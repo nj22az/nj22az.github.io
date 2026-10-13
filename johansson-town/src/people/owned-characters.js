@@ -13,17 +13,23 @@ function load(kind){
  }).catch(e=>{cache.delete(kind);throw e;}));return cache.get(kind);
 }
 /** Each instance owns its skeleton/mixer; cached geometry and textures are shared. */
-export function addOwnedCharacter({parent,kind,position=[0,0,0],yaw=0,height=null,staticDisplay=false}){
+/**
+ * `lazy`: nothing is fetched until `load()` is called (the 5 MB Thuan figurine waits until the back room it stands in is
+ * near, docs/LOADING.md batch 5); `ready` is then the load's promise. Otherwise it is fetched at once.
+ */
+export function addOwnedCharacter({parent,kind,position=[0,0,0],yaw=0,height=null,staticDisplay=false,lazy=false}){
  const spec=OWNED_CHARACTERS[kind];if(!spec)throw Error('Unknown owned character '+kind);
  const holder=new THREE.Group();holder.name=kind;holder.position.set(...position);holder.rotation.y=yaw;holder.userData.sharedAsset=true;parent.add(holder);
  let mixer=null,current=null,disposed=false,model=null;const actions=new Map();
  function play(name){if(disposed)return false;const next=actions.get(name);if(!next||next===current)return false;current?.fadeOut(.25);next.reset().fadeIn(.25).play();current=next;holder.userData.animation=name;return true;}
- const ready=typeof window==='undefined'||!window.document?Promise.resolve(false):load(kind).then(g=>{
+ let ready=null;
+ const start=()=>ready??=typeof window==='undefined'||!window.document?Promise.resolve(false):load(kind).then(g=>{
   if(disposed)return false;model=clone(g.scene);model.updateMatrixWorld(true);
   // Exported character meshes are authored with their soles on zero, facing +Z
   // after glTF's coordinate conversion. Props retain their source origin.
   if(!g.animations.length||spec.static||staticDisplay){const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3()),centre=bounds.getCenter(new THREE.Vector3());model.position.set(-centre.x,-bounds.min.y,-centre.z);holder.scale.setScalar((height??spec.height)/size.y);}
   holder.add(model);mixer=new THREE.AnimationMixer(model);for(const clip of (spec.static||staticDisplay?[]:g.animations))actions.set(clip.name,mixer.clipAction(clip));play(spec.clip||'Idle');holder.userData.rigged=actions.size>0;holder.userData.ready=true;return true;
  }).catch(e=>{holder.userData.loadError=true;console.warn('Owned character unavailable: '+kind,e);return false;});
- return {holder,ready,play,update(dt){if(!disposed&&holder.visible)mixer?.update(Math.min(.1,Math.max(0,dt)));},dispose(){disposed=true;mixer?.stopAllAction();if(model)mixer?.uncacheRoot(model);holder.removeFromParent();}};
+ if(!lazy)start();
+ return {holder,get ready(){return ready??Promise.resolve(false);},load:start,play,update(dt){if(!disposed&&holder.visible)mixer?.update(Math.min(.1,Math.max(0,dt)));},dispose(){disposed=true;mixer?.stopAllAction();if(model)mixer?.uncacheRoot(model);holder.removeFromParent();}};
 }

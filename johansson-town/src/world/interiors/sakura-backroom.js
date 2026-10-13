@@ -277,7 +277,7 @@ export function buildSakuraBackroom(room,{anchor,action}={}){
  k.finish();
  const F=BACKROOM.figurine;
  const plinth=new THREE.Mesh(new THREE.BoxGeometry(.34,F.plinth,.34),std(0x8a6a4a));plinth.position.set(F.x,F.plinth/2,F.z);plinth.name='Thuan figurine plinth';room.add(plinth);
- const figurine=addOwnedCharacter({parent:room,kind:'thuanFigurine',height:F.height,position:[F.x,F.plinth,F.z],yaw:F.yaw});
+ const figurine=addOwnedCharacter({parent:room,kind:'thuanFigurine',height:F.height,position:[F.x,F.plinth,F.z],yaw:F.yaw,lazy:true});
  if(anchor&&action){
   anchor([F.x-.5,1.0,F.z+.3],'Look at the Thuan figurine',()=>action('inspect','A figurine of Thuan','A carefully painted figurine of Thuan, a present from the mayor’s office. She says it is too much and keeps it in the back room, where she dusts it every morning before the rice delivery.'));
   const N=BACKROOM.noticeboard;
@@ -287,5 +287,7 @@ export function buildSakuraBackroom(room,{anchor,action}={}){
   anchor([D.x,.9,D.z],'Look at the rice delivery',()=>action('inspect',"Banju · The 11:00 rice delivery",
    'Four blue trays of onigiri and bento off the morning van, parked on the daisha at the end of the room. They go out on the shelves before the lunch crowd; the empty trays go back on the 16:00 run.'));
  }
- return {ready:figurine.ready,tick(time){rack.led.visible=Math.sin(time*2.4)>-.6;},dispose(){figurine.dispose();}};
+ // The figurine is the town's heaviest model (5 MB) and nobody sees the back room from the street: it is fetched when
+ // Johansson comes near the shop or goes in (sakura-shop.js), not with the town (docs/LOADING.md batch 5).
+ return {load:()=>figurine.load(),tick(time){rack.led.visible=Math.sin(time*2.4)>-.6;},dispose(){figurine.dispose();}};
 }

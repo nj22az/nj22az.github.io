@@ -101,6 +101,41 @@ distance to every coastline edge for each of its 200k texels.
 - Batches kept in a moved group (Kitano-jima's) get their world matrix at once (`render/static-props.js`), so a
   ray cast before the first frame finds them where they are drawn.
 
+## Batch 5: the audit of the start itself (2026-10-13)
+
+The creator: "Improve the loading times, audit why it loads so slow and improve loading time to enhance playability".
+Measured from Enter to a running town in a headless browser (`tools/measure-load.mjs`, and a CPU profile of the same
+run through the runtime's source maps). The start was not the download: it was the first frame. Of 33 s, 14 s went
+compiling shader programs and 5.5 s uploading geometry, against 5 s building the town.
+
+- **Every material was compiled twice.** `game.js` compiled the town's shaders ahead of time for the screen (sRGB
+  output), but the town is drawn into the ink pipeline's offscreen target (linear output), a different program. So the
+  first frame compiled them all again: 190 programs where 134 were needed. They are now compiled for the target the
+  town is drawn into (`compileTown`, and Kitano-jima's on arrival): 93 programs before the town runs, where it was 141.
+- **Sakura's back-room figurine (5 MB, the town's heaviest model) was fetched with the town**, and Sakura's window
+  view and its door both waited for it. Nobody sees the back room from the street: it is fetched when Johansson is
+  within 30 m of the shop on the street or goes in (`sakura-shop.js`, `owned-characters.js` `lazy`). The docks openings
+  are farther than that, so it does not compete with what they stream.
+- **The shelf labels read their canvas back from the GPU** once per flavour (1.4 s of the build, and the browser's
+  "multiple readback" warning). The atlas canvas is kept in memory (`willReadFrequently`), which reads back at once.
+
+| | Batch 4 | Batch 5 |
+|---|---|---|
+| Everything fetched before the town runs | 15 817 KB over 96 files | 8 066 KB over 91 files |
+| Enter to running (headless, software GPU) | 59 s | 30 s |
+| Shader programs compiled before it runs | 141 | 93 |
+
+Found and left for their own batches, in order of size:
+
+1. **Each resident's body is about 4 MB of vertex data**, unindexed (50 000 vertices at 76 bytes each), and there are
+   22 of them: most of the 146 MB uploaded to the GPU at the first frame. The body is unindexed on purpose (the
+   shoes, the hat's hair and the towel are edited as vertex ranges), so indexing it, or packing its colours and
+   weights in bytes, has to change those edits too (`avatars/build.js`).
+2. **The walk surface** (`walk-surface.js`, where feet stand on what is drawn) asks the plan's height at 874 000 grid
+   cells at startup: 2.8 s in node, most of it `coastalSurface`. It could be built near Johansson first and the rest
+   during the opening, or answered from the plan's indexes.
+3. The JavaScript before Enter is unchanged (3.8 MB): the interiors are still static imports of `game.js`.
+
 ## What is still large, in order (the plan for batch 2 and 3)
 
 1. **The game's static import graph is one 3.5 MB download before the first frame.** `game.js` statically imports

@@ -21,42 +21,120 @@ function pumpkinFace(s){
 }
 
 /**
+ * The glow round a lit lantern: a soft warm halo (one shared radial texture, drawn additively, no light of its own), so a
+ * lantern reads as lit at a glance, on a phone too. `halo(size)` is a sprite `size` metres across; its opacity is the
+ * glow (setGlow). Built from data, not a canvas, so the film and the tests can build it too.
+ */
+let haloTexture=null;
+function haloMap(){
+ if(haloTexture)return haloTexture;
+ const n=64,data=new Uint8Array(n*n*4);
+ for(let y=0;y<n;y++)for(let x=0;x<n;x++){const dx=(x+.5)/n*2-1,dy=(y+.5)/n*2-1,r=Math.min(1,Math.hypot(dx,dy)),a=Math.pow(1-r,2.2)*(1-r*r*.3),i=(y*n+x)*4;
+  data[i]=255;data[i+1]=Math.round(170+60*(1-r));data[i+2]=Math.round(70+90*Math.pow(1-r,3));data[i+3]=Math.round(255*a);}
+ haloTexture=new THREE.DataTexture(data,n,n,THREE.RGBAFormat);haloTexture.colorSpace=THREE.SRGBColorSpace;haloTexture.magFilter=THREE.LinearFilter;haloTexture.minFilter=THREE.LinearFilter;haloTexture.needsUpdate=true;
+ return haloTexture;
+}
+export function buildHalo(size,opacity=1){
+ const m=new THREE.SpriteMaterial({map:haloMap(),transparent:true,opacity,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
+ const s=new THREE.Sprite(m);s.scale.set(size,size,1);s.name='Lantern glow';s.renderOrder=2;s.userData.glowHalo=true;s.raycast=()=>{};return s;
+}
+
+/** A sphere's vertex colours, bright at its middle and deeper orange to its top and bottom (a bulb behind paper). */
+function glowShade(geo,mid,edge){
+ const p=geo.attributes.position,c=new Float32Array(p.count*3),r=geo.parameters?.radius||1,A=new THREE.Color(),B=new THREE.Color(),C=new THREE.Color();
+ A.setRGB(...mid,THREE.SRGBColorSpace);B.setRGB(...edge,THREE.SRGBColorSpace);
+ for(let i=0;i<p.count;i++){const t=Math.min(1,Math.abs(p.getY(i))/r);C.copy(A).lerp(B,t*t);c[i*3]=C.r;c[i*3+1]=C.g;c[i*3+2]=C.b;}
+ geo.setAttribute('color',new THREE.BufferAttribute(c,3));return geo;
+}
+
+/**
  * A paper pumpkin lantern (the 1990s party-shop kind: orange paper on a wire frame, a bulb inside): six lobes round a
- * vertical axis, a black cap and a green stem, the face cut on one side. Glows with `glow` (0 dark … 1 at 100 V; the
- * paper's colour, in sRGB, follows its light, eased so a dim lantern still reads as a lantern).
- * Its origin is the hanging point at the top of its cord.
+ * vertical axis, a black cap and a green stem, the face cut on one side. Glows with `glow` (0 dark … 1 at 100 V): lit, the
+ * paper is bright orange-yellow, brightest at its middle where the bulb is, the cut face glows pale yellow from inside, and
+ * a soft halo hangs round it; dimmed, all three fall together (eased, so a dim lantern still reads as a lantern); unlit
+ * (0), plain orange paper with a dark cut face, no halo. Its origin is the hanging point at the top of its cord.
  */
 export function buildPumpkinLantern({r=.19}={}){
  const g=new THREE.Group();g.name='Pumpkin lantern';
- const paper=new THREE.MeshBasicMaterial({color:0x8a4a1c}),face=new THREE.MeshBasicMaterial({color:0x3a2410,side:THREE.DoubleSide});
+ const paper=new THREE.MeshBasicMaterial({color:0xffffff,vertexColors:true,toneMapped:false}),face=new THREE.MeshBasicMaterial({color:0x3a2410,side:THREE.DoubleSide,toneMapped:false});
  const cy=-.06-r*.85;
- for(let i=0;i<6;i++){const a=i/6*Math.PI*2,lobe=mesh(g,new THREE.SphereGeometry(r*.62,14,10),paper,Math.cos(a)*r*.42,cy,Math.sin(a)*r*.42);lobe.scale.set(1,1.18,1);}
+ for(let i=0;i<6;i++){const a=i/6*Math.PI*2,lobe=mesh(g,glowShade(new THREE.SphereGeometry(r*.62,14,10),[1,.62,.14],[.88,.3,.02]),paper,Math.cos(a)*r*.42,cy,Math.sin(a)*r*.42);lobe.scale.set(1,1.18,1);}
  mesh(g,new THREE.CylinderGeometry(r*.32,r*.38,r*.16,12),std(0x2a2522),0,cy+r*.78,0,'Pumpkin lantern cap');
  mesh(g,new THREE.CylinderGeometry(r*.06,r*.09,r*.32,8),std(0x4f7a32),0,cy+r*.98,0);
  mesh(g,new THREE.CylinderGeometry(.004,.004,.06,6),std(0x2a2522),0,-.03,0);
  const f=mesh(g,pumpkinFace(r*1.05),face,0,cy-r*.04,r*.99,'Pumpkin lantern face');f.renderOrder=1;
- g.userData.lantern={paper,face,setGlow(v){const k=THREE.MathUtils.clamp(v,0,1);
-  // unlit (k=0): orange paper in the daylight and a dark cut face; lit: the paper and face glow with the bulb
-  if(k===0){paper.color.setRGB(.8,.43,.1,THREE.SRGBColorSpace);face.color.setRGB(.28,.16,.07,THREE.SRGBColorSpace);return;}
-  const l=.22+.78*Math.pow(k,.6);paper.color.setRGB(1*l,.55*l,.1*l,THREE.SRGBColorSpace);face.color.setRGB(1*l,.95*l,.6*l,THREE.SRGBColorSpace);}};
+ const halo=buildHalo(r*6.5,0);halo.position.set(0,cy,0);g.add(halo);
+ const unlit=new THREE.Color().setRGB(.8,.43,.1,THREE.SRGBColorSpace);
+ g.userData.lantern={paper,face,halo,glow:0,setGlow(v){const k=THREE.MathUtils.clamp(v,0,1);this.glow=k;
+  // unlit (k=0): orange paper in the daylight and a dark cut face; lit: the paper (its own bright-middle shading), the face
+  // and the halo glow with the bulb
+  if(k===0){if(paper.vertexColors){paper.vertexColors=false;paper.needsUpdate=true;}paper.color.copy(unlit);face.color.setRGB(.28,.16,.07,THREE.SRGBColorSpace);halo.visible=false;return;}
+  if(!paper.vertexColors){paper.vertexColors=true;paper.needsUpdate=true;}
+  const l=.3+.7*Math.pow(k,.6);paper.color.setScalar(l);face.color.setRGB(1*Math.min(1,l*1.15),.97*Math.min(1,l*1.15),.72*Math.min(1,l*1.15),THREE.SRGBColorSpace);
+  halo.visible=true;halo.material.opacity=.95*Math.pow(k,.85);}};
  g.userData.lantern.setGlow(0);
  return g;
 }
 
-/** A plastic jack-o'-lantern (a sweets pail, lit inside by a little torch): solid, ribbed, a carved face. Origin on the ground. */
+/** A plastic jack-o'-lantern (a sweets pail, lit inside by a little torch): solid, ribbed, a carved face, a small glow round it. Origin on the ground. */
 export function buildJackOLantern({r=.16}={}){
  const g=new THREE.Group();g.name='Jack-o’-lantern';
- const skin=new THREE.MeshBasicMaterial({color:0xff8a24}),face=new THREE.MeshBasicMaterial({color:0xfff4b0,side:THREE.DoubleSide});   // lit from inside: bright skin, a glowing face
- for(let i=0;i<7;i++){const a=i/7*Math.PI*2,lobe=mesh(g,new THREE.SphereGeometry(r*.6,14,10),skin,Math.cos(a)*r*.42,r*.82,Math.sin(a)*r*.42);lobe.scale.set(1,.95,1);}
+ const skin=new THREE.MeshBasicMaterial({color:0xffffff,vertexColors:true,toneMapped:false}),face=new THREE.MeshBasicMaterial({color:0xfff4b0,side:THREE.DoubleSide,toneMapped:false});   // lit from inside: bright skin, a glowing face
+ for(let i=0;i<7;i++){const a=i/7*Math.PI*2,lobe=mesh(g,glowShade(new THREE.SphereGeometry(r*.6,14,10),[1,.68,.24],[.93,.42,.08]),skin,Math.cos(a)*r*.42,r*.82,Math.sin(a)*r*.42);lobe.scale.set(1,.95,1);}
  mesh(g,new THREE.CylinderGeometry(r*.07,r*.1,r*.35,8),std(0x4f7a32),0,r*1.62,0);
  mesh(g,pumpkinFace(r*1.35),face,0,r*.82,r*.99,'Jack-o’-lantern face');
+ const halo=buildHalo(r*4.2,.42);halo.position.set(0,r*.85,0);g.add(halo);
+ return g;
+}
+
+/**
+ * J-Coffee (ジェイコーヒー): the island's own canned black coffee, a made-up brand of Minato Drinks (no real maker). A
+ * standard 350 ml can (66 mm across, 122 mm tall, a cola can's shape, not the short 190 ml coffee can), black, with a
+ * bold cream "J-COFFEE" under a gold bean mark on its front and "BLACK · 無糖" under it, a big gold J on its back;
+ * aluminium rims and a ring-pull top. Origin at its base, standing; its front (the name) faces -z, so rotation.y = π
+ * shows it to +z and -π/2 to +x. Lay it on its side with rotation.x.
+ * Sold at ¥120 in the town's drinks machines (commerce/vending-catalogue.js 'j-coffee').
+ */
+export const J_COFFEE_CAN=Object.freeze({diameter:.066,height:.122,colour:'#17130f',ink:'#f3e6c4',gold:'#d9a441'});
+let jLabel=null;
+function jCoffeeLabel(){
+ if(jLabel!==null)return jLabel;jLabel=undefined;
+ if(typeof document==='undefined'||!document.createElement)return jLabel;
+ const c=document.createElement('canvas');c.width=512;c.height=256;const x=c.getContext?.('2d');if(!x)return jLabel;
+ const C=J_COFFEE_CAN;x.fillStyle=C.colour;x.fillRect(0,0,512,256);
+ // the front (u .5): the bean mark, the name, a rule and the kind, the name kept within about a third of the way round
+ // so it reads whole from in front; the back (the seam): a big gold J, so the can is known from any side
+ x.fillStyle=C.gold;x.beginPath();x.ellipse(256,58,26,36,.5,0,Math.PI*2);x.fill();
+ x.strokeStyle=C.colour;x.lineWidth=6;x.beginPath();x.moveTo(238,31);x.bezierCurveTo(268,50,242,70,272,88);x.stroke();
+ x.fillStyle=C.ink;x.textAlign='center';x.textBaseline='middle';
+ x.font='900 50px "Arial Black", Arial, sans-serif';x.fillText('J-COFFEE',256,140,178);
+ x.fillRect(176,170,160,5);
+ x.font='bold 28px Arial, sans-serif';x.fillText('BLACK · 無糖',256,204,170);
+ x.fillStyle=C.gold;x.font='900 150px "Arial Black", Arial, sans-serif';for(const u of [0,512])x.fillText('J',u,138);
+ jLabel=new THREE.CanvasTexture(c);jLabel.colorSpace=THREE.SRGBColorSpace;jLabel.anisotropy=4;
+ return jLabel;
+}
+export function buildJCoffeeCan(){
+ const C=J_COFFEE_CAN,r=C.diameter/2,H=C.height,g=new THREE.Group();g.name='J-Coffee can';
+ const map=jCoffeeLabel();
+ // the printed body drawn as its own colours (unlit: the town's toon ramp lifts a black surface towards its blue shadow
+ // tint, and the can must read black at a glance, day or night); its aluminium rims and top are lit and give it its form
+ const body=map?new THREE.MeshBasicMaterial({map}):new THREE.MeshBasicMaterial({color:C.colour});
+ const alu=std(0xc9cdd0,{roughness:.3,metalness:.7});
+ mesh(g,new THREE.CylinderGeometry(r,r,H*.84,24,1,true),body,0,H*.5,0,'J-Coffee can body');
+ mesh(g,new THREE.CylinderGeometry(r*.84,r,H*.08,24),alu,0,H*.96,0,'J-Coffee can shoulder');
+ mesh(g,new THREE.CylinderGeometry(r,r*.84,H*.08,24),alu,0,H*.04,0,'J-Coffee can base');
+ mesh(g,new THREE.CircleGeometry(r*.84,24).rotateX(-Math.PI/2),alu,0,H+.0005,0);
+ mesh(g,new THREE.BoxGeometry(r*.5,.002,r*.3),std(0x9ea3a6,{metalness:.7,roughness:.3}),0,H+.002,r*.25,'Ring pull');
+ if(!map)mesh(g,new THREE.CylinderGeometry(r*1.005,r*1.005,H*.18,24,1,true),std(C.ink),0,H*.5,0,'J-Coffee band');
+ g.userData.product='j-coffee';
  return g;
 }
 
 /**
  * An obake (お化け), the cute paper-and-plush ghost of a Japanese Halloween: a round white head running into a
  * wavy hem, two little arms, dot eyes, rosy cheeks and a small smile. `flat`: a cardboard cut-out (a single shape,
- * for taping to a shutter); else a plush figure. `can`: holding a coffee can in its arms. Faces +z; origin at its
+ * for taping to a shutter); else a plush figure. `can`: holding a J-Coffee can in its arms (buildJCoffeeCan, scaled to its arms). Faces +z; origin at its
  * base (the plush) or its middle (the cut-out).
  */
 export function buildObake({h=.42,flat=false,can=false}={}){
@@ -80,8 +158,7 @@ export function buildObake({h=.42,flat=false,can=false}={}){
    mesh(g,new THREE.SphereGeometry(h*.032,10,8),ink,sx*R*.33,h-R*1.02,R*.93);
    const cheek=mesh(g,new THREE.CircleGeometry(h*.05,14),pink,sx*R*.58,h-R*1.3,R*.83);cheek.lookAt(sx*R*2,h-R*1.3,R*3);}
   const smile=new THREE.Mesh(new THREE.TorusGeometry(h*.04,h*.011,6,14,Math.PI),ink);smile.rotation.z=Math.PI;smile.position.set(0,h-R*1.18,R*1.01);g.add(smile);
-  if(can){const c=mesh(g,new THREE.CylinderGeometry(R*.26,R*.26,R*.7,16),std(0x5a3b26,{roughness:.4,metalness:.4}),0,h*.4,R*1.02,'Coffee can');
-   mesh(c,new THREE.CylinderGeometry(R*.305,R*.305,R*.3,16),std(0xf2e6cf),0,0,0);}
+  if(can){const c=buildJCoffeeCan();const k=(R*.78)/J_COFFEE_CAN.height;c.scale.setScalar(k);c.position.set(0,h*.36-R*.16,R*1.02);c.rotation.y=Math.PI;c.name='J-Coffee can';g.add(c);}
  }
  return g;
 }

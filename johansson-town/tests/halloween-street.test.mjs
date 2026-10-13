@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {createVendingMachine} from '../src/world/vending.js';
+import {buildJCoffeeCan,J_COFFEE_CAN} from '../src/world/halloween-props.js';
+import {VENDING_PRODUCTS} from '../src/commerce/vending-catalogue.js';
 import {buildHalloween,HALLOWEEN,HALLOWEEN_ELECTRICS as E,cordResistance,lanternCurrent,reelVolts,lanternBrightness,cordHeat,buildObake,buildDog,buildPumpkinLantern} from '../src/world/halloween.js';
 import {SAKURA_BOX} from '../src/world/okinawa/old-town.js';
 
@@ -12,7 +14,8 @@ installDOM();
 const town=()=>{const world={group:new THREE.Group(),colliders:[],hourly:[]};
  const m=createVendingMachine({});m.position.set(HALLOWEEN.machine.x,0,HALLOWEEN.machine.z);m.rotation.y=Math.PI/2;world.group.add(m);
  const h=buildHalloween(world,{});world.group.updateMatrixWorld(true);return {world,h,machine:m};};
-const box=o=>{o.updateWorldMatrix(true,true);return new THREE.Box3().setFromObject(o);};
+// the meshes' box (a lantern's glow halo is light, not a thing: it may spread past the lantern)
+const box=o=>{o.updateWorldMatrix(true,true);const b=new THREE.Box3();o.traverse(x=>{if(x.isMesh)b.expandByObject(x);});return b;};
 
 test('the electrics: the start surge through the thin, half-coiled reel dims every lantern and drops the coin relay',()=>{
  assert.ok(Math.abs(cordResistance()-1.376)<.001,'30 m of 0.75 mm², there and back: 1.38 Ω');
@@ -74,7 +77,7 @@ test('the season: up from 24 October, the lanterns lit from six in the evening',
 });
 
 test('the figures: a cute obake, Kuro the dog and a pumpkin lantern, each whole',()=>{
- const o=buildObake({h:.4,can:true}),b=box(o);assert.ok(Math.abs(b.max.y-.4)<.05&&b.min.y>-.04,'the plush ghost stands '+b.max.y.toFixed(2)+' tall');assert.ok(o.getObjectByName('Coffee can'),'holding its can');
+ const o=buildObake({h:.4,can:true}),b=box(o);assert.ok(Math.abs(b.max.y-.4)<.05&&b.min.y>-.04,'the plush ghost stands '+b.max.y.toFixed(2)+' tall');assert.ok(o.getObjectByName('J-Coffee can'),'holding its J-Coffee can');
  for(const pose of ['sit','eat','stand']){const d=box(buildDog({pose}));assert.ok(d.min.y>-.01&&d.max.y<.62,'Kuro '+pose);}
  const l=buildPumpkinLantern(),lb=box(l);assert.ok(lb.max.y<=.02&&lb.min.y>-.45,'a lantern hangs below its hook');
 });
@@ -100,4 +103,52 @@ test('the costumes fit the body that wears them: the pumpkin suit, the ghost she
   }
   a.dispose();
  }
+});
+
+test('the lanterns read as lit at night: bright paper brightest at the middle, a lit face, a halo, and warm pools that dim together',()=>{
+ const {h}=town();
+ const L=h.lanterns[0].userData.lantern,pools=h.group.getObjectByName('Lantern light').children;
+ assert.ok(pools.length>0&&pools.length<=4,'a few shared lights, not one a lantern: '+pools.length);
+ const look=g=>{h.stage({glow:g});const c=L.paper.color,f=L.face.color;return {paper:c.r,face:f.r+f.g+f.b,shaded:L.paper.vertexColors,halo:L.halo.visible?L.halo.material.opacity:0,pool:pools[0].visible?pools[0].intensity:0};};
+ const off=look(0),groan=look(.12),run=look(.7),fixed=look(1);
+ assert.equal(off.halo,0,'unlit: no halo');assert.equal(off.pool,0,'unlit: no pool of light');
+ assert.ok(!off.shaded&&run.shaded,'unlit: plain orange paper; lit: shaded by its bulb');
+ assert.ok(run.halo>.4&&run.pool>2,'lit at 90 V: a halo and a warm pool ('+run.halo.toFixed(2)+', '+run.pool.toFixed(1)+')');
+ assert.ok(run.face>2.2,'the carved face glows pale yellow from inside');
+ assert.ok(groan.paper<run.paper*.7&&groan.halo<run.halo*.4&&groan.pool<run.pool*.2,'the groan dims the paper, the halo and the pools together');
+ assert.ok(fixed.paper>=run.paper&&fixed.halo>run.halo&&fixed.pool>run.pool,'after the fix: steady and brightest');
+ h.stage({glow:.7});
+ const lobe=h.lanterns[0].children.find(x=>x.isMesh&&x.geometry.attributes.color),col=lobe.geometry.attributes.color,pos=lobe.geometry.attributes.position;
+ let mid=0,top=0;for(let i=0;i<pos.count;i++){const g=col.getY(i);if(Math.abs(pos.getY(i))<.01)mid=Math.max(mid,g);if(pos.getY(i)>lobe.geometry.parameters.radius*.95)top=Math.max(top,g);}
+ assert.ok(mid>top*1.4,'brightest at the middle, where the bulb is');
+ assert.ok(L.paper.toneMapped===false&&L.halo.material.blending===THREE.AdditiveBlending,'the glow is not toned down, and the halo adds light');
+ h.stage({show:false});assert.ok(pools.every(p=>!p.visible),'put away: no light left on');
+});
+
+test('J-Coffee: a black 350 ml can sold at ¥120, the free can in the pocket and the bucket’s, clear of the machine',()=>{
+ const p=VENDING_PRODUCTS.find(x=>x.id==='j-coffee');
+ assert.ok(p&&p.price===120&&p.size===350&&p.who&&p.why,'a real product: who buys it, why, ¥120');
+ const c=buildJCoffeeCan(),b=box(c),s=b.getSize(new THREE.Vector3());
+ assert.ok(Math.abs(s.y-.122)<.005&&Math.abs(s.x-.066)<.003,'a cola can’s shape: 66 × 122 mm, not the short coffee can');
+ const {h,machine}=town();h.stage({can:true,bucket:true});h.group.updateMatrixWorld(true);
+ const free=new THREE.Box3().setFromObject(h.group.getObjectByName('A can in the take-out pocket'),true),floor=machine.userData.takeOut;
+ assert.ok(free.min.y>.2&&free.min.y<.22,'lying on the pocket’s floor, not in it nor floating: '+free.min.y.toFixed(3));
+ assert.ok(free.max.x<HALLOWEEN.machine.front+.085,'behind the flap');assert.ok(floor,'the machine says where its pocket is');
+ const cans=h.group.getObjectByName('Free cans in the bucket');assert.equal(cans.children.length,9);assert.ok(box(cans).max.y>.25,'the cans show over the bucket’s rim (.22)');
+ for(const k of cans.children){const kb=box(k);assert.ok(kb.min.y>-.001,'on the bucket floor, not through it');}
+ h.stage({bucket:'empty'});assert.ok(!cans.visible,'the empty bucket of the last night');
+});
+
+test('Fujita’s dream: built only when the story asks, closed in by its own sky, and it bursts',()=>{
+ const {world,h}=town();
+ const find=()=>world.group.getObjectByName('Fujita’s dream');
+ h.stage({});assert.ok(!find(),'not built for the street');
+ h.stage({dream:'dream'});const d=find();assert.ok(d&&d.visible,'the dream');
+ const sky=d.getObjectByName('Dream sky'),cans=d.getObjectByName('A million J-Coffee cans');
+ assert.ok(sky.geometry.parameters.radius>=20&&cans.count>=2000,'its own sky round a mountain of cans');
+ assert.ok(d.position.y>100,'high over the town, out of sight of the street');
+ const m=new THREE.Matrix4(),p=new THREE.Vector3(),top=()=>{let y=0;for(let i=0;i<cans.count;i++){cans.getMatrixAt(i,m);p.setFromMatrixPosition(m);y=Math.max(y,p.y);}return y;};
+ const whole=top();h.stage({dream:'pop'});assert.ok(top()<whole,'bursting: the tower comes down');
+ assert.ok(Math.abs(d.getObjectByName('Dream house (a J-Coffee can)').rotation.z)>.2,'the house tips');
+ h.stage({dream:false});assert.ok(!d.visible,'gone when the story moves on');
 });

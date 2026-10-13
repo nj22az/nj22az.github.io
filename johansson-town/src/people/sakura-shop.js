@@ -13,6 +13,10 @@ import {PALETTE,fluorescent} from '../render/dusk.js';
 import {createStandIn} from '../render/static-props.js';
 import {townAudio} from '../audio/town-audio.js?snappy=1';
 
+/** Within this of the shop (a few seconds' walk from its door) its back room's figurine is fetched; the docks openings
+ * are farther, so it does not compete with what they stream (docs/LOADING.md batch 5). */
+const BACK_ROOMS_NEAR=30;
+
 // A single persistent shop owns stock, staff and customer jobs everywhere in town.
 export function createSakuraShop({world,scene,state,ledger,register,action,exit,getMinutes,getPlayerPosition,isInside,onBorrow=()=>{},getRain=()=>false,save=()=>{}}){
  // Re-checked twice a second too: the interior's lights arrive when its model loads.
@@ -37,6 +41,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   const player=isInside()&&getPlayerPosition();if(player&&Math.hypot(player.x-x,player.z-z)<r+.28)return true;
   return world.people.some(p=>p!==excluded&&p.g.userData.inMarket&&p.g.visible&&Math.hypot(p.g.position.x-x,p.g.position.z-z)<r+(p===person?layout.clearance:.35));
  };
+ let backRoomsFetched=false,backRoomCheck=0;const shopAt=new THREE.Vector3();
  const display=buildSakuraInterior({room:group,reg,action,exit});display.updateStock(state.sakura.stock);
  const retail=createShopRetail({world,state,ledger,display,collides:blocked,getMinutes,isOccupied});
  let attention=createShopAttention({clerk:person.g,world,retail,colliders,isInside,getPlayerPosition});
@@ -129,6 +134,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
  };
  return {group,colliders,service,retail,display,blocked,layout,ready:display.ready,
   enter(parent){
+   if(!backRoomsFetched){backRoomsFetched=true;display.loadBackRooms?.();}
    parent.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);
    const frame=frontFrame();if(frame)frame.visible=true;
    windowView(false);lit(false);backRooms(true);
@@ -167,6 +173,9 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   },
   hide(){windowView(false);scene.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);group.visible=false;lit(false);backRooms(true);const frame=frontFrame();if(frame)frame.visible=true;showPeople(true);syncLightVisibility(false);},
   update(dt){
+   // The back room's figurine comes when he is near the shop on the street (not parked out of sight at the origin) or
+   // goes in (sakura-backroom.js); a check a second.
+   if(!backRoomsFetched&&(backRoomCheck-=dt)<=0){backRoomCheck=1;const p=!isInside()&&getPlayerPosition();if(p&&group.visible&&group.parent&&group.parent!==scene&&group.getWorldPosition(shopAt).distanceTo(p)<BACK_ROOMS_NEAR){backRoomsFetched=true;display.loadBackRooms?.();}}
    // The shop's lights are for the inside of the shop. The interior stays in the street
    // scene so you can see it through the glass, but a light has no walls: left on, its
    // hemisphere fill brightened the whole town and its tubes threw a 17 m halo over the

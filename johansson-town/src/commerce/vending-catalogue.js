@@ -9,6 +9,11 @@ export const VENDING_PRODUCTS=Object.freeze([
   {id:'sanpin',brand:'SANPIN',subtitle:'Jasmine tea',mark:'花',color:'#c9a33a',price:120,inventoryName:'Sanpin jasmine tea',container:'can'},
   {id:'shikuwasa',brand:'SHIKUWASA',subtitle:'Citrus soda',mark:'柑',color:'#7bb342',price:120,inventoryName:'Shikuwasa soda',container:'can'},
   {id:'ryukyu-cola',brand:'RYUKYU COLA',subtitle:'Cola',mark:'C',color:'#b3262e',price:120,inventoryName:'Ryukyu cola',container:'can'},
+  // J-Coffee: the island's own black coffee in a 350 ml can (world/halloween-props.js buildJCoffeeCan draws it). For the
+  // men on the quay before a shift and after one (Fujita, the harbour crew, Officer Mori on a night watch): strong and
+  // unsweetened, a big can for the price of a small one, so it is the one they press; ¥120 like the rest.
+  {id:'j-coffee',brand:'J-COFFEE',subtitle:'Black coffee',mark:'J',color:'#141414',price:120,inventoryName:'J-Coffee',container:'can',size:350,
+   who:'the quay crew, early and late; Fujita; Officer Mori on watch',why:'Strong and unsweetened, and a full 350 ml for ¥120: the working man’s can at the port.'},
   {id:'corn-soup',brand:'CORN SOUP',subtitle:'Hot · creamy',mark:'温',color:'#e8b030',price:120,inventoryName:'Hot corn soup',container:'can',hot:true},
 ].map(p=>Object.freeze({...p,label:p.buttonLabel||`${p.brand[0]+p.brand.slice(1).toLowerCase()} · ${p.subtitle}${p.hot?' (hot)':''} · ¥${p.price}`})));
 export const VENDING_AD=Object.freeze({brand:'MINATO DRINKS',tagline:'A break at the port',background:'#244b4a',foreground:'#f4e8cb'});
