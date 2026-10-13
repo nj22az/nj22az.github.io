@@ -346,6 +346,8 @@ const CEL_FILL=1.35;
 // headroom than the rolled-off highlights AgX used to give.
 const CEL_EXPOSURE=1.04;
 const NIGHT_TINT=Object.freeze({light:GRADE_DEFAULTS.lightTint??0xffffff,shadow:0xe0dcf0});
+/** How much of the night is in the grade outdoors (0 by day and indoors, 1 at full night): the shadow lift eases off with it. */
+let nightLift=0;
 const ambient=new THREE.HemisphereLight(0xdbe7f2,0x6b5f8c,1.15);scene.add(ambient);
 const bounce=new THREE.DirectionalLight(0x9db6e8,1.25);bounce.position.set(26,16,-22);scene.add(bounce);
 const UPLIGHT=.35,uplight=new THREE.DirectionalLight(0xc9b9e0,UPLIGHT);uplight.position.set(4,-18,6);scene.add(uplight);
@@ -1427,7 +1429,10 @@ function setTime({updateHours=true}={}){
  // Night is moonlight: the grade's light and shadow tints go blue as the day goes, so the
  // street reads as night and the lit windows and lamps stand out warm against it.
  {const night=Math.max(0,1-day-c.dusk*.6)*(current?0:1),mix=(a,b,t)=>new THREE.Color(a).lerp(new THREE.Color(b),t).getHex();
-  pipeline?.tune({uLightTint:mix(NIGHT_TINT.light,0xb4c2f4,night*.6),uShadowTint:mix(NIGHT_TINT.shadow,0x7d86c4,night*.8)});}
+  pipeline?.tune({uLightTint:mix(NIGHT_TINT.light,0xb4c2f4,night*.6),uShadowTint:mix(NIGHT_TINT.shadow,0x6470b4,night*.85)});
+  // and the shadow lift that keeps the day's shade from going black is mostly taken off at night: lifted, a night street
+  // sat behind a milky grey veil (the lamps and windows could not stand out against it). Dusk and dawn keep their lift.
+  nightLift=night;}
  // Underground the sun and the sky do not reach: the lantern, the torches and a little
  // cold fill are all the light there is, and the dark closes in a few tiles off.
  if(current?.id==='dungeon'){sun.intensity=0;bounce.intensity=0;ambient.intensity*=.12;scene.environmentIntensity=.03;scene.background.set(0x050404);scene.fog=DUNGEON_FOG;}
@@ -1438,7 +1443,7 @@ function setTime({updateHours=true}={}){
   uplight.intensity=UPLIGHT*share;}
  // and the grade's shadow lift, which keeps the town's shade from ever going black, is
  // taken nearly off down there, or the whole cave sits behind a grey veil.
- pipeline?.tune({uLift:current?.id==='dungeon'?.003:INK_OPTIONS.gradeOptions.lift??GRADE_DEFAULTS.lift});
+ pipeline?.tune({uLift:current?.id==='dungeon'?.003:(INK_OPTIONS.gradeOptions.lift??GRADE_DEFAULTS.lift)*(1-.7*nightLift)});
  // Warmth only. Ink, shadow tint and flatten stay on their cel defaults.
  pipeline?.tune({uWarmth:c.gradeWarmth});
  $('.timecard small').textContent=c.period;
@@ -2036,6 +2041,8 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  // and how many of a product are on Sakura's shelves (each one is drawn, so a gap is a real gap).
  shopDoor(id,amount){if(id==='onsen'&&current?.id==='onsen'&&activeRoomLayout?.streetDoor){activeRoomLayout.streetDoor.set(amount);return activeRoomLayout.streetDoor.amount;}const s=SITES.find(site=>site.id===id);if(!s?.shopDoor)throw Error(`No shop door for ${id}`);s.shopDoor.set(amount);if(id==='market')sakuraShop.display.frontDoor?.set(amount);return s.shopDoor.amount;},
  fridgeDoor(column,amount){return sakuraShop.display.refrigerator.hold(column,amount);},
+ /** Halloween on Sakura Street (world/halloween.js): stage a moment of the children's walk. */
+ get halloween(){return world.halloween;},
  stock(id,shelf){const st=activities.state.sakura?.stock;if(!st?.[id])throw Error(`No Sakura stock line ${id}`);if(Number.isFinite(shelf)){st[id].shelf=Math.max(0,shelf|0);sakuraShop.display.updateStock(st);}return {shelf:st[id].shelf,capacity:id==='bun'?12:24};},
  interact(){doInteract();},
  get conversation(){const sp=conversationLine?.speaker;if(!sp)return {name:conversationName,speaker:null};const w=sp.getWorldPosition(new THREE.Vector3()),t=characters.conversationTarget(sp);return {name:conversationName,visible:sp.visible,seated,third:thirdPerson,speaker:w.toArray().map(v=>+v.toFixed(2)),target:t?.toArray?.().map(v=>+v.toFixed(2)),player:player.position.toArray().map(v=>+v.toFixed(2)),yaw:+yaw.toFixed(2)};},

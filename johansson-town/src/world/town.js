@@ -53,6 +53,7 @@ import {buildWestYard} from './west-yard.js';
 import {buildForestEdge} from './forest-edge.js';
 import {buildCoyoteTunnel,CAVE_ACTIVE} from './coyote-tunnel.js';
 import {buildOkinawaQuarters} from './okinawa/quarters.js';
+import {buildHalloween} from './halloween.js';
 import {createFerryRun} from './ferry.js';
 import {windowGlow} from '../render/dusk.js';
 import {setWindowLight} from '../render/window-interior.js';
@@ -304,6 +305,9 @@ export function createTown(options){
    // The streets that fill the rest of the island in: Nishi-machi behind the west
    // yard, and shop-houses along both kerbs of Main Street. See okinawa/layout.js.
    world.quarters=buildOkinawaQuarters(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});
+   // Halloween on Sakura Street: the children's walk's lanterns, paper ghosts and the drinks machine's cord reel
+   // (hidden until the season or a story stages it). See halloween.js.
+   world.halloween=buildHalloween(world,{shadows:options.shadows});
    // The standard street furniture: chain bollards along the sea wall, brick planters at
    // the crossings. Laid last, so it can step round everything already standing.
    // See street-furniture.js.

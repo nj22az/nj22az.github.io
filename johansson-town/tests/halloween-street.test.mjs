@@ -1,0 +1,103 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import * as THREE from '../vendor/three.module.js';
+import {installDOM} from './fixtures.mjs';
+import {createVendingMachine} from '../src/world/vending.js';
+import {buildHalloween,HALLOWEEN,HALLOWEEN_ELECTRICS as E,cordResistance,lanternCurrent,reelVolts,lanternBrightness,cordHeat,buildObake,buildDog,buildPumpkinLantern} from '../src/world/halloween.js';
+import {SAKURA_BOX} from '../src/world/okinawa/old-town.js';
+
+installDOM();
+
+// "The Haunted Vending Machine": Halloween on Sakura Street, and the electrics the story's Why it works explains.
+const town=()=>{const world={group:new THREE.Group(),colliders:[],hourly:[]};
+ const m=createVendingMachine({});m.position.set(HALLOWEEN.machine.x,0,HALLOWEEN.machine.z);m.rotation.y=Math.PI/2;world.group.add(m);
+ const h=buildHalloween(world,{});world.group.updateMatrixWorld(true);return {world,h,machine:m};};
+const box=o=>{o.updateWorldMatrix(true,true);return new THREE.Box3().setFromObject(o);};
+
+test('the electrics: the start surge through the thin, half-coiled reel dims every lantern and drops the coin relay',()=>{
+ assert.ok(Math.abs(cordResistance()-1.376)<.001,'30 m of 0.75 mm², there and back: 1.38 Ω');
+ assert.equal(lanternCurrent(),3.25,'thirteen 25 W bulbs at 100 V');
+ const run=reelVolts(false),start=reelVolts(true);
+ assert.ok(run>89&&run<91,'running: about 90 V at the reel ('+run.toFixed(1)+')');
+ assert.ok(start>62&&start<63.5,'starting (6 × 4 A): about 62 V ('+start.toFixed(1)+')');
+ assert.ok(start<E.supply*E.relayDropout,'below the coin relay’s hold-in: it lets go (a free can)');
+ assert.ok(lanternBrightness(run)>.65&&lanternBrightness(start)<.25,'the street breathes: the lanterns fall to a fifth of their light');
+ assert.ok(E.compressorRun+lanternCurrent()>E.coiledRating&&cordHeat()>60,'more than the reel’s coiled rating: about 70 W warming the coil');
+ // the fix: the machine on its own socket, the lanterns on their own: no shared thin cord, nothing dips
+ const own={...E,compressorRun:0};assert.ok(lanternBrightness(reelVolts(true,own))>.85,'on their own cable the lanterns hold');
+});
+
+test('the string, the lanterns, the ghosts and the reel are on Sakura’s frontage, clear of the people walking under them',()=>{
+ const {h,machine}=town();h.stage({glow:1});
+ assert.equal(h.lanterns.length,E.lanterns);
+ const mb=box(machine);
+ for(const l of h.lanterns){const b=box(l);
+  assert.ok(b.min.y>1.82,'a lantern hangs above a head: '+l.name+' '+b.min.y.toFixed(2));
+  assert.ok(b.max.y<2.62,'under the awning’s tie points');
+  assert.ok(b.min.x>SAKURA_BOX.maxX+.85&&b.max.x<-5.5,'over the pavement, in front of the awning');
+  assert.ok(b.min.z>-33.45,'clear of the cold-drinks banner');
+  assert.ok(!b.intersectsBox(mb),'not in the machine');}
+ const reel=h.group.getObjectByName('Cord reel'),rb=box(reel);
+ assert.ok(!rb.intersectsBox(mb),'the reel stands clear of the machine');
+ assert.ok(rb.min.y>-.001&&rb.min.y<.02,'the reel on the pavement');
+ const sock=h.group.getObjectByName('Drinks machine outdoor socket'),sb=box(sock);
+ assert.ok(Math.abs(sb.min.x-(SAKURA_BOX.maxX+.01))<.02,'the socket on the wall');
+ assert.ok(sb.min.z<SAKURA_BOX.minZ+.3&&sb.max.z>SAKURA_BOX.minZ,'on the corner pier, south of the shutter');
+ const ghosts=[];h.group.traverse(o=>{if(o.name==='Cardboard ghost')ghosts.push(o);});assert.equal(ghosts.length,4);
+ for(const g of ghosts){const b=box(g);assert.ok(b.min.y>.75&&b.max.y<1.7,'at a child’s eye height');assert.ok(b.min.x>SAKURA_BOX.maxX+.15,'on the shutter, in front of it');}
+});
+
+test('stage: the moments the story photographs, each switching what it should',()=>{
+ const {h,machine}=town();
+ assert.equal(h.group.visible,false,'hidden out of season');
+ h.stage({glow:lanternBrightness(reelVolts(false)),cable:'reel'});assert.equal(h.group.visible,true);
+ const lit=[];machine.traverse(m=>{if(m.isMesh&&m.material?.isMeshBasicMaterial&&m.material.map)lit.push(m.material);});assert.ok(lit.length>=2,'the machine’s lit window and brand');
+ const before=lit[0].color.r;h.stage({machine:.35});assert.ok(lit[0].color.r<before*.4,'the machine dims as its compressor starts');h.stage({machine:1});
+ const lantern=h.lanterns[0].userData.lantern;h.stage({glow:1});const full=lantern.paper.color.r;h.stage({glow:.2});assert.ok(lantern.paper.color.r<full*.6,'the lanterns dim');
+ assert.equal(h.group.getObjectByName('Kōji’s way: the reel').visible,true);assert.equal(h.group.getObjectByName('The fix: the lanterns’ own socket').visible,false);
+ h.stage({cable:'fixed'});assert.equal(h.group.getObjectByName('Cord reel').visible,false,'the reel is gone after the fix');
+ assert.equal(h.group.getObjectByName('Lantern socket with RCD').visible,true,'the lanterns’ own socket with an RCD');
+ for(const [key,name] of [['mist','Mist from the can chute'],['candles','Séance candles'],['salt','Morijio (salt cones)'],['bucket','Fujita’s bucket'],['can','A can in the take-out pocket'],['pumpkins','Jack-o’-lanterns round the machine'],['peek','Plush ghost peeking']]){
+  h.stage({[key]:key==='mist'?.8:true});assert.equal(h.group.getObjectByName(name).visible,true,name);h.stage({[key]:key==='mist'?0:false});assert.equal(h.group.getObjectByName(name).visible,false,name);}
+ h.stage({riceBall:'plate',dog:{pose:'eat',at:[HALLOWEEN.machine.front+.6,HALLOWEEN.machine.z+.42],yaw:-Math.PI/2}});
+ const dog=h.group.getObjectByName('Kuro (dog)');assert.ok(dog,'Kuro');assert.ok(Math.abs(box(dog).min.y)<.01,'on the ground');
+ h.stage({dog:false});assert.equal(h.group.getObjectByName('Kuro (dog)'),undefined);
+ // the clock leaves a staged moment alone
+ h.update(1440*10000+1250);assert.equal(h.group.visible,true);
+});
+
+test('the season: up from 24 October, the lanterns lit from six in the evening',()=>{
+ const {h}=town(),day=(m,d,hh)=>{const t=new Date(1997,m-1,d,hh,0);return (t.getTime()-t.getTimezoneOffset()*60000)/60000;};
+ h.update(day(9,20,20));assert.equal(h.group.visible,false,'not in September');
+ h.update(day(10,31,15));assert.equal(h.group.visible,true);assert.equal(h.state.glow,0,'unlit in the afternoon');
+ h.update(day(10,31,20));assert.ok(h.state.glow>.6,'lit in the evening');
+});
+
+test('the figures: a cute obake, Kuro the dog and a pumpkin lantern, each whole',()=>{
+ const o=buildObake({h:.4,can:true}),b=box(o);assert.ok(Math.abs(b.max.y-.4)<.05&&b.min.y>-.04,'the plush ghost stands '+b.max.y.toFixed(2)+' tall');assert.ok(o.getObjectByName('Coffee can'),'holding its can');
+ for(const pose of ['sit','eat','stand']){const d=box(buildDog({pose}));assert.ok(d.min.y>-.01&&d.max.y<.62,'Kuro '+pose);}
+ const l=buildPumpkinLantern(),lb=box(l);assert.ok(lb.max.y<=.02&&lb.min.y>-.45,'a lantern hangs below its hook');
+});
+
+test('the costumes fit the body that wears them: the pumpkin suit, the ghost sheet (over Mori’s cap) and the witch hat',async()=>{
+ const {buildAvatar}=await import('../src/avatars/build.js'),{recipeFor}=await import('../src/avatars/cast.js'),{normalizeRecipe}=await import('../src/avatars/recipe.js'),{storyProps,STORY_PROPS}=await import('../src/avatars/story-props.js');
+ for(const kind of ['pumpkinSuit','ghostSheet','witchHat'])assert.ok(STORY_PROPS[kind]?.why.length>40,kind+' has its reason');
+ for(const [who,recipe] of [['Tetsuo',recipeFor('Tetsuo')],['Officer Mori',recipeFor('Officer Mori')],['a child',normalizeRecipe({name:'Walk child',age:'child'})]]){
+  const a=buildAvatar(recipe,{shadows:false}),m=a.measure;a.root.updateMatrixWorld(true);
+  for(const kind of ['pumpkinSuit','ghostSheet','witchHat']){
+   const o=storyProps(a).give(kind);a.root.updateMatrixWorld(true);
+   const parts=o.userData.parts;assert.ok(parts.length>=1,who+' '+kind);
+   const b=new THREE.Box3();for(const [,p] of parts)b.expandByObject(p);
+   if(kind==='pumpkinSuit'){assert.ok(b.min.y>m.hipY*.7&&b.max.y<m.headCentre+m.Rh*m.headSY+.2,who+': the pumpkin round the torso');assert.ok(b.max.x-b.min.x>m.shoulderX*2&&b.max.x-b.min.x<(m.shoulderX+m.armR)*2.1,'as wide as the shoulders, so the arms hang outside it');
+    const face=parts[0][1].children.find(c=>c.isGroup),fp=face.getWorldPosition(new THREE.Vector3());assert.ok(fp.z<0,'its face on the front (the body faces -z)');}
+   if(kind==='ghostSheet'){const sheet=parts[0][1];const sb=new THREE.Box3().setFromObject(sheet);assert.ok(sb.max.x>m.shoulderX+m.armR,who+': over the shoulders and arms');assert.ok(sb.min.y<m.hipY*.75,'down to the knees');
+    const hood=parts[1][1],hb=new THREE.Box3().setFromObject(hood),crown=new THREE.Box3().setFromObject(a.face.head);assert.ok(hb.max.y>crown.max.y,'the hood over the crown');
+    // its opening at the face: a ray from in front of the face (the body faces -z) meets the face before any sheet
+    const front=new THREE.Vector3(0,(crown.min.y+crown.max.y)/2,-2),ray=new THREE.Raycaster(front,new THREE.Vector3(0,0,1));
+    const hit=ray.intersectObject(hood,true)[0],face=ray.intersectObject(a.face.head,true)[0];assert.ok(face&&(!hit||hit.distance>face.distance),who+': the face shows through the hood’s opening');}
+   if(kind==='witchHat')assert.ok(b.min.y>m.headCentre-.05&&b.max.y>m.headCentre+m.Rh,who+': the hat on the crown');
+   storyProps(a).take(kind);for(const [,p] of parts)assert.equal(p.parent,null,'taken off whole');
+  }
+  a.dispose();
+ }
+});
