@@ -3,6 +3,7 @@ import {MINATO_MEMORY_STORY,MINATO_RECIPE_CARD} from './src/world/interiors/izak
 import {foodArtForItem} from './src/commerce/food-art.js';
 import {FLYER_ITEM,FLYER_PATH,FLYER_PAPER,collectSakuraFlyer} from './src/commerce/sakura-flyer.js';
 import {restoreIsland} from './src/island/services.js';
+import {HOUSE_SAVE,restoreHouseState} from './src/world/johansson-house.js';
 import {MOTOR_LINKS} from './src/workshop/motor-bench.js';
 import {playerRecipe} from './src/avatars/actors.js';
 import {encodeRecipe} from './src/avatars/recipe.js';
@@ -97,7 +98,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     if(saved&&typeof saved==='object'){state.loopYear=saved.loopYear;state.loops=saved.loops|0;pendingAbsence=pendingTownAbsence(saved);state.pendingTownMinutes=pendingAbsence;
       state.homeDecor=restoreHomeDecor(saved.homeDecor);state.pocketAlbum=restoreAlbum(saved.pocketAlbum);state.pocketTaken=Number.isInteger(saved.pocketTaken)&&saved.pocketTaken>0?Math.min(saved.pocketTaken,999999):0;state.pocketSeen=restoreSeen(saved.pocketSeen,state.pocketAlbum);state.diary=restoreDiary(saved.diary);state.news=restoreNews(saved.news);state.post=restorePost(saved.post);awaySince=Number.isFinite(saved.savedAt)?saved.savedAt:0;state.impressions=restoreImpressions(saved.impressions);state.favours=restoreFavours(saved.favours);state.errand=restoreFavourErrand(saved.errand);state.greeted=saved.greeted&&typeof saved.greeted==='object'?Object.fromEntries(Object.entries(saved.greeted).filter(([k,v])=>typeof k==='string'&&Number.isSafeInteger(v)).slice(-60)):{};
       state.heardHappenings=Array.isArray(saved.heardHappenings)?saved.heardHappenings.filter(x=>typeof x==='string').slice(-40):[];
-      state.thuanOutfit=['nozomi','sailor'].includes(saved.thuanOutfit)?saved.thuanOutfit:'clothes';state.island=restoreIsland(saved.island);state.documentArchive=restoreArchive(saved.documentArchive);state.sakura=saved.sakura;state.bookshop=saved.bookshop;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.konbini=saved.konbini;state.residentLife=restoreResidentLife(saved.residentLife);state.friendship=restoreFriendship(saved.friendship);state.residentLocations=saved.residentLocations;
+      state.thuanOutfit=['nozomi','sailor'].includes(saved.thuanOutfit)?saved.thuanOutfit:'clothes';{const house=restoreHouseState(saved[HOUSE_SAVE]);if(house)state[HOUSE_SAVE]=house;}state.island=restoreIsland(saved.island);state.documentArchive=restoreArchive(saved.documentArchive);state.sakura=saved.sakura;state.bookshop=saved.bookshop;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.konbini=saved.konbini;state.residentLife=restoreResidentLife(saved.residentLife);state.friendship=restoreFriendship(saved.friendship);state.residentLocations=saved.residentLocations;
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
       state.yen=Math.min(state.yen,999999);state.quest=Math.min(state.quest,3);
       for(const k of ['inventory','visited','operated','inspectedIds','notes'])if(Array.isArray(saved[k]))state[k]=saved[k].filter(x=>typeof x==='string').slice(0,100);

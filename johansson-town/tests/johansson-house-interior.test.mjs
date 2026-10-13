@@ -4,7 +4,7 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {standingHitsRect} from '../physics.js';
 import {buildJohanssonHouse,roomPoint,storeyAt,HOUSE_STOREY_FLOOR,houseFloors} from '../src/world/interiors/johansson-house-interior.js';
-import {HOUSE_ROOMS,HOUSE_DOORS,HOUSE_STAIR} from '../src/world/johansson-house.js';
+import {HOUSE_ROOMS,HOUSE_DOORS,HOUSE_STAIR,restoreHouseState} from '../src/world/johansson-house.js';
 
 /** The house built as the game builds it, with its prompts and colliders collected (each given back, as game.js does). */
 function build(doors=null){
@@ -83,6 +83,12 @@ test('a sliding door shut keeps him out, and open again lets him through; its st
  // Built again from the save, the door is as it was left.
  a.fn();const again=build(doors);
  assert.equal(again.layout.doors.list().find(q=>q.id==='D-G0-WEST-S').open,false);
+});
+
+test('the save keeps the doors by id and reads back only what the house has',()=>{
+ assert.deepEqual(restoreHouseState({schema:2,doors:{'D-G0-WEST-S':false,'D-L1-HALL-N':true,'D-NOWHERE':false,'D-B1-EAST-S':'shut','D-G0-ENTRY-HALL':false}}),{schema:2,doors:{'D-G0-WEST-S':false,'D-L1-HALL-N':true}});
+ assert.equal(restoreHouseState({schema:1,doors:{'D-G0-WEST-S':false}}),undefined,'another schema needs a migration');
+ assert.equal(restoreHouseState(null),undefined);
 });
 
 test('every prompt in the house can be walked up to on its own floor', ()=>{

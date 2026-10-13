@@ -155,6 +155,18 @@ export const HOUSE_DOORS=freeze(CAD.openings.filter(o=>o.axis).map(o=>{
  return {id:o.id,level:o.level,axis:o.axis,at:o.at,from:o.from,to:o.to,sill:r3(F+o.sill),head:r3(F+o.head),rooms,leaf};
 }));
 
+/**
+ * The house's state as the save keeps it (under HOUSE_SAVE, schema 2, as Rev F's reference names it), read back: each
+ * door's leaf open or shut by the door's id. Ids the house does not have and values that are not true or false are
+ * dropped; another schema is not read (it would need a migration).
+ */
+export function restoreHouseState(raw){
+ if(!raw||typeof raw!=='object'||raw.schema!==2)return undefined;
+ const doors={};
+ for(const d of HOUSE_DOORS)if(d.leaf&&typeof raw.doors?.[d.id]==='boolean')doors[d.id]=raw.doors[d.id];
+ return {schema:2,doors};
+}
+
 // ---------------------------------------------------------------- guards and rails (findings RF2, RF3)
 
 /**
