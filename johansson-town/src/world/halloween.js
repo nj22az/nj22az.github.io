@@ -37,7 +37,7 @@ export const HALLOWEEN=Object.freeze({
  reel:Object.freeze({at:Object.freeze([SAKURA_BOX.maxX+.42,0,SAKURA_BOX.minZ+.72]),why:'Kōji’s cord reel from his boat shed, half coiled: the lanterns and the machine both plugged into it.'}),
  nobori:Object.freeze([SAKURA_BOX.maxX+.95,SAKURA_BOX.minZ+.45]),
  pools:Object.freeze([-32.4,-29.1,-25.6,-22.1]),   // the four shared lights of the lanterns' warm pools (z along the string)
- poolIntensity:9,
+ poolIntensity:6,
  seance:Object.freeze({centre:Object.freeze([-5.75,-32.6]),radius:.72,candles:8}),
 });
 

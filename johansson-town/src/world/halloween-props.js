@@ -58,12 +58,12 @@ export function buildPumpkinLantern({r=.19}={}){
  const g=new THREE.Group();g.name='Pumpkin lantern';
  const paper=new THREE.MeshBasicMaterial({color:0xffffff,vertexColors:true,toneMapped:false}),face=new THREE.MeshBasicMaterial({color:0x3a2410,side:THREE.DoubleSide,toneMapped:false});
  const cy=-.06-r*.85;
- for(let i=0;i<6;i++){const a=i/6*Math.PI*2,lobe=mesh(g,glowShade(new THREE.SphereGeometry(r*.62,14,10),[1,.86,.46],[.96,.46,.08]),paper,Math.cos(a)*r*.42,cy,Math.sin(a)*r*.42);lobe.scale.set(1,1.18,1);}
+ for(let i=0;i<6;i++){const a=i/6*Math.PI*2,lobe=mesh(g,glowShade(new THREE.SphereGeometry(r*.62,14,10),[1,.7,.22],[.9,.34,.03]),paper,Math.cos(a)*r*.42,cy,Math.sin(a)*r*.42);lobe.scale.set(1,1.18,1);}
  mesh(g,new THREE.CylinderGeometry(r*.32,r*.38,r*.16,12),std(0x2a2522),0,cy+r*.78,0,'Pumpkin lantern cap');
  mesh(g,new THREE.CylinderGeometry(r*.06,r*.09,r*.32,8),std(0x4f7a32),0,cy+r*.98,0);
  mesh(g,new THREE.CylinderGeometry(.004,.004,.06,6),std(0x2a2522),0,-.03,0);
  const f=mesh(g,pumpkinFace(r*1.05),face,0,cy-r*.04,r*.99,'Pumpkin lantern face');f.renderOrder=1;
- const halo=buildHalo(r*5.2,0);halo.position.set(0,cy,0);g.add(halo);
+ const halo=buildHalo(r*6.5,0);halo.position.set(0,cy,0);g.add(halo);
  const unlit=new THREE.Color().setRGB(.8,.43,.1,THREE.SRGBColorSpace);
  g.userData.lantern={paper,face,halo,glow:0,setGlow(v){const k=THREE.MathUtils.clamp(v,0,1);this.glow=k;
   // unlit (k=0): orange paper in the daylight and a dark cut face; lit: the paper (its own bright-middle shading), the face
@@ -71,7 +71,7 @@ export function buildPumpkinLantern({r=.19}={}){
   if(k===0){if(paper.vertexColors){paper.vertexColors=false;paper.needsUpdate=true;}paper.color.copy(unlit);face.color.setRGB(.28,.16,.07,THREE.SRGBColorSpace);halo.visible=false;return;}
   if(!paper.vertexColors){paper.vertexColors=true;paper.needsUpdate=true;}
   const l=.3+.7*Math.pow(k,.6);paper.color.setScalar(l);face.color.setRGB(1*Math.min(1,l*1.15),.97*Math.min(1,l*1.15),.72*Math.min(1,l*1.15),THREE.SRGBColorSpace);
-  halo.visible=true;halo.material.opacity=.62*Math.pow(k,.85);}};
+  halo.visible=true;halo.material.opacity=.95*Math.pow(k,.85);}};
  g.userData.lantern.setGlow(0);
  return g;
 }
