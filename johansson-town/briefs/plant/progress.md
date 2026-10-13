@@ -32,4 +32,4 @@
 - Lines to other decks (9) end at a penetration; drawn on their own decks later.
 
 ## Next action
-6r-2 pushed as 2c3a7072 (merge eb1a0aad); confirm the publishing run succeeded, then 6r-3 overhaul (covers off, parts on the plates; the crew at the handles; alarm acknowledge; the plant saved with the game).
+6r-2 live (runs 92–94). Next: 6r-3 overhaul (covers off, parts on the plates; the crew at the handles; alarm acknowledge; the plant saved with the game).
