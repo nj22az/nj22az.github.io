@@ -267,6 +267,12 @@ const LIST=[['main engine','Main engine, Johansson Marine '+JOHANSSON_MARINE.cat
  ['main switchboard','Main switchboard '+JOHANSSON_MARINE.catalogue.switchboard.model],['engine panel and log desk','Engine panel and log desk'],['pump','Pumps: fire and GS, fire and bilge, GS, bilge, sanitary, hydrophore'],['fuel service tank','Fuel-oil service tank 1.6 m³'],['sea-water strainer','Sea-water strainers (sea chests under the plates)'],
  ['air bottles','Starting-air bottles 2 × 150 L'],['air compressor','Starting-air compressor '+JOHANSSON_MARINE.catalogue.compressor.model],['workbench','Workbench and vice'],['fuel purifier','Fuel purifier '+JOHANSSON_MARINE.catalogue.purifier.model],['oily-water separator','Oily-water separator '+JOHANSSON_MARINE.catalogue.separator.model],
 ['local control stand','Local control stand'],['hydrant','Fire hydrant'],['ladder trunk','Access ladder from casing P'],['engine room door','Engine-room door (car deck)']];
+/** The routed pipe runs (FERRY_INTERIOR.pipes, 6r-1) on a plan: each a polyline in its system's colour, the bore as its width. */
+function pipePlan(routes,px,py){
+ let out='';
+ for(const r of routes)out+=`<path class="pipe" stroke="${r.colour}" stroke-width="${r2(Math.max(.6,r.dn/50))}" fill="none" d="M${r.points.map(p=>[px(p[2]+HALF),py(p[0])].map(r2).join(',')).join(' L')}"/>`;
+ return out;
+}
 export function engineRoomArrangement(){
  const S=50,W=1260,Hh=800,boxes=FERRY_INTERIOR.boxes.filter(b=>inER(b)&&(b.draw!==false||LIST.some(([n])=>n===b.name))),cyls=FERRY_INTERIOR.cyls.filter(c=>c.pos[2]+HALF>=Z0&&c.pos[2]+HALF<=Z1);
  let out='';
@@ -280,6 +286,7 @@ export function engineRoomArrangement(){
  out+=`<line class="l" x1="${px(Z0)}" y1="${py(hullX(ER.floor,Z0-HALF))}" x2="${px(Z0)}" y2="${py(-hullX(ER.floor,Z0-HALF))}"/><line class="l" x1="${px(Z1)}" y1="${py(hullX(ER.floor,Z1-HALF))}" x2="${px(Z1)}" y2="${py(-hullX(ER.floor,Z1-HALF))}"/><line class="c" x1="${px(Z0)-20}" y1="${py(0)}" x2="${px(Z1)+20}" y2="${py(0)}"/>`;
  for(const b of boxes){const z0=Math.min(b.a[2],b.b[2])+HALF,z1=Math.max(b.a[2],b.b[2])+HALF,x0=Math.min(b.a[0],b.b[0]),x1=Math.max(b.a[0],b.b[0]);out+=rect(px(z0),py(x1),(z1-z0)*S,(x1-x0)*S,b.solid?'sp':'t');}
  for(const c of cyls){const r=Math.max(c.rt,c.rb);out+=`<circle class="t" cx="${r2(px(c.pos[2]+HALF))}" cy="${r2(py(c.pos[0]))}" r="${r2(r*S)}"/>`;}
+ out+=pipePlan(FERRY_INTERIOR.pipes.filter(r=>r.points.every(p=>p[2]+HALF>=Z0-.1&&p[2]+HALF<=Z1+.1)),px,py);
  const placed=new Map();
  boxes.forEach(b=>{const i=LIST.findIndex(([n])=>n===b.name);if(i<0)return;const key=i+':'+r2((b.a[0]+b.b[0])/2)+':'+r2((b.a[2]+b.b[2])/2);if(placed.has(key))return;placed.set(key,1);out+=num(px((b.a[2]+b.b[2])/2+HALF),py((b.a[0]+b.b[0])/2),i+1);});
  // Frames every 0.5 m from the transom (frame 17 at z 8.5), the grid a yard reads positions off; the overall dimensions.
@@ -308,7 +315,7 @@ export function engineRoomArrangement(){
  const lx=W-330,ly=60;out+=rect(lx-10,ly-16,320,LIST.length*14+22,'t')+text(lx,ly,'EQUIPMENT LIST','sub');
  LIST.forEach(([,label],i)=>out+=fitText(lx,ly+16+i*14,(i+1)+'  '+label,300,8.5));
  wrap('Builder: '+FERRY_SHIP.yard+'. Machinery: '+JOHANSSON_MARINE.name+', '+JOHANSSON_MARINE.works+'.',300,8.5).forEach((l,i)=>out+=text(lx,ly+LIST.length*14+40+i*11,l,'lab'));
- out+=titleBlock(W,Hh,'ENGINE ROOM ARRANGEMENT · plan at the floor plates, centreline elevation, section · 1:20 at 50 px/m',5,['Every rectangle is a box of FERRY_INTERIOR as built (ferry-interior.js); circles are its cylinders. Numbers key the equipment list.']);
+ out+=titleBlock(W,Hh,'ENGINE ROOM ARRANGEMENT · plan at the floor plates, centreline elevation, section · 1:20 at 50 px/m',5,['Every rectangle is a box of FERRY_INTERIOR as built (ferry-interior.js); circles are its cylinders; the coloured lines are the pipe runs routed from the piping diagrams (sheets 8.1–8.11), seen from above. Numbers key the equipment list.']);
  return svg(W,Hh,out,'Minato Maru · engine room arrangement · Johansson Shipyard');
 }
 
@@ -361,6 +368,7 @@ export function machinerySpaces(){
  const inPlan=b=>Math.min(b.a[2],b.b[2])+HALF>=Z0-.1&&Math.max(b.a[2],b.b[2])+HALF<=Z1+.1&&Math.max(b.a[1],b.b[1])+T>=Y0-.2&&Math.min(b.a[1],b.b[1])+T<=Y1-.05;
  for(const b of FERRY_INTERIOR.boxes.filter(b=>inPlan(b)&&(b.draw!==false||b.solid))){const z0=Math.min(b.a[2],b.b[2])+HALF,z1=Math.max(b.a[2],b.b[2])+HALF,x0=Math.min(b.a[0],b.b[0]),x1=Math.max(b.a[0],b.b[0]);out+=rect(px(z0),py(x1),(z1-z0)*S,(x1-x0)*S,b.solid?'sp':'t');}
  for(const c of FERRY_INTERIOR.cyls.filter(c=>c.pos[2]+HALF>=Z0&&c.pos[2]+HALF<=Z1)){const r=Math.max(c.rt,c.rb);out+=`<circle class="t" cx="${r2(px(c.pos[2]+HALF))}" cy="${r2(py(c.pos[0]))}" r="${r2(r*S)}"/>`;}
+ out+=pipePlan(FERRY_INTERIOR.pipes,px,py);
  for(let i=0;i<=28;i++){const z=Z0+i*.5;out+=`<line class="g" x1="${r2(px(z))}" y1="${r2(py(4.3))}" x2="${r2(px(z))}" y2="${r2(py(-4.3))}"/>`;if(i%2===0)out+=text(px(z),py(-4.3)+12,'Fr '+Math.round(z*2),'lab','text-anchor="middle"');}
  for(const [z0,z1,lab] of [[8.5,14,'ENGINE ROOM'],[14,19,'AUXILIARY MACHINERY ROOM'],[19,22.5,'WORKSHOP (P) · ENGINE STORE (S)']])out+=fitText(px(z0)+4,py(4.3)-6,lab,(z1-z0)*S-8,10,'sub');
  out+=dim(px(Z0),py(-4.3)+30,px(14+HALF-HALF),py(-4.3)+30,'5.5 m',0)+dim(px(14),py(-4.3)+30,px(19),py(-4.3)+30,'5.0 m',0)+dim(px(19),py(-4.3)+30,px(22.5),py(-4.3)+30,'3.5 m',0);
