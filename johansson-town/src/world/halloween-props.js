@@ -95,7 +95,7 @@ export function buildJackOLantern({r=.16}={}){
  * shows it to +z and -π/2 to +x. Lay it on its side with rotation.x.
  * Sold at ¥120 in the town's drinks machines (commerce/vending-catalogue.js 'j-coffee').
  */
-export const J_COFFEE_CAN=Object.freeze({diameter:.066,height:.122,colour:'#141414',ink:'#f3e6c4',gold:'#d9a441'});
+export const J_COFFEE_CAN=Object.freeze({diameter:.066,height:.122,colour:'#17130f',ink:'#f3e6c4',gold:'#d9a441'});
 let jLabel=null;
 function jCoffeeLabel(){
  if(jLabel!==null)return jLabel;jLabel=undefined;
@@ -117,7 +117,9 @@ function jCoffeeLabel(){
 export function buildJCoffeeCan(){
  const C=J_COFFEE_CAN,r=C.diameter/2,H=C.height,g=new THREE.Group();g.name='J-Coffee can';
  const map=jCoffeeLabel();
- const body=map?new THREE.MeshStandardMaterial({map,roughness:.32,metalness:.25}):std(C.colour,{roughness:.32,metalness:.25});
+ // the printed body drawn as its own colours (unlit: the town's toon ramp lifts a black surface towards its blue shadow
+ // tint, and the can must read black at a glance, day or night); its aluminium rims and top are lit and give it its form
+ const body=map?new THREE.MeshBasicMaterial({map}):new THREE.MeshBasicMaterial({color:C.colour});
  const alu=std(0xc9cdd0,{roughness:.3,metalness:.7});
  mesh(g,new THREE.CylinderGeometry(r,r,H*.84,24,1,true),body,0,H*.5,0,'J-Coffee can body');
  mesh(g,new THREE.CylinderGeometry(r*.84,r,H*.08,24),alu,0,H*.96,0,'J-Coffee can shoulder');

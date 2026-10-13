@@ -112,14 +112,14 @@ export function createVendingMachine({shadows=false}={}){
   const lever=box(.04,.05,.04,.33,.61,front+.065,new THREE.MeshStandardMaterial({color:0xd8342c,roughness:.4}),'Coin return lever');
   box(.08,.05,.03,.33,.55,front+.055,dark,'Change cup');
   // The take-out pocket: an open bin standing out from the door (a light grey inside, so a can that has dropped shows),
-  // behind a hinged flap of clear smoked plastic; its name on the lip above. A dropped can lies on its floor
+  // behind a hinged flap of clear smoked plastic (it darkens what is behind it a little, never lightens it: a black can stays black); its name on the lip above. A dropped can lies on its floor
   // (userData.takeOut: where, in the machine's own coordinates, its axis across the machine).
   const pw=W-.2,pd=.085,inner=new THREE.MeshStandardMaterial({color:0x9aa1a5,roughness:.55,metalness:.2});
   box(pw,.2,.01,0,.3,front+.005,inner,'Take-out pocket');
   box(pw,.012,pd,0,.206,front+pd/2,inner,'Take-out pocket floor');
   box(pw,.03,pd,0,.385,front+pd/2,dark,'Take-out pocket lip');
   for(const sx of [-1,1])box(.012,.2,pd,sx*(pw/2-.006),.3,front+pd/2,dark,'Take-out pocket side');
-  const flap=new THREE.Mesh(new THREE.PlaneGeometry(pw-.03,.15),new THREE.MeshStandardMaterial({color:0x6f7f86,transparent:true,opacity:.32,roughness:.08,depthWrite:false}));
+  const flap=new THREE.Mesh(new THREE.PlaneGeometry(pw-.03,.15),new THREE.MeshBasicMaterial({color:0x1c2226,transparent:true,opacity:.22,depthWrite:false}));
   flap.position.set(0,.295,front+pd+.002);flap.name='Take-out flap';group.add(flap);
   const plate=canvasPanel(pw-.04,.026,512,40,(ctx,w,h)=>{ctx.fillStyle='#2b2f33';ctx.fillRect(0,0,w,h);ctx.fillStyle='#e8e8e2';ctx.font='bold 26px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('とりだし口 · TAKE OUT',w/2,h/2+1);});
   plate.position.set(0,.385,front+pd+.001);group.add(plate);

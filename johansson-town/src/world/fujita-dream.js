@@ -12,7 +12,7 @@ import {buildJCoffeeCan,J_COFFEE_CAN} from './halloween-props.js';
  * Origin at the meadow's centre.
  */
 export const FUJITA_DREAM=Object.freeze({at:Object.freeze([-6,150,-32]),radius:24,cans:7000,
- house:Object.freeze([-2.4,0,-3.7]),mountain:Object.freeze([-3.2,0,2.4]),tower:Object.freeze([-4.6,0,3.2]),
+ house:Object.freeze([-.6,0,-2.7]),mountain:Object.freeze([-3.2,0,2.4]),tower:Object.freeze([-4.6,0,3.2]),
  why:'Fujita’s sums made a picture: ¥10 a can, one million cans, a ¥10,000,000 house. The pile is a mountain; the million goes up past the clouds.'});
 
 function skyTexture(){
