@@ -148,7 +148,7 @@ function mulberry(seed){return ()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.im
 import {KITANO_HAMLET} from './kitano-hamlet-layout.js';
 const HAMLET=KITANO_HAMLET.clear;
 /** Inside Kitano hamlet's lane and yards: slabs over the ground, where nothing grows through. */
-const inHamlet=(u,v,r=0)=>u>HAMLET.minX-r&&u<HAMLET.maxX+r&&v>HAMLET.minZ-r&&v<HAMLET.maxZ+r;
+const inHamlet=(u,v,r=0)=>HAMLET.some(H=>u>H.minX-r&&u<H.maxX+r&&v>H.minZ-r&&v<H.maxZ+r);
 let plantings=null;
 export function tropicalPlantings(){
  if(plantings)return plantings;

@@ -6,8 +6,8 @@ import {AIRPORT_ISLAND} from './airport-island.js';
 import {airportWorld,airportSurface} from './airport-ground.js';
 import {SEA_LEVEL} from './ocean.js';
 import {KITANO_HAMLET,hamletGate} from './kitano-hamlet-layout.js';
-import {buildHouseExterior,houseLocal,HOUSE_PORCH} from './johansson-house-build.js';
-import {HOUSE_OPENINGS} from './johansson-house.js';
+import {buildHouseExterior,houseLocal} from './johansson-house-build.js';
+import {HOUSE_OPENINGS,HOUSE_SITE} from './johansson-house.js';
 import {householdAtHome,residentsLine} from '../people/island-households.js';
 
 /**
@@ -84,10 +84,10 @@ export function buildKitanoHamlet(world,options){
  return {colliders};
 }
 /**
- * Johansson's yard: his house from the creator's drawings, its front to the gate and 5.5 m in from it (the plot's
- * `front`), the hinpun between them, a path of coral flags round it to the front step, the gajumaru, his bicycle, the
- * fukugi windbreak along the seaward wall and the back, and the paved terrace outside the back door (D-TERRACE).
- * Built in the plot's frame, the gate at +z.
+ * Johansson's yard: his house from the creator's drawings, its front to the gate and 7.5 m in from it (the plot's
+ * `front`), level with the yard as the drawings have it; the hinpun between them, a path of coral flags round it to the
+ * front door, the gajumaru, his bicycle, the fukugi windbreak along the seaward wall and the back, and the drawn terrace
+ * outside the back door (D-TERRACE). Built in the plot's frame, the gate at +z.
  */
 function johanssonYard(kit,solid,p,hw,hd,seed){
  const at=p.front-5;
@@ -95,27 +95,27 @@ function johanssonYard(kit,solid,p,hw,hd,seed){
  // A drawn point of the house in the plot's frame.
  const plot=(x,y)=>{const [lx,,lz]=houseLocal(x,y,0);return [lx,lz+at];};
  solid(hinpun(kit,0,hd-2.2,2.6));
- // The path: flags from the gate, round the hinpun on its west side, to the step.
- const [px,pz]=plot((HOUSE_PORCH.x[0]+HOUSE_PORCH.x[1])/2,HOUSE_PORCH.y[0]);
- for(const [x,z] of [[0,hd-.6],[-.5,hd-1.3],[-1.9,hd-2.2],[-1.6,hd-3.1],[-.8,pz+.9],[px,pz+.35]])kit.box(.62,.03,.5,x,.015,z,0xe3dccb);
- // The gajumaru by the front wall, his bicycle by the step, pots either side of the door.
+ // The path: flags from the gate, round the hinpun on its west side, to the front door.
+ const door=HOUSE_OPENINGS.find(o=>o.id==='D-ENTRY'),[dx,dz]=plot((door.from+door.to)/2,-.35);
+ for(const [x,z] of [[0,hd-.6],[-.5,hd-1.3],[-1.9,hd-2.2],[-1.6,hd-3.1],[-1.1,hd-3.9],[-.5,hd-4.7],[dx,dz+1.6],[dx,dz+.8],[dx,dz+.05]])kit.box(.62,.03,.5,x,.015,z,0xe3dccb);
+ // The gajumaru by the front wall, his bicycle by the door, pots either side of it.
  gajumaru(kit,-(hw-2.2),hd-2.4,{seed:seed+7,size:.85});
- bicycle(kit,px-1.9,pz+.5,{ry:.25,colour:0x2f6f74});
- potPlant(kit,px-1.25,pz+.2,{seed});potPlant(kit,px+1.3,pz+.2,{seed:seed+3});
+ bicycle(kit,dx-1.9,dz+.4,{ry:.25,colour:0x2f6f74});
+ potPlant(kit,dx-1.0,dz-.05,{seed});potPlant(kit,dx+1.05,dz-.05,{seed:seed+3});
  solid(planterBoxes(kit,-(hw-1.6),hd-.65,{count:3,seed}));
- // The windbreak: fukugi along the seaward wall (the plot's +x, past the stair house) and along the back.
+ // The windbreak: fukugi along the seaward wall (the plot's +x) and along the back.
  for(let z=-hd+1.1;z<hd-4.6;z+=2.3)solid(fukugi(kit,hw-.55,z,{h:5.4+((z*7)%3+3)%3*.4,seed:100+seed*10+Math.round(z*3)}));
  for(let x=-hw+1.3;x<hw-1.5;x+=2.6)solid(fukugi(kit,x,-hd+.55,{h:5.2+((x*5)%3+3)%3*.4,seed:200+seed*10+Math.round(x*3)}));
  banana(kit,-(hw-.9),-hd+2.2,{seed});
- // The terrace behind the back door: coral flags, a bench along the house wall, two pots.
- const T=HOUSE_OPENINGS.find(o=>o.id==='D-TERRACE'),[t0x,t0z]=plot(T.from-1.2,10),[t1x,t1z]=plot(T.to+1.8,11.9);
- kit.block(Math.min(t0x,t1x),Math.max(t0x,t1x),0,.03,Math.min(t0z,t1z),Math.max(t0z,t1z),0xd9d1bf);
- const [bx,bz]=plot(T.to+1.15,10.45);
+ // The terrace as drawn behind the back door: coral flags level with the yard, a bench along the house wall, two pots.
+ const T=HOUSE_SITE.terrace,[t0x,t0z]=plot(T.min[0],T.min[1]),[t1x,t1z]=plot(T.max[0],T.max[1]),D=HOUSE_OPENINGS.find(o=>o.id==='D-TERRACE');
+ kit.block(Math.min(t0x,t1x),Math.max(t0x,t1x),0,.012,Math.min(t0z,t1z),Math.max(t0z,t1z),0xd9d1bf);
+ const [bx,bz]=plot(D.to+1.15,10.45);
  kit.box(1.4,.06,.38,bx,.44,bz,0x8a6641);for(const sx of [-.6,.6])kit.box(.08,.42,.34,bx+sx,.21,bz,0x5d4431);
  solid(kit.rect(bx-.72,bx+.72,bz-.2,bz+.2,.5,'johansson-terrace-bench'));
- potPlant(kit,t0x-.3,(t0z+t1z)/2,{seed:seed+11});hibiscus(kit,Math.max(t0x,t1x)+.4,t1z+.2,{seed:seed+13,flower:0xe8b12c});
+ potPlant(kit,Math.min(t0x,t1x)+.3,Math.min(t0z,t1z)+.4,{seed:seed+11});hibiscus(kit,Math.max(t0x,t1x)-.4,Math.min(t0z,t1z)+.4,{seed:seed+13,flower:0xe8b12c});
 }
-/** Johansson's front door as the site's door: on the step, 0.4 m out, facing in (island frame, as hamletGate). */
+/** Johansson's front door as the site's door: 0.4 m out in the yard, facing in (island frame, as hamletGate). */
 function frontDoor(p){
  const o=HOUSE_OPENINGS.find(o=>o.id==='D-ENTRY'),[lx,,lz]=houseLocal((o.from+o.to)/2,-.4,0);
  const cx=(p.minX+p.maxX)/2,cz=(p.minZ+p.maxZ)/2,x=lx,z=lz+p.front-5;

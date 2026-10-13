@@ -1,19 +1,24 @@
 # Johansson's house (ヨハンソン邸): the design book
 
 The creator, 2026-10-13, with the drawings: *"Can you use these drawings and model Johansson’s house on the tropical island?"*
-Two revisions came: Rev B (`cad-rev-b/`, a schematic set: plans, elevations, a section, structure, electrics, plumbing and
-drainage) and Rev C (`cad-rev-c/`, three coordinated plans with real wall gaps, the building manifest and the shell as GLB).
-Rev C rules; Rev B is reference only, as its README says. This folder is generated from what the game builds
+Three revisions came: Rev B (`cad-rev-b/`, a schematic set), Rev C (`cad-rev-c/`, three coordinated plans, the building
+manifest and the shell) and the **Final Rev F** (`cad-rev-f/`, the coordinated game production reference: 21 DXF, the
+drawing book, the architecture and services GLB, the building manifest (schema 2), the collision and navigation contract,
+the schedules, the defect register, the validation record and the executable reference simulation of the house's
+systems). **Rev F rules**; B and C are kept as the record. This folder is generated from what the game builds
 (`node tools/johansson-house-drawings.mjs`; `tests/johansson-house.test.mjs` fails when a sheet is stale), so the house
 in World, these drawings and the house in the stories are one house.
 
-- **The drawings, read:** `src/world/johansson-house-cad.js`, generated from `cad-rev-c/` by
-  `node tools/johansson-house-import.mjs`, which checks the plans and the manifest against each other on the way in.
+- **The drawings, read:** `src/world/johansson-house-cad.js`, generated from `cad-rev-f/` by
+  `node tools/johansson-house-import.mjs`, which checks the package on the way in: every file against SHA256SUMS.txt,
+  the collision contract against the manifest, each plan against the manifest cut 1 m over its floor, the schedules,
+  the roof plan and the site plan. A wall or slab split round a service sleeve is one element there.
 - **The house as built:** `src/world/johansson-house.js`: the drawings, and where they leave something open, the findings
   below. Nothing else departs from them.
 - **Outside, in Kitano hamlet:** `src/world/johansson-house-build.js`, on plot `kitano-1` (`kitano-hamlet-layout.js`,
   `kitano-hamlet.js`), its front door the site `mayor-home`.
 - **Inside:** `src/world/interiors/johansson-house-interior.js`, walked floor by floor with `src/world/house-walk.js`.
+  The 17 sliding doors keep their state by id in the save, under `johansson.house.v2`.
 
 A new revision: put it in `cad-rev-<x>/`, point the importer's `SOURCE` at it, run the importer, and the tests say
 which finding it settles and what no longer fits.
@@ -23,12 +28,13 @@ which finding it settles and what no longer fits.
 | | |
 |---|---|
 | Footprint | 12 × 10 m outside, walls 200 mm, partitions 120 mm |
-| Floors (finished) | Basement -2700, ground 100, upper +2900 mm; 2 800 mm floor to floor |
-| Clear heights | Basement 2520, ground 2520, upper 2700 mm |
-| Roof | Slab 5600–5800 mm, 400 mm over the walls; hipped red tile to a ridge at +7900 (F10) |
-| Stair | 16 risers × 175 mm, treads 250 mm, two flights 1100 mm wide and a landing, stacked (F1) |
-| Site | Yard -350 mm under the datum (450 under the ground floor), 1.3 m above the sea |
-| Rooms | 24 (21 and the stair on each floor) |
+| Floors (finished, no offset) | Basement -2 800, ground 0, upper +2 800 mm; 2 800 mm floor to floor, slabs 180 mm |
+| Clear heights | Basement 2 620, ground 2 620, upper 2 620 mm (to the roof deck, the upper floor's ceiling) |
+| Roof | Hipped, weathered red tile: eaves +5 800, ridge +8 000 (2 m long), overhang 400 mm; two sleeves for the vent and the flue |
+| Stair | Dog-leg, 16 risers × 175 mm a storey, goings 250 mm, flights 900 mm either side of a 200 mm gap, landing 900 mm; guards 1 100 mm; the flights stack 2.8 m apart |
+| Doors | 18 between rooms, 900 mm clear, heads +2 100; 17 timber sliding leaves (RF1: one without) |
+| Site | Yard level with the ground floor, 1.3 m above the sea; terrace behind; the court outside D-BEXT 1 400 × 1 300 mm at -2 800, the garden stair (16 × 175 mm, 1000 mm wide) up to the yard; the lightwell outside W-B1 |
+| Rooms | 19: 6 on B1, 7 on G0, 6 on L1 |
 
 ## The sheets
 
@@ -38,117 +44,101 @@ which finding it settles and what no longer fits.
 | G0 | `plan-G0.svg`, `as-built-G0.dxf` | Ground floor plan as built |
 | L1 | `plan-L1.svg`, `as-built-L1.dxf` | Upper floor plan as built |
 
-The DXF are in millimetres on Rev C's layers (A-EXT-WALL, A-PARTITION, A-OPENING, A-STAIR, A-FLOOR, A-ANNOT), so they
-open over the creator's own sheets.
+The DXF are in millimetres on Rev F's layers (A-WALL, A-OPENING, A-TAGS, A-ROOM, A-STAIR), with the game's own on layers of
+their own (A-DOOR-LEAF, A-GUARD, A-GUARD-ADDED, A-OPENING-ADDED, E-LIGHT, E-SOCKET, M-EQUIPMENT), so they open over the
+creator's sheets and show what was added.
 
 ## Rooms
 
-| Floor | Room | Size | Area | What it is for |
-|---|---|---|---|---|
-| B1 | Electrical workshop | 4.64 × 4.74 m | 21.99 m² | Johansson’s bench, his meters and the parts drawers: the ship’s electrician’s workshop he kept when he came ashore. |
-| B1 | Club reading room | 4.64 × 4.74 m | 21.99 m² | The reading club meets here: armchairs, the books, a bar; the high window under the garden lets in the day. |
-| B1 | Cellar store | 2.28 × 3.24 m | 7.39 m² | Under the genkan: preserves, the club’s bottles and the typhoon kit (finding F2). |
-| B1 | Stair hall | 2.28 × 3 m | 6.84 m² | The foot of the stair, and the way to every room in the basement. |
-| B1 | Stair | 2.28 × 3.24 m | 7.39 m² | The first flight up, and the cupboard under the flight down (finding F1). |
-| B1 | Boiler and pumps | 4.44 × 4.74 m | 21.05 m² | The water heater, the pressure pumps and the sump pumps, with its own door to the garden (D-BEXT). |
-| B1 | Sauna and shower | 4.44 × 1.98 m | 8.79 m² | A Swede’s sauna: the bench room, the shower and the changing bench. |
-| B1 | Storage | 4.44 × 2.64 m | 11.72 m² | Shelves, the fishing gear and the spare tiles, through the sauna’s changing room (finding F4). |
-| G0 | Living room | 4.64 × 4.74 m | 21.99 m² | The low table, the television and the window to the garden. |
-| G0 | Kitchen and dining | 4.64 × 4.74 m | 21.99 m² | The kitchen along the west wall, the dining table under the north window. |
-| G0 | Entry and genkan | 2.28 × 3.24 m | 7.39 m² | The front door, the doma where shoes come off, the step up and the letter box (finding F8). |
-| G0 | Stair hall | 2.28 × 3 m | 6.84 m² | The middle of the house: every room on the floor opens off it. |
-| G0 | Stair | 2.28 × 3.24 m | 7.39 m² | The stair, up and down (finding F1). |
-| G0 | Thuan sewing studio | 4.44 × 4.74 m | 21.05 m² | Thuan’s machine at the east window, her cutting table and her fabric. |
-| G0 | WC and utility | 4.44 × 1.98 m | 8.79 m² | The toilet, the washbasin and the utility sink. |
-| G0 | Covered terrace access | 4.44 × 2.64 m | 11.72 m² | Boots, the garden tools and the door out to the terrace (D-TERRACE). |
-| L1 | Primary bedroom | 4.64 × 4.74 m | 21.99 m² | Johansson and Thuan’s room: the futons and the wardrobe. |
-| L1 | Guest bedroom | 4.64 × 4.74 m | 21.99 m² | For visitors and for Thuan’s sisters when the last boat has gone. |
-| L1 | Box room | 2.28 × 3.24 m | 7.39 m² | The nando over the genkan: the winter quilts and the suitcases (finding F3). |
-| L1 | Stair hall | 2.28 × 3 m | 6.84 m² | The landing at the top of the stair. |
-| L1 | Stair | 2.28 × 3.24 m | 7.39 m² | The well of the stair, with its balustrade (finding F1). |
-| L1 | Bathroom | 4.44 × 4.74 m | 21.05 m² | The ofuro, the washing place and the basin. |
-| L1 | Study | 4.44 × 1.98 m | 8.79 m² | The desk at the east window, the town’s papers (finding F6). |
-| L1 | Linen room | 4.44 × 2.64 m | 11.72 m² | The linen and the airing rail under the north window (finding F5). |
+| Id | Room | Area | What it is for |
+|---|---|---|---|
+| B1-ROOM-01 | Electrical workshop | 21.994 m² | Johansson’s bench, his meters and the parts drawers, and the board he wired to teach the island’s apprentices: the ship’s electrician’s workshop he kept when he came ashore. |
+| B1-ROOM-02 | Club reading room | 21.994 m² | The reading club meets here: armchairs, the books, a bar; the high window on the lightwell lets in the day. |
+| B1-ROOM-03 | Stair hall | 20.467 m² | The foot of the stair, the basement’s distribution board, the preserves and the typhoon kit under the genkan. |
+| B1-ROOM-04 | Boiler and pumps | 11.146 m² | The water heater and the cold-water manifold, with its own door to the court and the garden stair (D-BEXT). |
+| B1-ROOM-05 | Sauna and shower | 11.971 m² | A Swede’s sauna: the cedar cabin, the shower over the drain to the lift pump, the changing bench. |
+| B1-ROOM-06 | Storage | 19.709 m² | Shelves, the fishing gear and the spare roof tiles; through it, the club and the far store. |
+| G0-ROOM-01 | Living room | 21.994 m² | The low table, the television and the window to the garden. |
+| G0-ROOM-02 | Kitchen and dining | 21.994 m² | The kitchen along the west wall, the dining table under the north window. |
+| G0-ROOM-03 | Stair hall | 20.467 m² | The landing of the stair’s well and the way to the kitchen, the WC and the terrace. |
+| G0-ROOM-04 | Thuan sewing studio | 16.306 m² | Thuan’s machine at the east window, her cutting table and her fabric. |
+| G0-ROOM-05 | Entry and genkan | 10.627 m² | The front door, the stone floor where shoes come off, the boards and the meter, and the stair up and down. |
+| G0-ROOM-06 | WC and utility | 6.811 m² | The toilet, the washbasin, the washing machine and the utility sink. |
+| G0-ROOM-07 | Covered terrace access | 9.082 m² | Boots, the garden tools and the door out to the covered terrace (D-TERRACE). |
+| L1-ROOM-01 | Primary bedroom | 21.994 m² | Johansson and Thuan’s room: the futons and the wardrobe. |
+| L1-ROOM-02 | Guest bedroom | 21.994 m² | For visitors, and for Thuan’s sisters when the last boat has gone. |
+| L1-ROOM-03 | Stair hall | 20.467 m² | The top of the stair, the upper floor’s board, and the suitcases under the window-less south wall. |
+| L1-ROOM-04 | Bathroom | 11.146 m² | The ofuro under the east window, the washing place, the changing room with the basin. |
+| L1-ROOM-05 | Study | 11.971 m² | The desk at the east window, the bookshelf, the town’s papers. |
+| L1-ROOM-06 | Linen and landing | 19.709 m² | The linen and the airing rail under the landing window; the way to the guest room. |
 
 ## Findings
 
-Where the house as built departs from Rev C, and why: for the next revision to settle.
+Where the house as built departs from Rev F, and why: for the next revision to settle.
 
-### F1. The stair cannot stand in the stair hall as drawn
+### RF1. The genkan’s partition stands across the foot of the stair
 
-- **Drawn:** Two flights of 8 risers × 175 mm, treads 250 mm, with an intermediate landing, in the 2.0 × 2.6 m footprint 5.1–7.1 × 3.7–6.3, and every floor slab cut away over that footprint. The second flight is drawn from y 6.3 down to 4.55, over the landing.
-- **Problem:** Two flights of seven treads and a landing take 1.75 + 0.85 m, the whole hall, so a floor has no landing to step off at: the hall’s doorways (two to the west rooms, two to the east rooms, the genkan’s, the linen’s) open over the stair well at every level. In the basement the slab is cut away under the stair too. And the bay north of the hall (4.96–7.24 × 6.56–9.8) has no doorway on any floor.
-- **Built:** The same stair, 16 × 175 mm risers and 250 mm treads, flights 1.10 m wide either side of an 80 mm spine wall, in the bay north of the hall: up north along the west half (7 treads, 1.75 m) to a landing 1.49 m deep across the bay, up south along the east half to the next floor. It fits the bay to the millimetre (1.75 + 1.49 = 3.24 m), the flights stack 2.8 m apart (2.6 m headroom), and the hall is a floor on every level. The hall’s north partition goes; the well is in the ground and upper floor slabs over the bay; the basement slab is whole. In the basement the hall’s east doorway at 7.6–8.4 (now under the flights) moves to 5.8–6.6, as on the floors above.
+- **Drawn:** G0-INT-ENTRY-00, 4 960–7 300 × 3 440–3 560, floor to soffit, between the genkan and the stair hall. Both flights meet the ground floor at y 3 700 (the flight down from it, RAMP-B1-B, and the flight up, RAMP-G0-A), and the navigation’s vertical links STAIR-B1 and STAIR-G0 end at y 3 200, in the genkan.
+- **Problem:** The partition leaves 140 mm of floor in front of both flights: nobody can step off the stair onto the ground floor, or onto it, and the 0.25 m capsule cannot pass. The drawings’ own links say the stair opens into the genkan.
+- **Built:** The partition stops at the well’s guard lines (x 5 060 and 7 140): between them it is a head over a 2.1 m opening, the height of every door head, so the stair rises from the genkan. D-G0-ENTRY-HALL stays a 900 mm doorway, without a leaf: 160 mm of its partition is left, too little for a 950 mm leaf to slide over.
 
-### F2. The basement room under the genkan has no door
+### RF2. The upper floor’s edge over the foot of the flight is unguarded
 
-- **Drawn:** Enclosed by partitions on all four sides (4.96–7.24 × 0.2–3.44).
-- **Problem:** Unreachable.
-- **Built:** A doorway onto the hall at 5.4–6.2, as the genkan has on the floor above: the cellar store.
+- **Drawn:** Guards round the upper floor’s well on its west, east and north sides (OPENING-GUARD-L1-*); none along y 3 700.
+- **Problem:** From x 5 060 to 6 200 the upper floor stops at y 3 700 over the flight up from the ground floor, its foot 2.6 m below: a fall.
+- **Built:** A guard as the drawn ones along y 3 700 from the west guard to the top of the flight (x 5 100–6 200): posts 30 mm at 190 mm, 1.1 m, the rail on them.
 
-### F3. The upper-floor room over the genkan has no door
+### RF3. The inner side of each upper flight is unguarded
 
-- **Drawn:** Enclosed on all four sides (4.96–7.24 × 0.2–3.44).
-- **Problem:** Unreachable.
-- **Built:** A doorway onto the landing at 5.4–6.2: the box room (nando).
+- **Drawn:** Each flight up from the landing to the next floor (B, x 6 200–7 100) has a guard and rail on its outer side (x 7 110). The inner rail (x 6 100) is the lower flight’s, 1.1 m over its nosings.
+- **Problem:** The upper flight stands up to 2.2 m above the lower one beside it, across a 200 mm gap: an open drop along its whole inner edge.
+- **Built:** The posts the outer side has, at the same nosings and 1.1 m high, on the upper flight’s inner string (x 6 170–6 200), and a rail on them. The strings are closed: a string either side of every flight, 50 mm over the nosings, and a soffit under the treads.
 
-### F4. The basement storage has no door
+### RF4. The sockets stand off the walls
 
-- **Drawn:** Storage, 5.0–11.8 × 6.6–9.8, reached only through the stair bay’s doorway at 7.6–8.4.
-- **Problem:** The stair bay is closed, and in F1 it is the stair.
-- **Built:** The north-east room (7.36–11.8 × 7.16–9.8) is the storage, with the doorway the ground floor has there (9.2–10.0) from the sauna’s changing room. A doorway off the hall would be better: Rev D.
+- **Drawn:** Each dry room’s socket is drawn 350 mm out from the nearer wall (B1-ROOM-01-SOCKET at 550, 900 in a room whose wall is at x 200).
+- **Problem:** A socket is fixed to a wall.
+- **Built:** Each socket on the nearest wall, at the drawn position along it and the drawn height (350 mm over the floor).
 
-### F5. The upper-floor linen room has no door
+### RF5. The services are not built yet
 
-- **Drawn:** Linen and landing, 5.0–11.8 × 6.6–9.8, with W-LANDING in its north wall; its east part is enclosed.
-- **Problem:** Unreachable, and its west part is the stair well in F1.
-- **Built:** The north-east room is the linen room, with W-LANDING, and the doorway the ground floor has there (9.2–10.0), from the study.
+- **Drawn:** Pipes, ducts, cables and the flue on their routes (Route_Schedule.csv, the R_*_3D drawings, Johansson_House_Services.glb), through sleeves in walls and slabs (Penetration_Schedule.csv).
+- **Problem:** Open: they are the next batch, with the systems.
+- **Built:** The sleeves (40–250 mm) are filled until the services go through them; the equipment the drawings place (the boards, the water heater, the manifold, the lift pump, the outdoor units) is built and can be looked at.
 
-### F6. The study window is cut by the bathroom’s partition
+### RF6. The house’s systems are not running yet
 
-- **Drawn:** W-STUDY, east wall, y 4.4–6.1, sill 850, head 2100.
-- **Problem:** The partition between the bathroom and the study is at y 4.94–5.06, across the window.
-- **Built:** W-STUDY, 1.7 m as drawn, at y 5.2–6.9, centred in the study.
+- **Drawn:** source/reference_sim.py: electrics (single-phase three-wire 100/200 V, 60 Hz), water, drainage, ventilation and cooling, faults and repairs, saved under johansson.house.v2.
+- **Problem:** Open: the next batch, with RF5.
+- **Built:** The sliding doors keep their state under johansson.house.v2 (game.js); they start open, where the reference starts them shut, because a house is lived in with its doors open.
 
-### F7. The walls stop short of the slabs
+### RF7. The basement is under the sea’s level
 
-- **Drawn:** Ground floor walls end at 2.60 under a slab from 2.62; upper floor walls at 5.40 under the roof slab at 5.60; basement walls at −0.20 under a slab from −0.18; partitions 50 mm lower still.
-- **Problem:** Gaps of 20–200 mm between wall and slab: no wall stands like that.
-- **Built:** Every wall runs to the soffit over it.
+- **Drawn:** Basement floor −2 800; game construction layers of 200 mm concrete, membrane, protection board, perimeter drain; the court’s storm sump and pump.
+- **Problem:** On Kitano-jima the yard is 1.3 m above the sea, so the basement floor is about 1.5 m below the yard’s datum and 0.9 m below the sea, in coral sand.
+- **Built:** As drawn. A builder would check the tanked box against flotation: open.
 
-### F8. Interior doorways and the genkan
+### RF8. The plot round the house
 
-- **Drawn:** Interior doors are full-height gaps in the partitions; the ground floor slab is level throughout.
-- **Problem:** A doorway has a head; a Japanese genkan has a doma a step below the floor, where shoes come off.
-- **Built:** Each interior doorway is 2.0 m high with its head walled up to the soffit (as the drawn outside openings are). The genkan’s doma, from the front door to 1.4 m in, is 150 mm under the hall, with the step (agari-kamachi) at its edge. Door leaves are not drawn, so none are hung.
+- **Drawn:** An assumed plot, −6 000 to 18 000 × −7 000 to 16 000, not surveyed.
+- **Problem:** Kitano-jima’s kitano-1 lies between the lane and the beach, its east side against rising ground.
+- **Built:** The plot is 17 × 22 m round the house: 2.5 m either side (the lightwell, 1.3 m, west; the outdoor units, 1.25 m, east), 7.5 m in front (the garden stair’s top landing is 6.25 m out), 4.5 m behind (the terrace, 2 m).
 
-### F9. The ground round the house
+## Rev C's findings, and Rev F
 
-- **Drawn:** Not drawn. The basement walls stop at −0.20 and the ground floor slab is at −0.18–0.10.
-- **Problem:** The house needs a grade, a step to its front door and a way down to D-BEXT, 2.35 m under the garden.
-- **Built:** The yard 450 mm under the ground floor (−0.35), a stone step at the front door (−0.20); outside D-BEXT a walled areaway with 14 steps of 168 mm up to the garden along the south face, rails round it; outside W-B1 a window well with a steel grating at grade.
-
-### F10. The roof is a placeholder
-
-- **Drawn:** A flat slab 5.60–5.80 over −0.4–12.4 × −0.4–10.4, a placeholder pending a typhoon-resistant roof (Rev B: a tiled hipped roof, ridge at 7.90).
-- **Problem:** A placeholder is not a roof for the hamlet; the design is the creator’s to make.
-- **Built:** The slab as drawn, and on it Rev B’s intent: a hipped roof of red tile pointed in lime, the Okinawan way, equal pitches (about 21°), ridge at 7.90, a shisa on the ridge. To be replaced by the creator’s design.
-
-### F11. The basement is under the sea’s level
-
-- **Drawn:** Basement floor at −2.70.
-- **Problem:** The yard is 1.3 m above the sea, so the basement floor is about 1 m below it, in coral sand: the drawings say basement waterproofing is not engineered.
-- **Built:** Nothing more than drawn: a tanked concrete box with a sump and two pumps (in the boiler room) is what a builder would need, and a check against flotation. Open.
-
-### F12. The kitchen window is lower than the counter under it
-
-- **Drawn:** W-KITCHEN, west wall of the kitchen and dining room, sill 850 over the datum: 750 mm over the ground floor.
-- **Problem:** A kitchen counter is 850 mm high, so the counter runs across the foot of the window, 100 mm of glass behind the worktop.
-- **Built:** The counter at 850 along the west wall as a kitchen has it, across the window’s foot. Rev D: a sill of 1 000 mm or more over the floor at a counter.
+Rev C's twelve findings (F1–F12, the record in git) were never sent; Rev F settles all but one on its own:
+the stair is a stacked dog-leg in the stair halls, the rooms over and under the genkan are part of the halls, every room
+has a door, the study's window is in the study, the walls run to the slabs, the doors have heads, the site, the court,
+the garden stair and the lightwell are drawn, the roof is a hipped tile roof, and the kitchen's sill is 850 over the
+floor. The basement under the sea's level stays open (RF7). The genkan is level with the hall (Rev F): shoes come off on
+the stone at the door, and a timber strip marks where.
 
 ## Open
 
-- The creator's roof design (F10), the basement's tanking and its sump (F11), the kitchen window's sill (F12).
-- The stair house's own steps down to D-BEXT are not walked yet: the door is bolted in the game.
-- Rev B's electrics, plumbing and drainage are not coordinated with Rev C (its README says so); the house's services
-  are the next sheets to draw.
+- The services (RF5) and the systems (RF6): the routes of the electrics, water, drainage, ventilation and cooling, the
+  flue and the vent through the roof, the downpipes, the supply from the pole; the reference simulation's 31 cases in the
+  game, the faults and repairs, the alarms. The equipment the drawings place is built.
+- The court outside D-BEXT, the garden stair down to it and the lightwell outside W-B1: drawn, not yet dug in the yard
+  (they need the yard cut and the sea kept out of them; the next batch). D-BEXT is bolted until then.
+- Game_Integration.md's host acceptance: every room walked on the desktop and the phone, the frame rate under the
+  town's load, the save surviving a reload (the doors' does).

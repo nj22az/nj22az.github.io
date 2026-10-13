@@ -1,25 +1,27 @@
-import {HOUSE_FLOORS,HOUSE_SITE,HOUSE_WALLS,HOUSE_OPENINGS} from './johansson-house.js';
+import * as THREE from '../../vendor/three.module.js';
+import {HOUSE_FLOORS,HOUSE_SITE,HOUSE_WALLS,HOUSE_SLABS,HOUSE_OPENINGS,HOUSE_ROOF,HOUSE_EQUIPMENT} from './johansson-house.js';
+import {JOHANSSON_HOUSE_CAD as CAD} from './johansson-house-cad.js';
 import {OKINAWA_COLOURS,shisa} from './okinawa/houses.js';
 
 /**
- * Johansson's house built with the Okinawan kit (okinawa/kit.js), from the house's data (johansson-house.js): the outside,
- * as it stands in Kitano hamlet. The kit's current frame is the house's: centred on its plan, the front (the drawings'
- * south face, with the genkan's door) looking along +z, y up from the yard. The drawings' frame is x east and y north
- * from the south-west corner, z up from the ground floor's datum, so a drawn point (x, y, z) is local (x − 6, z − grade,
- * 5 − y).
+ * Johansson's house built with the Okinawan kit (okinawa/kit.js), from the house's data (johansson-house.js, the
+ * creator's Final Rev F): the outside, as it stands in Kitano hamlet. The kit's current frame is the house's: centred on
+ * its plan, the front (the drawings' south face, with the genkan's door) looking along +z, y up from the yard, which is
+ * level with the ground floor (Rev F). The drawings' frame is x east and y north from the south-west corner, z up from
+ * the ground floor, so a drawn point (x, y, z) is local (x − 6, z, 5 − y).
  *
  * The concrete walls are the drawn walls, cut where the drawings cut them; the windows are aluminium sliding sashes
- * (引き違い) with glass that shows a room behind it, as every window in the town does; the roof is finding F10's.
+ * (引き違い) with glass that shows a room behind it, as every window in the town does; the roof is the drawn hipped roof
+ * of red tile, as the drawings' mesh, its hips and ridge pointed in lime the Okinawan way.
  */
 const C=OKINAWA_COLOURS;
 export const HOUSE_COLOURS=Object.freeze({
- wall:0xf0e8d6,band:0xdcd4c3,plinth:0xa9a397,sash:0xc3c8c9,glass:C.glass,door:0x5a3f2c,steel:0x6f777a,
- stone:0xcfc6b0,roofSlab:0xe6ddc9,tile:C.roof,lime:C.lime,cover:0xd8e4e3,
+ wall:0xf0e8d6,band:0xdcd4c3,sash:0xc3c8c9,glass:C.glass,door:0x5a3f2c,steel:0x6f777a,
+ stone:0xcfc6b0,soffit:0xe6ddc9,tile:C.roof,lime:C.lime,unit:0xe9e9e4,
 });
 const K=HOUSE_COLOURS;
 /** A drawn point to the kit's frame. */
 export const houseLocal=(x,y,z)=>[x-6,z-HOUSE_SITE.grade,5-y];
-const Y=z=>z-HOUSE_SITE.grade;
 
 /** A box between two drawn corners. */
 function drawnBlock(kit,min,max,hex,finish='matte'){
@@ -27,46 +29,34 @@ function drawnBlock(kit,min,max,hex,finish='matte'){
  kit.block(x0,x1,y0,y1,z0,z1,hex,finish);
 }
 
-/** The stair house over the basement's outside door (finding F9): its walls, flat roof and door, in drawn metres. */
-export const HOUSE_STAIR_HOUSE=Object.freeze({x:Object.freeze([8.6,12.6]),y:Object.freeze([-2.4,0]),top:2.3,wall:.2,
- /** Its door at the top landing, in the south wall, a step above the yard. */
- door:Object.freeze([8.95,9.85]),landing:HOUSE_SITE.porch});
-/** The window well outside W-B1 (finding F9), and its cover. */
-export const HOUSE_WINDOW_WELL=Object.freeze({x:Object.freeze([-.9,0]),y:Object.freeze([5.7,7.1]),bottom:-1.85});
-/** The front step and the hood over the front door (F9). */
-export const HOUSE_PORCH=Object.freeze({x:Object.freeze([5.05,7.05]),y:Object.freeze([-1.05,0]),hood:Object.freeze({x:[4.95,7.15],y:[-.7,0],z:2.3})});
-
 /**
  * The outside of the house. `solid(rect)` takes the kit's colliders; returns nothing else. Built inside the house's
  * frame (see above).
  */
 export function buildHouseExterior(kit,solid){
- const G0=HOUSE_FLOORS.G0,L1=HOUSE_FLOORS.L1;
- // The plinth: the basement walls' tops and the ground floor slab's edge, from the yard to the floor, darker; under
- // the front door it stops at the doma, a step under the hall.
- const door=HOUSE_OPENINGS.find(o=>o.id==='D-ENTRY');
- drawnBlock(kit,[0,0,HOUSE_SITE.grade],[door.from,10,G0.floor],K.plinth);
- drawnBlock(kit,[door.to,0,HOUSE_SITE.grade],[12,10,G0.floor],K.plinth);
- drawnBlock(kit,[door.from,.2,HOUSE_SITE.grade],[door.to,10,G0.floor],K.plinth);
- drawnBlock(kit,[door.from,0,HOUSE_SITE.grade],[door.to,.2,HOUSE_SITE.doma],K.stone);
- // The walls above the ground: every exterior wall, sill and lintel of the ground and upper floors, as drawn (F7).
- for(const w of HOUSE_WALLS.filter(w=>w.level!=='B1'&&w.kind!=='partition'))drawnBlock(kit,w.min,w.max,K.wall);
- // The upper floor's slab edge, a band round the house between the storeys, and the roof slab's (manifest geometry).
- for(const [z0,z1] of [[G0.soffit,L1.floor]])for(const [a,b] of [[[0,0],[12,.2]],[[0,9.8],[12,10]],[[0,.2],[.2,9.8]],[[11.8,.2],[12,9.8]]])drawnBlock(kit,[a[0],a[1],z0],[b[0],b[1],z1],K.band);
+ // The walls above the yard: every outside wall, sill and head of the ground and upper floors, as drawn.
+ for(const w of HOUSE_WALLS.filter(w=>w.level!=='B1'&&/-EXT-/.test(w.id)))drawnBlock(kit,w.min,w.max,K.wall);
+ // The slabs' edges between the storeys and under the roof: a band round the house.
+ for(const b of HOUSE_SLABS.filter(q=>q.level==='L1'||q.kind==='deck')){
+  const z0=b.min[2],z1=b.max[2];
+  for(const [a,c] of [[[0,0],[12,.2]],[[0,9.8],[12,10]],[[0,.2],[.2,9.8]],[[11.8,.2],[12,9.8]]]){
+   const lo=[Math.max(a[0],b.min[0]),Math.max(a[1],b.min[1]),z0],hi=[Math.min(c[0],b.max[0]),Math.min(c[1],b.max[1]),z1];
+   if(hi[0]-lo[0]>1e-6&&hi[1]-lo[1]>1e-6)drawnBlock(kit,lo,hi,K.band);
+  }
+ }
  for(const o of HOUSE_OPENINGS.filter(o=>o.level!=='B1'))opening(kit,o);
  roof(kit);
  frontDoor(kit);
- stairHouse(kit,solid);
- windowWell(kit,solid);
- // The house is one solid to walk round: its walls, the plinth, the stair house beside the front.
+ outdoorUnits(kit,solid);
+ // The house is one solid to walk round.
  const [x0,,z0]=houseLocal(0,10,0),[x1,,z1]=houseLocal(12,0,0);
- solid(kit.rect(x0,x1,z0,z1,Y(HOUSE_SITE.ridge),'johansson-house'));
+ solid(kit.rect(x0,x1,z0,z1,HOUSE_ROOF.ridge,'johansson-house'));
 }
 
 /** A window's sashes and glass, or a door's leaf, set in a drawn opening. */
 function opening(kit,o){
  const out=o.side==='south'?[0,-1]:o.side==='north'?[0,1]:o.side==='west'?[-1,0]:[1,0];
- const alongX=o.side==='south'||o.side==='north',face=o.side==='south'?0:o.side==='north'?10:o.side==='west'?0:12;
+ const alongX=o.side==='south'||o.side==='north',face=o.face;
  // The frame stands 70 mm in from the outside face.
  const inset=.07*(o.side==='south'||o.side==='west'?1:-1),plane=face+inset;
  const at=(s,z,depth,w,h,hex,finish)=>{
@@ -94,12 +84,12 @@ function opening(kit,o){
   at(mid,(o.sill+.5+o.head-.06)/2,.02,w-.12,o.head-.06-(o.sill+.5),K.glass,'window');
   return;
  }
- // D-ENTRY's leaf is frontDoor's; D-BEXT is inside the stair house.
+ // D-ENTRY's leaf is frontDoor's.
 }
 
 /** The front door: a timber leaf in a frame, with the letter slot that feeds the box inside and a lever handle. */
 function frontDoor(kit){
- const o=HOUSE_OPENINGS.find(o=>o.id==='D-ENTRY'),sill=HOUSE_SITE.doma,mid=(o.from+o.to)/2,w=o.to-o.from,h=o.head-sill,face=.07;
+ const o=HOUSE_OPENINGS.find(o=>o.id==='D-ENTRY'),sill=o.sill,mid=(o.from+o.to)/2,w=o.to-o.from,h=o.head-sill,face=.07;
  const at=(x,z,wd,ht,d,hex,finish)=>{const [lx,ly,lz]=houseLocal(x,face,z);kit.box(wd,ht,d,lx,ly,lz,hex,{finish});};
  for(const x of [o.from+.03,o.to-.03])at(x,sill+h/2,.06,h,.09,K.door);
  at(mid,o.head-.03,w,.06,.09,K.door);
@@ -108,60 +98,54 @@ function frontDoor(kit){
  for(const z of [sill+.55,sill+1.55])at(mid,z,w-.32,.62,.065,0x6a4c36);
  at(mid,sill+1.05,.3,.05,.07,0xb8913f,'metal');
  const hx=o.to-.16;at(hx,sill+1.0,.04,.04,.12,0xc9cdd0,'metal');at(hx-.06,sill+1.0,.14,.025,.03,0xc9cdd0,'metal');at(hx,sill+1.12,.035,.06,.08,0xc9cdd0,'metal');
- // The porch's stone step, and the concrete hood over it.
- const P=HOUSE_PORCH;
- drawnBlock(kit,[P.x[0],P.y[0],HOUSE_SITE.grade],[P.x[1],P.y[1],HOUSE_SITE.porch],K.stone);
- drawnBlock(kit,[P.hood.x[0],P.hood.y[0],P.hood.z],[P.hood.x[1],P.hood.y[1],P.hood.z+.12],K.roofSlab);
- drawnBlock(kit,[P.hood.x[0],P.hood.y[0]-.02,P.hood.z-.03],[P.hood.x[1],P.hood.y[0],P.hood.z+.12],K.band);
- // A porch light beside the door.
+ // The threshold stone, level with the yard and the genkan, and a light beside the door.
+ drawnBlock(kit,[o.from-.05,-.35,sill-.1],[o.to+.05,0,sill+.005],K.stone);
  const [lx,ly,lz]=houseLocal(o.from-.35,-.08,1.95);
  kit.box(.14,.2,.12,lx,ly,lz,0xf3e7c4,{finish:'lamp'});kit.box(.17,.04,.15,lx,ly+.12,lz,0x3a3632);
 }
 
 /**
- * The roof (finding F10): the drawn slab, 200 mm, 400 mm over the walls on every side, and on it a hipped roof of red
- * tile, equal pitches rising from the slab's edge to a ridge at HOUSE_SITE.ridge, the ridge and hips pointed in lime,
- * and a shisa on the ridge looking down the path to the gate.
+ * The roof as drawn: the hipped shell of red tile (the drawings' mesh, eaves +5 800, ridge +8 000, overhang 400, its
+ * underside +5 680), the hips and the ridge pointed in lime, the two sleeves' weather collars (the vent and the flue
+ * that go through them are the services', not built yet: RF5) capped, and a shisa on the ridge looking down the path.
  */
 function roof(kit){
- const S=HOUSE_SITE.roofSlab,o=S.overhang;
- drawnBlock(kit,[-o,-o,S.z0],[12+o,10+o,S.z1],K.roofSlab);
- const w=12+2*o,d=10+2*o,rise=HOUSE_SITE.ridge-S.z1,ridgeHalf=(w-d)/2;
- const [cx,cy,cz]=houseLocal(6,5,S.z1);
- kit.hipRoof(w,d,rise,cx,cy,cz,K.tile,{overhang:0,ridgeFrac:ridgeHalf/(w/2),finish:'tile'});
- const top=[[cx-ridgeHalf,cy+rise+.03,cz],[cx+ridgeHalf,cy+rise+.03,cz]];
- kit.rod(top[0],top[1],.1,K.lime,{segments:6});
- for(const [sx,sz] of [[-1,-1],[1,-1],[1,1],[-1,1]])kit.rod([cx+sx*w/2,cy+.04,cz+sz*d/2],top[sx<0?0:1],.07,K.lime,{segments:5});
- // The eave line pointed in lime along the front and back.
- for(const sz of [-1,1])kit.box(w+.04,.07,.07,cx,cy+.02,cz+sz*d/2,K.lime);
- shisa(kit,cx,cy+rise+.08,cz+.2,0,1.3);
+ // The tiles over the top and the eaves' edges; the soffit under the overhang, plastered.
+ const R=HOUSE_ROOF,tiles=[],soffit=[];
+ for(const [a,b,c] of R.triangles){
+  const [A,B,Cc]=[a,b,c].map(i=>R.vertices[i]),u=[B[0]-A[0],B[1]-A[1]],w=[Cc[0]-A[0],Cc[1]-A[1]];
+  (u[0]*w[1]-u[1]*w[0]<0?soffit:tiles).push(...[A,B,Cc].flatMap(p=>houseLocal(...p)));
+ }
+ for(const [list,hex,finish] of [[tiles,K.tile,'tile'],[soffit,K.soffit,'matte']]){
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(list,3));g.computeVertexNormals();
+  kit.add(g,new THREE.Matrix4(),hex,finish);g.dispose();
+ }
+ // Lime pointing along the hips and the ridge.
+ const [bx0,by0,bx1,by1]=R.bounds,[[rx0,ry0],[rx1,ry1]]=R.ridgeLine,e=R.eaves+.03,top=R.ridge+.04;
+ const P=(x,y,z)=>houseLocal(x,y,z);
+ kit.rod(P(rx0,ry0,top),P(rx1,ry1,top),.1,K.lime,{segments:6});
+ for(const [x,y,r] of [[bx0,by0,0],[bx0,by1,0],[bx1,by0,1],[bx1,by1,1]])kit.rod(P(x,y,e),P(r?rx1:rx0,r?ry1:ry0,top),.07,K.lime,{segments:5});
+ // The collars round the sleeves, as drawn, and a lead cap on each until its pipe goes through.
+ for(const b of CAD.roofBoots)drawnBlock(kit,b.min,b.max,0x59615a);
+ for(const [x0,y0,x1,y1] of R.sleeves){const z=Math.max(...CAD.roofBoots.filter(b=>b.min[0]>=x0-.04&&b.max[0]<=x1+.04&&b.min[1]>=y0-.04&&b.max[1]<=y1+.04).map(b=>b.max[2]));drawnBlock(kit,[x0-.03,y0-.03,z],[x1+.03,y1+.03,z+.02],0x59615a,'metal');}
+ const [sx,sy,sz]=P((rx0+rx1)/2,ry0-.2,top+.04);
+ shisa(kit,sx,sy,sz,0,1.3);
 }
 
-/** The stair house over D-BEXT: concrete walls, a flat roof with a drip, its door to the yard (F9). */
-function stairHouse(kit,solid){
- const S=HOUSE_STAIR_HOUSE,t=S.wall,g=HOUSE_SITE.grade,top=S.top;
- const [x0,x1]=S.x,[y0,y1]=S.y;
- // Its walls from the yard up: east, west and south (the house's south face is its back).
- drawnBlock(kit,[x0,y0,g],[x0+t,y1,top],K.wall);drawnBlock(kit,[x1-t,y0,g],[x1,y1,top],K.wall);
- drawnBlock(kit,[x0+t,y0,g],[S.door[0],y0+t,top],K.wall);drawnBlock(kit,[S.door[1],y0,g],[x1-t,y0+t,top],K.wall);
- drawnBlock(kit,[S.door[0],y0,S.landing+2],[S.door[1],y0+t,top],K.wall);
- // The roof slab, oversailing 150 mm, and the door: a steel leaf with a raised threshold against the rain.
- drawnBlock(kit,[x0-.15,y0-.15,top],[x1+.15,y1,top+.15],K.roofSlab);
- drawnBlock(kit,[S.door[0],y0+.05,S.landing],[S.door[1],y0+.12,S.landing+2],K.steel,'metal');
- drawnBlock(kit,[S.door[0],y0-.1,g],[S.door[1],y0+.2,S.landing],K.stone);
- const [hx,hy,hz]=houseLocal(S.door[1]-.12,y0-.01,S.landing+1);kit.box(.12,.03,.04,hx,hy,hz,0xc9cdd0,{finish:'metal'});
- // A sign on the door: 地下 (basement).
- const [sx,sy,sz]=houseLocal((S.door[0]+S.door[1])/2,y0-.005,S.landing+1.55);kit.box(.3,.12,.01,sx,sy,sz,0xf3efe4);
- const [a0,,c0]=houseLocal(x0,y1,0),[a1,,c1]=houseLocal(x1,y0,0);
- solid(kit.rect(a0,a1,c0,c1,Y(top)+.2,'johansson-house-stair-house'));
-}
-
-/** The window well outside W-B1: a concrete well under a polycarbonate cover on a steel frame, a kerb round it (F9). */
-function windowWell(kit,solid){
- const W=HOUSE_WINDOW_WELL,g=HOUSE_SITE.grade;
- drawnBlock(kit,[W.x[0]-.1,W.y[0]-.1,g],[W.x[1],W.y[1]+.1,g+.1],K.plinth);
- drawnBlock(kit,[W.x[0]-.05,W.y[0]-.05,g+.1],[W.x[1],W.y[1]+.05,g+.13],K.steel,'metal');
- drawnBlock(kit,[W.x[0],W.y[0],g+.11],[W.x[1],W.y[1],g+.135],K.cover,'gloss');
- const [a0,,c0]=houseLocal(W.x[0]-.1,W.y[1]+.1,0),[a1,,c1]=houseLocal(W.x[1],W.y[0]-.1,0);
- solid(kit.rect(a0,a1,c0,c1,.3,'johansson-house-window-well'));
+/**
+ * The outdoor units of the two cooling zones (HVAC-EQ-OUTDOOR_UNITS, beside the east wall), on a galvanised stand,
+ * one over the other: Johansson Reiki's, their plates on the side.
+ */
+function outdoorUnits(kit,solid){
+ const e=HOUSE_EQUIPMENT.find(q=>q.id==='HVAC-EQ-OUTDOOR_UNITS'),[x0,y0]=e.min,[x1,y1]=e.max,cx=(x0+x1)/2,cy=(y0+y1)/2;
+ const L=.8,D=.3;
+ for(const [z0,z1] of [[.15,.7],[.76,1.31]]){
+  drawnBlock(kit,[cx-D/2,cy-L/2,z0],[cx+D/2,cy+L/2,z1],K.unit);
+  // The fan's grille on the face away from the wall, and the maker's plate.
+  const [gx,gy,gz]=houseLocal(cx+D/2+.005,cy-.08,(z0+z1)/2);kit.cyl(.21,.21,.01,gx,gy,gz,0x4a4f52,{rz:Math.PI/2,segments:16});
+  drawnBlock(kit,[cx+D/2,cy+.25,z1-.12],[cx+D/2+.004,cy+.36,z1-.06],0xb8bcbf,'metal');
+ }
+ for(const [dx,dy] of [[-1,-1],[1,-1],[-1,1],[1,1]])drawnBlock(kit,[cx+dx*D/2-.02,cy+dy*(L/2-.05)-.02,0],[cx+dx*D/2+.02,cy+dy*(L/2-.05)+.02,1.33],K.steel,'metal');
+ const [a0,,c0]=houseLocal(cx-D/2-.05,cy+L/2+.05,0),[a1,,c1]=houseLocal(cx+D/2+.05,cy-L/2-.05,0);
+ solid(kit.rect(a0,a1,c0,c1,1.35,'johansson-house-outdoor-units'));
 }

@@ -1,6 +1,7 @@
 /**
  * A small reader for the ASCII DXF the creator's CAD sends (AutoCAD 2010, written by ezdxf): the ENTITIES section's
- * LINE, LWPOLYLINE, ARC, CIRCLE and TEXT, each with its layer, in drawing units. Nothing else in the file is read.
+ * LINE, LWPOLYLINE, ARC, CIRCLE and TEXT, each with its layer, in drawing units (a LINE's ends with their z where the
+ * file gives one, as the 3D route drawings do). Nothing else in the file is read.
  */
 export function readDxf(text){
  const lines=text.split(/\r?\n/),pairs=[];
@@ -19,8 +20,10 @@ export function readDxf(text){
    case 1:e.text=value;break;
    case 10:if(e.type==='LWPOLYLINE')e.points.push([n,0]);else e.a=[n,0];break;
    case 20:if(e.type==='LWPOLYLINE')e.points[e.points.length-1][1]=n;else e.a[1]=n;break;
+   case 30:if(e.a&&e.type!=='LWPOLYLINE')e.a[2]=n;break;
    case 11:e.b=[n,0];break;
    case 21:e.b[1]=n;break;
+   case 31:if(e.b)e.b[2]=n;break;
    case 40:if(e.type==='TEXT')e.height=n;else e.radius=n;break;
    case 50:e.start=n;break;
    case 51:e.end=n;break;

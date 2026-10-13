@@ -87,6 +87,7 @@ import {setOceanLight} from './world/ocean.js';
 import {eveningNews,newsOn} from './feed/evening-news.js';
 import {typhoonAt,typhoonBulletin} from './world/typhoons.js';
 import {buildMayorOffice,buildMayorHome,buildCommunityKitchen,buildClinic,MAYOR_HOME_FLOOR} from './world/interiors/town-hall.js';
+import {HOUSE_SAVE} from './world/johansson-house.js';
 import {createHomeCustomization} from './world/interiors/home-customization.js';
 import {buildCityRestaurant,CITY_RESTAURANT} from './world/interiors/city-restaurant.js';
 import {buildFamilyHome} from './world/interiors/family-home.js';
@@ -972,7 +973,7 @@ function updateConversationLift(dt){
  if(conversationLift>0)camera.setViewOffset(w,h,0,Math.round(h*conversationLift),w,h);else camera.clearViewOffset();
 }
 function residentSpeech(){const person=world.people.filter(p=>!p.g.userData.playerControlled&&p.g.userData.residentSpeech?.until>minutes&&p.g.visible&&p.g.userData.hit.inside===!!current&&(!p.g.userData.inMarket||current?.id==='market')).sort((a,b)=>a.g.position.distanceToSquared(player.position)-b.g.position.distanceToSquared(player.position))[0];return person?{speaker:person,text:person.g.userData.residentSpeech.text}:null;}
-function roomCollider(x,z,w,d,height=2.8,minY=0){roomColliders.push({x,z,w,d,height,minY});}
+function roomCollider(x,z,w,d,height=2.8,minY=0){const c={x,z,w,d,height,minY};roomColliders.push(c);return c;}
 
 // Umi-no-yu has one regular guest: Thuan, on the evenings she has been asked along.
 const onsenGuests=createIndoorResidents({world,parent:scene,collides:(x,z,r)=>environmentBlocked(x,z,r,'resident'),getRain:()=>weather,place:'onsen',layout:{entrance:ONSEN_ROOM.spawn},getPlayerSeat:()=>parkSeat?.seatId,onBorrow:npcActivities.release,getState:()=>activities.state});
@@ -1043,7 +1044,9 @@ function roomShell(s){
   setTimeout(()=>{if(!photoStudio?.active&&current?.id===CITY_RESTAURANT.id&&activeRoomLayout?.dinner===dinner)activities.action('city-dinner',CITY_RESTAURANT.title,dinner);},1400);
   return;}
  if(s.familyHome){activeRoomLayout=buildFamilyHome({...shared,household:s.familyHome,title:s.title,kind:s.houseKind});return;}
- if(s.id==='mayor-home'){activeRoomLayout=buildMayorHome({...shared,sleep:sleepUntilMorning,post:{unread:()=>activities.unreadPost,open:()=>activities.post()},television:()=>{const typhoon=weatherMode==='random'&&typhoonAt(minutes);if(!newsOn(minutes))return typhoon?typhoonBulletin(typhoon,minutes):null;const news=eveningNews(activities.state,minutes,{weather:weatherMode==='random'});activities.save();return news;}});
+ if(s.id==='mayor-home'){activeRoomLayout=buildMayorHome({...shared,sleep:sleepUntilMorning,player:()=>player.position.toArray(),
+  // The sliding doors keep their state by id, under the house's own name (johansson-house.js RF6).
+  doors:{get:id=>activities.state[HOUSE_SAVE]?.doors?.[id],set:(id,open)=>{const h=activities.state[HOUSE_SAVE]??={schema:2,doors:{}};(h.doors??={})[id]=!!open;activities.save();}},post:{unread:()=>activities.unreadPost,open:()=>activities.post()},television:()=>{const typhoon=weatherMode==='random'&&typhoonAt(minutes);if(!newsOn(minutes))return typhoon?typhoonBulletin(typhoon,minutes):null;const news=eveningNews(activities.state,minutes,{weather:weatherMode==='random'});activities.save();return news;}});
   // His home as it was decorated and furnished in Johansson Studio (src/studio-handoff.js): World shows it, Studio changes it.
   const furniture=showHomeFurniture({group:room.getObjectByName('Mayor’s home'),colliders:roomColliders,state:activities.state,floor:MAYOR_HOME_FLOOR.walkable,keepClear:MAYOR_HOME_FLOOR.keepClear});
   const decor=createHomeCustomization({room,state:activities.state});

@@ -34,7 +34,7 @@ test('furniture goes on the open floor of the living room and the kitchen, never
  assert.match(placements.check({kind:'tansu',x:-1.1,z:2.5})[0],/ground/,'through the living room’s east wall');
  assert.match(placements.check({kind:'andon',x:.05,z:4.25})[0],/ground/,'in the genkan');
  assert.match(placements.check({kind:'side-table',x:-3.4,z:2.5})[0],/overlaps/,'on the low table');
- assert.match(placements.check({kind:'tansu',x:-1.6,z:.5}).join(' '),/genkan|doorway|way to/,'in the hall’s doorway');
+ assert.match(placements.check({kind:'tansu',x:-1.6,z:2.25}).join(' '),/genkan|doorway|way to/,'in the hall’s doorway');
  assert.match(placements.check({kind:'cushion',x:-2.55,z:2.5}).join(' '),/way to/,'on a seat at the table');
  assert.match(placements.check({kind:'side-table',x:-3.8,z:-.7}).join(' '),/^$/,'by the dining table, on the kitchen’s open floor');
 });
