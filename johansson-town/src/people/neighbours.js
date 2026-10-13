@@ -178,6 +178,8 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
  return {
   people,
   entities:people.map(p=>p.g),
+  /** New walls (Kitano-jima built on demand): forget which ground was clear, and plan each walk again from where they are. */
+  replan(){navigation.clearCache?.();for(const p of people)if(p.routine)p.path=navigation.path(p.g.position,{x:p.routine.at[0],z:p.routine.at[1]});},
   /** Turn to whoever is talking to them, and stop walking while they do. */
   talkTo(name,to){
    const p=people.find(p=>p.spec.name===name);if(!p)return null;

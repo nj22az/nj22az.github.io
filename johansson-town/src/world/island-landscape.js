@@ -3,7 +3,8 @@ import {buildAobaRadio} from './aoba-radio.js';
 import {terrainPathPolygons} from './terrain-path.js';
 import {inGardenGround} from './garden-layout.js';
 import {buildShoppingLane} from './shopping-lane.js';
-import {buildAirportDistrict} from './airport-district.js';
+import {buildAirportDistrict,buildAirportDistrictFar} from './airport-district.js';
+import {kitanoLater} from './kitano-on-demand.js';
 import * as THREE from '../../vendor/three.module.js';
 import {ISLAND,HOSHIZAKI_STORE,TERRAIN_GRID,MOUNTAIN_VERTICES,islandTerrainHeight,ISLAND_ROUTES,ISLAND_LANDMARKS,AOBA_SUMMIT} from './island-plan.js';
 import {GROUND} from '../render/ground-palette.js';
@@ -90,7 +91,9 @@ export function buildIslandLandscape({world,register,onAction,mobile=false}){
  anchor([138,.7,188],'Take the coastal village bus','island-bus');anchor([13.3,1,-37.55],'Review island development projects','island-projects');anchor([-25,1,-39.65],'Complete the airport radio service','island-repair');
  // Airport passenger walkway, check-in counter and a usable local landing (the fence is in airport-district.js).
  world.shoppingLane=buildShoppingLane({world,register,onAction});
- buildAirportDistrict({world,register,onAction});
+ // Kitano-jima's district when he heads there; until then as it is seen from Minato (kitano-on-demand.js).
+ kitanoLater(world,'airport district',()=>buildAirportDistrict({world,register,onAction}));
+ if(world.kitano?.distant)world.kitano.far(buildAirportDistrictFar(world));
  world.airportVehicleYard=buildAirportVehicleYard(world);
  const airport=world.airportIsland.group;box('Airport passenger pavement',[88,.1,2.7],[0,1.05+GROUND_LAYER.grass,18.35],0xc4c0aa,false,airport);box('Check-in desk',[4,.9,.55],[-10,1.55,17.8],0x517282,false,airport);
  const [cx,cz]=AIRPORT_COUNTER;anchor([cx,AIRPORT_HEIGHT+1.2,cz],'Airport tickets and check-in','airport-counter');const [lx,lz]=AIRPORT_LANDING;anchor([lx,AIRPORT_HEIGHT+1.2,lz],'Airport ferry back to Minato','airport-return');const view=airportWorld(30,18.4);anchor([view[0],AIRPORT_HEIGHT+1,view[1]],'Read the airport departures board','airport-counter');

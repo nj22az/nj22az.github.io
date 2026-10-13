@@ -1,6 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {COASTLINE} from './island-coast.js';
 import {airportShoreDistance} from './airport-island.js';
+import {polygonTest,edgesNear} from './plan-index.js';
 
 // Cel-shaded Gerstner water for the island. Shared by the surrounding sea and
 // the harbour basin so the whole shore reads as one body of water.
@@ -236,21 +237,16 @@ function segmentDistance(px,pz,ax,az,bx,bz){
   const dx=bx-ax,dz=bz-az,t=Math.max(0,Math.min(1,((px-ax)*dx+(pz-az)*dz)/(dx*dx+dz*dz||1)));
   return Math.hypot(px-ax-dx*t,pz-az-dz*t);
 }
-function insidePolygon(px,pz,poly){
-  let inside=false;
-  for(let i=0,j=poly.length-1;i<poly.length;j=i++){
-    const [xi,zi]=poly[i],[xj,zj]=poly[j];
-    if((zi>pz)!==(zj>pz)&&px<(xj-xi)*(pz-zi)/(zj-zi)+xi)inside=!inside;
-  }
-  return inside;
-}
 
+/** The coast's inside and its edges within the field's range, through their grids (plan-index.js). */
+let coastInside=null,coastEdges=null;
 /** Metres from (x,z) to the nearest land, capped at SHORE_FIELD.range. */
 export function shoreDistance(x,z){
   let best=SHORE_FIELD.range;
-  const poly=COASTLINE;
-  if(insidePolygon(x,z,poly))return 0;
-  for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length];best=Math.min(best,segmentDistance(x,z,a[0],a[1],b[0],b[1]));}
+  coastInside??=polygonTest(COASTLINE);coastEdges??=edgesNear(COASTLINE,SHORE_FIELD.range);
+  if(coastInside(x,z))return 0;
+  // Only the edges that can be within the range: any other is farther, and the distance is capped there anyway.
+  const e=coastEdges(x,z);for(let i=0;i<e.length;i+=4)best=Math.min(best,segmentDistance(x,z,e[i],e[i+1],e[i+2],e[i+3]));
   // The airport island measures its own (long, curving) shore; past 36 m it is open sea.
   return Math.min(best,airportShoreDistance(x,z));
 }

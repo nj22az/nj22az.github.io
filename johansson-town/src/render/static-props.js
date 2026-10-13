@@ -3,18 +3,22 @@ import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 
 // Only explicitly marked, immobile factory meshes are eligible. Original anchors remain
 // visible to interactions but move to an unrendered layer. Animated props are excluded.
+// A batch is added to the outermost horizon group (userData.horizon) its pieces are in, or to `root`: scenery on the horizon
+// (Kitano-jima) is drawn from anywhere in town (town-sections.js), and a batch outside it was culled with the street.
 export function batchStaticProps(root,cellSize=24){
- root.updateMatrixWorld(true);const inverse=new THREE.Matrix4().copy(root.matrixWorld).invert(),buckets=new Map(),sources=[];
+ root.updateMatrixWorld(true);const buckets=new Map(),sources=[];
+ const home=o=>{let h=root;for(let p=o.parent;p&&p!==root;p=p.parent)if(p.userData.horizon)h=p;return h;};
  root.traverse(o=>{
   if(!o.isMesh||!o.userData.staticProp||o.isInstancedMesh||o.isSkinnedMesh||Array.isArray(o.material)||o.material.transparent)return;
   // A batch keeps a copy of the material, so anything whose glow the clock turns up stays live.
   if(o.material.emissive&&o.material.emissive.getHex()!==0||o.material.userData?.kitFinish)return;
+  if(o.userData.renderBatch)return;
   for(let p=o;p&&p!==root;p=p.parent)if(p.userData.dynamicProp)return;
-  const mat=o.material,world=o.getWorldPosition(new THREE.Vector3()),key=[Math.floor(world.x/cellSize),Math.floor(world.z/cellSize),mat.type,mat.map?.uuid,mat.normalMap?.uuid,mat.roughness,mat.metalness,mat.emissive?.getHex(),mat.emissiveIntensity,mat.side,o.castShadow,o.receiveShadow,o.renderOrder].join('/');
+  const mat=o.material,world=o.getWorldPosition(new THREE.Vector3()),key=[home(o).uuid,Math.floor(world.x/cellSize),Math.floor(world.z/cellSize),mat.type,mat.map?.uuid,mat.normalMap?.uuid,mat.roughness,mat.metalness,mat.emissive?.getHex(),mat.emissiveIntensity,mat.side,o.castShadow,o.receiveShadow,o.renderOrder].join('/');
   if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(o);
  });
  let batches=0,drawsSaved=0,triangles=0;
- for(const [key,objects] of buckets){if(objects.length<3)continue;const pieces=[];
+ for(const [key,objects] of buckets){if(objects.length<3)continue;const pieces=[],parent=home(objects[0]),inverse=new THREE.Matrix4().copy(parent.matrixWorld).invert();
   for(const o of objects){
    const g=o.geometry.index?o.geometry.toNonIndexed():o.geometry.clone();g.applyMatrix4(new THREE.Matrix4().multiplyMatrices(inverse,o.matrixWorld));g.clearGroups();
    const colours=new Float32Array(g.attributes.position.count*3);for(let i=0;i<g.attributes.position.count;i++){colours[i*3]=o.material.color.r;colours[i*3+1]=o.material.color.g;colours[i*3+2]=o.material.color.b;}
@@ -22,7 +26,7 @@ export function batchStaticProps(root,cellSize=24){
   }
   const geometry=mergeGeometries(pieces,false);if(!geometry){pieces.forEach(g=>g.dispose());continue;}
   const material=objects[0].material.clone();material.color.set(0xffffff);material.vertexColors=true;
-  const mesh=new THREE.Mesh(geometry,material);mesh.name='static-props:'+key;mesh.castShadow=objects[0].castShadow;mesh.receiveShadow=objects[0].receiveShadow;mesh.renderOrder=objects[0].renderOrder;root.add(mesh);
+  const mesh=new THREE.Mesh(geometry,material);mesh.name='static-props:'+key;mesh.castShadow=objects[0].castShadow;mesh.receiveShadow=objects[0].receiveShadow;mesh.renderOrder=objects[0].renderOrder;parent.add(mesh);mesh.updateMatrixWorld(true);
   geometry.computeBoundingSphere();geometry.computeBoundingBox();
   for(const o of objects){o.layers.set(31);o.userData.renderBatch=mesh.uuid;sources.push(o);}
   pieces.forEach(g=>g.dispose());batches++;drawsSaved+=objects.length-1;triangles+=geometry.attributes.position.count/3;

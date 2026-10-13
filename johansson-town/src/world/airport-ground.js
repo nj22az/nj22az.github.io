@@ -36,7 +36,8 @@ export const AIRPORT_COUNTER=Object.freeze(airportWorld(-10,18.7));
  */
 export function airportSurface(x,z,r=0){
  const [u,v]=airportLocal(x,z);
- const within=s=>u>=s.minX+r&&u<=s.maxX-r&&v>=s.minZ+r&&v<=s.maxZ-r;
+ // A micrometre of slack: a point on a floor's drawn edge (rounding through the island's turn) is on that floor.
+ const E=1e-6,within=s=>u>=s.minX+r-E&&u<=s.maxX-r+E&&v>=s.minZ+r-E&&v<=s.maxZ-r+E;
  const cargo=AIRPORT_CARGO_SURFACE;if(within(cargo))return {id:'airport-cargo-court',surface:'asphalt',y:cargo.y};
  const floor=AIRPORT_PUBLIC_FLOORS.find(within);if(floor)return {id:floor.id,surface:'stone',y:floorHeight(floor,v)};
  if(within(AIRPORT_JETTY))return {id:'airport-jetty',surface:'stone',y:AIRPORT_PIER_HEIGHT};
