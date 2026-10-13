@@ -35,15 +35,15 @@ test('all five models print, collect once, block duplicates and sell for the cor
 
 test('insufficient funds and a full bag cannot lose currency or a completed print',()=>{
  const state=initial();state.yen=recipe.material-1;assert.equal(startPrint(state,recipe.id).ok,false);assert.equal(state.workshop.job,null);
- state.yen=1200;state.inventory=Array(100).fill('Sea bream');assert.equal(startPrint(state,recipe.id).ok,false);assert.equal(state.yen,1200);
- state.inventory.pop();assert.equal(startPrint(state,recipe.id).ok,true);state.inventory.push('Sea bream');advancePrint(state,100);
+ state.yen=1200;state.inventory=Array(100).fill('Taman');assert.equal(startPrint(state,recipe.id).ok,false);assert.equal(state.yen,1200);
+ state.inventory.pop();assert.equal(startPrint(state,recipe.id).ok,true);state.inventory.push('Taman');advancePrint(state,100);
  assert.equal(collectPrint(state).ok,false);assert.equal(state.workshop.job.remaining,0);state.inventory.pop();assert.equal(collectPrint(state).ok,true);
  state.yen=999999;assert.equal(sellPrint(state,recipe.id).ok,false);assert.ok(state.inventory.includes(recipe.name));
 });
 
 test('old saves and mid-print reloads preserve unique models, ordinary stacks and paid progress',()=>{
- const save={yen:600,quest:3,inventory:[recipe.name,recipe.name,'Sea bream','Sea bream','Evening newspaper'],workshop:{selected:'unknown',job:{id:'unknown',remaining:1}}};
- const {acts}=setup(save);assert.deepEqual(acts.state.inventory,[recipe.name,'Sea bream','Sea bream','Evening newspaper']);assert.equal(acts.state.workshop.job,null);assert.equal(acts.state.quest,3);
+ const save={yen:600,quest:3,inventory:[recipe.name,recipe.name,'Taman','Taman','Evening newspaper'],workshop:{selected:'unknown',job:{id:'unknown',remaining:1}}};
+ const {acts}=setup(save);assert.deepEqual(acts.state.inventory,[recipe.name,'Taman','Taman','Evening newspaper']);assert.equal(acts.state.workshop.job,null);assert.equal(acts.state.quest,3);
  const model=WORKSHOP_MODELS[2];startPrint(acts.state,model.id);advancePrint(acts.state,3);acts.save();
  const reloaded=setup(JSON.parse(localStorage.getItem(SAVE_KEY)));assert.equal(reloaded.acts.state.workshop.job.remaining,model.seconds-3);assert.equal(reloaded.acts.state.yen,600-model.material);
  reloaded.acts.tick(model.seconds);reloaded.acts.save();const ready=setup(JSON.parse(localStorage.getItem(SAVE_KEY)));

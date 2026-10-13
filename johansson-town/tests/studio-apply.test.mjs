@@ -375,7 +375,7 @@ test('products: refused in plain words, and nothing written: real brands, an emp
    [change([update({'cells.brand':71},{'cells.brand':10})]),/atlas cells are its own/],
    [change([update({'brand.colour':'#ffffff'},{'brand.colour':null})]),/not a field Studio can change/],
    [change([update({brand:{...beer.brand,ink:'#000000'},'brand.ink':'#000000'})]),/Set brand or a part of it, not both/],
-   [change([{op:'product.retire',id:'beer',why:'The creator wants a new beer instead.',shelfTo:'milk',was:recordSha256(beer)}]),/Umineko lager cannot be retired yet.*game\.js:\d+.*friendship\.js:22/],
+   [change([{op:'product.retire',id:'beer',why:'The creator wants a new beer instead.',shelfTo:'milk',was:recordSha256(beer)}]),/Umineko lager cannot be retired yet.*game\.js:\d+.*friendship\.js:\d+/],
    [change([update(designed(words('UMINEKO')))],{files:{'beer.label.png':{sha256:sha256(one),data:b64(Buffer.from('#!/bin/sh\nrm -rf /'))}}}),/not a PNG, JPEG or WebP picture/],
    [change([update(designed(words('UMINEKO')))],{files:{'beer.label.png':{sha256:'0'.repeat(64),data:b64(one)}}}),/does not match its checksum/],
    [change([update(designed(words('UMINEKO')))]),/uses the picture beer\.label\.png, which is not in the change's files/],

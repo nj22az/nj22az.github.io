@@ -12,30 +12,39 @@
     "file": "beach-layout-BDTfOgJv.js",
     "name": "beach-layout"
   },
-  "_compact-shops-Buu3-hcT.js": {
-    "file": "compact-shops-Buu3-hcT.js",
+  "_compact-shops-DeeADhgq.js": {
+    "file": "compact-shops-DeeADhgq.js",
     "name": "compact-shops",
     "isDynamicEntry": true,
     "imports": [
       "_actors-CDGFJevL.js",
-      "_quarters-DnMogoaa.js",
+      "_quarters-NDUzgzGm.js",
       "_resident-personalities-3AnLD2aR.js",
       "_save-DNR2Pkyf.js",
-      "_residents-Dod0iJTL.js",
+      "_fish-CZB2ykuZ.js",
       "_beach-layout-BDTfOgJv.js",
       "_izakaya-serving-visuals-jPuRTIuv.js"
     ]
   },
-  "_friendship-TzGOQ4_P.js": {
-    "file": "friendship-TzGOQ4_P.js",
-    "name": "friendship",
+  "_fish-CZB2ykuZ.js": {
+    "file": "fish-CZB2ykuZ.js",
+    "name": "fish",
     "imports": [
+      "_save-DNR2Pkyf.js",
       "_resident-personalities-3AnLD2aR.js",
-      "_residents-Dod0iJTL.js"
+      "_beach-layout-BDTfOgJv.js"
     ]
   },
-  "_icons-D2FwW5n5.js": {
-    "file": "icons-D2FwW5n5.js",
+  "_friendship-B0mniTBF.js": {
+    "file": "friendship-B0mniTBF.js",
+    "name": "friendship",
+    "imports": [
+      "_fish-CZB2ykuZ.js",
+      "_resident-personalities-3AnLD2aR.js"
+    ]
+  },
+  "_icons-DfeBIm6m.js": {
+    "file": "icons-DfeBIm6m.js",
     "name": "icons"
   },
   "_izakaya-serving-visuals-jPuRTIuv.js": {
@@ -45,17 +54,17 @@
       "_resident-personalities-3AnLD2aR.js"
     ]
   },
-  "_onsen-pnH6Lw3m.js": {
-    "file": "onsen-pnH6Lw3m.js",
+  "_onsen-CKokBRkK.js": {
+    "file": "onsen-CKokBRkK.js",
     "name": "onsen",
     "isDynamicEntry": true,
     "imports": [
       "_actors-CDGFJevL.js",
       "_resident-personalities-3AnLD2aR.js",
       "_izakaya-serving-visuals-jPuRTIuv.js",
-      "_residents-Dod0iJTL.js",
+      "_fish-CZB2ykuZ.js",
       "_town-audio-DW8SohWz.js",
-      "_quarters-DnMogoaa.js",
+      "_quarters-NDUzgzGm.js",
       "_beach-layout-BDTfOgJv.js"
     ]
   },
@@ -63,15 +72,15 @@
     "file": "preload-helper-PPVm8Dsz.js",
     "name": "preload-helper"
   },
-  "_quarters-DnMogoaa.js": {
-    "file": "quarters-DnMogoaa.js",
+  "_quarters-NDUzgzGm.js": {
+    "file": "quarters-NDUzgzGm.js",
     "name": "quarters",
     "isDynamicEntry": true,
     "imports": [
       "_resident-personalities-3AnLD2aR.js",
+      "_fish-CZB2ykuZ.js",
       "_actors-CDGFJevL.js",
       "_town-audio-DW8SohWz.js",
-      "_residents-Dod0iJTL.js",
       "_beach-layout-BDTfOgJv.js",
       "_izakaya-serving-visuals-jPuRTIuv.js",
       "_save-DNR2Pkyf.js"
@@ -81,26 +90,17 @@
     "file": "resident-personalities-3AnLD2aR.js",
     "name": "resident-personalities"
   },
-  "_residents-Dod0iJTL.js": {
-    "file": "residents-Dod0iJTL.js",
-    "name": "residents",
-    "imports": [
-      "_save-DNR2Pkyf.js",
-      "_resident-personalities-3AnLD2aR.js",
-      "_beach-layout-BDTfOgJv.js"
-    ]
-  },
-  "_sakura-interior-vdfpNPOS.js": {
-    "file": "sakura-interior-vdfpNPOS.js",
+  "_sakura-interior-BTeDZvmK.js": {
+    "file": "sakura-interior-BTeDZvmK.js",
     "name": "sakura-interior",
     "isDynamicEntry": true,
     "imports": [
       "_resident-personalities-3AnLD2aR.js",
       "_beach-layout-BDTfOgJv.js",
       "_actors-CDGFJevL.js",
-      "_quarters-DnMogoaa.js",
+      "_quarters-NDUzgzGm.js",
       "_town-audio-DW8SohWz.js",
-      "_residents-Dod0iJTL.js"
+      "_fish-CZB2ykuZ.js"
     ]
   },
   "_save-DNR2Pkyf.js": {
@@ -154,13 +154,13 @@
     ]
   },
   "src/boot.js": {
-    "file": "boot-BfZm2TBq.js",
+    "file": "boot-CPLPeQuG.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
     "imports": [
       "_preload-helper-PPVm8Dsz.js",
-      "_icons-D2FwW5n5.js"
+      "_icons-DfeBIm6m.js"
     ],
     "dynamicImports": [
       "touch-ui.js?ui=controls-3",
@@ -170,7 +170,7 @@
     ]
   },
   "src/feed/mount.js": {
-    "file": "feed-BK9NNBNx.js",
+    "file": "feed-CgORUeWh.js",
     "name": "feed",
     "src": "src/feed/mount.js",
     "isEntry": true,
@@ -184,25 +184,25 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-D7HktrbL.js",
+    "file": "game-D-Gt0MTF.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
     "imports": [
       "_resident-personalities-3AnLD2aR.js",
-      "_residents-Dod0iJTL.js",
-      "_quarters-DnMogoaa.js",
+      "_fish-CZB2ykuZ.js",
+      "_quarters-NDUzgzGm.js",
       "_izakaya-serving-visuals-jPuRTIuv.js",
       "_actors-CDGFJevL.js",
-      "_icons-D2FwW5n5.js",
+      "_icons-DfeBIm6m.js",
       "_town-audio-DW8SohWz.js",
-      "_onsen-pnH6Lw3m.js",
-      "_sakura-interior-vdfpNPOS.js",
+      "_onsen-CKokBRkK.js",
+      "_sakura-interior-BTeDZvmK.js",
       "_save-DNR2Pkyf.js",
-      "_compact-shops-Buu3-hcT.js",
+      "_compact-shops-DeeADhgq.js",
       "src/world/interiors/sato-ramen.js",
       "_beach-layout-BDTfOgJv.js",
-      "_friendship-TzGOQ4_P.js",
+      "_friendship-B0mniTBF.js",
       "src/world/interiors/town-hall.js",
       "_studio-handoff-BYXb2E2-.js",
       "_preload-helper-PPVm8Dsz.js"
@@ -212,15 +212,15 @@
     ]
   },
   "src/scene/scene-world.js": {
-    "file": "scene-world-Dma_Ljzv.js",
+    "file": "scene-world-B94Hd64K.js",
     "name": "scene-world",
     "src": "src/scene/scene-world.js",
     "isDynamicEntry": true,
     "imports": [
       "_preload-helper-PPVm8Dsz.js",
       "_resident-personalities-3AnLD2aR.js",
-      "_quarters-DnMogoaa.js",
-      "_residents-Dod0iJTL.js",
+      "_quarters-NDUzgzGm.js",
+      "_fish-CZB2ykuZ.js",
       "_save-DNR2Pkyf.js",
       "_izakaya-serving-visuals-jPuRTIuv.js",
       "_actors-CDGFJevL.js",
@@ -228,57 +228,57 @@
       "_beach-layout-BDTfOgJv.js"
     ],
     "dynamicImports": [
-      "_sakura-interior-vdfpNPOS.js",
-      "_quarters-DnMogoaa.js",
+      "_sakura-interior-BTeDZvmK.js",
+      "_quarters-NDUzgzGm.js",
       "src/world/interiors/sato-ramen.js",
-      "_quarters-DnMogoaa.js",
-      "_compact-shops-Buu3-hcT.js",
-      "_onsen-pnH6Lw3m.js",
+      "_quarters-NDUzgzGm.js",
+      "_compact-shops-DeeADhgq.js",
+      "_onsen-CKokBRkK.js",
       "src/world/interiors/town-hall.js"
     ]
   },
   "src/world/interiors/sato-ramen.js": {
-    "file": "sato-ramen-CkrBOqvw.js",
+    "file": "sato-ramen-BaK_GkDm.js",
     "name": "sato-ramen",
     "src": "src/world/interiors/sato-ramen.js",
     "isDynamicEntry": true,
     "imports": [
       "_resident-personalities-3AnLD2aR.js",
-      "_quarters-DnMogoaa.js",
+      "_quarters-NDUzgzGm.js",
       "_actors-CDGFJevL.js",
-      "_town-audio-DW8SohWz.js",
-      "_beach-layout-BDTfOgJv.js",
-      "_residents-Dod0iJTL.js",
+      "_fish-CZB2ykuZ.js",
       "_save-DNR2Pkyf.js",
+      "_beach-layout-BDTfOgJv.js",
+      "_town-audio-DW8SohWz.js",
       "_izakaya-serving-visuals-jPuRTIuv.js"
     ]
   },
   "src/world/interiors/town-hall.js": {
-    "file": "town-hall-W-wlweL7.js",
+    "file": "town-hall-BCFG1ntK.js",
     "name": "town-hall",
     "src": "src/world/interiors/town-hall.js",
     "isDynamicEntry": true,
     "imports": [
       "_actors-CDGFJevL.js",
-      "_quarters-DnMogoaa.js",
+      "_quarters-NDUzgzGm.js",
       "_resident-personalities-3AnLD2aR.js",
       "_izakaya-serving-visuals-jPuRTIuv.js",
       "_save-DNR2Pkyf.js",
-      "_town-audio-DW8SohWz.js",
+      "_fish-CZB2ykuZ.js",
       "_beach-layout-BDTfOgJv.js",
-      "_residents-Dod0iJTL.js"
+      "_town-audio-DW8SohWz.js"
     ]
   },
   "title-menu.js": {
-    "file": "title-menu-Bi2X5J2p.js",
+    "file": "title-menu-rY15mN-f.js",
     "name": "title-menu",
     "src": "title-menu.js",
     "isEntry": true,
     "imports": [
       "_save-DNR2Pkyf.js",
-      "_friendship-TzGOQ4_P.js",
+      "_friendship-B0mniTBF.js",
       "_resident-personalities-3AnLD2aR.js",
-      "_residents-Dod0iJTL.js",
+      "_fish-CZB2ykuZ.js",
       "_beach-layout-BDTfOgJv.js"
     ]
   },

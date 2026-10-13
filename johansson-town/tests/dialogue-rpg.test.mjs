@@ -21,16 +21,16 @@ test('the reply selection wraps round the list in both directions',()=>{
 });
 
 test('anything in the bag can be a present except the rubbish and the book page',()=>{
- const bag=['Green tea','Returnable glass bottle','Sea bream','Green tea','Waterlogged page · Kings of Ben…','Bundle of empty cans'];
- assert.deepEqual(giftableItems(bag),['Green tea','Sea bream'],'each offered once, in order');
+ const bag=['Green tea','Returnable glass bottle','Taman','Green tea','Waterlogged page · Kings of Ben…','Bundle of empty cans'];
+ assert.deepEqual(giftableItems(bag),['Green tea','Taman'],'each offered once, in order');
  assert.equal(takeGift(bag,'Green tea'),true);
  assert.equal(bag.filter(i=>i==='Green tea').length,1,'only one is given away');
  assert.equal(takeGift(bag,'Ice'),false,'nothing to give, nothing taken');
 });
 
 test('she is delighted by a present, and shy about a second one the same day',()=>{
- const first=giftReaction('Sea bream');
- assert.equal(first.mood,'happy');assert.match(first.text,/sea bream/i);
+ const first=giftReaction('Taman');
+ assert.equal(first.mood,'happy');assert.match(first.text,/taman/i);
  assert.equal(giftReaction('Green tea').mood,'happy');
  assert.equal(giftReaction('A mystery',{giftsToday:0}).mood,'happy');
  const second=giftReaction('Green tea',{giftsToday:1});
@@ -45,19 +45,19 @@ test('presents are remembered in the story flags across a reload',()=>{
 });
 
 test('giving Thuan a fish: she takes it, beams, and a second present makes her shy',async()=>{
- const dom=installDOM({[SAVE_KEY]:JSON.stringify({yen:500,inventory:['Sea bream','Green tea']})});
+ const dom=installDOM({[SAVE_KEY]:JSON.stringify({yen:500,inventory:['Taman','Green tea']})});
  const moods=[],feelings=[];
  window.__JOHANSSON_CHARACTER_CONTROL__={gesture(){},setExpression:(name,mood)=>moods.push(mood),feel:(name,mood,s)=>feelings.push([mood,s])};
  const {createActivities}=await import('../activities.js?gifts=1');
  const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>2*1440+700});
  acts.action('resident','Thuan');
  dom.button('Give her a present');
- assert.deepEqual(dom.labels(),['Sea bream','Green tea','Never mind']);
- dom.button('Sea bream');
- assert.match(document.querySelector('#activityBody').children[0].textContent,/sea bream/i);
+ assert.deepEqual(dom.labels(),['Taman','Green tea','Never mind']);
+ dom.button('Taman');
+ assert.match(document.querySelector('#activityBody').children[0].textContent,/taman/i);
  assert.equal(moods.at(-1),'happy','Her face lights up on the line');
  assert.deepEqual(feelings.at(-1),['happy',10],'and stays happy a while after');
- assert.ok(!acts.state.inventory.includes('Sea bream'),'The fish is hers now');
+ assert.ok(!acts.state.inventory.includes('Taman'),'The fish is hers now');
  assert.equal(acts.state.story.gifts_given,1);
  dom.button('Back to Thuan');dom.button('Give her a present');dom.button('Green tea');
  assert.equal(moods.at(-1),'shy','Two in a day is spoiling her');

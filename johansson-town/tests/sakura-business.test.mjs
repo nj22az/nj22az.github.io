@@ -30,18 +30,18 @@ test('a month of shopping keeps five errands without waking night workers or can
 
 
 test('sales fund inventory purchases, with no free money or lost items when the till is empty',()=>{
- const state=fresh(),bottle=TOWN_FINDS[0].name;state.inventory.push(bottle,'Sea bream','Johansson cable ring','Waterlogged page · Kings of Ben…');
+ const state=fresh(),bottle=TOWN_FINDS[0].name;state.inventory.push(bottle,'Taman','Johansson cable ring','Waterlogged page · Kings of Ben…');
  assert.equal(sellToSakura(state,bottle).ok,false);assert.equal(state.inventory.length,4);assert.equal(state.yen,1200);
  assert.equal(recordSakuraSale(state,150,'customer-1'),true);assert.equal(recordSakuraSale(state,150,'customer-1'),false);
  assert.equal(sellToSakura(state,bottle).ok,true);assert.equal(state.sakura.cash,120);assert.equal(state.yen,1230);assert.equal(sellToSakura(state,bottle).ok,false);
  assert.equal(sellToSakura(state,'Johansson cable ring').ok,true);assert.equal(state.sakura.cash,0);assert.equal(state.yen,1350);
- assert.equal(sellToSakura(state,'Sea bream').ok,false);assert.equal(sellToSakura(state,'Waterlogged page · Kings of Ben…').ok,false);assert.equal(state.inventory.length,2);
+ assert.equal(sellToSakura(state,'Taman').ok,false);assert.equal(sellToSakura(state,'Waterlogged page · Kings of Ben…').ok,false);assert.equal(state.inventory.length,2);
  for(const amount of [NaN,-1,0,Infinity,1.5])assert.equal(recordSakuraSale(state,amount),false);
  assert.deepEqual(restoreSakura({cash:-20,sales:'10',bought:Infinity,receipts:null}),restoreSakura());
 });
 
 test('town clean-up can be collected once, survives saves and never discards a full-bag find',()=>{
- const state=fresh();state.inventory=Array(100).fill('Sea bream');assert.equal(collectTownFind(state,CLEANUP_SPOTS[0].id).ok,false);assert.equal(state.townCleanup.collected.length,0);state.inventory=[];
+ const state=fresh();state.inventory=Array(100).fill('Taman');assert.equal(collectTownFind(state,CLEANUP_SPOTS[0].id).ok,false);assert.equal(state.townCleanup.collected.length,0);state.inventory=[];
  for(const spot of CLEANUP_SPOTS){assert.equal(collectTownFind(state,spot.id).ok,true);assert.equal(collectTownFind(state,spot.id).ok,false);}
  assert.equal(state.inventory.length,6);assert.deepEqual(restoreTownCleanup(JSON.parse(JSON.stringify(state.townCleanup))),state.townCleanup);
  const dom=installDOM({[SAVE_KEY]:JSON.stringify(state)}),acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>600,getSocialContext:()=>({inside:'market',thuanAvailable:true})});
@@ -50,7 +50,7 @@ test('town clean-up can be collected once, survives saves and never discards a f
 });
 
 test('renaming Yuri preserves her saved life, home, player progress and workshop job',()=>{
- const old={yen:350,quest:2,inventory:['Sea bream'],notes:['Met Yuri at Sakura.'],residentLocations:{Yuri:{indoors:'home',position:[4,6]}},residentLife:{Yuri:{day:0,yen:2140,activities:['Yuri bought tea'],meals:{}}},workshop:{job:{id:'cable-ring',remaining:3}}};
+ const old={yen:350,quest:2,inventory:['Taman'],notes:['Met Yuri at Sakura.'],residentLocations:{Yuri:{indoors:'home',position:[4,6]}},residentLife:{Yuri:{day:0,yen:2140,activities:['Yuri bought tea'],meals:{}}},workshop:{job:{id:'cable-ring',remaining:3}}};
  const saved=readSave({getItem:key=>key===SAVE_KEY?JSON.stringify(old):null});assert.deepEqual(saved.residentLocations.Thuan,old.residentLocations.Yuri);assert.equal(saved.residentLife.Thuan.yen,2140);assert.equal(saved.residentLife.Yuri,undefined);assert.equal(saved.notes[0],'Met Thuan at Sakura.');assert.deepEqual(saved.workshop,old.workshop);assert.equal(saved.yen,350);assert.equal(saved.quest,2);
  const both=readSave({getItem:key=>key===SAVE_KEY?JSON.stringify({...old,residentLocations:{...old.residentLocations,Thuan:{indoors:'market',position:[8,9]}}}):null});assert.equal(both.residentLocations.Thuan.indoors,'market');
 });
