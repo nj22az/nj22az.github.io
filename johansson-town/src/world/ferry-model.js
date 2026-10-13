@@ -228,7 +228,8 @@ function deckAndBulwarks(){
  */
 function plateMesh(pl){
  if(typeof document==='undefined')return null;
- const kind=pl.kind||'text',c=document.createElement('canvas');let W=512,H=Math.max(64,Math.round(512*pl.h/pl.w)),repeat=null;
+ // The canvas has the plate's own proportions (a 0.76 × 0.03 m label gets a 25 : 1 canvas), so no lettering is stretched.
+ const kind=pl.kind||'text',c=document.createElement('canvas');let H=Math.max(64,Math.round(512*pl.h/pl.w)),W=Math.min(2048,Math.max(64,Math.round(H*pl.w/pl.h))),repeat=null;
  if(kind==='dial')W=H=pl.live?384:256;if(kind==='chequer'||kind==='grating'){W=H=256;repeat=[pl.w/.6,pl.h/.6];}if(kind==='safety-plan'||kind==='alarms'||kind==='readout'){W=1024;H=Math.round(1024*pl.h/pl.w);}
  c.width=W;c.height=H;const x=c.getContext('2d');
  drawPlate(x,W,H,pl,pl.kind==='alarms'?[]:pl.kind==='readout'?pl.lines:pl.value);
