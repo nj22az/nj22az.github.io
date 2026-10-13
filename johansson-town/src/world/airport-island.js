@@ -53,7 +53,8 @@ export function buildPlane(){
  return plane;
 }
 
-export function buildAirportIsland({parent,shadows=false}={}){
+/** Kitano-jima. `plants:false` gives its plants as seen from across the strait until he heads there (town.js world.kitano). */
+export function buildAirportIsland({parent,shadows=false,plants=true}={}){
  const A=AIRPORT_ISLAND;
  const group=new THREE.Group();group.name='Kitano-jima airport island';
  group.position.set(A.x,SEA_LEVEL,A.z);group.rotation.y=A.yaw;group.userData.horizon=true;parent.add(group);
@@ -62,7 +63,7 @@ export function buildAirportIsland({parent,shadows=false}={}){
  // drawn in a handful of batches (static-props.js).
  const add=(geometry,material,x,y,z)=>{const m=new THREE.Mesh(geometry,material);m.position.set(x,y,z);m.castShadow=false;m.receiveShadow=false;m.userData.staticProp=true;group.add(m);return m;};
  // The island: beaches, the jungle hill and the flat airport side, one terrain.
- const tropic=buildTropicalIsland(group);
+ const tropic=buildTropicalIsland(group,{plants});
  // The runway, its centreline and the threshold bars.
  const R=A.runway;
  add(new THREE.BoxGeometry(R.to-R.from,.1,R.width),mat(0x4a4d4f),0,1.15,-4);

@@ -105,3 +105,22 @@ export function buildAirportDistrict({world,register,onAction}){
  const {palms,trees,pandanus,bananas,rocks}=tropicalPlantings();
  for(const [list,w,h] of [[palms,.5,4],[trees,.75,4.5],[pandanus,1.2,2.5],[bananas,.35,2],[rocks.filter(r=>r.hill),1.4,1.2]])for(const t of list){const [x,z]=airportWorld(t.u,t.v);world.colliders.push({id:'Island tree trunk',x,z,yaw:0,w:w*t.scale,d:w*t.scale,minY:SEA_LEVEL+t.y-.2,height:h});}
 }
+
+/**
+ * The airport district as it is read from across the strait (kitano-on-demand.js), in the same places and colours: the
+ * plaza, the three kiosks and their roofs, the lounge's and the beach bar's thatch, the parasols on the sand and the
+ * lookout's deck. No prompts, no colliders: nobody stands there before the real district is built.
+ */
+export function buildAirportDistrictFar(world){
+ const root=world.airportIsland.group,far=new THREE.Group();far.name='Kitano-jima distant airport district';root.add(far);
+ const mats=new Map(),mat=c=>{if(!mats.has(c))mats.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.9}));return mats.get(c);};
+ const box=(size,p,c)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.position.set(...p);far.add(m);return m;};
+ const ground=(u,v)=>Math.max(1.1,tropicHeight(u,v)),plazaY=AIRPORT_PUBLIC_FLOORS[0].y-SEA_LEVEL;
+ box([P.maxX-P.minX,.12,P.maxZ-P.minZ],[(P.minX+P.maxX)/2,plazaY-.06,(P.minZ+P.maxZ)/2],0xe7dcc2);
+ AIRPORT_SHOPS.forEach((shop,i)=>{box([6,2.8,2.8],[shop.x,plazaY+1.4,shop.z+.4],KIOSK_COLOURS[i]);box([6.8,.25,4],[shop.x,plazaY+3.05,shop.z+.3],[0x6f9a9c,0xa86a4a,0x7c8f6a][i]);});
+ const thatch=0xc8a868,[lx,lz]=TROPIC_PLACES.lounge;box([8.6,1.2,6.6],[lx,plazaY+3.4,lz],thatch);
+ const [hx,hz]=TROPIC_PLACES.beachBar,hy=ground(hx,hz);box([5,1.6,4],[hx,hy+.8,hz],0xe6d2a8);box([5.4,1,4.4],[hx,hy+3.1,hz],thatch);
+ for(const [px,pz] of TROPIC_PLACES.parasols){const py=ground(px,pz),top=new THREE.Mesh(new THREE.ConeGeometry(1.5,.55,8,1),mat(px<-20?0xe0705a:0x3f9fb0));top.position.set(px,py+2.45,pz);far.add(top);}
+ const [ox,oz]=TROPIC_PLACES.lookout,look=AIRPORT_PUBLIC_FLOORS.find(f=>f.id==='kitano-lookout');box([look.maxX-look.minX,1.2,look.maxZ-look.minZ],[ox,look.y-SEA_LEVEL-.6,oz],0x9c7650);
+ return far;
+}

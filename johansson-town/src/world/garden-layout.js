@@ -26,7 +26,11 @@ export function gardenApronHeight(x,z){
  const dx=Math.max(GARDEN.minX-x,0,x-GARDEN.maxX),dz=Math.max(GARDEN.minZ-z,0,z-GARDEN.maxZ),d=Math.hypot(dx,dz);
  if(d>6)return null;return -.4*smooth(d/6);
 }
+/** Where the park access paths reach (their segments' box grown by the 3.05 m they lift the ground): nothing outside it. */
+let accessReach=null;
 export function gardenAccessHeight(x,z){
+ if(!accessReach){const P=PARK_ACCESS.flatMap(r=>r.points);accessReach={minX:Math.min(...P.map(p=>p[0]))-3.05,maxX:Math.max(...P.map(p=>p[0]))+3.05,minZ:Math.min(...P.map(p=>p[1]))-3.05,maxZ:Math.max(...P.map(p=>p[1]))+3.05};}
+ if(x<accessReach.minX||x>accessReach.maxX||z<accessReach.minZ||z>accessReach.maxZ)return null;
  let distance=Infinity,level=0;
  for(const r of PARK_ACCESS)for(let i=1;i<r.points.length;i++){const a=r.points[i-1],b=r.points[i],dx=b[0]-a[0],dz=b[1]-a[1],t=Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/(dx*dx+dz*dz)));const d=Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);if(d<distance){distance=d;level=r.heights?(r.heights[i-1]*(1-t)+r.heights[i]*t):0;}}
  if(distance>3.05)return null;const surrounding=-.4*smooth((z-12)/6);return level+(surrounding-level)*smooth((distance-1.25)/1.8);

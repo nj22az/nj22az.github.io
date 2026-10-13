@@ -23,6 +23,8 @@ export function createDetailStream({onChange=()=>{},timeoutMs=15000,retryMs=2000
   Promise.race([task,new Promise(resolve=>{timer=setTimeout(()=>{timedOut=true;fail(Error('Detail loading timed out'));resolve();},entry.timeoutMs??timeoutMs);})])
    .finally(()=>{if(!timedOut)clearTimeout(timer);busy=false;stats.active=null;});
  }
- return {add,update,stats};
+ /** Whether anything within its reach of `position` has still to load (not a failure waiting to retry). */
+ function pendingNear(position){return entries.some(e=>(e.status==='idle'||e.status==='loading')&&(e.distance?e.distance(position):Math.hypot(position.x-e.x,position.z-e.z))<=(e.radius??40));}
+ return {add,update,stats,pendingNear};
 }
 export function registerDetail(world,entry){(world.details??=[]).push(entry);}

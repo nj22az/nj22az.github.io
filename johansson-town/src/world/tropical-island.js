@@ -1,5 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {coconutPalm,rainforestTree,pandanus,bananaPlant,fern,shrub,grassTuft,rock,driftwood,shell} from './vegetation-kit.js';
+import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 
 /**
  * Kitano-jima as a tropical island: white beaches, clear shallows, a jungle hill and the
@@ -265,36 +266,84 @@ function terrainGeometry(){
  return g;
 }
 
-/** Draws the island into `group` (the airport island's own frame). */
-export function buildTropicalIsland(group){
+/**
+ * Draws the island into `group` (the airport island's own frame). With `plants:false` only its ground and quay, and its
+ * plants as they are read from across the strait (farPlants); `addPlants()` grows the real ones when he is on his way
+ * (town.js world.kitano). Once both exist, `lod` shows the real ones within 240 m of the island and the far ones beyond
+ * 260 m, where the difference is a few pixels.
+ */
+export function buildTropicalIsland(group,{plants=true}={}){
  const mat=(color,extra={})=>new THREE.MeshStandardMaterial({color,roughness:.95,...extra});
  const terrain=new THREE.Mesh(terrainGeometry(),new THREE.MeshStandardMaterial({vertexColors:true,roughness:1}));
  terrain.name='Kitano-jima island ground';terrain.receiveShadow=true;group.add(terrain);
  // The ferry quay's face, where the cargo court meets deep water.
  const quay=new THREE.Mesh(new THREE.BoxGeometry(1.2,4,19),mat(0xa8a396));quay.name='Kitano-jima ferry quay wall';quay.position.set(TROPIC_PLACES.quayU-.2,-.92,28);quay.userData.staticProp=true;group.add(quay);
  const P=tropicalPlantings(),m=new THREE.Matrix4(),q=new THREE.Quaternion(),s=new THREE.Vector3(),p=new THREE.Vector3(),up=new THREE.Vector3(0,1,0);
- // One material for every plant: the colours are painted into each plant's vertices.
- const foliage=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.9,side:THREE.DoubleSide});
- const solid=new THREE.MeshStandardMaterial({vertexColors:true,roughness:1});
- const detail=[];
- /** One instanced draw per plant model; `angle` turns it, `variant` picks which model of a kind. */
- const plant=(name,models,list,{material=foliage,angle=it=>it.turn,small=false}={})=>models.forEach((geometry,variant)=>{
+ const detail=[];let real=null,far=null;
+ /** One instanced draw per plant model into `parent`; `angle` turns it, `variant` picks which model of a kind. */
+ const plantInto=parent=>(name,models,list,{material,angle=it=>it.turn,small=false}={})=>models.forEach((geometry,variant)=>{
   const items=list.filter(it=>(it.kind??0)%models.length===variant);if(!items.length)return;
   const im=new THREE.InstancedMesh(geometry,material,items.length);im.name=name;
   items.forEach((it,k)=>{q.setFromAxisAngle(up,angle(it));m.compose(p.set(it.u,it.y,it.v),q,s.setScalar(it.scale));im.setMatrixAt(k,m);});
-  im.instanceMatrix.needsUpdate=true;im.computeBoundingSphere();im.computeBoundingBox?.();group.add(im);if(small)detail.push(im);
+  im.instanceMatrix.needsUpdate=true;im.computeBoundingSphere();im.computeBoundingBox?.();parent.add(im);if(small)detail.push(im);
  });
- plant('Coconut palms',[coconutPalm({seed:3,height:8.5,bow:1.8}),coconutPalm({seed:8,height:10,bow:3}),coconutPalm({seed:13,height:7,bow:1})],P.palms,{angle:it=>-it.lean});
- plant('Rainforest trees',[rainforestTree({seed:2,height:8,spread:3.4}),rainforestTree({seed:5,height:10,spread:4,light:0x7cbd58,dark:0x285c31}),rainforestTree({seed:9,height:7,spread:3,light:0x8ab858,dark:0x33652f,mid:0x56913f})],P.trees);
- plant('Adan (pandanus)',[pandanus({seed:4})],P.pandanus);
- plant('Banana plants',[bananaPlant({seed:6})],P.bananas);
- plant('Island shrubs',[shrub({seed:3}),shrub({seed:7,flowers:0xb83a78}),shrub({seed:11,flowers:0xd8423a})],P.bushes);
- plant('Forest ferns',[fern({seed:2})],P.ferns,{small:true});
- plant('Grass tufts',[grassTuft({seed:1}),grassTuft({seed:4,height:.6,blades:11})],P.grass.map((g,k)=>({...g,kind:k%2})),{small:true});
- plant('Coral-limestone rocks',[rock({seed:1,size:.9}),rock({seed:2,size:.8,flat:.55}),rock({seed:5,size:1,flat:.8,light:0xcfc6b0,dark:0x7f7a70})],P.rocks,{material:solid});
- plant('Driftwood',[driftwood({seed:3})],P.driftwood,{material:solid,small:true});
- plant('Shells',[shell({seed:1}),shell({seed:2})],P.shells,{small:true});
- /** Ferns, grass and shells are only worth drawing within a stroll of them. */
- const lod=at=>{if(!at)return;const far=group.position.distanceTo(new THREE.Vector3(at.x,group.position.y,at.z))>150;for(const d of detail)d.visible=!far;};
- return {terrain,plantings:P,lod};
+ function addPlants(){
+  if(real)return real;
+  real=new THREE.Group();real.name='Kitano-jima plants';group.add(real);
+  // One material for every plant: the colours are painted into each plant's vertices.
+  const foliage=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.9,side:THREE.DoubleSide});
+  const solid=new THREE.MeshStandardMaterial({vertexColors:true,roughness:1}),plantOne=plantInto(real);
+  const plant=(name,models,list,o={})=>plantOne(name,models,list,{material:foliage,...o});
+  plant('Coconut palms',[coconutPalm({seed:3,height:8.5,bow:1.8}),coconutPalm({seed:8,height:10,bow:3}),coconutPalm({seed:13,height:7,bow:1})],P.palms,{angle:it=>-it.lean});
+  plant('Rainforest trees',[rainforestTree({seed:2,height:8,spread:3.4}),rainforestTree({seed:5,height:10,spread:4,light:0x7cbd58,dark:0x285c31}),rainforestTree({seed:9,height:7,spread:3,light:0x8ab858,dark:0x33652f,mid:0x56913f})],P.trees);
+  plant('Adan (pandanus)',[pandanus({seed:4})],P.pandanus);
+  plant('Banana plants',[bananaPlant({seed:6})],P.bananas);
+  plant('Island shrubs',[shrub({seed:3}),shrub({seed:7,flowers:0xb83a78}),shrub({seed:11,flowers:0xd8423a})],P.bushes);
+  plant('Forest ferns',[fern({seed:2})],P.ferns,{small:true});
+  plant('Grass tufts',[grassTuft({seed:1}),grassTuft({seed:4,height:.6,blades:11})],P.grass.map((g,k)=>({...g,kind:k%2})),{small:true});
+  plant('Coral-limestone rocks',[rock({seed:1,size:.9}),rock({seed:2,size:.8,flat:.55}),rock({seed:5,size:1,flat:.8,light:0xcfc6b0,dark:0x7f7a70})],P.rocks,{material:solid});
+  plant('Driftwood',[driftwood({seed:3})],P.driftwood,{material:solid,small:true});
+  plant('Shells',[shell({seed:1}),shell({seed:2})],P.shells,{small:true});
+  return real;
+ }
+ if(plants)addPlants();else far=farPlants(group,P);
+ /** Ferns, grass and shells are only worth drawing within a stroll of them; the far plants only from across the strait. */
+ let near=null;
+ const lod=at=>{
+  if(!at)return;const d=group.position.distanceTo(new THREE.Vector3(at.x,group.position.y,at.z));
+  for(const x of detail)x.visible=d<=150;
+  if(real&&far){near=d<(near?260:240);real.visible=near;far.visible=!near;}
+ };
+ return {terrain,plantings:P,lod,addPlants,get plants(){return real;},get farPlants(){return far;}};
+}
+
+/**
+ * Kitano-jima's plants as they are read from Minato and the strait: at each palm, tree, pandanus, banana, shrub and rock
+ * its own place, size and turn (tropicalPlantings), drawn as a few simple shapes in the plants' own colours: about 10k
+ * triangles for the 355k of the real ones. Ferns, grass, shells and driftwood are not seen from there.
+ */
+export function farPlants(group,P=tropicalPlantings()){
+ const far=new THREE.Group();far.name='Kitano-jima distant plants';group.add(far);
+ const paint=(geometry,hex)=>{const g=geometry.index?geometry.toNonIndexed():geometry,c=new THREE.Color(hex),n=g.attributes.position.count,col=new Float32Array(n*3);for(let i=0;i<n;i++)c.toArray(col,i*3);g.setAttribute('color',new THREE.BufferAttribute(col,3));g.deleteAttribute('uv');return g;};
+ const shape=parts=>mergeGeometries(parts.map(([geometry,hex])=>paint(geometry,hex)),false);
+ const crown=(r,y,flat,hex)=>[new THREE.IcosahedronGeometry(r,0).scale(1,flat,1).translate(0,y,0),hex];
+ const trunk=(r,h,hex)=>[new THREE.CylinderGeometry(r*.7,r,h,5).translate(0,h/2,0),hex];
+ // Sizes are the real models' (vegetation-kit.js): palms 7–10 m with a 2 m crown of fronds, trees 7–10 m and 3–4 m wide.
+ const models={
+  palms:shape([trunk(.2,8.4,0x8a7a5a),crown(2.2,8.4,.32,0x5f9a45)]),
+  trees:shape([trunk(.3,4.2,0x6a5a42),crown(3.4,5.6,.8,0x3f7a3a)]),
+  pandanus:shape([trunk(.15,1.2,0x7a6a4a),crown(1.3,1.8,.6,0x6a9a4a)]),
+  bananas:shape([crown(1.1,1.4,.9,0x7ab84a)]),
+  bushes:shape([crown(.7,.55,.75,0x4f8a42)]),
+  rocks:shape([crown(.6,.2,.6,0xbdb6a4)]),
+ };
+ const material=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95,flatShading:true});
+ const m=new THREE.Matrix4(),q=new THREE.Quaternion(),s=new THREE.Vector3(),p=new THREE.Vector3(),up=new THREE.Vector3(0,1,0);
+ for(const [kind,geometry] of Object.entries(models)){
+  const list=P[kind];if(!list?.length)continue;
+  const im=new THREE.InstancedMesh(geometry,material,list.length);im.name='Kitano-jima distant '+kind;
+  list.forEach((it,k)=>{q.setFromAxisAngle(up,it.turn??0);m.compose(p.set(it.u,it.y,it.v),q,s.setScalar(it.scale??1));im.setMatrixAt(k,m);});
+  im.instanceMatrix.needsUpdate=true;im.computeBoundingSphere();far.add(im);
+ }
+ return far;
 }
