@@ -242,6 +242,10 @@ function plateMesh(pl){
  if(pl.live){let last=null;mesh.userData.live={key:pl.live,show(v){const k=Array.isArray(v)?v.join('|'):Math.round(v*1000);if(k===last)return false;last=k;drawPlate(x,W,H,pl,v);tex.needsUpdate=true;return true;}};}
  return mesh;
 }
+/** Sets a font of `size` px at most, shrunk until `text` measures no wider than `maxW` (nothing bleeds over its lamp or dial). */
+function fitFont(x,text,size,maxW,family='sans-serif',weight='bold '){x.font=weight+size+'px '+family;const w=x.measureText(text).width;if(w>maxW){size=Math.max(6,Math.floor(size*maxW/w));x.font=weight+size+'px '+family;}return size;}
+/** Wraps `text` by words into lines no wider than `maxW` at `size` px bold (a word wider than the lamp stays whole on its own line). */
+function wrapWords(x,text,maxW,size){x.font='bold '+size+'px sans-serif';const out=[];let line='';for(const w of text.split(' ')){const t=line?line+' '+w:w;if(line&&x.measureText(t).width>maxW){out.push(line);line=w;}else line=t;}if(line)out.push(line);return out;}
 /** Draws a plate's face on its canvas: `value` is a dial's needle (0–1) or the alarm matrix's lit names. */
 function drawPlate(x,W,H,pl,value){
  const kind=pl.kind||'text';
@@ -249,7 +253,7 @@ function drawPlate(x,W,H,pl,value){
   x.fillStyle=pl.bg;x.fillRect(0,0,W,H);x.strokeStyle=pl.fg;x.lineWidth=4;x.strokeRect(6,6,W-12,H-12);
   x.fillStyle=pl.fg;x.textAlign='center';x.textBaseline='middle';
   const n=pl.lines.length,rowH=(H-20)/n;
-  pl.lines.forEach((line,i)=>{const big=i===0||n===1;x.font=(big?'bold ':'')+Math.round(Math.min(rowH*.72,W/(line.length*.62)))+'px sans-serif';x.fillText(line,W/2,10+rowH*(i+.5));});
+  pl.lines.forEach((line,i)=>{const big=i===0||n===1;fitFont(x,line,Math.round(rowH*.72),W-24,'sans-serif',big?'bold ':'');x.fillText(line,W/2,10+rowH*(i+.5));});
  }else if(kind==='dial'){
   // A gauge a chief can read from the door: a numbered scale when the dial has a range, big lettering, the reading written under the pivot.
   const cx=W/2,cy=H/2,R=W*.46,a0=Math.PI*.75,a1=Math.PI*2.25,ang=f=>a0+(a1-a0)*Math.max(0,Math.min(1,f));
@@ -260,27 +264,29 @@ function drawPlate(x,W,H,pl,value){
    x.beginPath();x.moveTo(cx+Math.cos(a)*R*.92,cy+Math.sin(a)*R*.92);x.lineTo(cx+Math.cos(a)*R*(big?.74:.82),cy+Math.sin(a)*R*(big?.74:.82));x.stroke();}
   x.fillStyle=pl.fg;x.textAlign='center';x.textBaseline='middle';
   if(pl.range){const [lo,hi]=pl.range;x.font='bold '+Math.round(W*.085)+'px sans-serif';for(let i=0;i<=4;i++){const a=ang(i/4),n=lo+(hi-lo)*i/4;x.fillText(String(Math.round(n*10)/10),cx+Math.cos(a)*R*.58,cy+Math.sin(a)*R*.58);}}
-  x.font='bold '+Math.round(W*.12)+'px sans-serif';if(pl.lines[0])x.fillText(pl.lines[0],cx,cy+R*.4);
-  x.font=Math.round(W*.095)+'px sans-serif';if(pl.lines[1])x.fillText(pl.lines[1],cx,cy-R*.36);
+  if(pl.lines[0]){fitFont(x,pl.lines[0],Math.round(W*.12),R*1.1);x.fillText(pl.lines[0],cx,cy+R*.4);}
+  if(pl.lines[1]){fitFont(x,pl.lines[1],Math.round(W*.095),R*.9,'sans-serif','');x.fillText(pl.lines[1],cx,cy-R*.36);}
   const v=value??0,a=ang(v);
   if(pl.range){const n=pl.range[0]+(pl.range[1]-pl.range[0])*Math.max(0,Math.min(1,v));x.fillStyle='#101416';x.fillRect(cx-R*.3,cy+R*.6,R*.6,R*.2);x.fillStyle='#9fe3a8';x.font='bold '+Math.round(W*.09)+'px monospace';x.fillText((pl.range[1]-pl.range[0]>20?Math.round(n):Math.round(n*10)/10)+'',cx,cy+R*.7);}
   x.strokeStyle='#c2412f';x.lineWidth=W*.022;x.beginPath();x.moveTo(cx-Math.cos(a)*R*.12,cy-Math.sin(a)*R*.12);x.lineTo(cx+Math.cos(a)*R*.88,cy+Math.sin(a)*R*.88);x.stroke();
   x.fillStyle='#1c1f21';x.beginPath();x.arc(cx,cy,W*.045,0,Math.PI*2);x.fill();
  }else if(kind==='alarms'){
   // 4 rows of 8 lamps with their names, red the first sixteen and amber the rest, lit by the plant's readings.
-  const lit=new Set(value||[]),cols=8,rows=Math.ceil(pl.lines.length/cols),cw=W/cols,rh=H/rows;
+  const lit=new Set(value||[]),cols=8,rows=Math.ceil(pl.lines.length/cols),cw=W/cols,rh=H/rows,size=Math.round(rh*.27);
   x.fillStyle=pl.bg;x.fillRect(0,0,W,H);
   pl.lines.forEach((name,j)=>{const r=Math.floor(j/cols),c=j%cols,px=c*cw,py=r*rh,on=lit.has(name),amber=j>=16;
    x.fillStyle='#15181a';x.fillRect(px+2,py+2,cw-4,rh-4);x.fillStyle=on?(amber?'#e0b93a':'#d9442f'):(amber?'#5a4a1a':'#4a1f1a');x.fillRect(px+5,py+5,cw-10,rh-10);
-   // The name on two lines where it has a side or a number ("WATER TEMP" over "P"), so the lettering can be twice the size.
-   const k=name.length>9?name.lastIndexOf(' '):-1,rows=k>0?[name.slice(0,k),name.slice(k+1)]:[name];
-   x.fillStyle=on?'#1c1f21':'#d8d2c0';x.textAlign='center';x.textBaseline='middle';const size=Math.round(Math.min(rh*.34,...rows.map(t=>(cw-14)/(t.length*.58))));x.font='bold '+size+'px sans-serif';
-   rows.forEach((t,i)=>x.fillText(t,px+cw/2,py+rh/2+(i-(rows.length-1)/2)*size*1.1));});
+   // Every lamp's name wrapped by words to its lamp at one shared size (compact, and all the same to read); only a single
+   // word too long for a lamp (TELEGRAPH, SEPARATOR) is set a little smaller.
+   const rows=wrapWords(x,name,cw-18,size);x.fillStyle=on?'#1c1f21':'#d8d2c0';x.textAlign='center';x.textBaseline='middle';
+   const fit=Math.min(...rows.map(t=>fitFont(x,t,size,cw-18)));x.font='bold '+fit+'px sans-serif';
+   rows.forEach((t,i)=>x.fillText(t,px+cw/2,py+rh/2+(i-(rows.length-1)/2)*fit*1.08));});
  }else if(kind==='readout'){
   // The readout strip: green lettering on a dark panel, two lines, every reading written out.
   x.fillStyle=pl.bg;x.fillRect(0,0,W,H);x.strokeStyle='#3a4244';x.lineWidth=4;x.strokeRect(2,2,W-4,H-4);
   const rows=value||pl.lines;x.fillStyle=pl.fg;x.textAlign='left';x.textBaseline='middle';
-  rows.forEach((t,i)=>{let size=Math.round(H*.36);x.font='bold '+size+'px monospace';const w=x.measureText(t).width;if(w>W-24){size=Math.floor(size*(W-24)/w);x.font='bold '+size+'px monospace';}x.fillText(t,12,H*(i+.5)/rows.length);});
+  const size=Math.min(...rows.map(t=>fitFont(x,t,Math.round(H/rows.length*.72),W-24,'monospace')));x.font='bold '+size+'px monospace';   // one size for every line
+  rows.forEach((t,i)=>x.fillText(t,12,H*(i+.5)/rows.length));
  }else if(kind==='safety-plan'){
   drawSafetyPlan(canvasPen(x),W,H,pl.here);x.strokeStyle='#1d2326';x.lineWidth=6;x.setLineDash([]);x.strokeRect(3,3,W-6,H-6);
  }else if(kind==='chequer'){

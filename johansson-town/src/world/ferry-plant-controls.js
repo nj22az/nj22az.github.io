@@ -101,7 +101,7 @@ export function liveValue(readings,key){
 }
 /** The console's readout strip (two lines): the engines, the board, the air and the tanks, in the units the dials use. */
 export function readoutLines(r){
- const eng=(id,name)=>{const e=r.engines[id];return name+' '+Math.round(e.rpm*1000)+' rpm  LO '+(e.loPress*6).toFixed(1)+' bar  JW '+Math.round(e.water*100)+' °C  EXH '+Math.round(e.exhaust*600)+' °C  '+(r.telegraph[id]||'STOP');};
- const board=r.board.live?(r.board.shore?'SHORE POWER':r.board.generatorsOnline+' GEN ON BOARD  '+Math.round(r.board.kW)+' kW'):r.board.emergency?'BLACKOUT · EMERGENCY GEN':'BLACKOUT';
- return [eng('mainP','PORT')+'   '+eng('mainS','STBD'),board+'   AIR '+r.air.map(a=>a.toFixed(0)).join('/')+' bar   SERVICE TANK '+Math.round(r.service*100)+' %   FW '+r.fwPressure.toFixed(2)+' MPa   BILGE AFT '+Math.round(r.bilgeAft*100)+' %'];
+ const eng=(id,name)=>{const e=r.engines[id];return name+' '+Math.round(e.rpm*1000)+' rpm · LO '+(e.loPress*6).toFixed(1)+' bar · JW '+Math.round(e.water*100)+' °C · EXH '+Math.round(e.exhaust*600)+' °C · '+(r.telegraph[id]||'STOP');};
+ const board=r.board.live?(r.board.shore?'SHORE POWER ON BOARD':r.board.generatorsOnline+' GEN ON BOARD · '+Math.round(r.board.kW)+' kW'):r.board.emergency?'BLACKOUT · EMERGENCY GEN ON':'BLACKOUT · BOARD DEAD';
+ return [eng('mainP','PORT'),eng('mainS','STBD'),board+' · AIR '+r.air.map(a=>a.toFixed(0)).join('/')+' bar','SERVICE TANK '+Math.round(r.service*100)+' % · FW '+r.fwPressure.toFixed(2)+' MPa · BILGE AFT '+Math.round(r.bilgeAft*100)+' %'];
 }
