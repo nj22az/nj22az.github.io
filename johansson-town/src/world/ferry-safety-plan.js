@@ -17,7 +17,7 @@ export const FERRY_SAFETY_ITEMS=Object.freeze([
  // Extinguishers: four on the car deck (at the casings and the bow houses), four on the passenger deck, two in the engine room, CO₂ at the electrics.
  at('extinguisher','car',9.6,3.0),at('extinguisher','car',11.2,-3.0),at('extinguisher','car',27,3.2),at('extinguisher','car',27,-3.2),
  at('extinguisher','passenger',9.5,2.4),at('extinguisher','passenger',16,2.6),at('extinguisher','passenger',16,-2.6),at('extinguisher','passenger',4.5,-1.5),
- at('extinguisher','hold',9.6,3.0),at('extinguisher','hold',11.2,-2.2),
+ at('extinguisher','hold',9.6,3.0),at('extinguisher','hold',11.2,-2.2),at('extinguisher','hold',14.3,1.0),at('extinguisher','hold',19.3,.9),
  at('co2-ext','bridge',21.5,0,'wheelhouse'),at('co2-ext','bridge',14.6,-2.0,'galley'),at('co2-ext','bridge',7.6,1.9,'EG room'),at('co2-ext','car',28.5,-3.0,'bow house S'),
  // Hydrants: the fire main's, car deck either side, passenger deck either side, the engine room's.
  at('hydrant','car',12.5,3.4),at('hydrant','car',12.5,-3.4),at('hydrant','car',24,3.4),at('hydrant','passenger',12,2.9),at('hydrant','passenger',12,-2.9),at('hydrant','hold',13.7,3.75),
@@ -25,7 +25,7 @@ export const FERRY_SAFETY_ITEMS=Object.freeze([
  at('co2-room','bridge',...centre('co2-room'),'CO₂ room'),at('fire-panel','bridge',21.9,-2.3,'detection panel'),at('fire-pump','hold',11.8,-3.7,'fire pumps'),at('eg','bridge',...centre('eg-room'),'emergency generator'),
  at('fuel-cutoff','bridge',8.3,-2.5,'fuel quick-closing valves · stop of pumps and fans'),at('co2-release','bridge',8.3,-1.6,'CO₂ release'),
  // Fire doors: the lobby's two sliding doors onto the lanes.
- at('fire-door','car',12.0,2.2),at('fire-door','car',12.0,-2.2),
+ at('fire-door','car',12.0,2.2),at('fire-door','car',12.0,-2.2),at('wt-door','hold',14.0,0,'WT door Fr 28'),
  // Lifesaving: five liferafts, the rescue boat, eight lifebuoys, the lifejacket lockers, the pyrotechnics in the wheelhouse.
  at('liferaft','passenger',4.5,2.6),at('liferaft','passenger',11,3.3),at('liferaft','passenger',17,3.3),at('liferaft','passenger',11,-3.3),at('liferaft','passenger',17,-3.3),
  at('rescue-boat','passenger',3.2,-1.2,'rescue boat'),
@@ -34,16 +34,16 @@ export const FERRY_SAFETY_ITEMS=Object.freeze([
  at('pyro','bridge',21,1.0,'rockets · flares · EPIRB · SART'),
  // Muster stations A (the saloon) and B (the open deck), and the escapes.
  at('muster','passenger',...centre('saloon'),'A'),at('muster','passenger',...centre('open-deck'),'B'),
- at('escape','car',6.5,2.6,'stair P'),at('escape','car',6.5,-2.6,'stair S'),at('escape','hold',8.7,2.9,'ladder'),at('escape','hold',8.6,-3.6,'escape trunk'),at('escape','passenger',8.5,0,'to open deck'),
+ at('escape','car',6.5,2.6,'stair P'),at('escape','car',6.5,-2.6,'stair S'),at('escape','hold',8.7,2.9,'ladder'),at('escape','hold',8.6,-3.6,'escape trunk'),at('escape','hold',18.7,-3.6,'escape trunk'),at('escape','passenger',8.5,0,'to open deck'),
  // Control stations.
  at('control','bridge',...centre('wheelhouse'),'bridge'),at('control','hold',9.7,-3.2,'engine control booth'),
 ]);
 export const FERRY_SAFETY_LEGEND=Object.freeze([
  ['extinguisher','Portable extinguisher (powder)'],['co2-ext','CO₂ extinguisher'],['hydrant','Fire hydrant and hose'],['co2-room','Fixed CO₂ (engine room)'],['co2-release','CO₂ release cabinet'],
- ['fire-panel','Fire detection panel'],['fire-pump','Fire pumps'],['fuel-cutoff','Remote stops: fuel, pumps, fans'],['eg','Emergency generator'],['fire-door','Fire door (self-closing)'],
+ ['fire-panel','Fire detection panel'],['fire-pump','Fire pumps'],['fuel-cutoff','Remote stops: fuel, pumps, fans'],['eg','Emergency generator'],['fire-door','Fire door (self-closing)'],['wt-door','Watertight sliding door (remote close)'],
  ['liferaft','Liferaft, 25 persons'],['rescue-boat','Rescue boat, 6 persons'],['lifebuoy','Lifebuoy'],['lifejackets','Lifejackets'],['pyro','Pyrotechnics, EPIRB, SART'],['muster','Muster station A / B'],['escape','Escape route'],['control','Control station'],
 ]);
-export const SAFETY_DECKS=Object.freeze([['bridge','BRIDGE DECK'],['passenger','PASSENGER DECK'],['car','CAR DECK'],['hold','HOLD · ENGINE ROOM']]);
+export const SAFETY_DECKS=Object.freeze([['bridge','BRIDGE DECK'],['passenger','PASSENGER DECK'],['car','CAR DECK'],['hold','HOLD · MACHINERY SPACES']]);
 const COLOUR={fire:'#c2412f',life:'#e07b2a',green:'#2f8f4f',blue:'#2f5e9a',ink:'#1d2326',paper:'#f6f3ea',deck:'#eef1ee'};
 /**
  * Draws the plan with `pen`: rect(x,y,w,h,{fill,stroke,width,dash}), circle(cx,cy,r,o), line(x1,y1,x2,y2,o), path(points,o),
@@ -95,6 +95,7 @@ function symbol(pen,it,x,y,r,h){
   case 'fuel-cutoff':pen.rect(x-r,y-r,2*r,2*r,{fill:'#fff',stroke:COLOUR.fire,width:1.5});txt('S',COLOUR.fire);break;
   case 'eg':pen.rect(x-r,y-r,2*r,2*r,{fill:'#fff',stroke:COLOUR.blue,width:1.5});txt('EG',COLOUR.blue);break;
   case 'fire-door':pen.line(x,y-r*1.3,x,y+r*1.3,{stroke:COLOUR.fire,width:2.5});break;
+  case 'wt-door':pen.rect(x-r*.35,y-r*1.3,r*.7,r*2.6,{fill:COLOUR.blue});pen.line(x-r*1.2,y,x+r*1.2,y,{stroke:COLOUR.blue,width:1.2});break;
   case 'liferaft':pen.rect(x-r,y-r,2*r,2*r,{fill:COLOUR.life});txt('25');break;
   case 'rescue-boat':pen.path([[x-r*1.4,y-r*.6],[x+r*1.4,y-r*.6],[x+r*.8,y+r*.7],[x-r*.8,y+r*.7],[x-r*1.4,y-r*.6]],{fill:COLOUR.life});break;
   case 'lifebuoy':pen.circle(x,y,r*.8,{stroke:COLOUR.life,width:r*.7});break;

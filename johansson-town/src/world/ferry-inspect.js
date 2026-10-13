@@ -1,4 +1,4 @@
-import {FERRY_SHIP,FERRY_HEIGHTS,FERRY_MACHINERY,FERRY_ELECTRICS} from './ferry-ship.js';
+import {FERRY_SHIP,FERRY_HEIGHTS,FERRY_MACHINERY,FERRY_ELECTRICS,FERRY_LOADS} from './ferry-ship.js';
 import {FERRY_ENGINE_ROOM} from './ferry-interior.js';
 import {JOHANSSON_MARINE} from './johansson-marine.js';
 
@@ -9,7 +9,7 @@ import {JOHANSSON_MARINE} from './johansson-marine.js';
  */
 const HALF=FERRY_SHIP.length/2,Z=zy=>zy-HALF,Y=yk=>yk-FERRY_SHIP.draft;
 const CAR=Y(FERRY_HEIGHTS.carDeck),PASS=Y(FERRY_HEIGHTS.passengerDeck),BRIDGE=Y(FERRY_HEIGHTS.bridgeDeck),FP=FERRY_ENGINE_ROOM.floor;
-const M=FERRY_MACHINERY,E=FERRY_ELECTRICS;
+const M=FERRY_MACHINERY,E=FERRY_ELECTRICS,FERRY_LOADS_SEWAGE_KW=FERRY_LOADS.find(l=>l.id==='sewage').kW;
 const at=(id,pos,label,title,text,o={})=>Object.freeze({id,pos:Object.freeze(pos),label,title,text,reach:o.reach??null,facing:o.facing??null});
 
 export const FERRY_INSPECT=Object.freeze([
@@ -48,9 +48,30 @@ export const FERRY_INSPECT=Object.freeze([
  at('air',[2.5,FP+1.0,Z(9.2)],'Starting air','Starting air',
   `The compressor fills two 150 L bottles to ${M.mains.start.match(/[\d.]+ MPa/)?.[0]||'3 MPa'}, air for the main engines’ and the generators’ starters; the compressor runs again when the pressure falls.`),
  at('service-tank',[-3.1,FP+1.2,Z(13.3)],'Fuel service tank','Fuel service tank',
-  `A day’s fuel, settled and purified, for the engines and generators: A-heavy oil from the double-bottom tanks (${M.tanks.fuelStorage.join(' + ')} m³). The quick-closing valve under it can be shut from the CO₂ room if there is a fire down here.`),
+  `A day’s fuel, settled and purified, for the engines and generators: A-heavy oil from the double-bottom tanks (${M.tanks.fuelStorage.join(' + ')} m³). The quick-closing valve under it can be shut from the CO₂ room if there is a fire down here.`,{reach:1.4}),
  at('purifier',[3.3,FP+1.0,Z(12.0)],'Fuel purifier','Fuel purifier',
   `A centrifuge that spins the water and sludge out of the fuel on its way to the service tank. The sludge goes to its ${M.tanks.sludge} m³ tank and ashore.`),
+ // Forward of the engine room (6q): the watertight door, the auxiliary machinery room, the workshop and the store.
+ at('wt-door',[0,FP+1.2,Z(14.0)],'Watertight door','Watertight sliding door, Fr 28',
+  'The door between the engine room and the auxiliary machinery room, in the bulkhead that keeps a flooded hold to one compartment. It slides shut on its hand pump (thirty strokes, the lever beside it) or from the wheelhouse, and the rule is that it stays shut at sea: open now, alongside, so the oiler can get to the sounding pipes.',{reach:1.8}),
+ at('ballast-manifold',[-3.5,FP+.9,Z(15.4)],'Ballast manifold','Ballast and bilge manifold',
+  `Six valves on one header: ballast port and starboard (${M.tanks.ballast.port} m³ each, under these plates), the aft peak (${M.tanks.ballast.aftPeak} m³, which balances a truck forward), the engine-room and auxiliary-room bilges, and the overboard. The ballast pump beside it, or the fire and general-service pump through the sea-water run, moves the water; the bilges go through the separator first.`,{reach:1.8}),
+ at('ballast-pump',[-3.5,FP+.6,Z(16.85)],'Ballast pump','Ballast pump: Johansson Marine '+JOHANSSON_MARINE.catalogue.gsPump.model,
+  'A 3.7 kW sea-water pump on the manifold, run alongside: the forward tanks filled or emptied for the truck, the aft peak the other way, so she sits level on the ramp. Its sounding pipes are capped on the plates by the bulkhead.',{reach:1.6}),
+ at('sewage-tank',[3.1,FP+1.2,Z(17.7)],'Sewage tank','Sewage holding tank, 4 m³',
+  `Everything from the toilets is held here and pumped ashore at Minato after the last boat, through the deck connection on the car deck: nothing goes into the strait. The sight glass shows the level; the vent runs up the casing. The discharge pump (${FERRY_LOADS_SEWAGE_KW} kW) is beside it.`,{reach:1.8}),
+ at('escape-aux',[-3.6,FP+1.3,Z(18.7)],'Escape trunk','Escape trunk to casing S',
+  'The auxiliary machinery room’s second way out: a vertical ladder in its own trunk up through the car deck into casing S, the hatch above shut but never locked. The first way out is back through the watertight door and up the engine-room ladder.',{reach:1.8}),
+ at('lathe',[3.5,FP+1.1,Z(20.2)],'Lathe','Johansson Machine Tools JL-400 centre lathe',
+  'A 400 mm centre lathe bolted to her side, with its chuck, tailstock and leadscrew: bushes, studs and the odd shaft repair are turned here alongside rather than sent to Naha. The chips go in the tray under the bed, the swarf hook hangs on the headstock.',{reach:1.8}),
+ at('drill',[2.55,FP+1.2,Z(19.8)],'Pedestal drill','Johansson Machine Tools JD-13 pedestal drill',
+  'A 13 mm pedestal drill by the door, its table at bench height. The grinder is on the bench by the vice; the welding set stands against her side with its cables coiled.',{reach:1.6}),
+ at('wiped-bearing',[1.6,FP+.9,Z(22.2)],'Wiped bearing','The wiped bearing shell',
+  'The starboard engine’s No.3 main bearing, wiped in April when a lube-oil filter choked: the white metal smeared and run. It is kept on the bench for the surveyor, with the date, and the new shell has run two thousand hours since.',{reach:1.6}),
+ at('spares',[-3.5,FP+1.0,Z(21.2)],'Spares rack','Engine store: the spares',
+  'Filters, gaskets and seals, injectors, bearing shells, V-belts, lamps, hoses and touch-up paint, each box labelled and counted at the monthly inventory. What the yard’s list says she carries for a year away from a chandler, though Naha is a morning’s drive and a ferry.',{reach:1.8}),
+ at('oil-drums',[-1.9,FP+.8,Z(22.2)],'Oil drums','Lubricating oil, two 200 L drums',
+  `Two drums of SAE 40 on their rack with the taps over the drip tray: the engines’ sumps and the gearboxes are topped up from here, a can at a time, and the sump tank in the double bottom holds ${M.tanks.lubeOil} m³ more. Slung down the casing by the chain block on the deckhead.`,{reach:1.8}),
  at('emergency-generator',[1.9,BRIDGE+1.1,Z(7.6)],'Emergency generator','Emergency generator',
   `${E.emergency.kVA} kVA, on its own board. If the main board goes dead it starts by itself and is on load within ${E.emergency.onLoadWithin} s, for steering pump No.2, the emergency lighting, the radios and the emergency fire pump. ${E.emergency.why}. Its day tank holds ${E.emergency.dayTank} L, ${E.emergency.hours} hours.`),
  at('co2',[-2.0,BRIDGE+1.1,Z(8.3)],'CO₂ bottles','Fixed CO₂',

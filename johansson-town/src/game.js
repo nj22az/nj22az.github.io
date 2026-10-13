@@ -170,12 +170,16 @@ function wantCard(){
  * Postman Tōma's round (src/mail/post.js), checked every couple of town seconds as part of
  * the simulation: what came is said once, and the box inside the mayor's door shows it.
  */
-let postTimer=0;
+let postTimer=0,postNotice=null;
 function updatePost(dt){
  if((postTimer-=dt)>0||!activities?.state)return;postTimer=2;
  const delivered=activities.deliverPost?.()||[];
- if(delivered.length)say(delivered.length===1?`The post has come: a letter from ${delivered[0].from}.`:`The post has come: ${delivered.length} letters.`,5);
+ if(delivered.length)postNotice=delivered.length===1?`The post has come: a letter from ${delivered[0].from}.`:`The post has come: ${delivered.length} letters.`;
  activeRoomLayout?.refreshPost?.();
+ // Said once, and only where it can be acted on soon: out of doors, on your feet and ashore. In a shop, at a table or
+ // aboard the ferry it waits (the creator, 2026-10-13: the notice need not show all the time); the box inside the
+ // mayor's door keeps the count meanwhile.
+ if(postNotice&&!current&&!seated&&!deckUnder()){say(postNotice,4);postNotice=null;}
 }
 function updateWantCards(dt){
  if((wantCardTimer-=dt)>0||!activities?.state)return;wantCardTimer=2;

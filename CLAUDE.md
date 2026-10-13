@@ -188,6 +188,13 @@ that makes more or better stories.
   change the data, run the tool, commit the sheets (`tests/ferry-design-book.test.mjs` fails on stale sheets). Decide ship
   questions as a naval architect would (rules, weights, stability, structure) and record findings in the README rather
   than fudge a number.
+- **She is built to be built** (the creator, 2026-10-13: "Remember you are building a real ship, we should be able to
+  give these drawings to a shipyard and they build the ship for us and it works and floats, and it can be sold"). The
+  design book (`johansson-town/docs/minato-maru/`) is a build set in the making, not an illustration: every sheet is
+  generated from the ship's data, every number is one a yard can check, and what is not yet designed is written down as
+  open (the README's findings and programme), never fudged. Drawings carry KKS tags (`src/world/ferry-kks.js`), piping
+  and electrical sheets come from the same data the model is built from (`ferry-piping.js`, `ferry-electrical.js`), and
+  every pumped service has two means. A batch that changes the ship changes the book in the same commit.
 - **Every engineering part is Johansson Marine** (the creator, 2026-10-12: "I want them to look like real machines
   similar to Volvo but brand every engineering part as a Johansson brand"). Engines, gears, generators, thrusters,
   steering gear, switchboards, pumps, purifiers, compressors, windlasses, radar and radios aboard the Minato Maru (and
