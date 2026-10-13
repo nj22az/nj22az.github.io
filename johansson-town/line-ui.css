@@ -305,6 +305,11 @@ body>.shm .shm-share{background:var(--line-overlay)}body>.shm .shm-share>div{box
  #activity:not(.conversation) .activity-card{max-height:75dvh}
  #activity:not(.conversation) #activityActions{max-height:44dvh}
 }
+/* The same on a desktop window: 24% of a 760 px window shows two rows of buttons and half of a third (Ms Ganaha's
+   seven places and the way out), so a window tall enough gives the tray a third of its height. */
+@media(min-width:601px) and (min-height:640px){
+ #activity:not(.conversation) #activityActions{max-height:35dvh}
+}
 
 /* One typeface for every piece of interface text: LINE Seed JP, with the LINE stack behind it. (Figtree comes
    first only for ā ē ī ō ū and their capitals, which LINE Seed JP draws wrongly: index.html loads just those.)

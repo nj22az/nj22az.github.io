@@ -59,7 +59,7 @@ test('talking to her: the next boat, and a ticket from her window', () => {
  const dom=installDOM({});let minutes=13*60,bought=0;
  const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>minutes});
  acts.action('ganaha',GANAHA.name,{buy:()=>bought++});
- assert.deepEqual(dom.labels(),['When is the next boat?','A return to Kitano-jima, please','Goodbye']);
+ assert.deepEqual(dom.labels(),['When is the next boat?','What is there on Kitano-jima?','What is there on this island?','A return to Kitano-jima, please','Goodbye']);
  dom.button('When is the next boat?');
  assert.match(document.querySelector('#activityBody').children[0].textContent,/due at 14:30/);
  dom.button('A return to Kitano-jima, please');assert.equal(bought,1);
