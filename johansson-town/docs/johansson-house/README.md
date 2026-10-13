@@ -16,7 +16,9 @@ in World, these drawings and the house in the stories are one house.
 - **The house as built:** `src/world/johansson-house.js`: the drawings, and where they leave something open, the findings
   below. Nothing else departs from them.
 - **Outside, in Kitano hamlet:** `src/world/johansson-house-build.js`, on plot `kitano-1` (`kitano-hamlet-layout.js`,
-  `kitano-hamlet.js`), its front door the site `mayor-home`.
+  `kitano-hamlet.js`), its front door the site `mayor-home`. The court and the lightwell are dug into the yard: the
+  yard's slab and the island's ground are cut round them, the sea is not drawn in them (`ocean.js` `setOceanPits`:
+  their floors are under its level), and the garden stair is a floor of the island that slopes through its nosings.
 - **Inside:** `src/world/interiors/johansson-house-interior.js`, walked floor by floor with `src/world/house-walk.js`.
   The 17 sliding doors keep their state by id in the save, under `johansson.house.v2`.
 
@@ -115,7 +117,7 @@ Where the house as built departs from Rev F, and why: for the next revision to s
 ### RF7. The basement is under the sea’s level
 
 - **Drawn:** Basement floor −2 800; game construction layers of 200 mm concrete, membrane, protection board, perimeter drain; the court’s storm sump and pump.
-- **Problem:** On Kitano-jima the yard is 1.3 m above the sea, so the basement floor is about 1.5 m below the yard’s datum and 0.9 m below the sea, in coral sand.
+- **Problem:** On Kitano-jima the yard, level with the ground floor, is 1.3 m above the sea, so the basement floor and the court’s, 2.8 m under it, are 1.5 m below the sea (the lightwell’s, 1.8 m under it, 0.5 m below), in coral sand.
 - **Built:** As drawn. A builder would check the tanked box against flotation: open.
 
 ### RF8. The plot round the house
@@ -138,7 +140,8 @@ the stone at the door, and a timber strip marks where.
 - The services (RF5) and the systems (RF6): the routes of the electrics, water, drainage, ventilation and cooling, the
   flue and the vent through the roof, the downpipes, the supply from the pole; the reference simulation's 31 cases in the
   game, the faults and repairs, the alarms. The equipment the drawings place is built.
-- The court outside D-BEXT, the garden stair down to it and the lightwell outside W-B1: drawn, not yet dug in the yard
-  (they need the yard cut and the sea kept out of them; the next batch). D-BEXT is bolted until then.
+- D-BEXT, the basement's door onto the court, is bolted from inside (the story: the typhoon season); the court and the
+  garden stair are walked, the door is not yet a way in. The reference's flood alarm, which closes the basement's links,
+  comes with the systems.
 - Game_Integration.md's host acceptance: every room walked on the desktop and the phone, the frame rate under the
   town's load, the save surviving a reload (the doors' does).

@@ -225,7 +225,7 @@ and site plans). `src/world/johansson-house.js` is the house as built; its depar
 - **RF4:** the sockets, drawn 350 mm off the walls, are on the walls.
 - **RF5, RF6 (open):** the services and the systems simulation are the next batches; the equipment the drawings place
   (the boards, the water heater, the manifold, the lift pump, the outdoor units) is built and can be looked at.
-- **RF7 (open):** the basement is 0.9 m under the sea's level. **RF8:** the plot.
+- **RF7 (open):** the basement and the court are 1.5 m under the sea's level. **RF8:** the plot.
 
 **Outside.** Plot `kitano-1` grows to 17 × 22 m (island u −49.5…−32.5, v 51.5…73.5; its slab goes down to 0.2 m where the
 ground falls to the beach; the planting rectangle grows behind it, 4 m clear of the Coral Bay Bar). The house stands 7.5 m
@@ -246,9 +246,18 @@ it is for; the boards on the riser in the genkan and the halls, the heater and t
 pump's cover in the sauna's shower. Walked in the running game: up both flights from the genkan to the upper floor and
 down both to the basement.
 
-**Open.** The court outside D-BEXT, the garden stair down to it and the lightwell outside W-B1 (they need the yard cut and
-the sea kept out of the pits: a ground batch of its own; D-BEXT is bolted until then). The services and the systems
-(RF5, RF6). Game_Integration.md's host acceptance (phones, frame rate under the town's load).
+**The court, the garden stair and the lightwell (the ground batch).** Dug into the yard as drawn: the court outside
+D-BEXT 2.8 m down between its retaining walls and their 1.1 m parapets, its floor draining to the storm sump's grating;
+the garden stair down into it from a paved top landing at the yard (16 × 175 mm, 1 000 mm clear between cheeks over the
+200 mm the drawings leave either side); the lightwell outside the club's window with its drain and guards. The yard's
+slab is cut round them (`kitano-hamlet.js`), the island's ground has no cells in them (`tropical-island.js`), and the sea
+is not drawn in them (`ocean.js` `setOceanPits`, up to four fixed pits beside the ferry's moving hole): both floors are
+under the sea's level. The island's public floors can slope (`airport-ground.js` `floorHeight`), so the stair is walked
+through its nosings: walked in the running game down into the court and back up to the yard. D-BEXT is bolted from
+inside (*Try the court door*, from either side).
+
+**Open.** D-BEXT as a way in (with the systems' flood alarm). The services and the systems (RF5, RF6). Game_Integration.md's
+host acceptance (phones, frame rate under the town's load).
 
 **Found on the way.** Studio's furniture tool counted the basement's colliders under the living room: it ignores
 colliders whose top is under the floor (`placements.js`). The residents' room navigator keeps 0.32 m from walls on a

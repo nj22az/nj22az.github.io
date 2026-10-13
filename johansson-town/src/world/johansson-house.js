@@ -247,7 +247,7 @@ export const HOUSE_FINDINGS=freeze([
   built:'The sliding doors keep their state under johansson.house.v2 (game.js); they start open, where the reference starts them shut, because a house is lived in with its doors open.'},
  {id:'RF7',title:'The basement is under the sea’s level',
   drawn:'Basement floor −2 800; game construction layers of 200 mm concrete, membrane, protection board, perimeter drain; the court’s storm sump and pump.',
-  problem:'On Kitano-jima the yard is 1.3 m above the sea, so the basement floor is about 1.5 m below the yard’s datum and 0.9 m below the sea, in coral sand.',
+  problem:'On Kitano-jima the yard, level with the ground floor, is 1.3 m above the sea, so the basement floor and the court’s, 2.8 m under it, are 1.5 m below the sea (the lightwell’s, 1.8 m under it, 0.5 m below), in coral sand.',
   built:'As drawn. A builder would check the tanked box against flotation: open.'},
  {id:'RF8',title:'The plot round the house',
   drawn:'An assumed plot, −6 000 to 18 000 × −7 000 to 16 000, not surveyed.',

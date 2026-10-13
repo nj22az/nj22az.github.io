@@ -1,5 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
-import {HOUSE_FLOORS,HOUSE_SITE,HOUSE_WALLS,HOUSE_SLABS,HOUSE_OPENINGS,HOUSE_ROOF,HOUSE_EQUIPMENT} from './johansson-house.js';
+import {HOUSE_FLOORS,HOUSE_SITE,HOUSE_WALLS,HOUSE_SLABS,HOUSE_OPENINGS,HOUSE_ROOF,HOUSE_EQUIPMENT,HOUSE_GUARDS} from './johansson-house.js';
 import {JOHANSSON_HOUSE_CAD as CAD} from './johansson-house-cad.js';
 import {OKINAWA_COLOURS,shisa} from './okinawa/houses.js';
 
@@ -48,9 +48,86 @@ export function buildHouseExterior(kit,solid){
  roof(kit);
  frontDoor(kit);
  outdoorUnits(kit,solid);
- // The house is one solid to walk round.
- const [x0,,z0]=houseLocal(0,10,0),[x1,,z1]=houseLocal(12,0,0);
- solid(kit.rect(x0,x1,z0,z1,HOUSE_ROOF.ridge,'johansson-house'));
+ court(kit,solid);
+ lightwell(kit,solid);
+ // The house is one solid to walk round, from the court's floor to the ridge.
+ drawnSolid(kit,solid,[0,0,HOUSE_SITE.court.floor-.2],[12,10,HOUSE_ROOF.ridge],'johansson-house');
+}
+
+/** A collider over a drawn box (its height from the drawn z, below the yard too). */
+function drawnSolid(kit,solid,min,max,id){
+ const [x0,,z0]=houseLocal(min[0],max[1],0),[x1,,z1]=houseLocal(max[0],min[1],0),c=kit.rect(x0,x1,z0,z1,max[2]-min[2],id);
+ c.minY=(c.minY??0)+min[2]-HOUSE_SITE.grade;solid(c);
+}
+const site=id=>HOUSE_SITE.boxes.find(b=>b.id===id);
+const guard=id=>HOUSE_GUARDS.find(g=>g.id===id);
+/** The B1 outside wall the drawings cut where a pit meets the house, and the ground floor slab's edge over it. */
+function basementFace(kit,x0,x1,y0,y1){
+ for(const w of HOUSE_WALLS.filter(q=>q.level==='B1'&&/-EXT-/.test(q.id)&&q.max[0]>x0&&q.min[0]<x1&&q.max[1]>y0&&q.min[1]<y1))
+  drawnBlock(kit,[Math.max(w.min[0],x0),Math.max(w.min[1],y0),w.min[2]],[Math.min(w.max[0],x1),Math.min(w.max[1],y1),w.max[2]],K.wall);
+ drawnBlock(kit,[x0,y0,HOUSE_FLOORS.B1.soffit],[x1,y1,HOUSE_FLOORS.G0.floor],K.band);
+}
+
+/**
+ * The court outside the basement's door (D-BEXT), as drawn: its floor 2.8 m under the yard, the retaining walls either
+ * side with their 1.1 m parapets over the yard, the storm sump's grating, and the garden stair up to the yard's top
+ * landing, 16 risers of 175 mm on 250 mm goings, 1 000 mm clear. The flight is cast on fill between the walls; its
+ * 1 000 mm walking width is kept by a cheek upstand either side over the 200 mm the drawings leave between it and the
+ * walls.
+ */
+function court(kit,solid){
+ const C=HOUSE_SITE.court,X=HOUSE_SITE.gardenStair,floor=C.floor,cut=-3;
+ for(const id of ['COURT-RETAIN-W','COURT-RETAIN-E']){
+  const w=site(id),g=guard(id==='COURT-RETAIN-W'?'EXT-GUARD-W':'EXT-GUARD-E');
+  drawnBlock(kit,w.min,w.max,K.wall);drawnBlock(kit,g.min,g.max,K.wall);
+  // The parapet's coping.
+  drawnBlock(kit,[g.min[0]-.02,g.min[1],g.max[2]],[g.max[0]+.02,g.max[1],g.max[2]+.04],K.band);
+  drawnSolid(kit,solid,[Math.min(w.min[0],g.min[0]),w.min[1],w.min[2]],[Math.max(w.max[0],g.max[0]),w.max[1],g.max[2]],'johansson-court-wall');
+ }
+ const f=site('COURT-FLOOR');drawnBlock(kit,f.min,[f.max[0],f.max[1],f.max[2]-.01],K.stone);
+ drawnBlock(kit,[f.min[0],f.min[1],f.max[2]-.01],[f.max[0],f.max[1],f.max[2]],0xb9b2a0);
+ // The storm sump's grating over its pit, where the court drains.
+ const [sx0,sy0,sx1,sy1]=[9.45,-1.05,9.95,-.55];
+ drawnBlock(kit,[sx0,sy0,floor],[sx1,sy1,floor+.012],K.steel,'metal');
+ for(let x=sx0+.05;x<sx1-.02;x+=.06)drawnBlock(kit,[x,sy0+.02,floor+.012],[x+.012,sy1-.02,floor+.016],0x4a4f52,'metal');
+ // The flight: each step cast down to the fill, the full width between the walls; the cheeks over the 200 mm each side.
+ const [wx0,wx1]=[site('COURT-RETAIN-W').max[0],site('COURT-RETAIN-E').min[0]];
+ for(const t of X.treads){
+  drawnBlock(kit,[wx0,t.min[1],cut],[wx1,t.max[1],t.max[2]-.03],K.stone);
+  drawnBlock(kit,[t.min[0],t.min[1],t.max[2]-.03],[t.max[0],t.max[1],t.max[2]],0xd9d1bf);
+  for(const [a,b] of [[wx0,t.min[0]],[t.max[0],wx1]])drawnBlock(kit,[a,t.min[1],t.max[2]-.03],[b,t.max[1],t.max[2]+.15],K.band);
+ }
+ // The cheeks as colliders, beside the flight from its foot to the yard.
+ const [ty0,ty1]=[Math.min(...X.treads.map(t=>t.min[1])),Math.max(...X.treads.map(t=>t.max[1]))],[tx0,tx1]=[Math.min(...X.treads.map(t=>t.min[0])),Math.max(...X.treads.map(t=>t.max[0]))];
+ drawnSolid(kit,solid,[wx0,ty0,cut],[tx0,ty1,.15],'johansson-court-cheek');drawnSolid(kit,solid,[tx1,ty0,cut],[wx1,ty1,.15],'johansson-court-cheek');
+ // The top landing, paved, level with the yard.
+ const top=site('EXT-STAIR-TOP');drawnBlock(kit,[top.min[0],top.min[1],top.max[2]],[top.max[0],top.max[1],top.max[2]+.01],0xd9d1bf);
+ // The house's wall over the court, with D-BEXT: a steel door, shut, in its frame, and a light over it.
+ basementFace(kit,wx0,wx1,0,.2);
+ const o=HOUSE_OPENINGS.find(q=>q.id==='D-BEXT');
+ drawnBlock(kit,[o.from,.05,o.sill],[o.to,.1,o.head],K.steel,'metal');
+ for(const e of [o.from,o.to-.06])drawnBlock(kit,[e,-.02,o.sill],[e+.06,.05,o.head],K.steel);
+ drawnBlock(kit,[o.from,-.02,o.head-.06],[o.to,.05,o.head],K.steel);
+ const [hx,hy,hz]=houseLocal(o.to-.18,.02,o.sill+1);kit.box(.12,.03,.05,hx,hy,hz,0xc9cdd0,{finish:'metal'});
+ const [lx,ly,lz]=houseLocal((o.from+o.to)/2,-.08,o.head+.3);kit.box(.2,.14,.12,lx,ly,lz,0xf3e7c4,{finish:'lamp'});
+}
+
+/**
+ * The lightwell outside the club's window (W-B1), as drawn: three walls and a drained floor 1.8 m under the yard, guards
+ * 1.1 m round it, open to the sky so the window has the day.
+ */
+function lightwell(kit,solid){
+ const W=HOUSE_SITE.lightwell;
+ for(const w of W.walls)drawnBlock(kit,w.min,w.max,K.wall);
+ const base=site('LIGHTWELL-BASE');drawnBlock(kit,base.min,base.max,K.stone);
+ const [dx,dy]=[-.6,6.4];drawnBlock(kit,[dx-.12,dy-.12,base.max[2]],[dx+.12,dy+.12,base.max[2]+.012],K.steel,'metal');
+ for(const id of ['LIGHTWELL-GUARD-W','LIGHTWELL-GUARD-S','LIGHTWELL-GUARD-N']){
+  const g=guard(id);drawnBlock(kit,g.min,g.max,K.wall);drawnBlock(kit,[g.min[0]-.02,g.min[1]-.02,g.max[2]],[g.max[0]+.02,g.max[1]+.02,g.max[2]+.04],K.band);
+ }
+ drawnSolid(kit,solid,[Math.min(...W.walls.map(w=>w.min[0]))-.05,Math.min(...W.walls.map(w=>w.min[1]))-.05,base.min[2]],[0,Math.max(...W.walls.map(w=>w.max[1]))+.05,1.1],'johansson-lightwell');
+ // The house's wall over the well, with W-B1's sashes from outside.
+ basementFace(kit,0,.2,W.y[0],W.y[1]);
+ const o=HOUSE_OPENINGS.find(q=>q.id==='W-B1');opening(kit,o);
 }
 
 /** A window's sashes and glass, or a door's leaf, set in a drawn opening. */

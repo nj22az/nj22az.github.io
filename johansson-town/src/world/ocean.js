@@ -99,6 +99,9 @@ uniform float uGlint;
 // (cos, sin), and the half-breadth and half-length of her parallel body at the waterline. Zero size: no hole.
 uniform vec4 uHole;
 uniform vec2 uHoleSize;
+// Dry pits on land below the sea's level (Johansson's court and lightwell: setOceanPits): the sea is not drawn in them.
+uniform vec4 uPits[4];
+uniform vec2 uPitSizes[4];
 float hash12(vec2 p) {
   vec3 p3 = fract(vec3(p.xyx) * 0.1031);
   p3 += dot(p3, p3.yzx + 33.33);
@@ -137,6 +140,12 @@ void main() {
     vec2 d = vWorldPos.xz - uHole.xy;
     vec2 l = vec2(uHole.z * d.x - uHole.w * d.y, uHole.w * d.x + uHole.z * d.y);
     if (abs(l.x) < uHoleSize.x && abs(l.y) < uHoleSize.y) discard;
+  }
+  for (int i = 0; i < 4; i++) {
+    if (uPitSizes[i].x <= 0.0) continue;
+    vec2 d = vWorldPos.xz - uPits[i].xy;
+    vec2 l = vec2(uPits[i].z * d.x - uPits[i].w * d.y, uPits[i].w * d.x + uPits[i].z * d.y);
+    if (abs(l.x) < uPitSizes[i].x && abs(l.y) < uPitSizes[i].y) discard;
   }
   vec3 n = normalize(vWorldNormal);
   if (!gl_FrontFacing) n = -n;
@@ -273,6 +282,8 @@ export function oceanMaterial() {
       uGlint: {value: 1},
       uHole: {value: new THREE.Vector4(0, 0, 1, 0)},
       uHoleSize: {value: new THREE.Vector2(0, 0)},
+      uPits: {value: [0, 1, 2, 3].map(() => new THREE.Vector4(0, 0, 1, 0))},
+      uPitSizes: {value: [0, 1, 2, 3].map(() => new THREE.Vector2(0, 0))},
       uSunDir: {value: new THREE.Vector3(.42, .74, .53).normalize()},
       uDeep: {value: new THREE.Color(SEA.day.deep)},
       uMid: {value: new THREE.Color(SEA.day.mid)},
@@ -353,6 +364,22 @@ export function setOceanHole(x, z, yaw, halfX = 0, halfZ = 0, offsetZ = 0) {
   // Her centre of the rectangle, moved along her by offsetZ (her +z is world (sin yaw, cos yaw)).
   u.uHole.value.set(x + s * offsetZ, z + c * offsetZ, c, s);
   u.uHoleSize.value.set(halfX, halfZ);
+}
+
+/**
+ * Dry pits dug into land below the sea's level, where the sea's plane would otherwise show as water inside them: up to
+ * four rectangles, each {x, z, yaw, halfX, halfZ} (centre, turn, half-sizes along its own x and z). An empty list clears.
+ */
+export const OCEAN_PITS = 4;
+export function setOceanPits(pits) {
+  const u = oceanMaterial().uniforms;
+  if (pits.length > OCEAN_PITS) throw new Error(`setOceanPits: ${pits.length} pits, the sea keeps ${OCEAN_PITS}`);
+  for (let i = 0; i < OCEAN_PITS; i++) {
+    const p = pits[i];
+    if (!p) {u.uPitSizes.value[i].set(0, 0);continue;}
+    u.uPits.value[i].set(p.x, p.z, Math.cos(p.yaw), Math.sin(p.yaw));
+    u.uPitSizes.value[i].set(p.halfX, p.halfZ);
+  }
 }
 
 export function tickOcean(time) {

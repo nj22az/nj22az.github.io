@@ -145,7 +145,7 @@ function mulberry(seed){return ()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.im
  * the hill; flowering shrubs where people pass. Nothing on the trail, the plaza, the quay or
  * the airside.
  */
-import {KITANO_HAMLET} from './kitano-hamlet-layout.js';
+import {KITANO_HAMLET,KITANO_DUG} from './kitano-hamlet-layout.js';
 const HAMLET=KITANO_HAMLET.clear;
 /** Inside Kitano hamlet's lane and yards: slabs over the ground, where nothing grows through. */
 const inHamlet=(u,v,r=0)=>HAMLET.some(H=>u>H.minX-r&&u<H.maxX+r&&v>H.minZ-r&&v<H.maxZ+r);
@@ -255,6 +255,10 @@ function terrainGeometry(){
   const a=j*(NX+1)+i,b=a+1,c2=a+NX+1,d=c2+1;
   // Skip cells wholly under the sea floor's flat floor; the opaque sea hides them anyway.
   if(Math.max(H[a],H[b],H[c2],H[d])<-2.9)continue;
+  // Skip the cells Johansson's court and lightwell are dug through: their walls line the pits, and the yard's slab
+  // covers the rest of each cell (kitano-hamlet-layout.js KITANO_DUG).
+  const u0=G.minX+i*G.step,v0=G.minZ+j*G.step;
+  if(KITANO_DUG.some(q=>u0<q.maxX&&u0+G.step>q.minX&&v0<q.maxZ&&v0+G.step>q.minZ))continue;
   idx.push(a,c2,b,b,c2,d);
  }
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
