@@ -15,7 +15,9 @@ export function createRamenPlayerService({room,getSeat,getMinutes,getBalance,pay
  function place(seat,kind){
   let prop=props.get(kind);if(!prop){prop=makeProp(kind);props.set(kind,prop);room.add(prop);}
   const forward=new THREE.Vector3(-Math.sin(seat.yaw),0,-Math.cos(seat.yaw));
-  if(seat.table)prop.position.set(...seat.table);else{prop.position.set(...seat.position).addScaledVector(forward,.38);prop.position.y=1.04;}
+  // On the seat's table (game.js carries `table` from the seat anchor into the park seat; it once dropped it, and the
+  // bowl hung in the air at a counter's height beside a window table). Without a table, on the seat beside him.
+  if(seat.table)prop.position.set(...seat.table);else{prop.position.set(...seat.position).addScaledVector(forward,.2);prop.position.y=(seat.surfaceY??.46)+.002;}
   if(prop.userData.consumable)setPropPortion(prop,1,{immediate:true});prop.visible=true;return prop;
  }
  function deliver(){

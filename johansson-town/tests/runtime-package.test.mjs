@@ -25,7 +25,12 @@ test('published page uses one compiled audio/boot graph with local hashed depend
  // helper and the avatar code the guide and the feed both use. The comics are shot in the real
  // 3D places (src/scene/scene-world.js), so the room builders the game and the comics share are
  // split out as their own lazy chunks.
- assert.ok(Object.keys(manifest).length<=22,'Bound the compiled graph including optional diagnostics');
+ // The title menu is an entry too (docs/LOADING.md): it once imported the source tree straight from index.html, so
+ // the title screen fetched unminified three.js and sixty modules. Built, it shares the game's chunks (the residents,
+ // their personalities, the save) and a few more entries are split out for it.
+ assert.ok(Object.keys(manifest).length<=30,'Bound the compiled graph including optional diagnostics: '+Object.keys(manifest).length);
+ const titleMenu=manifest['title-menu.js'];assert.ok(titleMenu?.isEntry&&html.includes("from './runtime/"+titleMenu.file+"'"),'the title menu loads from the runtime');
+ assert.doesNotMatch(html,/from ['"]\.\/title-menu\.js['"]/,'the title menu is never imported from source');
  const portraits=manifest['src/avatars/guide-portraits.js'];assert.ok(portraits&&html.includes(portraits.file));assert.ok(!html.includes('data-town-runtime href="./runtime/'+portraits.file+'"'),'guide rendering stays lazy');
  const audioCode=await readFile(new URL(audio.file,base),'utf8');assert.match(audioCode,/unlockTownAudio/,'Title screen retains its audio unlock export');
  const game=Object.values(manifest).find(entry=>entry.src?.startsWith('src/game.js'));
