@@ -36,8 +36,11 @@ export function footprintsOverlap(a,b){
 /**
  * What is wrong with a placement, as sentences (an empty list means it can go there).
  * world: {colliders:[{x,z,w,d,yaw}], doors:[[x,z]], walkable(x,z), heightAt(x,z)?, passage?}; size: the prop's footprint {w,d}. Overhead colliders
- * (awnings, signs: starting above 2 m) and parked ones (far away) do not count.
+ * (awnings, signs: starting above 2 m), those of a storey below (a basement's, starting a metre or more under the floor)
+ * and parked ones (far away) do not count.
  */
+/** Whether a collider stands above the floor at (x, z): one wholly under it is a storey below (a basement's walls and door heads). */
+const aboveFloor=(c,world,x,z)=>(c.minY||0)+(c.height??Infinity)>(world.heightAt?.(x,z)??0)+.01;
 export function placementProblems(p,size,world){
  const out=[],entry=(world.lookup||catalogueEntry)(p.kind);
  if(!entry)return [`There is no "${p.kind}" in the catalogue.`];
@@ -47,7 +50,7 @@ export function placementProblems(p,size,world){
  if(!points.every(([x,z])=>world.walkable(x,z)))out.push(world.offGround||'Part of it is off the ground people walk on (the road, a wall or the water).');
  else if(world.heightAt){const h=points.map(([x,z])=>world.heightAt(x,z));if(Math.max(...h)-Math.min(...h)>LEVEL)out.push('It would stand across a step or a kerb; move it onto level ground.');}
  // A rug may lie under a table or a cushion, never under a wardrobe or a counter standing on it.
- const hit=world.colliders.find(c=>!c.moving&&(!entry.flat||(c.height??2)>.6)&&!(p.id&&c.placementId===p.id)&&(c.minY||0)<2&&Math.abs(c.x)<1e5&&footprintsOverlap(box,{x:c.x,z:c.z,w:c.w,d:c.d,yaw:c.yaw||0}));
+ const hit=world.colliders.find(c=>!c.moving&&(!entry.flat||(c.height??2)>.6)&&!(p.id&&c.placementId===p.id)&&(c.minY||0)<2&&aboveFloor(c,world,p.x,p.z)&&Math.abs(c.x)<1e5&&footprintsOverlap(box,{x:c.x,z:c.z,w:c.w,d:c.d,yaw:c.yaw||0}));
  // Name what is in the way when it is a piece somebody placed (the town's own colliders have no names a person knows).
  const other=hit?.placementKind&&(world.lookup||catalogueEntry)(hit.placementKind);
  if(hit)out.push(other?`It overlaps the ${other.name.toLowerCase()} that is already there.`:'It overlaps something that is already there.');
@@ -75,7 +78,7 @@ export function closesPassage(box,ownId,world){
  const x0=Math.min(...xs)-pad,z0=Math.min(...zs)-pad,nx=Math.ceil((Math.max(...xs)+pad-x0)/GRID)+1,nz=Math.ceil((Math.max(...zs)+pad-z0)/GRID)+1;
  if(nx*nz>60000)return false;   // a piece this big is not a street prop; the other rules still apply
  const minX=x0,maxX=x0+nx*GRID,minZ=z0,maxZ=z0+nz*GRID;
- const solid=world.colliders.filter(c=>!c.moving&&(c.minY||0)<2&&!(ownId&&c.placementId===ownId)&&Math.abs(c.x)<1e5&&
+ const solid=world.colliders.filter(c=>!c.moving&&(c.minY||0)<2&&aboveFloor(c,world,box.x,box.z)&&!(ownId&&c.placementId===ownId)&&Math.abs(c.x)<1e5&&
   c.x+Math.hypot(c.w,c.d)/2>minX&&c.x-Math.hypot(c.w,c.d)/2<maxX&&c.z+Math.hypot(c.w,c.d)/2>minZ&&c.z-Math.hypot(c.w,c.d)/2<maxZ);
  // Which ground points are off the walkable ground (the road, the water, a wall's footprint).
  const off=new Uint8Array(nx*nz);

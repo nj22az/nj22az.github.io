@@ -145,8 +145,10 @@ function mulberry(seed){return ()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.im
  * the hill; flowering shrubs where people pass. Nothing on the trail, the plaza, the quay or
  * the airside.
  */
-import {KITANO_HAMLET} from './kitano-hamlet-layout.js';
+import {KITANO_HAMLET,KITANO_DUG} from './kitano-hamlet-layout.js';
 const HAMLET=KITANO_HAMLET.clear;
+/** Inside Kitano hamlet's lane and yards: slabs over the ground, where nothing grows through. */
+const inHamlet=(u,v,r=0)=>HAMLET.some(H=>u>H.minX-r&&u<H.maxX+r&&v>H.minZ-r&&v<H.maxZ+r);
 let plantings=null;
 export function tropicalPlantings(){
  if(plantings)return plantings;
@@ -155,7 +157,7 @@ export function tropicalPlantings(){
   if(u>P.plaza.minX-r&&u<P.plaza.maxX+r&&v>P.plaza.minZ-r-6&&v<P.plaza.maxZ+r)return false;
   if(u<-36&&v>14&&v<42)return false;
   // Kitano hamlet's lane and yards (kitano-hamlet-layout.js).
-  if(u>HAMLET.minX-r&&u<HAMLET.maxX+r&&v>HAMLET.minZ-r&&v<HAMLET.maxZ+r)return false;
+  if(inHamlet(u,v,r))return false;
   // The lookout keeps its view: no rainforest trees within fourteen metres of the deck,
   // and none on the west slope below it, where the view runs across the strait to Minato.
   if(Math.hypot(u-P.lookout[0],v-P.lookout[1])<(r>1?(u<P.lookout[0]+6?26:14):5)+r)return false;
@@ -214,6 +216,8 @@ export function tropicalPlantings(){
   if(v<P.plaza.minZ+.5&&u<P.plaza.maxX+2||u<-44&&v<40||u>-54&&u<-9&&v>19&&v<37)continue;
   if(d<3.5||airside(u,v)||trailDistance(u,v)<1.2||(u>P.plaza.minX-1&&u<P.plaza.maxX+1&&v>P.plaza.minZ-1&&v<P.plaza.maxZ+1)||Math.hypot(u-P.beachBar[0],v-P.beachBar[1])<3.5)continue;
   if(d>9&&d<12&&rand()<.5)continue;
+  // Not through the hamlet's slabs (the yards, the lane): grass there stood up through the paving.
+  if(inHamlet(u,v,.3))continue;
   grass.push({u,v,y:tropicHeight(u,v),scale:.7+rand()*.8,turn:rand()*Math.PI*2});
  }
  // Coral-limestone rocks along the waterline of the headlands (the bays keep their sand),
@@ -227,7 +231,7 @@ export function tropicalPlantings(){
  }
  // What the tide leaves: bleached driftwood and shells on the sand.
  for(let n=0;n<3000&&driftwood.length<9;n++){const [u,v]=pick(),d=shoreAt(u,v);if(d<1.2||d>4||airside(u,v)||plateauWeight(u,v)>.3||!clearOfPlaces(u,v,1)||!apart(driftwood,u,v,10))continue;driftwood.push({u,v,y:tropicHeight(u,v),scale:.7+rand()*.5,turn:rand()*Math.PI*2});}
- for(let n=0;n<5000&&shells.length<80;n++){const [u,v]=pick(),d=shoreAt(u,v);if(d<.8||d>5||airside(u,v)||plateauWeight(u,v)>.3||!apart(shells,u,v,.8))continue;shells.push({u,v,y:tropicHeight(u,v),scale:.8+rand()*.6,turn:rand()*Math.PI*2,kind:Math.floor(rand()*2)});}
+ for(let n=0;n<5000&&shells.length<80;n++){const [u,v]=pick(),d=shoreAt(u,v);if(d<.8||d>5||airside(u,v)||plateauWeight(u,v)>.3||inHamlet(u,v,.3)||!apart(shells,u,v,.8))continue;shells.push({u,v,y:tropicHeight(u,v),scale:.8+rand()*.6,turn:rand()*Math.PI*2,kind:Math.floor(rand()*2)});}
  plantings={palms,trees,bushes,pandanus,bananas,ferns,grass,rocks,driftwood,shells};
  return plantings;
 }
@@ -251,6 +255,10 @@ function terrainGeometry(){
   const a=j*(NX+1)+i,b=a+1,c2=a+NX+1,d=c2+1;
   // Skip cells wholly under the sea floor's flat floor; the opaque sea hides them anyway.
   if(Math.max(H[a],H[b],H[c2],H[d])<-2.9)continue;
+  // Skip the cells Johansson's court and lightwell are dug through: their walls line the pits, and the yard's slab
+  // covers the rest of each cell (kitano-hamlet-layout.js KITANO_DUG).
+  const u0=G.minX+i*G.step,v0=G.minZ+j*G.step;
+  if(KITANO_DUG.some(q=>u0<q.maxX&&u0+G.step>q.minX&&v0<q.maxZ&&v0+G.step>q.minZ))continue;
   idx.push(a,c2,b,b,c2,d);
  }
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();

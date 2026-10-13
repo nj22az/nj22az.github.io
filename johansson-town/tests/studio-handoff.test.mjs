@@ -54,16 +54,18 @@ test('a saved game opens with the home and outfit chosen in Studio, and its save
 test('World shows the furniture Studio arranged, and follows a later arrangement',()=>{
  installDOM();
  const room=new THREE.Group(),colliders=[];
- buildMayorHome({room,reg(){},action(){},collider:(x,z,w,d,height)=>colliders.push({x,z,w,d,height})});
+ buildMayorHome({room,reg(){},action(){},collider:(x,z,w,d,height,minY)=>colliders.push({x,z,w,d,height,minY})});
  const group=room.getObjectByName('Mayor’s home');
- const state={homeDecor:restoreHomeDecor({items:[{id:'p1',kind:'andon',x:.3,z:-1.6,yaw:0}]})};
+ const state={homeDecor:restoreHomeDecor({items:[{id:'p1',kind:'andon',x:-5,z:1.7,yaw:0}]})};
  const furniture=showHomeFurniture({group,colliders,state,floor:MAYOR_HOME_FLOOR.walkable,keepClear:MAYOR_HOME_FLOOR.keepClear});
  assert.deepEqual(furniture.skipped,[],'the lamp stands where Studio put it');
  assert.deepEqual(furniture.placements.list().map(p=>p.kind),['andon']);
- state.homeDecor=restoreHomeDecor({items:[{id:'p4',kind:'rug',x:-.6,z:.9,yaw:0}]});
+ state.homeDecor=restoreHomeDecor({items:[{id:'p4',kind:'rug',x:-4.4,z:2,yaw:0}]});
  furniture.reload();
  assert.deepEqual(furniture.placements.list().map(p=>p.id+':'+p.kind),['p4:rug'],'the old lamp is gone and the rug is down');
  assert.equal(group.children.filter(o=>o.userData.placement).length,1,'nothing is left behind in the room');
- const before=group.children.length;createHomeCustomization({room,state});
- assert.deepEqual(group.children.slice(before).map(o=>o.name),['Earned keepsake shelf'],'World adds the shelf, and no Decorate your home point');
+ // The shelf goes on the ground floor's own group (the house has three: johansson-house-interior.js).
+ const floor=group.getObjectByName('House G0'),before=floor.children.length,all=group.children.length;createHomeCustomization({room,state});
+ assert.deepEqual(floor.children.slice(before).map(o=>o.name),['Earned keepsake shelf'],'World adds the shelf, and no Decorate your home point');
+ assert.equal(group.children.length,all,'nothing else is added to the home');
 });

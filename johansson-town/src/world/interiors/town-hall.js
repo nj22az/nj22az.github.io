@@ -58,24 +58,10 @@ function shell(group,{floor,wall,dado,ceiling=0xf3efe2,tatami=false}){
 }
 
 /**
- * Where furniture may go in Johansson's main room (src/build/home-decorate.js): the open floor, not the WC or the bath
- * behind their partitions; and squares kept free so the door, the seats and everything he uses stay reachable.
+ * Johansson's home is his house on Kitano-jima now (interiors/johansson-house-interior.js, from the creator's drawings):
+ * the names the game, Johansson Studio and the furniture tool know it by stay the same.
  */
-export const MAYOR_HOME_FLOOR=(()=>{
- const {w,d}=SHELL,hw=w/2,hd=d/2;
- return Object.freeze({
-  // Not the WC and bath behind their partitions, nor the raised genkan step (1.4 × 0.7 m) inside the door.
-  walkable:(x,z)=>x>-hw+.02&&x<hw-.02&&z>-hd+.02&&z<hd-.02&&!(x>1.25&&z>1.4)&&!(Math.abs(x)<.72&&z>hd-.72),
-  keepClear:Object.freeze([
-   [0,hd-.45,1.5],                                   // the genkan inside the door
-   [-hw+1.25,hd-1.1,.9],[-1.45,hd-.75,.9],           // in front of the wardrobe mirror and the bookshelf
-   [hw-1.65,-hd+1.15,.8],[1.2,-hd+.85,.8],           // beside the futon, in front of the television
-   [-hw+1.05,-1.6,.8],[-hw+1.05,-.25,.8],            // the kitchen counter and the fridge
-   [1.77,1.0,.7],[2.85,1.0,.7],[2.65,.85,.7],        // the WC and bath doors, and the keepsake shelf
-   [-.6,.25,.55],[-.6,-1.05,.55],[-1.35,-.4,.55],[.15,-.4,.55],   // the four cushions at the low table
-  ]),
- });
-})();
+export {buildJohanssonHouse as buildMayorHome,JOHANSSON_HOUSE_FLOOR as MAYOR_HOME_FLOOR} from './johansson-house-interior.js';
 
 function layoutFor(){
  const {w,d}=SHELL;
@@ -189,85 +175,6 @@ export function buildMayorOffice({room,reg,action,collider=()=>{},exit,petitions
  return {...layoutFor(),office:true,owned,dispose:()=>owned.forEach(prop=>prop.dispose())};
 }
 
-/**
- * 町長宅, the mayor's home in the east wing: Johansson's own rooms. Tatami, a low table
- * with cushions, the futon folded in the corner by day, a kitchenette, a television on a
- * cabinet, the bookshelf of sea charts and Swedish paperbacks, and the wardrobe with the
- * mirror on its door (what he wears is chosen in Johansson Studio).
- */
-export function buildMayorHome({room,reg,action,collider=()=>{},exit,sleep=null,television=null,post=null}){
- const group=new THREE.Group();group.name='Mayor’s home';room.add(group);
- const box=shell(group,{wall:0xf1e9d6,dado:0xb89c78,tatami:true});
- const {w,d}=SHELL,hw=w/2,hd=d/2;
- const anchor=(pos,label,fn)=>{const o=new THREE.Object3D();o.position.set(...pos);o.userData.npcInteraction=false;group.add(o);reg(o,label,fn,true);return o;};
- // The genkan step inside the door, where shoes come off.
- box([1.4,.12,.7],[0,.06,hd-.35],0x9a958a,'Genkan step');
- // Low table, four cushions.
- box([1.1,.05,.75],[-.6,.36,-.4],0x6b4a32,'Low table');for(const [x,z] of [[-.5,.35],[.5,.35],[-.5,-.35],[.5,-.35]])box([.05,.32,.05],[-.6+x,.17,-.4+z],0x5a3f2a);
- collider(-.6,-.4,1.1,.75,.42);
- for(const [x,z] of [[-.6,.25],[-.6,-1.05],[-1.35,-.4],[.15,-.4]])box([.5,.08,.5],[x,.05,z],0xb2453b,'Zabuton');
- box([.35,.08,.35],[-.75,.43,-.45],0xf2efe6,'Tea tray');box([.08,.1,.08],[-.55,.44,-.3],0x3f7a55,'Teacup');
- // Futon, folded by day, laid out along the north wall.
- const futon=box([1.0,.12,2.0],[hw-.75,.07,-hd+1.15],0xe9dfc8,'Futon');futon.userData.bed=true;
- box([.95,.06,1.4],[hw-.75,.16,-hd+1.35],0x2c3e5c,'Quilt');box([.7,.1,.35],[hw-.75,.18,-hd+.4],0xf3e8d2,'Pillow');
- collider(hw-.75,-hd+1.15,1.0,2.0,.25);
- // Thuan's futon (batch 7b: she is home at the weekend), folded by day in the corner by his pillow.
- const hers=box([.9,.42,.5],[hw-1.75,.21,-hd+.3],0xf1e6e0,'Futon Thuan');hers.userData.bed=true;
- box([.86,.08,.46],[hw-1.75,.46,-hd+.3],0xb2453b,'Thuan’s quilt');box([.5,.1,.3],[hw-1.75,.55,-hd+.3],0xf3e8d2,'Thuan’s pillow');
- collider(hw-1.75,-hd+.3,.9,.5,.6);
- // Kitchenette on the west wall: counter, sink, two-ring gas, a small fridge.
- box([.6,.9,1.8],[-hw+.32,.45,-1.6],0xd8d2c4,'Kitchen counter');box([.62,.04,1.82],[-hw+.32,.92,-1.6],0x9aa3a6);
- box([.4,.12,.4],[-hw+.32,.88,-1.2],0x8e979a,'Sink');box([.35,.04,.5],[-hw+.32,.95,-2.1],0x2b2b2b,'Gas rings');
- box([.6,1.4,.6],[-hw+.32,.7,-.25],0xe8ebe6,'Fridge');collider(-hw+.32,-1.25,.6,2.6,1.4);
- // Television on a low cabinet, and the bookshelf.
- box([.9,.45,.4],[1.2,.23,-hd+.25],0x6b4a32,'TV cabinet');box([.62,.48,.45],[1.2,.7,-hd+.27],0x2b2b2b,'Television');
- box([.52,.36,.02],[1.2,.72,-hd+.5],0x3a5260,'Television screen');collider(1.2,-hd+.25,.9,.45,1);
- // The bookshelf against the front wall, west of the door.
- box([1.1,1.7,.35],[-1.45,.85,hd-.2],0x8a6a4a,'Bookshelf');collider(-1.45,hd-.2,1.1,.35,1.7);
- for(let i=0;i<12;i++)box([.06,.26,.22],[-1.87+(i%4)*.27,.35+Math.floor(i/4)*.5,hd-.24],[0x2f4f6f,0xc9a64a,0x6f2f2f,0x3f6a4a][i%4]);
- // A house has its WC and its bath (docs/BUILDING-AUDIT.md): a toilet and a small
- // tiled bath side by side in the front-east corner, their doors facing into the room.
- {const kit=createPlanKit({box,collider,height:SHELL.h,wall:0xf1e9d6});
-  kit.partition(1.3,1.45,hw,1.45,[[1.42,2.12],[2.5,3.2]]);kit.partition(1.3,1.45,1.3,hd);kit.partition(2.3,1.45,2.3,hd);
-  kit.wetRoom(1.34,2.26,1.49,hd-.04,'Toilet',true,'z0');kit.wetRoom(2.34,hw-.04,1.49,hd-.04,'Bath',false,'z0');}
- // The wardrobe with its mirror.
- box([1.0,1.9,.55],[-hw+.6,.95,hd-1.1],0x7a5a3e,'Wardrobe');collider(-hw+.6,hd-1.1,1.0,.55,1.9);
- const mirror=new THREE.Mesh(new THREE.PlaneGeometry(.38,1.3),new THREE.MeshStandardMaterial({color:0xcfe0e6,roughness:.08,metalness:.6}));mirror.position.set(-hw+.6+.22,1.05,hd-1.1+.28);mirror.name='Wardrobe mirror';group.add(mirror);
- // A framed photograph: a harbour in Sweden, and one of the island the year he came.
- box([.5,.38,.03],[0,1.75,-hd+.04],0x3a3a3a,'Photograph frame');
- box([.44,.32,.008],[0,1.75,-hd+.076],0xe9dcc3,'Two harbour photographs');
- for(const [x,sea,roof] of [[-.11,0x7498aa,0xac5149],[.11,0x78aaa2,0xae8063]]){
-  box([.19,.09,.008],[x,1.69,-hd+.099],sea,'Photograph harbour water');
-  box([.08,.07,.008],[x,1.78,-hd+.122],roof,'Photograph harbour house');
-  box([.15,.018,.008],[x,1.741,-hd+.145],0xa79b84,'Photograph quay');
- }
- for(const [x,z,yaw] of [[-.6,.25,0],[-.6,-1.05,Math.PI],[-1.35,-.4,-Math.PI/2],[.15,-.4,Math.PI/2]]){const cushion=anchor([x,.8,z],'Sit at the low table',()=>action('seat','Low table','Tea from the thermos, still warm. The ferry horn comes across the field.'));cushion.userData.seat={position:[x,0,z],stand:[x+Math.sin(yaw)*.75,0,z+Math.cos(yaw)*.75],surfaceY:.09,eyeY:.82,yaw,pitch:0};}
- anchor([hw-.75,.6,-hd+1.15],'Lie down on the futon',()=>sleep?sleep():action('inspect','Futon','Folded square every morning, the way the harbour master taught you.'));
- anchor([-hw+.8,1.3,hd-.85],'Look in the wardrobe mirror',()=>action('inspect','Wardrobe','Three kariyushi shirts, a suit for assembly days and a straw hat.'));
- // From six the set has the Minato Evening News (feed/evening-news.js); before that, NHK.
- anchor([1.2,1,-hd+.7],'Watch the television',()=>{const news=television?.();if(news)action('watch',news.title,news.text);else action('inspect','Television','NHK Okinawa: the weather map with a typhoon symbol far to the south, then sumo highlights. You leave it on low for company.');});
- anchor([-1.45,1.2,hd-.7],'Look at the bookshelf',()=>action('read','Bookshelf','Sea charts of the Ryūkyū arc. A Swedish–Japanese dictionary with a cracked spine. Three Wallander paperbacks. The town budget for 1997, with coffee rings.'));
- anchor([0,1.7,-hd+.4],'Look at the photograph',()=>action('inspect','Photograph','Two pictures in one frame: a red wooden boathouse on a grey Swedish shore, and this harbour in 1979, the year you stepped off the ferry and did not get back on.'));
- // The letter box inside the front door (郵便受け): the post comes through the slot in
- // the door and drops into this steel box on the wall beside it, east of the frame and
- // clear of the dado rail. When something unread is inside, the tops of the envelopes show
- // over its lip, and that is the only signal (src/mail/post.js).
- const lx=.85,ly=1.1,lz=hd-.07;
- // Open at the top, as the inside box is: a back and sides, a floor, and a rolled front lip.
- box([.34,.26,.012],[lx,ly,lz+.054],0xd9d4c3,'Letter box back');
- for(const sx of [-1,1])box([.012,.26,.12],[lx+sx*.164,ly,lz],0xd9d4c3,'Letter box side');
- box([.34,.012,.12],[lx,ly-.124,lz],0xd9d4c3,'Letter box floor');
- box([.34,.2,.012],[lx,ly-.03,lz-.054],0xd9d4c3,'Letter box front');
- box([.35,.02,.022],[lx,ly+.075,lz-.056],0xbfb9a8,'Letter box lip');
- // It stands 12 cm off the wall at hip height: walking into it stops you, as it would.
- collider(lx,lz,.36,.14,ly+.13);
- plate(group,'JOHANSSON',{w:.24,h:.05,at:[lx,ly-.05,lz-.0615],ry:Math.PI,bg:'#f3efe2',fg:'#2f3a36',size:.62});
- const envelopes=[[-.06,.02,0xf6f2e6],[.05,-.01,0xe9dcc3]].map(([dx,tilt,c])=>{const e=box([.17,.12,.008],[lx+dx,ly+.06,lz+.012+dx*.1],c,'Envelope in the letter box');e.rotation.z=tilt;e.visible=false;return e;});
- const refreshPost=()=>{const n=post?.unread?.()||0;envelopes.forEach((e,i)=>{e.visible=n>i;});};
- refreshPost();
- anchor([lx,1.1,hd-.35],'Check the post',()=>{post?.open?.();refreshPost();});
- return {...layoutFor(),home:true,refreshPost};
-}
 
 /**
  * 調理室, the community centre's kitchen: where the women's association fries sata andagi

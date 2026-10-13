@@ -19,8 +19,14 @@ export const AIRPORT_PUBLIC_FLOORS=Object.freeze([
  // The Hinata lookout deck stands just clear of the highest ground under it.
  {id:'kitano-lookout',...LOOK,y:SEA_LEVEL+lookTop+.12},
  // Kitano hamlet's lane and yards (kitano-hamlet-layout.js), slabs over the uneven plateau south of the cargo court.
- ...KITANO_HAMLET_FLOORS.map(f=>({...f,y:SEA_LEVEL+f.y})),
+ ...KITANO_HAMLET_FLOORS.map(f=>({...f,y:SEA_LEVEL+f.y,...(f.slope?{slope:{...f.slope,y1:SEA_LEVEL+f.slope.y1}}:{})})),
 ].map(Object.freeze));
+/** A public floor's height at the island's v: level, or a flight of steps rising along v (`slope`: from y at v0 to y1 at v1). */
+export function floorHeight(f,v){
+ if(!f.slope)return f.y;
+ const {v0,v1,y1}=f.slope,t=Math.max(0,Math.min(1,(v-v0)/(v1-v0)));
+ return f.y+(y1-f.y)*t;
+}
 export const AIRPORT_LANDING=Object.freeze(airportWorld(...AIRPORT_JETTY.landing));
 export const AIRPORT_LANDING_HEIGHT=airportSurface(...AIRPORT_LANDING)?.y??AIRPORT_PIER_HEIGHT;
 export const AIRPORT_COUNTER=Object.freeze(airportWorld(-10,18.7));
@@ -32,7 +38,7 @@ export function airportSurface(x,z,r=0){
  const [u,v]=airportLocal(x,z);
  const within=s=>u>=s.minX+r&&u<=s.maxX-r&&v>=s.minZ+r&&v<=s.maxZ-r;
  const cargo=AIRPORT_CARGO_SURFACE;if(within(cargo))return {id:'airport-cargo-court',surface:'asphalt',y:cargo.y};
- const floor=AIRPORT_PUBLIC_FLOORS.find(within);if(floor)return {id:floor.id,surface:'stone',y:floor.y};
+ const floor=AIRPORT_PUBLIC_FLOORS.find(within);if(floor)return {id:floor.id,surface:'stone',y:floorHeight(floor,v)};
  if(within(AIRPORT_JETTY))return {id:'airport-jetty',surface:'stone',y:AIRPORT_PIER_HEIGHT};
  if(within({minX:-44,maxX:44,minZ:19.4,maxZ:20.8}))return {id:'airport-terminal-approach',surface:'stone',y:SEA_LEVEL+1.14};
  if(within({minX:-44,maxX:44,minZ:17,maxZ:19.7}))return {id:'airport-passenger-walk',surface:'stone',y:AIRPORT_PAVEMENT_HEIGHT};

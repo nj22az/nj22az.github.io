@@ -35,7 +35,7 @@ function validateSeats(root,targets,colliders,{streamed=new Set()}={}){
 function fixture(build){
  installDOM();const room=new THREE.Group(),targets=[],colliders=[];
  const reg=(object,label)=>targets.push({object,label});
- build({room,reg,action(){},onReturn(){},collider:(x,z,w,d,height)=>colliders.push({x,z,w,d,height})});
+ build({room,reg,action(){},onReturn(){},collider:(x,z,w,d,height,minY)=>colliders.push({x,z,w,d,height,minY})});
  return {room,targets,colliders};
 }
 

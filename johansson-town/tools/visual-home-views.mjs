@@ -4,13 +4,13 @@ import {HOME_CUSTOMIZATION_PLACEMENT} from '../src/world/interiors/home-customiz
 
 // Secondary views complement the entrance fixture. They use the authored plans:
 // concrete-family table (-2.25,-1.45), red-tile guest table (1.6,1), the staff
-// houses' mirrored tatami rooms, and the mayor's main-room shelf (3.13,.85).
+// houses' mirrored tatami rooms, and the mayor's keepsake shelf on his living room's west wall (−5.67,3.8).
 // Eye positions stay below ceilings and away from full-height partitions.
 const CONCRETE={name:'household',pos:[-.65,1.65,-.95],at:[-2.1,.95,-1.68]};
 const RED_TILE={name:'household',pos:[2.55,1.65,2.55],at:[1.35,.65,.3]};
 const THUAN_LIVING={name:'living',pos:[-.8,1.65,2.2],at:[-2.15,.8,.15]};
 const shelf=HOME_CUSTOMIZATION_PLACEMENT.shelf;
-const MAYOR={name:'keepsakes',pos:[1.8,1.6,.65],at:[shelf[0],shelf[1]+.15,shelf[2]]};
+const MAYOR={name:'keepsakes',pos:[-3.6,1.6,3.5],at:[shelf[0],shelf[1]+.15,shelf[2]]};
 const SATO={name:'tea-corner',pos:[1.3,1.65,2],at:[-1.5,.8,0]};
 const plots=new Map(KITAHAMA.plots.map(p=>['home-'+p.id,p]));
 

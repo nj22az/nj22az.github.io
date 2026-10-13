@@ -28,25 +28,26 @@ test('every home piece is real-sized, says what it is for, and its model fits th
  }
 });
 
-test('furniture goes on the open floor of the main room, never into the wall, the WC or the existing furniture',()=>{
+test('furniture goes on the open floor of the living room and the kitchen, never into a wall, the genkan or the existing furniture',()=>{
  const {placements}=home();
- assert.equal(placements.place({kind:'plant',x:-2.5,z:.6}).ok,true,'a palm in the open west corner');
- assert.match(placements.check({kind:'tansu',x:3.2,z:0})[0],/ground/,'through the east wall');
- assert.match(placements.check({kind:'andon',x:2.8,z:2.2})[0],/ground/,'inside the bath');
- assert.match(placements.check({kind:'side-table',x:-.6,z:-.4})[0],/overlaps/,'on the low table');
- assert.match(placements.check({kind:'tansu',x:0,z:2.3}).join(' '),/genkan|doorway|way to/,'in the genkan');
- assert.match(placements.check({kind:'cushion',x:.15,z:-.4}).join(' '),/way to/,'on a seat at the table');
+ assert.equal(placements.place({kind:'plant',x:-5.3,z:1.4}).ok,true,'a palm by the living room’s west wall');
+ assert.match(placements.check({kind:'tansu',x:-1.1,z:2.5})[0],/ground/,'through the living room’s east wall');
+ assert.match(placements.check({kind:'andon',x:.05,z:4.25})[0],/ground/,'in the genkan');
+ assert.match(placements.check({kind:'side-table',x:-3.4,z:2.5})[0],/overlaps/,'on the low table');
+ assert.match(placements.check({kind:'tansu',x:-1.6,z:2.25}).join(' '),/genkan|doorway|way to/,'in the hall’s doorway');
+ assert.match(placements.check({kind:'cushion',x:-2.55,z:2.5}).join(' '),/way to/,'on a seat at the table');
+ assert.match(placements.check({kind:'side-table',x:-3.8,z:-.7}).join(' '),/^$/,'by the dining table, on the kitchen’s open floor');
 });
 
 test('a rug lies on the floor under other furniture, and people walk over it',()=>{
  const {placements,colliders}=home(),n=colliders.length;
- assert.equal(placements.place({kind:'rug',x:-1.3,z:.9}).ok,true);
+ assert.equal(placements.place({kind:'rug',x:-4.4,z:2}).ok,true);
  assert.equal(colliders.length,n,'the rug adds nothing to bump into');
- assert.equal(placements.place({kind:'side-table',x:-1.3,z:.9}).ok,true,'a side table can stand on the rug');
+ assert.equal(placements.place({kind:'side-table',x:-4.7,z:1.4}).ok,true,'a side table can stand on the rug');
 });
 
 test('arranged furniture is saved with the player, survives other decor choices, and bad saves are cleaned',()=>{
- const state={homeDecor:{wall:'harbour',items:[{id:'p1',kind:'plant',x:-2.5,z:.6,yaw:0},{id:'p1',kind:'plant',x:0,z:0},{id:'p2',kind:'spaceship',x:0,z:0},{id:'p3',kind:'andon',x:'nope',z:0}]}};
+ const state={homeDecor:{wall:'harbour',items:[{id:'p1',kind:'plant',x:-5.3,z:1.4,yaw:0},{id:'p1',kind:'plant',x:0,z:0},{id:'p2',kind:'spaceship',x:0,z:0},{id:'p3',kind:'andon',x:'nope',z:0}]}};
  assert.deepEqual(restoreHomeItems(state.homeDecor.items).map(p=>p.id),['p1']);
  assert.equal(setHomeDecor(state,'textile','coral'),true);
  assert.deepEqual(state.homeDecor.items?.map(p=>p.id),['p1'],'changing the cushions keeps the furniture');
@@ -58,29 +59,29 @@ test('the keep-clear squares sit on the open floor, so they protect real places'
  for(const [x,z,s] of MAYOR_HOME_FLOOR.keepClear)assert.ok(footprint({x,z,w:s,d:s}).some(([px,pz])=>MAYOR_HOME_FLOOR.walkable(px,pz))||MAYOR_HOME_FLOOR.walkable(x,z),[x,z].join());
 });
 
-test('indoors a piece must leave the 0.78 m way between the door, the wardrobe, the futon and the table',async()=>{
+test('indoors a piece must leave the 0.78 m way between the doors, the table and the television',async()=>{
  const {createPlacements:make}=await import('../src/build/placements.js'),{HOME_PASSAGE}=await import('../src/build/home-decorate.js');
  assert.equal(HOME_PASSAGE,.78,'the Japanese housing standard\'s 780 mm for the ways of daily life');
  const room=new THREE.Group(),colliders=[];
  buildMayorHome({room,reg(){},action(){},collider:(x,z,w,d,height=2.8,minY=0)=>colliders.push({x,z,w,d,height,minY}),exit(){}});
  const placements=make({group:room.getObjectByName('Mayor’s home'),colliders,factory:homeFurnitureFactory(),walkable:MAYOR_HOME_FLOOR.walkable,
   heightAt:()=>0,doors:MAYOR_HOME_FLOOR.keepClear,lookup,needWhy:false,passage:HOME_PASSAGE,passageOnLoad:false});
- // Between the low table and the genkan: the way in from the door.
- assert.match(placements.check({kind:'side-table',x:-.4,z:1})[0],/less than 0\.78 m to walk past it/);
+ // Between the low table and the television: the way in from the hall's doorway.
+ assert.match(placements.check({kind:'side-table',x:-1.9,z:1.4})[0],/less than 0\.78 m to walk past it/);
  // Against the west wall: out of everybody's way.
- assert.deepEqual(placements.check({kind:'side-table',x:-3,z:.4}),[]);
+ assert.deepEqual(placements.check({kind:'side-table',x:-5.3,z:2.6}),[]);
  // A saved room where a side table already stands in the way is shown as it was, not hidden by the newer rule ...
- assert.deepEqual(placements.load([{id:'p1',kind:'side-table',x:-.4,z:1,yaw:0,note:''}]),[]);
+ assert.deepEqual(placements.load([{id:'p1',kind:'side-table',x:-1.9,z:1.4,yaw:0,note:''}]),[]);
  // ... an Undo puts it back where it was ...
  assert.equal(placements.remove('p1'),true);assert.equal(placements.undo().ok,true);
  assert.equal(placements.list().length,1);
  // ... and moved anywhere, the rule applies again.
- assert.match(placements.move('p1',{x:-.8,z:.9}).problems[0],/0\.78 m/);
- assert.deepEqual(placements.move('p1',{x:-3,z:.4}).ok,true);
- assert.equal(placements.move('p1',{x:-.4,z:1}).ok,true,'its saved spot stays its own: it may go back there');
+ assert.match(placements.move('p1',{x:-1.9,z:1.5}).problems[0],/0\.78 m/);
+ assert.deepEqual(placements.move('p1',{x:-5.3,z:2.6}).ok,true);
+ assert.equal(placements.move('p1',{x:-1.9,z:1.4}).ok,true,'its saved spot stays its own: it may go back there');
  // Turned there by float arithmetic (0.3 + 0.1 − 0.1 is not exactly 0.3), it is still its own spot.
  const turned=make({group:new THREE.Group(),colliders:colliders.filter(c=>!c.placementId),factory:homeFurnitureFactory(),walkable:MAYOR_HOME_FLOOR.walkable,
   heightAt:()=>0,doors:MAYOR_HOME_FLOOR.keepClear,lookup,needWhy:false,passage:HOME_PASSAGE,passageOnLoad:false});
- assert.deepEqual(turned.load([{id:'p7',kind:'side-table',x:-.4,z:1,yaw:.3,note:''}]),[]);
+ assert.deepEqual(turned.load([{id:'p7',kind:'side-table',x:-1.9,z:1.4,yaw:.3,note:''}]),[]);
  assert.equal(turned.move('p7',{yaw:(.3+.1)-.1}).ok,true);
 });

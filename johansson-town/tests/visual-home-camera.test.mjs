@@ -29,7 +29,7 @@ test('new staff and Thuan home camera fixtures are inside their real plans and c
 
 test('the Mayor keepsake fixture sees the actual postcard in the main room',()=>{
  installDOM();const room=new THREE.Group(),colliders=[];
- const layout=buildMayorHome({room,reg(){},action(){},collider(x,z,w,d,height){colliders.push({x,z,w,d,height});}});
+ const layout=buildMayorHome({room,reg(){},action(){},collider(x,z,w,d,height,minY=0){if(minY+height>.01&&minY<2)colliders.push({x,z,w,d,height});}});
  createHomeCustomization({room,state:{},menu(){},save(){},close(){},reg(){}});room.updateMatrixWorld(true);
  const view=homeViews('mayor-home',layout)[0],[x,y,z]=view.pos;
  assert.ok(!colliders.some(c=>c.height>=y&&Math.abs(x-c.x)<c.w/2+.05&&Math.abs(z-c.z)<c.d/2+.05),'Camera is clear of the bathroom partitions');

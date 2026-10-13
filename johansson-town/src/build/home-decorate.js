@@ -40,7 +40,8 @@ export function createHomeDecorating({group,colliders,state,save,canvas,camera,f
  const skipped=placements.load(restoreHomeItems(state.homeDecor?.items).map(p=>({...p,note:''})));persist=true;
  let bar=null,ceiling=[];
  const mode=createBuildMode({canvas,camera,group,placements,factory,heightAt:()=>0,lookup,stage,keep:()=>bar?[bar]:[],
-  limits:{min:2.5,max:10,start:7},getStart:()=>({x:0,z:0})});
+  // The furniture tool's view starts over the middle of the floor it furnishes.
+  limits:{min:2.5,max:10,start:7},getStart:()=>{let n=0,x=0,z=0;for(let i=-6;i<=6;i+=.5)for(let j=-5;j<=5;j+=.5)if(floor(i,j)){x+=i;z+=j;n++;}return n?{x:x/n,z:z/n}:{x:0,z:0};}});
 
  function makeBar(){
   const el=document.createElement('div');el.id='decorBar';el.setAttribute('role','toolbar');el.setAttribute('aria-label','Arrange furniture');

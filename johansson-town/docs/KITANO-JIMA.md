@@ -203,3 +203,63 @@ game: alongside, Mr Higa Jr in the foyer and Ms Uezu on the car deck with their 
 end of the car deck. Open: authored looks and portraits for Mr Nakandakari, Ms Uezu and Mr Higa Jr; the purser's post
 (the manning's eight); the crew moving between posts instead of appearing at them.
 
+
+## 5. Batch 7d: Johansson's house from the creator's drawings (2026-10-13)
+
+The creator, 2026-10-13, with a CAD set: *"Can you use these drawings and model Johansson’s house on the tropical
+island?"* Rev B came first, then Rev C (coordinated plans with real wall gaps), then the **Final Rev F** (the coordinated
+game production reference: manifest schema 2, the collision and navigation contract, schedules, services, a reference
+simulation of the house's systems). The house is built from **Rev F**; Rev C was built first and committed as a
+checkpoint, then replaced. The design book is `docs/johansson-house/README.md` (generated: the plans as SVG and the
+as-built plans as DXF on Rev F's layers with the game's own beside them, the rooms, findings RF1–RF8).
+
+**The drawings, read.** `tools/johansson-house-import.mjs` reads `docs/johansson-house/cad-rev-f/` into
+`src/world/johansson-house-cad.js` and checks the package on the way in (SHA-256 of every file, the collision contract
+against the manifest, each plan against the manifest cut 1 m over its floor, the room and opening schedules, the roof
+and site plans). `src/world/johansson-house.js` is the house as built; its departures are the findings:
+- **RF1:** the genkan's partition stood across the foot of both flights (140 mm of floor in front of them; the
+  drawings' own navigation links end in the genkan): it is opened between the well's guard lines under a 2.1 m head, so
+  the stair rises from the genkan. D-G0-ENTRY-HALL stays a doorway without a leaf (no wall left to slide one over).
+- **RF2, RF3:** guards the drawings leave out: the upper floor's edge over the foot of the flight up, and the inner side
+  of each upper flight (a 2.2 m drop onto the lower one).
+- **RF4:** the sockets, drawn 350 mm off the walls, are on the walls.
+- **RF5, RF6 (open):** the services and the systems simulation are the next batches; the equipment the drawings place
+  (the boards, the water heater, the manifold, the lift pump, the outdoor units) is built and can be looked at.
+- **RF7 (open):** the basement and the court are 1.5 m under the sea's level. **RF8:** the plot.
+
+**Outside.** Plot `kitano-1` grows to 17 × 22 m (island u −49.5…−32.5, v 51.5…73.5; its slab goes down to 0.2 m where the
+ground falls to the beach; the planting rectangle grows behind it, 4 m clear of the Coral Bay Bar). The house stands 7.5 m
+in from the gate (room for the garden stair down to the court), its ground floor level with the yard (Rev F: no porch
+step), the walls and openings as drawn, the slab bands, the front door with its letter slot, the drawn hipped roof of
+red tile (the drawings' own mesh, eaves +5 800, ridge +8 000) with its hips and ridge pointed in lime and a shisa on the
+ridge, the two roof sleeves capped until their pipes go through, and the outdoor units of the two cooling zones on
+their stand by the house's east wall. The yard keeps the hinpun, the path, the gajumaru and his bicycle; fukugi along
+the seaward wall and the back; the drawn terrace behind the back door.
+
+**Inside.** The mayor's home is the house (`buildMayorHome`, `MAYOR_HOME_FLOOR` in town-hall.js are the house's), so
+the game, Johansson Studio and the furniture tool find it by the old names. Nineteen rooms on three storeys, walked
+floor by floor (`house-walk.js`: the floor nearest the feet within a step, and now nobody stands where a floor's body is
+in theirs, so you step onto a flight and never walk under one lower than your head); the stacked dog-leg stair with
+closed strings, soffits and the drawn guards; seventeen timber sliding doors (*Slide the door*) that carry their
+colliders as they slide and keep their state by id in the save under `johansson.house.v2`; every room furnished for what
+it is for; the boards on the riser in the genkan and the halls, the heater and the manifold in the boiler room, the lift
+pump's cover in the sauna's shower. Walked in the running game: up both flights from the genkan to the upper floor and
+down both to the basement.
+
+**The court, the garden stair and the lightwell (the ground batch).** Dug into the yard as drawn: the court outside
+D-BEXT 2.8 m down between its retaining walls and their 1.1 m parapets, its floor draining to the storm sump's grating;
+the garden stair down into it from a paved top landing at the yard (16 × 175 mm, 1 000 mm clear between cheeks over the
+200 mm the drawings leave either side); the lightwell outside the club's window with its drain and guards. The yard's
+slab is cut round them (`kitano-hamlet.js`), the island's ground has no cells in them (`tropical-island.js`), and the sea
+is not drawn in them (`ocean.js` `setOceanPits`, up to four fixed pits beside the ferry's moving hole): both floors are
+under the sea's level. The island's public floors can slope (`airport-ground.js` `floorHeight`), so the stair is walked
+through its nosings: walked in the running game down into the court and back up to the yard. D-BEXT is bolted from
+inside (*Try the court door*, from either side).
+
+**Open.** D-BEXT as a way in (with the systems' flood alarm). The services and the systems (RF5, RF6). Game_Integration.md's
+host acceptance (phones, frame rate under the town's load).
+
+**Found on the way.** Studio's furniture tool counted the basement's colliders under the living room: it ignores
+colliders whose top is under the floor (`placements.js`). The residents' room navigator keeps 0.32 m from walls on a
+0.2 m grid, so it cannot plan through the house's 900 mm doors: when residents live in the house, plan their walks on
+the house's own floors.
