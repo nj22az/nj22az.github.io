@@ -105,10 +105,11 @@ export const FERRY_INTERIOR=(()=>{
   * 'chequer' and 'grating' repeating floor patterns, 'alarms' the console's matrix (ferry-model.js plateMesh). `live` names the
   * plant reading the plate shows (ferry-plant-controls.js liveValue): the model redraws it as the plant changes (6r-2).
   */
- const plate=(lines,w,h,pos,rotY,o={})=>plates.push(Object.freeze({lines:Object.freeze(lines),w,h,pos:Object.freeze(pos),rotY,rotX:o.rotX||0,kind:o.kind||'text',value:o.value??null,red:o.red?Object.freeze(o.red):null,here:o.here?Object.freeze(o.here):null,bg:o.bg||'#dcd8c8',fg:o.fg||'#1d2326',name:o.name||'maker’s plate',live:o.live||null}));
+ const plate=(lines,w,h,pos,rotY,o={})=>plates.push(Object.freeze({lines:Object.freeze(lines),w,h,pos:Object.freeze(pos),rotY,rotX:o.rotX||0,kind:o.kind||'text',value:o.value??null,red:o.red?Object.freeze(o.red):null,here:o.here?Object.freeze(o.here):null,bg:o.bg||'#dcd8c8',fg:o.fg||'#1d2326',name:o.name||'maker’s plate',live:o.live||null,range:o.range?Object.freeze(o.range):null}));
  /** The fire control and safety plan posted on a wall (ferry-safety-plan.js), 0.9 × 0.54 m, marked YOU ARE HERE at `here` {deck, z, x} in the yard's frame. */
  const safetyPlan=(pos,rotY,here,where)=>plate([],.9,.54,pos,rotY,{kind:'safety-plan',here,name:'safety plan: '+where});
  /** A round gauge d metres across at pos, facing +z turned by rotY: the needle at value 0–1, a red zone from `red`. */
+ /** `range` [lo, hi] numbers the scale and writes the reading under the pivot (the creator, 2026-10-13: the console "needs to be easier to read and more detailed"). */
  const dial=(label,unit,value,d,pos,rotY,o={})=>plate([label,unit],d,d,pos,rotY,{...o,kind:'dial',value,bg:o.bg||'#f1ede2',name:o.name||'gauge: '+label});
  /** Floor plates (chequer) or a grating over the bilge, flat on the floor at y, over x0–x1 × z0–z1. */
  const floorPlate=(kind,x0,x1,z0,z1,y,o={})=>plate([],Math.abs(x1-x0),Math.abs(z1-z0),[(x0+x1)/2,y,(z0+z1)/2],0,{...o,kind,rotX:-Math.PI/2,bg:o.bg||(kind==='chequer'?'#8f969a':'#7a2a1e'),fg:o.fg||(kind==='chequer'?'#a6adb0':'#3b4144'),name:o.name||(kind==='chequer'?'floor plates':'grating')});
@@ -689,13 +690,13 @@ export const FERRY_INTERIOR=(()=>{
     deco([cx+inb*1.1-.26,y0+.95,E0+.05],[cx+inb*1.1+.26,y0+1.3,E0+.08],0xf0ece0);
     // The gauge board (the photographs: a board of round dials): lube-oil pressure, cooling water, fuel pressure, exhaust temperature, charge air.
     const eid=s>0?'mainP':'mainS';
-    dial('LO PRESS','bar',.55,.1,[cx+inb*1.1-.17,y0+1.2,E0+.044],Math.PI,{red:[0,.2],live:eid+'.loPress'});dial('WATER','°C',.62,.1,[cx+inb*1.1-.055,y0+1.2,E0+.044],Math.PI,{red:[.85,1],live:eid+'.water'});
-    dial('FUEL','bar',.5,.1,[cx+inb*1.1+.055,y0+1.2,E0+.044],Math.PI,{live:eid+'.fuel'});dial('EXHAUST','°C',.45,.1,[cx+inb*1.1+.17,y0+1.2,E0+.044],Math.PI,{red:[.85,1],live:eid+'.exhaust'});
-    dial('CHARGE AIR','bar',.4,.08,[cx+inb*1.1-.11,y0+1.05,E0+.044],Math.PI,{live:eid+'.chargeAir'});dial('LO TEMP','°C',.5,.08,[cx+inb*1.1+.11,y0+1.05,E0+.044],Math.PI,{red:[.9,1],live:eid+'.loTemp'});
+    dial('LO PRESS','bar',.55,.1,[cx+inb*1.1-.17,y0+1.2,E0+.044],Math.PI,{red:[0,.2],live:eid+'.loPress',range:[0,6]});dial('WATER','°C',.62,.1,[cx+inb*1.1-.055,y0+1.2,E0+.044],Math.PI,{red:[.85,1],live:eid+'.water',range:[0,100]});
+    dial('FUEL','bar',.5,.1,[cx+inb*1.1+.055,y0+1.2,E0+.044],Math.PI,{live:eid+'.fuel',range:[0,10]});dial('EXHAUST','°C',.45,.1,[cx+inb*1.1+.17,y0+1.2,E0+.044],Math.PI,{red:[.85,1],live:eid+'.exhaust',range:[0,600]});
+    dial('CHARGE AIR','bar',.4,.08,[cx+inb*1.1-.11,y0+1.05,E0+.044],Math.PI,{live:eid+'.chargeAir',range:[0,3]});dial('LO TEMP','°C',.5,.08,[cx+inb*1.1+.11,y0+1.05,E0+.044],Math.PI,{red:[.9,1],live:eid+'.loTemp',range:[0,100]});
     bar([cx+inb*1.1,y0+.22,E0+.06],[cx+inb*1.1,y0+.95,E0+.06],.02,DARK);
     deco([cx+inb*1.2-.16,y0+.9,Z(9.1)],[cx+inb*1.2+.16,y0+1.05,Z(9.4)],COV);bar([cx+inb*1.2,y0+.22,Z(9.25)],[cx+inb*1.2,y0+.9,Z(9.25)],.04,COV);
     cyl(.07,.07,.02,[cx+inb*1.2,y0+1.06,Z(9.25)],0xf0ece0,{seg:14,name:'tachometer'});cyl(.025,.025,.03,[cx+inb*1.2+.1,y0+1.07,Z(9.15)],L.red,{seg:10,name:'stop button'});bar([cx+inb*1.2-.1,y0+1.05,Z(9.35)],[cx+inb*1.2-.1,y0+1.25,Z(9.45)],.012,DARK);
-    dial('RPM','×100',.0,.13,[cx+inb*1.2,y0+1.071,Z(9.25)],0,{rotX:-Math.PI/2,red:[.9,1],name:'gauge: tachometer',live:eid+'.rpm'});
+    dial('RPM','×100',.0,.13,[cx+inb*1.2,y0+1.071,Z(9.25)],0,{rotX:-Math.PI/2,red:[.9,1],name:'gauge: tachometer',live:eid+'.rpm',range:[0,10]});
     // The start panel on the stand's face: the key switch, the green start and the hour meter (the photographs' start panels)
     cyl(.018,.018,.03,[cx+inb*1.2+.1,y0+1.07,Z(9.35)],0x2f8f4f,{seg:10,name:'start button'});cyl(.012,.012,.03,[cx+inb*1.2+.1,y0+1.07,Z(9.42)],0x1f2224,{seg:8,name:'key switch'});
     plate(['HOURS','08421.6'],.09,.035,[cx+inb*1.2-.08,y0+1.025,Z(9.1)-.001],Math.PI,{bg:'#1f2224',fg:'#e8e2cc',name:'hour meter'});
@@ -716,7 +717,7 @@ export const FERRY_INTERIOR=(()=>{
     deco([s*2.05-.1,y0+.92,zc-.12],[s*2.05+.1,y0+1.08,zc+.12],COV);
     // The louvred end bell outboard (the photographs' alternators breathe through louvres), and the set's own panel
     cyl(.3,.3,.08,[s*2.39,y0+.6,zc],0x1f2f52,{rot:[0,0,Math.PI/2],seg:18,name:'alternator end bell'});for(const k of [-.18,-.09,0,.09,.18])deco([s*2.43-.005,y0+.6+k-.015,zc-.22],[s*2.43+.005,y0+.6+k+.015,zc+.22],0x15223d);
-    deco([s*.6-.1,y0+.95,Z(12.55)+.06],[s*.6+.1,y0+1.25,Z(12.55)+.09],0x6b7375);dial('RPM','×100',.6,.09,[s*.6,y0+1.15,Z(12.55)+.059],Math.PI,{red:[.92,1],live:(s>0?'gen1':'gen2')+'.rpm'});
+    deco([s*.6-.1,y0+.95,Z(12.55)+.06],[s*.6+.1,y0+1.25,Z(12.55)+.09],0x6b7375);dial('RPM','×100',.6,.09,[s*.6,y0+1.15,Z(12.55)+.059],Math.PI,{red:[.92,1],live:(s>0?'gen1':'gen2')+'.rpm',range:[0,30]});
     cyl(.012,.012,.02,[s*.6-.05,y0+1.02,Z(12.55)+.06],0x2f8f4f,{rot:[Math.PI/2,0,0],seg:8,name:'start button'});cyl(.012,.012,.02,[s*.6+.05,y0+1.02,Z(12.55)+.06],L.red,{rot:[Math.PI/2,0,0],seg:8,name:'stop button'});
     plate(makerPlate('genset',s>0?1:2),.3,.14,[s*1.2,y0+.42,Z(12.55)-.005],Math.PI,{name:'maker’s plate: generator No.'+(s>0?1:2)});tagPlate(tagOf('fuel',s>0?'fuel-gen1':'fuel-gen2').replace(/ .*$/,'')+' · '+(s>0?'13':'14')+'MKA10 AG001',[s*1.2,y0+.53,Z(12.55)-.005],Math.PI,{w:.3});
    }
@@ -732,10 +733,10 @@ export const FERRY_INTERIOR=(()=>{
    cyl(.055,.055,.22,[cx-.1,y0+.5,cz],L.cover,{rot:[0,0,.45],seg:10,name:'compressor cylinder'});cyl(.045,.045,.2,[cx+.1,y0+.5,cz],L.cover,{rot:[0,0,-.45],seg:10,name:'compressor cylinder'});
    cyl(.16,.16,.04,[cx,y0+.3,Z(8.99)],L.cover,{rot:[Math.PI/2,0,0],seg:16,name:'compressor flywheel'});cyl(.09,.09,.26,[cx,y0+.25,Z(9.43)],L.alternator,{rot:[Math.PI/2,0,0],seg:14,name:'compressor motor'});
    anchor('air','c1',[cx,y0+.62,cz],'up');                                                                                   // the delivery line to the bottles is routed from the diagram
-   dial('AIR','bar',.72,.07,[cx,y0+.46,Z(9.265)],0,{red:[.9,1],live:'air0'});plate(makerPlate('compressor'),.18,.08,[cx,y0+.25,Z(9.255)],0,{name:'maker’s plate: compressor'});tagPlate(tagOf('air','c1'),[cx,y0+.57,Z(9.3)+.001],0);
+   dial('AIR','bar',.72,.07,[cx,y0+.46,Z(9.265)],0,{red:[0,.5],live:'air0',range:[0,30]});plate(makerPlate('compressor'),.18,.08,[cx,y0+.25,Z(9.255)],0,{name:'maker’s plate: compressor'});tagPlate(tagOf('air','c1'),[cx,y0+.57,Z(9.3)+.001],0);
    for(const [x,id] of [[2.3,'b1'],[2.75,'b2']]){anchor('air',id,[x,y0+1.3,Z(8.75)],'fwd');anchor('air',id==='b1'?'sv1':'sv2',[x,y0+1.52,Z(8.95)],'up',{local:true});anchor('air',id==='b1'?'dr1':'dr2',[x,y0+.05,Z(8.95)],'fwd',{local:true});
     cyl(.02,.02,.06,[x,y0+1.52,Z(8.95)],0xb8a060,{seg:6,name:'safety valve'});cyl(.012,.012,.04,[x,y0+.05,Z(8.95)],0xb8a060,{rot:[Math.PI/2,0,0],seg:6,name:'drain cock'});
-    dial('BOTTLE','bar',.7,.06,[x,y0+1.42,Z(8.75)-.03],Math.PI,{live:id==='b1'?'air0':'air1'});bar([x,y0+1.3,Z(8.75)],[x,y0+1.42,Z(8.75)],.03,0xb0b4b4);plate(['STARTING AIR','150 L · 30 bar'],.16,.06,[x,y0+.9,Z(8.75)+.2],0,{bg:'#f1ede2',name:'label: air bottle'});tagPlate(tagOf('air',id),[x,y0+1.0,Z(8.75)+.2],0);}
+    dial('BOTTLE','bar',.7,.06,[x,y0+1.42,Z(8.75)-.03],Math.PI,{live:id==='b1'?'air0':'air1',range:[0,30]});bar([x,y0+1.3,Z(8.75)],[x,y0+1.42,Z(8.75)],.03,0xb0b4b4);plate(['STARTING AIR','150 L · 30 bar'],.16,.06,[x,y0+.9,Z(8.75)+.2],0,{bg:'#f1ede2',name:'label: air bottle'});tagPlate(tagOf('air',id),[x,y0+1.0,Z(8.75)+.2],0);}
   }
   // The workbench: a top on four legs (so the spare under it shows), its vice, and the bench's box for the walk.
   box([W-.35,y0,Z(10.0)],[W,y0+.9,Z(11.5)],0x8a7356,{draw:false,name:'workbench'});deco([W-.35,y0+.8,Z(10.0)],[W,y0+.9,Z(11.5)],0x8a7356);deco([W-.32,y0+.9,Z(10.2)],[W-.2,y0+1.05,Z(10.45)],STEEL);
@@ -777,7 +778,7 @@ export const FERRY_INTERIOR=(()=>{
      const gen=i===0||i===2,on=i===0;
      if(gen){const v=on?.78:0,A=on?.3:0,kW=on?.35:0,hz=on?.5:0;
       const gid=i===0?'gen1':'gen2';
-      dial('kW','0–150',kW,.11,[cx-.07,y0+1.5,F],0,{live:gid+'.kW'});dial('A','0–250',A,.11,[cx+.07,y0+1.5,F],0,{red:[.85,1],live:gid+'.A'});dial('V','0–500',v,.11,[cx-.07,y0+1.32,F],0,{live:gid+'.V'});dial('Hz','55–65',hz,.11,[cx+.07,y0+1.32,F],0,{live:gid+'.Hz'});
+      dial('kW','0–150',kW,.11,[cx-.07,y0+1.5,F],0,{live:gid+'.kW',range:[0,150]});dial('A','0–250',A,.11,[cx+.07,y0+1.5,F],0,{red:[.85,1],live:gid+'.A',range:[0,250]});dial('V','0–500',v,.11,[cx-.07,y0+1.32,F],0,{live:gid+'.V',range:[0,500]});dial('Hz','55–65',hz,.11,[cx+.07,y0+1.32,F],0,{live:gid+'.Hz',range:[55,65]});
       deco([cx-.09,y0+.75,a+.4],[cx+.09,y0+1.05,F+.01],0x1f2224);deco([cx-.02,y0+.78,F+.01],[cx+.02,on?y0+1.02:y0+.9,F+.02],0xe8e2cc);   // the breaker in its frame; the handle up when closed
       plate(['ACB','200 A'],.12,.04,[cx,y0+1.1,F+.005],0,{bg:'#f1ede2',name:'label: breaker'});
       cyl(.012,.012,.02,[cx-.06,y0+1.18,F],on?0x2f8f4f:0x1e4a2b,{rot:[Math.PI/2,0,0],seg:8,name:'breaker lamp'});cyl(.012,.012,.02,[cx+.06,y0+1.18,F],on?0x5a1f1a:L.red,{rot:[Math.PI/2,0,0],seg:8,name:'breaker lamp'});
@@ -818,11 +819,13 @@ export const FERRY_INTERIOR=(()=>{
    bar([-W+.2,y0+.82,Z(10.05)],[-W+.35,y0+.82,Z(10.09)],.004,0x1f2224);cyl(.035,.03,.08,[-W+.15,y0+.84,Z(10.5)],0xf1ede2,{seg:12,cls:'paint',name:'coffee mug'});
    deco([-W+.02,y0+.78,Z(9.6)],[-W+.3,y0+1.5,Z(10.6)],MINT);tagPlate('10CMA10 GS001',[-W+.301,y0+1.54,Z(10.1)],Math.PI/2);                                   // the raised panel, and its tag
    const PF=-W+.301;
-   dial('RPM PORT','×100',0,.11,[PF,y0+1.38,Z(9.75)],Math.PI/2,{red:[.9,1],live:'mainP.rpm'});dial('RPM STBD','×100',0,.11,[PF,y0+1.38,Z(10.45)],Math.PI/2,{red:[.9,1],live:'mainS.rpm'});
-   dial('LO PRESS P','bar',.55,.08,[PF,y0+1.38,Z(9.93)],Math.PI/2,{red:[0,.2],live:'mainP.loPress'});dial('WATER P','°C',.6,.08,[PF,y0+1.38,Z(10.07)],Math.PI/2,{red:[.85,1],live:'mainP.water'});dial('WATER S','°C',.6,.08,[PF,y0+1.38,Z(10.21)],Math.PI/2,{red:[.85,1],live:'mainS.water'});dial('LO PRESS S','bar',.55,.08,[PF,y0+1.38,Z(10.35)],Math.PI/2,{red:[0,.2],live:'mainS.loPress'});
+   dial('RPM PORT','×100',0,.13,[PF,y0+1.41,Z(9.74)],Math.PI/2,{red:[.9,1],live:'mainP.rpm',range:[0,10]});dial('RPM STBD','×100',0,.13,[PF,y0+1.41,Z(10.46)],Math.PI/2,{red:[.9,1],live:'mainS.rpm',range:[0,10]});
+   dial('LO PRESS P','bar',.55,.1,[PF,y0+1.41,Z(9.92)],Math.PI/2,{red:[0,.2],live:'mainP.loPress',range:[0,6]});dial('WATER P','°C',.6,.1,[PF,y0+1.41,Z(10.04)],Math.PI/2,{red:[.85,1],live:'mainP.water',range:[0,100]});dial('WATER S','°C',.6,.1,[PF,y0+1.41,Z(10.16)],Math.PI/2,{red:[.85,1],live:'mainS.water',range:[0,100]});dial('LO PRESS S','bar',.55,.1,[PF,y0+1.41,Z(10.28)],Math.PI/2,{red:[0,.2],live:'mainS.loPress',range:[0,6]});
+   // The readout strip under the dials: every reading written out (the engines, the board, the air, the tanks), live.
+   plate(['',''],.78,.08,[PF+.004,y0+1.3,Z(10.1)],Math.PI/2,{kind:'readout',live:'readout',bg:'#101416',fg:'#9fe3a8',name:'console readout'});
    // The alarm matrix: 4 × 8 lamps (PLANT_ALARMS, red the first sixteen, amber the rest), lit from the plant's readings (6r-2).
-   plate(PLANT_ALARMS,.78,.26,[PF+.004,y0+1.13,Z(10.05)],Math.PI/2,{kind:'alarms',live:'alarms',bg:'#2a2d2f',name:'alarm matrix'});
-   plate(['ALARMS · press to acknowledge'],.76,.03,[PF+.003,y0+1.0,Z(10.1)],Math.PI/2,{bg:'#f1ede2',name:'label: engine alarms'});
+   plate(PLANT_ALARMS,.78,.24,[PF+.004,y0+1.13,Z(10.1)],Math.PI/2,{kind:'alarms',live:'alarms',bg:'#2a2d2f',name:'alarm matrix'});
+   plate(['ALARMS · press to acknowledge'],.76,.03,[PF+.003,y0+.985,Z(10.1)],Math.PI/2,{bg:'#f1ede2',name:'label: engine alarms'});
    for(const [z,lab] of [[Z(9.85),'PORT'],[Z(10.35),'STBD']]){deco([-W+.32,y0+.8,z-.06],[-W+.46,y0+.86,z+.06],0x1f2224);bar([-W+.39,y0+.86,z],[-W+.39,y0+1.0,z],.008,0x1f2224);cyl(.018,.018,.02,[-W+.39,y0+1.0,z],0x1f2224,{seg:8,name:'telegraph lever'});
     plate(['AHEAD · STOP · ASTERN',lab],.12,.03,[-W+.39,y0+.861,z],0,{rotX:-Math.PI/2,bg:'#f1ede2',name:'label: telegraph '+lab.toLowerCase()});}
    deco([-W+.46,y0+.8,Z(10.5)-.06],[-W+.56,y0+.84,Z(10.5)+.06],0x1f2224);bar([-W+.51,y0+.84,Z(10.44)],[-W+.51,y0+.84,Z(10.56)],.02,0x1f2224);  // the telephone and its handset
@@ -983,7 +986,7 @@ export const FERRY_INTERIOR=(()=>{
     cyl(.055,.055,.22,[cx-.1,y0+.5,cz],L.cover,{rot:[0,0,.45],seg:10,name:'compressor cylinder'});cyl(.045,.045,.2,[cx+.1,y0+.5,cz],L.cover,{rot:[0,0,-.45],seg:10,name:'compressor cylinder'});
     cyl(.16,.16,.04,[cx,y0+.3,Z(14.1)],L.cover,{rot:[Math.PI/2,0,0],seg:16,name:'compressor flywheel'});cyl(.09,.09,.26,[cx,y0+.25,Z(14.55)],L.alternator,{rot:[Math.PI/2,0,0],seg:14,name:'compressor motor'});
     anchor('air','c2',[cx,y0+.62,cz],'up');
-    dial('AIR','bar',.72,.07,[cx,y0+.46,Z(14.38)+.002],0,{red:[.9,1],live:'air1'});plate(makerPlate('compressor',2),.18,.08,[cx,y0+.25,Z(14.42)+.001],0,{name:'maker’s plate: compressor No.2'});tagPlate(tagOf('air','c2'),[cx,y0+.57,Z(14.42)+.001],0);}
+    dial('AIR','bar',.72,.07,[cx,y0+.46,Z(14.38)+.002],0,{red:[0,.5],live:'air1',range:[0,30]});plate(makerPlate('compressor',2),.18,.08,[cx,y0+.25,Z(14.42)+.001],0,{name:'maker’s plate: compressor No.2'});tagPlate(tagOf('air','c2'),[cx,y0+.57,Z(14.42)+.001],0);}
   }
   // ---- The workshop (port): the bench along the forward bulkhead with its vice, grinder and the wiped bearing shell;
   // the JL-400 lathe along her side; the pedestal drill by the door; the welding set; the tool board; a stool.

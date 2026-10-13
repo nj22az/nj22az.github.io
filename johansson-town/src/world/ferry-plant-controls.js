@@ -91,10 +91,17 @@ export function telegraphFor(phase,exposure=0){
  */
 export function liveValue(readings,key){
  if(key==='alarms')return readings.alarms;
+ if(key==='readout')return readoutLines(readings);
  if(key==='air0'||key==='air1')return Math.max(0,Math.min(1,readings.air[key==='air0'?0:1]/30));
  const [who,what]=key.split('.');
  if(who in readings.engines)return readings.engines[who][what]??0;
  const g=readings.generators.find(g=>g.id===who);if(!g)return 0;
  if(what==='rpm')return g.running?.6:0;
  return g[what]??0;
+}
+/** The console's readout strip (two lines): the engines, the board, the air and the tanks, in the units the dials use. */
+export function readoutLines(r){
+ const eng=(id,name)=>{const e=r.engines[id];return name+' '+Math.round(e.rpm*1000)+' rpm  LO '+(e.loPress*6).toFixed(1)+' bar  JW '+Math.round(e.water*100)+' °C  EXH '+Math.round(e.exhaust*600)+' °C  '+(r.telegraph[id]||'STOP');};
+ const board=r.board.live?(r.board.shore?'SHORE POWER':r.board.generatorsOnline+' GEN ON BOARD  '+Math.round(r.board.kW)+' kW'):r.board.emergency?'BLACKOUT · EMERGENCY GEN':'BLACKOUT';
+ return [eng('mainP','PORT')+'   '+eng('mainS','STBD'),board+'   AIR '+r.air.map(a=>a.toFixed(0)).join('/')+' bar   SERVICE TANK '+Math.round(r.service*100)+' %   FW '+r.fwPressure.toFixed(2)+' MPa   BILGE AFT '+Math.round(r.bilgeAft*100)+' %'];
 }

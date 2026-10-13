@@ -63,7 +63,8 @@ test('every live plate reads a number or the alarm list from the plant, and the 
  const {run}=boot(FERRY_DAY.inService+5);
  const live=FERRY_INTERIOR.plates.filter(p=>p.live);assert.ok(live.length>=30,live.length+' live plates');
  const r=run.plant.readings();
- for(const pl of live){const v=liveValue(r,pl.live);if(pl.live==='alarms'){assert.ok(Array.isArray(v));for(const a of v)assert.ok(PLANT_ALARMS.includes(a),a);}else assert.ok(typeof v==='number'&&v>=0&&v<=1,pl.live+' = '+v);}
+ for(const pl of live){const v=liveValue(r,pl.live);if(pl.live==='alarms'){assert.ok(Array.isArray(v));for(const a of v)assert.ok(PLANT_ALARMS.includes(a),a);}else if(pl.live==='readout'){assert.equal(v.length,2);assert.match(v[0],/PORT \d+ rpm/);assert.match(v[1],/GEN ON BOARD|SHORE/);}else assert.ok(typeof v==='number'&&v>=0&&v<=1,pl.live+' = '+v);}
+ for(const pl of live)if(pl.kind==='dial')assert.ok(pl.range&&pl.range[1]>pl.range[0],pl.name+' has a numbered scale');
  assert.deepEqual(FERRY_INTERIOR.plates.find(p=>p.kind==='alarms').lines,PLANT_ALARMS,'the matrix names the plant’s alarms');
  const f=run.ferry;assert.equal(f.userData.livePlates.length,live.length);
  assert.equal(f.userData.readPlant(run.plant.readings()),0,'nothing to redraw while nothing changed');

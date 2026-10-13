@@ -32,4 +32,4 @@
 - Lines to other decks (9) end at a penetration; drawn on their own decks later.
 
 ## Next action
-Publish 6r-2 (suite, runtime rebuild, merge the branch and main, push, check the run); then 6r-3 overhaul.
+6r-2 pushed as 2c3a7072 (merge eb1a0aad); confirm the publishing run succeeded, then 6r-3 overhaul (covers off, parts on the plates; the crew at the handles; alarm acknowledge; the plant saved with the game).

@@ -1385,6 +1385,13 @@ The creator, 2026-10-13: *"Can you stop the engines and overhaul them? Turn off 
   desk is forward of it); the switchboard's note moved to the lighting panel (x −2.65). Checked: the crew posts test, the
   walk tests, the headless prompts at both panels (p8) and the chief at the console (p9); no film shot stages the booth
   (`jojo/remotion/episodes`).
+- **Readable** (the creator, on the first console photograph: "It needs to be easier to read and more detailed"): every
+  live dial has a numbered scale from its range (0–6 bar, 0–100 °C, 0–10 ×100 rpm, 0–30 bar air, the generators'
+  0–150 kW · 0–250 A · 0–500 V · 55–65 Hz), lettering twice the size on a 384 px face, and its reading written in a
+  window under the pivot; the air gauges' red zone is at the low end, where it belongs. Under the console's dials a
+  readout strip writes every reading out in two lines (each engine's rpm, oil, jacket water, exhaust and telegraph
+  order; the board, the air, the service tank, the fresh water, the aft bilge). The alarm matrix's names sit on two
+  lines in their lamps, twice the size.
 - **Open** (6r-3): the overhaul scenes themselves (covers off, parts on the plates, the crankcase inspected) when a
   machine is opened; the crew's bodies at the handles when the routine starts a machine; the alarm acknowledge; the
   plant saved with the game.
