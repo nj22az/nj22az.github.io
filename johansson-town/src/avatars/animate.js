@@ -180,7 +180,7 @@ export const CARRY=Object.freeze({under:.755,flank:.017,legs:.818,spread:.12,leg
 function carryJoints(){const C=CARRY;
  return {hips:[C.lean,0,0],chest:[-.04,0,0],thighL:[-.32-C.lean,0,.07],kneeL:[.64,0,0],footL:[-.32,0,-.07],thighR:[-.32-C.lean,0,-.07],kneeR:[.64,0,0],footR:[-.32,0,.07]};}
 /**
- * Mrs Higa's reach back for the contract breaker without looking (ReachBack, "Fujita's Back" 6c and 7a): seated on her stool
+ * Mrs Higa's reach back for the supply breaker without looking (ReachBack, "Fujita's Back" 6c and 7a): seated on her stool
  * at the bandai, she reaches back over her left shoulder and puts the lever up with the end of her mitten, her head and eyes
  * down on the account book in her right mitten. Where things are round her, in her frame as she sits (metres: to her left,
  * up from the seat, ahead; onsen-electrics.js ONSEN_CONTRACT and ONSEN_BOARD, onsen.js's stool): the lever's pivot (`lever`),
@@ -290,7 +290,7 @@ export const GESTURES=Object.freeze({
  // Fujita's Back (story v7): held until the next move, or named by the scene as a pose (STORY_POSES).
  BentStuck:Infinity,CrabWalk:Infinity,ChairUncurl:Infinity,FrozenAbsurd:Infinity,CarriedBent:Infinity,CarryFurniture:Infinity,
  CordWrapped:Infinity,BasketHead:Infinity,SitRead:Infinity,TorchUp:Infinity,TorchOff:Infinity,
- // The carry like a plank (CarriedPlank, CarryFurniture, CarryLegs) and Mrs Higa's reach back for the contract breaker
+ // The carry like a plank (CarriedPlank, CarryFurniture, CarryLegs) and Mrs Higa's reach back for the supply breaker
  // (ReachBack: up to the lever and pushing it up, held; out over `REACH_BACK.out` when its time ends).
  CarriedPlank:Infinity,CarryLegs:Infinity,ReachBack:3.2,
  // Funny poses for comics, memes and the scene builders (fun-poses.js: what each is for, and its face).
@@ -1416,7 +1416,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     armTo('R',A.R,w,A.handR);armTo('L',A.L,w,A.handL);
     // a Nod brings the head up off the paper to look at someone (the Nod's own dip goes on over it); the paper stays in the lap
     add('head',(SIT_READ.down-(SIT_READ.down+.12)*nod)*w);reading=Math.max(reading,w);return {eyes:[0,.85*(1-nod)]};}
-   // Putting the contract breaker back up without looking (6c, 7a; seated on her stool at the bandai): the chest turns toward
+   // Putting the supply breaker back up without looking (6c, 7a; seated on her stool at the bandai): the chest turns toward
    // the wall and leans over her book, the left arm goes out to the side and up behind the head (reachBackPath), the end of
    // the mitten comes to the lever from above and behind her hair and pushes it up (0.2 s, once it is there: REACH_BACK.reach),
    // and holds it; the head turns back and stays down, the eyes on the account book in the right mitten. Back the same way:

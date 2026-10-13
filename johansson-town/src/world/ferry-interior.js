@@ -1,5 +1,6 @@
 import {FERRY_SHIP,FERRY_HEIGHTS} from './ferry-ship.js';
 import {JOHANSSON_MARINE,makerPlate,WORDMARK} from './johansson-marine.js';
+import {FERRY_PIPING} from './ferry-piping.js';
 
 /**
  * The Minato Maru's houses and casings as she is walked (ferry batch 6b; docs/FERRY-AUDIT.md): one list of what is
@@ -65,8 +66,15 @@ export const FERRY_ENGINE_ROOM=Object.freeze({aft:Z(8.5),fore:Z(14),floor:Y(.9),
  ladder:Object.freeze({x:Object.freeze([3.2,3.95]),head:Z(7),foot:Z(8.6)}),hatch:Object.freeze({x:Object.freeze([3.15,HB-.07]),z:Object.freeze([Z(7),Z(9)])}),
 });
 const ER=FERRY_ENGINE_ROOM;
+/**
+ * The machinery spaces forward of the engine room (batch 6q; the creator, 2026-10-13: "The engine room should be several
+ * levels and have many rooms"): through the watertight sliding door at Fr 28 the auxiliary machinery room (z 14–19), then
+ * through the door at Fr 38 the workshop to port and the engine store to starboard (z 19–22.5), all on the floor plates.
+ */
+export const FERRY_MACHINERY_SPACES=Object.freeze({auxFore:Z(19),storeFore:Z(22.5),wtDoor:Object.freeze({w:.8,h:1.9}),door38:Object.freeze({w:.75,h:1.85}),partition:-.5,partitionAft:Z(20.1)});
+const MS=FERRY_MACHINERY_SPACES,WT_W=MS.wtDoor.w,WT_H=MS.wtDoor.h;
 /** The floors below the car deck, where the engines are heard: whoever stands on one wears ear defenders (game.js). */
-export const BELOW_DECK_FLOORS=Object.freeze(['er-ladder','er-ladder-foot','engine-room','control-booth']);
+export const BELOW_DECK_FLOORS=Object.freeze(['er-ladder','er-ladder-foot','engine-room','control-booth','aux-room','workshop']);
 
 /** The gangway passage through casing P (ferry-model.js GATE): 1.4 m wide, and the foyer from it aft to the foot of stair P. */
 const GATE_FROM=Z(13.3),GATE_TO=Z(14.7);
@@ -538,6 +546,18 @@ export const FERRY_INTERIOR=(()=>{
   for(let z=Z(10);z<WH0-.5;z+=2)deco([-.2,ceil-.04,z-.15],[.2,ceil,z+.15],0xf6f1e2);
  }
 
+ /** The KKS tag of a node on the piping diagrams (ferry-piping.js), so the plate on the machine and the drawing agree. */
+ const tagOf=(system,id)=>{const n=FERRY_PIPING.find(s=>s.id===system)?.nodes.find(n=>n.id===id);if(!n)throw new RangeError('no piping node '+system+'/'+id);return n.tag;};
+ /** A KKS tag plate (black, engraved white) on a machine, facing +z turned by rotY (the creator, 2026-10-13: "Use correct KKS codes"). */
+ const tagPlate=(tag,pos,rotY,o={})=>plate([tag],o.w||.16,.035,pos,rotY,{bg:'#1f2224',fg:'#e8e2cc',name:'KKS tag'});
+ /** A motor-driven pump on its bed against a lining at x0, facing side s (+1 the pump looks to port), with its plates and its tag. */
+ const pumpSet=(key,serial,hex,label,x0,s,z,tag)=>{const y0=ER.floor,y1=ER.deckhead,L=JOHANSSON_MARINE.livery;
+  box([Math.min(x0,x0+s*.5),y0,z-.125],[Math.max(x0,x0+s*.5),y0+.55,z+.125],hex,{draw:false,name:label.toLowerCase()+' pump'});deco([Math.min(x0+s*.02,x0+s*.48),y0+.03,z-.12],[Math.max(x0+s*.02,x0+s*.48),y0+.12,z+.12],0x3a3f41);
+  cyl(.1,.1,.14,[x0+s*.1,y0+.3,z],hex,{rot:[0,0,Math.PI/2],seg:14,cls:'paint',name:'pump casing'});cyl(.04,.04,.1,[x0+s*.1,y0+.44,z],hex,{seg:10,cls:'paint',name:'pump branch'});
+  cyl(.05,.05,.06,[x0+s*.2,y0+.3,z],0xe0b93a,{rot:[0,0,Math.PI/2],seg:10,cls:'paint',name:'coupling guard'});cyl(.09,.09,.24,[x0+s*.35,y0+.3,z],L.alternator,{rot:[0,0,Math.PI/2],seg:14,name:'pump motor'});
+  bar([x0+s*.1,y0+.49,z],[x0+s*.1,y1-.22,z],.03,hex,'paint');
+  plate(makerPlate(key,serial),.14,.065,[x0+s*.35,y0+.2,z+.091],0,{name:'maker’s plate: '+label.toLowerCase()+' pump'});plate([label],.2,.04,[x0+s*.25,y0+.09,z+.121],0,{bg:'#f1ede2',name:'label: '+label.toLowerCase()});
+  if(tag)tagPlate(tag,[x0+s*.25,y0+.52,z+.126],0);};
  // ---- The engine room (FERRY_ENGINE_ROOM): in by the casing P door and down the ladder through the car deck; the
  // two main engines with their reverse-reduction gearboxes aft and turbochargers forward, the shafts aft through the
  // bulkhead; the two generators forward, athwartships; the control booth aft to starboard with the main switchboard;
@@ -575,7 +595,8 @@ export const FERRY_INTERIOR=(()=>{
   // under the car deck, the chequered floor plates.
   for(const s of [1,-1])box([Math.min(s*W,s*(W+.06)),y0-.1,a],[Math.max(s*W,s*(W+.06)),y1,f],0xe8e6dc,{name:'engine room side'});
   wall('x',-W,W,a-.06,a,y0-.1,y1,[{s0:L.x[0]-.06,s1:L.x[1]+.07,y0:y0-1,y1:y1+1}],0xe8e6dc);
-  box([-W,y0-.1,f],[W,y1,f+.06],0xe8e6dc,{name:'engine room forward bulkhead'});
+  // The forward bulkhead (Fr 28) with the watertight sliding door on the centreline to the auxiliary machinery room (6q).
+  wall('x',-W,W,f,f+.06,y0-.1,y1,[doorAt(0,WT_W,y0,WT_H)],0xe8e6dc);
   box([-W,y1,a],[W,CAR-.02,f],0xd8d6cc,{solid:false,camera:true,name:'engine room deckhead'});
   box([-W,y0-.06,a],[W,y0,f],0x8c9193,{solid:false,camera:false,name:'floor plates'});
   // Chequer plate (the photographs: raised diamonds, a seam at every plate), everywhere but the booth's own floor.
@@ -590,7 +611,7 @@ export const FERRY_INTERIOR=(()=>{
    deco([Math.min(x,x-s*.1),y1-.55,z-.07],[Math.max(x,x-s*.1),y1-.35,z+.07],0xd8d2c0);cyl(.045,.045,.14,[x-s*.14,y1-.45,z],0xfff6dc,{rot:[0,0,Math.PI/2],seg:10,name:'bulkhead lamp'});
    for(const dz of [-.06,.06])bar([x-s*.1,y1-.52,z+dz],[x-s*.2,y1-.45,z+dz],.004,0x9a9ea0);bar([x-s*.1,y1-.38,z-.06],[x-s*.2,y1-.45,z-.06],.004,0x9a9ea0);bar([x-s*.1,y1-.38,z+.06],[x-s*.2,y1-.45,z+.06],.004,0x9a9ea0);
    bar([x-s*.2,y1-.45,z-.06],[x-s*.2,y1-.45,z+.06],.004,0x9a9ea0);}
-  box([W-.25,y0,Z(13.6)],[W,y0+.9,Z(13.8)],RED,{name:'hydrant'});
+  box([W-.25,y0,Z(13.6)],[W,y0+.9,Z(13.8)],RED,{name:'hydrant'});tagPlate(tagOf('fire','hER'),[W-.251,y0+.95,Z(13.7)],-Math.PI/2);
 
   // Inside, the engine room's own sign, the fire alarm bell and the CO₂ alarm (red and yellow), the first-aid box,
   // the escape-route sign over the escape ladder.
@@ -672,7 +693,7 @@ export const FERRY_INTERIOR=(()=>{
     cyl(.018,.018,.03,[cx+inb*1.2+.1,y0+1.07,Z(9.35)],0x2f8f4f,{seg:10,name:'start button'});cyl(.012,.012,.03,[cx+inb*1.2+.1,y0+1.07,Z(9.42)],0x1f2224,{seg:8,name:'key switch'});
     plate(['HOURS','08421.6'],.09,.035,[cx+inb*1.2-.08,y0+1.025,Z(9.1)-.001],Math.PI,{bg:'#1f2224',fg:'#e8e2cc',name:'hour meter'});
     plate(['LOCAL CONTROL','JM6-160 · '+(s>0?'PORT':'STBD')],.26,.05,[cx+inb*1.2,y0+.975,Z(9.1)-.001],Math.PI,{bg:'#f1ede2',name:'label: local control'});
-    plate(makerPlate('main',s>0?1:2),.36,.16,[cx+inb*.46,y0+.9,E0+.9],s>0?-Math.PI/2:Math.PI/2,{name:'maker’s plate: '+name});
+    plate(makerPlate('main',s>0?1:2),.36,.16,[cx+inb*.46,y0+.9,E0+.9],s>0?-Math.PI/2:Math.PI/2,{name:'maker’s plate: '+name});tagPlate(tagOf('fuel',s>0?'fuel-mainP':'fuel-mainS').replace(/ .*$/,''),[cx+inb*.46,y0+1.03,E0+.9],s>0?-Math.PI/2:Math.PI/2);tagPlate(tagOf('lube',s>0?'bear-mainP':'bear-mainS').replace(/XJA10 BR001/,'XJK10 MG001'),[cx+inb*1.2,y0+.5,Z(9.1)-.001],Math.PI);
     plate([WORDMARK],.9,.08,[cx+out*.25,y0+1.38,(E0+E1)/2],s>0?Math.PI/2:-Math.PI/2,{bg:'#1f2224',fg:'#dcd8c8',name:'wordmark'});
    }
    // The generator sets: Johansson Marine JG-125, athwartships forward of the mains; a four-cylinder engine inboard
@@ -690,7 +711,7 @@ export const FERRY_INTERIOR=(()=>{
     cyl(.3,.3,.08,[s*2.39,y0+.6,zc],0x1f2f52,{rot:[0,0,Math.PI/2],seg:18,name:'alternator end bell'});for(const k of [-.18,-.09,0,.09,.18])deco([s*2.43-.005,y0+.6+k-.015,zc-.22],[s*2.43+.005,y0+.6+k+.015,zc+.22],0x15223d);
     deco([s*.6-.1,y0+.95,Z(12.55)+.06],[s*.6+.1,y0+1.25,Z(12.55)+.09],0x6b7375);dial('RPM','×100',.6,.09,[s*.6,y0+1.15,Z(12.55)+.059],Math.PI,{red:[.92,1]});
     cyl(.012,.012,.02,[s*.6-.05,y0+1.02,Z(12.55)+.06],0x2f8f4f,{rot:[Math.PI/2,0,0],seg:8,name:'start button'});cyl(.012,.012,.02,[s*.6+.05,y0+1.02,Z(12.55)+.06],L.red,{rot:[Math.PI/2,0,0],seg:8,name:'stop button'});
-    plate(makerPlate('genset',s>0?1:2),.3,.14,[s*1.2,y0+.42,Z(12.55)-.005],Math.PI,{name:'maker’s plate: generator No.'+(s>0?1:2)});
+    plate(makerPlate('genset',s>0?1:2),.3,.14,[s*1.2,y0+.42,Z(12.55)-.005],Math.PI,{name:'maker’s plate: generator No.'+(s>0?1:2)});tagPlate(tagOf('fuel',s>0?'fuel-gen1':'fuel-gen2').replace(/ .*$/,'')+' · '+(s>0?'13':'14')+'MKA10 AG001',[s*1.2,y0+.53,Z(12.55)-.005],Math.PI,{w:.3});
    }
   }
   // Port, along her side: the air compressor and the two 150 L starting-air bottles by the ladder's foot, the
@@ -704,8 +725,8 @@ export const FERRY_INTERIOR=(()=>{
    cyl(.055,.055,.22,[cx-.1,y0+.5,cz],L.cover,{rot:[0,0,.45],seg:10,name:'compressor cylinder'});cyl(.045,.045,.2,[cx+.1,y0+.5,cz],L.cover,{rot:[0,0,-.45],seg:10,name:'compressor cylinder'});
    cyl(.16,.16,.04,[cx,y0+.3,Z(8.99)],L.cover,{rot:[Math.PI/2,0,0],seg:16,name:'compressor flywheel'});cyl(.09,.09,.26,[cx,y0+.25,Z(9.43)],L.alternator,{rot:[Math.PI/2,0,0],seg:14,name:'compressor motor'});
    bar([cx+.12,y0+.6,cz],[2.3,y0+1.0,Z(8.8)],.012,0x9a9ea0);bar([cx-.12,y0+.6,cz],[2.75,y0+1.0,Z(8.8)],.012,0x9a9ea0);        // the delivery lines to the bottles
-   dial('AIR','bar',.72,.07,[cx,y0+.46,Z(9.265)],0,{red:[.9,1]});plate(makerPlate('compressor'),.18,.08,[cx,y0+.25,Z(9.255)],0,{name:'maker’s plate: compressor'});
-   for(const x of [2.3,2.75]){dial('BOTTLE','bar',.7,.06,[x,y0+1.42,Z(8.75)-.03],Math.PI);bar([x,y0+1.3,Z(8.75)],[x,y0+1.42,Z(8.75)],.03,0xb0b4b4);plate(['STARTING AIR','150 L · 30 bar'],.16,.06,[x,y0+.9,Z(8.75)+.2],0,{bg:'#f1ede2',name:'label: air bottle'});}
+   dial('AIR','bar',.72,.07,[cx,y0+.46,Z(9.265)],0,{red:[.9,1]});plate(makerPlate('compressor'),.18,.08,[cx,y0+.25,Z(9.255)],0,{name:'maker’s plate: compressor'});tagPlate(tagOf('air','c1'),[cx,y0+.57,Z(9.3)+.001],0);
+   for(const [x,id] of [[2.3,'b1'],[2.75,'b2']]){dial('BOTTLE','bar',.7,.06,[x,y0+1.42,Z(8.75)-.03],Math.PI);bar([x,y0+1.3,Z(8.75)],[x,y0+1.42,Z(8.75)],.03,0xb0b4b4);plate(['STARTING AIR','150 L · 30 bar'],.16,.06,[x,y0+.9,Z(8.75)+.2],0,{bg:'#f1ede2',name:'label: air bottle'});tagPlate(tagOf('air',id),[x,y0+1.0,Z(8.75)+.2],0);}
   }
   // The workbench: a top on four legs (so the spare under it shows), its vice, and the bench's box for the walk.
   box([W-.35,y0,Z(10.0)],[W,y0+.9,Z(11.5)],0x8a7356,{draw:false,name:'workbench'});deco([W-.35,y0+.8,Z(10.0)],[W,y0+.9,Z(11.5)],0x8a7356);deco([W-.32,y0+.9,Z(10.2)],[W-.2,y0+1.05,Z(10.45)],STEEL);
@@ -719,14 +740,14 @@ export const FERRY_INTERIOR=(()=>{
   {const L=JOHANSSON_MARINE.livery,cx=W-.27,cz=Z(12.0);                                                            // the JF-1 purifier: the frame, the bowl under its hood, the motor outboard
    deco([W-.5,y0,Z(11.75)],[W-.04,y0+.55,Z(12.25)],0x7d8586);cyl(.2,.2,.3,[cx,y0+.7,cz],L.cast,{seg:18,name:'purifier bowl'});cyl(.21,.17,.14,[cx,y0+.92,cz],L.green,{seg:18,name:'purifier hood'});
    cyl(.07,.07,.3,[W-.12,y0+.3,cz],L.alternator,{seg:12,name:'purifier motor'});bar([cx-.2,y0+.9,cz],[cx-.35,y0+1.6,cz],.02,0x8a6a3a,'paint');bar([cx,y0+.99,cz],[cx,y0+1.2,cz],.02,0x8a6a3a,'paint');
-   plate(makerPlate('purifier'),.2,.09,[W-.51,y0+.3,cz],-Math.PI/2,{name:'maker’s plate: purifier'});dial('BOWL','rpm',.65,.07,[W-.51,y0+.48,cz-.12],-Math.PI/2);
+   plate(makerPlate('purifier'),.2,.09,[W-.51,y0+.3,cz],-Math.PI/2,{name:'maker’s plate: purifier'});tagPlate(tagOf('fuel','purifier'),[W-.51,y0+.17,cz],-Math.PI/2);dial('BOWL','rpm',.65,.07,[W-.51,y0+.48,cz-.12],-Math.PI/2);
   }
   box([W-.55,y0,Z(12.65)],[W,y0+1.0,Z(13.3)],0x6f8a7f,{draw:false,name:'oily-water separator'});
   {const L=JOHANSSON_MARINE.livery,cx=W-.3,cz=Z(13.05);                                                            // the JO-15 separator: the vessel on legs, its sight glass, the 15 ppm monitor
    cyl(.26,.26,.8,[cx,y0+.55,cz],0x6f8a7f,{seg:18,cls:'paint',name:'separator vessel'});cyl(.27,.27,.03,[cx,y0+.2,cz],0x5e7a6e,{seg:18,cls:'paint'});cyl(.27,.27,.03,[cx,y0+.9,cz],0x5e7a6e,{seg:18,cls:'paint'});
    for(const [dx,dz] of [[-.18,-.18],[.18,-.18],[-.18,.18],[.18,.18]])bar([cx+dx,y0,cz+dz],[cx+dx,y0+.15,cz+dz],.02,0x3a3f41);
    bar([cx-.27,y0+.3,cz],[cx-.27,y0+.8,cz],.015,0xdfe8ee);deco([cx-.14,y0+.98,cz-.07],[cx+.14,y0+1.12,cz+.07],0x9aa3a2);cyl(.01,.01,.02,[cx-.06,y0+1.05,cz-.075],0x2f8f4f,{rot:[Math.PI/2,0,0],seg:8,name:'monitor lamp'});
-   plate(makerPlate('separator'),.2,.09,[W-.57,y0+.5,cz],-Math.PI/2,{name:'maker’s plate: separator'});plate(['15 ppm','BILGE MONITOR'],.12,.05,[cx,y0+1.05,cz-.071],Math.PI,{bg:'#f1ede2',name:'label: bilge monitor'});
+   plate(makerPlate('separator'),.2,.09,[W-.57,y0+.5,cz],-Math.PI/2,{name:'maker’s plate: separator'});tagPlate(tagOf('bilge','ows'),[W-.57,y0+.37,cz],-Math.PI/2);plate(['15 ppm','BILGE MONITOR'],.12,.05,[cx,y0+1.05,cz-.071],Math.PI,{bg:'#f1ede2',name:'label: bilge monitor'});
   }
   // Starboard: the control booth aft (2.4 × 2.0 m, glazed towards the engines), the pumps along her side (two fire
   // pumps, the general-service pump, the bilge pump, the sanitary pump, the hydrophore set), the fuel service tank
@@ -739,7 +760,7 @@ export const FERRY_INTERIOR=(()=>{
    // five panels across its face: generator No.1, the synchronising panel, generator No.2, the 440 V feeders with
    // the earth lamps (an IT system: three lamps, all alight when nothing is earthed) and the insulation meter, and
    // the 105 V lighting panel. In port No.1 carries the ship: its meters read, No.2's stand at zero.
-   box([-W+.02,y0,a+.02],[BI-.1,y0+1.85,a+.4],0x9aa3a2,{name:'main switchboard'});
+   box([-W+.02,y0,a+.02],[BI-.1,y0+1.85,a+.4],0x9aa3a2,{name:'main switchboard'});tagPlate('10BRA10 GS001',[-W+.3,y0+1.9,a+.401],0);
    {const L=JOHANSSON_MARINE.livery,F=a+.401,x0=-W+.02,pw=(BI-.1-x0)/5,PANELS=['GENERATOR No.1','SYNCHRONISING','GENERATOR No.2','440 V FEEDERS','105 V LIGHTING'];
     deco([x0,y0+1.72,a+.39],[BI-.1,y0+1.85,a+.405],0x3a4244);                                                       // the name strip over the panels
     PANELS.forEach((name,i)=>{const px=x0+pw*i,cx=px+pw/2;deco([px+.005,y0+.05,a+.39],[px+pw-.005,y0+1.72,a+.4],0x8f9a99);
@@ -785,7 +806,7 @@ export const FERRY_INTERIOR=(()=>{
    bar([-W+.62,y0+.7,Z(9.62)],[-W+.62,y0+.7,Z(10.58)],.015,0x1f2224);                                                  // the grab rail along the front
    deco([-W+.1,y0+.802,Z(9.7)],[-W+.42,y0+.815,Z(10.0)],0x2f4a7a);deco([-W+.12,y0+.815,Z(9.73)],[-W+.4,y0+.82,Z(9.97)],0xf6f3ea);        // the engine-room log, open
    bar([-W+.2,y0+.82,Z(10.05)],[-W+.35,y0+.82,Z(10.09)],.004,0x1f2224);cyl(.035,.03,.08,[-W+.15,y0+.84,Z(10.5)],0xf1ede2,{seg:12,cls:'paint',name:'coffee mug'});
-   deco([-W+.02,y0+.78,Z(9.6)],[-W+.3,y0+1.5,Z(10.6)],MINT);                                                           // the raised panel
+   deco([-W+.02,y0+.78,Z(9.6)],[-W+.3,y0+1.5,Z(10.6)],MINT);tagPlate('10CMA10 GS001',[-W+.301,y0+1.54,Z(10.1)],Math.PI/2);                                   // the raised panel, and its tag
    const PF=-W+.301;
    dial('RPM PORT','×100',0,.11,[PF,y0+1.38,Z(9.75)],Math.PI/2,{red:[.9,1]});dial('RPM STBD','×100',0,.11,[PF,y0+1.38,Z(10.45)],Math.PI/2,{red:[.9,1]});
    dial('LO PRESS P','bar',.55,.08,[PF,y0+1.38,Z(9.93)],Math.PI/2,{red:[0,.2]});dial('WATER P','°C',.6,.08,[PF,y0+1.38,Z(10.07)],Math.PI/2,{red:[.85,1]});dial('WATER S','°C',.6,.08,[PF,y0+1.38,Z(10.21)],Math.PI/2,{red:[.85,1]});dial('LO PRESS S','bar',.55,.08,[PF,y0+1.38,Z(10.35)],Math.PI/2,{red:[0,.2]});
@@ -801,9 +822,9 @@ export const FERRY_INTERIOR=(()=>{
    bar([-3.1,y0,Z(10.0)],[-3.1,y0+.45,Z(10.0)],.2,0x3a4244);box([-3.3,y0,Z(10.0)-.2],[-2.9,y0+.45,Z(10.0)+.2],0x3a4244,{draw:false,name:'booth chair'});
    floor('control-booth',[-W,BI],[a,B1+.4],y0,(x,z,r)=>{if(z>B1-T/2-r)return Math.abs(x+2.95)<=.35-r+.06;return x>=-W+.5+r&&x<=BI-T/2-r&&z>=a+.4+r;});
   }
-  {const L=JOHANSSON_MARINE.livery,PUMPS=[['firePump',1,RED,'FIRE & GS No.1'],['firePump',2,RED,'FIRE & BILGE No.2'],['gsPump',1,0x3f8a5a,'GENERAL SERVICE'],['bilgePump',1,0x4f7fb0,'BILGE'],['sanitaryPump',1,0x4f7fb0,'SANITARY'],['hydrophore',1,0x4f7fb0,'HYDROPHORE']];
+  {const L=JOHANSSON_MARINE.livery,PUMPS=[['firePump',1,RED,'FIRE & GS No.1',tagOf('fire','fp1')],['firePump',2,RED,'FIRE & BILGE No.2',tagOf('fire','fp2')],['gsPump',1,0x3f8a5a,'GENERAL SERVICE',tagOf('seawater','gs')],['bilgePump',1,0x4f7fb0,'BILGE',tagOf('bilge','bp')],['sanitaryPump',1,0x4f7fb0,'SANITARY No.1',tagOf('sewage','sp1')],['hydrophore',1,0x4f7fb0,'HYDROPHORE No.1',tagOf('freshwater','hp1')]];
    deco([-W,y0,Z(10.95)],[-W+.55,y0+.03,Z(12.6)],0x3a3f41);                                                        // the drip tray under the row
-   PUMPS.forEach(([key,serial,hex,label],i)=>{const z=Z(11.0)+i*.27+.125;
+   PUMPS.forEach(([key,serial,hex,label,tag],i)=>{const z=Z(11.0)+i*.27+.125;tagPlate(tag,[-W+.25,y0+.52,z+.126],0);
     box([-W,y0,z-.125],[-W+.5,y0+.55,z+.125],hex,{draw:false,name:'pump'});deco([-W+.02,y0+.03,z-.12],[-W+.48,y0+.12,z+.12],0x3a3f41);
     cyl(.1,.1,.14,[-W+.1,y0+.3,z],hex,{rot:[0,0,Math.PI/2],seg:14,cls:'paint',name:'pump casing'});cyl(.04,.04,.1,[-W+.1,y0+.44,z],hex,{seg:10,cls:'paint',name:'pump branch'});
     cyl(.05,.05,.06,[-W+.2,y0+.3,z],0xe0b93a,{rot:[0,0,Math.PI/2],seg:10,cls:'paint',name:'coupling guard'});
@@ -814,7 +835,7 @@ export const FERRY_INTERIOR=(()=>{
     plate(makerPlate(key,serial),.14,.065,[-W+.35,y0+.2,z+.091],0,{name:'maker’s plate: '+label.toLowerCase()});plate([label],.2,.04,[-W+.25,y0+.09,z+.121],0,{bg:'#f1ede2',name:'label: '+label.toLowerCase()});});
   }
   // The fuel service tank (1.6 m³) in the forward starboard corner, its gauge glass and quick-closing valve.
-  box([-W,y0,Z(12.62)],[-(W-.65),y0+1.8,f],0x8a6a3a,{name:'fuel service tank'});deco([-(W-.66),y0+.2,Z(13.0)],[-(W-.67),y0+1.6,Z(13.05)],0xdfe8ee);
+  box([-W,y0,Z(12.62)],[-(W-.65),y0+1.8,f],0x8a6a3a,{name:'fuel service tank'});tagPlate(tagOf('fuel','service'),[-(W-.65)-.001,y0+1.4,Z(13.3)],Math.PI/2);deco([-(W-.66),y0+.2,Z(13.0)],[-(W-.67),y0+1.6,Z(13.05)],0xdfe8ee);
   // Pipes along her sides overhead: fuel (brown), sea water (green), fresh water (blue), fire main (red).
   for(const s of [1,-1])for(const [k,hex] of [[0,0x8a6a3a],[1,0x3f8a5a],[2,0x4f7fb0],[3,RED]])bar([s*(W-.12-k*.12),y1-.1,a+.1],[s*(W-.12-k*.12),y1-.1,f-.1],.035,hex,'paint');
   // The escape ladder in the aft starboard corner, up the trunk into casing S (its hatch closed above).
@@ -846,7 +867,7 @@ export const FERRY_INTERIOR=(()=>{
     bar([sx+.16,y0+.21,sz],[W-.02,y0+.21,sz],.045,0x3f8a5a,'paint');cyl(.05,.05,.02,[sx,y0+.52,sz],RED,{seg:10,name:'strainer handwheel'});bar([sx,y0+.45,sz],[sx,y0+.52,sz],.01,DARK);
     cyl(.012,.012,.06,[sx-.17,y0+.06,sz],0xb8a060,{rot:[0,0,Math.PI/2],seg:6,name:'strainer drain cock'});
     if(s>0)box([3.3,y0,Z(13.32)],[3.7,y0+.5,f],0x2f6f74,{draw:false,name:'sea-water strainer'});
-    plate([s>0?'SEA CHEST P':'SEA CHEST S','STRAINER · basket Mondays'],.12,.05,[sx-.161,y0+.3,sz],-Math.PI/2,{bg:'#f1ede2',name:'label: strainer'});}
+    plate([s>0?'SEA CHEST P':'SEA CHEST S','STRAINER · basket Mondays'],.12,.05,[sx-.161,y0+.3,sz],-Math.PI/2,{bg:'#f1ede2',name:'label: strainer'});tagPlate(tagOf('seawater',s>0?'strP':'strS'),[sx-.161,y0+.37,sz],-Math.PI/2);}
    const cx=s*1.55;box([cx+s*.55-.15,y0,Z(9.15)],[cx+s*.55+.15,y0+1.05,Z(9.45)],0x9aa3a2,{name:'local control stand'});
    bar([cx+s*.55,y0+1.05,Z(9.3)],[cx+s*.55,y0+1.3,Z(9.4)],.015,RED);
    bar([cx,y0+.45,a+.02],[cx,y0+.45,a+.12],.11,0x6f7476);
@@ -868,12 +889,137 @@ export const FERRY_INTERIOR=(()=>{
   // (The 200 L lubricating-oil drums are stowed in casing P's store, not down here: the walkway along the forward
   // bulkhead is the only way round the engines and stays clear.)
   deco([1.0,y0+.9,f-.02],[2.2,y0+1.6,f],0xd8d2c0);for(let i=0;i<6;i++)deco([1.1+i*.18,y0+1.1,f-.04],[1.14+i*.18,y0+1.45,f-.02],STEEL);
-  for(const [x,z] of [[3.0,Z(9.6)],[-2.2,Z(11.2)],[0,Z(13.85)]]){bar([x,y0,z],[x,y0+.55,z],.08,RED,'paint');}
+  for(const [x,z] of [[3.0,Z(9.6)],[-2.2,Z(11.2)],[.9,Z(13.85)]]){bar([x,y0,z],[x,y0+.55,z],.08,RED,'paint');}
   for(let z=a+.8;z<f-.4;z+=1.1)for(const x of [-.9,.9])bar([x,y1,z],[x,y1-.1,z],.02,0xb8b8b8);
   for(const x of [-1.0,1.0])bar([x,y0,Z(8.75)],[x,y0+.5,Z(8.75)],.025,0x6f7476);
   deco([-2.75,y0+1.2,a+.4],[-2.6,y0+1.45,a+.48],DARK);
   // The floor: the plates, round the engines, the generators and what stands on them.
-  floor('engine-room',[-W,W],[a,f],y0,(x,z,r)=>Math.abs(x)<=W-r&&z>=a+r&&z<=f-r&&!(x<-2.35+r&&z<Z(10.9)+r));
+  floor('engine-room',[-W,W],[a,f+.1],y0,(x,z,r)=>Math.abs(x)<=W-r&&z>=a+r&&(z<=f-r||Math.abs(x)<=WT_W/2-r+.06)&&!(x<-2.35+r&&z<Z(10.9)+r));
+ }
+ // ---- Forward of the engine room (batch 6q): the auxiliary machinery room, the workshop and the engine store, on the
+ // same floor plates, each its own room with its own door, so the way below is a line of rooms and not one box:
+ // ER → the watertight sliding door at Fr 28 → the aux room → the door at Fr 38 → the workshop (port, with the passage)
+ // → the opening in the mesh partition → the store (starboard). Linings, deckhead and plates as in the engine room.
+ {const y0=ER.floor,y1=ER.deckhead,f=ER.fore,W=ER.side,A1=MS.auxFore,F1=MS.storeFore,PX=MS.partition,PZ=MS.partitionAft,L=JOHANSSON_MARINE.livery;
+  const caged=(s,z)=>{const x=s*(W-.1);deco([Math.min(x,x-s*.1),y1-.55,z-.07],[Math.max(x,x-s*.1),y1-.35,z+.07],0xd8d2c0);cyl(.045,.045,.14,[x-s*.14,y1-.45,z],0xfff6dc,{rot:[0,0,Math.PI/2],seg:10,name:'bulkhead lamp'});
+   for(const dz of [-.06,.06])bar([x-s*.1,y1-.52,z+dz],[x-s*.2,y1-.45,z+dz],.004,0x9a9ea0);bar([x-s*.2,y1-.45,z-.06],[x-s*.2,y1-.45,z+.06],.004,0x9a9ea0);};
+  // The spaces: linings, the deckhead, the plates, the bulkhead at Fr 38 with its door, the forward bulkhead at Fr 45.
+  for(const s of [1,-1])box([Math.min(s*W,s*(W+.06)),y0-.1,f],[Math.max(s*W,s*(W+.06)),y1,F1+.06],0xe8e6dc,{name:'machinery space side'});
+  box([-W,y1,f],[W,CAR-.02,F1+.06],0xd8d6cc,{solid:false,camera:true,name:'machinery space deckhead'});
+  deco([-W,CAR-.03,f],[W,CAR-.005,F1+.06],0xd8d6cc);   // the car deck's plating over the deckhead: without a caster above it the sun striped the deckhead's underside with shadow acne
+  box([-W,y0-.06,f],[W,y0,F1+.06],0x8c9193,{solid:false,camera:false,name:'floor plates'});
+  floorPlate('chequer',-W,W,f+.06,A1,y0+.002);floorPlate('chequer',-W,W,A1+.06,F1,y0+.002);
+  wall('x',-W,W,A1,A1+.06,y0-.1,y1,[doorAt(0,MS.door38.w,y0,MS.door38.h)],0xe8e6dc);
+  box([-W,y0-.1,F1],[W,y1,F1+.06],0xe8e6dc,{name:'store forward bulkhead'});
+  // The watertight door at Fr 28 (seen from the aux room: its leaf slid open to port in its frame, the hand pump and
+  // lever beside it, the notice over it) and the hinged door at Fr 38, hooked back against the workshop's bulkhead.
+  for(const x of [-WT_W/2,WT_W/2])deco([x-.05,y0,f-.02],[x+.05,y0+WT_H+.05,f+.08],TEAL);deco([-WT_W/2-.05,y0+WT_H,f-.02],[WT_W/2+.05,y0+WT_H+.05,f+.08],TEAL);
+  box([WT_W/2+.06,y0+.02,f+.07],[WT_W/2+.06+WT_W,y0+WT_H,f+.11],STEEL,{name:'watertight door leaf'});for(const k of [.3,.9,1.5])deco([WT_W/2+.08,y0+k,f+.11],[WT_W/2+.04+WT_W,y0+k+.05,f+.125],0x6a7274);   // the leaf's stiffeners
+  deco([-.75,y0+.8,f+.06],[-.55,y0+1.25,f+.2],0x6b7375);bar([-.65,y0+1.25,f+.13],[-.65,y0+1.6,f+.3],.012,0x1f2224);                                                           // the hand pump and its lever
+  plate(['WATERTIGHT DOOR · 水密戸','KEEP CLOSED AT SEA'],.6,.08,[0,y0+WT_H+.14,f+.061],0,{bg:'#f1ede2',name:'label: watertight door'});
+  plate(['OPEN · CLOSE','hand pump · 30 strokes'],.16,.06,[-.65,y0+.72,f+.061],0,{bg:'#f1ede2',name:'label: door pump'});
+  for(const x of [-MS.door38.w/2,MS.door38.w/2])deco([x-.04,y0,A1-.02],[x+.04,y0+MS.door38.h,A1+.08],TEAL);deco([-MS.door38.w/2-.04,y0+MS.door38.h,A1-.02],[MS.door38.w/2+.04,y0+MS.door38.h+.04,A1+.08],TEAL);
+  box([MS.door38.w/2+.05,y0+.02,A1+.06],[MS.door38.w/2+.05+MS.door38.w,y0+MS.door38.h-.02,A1+.1],DOOR,{name:'workshop door leaf'});
+  deco([-.3,y0+2.0,A1-.025],[.3,y0+2.25,A1-.005],0x24585c);                                                                                                                  // the sign over it: 工作室 WORKSHOP
+  // Lights in their cages and the fire-detection heads, the pipe runs along both sides (sea water, fresh water, the
+  // fire main), the ballast line to port, the hangers, the cable tray, the frames showing in the workshop and the store.
+  for(const s of [1,-1])for(const z of [Z(15.3),Z(17.6),Z(20.0),Z(21.9)])caged(s,z);
+  for(const [x,z] of [[0,Z(16.5)],[1.5,Z(20.8)],[-2,Z(21.2)]])cyl(.05,.05,.03,[x,y1-.015,z],0xf6f1e2,{seg:10,name:'detector head'});
+  for(const s of [1,-1])for(const [k,hex] of [[1,0x3f8a5a],[2,0x4f7fb0],[3,RED]])bar([s*(W-.12-k*.12),y1-.1,f+.06],[s*(W-.12-k*.12),y1-.1,F1-.1],.035,hex,'paint');
+  bar([-(W-.6),y1-.3,f+.06],[-(W-.6),y1-.3,A1-.1],.06,0x3f8a5a,'paint');
+  for(const s of [1,-1])for(let z=f+.6;z<F1-.2;z+=1.2)deco([Math.min(s*(W-.02),s*(W-.5)),y1-.06,z-.015],[Math.max(s*(W-.02),s*(W-.5)),y1-.03,z+.015],0x6f7476,{cls:'metal'});
+  deco([-2.75,y1-.3,f+.06],[-2.45,y1-.22,F1-.1],0x8c9193,{cls:'metal'});
+  for(const s of [1,-1])for(let z=A1+.3;z<F1-.1;z+=.5)deco([Math.min(s*(W-.01),s*(W-.12)),y0,z-.04],[Math.max(s*(W-.01),s*(W-.12)),y1-.6,z+.04],0xd8d6cc);
+  // Extinguishers by each door, the escape sign and the room signs.
+  for(const [x,z] of [[1.0,f+.25],[.9,A1+.25]])bar([x,y0,z],[x,y0+.55,z],.08,RED,'paint');
+  deco([-W+.1,y1-.3,Z(18.2)],[-W+.6,y1-.15,Z(18.22)],0x1f7a4a);
+  plate(['AUXILIARY MACHINERY ROOM','補機室 · Fr 28–38'],.7,.1,[-1.6,y0+1.75,f+.061],0,{bg:'#f1ede2',name:'label: aux room'});
+  plate(['ENGINE STORE · 機関部倉庫'],.6,.08,[PX-.001,y0+1.75,(PZ+F1)/2],-Math.PI/2,{bg:'#f1ede2',name:'label: engine store'});
+
+  // ---- The auxiliary machinery room. Starboard: the ballast and bilge manifold (six valves on a header, the lines
+  // to the tanks under the plates) and the ballast pump; the sounding pipes capped on the plates; the escape trunk
+  // in the forward corner. Port: the sewage holding tank and its discharge pump.
+  {const x0=-W,hz=Z(14.5),hz1=Z(16.3);
+   box([x0,y0,hz],[x0+.5,y0+.9,hz1],0x3f8a5a,{draw:false,name:'ballast manifold'});
+   bar([x0+.3,y0+.5,hz],[x0+.3,y0+.5,hz1],.06,0x3f8a5a,'paint');bar([x0+.3,y0+.5,hz],[x0+.3,y0-.05,hz],.06,0x3f8a5a,'paint');
+   ['BALLAST P','BALLAST S','AFT PEAK','BILGE ER','BILGE AUX','OVERBOARD'].forEach((name,i)=>{const z=hz+.15+i*.3;
+    cyl(.075,.075,.14,[x0+.3,y0+.5,z],0x3f8a5a,{rot:[0,0,Math.PI/2],seg:10,cls:'paint',name:'ballast valve'});bar([x0+.3,y0+.57,z],[x0+.3,y0+.8,z],.012,0x9a9ea0);
+    cyl(.07,.07,.02,[x0+.3,y0+.81,z],L.red,{seg:12,name:'valve handwheel'});bar([x0+.3,y0+.2,z],[x0+.3,y0-.05,z],.04,0x3f8a5a,'paint');
+    plate([name],.22,.04,[x0+.041,y0+1.05,z],Math.PI/2,{bg:'#f1ede2',name:'label: valve '+name.toLowerCase()});});
+   plate(['BALLAST & BILGE MANIFOLD','sea suction below · pump forward'],.5,.08,[x0+.041,y0+1.3,(hz+hz1)/2],Math.PI/2,{bg:'#f1ede2',name:'label: manifold'});
+   pumpSet('gsPump',2,0x3f8a5a,'BALLAST',x0,1,Z(16.85),tagOf('bilge','balp'));tagPlate(tagOf('bilge','manifold'),[x0+.041,y0+1.42,(hz+hz1)/2],Math.PI/2);
+   for(const [x,name] of [[-3.2,'SOUNDING · BALLAST S'],[1.8,'SOUNDING · BALLAST P']]){cyl(.04,.04,.14,[x,y0+.07,Z(17.8)],0xb8a060,{seg:8,name:'sounding cap'});plate([name],.16,.03,[x,y0+.141,Z(17.8)],0,{rotX:-Math.PI/2,bg:'#f1ede2',name:'label: sounding'});}
+   // The escape trunk: its wall, the ladder up to the hatch into casing S (shut above), the sign.
+   box([x0,y0,Z(18.4)],[x0+.7,y1,Z(18.44)],0xe8e6dc,{name:'escape trunk'});
+   for(const x of [x0+.15,x0+.55])bar([x,y0,Z(18.8)],[x,y1,Z(18.8)],.025,STEEL);for(let yy=y0+.3;yy<y1;yy+=.3)bar([x0+.15,yy,Z(18.8)],[x0+.55,yy,Z(18.8)],.018,STEEL);
+   deco([x0+.02,y1-.03,Z(18.46)],[x0+.68,y1-.01,A1-.02],0x3a4244);
+   // The sewage holding tank, its manhole, sight glass and vent, and the discharge pump with its line up to the deck connection.
+   box([W-1.6,y0,Z(16.9)],[W,y0+1.7,Z(18.5)],0x7a756a,{name:'sewage holding tank'});cyl(.22,.22,.06,[W-.8,y0+1.73,Z(17.7)],0x5f5a52,{seg:14,name:'manhole cover'});
+   deco([W-1.61,y0+.3,Z(17.6)],[W-1.6,y0+1.5,Z(17.65)],0xdfe8ee);bar([W-.3,y0+1.7,Z(18.3)],[W-.3,y1-.02,Z(18.3)],.03,0x9a9ea0);
+   plate(['SEWAGE HOLDING TANK','4 m³ · pumped ashore at Minato'],.6,.1,[W-1.601,y0+1.0,Z(17.7)],-Math.PI/2,{bg:'#f1ede2',name:'label: sewage tank'});
+   pumpSet('sewagePump',1,0x7a756a,'SEWAGE DISCHARGE No.1',W,-1,Z(16.45),tagOf('sewage','dp1'));tagPlate(tagOf('sewage','htank'),[W-1.601,y0+1.2,Z(17.7)],-Math.PI/2);
+   // The standby machines (D10, the creator: "redundant motors so you can alternate"): along the port side a row of pumps
+   // No.2 (and the two fuel transfer pumps, whose storage tanks are under the engine room's plates next door), the
+   // second starting-air compressor in the starboard aft corner; each with its maker's plate and its KKS tag.
+   pumpSet('transferPump',1,0x8a6a3a,'FUEL TRANSFER No.1',W,-1,Z(14.2),tagOf('fuel','tp1'));pumpSet('transferPump',2,0x8a6a3a,'FUEL TRANSFER No.2',W,-1,Z(14.55),tagOf('fuel','tp2'));
+   pumpSet('hydrophore',2,0x4f7fb0,'HYDROPHORE No.2',W,-1,Z(15.0),tagOf('freshwater','hp2'));pumpSet('sanitaryPump',2,0x4f7fb0,'SANITARY No.2',W,-1,Z(15.4),tagOf('sewage','sp2'));
+   pumpSet('sewagePump',2,0x7a756a,'SEWAGE DISCHARGE No.2',W,-1,Z(15.85),tagOf('sewage','dp2'));
+   {const cx=x0+.2,cz=Z(14.25);box([x0,y0,Z(14.08)],[x0+.4,y0+.6,Z(14.42)],0x5f6a6c,{draw:false,name:'air compressor No.2'});
+    deco([x0,y0,Z(14.08)],[x0+.4,y0+.1,Z(14.42)],0x3a3f41);deco([x0+.08,y0+.1,Z(14.13)],[x0+.32,y0+.4,Z(14.37)],L.green);
+    cyl(.055,.055,.22,[cx-.1,y0+.5,cz],L.cover,{rot:[0,0,.45],seg:10,name:'compressor cylinder'});cyl(.045,.045,.2,[cx+.1,y0+.5,cz],L.cover,{rot:[0,0,-.45],seg:10,name:'compressor cylinder'});
+    cyl(.16,.16,.04,[cx,y0+.3,Z(14.1)],L.cover,{rot:[Math.PI/2,0,0],seg:16,name:'compressor flywheel'});cyl(.09,.09,.26,[cx,y0+.25,Z(14.55)],L.alternator,{rot:[Math.PI/2,0,0],seg:14,name:'compressor motor'});
+    bar([cx,y0+.6,cz],[cx,y1-.2,cz],.012,0x9a9ea0);bar([cx,y1-.2,cz],[cx,y1-.2,f+.06],.012,0x9a9ea0);                                                           // the delivery line to the bottles next door
+    dial('AIR','bar',.72,.07,[cx,y0+.46,Z(14.38)+.002],0,{red:[.9,1]});plate(makerPlate('compressor',2),.18,.08,[cx,y0+.25,Z(14.42)+.001],0,{name:'maker’s plate: compressor No.2'});tagPlate(tagOf('air','c2'),[cx,y0+.57,Z(14.42)+.001],0);}
+  }
+  // ---- The workshop (port): the bench along the forward bulkhead with its vice, grinder and the wiped bearing shell;
+  // the JL-400 lathe along her side; the pedestal drill by the door; the welding set; the tool board; a stool.
+  {const bx0=.9;
+   box([bx0,y0,F1-.6],[W,y0+.85,F1],0x8a7356,{draw:false,name:'workshop bench'});deco([bx0,y0+.8,F1-.6],[W,y0+.85,F1],0x8a7356);
+   for(const [x,z] of [[bx0+.04,F1-.56],[W-.04,F1-.56],[bx0+.04,F1-.04],[W-.04,F1-.04]])bar([x,y0,z],[x,y0+.8,z],.025,0x5a4a36);deco([bx0+.02,y0+.3,F1-.58],[W-.02,y0+.33,F1-.02],0x5a4a36);
+   deco([2.5,y0+.85,F1-.5],[2.7,y0+1.02,F1-.25],STEEL);                                                                                                                    // the vice
+   cyl(.1,.1,.03,[3.35,y0+1.0,F1-.3],0x6f7476,{rot:[0,0,Math.PI/2],seg:14,name:'grinding wheel'});cyl(.1,.1,.03,[3.65,y0+1.0,F1-.3],0x6f7476,{rot:[0,0,Math.PI/2],seg:14,name:'grinding wheel'});
+   cyl(.08,.08,.22,[3.5,y0+1.0,F1-.3],L.alternator,{rot:[0,0,Math.PI/2],seg:12,name:'grinder motor'});deco([3.42,y0+.85,F1-.36],[3.58,y0+.93,F1-.24],0x3a3f41);
+   cyl(.09,.09,.09,[1.6,y0+.895,F1-.3],0xb8bcbe,{rot:[0,0,Math.PI/2],seg:14,name:'wiped bearing shell'});deco([1.56,y0+.94,F1-.34],[1.64,y0+.95,F1-.26],0x3b3326);
+   plate(['WIPED · STBD No.3 MAIN BEARING','12 APR 94 · keep for the surveyor'],.22,.05,[1.6,y0+.88,F1-.39],Math.PI,{bg:'#f6f3ea',name:'label: wiped bearing'});
+   deco([2.0,y0+.85,F1-.5],[2.4,y0+1.0,F1-.2],L.red);                                                                                                                      // the toolbox
+   box([W-.8,y0,Z(19.45)],[W,y0+1.3,Z(21.0)],L.green,{draw:false,name:'lathe'});
+   for(const z of [Z(19.5),Z(20.55)])deco([W-.7,y0,z],[W-.1,y0+.75,z+.4],L.cover);deco([W-.75,y0+.75,Z(19.45)],[W-.05,y0+.95,Z(21.0)],L.green);   // the cabinets and the bed
+   deco([W-.75,y0+.95,Z(19.45)],[W-.05,y0+1.3,Z(19.9)],L.green);cyl(.09,.09,.08,[W-.4,y0+1.12,Z(19.94)],0xb8bcbe,{rot:[Math.PI/2,0,0],seg:14,name:'lathe chuck'});    // the headstock and chuck
+   deco([W-.55,y0+.95,Z(20.75)],[W-.25,y0+1.15,Z(21.0)],L.green);cyl(.03,.03,.3,[W-.4,y0+1.12,Z(20.6)],0xb8bcbe,{rot:[Math.PI/2,0,0],seg:8,name:'tailstock quill'});   // the tailstock
+   deco([W-.7,y0+.95,Z(20.1)],[W-.1,y0+1.1,Z(20.4)],L.cover);bar([W-.08,y0+.9,Z(19.9)],[W-.08,y0+.9,Z(21.0)],.012,0x9a9ea0);                                                // the carriage and the leadscrew
+   deco([W-.73,y0+.74,Z(19.47)],[W-.07,y0+.76,Z(20.98)],0x3a3f41);
+   plate(['JOHANSSON MACHINE TOOLS','JL-400 · centre lathe · 400 mm · Hiroshima'],.3,.08,[W-.4,y0+.62,Z(20.95)+.001],0,{name:'maker’s plate: lathe'});
+   {const dx=2.55;                                                                                                   // the drill, between the door's leaf and the lathe, off the way to the bench
+   box([dx-.3,y0,Z(19.5)],[dx+.3,y0+1.7,Z(20.1)],0x3a3f41,{draw:false,name:'pedestal drill'});deco([dx-.25,y0,Z(19.55)],[dx+.25,y0+.08,Z(20.05)],0x3a3f41);
+   bar([dx,y0+.08,Z(19.8)],[dx,y0+1.65,Z(19.8)],.04,L.green,'paint');deco([dx-.2,y0+.9,Z(19.6)],[dx+.2,y0+.95,Z(20.0)],0x6f7476);
+   deco([dx-.2,y0+1.45,Z(19.55)],[dx+.2,y0+1.7,Z(20.05)],L.green);cyl(.03,.03,.3,[dx,y0+1.3,Z(19.8)],0xb8bcbe,{seg:8,name:'drill quill'});cyl(.07,.07,.2,[dx,y0+1.6,Z(20.2)],L.alternator,{seg:12,name:'drill motor'});
+   plate(['JOHANSSON MACHINE TOOLS','JD-13 · pedestal drill'],.2,.06,[dx,y0+1.2,Z(19.5)-.001],Math.PI,{name:'maker’s plate: drill'});}
+   box([W-.5,y0,Z(21.2)],[W,y0+.8,Z(21.7)],0xd0652a,{name:'welding set'});deco([W-.45,y0+.5,Z(21.21)],[W-.05,y0+.75,Z(21.19)],0x3a3f41);bar([W-.25,y0+.8,Z(21.45)],[W-.9,y0+.05,Z(21.9)],.012,0x1f2224);
+   plate(['JOHANSSON WELDING','JW-250 · 250 A'],.2,.06,[W-.25,y0+.3,Z(21.2)-.001],Math.PI,{name:'maker’s plate: welding set'});
+   deco([1.6,y0+1.0,A1+.07],[3.0,y0+1.7,A1+.09],0xd8d2c0);for(let i=0;i<7;i++)deco([1.7+i*.18,y0+1.15,A1+.09],[1.74+i*.18,y0+1.55,A1+.11],STEEL);                       // the tool board
+   box([2.0,y0,Z(21.0)],[2.4,y0+.5,Z(21.4)],0x3a4244,{draw:false,name:'stool'});bar([2.2,y0,Z(21.2)],[2.2,y0+.45,Z(21.2)],.03,0x3a4244);cyl(.18,.18,.03,[2.2,y0+.47,Z(21.2)],0x3a4244,{seg:12,name:'stool seat'});
+  }
+  // ---- The store (starboard): the mesh partition with its opening by the door, the spares racks along her side,
+  // the oil drums on their rack with the drip tray, the rag bin, the chain block on the deckhead.
+  {box([PX-.02,y0,PZ],[PX+.02,y1-.3,F1],STEEL,{draw:false,name:'store partition'});                                   // welded mesh on a frame: posts, rails and the wires
+   for(const z of [PZ,PZ+.64,PZ+1.28,PZ+1.92,F1-.02])bar([PX,y0,z],[PX,y1-.3,z],.015,0x6f7476);for(const yy of [y0+.02,y1-.32])bar([PX,yy,PZ],[PX,yy,F1],.015,0x6f7476);
+   for(let yy=y0+.2;yy<y1-.35;yy+=.2)bar([PX,yy,PZ],[PX,yy,F1],.004,0x8c9193);for(let z=PZ+.16;z<F1;z+=.16)bar([PX,y0+.02,z],[PX,y1-.32,z],.004,0x8c9193);
+   box([-W,y0,Z(20.0)],[-W+.5,y0+1.6,Z(22.4)],STEEL,{draw:false,name:'spares rack'});
+   for(const z of [Z(20.0),Z(21.2),Z(22.4)])for(const x of [-W+.04,-W+.46])bar([x,y0,z],[x,y0+1.6,z],.015,0x6f7476);
+   for(const yy of [y0+.05,y0+.55,y0+1.05,y0+1.55])deco([-W,yy,Z(20.0)],[-W+.5,yy+.03,Z(22.4)],0x6f7476);
+   ['FILTERS','GASKETS & SEALS','INJECTORS','BEARINGS','V-BELTS','LAMPS','HOSES','PAINT · touch-up'].forEach((name,i)=>{const r=i%2,c=Math.floor(i/2),z0=Z(20.1)+c*.58,yy=y0+.08+r*.5;
+    deco([-W+.06,yy,z0],[-W+.44,yy+.36,z0+.5],i%3?0xb08a5a:0x9aa3a2);plate([name],.4,.05,[-W+.441,yy+.2,z0+.25],Math.PI/2,{bg:'#f6f3ea',name:'label: spares '+name.toLowerCase()});});
+   box([-2.9,y0,F1-.75],[-.9,y0+.9,F1],0x6f7476,{draw:false,name:'oil drums'});deco([-2.9,y0,F1-.75],[-.9,y0+.06,F1],0x3a3f41);
+   for(const x of [-2.4,-1.4]){cyl(.29,.29,.88,[x,y0+.5,F1-.37],0x2f4a7a,{rot:[0,0,Math.PI/2],seg:18,cls:'paint',name:'oil drum'});for(const k of [-.28,.28])cyl(.3,.3,.03,[x+k,y0+.5,F1-.37],0x1f2f52,{rot:[0,0,Math.PI/2],seg:18});
+    cyl(.025,.025,.08,[x-.44,y0+.3,F1-.37],0xb8a060,{rot:[0,0,Math.PI/2],seg:8,name:'drum tap'});plate(['LUBRICATING OIL · SAE 40','200 L'],.3,.06,[x-.46,y0+.6,F1-.37],-Math.PI/2,{bg:'#f1ede2',name:'label: oil drum'});}
+   for(const [x,z] of [[-2.85,F1-.7],[-.95,F1-.7],[-2.85,F1-.05],[-.95,F1-.05]])bar([x,y0+.06,z],[x,y0+.3,z],.02,0x3a3f41);
+   cyl(.22,.22,.6,[-.8,y0+.3,Z(20.3)],0x3a4244,{seg:12,cls:'paint',name:'rag bin'});plate(['OILY RAGS','lid on'],.16,.05,[-.8,y0+.4,Z(20.3)-.221],Math.PI,{bg:'#f1ede2',name:'label: rag bin'});
+   bar([-1.8,y1,Z(20.8)],[-1.8,y1-.5,Z(20.8)],.012,0x3a3f41);cyl(.08,.08,.18,[-1.8,y1-.6,Z(20.8)],0x3a3f41,{seg:10,name:'chain block'});bar([-1.8,y1-.7,Z(20.8)],[-1.8,y1-.95,Z(20.8)],.012,0x3a3f41);
+  }
+  // The floors: the aux room, reaching back through the watertight door and forward through the door at Fr 38; the
+  // workshop and the store as one floor (the partition stands on it), reaching back through that door.
+  floor('aux-room',[-W,W],[f-.4,A1+.1],y0,(x,z,r)=>{if(z<f+.06+r)return Math.abs(x)<=WT_W/2-r+.06;if(z>A1-r)return Math.abs(x)<=MS.door38.w/2-r+.06;return Math.abs(x)<=W-r;});
+  floor('workshop',[-W,W],[A1-.4,F1],y0,(x,z,r)=>{if(z<A1+.06+r)return Math.abs(x)<=MS.door38.w/2-r+.06;return Math.abs(x)<=W-r&&z<=F1-r;});
  }
  return Object.freeze({boxes:Object.freeze(boxes),bars:Object.freeze(bars),glass:Object.freeze(glass),floors:Object.freeze(floors),cyls:Object.freeze(cyls),plates:Object.freeze(plates)});
 })();

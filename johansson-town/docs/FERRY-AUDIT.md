@@ -1226,3 +1226,85 @@ control room's mint-green console, a wiped bearing. Built in code:
 - The hull's triangle budget rose from 60 000 to 66 000 for the machines (`ferry-ship.test.mjs`).
 - Open from the photographs: the gearbox opened for inspection (the gears), the bilge trough, the sludge tank's
   sight glass, the wiped bearing as a spare on the bench.
+
+### 10.11 6q-1 built: several levels and many rooms, the first batch (2026-10-13)
+
+The creator, 2026-10-13: *"The engine room should be several levels and have many rooms."* As a naval architect reads
+it for a 34.5 m, 199-ton ferry with 2.1 m under her car deck: not a tall engine room with platforms (she has no height
+for one; a D16-class high-speed diesel wants none), but **machinery spaces on every level the hull has, each a room with
+a door**, in the order a yard arranges them. The design (README finding 5, sheet 7 `machinery-spaces.svg`):
+
+| Level (above base) | What is there |
+|---|---|
+| 0.7 m, the tank top | The double bottom (fuel, lube oil, bilge holding and sludge under the engine room; ballast P and S under the aux room), the bilge wells under the gratings: 6q-3 |
+| 0.9 m, the floor plates | **Engine room** (Fr 17–28) with the **control booth** → the **watertight sliding door** at Fr 28 → **auxiliary machinery room** (Fr 28–38) → the door at Fr 38 → **workshop** (port) and **engine store** (starboard, behind a mesh partition), Fr 38–45; the shaft space and steering-gear room aft at 2.0 m are crawl spaces |
+| 3.0 m, the car deck | The engine-room entrance and ladder in casing P; the two escape trunks' hatches in casing S (z 6–7 and 18.4–19) |
+| 5.5 m, the fan flat | Over the lower lobby, under the passenger deck: the engine-room fans and their trunks down the casings, a ladder from the casing P landing, a hatch to the open deck: 6q-2 |
+
+Built in this batch (`ferry-ship.js` FERRY_GA: `aux-room`, `workshop`, `engine-store`, `fwd-double-bottom`, `void`;
+`ferry-interior.js` FERRY_MACHINERY_SPACES and the rooms; `ferry-inspect.js` ten prompts; `ferry-safety-plan.js` the
+extinguishers, the escape and the watertight-door symbol; `tools/ferry-drawings.mjs` sheet 7):
+- **The watertight door at Fr 28** on the centreline between the generators (the extinguisher that stood there moved
+  beside the tool board): 0.8 × 1.9 m, the full height under the deckhead (the first cut, 0.75 × 1.75, the yard's usual size, stopped the game's 1.82 m people at its lintel: `ferry-walk.test.mjs` now walks through it), the leaf slid open to port in its frame with its stiffeners, the hand pump and
+  lever beside it, the notice KEEP CLOSED AT SEA. A prompt tells why it is open alongside.
+- **The auxiliary machinery room** (z 14–19): the ballast and bilge manifold on the starboard side (six valves with red
+  handwheels on a header, labelled BALLAST P · BALLAST S · AFT PEAK · BILGE ER · BILGE AUX · OVERBOARD, the lines down to
+  the tanks), the ballast pump (Johansson Marine JP-32 No. 2), two sounding caps on the plates; the sewage holding tank
+  (4 m³, the rule's "nothing into the strait") to port with its manhole, sight glass, vent and discharge pump (JP-15 No. 2);
+  the escape trunk in the forward starboard corner, a ladder in its own trunk with the hatch above; caged lamps, detector
+  heads, the pipe runs and the ballast line overhead, the cable tray.
+- **The workshop** (port, z 19–22.5): the bench along the forward bulkhead with its vice, the bench grinder, a toolbox,
+  and the wiped No.3 main-bearing shell kept for the surveyor (open since 6o-3); the JL-400 centre lathe along her side
+  (cabinets, bed, headstock and chuck, tailstock, carriage, leadscrew, chip tray), the JD-13 pedestal drill by the door,
+  the JW-250 welding set, the tool board, a stool; the frames showing on the shell. Johansson Machine Tools and Johansson
+  Welding are two more Johansson companies (CLAUDE.md: Johansson is this universe's Acme).
+- **The engine store** (starboard, behind the mesh partition with its opening by the door): the spares rack with eight
+  labelled boxes, the two 200 L lubricating-oil drums on their rack over the drip tray with taps (out of casing P's
+  store, which was a stand-in), the oily-rag bin, the chain block on the deckhead.
+- **Walking**: the floors `aux-room` and `workshop` reach back through each doorway so a door is never a gap; both
+  count as below decks (ear defenders). The engine-room floor reaches through the watertight door.
+- **The data**: the ballast tanks move from "tanks" into `fwd-double-bottom` (Fr 28–38, under the valves that work them);
+  the sewage tank is a built tank in the aux room; the sewage pump and the workshop's machines are where they stand in
+  the load analysis; a ballast pump (3.7 kW) is added, run between boats and so in no condition's total; the engine room
+  carries four portable extinguishers below now, not two.
+- **Tests**: the GA (every new space inside the hull, none overlapping, ways out), 16 maker's plates, the triangle
+  budget raised 66 000 → 70 000 for three rooms, the floors drawn where they lie, every sheet regenerated (sheet 7 new,
+  every title block now n / 7).
+- **Open**: 6q-2 the fan flat; 6q-3 the bilge level; the CO₂ system covers the engine room only (the aux room, the
+  workshop and the store rely on extinguishers and detection; a yard would ask whether to extend it, and the answer
+  for a 1994 199-ton ferry is no: a watertight door between them, and the rule's portable appliances); the oiler's
+  rounds and the chief's day could pass through the new rooms (ferry-crew.js); the steering-gear room and the shaft
+  space stay crawl spaces reached by their hatch and manhole.
+
+### 10.12 D10, D15 and KKS: the piping and electrical drawings, tagged (2026-10-13)
+
+The creator, 2026-10-13: *"Make a piping diagram too, so all pipes are correct, and redundant motors so you can
+alternate"*; *"And electrical drawings for the ship; when the electrical drawings are correct, we can proceed to draw a
+house and make it correct, with proper cabling and piping"*; *"Use correct KKS codes for the drawings"*.
+- **KKS** (`src/world/ferry-kks.js`, README § Tags): the VGB structure and counting rules (from the one open text of
+  them, Eskom's 240-93576498), the ship as plant 1 and the shore as plant 0, F0 for the identical engines, the
+  function keys with their source marked (published key tables, or the yard's reading of the key part's lettering,
+  each with its reason), the equipment and component keys, the cable numbering. `kks()` refuses an unknown key or a
+  number outside its rule; `kksExplain()` reads a tag out as the crew would.
+- **Piping** (`src/world/ferry-piping.js`, sheets 8.1–8.11): eleven systems as data (nodes with kind, tag, space and
+  grid place; lines with bores), drawn as ISO 10628 diagrams by `tools/ferry-drawings.mjs pipingSheet` (symbols,
+  orthogonal runs in the system's colour, DN labels, the tag over and the name under every node, a reading of the
+  tags, the duty/standby table). Redundancy as the rules want it, `FERRY_SERVICES`: fourteen services with two
+  means; the ship gains compressor No.2, fuel transfer pumps No.1 and No.2, hydrophore No.2, sanitary No.2 and sewage
+  No.2 (in the load analysis at zero draw: they alternate with No.1), the general-service pump stands by for either
+  main engine's cooling and for the ballast, the fire and bilge pump for the bilge, the emergency fire pump outside the
+  engine room, the hand pumps third for steering and the ramp.
+- **Electrical** (`src/world/ferry-electrical.js`, sheets 3, 3b, 3c): boards, sources and every feeder derived from
+  the load analysis by IEC 60092 as a small yard applied it: FLA from kW, η and cos φ; DOL to 7.5 kW and star-delta
+  above; the breaker the next standard rating over 1.25 × FLA; marine EPR cable by rating at 45 °C and by voltage drop
+  (≤ 5 %) over the route (manhattan between the spaces' centres, 4 m a deck, 15 % slack); the route in words; the
+  KKS cable number. `electricalChecks()` is empty and tested: every cable carries its breaker, every drop under 6 %,
+  the thruster on 95 mm² and a 200 A star-delta, the generators' 200 AF breakers over their 162 A.
+- **Tests** `tests/ferry-kks-piping-electrical.test.mjs`: the tag rules; eleven systems with unique tags, every node in
+  a space, every line between nodes, every valve numbered by its kind, every pumped service with a standby, every
+  motor on the diagrams a consumer in the load analysis; every consumer a feeder with a standard breaker, a cable that
+  carries it, unique tags and cable numbers.
+- **Open**: the standby machines in the model (6q-2: compressor No.2 beside No.1, the transfer pumps under the tool
+  board, the No.2 pumps along the aux room's port side) with KKS tag plates on every machine; the engine room's pipe
+  runs generated from `FERRY_PIPING` rather than painted; control cabling, starter schematics and lighting circuits;
+  then the house, with the same data-first method (its own piping and cabling modules, drawn by the same tools).

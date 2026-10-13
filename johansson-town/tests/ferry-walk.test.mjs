@@ -189,3 +189,15 @@ test('the crew house: in from the bridge deck\'s aft platform, along the corrido
  const g=stroll(walk,colliders,[start.x,start.z,start.y],[W(1.6,5.6),W(1.6,6.5)]);
  assert.equal(g.stopped,null,'into the EG room: '+g.stopped);assert.ok(g.trail.some(t=>t[3]==='eg-room'));
 });
+
+test('below: from the engine room through the watertight door to the aux room, through the door at Fr 38 to the workshop and round the partition into the store (6q-1)',()=>{
+ const {run,walk,colliders}=alongside();const FP=.9-1.9,Z=z=>z-HALF;
+ const start=world(run,0,FP,Z(12.5)),aux=world(run,0,FP,Z(17)),manifold=world(run,-3.0,FP,Z(15.4)),door38=world(run,0,FP,Z(19.3)),bench=world(run,1.5,FP,Z(21.2)),store=world(run,-2.4,FP,Z(21.3)),gap=world(run,-1.2,FP,Z(19.7)),inside=world(run,0,FP,Z(19.8));
+ const r=stroll(walk,colliders,[start.x,start.z,start.y],[[aux.x,aux.z],[manifold.x,manifold.z],[aux.x,aux.z],[door38.x,door38.z],[inside.x,inside.z],[bench.x,bench.z],[inside.x,inside.z],[gap.x,gap.z],[store.x,store.z]]);
+ assert.equal(r.stopped,null,'stopped at '+r.stopped+' '+[r.x,r.y,r.z].map(n=>n.toFixed(2)));
+ const ids=[...new Set(r.trail.map(t=>t[3]))];assert.deepEqual(ids,['engine-room','aux-room','workshop'],ids.join(','));
+ for(let i=1;i<r.trail.length;i++)assert.ok(Math.abs(r.trail[i][1]-r.trail[i-1][1])<.05,'level plates throughout');
+ // The bulkheads stop you everywhere but at their doors; the partition stops you between the workshop and the store.
+ for(const [x,z] of [[2.0,Z(14.5)],[-2.0,Z(19.5)]]){const from=world(run,x,FP,z-1),to=world(run,x,FP,z+.5);const q=stroll(walk,colliders,[from.x,from.z,from.y],[[to.x,to.z]]);assert.notEqual(q.stopped,null,'through the bulkhead at '+x+','+z);}
+ {const from=world(run,1.0,FP,Z(21.0)),to=world(run,-1.0,FP,Z(21.0));const q=stroll(walk,colliders,[from.x,from.z,from.y],[[to.x,to.z]]);assert.notEqual(q.stopped,null,'through the partition');}
+});

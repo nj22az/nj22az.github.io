@@ -1,6 +1,8 @@
 import * as THREE from '../../vendor/three.module.js';
 import {celFrom} from '../render/cel.js';
 import {bodyVolume} from './build.js';
+import {faceLayout} from './face.js';
+import {faceObjectPoint} from './face-objects.js';
 
 /**
  * Small things the story puts on a body, each with its reason (nothing is random), built light for phones: a handful of
@@ -14,6 +16,11 @@ import {bodyVolume} from './build.js';
  *   storyProps(avatar).give('paperback')      Mrs Higa's novel, open in her right mitten (the film turns it to her facing)
  *   storyProps(avatar).give('pumpkinSuit')    a Halloween costume (also 'ghostSheet', 'witchHat'): buildCostume
  *   storyProps(avatar).give('dryerCord')      the vanity dryer's cord, wound round the body and its pinned arms
+ *   storyProps(avatar).give('safetyGlasses')  clear safety glasses over his own glasses (WORK_KIT)
+ *   storyProps(avatar).give('headlamp')       a headlamp on an elastic band round the head, lit, with its own light (WORK_KIT)
+ *   storyProps(avatar).give('gloves')         electrician's rubber gloves over both mittens, gauntlets over the cuffs (WORK_KIT)
+ *   storyProps(avatar).give('voltageTester')  a two-pole voltage tester in the right mitten, its second probe parked on it (WORK_KIT)
+ *   storyProps(avatar).giveKit('electricianWork')   all four at once: Tetsuo's work kit for a board (WORK_KIT)
  *
  * The moves give what they need themselves (SitRead the paper, CordWrapped the cord, BasketHead the basket, TorchUp the
  * torch, at his pocket); giving it beforehand puts it in place before the move (the torch on his pocket in 3f).
@@ -35,7 +42,24 @@ export const STORY_PROPS=Object.freeze({
   where:'On the crown of the head, tipped a little back.'}),
  dryerCord:Object.freeze({who:'Thao',why:'Spinning round in the dark with her dryer still in her hand, she winds herself up in its own cord, like a parcel.',
   where:'From the dryer’s handle in her right mitten, four turns round her and her arms from under the arms to the hips, then away to the socket.'}),
+ // Tetsuo's work kit for an open board (WORK_KIT): what he puts on before his hands go inside one.
+ safetyGlasses:Object.freeze({who:'Tetsuo',why:'Inside a board a slip of a probe across two terminals throws a flash and hot copper at the face: clear safety glasses go on before the cover comes off.',
+  where:'Over his own half-rim reading glasses, as safety glasses of the kind made to fit over spectacles do: a wide clear shield on his nose, its brow bar above his own frames, its arms outside theirs.'}),
+ headlamp:Object.freeze({who:'Tetsuo',why:'With the main locked off the house is dark, and a hand torch takes a hand: a headlamp puts the light where he looks and leaves both hands for the tester and the screwdriver.',
+  where:'On an elastic band round his head above the brows, the lamp on his forehead tipped a little down, its battery box at the back of the band.'}),
+ gloves:Object.freeze({who:'Tetsuo',why:'Electrician’s low-voltage rubber gloves: until the tester has shown the board dead, every terminal is treated as live, and the gloves are what stands between it and his hands.',
+  where:'Over both mittens, their long gauntlets pulled up over the ends of his sleeves.'}),
+ voltageTester:Object.freeze({who:'Tetsuo',why:'Prove dead before touching: a two-pole voltage tester, both probes on the terminals, a row of lamps for the voltage. He proves it on something live first, then the dead board, then live again (live, dead, live), so a broken tester can never tell him a live board is dead.',
+  where:'The main handle in his right mitten, probe tip out past his fingers; the second probe on its lead, parked on the handle until he takes it in his left mitten (testerSplit).'}),
 });
+
+/**
+ * Tetsuo's work kit (the creator, "Fujita's Back" page 9: he works on the board while everyone soaks in the dark): the four
+ * things he wears and holds at an open board, given together by giveKit('electricianWork'). Isolate, lock and tag come
+ * first (the board's own lock-out, onsen-electrics.js ONSEN_LOCKOUT); then these, and the tester proves the board dead.
+ */
+export const WORK_KIT=Object.freeze({electricianWork:Object.freeze({who:'Tetsuo',props:Object.freeze(['safetyGlasses','headlamp','gloves','voltageTester']),
+ why:'Isolate, lock and tag, then glasses, gloves and light on, then prove dead with the tester before anything is touched: the order every job at a board takes.'})});
 
 const mat=(c,o={})=>celFrom(new THREE.MeshStandardMaterial({color:c,roughness:.6,...o}),{bands:'soft3'});
 const add=(g,geo,m,x=0,y=0,z=0)=>{const o=new THREE.Mesh(geo,m);o.position.set(x,y,z);o.castShadow=true;g.add(o);return o;};
@@ -319,6 +343,169 @@ export function pocketSpot(avatar){
  return {position:at,quaternion:q,normal:n};
 }
 
+// ---- Tetsuo's work kit (WORK_KIT). Each piece fitted to the body that wears it, in the bone frame that carries it.
+
+/** The head's centre in the head bone's frame (faceObjectPoint's frame). */
+const headCentre=m=>new THREE.Vector3(0,m.headCentre-m.headY,0);
+/** Whatever is drawn on the head (the head, the hair, the nose, the face's own glasses), in the head bone's frame. */
+function headPoints(avatar,keep=()=>true){
+ const m=avatar.measure,pts=posedPoints(avatar,avatar.bones.head,p=>p.y>m.headY-m.Rh*.2&&keep(p),1);
+ const fo=avatar.bones.head.children.find(o=>o.name==='Face objects');
+ if(fo)fo.traverse(o=>{if(!o.isMesh)return;const P=o.geometry.attributes.position;for(let i=0;i<P.count;i++)pts.push(new THREE.Vector3().fromBufferAttribute(P,i));});
+ return pts;
+}
+
+/**
+ * Clear safety glasses over spectacles: one wide shield across both eyes following the face's curve (the same projection as
+ * the face's own glasses, face-objects.js), notched over the nose, a dark brow bar along its top and arms back to the head.
+ * `lift` is how far out from the face it starts (in head radii); it is raised until nothing drawn on the head (the nose, the
+ * brows, his own frames) comes through it, with `clear` metres to spare.
+ */
+export const SAFETY_GLASSES=Object.freeze({lift:.1,clear:.004,wide:1.5,top:1.2,bottom:1.05,lens:0xe6f2f6,opacity:.24,bar:0x3a3f44});
+export function buildSafetyGlasses(avatar){
+ const m=avatar.measure,L=faceLayout(avatar.recipe),S=SAFETY_GLASSES,c=headCentre(m);
+ const r=16*L.eyeS*L.glassS,rx=r*L.eyeW,x0=128-L.spread-rx*S.wide,x1=128+L.spread+rx*S.wide,yTop=L.glassY-r*S.top,yBot=L.glassY+r*S.bottom;
+ // the notch: over the nose, and up over the bridge of his own glasses (the face's glasses arch their bridge out from the face)
+ const noseHalf=13*L.noseS,nTop=L.glassY-r*.6,notch=(x,y)=>y>nTop&&Math.abs(x-128)<noseHalf*(.8+.7*(y-nTop)/(yBot-nTop));
+ const NX=18,NY=7,grid=[];for(let j=0;j<=NY;j++)for(let i=0;i<=NX;i++)grid.push([x0+(x1-x0)*i/NX,yTop+(yBot-yTop)*j/NY]);
+ const pts=headPoints(avatar),dirs=pts.map(p=>{const d=p.clone().sub(c);return {len:d.length(),d:d.normalize()};});
+ const fits=lift=>grid.every(([x,y])=>{if(notch(x,y))return true;const v=faceObjectPoint(m,x,y,lift).sub(c),len=v.length();v.normalize();
+  return dirs.every(q=>q.d.dot(v)<.9985||q.len+S.clear<len);});
+ let lift=S.lift;while(!fits(lift)&&lift<.4)lift+=.01;
+ const g=new THREE.Group();g.name='Safety glasses';g.userData.lift=lift;
+ // The shield: the grid's cells, the nose notch left open.
+ const pos=[],at=(x,y,l=lift)=>faceObjectPoint(m,x,y,l);
+ for(let j=0;j<NY;j++)for(let i=0;i<NX;i++){const k=j*(NX+1)+i,q=[grid[k],grid[k+1],grid[k+NX+2],grid[k+NX+1]];
+  if(q.some(([x,y])=>notch(x,y)))continue;const [a,b,cc,d]=q.map(([x,y])=>at(x,y));pos.push(...a.toArray(),...d.toArray(),...b.toArray(),...b.toArray(),...d.toArray(),...cc.toArray());}
+ const lensGeo=new THREE.BufferGeometry();lensGeo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));lensGeo.computeVertexNormals();
+ const lens=new THREE.Mesh(lensGeo,new THREE.MeshStandardMaterial({color:S.lens,transparent:true,opacity:S.opacity,roughness:.1,depthWrite:false,side:THREE.DoubleSide}));
+ lens.name='Safety glasses shield';lens.castShadow=false;g.add(lens);
+ // The brow bar along the top edge, a rim down each outer edge, and the arms back to the sides of the head, outside his own.
+ const bar=mat(S.bar,{roughness:.45}),tube=(points,radius,name)=>{const t=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points,false,'centripetal'),Math.max(12,points.length*3),radius,6,false),bar);t.name=name;t.castShadow=false;g.add(t);return t;};
+ tube(Array.from({length:NX+1},(_,i)=>at(x0+(x1-x0)*i/NX,yTop,lift+.01)),.0035,'Safety glasses brow bar');
+ for(const x of [x0,x1]){
+  tube(Array.from({length:NY+1},(_,j)=>at(x,yTop+(yBot-yTop)*j/NY,lift+.004)),.0022,'Safety glasses rim');
+  // the arm: back from the shield's outer top corner to the side of the head above the ear, outside the face's own glasses
+  const o=at(x,(yTop+L.glassY)/2,lift+.01),s=Math.sign(o.x),back=new THREE.Vector3(s*m.Rh*m.headSX*1.06,o.y-.004,-m.Rh*.1);
+  tube([o,o.clone().add(new THREE.Vector3(s*m.Rh*.04,0,-m.Rh*.08)),back],.003,'Safety glasses arm');
+ }
+ return g;
+}
+
+/**
+ * A headlamp on an elastic band: the band follows the outline of whatever is on the head at its height (hair, a bald crown)
+ * just clear of it, the lamp on the forehead tipped `tilt` down, its battery box at the back. setOn(true) lights the lens and
+ * switches on its light (no drawn beam: seen from in front it would lie over the face): a warm spot (an incandescent bulb of the period, not a white LED) from the lens,
+ * `light` its numbers, so a film can stand the same light in for it (capture-room's "torch": from the lens, along `aim`).
+ */
+export const HEADLAMP=Object.freeze({band:.024,above:22,clear:.004,tilt:.22,colour:0x3b3f44,bandColour:0x2a2c2e,stripe:0xe8c23a,
+ light:Object.freeze({colour:0xffd6a0,kelvin:2800,intensity:3,distance:3,angle:.34,penumbra:.5,decay:2,
+  why:'A krypton bulb behind a small reflector: a warm, fairly narrow pool, bright enough to read a breaker’s label at arm’s length, dim beyond a few metres.'})});
+export function buildHeadlamp(avatar){
+ const m=avatar.measure,L=faceLayout(avatar.recipe),H=HEADLAMP,c=headCentre(m);
+ const y=faceObjectPoint(m,128,L.browY-H.above,0).y;// the band's middle: on the forehead, above the brows
+ const pts=headPoints(avatar,p=>true).filter(p=>Math.abs(p.y-y)<H.band*.6);
+ const around=a=>{const dx=Math.sin(a),dz=Math.cos(a);let r=0;for(const p of pts){const px=p.x-c.x,pz=p.z-c.z,along=px*dx+pz*dz,off=Math.abs(px*dz-pz*dx);if(off<.012&&along>r)r=along;}return r+H.clear;};
+ const N=48,ring=Array.from({length:N},(_,i)=>{const a=i/N*Math.PI*2;return [a,around(a)];});
+ // smoothed, never inside: the larger of each radius and its neighbours' mean
+ const R=ring.map(([,r],i)=>Math.max(r,(ring[(i+N-1)%N][1]+ring[(i+1)%N][1])/2));
+ const g=new THREE.Group();g.name='Headlamp';
+ const pos=[],idx=[];for(let i=0;i<=N;i++){const a=i/N*Math.PI*2,r=R[i%N];for(const s of [-1,1])pos.push(c.x+Math.sin(a)*r,y+s*H.band/2,c.z+Math.cos(a)*r);if(i<N){const k=i*2;idx.push(k,k+1,k+2,k+1,k+3,k+2);}}
+ const bandGeo=new THREE.BufferGeometry();bandGeo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));bandGeo.setIndex(idx);bandGeo.computeVertexNormals();
+ const band=new THREE.Mesh(bandGeo,mat(H.bandColour,{roughness:.8,side:THREE.DoubleSide}));band.name='Headlamp band';band.castShadow=false;g.add(band);
+ const front=new THREE.Vector3(c.x,y,c.z+R[0]),back=new THREE.Vector3(c.x,y,c.z-R[N/2]);
+ // the lamp: a dark housing on the band, tipped down, a chrome bezel, the lens, and a yellow switch on top
+ const lamp=new THREE.Group();lamp.name='Headlamp lamp';lamp.position.copy(front);lamp.rotation.x=H.tilt;g.add(lamp);
+ const body=mat(H.colour,{roughness:.5}),chrome=mat(0xc9ccce,{metalness:.8,roughness:.25});
+ add(lamp,new THREE.BoxGeometry(.05,.036,.026),body,0,0,.013);
+ add(lamp,new THREE.CylinderGeometry(.0165,.0165,.008,20).rotateX(Math.PI/2),chrome,0,0,.029);
+ const lensMat=new THREE.MeshStandardMaterial({color:0xfff6dc,emissive:0x000000,emissiveIntensity:0,roughness:.2});
+ const lens=add(lamp,new THREE.CylinderGeometry(.0135,.0135,.002,20).rotateX(Math.PI/2),lensMat,0,0,.0335);lens.castShadow=false;lens.name='Headlamp lens';
+ add(lamp,new THREE.BoxGeometry(.012,.006,.01),mat(H.stripe,{roughness:.45}),.012,.021,.012);
+ const box=add(g,new THREE.BoxGeometry(.05,.032,.018),body,back.x,back.y,back.z-.009);box.name='Headlamp battery box';
+ const S=H.light,light=new THREE.SpotLight(S.colour,0,S.distance,S.angle,S.penumbra,S.decay);light.name='Headlamp light';light.castShadow=false;
+ light.position.set(0,0,.036);light.target.position.set(0,0,1);light.add(light.target);lamp.add(light);
+ let on=false;
+ g.userData.headlamp={
+  get on(){return on;},light,
+  setOn(v){on=!!v;lensMat.emissive.setHex(on?0xffe2b0:0);lensMat.emissiveIntensity=on?2.6:0;light.intensity=on?S.intensity:0;},
+  /** Where the light comes from and where it points, in the world: what a capture's "torch" stands in for. */
+  aim(distance=1){lamp.updateWorldMatrix(true,false);const from=new THREE.Vector3(0,0,.036).applyMatrix4(lamp.matrixWorld),to=new THREE.Vector3(0,0,.036+distance).applyMatrix4(lamp.matrixWorld);
+   return {from:from.toArray(),at:to.toArray(),angle_deg:S.angle*180/Math.PI,colour:'#'+new THREE.Color(S.colour).getHexString(),intensity:S.intensity,distance:S.distance,penumbra:S.penumbra};},
+ };
+ return g;
+}
+
+/**
+ * Low-voltage rubber gloves over the mittens: a palm a size bigger than the mitten's, the thumb's, and a gauntlet pulled up
+ * over the cuff of the sleeve, wide enough for whatever the forearm wears there, with a rolled rim. One per hand, carried by
+ * the hand bone, so a gloved hand does whatever the mitten does.
+ */
+export const GLOVES=Object.freeze({colour:0xd8913a,rim:0xb5732a,over:1.12,cuff:.075,clear:.004});
+export function buildGlove(avatar,side){
+ const m=avatar.measure,G=GLOVES,sx=side==='L'?1:-1,h=m.hand,g=new THREE.Group();g.name='Rubber glove '+side;
+ const rubber=mat(G.colour,{roughness:.55}),rim=mat(G.rim,{roughness:.55});
+ const ball=(r,at,scale,name)=>{const o=add(g,new THREE.SphereGeometry(r,16,12),rubber,...at);o.scale.set(...scale);o.name=name;return o;};
+ ball(h*G.over,[0,-h*.55,0],[.9,1.15,.78],'Rubber glove palm');
+ ball(h*.42*G.over*1.04,[-sx*h*.55,-h*.35,h*.42],[1,1.2,1],'Rubber glove thumb');
+ // the gauntlet: over the forearm (the arm is armR*0.86 at the wrist, build.js) and the sleeve's end, with room to spare
+ const rad=m.armR+G.clear;
+ const cuff=add(g,new THREE.CylinderGeometry(rad*1.12,rad,G.cuff+h*.25,20,1,true),rubber,0,G.cuff/2-h*.125,0);cuff.name='Rubber glove gauntlet';cuff.material=mat(G.colour,{roughness:.55,side:THREE.DoubleSide});
+ const roll=add(g,new THREE.TorusGeometry(rad*1.12,.0045,6,24).rotateX(Math.PI/2),rim,0,G.cuff,0);roll.name='Rubber glove rim';
+ return g;
+}
+
+/**
+ * A two-pole voltage tester: the main handle (yellow, like the film's tester) with a window of lamps for the voltage and a
+ * steel probe, and a second yellow probe handle on a lead. Built upright like the film's held props (props3d.ts): the probe
+ * tips up (+y), the window on its -z face (towards whoever holds it up to read it), its origin at the grip. In a mitten
+ * (storyProps give) it is turned so the probe points ahead, out of the fist, the window up. setReading(volts) lights the
+ * lamps up to that voltage (0: dead, all dark). The second probe is parked on the handle until testerSplit puts it in the
+ * other mitten; the lead follows both, every frame.
+ */
+export const TESTER=Object.freeze({colour:0xe8c23a,scale:Object.freeze([12,24,50,100,200,400]),length:.17,radius:.015,lead:.6,
+ why:'A row of lamps, not a needle: in a dark board at arm’s length it reads at a glance, and no lamp is no voltage.'});
+export function buildTester(){
+ const T=TESTER,g=new THREE.Group();g.name='Voltage tester';
+ const yellow=mat(T.colour,{roughness:.45}),black=mat(0x26282a,{roughness:.5}),steel=mat(0xb9c0c4,{metalness:.8,roughness:.3});
+ const cyl=(parent,r0,r1,h,y,m)=>add(parent,new THREE.CylinderGeometry(r0,r1,h,16),m,0,y,0);
+ // gripped near its tail (the fist is about a tenth of a metre across), so the window and the probe stand out ahead of the fist
+ cyl(g,T.radius*1.05,T.radius,T.length,T.length/2-.05,yellow);              // the handle
+ cyl(g,T.radius*1.35,T.radius*1.35,.008,T.length-.045,black);               // the finger guard
+ cyl(g,T.radius*.3,T.radius*.55,.02,T.length-.03,black);
+ cyl(g,.0022,.0022,.03,T.length-.005,steel);                                // the probe tip
+ // the window and its lamps, ahead of the fist, the lowest voltage nearest the hand
+ add(g,new THREE.BoxGeometry(.018,.07,.004),black,0,.072,-T.radius*.92).castShadow=false;
+ const lamps=T.scale.map((v,i)=>{const lm=new THREE.MeshStandardMaterial({color:0x5a2a20,emissive:0x000000,emissiveIntensity:0,roughness:.3});
+  const o=add(g,new THREE.SphereGeometry(.0042,10,8),lm,0,.046+i*.0105,-T.radius*.92-.003);o.castShadow=false;o.name='Voltage tester lamp '+v;return lm;});
+ // the second probe: a shorter handle, guard and tip, parked alongside the main one
+ const second=new THREE.Group();second.name='Voltage tester second probe';
+ cyl(second,T.radius*.9,T.radius*.85,.13,.015,yellow);cyl(second,T.radius*1.2,T.radius*1.2,.007,.083,black);cyl(second,.0022,.0022,.03,.1,steel);
+ const parked=new THREE.Vector3(T.radius*2.1,.01,0);second.position.copy(parked);g.add(second);
+ // the lead: from the main handle's tail to the second's, sagging a little, rebuilt as the two move
+ const tailA=new THREE.Vector3(0,-.05,0),tailB=new THREE.Vector3(0,-.05,0),leadMat=mat(0x2b2d30,{roughness:.6});
+ const lead=new THREE.Mesh(new THREE.BufferGeometry(),leadMat);lead.name='Voltage tester lead';lead.castShadow=false;lead.frustumCulled=false;g.add(lead);
+ const _a=new THREE.Vector3(),_b=new THREE.Vector3(),down=new THREE.Vector3(),tail=new THREE.Vector3(),inv=new THREE.Matrix4();
+ const update=()=>{g.updateWorldMatrix(true,false);second.updateWorldMatrix(true,false);inv.copy(g.matrixWorld).invert();
+  _a.copy(tailA);_b.copy(tailB).applyMatrix4(second.matrixWorld).applyMatrix4(inv);
+  const span=_a.distanceTo(_b),sag=Math.max(.03,(T.lead-span)*.45);
+  down.set(0,-1,0).transformDirection(inv);tail.set(0,-1,0).transformDirection(second.matrixWorld).transformDirection(inv);
+  const pts=[_a.clone(),_a.clone().add(new THREE.Vector3(0,-.03,0)),_a.clone().lerp(_b,.5).addScaledVector(down,sag),_b.clone().addScaledVector(tail,.03),_b.clone()];
+  lead.geometry.dispose();lead.geometry=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts,false,'centripetal'),24,.0028,5,false);};
+ lead.onBeforeRender=update;update();
+ let reading=0;
+ g.userData.tester={second,parked,update,
+  get reading(){return reading;},
+  /** The lamps lit up to `volts` (0: dead). */
+  setReading(volts){reading=Math.max(0,+volts||0);T.scale.forEach((v,i)=>{const lit=reading>=v;lamps[i].emissive.setHex(lit?(v>=50?0xff3a1f:0x5aff4a):0);lamps[i].emissiveIntensity=lit?2.2:0;});},
+ };
+ g.userData.hold='facing';
+ return g;
+}
+
+/** Where a mitten closes on a handle held pointing ahead (+z): the middle of the mitten, in the hand bone's frame. */
+const fistSpot=avatar=>new THREE.Vector3(0,-avatar.measure.hand*.55,0);
+
 /** The story's props on one body: given, taken, and where each is. */
 export function storyProps(avatar){
  if(avatar.storyProps)return avatar.storyProps;
@@ -335,12 +522,26 @@ export function storyProps(avatar){
    else if(kind==='newspaper'){o=buildPaper();o.visible=false;avatar.root.add(o);}
    else if(kind==='dryerCord'){o=buildCordWrap(avatar,options);avatar.bones.chest.add(o);}
    else if(kind==='paperback'){o=buildPaperback();avatar.bones.handR.add(o);o.userData.at='R';}
+   else if(kind==='safetyGlasses'){o=buildSafetyGlasses(avatar);avatar.bones.head.add(o);}
+   else if(kind==='headlamp'){o=buildHeadlamp(avatar);avatar.bones.head.add(o);o.userData.headlamp.setOn(options.on!==false);}
+   else if(kind==='gloves'){o=new THREE.Group();o.name='Rubber gloves';o.userData.parts=['L','R'].map(s=>{const gl=buildGlove(avatar,s);avatar.bones['hand'+s].add(gl);return gl;});avatar.root.add(o);}
+   else if(kind==='voltageTester'){o=buildTester();o.position.copy(fistSpot(avatar));o.rotation.x=Math.PI/2;avatar.bones.handR.add(o);o.userData.at='R';o.userData.tester.setReading(options.reading||0);}
    else if(kind==='pumpkinSuit'||kind==='ghostSheet'||kind==='witchHat'){o=new THREE.Group();o.name=kind;const c=buildCostume(avatar,kind);
     for(const [bone,part] of c.parts){avatar.bones[bone].add(part);}o.userData.parts=c.parts;avatar.root.add(o);}
    else throw new Error('No story prop "'+kind+'" (story-props.js STORY_PROPS)');
    o.userData.storyProp=kind;held.set(kind,o);return o;
   },
-  take(kind){const o=held.get(kind);if(!o)return;for(const [,part] of o.userData.parts||[])part.removeFromParent();o.removeFromParent();o.traverse(x=>{if(x.isMesh){x.geometry.dispose();}});held.delete(kind);},
+  take(kind){const o=held.get(kind);if(!o)return;if(kind==='voltageTester')api.testerSplit(false);
+   // parts are objects (the gloves) or [bone, part] pairs (the costumes): both come off and are freed
+   const parts=(o.userData.parts||[]).map(p=>Array.isArray(p)?p[1]:p);
+   for(const p of [o,...parts]){p.removeFromParent();p.traverse(x=>{if(x.isMesh){x.geometry.dispose();}if(x.isLight)x.dispose?.();});}held.delete(kind);},
+  /** A kit (WORK_KIT) given at once: Tetsuo's work kit for an open board, the headlamp lit. Returns the props. */
+  giveKit(name,options={}){const K=WORK_KIT[name];if(!K)throw new Error('No kit "'+name+'" (story-props.js WORK_KIT)');return K.props.map(k=>api.give(k,options[k]||{}));},
+  /** The tester's second probe to the left mitten (true: both probes out, to test) or parked back on the handle (false). */
+  testerSplit(split){const o=held.get('voltageTester');if(!o)return;const T=o.userData.tester,s=T.second;
+   if(split){if(s.parent!==o)return;avatar.bones.handL.add(s);s.position.copy(fistSpot(avatar));s.rotation.set(Math.PI/2,0,0);}
+   else{if(s.parent===o)return;o.add(s);s.position.copy(T.parked);s.quaternion.identity();}
+   T.update();},
   /** The torch to the hand ('R') or back on the pocket; on or off. */
   torchTo(where){const o=held.get('torch');if(!o||o.userData.at===where)return;
    if(where==='pocket'){const p=pocketSpot(avatar);avatar.bones.chest.add(o);o.position.copy(p.position);o.quaternion.copy(p.quaternion);}

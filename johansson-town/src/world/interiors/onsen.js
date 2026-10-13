@@ -108,7 +108,7 @@ export const ONSEN_MASSAGE=Object.freeze({
  started:'You feed it a hundred-yen coin. The red lamp comes on and the rollers start up your back like a slow, well-meaning truck.',
  running:'The LED counts down the coin’s ten minutes while the rollers work slowly up and down your back.',
  circuitDown:'You feed it a hundred-yen coin and nothing happens. Its socket is on the changing-room circuit, and that breaker is down. Higa-san hands the coin back.',
- houseDark:'You feed it a hundred-yen coin and nothing happens: the whole house is dark. The contract breaker by the bandai has let go. Higa-san hands the coin back.',
+ houseDark:'You feed it a hundred-yen coin and nothing happens: the whole house is dark. The supply breaker by the bandai has let go. Higa-san hands the coin back.',
 });
 /** What the room is built of from World's catalogue (src/catalog): the game fetches these before it opens the door. */
 export const ONSEN_ASSETS=Object.freeze([ONSEN_CHAIR.asset]);

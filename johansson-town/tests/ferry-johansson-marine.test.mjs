@@ -25,7 +25,8 @@ test('the main engines and generator sets are built as machines, in the livery, 
  const blocks=FERRY_INTERIOR.boxes.filter(b=>b.name==='main engine');assert.equal(blocks.length,2);for(const b of blocks)assert.equal(b.hex,green,'the block is in Johansson green');
  const plates=FERRY_INTERIOR.plates;
  // Two mains, two gensets, the compressor, purifier, separator, the switchboard and the six pumps carry a maker's plate.
- assert.equal(plates.filter(p=>p.lines[0]==='JOHANSSON MARINE').length,14,'every machine carries a maker’s plate');
+ assert.equal(plates.filter(p=>p.lines[0]==='JOHANSSON MARINE').length,22,'every machine carries a maker’s plate (6q: the ballast and sewage pumps; D10: the standby pumps and compressor No.2)');
+ const tags=plates.filter(p=>p.name==='KKS tag');assert.ok(tags.length>=28,'KKS tags on the machines: '+tags.length);for(const t of tags)assert.match(t.lines[0],/^\d\d[A-Z]{3}\d\d( [A-Z]{2}\d{3})?( · \d\d[A-Z]{3}\d\d [A-Z]{2}\d{3})?$/,'a KKS tag: '+t.lines[0]);
  assert.equal(plates.filter(p=>p.name==='wordmark').length,2,'the wordmark on each engine');assert.equal(plates.filter(p=>p.name==='badge').length,2,'the silver badge on each engine’s covers');
  for(const p of plates)assert.ok(p.w>0&&p.h>0&&p.pos.length===3&&Number.isFinite(p.rotY),p.name);
  // The photographs' engine room (6o-2): round dials on the gauge boards and the switchboard, chequer plate on the floor.

@@ -25,14 +25,14 @@ export const DRYER_CORD=Object.freeze({length:1.7,
  why:'A household dryer’s cord of the period is about 1.7 m: enough to dry your hair standing at the mirror, not enough to reach the noren 3 m away, so the women dry their hair at their mirrors, the cords taut to the sockets.'});
 
 /**
- * Umi-no-yu's electrics: the bath's contract breaker (契約ブレーカー) and the 分電盤 (distribution board) beside it on the
+ * Umi-no-yu's electrics: the bath's supply breaker (契約ブレーカー) and the 分電盤 (distribution board) beside it on the
  * wall behind Mrs Higa's stool at the bandai, the circuits the board feeds, and the things on them.
  *
  * Okinawa is 100 V. Every branch is a 20 A breaker on 1.6 mm cable, so a branch carries at most 2 000 W, and since the
  * rewiring (ONSEN_REWIRING) each of the women's three mirrors has a branch of its own: the left mirror and the massage
  * chair's 1994 spur on circuit 1 (14 A at most), the middle and right mirrors on circuits 7 and 8 (12 A each). No branch
  * can be overloaded by what is plugged into it. What the house cannot do is run everything at once: the whole bath is
- * contracted at 40 A (ONSEN_CONTRACT), and the contract breaker sees every branch added up.
+ * contracted at 40 A (ONSEN_CONTRACT), and the supply breaker sees every branch added up.
  *
  * The busy evening ("Fujita's Back"): the house idles at 9.46 A (the lamps, the andon, the television, the fan, the comb
  * sterilizer, the milk cooler and the pump: 946 W). Three women dry their hair (3 x 1 200 W, 36 A) while Mrs Higa's pot
@@ -40,7 +40,7 @@ export const DRYER_CORD=Object.freeze({length:1.7,
  * it warms. Fujita crab-walks the length of the lobby and feeds the chair a coin (200 W, 2 A): 60.46 A, 1.51 times the
  * contract, and four or five minutes after the dryers and the pot came on (BREAKER_CURVE) it lets go: the whole house goes
  * dark, every lamp, the television, the pump. The board's 60 A main never sees more than 60.46 A (under 105 % of it), so it
- * holds: the contract breaker is the one that trips (ブレーカーが落ちた). Mrs Higa first puts it straight back up with
+ * holds: the supply breaker is the one that trips (ブレーカーが落ちた). Mrs Higa first puts it straight back up with
  * everything still on, and the breaker, still hot, lets go again in about a second (the 'retrip' moment, BREAKER_COOL);
  * then the dryers, the chair and her pot go off and she puts it up again, and it holds (ONSEN_RESET): that order is the lesson.
  *
@@ -70,7 +70,7 @@ export const ONSEN_VOLTS=100;
  * `wallX` is the wall face it hangs on, `z` and `y` its centre; it faces into the room (+x). Its top is at 1.82 m, where a
  * Japanese board hangs, and its door is shut (`door.shut`); it opens (`door.open`, degrees, hinged on its right, the
  * bandai-wall side, so it swings away from her and stops short of that wall) only while someone works inside it.
- * `keeper` is where Mrs Higa sits (onsen.js, the attendant's stool): every branch lever and the contract breaker are in her
+ * `keeper` is where Mrs Higa sits (onsen.js, the attendant's stool): every branch lever and the supply breaker are in her
  * reach from there (tests/onsen-electrics.test.mjs); the main and the earth-leakage breaker, at the top, she reaches
  * standing up on the bandai floor beside her stool (`stand`), which is a job for the electrician anyway. The board stops
  * short of her head: her bun, at the back, clears its front edge.
@@ -82,20 +82,20 @@ export const ONSEN_BOARD=Object.freeze({
  keeper:Object.freeze({who:'Mrs Higa',seat:Object.freeze([-4.5,.75,2.6]),stand:Object.freeze([-4.55,.35,2.15]),facing:'+x',lean:30}),
  where:'Behind the bandai, on the wall at Mrs Higa’s back, just to her left: the keeper’s corner, where only she reaches it. She turns on her stool and flicks a lever up without looking up from her account book, and nobody else can get to it without climbing over the counter. It hangs where a Japanese board hangs, its top at 1.82 m, with its door shut and the printed card on it: 関係者以外さわらないでください, staff only.',
  main:Object.freeze({id:'main',jp:'主幹',en:'Main breaker',amps:60,
-  why:'Protects the service cable from the pole: 60 A at 100 V, 6 000 W. It is bigger than the bath’s 40 A contract, so on a busy evening the contract breaker beside the board lets go first and the main never has to.'}),
+  why:'Protects the service cable from the pole: 60 A at 100 V, 6 000 W. It is bigger than the bath’s 40 A supply, so on a busy evening the supply breaker beside the board lets go first and the main never has to.'}),
  elcb:Object.freeze({id:'elcb',jp:'漏電遮断器',en:'Earth-leakage breaker',amps:60,milliamps:30,
   why:'Opens the whole board if 30 mA leaks to earth: through wet tiles, a cracked dryer, a person. In a building full of water this is the most important switch on the board.'}),
 });
 
 /**
- * The contract breaker (契約ブレーカー): the breaker the bath's supply is contracted at, 40 A, in a small cream box of its
+ * The supply breaker (契約ブレーカー): the breaker the bath's supply is contracted at, 40 A, in a small cream box of its
  * own on the wall beside the board, on the stool side, ahead of the board's main. Everything the house draws goes through
  * it, so it trips when the whole house runs at once, before the 60 A main. It hangs a hand lower than the board's top
  * row, so Mrs Higa reaches back over her left shoulder from her stool and puts it up without getting down (the story's
  * reset, ONSEN_RESET). `wallX`, `z` and `y` are its back on the wall face and its centre; it faces into the room (+x).
  */
 export const ONSEN_CONTRACT=Object.freeze({
- id:'contract',jp:'契約ブレーカー',en:'Contract breaker',amps:40,volts:ONSEN_VOLTS,
+ id:'contract',jp:'契約ブレーカー',en:'Supply breaker',amps:40,volts:ONSEN_VOLTS,
  wallX:-4.94,z:2.53,y:1.56,w:.11,h:.19,d:.075,facing:'+x',
  label:Object.freeze({jp:'契約',amps:'40A',en:'CONTRACT'}),
  where:'On the lobby’s west wall between the board and Mrs Higa’s stool, its lever a hand below the board’s top row: the one switch she reaches back over her left shoulder for, from her stool, in the dark.',
@@ -104,11 +104,11 @@ export const ONSEN_CONTRACT=Object.freeze({
  period:'A cream moulded box the size of a paperback, its lever behind a small window and a printed label, 契約 40A: the switch every Japanese family knows from ブレーカーが落ちた, the click that leaves the whole house dark when the dryer, the kettle and the rice cooker run at once.'});
 
 /**
- * The reset after the contract breaker lets go ("Fujita's Back", pages 6 and 7). The breaker that has just let go is still
+ * The reset after the supply breaker lets go ("Fujita's Back", pages 6 and 7). The breaker that has just let go is still
  * hot (BREAKER_COOL), so putting it straight back up with everything still switched on, as Mrs Higa does first without
  * looking, brings the lights on for about a second before it lets go again (the 'retrip' moment). The reset that holds
  * switches the big things off first, by torchlight at Tetsuo's word: the dryers, the chair, Mrs Higa's pot; then she puts
- * the contract breaker up. The steps are done in order by higaReset().
+ * the supply breaker up. The steps are done in order by higaReset().
  */
 export const ONSEN_RESET=Object.freeze({by:'Mrs Higa',breaker:'contract',
  steps:Object.freeze([
@@ -118,7 +118,7 @@ export const ONSEN_RESET=Object.freeze({by:'Mrs Higa',breaker:'contract',
    why:'It forgot its coin when the power went, but its switch goes off too, so nothing starts by itself.'}),
   Object.freeze({do:'switchOff',loads:Object.freeze(['kettle']),by:'Mrs Higa',en:'She pulls the pot’s magnet plug.',
    why:'The pot is the biggest single load in the house (13 A), and the one in her hand.'}),
-  Object.freeze({do:'reset',breaker:'contract',by:'Mrs Higa',en:'Then she reaches back over her left shoulder and puts the contract breaker up.',
+  Object.freeze({do:'reset',breaker:'contract',by:'Mrs Higa',en:'Then she reaches back over her left shoulder and puts the supply breaker up.',
    why:'Down until it clicks, then up: a tripped breaker has to be pushed right down to latch before it will go back on. With only the house’s own 9.5 A on it, it holds.'}),
  ]),
  why:'Switch off before you put the breaker back up: everything that was on comes back on at once the moment the lever goes up, and a breaker that has just let go is still warm.'});
@@ -273,6 +273,54 @@ export const ONSEN_REWIRING=Object.freeze({
 });
 
 /**
+ * The upgrade: a later step of the same history, after the rewiring ("Fujita's Back", page 9: while everyone soaks in the
+ * dark, Tetsuo splits the consumers and fits another breaker). It is not how the bath is wired when you walk in: the town
+ * plays the board as it is now (ONSEN_CIRCUITS, 40 A), because the story's busy evening, its blackout and its retrip only
+ * happen on the 40 A supply. A film or a story sets it by name (ONSEN_SCENARIOS 'locked-out', 'upgraded-locked-out',
+ * 'upgraded'; boardUpgrade()).
+ *
+ * Two changes. The left mirror's dryer, the only one still sharing a branch (circuit 1, with the massage chair's 1994
+ * spur), gets a circuit of its own: the board's eight ways are full since the rewiring, so the ninth breaker goes in a small
+ * add-on box (増設ボックス) under the board, fed from the board's load side, behind the main and the earth-leakage breaker;
+ * circuit 1 keeps only the chair. And the 40 A supply breaker is swapped for a 60 A one. Neither changes what the house
+ * draws: splitting branches moves loads between breakers, it never takes a watt away, and the supply breaker still sees
+ * every branch added up. Everything on at once is still 60.46 A.
+ */
+export const ONSEN_UPGRADE=Object.freeze({
+ by:'Tetsuo, the island’s electrician',after:'rewiring',when:'The night of “Fujita’s Back” (page 9), with the main locked off while the bathers soak in the dark.',
+ en:'The left mirror’s dryer on a circuit of its own, and a 60 A supply breaker.',
+ circuit:plain({id:'vanity-1',no:9,way:9,jp:'左鏡ドライヤー',en:'Left mirror dryer',amps:20,volts:ONSEN_VOLTS,fitted:'upgrade',box:'Add-on breaker box',
+  tape:plain({jp:'左鏡 ドライヤー',en:'left mirror dryer'}),
+  why:'The left mirror’s socket on a cable of its own, like the middle and right mirrors since the rewiring: one 1 200 W dryer is 12 A on a 20 A breaker, and the chair no longer shares its branch with a dryer. It moves load from one breaker to another; the house draws the same.',
+  normal:Object.freeze(['dryer-1'])}),
+ moves:Object.freeze(['dryer-1']),from:'changing-sockets',
+ relabel:plain({id:'changing-sockets',tape:plain({jp:'マッサージ椅子',en:'massage chair'}),
+  why:'Circuit 1 now feeds only the chair’s spur, 2 A on 20, and a label must say what the breaker feeds: new tape over the old.'}),
+ route:'New 1.6 mm cable from the ninth breaker up into the ceiling void and down inside the vanity wall to the left mirror’s socket box, the way the rewiring ran ways 7 and 8. In that box the old circuit 1 cable is taken off the socket and joined straight through to the chair’s raceway, so the socket is on the new branch and the spur stays on circuit 1: nothing new shows in the changing room.',
+ box:plain({jp:'増設ボックス',en:'Add-on breaker box',wallX:-4.94,z:2.27,y:1.12,w:.19,h:.12,d:.085,conduit:.011,breakerX:-.05,tapeX:.047,
+  why:'The board has no spare way left (its two spares became circuits 7 and 8), so the ninth breaker hangs in a small steel box of its own just under the board, on the supply breaker’s side and above Mrs Higa’s noren pole (whose hooks it leaves room to lift it off), fed through a short grey conduit from the board’s load side: the main and the earth-leakage breaker switch it with everything else, and the earth-leakage breaker guards the wet room’s new socket feed too. It is in Mrs Higa’s reach from her stool, like every other lever.',
+  period:'A one-way branch box in the board’s grey: how an electrician of the early Heisei years added a circuit to a full board without changing the board.'}),
+ contract:plain({amps:60,label:plain({jp:'契約',amps:'60A',en:'CONTRACT'}),
+  why:'A bigger contract for the same house. Everything at once (three dryers, the pot, the chair and the idle house) is still 60.46 A: a hair over the 60 A on its face, inside the margin a breaker carries without opening (it never trips at or under 105 %), so it holds, with nothing to spare: anything more on the same evening would warm it until it let go. 60 A is as far as the contract goes: the board’s main is 60 A, sized for the service cable from the pole, so the contract and the main are now the same size.',
+  isolation:'The supply breaker sits ahead of the board’s main, on the supply side: locking the main off does not make it dead. It is changed with the supply cut upstream of it, by arrangement with the power company, never under the main’s lock alone.',
+  period:'The same cream moulded box as the 40 A one, newer and whiter, its rating printed on its face: 契約 60A.'}),
+});
+
+/**
+ * The lock-out on the main while someone works inside the board (ONSEN_SCENARIOS 'locked-out', lockOut()): the main
+ * switched off, a red clamp over its lever with a padlock through it, and the red-and-white tag hanging from the padlock's
+ * shackle. A locked main cannot be put back up, by hand, by resetAll or by the room's reset anchors, until the lock comes
+ * off; and the board's door cannot be shut over it (the clamp stands out past the door's inside face).
+ */
+export const ONSEN_LOCKOUT=Object.freeze({breaker:'main',by:'Tetsuo',doorMin:15,
+ tag:plain({jp:'投入禁止',head:'作業中',en:'DO NOT SWITCH ON',name:'テツオ',w:.06,h:.11,
+  why:'A tag says that the switch must stay off and who is working: the 作業中 / 投入禁止 tag of Japanese sites and plant rooms, red and white so it is seen in the dark by a torch, his name on it in marker so anyone can find him.'}),
+ padlock:plain({why:'A tag alone can be missed in the dark; a padlock cannot be ignored. The key is in his pocket, so nobody puts the main up while his hands are in the board.'}),
+ clamp:plain({why:'A breaker lever has no hole for a padlock: a small red clamp closes over the lever in the off position and takes the padlock through its tab.'}),
+ door:'The clamp, the padlock and the tag stand out past the inside face of the board’s door, so it will not shut over them: it stays at least doorMin degrees open until the lock comes off.',
+ why:'Isolate, lock and tag before proving dead: the main off, locked and tagged, then the tester shows dead (live, dead, live) before anything inside is touched. The lock holds the board’s branches dead; the supply breaker beside the board is still live, ahead of the main.'});
+
+/**
  * The massage chair's spur: white PVC surface raceway (モール), added in 1994. It leaves the
  * left mirror's socket on the women's vanity, climbs the vanity wall beside the lockers' end,
  * runs round the women's changing room at picture-rail height (west wall, then the bandai
@@ -329,11 +377,28 @@ const ALL_LOADS=ONSEN_CIRCUITS.flatMap(c=>c.loads);
 const LOAD_BY_ID=new Map(ALL_LOADS.map(l=>[l.id,l]));
 const knownLoad=id=>{if(!LOAD_BY_ID.has(id))throw new Error('No such load at Umi-no-yu: '+id);return id;};
 let doorAngle=ONSEN_BOARD.door.shut;
-const byId=id=>ONSEN_CIRCUITS.find(c=>c.id===id);
-/** The board's own switches (the main, the earth-leakage breaker and the eight branches), and with them the contract breaker. */
-const BOARD_SWITCHES=['main','elcb',...ONSEN_CIRCUITS.map(c=>c.id)];
+/**
+ * The circuits after the upgrade (ONSEN_UPGRADE): circuit 1 with only the chair, re-taped, and the ninth branch in the
+ * add-on box with the left mirror's dryer. The same load objects as ONSEN_CIRCUITS: nothing is added or taken away.
+ */
+const U=ONSEN_UPGRADE;
+export const ONSEN_UPGRADED_CIRCUITS=Object.freeze([
+ ...ONSEN_CIRCUITS.map(c=>c.id!==U.from?c:plain({...c,loads:Object.freeze(c.loads.filter(l=>!U.moves.includes(l.id))),normal:Object.freeze(c.normal.filter(id=>!U.moves.includes(id))),
+  tape:U.relabel.tape,why:U.relabel.why})),
+ plain({...U.circuit,loads:Object.freeze(U.moves.map(id=>LOAD_BY_ID.get(id)))}),
+]);
+// Whether the upgrade is in (a later step the film and stories set; the town plays the board as it is now) and whether the
+// main is locked off (ONSEN_LOCKOUT).
+let upgraded=false,locked=false;
+/** The circuits as the board is wired now: as it is (ONSEN_CIRCUITS) or after the upgrade (ONSEN_UPGRADED_CIRCUITS). */
+export const circuitsNow=()=>upgraded?ONSEN_UPGRADED_CIRCUITS:ONSEN_CIRCUITS;
+/** The supply breaker's rating and label now: 40 A as it is, 60 A after the upgrade. */
+export const contractNow=()=>upgraded?{...ONSEN_CONTRACT,amps:U.contract.amps,label:U.contract.label,why:U.contract.why,period:U.contract.period}:ONSEN_CONTRACT;
+const byId=id=>circuitsNow().find(c=>c.id===id);
+/** The board's own switches (the main, the earth-leakage breaker, the eight branches and the add-on box's ninth), and with them the supply breaker. */
+const BOARD_SWITCHES=['main','elcb',...ONSEN_CIRCUITS.map(c=>c.id),U.circuit.id];
 const ALL_SWITCHES=[ONSEN_CONTRACT.id,...BOARD_SWITCHES];
-const known=id=>{if(!ALL_SWITCHES.includes(id))throw new Error('No such breaker at Umi-no-yu: '+id);return id;};
+const known=id=>{if(!ALL_SWITCHES.includes(id))throw new Error('No such breaker at Umi-no-yu: '+id);if(id===U.circuit.id&&!upgraded)throw new Error('The '+id+' breaker is fitted in the upgrade (ONSEN_UPGRADE), not before');return id;};
 
 /** Watts on a circuit: every load, or only the ones named in `running`. */
 export function wattsOf(circuitId,running=null){
@@ -345,8 +410,8 @@ export const loadOf=(circuitId,running=null)=>wattsOf(circuitId,running)/ONSEN_V
 /** Would that load trip the circuit's breaker? */
 export const overloaded=(circuitId,running=null)=>loadOf(circuitId,running)>byId(circuitId).amps;
 /** The circuit a load is on. */
-export const circuitOf=loadId=>ONSEN_CIRCUITS.find(c=>c.loads.some(l=>l.id===loadId))?.id;
-/** Amps the whole house draws (what the contract breaker and the main see) with those loads running, or every load. */
+export const circuitOf=loadId=>circuitsNow().find(c=>c.loads.some(l=>l.id===loadId))?.id;
+/** Amps the whole house draws (what the supply breaker and the main see) with those loads running, or every load. */
 export const houseAmps=(running=null)=>ALL_LOADS.filter(l=>!running||running.includes(l.id)).reduce((s,l)=>s+l.watts,0)/ONSEN_VOLTS;
 
 /**
@@ -355,7 +420,7 @@ export const houseAmps=(running=null)=>ALL_LOADS.filter(l=>!running||running.inc
  * JIS limits (it must open within 60 minutes at 125 %, and at 200 % within 2 minutes up to
  * 30 A and 4 minutes up to 50 A); from ten times its rating the magnetic trip opens it at once.
  * Between the points the time is read on a log-log line. At or under 105 % it never trips.
- * The contract breaker is the same kind of breaker: at 1.5 times its 40 A it takes about four minutes.
+ * The supply breaker is the same kind of breaker: at 1.5 times its 40 A it takes about four minutes.
  */
 export const BREAKER_COOL=600;
 /**
@@ -387,7 +452,7 @@ const changed=()=>{for(const fn of listeners)fn();};
 /** Is that breaker itself on (its own lever up)? */
 export const isOn=id=>on.get(known(id));
 /**
- * Is there power on that circuit: the contract breaker, the main, the earth-leakage breaker and its own lever all on
+ * Is there power on that circuit: the supply breaker, the main, the earth-leakage breaker and its own lever all on
  * (each sits behind the one before it, in that order, from the pole to the socket).
  */
 export function isLive(id){known(id);if(!on.get('contract'))return false;if(id==='contract')return true;if(!on.get('main'))return false;if(id==='main')return true;if(!on.get('elcb'))return false;return on.get(id);}
@@ -406,15 +471,15 @@ const relay=()=>{if(running.has(CHAIR)&&!isPowered(CHAIR)){running.delete(CHAIR)
 
 /**
  * What the breakers carry right now: each branch's current from the loads switched on (drawn only while the branch is
- * live), whether it is over its rating and how many seconds it has left; and the contract breaker and the main, which
+ * live), whether it is over its rating and how many seconds it has left; and the supply breaker and the main, which
  * both see every live branch added up.
  */
 export function assess(){
- const circuits=ONSEN_CIRCUITS.map(c=>{const on=runningOn(c.id),demand=loadOf(c.id,on),live=isLive(c.id),amps=live?demand:0,limit=tripSeconds(amps,c.amps);
+ const circuits=circuitsNow().map(c=>{const on=runningOn(c.id),demand=loadOf(c.id,on),live=isLive(c.id),amps=live?demand:0,limit=tripSeconds(amps,c.amps);
   return {id:c.id,running:on,demand,amps,rating:c.amps,live,over:amps>c.amps,tripIn:Number.isFinite(limit)?Math.max(0,limit*(1-heat.get(c.id))):Infinity};});
  const amps=circuits.reduce((s,c)=>s+c.amps,0);
  const whole=(id,rating)=>{const limit=tripSeconds(amps,rating);return {amps,rating,live:isLive(id),over:amps>rating,tripIn:Number.isFinite(limit)?Math.max(0,limit*(1-heat.get(id))):Infinity};};
- return {volts:ONSEN_VOLTS,circuits,contract:whole('contract',ONSEN_CONTRACT.amps),main:whole('main',ONSEN_BOARD.main.amps)};
+ return {volts:ONSEN_VOLTS,circuits,contract:whole('contract',contractNow().amps),main:whole('main',ONSEN_BOARD.main.amps),upgraded,locked};
 }
 /**
  * Let `seconds` pass: an overloaded live breaker warms towards its trip time and opens when it gets there, hot; one that
@@ -452,9 +517,11 @@ export function chairTimer(value){
  return {left:chairLeft,reads:timerReads(chairLeft),lit:isPowered(CHAIR),running:running.has(CHAIR),pinned:timerPinned};
 }
 export function trip(id){known(id);held=false;timerPinned=false;if(!on.get(id))return false;on.set(id,false);heat.set(id,0);relay();changed();return true;}
-export function reset(id){known(id);held=false;if(on.get(id))return false;on.set(id,true);changed();return true;}
-export function resetAll(){let any=false;for(const id of ALL_SWITCHES)if(!on.get(id)){on.set(id,true);any=true;}if(any)changed();}
-/** The reset that holds (ONSEN_RESET), in its order: the dryers, the chair and the pot off, then the contract breaker up. Returns what the house then carries. */
+/** Puts a breaker back up. A locked main (ONSEN_LOCKOUT) stays down: false, as for a lever already up. */
+export function reset(id){known(id);held=false;if(on.get(id)||(locked&&id===ONSEN_LOCKOUT.breaker))return false;on.set(id,true);changed();return true;}
+/** Every lever back up, except a main that is locked off. */
+export function resetAll(){let any=false;for(const id of ALL_SWITCHES)if(!on.get(id)&&!(locked&&id===ONSEN_LOCKOUT.breaker)){on.set(id,true);any=true;}if(any)changed();}
+/** The reset that holds (ONSEN_RESET), in its order: the dryers, the chair and the pot off, then the supply breaker up. Returns what the house then carries. */
 export function higaReset(){for(const s of ONSEN_RESET.steps){if(s.do==='switchOff')for(const id of s.loads)switchOff(id);else reset(s.breaker);}return assess();}
 
 /**
@@ -468,21 +535,29 @@ export function higaReset(){for(const s of ONSEN_RESET.steps){if(s.do==='switchO
 const EVENING=Object.freeze(['dryer-1','dryer-2','dryer-3','kettle']);
 export const ONSEN_SCENARIOS=Object.freeze({
  rest:Object.freeze({on:[],down:[],tv:null,
-  en:'Nobody at the mirrors, the chair free and the pot unplugged: the lamps, the andon, the television, the fan, the milk cooler and the pump. The house idles at 9.46 A of its 40 A contract.'}),
+  en:'Nobody at the mirrors, the chair free and the pot unplugged: the lamps, the andon, the television, the fan, the milk cooler and the pump. The house idles at 9.46 A of its 40 A supply.'}),
  quiet:Object.freeze({on:['dryer-2','massage-chair'],down:[],tv:'night-game',
-  en:'A quiet evening: one dryer and the chair, 23.46 A on the 40 A contract (the dryer 12 A on its own circuit 7, the chair 2 A on circuit 1). It holds all night.'}),
+  en:'A quiet evening: one dryer and the chair, 23.46 A on the 40 A supply (the dryer 12 A on its own circuit 7, the chair 2 A on circuit 1). It holds all night.'}),
  evening:Object.freeze({on:EVENING,down:[],hold:true,tv:'night-game',pages:Object.freeze([3,4]),
-  en:'The evening rush, before the chair: three dryers at the mirrors (36 A, each on its own branch) and Mrs Higa’s pot boiling at the bandai (13 A) on the idle house (9.46 A): 58.46 A, 1.46 times the 40 A contract. The contract breaker is warming, its lever still up: left alone it lets go in about five minutes. Every branch is within its 20 A, and the 60 A main holds.'}),
+  en:'The evening rush, before the chair: three dryers at the mirrors (36 A, each on its own branch) and Mrs Higa’s pot boiling at the bandai (13 A) on the idle house (9.46 A): 58.46 A, 1.46 times the 40 A supply. The supply breaker is warming, its lever still up: left alone it lets go in about five minutes. Every branch is within its 20 A, and the 60 A main holds.'}),
  'last-straw':Object.freeze({on:[...EVENING,'massage-chair'],down:[],hold:true,chair:2,tv:'night-game',pages:Object.freeze([4]),
   en:'Fujita’s coin goes in and the rollers find the spot (the timer at 9:58): the chair’s 2 A on top of the rush, 60.46 A, 1.51 times the contract. The lever is still up; it is the moment before the click.'}),
  blackout:Object.freeze({on:[...EVENING,'massage-chair'],down:[],settle:true,tv:'night-game',pages:Object.freeze([5,6]),
-  en:'The contract breaker has let go: the whole house is dark. Every lamp, the andon, the television, the milk cooler, the pump, the dryers in the women’s hands and the chair under Fujita; only the outside lights the windows. The dryers and the pot are still switched on; the chair has forgotten its coin. Every branch lever and the main are still up. The same dark follows the retrip.'}),
+  en:'The supply breaker has let go: the whole house is dark. Every lamp, the andon, the television, the milk cooler, the pump, the dryers in the women’s hands and the chair under Fujita; only the outside lights the windows. The dryers and the pot are still switched on; the chair has forgotten its coin. Every branch lever and the main are still up. The same dark follows the retrip.'}),
  retrip:Object.freeze({on:[...EVENING,'massage-chair'],down:[],settle:true,wait:2,up:Object.freeze(['contract']),hold:true,tv:'night-game',pages:Object.freeze([6]),
-  en:'Mrs Higa puts the contract breaker straight back up without looking, two seconds into the dark, with everything still switched on: the lights blink on (the dryers roar, the pot boils; the chair has forgotten its coin), 58.46 A on a breaker still hot from letting go. It lets go again in about a second (CLACK): blackout, retrip, blackout, then restored.'}),
+  en:'Mrs Higa puts the supply breaker straight back up without looking, two seconds into the dark, with everything still switched on: the lights blink on (the dryers roar, the pot boils; the chair has forgotten its coin), 58.46 A on a breaker still hot from letting go. It lets go again in about a second (CLACK): blackout, retrip, blackout, then restored.'}),
  restored:Object.freeze({on:[],down:[],tv:'night-game',pages:Object.freeze([7,8,9]),
-  en:'The lights come back and stay on: by Tetsuo’s torch the dryers, the chair and Mrs Higa’s pot were switched off, and she put the contract breaker up (ONSEN_RESET). The house is back at rest, 9.46 A on the 40 A contract, and it holds.'}),
+  en:'The lights come back and stay on: by Tetsuo’s torch the dryers, the chair and Mrs Higa’s pot were switched off, and she put the supply breaker up (ONSEN_RESET). The house is back at rest, 9.46 A on the 40 A supply, and it holds.'}),
  isolated:Object.freeze({on:[],down:['main'],board:'open',tv:'night-game',
   en:'Isolate first: the board’s main off and its door open before anybody works inside it (Tetsuo). The whole house is dark and the television black.'}),
+ // The ending of "Fujita's Back" (page 9, ONSEN_UPGRADE and ONSEN_LOCKOUT): the board as it is, locked off; the same with the
+ // upgrade in; and the house back on after it.
+ 'locked-out':Object.freeze({on:[],down:['main'],lock:true,board:'open',tv:'night-game',pages:Object.freeze([9]),
+  en:'Isolated, locked and tagged while everyone soaks in the dark: the main off, Tetsuo’s red clamp and padlock on its lever and the 作業中 / 投入禁止 tag hanging from it, the door open. The board as it is (eight ways, the 40 A supply). Every branch is dead; the supply breaker beside the board, ahead of the main, is still live.'}),
+ 'upgraded-locked-out':Object.freeze({on:[],down:['main'],lock:true,upgrade:true,board:'open',tv:'night-game',pages:Object.freeze([9]),
+  en:'The work done, still locked off: the ninth breaker in the add-on box under the board, taped 左鏡 ドライヤー, its lever up; circuit 1 re-taped for the chair alone; the 60 A supply breaker (契約 60A) beside the board. The house still dark, the main still locked and tagged.'}),
+ upgraded:Object.freeze({on:[],down:[],upgrade:true,tv:'night-game',pages:Object.freeze([9]),
+  en:'Lock and tag off, the main up, the door shut: the lights come back. Each mirror on a branch of its own, the chair alone on circuit 1, the house at rest, 9.46 A on the 60 A supply. Everything at once would still be 60.46 A: it holds, with nothing to spare.'}),
 });
 /**
  * The board's door: 'shut', 'open' or an angle in degrees (0 shut … ONSEN_BOARD.door.open). A film can open it in any
@@ -491,12 +566,30 @@ export const ONSEN_SCENARIOS=Object.freeze({
 export function boardDoor(state){
  if(state!==undefined){const a=typeof state==='number'?state:ONSEN_BOARD.door[state];
   if(!Number.isFinite(a)||a<0||a>ONSEN_BOARD.door.open)throw new Error('The board door opens from 0 to '+ONSEN_BOARD.door.open+' degrees: '+state);
+  if(locked&&a<ONSEN_LOCKOUT.doorMin)throw new Error('The board door will not shut over the lock-out on the main (it stops at '+ONSEN_LOCKOUT.doorMin+' degrees): take the lock off first');
   if(a!==doorAngle){doorAngle=a;changed();}}
  return doorAngle;
+}
+/**
+ * The upgrade (ONSEN_UPGRADE): with no argument, whether it is in; true or false puts it in or takes it out (a film's or a
+ * story's later step; the dryer goes with its socket to the ninth branch, the supply breaker becomes 60 A). Returns it.
+ */
+export function boardUpgrade(v){if(v!==undefined&&!!v!==upgraded){upgraded=!!v;if(!upgraded)on.set(U.circuit.id,true);changed();}return upgraded;}
+/**
+ * The lock-out on the main (ONSEN_LOCKOUT): with no argument, whether it is on. true puts it on a main that is off (a lock
+ * goes on an isolated switch, never a live one) and opens the door at least to doorMin; false takes it off (the main stays
+ * off until someone puts it up). Returns it.
+ */
+export function lockOut(v){
+ if(v===undefined||!!v===locked)return locked;
+ if(v&&on.get(ONSEN_LOCKOUT.breaker))throw new Error('Switch the main off before it is locked: a lock goes on an isolated switch');
+ locked=!!v;if(locked&&doorAngle<ONSEN_LOCKOUT.doorMin)doorAngle=ONSEN_BOARD.door.open;changed();return locked;
 }
 /** Set the room to a named moment (ONSEN_SCENARIOS). Returns what the breakers then carry. */
 export function stageScenario(name){
  const s=ONSEN_SCENARIOS[name];if(!s)throw new Error('No such Umi-no-yu scenario: '+name);
+ // The upgrade and the lock are the moment's own: a moment that does not name them has the board as it is, unlocked.
+ upgraded=!!s.upgrade;locked=!!s.lock;if(locked&&!s.down.includes(ONSEN_LOCKOUT.breaker))throw new Error(name+': a lock goes on a main that is off');
  doorAngle=ONSEN_BOARD.door[s.board||'shut'];
  running.clear();for(const id of [...AT_REST,...s.on])running.add(knownLoad(id));
  for(const id of s.down)known(id);
@@ -641,7 +734,8 @@ export function buildOnsenElectrics({room,rect,anchor,action,sun=null,sunAtNoon=
  const face=.093,levers=new Map();
  const newWhite=new THREE.MeshStandardMaterial({color:0xf8f8f3,roughness:.4});// a newer breaker is whiter than ones that have hung there since 1987
  for(const id of BOARD_SWITCHES){
-  const L=LAYOUT[id],big=id==='main'||id==='elcb',w=L.w||.05,h=L.h||.09,depth=big?.03:.025,isNew=!!byId(id)?.fitted;
+  if(id===U.circuit.id)continue;// the ninth is in the add-on box under the board (below)
+  const L=LAYOUT[id],big=id==='main'||id==='elcb',w=L.w||.05,h=L.h||.09,depth=big?.03:.025,isNew=!!ONSEN_CIRCUITS.find(c=>c.id===id)?.fitted;
   const holder=isNew?new THREE.Group():board;if(isNew){holder.name='New breaker '+id;board.add(holder);}
   add(new THREE.BoxGeometry(w,h,depth),isNew?newWhite:big&&id==='elcb'?greyPlastic:whitePlastic,L.x,L.y,face+depth/2,'Breaker '+id,holder);
   const pivot=new THREE.Group();pivot.position.set(L.x,L.y,face+depth+.007);pivot.name='Breaker lever '+id;pivot.userData.breaker=id;holder.add(pivot);
@@ -655,6 +749,62 @@ export function buildOnsenElectrics({room,rect,anchor,action,sun=null,sunAtNoon=
   const t=add(new THREE.PlaneGeometry(LABEL_W*.98,LABEL_H*.92),tapeMat([[`${c.no}  ${c.tape.jp}`,long?52:58,.4],[`${c.tape.en} · ${c.amps}A`,long?32:34,.76]],c.no*31),
    L.x,labelY(L)+.001,face+.0012,'Tape label '+c.id,board);
   t.rotation.z=(hash(c.no,5)-.5)*.06;t.castShadow=false;t.userData.tape=c.id;}
+ // ---- The upgrade (ONSEN_UPGRADE), shown only once it is in: circuit 1's new tape over its old one, the add-on box with the
+ // ninth breaker under the board, the circuit list's new lines, the 60 A supply breaker. `upgradeShows` are its parts.
+ const upgradeShows=[];
+ {const R=ONSEN_UPGRADED_CIRCUITS.find(c=>c.id===U.relabel.id),L=LAYOUT[R.id];
+  const t=add(new THREE.PlaneGeometry(LABEL_W*.98,LABEL_H*.92),tapeMat([[`${R.no}  ${R.tape.jp}`,54,.4],[`${R.tape.en} · ${R.amps}A`,34,.76]],R.no*31+7),
+   L.x+.002,labelY(L)+.0025,face+.0024,'Tape label '+R.id+' (upgrade)',board);
+  t.rotation.z=(hash(R.no,9)-.5)*.07;t.castShadow=false;t.userData.tape=R.id;upgradeShows.push(t);}
+ // The add-on box: a one-way grey steel box under the board on the supply breaker's side, a short grey conduit up into the
+ // board's bottom (its feed from the board's load side), the ninth breaker through a window in its cover, its tape under it.
+ const X=U.box,addon=new THREE.Group();addon.name=X.en;addon.position.set(X.wallX,X.y,X.z);addon.rotation.y=Math.PI/2;group.add(addon);upgradeShows.push(addon);
+ {const boxSteel=steel,cover=new THREE.MeshStandardMaterial({color:0xa9aeaa,roughness:.45,metalness:.45});
+  add(new THREE.BoxGeometry(X.w,X.h,X.d-.006),boxSteel,0,0,(X.d-.006)/2,'Add-on breaker box body',addon);
+  add(new THREE.BoxGeometry(X.w-.008,X.h-.008,.006),cover,0,0,X.d-.003,'Add-on breaker box cover',addon);
+  for(const [sx,sy] of [[-1,1],[1,1],[-1,-1],[1,-1]])add(new THREE.CylinderGeometry(.0042,.0042,.003,10).rotateX(Math.PI/2),darkPlastic,sx*(X.w/2-.013),sy*(X.h/2-.013),X.d+.0012,'Add-on breaker box screw',addon).castShadow=false;
+  const top=X.h/2,gap=(B.y-B.h/2)-(X.y+top);// up to the board's bottom face
+  const pipe=add(new THREE.CylinderGeometry(X.conduit,X.conduit,gap,14),new THREE.MeshStandardMaterial({color:0x9c9f9a,roughness:.55}),0,top+gap/2,X.d*.45,'Add-on breaker box conduit',addon);pipe.castShadow=false;
+  add(new THREE.CylinderGeometry(X.conduit*1.45,X.conduit*1.45,.005,14),boxSteel,0,top+.0025,X.d*.45,'Add-on breaker box conduit nut',addon).castShadow=false;
+  // The ninth breaker, as new and white as ways 7 and 8, through a dark window in the cover; lever up is on, like the board's.
+  const id=U.circuit.id,bx=X.breakerX,depth=.022,front=X.d;
+  add(new THREE.BoxGeometry(.058,.098,.002),darkPlastic,bx,0,front+.001,'Add-on breaker box window',addon).castShadow=false;
+  const holder=new THREE.Group();holder.name='New breaker '+id;addon.add(holder);
+  add(new THREE.BoxGeometry(.05,.09,depth),newWhite,bx,0,front+depth/2-.008,'Breaker '+id,holder);
+  const pivot=new THREE.Group();pivot.position.set(bx,0,front+depth-.008+.007);pivot.name='Breaker lever '+id;pivot.userData.breaker=id;holder.add(pivot);
+  const lever=new THREE.Mesh(new THREE.BoxGeometry(.016,.034,.014).translate(0,.017,0),new THREE.MeshStandardMaterial({color:0x3a3f3c,roughness:.5}));lever.name='Breaker lever';lever.castShadow=true;pivot.add(lever);levers.set(id,pivot);
+  // Its tape beside it, on the cover: the way number and the mirror, and under them what it is and its rating.
+  const c=U.circuit,t=add(new THREE.PlaneGeometry(.088,.07),tapeMat([[`${c.no}  ${c.tape.jp.split(' ')[0]}`,64,.24],[c.tape.jp.split(' ')[1],58,.54],[`${c.amps}A  100V`,40,.82]],c.no*31,{w:384,h:304}),X.tapeX,0,front+.0012,'Tape label '+id,addon);
+  t.rotation.z=(hash(c.no,5)-.5)*.06;t.castShadow=false;t.userData.tape=id;}
+ // ---- The lock-out on the main (ONSEN_LOCKOUT), shown only while it is on (the main is then off): a red clamp over the
+ // lever's end in the off position, a fin under it with the padlock's shackle through its hole, the brass padlock hanging
+ // from it, and behind the padlock the tag on its shackle, hanging in the gap between branch breakers 1 and 2.
+ const LK=ONSEN_LOCKOUT,lock=new THREE.Group();lock.name='Main lock-out';board.add(lock);
+ {const M=LAYOUT.main,red=new THREE.MeshStandardMaterial({color:0xc8302a,roughness:.45}),brass=new THREE.MeshStandardMaterial({color:0xc9a24a,roughness:.35,metalness:.55}),shackleSteel=new THREE.MeshStandardMaterial({color:0xc4c8ca,roughness:.3,metalness:.75});
+  const px=M.x,pz=face+.03+.007,off=Math.PI-.6;// the main's pivot (its breaker is .03 deep) and its lever's off angle (apply's LEVER.off)
+  const arm=new THREE.Group();arm.position.set(px,M.y,pz);arm.rotation.x=off;arm.name='Main lock-out clamp';lock.add(arm);
+  add(new THREE.BoxGeometry(.06,.024,.024),red,0,.024,0,'Lock-out clamp',arm);
+  const dir=new THREE.Vector3(0,Math.cos(off),Math.sin(off)),tip=new THREE.Vector3(px,M.y,pz).addScaledVector(dir,.036);
+  // The fin hangs from the clamp's underside, its hole across (along x), so the padlock hangs face out.
+  const hole=new THREE.Vector3(px,tip.y-.018,tip.z+.002);
+  add(new THREE.BoxGeometry(.004,.03,.022),red,px,hole.y+.004,hole.z,'Lock-out clamp fin',lock);
+  const shackle=add(new THREE.TorusGeometry(.0095,.0023,8,16,Math.PI),shackleSteel,px,hole.y-.008,hole.z,'Lock-out padlock shackle',lock);shackle.castShadow=false;
+  for(const sx of [-1,1])add(new THREE.CylinderGeometry(.0023,.0023,.008,8),shackleSteel,px+sx*.0095,hole.y-.012,hole.z,'Lock-out padlock shackle',lock).castShadow=false;
+  const bodyTop=hole.y-.016,bh=.036;
+  add(new THREE.BoxGeometry(.032,bh,.015),brass,px,bodyTop-bh/2,hole.z,'Lock-out padlock',lock);
+  add(new THREE.CylinderGeometry(.0045,.0045,.002,12).rotateX(Math.PI/2),darkPlastic,px,bodyTop-bh*.62,hole.z+.0076,'Lock-out padlock keyhole',lock).castShadow=false;
+  // The tag: its eyelet on the shackle, hanging behind the padlock, its words below it.
+  const T=LK.tag,tex=paint(256,512,(ctx,W,H)=>{ctx.fillStyle='#fbfaf4';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#c8302a';ctx.lineWidth=10;ctx.strokeRect(5,5,W-10,H-10);
+   ctx.fillStyle='#c8302a';ctx.fillRect(0,H*.12,W,H*.36);// the red band, mostly behind the padlock
+   ctx.fillStyle='#fbfaf4';ctx.beginPath();ctx.arc(W/2,H*.05,13,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#8a8f88';ctx.lineWidth=4;ctx.stroke();// the eyelet
+   ctx.textAlign='center';ctx.textBaseline='middle';
+   ctx.fillStyle='#1b1a18';line(ctx,T.name,W/2,H*.095,W-40,36,'bold');
+   // Below the padlock: 作業中, then 投入 / 禁止 large on two lines (a line apart, never touching), then the English.
+   ctx.fillStyle='#c8302a';line(ctx,T.head,W/2,H*.525,W-40,44);
+   line(ctx,T.jp.slice(0,2),W/2,H*.655,W-30,84);line(ctx,T.jp.slice(2),W/2,H*.82,W-30,84);
+   ctx.fillStyle='#1d2422';line(ctx,T.en,W/2,H*.94,W-30,24,'bold');});
+  const tag=add(new THREE.PlaneGeometry(T.w,T.h),printed(tex,0xfbfaf4,{side:THREE.DoubleSide}),px,hole.y-.004-T.h/2,hole.z-.0105,'Lock-out tag',lock);tag.castShadow=false;
+ }
  // The door, hinged on its right (the bandai-wall side, so it opens away from Mrs Higa and clear of the wall), the
  // circuit list inside it; on its face a printed staff-only card and a small latch.
  const hinge=new THREE.Group();hinge.position.set(B.w/2,0,B.d);hinge.name='Breaker board door';board.add(hinge);
@@ -667,24 +817,38 @@ export function buildOnsenElectrics({room,rect,anchor,action,sun=null,sunAtNoon=
  // ...and the same two ways written in on the circuit list, on one strip over its last two rows.
  {const D=DIRECTORY,rowY=py=>.45*(.5-py/D.h),y=(rowY(D.y0+6*D.step)+rowY(D.y0+7*D.step+23))/2,h=Math.abs(rowY(D.y0+6*D.step-24)-rowY(D.y0+7*D.step+40));
   const t=add(new THREE.PlaneGeometry(.33,h),tapeMat(ONSEN_CIRCUITS.filter(c=>c.fitted).map((f,i)=>[`${f.no}  ${f.tape.jp}  ${f.amps}A`,44,.3+i*.42]),97,{w:512,h:220}),
-   0,y,.0009,'Tape label circuit list',card);t.rotation.z=.012;t.castShadow=false;}
+   0,y,.0009,'Tape label circuit list',card);t.rotation.z=.012;t.castShadow=false;
+  // The upgrade's two lines: circuit 1 re-taped over its row, and the ninth on a strip at the foot of the card.
+  const R=ONSEN_UPGRADED_CIRCUITS.find(c=>c.id===U.relabel.id),c=U.circuit;
+  const r1=add(new THREE.PlaneGeometry(.33,Math.abs(rowY(D.y0-26)-rowY(D.y0+44))),tapeMat([[`${R.no}  ${R.tape.jp}  ${R.amps}A`,44,.5]],R.no*31+11,{w:512,h:110}),
+   0,(rowY(D.y0-26)+rowY(D.y0+44))/2,.0012,'Tape label circuit list 1 (upgrade)',card);r1.rotation.z=-.01;r1.castShadow=false;
+  const r9=add(new THREE.PlaneGeometry(.33,Math.abs(rowY(D.y0+8*D.step-26)-rowY(D.y0+8*D.step+30))),tapeMat([[`${c.no}  ${c.tape.jp}  ${c.amps}A  (増設)`,44,.5]],c.no*31+11,{w:512,h:100}),
+   0,(rowY(D.y0+8*D.step-26)+rowY(D.y0+8*D.step+30))/2,.0012,'Tape label circuit list 9 (upgrade)',card);r9.rotation.z=.014;r9.castShadow=false;
+  upgradeShows.push(r1,r9);}
  // It hangs over the bandai's raised floor, behind the counter: nobody walks there but Mrs Higa.
  rect(B.wallX+B.d/2,B.z,B.d,B.w,B.y+B.h/2);
  const toWorld=(x,y,z)=>{board.updateMatrix();return new THREE.Vector3(x,y,z).applyMatrix4(board.matrix);};
 
- // ---- The contract breaker (ONSEN_CONTRACT): a cream box beside the board on the stool side, its printed label (契約 40A)
+ // ---- The supply breaker (ONSEN_CONTRACT): a cream box beside the board on the stool side, its printed label (契約 40A)
  // over a small window with its lever, lever up on like the board's. It faces into the room, as the board does.
+ let contractLooks=null;
  const C=ONSEN_CONTRACT,contract=new THREE.Group();contract.name=C.en;contract.position.set(C.wallX,C.y,C.z);contract.rotation.y=Math.PI/2;group.add(contract);
  {const cream=new THREE.MeshStandardMaterial({color:0xebe6d6,roughness:.5});
-  add(new THREE.BoxGeometry(C.w,C.h,C.d-.006),cream,0,0,(C.d-.006)/2,'Contract breaker box',contract);
+  add(new THREE.BoxGeometry(C.w,C.h,C.d-.006),cream,0,0,(C.d-.006)/2,'Supply breaker box',contract);
   // The front cover a little smaller than the box, so its edge reads as a soft step and not a sharp corner.
-  add(new THREE.BoxGeometry(C.w-.008,C.h-.008,.006),cream,0,0,C.d-.003,'Contract breaker cover',contract);
+  add(new THREE.BoxGeometry(C.w-.008,C.h-.008,.006),cream,0,0,C.d-.003,'Supply breaker cover',contract);
   const tex=paint(256,200,(ctx,W,H)=>{ctx.fillStyle='#f7f3e6';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#5c5a50';ctx.lineWidth=6;ctx.strokeRect(4,4,W-8,H-8);
    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#1d2422';line(ctx,C.label.jp,W/2,H*.2,W-30,40);
    ctx.fillStyle='#a3291d';line(ctx,C.label.amps,W/2,H*.53,W-30,92);ctx.fillStyle='#4a504c';line(ctx,C.label.en,W/2,H*.84,W-30,24,'600');});
-  const label=add(new THREE.PlaneGeometry(.084,.066),printed(tex,0xf7f3e6),0,.044,C.d+.0006,'Contract breaker label',contract);label.castShadow=false;
+  const label=add(new THREE.PlaneGeometry(.084,.066),printed(tex,0xf7f3e6),0,.044,C.d+.0006,'Supply breaker label',contract);label.castShadow=false;
+  // After the upgrade it is the 60 A breaker (ONSEN_UPGRADE.contract): the same box, newer and whiter, 契約 60A on its face.
+  const L6=U.contract.label,tex60=paint(256,200,(ctx,W,H)=>{ctx.fillStyle='#fbf9f1';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#5c5a50';ctx.lineWidth=6;ctx.strokeRect(4,4,W-8,H-8);
+   ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#1d2422';line(ctx,L6.jp,W/2,H*.2,W-30,40);
+   ctx.fillStyle='#a3291d';line(ctx,L6.amps,W/2,H*.53,W-30,92);ctx.fillStyle='#4a504c';line(ctx,L6.en,W/2,H*.84,W-30,24,'600');});
+  const label60=add(new THREE.PlaneGeometry(.084,.066),printed(tex60,0xfbf9f1),0,.044,C.d+.0006,'Supply breaker label (60A)',contract);label60.castShadow=false;
+  contractLooks={cream,label,label60,old:cream.color.getHex(),fresh:0xf4f1e6};
   // A pale grey window, so the black lever reads up or down from across the lobby.
-  add(new THREE.BoxGeometry(.05,.066,.004),new THREE.MeshStandardMaterial({color:0xb4b7b0,roughness:.6}),0,-.042,C.d+.002,'Contract breaker window',contract).castShadow=false;
+  add(new THREE.BoxGeometry(.05,.066,.004),new THREE.MeshStandardMaterial({color:0xb4b7b0,roughness:.6}),0,-.042,C.d+.002,'Supply breaker window',contract).castShadow=false;
   const pivot=new THREE.Group();pivot.position.set(0,-.042,C.d+.007);pivot.name='Breaker lever '+C.id;pivot.userData.breaker=C.id;contract.add(pivot);
   const lever=new THREE.Mesh(new THREE.BoxGeometry(.022,.032,.014).translate(0,.016,0),new THREE.MeshStandardMaterial({color:0x1f2321,roughness:.5}));lever.name='Breaker lever';lever.castShadow=true;pivot.add(lever);levers.set(C.id,pivot);}
 
@@ -1022,29 +1186,40 @@ export function buildOnsenElectrics({room,rect,anchor,action,sun=null,sunAtNoon=
    for(const name of l.hides||[]){const o=hidden.get(name);if(o)o.visible=live;}
   }
   shine();
-  for(const [id,o] of resetAnchors)o.visible=!on.get(id);
+  for(const [id,o] of resetAnchors)o.visible=!on.get(id)&&(id!==U.circuit.id||upgraded);
+  // The upgrade's parts and the 60 A supply breaker; the lock-out, while it is on.
+  for(const o of upgradeShows)o.visible=upgraded;
+  if(contractLooks){contractLooks.label.visible=!upgraded;contractLooks.label60.visible=upgraded;contractLooks.cream.color.setHex(upgraded?contractLooks.fresh:contractLooks.old);}
+  lock.visible=locked;
   drawLed(timerReads(chairLeft),isPowered(CHAIR));
   fill();
  }
 
  // ---- Interactions.
  const lower=s=>s.charAt(0).toLowerCase()+s.slice(1);
- const nameOf=id=>id==='main'?'main breaker':id==='elcb'?'earth-leakage breaker':id==='contract'?'contract breaker':lower(byId(id).en);
+ const circuitDef=id=>id===U.circuit.id?U.circuit:ONSEN_CIRCUITS.find(c=>c.id===id);
+ const nameOf=id=>id==='main'?'main breaker':id==='elcb'?'earth-leakage breaker':id==='contract'?'supply breaker':lower(circuitDef(id).en);
  const front=toWorld(0,0,B.d+.25);
  anchor([front.x,front.y,front.z],'Look at the breaker board',()=>{
   const down=ALL_SWITCHES.filter(id=>!on.get(id)).map(id=>'the '+nameOf(id));
-  const list=ONSEN_CIRCUITS.map(c=>`${c.no}, ${lower(c.en)}`).join('; ');
+  const list=ONSEN_CIRCUITS.map(c=>`${c.no}, ${lower(c.en)}`).join('; '),K=contractNow(),R=ONSEN_UPGRADED_CIRCUITS.find(c=>c.id===U.relabel.id);
   action('inspect','Breaker board · Distribution board',
    'Grandmother Higa’s breaker board, grey steel, on the wall behind the bandai at Higa-san’s back. Its door is shut, with a printed card on it: 関係者以外さわらないでください, staff only. She can open it and reach every lever from her stool without getting up, and nobody else can reach it at all. Inside, lever up is on. '+
    `At the top, the ${B.main.amps} A main breaker, which protects the cable from the pole, and the earth-leakage breaker, which switches everything off in a blink if ${B.elcb.milliamps} thousandths of an amp leak away to earth, through wet tiles or through a person. In a building full of water it is the most important switch here. `+
    `Below, eight ${ONSEN_CIRCUITS[0].amps} A breakers, one for each circuit: ${list}. The last two are whiter than the rest, in the ways that were spare, and labelled by hand on masking tape: each mirror has a circuit of its own. `+
-   `Beside the board, a hand lower, a small cream box: the contract breaker, ${C.label.jp} ${C.label.amps}. Everything in the house goes through it, and the bath is contracted at ${C.amps} A, ${C.amps*ONSEN_VOLTS} watts. Three dryers and the pot boiling at once are more than that; it warms for a few minutes and lets go, and the whole house goes dark. `+
-   `A breaker protects the cable, not the hair dryer. The cable in the wall is good for ${ONSEN_CIRCUITS[0].amps} A, so the breaker opens at ${ONSEN_CIRCUITS[0].amps} A. Fit a bigger one and the cable becomes the fuse, warming up inside the wall where nobody can see it. So when the sockets trip you never fit a bigger breaker: you spread the load out. And when the whole house goes dark, switch the big things off before the contract breaker goes back up.`+
+   (upgraded?`Circuit 1 has new tape over its old: ${R.tape.jp}, the chair alone. Under the board hangs a small grey box with a ninth breaker, the newest and whitest, taped ${U.circuit.no} ${U.circuit.tape.jp}: the left mirror’s dryer, moved off the chair’s circuit onto one of its own. `:'')+
+   `Beside the board, a hand lower, a small cream box: the supply breaker, ${K.label.jp} ${K.label.amps}. Everything in the house goes through it, and the bath is contracted at ${K.amps} A, ${K.amps*ONSEN_VOLTS} watts. `+
+   (upgraded?`Splitting the circuits did not change what the house draws: everything at once is still ${Math.round(houseAmps()*100)/100} A, a hair over the ${K.amps} A on its face. It holds, with nothing to spare. `
+    :'Three dryers and the pot boiling at once are more than that; it warms for a few minutes and lets go, and the whole house goes dark. ')+
+   (locked?`The main is locked off: a red clamp on its lever, a padlock through it and a red-and-white tag, ${ONSEN_LOCKOUT.tag.head} ${ONSEN_LOCKOUT.tag.jp}, with ${ONSEN_LOCKOUT.by}’s name on it. Nobody puts it up but the one whose lock it is. `:'')+
+   `A breaker protects the cable, not the hair dryer. The cable in the wall is good for ${ONSEN_CIRCUITS[0].amps} A, so the breaker opens at ${ONSEN_CIRCUITS[0].amps} A. Fit a bigger one and the cable becomes the fuse, warming up inside the wall where nobody can see it. So when the sockets trip you never fit a bigger breaker: you spread the load out. And when the whole house goes dark, switch the big things off before the supply breaker goes back up.`+
    (down.length?` Right now ${down.join(' and ')} ${down.length>1?'are':'is'} down.`:''));
  });
  for(const id of BOARD_SWITCHES){
-  const L=LAYOUT[id],p=toWorld(L.x,L.y,face+.05),name=nameOf(id);
+  let p;if(id===U.circuit.id){addon.updateMatrix();p=new THREE.Vector3(U.box.breakerX,0,U.box.d+.05).applyMatrix4(addon.matrix);}else{const L=LAYOUT[id];p=toWorld(L.x,L.y,face+.05);}
+  const name=nameOf(id);
   const o=anchor([p.x,p.y,p.z],'Reset the '+name,()=>{
+   if(locked&&id===ONSEN_LOCKOUT.breaker){action('inspect','Main breaker · Locked off',`Locked off: a red clamp over the lever, ${ONSEN_LOCKOUT.by}’s padlock through it and his tag, ${ONSEN_LOCKOUT.tag.head} ${ONSEN_LOCKOUT.tag.jp}. Someone is working on the wiring. Only the one whose lock it is takes it off.`);return;}
    if(!reset(id))return;
    const c=byId(id),again=c&&overloaded(id,runningOn(id));
    // The keeper's board: you ask, and Mrs Higa does it from her stool.
@@ -1052,18 +1227,18 @@ export function buildOnsenElectrics({room,rect,anchor,action,sun=null,sunAtNoon=
     ?`Higa-san turns on her stool without looking up from her account book, opens the board with one finger, pushes the ${name} lever all the way down until it clicks, then up to on, and shuts the door. `+(again?`What is switched on on it draws ${wattsOf(id,runningOn(id))} watts: ${loadOf(id,runningOn(id))} amps on a ${c.amps} amp breaker. Switch something off, or it will go again.`:'The power comes back.')
     :`Higa-san reaches round, pushes the ${name} lever down until it clicks, then up to on, and shuts the door. The whole board comes back.`);
   });
-  o.visible=!on.get(id);resetAnchors.set(id,o);
+  o.visible=!on.get(id)&&(id!==U.circuit.id||upgraded);resetAnchors.set(id,o);
  }
- // The contract breaker: the reset that holds (ONSEN_RESET): the dryers, the chair and the pot off first, then the lever up.
+ // The supply breaker: the reset that holds (ONSEN_RESET): the dryers, the chair and the pot off first, then the lever up.
  {const p=new THREE.Vector3(C.wallX+C.d+.05,C.y-.04,C.z);
-  const o=anchor([p.x,p.y,p.z],'Reset the contract breaker',()=>{
+  const o=anchor([p.x,p.y,p.z],'Reset the supply breaker',()=>{
    if(on.get('contract'))return;const big=runningLoads().filter(id=>LOAD_BY_ID.get(id).atRest==='off').length;const a=higaReset();
-   action('inspect','Contract breaker · Reset',(big?'“Switch off what’s in your hand,” Higa-san calls into the dark: the dryers click off, the chair, and she pulls her pot’s plug. Then, without looking up from her account book, she reaches':'Higa-san reaches')+
-    ' back over her left shoulder, pushes the contract breaker’s lever all the way down until it clicks, then up. '+
-    (a.contract.over?`Everything still switched on draws ${Math.round(a.contract.amps*10)/10} amps on the bath’s ${C.amps}: switch something off, or it will go again.`:'The whole house comes back, and stays.'));});
+   action('inspect','Supply breaker · Reset',(big?'“Switch off what’s in your hand,” Higa-san calls into the dark: the dryers click off, the chair, and she pulls her pot’s plug. Then, without looking up from her account book, she reaches':'Higa-san reaches')+
+    ' back over her left shoulder, pushes the supply breaker’s lever all the way down until it clicks, then up. '+
+    (a.contract.over?`Everything still switched on draws ${Math.round(a.contract.amps*10)/10} amps on the bath’s ${contractNow().amps}: switch something off, or it will go again.`:'The whole house comes back, and stays.'));});
   o.visible=!on.get('contract');resetAnchors.set('contract',o);}
  anchor([vanity.mirrors[1]+.12,1.05,-.8],'Use a hair dryer',()=>action('inspect','Hair dryer · 1200 W',isPowered('dryer-2')
-  ?'Warm air and a noise like a small aeroplane. 1200 W, 100 V: twelve amps, on a 20 A circuit of its own, number 7 on the tape. Whatever the other mirrors do, this one holds; but three dryers and Higa-san’s pot at once are more than the whole bath’s 40 A contract.'
+  ?'Warm air and a noise like a small aeroplane. 1200 W, 100 V: twelve amps, on a 20 A circuit of its own, number 7 on the tape. Whatever the other mirrors do, this one holds; '+(upgraded?`and the whole bath is on a ${contractNow().amps} A contract now, but with everything at once it is still ${Math.round(houseAmps()*100)/100} A, right at its limit.`:'but three dryers and Higa-san’s pot at once are more than the whole bath’s '+contractNow().amps+' A contract.')
   :!isLive('main')?'Nothing, and nothing anywhere: the whole house is dark. Ask Higa-san.'
   :`Nothing. The socket under the mirror is dead: the ${nameOf(circuitOf('dryer-2'))} breaker has tripped. The board is behind the bandai: ask Higa-san.`));
 
@@ -1097,6 +1272,8 @@ export function buildOnsenElectrics({room,rect,anchor,action,sun=null,sunAtNoon=
  const api={trip,reset,isLive,isOn,loadOf,wattsOf,overloaded,houseAmps,resetAll,higaReset,circuits:ONSEN_CIRCUITS,board:ONSEN_BOARD,contract:ONSEN_CONTRACT,resetOrder:ONSEN_RESET,
   switchOn,switchOff,isRunning,isWorking,runningLoads,assess,advance,settle,stage:stageScenario,scenarios:ONSEN_SCENARIOS,chairTimer,holdDryer,
   circuitOf,rewiring:ONSEN_REWIRING,raceway:ONSEN_RACEWAY,appearance,boardDoor,
+  /** The ending's states (ONSEN_UPGRADE, ONSEN_LOCKOUT): the upgrade in or out, the main locked off or not, and the board as it is wired now. */
+  boardUpgrade,lockOut,circuitsNow,contractNow,upgrade:ONSEN_UPGRADE,lockout:ONSEN_LOCKOUT,
   tv:{pin:pinLobbyChannel,get pinned(){return lobbyChannelPin();},channels:LOBBY_CHANNELS},
   /** The share of the town's indoor fill that reaches the house now (1 with its lamps on; the daylight's share when they are dead). */
   townFill:()=>townFill};

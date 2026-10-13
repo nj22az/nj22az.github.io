@@ -16,7 +16,10 @@ import {fileURLToPath} from 'node:url';
 import {dirname,join} from 'node:path';
 import {FERRY_SHIP,FERRY_HEIGHTS,FERRY_GA,FERRY_MACHINERY,FERRY_ELECTRICS,FERRY_LOADS,FERRY_CONDITIONS,FERRY_SAFETY,FERRY_MANNING} from '../src/world/ferry-ship.js';
 import {sectionPoint,keelY,deckEdge,bulwarkTop,halfBreadth,hullX} from '../src/world/ferry-model.js';
-import {FERRY_INTERIOR,FERRY_ENGINE_ROOM} from '../src/world/ferry-interior.js';
+import {FERRY_INTERIOR,FERRY_ENGINE_ROOM,FERRY_MACHINERY_SPACES} from '../src/world/ferry-interior.js';
+import {FERRY_PIPING,FERRY_SERVICES} from '../src/world/ferry-piping.js';
+import {KKS_FUNCTION_KEYS,kksExplain} from '../src/world/ferry-kks.js';
+import {FERRY_FEEDERS,FERRY_BOARDS,FERRY_SOURCES,electricalChecks} from '../src/world/ferry-electrical.js';
 import {JOHANSSON_MARINE} from '../src/world/johansson-marine.js';
 import {drawSafetyPlan,svgPen} from '../src/world/ferry-safety-plan.js';
 import {installDOM} from '../tests/fixtures.mjs';
@@ -68,7 +71,8 @@ export function hydrostatics(t,N=100){
 // bottom right as a grid (yard, ship and hull number, title, drawing number, scale, sheet, date, drawn/checked/
 // approved, revision), the notes in a box over it, wrapped to fit. Nothing is allowed to run out of its box: `fit`
 // shrinks a text to its width, `wrap` breaks notes into lines.
-const DRAWING_NO={1:'JS-127-01',2:'JS-127-02',3:'JS-127-03',5:'JS-127-05',6:'JS-127-06'};
+const DRAWING_NO={1:'JS-127-01',2:'JS-127-02',3:'JS-127-03','3b':'JS-127-03-B','3c':'JS-127-03-C',5:'JS-127-05',6:'JS-127-06',7:'JS-127-07',...Object.fromEntries(FERRY_PIPING.map((s,i)=>['8.'+(i+1),'JS-127-08-'+String(i+1).padStart(2,'0')]))};
+const SHEETS=9+FERRY_PIPING.length;
 const CHAR=.56; // average character width as a fraction of the font size (Helvetica)
 /** CJK characters are a full em wide; the rest about 0.56 em. */
 export const textWidth=(s,size)=>[...String(s)].reduce((w,c)=>w+(c.charCodeAt(0)>0x2e80?1:CHAR)*size,0);
@@ -110,7 +114,7 @@ const titleBlock=(w,h,name,sheet,notes=[])=>{
  out+=cell(0,30,340,30,'TITLE',name.split(' · ').slice(0,2).join(' · '));
  out+=cell(340,30,80,30,'SCALE',(name.match(/1:[\d.]+/)||['as noted'])[0]);
  out+=cell(0,60,70,36,'DRAWN','tools/ferry-drawings.mjs');out+=cell(70,60,70,36,'CHECKED','tests/ferry-design-book');out+=cell(140,60,70,36,'APPROVED','the creator');
- out+=cell(210,60,70,36,'DATE','2026-10-12');out+=cell(280,60,60,36,'SHEET',sheet+' / 6');out+=cell(340,60,80,36,'REV','A · first issue');
+ out+=cell(210,60,70,36,'DATE','2026-10-12');out+=cell(280,60,60,36,'SHEET',sheet+' / '+SHEETS);out+=cell(340,60,80,36,'REV','A · first issue');
  // Notes, wrapped, in their own box over the title block.
  const lines=notes.flatMap(n=>wrap(n,bw-12,8.5));if(lines.length){const nh=lines.length*11+12;out+=`<rect class="t" x="${x}" y="${y-nh-4}" width="${bw}" height="${nh}" fill="#fff"/>`+text(x+5,y-nh+4,'NOTES','lab','font-size="6.5" fill="#6a7477"');lines.forEach((l,i)=>out+=text(x+5,y-nh+15+i*11,l,'lab'));}
  return out;
@@ -214,33 +218,34 @@ export function generalArrangement(){
 
 // ---------------------------------------------------------------- 4. Electrical one-line
 export function oneLine(){
- const E=FERRY_ELECTRICS,W=1200,Hh=820;let out='';
+ const E=FERRY_ELECTRICS,W=1200,Hh=940;let out='';
  const box=(x,y,w,h,lines,cls='sp')=>`<rect class="${cls}" x="${x}" y="${y}" width="${w}" height="${h}" rx="3"/>`+lines.map((l,i)=>text(x+6,y+14+i*12,l,'lab')).join('');
  const line=(x1,y1,x2,y2)=>`<line class="l" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
- out+=box(60,40,170,52,['DG1 '+E.generators.kVA+' kVA '+E.generators.kW+' kW',E.generators.volts+' V '+E.generators.hz+' Hz · '+E.generators.amps+' A','ACB '+E.generators.breaker.frame+' AF set '+E.generators.breaker.setting+' A']);
- out+=box(300,40,170,52,['DG2 '+E.generators.kVA+' kVA '+E.generators.kW+' kW',E.generators.volts+' V '+E.generators.hz+' Hz · '+E.generators.amps+' A','ACB '+E.generators.breaker.frame+' AF set '+E.generators.breaker.setting+' A']);
- out+=box(560,40,200,52,['SHORE '+E.shore.kVA+' kVA · '+E.shore.volts+' V quay','transformer '+E.shore.transformer,'MCCB '+E.shore.breaker+' A · interlocked with DG1/DG2']);
+ const S=id=>FERRY_SOURCES.find(s=>s.id===id),B=id=>FERRY_BOARDS.find(b=>b.id===id);
+ out+=box(60,40,190,64,[S('DG1').tag+' · DG1 '+E.generators.kVA+' kVA '+E.generators.kW+' kW',E.generators.volts+' V '+E.generators.hz+' Hz · '+E.generators.amps+' A · '+S('DG1').cable,'ACB '+E.generators.breaker.frame+' AF set '+E.generators.breaker.setting+' A','generator leads 13BAA10']);
+ out+=box(300,40,190,64,[S('DG2').tag+' · DG2 '+E.generators.kVA+' kVA '+E.generators.kW+' kW',E.generators.volts+' V '+E.generators.hz+' Hz · '+E.generators.amps+' A · '+S('DG2').cable,'ACB '+E.generators.breaker.frame+' AF set '+E.generators.breaker.setting+' A','generator leads 14BAA10']);
+ out+=box(560,40,220,64,[S('shore').tag+' · SHORE '+E.shore.kVA+' kVA · '+E.shore.volts+' V quay','transformer '+E.shore.transformer,'MCCB '+E.shore.breaker+' A · interlocked with DG1/DG2','shore cable '+S('shore').cable]);
  out+=line(145,92,145,140)+line(385,92,385,140)+line(660,92,660,140);
- out+=`<rect class="l" x="60" y="140" width="700" height="10" fill="#1d2326"/>`+text(60,166,'MAIN SWITCHBOARD (MSB) · 440 V 3-phase 3-wire IT bus · engine control booth · earth lamps, insulation meter, synchroscope','lab');
+ out+=`<rect class="l" x="60" y="140" width="700" height="10" fill="#1d2326"/>`+text(60,166,B('MSB').tag+' · MAIN SWITCHBOARD (MSB) · 440 V 3-phase 3-wire IT bus · engine control booth · earth lamps, insulation meter, synchroscope','lab');
  // Feeders from MSB
  const msb=FERRY_LOADS.filter(l=>l.board==='MSB'),esb=FERRY_LOADS.filter(l=>l.board==='ESB'),lb=FERRY_LOADS.filter(l=>l.board==='LB'),elb=FERRY_LOADS.filter(l=>!['MSB','ESB','LB'].includes(l.board));
- const feeders=(list,x,y,title)=>{let s=text(x,y,title,'sub');list.forEach((l,i)=>{s+=text(x,y+13+i*11,`${l.count>1?l.count+'× ':''}${l.name} · ${l.kW} kW · ${l.amps} A${l.trip?' · trip st.'+l.trip:''}`,'lab');});return s;};
+ const feeders=(list,x,y,title)=>{let s=text(x,y,title,'sub');list.forEach((l,i)=>{const f=FERRY_FEEDERS.find(f=>f.id===l.id||f.id===l.id+'A');s+=text(x,y+13+i*11,`${f?f.tag.replace(/ -M01$/,'')+' · ':''}${l.count>1?l.count+'× ':''}${l.name} · ${l.kW} kW · ${l.amps} A${f?' · '+f.breaker+' A':''}${l.trip?' · trip st.'+l.trip:''}`,'lab');});return s;};
  out+=line(100,150,100,200)+feeders(msb,70,214,'440 V FEEDERS (MSB)');
- out+=line(500,150,500,200)+box(440,200,150,40,['TR1 / TR2 '+E.transformers.lighting.kVA+' kVA',E.transformers.lighting.ratio+' · one in use'])+line(515,240,515,270)+`<rect class="l" x="440" y="270" width="200" height="8" fill="#1d2326"/>`+text(440,292,'LIGHTING BOARD (LB) · 105 V','lab')+feeders(lb,440,310,'105 V FEEDERS (LB)');
+ out+=line(500,150,500,200)+box(440,200,190,40,[S('T1').tag+' / '+S('T2').tag.split(' ')[1]+' · '+E.transformers.lighting.kVA+' kVA',E.transformers.lighting.ratio+' · one in use · '+S('T1').breaker+' A · '+S('T1').cable])+line(515,240,515,270)+`<rect class="l" x="440" y="270" width="200" height="8" fill="#1d2326"/>`+text(440,292,B('LB').tag+' · LIGHTING BOARD (LB) · 105 V','lab')+feeders(lb,440,310,'105 V FEEDERS (LB)');
  out+=line(740,150,740,200)+box(690,200,120,40,['BUS-TIE to ESB','opens on main-bus loss'])+line(750,240,750,560);
- out+=box(900,480,220,52,['EMERGENCY GENERATOR '+E.emergency.kVA+' kVA',E.emergency.kW+' kW · on load within '+E.emergency.onLoadWithin+' s','day tank '+E.emergency.dayTank+' L · '+E.emergency.hours+' h']);
- out+=line(1000,532,1000,560)+`<rect class="l" x="700" y="560" width="440" height="10" fill="#1d2326"/>`+text(700,586,'EMERGENCY SWITCHBOARD (ESB) · 440 V and 105 V sections · emergency-generator room (bridge deck)','lab');
- out+=line(760,570,760,610)+feeders(esb,700,624,'EMERGENCY FEEDERS (ESB 440 V)')+box(960,610,150,40,['ETR '+E.transformers.emergency.kVA+' kVA',E.transformers.emergency.ratio])+line(1035,650,1035,670)+feeders(elb,960,684,'ESB 105 V and 24 V');
- out+=box(60,660,300,60,['24 V BATTERIES · '+E.batteries.banks.join(' · '),'transitional source '+E.batteries.transitionalMinutes+' min','chargers on the ESB 105 V section']);
- out+=text(60,745,'Preference trip: '+E.preferenceTrip.stages+' stages, '+E.preferenceTrip.delay+' s. '+E.preferenceTrip.why,'lab');
- out+=titleBlock(W,Hh,'ELECTRICAL ONE-LINE DIAGRAM · generation, distribution and feeders',3,['Load analysis per condition: README.md § electrical load (FERRY_LOADS).']);
+ out+=box(900,468,240,64,[S('EG').tag+' · EMERGENCY GENERATOR '+E.emergency.kVA+' kVA',E.emergency.kW+' kW · on load within '+E.emergency.onLoadWithin+' s','day tank '+E.emergency.dayTank+' L · '+E.emergency.hours+' h','MCCB '+S('EG').breaker+' A · '+S('EG').cable]);
+ out+=line(1000,532,1000,560)+`<rect class="l" x="700" y="560" width="440" height="10" fill="#1d2326"/>`+text(700,586,B('ESB').tag+' · EMERGENCY SWITCHBOARD (ESB) · 440 V and 105 V sections · emergency-generator room (bridge deck)','lab');
+ out+=line(760,570,760,610)+feeders(esb,700,624,'EMERGENCY FEEDERS (ESB 440 V)')+box(960,610,150,40,['ETR '+E.transformers.emergency.kVA+' kVA',E.transformers.emergency.ratio])+line(1035,650,1035,760)+line(760,760,1035,760)+feeders(elb,700,780,'ESB 105 V and 24 V (through the ETR)');
+ out+=box(60,760,300,60,[B('DC').tag+' · 24 V BATTERIES · '+E.batteries.banks.join(' · '),'transitional source '+E.batteries.transitionalMinutes+' min','chargers on the ESB 105 V section']);
+ out+=text(60,845,'Preference trip: '+E.preferenceTrip.stages+' stages, '+E.preferenceTrip.delay+' s. '+E.preferenceTrip.why,'lab');
+ out+=titleBlock(W,Hh,'ELECTRICAL ONE-LINE DIAGRAM · generation, distribution and feeders · KKS tags',3,['Load analysis per condition: electrical-load.md (FERRY_LOADS); feeders, breakers and cables: sheet 3b; the cable schedule: 3c (ferry-electrical.js). Tags: ferry-kks.js.']);
  return svg(W,Hh,out,'Minato Maru · one-line diagram');
 }
 
 // ---------------------------------------------------------------- 5. Tables: tanks, loads, safety, manning
 export function tankTable(){
  const M=FERRY_MACHINERY.tanks;
- const rows=[['Fuel storage P','er-double-bottom',M.fuelStorage[0],'A-heavy oil'],['Fuel storage S','er-double-bottom',M.fuelStorage[1],'A-heavy oil'],['Fuel service','engine-room',M.fuelService,'A-heavy oil, gravity to the engines'],['Lubricating oil','er-double-bottom',M.lubeOil,''],['Sludge','er-double-bottom',M.sludge,''],['Bilge holding','er-double-bottom',M.bilgeHolding,''],['Fresh water P','fresh-water',M.freshWater/2,''],['Fresh water S','fresh-water',M.freshWater/2,''],['Sewage holding','tanks',M.sewage,'pumped ashore at Minato'],['Ballast fore peak','fore-peak',M.ballast.forePeak,'sea water'],['Ballast aft peak','aft-peak',M.ballast.aftPeak,'sea water'],['Ballast P','tanks',M.ballast.port,'sea water'],['Ballast S','tanks',M.ballast.starboard,'sea water']];
+ const rows=[['Fuel storage P','er-double-bottom',M.fuelStorage[0],'A-heavy oil'],['Fuel storage S','er-double-bottom',M.fuelStorage[1],'A-heavy oil'],['Fuel service','engine-room',M.fuelService,'A-heavy oil, gravity to the engines'],['Lubricating oil','er-double-bottom',M.lubeOil,''],['Sludge','er-double-bottom',M.sludge,''],['Bilge holding','er-double-bottom',M.bilgeHolding,''],['Fresh water P','fresh-water',M.freshWater/2,''],['Fresh water S','fresh-water',M.freshWater/2,''],['Sewage holding','aux-room',M.sewage,'a built tank to port; pumped ashore at Minato'],['Ballast fore peak','fore-peak',M.ballast.forePeak,'sea water'],['Ballast aft peak','aft-peak',M.ballast.aftPeak,'sea water'],['Ballast P','fwd-double-bottom',M.ballast.port,'sea water, Fr 28–38'],['Ballast S','fwd-double-bottom',M.ballast.starboard,'sea water, Fr 28–38']];
  let md='# Tank plan · Minato Maru\n\n| Tank | Space (FERRY_GA) | z (m) | Capacity (m³) | Note |\n|---|---|---|---|---|\n';
  for(const [name,id,cap,note] of rows){const s=FERRY_GA.find(s=>s.id===id);md+=`| ${name} | ${id} | ${s?s.z.join('–'):'?'} | ${cap} | ${note} |\n`;}
  md+=`\nTotal fuel ${M.fuel} m³ (${FERRY_MACHINERY.fuelPerDay} L a day: ${Math.floor(M.fuel*1000/FERRY_MACHINERY.fuelPerDay)} days), fresh water ${M.freshWater} m³ (${FERRY_MACHINERY.freshWater.perDay} m³ a day), ballast ${Object.values(M.ballast).reduce((a,b)=>a+b,0)} m³.\n`;
@@ -314,14 +319,162 @@ export function safetyPlan(){
  out.push(`<g transform="translate(30,30)">`);drawSafetyPlan(svgPen(out),1180,700,null);out.push('</g>');
  return svg(W,Hh,out.join('')+titleBlock(W,Hh,'FIRE CONTROL AND SAFETY PLAN · posted in the lower lobby, the saloon, the crew corridor and the control booth · 1:46 at 20 px/m',6,['Symbols after the IMO signs: fire-fighting in red, lifesaving in orange, muster stations and escapes in green, control stations in blue. Items and positions: FERRY_SAFETY_ITEMS (ferry-safety-plan.js), from FERRY_SAFETY and FERRY_GA.']),'Minato Maru · fire control and safety plan');
 }
+// ---------------------------------------------------------------- 7. Machinery spaces: levels and rooms
+/**
+ * The machinery spaces as a line of rooms on several levels (batch 6q; the creator, 2026-10-13: "The engine room should
+ * be several levels and have many rooms"): a longitudinal section at the centreline from the transom to the car lanes
+ * with every level, and the plan at the floor plates from the engine room's aft bulkhead to the store's forward one, every
+ * rectangle a box of FERRY_INTERIOR as built. The hold spaces come from FERRY_GA, so the section and the GA never disagree.
+ */
+export function machinerySpaces(){
+ const S=46,W=1260,Hh=1040,MS=FERRY_MACHINERY_SPACES,Z0=ER.aft+HALF,Z1=MS.storeFore+HALF+.06;
+ let out='';
+ const rect=(x,y,w,h,cls='sp')=>`<rect class="${cls}" x="${r2(x)}" y="${r2(y)}" width="${r2(w)}" height="${r2(h)}"/>`;
+ // Section at the centreline, z 0–23 (stern left), y 0–7.4: the levels as lines, the hold spaces as rooms with their
+ // frame numbers, the car deck, the lower lobby and the fan flat over it (dashed: designed in 6q-2, not yet built), the
+ // casings' ladder and escape trunks.
+ const sx=z=>60+z*S,sy0=430,sy=y=>sy0-y*S;
+ out+=text(60,40,'LONGITUDINAL SECTION · at the centreline looking to port · stern left · 1:21.7 at 46 px/m','sub');
+ const zs=Array.from({length:93},(_,i)=>i*23/92);
+ out+=path(zs.map(z=>[sx(z),sy(keelAbove(keelY(toModel(z))))]));
+ for(const [name,y,cls] of [['tank top 0.7',H.tankTop,'g'],['floor plates 0.9',H.floorPlates,'l'],['car deck 3.0',H.carDeck,'l'],['lobby deckhead · fan flat 5.5',H.carDeck+2.5,'g'],['passenger deck 7.4',H.passengerDeck,'l']])out+=`<line class="${cls}" x1="${sx(0)}" y1="${r2(sy(y))}" x2="${sx(23)}" y2="${r2(sy(y))}"/>`+text(sx(23)+4,sy(y)+3,name,'lab');
+ out+=`<line class="wl" x1="${sx(-.5)}" y1="${r2(sy(T))}" x2="${sx(23.5)}" y2="${r2(sy(T))}"/>`+text(sx(-.5),sy(T)-3,'LWL 1.9','lab');
+ for(const s of FERRY_GA.filter(s=>s.deck==='hold'&&s.z[0]<23)){const [z0,z1]=s.z,[y0,y1]=s.y,within=s.within;
+  out+=rect(sx(z0),sy(y1),(z1-z0)*S,(y1-y0)*S,within?'t':'sp');
+  const label=s.id.replace(/-/g,' ')+(y1-y0>1.2?' · Fr '+Math.round(z0*2)+'–'+Math.round(z1*2):'');
+  if((z1-z0)*S>24&&!within)out+=fitText(sx(z0)+3,sy(y1)+(y1-y0>.9?11:(y1-y0)*S*.7),label,(z1-z0)*S-6,8.5);}
+ out+=rect(sx(2.5),sy(H.carDeck+2.5),10.1*S,2.5*S,'t')+fitText(sx(2.5)+3,sy(H.carDeck+2.5)+11,'lower lobby · Fr 5–25',10.1*S-6,8.5);
+ out+=`<rect class="t" stroke-dasharray="4,3" x="${r2(sx(2.5))}" y="${r2(sy(H.passengerDeck))}" width="${r2(10.1*S)}" height="${r2(1.9*S)}"/>`+fitText(sx(2.5)+3,sy(H.passengerDeck)+11,'fan flat (6q-2, not yet built): ER fans, trunks to the casings',10.1*S-6,8.5);
+ out+=rect(sx(12.6),sy(H.passengerDeck),10.4*S,4.4*S,'t')+fitText(sx(12.6)+3,sy(H.passengerDeck)+11,'car deck lanes · 4.2 m clear',10.4*S-6,8.5);
+ // The ways between the levels: the ER ladder in casing P (z 7.0–8.6), the escape trunks (z 6–7 and 18.4–19), the WT door and the door at Fr 38.
+ out+=`<line class="l" x1="${r2(sx(7))}" y1="${r2(sy(H.carDeck))}" x2="${r2(sx(8.6))}" y2="${r2(sy(H.floorPlates))}"/>`+text(sx(6.2),sy(H.carDeck+.4),'ladder, casing P','lab');
+ for(const [z0,z1,lab] of [[6,7,'escape trunk S'],[18.4,19,'escape trunk S']])out+=`<rect class="t" stroke-dasharray="2,2" x="${r2(sx(z0))}" y="${r2(sy(H.carDeck))}" width="${r2((z1-z0)*S)}" height="${r2((H.carDeck-H.floorPlates)*S)}"/>`+text(sx(z0)-6,sy(H.floorPlates)+12,lab,'lab');
+ for(const [z,h,lab] of [[14,MS.wtDoor.h,'WT door'],[19,MS.door38.h,'door']])out+=`<rect class="sp" x="${r2(sx(z)-2)}" y="${r2(sy(H.floorPlates+h))}" width="4" height="${r2(h*S)}"/>`+text(sx(z)+5,sy(H.carDeck)-5,lab,'lab');
+ out+=dim(sx(0),sy(-.6),sx(23),sy(-.6),'23.0 m · transom to the lanes',0)+dim(sx(23)+120,sy(0),sx(23)+120,sy(H.carDeck),'D 3.0 m',0);
+ Array.from({length:47},(_,i)=>i*.5).forEach((z,i)=>{if(i%4===0)out+=text(sx(z)-6,sy(-.2),'Fr '+i,'lab');});
+ // Plan at the floor plates, z 8.5–22.56 (the engine room, the aux room, the workshop and the store), port up.
+ const py0=560,px=z=>60+(z-Z0)*S,py=x=>py0+(4.2-x)*S;
+ out+=text(60,py0-20,'PLAN · at the floor plates (0.9 m above base) looking down · port side up · the rooms forward of the engine room','sub');
+ const zz=Array.from({length:30},(_,i)=>Z0+(Z1-Z0)*i/29);
+ out+=`<path class="l" d="M${zz.map(z=>[px(z),py(hullX(ER.floor,z-HALF))].map(r2).join(',')).join(' L')}"/><path class="l" d="M${zz.map(z=>[px(z),py(-hullX(ER.floor,z-HALF))].map(r2).join(',')).join(' L')}"/>`;
+ out+=`<line class="c" x1="${px(Z0)-20}" y1="${r2(py(0))}" x2="${px(Z1)+20}" y2="${r2(py(0))}"/>`;
+ const inPlan=b=>Math.min(b.a[2],b.b[2])+HALF>=Z0-.1&&Math.max(b.a[2],b.b[2])+HALF<=Z1+.1&&Math.max(b.a[1],b.b[1])+T>=Y0-.2&&Math.min(b.a[1],b.b[1])+T<=Y1-.05;
+ for(const b of FERRY_INTERIOR.boxes.filter(b=>inPlan(b)&&(b.draw!==false||b.solid))){const z0=Math.min(b.a[2],b.b[2])+HALF,z1=Math.max(b.a[2],b.b[2])+HALF,x0=Math.min(b.a[0],b.b[0]),x1=Math.max(b.a[0],b.b[0]);out+=rect(px(z0),py(x1),(z1-z0)*S,(x1-x0)*S,b.solid?'sp':'t');}
+ for(const c of FERRY_INTERIOR.cyls.filter(c=>c.pos[2]+HALF>=Z0&&c.pos[2]+HALF<=Z1)){const r=Math.max(c.rt,c.rb);out+=`<circle class="t" cx="${r2(px(c.pos[2]+HALF))}" cy="${r2(py(c.pos[0]))}" r="${r2(r*S)}"/>`;}
+ for(let i=0;i<=28;i++){const z=Z0+i*.5;out+=`<line class="g" x1="${r2(px(z))}" y1="${r2(py(4.3))}" x2="${r2(px(z))}" y2="${r2(py(-4.3))}"/>`;if(i%2===0)out+=text(px(z),py(-4.3)+12,'Fr '+Math.round(z*2),'lab','text-anchor="middle"');}
+ for(const [z0,z1,lab] of [[8.5,14,'ENGINE ROOM'],[14,19,'AUXILIARY MACHINERY ROOM'],[19,22.5,'WORKSHOP (P) · ENGINE STORE (S)']])out+=fitText(px(z0)+4,py(4.3)-6,lab,(z1-z0)*S-8,10,'sub');
+ out+=dim(px(Z0),py(-4.3)+30,px(14+HALF-HALF),py(-4.3)+30,'5.5 m',0)+dim(px(14),py(-4.3)+30,px(19),py(-4.3)+30,'5.0 m',0)+dim(px(19),py(-4.3)+30,px(22.5),py(-4.3)+30,'3.5 m',0);
+ // The levels and the rooms, listed as the yard lists them.
+ const lx=W-300,ly=580;const LEVELS=[['0.7','Tank top: the double bottom (fuel, lube oil, bilge holding, sludge; ballast forward), the bilge wells under the gratings'],['0.9','Floor plates: engine room with the control booth · auxiliary machinery room · workshop · engine store; the shaft space and the steering-gear room aft at 2.0 (crawl)'],['3.0','Car deck: the engine-room entrance and ladder in casing P, the escape trunks’ hatches in casing S'],['5.5','Fan flat over the lower lobby (6q-2): the engine-room fans and their trunks'],['7.4','Passenger deck: the funnels at z 4–5.8']];
+ out+=rect(lx-10,ly-16,290,LEVELS.length*46+24,'t')+text(lx,ly,'LEVELS · metres above base','sub');
+ let yy=ly+16;for(const [h,what] of LEVELS){const lines=wrap(h+'  '+what,270,8.5).slice(0,4);lines.forEach((l,i)=>out+=text(lx,yy+i*10,l,'lab'));yy+=46;}
+ out+=titleBlock(W,Hh,'MACHINERY SPACES · levels and rooms · longitudinal section and plan at the floor plates · 1:21.7 at 46 px/m',7,['Section: every hold space of FERRY_GA with its frames (Fr = 0.5 m from the transom). Plan: every box of FERRY_INTERIOR between the floor plates and the car deck, z 8.5–22.5; circles are its cylinders.','The watertight door at Fr 28 and the door at Fr 38 join the rooms; the escape trunks rise into casing S.']);
+ return svg(W,Hh,out,'Minato Maru · machinery spaces · Johansson Shipyard');
+}
+// ---------------------------------------------------------------- 8. Piping diagrams, one sheet per system
+// Every node of FERRY_PIPING drawn as its ISO 10628 symbol on a grid (columns in the direction of flow), with its KKS
+// tag over it and its name under it; every line an orthogonal run in the system's colour with its bore. The yard's
+// frame, a legend, and the system's duty/standby table from FERRY_SERVICES.
+const RH=96,OX=70,OY=110;
+function symbol(n,x,y,col){
+ const k=n.kind,s=[];const t=(cls,extra='')=>`class="${cls}" ${extra}`;const stroke=`stroke="${col}" fill="#fff" stroke-width="1.2"`;
+ switch(k){
+  case 'pump':case 'compressor':case 'fan':s.push(`<circle cx="${x}" cy="${y}" r="13" ${stroke}/>`);if(k==='pump')s.push(`<path d="M${x-7},${y-7} L${x+9},${y} L${x-7},${y+7} z" fill="${col}"/>`);if(k==='compressor')s.push(text(x,y+4,'C','lab','text-anchor="middle" font-weight="bold"'));if(k==='fan')s.push(`<path d="M${x-8},${y-8} L${x+8},${y+8} M${x+8},${y-8} L${x-8},${y+8}" stroke="${col}"/>`);
+   if(n.drive==='motor')s.push(`<circle cx="${x}" cy="${y-22}" r="7" ${stroke}/>`+text(x,y-19,'M','lab','text-anchor="middle" font-size="8"')+`<line x1="${x}" y1="${y-15}" x2="${x}" y2="${y-13}" stroke="${col}"/>`);
+   if(n.drive==='engine')s.push(`<rect x="${x-8}" y="${y-30}" width="16" height="10" ${stroke}/>`+text(x,y-22,'E','lab','text-anchor="middle" font-size="7"')+`<line x1="${x}" y1="${y-20}" x2="${x}" y2="${y-13}" stroke="${col}"/>`);
+   if(n.drive==='hand')s.push(`<path d="M${x},${y-13} L${x},${y-24} L${x+8},${y-28}" stroke="${col}" fill="none"/>`);break;
+  case 'valve':case 'nrv':case 'qcv':case 'relief':s.push(`<path d="M${x-9},${y-6} L${x+9},${y+6} L${x+9},${y-6} L${x-9},${y+6} z" ${stroke}/>`);
+   if(k==='nrv')s.push(`<circle cx="${x+5}" cy="${y}" r="2" fill="${col}"/>`);if(k==='qcv')s.push(`<path d="M${x},${y} L${x},${y-14} M${x-5},${y-14} L${x+5},${y-14}" stroke="${col}"/>`+text(x+8,y-12,'QC','lab','font-size="7"'));
+   if(k==='relief')s.push(`<path d="M${x},${y-6} L${x},${y-12} l-3,-2 l6,-2 l-6,-2 l6,-2" stroke="${col}" fill="none"/>`);break;
+  case 'strainer':s.push(`<path d="M${x-10},${y-8} L${x+10},${y-8} L${x+10},${y+8} L${x-10},${y+8} z M${x-10},${y-8} L${x+10},${y+8} M${x-4},${y-8} L${x+10},${y+2} M${x-10},${y-2} L${x+4},${y+8}" ${stroke}/>`);break;
+  case 'filter':s.push(`<rect x="${x-10}" y="${y-8}" width="20" height="16" ${stroke}/><path d="M${x-10},${y} L${x+10},${y}" stroke="${col}" stroke-dasharray="2,2"/>`);break;
+  case 'cooler':s.push(`<rect x="${x-14}" y="${y-8}" width="28" height="16" ${stroke}/><path d="M${x-14},${y-8} L${x+14},${y+8}" stroke="${col}"/>`);break;
+  case 'purifier':case 'separator':s.push(`<rect x="${x-12}" y="${y-12}" width="24" height="24" ${stroke}/><circle cx="${x}" cy="${y}" r="6" ${stroke}/>`);break;
+  case 'bottle':s.push(`<rect x="${x-7}" y="${y-18}" width="14" height="36" rx="5" ${stroke}/>`);break;
+  case 'tank':case 'drum':s.push(`<rect x="${x-20}" y="${y-12}" width="40" height="24" ${stroke}/><path d="M${x-20},${y+2} L${x+20},${y+2}" stroke="${col}"/>`);break;
+  case 'engine':s.push(`<rect x="${x-22}" y="${y-11}" width="44" height="22" ${stroke}/>`+text(x,y+3,'ENGINE','lab','text-anchor="middle" font-size="7"'));break;
+  case 'consumer':s.push(`<rect x="${x-20}" y="${y-10}" width="40" height="20" ${stroke} stroke-dasharray="3,2"/>`);break;
+  case 'seachest':s.push(`<rect x="${x-14}" y="${y-10}" width="28" height="20" ${stroke}/><path d="M${x-11},${y+4} q3,-4 6,0 t6,0 t6,0 M${x-11},${y-2} q3,-4 6,0 t6,0 t6,0" stroke="${col}" fill="none"/>`);break;
+  case 'overboard':s.push(`<path d="M${x-10},${y-7} L${x+6},${y-7} L${x+12},${y} L${x+6},${y+7} L${x-10},${y+7} z" ${stroke}/>`+text(x-2,y+3,'OB','lab','text-anchor="middle" font-size="7"'));break;
+  case 'shore':s.push(`<circle cx="${x}" cy="${y}" r="9" ${stroke}/><line x1="${x-14}" y1="${y}" x2="${x+14}" y2="${y}" stroke="${col}"/>`);break;
+  case 'manifold':s.push(`<rect x="${x-26}" y="${y-5}" width="52" height="10" fill="${col}"/>`);break;
+  case 'sensor':s.push(`<circle cx="${x}" cy="${y}" r="10" ${stroke}/>`+text(x,y+3,n.tag.split(' ')[1].slice(0,2),'lab','text-anchor="middle" font-size="7"'));break;
+  case 'hydrant':s.push(`<circle cx="${x}" cy="${y}" r="9" fill="${col}"/>`+text(x,y+3,'H','lab','text-anchor="middle" font-size="8" fill="#fff" font-weight="bold"'));break;
+  case 'nozzle':s.push(`<path d="M${x-8},${y-6} L${x+8},${y-6} L${x},${y+8} z" fill="${col}"/>`);break;
+  case 'cabinet':s.push(`<rect x="${x-14}" y="${y-12}" width="28" height="24" ${stroke}/>`+text(x,y+3,'CO₂','lab','text-anchor="middle" font-size="7"'));break;
+  case 'silencer':s.push(`<rect x="${x-18}" y="${y-7}" width="36" height="14" rx="7" ${stroke}/>`);break;
+  case 'funnel':s.push(`<path d="M${x-10},${y+12} L${x-6},${y-12} L${x+6},${y-12} L${x+10},${y+12} z" ${stroke}/>`);break;
+  case 'well':s.push(`<path d="M${x-10},${y-6} L${x-10},${y+2} a10,8 0 0 0 20,0 L${x+10},${y-6}" ${stroke}/>`);break;
+  default:s.push(`<rect x="${x-10}" y="${y-8}" width="20" height="16" ${stroke}/>`);
+ }
+ return s.join('');
+}
+export function pipingSheet(sys,index){
+ // Columns are the direction of flow; the rows are the distinct `r` values in order, one grid row each (nodes that
+ // share an r stay level), so nothing stacks closer than a row.
+ const W=1260,cols=Math.max(...sys.nodes.map(n=>n.c))+1,rowOf=new Map([...new Set(sys.nodes.map(n=>n.r))].sort((a,b)=>a-b).map((r,i)=>[r,i])),rows=rowOf.size;
+ const CW=Math.min(168,Math.floor((W-120)/cols)),gridH=OY+rows*RH+40,Hh=Math.max(820,gridH+430);
+ const px=n=>OX+n.c*CW+CW/2-24,py=n=>OY+rowOf.get(n.r)*RH+30,col=sys.colour,byId=Object.fromEntries(sys.nodes.map(n=>[n.id,n]));
+ let out='';
+ out+=text(60,40,`PIPING DIAGRAM 8.${index+1} · ${sys.name.toUpperCase()} · KKS ${sys.fn}: ${KKS_FUNCTION_KEYS.get(sys.fn)?.name||''} · medium ${sys.medium}`,'sub');
+ // Lines first, under the symbols: from the right edge of `from` to the left edge of `to`, orthogonally, the bore at the bend.
+ for(const l of sys.lines){const a=byId[l.from],b=byId[l.to];const x1=px(a)+16,y1=py(a),x2=px(b)-16,y2=py(b);const mx=x2>x1+30?(x1+x2)/2:x1+24;
+  const d=x2>x1+30?`M${x1},${y1} L${mx},${y1} L${mx},${y2} L${x2},${y2}`:`M${x1},${y1} L${mx},${y1} L${mx},${(y1+y2)/2+28} L${x2-24},${(y1+y2)/2+28} L${x2-24},${y2} L${x2},${y2}`;
+  out+=`<path d="${d}" stroke="${col}" fill="none" stroke-width="${l.dn>=65?2.2:l.dn>=40?1.6:l.dn>0?1.1:.7}" ${l.dn===0?'stroke-dasharray="4,3"':''}/>`;
+  if(l.dn>0)out+=text(mx+3,Math.min(y1,y2)+(Math.abs(y2-y1)>20?Math.abs(y2-y1)/2:-4),'DN'+l.dn,'lab','font-size="7" fill="#4a5457"');
+  if(l.note)out+=fitText(mx+3,Math.min(y1,y2)+(Math.abs(y2-y1)>20?Math.abs(y2-y1)/2:-4)+9,l.note,CW-40,7,'lab','fill="#4a5457"');}
+ for(const n of sys.nodes){const x=px(n),y=py(n);out+=symbol(n,x,y,col);
+  out+=text(x,y-(n.drive?36:n.kind==='bottle'?24:20),n.tag,'lab',`text-anchor="middle" font-family="monospace" font-weight="bold" font-size="8.5"`);
+  const lines=wrap(n.label,CW-20,7.5).slice(0,3);lines.forEach((t,i)=>out+=fitText(x,y+22+i*9,t,CW-20,7.5,'lab','text-anchor="middle"'));
+  out+=text(x,y+22+lines.length*9,n.where.replace(/-/g,' '),'lab','text-anchor="middle" font-size="6.5" font-style="italic" fill="#6f7476"');}
+ // Legend, the duty/standby table and the tag's reading.
+ const lx=W-330,ly=gridH+20;
+ out+=`<rect class="t" x="${lx-10}" y="${ly-16}" width="320" height="150"/>`+text(lx,ly,'DUTY AND STANDBY (FERRY_SERVICES)','sub');
+ const svc=FERRY_SERVICES.filter(s=>s.system===sys.id);svc.forEach((s,i)=>{out+=fitText(lx,ly+16+i*22,s.service+': '+byId[s.duty].tag+' duty · '+byId[s.standby].tag+' standby',300,8.5);out+=fitText(lx+8,ly+25+i*22,s.rota,292,7.5,'lab','fill="#4a5457"');});
+ if(!svc.length)out+=text(lx,ly+16,'No pumped service in this system (engine-driven or gravity).','lab');
+ const kx=60,ky=gridH+20;out+=`<rect class="t" x="${kx-10}" y="${ky-16}" width="${W-420-kx}" height="150"/>`+text(kx,ky,'READING A TAG · KKS (VGB-B 105)','sub');
+ const sample=sys.nodes.find(n=>n.kind==='pump')||sys.nodes[0];
+ [sample.tag+'  =  '+kksExplain(sample.tag),'G F0 FFF NN · AA NNN · BB NN: plant (1 the ship) · identical system (0 common, 1 port main, 2 starboard main, 3 generator No.1, 4 generator No.2) · function key · subsystem decade · equipment key and number · component',
+  'AA valves: 1xx electric actuator, 2xx pneumatic/hydraulic/solenoid, 4xx drain and vent, 5xx hand, 6xx mechanical (thermostat), 9xx safety. C* measuring: 0xx remote analogue, 3xx remote binary (switch), 5xx local.',
+  'Symbols after ISO 10628: pump (circle, triangle), M its motor, E engine-driven; valve (bowtie), non-return (dot), QC quick-closing, safety (spring); strainer, filter, cooler, tank with level, sea chest, OB overboard, deck connection (flange), manifold (bar), hydrant (H).'].forEach((t,i)=>{wrap(t,W-440-kx,8).forEach((l,j)=>{out+=text(kx,ky+16+i*32+j*10,l,'lab');});});
+ return svg(W,Hh,out+titleBlock(W,Hh,`PIPING DIAGRAM · ${sys.name} · system ${sys.fn} · not to scale`,'8.'+(index+1),[...sys.notes,'Nodes and lines: FERRY_PIPING (src/world/ferry-piping.js); tags: ferry-kks.js. Bores in mm (DN). A dashed line is not a pipe (a wire, a can, a cable).']),'Minato Maru · piping diagram · '+sys.name);
+}
+// ---------------------------------------------------------------- 3b, 3c. Feeder lists and the cable schedule
+/** Sheet 3b: every feeder of every board with its tag, consumer, starter, breaker, cable, route length and drop. */
+export function feederList(){
+ const W=1260,rows=FERRY_FEEDERS.length+FERRY_BOARDS.length*2+2,Hh=Math.max(900,rows*13+260);let out='';
+ const cols=[['Cable No.',60,80],['Consumer tag',148,112],['Consumer',268,290],['kW',562,34],['FLA A',598,40],['Starter',642,62],['MCB A',708,44],['Cable',756,80],['m',840,30],['drop %',874,44],['Route',922,300]];
+ out+=text(60,40,'FEEDER LISTS · every board, every consumer: tag, full-load current, starter, breaker, cable, route · IEC 60092 · 45 °C','sub');
+ let y=64;
+ for(const b of FERRY_BOARDS){const list=FERRY_FEEDERS.filter(f=>f.board===b.id);if(!list.length)continue;
+  out+=`<rect class="sp" x="50" y="${y-11}" width="1180" height="15"/>`+text(56,y,`${b.tag} · ${b.name} · ${b.where.replace(/-/g,' ')} · fed by ${b.fedBy.join(', ')}`,'lab','font-weight="bold"');y+=16;
+  cols.forEach(([h,x])=>out+=text(x,y,h,'lab','font-weight="bold" fill="#4a5457"'));y+=13;
+  for(const f of list){const vals=[f.number,f.tag,f.name,f.kW,f.amps,f.starter,f.breaker,f.cable+' · '+f.rating+' A',f.length,f.drop,f.route.replace(/-/g,' ')];cols.forEach(([,x,w],i)=>out+=fitText(x,y,vals[i],w-6,8,'lab',i<2?'font-family="monospace"':''));y+=13;}
+  y+=10;}
+ const checks=electricalChecks();out+=text(60,y+6,checks.length?'CHECKS FAILED: '+checks.join('; '):'Checks: every cable carries its breaker; every drop under 6 % at full load; star-delta over 7.5 kW; the generators’ breakers carry their full load. Standby pumps (No.2) draw nothing in any condition: they alternate with No.1.','lab');
+ return svg(W,Hh,out+titleBlock(W,Hh,'FEEDER LISTS · main, lighting and emergency switchboards, 24 V · breakers and cables','3b',['FERRY_FEEDERS (ferry-electrical.js) from the load analysis: FLA = kW / (√3·U·η·cos φ); MCB ≥ 1.25 × FLA for motors; cable rating ≥ MCB and drop ≤ 5 % over the route (manhattan between spaces + 4 m a deck + 15 %).']),'Minato Maru · feeder lists');
+}
+/** Sheet 3c: the cable schedule as the electricians pull it, one row a cable. */
+export function cableSchedule(){
+ let md='# Cable schedule · Minato Maru · sheet 3c (JS-127-03-C)\n\nEvery power cable, numbered by the KKS rule (the lower end’s tag, then 1001–1999 for AC ≤ 1 kV), with its ends, type, section, route and length. Control, measuring and communication cables (4501–5999, 7001–7999, 8001–8999) follow with the control drawings.\n\n';
+ md+='| Cable No. | From (board) | To (consumer) | Consumer | Type | Cores × mm² | Rating A | MCB A | Route | Length m | Drop % |\n|---|---|---|---|---|---|---|---|---|---|---|\n';
+ for(const s of FERRY_SOURCES)md+=`| ${s.tag.split(' ')[0]} ${s.id==='shore'?'1001':'0001'} | ${s.tag} | ${FERRY_BOARDS.find(b=>b.id===s.to).tag} | ${s.name} | ${s.id==='shore'?'flexible, the shore cable':'EPR/CSP braided'} | ${s.cable} | — | ${s.breaker} | ${s.where} → ${FERRY_BOARDS.find(b=>b.id===s.to).where} | — | — |\n`;
+ for(const f of FERRY_FEEDERS)md+=`| ${f.number} | ${f.boardTag} | ${f.tag} | ${f.name} | ${f.supply==='105'?'EPR/CSP braided, 2-core':'EPR/CSP braided, 3-core'} | ${f.cable} | ${f.rating} | ${f.breaker} | ${f.route} | ${f.length} | ${f.drop} |\n`;
+ md+='\nCable type: ethylene-propylene-rubber insulated, chlorosulphonated-polyethylene sheathed, copper-braided marine cable (IEC 60092-353), 0.6/1 kV, flame retardant; run on perforated trays along the deckheads, in trunks through the casings, with transit frames at every watertight bulkhead and deck.\n';
+ return md;
+}
 export function build(){
  const hyd=hydrostaticsTable();
  return {
   'lines-plan.svg':linesPlan(),
   'general-arrangement.svg':generalArrangement(),
   'electrical-one-line.svg':oneLine(),
+  'feeder-lists.svg':feederList(),
+  'cable-schedule.md':cableSchedule(),
   'engine-room-arrangement.svg':engineRoomArrangement(),
   'safety-plan.svg':safetyPlan(),
+  'machinery-spaces.svg':machinerySpaces(),
+  ...Object.fromEntries(FERRY_PIPING.map((sys,i)=>['piping-'+sys.id+'.svg',pipingSheet(sys,i)])),
   'offsets.md':offsetsTable(),
   'hydrostatics.md':hyd.md,
   'tanks.md':tankTable(),
