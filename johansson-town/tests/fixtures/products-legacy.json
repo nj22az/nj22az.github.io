@@ -3146,6 +3146,20 @@
    "label": "Ryukyu cola · Cola · ¥120"
   },
   {
+   "id": "j-coffee",
+   "brand": "J-COFFEE",
+   "subtitle": "Black coffee",
+   "mark": "J",
+   "color": "#141414",
+   "price": 120,
+   "inventoryName": "J-Coffee",
+   "container": "can",
+   "size": 350,
+   "who": "the quay crew, early and late; Fujita; Officer Mori on watch",
+   "why": "Strong and unsweetened, and a full 350 ml for ¥120: the working man’s can at the port.",
+   "label": "J-coffee · Black coffee · ¥120"
+  },
+  {
    "id": "corn-soup",
    "brand": "CORN SOUP",
    "subtitle": "Hot · creamy",
@@ -3164,6 +3178,7 @@
   "Sanpin jasmine tea",
   "Shikuwasa soda",
   "Ryukyu cola",
+  "J-Coffee",
   "Hot corn soup",
   "Umineko lager"
  ],
@@ -3173,6 +3188,7 @@
   "Sanpin jasmine tea": 13214522,
   "Shikuwasa soda": 8106818,
   "Ryukyu cola": 11740718,
+  "J-Coffee": 1315860,
   "Hot corn soup": 15249456,
   "Plum rice ball": 9532238,
   "Butter biscuits": 9532238,
@@ -3214,6 +3230,7 @@
   "Sanpin jasmine tea": "Empty can",
   "Shikuwasa soda": "Empty can",
   "Ryukyu cola": "Empty can",
+  "J-Coffee": "Empty can",
   "Hot corn soup": "Empty can",
   "Plum rice ball": "Empty can",
   "Butter biscuits": "Empty can",
