@@ -19,7 +19,7 @@ Computed from the loft (`ferry-model.js` sectionPoint) by Simpson's rule over 10
 
 | | Data (`FERRY_SHIP`) | From the loft at 1.9 m |
 |---|---|---|
-| Displacement | 283 t | 375.4 t |
-| Block coefficient | 0.56 | 0.708 |
+| Displacement | 375.41053 t | 375.4 t |
+| Block coefficient | 0.74026634 | 0.708 |
 | GM (loaded) | 1.6 m | KM_T 4.95 m, so KG must be 3.35 m (lightship + load; see the weight estimate, open) |
-| Lightship / deadweight | 210 t / 73 t | 302.4 t lightship if the deadweight stands |
+| Lightship / deadweight | 210 t / 165.41053 t | 210 t lightship if the deadweight stands |

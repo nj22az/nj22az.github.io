@@ -12,8 +12,8 @@
 | Fresh water S | fresh-water | 2.6–5 | 6 |  |
 | Sewage holding | aux-room | 14–19 | 4 | a built tank to port; pumped ashore at Minato |
 | Ballast fore peak | fore-peak | 30.5–34.5 | 6 | sea water |
-| Ballast aft peak | aft-peak | 0–2.6 | 4 | sea water |
-| Ballast P | fwd-double-bottom | 14–22.5 | 8 | sea water, Fr 28–38 |
-| Ballast S | fwd-double-bottom | 14–22.5 | 8 | sea water, Fr 28–38 |
+| Aft trim ballast pair | aft-peak | 14.1–15.4 | 4 | sea water |
+| Ballast P | fwd-double-bottom | 14–22.5 | 8 | sea water, z15.6–20.0 |
+| Ballast S | fwd-double-bottom | 14–22.5 | 8 | sea water, z15.6–20.0 |
 
-Total fuel 15 m³ (920 L a day: 16 days), fresh water 12 m³ (1.5 m³ a day), ballast 26 m³.
+Total fuel 15 m³ (1462.062 L a day: 10 days), fresh water 12 m³ (1.5 m³ a day), ballast 26 m³.
