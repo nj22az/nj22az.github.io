@@ -27,6 +27,7 @@ import {wantsAnother} from './src/people/drunk.js';
 import {restoreTownCleanup,collectTownFind} from './src/commerce/town-cleanup.js';
 import {restoreSakura,recordSakuraSale} from './src/commerce/sakura-economy.js';
 import {GANAHA,ganahaGreeting,nextBoatLine} from './src/people/ganaha.js';
+import {islandPlaces} from './src/world/island-guide.js';
 import {fishAt,fishItem,pierFishOfItem,pierCatch,LEGACY_CATCH,aFish} from './src/world/okinawa/fish.js';
 import {printedModels} from './src/workshop/catalogue.js';
 import {restoreWorkshop,advancePrint} from './src/workshop/production.js';
@@ -1039,8 +1040,14 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   function ganaha(detail){
    const ask=text=>show(GANAHA.name,text,[
     ['When is the next boat?',()=>ask(nextBoatLine(getMinutes()))],
+    ['What is there on Kitano-jima?',()=>places('kitano','Over the strait? Plenty, for a little island. What do you fancy?')],
+    ['What is there on this island?',()=>places('johansson','Past the main street, you mean? Where shall I start?')],
     ...(typeof detail?.buy==='function'?[['A return to Kitano-jima, please',()=>{close();detail.buy();}]]:[]),
     ['Goodbye',close]]);
+   // Her places (src/world/island-guide.js): one button each, then back to the window.
+   const places=(island,lead)=>show(GANAHA.name,lead,[
+    ...islandPlaces(island).map(p=>[p.name,()=>show(GANAHA.name,p.says,[['Somewhere else?',()=>places(island,'Where else, love?')],['Thank you',()=>ask('Anything else?')]])]),
+    ['That is all, thank you',()=>ask('Anything else?')]]);
    ask(ganahaGreeting(getMinutes()));
   }
   function fishing(){
