@@ -52,7 +52,7 @@ export function sectionAt(z,t){
 }
 /** Simpson's rule over equal stations. */
 function simpson(ys,h){let s=ys[0]+ys[ys.length-1];for(let i=1;i<ys.length-1;i++)s+=ys[i]*(i%2?4:2);return s*h/3;}
-/** The hydrostatics at a draft: the real naval architect's table, from the loft. */
+/** Numerical hydrostatics from the procedural loft, not an approved loading book. */
 export function hydrostatics(t,N=100){
  const h=L/N,zs=Array.from({length:N+1},(_,i)=>i*h),secs=zs.map(z=>sectionAt(z,t));
  const A=secs.map(s=>s.area),Mz=A.map((a,i)=>a*zs[i]),Mv=secs.map(s=>s.moment),b=secs.map(s=>s.b);
@@ -84,7 +84,7 @@ const svg=(w,h,body,title)=>`<svg xmlns="http://www.w3.org/2000/svg" width="${w}
 <title>${title}</title><rect width="${w}" height="${h}" fill="#fbfaf6"/>
 <style>.l{fill:none;stroke:#1d2326;stroke-width:1.1}.t{fill:none;stroke:#1d2326;stroke-width:.45}.g{fill:none;stroke:#9aa3a6;stroke-width:.4;stroke-dasharray:3 3}.wl{fill:none;stroke:#2f6f74;stroke-width:.8;stroke-dasharray:6 3}.c{fill:none;stroke:#8e3a30;stroke-width:.6;stroke-dasharray:1 3}.d{fill:none;stroke:#1d2326;stroke-width:.5}.txt{fill:#1d2326}.sp{fill:#eef1ee;stroke:#1d2326;stroke-width:.7}.lab{fill:#1d2326;font-size:8.5}.ttl{fill:#1d2326;font-size:14;font-weight:bold}.sub{fill:#4a5457;font-size:10}.hatch{fill:url(#hatch);stroke:#1d2326;stroke-width:.7}</style>
 <defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#1d2326" stroke-width=".6"/></pattern><marker id="arr" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" fill="#1d2326"/></marker></defs>
-${frame(w,h)}${body}</svg>`;
+${frame(w,h)}${body}<text x="16" y="${h-16}" font-size="8" fill="#9b3030">FOR DESIGN REVIEW - schematic game reference; no construction approval; SVG views NTS</text></svg>`;
 /** The border and its zone marks. */
 function frame(w,h){
  let out=`<rect class="l" x="10" y="10" width="${w-20}" height="${h-20}" fill="none"/><rect class="t" x="4" y="4" width="${w-8}" height="${h-8}" fill="none"/>`;
@@ -112,9 +112,9 @@ const titleBlock=(w,h,name,sheet,notes=[])=>{
  out+=cell(180,0,160,30,'SHIP','M/V MINATO MARU みなと丸 · hull No. 127');
  out+=cell(340,0,80,30,'DRAWING No.',DRAWING_NO[sheet]||('JS-127-0'+sheet),true);
  out+=cell(0,30,340,30,'TITLE',name.split(' · ').slice(0,2).join(' · '));
- out+=cell(340,30,80,30,'SCALE',(name.match(/1:[\d.]+/)||['as noted'])[0]);
- out+=cell(0,60,70,36,'DRAWN','tools/ferry-drawings.mjs');out+=cell(70,60,70,36,'CHECKED','tests/ferry-design-book');out+=cell(140,60,70,36,'APPROVED','the creator');
- out+=cell(210,60,70,36,'DATE','2026-10-12');out+=cell(280,60,60,36,'SHEET',sheet+' / '+SHEETS);out+=cell(340,60,80,36,'REV','A · first issue');
+ out+=cell(340,30,80,30,'SCALE','NTS (SVG preview)');
+ out+=cell(0,60,70,36,'DRAWN','tools/ferry-drawings.mjs');out+=cell(70,60,70,36,'CHECKED','AI numeric review');out+=cell(140,60,70,36,'ISSUE','DESIGN REVIEW');
+ out+=cell(210,60,70,36,'DATE','2026-10-13');out+=cell(280,60,60,36,'SHEET',sheet+' / '+SHEETS);out+=cell(340,60,80,36,'REV','B · correction');
  // Notes, wrapped, in their own box over the title block.
  const lines=notes.flatMap(n=>wrap(n,bw-12,8.5));if(lines.length){const nh=lines.length*11+12;out+=`<rect class="t" x="${x}" y="${y-nh-4}" width="${bw}" height="${nh}" fill="#fff"/>`+text(x+5,y-nh+4,'NOTES','lab','font-size="6.5" fill="#6a7477"');lines.forEach((l,i)=>out+=text(x+5,y-nh+15+i*11,l,'lab'));}
  return out;
@@ -155,7 +155,7 @@ export function linesPlan(){
  out+=`<line class="l" x1="${bs(-B/2-.3)}" y1="${bys(0)}" x2="${bs(B/2+.3)}" y2="${bys(0)}"/><line class="g" x1="${bs(0)}" y1="${bys(0)}" x2="${bs(0)}" y2="${bys(H.carDeck+1.3)}"/>`;
  for(const wl of waterlines)out+=`<line class="${wl===T?'wl':'g'}" x1="${bs(-B/2-.2)}" y1="${bys(wl)}" x2="${bs(B/2+.2)}" y2="${bys(wl)}"/>`+text(bs(B/2+.3),bys(wl)+3,(wl===T?'LWL ':'WL ')+wl,'lab');
  stations.forEach((z,i)=>{const side=i>=10?1:-1;const pts=section(z).map(([x,y])=>[bs(side*x),bys(y)]);const top=pts[pts.length-1];out+=path(pts,i%5?'t':'l');if(i%2===0)out+=text(top[0]+(side<0?-12:4),top[1]-6-(i%4?0:9),i,'lab');});
- out+=text(bs(-B/2-.3),bys(0)+16,'BODY PLAN · aft stations 0–9 to the left, forward 10–20 to the right · 1:40','sub');
+ out+=text(bs(-B/2-.3),bys(0)+16,'BODY PLAN · aft stations 0–9 to the left, forward 10–20 to the right · NTS SVG preview','sub');
  out+=titleBlock(W,Hh,'LINES PLAN · sheer and half-breadth plans at 18 px/m, body plan at 46.8 px/m',1,['Hull: parallel midbody with a 0.6 m bilge, spoon forefoot under the bow ramp, counter rising aft over the screws (ferry-model.js keelY, fullness).']);
  return svg(W,Hh,out,'Minato Maru · lines plan');
 }
@@ -212,7 +212,7 @@ export function generalArrangement(){
   }
  });
  out+=dim(50,410+100+4.2*S+14,50+L*S,410+100+4.2*S+14,'LBP 31.0 m between perpendiculars · LOA 34.5 m',0)+dim(50+L*S+24,400+100-4.2*S,50+L*S+24,400+100+4.2*S,'B 8.4 m',0);
- out+=titleBlock(W,Hh,'GENERAL ARRANGEMENT · profile and deck plans · 1:62.5 at 16 px/m',2,['Every space is a FERRY_GA entry with its z and x ranges; its contents and reasons are in ferry-ship.js and README.md.']);
+ out+=titleBlock(W,Hh,'GENERAL ARRANGEMENT · profile and deck plans · NTS SVG preview',2,['Every space is a FERRY_GA entry with its z and x ranges; its contents and reasons are in ferry-ship.js and README.md.']);
  return svg(W,Hh,out,'Minato Maru · lines plan');
 }
 
@@ -245,7 +245,7 @@ export function oneLine(){
 // ---------------------------------------------------------------- 5. Tables: tanks, loads, safety, manning
 export function tankTable(){
  const M=FERRY_MACHINERY.tanks;
- const rows=[['Fuel storage P','er-double-bottom',M.fuelStorage[0],'A-heavy oil'],['Fuel storage S','er-double-bottom',M.fuelStorage[1],'A-heavy oil'],['Fuel service','engine-room',M.fuelService,'A-heavy oil, gravity to the engines'],['Lubricating oil','er-double-bottom',M.lubeOil,''],['Sludge','er-double-bottom',M.sludge,''],['Bilge holding','er-double-bottom',M.bilgeHolding,''],['Fresh water P','fresh-water',M.freshWater/2,''],['Fresh water S','fresh-water',M.freshWater/2,''],['Sewage holding','aux-room',M.sewage,'a built tank to port; pumped ashore at Minato'],['Ballast fore peak','fore-peak',M.ballast.forePeak,'sea water'],['Ballast aft peak','aft-peak',M.ballast.aftPeak,'sea water'],['Ballast P','fwd-double-bottom',M.ballast.port,'sea water, Fr 28–38'],['Ballast S','fwd-double-bottom',M.ballast.starboard,'sea water, Fr 28–38']];
+ const rows=[['Fuel storage P','er-double-bottom',M.fuelStorage[0],'A-heavy oil'],['Fuel storage S','er-double-bottom',M.fuelStorage[1],'A-heavy oil'],['Fuel service','engine-room',M.fuelService,'A-heavy oil, gravity to the engines'],['Lubricating oil','er-double-bottom',M.lubeOil,''],['Sludge','er-double-bottom',M.sludge,''],['Bilge holding','er-double-bottom',M.bilgeHolding,''],['Fresh water P','fresh-water',M.freshWater/2,''],['Fresh water S','fresh-water',M.freshWater/2,''],['Sewage holding','aux-room',M.sewage,'a built tank to port; pumped ashore at Minato'],['Ballast fore peak','fore-peak',M.ballast.forePeak,'sea water'],['Aft trim ballast pair','aft-peak',M.ballast.aftPeak,'sea water'],['Ballast P','fwd-double-bottom',M.ballast.port,'sea water, z15.6–20.0'],['Ballast S','fwd-double-bottom',M.ballast.starboard,'sea water, z15.6–20.0']];
  let md='# Tank plan · Minato Maru\n\n| Tank | Space (FERRY_GA) | z (m) | Capacity (m³) | Note |\n|---|---|---|---|---|\n';
  for(const [name,id,cap,note] of rows){const s=FERRY_GA.find(s=>s.id===id);md+=`| ${name} | ${id} | ${s?s.z.join('–'):'?'} | ${cap} | ${note} |\n`;}
  md+=`\nTotal fuel ${M.fuel} m³ (${FERRY_MACHINERY.fuelPerDay} L a day: ${Math.floor(M.fuel*1000/FERRY_MACHINERY.fuelPerDay)} days), fresh water ${M.freshWater} m³ (${FERRY_MACHINERY.freshWater.perDay} m³ a day), ballast ${Object.values(M.ballast).reduce((a,b)=>a+b,0)} m³.\n`;
@@ -264,7 +264,7 @@ const ER=FERRY_ENGINE_ROOM,Z0=ER.aft+HALF,Z1=ER.fore+HALF,Y0=ER.floor+T,Y1=FERRY
 const inER=b=>Math.min(b.a[2],b.b[2])+HALF>=Z0-.1&&Math.max(b.a[2],b.b[2])+HALF<=Z1+.1&&Math.max(b.a[1],b.b[1])+T>=Y0-.2&&Math.min(b.a[1],b.b[1])+T<=Y1-.05;
 /** The equipment list: a number for every named thing, in the order a yard lists them. */
 const LIST=[['main engine','Main engine, Johansson Marine '+JOHANSSON_MARINE.catalogue.main.model],['gearbox','Reverse-reduction gear '+JOHANSSON_MARINE.catalogue.gear.model],['generator engine','Generator set '+JOHANSSON_MARINE.catalogue.genset.model+' (engine)'],['generator bed','Generator set bed'],
- ['main switchboard','Main switchboard '+JOHANSSON_MARINE.catalogue.switchboard.model],['engine panel and log desk','Engine panel and log desk'],['pump','Pumps: fire and GS, fire and bilge, GS, bilge, sanitary, hydrophore'],['fuel service tank','Fuel-oil service tank 1.6 m³'],['sea-water strainer','Sea-water strainers (sea chests under the plates)'],
+ ['main switchboard','Main switchboard '+JOHANSSON_MARINE.catalogue.switchboard.model],['engine panel and log desk','Engine panel and log desk'],['pump','Pumps: fire and GS, fire and bilge, GS, bilge, sanitary, hydrophore'],['fuel service tank','Fuel-oil service tank 1.5 m³'],['sea-water strainer','Sea-water strainers (sea chests under the plates)'],
  ['air bottles','Starting-air bottles 2 × 150 L'],['air compressor','Starting-air compressor '+JOHANSSON_MARINE.catalogue.compressor.model],['workbench','Workbench and vice'],['fuel purifier','Fuel purifier '+JOHANSSON_MARINE.catalogue.purifier.model],['oily-water separator','Oily-water separator '+JOHANSSON_MARINE.catalogue.separator.model],
 ['local control stand','Local control stand'],['hydrant','Fire hydrant'],['ladder trunk','Access ladder from casing P'],['engine room door','Engine-room door (car deck)']];
 /** The routed pipe runs (FERRY_INTERIOR.pipes, 6r-1) on a plan: each a polyline in its system's colour, the bore as its width. */
@@ -280,7 +280,7 @@ export function engineRoomArrangement(){
  const num=(x,y,n)=>`<circle cx="${r2(x)}" cy="${r2(y)}" r="7" fill="#fff" stroke="#1d2326" stroke-width=".7"/>`+text(x,y+3,n,'lab','text-anchor="middle"');
  // Plan at the floor plates, port up: z across the page (stern left), x up.
  const px=z=>60+(z-Z0)*S,py=x=>60+(4.2-x)*S;
- out+=text(60,40,'PLAN · at the floor plates (0.9 m above base) looking down · port side up · 1:20 at 50 px/m','sub');
+ out+=text(60,40,'PLAN · at the floor plates (0.9 m above base) looking down · port side up · NTS SVG preview','sub');
  const zs=Array.from({length:23},(_,i)=>Z0+(Z1-Z0)*i/22);
  out+=`<path class="l" d="M${zs.map(z=>[px(z),py(hullX(ER.floor,z-HALF))].map(r2).join(',')).join(' L')}"/><path class="l" d="M${zs.map(z=>[px(z),py(-hullX(ER.floor,z-HALF))].map(r2).join(',')).join(' L')}"/>`;
  out+=`<line class="l" x1="${px(Z0)}" y1="${py(hullX(ER.floor,Z0-HALF))}" x2="${px(Z0)}" y2="${py(-hullX(ER.floor,Z0-HALF))}"/><line class="l" x1="${px(Z1)}" y1="${py(hullX(ER.floor,Z1-HALF))}" x2="${px(Z1)}" y2="${py(-hullX(ER.floor,Z1-HALF))}"/><line class="c" x1="${px(Z0)-20}" y1="${py(0)}" x2="${px(Z1)+20}" y2="${py(0)}"/>`;
@@ -315,7 +315,7 @@ export function engineRoomArrangement(){
  const lx=W-330,ly=60;out+=rect(lx-10,ly-16,320,LIST.length*14+22,'t')+text(lx,ly,'EQUIPMENT LIST','sub');
  LIST.forEach(([,label],i)=>out+=fitText(lx,ly+16+i*14,(i+1)+'  '+label,300,8.5));
  wrap('Builder: '+FERRY_SHIP.yard+'. Machinery: '+JOHANSSON_MARINE.name+', '+JOHANSSON_MARINE.works+'.',300,8.5).forEach((l,i)=>out+=text(lx,ly+LIST.length*14+40+i*11,l,'lab'));
- out+=titleBlock(W,Hh,'ENGINE ROOM ARRANGEMENT · plan at the floor plates, centreline elevation, section · 1:20 at 50 px/m',5,['Every rectangle is a box of FERRY_INTERIOR as built (ferry-interior.js); circles are its cylinders; the coloured lines are the pipe runs routed from the piping diagrams (sheets 8.1–8.11), seen from above. Numbers key the equipment list.']);
+ out+=titleBlock(W,Hh,'ENGINE ROOM ARRANGEMENT · plan at the floor plates, centreline elevation, section · NTS SVG preview',5,['Every rectangle is a box of FERRY_INTERIOR as built (ferry-interior.js); circles are its cylinders; the coloured lines are the pipe runs routed from the piping diagrams (sheets 8.1–8.11), seen from above. Numbers key the equipment list.']);
  return svg(W,Hh,out,'Minato Maru · engine room arrangement · Johansson Shipyard');
 }
 
@@ -324,7 +324,7 @@ export function engineRoomArrangement(){
 export function safetyPlan(){
  const W=1260,Hh=900,out=[];
  out.push(`<g transform="translate(30,30)">`);drawSafetyPlan(svgPen(out),1180,700,null);out.push('</g>');
- return svg(W,Hh,out.join('')+titleBlock(W,Hh,'FIRE CONTROL AND SAFETY PLAN · posted in the lower lobby, the saloon, the crew corridor and the control booth · 1:46 at 20 px/m',6,['Symbols after the IMO signs: fire-fighting in red, lifesaving in orange, muster stations and escapes in green, control stations in blue. Items and positions: FERRY_SAFETY_ITEMS (ferry-safety-plan.js), from FERRY_SAFETY and FERRY_GA.']),'Minato Maru · fire control and safety plan');
+ return svg(W,Hh,out.join('')+titleBlock(W,Hh,'FIRE CONTROL AND SAFETY PLAN · posted in the lower lobby, the saloon, the crew corridor and the control booth · NTS SVG preview',6,['Symbols after the IMO signs: fire-fighting in red, lifesaving in orange, muster stations and escapes in green, control stations in blue. Items and positions: FERRY_SAFETY_ITEMS (ferry-safety-plan.js), from FERRY_SAFETY and FERRY_GA.']),'Minato Maru · fire control and safety plan');
 }
 // ---------------------------------------------------------------- 7. Machinery spaces: levels and rooms
 /**
@@ -341,7 +341,7 @@ export function machinerySpaces(){
  // frame numbers, the car deck, the lower lobby and the fan flat over it (dashed: designed in 6q-2, not yet built), the
  // casings' ladder and escape trunks.
  const sx=z=>60+z*S,sy0=430,sy=y=>sy0-y*S;
- out+=text(60,40,'LONGITUDINAL SECTION · at the centreline looking to port · stern left · 1:21.7 at 46 px/m','sub');
+ out+=text(60,40,'LONGITUDINAL SECTION · at the centreline looking to port · stern left · NTS SVG preview','sub');
  const zs=Array.from({length:93},(_,i)=>i*23/92);
  out+=path(zs.map(z=>[sx(z),sy(keelAbove(keelY(toModel(z))))]));
  for(const [name,y,cls] of [['tank top 0.7',H.tankTop,'g'],['floor plates 0.9',H.floorPlates,'l'],['car deck 3.0',H.carDeck,'l'],['lobby deckhead · fan flat 5.5',H.carDeck+2.5,'g'],['passenger deck 7.4',H.passengerDeck,'l']])out+=`<line class="${cls}" x1="${sx(0)}" y1="${r2(sy(y))}" x2="${sx(23)}" y2="${r2(sy(y))}"/>`+text(sx(23)+4,sy(y)+3,name,'lab');
@@ -376,7 +376,7 @@ export function machinerySpaces(){
  const lx=W-300,ly=580;const LEVELS=[['0.7','Tank top: the double bottom (fuel, lube oil, bilge holding, sludge; ballast forward), the bilge wells under the gratings'],['0.9','Floor plates: engine room with the control booth · auxiliary machinery room · workshop · engine store; the shaft space and the steering-gear room aft at 2.0 (crawl)'],['3.0','Car deck: the engine-room entrance and ladder in casing P, the escape trunks’ hatches in casing S'],['5.5','Fan flat over the lower lobby (6q-2): the engine-room fans and their trunks'],['7.4','Passenger deck: the funnels at z 4–5.8']];
  out+=rect(lx-10,ly-16,290,LEVELS.length*46+24,'t')+text(lx,ly,'LEVELS · metres above base','sub');
  let yy=ly+16;for(const [h,what] of LEVELS){const lines=wrap(h+'  '+what,270,8.5).slice(0,4);lines.forEach((l,i)=>out+=text(lx,yy+i*10,l,'lab'));yy+=46;}
- out+=titleBlock(W,Hh,'MACHINERY SPACES · levels and rooms · longitudinal section and plan at the floor plates · 1:21.7 at 46 px/m',7,['Section: every hold space of FERRY_GA with its frames (Fr = 0.5 m from the transom). Plan: every box of FERRY_INTERIOR between the floor plates and the car deck, z 8.5–22.5; circles are its cylinders.','The watertight door at Fr 28 and the door at Fr 38 join the rooms; the escape trunks rise into casing S.']);
+ out+=titleBlock(W,Hh,'MACHINERY SPACES · levels and rooms · longitudinal section and plan at the floor plates · NTS SVG preview',7,['Section: every hold space of FERRY_GA with its frames (Fr = 0.5 m from the transom). Plan: every box of FERRY_INTERIOR between the floor plates and the car deck, z 8.5–22.5; circles are its cylinders.','The watertight door at Fr 28 and the door at Fr 38 join the rooms; the escape trunks rise into casing S.']);
  return svg(W,Hh,out,'Minato Maru · machinery spaces · Johansson Shipyard');
 }
 // ---------------------------------------------------------------- 8. Piping diagrams, one sheet per system
@@ -495,3 +495,4 @@ if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
  if(check){console.log(stale?stale+' drawing(s) differ from the data: run node tools/ferry-drawings.mjs':'drawings match the data');process.exit(stale?1:0);}
  const laden=hydrostaticsTable().laden;console.log(`laden ${T} m: ${r1(laden.displacement)} t (data ${SH.displacement}), Cb ${r3(laden.cb)} (data ${SH.blockCoefficient}), KM ${r3(laden.kmT)} m, LCB ${r2(laden.lcb)} m from transom`);
 }
+

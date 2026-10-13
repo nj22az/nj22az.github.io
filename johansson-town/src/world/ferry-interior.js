@@ -1,7 +1,7 @@
 import {FERRY_SHIP,FERRY_HEIGHTS} from './ferry-ship.js';
 import {JOHANSSON_MARINE,makerPlate,WORDMARK} from './johansson-marine.js';
 import {FERRY_PIPING} from './ferry-piping.js';
-import {routePipes,pipeSegments,pipeBends,pipeRadius} from './ferry-pipe-routes.js';
+import {routePipes,routePipePreview,pipePreviewSegments,pipePreviewBends,pipeRadius} from './ferry-pipe-routes.js';
 import {PLANT_ALARMS} from './ferry-plant.js';
 
 /**
@@ -20,6 +20,8 @@ import {PLANT_ALARMS} from './ferry-plant.js';
  */
 const SH=FERRY_SHIP,H=FERRY_HEIGHTS,HALF=SH.length/2,HB=SH.beam/2;
 const Z=zy=>zy-HALF,Y=yk=>yk-SH.draft;
+/** Generator sets relocated into the existing auxiliary machinery room, 2.65 m forward of their former crowded site. */
+const GENERATOR_SHIFT=2.65,GZ=zy=>Z(zy+GENERATOR_SHIFT);
 const CAR=Y(H.carDeck),PASS=Y(H.passengerDeck),BRIDGE=Y(H.bridgeDeck),COMPASS=Y(H.compassDeck);
 const WHITE=0xeeeae0,CREAM=0xece4d2,TEAL=0x2f6f74,DOOR=0x5d6b6a,DARK=0x2a2f31,STEEL=0x7d8586,DECKGREEN=0x6f7d6c,
  VINYL=0xc8c0aa,CARPET=0x6f8a63,SALOON=0x5d7189,MOQUETTE=0x3e5d85,TEAK=0x8d6f4c,ORANGE=0xe0702a,YELLOW=0xe0b93a,RED=0xc2412f;
@@ -75,6 +77,20 @@ const ER=FERRY_ENGINE_ROOM;
  */
 export const FERRY_MACHINERY_SPACES=Object.freeze({auxFore:Z(19),storeFore:Z(22.5),wtDoor:Object.freeze({w:.8,h:1.9}),door38:Object.freeze({w:.75,h:1.85}),partition:-.5,partitionAft:Z(20.1)});
 const MS=FERRY_MACHINERY_SPACES,WT_W=MS.wtDoor.w,WT_H=MS.wtDoor.h;
+/** Model-linked arrangement review data. Clearances are measured/reserved values, never OEM overhaul minima. */
+export const FERRY_ENGINEERING_ARRANGEMENT=Object.freeze({
+ status:'concept-requires-redesign',datum:'metres above keel / forward of transom; port-positive transverse',
+ engineRoom:Object.freeze({aft:8.5,fore:14,breadth:ER.side*2,floorAboveKeel:ER.floor+SH.draft,deckheadAboveKeel:ER.deckhead+SH.draft,nominalHeadroom:ER.deckhead-ER.floor}),
+ engineRailEnvelope:Object.freeze({longitudinal:Object.freeze([9.3,12.4]),port:Object.freeze([.65,2.45]),starboard:Object.freeze([-2.45,-.65]),railHeight:.95}),
+ centralAisle:Object.freeze({width:1.30,clearBetweenRails:1.30-.04,verification:'game collision envelope only'}),
+ mainForwardServiceBand:Object.freeze({longitudinal:Object.freeze([13.0,14.0]),width:1.0,verification:'clear after genset relocation; supplier overhaul procedure unverified'}),
+ auxiliaryGeneratorAccess:Object.freeze({centreAisle:1.0,sideAisle:1.035,verification:'model footprint clearance, not supplier minimum'}),
+ generatorEnvelope:Object.freeze({room:'aux-room',longitudinal:Object.freeze([15.2,16.05]),port:Object.freeze([.55,2.4]),starboard:Object.freeze([-2.4,-.55]),bedHeight:.2}),
+ primaryLadder:Object.freeze({width:.75,head:7,foot:8.6,verification:'model walk tested; real escape compliance unresolved'}),
+ escape:Object.freeze({location:'aft starboard',ladderWidth:.4,verification:'decorative ladder; no complete protected trunk/hatch/operating arrangement verified'}),
+ removal:Object.freeze({verification:'unresolved: no engineered removable hatch, lifting beam, rigging or machinery-to-weather removal route'}),
+ overheadService:Object.freeze({verification:'unresolved: 1.9 m nominal room height is not a demonstrated engine-overhaul clearance'}),
+});
 /** The floors below the car deck, where the engines are heard: whoever stands on one wears ear defenders (game.js). */
 export const BELOW_DECK_FLOORS=Object.freeze(['er-ladder','er-ladder-foot','engine-room','control-booth','aux-room','workshop']);
 
@@ -92,6 +108,7 @@ const sorted=(a,b)=>a<b?[a,b]:[b,a];
  */
 export const FERRY_INTERIOR=(()=>{
  const boxes=[],bars=[],glass=[],floors=[],cyls=[],plates=[],pipes=[];
+ let routeAudit=null,routeAuditCache=null;
  const box=(a,b,hex,o={})=>{boxes.push(Object.freeze({a:Object.freeze(a),b:Object.freeze(b),hex,cls:o.cls||'paint',solid:o.solid!==false,camera:o.camera??o.solid!==false,draw:o.draw!==false,name:o.name||null}));};
  const deco=(a,b,hex,o={})=>box(a,b,hex,{...o,solid:false,camera:false});
  const bar=(a,b,r,hex,cls='metal')=>bars.push(Object.freeze({a:Object.freeze(a),b:Object.freeze(b),r,hex,cls}));
@@ -553,9 +570,9 @@ export const FERRY_INTERIOR=(()=>{
  /** The KKS tag of a node on the piping diagrams (ferry-piping.js), so the plate on the machine and the drawing agree. */
  const tagOf=(system,id)=>{const n=FERRY_PIPING.find(s=>s.id===system)?.nodes.find(n=>n.id===id);if(!n)throw new RangeError('no piping node '+system+'/'+id);return n.tag;};
  /** Where a pipe meets a thing (ferry-pipe-routes.js): keyed 'system/node' as on the piping diagrams. */
- const anchors={};const anchor=(sys,id,pos,dir,o={})=>{anchors[sys+'/'+id]=Object.freeze({pos:Object.freeze(pos),dir,local:!!o.local,off:o.off??.25});};
+ const anchors={};const anchor=(sys,id,pos,dir,o={})=>{anchors[sys+'/'+id]=Object.freeze({pos:Object.freeze(pos),dir,local:!!o.local,penetration:!!o.penetration,off:o.off??.25});};
  /** A penetration: a pipe leaves the space here through a deck, a bulkhead or the tank top; drawn as its flange. */
- const pen=(sys,id,pos,dir)=>{anchor(sys,id,pos,dir);const v=dir==='up'||dir==='down';cyl(.05,.05,.02,pos,0x9ea4a6,{rot:v?[0,0,0]:dir==='fwd'||dir==='aft'?[Math.PI/2,0,0]:[0,0,Math.PI/2],seg:8,name:'penetration'});};
+ const pen=(sys,id,pos,dir)=>{anchor(sys,id,pos,dir,{penetration:true});const v=dir==='up'||dir==='down';cyl(.05,.05,.02,pos,0x9ea4a6,{rot:v?[0,0,0]:dir==='fwd'||dir==='aft'?[Math.PI/2,0,0]:[0,0,Math.PI/2],seg:8,name:'penetration'});};
  /** A KKS tag plate (black, engraved white) on a machine, facing +z turned by rotY (the creator, 2026-10-13: "Use correct KKS codes"). */
  const tagPlate=(tag,pos,rotY,o={})=>plate([tag],o.w||.16,.035,pos,rotY,{bg:'#1f2224',fg:'#e8e2cc',name:'KKS tag'});
  /** A motor-driven pump on its bed against a lining at x0, facing side s (+1 the pump looks to port), with its plates and its tag. */
@@ -567,7 +584,7 @@ export const FERRY_INTERIOR=(()=>{
   if(tag)tagPlate(tag,[x0+s*.25,y0+.52,z+.126],0);};
  // ---- The engine room (FERRY_ENGINE_ROOM): in by the casing P door and down the ladder through the car deck; the
  // two main engines with their reverse-reduction gearboxes aft and turbochargers forward, the shafts aft through the
- // bulkhead; the two generators forward, athwartships; the control booth aft to starboard with the main switchboard;
+ // bulkhead; the two generators relocated forward into the auxiliary room, athwartships; the control booth aft to starboard with the main switchboard;
  // pumps, the air compressor and its bottles, the purifier, the service tank, the workbench, the escape ladder.
  {const y0=ER.floor,y1=ER.deckhead,a=ER.aft,f=ER.fore,W=ER.side,G=0x8fa39a,GD=0x5f7f6a;
   // The entrance in casing P: its walls, the door frame and the door hooked back aft along the casing's face.
@@ -704,12 +721,12 @@ export const FERRY_INTERIOR=(()=>{
     plate(makerPlate('main',s>0?1:2),.36,.16,[cx+inb*.46,y0+.9,E0+.9],s>0?-Math.PI/2:Math.PI/2,{name:'maker’s plate: '+name});tagPlate(tagOf('fuel',s>0?'fuel-mainP':'fuel-mainS').replace(/ .*$/,''),[cx+inb*.46,y0+1.03,E0+.9],s>0?-Math.PI/2:Math.PI/2);tagPlate(tagOf('lube',s>0?'bear-mainP':'bear-mainS').replace(/XJA10 BR001/,'XJK10 MG001'),[cx+inb*1.2,y0+.5,Z(9.1)-.001],Math.PI);
     plate([WORDMARK],.9,.08,[cx+out*.25,y0+1.38,(E0+E1)/2],s>0?Math.PI/2:-Math.PI/2,{bg:'#1f2224',fg:'#dcd8c8',name:'wordmark'});
    }
-   // The generator sets: Johansson Marine JG-125, athwartships forward of the mains; a four-cylinder engine inboard
+   // The generator sets: Johansson Marine JG-125, athwartships in the existing auxiliary room; a four-cylinder engine inboard
    // (heads, covers, manifold and a small turbo), the alternator outboard in the works' blue with its cooling ribs
    // and terminal box, on a common bed, and the maker's plate on the bed.
-   for(const s of [1,-1]){const X=S2(s,.55,2.4),zc=Z(12.975),ex=S2(s,.6,1.75);
-    box([X[0],y0,Z(12.55)],[X[1],y0+.2,Z(13.4)],0x3a3f41,{name:'generator bed'});
-    box([ex[0],y0+.2,Z(12.7)],[ex[1],y0+.52,Z(13.25)],GRND,{name:'generator sump'});box([ex[0],y0+.52,Z(12.65)],[ex[1],y0+.95,Z(13.3)],GRN,{name:'generator engine'});
+   for(const s of [1,-1]){const X=S2(s,.55,2.4),zc=GZ(12.975),ex=S2(s,.6,1.75);
+    box([X[0],y0,GZ(12.55)],[X[1],y0+.2,GZ(13.4)],0x3a3f41,{name:'generator bed'});
+    box([ex[0],y0+.2,GZ(12.7)],[ex[1],y0+.52,GZ(13.25)],GRND,{name:'generator sump'});box([ex[0],y0+.52,GZ(12.65)],[ex[1],y0+.95,GZ(13.3)],GRN,{name:'generator engine'});
     for(let i=0;i<4;i++){const x0=Math.min(ex[0],ex[1])+.12+i*.26;deco([x0,y0+.95,zc-.2],[x0+.2,y0+1.08,zc+.2],GRN);deco([x0+.02,y0+1.08,zc-.16],[x0+.18,y0+1.18,zc+.16],COV);}
     bar([ex[0],y0+1.05,zc+.28],[ex[1],y0+1.05,zc+.28],.05,LAG,'paint');cyl(.11,.11,.16,[s*1.7,y0+1.05,zc+.28],CAST,{rot:[0,0,Math.PI/2],seg:14,name:'generator turbocharger'});
     bar([s*1.75,y0+1.1,zc+.28],[s*1.75,y1-.15,zc+.28],.09,LAG,'paint');
@@ -717,9 +734,9 @@ export const FERRY_INTERIOR=(()=>{
     deco([s*2.05-.1,y0+.92,zc-.12],[s*2.05+.1,y0+1.08,zc+.12],COV);
     // The louvred end bell outboard (the photographs' alternators breathe through louvres), and the set's own panel
     cyl(.3,.3,.08,[s*2.39,y0+.6,zc],0x1f2f52,{rot:[0,0,Math.PI/2],seg:18,name:'alternator end bell'});for(const k of [-.18,-.09,0,.09,.18])deco([s*2.43-.005,y0+.6+k-.015,zc-.22],[s*2.43+.005,y0+.6+k+.015,zc+.22],0x15223d);
-    deco([s*.6-.1,y0+.95,Z(12.55)+.06],[s*.6+.1,y0+1.25,Z(12.55)+.09],0x6b7375);dial('RPM','×100',.6,.09,[s*.6,y0+1.15,Z(12.55)+.059],Math.PI,{red:[.92,1],live:(s>0?'gen1':'gen2')+'.rpm',range:[0,30]});
-    cyl(.012,.012,.02,[s*.6-.05,y0+1.02,Z(12.55)+.06],0x2f8f4f,{rot:[Math.PI/2,0,0],seg:8,name:'start button'});cyl(.012,.012,.02,[s*.6+.05,y0+1.02,Z(12.55)+.06],L.red,{rot:[Math.PI/2,0,0],seg:8,name:'stop button'});
-    plate(makerPlate('genset',s>0?1:2),.3,.14,[s*1.2,y0+.42,Z(12.55)-.005],Math.PI,{name:'maker’s plate: generator No.'+(s>0?1:2)});tagPlate(tagOf('fuel',s>0?'fuel-gen1':'fuel-gen2').replace(/ .*$/,'')+' · '+(s>0?'13':'14')+'MKA10 AG001',[s*1.2,y0+.53,Z(12.55)-.005],Math.PI,{w:.3});
+    deco([s*.6-.1,y0+.95,GZ(12.55)+.06],[s*.6+.1,y0+1.25,GZ(12.55)+.09],0x6b7375);dial('RPM','×100',.6,.09,[s*.6,y0+1.15,GZ(12.55)+.059],Math.PI,{red:[.92,1],live:(s>0?'gen1':'gen2')+'.rpm',range:[0,30]});
+    cyl(.012,.012,.02,[s*.6-.05,y0+1.02,GZ(12.55)+.06],0x2f8f4f,{rot:[Math.PI/2,0,0],seg:8,name:'start button'});cyl(.012,.012,.02,[s*.6+.05,y0+1.02,GZ(12.55)+.06],L.red,{rot:[Math.PI/2,0,0],seg:8,name:'stop button'});
+    plate(makerPlate('genset',s>0?1:2),.3,.14,[s*1.2,y0+.42,GZ(12.55)-.005],Math.PI,{name:'maker’s plate: generator No.'+(s>0?1:2)});tagPlate(tagOf('fuel',s>0?'fuel-gen1':'fuel-gen2').replace(/ .*$/,'')+' · '+(s>0?'13':'14')+'MKA10 AG001',[s*1.2,y0+.53,GZ(12.55)-.005],Math.PI,{w:.3});
    }
   }
   // Port, along her side: the air compressor and the two 150 L starting-air bottles by the ladder's foot, the
@@ -899,8 +916,8 @@ export const FERRY_INTERIOR=(()=>{
    bar([s*(W-.08),y0,Z(10.8)],[s*(W-.08),y1,Z(10.8)],.025,0x7d8586);bar([s*(W-.08),y0,Z(12.0)],[s*(W-.08),y1,Z(12.0)],.025,0x7d8586);
   }
   // The fuel service tank's line: up from its top, across under the deckhead at Z 13.6 to both engines' drops (above).
-  anchor('fuel','service',[-(W-.75),y0+1.3,Z(13.1)],'port');anchor('fuel','overflow',[-(W-.75),y0+1.5,Z(12.8)],'port');anchor('fuel','qcv',[-(W-.9),y0+1.9,Z(13.6)],'up');anchor('fuel','return',[.5,y1-.4,Z(13.0)],'up');
-  cyl(.03,.03,.05,[-(W-.9),y0+1.9,Z(13.6)+.03],RED,{rot:[Math.PI/2,0,0],seg:10,name:'quick-closing valve'});
+  anchor('fuel','service',[-(W-.75),y0+1.3,Z(13.1)],'port');anchor('fuel','overflow',[-(W-.75),y0+1.5,Z(12.8)],'port');anchor('fuel','qcv',[-(W-.9),y0+1.50,Z(13.6)],'up',{off:.12});anchor('fuel','return',[.5,y1-.4,Z(13.0)],'up');
+  cyl(.03,.03,.05,[-(W-.9),y0+1.50,Z(13.6)+.03],RED,{rot:[Math.PI/2,0,0],seg:10,name:'quick-closing valve'});
   // Hangers from the deckhead to the overhead runs along her sides, and a flange pair in each run (the photographs' pipework)
   for(const s of [1,-1])for(let z=a+.5;z<f-.2;z+=1.2){deco([Math.min(s*(W-.02),s*(W-.5)),y1-.06,z-.015],[Math.max(s*(W-.02),s*(W-.5)),y1-.03,z+.015],0x6f7476,{cls:'metal'});
    for(const k of [0,1,2,3])bar([s*(W-.14-k*.12),y1-.03,z],[s*(W-.14-k*.12),y1-.1,z],.006,0x6f7476);}
@@ -932,14 +949,14 @@ export const FERRY_INTERIOR=(()=>{
   box([-W,y0-.1,F1],[W,y1,F1+.06],0xe8e6dc,{name:'store forward bulkhead'});
   // The watertight door at Fr 28 (seen from the aux room: its leaf slid open to port in its frame, the hand pump and
   // lever beside it, the notice over it) and the hinged door at Fr 38, hooked back against the workshop's bulkhead.
-  for(const x of [-WT_W/2,WT_W/2])deco([x-.05,y0,f-.02],[x+.05,y0+WT_H+.05,f+.08],TEAL);deco([-WT_W/2-.05,y0+WT_H,f-.02],[WT_W/2+.05,y0+WT_H+.05,f+.08],TEAL);
+  for(const x of [-WT_W/2,WT_W/2])deco([x-.05,y0,f-.02],[x+.05,y0+WT_H+.05,f+.08],TEAL);deco([-WT_W/2-.05,y0+WT_H-.05,f-.02],[WT_W/2+.05,y0+WT_H,f+.08],TEAL);
   box([WT_W/2+.06,y0+.02,f+.07],[WT_W/2+.06+WT_W,y0+WT_H,f+.11],STEEL,{name:'watertight door leaf'});for(const k of [.3,.9,1.5])deco([WT_W/2+.08,y0+k,f+.11],[WT_W/2+.04+WT_W,y0+k+.05,f+.125],0x6a7274);   // the leaf's stiffeners
   deco([-.75,y0+.8,f+.06],[-.55,y0+1.25,f+.2],0x6b7375);bar([-.65,y0+1.25,f+.13],[-.65,y0+1.6,f+.3],.012,0x1f2224);                                                           // the hand pump and its lever
-  plate(['WATERTIGHT DOOR · 水密戸','KEEP CLOSED AT SEA'],.6,.08,[0,y0+WT_H+.14,f+.061],0,{bg:'#f1ede2',name:'label: watertight door'});
+  plate(['WATERTIGHT DOOR · 水密戸','KEEP CLOSED AT SEA'],.6,.08,[-1.1,y0+1.55,f+.061],0,{bg:'#f1ede2',name:'label: watertight door'});
   plate(['OPEN · CLOSE','hand pump · 30 strokes'],.16,.06,[-.65,y0+.72,f+.061],0,{bg:'#f1ede2',name:'label: door pump'});
   for(const x of [-MS.door38.w/2,MS.door38.w/2])deco([x-.04,y0,A1-.02],[x+.04,y0+MS.door38.h,A1+.08],TEAL);deco([-MS.door38.w/2-.04,y0+MS.door38.h,A1-.02],[MS.door38.w/2+.04,y0+MS.door38.h+.04,A1+.08],TEAL);
   box([MS.door38.w/2+.05,y0+.02,A1+.06],[MS.door38.w/2+.05+MS.door38.w,y0+MS.door38.h-.02,A1+.1],DOOR,{name:'workshop door leaf'});
-  deco([-.3,y0+2.0,A1-.025],[.3,y0+2.25,A1-.005],0x24585c);                                                                                                                  // the sign over it: 工作室 WORKSHOP
+  deco([-1.25,y0+1.50,A1-.025],[-.65,y0+1.75,A1-.005],0x24585c);                                                                                                                  // the sign over it: 工作室 WORKSHOP
   // Lights in their cages and the fire-detection heads, the pipe runs along both sides (sea water, fresh water, the
   // fire main), the ballast line to port, the hangers, the cable tray, the frames showing in the workshop and the store.
   for(const s of [1,-1])for(const z of [Z(15.3),Z(17.6),Z(20.0),Z(21.9)])caged(s,z);
@@ -1041,7 +1058,7 @@ export const FERRY_INTERIOR=(()=>{
  // ---- The pipes, from the diagrams (6r-1). The anchors the machines did not set themselves: the tanks under the plates
  // (a flanged stub on the tank top, under the gratings), the sea-water crossover, the overboards, the bilge wells, the
  // risers and deck connections that leave the space (a penetration flange), the hydrophore's pressure tank; then every
- // line of FERRY_PIPING between two anchors is routed and drawn (ferry-pipe-routes.js).
+ // diagram line is either accepted in engineeringPipes or retained as an issue. The game also retains unverified illustrative paths.
  {const y0=ER.floor,y1=ER.deckhead,a=ER.aft,f=ER.fore,W=ER.side,F1=MS.storeFore,L=JOHANSSON_MARINE.livery;
   // A tank's stub: a flanged fitting on the plates, its pipe dropping through them to the lane under the plates.
   const stub=(sys,id,x,z)=>{anchor(sys,id,[x,y0+.02,z],'down',{off:.16});cyl(.05,.05,.04,[x,y0+.02,z],0x9ea4a6,{seg:8,name:'tank-top flange'});};
@@ -1068,23 +1085,28 @@ export const FERRY_INTERIOR=(()=>{
   anchor('freshwater','ptank',[-W+.3,y0+1.12,Z(17.6)],'up');anchor('freshwater','psw',[-W+.3,y0+1.3,Z(17.9)],'up',{local:true});cyl(.03,.03,.04,[-W+.3,y0+1.3,Z(17.9)],0x2a2d2f,{seg:6,name:'pressure switch'});
   for(const id of ['galley','toilets','heater'])anchor('freshwater',id,[W-.3,y1,Z(14.5)],'down');pen('freshwater','galley',[W-.3,y1,Z(14.5)],'down');anchor('freshwater','expfill',[1.0,y0+1.2,f-.05],'aft');
   pen('sewage','flush',[-(W-.3),y1,Z(14.5)],'down');pen('sewage','deck',[W-.6,y1,Z(16.0)],'down');
-  for(const s of [1,-1]){const X=S2(s,.55,2.4),zc=Z(12.975),id=s>0?'gen1':'gen2';                                                              // the generator sets' own circuits
-   anchor('fuel','fuel-'+id,[s*.75,y0+1.1,Z(12.65)],'up');anchor('lube','sump-'+id,[s*1.0,y0+.4,Z(12.65)],'aft',{local:true});anchor('lube','lop-'+id,[s*1.4,y0+.5,Z(12.63)],'aft',{local:true});
-   anchor('lube','lof-'+id,[s*1.2,y0+.7,Z(12.63)],'aft',{local:true});anchor('lube','loc-'+id,[s*1.6,y0+.6,Z(13.32)],'fwd',{local:true});anchor('lube','bear-'+id,[s*1.1,y0+1.1,zc],'up',{local:true});
-   anchor('jacket','exp-'+id,[s*.9,y0+1.3,zc],'up',{local:true});anchor('jacket','jwp-'+id,[s*1.3,y0+.6,Z(13.32)],'fwd',{local:true});anchor('jacket','blk-'+id,[s*1.1,y0+1.0,zc+.1],'up',{local:true});
-   anchor('jacket','thermo-'+id,[s*1.4,y0+1.15,zc+.2],'up',{local:true});anchor('jacket','jwc2-'+id,[s*1.6,y0+.5,Z(12.63)],'aft',{local:true});
-   anchor('seawater','swp-'+id,[s*1.5,y0+.5,Z(13.33)],'fwd',{local:true});anchor('seawater','cac-'+id,[s*1.7,y0+1.0,zc+.28],'up',{local:true});anchor('seawater','jwc-'+id,[s*1.6,y0+.5,Z(12.63)],'aft',{local:true});
+  for(const s of [1,-1]){const X=S2(s,.55,2.4),zc=GZ(12.975),id=s>0?'gen1':'gen2';                                                              // the generator sets' own circuits
+   anchor('fuel','fuel-'+id,[s*.75,y0+1.1,GZ(12.65)],'up');anchor('lube','sump-'+id,[s*1.0,y0+.4,GZ(12.65)],'aft',{local:true});anchor('lube','lop-'+id,[s*1.4,y0+.5,GZ(12.63)],'aft',{local:true});
+   anchor('lube','lof-'+id,[s*1.2,y0+.7,GZ(12.63)],'aft',{local:true});anchor('lube','loc-'+id,[s*1.6,y0+.6,GZ(13.32)],'fwd',{local:true});anchor('lube','bear-'+id,[s*1.1,y0+1.1,zc],'up',{local:true});
+   anchor('jacket','exp-'+id,[s*.9,y0+1.3,zc],'up',{local:true});anchor('jacket','jwp-'+id,[s*1.3,y0+.6,GZ(13.32)],'fwd',{local:true});anchor('jacket','blk-'+id,[s*1.1,y0+1.0,zc+.1],'up',{local:true});
+   anchor('jacket','thermo-'+id,[s*1.4,y0+1.15,zc+.2],'up',{local:true});anchor('jacket','jwc2-'+id,[s*1.6,y0+.5,GZ(12.63)],'aft',{local:true});
+   anchor('seawater','swp-'+id,[s*1.5,y0+.5,GZ(13.33)],'fwd',{local:true});anchor('seawater','cac-'+id,[s*1.7,y0+1.0,zc+.28],'up',{local:true});anchor('seawater','jwc-'+id,[s*1.6,y0+.5,GZ(12.63)],'aft',{local:true});
    anchor('air','start-'+id,[s*.7,y0+1.15,zc-.25],'up');}
   // Route and draw.
   const solids=boxes.filter(b=>b.solid&&b.name&&!/side|deckhead|bulkhead|trunk|casing|partition|escape|plates/.test(b.name));
-  const clear=p=>!solids.some(b=>p[0]>Math.min(b.a[0],b.b[0])+.02&&p[0]<Math.max(b.a[0],b.b[0])-.02&&p[1]>Math.min(b.a[1],b.b[1])+.02&&p[1]<Math.max(b.a[1],b.b[1])-.02&&p[2]>Math.min(b.a[2],b.b[2])+.02&&p[2]<Math.max(b.a[2],b.b[2])-.02);
-  const routes=routePipes(FERRY_PIPING,anchors,{y0,y1,W,crossings:[f-.22,MS.auxFore-.22,F1-.22],clear});
-  for(const sg of pipeSegments(routes)){bar(sg.a,sg.b,pipeRadius(sg.dn),parseInt(sg.colour.slice(1),16),'paint');
+  // Exact, radius-expanded equipment checks replace the old point-only/shrunken-box test. Terminal stubs alone
+  // may enter their own equipment. Unresolved routes remain in the issue register and are not drawn as connected pipes.
+  // Keep the bounded engineering audit lazy: drawings/tests inspect it, gameplay does not pay its startup cost.
+  routeAudit=()=>{if(!routeAuditCache){const routes=routePipes(FERRY_PIPING,anchors,{y0,y1,W,z0:a,z1:F1,crossings:[f-.22,MS.auxFore-.22,F1-.22],obstacles:solids});routeAuditCache=Object.freeze({routes,issues:routes.issues});}return routeAuditCache;};
+  // Retain the game's illustrative pipes while CAD/export uses engineeringPipes only. No preview is a validated spool.
+  const previewClear=p=>!solids.some(b=>p.every((v,k)=>v>Math.min(b.a[k],b.b[k])+.02&&v<Math.max(b.a[k],b.b[k])-.02));
+  const preview=routePipePreview(FERRY_PIPING,anchors,{y0,y1,W,crossings:[f-.22,MS.auxFore-.22,F1-.22],previewClear});
+  for(const sg of pipePreviewSegments(preview)){bar(sg.a,sg.b,pipeRadius(sg.dn),parseInt(sg.colour.slice(1),16),'paint');
    for(const zb of [f+.03,MS.auxFore+.03])if(Math.abs(sg.a[0]-sg.b[0])<1e-6&&(sg.a[2]-zb)*(sg.b[2]-zb)<0){const r=pipeRadius(sg.dn);cyl(r+.03,r+.03,.05,[sg.a[0],sg.a[1],zb],0x9ea4a6,{rot:[Math.PI/2,0,0],seg:8,name:'penetration'});}}   // the bulkhead penetration piece
-  for(const b of pipeBends(routes)){const r=pipeRadius(b.dn)*1.3;cyl(r,r,r*2,b.p,parseInt(b.colour.slice(1),16),{seg:6,cls:'paint',name:'pipe bend'});}
-  pipes.push(...routes);
+  for(const b of pipePreviewBends(preview)){const r=pipeRadius(b.dn)*1.3;cyl(r,r,r*2,b.p,parseInt(b.colour.slice(1),16),{seg:6,cls:'paint',name:'pipe bend'});}
+  pipes.push(...preview);
  }
- return Object.freeze({boxes:Object.freeze(boxes),bars:Object.freeze(bars),glass:Object.freeze(glass),floors:Object.freeze(floors),cyls:Object.freeze(cyls),plates:Object.freeze(plates),pipes:Object.freeze(pipes),anchors:Object.freeze(anchors)});
+ return Object.freeze({boxes:Object.freeze(boxes),bars:Object.freeze(bars),glass:Object.freeze(glass),floors:Object.freeze(floors),cyls:Object.freeze(cyls),plates:Object.freeze(plates),pipes:Object.freeze(pipes),get engineeringPipes(){return routeAudit().routes;},get pipeRouteIssues(){return routeAudit().issues;},anchors:Object.freeze(anchors)});
 })();
 
 /** Where the car deck is no floor: under the flights of stair P and S, inside the casings (up to the foot, where the stair takes over). */
@@ -1094,3 +1116,4 @@ export function underStair(x,z,r=0){
  return x>ER.hatch.x[0]-r&&z>ER.hatch.z[0]-r+.05&&z<ER.hatch.z[1];
 }
 export const FERRY_CASING_LIMITS=Object.freeze({aft:CAS0,fore:CAS1,inner:CAS_IN,outer:CAS_OUT,top:CAS_TOP});
+

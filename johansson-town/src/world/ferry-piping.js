@@ -25,7 +25,7 @@ const system=(id,name,fn,medium,colour,nodes,lines,notes=[])=>Object.freeze({id,
 const T=(fn,n,eq,no,o={})=>kks({fn,n,eq,no,...o});
 
 /** The two main engines and the two generator engines, for the per-engine systems. */
-const ENGINES=[['mainP','Port main engine',F0.mainP,'engine-room'],['mainS','Starboard main engine',F0.mainS,'engine-room'],['gen1','Generator No.1 engine',F0.gen1,'engine-room'],['gen2','Generator No.2 engine',F0.gen2,'engine-room']];
+const ENGINES=[['mainP','Port main engine',F0.mainP,'engine-room'],['mainS','Starboard main engine',F0.mainS,'engine-room'],['gen1','Generator No.1 engine',F0.gen1,'aux-room'],['gen2','Generator No.2 engine',F0.gen2,'aux-room']];
 
 export const FERRY_PIPING=Object.freeze([
  // ---- 8.1 Fuel oil: bunkering, storage in the double bottom, transfer (two pumps), the purifier, the service tank, the engines.
@@ -239,3 +239,4 @@ export const FERRY_SERVICES=Object.freeze([
  Object.freeze({service:'Steering',system:'hydraulics',duty:'hpu1',standby:'hpu2',rota:'No.1 at sea, both in narrow water; the hand pump third'}),
  Object.freeze({service:'Ramp',system:'hydraulics',duty:'rp1',standby:'rp2',rota:'weekly; the hand pump third'}),
 ]);
+

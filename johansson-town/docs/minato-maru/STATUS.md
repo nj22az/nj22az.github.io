@@ -1,10 +1,10 @@
 # The Minato Maru: status of the vessel and engine particulars
 
-For the creator's audit of the vessel (2026-10-13), before the CAD comes. Generated from the ship's data by `node tools/ferry-status.mjs`
+**Revision B — for design review; construction not approved.** Johansson World game vessel, issued 2026-10-13. Generated from the ship's data by `node tools/ferry-status.mjs`
 (`tests/ferry-status.test.mjs` fails when this report no longer matches the data), so the numbers here are the ones the game, the
 drawings and the plant run on. Sources: `src/world/ferry-ship.js` (particulars, machinery, electrics, loads, safety), `ferry-model.js`
 (the loft), `ferry-interior.js` (the machinery spaces as built), `ferry-piping.js`, `ferry-electrical.js`, `ferry-plant.js`,
-`johansson-marine.js` (the makers' catalogue). The yard's findings and the programme are in `README.md`; the batches in `../FERRY-AUDIT.md`.
+`johansson-marine.js` (the fictional makers' catalogue). The reviewed CAD and construction work register are linked from `cad-revb/index.html`. The yard's findings and historical programme are in `README.md`; the batches in `../FERRY-AUDIT.md`.
 
 ## 1. The vessel
 
@@ -14,13 +14,14 @@ drawings and the plant run on. Sources: `src/world/ferry-ship.js` (particulars, 
 | Owner | Minato-chō (the town ferry, a chōei ferī) |
 | Type | Passenger ship and vehicle ferry (ryokakusen ken jidōsha tosen), bow ramp only, twin screw |
 | Built, refit | 1994, Johansson Shipyard (ヨハンソン造船), Innoshima, Seto Inland Sea: hull No. 127, an island ferry like the dozens before her; 1998: GMDSS (VHF with DSC, EPIRB, SART, NAVTEX) |
-| Rules, area | Ship Safety Act and its regulations; inspected by the Okinawa General Bureau’s transport department; classed with NK at the insurer’s request; Limited coastal (gentei engan) |
+| Rules, area | Fictional narrative reference to Japanese inspection and NK class; no actual flag, class or construction approval has been obtained; Limited coastal (gentei engan) |
 | Length overall / between perpendiculars | 34.5 m / 31 m |
 | Breadth moulded / depth to car deck | 8.4 m / 3 m |
 | Draft laden / service; freeboard laden | 1.9 m / 1.7 m; 1.1 m |
 | Gross tonnage | 199 |
-| Displacement laden / lightship / deadweight (particulars) | 283 t / 210 t / 73 t |
-| Block coefficient, GM loaded (particulars) | 0.56, 1.6 m |
+| Geometric displacement at the design immersion | 375.41053 t; numerical loft in seawater, not a verified loading condition |
+| Legacy lightship / operating target / payload target | 210 t / 283 t / 73 t; unreconciled assumptions. 165.41053 t is an arithmetic residual, not approved deadweight. |
+| Block coefficient / game-motion GM | 0.74026634 on LBP 31 m; 1.6 m motion parameter only, stability unverified |
 | Passengers / vehicles / crew | 100 / 6 cars (or a truck and 2 cars, or 8 kei trucks; 5 t axle, 4.2 m clear) / 8 |
 | Speed service / trial / manoeuvring / inside the breakwater | 11.5 / 12.8 / 3 / 5 kn |
 | Colours | White superstructure; white hull over red-brown antifouling with a teal sheer band (the ferry company’s colour on the Port Building); teal funnels with the town’s anchor mark |
@@ -29,14 +30,15 @@ drawings and the plant run on. Sources: `src/world/ferry-ship.js` (particulars, 
 
 | | Particulars | From the loft at 1.9 m |
 |---|---|---|
-| Displacement | 283 t | 375.4 t |
-| Block coefficient | 0.56 | 0.708 |
-| Prismatic / waterplane coefficient | — | 0.739 / 0.952 |
+| Displacement | 375.41053 t geometric | 375.4 t |
+| Block coefficient on LBP 31 m | 0.74026634 | 0.74026634 |
+| Block coefficient on LOA 34.5 m | Separate length basis | 0.66516686 |
+| Waterplane area | — | 259.28 m² |
 | LCB from the transom | — | 19.3 m |
 | KB / BM_T / KM_T | — | 1.06 / 3.89 / 4.95 m |
 | TPC | — | 2.66 t/cm |
 
-The loft is fuller than the particulars (a long parallel middle body); the naval architect's answer is to fair the hull finer at the ends with a weight estimate (D2, D3), not to change the particulars. Nothing is fudged until then.
+The geometric particulars now match the numerical loft at the stated immersion and density 1.025 t/m³. The legacy weight targets remain unreconciled. Weight groups, loading cases, KG, free-surface corrections and intact/damage stability must establish a real operating condition before any hull revision or construction release.
 
 ### 1.2 General arrangement
 
@@ -53,7 +55,7 @@ Every machine is a Johansson Marine machine (CLAUDE.md: Johansson is this univer
 | Main engines | 2 × JM6-160: Four-stroke medium-speed marine diesel, six in line, turbocharged and intercooled; 6 cylinders 160 × 200 mm (24 L), 460 kW (625 PS) at 1350 rpm, mep 17 bar, 3 t each |
 | Starting | Compressed air at 2.94 MPa (30 kgf/cm²) from two 150 L bottles |
 | Engine-driven pumps | Each engine drives its own lubricating-oil, jacket-water and sea-water pumps: they run when the engine runs, with or without electricity, so a blackout does not stop the propellers |
-| Fuel | A-heavy oil (A-jūyu) at 210 g/kWh; firing pressure 27.5 bar idle, 67.5 bar full; 46 L a crossing, 920 L a day |
+| Fuel | A-heavy oil (A-jūyu) at 210 g/kWh; firing pressure 27.5 bar idle, 67.5 bar full; 73.1031 L a crossing, 1462.062 L a day |
 | Gearboxes | 2 × JR-30: Reverse-reduction gearbox with hydraulic multi-disc ahead and astern clutches; bridge control from the wheelhouse and both wings, emergency control in the engine room; 3 : 1 |
 | Shafting | 2 × 110 mm; Oil-lubricated stern tubes with lip seals; header tanks in the steering-gear room |
 | Propellers | 2 × 4-bladed aluminium bronze 1.45 m, P/D 0.8, fixed pitch, 450 rpm, turning outward |
@@ -64,7 +66,7 @@ Every machine is a Johansson Marine machine (CLAUDE.md: Johansson is this univer
 | Fuel treatment | JF-1 purifier, A-heavy oil · 250 L/h; 2 × JP-5 transfer pumps |
 | Fire main | 2 × JP-40 40 m³/h at 0.5 MPa (11 kW); emergency fire pump 5.5 kW 20 m³/h; main DN 65; hydrants car deck 4, passenger deck 2, bridge 1, engine room 1 |
 | Bilge | JP-25 25 m³/h (3.7 kW); main DN 65 (The rule asks for 25 + 1.68·√(L(B+D)) millimetres: 57 for her); separator JO-15 0.25 m³/h · 15 ppm |
-| Fixed fire fighting | CO₂ 4 × 45 kg for the engine room (40 % of the engine room’s gross volume at 0.56 m³ a kilogram: 136 kg needed, 180 kg carried); detection 30 heads in 6 zones, panel in the wheelhouse |
+| Fixed fire fighting | CO₂ 4 × 45 kg for the engine room (Provisional inventory screen only: 180 kg carried against an assumed 190 m3 protected volume. Actual fire boundaries, ducts, protected volumes, nozzle distribution and release interlocks require engineered verification); detection 30 heads in 6 zones, panel in the wheelhouse |
 | Fresh water | JQ-2 hydrophore 0.75 kW, 300 L tank, 0.25–0.35 MPa; 1.5 m³ a day |
 | Ramp | JH-55: 2 × 5.5 kW at 14 MPa, 2 cylinders 100 mm; up in 60 s, down in 45 s |
 | Anchors and mooring | 2 × 480 kg stockless, 19 mm grade 2 chain 137.5 m; 2 × JW-75 7.5 kW; JW-55 5.5 kW; 6 × 40 m vinylon lines |
@@ -104,9 +106,9 @@ Every machine is a Johansson Marine machine (CLAUDE.md: Johansson is this univer
 |---|---|
 | System | 440 V three-phase three-wire, insulated from earth (earth lamps and an insulation meter on the board); lighting 105 V through 2 × 30 kVA (1 in use) |
 | Generators | 2 × JG-125 125 kVA (100 kW, pf 0.8) 445 V 60 Hz 1800 rpm, 162 A; breaker 200 A frame set 170 A; trips: over-current, short-time, under-voltage and reverse power (about 10 %) |
-| Emergency generator | JG-40E 40 kVA (32 kW), on load within 45 s, 60 L day tank for 15 h; 40 kVA rather than 25, because the 5.5 kW emergency fire pump starts direct on line (66 A against a rated 52 A) |
+| Emergency generator | JG-40E 40 kVA (32 kW), on load within 45 s as a game assumption; 60 L day tank with assumed 15 h endurance, unverified; Provisional continuous capacity only. Emergency fire-pump starting and voltage recovery require generator/AVR/governor transient validation; current comparison alone does not prove performance. |
 | Batteries | 24 V, banks: starting, radio and emergency; transitional 30 min |
-| Shore supply | 200 V 3-phase 60 Hz, 50 kVA (40 kW), 50 kVA 200/440 V in the quay kiosk at Minato, 75 A; Shore power and the generators never run together: the shore breaker and the generators’ breakers are interlocked |
+| Shore supply | 200 V 3-phase 60 Hz, 50 kVA (40 kW), 50 kVA 200/440 V in the quay kiosk at Minato; primary 200 V breaker 160 A frame / 145 A setting; secondary 440 V 80 A frame / 66 A setting; Shore power and the generators never run together: the shore breaker and the generators’ breakers are interlocked |
 | Switchboards | MSB: Main switchboard, in the engine control booth: DG1, synchronising (synchroscope, lamps, two kW meters, Hz, V, A, three earth lamps, insulation meter), DG2, two 440 V feeder panels, shore; LB: 105 V lighting board, fed through one of the two 30 kVA transformers; ESB: Emergency switchboard, 440 V and 105 V sections, in the emergency-generator room: fed from the main board through a bus-tie, and from the emergency generator when the main board is dead |
 | Consumers | 50 loads in the load analysis (sheet 3a), 58 feeders with breakers and cables (sheets 3b, 3c) |
 
@@ -120,9 +122,9 @@ Every machine is a Johansson Marine machine (CLAUDE.md: Johansson is this univer
 | night | shore 40 kW | 10.3 kW | 26 % |
 | blackout | emergency generator 32 kW | 10 kW | 31 % |
 
-Electrical checks (`electricalChecks()`): none outstanding.
+Source numerical consistency checks (`electricalChecks()`): zero mismatches in the implemented checks. Fault levels, selectivity, starting and installation engineering holds remain open.
 
-## 4. Piping systems (sheets 8.1–8.11) and the pipes as built
+## 4. Piping systems (sheets 8.1–8.11) and route status
 
 | System | Nodes | Lines | Duty / standby pairs |
 |---|---|---|---|
@@ -138,7 +140,7 @@ Electrical checks (`electricalChecks()`): none outstanding.
 | exhaust | 14 | 8 | — |
 | hydraulics | 13 | 17 | Steering: hpu1 / hpu2; Ramp: rp1 / rp2 |
 
-In the machinery spaces every machine, tank stub and penetration of the diagrams is anchored (151 anchors) and every line between two of them is routed in 3D in its system's colour and bore (172 runs of 210 lines; the rest end at a penetration to another deck). Every pumped service has two means (14 pairs).
+The graph contains 210 lines and 151 machinery-space anchors. There are 55 accepted engineering routes and 151 unresolved positive-bore connections. The 172 coloured game preview runs are illustrative and unverified; graph connectivity alone does not prove physical pipe routing. Every pumped service has two means in the source (14 pairs), with hydraulic capacity and installation verification still open.
 
 ## 5. Life-saving and fire safety (sheet 6)
 
@@ -150,11 +152,11 @@ The crew's day: shore power until 06:10, No.1 generator on the board, the engine
 
 | State | Machines |
 |---|---|
-| running | Port main engine, Starboard main engine, Generator No.1, Sanitary pump No.1 JP-15, Engine-room supply fans No.1 |
-| stopped | Generator No.2, Fuel transfer pump No.1, Priming pump, Priming pump, General-service pump JP-32, Bilge pump JP-25, Fire and bilge pump No.2 (8.6), Ballast pump JP-32, General-service pump (standby, 8.3), Emergency fire pump, Steering power unit No.1, Steering power unit No.2, Ramp pump No.1, Ramp pump No.2, Engine-room supply fans No.2, Car-deck exhaust fans No.1, Car-deck exhaust fans No.2, Bow thruster (star-delta, two-generator interlock), Anchor windlass and warping heads, Aft mooring capstan, Ramp power pack pump (one of two runs) No.1, Ramp power pack pump (one of two runs) No.2, Fuel purifier, Oily-water separator, Rescue-boat davit winch |
+| running | Port main engine, Starboard main engine, Generator No.1, Sanitary pump No.1 JP-15, Engine-room supply fans feeder 1 |
+| stopped | Generator No.2, Fuel transfer pump No.1, Priming pump, Priming pump, General-service pump JP-32, Bilge pump JP-25, Fire and bilge pump No.2 (8.6), Ballast pump JP-32, General-service pump (standby, 8.3), Emergency fire pump, Steering power unit No.1, Steering power unit No.2, Ramp pump No.1, Ramp pump No.2, Engine-room supply fans feeder 2, Car-deck exhaust fans feeder 1, Car-deck exhaust fans feeder 2, Bow thruster (star-delta, two-generator interlock), Anchor windlass and warping heads, Aft mooring capstan, Ramp power pack pump (one of two runs) feeder 1, Ramp power pack pump (one of two runs) feeder 2, Fuel purifier, Oily-water separator, Rescue-boat davit winch |
 | standby | Fuel transfer pump No.2, Fire and GS pump No.1 JP-40, Fire and bilge pump No.2 JP-40, Starting-air compressor No.1 JC-30, Starting-air compressor No.2 JC-30, Hydrophore pump No.1, Hydrophore pump No.2, Sanitary pump No.2 JP-15 |
 
-Readings at 14:00: board 1 generator(s) on the board, 16 kW; starting air 29 / 28 bar; service tank 48 %; fresh-water pressure 0.31 MPa; alarms: none. The player works the plant at 18 stations (start, stop, standby, isolate and tag out, open for overhaul, breakers, change-overs); the console's dials, readout and alarm matrix read the plant.
+Readings at 14:00: board 1 generator(s) on the board, 16 kW; starting air 29 / 28 bar; service tank 48 %; fresh-water pressure 0.31 MPa; alarms: none. The player works the plant at 20 stations (start, stop, standby, isolate and tag out, open for overhaul, breakers, change-overs); the console's dials, readout and alarm matrix read the plant.
 
 ## 7. The design programme: built and open
 
@@ -191,11 +193,11 @@ Readings at 14:00: board 1 generator(s) on the board, 16 kW; starting air 29 / 2
 
 ## 8. Open findings and what the CAD audit should settle
 
-1. **The hull** (finding 1): the loft is fuller than the particulars (§1.1). The CAD decides which stands: fair the hull to the particulars, or correct the particulars to the hull, then the weight estimate (D2) sets draft, trim, KG and GM.
-2. **No structure is drawn** (finding 2): the midship section and scantlings (D12), the shell expansion and deck plans (D5) need rule scantlings in the data; the CAD's steel is the reference.
+1. **The hull and weights** (finding 1): numerical loft displacement is recorded (§1.1), while lightship and operating weight remain assumptions. Weight groups and loading/stability cases (D2, D8) must establish draft, trim, KG and GM.
+2. **No approved structure is drawn** (finding 2): midship scantlings (D12), shell expansion, deck plans (D5), machinery foundations and lifting structure need rule calculations and reviewed fabrication details. The CAD equipment envelopes are design references.
 3. **Shafting and propeller** (D11), **ventilation, insulation and deck machinery** (D13), **the stability booklet** (D8) are open.
 4. **The fan flat** (6q-2) and **the bilge level** (6q-3) of the machinery spaces are designed, not built; the CO₂ covers the engine room only (the new rooms rely on extinguishers and detection).
 5. **The plant** (6r-3): overhaul scenes (covers off, parts on the plates) when a machine is opened, the crew at the handles when the routine starts a machine, alarm acknowledge, the plant saved with the game; the starboard engine's open No.4 crankcase door (from the photographs) should follow the plant's state.
 6. **Lines beyond the machinery spaces** (hydrants on the car and passenger decks, the galley and toilets, the steering-gear room, the bow house) are on the diagrams but not yet built on their own decks.
 
-When the CAD comes: compare it with sheets 1–2 (lines, GA), 5 and 7 (machinery spaces), 8.x (piping), 3.x (electrical) and this report, and record every difference as a finding in README.md before anything in the data is changed (CLAUDE.md: plan a change before making it; no fudged numbers).
+Use the Revision B engineering review and construction work register for the full release holds, including supplier installation data, removal/escape paths, pipe classes and supports, electrical faults/selectivity/starting, flag/class basis and signed approval. Publication of the game and drawings does not close those holds.

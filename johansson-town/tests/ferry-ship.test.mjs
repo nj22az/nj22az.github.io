@@ -70,7 +70,7 @@ test('six cars on her car deck, or a truck and two cars, lashed half a metre apa
  const ramp=gaSpace('ramp');assert.ok(near(ramp.x[1]-ramp.x[0],4.4,1e-9));assert.ok(ramp.x[1]-ramp.x[0]>=FERRY_TRUCK_PLAN.trucks[0].width+1.5);
 });
 
-test('her machinery and systems meet the rules of her class',()=>{
+test('her machinery and system planning budgets are internally consistent, not class approval',()=>{
  const S=FERRY_SHIP,M=FERRY_MACHINERY;
  // The bilge main: d = 25 + 1.68·√(L(B+D)) mm.
  assert.ok(M.bilge.main>=25+1.68*Math.sqrt(S.lengthBP*(S.beam+S.depth)));
@@ -78,8 +78,10 @@ test('her machinery and systems meet the rules of her class',()=>{
  assert.ok(M.co2.bottles*M.co2.kg>=.4*M.co2.grossVolume/.56);
  // Two steering pumps, two fire pumps and an emergency fire pump outside the engine room.
  assert.equal(M.steering.pumps,2);assert.equal(M.fireMain.pumps,2);assert.equal(FERRY_LOADS.find(l=>l.id==='fire-emergency').where,'steering-gear');
- // Fuel: sixteen days of A-oil at a day's burn.
- assert.ok(near(M.tanks.fuelStorage.reduce((a,b)=>a+b,0),M.tanks.fuel,1e-9));assert.ok(M.tanks.fuel*1000/M.fuelPerDay>=16);
+ // Fuel: explicit duty estimate; 90% usable storage, no unproved sixteen-day claim.
+ assert.ok(near(M.tanks.fuelStorage.reduce((a,b)=>a+b,0),M.tanks.fuel,1e-9));
+ assert.ok(near(M.fuelPerDay,20*M.fuelPerCrossing,1e-6));
+ assert.ok(M.tanks.fuel*1000*.9/M.fuelPerDay>9&&M.tanks.fuel*1000*.9/M.fuelPerDay<10);
  // The screws turn at engine speed through the gears; two of them, 1.45 m, fixed pitch.
  assert.ok(near(M.mains.rpm/M.gears.ratio,M.propellers.rpm,1e-9));assert.equal(M.propellers.count,2);
  // The engines' firing note at full speed: six cylinders, four-stroke.
@@ -221,3 +223,4 @@ test('the decks a person walks on are drawn floors at their heights, with headro
   if(!standing){ray.set(new THREE.Vector3(x,w.y+.1,z),new THREE.Vector3(0,1,0));ray.far=1.9;const over=ray.intersectObjects(meshes,false)[0];assert.ok(!over,`${w.id}: ${over?.object.name} ${(over?.point.y-w.y).toFixed(2)} m over the deck at ${x.toFixed(2)},${z.toFixed(2)}`);}
  }
 });
+

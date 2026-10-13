@@ -17,7 +17,7 @@ import {FERRY_FEEDERS,FERRY_BOARDS,electricalChecks} from '../src/world/ferry-el
 import {FERRY_INTERIOR} from '../src/world/ferry-interior.js';
 import {createPlant} from '../src/world/ferry-plant.js';
 import {PLANT_STATIONS} from '../src/world/ferry-plant-controls.js';
-import {hydrostatics} from './ferry-drawings.mjs';
+import {hydrostatics} from '../src/world/ferry-engineering-hydrostatics.js';
 
 const S=FERRY_SHIP,M=FERRY_MACHINERY,E=FERRY_ELECTRICS,C=JOHANSSON_MARINE.catalogue;
 const row=(...c)=>'| '+c.join(' | ')+' |';
@@ -33,33 +33,36 @@ function programme(){
 
 export function statusReport(){
  const out=[];
- const H=hydrostatics(S.draft),P=programme();
+ const H=hydrostatics({draftM:S.draft}),P=programme();
  const plant=createPlant({minutes:14*60});for(let t=0;t<14*60;t+=5){plant.routine(t);plant.tick(5);}plant.routine(14*60);
  const r=plant.readings();
  const byState={};for(const x of plant.machines.values())(byState[x.state]??=[]).push(x.name);
  out.push('# The Minato Maru: status of the vessel and engine particulars','',
-  'For the creator\'s audit of the vessel (2026-10-13), before the CAD comes. Generated from the ship\'s data by `node tools/ferry-status.mjs`',
+  '**Revision B — for design review; construction not approved.** Johansson World game vessel, issued 2026-10-13. Generated from the ship\'s data by `node tools/ferry-status.mjs`',
   '(`tests/ferry-status.test.mjs` fails when this report no longer matches the data), so the numbers here are the ones the game, the',
   'drawings and the plant run on. Sources: `src/world/ferry-ship.js` (particulars, machinery, electrics, loads, safety), `ferry-model.js`',
   '(the loft), `ferry-interior.js` (the machinery spaces as built), `ferry-piping.js`, `ferry-electrical.js`, `ferry-plant.js`,',
-  '`johansson-marine.js` (the makers\' catalogue). The yard\'s findings and the programme are in `README.md`; the batches in `../FERRY-AUDIT.md`.','');
+  '`johansson-marine.js` (the fictional makers\' catalogue). The reviewed CAD and construction work register are linked from `cad-revb/index.html`. The yard\'s findings and historical programme are in `README.md`; the batches in `../FERRY-AUDIT.md`.','');
  // 1. Vessel
  out.push('## 1. The vessel','','| | |','|---|---|',
   row('Name, port of registry',`${S.name} (${S.jp}), ${S.registry}`),row('Owner',S.owner),row('Type',S.type),
   row('Built, refit',`${S.built}, ${S.yard}; ${S.refit}`),row('Rules, area',`${S.rules}; ${S.area}`),
   row('Length overall / between perpendiculars',`${S.length} m / ${S.lengthBP} m`),row('Breadth moulded / depth to car deck',`${S.beam} m / ${S.depth} m`),
   row('Draft laden / service; freeboard laden',`${S.draft} m / ${S.serviceDraft} m; ${S.freeboard} m`),row('Gross tonnage',String(S.grossTons)),
-  row('Displacement laden / lightship / deadweight (particulars)',`${S.displacement} t / ${S.lightship} t / ${S.deadweight} t`),
-  row('Block coefficient, GM loaded (particulars)',`${S.blockCoefficient}, ${S.gm} m`),
+  row('Geometric displacement at the design immersion',`${S.displacement} t; numerical loft in seawater, not a verified loading condition`),
+  row('Legacy lightship / operating target / payload target',`${S.lightship} t / ${S.assumedOperatingDisplacement} t / ${S.payloadPlanningTarget} t; unreconciled assumptions. ${S.deadweight} t is an arithmetic residual, not approved deadweight.`),
+  row('Block coefficient / game-motion GM',`${S.blockCoefficient} on ${S.blockCoefficientLengthBasis}; ${S.gm} m motion parameter only, stability unverified`),
   row('Passengers / vehicles / crew',`${S.passengers} / ${S.vehicles} cars (or a truck and ${S.vehicleMix.trucksAndCars[1]} cars, or ${S.vehicleMix.keiTrucks} kei trucks; ${S.vehicleMix.axleTonnes} t axle, ${S.vehicleMix.clearHeight} m clear) / ${S.crew}`),
   row('Speed service / trial / manoeuvring / inside the breakwater',`${S.speed.service} / ${S.speed.trial} / ${S.speed.manoeuvring} / ${S.speed.breakwater} kn`),
   row('Colours',S.colours),'');
  out.push('### 1.1 The hull as lofted against the particulars (README finding 1: still open)','',
   '| | Particulars | From the loft at '+S.draft+' m |','|---|---|---|',
-  row('Displacement',`${S.displacement} t`,`${n1(H.displacement)} t`),row('Block coefficient',String(S.blockCoefficient),H.cb.toFixed(3)),
-  row('Prismatic / waterplane coefficient','—',`${H.cp.toFixed(3)} / ${H.cwp.toFixed(3)}`),row('LCB from the transom','—',`${n1(H.lcb)} m`),
-  row('KB / BM_T / KM_T','—',`${H.kb.toFixed(2)} / ${(H.kmT-H.kb).toFixed(2)} / ${H.kmT.toFixed(2)} m`),row('TPC','—',`${H.tpc.toFixed(2)} t/cm`),
-  '',`The loft is fuller than the particulars (a long parallel middle body); the naval architect's answer is to fair the hull finer at the ends with a weight estimate (D2, D3), not to change the particulars. Nothing is fudged until then.`,'');
+  row('Displacement',`${S.displacement} t geometric`,`${n1(H.displacementTonnes)} t`),
+  row('Block coefficient on LBP 31 m',String(S.blockCoefficient),H.blockCoefficientLBP.toFixed(8)),
+  row('Block coefficient on LOA 34.5 m','Separate length basis',H.blockCoefficientLOA.toFixed(8)),
+  row('Waterplane area','—',`${H.waterplaneAreaM2.toFixed(2)} m²`),row('LCB from the transom','—',`${n1(H.lcbM)} m`),
+  row('KB / BM_T / KM_T','—',`${H.kbM.toFixed(2)} / ${H.bmtM.toFixed(2)} / ${H.kmtM.toFixed(2)} m`),row('TPC','—',`${H.tpcTonnesPerCm.toFixed(2)} t/cm`),
+  '',`The geometric particulars now match the numerical loft at the stated immersion and density 1.025 t/m³. The legacy weight targets remain unreconciled. Weight groups, loading cases, KG, free-surface corrections and intact/damage stability must establish a real operating condition before any hull revision or construction release.`,'');
  out.push('### 1.2 General arrangement','',`${FERRY_GA.length} spaces (sheet 2): `+FERRY_GA.map(g=>g.id).join(', ')+'.','',
   'Machinery spaces as built and walked (`ferry-interior.js`, sheets 5 and 7): the engine room (Fr 17–28) on three levels (tank top under the gratings, floor plates, upper grating), the control booth with the main switchboard, the auxiliary machinery room (Fr 28–38) through a watertight sliding door, the workshop and engine store (Fr 38–45), a void forward; the fan flat over the lower lobby is designed (6q-2) but not built.','');
  // 2. Machinery
@@ -91,19 +94,19 @@ export function statusReport(){
  out.push('## 3. Electrical particulars','','| | |','|---|---|',
   row('System',`${E.distribution}; lighting ${E.lighting} V through ${E.transformers.lighting.count} × ${E.transformers.lighting.kVA} kVA (${E.transformers.lighting.inUse} in use)`),
   row('Generators',`${gen.count} × ${C.genset.model} ${gen.kVA} kVA (${gen.kW} kW, pf ${gen.pf}) ${gen.volts} V ${gen.hz} Hz ${gen.rpm} rpm, ${gen.amps} A; breaker ${gen.breaker.frame} A frame set ${gen.breaker.setting} A; trips: ${gen.trips}`),
-  row('Emergency generator',`${C.emergency.model} ${E.emergency.kVA} kVA (${E.emergency.kW} kW), on load within ${E.emergency.onLoadWithin} s, ${E.emergency.dayTank} L day tank for ${E.emergency.hours} h; ${E.emergency.why}`),
+  row('Emergency generator',`${C.emergency.model} ${E.emergency.kVA} kVA (${E.emergency.kW} kW), on load within ${E.emergency.onLoadWithin} s as a game assumption; ${E.emergency.dayTank} L day tank with assumed ${E.emergency.hours} h endurance, unverified; ${E.emergency.why}`),
   row('Batteries',`${E.batteries.volts} V, banks: ${E.batteries.banks.join(', ')}; transitional ${E.batteries.transitionalMinutes} min`),
-  row('Shore supply',`${E.shore.volts} V ${E.shore.phases}-phase ${E.shore.hz} Hz, ${E.shore.kVA} kVA (${E.shore.kW} kW), ${E.shore.transformer}, ${E.shore.breaker} A; ${E.shore.interlock}`),
+  row('Shore supply',`${E.shore.volts} V ${E.shore.phases}-phase ${E.shore.hz} Hz, ${E.shore.kVA} kVA (${E.shore.kW} kW), ${E.shore.transformer}; primary 200 V breaker ${E.shore.primaryBreaker} A frame / ${E.shore.primarySetting} A setting; secondary 440 V ${E.shore.breaker} A frame / ${E.shore.breakerSetting} A setting; ${E.shore.interlock}`),
   row('Switchboards',Object.entries(E.boards).map(([k,v])=>`${k}: ${v}`).join('; ')),
   row('Consumers',`${FERRY_LOADS.length} loads in the load analysis (sheet 3a), ${FERRY_FEEDERS.length} feeders with breakers and cables (sheets 3b, 3c)`),'');
  out.push('### 3.1 Load by condition (sheet 3a)','','| Condition | Supply | Demand | Load |','|---|---|---|---|');
  for(const c of FERRY_CONDITIONS){const s=FERRY_SUPPLY[c],d=ferryDemand(c),k=ferrySupplyKW(c);out.push(row(c,s.shore?'shore '+k+' kW':s.emergency?'emergency generator '+k+' kW':s.generators+' generator'+(s.generators>1?'s ':' ')+k+' kW',n1(d)+' kW',Math.round(d/k*100)+' %'));}
- const checks=electricalChecks();out.push('',`Electrical checks (`+'`electricalChecks()`'+`): ${checks.length?checks.join('; '):'none outstanding'}.`,'');
+ const checks=electricalChecks();out.push('',`Source numerical consistency checks (`+'`electricalChecks()`'+`): ${checks.length?checks.join('; '):'zero mismatches in the implemented checks'}. Fault levels, selectivity, starting and installation engineering holds remain open.`,'');
  // 4. Piping
- out.push('## 4. Piping systems (sheets 8.1–8.11) and the pipes as built','','| System | Nodes | Lines | Duty / standby pairs |','|---|---|---|---|');
+ out.push('## 4. Piping systems (sheets 8.1–8.11) and route status','','| System | Nodes | Lines | Duty / standby pairs |','|---|---|---|---|');
  for(const s of FERRY_PIPING){const sv=FERRY_SERVICES.filter(x=>x.system===s.id).map(x=>`${x.service}: ${x.duty} / ${x.standby}`);out.push(row(s.id,String(s.nodes.length),String(s.lines.length),sv.join('; ')||'—'));}
  const lines=sum(FERRY_PIPING.map(s=>s.lines.length));
- out.push('',`In the machinery spaces every machine, tank stub and penetration of the diagrams is anchored (${Object.keys(FERRY_INTERIOR.anchors).length} anchors) and every line between two of them is routed in 3D in its system's colour and bore (${FERRY_INTERIOR.pipes.length} runs of ${lines} lines; the rest end at a penetration to another deck). Every pumped service has two means (${FERRY_SERVICES.length} pairs).`,'');
+ out.push('',`The graph contains ${lines} lines and ${Object.keys(FERRY_INTERIOR.anchors).length} machinery-space anchors. There are ${FERRY_INTERIOR.engineeringPipes.length} accepted engineering routes and ${FERRY_INTERIOR.pipeRouteIssues.length} unresolved positive-bore connections. The ${FERRY_INTERIOR.pipes.length} coloured game preview runs are illustrative and unverified; graph connectivity alone does not prove physical pipe routing. Every pumped service has two means in the source (${FERRY_SERVICES.length} pairs), with hydraulic capacity and installation verification still open.`,'');
  // 5. Safety
  const F=FERRY_SAFETY;
  out.push('## 5. Life-saving and fire safety (sheet 6)','',`${F.persons} persons; ${F.liferafts.count} liferafts × ${F.liferafts.persons} (serviced ${F.liferafts.serviced.toLowerCase().replace('naha','Naha')}); rescue boat ${F.rescueBoat.length} m for ${F.rescueBoat.persons} with a ${F.rescueBoat.outboard} hp outboard and a ${F.rescueBoat.davitKW} kW davit; extinguishers, hydrants, the CO₂ system, muster stations and escapes on the fire control and safety plan.`,'');
@@ -118,13 +121,13 @@ export function statusReport(){
  out.push('','### Open','','| Batch | Sheets | What |','|---|---|---|');
  for(const b of P.open)out.push(row(b.id,b.sheets,b.what));
  out.push('','## 8. Open findings and what the CAD audit should settle','',
-  '1. **The hull** (finding 1): the loft is fuller than the particulars (§1.1). The CAD decides which stands: fair the hull to the particulars, or correct the particulars to the hull, then the weight estimate (D2) sets draft, trim, KG and GM.',
-  '2. **No structure is drawn** (finding 2): the midship section and scantlings (D12), the shell expansion and deck plans (D5) need rule scantlings in the data; the CAD\'s steel is the reference.',
+  '1. **The hull and weights** (finding 1): numerical loft displacement is recorded (§1.1), while lightship and operating weight remain assumptions. Weight groups and loading/stability cases (D2, D8) must establish draft, trim, KG and GM.',
+  '2. **No approved structure is drawn** (finding 2): midship scantlings (D12), shell expansion, deck plans (D5), machinery foundations and lifting structure need rule calculations and reviewed fabrication details. The CAD equipment envelopes are design references.',
   '3. **Shafting and propeller** (D11), **ventilation, insulation and deck machinery** (D13), **the stability booklet** (D8) are open.',
   '4. **The fan flat** (6q-2) and **the bilge level** (6q-3) of the machinery spaces are designed, not built; the CO₂ covers the engine room only (the new rooms rely on extinguishers and detection).',
   '5. **The plant** (6r-3): overhaul scenes (covers off, parts on the plates) when a machine is opened, the crew at the handles when the routine starts a machine, alarm acknowledge, the plant saved with the game; the starboard engine\'s open No.4 crankcase door (from the photographs) should follow the plant\'s state.',
   '6. **Lines beyond the machinery spaces** (hydrants on the car and passenger decks, the galley and toilets, the steering-gear room, the bow house) are on the diagrams but not yet built on their own decks.','',
-  'When the CAD comes: compare it with sheets 1–2 (lines, GA), 5 and 7 (machinery spaces), 8.x (piping), 3.x (electrical) and this report, and record every difference as a finding in README.md before anything in the data is changed (CLAUDE.md: plan a change before making it; no fudged numbers).','');
+  'Use the Revision B engineering review and construction work register for the full release holds, including supplier installation data, removal/escape paths, pipe classes and supports, electrical faults/selectivity/starting, flag/class basis and signed approval. Publication of the game and drawings does not close those holds.','');
  return out.join('\n');
 }
 const fmt=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');

@@ -1,5 +1,15 @@
 # The Minato Maru (みなと丸): the design book
 
+**Revision B · for design review · construction not approved.** These documents describe the
+Johansson World game vessel. Japanese inspection and NK class references are narrative assumptions,
+not evidence of actual flag, class or construction approval.
+
+The [reviewed CAD download page](cad-revb/index.html) contains the complete 55-sheet PDF/DXF set,
+the engineering review, equipment models, schedules, source snapshot and construction work register.
+The archive is an immutable review issue dated 2026-10-13; its integration note records the state at
+issue. Current publication and source-integration details are recorded separately in
+[the publication record](cad-revb/PUBLICATION.md). The programme below retains historical work entries.
+
 The creator, 2026-10-12: *"The ferry needs to be built like a realistic ferry in the 90's, the cartoon cel shading is just
 to make it more fun. Be a naval ship architect and build the ferry as a real ferry would be built and make drawings, one
 should be able to build a real ferry from our documentation."*
@@ -20,13 +30,14 @@ her are in `docs/FERRY-AUDIT.md`.
 | Owner | Minato-chō (the town ferry, 町営フェリー) |
 | Type | Passenger ship and vehicle ferry, bow ramp only, twin screw (旅客船兼自動車渡船) |
 | Built, refit | 1994, Johansson Shipyard, Innoshima (hull No. 127); 1998 GMDSS |
-| Rules, area | Ship Safety Act (船舶安全法) and regulations; NK class at the insurer's request; limited coastal (限定沿海) |
+| Rules, area | Fictional Japanese inspection/NK class setting; limited coastal (限定沿海); no actual approval obtained |
 | Length overall / between perpendiculars | 34.5 m / 31.0 m |
 | Breadth moulded / depth to car deck | 8.4 m / 3.0 m |
 | Draft, laden / service | 1.9 m / 1.7 m |
 | Freeboard to the car deck, laden | 1.1 m |
 | Gross tonnage | 199 |
-| Displacement laden / lightship / deadweight (data) | 283 t / 210 t / 73 t **(see finding 1)** |
+| Displacement at 1.9 m immersion | 375.41053 t from the procedural loft; Cb 0.74026634 on LBP 31.0 m |
+| Lightship / payload planning target | Legacy assumptions 210 t / 73 t; weight budget unresolved. The former 283 t operating target is inconsistent with this loft at 1.9 m. The arithmetic displacement residual is not an approved deadweight limit. |
 | Passengers / vehicles / crew | 100 / 6 cars (or an 8 t truck and two cars, or eight kei trucks) / 8 |
 | Speed, service / trial | 11.5 kn / 12.8 kn |
 | Main engines | 2 × 460 kW (625 PS) at 1 350 rpm, six-cylinder four-stroke medium-speed diesels, 160 × 200 mm, turbocharged and intercooled, air start |
@@ -34,8 +45,8 @@ her are in `docs/FERRY-AUDIT.md`.
 | Rudders, steering | 2 spade rudders 0.75 m² behind the propellers; electro-hydraulic, 2 × 2.2 kW units, hand pump |
 | Bow thruster | 75 kW, 0.9 m tunnel, 10 kN |
 | Generators | 2 × 125 kVA (100 kW) 445 V 60 Hz; emergency 40 kVA; 24 V batteries; 50 kVA shore supply at Minato |
-| Fuel, fresh water | 15 m³ A-heavy oil (16 days); 12 m³ fresh water (filled every fifth morning) |
-| Metacentric height, loaded (data) | 1.6 m **(see finding 1)** |
+| Fuel, fresh water | 15 m³ fuel storage: 9.23 days at 20 crossings/day and 90% usable storage, excluding idle/weather allowance; 12 m³ fresh water, narrative refill every fifth morning |
+| Metacentric height | 1.6 m game-motion parameter only; intact/damage stability unverified |
 
 ## The sheets
 
@@ -94,23 +105,21 @@ thruster, windlasses), allocated under X (heavy machinery, not main machine sets
 
 ## Findings (what a yard would send back)
 
-1. **The hull displaces more than the particulars say.** Integrated from the loft, the hull at the laden draft of 1.9 m
-   displaces **375 t** with a block coefficient of **0.71** and a waterplane coefficient of 0.95; the particulars say 283 t
-   and 0.56. The loft is boxy: a parallel middle body from 1.5 m to 28.5 m from the transom (27 m of 34.5 m), full
-   waterlines right to the ends, a 0.6 m bilge. A real ferry of this length and beam would be between the two: a block
-   coefficient of about 0.60–0.65 and 310–340 t laden. Either the hull is faired finer at both ends (the model changes:
-   a visual batch of its own, with the game's ferry walked and photographed after it) or the particulars are corrected to
-   the hull. The naval architect's answer is the first, with a **weight estimate** (lightship by group: hull steel,
-   outfit, machinery; deadweight: six cars or the truck, a hundred passengers, fuel, water, stores) that sets the real
-   draft and KG, and so the real GM. Until then the drawings say so here and in `hydrostatics.md`, and nothing is fudged.
+1. **The original weight assumptions do not match the loft.** Revision B records the numerical loft displacement
+   as **375.41053 t** at 1.9 m immersion in seawater of density 1.025 t/m³, with **Cb 0.74026634 on LBP 31.0 m**.
+   The 283 t operating target and 210 t lightship remain unreconciled assumptions, explicitly separated from this
+   geometric result. A weight estimate by hull, outfit and machinery group, loading cases, KG and intact/damage
+   stability calculations are still needed before selecting a real operating draft or a revised hull. See
+   `hydrostatics.md` and the Revision B engineering review; the game motion GM is not a stability approval.
 2. **No structure is drawn yet.** The midship section with scantlings (keel, bottom and side shell, car deck under a
    5 t axle, frames at 500 mm, web frames, floors, girders, pillars, bulkheads), the shell expansion and the deck
    plating plans are what a yard cuts steel from; they need rule scantlings (NK rules for steel ships under 90 m) in the
    data first (`FERRY_STRUCTURE`, open).
-3. **The piping diagrams** (bilge and ballast, fire main, fuel, cooling sea water and jacket water, lubricating oil,
-   compressed air, fresh and sanitary water, hydraulics for the ramp and steering), **the machinery arrangement** in the
-   engine room, **the fire-control plan**, **the life-saving plan** and **the mooring and anchoring arrangement** are
-   described in the data (`FERRY_MACHINERY`, `FERRY_SAFETY`, `FERRY_GA`) but not yet drawn as sheets.
+3. **Drawing coverage and physical design are separate.** The generated SVG set and Revision B CAD set now cover
+   the machinery arrangement, system diagrams and electrical records. The source has 55 accepted engineering pipe
+   routes and 151 unresolved positive-bore connections; illustrative preview pipes remain explicitly unverified.
+   Final pipe classes, hydraulic sizing, supports, penetrations, fire boundaries, equipment interfaces, lifting,
+   removal and escape arrangements remain construction holds in the engineering review and work register.
 5. **The hold forward of the engine room was empty.** Between Fr 28 and Fr 55 (z 14–27.5) the general arrangement had
    13.5 m of hull, 8 m wide and 2.1 m high under the car deck, down as "tanks and voids" holding 20 m³ of tanks: 260 m³
    of ship doing nothing, which no owner pays a yard for. Settled in 6q-1 as a yard would: the auxiliary machinery room
