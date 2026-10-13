@@ -210,3 +210,43 @@ Open:
   instruction (`johansson-town/src/people/birthdays.js`). Setting them in Studio is not built; the profiles show them.
 - `jojo/town-studio/evidence/home-decorating.mjs` drove World's old "Arrange furniture"; it is evidence of that check,
   not a tool to run again.
+
+## 9. The Minato Maru: first tighten the ship to the CAD, then Johansson Automation (the creator, 2026-10-13)
+
+The creator, 2026-10-13: *"We need a automation system similar to Kongsberg with alarms and so but before that we need to
+tighten the ship wait for the cad."* So, in this order, and nothing of the second before the first:
+
+### 9.1 Tighten the ship: wait for the CAD, then audit against it
+
+The creator is auditing the vessel and will hand over CAD. Until it comes, **no batch changes the ship** (her data, her
+model, her machinery spaces); the status report `docs/minato-maru/STATUS.md` (`node tools/ferry-status.mjs`) is the
+record of where she stands. When the CAD comes:
+1. Compare it with the sheets (1–2 lines and GA, 5 and 7 machinery spaces, 8.x piping, 3.x electrical) and the status
+   report; write every difference as a numbered finding in `docs/minato-maru/README.md` before any data changes.
+2. Settle finding 1 by the CAD (fair the hull, or correct the particulars), then the weight estimate (D2), the hull
+   (D3), structure (D4, D5, D12), shafting (D11), stability (D8), ventilation (D13), in the programme's order, each
+   batch regenerating the book and walked in the game.
+3. Tidy the programme: D6 and D7 are listed open although the machinery arrangement, the piping diagrams and the safety
+   plan are drawn (D9, D10, sheet 6).
+
+### 9.2 Johansson Automation: an integrated automation system like a Kongsberg K-Chief (after 9.1)
+
+A Johansson Marine product like the rest (`johansson-marine.js`: a model, a maker's plate, its numbers the ship's own),
+reading the one plant (`ferry-plant.js`) the console already reads, so an alarm on the screen is the alarm on the
+matrix and the state in the game. Built in small batches, each checked in the game:
+- **Operator station** in the control booth (a screen and keyboard on the console) and a **repeater on the bridge**;
+  an **extension alarm panel** in the chief's cabin and the mess for unmanned periods (UMS): the alarm goes to the
+  duty engineer's cabin, and to all if not acknowledged in time; a dead-man (watch-call) timer in the engine room.
+- **Alarm and monitoring**: every point of the plant with a tag (KKS, `ferry-kks.js`), limits and a priority; an alarm
+  list with time, tag, text, value, state (unacknowledged / acknowledged / normal), acknowledge and reset, group
+  alarms, inhibits for a machine stopped for overhaul, an alarm history and a log. PLANT_ALARMS become points.
+- **Mimic diagrams**, one a system, drawn from `FERRY_PIPING` and `FERRY_FEEDERS` (the same data as sheets 8.x and
+  3.x), live: pumps running, valves open, pressures and temperatures at the sensors, the board's one-line with
+  breakers and kW.
+- **Control**: start, stop, change-over and the generators' breakers from the mimics (the same `createPlant` calls
+  as the stations), with the local/remote selector at each machine deciding who has it.
+- **Power management**: standby start of the second generator on load or on a trip, load sharing, blackout recovery
+  (the sequence FERRY_SCENARIOS "blackout" describes), preference tripping (`preferenceShed`), shore connection.
+- **Trends** of any point over the day; **the log** the chief writes becomes the system's.
+- Data first: `src/world/ferry-automation.js` (points, limits, priorities, groups, the UMS rules), tested without
+  three.js; then the screens; then the panels and the sound of the alarm.
