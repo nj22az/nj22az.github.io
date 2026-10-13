@@ -24,3 +24,17 @@ test('the game loop cooks the order: the frame drives the ramen counter every ti
  const frame=source.slice(source.indexOf('venueService?.update(dt)'),source.indexOf('castAI?.update(dt'));
  assert.ok(frame.includes('ramenPlayerService?.update(dt)'),'ramenPlayerService.update is not called from the frame loop');
 });
+
+test('the bowl is set down on the seat’s table, never in the air (the window table once had it hanging at counter height)',()=>{
+ const room=new T.Group(),mk=seat=>createRamenPlayerService({room,getSeat:()=>seat,getMinutes:()=>600,getBalance:()=>1000,pay:()=>true,say(){}});
+ const withTable=mk({position:[7.65,0,.35],yaw:Math.PI,surfaceY:.46,table:[7.65,.72,.85]});assert.ok(withTable.request('ramen'));withTable.update(5);
+ const bowl=room.children.find(p=>p.visible);assert.deepEqual(bowl.position.toArray().map(n=>+n.toFixed(2)),[7.65,.72,.85]);withTable.dispose();
+ const noTable=mk({position:[7.65,0,.35],yaw:Math.PI,surfaceY:.46});assert.ok(noTable.request('ramen'));noTable.update(5);
+ const lap=room.children.find(p=>p.visible);assert.ok(lap.position.y<=.47,'without a table the bowl rests on the seat, not in the air: y '+lap.position.y);noTable.dispose();
+});
+
+test('game.js carries the seat anchor’s table into the park seat the ramen service reads',async()=>{
+ const {readFile}=await import('node:fs/promises');
+ const source=await readFile(new URL('../src/game.js',import.meta.url),'utf8');
+ assert.match(source,/parkSeat=\{seatId:seat\?\.id,[^}]*table:seat\?\.table\?\[\.\.\.seat\.table\]:null/);
+});
