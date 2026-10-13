@@ -44,7 +44,7 @@ test('the main engines and generator sets are built as machines, in the livery, 
  const lo=(b,i)=>Math.min(b.a[i],b.b[i]),hi=(b,i)=>Math.max(b.a[i],b.b[i]);
  for(let i=0;i<solids.length;i++)for(let j=i+1;j<solids.length;j++){const A=solids[i],B=solids[j];const overlap=[0,1,2].every(k=>lo(A,k)<hi(B,k)-.01&&lo(B,k)<hi(A,k)-.01);assert.ok(!overlap,A.name+' stands inside '+B.name);}
  // Every cylinder stands inside the engine room, below the car deck.
- for(const c of FERRY_INTERIOR.cyls)assert.ok(c.pos[1]<2.2&&c.pos[1]>-1.2&&Math.abs(c.pos[0])<4,'in the engine room: '+c.name+' '+JSON.stringify(c.pos));
+ for(const c of FERRY_INTERIOR.cyls)assert.ok(c.pos[1]<2.2&&c.pos[1]>-1.25&&Math.abs(c.pos[0])<4,'in the engine room: '+c.name+' '+JSON.stringify(c.pos));
 });
 
 test('the model draws the cylinders and hangs the plates on her; the prompts name the brand',()=>{

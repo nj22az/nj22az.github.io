@@ -1308,3 +1308,42 @@ house and make it correct, with proper cabling and piping"*; *"Use correct KKS c
   board, the No.2 pumps along the aux room's port side) with KKS tag plates on every machine; the engine room's pipe
   runs generated from `FERRY_PIPING` rather than painted; control cabling, starter schematics and lighting circuits;
   then the house, with the same data-first method (its own piping and cabling modules, drawn by the same tools).
+
+### 10.13 6r-1 built: the pipes from the diagrams (2026-10-13)
+
+The creator, 2026-10-13: *"So audit the engine room are pipes connected to they lead to systems? Can you stop the
+engines and overhaul them? Turn off help systems?"*, then *"So proceed"*. The audit's answer was no on all three
+(37 hand-painted runs, none from data; no machinery state). 6r-1 answers the first:
+- **Anchors** (`ferry-interior.js`, `FERRY_INTERIOR.anchors`): 151 points where a pipe meets a thing, keyed as the
+  diagrams' nodes (`system/node`): the pumps' delivery tops and low suctions, the engines' and generators' own
+  connections, the strainers and the sea chests' hatches, the crossover's valve chest, the overboard valves, the tanks'
+  stubs on the plates (a flanged fitting; the pipe drops through the plates), the penetrations where a line leaves the
+  space (a flange on the deckhead, bulkhead or lining: the fire main's riser up casing S, the fresh water to the galley,
+  the sewage from the toilets, the aft peak and fore peak, the shaft space and steering-gear bilges), the new
+  hydrophore pressure tank and the engines' priming pumps.
+- **The router** (`ferry-pipe-routes.js`): overhead lanes by system along both sides under the deckhead (fuel, sea
+  water, fresh water, fire main, air, sewage), low lanes under the floor plates (bilge and ballast, lubricating oil),
+  cross-ship runs along the forward bulkhead of the room (never the aft one, where the switchboard stands), a machine's
+  own circuit routed straight round the machine (both orders tried against the solids). 172 routes, every segment
+  axis-aligned, shared segments drawn once, bends at the corners, radius from the bore.
+- **Removed**: the painted mains, pump branches, fuel drops, service-tank line, compressor lines, strainer suction and
+  the aux room's mains. The service tank is 1.55 m high and 0.75 m wide now (1.6 m³ still) so the lanes clear it.
+- **Reviewed** by a separate reviewer before publishing: it found the suctions run straight across the walkways, the
+  cross-ship runs stacked on one line and through the aux room's bulkhead, and overlapping bars. Fixed: a run with both
+  ends low (a sea chest, a tank stub, a pump's suction, a bilge well) goes under the plates on its system's low lane; a
+  cross-ship run follows the forward bulkhead of the compartment both ends stand in, each lane 11 cm aft of the last;
+  collinear spans are merged (874 bars); a ring is drawn at each bulkhead penetration and a stem with a handwheel on each
+  overboard.
+- **Tests** `tests/ferry-pipes.test.mjs`: every machinery-space node anchored; every line between anchors routed from
+  anchor to anchor; no run through a machine (found five and fixed them); no run in a walkway between 5 cm and 1.75 m
+  over the plates; no run along inside a bulkhead; the lanes distinct; the budget raised to 100 000 triangles
+  (95 442 now) with the reason.
+- **Sheets** 5 and 7 draw the runs on the plan in their colours.
+- **The plant's state** (6r-2's core, `src/world/ferry-plant.js`, tested by `tests/ferry-plant.test.mjs`): a pure model
+  of every engine and motor-driven machine of the diagrams with the duty/standby pairs, a chief's interlocks (air,
+  priming, fuel, cooling, the board, the thruster's two generators, the shore connection), the blackout and the
+  emergency generator, change-over, isolate → open → close for an overhaul, the crew's routine by FERRY_DAY and time
+  passing (air bottles, hydrophore, warm-up, the service tank). Not yet wired into the game.
+- **Open** (6r-2, 6r-3): the console, prompts, sound and routine reading the plant; the lines to other decks drawn on
+  those decks; valves drawn on every valve node (the hand valves at the tank stubs and overboards are; the isolating
+  valves either side of each pump are not yet).
