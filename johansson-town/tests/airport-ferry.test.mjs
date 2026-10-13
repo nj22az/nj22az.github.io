@@ -16,6 +16,9 @@ import {createIslandPlay} from '../src/island/play.js';
 import {createTownTraffic} from '../src/world/town-traffic.js';
 import {KITANO_ROAD_LENGTH,roadPoint,kitanoRoadAt} from '../src/world/kitano-link-plan.js';
 import {buildKitanoLink} from '../src/world/kitano-link.js';
+import {QUICK_CROSSING,QUICK_SIGN} from '../src/world/ferry-quick-crossing.js';
+import {HOUSE_HEAD} from '../src/world/house-walk.js';
+import {standingHitsRect} from '../physics.js';
 
 test('the former airport bridge has neither drawn structure nor walking support',()=>{
  const group=new THREE.Group(),colliders=[],link=buildKitanoLink({parent:group,colliders});
@@ -115,12 +118,12 @@ test('she moves like a ship: no snaps, her speed continuous, her turns within wh
 function playerService(){
  const group=new THREE.Group(),run=createFerryRun({parent:group,colliders:[]}),player=new THREE.Object3D(),camera=new THREE.PerspectiveCamera();
  const state={yen:1000,inventory:['Saved keepsake'],island:{v:1,projects:[],treasury:43210,repair:false,flights:0,visits:0,journey:{location:'town',roundTrip:false,ticket:null,checked:false}}};
- let menu=null,minutes=600;const arrivals=[],activities={state,save(){},close(){menu=null;},menu(title,text,buttons){menu={title,text,buttons};}};
+ let menu=null,minutes=600;const arrivals=[],anchors=[],activities={state,save(){},close(){menu=null;},menu(title,text,buttons){menu={title,text,buttons};}};
  const world={group,people:[],ferry:run,colliders:[]};
- const play=createIslandPlay({world,player,camera,activities,getMinutes:()=>minutes,getRain:()=>false,passTime:m=>minutes+=m,place:(x,z,y)=>{arrivals.push({x,z,y});player.position.set(x,y,z);},enterNaha(){},leaveNaha(){}});
+ const play=createIslandPlay({world,player,camera,activities,register:(o,label,fn)=>anchors.push({o,label,fn}),getMinutes:()=>minutes,getRain:()=>false,passTime:m=>minutes+=m,place:(x,z,y)=>{arrivals.push({x,z,y});player.position.set(x,y,z);},enterNaha(){},leaveNaha(){}});
  const choose=prefix=>{const fn=menu.buttons.find(([label])=>label.startsWith(prefix))?.[1];assert.ok(fn,'Missing '+prefix);fn();};
  const complete=()=>{for(let i=0;i<100&&play.active;i++)play.tick(1);assert.equal(play.active,false);};
- return {group,world,run,player,camera,state,play,arrivals,choose,complete};
+ return {group,world,run,player,camera,state,play,arrivals,anchors,choose,complete,get minutes(){return minutes;},get menu(){return menu;}};
 }
 
 test('one hull carries the player both ways, preserves saves and returns at safe heights',()=>{
@@ -203,4 +206,68 @@ test('automatic crossings wait for vehicle transfer, and passenger requests pres
  // The cargo trip finishes at airport, so the same hull returns to collect this town passenger.
  s.world.traffic.pendingVehicleJourney=()=>null;s.complete();
  assert.equal(s.state.island.journey.location,'airport');assert.equal(s.run.berth,'airport');assert.equal(s.state.island.visits,1);
+});
+
+test('a landing sign at each end stands clear of her gangway, her lines, the queue and the cars’ lane',()=>{
+ const s=playerService(),signs=s.anchors.filter(a=>/^Quick crossing to/.test(a.label));
+ assert.deepEqual(signs.map(a=>a.label).sort(),['Quick crossing to Kitano-jima','Quick crossing to Minato']);
+ s.group.updateMatrixWorld(true);
+ // Minato: on the pier, in from the berthing face, off the gangway and the queue, between the springs' bitts.
+ const [mx,mz]=QUICK_CROSSING.town.at,face=OUTER_PIER.x-OUTER_PIER.width/2;
+ assert.ok(mx-face>.5&&mx-QUICK_SIGN.board.w/2-face>.2,'the sign stands over the berthing face');
+ assert.ok(mz-(FERRY_BERTH.gangwayZ+.68)>.6,'the sign stands on the gangway');
+ for(let place=0;place<8;place++){const [qx,qz]=s.run.queueSpot(place);assert.ok(Math.hypot(qx-mx,qz-mz)>1,'the sign stands in the queue');}
+ const springs=MINATO_BERTH.bitts.filter(b=>/spring/.test(b.line)).map(b=>b.z);assert.ok(mz<Math.max(...springs)&&mz>Math.min(...springs),'a line leads across the sign');
+ // Kitano-jima: in the north rail's shore stanchion, well off the cars’ lane (v 31) and the landing.
+ const [u,v]=airportLocal(...QUICK_CROSSING.airport.at);
+ assert.ok(Math.abs(u+49)<1e-9&&Math.abs(v-(AIRPORT_JETTY.maxZ-.12))<1e-9);assert.ok(v-31>2.5);
+ // Both: the pole is a collider, the board is over a tall man's head, the prompt is reached from where he walks.
+ const p=new THREE.Vector3();
+ for(const a of signs){
+  const q=Object.values(QUICK_CROSSING).find(q=>q.label===a.label);a.o.getWorldPosition(p);
+  const c=s.world.colliders.find(c=>c.id===q.id);assert.ok(c&&standingHitsRect(q.at[0],q.at[1],.28,q.ground,c));
+  assert.ok(QUICK_SIGN.board.bottom>HOUSE_HEAD+.15);
+  const ground=a.label.endsWith('Minato')?airportSurface(p.x,p.z,.28):{y:OUTER_PIER.height};
+  assert.ok(ground&&Math.abs(p.y-1-ground.y)<.01,a.label+' is not at hand height over a floor');
+  assert.ok(!s.world.colliders.some(c=>standingHitsRect(p.x,p.z,.28,ground.y,c)),a.label+' cannot be stood at');
+ }
+});
+
+test('the quick crossing is his alone: free, at once, sign to sign, and the ferry left to the residents',()=>{
+ const s=playerService(),use=label=>s.anchors.find(a=>a.label===label).fn(),papers=()=>JSON.stringify(s.state.documentArchive??null);
+ const ferry=()=>({berth:s.run.berth,phase:s.run.phase,destination:s.run.destination,progress:s.run.crossingProgress,at:s.run.ferry.position.toArray()});
+ const before={minutes:s.minutes,yen:s.state.yen,papers:papers(),ferry:ferry(),visits:s.state.island.visits};
+ use('Quick crossing to Kitano-jima');assert.equal(s.menu,null,'no menu: it is taken at once');
+ assert.equal(s.play.active,false);assert.equal(s.state.island.journey.location,'airport');
+ const K=QUICK_CROSSING.airport;assert.deepEqual(s.arrivals.at(-1),{x:K.stand[0],z:K.stand[1],y:K.ground});
+ // He arrives on the jetty's side of its rail, clear of the pole, with the floor under him at the sign's foot.
+ const [u,v]=airportLocal(...K.stand);assert.ok(Math.abs(u+49)<1e-9&&v<AIRPORT_JETTY.maxZ-.32&&v>AIRPORT_JETTY.minZ);
+ assert.ok(Math.abs(airportSurface(...K.stand,.28).y-K.ground)<1e-9);
+ assert.ok(!s.world.colliders.some(c=>standingHitsRect(K.stand[0],K.stand[1],.28,K.ground,c)),'he arrives in the pole');
+ // Free, no time passes, nothing filed, and the ship has not moved.
+ assert.equal(s.minutes,before.minutes);assert.equal(s.state.yen,before.yen);assert.equal(papers(),before.papers);assert.equal(s.state.island.visits,before.visits);
+ assert.deepEqual(ferry(),before.ferry);
+ use('Quick crossing to Minato');assert.equal(s.state.island.journey.location,'town');
+ const T=QUICK_CROSSING.town;assert.deepEqual(s.arrivals.at(-1),{x:T.stand[0],z:T.stand[1],y:T.ground});
+ assert.ok(!s.world.colliders.some(c=>standingHitsRect(T.stand[0],T.stand[1],.28,T.ground,c)),'he arrives in the pole or a bitt');
+ assert.equal(s.minutes,before.minutes);assert.deepEqual(ferry(),before.ferry);
+ // He faces inland on arriving: up the pier to its root, along the jetty to the shore.
+ const ahead=yaw=>[-Math.sin(yaw),-Math.cos(yaw)];
+ assert.ok(ahead(T.facing)[1]>.99);
+ const [fu,fv]=airportLocal(K.stand[0]+ahead(K.facing)[0],K.stand[1]+ahead(K.facing)[1]);assert.ok(Math.abs(fu-(u+1))<1e-6&&Math.abs(fv-v)<1e-6);
+});
+
+test('her own crossings with cars go on untouched by his quick crossing, and a ride is never cut short by it',()=>{
+ const s=playerService();let pending=true;
+ s.world.traffic={pendingVehicleJourney:()=>pending?{id:'car',origin:'town',destination:'airport'}:null,prepareCrossing:()=>true,loadingVehicles:0};
+ s.play.tick(0);assert.equal(s.run.automaticCrossing,true);s.play.tick(5);pending=false;
+ const progress=s.run.crossingProgress,at=s.run.ferry.position.clone();
+ s.anchors.find(a=>a.label==='Quick crossing to Kitano-jima').fn();
+ assert.equal(s.state.island.journey.location,'airport');assert.equal(s.run.automaticCrossing,true);
+ assert.equal(s.run.crossingProgress,progress);assert.equal(s.run.ferry.position.distanceTo(at),0);
+ s.play.tick(1);assert.ok(s.run.crossingProgress>progress,'her crossing stopped for him');
+ // Riding her, the signs do nothing until he is ashore.
+ const t=playerService();t.play.action('airport-ferry');t.choose('Board');t.play.tick(0);assert.equal(t.play.phase,'ferry');
+ const where=t.state.island.journey.location;t.anchors.find(a=>a.label==='Quick crossing to Kitano-jima').fn();
+ assert.equal(t.play.phase,'ferry');assert.equal(t.state.island.journey.location,where);
 });

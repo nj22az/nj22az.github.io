@@ -584,7 +584,7 @@ activities=createActivities({say,onOpen:()=>toggleDir(false),onOutfit:on=>wearSw
   else if(!followRealClock)minutes+=value;
   else if(Number.isFinite(value)&&value>0){minutes+=value;townClock.pass(value);activities.state.clockAhead=townClock.ahead;}
   evictIfClosed();}});
-islandPlay=createIslandPlay({world,player,camera,activities,register:reg,holdFerry:()=>!current&&!!deckUnder(),getMinutes:()=>minutes,getRain:()=>weather,passTime:value=>{minutes+=value;townClock.pass(value);activities.state.clockAhead=townClock.ahead;activities.save();},place:(x,z)=>{if(current)leaveRoom();standUpAt(x,z,0);resetInput();},enterNaha:()=>crossThreshold(()=>enterRoom(NAHA_ARRIVALS)),leaveNaha:()=>leaveRoom()});
+islandPlay=createIslandPlay({world,player,camera,activities,register:reg,holdFerry:()=>!current&&!!deckUnder(),getMinutes:()=>minutes,getRain:()=>weather,passTime:value=>{minutes+=value;townClock.pass(value);activities.state.clockAhead=townClock.ahead;activities.save();},place:(x,z,_y,facing=0)=>{if(current)leaveRoom();standUpAt(x,z,facing);resetInput();},veil:run=>crossThreshold(run,{chime:false}),enterNaha:()=>crossThreshold(()=>enterRoom(NAHA_ARRIVALS)),leaveNaha:()=>leaveRoom()});
 syncView();
 fists=createFists({camera,skin:playerRecipe()?.body?.skin||'#d9a57c',sleeve:playerRecipe()?.outfit?.topColour||'#3f6a8a'});
 hands=createHands({scene,camera,say,consume:name=>{const i=activities.state.inventory.indexOf(name);if(i<0)return false;const lager=name==='Umineko lager';if(lager&&!wantsAnother(tipsy,LAGER_ALCOHOL)){say('Enough for tonight. The can goes back in your bag for tomorrow.',3);return false;}if(lager)tipsy=drinkUp(tipsy,LAGER_ALCOHOL);activities.state.inventory.splice(i,1);const left=SPECIAL_BY_NAME[name]?.cup?null:emptyFor(name);if(left)activities.state.inventory.push(left);activities.save();return true;},canColour,onDrink:()=>johansson?.play(seated?'SitDrink':'Drink')});
@@ -1091,9 +1091,9 @@ let doorSite=null;
  * The crossing itself: chime, a short veil over the swap, and the heading carried
  * across. The veil also covers a room that has to stream its model in.
  */
-async function crossThreshold(run){
+async function crossThreshold(run,{chime=true}={}){
  const veil=$('#threshold');
- townAudio.play('door-chime',.42);
+ if(chime)townAudio.play('door-chime',.42);
  veil.classList.add('on');
  await new Promise(r=>setTimeout(r,150));
  try{await run();}finally{
@@ -1500,7 +1500,7 @@ function syncView(){
 function markPlace(s){navigationTarget=s;toggleDir(false);drawMap();say(placeDirections(s)+(current?' Use Exit to street to start walking.':''),7);return false;}
 function visitPlace(s){
  if(islandPlay?.active)return false;
- if(s?.id==='airport-island')return markPlace({...s,directions:'Take the local airport ferry from the Minato pier. Tickets are at the harbour terminal.'});
+ if(s?.id==='airport-island')return markPlace({...s,directions:'Take the Minato Maru from the outer pier: board her at the gangway, or cross quickly from the landing sign beside it.'});
  if(!s)return false;
  // The gate lives at the action itself, so stale buttons and WebMCP share it.
  if(!travelProgress(activities.state).unlocked)return markPlace(s);

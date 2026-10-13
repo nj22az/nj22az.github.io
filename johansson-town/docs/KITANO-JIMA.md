@@ -263,3 +263,15 @@ host acceptance (phones, frame rate under the town's load).
 colliders whose top is under the floor (`placements.js`). The residents' room navigator keeps 0.32 m from walls on a
 0.2 m grid, so it cannot plan through the house's 900 mm doors: when residents live in the house, plan their walks on
 the house's own floors.
+
+## 6. The quick crossing (2026-10-13)
+
+The creator: "Include a quick travel point at the docks to travel to the island and back", and "quick crossing should be
+free it's only Johansson who can do it, npcs need to go by ferry". The Minato Maru's landing sign (のりば) stands at
+each end of her run (`src/world/ferry-quick-crossing.js`): on the outer pier 0.7 m north of her gangway, off the berthing
+face and clear of her lines and the queue (北野島行), and in the place of the Kitano-jima jetty's north rail stanchion at
+its shore end, off the cars' lane (港町行). Each box reads the destination, フェリーのりば, and her name and minutes
+(みなと丸 · 所要22分, from `AIRPORT_FERRY.duration`). The residents read it and take her. Johansson's prompt at it,
+"Quick crossing to Kitano-jima" / "Quick crossing to Minato", takes him to the sign at the other end at once: no fare,
+no time passes, nothing is filed, and the ship, her cars and her passengers are left as they are (`island/play.js`
+`quickCrossing`; tests in `tests/airport-ferry.test.mjs`). The ferry ride stays as it was for him too.
