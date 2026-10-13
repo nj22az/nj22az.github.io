@@ -4,7 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {installDOM} from './fixtures.mjs';
-const {ISLAND_PLACES,islandPlaces,islandPlace}=await import('../src/world/island-guide.js');
+const {ISLAND_PLACES,islandPlaces,islandPlace,placeSays}=await import('../src/world/island-guide.js');
 const {FLIGHT_TIMES,stamp}=await import('../src/island/services.js');
 const {createActivities}=await import('../activities.js');
 const read=f=>readFileSync(new URL('../'+f,import.meta.url),'utf8');
@@ -14,21 +14,24 @@ test('every place is whole, and each of its facts is still in the game', () => {
  for(const p of ISLAND_PLACES){
   assert.ok(['kitano','johansson'].includes(p.island),p.id);
   assert.ok(['beach','view','shrine','shop','village','travel','bath','walk'].includes(p.kind),p.id);
-  assert.ok(p.says.length>60&&p.says.length<420,p.id+' says something, briefly');
+  assert.ok(placeSays(p).length>60&&placeSays(p).length<420,p.id+' says something, briefly');
   assert.ok(p.checks.length>=1,p.id+' is held to the game');
   for(const [file,text] of p.checks)assert.ok(read(file).includes(text),`${p.id}: "${text}" in ${file}`);
  }
  assert.ok(islandPlaces('kitano').length>=5&&islandPlaces('johansson').length>=5);
- assert.match(islandPlace('airport').says,new RegExp(FLIGHT_TIMES.map(stamp).join('|')),'the flights from the timetable');
+ assert.match(placeSays(islandPlace('airport')),new RegExp(FLIGHT_TIMES.map(stamp).join(', ').replace(/, ([^,]*)$/,' and $1')),'the flights from the timetable');
+ // What the town has funded changes her answers: the guesthouse's 11:00 flight, the coastal bus.
+ assert.match(placeSays(islandPlace('airport'),{island:{projects:['guesthouse']}}),/11:00/);
+ assert.match(placeSays(islandPlace('hoshizaki'),{island:{projects:['bus']}}),/coastal bus runs/);
 });
 
 test('she never promises what is not built', () => {
- const all=ISLAND_PLACES.map(p=>p.says).join(' ');
+ const all=ISLAND_PLACES.map(p=>placeSays(p)).join(' ');
  // No live turtles: she only repeats what the cove's own sign says, and that she has never seen one.
- assert.match(islandPlace('turtle-cove').says,/they say/);
+ assert.match(placeSays(islandPlace('turtle-cove')),/they say/);
  // No village bus, no guesthouse, no keeper, no summer flight, no fare.
- assert.match(islandPlace('hoshizaki').says,/no village bus yet/);assert.match(islandPlace('hoshizaki').says,/only a sign so far/);
- assert.match(islandPlace('west-cape').says,/no keeper/);
+ assert.match(placeSays(islandPlace('hoshizaki')),/no village bus yet/);assert.match(placeSays(islandPlace('kitano-hamlet')),/Mayor/,'she knows whom she is talking to');assert.match(placeSays(islandPlace('hoshizaki')),/only a sign so far/);
+ assert.match(placeSays(islandPlace('west-cape')),/the log says/);
  assert.doesNotMatch(all,/summer flight|Gate 2|parasol|¥400 (ferry|return)/i);
 });
 
@@ -39,7 +42,7 @@ test('at her window: pick an island, then a place', () => {
  dom.button('What is there on Kitano-jima?');
  assert.deepEqual(dom.labels(),[...islandPlaces('kitano').map(p=>p.name),'That is all, thank you']);
  dom.button('Coral Bay');
- assert.equal(document.querySelector('#activityBody').children[0].textContent,islandPlace('coral-bay').says);
+ assert.equal(document.querySelector('#activityBody').children[0].textContent,placeSays(islandPlace('coral-bay')));
  dom.button('Somewhere else?');dom.button('That is all, thank you');
  dom.button('What is there on this island?');assert.ok(dom.labels().includes('Umi-no-yu'));
 });
