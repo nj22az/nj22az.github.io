@@ -49,7 +49,8 @@ island".
   (Minato, Sato Ramen, the benches, the seawall) are kept for `?spawn=`.
 - **The opening holds while the town loads** (`render/spawn-scene.js`). A docks opening begins high and wide over the
   harbour, turning slowly round him. It holds there while anything near him is still loading
-  (`detailStream.pendingNear`; the staged build adds its own steps in batch 3), for at least 2.2 s and at most 45 s.
+  (`detailStream.pendingNear`, once the stream has started), for at least 2.2 s and at most 20 s: on a slow line he is
+  not kept standing longer, and what has not come streams in as he walks.
   Then it comes down to him and the lens returns behind him, onto what he is looking at. While it holds he stands
   still, and only a placement, a room or another view can end it, so nobody walks into a town still being built.
 - **Found on the way: Kitano-jima's batches were culled from Minato.** `batchStaticProps` put the island's merged

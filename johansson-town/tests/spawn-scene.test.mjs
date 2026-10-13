@@ -45,8 +45,8 @@ test('streamed obstructions, another travel view and interaction stop an arrival
 test('a docks opening holds on the harbour while the town loads, ignores input until then, then comes down to him',()=>{
  const {camera,actor,arrival}=fixture();actor.root.position.set(-2.6,.1,-70.4);camera.fov=65;let loading=true;
  arrival.start({id:'landing-sign',yaw:-.89,establish:true,hold:()=>loading});
- // Twenty seconds of loading: the harbour from high up, turning slowly, and nothing cancels it but a placement.
- const heights=[];for(let i=0;i<200;i++){arrival.update(.1);heights.push(camera.position.y);}
+ // Fifteen seconds of loading: the harbour from high up, turning slowly, and nothing cancels it but a placement.
+ const heights=[];for(let i=0;i<150;i++){arrival.update(.1);heights.push(camera.position.y);}
  assert.equal(arrival.holding,true);assert.equal(arrival.snapshot().establishing,true);
  assert.ok(Math.min(...heights)>actor.root.position.y+8,'the harbour is seen from high up');
  arrival.cancel('input');arrival.update(.1,{paused:true});assert.equal(arrival.active,true,'input ended the opening during loading');
@@ -56,6 +56,8 @@ test('a docks opening holds on the harbour while the town loads, ignores input u
  // With nothing to load it is short: the harbour for its two seconds, then him.
  arrival.start({id:'pier',yaw:-.94,establish:true,hold:()=>false});let t=0;while(arrival.active&&t<20){arrival.update(.1);t+=.1;}
  assert.ok(t<11,'an opening with nothing to wait for took '+t.toFixed(1)+' s');
+ // On a slow line he is not kept standing past twenty seconds: the shot goes on while the rest streams in.
+ arrival.start({id:'pier',yaw:-.94,establish:true,hold:()=>true});for(let i=0;i<205;i++)arrival.update(.1);assert.equal(arrival.holding,false);
  // A placement still ends it at once, loading or not.
  loading=true;arrival.start({id:'pier',establish:true,hold:()=>loading});arrival.update(.1);arrival.cancel('placement');assert.equal(arrival.active,false);
 });

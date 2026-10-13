@@ -4,9 +4,10 @@ const DURATION=5.6,RETURN_TIME=.9;
 /**
  * The docks openings (world/openings.js `docks`) begin with the harbour: a wide, high view that turns slowly round him
  * while the town is still being built (`hold`, the creator, 2026-10-13: "the animation should be long enough to load the
- * rest of the town"), at least ESTABLISH seconds and at most HOLD_MAX, then DESCEND seconds down to the shot of him.
+ * rest of the town"), at least ESTABLISH seconds and at most HOLD_MAX (on a slow line he is not kept standing longer:
+ * what has not come by then streams in as he walks), then DESCEND seconds down to the shot of him.
  */
-const ESTABLISH=2.2,DESCEND=2.4,HOLD_MAX=45,ORBIT=.05;
+const ESTABLISH=2.2,DESCEND=2.4,HOLD_MAX=20,ORBIT=.05;
 const SHOTS={
  'sakura-bench':{angle:.85,distance:4.5,height:1.9,action:'Think'},
  'park-bench':{angle:-.9,distance:5.1,height:2.5,action:'LookAround',bird:true},
