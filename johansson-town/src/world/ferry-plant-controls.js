@@ -21,6 +21,9 @@ export const PLANT_STATIONS=Object.freeze([
  station('stand-mainS',at('lube/prime-mainS',.55,.6,.1),['mainS','prime-mainS'],'Starboard main engine · local control stand'),
  station('panel-gen1',panel('generator no.1'),['gen1'],'Generator No.1 panel'),
  station('panel-gen2',panel('generator no.2'),['gen2'],'Generator No.2 panel'),
+ // Local panels travel with the relocated auxiliary-room machines; switchboard operation remains in the booth.
+ station('local-gen1',[.6,FP+1.1,A['fuel/fuel-gen1'].pos[2]-.55],['gen1'],'Generator No.1 local control',{reach:1.0}),
+ station('local-gen2',[-.6,FP+1.1,A['fuel/fuel-gen2'].pos[2]-.55],['gen2'],'Generator No.2 local control',{reach:1.0}),
  station('pump-fp1',at('fire/fp1',.6,.5),['fp1'],'Fire & GS pump No.1'),station('pump-fp2',at('fire/fp2',.6,.5),['fp2'],'Fire & bilge pump No.2'),
  station('pump-gs',at('seawater/gs',.6,.5),['gs'],'General-service pump'),station('pump-bp',at('bilge/bp',.5,.75),['bp'],'Bilge pump'),
  station('pump-sp1',at('sewage/sp1',.6,.5),['sp1'],'Sanitary pump No.1'),station('pump-hp1',at('freshwater/hp1',.6,.5),['hp1'],'Hydrophore pump No.1'),
@@ -105,3 +108,4 @@ export function readoutLines(r){
  const board=r.board.live?(r.board.shore?'SHORE POWER ON BOARD':r.board.generatorsOnline+' GEN ON BOARD · '+Math.round(r.board.kW)+' kW'):r.board.emergency?'BLACKOUT · EMERGENCY GEN ON':'BLACKOUT · BOARD DEAD';
  return [eng('mainP','PORT'),eng('mainS','STBD'),board+' · AIR '+r.air.map(a=>a.toFixed(0)).join('/')+' bar','SERVICE TANK '+Math.round(r.service*100)+' % · FW '+r.fwPressure.toFixed(2)+' MPa · BILGE AFT '+Math.round(r.bilgeAft*100)+' %'];
 }
+
