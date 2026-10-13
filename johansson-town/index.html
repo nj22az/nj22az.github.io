@@ -37,20 +37,20 @@
 <link rel="modulepreload" data-town-runtime href="./runtime/resident-personalities-CEKTpmiT.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/fish-wPkwLsr-.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/beach-layout-BDTfOgJv.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-BSUlvEDV.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-pSEB3XHa.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/preload-helper-PPVm8Dsz.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/icons-DfeBIm6m.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-D34cMzo7.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-HUBfNaoU.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/halloween-CbbXninb.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/izakaya-serving-visuals-7cJ1-slZ.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/actors-BF2yeQxD.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-DOQvDyJE.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/halloween-BXyCtbtt.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/izakaya-serving-visuals-B_DBQJ_X.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/actors-DGjTDFcr.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/town-audio-DW8SohWz.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/onsen-CWYVRx6b.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/sakura-interior-D1YILMqT.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/compact-shops-Duif_WiQ.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/sato-ramen-DUHW-cH0.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/town-hall-CuR__zZT.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/onsen-DKalHu1a.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/sakura-interior-Cu0QijAE.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/compact-shops-BpynwMI6.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/sato-ramen-0EGGgpib.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/town-hall-D_XQZOOd.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/studio-handoff-CmyBs9Fs.js">
 </head>
 <body>
@@ -388,8 +388,8 @@
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON WORLD</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>INSTALL JOHANSSON WORLD</h2><p>On iPhone or iPad, open this page in Safari. Tap Share, then Add to Home Screen, and turn on Open as Web App if offered. Open the town from its new icon. Your save stays on this device; installed apps and Safari may have separate saves. Reopen while online to get the latest town updates. Previously visited content can load offline.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
 <script src="./resident-guide.js?h=6b430c7d"></script>
-<script>window.JOHANSSON_FEED_MODULE="./runtime/feed-XAmhekip.js";</script>
-<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-EhrfA7ie.js";</script>
+<script>window.JOHANSSON_FEED_MODULE="./runtime/feed-DppggW4Q.js";</script>
+<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-xXvZsBW2.js";</script>
 <script src="./landing.js?h=7591566d"></script>
 <script>
 // Title screen: the Johansson Co. splash, the START menu, and the town guide page
@@ -582,7 +582,7 @@ import {unlockTownAudio} from './runtime/audio-DKP6o9rD.js';
 
   window.__JOHANSSON_TITLE_PREVIEW__=true;
   async function loadPreview(){
-    try { await import('./runtime/boot-BSUlvEDV.js'); } catch (error) {
+    try { await import('./runtime/boot-pSEB3XHa.js'); } catch (error) {
         if (!/fetch|module|import|404/i.test(error.message||'')) throw error;
         const response=await fetch('./index.html',{cache:'no-store'});
         if(!response.ok)throw error;
