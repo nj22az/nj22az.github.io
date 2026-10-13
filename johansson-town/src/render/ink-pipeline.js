@@ -339,6 +339,8 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
     renderer.setRenderTarget(previousTarget);
    }
   },
+  /** The target the town is drawn into: shaders compiled ahead of time are compiled for it (game.js compileTown). */
+  get sceneTarget(){return rtScene;},
   dispose(){
    [rtScene,rtA,rtB].forEach(rt=>rt.dispose());
    [inkPass,gradePass,fxaaPass].forEach(p=>p.dispose());

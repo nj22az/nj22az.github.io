@@ -104,7 +104,9 @@ function emblem(ctx,kind,x,y,r,color){
 }
 export function createLabelAtlas(){
  const canvas=document.createElement('canvas');canvas.width=ATLAS_SPAN*TW;canvas.height=ROWS*TH;
- const ctx=canvas.getContext('2d');ctx.fillStyle='#f0e5ca';ctx.fillRect(0,0,canvas.width,canvas.height);
+ // Read back for every flavour (paintFlavourCell): a canvas kept in memory reads back at once, where a GPU canvas
+ // stalled the town's build for over a second (docs/LOADING.md batch 5).
+ const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.fillStyle='#f0e5ca';ctx.fillRect(0,0,canvas.width,canvas.height);
  for(const [id,index] of slots){
   const b=STORE_BRANDS[id]||STORE_BRANDS.stock,x=index%COLS*TW,y=Math.floor(index/COLS)*TH;
   // Fresh food and the paper have their own printed faces (fresh-labels.js).

@@ -66,7 +66,7 @@ for(const spec of [
  }
 });
 
-test('shop readiness waits for both loaded displays, counts their real geometry and disposes pending fixtures safely',async t=>{
+test('shop readiness waits for the cat, the back room fetches the figurine on demand, counts their real geometry and disposes pending fixtures safely',async t=>{
  installDOM();const nativeFetch=globalThis.fetch,nativeBitmap=globalThis.createImageBitmap,nativeSelf=globalThis.self;
  globalThis.self=globalThis;globalThis.window.document=globalThis.document;
  // Node has no bitmap decoder; image byte fidelity is checked above. This exercises
@@ -84,8 +84,11 @@ test('shop readiness waits for both loaded displays, counts their real geometry 
  let display;
  try{
   const room=new THREE.Group();display=buildSakuraInterior({room,reg(){},action(){},exit(){}});
-  let ready=false;const completion=display.ready().then(value=>{ready=value;return value;});
-  await new Promise(done=>setTimeout(done,30));assert.equal(requested,true);assert.equal(ready,false,'Room readiness cannot complete before its figurine loads');release();assert.equal(await completion,true);
+  // The shop is ready without the back room's figurine (5 MB): it is fetched when he nears the shop or goes in
+  // (docs/LOADING.md batch 5), and not before.
+  assert.equal(await display.ready(),true);assert.equal(requested,false,'The figurine is fetched with the shop');
+  const figurine=display.loadBackRooms();await new Promise(done=>setTimeout(done,30));assert.equal(requested,true);
+  release();assert.equal(await figurine,true);assert.equal(display.loadBackRooms(),figurine,'The figurine is fetched twice');
   for(const kind of ['thuanFigurine','Maneki_neko_Colorful'])assert.equal(room.getObjectByName(kind)?.userData.ready,true,kind+' is part of the fully ready room');
   room.updateMatrixWorld(true);
   for(const [kind,sole,height] of [['thuanFigurine',BACKROOM.figurine.plinth,BACKROOM.figurine.height],['Maneki_neko_Colorful',FURNITURE_HEIGHTS.serviceCounter,.23]]){

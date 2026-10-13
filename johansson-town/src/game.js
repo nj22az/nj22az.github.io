@@ -273,6 +273,18 @@ const INK_OPTIONS={
 };
 const inkRecovery=createInkRecovery({retries:4,cooldown:3500});
 let pipeline=null;
+/**
+ * Compiles the town's shaders ahead of its first frame, for the target it is drawn into: with the ink pipeline that is
+ * its offscreen target (linear output), not the screen (sRGB). Compiled for the screen, every material was compiled
+ * twice, once here and again on its first draw: 56 of the 190 programs at startup (docs/LOADING.md batch 5).
+ */
+function compileTown(object,{async=false}={}){
+ const previous=renderer.getRenderTarget();
+ try{
+  if(pipeline)renderer.setRenderTarget(pipeline.sceneTarget);
+  if(async)renderer.compileAsync?.(object,camera,scene)?.catch?.(()=>{});else renderer.compile(object,camera);
+ }catch{}finally{renderer.setRenderTarget(previous);}
+}
 /** Plain output, for while the ink is away. */
 function renderPlain(){renderer.toneMapping=THREE.AgXToneMapping;renderer.toneMappingExposure=.96;}
 function buildInk(){
@@ -536,7 +548,7 @@ function advanceWeather(){
  // Colliders by where they are, for the camera, walking and residents (collider-grid.js).
  const colliderGrid=createColliderGrid(world.colliders);
  // Kitano-jima is built when he heads there (world/kitano-on-demand.js): shaded, lit and compiled as it arrives.
- world.kitano.onLoaded.push(island=>{celPass.apply(scene);lightBudget.update();townSections.invalidate();shopStreetView.invalidate();if(island)renderer.compileAsync?.(island,camera,scene)?.catch?.(()=>{});neighbours?.replan?.();});
+ world.kitano.onLoaded.push(island=>{celPass.apply(scene);lightBudget.update();townSections.invalidate();shopStreetView.invalidate();if(island)compileTown(island,{async:true});neighbours?.replan?.();});
  /** Before he is put anywhere on or by Kitano-jima, the island is whole (at once: he arrives behind a veil or a cut). */
  const ensureKitanoAt=(x,z)=>{if(world.kitano.near(x,z))world.kitano.ensure();};
  // What the creator placed with the builder (src/build), published with the town in data/world-placements.json.
@@ -1592,7 +1604,7 @@ function startArrivalScene(opening){
 }
 // Queue shared shaders once. This renderer's async poll can outlive materials replaced
 // by the detail stream; compile queues GPU work without retaining disposed materials.
-lightBudget.update();try{renderer.compile(scene,camera);}catch{}
+lightBudget.update();compileTown(scene);
 function enterWorld(){
  if(started)return;
  window.__JOHANSSON_TITLE_PREVIEW__=false;
