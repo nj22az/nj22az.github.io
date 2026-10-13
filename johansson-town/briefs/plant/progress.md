@@ -23,9 +23,13 @@
 - A separate reviewer (general-purpose agent, given the output paths, checks.md and the sources) found: suctions run straight across the walkways; compartment crossings stacked on one line and through the aux room's bulkhead; the storeP→vP loop; no penetration pieces or overboard valves drawn; collinear bars drawn twice. All fixed (low lanes for suctions, crossings by compartment and staggered, the near case, rings and stems, spans merged) and the walkway and bulkhead checks added to `tests/ferry-pipes.test.mjs`.
 - `src/world/ferry-plant.js` (6r-2's core) written and tested (5 tests); not wired into the game yet.
 
+## Completed (6r-2)
+- `ferry-plant-controls.js` (stations, labels, menus, liveValue, plantSound, telegraphFor); `ferry.js` runs the plant by the clock and her phase; `ferry-interior.js` live keys on 35 plates and the alarm matrix as one plate; `ferry-model.js` redraws live plates (`ferry.userData.readPlant`); `town-audio.js` ENGINE generators/emergency; `game.js` plantStation menus; the console note removed from ferry-inspect.js. Tests: `tests/ferry-plant-game.test.mjs`.
+- 6r-1 published: run 88 succeeded (57d4612e).
+
 ## Open issues
-- 6r-2 integration: the console's dials and alarm matrix, the engine sound and the crew's routine still read the old fixed state; prompts to start, stop, change over and isolate not yet offered at the machines.
+- 6r-3: overhaul scenes (covers off, parts on the plates) when a machine is opened; crew bodies at the handles; alarm acknowledge; the plant saved with the game.
 - Lines to other decks (9) end at a penetration; drawn on their own decks later.
 
 ## Next action
-Publish 6r-1 with ferry-plant.js (suite, runtime rebuild, merge the branch and main, push, check the run); then 6r-2 integration: `createPlant` driving the console (dials, alarms), the machine prompts, the engine sound and the crew's routine; then 6r-3 overhaul.
+Publish 6r-2 (suite, runtime rebuild, merge the branch and main, push, check the run); then 6r-3 overhaul.

@@ -112,7 +112,9 @@ export function createPlant({minutes=FERRY_DAY.generators}={}){
   // Fresh water: the taps use it, the duty hydrophore pump keeps the pressure tank between its switch points.
   tanks.fwPressure-=FW.usePerMinute*dtMinutes;const hp=machines.get(duty.get('Fresh water'));
   if(hp&&live()){if(tanks.fwPressure<=FW.cutIn&&hp.state!=='running'&&/stopped|standby/.test(hp.state)){hp.state='running';}if(hp.state==='running'){tanks.fwPressure=Math.min(FW.cutOut+.02,tanks.fwPressure+FW.fillPerMinute*dtMinutes);tanks.freshWater-=dtMinutes*.0003;if(tanks.fwPressure>=FW.cutOut&&!hp.manual)hp.state='standby';}}
-  tanks.bilgeAft=Math.min(1,tanks.bilgeAft+dtMinutes*.0008);if(machines.get('bp')?.state==='running')tanks.bilgeAft=Math.max(0,tanks.bilgeAft-dtMinutes*.05);
+  tanks.bilgeAft=Math.min(1,tanks.bilgeAft+dtMinutes*.0008);const bp=machines.get('bp');if(bp?.state==='running')tanks.bilgeAft=Math.max(0,tanks.bilgeAft-dtMinutes*.05);
+  // The oiler pumps the well each watch before the float switch's alarm (0.5), and stops the pump when it sucks air; a pump the player handled is left alone.
+  if(bp&&!bp.manual&&live()){if(tanks.bilgeAft>=.4&&bp.state==='stopped'){bp.state='running';note('Bilge pump started: the aft well pumped by the watch');}else if(bp.state==='running'&&tanks.bilgeAft<=.02)bp.state='stopped';}
   for(const x of machines.values())if(x.state==='running'&&!(x.kind==='engine'||x.kind==='generator'))x.hours+=dtMinutes/60;
   board.MSB.kW=[...machines.values()].filter(x=>x.state==='running'&&x.kind!=='engine'&&x.kind!=='generator').reduce((s,x)=>s+x.kW*.7,0)+(live()?12:0);
   if(!live()&&board.ESB.source===null&&events.some(e=>e.kind==='blackout'&&clock-e.at>=E.emergency.onLoadWithin/60)){board.ESB.source='EG';board.ESB.live=true;board.EG.state='running';note('Emergency generator on load');}

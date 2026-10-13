@@ -18,7 +18,7 @@ const CAR=Y(FERRY_HEIGHTS.carDeck),PASS=Y(FERRY_HEIGHTS.passengerDeck),BRIDGE=Y(
 export const CREW_POSTS=Object.freeze({
  wheelhouse:{pos:[.45,BRIDGE,Z(20.7)],yaw:Math.PI},
  'port-wing':{pos:[3.55,BRIDGE,Z(20.6)],yaw:Math.PI},
- 'engine-room':{pos:[-3.0,FP,Z(9.2)],yaw:0},
+ 'engine-room':{pos:[-3.1,FP,Z(10.4)],yaw:Math.PI/2},   // at the console's forward end, facing the panel (6r-2: the switchboard's front is the player's to work; the chief stood in the booth door)
  'steering-gear':{pos:[0,FP,Z(9.6)],yaw:0},
  stern:{pos:[1.2,CAR,Z(1.6)],yaw:0},
  bow:{pos:[0,CAR,Z(31.5)],yaw:Math.PI},

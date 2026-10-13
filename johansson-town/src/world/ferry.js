@@ -7,6 +7,8 @@ import {FERRY_DAY,rollPeriod,pitchPeriod} from './ferry-ship.js';
 import {buildFerryModel,GANGWAY_Z,WL,FERRY_HULL,FERRY_RAMP,FERRY_DECKS,FERRY_CASINGS,halfBreadth} from './ferry-model.js';
 import {MINATO_BERTH} from './minato-berth.js';
 import {FERRY_INSPECT,FERRY_LADDER} from './ferry-inspect.js';
+import {createPlant} from './ferry-plant.js';
+import {PLANT_STATIONS,stationLabel,plantSound,telegraphFor} from './ferry-plant-controls.js';
 import {OUTER_PIER} from './layout.js';
 import {BERTH_X,BERTH_Z,townArrival,townDeparture} from './ferry-paths.js';
 import {lanternGlow,windowGlow} from '../render/dusk.js';
@@ -141,6 +143,31 @@ export function createFerryRun({parent,shadows=false,colliders,register=null,onA
  // Her whistle: every signal she sounds, in order (the town's sound plays each one where she is).
  const whistle={count:0,kind:null,x,z,log:[]};
  const sound=kind=>{whistle.count++;whistle.kind=kind;whistle.x=x;whistle.z=z;whistle.log.push({n:whistle.count,kind,x,z});if(whistle.log.length>6)whistle.log.shift();};
+ // The plant (6r-2, ferry-plant.js): her machines as they run, worked by the crew's day and by the player at the
+ // stations (ferry-plant-controls.js); the console's dials and alarm matrix, the prompts and her sound read it.
+ const plant=createPlant();let plantMinute=null,plantShown=-1;const stations=[];
+ if(register)for(const st of PLANT_STATIONS){const a=new THREE.Object3D();a.name='Ferry: '+st.title;a.position.set(...st.pos);a.userData.sameLevel=true;a.userData.reach=st.reach;a.userData.facing=.55;ferry.add(a);
+  register(a,stationLabel(plant,st),()=>onAction('plant',st.id));stations.push({st,a});}
+ /** The prompts and the live plates follow the plant (after the crew's routine, time passing, or the player's hand). */
+ const showPlant=()=>{for(const {st,a} of stations)if(a.userData.hit)a.userData.hit.label=stationLabel(plant,st);ferry.userData.readPlant?.(plant.readings());};
+ /**
+ * Advances the plant to the town's minute: the crew's routine each minute, time passing, the telegraph by her phase.
+ * The first time (and when the clock is set back or jumps), the day so far is replayed from midnight in five-minute
+ * steps, so an engine that the crew started at 6:25 is warm with its hours on the counter when the player comes aboard
+ * at two, not one that has just been started.
+ */
+ const runPlant=minutes=>{
+  const m=((minutes%1440)+1440)%1440;
+  if(plantMinute===null||minutes<plantMinute||minutes-plantMinute>180){const day=minutes-m;for(let t=0;t<m;t+=5){plant.routine(t);plant.tick(Math.min(5,m-t));}plantMinute=minutes;plant.routine(m);}
+  const dm=minutes-plantMinute;if(dm>0){plant.tick(dm);if(Math.floor(minutes)!==Math.floor(plantMinute))plant.routine(m);plantMinute=minutes;}
+  const under=!['waiting','away'].includes(phase);plant.setUnderway(under);const order=telegraphFor(phase,exposure);
+  // Manoeuvring (FERRY_WATCH: the chief puts both generators on the board for the thruster), No.2 comes on; alongside again it goes off, unless the player has it in hand.
+  const g2=plant.machine('gen2');if(g2&&!g2.manual){const manoeuvring=['reversing','swinging'].includes(phase)||(phase==='arriving'&&(exposure<.5||g2.state==='running'))||(phase==='leaving'&&exposure<.5);   // once on for the arrival it stays on until she is alongside
+   if(manoeuvring&&g2.state==='stopped'&&plant.start('gen2').ok){plant.closeBreaker('gen2');g2.manual=false;}
+   else if(!manoeuvring&&g2.state==='running'&&g2.breaker&&plant.readings().board.generatorsOnline>1){plant.openBreaker('gen2');plant.stop('gen2');g2.manual=false;}}
+  for(const id of ['mainP','mainS'])if(plant.readings().telegraph[id]!==order)plant.setTelegraph(id,order);
+  if(Math.abs(minutes-plantShown)>=.05){plantShown=minutes;showPlant();}
+ };
  /** Signals of the passage she is on, sounded as her time passes each one. */
  const signalsBetween=(passage,from,to)=>{if(!passage||to<=from)return;for(const s of passage.signals)if(s.at>=from&&s.at<to)sound(s.kind);};
  const set=(nx,nz,nyaw)=>{x=nx;z=nz;yaw=nyaw;};
@@ -235,15 +262,18 @@ export function createFerryRun({parent,shadows=false,colliders,register=null,onA
   /** The bow ramp: down a minute after it berths, up again a minute before it leaves. */
   get rampDown(){if(localService)return phase==='waiting'?1:0;const e=run.alongsideFor;if(e===null)return 0;const s=u=>{u=Math.max(0,Math.min(1,u));return u*u*(3-2*u);};return Math.min(s(e-.2),s(BUS_DWELL-.4-e));},
   get service(){return service;},
+  /** Her plant (ferry-plant.js) and the stations the player works it at; `refreshPlant` after the player's hand. */
+  get plant(){return plant;},get stations(){return stations.map(s=>s.st);},refreshPlant(){showPlant();},
   /** What the town's sound needs: where she is, what she is doing, her engines and her whistle. */
   get audio(){
    const m=((lastMinutes??0)%1440+1440)%1440,underway=!['waiting','away'].includes(phase);
-   const engines=!ferry.visible?'off':underway?(exposure>.5?'sea':'manoeuvring'):m>=FERRY_DAY.shorePower||m<FERRY_DAY.generators?'off':'idle';
+   const engines=!ferry.visible?'off':plantSound(plant.readings(),{underway,exposure});
    return {phase,x,z,engines,whistle:{count:whistle.count,kind:whistle.kind,x:whistle.x,z:whistle.z,log:[...whistle.log]}};
   },
   update(dt,minutes=0,time){
    if(!(dt>0))return;
    clock=Number.isFinite(time)?time:clock+dt;
+   runPlant(minutes);
    if(localService){lastMinutes=minutes;if(phase==='waiting'){place();lights(minutes,false);}trackSolid();return;}
    try{
     if(lastMinutes===null||minutes<lastMinutes||minutes-lastMinutes>dt+1){

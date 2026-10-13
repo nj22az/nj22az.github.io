@@ -1,5 +1,6 @@
 import {createLensOcclusion} from './render/lens-occlusion.js';
 import {FERRY_LADDER} from './world/ferry-inspect.js';
+import {PLANT_STATIONS,stationMenu} from './world/ferry-plant-controls.js';
 import {BELOW_DECK_FLOORS} from './world/ferry-interior.js';
 import {WEATHERS,WEATHER_CHANGE_MINUTES,weatherLine,nextWeather,readWeather,writeWeather} from './world/weather.js';
 import {izakayaOpen} from './people/social.js';
@@ -530,7 +531,7 @@ function advanceWeather(){
  const next=nextWeather(weatherKind);if(next!==weatherKind)applyWeather(next,{announce:true});
 }
 
- const world=createTown({scene:town,sites:SITES,mobile,shadows,maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:s=>crossThreshold(()=>enterRoom(s)),getPlayerPosition:()=>current?null:player.position,onAction:(...args)=>{if(islandPlay?.action(...args))return;if(args[0]==='ferry-ladder'){ferryLadder(args[1]);return;}if(args[0]==='bicycle'){startBicycleRide(args[1]);return;}if(args[0]==='dungeon'){enterDungeon();return;}if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person?.g.userData.sleeping){say(args[1]+' is sleeping. You can stay and watch the morning routine.',4);return;}if(person?.g.userData.waking||person?.g.userData.roomTransition){say(args[1]+' is '+person.g.userData.activity+'.',3);return;}if(person){person.g.userData.facePlayerUntil=performance.now()+1600;characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
+ const world=createTown({scene:town,sites:SITES,mobile,shadows,maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:s=>crossThreshold(()=>enterRoom(s)),getPlayerPosition:()=>current?null:player.position,onAction:(...args)=>{if(islandPlay?.action(...args))return;if(args[0]==='ferry-ladder'){ferryLadder(args[1]);return;}if(args[0]==='plant'){plantStation(args[1]);return;}if(args[0]==='bicycle'){startBicycleRide(args[1]);return;}if(args[0]==='dungeon'){enterDungeon();return;}if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person?.g.userData.sleeping){say(args[1]+' is sleeping. You can stay and watch the morning routine.',4);return;}if(person?.g.userData.waking||person?.g.userData.roomTransition){say(args[1]+' is '+person.g.userData.activity+'.',3);return;}if(person){person.g.userData.facePlayerUntil=performance.now()+1600;characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
  // Colliders by where they are, for the camera, walking and residents (collider-grid.js).
  const colliderGrid=createColliderGrid(world.colliders);
  // What the creator placed with the builder (src/build), published with the town in data/world-placements.json.
@@ -1194,6 +1195,15 @@ function deckUnder(x=player.position.x,z=player.position.z,y=player.position.y){
 function ferryLadder(way){
  const l=FERRY_LADDER[way],f=world.ferry?.ferry;if(!l||!f)return;
  crossThreshold(()=>{const v=new THREE.Vector3(...l.to);f.localToWorld(v);if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.copy(v);yaw=f.rotation.y+l.yaw;say(l.note,3.5);});
+}
+/**
+ * A station of the Minato Maru's plant (ferry-plant-controls.js, 6r-2): a menu of what the machine can do now; each
+ * choice works the plant and the menu reopens with the result in the chief's words, the dials and prompts following.
+ */
+function plantStation(id,line=null){
+ const run=world.ferry,st=PLANT_STATIONS.find(s=>s.id===id);if(!run||!st)return;
+ const menu=stationMenu(run.plant,st);
+ activities.menu(menu.title,(line?line+'\n\n':'')+menu.line,[...menu.items.map(it=>[it.label,()=>{const r=it.act();run.refreshPlant();plantStation(id,r.ok?r.what:r.why);}]),['Close',activities.close]]);
 }
 /** Below the car deck (BELOW_DECK_FLOORS: the ladder, the floor plates, the booth) everybody wears ear defenders. */
 let earDefendersOn=false;
