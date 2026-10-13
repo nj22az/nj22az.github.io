@@ -15,12 +15,24 @@
  * stem), `y` metres above the keel (base line), `x` across the ship, + to port. toShip() gives the
  * model's frame (origin amidships at the waterline, +z forward).
  */
+/** Integrated seawater displacement of the procedural hull at 1.9 m immersion.
+ * This is geometry, not an approved loading or lightship measurement. */
+const GEOMETRIC_DISPLACEMENT=375.41053;
+export const FERRY_ENGINEERING_STATUS=Object.freeze({
+ revision:'B',issue:'FOR DESIGN REVIEW',constructionApproved:false,
+ hydrostatics:'Numerically integrated procedural loft; seawater density 1.025 t/m3',
+ mass:'210 t legacy lightship and 283 t operating target remain unreconciled assumptions',
+ stability:'GM 1.6 m drives game motion only; intact/damage stability not approved',
+ machinery:'Fictional 1994 Johansson Marine plant; separate manufacturer references are comparisons only',
+ structure:'No approved scantlings, welding or machinery foundation design',
+ classification:'JG/NK descriptions are narrative setting, not evidence of real approval',
+});
 export const FERRY_SHIP=Object.freeze({
  name:'Minato Maru',jp:'みなと丸',built:1994,refit:'1998: GMDSS (VHF with DSC, EPIRB, SART, NAVTEX)',
  yard:'Johansson Shipyard (ヨハンソン造船), Innoshima, Seto Inland Sea: hull No. 127, an island ferry like the dozens before her',
  owner:'Minato-chō (the town ferry, a chōei ferī)',registry:'Minato',
  type:'Passenger ship and vehicle ferry (ryokakusen ken jidōsha tosen), bow ramp only, twin screw',
- rules:'Ship Safety Act and its regulations; inspected by the Okinawa General Bureau’s transport department; classed with NK at the insurer’s request',
+ rules:'Fictional narrative reference to Japanese inspection and NK class; no actual flag, class or construction approval has been obtained',
  area:'Limited coastal (gentei engan)',
  grossTons:199,
  length:34.5,lengthBP:31,beam:8.4,depth:3,
@@ -28,14 +40,18 @@ export const FERRY_SHIP=Object.freeze({
  draft:1.9,serviceDraft:1.7,
  /** The car deck above the waterline at full load: depth less draft. */
  freeboard:1.1,
- /** Tonnes: displacement at full load (block coefficient 0.56), her empty weight, and what she can carry. */
- displacement:283,blockCoefficient:.56,lightship:210,deadweight:73,
+ /** Tonnes: geometry displacement at the design immersion; legacy assumed
+  * lightship and arithmetic residual are NOT certified deadweight/cargo limits.
+  * The former 283 t operating target cannot float this loft at 1.9 m. */
+ displacement:GEOMETRIC_DISPLACEMENT,blockCoefficient:.74026634,
+ blockCoefficientLengthBasis:'LBP 31 m',lightship:210,deadweight:GEOMETRIC_DISPLACEMENT-210,
+ assumedOperatingDisplacement:283,payloadPlanningTarget:73,massReconciled:false,
  passengers:100,vehicles:6,crew:8,
  /** What the car deck takes (batch 6f: 17.4 m of lanes forward of the lower lobby): six cars, or an 8-tonne truck and two cars, or eight kei trucks; 4.2 m clear under the passenger deck, 5 t an axle. */
  vehicleMix:Object.freeze({cars:6,trucksAndCars:Object.freeze([1,2]),keiTrucks:8,clearHeight:4.2,axleTonnes:5}),
  /** Knots. */
  speed:Object.freeze({service:11.5,trial:12.8,manoeuvring:3,breakwater:5}),
- /** Metacentric height loaded, metres: how stiff she is, and so how quickly she rolls (rollPeriod). */
+ /** Metres, game-motion parameter only; not a verified loaded metacentric height. */
  gm:1.6,
  colours:'White superstructure; white hull over red-brown antifouling with a teal sheer band (the ferry company’s colour on the Port Building); teal funnels with the town’s anchor mark',
 });
@@ -59,20 +75,20 @@ const H=FERRY_HEIGHTS,DECKHOUSE=6.8,BRIDGEHOUSE=6;
  */
 export const FERRY_GA=Object.freeze([
  // ---- Below the car deck (tank top 0.7 m, floor plates 0.9 m).
- space('aft-peak','hold',[0,2.6],[-3.5,3.5],[0,1],'Aft peak tank: 4 m³ of ballast water','Trim: a truck forward is balanced here'),
+ space('aft-peak','hold',[14.1,15.4],[-3.9,3.9],[.10,.68],'Paired aft trim-ballast reservation under the auxiliary room: 2 m3 each. Curved outboard faces follow the hull minus 0.10 m geometric clearance; centreline gap 0.40 m; floor is at least 0.10 m above the loft. Gross 5.3916 m3, 4.8524 m3 after a provisional 10% structure allowance. This replaces the former tank outside the stern hull without crowding the fuel tanks.','Trim ballast; final framing and net tank calibration remain to be engineered',{within:'fwd-double-bottom',shape:'conformal-hull',capacityStatus:'planning reservation, not fabricated capacity'}),
  space('steering-gear','hold',[.3,2.6],[-3.5,3.5],[2.0,H.carDeck],'Steering-gear room: two rudder stocks, rams and tie bar; two 2.2 kW hydraulic power units; the emergency hand pump; the rudder-angle transmitter; the stern-tube oil header tanks; the 5.5 kW emergency fire pump with its own sea suction; a sound-powered telephone and the emergency steering notice','Steering, and a fire pump outside the engine room',{exits:['steering-gear-hatch','engine-room']}),
  space('fresh-water','hold',[2.6,5],[-3.6,3.6],[1.95,2.9],'Fresh-water tanks port and starboard, 6 m³ each, the stern tubes between them','Water for the taps, the galley and the toilets: 1.5 m³ a day'),
- space('engine-room','hold',[8.5,14],[-4,4],[H.floorPlates,2.8],'Engine room (batch 6c: from z 8.5, where the counter leaves room for floor plates): the two main engines (x ±1.55, z 9.6–12.0) with their gearboxes aft and turbochargers forward, the shafts aft through the bulkhead; the two generators athwartships forward of them (z 12.6–13.35); the control booth aft to starboard; fire and general-service pumps, bilge pump, sanitary pump, hydrophore set along the starboard side; the starting-air compressor and two 150 L air bottles against the aft bulkhead to port; the workbench, the fuel purifier and the oily-water separator along the port side; the 1.6 m³ fuel service tank in the forward starboard corner; the sea chests under the plates either side forward; CO₂ nozzles overhead; the watertight door forward on the centreline to the auxiliary machinery room','Propulsion and power. Low: 1.9 m clear, and tall men duck under the pipes',{exits:['er-stair-p','er-escape-s']}),
+ space('engine-room','hold',[8.5,14],[-4,4],[H.floorPlates,2.8],'Engine room (batch 6c: from z 8.5, where the counter leaves room for floor plates): the two main engines (x ±1.55, z 9.6–12.0) with their gearboxes aft and turbochargers forward, the shafts aft through the bulkhead; the forward service band of the main engines extends to z 14.0; the two generators are in the auxiliary room; the control booth aft to starboard; fire and general-service pumps, bilge pump, sanitary pump, hydrophore set along the starboard side; the starting-air compressor and two 150 L air bottles against the aft bulkhead to port; the workbench, the fuel purifier and the oily-water separator along the port side; the 1.5 m3 fuel service tank in the forward starboard corner; the sea chests under the plates either side forward; CO₂ nozzles overhead; the watertight door forward on the centreline to the auxiliary machinery room','Propulsion and power. Low: 1.9 m clear, and tall men duck under the pipes',{exits:['er-stair-p','er-escape-s']}),
  space('control-booth','hold',[8.6,10.9],[-4,-2.35],[H.floorPlates,2.8],'Engine control booth (2.3 × 1.6 m, soundproofed, glazed towards the engines): the main switchboard on the aft bulkhead, the engine panel and the log desk along her side, the telephone to the bridge','Where the chief engineer stands his watch out of the noise',{exits:['engine-room'],within:'engine-room'}),
- space('er-double-bottom','hold',[8.5,14],[-4,4],[0,H.tankTop],'Double bottom under the engine room: fuel storage port and starboard (7.5 m³ each), bilge holding (1 m³), sludge (0.3 m³), lubricating oil (0.6 m³)','Sixteen days of A-heavy oil'),
+ space('er-double-bottom','hold',[8.5,14],[-4,4],[0,H.tankTop],'Double bottom under the engine room: fuel storage port and starboard (7.5 m3 each), bilge holding (1 m3), sludge (0.3 m3), lubricating oil (0.6 m3): total 16.9 m3 against 18.5526 m3 planning envelope after a 10% structure allowance. Individual tank partitions and calibration remain to be designed.','Fuel storage: calculated 9.23 days at the stated duty and 90% usable capacity, excluding idle and weather allowance'),
  space('shaft-space','hold',[5,8.5],[-3.5,3.5],[2.0,H.carDeck],'Shaft space aft of the engine room, over the counter: the two shafts from the gearboxes to the stern tubes, the fresh-water tanks’ fill and air pipes','The hull rises aft of z 10.5; the shafts run through here at a slope',{unmanned:'Reached through a manhole in the engine room’s aft bulkhead, for the shafts’ couplings'}),
  // Forward of the engine room (batch 6q, the creator, 2026-10-13: "The engine room should be several levels and have many
  // rooms"): the hold that was tanks and voids is the auxiliary machinery room, the workshop and the engine store, in a
  // line through a watertight sliding door at Fr 28 and a door at Fr 38; the ballast lives in the double bottom under them.
- space('aux-room','hold',[14,19],[-4,4],[H.floorPlates,2.8],'Auxiliary machinery room, through the watertight sliding door at Fr 28 (kept shut at sea, slid by its hand pump at the door or closed from the bridge): the ballast and bilge manifold and the ballast pump along the starboard side over the tanks they serve, the sewage holding tank (4 m³) and its two discharge pumps to port with the standby pumps in a row before them (fuel transfer No.1 and No.2, hydrophore No.2, sanitary No.2), starting-air compressor No.2 in the aft starboard corner, the sounding pipes to the double bottom, the escape trunk in the forward starboard corner up into casing S','The hold forward of the engines was 13.5 m of tanks and voids; a yard puts the auxiliaries that want no watch here, out of the noise, with the ballast valves over their tanks',{exits:['engine-room','aux-escape-s']}),
+ space('aux-room','hold',[14,19],[-4,4],[H.floorPlates,2.8],'Auxiliary machinery room, through the watertight sliding door at Fr 28 (kept shut at sea, slid by its hand pump at the door or closed from the bridge): two generator sets relocated to z15.20-16.05 with a 1.00 m centre aisle and at least 1.035 m to side plant; the ballast and bilge manifold and the ballast pump along the starboard side over the tanks they serve, the sewage holding tank (4 m³) and its two discharge pumps to port with the standby pumps in a row before them (fuel transfer No.1 and No.2, hydrophore No.2, sanitary No.2), starting-air compressor No.2 in the aft starboard corner, the sounding pipes to the double bottom, the escape trunk in the forward starboard corner up into casing S','The hold forward of the engines was 13.5 m of tanks and voids; a yard puts the auxiliaries that want no watch here, out of the noise, with the ballast valves over their tanks',{exits:['engine-room','aux-escape-s']}),
  space('workshop','hold',[19,22.5],[-.4,4],[H.floorPlates,2.8],'Workshop, through the door at Fr 38: the bench and vice along the forward bulkhead, the JL-400 centre lathe along her side, the pedestal drill, the bench grinder, the welding set, the tool board; a wiped main-bearing shell on the bench, kept for the surveyor','Repairs alongside at a bench with room to swing a hammer: the engine room has only the small bench by the ladder',{exits:['aux-room']}),
  space('engine-store','hold',[19,22.5],[-4,-.4],[H.floorPlates,2.8],'Engine store, behind the mesh partition off the workshop: the spares racks (filters, gaskets and seals, injectors, bearings, belts, lamps), two 200 L lubricating-oil drums on their rack with a drip tray, the oily-rag bin, a chain block','Spares locked away from the car deck, next to the bench that fits them',{exits:['workshop'],unmanned:'A store: entered to fetch a part; its one door is the workshop’s, a step from the aux room'}),
- space('fwd-double-bottom','hold',[14,22.5],[-4,4],[0,H.tankTop],'Double bottom under the auxiliary machinery room, the workshop and the store: ballast port and starboard, 8 m³ each (Fr 28–38), voids forward of them','Heel and trim, under the valves that work the tanks'),
+ space('fwd-double-bottom','hold',[14,22.5],[-4,4],[0,H.tankTop],'Double bottom under the auxiliary room, workshop and store: paired trim tanks 2 m3 each at z14.1-15.4; main ballast port and starboard 8 m3 each at z15.6-20.0. These disjoint conformal reservations have 4.8524 and 16.4238 m3 respective planning envelopes after a 10% structure allowance. Unassigned reserve is not additional certified capacity.','Heel and trim, with capacities and framing subject to tank design'),
  space('void','hold',[22.5,27.5],[-4,4],[0,2.8],'Void between the store and the thruster room: the thruster’s cable and the fore peak’s ballast line run through it; a manhole in the store’s forward bulkhead','Kept as a reserve: the ferry office talked of a cold store for the island’s fish and never ordered it',{unmanned:'A void: manhole only'}),
  space('bow-thruster','hold',[27.5,30.5],[-2.75,2.75],[.6,2.8],'Bow-thruster room: the 75 kW motor on its 0.9 m tunnel, the starter cabinet','Berthing: it pushes the bow off and on',{exits:['thruster-hatch'],unmanned:'Nobody works in it at sea: it is visited alongside, with the thruster isolated, through its one hatch'}),
  space('fore-peak','hold',[30.5,34.5],[-2.5,2.5],[0,2.8],'Fore peak: 6 m³ of ballast, and the two chain lockers under the windlasses','Trim, and the anchors’ cables'),
@@ -161,13 +177,16 @@ export const FERRY_MACHINERY=Object.freeze({
  rudders:Object.freeze({count:2,area:.75,angle:35,kind:'Behind each propeller'}),
  steering:Object.freeze({pumps:2,kW:2.2,kind:'Electro-hydraulic, two power units: one at sea, both in narrow water',hardOver:'35° one side to 30° the other in under 28 s',emergency:'No.2 is fed from the emergency switchboard; a hand pump and a telephone to the bridge'}),
  bowThruster:Object.freeze({kW:75,thrust:10,tunnel:.9,start:'star-delta',interlock:'May start only with two generators on the board'}),
- fuelPerCrossing:46,fuelPerDay:920,
+ /** Explicit duty estimate: 22-minute crossing, 80% propulsion load,
+  * 210 g/kWh, density 860 kg/m3; assumed generator load 65 kW at 260 g/kWh.
+  * Twenty crossings/day, excluding idle and weather. Not measured consumption. */
+ fuelPerCrossing:73.1031,fuelPerDay:1462.062,
  tanks:Object.freeze({fuel:15,fuelStorage:Object.freeze([7.5,7.5]),fuelService:1.5,freshWater:12,sewage:4,bilgeHolding:1,sludge:.3,lubeOil:.6,
   ballast:Object.freeze({forePeak:6,aftPeak:4,port:8,starboard:8})}),
  bilge:Object.freeze({main:65,pumpKW:3.7,pumpM3h:25,separatorM3h:.25,why:'The rule asks for 25 + 1.68·√(L(B+D)) millimetres: 57 for her'}),
  fireMain:Object.freeze({pumps:2,pumpKW:11,pumpM3h:40,pressure:.5,emergencyKW:5.5,emergencyM3h:20,main:65,
   hydrants:Object.freeze({car:4,passenger:2,bridge:1,engine:1}),hose:15,nozzle:12}),
- co2:Object.freeze({bottles:4,kg:45,grossVolume:190,why:'40 % of the engine room’s gross volume at 0.56 m³ a kilogram: 136 kg needed, 180 kg carried'}),
+ co2:Object.freeze({bottles:4,kg:45,grossVolume:190,why:'Provisional inventory screen only: 180 kg carried against an assumed 190 m3 protected volume. Actual fire boundaries, ducts, protected volumes, nozzle distribution and release interlocks require engineered verification'}),
  fireDetection:Object.freeze({heads:30,zones:6,volts:24,panel:'wheelhouse'}),
  freshWater:Object.freeze({hydrophoreKW:.75,pressureTank:300,cutIn:.25,cutOut:.35,perDay:1.5,why:'Filled every fifth morning from Mr Chinen’s water lorry'}),
  ramp:Object.freeze({pumps:2,pumpKW:5.5,pressure:14,up:60,down:45,cylinders:2,cylinderBore:.1,why:'One pump runs and one stands by; a hand pump if both fail'}),
@@ -184,9 +203,9 @@ export const FERRY_ELECTRICS=Object.freeze({
  hz:60,volts:445,distribution:'440 V three-phase three-wire, insulated from earth (earth lamps and an insulation meter on the board)',lighting:105,
  generators:Object.freeze({count:2,kVA:125,kW:100,pf:.8,volts:445,hz:60,rpm:1800,amps:162,breaker:Object.freeze({frame:200,setting:170}),
   trips:'over-current, short-time, under-voltage and reverse power (about 10 %)'}),
- emergency:Object.freeze({kVA:40,kW:32,volts:445,hz:60,onLoadWithin:45,dayTank:60,hours:15,why:'40 kVA rather than 25, because the 5.5 kW emergency fire pump starts direct on line (66 A against a rated 52 A)'}),
+ emergency:Object.freeze({kVA:40,kW:32,volts:445,hz:60,onLoadWithin:45,dayTank:60,hours:15,why:'Provisional continuous capacity only. Emergency fire-pump starting and voltage recovery require generator/AVR/governor transient validation; current comparison alone does not prove performance.'}),
  batteries:Object.freeze({volts:24,banks:Object.freeze(['starting','radio and emergency']),transitionalMinutes:30}),
- shore:Object.freeze({volts:200,phases:3,hz:60,kVA:50,kW:40,transformer:'50 kVA 200/440 V in the quay kiosk at Minato',breaker:75,
+ shore:Object.freeze({volts:200,phases:3,hz:60,kVA:50,kW:40,transformer:'50 kVA 200/440 V in the quay kiosk at Minato',breaker:80,breakerSetting:66,primaryBreaker:160,primarySetting:145,
   interlock:'Shore power and the generators never run together: the shore breaker and the generators’ breakers are interlocked',phaseLamp:true}),
  transformers:Object.freeze({lighting:Object.freeze({count:2,kVA:30,ratio:'440/105 V',inUse:1}),emergency:Object.freeze({kVA:5,ratio:'440/105 V'})}),
  boards:Object.freeze({MSB:'Main switchboard, in the engine control booth: DG1, synchronising (synchroscope, lamps, two kW meters, Hz, V, A, three earth lamps, insulation meter), DG2, two 440 V feeder panels, shore',
@@ -351,7 +370,8 @@ export const FERRY_SCENARIOS=Object.freeze([
  Object.freeze({id:'shore-power',title:'The shore power the wrong way round',cause:'At 22:15 the shore cable is plugged in at the quay kiosk with two phases crossed after a repair: the phase-sequence lamp in the shore box shows them reversed, and every pump on the board would run backwards',
   steps:Object.freeze([
    ['oiler','casing-p','Sees the phase-sequence lamp lit the wrong way and does not close the shore breaker.'],
-   ['chief','quay','Swaps two phases at the kiosk’s plug, the way the manual says, and the lamp shows the right sequence.'],
-   ['chief','control-booth','Stops No.1 generator only after the shore breaker has closed; the interlock lets one in as the other goes.'],
+   ['chief','quay','Isolates and locks out the shore supply, verifies dead, and has two phases corrected at the kiosk plug by the authorised electrician; checks the phase sequence after re-energising.'],
+   ['chief','control-booth','Opens the generator breaker first, verifies the main bus dead and the shore interlock permissive, then closes the shore breaker. Stops the unloaded generator after the shore supply is established; shore and generators are never paralleled.'],
   ])}),
 ]);
+
