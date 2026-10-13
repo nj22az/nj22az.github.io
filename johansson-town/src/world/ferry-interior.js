@@ -822,10 +822,10 @@ export const FERRY_INTERIOR=(()=>{
    dial('RPM PORT','×100',0,.13,[PF,y0+1.41,Z(9.74)],Math.PI/2,{red:[.9,1],live:'mainP.rpm',range:[0,10]});dial('RPM STBD','×100',0,.13,[PF,y0+1.41,Z(10.46)],Math.PI/2,{red:[.9,1],live:'mainS.rpm',range:[0,10]});
    dial('LO PRESS P','bar',.55,.1,[PF,y0+1.41,Z(9.92)],Math.PI/2,{red:[0,.2],live:'mainP.loPress',range:[0,6]});dial('WATER P','°C',.6,.1,[PF,y0+1.41,Z(10.04)],Math.PI/2,{red:[.85,1],live:'mainP.water',range:[0,100]});dial('WATER S','°C',.6,.1,[PF,y0+1.41,Z(10.16)],Math.PI/2,{red:[.85,1],live:'mainS.water',range:[0,100]});dial('LO PRESS S','bar',.55,.1,[PF,y0+1.41,Z(10.28)],Math.PI/2,{red:[0,.2],live:'mainS.loPress',range:[0,6]});
    // The readout strip under the dials: every reading written out (the engines, the board, the air, the tanks), live.
-   plate(['',''],.78,.08,[PF+.004,y0+1.3,Z(10.1)],Math.PI/2,{kind:'readout',live:'readout',bg:'#101416',fg:'#9fe3a8',name:'console readout'});
+   plate(['','','',''],.78,.11,[PF+.004,y0+1.285,Z(10.1)],Math.PI/2,{kind:'readout',live:'readout',bg:'#101416',fg:'#9fe3a8',name:'console readout'});
    // The alarm matrix: 4 × 8 lamps (PLANT_ALARMS, red the first sixteen, amber the rest), lit from the plant's readings (6r-2).
-   plate(PLANT_ALARMS,.78,.24,[PF+.004,y0+1.13,Z(10.1)],Math.PI/2,{kind:'alarms',live:'alarms',bg:'#2a2d2f',name:'alarm matrix'});
-   plate(['ALARMS · press to acknowledge'],.76,.03,[PF+.003,y0+.985,Z(10.1)],Math.PI/2,{bg:'#f1ede2',name:'label: engine alarms'});
+   plate(PLANT_ALARMS,.78,.22,[PF+.004,y0+1.105,Z(10.1)],Math.PI/2,{kind:'alarms',live:'alarms',bg:'#2a2d2f',name:'alarm matrix'});
+   plate(['ALARMS · press to acknowledge'],.76,.03,[PF+.003,y0+.965,Z(10.1)],Math.PI/2,{bg:'#f1ede2',name:'label: engine alarms'});
    for(const [z,lab] of [[Z(9.85),'PORT'],[Z(10.35),'STBD']]){deco([-W+.32,y0+.8,z-.06],[-W+.46,y0+.86,z+.06],0x1f2224);bar([-W+.39,y0+.86,z],[-W+.39,y0+1.0,z],.008,0x1f2224);cyl(.018,.018,.02,[-W+.39,y0+1.0,z],0x1f2224,{seg:8,name:'telegraph lever'});
     plate(['AHEAD · STOP · ASTERN',lab],.12,.03,[-W+.39,y0+.861,z],0,{rotX:-Math.PI/2,bg:'#f1ede2',name:'label: telegraph '+lab.toLowerCase()});}
    deco([-W+.46,y0+.8,Z(10.5)-.06],[-W+.56,y0+.84,Z(10.5)+.06],0x1f2224);bar([-W+.51,y0+.84,Z(10.44)],[-W+.51,y0+.84,Z(10.56)],.02,0x1f2224);  // the telephone and its handset
