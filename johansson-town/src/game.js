@@ -394,7 +394,7 @@ const cameraControls=createCameraControls({onChange:()=>syncView(),onCentre:cent
 camera.fov=cameraControls.settings.fov;camera.updateProjectionMatrix();
 document.documentElement.classList.toggle('touch-controls',touch);
 function centreCamera(){spawnScene?.cancel();pitch=0;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);}
-function controlsAllowed(){return !islandPlay?.cinematic&&!photoStudio?.active&&!photoLoading&&!photoReturning&&started&&!document.hidden&&!roomLoading&&!activities?.paused&&!inspector?.active&&!itemViewer?.active&&!cameraControls.active&&$('#directory').classList.contains('hidden')&&$('#qte').classList.contains('hidden');}
+function controlsAllowed(){return !islandPlay?.cinematic&&!spawnScene?.holding&&!photoStudio?.active&&!photoLoading&&!photoReturning&&started&&!document.hidden&&!roomLoading&&!activities?.paused&&!inspector?.active&&!itemViewer?.active&&!cameraControls.active&&$('#directory').classList.contains('hidden')&&$('#qte').classList.contains('hidden');}
 // Swipes scale to the screen and barely tip the view when they are mostly sideways (input/touch-feel.js).
 function dragLook(dx,dy){spawnScene?.cancel();const turn=swipeLook(dx,dy,innerWidth,cameraControls.settings);yaw+=turn.yaw;pitch=THREE.MathUtils.clamp(pitch+turn.pitch,-1.25,1.15);}
 const walkMotion=createMotion(),touchAutoRun=createAutoRun();
@@ -1361,6 +1361,8 @@ function replayInterrupted(){
 }
 function updatePlayer(dt){
  if(islandPlay?.cinematic)return;
+ // The docks opening holds on the harbour while the town finishes loading (render/spawn-scene.js): he waits for it.
+ if(spawnScene?.holding)return;
  if(replayPlayer&&bicycleRide)stopReplay('stopped: the bicycle is not in recordings yet');
  if(replayRecorder?.open&&bicycleRide){replayRecorder.cancel();replayNote='recording stopped: the bicycle is not in recordings yet';}
  // Drink wears off with town time, an hour a drink; sleep clears it.
@@ -1536,7 +1538,7 @@ function beginAtOpening(){
  const params=new URLSearchParams(location.search),force=params.get('spawn');
  if(params.has('audit')&&!force)return null;
  if(activities.state.island?.journey.location!=='town'&&activities.state.island){islandPlay.recover();return null;}
- const opening=chooseOpening({minutes,rain:weather,force});
+ const opening=chooseOpening({minutes,rain:weather,force,context:{ferryAlongside:world.ferry?.berth==='town'&&world.ferry?.phase==='waiting'}});
  if(opening.id==='sakura-bench')return opening;
  if(opening.room){const door=doors.get(opening.room);if(door){standUpAt(door.x,door.z,Math.PI);}preloadIzakaya(['interior']);return opening;}
  if(opening.stand){const [x,z]=opening.stand==='bus-platform'?transitStop().platform:opening.stand;standUpAt(x,z,opening.facing);return opening;}
@@ -1576,10 +1578,12 @@ async function openInside(opening){
 function runStabilityChecks(){const failures=[];if(!townBoundsBlocked(400,0,PLAYER_RADIUS))failures.push('town edge');if(!roomBoundsBlocked(5.5,0,PLAYER_RADIUS))failures.push('room edge');if(world.colliders.length<20)failures.push('world collider coverage');if((world.quality?.streetInteractions||0)<7)failures.push('street interaction coverage');for(const [id,p] of doors){const site=SITES.find(s=>s.id===id)||(world.landmarks||[]).find(s=>s.id===id);const facing=site?.exitPosition||id==='warehouse'||homeOwner(site)?site?.entryFacing:null,exitStep=site?.exitPosition ? .6 : .7;const ex=Number.isFinite(facing)?p.x+Math.sin(facing)*exitStep:p.x,ez=Number.isFinite(facing)?p.z+Math.cos(facing)*exitStep:p.z+(id==='izakaya'?-.7:.7);if(environmentBlocked(p.x,p.z,PLAYER_RADIUS)||(environmentBlocked(ex,ez,PLAYER_RADIUS)))failures.push(`door spawn ${id}`);}window.__JOHANSSON_STABILITY__={ok:failures.length===0,failures,colliders:world.colliders.length,characterCount:world.people.length+1,streetInteractions:world.quality?.streetInteractions||0,renderDpr:renderer.getPixelRatio(),toneMapping:'AgX',shadows};if(failures.length)console.error('Johansson Town stability checks failed',failures);else console.info('Johansson Town stability checks passed',window.__JOHANSSON_STABILITY__)}
 
 spawnScene=createSpawnScene({scene,camera,getActor:ensureJohansson,blocked:arrivalLensBlocked,ground:(x,z)=>current?0:groundHeight(x,z),onActive:active=>{hands.firstPersonVisible=!active&&!thirdPerson;}});
+/** What the docks opening waits for: the details near him still streaming in. */
+function openingLoads(){return detailStream.pendingNear(player.position);}
 function startArrivalScene(opening){
  const params=new URLSearchParams(location.search);
  if(params.has('visual-audit')||params.has('audit')&&!params.has('spawn')||params.get('cinematic')==='off')return;
- spawnScene.start({id:opening?.id||'sakura-bench',inside:!!current,yaw:parkSeat?.yaw??yaw});
+ spawnScene.start({id:opening?.id||'sakura-bench',inside:!!current,yaw:parkSeat?.yaw??yaw,establish:!!opening?.docks,hold:openingLoads});
 }
 // Queue shared shaders once. This renderer's async poll can outlive materials replaced
 // by the detail stream; compile queues GPU work without retaining disposed materials.

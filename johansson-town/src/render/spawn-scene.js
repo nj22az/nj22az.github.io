@@ -1,6 +1,12 @@
 import * as THREE from '../../vendor/three.module.js';
 
 const DURATION=5.6,RETURN_TIME=.9;
+/**
+ * The docks openings (world/openings.js `docks`) begin with the harbour: a wide, high view that turns slowly round him
+ * while the town is still being built (`hold`, the creator, 2026-10-13: "the animation should be long enough to load the
+ * rest of the town"), at least ESTABLISH seconds and at most HOLD_MAX, then DESCEND seconds down to the shot of him.
+ */
+const ESTABLISH=2.2,DESCEND=2.4,HOLD_MAX=45,ORBIT=.05;
 const SHOTS={
  'sakura-bench':{angle:.85,distance:4.5,height:1.9,action:'Think'},
  'park-bench':{angle:-.9,distance:5.1,height:2.5,action:'LookAround',bird:true},
@@ -9,6 +15,13 @@ const SHOTS={
  seawall:{angle:-1,distance:4.9,height:1.65,action:'Think',bird:true},
  izakaya:{angle:.7,distance:2.5,height:1.4,action:'LookAround'},
  ramen:{angle:-.75,distance:2.5,height:1.5,action:'LookAround'},
+ // The docks (world/openings.js): he is seen from the front, and the lens comes back behind him onto what he looks at.
+ 'minato-maru':{angle:-.9,distance:4.8,height:1.9,action:'LookAround',bird:true},
+ 'cargo-boat':{angle:.9,distance:4.6,height:1.8,action:'Think',bird:true},
+ 'fish-auction':{angle:-.8,distance:4.2,height:1.8,action:'Think'},
+ houseboat:{angle:.85,distance:4.5,height:1.8,action:'Stretch',bird:true},
+ 'fishing-boat':{angle:-.85,distance:4.6,height:1.8,action:'LookAround',bird:true},
+ 'landing-sign':{angle:.9,distance:4.8,height:1.9,action:'Stretch',bird:true},
 };
 const smooth=t=>t*t*(3-2*t);
 
@@ -27,6 +40,7 @@ export function clearArrivalLens(target,lens,{blocked,ground,inside=false}={}){
 /** A composed arrival, using the player's real avatar and the current collision floor. */
 export function createSpawnScene({scene,camera,getActor,blocked,ground,onActive=()=>{}}){
  let pending=null,shot=null,time=0,reason=null,lastShot=null;
+ const holding=()=>!!(shot?.establish&&!shot.establish.released&&shot.establish.hold?.()&&time<HOLD_MAX);
  const bird=new THREE.Group();bird.name='Arrival gull';bird.visible=false;bird.userData.dynamicProp=true;
  const white=new THREE.MeshStandardMaterial({color:0xeae7d8,roughness:1}),dark=new THREE.MeshStandardMaterial({color:0x47505b,roughness:1});
  const body=new THREE.Mesh(new THREE.SphereGeometry(.075,8,5),white);body.scale.set(.7,.8,2);bird.add(body);
@@ -38,6 +52,8 @@ export function createSpawnScene({scene,camera,getActor,blocked,ground,onActive=
  scene.add(bird);
  function finish(why){
   if(!pending&&!shot)return;
+  // Nobody walks off into a town still being built: plain input waits for the hold to end.
+  if(holding()&&(why==='input'||why==='interaction'))return;
   if(shot)camera.fov=shot.fov;
   pending=null;shot=null;time=0;reason=why;bird.visible=false;
   const actor=getActor();actor.stop();actor.lookAt(null);actor.express('neutral',0);
@@ -62,12 +78,20 @@ export function createSpawnScene({scene,camera,getActor,blocked,ground,onActive=
   }
   // Keep a safe existing view if the counter leaves no room for a front shot.
   from??=camera.position.clone();to??=from.clone();
-  shot={id:options.id,inside:options.inside,preset,origin,target,from,to,fov:camera.fov};time=0;
+  // The harbour first: high and wide on the same side as the shot of him, or the other side, or not at all.
+  let establish=null;
+  if(options.establish&&!options.inside)for(const angle of [preset.angle*1.3,-preset.angle*1.3,preset.angle*.6,-preset.angle*.6]){
+   const a=base+angle,high=origin.clone().add(new THREE.Vector3(-Math.sin(a)*15,9,-Math.cos(a)*15));
+   if(clearArrivalLens(target,high,{blocked,ground})&&[.25,.5,.75].every(t=>clearArrivalLens(target,high.clone().lerp(from,t),{blocked,ground}))){establish={high,angle:0,hold:options.hold,released:null};break;}
+  }
+  shot={id:options.id,inside:options.inside,preset,origin,target,from,to,fov:camera.fov,establish};time=0;
   lastShot={origin:origin.toArray(),target:target.toArray(),lens:from.toArray()};
   actor.play(preset.action);onActive(true);
  }
  return {
   get active(){return !!(pending||shot);},
+  /** Still showing the harbour while the town is built: the game holds him still and keeps the shot. */
+  get holding(){return holding();},
   get gaze(){return bird.visible?bird.position:null;},
   start(options){finish('replaced');pending=options;reason=null;},
   cancel(reason='input'){finish(reason);},
@@ -77,6 +101,18 @@ export function createSpawnScene({scene,camera,getActor,blocked,ground,onActive=
    if(paused){finish('interaction');return;}
    if(pending)begin();
    time+=Math.max(0,Math.min(dt,.1));
+   const E=shot.establish;
+   if(E&&!E.released&&time>=ESTABLISH&&!holding())E.released=time;
+   if(E&&!E.shifted&&(!E.released||time<E.released+DESCEND)){
+    // Turning slowly round him over the harbour while it holds, never through anything; then down to the shot of him.
+    const orbit=(E.released??time)*ORBIT,lens=E.high.clone().sub(shot.origin).applyAxisAngle(new THREE.Vector3(0,1,0),orbit).add(shot.origin);
+    const lensHigh=clearArrivalLens(shot.target,lens,{blocked,ground})?(E.last=lens):(E.last??E.high);
+    const u=E.released?smooth(Math.min(1,(time-E.released)/DESCEND)):0,at=lensHigh.clone().lerp(shot.from,u);
+    camera.position.copy(at);camera.lookAt(shot.target);camera.fov=THREE.MathUtils.lerp(52,48,u);camera.updateProjectionMatrix();camera.updateMatrixWorld();
+    bird.visible=false;return;
+   }
+   // The shot of him runs on its own clock after the harbour.
+   if(E&&!E.shifted){E.shifted=true;time=Math.max(0,time-E.released-DESCEND);}
    if(time>=DURATION){const fov=shot.fov;finish('complete');camera.fov=fov;camera.updateProjectionMatrix();return;}
    const normal=camera.position.clone(),rotation=camera.quaternion.clone();
    const progress=Math.min(1,time/(DURATION-RETURN_TIME));
@@ -97,6 +133,6 @@ export function createSpawnScene({scene,camera,getActor,blocked,ground,onActive=
     bird.position.copy(p);bird.rotation.y=Math.atan2(right.x,right.z);wings.forEach((wing,i)=>wing.rotation.z=(i?1:-1)*(Math.sin(time*8)*.35+.1));
    }else bird.visible=false;
   },
-  snapshot(){return {active:this.active,id:pending?.id||shot?.id||null,seconds:+time.toFixed(2),action:shot?.preset.action||null,bird:bird.visible,reason,shot:lastShot};},
+  snapshot(){return {active:this.active,id:pending?.id||shot?.id||null,seconds:+time.toFixed(2),action:shot?.preset.action||null,bird:bird.visible,reason,shot:lastShot,establishing:!!(shot?.establish&&!shot.establish.shifted),holding:holding()};},
  };
 }
