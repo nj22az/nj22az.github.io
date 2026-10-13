@@ -275,3 +275,13 @@ its shore end, off the cars' lane (港町行). Each box reads the destination, �
 "Quick crossing to Kitano-jima" / "Quick crossing to Minato", takes him to the sign at the other end at once: no fare,
 no time passes, nothing is filed, and the ship, her cars and her passengers are left as they are (`island/play.js`
 `quickCrossing`; tests in `tests/airport-ferry.test.mjs`). The ferry ride stays as it was for him too.
+
+## 7. Built when he goes there (2026-10-13)
+
+The creator: "tropical island doesn't need to load until we are there we see it in the distance but it's not the whole
+island". The game builds Kitano-jima's ground, airport, sites and prompts at startup, and a distant view of its plants,
+district and hamlet; the real ones are built while the Minato Maru takes him over, or behind the quick crossing's veil,
+or at once before anything puts him there (`src/world/kitano-on-demand.js`; docs/LOADING.md batch 3). Every new
+builder on the island goes through `kitanoLater` (and, if it is seen from Minato, gets a stand-in through
+`world.kitano.far`), so that the island built on demand stays the island built whole
+(`tests/kitano-on-demand.test.mjs`).

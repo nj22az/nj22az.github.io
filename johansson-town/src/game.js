@@ -532,9 +532,13 @@ function advanceWeather(){
  const next=nextWeather(weatherKind);if(next!==weatherKind)applyWeather(next,{announce:true});
 }
 
- const world=createTown({scene:town,sites:SITES,mobile,shadows,maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:s=>crossThreshold(()=>enterRoom(s)),getPlayerPosition:()=>current?null:player.position,onAction:(...args)=>{if(islandPlay?.action(...args))return;if(args[0]==='ferry-ladder'){ferryLadder(args[1]);return;}if(args[0]==='plant'){plantStation(args[1]);return;}if(args[0]==='bicycle'){startBicycleRide(args[1]);return;}if(args[0]==='dungeon'){enterDungeon();return;}if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person?.g.userData.sleeping){say(args[1]+' is sleeping. You can stay and watch the morning routine.',4);return;}if(person?.g.userData.waking||person?.g.userData.roomTransition){say(args[1]+' is '+person.g.userData.activity+'.',3);return;}if(person){person.g.userData.facePlayerUntil=performance.now()+1600;characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
+ const world=createTown({scene:town,sites:SITES,mobile,shadows,kitano:'distant',maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:s=>crossThreshold(()=>enterRoom(s)),getPlayerPosition:()=>current?null:player.position,onAction:(...args)=>{if(islandPlay?.action(...args))return;if(args[0]==='ferry-ladder'){ferryLadder(args[1]);return;}if(args[0]==='plant'){plantStation(args[1]);return;}if(args[0]==='bicycle'){startBicycleRide(args[1]);return;}if(args[0]==='dungeon'){enterDungeon();return;}if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person?.g.userData.sleeping){say(args[1]+' is sleeping. You can stay and watch the morning routine.',4);return;}if(person?.g.userData.waking||person?.g.userData.roomTransition){say(args[1]+' is '+person.g.userData.activity+'.',3);return;}if(person){person.g.userData.facePlayerUntil=performance.now()+1600;characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
  // Colliders by where they are, for the camera, walking and residents (collider-grid.js).
  const colliderGrid=createColliderGrid(world.colliders);
+ // Kitano-jima is built when he heads there (world/kitano-on-demand.js): shaded, lit and compiled as it arrives.
+ world.kitano.onLoaded.push(island=>{celPass.apply(scene);lightBudget.update();townSections.invalidate();shopStreetView.invalidate();if(island)renderer.compileAsync?.(island,camera,scene)?.catch?.(()=>{});neighbours?.replan?.();});
+ /** Before he is put anywhere on or by Kitano-jima, the island is whole (at once: he arrives behind a veil or a cut). */
+ const ensureKitanoAt=(x,z)=>{if(world.kitano.near(x,z))world.kitano.ensure();};
  // What the creator placed with the builder (src/build), published with the town in data/world-placements.json.
  const placements=createPlacements({group:world.group,colliders:world.colliders,factory:world.propFactory,walkable:(x,z)=>{const r=routeAt(x,z,0);return !!r&&r.surface!=='asphalt';},heightAt:groundHeight,
   // Kept clear: every door (shops, homes, the warehouse and the bus station), the bays where cars park, and the spots
@@ -1289,6 +1293,7 @@ function placeAtEntrance(s,leave=false){
  else if(s.exitPosition){x0=s.exitPosition[0];z0=s.exitPosition[2];}
  else if(mapped){x0=mapped.x;z0=mapped.z+(leave?.6:s.id==='izakaya'?-1.2:.7);}
  else return;
+ ensureKitanoAt(x0,z0);
  yaw=leave?(s.entryFacing!=null?s.entryFacing+Math.PI:0):(s.entryFacing??(s.id==='izakaya'?Math.PI:s.side?-s.side*Math.PI/2:0));
  const fwX=-Math.sin(yaw),fwZ=-Math.cos(yaw);
  const [x,z]=findClear(x0+fwX*(leave?.6:0),z0+fwZ*(leave?.6:0));
@@ -1546,7 +1551,7 @@ function beginAtOpening(){
  return null;
 }
 function standUpAt(x0,z0,facing=yaw){
- seated=false;parkSeat=null;
+ seated=false;parkSeat=null;ensureKitanoAt(x0,z0);
  const [x,z]=findClear(x0,z0);player.position.set(x,groundHeight(x,z),z);yaw=facing;pitch=-.05;player.quaternion.setFromAxisAngle(yAxis,yaw);playerSpeed=0;playerRunning=false;world.spawn=player.position.toArray();
 }
 /** Sit on a seat by its label, through the same path as tapping it: the first one of them that is free. */
@@ -1959,8 +1964,8 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  /** Where he stands and which way he faces (a room's own frame indoors). */
  get player(){return {position:player.position.toArray(),yaw,room:current?.id??null};},
  /** Stand him at a point with its height (on a deck aboard the ferry, where the town's ground is the sea). */
- stand(x,y,z,facing){spawnScene?.cancel('placement');if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,y,z);if(Number.isFinite(facing))yaw=facing;},
- teleport(x,z,facing,tilt){spawnScene?.cancel('placement');if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,groundHeight(x,z),z);if(Number.isFinite(facing))yaw=facing;if(Number.isFinite(tilt))pitch=tilt;},
+ stand(x,y,z,facing){spawnScene?.cancel('placement');ensureKitanoAt(x,z);if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,y,z);if(Number.isFinite(facing))yaw=facing;},
+ teleport(x,z,facing,tilt){spawnScene?.cancel('placement');ensureKitanoAt(x,z);if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,groundHeight(x,z),z);if(Number.isFinite(facing))yaw=facing;if(Number.isFinite(tilt))pitch=tilt;},
  get lensOcclusion(){return lensOcclusion;},
  /** For the audit: the lens's own tests at a point (what stops the boom), and whether he is in one of the ferry's rooms. */
  probe(x,y,z,r=.16){return {blocked:cameraBlocked(x,z,y,r),room:shipRoom(),deck:deckUnder()?.floor?.id??null,aboardSolid:!!deckUnder()&&ferryWalk.cameraBlocked(x,z,y,r)};},

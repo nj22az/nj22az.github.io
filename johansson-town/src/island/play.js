@@ -38,6 +38,8 @@ export function createIslandPlay({world,player,camera,activities,holdFerry=()=>f
   */
  function crossing(location){
   if(ride)return;const origin=location==='airport'?'town':'airport';a.close();
+  // Kitano-jima is built while she takes him there (world/kitano-on-demand.js), a step at a time.
+  if(location==='airport')void world.kitano?.prepare();
   const afoot=holdFerry();
   const waiting=AIRPORT_FERRY_PORTS[origin];if(!afoot)place(...waiting.landing,waiting.height);
   if(ferryRun.phase==='crossing'){ride={kind:'awaiting-boat',requestedDestination:location,location:ferryRun.destination,elapsed:0,duration:AIRPORT_FERRY.duration};a.save();return;}
@@ -53,7 +55,11 @@ export function createIslandPlay({world,player,camera,activities,holdFerry=()=>f
  function quickCrossing(location){
   if(ride)return;const q=QUICK_CROSSING[location];
   ride={kind:'quick',location,elapsed:0,duration:1};
-  void veil(()=>{ride=null;s.journey.location=location;a.save();place(...q.stand,q.ground,q.facing);});
+  // Behind the veil Kitano-jima is finished before he is put there (world/kitano-on-demand.js).
+  void veil(()=>{
+   const arrive=()=>{ride=null;s.journey.location=location;a.save();place(...q.stand,q.ground,q.facing);};
+   return location==='airport'&&world.kitano&&!world.kitano.loaded?world.kitano.prepare().then(arrive):arrive();
+  });
  }
  /** The crossing with him walking her decks: her 22 minutes in a minute, the clock catching up when she is alongside. */
  const AFOOT_SECONDS=60;

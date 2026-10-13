@@ -59,6 +59,26 @@ island".
   meets the plaza's edge, which the island's walk floors now count as plaza (`airport-ground.js`: a micrometre of
   slack on floor bounds).
 
+## Batch 3: Kitano-jima when he goes there (2026-10-13)
+
+"tropical island doesn't need to load until we are there we see it in the distance but it's not the whole island".
+Kitano-jima was about 410k triangles, ~320 colliders and ~60 prompts, all built at startup and drawn from Minato.
+
+- **At startup** (`createTown({kitano:'distant'})`, `world/kitano-on-demand.js`): the island's ground and quay, its
+  airport buildings (a few thousand triangles), the vehicle yard, the hamlet's sites, gate prompts and nameplates, the
+  ocean's dry pits, and a view of the rest as it is read from across the strait. The distant view has the plants at
+  their own places, sizes and turns as a few simple shapes (`farPlants`, under 20k triangles for the 355k of the real
+  ones). The airport district is its plaza, kiosks, thatch, parasols and lookout deck (`buildAirportDistrictFar`).
+  The hamlet is its yards and three houses, Johansson's from its drawings' walls, eaves and ridge (`hamletFar`).
+- **When he heads there:** boarding the Minato Maru for Kitano-jima starts `prepare()`, a builder a step, so it is
+  ready long before she berths. The quick crossing waits for it behind its veil. Anything that puts him on or by the
+  island (a save that wakes there, the Town Book, a room's door, the audit) calls `ensure()` first, which builds it
+  at once. Then the stand-ins go, everything static is batched in the island's own group, its window glass joins the
+  clock, the game shades and compiles it, and the neighbours plan their walks again round its new walls.
+- **After that** the real plants show within 240 m of the island and the simple ones beyond 260 m (`tropic.lod`).
+- **The same island either way:** `tests/kitano-on-demand.test.mjs` builds it both ways and compares colliders,
+  prompts and meshes one by one. The tests, the tools and Studio build it whole (`kitano:'full'`, the default).
+
 ## What is still large, in order (the plan for batch 2 and 3)
 
 1. **The game's static import graph is one 3.5 MB download before the first frame.** `game.js` statically imports

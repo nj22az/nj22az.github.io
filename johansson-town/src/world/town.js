@@ -1,4 +1,5 @@
 import {isWeekend} from '../commerce/sakura-rota.js';
+import {createKitano} from './kitano-on-demand.js';
 import {buildCountryside} from './countryside.js';
 import {buildQuietLife} from './quiet-life.js';
 import {buildTownPower} from './town-power.js';
@@ -252,6 +253,8 @@ export function createTown(options){
   beginPowerPlan();
   applyShopAddresses(options.sites);
   const world=createBaseTown(options);
+  // Kitano-jima whole now, or only as seen from across the strait until he heads there (kitano-on-demand.js).
+  world.kitano=createKitano(world,{distant:options.kitano==='distant'});
   // Only the street cast lives in the playable town; nothing else may arrive as a person.
   for(const person of world.people)person.g?.removeFromParent();
   world.people.length=0;
@@ -293,7 +296,8 @@ export function createTown(options){
    // Tetrapods at the foot of the west seawall and two breakwaters off the east beach.
    world.breakwaters=buildBreakwaters({parent:world.group,shadows:options.shadows});
    // Kitano-jima, the airport island on the horizon to the east. See airport-island.js.
-   world.airportIsland=buildAirportIsland({parent:world.group,shadows:options.shadows});
+   world.airportIsland=buildAirportIsland({parent:world.group,shadows:options.shadows,plants:!world.kitano.distant});
+   if(world.kitano.distant)world.kitano.later('plants',()=>world.airportIsland.tropic.addPlants());
    world.oilJetty=buildOilJetty(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});
    // The lawn wears the supplied park's own grass, so the green and the mound it runs
    // up to are one field. The park model is streamed, and the lawn reaches further
@@ -369,8 +373,10 @@ export function createTown(options){
   pierSurface.name='pier-concrete-surface';pierSurface.rotation.x=-Math.PI/2; pierSurface.position.set(OUTER_PIER.x,OUTER_PIER.height,(deckFrom+deckTo)/2);pierSurface.receiveShadow=true;world.group.add(pierSurface);
   // Every kit building's window glass and lamps follow the clock, not only the quarters':
   // the town hall, Kitahama and the island homes used to stay dark all night.
+  // `collect` again for anything built later (Kitano-jima on demand).
   {const glass=new Set(),lamps=new Set();
-   world.group.traverse(o=>{if(!o.isMesh)return;for(const m of Array.isArray(o.material)?o.material:[o.material]){const kind=m?.userData?.kitFinish;if(kind==='glow')glass.add(m.userData.celFrom||m);else if(kind==='lamp')lamps.add(m.userData.celFrom||m);}});
+   const collect=root=>root.traverse(o=>{if(!o.isMesh)return;for(const m of Array.isArray(o.material)?o.material:[o.material]){const kind=m?.userData?.kitFinish;if(kind==='glow')glass.add(m.userData.celFrom||m);else if(kind==='lamp')lamps.add(m.userData.celFrom||m);}});
+   collect(world.group);world.glow={glass,lamps,collect};
    (world.hourly??=[]).push(minutes=>{const glow=windowGlow(minutes);setWindowLight(glow);for(const m of glass)m.emissiveIntensity=glow*.75;for(const m of lamps)m.emissiveIntensity=.1+glow*1.6;});}
   world.isOpen=isOpen;world.updateHours=minutes=>{for(const fn of world.hourly||[])fn(minutes);for(const {mesh,id} of districts.shutters){const open=isOpen(options.sites.find(s=>s.id===id),minutes);mesh.position.y=1.3;mesh.visible=false;mesh.userData.closed=!open;}const glow=windowGlow(minutes);for(const m of districts.windows)m.material.emissiveIntensity=.02+glow*.78;};
   let normalTick=-1;

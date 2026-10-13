@@ -78,12 +78,15 @@ export function createSpawnScene({scene,camera,getActor,blocked,ground,onActive=
   }
   // Keep a safe existing view if the counter leaves no room for a front shot.
   from??=camera.position.clone();to??=from.clone();
-  // The harbour first: high and wide on the same side as the shot of him, or the other side, or not at all.
+  // The harbour first: high and wide on the same side as the shot of him, the other side, or round behind him (under a
+  // roof he faces into, the front is closed above), lower if it must be, or not at all.
   let establish=null;
-  if(options.establish&&!options.inside)for(const angle of [preset.angle*1.3,-preset.angle*1.3,preset.angle*.6,-preset.angle*.6]){
-   const a=base+angle,high=origin.clone().add(new THREE.Vector3(-Math.sin(a)*15,9,-Math.cos(a)*15));
-   if(clearArrivalLens(target,high,{blocked,ground})&&[.25,.5,.75].every(t=>clearArrivalLens(target,high.clone().lerp(from,t),{blocked,ground}))){establish={high,angle:0,hold:options.hold,released:null};break;}
+  if(options.establish&&!options.inside)search:for(const [reach,height] of [[15,9],[11,6]])for(const angle of [preset.angle*1.3,-preset.angle*1.3,preset.angle*.6,-preset.angle*.6,2.3,-2.3,Math.PI]){
+   const a=base+angle,high=origin.clone().add(new THREE.Vector3(-Math.sin(a)*reach,height,-Math.cos(a)*reach));
+   if(clearArrivalLens(target,high,{blocked,ground})&&[.25,.5,.75].every(t=>clearArrivalLens(target,high.clone().lerp(from,t),{blocked,ground}))){establish={high,angle:0,hold:options.hold,released:null};break search;}
   }
+  // Nowhere clear above him: the hold is kept on the shot of him itself, turning slowly round him from where it starts.
+  if(options.establish&&!options.inside&&!establish)establish={high:from.clone(),angle:0,hold:options.hold,released:null};
   shot={id:options.id,inside:options.inside,preset,origin,target,from,to,fov:camera.fov,establish};time=0;
   lastShot={origin:origin.toArray(),target:target.toArray(),lens:from.toArray()};
   actor.play(preset.action);onActive(true);
