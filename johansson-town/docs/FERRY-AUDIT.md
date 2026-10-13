@@ -1347,3 +1347,51 @@ engines and overhaul them? Turn off help systems?"*, then *"So proceed"*. The au
 - **Open** (6r-2, 6r-3): the console, prompts, sound and routine reading the plant; the lines to other decks drawn on
   those decks; valves drawn on every valve node (the hand valves at the tank stubs and overboards are; the isolating
   valves either side of each pump are not yet).
+
+### 10.14 6r-2 built: the plant runs, and the player works it (2026-10-13)
+
+The creator, 2026-10-13: *"Can you stop the engines and overhaul them? Turn off help systems?"* Now yes:
+- **One plant** (`src/world/ferry-plant.js`, pure) drives everything: `ferry.js` creates it, runs the crew's routine every
+  town minute (FERRY_DAY: shore power until 6:10, No.1 generator on the board, the engines for the first boat at 6:25,
+  shore power again after the last at 22:15), lets time pass (air bottles, the hydrophore's pressure tank, warm-up, the
+  service tank by the telegraph's order, which follows her phase: STOP alongside, SLOW ASTERN off the berth, SLOW AHEAD
+  on the swing, HALF then FULL AHEAD out), and tells the sound what she is doing (`town-audio.js` ENGINE: off, the
+  generators' hum, idle, manoeuvring, at sea, the emergency generator alone).
+- **The console reads it** (`ferry-interior.js` plates with a `live` key, `ferry-model.js` redraws them, 35 plates): the
+  shaft rpm, oil pressures and water temperatures on the panel, the engines' own gauge boards, the generator panels'
+  kW · A · V · Hz, the air gauges, and the alarm matrix, now one plate of 4 × 8 lamps lit from `readings().alarms`
+  (PLANT_ALARMS) instead of 32 painted squares with one fixed amber.
+- **Stations** (`src/world/ferry-plant-controls.js`, 18): the local control stand at each main engine's forward end (the
+  engine and its priming pump), each generator's panel on the switchboard (start, stop, the breaker), each pump and
+  compressor at its box (the row in the engine room, the aux room's pumps and compressor No.2, the ballast pump) and the
+  console (the readings, the alarms, change-over of every duty/standby pair). The prompt reads the machine's state; the
+  menu offers only what it can do now (stop · start · standby · isolate and tag out · open for overhaul · box up ·
+  return to service; a generator's breaker), each button naming its machine, and every refusal is the chief's reason
+  ("She is under way: bring the telegraph to STOP first", "Prime the lubricating oil first", "Starting air is down to
+  17 bar"). The old console note is gone: its words were fixed, the console is live.
+- **Checked** in the headless game: the console photographed before and after stopping the port engine (its rpm and
+  oil-pressure needles at zero after), the stand's prompt and menu, the alarm matrix with lamps lit. Tests:
+  `tests/ferry-plant-game.test.mjs` (the routine by the clock and the sound, every station on a floor with its machines
+  and prompt, the menus by state, every live plate reading the plant and redrawn when it changes).
+- **The crew's hands** on it as well: at first load the day so far is replayed from midnight in five-minute steps, so
+  the engines are warm with their hours on the counter when the player comes aboard at two (not just started); the
+  watch pumps the aft bilge well before its float alarm (0.4) and stops the pump when it sucks air; No.2 generator goes
+  on the board for the thruster as she comes in past the breakwater and for the departure, and off again once the
+  thruster is done (FERRY_WATCH's own words), unless the player has it in hand.
+- **Moved, with its effects listed first** (CLAUDE.md: plan before moving anything): the chief stood in the booth door
+  in front of the switchboard, where "Talk to" (people before things, game.js) took every prompt within 0.6 m, so the
+  generator panels could not be worked. He stands at the console's forward end now, facing the panel
+  (`people/ferry-crew-aboard.js` CREW_POSTS); the booth floor's strip in front of the switchboard runs to the lining (the
+  desk is forward of it); the switchboard's note moved to the lighting panel (x −2.65). Checked: the crew posts test, the
+  walk tests, the headless prompts at both panels (p8) and the chief at the console (p9); no film shot stages the booth
+  (`jojo/remotion/episodes`).
+- **Readable** (the creator, on the first console photograph: "It needs to be easier to read and more detailed"): every
+  live dial has a numbered scale from its range (0–6 bar, 0–100 °C, 0–10 ×100 rpm, 0–30 bar air, the generators'
+  0–150 kW · 0–250 A · 0–500 V · 55–65 Hz), lettering twice the size on a 384 px face, and its reading written in a
+  window under the pivot; the air gauges' red zone is at the low end, where it belongs. Under the console's dials a
+  readout strip writes every reading out in two lines (each engine's rpm, oil, jacket water, exhaust and telegraph
+  order; the board, the air, the service tank, the fresh water, the aft bilge). The alarm matrix's names sit on two
+  lines in their lamps, twice the size.
+- **Open** (6r-3): the overhaul scenes themselves (covers off, parts on the plates, the crankcase inspected) when a
+  machine is opened; the crew's bodies at the handles when the routine starts a machine; the alarm acknowledge; the
+  plant saved with the game.

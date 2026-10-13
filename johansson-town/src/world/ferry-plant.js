@@ -112,7 +112,9 @@ export function createPlant({minutes=FERRY_DAY.generators}={}){
   // Fresh water: the taps use it, the duty hydrophore pump keeps the pressure tank between its switch points.
   tanks.fwPressure-=FW.usePerMinute*dtMinutes;const hp=machines.get(duty.get('Fresh water'));
   if(hp&&live()){if(tanks.fwPressure<=FW.cutIn&&hp.state!=='running'&&/stopped|standby/.test(hp.state)){hp.state='running';}if(hp.state==='running'){tanks.fwPressure=Math.min(FW.cutOut+.02,tanks.fwPressure+FW.fillPerMinute*dtMinutes);tanks.freshWater-=dtMinutes*.0003;if(tanks.fwPressure>=FW.cutOut&&!hp.manual)hp.state='standby';}}
-  tanks.bilgeAft=Math.min(1,tanks.bilgeAft+dtMinutes*.0008);if(machines.get('bp')?.state==='running')tanks.bilgeAft=Math.max(0,tanks.bilgeAft-dtMinutes*.05);
+  tanks.bilgeAft=Math.min(1,tanks.bilgeAft+dtMinutes*.0008);const bp=machines.get('bp');if(bp?.state==='running')tanks.bilgeAft=Math.max(0,tanks.bilgeAft-dtMinutes*.05);
+  // The oiler pumps the well each watch before the float switch's alarm (0.5), and stops the pump when it sucks air; a pump the player handled is left alone.
+  if(bp&&!bp.manual&&live()){if(tanks.bilgeAft>=.4&&bp.state==='stopped'){bp.state='running';note('Bilge pump started: the aft well pumped by the watch');}else if(bp.state==='running'&&tanks.bilgeAft<=.02)bp.state='stopped';}
   for(const x of machines.values())if(x.state==='running'&&!(x.kind==='engine'||x.kind==='generator'))x.hours+=dtMinutes/60;
   board.MSB.kW=[...machines.values()].filter(x=>x.state==='running'&&x.kind!=='engine'&&x.kind!=='generator').reduce((s,x)=>s+x.kW*.7,0)+(live()?12:0);
   if(!live()&&board.ESB.source===null&&events.some(e=>e.kind==='blackout'&&clock-e.at>=E.emergency.onLoadWithin/60)){board.ESB.source='EG';board.ESB.live=true;board.EG.state='running';note('Emergency generator on load');}
@@ -121,7 +123,7 @@ export function createPlant({minutes=FERRY_DAY.generators}={}){
  function readings(){
   const eng=id=>{const x=m(id),run=x.state==='running';const order=telegraph[id]||'STOP';const rpm=!run?0:x.kind==='generator'?.6:order==='STOP'?.28:order.includes('HALF')?.5:.68;
    return {state:x.state,rpm,loPress:run?.55:(machines.get('prime-'+id)?.state==='running'?.3:0),water:Math.min(1,temps[id]/100),exhaust:run?(rpm>.4?.5:.3):0,chargeAir:run?rpm*.6:0,fuel:run?.5:0,loTemp:Math.min(1,(temps[id]-10)/100)};};
-  const gens=['gen1','gen2'].map(id=>{const x=m(id),on=x.state==='running'&&x.breaker;const share=on?board.MSB.kW/Math.max(1,generatorsOnline())/E.generators.kW:0;return {id,on,running:x.state==='running',kW:Math.min(1,share),A:Math.min(1,share*E.generators.kW/E.generators.pf/(Math.sqrt(3)*E.volts)*1000/E.generators.amps/E.generators.amps*E.generators.amps),V:x.state==='running'?.78:0,Hz:x.state==='running'?.5:0};});
+  const gens=['gen1','gen2'].map(id=>{const x=m(id),on=x.state==='running'&&x.breaker;const share=on?board.MSB.kW/Math.max(1,generatorsOnline())/E.generators.kW:0;return {id,on,running:x.state==='running',kW:Math.min(1,share),A:Math.min(1,share*E.generators.kW/E.generators.pf/(Math.sqrt(3)*E.volts)*1000/E.generators.amps/E.generators.amps*E.generators.amps),V:x.state==='running'?.88:0,Hz:x.state==='running'?.5:0};});
   const alarms=new Set();
   for(const [id,s] of [['mainP','P'],['mainS','S']]){const e=eng(id);if(m(id).state==='running'&&e.loPress<.2)alarms.add('LO PRESS '+s);if(temps[id]>95)alarms.add('WATER TEMP '+s);if(e.exhaust>.9)alarms.add('EXHAUST '+s);}
   if(tanks.service<.3)alarms.add('FUEL LEVEL');if(tanks.bilgeAft>.5)alarms.add('BILGE AFT');if(tanks.bilgeFwd>.5)alarms.add('BILGE FWD');if(fire)alarms.add('FIRE ER');if(co2)alarms.add('CO₂ RELEASED');

@@ -123,7 +123,7 @@ function shipWhistle(kind,distance,pan,at){
  const last=blasts.at(-1);return t+last[0]+last[1];
 }
 /** Her engines, by what she is doing (ferry.js audio): the loop's level and how fast it runs. */
-const ENGINE=Object.freeze({off:[0,.85],idle:[.12,.82],manoeuvring:[.2,.95],sea:[.27,1.12]});
+const ENGINE=Object.freeze({off:[0,.85],generators:[.06,.78],idle:[.12,.82],manoeuvring:[.2,.95],sea:[.27,1.12],emergency:[.08,.8]});
 function updateScape(player,{minutes,rain,inside,paused,ferry}){
  // Gulls want the water: the harbour is to the south of the town, past z = -35.
  const harbour=Math.max(0,Math.min(1,(-player.z-25)/25));

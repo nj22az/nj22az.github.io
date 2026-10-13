@@ -39,10 +39,9 @@ export const FERRY_INSPECT=Object.freeze([
   'The spare ahead clutch pack on its pallet, slung down the casing in April when the port gearbox chattered. It stays aboard as the spare now: the plates, the hub and the piston, in grease under the bench.',{reach:1.6}),
  at('generator',[-1.4,FP+1.2,Z(12.6)],'No.2 generator','Generator No.2: Johansson Marine '+JOHANSSON_MARINE.catalogue.genset.model,
   `A Johansson Marine ${JOHANSSON_MARINE.catalogue.genset.model} set: ${E.generators.kVA} kVA (${E.generators.kW} kW at ${E.generators.pf} power factor), ${E.generators.volts} V three-phase ${E.hz} Hz at ${E.generators.rpm} rpm, ${E.generators.amps} A. Its breaker trips on ${E.generators.trips}. One carries her at sea; both are on the board in narrow water, because the ${M.bowThruster.kW} kW bow thruster ${M.bowThruster.interlock.toLowerCase()}.`),
- at('switchboard',[-3.0,FP+1.3,Z(8.95)],'Main switchboard','Main switchboard',
+ at('switchboard',[-2.65,FP+1.3,Z(8.95)],'Main switchboard','Main switchboard',
   `${E.boards.MSB}. The system is ${E.distribution}. Lighting is ${E.lighting} V through ${E.transformers.lighting.count} × ${E.transformers.lighting.kVA} kVA transformers. ${E.preferenceTrip.why}.`),
- at('booth-desk',[-3.4,FP+1.0,Z(10.1)],'Control console','Engine control console',
-  `The chief’s desk in the booth: the shaft rpm, the engines’ oil pressures and water temperatures on the panel, the alarm matrix under them (one amber: FUEL LEVEL, the service tank wants topping up), the telegraph levers that answer the bridge, the telephone, and the log, where each watch writes the hours, the pressures and temperatures, the fuel used (${M.fuelPerCrossing} L a crossing, ${M.fuelPerDay} L a day) and the tanks’ soundings. The clock and the fire control plan over it.`),
+ // The control console is a station of the plant now (ferry-plant-controls.js): its readings are live, not a note.
  at('pumps',[-3.4,FP+.9,Z(11.8)],'The pumps','Pumps',
   `Two ${M.fireMain.pumpKW} kW fire and general-service pumps (${M.fireMain.pumpM3h} m³/h at ${M.fireMain.pressure} MPa), the ${M.bilge.pumpKW} kW bilge pump (${M.bilge.pumpM3h} m³/h), the sanitary pump and the hydrophore set (${M.freshWater.hydrophoreKW} kW, a ${M.freshWater.pressureTank} L pressure tank). ${M.bilge.why}.`),
  at('air',[2.5,FP+1.0,Z(9.2)],'Starting air','Starting air',

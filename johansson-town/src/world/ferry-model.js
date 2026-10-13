@@ -3,6 +3,7 @@ import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {FERRY_SHIP,FERRY_HEIGHTS,FERRY_CAR_PLACES,FERRY_MACHINERY} from './ferry-ship.js';
 import {drawSafetyPlan,canvasPen} from './ferry-safety-plan.js';
 import {FERRY_INTERIOR,FERRY_HOUSE,FERRY_ENGINE_ROOM,FERRY_STAIRS} from './ferry-interior.js';
+import {liveValue} from './ferry-plant-controls.js';
 
 /**
  * The Minato Maru (みなと丸) as she is built: drawn from her data (ferry-ship.js FERRY_SHIP, FERRY_HEIGHTS,
@@ -228,24 +229,58 @@ function deckAndBulwarks(){
 function plateMesh(pl){
  if(typeof document==='undefined')return null;
  const kind=pl.kind||'text',c=document.createElement('canvas');let W=512,H=Math.max(64,Math.round(512*pl.h/pl.w)),repeat=null;
- if(kind==='dial')W=H=256;if(kind==='chequer'||kind==='grating'){W=H=256;repeat=[pl.w/.6,pl.h/.6];}if(kind==='safety-plan'){W=1024;H=Math.round(1024*pl.h/pl.w);}
+ if(kind==='dial')W=H=pl.live?384:256;if(kind==='chequer'||kind==='grating'){W=H=256;repeat=[pl.w/.6,pl.h/.6];}if(kind==='safety-plan'||kind==='alarms'||kind==='readout'){W=1024;H=Math.round(1024*pl.h/pl.w);}
  c.width=W;c.height=H;const x=c.getContext('2d');
+ drawPlate(x,W,H,pl,pl.kind==='alarms'?[]:pl.kind==='readout'?pl.lines:pl.value);
+ const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=4;
+ if(repeat){tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.repeat.set(repeat[0],repeat[1]);}
+ const flat=repeat!==null,mat=new THREE.MeshStandardMaterial({map:tex,roughness:flat?.62:.5,metalness:flat?.35:.3,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4});
+ const geo=kind==='dial'?new THREE.CircleGeometry(pl.w/2,24):new THREE.PlaneGeometry(pl.w,pl.h);
+ const mesh=new THREE.Mesh(geo,mat);
+ mesh.position.set(...pl.pos);mesh.rotation.order='YXZ';mesh.rotation.y=pl.rotY;mesh.rotation.x=pl.rotX||0;mesh.name=pl.name;mesh.userData.plate=kind;
+ // A live plate (a dial of the plant, the alarm matrix) is redrawn when its reading changes (6r-2, ferry.js readPlant).
+ if(pl.live){let last=null;mesh.userData.live={key:pl.live,show(v){const k=Array.isArray(v)?v.join('|'):Math.round(v*1000);if(k===last)return false;last=k;drawPlate(x,W,H,pl,v);tex.needsUpdate=true;return true;}};}
+ return mesh;
+}
+/** Draws a plate's face on its canvas: `value` is a dial's needle (0–1) or the alarm matrix's lit names. */
+function drawPlate(x,W,H,pl,value){
+ const kind=pl.kind||'text';
  if(kind==='text'){
   x.fillStyle=pl.bg;x.fillRect(0,0,W,H);x.strokeStyle=pl.fg;x.lineWidth=4;x.strokeRect(6,6,W-12,H-12);
   x.fillStyle=pl.fg;x.textAlign='center';x.textBaseline='middle';
   const n=pl.lines.length,rowH=(H-20)/n;
   pl.lines.forEach((line,i)=>{const big=i===0||n===1;x.font=(big?'bold ':'')+Math.round(Math.min(rowH*.72,W/(line.length*.62)))+'px sans-serif';x.fillText(line,W/2,10+rowH*(i+.5));});
  }else if(kind==='dial'){
+  // A gauge a chief can read from the door: a numbered scale when the dial has a range, big lettering, the reading written under the pivot.
   const cx=W/2,cy=H/2,R=W*.46,a0=Math.PI*.75,a1=Math.PI*2.25,ang=f=>a0+(a1-a0)*Math.max(0,Math.min(1,f));
   x.fillStyle='#1c1f21';x.beginPath();x.arc(cx,cy,W/2,0,Math.PI*2);x.fill();                       // the bezel
   x.fillStyle=pl.bg;x.beginPath();x.arc(cx,cy,R,0,Math.PI*2);x.fill();                             // the face
-  if(pl.red){x.strokeStyle='#c2412f';x.lineWidth=W*.05;x.beginPath();x.arc(cx,cy,R*.82,ang(pl.red[0]),ang(pl.red[1]));x.stroke();}
-  x.strokeStyle=pl.fg;for(let i=0;i<=20;i++){const a=ang(i/20),big=i%5===0;x.lineWidth=big?W*.016:W*.008;
-   x.beginPath();x.moveTo(cx+Math.cos(a)*R*.9,cy+Math.sin(a)*R*.9);x.lineTo(cx+Math.cos(a)*R*(big?.72:.8),cy+Math.sin(a)*R*(big?.72:.8));x.stroke();}
-  x.fillStyle=pl.fg;x.textAlign='center';x.textBaseline='middle';x.font='bold '+Math.round(W*.11)+'px sans-serif';
-  if(pl.lines[0])x.fillText(pl.lines[0],cx,cy+R*.42);x.font=Math.round(W*.085)+'px sans-serif';if(pl.lines[1])x.fillText(pl.lines[1],cx,cy-R*.4);
-  const a=ang(pl.value??0);x.strokeStyle='#1c1f21';x.lineWidth=W*.02;x.beginPath();x.moveTo(cx-Math.cos(a)*R*.12,cy-Math.sin(a)*R*.12);x.lineTo(cx+Math.cos(a)*R*.86,cy+Math.sin(a)*R*.86);x.stroke();
-  x.fillStyle='#1c1f21';x.beginPath();x.arc(cx,cy,W*.04,0,Math.PI*2);x.fill();
+  if(pl.red){x.strokeStyle='#c2412f';x.lineWidth=W*.06;x.beginPath();x.arc(cx,cy,R*.84,ang(pl.red[0]),ang(pl.red[1]));x.stroke();}
+  x.strokeStyle=pl.fg;for(let i=0;i<=20;i++){const a=ang(i/20),big=i%5===0;x.lineWidth=big?W*.018:W*.008;
+   x.beginPath();x.moveTo(cx+Math.cos(a)*R*.92,cy+Math.sin(a)*R*.92);x.lineTo(cx+Math.cos(a)*R*(big?.74:.82),cy+Math.sin(a)*R*(big?.74:.82));x.stroke();}
+  x.fillStyle=pl.fg;x.textAlign='center';x.textBaseline='middle';
+  if(pl.range){const [lo,hi]=pl.range;x.font='bold '+Math.round(W*.085)+'px sans-serif';for(let i=0;i<=4;i++){const a=ang(i/4),n=lo+(hi-lo)*i/4;x.fillText(String(Math.round(n*10)/10),cx+Math.cos(a)*R*.58,cy+Math.sin(a)*R*.58);}}
+  x.font='bold '+Math.round(W*.12)+'px sans-serif';if(pl.lines[0])x.fillText(pl.lines[0],cx,cy+R*.4);
+  x.font=Math.round(W*.095)+'px sans-serif';if(pl.lines[1])x.fillText(pl.lines[1],cx,cy-R*.36);
+  const v=value??0,a=ang(v);
+  if(pl.range){const n=pl.range[0]+(pl.range[1]-pl.range[0])*Math.max(0,Math.min(1,v));x.fillStyle='#101416';x.fillRect(cx-R*.3,cy+R*.6,R*.6,R*.2);x.fillStyle='#9fe3a8';x.font='bold '+Math.round(W*.09)+'px monospace';x.fillText((pl.range[1]-pl.range[0]>20?Math.round(n):Math.round(n*10)/10)+'',cx,cy+R*.7);}
+  x.strokeStyle='#c2412f';x.lineWidth=W*.022;x.beginPath();x.moveTo(cx-Math.cos(a)*R*.12,cy-Math.sin(a)*R*.12);x.lineTo(cx+Math.cos(a)*R*.88,cy+Math.sin(a)*R*.88);x.stroke();
+  x.fillStyle='#1c1f21';x.beginPath();x.arc(cx,cy,W*.045,0,Math.PI*2);x.fill();
+ }else if(kind==='alarms'){
+  // 4 rows of 8 lamps with their names, red the first sixteen and amber the rest, lit by the plant's readings.
+  const lit=new Set(value||[]),cols=8,rows=Math.ceil(pl.lines.length/cols),cw=W/cols,rh=H/rows;
+  x.fillStyle=pl.bg;x.fillRect(0,0,W,H);
+  pl.lines.forEach((name,j)=>{const r=Math.floor(j/cols),c=j%cols,px=c*cw,py=r*rh,on=lit.has(name),amber=j>=16;
+   x.fillStyle='#15181a';x.fillRect(px+2,py+2,cw-4,rh-4);x.fillStyle=on?(amber?'#e0b93a':'#d9442f'):(amber?'#5a4a1a':'#4a1f1a');x.fillRect(px+5,py+5,cw-10,rh-10);
+   // The name on two lines where it has a side or a number ("WATER TEMP" over "P"), so the lettering can be twice the size.
+   const k=name.length>9?name.lastIndexOf(' '):-1,rows=k>0?[name.slice(0,k),name.slice(k+1)]:[name];
+   x.fillStyle=on?'#1c1f21':'#d8d2c0';x.textAlign='center';x.textBaseline='middle';const size=Math.round(Math.min(rh*.34,...rows.map(t=>(cw-14)/(t.length*.58))));x.font='bold '+size+'px sans-serif';
+   rows.forEach((t,i)=>x.fillText(t,px+cw/2,py+rh/2+(i-(rows.length-1)/2)*size*1.1));});
+ }else if(kind==='readout'){
+  // The readout strip: green lettering on a dark panel, two lines, every reading written out.
+  x.fillStyle=pl.bg;x.fillRect(0,0,W,H);x.strokeStyle='#3a4244';x.lineWidth=4;x.strokeRect(2,2,W-4,H-4);
+  const rows=value||pl.lines;x.fillStyle=pl.fg;x.textAlign='left';x.textBaseline='middle';
+  rows.forEach((t,i)=>{let size=Math.round(H*.36);x.font='bold '+size+'px monospace';const w=x.measureText(t).width;if(w>W-24){size=Math.floor(size*(W-24)/w);x.font='bold '+size+'px monospace';}x.fillText(t,12,H*(i+.5)/rows.length);});
  }else if(kind==='safety-plan'){
   drawSafetyPlan(canvasPen(x),W,H,pl.here);x.strokeStyle='#1d2326';x.lineWidth=6;x.setLineDash([]);x.strokeRect(3,3,W-6,H-6);
  }else if(kind==='chequer'){
@@ -257,12 +292,6 @@ function plateMesh(pl){
   x.fillStyle=pl.bg;x.fillRect(0,0,W,H);x.fillStyle=pl.fg;const n=12,s=W/n;for(let i=0;i<n;i++)x.fillRect(i*s,0,s*.55,H);
   x.fillStyle='#4a5053';for(let j=0;j<4;j++)x.fillRect(0,j*H/4+H/8-3,W,6);
  }
- const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=4;
- if(repeat){tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.repeat.set(repeat[0],repeat[1]);}
- const flat=repeat!==null,mat=new THREE.MeshStandardMaterial({map:tex,roughness:flat?.62:.5,metalness:flat?.35:.3,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4});
- const geo=kind==='dial'?new THREE.CircleGeometry(pl.w/2,24):new THREE.PlaneGeometry(pl.w,pl.h);
- const mesh=new THREE.Mesh(geo,mat);
- mesh.position.set(...pl.pos);mesh.rotation.order='YXZ';mesh.rotation.y=pl.rotY;mesh.rotation.x=pl.rotX||0;mesh.name=pl.name;mesh.userData.plate=kind;return mesh;
 }
 
 /** Collects static parts by material and merges them. */
@@ -509,7 +538,10 @@ export function buildFerryModel({shadows=false}={}){
  for(const r of FERRY_INTERIOR.bars)kit.bar(r.cls,r.a,r.b,r.r,r.hex,r.r>.2?14:6);
  for(const c of FERRY_INTERIOR.cyls)kit.cyl(c.cls,c.rt,c.rb,c.h,c.pos,c.hex,c.rot,c.seg);
  // Maker's plates and labels (johansson-marine.js): lettering on a plate, drawn as its own small textured plane.
- for(const pl of FERRY_INTERIOR.plates){const m=plateMesh(pl);if(m)ferry.add(m);}
+ const livePlates=[];for(const pl of FERRY_INTERIOR.plates){const m=plateMesh(pl);if(m){ferry.add(m);if(m.userData.live)livePlates.push(m.userData.live);}}
+ /** Shows the plant's readings (ferry-plant.js readings()) on every live dial and the alarm matrix; returns how many were redrawn. */
+ ferry.userData.readPlant=readings=>{let n=0;for(const l of livePlates)if(l.show(liveValue(readings,l.key)))n++;return n;};
+ ferry.userData.livePlates=livePlates;
  for(const g of FERRY_INTERIOR.glass){win(g.size,g.pos,g.rot);
   // Each pane in an anodised frame, 5 cm, standing 1 cm proud of the plating: no window is a hole in a flat wall.
   const [sx,sy,sz]=g.size,alongX=sx>sz,w=alongX?sx:sz,t=.05,d=(alongX?sz:sx)+.02;
