@@ -26,7 +26,7 @@ export function batchStaticProps(root,cellSize=24){
   }
   const geometry=mergeGeometries(pieces,false);if(!geometry){pieces.forEach(g=>g.dispose());continue;}
   const material=objects[0].material.clone();material.color.set(0xffffff);material.vertexColors=true;
-  const mesh=new THREE.Mesh(geometry,material);mesh.name='static-props:'+key;mesh.castShadow=objects[0].castShadow;mesh.receiveShadow=objects[0].receiveShadow;mesh.renderOrder=objects[0].renderOrder;parent.add(mesh);
+  const mesh=new THREE.Mesh(geometry,material);mesh.name='static-props:'+key;mesh.castShadow=objects[0].castShadow;mesh.receiveShadow=objects[0].receiveShadow;mesh.renderOrder=objects[0].renderOrder;parent.add(mesh);mesh.updateMatrixWorld(true);
   geometry.computeBoundingSphere();geometry.computeBoundingBox();
   for(const o of objects){o.layers.set(31);o.userData.renderBatch=mesh.uuid;sources.push(o);}
   pieces.forEach(g=>g.dispose());batches++;drawsSaved+=objects.length-1;triangles+=geometry.attributes.position.count/3;

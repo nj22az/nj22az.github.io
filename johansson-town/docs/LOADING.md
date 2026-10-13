@@ -79,6 +79,27 @@ Kitano-jima was about 410k triangles, ~320 colliders and ~60 prompts, all built 
 - **The same island either way:** `tests/kitano-on-demand.test.mjs` builds it both ways and compares colliders,
   prompts and meshes one by one. The tests, the tools and Studio build it whole (`kitano:'full'`, the default).
 
+## Batch 4: the same plan, answered faster (2026-10-13)
+
+The town's build was 9.3 s of CPU in node (`--cpu-prof`). A fifth of it was two questions every builder asks
+thousands of times: which route is under a point (`routeAt`), and how high the ground is there (`groundHeight`).
+Each answer scanned every route's every segment (37 routes, 121 segments, a fresh copy of each list every time), the
+island's routes the same way, and every coastline edge for "is this land". The sea's shore texture asked for the
+distance to every coastline edge for each of its 200k texels.
+
+- `src/world/plan-index.js`: a grid of where each route segment reaches (`routeFinder`), still asked in the routes'
+  own order, so the first route found is the scan's; a grid of the coast that answers inside or outside at once
+  wherever no edge crosses the cell (`polygonTest`); and only the coast edges that can be within the shore field's
+  80 m (`edgesNear`). The park access paths' heights answer "none" at once outside their reach.
+- The answers are the same: `tests/plan-index.test.mjs` asks 40 000 points both ways each, and the shore texture is
+  identical texel for texel. The power lines (108 wires, the same two clipped), the countryside's placements, the
+  colliders and the prompts are unchanged.
+- **Measured (node, CPU only):** `routeAt` and `groundHeight` over 73 000 points 14.5 s → 1.1 s; the town's build
+  9.3 s → 4.6 s (the east lawn 2.4 s → 0.6 s, the countryside 1.3 s → 0.2 s, the harbour 1.7 s → 0.7 s); the shore
+  texture 1.3 s → 0.3 s. Walking and the residents ask the same questions every frame, so they gain too.
+- Batches kept in a moved group (Kitano-jima's) get their world matrix at once (`render/static-props.js`), so a
+  ray cast before the first frame finds them where they are drawn.
+
 ## What is still large, in order (the plan for batch 2 and 3)
 
 1. **The game's static import graph is one 3.5 MB download before the first frame.** `game.js` statically imports

@@ -2,18 +2,13 @@ import {inShoppingLane,shoppingLaneGroundHeight} from './shopping-lane-plan.js';
 import {inGarden,gardenHeight,gardenPondAt,gardenGroundHeight,GARDEN} from './garden-layout.js';
 import {islandTerrainHeight,islandRouteAt} from './island-plan.js';
 import {COASTLINE} from './island-coast.js';
+import {polygonTest} from './plan-index.js';
 import {headlandHeight} from './coyote-tunnel.js';
 import {BEACH,beachHeight,beachAccessHeight} from './beach-layout.js';
 export const ISLAND_GROUND_Y=-.4;
-/** Interior of the actual rendered land polygon, including its slanted coast. */
-export function onIslandLand(x,z){
- let inside=false;
- for(let i=0,j=COASTLINE.length-1;i<COASTLINE.length;j=i++){
-  const [ax,az]=COASTLINE[i],[bx,bz]=COASTLINE[j];
-  if((az>z)!==(bz>z)&&x<(bx-ax)*(z-az)/(bz-az)+ax)inside=!inside;
- }
- return inside;
-}
+/** Interior of the actual rendered land polygon, including its slanted coast (through its grid, plan-index.js). */
+const insideCoast=polygonTest(COASTLINE);
+export function onIslandLand(x,z){return insideCoast(x,z);}
 /** Surface beyond the authored streets. Water remains outside the playable union. */
 export function coastalSurface(x,z){
  const ramp=beachAccessHeight(x,z);

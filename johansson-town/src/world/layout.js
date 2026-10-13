@@ -1,4 +1,5 @@
 import {houseboatSurface} from './fujita-houseboat.js';
+import {routeFinder} from './plan-index.js';
 import {DOCKLANDS,docklandsAt} from './docklands-layout.js';
 import {ISLAND_ROUTES} from './island-plan.js';
 import {airportSurface} from './airport-ground.js';
@@ -70,6 +71,8 @@ export const ROUTES = [
  ...ISLAND_ROUTES,
 ];
 export function activeRoutes(){return ROUTES;}
+/** The routes past the first three (asked for on their own in regionAt), through their index (plan-index.js). */
+const findRoute=routeFinder(ROUTES,{from:3});
 export function nearestOnSegment(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],q=dx*dx+dz*dz;const t=q?Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/q)):0;return {x:a[0]+dx*t,z:a[1]+dz*t,t,d:Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t)};}
 export const LANDINGS=[];
 /**
@@ -123,7 +126,7 @@ function regionAt(x,z,r=0){
  if(docklandsAt(x,z,r))return DOCKLANDS;
  if(Math.abs(x)<=19-r&&z>=-49.7&&z<=-38)return ROUTES[1];
  if(Math.abs(x)<=OUTER_PIER.width/2-r&&z>=Math.max(OUTER_PIER.z-OUTER_PIER.length/2,OUTER_PIER.open)+r&&z<=-49.7)return ROUTES[2];
- const route=LANDINGS.find(p=>Math.abs(x-p.x)<=p.w/2-r&&Math.abs(z-p.z)<=p.d/2-r)||activeRoutes().slice(3).find(route=>route.points.slice(1).some((b,i)=>nearestOnSegment(x,z,route.points[i],b).d<=(route.segmentWidths?.[i]??route.width)/2-r));
+ const route=LANDINGS.find(p=>Math.abs(x-p.x)<=p.w/2-r&&Math.abs(z-p.z)<=p.d/2-r)||findRoute(x,z,r);
  if(route)return route;
  // The lawn is asked last, so the park's mound, its ramp and every authored path keep
  // their own surface and the green is simply whatever is left over. Asking it earlier
