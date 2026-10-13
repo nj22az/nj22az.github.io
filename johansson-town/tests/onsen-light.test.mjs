@@ -116,7 +116,7 @@ test('the women’s lamp goes out with its breaker and with the main; the blacko
  stageScenario('isolated');const isolated=snapshot();
  for(const [name,v] of isolated.lights)assert.equal(v,0,name+' dark with the main off');
  assert.ok(isolated.town<.3&&isolated.hemi<hemiOf(room).intensity+1e-9);
- // The blackout: the contract breaker down, every lamp in the house dark, as dark as the house with its main off.
+ // The blackout: the supply breaker down, every lamp in the house dark, as dark as the house with its main off.
  stageScenario('blackout');const blackout=snapshot();
  for(const [name,v] of blackout.lights)assert.equal(v,0,name+' dark in the blackout');
  assert.deepEqual(blackout,isolated,'the blackout matches the isolated house');
@@ -182,7 +182,7 @@ test('night: the harbour lights stand still over the fence, red right and green 
  layout.dispose();
 });
 
-test('the story’s numbers hold with the lamps: the house idles at 9.46 A, the evening rush is 58.46 A on the 40 A contract',()=>{
+test('the story’s numbers hold with the lamps: the house idles at 9.46 A, the evening rush is 58.46 A on the 40 A supply',()=>{
  resetAll();stageScenario('rest');
  const lights=ONSEN_CIRCUITS.find(c=>c.id==='changing-lights');
  assert.deepEqual(lights.loads.map(l=>[l.id,l.watts]),[['changing-pendant',30],['women-tube',40]]);

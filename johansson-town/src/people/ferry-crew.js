@@ -56,7 +56,7 @@ export const FERRY_WATCH=Object.freeze({
   chief:['engine-room','Engines idling, one generator stopped; checks the bilges and the oil'],
   oiler:['gangway','At the gangway: tickets and a hand for anyone with bags'],
   deck:['car-deck','Waves the cars aboard, backing them in, and lashes them at the wheels'],
-  tickets:['waiting-hall','Sells the last tickets and telephones the count to the wheelhouse'],
+  tickets:['waiting-hall','Sells the last tickets and telephones the count to the wheelhouse (from noon: people/ganaha.js; before, the oiler sells at the gangway)'],
  }),
  reversing:Object.freeze({
   master:['port-wing','Astern on both engines, the thruster holding the bow off the quay'],

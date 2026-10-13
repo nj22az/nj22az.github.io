@@ -203,6 +203,7 @@ export const RESIDENT_NAMES=Object.freeze(Object.values(RESIDENT_GROUPS).flat())
 /**
  * The Minato Maru's crew (people/ferry-crew.js), drawn, not generated: the generator gave the oiler and the deck hand the
  * same spiky hair and polo (the creator, 2026-10-12: "the oiler is cloned, why"). Kōji is among the neighbours.
+ * Ms Ganaha, the ticket clerk ashore (FERRY_SHORE) and the island's guide (people/ganaha.js), is drawn with them.
  */
 export const CREW_LOOKS=Object.freeze({
  // The chief, 61: grey side-parted hair, a square jaw, reading glasses, the ship's navy boiler suit.
@@ -211,6 +212,9 @@ export const CREW_LOOKS=Object.freeze({
  'Mr Higa Jr':R({name:'Mr Higa Jr',age:'adult',head:{size:.48,shape:.45,form:'round',jaw:0.55,cheeks:0.6},body:{height:.6,build:.45,silhouette:'masculine',skin:'#b27449'},hair:{style:'buzz',colour:'#1c1714'},eyes:{style:'round'},brows:{style:'straight'},nose:{style:'button'},mouth:{style:'grin'},outfit:{top:'overalls',topColour:'#2a3f6b',bottom:'trousers',bottomColour:'#2a3f6b',shoes:'#1c1c24',hat:'kerchief',hatColour:'#d8342c'}}),
  // The deck hand, Ms Uezu, 38: a swept ponytail under a white cap, a work jacket over cropped trousers.
  'Ms Uezu':R({name:'Ms Uezu',age:'adult',head:{size:.47,shape:.55,form:'oval',jaw:0.45,cheeks:0.5},body:{height:.5,build:.4,silhouette:'feminine',skin:'#d8a77c'},hair:{style:'sweptponytail',colour:'#3a2618'},eyes:{style:'gentle'},brows:{style:'arched'},nose:{style:'dot'},mouth:{style:'smile'},outfit:{top:'jacket',topColour:'#3f6ea0',bottom:'cropped',bottomColour:'#2a3f6b',shoes:'#f4f1ea',hat:'cap',hatColour:'#f4f1ea'}}),
+ // The ticket clerk, Ms Ganaha, 52: a neat greying bob, reading glasses on a chain, the terminal's terracotta vest over
+ // a white shirt (outfits.js 'ticket-window'), so the waiting hall knows whom to ask.
+ 'Ms Ganaha':R({name:'Ms Ganaha',age:'adult',head:{size:.48,shape:.5,form:'oval',jaw:0.4,cheeks:0.6},body:{height:.4,build:.5,silhouette:'feminine',skin:'#cf9d76'},hair:{style:'bob',colour:'#4a423c'},eyes:{style:'gentle'},brows:{style:'arched'},nose:{style:'button'},mouth:{style:'smile'},glasses:{style:'half',colour:'#7a5a3a'},wrinkles:.35,outfit:{top:'vest',topColour:'#b4583c',accent:'#f4f1ea',bottom:'skirt',bottomColour:'#27304d',footwear:'shoes',shoes:'#2b2b2b',pattern:'none'}}),
 });
 export function baseRecipe(name=''){return withBirthday(drawnRecipe(name),name);}
 function drawnRecipe(name){

@@ -23,6 +23,8 @@ for(const age of ['child','teen','adult','elder'])for(const build of [0,1])for(c
  BODIES.push([`${age}, build ${build}, ${proportion}`,normalizeRecipe({...base,name:`Poser ${age} ${build} ${proportion}`,age,body:{...base.body,build,proportion,height:build}}),'clothes']);
 for(const [who,outfit] of [['Mr Fujita','clothes'],['Mrs Higa','clothes'],['Nhung','clothes'],['Tetsuo','afterbath']])BODIES.push([`${who} (${outfit})`,recipeFor(who),outfit]);
 const NAMES=Object.keys(FUN_POSES),JUMPS=new Set(['JumpForJoy','StartledJump']);
+/** The poses that leave the floor (fun-poses.js `airborne`): the two jumps, and up the pole. */
+const AIRBORNE=new Set(NAMES.filter(name=>FUN_POSES[name].airborne));
 /** When the still is taken: as World's photo studio and Johansson Studio take it. */
 const stillAt=name=>Number.isFinite(GESTURES[name])?GESTURES[name]*STILL_AT:.7;
 
@@ -84,7 +86,7 @@ test('on every body, at the still: in nothing (the head, the body, the legs), on
    if(c.body<Math.min(ref,0)-.004)wrong.push(`${tag}: a mitten ${(-c.body*1000).toFixed(0)} mm into the body (standing easy: ${(-ref*1000).toFixed(0)})`);
    if(c.leg<-.004)wrong.push(`${tag}: a mitten ${(-c.leg*1000).toFixed(0)} mm into a leg`);
    const low=Math.min(...surface(b.avatar,{only:n=>/^foot/.test(n)}).map(a=>a.p.y),...surface(b.avatar,{stride:3}).map(a=>a.p.y));
-   if(JUMPS.has(name)?low<.02:Math.abs(low)>.004)wrong.push(`${tag}: ${JUMPS.has(name)?'not in the air':'off the floor'} (${(low*1000).toFixed(0)} mm)`);
+   if(AIRBORNE.has(name)?low<.02:Math.abs(low)>.004)wrong.push(`${tag}: ${AIRBORNE.has(name)?'not in the air':'off the floor'} (${(low*1000).toFixed(0)} mm)`);
    b.avatar.dispose();
   }
  }

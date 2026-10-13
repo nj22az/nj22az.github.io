@@ -180,6 +180,10 @@ that makes more or better stories.
 - **Plan a change before making it.** Before moving or resizing anything in a place, list what it affects: colliders, standing
   spots and walking routes, tests, residents' routines, and every film shot that photographed it (the studio's
   `remotion/tools/impact.py` lists the shots, marks and photographs). Then change it, and check each item on the list.
+- **English words, Japanese signs** (the creator, 2026-10-13: "We should use English terms even though it's in Japan, the
+  labels can be correct Japanese but teaching is in English and storytelling too and the gameplay"). Signs, labels and
+  packaging in the world are correct Japanese; every word a player reads in the UI, an inspect text, a story or a lesson
+  is plain English ("supply breaker", not a translated "contract breaker").
 - **The Minato Maru is a real ship** (the creator, 2026-10-12: "The ferry needs to be built like a realistic ferry in the
   90's, the cartoon cel shading is just to make it more fun. Be a naval ship architect and build the ferry as a real ferry
   would be built and make drawings, one should be able to build a real ferry from our documentation"). Her design book is

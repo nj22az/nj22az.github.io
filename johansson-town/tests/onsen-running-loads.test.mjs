@@ -22,11 +22,11 @@ test('at rest the fixed loads run and the dryers, the chair and the pot wait for
  assert.ok(AT_REST.includes('changing-pendant')&&AT_REST.includes('television')&&AT_REST.includes('circulation-pump'));
  const a=assess();assert.equal(circuit(a,'changing-sockets').amps,0);
  // Lamps 40+30+40+20+120+5 W, andon 25, television 80, fan 30, sterilizer 6, cooler 150, pump 400: 946 W.
- assert.ok(Math.abs(a.main.amps-9.46)<1e-9,'the house idles at 9.46 A: '+a.main.amps);assert.equal(a.contract.amps,a.main.amps,'the contract breaker sees the same');
+ assert.ok(Math.abs(a.main.amps-9.46)<1e-9,'the house idles at 9.46 A: '+a.main.amps);assert.equal(a.contract.amps,a.main.amps,'the supply breaker sees the same');
  assert.deepEqual(advance(3600),[],'nothing trips at rest, however long');
 });
 
-test('three dryers, the pot and the chair: every branch holds, the 40 A contract breaker lets go after minutes and the whole house is dark',()=>{
+test('three dryers, the pot and the chair: every branch holds, the 40 A supply breaker lets go after minutes and the whole house is dark',()=>{
  stageScenario('rest');
  for(const id of [...RUSH,'massage-chair'])assert.equal(switchOn(id),true,id);
  assert.equal(switchOn('dryer-1'),false,'already on');
@@ -56,7 +56,7 @@ test('the trip curve stays inside the JIS limits and never trips within the rati
  assert.equal(tripSeconds(20,20),Infinity);assert.equal(tripSeconds(14,20),Infinity);
  assert.ok(tripSeconds(25,20)<=3600,'125 %: within 60 minutes');assert.ok(tripSeconds(40,20)<=120,'200 %: within 2 minutes');
  assert.equal(tripSeconds(200,20),0,'magnetic trip at ten times');
- assert.ok(tripSeconds(80,40)<=240,'the 40 A contract breaker at 200 %: within 4 minutes');assert.equal(tripSeconds(40,40),Infinity);
+ assert.ok(tripSeconds(80,40)<=240,'the 40 A supply breaker at 200 %: within 4 minutes');assert.equal(tripSeconds(40,40),Infinity);
  let last=Infinity;for(let r=1.06;r<10;r+=.01){const t=tripSeconds(r*20,20);assert.ok(t<=last+1e-9,'more current never takes longer at '+r.toFixed(2));last=t;}
  assert.ok(BREAKER_CURVE.length>3);
 });
@@ -69,7 +69,7 @@ test('the board, lamps and screen follow switches as well as breakers',()=>{
  // Switching the pendant off at the wall puts it out without touching the breaker.
  switchOff('changing-pendant');assert.equal(light.intensity,0);assert.equal(lamp.material.emissiveIntensity,0);assert.equal(isLive('changing-lights'),true);
  switchOn('changing-pendant');assert.equal(light.intensity,lit);
- // The busy evening, ticked in the room: the contract breaker's lever drops by itself and the whole house goes dark.
+ // The busy evening, ticked in the room: the supply breaker's lever drops by itself and the whole house goes dark.
  const contract=room.getObjectByName('Breaker lever contract');
  for(const id of [...RUSH,'massage-chair'])switchOn(id);
  let seconds=0;while(isLive('contract')&&seconds<600){layout.tick(.5,20*60);seconds+=.5;}
@@ -85,7 +85,7 @@ test('the board, lamps and screen follow switches as well as breakers',()=>{
 
 test('the film stages the story by name, and the TV can be pinned to the night game',()=>{
  for(const [name,s] of Object.entries(ONSEN_SCENARIOS)){assert.ok(s.en.length>30,name+' explains itself');for(const id of s.on)assert.ok(ONSEN_CIRCUITS.some(c=>c.loads.some(l=>l.id===id)),id);}
- assert.deepEqual(Object.keys(ONSEN_SCENARIOS),['rest','quiet','evening','last-straw','blackout','retrip','restored','isolated']);
+ assert.deepEqual(Object.keys(ONSEN_SCENARIOS),['rest','quiet','evening','last-straw','blackout','retrip','restored','isolated','locked-out','upgraded-locked-out','upgraded']);
  // "Fujita's Back": the evening (3–4), the last straw (4), the blackout and the dark twice (5–6), restored (7–9).
  for(const [name,pages] of [['evening',[3,4]],['last-straw',[4]],['blackout',[5,6]],['retrip',[6]],['restored',[7,8,9]]])assert.deepEqual(ONSEN_SCENARIOS[name].pages,pages,name);
  let a=stageScenario('evening');

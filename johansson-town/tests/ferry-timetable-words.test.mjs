@@ -17,7 +17,7 @@ test('every timetable in town tells the same service: on request, with the commu
  // The board in the hall, the boarding menu and the ticket clerk on the telephone.
  assert.match(source('src/world/interiors/port-hall.js'),/'KITANO-JIMA','On request'/);
  const menu=source('src/island/play.js');assert.match(menu,/on request/);assert.match(menu,/Passengers ride the upper deck/);assert.doesNotMatch(menu,/share the open deck/);
- assert.match(source('src/people/izakaya-play.js'),/She goes on request/);
+ assert.match(source('src/people/izakaya-play.js'),/goes on request/);
 });
 
 test('nobody waits for a bus that does not run: Vy waits for the ferry',()=>{

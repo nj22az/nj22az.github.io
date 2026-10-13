@@ -403,8 +403,10 @@ function drawMarks(ctx,L,skin,marks,mouthDY=0){
 
 function drawBrow(ctx,x,y,s,side,brows,tilt,mood){
  ctx.save();ctx.translate(x,y);ctx.scale(s,s);
- // Positive mood tilts the inner end down (cross), negative lifts it (worried, sad).
- ctx.rotate(side*(tilt*-1+mood*.48));
+ // Positive mood tilts the inner end down (cross), negative lifts it (worried, sad). The inner end is toward the nose
+ // (-side), and a positive canvas turn moves +x down: so the mood turns the brow by -side (it had the sign the wrong way
+ // round, and every angry face wore worried brows; the creator, 2026-10-12: "Tetsuos eye brows look worried instead of evil").
+ ctx.rotate(side*-tilt-side*mood*.48);
  const ink=shade(brows.colour,.68);ctx.strokeStyle=ink;ctx.fillStyle=ink;ctx.lineCap='round';
  const style=brows.style;
  const w=style==='thick'||style==='bushy'?7:style==='thin'?2.4:style==='short'?5.4:style==='feathered'?3:4.2;
