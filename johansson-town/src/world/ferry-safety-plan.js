@@ -19,8 +19,9 @@ export const FERRY_SAFETY_ITEMS=Object.freeze([
  at('extinguisher','passenger',9.5,2.4),at('extinguisher','passenger',16,2.6),at('extinguisher','passenger',16,-2.6),at('extinguisher','passenger',4.5,-1.5),
  at('extinguisher','hold',9.6,3.0),at('extinguisher','hold',11.2,-2.2),at('extinguisher','hold',14.3,1.0),at('extinguisher','hold',19.3,.9),
  at('co2-ext','bridge',21.5,0,'wheelhouse'),at('co2-ext','bridge',14.6,-2.0,'galley'),at('co2-ext','bridge',7.6,1.9,'EG room'),at('co2-ext','car',28.5,-3.0,'bow house S'),
- // Hydrants: the fire main's, car deck either side, passenger deck either side, the engine room's.
- at('hydrant','car',12.5,3.4),at('hydrant','car',12.5,-3.4),at('hydrant','car',24,3.4),at('hydrant','passenger',12,2.9),at('hydrant','passenger',12,-2.9),at('hydrant','hold',13.7,3.75),
+ // Hydrants: the fire main's (ferry-piping.js 8.6): the car deck's four (ferry-model.js FERRY_DECK_FITTINGS: aft on the
+ // casings' faces by the hose boxes, forward on the bulwark at the walkways), passenger deck either side, the engine room's.
+ at('hydrant','car',15.8,2.65),at('hydrant','car',15.8,-2.65),at('hydrant','car',24,3.95),at('hydrant','car',24,-3.95),at('hydrant','passenger',12,2.9),at('hydrant','passenger',12,-2.9),at('hydrant','hold',13.7,3.75),
  // Fixed systems: CO₂ for the engine room from the CO₂ room; the fire detection panel in the wheelhouse; the fire pumps.
  at('co2-room','bridge',...centre('co2-room'),'CO₂ room'),at('fire-panel','bridge',21.9,-2.3,'detection panel'),at('fire-pump','hold',11.8,-3.7,'fire pumps'),at('eg','bridge',...centre('eg-room'),'emergency generator'),
  at('fuel-cutoff','bridge',8.3,-2.5,'fuel quick-closing valves · stop of pumps and fans'),at('co2-release','bridge',8.3,-1.6,'CO₂ release'),

@@ -63,6 +63,7 @@ Every power cable, numbered by the KKS rule (the lower end’s tag, then 1001–
 | 10BRB10 1013 | 10BRB10 GS001 | 10BRB10 GS018 | Drink vending machines No.2 | EPR/CSP braided, 2-core | 2 × 1.5 mm² | 16 | 10 | control-booth → casing-p trunk → lobby → lobby | 17 | 2.5 |
 | 10BRB10 1014 | 10BRB10 GS001 | 10BRB10 GS019 | Carpet-room television | EPR/CSP braided, 2-core | 2 × 1.5 mm² | 16 | 6 | control-booth → casing-p trunk → lobby → carpet-room | 20 | 0.4 |
 | 10BRB10 1015 | 10BRB10 GS001 | 10SAC30 AN001 -M01 | Toilet exhaust fans | EPR/CSP braided, 2-core | 2 × 1.5 mm² | 16 | 6 | control-booth → casing-p trunk → lobby → toilets | 16 | 0.6 |
+| 10BRB10 1016 | 10BRB10 GS001 | 10BRB10 GS020 | Lane signals at the ramp (2 posts, a board each way, 3 LED lamps a board, 15 W a lamp) | EPR/CSP braided, 2-core | 2 × 1.5 mm² | 16 | 6 | control-booth → casing-p trunk → car-deck | 24 | 1 |
 | 10BRV10 1003 | 10BRV10 GS001 | 10BRV20 GS011 | Emergency lighting (one fitting in four, the escapes, the muster stations) | EPR/CSP braided, 2-core | 2 × 2.5 mm² | 21 | 20 | eg-room → corridor | 10 | 2.2 |
 | 10BRV10 1004 | 10BRV10 GS001 | 10CTA20 GS001 | Navigation lights (7 × 60 W) | EPR/CSP braided, 2-core | 2 × 1.5 mm² | 16 | 6 | eg-room → compass-deck | 24 | 2.3 |
 | 10BRV10 1005 | 10BRV10 GS001 | 10CTA10 GS003 | Radar and PA on the emergency supply | EPR/CSP braided, 2-core | 2 × 1.5 mm² | 16 | 6 | eg-room → wheelhouse | 20 | 2.4 |

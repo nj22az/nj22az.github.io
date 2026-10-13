@@ -250,6 +250,7 @@ export const FERRY_LOADS=Object.freeze([
  load('vending','Drink vending machines','lobby','LB','105',2,.6,6.7,[.7,.7,.7,.7],'Canned coffee and tea',1),
  load('tv','Carpet-room television','carpet-room','LB','105',1,.08,.8,[.1,.1,.1],''),
  load('toilet-fans','Toilet exhaust fans','toilets','LB','105',2,.15,1.7,[.3,.3,.3,.1],''),
+ load('lane-signals','Lane signals at the ramp (2 posts, a board each way, 3 LED lamps a board, 15 W a lamp)','car-deck','LB','105',1,.18,1.9,[.18,.18,.18],'Red at sea and while the ramp moves, green when it is down: drivers on the quay and on the deck know when to go; off at night on shore power'),
  load('emergency-light','Emergency lighting (one fitting in four, the escapes, the muster stations)','corridor','ESB','105',1,1.55,16.4,[_,_,_,_,1.6],'Inside the lighting above in normal service'),
  load('nav-lights','Navigation lights (7 × 60 W)','compass-deck','ESB','105',1,.42,4.4,[.4,.4,_,_,.4],'Masthead, sidelights, stern light, all-round lights'),
  load('emergency-radar','Radar and PA on the emergency supply','wheelhouse','ESB','105',1,.5,5.3,[_,_,_,_,.5],'Inside the bridge electronics normally'),
