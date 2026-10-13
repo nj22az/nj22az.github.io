@@ -92,12 +92,16 @@ export const FUN_POSES=Object.freeze({
    P.toward('chest',-.28,0,0,up);P.add('head',-.16*up);P.toward('thighL',-1,0,0,up);P.toward('kneeL',1.4,0,0,up);P.toward('footL',.3,0,0,up);
    return {root:air*.12*m.k};}}),
  PoleHug:Object.freeze({label:'Up the pole',face:'dismay',d:Infinity,ramp:.6,airborne:true,
-  use:'Up a pole (or a tree) out of fright and not coming down: both arms round it high, the knees drawn up round it, clinging on.',
-  play(P){const {w,t}=P,sway=Math.sin(t*1.7)*.02*w;
-   P.armTo('R',[-2.35,0,.42,-1.05],w,[0,.25,0]);P.armTo('L',[-2.2,0,.42,-1.15],w,[0,.25,0]);
+  use:'Up a pole (or a tree) out of fright and not coming down: both arms round it, the knees drawn up round it, clinging on.',
+  // The arms go round the pole below the chin, the forearms meeting in front of it: raised round it above the head (as first
+  // drawn) they went 8-15 cm into the big head on every body, and through the tenugui round the neck after the bath. Held up
+  // off the floor by the pole (the body is lifted clear, as a jump is), never hovering a centimetre over it.
+  play(P){const {w,t,m}=P,sway=Math.sin(t*1.7)*.02*w;
+   P.armTo('R',[-1.35,0,.6,-1.6],w,[0,.25,0]);P.armTo('L',[-1.25,0,.6,-1.65],w,[0,.25,0]);
    P.toward('chest',.14+sway,0,0,w);P.add('head',-.12*w);
    P.toward('thighL',-1.25,0,-.18,w);P.toward('kneeL',1.55,0,0,w);P.toward('footL',.2,0,0,w);
-   P.toward('thighR',-.85,0,.18,w);P.toward('kneeR',1.35,0,0,w);P.toward('footR',.2,0,0,w);}}),
+   P.toward('thighR',-.85,0,.18,w);P.toward('kneeR',1.35,0,0,w);P.toward('footR',.2,0,0,w);
+   return {root:.14*w*m.k};}}),
  Sneak:Object.freeze({label:'Sneak',face:'scheme',d:Infinity,
   use:'Tiptoeing past someone: crouched on the toes, the mittens up like paws, looking sideways.',
   play(P){const {w,t}=P,bob=Math.sin(t*3)*.03*w;
