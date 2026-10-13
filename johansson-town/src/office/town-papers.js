@@ -101,9 +101,16 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
+    "title": "Airport ferry window",
+    "organisation": "Town Services",
+    "text": "The window opens at noon. Until then the oiler sells tickets at the gangway on the outer pier, as each boat waits to sail.",
+    "source": "notice:Airport ferry window"
+  },
+  {
+    "type": "Notice",
     "title": "Ferry departures",
     "organisation": "Town Services",
-    "text": "The shared car and passenger ferry crosses to Kitano-jima on request. Buy a return passenger ticket at the airport-ferry counter and board from the outer pier. The evening boat to Naha opens at 17:00.",
+    "text": "The shared car and passenger ferry crosses to Kitano-jima on request. Buy a return passenger ticket at the airport-ferry window (Ms Ganaha, noon to 22:15; in the morning from the oiler at the gangway) and board from the outer pier. The evening boat to Naha opens at 17:00.",
     "source": "notice:Ferry departures"
   },
   {

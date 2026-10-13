@@ -9,8 +9,8 @@ import {FERRY_FARE} from '../island/services.js';
  * strait map. Whatever she says comes from the town's own data, so she cannot contradict the world.
  *
  * Her hours, 12:00 to 22:15: the 14:30 and 22:00 commuter boats and every crossing on request in between, and the
- * evening telephone (izakaya-play.js: she picks up on the fourth ring). Before noon the deck hand sells the tickets
- * at the gangway (FERRY_WATCH), so the morning boat needs no clerk.
+ * evening telephone (izakaya-play.js: she picks up on the fourth ring). Before noon the oiler sells the tickets
+ * at the gangway (FERRY_WATCH: the oiler, at the gangway while she waits), so the morning boat needs no clerk.
  */
 export const GANAHA=Object.freeze({name:'Ms Ganaha',from:12*60,until:22*60+15,
  window:'Airport ferry',lives:'Kitahama Heights, flat 1'});
@@ -26,11 +26,11 @@ export function nextBoatLine(minutes){
  if(alongside!==undefined)return `The commuter boat is alongside now, until ${serviceTime(alongside+BUS_DWELL)}. If you are going across (${fare}), get your ticket and go straight down the outer pier.`;
  const due=nextService(minutes),wait=Math.ceil(due.wait);
  const when=wait<=60?`in ${wait} minute${wait===1?'':'s'}`:`at ${serviceTime(due.service)}`;
- return `She goes on request, love: ${fare}, and she sails when the cars are aboard. It is ${CROSSING_MINUTES} minutes across to Kitano-jima. The commuter boat is due ${when}.`;
+ return `The boat goes on request, love: ${fare}, and she sails when the cars are aboard. It is ${CROSSING_MINUTES} minutes across to Kitano-jima. The commuter boat is due ${when}.`;
 }
 
 /** What she says first, by the hour. */
 export function ganahaGreeting(minutes){
- const h=minuteOfDay(minutes)/60;
- return h<13?'Afternoon window’s open, love. Where are you off to?':h<18?'Port Terminal. Where are you off to?':'Evening, love. The last commuter boat’s in at ten. Where are you off to?';
+ const m=minuteOfDay(minutes),h=m/60;
+ return h<13?'Afternoon window’s open, love. Where are you off to?':h<18?'Port Terminal. Where are you off to?':m<22*60?'Evening, love. The last commuter boat’s in at ten. Where are you off to?':'The last boat’s alongside, love. Where are you off to?';
 }

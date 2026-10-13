@@ -13,6 +13,8 @@ const {recipeFor,CREW_LOOKS}=await import('../src/avatars/cast.js');
 const {buildPortHall}=await import('../src/world/interiors/port-hall.js');
 const {FURNITURE_HEIGHTS}=await import('../src/world/furniture-standards.js');
 const {createActivities}=await import('../activities.js');
+const {ISLAND_OUTFITS}=await import('../src/avatars/outfits.js');
+const {createIzakayaPlay}=await import('../src/people/izakaya-play.js');
 
 test('she keeps the window from noon to 22:15, and says the timetable the terminal posts', () => {
  assert.deepEqual([11*60+59,12*60,22*60+14,22*60+15,3*60].map(ganahaAtWindow),[false,true,true,false,false]);
@@ -27,12 +29,14 @@ test('she keeps the window from noon to 22:15, and says the timetable the termin
 
 test('she is drawn, in the terminal\'s vest', () => {
  const r=recipeFor(GANAHA.name);
- assert.ok(CREW_LOOKS[GANAHA.name]);assert.equal(r.outfit.top,'vest');assert.equal(r.outfit.topColour,'#b4583c');assert.equal(r.body.silhouette,'feminine');
+ assert.ok(CREW_LOOKS[GANAHA.name]);assert.equal(r.body.silhouette,'feminine');
+ const set=ISLAND_OUTFITS.find(o=>o.id==='ticket-window').outfit;
+ for(const [k,v] of Object.entries(set))assert.equal(r.outfit[k],v,'her look wears the Ticket window outfit: '+k);
 });
 
 test('her half of the counter is open for her knees, and she is there only in her hours', () => {
  const spots=[],room=new THREE.Group();
- const layout=buildPortHall({room,reg:(o,label)=>spots.push({o,label}),action(){},collider(){}});
+ const layout=buildPortHall({room,reg:(o,label,fn)=>{o.userData.hit={label,fn};spots.push({o,label});},action(){},collider(){}});   // as game.js reg does
  room.updateMatrixWorld(true);
  const box=n=>new THREE.Box3().setFromObject(room.getObjectByName(n));
  const counter=box('Ticket counter'),seat=box('Clerk chair seat'),screen=box('Counter screen'),top=box('Ticket counter top');
@@ -44,8 +48,11 @@ test('her half of the counter is open for her knees, and she is there only in he
  assert.ok(Math.abs(seat.max.y-FURNITURE_HEIGHTS.seat)<.01,'an ordinary chair at seat height');
  assert.ok(box('Clerk chair back').min.z>-3.5,'her chair\'s back clears the wall');
  const talk=spots.find(s=>s.label==='Talk to Ms Ganaha');assert.ok(talk);
- layout.tick(0,9*60);assert.equal(layout.clerk.visible,false);assert.equal(talk.o.visible,false);assert.equal(room.getObjectByName('Window closed plate').visible,true);
- layout.tick(0,13*60);assert.equal(layout.clerk.visible,true);assert.equal(talk.o.visible,true);assert.equal(room.getObjectByName('Window closed plate').visible,false);
+ const window=spots.find(s=>s.label==='Buy a ticket: Airport ferry').o.userData;
+ assert.ok(!room.getObjectByName('Ticket counter back rail'),'nothing at her lap');
+ layout.tick(0,9*60);assert.match(window.hit?.label||'',/opens at 12:00/,'before noon the window sells nothing');
+ assert.equal(layout.clerk.visible,false);assert.equal(talk.o.visible,false);assert.equal(room.getObjectByName('Window closed plate').visible,true);
+ layout.tick(0,13*60);assert.equal(window.hit?.label,'Buy a ticket: Airport ferry');assert.equal(layout.clerk.visible,true);assert.equal(talk.o.visible,true);assert.equal(room.getObjectByName('Window closed plate').visible,false);
 });
 
 test('talking to her: the next boat, and a ticket from her window', () => {
@@ -56,4 +63,10 @@ test('talking to her: the next boat, and a ticket from her window', () => {
  dom.button('When is the next boat?');
  assert.match(document.querySelector('#activityBody').children[0].textContent,/due at 14:30/);
  dom.button('A return to Kitano-jima, please');assert.equal(bought,1);
+});
+
+test('the ferry desk telephone rings out when she has gone home', () => {
+ let text='';const play=createIzakayaPlay({state:{},show:(t,b,buttons)=>{play.buttons=buttons;},close(){},spend:()=>true,save(){},receipt:(w,t)=>{text=t;},getMinutes:()=>minutes,say(){},note(){}});
+ let minutes=23*60;play.phone();play.buttons.find(b=>/Ferry desk/.test(b[0]))[1]();assert.match(text,/rings and rings/);
+ minutes=20*60;play.phone();play.buttons.find(b=>/Ferry desk/.test(b[0]))[1]();assert.match(text,/Ms Ganaha picks up/);
 });

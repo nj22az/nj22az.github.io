@@ -6,6 +6,7 @@ import {buildAvatar} from '../../avatars/build.js';
 import {createAvatarAnimator} from '../../avatars/animate.js';
 import {recipeFor} from '../../avatars/cast.js';
 import {GANAHA,ganahaAtWindow} from '../../people/ganaha.js';
+import {FERRY_FARE} from '../../island/services.js';
 
 /**
  * The waiting hall of the Minato Port Building (port-building.js, docs/PORT-BUILDING-PLAN.md).
@@ -66,7 +67,6 @@ export function buildPortHall({room,reg,collider=()=>{},action,naha=()=>{},upsta
  // an ordinary chair at its height, the passengers stand).
  const cz=-hd+.75;
  box('Ticket counter',[6.6,FURNITURE_HEIGHTS.serviceCounter-.05,.3],[-.4,(FURNITURE_HEIGHTS.serviceCounter-.05)/2,cz+.2],0x7a5b40);
- box('Ticket counter back rail',[6.6,.08,.04],[-.4,FURNITURE_HEIGHTS.serviceCounter-.09,cz-.38],0x6a4d35);
  for(const x of [-3.68,2.88])box('Ticket counter end',[.04,FURNITURE_HEIGHTS.serviceCounter-.05,.75],[x,(FURNITURE_HEIGHTS.serviceCounter-.05)/2,cz-.02],0x7a5b40);
  box('Ticket counter top',[6.7,.05,.8],[-.4,FURNITURE_HEIGHTS.serviceCounter-.025,cz],0xd9d0bd);
  box('Ticket counter kick',[6.6,.12,.05],[-.4,.06,cz+.36],0x2b3436);
@@ -76,13 +76,13 @@ export function buildPortHall({room,reg,collider=()=>{},action,naha=()=>{},upsta
  collider(-.4,cz,6.8,.85,FURNITURE_HEIGHTS.serviceCounter);
  const windows=[
   {x:-2.6,title:'Cargo crossing',sub:'CARS WITH DRIVERS · ISLAND ERRANDS',go:()=>action('read','Cargo crossing','The same ferry carries passengers and occasional island deliveries. Drivers reverse their cars up its lowered ramp, stay aboard for the crossing, and drive off onto the cargo court. Some sailings carry no cars.')},
-  {x:-.4,title:'Airport ferry',sub:'KITANO-JIMA AIRPORT · ¥400',go:()=>action('airport-ferry')},
+  {x:-.4,title:'Airport ferry',sub:'KITANO-JIMA AIRPORT · '+(FERRY_FARE?'¥'+FERRY_FARE:'NO FARE THIS SEASON'),go:()=>action('airport-ferry')},
   {x:1.8,title:'Evening boat to Naha',sub:'17:00–21:30 · WITH THUAN',go:()=>naha()},
  ];
  for(const win of windows){
   panel('Counter window sign',1.9,.36,[win.x,2.86,cz-.02],0,(x,cw,ch)=>{x.fillStyle='#2b5a78';x.fillRect(0,0,cw,ch);x.fillStyle='#f3ecd8';x.textAlign='center';x.textBaseline='middle';x.font=`700 ${ch*.42}px ${GOTHIC}`;x.fillText(japaneseSign(win.title)===win.title?win.title.toUpperCase():japaneseSign(win.title),cw/2,ch*.36);x.font=`600 ${ch*.2}px system-ui`;x.fillText(win.sub,cw/2,ch*.78);},512);
   box('Ticket tray',[.5,.04,.3],[win.x,FURNITURE_HEIGHTS.serviceCounter+.02,cz+.25],0x8e979a);
-  spot([win.x,1.25,cz+.6],win.title==='Evening boat to Naha'?'Take the evening boat to Naha with Thuan':win.title==='Cargo crossing'?'Read about cargo crossings':'Buy a ticket: '+win.title,win.go);
+  win.spot=spot([win.x,1.25,cz+.6],win.title==='Evening boat to Naha'?'Take the evening boat to Naha with Thuan':win.title==='Cargo crossing'?'Read about cargo crossings':'Buy a ticket: '+win.title,win.go);
  }
  // Ms Ganaha's place behind the middle window (people/ganaha.js): her chair, the ticket stock, the date stamp, the
  // telephone the izakaya rings, and the slip pad for the passenger count. She is there from noon to 22:15.
@@ -99,17 +99,20 @@ export function buildPortHall({room,reg,collider=()=>{},action,naha=()=>{},upsta
  panel('Window closed plate',.72,.2,[mid,top+.34,cz-.03],0,(x,cw,ch)=>{x.fillStyle='#f6f1e2';x.fillRect(0,0,cw,ch);x.strokeStyle='#2b5a78';x.lineWidth=ch*.05;x.strokeRect(0,0,cw,ch);x.fillStyle='#2b3436';x.textAlign='center';x.textBaseline='middle';
   // Each line is fitted to the plate (never cut at its edges).
   const fit=(text,weight,size,y)=>{let px=size;do{x.font=`${weight} ${px}px system-ui`;}while(x.measureText(text).width>cw*.9&&--px>8);x.fillText(text,cw/2,y);};
-  fit('WINDOW OPENS AT 12:00','700',ch*.34,ch*.34);fit('Morning tickets from the deck hand at the gangway','600',ch*.22,ch*.72);},512);
+  fit('WINDOW OPENS AT 12:00','700',ch*.34,ch*.34);fit('Morning tickets from the oiler at the gangway','600',ch*.22,ch*.72);},512);
  const closedPlate=group.getObjectByName('Window closed plate');
  const clerk=new THREE.Group();clerk.name='Ms Ganaha at the ticket window';clerk.position.set(mid,0,chairZ);clerk.rotation.y=Math.PI;group.add(clerk);   // facing the window
  // Her face is painted on a canvas, so without a page (the room tests) the chair is empty.
- const ganaha=typeof document!=='undefined'&&document.createElement?buildAvatar(recipeFor(GANAHA.name),{shadows:true,faceSize:256}):null,ganahaMotion=ganaha&&createAvatarAnimator(ganaha);
+ const ganaha=typeof document!=='undefined'&&document.createElement?buildAvatar(recipeFor(GANAHA.name),{shadows:false,faceSize:256}):null,ganahaMotion=ganaha&&createAvatarAnimator(ganaha);
  if(ganaha)clerk.add(ganaha.root);
  const talk=spot([mid+.45,1.25,cz+.6],'Talk to Ms Ganaha',()=>action('ganaha',GANAHA.name,{buy:windows[1].go}));
  let time=0;
  function tick(dt=0,minutes=720){
   time+=dt;const here=ganahaAtWindow(minutes);
   clerk.visible=here;talk.visible=here;if(closedPlate)closedPlate.visible=!here;
+  // Before noon her window sells nothing: the oiler sells the morning tickets at the gangway (people/ferry-crew.js).
+  const hit=windows[1].spot.userData.hit;
+  if(hit){hit.label=here?'Buy a ticket: Airport ferry':'Airport ferry: the window opens at 12:00';hit.fn=here?windows[1].go:()=>action('read','Airport ferry window','The window opens at noon. Until then the oiler sells tickets at the gangway on the outer pier, as each boat waits to sail.');}
   if(here)ganahaMotion?.update(dt,{speed:0,seated:true,seatHeight:FURNITURE_HEIGHTS.seat,pose:Math.floor(time/11)%4===3?'SitHold':'Sit',expression:'neutral'});
  }
  tick(0);
@@ -121,7 +124,7 @@ export function buildPortHall({room,reg,collider=()=>{},action,naha=()=>{},upsta
   const rows=[['—','KITANO-JIMA','On request'],['—','CARS & FOOT','Shared ferry'],['17:00','NAHA (evening)','Outer pier']];
   x.font=`600 ${ch*.1}px ui-monospace,monospace`;rows.forEach(([t,dest,where],i)=>{const y=ch*(.36+i*.13);x.fillText(t,cw*.04,y);x.fillText(dest,cw*.22,y);x.fillText(where,cw*.68,y);});
  },1024,true);
- spot([-.4,1.4,cz+.9],'Read the departures board',()=>action('read','Ferry departures','The shared car and passenger ferry crosses to Kitano-jima on request. Buy a return passenger ticket at the airport-ferry counter and board from the outer pier. The evening boat to Naha opens at 17:00.'));
+ spot([-.4,1.4,cz+.9],'Read the departures board',()=>action('read','Ferry departures','The shared car and passenger ferry crosses to Kitano-jima on request. Buy a return passenger ticket at the airport-ferry window (Ms Ganaha, noon to 22:15; in the morning from the oiler at the gangway) and board from the outer pier. The evening boat to Naha opens at 17:00.'));
 
  // Benches: two rows of moulded seats facing the pier windows.
  const seatColours=[0x2f6a70,0xd27a3a];
