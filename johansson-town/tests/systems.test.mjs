@@ -42,7 +42,7 @@ test('navigation finds a collision-free route and cannot cut a wall corner',()=>
 test('v4 save import preserves money, inventory and quest; transactions and Tama remain one-time',()=>{
  const initial=JSON.stringify({yen:888,quest:2,inventory:['Sea bream'],visited:['office'],kenjiEscort:'walking'}),dom=installDOM({'johansson-town-1988-v4':initial});let minutes=1002;
  const acts=createActivities({say(){},onWeather(){},onTime:value=>{if(value?.restore)minutes=value.restore;},getMinutes:()=>minutes});
- assert.equal(acts.state.yen,888);assert.equal(dom.storage.get('johansson-town-1988-v4'),initial);assert.equal(acts.state.kenjiEscort,'walking');
+ assert.equal(acts.state.yen,888);assert.equal(dom.storage.get('johansson-town-1988-v4'),initial);assert.deepEqual(acts.state.inventory,['Taman'],'the old sea bream is a taman now');assert.equal(acts.state.kenjiEscort,'walking');
  acts.action('resident','Nhung');dom.button('About Tama');assert.equal(acts.state.yen,1388);assert.equal(acts.state.quest,3);acts.action('resident','Nhung');dom.button('About Tama');assert.equal(acts.state.yen,1388);
  acts.action('vending');dom.button('Dockside Coffee · ¥120');assert.equal(acts.state.yen,1268);assert.ok(acts.state.inventory.includes('Canned coffee'));
  const restored=JSON.parse(dom.storage.get('johansson-town-1988-v5'));assert.equal(restored.quest,3);assert.equal(restored.yen,1268);assert.ok(restored.visited.includes('office'));

@@ -35,7 +35,7 @@ test('the yard houses are home sites you can walk up to and into, clear of the p
   buildYardHomes(world,{sites,register:(o,label,fn)=>doors.push({label,fn}),enter:site=>doors.entered=site.id});
   assert.deepEqual(sites.map(s=>s.id).sort(),['resident-home-aya','resident-home-kenji']);
   for(const s of sites){
-   assert.deepEqual(s.homeOwners.length,2);
+   assert.deepEqual(s.homeOwners.length,s.id==='resident-home-kenji'?1:2,s.id+': Tetsuo lives alone at 2 Front-Row Yard since Chin moved in with Thao');
    const [x,,z]=s.door;assert.equal(townBoundsBlocked(x,z,.32),false,s.id+' door is on walkable ground');
    assert.ok(!world.colliders.some(c=>circleHitsRect(x,z,.32,c)),s.id+' door is not inside a house');
   }
@@ -43,6 +43,6 @@ test('the yard houses are home sites you can walk up to and into, clear of the p
   for(const [x,z] of [[-23.8,1.6],[-19.6,1.6],[-16.2,1.6],[-18,-4.2]])
    assert.ok(!world.colliders.some(c=>circleHitsRect(x,z,.32,c)),'clear at '+[x,z]);
   assert.equal(world.homes.get('Reiko').household,'resident-home-aya');
-  doors.find(d=>/Chin/.test(d.label)).fn();assert.equal(doors.entered,'resident-home-kenji');
+  doors.find(d=>/Tetsuo/.test(d.label)).fn();assert.equal(doors.entered,'resident-home-kenji');
  }finally{}
 });

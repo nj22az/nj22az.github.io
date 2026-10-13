@@ -6,6 +6,7 @@
  * delighted the first time in a day; a second present the same day makes her shy.
  */
 import {TOWN_FINDS} from '../commerce/sakura-economy.js';
+import {pierFishOfItem} from '../world/okinawa/fish.js';
 import {GROCERY_ITEMS} from '../commerce/catalogue.js';
 import {WORKSHOP_MODELS} from '../workshop/catalogue.js';
 
@@ -44,8 +45,12 @@ export function giftReaction(item,{giftsToday=0}={}){
   return {mood:'shy',text:"Eh…Tuna head?\nA tuna head. For me. Wrapped in the Ryūkyū Shimpō. …Kōji gave it to you, didn’t he. He gives it to everybody. Fine — soup tonight. You are washing the pot."};
  if(item==='Mozuku')
   return {mood:'happy',text:"Mozuku!\nMozuku from Yonamine-san! With vinegar, cold, after work. You are learning how to live here."};
- if(item==='Sea bream')
-  return {mood:'happy',text:"Sea bream! Splendid!\nA whole sea bream! Supper is solved. I will tell Thao I caught it myself. She will not believe me."};
+ // The pier's catch (fish.js): a taman is a feast; a mijun is a joke she is happy to be in on.
+ const fish=pierFishOfItem(item);
+ if(fish?.id==='mijun')
+  return {mood:'happy',text:"A mijun! Hehe.\nOne mijun. That is bait, you know. …Fine, it is going in the fryer with the croquettes, and I will eat it in one bite."};
+ if(fish)
+  return {mood:'happy',text:`${item}! Splendid!\nA whole ${fish.name}! Supper is solved. I will tell Thao I caught it myself. She will not believe me.`};
  if(item==='Coffee milk')
   return {mood:'happy',text:"Coffee milk!\nCoffee milk! That is the best part of the bath. How did you know?"};
  if(item==='Ice')

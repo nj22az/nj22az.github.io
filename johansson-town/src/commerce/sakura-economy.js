@@ -1,6 +1,7 @@
 import {fileShopEntry} from '../office/archive.js';
 import {SHOP_STOCK,restoreShopStock,closingStockPending} from './shop-stock.js';
 import {GROCERY_ITEMS} from './catalogue.js';
+import {pierFishOfItem} from '../world/okinawa/fish.js';
 import {WORKSHOP_MODELS} from '../workshop/catalogue.js';
 
 export const TOWN_FINDS=Object.freeze([
@@ -96,7 +97,8 @@ export function sakuraOffer(name){
  const model=WORKSHOP_MODELS.find(m=>m.name===name);if(model)return {name,price:model.price,model};
  const found=TOWN_FINDS.find(m=>m.name===name);if(found)return found;
  const stocked=GROCERY_ITEMS.find(m=>m.name===name);if(stocked)return {name,price:Math.floor(stocked.cost*.4)};
- if(name==='Sea bream')return {name,price:120};
+ // Thuan buys the pier's catch for the fryer at two thirds of the harbour master's price (fish.js).
+ const fish=pierFishOfItem(name);if(fish)return {name,price:Math.floor(fish.pierPrice*2/3)};
  return null;
 }
 export function saleProblem(state,name){

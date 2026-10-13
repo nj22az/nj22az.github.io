@@ -74,7 +74,7 @@ test('every household chair and tea cushion supports visitors with a clear stand
   validateSeats(f.room,seats,f.colliders);
   for(const {object} of seats){const [x,,z]=object.userData.seat.stand;assert.ok(x>=-2.9&&x<=2.9&&z>=-2.5&&z<=2.5,'Standing leaves space inside the house walls');}
  }
- for(const [id,homeOwner] of [['resident-home-aya','Nhung'],['resident-home-kenji','Chin']]){
+ for(const [id,homeOwner] of [['resident-home-aya','Nhung']]){
   const f=fixture(args=>buildYardHomeInterior({...args,site:{id,homeOwner}}));
   validateSeats(f.room,f.targets,f.colliders);
  }

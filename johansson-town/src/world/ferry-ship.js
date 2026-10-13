@@ -6,7 +6,7 @@
  * The creator chose the bigger ship and the bigger harbour (2026-10-11): a 199-ton class island car
  * ferry of 34.5 m, the size that worked 15–30 minute crossings in Okinawa in the 1990s, carrying
  * six cars (or an 8-tonne truck and two cars) and a hundred passengers, with a crew of eight.
- * Built in 1994 at a small Seto Inland Sea yard; refitted for GMDSS in 1998.
+ * Built in 1994 by Johansson Shipyard on Innoshima in the Seto Inland Sea (hull No. 127); refitted for GMDSS in 1998.
  *
  * Everything is data first, so the model (ferry-model.js, drawn from these numbers since batch 5), the
  * crew's routines (people/ferry-crew.js), stories and tests read the same ship.
@@ -17,7 +17,7 @@
  */
 export const FERRY_SHIP=Object.freeze({
  name:'Minato Maru',jp:'みなと丸',built:1994,refit:'1998: GMDSS (VHF with DSC, EPIRB, SART, NAVTEX)',
- yard:'A small Seto Inland Sea yard that built island ferries by the dozen',
+ yard:'Johansson Shipyard (ヨハンソン造船), Innoshima, Seto Inland Sea: hull No. 127, an island ferry like the dozens before her',
  owner:'Minato-chō (the town ferry, a chōei ferī)',registry:'Minato',
  type:'Passenger ship and vehicle ferry (ryokakusen ken jidōsha tosen), bow ramp only, twin screw',
  rules:'Ship Safety Act and its regulations; inspected by the Okinawa General Bureau’s transport department; classed with NK at the insurer’s request',
@@ -85,7 +85,7 @@ export const FERRY_GA=Object.freeze([
  space('open-deck','passenger',[0,6],[-4.1,4.1],[H.passengerDeck,H.bridgeDeck],'Open deck: benches for 22 under an awning, one liferaft (port, aft), the rescue boat and its davit (starboard, aft), the stern flagstaff, two lifebuoys, the sign for muster station B','Fresh air, the view, and where people embark the liferafts',{exits:['lobby','platform-ladders'],seats:22}),
  space('lobby','passenger',[6,9.5],[-4.1,4.1],[H.passengerDeck,H.bridgeDeck],'Lobby, the deckhouse’s full breadth: the stair heads P and S in its wings; the purser’s window (S: ticket rack, cash box, punch, PA microphone, first-aid kit, lost property); the kiosk (P counter); the vending corner (two drink machines and a hot-water dispenser for cup noodles); timetable and fare boards; the capacity sign and the ship’s certificate; an ashtray stand by the aft door','Tickets and snacks; everyone passes through',{exits:['open-deck','stair-p','stair-s']}),
  space('toilets','passenger',[9.5,11.5],[-3.4,3.4],[H.passengerDeck,H.bridgeDeck],'Toilets: men’s to port (a WC, two urinals, a basin), women’s to starboard (two WCs, a basin); sea-water flushing','',{exits:['lobby']}),
- space('carpet-room','passenger',[11.5,16.5],[-3.4,3.4],[H.passengerDeck+.3,H.bridgeDeck],'Carpet room, raised 0.3 m: carpet, a rack of cushions and blankets, the shoe shelf at the step, a television on a bracket, life-jacket lockers; 36 places','Lie down for eighteen minutes, as everyone does',{exits:['lobby','saloon'],seats:36}),
+ space('carpet-room','passenger',[11.5,16.5],[-3.4,3.4],[H.passengerDeck+.3,H.bridgeDeck],'Carpet room, raised 0.3 m: carpet, a rack of cushions and blankets, the shoe shelf at the step, a television on a bracket, life-jacket lockers; 36 places','Lie down for twenty-two minutes, as everyone does',{exits:['lobby','saloon'],seats:36}),
  space('saloon','passenger',[16.5,23],[-3.4,3.4],[H.passengerDeck,H.bridgeDeck],'Seated saloon: a cross passage at its aft end to the side doors (z 16.5–17.6), then 42 moquette seats in seven rows of three each side at 0.85 m, windows forward over the car deck and the sea, life-jacket lockers, the sign for muster station A','The forward view',{exits:['carpet-room','walkway-p','walkway-s'],seats:42}),
  space('walkway-p','passenger',[9.5,23],[3.4,4.1],[H.passengerDeck,H.bridgeDeck],'Side walkway, port, 0.7 m: rails, two liferafts in cradles outboard of the rail, a hydrant, and the ladder up to the bridge wing at its forward end (z 17.6–19.5)','Crew and escape',{exits:['saloon','wing-p']}),
  space('walkway-s','passenger',[9.5,23],[-4.1,-3.4],[H.passengerDeck,H.bridgeDeck],'Side walkway, starboard, 0.7 m: rails, two liferafts in cradles outboard of the rail, a hydrant, and the ladder up to the bridge wing at its forward end (z 17.6–19.5)','Crew and escape',{exits:['saloon','wing-s']}),

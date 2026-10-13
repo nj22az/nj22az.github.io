@@ -5,9 +5,11 @@ const shifts={
  // Work hours stay unchanged. Departure identifies the service's arrival time.
  Thuan:{arrival:510,start:540,finish:1200,departure:1320},
  Nhung:{arrival:510,start:540,finish:1110,departure:1320},
- Chin:{arrival:510,start:540,finish:1140,departure:1320},
+ // Chin: Sakura's night shift (20:30–06:00, sakura-rota.js), sleep till the early afternoon, then the workshop bench.
+ Chin:{arrival:510,start:840,finish:1140,departure:1320},
  'Mrs Sato':{arrival:510,start:540,finish:1260,departure:1320},
  Reiko:{arrival:870,start:900,finish:1470,departure:1950},
+ // Tetsuo lives in the Front-Row yard (never takes the boat): lunch at Sato, the bench from five until midnight (the workshop's evening).
  Tetsuo:{arrival:870,start:1020,finish:1440,departure:1950},
  // Thao takes the morning service so her Konbini errand and park walk happen before
  // Minato opens. Her return service is the next morning after the night shift.
@@ -56,6 +58,11 @@ export const HARBOUR_LINE=Object.freeze([
 1320,  //  22:00  day staff go home
 ]);
 
+/**
+ * The Minato Maru's crossing, in town minutes: worked out from her passage (airport-ferry.js AIRPORT_FERRY.duration),
+ * written here so the timetable need not load the ship; tests/ganaha.test.mjs keeps the two the same.
+ */
+export const CROSSING_MINUTES=22;
 /** How long the bus stands at the terminus with its doors open, in town minutes. */
 export const BUS_DWELL=15;
 
@@ -92,7 +99,7 @@ function ferryTimetable(minutes){
  const status=current===undefined
   ?'Next commuter boat in: '+serviceTime(due.service)+(due.wait===0?' · due now':' · in '+Math.ceil(due.wait)+' town minutes')
   :'The commuter boat is alongside: '+serviceTime(current)+'–'+serviceTime(current+BUS_DWELL);
- return 'Minato Maru · Minato ⇄ Kitano-jima · 18-minute crossing\nCrossings on request: buy a return at the Port Terminal window and board by the gangway on the outer pier.\n'
+ return 'Minato Maru · Minato ⇄ Kitano-jima · '+CROSSING_MINUTES+'-minute crossing\nCrossings on request: buy a return at the Port Terminal window and board by the gangway on the outer pier.\n'
   +'Commuter boats in to Minato: '+HARBOUR_LINE.map(serviceTime).join(' · ')+'. Each lies alongside '+BUS_DWELL+' town minutes.\n'+status;
 }
 export function shiftActive(profile,minutes){

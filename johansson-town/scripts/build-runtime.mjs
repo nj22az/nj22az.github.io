@@ -14,9 +14,14 @@ const previousManifest=existsSync(manifestPath)?JSON.parse(readFileSync(manifest
 // configFile:false means vite.config.js is not read, so base has to be set here too.
 // Without it the build defaults to '/', and the preload helper asks for every chunk
 // at the site root: each dynamic import 404s its hint and loads unprefetched.
-await build({configFile:false,root,publicDir:false,base:'./',build:{target:'es2022',outDir:'runtime',emptyOutDir:false,minify:'esbuild',manifest:true,rollupOptions:{input:{portraits:resolve(root,'src/avatars/guide-portraits.js'),feed:resolve(root,'src/feed/mount.js'),boot:resolve(root,'src/boot.js'),audio:resolve(root,'src/audio/town-audio.js')+'?snappy=1'},preserveEntrySignatures:'strict',output:{entryFileNames:'[name]-[hash].js',chunkFileNames:'[name]-[hash].js',assetFileNames:'[name]-[hash][extname]'}}}});
+await build({configFile:false,root,publicDir:false,base:'./',build:{target:'es2022',outDir:'runtime',emptyOutDir:false,minify:'esbuild',manifest:true,rollupOptions:{input:{portraits:resolve(root,'src/avatars/guide-portraits.js'),feed:resolve(root,'src/feed/mount.js'),boot:resolve(root,'src/boot.js'),audio:resolve(root,'src/audio/town-audio.js')+'?snappy=1','title-menu':resolve(root,'title-menu.js')},preserveEntrySignatures:'strict',output:{entryFileNames:'[name]-[hash].js',chunkFileNames:'[name]-[hash].js',assetFileNames:'[name]-[hash][extname]'}}}});
 const manifest=JSON.parse(await readFile(resolve(root,'runtime/.vite/manifest.json'),'utf8'));
 const boot=manifest['src/boot.js'].file,audio=Object.values(manifest).find(entry=>entry.isEntry&&entry.name==='audio').file;
+// The title menu (saves, friendship hearts) imported the source tree straight from index.html: save.js pulls the
+// residents, who pull the town's layouts, the ferry, the ocean and three.js, so the title screen fetched 1.3 MB of
+// unminified three.js and sixty source modules one after another, and the game then fetched three.js again inside
+// its own chunk. Built as an entry it shares the game's chunks and is minified.
+const titleMenu=manifest['title-menu.js'].file;
 const portraits=manifest['src/avatars/guide-portraits.js'].file,feed=manifest['src/feed/mount.js'].file;
 let html=await readFile(resolve(root,'index.html'),'utf8');
 html=html.replace(/window\.JOHANSSON_PORTRAIT_MODULE="[^"]+"/,`window.JOHANSSON_PORTRAIT_MODULE="./runtime/${portraits}"`);
@@ -25,12 +30,13 @@ html=html.replace(/from ['"]\.\/(?:src\/audio\/town-audio\.js(?:\?[^'"]*)?|runti
 html=html.replace(/import\(['"]\.\/(?:src\/boot\.js(?:\?[^'"]*)?|runtime\/boot-[^'"]+)['"]\)/g,`import('./runtime/${boot}')`);
 // Fetch the compiled boot graph while the title screen is visible. This does not
 // execute the game, unlock sound, or start model downloads before Enter Town.
+html=html.replace(/from ['"]\.\/(?:title-menu\.js|runtime\/title-menu-[^'"]+)['"]/g,`from './runtime/${titleMenu}'`);
 html=html.replace(/<link rel="modulepreload" data-town-runtime[^>]*>\n?/g,'');
 // Preload the modules the entry gate will need, not just boot. game.js was imported
 // only after the street assets settled, so its chunk started downloading when the gate
 // was nearly over and the player waited through it serially. Preloading fetches it
 // alongside the assets without executing it, so the import resolves from cache.
-const preloadEntries=['src/boot.js','touch-ui.js?ui=controls-3','src/game.js?snappy=1'];
+const preloadEntries=['title-menu.js','src/boot.js','touch-ui.js?ui=controls-3','src/game.js?snappy=1'];
 const preloadFiles=[...new Set(preloadEntries.flatMap(name=>{
  const entry=manifest[name];
  return entry?[entry.file,...(entry.imports||[]).map(dep=>manifest[dep]?.file).filter(Boolean)]:[];

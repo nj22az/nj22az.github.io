@@ -21,9 +21,11 @@ test('Thuan wakes, eats, gets ready, walks to work and takes a noodle lunch',()=
 test('saved clock keeps beer evenings stable over reload, rain and consecutive days',()=>{
  for(let day=0;day<4;day++){
   const m=day*1440+1260;
-  assert.equal(residentPlan(thuan,m,false,{}).place,day%2===0?'izakaya':'home');
+  // Day 2 is Friday: after Minato she walks to the 22:00 boat home to Kitano-jima; in the rain, straight to the boat (batch 7b-3).
+  // Day 3 is Saturday: she is away on Kitano-jima all weekend.
+  assert.equal(residentPlan(thuan,m,false,{}).place,day===3?'away':day%2===0?'izakaya':'home');
   assert.deepEqual(residentPlan(thuan,m,false,JSON.parse(JSON.stringify({}))),residentPlan(thuan,m,false,{}));
-  assert.equal(residentPlan(thuan,m,true,{}).place,'home');
+  assert.equal(residentPlan(thuan,m,true,{}).place,day===2?'bus':day===3?'away':'home');
  }
 });
 

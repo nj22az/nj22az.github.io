@@ -1,5 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
+import {fishById} from './okinawa/fish.js';
 
 /**
  * Roadside life, built in code: a tea stop with a red-felt bench under a paper parasol,
@@ -77,7 +78,7 @@ export function teaBoardTexture(){
 
 /**
  * A fish seller's push cart: two big wheels, a long box of ice with the morning's catch
- * laid on it -- silver mackerel, a red bigeye, a blue parrotfish -- a hanging scale, the
+ * laid on it -- a row of gurukun, a gāra, an irabuchā and a mībai (bought at the auction at six, and the gāra he caught himself: okinawa/fish.js) -- a hanging scale, the
  * shafts he pushes by, and a cloth shade. Front (+z) is the end he pushes from.
  */
 export function buildFishCart(){
@@ -100,8 +101,9 @@ export function buildFishCart(){
  parts.push(cyl(.025,.025,.66,DARK,[0,.86,1.28],6,[0,0,Math.PI/2]));
  // The catch, laid head to tail on the ice.
  const fish=(len,hex,x,z,ry)=>{parts.push(ball(.5,hex,[x,.86,z],[len*.18,.05,len]));parts.push(part(new THREE.ConeGeometry(.045,.08,3),hex,{at:[x+Math.sin(ry)*len*.55,.86,z+Math.cos(ry)*len*.55],rot:[Math.PI/2,0,0]}));};
- for(let i=0;i<4;i++)fish(.22,0xb9c4c8,-.2+i*.13,-.34,0);
- fish(.28,0xd8463a,.18,.1,0);fish(.26,0x3f8fb0,-.12,.18,0);fish(.24,0xd8463a,.2,.42,0);
+ const F=id=>fishById(id).colour;
+ for(let i=0;i<4;i++)fish(.22,F('gurukun'),-.2+i*.13,-.34,0);
+ fish(.28,F('gara'),.18,.1,0);fish(.26,F('irabucha'),-.12,.18,0);fish(.24,F('mibai'),.2,.42,0);
  // The scale on its post, and a cloth shade over it all.
  parts.push(box(.03,.75,.03,DARK,[.35,1.18,.55]));parts.push(cyl(.07,.07,.02,TIN,[.35,1.3,.62],10));
  for(const [x,z] of [[-.36,-.6],[.36,-.6],[-.36,.6],[.36,.6]])parts.push(box(.025,.85,.025,DARK,[x,1.2,z]));

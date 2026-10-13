@@ -1,6 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {FERRY_SHIP,FERRY_HEIGHTS,FERRY_CAR_PLACES,FERRY_MACHINERY} from './ferry-ship.js';
+import {drawSafetyPlan,canvasPen} from './ferry-safety-plan.js';
 import {FERRY_INTERIOR,FERRY_HOUSE,FERRY_ENGINE_ROOM,FERRY_STAIRS} from './ferry-interior.js';
 
 /**
@@ -112,7 +113,7 @@ export function keelY(z){
 const fullness=z=>z>Z(24)?7-4.2*((z-Z(24))/(HALF-Z(24))):z<Z(9)?7-2.5*((Z(9)-z)/(Z(9)+HALF)):7;
 const narrowing=z=>z>Z(26)?.12*((z-Z(26))/(HALF-Z(26)))**2:0;
 /** A point on the section at z, for θ from 0 (the keel, on the centreline) to π/2 (the deck edge). */
-function sectionPoint(z,theta){
+export function sectionPoint(z,theta){
  const n=fullness(z),k=keelY(z),top=deckEdge(z),hb=halfBreadth(z);
  const sn=Math.sin(theta),cs=Math.cos(theta);
  const y=k+(top-k)*(1-Math.pow(Math.max(0,cs),2/n));
@@ -195,6 +196,52 @@ function deckAndBulwarks(){
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setAttribute('color',new THREE.Float32BufferAttribute(cc,3));g.computeVertexNormals();return g;
 }
 
+/**
+ * A plate (ferry-interior.js plates): by `kind`, a maker's plate or label (lines of text on a plate), a `dial` (a round
+ * gauge with ticks, a red zone, the needle at `value` 0–1 and the label under the pivot), `chequer` (floor plates:
+ * raised diamonds, a seam every 0.6 m) or `grating` (bars over the red bilge). Texts are drawn on a canvas once;
+ * patterns repeat across the plane.
+ */
+function plateMesh(pl){
+ if(typeof document==='undefined')return null;
+ const kind=pl.kind||'text',c=document.createElement('canvas');let W=512,H=Math.max(64,Math.round(512*pl.h/pl.w)),repeat=null;
+ if(kind==='dial')W=H=256;if(kind==='chequer'||kind==='grating'){W=H=256;repeat=[pl.w/.6,pl.h/.6];}if(kind==='safety-plan'){W=1024;H=Math.round(1024*pl.h/pl.w);}
+ c.width=W;c.height=H;const x=c.getContext('2d');
+ if(kind==='text'){
+  x.fillStyle=pl.bg;x.fillRect(0,0,W,H);x.strokeStyle=pl.fg;x.lineWidth=4;x.strokeRect(6,6,W-12,H-12);
+  x.fillStyle=pl.fg;x.textAlign='center';x.textBaseline='middle';
+  const n=pl.lines.length,rowH=(H-20)/n;
+  pl.lines.forEach((line,i)=>{const big=i===0||n===1;x.font=(big?'bold ':'')+Math.round(Math.min(rowH*.72,W/(line.length*.62)))+'px sans-serif';x.fillText(line,W/2,10+rowH*(i+.5));});
+ }else if(kind==='dial'){
+  const cx=W/2,cy=H/2,R=W*.46,a0=Math.PI*.75,a1=Math.PI*2.25,ang=f=>a0+(a1-a0)*Math.max(0,Math.min(1,f));
+  x.fillStyle='#1c1f21';x.beginPath();x.arc(cx,cy,W/2,0,Math.PI*2);x.fill();                       // the bezel
+  x.fillStyle=pl.bg;x.beginPath();x.arc(cx,cy,R,0,Math.PI*2);x.fill();                             // the face
+  if(pl.red){x.strokeStyle='#c2412f';x.lineWidth=W*.05;x.beginPath();x.arc(cx,cy,R*.82,ang(pl.red[0]),ang(pl.red[1]));x.stroke();}
+  x.strokeStyle=pl.fg;for(let i=0;i<=20;i++){const a=ang(i/20),big=i%5===0;x.lineWidth=big?W*.016:W*.008;
+   x.beginPath();x.moveTo(cx+Math.cos(a)*R*.9,cy+Math.sin(a)*R*.9);x.lineTo(cx+Math.cos(a)*R*(big?.72:.8),cy+Math.sin(a)*R*(big?.72:.8));x.stroke();}
+  x.fillStyle=pl.fg;x.textAlign='center';x.textBaseline='middle';x.font='bold '+Math.round(W*.11)+'px sans-serif';
+  if(pl.lines[0])x.fillText(pl.lines[0],cx,cy+R*.42);x.font=Math.round(W*.085)+'px sans-serif';if(pl.lines[1])x.fillText(pl.lines[1],cx,cy-R*.4);
+  const a=ang(pl.value??0);x.strokeStyle='#1c1f21';x.lineWidth=W*.02;x.beginPath();x.moveTo(cx-Math.cos(a)*R*.12,cy-Math.sin(a)*R*.12);x.lineTo(cx+Math.cos(a)*R*.86,cy+Math.sin(a)*R*.86);x.stroke();
+  x.fillStyle='#1c1f21';x.beginPath();x.arc(cx,cy,W*.04,0,Math.PI*2);x.fill();
+ }else if(kind==='safety-plan'){
+  drawSafetyPlan(canvasPen(x),W,H,pl.here);x.strokeStyle='#1d2326';x.lineWidth=6;x.setLineDash([]);x.strokeRect(3,3,W-6,H-6);
+ }else if(kind==='chequer'){
+  x.fillStyle=pl.bg;x.fillRect(0,0,W,H);const n=8,s=W/n;
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++){const px=i*s+s/2,py=j*s+s/2,along=(i+j)%2===0;x.save();x.translate(px,py);x.rotate(along?Math.PI/4:-Math.PI/4);
+   x.fillStyle=pl.fg;x.fillRect(-s*.1,-s*.34,s*.2,s*.68);x.fillStyle='#bfc4c6';x.fillRect(-s*.1,-s*.34,s*.2,s*.08);x.restore();}
+  x.strokeStyle='#5e6467';x.lineWidth=5;x.strokeRect(2,2,W-4,H-4);                                 // the plate's edge, a seam every tile
+ }else if(kind==='grating'){
+  x.fillStyle=pl.bg;x.fillRect(0,0,W,H);x.fillStyle=pl.fg;const n=12,s=W/n;for(let i=0;i<n;i++)x.fillRect(i*s,0,s*.55,H);
+  x.fillStyle='#4a5053';for(let j=0;j<4;j++)x.fillRect(0,j*H/4+H/8-3,W,6);
+ }
+ const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=4;
+ if(repeat){tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.repeat.set(repeat[0],repeat[1]);}
+ const flat=repeat!==null,mat=new THREE.MeshStandardMaterial({map:tex,roughness:flat?.62:.5,metalness:flat?.35:.3,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4});
+ const geo=kind==='dial'?new THREE.CircleGeometry(pl.w/2,24):new THREE.PlaneGeometry(pl.w,pl.h);
+ const mesh=new THREE.Mesh(geo,mat);
+ mesh.position.set(...pl.pos);mesh.rotation.order='YXZ';mesh.rotation.y=pl.rotY;mesh.rotation.x=pl.rotX||0;mesh.name=pl.name;mesh.userData.plate=kind;return mesh;
+}
+
 /** Collects static parts by material and merges them. */
 function createKit(shadows){
  const groups=new Map();const c=new THREE.Color();
@@ -206,7 +253,11 @@ function createKit(shadows){
   const g=prep(geo,hex);g.applyMatrix4(m);(groups.get(cls)||groups.set(cls,[]).get(cls)).push(g);return g;};
  const box=(cls,size,pos,hex,rot)=>add(cls,new THREE.BoxGeometry(...size),hex,pos,rot);
  /** A box between two corners [x0,y0,z0]–[x1,y1,z1]. */
- const block=(cls,a,b,hex)=>box(cls,[Math.abs(b[0]-a[0]),Math.abs(b[1]-a[1]),Math.abs(b[2]-a[2])],[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],hex);
+ /** A box between two corners [x0,y0,z0]–[x1,y1,z1]. Paint thinner than 2 cm is a decal (a floor covering, a painted
+  * stripe, a sign) lying on another face: it is drawn with a depth offset so a phone, which cannot tell a few
+  * millimetres apart at a few metres, never flickers between the two (the creator, 2026-10-12: "I don't want flashing
+  * graphics like that"). */
+ const block=(cls,a,b,hex)=>{const size=[Math.abs(b[0]-a[0]),Math.abs(b[1]-a[1]),Math.abs(b[2]-a[2])];return box(cls==='paint'&&Math.min(...size)<=.02?'decal':cls,size,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],hex);};
  const cyl=(cls,rt,rb,h,pos,hex,rot,seg=12)=>add(cls,new THREE.CylinderGeometry(rt,rb,h,seg),hex,pos,rot);
  const bar=(cls,a,b,r,hex,seg=6)=>{const A=new THREE.Vector3(...a),B=new THREE.Vector3(...b),len=A.distanceTo(B);const g=new THREE.CylinderGeometry(r,r,len,seg);g.translate(0,len/2,0);
   g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),B.clone().sub(A).normalize()));g.translate(...a);return add(cls,g,hex);};
@@ -214,6 +265,7 @@ function createKit(shadows){
   paint:new THREE.MeshStandardMaterial({vertexColors:true,roughness:.58,metalness:.05}),
   metal:new THREE.MeshStandardMaterial({vertexColors:true,roughness:.42,metalness:.55}),
   rubber:new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95}),
+  decal:new THREE.MeshStandardMaterial({vertexColors:true,roughness:.58,metalness:.05,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4}),
  };
  const finish=parent=>{
   for(const [cls,list] of groups){const mesh=new THREE.Mesh(mergeGeometries(list,false),materials[cls]||materials.paint);mesh.name='Minato Maru '+cls;mesh.castShadow=mesh.receiveShadow=!!shadows;parent.add(mesh);}
@@ -384,6 +436,9 @@ export function buildFerryModel({shadows=false}={}){
  const SAL=FERRY_DECKS.saloon,DH0=SAL.aft,DH1=SAL.fore,dw=SAL.width/2,dhTop=BRIDGE-.25;
  for(const b of FERRY_INTERIOR.boxes)if(b.draw!==false)kit.block(b.cls,b.a,b.b,b.hex);
  for(const r of FERRY_INTERIOR.bars)kit.bar(r.cls,r.a,r.b,r.r,r.hex,r.r>.2?14:6);
+ for(const c of FERRY_INTERIOR.cyls)kit.cyl(c.cls,c.rt,c.rb,c.h,c.pos,c.hex,c.rot,c.seg);
+ // Maker's plates and labels (johansson-marine.js): lettering on a plate, drawn as its own small textured plane.
+ for(const pl of FERRY_INTERIOR.plates){const m=plateMesh(pl);if(m)ferry.add(m);}
  for(const g of FERRY_INTERIOR.glass){win(g.size,g.pos,g.rot);
   // Each pane in an anodised frame, 5 cm, standing 1 cm proud of the plating: no window is a hole in a flat wall.
   const [sx,sy,sz]=g.size,alongX=sx>sz,w=alongX?sx:sz,t=.05,d=(alongX?sz:sx)+.02;

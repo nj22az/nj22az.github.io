@@ -7,7 +7,7 @@ const gift=GROCERY_ITEMS.find(item=>item.id===CARD_GIFT);
 export const FLYER_PAPER=Object.freeze({type:'Flyer',title:'Sakura Shop · Thuan’s neighbourhood flyer',organisation:'Sakura Shop',author:'Thuan',source:'flyer:sakura-shop-1997',text:[
  'SAKURA SHOP — Your little island convenience store',
  '1997 neighbourhood edition · Prepared by Thuan',
- 'Open daily 09:00–20:00. Cash only. All prices include tax.',
+ 'Open 24 hours, every day. Cash only. All prices include tax.',
  ...FLYER_PRODUCTS.map(item=>item.name+' · ¥'+item.cost),
  'One stamp per ¥'+STAMP_PER_YEN+' spent in a visit. Collect '+CARD_STAMPS+' stamps for a free '+gift.name.toLowerCase()+'.',
  'Find us on Main Street, beside the harbour approach. The map is a neighbourhood sketch; the bus stop is north and the harbour is south.',

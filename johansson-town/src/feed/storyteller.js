@@ -24,7 +24,7 @@ export function seeded(text){
 const PROPER=/^(Vietnamese|Okinawan|Japanese|Minato|Sakura)\b/;
 const job=role=>{const r=String(role||'resident');return PROPER.test(r)?r:r[0].toLowerCase()+r.slice(1);};
 const sentence=text=>text?text.replace(/\s+/g,' ').trim().replace(/^([“"…]*)([a-z])/,(m,q,c)=>q+c.toUpperCase()).replace(/([.!?]\s+)([a-z])/g,(m,p,c)=>p+c.toUpperCase()):text;
-const article=phrase=>(/^[aeiou]/i.test(phrase)?'an ':'a ')+phrase;
+const article=phrase=>(/^[aeiouāēīōū]/i.test(phrase)?'an ':'a ')+phrase;   // "an ēgwā": Okinawan long vowels too
 const clip=s=>String(s||'').replace(/\.$/,'');
 
 /** The facts a story can use about one resident. */

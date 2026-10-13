@@ -95,6 +95,89 @@ husband."* So:
 - Tests: `yard-homes` (2 Front-Row Yard to let), `continuous-life` (home owners' sites), `home-interiors`,
   `thuan-*` unaffected, a new `kitano-hamlet` test (the commute's timetable, the island home life).
 
+### 7b-1, built: the households (2026-10-12)
+
+- `people/households.js`: `yuri-home` is Thuan, Thao and Chin; 2 Front-Row Yard (`resident-home-kenji`) has no
+  household and is **to let** (`yard-homes.js` now builds every yard house, the empty one with the agent's board, a
+  family-home interior and *Look round*). `kitahama-layout.js`: 1 Kitahama's residents and nameplate name the three.
+- `people/kitano-residents.js`: **Tetsuo lives at `kitano-3`** (the Chinen house, 知念); his profile's `home` is the
+  hamlet's gate (world coordinates), his address Kitano hamlet; with no household in town he is no longer a home
+  owner, so the timetable's commuter rules carry him: the 14:30 boat in, the workshop's afternoon-and-evening shift,
+  the morning boat home, and `awayPlace` says *at home on Kitano-jima*, not the mainland.
+- **Chin keeps the yard's day** (lunch at Sato, the workshop, the evening, then home) from 1 Kitahama: the commuter
+  rules sent him through the generic branches and lost his lunch (the `continuous-life` test found it).
+- Rooms: the family home lays **three futons** (red tile: Thuan's in the nibanza, Thao's and Chin's in the uraza; concrete:
+  three in the east room) and a third seat at the low table's west cushion; the shared Kitahama room gives a third
+  person the middle futon; Thuan's futon is in Johansson's house, folded by day in the corner by his pillow
+  (`town-hall.js`); `home-life.js` gives Chin a place in the Yuri apartment.
+- Texts: the household registry (Thuan his wife, Chin Thao's husband, Tetsuo at kitano-3), the hamlet's nameplates
+  (ヨハンソン: Johansson & Thuan; 知念: Chinen), the residents' *I live at…* lines.
+- Tests updated: `yard-homes` (to let), `resident-home-plan`, `visual-home-camera`, `seat-layouts`,
+  `neighbourhood-access` (Tetsuo no longer in the park at 13:00: he is on the island), `home-interiors`,
+  `continuous-life`, `town-hall-plan` pass with the rest of the household suite and `boot`.
+- Open for 7b-2 and 7b-3: Sakura 24/7 with Chin's night shift and Nhung's weekend cover, Front Row closed at the
+  weekend, Thuan's weekends on Kitano-jima, Jun's home life, the guide's portraits and backstories (Johansson's wife,
+  Thao's husband) regenerated.
+
+### 7b-2, built: Sakura open 24 hours, the rota, the weekend (2026-10-12)
+
+- `commerce/sakura-rota.js` is the one place that says **who is at Sakura's counter**: Thuan 09:00–20:30 on weekdays,
+  **Nhung** the same hours on Saturday and Sunday (Thuan is home on Kitano-jima), **Chin** 20:30–06:00 every night,
+  and Grandmother Sakurai, who owns the shop and lives above it, 06:00–09:00 (she has no walking body yet; the counter
+  keeps the last clerk's binding). The day clerk hands over at 20:30 so her end-of-day restock (`shop-stock.js`
+  `closingDay`, from 20:00) is done with the night clerk already in the shop.
+- **Sakura never closes**: the konbini hours, the shopfront shutter (always up; a fixture can still set it), the strip
+  lights and the interior tubes (full strength all night), the shutter text, flyer, town papers and specials board
+  ("Open 24 hours, every day"; the hot case still runs 09:00–20:00), and the staff board's rota. Purchases no longer
+  wait for opening time; the till, the sold-out line, the restock entries and the recycling box name whoever is on shift.
+- **The clerk follows the rota**: `shop-retail`, `indoor-residents` and `sakura-shop` bind the counter's services to the
+  body on shift and re-bind when it changes (`followRota`).
+- **Plans**: Chin works the night shift, sleeps 06:30–13:30 at 1 Kitahama, keeps his afternoon at the bench and loses
+  his Sato lunch slot (he is asleep); Nhung minds Sakura at the weekend and has no bookshop day then; Thuan's weekday
+  market shift is gated by the rota; **Front Row Books is closed at the weekend** (`town.js isOpen`, no bookshop
+  visits). Tetsuo, who had fallen into the night-bus pattern after moving to Kitano-jima in 7b-1 (at the izakaya at
+  midnight, away all day), now takes the 08:30 boat over, works 09:00–18:30 with lunch at Sato and goes home on the
+  22:00 boat (`commuter-schedule.js`).
+- Checked in the headless game: at 23:00 the shop is lit, the shutter up and Chin at the counter; on Saturday at
+  10:00 Nhung is the clerk and Thuan is at home. Tests: the shutter, strip-light and tube tests say "always on";
+  `continuous-life` and `npc-seating` use Nhung's and Reiko's lunch visits; `sato-ramen` has no slot for Chin.
+- Open: Grandmother Sakurai's body for 06:00–09:00; Thuan's weekends on Kitano-jima (7b-3: at the weekend she is at
+  home at 1 Kitahama, not yet across the water); Reiko is held at the market room's origin with `place: market` at all
+  hours in the headless game, on main as well (an old resident-location record; not this batch's); the specials
+  text in `activities.js` still says Thuan in places that are hers anyway.
+
+### 7b-3, built: Thuan's weekend, Jun's house (2026-10-12)
+
+- `social.js thuanWeekendAway/thuanWeekendPlan`: from the Friday 22:00 boat to the Monday 08:30 boat Thuan is **away,
+  "at home on Kitano-jima with her husband, Johansson"**; on Friday evening, after Minato with her sisters, she walks
+  to the ferry instead of home to Kitahama (rain sends her straight to the boat), and on Monday 08:30–09:00 she is
+  "arriving on the ferry from Kitano-jima". Read before her Kitahama room's sleep and breakfast. Day 0 is a
+  Wednesday (`town-clock.js`), so Friday is day 2.
+- `neighbours.js`: **Jun's off-duty home is kitano-2's gate** (the Shiroma house); he walks there from the terminal at
+  20:00 and is hidden indoors, as the island's other neighbours are at home.
+- Tests: `kitano-residents.test.mjs` (Thuan's weekend, the rota, Tetsuo's ferry day, Jun's home);
+  `thuan-daily-life` knows Friday.
+- Open: bodies at home on the island (Thuan in Johansson's house at the weekend, Tetsuo and Jun in theirs when the
+  player calls; today an island resident who is "away" has no body); the guide's portraits and backstories for the
+  new relationships.
+
+### 7b-4, built: the creator's correction (2026-10-12)
+
+The creator: *"Only Johansson and Thuan live on the hamlet, the others live in the port"* and *"Tetsuo's mother lives on
+the Hamlet in an old house"*. So:
+
+- **kitano-1**: Johansson and Thuan, unchanged. **kitano-3**, the old red-tile Chinen house: **Grandmother Chinen, Tetsuo's
+  mother**, a neighbour (`people/neighbours.js`: sweeps the lane in front of her gate from 06:30, sits at her gate for the
+  breeze from 15:00, home otherwise; three lines about the house, her son and the mayor's wife). **kitano-2**, the
+  concrete Shiroma house, is **to let** (its plate says so). `island-households.js` and the plates follow.
+- **Tetsuo lives in the port again**, alone at 2 Front-Row Yard (`households.js`, `YARD_RESIDENT_NAMES`): his old day
+  (lunch at Sato, the bench from five until midnight) and no boat; his line says his mother is across the water.
+- **Jun lives in the port**: off duty his home is the ferry terminal's exit in Minato (he is hidden there); his body
+  cannot yet walk the crossing, so he is hidden at the terminal until his shift (open: his ferry ride).
+- Tests: `kitano-residents` (Tetsuo in the yard, Mrs Chinen, Jun in Minato), `yard-homes` (Tetsuo's door),
+  `neighbourhood-access` (Tetsuo in the park at 13:00 again). Checked headless at 16:00: Grandmother Chinen at her gate.
+- Open: an authored look for Grandmother Chinen (she borrows Fumiko's); Jun's crossing on the boat.
+
 ## 4. Batch 7c: the crew at their posts (built 2026-10-12)
 
 The data is there (`people/ferry-crew.js`: the master, Mr Nakandakari the chief, Mr Higa Jr the oiler, Ms Uezu on deck,

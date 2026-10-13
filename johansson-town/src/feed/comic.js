@@ -19,7 +19,7 @@ import {fitAvatarHeldProp,poseAvatarConsumption} from '../avatars/consume.js';
  * Bubbles, marks and sound effects go on top.
  */
 const PAGE=1080,GAP=18,RADIUS=22,INK='#111';
-const FONT='"LINE Seed JP","Noto Sans JP","Hiragino Sans",system-ui,sans-serif';
+const FONT='Figtree,"LINE Seed JP","Noto Sans JP","Hiragino Sans",system-ui,sans-serif';
 const VIEW_W=1600,VIEW_H=1200;
 let renderer=null,views=null;const images=new Map();
 
@@ -191,7 +191,7 @@ function sceneCamera(data){
 /** Renders a strip ({panels, place}) as one Sunday-page image; returns a data URL. */
 export async function renderComic({panels,place,props={},sitting=false},{base='./',quality=.86}={}){
  // The lettering is set in the interface face; wait for it so the first page is not in a fallback.
- try{await Promise.all(['700 22px','800 40px'].map(f=>document.fonts?.load(f+' "LINE Seed JP"')));}catch{}
+ try{await Promise.all(['700 22px','800 40px'].map(f=>document.fonts?.load(f+' Figtree,"LINE Seed JP"','āēīōū Aa')));}catch{}
  const set=(await placeViews(base))[place];
  const layout=pageLayout(panels);
  const page=document.createElement('canvas');page.width=layout.width;page.height=layout.height;

@@ -1,5 +1,6 @@
 import {stairFlight,stairLanding} from './stairs.js';
 import {rng} from './kit.js';
+import {fishAt} from './fish.js';
 import {wallAd,WALL_ADS} from './signs.js';
 import {broadleaf} from './trees.js';
 
@@ -375,9 +376,12 @@ function shopInterior(kit,kind,{open,back,D,r,stock}){
   // A sloped counter of crushed ice with the day's fish laid on it, out to the street.
   kit.box(open*2-.2,.85,1.1,0,.43,D-.9,0xb8bec0,{finish:'metal'});
   kit.box(open*2-.3,.08,1.05,0,.9,D-.9,0xeef4f4,{rx:-.18});
-  const fish=[0x5a8fb0,0xc85a4a,0x9fb4c0,0x6fa0c8,0x3f7fa0];
-  for(let i=0;i<Math.floor(open*2/.42);i++)for(let row=0;row<2;row++)
-   kit.sphere(.1,-open+.35+i*.42,.98+row*.08,D-.65-row*.4,r.pick(fish),{sx:2.3,sy:.6,finish:'gloss'});
+  // The fish Yonamine sells (fish.js), laid along the ice in turn, each kind in a pair front and back as a fishmonger
+  // lays them. (r is still drawn once a fish, so everything after the counter stays where it was.)
+  // (Not the suku: the fry come a few days a year and go into jars. Not the sēika: a squid lies in its own tray.)
+  const fish=fishAt('yonamine').filter(f=>f.id!=='suku'&&f.id!=='seika');
+  for(let i=0;i<Math.floor(open*2/.42);i++)for(let row=0;row<2;row++){
+   r.next();kit.sphere(.1,-open+.35+i*.42,.98+row*.08,D-.65-row*.4,fish[i%fish.length].colour,{sx:2.3,sy:.6,finish:'gloss'});}
   kit.box(1.4,1.1,.5,-open*.5,.55,back+.4,0xf1efe8);kit.box(.5,.3,.3,open*.5,1.1,back+.5,0x2f6fb8);
   counter(open*.45,1.2,0x6a7a80);
  }else if(kind==='sweets'){

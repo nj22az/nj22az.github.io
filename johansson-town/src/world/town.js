@@ -1,3 +1,4 @@
+import {isWeekend} from '../commerce/sakura-rota.js';
 import {buildCountryside} from './countryside.js';
 import {buildQuietLife} from './quiet-life.js';
 import {buildTownPower} from './town-power.js';
@@ -52,6 +53,7 @@ import {buildWestYard} from './west-yard.js';
 import {buildForestEdge} from './forest-edge.js';
 import {buildCoyoteTunnel,CAVE_ACTIVE} from './coyote-tunnel.js';
 import {buildOkinawaQuarters} from './okinawa/quarters.js';
+import {buildHalloween} from './halloween.js';
 import {createFerryRun} from './ferry.js';
 import {windowGlow} from '../render/dusk.js';
 import {setWindowLight} from '../render/window-interior.js';
@@ -303,6 +305,9 @@ export function createTown(options){
    // The streets that fill the rest of the island in: Nishi-machi behind the west
    // yard, and shop-houses along both kerbs of Main Street. See okinawa/layout.js.
    world.quarters=buildOkinawaQuarters(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});
+   // Halloween on Sakura Street: the children's walk's lanterns, paper ghosts and the drinks machine's cord reel
+   // (hidden until the season or a story stages it). See halloween.js.
+   world.halloween=buildHalloween(world,{shadows:options.shadows});
    // The standard street furniture: chain bollards along the sea wall, brick planters at
    // the crossings. Laid last, so it can step round everything already standing.
    // See street-furniture.js.
@@ -331,7 +336,7 @@ export function createTown(options){
    shadows:options.shadows,register:options.register,onAction:options.onAction});
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
   world.islandLandscape=buildIslandLandscape({world,register:options.register,onAction:options.onAction,mobile:options.mobile});addCoastalRoadPaint(world);world.traditionalGarden=buildTraditionalGarden({world,register:options.register,onAction:options.onAction});world.parkAccess=buildParkAccess(world,{register:options.register,onAction:options.onAction});world.powerNetwork=buildTownPower(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});world.quietLife=buildQuietLife(world);world.countrysideLife=buildCountryside({world,register:options.register,onAction:options.onAction,mobile:options.mobile});
-  const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station','ferry-terminal'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);if(site.industrialWorkshop)return h>=540&&h<1140;const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
+  const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station','ferry-terminal'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);if(site.industrialWorkshop)return h>=540&&h<1140;if(site.id==='market')return true;if(site.id==='frontrow'&&isWeekend(minutes))return false;const close=site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
   // Minato's regular comes back with them: he lives in the izakaya and keeps it
   // company when it is shut (people/izakaya-hours.js), so it is never empty.
   for(const profile of WORLD_CAST){

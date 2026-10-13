@@ -2,6 +2,12 @@ import {DOCK_CREW_ROUTE} from '../world/docklands-layout.js';
 import {groundHeight} from '../world/layout.js';
 import {createNavigation} from './navmesh.js';
 import {airportWorld} from '../world/airport-ground.js';
+import {KITANO_HAMLET,hamletGate} from '../world/kitano-hamlet-layout.js';
+// Jun lives in the port (the creator, 2026-10-12: only Johansson and Thuan live in the hamlet): off duty he goes home to Minato on the
+// boat, so his home is the ferry terminal's exit there (world/ferry.js FERRY_TERMINAL.exit), where he is hidden until his next shift.
+const JUN_HOME=[4.7,-44.3];
+// Tetsuo's mother keeps the old Chinen house, kitano-3 (the creator, 2026-10-12: "Tetsuo's mother lives on the hamlet in an old house").
+const CHINEN=KITANO_HAMLET.plots.find(p=>p.id==='kitano-3'),CHINEN_GATE=airportWorld(...hamletGate(CHINEN).door),CHINEN_LANE=airportWorld((CHINEN.minX+CHINEN.maxX)/2,CHINEN.maxZ+1.6);
 import {TROPIC_PLACES} from '../world/tropical-island.js';
 import * as THREE from '../../vendor/three.module.js';
 import {inGateball,COURT_TERRACE} from '../world/park-layout.js';
@@ -36,7 +42,9 @@ const ALL_NEIGHBOURS=Object.freeze([
  {name:'Old Mr Zukeran',look:'Mr Tanabe',height:1.6,role:'playing the sanshin under the gajumaru',at:[FUMOTO.bench[0],FUMOTO.bench[1]-.8],face:[0,-1],hours:[[0,1440]],home:[26,213.2],routine:[{from:0,at:[26,213.2],role:'at home',home:true},{from:H(6),at:[24.2,194.8],face:[0,1],role:'feeding his goats'},{from:H(9,30),at:[24,219],face:[0,1],role:'weeding the kitchen garden'},{from:H(12),at:[26,213.2],role:'at home',home:true},{from:H(17,30),at:[FUMOTO.bench[0],FUMOTO.bench[1]-.8],face:[0,-1],role:'playing the sanshin under the gajumaru'},{from:H(21),at:[26,213.2],role:'at home',home:true}],
   lines:['This sanshin is older than my house. The snake was older than me.','In the evening it is too hot indoors and too quiet outside. So: the sanshin.','The goats eat the cane tops, I eat the goat soup at New Year. We have an understanding.']},
  {name:'Mina',look:'Yui',height:1.6,role:'keeping the village store',at:HOSHIZAKI_STORE.clerk,face:HOSHIZAKI_STORE.clerkFace,hours:[[0,1440]],home:[126,202.8],routine:[{from:0,at:[126,205.5],role:'at home',home:true},{from:480,at:HOSHIZAKI_STORE.clerk,role:'opening the village general store'},{from:720,at:[130,208],role:'taking a lunch break'},{from:780,at:HOSHIZAKI_STORE.clerk,role:'serving village customers'},{from:1080,at:[126,205.5],role:'at home',home:true}],lines:['Tea, rice crackers and postcards. Most customers are our neighbours.','The new guesthouse will bring a few visitors, but this will still be a quiet fishing village.']},
- {name:'Jun',look:'Daichi',height:1.7,role:'checking commuter tickets',at:airportWorld(-16,18.5),face:[1,0],hours:[[0,1440]],home:airportWorld(-20,18.5),routine:[{from:0,at:airportWorld(-20,18.5),role:'off duty',home:true},{from:420,at:airportWorld(-16,18.5),role:'checking commuter tickets'},{from:720,at:airportWorld(TROPIC_PLACES.coralBay[0]-2,TROPIC_PLACES.coralBay[1]-1.1),role:'eating his lunch on Coral Bay'},{from:765,at:airportWorld(-14,24),role:'walking back up from the beach'},{from:780,at:airportWorld(-16,18.5),role:'checking commuter tickets'},{from:1200,at:airportWorld(-20,18.5),role:'off duty',home:true}],lines:['Check in ten minutes before your flight. Keep your cabin bag with you. If you are looking for me at lunch, I am on the sand at Coral Bay.','The ground-service radio goes to Chin and Tetsuo at the docks. The test sheet comes back with it.']},
+ {name:'Jun',look:'Daichi',height:1.7,role:'checking commuter tickets',at:airportWorld(-16,18.5),face:[1,0],hours:[[0,1440]],home:JUN_HOME,routine:[{from:0,at:JUN_HOME,role:'off duty, at home in Minato',home:true},{from:420,at:airportWorld(-16,18.5),role:'checking commuter tickets'},{from:720,at:airportWorld(TROPIC_PLACES.coralBay[0]-2,TROPIC_PLACES.coralBay[1]-1.1),role:'eating his lunch on Coral Bay'},{from:765,at:airportWorld(-14,24),role:'walking back up from the beach'},{from:780,at:airportWorld(-16,18.5),role:'checking commuter tickets'},{from:1200,at:JUN_HOME,role:'off duty, at home in Minato',home:true}],lines:['Check in ten minutes before your flight. Keep your cabin bag with you. If you are looking for me at lunch, I am on the sand at Coral Bay.','The ground-service radio goes to Chin and Tetsuo at the docks. The test sheet comes back with it.']},
+ {name:'Grandmother Chinen',look:'Fumiko',height:1.48,role:'at her gate in Kitano hamlet',at:CHINEN_GATE,face:[0,1],hours:[[H(6,30),H(18,30)]],home:CHINEN_GATE,routine:[{from:0,at:CHINEN_GATE,role:'at home',home:true},{from:H(6,30),at:CHINEN_LANE,face:[0,-1],role:'sweeping the lane in front of her gate'},{from:H(9),at:CHINEN_GATE,role:'at home',home:true},{from:H(15),at:CHINEN_GATE,face:[0,1],role:'sitting at her gate for the breeze'},{from:H(18,30),at:CHINEN_GATE,role:'at home',home:true}],
+  lines:['This is the old Chinen house. The typhoon of 1987 took the Shiromas’ roof next door; it only took three of our tiles.','My son Tetsuo mends radios in Minato. He comes over on the boat when he can, and eats like he is still fifteen.','The mayor and his wife are at the end of the lane. Thuan brings me the shop’s day-old bread on Saturdays.']},
 
  {name:'Grandmother Higa',look:'Fumiko',height:1.46,role:'on her verandah',at:[-29.8,-20.7],y:.47,face:[0,-1],pose:'Interact',hours:[[H(7),H(18,30)]],
   lines:[
@@ -66,7 +74,7 @@ const ALL_NEIGHBOURS=Object.freeze([
    'When the tanker is in at the oil jetty I take the town truck down and bring the diesel up. Six trips. On typhoon days I sleep on a camp bed by the switchboard.']},
  {name:'Mrs Yonamine',look:'Naoko',height:1.56,role:'behind the fish counter',at:[-9.95,10.25],y:.08,face:[1,0],pose:'Interact',hours:[[H(7),H(15)]],
   lines:[
-   'Irabu-chā, fresh this morning — the blue one, parrotfish. Sashimi with vinegar miso. Don’t make that face, try it first.',
+   'Irabuchā, fresh this morning — the blue one, parrotfish. Sashimi with vinegar miso. Don’t make that face, try it first.',
    'Mozuku, ¥200 a tray. It is seaweed and it is good for everything. My mother lived to ninety-eight on it and on complaining.',
    'The auction is at six. By three I am sold out or the cat has it. Either way I go home.']},
  {name:'Mrs Miyagi',look:'Fumiko',height:1.44,role:'praying at the utaki',at:[-30.8,21.6],face:[0,1],pose:'Interact',hours:[[H(6),H(9,30)]],
@@ -113,7 +121,7 @@ const ALL_NEIGHBOURS=Object.freeze([
  {name:'Mr Toguchi',look:'Mr Toguchi',height:1.66,role:'selling the morning catch from his cart',walk:true,cart:true,speed:.45,hours:[[H(7),H(11)]],
   route:[[2.2,-13.8],[2.2,13.8]],
   lines:[
-   'Gurukun this morning, and a bigeye that fought me for half an hour. He lost. You can have him for six hundred yen.',
+   'Gurukun this morning, and a gāra off the breakwater that fought me for half an hour. He lost. You can have him for six hundred yen.',
    'Fish has to be sold before the sun gets over the roofs. After that I am just a man pushing ice up a hill.',
    'Thao at Minato takes whatever I have left at eleven. She pretends to haggle. I pretend to lose.']},
  {name:'Postman Tōma',look:'Kenta',height:1.7,role:'on his round',walk:true,speed:1.25,hours:[[H(9),H(13)],[H(14),H(17)]],

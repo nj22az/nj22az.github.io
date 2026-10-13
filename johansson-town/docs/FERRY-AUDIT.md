@@ -857,3 +857,372 @@ backed in under the rungs and looked up through them: the ladder's volume is now
 passage facing the open gate (the pier and the sea through it), the passage looking aft (the stair), the stair head,
 the shut gate at sea, the raised ramp close to.
 
+
+## 8. Batch 6g: down to the engine room, ear defenders, no flashing, the crew's looks (2026-10-12)
+
+The creator, 2026-10-12, from the phone: *"I want to be able to go down in the engine room and he should take on ear
+protectors automatically when he goes down or anyone goes down"*; *"And I don't want flashing graphics like that"* (the
+hazard stripes at the engine-room door flickering in a yellow-and-black hatch); *"Flashing in the accommodation too and
+the oiler is cloned, why"*.
+
+- **Down and up** (`ferry-inspect.js FERRY_LADDER`, `ferry.js`, `game.js ferryLadder`): the casing door's prompt is now
+  *Go down to the engine room* and takes him through the veil to the floor plates at the ladder's foot; there, *Climb up
+  to the car deck* brings him back out through the door. The ladder is still walkable, and across its whole width now
+  (`er-ladder` floors: ±0.34 m, not ±0.12 m, which a thumb on a phone could not hit).
+- **Ear defenders** (`avatars/ear-defenders.js`): a black band and two yellow cups built to each head's measurements and
+  hung on the head bone. He puts them on whenever his feet are on an engine-room floor (`game.js updateEarDefenders`,
+  floors `er-…`) and takes them off when he comes up; the note at the ladder says so. The crew wear them at every post
+  below the car deck (`ferry-crew-aboard.js BELOW_DECK_PLACES`: the engine room and the steering gear), and their line
+  says "nobody goes below without them". Open: the sound. Below, the engines should be loud and the defenders should
+  muffle them (`townAudio`'s ferry channel); nothing is heard yet.
+- **No flashing** (`ferry-model.js createKit.block`): paint thinner than 2 cm (the vinyl floor coverings laid 3–8 mm over
+  the decks, the hazard stripes, painted signs) is drawn as its own class, `decal`, with a depth offset
+  (`polygonOffset -1/-4`). The note at `game.js`'s camera says why: a phone cannot tell a few millimetres apart at a few
+  metres, so two faces that close flicker between each other; an offset settles which is in front. The lower lobby and
+  saloon floors were the "accommodation" flicker.
+- **The oiler is not cloned** (`avatars/cast.js CREW_LOOKS`): the chief, the oiler and the deck hand had generated looks,
+  and the generator gave the oiler and Ms Uezu the same spiky hair, polo and trousers (it did not know "Ms" is a woman:
+  fixed too). They are drawn now: the chief grey and square-jawed in the navy boiler suit with reading glasses, Mr Higa
+  Jr with a buzz cut and a red kerchief in the same boiler suit, Ms Uezu with a swept ponytail under a white cap, a work
+  jacket and cropped trousers. Tests: `ferry-engine-room-access.test.mjs`.
+- Checked in the headless game at 12:06 alongside: the door prompt, the descent (he lands on `er-ladder-foot`, ear
+  defenders on, the chief below wearing his), the climb back (defenders off).
+
+## 9. Audit: shipbuilder, game developer, marine engineer (2026-10-12)
+
+The creator: *"Audit the ferry as a ship builder, game developer and a marine engineer, it lacks polish and doesn't feel
+alive."* Evidence: the code (what her run animates, sounds and populates), eight photographs from the quay, aboard and at
+night (`/tmp/claude-0/shots/f1…f8`, taken at 12:06 and 21:30 alongside), and a trace of her run from 08:20 to 10:00.
+
+### 9.1 The one finding that explains "not alive"
+
+**She never sails on her own.** `island/play.js` parks her at boot (`run.parkAt`, which sets `localService`), and in
+that mode `ferry.js update()` does nothing but hold her alongside: the timetable (`HARBOUR_LINE`, `FERRY_TIMES`, the
+whistle signals, the lights under way, the crew's arriving and crossing watches) only runs when the player buys a
+crossing. Traced from 08:20 to 10:00 she stays `waiting/town` through the 08:30 service. So the harbour's clock has no
+ship in it: nobody sees her come in, blow for the breakwater, swing in the basin, lower the ramp, load, and leave; the
+crew never change watch; the lights never show her under way. Everything else below is polish; this is the life.
+
+### 9.2 As a shipbuilder (the hull, the fit-out, the finish)
+
+- **The finish is new-build paint with no sea on it.** No weathering at all (`ferry-model.js` has no rust streaks, no
+  scuffed bulwark tops, no boot-top scum line, no grime under the scuppers, no fender marks on the hull where she lies
+  port side to). A 1994 ship in 1997 has rust at every scupper and a dark line at the waterline.
+- **The pier side is bare.** No fenders on the pier taking her weight (photo f2: a flat pier and a bollard), no rubbing
+  marks, no tyre fenders on her side, no mooring-line chafe. The lines are drawn (`FERRY_MOORING`) but nothing between
+  ship and pier.
+- **Decks without their clutter**: the car deck has no lashing chains in use, no wheel chocks out, no oil stain under
+  the lanes, no "no smoking" and "stay in your vehicle" stencils in Japanese, no deck numbers; the open deck's benches
+  carry nobody and nothing (no bag, no bicycle lashed, no wet footprints).
+- **Flags**: no ensign at the stern, no house flag, no courtesy signal, nothing that moves in the wind.
+- **The hull is too full** (design book finding 1): block coefficient 0.71 against a stated 0.56. Her bow and stern are
+  box-like in the water. D3 fairs her; the wake and bow wave below depend on it.
+
+### 9.3 As a game developer (what moves, what sounds, who is there)
+
+- **Nothing on the water moves with her**: no bow wave, no wash at the screws, no wake astern, no foam at the quay when
+  she thrusts in (`ferry.js` has roll and pitch, turning screws and a sweeping radar, and that is all). A ship with no
+  wake reads as a model on a table.
+- **No exhaust.** Two diesels and two generators, and the funnels show nothing: no haze under way, no puff when she
+  starts, no shimmer.
+- **Nobody rides her.** The passenger saloon (photo f5), the carpet room, the open deck (f7) and the car deck (f4) are
+  empty at noon alongside. The town's commuters are "away" (hidden) when they should be seen boarding and standing at
+  the rail; the kei trucks and cars drive the roads but none wait in the lane or board.
+- **The crew are statues**: five bodies at five posts (batch 7c) with one prompt each; nobody walks the deck, lashes a
+  car, handles a line, climbs to the bridge. `FERRY_WATCH` names the actions; the bodies do not do them.
+- **Sound is one loop**: an engine loop by phase and the whistle. No ramp hydraulics, no chain and windlass, no PA
+  ("the ferry for Kitano-jima is now boarding"), no ticket-hall bell, no gulls, no slap of water on the hull alongside,
+  no door-closing thunk, nothing below with the ear defenders on (open from batch 6g).
+- **Night (photo f8)**: the saloon glows faintly; the pier and the ramp are unlit, no deck lights on the car deck, no
+  floodlight over the gangway, no reflection of her lights in the water. Night alongside should be the prettiest
+  picture in the harbour.
+- **The crossing is a cut**: a player's crossing is a camera pose and 60 seconds (`AFOOT_SECONDS`), not a sailing you
+  stand on deck for with the town going away behind you and the island coming up ahead.
+- **Loading is a prompt**: the player buys a ticket at a window and is placed aboard; nobody walks up the gangway with a
+  ticket torn by the oiler, nobody waits in the hall when she is late.
+
+### 9.4 As a marine engineer (does she work like a ship)
+
+- **The timetable and the watches exist as data and are not run** (9.1). `FERRY_SCENARIOS` (blackout, the net round
+  the screw, the ramp hose) exist for stories and never happen to her.
+- **The engine room is a diorama**: the engines never start (no vibration, no change of sound between idle and ahead),
+  the control booth's board shows nothing live (the generators' kW, the shore-power lamp, the earth lamps), the
+  tachometers do not turn, the bilge is dry and still. The chief stands and says one line.
+- **Shore power is a text**: at night she is "on shore power" in the data; no cable from the quay kiosk to her side,
+  no lamp, no generator stop at 22:15 you can hear.
+- **Nothing is ever done to her**: no bunkering (the fuel lorry), no water from Mr Chinen's lorry every fifth morning
+  (the data says so), no stores, no washing down the car deck, no ropes being coiled. Her day has no tasks.
+- **Berthing has no physics you can see**: she arrives in the pose the timetable says. No thruster wash at the bow, no
+  fenders compressing, no line thrown and made fast, no "all fast" moment.
+
+### 9.5 What is right (keep)
+
+Her general arrangement is coherent and walkable from the pier to the wheelhouse and down to the floor plates; the
+head camera works in her passages; the lower lobby, foyer, stairs and doors hold collision; the crew have posts and
+reasons; the lights follow the clock; her data would let a yard build her (design book D1). The bones are good. What
+is missing is the ship in motion and the people around her.
+
+### 9.6 The plan (in this order; each batch checked in the live game)
+
+| Batch | What | Why first |
+|---|---|---|
+| **6h** | **She sails her timetable.** Island play no longer parks her: the run keeps the timetable and a player's crossing becomes one sailing of it (you board the next boat, or ask the purser to call her early if the design wants that). Away at the island berth between calls; whistle, lights, crew watches and the ramp follow. Commuters, the vehicles' crossings and the afoot ride are retimed to the sailings. Impact: `island/play.js`, `town-traffic.js`, `commuter-schedule.js`, tests `airport-ferry`, `ferry`, `bus-boarding`, `thuan-commute-yield`. | It is the life. Without it nothing below is ever seen happening. |
+| 6i | **Wake, wash and exhaust**: bow wave and stern wake scaled to speed, thruster foam at the bow when berthing, prop wash astern when she backs off, funnel haze under way and a puff at the start. Water slap alongside. | The first thing a phone sees from the quay. |
+| 6j | **People aboard and on the pier**: the commuters who take her (Thuan on Friday evening and Monday morning, Tetsuo's visits to his mother, Jun) walk the gangway with tickets, stand at the rail, sit in the saloon, and walk off; a few townsfolk ride for errands; the cars queue in the lane and are waved aboard by the deck hand; the hall fills before a sailing. | A ship is alive because of who is on her. |
+| 6k | **The crew work**: between posts they walk (the deck hand from bow to car deck to gangway, the oiler to the capstan and down the ladder), lash a car, throw and make fast a line, blow the whistle from the wing; a watch change you can watch. | The data (`FERRY_WATCH`) already says what they do. |
+| 6l | **Sound**: ramp hydraulics and the thud on the landing, windlass and chain, the PA before sailing, the gangway's rattle, doors, gulls, water on the hull, the engine room loud with the ear defenders muffling it, shore power's silence at night. | Half of "alive" is heard. |
+| 6m | **Weathering and the pier**: rust at the scuppers and chain pipes, a scum line, fender marks, tyre fenders on the pier and her side, chafed lines, oil on the car deck, stencils; the ensign and house flag in the wind; night lights on the gangway, the car deck and the pier, reflected in the water. | The finish a shipbuilder would be ashamed of today. |
+| 6n | **The engine room runs**: engines start at 06:10 (sound, vibration, tachometers), the board shows the generators and shore power, the bilge pump runs, the chief's rounds; the scenarios can happen (a blackout halfway across, the net round the screw) as stories. | A marine engineer's ship works. |
+| D2–D3 | The weight estimate and the finer hull (design book). | The wake and the drawings depend on the real hull. |
+
+## 10. Audit: the engine room and the bridge, as places to explore (2026-10-12)
+
+The creator: *"Audit the ferry again and the engine room and the bridge, it needs to feel like we are exploring a real
+ship … report back what needs to be added or have more details."* Method: the data (`FERRY_MACHINERY`, `FERRY_ELECTRICS`,
+`FERRY_GA`), the interior as built (`ferry-interior.js`, 29 named parts below, 12 on the bridge deck), every prompt
+aboard (20 in `ferry-inspect.js`), and 17 photographs at eye height (`/tmp/claude-0/shots/e1…e9, b1…b8`).
+
+### 10.1 The engine room: what is there
+
+Two main engines with gearboxes and turbochargers, two generators on beds, the main switchboard and the booth with its
+desk and chair, the air compressor and bottles, the fuel purifier and service tank, pumps, the oily-water separator,
+sea chests, the workbench, lube-oil drums, a hydrant, the escape ladder, hand rails round the engines, colour-coded
+pipes along the sides, cable trays, the hatch and ladder. Twelve prompts, each a paragraph of true data (the switchboard
+reads `FERRY_ELECTRICS`; the log reads the fuel figures). The arrangement is right and the data is right.
+
+### 10.2 The engine room: why it does not feel real (the photographs)
+
+- **Every machine is a plain box.** The main engines (e2, e3) are teal slabs with a white tube on top: no cylinder
+  heads and rocker covers in a row of six, no fuel pumps and injector lines, no exhaust manifold in lagging under
+  aluminium cladding, no turbocharger as a snail with its air filter, no flywheel housing, no coupling to the gearbox,
+  no gauge board with its round dials, no local control stand with the tachometer, the start lever and the stop
+  button, no nameplate with the maker's name and the serial. A visitor cannot tell the engine from the generator from
+  a box.
+- **The booth's switchboard is five grey squares** (e5, e7): no meters with needles, no synchroscope, no earth lamps,
+  no breaker handles, no mimic lines, no labels (DG1, DG2, SHORE, 440 V), nothing lit. The desk has no log book, no
+  telephone, no pen, no coffee cup, no chart of the day's temperatures.
+- **The pipes fan out from a point** (e8, e5, e1): several colour-coded runs converge on one spot by the booth like
+  spokes, because they are drawn as straight bars from source to destination. Real pipes run along bulkheads and
+  under the deckhead in parallel with 90° bends, hangers, flanges and valves with handwheels. This is a glitch, not
+  detail.
+- **The floor is a flat colour.** Floor plates are chequer plate with raised edging and lifting rings; there are
+  gratings over the bilge wells, sounding pipes with brass caps, drip trays under every pump, oil stains, a rag on the
+  rail. None of it is there.
+- **No light fittings and no shadow of them**: the room is lit from nowhere. A real engine room has caged fluorescent
+  tubes under the deckhead, one over the booth desk, the emergency lamp with its red stripe, and a torch on a hook.
+- **No small things a person works with**: fire extinguishers (CO₂ and foam) by the door, the fire blanket, the
+  ear-defender hooks (batch 6g puts the defenders on you but there is no hook they came from), the telephone to the
+  bridge with its sound-powered handset, the engine-room telegraph or its lamp, the oil cans, grease gun, spanner
+  rack over the bench, the vice, the parts bins, the rags bin, the bilge alarm's red lamp, the escape-route arrows
+  on the plates, the "No.1 MAIN ENGINE" stencils in Japanese and English.
+- **Nothing happens.** No sound below (batch 6g's open item), no vibration, no heat shimmer at the exhaust, no
+  needles moving, no running lamp on the generator, no bilge pump cycling, no chief on his rounds. At 22:00 (e9) it
+  is a dark version of the same room: shore power, the generators stopped, the night lamp over the booth should read
+  as a different room.
+
+### 10.3 The engine room: what to add (batch 6o, "a working space")
+
+1. **The engines as engines**: six rocker covers and the camshaft cover, the fuel pumps and injector lines, the
+   manifold in silver lagging, the turbo and air filter, the coupling guard, the gauge board (lube-oil pressure,
+   water temperature, exhaust temperature) with real dial faces, the local control stand, the maker's plate. Same
+   for the two generators at smaller scale. Data for every number is already in `FERRY_MACHINERY`.
+2. **Pipes routed like pipes**: along the sides and the deckhead in parallel, bends, hangers every 1.5 m, flanges,
+   valves with handwheels painted by service, labels on the pipes (JIS colours: fuel red-brown, lube oil yellow, sea
+   water green, fresh water blue, air white, fire main red, exhaust silver). The fan of cones goes.
+3. **The switchboard as a board**: panels with meters (V, A, kW, Hz), the synchroscope, three earth lamps, breaker
+   handles, labels, the shore-power lamp; read from `FERRY_ELECTRICS`, and **live**: which generator is on the board
+   follows the condition (`FERRY_SUPPLY`), the kW meter follows `FERRY_LOADS`, the shore lamp lights at night.
+4. **Floor and lighting**: chequer plate, edging, bilge gratings and wells, sounding pipes, drip trays, caged tubes
+   (lit at day, the night lamp alone after 22:15), escape arrows, stencils.
+5. **The watchkeeper's things**: extinguishers, the fire blanket, the ear-defender hooks (the ones you take), the
+   telephone, the bench with its vice and spanner rack, drums, the rag bin, the log book and pen on the desk, a mug.
+6. **It runs**: engine sound by state (stopped at shore power, idling alongside, ahead under way), vibration, needles
+   that read the data, the running lamps, the bilge pump that cycles, the chief's rounds between the booth, the
+   engines and the purifier; and the scenarios can happen (6n).
+
+### 10.4 The bridge: what is there
+
+The wheelhouse with five raked windows, the console, the steering stand, the magnetic compass, the radar under its
+hood, two engine levers and the thruster lever, the clock and barometer, the chart table aft, the wing doors and the
+wings with their consoles and dodgers; aft, the corridor with the crew's cabins, the mess, the galley, the emergency
+generator and CO₂ rooms. Five prompts on this deck. The master stands at the wheel.
+
+### 10.5 The bridge: why it does not feel real (the photographs)
+
+- **The console is a grey slab with four blobs** (b2): no instrument faces, no telegraph levers you can read AHEAD
+  and ASTERN on, no rudder-angle indicator, no tachometers for each engine, no clinometer, no nav-light switch
+  panel with its lamps, no VHF with a handset on its hook, no PA microphone, no echo sounder's paper, no GPS plotter,
+  no whistle button, no searchlight control, no window wiper switches. Nothing glows, by day or at night (b8).
+- **The chart table is a prompt**, not a table: no chart under perspex with the course pencilled from Minato to
+  Kitano-jima, no tide table, no log book, no dividers and parallel ruler, no desk lamp with a red filter for night.
+- **The deckhead is a radial pattern** (b1, b3, b5): the cel pass's dots converge on the deckhead's centre and read as
+  a sunburst in every room of the bridge deck. Glitch.
+- **The windows are plain glass**: no frames with handles, no wipers' arcs, no clear-view screen, no sun visors, no
+  handrail under the windows, no non-slip matting at the wheel, no pilot chair.
+- **Nothing on the walls**: the ship's licence in its frame, the muster list, the safety plan, the passenger count
+  slate, the fire-detection panel with its zone lamps, the bell, the binoculars on their hook, the ensign in its
+  locker, the "操舵室 WHEELHOUSE" sign on the door, the no-entry sign on its outside.
+- **The crew's rooms are empty boxes** (b6, b7): the mess has a table and nothing on it (no rice cooker, kettle,
+  television, duty board, muster list, the kettle's tea); the master's cabin has a desk and a bunk and no bedding, no
+  papers, no safe, no family photo, no uniform cap on the hook. The corridor has no doors with name plates, no fire
+  extinguisher, no deck-plan frame.
+- **Nothing happens**: the master is a statue; the radar does not sweep on its screen (the scanner outside does); no
+  VHF chatter, no clock tick, no whistle you can sound from the wing, no wipers in the rain, no instruments following
+  the ship (rudder angle, rpm, heading).
+
+### 10.6 The bridge: what to add (batch 6p, "a working bridge")
+
+1. **The console as instruments**: two telegraph levers with AHEAD / STOP / ASTERN faces, the thruster lever, two
+   tachometers, the rudder-angle indicator, the clinometer, the nav-light panel with lamps, the VHF with handset and
+   channel display, the PA microphone, the echo sounder, the GPS plotter, the whistle button, the wiper switches; and
+   **live**: rpm, rudder angle, heading and the radar screen's sweep follow her run; the nav-light lamps follow
+   `setNavigationLights`; everything lit red at night.
+2. **The chart table as a table**: the chart with the course, the tide table, the log book open at today, dividers,
+   parallel ruler, pencil, the red lamp.
+3. **Windows and handrails**: frames, wipers that run in the rain, a clear-view screen, the handrail, the matting, the
+   pilot chair, sun visors.
+4. **The walls**: the licence, the muster list, the safety plan, the fire panel with zone lamps, the bell, the
+   binoculars, the passenger count slate, the door sign, the no-entry sign.
+5. **The crew's rooms**: the mess dressed (rice cooker, kettle, television on a bracket, the duty board, cups, the
+   newspaper), the galley's range and pots, the cabins with bedding, lockers with names, a photo, a cap, the
+   corridor's name plates and extinguisher, the CO₂ room's release cabinet labelled.
+6. **It works**: the master's hands on the wheel under way and on the wing throttles berthing, the whistle you can
+   sound from the wing (through `ferry.js`'s signals), VHF calls at the breakwater, the bell at the change of watch.
+7. **Fix the deckhead sunburst** (the cel pass on flat deckheads: a pattern, not shading).
+
+### 10.7 Order
+
+6h (she sails) stays first, because the instruments and the engines are only alive when she moves. Then **6o** and
+**6p** before the wake and the people (6i, 6j): the creator wants to explore her, and these two rooms are where the
+exploring is. The crew's rooms (10.6 item 5) can ride with 6p.
+
+### 10.8 Batch 6o-1, built: the machines as Johansson Marine machines (2026-10-12)
+
+The creator: *"I want them to look like real machines similar to Volvo but brand every engineering part as a Johansson
+brand."* Built:
+
+- **The brand** (`world/johansson-marine.js`, and the rule in CLAUDE.md): Johansson Marine (ヨハンソン舶用機械),
+  Johansson Marine Works, Naha, 1961; the livery (the green block, black covers, silver lagging, the aluminium plate,
+  the works' blue for alternators); a catalogue of every machine aboard with a model number (JM6-160 mains, JR-30
+  gears, JG-125 sets, JG-40E emergency set, JT-75 thruster, JS-22 steering gear, JE-440 switchboard, JC-30 compressor,
+  JF-1 purifier, JP-40 and JP-25 pumps, JO-15 separator, JW-75 windlass, JW-55 capstan, JH-55 ramp pack, JN-1800
+  radar, JN-25 VHF, JN-AP2 autopilot), every spec read from the ship's own data so the catalogue can never contradict
+  it; `makerPlate(key)` gives the lines of a plate with a works number.
+- **The main engines, built like engines** (`ferry-interior.js`): bedplate, sump and crankcase with six crankcase
+  doors, the block in the green, six heads under six black rocker covers with the oil filler, the fuel rail and
+  injection-pump block with a line to each head and two fuel filters, the exhaust manifold in silver lagging with a
+  branch from each head to the turbocharger forward (turbine, compressor, the air-filter drum, the charge-air
+  cooler) and the exhaust up to the casing, cooling-water and sea-water pumps and two lube-oil filters on the forward
+  end, the flywheel housing and coupling guard aft, the JR-30 gearbox with its round cover and output flange, the
+  gauge board with three gauges on its stand, the local control stand with tachometer, stop button and start lever;
+  the maker's plate on the block and the JOHANSSON wordmark along the covers. 78 cylinders and 6 textured plates,
+  drawn by the model (`cyls`, `plates` in `FERRY_INTERIOR`; `plateMesh` in `ferry-model.js`).
+- **The generator sets**: four-cylinder engines with heads, covers, manifold and a small turbo, the alternator in the
+  works' blue with cooling ribs and terminal box, on a common bed, each with its plate.
+- The prompts name the models. Test: `ferry-johansson-marine.test.mjs`. Photographed from the aisle, the aft end, the
+  turbo end and the generators (`/tmp/claude-0/shots/m1…m7`).
+- Open after 6o-1: the switchboard as a board, the pumps, purifier, compressor and separator as machines, pipes routed
+  like pipes, chequer plate, caged lights, the watchkeeper's things, sound and vibration by state (6o-2 below).
+
+### 10.9 6o-2 built: the engine room from the creator's photographs
+
+The creator sent sixteen photographs of real engine rooms (2026-10-12: "Here are some engine room photos can you use
+them to enhance the engine room? As inspiration? Model what we need in code or blender"): Volvo Penta mains with
+black valve covers and a silver badge on green blocks, chequer-plate floors, exhausts in quilted silver lagging held
+by stainless bands, gauge boards of round dials, gensets with louvred alternators, shutdown/reset boxes and start
+panels on the engines, braided hoses, filters with the change date written on them, a row of sensor boxes along a
+block, cable trays, a compressor, a burner, a MAN gauge panel. Everything is modelled in code, in the town's own
+procedural style (`ferry-interior.js`, drawn by `ferry-model.js`); nothing needed Blender.
+
+What each photograph gave, and where it now is:
+- **Round dials** (the gauge boards, the gensets' panels, the MAN panel): `plateMesh` draws a `dial` kind, a round
+  gauge with a bezel, ticks, a red zone, a needle at a value 0–1 and its label; `dial()` in the interior places one.
+  Each main engine's gauge board carries six (lube-oil pressure, water, fuel, exhaust, charge air, lube-oil
+  temperature) and the tachometer on the stand is a dial face-up; each genset's panel an rpm dial with start and
+  stop; the booth desk's panel the two shaft rpm dials and eight engine-alarm lamps with their legend.
+- **The main switchboard** (JE-440) is a board: five panels under a name strip (GENERATOR No.1, SYNCHRONISING,
+  GENERATOR No.2, 440 V FEEDERS, 105 V LIGHTING). A generator panel has kW, A, V and Hz meters, the breaker in its
+  frame with the handle up when closed, closed and open lamps, governor and ammeter switches with labels; the
+  synchronising panel the synchroscope (SLOW · FAST), bus and incoming voltmeters, three synchronising lamps, the
+  selector switch and the board's maker's plate; the feeder panel three earth lamps (IT system: all alight when
+  nothing is earthed), the insulation meter in MΩ with the test switch, and eight labelled breakers (steering, fire
+  pumps, thruster, ramp pack, galley, windlass, ER pumps); the lighting panel its V and A, the 440/105 V transformer
+  label, eight breakers and the shore-connected lamp. In port No.1 carries the ship (its meters read), No.2 stands
+  at zero.
+- **Black valve covers with the badge**: cast ribs along each cover, and a silver JOHANSSON badge on the inboard
+  face of No.3's cover; the wordmark stays along the outboard side.
+- **Quilted lagging with bands**: stainless bands every 0.36 m along each exhaust manifold and every 0.5 m along the
+  uptake, with a band at the elbow.
+- **Shutdown/reset box** on each block's inboard face aft (the red mushroom, the reset button, the amber alarm lamp,
+  the label) and the **start panel** on the local stand (green start, key switch, hour meter, LOCAL CONTROL label).
+- **Dated filters**: each fuel filter reads FUEL FILTER · CHG 12 MAR 94, each lube-oil filter LO FILTER · CHG 8 FEB
+  94, and **braided hoses** run from the filters to the pump block.
+- **The sensor row**: a sensor box on each head along the block's top inboard edge, cabled together.
+- **Louvred alternators**: an end bell outboard with five louvre slats.
+- **Chequer plate**: the floor is a repeating chequer texture (raised diamonds, a seam every 0.6 m) everywhere but
+  the booth, which keeps its own floor.
+- **Caged bulkhead lamps**: three a side, a lamp in a wire cage over the machines.
+- **The pumps are machines**: six on a drip tray, each a coloured pump casing (red fire, green general service,
+  blue bilge, sanitary and hydrophore), the yellow coupling guard, a motor in the works' blue with its terminal box,
+  the delivery rising with a flange to join its overhead run (the fire pumps the fire main, the hydrophore the fresh
+  water, the rest the sea-water run), a maker's plate and a label. The catalogue gained JP-32 (general service),
+  JP-15 (sanitary) and JQ-2 (hydrophore).
+- **Compressor, purifier, separator as machines**: the JC-30 a two-stage V compressor on its motor with the flywheel,
+  its air gauge and delivery lines to the bottles (each bottle with its gauge and STARTING AIR label); the JF-1 its
+  frame, bowl, hood and motor with a bowl-rpm dial; the JO-15 a vessel on legs with its sight glass and the 15 ppm
+  bilge monitor. Each with its plate. The compressor moved outboard (x 2.7–3.1): it had stood inside the port
+  engine's local control stand.
+- **Pipes routed like pipes**: the fuel line runs from the service tank's quick-closing valve up to the deckhead,
+  across at z 13.6, and to each engine drops by the turbo end inboard through a valve with a red handwheel to a run
+  along the block's inboard edge; the diagonal bars (the fan of cones) are gone. The overhead runs along her sides
+  carry hangers from the deckhead every 1.2 m and flange pairs.
+- **The watchkeeper's things**: the engine-room log open on the desk, a pen, a coffee mug.
+- Test (`ferry-johansson-marine.test.mjs`): 14 maker's plates, the badges, 24+ dials reading 0–1, the chequer floor,
+  the dated filters, and every new part by name. 218 cylinders and 112 plates. Photographed with the audit's free
+  camera (`/tmp/claude-0/shots/p1…p12`, `q1…q6`, `r1`).
+- Open: sound and vibration by state (the engines are silent in port and at sea alike); the plate on the block still
+  sits low; a cable tray from the switchboard to the panels; the compressor's bottles' relief lines.
+
+### 10.10 6o-3 built: the second photo set, the action button, the yard's drawings, the safety plan
+
+The creator's second set (2026-10-12: "Upper grating", "Sea water filter, control panel, cams etc"): a big engine
+room's open grating walkway between the engines over the red bilge, a sea-water strainer full of mussels with its
+basket, a reduction gear opened, a clutch pack on a pallet, a camshaft seen through an open crankcase door, an engine
+control room's mint-green console, a wiped bearing. Built in code:
+- **Gratings over the bilge** (`floorPlate('grating', …)`): the aisle between the rails and the strips inside each
+  engine's rails, the bilge red under the bars.
+- **The sea chests and strainers**: the chests are under the floor plates against her sides (a hatch over each);
+  both strainers stand in the port forward corner, the starboard chest's suction crossing under the plates, each a
+  housing with a bolted cover on eight studs, the suction valve's handwheel, the drain cock and a label, with the
+  Monday-morning basket in the prompt. They had stood inside the fuel tank and the separator, and then in the
+  walkway along the forward bulkhead (`ferry-walk.test.mjs` walks it); a test now proves no two solid things of the
+  engine room overlap. The 200 L lubricating-oil drums are stowed in casing P's store, out of the walkway.
+- **The control console**: the booth desk is a mint-green console with a raised panel of six dials (shaft rpm port
+  and starboard, lube-oil pressures, water temperatures), a 4 × 8 alarm matrix with FUEL LEVEL lit amber, two
+  telegraph levers at STOP, the telephone, the grab rail, the log, the pen, the mug, the clock and the safety plan
+  over it.
+- **No.4 crankcase door off the starboard engine**: the red inside, the camshaft and a lobe, the crank web; the
+  door on a rag on the plates with its six bolts; a prompt tells why (the second engineer looked at the cams).
+- **A spare JR-30 clutch pack** on a pallet under the bench's aft end, tagged, with its story (the port gear
+  chattered in April); the oil drums side by side against the forward bulkhead (they stood inside the separator).
+- **The action button** (the creator: "The green action button doesn't make sense it seems buggy"): aboard, the
+  prompts were offered 3.1 m away whatever you faced, there was no prompt for the starboard engine or gearbox or
+  No.1 generator (so facing them offered "No.2 generator" or the port engine), and the labels were cut on the phone's
+  round button ("Look at No.2···"). Now every ferry prompt has a reach (2.2 m, 1.6 m for small things) and wants to be
+  faced (`userData.reach`, `userData.facing`, game.js interaction), there are prompts for the starboard engine and
+  gearbox, No.1 generator, the open crankcase, the strainer, the compressor and the spare clutch pack, and every
+  label is short enough for the button (the eye icon already says "look"). Probed at ten points and four headings
+  (`/tmp/claude-0/probe-prompts.mjs`).
+- **The yard's drawings** (the creator: "give me a schematic over what the engine room looks like a construction
+  drawing, from Johansson Shipyard"; "The drawings don't look real and text overflowing"): sheet 5, the engine room
+  arrangement (plan at the floor plates on the frame grid, centreline elevation, hatched section through the mains,
+  dimensions, equipment list), and every sheet reframed as a yard drawing with a zoned border, a title-block grid and
+  notes that wrap; labels shrink to their rooms. `docs/minato-maru/README.md` D9, D9a; the builder is Johansson
+  Shipyard, Innoshima, hull No. 127 (CLAUDE.md: Johansson is this universe's Acme).
+- **The safety plan** (the creator: "There needs to be a safety plan posted as well, on the vessel"): drawn from
+  the ship's data by `src/world/ferry-safety-plan.js` with a pen that writes to a canvas aboard and to SVG in the
+  book (sheet 6); posted in the lower lobby over the drink machine and in the control booth, each marked YOU ARE
+  HERE. Open: posting it in the saloon and the crew corridor too (the walls there are drawn by other code).
+- The hull's triangle budget rose from 60 000 to 66 000 for the machines (`ferry-ship.test.mjs`).
+- Open from the photographs: the gearbox opened for inspection (the gears), the bilge trough, the sludge tank's
+  sight glass, the wiped bearing as a spare on the bench.

@@ -6,7 +6,7 @@ export const TOWN_PAPERS=[
     "organisation": "Sakura Shop",
     "author": "Thuan",
     "source": "flyer:sakura-shop-1997",
-    "text": "SAKURA SHOP — Your little island convenience store\n1997 neighbourhood edition · Prepared by Thuan\nOpen daily 09:00–20:00. Cash only. All prices include tax.\nPlum rice ball · ¥110\nGreen tea · ¥120\nSalted potato crisps · ¥100\nOne stamp per ¥300 spent in a visit. Collect 10 stamps for a free green tea.\nFind us on Main Street, beside the harbour approach. The map is a neighbourhood sketch; the bus stop is north and the harbour is south.\nMeet Jaga-bo, our KOGANE potato-crisp mascot. Drop in and say hello to Thuan!\nFree copies at Sakura’s counter and the harbour notice board. Community Hall keeps a filed copy for one year."
+    "text": "SAKURA SHOP — Your little island convenience store\n1997 neighbourhood edition · Prepared by Thuan\nOpen 24 hours, every day. Cash only. All prices include tax.\nPlum rice ball · ¥110\nGreen tea · ¥120\nSalted potato crisps · ¥100\nOne stamp per ¥300 spent in a visit. Collect 10 stamps for a free green tea.\nFind us on Main Street, beside the harbour approach. The map is a neighbourhood sketch; the bus stop is north and the harbour is south.\nMeet Jaga-bo, our KOGANE potato-crisp mascot. Drop in and say hello to Thuan!\nFree copies at Sakura’s counter and the harbour notice board. Community Hall keeps a filed copy for one year."
   },
   {
     "type": "Notice",
@@ -101,9 +101,16 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
+    "title": "Airport ferry window",
+    "organisation": "Town Services",
+    "text": "The window opens at noon. Until then the oiler sells tickets at the gangway on the outer pier, as each boat waits to sail.",
+    "source": "notice:Airport ferry window"
+  },
+  {
+    "type": "Notice",
     "title": "Ferry departures",
     "organisation": "Town Services",
-    "text": "The shared car and passenger ferry crosses to Kitano-jima on request. Buy a return passenger ticket at the airport-ferry counter and board from the outer pier. The evening boat to Naha opens at 17:00.",
+    "text": "The shared car and passenger ferry crosses to Kitano-jima on request. Buy a return passenger ticket at the airport-ferry window (Ms Ganaha, noon to 22:15; in the morning from the oiler at the gangway) and board from the outer pier. The evening boat to Naha opens at 17:00.",
     "source": "notice:Ferry departures"
   },
   {

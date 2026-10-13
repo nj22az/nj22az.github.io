@@ -106,16 +106,15 @@ test('checkout refuses while Thuan is away mid-hours but still works when she is
  const ok=checkout(present,{},850,true);
  assert.equal(ok.ok,true);
  assert.equal(present.yen<5000,true);
- // Overnight closed stays the closed message, even if availability were false.
+ // Open 24 hours: at night the clerk away from the counter is the away message, not a closed till.
  const night=shopper();fill(night);addToBasket(night,'tea');
- assert.match(checkout(night,{},1300,false).message,/till is closed/);
+ assert.match(checkout(night,{},1300,false).message,/away from the counter/);
 });
 
-test('the till is shut outside trading hours and short money is refused',()=>{
+test('the till is open round the clock (Sakura is 24 hours) and short money is refused',()=>{
  const shut=shopper();fill(shut);addToBasket(shut,'tea');
- assert.match(checkout(shut,{},1300).message,/till is closed/);
- assert.match(checkout(shut,{},300).message,/till is closed/);
- assert.equal(shut.yen,5000);
+ assert.equal(checkout(shut,{},1300).ok,true,'open at 21:40');
+ const early=shopper();fill(early);addToBasket(early,'tea');assert.equal(checkout(early,{},300).ok,true,'open at 05:00');
  const broke=shopper({yen:50});fill(broke);addToBasket(broke,'battery');
  assert.match(checkout(broke,{},600).message,/enough yen/);
  assert.equal(broke.sakura.stock.battery.shelf>0,true,'and the battery stays on the shelf');

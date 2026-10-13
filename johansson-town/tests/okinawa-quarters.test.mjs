@@ -105,23 +105,18 @@ test('the neighbours can be walked up to, and the walkers keep to the ground',as
  assert.ok(neighbourAwake(higa,9*60)&&!neighbourAwake(higa,23*60),'Grandmother Higa keeps the wrong hours');
 });
 
-test('Sakura’s shutter is up while she is open and comes down at eight',async()=>{
+test('Sakura’s shutter stays up round the clock: she is open 24 hours',async()=>{
  const {world}=await town();
  const shutter=world.quarters.shutter;
- for(let i=0;i<400;i++)shutter.update(21*60,1/30);
- assert.equal(shutter.open,0,'The shutter is up after closing');
- for(let i=0;i<400;i++)shutter.update(10*60,1/30);
- assert.equal(shutter.open,1,'The shutter is down in shop hours');
+ for(const h of[3,10,21,23.5]){for(let i=0;i<400;i++)shutter.update(h*60,1/30);assert.equal(shutter.open,1,'The shutter is down at '+h+':00');}
 });
 
-test('visual fixtures can snap the shutter to opening hours without changing normal interpolation',async()=>{
+test('visual fixtures can snap the shutter without changing normal interpolation',async()=>{
  const {world}=await town(),shutter=world.quarters.shutter;
- shutter.update(21*60);
- assert.ok(shutter.open>0&&shutter.open<1,'Ordinary hourly updates still animate rather than jump');
- shutter.update(21*60,0,{snap:true});assert.equal(shutter.open,0);
- const curtain=world.group.getObjectByName('Sakura roller shutter'),closed=curtain.position.clone();
- for(let i=0;i<20;i++)shutter.update(21*60,0);
- assert.deepEqual(curtain.position,closed);assert.equal(curtain.scale.y,1);
+ const curtain=world.group.getObjectByName('Sakura roller shutter');
  shutter.update(12*60,0,{snap:true});assert.equal(shutter.open,1);assert.equal(curtain.visible,false);
- shutter.update(21*60,.5);assert.ok(Math.abs(shutter.open-.8)<1e-9,'Ordinary animation retains its elapsed-time rate');
+ // A fixture can still force the curtain down (a photograph of the slats); ordinary updates then roll it back up at the usual rate.
+ shutter.set(0);
+ shutter.update(21*60,.5);assert.ok(Math.abs(shutter.open-.2)<1e-9,'Ordinary animation retains its elapsed-time rate');
+ shutter.update(21*60,.5);assert.ok(shutter.open>0&&shutter.open<1,'Ordinary updates animate rather than jump');
 });

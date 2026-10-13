@@ -184,6 +184,26 @@ that makes more or better stories.
   labels can be correct Japanese but teaching is in English and storytelling too and the gameplay"). Signs, labels and
   packaging in the world are correct Japanese; every word a player reads in the UI, an inspect text, a story or a lesson
   is plain English ("supply breaker", not a translated "contract breaker").
+- **The Minato Maru is a real ship** (the creator, 2026-10-12: "The ferry needs to be built like a realistic ferry in the
+  90's, the cartoon cel shading is just to make it more fun. Be a naval ship architect and build the ferry as a real ferry
+  would be built and make drawings, one should be able to build a real ferry from our documentation"). Her design book is
+  `johansson-town/docs/minato-maru/` (README: particulars, sheets, findings, the programme D1–D8). Every sheet is generated
+  from her data (`src/world/ferry-ship.js`, `ferry-model.js`, `ferry-interior.js`) by `node tools/ferry-drawings.mjs`:
+  change the data, run the tool, commit the sheets (`tests/ferry-design-book.test.mjs` fails on stale sheets). Decide ship
+  questions as a naval architect would (rules, weights, stability, structure) and record findings in the README rather
+  than fudge a number.
+- **Every engineering part is Johansson Marine** (the creator, 2026-10-12: "I want them to look like real machines
+  similar to Volvo but brand every engineering part as a Johansson brand"). Engines, gears, generators, thrusters,
+  steering gear, switchboards, pumps, purifiers, compressors, windlasses, radar and radios aboard the Minato Maru (and
+  any machine built later in the town) are built like the real marine machines of their day, in the Johansson Marine
+  livery (`johansson-town/src/world/johansson-marine.js`: the green block, black covers, silver lagging, the aluminium
+  maker's plate) and carry a model from its catalogue, whose numbers are the ship's own data. No other maker's name
+  appears on a machine.
+- **Johansson is this universe's Acme** (the creator, 2026-10-12: "in this universe Johansson is the equivalent of Acme
+  in Looney Toons"). Whatever is made, built or sold by a company carries the Johansson name: Johansson Shipyard
+  (Innoshima) built the Minato Maru (`ferry-ship.js` `yard`; her drawings in `docs/minato-maru/` are the yard's),
+  Johansson Marine made her machines, and any later maker (a bus, a radio, a vending machine) is a Johansson company
+  too, with its own works and model numbers that are the thing's own data.
 - **The town's trade** (`johansson-town/src/commerce/merchandising.js`): Sakura Shōten is a konbini *and* the
   town's supplier of everyday goods, from its depot in the Quay Warehouse (Sakura Trading). Higa Liquor supplies
   all alcohol (to Sakura, Minato, Sato Ramen and the Coral Bay Bar on Kitano-jima); Front-Row Books & Stationery supplies office supplies; Rainflower

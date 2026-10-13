@@ -33,17 +33,17 @@ test('daily favours belong to the playable cast on every day, including the form
  }
 });
 
-test('a freshly caught sea bream completes a fish favour, with legacy fish gifts accepted too',()=>{
- assert.equal(TASTE_ITEMS.fish,'Sea bream');
+test('a freshly caught taman completes a fish favour, with legacy fish gifts accepted too',()=>{
+ assert.equal(TASTE_ITEMS.fish,'Taman');
  let minutes,want;
  for(let day=0;day<1000&&!want;day++){
-  minutes=day*1440+600;want=wantsFor(minutes,wantPool()).find(w=>w.item==='Sea bream');
+  minutes=day*1440+600;want=wantsFor(minutes,wantPool()).find(w=>w.item==='Taman');
  }
  assert.ok(want,'A resident requests the fish obtainable from the pier');
- assert.match(wantLine(want),/fishing pier/,'The request directs the player to the actual fish source');
+ assert.match(wantLine(want),/off the pier tonight/,'The request directs the player to the actual fish source, at the hour it bites');
  assert.doesNotMatch(wantLine(want),/Sakura/);
- assert.match(wantLine({item:'Mackerel'}),/fishing pier/,'Legacy fish requests retain the correct directions');
- for(const item of ['Sea bream','Mackerel']){
+ assert.match(wantLine({item:'Mībai'}),/fishing pier/,'Other pier fish point at the pier');
+ for(const item of ['Taman','Sea bream','Mackerel']){
   const state={},result=gave(state,want.name,item,minutes,wantPool());
   assert.equal(result.kind,'want');assert.equal(result.yen,want.reward);
   assert.equal(openWant(state,minutes,wantPool(),want.name),null);
@@ -68,10 +68,10 @@ test('players keep separate appearances while the original player keeps the lega
 
 test('gift pages expose a late-picked daily request and every present for Thuan',()=>{
  const inventory=['Green tea','Canned coffee','Plum rice ball','Butter biscuits','Sakura soap','Pocket notebook','Harbour postcard','Radio batteries',
-  'Sea breeze cola','Spring water','Umineko lager','Instant shoyu noodles','Asamori milk','Salted potato crisps','Soy rice crackers','Milk chocolate','Sea bream'];
+  'Sea breeze cola','Spring water','Umineko lager','Instant shoyu noodles','Asamori milk','Salted potato crisps','Soy rice crackers','Milk chocolate','Taman'];
  let minutes,want;
  for(let day=0;day<1000&&!want;day++){
-  minutes=day*1440+600;want=wantsFor(minutes,wantPool()).find(w=>w.item==='Sea bream');
+  minutes=day*1440+600;want=wantsFor(minutes,wantPool()).find(w=>w.item==='Taman');
  }
  assert.ok(want);
  for(const name of [want.name,'Thuan']){
@@ -79,14 +79,14 @@ test('gift pages expose a late-picked daily request and every present for Thuan'
   acts.state.inventory=[...inventory];
   acts.action('resident',name);
   ui.button(name==='Thuan'?'Give her a present':'Give a present…');
-  assert.equal(ui.has('Sea bream'),false,'The first page stays a manageable size');
+  assert.equal(ui.has('Taman'),false,'The first page stays a manageable size');
   ui.button('More presents');assert.ok(ui.has('Sea breeze cola'));
   ui.button('Previous presents');assert.ok(ui.has('Green tea'));
   ui.button('More presents');ui.button('More presents');
-  assert.ok(ui.has('Sea bream'),'The seventeenth picked-up item is selectable');
+  assert.ok(ui.has('Taman'),'The seventeenth picked-up item is selectable');
   assert.equal(ui.has('More presents'),false,'The last page has no empty next page');
-  ui.button('Sea bream');
-  assert.equal(acts.state.inventory.includes('Sea bream'),false);
+  ui.button('Taman');
+  assert.equal(acts.state.inventory.includes('Taman'),false);
   if(name==='Thuan')assert.equal(acts.state.story.gifts_given,1);
   else{
    assert.equal(acts.state.yen,1200+want.reward,'A request on a later page still pays its reward');

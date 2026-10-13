@@ -10,6 +10,7 @@ import {restoreArchive,seedArchive,fileDocument,retainArchive} from './src/offic
 import {createArchiveView} from './src/office/archive-ui.js';
 import {isWorkshopSite} from './src/world/businesses.js';
 import {harbourTimetable} from './src/people/commuter-schedule.js';
+import {sakuraClerkAt} from './src/commerce/sakura-rota.js';
 import {createRamenTicketMachine} from './src/people/ramen-ticket.js';
 import {createIzakayaPlay} from './src/people/izakaya-play.js';
 import {pendingTownAbsence} from './src/people/town-absence.js';
@@ -25,6 +26,9 @@ import {albumView,albumLead} from './src/photo/pocket-album-view.js';
 import {wantsAnother} from './src/people/drunk.js';
 import {restoreTownCleanup,collectTownFind} from './src/commerce/town-cleanup.js';
 import {restoreSakura,recordSakuraSale} from './src/commerce/sakura-economy.js';
+import {GANAHA,ganahaGreeting,nextBoatLine} from './src/people/ganaha.js';
+import {islandPlaces,placeSays} from './src/world/island-guide.js';
+import {fishAt,fishItem,pierFishOfItem,pierCatch,LEGACY_CATCH,aFish} from './src/world/okinawa/fish.js';
 import {printedModels} from './src/workshop/catalogue.js';
 import {restoreWorkshop,advancePrint} from './src/workshop/production.js';
 import {createWorkshopUI} from './src/workshop/interface.js';
@@ -97,7 +101,8 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
       state.yen=Math.min(state.yen,999999);state.quest=Math.min(state.quest,3);
       for(const k of ['inventory','visited','operated','inspectedIds','notes'])if(Array.isArray(saved[k]))state[k]=saved[k].filter(x=>typeof x==='string').slice(0,100);
-      state.notes=state.notes.filter(n=>!n.includes('Website is the town')&&!/https?:/.test(n));state.clockAhead=Number.isFinite(saved.clockAhead)?Math.max(0,Math.min(10080,saved.clockAhead)):0;state.minutes=Number.isFinite(saved.minutes)?saved.minutes:1002;state.sound=saved.sound!==false;state.bookRescue=saved.bookRescue||0;state.radioStation=Number.isInteger(saved.radioStation)?Math.max(0,Math.min(2,saved.radioStation)):0;state.inventory=state.inventory.map(i=>i==='Mackerel'?'Sea bream':i);state.weather=saved.weather===true;state.shrineIntent=['Book','Work','Home'].includes(saved.shrineIntent)?saved.shrineIntent:null;state.kenjiEscort=[true,'walking','done'].includes(saved.kenjiEscort)?saved.kenjiEscort:false;if(Number.isInteger(saved.onsenDate)&&saved.onsenDate>=0)state.onsenDate=saved.onsenDate;state.quickTravelNotified=saved.quickTravelNotified===true;
+      state.inventory=state.inventory.map(x=>LEGACY_CATCH[x]||x);   // the old "Sea bream" is a taman now (fish.js)
+      state.notes=state.notes.filter(n=>!n.includes('Website is the town')&&!/https?:/.test(n));state.clockAhead=Number.isFinite(saved.clockAhead)?Math.max(0,Math.min(10080,saved.clockAhead)):0;state.minutes=Number.isFinite(saved.minutes)?saved.minutes:1002;state.sound=saved.sound!==false;state.bookRescue=saved.bookRescue||0;state.radioStation=Number.isInteger(saved.radioStation)?Math.max(0,Math.min(2,saved.radioStation)):0;state.weather=saved.weather===true;state.shrineIntent=['Book','Work','Home'].includes(saved.shrineIntent)?saved.shrineIntent:null;state.kenjiEscort=[true,'walking','done'].includes(saved.kenjiEscort)?saved.kenjiEscort:false;if(Number.isInteger(saved.onsenDate)&&saved.onsenDate>=0)state.onsenDate=saved.onsenDate;state.quickTravelNotified=saved.quickTravelNotified===true;
       if(typeof saved.lastDayKey==='string')state.lastDayKey=saved.lastDayKey;if(Array.isArray(saved.dailyQuests))state.dailyQuests=saved.dailyQuests;if(saved.dailyDone&&(typeof saved.dailyDone==='object'))state.dailyDone=saved.dailyDone;
     }
   } catch(error){
@@ -346,29 +351,31 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       :special?`${special.note}. From the board at Sakura.`
       :hotSnack?hotSnack.line
       :spec?spec.text:find?`Worth ¥${find.price} back at Sakura’s till.`
-      :item==='Sea bream'?'Fresh from the pier. Thao — or Thuan — would know what to do with it.'
+      :pierFishOfItem(item)?pierFishLine(pierFishOfItem(item))
       :'Something you picked up in town.';
     show(item,text,[...(drinkable?[['Drink it',()=>{close();onDrink(item);}]]:[]),...(edible?[['Eat it',()=>{close();onSnack(item);}]]:[]),...(model?[['Look at it',()=>previewPrint(model)]]:[]),['Back to the bag',bag],['Close',close]]);
     modal.classList.add('bag-view');
     const hero=document.createElement('div');hero.className='bag-hero';hero.innerHTML=svg(itemIcon(item,{printed:!!model}),{size:56});if(foodArtForItem(item)){hero.innerHTML='';const image=document.createElement('img');image.src=foodArtForItem(item);image.alt=item;image.width=160;image.height=160;image.style.objectFit='contain';hero.append(image);}body.prepend(hero);
   }
-  function addItem(item){if(STORE_ITEMS.some(p=>p.name===item)||DRINKABLE.has(item)||SPECIAL_BY_NAME[item]||['Sea bream','Ice',EMPTY_CAN].includes(item)||!state.inventory.includes(item))state.inventory.push(item);save();}
+  const withEnglish=f=>(/^[aeiou]/i.test(f.english)?'an ':'a ')+f.english;
+  const pierFishLine=f=>`${withEnglish(f).replace(/^a/,'A')}, fresh from the pier. Eaten here: ${f.eaten}. The harbour master pays ¥${f.pierPrice}; Tama would take it for nothing.`;
+  function addItem(item){if(STORE_ITEMS.some(p=>p.name===item)||DRINKABLE.has(item)||SPECIAL_BY_NAME[item]||['Ice',EMPTY_CAN].includes(item)||pierFishOfItem(item)||!state.inventory.includes(item))state.inventory.push(item);save();}
   /**
    * The recycling box by Sakura's door. Every empty can in your pockets goes in, and
-   * Thuan pays a small refund out of the shop's own till (she sells the aluminium on).
+   * whoever is at the till (sakura-rota.js) pays a small refund out of the shop's own till (the aluminium is sold on).
    */
   function recycleCans(){
-    const n=state.inventory.filter(i=>i===EMPTY_CAN).length;
-    if(!n){receipt('Recycling box','A blue box with a round hole in the lid, for empty cans. Thuan gives ¥'+CAN_REFUND+' a can, from the till.');return;}
+    const n=state.inventory.filter(i=>i===EMPTY_CAN).length,clerk=sakuraClerkAt(getMinutes());
+    if(!n){receipt('Recycling box','A blue box with a round hole in the lid, for empty cans. '+clerk+' gives ¥'+CAN_REFUND+' a can, from the till.');return;}
     state.inventory=state.inventory.filter(i=>i!==EMPTY_CAN);
     // From the till when it has it; a few coins from her own purse when it does not.
     const shop=state.sakura,pay=n*CAN_REFUND;if(shop)shop.cash=Math.max(0,shop.cash-pay);state.yen+=pay;
     onTime(1);onMove('Give');townAudio.play('clunk',.5);save();
-    receipt('Recycling box',`${n} empty can${n>1?'s':''} rattle${n>1?'':'s'} into the box.`+` Thuan counts ¥${pay} into your hand.`);
+    receipt('Recycling box',`${n} empty can${n>1?'s':''} rattle${n>1?'':'s'} into the box.`+` ${clerk} counts ¥${pay} into your hand.`);
   }
   /** The specials board behind the counter: order from Thuan while the hot case is on. */
   function specialsMenu(){
-    if(!specialsOpen(getMinutes())){receipt('Specials board','The hot case is off. Thuan serves the specials from 09:00 to 20:00.');return;}
+    if(!specialsOpen(getMinutes())){receipt('Specials board','The hot case is off. The specials are served from 09:00 to 20:00.');return;}
     show('Today’s specials','Chalked up behind the counter. Thuan wraps it or pours it while you wait.',[
       ...SAKURA_SPECIALS.map(sp=>[`${sp.name} · ¥${sp.price}`,()=>{if(!spend(sp.price))return;addItem(sp.name);recordSakuraSale(state,sp.price,null,{minute:getMinutes(),item:sp.name,buyer:'Johansson'});onTime(2);save();townAudio.play('click',.35);
         receipt('Thuan',sp.kind==='food'?`One ${sp.name.toLowerCase()}, wrapped in paper. It is in your bag. Eat it while it is warm.`:`One ${sp.name.toLowerCase()}, with a straw. It is in your bag.`);}]),
@@ -1008,10 +1015,10 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     const lines={
       Chin:'The Star Port cabinet is outside the workshop. Stop the signal in the illuminated zone three times to win. It costs ¥100; a perfect round pays ¥250.',
       'Mrs Sato':'Ramen is ¥300 today. The payphone near the bookshop still works, and the Harbour Line timetable is at the northern terminal.',
-      'Harbour master':'There are sea bream off the pier. Cast a line and wait until the float dips. Reel in while the signal reads BITE. You can sell your catch here.'
+      'Harbour master':'Mībai bite at any hour; ēgwā by day, and mijun when the shoals come in. Taman and tachinuiyu after dark: that is when the old men come out. Cast a line, wait for the float to dip, and reel in while the signal reads BITE. I buy what you land.'
     };
     show(name,lines[name]||'The resident nods politely.',[
-      ...(name==='Harbour master'?[['Sell a fish · +¥180',()=>{const i=state.inventory.indexOf('Sea bream');if(i<0){say('Catch a fish at the pier first.');return;}state.inventory.splice(i,1);state.yen+=180;save();receipt('Harbour master','A fine sea bream. Here is ¥180.');},!state.inventory.includes('Sea bream')]]:[]),
+      ...(name==='Harbour master'?[...(pierFishInBag().sort((a,b)=>b.pierPrice-a.pierPrice).map(f=>[`Sell your ${f.name} · +¥${f.pierPrice}`,()=>{if(!state.inventory.includes(fishItem(f))){say('That fish is no longer in your bag.');return;}takeOne(fishItem(f));state.yen+=f.pierPrice;save();receipt('Harbour master',`${aFish(f).replace(/^a/,'A')}. ${f.pierPrice>=300?'Now that is a fish.':f.pierPrice<100?'Bait, mostly, but I will take it.':'A fair fish.'} Here is ¥${f.pierPrice}.`);}])),...(pierFishInBag().length?[]:[['Sell a fish',()=>say('Catch a fish at the pier first.'),true]])]:[]),
       ['Goodbye',close]
     ]);
   }
@@ -1019,16 +1026,35 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   function cat(){
     note('Tama approved this route');
     if(state.quest===1){
-      if(state.inventory.includes('Sea bream'))show('Tama','The ginger cat watches the fish in your bag.',[['Give Tama a fish',()=>{state.inventory.splice(state.inventory.indexOf('Sea bream'),1);state.quest=2;save();receipt('Tama','Tama eats the fish and trots towards Nhung’s shop. Tell Nhung where he is.');}],['Leave',close]]);
+      if(cheapestPierFish())show('Tama','The ginger cat watches the fish in your bag.',[['Give Tama a fish',()=>{const fish=cheapestPierFish();if(!fish){close();return;}takeOne(fishItem(fish));state.quest=2;save();receipt('Tama','Tama eats the fish and trots towards Nhung’s shop. Tell Nhung where he is.');}],['Leave',close]]);
       else receipt('Tama','The ginger cat chirps, but keeps his distance. He seems hungry. Try fishing at the harbour.');
     } else receipt('Ginger cat',state.quest===3?'A neighbourhood cat stretches in the afternoon warmth.':'A ginger cat is warming himself beside the ramen stall.');
   }
 
+  // The pier's fish in the bag (src/world/okinawa/fish.js). The harbour master is offered each kind (the player
+  // chooses, so a taman a friend asked for is never sold by mistake); Tama is given the least (a cat is happy with a mijun, and the player keeps the taman).
+  const pierFishInBag=()=>fishAt('pier').filter(f=>state.inventory.includes(fishItem(f)));
+  const cheapestPierFish=()=>pierFishInBag().sort((a,b)=>a.pierPrice-b.pierPrice)[0]||null;
+  // Ms Ganaha at the Port Terminal's ticket window (src/people/ganaha.js), the island's guide: what she says is read
+  // from the town's own timetable and fares. More questions come with the guide's later batches.
+  function ganaha(detail){
+   const ask=text=>show(GANAHA.name,text,[
+    ['When is the next boat?',()=>ask(nextBoatLine(getMinutes()))],
+    ['What is there on Kitano-jima?',()=>places('kitano','Over the strait? Plenty, for a little island. What do you fancy?')],
+    ['What is there on this island?',()=>places('johansson','Past the main street, you mean? Where shall I start?')],
+    ...(typeof detail?.buy==='function'?[['A return to Kitano-jima, please',()=>{close();detail.buy();}]]:[]),
+    ['Goodbye',close]]);
+   // Her places (src/world/island-guide.js): one button each, then back to the window.
+   const places=(island,lead)=>show(GANAHA.name,lead,[
+    ...islandPlaces(island).map(p=>[p.name,()=>show(GANAHA.name,placeSays(p,state),[['Somewhere else?',()=>places(island,'Where else, love?')],['Thank you',()=>ask('Anything else?')]])]),
+    ['That is all, thank you',()=>ask('Anything else?')]]);
+   ask(ganahaGreeting(getMinutes()));
+  }
   function fishing(){
     show('Harbour fishing','Cast a line. Wait for BITE, then reel in before the fish gets away.',[
       // Waiting for a bite is the time the town gets on without you.
       ['Cast line',()=>{onTime(8);onMove('Cast');let elapsed=0,biteAt=2+Math.random()*2.5,caught=false;show('Harbour fishing','Waiting for a bite…',[
-        ['Reel in',()=>{if(caught)return;caught=true;onMove('Reel');if(elapsed>=biteAt&&elapsed<biteAt+1.35){state.fish++;if(state.fish===2){addItem('Waterlogged page · Kings of Ben…');note('Recovered a Book Three fragment: Kings of Ben…');receipt('A waterlogged page','Only “Kings of Ben…” survives. Nhung will want this dried away from the stove.');return;}addItem('Sea bream');tone(880,.2);receipt('A sea bream!','A fresh sea bream is in your bag. Keep it, give it to Tama, or sell it to the harbour master.');}else receipt('The line is empty','You reeled in too soon. Watch for BITE.');}],
+        ['Reel in',()=>{if(caught)return;caught=true;onMove('Reel');if(elapsed>=biteAt&&elapsed<biteAt+1.35){state.fish++;if(state.fish===2){addItem('Waterlogged page · Kings of Ben…');note('Recovered a Book Three fragment: Kings of Ben…');receipt('A waterlogged page','Only “Kings of Ben…” survives. Nhung will want this dried away from the stove.');return;}const fish=pierCatch(getMinutes(),Math.random()),name=fishItem(fish);addItem(name);tone(880,.2);receipt(`${aFish(fish).replace(/^a/,'A')}!`,`${aFish(fish).replace(/^a/,'A')}, ${withEnglish(fish)}, is in your bag.${fish.note?' '+fish.note:''} Keep it, give it to Tama, or sell it to the harbour master for ¥${fish.pierPrice}.`);}else receipt('The line is empty','You reeled in too soon. Watch for BITE.');}],
         ['Put away the rod',close]
       ]);timer=setInterval(()=>{elapsed+=.05;if(elapsed>=biteAt&&elapsed<biteAt+1.35){body.firstChild.textContent='BITE — REEL IN NOW';body.classList.add('signal');}if(elapsed>=biteAt+1.35){body.classList.remove('signal');receipt('The fish got away','Try again and reel in when BITE appears.');}},50);}],
       ['Leave',close]
@@ -1303,6 +1329,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       case 'city-trip':show('Evening boat to Naha','Thuan is at the terminal in a cardigan over the yellow blouse, with a cloth bag and the ferry tickets already bought. Fifty minutes across to Tomari, a taxi up to Kokusai-dōri, and a table by the window at Hoshizora, on the top floor of the Hotel Ryūsei. The last boat back leaves at half past eleven.',[['Board with Thuan',()=>{close();onTime(CITY_RESTAURANT.crossing);detail?.go?.();}],['Not tonight',close]]);break;
       case 'cat':cat();break;
       case 'fishing':fishing();break;
+      case 'ganaha':ganaha(detail);break;
       case 'arcade':arcade();break;
       case 'sakura-flyer':sakuraFlyer(name);break;
       case 'inspect':inspect(name,detail);break;

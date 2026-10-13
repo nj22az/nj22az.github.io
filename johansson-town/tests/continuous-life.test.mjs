@@ -50,7 +50,7 @@ test('two complete days give every resident work, meals and uninterrupted sleep 
 test('indoor saves follow moved homes and venues, then depart from that same door when the schedule changes',()=>{
  const cases=HOME_OWNERS.flatMap(p=>[[p.name,'home',(sleepHours(p).sleep+5)%1440,p.home,true],[p.name,'home',departureFor(p),p.home,false]]);
  const market=[...MARKET_THRESHOLD];
- for(const [name,place,door] of [['Chin','ramen',RAMEN_DOOR],['Thao','izakaya',IZAKAYA_DOOR],['Reiko','market',market]]){
+ for(const [name,place,door] of [['Nhung','ramen',RAMEN_DOOR],['Thao','izakaya',IZAKAYA_DOOR],['Reiko','market',market]]){
   const profile=RESIDENTS.find(p=>p.name===name),inside=Array.from({length:1440},(_,m)=>m).find(m=>residentPlan(profile,m).place===place),outside=Array.from({length:1440},(_,offset)=>(inside+offset+1)%1440).find(m=>residentPlan(profile,m).place!==place);
   assert.ok(inside!==undefined&&outside!==undefined,name+' has an actual '+place+' visit');cases.push([name,place,inside,door,true],[name,place,outside,door,false]);
  }
@@ -96,9 +96,9 @@ test('every resident sleeps, wakes, eats breakfast and leaves their actual furni
 
 test('residents travelling home cannot be teleported into a visited apartment',()=>{
  const street=new THREE.Group(),parent=new THREE.Group(),p=person('Chin',street);p.g.position.set(0,0,40);
- const homes=createHomeResidents({world:{people:[p]},parent});homes.enter({homeOwner:'Chin'},1300);
+ const homes=createHomeResidents({world:{people:[p]},parent});homes.enter({homeOwner:'Chin'},365); // 06:05, home from the night shift
  assert.equal(p.g.parent,street);assert.equal(p.g.visible,true);
- p.g.position.set(p.profile.home[0],0,p.profile.home[1]);homes.update(1/30,1301);assert.equal(p.g.parent,parent);assert.equal(p.g.userData.roomTransition,true);
+ p.g.position.set(p.profile.home[0],0,p.profile.home[1]);homes.update(1/30,366);assert.equal(p.g.parent,parent);assert.equal(p.g.userData.roomTransition,true);
 });
 test('camera rank cannot remove a visible street resident',()=>{
  const street=new THREE.Group(),player=new THREE.Group(),world={people:RESIDENTS.map(p=>person(p.name,street))},saved={inventory:[]};
