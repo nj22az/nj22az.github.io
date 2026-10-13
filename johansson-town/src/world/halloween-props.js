@@ -21,35 +21,69 @@ function pumpkinFace(s){
 }
 
 /**
+ * The glow round a lit lantern: a soft warm halo (one shared radial texture, drawn additively, no light of its own), so a
+ * lantern reads as lit at a glance, on a phone too. `halo(size)` is a sprite `size` metres across; its opacity is the
+ * glow (setGlow). Built from data, not a canvas, so the film and the tests can build it too.
+ */
+let haloTexture=null;
+function haloMap(){
+ if(haloTexture)return haloTexture;
+ const n=64,data=new Uint8Array(n*n*4);
+ for(let y=0;y<n;y++)for(let x=0;x<n;x++){const dx=(x+.5)/n*2-1,dy=(y+.5)/n*2-1,r=Math.min(1,Math.hypot(dx,dy)),a=Math.pow(1-r,2.2)*(1-r*r*.3),i=(y*n+x)*4;
+  data[i]=255;data[i+1]=Math.round(170+60*(1-r));data[i+2]=Math.round(70+90*Math.pow(1-r,3));data[i+3]=Math.round(255*a);}
+ haloTexture=new THREE.DataTexture(data,n,n,THREE.RGBAFormat);haloTexture.colorSpace=THREE.SRGBColorSpace;haloTexture.magFilter=THREE.LinearFilter;haloTexture.minFilter=THREE.LinearFilter;haloTexture.needsUpdate=true;
+ return haloTexture;
+}
+export function buildHalo(size,opacity=1){
+ const m=new THREE.SpriteMaterial({map:haloMap(),transparent:true,opacity,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
+ const s=new THREE.Sprite(m);s.scale.set(size,size,1);s.name='Lantern glow';s.renderOrder=2;s.userData.glowHalo=true;s.raycast=()=>{};return s;
+}
+
+/** A sphere's vertex colours, bright at its middle and deeper orange to its top and bottom (a bulb behind paper). */
+function glowShade(geo,mid,edge){
+ const p=geo.attributes.position,c=new Float32Array(p.count*3),r=geo.parameters?.radius||1,A=new THREE.Color(),B=new THREE.Color(),C=new THREE.Color();
+ A.setRGB(...mid,THREE.SRGBColorSpace);B.setRGB(...edge,THREE.SRGBColorSpace);
+ for(let i=0;i<p.count;i++){const t=Math.min(1,Math.abs(p.getY(i))/r);C.copy(A).lerp(B,t*t);c[i*3]=C.r;c[i*3+1]=C.g;c[i*3+2]=C.b;}
+ geo.setAttribute('color',new THREE.BufferAttribute(c,3));return geo;
+}
+
+/**
  * A paper pumpkin lantern (the 1990s party-shop kind: orange paper on a wire frame, a bulb inside): six lobes round a
- * vertical axis, a black cap and a green stem, the face cut on one side. Glows with `glow` (0 dark … 1 at 100 V; the
- * paper's colour, in sRGB, follows its light, eased so a dim lantern still reads as a lantern).
- * Its origin is the hanging point at the top of its cord.
+ * vertical axis, a black cap and a green stem, the face cut on one side. Glows with `glow` (0 dark … 1 at 100 V): lit, the
+ * paper is bright orange-yellow, brightest at its middle where the bulb is, the cut face glows pale yellow from inside, and
+ * a soft halo hangs round it; dimmed, all three fall together (eased, so a dim lantern still reads as a lantern); unlit
+ * (0), plain orange paper with a dark cut face, no halo. Its origin is the hanging point at the top of its cord.
  */
 export function buildPumpkinLantern({r=.19}={}){
  const g=new THREE.Group();g.name='Pumpkin lantern';
- const paper=new THREE.MeshBasicMaterial({color:0x8a4a1c}),face=new THREE.MeshBasicMaterial({color:0x3a2410,side:THREE.DoubleSide});
+ const paper=new THREE.MeshBasicMaterial({color:0xffffff,vertexColors:true,toneMapped:false}),face=new THREE.MeshBasicMaterial({color:0x3a2410,side:THREE.DoubleSide,toneMapped:false});
  const cy=-.06-r*.85;
- for(let i=0;i<6;i++){const a=i/6*Math.PI*2,lobe=mesh(g,new THREE.SphereGeometry(r*.62,14,10),paper,Math.cos(a)*r*.42,cy,Math.sin(a)*r*.42);lobe.scale.set(1,1.18,1);}
+ for(let i=0;i<6;i++){const a=i/6*Math.PI*2,lobe=mesh(g,glowShade(new THREE.SphereGeometry(r*.62,14,10),[1,.86,.46],[.96,.46,.08]),paper,Math.cos(a)*r*.42,cy,Math.sin(a)*r*.42);lobe.scale.set(1,1.18,1);}
  mesh(g,new THREE.CylinderGeometry(r*.32,r*.38,r*.16,12),std(0x2a2522),0,cy+r*.78,0,'Pumpkin lantern cap');
  mesh(g,new THREE.CylinderGeometry(r*.06,r*.09,r*.32,8),std(0x4f7a32),0,cy+r*.98,0);
  mesh(g,new THREE.CylinderGeometry(.004,.004,.06,6),std(0x2a2522),0,-.03,0);
  const f=mesh(g,pumpkinFace(r*1.05),face,0,cy-r*.04,r*.99,'Pumpkin lantern face');f.renderOrder=1;
- g.userData.lantern={paper,face,setGlow(v){const k=THREE.MathUtils.clamp(v,0,1);
-  // unlit (k=0): orange paper in the daylight and a dark cut face; lit: the paper and face glow with the bulb
-  if(k===0){paper.color.setRGB(.8,.43,.1,THREE.SRGBColorSpace);face.color.setRGB(.28,.16,.07,THREE.SRGBColorSpace);return;}
-  const l=.22+.78*Math.pow(k,.6);paper.color.setRGB(1*l,.55*l,.1*l,THREE.SRGBColorSpace);face.color.setRGB(1*l,.95*l,.6*l,THREE.SRGBColorSpace);}};
+ const halo=buildHalo(r*5.2,0);halo.position.set(0,cy,0);g.add(halo);
+ const unlit=new THREE.Color().setRGB(.8,.43,.1,THREE.SRGBColorSpace);
+ g.userData.lantern={paper,face,halo,glow:0,setGlow(v){const k=THREE.MathUtils.clamp(v,0,1);this.glow=k;
+  // unlit (k=0): orange paper in the daylight and a dark cut face; lit: the paper (its own bright-middle shading), the face
+  // and the halo glow with the bulb
+  if(k===0){if(paper.vertexColors){paper.vertexColors=false;paper.needsUpdate=true;}paper.color.copy(unlit);face.color.setRGB(.28,.16,.07,THREE.SRGBColorSpace);halo.visible=false;return;}
+  if(!paper.vertexColors){paper.vertexColors=true;paper.needsUpdate=true;}
+  const l=.3+.7*Math.pow(k,.6);paper.color.setScalar(l);face.color.setRGB(1*Math.min(1,l*1.15),.97*Math.min(1,l*1.15),.72*Math.min(1,l*1.15),THREE.SRGBColorSpace);
+  halo.visible=true;halo.material.opacity=.62*Math.pow(k,.85);}};
  g.userData.lantern.setGlow(0);
  return g;
 }
 
-/** A plastic jack-o'-lantern (a sweets pail, lit inside by a little torch): solid, ribbed, a carved face. Origin on the ground. */
+/** A plastic jack-o'-lantern (a sweets pail, lit inside by a little torch): solid, ribbed, a carved face, a small glow round it. Origin on the ground. */
 export function buildJackOLantern({r=.16}={}){
  const g=new THREE.Group();g.name='Jack-o’-lantern';
- const skin=new THREE.MeshBasicMaterial({color:0xff8a24}),face=new THREE.MeshBasicMaterial({color:0xfff4b0,side:THREE.DoubleSide});   // lit from inside: bright skin, a glowing face
- for(let i=0;i<7;i++){const a=i/7*Math.PI*2,lobe=mesh(g,new THREE.SphereGeometry(r*.6,14,10),skin,Math.cos(a)*r*.42,r*.82,Math.sin(a)*r*.42);lobe.scale.set(1,.95,1);}
+ const skin=new THREE.MeshBasicMaterial({color:0xffffff,vertexColors:true,toneMapped:false}),face=new THREE.MeshBasicMaterial({color:0xfff4b0,side:THREE.DoubleSide,toneMapped:false});   // lit from inside: bright skin, a glowing face
+ for(let i=0;i<7;i++){const a=i/7*Math.PI*2,lobe=mesh(g,glowShade(new THREE.SphereGeometry(r*.6,14,10),[1,.68,.24],[.93,.42,.08]),skin,Math.cos(a)*r*.42,r*.82,Math.sin(a)*r*.42);lobe.scale.set(1,.95,1);}
  mesh(g,new THREE.CylinderGeometry(r*.07,r*.1,r*.35,8),std(0x4f7a32),0,r*1.62,0);
  mesh(g,pumpkinFace(r*1.35),face,0,r*.82,r*.99,'Jack-o’-lantern face');
+ const halo=buildHalo(r*4.2,.42);halo.position.set(0,r*.85,0);g.add(halo);
  return g;
 }
 

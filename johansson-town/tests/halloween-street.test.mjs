@@ -12,7 +12,8 @@ installDOM();
 const town=()=>{const world={group:new THREE.Group(),colliders:[],hourly:[]};
  const m=createVendingMachine({});m.position.set(HALLOWEEN.machine.x,0,HALLOWEEN.machine.z);m.rotation.y=Math.PI/2;world.group.add(m);
  const h=buildHalloween(world,{});world.group.updateMatrixWorld(true);return {world,h,machine:m};};
-const box=o=>{o.updateWorldMatrix(true,true);return new THREE.Box3().setFromObject(o);};
+// the meshes' box (a lantern's glow halo is light, not a thing: it may spread past the lantern)
+const box=o=>{o.updateWorldMatrix(true,true);const b=new THREE.Box3();o.traverse(x=>{if(x.isMesh)b.expandByObject(x);});return b;};
 
 test('the electrics: the start surge through the thin, half-coiled reel dims every lantern and drops the coin relay',()=>{
  assert.ok(Math.abs(cordResistance()-1.376)<.001,'30 m of 0.75 mm², there and back: 1.38 Ω');
@@ -100,4 +101,24 @@ test('the costumes fit the body that wears them: the pumpkin suit, the ghost she
   }
   a.dispose();
  }
+});
+
+test('the lanterns read as lit at night: bright paper brightest at the middle, a lit face, a halo, and warm pools that dim together',()=>{
+ const {h}=town();
+ const L=h.lanterns[0].userData.lantern,pools=h.group.getObjectByName('Lantern light').children;
+ assert.ok(pools.length>0&&pools.length<=4,'a few shared lights, not one a lantern: '+pools.length);
+ const look=g=>{h.stage({glow:g});const c=L.paper.color,f=L.face.color;return {paper:c.r,face:f.r+f.g+f.b,shaded:L.paper.vertexColors,halo:L.halo.visible?L.halo.material.opacity:0,pool:pools[0].visible?pools[0].intensity:0};};
+ const off=look(0),groan=look(.12),run=look(.7),fixed=look(1);
+ assert.equal(off.halo,0,'unlit: no halo');assert.equal(off.pool,0,'unlit: no pool of light');
+ assert.ok(!off.shaded&&run.shaded,'unlit: plain orange paper; lit: shaded by its bulb');
+ assert.ok(run.halo>.4&&run.pool>5,'lit at 90 V: a halo and a warm pool ('+run.halo.toFixed(2)+', '+run.pool.toFixed(1)+')');
+ assert.ok(run.face>2.2,'the carved face glows pale yellow from inside');
+ assert.ok(groan.paper<run.paper*.7&&groan.halo<run.halo*.4&&groan.pool<run.pool*.2,'the groan dims the paper, the halo and the pools together');
+ assert.ok(fixed.paper>=run.paper&&fixed.halo>run.halo&&fixed.pool>run.pool,'after the fix: steady and brightest');
+ h.stage({glow:.7});
+ const lobe=h.lanterns[0].children.find(x=>x.isMesh&&x.geometry.attributes.color),col=lobe.geometry.attributes.color,pos=lobe.geometry.attributes.position;
+ let mid=0,top=0;for(let i=0;i<pos.count;i++){const g=col.getY(i);if(Math.abs(pos.getY(i))<.01)mid=Math.max(mid,g);if(pos.getY(i)>lobe.geometry.parameters.radius*.95)top=Math.max(top,g);}
+ assert.ok(mid>top*1.4,'brightest at the middle, where the bulb is');
+ assert.ok(L.paper.toneMapped===false&&L.halo.material.blending===THREE.AdditiveBlending,'the glow is not toned down, and the halo adds light');
+ h.stage({show:false});assert.ok(pools.every(p=>!p.visible),'put away: no light left on');
 });

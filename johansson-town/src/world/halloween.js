@@ -36,6 +36,8 @@ export const HALLOWEEN=Object.freeze({
  rcd:Object.freeze({at:Object.freeze([SAKURA_BOX.maxX+.01,1.2,SAKURA_BOX.minZ+.16]),why:'After the fix: the lanterns’ own outdoor socket, with an RCD (earth-leakage breaker) and its test button, put in by Tetsuo.'}),
  reel:Object.freeze({at:Object.freeze([SAKURA_BOX.maxX+.42,0,SAKURA_BOX.minZ+.72]),why:'Kōji’s cord reel from his boat shed, half coiled: the lanterns and the machine both plugged into it.'}),
  nobori:Object.freeze([SAKURA_BOX.maxX+.95,SAKURA_BOX.minZ+.45]),
+ pools:Object.freeze([-32.4,-29.1,-25.6,-22.1]),   // the four shared lights of the lanterns' warm pools (z along the string)
+ poolIntensity:9,
  seance:Object.freeze({centre:Object.freeze([-5.75,-32.6]),radius:.72,candles:8}),
 });
 
@@ -109,6 +111,10 @@ export function buildHalloween(world,{shadows=false}={}){
  const string=cable(strPts,.004,stringMat);string.name='Lantern string';group.add(string);
  const lanterns=[];
  for(let i=0;i<HALLOWEEN_ELECTRICS.lanterns;i++){const z=-33.12+i*1.0,[x,y]=sagAt(z);const l=add(buildPumpkinLantern(),x,y,z,Math.PI/2);l.name='Pumpkin lantern '+(i+1);lanterns.push(l);}
+ // ---- where their light falls: a warm pool on the pavement, the shutter and the awning under the string. Four shared
+ // lights along it (not one a lantern: a phone lights four cheaply), each following the lanterns' glow; none at dusk.
+ const pools=new THREE.Group();pools.name='Lantern light';group.add(pools);
+ for(const z of HALLOWEEN.pools){const [x,y]=sagAt(z),L=new THREE.PointLight(0xffa24a,0,4.5,2);L.position.set(x-.15,y-.45,z);L.name='Lantern pool';L.castShadow=false;pools.add(L);}
  // ---- the cardboard ghosts on the shutter, at a child's eye height
  for(const [z,y,s] of [[-30.45,1.32,.66],[-28.55,1.45,.6],[-24.9,1.3,.66],[-22.9,1.42,.6]]){const o=add(buildObake({h:s,flat:true}),S.maxX+.2,y,z,Math.PI/2);o.name='Cardboard ghost';}
  // ---- the sockets, the reel, the cords
@@ -167,6 +173,7 @@ export function buildHalloween(world,{shadows=false}={}){
  const apply=()=>{
   group.visible=!!state.show;
   for(const l of lanterns)l.userData.lantern.setGlow(state.glow);
+ const g=THREE.MathUtils.clamp(state.glow,0,1);for(const L of pools.children){L.intensity=H.poolIntensity*Math.pow(g,1.2);L.visible=g>0&&!!state.show;}
   reelWay.visible=state.cable==='reel';reel.visible=state.cable==='reel';fixedWay.visible=state.cable==='fixed';rcd.visible=state.cable==='fixed';
   for(const p of mist.children)p.material.opacity=THREE.MathUtils.clamp(state.mist,0,1);mist.visible=state.mist>0;
   ring.visible=!!state.pumpkins;deco.visible=!!state.deco;peek.visible=!!state.peek;can.visible=!!state.can;candles.visible=!!state.candles;salt.visible=!!state.salt;
