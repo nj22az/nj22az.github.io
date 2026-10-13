@@ -229,10 +229,14 @@ record of where she stands. When the CAD comes:
 3. Tidy the programme: D6 and D7 are listed open although the machinery arrangement, the piping diagrams and the safety
    plan are drawn (D9, D10, sheet 6).
 
-### 9.2 Johansson Automation: an integrated automation system like a Kongsberg K-Chief (after 9.1)
+### 9.2 Johansson Automation: an integrated automation system of the K-Chief kind, Johansson-branded (after 9.1)
 
-A Johansson Marine product like the rest (`johansson-marine.js`: a model, a maker's plate, its numbers the ship's own),
-reading the one plant (`ferry-plant.js`) the console already reads, so an alarm on the screen is the alarm on the
+**It is a Johansson product** (the creator, 2026-10-13: "Automation system should also be Johansson Brand"; CLAUDE.md:
+Johansson is this universe's Acme): a Johansson Marine automation line in the catalogue (`johansson-marine.js`) with
+its own model (a "JA-" number, the works and the year on the maker's plate), the Johansson wordmark and livery on the
+operator station, the repeater, the extension panels and every screen, and its own manual pages in the design book.
+No other maker's name appears anywhere, Kongsberg's included: it is what such a system is, in Johansson's livery. It
+reads the one plant (`ferry-plant.js`) the console already reads, so an alarm on the screen is the alarm on the
 matrix and the state in the game. Built in small batches, each checked in the game:
 - **Operator station** in the control booth (a screen and keyboard on the console) and a **repeater on the bridge**;
   an **extension alarm panel** in the chief's cabin and the mess for unmanned periods (UMS): the alarm goes to the
