@@ -94,6 +94,13 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
+    "title": "Bookshelf",
+    "organisation": "Town Services",
+    "text": "Sea charts of the Ryūkyū arc. A Swedish–Japanese dictionary with a cracked spine. Three Wallander paperbacks. The town budget for 1997, with coffee rings.",
+    "source": "notice:Bookshelf"
+  },
+  {
+    "type": "Notice",
     "title": "Cargo crossing",
     "organisation": "Town Services",
     "text": "The same ferry carries passengers and occasional island deliveries. Drivers reverse their cars up its lowered ramp, stay aboard for the crossing, and drive off onto the cargo court. Some sailings carry no cars.",
@@ -147,13 +154,6 @@ export const TOWN_PAPERS=[
     "organisation": "Community Hall",
     "text": "Item 3: the power house's second diesel set to be overhauled before typhoon season; the old barber's shop to be let to the post office. Item 5: the ferry company asks for a longer ramp so the new cargo trucks can board. Item 7: Mrs Sato's complaint about the gulls, again. Item 9: the sewage works on Kitano-jima to be inspected by the prefecture in November.",
     "source": "notice:Town assembly minutes, 1997"
-  },
-  {
-    "type": "Notice",
-    "title": "Bookshelf",
-    "organisation": "Community Hall",
-    "text": "Sea charts of the Ryūkyū arc. A Swedish–Japanese dictionary with a cracked spine. Three Wallander paperbacks. The town budget for 1997, with coffee rings.",
-    "source": "notice:Bookshelf"
   },
   {
     "type": "Notice",

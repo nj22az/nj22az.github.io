@@ -6,6 +6,8 @@ import {AIRPORT_ISLAND} from './airport-island.js';
 import {airportWorld,airportSurface} from './airport-ground.js';
 import {SEA_LEVEL} from './ocean.js';
 import {KITANO_HAMLET,hamletGate} from './kitano-hamlet-layout.js';
+import {buildHouseExterior,houseLocal,HOUSE_PORCH} from './johansson-house-build.js';
+import {HOUSE_OPENINGS} from './johansson-house.js';
 import {householdAtHome,residentsLine} from '../people/island-households.js';
 
 /**
@@ -13,7 +15,8 @@ import {householdAtHome,residentsLine} from '../people/island-households.js';
  * each plot's slab and walls, its gate with the shisa and the nameplate, and the house at the back: Johansson's red-tile
  * house (his rooms inside are the mayor's home, interiors/town-hall.js, so his futon, post and television come with him),
  * Jun's concrete house, and the red-tile house to let. The walls' and houses' colliders are turned into the world with
- * the island. Each gate is a site, entered the way Kitahama's are (island-homes.js).
+ * the island. Each gate is a site, entered the way Kitahama's are (island-homes.js), except Johansson's: his house is
+ * the creator's (johansson-house.js), his gate opens onto his yard, and his front door is the site.
  */
 const SAND=0xe6dcc3,CORAL_SAND=0xefe6d2;
 export function buildKitanoHamlet(world,options){
@@ -31,7 +34,7 @@ export function buildKitanoHamlet(world,options){
   const W=p.maxX-p.minX,D=p.maxZ-p.minZ,hw=W/2,hd=D/2,ry=p.gate==='north'?0:Math.PI,seed=30+i;
   const household=householdAtHome(p.id),toLet=!household;
   // The yard's slab, then everything else in the plot's frame on top of it, the gate at local +z.
-  kit.block(p.minX,p.maxX,.6,H.yardTop,p.minZ,p.maxZ,SAND);
+  kit.block(p.minX,p.maxX,p.base??.6,H.yardTop,p.minZ,p.maxZ,SAND);
   kit.at((p.minX+p.maxX)/2,(p.minZ+p.maxZ)/2,ry,()=>{
    const gate=[-.95,.95],wall=p.wall==='block'?(x0,z0,x1,z1,o)=>blockWall(kit,x0,z0,x1,z1,o):(x0,z0,x1,z1,o)=>coralWall(kit,x0,z0,x1,z1,o);
    solid(wall(-hw,hd,hw,hd,{gaps:[gate],seed:50+seed,flowers:i%2===0}));
@@ -41,7 +44,8 @@ export function buildKitanoHamlet(world,options){
    for(const gx of gate)shisa(kit,gx,1.53,hd,0,.7);
    kit.sign(nameplate(p.family,p.romaji),.42,.21,gate[1]+.45,1.05,hd+.24,{name:'nameplate '+p.id});
    hibiscus(kit,gate[0]-1.1,hd-.9,{seed:90+seed});
-   if(p.kind==='red-tile'){
+   if(p.kind==='johansson-house')johanssonYard(kit,solid,p,hw,hd,seed);
+   else if(p.kind==='red-tile'){
     solid(hinpun(kit,0,hd-2,2.6));
     const d=6.2,w=7.4,houseZ=-hd+.3+d/2;
     kit.at(0,houseZ,0,()=>solid(redTileHouse(kit,{w,d,seed})));
@@ -49,7 +53,6 @@ export function buildKitanoHamlet(world,options){
     banana(kit,hw-.9,-hd+.9,{seed});
     potPlant(kit,1.6,hd-2.2,{seed});potPlant(kit,-1.8,hd-2.3,{seed:seed+3});
     solid(planterBoxes(kit,2.2,hd-.65,{count:3,seed}));
-    if(p.id==='kitano-1'){gajumaru(kit,hw-1.6,hd-2.6,{seed:seed+7,size:.8});bicycle(kit,-2.6,hd-1.3,{ry:.3,colour:0x2f6f74});}
    }else{
     const d=6.2,w=6.8,houseZ=-hd+.35+d/2,houseX=-hw+.35+w/2;
     kit.at(houseX,houseZ,0,()=>solid(concreteHouse(kit,{w,d,seed})));
@@ -58,8 +61,8 @@ export function buildKitanoHamlet(world,options){
     bicycle(kit,2.2,hd-1.2,{ry:.2,colour:0xb03a3a});
    }
   },H.yardTop);
-  // The gate as a site: Johansson's is the mayor's home (its rooms come with him); the others are family homes.
-  const {door,inward}=hamletGate(p),[wx,wz]=airportWorld(door[0],door[1]),y=airportSurface(wx,wz)?.y??SEA_LEVEL+H.laneTop,facing=inward+A.yaw;
+  // The gate as a site: Johansson's front door is the mayor's home (its rooms come with him); the others are family homes.
+  const {door,inward}=p.kind==='johansson-house'?frontDoor(p):hamletGate(p),[wx,wz]=airportWorld(door[0],door[1]),y=airportSurface(wx,wz)?.y??SEA_LEVEL+H.laneTop,facing=inward+A.yaw;
   const title=p.id==='kitano-1'?'Johansson & Thuan’s House':toLet?'House to let':household.members.map(m=>m.name).join(' & ')+'’s home';
   const site={id:p.id==='kitano-1'?'mayor-home':'home-'+p.id,title,jp:p.family,sub:'KITANO-JIMA',color:0xd4c6ad,accent:'#776953',
    line:household?.address||'Kitano hamlet, by the pier',door:[wx,y,wz],exitPosition:[wx,y,wz],approachPosition:[wx,y,wz],entryFacing:facing,x:wx,z:wz,opens:'00:00',plot:p.id};
@@ -67,7 +70,7 @@ export function buildKitanoHamlet(world,options){
   options.sites.push(site);
   const anchor=new THREE.Object3D();anchor.name='kitano gate:'+p.id;anchor.position.set(wx,y+1.3,wz);world.group.add(anchor);
   options.register?.(anchor,p.id==='kitano-1'?'Go home':(toLet?'Look round the ':'Visit ')+title,()=>options.enter(site));
-  const plate=new THREE.Object3D();plate.name='kitano nameplate:'+p.id;const [px,pz]=airportWorld(door[0]+(p.gate==='north'?1.3:-1.3),door[1]-(p.gate==='north'?.4:-.4));plate.position.set(px,y+1,pz);world.group.add(plate);
+  const plate=new THREE.Object3D();plate.name='kitano nameplate:'+p.id;const gateAt=hamletGate(p).door,[px,pz]=airportWorld(gateAt[0]+(p.gate==='north'?1.3:-1.3),gateAt[1]-(p.gate==='north'?.4:-.4));plate.position.set(px,y+1,pz);world.group.add(plate);
   options.register?.(plate,`Read the ${p.romaji} nameplate`,()=>options.onAction?.('read',`${p.family} · the ${p.romaji} house`,[KITANO_PLATES[p.id],residentsLine(p.id)].filter(Boolean).join('\n\n')));
  }
  // Its own group under the island's: the kit's finish writes walk levels and a power network on the group it is
@@ -80,8 +83,47 @@ export function buildKitanoHamlet(world,options){
  world.colliders.push(...colliders);
  return {colliders};
 }
+/**
+ * Johansson's yard: his house from the creator's drawings, its front to the gate and 5.5 m in from it (the plot's
+ * `front`), the hinpun between them, a path of coral flags round it to the front step, the gajumaru, his bicycle, the
+ * fukugi windbreak along the seaward wall and the back, and the paved terrace outside the back door (D-TERRACE).
+ * Built in the plot's frame, the gate at +z.
+ */
+function johanssonYard(kit,solid,p,hw,hd,seed){
+ const at=p.front-5;
+ kit.at(0,at,0,()=>buildHouseExterior(kit,solid));
+ // A drawn point of the house in the plot's frame.
+ const plot=(x,y)=>{const [lx,,lz]=houseLocal(x,y,0);return [lx,lz+at];};
+ solid(hinpun(kit,0,hd-2.2,2.6));
+ // The path: flags from the gate, round the hinpun on its west side, to the step.
+ const [px,pz]=plot((HOUSE_PORCH.x[0]+HOUSE_PORCH.x[1])/2,HOUSE_PORCH.y[0]);
+ for(const [x,z] of [[0,hd-.6],[-.5,hd-1.3],[-1.9,hd-2.2],[-1.6,hd-3.1],[-.8,pz+.9],[px,pz+.35]])kit.box(.62,.03,.5,x,.015,z,0xe3dccb);
+ // The gajumaru by the front wall, his bicycle by the step, pots either side of the door.
+ gajumaru(kit,-(hw-2.2),hd-2.4,{seed:seed+7,size:.85});
+ bicycle(kit,px-1.9,pz+.5,{ry:.25,colour:0x2f6f74});
+ potPlant(kit,px-1.25,pz+.2,{seed});potPlant(kit,px+1.3,pz+.2,{seed:seed+3});
+ solid(planterBoxes(kit,-(hw-1.6),hd-.65,{count:3,seed}));
+ // The windbreak: fukugi along the seaward wall (the plot's +x, past the stair house) and along the back.
+ for(let z=-hd+1.1;z<hd-4.6;z+=2.3)solid(fukugi(kit,hw-.55,z,{h:5.4+((z*7)%3+3)%3*.4,seed:100+seed*10+Math.round(z*3)}));
+ for(let x=-hw+1.3;x<hw-1.5;x+=2.6)solid(fukugi(kit,x,-hd+.55,{h:5.2+((x*5)%3+3)%3*.4,seed:200+seed*10+Math.round(x*3)}));
+ banana(kit,-(hw-.9),-hd+2.2,{seed});
+ // The terrace behind the back door: coral flags, a bench along the house wall, two pots.
+ const T=HOUSE_OPENINGS.find(o=>o.id==='D-TERRACE'),[t0x,t0z]=plot(T.from-1.2,10),[t1x,t1z]=plot(T.to+1.8,11.9);
+ kit.block(Math.min(t0x,t1x),Math.max(t0x,t1x),0,.03,Math.min(t0z,t1z),Math.max(t0z,t1z),0xd9d1bf);
+ const [bx,bz]=plot(T.to+1.15,10.45);
+ kit.box(1.4,.06,.38,bx,.44,bz,0x8a6641);for(const sx of [-.6,.6])kit.box(.08,.42,.34,bx+sx,.21,bz,0x5d4431);
+ solid(kit.rect(bx-.72,bx+.72,bz-.2,bz+.2,.5,'johansson-terrace-bench'));
+ potPlant(kit,t0x-.3,(t0z+t1z)/2,{seed:seed+11});hibiscus(kit,Math.max(t0x,t1x)+.4,t1z+.2,{seed:seed+13,flower:0xe8b12c});
+}
+/** Johansson's front door as the site's door: on the step, 0.4 m out, facing in (island frame, as hamletGate). */
+function frontDoor(p){
+ const o=HOUSE_OPENINGS.find(o=>o.id==='D-ENTRY'),[lx,,lz]=houseLocal((o.from+o.to)/2,-.4,0);
+ const cx=(p.minX+p.maxX)/2,cz=(p.minZ+p.maxZ)/2,x=lx,z=lz+p.front-5;
+ // The plot is turned half round (the gate on its lane side): a plot point (x, z) is the island's (cx − x, cz − z).
+ return {door:[cx-x,cz-z],inward:Math.PI};
+}
 const KITANO_PLATES=Object.freeze({
- 'kitano-1':'Johansson and Thuan’s house: the red-tile house at the end of the lane, its back to the sea and its front to the pier, so he hears the Minato Maru’s whistle before he sees her. He moved out here from his rooms in the town hall’s east wing; the office is still in Minato, a crossing away, and the futon, the television and the letter box came with him. Thuan, his wife, keeps Sakura Shōten in town on weekdays from her room at 1 Kitahama and comes home on the Friday boat; her futon lies beside his.',
+ 'kitano-1':'Johansson and Thuan’s house: the big concrete house at the end of the lane under a red-tile roof, two floors and a basement, its front to the pier, so he hears the Minato Maru’s whistle before he sees her. He moved out here from his rooms in the town hall’s east wing; the office is still in Minato, a crossing away, and the futon, the television and the letter box came with him. Thuan, his wife, keeps Sakura Shōten in town on weekdays from her room at 1 Kitahama and comes home on the Friday boat; her futon lies beside his.',
  'kitano-2':'The Shiroma house, to let: concrete, after the typhoon of 1987 took the roof off the old one; the Shiromas moved to their daughter’s in Naha. Enquire at the town hall.',
  'kitano-3':'The Chinen house: the old red-tile house, Tetsuo’s mother’s. Her son mends radios in Minato and comes over on the boat; the mayor and his wife are at the end of the lane.',
 });

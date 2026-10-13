@@ -4,7 +4,7 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {buildMayorHome,buildMayorOffice} from '../src/world/interiors/town-hall.js';
 import {createHomeCustomization,HOME_CUSTOMIZATION_PLACEMENT} from '../src/world/interiors/home-customization.js';
-import {createRoomWalk} from '../src/people/room-walk.js';
+import {createNavigation} from '../src/people/navmesh.js';
 import {circleHitsRect} from '../physics.js';
 import {restoreHomeDecor,setHomeDecor,unlockedHomeKeepsakes} from '../src/progression/home-decor.js';
 import {createActivities} from '../activities.js';
@@ -32,37 +32,39 @@ test('physical decoration changes only the player room and keeps clear of the do
  const decor=createHomeCustomization({room,state,reg:(o,label,fn)=>hits.push({o,label,fn}),menu:(...a)=>menus.push(a),close(){},save(){saves++;}});
  hits[0].fn();menus.at(-1)[2].find(([label])=>label==='Wall colour')[1]();menus.at(-1)[2].find(([label])=>label==='Garden green')[1]();
  assert.equal(saves,1);assert.equal(decor.snapshot().wall,'garden');
- const doorwayWall=room.getObjectByName('Mayor’s home').children.find(o=>o.isMesh&&o.position.z>2.8&&o.position.y>2.1);
- assert.ok(doorwayWall,'There is a wall over the exit');assert.equal(doorwayWall.material.color.getHex(),0xdde5cb,'The selected colour includes the wall over the doorway');
+ const linings=[];room.getObjectByName('Mayor’s home').traverse(o=>{if(o.isMesh&&o.name==='Upper wall')linings.push(o);});
+ assert.ok(linings.length>=6,'The living room’s walls are lined over the dado');
+ for(const m of linings)assert.equal(m.material.color.getHex(),0xdde5cb,'The selected colour is on every wall of the living room, over the window too');
  const after=[];office.traverse(o=>{if(o.isMesh)after.push(o.material.color.getHex());});assert.deepEqual(after,officeColours,'Shared shell materials are never recoloured');
  assert.equal(room.getObjectByName('Tama clay cat').visible,false);
  state.quest=3;assert.equal(setHomeDecor(state,'keepsake','cat'),true);decor.snapshot();assert.equal(room.getObjectByName('Tama clay cat').visible,true);assert.equal(room.getObjectByName('Swedish harbour postcard').visible,false);
  const shelf=new THREE.Box3().setFromObject(room.getObjectByName('Earned keepsake shelf'));
- assert.ok(shelf.min.x>3&&shelf.max.x<3.3&&shelf.min.z>.4&&shelf.max.z<1.39,'Every keepsake stays inside the main room, between the east window and the bathroom wall');
+ assert.ok(shelf.min.x>-5.8&&shelf.max.x<-5.3&&shelf.min.z>3.3&&shelf.max.z<4.3,'Every keepsake stays on the living room’s west wall, between the window’s corner and the photograph');
 });
 
-test('the keepsake display faces the main room and its control can be walked to without entering the bathroom',()=>{
- installDOM();const room=new THREE.Group(),colliders=[],hits=[];
- const layout=buildMayorHome({room,reg(){},action(){},collider:(x,z,w,d)=>colliders.push({x,z,w,d})});
+test('the keepsake display faces the living room and its control can be walked to from the front door',()=>{
+ installDOM();const room=new THREE.Group(),all=[],hits=[];
+ const layout=buildMayorHome({room,reg(){},action(){},collider:(x,z,w,d,height=2.8,minY=0)=>all.push({x,z,w,d,height,minY})});
+ // The ground floor's walls and furniture: the storeys over and under it are not in the way.
+ const colliders=all.filter(c=>c.minY+c.height>.01&&c.minY<2);
  createHomeCustomization({room,state:{homeDecor:restoreHomeDecor()},reg:(o,label)=>hits.push({o,label}),menu(){},close(){},save(){}});
  room.updateMatrixWorld(true);
  const anchor=hits.find(h=>h.label==='Decorate your home').o;
  assert.deepEqual(anchor.position.toArray(),HOME_CUSTOMIZATION_PLACEMENT.anchor);
- const bounds=layout.bounds,blocked=(x,z,r=.32)=>x<bounds.minX+r||x>bounds.maxX-r||z<bounds.minZ+r||z>bounds.maxZ-r||colliders.some(c=>circleHitsRect(x,z,r,c));
+ // The player's own radius (game.js PLAYER_RADIUS): the house's doorways are the drawings' 0.8 m.
+ const bounds=layout.bounds,blocked=(x,z,r=.28)=>x<bounds.minX+r||x>bounds.maxX-r||z<bounds.minZ+r||z>bounds.maxZ-r||colliders.some(c=>circleHitsRect(x,z,r,c));
  assert.equal(blocked(anchor.position.x,anchor.position.z),false,'A full player body fits at the decoration control');
- const person={g:new THREE.Group(),profile:{name:'Johansson',age:35}},walker=createRoomWalk(blocked,{bounds,radius:.32});
- person.g.position.set(...layout.spawn);
- for(const target of [[0,0,.85],[anchor.position.x,0,anchor.position.z],layout.spawn]){
-  let arrived=false;
-  for(let frame=0;frame<3600&&!arrived;frame++){
-   const before=person.g.position.clone();arrived=walker.move(person,target,1/60);
-   assert.ok(person.g.position.distanceTo(before)<=1/60+1e-7,'Movement is continuous, without a clearance teleport');
-   assert.equal(blocked(person.g.position.x,person.g.position.z),false,'The actual doorway-to-control path clears all room furniture and partitions');
-   assert.ok(person.g.position.x<1.3||person.g.position.z<1.39,'The route remains on the main-room side of the wet-room wall');
-  }
-  assert.ok(arrived,'Reach the decoration control and return through the normal doorway');
+ // Walked as he walks it, at his own radius: the route from the front door to the control and back is clear all the way
+ // (every 5 cm of it), through the drawings' 0.8 m doorways, and keeps out of the east rooms.
+ const nav=createNavigation(blocked,{step:.1,heightAt:()=>0,bounds,radius:.28});
+ const door=[layout.spawn[0],layout.spawn[2]],control=[anchor.position.x,anchor.position.z];
+ for(const [from,to] of [[door,control],[control,door]]){
+  const route=[from,...nav.path({x:from[0],z:from[1]},{x:to[0],z:to[1]})];
+  assert.ok(route.length>2&&Math.hypot(route.at(-1)[0]-to[0],route.at(-1)[1]-to[1])<.15,'Reach the decoration control and return through the normal doorways');
+  for(let i=1;i<route.length;i++){const [ax,az]=route[i-1],[bx,bz]=route[i],n=Math.ceil(Math.hypot(bx-ax,bz-az)/.05);
+   for(let k=0;k<=n;k++){const x=ax+(bx-ax)*k/n,z=az+(bz-az)*k/n;assert.equal(blocked(x,z),false,'The doorway-to-control path clears all room furniture and partitions');assert.ok(x<1.3,'The route keeps out of the sewing studio and the WC');}}
  }
- const ray=new THREE.Raycaster(new THREE.Vector3(2.4,1.44,.85),new THREE.Vector3(1,0,0));
+ const ray=new THREE.Raycaster(new THREE.Vector3(anchor.position.x,1.44,anchor.position.z),new THREE.Vector3(-1,0,0));
  const visible=ray.intersectObjects(room.children,true).filter(h=>h.object.visible&&h.object.isMesh);
  assert.equal(visible[0]?.object.name,'Postcard sea','The postcard artwork is in front of its frame and faces the accessible main room');
 });

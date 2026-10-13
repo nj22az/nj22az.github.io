@@ -1,11 +1,11 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {HOME_WALLS,HOME_TEXTILES,restoreHomeDecor,setHomeDecor,unlockedHomeKeepsakes} from '../../progression/home-decor.js';
 
-// Main-room east wall, between the window and the bathroom partition. The display
-// faces west into the room, and its control stays on the accessible side of the wall.
+// The living room's west wall in Johansson's house on Kitano-jima (interiors/johansson-house-interior.js), south of the
+// photograph: the display faces east into the room, and its control stays on the open floor in front of it.
 export const HOME_CUSTOMIZATION_PLACEMENT=Object.freeze({
- shelf:Object.freeze([3.13,1.3,.85]),yaw:Math.PI/2,
- anchor:Object.freeze([2.65,1.3,.85]),
+ shelf:Object.freeze([-5.67,1.3,3.8]),yaw:-Math.PI/2,
+ anchor:Object.freeze([-5.19,1.3,3.8]),
 });
 
 /**
@@ -21,7 +21,8 @@ export function createHomeCustomization({room,state,menu=null,save=()=>{},close=
   const targets=o.name==='Upper wall'?walls:['Zabuton','Quilt'].includes(o.name)?textiles:null;
   if(targets){o.material=o.material.clone();targets.push(o);}
  });
- const shelf=new THREE.Group();shelf.name='Earned keepsake shelf';shelf.position.set(...HOME_CUSTOMIZATION_PLACEMENT.shelf);shelf.rotation.y=HOME_CUSTOMIZATION_PLACEMENT.yaw;group.add(shelf);
+ // On the ground floor's own group where the house has storeys, so it is put away with that floor.
+ const shelf=new THREE.Group();shelf.name='Earned keepsake shelf';shelf.position.set(...HOME_CUSTOMIZATION_PLACEMENT.shelf);shelf.rotation.y=HOME_CUSTOMIZATION_PLACEMENT.yaw;(group.getObjectByName('House G0')||group).add(shelf);
  const part=(size,pos,colour,name)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),new THREE.MeshStandardMaterial({color:colour,roughness:.9}));m.position.set(...pos);m.name=name;shelf.add(m);return m;};
  part([.8,.05,.24],[0,0,0],0x8a6a4a,'Keepsake shelf board');
  const objects={};

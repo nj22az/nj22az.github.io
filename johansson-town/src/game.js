@@ -1128,7 +1128,7 @@ async function enterRoom(s){replayInterrupted();lowerPocket();spawnScene?.cancel
  }
  parkSeat=null;seated=false;activities.close();if(!photoStudio?.active&&!photoReturning)activities.visit(s.id);
  const streetYaw=yaw,streetPitch=pitch;
- current=s;roomShell(s);addRoomProps(s);content=buildBusinessContent({site:s,room,register:reg,onAction:activities.action,onInspect:item=>inspector.open(item)});room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});indoorCeilings=createIndoorCeilings(room);const spawn=activeRoomLayout?.spawn||[0,0,4.3];
+ current=s;roomShell(s);addRoomProps(s);content=buildBusinessContent({site:s,room,register:reg,onAction:activities.action,onInspect:item=>inspector.open(item)});if(!activeRoomLayout?.storeys)room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});activeRoomLayout?.follow?.({x:0,y:activeRoomLayout.spawn?.[1]??0,z:0});indoorCeilings=createIndoorCeilings(room,{from:activeRoomLayout?.ceilingsFrom});const spawn=activeRoomLayout?.spawn||[0,0,4.3];
  player.position.set(...spawn);
  // With the camera behind him, start a step inside so it is not up against the door.
  if(thirdPerson){const inward=activeRoomLayout?.yaw??0,dx=-Math.sin(inward),dz=-Math.cos(inward);for(let d=.1;d<=1.2;d+=.1){const x=spawn[0]+dx*d,z=(spawn[2]??0)+dz*d;if(cameraBlocked(x,z,player.position.y+.9,.35))break;player.position.x=x;player.position.z=z;}}
@@ -1183,13 +1183,20 @@ function doInteract(){if(replayPlayer||pocket?.raised)return;spawnScene?.cancel(
 // keeps people on the pier off her hull; only what moves with her (the cars on her deck).
 function environmentBlocked(x,z,r=PLAYER_RADIUS,who='player',deckY=null){const aboard=Number.isFinite(deckY)&&!current;
  const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):!aboard&&townBoundsBlocked(x,z,r);if(bounds)return true;
- const y=current?0:aboard?deckY:groundHeight(x,z),hit=c=>(!c.only||c.only===who)&&!(aboard&&(c.id==='ferry'||!c.moving))&&standingHitsRect(x,z,r,y,c);
+ const y=current?(Number.isFinite(deckY)?deckY:roomWalk()?player.position.y:0):aboard?deckY:groundHeight(x,z),hit=c=>(!c.only||c.only===who)&&!(aboard&&(c.id==='ferry'||!c.moving))&&standingHitsRect(x,z,r,y,c);
  return current?roomColliders.some(hit):colliderGrid.some(x,z,r,hit);}
 /**
  * Walking aboard the Minato Maru while she lies alongside (ferry-walk.js): her decks are floors that move with her.
  * `deckUnder` is the floor under the player's feet, or null on the town's ground.
  */
 function shipWalk(){if(!ferryWalk&&world.ferry?.ferry)ferryWalk=createFerryWalk(world.ferry);return ferryWalk;}
+/**
+ * A room of more than one storey (Johansson's house, interiors/johansson-house-interior.js): its floors stack, and the
+ * one under his feet is the one nearest them within a step (house-walk.js), as aboard the ferry.
+ */
+function roomWalk(){return current?activeRoomLayout?.walk??null:null;}
+/** The floor of a room with storeys under (x, z) for feet at y, or y itself where there is none. */
+function roomFloorAt(x,z,y=player.position.y){return roomWalk()?.floorAt(x,z,y)?.y??y;}
 function deckUnder(x=player.position.x,z=player.position.z,y=player.position.y){return current?null:shipWalk()?.floorBelow(x,z,y)??null;}
 /** The engine-room ladder (ferry-inspect.js FERRY_LADDER): the prompt takes him down to the floor plates, or back up. */
 function ferryLadder(way){
@@ -1219,7 +1226,7 @@ const HEAD_CAM=.85;
 /** In one of her rooms: aboard, with a deckhead over him within about 2–2.7 m (the lens keeps under it, and comes in closer). */
 function shipRoom(){const d=current?null:deckUnder();return !!d&&[1.95,2.2,2.45,2.65].some(h=>ferryWalk.cameraBlocked(player.position.x,player.position.z,d.y+h,.05));}
 /** The ground under the player's feet: her deck aboard, the town's otherwise. */
-function playerGround(){if(current)return 0;const d=deckUnder();return d?d.y:groundHeight(player.position.x,player.position.z);}
+function playerGround(){if(current)return roomWalk()?roomWalk().floorBelow(player.position.x,player.position.z,player.position.y)?.y??player.position.y:0;const d=deckUnder();return d?d.y:groundHeight(player.position.x,player.position.z);}
 function entrancePoints(){return SITES.filter(s=>s.door).map(s=>[s.door[0],s.door[2]??s.door[1]]);}
 function inEntrance(x,z,r=1.2){return entrancePoints().some(([dx,dz])=>Math.hypot(x-dx,z-dz)<r);}
 function indoorNpc(g){return g.userData.inBookshop||g.userData.inWorkplace||g.userData.inIzakaya||g.userData.inOnsen||g.userData.inRamen||g.userData.inHome||g.userData.inMarket;}
@@ -1230,6 +1237,11 @@ function residentsAt(x,z,radius=PLAYER_RADIUS){return residentEntities().filter(
 function overlapsResident(x,z){return residentsAt(x,z).length>0;}
 function residentBlocked(x,z){if(!current&&inEntrance(x,z))return false;return overlapsResident(x,z);}
 function collides(x,z){
+ if(roomWalk()){
+  // Up and down the stair, and never off the edge of a floor: the step is onto a floor within a step of his feet.
+  const y=player.position.y,step=roomWalk().move(player.position.x,y,player.position.z,x,z,PLAYER_RADIUS,(bx,by,bz)=>environmentBlocked(bx,bz,.05,'player',by));
+  return !step.ok||environmentBlocked(x,z,PLAYER_RADIUS,'player',step.y)||residentBlocked(x,z);
+ }
  if(!current&&shipWalk()){
   // On her decks, or stepping onto them (the gangway's foot, the ramp's flap) or off them onto the shore.
   const deck=deckUnder(),base=deck?deck.y:groundHeight(player.position.x,player.position.z);
@@ -1242,7 +1254,7 @@ function collides(x,z){
 }
 function occupiedByPerson(x,z){return overlapsResident(x,z);}
 function findClear(x0,z0,maxR=6){
- const ok=(x,z)=>!environmentBlocked(x,z)&&!occupiedByPerson(x,z);
+ const ok=(x,z)=>!environmentBlocked(x,z)&&!occupiedByPerson(x,z)&&(!roomWalk()||!!roomWalk().floorAt(x,z,player.position.y));
  if(ok(x0,z0))return [x0,z0];
  for(let r=.25;r<=maxR;r+=.25){const n=Math.max(8,Math.round(r*14));for(let i=0;i<n;i++){const a=i/n*Math.PI*2,x=x0+Math.cos(a)*r,z=z0+Math.sin(a)*r;if(ok(x,z))return [x,z];}}
  if(!current){const s=world.spawn;if(s){const x=s[0],z=s[2]??s[1];if(ok(x,z))return [x,z];}}
@@ -1262,7 +1274,7 @@ function unstuckPlayer(forceStreet=false){
   return;}}
  if(!environmentBlocked(x,z)&&!occupiedByPerson(x,z))return;
  const [nx,nz]=findClear(x,z);
- player.position.set(nx,current?0:groundHeight(nx,nz),nz);
+ player.position.set(nx,current?(roomWalk()?roomFloorAt(nx,nz):0):groundHeight(nx,nz),nz);
 }
 function evictIfClosed(){return false;}
 
@@ -1740,6 +1752,7 @@ function advanceTown(dt,playerPaused,fastForward=false){
     if(current?.id==='izakaya')izakayaGuests.sync(minutes,dt);
     if(current?.id==='onsen')onsenGuests.sync(minutes,dt);
     if(current&&!catchingUp)activeRoomLayout?.tick?.(dt,minutes,elapsed);
+    if(current)activeRoomLayout?.follow?.(player.position);
     if(homeOwner(current))homeGuests.update(dt,minutes);
     // The ramen counter: an order is cooked for five seconds, then set down in front of you.
     venueService?.update(dt);beerService?.update(dt);ramenPlayerService?.update(dt);
@@ -1879,7 +1892,7 @@ function updateContextControls(){
  const table=Number.isInteger(parkSeat?.ramenSeatId)||!!parkSeat?.izakaya;
  const pending=ramenOrder?!ramenOrder.delivered:!!beerService?.pending;
  const exitPoint=activeRoomLayout?.exit;
- const exitNearby=!!current&&(!!active&&/^(?:exit|leave|step outside|go out)\b/i.test(active.label)||exitPoint&&Math.hypot(player.position.x-exitPoint[0],player.position.z-exitPoint[2])<1.45);
+ const exitNearby=!!current&&(!!active&&/^(?:exit|leave|step outside|go out)\b/i.test(active.label)||exitPoint&&Math.hypot(player.position.x-exitPoint[0],player.position.z-exitPoint[2])<1.45&&(!roomWalk()||Math.abs(player.position.y-(activeRoomLayout.exitFloor??0))<1));
  contextTarget=!seated&&!blocked?active:null;
  const serviceOpen=Number.isInteger(parkSeat?.ramenSeatId)?satoRamenOpen(minutes):!!parkSeat?.izakaya&&izakayaOpen(minutes);
  contextRail.update({playing:started,paused:blocked,seated,table,canOrder:table&&serviceOpen&&!pending&&!ramenOrder,
@@ -1936,6 +1949,8 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  },
  /** Turn where he stands (aboard the ferry too, where teleport's ground would be the sea). */
  face(facing,tilt){if(Number.isFinite(facing))yaw=facing;if(Number.isFinite(tilt))pitch=tilt;},
+ /** Where he stands and which way he faces (a room's own frame indoors). */
+ get player(){return {position:player.position.toArray(),yaw,room:current?.id??null};},
  /** Stand him at a point with its height (on a deck aboard the ferry, where the town's ground is the sea). */
  stand(x,y,z,facing){spawnScene?.cancel('placement');if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,y,z);if(Number.isFinite(facing))yaw=facing;},
  teleport(x,z,facing,tilt){spawnScene?.cancel('placement');if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,groundHeight(x,z),z);if(Number.isFinite(facing))yaw=facing;if(Number.isFinite(tilt))pitch=tilt;},

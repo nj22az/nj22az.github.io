@@ -2,13 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {buildMayorHome,buildClinic,buildCommunityKitchen} from '../src/world/interiors/town-hall.js';
+import {buildClinic,buildCommunityKitchen} from '../src/world/interiors/town-hall.js';
 
-// docs/BUILDING-AUDIT.md B5/B7: the mayor's house has its WC and bath, the clinic a
-// waiting room in front of the consulting room and a patients' WC, and the hall's public
-// WC is off the community kitchen. Every one of them can be walked into from the door.
+// docs/BUILDING-AUDIT.md B5/B7: the clinic has a waiting room in front of the consulting room and a patients' WC, and
+// the hall's public WC is off the community kitchen. Every one of them can be walked into from the door. (The mayor's
+// house, with its WC and bath, is on Kitano-jima now, three floors walked by johansson-house-interior.test.mjs.)
 const rooms=[
- ['mayor’s house',buildMayorHome,{Toilet:[1.8,1.0],Bath:[2.8,1.0],futon:[2.0,-1.6],table:[-.6,.4]},['Toilet','Bath (ofuro)']],
  ['clinic',buildClinic,{Toilet:[1.7,2.0],stool:[.5,-1.0],couch:[-1.9,-1.3],bench:[1.0,1.3]},['Toilet','Waiting room partition','Waiting bench']],
  ['community kitchen',buildCommunityKitchen,{Toilet:[1.6,2.0],islands:[0,-.6]},['Toilet']],
 ];

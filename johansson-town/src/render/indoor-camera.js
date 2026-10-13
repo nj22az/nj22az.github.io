@@ -1,8 +1,10 @@
 import * as THREE from '../../vendor/three.module.js';
 
 /** Cache overhead surfaces once per room, including sloping roofs and upstairs floors.
- * Queries use projected triangles, independent of material sidedness or cutaway layers. */
-export function createIndoorCeilings(root){
+ * Queries use projected triangles, independent of material sidedness or cutaway layers.
+ * `from`: surfaces lower than this are floors and table tops, not ceilings (1.9 m over a room's floor; a house with a
+ * basement starts lower, interiors/johansson-house-interior.js). */
+export function createIndoorCeilings(root,{from=1.9}={}){
  root.updateMatrixWorld(true);
  const triangles=[],cells=new Map(),a=new THREE.Vector3(),b=new THREE.Vector3(),c=new THREE.Vector3(),normal=new THREE.Vector3(),edge=new THREE.Vector3();
  root.traverse(o=>{
@@ -13,7 +15,7 @@ export function createIndoorCeilings(root){
    b.fromBufferAttribute(p,index?index.getX(i+1):i+1).applyMatrix4(o.matrixWorld);
    c.fromBufferAttribute(p,index?index.getX(i+2):i+2).applyMatrix4(o.matrixWorld);
    normal.subVectors(b,a).cross(edge.subVectors(c,a)).normalize();
-   if(Math.abs(normal.y)<.5||Math.min(a.y,b.y,c.y)<1.9)continue;
+   if(Math.abs(normal.y)<.5||Math.min(a.y,b.y,c.y)<(from??1.9))continue;
    const den=(b.z-c.z)*(a.x-c.x)+(c.x-b.x)*(a.z-c.z);
    if(Math.abs(den)<1e-8)continue;
    triangles.push({ax:a.x,ay:a.y,az:a.z,bx:b.x,by:b.y,bz:b.z,cx:c.x,cy:c.y,cz:c.z,den,

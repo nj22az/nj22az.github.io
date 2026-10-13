@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 750" width="780" height="750" font-family="Helvetica, Arial, sans-serif">
+<rect width="780" height="750" fill="#fbfaf6"/>
+<rect x="100" y="343" width="232" height="237" fill="#ffffff" stroke="none"/>
+<text x="216" y="455.5" font-size="12" text-anchor="middle" fill="#222">Living room</text>
+<text x="216" y="472.5" font-size="10" text-anchor="middle" fill="#777">21.99 m²</text>
+<rect x="100" y="100" width="232" height="237" fill="#ffffff" stroke="none"/>
+<text x="216" y="212.5" font-size="12" text-anchor="middle" fill="#222">Kitchen and dining</text>
+<text x="216" y="229.5" font-size="10" text-anchor="middle" fill="#777">21.99 m²</text>
+<rect x="338" y="418" width="114" height="162" fill="#ffffff" stroke="none"/>
+<text x="395" y="493" font-size="12" text-anchor="middle" fill="#222">Entry and genkan</text>
+<text x="395" y="510" font-size="10" text-anchor="middle" fill="#777">7.39 m²</text>
+<rect x="338" y="262" width="114" height="150" fill="#ffffff" stroke="none"/>
+<text x="395" y="331" font-size="12" text-anchor="middle" fill="#222">Stair hall</text>
+<text x="395" y="348" font-size="10" text-anchor="middle" fill="#777">6.84 m²</text>
+<rect x="338" y="100" width="114" height="162" fill="#ffffff" stroke="none"/>
+<rect x="458" y="343" width="222" height="237" fill="#ffffff" stroke="none"/>
+<text x="569" y="455.5" font-size="12" text-anchor="middle" fill="#222">Thuan sewing studio</text>
+<text x="569" y="472.5" font-size="10" text-anchor="middle" fill="#777">21.05 m²</text>
+<rect x="458" y="238" width="222" height="99" fill="#ffffff" stroke="none"/>
+<text x="569" y="281.5" font-size="12" text-anchor="middle" fill="#222">WC and utility</text>
+<text x="569" y="298.5" font-size="10" text-anchor="middle" fill="#777">8.79 m²</text>
+<rect x="458" y="100" width="222" height="132" fill="#ffffff" stroke="none"/>
+<text x="569" y="160" font-size="12" text-anchor="middle" fill="#222">Covered terrace access</text>
+<text x="569" y="177" font-size="10" text-anchor="middle" fill="#777">11.72 m²</text>
+<line x1="338" y1="262" x2="393" y2="262" stroke="#555" stroke-width="1"/>
+<line x1="338" y1="249.5" x2="393" y2="249.5" stroke="#555" stroke-width="1"/>
+<line x1="338" y1="237" x2="393" y2="237" stroke="#555" stroke-width="1"/>
+<line x1="338" y1="224.5" x2="393" y2="224.5" stroke="#555" stroke-width="1"/>
+<line x1="338" y1="212" x2="393" y2="212" stroke="#555" stroke-width="1"/>
+<line x1="338" y1="199.5" x2="393" y2="199.5" stroke="#555" stroke-width="1"/>
+<line x1="338" y1="187" x2="393" y2="187" stroke="#555" stroke-width="1"/>
+<line x1="397" y1="174.5" x2="452" y2="174.5" stroke="#555" stroke-width="1"/>
+<line x1="397" y1="187" x2="452" y2="187" stroke="#555" stroke-width="1"/>
+<line x1="397" y1="199.5" x2="452" y2="199.5" stroke="#555" stroke-width="1"/>
+<line x1="397" y1="212" x2="452" y2="212" stroke="#555" stroke-width="1"/>
+<line x1="397" y1="224.5" x2="452" y2="224.5" stroke="#555" stroke-width="1"/>
+<line x1="397" y1="237" x2="452" y2="237" stroke="#555" stroke-width="1"/>
+<line x1="397" y1="249.5" x2="452" y2="249.5" stroke="#555" stroke-width="1"/>
+<rect x="338" y="100" width="114" height="74.5" fill="none" stroke="#555" stroke-width="1"/>
+<line x1="338" y1="262" x2="393" y2="262" stroke="#555" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="338" y1="249.5" x2="393" y2="249.5" stroke="#555" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="338" y1="237" x2="393" y2="237" stroke="#555" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="338" y1="224.5" x2="393" y2="224.5" stroke="#555" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="338" y1="212" x2="393" y2="212" stroke="#555" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="338" y1="199.5" x2="393" y2="199.5" stroke="#555" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="338" y1="187" x2="393" y2="187" stroke="#555" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="397" y1="174.5" x2="452" y2="174.5" stroke="#555" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="397" y1="187" x2="452" y2="187" stroke="#555" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="397" y1="199.5" x2="452" y2="199.5" stroke="#555" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="397" y1="212" x2="452" y2="212" stroke="#555" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="397" y1="224.5" x2="452" y2="224.5" stroke="#555" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="397" y1="237" x2="452" y2="237" stroke="#555" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="397" y1="249.5" x2="452" y2="249.5" stroke="#555" stroke-width="1" stroke-dasharray="4 3"/>
+<rect x="338" y="100" width="114" height="74.5" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="4 3"/>
+<polyline points="365.5,254.5 365.5,137.25 424.5,137.25 424.5,244.5" fill="none" stroke="#b03a2e" stroke-width="1.5"/>
+<polygon points="418.5,237 430.5,237 424.5,249.5" fill="#b03a2e"/>
+<text x="395" y="276" font-size="9" text-anchor="middle" fill="#b03a2e">UP 16R × 175 / 250</text>
+<rect x="393" y="174.5" width="4" height="87.5" fill="#8a8a8a"/>
+<line x1="367.5" y1="587" x2="417.5" y2="587" stroke="#3a7ca5" stroke-width="1"/>
+<line x1="367.5" y1="583" x2="417.5" y2="583" stroke="#3a7ca5" stroke-width="1"/>
+<text x="392.5" y="606" font-size="9" text-anchor="middle" fill="#3a7ca5">D-ENTRY</text>
+<line x1="160" y1="587" x2="260" y2="587" stroke="#3a7ca5" stroke-width="1"/>
+<line x1="160" y1="583" x2="260" y2="583" stroke="#3a7ca5" stroke-width="1"/>
+<text x="210" y="606" font-size="9" text-anchor="middle" fill="#3a7ca5">W-LIVING</text>
+<line x1="687" y1="530" x2="687" y2="440" stroke="#3a7ca5" stroke-width="1"/>
+<line x1="683" y1="530" x2="683" y2="440" stroke="#3a7ca5" stroke-width="1"/>
+<text x="707.5" y="485" font-size="9" text-anchor="middle" fill="#3a7ca5">W-SEW</text>
+<line x1="93" y1="245" x2="93" y2="165" stroke="#3a7ca5" stroke-width="1"/>
+<line x1="97" y1="245" x2="97" y2="165" stroke="#3a7ca5" stroke-width="1"/>
+<text x="72.5" y="205" font-size="9" text-anchor="middle" fill="#3a7ca5">W-KITCHEN</text>
+<line x1="530" y1="93" x2="580" y2="93" stroke="#3a7ca5" stroke-width="1"/>
+<line x1="530" y1="97" x2="580" y2="97" stroke="#3a7ca5" stroke-width="1"/>
+<text x="555" y="74" font-size="9" text-anchor="middle" fill="#3a7ca5">D-TERRACE</text>
+<line x1="170" y1="93" x2="260" y2="93" stroke="#3a7ca5" stroke-width="1"/>
+<line x1="170" y1="97" x2="260" y2="97" stroke="#3a7ca5" stroke-width="1"/>
+<text x="215" y="74" font-size="9" text-anchor="middle" fill="#3a7ca5">W-DINING</text>
+<rect x="90" y="580" width="70" height="10" fill="#2b2b2b"/>
+<rect x="260" y="580" width="107.5" height="10" fill="#2b2b2b"/>
+<rect x="417.5" y="580" width="272.5" height="10" fill="#2b2b2b"/>
+<rect x="90" y="90" width="80" height="10" fill="#2b2b2b"/>
+<rect x="260" y="90" width="270" height="10" fill="#2b2b2b"/>
+<rect x="580" y="90" width="110" height="10" fill="#2b2b2b"/>
+<rect x="90" y="245" width="10" height="345" fill="#2b2b2b"/>
+<rect x="90" y="90" width="10" height="75" fill="#2b2b2b"/>
+<rect x="680" y="530" width="10" height="60" fill="#2b2b2b"/>
+<rect x="680" y="90" width="10" height="350" fill="#2b2b2b"/>
+<rect x="332" y="385" width="6" height="195" fill="#8a8a8a"/>
+<rect x="332" y="305" width="6" height="40" fill="#8a8a8a"/>
+<rect x="332" y="100" width="6" height="165" fill="#8a8a8a"/>
+<rect x="452" y="390" width="6" height="190" fill="#8a8a8a"/>
+<rect x="452" y="300" width="6" height="50" fill="#8a8a8a"/>
+<rect x="452" y="100" width="6" height="160" fill="#8a8a8a"/>
+<rect x="100" y="337" width="35" height="6" fill="#8a8a8a"/>
+<rect x="175" y="337" width="160" height="6" fill="#8a8a8a"/>
+<rect x="335" y="412" width="25" height="6" fill="#8a8a8a"/>
+<rect x="400" y="412" width="55" height="6" fill="#8a8a8a"/>
+<rect x="455" y="337" width="225" height="6" fill="#8a8a8a"/>
+<rect x="455" y="232" width="95" height="6" fill="#8a8a8a"/>
+<rect x="590" y="232" width="90" height="6" fill="#8a8a8a"/>
+<line x1="330" y1="385" x2="340" y2="385" stroke="#2b2b2b" stroke-width="1"/>
+<line x1="330" y1="345" x2="340" y2="345" stroke="#2b2b2b" stroke-width="1"/>
+<line x1="330" y1="305" x2="340" y2="305" stroke="#2b2b2b" stroke-width="1"/>
+<line x1="330" y1="265" x2="340" y2="265" stroke="#2b2b2b" stroke-width="1"/>
+<line x1="450" y1="390" x2="460" y2="390" stroke="#2b2b2b" stroke-width="1"/>
+<line x1="450" y1="350" x2="460" y2="350" stroke="#2b2b2b" stroke-width="1"/>
+<line x1="450" y1="300" x2="460" y2="300" stroke="#2b2b2b" stroke-width="1"/>
+<line x1="450" y1="260" x2="460" y2="260" stroke="#2b2b2b" stroke-width="1"/>
+<line x1="135" y1="345" x2="135" y2="335" stroke="#2b2b2b" stroke-width="1"/>
+<line x1="175" y1="345" x2="175" y2="335" stroke="#2b2b2b" stroke-width="1"/>
+<line x1="360" y1="420" x2="360" y2="410" stroke="#2b2b2b" stroke-width="1"/>
+<line x1="400" y1="420" x2="400" y2="410" stroke="#2b2b2b" stroke-width="1"/>
+<line x1="550" y1="240" x2="550" y2="230" stroke="#2b2b2b" stroke-width="1"/>
+<line x1="590" y1="240" x2="590" y2="230" stroke="#2b2b2b" stroke-width="1"/>
+<line x1="90" y1="635" x2="690" y2="635" stroke="#555"/>
+<text x="390" y="631" font-size="10" text-anchor="middle" fill="#555">12 000</text>
+<line x1="45" y1="590" x2="45" y2="90" stroke="#555"/>
+<text x="37.5" y="340" font-size="10" text-anchor="middle" fill="#555" transform="rotate(-90 37.5 340)">10 000</text>
+<text x="90" y="704" font-size="15" font-weight="bold" fill="#222">Johansson House · Ground floor (G0) · finished floor +100</text>
+<text x="90" y="722" font-size="10" fill="#555">As built in Johansson World from Rev C (findings F1–F12, README.md). Plan cut at 1200 mm. Millimetres. Game asset: not for construction.</text>
+<line x1="590" y1="710" x2="690" y2="710" stroke="#222" stroke-width="2"/><text x="640" y="704" font-size="9" text-anchor="middle">2 m</text>
+<text x="730" y="70" font-size="12" text-anchor="middle">N</text><polygon points="724,84 736,84 730,72" fill="#222"/>
+</svg>
