@@ -58,7 +58,7 @@ export function buildPumpkinLantern({r=.19}={}){
  const g=new THREE.Group();g.name='Pumpkin lantern';
  const paper=new THREE.MeshBasicMaterial({color:0xffffff,vertexColors:true,toneMapped:false}),face=new THREE.MeshBasicMaterial({color:0x3a2410,side:THREE.DoubleSide,toneMapped:false});
  const cy=-.06-r*.85;
- for(let i=0;i<6;i++){const a=i/6*Math.PI*2,lobe=mesh(g,glowShade(new THREE.SphereGeometry(r*.62,14,10),[1,.7,.22],[.9,.34,.03]),paper,Math.cos(a)*r*.42,cy,Math.sin(a)*r*.42);lobe.scale.set(1,1.18,1);}
+ for(let i=0;i<6;i++){const a=i/6*Math.PI*2,lobe=mesh(g,glowShade(new THREE.SphereGeometry(r*.62,14,10),[1,.62,.14],[.88,.3,.02]),paper,Math.cos(a)*r*.42,cy,Math.sin(a)*r*.42);lobe.scale.set(1,1.18,1);}
  mesh(g,new THREE.CylinderGeometry(r*.32,r*.38,r*.16,12),std(0x2a2522),0,cy+r*.78,0,'Pumpkin lantern cap');
  mesh(g,new THREE.CylinderGeometry(r*.06,r*.09,r*.32,8),std(0x4f7a32),0,cy+r*.98,0);
  mesh(g,new THREE.CylinderGeometry(.004,.004,.06,6),std(0x2a2522),0,-.03,0);

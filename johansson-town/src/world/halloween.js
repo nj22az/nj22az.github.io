@@ -37,7 +37,7 @@ export const HALLOWEEN=Object.freeze({
  reel:Object.freeze({at:Object.freeze([SAKURA_BOX.maxX+.42,0,SAKURA_BOX.minZ+.72]),why:'Kōji’s cord reel from his boat shed, half coiled: the lanterns and the machine both plugged into it.'}),
  nobori:Object.freeze([SAKURA_BOX.maxX+.95,SAKURA_BOX.minZ+.45]),
  pools:Object.freeze([-32.4,-29.1,-25.6,-22.1]),   // the four shared lights of the lanterns' warm pools (z along the string)
- poolIntensity:6,
+ poolIntensity:4,
  seance:Object.freeze({centre:Object.freeze([-5.75,-32.6]),radius:.72,candles:8}),
 });
 
@@ -114,7 +114,7 @@ export function buildHalloween(world,{shadows=false}={}){
  // ---- where their light falls: a warm pool on the pavement, the shutter and the awning under the string. Four shared
  // lights along it (not one a lantern: a phone lights four cheaply), each following the lanterns' glow; none at dusk.
  const pools=new THREE.Group();pools.name='Lantern light';group.add(pools);
- for(const z of HALLOWEEN.pools){const [x,y]=sagAt(z),L=new THREE.PointLight(0xffa24a,0,4.5,2);L.position.set(x-.15,y-.45,z);L.name='Lantern pool';L.castShadow=false;pools.add(L);}
+ for(const z of HALLOWEEN.pools){const [x,y]=sagAt(z),L=new THREE.PointLight(0xffa24a,0,4.5,2);L.position.set(x+.4,y-.8,z);L.name='Lantern pool';L.castShadow=false;pools.add(L);}
  // ---- the cardboard ghosts on the shutter, at a child's eye height
  for(const [z,y,s] of [[-30.45,1.32,.66],[-28.55,1.45,.6],[-24.9,1.3,.66],[-22.9,1.42,.6]]){const o=add(buildObake({h:s,flat:true}),S.maxX+.2,y,z,Math.PI/2);o.name='Cardboard ghost';}
  // ---- the sockets, the reel, the cords

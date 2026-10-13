@@ -111,7 +111,7 @@ test('the lanterns read as lit at night: bright paper brightest at the middle, a
  const off=look(0),groan=look(.12),run=look(.7),fixed=look(1);
  assert.equal(off.halo,0,'unlit: no halo');assert.equal(off.pool,0,'unlit: no pool of light');
  assert.ok(!off.shaded&&run.shaded,'unlit: plain orange paper; lit: shaded by its bulb');
- assert.ok(run.halo>.4&&run.pool>3,'lit at 90 V: a halo and a warm pool ('+run.halo.toFixed(2)+', '+run.pool.toFixed(1)+')');
+ assert.ok(run.halo>.4&&run.pool>2,'lit at 90 V: a halo and a warm pool ('+run.halo.toFixed(2)+', '+run.pool.toFixed(1)+')');
  assert.ok(run.face>2.2,'the carved face glows pale yellow from inside');
  assert.ok(groan.paper<run.paper*.7&&groan.halo<run.halo*.4&&groan.pool<run.pool*.2,'the groan dims the paper, the halo and the pools together');
  assert.ok(fixed.paper>=run.paper&&fixed.halo>run.halo&&fixed.pool>run.pool,'after the fix: steady and brightest');
