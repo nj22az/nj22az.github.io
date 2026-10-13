@@ -58,6 +58,11 @@ export const HARBOUR_LINE=Object.freeze([
 1320,  //  22:00  day staff go home
 ]);
 
+/**
+ * The Minato Maru's crossing, in town minutes: worked out from her passage (airport-ferry.js AIRPORT_FERRY.duration),
+ * written here so the timetable need not load the ship; tests/ganaha.test.mjs keeps the two the same.
+ */
+export const CROSSING_MINUTES=22;
 /** How long the bus stands at the terminus with its doors open, in town minutes. */
 export const BUS_DWELL=15;
 
@@ -94,7 +99,7 @@ function ferryTimetable(minutes){
  const status=current===undefined
   ?'Next commuter boat in: '+serviceTime(due.service)+(due.wait===0?' · due now':' · in '+Math.ceil(due.wait)+' town minutes')
   :'The commuter boat is alongside: '+serviceTime(current)+'–'+serviceTime(current+BUS_DWELL);
- return 'Minato Maru · Minato ⇄ Kitano-jima · 18-minute crossing\nCrossings on request: buy a return at the Port Terminal window and board by the gangway on the outer pier.\n'
+ return 'Minato Maru · Minato ⇄ Kitano-jima · '+CROSSING_MINUTES+'-minute crossing\nCrossings on request: buy a return at the Port Terminal window and board by the gangway on the outer pier.\n'
   +'Commuter boats in to Minato: '+HARBOUR_LINE.map(serviceTime).join(' · ')+'. Each lies alongside '+BUS_DWELL+' town minutes.\n'+status;
 }
 export function shiftActive(profile,minutes){
