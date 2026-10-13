@@ -32,4 +32,4 @@
 - Lines to other decks (9) end at a penetration; drawn on their own decks later.
 
 ## Next action
-6r-2 live (runs 92–94). Next: 6r-3 overhaul (covers off, parts on the plates; the crew at the handles; alarm acknowledge; the plant saved with the game).
+6r-2 live (runs 92–94). **Paused by the creator (2026-10-13): the ship waits for the CAD; then tighten her to it (briefs/NEXT.md §9.1); then Johansson Automation, a Kongsberg-like alarm and monitoring system (§9.2).** After that 6r-3 overhaul (covers off, parts on the plates; the crew at the handles; alarm acknowledge; the plant saved with the game).
