@@ -70,3 +70,9 @@ test('every live plate reads a number or the alarm list from the plant, and the 
  assert.equal(f.userData.readPlant(run.plant.readings()),0,'nothing to redraw while nothing changed');
  assert.ok(run.plant.stop('mainP').ok);assert.ok(f.userData.readPlant(run.plant.readings())>=6,'the port engine’s dials fall');
 });
+
+test('no plate’s lettering is stretched: every canvas has its plate’s own proportions',()=>{
+ const {run}=boot(FERRY_DAY.inService+5);let n=0;const bad=[];
+ run.ferry.traverse(o=>{if(!o.userData.plate||o.userData.plate==='chequer'||o.userData.plate==='grating')return;n++;const img=o.material.map.image,g=o.geometry.parameters;const pw=g.width??g.radius*2,ph=g.height??g.radius*2;const r=(img.width/img.height)/(pw/ph);if(Math.abs(r-1)>.02)bad.push(o.name+' '+r.toFixed(2));});
+ assert.ok(n>150,n+' plates');assert.deepEqual(bad,[]);
+});
