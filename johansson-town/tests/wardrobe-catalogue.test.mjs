@@ -102,7 +102,7 @@ test('search finds items by label, the names in who, places and occasions, ignor
  assert.ok(ids('Sakura Shoten').includes('set:shop-counter-smock'));
  assert.ok(ids('haarii').includes('set:haarii-crew'));
  assert.deepEqual(ids(''),[]);assert.deepEqual(ids('zzzz'),[]);
- const groups=searchWardrobe('police');assert.deepEqual(groups.map(g=>g.slot),['set','top','hat'],'results come grouped by slot, in tab order');
+ const groups=searchWardrobe('police');assert.deepEqual(groups.map(g=>g.slot),['set','top','hat','belt'],'results come grouped by slot, in tab order');
 });
 
 test('a set never leaves the last set’s hat on, and a hat of one’s own stays',()=>{

@@ -13,6 +13,8 @@ import {longBraidPoints} from './braid-path.js';
 import {pleatedSkirtGeometry} from './pleated-skirt.js';
 import {celFrom} from '../render/cel.js';
 import {createTowelFit} from './towel-fit.js';
+import {addPoliceCap,policeCapTuck,addPoliceJacket,addDutyBelt} from './police-uniform.js';
+import {addKerchief,kerchiefTuck} from './kerchief.js';
 import {GARMENT,PLAIN_UV,torsoUV,sleeveUV,paintGarment,SLEEVED_LONG,CAMP_COLLAR,SHIRT_SLEEVES,UNDERSHIRT_ARMS,SLEEVE_END} from './garment.js';
 import {ASSET_HATS,isAssetHat,assetHatPieces,hatTuck,weaveTexture} from './hat-assets.js';
 
@@ -205,6 +207,20 @@ function limb(list,a,b,r0,r1,hex,{bone,joints=[],root=null,soft=.13,segments=14,
  part(list,g,share,hex,new THREE.Matrix4().compose(A.clone().add(B).multiplyScalar(.5),q,new THREE.Vector3(1,1,1)),uvAt);
 }
 const ball=(list,r,at,bone,hex,s=[1,1,1],w=12,h=8)=>part(list,new THREE.SphereGeometry(r,w,h),bone,hex,M(at[0],at[1],at[2],0,0,0,...s));
+/** The builder's own tools, for the wardrobe pieces built in their own modules (police-uniform.js, kerchief.js). */
+const avatarKit=()=>({part,ball,tube,limb,M,HAIR,latheRadius,torsoProfile,bodyVolume,laidFrames,clothStrip});
+/**
+ * Smooth normals for a part that part() has split into separate triangles: each corner takes the sum of the faces that
+ * meet at its position. (Recomputed per triangle, a reshaped piece of hair is faceted and its toon shadow runs in steps.)
+ */
+function smoothNormals(g){
+ const P=g.attributes.position,N=g.attributes.normal,ids=new Int32Array(P.count),map=new Map();
+ for(let i=0;i<P.count;i++){const key=Math.round(P.getX(i)*1e5)+','+Math.round(P.getY(i)*1e5)+','+Math.round(P.getZ(i)*1e5);if(!map.has(key))map.set(key,map.size);ids[i]=map.get(key);}
+ const acc=new Float32Array(map.size*3),a=new THREE.Vector3(),b=new THREE.Vector3(),c=new THREE.Vector3();
+ for(let i=0;i+2<P.count;i+=3){a.fromBufferAttribute(P,i);b.fromBufferAttribute(P,i+1).sub(a);c.fromBufferAttribute(P,i+2).sub(a);b.cross(c);for(let j=0;j<3;j++){const o=ids[i+j]*3;acc[o]+=b.x;acc[o+1]+=b.y;acc[o+2]+=b.z;}}
+ for(let i=0;i<P.count;i++){const o=ids[i]*3;a.set(acc[o],acc[o+1],acc[o+2]);if(a.lengthSq()<1e-24)continue;a.normalize();N.setXYZ(i,a.x,a.y,a.z);}
+ N.needsUpdate=true;
+}
 
 /**
  * Hair, as a cap over the head that stops where the face and neck begin. The cap is a
@@ -383,11 +399,14 @@ function addHair(list,recipe,m){
  if(style==='sidepart'||style==='braids'){ball(list,R*.34,at(side*R*.5,cy+R*.62,R*.62),'head',c,[1.4,.55,.7],10,6);}
  if(style==='bob'||style==='long'){ball(list,R*.4,at(0,cy+R*.52,R*.72),'head',c,[2,.5,.6],10,6);}
  // Hair is tucked under full hats, while fringes, braids and tails stay below them.
+ // How much each hair point is tucked (head-cover.js): a fitted cap from its band up, a kerchief under its cloth, the
+ // other full hats everything above the line y = 0.3.
+ const tuck=recipe.outfit.hat==='police'?policeCapTuck:recipe.outfit.hat==='kerchief'?kerchiefTuck:(x,y)=>y>.3?1:0;
  if(!['none','headband','ribbon'].includes(recipe.outfit.hat))for(const g of list.slice(hairStart)){
   const pos=g.attributes.position;g.userData.hatHair={position:pos.array.slice(),normal:g.attributes.normal.array.slice()};for(let i=0;i<pos.count;i++){
    const x=pos.getX(i)/S[0],y=(pos.getY(i)-m.headCentre)/S[1],z=pos.getZ(i)/S[2],r=Math.hypot(x,y,z);
-   if(y>.3&&r>1.035){const f=1.035/r;pos.setXYZ(i,x*f*S[0],m.headCentre+y*f*S[1],z*f*S[2]);}
-  }g.computeVertexNormals();
+   const w=r>1.035?tuck(x,y,z):0;if(w>0){const f=1+(1.035/r-1)*w;pos.setXYZ(i,x*f*S[0],m.headCentre+y*f*S[1],z*f*S[2]);}
+  }smoothNormals(g);
  }
  // A hat from World's catalogue presses the hair in under its own band, and leaves it out of a snapback's opening above
  // the strap (hat-assets.js hatTuck): lower than the line above, all round the head.
@@ -435,14 +454,14 @@ function addHat(list,recipe,m){
  const hat=recipe.outfit.hat,c=recipe.outfit.hatColour,R=m.Rh,top=m.headCentre+R*m.headSY*.2;
  if(hat==='none')return;
  const S=[m.headSX*R,m.headSY*R,R];
- if(hat==='cap'||hat==='police'||hat==='captain'){
-  const police=hat==='police',crown=police?new THREE.CylinderGeometry(1.16,1.03,.4,28,1,true):new THREE.SphereGeometry(1.1,24,12,0,Math.PI*2,0,Math.PI*.5);
-  part(list,crown,'head',c,M(0,m.headCentre+R*m.headSY*(police?.95:.23),0,police?0:-.08,0,0,S[0],S[1]*(police?1:hat==='cap'?.9:1.05),S[2]));
-  if(police)part(list,new THREE.CircleGeometry(1.16,28),'head',c,M(0,m.headCentre+R*m.headSY*1.15,0,-Math.PI/2,0,0,S[0],S[2],1));
+ if(hat==='police'){addPoliceCap(list,recipe,m,avatarKit());return;}
+ if(hat==='kerchief'){addKerchief(list,recipe,m,avatarKit());return;}
+ if(hat==='cap'||hat==='captain'){
+  part(list,new THREE.SphereGeometry(1.1,24,12,0,Math.PI*2,0,Math.PI*.5),'head',c,M(0,m.headCentre+R*m.headSY*.23,0,-.08,0,0,S[0],S[1]*(hat==='cap'?.9:1.05),S[2]));
   // A shallow curved visor reads as a cap bill rather than a cloth band.
-  ball(list,R*.68,[0,m.headCentre+R*m.headSY*(police?.68:.25),R*.9],'head',hat==='cap'?c:'#1c1c24',[m.headSX*1.4,.07,1],20,8);
-  if(hat!=='cap'){part(list,new THREE.CylinderGeometry(R*1.12,R*1.12,R*.14,24,1,true),'head',hat==='captain'?'#1c1c24':'#1c2742',M(0,m.headCentre+R*(police?.72:.26),0,-.08));
-   ball(list,R*.1,[0,m.headCentre+R*(police?.95:.62),R*1.02],'head','#e0b93a',[1,1,.4],8,6);}
+  ball(list,R*.68,[0,m.headCentre+R*m.headSY*.25,R*.9],'head',hat==='cap'?c:'#1c1c24',[m.headSX*1.4,.07,1],20,8);
+  if(hat==='captain'){part(list,new THREE.CylinderGeometry(R*1.12,R*1.12,R*.14,24,1,true),'head','#1c1c24',M(0,m.headCentre+R*.26,0,-.08));
+   ball(list,R*.1,[0,m.headCentre+R*.62,R*1.02],'head','#e0b93a',[1,1,.4],8,6);}
  }else if(hat==='helmet'){
   if(hat!=='paperboat')part(list,new THREE.SphereGeometry(1.16,24,12,0,Math.PI*2,0,Math.PI*.52),'head',c,M(0,m.headCentre+R*m.headSY*.35,0,0,0,0,S[0],S[1]*.9,S[2]));
   part(list,new THREE.TorusGeometry(1.16,.045,6,24),'head',c,M(0,m.headCentre+R*m.headSY*.35,0,Math.PI/2,0,0,S[0],S[2],S[1]));
@@ -499,9 +518,6 @@ function addHat(list,recipe,m){
   const band=headband(recipe.hair.style,m.profile);
   part(list,band.geometry,'head',c,M(0,m.headCentre,0,0,0,0,...S));
   ball(list,R*.13,[0,m.headCentre+band.knot[1]*S[1],band.knot[2]*S[2]-R*.04],'head',c,[1.5,.8,.7],8,6);
- }else if(hat==='kerchief'){
-  part(list,new THREE.SphereGeometry(1.1,24,12,0,Math.PI*2,0,Math.PI*.36),'head',c,M(0,m.headCentre+R*.05,-R*.12,-.45,0,0,...S));
-  ball(list,R*.2,[0,m.headCentre+R*.1,-R*1.1],'head',c,[1.3,.9,.9],8,6);
  }
 }
 
@@ -533,7 +549,7 @@ export function buildHatProp(input,{mode='wall',shadows=true}={}){
 
 /**
  * The hat on the head: a model from World's asset catalogue (hat-assets.js: Johansson's trucker cap), fitted to this head,
- * painted * and bound to the head bone like every other part; or one of the hats drawn here (addHat). An asset hat whose model is not
+ * painted and bound to the head bone like every other part; or one of the hats drawn here (addHat). An asset hat whose model is not
  * in hand yet is drawn as its stand-in (ASSET_HATS: the trucker as the cap), so nobody is ever bare-headed for it.
  */
 function wearHat(list,recipe,m,layers=null){
@@ -878,6 +894,10 @@ function addBody(list,recipe,m,swim=false){
   const ring=new THREE.CylinderGeometry(rTop,hem.rx*1.04,hem.length,32,4,true);
   part(list,ring,quarterShare(hem,()=>[['hips',1]]),top,M(0,hem.waist-hem.length/2,0,0,0,0,1,1,D/W),p=>torsoUV(p,m));
  }
+ // The 1994 police jacket's modelled pieces and its skirt (police-uniform.js); its pockets, shirt and tie are painted.
+ if(!swim&&o.top==='police')addPoliceJacket(list,recipe,m,prof,avatarKit(),{torsoUV,hemSpec,quarterShare});
+ // A duty belt and its kit (police-data.js DUTY_BELT), out of the jacket's waist slots or on the belt over a shirt.
+ if(!swim&&o.belt==='duty')addDutyBelt(list,recipe,m,prof,avatarKit(),{hemSpec,quarterShare});
  // Legs and shoes; shorts and skirts show the knees.
  const b=swim?'swim':o.bottom;
  for(const s of ['L','R']){

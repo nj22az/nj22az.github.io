@@ -186,9 +186,13 @@ export const TABS=[
  {id:'accessories',name:'Accessories',wardrobe:true,controls:[
   {kind:'parts',page:'style',at:'accessories.earrings',label:'Earrings',list:PARTS.earrings,draw:'head'},
   {kind:'parts',page:'style',at:'accessories.neckwear',label:'Neckwear',list:PARTS.neckwear,draw:'figure'},
+  // A belt and what hangs on it (police-data.js DUTY_BELT): the police officer's duty belt, chosen on purpose.
+  {kind:'parts',page:'style',at:'outfit.belt',label:'Belt & kit',list:PARTS.belt,draw:'figure'},
   {kind:'toggle',page:'style',at:'accessories.pin',label:'Lapel pin'},
   {kind:'colours',page:'colour',at:'accessories.colour',label:'Earring and pin colour',palette:PALETTE.cloth},
-  {kind:'colours',page:'colour',at:'accessories.necklaceColour',label:'Necklace colour',palette:PALETTE.cloth}]},
+  {kind:'colours',page:'colour',at:'accessories.necklaceColour',label:'Necklace colour',palette:PALETTE.cloth},
+  // Black leather for the patrol, white for traffic duty.
+  {kind:'colours',page:'colour',at:'outfit.beltColour',label:'Belt leather',palette:['#16171b','#f4f1ea','#6d4a32']}]},
 ];
 const PAGES=[['style','Style'],['colour','Colour'],['adjust','Adjust']];
 const STEPS=[['start','Choose a face'],['look','Make them'],['profile','Who are they?'],['hello','Say hello']];
@@ -583,7 +587,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  const found=el('p',{className:'shm-found',role:'status'});
  const undress=el('button',{type:'button',className:'shm-pill shm-undress',textContent:'Take all off',title:'Down to what is underneath it all: a tank top, underwear and bare feet. The first picture of each grid takes that one thing off.'});
  undress.onclick=()=>{
-  remember();Object.assign(recipe.outfit,{top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',hat:'none',number:0});Object.assign(recipe.accessories,{earrings:'none',neckwear:'none',pin:false});
+  remember();Object.assign(recipe.outfit,{top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',hat:'none',number:0,belt:'none'});Object.assign(recipe.accessories,{earrings:'none',neckwear:'none',pin:false});
   recipe=normalizeRecipe(recipe);dirty=true;const focused=document.activeElement===undress;renderBody();if(focused)undress.focus({preventScroll:true});
  };
 

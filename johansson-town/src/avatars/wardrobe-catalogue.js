@@ -33,6 +33,7 @@ export const SLOTS=Object.freeze({
  bottom:Object.freeze({name:'Bottoms',at:'outfit.bottom',categories:Object.freeze(['Trousers & shorts','Skirts'])}),
  footwear:Object.freeze({name:'Shoes',at:'outfit.footwear',categories:Object.freeze(['Everyday','Work'])}),
  hat:Object.freeze({name:'Hats',at:'outfit.hat',categories:Object.freeze(['Sun & everyday','Work','Festival','Fun'])}),
+ belt:Object.freeze({name:'Belts',at:'outfit.belt',categories:Object.freeze(['Work'])}),
  earrings:Object.freeze({name:'Earrings',at:'accessories.earrings',categories:Object.freeze(['Jewellery'])}),
  neckwear:Object.freeze({name:'Neckwear',at:'accessories.neckwear',categories:Object.freeze(['Jewellery','Scarves'])}),
  glasses:Object.freeze({name:'Glasses',at:'glasses.style',categories:Object.freeze(['Everyday','Sun'])}),
@@ -55,7 +56,8 @@ const PART_ENTRIES={
   smock:{label:'Smock',category:'Work & uniform',tags:['school lunch','ink','newspaper','generators','sleeves','kitchen','shop'],who:'Reiko at the paper, Mr Shimabukuro at the generators, Mrs Sato at her stove, Grandmother Sakurai at the shop and the Years 5–6 lunch squad',why:'Long sleeves and a pocket against ink, oil, broth and school lunch.'},
   sailor:{label:'Sailor shirt',category:'School & sport',tags:['school uniform','high school','ferry'],who:'Vy and Hana, on the ferry to the high school',why:'The high school’s summer uniform.'},
   sailorlong:{label:'Long-sleeved sailor',category:'School & sport',tags:['sailor','Thuan’s wardrobe','navy'],who:'Thuan, from her own wardrobe',why:'Her navy sailor top with long sleeves and a red necktie, for the cooler days.'},
-  police:{label:'Police jacket',category:'Work & uniform',tags:['police','officer','patrol','uniform'],who:'Officer Mori',why:'The island police officer’s uniform, so anyone can find him at the desk or on night patrol.'},
+  police:{label:'Police jacket',category:'Work & uniform',tags:['police','officer','patrol','uniform','1994','kōban','tie'],who:'Officer Mori',
+   why:'The 1994-pattern police jacket: navy, notched lapels, three dark-gold buttons, shoulder straps, the rank plate on the left breast and the emblem on the right arm, over a white shirt and tie.'},
   hoodie:{label:'Hooded sweater',category:'Everyday',tags:['hoodie','rain','early boats','pier'],who:'Chin, Daichi, Masaru, Kenta, Hiroshi and the Cold-storage kid',why:'A hood and a pocket for the early boats, the rainy season and the windy pier.'},
   cardigan:{label:'Cardigan',category:'Everyday',tags:['knit','January','winter','bookshop','florist'],who:'Mrs Kinjō on January mornings; Nhung in the air-conditioned bookshop',why:'A knitted layer for the north wind of January, and for air-conditioning.'},
   overalls:{label:'Work overalls',category:'Work & uniform',tags:['cargo yard','quay','repair','workshop'],who:'Riku in the cargo yard; Chin on a repair',why:'A bib with pockets that takes the grease and the crates.'},
@@ -106,11 +108,12 @@ const PART_ENTRIES={
   none:{label:'No hat',category:'Sun & everyday',tags:['bare head'],who:'most people, most of the time',why:'Hair out.'},
   cap:{label:'Cap',category:'Sun & everyday',tags:['baseball cap','sun','post','bus'],who:'Postman Tōma, the bus driver, Mr Nakasone, Mr Arakaki, Chin and Uncle Kinjō',why:'A peak to keep the sun out of the eyes.'},
   captain:{label:'Captain’s cap',category:'Work',tags:['harbour master','ferry','harbour office'],who:'the harbour master',why:'His cap, so the ferry knows who gives the berth.'},
-  police:{label:'Police cap',category:'Work',tags:['police','officer','uniform'],who:'Officer Mori',why:'Part of the police uniform.'},
+  police:{label:'Police cap',category:'Work',tags:['police','officer','uniform','peaked cap','1994'],who:'Officer Mori',why:'The peaked police cap: a navy crown, a black band, a black visor and chin strap, and the island police badge.'},
   helmet:{label:'Helmet',category:'Work',tags:['hard hat','safety','cargo yard','ice plant'],who:'Riku in the cargo yard; Masaru and the Cold-storage kid under the ice chute',why:'A hard hat where crates and blocks of ice swing overhead.'},
   straw:{label:'Straw hat',category:'Sun & everyday',tags:['sun','sabani','gateball','garden'],who:'Mr Ōshiro on his sabani; Mrs Kamiya at gateball',why:'Wide shade for the open water and the court at noon.'},
   headband:{label:'Headband',category:'Work',tags:['sweat','fish counter','ice plant','post'],who:'Mr Toguchi, Mrs Yonamine, Mr Tamaki and Naoko',why:'A band to keep sweat and hair out of the eyes while they work.'},
-  kerchief:{label:'Kerchief',category:'Work',tags:['kitchen','shop','school lunch','hair covered'],who:'Mrs Sato, Mrs Nakamura, Kōji, Hiroshi and the school’s lunch squad',why:'Hair tied up and covered over food.'},
+  kerchief:{label:'Kerchief',category:'Work',tags:['kitchen','shop','school lunch','hair covered','headscarf','sankakukin','engine room'],who:'Mrs Sato, Mrs Nakamura, Kōji, Mr Higa Jr, Hiroshi and the school’s lunch squad',
+   why:'A triangle of cotton tied at the back of the neck, so hair stays covered over food (and out of the oil in the engine room).'},
   beanie:{label:'Beanie',category:'Work',tags:['cold','ice plant','cold room','knit','winter'],who:'Mr Tamaki and the Cold-storage kid in the ice plant’s cold room',why:'The only warm hat on the island in August, for a room below freezing.'},
   beret:{label:'Beret',category:'Sun & everyday',tags:['bookshop','wool','autumn'],who:'Nhung on cooler days',why:'A soft wool beret, her own style.'},
   bucket:{label:'Bucket hat',category:'Sun & everyday',tags:['sun','school','children','yellow hat','beach','seawall'],who:'the Years 5–6 pupils on the walk to school; anglers on the seawall',why:'A soft brim all round, shade for the neck too.'},
@@ -127,6 +130,11 @@ const PART_ENTRIES={
    why:'A well-made trucker cap: a tall foam front with Johansson’s J raised in embroidery, a mesh back that lets the sea wind through, a strap that fits anyone.',
    supplier:'Sakura Shōten, ¥3,800 (Johansson Headwear JH-712)',
    colourways:[{name:'Navy & white',colours:{'outfit.hatColour':'#27304d','outfit.accent':'#f4f1ea'}},{name:'Charcoal & grey',colours:{'outfit.hatColour':'#2b2b2b','outfit.accent':'#6d7478'}},{name:'White & navy',colours:{'outfit.hatColour':'#f4f1ea','outfit.accent':'#27304d'}}]},
+ },
+ belt:{
+  none:{label:'No belt',category:'Work',tags:[],who:'most islanders',why:'Nothing hanging at the waist.'},
+  duty:{label:'Duty belt',category:'Work',tags:['police','officer','patrol','holster','baton','handcuffs','radio','uniform'],who:'Officer Mori',
+   why:'A police officer’s duty belt: the holster, the baton, the handcuffs and the radio, with its microphone on the shoulder. Under the police jacket only what comes out of its side slots shows.'},
  },
  earrings:{
   none:{label:'No earrings',category:'Jewellery',tags:[],who:'most islanders',why:'Nothing in the ears.'},
@@ -179,12 +187,13 @@ export function wornSet(outfit){
 
 /**
  * What `outfit` becomes with `set` put on (`colours`: one of its colourways' fields). A field the set leaves out stays as it
- * was, except the hat that came with the set being worn now: it comes off with that set (no kitchen kerchief on a Sunday
+ * was, except the hat (or the belt) that came with the set being worn now: it comes off with that set (no kitchen kerchief on a Sunday
  * dress). A hat of one's own stays (Nhung keeps her beret for a bookshop afternoon).
  */
 export function putOnSet(outfit,set,colours={}){
  const was=wornSet(outfit)?.set,next={...outfit,...set.outfit,...colours};
- if(!('hat' in set.outfit)&&was&&was.id!==set.id&&'hat' in was.outfit&&outfit.hat===was.outfit.hat)next.hat='none';
+ // The same for a belt that came with a set (the police duty belt comes off with the uniform).
+ for(const field of ['hat','belt'])if(!(field in set.outfit)&&was&&was.id!==set.id&&field in was.outfit&&outfit[field]===was.outfit[field])next[field]='none';
  return next;
 }
 

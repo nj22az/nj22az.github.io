@@ -1,5 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {hemSpec} from './springs.js';
+import {POLICE_UNIFORM} from './police-data.js';
 
 /**
  * The shirt, painted.
@@ -83,7 +84,7 @@ export function patchName(name,measure,width,min=.6){
  * measurements; returns the list of what was drawn, for tests and the studio.
  */
 export function paintGarment(ctx,recipe,m,radiusAt){
- const {width:TW,height:TH,V0,T0,T1}=GARMENT,o=recipe.outfit,top=o.topColour,marks=[];
+ const {width:TW,height:TH,V0,T0,T1}=GARMENT,o=recipe.outfit,top=o.topColour,top0=top,marks=[];
  ctx.clearRect(0,0,TW,TH);
  const W=m.width,D=m.depth;
  const Y=t=>(1-(V0+(1-V0)*(t-T0)/(T1-T0)))*TH;
@@ -124,7 +125,7 @@ export function paintGarment(ctx,recipe,m,radiusAt){
   ctx.restore();return shown;
  };
  // An island shirt is worn out over the shorts, so its cloth (and print) runs down to its own hem (springs.js).
- const out=o.top==='kariyushi'?hemSpec(recipe,m):null;
+ const out=o.top==='kariyushi'||o.top==='police'?hemSpec(recipe,m):null;
  const k=m.k,neck=.92,hem=out?Math.max(GARMENT.T0+.02,(out.waist-out.length-m.hipY)/m.torso+.01):.15;
 
  // Stripes and prints first, so collars and pockets sit over them.
@@ -242,11 +243,29 @@ export function paintGarment(ctx,recipe,m,radiusAt){
    for(const s of [-1,1]){poly([[s*.012*k,1.0],[s*.16*k,1.0],[s*.03*k,.66],[s*.0*k,.66]],c);path([[s*.13*k,.985],[s*.02*k,.69]],w,line*1.2);}
    poly([[-.045*k,.7],[.045*k,.7],[0,.56]],'#d8342c');marks.push('collar','scarf');break;
   }
+  // The 1994 police jacket (police-data.js): its lapels, buttons, straps and badges are modelled (police-uniform.js);
+  // here the white shirt and the indigo-grey tie in the V, the front edge, the breast pockets with their pleat and flap,
+  // the flapped slots at the waist the holster and the baton come out of, and the side vents behind.
   case 'police':{
-   collar('#f4f1ea',{drop:.87,spread:.09});
-   poly([[-.016*k,.93],[.016*k,.93],[.027*k,.75],[0,.7],[-.027*k,.75]],'#18243d');
-   for(const side of [-1,1])for(const t of [.64,.49,.34])dotAt(side*W*.15,t,.009*k,'#d7b561');
-   pocket(-W*.25,.73,W*.19,.10,shade(top,.92));dotAt(W*.25,.76,.022*k,'#d7b561');marks.push('tie','badge','buttons');hemRound();break;
+   const J=POLICE_UNIFORM.jacket,L=J.lapel,fx=(f,t)=>f*W/2*radiusAt(t),neck=L[0],foot=L.at(-1);
+   poly([[-fx(neck[0],1.0),1.02],[fx(neck[0],1.0),1.02],[0,foot[1]]],J.shirt,{stroke:null});
+   // The shirt's collar points in the V only: round the back of the neck the jacket's collar covers it.
+   for(const sd of [-1,1])poly([[sd*.008*k,.99],[sd*.085*k,1.0],[sd*.075*k,.95],[sd*.026*k,.9]],J.shirt);
+   poly([[-.017*k,.985],[.017*k,.985],[.021*k,.94],[-.021*k,.94]],J.tie,{width:line*.7});
+   poly([[-.016*k,.94],[.016*k,.94],[.024*k,foot[1]+.03],[-.024*k,foot[1]+.03]],J.tie,{width:line*.7});
+   path([[.004*k,foot[1]],[.004*k,hem]],ink,line*.9);
+   const P=J.pockets;
+   for(const s of [-1,1]){
+    const cx=s*fx(P.f,P.t),w=fx(P.w,P.t),top=P.t+P.h/2,bot=P.t-P.h/2;
+    poly([[cx-w/2,top],[cx+w/2,top],[cx+w/2,bot],[cx-w/2,bot]],shade(top0,.95),{width:line*.8});
+    path([[cx,top-P.flap],[cx,bot+.01]],shade(top0,.7),line*.6);
+    poly([[cx-w/2-.002*k,top+.008],[cx+w/2+.002*k,top+.008],[cx+w/2,top-P.flap],[cx-w/2,top-P.flap]],shade(top0,.9),{width:line*.8});
+   }
+   const S=J.slots;
+   for(const s of [-1,1]){const xa=fx(Math.sin(S.at-S.w/2),S.t),xb=fx(Math.sin(Math.min(Math.PI/2-.01,S.at+S.w/2)),S.t);
+    poly([[s*xa,S.t+S.h/2],[s*xb,S.t+S.h/2],[s*xb,S.t-S.h/2],[s*xa,S.t-S.h/2]],shade(top0,.9),{width:line*.8});}
+   for(const s of [-1,1])path([[s*W*.26,hem],[s*W*.26,hem+.16]],ink,line*.8,true);
+   marks.push('shirt and tie','pockets','slots','vents');hemRound();break;
   }
   case 'overalls':{
    // The bib, its straps and their buttons, in the trousers' cloth.
