@@ -37,9 +37,12 @@ export const PATHS=Object.freeze({
  brands:'johansson-town/data/studio/brand-rules.json',
  output:'output/studio-mcp',
 });
-const WRITABLE=[PATHS.looks,PATHS.products,PATHS.log,PATHS.draft,PATHS.looksModule,PATHS.charactersModule,PATHS.productsModule];
+const WRITABLE=['johansson-town/src/catalog/catalog-data.js',PATHS.looks,PATHS.products,PATHS.log,PATHS.draft,PATHS.looksModule,PATHS.charactersModule,PATHS.productsModule];
 const LABEL=/^johansson-town\/assets\/graphics\/labels\/[a-z][a-z0-9-]{1,39}\.r[1-9][0-9]{0,3}\.webp$/;
-const OUTPUT=/^output\/studio-mcp\/(?:[a-z0-9][a-z0-9._-]{0,80}\/){0,3}[a-z0-9][a-z0-9._-]{0,120}\.(png|webp|json|txt)$/;
+const OUTPUT=/^output\/studio-mcp\/(?:[a-z0-9][a-z0-9._-]{0,80}\/){0,3}[a-z0-9][a-z0-9._-]{0,120}\.(png|webp|json|txt|glb|stl)$/;
+// Assets made in Studio (tools/studio/assets.mjs): held in the draft until "update World", then World's catalogue.
+const DRAFT_ASSET=/^johansson-town\/data\/studio\/draft\/assets\/[a-z0-9][a-z0-9-]{1,47}\/(model\.glb|asset\.json|hero\.png|package\.json)$/;
+const CATALOG_ASSET=/^johansson-town\/assets\/catalog\/([a-z0-9][a-z0-9-]{1,47}\/(model\.glb|asset\.json|hero\.png)|index\.json)$/;
 export const OUTPUT_CAP=50*1024*1024;
 
 /** Is this repository-relative path one Studio may write? (Checked before anything touches the disk.) */
@@ -47,7 +50,7 @@ export function writable(path){
  if(typeof path!=='string'||path.includes('\\')||path.includes('\0'))return false;
  const clean=posix.normalize(path);
  if(clean!==path||clean.startsWith('/')||clean.split('/').some(part=>part==='..'||part==='.'||part===''))return false;
- return WRITABLE.includes(clean)||LABEL.test(clean)||(OUTPUT.test(clean)&&!clean.split('/').some(p=>p.startsWith('.')));
+ return WRITABLE.includes(clean)||LABEL.test(clean)||DRAFT_ASSET.test(clean)||CATALOG_ASSET.test(clean)||(OUTPUT.test(clean)&&!clean.split('/').some(p=>p.startsWith('.')));
 }
 
 let queue=Promise.resolve();
@@ -63,7 +66,7 @@ export function openRepo(root=defaultRoot()){
  const abs=path=>resolve(root,path);
  /** Refuses a path unless every folder on the way is a real folder inside the repository and the file is no link. */
  async function guard(path,{create=false}={}){
-  if(!writable(path))throw Error(`Studio may not write ${JSON.stringify(path)}: only its data files, its generated modules, label pictures and output/studio-mcp are writable.`);
+  if(!writable(path))throw Error(`Studio may not write ${JSON.stringify(path)}: only its data files, its generated modules, label pictures, drafted and catalogue assets and output/studio-mcp are writable.`);
   const realRoot=await realpath(root),target=abs(path);
   let folder=dirname(target);
   if(create)await mkdirInside(realRoot,relative(root,folder));
@@ -154,6 +157,8 @@ export function openRepo(root=defaultRoot()){
  }
  const readJSON=async path=>JSON.parse(await read(path));
  const exists=path=>lstat(abs(path)).then(()=>true,()=>false);
+ /** Removes a file Studio may write (a drafted asset once published or discarded); a missing file is no error. */
+ async function remove(path){const target=await guard(path);await unlink(target).catch(e=>{if(e.code!=='ENOENT')throw e;});return path;}
  /** output/studio-mcp stays under 50 MB: the oldest files go first. */
  async function capOutput(){
   const files=[];
@@ -163,7 +168,7 @@ export function openRepo(root=defaultRoot()){
   let total=files.reduce((a,f)=>a+f.size,0);
   for(const f of files.sort((a,b)=>a.time-b.time)){if(total<=OUTPUT_CAP)break;await unlink(f.p).catch(()=>{});total-=f.size;}
  }
- return {root,abs,guard,write,writeAll,locked,read,readJSON,exists,capOutput};
+ return {root,abs,guard,write,writeAll,locked,read,readJSON,exists,remove,capOutput};
 }
 
 /** JSON as Studio writes it: two spaces and a newline at the end, so the same data is always the same bytes. */

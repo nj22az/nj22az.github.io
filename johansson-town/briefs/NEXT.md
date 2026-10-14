@@ -144,6 +144,64 @@ it, using World's own vendored three.js and toon look, so what you model is exac
   - *Next pieces of the loader:* placing by id from a layout file and from the Build page (§6), moving hand-coded props
     over, regenerating the building survey (docs/building-plans still lists the old boxes).
 
+- **Studio on the iPad: "Make model" (2026-10-14).** The creator, seeing a parametric lampshade page: "Yes proceed I want
+  all assets to be available in a studio maker as well and easy to export". Taken from that page: a shape driven by a
+  profile with ribs, twist and bulge, live checks while you drag, presets and a sealed mesh; not copied: its 43k
+  triangles, glossy transmission materials, CDN scripts and STL-only export.
+  - *Done:* Studio's fifth workspace, **Make model** (`avatar-creator/model.js`, `model-assets.mjs`): every catalogue
+    asset and every prop in the registry as picture tiles grouped by kind, searchable, opened in World's look (its
+    lights, cel pass and ink) to orbit by finger, optionally beside Miss Higa. The desktop's checks run live as Pass/Fail
+    lines: `src/studio/modeller/checks.js` and `rules.json` are byte copies of `jojo/town-studio/modeller/` and
+    `card-checks.js` ports `townstudio/assets.py`'s card checks (`tests/asset-modeller.test.mjs` holds all three to the
+    desktop). One tap each, made ahead of the tap so iPad Safari keeps it: **GLB** for World (a catalogue asset's own
+    file; anything else written by World's GLTFExporter, its root the asset node at the origin, real metres), **STL**
+    (millimetres, z up, with a sentence on whether it is watertight), a 1200 × 1200 **transparent PNG** in World's look,
+    and the **asset card**, all named `<id>.v<version>.<ext>`.
+  - *Done:* the **Lathe maker** (`src/studio/makers/lathe.js`, in World's src so Studio, World and the desktop build
+    the same mesh from the same parameters): chōchin, andon, vase, bottle or can, bucket, wooden onsen tub, three
+    presets each; a profile of draggable points, height, radii, bulge, ribs (count, depth, round/pleat/flute/facet,
+    round it or up it), twist, wall, sides, open or closed ends, rims and hoops, colours from World's palette (each
+    with where World uses it), glow for the lamps (World's own lantern halo), and a smoothness the phone budget caps.
+    A design is saved as its parameters (`card.maker`), in the browser and in its asset card, and opens again. The
+    bandai andon in `onsen-lobby.js` is drawn inline; the andon preset "Bandai andon" is its standalone twin.
+  - *Done:* the hand-off. A made asset whose checks all pass is sent as a package (`<id>.v<n>.studio-asset.json`: the
+    resolved card, GLB and hero, each with its sha256); the johansson-studio tools `asset_list`, `asset_export` (the
+    iPad's files drawn in headless Studio), `asset_draft` (checks it again into `data/studio/draft/assets/<id>/`) and
+    `asset_publish` (only on "update World": into `assets/catalog/`, `index.json`, `catalog-data.js`), documented in
+    `avatar-creator/docs/STUDIO-MCP.md`. Proved once with "Minato akachōchin" (a red izakaya chōchin): made in the
+    maker, exported, looked at full size beside Miss Higa hung 2.2 m up, and kept in the draft; not published.
+  - *Findings (World's own props against the desktop's checks):* the cord reel (9 materials), the voltage tester (10),
+    the paperback (8) and the pumpkin lantern (5) are over a prop's 4 materials; the pumpkin lantern's face floats a
+    few millimetres off its lobes; the cardboard obake is under a centimetre thick (a sheet). Each is shown as a Fail
+    line, not hidden. Most hand-coded props are not watertight (open planes and cylinders): the STL says so.
+  - *Done:* the desktop Studio builds a Lathe design from its card's parameters with this same maker (jojo
+    `town-studio/modeller/build.js buildMaker`), checked: the same 2,688 triangles and the same checks pass.
+  - *Open:* the desktop's Models page has no Lathe controls of its own (it opens and checks a design); the drawing modes "outline and extrude" and "stack blocks"; a `wearable` kind (§10); World placing a
+    made asset somewhere (a layout file, §6); materials for a print (an STL has none; a 3MF with colours would);
+    turning an open sheet into a printable shell automatically; thumbnails of registry props are drawn on the device
+    on first open of the library (about a second each on an iPad).
+- **The survey: what World builds in code, and which of it is in Studio's registry (2026-10-14).**
+  - *In the registry (16):* the drinks machine (`vending.js`), the paper pumpkin lantern, the jack-o'-lantern pail, the
+    plush and cardboard obake, Kuro, the cord reel and the J-Coffee can (`halloween-props.js`), Tetsuo's pocket torch,
+    the rattan locker basket, the evening paper, Miss Higa's paperback and the voltage tester (`story-props.js`), the
+    park's tea stop (`roadside-props.js`), the commuter bicycle (`bicycle.js`) and the kept sake bottle
+    (`izakaya-devices.js`).
+  - *Buildable alone, not in yet, and why:* the fish cart (`roadside-props.js buildFishCart`: built but placed nowhere,
+    so it has no "where"); the obake holding a can (only the film uses it); the kei truck, car and delivery truck
+    (`road-vehicles.js buildVehicle`) and the commuter plane (`airport-island.js buildPlane`): whole vehicles, which
+    rules.json's kinds do not cover (a `vehicle` kind is the creator's call); the Minato Maru (`ferry.js buildFerry`):
+    she has her own design book and is far past every kind's budget; Fujita's houseboat (`createHouseboatModel`): needs
+    its hull GLB passed in; hats and shoes (`avatars/build.js buildHatProp`, `buildShoeProp`), costumes, the cord
+    wrap, safety glasses, headlamp and gloves (`story-props.js`): fitted to a body, they wait for a `wearable` kind;
+    the cleaning tools (`avatars/tools.js createToolProp`): built leaning in a hand's frame; the steamed bun
+    (`createSteamedBunGeometry`): a geometry, not an object; the lantern halo (`buildHalo`): light, not shape.
+  - *Built into a place, not alone:* the build catalogue's street things and the home furniture (`src/build`: bench,
+    postbox, notice board…, made by factories): the next registry batch, through those factories; the rooms' small
+    things (`onsen-props.js`, `onsen-lobby.js`, `sakura-*.js`, `izakaya-*.js` and the rest), drawn inline into their room
+    with its colliders and actions: each moves over by giving it a builder of its own; building shells
+    (`buildSakuraShell`, `buildWarehouseShell`, `buildOfficeShell`, doors): §6's building view; districts, streets,
+    the park and the islands (`createTown`, `buildPark`, `buildHarbour` …): places, not assets (§6).
+
 ## 6. Studio as "Mario Maker for Johansson World": the island builder (the creator, 2026-10-10)
 
 > "I would like a sim city kind of mode where I can build the island from my assets and build the houses and rooms and

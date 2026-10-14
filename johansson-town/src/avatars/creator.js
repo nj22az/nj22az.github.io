@@ -3,8 +3,8 @@ import {SETS,SLOTS,SLOT_AT,ISLAND_PALETTE,ISLAND_HEX,entryFor,labelFor,wornSet,w
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar,wearsBathTowel} from './build.js';
 import {createAvatarAnimator} from './animate.js';
-import {drawPart,drawFace,EXPRESSION_NAMES} from './face.js';
-import {PALETTE,PARTS,PATTERNS,NUMBERED_TOPS,normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe,AGES} from './recipe.js';
+import {drawPart,drawFace,EXPRESSION_NAMES,INK_NOSES,FACE_MARKS,PAINTED_MOUSTACHES,PAINTED_BEARDS} from './face.js';
+import {PALETTE,PARTS,PATTERNS,BOTTOM_PATTERNS,NUMBERED_TOPS,normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe,AGES} from './recipe.js';
 import {POSITION_FEATURES,hitFaceFeature,draggedFaceFields} from './face-position.js';
 import {CAST_RECIPES,ORIGINAL_THUAN_RECIPE} from './cast.js';
 import {MOVES} from './moves.js';
@@ -69,6 +69,8 @@ export function previewOutfits(recipe){
  return PREVIEW_OUTFITS.map(([value,label])=>{const off=GROWN_UP_OUTFITS.has(value)&&!grown;return {value,label:off?label+' (grown-ups)':label,disabled:off};});
 }
 const LABEL={
+ ...Object.fromEntries(Object.entries(INK_NOSES).map(([id,n])=>[id,n.label])),   // the ink noses, named where they are drawn
+ ...PAINTED_MOUSTACHES,...PAINTED_BEARDS,
  towel:'Bath towel',swimwear:'Swimwear',
  crop:'Crop',sidepart:'Side part',bob:'Bob',long:'Long',sweptponytail:'Swept low ponytail',ponytail:'Ponytail',braids:'Original Thuận braids',longbraids:'Twin braids · Thuan',bun:'Bun',spiky:'Spiky',perm:'Perm',buzz:'Buzz',afro:'Afro',horseshoe:'Horseshoe',bald:'Bald',
  pixie:'Pixie',shoulder:'Shoulder',curtains:'Centre part',slick:'Slicked back',mullet:'Mullet',topknot:'Topknot',pigtails:'Pigtails',twinbuns:'Twin buns',
@@ -83,7 +85,7 @@ const LABEL={
  smile:'Smile',flat:'Flat',grin:'Grin',small:'Small',smirk:'Smirk',pout:'Pout',
  square:'Square',oval:'Oval',heart:'Heart',sun:'Shades',half:'Half-rim',
  moustache:'Moustache',walrus:'Walrus',stubble:'Stubble',beard:'Beard',goatee:'Goatee',
- flowers:'Flowers',stripes:'Stripes',dots:'Dots',
+ flowers:'Flowers',stripes:'Stripes',dots:'Dots',plaid:'Plaid',
  child:'Child',teen:'Teen',adult:'Adult',elder:'Elder',
 };
 /** The words under a part's picture: a wardrobe item's from the catalogue, by slot (a police top and a police cap read apart). */
@@ -105,6 +107,7 @@ export const TABS=[
  {id:'head',name:'Face',controls:[
   {kind:'face-forms',page:'style',at:'head.form',label:'Face shape',list:PARTS.head},
   {kind:'toggle',page:'style',at:'freckles',label:'Freckles'},{kind:'toggle',page:'style',at:'mole',label:'Beauty spot'},
+  ...Object.entries(FACE_MARKS).map(([k,label])=>({kind:'toggle',page:'style',at:'marks.'+k,label})),
   {kind:'position',page:'adjust',at:'moleSpot.height',horizontal:'moleSpot.x',label:'Beauty spot',when:r=>r.mole},
   {kind:'stepper',page:'adjust',at:'moleSpot.size',label:'Spot size',less:'Smaller spot',more:'Bigger spot',when:r=>r.mole},
   {kind:'colours',page:'colour',at:'body.skin',label:'Skin',palette:PALETTE.skin},
@@ -150,12 +153,14 @@ export const TABS=[
   {kind:'toggle',page:'style',at:'glasses.enabled',label:'Wear glasses'},
   {kind:'parts',page:'style',at:'facial.moustache',label:'Moustache',list:PARTS.moustache,draw:'moustache'},
   {kind:'parts',page:'style',at:'facial.beard',label:'Beard',list:PARTS.beard,draw:'beard'},
+  {kind:'parts',page:'style',at:'facial.paint',label:'Painted beard',list:PARTS.paint,draw:'paint'},
   {kind:'colours',page:'colour',at:'glasses.colour',label:'Frames',palette:['#2b2b2b','#8a4a3a','#c8a060','#e06a7a','#3d6a8a','#d8342c']},
   {kind:'colours',page:'colour',at:'facial.colour',label:'Moustache & beard',palette:PALETTE.hair},
   {kind:'stepper',page:'adjust',at:'glasses.size',label:'Glasses size',less:'Smaller glasses',more:'Bigger glasses'},
   {kind:'stepper',page:'adjust',at:'glasses.height',label:'Glasses height',less:'Lower glasses',more:'Higher glasses'},
   {kind:'stepper',page:'adjust',at:'facial.size',label:'Whiskers size',less:'Smaller moustache and beard',more:'Bigger moustache and beard'},
-  {kind:'stepper',page:'adjust',at:'facial.height',label:'Whiskers height',less:'Lower moustache',more:'Higher moustache'}]},
+  {kind:'stepper',page:'adjust',at:'facial.height',label:'Whiskers height',less:'Lower moustache',more:'Higher moustache'},
+  {kind:'stepper',page:'adjust',at:'facial.width',label:'Moustache width',less:'Narrower moustache',more:'Wider moustache'}]},
  // The wardrobe. Everyone has the base layer on (tank top, underwear, bare feet);
  // clothes are added over it, and the first tile of each grid takes them off again.
  // Outfits: the island's sets and costumes (outfits.js), each put on in one tap over what is worn.
@@ -171,6 +176,8 @@ export const TABS=[
   {kind:'colours',page:'colour',at:'outfit.accent',label:'Ribbons & print',palette:PALETTE.cloth,cloth:true}]},
  {id:'bottom',name:'Bottoms',wardrobe:true,controls:[
   {kind:'parts',page:'style',at:'outfit.bottom',list:PARTS.bottom,draw:'figure'},
+  // Plaid on a skirt, stripes down trousers (build.js), in the accent colour.
+  {kind:'chips',page:'style',at:'outfit.bottomPattern',list:BOTTOM_PATTERNS,label:'Pattern'},
   {kind:'colours',page:'colour',at:'outfit.bottomColour',label:'Colour',palette:PALETTE.cloth,cloth:true},
   {kind:'colours',page:'colour',at:'swim.colour',label:'Swimwear, for the onsen',palette:PALETTE.cloth,cloth:true},
   // What they wear behind Umi-no-yu's noren: grown-ups choose; children wear swimwear. (Past the bath doors, in the shared
@@ -179,7 +186,7 @@ export const TABS=[
   {kind:'note',page:'style',text:BATH_CHILD_NOTE,when:r=>!wearsBathTowel(r)}]},
  {id:'shoes',name:'Shoes',wardrobe:true,controls:[
   {kind:'parts',page:'style',at:'outfit.footwear',list:PARTS.footwear,draw:'feet'},
-  {kind:'colours',page:'colour',at:'outfit.shoes',label:'Colour',palette:['#6d4a32','#2b2b2b','#f4f1ea','#d8342c','#3fa0c8','#f4d23c','#8fbf4a','#e98aa6'],cloth:true}]},
+  {kind:'colours',page:'colour',at:'outfit.shoes',label:'Colour',palette:['#6d4a32','#2b2b2b','#f4f1ea','#d8342c','#3fa0c8','#f4d23c','#8fbf4a','#e98aa6','#f2b8c6','#b8dcc8'],cloth:true}]},
  {id:'hat',name:'Hats & bows',wardrobe:true,controls:[
   {kind:'parts',page:'style',at:'outfit.hat',list:PARTS.hat,draw:'head'},
   {kind:'colours',page:'colour',at:'outfit.hatColour',label:'Colour',palette:PALETTE.cloth,cloth:true}]},
@@ -627,7 +634,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   * What a figure tile's picture is kept under: the item plus only the recipe fields that show in that framing, so a new
   * hat does not redraw every top, and new shoes do not redraw the hats.
   */
- const FACE_FIELDS=['eyes','brows','nose','mouth','glasses','facial','blush','freckles','mole','moleSpot','wrinkles'];
+ const FACE_FIELDS=['eyes','brows','nose','mouth','glasses','facial','blush','freckles','mole','moleSpot','wrinkles','marks'];
  const HEAD_UNSEEN=['outfit.bottom','outfit.bottomColour','outfit.bottomPattern','outfit.footwear','outfit.shoes'];
  const UNSEEN={figure:['outfit.hat','outfit.hatColour','outfit.footwear','outfit.shoes'],bottom:['outfit.hat','outfit.hatColour',...FACE_FIELDS],
   feet:['outfit.hat','outfit.hatColour','hair','accessories',...FACE_FIELDS],head:HEAD_UNSEEN,'hair-rear':HEAD_UNSEEN,outfit:[]};

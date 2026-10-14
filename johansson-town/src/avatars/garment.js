@@ -53,6 +53,11 @@ const COLLARED=['contrastpolo','polo','blouse','kariyushi','jacket','smock','car
  * the sleeves, the shoulders and the underarms, in the accent colour (build.js addBody).
  */
 export const SHIRT_SLEEVES=Object.freeze(['vest','knitvest']);
+/**
+ * Tops whose sleeves (with the shoulder caps and the underarms) are their own cloth in the accent colour: the raglan tee,
+ * whose sleeves run up to the neck in a contrasting colour (build.js addBody).
+ */
+export const ACCENT_SLEEVES=Object.freeze(['raglan']);
 /** Tops whose arm under a short sleeve is an undershirt in the accent colour, not skin (the Seagulls jersey). */
 export const UNDERSHIRT_ARMS=Object.freeze(['baseball']);
 /** Long-sleeved tops whose sleeve ends before the wrist, as a fraction of the arm from shoulder to wrist. */
@@ -337,6 +342,42 @@ export function paintGarment(ctx,recipe,m,radiusAt){
    if(o.number>0)words(String(o.number),0,.56,.34*m.torso,{fill:pipe,stroke:shade(pipe,.6),strokeW:.004*k,font:['900',NUMERALS],back:true});
    marks.push('V neck','piping','lettering',o.number>0?'number:'+o.number:'no number');break;
   }
+  // The raglan tee: the body in the top colour; the sleeves (ACCENT_SLEEVES), their seams running from the underarm up to
+  // the neck in front and behind, and the neck band in the accent; a little heart printed on the chest, our own.
+  case 'raglan':{
+   const sleeve=o.accent,seam=shade(sleeve,.6),side=t=>W/2*radiusAt(t)*.999;
+   for(const back of [false,true])for(const s of [-1,1]){
+    poly([[s*.085*k,1.05],[s*side(1.05),1.05],[s*side(.72),.72],[s*side(.84)*.8,.86]],sleeve,{stroke:null,back});
+    wrapped(back,()=>path([[s*.085*k,1.035],[s*side(.84)*.8,.86],[s*side(.72),.72]],seam,line*.9,back));
+   }
+   rib(sleeve);hemRound();
+   // The heart: about 7 cm across on a grown-up, in the accent, edged in its ink, with a little shine on one lobe.
+   const r=.036*k,ht=.66,a=theta(0,ht);
+   ctx.save();ctx.translate(X(0,ht),Y(ht));ctx.scale(r*pxPerX(a,ht),r*pxPerY);
+   ctx.beginPath();ctx.moveTo(0,.95);ctx.bezierCurveTo(-.3,.68,-1.05,.2,-1.05,-.32);ctx.bezierCurveTo(-1.05,-.92,-.32,-1.08,0,-.5);
+   ctx.bezierCurveTo(.32,-1.08,1.05,-.92,1.05,-.32);ctx.bezierCurveTo(1.05,.2,.3,.68,0,.95);ctx.closePath();
+   ctx.fillStyle=sleeve;ctx.fill();ctx.lineWidth=.13;ctx.lineJoin='round';ctx.strokeStyle=seam;ctx.stroke();
+   ctx.fillStyle='rgba(255,255,255,.8)';ctx.beginPath();ctx.ellipse(-.5,-.42,.17,.12,-.6,0,Math.PI*2);ctx.fill();
+   ctx.restore();
+   marks.push('raglan seams','heart');break;
+  }
+  // A pinafore over a T-shirt: the tee (the top colour) shows at the neck and is the sleeves; the pinafore's bib, its waist
+  // and its wide straps (crossed behind) are the skirt's cloth (the bottom colour), with a button at each strap in the
+  // accent and a patch pocket on the bib.
+  case 'pinafore':{
+   const b=o.bottomColour,bw=W*.3,bt=.74,waistT=.3;
+   rib();
+   ctx.fillStyle=b;ctx.fillRect(0,Y(waistT),TW,Y(GARMENT.T0)-Y(waistT));
+   ctx.strokeStyle=shade(b,.5);ctx.lineWidth=line*.8;ctx.beginPath();ctx.moveTo(0,Y(waistT));ctx.lineTo(TW,Y(waistT));ctx.stroke();
+   poly([[-bw,bt],[bw,bt],[bw*1.06,waistT],[-bw*1.06,waistT]],b,{stroke:shade(b,.5)});
+   pocket(0,.5,bw*.8,.13,shade(b,.94));
+   for(const s of [-1,1]){
+    poly([[s*bw*.98,bt],[s*bw*.5,bt],[s*W*.16,1.0],[s*W*.33,1.0]],b,{stroke:shade(b,.5),width:line*.8});
+    poly([[s*W*.33,1.0],[s*W*.16,1.0],[-s*W*.12,waistT],[-s*W*.3,waistT]],b,{stroke:shade(b,.5),back:true,width:line*.8});
+    dotAt(s*bw*.74,bt-.035,.011*k,o.accent,shade(o.accent,.6));
+   }
+   marks.push('bib','straps','pocket');break;
+  }
   // After the bath (outfits.js AFTERBATH): a house dress's round neck, bound in a paler bias tape; a running vest is
   // its own shell over the bare body (build.js runningShirt), so nothing is drawn for it.
   case 'housedress':rib(lighten(top,.45));break;
@@ -349,7 +390,8 @@ export function paintGarment(ctx,recipe,m,radiusAt){
   // A sleeve that ends before the wrist (SLEEVE_END): its print and its cuff stop there, the arm below it is bare.
   const end=long&&SLEEVE_END[col]?yTop+h*SLEEVE_END[col]:yBot;
   // Over a shirt (SHIRT_SLEEVES) the sleeves are the shirt's: plain, in the accent colour, with the shirt's own hem.
-  const shirtSleeve=SHIRT_SLEEVES.includes(col),cloth=shirtSleeve?o.accent:o.topColour;
+  // A raglan's sleeves (ACCENT_SLEEVES) are plain cloth in the accent the same way.
+  const shirtSleeve=SHIRT_SLEEVES.includes(col)||ACCENT_SLEEVES.includes(col),cloth=shirtSleeve?o.accent:o.topColour;
   ctx.save();ctx.beginPath();ctx.rect(0,yTop,TW,end-yTop);ctx.clip();
   if(o.pattern==='stripes'&&!shirtSleeve){ctx.fillStyle='#f4f1ea';const band=m.torso*.12*pxV;for(let y=yTop+band;y<end;y+=band*2)ctx.fillRect(0,y,TW,Math.min(band,end-y));}
   if((o.pattern==='flowers'||o.pattern==='dots')&&!shirtSleeve){

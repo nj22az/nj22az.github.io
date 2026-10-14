@@ -8,6 +8,8 @@
  * (data/studio/draft, which git ignores); publish_draft writes the draft into World's data, and only when the creator
  * says "update World". None of them commits or pushes.
  */
+import {ASSET_TOOLS} from './assets.mjs';
+
 const NAME={type:'string',minLength:1,maxLength:40,description:'A resident\'s name as World writes it (e.g. "Mr Fujita", "Kōji"; accents and capitals may be left out), or a Studio character\'s id or name.'};
 const SET={type:'object',minProperties:1,maxProperties:80,propertyNames:{pattern:'^[a-z][a-zA-Z]*(\\.[a-z][a-zA-Z]*)?$'},additionalProperties:{type:['string','number','boolean']},
  description:'Fields to change, by path: {"outfit.hat":"captain","hair.colour":"#9a9a96"}. character_get with options:true lists every path and its choices.'};
@@ -402,6 +404,7 @@ export const TOOLS=[
   input:object({tests:{type:'boolean',default:true,description:'Run the Studio tests (about a minute).'}}),
   async run({tests=true},ctx,{signal}={}){return publishCheck(ctx,{tests,signal});}},
  ...PRODUCT_TOOLS,
+ ...ASSET_TOOLS,
 ];
 export const TOOL_BY_NAME=Object.freeze(Object.fromEntries(TOOLS.map(t=>[t.name,t])));
 

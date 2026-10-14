@@ -44,7 +44,8 @@ test('the cap is World’s catalogue asset: a real GLB, its card, its fit, withi
 });
 
 test('old recipes do not change: the cap is a new id, and a procedural cap is built as before',()=>{
- assert.equal(PARTS.hat.at(-1),'trucker','appended, so no saved id moves');
+ // Appended after the older hats (later hats, such as the hair clip, come after it), so no saved id moves.
+ assert.equal(PARTS.hat.indexOf('trucker'),PARTS.hat.indexOf('mountain')+1,'appended, so no saved id moves');
  assert.equal(normalizeRecipe({outfit:{hat:'cap'}}).outfit.hat,'cap');
  const before=buildAvatar(wearing(recipeFor('Kōji'),'cap'),{shadows:false}),a=before.body.geometry.attributes.position.array.slice();before.dispose();
  // Until its model is in hand the trucker is worn as its stand-in, never as a bare head.

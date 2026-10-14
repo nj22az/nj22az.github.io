@@ -136,7 +136,18 @@ export function drawFace(ctx,recipe,state={}){
  // Blush: the recipe's own, and more when shy or pleased.
  const blush=Math.min(1,recipe.blush*.8+mood.blush);
  if(blush>.02){for(const s of [-1,1]){const x=128+s*(L.spread+8),y=L.noseY+2;const g=ctx.createRadialGradient(x,y,1,x,y,17);g.addColorStop(0,`rgba(236,110,120,${.55*blush})`);g.addColorStop(1,'rgba(236,110,120,0)');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(x,y,18,12,0,0,TAU);ctx.fill();}
-  if(mood.blush>=.9){ctx.strokeStyle='rgba(210,80,90,.7)';ctx.lineWidth=1.6;for(const s of [-1,1])for(let i=0;i<3;i++){const x=128+s*(L.spread+2+i*6);ctx.beginPath();ctx.moveTo(x-2,L.noseY+6);ctx.lineTo(x+2,L.noseY-2);ctx.stroke();}}}
+  }
+ // The blush you can see across a room (the creator, 2026-10-14: "characters need to be able to blush"): a pink oval on
+ // each cheek with four hatched strokes across it, stencil-drawn, when they are shy, embarrassed, smitten or laughing hard,
+ // and always for someone given the "Blushing" mark.
+ const flush=Math.max(mood.blush>=.5?Math.min(1,(mood.blush-.3)/.6):0,recipe.marks?.blushing?.8:0);
+ if(flush>0)for(const s of [-1,1]){
+  const x=128+s*(L.spread+8),y=L.noseY+5;
+  ctx.fillStyle=`rgba(244,120,150,${.72*flush})`;ctx.beginPath();ctx.ellipse(x,y,21,10.5,0,0,TAU);ctx.fill();
+  ctx.strokeStyle=`rgba(214,60,100,${.9*flush})`;ctx.lineWidth=3;ctx.lineCap='round';
+  for(let i=0;i<5;i++){const hx=x-14+i*7;ctx.beginPath();ctx.moveTo(hx-3.2,y+6);ctx.lineTo(hx+3.2,y-6);ctx.stroke();}
+ }
+ drawFaceMarks(ctx,L,recipe);
  // The cartoon marks that go under the parts: a face going red, gloom lines, puffed-out cheeks.
  const fx=mood.fx||[];drawMarks(ctx,L,skin,fx.filter(f=>UNDER_MARKS.has(f)));
  // Eyes. Symbol eyes (stars, hearts, a wink...) are a drawing, not a lid: a blink leaves them be.
@@ -146,9 +157,13 @@ export function drawFace(ctx,recipe,state={}){
  const look=mood.look||state.look||[0,0];
  for(const s of [-1,1])drawEye(ctx,128+s*L.spread,L.eyeY,L.eyeS,s,recipe.eyes,eyesState,look,L.eyeTilt,L.eyeW);
  // Brows (oneBrow: the viewer's right one goes up on its own, the smug brow).
- if(recipe.brows.style!=='none')for(const s of [-1,1])drawBrow(ctx,128+s*L.browSpread,L.browY-mood.browLift-(s>0?mood.oneBrow||0:0),L.browS,s,recipe.brows,L.browTilt,mood.brow);
+ if(recipe.brows.style!=='none')for(const s of [-1,1])drawBrow(ctx,128+s*L.browSpread,L.browY-mood.browLift-(s>0?(mood.oneBrow||0)+(recipe.marks?.cocked?7:0):0),L.browS,s,recipe.brows,L.browTilt,mood.brow);
  drawNose(ctx,L.noseX,L.noseY,L.noseS,recipe.nose.style,skin,line);
+ // A painted beard sits under the lips, a painted moustache over the top one. In 3D the beard is on its own shell round the
+ // jaw (drawBeardShell), which reaches the chin's outline and the sideburns as the face's canvas cannot.
+ if(!state.objects)drawFacialPaint(ctx,L,recipe.facial,'beard');
  drawMouth(ctx,L.mouthX,L.mouthY+(mood.mouthDY||0),L.mouthS,recipe.mouth,mood.mouth,state.talk||0,line,L.mouthW);
+ drawFacialPaint(ctx,L,recipe.facial,'moustache');
  drawMarks(ctx,L,skin,fx.filter(f=>!UNDER_MARKS.has(f)),mood.mouthDY||0);
  if(!state.objects){drawFacialHair(ctx,L,recipe.facial);drawGlasses(ctx,L,recipe.glasses);}
  ctx.restore();
@@ -425,6 +440,96 @@ function drawBrow(ctx,x,y,s,side,brows,tilt,mood){
  ctx.stroke();ctx.restore();
 }
 
+/**
+ * The ink noses (the creator, 2026-10-14: "many different kind of noses needs to go in the avatar creator, they should look
+ * like different characters ... don't copy Nintendo ... it should feel like something you could draw with a stencil"): each
+ * is a few strokes of one pen, round at the ends, drawn on the face with nothing raised (build.js adds no bump for them).
+ * The pen is a list of strokes; a stroke is moves in face units round the nose's point (y down): [x,y] a line to there,
+ * [cx,cy,x,y] a curve through cx,cy to there, 'z' closing it; {dot:[x,y]} is a filled dot. The first point starts the stroke.
+ */
+export const INK_NOSES=Object.freeze({
+ drawn:{label:'Drawn line',pen:[[[3,-17],[-4,-4,-3,2],[-1,5.5,5,4]]]},
+ slash:{label:'Slash',pen:[[[3,-9],[-3,3]]]},
+ bracket:{label:'Bracket',pen:[[[3,-8],[-5,-2,3,4]]]},
+ corner:{label:'Corner',pen:[[[-1,-14],[-4,2],[4,2]]]},
+ stub:{label:'Stub',pen:[[[0,-7],[-3,2],[3,2]]]},
+ jhook:{label:'J hook',pen:[[[2,-15],[2,0],[2,4,-2,3]]]},
+ chevron:{label:'Chevron',pen:[[[-4,-3],[0,2],[4,-3]]]},
+ caret:{label:'Caret',pen:[[[-4,2],[0,-3],[4,2]]]},
+ curve:{label:'Curve',pen:[[[-7,-1],[0,6,7,-1]]]},
+ widecurve:{label:'Wide curve',pen:[[[-10,-2],[0,8,10,-2]]]},
+ cup:{label:'Cup',pen:[[[-4,-4],[-4,4,0,4],[4,4,4,-4]]]},
+ tallcup:{label:'Tall cup',pen:[[[-4,-12],[-4,0],[-4,5,0,5],[4,5,4,0],[4,-12]]]},
+ bell:{label:'Bell',pen:[[[-3,-9],[-8,4,0,4],[8,4,3,-9]]]},
+ twinlobe:{label:'Two lobes',pen:[[[-6,-1],[-6,4,-2,3],[0,5,2,3],[6,4,6,-1]]]},
+ cloud:{label:'Cloud',pen:[[[-9,-1],[-9,4,-5,3],[-3,6.5,0,4],[3,6.5,5,3],[9,4,9,-1]]]},
+ arch:{label:'Arch',pen:[[[-5,2],[0,-6,5,2]]]},
+ hood:{label:'Hood',pen:[[[-4,3],[-4,-1],[0,-6.5,4,-1],[4,3]]]},
+ profile:{label:'Profile',pen:[[[-2,-15],[-3,-2],[-8,4,-1,4],[4,4,4,1]]]},
+ bridge:{label:'Bridge',pen:[[[-2,-14],[-2,1],[-4,3.5,-7,2]],[[2,-14],[2,1],[4,3.5,7,2]]]},
+ ring:{label:'Ring',pen:[[[-5,0],[-5,-4,0,-4],[5,-4,5,0],[5,4,0,4],[-5,4,-5,0],'z']]},
+ nostrils:{label:'Nostrils',pen:[{dot:[-3,1]},{dot:[3,1]}]},
+ wedge:{label:'Wedge',pen:[[[0,-7],[-3.5,2],[3.5,2],'z']]},
+ slope:{label:'Slope',pen:[[[0,-13],[1,-2,5,2],[0,3]]]},
+});
+function inkNose(ctx,pen,skin){
+ ctx.scale(1.35,1.35);ctx.strokeStyle=shade(skin,.28);ctx.fillStyle=shade(skin,.28);ctx.lineWidth=2.6;ctx.lineCap='round';ctx.lineJoin='round';
+ for(const stroke of pen){
+  if(stroke.dot){ctx.beginPath();ctx.arc(stroke.dot[0],stroke.dot[1],2.1,0,TAU);ctx.fill();continue;}
+  ctx.beginPath();stroke.forEach((m,i)=>{if(m==='z')ctx.closePath();else if(i===0)ctx.moveTo(m[0],m[1]);else if(m.length===2)ctx.lineTo(m[0],m[1]);else ctx.quadraticCurveTo(m[0],m[1],m[2],m[3]);});
+  ctx.stroke();
+ }
+}
+/**
+ * Face marks (the creator, 2026-10-14: "I want to be able to give them more personality with lines stubble etc ... I want
+ * you to be able to look at the characters and feel how they are"): lines and shading in the same pen as the ink noses,
+ * each switched on by itself (recipe.marks), placed by the face's own layout so they follow the eyes, brows, nose and mouth.
+ */
+export const FACE_MARKS=Object.freeze({
+ forehead:'Forehead lines',worry:'Worry lines',frown:'Frown lines',lids:'Heavy lids',bags:'Eye bags',crowsfeet:'Crow’s feet',
+ smilelines:'Smile lines',cheeks:'Hollow cheeks',dimples:'Dimples',cleft:'Chin cleft',stubble:'Stubble shadow',rosy:'Rosy nose',
+ cocked:'One brow up',blushing:'Blushing',   // a face is never quite symmetrical: the viewer's right brow sits higher, always
+});
+function drawFaceMarks(ctx,L,recipe){
+ const m=recipe.marks||{},skin=recipe.body.skin,ink=shade(skin,.42);
+ ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+ // Stubble first, under everything: a shadow of the beard's colour over the jaw and the upper lip, and a fine tooth to it.
+ if(m.stubble){
+  // Along the jaw: from below the cheekbones out to the edges of the face, round the chin, the mouth and the
+  // upper lip's middle left clear; it fades towards the sides of the head, so it never stops on a hard edge.
+  const hair=recipe.facial?.colour||recipe.hair?.colour||'#1c1714',top=L.noseY+4,chin=L.mouthY+60,lip=(L.noseY+L.mouthY)/2;
+  const n=parseInt(hair.slice(1),16),rgba=a=>`rgba(${n>>16},${n>>8&255},${n&255},${a})`;
+  ctx.save();ctx.beginPath();
+  ctx.moveTo(20,top-14);ctx.quadraticCurveTo(70,top+2,96,top+12);ctx.quadraticCurveTo(110,lip-2,128,lip-4);ctx.quadraticCurveTo(146,lip-2,160,top+12);
+  ctx.quadraticCurveTo(186,top+2,236,top-14);ctx.quadraticCurveTo(232,chin,128,chin+6);ctx.quadraticCurveTo(24,chin,20,top-14);ctx.closePath();
+  ctx.moveTo(110,L.mouthY-3);ctx.quadraticCurveTo(128,L.mouthY-9,146,L.mouthY-3);ctx.quadraticCurveTo(128,L.mouthY+9,110,L.mouthY-3);ctx.closePath();
+  const g=ctx.createLinearGradient(20,0,236,0);g.addColorStop(0,rgba(0));g.addColorStop(.18,rgba(.2));g.addColorStop(.82,rgba(.2));g.addColorStop(1,rgba(0));
+  ctx.fillStyle=g;ctx.fill('evenodd');ctx.clip('evenodd');
+  // Speckles scattered by a hash, so no rows or stripes show.
+  const hash=k=>{const x=Math.sin(k*127.1+311.7)*43758.5453;return x-Math.floor(x);};
+  for(let i=0;i<620;i++){const x=24+hash(i)*208,y=top-12+hash(i+999)*(chin+16-top),edge=Math.min(x-20,236-x)/40;ctx.fillStyle=rgba(.4*Math.min(1,edge));ctx.fillRect(x,y,1.3,1.3);}
+  ctx.restore();
+ }
+ ctx.strokeStyle=ink;ctx.lineWidth=3.2;   // a few bold lines read from across the street, many thin ones do not
+ const line=(pts)=>{ctx.beginPath();pts.forEach((p,i)=>i?(p.length===2?ctx.lineTo(p[0],p[1]):ctx.quadraticCurveTo(p[0],p[1],p[2],p[3])):ctx.moveTo(p[0],p[1]));ctx.stroke();};
+ const fy=L.browY-16;
+ if(m.forehead)for(let i=0;i<2;i++){const y=fy-i*9,w=26-i*5;line([[128-w,y+1],[128,y-2,128+w,y+1]]);}
+ if(m.worry)for(let i=0;i<2;i++){const y=fy-2-i*8;line([[100,y+3],[114,y-1,128,y-5-i]]);line([[156,y+3],[142,y-1,128,y-5-i]]);}
+ if(m.frown)for(const s of [-1,1])line([[128+s*4,L.browY-6],[128+s*5.5,L.browY+3,128+s*4,L.browY+10]]);
+ for(const s of [-1,1]){
+  const ex=128+s*L.spread,er=11*L.eyeS*L.eyeW,eh=13*L.eyeS;
+  if(m.lids)line([[ex-er,L.eyeY-eh*.75],[ex,L.eyeY-eh*1.25,ex+er,L.eyeY-eh*.75]]);
+  if(m.bags){ctx.lineWidth=2.6;line([[ex-er*.8,L.eyeY+eh*.95],[ex,L.eyeY+eh*1.45,ex+er*.8,L.eyeY+eh*.95]]);ctx.lineWidth=3.2;}
+  if(m.crowsfeet)for(const i of [-.6,.6])line([[ex+s*(er+3),L.eyeY+i*4],[ex+s*(er+10),L.eyeY+i*7]]);
+  if(m.smilelines)line([[L.noseX+s*11,L.noseY+3],[L.noseX+s*21,(L.noseY+L.mouthY)/2+2,L.mouthX+s*(14*L.mouthS*L.mouthW+3),L.mouthY+1]]);
+  if(m.cheeks)line([[128+s*(L.spread+10),L.noseY-2],[128+s*(L.spread+6),L.noseY+12,128+s*(L.spread+8),L.noseY+22]]);
+  if(m.dimples)line([[L.mouthX+s*(14*L.mouthS*L.mouthW+6),L.mouthY-3],[L.mouthX+s*(14*L.mouthS*L.mouthW+9),L.mouthY+1,L.mouthX+s*(14*L.mouthS*L.mouthW+6),L.mouthY+5]]);
+ }
+ if(m.cleft)line([[128,L.mouthY+30],[129.5,L.mouthY+35,128,L.mouthY+40]]);
+ if(m.rosy){const g=ctx.createRadialGradient(L.noseX,L.noseY+2,1,L.noseX,L.noseY+2,9);g.addColorStop(0,'rgba(226,96,96,.55)');g.addColorStop(1,'rgba(226,96,96,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(L.noseX,L.noseY+2,9,0,TAU);ctx.fill();}
+ ctx.restore();
+}
+
 function drawNose(ctx,x,y,s,style,skin,line){
  ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.strokeStyle=shade(skin,.62);ctx.fillStyle=shade(skin,.8);ctx.lineWidth=2.4;
  if(style==='button'){ctx.beginPath();ctx.ellipse(0,0,7,5.5,0,0,TAU);ctx.fill();ctx.fillStyle='rgba(255,255,255,.35)';ctx.beginPath();ctx.arc(-2,-2,2,0,TAU);ctx.fill();}
@@ -435,6 +540,7 @@ function drawNose(ctx,x,y,s,style,skin,line){
  else if(style==='pointed'){ctx.beginPath();ctx.moveTo(0,-13);ctx.lineTo(5,4);ctx.lineTo(-2,4);ctx.stroke();}
  else if(style==='snub'){ctx.beginPath();ctx.moveTo(-7,1);ctx.quadraticCurveTo(0,8,7,1);ctx.stroke();ctx.fillStyle=shade(skin,.6);for(const sx of [-3,3]){ctx.beginPath();ctx.arc(sx,1.5,1.4,0,TAU);ctx.fill();}}
  else if(style==='bulb'){ctx.beginPath();ctx.ellipse(0,1,9.5,7.5,0,0,TAU);ctx.fill();ctx.stroke();ctx.fillStyle='rgba(255,255,255,.35)';ctx.beginPath();ctx.arc(-3,-2,2.4,0,TAU);ctx.fill();}
+ else if(INK_NOSES[style])inkNose(ctx,INK_NOSES[style].pen,skin);
  else if(style==='ridge'){ctx.beginPath();ctx.moveTo(-3,-15);ctx.quadraticCurveTo(-3.5,-1,-7,4);ctx.moveTo(3,-15);ctx.quadraticCurveTo(3.5,-1,7,4);ctx.stroke();ctx.fillStyle=shade(skin,.6);for(const sx of [-3,3]){ctx.beginPath();ctx.arc(sx,4,1.4,0,TAU);ctx.fill();}}
  ctx.restore();
 }
@@ -494,6 +600,104 @@ function drawMouth(ctx,x,y,s,mouth,moodMouth,talk,line,width=1){
 
 /** Moustache and beard, from a normalized recipe or an older one that gave one `style`. */
 const MOUSTACHES=['moustache','walrus','handlebar','pencil'];
+/**
+ * Facial hair painted on the skin (the creator, 2026-10-14: "enhance facial hair too"): a third layer under the 3D
+ * moustache and beard (recipe.facial.paint), and moustaches that are painted rather than built (PAINTED_MOUSTACHES), so
+ * they read in the game as they do in the maker. All in the whiskers' colour with a darker edge; the moustaches stretch
+ * with facial.width, and everything follows the size and height sliders.
+ */
+export const PAINTED_MOUSTACHES=Object.freeze({chevron:'Chevron',toothbrush:'Toothbrush',horseshoe:'Horseshoe',fumanchu:'Fu Manchu',brush:'Brush',curled:'Curled'});
+export const PAINTED_BEARDS=Object.freeze({full:'Full beard',circle:'Circle beard',chops:'Chops',mutton:'Mutton chops',anchor:'Anchor',soul:'Soul patch',scruff:'Scruffy beard',strip:'Chin strip'});
+function drawFacialPaint(ctx,L,facial,layer='both'){
+ const paint=layer==='moustache'?'none':facial.paint||'none',mous=layer==='beard'||!PAINTED_MOUSTACHES[facial.moustache]?'none':facial.moustache;
+ if(paint==='none'&&mous==='none')return;
+ const S=L.facialS??1,DY=L.facialDY??0,wk=.6+(facial.width??.5)*.8,col=facial.colour||'#1c1714',edge=shade(col,.7);
+ const mw=14*L.mouthS*L.mouthW,mx=L.mouthX,my=L.mouthY;
+ ctx.save();ctx.fillStyle=col;ctx.strokeStyle=edge;ctx.lineWidth=1.4;ctx.lineJoin='round';ctx.lineCap='round';
+ const finish=(rule)=>{ctx.fill(rule);ctx.stroke();};
+ if(paint!=='none'){
+  ctx.save();ctx.translate(128,my+DY*.5);ctx.scale(S,S);ctx.translate(-128,-my);
+  const top=L.noseY+6,chin=my+56,hole=()=>{ctx.moveTo(mx-mw-6,my);ctx.quadraticCurveTo(mx,my-12,mx+mw+6,my);ctx.quadraticCurveTo(mx,my+12,mx-mw-6,my);ctx.closePath();};
+  ctx.beginPath();
+  if(paint==='full'||paint==='scruff'){
+   ctx.moveTo(58,top-8);ctx.quadraticCurveTo(84,top+4,100,top+10);ctx.quadraticCurveTo(114,(L.noseY+my)/2-2,128,(L.noseY+my)/2-4);ctx.quadraticCurveTo(142,(L.noseY+my)/2-2,156,top+10);ctx.quadraticCurveTo(172,top+4,198,top-8);
+   if(paint==='scruff'){ctx.lineTo(196,chin-22);for(let i=0;i<=12;i++){const x=196-i*(136/12),y=chin-22+Math.sin(i/12*Math.PI)*24+(i%2?7:-1);ctx.lineTo(x,y);}ctx.lineTo(58,top-8);}
+   else{ctx.quadraticCurveTo(200,chin-4,128,chin+4);ctx.quadraticCurveTo(56,chin-4,58,top-8);}
+   ctx.closePath();hole();finish('evenodd');
+  }else if(paint==='circle'){
+   ctx.ellipse(mx,my+4,mw+15,27,0,0,TAU);ctx.closePath();hole();finish('evenodd');
+  }else if(paint==='chops'||paint==='mutton'){
+   for(const s of [-1,1]){const o=x=>128+s*x;ctx.moveTo(o(100),L.eyeY+2);ctx.lineTo(o(114),L.eyeY+2);ctx.quadraticCurveTo(o(112),my+2,o(paint==='mutton'?mw+8:104),my+12);
+    ctx.lineTo(o(paint==='mutton'?mw+4:92),my+26);ctx.quadraticCurveTo(o(98),my+14,o(98),L.eyeY+14);ctx.closePath();}
+   finish();
+   if(paint==='mutton'){ctx.beginPath();ctx.moveTo(mx-mw-8,my+4);ctx.quadraticCurveTo(mx-10,my-16,mx,my-12);ctx.quadraticCurveTo(mx+10,my-16,mx+mw+8,my+4);ctx.quadraticCurveTo(mx,my-6,mx-mw-8,my+4);ctx.closePath();finish();}
+  }else if(paint==='anchor'){
+   ctx.moveTo(mx-mw-2,my+2);ctx.quadraticCurveTo(mx-mw+2,my+16,mx-4,my+40);ctx.lineTo(mx,my+46);ctx.lineTo(mx+4,my+40);ctx.quadraticCurveTo(mx+mw-2,my+16,mx+mw+2,my+2);
+   ctx.quadraticCurveTo(mx,my+12,mx-mw-2,my+2);ctx.closePath();finish();
+   ctx.beginPath();ctx.moveTo(mx-mw,my-7);ctx.quadraticCurveTo(mx,my-13,mx+mw,my-7);ctx.quadraticCurveTo(mx,my-9,mx-mw,my-7);ctx.closePath();finish();
+  }else if(paint==='soul'){
+   ctx.ellipse(mx,my+13,5,6.5,0,0,TAU);finish();
+  }else if(paint==='strip'){
+   ctx.lineWidth=8;ctx.strokeStyle=col;ctx.moveTo(24,L.eyeY+6);ctx.quadraticCurveTo(40,chin-2,128,chin);ctx.quadraticCurveTo(216,chin-2,232,L.eyeY+6);ctx.stroke();
+  }
+  ctx.restore();
+ }
+ if(mous!=='none'){
+  // Moustaches sit low, their lower edge over the top lip, and half again as wide as they were (the creator's review).
+  const y=my-5.5,n=parseInt(col.slice(1),16),light=(.3*(n>>16)+.59*(n>>8&255)+.11*(n&255))/255>.5;
+  if(light){ctx.strokeStyle=shade(col,.45);ctx.lineWidth=1.8;}   // light hair (grey, blonde) keeps a darker edge
+  ctx.save();ctx.translate(mx,y+DY);ctx.scale(S*wk*1.8,S*1.2);ctx.translate(-128,-y);ctx.beginPath();
+  if(mous==='chevron'){ctx.moveTo(104,y+5);ctx.lineTo(128,y-7);ctx.lineTo(152,y+5);ctx.lineTo(147,y+9);ctx.lineTo(128,y);ctx.lineTo(109,y+9);ctx.closePath();finish();}
+  else if(mous==='toothbrush'){ctx.moveTo(120,y-5);ctx.lineTo(136,y-5);ctx.lineTo(137,y+5);ctx.lineTo(119,y+5);ctx.closePath();finish();}
+  else if(mous==='horseshoe'){
+   // Full, with square-cut ends that run down past the mouth toward the jaw.
+   const d=34;ctx.moveTo(105,y+1);ctx.quadraticCurveTo(128,y-13,151,y+1);ctx.lineTo(152,y+d);ctx.lineTo(143,y+d);ctx.lineTo(142.5,y+7);ctx.quadraticCurveTo(128,y,113.5,y+7);ctx.lineTo(113,y+d);ctx.lineTo(104,y+d);ctx.closePath();finish();}
+  else if(mous==='fumanchu'){
+   // Thick at the lip, tapering to fine points that hang down past the chin.
+   for(const s of [-1,1]){const o=x=>128+s*x;ctx.moveTo(o(1.5),y-4);ctx.quadraticCurveTo(o(13),y-6,o(19),y+1);ctx.quadraticCurveTo(o(22),y+20,o(18),y+46);
+    ctx.quadraticCurveTo(o(15),y+22,o(12),y+5);ctx.quadraticCurveTo(o(7),y+1,o(1.5),y+2);ctx.closePath();}
+   finish();}
+  else if(mous==='brush'){ctx.moveTo(102,y+4);ctx.quadraticCurveTo(128,y-14,154,y+4);for(let i=0;i<=8;i++){const x=154-i*6.5;ctx.lineTo(x,y+(i%2?5:9));}ctx.closePath();finish();}
+  else if(mous==='curled'){
+   // A full body over the lip whose ends roll up into curls.
+   for(const s of [-1,1]){const o=x=>128+s*x;ctx.moveTo(o(0),y-4);ctx.quadraticCurveTo(o(13),y-8,o(21),y-1);ctx.quadraticCurveTo(o(27),y+2,o(30),y-4);
+    ctx.quadraticCurveTo(o(31),y-11,o(26),y-11);ctx.quadraticCurveTo(o(23),y-10,o(24),y-7);ctx.quadraticCurveTo(o(27),y-6,o(26),y-3);ctx.quadraticCurveTo(o(21),y+5,o(12),y+4);ctx.quadraticCurveTo(o(5),y+3,o(0),y+3);ctx.closePath();}
+   finish();}
+  ctx.restore();
+ }
+ ctx.restore();
+}
+/**
+ * The scruffy beard: a shadow of hair painted on its own shell round the lower head (build.js beardShell), sideburn to
+ * sideburn and down to the chin's outline, which the face's canvas cannot reach. (Every other beard is built: beard-mesh.js.)
+ * The shell's canvas is drawn in degrees: x is the angle round from the front (a, ±BEARD_SHELL.A, + toward the avatar's left
+ * as on the face), y the angle down from the crown (θ, from BEARD_SHELL.T0 to the chin's point at 180). Seen from the front
+ * the face's outline is a = ±90 and the chin's is θ = 180. The mouth is left open for every mouth the face makes.
+ */
+export const BEARD_SHELL=Object.freeze({A:100,T0:68});
+export function drawBeardShell(ctx,recipe,state={}){
+ const {A,T0}=BEARD_SHELL,W=ctx.canvas.width,H=ctx.canvas.height;
+ ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,W,H);
+ if(recipe.facial.paint!=='scruff')return;
+ const L=faceLayout(recipe),mood=MOOD[state.expression]||MOOD.neutral;
+ // Face-canvas units to degrees: the face's canvas spans 1.9 rad across and .58π down, from θ = .28π.
+ const DX=1.9/256*180/Math.PI,DYD=.58*180/256,T=fy=>50.4+fy*DYD;
+ const aM=(L.mouthX-128)*DX,tM=T(L.mouthY+(mood.mouthDY||0)),tN=T(L.noseY),aw=14*L.mouthS*L.mouthW*DX;
+ const open=state.talk>.5||['grin','laugh','o','jawdrop','wail','shout','gasp'].includes(mood.mouth);
+ ctx.setTransform(W/(2*A),0,0,H/(180-T0),W/2,-T0*H/(180-T0));ctx.fillStyle=recipe.facial.colour||'#1c1714';
+ ctx.beginPath();
+ // Down the sideburns, across the cheeks to the mouth's corners, and down to the chin's outline; the mouth left open.
+ const cheek=s=>{ctx.lineTo(s*66,85);ctx.lineTo(s*70,tN-2);ctx.quadraticCurveTo(s*64,tN+6,s*46,tN+6);ctx.quadraticCurveTo(aM+s*(aw+9),tN+7,aM+s*(aw+1.5),tM-2.2);};
+ ctx.moveTo(-91,84);cheek(-1);ctx.lineTo(aM+aw+1.5,tM-2.2);
+ ctx.quadraticCurveTo(aM+aw+9,tN+7,46,tN+6);ctx.quadraticCurveTo(64,tN+6,70,tN-2);ctx.lineTo(66,85);ctx.lineTo(91,84);
+ ctx.lineTo(97,112);ctx.lineTo(99,150);ctx.lineTo(A,180);ctx.lineTo(-A,180);ctx.lineTo(-99,150);ctx.lineTo(-97,112);ctx.closePath();
+ const x0=aM-aw-2.4,x1=aM+aw+2.4;ctx.moveTo(x0,tM);ctx.quadraticCurveTo(aM,tM-5.8,x1,tM);ctx.quadraticCurveTo(aM,tM+(open?13:8.2),x0,tM);ctx.closePath();
+ // A shadow of hair rather than a shape: see-through, speckled, no edge.
+ ctx.save();ctx.clip('evenodd');ctx.globalAlpha=.3;ctx.fillRect(-A,T0,2*A,180-T0);ctx.globalAlpha=.55;
+ let h=2166136261;const rnd=()=>{h=Math.imul(h^h>>>15,2246822507);h=Math.imul(h^h>>>13,3266489909);return ((h^=h>>>16)>>>0)/4294967296;};
+ for(let i=0;i<1400;i++){const x=-A+rnd()*2*A,y=T0+rnd()*(180-T0);ctx.fillRect(x,y,.55,.55);}
+ ctx.restore();ctx.setTransform(1,0,0,1,0,0);
+}
 function facialParts(facial){
  if(facial.moustache!==undefined||facial.beard!==undefined)return {moustache:facial.moustache||'none',beard:facial.beard||'none'};
  return {moustache:MOUSTACHES.includes(facial.style)?facial.style:'none',beard:facial.style&&facial.style!=='none'&&!MOUSTACHES.includes(facial.style)?facial.style:'none'};
@@ -573,7 +777,7 @@ export function drawPart(ctx,recipe,part,size=ctx.canvas.width){
  if(part==='brows'&&recipe.brows.style!=='none')for(const s of [-1,1])drawBrow(ctx,128+s*L.browSpread,L.browY,L.browS,s,flat.brows,L.browTilt,0);
  if(part==='nose')drawNose(ctx,L.noseX,L.noseY,L.noseS,recipe.nose.style,skin,line);
  if(part==='mouth')drawMouth(ctx,L.mouthX,L.mouthY,L.mouthS,flat.mouth,null,0,line,L.mouthW);
- if(part==='facial'||part==='moustache'||part==='beard'){drawMouth(ctx,L.mouthX,L.mouthY,L.mouthS,{...flat.mouth,style:'flat'},null,0,'rgba(43,38,35,.35)',L.mouthW);drawFacialHair(ctx,L,facial);}
+ if(part==='facial'||part==='moustache'||part==='beard'||part==='paint'){drawFacialPaint(ctx,L,part==='paint'?{...facial,moustache:'none'}:part==='moustache'?{...facial,paint:'none'}:part==='beard'?{...facial,paint:'none'}:facial);drawMouth(ctx,L.mouthX,L.mouthY,L.mouthS,{...flat.mouth,style:'flat'},null,0,'rgba(43,38,35,.35)',L.mouthW);drawFacialHair(ctx,L,facial);}
  if(part==='glasses')drawGlasses(ctx,L,flat.glasses);
  ctx.restore();
  // "None" reads as an empty tile with a soft slash, the way a blank slot should.
