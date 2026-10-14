@@ -136,7 +136,17 @@ export function drawFace(ctx,recipe,state={}){
  // Blush: the recipe's own, and more when shy or pleased.
  const blush=Math.min(1,recipe.blush*.8+mood.blush);
  if(blush>.02){for(const s of [-1,1]){const x=128+s*(L.spread+8),y=L.noseY+2;const g=ctx.createRadialGradient(x,y,1,x,y,17);g.addColorStop(0,`rgba(236,110,120,${.55*blush})`);g.addColorStop(1,'rgba(236,110,120,0)');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(x,y,18,12,0,0,TAU);ctx.fill();}
-  if(mood.blush>=.9){ctx.strokeStyle='rgba(210,80,90,.7)';ctx.lineWidth=1.6;for(const s of [-1,1])for(let i=0;i<3;i++){const x=128+s*(L.spread+2+i*6);ctx.beginPath();ctx.moveTo(x-2,L.noseY+6);ctx.lineTo(x+2,L.noseY-2);ctx.stroke();}}}
+  }
+ // The blush you can see across a room (the creator, 2026-10-14: "characters need to be able to blush"): a pink oval on
+ // each cheek with four hatched strokes across it, stencil-drawn, when they are shy, embarrassed, smitten or laughing hard,
+ // and always for someone given the "Blushing" mark.
+ const flush=Math.max(mood.blush>=.5?Math.min(1,(mood.blush-.3)/.6):0,recipe.marks?.blushing?.8:0);
+ if(flush>0)for(const s of [-1,1]){
+  const x=128+s*(L.spread+8),y=L.noseY+5;
+  ctx.fillStyle=`rgba(244,120,150,${.72*flush})`;ctx.beginPath();ctx.ellipse(x,y,21,10.5,0,0,TAU);ctx.fill();
+  ctx.strokeStyle=`rgba(214,60,100,${.9*flush})`;ctx.lineWidth=3;ctx.lineCap='round';
+  for(let i=0;i<5;i++){const hx=x-14+i*7;ctx.beginPath();ctx.moveTo(hx-3.2,y+6);ctx.lineTo(hx+3.2,y-6);ctx.stroke();}
+ }
  drawFaceMarks(ctx,L,recipe);
  // The cartoon marks that go under the parts: a face going red, gloom lines, puffed-out cheeks.
  const fx=mood.fx||[];drawMarks(ctx,L,skin,fx.filter(f=>UNDER_MARKS.has(f)));
@@ -474,7 +484,7 @@ function inkNose(ctx,pen,skin){
 export const FACE_MARKS=Object.freeze({
  forehead:'Forehead lines',worry:'Worry lines',frown:'Frown lines',lids:'Heavy lids',bags:'Eye bags',crowsfeet:'Crow’s feet',
  smilelines:'Smile lines',cheeks:'Hollow cheeks',dimples:'Dimples',cleft:'Chin cleft',stubble:'Stubble shadow',rosy:'Rosy nose',
- cocked:'One brow up',   // a face is never quite symmetrical: the viewer's right brow sits higher, always
+ cocked:'One brow up',blushing:'Blushing',   // a face is never quite symmetrical: the viewer's right brow sits higher, always
 });
 function drawFaceMarks(ctx,L,recipe){
  const m=recipe.marks||{},skin=recipe.body.skin,ink=shade(skin,.42);
