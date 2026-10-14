@@ -254,3 +254,34 @@ matrix and the state in the game. Built in small batches, each checked in the ga
 - **Trends** of any point over the day; **the log** the chief writes becomes the system's.
 - Data first: `src/world/ferry-automation.js` (points, limits, priorities, groups, the UMS rules), tested without
   three.js; then the screens; then the panels and the sound of the alarm.
+
+## 10. Worn assets: the Seagulls cap (the creator, 2026-10-14)
+
+> "I want his cap to look nice, now it looks like cheap 3d tricks, he should be wearing a 3d asset, you should be able to
+> buy a nice hat in the Konbini and wear it, use blender and build his cap and add it to the avatar creator"
+
+**Built (2026-10-14):** the Minato Seagulls cap, a 1990s six-panel snapback built in Blender
+(`assets/catalog/seagulls-cap/source/`), checked and published by Johansson Studio into World's catalogue; worn by any
+recipe as `outfit.hat: 'seagulls-cap'` (`src/avatars/hat-assets.js` reads the GLB itself, fits it to every head, presses
+the hair under its band and out of its opening, binds it to the head bone); fetched before people are built by World's
+boot, the guide portraits, the comic feed and Studio (`src/catalog/hat-models.js`); in the wardrobe catalogue with three
+colourways; stocked at Sakura on a cap tree by the east window (`src/commerce/sakura-caps.js`,
+`src/world/interiors/sakura-cap-stand.js`); Kōji's Studio look wears it (in Studio's draft until "update World").
+
+Open:
+- **Buying it.** Sakura's till (`commerce/konbini.js`) sells the packed goods of `data/studio/products.json` only; a cap has
+  no pack shape and no label cell, so the products format needs a garment line (Studio's product tools, the till line,
+  the bag, the stock count on the stand). Not faked: the stand's look-at text describes the caps, it sells nothing.
+- **Wearing what you bought.** No purchase changes a look today: the player's look comes from Studio ("Use in Johansson
+  World") or the photo studio's maker. A bought cap should go into the player's own wardrobe and onto `outfit.hat`.
+- **The film.** `remotion/tools/sync-town.sh` copies `hat-assets.js` (build.js imports it) and the film's three reads the
+  GLB, but the film must copy `assets/catalog/seagulls-cap/model.glb` into `remotion/public/` and call
+  `provideHatModel('seagulls-cap', bytes)` (in a `delayRender`) before building anyone; without it the cap's wearers wear
+  the stand-in procedural cap. The film's own `src/town/koji.js` still has his old recipe. The sync also follows imports
+  one level only: a file imported by a newly copied file (e.g. `head-cover.js`) is not copied.
+- **Studio's modeller.** The cap went through as a `prop` with a hand-built GLB; a `wearable` kind would check what a
+  hat needs (the head it is built on, the fit on the town's heads, no hair through it) and show it worn in its hero.
+- **More hats.** The procedural cap, bucket hat, straw hat and the rest could become catalogue assets the same way;
+  `ASSET_HATS` takes another entry and its stand-in.
+- **Runtime.** World's `runtime/` was not rebuilt with this batch; it ships at the next "update World".
+

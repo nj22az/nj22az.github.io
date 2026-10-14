@@ -155,5 +155,82 @@ export const CATALOG=freeze({
    "materials": 6
   },
   "published": "2026-10-11"
+ },
+ "seagulls-cap": {
+  "id": "seagulls-cap",
+  "name": "Seagulls cap",
+  "kind": "prop",
+  "version": 1,
+  "purpose": {
+   "for": "Islanders who work bare-headed under the Okinawan sun on the quay and the boats (Kōji at the catch tables first; Haru, Masaru and Uncle Kinjō), and the Minato Seagulls' fans who follow the autumn fixtures from the izakaya counter (Daichi, who dreams of a perfect game).",
+   "why": "A peak against the glare off the water at the morning catch, cloth that breathes in the heat, a strap that fits any head; and the home team's gull, the same night navy as the jersey on the wall at Sato Ramen, so the whole counter can see whose side you are on.",
+   "where": "On the cap rack at Sakura Shōten, hung on its pegs by the strap, a season line near the window where the walk from the door to the till passes it; and on the heads of whoever bought one (src/avatars/hat-assets.js fits it to any head)."
+  },
+  "size": [0.4811,0.2928,0.6657],
+  "colours": {
+   "cloth": "#27304d",
+   "undervisor": "#2f5a3e",
+   "sweatband": "#cfc8b8",
+   "button": "#f4f1ea",
+   "strap": "#2b2b2b",
+   "gull": "#f8f6ef",
+   "gull-edge": "#27304d",
+   "wingtips": "#2b2623",
+   "bill": "#e8b83e"
+  },
+  "tags": ["cap","baseball cap","snapback","Minato Seagulls","Seagulls","baseball","sun","quay","1990s","wearable","Sakura Shōten"],
+  "checked": "2026-10-14T04:48:32.859Z",
+  "colliders": [
+   {
+    "name": "body",
+    "x": 0,
+    "z": 0.075,
+    "w": 0.481,
+    "d": 0.666,
+    "yaw": 0,
+    "minY": 0,
+    "height": 0.293
+   }
+  ],
+  "seats": [],
+  "spots": [],
+  "action": {
+   "kind": "buy",
+   "label": "Buy the Seagulls cap (¥1,800)",
+   "price": 1800
+  },
+  "anchors": {
+   "head-centre": [0,-0.0088,0],
+   "head-top": [0,0.251,0],
+   "head-left": [0.2261,-0.0088,0],
+   "head-front": [0,-0.0088,0.2357],
+   "peg": [0,0.0613,-0.2465],
+   "crown-top": [0,0.2925,0],
+   "bill-tip": [0,0.076,0.4028],
+   "band-front": [0,0.0951,0.239]
+  },
+  "parts": [],
+  "model": "seagulls-cap/model.glb",
+  "modelSha": "dea5609ef74f",
+  "hero": "seagulls-cap/hero.png",
+  "measured": {
+   "size": [0.4811,0.2928,0.6657],
+   "body": {
+    "min": [-0.2406,0,-0.2576],
+    "max": [0.2406,0.2928,0.4081]
+   },
+   "all": {
+    "min": [-0.2406,0,-0.2576],
+    "max": [0.2406,0.2928,0.4081]
+   },
+   "triangles": 2956,
+   "materials": 3,
+   "meshes": 10
+  },
+  "budget": {
+   "triangles": 3000,
+   "materials": 3
+  },
+  "published": "2026-10-14"
  }
 });

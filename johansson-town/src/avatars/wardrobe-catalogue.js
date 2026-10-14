@@ -120,6 +120,12 @@ const PART_ENTRIES={
   sunflower:{label:'Sunflower bonnet',category:'Fun',tags:['costume','parade','Port Festival','summer','silly'],who:PROPOSED_PARADE,why:'A sunflower for the brightest day of summer.'},
   paperboat:{label:'Paper-boat hat',category:'Fun',tags:['newspaper','folded','children','silly'],who:'children who fold yesterday’s evening paper',why:'The paper hat every child on the island learns to fold.'},
   mountain:{label:'Mount Aoba hat',category:'Fun',tags:['costume','parade','Port Festival','Mount Aoba','silly'],who:PROPOSED_PARADE,why:'Mount Aoba, the island’s peak, worn on the head.'},
+  // A model from World's asset catalogue (assets/catalog/seagulls-cap, avatars/hat-assets.js), sold at Sakura Shōten.
+  'seagulls-cap':{label:'Seagulls cap',category:'Sun & everyday',tags:['baseball cap','snapback','Minato Seagulls','baseball','team','sun','quay','catch','boats','Sakura Shōten','konbini'],
+   who:'Kōji at the catch tables; Haru, Masaru and Uncle Kinjō on the boats; the Seagulls’ fans at the izakaya counter, Daichi among them',
+   why:'A six-panel snapback with the home team’s gull on the front: a peak against the glare off the water, and whose side you are on.',
+   supplier:'Sakura Shōten, ¥1,800 (Johansson Headwear JH-605)',
+   colourways:[{name:'Seagulls navy',colours:{'outfit.hatColour':'#27304d'}},{name:'Paper white',colours:{'outfit.hatColour':'#f4f1ea'}},{name:'Fukugi green',colours:{'outfit.hatColour':'#4f7a4f'}}]},
  },
  earrings:{
   none:{label:'No earrings',category:'Jewellery',tags:[],who:'most islanders',why:'Nothing in the ears.'},

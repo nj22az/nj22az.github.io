@@ -17,6 +17,7 @@ import {buildMagazineRack,MAGAZINE_RACK} from './sakura-magazine-rack.js';
 import {buildShelfEdges} from './sakura-shelf-edge.js';
 import {buildSakuraCorners} from './sakura-corners.js';
 import {buildSakuraSurfaces} from './sakura-surfaces.js';
+import {buildCapStand} from './sakura-cap-stand.js';
 import {shelfArtMaterial,flavouredArt,flavourForColumn,setFlavour,flavourTint} from './shelf-flavours.js';
 let model=null;
 const sakuraFoodGlass=new THREE.MeshStandardMaterial({color:0xf1f7ef,transparent:true,opacity:.09,roughness:.12,depthWrite:false,side:THREE.DoubleSide});
@@ -119,6 +120,8 @@ export function buildSakuraInterior({room,reg,action,exit}){
  buildShelfEdges(room);
  buildSakuraCorners(room,{anchor,action});
  buildSakuraSurfaces(room);
+ // The cap tree by the east window: the Seagulls caps, World's catalogue's model (commerce/sakura-caps.js).
+ const capStand=buildCapStand(room,{anchor,action});
  // Fittings the model came with that nothing stood on (SAKURA_DRESSING). Instanced the
  // same way as the goods, but never restocked: none of it is for sale.
  for(const piece of SAKURA_DRESSING){
@@ -178,7 +181,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
   }
  };
  let mounted=false,disposed=false,last='';
- return {dispose:()=>{disposed=true;life.dispose();},officeDoor:life.officeDoor,frontDoor:life.frontDoor,loadBackRooms:life.loadBackRooms,layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:time=>{decorations.tick(time);life.tick(time);},accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const [ok]=await Promise.all([preloadSakuraInterior(),life.ready]);if(disposed)return false;if(ok&&!mounted){
+ return {dispose:()=>{disposed=true;life.dispose();},officeDoor:life.officeDoor,frontDoor:life.frontDoor,loadBackRooms:life.loadBackRooms,layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:time=>{decorations.tick(time);life.tick(time);},accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const [ok]=await Promise.all([preloadSakuraInterior(),life.ready,capStand.ready]);if(disposed)return false;if(ok&&!mounted){
    const interior=model.clone(true);
    interior.traverse(o=>{if(o.isMesh&&o.name==='sakura-light'){
     const prepare=m=>{const mat=m.clone();mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;return mat;};

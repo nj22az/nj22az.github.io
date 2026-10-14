@@ -14,6 +14,7 @@ import {pleatedSkirtGeometry} from './pleated-skirt.js';
 import {celFrom} from '../render/cel.js';
 import {createTowelFit} from './towel-fit.js';
 import {GARMENT,PLAIN_UV,torsoUV,sleeveUV,paintGarment,SLEEVED_LONG,CAMP_COLLAR,SHIRT_SLEEVES,UNDERSHIRT_ARMS,SLEEVE_END} from './garment.js';
+import {ASSET_HATS,isAssetHat,assetHatPieces,hatTuck} from './hat-assets.js';
 
 /**
  * Builds a Shimanchu from a recipe.
@@ -388,6 +389,15 @@ function addHair(list,recipe,m){
    if(y>.3&&r>1.035){const f=1.035/r;pos.setXYZ(i,x*f*S[0],m.headCentre+y*f*S[1],z*f*S[2]);}
   }g.computeVertexNormals();
  }
+ // A hat from World's catalogue presses the hair in under its own band, and leaves it out of a snapback's opening above
+ // the strap (hat-assets.js hatTuck): lower than the line above, all round the head.
+ const assetTuck=hatTuck(recipe);
+ if(assetTuck)for(const g of list.slice(hairStart)){
+  const pos=g.attributes.position;for(let i=0;i<pos.count;i++){
+   const x=pos.getX(i)/S[0],y=(pos.getY(i)-m.headCentre)/S[1],z=pos.getZ(i)/S[2],r=Math.hypot(x,y,z),to=assetTuck(x,y,z,r);
+   if(to<r){const f=to/r;pos.setXYZ(i,x*f*S[0],m.headCentre+y*f*S[1],z*f*S[2]);}
+  }g.computeVertexNormals();
+ }
 }
 
 /**
@@ -504,7 +514,7 @@ function addHat(list,recipe,m){
 export function buildHatProp(input,{mode='wall',shadows=true}={}){
  const recipe=normalizeRecipe(input);
  if(recipe.outfit.hat==='none')return null;
- const parts=[];addHat(parts,recipe,measure(recipe));
+ const parts=[];wearHat(parts,recipe,measure(recipe));
  if(!parts.length)return null;
  const geometry=mergeGeometries(parts,false);parts.forEach(g=>g.dispose());
  for(const key of ['skinIndex','skinWeight'])geometry.deleteAttribute(key);
@@ -516,6 +526,19 @@ export function buildHatProp(input,{mode='wall',shadows=true}={}){
  mesh.name=(recipe.name||'Resident')+'’s hat';mesh.castShadow=shadows;mesh.receiveShadow=true;
  mesh.userData.hatProp=true;
  return mesh;
+}
+
+/**
+ * The hat on the head: a model from World's asset catalogue (hat-assets.js: the Seagulls cap), fitted to this head, painted
+ * and bound to the head bone like every other part; or one of the hats drawn here (addHat). An asset hat whose model is not
+ * in hand yet is drawn as its stand-in (ASSET_HATS: the Seagulls cap as the cap), so nobody is ever bare-headed for it.
+ */
+function wearHat(list,recipe,m){
+ const hat=recipe.outfit.hat;
+ if(!isAssetHat(hat))return addHat(list,recipe,m);
+ const pieces=assetHatPieces(recipe,m);
+ if(!pieces)return addHat(list,{...recipe,outfit:{...recipe.outfit,hat:ASSET_HATS[hat].standIn}},m);
+ for(const p of pieces){const g=part(list,p.geometry,'head',p.colour);if(!p.ink)g.attributes.ink.array.fill(0);}
 }
 
 /** A shoe (or boot) on the foot of side s ('L' or 'R'): its upper and its sole, tagged so it can come off. */
@@ -1486,7 +1509,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  const mainHairFrom=parts.length;addHair(parts,recipe,m);const mainHairSpan=hairSpan(parts,mainHairFrom,parts.length);addAccessories(parts,recipe,m);
  // The hat goes in last, so taking it off is drawing one range shorter: people hang it
  // up when they get home (home-residents.js) and put it back on to go out.
- const hatStart=parts.reduce((n,g)=>n+g.attributes.position.count,0);addHat(parts,recipe,m);
+ const hatStart=parts.reduce((n,g)=>n+g.attributes.position.count,0);wearHat(parts,recipe,m);
  const hatHairRanges=[];
  for(const g of parts.slice(mainHairFrom))if(g.userData.hatHair)hatHairRanges.push({original:g.userData.hatHair,tucked:{position:g.attributes.position.array.slice(),normal:g.attributes.normal.array.slice()}});
  let hairCovered=true;

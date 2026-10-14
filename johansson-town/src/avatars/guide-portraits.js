@@ -4,6 +4,7 @@ import {recipeFor} from './cast.js';
 import {readSave} from '../save.js';
 import {readStudioChoices} from '../studio-handoff.js';
 import {playerRecipe} from './actors.js';
+import {loadHatModels} from '../catalog/hat-models.js';
 
 /** One shared renderer, only visible cards, using the game's current saved recipes. */
 export function mountResidentPortraits(){
@@ -15,6 +16,8 @@ export function mountResidentPortraits(){
  function release(){renderer?.dispose();renderer?.forceContextLoss();renderer=null;}
  async function draw(){
   if(running)return;running=true;
+  // The hats from World's catalogue (the Seagulls cap), so a resident's portrait shows theirs and not the stand-in.
+  await loadHatModels();
   try{while(pending.size&&active()){
    const img=pending.values().next().value;pending.delete(img);
    if(!img.isConnected)continue;

@@ -20,6 +20,30 @@
    ],
    "from": "johansson-studio",
    "published": "2026-10-11"
+  },
+  {
+   "id": "seagulls-cap",
+   "name": "Seagulls cap",
+   "kind": "prop",
+   "version": 1,
+   "model": "seagulls-cap/model.glb",
+   "card": "seagulls-cap/asset.json",
+   "hero": "seagulls-cap/hero.png",
+   "tags": [
+    "cap",
+    "baseball cap",
+    "snapback",
+    "Minato Seagulls",
+    "Seagulls",
+    "baseball",
+    "sun",
+    "quay",
+    "1990s",
+    "wearable",
+    "Sakura Shōten"
+   ],
+   "from": "johansson-studio",
+   "published": "2026-10-14"
   }
  ]
 }

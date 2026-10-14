@@ -69,3 +69,15 @@ Do not assume that “free to view” or “free download” means CC0. Record t
 ## Runtime policy
 
 External asset hosts must never be required for the game to start. If a third-party model fails to load, Johansson Town must keep its local procedural fallback so the player is never left with missing people or collision geometry.
+
+## Made in-house
+
+### Seagulls cap (assets/catalog/seagulls-cap) — 2026-10-14
+- Made in-house in Blender (bpy 5.0.1 as a Python module) by `assets/catalog/seagulls-cap/source/build-seagulls-cap.py`;
+  the `.blend` beside it is that script's output. Licence: CC0, no third-party geometry, textures or logos.
+- A 1990s six-panel snapback modelled on a real cap's measurements (57.5 cm band, 7 cm bill, 1.6 cm button, eyelets two
+  thirds up, a 6.5 × 4 cm opening, seven-stud straps), scaled to the town's default adult head; 2,956 triangles, three
+  materials (cloth, trim, embroidery), vertex colours, no textures. The maker is invented: Johansson Headwear JH-605; the
+  embroidery is the town's own Minato Seagulls gull.
+- Checked and exported by Johansson Studio (`jojo/town-studio/assets/seagulls-cap`, every check passed), published into
+  World's catalogue; worn through `src/avatars/hat-assets.js`, sold from Sakura's cap tree (`src/commerce/sakura-caps.js`).
