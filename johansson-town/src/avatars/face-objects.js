@@ -31,7 +31,7 @@ export function buildFaceObjects(recipe,m,{shadows=false}={}){
  }
  const glasses=recipe.glasses;
  if(glasses.enabled&&glasses.style!=='none'){
-  const frames=[],lenses=[],r=16*L.eyeS*L.glassS,rx=r*L.eyeW,y=L.glassY;
+  const frames=[],lenses=[],glints=[],r=16*L.eyeS*L.glassS,rx=r*L.eyeW,y=L.glassY;
   for(const side of [-1,1]){
    const x=128+side*L.spread,round=glasses.style==='round'||glasses.style==='half',half=glasses.style==='half';
    const ring=[];
@@ -45,11 +45,15 @@ export function buildFaceObjects(recipe,m,{shadows=false}={}){
    const pos=[],centre=at(x,y,.07);
    for(let i=0;i<ring.length;i++){const a=at(...ring[i],.07),b=at(...ring[(i+1)%ring.length],.07);pos.push(centre.x,centre.y,centre.z,a.x,a.y,a.z,b.x,b.y,b.z);}
    const lens=new THREE.BufferGeometry();lens.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));lens.computeVertexNormals();lenses.push(lens);
+   // A glint on the glass (the creator's review, 2026-10-14: the lenses should catch the light): a short diagonal stroke
+   // high on each lens, and a dot beside it, lit the same in every room.
+   tube(glints,[at(x-rx*.5,y-r*.05,.08),at(x-rx*.12,y-r*.5,.08)],.007,false);tube(glints,[at(x-rx*.02,y-r*.6,.08),at(x+rx*.06,y-r*.68,.08)],.007,false);
    const outer=at(x+side*rx*(round?1:1.1),y,.065);
    tube(frames,[outer,outer.clone().add(new THREE.Vector3(side*m.Rh*.065,0,-m.Rh*.12)),new THREE.Vector3(side*m.Rh*m.headSX*1.01,m.headCentre-m.headY+(outer.y-(m.headCentre-m.headY))*.7,-m.Rh*.08)],.017);
   }
   tube(frames,[at(128-L.spread+rx,y-2,.065),at(128,y-8,.19),at(128+L.spread-rx,y-2,.065)],.017);
   mesh('Glasses frames and temples',frames,new THREE.MeshStandardMaterial({color:glasses.colour,roughness:.32,metalness:.2}));
+  mesh('Glasses glints',glints,new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.8,depthWrite:false}));
   mesh('Glasses lenses',lenses,new THREE.MeshStandardMaterial({color:glasses.style==='sun'?'#263442':'#dbeaf2',transparent:true,opacity:glasses.style==='sun'?.92:.12,roughness:.15,metalness:0,depthWrite:false,side:THREE.DoubleSide}));
  }
  const f=recipe.facial,k=L.facialS,dy=L.facialDY;

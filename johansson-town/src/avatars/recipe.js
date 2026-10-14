@@ -11,6 +11,7 @@
  */
 
 import {HEAD_FORMS} from './head-profile.js';
+import {INK_NOSES,FACE_MARKS} from './face.js';
 /** Skin, hair, eyes and cloth. Chosen to sit well under the town's cel grade. */
 export const PALETTE=Object.freeze({
  skin:Object.freeze(['#f7dcc4','#f1cfae','#e8bf98','#dca97e','#c98d62','#b27449','#8f5a38','#6b4029','#e8bd9e']),
@@ -36,7 +37,7 @@ export const PARTS=Object.freeze({
  hair:Object.freeze(['crop','sidepart','bob','long','ponytail','sweptponytail','braids','longbraids','bun','spiky','perm','buzz','afro','horseshoe','bald','pixie','shoulder','curtains','slick','mullet','topknot','pigtails','twinbuns']),
  eyes:Object.freeze(['round','dot','almond','sleepy','lashes','narrow','sparkle','gentle','doe','cat','droopy','heavy','bright','tired','squint','starry']),
  brows:Object.freeze(['straight','arched','thick','thin','worried','bushy','angled','short','rounded','tapered','feathered','maro','none']),
- nose:Object.freeze(['button','dot','line','wide','hook','pointed','snub','bulb','ridge','none']),
+ nose:Object.freeze(['button','dot','line','wide','hook','pointed','snub','bulb','ridge',...Object.keys(INK_NOSES),'none']),   // then the ink noses (face.js)
  mouth:Object.freeze(['smile','flat','grin','small','wide','smirk','pout','cat','teeth','open','lopsided','tongue','buck','soft']),
  glasses:Object.freeze(['none','round','square','sun','half']),
  // Moustache and beard are worn together or apart, as in any face maker; `facial` is
@@ -99,6 +100,8 @@ export const DEFAULT_RECIPE=Object.freeze({
  // `style` is kept for older readers: the beard if there is one, else the moustache.
  facial:Object.freeze({style:'none',moustache:'none',beard:'none',colour:'#1c1714',size:.5,height:.5}),
  blush:.25,freckles:false,mole:false,wrinkles:0,
+ // The face marks (face.js FACE_MARKS): lines and shading for character, each on or off.
+ marks:Object.freeze(Object.fromEntries(Object.keys(FACE_MARKS).map(k=>[k,false]))),
  // Where the beauty spot sits on the face (when `mole` is on), and how big it is.
  moleSpot:Object.freeze({x:.77,height:.33,size:.5}),
  // Everybody starts in the base layer -- a tank top, underwear and bare feet -- and
@@ -133,6 +136,7 @@ export function normalizeRecipe(input={}){
   facial:facialHair(r.facial,sub('facial',{colour:col,size:num,height:num})),
   blush:num(r.blush,d.blush),freckles:!!r.freckles,mole:!!r.mole,wrinkles:num(r.wrinkles,d.wrinkles),
   moleSpot:sub('moleSpot',{x:num,height:num,size:num}),
+  marks:sub('marks',Object.fromEntries(Object.keys(FACE_MARKS).map(k=>[k,flag]))),
   outfit:legacyDressed(r.outfit,sub('outfit',{top:(v,f)=>pick(PARTS.top,v,f),topColour:col,pattern:(v,f)=>PATTERNS.includes(v)?v:f,bottom:(v,f)=>pick(PARTS.bottom,v,f),bottomColour:col,bottomPattern:(v)=>v==='plaid'?'plaid':'none',footwear:(v,f)=>pick(PARTS.footwear,v,f),shoes:col,hat:(v,f)=>pick(PARTS.hat,v,f),hatColour:col,accent:col,belt:(v,f)=>pick(PARTS.belt,v,f),beltColour:col,
    // A shirt number, 0–99 (0: none), worn by the tops in NUMBERED_TOPS.
    number:(v,f)=>(typeof v==='number'||typeof v==='string'&&v.trim()!=='')&&Number.isFinite(+v)?Math.min(99,Math.max(0,Math.round(+v))):f})),
