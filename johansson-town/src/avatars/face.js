@@ -137,6 +137,7 @@ export function drawFace(ctx,recipe,state={}){
  const blush=Math.min(1,recipe.blush*.8+mood.blush);
  if(blush>.02){for(const s of [-1,1]){const x=128+s*(L.spread+8),y=L.noseY+2;const g=ctx.createRadialGradient(x,y,1,x,y,17);g.addColorStop(0,`rgba(236,110,120,${.55*blush})`);g.addColorStop(1,'rgba(236,110,120,0)');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(x,y,18,12,0,0,TAU);ctx.fill();}
   if(mood.blush>=.9){ctx.strokeStyle='rgba(210,80,90,.7)';ctx.lineWidth=1.6;for(const s of [-1,1])for(let i=0;i<3;i++){const x=128+s*(L.spread+2+i*6);ctx.beginPath();ctx.moveTo(x-2,L.noseY+6);ctx.lineTo(x+2,L.noseY-2);ctx.stroke();}}}
+ drawFaceMarks(ctx,L,recipe);
  // The cartoon marks that go under the parts: a face going red, gloom lines, puffed-out cheeks.
  const fx=mood.fx||[];drawMarks(ctx,L,skin,fx.filter(f=>UNDER_MARKS.has(f)));
  // Eyes. Symbol eyes (stars, hearts, a wink...) are a drawing, not a lid: a blink leaves them be.
@@ -465,6 +466,52 @@ function inkNose(ctx,pen,skin){
   ctx.stroke();
  }
 }
+/**
+ * Face marks (the creator, 2026-10-14: "I want to be able to give them more personality with lines stubble etc ... I want
+ * you to be able to look at the characters and feel how they are"): lines and shading in the same pen as the ink noses,
+ * each switched on by itself (recipe.marks), placed by the face's own layout so they follow the eyes, brows, nose and mouth.
+ */
+export const FACE_MARKS=Object.freeze({
+ forehead:'Forehead lines',worry:'Worry lines',frown:'Frown lines',lids:'Heavy lids',bags:'Eye bags',crowsfeet:'Crow’s feet',
+ smilelines:'Smile lines',cheeks:'Hollow cheeks',dimples:'Dimples',cleft:'Chin cleft',stubble:'Stubble shadow',rosy:'Rosy nose',
+});
+function drawFaceMarks(ctx,L,recipe){
+ const m=recipe.marks||{},skin=recipe.body.skin,ink=shade(skin,.42);
+ ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+ // Stubble first, under everything: a shadow of the beard's colour over the jaw and the upper lip, and a fine tooth to it.
+ if(m.stubble){
+  const hair=recipe.facial?.colour||recipe.hair?.colour||'#1c1714',top=L.noseY+2,chin=L.mouthY+58,lip=(L.noseY+L.mouthY)/2;
+  ctx.save();ctx.beginPath();
+  // Ear to ear under the cheekbones, round the chin; the mouth left clear.
+  ctx.moveTo(66,top-6);ctx.quadraticCurveTo(84,top+4,96,top+10);ctx.quadraticCurveTo(110,lip-4,128,lip-6);ctx.quadraticCurveTo(146,lip-4,160,top+10);
+  ctx.quadraticCurveTo(172,top+4,190,top-6);ctx.quadraticCurveTo(196,chin-6,128,chin+4);ctx.quadraticCurveTo(60,chin-6,66,top-6);ctx.closePath();
+  ctx.moveTo(110,L.mouthY-3);ctx.quadraticCurveTo(128,L.mouthY-9,146,L.mouthY-3);ctx.quadraticCurveTo(128,L.mouthY+9,110,L.mouthY-3);ctx.closePath();
+  ctx.globalAlpha=.22;ctx.fillStyle=hair;ctx.fill('evenodd');ctx.clip('evenodd');ctx.globalAlpha=.4;
+  // Speckles scattered by a hash, so no rows or stripes show.
+  const hash=n=>{const x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x);};
+  for(let i=0;i<420;i++){const x=64+hash(i)*128,y=top-6+hash(i+999)*(chin+10-top);ctx.fillRect(x,y,1.2,1.2);}
+  ctx.restore();
+ }
+ ctx.strokeStyle=ink;ctx.lineWidth=2.2;
+ const line=(pts)=>{ctx.beginPath();pts.forEach((p,i)=>i?(p.length===2?ctx.lineTo(p[0],p[1]):ctx.quadraticCurveTo(p[0],p[1],p[2],p[3])):ctx.moveTo(p[0],p[1]));ctx.stroke();};
+ const fy=L.browY-16;
+ if(m.forehead)for(let i=0;i<3;i++){const y=fy-i*7,w=26-i*4;line([[128-w,y+1],[128,y-2,128+w,y+1]]);}
+ if(m.worry)for(let i=0;i<2;i++){const y=fy-2-i*8;line([[100,y+3],[114,y-1,128,y-5-i]]);line([[156,y+3],[142,y-1,128,y-5-i]]);}
+ if(m.frown)for(const s of [-1,1])line([[128+s*4,L.browY-6],[128+s*5.5,L.browY+3,128+s*4,L.browY+10]]);
+ for(const s of [-1,1]){
+  const ex=128+s*L.spread,er=11*L.eyeS*L.eyeW,eh=13*L.eyeS;
+  if(m.lids)line([[ex-er,L.eyeY-eh*.75],[ex,L.eyeY-eh*1.25,ex+er,L.eyeY-eh*.75]]);
+  if(m.bags){ctx.lineWidth=1.8;line([[ex-er*.8,L.eyeY+eh*.95],[ex,L.eyeY+eh*1.45,ex+er*.8,L.eyeY+eh*.95]]);ctx.lineWidth=2.2;}
+  if(m.crowsfeet)for(let i=-1;i<=1;i++)line([[ex+s*(er+3),L.eyeY+i*4],[ex+s*(er+10),L.eyeY+i*7]]);
+  if(m.smilelines)line([[L.noseX+s*11,L.noseY+3],[L.noseX+s*21,(L.noseY+L.mouthY)/2+2,L.mouthX+s*(14*L.mouthS*L.mouthW+3),L.mouthY+1]]);
+  if(m.cheeks)line([[128+s*(L.spread+10),L.noseY-2],[128+s*(L.spread+6),L.noseY+12,128+s*(L.spread+8),L.noseY+22]]);
+  if(m.dimples)line([[L.mouthX+s*(14*L.mouthS*L.mouthW+6),L.mouthY-3],[L.mouthX+s*(14*L.mouthS*L.mouthW+9),L.mouthY+1,L.mouthX+s*(14*L.mouthS*L.mouthW+6),L.mouthY+5]]);
+ }
+ if(m.cleft)line([[128,L.mouthY+30],[129.5,L.mouthY+35,128,L.mouthY+40]]);
+ if(m.rosy){const g=ctx.createRadialGradient(L.noseX,L.noseY+2,1,L.noseX,L.noseY+2,9);g.addColorStop(0,'rgba(226,96,96,.55)');g.addColorStop(1,'rgba(226,96,96,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(L.noseX,L.noseY+2,9,0,TAU);ctx.fill();}
+ ctx.restore();
+}
+
 function drawNose(ctx,x,y,s,style,skin,line){
  ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.strokeStyle=shade(skin,.62);ctx.fillStyle=shade(skin,.8);ctx.lineWidth=2.4;
  if(style==='button'){ctx.beginPath();ctx.ellipse(0,0,7,5.5,0,0,TAU);ctx.fill();ctx.fillStyle='rgba(255,255,255,.35)';ctx.beginPath();ctx.arc(-2,-2,2,0,TAU);ctx.fill();}

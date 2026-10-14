@@ -3,7 +3,7 @@ import {SETS,SLOTS,SLOT_AT,ISLAND_PALETTE,ISLAND_HEX,entryFor,labelFor,wornSet,w
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar,wearsBathTowel} from './build.js';
 import {createAvatarAnimator} from './animate.js';
-import {drawPart,drawFace,EXPRESSION_NAMES,INK_NOSES} from './face.js';
+import {drawPart,drawFace,EXPRESSION_NAMES,INK_NOSES,FACE_MARKS} from './face.js';
 import {PALETTE,PARTS,PATTERNS,NUMBERED_TOPS,normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe,AGES} from './recipe.js';
 import {POSITION_FEATURES,hitFaceFeature,draggedFaceFields} from './face-position.js';
 import {CAST_RECIPES,ORIGINAL_THUAN_RECIPE} from './cast.js';
@@ -106,6 +106,7 @@ export const TABS=[
  {id:'head',name:'Face',controls:[
   {kind:'face-forms',page:'style',at:'head.form',label:'Face shape',list:PARTS.head},
   {kind:'toggle',page:'style',at:'freckles',label:'Freckles'},{kind:'toggle',page:'style',at:'mole',label:'Beauty spot'},
+  ...Object.entries(FACE_MARKS).map(([k,label])=>({kind:'toggle',page:'style',at:'marks.'+k,label})),
   {kind:'position',page:'adjust',at:'moleSpot.height',horizontal:'moleSpot.x',label:'Beauty spot',when:r=>r.mole},
   {kind:'stepper',page:'adjust',at:'moleSpot.size',label:'Spot size',less:'Smaller spot',more:'Bigger spot',when:r=>r.mole},
   {kind:'colours',page:'colour',at:'body.skin',label:'Skin',palette:PALETTE.skin},
@@ -628,7 +629,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   * What a figure tile's picture is kept under: the item plus only the recipe fields that show in that framing, so a new
   * hat does not redraw every top, and new shoes do not redraw the hats.
   */
- const FACE_FIELDS=['eyes','brows','nose','mouth','glasses','facial','blush','freckles','mole','moleSpot','wrinkles'];
+ const FACE_FIELDS=['eyes','brows','nose','mouth','glasses','facial','blush','freckles','mole','moleSpot','wrinkles','marks'];
  const HEAD_UNSEEN=['outfit.bottom','outfit.bottomColour','outfit.bottomPattern','outfit.footwear','outfit.shoes'];
  const UNSEEN={figure:['outfit.hat','outfit.hatColour','outfit.footwear','outfit.shoes'],bottom:['outfit.hat','outfit.hatColour',...FACE_FIELDS],
   feet:['outfit.hat','outfit.hatColour','hair','accessories',...FACE_FIELDS],head:HEAD_UNSEEN,'hair-rear':HEAD_UNSEEN,outfit:[]};
