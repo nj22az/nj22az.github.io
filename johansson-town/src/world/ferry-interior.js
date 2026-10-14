@@ -1079,8 +1079,11 @@ export const FERRY_INTERIOR=(()=>{
    deco([1.35,top+.075,bz0+.22],[1.75,top+.2,bz0+.48],0x2a2e30,{name:'contactor (steering-gear starter)'});deco([1.42,top+.2,bz0+.26],[1.68,top+.24,bz0+.44],0xd97706);
    plate(['JOHANSSON DENKI','JC-40 · 440 V AC · coil 105 V'],.16,.05,[1.55,top+.14,bz0+.219],Math.PI,{name:'maker’s plate: contactor'});
    deco([1.95,top+.075,bz0+.2],[2.2,top+.12,bz0+.45],0xfacc15,{name:'digital multimeter'});
-   plate([`AUTO  V~  ${E.hz}.0 Hz  TRUE RMS`,` ${E.volts-4}.2  V AC`],.2,.11,[2.075,top+.125,bz0+.325],0,{kind:'readout',rotX:-Math.PI/2+.35,bg:'#9eab88',fg:'#0f172a',name:'multimeter display'});
-   bar([2.0,top+.12,bz0+.2],[1.55,top+.28,bz0+.3],.006,0xef4444);bar([2.12,top+.12,bz0+.2],[1.6,top+.26,bz0+.42],.006,0x1e293b);   // the leads to the contactor
+   plate([`AUTO  V~  ${E.hz}.0 Hz  TRUE RMS`,` ${E.volts-4}.2  V AC`],.2,.11,[2.075,top+.141,bz0+.34],Math.PI,{kind:'readout',rotX:-Math.PI/2+.35,bg:'#9eab88',fg:'#0f172a',name:'multimeter display'});   // tilted to whoever stands at the bench
+   // The leads from the meter's jacks lie down on the mat and climb the contactor's front to the probes on the contactor's line terminals.
+   for(const [jx,mx,px,pz,c] of [[2.0,1.86,1.62,bz0+.3,0xef4444],[2.1,1.9,1.48,bz0+.38,0x1e293b]]){
+    const jack=[jx,top+.1,bz0+.2],mat=[mx,top+.081,bz0+.14],foot=[px+.06,top+.081,bz0+.19],rise=[px+.06,top+.27,bz0+.19],probe=[px,top+.25,pz];
+    bar(jack,mat,.006,c);bar(mat,foot,.006,c);bar(foot,rise,.006,c);bar(rise,probe,.011,c);}
    deco([.6,top+.075,bz0+.12],[.9,top+.21,bz0+.48],0x1e293b,{name:'insulation tester'});
    plate(['MΩ  500 V','∞ ──── 0'],.24,.16,[.75,top+.215,bz0+.3],0,{rotX:-Math.PI/2,bg:'#f8fafc',name:'insulation tester scale'});
    deco([2.45,top+.06,bz0+.15],[2.6,top+.11,bz0+.42],0xeab308,{name:'clamp meter'});cyl(.07,.07,.03,[2.52,top+.12,bz0+.1],0xdc2626,{rot:[Math.PI/2,0,0],seg:14,name:'clamp meter jaws'});

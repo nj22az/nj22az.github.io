@@ -38,6 +38,7 @@ const shot=async(name,pos,at)=>{
  await page.waitForTimeout(300);await page.locator('#game').screenshot({path:resolve(out,name+'.jpg'),type:'jpeg',quality:86});console.log('wrote',name);
 };
 await shot('01-from-the-door',[.3,y0+1.55,Z(22.75)],[2.2,y0+.9,Z(26)]);
+await shot('03b-meter',[1.9,y0+1.35,Z(24.9)],[1.75,y0+.95,Z(25.65)]);
 await shot('02-test-panel',[.6,y0+1.5,Z(23.1)],[-3.0,y0+1.0,Z(25.7)]);
 await shot('03-bench',[1.9,y0+1.45,Z(24.4)],[2.3,y0+1.0,Z(25.9)]);
 await shot('04-from-forward',[-1.8,y0+1.6,Z(25.6)],[1.2,y0+.6,Z(22.6)]);
