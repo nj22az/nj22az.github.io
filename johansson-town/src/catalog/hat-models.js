@@ -1,5 +1,5 @@
 import {assetURL} from '../assets.js';
-import {catalogCard} from './catalog.js';
+import {catalogCard} from './catalog-cards.js';
 import {assetHatIds,provideHatModel,hatModelLoaded} from '../avatars/hat-assets.js';
 
 /**

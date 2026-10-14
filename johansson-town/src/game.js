@@ -137,6 +137,11 @@ import {cleanStudioChoices,applyStudioChoices,studioKey} from './studio-handoff.
 import {createGraphicsInspector} from './render/graphics-inspector.js';
 import {dressHud,runButtonFace} from './ui/hud-icons.js';
 import {decoratorEnabled} from './features.js';
+import {loadHatModels} from './catalog/hat-models.js';
+// The hats people wear from World's catalogue (Johansson's trucker cap) are in hand before the town's people are built, so
+// nobody starts in the stand-in. Loaded here, not in boot.js, so the boot chunk stays small and three.js stays in this chunk
+// (tests/runtime-package.test.mjs). A failure leaves the stand-in (src/catalog/hat-models.js).
+await loadHatModels(undefined,{timeout:8000}).catch(error=>{console.warn('Hat models unavailable:',error);return false;});
 
 // Change the emitted game chunk URL when repairing a cached live runtime.
 window.__JOHANSSON_RUNTIME_VERSION__='town-bicycle-ride-2';
