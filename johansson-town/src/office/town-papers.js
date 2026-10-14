@@ -171,6 +171,13 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
+    "title": "Vy’s homework",
+    "organisation": "Town Services",
+    "text": "Miss Higa has set ten kanji and a page of fractions. Mai’s name is written beside Saturday’s Blue Coral visit.",
+    "source": "notice:Vy’s homework"
+  },
+  {
+    "type": "Notice",
     "title": "On the fridge",
     "organisation": "Town Services",
     "text": "No bath in this house: Umi-no-yu after the shop shuts, ¥300 with a towel. Rubbish: burnables Tuesday and Friday, cans on Wednesday to the box at Sakura. Rent is paid to Front-Row, ¥18,000 a month.",

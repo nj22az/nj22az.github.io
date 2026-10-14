@@ -3,6 +3,7 @@ import * as THREE from '../../../vendor/three.module.js';
 import {RESIDENTS} from '../../people/residents.js';
 import {householdDetails,addPersonalObject,addFamilyPhoto,addTeaSetting} from './home-details.js';
 import {createPlanKit,addHatPeg,materialCache} from './house-plan.js';
+import {buildVyFamilyHome} from './vy-room.js';
 
 /**
  * Inside an island family's house, planned the way it would have been built (see
@@ -28,7 +29,8 @@ const W=6.4,D=5.6,H=2.7;
 const mat=materialCache();
 export const FAMILY_HOME_LAYOUT=Object.freeze({bounds:{minX:-W/2+.05,maxX:W/2-.05,minZ:-D/2+.05,maxZ:D/2-.05},spawn:[0,0,D/2-.6],exit:[0,1.1,D/2-.04],yaw:0});
 
-export function buildFamilyHome({room,reg,action,collider=()=>{},household,title='Home',kind='concrete',residents=null}){
+export function buildFamilyHome({room,reg,action,collider=()=>{},household,title='Home',kind='concrete',residents=null,exit}){
+ if(household?.members?.some(m=>m.name==='Vy')||residents?.includes('Vy'))return buildVyFamilyHome({room,reg,action,collider,exit});
  const redTile=kind==='red-tile';
  const group=new THREE.Group();group.name='Family home · '+title;room.add(group);
  const box=(size,pos,c,name)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.position.set(...pos);m.receiveShadow=true;if(name)m.name=name;group.add(m);return m;};

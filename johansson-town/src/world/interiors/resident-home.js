@@ -33,7 +33,9 @@ import {YARD_HOMES} from '../yard-homes-layout.js';
 import {buildYardHomeInterior} from './yard-home.js';
 import {buildTetsuoFlat} from './tetsuo-flat.js';
 import {buildFamilyHome} from './family-home.js';
+import {buildVyFamilyHome} from './vy-room.js';
 export function buildResidentHome({site,profile,room,box,reg,collider,action,exit}){
+ if(site?.plot==='kitahama-1')return buildVyFamilyHome({room,reg,collider,action,exit});
  if(profile.name===TATAMI_HOME_OWNER)return buildTatamiHome({site,profile,room,box,reg,collider,action,exit});
  // Shared houses are drawn to the house you walked into (docs/BUILDING-AUDIT.md): the
  // Front-Row yard staff houses, and Thuan and Thao's house in Kitahama, which is built
