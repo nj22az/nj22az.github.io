@@ -1,7 +1,8 @@
 import * as THREE from '../../vendor/three.module.js';
 import {applyCelShading} from '../render/cel.js';
 import {townDate} from '../town-clock.js';
-import {SAKURA_BOX} from './okinawa/old-town.js';
+import {SAKURA_BOX,SAKURA_VENDING} from './okinawa/old-town.js';
+import {VENDING_MACHINE,vendingPoints,vendingToWorld} from './vending.js';
 import {buildFujitaDream} from './fujita-dream.js';
 import {std,mesh,buildPumpkinLantern,buildJackOLantern,buildObake,buildDog,buildCordReel,buildJCoffeeCan,J_COFFEE_CAN} from './halloween-props.js';
 export {buildPumpkinLantern,buildJackOLantern,buildObake,buildDog,buildCordReel};
@@ -32,10 +33,22 @@ export {buildPumpkinLantern,buildJackOLantern,buildObake,buildDog,buildCordReel}
 export const HALLOWEEN=Object.freeze({
  why:'The children’s Halloween walk on Sakura Street, the last evening of October, as Okinawa has kept it since the American bases came: lanterns, paper ghosts and costumes.',
  season:Object.freeze({from:'10-24',to:'10-31',litFrom:18*60}),
- machine:Object.freeze({x:SAKURA_BOX.maxX+.45,z:SAKURA_BOX.minZ+1.7,front:SAKURA_BOX.maxX+.45+.35,chute:Object.freeze([SAKURA_BOX.maxX+.45+.36,.3,SAKURA_BOX.minZ+1.7])}),
- socket:Object.freeze({at:Object.freeze([SAKURA_BOX.maxX+.01,.5,SAKURA_BOX.minZ+.16]),why:'The drinks machine’s own outdoor socket on the corner pier, beside the shutter’s guide: the machine’s cord runs to it behind the machine.'}),
- rcd:Object.freeze({at:Object.freeze([SAKURA_BOX.maxX+.01,1.2,SAKURA_BOX.minZ+.16]),why:'After the fix: the lanterns’ own outdoor socket, with an RCD (earth-leakage breaker) and its test button, put in by Tetsuo.'}),
- reel:Object.freeze({at:Object.freeze([SAKURA_BOX.maxX+.42,0,SAKURA_BOX.minZ+.72]),why:'Kōji’s cord reel from his boat shed, half coiled: the lanterns and the machine both plugged into it.'}),
+ // Sakura's drinks machine (old-town.js SAKURA_VENDING, vending.js): where it stands, its door's face (front), its top,
+ // the middle of a can lying in its take-out pocket (chute) and where its cord leaves its back (cordExit), in the town
+ machine:(()=>{const V=SAKURA_VENDING,P=vendingPoints({pad:true}),w=p=>Object.freeze(vendingToWorld(V,p));
+  return Object.freeze({x:V.x,y:V.y,z:V.z,ry:V.ry,front:w([0,0,P.front])[0],padFront:w([0,0,P.padFront])[0],top:w([0,P.top,0])[1],width:VENDING_MACHINE.size.width,
+   chute:w([P.takeOut.x,P.takeOut.y,P.takeOut.z]),cordExit:w([P.cordExit.x,P.cordExit.y,P.cordExit.z])});})(),
+ socket:Object.freeze({at:Object.freeze([SAKURA_BOX.maxX+.01,.5,SAKURA_BOX.minZ+.18]),why:'The drinks machine’s own outdoor socket on the corner pier, between the corner’s downpipe and the shutter’s guide: the machine’s cord runs to it along the foot of the shutter. There all year (the machine lives on it); only Halloween’s reel takes its place.'}),
+ rcd:Object.freeze({at:Object.freeze([SAKURA_BOX.maxX+.01,1.2,SAKURA_BOX.minZ+.18]),why:'After the fix: the lanterns’ own outdoor socket, with an RCD (earth-leakage breaker) and its test button, put in by Tetsuo.'}),
+ // the street's ground here: the Main Street footway (harbour.js), whose top is 12 mm below the town's datum
+ ground:SAKURA_VENDING.y,
+ // Sakura's corner paving (exterior-details.js: 0.55 m square, its top 65 mm up) at the frontage's south corner: the
+ // cords cross over it, nothing stands in it
+ cornerPaving:Object.freeze({minX:SAKURA_BOX.maxX+.095,maxX:SAKURA_BOX.maxX+.645,minZ:SAKURA_BOX.minZ+.075,maxZ:SAKURA_BOX.minZ+.625,top:.065}),
+ // the low window sill along the frontage (exterior-details.js), which runs on under the socket to the corner pier: a cord
+ // from the socket drops in front of it
+ sill:Object.freeze({maxX:SAKURA_BOX.maxX+.19,bottom:.08,top:.20,minZ:SAKURA_BOX.minZ+.12}),
+ reel:Object.freeze({at:Object.freeze([SAKURA_BOX.maxX+.42,SAKURA_VENDING.y,SAKURA_BOX.minZ+.8]),why:'Kōji’s cord reel from his boat shed, half coiled: the lanterns and the machine both plugged into it.'}),
  nobori:Object.freeze([SAKURA_BOX.maxX+.95,SAKURA_BOX.minZ+.45]),
  pools:Object.freeze([-32.4,-29.1,-25.6,-22.1]),   // the four shared lights of the lanterns' warm pools (z along the string)
  poolIntensity:4,
@@ -48,7 +61,7 @@ export const HALLOWEEN=Object.freeze({
  * lantern bulbs; the reel's cord 30 m of 0.75 mm² copper, there and back. Incandescent light goes as about V^3.4.
  */
 export const HALLOWEEN_ELECTRICS=Object.freeze({
- supply:100,compressorRun:4,startTimes:6,lanterns:13,lanternWatts:25,cordLength:30,cordArea:.75,copper:.0172,coiledRating:6,relayDropout:.7,
+ supply:100,compressorRun:VENDING_MACHINE.rating.amps,startTimes:6,lanterns:13,lanternWatts:25,cordLength:30,cordArea:.75,copper:.0172,coiledRating:6,relayDropout:.7,
 });
 export function lanternCurrent(E=HALLOWEEN_ELECTRICS){return E.lanterns*E.lanternWatts/E.supply;}
 export function cordResistance(E=HALLOWEEN_ELECTRICS){return 2*E.cordLength*E.copper/E.cordArea;}
@@ -62,8 +75,11 @@ export const lanternBrightness=(volts,E=HALLOWEEN_ELECTRICS)=>Math.pow(Math.max(
 /** The heat in the reel's cord while everything runs (W): coiled, it cannot get rid of it. */
 export const cordHeat=(E=HALLOWEEN_ELECTRICS)=>Math.pow(E.compressorRun+lanternCurrent(E),2)*cordResistance(E);
 
-/** A tube along points (a cord or a cable), radius r. */
-function cable(points,r,mat){const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)));return new THREE.Mesh(new THREE.TubeGeometry(curve,Math.max(12,points.length*8),r,6,false),mat);}
+/** A tube along points (a cord or a cable), radius r. floorAt(x,z): the height of what it lies on there (the footway,
+ *  a paving slab), if anything: a cord rests on it, never sinks into it, wherever the curve between its points would sag. */
+function cable(points,r,mat,floorAt=null){let curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)));
+ if(floorAt){const pts=curve.getSpacedPoints(Math.max(24,points.length*12));for(const p of pts)p.y=Math.max(p.y,floorAt(p.x,p.z)+r+.002);curve=new THREE.CatmullRomCurve3(pts);}
+ return new THREE.Mesh(new THREE.TubeGeometry(curve,Math.max(12,points.length*8),r,6,false),mat);}
 
 /** A weatherproof outdoor socket (屋外コンセント): a grey box with its flip lid, on a wall facing +x. rcd: the
  *  earth-leakage breaker's box above it with its test button. Origin at the box's back centre. */
@@ -121,30 +137,41 @@ export function buildHalloween(world,{shadows=false}={}){
  // ---- the cardboard ghosts on the shutter, at a child's eye height
  for(const [z,y,s] of [[-30.45,1.32,.66],[-28.55,1.45,.6],[-24.9,1.3,.66],[-22.9,1.42,.6]]){const o=add(buildObake({h:s,flat:true}),S.maxX+.2,y,z,Math.PI/2);o.name='Cardboard ghost';}
  // ---- the sockets, the reel, the cords
- const sock=add(outdoorSocket(),...H.socket.at,0);sock.name='Drinks machine outdoor socket';
+ // the machine's own socket and its cord, there all year (outside the season's group): the cord leaves the machine's
+ // back, runs down the 3 cm gap behind it and along the foot of the shutter, in front of its bottom rail, round the end
+ // of the shutter's guide to the socket. Only Kōji's reel (the story's trouble) takes the machine's plug off it.
+ const street=new THREE.Group();street.name='Sakura drinks machine power';world.group.add(street);
+ const sock=add(outdoorSocket(),...H.socket.at,0,street);sock.name='Drinks machine outdoor socket';
  const rcd=add(outdoorSocket({rcd:true}),...H.rcd.at,0);rcd.name='Lantern socket with RCD';
  const reel=add(buildCordReel(),...H.reel.at,0);
  const cordMat=std(0x3d3f42,{roughness:.6}),orangeCable=std(0xe8742a,{roughness:.55});
- const [rx,,rz]=H.reel.at,[sx,sy,sz]=H.socket.at;
+ const [rx,,rz]=H.reel.at,[sx,sy,sz]=H.socket.at,[ex,ey,ez]=M.cordExit,G=H.ground,g=G+.006,C=H.cornerPaving,on=C.top+.009;
+ // along the foot of the shutter: in front of its bottom rail (front +.24), behind the machine in its 3 cm gap, and over
+ // the corner paving (not through it) to the socket, round the south end of the shutter's guide
+ const L=H.sill,drop=[[sx+.07,sy-.03,sz],[L.maxX+.01,sy-.12,sz+.005],[L.maxX+.035,L.top+.015,sz+.02]];   // from the plug, out over the sill and down in front of it
+ const floorAt=(x,z)=>x>C.minX-.008&&x<C.maxX+.008&&z>C.minZ-.008&&z<C.maxZ+.008?C.top:G;
+ const gap=S.maxX+.255,curtainEnd=S.minZ+.3,cordIn=[[gap,g,M.z-M.width/2-.02],[ex-.002,G+.03,ez-.05],[ex,ey,ez]];
+ const ownCord=cable([...drop,[gap-.004,on,curtainEnd-.08],[gap,on,C.maxZ-.004],[gap,g,C.maxZ+.1],...cordIn],.006,cordMat,floorAt);
+ ownCord.name='Drinks machine cord';street.add(ownCord);
  const reelWay=new THREE.Group();reelWay.name='Kōji’s way: the reel';group.add(reelWay);
- reelWay.add(cable([[sx+.07,sy-.03,sz],[sx+.12,.05,sz+.05],[rx-.1,.02,rz-.15],[rx-.02,.12,rz-.05],[rx,.2,rz]],.006,cordMat));            // the reel's plug in the machine's socket
- reelWay.add(cable([[rx+.11,.2,rz+.03],[rx+.2,.03,rz+.15],[M.x-.25,.03,M.z-.62],[M.x-.32,.12,M.z-.5]],.005,cordMat));                       // the machine's cord into the reel
- reelWay.add(cable([[rx+.11,.2,rz-.03],[rx+.35,.02,rz-.2],[nx+.06,.02,nz+.02],[nx+.06,.6,nz],[nx+.06,2.5,nz],[nx,2.6,nz]],.005,cordMat));        // the lantern string's cord down the nobori pole
- for(let i=0;i<5;i++){const loop=mesh(reelWay,new THREE.TorusGeometry(.13+i*.012,.005,6,28),cordMat,rx+.3+i*.02,.006+i*.004,rz-.32);loop.rotation.x=Math.PI/2;}   // loose coils on the pavement
+ reelWay.add(cable([...drop,[gap+.02,on,curtainEnd-.08],[rx-.1,on,C.maxZ-.04],[rx-.04,G+.12,rz-.06],[rx,G+.2,rz]],.006,cordMat,floorAt));   // the reel's plug in the machine's socket
+ reelWay.add(cable([[rx+.11,G+.2,rz+.03],[rx+.2,G+.03,rz+.15],[rx+.03,g,M.z-M.width/2-.11],[gap+.005,g,M.z-M.width/2-.1],...cordIn],.005,cordMat,floorAt)); // the machine's cord into the reel
+ reelWay.add(cable([[rx+.11,G+.2,rz-.03],[C.maxX+.08,g,C.maxZ-.04],[nx+.06,g,nz+.02],[nx+.06,.6,nz],[nx+.06,2.5,nz],[nx,2.6,nz]],.005,cordMat,floorAt));        // the lantern string's cord down the nobori pole
+ for(let i=0;i<5;i++){const loop=mesh(reelWay,new THREE.TorusGeometry(.13+i*.012,.005,6,28),cordMat,rx+.41+i*.012,g+i*.004,rz+.05);loop.rotation.x=Math.PI/2;loop.name='Loose cord coil';}   // loose coils on the pavement, between the reel and the machine's pad
  const fixedWay=new THREE.Group();fixedWay.name='The fix: the lanterns’ own socket';group.add(fixedWay);
- fixedWay.add(cable([[sx+.07,sy-.03,sz],[sx+.12,.05,sz+.05],[M.x-.3,.03,M.z-.62],[M.x-.32,.12,M.z-.5]],.006,cordMat));                       // the machine back in its own socket
+ // (the machine back in its own socket: the street's cord above, shown again)
  const [qx,qy,qz]=H.rcd.at;
  fixedWay.add(cable([[qx+.07,qy-.03,qz],[qx+.2,qy-.2,qz+.1],[nx+.06,1.0,nz-.04],[nx+.06,2.5,nz-.04],[nx,2.6,nz]],.008,orangeCable));            // a proper cable, fully run, up the pole
  // ---- the story's things
  const ring=new THREE.Group();ring.name='Jack-o’-lanterns round the machine';group.add(ring);
- for(let i=0;i<7;i++){const a=-1.15+i*2.3/6,r=.95;add(buildJackOLantern({r:i%2?.14:.17}),M.front+Math.cos(a)*r,0,M.z+Math.sin(a)*r,Math.PI/2-a*.6,ring);}
+ for(let i=0;i<7;i++){const a=-1.15+i*2.3/6,r=.95;add(buildJackOLantern({r:i%2?.14:.17}),M.front+Math.cos(a)*r,G,M.z+Math.sin(a)*r,Math.PI/2-a*.6,ring);}
  const deco=new THREE.Group();deco.name='Jack-o’-lanterns on the frontage';group.add(deco);
- for(const [x,y,z,r,ry] of [[S.maxX+.32,.84,-30.75,.15,Math.PI/2],[S.maxX+.32,.84,-30.2,.12,Math.PI/2+.3],[S.maxX+.4,.78,-29.4,.13,Math.PI/2-.2],[H.nobori[0]+.12,0,H.nobori[1]-.22,.14,Math.PI/2-.4]])add(buildJackOLantern({r}),x,y,z,ry,deco);
- const peek=add(buildObake({h:.36}),M.x+.12,1.89,M.z-.36,Math.PI/2);peek.name='Plush ghost peeking';peek.rotation.z=-.18;   // on top of the machine, leaning out over its front edge
+ for(const [x,y,z,r,ry] of [[S.maxX+.32,.84,-30.75,.15,Math.PI/2],[S.maxX+.32,.84,-30.2,.12,Math.PI/2+.3],[S.maxX+.4,.78,-29.4,.13,Math.PI/2-.2],[H.nobori[0]+.12,H.ground,H.nobori[1]-.22,.14,Math.PI/2-.4]])add(buildJackOLantern({r}),x,y,z,ry,deco);
+ const peek=add(buildObake({h:.36}),M.x+.12,M.top,M.z-.36,Math.PI/2);peek.name='Plush ghost peeking';peek.rotation.z=-.18;   // on top of the machine, leaning out over its front edge
  const can=new THREE.Group();can.name='A can in the take-out pocket';group.add(can);
- // the free can: a J-Coffee, lying on the pocket's floor behind the clear flap (vending.js takeOut), across the machine
+ // the free can: a J-Coffee, lying on the pocket's floor behind the smoked flap (vending.js takeOut), across the machine
  {const c=buildJCoffeeCan();c.rotation.x=Math.PI/2;c.rotation.y=-Math.PI/2+.4;   // its name to the street, tipped up a little
- c.position.set(M.front+.042,.212+J_COFFEE_CAN.diameter/2,M.z-J_COFFEE_CAN.height/2+.04);can.add(c);}
+ const [cx,cy,cz]=M.chute;c.position.set(cx,cy,cz-J_COFFEE_CAN.height/2);can.add(c);}
  const candles=new THREE.Group();candles.name='Séance candles';group.add(candles);
  const flame=new THREE.MeshBasicMaterial({color:0xffd27a});
  for(let i=0;i<H.seance.candles;i++){const a=i/H.seance.candles*Math.PI*2,x=H.seance.centre[0]+Math.cos(a)*H.seance.radius,z=H.seance.centre[1]+Math.sin(a)*H.seance.radius;
@@ -157,7 +184,7 @@ export function buildHalloween(world,{shadows=false}={}){
  {const r=mesh(riceBall,new THREE.ConeGeometry(.055,.075,3),std(0xfbfaf4,{roughness:.95}),M.front+.32,.052,M.z+.42);r.rotation.y=Math.PI/2;r.scale.set(1,1,.55);
   mesh(riceBall,new THREE.BoxGeometry(.05,.035,.02),std(0x1e2a22),M.front+.32,.035,M.z+.43).rotation.y=Math.PI/2;}
  const bucket=new THREE.Group();bucket.name='Fujita’s bucket';group.add(bucket);
- const bx=M.front+.27;   // in front of the take-out pocket (which stands .085 out from the door), under its chute
+ const bx=M.front+.27;   // in front of the take-out pocket, just off the machine's pad (its lip is .12 out from the door)
  mesh(bucket,new THREE.CylinderGeometry(.13,.1,.22,18,1,true),std(0xa9aeb1,{metalness:.6,roughness:.35,side:THREE.DoubleSide}),bx,.11,M.z);
  mesh(bucket,new THREE.CircleGeometry(.1,18).rotateX(-Math.PI/2),std(0x8d9295),bx,.005,M.z);
  // the night's free cans in it: J-Coffee, two standing, one leaning on the rim with its name to the street
@@ -168,7 +195,9 @@ export function buildHalloween(world,{shadows=false}={}){
   for(let i=0;i<5;i++){const a=i/5*Math.PI*2;put(Math.cos(a)*.058,.006,Math.sin(a)*.058,-Math.PI/2+(i-2)*.45);}
   for(let i=0;i<3;i++){const a=(i+.5)/3*Math.PI*2;put(Math.cos(a)*.036,.006+Hc,Math.sin(a)*.036,-Math.PI/2+(i-1)*.4);}
   put(.07,.006+Hc+D/2*Math.sin(.5),-.02,-Math.PI/2,.5);}
- const mist=new THREE.Group();mist.name='Mist from the can chute';group.add(mist);
+ // (the séance's candles, the salt, the rice ball and the bucket stand on the footway, 12 mm below the datum)
+ for(const o of [candles,salt,riceBall,bucket])o.position.y=G;
+ const mist=new THREE.Group();mist.name='Mist from the can chute';mist.position.y=G;group.add(mist);
  for(const [dx,dz,r,y] of [[.12,0,.55,.06],[.45,.3,.7,.05],[.5,-.35,.65,.07],[.95,.05,.85,.04],[.3,.65,.55,.05],[.3,-.65,.55,.06],[1.4,.2,.8,.03],[1.3,-.5,.7,.035],[.08,0,.35,.2],[.1,.15,.3,.3],[.06,-.12,.28,.26]]){const p=mistPuff(r);p.position.set(M.front+dx,y,M.z+dz);mist.add(p);}
  let dog=null,dream=null;
  // the drinks machine's own lit window and brand (the town's machine at Sakura): dimmed with its compressor's start.
@@ -189,11 +218,12 @@ export function buildHalloween(world,{shadows=false}={}){
   for(const l of lanterns)l.userData.lantern.setGlow(state.glow);
  const g=THREE.MathUtils.clamp(state.glow,0,1);for(const L of pools.children){L.intensity=H.poolIntensity*Math.pow(g,1.2);L.visible=g>0&&!!state.show;}
   reelWay.visible=state.cable==='reel';reel.visible=state.cable==='reel';fixedWay.visible=state.cable==='fixed';rcd.visible=state.cable==='fixed';
+  ownCord.visible=!(state.show&&state.cable==='reel');   // the machine on its own socket, except while it is on Kōji's reel
   for(const p of mist.children)p.material.opacity=THREE.MathUtils.clamp(state.mist,0,1);mist.visible=state.mist>0;
   ring.visible=!!state.pumpkins;deco.visible=!!state.deco;peek.visible=!!state.peek;can.visible=!!state.can;candles.visible=!!state.candles;salt.visible=!!state.salt;
   riceBall.visible=state.riceBall==='plate';bucket.visible=!!state.bucket;bucketCans.visible=state.bucket!=='empty';
   if(dog){dog.removeFromParent();dog=null;}
-  if(state.dog){const d=state.dog;dog=buildDog({pose:d.pose||'sit'});applyCelShading(dog);dog.position.set(d.at[0],0,d.at[1]);dog.rotation.y=d.yaw??0;group.add(dog);}
+  if(state.dog){const d=state.dog;dog=buildDog({pose:d.pose||'sit'});applyCelShading(dog);dog.position.set(d.at[0],H.ground,d.at[1]);dog.rotation.y=d.yaw??0;group.add(dog);}
   dimMachine(THREE.MathUtils.clamp(state.machine,0,1));
   // Fujita's dream (fujita-dream.js), built the first time a story asks for it: 'dream', or 'pop' (it bursts)
   if(state.dream&&!dream){dream=buildFujitaDream();world.group.add(dream);}

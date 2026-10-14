@@ -1,6 +1,6 @@
 import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
-import {createVendingMachine} from '../vending.js';
+import {createVendingMachine,VENDING_MACHINE} from '../vending.js';
 import {japaneseSign} from '../okinawa/signs.js';
 import {buildAvatar} from '../../avatars/build.js';
 import {createAvatarAnimator} from '../../avatars/animate.js';
@@ -154,7 +154,8 @@ export function buildPortHall({room,reg,collider=()=>{},action,naha=()=>{},upsta
  panel('Harbour Office sign',.9,.24,[hw-.04,3.0-.05,.45],-Math.PI/2,(x,cw,ch)=>{x.fillStyle='#3e463f';x.fillRect(0,0,cw,ch);x.fillStyle='#f3ecd8';x.font=`700 ${ch*.5}px system-ui`;x.textAlign='center';x.textBaseline='middle';x.fillText('HARBOUR OFFICE ↑',cw/2,ch/2);},384);
  collider(hw-.55,1.75,1,2.6,1.7);
  spot([hw-1.3,1.2,2.4],'Go up to the Harbour Office',upstairs);
- const vending=createVendingMachine({});vending.position.set(hw-.55,0,-2.9);vending.rotation.y=-Math.PI/2;group.add(vending);collider(hw-.55,-2.9,.9,.9,1.9);
+ // indoors on the hall's floor, so no concrete pad; its collider is its own footprint (it faces -x: its depth along x)
+ const vending=createVendingMachine({pad:false});vending.position.set(hw-.55,0,-2.9);vending.rotation.y=-Math.PI/2;group.add(vending);collider(hw-.55,-2.9,VENDING_MACHINE.size.depth+.04,VENDING_MACHINE.size.width+.04,1.9);
  spot([hw-1.2,1.1,-2.9],'Buy a drink from the vending machine',()=>action('vending'));
  // Sakura's ferry punch cards, on an honour shelf by the door: Thuan restocks it.
  box('Punch card shelf',[.6,.9,.3],[-hw+.5,.45,hd-.4],0x8a6a4a);

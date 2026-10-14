@@ -97,11 +97,15 @@ export function buildJackOLantern({r=.16}={}){
  */
 export const J_COFFEE_CAN=Object.freeze({diameter:.066,height:.122,colour:'#17130f',ink:'#f3e6c4',gold:'#d9a441'});
 let jLabel=null;
-function jCoffeeLabel(){
- if(jLabel!==null)return jLabel;jLabel=undefined;
- if(typeof document==='undefined'||!document.createElement)return jLabel;
- const c=document.createElement('canvas');c.width=512;c.height=256;const x=c.getContext?.('2d');if(!x)return jLabel;
- const C=J_COFFEE_CAN;x.fillStyle=C.colour;x.fillRect(0,0,512,256);
+/**
+ * Paints the J-Coffee can's printed body into a w × h box of a 2D canvas (the label wraps once round the can: its
+ * front at u .5, the seam at the back). Shared by the can (buildJCoffeeCan) and the drinks machine's dummy sample
+ * (vending.js), so the can in the window and the can in the pocket are the same can.
+ */
+export function paintJCoffeeLabel(x,w=512,h=256){
+ const C=J_COFFEE_CAN,sx=w/512,sy=h/256;
+ x.save();x.scale(sx,sy);
+ x.fillStyle=C.colour;x.fillRect(0,0,512,256);
  // the front (u .5): the bean mark, the name, a rule and the kind, the name kept within about a third of the way round
  // so it reads whole from in front; the back (the seam): a big gold J, so the can is known from any side
  x.fillStyle=C.gold;x.beginPath();x.ellipse(256,58,26,36,.5,0,Math.PI*2);x.fill();
@@ -111,6 +115,13 @@ function jCoffeeLabel(){
  x.fillRect(176,170,160,5);
  x.font='bold 28px Arial, sans-serif';x.fillText('BLACK · 無糖',256,204,170);
  x.fillStyle=C.gold;x.font='900 150px "Arial Black", Arial, sans-serif';for(const u of [0,512])x.fillText('J',u,138);
+ x.restore();
+}
+function jCoffeeLabel(){
+ if(jLabel!==null)return jLabel;jLabel=undefined;
+ if(typeof document==='undefined'||!document.createElement)return jLabel;
+ const c=document.createElement('canvas');c.width=512;c.height=256;const x=c.getContext?.('2d');if(!x)return jLabel;
+ paintJCoffeeLabel(x,512,256);
  jLabel=new THREE.CanvasTexture(c);jLabel.colorSpace=THREE.SRGBColorSpace;jLabel.anisotropy=4;
  return jLabel;
 }

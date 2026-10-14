@@ -4,6 +4,7 @@ import {paint} from './kit.js';
 import {fascia,iceMural,enamel,catchFlag,poster,vertical} from './signs.js';
 import {potPlant,OKINAWA_COLOURS as C} from './houses.js';
 import {buoys,bicycle} from './props.js';
+import {VENDING_MACHINE} from '../vending.js';
 
 /**
  * The buildings that were here before the quarters went up, brought up to the street
@@ -83,7 +84,7 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  // The vending pair at the south end of the frontage, with a bin between them and the door.
  // One machine, not a bank: vending is kept to a few places worth stopping at (Sakura,
  // the onsen lane, the fish quay) rather than every frontage (docs/AMPLIFY-AUDIT.md).
- vending(front+.45,S.minZ+1.7,Math.PI/2);
+ vending(SAKURA_VENDING.x,SAKURA_VENDING.z,SAKURA_VENDING.ry,SAKURA_VENDING.y);
  // The can recycling box (空きかん): a blue box with a round hole in the lid. Bring your
  // empties back here and Thuan gives a little for each from the till.
  {const bx=front+.4,bz=door-doorClear-.5;
@@ -115,7 +116,8 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  }
  // Services on the wall ends: the meter, pipes to the drum, the camera and its plate.
  kit.box(.14,.5,.36,front+.07,1.75,S.maxZ-.2,0xd8d4ca);kit.box(.02,.2,.2,front+.15,1.8,S.maxZ-.2,0x2c3a33);
- for(const z of [S.minZ+.12,S.maxZ-.12]){kit.cyl(.045,.045,2.7,front+.06,1.35,z,0x9aa0a4,{segments:8});for(let y=.6;y<2.6;y+=1.1)kit.box(.1,.06,.1,front+.08,y,z,0x6d7478);}
+ // the downpipes at the corners (the south one tucked into its corner, leaving the pier for the drinks machine's socket)
+ for(const z of [S.minZ+.07,S.maxZ-.12]){kit.cyl(.045,.045,2.7,front+.06,1.35,z,0x9aa0a4,{segments:8});for(let y=.6;y<2.6;y+=1.1)kit.box(.1,.06,.1,front+.08,y,z,0x6d7478);}
  kit.box(.18,.14,.26,front+.12,2.52,S.maxZ-.5,0xe8e6e0);kit.box(.1,.08,.08,front+.24,2.5,S.maxZ-.5,0x2b2b2b);
  kit.sign(enamel({jp:"Security camera",en:'CCTV in operation',bg:'#f4d23c',ink:'#1f1f1f'}),.28,.42,front+.02,2.05,S.maxZ-.55,{ry:Math.PI/2,depth:.01,name:'camera plate'});
  // Bicycles park in the side service court, leaving the vending face and pavement clear.
@@ -136,6 +138,14 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
 
 /** Sakura's footprint and the height of its roof slab, as the storefront builds them. */
 export const SAKURA_BOX=Object.freeze({minX:-18.45,maxX:-7.45,minZ:-34.43,maxZ:-20.17,roof:4.01});
+/**
+ * Sakura's drinks machine, at the south end of the frontage, facing the street (+x). It stands in front of the roller
+ * shutter, as a machine does, so the shutter comes down behind it at night: its back is 3 cm clear of the shutter's
+ * bottom rail (the curtain hangs at the front +.18, its rail reaches the front +.24), with its cord in that gap.
+ */
+export const SAKURA_VENDING=Object.freeze({x:SAKURA_BOX.maxX+.24+.03+VENDING_MACHINE.size.depth/2,y:-.012,   // on the Main Street footway (harbour.js), its top 12 mm below the datum
+ z:SAKURA_BOX.minZ+1.7,ry:Math.PI/2,
+ why:'In front of the shutter at the frontage’s south end, by the corner pier with its outdoor socket: open all night when the shop is shut, and seen from the quay road.'});
 
 function dressSakura(kit,solid,{inspect}){
  const S=SAKURA_BOX,roof=S.roof;
