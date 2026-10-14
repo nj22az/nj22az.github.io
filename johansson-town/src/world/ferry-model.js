@@ -230,7 +230,7 @@ function plateMesh(pl){
  if(typeof document==='undefined')return null;
  // The canvas has the plate's own proportions (a 0.76 × 0.03 m label gets a 25 : 1 canvas), so no lettering is stretched.
  const kind=pl.kind||'text',c=document.createElement('canvas');let H=Math.max(64,Math.round(512*pl.h/pl.w)),W=Math.min(2048,Math.max(64,Math.round(H*pl.w/pl.h))),repeat=null;
- if(kind==='dial')W=H=pl.live?384:256;if(kind==='chequer'||kind==='grating'){W=H=256;repeat=[pl.w/.6,pl.h/.6];}if(kind==='safety-plan'||kind==='alarms'||kind==='readout'){W=1024;H=Math.round(1024*pl.h/pl.w);}
+ if(kind==='dial')W=H=pl.live?384:256;if(kind==='chequer'||kind==='grating'){W=H=256;repeat=[pl.w/.6,pl.h/.6];}if(kind==='safety-plan'||kind==='alarms'||kind==='readout'||kind==='scope'){W=1024;H=Math.round(1024*pl.h/pl.w);}
  c.width=W;c.height=H;const x=c.getContext('2d');
  drawPlate(x,W,H,pl,pl.kind==='alarms'?[]:pl.kind==='readout'?pl.lines:pl.value);
  const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=4;
@@ -288,6 +288,12 @@ function drawPlate(x,W,H,pl,value){
   const rows=value||pl.lines;x.fillStyle=pl.fg;x.textAlign='left';x.textBaseline='middle';
   const size=Math.min(...rows.map(t=>fitFont(x,t,Math.round(H/rows.length*.72),W-24,'monospace')));x.font='bold '+size+'px monospace';   // one size for every line
   rows.forEach((t,i)=>x.fillText(t,12,H*(i+.5)/rows.length));
+ }else if(kind==='scope'){
+  // A cathode-ray oscilloscope: the graticule, CH1 a 60 Hz sine over two cycles, CH2 a smaller one a third of a cycle on.
+  x.fillStyle=pl.bg;x.fillRect(0,0,W,H);x.strokeStyle='rgba(74,222,128,.25)';x.lineWidth=2;
+  for(let i=0;i<=10;i++){x.beginPath();x.moveTo(i*W/10,0);x.lineTo(i*W/10,H);x.stroke();}for(let j=0;j<=8;j++){x.beginPath();x.moveTo(0,j*H/8);x.lineTo(W,j*H/8);x.stroke();}
+  for(const [amp,phase,col] of [[.34,0,pl.fg],[.22,2.094,'#38bdf8']]){x.strokeStyle=col;x.lineWidth=6;x.beginPath();for(let i=0;i<=200;i++){const t=i/200,y=H/2-Math.sin(t*Math.PI*4+phase)*H*amp;i?x.lineTo(t*W,y):x.moveTo(0,y);}x.stroke();}
+  x.fillStyle=pl.fg;x.textAlign='left';x.textBaseline='top';x.font='bold '+Math.round(H*.08)+'px monospace';pl.lines.forEach((t,i)=>x.fillText(t,14,10+i*H*.09));
  }else if(kind==='safety-plan'){
   drawSafetyPlan(canvasPen(x),W,H,pl.here);x.strokeStyle='#1d2326';x.lineWidth=6;x.setLineDash([]);x.strokeRect(3,3,W-6,H-6);
  }else if(kind==='chequer'){

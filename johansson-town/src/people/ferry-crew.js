@@ -36,6 +36,7 @@ export const FERRY_RELIEF=Object.freeze({deck:Object.freeze({name:'Kōji',why:'H
 export const FERRY_SHORE=Object.freeze([
  Object.freeze({post:'tickets',title:'Ticket clerk',name:'Ms Ganaha',where:'The ticket window in the Port Building’s waiting hall',does:'Sells the tickets, answers the telephone, writes the passenger count on the slip the deck hand collects'}),
  Object.freeze({post:'linesman',title:'Linesman at Minato',name:'Mr Fujita',where:'The quay by the bow bollards',does:'Takes the bow line ashore and puts its eye over the bollard, and casts it off again; for a can of coffee from the master and the news'}),
+ Object.freeze({post:'electrician',title:'Electrician (under contract)',name:'Tetsuo',where:'The electrical workshop aboard, below the car deck (Fr 45–52), while she lies at Minato on shore power',does:'Keeps her electrics: the insulation tests the IT system lives by, the motors, the lamps, the radios; works aboard alongside, never at sea'}),
  Object.freeze({post:'port',title:'Harbour master',name:'Harbour master',where:'The Harbour Office',does:'Gives the berth, keeps the port radio, and signs the passenger list'}),
 ]);
 

@@ -132,6 +132,18 @@ thruster, windlasses), allocated under X (heavy machinery, not main machine sets
    the detection heads, and the fan flat over the lower lobby (the 1.9 m between its deckhead at 5.5 m and the
    passenger deck at 7.4 m, 10 m long, which the arrangement had left unassigned) is designed as the engine-room fan
    room and will be built in 6q-2.
+   **6q-3, the electrical workshop** (the creator, 2026-10-14, from his engine-room workshop diorama): the after 3.5 m
+   of the reserve void (Fr 45–52) is the electrical workshop, reached through a door in the store's forward bulkhead;
+   the void keeps 1.5 m as a cofferdam to the thruster room, the thruster's cable crossing in a tray, and the space
+   under the floor plates is a void tank the fore peak's ballast line passes through. Fr 45 is taken as **not** a
+   subdivision bulkhead (a plain door), so the workshop, the void and the store are one compartment in the damage
+   cases still to be computed (finding 4): if those cases need a bulkhead there, the door becomes a sliding watertight
+   door like Fr 28. Its second way out is an escape trunk to the open car deck beside the starboard lane; the trunk,
+   its hatch and coaming are arranged but not yet detailed (an open item for the structural sheets). Its test panel
+   (Johansson Marine JE-440T, SMA30 GS001) is a 2 kW consumer of the main board, used alongside at Minato on shore power,
+   which moves the night condition from 10.3 to 11.0 kW (27.5 % of the 40 kW shore supply), and the machinery spaces'
+   lighting by 0.12 kW. The sign on it reads 感電注意 (danger of electric shock): 440 V is low voltage in Japanese law,
+   where 高圧 begins above 600 V AC. There is no porthole: the space is below her waterline.
 4. **Stability**: intact stability curves (KN or GZ) and the damage cases the rules ask of a passenger ship (one
    compartment, with the car deck's free surface) are not computed yet; they need the weight estimate and the finer hull.
 

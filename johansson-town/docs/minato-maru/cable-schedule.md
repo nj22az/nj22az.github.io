@@ -48,10 +48,11 @@ Every power cable, numbered by the KKS rule (the lower end’s tag, then 1001–
 | 10BRA10 1033 | 10BRA10 GS001 | 10BRU10 GU001 | 24 V battery chargers feeder 1 | EPR/CSP braided, 3-core | 3 × 1.5 mm² + PE 1.5 mm² | 16 | 6 | control-booth → casing-p trunk → lobby → corridor → eg-room | 24 | 0.3 |
 | 10BRA10 1034 | 10BRA10 GS001 | 10BRU10 GU002 | 24 V battery chargers feeder 2 | EPR/CSP braided, 3-core | 3 × 1.5 mm² + PE 1.5 mm² | 16 | 6 | control-booth → casing-p trunk → lobby → corridor → eg-room | 24 | 0.3 |
 | 10BRA10 1035 | 10BRA10 GS001 | 10SMA20 AE002 -M01 | Workshop lathe, drill and grinder (3 units) | EPR/CSP braided, 3-core | 3 × 1.5 mm² + PE 1.5 mm² | 16 | 6 | control-booth → workshop | 20 | 0.3 |
-| 10BRA10 1036 | 10BRA10 GS001 | 10GHA10 AP001 -M01 | Ballast pump | EPR/CSP braided, 3-core | 3 × 1.5 mm² + PE 1.5 mm² | 16 | 10 | control-booth → engine-room → aux-room | 13 | 0.5 |
+| 10BRA10 1036 | 10BRA10 GS001 | 10SMA30 GS001 | Electrical workshop test panel: bench supply, soldering, motor tests | EPR/CSP braided, 3-core | 3 × 1.5 mm² + PE 1.5 mm² | 16 | 6 | control-booth → electrical-workshop | 22 | 0.4 |
+| 10BRA10 1037 | 10BRA10 GS001 | 10GHA10 AP001 -M01 | Ballast pump | EPR/CSP braided, 3-core | 3 × 1.5 mm² + PE 1.5 mm² | 16 | 10 | control-booth → engine-room → aux-room | 13 | 0.5 |
 | 10BRB10 1001 | 10BRB10 GS001 | 10BRB10 GS011 | Lighting: saloon, carpet room, lobby, toilets, stairs | EPR/CSP braided, 2-core | 2 × 6 mm² + PE 6 mm² | 36 | 25 | control-booth → casing-p trunk → lobby → saloon | 26 | 4.6 |
 | 10BRB10 1002 | 10BRB10 GS001 | 10BRB10 GS012 | Lighting: car deck | EPR/CSP braided, 2-core | 2 × 2.5 mm² + PE 2.5 mm² | 21 | 16 | control-booth → casing-p trunk → car-deck | 24 | 4.2 |
-| 10BRB10 1003 | 10BRB10 GS001 | 10BRB10 GS013 | Lighting: engine room, steering-gear room | EPR/CSP braided, 2-core | 2 × 1.5 mm² + PE 1.5 mm² | 16 | 16 | control-booth → engine-room | 7 | 2.2 |
+| 10BRB10 1003 | 10BRB10 GS001 | 10BRB10 GS013 | Lighting: engine room, steering-gear room, workshops | EPR/CSP braided, 2-core | 2 × 1.5 mm² + PE 1.5 mm² | 16 | 16 | control-booth → engine-room | 7 | 2.5 |
 | 10BRB10 1004 | 10BRB10 GS001 | 10BRB10 GS014 | Lighting: bridge, mess, galley, cabins | EPR/CSP braided, 2-core | 2 × 1.5 mm² + PE 1.5 mm² | 16 | 6 | control-booth → casing-p trunk → lobby → corridor → mess | 28 | 3.5 |
 | 10BRB10 1005 | 10BRB10 GS001 | 10BRB10 GS015 | Deck lights and ramp floodlights (6 × 100 W + 4 × 500 W) | EPR/CSP braided, 2-core | 2 × 6 mm² + PE 6 mm² | 36 | 32 | control-booth → casing-p trunk → car-deck | 24 | 4.7 |
 | 10BRB10 1006 | 10BRB10 GS001 | 10CTA10 GS001 | Searchlight | EPR/CSP braided, 2-core | 2 × 4 mm² + PE 4 mm² | 28 | 10 | control-booth → casing-p trunk → compass-deck | 37 | 3.7 |
