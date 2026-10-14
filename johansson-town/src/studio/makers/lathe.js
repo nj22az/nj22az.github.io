@@ -314,7 +314,7 @@ export function buildLathe(input,{name='Lathe model'}={}){
  let material;
  if(lit){
   // brightest at its middle where the bulb is, a deeper tone to its ends (halloween-props.js glowShade)
-  const base=colour(p.colours.body),warm=new THREE.Color('#fff1c9'),k=p.glow,mid=base.clone().lerp(warm,.55*k),edge=base.clone().multiplyScalar(.62+.25*k),c=new Float32Array(body.glowT.length*3),C=new THREE.Color();
+  const base=colour(p.colours.body),warm=new THREE.Color('#fff1c9'),k=p.glow,mid=base.clone().lerp(warm,.18*k),edge=base.clone().multiplyScalar(.6+.2*k),c=new Float32Array(body.glowT.length*3),C=new THREE.Color();
   for(let i=0;i<body.glowT.length;i++){C.copy(mid).lerp(edge,body.glowT[i]**2);c[i*3]=C.r;c[i*3+1]=C.g;c[i*3+2]=C.b;}
   geometry.setAttribute('color',new THREE.BufferAttribute(c,3));
   material=new THREE.MeshBasicMaterial({vertexColors:true,toneMapped:false,side:sheet?THREE.DoubleSide:THREE.FrontSide});material.name='glow';

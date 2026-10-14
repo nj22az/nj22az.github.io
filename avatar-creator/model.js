@@ -85,7 +85,8 @@ export function createModelWorkspace(){
   catch(e){console.warn('Make model: ink failed, drawing plain',e);ink=null;renderer.render(scene,camera);}
  }
  function resize(){
-  const w=Math.max(1,canvas.clientWidth),h=Math.max(1,Math.round(w*(w<560?1:.75))),pr=renderer.getPixelRatio();
+  // its shape is the stylesheet's (4:3, square on a phone): the drawing follows it, never stretched
+  const w=Math.max(1,canvas.clientWidth),h=Math.max(1,canvas.clientHeight||Math.round(w*.75)),pr=renderer.getPixelRatio();
   if(canvas.width!==Math.round(w*pr)||canvas.height!==Math.round(h*pr))renderer.setSize(w,h,false);
   camera.aspect=w/h;camera.updateProjectionMatrix();
  }
@@ -246,7 +247,7 @@ export function createModelWorkspace(){
 
  function openMaker(){
   maker.hidden=false;const fam=()=>LATHE_FAMILIES[params.family];
-  const range=(key,label)=>`<label class="model-range">${label} <output data-out="${key}"></output><input type="range" data-range="${key}" min="${min}" max="${max}" step="${step}"></label>`;
+  const range=(key,label)=>`<label class="model-range">${label} <output data-out="${key}"></output><input type="range" data-range="${key}"></label>`;
   const choice=(key,label,list)=>`<p class="scene-label">${label}</p><div class="scene-choice" role="group" aria-label="${label}" data-choice="${key}">${list.map(([v,t])=>`<button type="button" data-value="${v}" aria-pressed="false">${t}</button>`).join('')}</div>`;
   const swatches=(key,label)=>`<p class="scene-label">${label} <span data-colour-name="${key}"></span></p><div class="model-swatches" role="group" aria-label="${label}" data-swatch="${key}">${LATHE_PALETTE.map(c=>`<button type="button" data-value="${c.hex}" aria-pressed="false" aria-label="${esc(c.name)}" title="${esc(c.name)}: ${esc(c.from)}" style="background:${c.hex}"></button>`).join('')}</div>`;
   maker.innerHTML=`<h2>Lathe</h2><p>A profile spun round: drag its points, then shape it with the sliders.</p>
