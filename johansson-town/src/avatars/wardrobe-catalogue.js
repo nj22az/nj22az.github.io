@@ -23,6 +23,8 @@ export const ISLAND_PALETTE=Object.freeze([
  ['#d9668a','Hibiscus'],['#e8836a','Coral'],['#8cc4b4','Sea glass'],['#3a9cb8','Lagoon'],['#8fbfe0','Sky'],['#4f7a4f','Fukugi green'],
  ['#9cb85a','Sugarcane'],['#e3d4b0','Sand'],['#c9b68c','Bashō beige'],['#b4583c','Roof-tile terracotta'],['#6e4a33','Black-sugar brown'],
  ['#6d7478','Typhoon grey'],['#2b2b2b','Charcoal'],
+ // Pastels for the cute everyday wear (2026-10-14): a washed sakura pink and a mint, for sneakers, clips and sleeves.
+ ['#f2b8c6','Sakura pink'],['#b8dcc8','Mint'],
 ].map(([hex,name])=>Object.freeze({hex,name})));
 export const ISLAND_HEX=Object.freeze(new Set(ISLAND_PALETTE.map(c=>c.hex)));
 
@@ -85,6 +87,15 @@ const PART_ENTRIES={
    who:'the Minato Seagulls, whose signed board hangs at Sato Ramen (players proposed: Kōji, Mr Higa Jr and Mr Iha); Daichi, who dreams of a perfect game',
    why:'The town team’s home jersey, with Minato across the chest and a number on the back. They have not beaten Aoba since 1989.',
    colourways:[{name:'Seagulls home',colours:{'outfit.topColour':'#f4f1ea','outfit.accent':'#27304d','outfit.pattern':'none'}}]},
+  // Cute everyday wear (the creator, 2026-10-14: "characters need to … have cute clothes"): painted on the same body.
+  raglan:{label:'Raglan tee',category:'Everyday',tags:['tee','baseball tee','heart','weekend','Sunday','Blue Coral','park','school'],
+   who:'Vy and Mai on Saturdays, walking to Blue Coral for ice cream; Thao on her afternoon off',
+   why:'A cotton tee with sleeves in a second colour that run up to the neck, and a little heart on the chest: easy to run about in.',
+   colourways:[{name:'Hibiscus sleeves',colours:{'outfit.topColour':'#f4f1ea','outfit.accent':'#d9668a','outfit.pattern':'none'}},{name:'Lagoon sleeves',colours:{'outfit.topColour':'#f4f1ea','outfit.accent':'#3a9cb8','outfit.pattern':'none'}},{name:'Navy sleeves',colours:{'outfit.topColour':'#e3d4b0','outfit.accent':'#27304d','outfit.pattern':'none'}}]},
+  pinafore:{label:'Pinafore',category:'Everyday',tags:['dress','pinafore','jumper skirt','Sunday','school','tee'],
+   who:'Mai on Sundays; Miss Higa on school trips',
+   why:'A pinafore over a T-shirt, its bib and skirt one cloth: a dress that takes a fall in the playground and washes in one go.',
+   colourways:[{name:'Indigo over white',colours:{'outfit.topColour':'#f4f1ea','outfit.bottomColour':'#2f4f7f','outfit.accent':'#e8b83e','outfit.pattern':'none'}},{name:'Hibiscus over white',colours:{'outfit.topColour':'#f4f1ea','outfit.bottomColour':'#d9668a','outfit.accent':'#f4f1ea','outfit.pattern':'none'}}]},
  },
  bottom:{
   underwear:{label:'Underwear',category:'Trousers & shorts',tags:['base layer'],who:'everyone, under it all',why:'The base layer.'},
@@ -130,6 +141,10 @@ const PART_ENTRIES={
    why:'A well-made trucker cap: a tall foam front with Johansson’s J raised in embroidery, a mesh back that lets the sea wind through, a strap that fits anyone.',
    supplier:'Sakura Shōten, ¥3,800 (Johansson Headwear JH-712)',
    colourways:[{name:'Navy & white',colours:{'outfit.hatColour':'#27304d','outfit.accent':'#f4f1ea'}},{name:'Charcoal & grey',colours:{'outfit.hatColour':'#2b2b2b','outfit.accent':'#6d7478'}},{name:'White & navy',colours:{'outfit.hatColour':'#f4f1ea','outfit.accent':'#27304d'}}]},
+  hairclip:{label:'Hair clip',category:'Sun & everyday',tags:['hair slide','hairpin','clip','heart','fringe','school','Sunday'],
+   who:'Vy, pinning back her fringe for school; Mai; Thao at the izakaya counter',
+   why:'A little slide at the temple that keeps the fringe out of the eyes, with a heart on it.',
+   colourways:[{name:'Sakura pink',colours:{'outfit.hatColour':'#f2b8c6'}},{name:'Lagoon',colours:{'outfit.hatColour':'#3a9cb8'}},{name:'Turmeric',colours:{'outfit.hatColour':'#e8b83e'}}]},
  },
  belt:{
   none:{label:'No belt',category:'Work',tags:[],who:'most islanders',why:'Nothing hanging at the waist.'},

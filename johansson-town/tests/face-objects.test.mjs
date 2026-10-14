@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {buildFaceObjects,faceObjectPoint} from '../src/avatars/face-objects.js';
 import {buildAvatar,measure} from '../src/avatars/build.js';
 import {normalizeRecipe,PARTS} from '../src/avatars/recipe.js';
+import {PAINTED_MOUSTACHES} from '../src/avatars/face.js';
 import {installDOM} from './fixtures.mjs';
 const recipe=overrides=>normalizeRecipe({glasses:{style:'round',enabled:true},facial:{moustache:'handlebar',beard:'beard'},...overrides});
 test('every accessory style has finite three-dimensional geometry across head shapes',()=>{
@@ -11,7 +12,8 @@ test('every accessory style has finite three-dimensional geometry across head sh
   assert.equal(!!g.getObjectByName('Glasses frames and temples'),style!=='none');
   g.traverse(o=>{if(!o.isMesh)return;for(const v of o.geometry.attributes.position.array)assert.ok(Number.isFinite(v));o.geometry.computeBoundingBox();const b=o.geometry.boundingBox;assert.ok(b.max.z-b.min.z>.001);});g.userData.dispose();
  }
- for(const moustache of PARTS.moustache)for(const beard of PARTS.beard){const r=recipe({facial:{moustache,beard}}),g=buildFaceObjects(r,measure(r));assert.equal(!!g.getObjectByName('Sculpted moustache'),moustache!=='none');assert.equal(!!g.getObjectByName('Sculpted beard'),beard!=='none');g.userData.dispose();}
+ // (A painted moustache is drawn on the face, not sculpted.)
+ for(const moustache of PARTS.moustache)for(const beard of PARTS.beard){const r=recipe({facial:{moustache,beard}}),g=buildFaceObjects(r,measure(r));assert.equal(!!g.getObjectByName('Sculpted moustache'),moustache!=='none'&&!PAINTED_MOUSTACHES[moustache],moustache);assert.equal(!!g.getObjectByName('Sculpted beard'),beard!=='none');g.userData.dispose();}
 });
 test('disabled glasses are absent, adjustment changes geometry, and lift is outside the skin',()=>{
  const a=recipe({glasses:{enabled:false,style:'round'}}),b=recipe({glasses:{enabled:true,style:'round',height:1,size:1}}),m=measure(b);

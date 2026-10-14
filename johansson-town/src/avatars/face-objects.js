@@ -56,15 +56,15 @@ export function buildFaceObjects(recipe,m,{shadows=false}={}){
   mesh('Glasses glints',glints,new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.8,depthWrite:false}));
   mesh('Glasses lenses',lenses,new THREE.MeshStandardMaterial({color:glasses.style==='sun'?'#263442':'#dbeaf2',transparent:true,opacity:glasses.style==='sun'?.92:.12,roughness:.15,metalness:0,depthWrite:false,side:THREE.DoubleSide}));
  }
- const f=recipe.facial,k=L.facialS,dy=L.facialDY;
+ const f=recipe.facial,k=L.facialS,dy=L.facialDY,wk=.6+(f.width??.5)*.8;   // the moustache stretches with facial.width
  const hairMaterial=()=>new THREE.MeshStandardMaterial({color:f.colour,roughness:.92});
  const moustache=[],beard=[],fy=(L.noseY+L.mouthY)/2+3+dy;
  if(f.moustache==='moustache'||f.moustache==='walrus'){
-  for(const side of [-1,1])tuft(moustache,128+side*10*k,fy+(f.moustache==='walrus'?2:0),.085*k,(f.moustache==='walrus'?.05:.028)*k,.045*k);
+  for(const side of [-1,1])tuft(moustache,128+side*10*k*wk,fy+(f.moustache==='walrus'?2:0),.085*k,(f.moustache==='walrus'?.05:.028)*k,.045*k);
  }else if(f.moustache==='pencil'){
-  tube(moustache,Array.from({length:9},(_,i)=>at(128+(i-4)*4*k,fy-2+Math.abs(i-4)*.5,.035)),.012*k);
+  tube(moustache,Array.from({length:9},(_,i)=>at(128+(i-4)*4*k*wk,fy-2+Math.abs(i-4)*.5,.035)),.012*k);
  }else if(f.moustache==='handlebar'){
-  for(const side of [-1,1])tube(moustache,[[0,0],[10,-2],[20,3],[28,0],[27,-7],[23,-6]].map(([x,y])=>at(128+side*x*k,fy+y*k,.05)),.025*k);
+  for(const side of [-1,1])tube(moustache,[[0,0],[10,-2],[20,3],[28,0],[27,-7],[23,-6]].map(([x,y])=>at(128+side*x*k*wk,fy+y*k,.05)),.025*k);
  }
  if(f.beard==='goatee'){
   tuft(beard,128,L.mouthY+20*k+dy,.058*k,.085*k,.05*k);

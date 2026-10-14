@@ -208,7 +208,8 @@ function drawnRecipe(name){
  const hat=ACCESSORY_HAT[style.accessory]||(style.helmet?['helmet',style.helmet]:['none','#f4f1ea']);
  const generated=normalizeRecipe(withTownDials({name,age:ageClass(AGE_OF.get(name)),
   body:{silhouette:feminine?'feminine':'masculine',height:.3+r()*.45,build:.3+(Math.min(1.2,style.width||1)-.85)*1.6,skin:style.skin||'#e8bf98'},
-  head:{size:.38+r()*.22,shape:r(),form:any(PARTS.head),jaw:.25+r()*.5,cheeks:.25+r()*.5},
+  // (The first twelve forms only: the shapes added later must not change a look already dealt from its seed.)
+  head:{size:.38+r()*.22,shape:r(),form:any(PARTS.head.slice(0,12)),jaw:.25+r()*.5,cheeks:.25+r()*.5},
   hair:{style:grey&&!feminine?any(['horseshoe','buzz','crop']):feminine?any(['bob','long','ponytail','bun','sidepart']):any(['crop','sidepart','spiky','buzz']),colour:style.hair||'#1c1714',flip:r()<.5},
   eyes:{style:any(PARTS.eyes),size:.35+r()*.35,spacing:.4+r()*.2,tilt:.4+r()*.2},
   brows:{style:any(PARTS.brows.slice(0,6)),colour:style.hair||'#1c1714'},
