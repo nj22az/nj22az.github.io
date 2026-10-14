@@ -131,7 +131,7 @@ return {creator,cleanup};
 
 switchMode('character',{focus:false});
 // For agents only (the johansson-studio MCP server's page): ?agent adds window.__JOHANSSON_STUDIO__ (studio-api.js).
-if(new URLSearchParams(location.search).has('agent'))import('./studio-api.js?v=20261011-1').catch(e=>console.warn('Johansson Studio: agent API',e));
+if(new URLSearchParams(location.search).has('agent'))import('./studio-api.js?v=20261014-1').catch(e=>console.warn('Johansson Studio: agent API',e));
 // The maker focuses its close button on open; on first load nothing should wear a focus ring until the user acts.
 requestAnimationFrame(()=>requestAnimationFrame(()=>{const a=document.activeElement;if(a&&a!==document.body&&a.closest('.shm'))a.blur();}));
 window.addEventListener('pagehide',()=>{editor?.cleanup();workspace?.dispose();home?.dispose();model?.dispose();},{once:true});

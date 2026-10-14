@@ -188,5 +188,25 @@ export async function renderProduct(product,{view='front',size=512,background='#
  }finally{pack.userData.dispose();}
 }
 
+/**
+ * An asset's files as "Make model" saves them (model-assets.mjs exportAll), for the johansson-studio tools' asset_export:
+ * key "catalogue:<id>" or "registry:<id>", or "lathe" with a Lathe design's params and card (name, kind, purpose, tags,
+ * action, version). Base64 GLB, STL and transparent PNG, the card, the resolved card and the checks.
+ */
+async function exportAsset({key,params=null,card=null,png=true}={}){
+ const [A,{normalizeLathe},{slugify},{base64}]=await Promise.all([import('./model-assets.mjs?v=20261014-1'),import('../johansson-town/src/studio/makers/lathe.js'),
+  import('../johansson-town/src/studio/modeller/card-checks.js'),import('../johansson-town/src/studio/modeller/export.js')]);
+ let item;
+ if(key==='lathe'){
+  if(!params||!card?.name)throw Error('A Lathe design needs its params and a card with at least a name.');
+  const p=normalizeLathe(params),id=card.id||slugify(card.name),rules=await A.loadRules();
+  const full=A.latheCard(p,{id,name:card.name,kind:card.kind||'prop',purpose:card.purpose||{for:'',why:'',where:''},tags:card.tags||[],action:card.action,version:card.version||1},A.buildMade(p,card),rules);
+  item=A.madeItem(id,{card:full,params:p});card=full;
+ }else item=A.libraryItems().find(i=>i.key===key);
+ if(!item)throw Error(`Make model has no asset ${JSON.stringify(key)}.`);
+ const r=await A.exportAll(item,{card,png});
+ return {card:r.card,resolved:r.resolved,checks:r.checks,ok:r.ok,glb:base64(r.glb),stl:base64(r.stl.bytes),png:r.png?base64(r.png):null,print:r.stl.words,triangles:r.stl.report.triangles};
+}
+
 window.__JOHANSSON_STUDIO__=Object.freeze({version:VERSION,ready:true,views:Object.keys(VIEWS),poses:[...KNOWN_POSES],expressions:[...KNOWN_EXPRESSIONS],renderPortrait,
- productViews:['front','back','turn','shelf','flat','cell'],bakeLabel,cropPicture,renderProduct});
+ productViews:['front','back','turn','shelf','flat','cell'],bakeLabel,cropPicture,renderProduct,exportAsset});
