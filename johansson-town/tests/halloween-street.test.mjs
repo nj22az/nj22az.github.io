@@ -55,7 +55,7 @@ test('stage: the moments the story photographs, each switching what it should',(
  const {h,machine}=town();
  assert.equal(h.group.visible,false,'hidden out of season');
  h.stage({glow:lanternBrightness(reelVolts(false)),cable:'reel'});assert.equal(h.group.visible,true);
- const lit=machine.getObjectByName('Vending lit panels').material,glass=machine.getObjectByName('Vending glass and flap').material,pool=machine.getObjectByName('Vending light on the pavement').material;
+ const lit=machine.getObjectByName('Vending lit panels').material,glass=machine.getObjectByName('Vending glass').material,pool=machine.getObjectByName('Vending light on the pavement').material;
  assert.ok(lit.isMeshBasicMaterial&&lit.vertexColors,'the window, its header, lamps and labels: one unlit mesh');
  const before=[lit.color.r,glass.color.r,pool.color.r];h.stage({machine:.35});
  assert.ok(lit.color.r<before[0]*.4,'the machine’s window, header and lamps dim as its compressor starts');
