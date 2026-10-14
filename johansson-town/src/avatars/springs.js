@@ -1,3 +1,4 @@
+import {POLICE_UNIFORM} from './police-data.js';
 import * as THREE from '../../vendor/three.module.js';
 import {longBraidPoints} from './braid-path.js';
 import {DRESS_BOTTOMS} from './recipe.js';
@@ -40,6 +41,11 @@ export function hemSpec(recipe,m){
  if(o.top==='kariyushi'){
   // An island shirt is worn out over the shorts: its hem hangs a hand's width below the waist.
   const len=.1*m.k;return {kind:'hem',waist:waist+m.torso*.08,length:len+m.torso*.08,rx:m.hips*.56,rz:m.hips*.56*m.depth/m.width};
+ }
+ if(o.top==='police'){
+  // The 1994 police jacket (police-data.js): from just above the waist to a little below the hip joint, over the duty belt.
+  const top=waist+m.torso*.08,J=POLICE_UNIFORM.jacket.hem,r=m.hips*J.ease;
+  return {kind:'hem',waist:top,length:top-(hipY-J.below*m.k),rx:r,rz:r*m.depth/m.width};
  }
  return null;
 }

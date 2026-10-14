@@ -38,14 +38,8 @@ function turnOf(yaw){
  return right?{cos:[1,0,-1,0][k],sin:[0,1,0,-1][k],right,odd:k%2===1}:{cos:Math.cos(yaw),sin:Math.sin(yaw),right,odd:false};
 }
 
-/** The ids in the catalogue. */
-export const catalogIds=()=>Object.keys(CATALOG);
-/** An asset's card (catalog-data.js). */
-export function catalogCard(id){
- const card=Object.hasOwn(CATALOG,id)?CATALOG[id]:null;
- if(!card)throw new Error(`No ${JSON.stringify(id)} in World's catalogue (assets/catalog/index.json): ${catalogIds().join(', ')}`);
- return card;
-}
+import {catalogIds,catalogCard} from './catalog-cards.js';
+export {catalogIds,catalogCard};
 
 /**
  * Where an asset's card puts things once it stands at (x, y, z) turned by `yaw`, without its model: `toPlace([ax,ay,az])`,

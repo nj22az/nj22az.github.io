@@ -120,3 +120,13 @@ then put it back or take it to the till. See `src/world/interiors/item-viewer.js
 - The bunting is gone, and one hanging card remains.
 - Walkers who hit a corner fall back to the planner's own route (room-walk.js); the smoothed one had
   Thuan stuck at the west end cap with a carton.
+
+## Built (14 October 2026): the cap tree
+
+- A chromed cap tree by the east window, between the fax and the end of the counter, with two stacks of Johansson trucker
+  caps (Johansson Headwear JH-712, ¥3,800 with tax; navy and white, charcoal and grey, white and navy): in the window,
+  beside the till where a dear line is watched and a cap can be tried on in the glass, and out of the walk from the door
+  to the till, the queue and the evening guests' places. The west corner by the chiller was the first thought and was
+  refused: it is the sale poster's corner, Tetsuo's mark and three of the poster film's views. Data:
+  `src/commerce/sakura-caps.js`; fixture: `src/world/interiors/sakura-cap-stand.js`. Selling it at the till is open
+  (briefs/NEXT.md §10).

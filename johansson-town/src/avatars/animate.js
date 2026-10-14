@@ -9,6 +9,7 @@ import {FUN_POSES,STILL_AT} from './fun-poses.js';
 export {FUN_POSES,STILL_AT};
 import {createSeatSupport} from './seat-support.js';
 import {gaitOf} from './gait.js';
+import {DUTY_BELT} from './police-data.js';
 import {bodyVolume} from './build.js';
 import {storyProps,pocketSpot,PAPER} from './story-props.js';
 
@@ -323,6 +324,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
  const individual=seeded(avatar.recipe.name||JSON.stringify(avatar.recipe));
  const strideStyle=.92+individual()*.16,armStyle=.8+individual()*.25;
  const posture=(individual()-.5)*.055,idleRate=.85+individual()*.3;
+ // Over a duty belt the arms hang a little further out, as a police officer's do, so a hand swings past the holster, the
+ // baton and the radio instead of through them (police-data.js DUTY_BELT.armClear).
+ const clear=avatar.recipe?.outfit?.belt==='duty'?DUTY_BELT.armClear:0;
  // How they walk (gait.js): their type, their age and, for a few, their own way of going.
  const gait=gaitOf(avatar.recipe,individual);
  let ticIn=gait.ticEvery[0]+random()*(gait.ticEvery[1]-gait.ticEvery[0]),tic=null,ticT=0;
@@ -333,6 +337,8 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
  let nodIn=between(listen.nodEvery),nodT=-1,quirkIn=between(listen.quirkEvery),beatCool=0,awayIn=2,awayT=0,awaySide=1,attention=0;
  const gazeWorld=new THREE.Vector3();let gazeWeight=0,hadGaze=false;
  const current=Object.fromEntries(JOINTS.map(j=>[j,new THREE.Vector3()]));
+ // Over a duty belt the arms start out over the kit, so the first frames do not ease them out through it from the body's rest pose.
+ if(clear){current.shoulderL.z=.13+clear;current.shoulderR.z=-.13-clear;}
  const target=Object.fromEntries(JOINTS.map(j=>[j,new THREE.Vector3()]));
  const gazeLocal=new THREE.Vector3();
  let phase=0,time=Math.random()*10,rootY=0,hipsY=0,lean=0;
@@ -517,7 +523,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
  function carryArms(carry,sp,A){
   if(carry==='behind'){set('shoulderL',.38,0,.18);set('shoulderR',.38,0,-.18);set('elbowL',-.95);set('elbowR',-.95);}
   else if(carry==='pockets'){set('shoulderL',sp*A*.15+.05,0,.07);set('shoulderR',-sp*A*.15+.05,0,-.07);set('elbowL',-.4);set('elbowR',-.4);}
-  else if(carry==='stiff'){set('shoulderL',sp*A*1.25,0,.08);set('shoulderR',-sp*A*1.25,0,-.08);set('elbowL',-.05);set('elbowR',-.05);}
+  else if(carry==='stiff'){set('shoulderL',sp*A*1.25,0,.08+clear);set('shoulderR',-sp*A*1.25,0,-.08-clear);set('elbowL',-.05);set('elbowR',-.05);}
   else if(carry==='hips'){set('shoulderL',.1,0,.62);set('shoulderR',.1,0,-.62);set('elbowL',-1.6);set('elbowR',-1.6);}
  }
  /** A walking tic, at strength e (0..1, in and out). */
@@ -583,7 +589,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   const onChair=chairBlend>0||s.seated;
   const speed=s.speed||0,moving=speed>.08&&!s.seated&&!s.riding;
   // Arms hang a little out from the body, the way a toy's do.
-  set('shoulderL',0,0,.13);set('shoulderR',0,0,-.13);set('elbowL',-.12);set('elbowR',-.12);
+  set('shoulderL',0,0,.13+clear);set('shoulderR',0,0,-.13-clear);set('elbowL',-.12);set('elbowR',-.12);
   if(s.riding){
    // Pedalling: the knees go round, the hands are on the bars.
    const p=s.ridePhase||0;
@@ -606,7 +612,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    if(flex>0){set('kneeL',1.52-flex);set('kneeR',1.52-flex);set('footL',flex);set('footR',flex);}
    floorSit=soak?0:floorWeight(s);
    // Rest beside the thighs (on the floor, on them); task poses lift only the arms they need.
-   set('shoulderL',-.10,0,.13);set('shoulderR',-.10,0,-.13);set('elbowL',-.15);set('elbowR',-.15);
+   set('shoulderL',-.10,0,.13+clear);set('shoulderR',-.10,0,-.13-clear);set('elbowL',-.15);set('elbowR',-.15);
    if(floorSit>0){const F=floorShape(seatH-(s.floorHeight||0)),A=F.hands();
     for(const j of LEG_JOINTS)target[j].lerp(_pose.set(...F.joints[j]),floorSit);add('chest',FLOOR_SIT.lean*floorSit);
     if(A){armTo('R',A.R,floorSit,A.handR);armTo('L',A.L,floorSit,A.handL);}}
@@ -638,7 +644,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    set('kneeL',(Math.max(0,Math.sin(phase-.9))*A*1.5+.05)*G.lift);set('kneeR',(Math.max(0,Math.sin(phase+Math.PI-.9))*A*1.5+.05)*G.lift);
    set('footL',sp*A*.3);set('footR',-sp*A*.3);
    const swing=A*armStyle*G.arms;
-   set('shoulderL',sp*swing,0,.12);set('shoulderR',-sp*swing,0,-.12);
+   set('shoulderL',sp*swing,0,.12+clear);set('shoulderR',-sp*swing,0,-.12-clear);
    set('elbowL',run?-1.35:-.25-G.elbow-Math.max(0,-sp)*.3);set('elbowR',run?-1.35:-.25-G.elbow-Math.max(0,sp)*.3);
    set('hips',0,sp*.14*G.swagger,Math.sin(phase)*G.sway);set('chest',(run?.22:.05)+G.lean,-sp*.18*G.swagger,-Math.sin(phase)*G.sway*.6);
    set('head',(run?-.12:-.02)-G.lean*.5+Math.abs(cp)*G.headBob,sp*.08,0);
@@ -1117,7 +1123,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   const w=g.ramp!==undefined?smooth(g.ramp):inOut(t,d,...[RAMP_TIME[g.name]||FUN_POSES[g.name]?.ramp||.5].flat()),soak=s.seat==='Soak'||s.pose==='Soak';
   switch(g.name){
    case 'Wave':set('shoulderR',-.2,0,-2.55*q);set('elbowR',0,0,-.45+Math.sin(t*10)*.45*q);add('head',0,0,.08*q);break;
-   case 'Bow':add('chest',.95*e*bowDepth);add('spine',.25*e*bowDepth);add('head',.2*e*bowDepth);set('shoulderL',.1,0,.05);set('shoulderR',.1,0,-.05);break;
+   case 'Bow':add('chest',.95*e*bowDepth);add('spine',.25*e*bowDepth);add('head',.2*e*bowDepth);set('shoulderL',.1,0,clear?.13+clear:.05);set('shoulderR',.1,0,clear?-.13-clear:-.05);break;
    case 'Nod':add('head',Math.sin(t*9)*.28*e);break;
    case 'ScratchHead':set('shoulderR',-1.55*q,0,-1.15*q);set('elbowR',-2.2*q+Math.sin(t*16)*.12*q);add('head',.06*q,0,-.14*q);break;
    case 'HairTuck':set('shoulderL',-1.3*q,0,.95*q);set('elbowL',-2.25*q);add('head',0,0,.12*q);break;

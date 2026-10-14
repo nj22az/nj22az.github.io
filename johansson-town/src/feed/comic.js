@@ -1,5 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar} from '../avatars/build.js';
+import {loadHatModels} from '../catalog/hat-models.js';
 import {createAvatarAnimator,GESTURES} from '../avatars/animate.js';
 import {recipeFor} from '../avatars/cast.js';
 import {drawBackground,drawFaceFx,drawSfx} from './manga-fx.js';
@@ -192,6 +193,8 @@ function sceneCamera(data){
 export async function renderComic({panels,place,props={},sitting=false},{base='./',quality=.86}={}){
  // The lettering is set in the interface face; wait for it so the first page is not in a fallback.
  try{await Promise.all(['700 22px','800 40px'].map(f=>document.fonts?.load(f+' Figtree,"LINE Seed JP"','āēīōū Aa')));}catch{}
+ // The hats from World's catalogue (Johansson's trucker cap) before anyone is built, so they wear them and not the stand-in.
+ await loadHatModels();
  const set=(await placeViews(base))[place];
  const layout=pageLayout(panels);
  const page=document.createElement('canvas');page.width=layout.width;page.height=layout.height;

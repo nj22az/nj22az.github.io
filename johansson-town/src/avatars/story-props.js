@@ -222,14 +222,16 @@ export function buildCostume(avatar,kind){
   add(sheet,new THREE.CylinderGeometry(rn*.6,rn,.03*k,24,1,true),white,0,y0+.012*k,0);   // closed round the neck
   parts.push(['hips',sheet]);
   const hood=new THREE.Group();hood.name='Ghost hood';
-  // over a hat, if they wear one (Mori's police cap): the hood is cut wider and taller to go over it
-  const hatted=avatar.recipe?.outfit?.hat&&avatar.recipe.outfit.hat!=='none',grow=hatted?1.42:1;
-  const R=(m.Rh*Math.max(m.headSX,1)+.03*k)*grow,cy=m.headCentre-m.headY+(hatted?m.Rh*.18:0),hp=[];
-  for(let i=0;i<=10;i++){const a=i/10*Math.PI*.62;hp.push(new THREE.Vector2(Math.sin(a)*R*1.02+.0001,cy+Math.cos(a)*R*m.headSY*.95));}
-  for(let i=1;i<=3;i++)hp.push(new THREE.Vector2(R*1.02+.01*i,cy-R*.4-i*.05*k));
-  const front=hatted?.95:1.15;   // the face's opening, radians each side of the front
-  add(hood,new THREE.LatheGeometry(hp,24,front,Math.PI*2-front*2),white);
-  add(hood,new THREE.ConeGeometry(.05*k,.1*k,12),white,0,cy+R*m.headSY*.95+.03*k,-.02*k).rotation.x=-.4;   // the sheet's little peak
+  const hatted=avatar.recipe?.outfit?.hat&&avatar.recipe.outfit.hat!=='none';
+  if(hatted)drapedHood(avatar,hood,white);
+  else{
+   const R=m.Rh*Math.max(m.headSX,1)+.03*k,cy=m.headCentre-m.headY,hp=[];
+   for(let i=0;i<=10;i++){const a=i/10*Math.PI*.62;hp.push(new THREE.Vector2(Math.sin(a)*R*1.02+.0001,cy+Math.cos(a)*R*m.headSY*.95));}
+   for(let i=1;i<=3;i++)hp.push(new THREE.Vector2(R*1.02+.01*i,cy-R*.4-i*.05*k));
+   const front=1.15;   // the face's opening, radians each side of the front
+   add(hood,new THREE.LatheGeometry(hp,24,front,Math.PI*2-front*2),white);
+   add(hood,new THREE.ConeGeometry(.05*k,.1*k,12),white,0,cy+R*m.headSY*.95+.03*k,-.02*k).rotation.x=-.4;   // the sheet's little peak
+  }
   parts.push(['head',hood]);
  }else if(kind==='witchHat'){
   const hat=new THREE.Group();hat.name='Witch hat';
@@ -244,6 +246,63 @@ export function buildCostume(avatar,kind){
 }
 
 const _v=new THREE.Vector3(),_w=new THREE.Vector3(),_m=new THREE.Matrix4();
+/**
+ * The ghost sheet's hood over a hat (Mori's police cap): the sheet drawn over the head and everything on it, as cloth is.
+ * From a point in the head, in every direction it lies a little (HOOD.clear) outside the furthest thing there -- the cap's
+ * crown, its welt, the visor, the hair, the ears -- so it takes the cap's shape: flat over the crown, out over the visor,
+ * which makes its peak, and nothing comes through it. The face is left open below the visor (HOOD.open each side of the
+ * front), wide enough to see the face and what it is doing. It casts no shadow: a closed shell round the head would put the
+ * face in the dark, which the thin sheet does not.
+ */
+const lerp=THREE.MathUtils.lerp;
+export const HOOD=Object.freeze({clear:.016,open:1.25,rows:30,cols:72,reach:.82,brow:.3});
+function drapedHood(avatar,group,material){
+ const m=avatar.measure,k=m.k||1,R=m.Rh,H=HOOD,hc=m.headCentre-m.headY;
+ const pts=posedPoints(avatar,avatar.bones.head).filter(p=>p.y>-R*.15&&p.y<R*4&&Math.hypot(p.x,p.z)<R*2.4);
+ const c=new THREE.Vector3(0,hc+R*.2,-R*.05),rel=pts.map(p=>p.clone().sub(c)),len=rel.map(v=>v.length()),unit=rel.map((v,i)=>v.clone().divideScalar(len[i]||1));
+ const NT=H.rows,NP=H.cols,TMAX=Math.PI*H.reach,cone=Math.max(TMAX/NT,Math.PI*2/NP)*2.6,cosCone=Math.cos(cone);
+ const dir=(t,p)=>new THREE.Vector3(Math.sin(t)*Math.sin(p),Math.cos(t),Math.sin(t)*Math.cos(p));
+ let r=[];
+ for(let i=0;i<=NT;i++){const row=[],t=i/NT*TMAX;
+  for(let j=0;j<NP;j++){const d=dir(t,j/NP*Math.PI*2);let best=R*.9;
+   for(let n=0;n<rel.length;n++){const cos=unit[n].dot(d);if(cos>cosCone)best=Math.max(best,len[n]*Math.min(1,cos+.02));}
+   row.push(best);}
+  r.push(row);}
+ // smoothed out into soft cloth (each pass an average of its neighbours, never drawn in below what it covers)
+ const need=r.map(row=>row.slice());
+ for(let pass=0;pass<6;pass++)r=r.map((row,i)=>row.map((v,j)=>{const n=[row[(j+1)%NP],row[(j+NP-1)%NP],(r[i-1]||row)[j],(r[i+1]||row)[j]];return Math.max(need[i][j],(v*2+n.reduce((a,b)=>a+b,0))/6);}));
+ // The cloth falls from the widest thing it goes over (the crown's rim, the visor's edge) straight down, as a sheet does,
+ // and on down to the shoulders, where the sheet's own top is.
+ const grid=[];for(let i=0;i<=NT;i++)grid.push(r[i].map((v,j)=>dir(i/NT*TMAX,j/NP*Math.PI*2).multiplyScalar(v+H.clear*k).add(c)));
+ for(let j=0;j<NP;j++){let wide=0;for(let i=0;i<=NT;i++){const p=grid[i][j],h=Math.hypot(p.x,p.z-c.z);
+  if(h>=wide){wide=h;continue;}const f=wide/(h||1);p.x*=f;p.z=c.z+(p.z-c.z)*f;}}
+ // Below the head it spreads over the shoulders onto the sheet's own top (buildCostume), so no gap shows from below.
+ const neck=m.shoulderY+.04*k-m.headY,shoulder=m.shoulderY-.03*k-m.headY,spread=m.shoulderX+m.armR+.09*k;
+ {const last=grid.at(-1);
+  grid.push(last.map(p=>new THREE.Vector3(p.x,lerp(p.y,neck,.6),p.z)));
+  grid.push(last.map(p=>{const h=Math.hypot(p.x,p.z-c.z)||1,f=Math.max(1,spread/h);return new THREE.Vector3(p.x*f,shoulder,c.z+(p.z-c.z)*f);}));}
+ // The face's opening: an oval cut in the front from the brow to the chin, as the children cut it. Its edge is a clean
+ // curve: the cloth's points inside it are moved out to it, and what lies wholly inside is left out.
+ const NR=grid.length-1,browY=hc+R*m.headSY*H.brow,chinY=hc-R*m.headSY*1.02,midY=(browY+chinY)/2,up=browY-midY,down=midY-chinY;
+ const cut=grid.map(row=>row.map(()=>false));
+ for(let i=0;i<=NR;i++)for(let j=0;j<NP;j++){
+  const az=Math.atan2(Math.sin(j/NP*Math.PI*2),Math.cos(j/NP*Math.PI*2)),w=1-(az/H.open)**2;if(w<=0)continue;
+  const top=midY+up*Math.sqrt(w),bottom=midY-down*Math.sqrt(w),p=grid[i][j];
+  if(p.y<top&&p.y>bottom){p.y=top-p.y<p.y-bottom?top:bottom;cut[i][j]=true;}
+ }
+ const pos=[],index=[],at=(i,j)=>i*NP+j;
+ for(const row of grid)for(const p of row)pos.push(p.x,p.y,p.z);
+ for(let i=0;i<NR;i++)for(let j=0;j<NP;j++){const jj=(j+1)%NP;
+  if(cut[i][j]&&cut[i][jj]&&cut[i+1][j]&&cut[i+1][jj])continue;
+  const a=at(i,j),b=at(i,jj),cc=at(i+1,j),d=at(i+1,jj);index.push(a,cc,b,b,cc,d);}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(index);g.computeVertexNormals();
+ const shell=new THREE.Mesh(g,material);shell.name='Ghost hood cloth';shell.castShadow=false;shell.receiveShadow=true;group.add(shell);
+ // the sheet's little peak, on top of whatever the hood covers
+ const top=dir(0,0).multiplyScalar(r[0][0]+H.clear*k).add(c);
+ const peak=new THREE.Mesh(new THREE.ConeGeometry(.05*k,.1*k,12),material);peak.position.set(0,top.y+.03*k,-.02*k);peak.rotation.x=-.4;peak.castShadow=false;group.add(peak);
+ return {shell,points:pts.length};
+}
+
 /** Every point of the drawn body (each skinned mesh as it stands this frame, the face's head), in `frame`'s space, through
  *  `keep(point in the root's space)`: what a prop round the body must clear. The outlines and hidden ranges are left out. */
 function posedPoints(avatar,frame,keep=()=>true,stride=1){

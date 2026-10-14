@@ -104,6 +104,25 @@ function mistPuff(r){
 }
 
 /**
+ * The cold air out of the take-out pocket, for a lens at the pocket (the ground mist's flat discs are edge-on to it): a
+ * stream of soft puffs that always face the camera, each on its way along one path in the machine's own frame (+z out of
+ * its face): from the cold chute floor inside the pocket, out under the flap's bottom edge, over the flap lip, then
+ * sinking down the face of the door to the pad and spreading there, as cold, wet air does. phase (0 … 1) moves every
+ * puff along it, a loop, so a film can photograph it moving; each puff is its own seed's place across the pocket.
+ */
+const FADE=(()=>{const n=64,d=new Uint8Array(n*n*4);for(let y=0;y<n;y++)for(let x=0;x<n;x++){const r=Math.hypot(x-n/2+.5,y-n/2+.5)/(n/2),a=Math.max(0,1-r);d.set([255,255,255,Math.round(255*a*a*(3-2*a))],(y*n+x)*4);}
+ const t=new THREE.DataTexture(d,n,n,THREE.RGBAFormat);t.needsUpdate=true;return t;})();
+export const POCKET_MIST=Object.freeze({puffs:22,why:'Cold air from the chute meeting the warm, wet night: it rolls out under the flap, curls over the lip and sinks down the door to the pad, where the ground mist gathers.'});
+export function pocketMistPath(s,seed,P){
+ // P: vendingPoints({pad:true}); s 0 … 1 along the way; returns [x, y, z, radius] in the machine's frame
+ const u=seed*.8+.1,x=P.takeOut.x0+.04+(P.takeOut.x1-P.takeOut.x0-.08)*u,F=P.front,fl=P.takeOut.floor;
+ const k=(a,b,t)=>a+(b-a)*t,sm=t=>t*t*(3-2*t);
+ if(s<.3){const t=sm(s/.3);return [x,fl+.025+.01*t,k(P.takeOut.back+.04,F+.025,t),k(.018,.032,t)];}   // along the chute floor and out under the flap
+ if(s<.5){const t=(s-.3)/.2;return [x+(seed-.5)*.03*t,fl+.035+.025*Math.sin(Math.PI*t),k(F+.025,F+.08,t),k(.032,.045,t)];}   // curling up over the lip
+ const t=sm((s-.5)/.5);return [x+(seed-.5)*.16*t,k(fl+.03,.06,t),k(F+.08,P.padFront+.08,t),k(.045,.09,t)];   // sinking down the door, spreading on the pad
+}
+
+/**
  * Builds Halloween on Sakura Street into the town (hidden until the season or a story stages it) and returns its api:
  *   stage({show, glow, machine, cable, mist, pumpkins, peek, can, candles, riceBall, salt, bucket, dog})
  *     show      true / false
@@ -111,7 +130,9 @@ function mistPuff(r){
  *     machine   the drinks machine's lit window and brand, 0 … 1 (it flickers dim when its compressor starts)
  *     cable     'reel' (Kōji's way: the reel in the socket, the machine and the lanterns in the reel) or 'fixed'
  *               (the machine back in its own socket, the lanterns on their own RCD socket by a proper cable)
- *     mist      0 … 1, the cold mist from the chute; pumpkins (the ring), deco (jack-o'-lanterns on the crates, the bin and the
+ *     mist      0 … 1, the cold mist from the chute; pocketMist 0 … 1 the cold air rolling out of the take-out pocket
+ *               itself (for a lens at the pocket), mistPhase 0 … 1 where it is on its way; flap -1 … 1 the take-out flap
+ *               (+ pushed in, - stirred out: vending.js setFlap); pumpkins (the ring), deco (jack-o'-lanterns on the crates, the bin and the
  *               pole's foot; on by default), peek, can, candles, salt, bucket: true / false;
  *     bucket    true (with the night's free cans in it), 'empty' or false;
  *     dream     Fujita's dream of his pension (fujita-dream.js): 'dream', 'pop' (it bursts) or false;
@@ -199,6 +220,12 @@ export function buildHalloween(world,{shadows=false}={}){
  for(const o of [candles,salt,riceBall,bucket])o.position.y=G;
  const mist=new THREE.Group();mist.name='Mist from the can chute';mist.position.y=G;group.add(mist);
  for(const [dx,dz,r,y] of [[.12,0,.55,.06],[.45,.3,.7,.05],[.5,-.35,.65,.07],[.95,.05,.85,.04],[.3,.65,.55,.05],[.3,-.65,.55,.06],[1.4,.2,.8,.03],[1.3,-.5,.7,.035],[.08,0,.35,.2],[.1,.15,.3,.3],[.06,-.12,.28,.26]]){const p=mistPuff(r);p.position.set(M.front+dx,y,M.z+dz);mist.add(p);}
+ const pocketMist=new THREE.Group();pocketMist.name='Cold air from the take-out pocket';group.add(pocketMist);
+ const PM=vendingPoints({pad:true}),pmSeeds=Array.from({length:POCKET_MIST.puffs},(_,i)=>((i*.618034)%1));
+ const pmPuffs=pmSeeds.map(()=>{const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:FADE,color:0xdfe9f2,transparent:true,depthWrite:false,opacity:0}));sp.name='Pocket mist';sp.renderOrder=3;sp.raycast=()=>{};pocketMist.add(sp);return sp;});   // (air: nothing to pick or bump into; a sprite cannot be raycast without a camera, and the town's rays have none)
+ const placePocketMist=()=>{const k=THREE.MathUtils.clamp(state.pocketMist||0,0,1),ph=state.mistPhase||0;pocketMist.visible=k>0&&!!state.show;
+  pmPuffs.forEach((sp,i)=>{const s=((ph+i/pmPuffs.length)%1+1)%1,[lx,ly,lz,r]=pocketMistPath(s,pmSeeds[i],PM),w=vendingToWorld(SAKURA_VENDING,[lx,ly,lz]);
+   sp.position.set(w[0],w[1],w[2]);sp.scale.setScalar(r*2);sp.material.opacity=k*.55*Math.min(1,s/.12)*Math.min(1,(1-s)/.3);});};
  let dog=null,dream=null;
  // the drinks machine's own lit window and brand (the town's machine at Sakura): dimmed with its compressor's start.
  // Found afresh each time (the town may swap the machine's materials for its cel ones, or hydrate its model): every
@@ -212,7 +239,7 @@ export function buildHalloween(world,{shadows=false}={}){
  applyCelShading(group);
  group.traverse(o=>{if(o.isMesh){o.castShadow=shadows&&!o.material.transparent;o.receiveShadow=true;}});
  let pinned=false;
- const state={show:false,glow:0,machine:1,cable:'reel',mist:0,pumpkins:false,deco:true,peek:false,can:false,candles:false,riceBall:false,salt:false,bucket:false,dog:false,dream:false};
+ const state={show:false,glow:0,machine:1,cable:'reel',mist:0,pocketMist:0,mistPhase:0,flap:0,pumpkins:false,deco:true,peek:false,can:false,candles:false,riceBall:false,salt:false,bucket:false,dog:false,dream:false};
  const apply=()=>{
   group.visible=!!state.show;
   for(const l of lanterns)l.userData.lantern.setGlow(state.glow);
@@ -225,6 +252,7 @@ export function buildHalloween(world,{shadows=false}={}){
   if(dog){dog.removeFromParent();dog=null;}
   if(state.dog){const d=state.dog;dog=buildDog({pose:d.pose||'sit'});applyCelShading(dog);dog.position.set(d.at[0],H.ground,d.at[1]);dog.rotation.y=d.yaw??0;group.add(dog);}
   dimMachine(THREE.MathUtils.clamp(state.machine,0,1));
+  placePocketMist();machineObject()?.userData.setFlap?.(state.flap||0);
   // Fujita's dream (fujita-dream.js), built the first time a story asks for it: 'dream', or 'pop' (it bursts)
   if(state.dream&&!dream){dream=buildFujitaDream();world.group.add(dream);}
   if(dream){dream.visible=!!state.dream&&!!state.show;if(state.dream)dream.userData.dream.set(state.dream);}

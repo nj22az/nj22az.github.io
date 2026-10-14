@@ -55,7 +55,7 @@ test('stage: the moments the story photographs, each switching what it should',(
  const {h,machine}=town();
  assert.equal(h.group.visible,false,'hidden out of season');
  h.stage({glow:lanternBrightness(reelVolts(false)),cable:'reel'});assert.equal(h.group.visible,true);
- const lit=machine.getObjectByName('Vending lit panels').material,glass=machine.getObjectByName('Vending glass and flap').material,pool=machine.getObjectByName('Vending light on the pavement').material;
+ const lit=machine.getObjectByName('Vending lit panels').material,glass=machine.getObjectByName('Vending glass').material,pool=machine.getObjectByName('Vending light on the pavement').material;
  assert.ok(lit.isMeshBasicMaterial&&lit.vertexColors,'the window, its header, lamps and labels: one unlit mesh');
  const before=[lit.color.r,glass.color.r,pool.color.r];h.stage({machine:.35});
  assert.ok(lit.color.r<before[0]*.4,'the machine’s window, header and lamps dim as its compressor starts');
@@ -158,4 +158,23 @@ test('Fujita’s dream: built only when the story asks, closed in by its own sky
  const whole=top();h.stage({dream:'pop'});assert.ok(top()<whole,'bursting: the tower comes down');
  assert.ok(Math.abs(d.getObjectByName('Dream house (a J-Coffee can)').rotation.z)>.2,'the house tips');
  h.stage({dream:false});assert.ok(!d.visible,'gone when the story moves on');
+});
+
+test('the cold air rolls out of the take-out pocket, down the door to the pad, and swings the flap; the town can still raycast the street',()=>{
+ const {h,machine}=town();
+ h.stage({pocketMist:1,mistPhase:0});
+ const mist=h.group.getObjectByName('Cold air from the take-out pocket');assert.ok(mist.visible,'staged: the stream is out');
+ const P=machine.userData.takeOut,inv=new THREE.Matrix4().copy(machine.matrixWorld).invert();
+ const local=mist.children.map(sp=>sp.position.clone().applyMatrix4(inv));
+ assert.ok(local.some(p=>p.z<P.flap),'some still inside the pocket, behind its flap');
+ assert.ok(local.some(p=>p.z>P.flap+.1&&p.y<P.floor),'some out in front, sunk below the pocket floor');
+ assert.ok(local.every(p=>p.x>P.x0-.1&&p.x<P.x1+.1),'all in front of the pocket, not across the street');
+ const before=mist.children.map(sp=>sp.position.clone());h.stage({mistPhase:.3});
+ assert.ok(mist.children.some((sp,i)=>sp.position.distanceTo(before[i])>.02),'the phase moves it');
+ h.stage({flap:-.2});assert.ok(machine.getObjectByName('Take-out flap').rotation.x<0,'stirred outward');
+ h.stage({flap:.6});assert.ok(machine.getObjectByName('Take-out flap').rotation.x>.5,'pushed in by a hand');
+ // the town picks things with a ray that has no camera: the mist must not break it (THREE.Sprite needs one)
+ const ray=new THREE.Raycaster(new THREE.Vector3(-4,.3,P.z),new THREE.Vector3(-1,0,0));
+ assert.doesNotThrow(()=>ray.intersectObject(h.group,true),'raycasting the street');
+ h.stage({pocketMist:0,flap:0});assert.ok(!mist.visible,'and gone when the story moves on');
 });
