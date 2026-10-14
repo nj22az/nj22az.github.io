@@ -11,7 +11,7 @@
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
-import {mkdir,readFile} from 'node:fs/promises';
+import {mkdir,readFile,writeFile} from 'node:fs/promises';
 const require=createRequire(import.meta.url);
 const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES?process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright':fileURLToPath(new URL('../../johansson-town/node_modules/playwright/index.js',import.meta.url)));
 const {serveGame}=await import('../../johansson-town/tools/mcp/static-server.mjs');
@@ -105,6 +105,6 @@ try{
   assert.deepEqual(errors,[]);
   await context.close();
  }
- console.log(JSON.stringify(results,null,1));
+ await writeFile(OUT+'/results.json',JSON.stringify(results,null,1));console.log(JSON.stringify(results,null,1));
  console.log('Make model: library, export and Lathe maker checks passed at iPad and phone size.');
 }finally{await browser.close();await server.close();}
