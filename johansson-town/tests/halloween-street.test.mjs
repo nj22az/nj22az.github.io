@@ -12,7 +12,7 @@ installDOM();
 
 // "The Haunted Vending Machine": Halloween on Sakura Street, and the electrics the story's Why it works explains.
 const town=()=>{const world={group:new THREE.Group(),colliders:[],hourly:[]};
- const m=createVendingMachine({});m.position.set(HALLOWEEN.machine.x,0,HALLOWEEN.machine.z);m.rotation.y=Math.PI/2;world.group.add(m);
+ const m=createVendingMachine({});m.position.set(HALLOWEEN.machine.x,HALLOWEEN.machine.y,HALLOWEEN.machine.z);m.rotation.y=HALLOWEEN.machine.ry;world.group.add(m);
  const h=buildHalloween(world,{});world.group.updateMatrixWorld(true);return {world,h,machine:m};};
 // the meshes' box (a lantern's glow halo is light, not a thing: it may spread past the lantern)
 const box=o=>{o.updateWorldMatrix(true,true);const b=new THREE.Box3();o.traverse(x=>{if(x.isMesh)b.expandByObject(x);});return b;};
@@ -31,9 +31,9 @@ test('the electrics: the start surge through the thin, half-coiled reel dims eve
 });
 
 test('the string, the lanterns, the ghosts and the reel are on Sakura’s frontage, clear of the people walking under them',()=>{
- const {h,machine}=town();h.stage({glow:1});
+ const {world,h,machine}=town();h.stage({glow:1});
  assert.equal(h.lanterns.length,E.lanterns);
- const mb=box(machine);
+ const mb=box(machine.getObjectByName('Vending machine body'));   // the machine itself (its pool of light on the pavement is light, not a thing)
  for(const l of h.lanterns){const b=box(l);
   assert.ok(b.min.y>1.82,'a lantern hangs above a head: '+l.name+' '+b.min.y.toFixed(2));
   assert.ok(b.max.y<2.62,'under the awning’s tie points');
@@ -42,8 +42,9 @@ test('the string, the lanterns, the ghosts and the reel are on Sakura’s fronta
   assert.ok(!b.intersectsBox(mb),'not in the machine');}
  const reel=h.group.getObjectByName('Cord reel'),rb=box(reel);
  assert.ok(!rb.intersectsBox(mb),'the reel stands clear of the machine');
- assert.ok(rb.min.y>-.001&&rb.min.y<.02,'the reel on the pavement');
- const sock=h.group.getObjectByName('Drinks machine outdoor socket'),sb=box(sock);
+ assert.ok(rb.min.y-HALLOWEEN.ground>-.001&&rb.min.y-HALLOWEEN.ground<.02,'the reel on the pavement');
+ const C=HALLOWEEN.cornerPaving;assert.ok(rb.max.z<C.minZ||rb.min.z>C.maxZ||rb.max.x<C.minX||rb.min.x>C.maxX||rb.min.y>C.top,'the reel’s feet clear of the corner paving');
+ const sock=world.group.getObjectByName('Drinks machine outdoor socket'),sb=box(sock);
  assert.ok(Math.abs(sb.min.x-(SAKURA_BOX.maxX+.01))<.02,'the socket on the wall');
  assert.ok(sb.min.z<SAKURA_BOX.minZ+.3&&sb.max.z>SAKURA_BOX.minZ,'on the corner pier, south of the shutter');
  const ghosts=[];h.group.traverse(o=>{if(o.name==='Cardboard ghost')ghosts.push(o);});assert.equal(ghosts.length,4);
@@ -54,8 +55,12 @@ test('stage: the moments the story photographs, each switching what it should',(
  const {h,machine}=town();
  assert.equal(h.group.visible,false,'hidden out of season');
  h.stage({glow:lanternBrightness(reelVolts(false)),cable:'reel'});assert.equal(h.group.visible,true);
- const lit=[];machine.traverse(m=>{if(m.isMesh&&m.material?.isMeshBasicMaterial&&m.material.map)lit.push(m.material);});assert.ok(lit.length>=2,'the machine’s lit window and brand');
- const before=lit[0].color.r;h.stage({machine:.35});assert.ok(lit[0].color.r<before*.4,'the machine dims as its compressor starts');h.stage({machine:1});
+ const lit=machine.getObjectByName('Vending lit panels').material,glass=machine.getObjectByName('Vending glass and flap').material,pool=machine.getObjectByName('Vending light on the pavement').material;
+ assert.ok(lit.isMeshBasicMaterial&&lit.vertexColors,'the window, its header, lamps and labels: one unlit mesh');
+ const before=[lit.color.r,glass.color.r,pool.color.r];h.stage({machine:.35});
+ assert.ok(lit.color.r<before[0]*.4,'the machine’s window, header and lamps dim as its compressor starts');
+ assert.ok(pool.color.r<before[2]*.4,'and its light on the pavement with them');
+ h.stage({machine:1});assert.ok(Math.abs(lit.color.r-before[0])<1e-6&&Math.abs(glass.color.r-before[1])<1e-6,'and come back whole');
  const lantern=h.lanterns[0].userData.lantern;h.stage({glow:1});const full=lantern.paper.color.r;h.stage({glow:.2});assert.ok(lantern.paper.color.r<full*.6,'the lanterns dim');
  assert.equal(h.group.getObjectByName('Kōji’s way: the reel').visible,true);assert.equal(h.group.getObjectByName('The fix: the lanterns’ own socket').visible,false);
  h.stage({cable:'fixed'});assert.equal(h.group.getObjectByName('Cord reel').visible,false,'the reel is gone after the fix');
@@ -63,7 +68,7 @@ test('stage: the moments the story photographs, each switching what it should',(
  for(const [key,name] of [['mist','Mist from the can chute'],['candles','Séance candles'],['salt','Morijio (salt cones)'],['bucket','Fujita’s bucket'],['can','A can in the take-out pocket'],['pumpkins','Jack-o’-lanterns round the machine'],['peek','Plush ghost peeking']]){
   h.stage({[key]:key==='mist'?.8:true});assert.equal(h.group.getObjectByName(name).visible,true,name);h.stage({[key]:key==='mist'?0:false});assert.equal(h.group.getObjectByName(name).visible,false,name);}
  h.stage({riceBall:'plate',dog:{pose:'eat',at:[HALLOWEEN.machine.front+.6,HALLOWEEN.machine.z+.42],yaw:-Math.PI/2}});
- const dog=h.group.getObjectByName('Kuro (dog)');assert.ok(dog,'Kuro');assert.ok(Math.abs(box(dog).min.y)<.01,'on the ground');
+ const dog=h.group.getObjectByName('Kuro (dog)');assert.ok(dog,'Kuro');assert.ok(Math.abs(box(dog).min.y-HALLOWEEN.ground)<.01,'on the ground');
  h.stage({dog:false});assert.equal(h.group.getObjectByName('Kuro (dog)'),undefined);
  // the clock leaves a staged moment alone
  h.update(1440*10000+1250);assert.equal(h.group.visible,true);
@@ -131,11 +136,13 @@ test('J-Coffee: a black 350 ml can sold at ¥120, the free can in the pocket and
  const c=buildJCoffeeCan(),b=box(c),s=b.getSize(new THREE.Vector3());
  assert.ok(Math.abs(s.y-.122)<.005&&Math.abs(s.x-.066)<.003,'a cola can’s shape: 66 × 122 mm, not the short coffee can');
  const {h,machine}=town();h.stage({can:true,bucket:true});h.group.updateMatrixWorld(true);
- const free=new THREE.Box3().setFromObject(h.group.getObjectByName('A can in the take-out pocket'),true),floor=machine.userData.takeOut;
- assert.ok(free.min.y>.2&&free.min.y<.22,'lying on the pocket’s floor, not in it nor floating: '+free.min.y.toFixed(3));
- assert.ok(free.max.x<HALLOWEEN.machine.front+.085,'behind the flap');assert.ok(floor,'the machine says where its pocket is');
+ const free=new THREE.Box3().setFromObject(h.group.getObjectByName('A can in the take-out pocket'),true),T=machine.userData.takeOut;
+ assert.ok(T,'the machine says where its pocket is');
+ const floor=HALLOWEEN.machine.y+T.floor;assert.ok(Math.abs(free.min.y-floor)<.004,'lying on the pocket’s floor, not in it nor floating: '+free.min.y.toFixed(3)+' on '+floor.toFixed(3));
+ assert.ok(free.max.x<HALLOWEEN.machine.x+T.flap-.004,'behind the flap');assert.ok(free.min.x>HALLOWEEN.machine.x+T.back,'in front of the pocket’s back');
+ assert.ok(free.max.z<HALLOWEEN.machine.z-T.x0&&free.min.z>HALLOWEEN.machine.z-T.x1,'between the pocket’s sides');
  const cans=h.group.getObjectByName('Free cans in the bucket');assert.equal(cans.children.length,9);assert.ok(box(cans).max.y>.25,'the cans show over the bucket’s rim (.22)');
- for(const k of cans.children){const kb=box(k);assert.ok(kb.min.y>-.001,'on the bucket floor, not through it');}
+ for(const k of cans.children){const kb=box(k);assert.ok(kb.min.y>HALLOWEEN.ground-.001,'on the bucket floor, not through it');}
  h.stage({bucket:'empty'});assert.ok(!cans.visible,'the empty bucket of the last night');
 });
 

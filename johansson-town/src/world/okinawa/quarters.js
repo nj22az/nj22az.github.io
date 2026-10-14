@@ -20,7 +20,7 @@ import {buildFumoto} from './fumoto.js';
 import {FUMOTO} from '../fumoto-layout.js';
 import {MAIN_ROAD} from '../main-road.js';
 import {WEST_YARD} from '../west-yard.js';
-import {createVendingMachine,vendingReady,hydrateVending} from '../vending.js';
+import {createVendingMachine,vendingReady,hydrateVending,VENDING_MACHINE} from '../vending.js';
 import {windowGlow} from '../../render/dusk.js';
 
 /**
@@ -47,7 +47,9 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  const vendings=[];
  const vending=(x,z,ry,y=0)=>{
   const machine=createVendingMachine({shadows});machine.position.set(x,y,z);machine.rotation.y=ry;group.add(machine);vendings.push(machine);
-  colliders.push({id:'vending',x,z,w:Math.abs(Math.sin(ry))>.5?1:1.25,d:Math.abs(Math.sin(ry))>.5?1.25:1,height:2.2});
+  // its collider is its footprint: the cabinet and the pad's lip in front of it (so nobody stands on the pad's edge)
+  const S=VENDING_MACHINE.size,across=S.width+.06,deep=S.depth+S.padFront+.04,off=(S.padFront+.04)/2,side=Math.abs(Math.sin(ry))>.5;
+  colliders.push({id:'vending',x:x+Math.sin(ry)*off,z:z+Math.cos(ry)*off,w:side?deep:across,d:side?across:deep,height:2.2});
   anchor(x+Math.sin(ry)*.95,1,z+Math.cos(ry)*.95,'Buy a drink',()=>onAction?.('vending'));
  };
 
@@ -64,7 +66,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  // Kitahama stands on the island's ground, below the old town's datum.
  kit.at(0,0,0,()=>buildKitahama(kit,solid,{anchor,inspect,onAction,vending:(x,z,ry)=>vending(x,z,ry,KITAHAMA.y)}),KITAHAMA.y);
  // Fumoto, the hamlet at the foot of Mount Aoba, on the same island ground.
- kit.at(0,0,0,()=>buildFumoto(kit,solid,{anchor,inspect,onAction,walledHouse,vending:(x,z,ry)=>vending(x,z,ry,FUMOTO.y)}),FUMOTO.y);
+ kit.at(0,0,0,()=>buildFumoto(kit,solid,{anchor,inspect,onAction,walledHouse,vending:(x,z,ry)=>vending(x,z,ry,FUMOTO.y+GROUND_LAYER.grass)}),FUMOTO.y);   // the co-op's machine on the hamlet's ground
  const old=dressOldTown(kit,solid,{inspect,anchor,onAction,vending,group});
 
  const {meshes,materials}=kit.finish(group,'Okinawan quarter');
@@ -74,6 +76,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
   const glow=windowGlow(minutes);
   if(materials.glow)materials.glow.emissiveIntensity=glow*.75;
   if(materials.lamp)materials.lamp.emissiveIntensity=.1+glow*1.6;
+  for(const machine of vendings)machine.userData.night?.(glow);   // the drinks machines' light on the pavement
   old.shutter.update(minutes);
  });
  if(!vendingReady())for(const machine of vendings)(world.details??=[]).push({id:'okinawa-vending-'+machine.id,x:machine.position.x,z:machine.position.z,radius:44,load:()=>hydrateVending(machine,{shadows})});
@@ -420,7 +423,7 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  solid(fishCrates(kit,Q.minX+2.62,Q.maxZ-2.53,{rows:2,cols:2,seed:31}));
  kit.box(.5,1.4,.4,I.maxX-.4,.7,Q.maxZ-.9,0xc0392b);kit.box(.3,.3,.06,I.maxX-.4,1.1,Q.maxZ-1.12,0xf2efe4);
  solid({id:'fuel-pump',x:I.maxX-.4,z:Q.maxZ-.9,w:.6,d:.5,height:1.4});
- vending(S.minX-.9,S.maxZ-1.9,-Math.PI/2);
+ vending(S.minX-.9,S.maxZ-1.9,-Math.PI/2,GROUND_LAYER.lane);   // on the quay's paving (the lane layer), not sunk in it
  inspect(24.6,1,Q.minZ+.9,'Look at the boats',"Daisan Minatomaru · Minato Maru No. 3",
   'The Daisan Minatomaru, the third fishing boat of the name (the town ferry is the Minato Maru), is back from the reef with her hold iced and her deck hosed. Her skipper is asleep in the wheelhouse with the radio on. The red boat further along goes out for squid at night and has its lamps strung along a boom.');
  anchor(29.5,1,Q.minZ+.9,'Fish from the east quay',()=>onAction?.('fishing'));
