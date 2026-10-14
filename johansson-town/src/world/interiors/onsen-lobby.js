@@ -45,8 +45,9 @@ export const ONSEN_NOREN=Object.freeze({top:2.25,hem:1.1,h:1.15,slit:.004,// the
  // as half-depths across the cloth (metres) and a hand's margin in front, and half-widths along the rod.
  passer:Object.freeze({head:.19,shoulders:.17,headDrop:.46,from:.45,hand:.06,hair:.02,halfWidth:.26}),
  // The people the town has measured (head tops from the avatar builder, metres); anyone else is taken as the tallest.
- tops:Object.freeze({Johansson:1.67,'Mr Fujita':1.57,Thuan:1.53,Thao:1.57,Nhung:1.57,Reiko:1.58,Chin:1.63,Tetsuo:1.63,'Mrs Sato':1.44,'Mrs Higa':1.52,'Harbour master':1.68,'Officer Mori':1.71}),
- tallest:1.72,
+ tops:Object.freeze({Johansson:1.67,'Mr Fujita':1.57,Thuan:1.53,Thao:1.57,Nhung:1.57,Reiko:1.58,Chin:1.63,Tetsuo:1.63,'Mrs Sato':1.44,'Mrs Higa':1.52,'Harbour master':1.68,'Officer Mori':1.75}),
+ // (Officer Mori's is the crown of his 1994 police cap, police-data.js: he comes in from the box in uniform.)
+ tallest:1.76,
  // A cloth panel swinging from its rod: a pendulum of ~1.7 s, damped by the air to 0.7 of critical, so it settles with one small
  // swing back rather than ringing like a board; never past `maxSwing` (radians).
  swing:Object.freeze({stiffness:12.7,damping:5,maxSwing:1.35,step:1/120}),

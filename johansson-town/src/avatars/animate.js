@@ -612,7 +612,8 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    if(flex>0){set('kneeL',1.52-flex);set('kneeR',1.52-flex);set('footL',flex);set('footR',flex);}
    floorSit=soak?0:floorWeight(s);
    // Rest beside the thighs (on the floor, on them); task poses lift only the arms they need.
-   set('shoulderL',-.10,0,.13+clear);set('shoulderR',-.10,0,-.13-clear);set('elbowL',-.15);set('elbowR',-.15);
+   // (seated the kit is behind them, against the seat back: the hands rest as anybody's do, clear of a chair's arms)
+   set('shoulderL',-.10,0,.13);set('shoulderR',-.10,0,-.13);set('elbowL',-.15);set('elbowR',-.15);
    if(floorSit>0){const F=floorShape(seatH-(s.floorHeight||0)),A=F.hands();
     for(const j of LEG_JOINTS)target[j].lerp(_pose.set(...F.joints[j]),floorSit);add('chest',FLOOR_SIT.lean*floorSit);
     if(A){armTo('R',A.R,floorSit,A.handR);armTo('L',A.L,floorSit,A.handL);}}
