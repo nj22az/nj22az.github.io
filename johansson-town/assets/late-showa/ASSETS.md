@@ -81,4 +81,6 @@ External asset hosts must never be required for the game to start. If a third-pa
   invented: Johansson Headwear JH-712. The J is the house mark: the site's rubber-stamp seal (config.js CONFIG.logo).
 - Checked and exported by Johansson Studio (`jojo/town-studio/assets/johansson-trucker`, every check passed), published
   into World's catalogue; worn through `src/avatars/hat-assets.js`, sold from Sakura's cap tree (`src/commerce/sakura-caps.js`).
+- Its shop-display level of detail (`assets/catalog/johansson-trucker-display`, same script with `--display`, output in
+  `source/display/`): 1,298 triangles, for the six caps on Sakura's stand.
 - The Seagulls six-panel built before it (same day, same method) is kept in `source/seagulls-six-panel/`, not published.

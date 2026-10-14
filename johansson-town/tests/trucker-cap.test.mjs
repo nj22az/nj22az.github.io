@@ -138,6 +138,11 @@ test('Sakura stocks it: a 1997 price, real buyers and reasons, its supplier and 
  assert.ok(c.purpose.why.length>40&&c.purpose.placed.length>40);
  assert.ok(SUPPLIERS[c.supplier],'Sakura Trading supplies it');assert.match(c.maker.name,/^Johansson /,'a Johansson company makes it');
  assert.equal(catalogCard(c.asset).id,c.asset);assert.ok(PARTS.hat.includes(c.hat));
+ // The stand shows the same cap at the shop display's level of detail: the same frame and head, a third of the triangles.
+ const shown=catalogCard(c.displayAsset),worn=catalogCard(c.asset);
+ assert.ok(shown.measured.triangles*2<=worn.measured.triangles,'the display copy is light: '+shown.measured.triangles);
+ assert.deepEqual(shown.anchors['head-centre'],worn.anchors['head-centre']);assert.deepEqual(shown.colours,worn.colours);
+ assert.ok(Math.abs(shown.measured.size[0]-worn.measured.size[0])<.01&&Math.abs(shown.measured.size[2]-worn.measured.size[2])<.01,'the same cap');
  assert.ok(c.colourways.every(w=>ISLAND_HEX.has(w.hatColour)&&ISLAND_HEX.has(w.accent))&&c.stock.flatMap(s=>s.caps).every(n=>c.colourways.some(w=>w.name===n)));
  assert.ok(c.price>1800&&c.priceWhy.includes('1997'),'a premium cap, priced with its reasons');
  // The stand's box is in the shop's colliders, overlaps no other fitting, and leaves the walk to the counter 0.9 m.

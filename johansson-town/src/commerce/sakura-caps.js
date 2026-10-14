@@ -11,7 +11,7 @@
  * player's look is changed in Johansson Studio, not by a purchase.
  *
  *   hat       the recipe's `outfit.hat` (src/avatars/hat-assets.js ASSET_HATS)
- *   asset     World's asset catalogue id (assets/catalog/johansson-trucker)
+ *   asset     World's asset catalogue id (assets/catalog/johansson-trucker); displayAsset, the stand's lighter copy
  *   price     yen, 1997, tax included (Sakura prices as a shop pricing tax-inclusive did: commerce/konbini.js)
  *   stock     the caps on the stand, by colourway: the front and bill (hatColour) and the mesh, rope and J (accent)
  *   purpose   who buys it (residents by name, guide/residents.json), why, and why it stands where it does
@@ -19,6 +19,9 @@
  */
 export const JOHANSSON_TRUCKER=Object.freeze({
  id:'johansson-trucker',hat:'trucker',asset:'johansson-trucker',
+ // What stands on the stand: the same cap at the shop display's level of detail (build-johansson-trucker.py --display),
+ // so six of them stay within Sakura's phone budget (tests/owned-display-lod.test.mjs); a head wears `asset`.
+ displayAsset:'johansson-trucker-display',
  name:'Johansson trucker cap',
  // On the price card (Japanese on signs): the maker, the line, one size with the strap, the price with tax.
  jp:Object.freeze({brand:'ヨハンソン帽子',line:'メッシュキャップ',size:'フリーサイズ（アジャスター付）',price:'¥3,800',tax:'税込'}),
@@ -47,9 +50,10 @@ export const JOHANSSON_TRUCKER=Object.freeze({
  // A cap tree, as a 1990s shop stood one: a chromed pole on a weighted base, two arms to the north (the shop side), each
  // ending in a cap form, a dome the size of a head, that a stack of caps sits on, crown up and bill out, as they are worn.
  // `forms` are the heights of the caps' lowest points; `reach` how far out the form's centre is from the pole; `nest`
- // how much higher each cap of a stack sits. The collider is the base and the caps, the box the walkers keep out of.
- stand:Object.freeze({x:3.28,z:3.62,yaw:Math.PI,forms:Object.freeze({top:1.5,low:.92}),reach:.3,nest:.02,height:2.0,
-  collider:Object.freeze({x:3.28,z:3.37,w:.52,d:.96,height:2.25})}),
+ // how much higher and further forward each cap of a stack sits on the one under it: a trucker's foam front stands
+ // upright, so a cap nested only higher would have the one inside it come through its front. The collider is the base and the caps, the box the walkers keep out of.
+ stand:Object.freeze({x:3.28,z:3.62,yaw:Math.PI,forms:Object.freeze({top:1.5,low:.92}),reach:.3,nest:Object.freeze({up:.02,out:.018}),height:2.0,
+  collider:Object.freeze({x:3.28,z:3.35,w:.52,d:1.0,height:2.25})}),
 });
 /** The lines Sakura stocks that are worn (one so far), by id. */
 export const WORN_LINES=Object.freeze({[JOHANSSON_TRUCKER.id]:JOHANSSON_TRUCKER});

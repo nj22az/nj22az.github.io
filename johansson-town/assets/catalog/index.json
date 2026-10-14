@@ -27,6 +27,25 @@
    "published": "2026-10-14"
   },
   {
+   "id": "johansson-trucker-display",
+   "name": "Johansson trucker cap (shop display)",
+   "kind": "prop",
+   "version": 1,
+   "model": "johansson-trucker-display/model.glb",
+   "card": "johansson-trucker-display/asset.json",
+   "hero": "johansson-trucker-display/hero.png",
+   "tags": [
+    "cap",
+    "trucker cap",
+    "display",
+    "level of detail",
+    "Johansson",
+    "Sakura Shōten"
+   ],
+   "from": "johansson-studio",
+   "published": "2026-10-14"
+  },
+  {
    "id": "massage-chair",
    "name": "Coin massage chair",
    "kind": "furniture",

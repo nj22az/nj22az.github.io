@@ -80,6 +80,82 @@ export const CATALOG=freeze({
   },
   "published": "2026-10-14"
  },
+ "johansson-trucker-display": {
+  "id": "johansson-trucker-display",
+  "name": "Johansson trucker cap (shop display)",
+  "kind": "prop",
+  "version": 1,
+  "purpose": {
+   "for": "Customers at Sakura Shōten looking at Johansson's trucker caps on the cap tree by the east window, before they ask Thuan for one: the boats' crews, the catch sorters and the cargo quay.",
+   "why": "Six caps stand on the stand at once; at the worn cap's detail they took Sakura over its phone budget, so the stand shows the same cap built for being looked at from the shop floor, under half the triangles.",
+   "where": "On the two cap forms of Sakura's cap tree (src/world/interiors/sakura-cap-stand.js), stacked three to a form; never on a head, where the worn cap (johansson-trucker) goes."
+  },
+  "size": [0.476,0.3182,0.663],
+  "colours": {
+   "front": "#27304d",
+   "mesh": "#f4f1ea",
+   "accent": "#f4f1ea",
+   "sweatband": "#cfc8b8",
+   "strap": "#1f1f22",
+   "gold": "#c9a54a",
+   "label": "#efe9d8",
+   "label-ink": "#27304d"
+  },
+  "tags": ["cap","trucker cap","display","level of detail","Johansson","Sakura Shōten"],
+  "checked": "2026-10-14T08:48:31.724Z",
+  "colliders": [
+   {
+    "name": "body",
+    "x": 0,
+    "z": 0.077,
+    "w": 0.476,
+    "d": 0.663,
+    "yaw": 0,
+    "minY": 0,
+    "height": 0.318
+   }
+  ],
+  "seats": [],
+  "spots": [],
+  "action": {
+   "kind": "look",
+   "label": "Look at the Johansson caps"
+  },
+  "anchors": {
+   "head-centre": [0,-0.0088,0],
+   "head-top": [0,0.251,0],
+   "head-left": [0.2261,-0.0088,0],
+   "head-front": [0,-0.0088,0.2357],
+   "peg": [0,0.0613,-0.2465],
+   "crown-top": [0,0.3159,0],
+   "bill-tip": [0,0.076,0.4028],
+   "band-front": [0,0.0951,0.239],
+   "logo": [0,0.203,0.2235]
+  },
+  "parts": [],
+  "model": "johansson-trucker-display/model.glb",
+  "modelSha": "f3ff0cfad64b",
+  "hero": "johansson-trucker-display/hero.png",
+  "measured": {
+   "size": [0.476,0.3182,0.663],
+   "body": {
+    "min": [-0.238,0,-0.2549],
+    "max": [0.238,0.3182,0.4081]
+   },
+   "all": {
+    "min": [-0.238,0,-0.2549],
+    "max": [0.238,0.3182,0.4081]
+   },
+   "triangles": 1298,
+   "materials": 4,
+   "meshes": 6
+  },
+  "budget": {
+   "triangles": 1500,
+   "materials": 4
+  },
+  "published": "2026-10-14"
+ },
  "massage-chair": {
   "id": "massage-chair",
   "name": "Coin massage chair",

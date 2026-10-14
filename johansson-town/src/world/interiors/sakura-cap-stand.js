@@ -6,7 +6,8 @@ import {JOHANSSON_TRUCKER} from '../../commerce/sakura-caps.js';
  * Sakura's cap tree (commerce/sakura-caps.js JOHANSSON_TRUCKER: why it stands by the east window, who buys the caps):
  * a chromed pole on a weighted cast base, two arms to the shop side, each ending in a cap form, a dome the size of the
  * town's head, with a stack of three Johansson trucker caps on it, crown up and bill out, as they are worn. The caps are
- * the catalogue's own model (assets/catalog/johansson-trucker, the one a resident wears), each copy in its colourway. A card on
+ * the catalogue's own model (assets/catalog/johansson-trucker-display: the cap a resident wears, at the shop display's
+ * level of detail, built by the same script), each copy in its colourway. A card on
  * top says what they are and what they cost, in Japanese, as Sakura's other signs do; looking at it tells the rest in
  * English.
  *
@@ -53,7 +54,7 @@ function capForm(){
 }
 
 export function buildCapStand(room,{anchor,action}={}){
- const C=JOHANSSON_TRUCKER,S=C.stand,card=catalogCard(C.asset),A=card.anchors;
+ const C=JOHANSSON_TRUCKER,S=C.stand,card=catalogCard(C.displayAsset),A=card.anchors;
  const group=new THREE.Group();group.name='Sakura cap tree';group.position.set(S.x,0,S.z);group.rotation.y=S.yaw;room.add(group);
  const chrome=new THREE.MeshStandardMaterial({color:0xc9ced3,metalness:.55,roughness:.32});
  const iron=new THREE.MeshStandardMaterial({color:0x4a4f55,roughness:.7});
@@ -77,7 +78,7 @@ export function buildCapStand(room,{anchor,action}={}){
   const arm=add(new THREE.CylinderGeometry(.009,.009,back+.03,10),chrome,0,armY,(back+.03)/2,'Cap tree arm');arm.rotation.x=Math.PI/2;
   colours.forEach((way,i)=>{
    const {hatColour,accent}=C.colourways.find(w=>w.name===way);
-   const cap=placeAsset(C.asset,{parent:group,x:0,y:y0+i*S.nest,z:S.reach,yaw:0,
+   const cap=placeAsset(C.displayAsset,{parent:group,x:0,y:y0+i*S.nest.up,z:S.reach+i*S.nest.out,yaw:0,
     // Each copy has its own materials: they take this cap's colourway as a head's hatColour and accent do (the model's
     // `wear.tint`: the front and bill the hat colour, the mesh, undervisor, piping, rope and J the accent).
     onModel:copy=>copy.traverse(o=>{if(!o.isMesh)return;const n=o.material?.name;if(n==='front')o.material.color.set(hatColour);else if(n==='mesh'||n==='accent')o.material.color.set(accent);})});

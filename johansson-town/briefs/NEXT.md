@@ -270,7 +270,9 @@ rope and J in `accent` (`src/avatars/hat-assets.js` reads the GLB itself, fits i
 band and out of its opening; build.js binds the solid parts to the head bone in the body and draws the mesh as the hat's
 see-through layer); fetched before people are built (`src/catalog/hat-models.js`); in the wardrobe with three colourways;
 stocked at Sakura on a cap tree by the east window (`src/commerce/sakura-caps.js`, `src/world/interiors/sakura-cap-stand.js`);
-Kōji's Studio look wears it, navy front and white mesh (in Studio's draft until "update World"). The Seagulls six-panel
+Kōji's Studio look wears it, navy front and white mesh (in Studio's draft until "update World"). The stand shows the same cap at a
+shop-display level of detail (`assets/catalog/johansson-trucker-display`, 1,298 triangles, built by the same script with
+`--display`), so six caps keep Sakura within its 450,000-triangle budget (tests/owned-display-lod.test.mjs). The Seagulls six-panel
 built first is kept for later in `source/seagulls-six-panel/` (its script, its .blend); it is not in the catalogue.
 
 Open:

@@ -10,6 +10,14 @@ Writes next to this file:
                               (town-studio/assets/johansson-trucker/model.glb is a copy of it)
     build-report.json         the measurements, the parts and their triangles, the anchors
 
+    python3 .../build-johansson-trucker.py --display
+writes the same cap as a shop display (`display/`: model.glb, build-report.json, johansson-trucker-display.blend), the
+second level of detail World's catalogue holds it in (assets/catalog/johansson-trucker-display): what a cap sitting on a
+stand's form shows from the shop floor, at under half the triangles. The same shape, colours and frame; fewer
+segments round the bill and the crown; no lining, sweatband rows or strap studs (the form fills it, nobody
+looks up into it); the topstitching and the bill's rows left to the worn cap. Six of these stand in Sakura within the
+shop's triangle budget (tests/owned-display-lod.test.mjs); the worn cap is unchanged.
+
 The creator, 2026-10-14: "I want the hat look like a premium product, for now make it a trucker Cap with the J logo on it".
 It replaces the Seagulls six-panel (whose script and .blend are kept in seagulls-six-panel/ for later).
 
@@ -48,11 +56,14 @@ white one with navy.
 Coordinates while building: the head as a unit sphere (`u`), x left, y up, z front, its centre at 0; `metres()` carries a
 point onto the town's head. Every number is here; nothing is placed by hand.
 """
-import bpy, bmesh, json, math
+import bpy, bmesh, json, math, sys
 from pathlib import Path
 
+DISPLAY = '--display' in sys.argv          # the shop display's level of detail (see above)
 HERE = Path(__file__).resolve().parent
-NAME = 'Johansson trucker cap'
+OUT = HERE / 'display' if DISPLAY else HERE
+OUT.mkdir(exist_ok=True)
+NAME = 'Johansson trucker cap (shop display)' if DISPLAY else 'Johansson trucker cap'
 
 REAL = {
     'band': '58 cm round the band (55-60 by the strap), a 3 cm cotton sweatband',
@@ -289,6 +300,18 @@ FRONT_ROWS = [0, 0.04, 0.06, 0.16, 0.28, 0.4, 0.52, 0.62, 0.72, 0.82, 0.91]  # 0
 MESH_ROWS = [0, 0.1, 0.24, 0.38, 0.52, 0.66, 0.8, 0.91]
 SWEAT_ROWS = [0, 0.1, 0.22]
 LINING_ROWS = [0.22, 0.45, 0.7, 0.91]
+# The level of detail: the worn cap's, then the shop display's (DISPLAY).
+DETAIL = {'lining': True, 'roll': 4, 'under': [0, 0.35, 0.7, 1], 'rope': (6, 20), 'strap': 12, 'studs': 6, 'pipe': 18,
+          'button': 10, 'rings': (28, 24), 'label_j': True, 'quarter_j': True}
+if DISPLAY:
+    FRONT_COLS = [0, 0.25, 0.5, 0.75, 1]
+    FRONT_ROWS = [0, 0.16, 0.34, 0.52, 0.7, 0.86]
+    MESH_COLS = [0, 0.33, 0.67, 1]
+    BACK_COLS = [0, 0.5, o0, o0 + (1 - o0) * 0.5, 1]
+    MESH_ROWS = [0, 0.22, 0.46, 0.7, 0.88]
+    SWEAT_ROWS = [0, 0.22]
+    DETAIL = {'lining': False, 'roll': 2, 'under': [0, 1], 'rope': (4, 10), 'strap': 6, 'studs': 0, 'pipe': 8,
+              'button': 6, 'rings': (24, 20), 'label_j': False, 'quarter_j': True}
 
 
 def panel_columns(i):
@@ -344,10 +367,10 @@ def build_crown():
         for r in range(len(rows) - 1):
             band_stitch = rows[r] >= 0.04 and rows[r + 1] <= 0.06
             for j in range(n - 1):
-                strip = is_foam and (j in (1, n - 3) or band_stitch)
+                strip = is_foam and not DISPLAY and (j in (1, n - 3) or band_stitch)
                 owner.quad(grid[r][j], grid[r][j + 1], grid[r + 1][j + 1], grid[r + 1][j], stitch if strip else cloth)
         for j in range(n - 1):
-            strip = is_foam and j in (1, n - 3)
+            strip = is_foam and not DISPLAY and j in (1, n - 3)
             owner.f((grid[-1][j], grid[-1][j + 1], apex), stitch if strip else cloth)
         # the sweatband all round, and the foam front's lining above it
         cache = {}
@@ -362,7 +385,7 @@ def build_crown():
             for r in range(len(SWEAT_ROWS) - 1):
                 a, b = SWEAT_ROWS[r], SWEAT_ROWS[r + 1]
                 who.quad(vid(who, a, j), vid(who, b, j), vid(who, b, j + 1), vid(who, a, j + 1), c)
-            if is_foam:
+            if is_foam and DETAIL['lining']:
                 for r in range(len(LINING_ROWS) - 1):
                     a, b = LINING_ROWS[r], LINING_ROWS[r + 1]
                     lining.quad(vid(lining, a, j), vid(lining, b, j), vid(lining, b, j + 1), vid(lining, a, j + 1), inside)
@@ -381,7 +404,7 @@ def build_piping():
     c = lin('#ffffff')
     for phi in (PANELS[2][0], PANELS[3][1]):
         prev = None
-        steps = 18
+        steps = DETAIL['pipe']
         ring_ids = []
         for k in range(steps + 1):
             s = 0.02 + 0.93 * k / steps
@@ -400,7 +423,7 @@ def build_button():
     b = part('Cap button', 'front', 'decoration', note='the cloth-covered button where the six panels meet')
     top = crown_outer(0, 1.0)
     c = grey(1.0)
-    rad, h, seg = 0.08, 0.05, 10
+    rad, h, seg = 0.08, 0.05, DETAIL['button']
     prof = [(rad * 0.92, -0.012), (rad, 0.006), (rad * 0.93, h * 0.55), (rad * 0.62, h * 0.9), (rad * 0.25, h)]
     rings = [[b.v((r * math.cos(2 * math.pi * k / seg), top[1] + y, r * math.sin(2 * math.pi * k / seg))) for k in range(seg)] for r, y in prof]
     cap = b.v((0, top[1] + h * 1.02, 0))
@@ -416,6 +439,8 @@ def build_button():
 BILL_S = 14
 BILL_V = [0, 0.3, 0.33, 0.47, 0.5, 0.64, 0.67, 0.81, 0.84, 1]   # four rows of tight stitching
 STITCH_ROWS = {(0.3, 0.33), (0.47, 0.5), (0.64, 0.67), (0.81, 0.84)}
+if DISPLAY:
+    BILL_S, BILL_V, STITCH_ROWS = 8, [0, 0.5, 1], set()
 
 
 def bill_root(s):
@@ -471,7 +496,7 @@ def build_bill():
         c = stitch if (BILL_V[r], BILL_V[r + 1]) in STITCH_ROWS else cloth
         for k in range(BILL_S):
             top.quad(T[r][k], T[r + 1][k], T[r + 1][k + 1], T[r][k + 1], c)
-    steps = 4
+    steps = DETAIL['roll']
     roll = []
     for s in ss:
         p, n = bill_top(s, 1.0), bill_outward(s)
@@ -482,7 +507,7 @@ def build_bill():
     for q in range(steps):
         for k in range(BILL_S):
             top.quad(R[q][k], R[q + 1][k], R[q + 1][k + 1], R[q][k + 1], cloth)
-    UV = [0, 0.35, 0.7, 1]
+    UV = DETAIL['under']
     U = [[under.v(sub(bill_top(s, v), (0, BILL_T, 0)) if v < 1 else roll[k][steps]) for k, s in enumerate(ss)] for v in UV]
     for r in range(len(UV) - 1):
         for k in range(BILL_S):
@@ -505,7 +530,7 @@ def build_bill():
 def build_rope():
     """A braided cord across the front at the root of the bill, its ends sewn under the crown at the bill's corners."""
     rope = part('Cap rope', 'accent', 'decoration', note='braided rope across the front')
-    r, sides, segs = 0.022, 6, 20
+    r, (sides, segs) = 0.022, DETAIL['rope']
     pts = []
     for k in range(segs + 1):
         s = -0.86 + 1.72 * k / segs
@@ -535,7 +560,7 @@ def build_strap():
     st = part('Cap snapback strap', 'trim', 'decoration', note='two plastic straps across the opening, studs through holes')
     c = lin(COLOURS['strap'])
     lo, hi = math.pi - OPEN_W - 0.12, math.pi + OPEN_W + 0.12
-    seg = 12
+    seg = DETAIL['strap']
     r_in, r_out = R_OUT - 0.022, R_OUT - 0.008
     def p(phi, y, r):
         rho = math.sqrt(max(0.0, r * r - y * y))
@@ -552,7 +577,7 @@ def build_strap():
         st.quad(I0[k + 1], I0[k], I1[k], I1[k + 1], c)
         st.quad(O1[k], O1[k + 1], I1[k + 1], I1[k], c, smooth=False)
         st.quad(I0[k], I0[k + 1], O0[k + 1], O0[k], c, smooth=False)
-    for i in range(6):
+    for i in range(DETAIL['studs']):
         phi = math.pi + (i - 2.5) * 0.085
         y = (y0(phi) + y1(phi)) / 2
         centre = p(phi, y, r_out)
@@ -788,10 +813,10 @@ def build_embroidery():
     gold = part('Cap J outline', 'trim', 'sign', ink=0, note='the satin-stitch outline in gold thread')
     front = lambda x, y, h: on_crown(0.0, J_ABOVE_BAND, x * J_SCALE, y * J_SCALE, h)
     j = j_outline()
-    raised(gold, offset(j, J_OUTLINE), front, J_LIFT[0], lin(COLOURS['gold']), -0.012)
-    raised(em, j, front, J_LIFT[1], grey(1.0), J_LIFT[0] - 0.002)
-    ring(em, front, RING_R, RING_W, RING_LIFT, grey(1.0), seg=28)
-    ring(em, front, RING2_R, RING2_W, RING_LIFT * 0.8, grey(1.0), seg=24)
+    raised(gold, offset(j, J_OUTLINE), front, J_LIFT[0], lin(COLOURS['gold']), -0.012, quarter=DETAIL['quarter_j'])
+    raised(em, j, front, J_LIFT[1], grey(1.0), J_LIFT[0] - 0.002, quarter=DETAIL['quarter_j'])
+    ring(em, front, RING_R, RING_W, RING_LIFT, grey(1.0), seg=DETAIL['rings'][0])
+    ring(em, front, RING2_R, RING2_W, RING_LIFT * 0.8, grey(1.0), seg=DETAIL['rings'][1])
 
 
 def build_label():
@@ -800,6 +825,8 @@ def build_label():
     back = lambda x, y, h: on_crown(math.pi, edge_y(math.pi) - Y_BACK + 0.14, -x, y, h)
     w, hh = 0.15, 0.085
     raised(lab, [(-w / 2, -hh / 2), (w / 2, -hh / 2), (w / 2, hh / 2), (-w / 2, hh / 2)], back, 0.007, lin(COLOURS['label']), -0.01, quarter=False)
+    if not DETAIL['label_j']:
+        return
     small = [(x * 0.075, y * 0.075) for x, y in j_outline()]
     raised(lab, small, back, 0.0095, lin(COLOURS['label-ink']), 0.005, quarter=False)
 
@@ -972,9 +999,9 @@ report['anchors'] = {k: [round(c, 4) for c in metres(v)] for k, v in {
     'logo': on_crown(0.0, J_ABOVE_BAND, 0, 0, J_LIFT[1]),
 }.items()}
 
-bpy.ops.wm.save_as_mainfile(filepath=str(HERE / 'johansson-trucker.blend'), compress=True)
-bpy.ops.export_scene.gltf(filepath=str(HERE / 'model.glb'), export_format='GLB', export_yup=True, export_apply=True,
+bpy.ops.wm.save_as_mainfile(filepath=str(OUT / ('johansson-trucker-display.blend' if DISPLAY else 'johansson-trucker.blend')), compress=True)
+bpy.ops.export_scene.gltf(filepath=str(OUT / 'model.glb'), export_format='GLB', export_yup=True, export_apply=True,
                           export_extras=True, export_vertex_color='ACTIVE', export_normals=True,
                           export_animations=False, export_materials='EXPORT', export_image_format='AUTO')
-(HERE / 'build-report.json').write_text(json.dumps(report, indent=1, ensure_ascii=False) + '\n')
+(OUT / 'build-report.json').write_text(json.dumps(report, indent=1, ensure_ascii=False) + '\n')
 print('triangles', report['triangles'], 'size', report['size'])
