@@ -147,7 +147,7 @@ export function drawFace(ctx,recipe,state={}){
  const look=mood.look||state.look||[0,0];
  for(const s of [-1,1])drawEye(ctx,128+s*L.spread,L.eyeY,L.eyeS,s,recipe.eyes,eyesState,look,L.eyeTilt,L.eyeW);
  // Brows (oneBrow: the viewer's right one goes up on its own, the smug brow).
- if(recipe.brows.style!=='none')for(const s of [-1,1])drawBrow(ctx,128+s*L.browSpread,L.browY-mood.browLift-(s>0?mood.oneBrow||0:0),L.browS,s,recipe.brows,L.browTilt,mood.brow);
+ if(recipe.brows.style!=='none')for(const s of [-1,1])drawBrow(ctx,128+s*L.browSpread,L.browY-mood.browLift-(s>0?(mood.oneBrow||0)+(recipe.marks?.cocked?7:0):0),L.browS,s,recipe.brows,L.browTilt,mood.brow);
  drawNose(ctx,L.noseX,L.noseY,L.noseS,recipe.nose.style,skin,line);
  drawMouth(ctx,L.mouthX,L.mouthY+(mood.mouthDY||0),L.mouthS,recipe.mouth,mood.mouth,state.talk||0,line,L.mouthW);
  drawMarks(ctx,L,skin,fx.filter(f=>!UNDER_MARKS.has(f)),mood.mouthDY||0);
@@ -474,35 +474,39 @@ function inkNose(ctx,pen,skin){
 export const FACE_MARKS=Object.freeze({
  forehead:'Forehead lines',worry:'Worry lines',frown:'Frown lines',lids:'Heavy lids',bags:'Eye bags',crowsfeet:'Crow’s feet',
  smilelines:'Smile lines',cheeks:'Hollow cheeks',dimples:'Dimples',cleft:'Chin cleft',stubble:'Stubble shadow',rosy:'Rosy nose',
+ cocked:'One brow up',   // a face is never quite symmetrical: the viewer's right brow sits higher, always
 });
 function drawFaceMarks(ctx,L,recipe){
  const m=recipe.marks||{},skin=recipe.body.skin,ink=shade(skin,.42);
  ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
  // Stubble first, under everything: a shadow of the beard's colour over the jaw and the upper lip, and a fine tooth to it.
  if(m.stubble){
-  const hair=recipe.facial?.colour||recipe.hair?.colour||'#1c1714',top=L.noseY+2,chin=L.mouthY+58,lip=(L.noseY+L.mouthY)/2;
+  // Along the jaw: from below the cheekbones out to the edges of the face, round the chin, the mouth and the
+  // upper lip's middle left clear; it fades towards the sides of the head, so it never stops on a hard edge.
+  const hair=recipe.facial?.colour||recipe.hair?.colour||'#1c1714',top=L.noseY+4,chin=L.mouthY+60,lip=(L.noseY+L.mouthY)/2;
+  const n=parseInt(hair.slice(1),16),rgba=a=>`rgba(${n>>16},${n>>8&255},${n&255},${a})`;
   ctx.save();ctx.beginPath();
-  // Ear to ear under the cheekbones, round the chin; the mouth left clear.
-  ctx.moveTo(66,top-6);ctx.quadraticCurveTo(84,top+4,96,top+10);ctx.quadraticCurveTo(110,lip-4,128,lip-6);ctx.quadraticCurveTo(146,lip-4,160,top+10);
-  ctx.quadraticCurveTo(172,top+4,190,top-6);ctx.quadraticCurveTo(196,chin-6,128,chin+4);ctx.quadraticCurveTo(60,chin-6,66,top-6);ctx.closePath();
+  ctx.moveTo(20,top-14);ctx.quadraticCurveTo(70,top+2,96,top+12);ctx.quadraticCurveTo(110,lip-2,128,lip-4);ctx.quadraticCurveTo(146,lip-2,160,top+12);
+  ctx.quadraticCurveTo(186,top+2,236,top-14);ctx.quadraticCurveTo(232,chin,128,chin+6);ctx.quadraticCurveTo(24,chin,20,top-14);ctx.closePath();
   ctx.moveTo(110,L.mouthY-3);ctx.quadraticCurveTo(128,L.mouthY-9,146,L.mouthY-3);ctx.quadraticCurveTo(128,L.mouthY+9,110,L.mouthY-3);ctx.closePath();
-  ctx.globalAlpha=.22;ctx.fillStyle=hair;ctx.fill('evenodd');ctx.clip('evenodd');ctx.globalAlpha=.4;
+  const g=ctx.createLinearGradient(20,0,236,0);g.addColorStop(0,rgba(0));g.addColorStop(.18,rgba(.2));g.addColorStop(.82,rgba(.2));g.addColorStop(1,rgba(0));
+  ctx.fillStyle=g;ctx.fill('evenodd');ctx.clip('evenodd');
   // Speckles scattered by a hash, so no rows or stripes show.
-  const hash=n=>{const x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x);};
-  for(let i=0;i<420;i++){const x=64+hash(i)*128,y=top-6+hash(i+999)*(chin+10-top);ctx.fillRect(x,y,1.2,1.2);}
+  const hash=k=>{const x=Math.sin(k*127.1+311.7)*43758.5453;return x-Math.floor(x);};
+  for(let i=0;i<620;i++){const x=24+hash(i)*208,y=top-12+hash(i+999)*(chin+16-top),edge=Math.min(x-20,236-x)/40;ctx.fillStyle=rgba(.4*Math.min(1,edge));ctx.fillRect(x,y,1.3,1.3);}
   ctx.restore();
  }
- ctx.strokeStyle=ink;ctx.lineWidth=2.2;
+ ctx.strokeStyle=ink;ctx.lineWidth=3.2;   // a few bold lines read from across the street, many thin ones do not
  const line=(pts)=>{ctx.beginPath();pts.forEach((p,i)=>i?(p.length===2?ctx.lineTo(p[0],p[1]):ctx.quadraticCurveTo(p[0],p[1],p[2],p[3])):ctx.moveTo(p[0],p[1]));ctx.stroke();};
  const fy=L.browY-16;
- if(m.forehead)for(let i=0;i<3;i++){const y=fy-i*7,w=26-i*4;line([[128-w,y+1],[128,y-2,128+w,y+1]]);}
+ if(m.forehead)for(let i=0;i<2;i++){const y=fy-i*9,w=26-i*5;line([[128-w,y+1],[128,y-2,128+w,y+1]]);}
  if(m.worry)for(let i=0;i<2;i++){const y=fy-2-i*8;line([[100,y+3],[114,y-1,128,y-5-i]]);line([[156,y+3],[142,y-1,128,y-5-i]]);}
  if(m.frown)for(const s of [-1,1])line([[128+s*4,L.browY-6],[128+s*5.5,L.browY+3,128+s*4,L.browY+10]]);
  for(const s of [-1,1]){
   const ex=128+s*L.spread,er=11*L.eyeS*L.eyeW,eh=13*L.eyeS;
   if(m.lids)line([[ex-er,L.eyeY-eh*.75],[ex,L.eyeY-eh*1.25,ex+er,L.eyeY-eh*.75]]);
-  if(m.bags){ctx.lineWidth=1.8;line([[ex-er*.8,L.eyeY+eh*.95],[ex,L.eyeY+eh*1.45,ex+er*.8,L.eyeY+eh*.95]]);ctx.lineWidth=2.2;}
-  if(m.crowsfeet)for(let i=-1;i<=1;i++)line([[ex+s*(er+3),L.eyeY+i*4],[ex+s*(er+10),L.eyeY+i*7]]);
+  if(m.bags){ctx.lineWidth=2.6;line([[ex-er*.8,L.eyeY+eh*.95],[ex,L.eyeY+eh*1.45,ex+er*.8,L.eyeY+eh*.95]]);ctx.lineWidth=3.2;}
+  if(m.crowsfeet)for(const i of [-.6,.6])line([[ex+s*(er+3),L.eyeY+i*4],[ex+s*(er+10),L.eyeY+i*7]]);
   if(m.smilelines)line([[L.noseX+s*11,L.noseY+3],[L.noseX+s*21,(L.noseY+L.mouthY)/2+2,L.mouthX+s*(14*L.mouthS*L.mouthW+3),L.mouthY+1]]);
   if(m.cheeks)line([[128+s*(L.spread+10),L.noseY-2],[128+s*(L.spread+6),L.noseY+12,128+s*(L.spread+8),L.noseY+22]]);
   if(m.dimples)line([[L.mouthX+s*(14*L.mouthS*L.mouthW+6),L.mouthY-3],[L.mouthX+s*(14*L.mouthS*L.mouthW+9),L.mouthY+1,L.mouthX+s*(14*L.mouthS*L.mouthW+6),L.mouthY+5]]);
