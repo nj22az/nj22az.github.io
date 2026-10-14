@@ -379,6 +379,8 @@ export function createTown(options){
    collect(world.group);world.glow={glass,lamps,collect};
    (world.hourly??=[]).push(minutes=>{const glow=windowGlow(minutes);setWindowLight(glow);for(const m of glass)m.emissiveIntensity=glow*.75;for(const m of lamps)m.emissiveIntensity=.1+glow*1.6;});}
   world.isOpen=isOpen;world.updateHours=minutes=>{for(const fn of world.hourly||[])fn(minutes);for(const {mesh,id} of districts.shutters){const open=isOpen(options.sites.find(s=>s.id===id),minutes);mesh.position.y=1.3;mesh.visible=false;mesh.userData.closed=!open;}const glow=windowGlow(minutes);for(const m of districts.windows)m.material.emissiveIntensity=.02+glow*.78;};
+  const setBridgeRain=world.setRain.bind(world);
+  world.setRain=value=>{setBridgeRain(value);if(world.ferry?.ferry)world.ferry.ferry.userData.bridgeRain=!!value;};
   let normalTick=-1;
   const staticProps=batchStaticProps(world.group);
   world.beats=createLivingProps(world,factory);
