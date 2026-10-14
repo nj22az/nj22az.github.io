@@ -86,6 +86,17 @@ The rules every product change keeps:
   beer is named in its stories (Mr Fujita's routine, gift likes, the drunk walk, Higa's trade lines and more), so
   retiring it waits for your choices about those stories (decision 4).
 
+### Assets: "Make model" (the creator, 2026-10-14)
+
+Studio's **Make model** workspace holds every asset of World: the catalogue's (the massage chair, the trucker cap and
+its display copy) and the props World builds in its own code (the prop registry, `johansson-town/src/studio/prop-registry.js`).
+Open one to turn it round in World's look, see its checks, and save it in one tap: a GLB for World, an STL for a 3D
+printer, a transparent PNG, or its asset card. **New from a shape: Lathe** makes a new one (a lantern, an andon, a vase,
+a can, a bucket, a tub). An iPad cannot change World by itself, so a made asset whose checks all pass is sent with
+**Send to World's draft**: it saves a package file (`<id>.v<n>.studio-asset.json`). Give that file to Claude:
+1. Claude checks it again and keeps it in Studio's draft (`asset_draft`), outside git.
+2. When you say **"update World"**, Claude copies it into World's catalogue (`asset_publish`), and World can place it.
+
 ## For Claude
 
 **Tools.** The MCP server is `johansson-studio` in `.mcp.json`. It runs as `node johansson-town/tools/studio/server.mjs`.
@@ -123,6 +134,10 @@ other's changes.
 | `product_add` | `as:"flavour"` adds a flavour `{name, hue}` to a line. `as:"product"` adds a line (`from` a product to start from), placed with `place.mode` `share` (a line's shelf), `replace` (retires that line) or `free`. Its label is its own design, or redrawn from its brand and baked. |
 | `product_retire` | Retires a line, giving its shelf to `shelfTo` (the other line in its cold-cabinet column, or a line in its gondola bay). Refused, with every reference, while World's code, tests or trade accounts name it. |
 | `render_product` | A PNG of a product by `id` (draft included) or a `draft` record: `front`, `back`, `turn`, `shelf`, `flat` or `cell`. Saved under `output/studio-mcp/products/`. |
+| `asset_list` | World's catalogue (published), Studio's drafted assets (made in Studio, not in World yet), and the prop registry. |
+| `asset_export` | An asset's files exactly as "Make model" saves them on the iPad, drawn by Studio's own code in headless Studio: `key` `catalogue:<id>`, `registry:<id>`, or `lathe` with a design's `params` and `card`. Writes `<id>.v<n>.glb`, `.stl`, `.png` and `.asset.json` into `output/studio-mcp/assets/` (git ignores it) and returns the checks and the STL's watertight report. |
+| `asset_draft` | Keeps a package from "Send to World's draft" (`file` or `package`) in `data/studio/draft/assets/<id>/`: refused unless every check ran and passed, its files are the ones it names (sha256), its GLB has the asset's node at the origin, its id is free in World and its version is new. Dry run unless `dryRun:false`. |
+| `asset_publish` | Only on "update World": copies a drafted asset into `assets/catalog/<id>/`, lists it in `index.json` and compiles `src/catalog/catalog-data.js`, as the desktop Studio's publish does (`townstudio/assets.py`). Dry run unless `dryRun:false`. |
 
 **How a change is made.** Each write builds one change file. The same file comes from the iPad and from the page's
 agent API in stage 4:
@@ -236,9 +251,10 @@ Never call a change live before that run has succeeded.
 
 | Test | Where it runs |
 |---|---|
-| `tests/looks-data.test.mjs`, `tests/studio-apply.test.mjs` (including eight writers in eight processes at once, and every product refusal), `tests/studio-data.test.mjs`, `tests/studio-mcp.test.mjs` (every tool), `tests/products-data.test.mjs`, `tests/products-move.test.mjs`, `tests/label-spec.test.mjs` | `npm test` and CI |
+| `tests/studio-assets.test.mjs` (the asset tools on a copy of the catalogue), `tests/asset-modeller.test.mjs`, `tests/lathe-maker.test.mjs`, `tests/looks-data.test.mjs`, `tests/studio-apply.test.mjs` (including eight writers in eight processes at once, and every product refusal), `tests/studio-data.test.mjs`, `tests/studio-mcp.test.mjs` (every tool), `tests/products-data.test.mjs`, `tests/products-move.test.mjs`, `tests/label-spec.test.mjs` | `npm test` and CI |
 | `npm run studio:smoke` | Not CI, because it needs a real MCP client and Chromium. It renders every product view, bakes a designed label for the beer on a throwaway copy, publishes it, and checks that World's atlas differs only in the beer's cell and its flavours' cells |
 | `node johansson-town/tools/studio/baselines.mjs --compare <name>` and `cabinet-walk.mjs` | Not CI: pixel baselines and a live walk, for every batch that moves or changes products |
+| `node avatar-creator/tests/model.browser.mjs` | Not CI. Make model at iPad and phone size by taps: the library, every export re-opened (GLB, STL, PNG, card), the Lathe maker's presets, a dragged profile point, a lantern's files and its package |
 | `node avatar-creator/tests/studio-agent.browser.mjs` | Not CI. It covers the agent page and both pickers (with a Studio character served from a seeded module) at iPad size (1024×1366) and phone size (390×844) |
 
 `tests/studio-mcp.test.mjs` refuses to run outside `node --test`: outside it the server ignores
