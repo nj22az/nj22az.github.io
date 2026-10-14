@@ -425,6 +425,46 @@ function drawBrow(ctx,x,y,s,side,brows,tilt,mood){
  ctx.stroke();ctx.restore();
 }
 
+/**
+ * The ink noses (the creator, 2026-10-14: "many different kind of noses needs to go in the avatar creator, they should look
+ * like different characters ... don't copy Nintendo ... it should feel like something you could draw with a stencil"): each
+ * is a few strokes of one pen, round at the ends, drawn on the face with nothing raised (build.js adds no bump for them).
+ * The pen is a list of strokes; a stroke is moves in face units round the nose's point (y down): [x,y] a line to there,
+ * [cx,cy,x,y] a curve through cx,cy to there, 'z' closing it; {dot:[x,y]} is a filled dot. The first point starts the stroke.
+ */
+export const INK_NOSES=Object.freeze({
+ drawn:{label:'Drawn line',pen:[[[3,-17],[-4,-4,-3,2],[-1,5.5,5,4]]]},
+ slash:{label:'Slash',pen:[[[3,-9],[-3,3]]]},
+ bracket:{label:'Bracket',pen:[[[3,-8],[-5,-2,3,4]]]},
+ corner:{label:'Corner',pen:[[[-1,-14],[-4,2],[4,2]]]},
+ stub:{label:'Stub',pen:[[[0,-7],[-3,2],[3,2]]]},
+ jhook:{label:'J hook',pen:[[[2,-15],[2,0],[2,4,-2,3]]]},
+ chevron:{label:'Chevron',pen:[[[-4,-3],[0,2],[4,-3]]]},
+ caret:{label:'Caret',pen:[[[-4,2],[0,-3],[4,2]]]},
+ curve:{label:'Curve',pen:[[[-7,-1],[0,6,7,-1]]]},
+ widecurve:{label:'Wide curve',pen:[[[-10,-2],[0,8,10,-2]]]},
+ cup:{label:'Cup',pen:[[[-4,-4],[-4,4,0,4],[4,4,4,-4]]]},
+ tallcup:{label:'Tall cup',pen:[[[-4,-12],[-4,0],[-4,5,0,5],[4,5,4,0],[4,-12]]]},
+ bell:{label:'Bell',pen:[[[-3,-9],[-8,4,0,4],[8,4,3,-9]]]},
+ twinlobe:{label:'Two lobes',pen:[[[-6,-1],[-6,4,-2,3],[0,5,2,3],[6,4,6,-1]]]},
+ cloud:{label:'Cloud',pen:[[[-9,-1],[-9,4,-5,3],[-3,6.5,0,4],[3,6.5,5,3],[9,4,9,-1]]]},
+ arch:{label:'Arch',pen:[[[-5,2],[0,-6,5,2]]]},
+ hood:{label:'Hood',pen:[[[-4,3],[-4,-1],[0,-6.5,4,-1],[4,3]]]},
+ profile:{label:'Profile',pen:[[[-2,-15],[-3,-2],[-8,4,-1,4],[4,4,4,1]]]},
+ bridge:{label:'Bridge',pen:[[[-2,-14],[-2,1],[-4,3.5,-7,2]],[[2,-14],[2,1],[4,3.5,7,2]]]},
+ ring:{label:'Ring',pen:[[[-5,0],[-5,-4,0,-4],[5,-4,5,0],[5,4,0,4],[-5,4,-5,0],'z']]},
+ nostrils:{label:'Nostrils',pen:[{dot:[-3,1]},{dot:[3,1]}]},
+ wedge:{label:'Wedge',pen:[[[0,-7],[-3.5,2],[3.5,2],'z']]},
+ slope:{label:'Slope',pen:[[[0,-13],[1,-2,5,2],[0,3]]]},
+});
+function inkNose(ctx,pen,skin){
+ ctx.scale(1.35,1.35);ctx.strokeStyle=shade(skin,.28);ctx.fillStyle=shade(skin,.28);ctx.lineWidth=2.6;ctx.lineCap='round';ctx.lineJoin='round';
+ for(const stroke of pen){
+  if(stroke.dot){ctx.beginPath();ctx.arc(stroke.dot[0],stroke.dot[1],2.1,0,TAU);ctx.fill();continue;}
+  ctx.beginPath();stroke.forEach((m,i)=>{if(m==='z')ctx.closePath();else if(i===0)ctx.moveTo(m[0],m[1]);else if(m.length===2)ctx.lineTo(m[0],m[1]);else ctx.quadraticCurveTo(m[0],m[1],m[2],m[3]);});
+  ctx.stroke();
+ }
+}
 function drawNose(ctx,x,y,s,style,skin,line){
  ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.strokeStyle=shade(skin,.62);ctx.fillStyle=shade(skin,.8);ctx.lineWidth=2.4;
  if(style==='button'){ctx.beginPath();ctx.ellipse(0,0,7,5.5,0,0,TAU);ctx.fill();ctx.fillStyle='rgba(255,255,255,.35)';ctx.beginPath();ctx.arc(-2,-2,2,0,TAU);ctx.fill();}
@@ -435,6 +475,7 @@ function drawNose(ctx,x,y,s,style,skin,line){
  else if(style==='pointed'){ctx.beginPath();ctx.moveTo(0,-13);ctx.lineTo(5,4);ctx.lineTo(-2,4);ctx.stroke();}
  else if(style==='snub'){ctx.beginPath();ctx.moveTo(-7,1);ctx.quadraticCurveTo(0,8,7,1);ctx.stroke();ctx.fillStyle=shade(skin,.6);for(const sx of [-3,3]){ctx.beginPath();ctx.arc(sx,1.5,1.4,0,TAU);ctx.fill();}}
  else if(style==='bulb'){ctx.beginPath();ctx.ellipse(0,1,9.5,7.5,0,0,TAU);ctx.fill();ctx.stroke();ctx.fillStyle='rgba(255,255,255,.35)';ctx.beginPath();ctx.arc(-3,-2,2.4,0,TAU);ctx.fill();}
+ else if(INK_NOSES[style])inkNose(ctx,INK_NOSES[style].pen,skin);
  else if(style==='ridge'){ctx.beginPath();ctx.moveTo(-3,-15);ctx.quadraticCurveTo(-3.5,-1,-7,4);ctx.moveTo(3,-15);ctx.quadraticCurveTo(3.5,-1,7,4);ctx.stroke();ctx.fillStyle=shade(skin,.6);for(const sx of [-3,3]){ctx.beginPath();ctx.arc(sx,4,1.4,0,TAU);ctx.fill();}}
  ctx.restore();
 }

@@ -6,7 +6,7 @@ import {SHOPPING_LANE_OUTFIT} from '../world/shopping-lane-plan.js';
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries,mergeVertices} from '../../vendor/BufferGeometryUtils.js';
 import {normalizeRecipe,DRESS_BOTTOMS} from './recipe.js';
-import {drawFace,faceLayout} from './face.js';
+import {drawFace,faceLayout,INK_NOSES} from './face.js';
 import {buildFaceObjects} from './face-objects.js';
 import {headProfile,shapeHeadPoint} from './head-profile.js';
 import {longBraidPoints} from './braid-path.js';
@@ -1487,7 +1487,7 @@ function buildHead(recipe,m,faceSize){
 }
 
 function addNose(parts,recipe,m){
- if(recipe.nose.style==='none')return;
+ if(recipe.nose.style==='none'||INK_NOSES[recipe.nose.style])return;   // an ink nose is all drawn on the face
  const layout=faceLayout(recipe),theta=Math.PI*.28+layout.noseY/256*Math.PI*.58,phi=Math.PI/2-.95+layout.noseX/256*1.9;
  const v=shapeHeadPoint(new THREE.Vector3(-Math.cos(phi)*Math.sin(theta),Math.cos(theta),Math.sin(phi)*Math.sin(theta)),m.profile);
  const hook=recipe.nose.style==='hook',wide=recipe.nose.style==='wide';

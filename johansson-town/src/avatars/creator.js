@@ -3,7 +3,7 @@ import {SETS,SLOTS,SLOT_AT,ISLAND_PALETTE,ISLAND_HEX,entryFor,labelFor,wornSet,w
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar,wearsBathTowel} from './build.js';
 import {createAvatarAnimator} from './animate.js';
-import {drawPart,drawFace,EXPRESSION_NAMES} from './face.js';
+import {drawPart,drawFace,EXPRESSION_NAMES,INK_NOSES} from './face.js';
 import {PALETTE,PARTS,PATTERNS,NUMBERED_TOPS,normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe,AGES} from './recipe.js';
 import {POSITION_FEATURES,hitFaceFeature,draggedFaceFields} from './face-position.js';
 import {CAST_RECIPES,ORIGINAL_THUAN_RECIPE} from './cast.js';
@@ -69,6 +69,7 @@ export function previewOutfits(recipe){
  return PREVIEW_OUTFITS.map(([value,label])=>{const off=GROWN_UP_OUTFITS.has(value)&&!grown;return {value,label:off?label+' (grown-ups)':label,disabled:off};});
 }
 const LABEL={
+ ...Object.fromEntries(Object.entries(INK_NOSES).map(([id,n])=>[id,n.label])),   // the ink noses, named where they are drawn
  towel:'Bath towel',swimwear:'Swimwear',
  crop:'Crop',sidepart:'Side part',bob:'Bob',long:'Long',sweptponytail:'Swept low ponytail',ponytail:'Ponytail',braids:'Original Thuận braids',longbraids:'Twin braids · Thuan',bun:'Bun',spiky:'Spiky',perm:'Perm',buzz:'Buzz',afro:'Afro',horseshoe:'Horseshoe',bald:'Bald',
  pixie:'Pixie',shoulder:'Shoulder',curtains:'Centre part',slick:'Slicked back',mullet:'Mullet',topknot:'Topknot',pigtails:'Pigtails',twinbuns:'Twin buns',

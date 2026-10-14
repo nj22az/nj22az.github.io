@@ -11,6 +11,7 @@
  */
 
 import {HEAD_FORMS} from './head-profile.js';
+import {INK_NOSES} from './face.js';
 /** Skin, hair, eyes and cloth. Chosen to sit well under the town's cel grade. */
 export const PALETTE=Object.freeze({
  skin:Object.freeze(['#f7dcc4','#f1cfae','#e8bf98','#dca97e','#c98d62','#b27449','#8f5a38','#6b4029','#e8bd9e']),
@@ -36,7 +37,7 @@ export const PARTS=Object.freeze({
  hair:Object.freeze(['crop','sidepart','bob','long','ponytail','sweptponytail','braids','longbraids','bun','spiky','perm','buzz','afro','horseshoe','bald','pixie','shoulder','curtains','slick','mullet','topknot','pigtails','twinbuns']),
  eyes:Object.freeze(['round','dot','almond','sleepy','lashes','narrow','sparkle','gentle','doe','cat','droopy','heavy','bright','tired','squint','starry']),
  brows:Object.freeze(['straight','arched','thick','thin','worried','bushy','angled','short','rounded','tapered','feathered','maro','none']),
- nose:Object.freeze(['button','dot','line','wide','hook','pointed','snub','bulb','ridge','none']),
+ nose:Object.freeze(['button','dot','line','wide','hook','pointed','snub','bulb','ridge',...Object.keys(INK_NOSES),'none']),   // then the ink noses (face.js)
  mouth:Object.freeze(['smile','flat','grin','small','wide','smirk','pout','cat','teeth','open','lopsided','tongue','buck','soft']),
  glasses:Object.freeze(['none','round','square','sun','half']),
  // Moustache and beard are worn together or apart, as in any face maker; `facial` is
