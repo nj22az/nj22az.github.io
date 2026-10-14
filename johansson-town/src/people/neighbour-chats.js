@@ -112,7 +112,9 @@ export function createChatBubble({camera,canvas,target,blocked=()=>false}){
   const rect=canvas.getBoundingClientRect?.()||{left:0,top:0,width:innerWidth,height:innerHeight};
   const x=rect.left+(p.x+1)*rect.width/2,y=rect.top+(1-p.y)*rect.height/2;
   if(y<100||y>rect.top+rect.height*.72)return;
-  name.textContent=chat.speaker.profile.name;line.textContent=chat.text;
-  bubble.style.left=Math.max(116,Math.min(innerWidth-116,x))+'px';bubble.style.top=y+'px';bubble.hidden=false;
+  name.textContent=chat.speaker.profile.name;line.textContent=chat.text;bubble.hidden=false;
+  // Kept whole on screen: half the balloon's own width (or the old fixed 116 px) from each edge.
+  const half=Math.max(116,(bubble.offsetWidth||0)/2+12);
+  bubble.style.left=Math.max(half,Math.min(innerWidth-half,x))+'px';bubble.style.top=y+'px';
  },hide(){bubble.hidden=true;}};
 }

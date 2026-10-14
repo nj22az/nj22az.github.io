@@ -159,7 +159,11 @@ export function drawFace(ctx,recipe,state={}){
  // Brows (oneBrow: the viewer's right one goes up on its own, the smug brow).
  if(recipe.brows.style!=='none')for(const s of [-1,1])drawBrow(ctx,128+s*L.browSpread,L.browY-mood.browLift-(s>0?(mood.oneBrow||0)+(recipe.marks?.cocked?7:0):0),L.browS,s,recipe.brows,L.browTilt,mood.brow);
  drawNose(ctx,L.noseX,L.noseY,L.noseS,recipe.nose.style,skin,line);
+ // A painted beard sits under the lips, a painted moustache over the top one. In 3D the beard is on its own shell round the
+ // jaw (drawBeardShell), which reaches the chin's outline and the sideburns as the face's canvas cannot.
+ if(!state.objects)drawFacialPaint(ctx,L,recipe.facial,'beard');
  drawMouth(ctx,L.mouthX,L.mouthY+(mood.mouthDY||0),L.mouthS,recipe.mouth,mood.mouth,state.talk||0,line,L.mouthW);
+ drawFacialPaint(ctx,L,recipe.facial,'moustache');
  drawMarks(ctx,L,skin,fx.filter(f=>!UNDER_MARKS.has(f)),mood.mouthDY||0);
  if(!state.objects){drawFacialHair(ctx,L,recipe.facial);drawGlasses(ctx,L,recipe.glasses);}
  ctx.restore();
@@ -596,6 +600,104 @@ function drawMouth(ctx,x,y,s,mouth,moodMouth,talk,line,width=1){
 
 /** Moustache and beard, from a normalized recipe or an older one that gave one `style`. */
 const MOUSTACHES=['moustache','walrus','handlebar','pencil'];
+/**
+ * Facial hair painted on the skin (the creator, 2026-10-14: "enhance facial hair too"): a third layer under the 3D
+ * moustache and beard (recipe.facial.paint), and moustaches that are painted rather than built (PAINTED_MOUSTACHES), so
+ * they read in the game as they do in the maker. All in the whiskers' colour with a darker edge; the moustaches stretch
+ * with facial.width, and everything follows the size and height sliders.
+ */
+export const PAINTED_MOUSTACHES=Object.freeze({chevron:'Chevron',toothbrush:'Toothbrush',horseshoe:'Horseshoe',fumanchu:'Fu Manchu',brush:'Brush',curled:'Curled'});
+export const PAINTED_BEARDS=Object.freeze({full:'Full beard',circle:'Circle beard',chops:'Chops',mutton:'Mutton chops',anchor:'Anchor',soul:'Soul patch',scruff:'Scruffy beard',strip:'Chin strip'});
+function drawFacialPaint(ctx,L,facial,layer='both'){
+ const paint=layer==='moustache'?'none':facial.paint||'none',mous=layer==='beard'||!PAINTED_MOUSTACHES[facial.moustache]?'none':facial.moustache;
+ if(paint==='none'&&mous==='none')return;
+ const S=L.facialS??1,DY=L.facialDY??0,wk=.6+(facial.width??.5)*.8,col=facial.colour||'#1c1714',edge=shade(col,.7);
+ const mw=14*L.mouthS*L.mouthW,mx=L.mouthX,my=L.mouthY;
+ ctx.save();ctx.fillStyle=col;ctx.strokeStyle=edge;ctx.lineWidth=1.4;ctx.lineJoin='round';ctx.lineCap='round';
+ const finish=(rule)=>{ctx.fill(rule);ctx.stroke();};
+ if(paint!=='none'){
+  ctx.save();ctx.translate(128,my+DY*.5);ctx.scale(S,S);ctx.translate(-128,-my);
+  const top=L.noseY+6,chin=my+56,hole=()=>{ctx.moveTo(mx-mw-6,my);ctx.quadraticCurveTo(mx,my-12,mx+mw+6,my);ctx.quadraticCurveTo(mx,my+12,mx-mw-6,my);ctx.closePath();};
+  ctx.beginPath();
+  if(paint==='full'||paint==='scruff'){
+   ctx.moveTo(58,top-8);ctx.quadraticCurveTo(84,top+4,100,top+10);ctx.quadraticCurveTo(114,(L.noseY+my)/2-2,128,(L.noseY+my)/2-4);ctx.quadraticCurveTo(142,(L.noseY+my)/2-2,156,top+10);ctx.quadraticCurveTo(172,top+4,198,top-8);
+   if(paint==='scruff'){ctx.lineTo(196,chin-22);for(let i=0;i<=12;i++){const x=196-i*(136/12),y=chin-22+Math.sin(i/12*Math.PI)*24+(i%2?7:-1);ctx.lineTo(x,y);}ctx.lineTo(58,top-8);}
+   else{ctx.quadraticCurveTo(200,chin-4,128,chin+4);ctx.quadraticCurveTo(56,chin-4,58,top-8);}
+   ctx.closePath();hole();finish('evenodd');
+  }else if(paint==='circle'){
+   ctx.ellipse(mx,my+4,mw+15,27,0,0,TAU);ctx.closePath();hole();finish('evenodd');
+  }else if(paint==='chops'||paint==='mutton'){
+   for(const s of [-1,1]){const o=x=>128+s*x;ctx.moveTo(o(100),L.eyeY+2);ctx.lineTo(o(114),L.eyeY+2);ctx.quadraticCurveTo(o(112),my+2,o(paint==='mutton'?mw+8:104),my+12);
+    ctx.lineTo(o(paint==='mutton'?mw+4:92),my+26);ctx.quadraticCurveTo(o(98),my+14,o(98),L.eyeY+14);ctx.closePath();}
+   finish();
+   if(paint==='mutton'){ctx.beginPath();ctx.moveTo(mx-mw-8,my+4);ctx.quadraticCurveTo(mx-10,my-16,mx,my-12);ctx.quadraticCurveTo(mx+10,my-16,mx+mw+8,my+4);ctx.quadraticCurveTo(mx,my-6,mx-mw-8,my+4);ctx.closePath();finish();}
+  }else if(paint==='anchor'){
+   ctx.moveTo(mx-mw-2,my+2);ctx.quadraticCurveTo(mx-mw+2,my+16,mx-4,my+40);ctx.lineTo(mx,my+46);ctx.lineTo(mx+4,my+40);ctx.quadraticCurveTo(mx+mw-2,my+16,mx+mw+2,my+2);
+   ctx.quadraticCurveTo(mx,my+12,mx-mw-2,my+2);ctx.closePath();finish();
+   ctx.beginPath();ctx.moveTo(mx-mw,my-7);ctx.quadraticCurveTo(mx,my-13,mx+mw,my-7);ctx.quadraticCurveTo(mx,my-9,mx-mw,my-7);ctx.closePath();finish();
+  }else if(paint==='soul'){
+   ctx.ellipse(mx,my+13,5,6.5,0,0,TAU);finish();
+  }else if(paint==='strip'){
+   ctx.lineWidth=8;ctx.strokeStyle=col;ctx.moveTo(24,L.eyeY+6);ctx.quadraticCurveTo(40,chin-2,128,chin);ctx.quadraticCurveTo(216,chin-2,232,L.eyeY+6);ctx.stroke();
+  }
+  ctx.restore();
+ }
+ if(mous!=='none'){
+  // Moustaches sit low, their lower edge over the top lip, and half again as wide as they were (the creator's review).
+  const y=my-5.5,n=parseInt(col.slice(1),16),light=(.3*(n>>16)+.59*(n>>8&255)+.11*(n&255))/255>.5;
+  if(light){ctx.strokeStyle=shade(col,.45);ctx.lineWidth=1.8;}   // light hair (grey, blonde) keeps a darker edge
+  ctx.save();ctx.translate(mx,y+DY);ctx.scale(S*wk*1.8,S*1.2);ctx.translate(-128,-y);ctx.beginPath();
+  if(mous==='chevron'){ctx.moveTo(104,y+5);ctx.lineTo(128,y-7);ctx.lineTo(152,y+5);ctx.lineTo(147,y+9);ctx.lineTo(128,y);ctx.lineTo(109,y+9);ctx.closePath();finish();}
+  else if(mous==='toothbrush'){ctx.moveTo(120,y-5);ctx.lineTo(136,y-5);ctx.lineTo(137,y+5);ctx.lineTo(119,y+5);ctx.closePath();finish();}
+  else if(mous==='horseshoe'){
+   // Full, with square-cut ends that run down past the mouth toward the jaw.
+   const d=34;ctx.moveTo(105,y+1);ctx.quadraticCurveTo(128,y-13,151,y+1);ctx.lineTo(152,y+d);ctx.lineTo(143,y+d);ctx.lineTo(142.5,y+7);ctx.quadraticCurveTo(128,y,113.5,y+7);ctx.lineTo(113,y+d);ctx.lineTo(104,y+d);ctx.closePath();finish();}
+  else if(mous==='fumanchu'){
+   // Thick at the lip, tapering to fine points that hang down past the chin.
+   for(const s of [-1,1]){const o=x=>128+s*x;ctx.moveTo(o(1.5),y-4);ctx.quadraticCurveTo(o(13),y-6,o(19),y+1);ctx.quadraticCurveTo(o(22),y+20,o(18),y+46);
+    ctx.quadraticCurveTo(o(15),y+22,o(12),y+5);ctx.quadraticCurveTo(o(7),y+1,o(1.5),y+2);ctx.closePath();}
+   finish();}
+  else if(mous==='brush'){ctx.moveTo(102,y+4);ctx.quadraticCurveTo(128,y-14,154,y+4);for(let i=0;i<=8;i++){const x=154-i*6.5;ctx.lineTo(x,y+(i%2?5:9));}ctx.closePath();finish();}
+  else if(mous==='curled'){
+   // A full body over the lip whose ends roll up into curls.
+   for(const s of [-1,1]){const o=x=>128+s*x;ctx.moveTo(o(0),y-4);ctx.quadraticCurveTo(o(13),y-8,o(21),y-1);ctx.quadraticCurveTo(o(27),y+2,o(30),y-4);
+    ctx.quadraticCurveTo(o(31),y-11,o(26),y-11);ctx.quadraticCurveTo(o(23),y-10,o(24),y-7);ctx.quadraticCurveTo(o(27),y-6,o(26),y-3);ctx.quadraticCurveTo(o(21),y+5,o(12),y+4);ctx.quadraticCurveTo(o(5),y+3,o(0),y+3);ctx.closePath();}
+   finish();}
+  ctx.restore();
+ }
+ ctx.restore();
+}
+/**
+ * The scruffy beard: a shadow of hair painted on its own shell round the lower head (build.js beardShell), sideburn to
+ * sideburn and down to the chin's outline, which the face's canvas cannot reach. (Every other beard is built: beard-mesh.js.)
+ * The shell's canvas is drawn in degrees: x is the angle round from the front (a, ±BEARD_SHELL.A, + toward the avatar's left
+ * as on the face), y the angle down from the crown (θ, from BEARD_SHELL.T0 to the chin's point at 180). Seen from the front
+ * the face's outline is a = ±90 and the chin's is θ = 180. The mouth is left open for every mouth the face makes.
+ */
+export const BEARD_SHELL=Object.freeze({A:100,T0:68});
+export function drawBeardShell(ctx,recipe,state={}){
+ const {A,T0}=BEARD_SHELL,W=ctx.canvas.width,H=ctx.canvas.height;
+ ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,W,H);
+ if(recipe.facial.paint!=='scruff')return;
+ const L=faceLayout(recipe),mood=MOOD[state.expression]||MOOD.neutral;
+ // Face-canvas units to degrees: the face's canvas spans 1.9 rad across and .58π down, from θ = .28π.
+ const DX=1.9/256*180/Math.PI,DYD=.58*180/256,T=fy=>50.4+fy*DYD;
+ const aM=(L.mouthX-128)*DX,tM=T(L.mouthY+(mood.mouthDY||0)),tN=T(L.noseY),aw=14*L.mouthS*L.mouthW*DX;
+ const open=state.talk>.5||['grin','laugh','o','jawdrop','wail','shout','gasp'].includes(mood.mouth);
+ ctx.setTransform(W/(2*A),0,0,H/(180-T0),W/2,-T0*H/(180-T0));ctx.fillStyle=recipe.facial.colour||'#1c1714';
+ ctx.beginPath();
+ // Down the sideburns, across the cheeks to the mouth's corners, and down to the chin's outline; the mouth left open.
+ const cheek=s=>{ctx.lineTo(s*66,85);ctx.lineTo(s*70,tN-2);ctx.quadraticCurveTo(s*64,tN+6,s*46,tN+6);ctx.quadraticCurveTo(aM+s*(aw+9),tN+7,aM+s*(aw+1.5),tM-2.2);};
+ ctx.moveTo(-91,84);cheek(-1);ctx.lineTo(aM+aw+1.5,tM-2.2);
+ ctx.quadraticCurveTo(aM+aw+9,tN+7,46,tN+6);ctx.quadraticCurveTo(64,tN+6,70,tN-2);ctx.lineTo(66,85);ctx.lineTo(91,84);
+ ctx.lineTo(97,112);ctx.lineTo(99,150);ctx.lineTo(A,180);ctx.lineTo(-A,180);ctx.lineTo(-99,150);ctx.lineTo(-97,112);ctx.closePath();
+ const x0=aM-aw-2.4,x1=aM+aw+2.4;ctx.moveTo(x0,tM);ctx.quadraticCurveTo(aM,tM-5.8,x1,tM);ctx.quadraticCurveTo(aM,tM+(open?13:8.2),x0,tM);ctx.closePath();
+ // A shadow of hair rather than a shape: see-through, speckled, no edge.
+ ctx.save();ctx.clip('evenodd');ctx.globalAlpha=.3;ctx.fillRect(-A,T0,2*A,180-T0);ctx.globalAlpha=.55;
+ let h=2166136261;const rnd=()=>{h=Math.imul(h^h>>>15,2246822507);h=Math.imul(h^h>>>13,3266489909);return ((h^=h>>>16)>>>0)/4294967296;};
+ for(let i=0;i<1400;i++){const x=-A+rnd()*2*A,y=T0+rnd()*(180-T0);ctx.fillRect(x,y,.55,.55);}
+ ctx.restore();ctx.setTransform(1,0,0,1,0,0);
+}
 function facialParts(facial){
  if(facial.moustache!==undefined||facial.beard!==undefined)return {moustache:facial.moustache||'none',beard:facial.beard||'none'};
  return {moustache:MOUSTACHES.includes(facial.style)?facial.style:'none',beard:facial.style&&facial.style!=='none'&&!MOUSTACHES.includes(facial.style)?facial.style:'none'};
@@ -675,7 +777,7 @@ export function drawPart(ctx,recipe,part,size=ctx.canvas.width){
  if(part==='brows'&&recipe.brows.style!=='none')for(const s of [-1,1])drawBrow(ctx,128+s*L.browSpread,L.browY,L.browS,s,flat.brows,L.browTilt,0);
  if(part==='nose')drawNose(ctx,L.noseX,L.noseY,L.noseS,recipe.nose.style,skin,line);
  if(part==='mouth')drawMouth(ctx,L.mouthX,L.mouthY,L.mouthS,flat.mouth,null,0,line,L.mouthW);
- if(part==='facial'||part==='moustache'||part==='beard'){drawMouth(ctx,L.mouthX,L.mouthY,L.mouthS,{...flat.mouth,style:'flat'},null,0,'rgba(43,38,35,.35)',L.mouthW);drawFacialHair(ctx,L,facial);}
+ if(part==='facial'||part==='moustache'||part==='beard'||part==='paint'){drawFacialPaint(ctx,L,part==='paint'?{...facial,moustache:'none'}:part==='moustache'?{...facial,paint:'none'}:part==='beard'?{...facial,paint:'none'}:facial);drawMouth(ctx,L.mouthX,L.mouthY,L.mouthS,{...flat.mouth,style:'flat'},null,0,'rgba(43,38,35,.35)',L.mouthW);drawFacialHair(ctx,L,facial);}
  if(part==='glasses')drawGlasses(ctx,L,flat.glasses);
  ctx.restore();
  // "None" reads as an empty tile with a soft slash, the way a blank slot should.

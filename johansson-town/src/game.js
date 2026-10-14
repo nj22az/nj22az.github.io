@@ -984,8 +984,34 @@ function frameConversation(dt){
  if(shotCut){camera.position.copy(shotPos);camera.quaternion.copy(shotQ);shotCut=false;}
  else{camera.position.lerp(shotPos,k*.6);camera.quaternion.slerp(shotQ,k);}
 }
+/**
+ * The spoken line is a balloon floating above the replies panel (line-ui.css, "Speech
+ * balloons"). Each frame it is raised to sit over the head of whoever is talking (Johansson
+ * on the reverse shot) and its tail turned towards them, but never off the top or sides of
+ * the screen; when there is no room it stays just above the panel.
+ */
+const balloonHead=new THREE.Vector3(),balloonSet={lift:NaN,shift:NaN,tail:NaN};
+function placeConversationBalloon(){
+ const modal=$('#activity'),body=$('#activityBody'),card=modal?.querySelector('.activity-card');
+ if(!modal||!body||!card?.getBoundingClientRect||!canvas.getBoundingClientRect)return;
+ const put=(key,value)=>{if(Math.abs(balloonSet[key]-value)<.5)return;balloonSet[key]=value;modal.style?.setProperty?.('--balloon-'+key,value.toFixed(1)+'px');};
+ const speaker=conversationLine?.speaker;
+ if(!speaker?.visible||modal.classList?.contains('hidden')){put('lift',26);put('shift',0);put('tail',0);return;}
+ if(conversationShot==='player'&&thirdPerson&&!seated)balloonHead.copy(playerHead);else balloonHead.copy(speakerHead);
+ balloonHead.y+=.42;balloonHead.project(camera);
+ const rect=canvas.getBoundingClientRect(),box=card.getBoundingClientRect(),w=body.offsetWidth,h=body.offsetHeight;
+ if(!(balloonHead.z<1)||!w){put('lift',26);put('shift',0);put('tail',0);return;}
+ const x=rect.left+(balloonHead.x+1)*rect.width/2,y=rect.top+(1-balloonHead.y)*rect.height/2;
+ const room=Math.max(26,box.top-h-12);
+ put('lift',Math.min(room,Math.max(26,box.top-y+14)));
+ const centre=box.left+box.width/2,half=w/2,edge=16;
+ const want=Math.max(edge+half,Math.min(innerWidth-edge-half,x));
+ put('shift',want-centre);
+ put('tail',Math.max(-(half-44),Math.min(half-44,x-want)));
+}
 function updateConversationLift(dt){
  if(conversationLine)frameConversation(dt);
+ placeConversationBalloon();
  const target=conversationLine?.1:0;
  if(Math.abs(target-conversationLift)<.001&&conversationLift===target)return;
  conversationLift+=(target-conversationLift)*Math.min(1,dt*7);

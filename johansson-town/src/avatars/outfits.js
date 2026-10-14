@@ -78,6 +78,17 @@ export const ISLAND_OUTFITS=Object.freeze([
  {id:'harbour-summer',name:'Harbour master’s summer',label:'Harbour summer',category:'Work',tags:['harbour master','harbour office','ferry','berth','summer','captain','shirt'],
   who:'the harbour master, from June to September',why:'Too hot for his jacket on the quay: a sky-blue shirt with a pen for the berth log, and the white cap the ferry looks for.',
   outfit:{top:'shirt',topColour:'#8fbfe0',accent:'#2f4f7f',bottom:'trousers',bottomColour:'#27304d',footwear:'shoes',shoes:'#2b2b2b',hat:'captain',hatColour:'#f4f1ea',pattern:'none'}},
+ // Cute everyday wear (the creator, 2026-10-14: "characters need to … have cute clothes"): the raglan tee, the pinafore,
+ // the hair clip and striped trousers, every colour from the island palette.
+ {id:'saturday-ice-cream',name:'Saturday ice cream',label:'Saturday ice cream',category:'Everyday',tags:['Blue Coral','ice cream','Rainflower Lane','Saturday','weekend','raglan','pleats','hair clip'],
+  who:'Vy and Mai on a Saturday, walking to Blue Coral',why:'A raglan tee and swinging pleats for the walk down Rainflower Lane, pink sneakers, and a clip to keep the fringe off the ice cream.',
+  outfit:{top:'raglan',topColour:'#f4f1ea',accent:'#d9668a',bottom:'pleatedskirt',bottomColour:'#27304d',bottomPattern:'none',footwear:'sneakers',shoes:'#f2b8c6',hat:'hairclip',hatColour:'#f2b8c6',pattern:'none'}},
+ {id:'market-stripes',name:'Market-morning stripes',label:'Market stripes',category:'Everyday',tags:['market','morning','izakaya','wide trousers','stripes','tee'],
+  who:'Thao buying for the izakaya at the morning market',why:'Loose striped trousers and a lagoon tee: cool for the market at ten, and she can sit on a crate to haggle.',
+  outfit:{top:'tee',topColour:'#3a9cb8',accent:'#f4f1ea',bottom:'widepants',bottomColour:'#4f7a4f',bottomPattern:'stripes',footwear:'sneakers',shoes:'#f4f1ea',pattern:'none'}},
+ {id:'sunday-pinafore',name:'Sunday pinafore',label:'Sunday pinafore',category:'Everyday',tags:['Sunday','dress','pinafore','school trip','shrine'],
+  who:'Mai on Sundays; Miss Higa on school trips',why:'A pinafore dress over a white tee: smart enough for the shrine, tough enough for the playground.',
+  outfit:{top:'pinafore',topColour:'#f4f1ea',accent:'#e8b83e',bottom:'skirt',bottomColour:'#2f4f7f',bottomPattern:'none',footwear:'shoes',shoes:'#6e4a33',pattern:'none'}},
 ]);
 
 /** Town-made costumes for the Port Festival parade. Headwear is chosen separately so the face stays visible. */

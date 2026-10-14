@@ -1,4 +1,4 @@
-import {DEFAULT_RECIPE,normalizeRecipe,PARTS,AGES,PATTERNS} from './recipe.js';
+import {DEFAULT_RECIPE,normalizeRecipe,PARTS,AGES,PATTERNS,BOTTOM_PATTERNS} from './recipe.js';
 
 /**
  * Looks: what Johansson Studio may change about a resident, as a short list of fields laid over the recipe World
@@ -19,8 +19,8 @@ export const LOOK_PATHS=Object.freeze(DEFAULTS.map(([path])=>path));
 /** The words a field may take, for every field that is a word. Colours are #rrggbb; numbers run from 0 to 1. */
 const WORDS={age:AGES,'body.proportion':['classic','rounded'],'body.silhouette':PARTS.silhouette,'head.form':PARTS.head,
  'hair.style':PARTS.hair,'eyes.style':PARTS.eyes,'brows.style':PARTS.brows,'nose.style':PARTS.nose,'mouth.style':PARTS.mouth,
- 'glasses.style':PARTS.glasses,'facial.moustache':PARTS.moustache,'facial.beard':PARTS.beard,'outfit.top':PARTS.top,
- 'outfit.pattern':PATTERNS,'outfit.bottom':PARTS.bottom,'outfit.bottomPattern':['none','plaid'],
+ 'glasses.style':PARTS.glasses,'facial.moustache':PARTS.moustache,'facial.beard':PARTS.beard,'facial.paint':PARTS.paint,'outfit.top':PARTS.top,
+ 'outfit.pattern':PATTERNS,'outfit.bottom':PARTS.bottom,'outfit.bottomPattern':BOTTOM_PATTERNS,
  'outfit.footwear':PARTS.footwear,'outfit.hat':PARTS.hat,'outfit.belt':PARTS.belt,'accessories.earrings':PARTS.earrings,'accessories.neckwear':PARTS.neckwear,
  'swim.bath':['towel','swimwear']};
 const COLOUR=/^#[0-9a-f]{6}$/;
