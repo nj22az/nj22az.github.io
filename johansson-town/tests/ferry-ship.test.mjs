@@ -93,11 +93,12 @@ test('her switchboard: one generator at sea, both for the berth, shore power at 
  assert.equal(E.generators.kW,E.generators.kVA*E.generators.pf);
  // The load analysis's totals (briefs/ferry-audit.md §3.4), rounded as the brief rounded them, and since 2026-10-13 the
  // lane signals at the ramp (0.18 kW on the lighting board at sea, arriving and loading).
- const brief={sea:40.1,arrival:110,loading:45.9,night:10.3,blackout:9.9},lighting={sea:12.2,arrival:14.2,loading:14.8,night:6};
+ // The electrical workshop (2026-10-14) adds its test panel at night on shore power (0.6 kW) and 0.1 kW of lighting.
+ const brief={sea:40.2,arrival:110.1,loading:46.0,night:11.0,blackout:9.9},lighting={sea:12.3,arrival:14.3,loading:14.9,night:6};
  for(const c of FERRY_CONDITIONS){assert.ok(near(ferryDemand(c),brief[c],.15),c+' '+ferryDemand(c).toFixed(1));if(c in lighting)assert.ok(near(ferryDemand(c,{board:'LB'}),lighting[c],.15),c+' lighting');}
  // How each condition is carried, and how hard.
  const use=c=>ferryDemand(c)/ferrySupplyKW(c);
- assert.ok(near(use('sea'),.40,.01)&&near(use('arrival'),.55,.01)&&near(use('loading'),.46,.01)&&near(use('night'),.26,.01)&&near(use('blackout'),.31,.01));
+ assert.ok(near(use('sea'),.40,.01)&&near(use('arrival'),.55,.01)&&near(use('loading'),.46,.01)&&near(use('night'),.275,.01)&&near(use('blackout'),.31,.01));
  for(const c of FERRY_CONDITIONS)assert.ok(use(c)<=.85,c);
  // Arriving on one generator she would be at 110 %: hence No.2 on the board before the breakwater, and the thruster's interlock.
  assert.ok(ferryDemand('arrival')>E.generators.kW);assert.equal(FERRY_SUPPLY.arrival.generators,2);

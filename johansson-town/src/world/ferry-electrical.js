@@ -124,7 +124,7 @@ const TAGS=Object.freeze({
  purifier:kks({fn:'EGD',n:10,eq:'AT',no:1,cmp:'-M'}),'lube-priming':kks({f0:F0.mainP,fn:'XJV',n:10,eq:'AP',no:2,cmp:'-M'}),hydrophore:kks({fn:'GKB',n:10,eq:'AP',no:1,cmp:'-M'}),'hydrophore-2':kks({fn:'GKB',n:10,eq:'AP',no:2,cmp:'-M'}),
  sanitary:kks({fn:'GHB',n:10,eq:'AP',no:1,cmp:'-M'}),'sanitary-2':kks({fn:'GHB',n:10,eq:'AP',no:2,cmp:'-M'}),sewage:kks({fn:'GRA',n:10,eq:'AP',no:1,cmp:'-M'}),'sewage-2':kks({fn:'GRA',n:10,eq:'AP',no:2,cmp:'-M'}),
  separator:kks({fn:'GNA',n:10,eq:'AT',no:1,cmp:'-M'}),davit:kks({fn:'SMA',n:10,eq:'AE',no:1,cmp:'-M'}),'saloon-ac':kks({fn:'SAC',n:10,eq:'AH',no:1}),range:kks({fn:'GKB',n:30,eq:'AH',no:1}),'water-heater':kks({fn:'GKB',n:20,eq:'AC',no:1}),
- chargers:kks({fn:'BRU',n:10,eq:'GU',no:1}),workshop:kks({fn:'SMA',n:20,eq:'AE',no:2,cmp:'-M'}),ballast:kks({fn:'GHA',n:10,eq:'AP',no:1,cmp:'-M'}),
+ chargers:kks({fn:'BRU',n:10,eq:'GU',no:1}),workshop:kks({fn:'SMA',n:20,eq:'AE',no:2,cmp:'-M'}),'electrical-workshop':kks({fn:'SMA',n:30,eq:'GS',no:1}),ballast:kks({fn:'GHA',n:10,eq:'AP',no:1,cmp:'-M'}),
  'light-passenger':kks({fn:'BRB',n:10,eq:'GS',no:11}),'light-car-deck':kks({fn:'BRB',n:10,eq:'GS',no:12}),'light-engine':kks({fn:'BRB',n:10,eq:'GS',no:13}),'light-crew':kks({fn:'BRB',n:10,eq:'GS',no:14}),
  floodlights:kks({fn:'BRB',n:10,eq:'GS',no:15}),searchlight:kks({fn:'CTA',n:10,eq:'GS',no:1}),'bridge-electronics':kks({fn:'CTA',n:10,eq:'GS',no:2}),'room-ac':kks({fn:'SAC',n:20,eq:'AH',no:1}),'galley-appliances':kks({fn:'GKB',n:30,eq:'GS',no:1}),
  kiosk:kks({fn:'BRB',n:10,eq:'GS',no:16}),vending:kks({fn:'BRB',n:10,eq:'GS',no:17}),'lane-signals':kks({fn:'BRB',n:10,eq:'GS',no:20}),tv:kks({fn:'BRB',n:10,eq:'GS',no:19}),'toilet-fans':kks({fn:'SAC',n:30,eq:'AN',no:1,cmp:'-M'}),

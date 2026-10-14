@@ -42,7 +42,7 @@ The geometric particulars now match the numerical loft at the stated immersion a
 
 ### 1.2 General arrangement
 
-47 spaces (sheet 2): aft-peak, steering-gear, fresh-water, engine-room, control-booth, er-double-bottom, shaft-space, aux-room, workshop, engine-store, fwd-double-bottom, void, bow-thruster, fore-peak, aft-mooring, lower-lobby, car-deck, casing-p, casing-s, foyer, bow-house-p, bow-house-s, ramp, open-deck, lobby, toilets, carpet-room, saloon, walkway-p, walkway-s, eg-room, co2-room, crew-cabin, mate-cabin, deckhand-cabin, crew-wc, mess, galley, chief-cabin, master-cabin, corridor, wheelhouse, wing-p, wing-s, compass-deck, funnel-p, funnel-s.
+49 spaces (sheet 2): aft-peak, steering-gear, fresh-water, engine-room, control-booth, er-double-bottom, shaft-space, aux-room, workshop, engine-store, fwd-double-bottom, electrical-workshop, ew-double-bottom, void, bow-thruster, fore-peak, aft-mooring, lower-lobby, car-deck, casing-p, casing-s, foyer, bow-house-p, bow-house-s, ramp, open-deck, lobby, toilets, carpet-room, saloon, walkway-p, walkway-s, eg-room, co2-room, crew-cabin, mate-cabin, deckhand-cabin, crew-wc, mess, galley, chief-cabin, master-cabin, corridor, wheelhouse, wing-p, wing-s, compass-deck, funnel-p, funnel-s.
 
 Machinery spaces as built and walked (`ferry-interior.js`, sheets 5 and 7): the engine room (Fr 17–28) on three levels (tank top under the gratings, floor plates, upper grating), the control booth with the main switchboard, the auxiliary machinery room (Fr 28–38) through a watertight sliding door, the workshop and engine store (Fr 38–45), a void forward; the fan flat over the lower lobby is designed (6q-2) but not built.
 
@@ -110,16 +110,16 @@ Every machine is a Johansson Marine machine (CLAUDE.md: Johansson is this univer
 | Batteries | 24 V, banks: starting, radio and emergency; transitional 30 min |
 | Shore supply | 200 V 3-phase 60 Hz, 50 kVA (40 kW), 50 kVA 200/440 V in the quay kiosk at Minato; primary 200 V breaker 160 A frame / 145 A setting; secondary 440 V 80 A frame / 66 A setting; Shore power and the generators never run together: the shore breaker and the generators’ breakers are interlocked |
 | Switchboards | MSB: Main switchboard, in the engine control booth: DG1, synchronising (synchroscope, lamps, two kW meters, Hz, V, A, three earth lamps, insulation meter), DG2, two 440 V feeder panels, shore; LB: 105 V lighting board, fed through one of the two 30 kVA transformers; ESB: Emergency switchboard, 440 V and 105 V sections, in the emergency-generator room: fed from the main board through a bus-tie, and from the emergency generator when the main board is dead |
-| Consumers | 50 loads in the load analysis (sheet 3a), 58 feeders with breakers and cables (sheets 3b, 3c) |
+| Consumers | 51 loads in the load analysis (sheet 3a), 59 feeders with breakers and cables (sheets 3b, 3c) |
 
 ### 3.1 Load by condition (sheet 3a)
 
 | Condition | Supply | Demand | Load |
 |---|---|---|---|
-| sea | 1 generator 100 kW | 40.1 kW | 40 % |
-| arrival | 2 generators 200 kW | 110 kW | 55 % |
-| loading | 1 generator 100 kW | 45.9 kW | 46 % |
-| night | shore 40 kW | 10.3 kW | 26 % |
+| sea | 1 generator 100 kW | 40.2 kW | 40 % |
+| arrival | 2 generators 200 kW | 110.1 kW | 55 % |
+| loading | 1 generator 100 kW | 46 kW | 46 % |
+| night | shore 40 kW | 11 kW | 27 % |
 | blackout | emergency generator 32 kW | 10 kW | 31 % |
 
 Source numerical consistency checks (`electricalChecks()`): zero mismatches in the implemented checks. Fault levels, selectivity, starting and installation engineering holds remain open.

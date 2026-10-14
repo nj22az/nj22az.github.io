@@ -87,6 +87,19 @@ export const FERRY_INSPECT=Object.freeze([
   'A table for six. The duty board says who is on watch and who has the galley; the muster list says where everyone goes if the alarm rings.'),
  at('galley',[-2.0,BRIDGE+1.1,Z(14.6)],'The galley','Galley',
   'A three-plate range under its hood, the rice cooker, the fridge-freezer, the sink and the provision locker. The kiosk’s hot water comes from here too.'),
+ // The electrical workshop, Fr 45–52 (ferry-interior.js): Tetsuo's, under contract, worked alongside at Minato on shore power.
+ at('ew-bench',[1.9,FP+1.1,Z(25.1)],'Electrical bench','The electrical bench',
+  `Tetsuo’s bench. On the anti-static mat, a contactor out of the steering-gear starter, waiting for new contacts; the yellow multimeter on its leads reads the bus: ${E.volts-4} V at ${E.hz} Hz, the 440 V system as it should be. The vice holds the bilge pump’s rewound stator, the soldering station is warm, and a can of J-Coffee keeps the place.`,{reach:1.6}),
+ at('ew-scope',[3.0,FP+1.6,Z(25.6)],'Oscilloscope','Johansson Denki JS-20 oscilloscope',
+  `Twenty megahertz, two channels, a green tube. On channel 1 the ship’s own ${E.hz} Hz through a probe divider, on channel 2 the shore supply at ${E.shore.volts} V: the two have to agree in frequency before the changeover, and here is where Tetsuo shows the oiler why.`,{reach:1.6}),
+ at('ew-test-panel',[-3.05,FP+1.2,Z(25.3)],'Test panel','440 V test panel, Johansson Marine JE-440T',
+  `Fed from the main switchboard: test sockets for 440 V three-phase, the ${E.lighting} V lighting and 24 V DC, each behind its own breaker, and an insulation meter of its own. Her system is insulated from earth (IT): one earth fault leaves everything running and lights an earth lamp, and a second one on another phase is a short circuit. So the insulation is tested, motor by motor, and written down.`,{reach:1.6}),
+ at('ew-motor',[-3.1,FP+.6,Z(23.3)],'Motor under test','Ballast pump motor, 3.7 kW, in for its insulation test',
+  'Out of the auxiliary room for its five-yearly test. Isolate, lock and tag, prove it dead, then the tester at 500 V between each winding and the frame: anything under 1 MΩ is a motor to dry out or rewind. This one read 220 MΩ, which goes in the book with the date.',{reach:1.6}),
+ at('ew-escape',[-3.1,FP+1.2,Z(24.9)],'Escape trunk','Emergency escape',
+  'The electrical workshop’s second way out: a trunk up to the open car deck beside the starboard lane, its door dogged by the red handwheel, which turns from either side, and a weathertight hatch at the top.',{reach:1.4}),
+ at('ew-cable',[3.3,FP+.7,Z(23.25)],'Shore cable','The spare shore-power cable',
+  `The ship’s spare shore cable on its drum: at night at Minato she lies on ${E.shore.kVA} kVA of shore power, ${E.shore.volts} V from the quay kiosk, transformed to 440 V aboard. If the cable at the box is ever cut by a lorry, this one goes out instead.`,{reach:1.6})
 ]);
 
 /**
