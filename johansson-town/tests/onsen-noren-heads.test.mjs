@@ -20,7 +20,7 @@ test('the noren knows how tall everybody’s head is, and the story’s faces ar
   // The top of them, hair and all (the cloth meets the hair first).
   const crown=new THREE.Box3().setFromObject(a.root,true).max.y;
   assert.ok(Math.abs(crown-top)<.03,`${name}: top of the head ${crown.toFixed(3)}, the noren has ${top}`);
-  if(['Mr Fujita','Thuan','Thao','Nhung','Tetsuo','Mrs Higa'].includes(name)){
+  if(['Mr Fujita','Thuan','Thao','Nhung','Tetsuo','Miss Higa'].includes(name)){
    // Behind the cloth: most of the head, and everything from the chin's line up (only a chin's tip may show under the hem).
    const behind=(Math.min(hi,ONSEN_NOREN.top)-Math.max(lo,ONSEN_NOREN.hem))/(hi-lo);
    assert.ok(behind>.9,`${name}: ${(behind*100).toFixed(0)}% of the head behind the cloth`);

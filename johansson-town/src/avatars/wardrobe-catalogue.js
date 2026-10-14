@@ -33,6 +33,7 @@ export const SLOTS=Object.freeze({
  bottom:Object.freeze({name:'Bottoms',at:'outfit.bottom',categories:Object.freeze(['Trousers & shorts','Skirts'])}),
  footwear:Object.freeze({name:'Shoes',at:'outfit.footwear',categories:Object.freeze(['Everyday','Work'])}),
  hat:Object.freeze({name:'Hats',at:'outfit.hat',categories:Object.freeze(['Sun & everyday','Work','Festival','Fun'])}),
+ belt:Object.freeze({name:'Belts',at:'outfit.belt',categories:Object.freeze(['Work'])}),
  earrings:Object.freeze({name:'Earrings',at:'accessories.earrings',categories:Object.freeze(['Jewellery'])}),
  neckwear:Object.freeze({name:'Neckwear',at:'accessories.neckwear',categories:Object.freeze(['Jewellery','Scarves'])}),
  glasses:Object.freeze({name:'Glasses',at:'glasses.style',categories:Object.freeze(['Everyday','Sun'])}),
@@ -47,20 +48,21 @@ const PART_ENTRIES={
   tank:{label:'Tank top',category:'Everyday',tags:['vest','base layer','summer'],who:'everyone, under it all; Nhung on the hottest days',why:'The base layer under every top, and on its own in August.'},
   tee:{label:'T-shirt',category:'Everyday',tags:['tee','cotton','summer'],who:'Thao, Chin, Mr Ōshiro and Kōji',why:'Cotton that is cheap, cool and dry on the line by noon.'},
   kariyushi:{label:'Kariyushi',category:'Island & festival',tags:['island shirt','aloha','town hall','summer','Minato'],who:'Johansson in his sky-blue one; the Barfly at Minato',why:'The island’s own summer shirt, worn untucked and open at the neck, even to the town hall.'},
-  polo:{label:'Polo',category:'Everyday',tags:['collar','uniform','gateball','post'],who:'Postman Tōma, the bus driver, Mr Nakasone, Mrs Kamiya and Daichi',why:'A collar that looks tidy at work and still breathes in the heat.'},
+  polo:{label:'Polo',category:'Everyday',tags:['collar','uniform','gateball','post'],who:'Postman Tōma, the bus driver and Daichi',why:'A collar that looks tidy at work and still breathes in the heat.'},
   contrastpolo:{label:'Contrast-collar polo',category:'Everyday',tags:['polo','collar','ferry','harbour'],who:'the harbour visitor off the ferry; Thuan on her days off',why:'A navy knit with a cream collar that stays smart on the ferry deck.'},
-  blouse:{label:'Blouse',category:'Everyday',tags:['shop','shrine','summer'],who:'Thuan in her yellow one; Mrs Higa, Naoko, Emi and Yoshiko',why:'Light cotton with a round collar, as right at the shop counter as at the shrine.'},
-  jacket:{label:'Jacket',category:'Everyday',tags:['ferry','evening','wind','harbour office'],who:'Nhung, Tetsuo, the harbour master and Mr Tamaki',why:'For the ferry deck and the wind off the sea after dark.'},
-  apron:{label:'Apron',category:'Work & uniform',tags:['apron dress','stall','kitchen','fish counter','Sato Ramen'],who:'Mrs Sato, Mr Toguchi at his cart, Mina, Mrs Nakamura, Mrs Yonamine and Hiroshi',why:'An apron dress that keeps the stall and the kitchen off their clothes.'},
+  blouse:{label:'Blouse',category:'Everyday',tags:['shop','shrine','summer'],who:'Thuan in her yellow one; Miss Higa, Naoko and Yoshiko',why:'Light cotton with a round collar, as right at the shop counter as at the shrine.'},
+  jacket:{label:'Jacket',category:'Everyday',tags:['ferry','evening','wind','harbour office'],who:'Nhung, Tetsuo and the harbour master',why:'For the ferry deck and the wind off the sea after dark.'},
+  apron:{label:'Apron',category:'Work & uniform',tags:['apron dress','stall','kitchen','fish counter','Sato Ramen'],who:'Mrs Sato, Mrs Nakamura and Hiroshi',why:'An apron dress that keeps the stall and the kitchen off their clothes.'},
   smock:{label:'Smock',category:'Work & uniform',tags:['school lunch','ink','newspaper','generators','sleeves','kitchen','shop'],who:'Reiko at the paper, Mr Shimabukuro at the generators, Mrs Sato at her stove, Grandmother Sakurai at the shop and the Years 5–6 lunch squad',why:'Long sleeves and a pocket against ink, oil, broth and school lunch.'},
   sailor:{label:'Sailor shirt',category:'School & sport',tags:['school uniform','high school','ferry'],who:'Vy and Hana, on the ferry to the high school',why:'The high school’s summer uniform.'},
   sailorlong:{label:'Long-sleeved sailor',category:'School & sport',tags:['sailor','Thuan’s wardrobe','navy'],who:'Thuan, from her own wardrobe',why:'Her navy sailor top with long sleeves and a red necktie, for the cooler days.'},
-  police:{label:'Police jacket',category:'Work & uniform',tags:['police','officer','patrol','uniform'],who:'Officer Mori',why:'The island police officer’s uniform, so anyone can find him at the desk or on night patrol.'},
+  police:{label:'Police jacket',category:'Work & uniform',tags:['police','officer','patrol','uniform','1994','kōban','tie'],who:'Officer Mori',
+   why:'The 1994-pattern police jacket: navy, notched lapels, three dark-gold buttons, shoulder straps, the rank plate on the left breast and the emblem on the right arm, over a white shirt and tie.'},
   hoodie:{label:'Hooded sweater',category:'Everyday',tags:['hoodie','rain','early boats','pier'],who:'Chin, Daichi, Masaru, Kenta, Hiroshi and the Cold-storage kid',why:'A hood and a pocket for the early boats, the rainy season and the windy pier.'},
   cardigan:{label:'Cardigan',category:'Everyday',tags:['knit','January','winter','bookshop','florist'],who:'Mrs Kinjō on January mornings; Nhung in the air-conditioned bookshop',why:'A knitted layer for the north wind of January, and for air-conditioning.'},
   overalls:{label:'Work overalls',category:'Work & uniform',tags:['cargo yard','quay','repair','workshop'],who:'Riku in the cargo yard; Chin on a repair',why:'A bib with pockets that takes the grease and the crates.'},
-  sundress:{label:'Sundress bodice',category:'Everyday',tags:['dress','summer','Sunday','beach'],who:'Emi, in a dress she sewed herself',why:'The coolest thing to wear on a hot Sunday.'},
-  festival:{label:'Happi coat',category:'Island & festival',tags:['happi','festival coat','eisa','tug-of-war','Obon','steward','andagi'],who:'the stewards at the eisa night and the tug-of-war; Mr Arakaki at the andagi stall',why:'A happi coat shows who is helping to run the festival.'},
+  sundress:{label:'Sundress bodice',category:'Everyday',tags:['dress','summer','Sunday','beach'],who:'Mai and Vy at the beach',why:'The coolest thing to wear on a hot Sunday.'},
+  festival:{label:'Happi coat',category:'Island & festival',tags:['happi','festival coat','eisa','tug-of-war','Obon','steward','andagi'],who:'the stewards at the eisa night, the tug-of-war and the andagi stall',why:'A happi coat shows who is helping to run the festival.'},
   lighthouse:{label:'Lighthouse costume',category:'Costume',tags:['costume','parade','Port Festival','lighthouse'],who:PROPOSED_PARADE,why:'The white lighthouse on the breakwater head with its red lamp: the harbour’s landmark.'},
   lantern:{label:'Lantern costume',category:'Costume',tags:['costume','parade','Port Festival','Obon','lantern'],who:PROPOSED_PARADE,why:'The lanterns hung along the quay on the last night of Obon.'},
   reef:{label:'Reef costume',category:'Costume',tags:['costume','parade','Port Festival','reef','Kitahama'],who:PROPOSED_PARADE,why:'The coral reef off Kitahama, in ribbons, so nobody forgets it is there.'},
@@ -77,7 +79,7 @@ const PART_ENTRIES={
    who:'Mr Fujita on the pier and Mr Tanabe at the shrine',why:'A knitted layer over the shirt for the wind on the pier and the shrine’s shade.',
    colourways:[{name:'Sea glass',colours:{'outfit.topColour':'#8cc4b4','outfit.accent':'#f4f1ea','outfit.pattern':'none'}},{name:'Sand',colours:{'outfit.topColour':'#e3d4b0','outfit.accent':'#f4f1ea','outfit.pattern':'none'}},{name:'Bashō beige',colours:{'outfit.topColour':'#c9b68c','outfit.accent':'#f4f1ea','outfit.pattern':'none'}}]},
   gymtee:{label:'PE shirt',category:'School & sport',tags:['PE','gym','school','sports day','name patch','children','Years 5–6'],
-   who:'the Years 5–6 pupils in PE with Yonamine-sensei',why:'The name patch sewn on the chest is how the teachers tell the children apart.',
+   who:'the Years 5–6 pupils in PE with Miss Higa',why:'The name patch sewn on the chest is how the teachers tell the children apart.',
    colourways:[{name:'Lagoon class',colours:{'outfit.topColour':'#f4f1ea','outfit.accent':'#3a9cb8','outfit.pattern':'none'}},{name:'Red class',colours:{'outfit.topColour':'#f4f1ea','outfit.accent':'#c8473a','outfit.pattern':'none'}}]},
   baseball:{label:'Seagulls jersey',category:'School & sport',tags:['baseball','Minato Seagulls','Seagulls','team','game day','number','Aoba'],
    who:'the Minato Seagulls, whose signed board hangs at Sato Ramen (players proposed: Kōji, Mr Higa Jr and Mr Iha); Daichi, who dreams of a perfect game',
@@ -86,10 +88,10 @@ const PART_ENTRIES={
  },
  bottom:{
   underwear:{label:'Underwear',category:'Trousers & shorts',tags:['base layer'],who:'everyone, under it all',why:'The base layer.'},
-  shorts:{label:'Shorts',category:'Trousers & shorts',tags:['summer','beach','school'],who:'Johansson, Thao, Chin, Kōji, Uncle Kinjō and the schoolboys',why:'Knees out from May to October.'},
+  shorts:{label:'Shorts',category:'Trousers & shorts',tags:['summer','beach','school'],who:'Johansson, Thao, Chin, Kōji and the schoolboys',why:'Knees out from May to October.'},
   trousers:{label:'Trousers',category:'Trousers & shorts',tags:['work','uniform'],who:'most of the island at work: Thuan, Reiko, Mrs Sato, Officer Mori and the harbour master',why:'Cotton trousers for work, and for the sun on the legs.'},
-  skirt:{label:'Skirt',category:'Skirts',tags:['summer','school'],who:'Mrs Higa, Mrs Nakamura, Mrs Kinjō and the schoolgirls',why:'A short A-line skirt for the heat.'},
-  longskirt:{label:'Long skirt',category:'Skirts',tags:['shrine','verandah'],who:'Nhung, Mina, Grandmother Higa, Mrs Miyagi, Yoshiko and Yonamine-sensei',why:'A long skirt that keeps the sun and the mosquitoes off.'},
+  skirt:{label:'Skirt',category:'Skirts',tags:['summer','school'],who:'Miss Higa, Mrs Nakamura, Mrs Kinjō and the schoolgirls',why:'A short A-line skirt for the heat.'},
+  longskirt:{label:'Long skirt',category:'Skirts',tags:['shrine','verandah'],who:'Nhung, Miss Higa, Grandmother Higa and Yoshiko',why:'A long skirt that keeps the sun and the mosquitoes off.'},
   widepants:{label:'Wide trousers',category:'Trousers & shorts',tags:['monpe','work','garden','quay'],who:'the harbour day shift; Grandmother Sakurai at the shop',why:'Loose trousers that let the air in on a hot shift.'},
   cropped:{label:'Cropped trousers',category:'Trousers & shorts',tags:['rain','rainy season'],who:'Kenta and the Cold-storage kid in the rainy season',why:'Hems clear of the puddles in May and June.'},
   culottes:{label:'Culottes',category:'Skirts',tags:['bookshop','ladder'],who:'Nhung at Front-Row Books',why:'As cool as a skirt, and easy on the ladder to the top shelves.'},
@@ -100,18 +102,19 @@ const PART_ENTRIES={
   sneakers:{label:'Sneakers',category:'Everyday',tags:['canvas','school','lanes'],who:'most of the island, and the schoolchildren',why:'Canvas shoes for the lanes, cheap and quick to dry.'},
   sandals:{label:'Sandals',category:'Everyday',tags:['summer','genkan','beach'],who:'Johansson, Thao and Chin',why:'Off in a second at the genkan, and cool all summer.'},
   shoes:{label:'Shoes',category:'Everyday',tags:['leather','school','office','occasion'],who:'Vy and Hana with the uniform; Officer Mori; anyone in their Sunday best',why:'Leather shoes for school, the office and occasions.'},
-  boots:{label:'Boots',category:'Work',tags:['quay','fish market','wet','work'],who:'Mr Toguchi at his cart; the harbour day shift',why:'For the wet quay and the fish market floor.'},
+  boots:{label:'Boots',category:'Work',tags:['quay','fish market','wet','work'],who:'Kōji at the auction; the harbour day shift',why:'For the wet quay and the fish market floor.'},
  },
  hat:{
   none:{label:'No hat',category:'Sun & everyday',tags:['bare head'],who:'most people, most of the time',why:'Hair out.'},
-  cap:{label:'Cap',category:'Sun & everyday',tags:['baseball cap','sun','post','bus'],who:'Postman Tōma, the bus driver, Mr Nakasone, Mr Arakaki, Chin and Uncle Kinjō',why:'A peak to keep the sun out of the eyes.'},
+  cap:{label:'Cap',category:'Sun & everyday',tags:['baseball cap','sun','post','bus'],who:'Postman Tōma, the bus driver and Chin',why:'A peak to keep the sun out of the eyes.'},
   captain:{label:'Captain’s cap',category:'Work',tags:['harbour master','ferry','harbour office'],who:'the harbour master',why:'His cap, so the ferry knows who gives the berth.'},
-  police:{label:'Police cap',category:'Work',tags:['police','officer','uniform'],who:'Officer Mori',why:'Part of the police uniform.'},
+  police:{label:'Police cap',category:'Work',tags:['police','officer','uniform','peaked cap','1994'],who:'Officer Mori',why:'The peaked police cap: a navy crown, a black band, a black visor and chin strap, and the island police badge.'},
   helmet:{label:'Helmet',category:'Work',tags:['hard hat','safety','cargo yard','ice plant'],who:'Riku in the cargo yard; Masaru and the Cold-storage kid under the ice chute',why:'A hard hat where crates and blocks of ice swing overhead.'},
-  straw:{label:'Straw hat',category:'Sun & everyday',tags:['sun','sabani','gateball','garden'],who:'Mr Ōshiro on his sabani; Mrs Kamiya at gateball',why:'Wide shade for the open water and the court at noon.'},
-  headband:{label:'Headband',category:'Work',tags:['sweat','fish counter','ice plant','post'],who:'Mr Toguchi, Mrs Yonamine, Mr Tamaki and Naoko',why:'A band to keep sweat and hair out of the eyes while they work.'},
-  kerchief:{label:'Kerchief',category:'Work',tags:['kitchen','shop','school lunch','hair covered'],who:'Mrs Sato, Mrs Nakamura, Kōji, Hiroshi and the school’s lunch squad',why:'Hair tied up and covered over food.'},
-  beanie:{label:'Beanie',category:'Work',tags:['cold','ice plant','cold room','knit','winter'],who:'Mr Tamaki and the Cold-storage kid in the ice plant’s cold room',why:'The only warm hat on the island in August, for a room below freezing.'},
+  straw:{label:'Straw hat',category:'Sun & everyday',tags:['sun','sabani','gateball','garden'],who:'Mr Ōshiro on his sabani; the elders at gateball',why:'Wide shade for the open water and the court at noon.'},
+  headband:{label:'Headband',category:'Work',tags:['sweat','fish counter','ice plant','post'],who:'Kōji at the auction and Naoko',why:'A band to keep sweat and hair out of the eyes while they work.'},
+  kerchief:{label:'Kerchief',category:'Work',tags:['kitchen','shop','school lunch','hair covered','headscarf','sankakukin','engine room'],who:'Mrs Sato, Mrs Nakamura, Kōji, Mr Higa Jr, Hiroshi and the school’s lunch squad',
+   why:'A triangle of cotton tied at the back of the neck, so hair stays covered over food (and out of the oil in the engine room).'},
+  beanie:{label:'Beanie',category:'Work',tags:['cold','ice plant','cold room','knit','winter'],who:'Kōji and the Cold-storage kid in the ice plant’s cold room',why:'The only warm hat on the island in August, for a room below freezing.'},
   beret:{label:'Beret',category:'Sun & everyday',tags:['bookshop','wool','autumn'],who:'Nhung on cooler days',why:'A soft wool beret, her own style.'},
   bucket:{label:'Bucket hat',category:'Sun & everyday',tags:['sun','school','children','yellow hat','beach','seawall'],who:'the Years 5–6 pupils on the walk to school; anglers on the seawall',why:'A soft brim all round, shade for the neck too.'},
   ribbon:{label:'Hair bow',category:'Sun & everyday',tags:['bow','occasion','Sunday'],who:'Hana and the schoolgirls on Sundays',why:'A bow for an occasion.'},
@@ -120,6 +123,18 @@ const PART_ENTRIES={
   sunflower:{label:'Sunflower bonnet',category:'Fun',tags:['costume','parade','Port Festival','summer','silly'],who:PROPOSED_PARADE,why:'A sunflower for the brightest day of summer.'},
   paperboat:{label:'Paper-boat hat',category:'Fun',tags:['newspaper','folded','children','silly'],who:'children who fold yesterday’s evening paper',why:'The paper hat every child on the island learns to fold.'},
   mountain:{label:'Mount Aoba hat',category:'Fun',tags:['costume','parade','Port Festival','Mount Aoba','silly'],who:PROPOSED_PARADE,why:'Mount Aoba, the island’s peak, worn on the head.'},
+  // A model from World's asset catalogue (assets/catalog/johansson-trucker, avatars/hat-assets.js), sold at Sakura Shōten.
+  // Its foam front and bill are the hat colour, its mesh, undervisor, rope and J the accent: each colourway sets both.
+  trucker:{label:'Johansson trucker',category:'Sun & everyday',tags:['trucker cap','baseball cap','snapback','mesh','J','Johansson','premium','sun','quay','boats','Sakura Shōten','konbini'],
+   who:'Kōji, who bought the first one at Sakura; Riku on the cargo quay, Mr Fujita at the bow bollards',
+   why:'A well-made trucker cap: a tall foam front with Johansson’s J raised in embroidery, a mesh back that lets the sea wind through, a strap that fits anyone.',
+   supplier:'Sakura Shōten, ¥3,800 (Johansson Headwear JH-712)',
+   colourways:[{name:'Navy & white',colours:{'outfit.hatColour':'#27304d','outfit.accent':'#f4f1ea'}},{name:'Charcoal & grey',colours:{'outfit.hatColour':'#2b2b2b','outfit.accent':'#6d7478'}},{name:'White & navy',colours:{'outfit.hatColour':'#f4f1ea','outfit.accent':'#27304d'}}]},
+ },
+ belt:{
+  none:{label:'No belt',category:'Work',tags:[],who:'most islanders',why:'Nothing hanging at the waist.'},
+  duty:{label:'Duty belt',category:'Work',tags:['police','officer','patrol','holster','baton','handcuffs','radio','uniform'],who:'Officer Mori',
+   why:'A police officer’s duty belt: the holster, the baton, the handcuffs and the radio, with its microphone on the shoulder. Under the police jacket only what comes out of its side slots shows.'},
  },
  earrings:{
   none:{label:'No earrings',category:'Jewellery',tags:[],who:'most islanders',why:'Nothing in the ears.'},
@@ -133,10 +148,10 @@ const PART_ENTRIES={
  },
  glasses:{
   none:{label:'No glasses',category:'Everyday',tags:[],who:'most islanders',why:'Nothing on the nose.'},
-  round:{label:'Round',category:'Everyday',tags:['spectacles','reading'],who:'Thuan in rose frames; Mrs Sato, the harbour master and Mr Arakaki',why:'Round frames, for reading and for seeing.'},
-  square:{label:'Square',category:'Everyday',tags:['spectacles','reading'],who:'Mr Nakasone, Mr Fujita, Mr Tanabe and Fumiko',why:'Square frames that sit firm through gateball and fishing.'},
+  round:{label:'Round',category:'Everyday',tags:['spectacles','reading'],who:'Thuan in rose frames; Mrs Sato and the harbour master',why:'Round frames, for reading and for seeing.'},
+  square:{label:'Square',category:'Everyday',tags:['spectacles','reading'],who:'Mr Fujita, Mr Tanabe and Fumiko',why:'Square frames that sit firm through a day of fishing.'},
   sun:{label:'Shades',category:'Sun',tags:['sunglasses','glare','sea','boat'],who:'Mr Ōshiro out on the water at noon',why:'Against the glare off the sea.'},
-  half:{label:'Half-rim',category:'Everyday',tags:['reading glasses','reading'],who:'Tetsuo, Mrs Higa, Jun and Grandmother Higa',why:'Reading glasses to look over.'},
+  half:{label:'Half-rim',category:'Everyday',tags:['reading glasses','reading'],who:'Tetsuo, Miss Higa and Grandmother Higa',why:'Reading glasses to look over.'},
  },
 };
 
@@ -172,12 +187,13 @@ export function wornSet(outfit){
 
 /**
  * What `outfit` becomes with `set` put on (`colours`: one of its colourways' fields). A field the set leaves out stays as it
- * was, except the hat that came with the set being worn now: it comes off with that set (no kitchen kerchief on a Sunday
+ * was, except the hat (or the belt) that came with the set being worn now: it comes off with that set (no kitchen kerchief on a Sunday
  * dress). A hat of one's own stays (Nhung keeps her beret for a bookshop afternoon).
  */
 export function putOnSet(outfit,set,colours={}){
  const was=wornSet(outfit)?.set,next={...outfit,...set.outfit,...colours};
- if(!('hat' in set.outfit)&&was&&was.id!==set.id&&'hat' in was.outfit&&outfit.hat===was.outfit.hat)next.hat='none';
+ // The same for a belt that came with a set (the police duty belt comes off with the uniform).
+ for(const field of ['hat','belt'])if(!(field in set.outfit)&&was&&was.id!==set.id&&field in was.outfit&&outfit[field]===was.outfit[field])next[field]='none';
  return next;
 }
 

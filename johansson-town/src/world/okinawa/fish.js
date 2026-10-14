@@ -1,6 +1,6 @@
 /**
  * The fish of Minato Machi: what the boats land, what the pier gives, what the fishmonger lays on ice and the
- * izakaya cooks. One list, so the auction board, Yonamine's counter, the menus, the anglers' talk and the storyteller
+ * izakaya cooks. One list, so the auction board, the old Yonamine counter, the menus, the anglers' talk and the storyteller
  * all say the same fish the same way (the creator, 2026-10-12: "Yes start with the fish").
  *
  * Every name but maguro's is the one Okinawans use, checked against the Okinawa dictionary project's fish list (o-dic `sakana.dic`,
@@ -17,7 +17,7 @@
  *   caught    how
  *   eaten     how it reaches a plate here
  *   by        who in the town lands it, sells it or cooks it
- *   colour    its colour on ice (for the 3D fish on Yonamine's counter and the auction floor)
+ *   colour    its colour on ice (for the 3D fish on the old Yonamine counter and the auction floor)
  *   bites     (pier fish) how often it takes a bait by daylight, at dawn and dusk, and at night, as weights: what the
  *             anglers know (taman and tachinuiyu feed after dark, mijun shoal by day, gāra hunt at the change of light)
  *   pierPrice (pier fish) what the harbour master pays for one, in yen: a taman is the prize, a mijun is bait
@@ -74,7 +74,8 @@ export const FISH=Object.freeze([
 ]);
 
 export const fishById=id=>FISH.find(f=>f.id===id)||null;
-/** The fish a place deals in: 'auction' (the harbour auction), 'yonamine' (Yonamine Fresh Fish), 'pier', 'izakaya'. */
+/** The fish a place deals in: 'auction' (the harbour auction), 'yonamine' (Yonamine Fresh Fish, closed now:
+ * cast.js PLACES; its counter still shows the fish it sold), 'pier', 'izakaya'. */
 export const fishAt=where=>FISH.filter(f=>f.by.includes(where));
 /** "a gurukun", "an irabuchā". */
 export const aFish=f=>(/^[aeiouāēīōū]/i.test(f.name)?'an ':'a ')+f.name;

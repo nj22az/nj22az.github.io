@@ -13,11 +13,18 @@ if(process.argv[2])for(const r of JSON.parse(await readFile(process.argv[2],'utf
 const slug=name=>name.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 // Facts that changed in the game since the old catalogue was written.
 const FIX={
- Thao:{friend:'Thuan'},Nhung:{friend:'Reiko'},'Mrs Sato':{friend:'Thao'},'Harbour master':{friend:'Mrs Sato'},'Bus driver':{friend:'Grandmother Higa'},
+ Thao:{friend:'Thuan'},Nhung:{friend:'Reiko'},'Harbour master':{friend:'Mrs Sato'},
  Chin:{role:'Repairman and karaoke champion'},
+ Johansson:{role:'Mayor of Minato-chō',place:'The town hall, Minato; home on Kitano-jima',
+  islandPersonality:{title:'Practical dreamer',traits:['Curious','dependable','quietly adventurous'],habit:'Tests repaired radios at Chin and Tetsuo’s bench on quiet afternoons.',ambition:'Run the town without losing its small shops, its bath or its working boats.',favourite:'A late supper at Minato'}},
+ 'Bus driver':{friend:'Grandmother Higa',role:'Master of the Minato Maru',place:'The Minato Maru’s wheelhouse',dailyLife:'I collect passengers and opening sentences. The best stories start on the last crossing.',
+  islandPersonality:{title:'Collector of stories',traits:['Friendly','punctual','curious'],habit:'Knows the regulars by the way they wave from the quay.',ambition:'Keep every call on time, and the island connected to the harbour.',favourite:'The last crossing in golden light'}},
+ 'Mrs Sato':{friend:'Thao',role:'Ramen cook',place:'Sato Ramen'},
+ 'Grandmother Chinen':{role:'Keeper of the old Chinen house',place:'Kitano hamlet, Kitano-jima',portrait:'assets/images/residents/grandmother-chinen.webp',
+  islandPersonality:{title:'The lane’s weather station',traits:['Sharp-eyed','unhurried','generous with vegetables'],habit:'Sweeps the lane in front of her gate at half past six, whatever the weather.',ambition:'See the old house stand through one more typhoon season.',favourite:'The breeze at her gate at three in the afternoon'}},
  'Mr Shimabukuro':{role:'Power house keeper',place:'Town power house'},
- 'Mrs Higa':{role:'Bathhouse attendant',place:'Umi-no-yu bandai',portrait:'assets/images/residents/higa.webp',
-  islandPersonality:{title:'Keeper of the bandai',traits:['Unflappable','observant','dry'],habit:'Finishes the crossword clue before taking your coins.',ambition:'Keep Umi-no-yu a family bath for another thirty years.',favourite:'The rock bath after dark'}},
+ 'Miss Higa':{role:'Schoolteacher; keeps the Umi-no-yu bandai in the evenings and at weekends',place:'The island school and the Umi-no-yu bandai',portrait:'assets/images/residents/higa.webp',
+  islandPersonality:{title:'Teacher by day, keeper of the bandai by night',traits:['Patient','observant','dry'],habit:'Marks the class’s homework at the bandai between customers.',ambition:'Send every pupil in her class on to the mainland high school able to read, reckon and swim.',favourite:'The rock bath after dark, once the boiler is running sweet'}},
 };
 const catalogue=Object.entries(ARTICLES).map(([name,article])=>{
  const base={...(byName.get(name)||{name}),...(FIX[name]||{})};

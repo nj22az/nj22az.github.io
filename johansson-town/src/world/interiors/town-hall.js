@@ -177,16 +177,16 @@ export function buildMayorOffice({room,reg,action,collider=()=>{},exit,petitions
 
 
 /**
- * 調理室, the community centre's kitchen: where the women's association fries sata andagi
+ * 調理室, the community centre's kitchen: where Mrs Nakamura and the women's association fry sata andagi
  * for the eisa night, the class cooks once a term, and anybody can book the stoves for a
  * family occasion. Two long steel work islands, a row of gas rings and the big rice
  * cookers, the sink run under the window, a fridge, the dish cupboards, and the booking
  * sheet on the wall.
  */
 export const KITCHEN_BOOKINGS=Object.freeze([
- "Saturday: Women's Association · women's association, andagi for the eisa night (Mrs Nakamura)",
+ "Saturday: Women's Association, andagi for the eisa night (Mrs Nakamura)",
  "Sunday: Higa family, 33rd anniversary memorial lunch",
- "Wednesday: Years 5–6 cooking class, goya champurū (Yonamine-sensei)",
+ "Wednesday: Years 5–6 cooking class, goya champurū (Higa-sensei)",
  "Friday: open to all, 18:00 -- bring your own fish (Kōji has promised tuna)",
 ]);
 export function buildCommunityKitchen({room,reg,action,collider=()=>{}}){

@@ -13,7 +13,7 @@ import {GENKAN_STEP} from './onsen-front.js';
  *   height, a board ceiling, and shoji windows either side of the street door that
  *   glow with the daylight;
  * - a proper getabako with wooden 木札 locks, numbered;
- * - on the bandai: an andon, a brass desk bell (ring it) and a push-button phone (Mrs Higa's
+ * - on the bandai: an andon, a brass desk bell (ring it) and a push-button phone (Miss Higa's
  *   account book is in onsen-props.js);
  * - a raised tatami 小上がり with a chabudai, a kyūsu and cups (sit and pour), zabuton,
  *   and a small CRT on its stand that changes channel when you ask it to;
@@ -45,8 +45,9 @@ export const ONSEN_NOREN=Object.freeze({top:2.25,hem:1.1,h:1.15,slit:.004,// the
  // as half-depths across the cloth (metres) and a hand's margin in front, and half-widths along the rod.
  passer:Object.freeze({head:.19,shoulders:.17,headDrop:.46,from:.45,hand:.06,hair:.02,halfWidth:.26}),
  // The people the town has measured (head tops from the avatar builder, metres); anyone else is taken as the tallest.
- tops:Object.freeze({Johansson:1.67,'Mr Fujita':1.57,Thuan:1.53,Thao:1.57,Nhung:1.57,Reiko:1.58,Chin:1.63,Tetsuo:1.63,'Mrs Sato':1.44,'Mrs Higa':1.52,'Harbour master':1.68,'Officer Mori':1.71}),
- tallest:1.72,
+ tops:Object.freeze({Johansson:1.67,'Mr Fujita':1.57,Thuan:1.53,Thao:1.57,Nhung:1.57,Reiko:1.58,Chin:1.63,Tetsuo:1.63,'Mrs Sato':1.44,'Miss Higa':1.52,'Harbour master':1.68,'Officer Mori':1.75}),
+ // (Officer Mori's is the crown of his 1994 police cap, police-data.js: he comes in from the box in uniform.)
+ tallest:1.76,
  // A cloth panel swinging from its rod: a pendulum of ~1.7 s, damped by the air to 0.7 of critical, so it settles with one small
  // swing back rather than ringing like a board; never past `maxSwing` (radians).
  swing:Object.freeze({stiffness:12.7,damping:5,maxSwing:1.35,step:1/120}),
@@ -84,7 +85,7 @@ export const DAILY_BATH=Object.freeze([
  */
 export const LOBBY_CHANNELS=Object.freeze([
  Object.freeze({id:'night-game',en:'The night game, Okinawa v Kagoshima',note:'The radio commentary is a beat ahead of the picture.',
-  why:'Mrs Higa keeps the lobby set on the night game in the season: people cooling down on the tatami ask for the score.'}),
+  why:'Miss Higa keeps the lobby set on the night game in the season: people cooling down on the tatami ask for the score.'}),
  Object.freeze({id:'weather',en:'Island weather',note:'A typhoon is sitting a long way south. Not yet.',why:'Fishermen and ferry crews check tomorrow before they go home.'}),
  Object.freeze({id:'jidaigeki',en:'Historical drama',note:'Somebody in a topknot is about to be very sorry.',why:'The eight o’clock samurai drama, for the grandparents.'}),
  Object.freeze({id:'snow',en:'Snow',note:'Snow. Higa-san reaches over and thumps the set, and it does not help.',why:'Between stations the rabbit ears find nothing.'}),
@@ -357,7 +358,7 @@ export function buildOnsenLobby({room,R,box,cyl,rect,mat,anchor,seat,action,seat
    const tex=paperWarTexture(kind),m=new THREE.Mesh(new THREE.PlaneGeometry(...size),new THREE.MeshStandardMaterial(tex?{map:tex,roughness:.9}:{color:0xf6f3ea,roughness:.9}));
    m.position.set(slitX-pivot.position.x,y-NOREN.top,face*.004);if(face<0)m.rotation.y=Math.PI;m.name=kind==='reserved'?'Reserved sign':'Hair rights sign';m.userData.paperWar=kind;m.visible=false;pivot.add(m);paper[kind]=m;}}
  const cloth=createNorenMotion(noren.map(p=>({side:p.userData.side,panel:p.userData.panel,x:p.position.x,half:(ONSEN_DOORWAYS.women.x1-ONSEN_DOORWAYS.women.x0-NOREN.slit)/4})),R.hall.front);
- // A man at the crimson noren: Mrs Higa points him to the indigo one without looking up, and lets him go on if he must.
+ // A man at the crimson noren: Miss Higa points him to the indigo one without looking up, and lets him go on if he must.
  {const W=ONSEN_DOORWAYS.women;anchor([(W.x0+W.x1)/2,1.4,R.hall.front+.35],'Women’s side',()=>action('inspect','The women’s side',
   'The crimson noren with the kanji for woman on it is the women’s side: their lockers, the mirrors and the hair dryers. Higa-san, without looking up from her account book: “That’s the ladies’ curtain, dear. Man is the kanji with the rice field and the strength in it. Go on, then, if you must, but call out before you go through.”'));}
 

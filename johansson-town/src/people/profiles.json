@@ -1,7 +1,7 @@
 [
   {
     "name": "Nhung",
-    "age": 31,
+    "age": 37,
     "role": "bookshop assistant",
     "female": true,
     "height": 1.62,
@@ -42,7 +42,7 @@
   },
   {
     "name": "Chin",
-    "age": 32,
+    "age": 36,
     "role": "repairman",
     "female": false,
     "height": 1.76,
@@ -821,7 +821,7 @@
   },
   {
     "name": "Thao",
-    "age": 28,
+    "age": 34,
     "role": "izakaya owner",
     "female": true,
     "height": 1.65,

@@ -29,7 +29,7 @@ export function buildFlowerShop({world,group,register,onAction,authored=false}){
  let minutes=720;
  const anchor=(pos,label,fn)=>{const a=new THREE.Object3D();a.position.set(...pos);root.add(a);register(a,label,fn);};
  anchor([.6,1,.5],'Buy a Rainflower bouquet · ¥250',()=>((minutes%1440)+1440)%1440>=540&&((minutes%1440)+1440)%1440<1080?onAction('buy','Rainflower bouquet',{cost:250,item:'Rainflower bouquet',text:'Mrs Kinjō wraps island-grown stems in brown paper. A little colour for a home, a dinner table or someone you care about.'}):onAction('read','Rainflower is closed','Mrs Kinjō serves flowers from 09:00 to 18:00. You may still look around the open shop.'));
- anchor([.1,1,-2.3],'Browse the flower buckets',()=>onAction('read','Rainflower Florist','Fresh stems, potted greenery and hand-made wreaths. Mrs Kinjō works here from 09:00 to 18:00, and still reminds her husband that supper will not wait for the tide. The flowers are refreshed when the supply boat brings its morning delivery.'));
+ anchor([.1,1,-2.3],'Browse the flower buckets',()=>onAction('read','Rainflower Florist','Fresh stems, potted greenery and hand-made wreaths. Mrs Kinjō works here from 09:00 to 18:00, and makes the lanterns and flowers for the izakaya and the town’s festivals. The flowers are refreshed when the supply boat brings its morning delivery.'));
  if(!authored){placeShoppingLaneGroup(root);placeShoppingLaneColliders(world.colliders,colliderStart);}
  return {root,update(value){minutes=value;}};
 }

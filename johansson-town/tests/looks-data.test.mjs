@@ -6,15 +6,16 @@ import {LOOK_PATHS,LOOK_FIELDS,applyLook,readPath} from '../src/avatars/looks.js
 import {normalizeRecipe,DEFAULT_RECIPE} from '../src/avatars/recipe.js';
 import {PROFILES} from '../src/people/profiles.js';
 import {WARDROBE_KEY} from '../src/avatars/wardrobe.js';
+import {CAST_NAMES} from '../src/people/cast.js';
 
-// Everybody World asks recipeFor about: the residents (PROFILES, and Thuan in the cast; residents.js draws its list
-// from these), the neighbours (NEIGHBOUR_RECIPES: everyone in neighbours.js, and the off-season gateball players), the
+// Everybody World asks recipeFor about: the island's cast (people/cast.js), the residents (PROFILES, and Thuan in the
+// cast; residents.js draws its list from these), the neighbours (NEIGHBOUR_RECIPES: everyone in neighbours.js), the
 // drawn cast, and a name nobody has. (residents.js and neighbours.js themselves pull in the whole island.)
-const NAMES=[...new Set([...PROFILES.map(p=>p.name),...Object.keys(CAST_RECIPES),...Object.keys(NEIGHBOUR_RECIPES),'Somebody new'])];
+const NAMES=[...new Set([...CAST_NAMES,...PROFILES.map(p=>p.name),...Object.keys(CAST_RECIPES),...Object.keys(NEIGHBOUR_RECIPES),'Somebody new'])];
 const json=JSON.stringify;
 
 test('with no published looks, every resident is drawn exactly as before (byte for byte)',()=>{
- assert.ok(NAMES.length>=45,`${NAMES.length} names`);
+ assert.ok(NAMES.length>CAST_NAMES.length,`${NAMES.length} names`);
  for(const name of NAMES){
   assert.equal(json(recipeFor(name,{looks:{}})),json(baseRecipe(name)),name);
   if(!Object.hasOwn(LOOKS,name))assert.equal(json(recipeFor(name)),json(baseRecipe(name)),`${name} has no published look`);
@@ -23,7 +24,7 @@ test('with no published looks, every resident is drawn exactly as before (byte f
 
 test('a published look changes only its fields; name, age and profile (gait and voice) stay',()=>{
  const set={'outfit.hat':'captain','hair.colour':'#9a9a96','body.height':.8};
- for(const name of ['Mr Fujita','Thuan','Mrs Yonamine']){
+ for(const name of ['Mr Fujita','Thuan','Mrs Kinjō']){
   const base=baseRecipe(name),looked=recipeFor(name,{looks:{[name]:{set}}});
   for(const path of LOOK_PATHS)assert.deepEqual(readPath(looked,path),Object.hasOwn(set,path)?set[path]:readPath(base,path),`${name} ${path}`);
   assert.deepEqual(looked.profile,base.profile);assert.equal(looked.name,name);assert.equal(looked.age,base.age);

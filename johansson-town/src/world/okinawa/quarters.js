@@ -278,21 +278,22 @@ function buildPromenade(kit,solid,{anchor,onAction}){
 const SHOPS=Object.freeze({
  nakamura:{interior:'zenzai',jp:"Nakamura Zenzai",en:'Nakamura · shaved ice & zenzai',bg:'#f6efd9',accent:'#2f7fa8',mark:"Ice",upright:"Zenzai",uprightBg:'#2f7fa8',
   buy:{label:'Buy a zenzai',title:"Nakamura Zenzai · Nakamura Zenzai",cost:250,item:'Zenzai',text:'Okinawan zenzai: a mountain of shaved ice over sweet kintoki beans and little white mochi, in a glass bowl that sweats on the counter. Mrs Nakamura has been making it on this corner since the Americans left.'},
-  // The island's one sweet counter: when the Arakakis shut theirs, Mrs Nakamura took on the sata andagi.
-  more:[{label:'Buy sata andagi',title:"Nakamura Zenzai · sata andagi",cost:120,item:'Sata andagi',text:'Okinawan doughnuts, fried in the back in the morning until they crack open and smile, to old Mr Arakaki’s recipe. Three to a paper bag, still warm, sugar on your fingers.',dz:1.3}]},
+  // The island's one sweet counter: when Aragaki Confectionery shut, Mrs Nakamura took on the sata andagi.
+  more:[{label:'Buy sata andagi',title:"Nakamura Zenzai · sata andagi",cost:120,item:'Sata andagi',text:'Okinawan doughnuts, fried in the back in the morning until they crack open and smile, to the recipe from the old sweet shop over the road. Three to a paper bag, still warm, sugar on your fingers.',dz:1.3}]},
  // The post office, in the shop-house that was the barber's and then, briefly, the
  // power station before that moved to the town hall grounds. Postman Tōma's round starts
  // and ends here; Mr Shimabukuro still rents the flat upstairs.
  shimabukuro:{interior:'post',jp:"Minato Town Post Office",en:'Minato post office',bg:'#f4f1ea',accent:'#c8102e',mark:'〒',upright:"Postal",uprightBg:'#c8102e',
   inspect:{label:'Look into the post office',title:"Minato Post Office · Minato Town Post Office",text:'A counter with a brass scale, a rack of forms, the savings-book window and a wall of pigeonholes, one for every household on the island. Collections at 10:30 and 16:30. The mail goes over on the morning ferry and comes back on the afternoon one; a parcel from Naha takes two days, from Tokyo four.'}},
  'higa-saketen':{interior:'liquor',jp:"Higa Liquor Store",en:'Higa liquor · awamori',bg:'#f7ead6',accent:'#8a3b2e',upright:"Awamori",uprightBg:'#8a3b2e',
-  buy:{label:'Buy a bottle of awamori',title:"Higa Liquor · Higa Liquor Store",cost:600,item:'Awamori miniature',text:'Awamori in every size, from the little 180 ml bottles by the till to the old clay pots at the back that Grandmother Higa will not sell you however you ask: the shop is the Higas’ from Nishi-machi, and she minds the till in the afternoons. He wraps a miniature in newspaper and tells you to keep it for a guest.'}},
- // The Arakakis' sweet shop, shut since Mr Arakaki retired to the gateball court. The faded
- // sign stays up; the family still lives behind the shutter.
+  buy:{label:'Buy a bottle of awamori',title:"Higa Liquor · Higa Liquor Store",cost:600,item:'Awamori miniature',text:'Awamori in every size, from the little 180 ml bottles by the till to the old clay pots at the back that Grandmother Higa will not sell you however you ask. The shop is hers, and she keeps the counter in the mornings. She wraps a miniature in newspaper and tells you to keep it for a guest.'}},
+ // Aragaki Confectionery, closed (cast.js PLACES): nobody keeps it, and nobody lives behind it. The faded
+ // sign stays up.
  arakaki:{interior:'sweets',awning:false,jp:"Aragaki Confectionery Store",en:'Arakaki sweets · closed',bg:'#efe6cf',accent:'#5f7d76',upright:"Sweets",uprightBg:'#8a9a94',
-  inspect:{label:'Look at the old sweet shop',title:"Arakaki house · the old sweet shop",text:'The shutter has been down since Mr Arakaki retired; he plays gateball on the lawn now and the family lives behind the shop. His sata andagi recipe went next door: Mrs Nakamura fries it every morning.'}},
+  inspect:{label:'Look at the old sweet shop',title:"Aragaki Confectionery · the old sweet shop",text:'The shutter is down, and nobody lives behind it now; the faded sign is all that is left of the shop. Its sata andagi recipe went over the road: Mrs Nakamura fries it every morning.'}},
+ // Yonamine Fresh Fish, closed (cast.js PLACES): nobody keeps it; the morning catch is sold at the auction.
  yonamine:{interior:'fish',anchorDz:2.3,jp:"Yonamine Fresh Fish Store",en:'Yonamine fish',bg:'#eef4f2',accent:'#9a4a2a',mark:"Fish",upright:"Fresh fish",uprightBg:'#9a4a2a',
-  inspect:{label:'Look at the fish',title:"Yonamine Fish · Yonamine Fresh Fish Store",text:'Irabuchā, the blue parrotfish; gurukun, red on the ice though they are blue in the sea; a taman from the night anglers; ēgwā with their stinging spines; and a tray of mozuku seaweed. Mrs Yonamine buys from the morning boats and sells out by three. Irabuchā is best as sashimi, she says, with vinegared miso.'}},
+  inspect:{label:'Look at the old fish shop',title:"Yonamine Fresh Fish · closed",text:'The shop is shut, and nobody keeps it now. The morning catch goes to the fish auction on the east quay instead: irabuchā, the blue parrotfish; gurukun, red on the ice though they are blue in the sea; and a taman from the night anglers.'}},
  'coin-laundry':{interior:'laundry',jp:"Coin laundry",en:'Coin laundry · open 24 hours',bg:'#e9f0f6',accent:'#3a6a9a',upright:"Laundry",uprightBg:'#3a6a9a',
   inspect:{label:'Look into the coin laundry',title:'Coin laundry',text:'Four washers, two dryers and a bench, with a stack of old manga and a sign about not leaving washing overnight that everybody ignores. One dryer is going round with somebody’s towels in it. It smells of warm cotton.'}},
 });
@@ -411,7 +412,7 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  // The forklift runs ice from the plant's door to the boats. Between runs it waits on the
  // quay side of the plant, along its wall under the chute, forks to the west: parked in the
  // lane between the shed and the plant it stood in front of the ice door (and 0.3 m into
- // the plant's wall), and Mr Tamaki loads ice there.
+ // the plant's wall), and Kōji loads ice there.
  kit.at(I.minX+2.8,I.minZ-.65,Math.PI/2,()=>{
   kit.box(1.1,1,1.8,0,.55,.3,0xe0b93a);kit.box(.9,.06,1.2,0,.2,-.6,0x3a3f42);
   for(const dx of [-.3,.3])kit.box(.06,2,.06,dx,1,-.7,0x3a3f42);
@@ -557,27 +558,27 @@ function buildKitahama(kit,solid,ctx){
 
 /** What the nameplates say when you stop to read one. */
 const NAMEPLATES=Object.freeze({
- higa:'The Higas. Grandmother Higa sits on the verandah every afternoon shelling beans into a bowl and knows the time of every ferry by the sound of its horn off the breakwater. The shisa on the left gatepost has its mouth open to let luck in; the one on the right has it shut, to keep it.',
+ higa:'The Higas. Grandmother Higa sits on the verandah every evening shelling beans into a bowl and knows the time of every ferry by the sound of its horn off the breakwater. The shisa on the left gatepost has its mouth open to let luck in; the one on the right has it shut, to keep it.',
  kinjo:'The Kinjōs built in concrete after the 1971 typhoon took their old roof. Their son is a welder in Naha and sends money for the water tank to be painted every other year. The flower-block wall was his first job.',
- nakasone:'The Nakasones keep the lawn in front of Umi-no-yu cut, because nobody else will. Mr Nakasone plays the sanshin on the verandah after supper; if the wind is right you can hear it from the bath.',
- miyagi:'Mrs Miyagi is ninety-one, walks to the utaki every morning and has outlived two husbands and a typhoon that took the roof off everything else on this side. The shisa on her ridge is older than she is.',
- kamiya:'Mrs Kamiya worked the post-office counter for thirty-one years and still corrects the postman\'s handwriting. Her gateball mallet hangs inside the gate.',
- 'kitahama-1':'Thuan and Thao\'s house: a red-tile roof, a hinpun, and a row of herb pots that Thuan names after customers. Thao comes home after three in the morning and the gate latch is oiled so it does not wake anybody.',
- 'kitahama-2':'Mrs Sato\'s house, concrete and very tidy, with a stock pot always on the back step to cool. She walks down to the morning auction at nine and to the ramen counter at half past ten.',
- 'kitahama-3':'Kōji Uehara\'s house. A wetsuit on the line, fish boxes stacked by the gate and a radio that plays the weather on the hour.',
+ nakasone:'An empty red-tile house facing the lawn in front of Umi-no-yu. The shutters are down and the shisa still sit on the gateposts.',
+ miyagi:'An empty red-tile house, the oldest on this side. A typhoon took the roof off everything else here, but not this one. The shisa on the ridge is older than the house.',
+ kamiya:'An empty red-tile house, swept, with the water off at the main.',
+ 'kitahama-1':'Thuan and Thao\'s house: a red-tile roof, a hinpun, and a row of herb pots that Thuan names after customers. Thao comes home at half past eleven at night and the gate latch is oiled so it does not wake anybody.',
+ 'kitahama-2':'Mrs Sato\'s house, concrete and very tidy, with a stock pot always on the back step to cool. She walks down to the morning auction at half past five and has the ramen stock on by seven.',
+ 'kitahama-3':'Kōji\'s house, and Riku\'s. A wetsuit on the line, fish boxes stacked by the gate, a football in the yard and a radio that plays the weather on the hour.',
  'kitahama-4':'Tōma. The postman lives here: his red Super Cub stands in the yard at night with its box padlocked, and he grows goya over the gate.',
- 'kitahama-5':'An empty concrete house, swept and waiting, with the water off at the main.',
- 'kitahama-6':'The Tairas\' house, the oldest on the lane: red tile, a hinpun with a crack the grandfather says the 1959 typhoon put there, and a loom on the verandah under a sheet. The cane knives hang inside the gate, oiled, from January to January.',
- 'fumoto-1':'The Kuniyoshis, the oldest house in Fumoto. Mr Kuniyoshi is the kuchō, the hamlet’s head: the cane-cut list, the well rota and the key to the co-op’s safe all live inside this gate. The hinpun has a bucket of cane knives behind it from New Year to the end of the cut.',
- 'fumoto-2':'The Tokashikis. Grandmother Tokashiki keeps the co-op store; her son drives the cane lorry and the store’s van to the ferry. The shisa on the gate are the ones her husband carved the year the store opened.',
- 'fumoto-3':'The Ishimines rebuilt in concrete after Typhoon Della in 1977. The lights in the back kitchen go on at four: that is the tofu, soaked overnight, ground, boiled in seawater from the beach below the cane, pressed, and on the co-op’s counter by seven.',
- 'fumoto-4':'Old Mr Zukeran’s house: red tile, a hinpun, three goats in a pen behind the house and a sanshin with a snakeskin he says is older than the house. In the evenings he takes it down to the bench under the gajumaru.',
- 'kitahama-7':'The Chinens. The water lorry is parked at the end of Fukugi Lane because it will not fit through the gate. A nurse\'s bicycle with a basket, and a rota for the clinic\'s night calls taped inside the kitchen window.',
+ 'kitahama-5':'An empty concrete house on Fukugi Lane, with the board on the gate: to let, ask at the town hall.',
+ 'kitahama-6':'The oldest house on the lane: red tile, and a hinpun with a crack the 1959 typhoon put there. The ferry\'s master lives here now; he is gone to the bridge by half past six and home at eight.',
+ 'fumoto-1':'The oldest house in Fumoto, red tile behind a hinpun, and empty. The shutters are down and the yard has gone to grass.',
+ 'fumoto-2':'An empty red-tile house. Hand-carved shisa still sit on the gate, from the year the co-op store opened.',
+ 'fumoto-3':'An empty concrete house, rebuilt after Typhoon Della in 1977. The back kitchen once made the hamlet’s tofu; it is dark now, with the water off at the main.',
+ 'fumoto-4':'An empty red-tile house with a hinpun, and a goat pen behind it.',
+ 'kitahama-7':'An empty concrete house, swept and waiting, with the water off at the main.',
  'kitahama-8':'Ms Uezu\'s house: a week of washing on the line when she is home, and the shutters down the week she is on the ferry. A neighbour waters the bougainvillea.',
- 'kitahama-9':'Grandmother Gushiken\'s house. On Saturday mornings the verandah is full of children with sanshin and the lane is full of the same three notes, getting better.',
- 'kitahama-10':'The Tamashiros keep the lane. Goya over the wall, papaya by the gate, the rubbish rota pinned inside the gatepost and a dog called Kuro who barks at the postman\'s Super Cub and nothing else.',
- 'kitahama-11':'Mr Iha\'s house. A coil of cable by the gate, a ladder on the wall and the brightest porch light in Kitahama, which he says is a test.',
- 'kitahama-12':'Mrs Kohagura\'s front room is a hair salon from Tuesday to Saturday: one chair, a hood dryer from 1979 and the island\'s gossip, in that order.',
- tamaki:'The Tamakis run the ice plant on the east quay. Their daughter is at the school; her bicycle is the red one, and her swimming things are on the washing line most days of the year.',
- oshiro:'The Ōshiros. Old Mr Ōshiro was a sabani builder; his boat is the red one on the west quay. There is a bunch of bananas ripening by the kitchen door and, if you believe the neighbours, a habu in the fukugi that nobody has seen for years.',
+ 'kitahama-9':'An old red-tile house with a deep verandah, empty, its shutters down.',
+ 'kitahama-10':'An empty red-tile house: goya gone to seed over the wall, and the papaya by the gate left unpicked.',
+ 'kitahama-11':'A concrete house with its shutters down until noon: the man who lives here keeps the night watch at the Quay Warehouse and sleeps through the morning.',
+ 'kitahama-12':'An empty concrete house at the end of Fukugi Lane, its shutters down and its gate tied shut with wire.',
+ tamaki:'An empty concrete house near the east quay, its shutters down and the water off at the main.',
+ oshiro:'The Ōshiros. Mr Ōshiro builds and mends sabani at the boatyard; his own boat is the red one on the west quay. There is a bunch of bananas ripening by the kitchen door and, if you believe the neighbours, a habu in the fukugi that nobody has seen for years.',
 });

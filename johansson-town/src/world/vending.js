@@ -77,6 +77,7 @@ export const VENDING_MACHINE=Object.freeze({
  // its rating plate (銘板): the compressor's running current is the story's (halloween.js HALLOWEEN_ELECTRICS reads it)
  rating:Object.freeze({volts:100,hz:'50/60',amps:4,why:'The cooling compressor and the window’s tubes: 4 A running at 100 V, and about six times that for the moment the compressor starts.'}),
  lever:Object.freeze({travel:.45,why:'The coin-return lever (返却レバー): pushed down, it opens the coin mechanism’s gate and the coins drop to the change cup.'}),
+ flap:Object.freeze({swing:1.1,why:'The take-out flap hangs from its hinge bar at the top of the pocket: a hand pushes it in to reach the can (up to about 60°), and it swings back and settles; cold air from the chute stirs it a little outward.'}),
  // where the power cord leaves the cabinet: low on the back, at the right (the money side)
  cord:Object.freeze({x:.40,y:.10,why:'The cord leaves the back low on the right, behind the coin mechanism, and runs to the machine’s own outdoor socket.'}),
 });
@@ -304,11 +305,11 @@ function sampleCan(lit,product,size,[x,y,z]){
 }
 
 let geometryCache=new Map();
-/** Builds (once for each kind) the machine's merged geometries: body, print, lit, clear (glass and flap), lever, pool. */
+/** Builds (once for each kind) the machine's merged geometries: body, print, lit, clear (glass), flap, lever, pool. */
 function machineGeometry({pad=true}={}){
  const key=pad?'pad':'bare';if(geometryCache.has(key))return geometryCache.get(key);
  const M=VENDING_MACHINE,{width:W,height:H,depth:D,door:DOOR}=M.size,F=D/2,Y=pad?M.size.pad:0,WW=M.windowWidth;
- const body=bucket(),print=bucket({uv:true}),lit=bucket({uv:true}),clear=bucket({alpha:true});
+ const body=bucket(),print=bucket({uv:true}),lit=bucket({uv:true}),clear=bucket({alpha:true}),flapB=bucket({alpha:true});let hingeAt=[0,0,0];
  const RED=0xc4262e,CREAM=0xf2ecdc,DARK=0x2b2f33,STEEL=0xbfc4c7,CHROME=0xdfe3e5,KICK=0x3a3d40,GREYP=0xe4e1d8;
  const face=F+.008;   // the cream face panel's front, on the door
  // ---- the concrete pad it stands on, poured flush with its back
@@ -388,8 +389,10 @@ function machineGeometry({pad=true}={}){
   for(const s of [-1,1])lit.add(planeGeo(L,h).rotateY(-s*Math.PI/2),{c:0x596166,at:[s>0?P.x1-.001:P.x0+.001,cy,zc]});
   body.add(boxGeo(w-.01,.014,.014),{c:CHROME,at:[cx,Y+P.y1-.008,F-.004],name:'Flap hinge'});
   for(const [ww,hh,x,y] of [[w+.024,.012,cx,Y+P.y1+.006],[w+.024,.012,cx,Y+P.y0-.006],[.012,h,P.x0-.006,cy],[.012,h,P.x1+.006,cy]])body.add(boxGeo(ww,hh,.01),{c:CHROME,at:[x,y,face+.003],name:'Pocket trim'});
-  clear.add(planeGeo(w-.012,h-.02),{c:0x1c2226,a:.34,at:[cx,cy-.004,F-.006],name:'Take-out flap'});
-  clear.add(planeGeo(w-.03,.014),{c:0xffffff,a:.16,at:[cx,Y+P.y1-.03,F-.0055]});                                   // the light along its top
+  // the flap is its own piece, hung from the hinge bar (so it can swing: userData.setFlap), in the hinge's frame
+  hingeAt=[cx,Y+P.y1-.008,F-.006];
+  flapB.add(planeGeo(w-.012,h-.02),{c:0x1c2226,a:.34,at:[0,cy-.004-hingeAt[1],0],name:'Take-out flap'});
+  flapB.add(planeGeo(w-.03,.014),{c:0xffffff,a:.16,at:[0,Y+P.y1-.03-hingeAt[1],.0005]});                               // the light along its top
   body.add(boxGeo(w-.014,.01,.008),{c:0x23282b,at:[cx,Y+P.y0+.016,F-.006],name:'Flap lip'});}
  // ---- the sides: a poster on each, the louvres low at the back, the rating plate on the right
  for(const s of [-1,1]){const x=s*(W/2+.0035);
@@ -409,8 +412,8 @@ function machineGeometry({pad=true}={}){
   glow.setAttribute('position',new THREE.BufferAttribute(new Float32Array(pos),3));glow.setAttribute('color',new THREE.BufferAttribute(new Float32Array(col),4));
   glow.setAttribute('normal',new THREE.BufferAttribute(new Float32Array(pos.length).map((_,i)=>i%3===1?1:0),3));
   glow.translate(0,.004,F+(pad?M.size.padFront:0)+.01);glow.computeBoundingSphere();}
- const names=[...body.names,...print.names,...lit.names,...clear.names];
- const out={body:body.merge(),print:print.merge(),lit:lit.merge(),clear:clear.merge(),lever,glow,names,Y,samples:Object.freeze(samples)};
+ const names=[...body.names,...print.names,...lit.names,...clear.names,...flapB.names];
+ const out={body:body.merge(),print:print.merge(),lit:lit.merge(),clear:clear.merge(),flap:flapB.merge(),hingeAt,lever,glow,names,Y,samples:Object.freeze(samples)};
  geometryCache.set(key,out);return out;
 }
 
@@ -428,7 +431,7 @@ function sharedMaterials(){
  * stands in its window), fronted on +z, its origin on the ground under its middle. pad: it stands on a slight
  * concrete pad (outdoors). The lit window, header, lamps and labels are one unlit mesh ('Vending lit panels'), so a
  * story dims them all at once (halloween.js); userData.night(k) lights its pool on the pavement after dark (0 … 1);
- * userData.setLever(k) pushes the coin-return lever down (0 … 1). userData.takeOut is where a dropped can lies (its
+ * userData.setLever(k) pushes the coin-return lever down (0 … 1); userData.setFlap(k) swings the take-out flap (+ in, - out). userData.takeOut is where a dropped can lies (its
  * axis across the machine), userData.cordExit where its power cord leaves the back, userData.top its height.
  */
 export function createVendingMachine({shadows=false,pad=true}={}){
@@ -439,14 +442,18 @@ export function createVendingMachine({shadows=false,pad=true}={}){
  add(G.print,mats.print,'Vending printed panels');
  // its own unlit materials (a story dims one machine, not every machine in town)
  add(G.lit,new THREE.MeshBasicMaterial({map:mats.lit,vertexColors:true,toneMapped:false}),'Vending lit panels');
- add(G.clear,new THREE.MeshBasicMaterial({vertexColors:true,transparent:true,depthWrite:false}),'Vending glass and flap');
+ const clearMat=new THREE.MeshBasicMaterial({vertexColors:true,transparent:true,depthWrite:false});
+ add(G.clear,clearMat,'Vending glass');
+ const flap=add(G.flap,clearMat,'Take-out flap');flap.position.set(...G.hingeAt);
  const lever=add(G.lever,mats.lever,'Coin return lever',true);lever.position.set(.41,G.Y+.658,F+.008+.012+.006);
  const poolMat=new THREE.MeshBasicMaterial({vertexColors:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0,toneMapped:false});
  const pool=pad?add(G.glow,poolMat,'Vending light on the pavement'):null;if(pool){pool.visible=false;pool.receiveShadow=false;pool.renderOrder=1;}
  const cans=VENDING_COLUMNS.map(()=>'can');
  group.userData.parts=[...G.names,'Coin return lever',...cans];
  group.userData.columns=VENDING_COLUMNS;group.userData.samples=G.samples;   // where each dummy can stands, in its frame
- group.userData.lever=lever;
+ group.userData.lever=lever;group.userData.flap=flap;
+ // the flap: + pushed in (a hand reaching for the can, 1 = fully in), - stirred outward (the chute's cold air); radians = k × swing
+ group.userData.setFlap=k=>{flap.rotation.x=THREE.MathUtils.clamp(k,-1,1)*M.flap.swing;};
  group.userData.setLever=k=>{lever.rotation.x=THREE.MathUtils.clamp(k,0,1)*M.lever.travel;};
  group.userData.night=k=>{if(!pool)return;poolMat.opacity=THREE.MathUtils.clamp(k,0,1);pool.visible=poolMat.opacity>.02;};
  const at=vendingPoints({pad});

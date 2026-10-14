@@ -38,13 +38,13 @@ export function giftReaction(item,{giftsToday=0}={}){
  if(item==='Zenzai')
   return {mood:'happy',text:"Zenzai! Before it melts!\nZenzai from Nakamura’s! Quick, before it melts — no, you have a spoon too. We share. That is the rule with zenzai."};
  if(item==='Sata andagi')
-  return {mood:'happy',text:"Sata Andagi!\nStill warm! Arakaki-san’s are the best on the island. My grandmother said they smile when they are done properly. Look — this one is smiling."};
+  return {mood:'happy',text:"Sata Andagi!\nStill warm! Nakamura-san’s from the community kitchen are the best on the island. My grandmother said they smile when they are done properly. Look — this one is smiling."};
  if(item==='Awamori miniature')
   return {mood:'shy',text:"Awamori? Already…\nAwamori? Are you trying to get the shopkeeper drunk? I will keep it for after closing. Maybe we open it together."};
  if(item==='Tuna head')
   return {mood:'shy',text:"Eh…Tuna head?\nA tuna head. For me. Wrapped in the Ryūkyū Shimpō. …Kōji gave it to you, didn’t he. He gives it to everybody. Fine — soup tonight. You are washing the pot."};
  if(item==='Mozuku')
-  return {mood:'happy',text:"Mozuku!\nMozuku from Yonamine-san! With vinegar, cold, after work. You are learning how to live here."};
+  return {mood:'happy',text:"Mozuku!\nMozuku from the auction! With vinegar, cold, after work. You are learning how to live here."};
  // The pier's catch (fish.js): a taman is a feast; a mijun is a joke she is happy to be in on.
  const fish=pierFishOfItem(item);
  if(fish?.id==='mijun')

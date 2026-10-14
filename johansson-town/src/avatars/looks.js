@@ -21,7 +21,7 @@ const WORDS={age:AGES,'body.proportion':['classic','rounded'],'body.silhouette':
  'hair.style':PARTS.hair,'eyes.style':PARTS.eyes,'brows.style':PARTS.brows,'nose.style':PARTS.nose,'mouth.style':PARTS.mouth,
  'glasses.style':PARTS.glasses,'facial.moustache':PARTS.moustache,'facial.beard':PARTS.beard,'outfit.top':PARTS.top,
  'outfit.pattern':PATTERNS,'outfit.bottom':PARTS.bottom,'outfit.bottomPattern':['none','plaid'],
- 'outfit.footwear':PARTS.footwear,'outfit.hat':PARTS.hat,'accessories.earrings':PARTS.earrings,'accessories.neckwear':PARTS.neckwear,
+ 'outfit.footwear':PARTS.footwear,'outfit.hat':PARTS.hat,'outfit.belt':PARTS.belt,'accessories.earrings':PARTS.earrings,'accessories.neckwear':PARTS.neckwear,
  'swim.bath':['towel','swimwear']};
 const COLOUR=/^#[0-9a-f]{6}$/;
 /** Numbers that are not 0 to 1: whole numbers in their own range (a shirt number, 0 for none). */

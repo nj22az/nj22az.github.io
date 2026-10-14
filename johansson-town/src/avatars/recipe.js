@@ -49,7 +49,12 @@ export const PARTS=Object.freeze({
   'shirt','vest','knitvest','gymtee','baseball']),
  bottom:Object.freeze(['underwear','shorts','trousers','skirt','longskirt','widepants','cropped','culottes','pleatedskirt']),
  footwear:Object.freeze(['barefoot','sneakers','sandals','shoes','boots']),
- hat:Object.freeze(['none','cap','captain','police','helmet','straw','headband','kerchief','beanie','beret','bucket','ribbon','squid','teapot','sunflower','paperboat','mountain']),
+ hat:Object.freeze(['none','cap','captain','police','helmet','straw','headband','kerchief','beanie','beret','bucket','ribbon','squid','teapot','sunflower','paperboat','mountain',
+  // Hats that are models from World's asset catalogue (hat-assets.js), sold at Sakura Shōten: appended, so no saved id moves.
+  'trucker']),
+ // What is worn on a belt (police-data.js DUTY_BELT): the police officer's duty belt and its kit. Chosen on purpose in the
+ // maker, never dealt by the dice.
+ belt:Object.freeze(['none','duty']),
  earrings:Object.freeze(['none','studs','hoops']),
  neckwear:Object.freeze(['none','pendant','scarf']),
 });
@@ -98,7 +103,7 @@ export const DEFAULT_RECIPE=Object.freeze({
  moleSpot:Object.freeze({x:.77,height:.33,size:.5}),
  // Everybody starts in the base layer -- a tank top, underwear and bare feet -- and
  // clothes are put on over it in the maker's wardrobe.
- outfit:Object.freeze({top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',shoes:'#6d4a32',hat:'none',hatColour:'#f4f1ea',accent:'#f4d23c',number:0}),
+ outfit:Object.freeze({top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',shoes:'#6d4a32',hat:'none',hatColour:'#f4f1ea',accent:'#f4d23c',number:0,belt:'none',beltColour:'#16171b'}),
  accessories:Object.freeze({earrings:'none',neckwear:'none',colour:'#e0b93a',necklaceColour:'#e0b93a',pin:false}),
  // What they wear in the water, and (adults) whether they wrap up in a bath towel or wear
  // their swimwear at Umi-no-yu's family bath (avatars/build.js, bathOutfit).
@@ -128,7 +133,7 @@ export function normalizeRecipe(input={}){
   facial:facialHair(r.facial,sub('facial',{colour:col,size:num,height:num})),
   blush:num(r.blush,d.blush),freckles:!!r.freckles,mole:!!r.mole,wrinkles:num(r.wrinkles,d.wrinkles),
   moleSpot:sub('moleSpot',{x:num,height:num,size:num}),
-  outfit:legacyDressed(r.outfit,sub('outfit',{top:(v,f)=>pick(PARTS.top,v,f),topColour:col,pattern:(v,f)=>PATTERNS.includes(v)?v:f,bottom:(v,f)=>pick(PARTS.bottom,v,f),bottomColour:col,bottomPattern:(v)=>v==='plaid'?'plaid':'none',footwear:(v,f)=>pick(PARTS.footwear,v,f),shoes:col,hat:(v,f)=>pick(PARTS.hat,v,f),hatColour:col,accent:col,
+  outfit:legacyDressed(r.outfit,sub('outfit',{top:(v,f)=>pick(PARTS.top,v,f),topColour:col,pattern:(v,f)=>PATTERNS.includes(v)?v:f,bottom:(v,f)=>pick(PARTS.bottom,v,f),bottomColour:col,bottomPattern:(v)=>v==='plaid'?'plaid':'none',footwear:(v,f)=>pick(PARTS.footwear,v,f),shoes:col,hat:(v,f)=>pick(PARTS.hat,v,f),hatColour:col,accent:col,belt:(v,f)=>pick(PARTS.belt,v,f),beltColour:col,
    // A shirt number, 0–99 (0: none), worn by the tops in NUMBERED_TOPS.
    number:(v,f)=>(typeof v==='number'||typeof v==='string'&&v.trim()!=='')&&Number.isFinite(+v)?Math.min(99,Math.max(0,Math.round(+v))):f})),
   accessories:sub('accessories',{earrings:(v,f)=>pick(PARTS.earrings,v,f),neckwear:(v,f)=>pick(PARTS.neckwear,v,f),colour:col,necklaceColour:(v,f)=>col(v,col(r.accessories?.colour,f)),pin:flag}),

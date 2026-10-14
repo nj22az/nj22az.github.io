@@ -4,7 +4,8 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 installDOM();
 const {buildTeaStop,buildFishCart,placeTeaStop}=await import('../src/world/roadside-props.js');
-const {NEIGHBOUR_TALK}=await import('../src/people/neighbours.js');
+const {NEIGHBOURS,NEIGHBOUR_TALK}=await import('../src/people/neighbours.js');
+const {PLACES}=await import('../src/people/cast.js');
 
 const triangles=mesh=>mesh.geometry.attributes.position.count/3;
 
@@ -28,7 +29,8 @@ test('the tea stop blocks the way where it stands and sells a cup of tea',()=>{
  assert.equal(bought[0],'buy');assert.equal(bought[2].item,'Green tea');assert.equal(bought[2].cost,100);
 });
 
-test('the fish seller pushes his cart along the main street in the morning',()=>{
- const spec=NEIGHBOUR_TALK['Mr Toguchi'];
- assert.ok(spec.cart&&spec.walk);assert.ok(spec.hours[0][0]<=420&&spec.hours[0][1]<=720);
+test('the fish cart is gone: nobody pushes a cart along the main street, and the catch is sold at the auction',()=>{
+ assert.equal(NEIGHBOUR_TALK['Mr Toguchi'],undefined,'the fish seller has left the island');
+ assert.deepEqual(NEIGHBOURS.filter(n=>n.cart).map(n=>n.name),[],'no neighbour walks a cart');
+ assert.ok(PLACES['fish-auction'].keepers.includes('Kōji'),'Kōji sorts the morning catch at the auction');
 });

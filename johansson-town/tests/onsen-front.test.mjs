@@ -74,7 +74,7 @@ test('shoes at the step are whoever is past it, in what they actually wear, eith
  // The same kind and colours as the feet that walked in.
  for(const e of genkanLayout(GENKAN_SCENES.electrician.cast)){const r=recipeFor(e.name);assert.equal(e.kind,r.outfit.footwear,e.name);assert.equal(e.upper,r.outfit.shoes,e.name);}
  assert.equal(footwearOf({outfit:{footwear:'barefoot'}}),null,'nobody leaves bare feet at the door');
- assert.deepEqual(genkanLayout(['Mrs Higa','Johansson']),[],'the bandai and the player leave none');
+ assert.deepEqual(genkanLayout(['Miss Higa','Johansson']),[],'the bandai and the player leave none');
  assert.deepEqual(genkanLayout(['Visitor A','Visitor B']).map(e=>[e.x,e.z]),GENKAN_SPARE.slice(0,2).map(s=>[s.x,s.z]),'strangers take the spare places in order');
 
  const b=build();

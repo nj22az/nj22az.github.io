@@ -1,7 +1,7 @@
 /**
  * Kitano hamlet (北野集落), the handful of houses by the pier on Kitano-jima (batch 7a; docs/KITANO-JIMA.md): three walled
  * plots on a sandy lane just south of the cargo court, in the island's own frame (airport-ground.js airportWorld: u along
- * the runway, v towards Minato; y above the sea). The row (Jun's house and the house to let) stands north of the lane
+ * the runway, v towards Minato; y above the sea). The row (the Shiroma house, to let, and the Chinen house) stands north of the lane
  * with its gates on the lane; Johansson's house stands south of it, its gate on the lane and the sea behind.
  * It imports only the house's data (johansson-house.js, no three.js), so the island's ground and plantings can read it
  * as freely as the builder does.
@@ -21,7 +21,7 @@ export const KITANO_HAMLET=Object.freeze({
   // where the ground east of it rises above the yard (1.28 m at its edge); west and north it runs down towards the beach
   // (0.26 m at its far corner), so its slab goes down to `base`.
   {id:'kitano-1',family:'ヨハンソン',romaji:'Johansson & Thuan',minX:-49.5,maxX:-32.5,minZ:51.5,maxZ:73.5,gate:'south',kind:'johansson-house',wall:'coral',front:3.5,base:.2},
-  {id:'kitano-2',family:'城間',romaji:'Jun',minX:-45,maxX:-35,minZ:38,maxZ:48,gate:'north',kind:'concrete',wall:'block'},
+  {id:'kitano-2',family:'城間',romaji:'Shiroma',minX:-45,maxX:-35,minZ:38,maxZ:48,gate:'north',kind:'concrete',wall:'block'},
   {id:'kitano-3',family:'知念',romaji:'Chinen',minX:-33,maxX:-23,minZ:38,maxZ:48,gate:'north',kind:'red-tile',wall:'coral'},
  ].map(Object.freeze)),
 });

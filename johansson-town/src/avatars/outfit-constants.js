@@ -27,7 +27,7 @@ const mixHex=(a,b,f)=>'#'+[1,3,5].map(i=>Math.round(parseInt(a.slice(i,i+2),16)*
 /** Near-white tops (a white tee) give no colour of her own: then the accent she wears with it does. */
 const pale=hex=>[1,3,5].every(i=>parseInt(hex.slice(i,i+2),16)>215);
 /**
- * Her house dress: a pastel of the top she usually wears (Thuan's yellow, Nhung's sage, Mrs Higa's green), or of its
+ * Her house dress: a pastel of the top she usually wears (Thuan's yellow, Nhung's sage, Miss Higa's green), or of its
  * accent when that top is white (Thao's tee, with her blue shorts and ties), washed out as a much-laundered cotton is.
  */
 export function houseDressColour(recipe){

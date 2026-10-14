@@ -2,6 +2,7 @@ import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import {MAGAZINE_RACK} from './sakura-magazine-rack.js';
 import {shelfCapacity} from '../../commerce/shop-stock.js';
 import {PRODUCTS} from '../../commerce/products-data.js';
+import {JOHANSSON_TRUCKER} from '../../commerce/sakura-caps.js';
 // Measured from the supplied convenience-store model, in metres at floor Y=0.
 const rect=(x,z,w,d,height=2.9)=>({x,z,w,d,height});
 
@@ -124,6 +125,8 @@ export const SAKURA_LAYOUT={
   // umbrella stand, the office fridge, the hand truck, crates and ladder in the back room.
   ...FRONT_ENDCAPS.map(E=>rect(E.x,E.z,E.w+.04,E.d+.04,1.5)),
   rect(COPY_MACHINE.x,COPY_MACHINE.z,COPY_MACHINE.w+.08,COPY_MACHINE.d+.08,1.1),rect(COPY_MACHINE.x+.56,COPY_MACHINE.z+.02,.44,.5,.9),
+  // The cap tree by the east window, its base and the caps on it (sakura-cap-stand.js).
+  (({x,z,w,d,height})=>rect(x,z,w,d,height))(JOHANSSON_TRUCKER.stand.collider),
   rect(-2.45,3.42,.72,.72,1.3),rect(-1.35,3.45,.42,.42,1.2),rect(1.2,3.55,.3,.3,1.0),
   rect(4.98,-3.62,.48,.5,1.2),rect(5.35,-5.0,.4,.6,1.1),rect(-.95,-6.35,.5,.4,.9),rect(3.6,-5.7,.45,.6,1.2),
   // The stocked back room (sakura-backroom.js BACKROOM): bottle crates and the daisha at the

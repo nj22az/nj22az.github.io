@@ -87,7 +87,7 @@ function bodyRings(mesh,range){
 }
 
 test('standing, the wrap is outside the body all the way round',()=>{
- for(const recipe of [CAST_RECIPES.Johansson,CAST_RECIPES.Thuan,recipeFor('Mrs Higa'),recipeFor('Tetsuo')]){
+ for(const recipe of [CAST_RECIPES.Johansson,CAST_RECIPES.Thuan,recipeFor('Miss Higa'),recipeFor('Tetsuo')]){
   const avatar=buildAvatar(recipe,{shadows:false});avatar.wear('towel');
   const towel=towelOf(avatar),{wrap}=towel.userData.towel,body=bodyRings(towel,wrap),P=towel.geometry.attributes.position;
   // Every body vertex near the wrap's height, in the same direction from the body's axis,

@@ -1,4 +1,4 @@
-// The town's fish (src/world/okinawa/fish.js): one list the auction, Yonamine's counter, Mr Toguchi's cart and the
+// The town's fish (src/world/okinawa/fish.js): one list the auction, the Yonamine counter (the shop stands, closed) and the
 // storyteller all read, so a fish is named the same way everywhere and nothing on the ice is picked at random.
 import test from 'node:test';
 import assert from 'node:assert/strict';

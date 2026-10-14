@@ -124,7 +124,7 @@ function buildPark(kit,solid,{anchor,onAction,vending}){
  solid(kit.rect(sx-.8,sx+.8,sz-1.3,sz+1.3,2.2,'park-swing'));
  const swing=kit.point(sx+1,1,sz);
  anchor(swing.x,swing.y,swing.z,'Push the swing',()=>onAction?.('read','The swing',
-  'The chains squeak on the forward stroke and not on the back one. Mr Iha oils them every spring and the squeak comes back by the summer. Somebody has written a name in felt pen on the left seat and somebody else has crossed it out.'));
+  'The chains squeak on the forward stroke and not on the back one. Somebody oils them every spring and the squeak comes back by the summer. Somebody has written a name in felt pen on the left seat and somebody else has crossed it out.'));
  // The sandpit with a red bucket, and the gajumaru for shade over the bench.
  const bx=P.maxX-2.2,bz=P.maxZ-2.5;
  kit.block(P.minX+.6,P.minX+2.6,0,.18,P.maxZ-3.2,P.maxZ-1.4,0xd8c9a2);kit.block(P.minX+.75,P.minX+2.45,.02,.16,P.maxZ-3.05,P.maxZ-1.55,0xe8dcb8);
@@ -162,14 +162,14 @@ function buildCorner(kit,solid,{anchor,onAction}){
  for(const dz of [-.7,.7])kit.box(.08,1.9,.08,nx,.95,nz+dz,0x6b4a33);
  kit.box(.08,.95,1.6,nx,1.45,nz,0x8a6a45);kit.box(.12,.06,1.7,nx,1.97,nz,0x5d4431);
  const notices=[
-  poster({title:'CANE CUT',lines:['Mon 12 January, 7:00','Everybody on the lane','Lunch at the Tairas'],bg:'#f4e7c4',band:'#8a6a2f'}),
-  poster({title:'SANSHIN',lines:['Saturdays 9:30','Mrs Gushiken','Beginners welcome'],bg:'#eef1e4',band:'#c8432f'}),
+  poster({title:'CANE CUT',lines:['Mon 12 January, 7:00','Everybody on the lane','Lunch at Sato Ramen'],bg:'#f4e7c4',band:'#8a6a2f'}),
+  poster({title:'TO LET',lines:['7, 9, 10, 11, 12','Kitahama','Ask at the town hall'],bg:'#eef1e4',band:'#c8432f'}),
   poster({title:'TYPHOON',lines:['Tie down tanks','Fill the bath','Shutters by Friday'],bg:'#f2ede0',band:'#3f6f8a'}),
  ];
  notices.forEach((t,i)=>kit.sign(t,.42,.6,nx+.06,1.45,nz-.5+i*.5,{ry:Math.PI/2,name:'notice'}));
  solid(kit.rect(nx-.1,nx+.1,nz-.8,nz+.8,2,'notice-board'));
  const at=kit.point(nx+.6,1,nz);
  anchor(at.x,at.y,at.z,'Read the Kitahama notice board',()=>onAction?.('read','Kitahama notice board',
-  'Rubbish: burnable on Tuesdays and Fridays, cans and bottles on Wednesdays, out by eight and under the nets, because of the crows.\n\nThe cane cut is on Monday the 12th of January from seven. Everybody on the lane, lunch at the Tairas\'.\n\nSanshin with Mrs Gushiken, Saturdays at half past nine on her verandah. Beginners welcome; bring your own picks.\n\nTyphoon season: tie down your water tanks, fill the bath, shutters up by Friday. Mr Iha will check the lane lights.\n\nFound: a child\'s blue sandal, left foot. Ask at number 10.'));
+  'Rubbish: burnable on Tuesdays and Fridays, cans and bottles on Wednesdays, out by eight and under the nets, because of the crows.\n\nThe cane cut is on Monday the 12th of January from seven. Everybody on the lane, lunch at Sato Ramen.\n\nTo let: numbers 7, 9, 10, 11 and 12. Ask at the town hall.\n\nTyphoon season: tie down your water tanks, fill the bath, shutters up by Friday. Mr Shimabukuro will check the lane lights.\n\nFound: a child\'s blue sandal, left foot. Ask at number 3.'));
  potPlant(kit,L.maxX-.4,L.minZ+.4,{seed:280});
 }

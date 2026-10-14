@@ -35,7 +35,7 @@ import {buildOnsenSteam} from './onsen-steam.js';
  *
  * The front of the house (genkan, bandai, lobby, noren) is dressed in onsen-lobby.js; the street
  * doors, the shoes at the step and the umbrella stand are in onsen-front.js; the small things with a story
- * (the straw jar, the uchiwa rack, Mrs Higa's rubber plant and her account book) in onsen-props.js.
+ * (the straw jar, the uchiwa rack, Miss Higa's rubber plant and her account book) in onsen-props.js.
  *
  * Room frame: the street door is at +z, the sea at -z. Metres, floor at y = 0.
  */
@@ -159,7 +159,7 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  const seat=(spec,title,text)=>{const o=anchor([spec.position[0],.9,spec.position[2]],spec.label,()=>action('seat',title,typeof text==='function'?text():text));o.userData.seat={...spec,onsen:spec.id,pitch:spec.soak?-.05:0};return o;};
  // Its lamps stop at its walls (render/cel.js lampsStopAtWalls): the lobby's bulb does not shine on the women's side of
  // the noren wall, nor the bath lamps on the changing rooms' mirrors, nor the porch lamp on the inside of the street wall.
- // The noren is cloth and lets the lamp behind it glow through, and Mrs Higa is the town's like everyone else: they keep
+ // The noren is cloth and lets the lamp behind it glow through, and Miss Higa is the town's like everyone else: they keep
  // the town's light.
  const stopLamps=root=>{const keep=new Set();room.getObjectByName('Umi-no-yu attendant')?.traverse(o=>keep.add(o));
   root.traverse(o=>{if(!o.isMesh||keep.has(o)||o.name==='Noren'||o.userData.sharedAsset)return;
@@ -241,18 +241,18 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  rect(-4.8,4.51,.4,1.05,1.4);
  box([.62,FURNITURE_HEIGHTS.serviceCounter-.05,1.7],[-3.85,(FURNITURE_HEIGHTS.serviceCounter-.05)/2,2.55],darkWood,'Bandai counter');box([.7,.05,1.78],[-3.85,FURNITURE_HEIGHTS.serviceCounter-.025,2.55],wood,'Bandai top');rect(-3.85,2.55,.66,1.74,FURNITURE_HEIGHTS.serviceCounter);
  box([.2,.12,.14],[-3.75,FURNITURE_HEIGHTS.serviceCounter+.06,2.2],mat(0xd9c9a0,.6),'Ticket tray');
- // Higa-san, a Shimanchu like everyone else, up on the bandai's raised floor so she can
+ // Miss Higa, a Shimanchu like everyone else, up on the bandai's raised floor so she can
  // see over the counter -- which is the point of a bandai.
  box([.9,.35,1.4],[-4.45,.175,2.6],darkWood,'Bandai platform');
  box([.44,.4,.44],[-4.5,.55,2.6],wood,'Attendant stool');rect(-4.45,2.6,.9,1.4,1.2);
  const attendant=new THREE.Group();attendant.name='Umi-no-yu attendant';attendant.position.set(-4.5,.35,2.6);attendant.rotation.y=-Math.PI/2;room.add(attendant);
  // Her face is painted on a canvas, so without a page (the room tests) the stool is empty.
- const higa=typeof document!=='undefined'&&document.createElement?buildAvatar(recipeFor('Mrs Higa'),{shadows:true,faceSize:256}):null,higaMotion=higa&&createAvatarAnimator(higa);if(higa)attendant.add(higa.root);
+ const higa=typeof document!=='undefined'&&document.createElement?buildAvatar(recipeFor('Miss Higa'),{shadows:true,faceSize:256}):null,higaMotion=higa&&createAvatarAnimator(higa);if(higa)attendant.add(higa.root);
  anchor([-3.5,1.25,2.55],'Pay at the bandai · ¥300',()=>action('onsen-pay'));
  anchor([-3.5,1.25,3.1],'Talk to the attendant',()=>action('inspect','Umi-no-yu attendant',
-  'Higa-san has kept the bandai for thirty years. She takes your coins without looking up from her account book. "Gentlemen through the indigo noren, ladies the crimson. Past the bath doors it is swimwear or a bath wrap, please: the washing room and the rock bath are for everybody. The rock bath is best after dark."'));
+  'Miss Higa teaches at the island school and keeps the bandai in the evenings and at weekends; her grandmother, who owns the house, has kept it in the afternoons for decades. She takes your coins without looking up from her account book. "Gentlemen through the indigo noren, ladies the crimson. Past the bath doors it is swimwear or a bath wrap, please: the washing room and the rock bath are for everybody. The rock bath is best after dark."'));
  // The price board on the counter's front, under the top (ONSEN_SIGNS.fee): read from the genkan while you count your
- // coins, and never between Mrs Higa's face and the people she is talking to.
+ // coins, and never between Miss Higa's face and the people she is talking to.
  const fee=canvasSign(ONSEN_SIGNS.fee.lines.map((text,i)=>[text,i?.5:1]),{w:384,h:192,bg:'#fbf6ea',size:60});
  if(fee){const s=new THREE.Mesh(new THREE.PlaneGeometry(.7,.35),new THREE.MeshStandardMaterial({map:fee,roughness:.8}));s.position.set(-3.53,.55,2.55);s.rotation.y=Math.PI/2;s.name='Fee sign';room.add(s);}
  // Coffee milk in the glass-fronted fridge, drunk standing, hand on hip.

@@ -5,6 +5,11 @@ import {normalizeRecipe,decodeRecipe} from '../johansson-town/src/avatars/recipe
 import {createSceneWorkspace} from './scene.js?v=20261011-5';
 import {createWorldPanel} from './world-panel.js?v=20261011-1';
 import {createHomeWorkspace} from './home.js?v=20261011-1';
+import {loadHatModels} from '../johansson-town/src/catalog/hat-models.js';
+
+// The hats that are models in World's asset catalogue (Johansson's trucker cap, sold at Sakura Shōten) are in hand before anyone
+// is drawn, so the maker's pictures, its preview, scenes and portraits show them and not their stand-in.
+await loadHatModels();
 
 // Studio's own working copy of the character. What goes into Johansson World is sent with "Use in Johansson World",
 // which writes World's own keys (../johansson-town/src/studio-handoff.js): all customisation is Studio's.

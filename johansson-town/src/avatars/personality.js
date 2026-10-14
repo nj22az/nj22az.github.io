@@ -104,7 +104,7 @@ export function hello(recipe){
 export const TOWN_DIALS=Object.freeze(Object.fromEntries(Object.entries({
  Johansson:[.3,.7,.7,.8],          // Wanderer: sixty-odd, sunburnt, in no hurry, glad of everything
  Thuan:[.7,.35,.75,.75],           // Festival friend: quick, polite, bright as her blouse
- 'Mrs Higa':[.25,.3,.3,.3],        // Lighthouse keeper: thirty years at the bandai
+ 'Miss Higa':[.25,.3,.3,.3],        // Lighthouse keeper: steady at the blackboard and the bandai
  Nhung:[.6,.65,.4,.75],             // Joker: the eldest sister, playful mischief behind the bookshop counter
  Chin:[.7,.4,.75,.7],             // Festival friend: enthusiastic tinkerer
  'Mrs Sato':[.4,.75,.7,.3],        // Big heart: affectionately formidable
@@ -119,16 +119,13 @@ export const TOWN_DIALS=Object.freeze(Object.fromEntries(Object.entries({
  Yoshiko:[.25,.4,.25,.6],          // Porch sitter: calm neighbourhood anchor
  Reiko:[.75,.7,.65,.6],            // Typhoon: curious, loves a scoop
  Tetsuo:[.3,.65,.2,.35],           // Quiet craftsman: deadpan music lover
- Emi:[.6,.35,.45,.65],             // Helping hand: warm, quietly daring
  'Mr Tanabe':[.25,.3,.65,.75],     // Cloud watcher: playful philosopher
  Naoko:[.8,.35,.35,.35],           // Timekeeper: brisk, remembers everyone
  Hiroshi:[.65,.4,.8,.3],           // Rising star: proud amateur singer
  Fumiko:[.7,.85,.4,.3],            // Straight shooter: fearless neighbourhood aunt
  Kenta:[.4,.25,.6,.65],            // Cloud watcher: sweetly awkward inventor
  Thao:[.7,.85,.4,.45],              // Straight shooter: stubborn but friendly; will not be talked out of it
- Barfly:[.15,.65,.35,.8],
- 'Grandmother Tokashiki':[.45,.6,.35,.55], // Timekeeper: the hamlet's ledger, kind and exact
- 'Old Mr Zukeran':[.2,.55,.75,.8],   // Porch sitter: slow, sly, sings at the drop of a hat          // Easy neighbour: unhurried, permanently thirsty
+ Barfly:[.15,.65,.35,.8],         // Easy neighbour: unhurried, permanently thirsty
 }).map(([name,[pace,talk,show,outlook]])=>[name,Object.freeze({pace,talk,show,outlook})])));
 
 const DIAL_KEYS=['pace','talk','show','outlook'];

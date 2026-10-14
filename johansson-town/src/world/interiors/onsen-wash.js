@@ -31,8 +31,8 @@ export const WASH_SEATS=Object.freeze(Object.fromEntries([
 
 // The advertisements along the bottoms of the mirrors: businesses in town, in English.
 const ADS=[
- ['Kinjo Dental','Two minutes from the harbour'],['Harbour Barber','Closed on Mondays'],['Ishimine Tofu','Fresh every morning'],
- ['Sakura Shoten','Open late · by the bus stop'],['Higa Rice & Sake','We deliver'],['Sato Ramen','After your bath: a bowl'],
+ ['Rainflower','Flowers and wreaths'],['Front-Row Books','Books and stationery'],['Chin & Tetsuo','Radios mended'],
+ ['Sakura Shoten','Open late · by the bus stop'],['Higa Liquor','We deliver'],['Sato Ramen','After your bath: a bowl'],
  ['Minato','Cold beer on the quay'],['Island Clinic','Weekdays 9:00–17:00'],
 ];
 

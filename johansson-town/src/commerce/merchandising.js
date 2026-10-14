@@ -52,6 +52,9 @@ export const linesFor=name=>Object.entries(MERCHANDISING).filter(([,m])=>m.for.i
  *   rainflower-florist  Rainflower Florist on the lane: decorations — the season's window dressing,
  *                 festival trimmings, lanterns and wreaths — for the shops, the bar and the town hall.
  *
+ * Only places that are open trade (src/people/cast.js PLACES): the Fumoto co-op has closed, so Sakura and the Higas
+ * no longer send it a Wednesday crate.
+ *
  * An account is what one business orders from one supplier: owner (who places the order, or
  * contact when it is a post rather than anyone in the cast),
  * lines (what), why (what it is for) and delivery (when and how it arrives). Lines are
@@ -75,7 +78,7 @@ export const ACCOUNTS=Object.freeze({
   ramen:{name:'Sato Ramen',owner:'Mrs Sato',lines:['soy','tea','detergent'],
    why:'Soy to top up the tare, tea for the counter, and powder for the towels.',
    delivery:'At half past ten, while the stock comes up to the boil.'},
-  onsen:{name:'Umi-no-yu',owner:'Mrs Higa',lines:['milk','soda','soap','detergent'],
+  onsen:{name:'Umi-no-yu',owner:'Miss Higa',lines:['milk','soda','soap','detergent'],
    why:'Bottled milk and ramune for the fridge by the bandai — the after-bath drink — soap for the washing stools, and powder for the towels.',
    delivery:'Mornings before the bath opens; the milk crate is the heaviest thing Thuan carries all week.'},
   frontrow:{name:'Front-Row Books & Stationery',owner:'Nhung',lines:['tea','biscuit','battery'],
@@ -96,9 +99,6 @@ export const ACCOUNTS=Object.freeze({
   'coral-bay-bar':{name:'the Coral Bay Bar on Kitano-jima',contact:'the beach bar keeper',lines:['orange','water'],
    why:'Mandarin and shikuwasa juice for the children and the drivers, and water for anyone who fell asleep under a parasol.',
    delivery:'On the morning car ferry, in the Sakura Trading crate that goes over with the Higa ice boxes.'},
-  'fumoto-co-op':{name:'the Fumoto co-op store',owner:'Grandmother Tokashiki',lines:['rice','soy','tuna','soap','battery','tea'],
-   why:'What a farming hamlet runs out of: rice and soy, tinned tuna for the cane-cut lunches, soap, batteries for the radios in the fields, and tea for the bench.',
-   delivery:'Wednesdays: Mr Tokashiki brings the Sakura Trading crate up from the morning ferry in the co-op’s van.'},
   'community-kitchen':{name:'the community kitchen',owner:'Mrs Nakamura',lines:['curry','soy','tuna','rice'],
    why:'The Saturday curry for the whole street, and onigiri for the volunteers.',
    delivery:'Friday evening, so the pot can start early.'},
@@ -122,9 +122,6 @@ export const ACCOUNTS=Object.freeze({
   'coral-bay-bar':{name:'the Coral Bay Bar on Kitano-jima',contact:'the beach bar keeper',lines:['Umineko lager, bottles on ice'],
    why:'Cold beer for the day-trippers on Coral Bay, the reason half the morning ferry carries towels.',
    delivery:'Ice boxes on the morning car ferry; the empties come back on the evening sailing.'},
-  'fumoto-co-op':{name:'the Fumoto co-op store',owner:'Grandmother Tokashiki',lines:['awamori, by the cup and the 180 ml bottle','Umineko lager, cases of bottles'],
-   why:'A cup of awamori for the farmers on the way home, and the beer for the cane-cut party, which the store pays for.',
-   delivery:'With the Wednesday van: Mr Tokashiki collects the Higa crates at the quay and takes back the empties from the porch.'},
   'fujita-shed':{name:'Mr Fujita’s shed on the pier',contact:'Mr Fujita',lines:['Umineko lager, large bottles'],
    why:'Twenty-four to forty-nine large bottles a day, three small glasses a bottle, poured from the armchair in front of the television.',
    delivery:'Six every morning at the pier root: the day’s crates down, yesterday’s empties up off his floor. Returnable bottles, counted by Grandmother Higa.'},
@@ -139,7 +136,7 @@ export const ACCOUNTS=Object.freeze({
   'mayor-office':{name:'the mayor’s office',owner:'Johansson',lines:['ceremony wreaths','festival bunting','a garland for the Merry Moose'],
    why:'Openings, prize days and the town’s festivals, and the moose is dressed for every one of them.',
    delivery:'The morning of each ceremony, carried up the Community Hall stairs.'},
-  onsen:{name:'Umi-no-yu',owner:'Mrs Higa',lines:['seasonal flowers for the bandai'],
+  onsen:{name:'Umi-no-yu',owner:'Miss Higa',lines:['seasonal flowers for the bandai'],
    why:'A small vase on the bandai, changed with the season, the first thing a bather sees.',
    delivery:'Every other Saturday, before the bath opens.'},
   school:{name:'the island school',contact:'the head teacher',lines:['sports day bunting','graduation flowers'],

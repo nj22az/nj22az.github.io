@@ -3,6 +3,159 @@
 const freeze=o=>{if(o&&typeof o==='object'){for(const v of Object.values(o))freeze(v);Object.freeze(o);}return o;};
 /** Johansson World's asset catalogue, by id (src/catalog/catalog.js places them). */
 export const CATALOG=freeze({
+ "johansson-trucker": {
+  "id": "johansson-trucker",
+  "name": "Johansson trucker cap",
+  "kind": "prop",
+  "version": 1,
+  "purpose": {
+   "for": "Islanders who work bare-headed under the Okinawan sun on the quay and the boats and want a good cap, not a giveaway: Kōji at the catch tables first, Riku on the cargo quay, Mr Fujita at the bow bollards.",
+   "why": "A peak against the glare off the water, a mesh back that lets the sea wind through, a strap that fits anyone; made as well as an imported cap, by the town's own maker, with Johansson's J raised on the front.",
+   "where": "On the cap tree at Sakura Shōten by the east window, beside the till and in the window, a stack on each cap form; and on the heads of whoever bought one (src/avatars/hat-assets.js fits it to any head)."
+  },
+  "size": [0.4811,0.3206,0.6652],
+  "colours": {
+   "front": "#27304d",
+   "mesh": "#f4f1ea",
+   "accent": "#f4f1ea",
+   "sweatband": "#cfc8b8",
+   "strap": "#1f1f22",
+   "gold": "#c9a54a",
+   "label": "#efe9d8",
+   "label-ink": "#27304d"
+  },
+  "tags": ["cap","trucker cap","mesh cap","snapback","Johansson","J","premium","sun","quay","1990s","wearable","Sakura Shōten"],
+  "checked": "2026-10-14T06:16:19.795Z",
+  "colliders": [
+   {
+    "name": "body",
+    "x": 0,
+    "z": 0.075,
+    "w": 0.481,
+    "d": 0.665,
+    "yaw": 0,
+    "minY": 0,
+    "height": 0.321
+   }
+  ],
+  "seats": [],
+  "spots": [],
+  "action": {
+   "kind": "buy",
+   "label": "Buy a Johansson trucker cap (¥3,800)",
+   "price": 3800
+  },
+  "anchors": {
+   "head-centre": [0,-0.0088,0],
+   "head-top": [0,0.251,0],
+   "head-left": [0.2261,-0.0088,0],
+   "head-front": [0,-0.0088,0.2357],
+   "peg": [0,0.0613,-0.2465],
+   "crown-top": [0,0.3159,0],
+   "bill-tip": [0,0.076,0.4028],
+   "band-front": [0,0.0951,0.239],
+   "logo": [0,0.203,0.2235]
+  },
+  "parts": [],
+  "model": "johansson-trucker/model.glb",
+  "modelSha": "358bf73a1f56",
+  "hero": "johansson-trucker/hero.png",
+  "measured": {
+   "size": [0.4811,0.3206,0.6652],
+   "body": {
+    "min": [-0.2406,0,-0.2571],
+    "max": [0.2406,0.3206,0.4081]
+   },
+   "all": {
+    "min": [-0.2406,0,-0.2571],
+    "max": [0.2406,0.3206,0.4081]
+   },
+   "triangles": 2968,
+   "materials": 4,
+   "meshes": 7
+  },
+  "budget": {
+   "triangles": 3000,
+   "materials": 4
+  },
+  "published": "2026-10-14"
+ },
+ "johansson-trucker-display": {
+  "id": "johansson-trucker-display",
+  "name": "Johansson trucker cap (shop display)",
+  "kind": "prop",
+  "version": 1,
+  "purpose": {
+   "for": "Customers at Sakura Shōten looking at Johansson's trucker caps on the cap tree by the east window, before they ask Thuan for one: the boats' crews, the catch sorters and the cargo quay.",
+   "why": "Six caps stand on the stand at once; at the worn cap's detail they took Sakura over its phone budget, so the stand shows the same cap built for being looked at from the shop floor, under half the triangles.",
+   "where": "On the two cap forms of Sakura's cap tree (src/world/interiors/sakura-cap-stand.js), stacked three to a form; never on a head, where the worn cap (johansson-trucker) goes."
+  },
+  "size": [0.476,0.3182,0.663],
+  "colours": {
+   "front": "#27304d",
+   "mesh": "#f4f1ea",
+   "accent": "#f4f1ea",
+   "sweatband": "#cfc8b8",
+   "strap": "#1f1f22",
+   "gold": "#c9a54a",
+   "label": "#efe9d8",
+   "label-ink": "#27304d"
+  },
+  "tags": ["cap","trucker cap","display","level of detail","Johansson","Sakura Shōten"],
+  "checked": "2026-10-14T08:48:31.724Z",
+  "colliders": [
+   {
+    "name": "body",
+    "x": 0,
+    "z": 0.077,
+    "w": 0.476,
+    "d": 0.663,
+    "yaw": 0,
+    "minY": 0,
+    "height": 0.318
+   }
+  ],
+  "seats": [],
+  "spots": [],
+  "action": {
+   "kind": "look",
+   "label": "Look at the Johansson caps"
+  },
+  "anchors": {
+   "head-centre": [0,-0.0088,0],
+   "head-top": [0,0.251,0],
+   "head-left": [0.2261,-0.0088,0],
+   "head-front": [0,-0.0088,0.2357],
+   "peg": [0,0.0613,-0.2465],
+   "crown-top": [0,0.3159,0],
+   "bill-tip": [0,0.076,0.4028],
+   "band-front": [0,0.0951,0.239],
+   "logo": [0,0.203,0.2235]
+  },
+  "parts": [],
+  "model": "johansson-trucker-display/model.glb",
+  "modelSha": "f3ff0cfad64b",
+  "hero": "johansson-trucker-display/hero.png",
+  "measured": {
+   "size": [0.476,0.3182,0.663],
+   "body": {
+    "min": [-0.238,0,-0.2549],
+    "max": [0.238,0.3182,0.4081]
+   },
+   "all": {
+    "min": [-0.238,0,-0.2549],
+    "max": [0.238,0.3182,0.4081]
+   },
+   "triangles": 1298,
+   "materials": 4,
+   "meshes": 6
+  },
+  "budget": {
+   "triangles": 1500,
+   "materials": 4
+  },
+  "published": "2026-10-14"
+ },
  "massage-chair": {
   "id": "massage-chair",
   "name": "Coin massage chair",

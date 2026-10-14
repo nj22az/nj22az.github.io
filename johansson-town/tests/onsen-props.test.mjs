@@ -12,7 +12,7 @@ import {provideCatalog} from './catalog-fixture.mjs';
 // The massage chair's model in hand (World's catalogue), so the offering finds the arm pad it stands on.
 await provideCatalog('massage-chair');
 
-// The props "Fujita's Ten Minutes of Heaven" needs: the straw jar, the uchiwa rack, Mrs Higa's rubber plant, her account book.
+// The props "Fujita's Ten Minutes of Heaven" needs: the straw jar, the uchiwa rack, Miss Higa's rubber plant, her account book.
 const build=()=>{const room=new THREE.Group(),hits=[];const layout=buildOnsenInterior({room,reg:(o,label)=>hits.push({o,label}),action(){},exit(){}});room.updateMatrixWorld(true);return {room,hits,layout};};
 const meshes=root=>{const all=[];root.traverse(o=>{if(o.isMesh)all.push(o);});return all;};
 const box=o=>new THREE.Box3().setFromObject(o);
@@ -34,7 +34,7 @@ test('every prop is in the room, named, and says who it is for and why it is the
  // Uchiwa prints come from the signs file, each one with a reason; the giant one is the Hārī fan.
  assert.deepEqual(ONSEN_PROPS.uchiwaRack.fans.map(f=>f.id).concat(ONSEN_PROPS.uchiwaRack.giant.id).sort(),ONSEN_SIGNS.uchiwa.map(s=>s.id).sort());
  assert.ok(ONSEN_SIGNS.uchiwa.every(s=>s.why.length>30));assert.equal(ONSEN_SIGNS.uchiwa.find(s=>s.giant).id,'harii');
- // Mrs Higa's sums add up, at the prices on the board (¥300 a bath, ¥100 a towel or a milk).
+ // Miss Higa's sums add up, at the prices on the board (¥300 a bath, ¥100 a towel or a milk).
  const yen=v=>+String(v).replace(/,/g,'')||0;let balance=0;
  for(const r of ONSEN_SIGNS.ledger.rows){balance+=yen(r[2])-yen(r[3]);assert.equal(balance,yen(r[4]),'balance after '+r[1]);}
  const [baths,towels,milk]=ONSEN_SIGNS.ledger.rows;assert.equal(yen(baths[2]),38*300);assert.equal(yen(towels[2]),6*100);assert.equal(yen(milk[2]),21*100);
@@ -114,7 +114,7 @@ test('the props keep the ways, the seats, the mirrors and the people clear',()=>
  const jar=box(room.getObjectByName('Straw jar')),lid=box(room.getObjectByName('Milk cooler top'));
  assert.ok(jar.min.x>lid.min.x&&jar.max.x<lid.max.x&&jar.min.z>lid.min.z&&jar.max.z<lid.max.z,'on the lid');
  assert.ok(jar.max.y<1.9,'in reach: top at '+jar.max.y.toFixed(2));
- // The account book: under Mrs Higa's hand on the bandai, below her line of sight to the lobby.
+ // The account book: under Miss Higa's hand on the bandai, below her line of sight to the lobby.
  const book=box(room.getObjectByName('Account book')),top=box(room.getObjectByName('Bandai top'));
  assert.ok(book.min.x>top.min.x&&book.max.x<top.max.x&&book.min.z>top.min.z&&book.max.z<top.max.z,'on the bandai top');
  assert.ok(Math.hypot(book.getCenter(new THREE.Vector3()).x+4.5,book.getCenter(new THREE.Vector3()).z-2.6)<.6,'within her reach');
@@ -125,6 +125,6 @@ test('the props keep the ways, the seats, the mirrors and the people clear',()=>
 
 test('the storyteller knows the new props',()=>{
  const onsen=FEED_PLACES.find(p=>p.id==='onsen');
- for(const thing of ['the straw jar on the milk fridge','the uchiwa rack','the giant Hārī fan','Mrs Higa’s rubber plant','Mrs Higa’s account book'])assert.ok(onsen.things.includes(thing),thing);
+ for(const thing of ['the straw jar on the milk fridge','the uchiwa rack','the giant Hārī fan','Miss Higa’s rubber plant','Miss Higa’s account book'])assert.ok(onsen.things.includes(thing),thing);
  assert.ok(onsen.doing.includes('fanning themselves with an uchiwa'));
 });
