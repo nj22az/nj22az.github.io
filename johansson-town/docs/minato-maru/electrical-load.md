@@ -33,10 +33,11 @@
 | Water heater, 100 L | galley | MSB | 440 | 1 | 3 | 3.9 | 0.9 |  | 0.9 | 1.5 |  | 2 | The galley and the shower |
 | 24 V battery chargers | eg-room | MSB | 440 | 2 | 1.5 | 2 | 0.9 | 0.9 | 0.9 | 0.9 |  |  | Both banks kept full |
 | Workshop lathe, drill and grinder | workshop | MSB | 440 | 3 | 0.4 | 0.8 |  |  | 0.1 |  |  |  | Repairs alongside |
+| Electrical workshop test panel: bench supply, soldering, motor tests | electrical-workshop | MSB | 440 | 1 | 2 | 3.3 |  |  |  | 0.6 |  |  | The electrician’s work, alongside at Minato on shore power |
 | Ballast pump | aux-room | MSB | 440 | 1 | 3.7 | 6.8 |  |  |  |  |  |  | Trims her for the truck, ten minutes between boats before it drives on: not in any condition’s total |
 | Lighting: saloon, carpet room, lobby, toilets, stairs | saloon | LB | 105 | 1 | 2.36 | 25 | 2.4 | 2.4 | 2.4 | 0.2 |  |  |  |
 | Lighting: car deck | car-deck | LB | 105 | 1 | 0.96 | 10.2 | 0.5 | 1 | 1 | 0.2 |  |  |  |
-| Lighting: engine room, steering-gear room | engine-room | LB | 105 | 1 | 1.06 | 11.2 | 1.1 | 1.1 | 1.1 | 0.2 |  |  |  |
+| Lighting: engine room, steering-gear room, workshops | engine-room | LB | 105 | 1 | 1.18 | 12.5 | 1.2 | 1.2 | 1.2 | 0.3 |  |  |  |
 | Lighting: bridge, mess, galley, cabins | mess | LB | 105 | 1 | 0.42 | 4.4 | 0.2 | 0.2 | 0.3 | 0.3 |  |  |  |
 | Deck lights and ramp floodlights (6 × 100 W + 4 × 500 W) | car-deck | LB | 105 | 1 | 2.6 | 27.5 | 0.6 | 2.6 | 2.6 | 0.7 |  |  | Loading after dark |
 | Searchlight | compass-deck | LB | 105 | 1 | 1 | 9.5 |  | 0.5 |  |  |  |  | Finds the pier on the last boat |
@@ -52,4 +53,4 @@
 | Navigation lights (7 × 60 W) | compass-deck | ESB | 105 | 1 | 0.42 | 4.4 | 0.4 | 0.4 |  |  | 0.4 |  | Masthead, sidelights, stern light, all-round lights |
 | Radar and PA on the emergency supply | wheelhouse | ESB | 105 | 1 | 0.5 | 5.3 |  |  |  |  | 0.5 |  | Inside the bridge electronics normally |
 | 24 V emergency charger (radio, fire detection, alarm) | eg-room | ESB | 440 | 1 | 0.5 | 4.8 |  |  |  |  | 0.5 |  |  |
-| **Total kW** | | | | | | | 40.1 | 110 | 45.9 | 10.3 | 10 | | |
+| **Total kW** | | | | | | | 40.2 | 110.1 | 46 | 11 | 10 | | |

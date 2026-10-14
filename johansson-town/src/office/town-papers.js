@@ -136,6 +136,13 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
+    "title": "The fishermen’s co-op calendar",
+    "organisation": "Town Services",
+    "text": "A free calendar from the Minato fishermen’s co-op. Two dates ringed: the day his mother’s gas cylinder is due on Kitano-jima, and the boiler service at Umi-no-yu.",
+    "source": "notice:The fishermen’s co-op calendar"
+  },
+  {
+    "type": "Notice",
     "title": "Town office telephone",
     "organisation": "Community Hall",
     "text": "The harbour master confirms Thursday’s supply ferry. Mori reports the crossing outside the school is clear. Thuan asks whether the bus-stop bench has reached the carpenter yet.",

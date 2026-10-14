@@ -7,7 +7,7 @@ are the leading women they should have families. Thuan has Johansson, everyone w
 reason to be there. Thao have a daughter Vy of course she goes to school maybe miss Higa is the school teacher, and
 she works at the Onsen when she is free and maybe Tetsuo also chips in at the Onsen when he is not in the workshop."
 
-Status: **a proposal for the creator's review.** Nothing in the game changes until it is agreed. Decisions the
+Status: **a proposal for the creator's review.** Updated 2026-10-14: no apartment block; shops that are only a still figure are not a purpose (the creator: "shops that have only a still character is not purposeful"). Nothing in the game changes until it is agreed. Decisions the
 creator still has to make are marked **(decide)**.
 
 ## 1. What is there today, and why it feels empty
@@ -157,7 +157,7 @@ The rules **(decide if any should change)**:
 1. **One cast file (`src/people/cast.js`).**
    - For each person: family, home, purpose, schedule, personality, look, and their relationships.
    - Everything else reads from it: the profiles, the households, the neighbours, the classroom, the onsen, the
-     ferry crew, the Town Book, the guide, the storyteller and the apartments.
+     ferry crew, the Town Book, the guide and the storyteller.
 2. **Everyone walks.**
    - All 26 run the schedule engine the 10 walking residents use today: home, work, a meal, leisure, home.
    - The fixed-spot neighbours retire.
@@ -181,11 +181,10 @@ The rules **(decide if any should change)**:
    - The storyteller picks a pair with something going on: a quarrel, a spark or a rivalry.
    - The Town Book shows each person's family and their closest people.
    - The evening paper (Reiko's) can print the town's gossip.
-6. **Homes fit the cast.**
-   - With 23 people in Minato, one three-storey block on the Rainflower Lane plot is enough: shops on the ground floor
-     and 12 flats above.
-   - Thao's family and Nhung's family each get a connecting pair of flats.
-   - The seven-storey drawing set (`docs/minato-apartments/`) is redrawn for it.
+6. **Homes: the ones that exist** (the creator, 2026-10-14: "Scrap my flat idea, consolidate and remove unused
+   characters instead make every character have a purpose and I think there are enough homes").
+   - No new buildings for people: everyone lives in a home that already stands. The apartment drawing set was removed.
+   - A house nobody lives in after the cuts is either kept (to let, or turned to a use the town needs) or removed.
 
 ## 6. Order of work (small batches, each checked in the live game)
 
@@ -204,7 +203,7 @@ The rules **(decide if any should change)**:
 4. **Showing it.**
    - Walking together, sitting apart, making up, gifts, faces; the Town Book page.
 5. **Homes.**
-   - The apartment block redrawn for the cast and built; Rainflower Lane removed; the shops moved to its ground floor.
+   - Everyone in a home that exists; empty houses kept to let, given a use, or removed.
 6. **Stories.**
    - The storyteller and the evening paper use the relationships.
 

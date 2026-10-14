@@ -1,4 +1,4 @@
-import {FERRY_SHIP,FERRY_HEIGHTS} from './ferry-ship.js';
+import {FERRY_SHIP,FERRY_HEIGHTS,FERRY_ELECTRICS} from './ferry-ship.js';
 import {JOHANSSON_MARINE,makerPlate,WORDMARK} from './johansson-marine.js';
 import {FERRY_PIPING} from './ferry-piping.js';
 import {routePipes,routePipePreview,pipePreviewSegments,pipePreviewBends,pipeRadius} from './ferry-pipe-routes.js';
@@ -75,7 +75,9 @@ const ER=FERRY_ENGINE_ROOM;
  * levels and have many rooms"): through the watertight sliding door at Fr 28 the auxiliary machinery room (z 14–19), then
  * through the door at Fr 38 the workshop to port and the engine store to starboard (z 19–22.5), all on the floor plates.
  */
-export const FERRY_MACHINERY_SPACES=Object.freeze({auxFore:Z(19),storeFore:Z(22.5),wtDoor:Object.freeze({w:.8,h:1.9}),door38:Object.freeze({w:.75,h:1.85}),partition:-.5,partitionAft:Z(20.1)});
+export const FERRY_MACHINERY_SPACES=Object.freeze({auxFore:Z(19),storeFore:Z(22.5),ewFore:Z(26),wtDoor:Object.freeze({w:.8,h:1.9}),door38:Object.freeze({w:.75,h:1.85}),
+ /** The door at Fr 45, the workshop's forward bulkhead to the electrical workshop: between the store's mesh and the bench. */
+ door45:Object.freeze({x:.25,w:.7,h:1.85}),partition:-.5,partitionAft:Z(20.1)});
 const MS=FERRY_MACHINERY_SPACES,WT_W=MS.wtDoor.w,WT_H=MS.wtDoor.h;
 /** Model-linked arrangement review data. Clearances are measured/reserved values, never OEM overhaul minima. */
 export const FERRY_ENGINEERING_ARRANGEMENT=Object.freeze({
@@ -92,7 +94,7 @@ export const FERRY_ENGINEERING_ARRANGEMENT=Object.freeze({
  overheadService:Object.freeze({verification:'unresolved: 1.9 m nominal room height is not a demonstrated engine-overhaul clearance'}),
 });
 /** The floors below the car deck, where the engines are heard: whoever stands on one wears ear defenders (game.js). */
-export const BELOW_DECK_FLOORS=Object.freeze(['er-ladder','er-ladder-foot','engine-room','control-booth','aux-room','workshop']);
+export const BELOW_DECK_FLOORS=Object.freeze(['er-ladder','er-ladder-foot','engine-room','control-booth','aux-room','workshop','electrical-workshop']);
 
 /** The gangway passage through casing P (ferry-model.js GATE): 1.4 m wide, and the foyer from it aft to the foot of stair P. */
 const GATE_FROM=Z(13.3),GATE_TO=Z(14.7);
@@ -946,7 +948,7 @@ export const FERRY_INTERIOR=(()=>{
   box([-W,y0-.06,f],[W,y0,F1+.06],0x8c9193,{solid:false,camera:false,name:'floor plates'});
   floorPlate('chequer',-W,W,f+.06,A1,y0+.002);floorPlate('chequer',-W,W,A1+.06,F1,y0+.002);
   wall('x',-W,W,A1,A1+.06,y0-.1,y1,[doorAt(0,MS.door38.w,y0,MS.door38.h)],0xe8e6dc);
-  box([-W,y0-.1,F1],[W,y1,F1+.06],0xe8e6dc,{name:'store forward bulkhead'});
+  wall('x',-W,W,F1,F1+.06,y0-.1,y1,[doorAt(MS.door45.x,MS.door45.w,y0,MS.door45.h)],0xe8e6dc);                                   // Fr 45, with the door to the electrical workshop
   // The watertight door at Fr 28 (seen from the aux room: its leaf slid open to port in its frame, the hand pump and
   // lever beside it, the notice over it) and the hinged door at Fr 38, hooked back against the workshop's bulkhead.
   for(const x of [-WT_W/2,WT_W/2])deco([x-.05,y0,f-.02],[x+.05,y0+WT_H+.05,f+.08],TEAL);deco([-WT_W/2-.05,y0+WT_H-.05,f-.02],[WT_W/2+.05,y0+WT_H,f+.08],TEAL);
@@ -1050,10 +1052,95 @@ export const FERRY_INTERIOR=(()=>{
    cyl(.22,.22,.6,[-.8,y0+.3,Z(20.3)],0x3a4244,{seg:12,cls:'paint',name:'rag bin'});plate(['OILY RAGS','lid on'],.16,.05,[-.8,y0+.4,Z(20.3)-.221],Math.PI,{bg:'#f1ede2',name:'label: rag bin'});
    bar([-1.8,y1,Z(20.8)],[-1.8,y1-.5,Z(20.8)],.012,0x3a3f41);cyl(.08,.08,.18,[-1.8,y1-.6,Z(20.8)],0x3a3f41,{seg:10,name:'chain block'});bar([-1.8,y1-.7,Z(20.8)],[-1.8,y1-.95,Z(20.8)],.012,0x3a3f41);
   }
+  // ---- The electrical workshop, Fr 45–52 (the creator's diorama, built to the hold's 1.9 m and to her own electrics):
+  // the bench along the forward bulkhead with the meters and the scope, the tool board over it, the 440 V test panel
+  // to starboard on its insulating mat, a motor in for its test, the shore cable's drum, the escape trunk, the cable tray.
+  {const F2=MS.ewFore,D=MS.door45,E=FERRY_ELECTRICS,BENCH=0x8c5a32,FRAME=0x2b5b6c,DRAWER=0x3a6f82;
+   for(const s of [1,-1])box([Math.min(s*W,s*(W+.06)),y0-.1,F1],[Math.max(s*W,s*(W+.06)),y1,F2+.06],0xe8e6dc,{name:'electrical workshop side'});
+   box([-W,y1,F1],[W,CAR-.02,F2+.06],0xd8d6cc,{solid:false,camera:true,name:'electrical workshop deckhead'});deco([-W,CAR-.03,F1],[W,CAR-.005,F2+.06],0xd8d6cc);
+   box([-W,y0-.06,F1+.06],[W,y0,F2],0x8c9193,{solid:false,camera:false,name:'floor plates'});floorPlate('chequer',-W,W,F1+.06,F2,y0+.002);
+   box([-W,y0-.1,F2],[W,y1,F2+.06],0xe8e6dc,{name:'electrical workshop forward bulkhead'});
+   deco([-.3,y0+.35,F2-.01],[.3,y0+.8,F2],0x9aa0a2);for(const [x,yy] of [[-.26,.39],[.26,.39],[-.26,.76],[.26,.76]])cyl(.012,.012,.02,[x,y0+yy,F2-.012],0x5e6467,{rot:[Math.PI/2,0,0],seg:6});   // the manhole to the void, bolted
+   plate(['VOID · 空所','manhole · enter with a permit'],.36,.07,[0,y0+.9,F2-.002],Math.PI,{bg:'#f1ede2',name:'label: void manhole'});
+   // The door at Fr 45: its frame, the leaf hooked back against the bulkhead on this side, the sign over it.
+   for(const x of [D.x-D.w/2,D.x+D.w/2])deco([x-.04,y0,F1-.02],[x+.04,y0+D.h,F1+.08],TEAL);deco([D.x-D.w/2-.04,y0+D.h,F1-.02],[D.x+D.w/2+.04,y0+D.h+.04,F1+.08],TEAL);
+   box([D.x+D.w/2+.05,y0+.02,F1+.06],[D.x+D.w/2+.05+D.w,y0+D.h-.02,F1+.1],DOOR,{name:'electrical workshop door leaf'});
+   plate(['電気工作室','ELECTRICAL WORKSHOP'],.5,.12,[D.x,y0+D.h+.18,F1-.002],Math.PI,{bg:'#24585c',fg:'#f6f3ea',name:'sign: electrical workshop'});
+   // Insulating rubber mats, where a man stands at the bench and at the panel.
+   deco([.5,y0+.002,F2-1.75],[3.9,y0+.022,F2-.82],0x1e293b);deco([-3.9,y0+.002,F2-1.55],[-1.9,y0+.022,F2-.62],0x1e293b);
+   // The bench: a beech top on a blue-green steel frame, the four-drawer pedestal at its port end, the shelf under it.
+   const bz0=F2-.8,bz1=F2,bx0=.5,bx1=3.9,top=y0+.88;
+   box([bx0,y0,bz0],[bx1,top+.06,bz1],BENCH,{draw:false,name:'electrical bench'});deco([bx0,top,bz0],[bx1,top+.06,bz1],BENCH);
+   deco([bx0,y0,bz0+.04],[bx0+.06,top,bz1-.02],FRAME);deco([bx0,y0+.16,bz0+.06],[bx1-.9,y0+.2,bz1-.04],FRAME);
+   deco([bx1-.88,y0,bz0+.02],[bx1,top,bz1],FRAME);for(let d=0;d<4;d++){deco([bx1-.84,y0+.06+d*.2,bz0-.005],[bx1-.04,y0+.22+d*.2,bz0+.02],DRAWER);deco([bx1-.58,y0+.13+d*.2,bz0-.02],[bx1-.3,y0+.15+d*.2,bz0],0xcbd5e1);}
+   deco([1.2,y0+.2,bz0+.15],[1.8,y0+.48,bz0+.5],L.red,{name:'toolbox'});
+   deco([.9,top+.06,bz0+.08],[2.4,top+.075,bz1-.12],0x1f4d3d);                                                                 // the green anti-static mat
+   // On the mat: a 440 V contactor from the steering-gear starter, out for new contacts, and the meters on it.
+   deco([1.35,top+.075,bz0+.22],[1.75,top+.2,bz0+.48],0x2a2e30,{name:'contactor (steering-gear starter)'});deco([1.42,top+.2,bz0+.26],[1.68,top+.24,bz0+.44],0xd97706);
+   plate(['JOHANSSON DENKI','JC-40 · 440 V AC · coil 105 V'],.16,.05,[1.55,top+.14,bz0+.219],Math.PI,{name:'maker’s plate: contactor'});
+   deco([1.95,top+.075,bz0+.2],[2.2,top+.12,bz0+.45],0xfacc15,{name:'digital multimeter'});
+   plate([`AUTO  V~  ${E.hz}.0 Hz  TRUE RMS`,` ${E.volts-4}.2  V AC`],.2,.11,[2.075,top+.141,bz0+.34],Math.PI,{kind:'readout',rotX:-Math.PI/2+.35,bg:'#9eab88',fg:'#0f172a',name:'multimeter display'});   // tilted to whoever stands at the bench
+   // The leads from the meter's jacks lie down on the mat and climb the contactor's front to the probes on the contactor's line terminals.
+   for(const [jx,mx,px,pz,c] of [[2.0,1.86,1.62,bz0+.3,0xef4444],[2.1,1.9,1.48,bz0+.38,0x1e293b]]){
+    const jack=[jx,top+.1,bz0+.2],mat=[mx,top+.081,bz0+.14],foot=[px+.06,top+.081,bz0+.19],rise=[px+.06,top+.27,bz0+.19],probe=[px,top+.25,pz];
+    bar(jack,mat,.006,c);bar(mat,foot,.006,c);bar(foot,rise,.006,c);bar(rise,probe,.011,c);}
+   deco([.6,top+.075,bz0+.12],[.9,top+.21,bz0+.48],0x1e293b,{name:'insulation tester'});
+   plate(['MΩ  500 V','∞ ──── 0'],.24,.16,[.75,top+.215,bz0+.3],0,{rotX:-Math.PI/2,bg:'#f8fafc',name:'insulation tester scale'});
+   deco([2.45,top+.06,bz0+.15],[2.6,top+.11,bz0+.42],0xeab308,{name:'clamp meter'});cyl(.07,.07,.03,[2.52,top+.12,bz0+.1],0xdc2626,{rot:[Math.PI/2,0,0],seg:14,name:'clamp meter jaws'});
+   deco([3.05,top+.06,bz0+.5],[3.27,top+.21,bz0+.76],0xfacc15,{name:'soldering station'});bar([3.0,top+.06,bz0+.4],[2.85,top+.22,bz0+.35],.018,0x94a3b8);cyl(.04,.04,.07,[2.7,top+.1,bz0+.62],0x38bdf8,{rot:[0,0,Math.PI/2],seg:10,name:'solder reel'});
+   deco([3.45,top+.06,bz0+.12],[3.75,top+.22,bz0+.4],0x3b82f6,{name:'vice'});cyl(.09,.09,.06,[3.6,top+.28,bz0+.26],0xd97706,{seg:16,name:'stator in the vice (bilge pump motor, rewound)'});
+   cyl(.033,.033,.11,[3.8,top+.11,bz0+.6],0x7a4a20,{seg:10,name:'J-Coffee can'});
+   // The shelf on posts at the bench's back: the oscilloscope and the bench supply.
+   for(const x of [2.55,3.85])deco([x,top+.06,bz1-.46],[x+.04,top+.52,bz1-.04],FRAME);deco([2.55,top+.52,bz1-.46],[3.89,top+.56,bz1-.04],FRAME);
+   box([2.62,top+.56,bz1-.44],[3.22,top+.86,bz1-.06],0xd6d3c4,{draw:false,name:'oscilloscope'});deco([2.62,top+.56,bz1-.44],[3.22,top+.86,bz1-.06],0xd6d3c4);
+   plate([`CH1 100 V/DIV  ${E.hz} Hz`,'CH2 shore 200 V'],.26,.2,[2.8,top+.71,bz1-.445],Math.PI,{kind:'scope',bg:'#041f14',fg:'#4ade80',name:'oscilloscope screen'});
+   for(let r=0;r<2;r++)for(let c=0;c<3;c++)cyl(.02,.02,.025,[3.0+c*.07,top+.66+r*.1,bz1-.455],c===2?0xef4444:0x475569,{rot:[Math.PI/2,0,0],seg:10});
+   deco([3.3,top+.56,bz1-.42],[3.82,top+.8,bz1-.08],0x334155,{name:'bench supply'});plate([' 24.0 V',' 1.8 A'],.2,.09,[3.56,top+.68,bz1-.425],Math.PI,{kind:'readout',bg:'#090d16',fg:'#ef4444',name:'bench supply display'});
+   plate(['JOHANSSON DENKI · JS-20 · 20 MHz'],.3,.03,[2.92,top+.58,bz1-.445],Math.PI,{name:'maker’s plate: oscilloscope'});
+   // The magnifier lamp clamped to the bench, over the mat.
+   bar([1.0,top+.06,bz1-.1],[1.1,top+.62,bz1-.25],.012,0xe2e8f0);bar([1.1,top+.62,bz1-.25],[1.45,top+.68,bz0+.35],.012,0xe2e8f0);cyl(.12,.14,.05,[1.5,top+.64,bz0+.32],0x38bdf8,{seg:16,name:'magnifier lamp'});
+   // The tool board over the bench: insulated screwdrivers, pliers and strippers, spanners, the rolls of wire and tape.
+   const pb=F2-.012;deco([.6,top+.4,pb-.02],[2.5,top+.98,pb],0x334155,{name:'tool board'});
+   for(let i=0;i<4;i++){cyl(.018,.016,.12,[.75+i*.12,top+.82,pb-.04],i%2?0xfacc15:0xdc2626,{seg:8});bar([.75+i*.12,top+.76,pb-.04],[.75+i*.12,top+.58-i*.02,pb-.04],.005,0xe2e8f0);}
+   for(const [i,c] of [0xef4444,0x3b82f6,0xf97316].entries()){bar([1.35+i*.17,top+.86,pb-.04],[1.33+i*.17,top+.68,pb-.04],.01,c);bar([1.39+i*.17,top+.86,pb-.04],[1.41+i*.17,top+.68,pb-.04],.01,c);deco([1.33+i*.17,top+.86,pb-.05],[1.41+i*.17,top+.92,pb-.03],0x94a3b8);}
+   for(let i=0;i<4;i++)deco([1.95+i*.12,top+.6+i*.03,pb-.05],[1.98+i*.12,top+.9,pb-.03],0xcbd5e1);
+   for(const [i,c] of [0xef4444,0x22c55e,0x3b82f6,0xfacc15,0x0f172a].entries())cyl(.045,.045,.03,[.75+i*.13,top+.5,pb-.04],c,{rot:[Math.PI/2,0,0],seg:12,name:'roll of wire'});
+   // The 440 V test panel to starboard: a marine-green cubicle, fed from the main board; test sockets and its insulation meter.
+   const px0=-3.95,px1=-2.15,pz0=F2-.55;
+   box([px0,y0,pz0],[px1,y0+1.84,F2],L.green,{name:'test panel'});
+   deco([px0+.04,y0+1.0,pz0-.01],[px1-.04,y0+1.78,pz0],L.greenDark);
+   dial('INSULATION','MΩ',.92,.16,[px0+.35,y0+1.5,pz0-.012],Math.PI,{red:[0,.1]});dial('BUS','V',.78,.16,[px0+.75,y0+1.5,pz0-.012],Math.PI,{range:[0,600]});
+   for(const [i,c] of [0x22c55e,0xf8fafc,0xf8fafc,0xf8fafc].entries())cyl(.022,.022,.02,[px0+1.1+i*.12,y0+1.55,pz0-.012],c,{rot:[Math.PI/2,0,0],seg:10,name:i?'earth lamp':'supply lamp'});
+   for(const [i,[lbl,c]] of [['440 V 3φ',0x1e293b],['105 V',0xf8fafc],['24 V DC',0xdc2626]].entries()){deco([px0+.2+i*.52,y0+.75,pz0-.04],[px0+.5+i*.52,y0+.95,pz0],c,{name:'test socket '+lbl});plate([lbl],.28,.05,[px0+.35+i*.52,y0+.68,pz0-.001],Math.PI,{bg:'#f1ede2',name:'label: test socket '+lbl});}
+   plate(['感電注意 440V','DANGER OF ELECTRIC SHOCK'],.5,.18,[px0+.9,y0+.35,pz0-.001],Math.PI,{bg:'#facc15',fg:'#111827',name:'sign: 440 V'});
+   plate(['JOHANSSON MARINE · JE-440T','test panel · 440 V 60 Hz · IT'],.36,.07,[px0+.9,y0+1.86-.1,pz0-.001],Math.PI,{name:'maker’s plate: test panel'});
+   // A motor in for its insulation test: the ballast pump's, on a pallet, its terminal box open and the tester's leads on it.
+   box([-3.6,y0,F1+.35],[-2.6,y0+.12,F1+1.25],0x9a6b3e,{name:'pallet'});
+   cyl(.24,.24,.55,[-3.1,y0+.38,F1+.8],L.alternator,{rot:[0,0,Math.PI/2],seg:16,name:'ballast pump motor, 3.7 kW'});deco([-3.2,y0+.6,F1+.68],[-3.0,y0+.72,F1+.9],L.green);cyl(.04,.04,.18,[-2.75,y0+.38,F1+.8],0xe2e8f0,{rot:[0,0,Math.PI/2],seg:10});
+   plate(['JOHANSSON MARINE · JM-37','3.7 kW · 440 V · 60 Hz · IP44'],.22,.06,[-3.1,y0+.38,F1+.53],Math.PI,{name:'maker’s plate: ballast pump motor'});
+   // The spare shore-power cable on its drum, port aft.
+   cyl(.46,.46,.05,[3.3,y0+.03,F1+.75],0xa16207,{seg:18});cyl(.46,.46,.05,[3.3,y0+.55,F1+.75],0xa16207,{seg:18});cyl(.36,.36,.47,[3.3,y0+.3,F1+.75],0xf97316,{seg:16,name:'shore cable on its drum'});
+   box([2.84,y0,F1+.29],[3.76,y0+.58,F1+1.21],0xa16207,{draw:false,name:'cable drum'});
+   // A stool at the bench.
+   box([1.55,y0,F2-1.35],[1.95,y0+.6,F2-.95],0x1e293b,{draw:false,name:'stool'});bar([1.75,y0,F2-1.15],[1.75,y0+.56,F2-1.15],.03,0x94a3b8);cyl(.2,.2,.05,[1.75,y0+.58,F2-1.15],0x1e293b,{seg:14,name:'stool seat'});
+   // The escape trunk in the starboard side, its dogged door with the red handwheel facing inboard.
+   const tz0=Z(24.6),tz1=Z(25.2);box([-W,y0,tz0-.06],[-W+.7,y1,tz1+.06],0xc8d6d0,{name:'escape trunk'});
+   deco([-W+.7,y0+.05,tz0],[-W+.74,y0+1.75,tz1],0x94a3b8);cyl(.14,.14,.025,[-W+.76,y0+1.0,(tz0+tz1)/2],0xdc2626,{rot:[0,0,Math.PI/2],seg:16,name:'escape door handwheel'});
+   for(const yy of [.3,1.0,1.6])deco([-W+.74,y0+yy,tz1-.06],[-W+.78,y0+yy+.08,tz1-.02],0x5e6467);
+   plate(['非常脱出口','EMERGENCY ESCAPE ↑ car deck'],.42,.1,[-W+.75,y0+1.6,(tz0+tz1)/2],Math.PI/2,{bg:'#15803d',fg:'#ffffff',name:'sign: emergency escape'});
+   // Overhead: the thruster's cable in its tray to starboard, the lamps in their cages, the machinery alarm beacon.
+   deco([-3.7,y1-.14,F1],[-3.15,y1-.1,F2+.06],0x64748b,{name:'cable tray'});for(const x of [-3.6,-3.42,-3.25])cyl(.025,.025,F2-F1,[x,y1-.08,(F1+F2)/2],0x0f172a,{rot:[Math.PI/2,0,0],seg:8,name:x===-3.42?'thruster cable':'cable'});
+   caged(1,Z(23.5));caged(-1,Z(23.2));caged(1,Z(25.4));
+   for(const x of [-1,1.6])deco([x-.6,y1-.08,Z(24.4)-.12],[x+.6,y1-.01,Z(24.4)+.12],0xe2e8f0,{name:'fluorescent fitting'});
+   cyl(.07,.07,.1,[0,y1-.08,Z(25.3)],0xef4444,{seg:12,name:'machinery alarm beacon'});
+   plate(['安全第一','SAFETY FIRST'],.44,.2,[-1.4,y0+1.45,F1+.062],0,{bg:'#15803d',fg:'#ffffff',name:'sign: safety first'});
+   plate(['DG No.2 · AVR · wiring','JOHANSSON MARINE · 1994'],.5,.3,[W-.01,y0+1.35,Z(24.1)],-Math.PI/2,{bg:'#1e3a8a',fg:'#93c5fd',name:'diagram: DG2 AVR'});
+  }
   // The floors: the aux room, reaching back through the watertight door and forward through the door at Fr 38; the
   // workshop and the store as one floor (the partition stands on it), reaching back through that door.
   floor('aux-room',[-W,W],[f-.4,A1+.1],y0,(x,z,r)=>{if(z<f+.06+r)return Math.abs(x)<=WT_W/2-r+.06;if(z>A1-r)return Math.abs(x)<=MS.door38.w/2-r+.06;return Math.abs(x)<=W-r;});
-  floor('workshop',[-W,W],[A1-.4,F1],y0,(x,z,r)=>{if(z<A1+.06+r)return Math.abs(x)<=MS.door38.w/2-r+.06;return Math.abs(x)<=W-r&&z<=F1-r;});
+  floor('workshop',[-W,W],[A1-.4,F1+.1],y0,(x,z,r)=>{if(z<A1+.06+r)return Math.abs(x)<=MS.door38.w/2-r+.06;if(z>F1-r)return Math.abs(x-MS.door45.x)<=MS.door45.w/2-r+.06;return Math.abs(x)<=W-r;});
+  floor('electrical-workshop',[-W,W],[F1-.4,MS.ewFore],y0,(x,z,r)=>{if(z<F1+.06+r)return Math.abs(x-MS.door45.x)<=MS.door45.w/2-r+.06;return Math.abs(x)<=W-r&&z<=MS.ewFore-r;});
  }
  // ---- The pipes, from the diagrams (6r-1). The anchors the machines did not set themselves: the tanks under the plates
  // (a flanged stub on the tank top, under the gratings), the sea-water crossover, the overboards, the bilge wells, the
