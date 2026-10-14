@@ -108,7 +108,7 @@ export const CAST_RECIPES=castSet({
   outfit:{top:'apron',topColour:'#ad6178',bottom:'trousers',bottomColour:'#4a4040',shoes:'#2b2b2b',hat:'kerchief',hatColour:'#f4f1ea',accent:'#f4f1ea'}}),
  // Miss Higa, who teaches the island school and keeps the bandai at Umi-no-yu in the evenings (docs/CAST-PLAN.md):
  // one face in the classroom and at the bath (people/school-avatars.js TEACHER_RECIPE is this one).
- 'Miss Higa':R({name:'Miss Higa',body:{height:.3,build:.45,silhouette:'feminine',skin:'#d6a07a'},head:{size:.5,shape:.48,form:'oval',jaw:.4,cheeks:.45},
+ 'Miss Higa':R({name:'Miss Higa',body:{height:.33,build:.45,silhouette:'feminine',skin:'#d6a07a'},head:{size:.5,shape:.48,form:'oval',jaw:.4,cheeks:.45},
   hair:{style:'bob',colour:'#241a14'},eyes:{style:'gentle',colour:'#2a1d16',size:.5},brows:{style:'arched',colour:'#241a14',size:.45},
   nose:{style:'line',size:.4},mouth:{style:'smile',colour:'#b8544a',size:.45},glasses:{style:'square',colour:'#3b3f45'},blush:.2,
   outfit:{top:'blouse',topColour:'#e9e4d6',bottom:'longskirt',bottomColour:'#3a4a5e',shoes:'#3a2a1e',accent:'#f4f1ea'}}),
