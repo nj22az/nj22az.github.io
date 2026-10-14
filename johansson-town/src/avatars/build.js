@@ -405,7 +405,8 @@ function addHair(list,recipe,m){
  if(!['none','headband','ribbon'].includes(recipe.outfit.hat))for(const g of list.slice(hairStart)){
   const pos=g.attributes.position;g.userData.hatHair={position:pos.array.slice(),normal:g.attributes.normal.array.slice()};for(let i=0;i<pos.count;i++){
    const x=pos.getX(i)/S[0],y=(pos.getY(i)-m.headCentre)/S[1],z=pos.getZ(i)/S[2],r=Math.hypot(x,y,z);
-   const w=r>1.035?tuck(x,y,z):0;if(w>0){const f=1+(1.035/r-1)*w;pos.setXYZ(i,x*f*S[0],m.headCentre+y*f*S[1],z*f*S[2]);}
+   // (a hat may tuck some of it further in than the line under its cloth: the kerchief's fringe, under the skin)
+   const target=tuck.target?tuck.target(x,y,z):1.035,w=r>target?tuck(x,y,z):0;if(w>0){const f=1+(target/r-1)*w;pos.setXYZ(i,x*f*S[0],m.headCentre+y*f*S[1],z*f*S[2]);}
   }smoothNormals(g);
  }
  // A hat from World's catalogue presses the hair in under its own band, and leaves it out of a snapback's opening above

@@ -1,5 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
-import {TUCK_R,unitToModel,headReach,dirAt} from './head-cover.js';
+import {TUCK_R,unitToModel,headReach,dirAt,shapeScale} from './head-cover.js';
 import {POLICE_UNIFORM,DUTY_BELT} from './police-data.js';
 export {POLICE_UNIFORM,POLICE_PURPOSE,DUTY_BELT} from './police-data.js';
 
@@ -49,7 +49,7 @@ export function addPoliceCap(list,recipe,m,kit){
  // `up`: the inside is below (a face that looks up); `down`: the inside is above.
  const down=p=>p.clone().add(new THREE.Vector3(0,1,0)),up=p=>p.clone().add(new THREE.Vector3(0,-1,0));
  // The band's line round the head: on the skin at the forehead, on the (tucked) hair elsewhere, a few millimetres out.
- let rh=[];for(let i=0;i<N;i++){const a=i/N*Math.PI*2,d=dirAt(a,y0),r=headReach(spec,d,1,flip)+C.gap;rh.push(r*Math.sqrt(1-y0*y0));}
+ let rh=[];for(let i=0;i<N;i++){const a=i/N*Math.PI*2,d=dirAt(a,y0),r=headReach(spec,d,1,flip,shapeScale(d,m))+C.gap;rh.push(r*Math.sqrt(1-y0*y0));}
  // Smoothed round, so the band is a clean ring, not a dent where the hairline meets the forehead.
  for(let k=0;k<3;k++)rh=rh.map((r,i)=>Math.max(r,(rh[(i+N-1)%N]+2*r+rh[(i+1)%N])/4));
  const ang=i=>i/N*Math.PI*2,P=(a,r,y)=>new THREE.Vector3(Math.sin(a)*r,y,Math.cos(a)*r);

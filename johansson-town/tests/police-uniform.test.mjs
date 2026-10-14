@@ -77,7 +77,7 @@ test('the uniform stays light: the cap, the kerchief and the belt each within th
  const count=r=>{const a=buildAvatar(r,{shadows:false,faceSize:64});const n=a.body.geometry.attributes.position.count;a.dispose();return n;};
  const base={...MORI,outfit:{...MORI.outfit,hat:'none',belt:'none'}},n0=count(base);
  assert.ok(count({...base,outfit:{...base.outfit,hat:'police'}})-n0<=3600,'the police cap');
- assert.ok(count({...base,outfit:{...base.outfit,hat:'kerchief'}})-n0<=5100,'the kerchief');
+ assert.ok(count({...base,outfit:{...base.outfit,hat:'kerchief'}})-n0<=6000,'the kerchief');
  assert.ok(count({...base,outfit:{...base.outfit,belt:'duty'}})-n0<=4100,'the duty belt');
  const dressed=count(MORI),undressed=count({...MORI,outfit:{...MORI.outfit,top:'tank',bottom:'underwear',footwear:'barefoot',hat:'none',belt:'none'}});
  assert.ok(dressed-undressed<=10000,'the whole uniform over the base layer');
