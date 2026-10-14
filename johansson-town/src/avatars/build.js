@@ -1483,7 +1483,35 @@ function buildHead(recipe,m,faceSize){
  const material=celFrom(new THREE.MeshStandardMaterial({map:texture,emissive:0xffffff,emissiveMap:texture,emissiveIntensity:.05}),{bands:'soft3'});
  const head=new THREE.Mesh(g,material);head.name='Shimanchu head';
  head.position.y=m.headCentre-m.headY;
+ if(INK_NOSES[recipe.nose.style])head.add(inkNoseBump(recipe,m,material,{PHI0,PHI,TH0,TH}));
  return {head,canvas,ctx,texture};
+}
+
+/**
+ * The ink noses' bump (the creator, 2026-10-14: "They need a 3d bump too"): a low, smooth rise of the face under the drawn
+ * line, so the nose stands off the face in profile and catches the light, as a Mii's does. It wears the face's own canvas,
+ * its points mapped onto it the way the head's are, so the line drawn on the face runs over the bump unbroken.
+ */
+function inkNoseBump(recipe,m,material,{PHI0,PHI,TH0,TH}){
+ const L=faceLayout(recipe),k=.7+recipe.nose.size*.7;
+ const theta=TH0+(L.noseY-7*k)/256*TH,phi=PHI0+L.noseX/256*PHI;   // centred a little above the tip, where the bridge rises
+ const at=shapeHeadPoint(new THREE.Vector3(-Math.cos(phi)*Math.sin(theta),Math.cos(theta),Math.sin(phi)*Math.sin(theta)),m.profile);
+ const S=[m.Rh*m.headSX,m.Rh*m.headSY,m.Rh*.98],w=m.Rh*(.08+recipe.nose.size*.05),h=w*1.4,d=m.Rh*(.11+recipe.nose.size*.07);
+ const g=new THREE.SphereGeometry(1,24,16,0,Math.PI*2,0,Math.PI*.5);g.rotateX(Math.PI/2);   // a dome, its top facing +z
+ const pos=g.attributes.position,uv=g.attributes.uv,v=new THREE.Vector3(),centre=new THREE.Vector3(at.x*S[0],at.y*S[1],at.z*S[2]);
+ const out=centre.clone().divide(new THREE.Vector3(S[0]*S[0],S[1]*S[1],S[2]*S[2])).normalize();   // the face's normal there
+ const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1),out);
+ for(let i=0;i<pos.count;i++){
+  v.fromBufferAttribute(pos,i);v.set(v.x*w,v.y*h,v.z*d-d*.3).applyQuaternion(q).add(centre);pos.setXYZ(i,v.x,v.y,v.z);
+  // Where this point falls on the face's canvas: back through the head's scale to the sphere, then the head's own mapping.
+  const n=v.clone().set(v.x/S[0],v.y/S[1],v.z/S[2]).normalize(),p=Math.atan2(n.z,-n.x),t=Math.acos(THREE.MathUtils.clamp(n.y,-1,1));
+  uv.setXY(i,THREE.MathUtils.clamp((p-PHI0)/PHI,.002,.998),THREE.MathUtils.clamp(1-(t-TH0)/TH,.002,.998));
+ }
+ g.computeVertexNormals();
+ // Lit like the face: its normals leaned the same way toward the light, so the bump shades softly and never darkly.
+ const nrm=g.attributes.normal,nn=new THREE.Vector3(),toward=new THREE.Vector3(0,.4,.92).normalize();
+ for(let i=0;i<nrm.count;i++){nn.fromBufferAttribute(nrm,i);nn.lerp(toward,.45).normalize();nrm.setXYZ(i,nn.x,nn.y,nn.z);}
+ const bump=new THREE.Mesh(g,material);bump.name='Shimanchu nose';return bump;
 }
 
 function addNose(parts,recipe,m){
