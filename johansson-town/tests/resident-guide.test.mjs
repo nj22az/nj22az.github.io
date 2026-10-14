@@ -9,7 +9,7 @@ const root=new URL('../',import.meta.url);
 const read=path=>readFile(new URL(path,root));
 test('every resident the player can meet has a photo article and real model portrait',async()=>{
  const catalogue=JSON.parse(await read('guide/residents.json'));
- const expected=['Johansson',...ACTIVE_RESIDENT_NAMES,'Mrs Higa',...NEIGHBOURS.map(p=>p.name)];
+ const expected=['Johansson',...ACTIVE_RESIDENT_NAMES,'Miss Higa',...NEIGHBOURS.map(p=>p.name)];
  assert.deepEqual(catalogue.map(r=>r.name).sort(),expected.sort());
  assert.equal(new Set(catalogue.map(r=>r.name)).size,catalogue.length);
  for(const r of catalogue){

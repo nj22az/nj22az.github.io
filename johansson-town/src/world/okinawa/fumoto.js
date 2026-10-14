@@ -6,7 +6,7 @@ import {rng} from './kit.js';
 
 /**
  * Fumoto, the farming hamlet at the foot of Mount Aoba (fumoto-layout.js): its walled
- * houses, the co-operative store, the asagi square with the gajumaru and the well, the
+ * houses (empty and to let: nobody in the cast lives here, cast.js), the co-operative store (closed), the asagi square with the gajumaru and the well, the
  * ishiganto at the T-junctions, the fukugi windbreak along the back, and the pole line
  * that brings power up the main lane from the coastal road.
  *
@@ -35,7 +35,8 @@ export function buildFumoto(kit,solid,ctx){
   kit.box(.5,1.25,.34,x+.1,.62,z,0xd8cfb3,{finish:'coral'});
   kit.sign(enamel({jp:'Ishigantō',en:'ISHIGANTŌ',bg:'#d8d2c2',ink:'#2b2b2b'}),.3,.46,x-.17,.85,z,{ry:-Math.PI/2,depth:.02,name:'ishiganto sign'});
   solid(kit.rect(x-.15,x+.35,z-.2,z+.2,1.3,'ishiganto'));}
- // Old Mr Zukeran's goats, in a pen of posts and rails on the strip behind his house:
+ // The goats of 4 Fumoto, in a pen of posts and rails on the strip behind the house (the house is empty;
+ // the goats stay with it until the cast plan decides, docs/CAST-PLAN.md):
  // three Ryukyu goats (hīja), white and brown, with a hay rack and a water pan.
  {const x0=21,x1=27.5,z0=195.6,z1=199.4,post=0x6d5238,rail=0x8a6a46;
   for(const x of [x0,(x0+x1)/2,x1])for(const z of [z0,z1])kit.block(x-.06,x+.06,0,1.1,z-.06,z+.06,post);
@@ -52,7 +53,7 @@ export function buildFumoto(kit,solid,ctx){
   });
   goat(x0+2.2,z0+1.6,.4,0xf1ede4,1);goat(x0+4.4,z0+2.4,-2.2,0x8a5a34,2);goat(x1-1,z0+1.2,1.6,0xf1ede4,3);
   solid([kit.rect(x0-.1,x1+.1,z0-.1,z0+.1,1.1,'goat pen'),kit.rect(x0-.1,x1+.1,z1-.1,z1+.1,1.1,'goat pen'),kit.rect(x0-.1,x0+.1,z0,z1,1.1,'goat pen'),kit.rect(x1-.1,x1+.1,z0,z1,1.1,'goat pen')]);
-  inspect((x0+x1)/2,1,z0-.9,'Look at the goats','Hīja, the goats','Three island goats, two white and one brown, who eat the cane tops and the hibiscus and anything Old Mr Zukeran leaves on the wall. Goat soup is for New Year and for a new house, and he says the brown one knows it.');}
+  inspect((x0+x1)/2,1,z0-.9,'Look at the goats','Hīja, the goats','Three island goats, two white and one brown, who eat the cane tops and the hibiscus. The house they belong to is empty; the board on its gate says to ask at the town hall, and whoever takes the house takes the goats.');}
  // The fukugi row behind the hamlet, against the north wind of the winter monsoon.
  for(let x=F.plots[0].minX;x<=F.plots[1].maxX;x+=2.3)solid(fukugi(kit,x,F.plots[0].minZ-1.1,{h:5.6+((x*7)%3)*.4,seed:700+Math.round(x)}));
  // The hamlet's name stone at the foot of the main lane, where it leaves the cane.
@@ -60,7 +61,7 @@ export function buildFumoto(kit,solid,ctx){
   kit.box(.9,1.5,.55,x,.75,z,0xe2dccb,{finish:'coral'});kit.box(1,.12,.62,x,1.56,z,0xd6cfbd,{finish:'coral'});
   kit.sign(fascia({jp:'Fumoto',en:'FUMOTO'}),.86,.2,x,1.15,z+.29,{depth:.02,name:'hamlet name sign'});
   solid(kit.rect(x-.5,x+.5,z-.32,z+.32,1.6,'hamlet stone'));
-  inspect(x,1.2,z+1,'Read the hamlet stone','Fumoto','Fumoto, “the foot of the mountain”: four families, the co-op store and the well, between the cane and Mount Aoba. The lane goes on up past Aoba Radio to the utaki at the top.');}
+  inspect(x,1.2,z+1,'Read the hamlet stone','Fumoto','Fumoto, “the foot of the mountain”: four houses, the co-op store and the well, between the cane and Mount Aoba. Nobody lives here now; the fields are still here and the houses are to let. The lane goes on up past Aoba Radio to the utaki at the top.');}
  // Power: up the main lane from the coastal road on the lane's east verge, then along the
  // two cross lanes, with a drop to every house and the store.
  const poles=[],pole=(x,z,o={})=>{const p=utilityPole(kit,x,z,o);solid(p.collider);poles.push(p);return p;};
@@ -139,8 +140,9 @@ function coOpStore(kit,solid,{inspect,anchor,onAction,vending}){
  solid([{id:'co-op bench',x:S.minX+1.05,z:cz-(W+.45)/2,w:.5,d:2.3,height:.5},{id:'post box',x:S.minX+.35,z:S.maxZ+.55,w:.5,d:.5,height:1.2},{id:'bicycle',x:S.minX+1.3,z:S.minZ-.6,w:1.4,d:.6,height:1.1}]);
  for(const z of [S.minZ+.05,S.maxZ-.05])solid([{id:'porch column',x:S.minX+.12,z,w:.3,d:.3,height:3}]);
  vending(S.minX+2.4,S.maxZ+.65,0);
- inspect(S.minX+.1,1.2,(S.minZ+S.maxZ)/2+1.3,'Read the co-op store’s doors','Fumoto Co-op Store','Built by the hamlet in 1968, one share per family; the profit pays for the well, the street lights and the cane-cut party. Rice, soy, tinned tuna, soap, batteries, mosquito coils, awamori by the cup, and the island tofu the Ishimines make at dawn. The telephone by the door is the hamlet’s; the round red box is the post.');
- anchor(S.minX-.8,1,(S.minZ+S.maxZ)/2,'Shop at the Fumoto co-op',()=>onAction?.('airport-shop','Fumoto Co-op Store',{id:'fumoto-co-op',line:'Grandmother Tokashiki’s counter: what a farming hamlet runs out of, and the tofu from up the lane.',items:[['Island tofu (shima-dōfu), still warm',150],['Tinned tuna',120],['Mosquito coils',200],['Rice, 2 kg',780]]}));
+ inspect(S.minX+.1,1.2,(S.minZ+S.maxZ)/2+1.3,'Read the co-op store’s doors','Fumoto Co-op Store','The shop is shut. The hamlet built it in 1968, one share per family, and it closed when the families left. A notice on the glass says to buy your groceries at Sakura Shōten in Minato. The telephone by the door and the round red post box are still there.');
+ // Closed (cast.js PLACES 'fumoto-co-op'): nobody keeps it, so the door says so instead of selling.
+ anchor(S.minX-.8,1,(S.minZ+S.maxZ)/2,'Try the co-op store’s door',()=>onAction?.('read','Fumoto Co-op Store · closed','The door is locked and the counter inside is bare. Nobody keeps the store now: Fumoto stays as fields. For groceries, go to Sakura Shōten in Minato.'));
 }
 
 /**
@@ -162,20 +164,20 @@ function square(kit,solid,{inspect}){
  kit.cyl(.14,.11,.24,wx+.35,.97,wz,0x8a6a46,{segments:10});
  kit.block(wx+1.15,wx+2.1,0,.55,wz-.45,wz+.45,0xc9c4b6);kit.block(wx+1.25,wx+2,.4,.56,wz-.35,wz+.35,0x7d8a8e);
  solid([kit.rect(wx-1.05,wx+1.05,wz-1.1,wz+1.1,1,'village well'),kit.rect(wx+1.1,wx+2.15,wz-.5,wz+.5,.6,'well basin')]);
- inspect(wx-1.5,1,wz,'Look into the well','Mura-gā, the village well','The hamlet’s well, older than any of its houses. Water came from here until the island main reached Fumoto in 1972, and the first water of the new year is still drawn from it for the gods. On Sunday mornings the families take turns to clean it.');
+ inspect(wx-1.5,1,wz,'Look into the well','Mura-gā, the village well','The hamlet’s well, older than any of its houses. Water came from here until the island main reached Fumoto in 1972, and the first water of the new year was drawn from it for the gods. Nobody lives here to clean it now, and its lid is half off.');
  // A long bench of two coral slabs on stone feet, facing the tree.
  for(const dx of [-1,1])kit.block(sx+dx*1.1-.18,sx+dx*1.1+.18,0,.38,sz-.18,sz+.18,0xd8cfb3,'coral');
  kit.block(sx-1.6,sx+1.6,.38,.5,sz-.26,sz+.26,0xe2dccb,'coral');
  solid([kit.rect(sx-1.65,sx+1.65,sz-.3,sz+.3,.5,'square bench')]);
- inspect(sx,1,sz+.9,'Sit a while under the gajumaru','The asagi square','The open ground every hamlet keeps: for the harvest dance, the tug of war at the old new year, and the evenings, when it is too hot indoors and somebody brings a sanshin out to the bench under the gajumaru.');
+ inspect(sx,1,sz+.9,'Sit a while under the gajumaru','The asagi square','The open ground every hamlet keeps: for the harvest dance, the tug of war at the old new year, and the hot evenings, when somebody brought a sanshin out to the bench under the gajumaru. The houses round it are empty now, and the square is quiet.');
  // The notice board on the square's lane side, facing the lane.
  {const x=F.square.minX+.35,z=F.notices[1]+2.6;
   for(const dz of [-.9,.9])kit.block(x-.05,x+.05,0,1.9,z+dz-.05,z+dz+.05,0x6d5238);
   kit.block(x-.03,x+.03,.9,1.9,z-1,z+1,0x8a6a46);kit.block(x-.12,x+.12,1.9,1.98,z-1.1,z+1.1,0x5d4431);
-  const notes=[poster({title:'Cane cut',lines:['January 10th','all households','Kuniyoshi kuchō'],band:'#3f7f86'}),poster({title:'Well day',lines:['Sundays 7:00','this month:','Zukeran']}),poster({title:'Moai',lines:['3rd Saturday','at the store','¥3,000']})];
+  const notes=[poster({title:'To let',lines:['1–4 Fumoto','ask at the','town hall'],band:'#3f7f86'}),poster({title:'Store closed',lines:['for groceries:','Sakura Shōten','Minato']}),poster({title:'Well',lines:['not for','drinking','town water only']})];
   notes.forEach((t,i)=>kit.sign(t,.5,.7,x-.05,1.4,z-.62+i*.62,{ry:-Math.PI/2,depth:.01,name:'notice sign'}));
   solid([kit.rect(x-.12,x+.12,z-1.1,z+1.1,2,'notice board')]);
-  inspect(x-.8,1.3,z,'Read the hamlet notices','Fumoto notices','CANE CUT: from January 10th, every household, one person a day; Kuniyoshi is kuchō and keeps the list. WELL DAY: Sunday at seven, this month the Zukerans. MOAI: the third Saturday at the store, ¥3,000 each; this month the pot goes to the Ishimines, for their new water tank.');}
+  inspect(x-.8,1.3,z,'Read the hamlet notices','Fumoto notices','TO LET: 1 to 4 Fumoto, red tile and concrete, with their yards; ask at the town hall. STORE CLOSED: for groceries, go to Sakura Shōten in Minato. WELL: not for drinking; use the town water.');}
  hibiscus(kit,F.square.maxX-.8,F.square.minZ+1,{seed:82});banana(kit,F.square.maxX-.6,F.square.maxZ-1.2,{seed:83});
  solid([kit.rect(F.square.maxX-1.3,F.square.maxX-.1,F.square.maxZ-1.7,F.square.maxZ-.7,2,'banana')]);
 }

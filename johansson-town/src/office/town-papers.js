@@ -33,7 +33,7 @@ export const TOWN_PAPERS=[
     "type": "Notice",
     "title": "Island freight and dock shifts",
     "organisation": "Town Services",
-    "text": "WESTERN QUAY · ISLAND LIFELINE\nCargo crews: 07:00–22:00. Early boat: ice, rice and shop supplies. Afternoon: post, repair parts and village parcels. Evening: chilled fish and outgoing mail.\nRiku walks the cargo circuit; Emi Kado checks manifests at the dispatch desk. Ferry passengers use the marked main quay. Dock Electrical & Repairs is beside the warehouse. Keep its doorway and the hoist bay clear.",
+    "text": "WESTERN QUAY · ISLAND LIFELINE\nCargo crews: 07:00–22:00. Early boat: ice, rice and shop supplies. Afternoon: post, repair parts and village parcels. Evening: chilled fish and outgoing mail.\nThe harbour master runs the cargo yard and keeps the freight book at the dispatch desk. Ferry passengers use the marked main quay. Dock Electrical & Repairs is beside the warehouse. Keep its doorway and the hoist bay clear.",
     "source": "notice:Island freight and dock shifts"
   },
   {
@@ -61,7 +61,7 @@ export const TOWN_PAPERS=[
     "type": "Notice",
     "title": "Rainflower Florist",
     "organisation": "Town Services",
-    "text": "Fresh stems, potted greenery and hand-made wreaths. Mrs Kinjō works here from 09:00 to 18:00, and still reminds her husband that supper will not wait for the tide. The flowers are refreshed when the supply boat brings its morning delivery.",
+    "text": "Fresh stems, potted greenery and hand-made wreaths. Mrs Kinjō works here from 09:00 to 18:00, and makes the lanterns and flowers for the izakaya and the town’s festivals. The flowers are refreshed when the supply boat brings its morning delivery.",
     "source": "notice:Rainflower Florist"
   },
   {
@@ -185,16 +185,23 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
+    "title": "Fumoto Co-op Store · closed",
+    "organisation": "Town Services",
+    "text": "The door is locked and the counter inside is bare. Nobody keeps the store now: Fumoto stays as fields. For groceries, go to Sakura Shōten in Minato.",
+    "source": "notice:Fumoto Co-op Store · closed"
+  },
+  {
+    "type": "Notice",
     "title": "The swing",
     "organisation": "Town Services",
-    "text": "The chains squeak on the forward stroke and not on the back one. Mr Iha oils them every spring and the squeak comes back by the summer. Somebody has written a name in felt pen on the left seat and somebody else has crossed it out.",
+    "text": "The chains squeak on the forward stroke and not on the back one. Somebody oils them every spring and the squeak comes back by the summer. Somebody has written a name in felt pen on the left seat and somebody else has crossed it out.",
     "source": "notice:The swing"
   },
   {
     "type": "Flyer",
     "title": "Kitahama notice board",
     "organisation": "Town Services",
-    "text": "Rubbish: burnable on Tuesdays and Fridays, cans and bottles on Wednesdays, out by eight and under the nets, because of the crows.\n\nThe cane cut is on Monday the 12th of January from seven. Everybody on the lane, lunch at the Tairas'.\n\nSanshin with Mrs Gushiken, Saturdays at half past nine on her verandah. Beginners welcome; bring your own picks.\n\nTyphoon season: tie down your water tanks, fill the bath, shutters up by Friday. Mr Iha will check the lane lights.\n\nFound: a child's blue sandal, left foot. Ask at number 10.",
+    "text": "Rubbish: burnable on Tuesdays and Fridays, cans and bottles on Wednesdays, out by eight and under the nets, because of the crows.\n\nThe cane cut is on Monday the 12th of January from seven. Everybody on the lane, lunch at Sato Ramen.\n\nTo let: numbers 7, 9, 10, 11 and 12. Ask at the town hall.\n\nTyphoon season: tie down your water tanks, fill the bath, shutters up by Friday. Mr Shimabukuro will check the lane lights.\n\nFound: a child's blue sandal, left foot. Ask at number 3.",
     "source": "notice:Kitahama notice board"
   },
   {
@@ -257,7 +264,7 @@ export const TOWN_PAPERS=[
     "title": "Community kitchen bookings",
     "type": "Schedule",
     "organisation": "Community Hall",
-    "text": "Saturday: Women's Association · women's association, andagi for the eisa night (Mrs Nakamura)\n\nSunday: Higa family, 33rd anniversary memorial lunch\n\nWednesday: Years 5–6 cooking class, goya champurū (Yonamine-sensei)\n\nFriday: open to all, 18:00 -- bring your own fish (Kōji has promised tuna)",
+    "text": "Saturday: Women's Association, andagi for the eisa night (Mrs Nakamura)\n\nSunday: Higa family, 33rd anniversary memorial lunch\n\nWednesday: Years 5–6 cooking class, goya champurū (Higa-sensei)\n\nFriday: open to all, 18:00 -- bring your own fish (Kōji has promised tuna)",
     "source": "notice:Community kitchen bookings"
   },
   {

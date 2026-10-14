@@ -51,7 +51,6 @@ const BY_AGE=Object.freeze({
 /** Residents whose walk is part of who they are. */
 export const PERSONAL_GAITS=Object.freeze({
  'Grandmother Higa':{stride:.72,bounce:.45,lift:.55,lean:.16,carry:'behind',tics:['nod','sky'],ticEvery:[10,20]},
- 'Uncle Kinjō':{stride:.8,bounce:.5,lean:.1,carry:'behind',tics:['nod','glance']},
  'Mr Ōshiro':{stride:.82,bounce:.55,lean:.09,carry:'behind',tics:['sky','nod']},
  Barfly:{stride:.75,bounce:.4,lift:.45,arms:.4,lean:.1,sway:.05,carry:'pockets',tics:['hum','glance'],ticEvery:[8,14]},
  'Officer Mori':{stride:1.15,bounce:.6,arms:1.2,elbow:.2,swagger:.5,lean:-.02,carry:'stiff',tics:['glance','glance','watch'],ticEvery:[6,12]},
@@ -59,7 +58,6 @@ export const PERSONAL_GAITS=Object.freeze({
  Thuan:{stride:1.05,bounce:1.1,arms:1,lean:.03,tics:['glance','hum','hair'],ticEvery:[8,15]},
  Thao:{stride:1.08,bounce:.9,swagger:1.4,sway:.05,carry:'pockets',tics:['glance','hum'],ticEvery:[9,16]},
  Nhung:{stride:.9,bounce:.9,arms:.7,headBob:.02,tics:['sky','hair'],ticEvery:[9,18]},
- 'Mr Toguchi':{stride:1.05,bounce:.8,arms:.7,lean:.08,toe:.1,tics:['glance','sky'],ticEvery:[8,14]},
  Johansson:{stride:1.12,bounce:.85,arms:.9,lean:.03,tics:['sky','watch','glance'],ticEvery:[10,20]},
  'Harbour master':{stride:1.05,bounce:.7,arms:.8,toe:.12,carry:'behind',tics:['sky','watch']},
  Reiko:{stride:1,bounce:.8,arms:.8,lean:.05,tics:['nod','glance']},

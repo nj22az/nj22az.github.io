@@ -28,16 +28,16 @@ const F={who:'Mr Fujita',outfit:'afterbath'},STOOL={seated:true,seatHeight:.4},C
 const CASES=[
  ['CupHands',F],['CupHands',{...F,state:{speed:1.1},walking:true}],['CoinToCheek',F],['BowDeep',{...F,hold:2.4}],
  ['BowWalk',{who:'Thuan',outfit:'afterbath',state:{speed:.7},walking:true}],['BowWalk',{who:'Nhung',outfit:'afterbath'}],
- ['KneelHug',{...F,seconds:4}],['PoleFlick',{who:'Mrs Higa',outfit:'clothes',state:{...STOOL,pose:'SitHold'},hold:3}],
+ ['KneelHug',{...F,seconds:4}],['PoleFlick',{who:'Miss Higa',outfit:'clothes',state:{...STOOL,pose:'SitHold'},hold:3}],
  ['Peek',{who:'Thuan',outfit:'towel'}],['Peek',{who:'Thao',outfit:'towel'}],['Peek',F],
  ['BannerUp',F],['BannerUp',{...F,state:{speed:1.2},walking:true}],['FanWild',F],['HoldOn',{...F,tenugui:'flag'}],
- ['FingerStop',{who:'Mrs Higa',outfit:'clothes'}],['FingerStop',{who:'Mrs Higa',outfit:'clothes',state:STOOL}],
- ['Tape',F],['Tape',{who:'Thuan',outfit:'towel'}],['Offer',{who:'Nhung',outfit:'towel'}],['Offer',{who:'Mrs Higa',outfit:'clothes',state:STOOL}],
+ ['FingerStop',{who:'Miss Higa',outfit:'clothes'}],['FingerStop',{who:'Miss Higa',outfit:'clothes',state:STOOL}],
+ ['Tape',F],['Tape',{who:'Thuan',outfit:'towel'}],['Offer',{who:'Nhung',outfit:'towel'}],['Offer',{who:'Miss Higa',outfit:'clothes',state:STOOL}],
  ['Offer',{who:'Nhung',outfit:'swim',state:SOAK}],['Reach',{who:'Thuan',outfit:'towel'}],['Reach',F],
  ['LieKnead',{...F,state:{lying:true}}],['GrenadeCoin',{...F,state:CHAIR}],
  ['Aim',{who:'Thuan',outfit:'towel'}],['Aim',{who:'Nhung',outfit:'towel'}],['Aim',{who:'Thao',outfit:'towel'}],
  ['HoldUp',{who:'Tetsuo',outfit:'clothes'}],['HoldUpStraws',{who:'Tetsuo',outfit:'clothes'}],
- ['Call',{who:'Mrs Higa',outfit:'clothes',state:STOOL}],['WriteAbove',{who:'Mrs Higa',outfit:'swim',state:SOAK}],
+ ['Call',{who:'Miss Higa',outfit:'clothes',state:STOOL}],['WriteAbove',{who:'Miss Higa',outfit:'swim',state:SOAK}],
 ];
 const label=(name,c)=>`${name} (${c.who}, ${c.outfit}${c.state?.seated?', seated':''}${c.walking?', walking':''}${c.state?.lying?', lying':''})`;
 
@@ -201,7 +201,7 @@ test('KneelHug kneels on the knees and the tucked toes, its cheek on the massage
  assert.ok(Math.abs(soles(b)()-0)<1e-5,'standing again');
  b.avatar.dispose();
  // Anyone in the town's barefoot clothes kneels the same way without going through the floor.
- for(const who of ['Thuan','Nhung','Thao','Tetsuo','Mrs Higa'])for(const outfit of ['afterbath','towel','swim','clothes']){
+ for(const who of ['Thuan','Nhung','Thao','Tetsuo','Miss Higa'])for(const outfit of ['afterbath','towel','swim','clothes']){
   const k=cast({who,outfit});k.step(10);k.animator.play('KneelHug');k.step(90);
   assert.ok(lowest(k)>-.002,`${who} in ${outfit} kneels through the floor: ${lowest(k)}`);k.avatar.dispose();
  }
@@ -267,10 +267,10 @@ test('the mittens are where the film’s props are gripped',()=>{
  {const b=pose('HoldUpStraws',{who:'Tetsuo',outfit:'clothes'}),H=head(b),g=grip(b,'R');
   assert.ok(g.x<H.centre.x-H.S[0]*.9&&g.z>.2&&g.y+.2>H.centre.y-H.S[1]&&g.y+.2<H.centre.y+.1,'beside the face: '+g.toArray());b.avatar.dispose();}
  // PoleFlick: after the flick the hand is up and behind, over the right shoulder; the head stays down, the eyes on the book.
- {const b=pose('PoleFlick',{who:'Mrs Higa',outfit:'clothes',state:{...STOOL,pose:'SitHold'}},1.4),g=grip(b,'R');
+ {const b=pose('PoleFlick',{who:'Miss Higa',outfit:'clothes',state:{...STOOL,pose:'SitHold'}},1.4),g=grip(b,'R');
   assert.ok(g.y>b.m.shoulderY+.2&&g.z<0&&g.x<0,'up and back over the right shoulder: '+g.toArray());assert.ok(b.looks.at(-1)[1]>.5,'the eyes down');b.avatar.dispose();}
  // FingerStop: the right arm out, the mitten raised like a stop sign; reading, eyes down.
- for(const state of [undefined,STOOL]){const b=pose('FingerStop',{who:'Mrs Higa',outfit:'clothes',state}),g=grip(b,'R');
+ for(const state of [undefined,STOOL]){const b=pose('FingerStop',{who:'Miss Higa',outfit:'clothes',state}),g=grip(b,'R');
   const up=local(b,world(b,'handR',[0,-b.m.hand,0])).sub(local(b,world(b,'handR'))).normalize();
   assert.ok(g.z>.3,'out before her');assert.ok(up.y>.6,'the mitten up: '+up.y.toFixed(2));assert.ok(b.looks.at(-1)[1]>.5,'the eyes down');b.avatar.dispose();}
  // Tape: both mittens pressed on a cloth before the chest, level, the mittens up.
@@ -285,10 +285,10 @@ test('the mittens are where the film’s props are gripped',()=>{
  for(const c of [F,{who:'Thuan',outfit:'towel'}]){const b=pose('Reach',c),m=b.m;
   assert.ok(local(b,world(b,'shoulderR')).distanceTo(grip(b,'R'))>.85*(m.upper+m.fore+.06),'reaching');b.avatar.dispose();}
  // Call: the head turned to her left to call, the eyes down on the book in the left mitten.
- {const b=pose('Call',{who:'Mrs Higa',outfit:'clothes',state:STOOL}),H=head(b);
+ {const b=pose('Call',{who:'Miss Higa',outfit:'clothes',state:STOOL}),H=head(b);
   assert.ok(H.face.normalize().x>.3,'the head turned');assert.ok(b.looks.at(-1)[1]>.5,'the eyes on the book');assert.ok(mitten(b,'L').z>b.m.depth/2+.05);b.avatar.dispose();}
  // WriteAbove: in the rock bath, both mittens (the book and the pencil) above the water, before her; the eyes on the book.
- {const b=pose('WriteAbove',{who:'Mrs Higa',outfit:'swim',state:SOAK});
+ {const b=pose('WriteAbove',{who:'Miss Higa',outfit:'swim',state:SOAK});
   for(const s of ['L','R']){const p=world(b,'hand'+s,[0,-b.m.hand*.55,0]);assert.ok(p.y>ROCK_BATH.water+.04,`the ${s} mitten above the water: ${p.y.toFixed(3)}`);assert.ok(mitten(b,s).z>.2);}
   near(mitten(b,'L'),mitten(b,'R'),.15,'both at the book');assert.ok(b.looks.at(-1)[1]>.5);b.avatar.dispose();}
  // BowDeep: 45° from the hips at the hold, the hands by the knees, the legs straight.

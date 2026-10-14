@@ -65,7 +65,6 @@
         "zone": "drinks",
         "for": [
           "Grandmother Higa",
-          "Mrs Miyagi",
           "Thuan"
         ],
         "why": "The everyday bottle: with lunch, on a hot walk, on the verandah.",
@@ -144,7 +143,6 @@
       "purpose": {
         "zone": "drinks",
         "for": [
-          "Mr Toguchi",
           "Harbour master",
           "Bus driver",
           "Postman Tōma"
@@ -220,7 +218,6 @@
         "zone": "drinks",
         "for": [
           "Riku",
-          "Haru",
           "Officer Mori"
         ],
         "why": "Spring water for runs, patrols and long afternoons on the quay.",
@@ -307,8 +304,6 @@
       "purpose": {
         "zone": "drinks",
         "for": [
-          "Mina",
-          "Jun",
           "Mrs Nakamura"
         ],
         "why": "Mandarin juice for a child’s lunch, or a breakfast in a hurry.",
@@ -382,8 +377,7 @@
         "zone": "drinks",
         "for": [
           "Kōji",
-          "Riku",
-          "Emi Kado"
+          "Riku"
         ],
         "why": "A cold cola after school or a shift.",
         "placed": "Eye level in the third column: the impulse drink."
@@ -457,9 +451,7 @@
       "purpose": {
         "zone": "drinks",
         "for": [
-          "Vy",
-          "Mina",
-          "Jun"
+          "Vy"
         ],
         "why": "Ramune with the marble: the summer drink children ask for by name.",
         "placed": "Low under the cola, where children look."
@@ -535,8 +527,7 @@
       "purpose": {
         "zone": "drinks",
         "for": [
-          "Mrs Higa",
-          "Mrs Yonamine",
+          "Miss Higa",
           "Thao"
         ],
         "why": "For the morning tea, the children, and the bathhouse fridge when it runs out.",
@@ -615,7 +606,6 @@
         "for": [
           "Barfly",
           "Tetsuo",
-          "Uncle Kinjō",
           "Johansson"
         ],
         "why": "Umineko lager for the evening at home, the boat, or the walk to Minato.",
@@ -774,8 +764,7 @@
         "zone": "fresh",
         "for": [
           "Mr Shimabukuro",
-          "Tetsuo",
-          "Mr Tamaki"
+          "Tetsuo"
         ],
         "why": "A proper lunch for people who cannot leave their work: the power house, the workshop, the office.",
         "placed": "Under the rice balls: the dearer lunch beside the cheap one."
@@ -850,8 +839,7 @@
         "zone": "fresh",
         "for": [
           "Johansson",
-          "Reiko",
-          "Emi Kado"
+          "Reiko"
         ],
         "why": "Egg sandwiches eaten at a desk or on the ferry.",
         "placed": "Middle bay, eye level, over the bread it is made from."
@@ -925,7 +913,6 @@
         "zone": "fresh",
         "for": [
           "Mrs Nakamura",
-          "Mrs Yonamine",
           "Mrs Kinjō"
         ],
         "why": "Milk bread for tomorrow’s breakfast.",
@@ -1075,9 +1062,7 @@
       "purpose": {
         "zone": "fresh",
         "for": [
-          "Mrs Miyagi",
-          "Haru",
-          "Mrs Higa"
+          "Miss Higa"
         ],
         "why": "Plain yoghurt for a light breakfast and a careful stomach.",
         "placed": "Under the pudding, for the people with good intentions."
@@ -1306,7 +1291,6 @@
         "zone": "pantry",
         "for": [
           "Mrs Nakamura",
-          "Mrs Yonamine",
           "Mrs Sato"
         ],
         "why": "Curry roux for a family dinner; Mrs Sato swears it is not for the shop.",
@@ -1371,8 +1355,7 @@
         "zone": "pantry",
         "for": [
           "Mrs Sato",
-          "Thao",
-          "Mrs Miyagi"
+          "Thao"
         ],
         "why": "Soy sauce for a kitchen that ran out mid-service.",
         "placed": "Pantry, back face: the staple, found by people who already know where it is."
@@ -1434,9 +1417,8 @@
       "purpose": {
         "zone": "pantry",
         "for": [
-          "Uncle Kinjō",
-          "Mr Tamaki",
-          "Haru"
+          "Mr Ōshiro",
+          "Barfly"
         ],
         "why": "Tinned tuna for onigiri at home and for the cat that is not officially fed.",
         "placed": "Back face, with the other tins."
@@ -1499,7 +1481,7 @@
         "zone": "pantry",
         "for": [
           "Grandmother Higa",
-          "Mrs Higa"
+          "Miss Higa"
         ],
         "why": "Tinned peaches for visiting someone who is ill, as one does.",
         "placed": "Back face, high: an occasional buy, not in the way."
@@ -1578,8 +1560,7 @@
         "zone": "sweets",
         "for": [
           "Barfly",
-          "Kōji",
-          "Jun"
+          "Kōji"
         ],
         "why": "Salted crisps with a beer or a baseball game on the radio.",
         "placed": "Front face at a grown-up’s eye, seen on the way back from the beer."
@@ -1806,9 +1787,7 @@
       "purpose": {
         "zone": "sweets",
         "for": [
-          "Vy",
-          "Mina",
-          "Jun"
+          "Vy"
         ],
         "why": "Milk chocolate after school.",
         "placed": "Back face, low: at a child’s eye, below a parent’s."
@@ -1881,8 +1860,6 @@
       "purpose": {
         "zone": "sweets",
         "for": [
-          "Mina",
-          "Jun",
           "Vy"
         ],
         "why": "Fruit sweets, the ten-yen kind of treat.",
@@ -1951,9 +1928,8 @@
       "purpose": {
         "zone": "daily",
         "for": [
-          "Mrs Yonamine",
           "Mrs Nakamura",
-          "Mrs Higa"
+          "Miss Higa"
         ],
         "why": "Laundry powder: the bathhouse towels and a family’s week.",
         "placed": "Bottom of the front face: the heaviest thing in the shop, low and near the door out."
@@ -2034,8 +2010,7 @@
       "purpose": {
         "zone": "daily",
         "for": [
-          "Mrs Higa",
-          "Mrs Miyagi",
+          "Miss Higa",
           "Thuan"
         ],
         "why": "Sakura soap for the bath and the shop’s own washroom.",
@@ -2175,8 +2150,6 @@
       "purpose": {
         "zone": "daily",
         "for": [
-          "Haru",
-          "Emi Kado",
           "Johansson"
         ],
         "why": "Mint toothpaste, the thing you notice has run out at night.",
@@ -2401,7 +2374,6 @@
         "zone": "daily",
         "for": [
           "Johansson",
-          "Emi Kado",
           "Nhung"
         ],
         "why": "Harbour postcards for visitors and for letters to the main island.",

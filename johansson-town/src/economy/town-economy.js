@@ -34,7 +34,7 @@ export const BUSINESSES=Object.freeze({
  higa:{name:'Higa Liquor',owner:'Grandmother Higa',float:40000,overhead:{town:500,mainland:250},cover:10,supplier:'sakura',goods:Object.keys(ALCOHOL)},
  minato:{name:'Minato Izakaya',owner:'Thao',float:30000,overhead:{town:2800,mainland:1800},cover:7,supplier:'higa',goods:[...Object.keys(ALCOHOL).filter(id=>GOODS[id].measure?.minato),...Object.keys(BAR_SOFT)]},
  sato:{name:'Sato Ramen',owner:'Mrs Sato',float:15000,overhead:{town:1500,mainland:900},cover:7,supplier:'higa',goods:['beer-bottle']},
- onsen:{name:'Umi-no-yu',owner:'Mrs Higa',float:15000,overhead:{town:2600,mainland:1400},cover:7,goods:['milk','soda','soap','detergent']},
+ onsen:{name:'Umi-no-yu',owner:'Grandmother Higa',float:15000,overhead:{town:2600,mainland:1400},cover:7,goods:['milk','soda','soap','detergent']},
 });
 
 const SEASON={nights:[.85,.82,.95,1,1.1,1,1.15,1.25,1.05,1,.92,1.1],beer:[.65,.7,.85,1,1.15,1.3,1.5,1.55,1.3,1.05,.8,.7],sake:[1.5,1.4,1.1,.9,.75,.6,.55,.55,.7,.95,1.2,1.45],tourists:[.4,.45,.8,.9,1.6,.9,1.5,1.8,1,.8,.5,.6],fish:[.8,.85,1,1.1,1.15,1.1,1.05,1,1.1,1.15,1,.9]};

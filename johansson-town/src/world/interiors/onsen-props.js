@@ -14,12 +14,12 @@ const ARM=CHAIR.anchor('right-arm-top');
  *   where Tetsuo finds his straws to explain the circuits);
  * - the uchiwa rack on the lobby wall by the tatami (summer fans for people cooling down
  *   after the bath; the giant Hārī fan Fujita takes to the noren);
- * - Mrs Higa's rubber plant in the changing room, by the frosted bath door where the light
+ * - Miss Higa's rubber plant in the changing room, by the frosted bath door where the light
  *   from the bath hall's sea glass comes through, a step from the right-hand mirror's dryer;
- * - Mrs Higa's account book, open on the bandai in front of her, with its pencil;
+ * - Miss Higa's account book, open on the bandai in front of her, with its pencil;
  * - the men's side's small vanity: one mirror on a wall shelf, a bottle of hair tonic and a comb sterilizer
  *   glowing blue (plugged into its own socket on the lobby circuit, onsen-electrics.js);
- * - Mrs Higa's noren pole on two hooks on the wall behind her stool;
+ * - Miss Higa's noren pole on two hooks on the wall behind her stool;
  * - the box of white extension cords on the bandai's floor, beside her stool;
  * - and, only when a story sets it (stage), three coffee milks on the massage chair's arm: Fujita's offering.
  *
@@ -46,7 +46,7 @@ export const ONSEN_PROPS=Object.freeze({
   at:Object.freeze([4.47,COOLER_TOP,2.45]),on:'Milk cooler top',r:.042,h:.11,
   for:'Children, who drink their fruit milk through a straw, and the old regulars with dentures; anyone who wants their coffee milk slowly.',
   why:'On the cooler’s lid, at the back corner by the wall: you take a bottle and a straw in one movement, and nobody knocks the jar over reaching for the door.',
-  period:'A squat glass jar, the kind jam came in, full of striped plastic straws: by the 1980s Japanese straws were plastic, not paper (a box of them came in paper sleeves, which Mrs Higa throws away). The thin ones for milk, a few thin stirrer straws from the coffee counter at Sakura Shōten, and two fat milkshake straws left over from a summer.',
+  period:'A squat glass jar, the kind jam came in, full of striped plastic straws: by the 1980s Japanese straws were plastic, not paper (a box of them came in paper sleeves, which Miss Higa throws away). The thin ones for milk, a few thin stirrer straws from the coffee counter at Sakura Shōten, and two fat milkshake straws left over from a summer.',
   straws:Object.freeze([
    plain({kind:'thin',count:8,r:.0032,len:.21,stripe:'red',en:'Ordinary 6 mm straws, red-striped'}),
    plain({kind:'thinner',count:3,r:.0021,len:.18,stripe:'green',en:'Thin 4 mm stirrer straws, green-striped'}),
@@ -71,7 +71,7 @@ export const ONSEN_PROPS=Object.freeze({
 
  plant:plain({id:'rubber-plant',name:'Rubber plant',jp:'ゴムの木',
   at:Object.freeze([-1.19,0,-.9]),on:'Umi-no-yu floor',pot:plain({r0:.1,r1:.13,h:.26}),saucer:plain({r:.15,h:.02}),stem:.95,spread:.2,
-  for:'Mrs Higa, who has kept it alive for twelve years; and, one evening, Thuan.',
+  for:'Miss Higa, who has kept it alive for twelve years; and, one evening, Thuan.',
   why:'The changing room has no window to the street (it is the middle of the house), so the brightest place is beside the frosted bath door, where the light of the bath hall’s sea glass comes through. That puts it a step from the right-hand mirror’s dryer, out of the doorway and clear of the vanity and its mirrors.',
   period:'The rubber plant (インドゴムの木) in a glazed pot on a saucer was the houseplant of Shōwa homes, offices and bathhouses: it survives steam, neglect and the occasional hair dryer. The pot is Okinawan yachimun, green glaze from the Tsuboya kilns.'}),
 
@@ -89,7 +89,7 @@ export const ONSEN_PROPS=Object.freeze({
   // Along the west wall behind the stool, above the wainscot rail (top 0.945) and under the breaker board (bottom 1.2).
   wallX:-4.94,y:1,z0:1.75,len:1.45,r:.014,hooks:Object.freeze([1.95,3]),off:.04,nodes:Object.freeze([.22,.55,.88,1.21]),
   reach:plain({from:Object.freeze([-4.5,1.15,2.6]),arm:.75,why:'Her shoulder on the stool (onsen-electrics.js ONSEN_BOARD.keeper) to the pole on the wall behind her: she takes it down without standing up.'}),
-  for:'Mrs Higa: she hangs the street noren out with it at opening and lifts it in at ten, and from her stool she nudges the changing-room noren straight with it without looking up.',
+  for:'Miss Higa: she hangs the street noren out with it at opening and lifts it in at ten, and from her stool she nudges the changing-room noren straight with it without looking up.',
   why:'On two brass hooks on the wall right behind her stool, along the wall above the wainscot rail and under the breaker board: in reach of her hand from the stool and of nobody else’s, and flat to the wall, so it is in nobody’s way.',
   period:'A length of madake bamboo with its nodes and a brass hook (鉤) bound on at the tip with wire: the noren pole every shop with a noren kept by the door. 1.45 m: from the step it reaches the rod over the street door, and it fits behind the bandai.'}),
 
@@ -99,19 +99,19 @@ export const ONSEN_PROPS=Object.freeze({
   cords:Object.freeze([1,2,3].map(n=>plain({n,metres:5,amps:15,volts:125,colour:0xf3f1ea,name:'Extension cord '+n,
    use:plain({from:'Vanity socket '+n,to:'Massage chair'})}))),
   for:'The house: the floor polisher at closing, the summer festival’s lanterns out on the porch, the New Year mochi machine on the tatami; and on page 10, the three dryers at the massage chair, each from its own mirror’s socket.',
-  why:'Mrs Higa keeps the bath’s odds where she sits, so nobody borrows them without asking: a box on the bandai’s floor, under the counter, at the street end beside her stool and clear of her feet. Three cords because the bath has three sockets that matter: the three mirrors.',
+  why:'Miss Higa keeps the bath’s odds where she sits, so nobody borrows them without asking: a box on the bandai’s floor, under the counter, at the street end beside her stool and clear of her feet. Three cords because the bath has three sockets that matter: the three mirrors.',
   period:'White two-core cords, 5 m each, with a moulded two-pin plug and a single socket on the end, rated 15 A 125 V on a paper tag: the cord every 1980s hardware shop sold. Each one carries one dryer (12 A) well inside its 15 A; a three-way reel with all three dryers on it would carry 36 A, which is why there are three.'}),
 
  offering:plain({id:'milk-offering',name:'Coffee milk offering',jp:'コーヒー牛乳',
   on:'Coin massage chair',z:ARM[2],top:ARM[1],xs:Object.freeze([4.33,4.45,4.57]),states:Object.freeze(['none','full','empty']),
   bottle:plain({r:.028,h:.133,neck:.021}),
-  for:'Mr Fujita: three coffee milks lined up on the chair’s arm as an offering before his ten minutes (page 1); on page 10 Mrs Higa pays his ¥300 back in three coffee milks, and in the last panel the three stand there empty, lined up like offerings.',
+  for:'Mr Fujita: three coffee milks lined up on the chair’s arm as an offering before his ten minutes (page 1); on page 10 Miss Higa pays his ¥300 back in three coffee milks, and in the last panel the three stand there empty, lined up like offerings.',
   why:'On the right arm’s flat vinyl pad, behind the coin box and in a row towards the backrest, so a sitter’s elbow does not knock them over and the coin slot stays free. Only there when a story puts them there (stage): nobody leaves milk on the chair otherwise.',
   period:'Glass 180 ml bottles of coffee milk (コーヒー牛乳) with paper caps, ¥100 each from the lobby cooler: drunk standing, hand on hip, after the bath. Empty, they keep a brown film at the bottom until they go back in the crate.'}),
 
  accountBook:plain({id:'account-book',name:'Account book',jp:ONSEN_SIGNS.ledger.jp,
   at:Object.freeze([-3.98,FURNITURE_HEIGHTS.serviceCounter,2.62]),on:'Bandai top',yaw:-.08,w:.19,d:.28,
-  for:'Mrs Higa, who does the day’s takings on the bandai every evening and never looks up from it.',
+  for:'Miss Higa, who does the day’s takings on the bandai every evening and never looks up from it.',
   why:'Open on the counter right in front of her stool, the top of the page away from her: within reach of her pencil and the ticket tray, under the andon’s light, and too low to come between her face and the people paying.',
   period:'A cloth-bound cash book (金銭出納帳) with columns for date, item, in, out and balance, written in pencil; a green-painted pencil sharpened with a knife.'}),
 });
@@ -286,7 +286,7 @@ export function buildOnsenProps({room,rect,anchor=null,action=()=>{}}){
  if(anchor)anchor([P.x+.3,1.35,P.wallZ+.4],'Take an uchiwa',()=>action('inspect','Uchiwa',
   'You take the goldfish one and fan yourself. After forty-two degrees it is the best wind in the world. The giant Hārī fan on the pegs is for show, Higa-san says without looking up, and for emergencies.'));
 
- // ---- Mrs Higa's rubber plant, by the frosted bath door.
+ // ---- Miss Higa's rubber plant, by the frosted bath door.
  const Pl=ONSEN_PROPS.plant,plant=node(Pl.name,...Pl.at);plant.userData.prop=Pl.id;
  const glaze=std(0x35568c,.25),soil=std(0x3a2a1e,.95),leaf=std(0x2c5233,.3),stem=std(0x5e5a3a,.8);
  const S=Pl.saucer,Pt=Pl.pot;
@@ -307,7 +307,7 @@ export function buildOnsenProps({room,rect,anchor=null,action=()=>{}}){
  if(anchor)anchor([Pl.at[0],1.1,Pl.at[2]],'Look at the rubber plant',()=>action('inspect','Rubber plant',
   'Higa-san’s rubber plant, twelve years old, in a green Tsuboya pot. It stands by the bath door for the light through the frosted glass. A card in the soil says, in her handwriting: please do not dry me.'));
 
- // ---- Mrs Higa's account book, open on the bandai, the pencil on the right-hand page.
+ // ---- Miss Higa's account book, open on the bandai, the pencil on the right-hand page.
  const A=ONSEN_PROPS.accountBook,book=node(A.name,...A.at);book.rotation.y=A.yaw;book.userData.prop=A.id;
  // Spine along x (away from her), pages either side in z; u runs left to right for a reader facing +x (+z is her right).
  const cover=add(new THREE.BoxGeometry(A.w+.012,.006,A.d+.014),std(0x2b3346,.8),0,.003,0,'Account book cover',book);cover.userData.restsOn=A.on;
@@ -350,7 +350,7 @@ export function buildOnsenProps({room,rect,anchor=null,action=()=>{}}){
   if(anchor)anchor([V.x,1.35,V.wallZ-.45],'Look in the men’s mirror',()=>action('inspect','The men’s mirror',
    'One mirror, a bottle of 潮風 hair tonic for anyone who wants it, and the comb sterilizer humming blue with the house combs standing in its light. You comb your hair. It is the best it has looked all week.'));}
 
- // ---- Mrs Higa's noren pole on two hooks behind her stool.
+ // ---- Miss Higa's noren pole on two hooks behind her stool.
  const NP=ONSEN_PROPS.norenPole,poleX=NP.wallX+NP.off,pole=node(NP.name,poleX,NP.y,NP.z0+NP.len/2);pole.userData.prop=NP.id;
  {const cane=add(new THREE.CylinderGeometry(NP.r,NP.r*1.1,NP.len,8,1,true).rotateX(Math.PI/2),bamboo,0,0,0,'Noren pole cane',pole);cane.userData.hangsOn='Noren pole hook';
   // The nodes: a ring a little proud of the cane every third of a metre.
@@ -375,7 +375,7 @@ export function buildOnsenProps({room,rect,anchor=null,action=()=>{}}){
    new THREE.BoxGeometry(B.w,B.h,t).translate(0,B.h/2,-B.d/2+t/2),new THREE.BoxGeometry(B.w,B.h,t).translate(0,B.h/2,B.d/2-t/2),
    new THREE.BoxGeometry(t,B.h,B.d-2*t).translate(-B.w/2+t/2,B.h/2,0),new THREE.BoxGeometry(t,B.h,B.d-2*t).translate(B.w/2-t/2,B.h/2,0)];
   const boxMesh=add(mergeGeometries(parts,false),crate,0,0,0,'Extension cord box crate',ec);boxMesh.userData.restsOn=EC.on;parts.forEach(g=>g.dispose());
-  // Mrs Higa's label on the box's front (the side that faces the counter), in marker: 延長コード.
+  // Miss Higa's label on the box's front (the side that faces the counter), in marker: 延長コード.
   const label=paint(192,64,(ctx,w,h)=>{ctx.fillStyle='#ead9a4';ctx.fillRect(0,0,w,h);ctx.fillStyle='#1b1a18';ctx.font=`bold 34px ${HAND}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(EC.jp,w/2,h/2+2);});
   const tag=add(new THREE.PlaneGeometry(.15,.05),label?new THREE.MeshStandardMaterial({map:label,roughness:.85}):std(0xead9a4,.85),0,B.h*.55,B.d/2+.0006,'Extension cord box label',ec);tag.castShadow=false;// on the street end, read from the genkan
   // Three coils side by side, each two loops of white cord, its plug and its socket end laid on top.

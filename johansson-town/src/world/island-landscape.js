@@ -44,14 +44,14 @@ export function buildIslandLandscape({world,register,onAction,mobile=false}){
  world.aobaRadio=buildAobaRadio(world,{register,onAction});
  // Quiet far-coast fishing settlement. Buildings leave the coastal carriageway clear.
  for(const [i,x,z] of [[0,127,178],[1,126,202],[2,149,200]]){const y=groundHeight(x,z);box('Hoshizaki family home '+i,[7,3.2,6],[x,y+1.6,z],i===1?0xe2d2ae:0xd6d4bd,true);box('Red tiled roof',[7.8,.55,6.8],[x,y+3.35,z],0x9f5b47);box('Home window',[2,.9,.08],[x,y+1.8,z+3.05],0x46656a);sign(['FISHER FAMILY','HOSHIZAKI GENERAL STORE','FAMILY GUESTHOUSE'][i],x,z+3.12,5,y+2.6);}
- anchor([HOSHIZAKI_STORE.customer[0],.7,HOSHIZAKI_STORE.customer[1]],'Shop at Hoshizaki General Store','island-shop');anchor([127,.7,182],'Read the fishing co-operative board','read','Hoshizaki Fishing Co-operative','Dawn: launch the boats. Morning: land and sort the catch. Afternoon: mend nets, prepare ice boxes and deliver the airport cargo. Families keep their boat and weather logs at the Community Hall.');
+ anchor([HOSHIZAKI_STORE.customer[0],.7,HOSHIZAKI_STORE.customer[1]],'Try the Hoshizaki store’s door','read','Hoshizaki General Store · closed','The shutter is down, and nobody keeps the store now. For groceries, go to Sakura Shōten in Minato.');anchor([127,.7,182],'Read the fishing co-operative board','read','Hoshizaki Fishing Co-operative','Dawn: launch the boats. Morning: land and sort the catch. Afternoon: mend nets, prepare ice boxes and deliver the airport cargo. Families keep their boat and weather logs at the Community Hall.');
  box('Hoshizaki net shed',[5,2.8,5],[151,1,180],0x829392,true);box('Fishing pier',[9,.2,4],[156,-.3,190],0x948978);for(let i=0;i<4;i++)box('Fish box',[.8,.4,.6],[151+i*.9,-.05,188],0x456f86);
  const guestAwning=box('Guesthouse open canopy',[7.5,.2,2],[149,2.7,204],0xb78755);guestAwning.visible=false;guestAwning.userData.staticProp=false;
  const tower=new THREE.Mesh(new THREE.CylinderGeometry(1.1,1.6,9,12),mat(0xe1d8c2));tower.position.set(-54,4.1,204);group.add(tower);box('Lighthouse lantern',[2.5,1.5,2.5],[-54,9.4,204],0x466b75);sign('WEST CAPE LIGHTHOUSE',-51,207,4,1.8);anchor([-51,.8,207],'Read the lighthouse log','read','West Cape Lighthouse','The keeper checks the lamp at dusk, cleans the salt from the glass and records visibility. The coastal road returns to Minato through the western quarter.');
  // The utaki on Mount Aoba's summit: an Okinawan sacred grove, not a shrine with a building.
  // A low coral-stone wall round a clearing, a stone incense burner (uchikō) on a flat altar
- // stone, and the old banyans that make it a grove. The fishing families climb up before
- // dawn to ask for a good sea; Haru from Hoshizaki most mornings of the week.
+ // stone, and the old banyans that make it a grove. Fishermen climb up before dawn to ask
+ // for a good sea, and the island comes at the old new year.
  {const {x:ux,z:uz}=AOBA_SUMMIT,top=islandTerrainHeight(ux,uz),still=m=>{m.userData.staticProp=true;return m;},m4=new THREE.Matrix4(),q=new THREE.Quaternion(),sv=new THREE.Vector3(),up=new THREE.Vector3(0,1,0);
   const stoneMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:1});
   // The wall: two courses of rounded coral stones laid dry, open to the path on the north-east.
@@ -70,7 +70,7 @@ export function buildIslandLandscape({world,register,onAction,mobile=false}){
   const groves=[[-5,4,1.05,41],[4.5,-4,.95,42],[-3.5,-6.5,.9,43],[6,3.5,1.1,44]];
   for(const [dx,dz,sc,seed] of groves){const x=ux+dx*1.4,z=uz+dz*1.4,y=islandTerrainHeight(x,z),tree=new THREE.Mesh(banyan({seed,height:7,spread:4.6}),plantMat);tree.name='Utaki banyan';tree.position.set(x,y,z);tree.scale.setScalar(sc);tree.rotation.y=seed;group.add(tree);world.colliders.push({id:'Utaki banyan',x,z,w:1.6*sc,d:1.6*sc,minY:y-.2,height:4});}
   {const sx=ux+2.5,sz=uz+4,sy=islandTerrainHeight(sx,sz);sign('AOBA UTAKI · PLEASE BE QUIET',sx,sz,3.2,sy+1.55);box('Utaki sign post',[.12,1.25,.08],[sx,sy+.62,sz-.06],0x6d5a46);}
-  anchor([ux,top+1,uz],'Stand quietly at the utaki','read','Mount Aoba Utaki','The sacred grove at the top of the island. There is no building: the stones, the banyans and the sky are the shrine. A thread of incense is still burning; Haru from Hoshizaki comes up before dawn to ask the sea for a good catch, and the farm families come at the old new year.');
+  anchor([ux,top+1,uz],'Stand quietly at the utaki','read','Mount Aoba Utaki','The sacred grove at the top of the island. There is no building: the stones, the banyans and the sky are the shrine. A thread of incense is still burning: somebody came up before dawn to ask the sea for a good catch. At the old new year the whole island comes.');
  }
  // The Ōshiro family's honesty stand (mujin hanbaijo) on the coastal loop, beside their
  // vegetable plots: no one minds it. Pick up what you want and drop the coins in the tin.

@@ -18,7 +18,8 @@ export const KITAHAMA=Object.freeze({
   {id:'kitahama-4',kind:'red-tile',family:"For the time being",romaji:'Tōma',minX:42.3,maxX:50.6,minZ:68,maxZ:77.5,gate:'south'},
   {id:'kitahama-5',kind:'concrete',family:"Rental house",romaji:'To let',minX:51.1,maxX:59.4,minZ:68,maxZ:77.5,gate:'south'},
   // The residential quarter (docs/RESIDENTIAL-PLAN.md): the spine lane west, Fukugi
-  // Lane north and Well Lane south. Two old red-tile houses for the grandparents.
+  // Lane north and Well Lane south. `family` and `romaji` are what the nameplate on the gate says (the
+  // house's own sign); who lives there is the cast (people/cast.js), and a house nobody in it lives in is to let.
   {id:'kitahama-6',kind:'red-tile',family:'Taira',romaji:'Taira',minX:4.5,maxX:12.5,minZ:68,maxZ:77.5,gate:'south'},
   {id:'kitahama-7',kind:'concrete',family:'Chinen',romaji:'Chinen',minX:13,maxX:21.5,minZ:68,maxZ:77.5,gate:'south'},
   {id:'kitahama-8',kind:'concrete',family:'Uezu',romaji:'Uezu',minX:25.5,maxX:33,minZ:68,maxZ:77.5,gate:'south'},

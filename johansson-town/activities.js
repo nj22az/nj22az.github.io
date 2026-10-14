@@ -657,8 +657,9 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   const neighbourTurns=new Map();
   const NEIGHBOUR_SALES=Object.freeze({
    'Mrs Nakamura':['A zenzai, please · ¥250',250,'Zenzai','She shaves the ice straight into the glass, spoons the beans over and pushes it across. “Eat it before it eats you.”'],
-   'Mrs Yonamine':['A tray of mozuku · ¥200',200,'Mozuku','A tray of mozuku in vinegar, wrapped in newspaper. “Good for everything,” she says again, in case you missed it.'],
-   'Kōji':['I’ll take the tuna head',0,'Tuna head','He wraps it in two newspapers and a plastic bag, and it is still looking at you. “Soup,” he says. “Trust me.”'],
+   // The auction sells the morning's mozuku by the tray now that Yonamine Fresh Fish has closed (cast.js PLACES).
+   'Kōji':[['I’ll take the tuna head',0,'Tuna head','He wraps it in two newspapers and a plastic bag, and it is still looking at you. “Soup,” he says. “Trust me.”'],
+    ['A tray of mozuku · ¥200',200,'Mozuku','A tray of this morning’s mozuku from the auction, in vinegar, wrapped in newspaper. “Good for everything,” he says.']],
    'Mrs Kinjō':null,
   });
   /**
@@ -682,8 +683,8 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     const favour=favourTalk(name);if(favour.handled)return;
     const greeting=openingGreeting(name);
     const said=joinLines([greeting,favour.line,spec.lines[turn%spec.lines.length]]),line=said.text,buttons=[...(favour.buttons||[])];
-    const sale=NEIGHBOUR_SALES[name];
-    if(sale)buttons.push([sale[0],()=>{if(sale[1]&&!spend(sale[1]))return;onTime(2);addItem(sale[2]);tone(700,.12);show(name+' · '+spec.role,sale[3],[['Thank you',close]]);}]);
+    const sales=NEIGHBOUR_SALES[name],list=!sales?[]:Array.isArray(sales[0])?sales:[sales];
+    for(const sale of list)buttons.push([sale[0],()=>{if(sale[1]&&!spend(sale[1]))return;onTime(2);addItem(sale[2]);tone(700,.12);show(name+' · '+spec.role,sale[3],[['Thank you',close]]);}]);
     if(spec.lines.length>1)buttons.push(['Tell me more',()=>neighbour(name)]);
     buttons.push(['See you later',close]);
     show(name+' · '+spec.role,line,buttons,{pauses:said.pauses,face:said.face});
@@ -836,7 +837,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       show('Kyūshoku trolley','The stainless trolley parked by the pantry, its cauldrons scrubbed and upside down. Lunch is at 12:20: the lunch squad fetches it from the prep kitchen and serves at the front.',[['Back',close]]);return;
     }
     const dishes=menu?.jp?.join('、')||'';
-    show("School lunch · Kyūshoku",'Yonamine-sensei waves you over: "There is always a spare tray. Sit with han three." The lunch squad, in white smocks and caps and gauze masks, ladles it out: '+(menu?.en||'')+'.',[
+    show("School lunch · Kyūshoku",'Higa-sensei waves you over: "There is always a spare tray. Sit with han three." The lunch squad, in white smocks and caps and gauze masks, ladles it out: '+(menu?.en||'')+'.',[
       ["Take a tray · Enjoy your meal",()=>{onTime(phase==='serving'?30:18);note("Ate kyūshoku with the Years 5–6 class: "+dishes+'.');
         show("Enjoy your meal!",'Twelve voices and one teacher, all at once. '+(menu?.en?menu.en[0].toUpperCase()+menu.en.slice(1):'')+". The bottle of milk is cold, and finishing it before you leave the table is not optional. Across the han, Kenta is trying to trade his goya to anyone who will take it. At the end: Thank you for the meal, trays stacked, milk bottles rinsed at the corridor taps, and everybody is already rolling up their sleeves for sōji.",[['Help with sōji',()=>{onTime(15);receipt('Sōji','Desks to the back, brooms down the rows, wet rags pushed along the floorboards at a run. The class finishes in fifteen minutes flat and the floor shines.');}],['Thank the class',close]]);}],
       ['Just watch',close]]);
@@ -851,7 +852,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   ];
   function schoolPantry(phase){
     const club=phase==='club';
-    const intro=club?'The home-economics club is at the pantry: three pupils in aprons and Yonamine-sensei with the andagi pot. "Wash your hands first. Then you can help."':
+    const intro=club?'The home-economics club is at the pantry: three pupils in aprons and Higa-sensei with the andagi pot. "Wash your hands first. Then you can help."':
       phase==='lesson'||phase==='lesson-pm'?'A lesson is on. The pantry can wait until after school -- the jar says ¥ on it, for ingredients.':
       'The class pantry: a sink, two gas rings, the rice cooker, a shelf of trays and bowls, and a jar for ingredient money. Clean up after yourself.';
     if(phase==='lesson'||phase==='lesson-pm'){show('Class pantry',intro,[['Back',close]]);return;}
@@ -871,7 +872,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       weekend:'"No school today. I came in to water the morning glories on the windowsill."',
       closed:'Nobody here. The notebooks are stacked on the teacher\'s desk, the chairs are up on the desks.'};
     const text=lines[phase]||lines.closed;
-    show(phase==='closed'?'Empty classroom':"Ms Yonamine · Yonamine-sensei",text,[['Thank you',close]]);
+    show(phase==='closed'?'Empty classroom':"Miss Higa · Higa-sensei",text,[['Thank you',close]]);
   }
   // The medicine shelf behind Sakura's till. Nothing on it is self-service: you ask, and
   // Thuan reaches it down and tells you how many to take.

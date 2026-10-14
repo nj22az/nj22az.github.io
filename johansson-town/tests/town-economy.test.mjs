@@ -57,3 +57,9 @@ test('the town has its ups and downs and balances over the year',()=>{
  assert.ok(Math.abs(years[2].end-years[1].end)/start<.15,'Year on year, the town is in balance');
  for(const id of Object.keys(BUSINESSES))assert.ok(s.biz[id].cash>0,id+' is trading at the end');
 });
+
+test('every business in the economy is kept by somebody in the cast, and Umi-no-yu by its owner, Grandmother Higa',async()=>{
+ const {CAST_NAMES}=await import('../src/people/cast.js');
+ for(const [id,b] of Object.entries(BUSINESSES))assert.ok(CAST_NAMES.includes(b.owner),id+': '+b.owner+' is in the cast');
+ assert.equal(BUSINESSES.onsen.owner,'Grandmother Higa');assert.equal(BUSINESSES.higa.owner,'Grandmother Higa');
+});

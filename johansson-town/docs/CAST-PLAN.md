@@ -7,8 +7,10 @@ are the leading women they should have families. Thuan has Johansson, everyone w
 reason to be there. Thao have a daughter Vy of course she goes to school maybe miss Higa is the school teacher, and
 she works at the Onsen when she is free and maybe Tetsuo also chips in at the Onsen when he is not in the workshop."
 
-Status: **a proposal for the creator's review.** Updated 2026-10-14: no apartment block; shops that are only a still figure are not a purpose (the creator: "shops that have only a still character is not purposeful"). Nothing in the game changes until it is agreed. Decisions the
-creator still has to make are marked **(decide)**.
+Status: **agreed and under way.** The creator (2026-10-14): "Yes proceed". The decisions in section 7 were taken as
+proposed (Vy 11 and Thao 34; Kōji and Riku; Miss Higa single; the cut list goes; Fumoto stays as fields), with one
+change: **Mr Higa Jr stays**, as Miss Higa's elder brother, because the Minato Maru's safe manning needs her oiler and
+the ship is built true (CLAUDE.md). Batch 1 is done (section 6). The cast is 31 people, in `src/people/cast.js`.
 
 ## 1. What is there today, and why it feels empty
 
@@ -48,7 +50,7 @@ A test checks all four, for everyone. Anyone who fails is cut, or given a reason
 
 Every place that is open must have someone running it. A shop nobody keeps is closed, merged or removed.
 
-## 3. The proposed cast: 26 people
+## 3. The cast: 31 people
 
 ### Johansson's family (Kitano-jima)
 
@@ -74,7 +76,7 @@ her father.
 
 | Who | Age | Purpose |
 |---|---|---|
-| Nhung | 31 | Bookshop assistant at Front-Row Books; the eldest sister |
+| Nhung | **37** (was 31) | Bookshop assistant at Front-Row Books; the eldest sister |
 | **(decide)** Her husband | — | Proposal: **Kōji**, fisherman. He sorts the catch at the morning auction and crews Mr Ōshiro's boat. |
 | **(decide)** Their son | ~9 | Proposal: **Riku**, already a character. A pupil, and Vy's classmate and rival. |
 
@@ -104,6 +106,9 @@ son. The cousins are in the same tiny class.
 | Mr Nakandakari | Chief engineer of the Minato Maru | Lives aboard |
 | Ms Uezu | Bosun of the Minato Maru | Week on, week off; Kōji relieves her |
 | Mr Shimabukuro | Runs the power station | Keeps the island lit; Chin's fishing partner |
+| Mr Higa Jr | Oiler on the Minato Maru | Miss Higa's elder brother; kept because her safe manning needs an oiler |
+| Ms Ganaha | The Port Terminal's ticket window | A spark with Postman Tōma |
+| Mr Fujita | The port's linesman | An onsen regular with a bad back; Mr Ōshiro's old racing rival |
 
 The island school becomes a real small-island class: **three pupils** (Vy, Riku and Mai) and one teacher. That is
 true to the place (a mixed-grade class) and small enough for each child to be a character.
@@ -116,7 +121,6 @@ These go, in favour of fewer people who live:
 - the Nishi-machi and east-back families who exist only as text;
 - the other pupils;
 - Mrs Yonamine and Yonamine-sensei;
-- Mr Higa Jr;
 - neighbours with no purpose (Haru, Mina, Jun, Emi Kado, Mr Toguchi, Grandmother Tokashiki, Old Mr Zukeran, the
   gateball three).
 
@@ -188,11 +192,16 @@ The rules **(decide if any should change)**:
 
 ## 6. Order of work (small batches, each checked in the live game)
 
-1. **Cast file and cuts.**
-   - Write `cast.js` and move every list to read it.
-   - Retire the cut people, and the places nobody runs.
-   - Add the test of the four rules.
-   - Change no visuals yet.
+1. **Cast file and cuts.** Done (2026-10-14).
+   - `src/people/cast.js`: the 31, with home, purpose, place, day, family and the relationships (`RELATIONSHIPS`), and
+     `PLACES` with who keeps each, or why it is closed.
+   - The registry (`island-households.js`) is built from it; a home nobody lives in is to let.
+   - The cut people are gone from the neighbours, the registry, the guide, the storyteller's places, the shops' data,
+     the avatars and the town's texts. Mrs Higa became Miss Higa, the teacher, with one face at the school and the bath.
+   - `tests/cast.test.mjs` checks the four rules for everyone, that every open place has keepers, and that nobody in
+     the world is outside the cast (the classroom's eight old pupils are the only ones waiting, for batch 2).
+   - Still to follow in batch 2: Vy and Riku as children, the class of three, Nhung moving to 3 Kitahama, Barfly at
+     the warehouse, the onsen shifts, and everyone on `cast.js`'s days. Closed shops still look open until batch 5.
 2. **Families and schedules.**
    - Vy, Riku, Mai and Miss Higa with their days; the onsen shifts (Grandmother Higa by day, Miss Higa and Tetsuo in
      the evenings).

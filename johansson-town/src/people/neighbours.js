@@ -3,20 +3,12 @@ import {groundHeight} from '../world/layout.js';
 import {createNavigation} from './navmesh.js';
 import {airportWorld} from '../world/airport-ground.js';
 import {KITANO_HAMLET,hamletGate} from '../world/kitano-hamlet-layout.js';
-// Jun lives in the port (the creator, 2026-10-12: only Johansson and Thuan live in the hamlet): off duty he goes home to Minato on the
-// boat, so his home is the ferry terminal's exit there (world/ferry.js FERRY_TERMINAL.exit), where he is hidden until his next shift.
-const JUN_HOME=[4.7,-44.3];
 // Tetsuo's mother keeps the old Chinen house, kitano-3 (the creator, 2026-10-12: "Tetsuo's mother lives on the hamlet in an old house").
 const CHINEN=KITANO_HAMLET.plots.find(p=>p.id==='kitano-3'),CHINEN_GATE=airportWorld(...hamletGate(CHINEN).door),CHINEN_LANE=airportWorld((CHINEN.minX+CHINEN.maxX)/2,CHINEN.maxZ+1.6);
-import {TROPIC_PLACES} from '../world/tropical-island.js';
 import * as THREE from '../../vendor/three.module.js';
 import {inGateball,COURT_TERRACE} from '../world/park-layout.js';
-import {GATEBALL_ACTIVE} from '../world/okinawa/layout.js';
 import {GROUND_LAYER} from '../world/ground-layers.js';
 import {FLOWER_SHOP} from '../world/flower-shop.js';
-import {HOSHIZAKI_STORE,AOBA_SUMMIT} from '../world/island-plan.js';
-import {buildFishCart} from '../world/roadside-props.js';
-import {FUMOTO} from '../world/fumoto-layout.js';
 
 /**
  * The people who live and work in the new streets.
@@ -34,15 +26,6 @@ const H=(h,m=0)=>h*60+m;
 
 const ALL_NEIGHBOURS=Object.freeze([
  {name:'Riku',look:'Chin',height:1.7,role:'checking the cargo yard',walk:true,route:DOCK_CREW_ROUTE,speed:.65,at:[-35.8,-38.3],face:[0,-1],hours:[[420,1320]],lines:['Rice for Sakura, fuses for the workshop, ice for the fishing boats. This quay keeps the whole island going.','The early boat brings supplies; the evening boat takes fish and outgoing post. Keep the workshop doorway clear, please.']},
- {name:'Emi Kado',look:'Reiko',height:1.61,role:'checking island freight manifests',at:[-23.1,-35.1],face:[1,0],pose:'Think',hours:[[360,1440]],lines:['Every parcel gets a line in the freight book. The Community Hall keeps our filed records for one year.','Chin and Tetsuo are in the blue electrical workshop. The last cargo check is at ten; I stay for the late passenger boat.']},
- {name:'Haru',look:'Shin',height:1.76,role:'sorting the village catch',at:[151,188],face:[-1,0],hours:[[0,1440]],home:[127,182],routine:[{from:0,at:[127,182],role:'at home',home:true},{from:285,at:[AOBA_SUMMIT.x-2.5,AOBA_SUMMIT.z+1],face:[1,-1],role:'praying at the Aoba utaki for a good catch'},{from:330,at:[127,182],role:'coming down from the utaki'},{from:360,at:[151,188],role:'landing and sorting the catch'},{from:720,at:HOSHIZAKI_STORE.waiting,face:HOSHIZAKI_STORE.waitingFace,role:'collecting lunch at the general store'},{from:780,at:[149,183],role:'mending fishing nets'},{from:1080,at:[127,182],role:'at home',home:true}],lines:['The airport takes our parcels, but the boats still set the pace of the village.','I land the catch at dawn, collect lunch from Mina and mend the nets before going home.','Before the boats go out I climb to the utaki on Mount Aoba. My father did, and his father. The sea has been kind to this village.']},
- // Fumoto, the hamlet at the foot of Mount Aoba (fumoto-layout.js).
- {name:'Grandmother Tokashiki',look:'Fumiko',height:1.47,role:'keeping the Fumoto co-op store',at:[37.05,198.8],face:[-1,0],hours:[[0,1440]],home:[26,191.2],routine:[{from:0,at:[26,191.2],role:'at home',home:true},{from:H(7),at:[37.05,198.8],face:[-1,0],role:'opening the co-op store'},{from:H(12),at:[36.6,195.6],face:[-1,0],role:'eating her lunch on the store bench'},{from:H(13),at:[37.05,198.8],face:[-1,0],role:'serving at the co-op store'},{from:H(19),at:[26,191.2],role:'at home',home:true}],
-  lines:['Rice, soy, tuna, mosquito coils. And the Ishimines’ tofu, still warm before eight. After eight it is just tofu.','Every family in Fumoto owns a share of this store. So every family in Fumoto tells me how to run it.','The telephone is ten yen. If it is Naha, talk fast; if it is your mother, talk properly.']},
- {name:'Old Mr Zukeran',look:'Mr Tanabe',height:1.6,role:'playing the sanshin under the gajumaru',at:[FUMOTO.bench[0],FUMOTO.bench[1]-.8],face:[0,-1],hours:[[0,1440]],home:[26,213.2],routine:[{from:0,at:[26,213.2],role:'at home',home:true},{from:H(6),at:[24.2,194.8],face:[0,1],role:'feeding his goats'},{from:H(9,30),at:[24,219],face:[0,1],role:'weeding the kitchen garden'},{from:H(12),at:[26,213.2],role:'at home',home:true},{from:H(17,30),at:[FUMOTO.bench[0],FUMOTO.bench[1]-.8],face:[0,-1],role:'playing the sanshin under the gajumaru'},{from:H(21),at:[26,213.2],role:'at home',home:true}],
-  lines:['This sanshin is older than my house. The snake was older than me.','In the evening it is too hot indoors and too quiet outside. So: the sanshin.','The goats eat the cane tops, I eat the goat soup at New Year. We have an understanding.']},
- {name:'Mina',look:'Yui',height:1.6,role:'keeping the village store',at:HOSHIZAKI_STORE.clerk,face:HOSHIZAKI_STORE.clerkFace,hours:[[0,1440]],home:[126,202.8],routine:[{from:0,at:[126,205.5],role:'at home',home:true},{from:480,at:HOSHIZAKI_STORE.clerk,role:'opening the village general store'},{from:720,at:[130,208],role:'taking a lunch break'},{from:780,at:HOSHIZAKI_STORE.clerk,role:'serving village customers'},{from:1080,at:[126,205.5],role:'at home',home:true}],lines:['Tea, rice crackers and postcards. Most customers are our neighbours.','The new guesthouse will bring a few visitors, but this will still be a quiet fishing village.']},
- {name:'Jun',look:'Daichi',height:1.7,role:'checking commuter tickets',at:airportWorld(-16,18.5),face:[1,0],hours:[[0,1440]],home:JUN_HOME,routine:[{from:0,at:JUN_HOME,role:'off duty, at home in Minato',home:true},{from:420,at:airportWorld(-16,18.5),role:'checking commuter tickets'},{from:720,at:airportWorld(TROPIC_PLACES.coralBay[0]-2,TROPIC_PLACES.coralBay[1]-1.1),role:'eating his lunch on Coral Bay'},{from:765,at:airportWorld(-14,24),role:'walking back up from the beach'},{from:780,at:airportWorld(-16,18.5),role:'checking commuter tickets'},{from:1200,at:JUN_HOME,role:'off duty, at home in Minato',home:true}],lines:['Check in ten minutes before your flight. Keep your cabin bag with you. If you are looking for me at lunch, I am on the sand at Coral Bay.','The ground-service radio goes to Chin and Tetsuo at the docks. The test sheet comes back with it.']},
  {name:'Grandmother Chinen',look:'Fumiko',height:1.48,role:'at her gate in Kitano hamlet',at:CHINEN_GATE,face:[0,1],hours:[[H(6,30),H(18,30)]],home:CHINEN_GATE,routine:[{from:0,at:CHINEN_GATE,role:'at home',home:true},{from:H(6,30),at:CHINEN_LANE,face:[0,-1],role:'sweeping the lane in front of her gate'},{from:H(9),at:CHINEN_GATE,role:'at home',home:true},{from:H(15),at:CHINEN_GATE,face:[0,1],role:'sitting at her gate for the breeze'},{from:H(18,30),at:CHINEN_GATE,role:'at home',home:true}],
   lines:['This is the old Chinen house. The typhoon of 1987 took the Shiromas’ roof next door; it only took three of our tiles.','My son Tetsuo mends radios in Minato. He comes over on the boat when he can, and eats like he is still fifteen.','The mayor and his wife are at the end of the lane. Thuan brings me the shop’s day-old bread on Saturdays.']},
 
@@ -55,13 +38,8 @@ const ALL_NEIGHBOURS=Object.freeze([
  {name:'Mr Ōshiro',look:'Mr Fujita',height:1.62,role:'scraping his sabani',at:[-33.4,-42.75],face:[0,-1],pose:'Interact',hours:[[H(6,30),H(17)]],
   lines:[
    'Cedar, this. From Yakushima, before you could not get it any more. I built her in 1968 and I will be buried before she is.',
-   'Weed and barnacles, every spring. You scrape to the wood, you let her dry a week, then tar. My son says buy a fibreglass one. My son also says buy a microwave.',
+   'Weed and barnacles, every spring. You scrape to the wood, you let her dry a week, then tar. Kōji says buy a fibreglass one. Kōji also says buy a microwave.',
    'In June the whole island races these, sail and paddle, Zamami to Naha. I came fourth in 1979. Fourth! Ask anyone.']},
- {name:'Uncle Kinjō',look:'Masaru',height:1.7,role:'fishing off the seawall',at:[-38.3,7.2],face:[-1,0],pose:'Idle',hours:[[H(5),H(10)],[H(15,30),H(19,30)]],
-  lines:[
-   'Shh — no, it is fine, they are not biting anyway. The tide is wrong. The tide is always wrong when somebody is watching.',
-   'Gurukun, if I am lucky. Fried whole, you eat the bones too. If I am unlucky, the cat from the net shed gets the bait again.',
-   'My son runs the ice plant now. I told him: ice is a good business, it never goes off. He did not laugh either.']},
  {name:'Mrs Nakamura',look:'Yoshiko',height:1.52,role:'at the zenzai counter',at:[7.35,-10.55],y:.08,face:[-1,0],pose:'Idle',hours:[[H(10),H(19)]],
   lines:[
    "Welcome! Zenzai? Kintoki beans, cooked since six this morning. The ice is from the plant on the quay, shaved to order. ¥250.",
@@ -72,41 +50,13 @@ const ALL_NEIGHBOURS=Object.freeze([
    'Hear that? Two diesels, one running, one resting. Every light on this island comes through that switchboard. Mind the yellow line.',
    'I used to cut hair on Main Street. Then the town needed somebody who understood engines more than it needed another barber. The post office has my old shop now; I still live upstairs.',
    'When the tanker is in at the oil jetty I take the town truck down and bring the diesel up. Six trips. On typhoon days I sleep on a camp bed by the switchboard.']},
- {name:'Mrs Yonamine',look:'Naoko',height:1.56,role:'behind the fish counter',at:[-9.95,10.25],y:.08,face:[1,0],pose:'Interact',hours:[[H(7),H(15)]],
-  lines:[
-   'Irabuchā, fresh this morning — the blue one, parrotfish. Sashimi with vinegar miso. Don’t make that face, try it first.',
-   'Mozuku, ¥200 a tray. It is seaweed and it is good for everything. My mother lived to ninety-eight on it and on complaining.',
-   'The auction is at six. By three I am sold out or the cat has it. Either way I go home.']},
- {name:'Mrs Miyagi',look:'Fumiko',height:1.44,role:'praying at the utaki',at:[-30.8,21.6],face:[0,1],pose:'Interact',hours:[[H(6),H(9,30)]],
-  lines:[
-   '……\nShe does not turn round straight away. When she does, she smiles as if she had been expecting you.\nThe gods here are not like the ones in the shrines on the mainland. They do not want money. They want you to come back.',
-   'Every morning since I was a girl, rice and salt and incense. When I cannot walk here any more my granddaughter will. That is how it goes.']},
- {name:'Mr Tamaki',look:'Kenta',height:1.72,role:'loading ice',at:[30,-44.8],face:[1,0],pose:'Interact',hours:[[H(5),H(13)]],
-  lines:[
-   'Mind your feet — the floor is wet everywhere here, even in August. Especially in August.',
-   'Block, crushed, flake. Crushed for the boats, flake for the fish shop, block for anybody with a party. Forty tonnes a day in summer.',
-   'My father fishes off the seawall and says ice is a good business because it never goes off. He says it every day.']},
  {name:'Kōji',look:'Daichi',height:1.7,role:'sorting the catch',at:[23.4,-41.7],face:[0,-1],pose:'Interact',hours:[[H(5),H(12)]],
   lines:[
-   'Auction is done, bro. What is left goes to Yonamine-san or to the freezer. You want a tuna head? Free. Great for soup. Nobody ever takes the tuna head.',
+   'Auction is done, bro. What is left goes to Mrs Sato or to the freezer. You want a tuna head? Free. Great for soup. Nobody ever takes the tuna head.',
    'The Minato Maru came in at four with a full hold and the skipper is asleep on the wheel. That is the life.']},
- // The gateball players, on the court morning and late afternoon (only while there is a
- // court: okinawa/layout.js GATEBALL_ACTIVE; NEIGHBOURS leaves them out otherwise).
- {name:'Mr Nakasone',look:'Hiroshi',height:1.64,role:'playing gateball',at:[22.6,-34.6],face:[1,.2],pose:'Interact',hours:[[H(7),H(10,30)],[H(16),H(18,30)]],
-  lines:[
-   'Red team, number three. Do not stand there, that is where my ball is going. Probably.',
-   'We play the next village on Sunday. They have a man who used to play professional baseball. It is not fair and we will beat him anyway.']},
- {name:'Mrs Kamiya',look:'Yoshiko',height:1.5,role:'playing gateball',at:[26.2,-35.8],face:[-1,.3],pose:'Idle',hours:[[H(7),H(10,30)],[H(16),H(18,30)]],
-  lines:[
-   'Nakasone-san hits too hard. Gateball is a game of patience. I have been patient with him for fifty years.',
-   'After the game we go to Nakamura’s for zenzai. The winning team pays. So Nakasone-san has never paid.']},
- {name:'Mr Arakaki',look:'Mr Tanabe',height:1.62,role:'refereeing',at:[28.8,-33.4],face:[-1,-.2],pose:'Idle',hours:[[H(7),H(10,30)],[H(16),H(18,30)]],
-  lines:[
-   'Thirty minutes, not a second more! — Oh, a visitor. My wife makes the andagi at the shop on Main Street. I referee, which is how I keep out of her kitchen.']},
- // Two who walk: one doing her shopping, one on his round.
  {name:'Mrs Kinjō',look:'Emi',height:1.58,role:'arranging flowers at Rainflower Florist',at:FLOWER_SHOP.staffAt,face:[-1,0],pose:'Interact',hours:[[H(9),H(18)]],
   lines:['Welcome to Rainflower. Fresh stems, a small bouquet, or something green for your windowsill? I wrap everything by hand.',
-   'My husband is the one fishing off the seawall. If you see him, tell him the rice is ready. The flowers finish work on time; he never does.']},
+   'Nakamura-san and I share the walkway. Her customers stand in my doorway with their ice; my buckets stand in hers. We have lunch at each other’s counters and say nothing about it.']},
  // Vy, at the high school on the mainland: the ferry to school from twenty past seven, then after
  // school an ice cream at the Blue Coral counter on Rainflower Lane and her homework in the park.
  {name:'Vy',look:'Vy',height:1.56,role:'waiting for the ferry to school',at:[-2.4,-57],face:[0,-1],hours:[[H(7,20),H(8)],[H(15,40),H(18,40)]],
@@ -116,22 +66,15 @@ const ALL_NEIGHBOURS=Object.freeze([
    'Kanji test tomorrow. Two hundred characters. I know one hundred and ninety. The other ten are probably not important.',
    'The lady at Blue Coral saves me the pink one. Do not tell anyone; she says it is a secret menu.',
    'My skirt has exactly twenty-four pleats. Our teacher counts them.']},
- // The fish seller: the dawn catch on ice in his push cart, up and down the main street
- // all morning, slowly, calling out what he has.
- {name:'Mr Toguchi',look:'Mr Toguchi',height:1.66,role:'selling the morning catch from his cart',walk:true,cart:true,speed:.45,hours:[[H(7),H(11)]],
-  route:[[2.2,-13.8],[2.2,13.8]],
-  lines:[
-   'Gurukun this morning, and a gāra off the breakwater that fought me for half an hour. He lost. You can have him for six hundred yen.',
-   'Fish has to be sold before the sun gets over the roofs. After that I am just a man pushing ice up a hill.',
-   'Thao at Minato takes whatever I have left at eleven. She pretends to haggle. I pretend to lose.']},
+ // The postman, on his round.
  {name:'Postman Tōma',look:'Kenta',height:1.7,role:'on his round',walk:true,speed:1.25,hours:[[H(9),H(13)],[H(14),H(17)]],
   route:[[2.6,15.2],[2.6,-14.6],[4.3,-15.2],[4.3,-1.6],[5.4,2.4],[14,2.4],[14,9.2],[14,2.4],[5.4,2.4],[4.3,-1.6],[2.6,-1.2]],
   lines:[
    'Two collections a day, 10:30 and 16:30, same as the post box says. The post box is never wrong. I am sometimes wrong.',
-   'Letters for the Nakasones, a parcel for Mr Shimabukuro at the power house, and a postcard for Sakura from somebody in Hanoi. I do not read postcards. The picture was very nice.']},
+   'Letters for the Ōshiros, a parcel for Mr Shimabukuro at the power house, and a postcard for Sakura from somebody in Hanoi. I do not read postcards. The picture was very nice.']},
 ]);
-/** Who is about today: the gateball players only while there is a court. */
-export const NEIGHBOURS=Object.freeze(ALL_NEIGHBOURS.filter(n=>GATEBALL_ACTIVE||!/gateball|refereeing/.test(n.role)));
+/** Who is about today. Everyone here is in the cast (cast.js); the plan's batch 2 moves them onto its schedules. */
+export const NEIGHBOURS=ALL_NEIGHBOURS;
 
 /** Everything they can say, by name, for the conversation box. */
 export const NEIGHBOUR_TALK=Object.freeze(Object.fromEntries(NEIGHBOURS.map(n=>[n.name,n])));
@@ -169,8 +112,6 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
   g.position.set(start.x,spec.y??groundAt(start.x,start.z),start.z);faceAlong(g,start.dx,start.dz);
   parent.add(g);
   characters?.attach(g,spec.look,spec.height);
-  // A cart goes ahead of whoever pushes it (roadside-props.js): its shafts at their hands.
-  if(spec.cart){const cart=buildFishCart();cart.position.set(0,0,-1.55);g.add(cart);}
   register?.(g,'Talk to '+spec.name,()=>onAction?.('neighbour',spec.name));
   return {g,spec,travelled:i*7};
  });

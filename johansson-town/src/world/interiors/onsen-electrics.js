@@ -16,7 +16,7 @@ export {MASSAGE_CHAIR};
  * goes dark and the coin is gone; when the power comes back the chair stays still until somebody pays again.
  */
 export const CHAIR_TIMER=Object.freeze({coin:100,seconds:600,name:'Massage chair timer display',
- for:'Whoever sits in the chair, to see how much of their hundred yen is left; and Mrs Higa, who can read it from the bandai when somebody says the chair cheated them.',
+ for:'Whoever sits in the chair, to see how much of their hundred yen is left; and Miss Higa, who can read it from the bandai when somebody says the chair cheated them.',
  why:'On the coin box at the front of the right arm, at the sitter’s right hand and facing the lobby, so the sitter and the people waiting both see it.',
  period:'A 1994 coin-operated chair: a grey steel coin box with a coin slot, a red 運転中 lamp and a four-digit red seven-segment LED, the cheap readout of every coin-op machine of the late eighties (coin TVs in inns, game machines). A dial cannot show seconds; the LED can, which is why the story can say 9:58.'});
 
@@ -26,7 +26,7 @@ export const DRYER_CORD=Object.freeze({length:1.7,
 
 /**
  * Umi-no-yu's electrics: the bath's supply breaker (契約ブレーカー) and the 分電盤 (distribution board) beside it on the
- * wall behind Mrs Higa's stool at the bandai, the circuits the board feeds, and the things on them.
+ * wall behind Miss Higa's stool at the bandai, the circuits the board feeds, and the things on them.
  *
  * Okinawa is 100 V. Every branch is a 20 A breaker on 1.6 mm cable, so a branch carries at most 2 000 W, and since the
  * rewiring (ONSEN_REWIRING) each of the women's three mirrors has a branch of its own: the left mirror and the massage
@@ -35,12 +35,12 @@ export const DRYER_CORD=Object.freeze({length:1.7,
  * contracted at 40 A (ONSEN_CONTRACT), and the supply breaker sees every branch added up.
  *
  * The busy evening ("Fujita's Back"): the house idles at 9.46 A (the lamps, the andon, the television, the fan, the comb
- * sterilizer, the milk cooler and the pump: 946 W). Three women dry their hair (3 x 1 200 W, 36 A) while Mrs Higa's pot
+ * sterilizer, the milk cooler and the pump: 946 W). Three women dry their hair (3 x 1 200 W, 36 A) while Miss Higa's pot
  * boils at the bandai (1 300 W, 13 A): 58.46 A, 1.46 times the contract. The breaker is thermal, so it does not open at once:
  * it warms. Fujita crab-walks the length of the lobby and feeds the chair a coin (200 W, 2 A): 60.46 A, 1.51 times the
  * contract, and four or five minutes after the dryers and the pot came on (BREAKER_CURVE) it lets go: the whole house goes
  * dark, every lamp, the television, the pump. The board's 60 A main never sees more than 60.46 A (under 105 % of it), so it
- * holds: the supply breaker is the one that trips (ブレーカーが落ちた). Mrs Higa first puts it straight back up with
+ * holds: the supply breaker is the one that trips (ブレーカーが落ちた). Miss Higa first puts it straight back up with
  * everything still on, and the breaker, still hot, lets go again in about a second (the 'retrip' moment, BREAKER_COOL);
  * then the dryers, the chair and her pot go off and she puts it up again, and it holds (ONSEN_RESET): that order is the lesson.
  *
@@ -66,11 +66,11 @@ export const DRYER_CORD=Object.freeze({length:1.7,
 export const ONSEN_VOLTS=100;
 
 /**
- * The board: in the keeper's corner behind the bandai, on the lobby's west wall just behind Mrs Higa's stool, on her left.
+ * The board: in the keeper's corner behind the bandai, on the lobby's west wall just behind Miss Higa's stool, on her left.
  * `wallX` is the wall face it hangs on, `z` and `y` its centre; it faces into the room (+x). Its top is at 1.82 m, where a
  * Japanese board hangs, and its door is shut (`door.shut`); it opens (`door.open`, degrees, hinged on its right, the
  * bandai-wall side, so it swings away from her and stops short of that wall) only while someone works inside it.
- * `keeper` is where Mrs Higa sits (onsen.js, the attendant's stool): every branch lever and the supply breaker are in her
+ * `keeper` is where Miss Higa sits (onsen.js, the attendant's stool): every branch lever and the supply breaker are in her
  * reach from there (tests/onsen-electrics.test.mjs); the main and the earth-leakage breaker, at the top, she reaches
  * standing up on the bandai floor beside her stool (`stand`), which is a job for the electrician anyway. The board stops
  * short of her head: her bun, at the back, clears its front edge.
@@ -79,8 +79,8 @@ export const ONSEN_BOARD=Object.freeze({
  wallX:-4.94,z:2.15,y:1.51,w:.52,h:.62,d:.175,
  facing:'+x',door:Object.freeze({shut:0,open:100,hinge:'right'}),
  // Seated, she reaches with her arm and a lean of the body (30 degrees from the hip), the way anyone reaches round from a stool.
- keeper:Object.freeze({who:'Mrs Higa',seat:Object.freeze([-4.5,.75,2.6]),stand:Object.freeze([-4.55,.35,2.15]),facing:'+x',lean:30}),
- where:'Behind the bandai, on the wall at Mrs Higa’s back, just to her left: the keeper’s corner, where only she reaches it. She turns on her stool and flicks a lever up without looking up from her account book, and nobody else can get to it without climbing over the counter. It hangs where a Japanese board hangs, its top at 1.82 m, with its door shut and the printed card on it: 関係者以外さわらないでください, staff only.',
+ keeper:Object.freeze({who:'Miss Higa',seat:Object.freeze([-4.5,.75,2.6]),stand:Object.freeze([-4.55,.35,2.15]),facing:'+x',lean:30}),
+ where:'Behind the bandai, on the wall at Miss Higa’s back, just to her left: the keeper’s corner, where only she reaches it. She turns on her stool and flicks a lever up without looking up from her account book, and nobody else can get to it without climbing over the counter. It hangs where a Japanese board hangs, its top at 1.82 m, with its door shut and the printed card on it: 関係者以外さわらないでください, staff only.',
  main:Object.freeze({id:'main',jp:'主幹',en:'Main breaker',amps:60,
   why:'Protects the service cable from the pole: 60 A at 100 V, 6 000 W. It is bigger than the bath’s 40 A supply, so on a busy evening the supply breaker beside the board lets go first and the main never has to.'}),
  elcb:Object.freeze({id:'elcb',jp:'漏電遮断器',en:'Earth-leakage breaker',amps:60,milliamps:30,
@@ -91,34 +91,34 @@ export const ONSEN_BOARD=Object.freeze({
  * The supply breaker (契約ブレーカー): the breaker the bath's supply is contracted at, 40 A, in a small cream box of its
  * own on the wall beside the board, on the stool side, ahead of the board's main. Everything the house draws goes through
  * it, so it trips when the whole house runs at once, before the 60 A main. It hangs a hand lower than the board's top
- * row, so Mrs Higa reaches back over her left shoulder from her stool and puts it up without getting down (the story's
+ * row, so Miss Higa reaches back over her left shoulder from her stool and puts it up without getting down (the story's
  * reset, ONSEN_RESET). `wallX`, `z` and `y` are its back on the wall face and its centre; it faces into the room (+x).
  */
 export const ONSEN_CONTRACT=Object.freeze({
  id:'contract',jp:'契約ブレーカー',en:'Supply breaker',amps:40,volts:ONSEN_VOLTS,
  wallX:-4.94,z:2.53,y:1.56,w:.11,h:.19,d:.075,facing:'+x',
  label:Object.freeze({jp:'契約',amps:'40A',en:'CONTRACT'}),
- where:'On the lobby’s west wall between the board and Mrs Higa’s stool, its lever a hand below the board’s top row: the one switch she reaches back over her left shoulder for, from her stool, in the dark.',
+ where:'On the lobby’s west wall between the board and Miss Higa’s stool, its lever a hand below the board’s top row: the one switch she reaches back over her left shoulder for, from her stool, in the dark.',
  why:'The whole bath is contracted at 40 A: the house idles at 9.5 A, so two dryers, the chair and the lamps (35.5 A) are fine, and so is the pot with one dryer (34.5 A). Three dryers and the boiling pot together are 58.5 A, and with the chair 60.5 A, one and a half times the contract: it warms for a few minutes and lets go, and the whole house goes dark at once, not one room. It trips before the board’s 60 A main, so the main never has to.',
  region:'Okinawa Electric bills by a minimum charge (最低料金制), not by contracted amperes, so it never fitted the colour-coded ampere breakers of Tokyo or Kyushu (red 10 A, yellow 20 A, green 30 A, grey 40 A…). Here the contract is the bath’s own breaker by the board, its rating printed on its face; the colour is the plain cream of any breaker box.',
  period:'A cream moulded box the size of a paperback, its lever behind a small window and a printed label, 契約 40A: the switch every Japanese family knows from ブレーカーが落ちた, the click that leaves the whole house dark when the dryer, the kettle and the rice cooker run at once.'});
 
 /**
  * The reset after the supply breaker lets go ("Fujita's Back", pages 6 and 7). The breaker that has just let go is still
- * hot (BREAKER_COOL), so putting it straight back up with everything still switched on, as Mrs Higa does first without
+ * hot (BREAKER_COOL), so putting it straight back up with everything still switched on, as Miss Higa does first without
  * looking, brings the lights on for about a second before it lets go again (the 'retrip' moment). The reset that holds
- * switches the big things off first, by torchlight at Tetsuo's word: the dryers, the chair, Mrs Higa's pot; then she puts
+ * switches the big things off first, by torchlight at Tetsuo's word: the dryers, the chair, Miss Higa's pot; then she puts
  * the supply breaker up. The steps are done in order by higaReset().
  */
-export const ONSEN_RESET=Object.freeze({by:'Mrs Higa',breaker:'contract',
+export const ONSEN_RESET=Object.freeze({by:'Miss Higa',breaker:'contract',
  steps:Object.freeze([
   Object.freeze({do:'switchOff',loads:Object.freeze(['dryer-1','dryer-2','dryer-3']),by:'the women at the mirrors, at Tetsuo’s word',en:'The dryers off, one by one.',
    why:'Three dryers are 36 A: switched on when the lever goes up, they come back on at once, on a breaker still hot from letting go.'}),
   Object.freeze({do:'switchOff',loads:Object.freeze(['massage-chair']),by:'Fujita',en:'The chair off at its switch.',
    why:'It forgot its coin when the power went, but its switch goes off too, so nothing starts by itself.'}),
-  Object.freeze({do:'switchOff',loads:Object.freeze(['kettle']),by:'Mrs Higa',en:'She pulls the pot’s magnet plug.',
+  Object.freeze({do:'switchOff',loads:Object.freeze(['kettle']),by:'Miss Higa',en:'She pulls the pot’s magnet plug.',
    why:'The pot is the biggest single load in the house (13 A), and the one in her hand.'}),
-  Object.freeze({do:'reset',breaker:'contract',by:'Mrs Higa',en:'Then she reaches back over her left shoulder and puts the supply breaker up.',
+  Object.freeze({do:'reset',breaker:'contract',by:'Miss Higa',en:'Then she reaches back over her left shoulder and puts the supply breaker up.',
    why:'Down until it clicks, then up: a tripped breaker has to be pushed right down to latch before it will go back on. With only the house’s own 9.5 A on it, it holds.'}),
  ]),
  why:'Switch off before you put the breaker back up: everything that was on comes back on at once the moment the lever goes up, and a breaker that has just let go is still warm.'});
@@ -151,14 +151,14 @@ export const ONSEN_CIRCUITS=Object.freeze([
   why:'The changing rooms’ lamps on a circuit of their own, so a tripped socket never leaves people undressing in the dark: the women’s tube over their mirrors and the men’s ring pendant, both fluorescent since the 1987 rewiring.',
   normal:['changing-pendant','women-tube'],
   loads:Object.freeze([
-   plain({id:'changing-pendant',en:'Men’s changing-room ring pendant',watts:30,atRest:'on',by:'Mrs Higa at opening time',meshes:['Changing-room pendant lamp'],lights:['Changing-room light'],
+   plain({id:'changing-pendant',en:'Men’s changing-room ring pendant',watts:30,atRest:'on',by:'Miss Higa at opening time',meshes:['Changing-room pendant lamp'],lights:['Changing-room light'],
     fixture:plain({kind:'ring',at:[2.1,2.7,.2],room:'men'}),
     light:plain({at:[2.1,2.46,.2],colour:0xd0deff,kelvin:5000,intensity:8,range:3.2,
      floor:plain({rect:[.06,4.94,-1.14,1.6],centre:[2.1,.2],radius:4.2,strength:.1,wedge:plain({x0:.05,x1:.9,depth:.85,spread:.3,strength:.1})}),
      why:'Neutral white (昼白色) from a ring tube: cooler than the lobby’s bulb, a shade warmer than the women’s daylight tube. Its reach stops short of the partition’s far side, so it lights the men’s room and not the women’s through the wall.'}),
     period:'A 30 W ring fluorescent (丸形蛍光灯 FCL30) under a shallow milk-white shade with a pull cord: the pendant of every Shōwa home and shop from the seventies, fitted here in 1987 in place of the old bulb.',
     purpose:'Hangs from the middle beam straight over the bench, the brightest place on the men’s side to find your locker key, and the middle of their room, so its light stays on their side of the partition.'}),
-   plain({id:'women-tube',en:'Women’s changing-room fluorescent lamp',watts:40,atRest:'on',by:'Mrs Higa at opening time',meshes:['Women’s changing-room lamp'],lights:['Women’s changing-room light'],
+   plain({id:'women-tube',en:'Women’s changing-room fluorescent lamp',watts:40,atRest:'on',by:'Miss Higa at opening time',meshes:['Women’s changing-room lamp'],lights:['Women’s changing-room light'],
     fixture:plain({kind:'trough',at:[-2.6,2.8,-.32],length:1.25,room:'women'}),
     light:plain({at:[-2.6,2.82,-.32],colour:0xb8ceff,kelvin:6500,intensity:10,range:3,
      floor:plain({rect:[-4.94,-.06,-1.14,1.6],centre:[-2.6,-.32],radius:4.4,strength:.16,wedge:plain({x0:-.9,x1:-.05,depth:.95,spread:.3,strength:.15})}),
@@ -170,11 +170,11 @@ export const ONSEN_CIRCUITS=Object.freeze([
   why:'Sealed damp-proof lamps over the washing places and the indoor bath, and the stone lantern by the rock bath, on their own breaker so a fault in the wet room is found on its own.',
   normal:['bath-lamp-west','bath-lamp-east','garden-lantern'],
   loads:Object.freeze([
-   plain({id:'bath-lamp-west',en:'Bath-hall lamp over the washing places',watts:60,atRest:'on',by:'Mrs Higa at opening time',meshes:['Bath hall lamp west'],lights:['Bath hall light west'],
+   plain({id:'bath-lamp-west',en:'Bath-hall lamp over the washing places',watts:60,atRest:'on',by:'Miss Higa at opening time',meshes:['Bath hall lamp west'],lights:['Bath hall light west'],
     fixture:plain({kind:'sealed',at:[-1.5,2.8,-2.8],room:'bath'}),
     light:plain({at:[-1.5,2.82,-2.8],colour:0xffd9a8,kelvin:2800,intensity:6,range:4.2}),
     purpose:'Lights the taps and mirrors where people wash before they get in.'}),
-   plain({id:'bath-lamp-east',en:'Bath-hall lamp over the indoor bath',watts:60,atRest:'on',by:'Mrs Higa at opening time',meshes:['Bath hall lamp east'],lights:['Bath hall light east'],
+   plain({id:'bath-lamp-east',en:'Bath-hall lamp over the indoor bath',watts:60,atRest:'on',by:'Miss Higa at opening time',meshes:['Bath hall lamp east'],lights:['Bath hall light east'],
     fixture:plain({kind:'sealed',at:[2.8,2.8,-2.9],room:'bath'}),
     light:plain({at:[2.8,2.82,-2.9],colour:0xffd9a8,kelvin:2800,intensity:6,range:4.2}),
     purpose:'Lights the indoor bath so you can see the step down into the water.'}),
@@ -185,10 +185,10 @@ export const ONSEN_CIRCUITS=Object.freeze([
     purpose:'Marks the corner of the rock bath after dark, so nobody steps off the paving into the fukugi’s roots, and puts a little warm light on the bathers from the left.'}),
   ])}),
  plain({id:'lobby',no:4,jp:'玄関・番台',en:'Lobby and bandai',amps:20,volts:ONSEN_VOLTS,
-  why:'The front of the house: the porch lamp, the lobby lamp, the andon and Mrs Higa’s pot on the bandai, the television, and on the men’s side the fan and the comb sterilizer, whose sockets are spurs off the television’s through the same wall. Everything on it at once, the pot boiling, is 15 A on 20.',
+  why:'The front of the house: the porch lamp, the lobby lamp, the andon and Miss Higa’s pot on the bandai, the television, and on the men’s side the fan and the comb sterilizer, whose sockets are spurs off the television’s through the same wall. Everything on it at once, the pot boiling, is 15 A on 20.',
   normal:['porch-lamp','lobby-lamp','andon','television','fan','comb-sterilizer'],
   loads:Object.freeze([
-   plain({id:'porch-lamp',en:'Porch lamp under the eave',watts:20,atRest:'on',by:'Mrs Higa at opening time, with the noren',meshes:['Porch lamp'],lights:['Porch light'],
+   plain({id:'porch-lamp',en:'Porch lamp under the eave',watts:20,atRest:'on',by:'Miss Higa at opening time, with the noren',meshes:['Porch lamp'],lights:['Porch light'],
     fixture:plain({kind:'porch',at:[0,2.31,6.2],room:'porch'}),
     dusk:plain({why:'On a photocell (自動点滅器), like every porch lamp of the period: it comes on as the street goes dark and goes out at dawn, one click and steady.'}),
     // The porch outside is drawn in the sky's flat colours (onsen-front.js), so the lamp shows on it as pools of light
@@ -198,31 +198,31 @@ export const ONSEN_CIRCUITS=Object.freeze([
      why:'A cool white over the step, from above and behind whoever stands on it coming in: their rim from the street. It reaches the step and no further, so it never lights the lobby’s ceiling through the street wall.'}),
     period:'A damp-proof milk-glass globe (防雨形 軒下灯) under the porch roof with a 20 W ring tube: the porch light of shops and baths of the eighties, cooler than the bulbs inside.',
     purpose:'Lights the step and the stepping stones after dark, so nobody misses the step in geta, and tells the street the bath is open.'}),
-   plain({id:'lobby-lamp',en:'Lobby ceiling lamp',watts:40,atRest:'on',by:'Mrs Higa at opening time',meshes:['Lobby ceiling lamp'],lights:['Lobby light'],
+   plain({id:'lobby-lamp',en:'Lobby ceiling lamp',watts:40,atRest:'on',by:'Miss Higa at opening time',meshes:['Lobby ceiling lamp'],lights:['Lobby light'],
     fixture:plain({kind:'flush',at:[-2,2.8,3],room:'lobby'}),
     light:plain({at:[-2,2.82,3],colour:0xffc488,kelvin:2700,intensity:7,range:3.5,
      floor:plain({rect:[-4.94,4.94,1.6,4.94],centre:[-2,3],radius:5.4,strength:.1}),
      why:'A 40 W bulb behind milk glass: the warm camp, the colour of the lobby, the genkan and the bandai. Its reach is held to the lobby so it does not warm the changing rooms through the noren wall.'}),
-    purpose:'Over the genkan and the bandai, so Mrs Higa can see the coins and you can see your shoes.'}),
-   plain({id:'andon',en:'Andon on the bandai',watts:25,atRest:'on',by:'Mrs Higa at opening time',meshes:['Andon'],lights:['Andon light'],
+    purpose:'Over the genkan and the bandai, so Miss Higa can see the coins and you can see your shoes.'}),
+   plain({id:'andon',en:'Andon on the bandai',watts:25,atRest:'on',by:'Miss Higa at opening time',meshes:['Andon'],lights:['Andon light'],
     light:plain({at:[-3.92,1.06,1.92],colour:0xffcf98,kelvin:2400,intensity:3.5,range:1.25,
      why:'A 25 W bulb in paper on the counter: warm light up the wall behind her, so the board at her back is lit from below at the bandai. Its reach is the keeper’s corner: the board, her face, her book.'}),
     purpose:'The paper lamp Grandmother Higa put on the bandai in the seventies; it says the bath is open from the street.'}),
-   plain({id:'television',en:'Lobby television',watts:80,atRest:'on',by:'Mrs Higa, for the night game',screens:['Lobby CRT'],
+   plain({id:'television',en:'Lobby television',watts:80,atRest:'on',by:'Miss Higa, for the night game',screens:['Lobby CRT'],
     purpose:'The night game for people cooling down on the tatami.'}),
-   plain({id:'fan',en:'Changing-room fan',watts:30,atRest:'on',by:'Mrs Higa at opening time',socket:'Fan socket',
+   plain({id:'fan',en:'Changing-room fan',watts:30,atRest:'on',by:'Miss Higa at opening time',socket:'Fan socket',
     purpose:'Cools people coming out of the bath at 42 degrees; it turns its head so everyone on the bench gets some.'}),
-   plain({id:'comb-sterilizer',en:'Comb sterilizer on the men’s vanity',watts:6,atRest:'on',by:'Mrs Higa at opening time',meshes:['Comb sterilizer lamp'],socket:'Men’s vanity socket',
+   plain({id:'comb-sterilizer',en:'Comb sterilizer on the men’s vanity',watts:6,atRest:'on',by:'Miss Higa at opening time',meshes:['Comb sterilizer lamp'],socket:'Men’s vanity socket',
     purpose:'A small ultraviolet lamp in a box that keeps the men’s side’s house combs clean between customers: the blue glow of every Shōwa barber’s and bath’s mirror.'}),
-   plain({id:'kettle',jp:'電気ポット',en:'Mrs Higa’s electric pot on the bandai',watts:1300,atRest:'off',by:'Mrs Higa, for her tea',meshes:['Electric pot boil lamp'],socket:'Bandai socket',
+   plain({id:'kettle',jp:'電気ポット',en:'Miss Higa’s electric pot on the bandai',watts:1300,atRest:'off',by:'Miss Higa, for her tea',meshes:['Electric pot boil lamp'],socket:'Bandai socket',
     shows:plain({lamp:'Electric pot boil lamp',plug:'Electric pot magnet plug'}),
     // `at` is the middle of its foot on the bandai top; `face` the way its spout and lamp panel look (radians about y, from
     // +x): to the lobby, the magnet plug at the back by the counter's inner edge. She turns it on its foot to pour.
     prop:plain({at:Object.freeze([-4.06,BANDAI_TOP,2.22]),on:'Bandai top',r:.1,h:.325,face:0,litres:3,boilMinutes:12,
-     for:'Mrs Higa: her tea at the bandai through the evening, and the hot water for the free genmaicha in the kyūsu on the tatami.',
+     for:'Miss Higa: her tea at the bandai through the evening, and the hot water for the free genmaicha in the kyūsu on the tatami.',
      why:'On the counter top at her left hand, between the andon and her account book: she turns it on its foot and pours without getting up, and between pours its spout and its red lamp face the lobby, so the room (and the reader) can see when it boils. The cord drops straight over the counter’s back edge to the socket on its inside face (Bandai socket), on her side, where no customer can catch it and it never crosses the coins or the book.',
-     period:'A 3-litre electric pot (沸騰ジャーポット) of the late eighties: a cream body with a band of small orange flowers, a brown lid with a big air-pump button (エアー式) and a red 沸騰 lamp on its panel, on a turning foot, and a magnet plug (マグネットプラグ) that lets go if the cord is caught. A big quick-boil pot: 1 300 W while it boils, about twelve minutes from the tap; a home pot boiled at 700 to 900 W. Mrs Higa pulls the magnet plug once it has boiled, as careful keepers did, and boils it again when she wants tea.'}),
-    purpose:'Mrs Higa’s tea, boiled fresh at the start of the evening rush; the biggest single thing in the house while it boils, and the 13 A that tips the busy evening over the contract.'}),
+     period:'A 3-litre electric pot (沸騰ジャーポット) of the late eighties: a cream body with a band of small orange flowers, a brown lid with a big air-pump button (エアー式) and a red 沸騰 lamp on its panel, on a turning foot, and a magnet plug (マグネットプラグ) that lets go if the cord is caught. A big quick-boil pot: 1 300 W while it boils, about twelve minutes from the tap; a home pot boiled at 700 to 900 W. Miss Higa pulls the magnet plug once it has boiled, as careful keepers did, and boils it again when she wants tea.'}),
+    purpose:'Miss Higa’s tea, boiled fresh at the start of the evening rush; the biggest single thing in the house while it boils, and the 13 A that tips the busy evening over the contract.'}),
   ])}),
  plain({id:'fridge',no:5,jp:'冷蔵庫',en:'Milk fridge',amps:20,volts:ONSEN_VOLTS,
   why:'A dedicated circuit so nobody’s hair dryer can ever switch the milk off overnight.',
@@ -298,7 +298,7 @@ export const ONSEN_UPGRADE=Object.freeze({
   why:'Circuit 1 now feeds only the chair’s spur, 2 A on 20, and a label must say what the breaker feeds: new tape over the old.'}),
  route:'New 1.6 mm cable from the ninth breaker up into the ceiling void and down inside the vanity wall to the left mirror’s socket box, the way the rewiring ran ways 7 and 8. In that box the old circuit 1 cable is taken off the socket and joined straight through to the chair’s raceway, so the socket is on the new branch and the spur stays on circuit 1: nothing new shows in the changing room.',
  box:plain({jp:'増設ボックス',en:'Add-on breaker box',wallX:-4.94,z:2.27,y:1.12,w:.19,h:.12,d:.085,conduit:.011,breakerX:-.05,tapeX:.047,
-  why:'The board has no spare way left (its two spares became circuits 7 and 8), so the ninth breaker hangs in a small steel box of its own just under the board, on the supply breaker’s side and above Mrs Higa’s noren pole (whose hooks it leaves room to lift it off), fed through a short grey conduit from the board’s load side: the main and the earth-leakage breaker switch it with everything else, and the earth-leakage breaker guards the wet room’s new socket feed too. It is in Mrs Higa’s reach from her stool, like every other lever.',
+  why:'The board has no spare way left (its two spares became circuits 7 and 8), so the ninth breaker hangs in a small steel box of its own just under the board, on the supply breaker’s side and above Miss Higa’s noren pole (whose hooks it leaves room to lift it off), fed through a short grey conduit from the board’s load side: the main and the earth-leakage breaker switch it with everything else, and the earth-leakage breaker guards the wet room’s new socket feed too. It is in Miss Higa’s reach from her stool, like every other lever.',
   period:'A one-way branch box in the board’s grey: how an electrician of the early Heisei years added a circuit to a full board without changing the board.'}),
  contract:plain({amps:60,label:plain({jp:'契約',amps:'60A',en:'CONTRACT'}),
   why:'A bigger contract for the same house. Everything at once (three dryers, the pot, the chair and the idle house) is still 60.46 A: a hair over the 60 A on its face, inside the margin a breaker carries without opening (it never trips at or under 105 %), so it holds, with nothing to spare: anything more on the same evening would warm it until it let go. 60 A is as far as the contract goes: the board’s main is 60 A, sized for the service cable from the pole, so the contract and the main are now the same size.',
@@ -539,15 +539,15 @@ export const ONSEN_SCENARIOS=Object.freeze({
  quiet:Object.freeze({on:['dryer-2','massage-chair'],down:[],tv:'night-game',
   en:'A quiet evening: one dryer and the chair, 23.46 A on the 40 A supply (the dryer 12 A on its own circuit 7, the chair 2 A on circuit 1). It holds all night.'}),
  evening:Object.freeze({on:EVENING,down:[],hold:true,tv:'night-game',pages:Object.freeze([3,4]),
-  en:'The evening rush, before the chair: three dryers at the mirrors (36 A, each on its own branch) and Mrs Higa’s pot boiling at the bandai (13 A) on the idle house (9.46 A): 58.46 A, 1.46 times the 40 A supply. The supply breaker is warming, its lever still up: left alone it lets go in about five minutes. Every branch is within its 20 A, and the 60 A main holds.'}),
+  en:'The evening rush, before the chair: three dryers at the mirrors (36 A, each on its own branch) and Miss Higa’s pot boiling at the bandai (13 A) on the idle house (9.46 A): 58.46 A, 1.46 times the 40 A supply. The supply breaker is warming, its lever still up: left alone it lets go in about five minutes. Every branch is within its 20 A, and the 60 A main holds.'}),
  'last-straw':Object.freeze({on:[...EVENING,'massage-chair'],down:[],hold:true,chair:2,tv:'night-game',pages:Object.freeze([4]),
   en:'Fujita’s coin goes in and the rollers find the spot (the timer at 9:58): the chair’s 2 A on top of the rush, 60.46 A, 1.51 times the contract. The lever is still up; it is the moment before the click.'}),
  blackout:Object.freeze({on:[...EVENING,'massage-chair'],down:[],settle:true,tv:'night-game',pages:Object.freeze([5,6]),
   en:'The supply breaker has let go: the whole house is dark. Every lamp, the andon, the television, the milk cooler, the pump, the dryers in the women’s hands and the chair under Fujita; only the outside lights the windows. The dryers and the pot are still switched on; the chair has forgotten its coin. Every branch lever and the main are still up. The same dark follows the retrip.'}),
  retrip:Object.freeze({on:[...EVENING,'massage-chair'],down:[],settle:true,wait:2,up:Object.freeze(['contract']),hold:true,tv:'night-game',pages:Object.freeze([6]),
-  en:'Mrs Higa puts the supply breaker straight back up without looking, two seconds into the dark, with everything still switched on: the lights blink on (the dryers roar, the pot boils; the chair has forgotten its coin), 58.46 A on a breaker still hot from letting go. It lets go again in about a second (CLACK): blackout, retrip, blackout, then restored.'}),
+  en:'Miss Higa puts the supply breaker straight back up without looking, two seconds into the dark, with everything still switched on: the lights blink on (the dryers roar, the pot boils; the chair has forgotten its coin), 58.46 A on a breaker still hot from letting go. It lets go again in about a second (CLACK): blackout, retrip, blackout, then restored.'}),
  restored:Object.freeze({on:[],down:[],tv:'night-game',pages:Object.freeze([7,8,9]),
-  en:'The lights come back and stay on: by Tetsuo’s torch the dryers, the chair and Mrs Higa’s pot were switched off, and she put the supply breaker up (ONSEN_RESET). The house is back at rest, 9.46 A on the 40 A supply, and it holds.'}),
+  en:'The lights come back and stay on: by Tetsuo’s torch the dryers, the chair and Miss Higa’s pot were switched off, and she put the supply breaker up (ONSEN_RESET). The house is back at rest, 9.46 A on the 40 A supply, and it holds.'}),
  isolated:Object.freeze({on:[],down:['main'],board:'open',tv:'night-game',
   en:'Isolate first: the board’s main off and its door open before anybody works inside it (Tetsuo). The whole house is dark and the television black.'}),
  // The ending of "Fujita's Back" (page 9, ONSEN_UPGRADE and ONSEN_LOCKOUT): the board as it is, locked off; the same with the
@@ -805,7 +805,7 @@ export function buildOnsenElectrics({room,rect,anchor,action,sun=null,sunAtNoon=
    ctx.fillStyle='#1d2422';line(ctx,T.en,W/2,H*.94,W-30,24,'bold');});
   const tag=add(new THREE.PlaneGeometry(T.w,T.h),printed(tex,0xfbfaf4,{side:THREE.DoubleSide}),px,hole.y-.004-T.h/2,hole.z-.0105,'Lock-out tag',lock);tag.castShadow=false;
  }
- // The door, hinged on its right (the bandai-wall side, so it opens away from Mrs Higa and clear of the wall), the
+ // The door, hinged on its right (the bandai-wall side, so it opens away from Miss Higa and clear of the wall), the
  // circuit list inside it; on its face a printed staff-only card and a small latch.
  const hinge=new THREE.Group();hinge.position.set(B.w/2,0,B.d);hinge.name='Breaker board door';board.add(hinge);
  add(new THREE.BoxGeometry(B.w,B.h,.012),steel,-B.w/2,0,-.006,'Breaker board door panel',hinge);
@@ -825,7 +825,7 @@ export function buildOnsenElectrics({room,rect,anchor,action,sun=null,sunAtNoon=
   const r9=add(new THREE.PlaneGeometry(.33,Math.abs(rowY(D.y0+8*D.step-26)-rowY(D.y0+8*D.step+30))),tapeMat([[`${c.no}  ${c.tape.jp}  ${c.amps}A  (増設)`,44,.5]],c.no*31+11,{w:512,h:100}),
    0,(rowY(D.y0+8*D.step-26)+rowY(D.y0+8*D.step+30))/2,.0012,'Tape label circuit list 9 (upgrade)',card);r9.rotation.z=.014;r9.castShadow=false;
   upgradeShows.push(r1,r9);}
- // It hangs over the bandai's raised floor, behind the counter: nobody walks there but Mrs Higa.
+ // It hangs over the bandai's raised floor, behind the counter: nobody walks there but Miss Higa.
  rect(B.wallX+B.d/2,B.z,B.d,B.w,B.y+B.h/2);
  const toWorld=(x,y,z)=>{board.updateMatrix();return new THREE.Vector3(x,y,z).applyMatrix4(board.matrix);};
 
@@ -1060,7 +1060,7 @@ export function buildOnsenElectrics({room,rect,anchor,action,sun=null,sunAtNoon=
  socket(3.62,.3,hall.front-.06,Math.PI,'Fan socket');
  cord([[3.85,.004,1.222],[3.8,.004,1.33],[3.66,.004,1.47],[3.625,.03,1.505],[3.62,.15,1.515],[3.62,.28,1.517]],'Fan cord');
 
- // ---- Mrs Higa's electric pot (the lobby circuit's `kettle`): on its turning foot on the bandai top, its spout and lamp
+ // ---- Miss Higa's electric pot (the lobby circuit's `kettle`): on its turning foot on the bandai top, its spout and lamp
  // panel to the lobby (she turns it on its foot to pour), its magnet plug at the back, and the cord over the counter's
  // back edge to the socket on the counter's inside face. Switched off, the magnet plug lies on the counter beside it.
  const KP=LOAD_BY_ID.get('kettle').prop,[kx,ky,kz]=KP.at,pot=new THREE.Group();pot.name='Electric pot';pot.position.set(kx,ky,kz);pot.rotation.y=KP.face;pot.userData.prop='kettle';group.add(pot);
@@ -1222,7 +1222,7 @@ export function buildOnsenElectrics({room,rect,anchor,action,sun=null,sunAtNoon=
    if(locked&&id===ONSEN_LOCKOUT.breaker){action('inspect','Main breaker · Locked off',`Locked off: a red clamp over the lever, ${ONSEN_LOCKOUT.by}’s padlock through it and his tag, ${ONSEN_LOCKOUT.tag.head} ${ONSEN_LOCKOUT.tag.jp}. Someone is working on the wiring. Only the one whose lock it is takes it off.`);return;}
    if(!reset(id))return;
    const c=byId(id),again=c&&overloaded(id,runningOn(id));
-   // The keeper's board: you ask, and Mrs Higa does it from her stool.
+   // The keeper's board: you ask, and Miss Higa does it from her stool.
    action('inspect','Breaker · Reset',c
     ?`Higa-san turns on her stool without looking up from her account book, opens the board with one finger, pushes the ${name} lever all the way down until it clicks, then up to on, and shuts the door. `+(again?`What is switched on on it draws ${wattsOf(id,runningOn(id))} watts: ${loadOf(id,runningOn(id))} amps on a ${c.amps} amp breaker. Switch something off, or it will go again.`:'The power comes back.')
     :`Higa-san reaches round, pushes the ${name} lever down until it clicks, then up to on, and shuts the door. The whole board comes back.`);

@@ -88,7 +88,7 @@ export const GENKAN_SPARE=Object.freeze([spot(1.27,3.82,pair(),'A visitor’s, a
  spot(-1.6,3.82,pair(),'A visitor’s, past the sisters’ row.','A visitor’s pair.'),spot(1.56,3.82,pair(),'A visitor’s, by the others.','A visitor’s pair.')]);
 /** Who never leaves shoes at the step, and why. */
 export const GENKAN_NOT_HERE=Object.freeze({
- 'Mrs Higa':'She comes in by the boiler-room door at the back and keeps her sandals under the bandai.',
+ 'Miss Higa':'She comes in by the boiler-room door at the back and keeps her sandals under the bandai.',
  Johansson:'The player: whoever is looking still has their own shoes on.',
 });
 /**

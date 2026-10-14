@@ -51,5 +51,10 @@ test('Sakura supplies every business in town, with lines it really stocks',async
  assert.ok(ACCOUNTS.frontrow.office&&ACCOUNTS.frontrow['mayor-office'],'Front-Row supplies the offices');
  for(const [id,s] of Object.entries(SUPPLIERS)){assert.ok(residents.has(s.owner),s.owner+' runs '+s.name);for(const [site,a] of Object.entries(ACCOUNTS[id])){assert.ok(new RegExp(`id:'${site}'|'${site}'`).test(sources),site+' is a real place');assert.ok(a.owner?residents.has(a.owner):a.contact,site);}}
  assert.ok(ACCOUNTS['rainflower-florist'].market,'Rainflower Florist decorates Sakura');
+ // Only open places trade, and every named owner is somebody in the cast (src/people/cast.js).
+ const {CAST_NAMES,PLACES}=await import('../src/people/cast.js');
+ const cast=new Set(CAST_NAMES),closed=Object.keys(PLACES).filter(id=>PLACES[id].closed);
+ for(const [id,s] of Object.entries(SUPPLIERS)){assert.ok(cast.has(s.owner),s.owner+' is in the cast');
+  for(const [site,a] of Object.entries(ACCOUNTS[id])){assert.ok(!closed.includes(site),site+' is closed and orders nothing');if(a.owner)assert.ok(cast.has(a.owner),a.owner+' ('+site+') is in the cast');}}
  assert.ok(SHOP_STOCK.filter(i=>tradeBuyersOf(i.id).length).length>=15,'Half the lines go to a business too');
 });

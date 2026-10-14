@@ -24,7 +24,7 @@ const base=recipeFor('Thuan');
 const BODIES=[];
 for(const age of ['child','teen','adult','elder'])for(const build of [0,1])for(const proportion of ['classic','rounded'])
  BODIES.push([`${age}, build ${build}, ${proportion}`,normalizeRecipe({...base,name:`Sitter ${age} ${build} ${proportion}`,age,body:{...base.body,build,proportion,height:build}}),'clothes']);
-for(const [who,outfits] of [['Mr Fujita',['clothes','afterbath','swim','towel']],['Mrs Higa',['clothes','afterbath']],['Nhung',['towel','afterbath']],['Tetsuo',['afterbath']]])
+for(const [who,outfits] of [['Mr Fujita',['clothes','afterbath','swim','towel']],['Miss Higa',['clothes','afterbath']],['Nhung',['towel','afterbath']],['Tetsuo',['afterbath']]])
  for(const outfit of outfits)BODIES.push([`${who} (${outfit})`,recipeFor(who),outfit]);
 BODIES.push(['Thuan in her pleated skirt',ORIGINAL_THUAN_RECIPE,'clothes']);
 
@@ -133,7 +133,7 @@ test('a chair, a bench or a stool is sat on as before: the thighs on the seat, t
 
 test('getting down onto the floor and up again: through a squat, smoothly, never through the floor, the same every time',()=>{
  const LEGS=['thighL','kneeL','footL','thighR','kneeR','footR'];
- for(const [name,recipe,outfit] of [BODIES[0],BODIES[5],BODIES[9],BODIES.find(([n])=>n.startsWith('Mrs Higa')),BODIES.at(-1)]){
+ for(const [name,recipe,outfit] of [BODIES[0],BODIES[5],BODIES[9],BODIES.find(([n])=>n.startsWith('Miss Higa')),BODIES.at(-1)]){
   // as the player sits on a cushion: seated, with no blend of the scene's own; and as a resident: the scene's chairBlend
   for(const how of ['animator','scene']){
    const run=()=>{

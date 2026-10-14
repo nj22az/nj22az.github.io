@@ -21,7 +21,7 @@ installDOM();
 const base=recipeFor('Thuan'),BODIES=[];
 for(const age of ['child','teen','adult','elder'])for(const build of [0,1])for(const proportion of ['classic','rounded'])
  BODIES.push([`${age}, build ${build}, ${proportion}`,normalizeRecipe({...base,name:`Poser ${age} ${build} ${proportion}`,age,body:{...base.body,build,proportion,height:build}}),'clothes']);
-for(const [who,outfit] of [['Mr Fujita','clothes'],['Mrs Higa','clothes'],['Nhung','clothes'],['Tetsuo','afterbath']])BODIES.push([`${who} (${outfit})`,recipeFor(who),outfit]);
+for(const [who,outfit] of [['Mr Fujita','clothes'],['Miss Higa','clothes'],['Nhung','clothes'],['Tetsuo','afterbath']])BODIES.push([`${who} (${outfit})`,recipeFor(who),outfit]);
 const NAMES=Object.keys(FUN_POSES),JUMPS=new Set(['JumpForJoy','StartledJump']);
 /** The poses that leave the floor (fun-poses.js `airborne`): the two jumps, and up the pole. */
 const AIRBORNE=new Set(NAMES.filter(name=>FUN_POSES[name].airborne));

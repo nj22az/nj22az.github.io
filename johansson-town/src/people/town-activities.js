@@ -29,8 +29,8 @@ export function townAffordance(object){
 }
 
 const POSE={read:'Read',inspect:'Use',machine:'Use',radio:'Use',post:'Use',recycle:'Use',arcade:'Use',phone:'Phone',fish:'Fish',seat:'Sit',shop:'Use'};
-// An action label is an order to the player ("Read the Gushiken nameplate"); a resident's activity names only its object
-// ("reading the Gushiken nameplate"), so the label's own verb is dropped.
+// An action label is an order to the player ("Read the Kitahama notice board"); a resident's activity names only its object
+// ("reading the Kitahama notice board"), so the label's own verb is dropped.
 const LABEL_VERB=/^(?:read|inspect|use|look (?:at|into|out for)|browse|watch|work|visit|enter|go into|come into|talk to|sit (?:on|under|beside)|fish from|buy|return|pray at|soak your feet in|cool off on|greet|cast|complete|board)\s+/i;
 export const labelObject=label=>{const rest=String(label).replace(LABEL_VERB,'');return rest===label?label:rest.replace(/^The\b/,'the');};
 const VERB={read:'reading',inspect:'examining',machine:'using',radio:'listening to',post:'posting a letter at',recycle:'sorting recycling at',arcade:'playing',phone:'making a call at',fish:'fishing at',seat:'resting at',shop:'buying a snack at'};

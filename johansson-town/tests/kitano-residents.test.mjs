@@ -7,6 +7,7 @@ import {NEIGHBOURS} from '../src/people/neighbours.js';
 import {KITANO_HAMLET,hamletGate} from '../src/world/kitano-hamlet-layout.js';
 import {airportWorld} from '../src/world/airport-ground.js';
 import {townCalendarAt} from '../src/town-clock.js';
+import {PLACES,castMember} from '../src/people/cast.js';
 
 // Day 0 is Wednesday 1 January 1997 (town-clock.js): Friday is day 2, Saturday 3, Sunday 4, Monday 5.
 const at=(day,minute)=>day*1440+minute,profile=name=>RESIDENTS.find(p=>p.name===name);
@@ -45,9 +46,9 @@ test('Tetsuo lives in the Front-Row yard and never takes the boat; his mother ke
  assert.ok(mother.lines.some(l=>/Tetsuo/.test(l)));
 });
 
-test('Jun lives in the port: off duty he is home in Minato, not in the hamlet',()=>{
- const jun=NEIGHBOURS.find(n=>n.name==='Jun');
- assert.deepEqual(jun.home,[4.7,-44.3]);
- for(const phase of jun.routine.filter(p=>p.home)){assert.deepEqual(phase.at,[4.7,-44.3]);assert.match(phase.role,/at home in Minato/);}
- assert.ok(jun.routine.some(p=>!p.home),'He still works at the terminal');
+test('Jun has left the island: the Minato Maru’s tickets are sold at the Port Terminal window',()=>{
+ assert.equal(NEIGHBOURS.find(n=>n.name==='Jun'),undefined,'Jun has left the island');
+ assert.equal(castMember('Jun'),null);
+ assert.equal(PLACES['airport-tickets'],undefined,'no desk of Jun’s left in the cast’s places');
+ assert.ok(PLACES.port.keepers.includes('Ms Ganaha')&&castMember('Ms Ganaha').work==='port','Ms Ganaha sells the tickets at the terminal window');
 });

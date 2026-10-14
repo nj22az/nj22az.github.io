@@ -108,7 +108,7 @@ test('the reset: straight back up under load it lets go again in about a second;
  stageScenario('rest');
 });
 
-test('the pot: Mrs Higa’s tea on the bandai, 1 300 W on the lobby circuit, switched like the other loads, its lamp and plug showing it',()=>{
+test('the pot: Miss Higa’s tea on the bandai, 1 300 W on the lobby circuit, switched like the other loads, its lamp and plug showing it',()=>{
  resetAll();stageScenario('rest');const {room,layout}=build();
  const K=ONSEN_CIRCUITS.flatMap(c=>c.loads).find(l=>l.id==='kettle'),P=K.prop;
  assert.equal(K.watts,1300);assert.equal(K.atRest,'off');assert.equal(circuitOf('kettle'),'lobby');assert.match(K.jp,/電気ポット/);
@@ -177,7 +177,7 @@ test('a branch trips on its own: its things go dead, the reset prompt appears; t
  trip('vanity-2');hits.find(h=>h.label==='Use a hair dryer').fn();assert.match(actions.at(-1)[2],/middle mirror dryer breaker has tripped/);
  hits.find(h=>h.label==='Reset the middle mirror dryer').fn();assert.equal(isLive('vanity-2'),true);
  hits.find(h=>h.label==='Use a hair dryer').fn();assert.match(actions.at(-1)[2],/circuit of its own/);
- // The supply breaker takes the whole house; its reset prompt is Mrs Higa's reset, the big things off first.
+ // The supply breaker takes the whole house; its reset prompt is Miss Higa's reset, the big things off first.
  switchOn('dryer-1');switchOn('kettle');trip('contract');for(const c of ONSEN_CIRCUITS)assert.equal(isLive(c.id),false,c.id);
  hits.find(h=>h.label==='Use a hair dryer').fn();assert.match(actions.at(-1)[2],/whole house is dark/);
  const rc=hits.find(h=>h.label==='Reset the supply breaker');assert.equal(rc.o.visible,true);
@@ -233,7 +233,7 @@ test('the supply breaker hangs beside the board, on the stool side, a hand lower
  layout.dispose();
 });
 
-test('the cabinet hangs behind the bandai, its door shut, every lever in Mrs Higa\'s reach from her stool and nobody else\'s',()=>{
+test('the cabinet hangs behind the bandai, its door shut, every lever in Miss Higa\'s reach from her stool and nobody else\'s',()=>{
  resetAll();stageScenario('rest');const {room,layout}=build();
  const board=room.getObjectByName('Breaker board'),box=new THREE.Box3().setFromObject(board);
  // In the keeper's corner: over the bandai's raised floor, behind the counter, on the lobby's west wall.
@@ -247,14 +247,14 @@ test('the cabinet hangs behind the bandai, its door shut, every lever in Mrs Hig
  assert.ok(room.getObjectByName('Staff only card'),'関係者以外 on the door');
  assert.equal(ONSEN_SCENARIOS.isolated.board,'open','isolated opens it');
  for(const name of ['rest','quiet','evening','last-straw','blackout','retrip','restored'])assert.ok(!ONSEN_SCENARIOS[name].board,name+' leaves it shut');
- // Mrs Higa reaches every lever from her stool: arm and a lean from the hip (ONSEN_BOARD.keeper), from the nearer shoulder.
+ // Miss Higa reaches every lever from her stool: arm and a lean from the hip (ONSEN_BOARD.keeper), from the nearer shoulder.
  const K=ONSEN_BOARD.keeper,m=measure(recipeFor(K.who)),arm=m.upper+m.fore+m.hand/2,reach=arm+(m.shoulderY-m.hipY)*Math.sin(K.lean*Math.PI/180);
  const shoulderY=K.seat[1]+m.seatDrop+m.shoulderY-m.hipY,shoulders=[-1,1].map(s=>new THREE.Vector3(K.seat[0],shoulderY,K.seat[2]+s*m.shoulderX));
  const standing=[-1,1].map(s=>new THREE.Vector3(K.stand[0],K.stand[1]+m.shoulderY,K.stand[2]+s*m.shoulderX));
  const branches=[...ONSEN_CIRCUITS.map(c=>c.id),'contract'],levers=['main','elcb',...branches];
  const lever=id=>room.getObjectByName('Breaker lever '+id).getWorldPosition(new THREE.Vector3());
  for(const id of branches){const d=Math.min(...shoulders.map(s=>s.distanceTo(lever(id))));
-  assert.ok(d<=reach,`Mrs Higa reaches the ${id} lever from her stool: ${d.toFixed(2)} m (reach ${reach.toFixed(2)} m)`);}
+  assert.ok(d<=reach,`Miss Higa reaches the ${id} lever from her stool: ${d.toFixed(2)} m (reach ${reach.toFixed(2)} m)`);}
  for(const id of levers){const d=Math.min(...standing.map(s=>s.distanceTo(lever(id))));
   assert.ok(d<=reach,`standing on the bandai floor she reaches the ${id} lever: ${d.toFixed(2)} m`);}
  // The board stands on the bandai floor's edge of the stool, not where she stands: her standing place is clear.
@@ -265,7 +265,7 @@ test('the cabinet hangs behind the bandai, its door shut, every lever in Mrs Hig
  // The shut cabinet, and the open one, touch nothing but the wall it hangs on (the levers stay inside the shut door).
  for(const state of ['shut','open']){boardDoor(state);
   const now=new THREE.Box3().setFromObject(board),own=new Set(meshes(board)),shrunk=now.clone().expandByScalar(-.002);
-  // Mrs Higa is checked vertex by vertex below: her box is far bigger than she is.
+  // Miss Higa is checked vertex by vertex below: her box is far bigger than she is.
   const higa=room.getObjectByName('Umi-no-yu attendant'),hers=new Set(higa?meshes(higa):[]);
   // The sea view wraps round the bath 45–70 m out, so its box holds the whole house (onsen-night.js ONSEN_SEA_VIEW).
   for(const o of meshes(room)){if(own.has(o)||hers.has(o)||o.userData.wall||/^(Umi-no-yu floor|Umi-no-yu sea view)$/.test(o.name))continue;const ob=new THREE.Box3().setFromObject(o);if(ob.isEmpty())continue;
@@ -281,7 +281,7 @@ test('the cabinet hangs behind the bandai, its door shut, every lever in Mrs Hig
   const parts=[...meshes(board),...meshes(room.getObjectByName('Supply breaker'))].map(m=>new THREE.Box3().setFromObject(m).expandByScalar(-.001)).filter(b=>!b.isEmpty()),solid={containsPoint:p=>parts.some(b=>b.containsPoint(p))};
   for(let f=0;f<30*28;f++){layout.tick(1/30,1170);if(f%30)continue;room.updateMatrixWorld(true);
    for(const o of meshes(higa)){const p=o.geometry.attributes.position;for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);if(o.isSkinnedMesh)o.applyBoneTransform(i,v);v.applyMatrix4(o.matrixWorld);
-    assert.ok(!solid.containsPoint(v),`Mrs Higa (${o.name}) passes into the board at ${v.toArray().map(n=>n.toFixed(3))}, door ${state}`);}}}}
+    assert.ok(!solid.containsPoint(v),`Miss Higa (${o.name}) passes into the board at ${v.toArray().map(n=>n.toFixed(3))}, door ${state}`);}}}}
  boardDoor('shut');
  layout.dispose();
 });

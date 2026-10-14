@@ -26,7 +26,7 @@ export const ORIGINAL_THUAN_RECIPE=R({name:'Thuan',
  nose:{style:'dot',size:.35,height:.5},mouth:{style:'smile',colour:'#cc3d52',size:.42,height:.5},
  glasses:{style:'round',colour:'#e06a7a'},blush:.65,
  outfit:HARBOUR_POLO_OUTFIT,swim:{colour:'#e98aa6'}});
-const FEMALE_NEIGHBOURS=new Set(['Thuan','Mrs Higa','Mina','Grandmother Higa','Grandmother Chinen','Mrs Nakamura','Mrs Yonamine','Mrs Miyagi','Mrs Kamiya','Mrs Kinjō','Grandmother Tokashiki']);
+const FEMALE_NEIGHBOURS=new Set(['Thuan','Miss Higa','Grandmother Higa','Grandmother Chinen','Mrs Nakamura','Mrs Kinjō']);
 /** The birthday the town keeps (people/birthdays.js) is the one the profile shows, in World and in Studio. */
 function withBirthday(recipe,name){
  const date=BIRTHDAYS[name];if(!recipe||!date)return recipe;
@@ -106,12 +106,12 @@ export const CAST_RECIPES=castSet({
   brows:{style:'arched',colour:'#b9b6b0',size:.5},nose:{style:'button',size:.45},mouth:{style:'smile',colour:'#b8544a',size:.5},
   glasses:{style:'round',colour:'#6b4a2e'},wrinkles:.7,blush:.3,
   outfit:{top:'apron',topColour:'#ad6178',bottom:'trousers',bottomColour:'#4a4040',shoes:'#2b2b2b',hat:'kerchief',hatColour:'#f4f1ea',accent:'#f4f1ea'}}),
- // Higa-san, who has kept the bandai at Umi-no-yu for thirty years.
- 'Mrs Higa':R({name:'Mrs Higa',body:{height:.24,build:.58,skin:'#c99a74'},head:{size:.5,shape:.55,form:'round',jaw:.35,cheeks:.6},
-  hair:{style:'perm',colour:'#9a968e'},eyes:{style:'sleepy',colour:'#2a1d16',size:.42},
-  brows:{style:'thin',colour:'#8a8680',size:.45},nose:{style:'button',size:.45},mouth:{style:'small',colour:'#a8433e',size:.45},
-  glasses:{style:'half',colour:'#6b4a2e'},wrinkles:.75,blush:.25,
-  outfit:{top:'blouse',topColour:'#6d8a74',bottom:'skirt',bottomColour:'#3a3a42',shoes:'#2b2b2b',accent:'#f4f1ea'}}),
+ // Miss Higa, who teaches the island school and keeps the bandai at Umi-no-yu in the evenings (docs/CAST-PLAN.md):
+ // one face in the classroom and at the bath (people/school-avatars.js TEACHER_RECIPE is this one).
+ 'Miss Higa':R({name:'Miss Higa',body:{height:.3,build:.45,silhouette:'feminine',skin:'#d6a07a'},head:{size:.5,shape:.48,form:'oval',jaw:.4,cheeks:.45},
+  hair:{style:'bob',colour:'#241a14'},eyes:{style:'gentle',colour:'#2a1d16',size:.5},brows:{style:'arched',colour:'#241a14',size:.45},
+  nose:{style:'line',size:.4},mouth:{style:'smile',colour:'#b8544a',size:.45},glasses:{style:'square',colour:'#3b3f45'},blush:.2,
+  outfit:{top:'blouse',topColour:'#e9e4d6',bottom:'longskirt',bottomColour:'#3a4a5e',shoes:'#3a2a1e',accent:'#f4f1ea'}}),
  // The harbour master, who lives in his office, and Officer Mori at the police box.
  'Harbour master':R({name:'Harbour master',body:{height:.52,build:.68,skin:'#b5805d'},head:{size:.52,shape:.55,form:'round',jaw:.6,cheeks:.5},
   hair:{style:'horseshoe',colour:'#b9b7b0'},eyes:{style:'gentle',colour:'#2a1d16',size:.45},
@@ -134,34 +134,15 @@ export const NEIGHBOUR_RECIPES=castSet({
   hair:{style:'ponytail',colour:'#1c1714'},eyes:{style:'gentle',colour:'#2a1d16',size:.58,tilt:.5},brows:{style:'thin',colour:'#1c1714',size:.45},
   nose:{style:'dot',size:.32},mouth:{style:'soft',colour:'#c4485a',size:.4},blush:.35,
   outfit:{top:'sailor',topColour:'#f4f1ea',bottom:'pleatedskirt',bottomColour:'#27304d',footwear:'shoes',shoes:'#2b2b2b',accent:'#d8342c'}}),
- // Mr Toguchi, the fish seller: weathered from dawns at the auction, a twisted towel headband,
- // a rubber apron over a work shirt and white boots for the wet ice of his cart.
- 'Mr Toguchi':R({name:'Mr Toguchi',body:{height:.4,build:.62,skin:'#c98d62'},head:{size:.48,shape:.6,form:'square',jaw:.6,cheeks:.45},
-  hair:{style:'buzz',colour:'#5a5650'},eyes:{style:'squint',colour:'#2a1d16',size:.42,tilt:.48},brows:{style:'bushy',colour:'#5a5650',size:.6},
-  nose:{style:'wide',size:.55},mouth:{style:'grin',colour:'#9c5a4a',size:.5},blush:.1,
-  outfit:{top:'apron',topColour:'#2f5d74',bottom:'trousers',bottomColour:'#4a4a48',footwear:'boots',shoes:'#f2f0ea',accent:'#f2f0ea',hat:'headband'}}),
  Riku:R({body:{silhouette:'masculine',height:.56,build:.55,skin:'#c89a74'},hair:{style:'crop',colour:'#33271f'},eyes:{style:'round'},brows:{style:'thick'},mouth:{style:'smile'},outfit:{top:'polo',topColour:'#587d83',bottom:'trousers',bottomColour:'#505f65',hat:'helmet',hatColour:'#dabb55'}}),
- 'Emi Kado':R({body:{silhouette:'feminine',height:.43,build:.42,skin:'#d1a079'},hair:{style:'ponytail',colour:'#3c2c24'},eyes:{style:'almond'},mouth:{style:'smile'},outfit:{top:'polo',topColour:'#a77e67',bottom:'trousers',bottomColour:'#465d69',hat:'cap',hatColour:'#465d69'}}),
- Haru:R({head:{form:'square',jaw:.72,cheeks:.4},body:{height:.63,build:.58,skin:'#bf875f'},hair:{style:'crop',colour:'#302419'},eyes:{style:'narrow'},brows:{style:'thick'},nose:{style:'wide'},mouth:{style:'smile'},facial:{style:'stubble',colour:'#302419'},outfit:{top:'polo',topColour:'#607c84',bottom:'shorts',bottomColour:'#7b7155',hat:'cap',hatColour:'#c4b486'}}),
- Mina:R({head:{form:'oval',jaw:.35,cheeks:.6},body:{height:.4,build:.45,skin:'#d8ac87'},hair:{style:'bun',colour:'#3b2920'},eyes:{style:'gentle',size:.48},brows:{style:'arched'},nose:{style:'button'},mouth:{style:'smile'},outfit:{top:'apron',topColour:'#849267',bottom:'longskirt',bottomColour:'#5c6e75'}}),
- Jun:R({head:{form:'narrow',jaw:.4,cheeks:.3},body:{height:.53,build:.4,skin:'#dbb393'},hair:{style:'sidepart',colour:'#29241e'},eyes:{style:'almond'},brows:{style:'straight'},nose:{style:'line'},mouth:{style:'small'},glasses:{style:'half',colour:'#5b5c52'},outfit:{top:'polo',topColour:'#e0dac7',bottom:'trousers',bottomColour:'#3e596d'}}),
 
  // Tetsuo's mother, who keeps the old Chinen house in Kitano hamlet (people/neighbours.js): small, a grey bun, a blouse and wide pants.
  'Grandmother Chinen':R({head:{size:.48,shape:.5,form:'round',jaw:0.65,cheeks:0.8},body:{height:.15,build:.55,silhouette:'feminine',skin:'#d6a67c'},hair:{style:'bun',colour:'#c9c7c1'},eyes:{style:'gentle',size:.4},brows:{style:'arched',colour:'#c9c7c1'},nose:{style:'dot'},mouth:{style:'smile'},wrinkles:.85,outfit:{top:'blouse',topColour:'#6f8aa6',bottom:'widepants',bottomColour:'#3b3f4a',shoes:'#e9e2d2',hat:'none'}}),
  'Grandmother Higa':R({head:{size:.48,shape:.5,form:'round',jaw:0.7,cheeks:0.85},body:{height:.2,build:.6,skin:'#dca97e'},hair:{style:'perm',colour:'#d8d6d0'},eyes:{style:'gentle',size:.4},brows:{style:'thin',colour:'#9a9a96'},nose:{style:'button',size:.55},mouth:{style:'smile',size:.45},glasses:{style:'half',colour:'#8a4a3a'},wrinkles:1,blush:.4,outfit:{top:'blouse',topColour:'#8a4ab8',pattern:'flowers',bottom:'longskirt',bottomColour:'#6d7478',shoes:'#2b2b2b'}}),
  'Mr Ōshiro':R({head:{size:.48,shape:.5,form:'narrow',jaw:0.45,cheeks:0.3},body:{height:.4,build:.4,skin:'#b27449'},hair:{style:'buzz',colour:'#d8d6d0'},eyes:{style:'narrow'},brows:{style:'bushy',colour:'#d8d6d0'},nose:{style:'hook',size:.6},mouth:{style:'flat'},facial:{style:'stubble',colour:'#d8d6d0'},wrinkles:.9,outfit:{top:'tee',topColour:'#f4f1ea',bottom:'trousers',bottomColour:'#6d7478',shoes:'#2b2b2b',hat:'straw',hatColour:'#e0c078'}}),
- 'Uncle Kinjō':R({head:{size:.48,shape:.5,form:'square',jaw:0.8,cheeks:0.65},body:{height:.55,build:.75,skin:'#c98d62'},hair:{style:'crop',colour:'#5a3a22'},eyes:{style:'dot'},brows:{style:'thick'},nose:{style:'wide'},mouth:{style:'wide'},facial:{style:'moustache',colour:'#3a2618'},wrinkles:.5,outfit:{top:'polo',topColour:'#2a8a5a',bottom:'shorts',bottomColour:'#c8b48a',shoes:'#6d4a32',hat:'cap',hatColour:'#d8342c'}}),
  'Mrs Nakamura':R({head:{size:.48,shape:.5,form:'round',jaw:0.55,cheeks:0.8},body:{height:.25,build:.6,skin:'#e8bf98'},hair:{style:'bun',colour:'#5a3a22'},eyes:{style:'round',size:.55},brows:{style:'arched'},nose:{style:'button'},mouth:{style:'grin',colour:'#cc3d52'},blush:.5,wrinkles:.4,outfit:{top:'apron',topColour:'#3fa0c8',bottom:'skirt',bottomColour:'#27304d',shoes:'#f4f1ea',hat:'kerchief',hatColour:'#f4f1ea',accent:'#f4f1ea'}}),
  'Mr Shimabukuro':R({head:{size:.48,shape:.5,form:'narrow',jaw:0.5,cheeks:0.35},body:{height:.5,build:.45,skin:'#dca97e'},hair:{style:'sidepart',colour:'#1c1714'},eyes:{style:'almond'},brows:{style:'straight'},nose:{style:'line'},mouth:{style:'smirk'},facial:{style:'moustache',colour:'#1c1714'},wrinkles:.3,outfit:{top:'smock',topColour:'#f4f1ea',bottom:'trousers',bottomColour:'#2b2b2b',shoes:'#2b2b2b'}}),
- 'Mrs Yonamine':R({head:{size:.48,shape:.5,form:'heart',jaw:0.3,cheeks:0.65},body:{height:.3,build:.55,skin:'#c98d62'},hair:{style:'ponytail',colour:'#3a2618'},eyes:{style:'sparkle'},brows:{style:'thick'},nose:{style:'button'},mouth:{style:'wide'},blush:.3,outfit:{top:'apron',topColour:'#2f5f9e',bottom:'trousers',bottomColour:'#27304d',shoes:'#f4f1ea',hat:'headband',hatColour:'#d8342c',accent:'#f4f1ea'}}),
- 'Grandmother Tokashiki':R({head:{size:.48,shape:.5,form:'round',jaw:.55,cheeks:.75},body:{height:.18,build:.55,skin:'#c9915f'},hair:{style:'bun',colour:'#a9a59c'},eyes:{style:'almond',size:.42},brows:{style:'thin',colour:'#7d7a74'},nose:{style:'button',size:.5},mouth:{style:'smile',size:.42},glasses:{style:'round',colour:'#4a3a2c'},wrinkles:.85,blush:.3,outfit:{top:'apron',topColour:'#3f7f86',bottom:'longskirt',bottomColour:'#5a4f45',shoes:'#2b2b2b'}}),
- 'Old Mr Zukeran':R({head:{size:.47,shape:.55,form:'narrow',jaw:.6,cheeks:.35},body:{height:.42,build:.38,skin:'#a8714a'},hair:{style:'horseshoe',colour:'#e6e3dc'},eyes:{style:'sleepy'},brows:{style:'bushy',colour:'#e0ddd6'},nose:{style:'hook'},mouth:{style:'grin'},facial:{style:'moustache',colour:'#dedbd4'},wrinkles:1,outfit:{top:'kariyushi',topColour:'#d9c79a',bottom:'trousers',bottomColour:'#4a4f55',shoes:'#3a2a1c',hat:'straw',hatColour:'#d8b864'}}),
- 'Mrs Miyagi':R({head:{size:.48,shape:.5,form:'oval',jaw:0.35,cheeks:0.4},body:{height:.1,build:.4,skin:'#c98d62'},hair:{style:'bun',colour:'#f4f1ea'},eyes:{style:'sleepy'},brows:{style:'thin',colour:'#d8d6d0'},nose:{style:'button'},mouth:{style:'small'},wrinkles:1,outfit:{top:'blouse',topColour:'#f4f1ea',bottom:'longskirt',bottomColour:'#2f5f9e',shoes:'#2b2b2b'}}),
- 'Mr Tamaki':R({head:{size:.48,shape:.5,form:'square',jaw:0.7,cheeks:0.4},body:{height:.6,build:.7,skin:'#c98d62'},hair:{style:'spiky',colour:'#1c1714'},eyes:{style:'round'},brows:{style:'thick'},nose:{style:'wide'},mouth:{style:'grin'},outfit:{top:'jacket',topColour:'#e8742a',bottom:'trousers',bottomColour:'#27304d',shoes:'#2b2b2b',hat:'headband',hatColour:'#f4f1ea'}}),
  'Kōji':R({head:{size:.48,shape:.5,form:'oval',jaw:0.65,cheeks:0.4},body:{height:.58,build:.5,skin:'#b27449'},hair:{style:'crop',colour:'#3a2618'},eyes:{style:'dot'},brows:{style:'straight'},nose:{style:'button'},mouth:{style:'grin'},outfit:{top:'tee',topColour:'#d8342c',bottom:'shorts',bottomColour:'#2f5f9e',shoes:'#f4f1ea',hat:'kerchief',hatColour:'#2f5f9e'}}),
- 'Mr Nakasone':R({head:{size:.48,shape:.5,form:'square',jaw:0.75,cheeks:0.6},body:{height:.42,build:.55,skin:'#dca97e'},hair:{style:'horseshoe',colour:'#d8d6d0'},eyes:{style:'gentle'},brows:{style:'bushy',colour:'#d8d6d0'},nose:{style:'wide'},mouth:{style:'smile'},glasses:{style:'square',colour:'#2b2b2b'},wrinkles:.8,outfit:{top:'polo',topColour:'#d8342c',bottom:'trousers',bottomColour:'#c8b48a',shoes:'#f4f1ea',hat:'cap',hatColour:'#f4f1ea'}}),
- 'Mrs Kamiya':R({head:{size:.48,shape:.5,form:'round',jaw:0.5,cheeks:0.7},body:{height:.2,build:.5,skin:'#e8bf98'},hair:{style:'perm',colour:'#9a9a96'},eyes:{style:'round',size:.45},brows:{style:'arched',colour:'#9a9a96'},nose:{style:'dot'},mouth:{style:'small',colour:'#e06a7a'},wrinkles:.8,blush:.4,outfit:{top:'polo',topColour:'#3fa0c8',bottom:'trousers',bottomColour:'#f4f1ea',shoes:'#f4f1ea',hat:'straw',hatColour:'#f4f1ea'}}),
- 'Mr Arakaki':R({head:{size:.48,shape:.5,form:'narrow',jaw:0.3,cheeks:0.25},body:{height:.35,build:.35,skin:'#dca97e'},hair:{style:'bald',colour:'#9a9a96'},eyes:{style:'narrow'},brows:{style:'worried',colour:'#9a9a96'},nose:{style:'hook'},mouth:{style:'flat'},glasses:{style:'round',colour:'#2b2b2b'},wrinkles:.9,outfit:{top:'polo',topColour:'#f4d23c',bottom:'trousers',bottomColour:'#27304d',shoes:'#2b2b2b',hat:'cap',hatColour:'#2f5f9e'}}),
  'Mrs Kinjō':R({head:{size:.48,shape:.5,form:'heart',jaw:0.4,cheeks:0.55},body:{height:.32,build:.55,skin:'#dca97e'},hair:{style:'bob',colour:'#3a2618'},eyes:{style:'round'},brows:{style:'arched'},nose:{style:'button'},mouth:{style:'smile',colour:'#b8544a'},blush:.4,wrinkles:.3,outfit:{top:'blouse',topColour:'#e98aa6',pattern:'dots',bottom:'skirt',bottomColour:'#6d7478',shoes:'#9a6a42'}}),
  'Postman Tōma':R({head:{size:.48,shape:.5,form:'oval',jaw:0.5,cheeks:0.4},body:{height:.6,build:.4,skin:'#e8bf98'},hair:{style:'sidepart',colour:'#3a2618',flip:true},eyes:{style:'round'},brows:{style:'straight'},nose:{style:'line'},mouth:{style:'smile'},outfit:{top:'polo',topColour:'#2f5f9e',bottom:'trousers',bottomColour:'#27304d',shoes:'#2b2b2b',hat:'cap',hatColour:'#2f5f9e'}}),
 });
@@ -222,7 +203,7 @@ function drawnRecipe(name){
  if(NEIGHBOUR_RECIPES[name])return aged(normalizeRecipe(withTownDials(NEIGHBOUR_RECIPES[name],name)),name);
  if(CREW_LOOKS[name])return aged(CREW_LOOKS[name],name);
  const style=residentPersonality(name),r=seeded(name),any=list=>list[Math.floor(r()*list.length)];
- const feminine=PROFILES.find(p=>p.name===name)?.female??(/female/.test(style.source||'')||/^(Mrs |Ms |Nhung|Reiko|Hana|Yoshiko|Emi|Naoko|Fumiko|Yui)/.test(name));
+ const feminine=PROFILES.find(p=>p.name===name)?.female??(/female/.test(style.source||'')||/^(Mrs |Ms |Nhung|Reiko|Hana|Yoshiko|Naoko|Fumiko|Yui)/.test(name));
  const grey=/^#[a-f0-9]{6}$/i.test(style.hair||'')&&parseInt(style.hair.slice(1,3),16)>150;
  const hat=ACCESSORY_HAT[style.accessory]||(style.helmet?['helmet',style.helmet]:['none','#f4f1ea']);
  const generated=normalizeRecipe(withTownDials({name,age:ageClass(AGE_OF.get(name)),

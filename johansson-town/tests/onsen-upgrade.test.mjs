@@ -97,7 +97,7 @@ test('locked out: the main off, locked and tagged; nothing puts it up until the 
  stageScenario('rest');assert.equal(lockOut(),false,'a moment that does not name the lock has none');
 });
 
-test('the add-on box under the board: on the wall, clear of the board, the pole and Mrs Higa, its lever in her reach',()=>{
+test('the add-on box under the board: on the wall, clear of the board, the pole and Miss Higa, its lever in her reach',()=>{
  stageScenario('upgraded-locked-out');const {room,hits,actions,layout}=build();
  const X=ONSEN_UPGRADE.box,addon=room.getObjectByName(X.en),b=box(addon);
  for(const n of UPGRADE_PARTS)assert.ok(shown(room.getObjectByName(n)),n+' shows');
@@ -113,7 +113,7 @@ test('the add-on box under the board: on the wall, clear of the board, the pole 
   assert.ok(!shrunk.intersectsBox(ob),'the add-on box clips '+(o.name||o.type));}
  const pole=new THREE.Box3();for(const o of meshes(room).filter(m=>/^Noren pole/.test(m.name)&&box(m).max.z>body.min.z&&box(m).min.z<body.max.z))pole.union(box(o));
  assert.ok(body.min.y-pole.max.y>.03,'room to lift the noren pole off its hooks: '+(body.min.y-pole.max.y).toFixed(3)+' m');
- // In Mrs Higa's reach from her stool, like every lever on the board; out of a customer's.
+ // In Miss Higa's reach from her stool, like every lever on the board; out of a customer's.
  const K=ONSEN_BOARD.keeper,m=measure(recipeFor(K.who)),reach=m.upper+m.fore+m.hand/2+(m.shoulderY-m.hipY)*Math.sin(K.lean*Math.PI/180);
  const shoulderY=K.seat[1]+m.seatDrop+m.shoulderY-m.hipY,lever=room.getObjectByName('Breaker lever vanity-1').getWorldPosition(new THREE.Vector3());
  const d=Math.min(...[-1,1].map(s=>new THREE.Vector3(K.seat[0],shoulderY,K.seat[2]+s*m.shoulderX).distanceTo(lever)));assert.ok(d<=reach,'she reaches it: '+d.toFixed(2));

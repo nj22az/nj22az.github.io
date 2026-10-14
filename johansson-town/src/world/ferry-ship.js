@@ -193,7 +193,7 @@ export const FERRY_MACHINERY=Object.freeze({
   hydrants:Object.freeze({car:4,passenger:2,bridge:1,engine:1}),hose:15,nozzle:12}),
  co2:Object.freeze({bottles:4,kg:45,grossVolume:190,why:'Provisional inventory screen only: 180 kg carried against an assumed 190 m3 protected volume. Actual fire boundaries, ducts, protected volumes, nozzle distribution and release interlocks require engineered verification'}),
  fireDetection:Object.freeze({heads:30,zones:6,volts:24,panel:'wheelhouse'}),
- freshWater:Object.freeze({hydrophoreKW:.75,pressureTank:300,cutIn:.25,cutOut:.35,perDay:1.5,why:'Filled every fifth morning from Mr Chinen’s water lorry'}),
+ freshWater:Object.freeze({hydrophoreKW:.75,pressureTank:300,cutIn:.25,cutOut:.35,perDay:1.5,why:'Filled every fifth morning from the town water lorry, which Mr Shimabukuro drives from the power station'}),
  ramp:Object.freeze({pumps:2,pumpKW:5.5,pressure:14,up:60,down:45,cylinders:2,cylinderBore:.1,why:'One pump runs and one stands by; a hand pump if both fail'}),
  anchors:Object.freeze({count:2,kg:480,kind:'stockless',chain:Object.freeze({length:137.5,diameter:19,grade:2}),windlassKW:7.5,capstanKW:5.5,lines:Object.freeze({count:6,length:40,kind:'vinylon'})}),
 });
@@ -271,7 +271,7 @@ export const FERRY_LOADS=Object.freeze([
  load('bridge-electronics','Bridge electronics (radar, autopilot, echo sounder, GPS, NAVTEX, PA)','wheelhouse','LB','105',1,.75,7.9,[.8,.8,.4,.1],''),
  load('room-ac','Room air conditioners (bridge, mess, cabins)','mess','LB','105',4,1,11.2,[3,3,3,1.5],''),
  load('galley-appliances','Galley appliances (rice cooker, microwave, pot, fridge, hood)','galley','LB','105',1,4,38.1,[1.2,.4,1.6,1.2],'',2),
- load('kiosk','Kiosk (ice-cream freezer, showcase, hot water)','lobby','LB','105',1,1.9,18.1,[1.1,.9,1.1,.7],'Blue Coral’s cups and Mr Arakaki’s andagi',1),
+ load('kiosk','Kiosk (ice-cream freezer, showcase, hot water)','lobby','LB','105',1,1.9,18.1,[1.1,.9,1.1,.7],'Blue Coral’s cups and Mrs Nakamura’s andagi',1),
  load('vending','Drink vending machines','lobby','LB','105',2,.6,6.7,[.7,.7,.7,.7],'Canned coffee and tea',1),
  load('tv','Carpet-room television','carpet-room','LB','105',1,.08,.8,[.1,.1,.1],''),
  load('toilet-fans','Toilet exhaust fans','toilets','LB','105',2,.15,1.7,[.3,.3,.3,.1],''),

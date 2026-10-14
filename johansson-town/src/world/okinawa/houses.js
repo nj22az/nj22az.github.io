@@ -376,7 +376,7 @@ function shopInterior(kit,kind,{open,back,D,r,stock}){
   // A sloped counter of crushed ice with the day's fish laid on it, out to the street.
   kit.box(open*2-.2,.85,1.1,0,.43,D-.9,0xb8bec0,{finish:'metal'});
   kit.box(open*2-.3,.08,1.05,0,.9,D-.9,0xeef4f4,{rx:-.18});
-  // The fish Yonamine sells (fish.js), laid along the ice in turn, each kind in a pair front and back as a fishmonger
+  // The fish Yonamine Fresh Fish sold (fish.js; the shop is closed, cast.js PLACES), laid along the ice in turn, each kind in a pair front and back as a fishmonger
   // lays them. (r is still drawn once a fish, so everything after the counter stays where it was.)
   // (Not the suku: the fry come a few days a year and go into jars. Not the sēika: a squid lies in its own tray.)
   const fish=fishAt('yonamine').filter(f=>f.id!=='suku'&&f.id!=='seika');

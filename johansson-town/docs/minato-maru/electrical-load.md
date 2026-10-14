@@ -44,7 +44,7 @@
 | Bridge electronics (radar, autopilot, echo sounder, GPS, NAVTEX, PA) | wheelhouse | LB | 105 | 1 | 0.75 | 7.9 | 0.8 | 0.8 | 0.4 | 0.1 |  |  |  |
 | Room air conditioners (bridge, mess, cabins) | mess | LB | 105 | 4 | 1 | 11.2 | 3 | 3 | 3 | 1.5 |  |  |  |
 | Galley appliances (rice cooker, microwave, pot, fridge, hood) | galley | LB | 105 | 1 | 4 | 38.1 | 1.2 | 0.4 | 1.6 | 1.2 |  | 2 |  |
-| Kiosk (ice-cream freezer, showcase, hot water) | lobby | LB | 105 | 1 | 1.9 | 18.1 | 1.1 | 0.9 | 1.1 | 0.7 |  | 1 | Blue Coral’s cups and Mr Arakaki’s andagi |
+| Kiosk (ice-cream freezer, showcase, hot water) | lobby | LB | 105 | 1 | 1.9 | 18.1 | 1.1 | 0.9 | 1.1 | 0.7 |  | 1 | Blue Coral’s cups and Mrs Nakamura’s andagi |
 | Drink vending machines | lobby | LB | 105 | 2 | 0.6 | 6.7 | 0.7 | 0.7 | 0.7 | 0.7 |  | 1 | Canned coffee and tea |
 | Carpet-room television | carpet-room | LB | 105 | 1 | 0.08 | 0.8 | 0.1 | 0.1 | 0.1 |  |  |  |  |
 | Toilet exhaust fans | toilets | LB | 105 | 2 | 0.15 | 1.7 | 0.3 | 0.3 | 0.3 | 0.1 |  |  |  |

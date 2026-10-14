@@ -17,7 +17,7 @@ installDOM();
  * shared lobby the after-bath clothes of a town bath in the 80s and 90s; in the shared bath swimwear. And the hair states
  * the story needs: Nhung's half-dried bob, Fujita's cloud, hair slicked flat by the water.
  */
-const SIX=['Mr Fujita','Thuan','Nhung','Thao','Tetsuo','Mrs Higa'];
+const SIX=['Mr Fujita','Thuan','Nhung','Thao','Tetsuo','Miss Higa'];
 const shown=avatar=>avatar.root.children.filter(o=>o.isSkinnedMesh&&o.visible).map(o=>o.name).sort();
 const after=avatar=>avatar.root.children.find(o=>o.name.startsWith('Shimanchu after the bath')&&!o.name.endsWith('outline'));
 const swimOf=avatar=>avatar.root.children.find(o=>o.name==='Shimanchu swimwear');
@@ -60,7 +60,7 @@ test('after the bath grown-ups change into the lobby clothes; children keep thei
 
 test('each woman’s house dress is a washed pastel of what she likes to wear, and the same every time',()=>{
  const rgb=hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
- const dresses=['Thuan','Nhung','Thao','Mrs Higa'].map(n=>{const r=recipeFor(n),d=houseDressColour(r),pale=rgb(r.outfit.topColour).every(v=>v>215),base=pale?r.outfit.accent:r.outfit.topColour;
+ const dresses=['Thuan','Nhung','Thao','Miss Higa'].map(n=>{const r=recipeFor(n),d=houseDressColour(r),pale=rgb(r.outfit.topColour).every(v=>v>215),base=pale?r.outfit.accent:r.outfit.topColour;
   assert.equal(houseDressColour(r),d);
   assert.ok(rgb(d).every((v,k)=>v>=rgb(base)[k])&&rgb(d).reduce((a,b)=>a+b)/3>175,n+': '+d+', a pastel of '+base);return d;});
  assert.equal(new Set(dresses).size,4,'four women, four dresses: '+dresses.join(' '));
@@ -142,7 +142,7 @@ test('in every pose the tenugui keeps off the chin and the neck, and an arm meet
 
 test('nothing goes below the floor, and the house dress and the swimsuit skirt stay out of the legs and sit on the seat',()=>{
  const poses={stand:{},walk:{speed:1.3},run:{speed:3.6,running:true},sit:{seated:true,seatHeight:.45},chair:{seated:true,seatHeight:.5}};
- for(const [name,outfit] of [['Thuan','afterbath'],['Mrs Higa','afterbath'],['Mr Fujita','afterbath'],['Mrs Higa','swim']]){
+ for(const [name,outfit] of [['Thuan','afterbath'],['Miss Higa','afterbath'],['Mr Fujita','afterbath'],['Miss Higa','swim']]){
   for(const [pose,state] of Object.entries(poses)){
    const avatar=buildAvatar(recipeFor(name),{shadows:false});avatar.wear(outfit);
    const mesh=outfit==='swim'?swimOf(avatar):after(avatar),m=avatar.measure,fit=mesh.towelFit,flags=mesh.geometry.attributes.towelFit,holder=new THREE.Group();holder.add(avatar.root);
@@ -167,7 +167,7 @@ test('nothing goes below the floor, and the house dress and the swimsuit skirt s
 });
 
 test('the turban covers the hair, sized to it, and leaves the brows and eyes clear',()=>{
- for(const name of ['Thuan','Nhung','Thao','Mrs Higa']){
+ for(const name of ['Thuan','Nhung','Thao','Miss Higa']){
   const recipe=recipeFor(name),avatar=buildAvatar(recipe,{shadows:false});avatar.wear('afterbath');
   const body=after(avatar),m=avatar.measure,g=body.geometry,P=g.attributes.position,C=g.attributes.color,I=g.attributes.skinIndex,head=BONES.indexOf('head');
   const hair=new THREE.Color(recipe.hair.colour),S=[m.Rh*m.headSX,m.Rh*m.headSY,m.Rh*.98];
@@ -193,7 +193,7 @@ test('the turban covers the hair, sized to it, and leaves the brows and eyes cle
  }
 });
 
-test('swimwear for the story’s six is modest: one-piece costumes (Mrs Higa’s with a little skirt), bath trunks, and Tetsuo’s towel on his head',()=>{
+test('swimwear for the story’s six is modest: one-piece costumes (the skirted one only for the older generation), bath trunks, and Tetsuo’s towel on his head',()=>{
  for(const name of SIX){
   const recipe=recipeFor(name),avatar=buildAvatar(recipe,{shadows:false});
   assert.equal(avatar.wear('swim'),'swim');const swim=swimOf(avatar),m=avatar.measure;
@@ -215,7 +215,8 @@ test('swimwear for the story’s six is modest: one-piece costumes (Mrs Higa’s
   let low=Infinity;for(let i=0;i<P.count;i++)if(same(i,suit)&&P.getY(i)<m.hipY)low=Math.min(low,P.getY(i));
   const want=top?(wearsSwimSkirt(recipe)?.42:SWIMSUIT.legs):SWIMSUIT.trunks;
   assert.ok(low<=m.hipY-m.thigh*want*.95,`${name}: down to ${((m.hipY-low)/m.thigh).toFixed(2)} of the thigh`);
-  assert.equal(swim.userData.swim.skirt,name==='Mrs Higa',name+': only Mrs Higa wears the skirted costume of her generation');
+  assert.equal(swim.userData.swim.skirt,wearsSwimSkirt(recipe),name+': the skirted costume is for the older generation');
+  if(name==='Miss Higa')assert.equal(swim.userData.swim.skirt,false,'Miss Higa is 29: a plain one-piece');
   // The folded towel on the head: off unless asked for, on for Tetsuo's soak.
   assert.equal(avatar.headTowel,false);assert.equal(g.drawRange.count,swim.userData.swim.headTowel[0]);
   assert.equal(avatar.wear('swim',{headTowel:true}),'swim');assert.equal(avatar.headTowel,true);assert.equal(g.drawRange.count,Infinity);

@@ -161,7 +161,7 @@ export const FERRY_PIPING=Object.freeze([
 
  // ---- 8.8 Fresh (drinking) water: filling, two tanks, two hydrophore pumps, the pressure tank, the taps.
  system('freshwater','Fresh water','GKA','Drinking water','#5aa0d8',[
-  node('fill','shore','Filling connection · Mr Chinen’s water lorry, every fifth morning','car-deck',T('GKA',10,'AA',501),0,.6),
+  node('fill','shore','Filling connection · the town water lorry, which Mr Shimabukuro drives from the power station','car-deck',T('GKA',10,'AA',501),0,.6),
   node('fwP','tank','Fresh-water tank P · '+M.tanks.freshWater/2+' m³','fresh-water',T('GKA',10,'BB',1),1,0),node('fwS','tank','Fresh-water tank S · '+M.tanks.freshWater/2+' m³','fresh-water',T('GKA',10,'BB',2),1,1.2),
   node('hp1','pump','Hydrophore pump No.1 · '+M.freshWater.hydrophoreKW+' kW','engine-room',T('GKB',10,'AP',1),2,0,{drive:'motor',kW:M.freshWater.hydrophoreKW}),
   node('hp2','pump','Hydrophore pump No.2 · '+M.freshWater.hydrophoreKW+' kW','aux-room',T('GKB',10,'AP',2),2,1.2,{drive:'motor',kW:M.freshWater.hydrophoreKW}),
