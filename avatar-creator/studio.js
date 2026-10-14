@@ -7,7 +7,7 @@ import {createWorldPanel} from './world-panel.js?v=20261011-1';
 import {createHomeWorkspace} from './home.js?v=20261011-1';
 import {loadHatModels} from '../johansson-town/src/catalog/hat-models.js';
 
-// The hats that are models in World's asset catalogue (the Seagulls cap, sold at Sakura Shōten) are in hand before anyone
+// The hats that are models in World's asset catalogue (Johansson's trucker cap, sold at Sakura Shōten) are in hand before anyone
 // is drawn, so the maker's pictures, its preview, scenes and portraits show them and not their stand-in.
 await loadHatModels();
 

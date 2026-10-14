@@ -120,12 +120,13 @@ const PART_ENTRIES={
   sunflower:{label:'Sunflower bonnet',category:'Fun',tags:['costume','parade','Port Festival','summer','silly'],who:PROPOSED_PARADE,why:'A sunflower for the brightest day of summer.'},
   paperboat:{label:'Paper-boat hat',category:'Fun',tags:['newspaper','folded','children','silly'],who:'children who fold yesterday’s evening paper',why:'The paper hat every child on the island learns to fold.'},
   mountain:{label:'Mount Aoba hat',category:'Fun',tags:['costume','parade','Port Festival','Mount Aoba','silly'],who:PROPOSED_PARADE,why:'Mount Aoba, the island’s peak, worn on the head.'},
-  // A model from World's asset catalogue (assets/catalog/seagulls-cap, avatars/hat-assets.js), sold at Sakura Shōten.
-  'seagulls-cap':{label:'Seagulls cap',category:'Sun & everyday',tags:['baseball cap','snapback','Minato Seagulls','baseball','team','sun','quay','catch','boats','Sakura Shōten','konbini'],
-   who:'Kōji at the catch tables; Haru, Masaru and Uncle Kinjō on the boats; the Seagulls’ fans at the izakaya counter, Daichi among them',
-   why:'A six-panel snapback with the home team’s gull on the front: a peak against the glare off the water, and whose side you are on.',
-   supplier:'Sakura Shōten, ¥1,800 (Johansson Headwear JH-605)',
-   colourways:[{name:'Seagulls navy',colours:{'outfit.hatColour':'#27304d'}},{name:'Paper white',colours:{'outfit.hatColour':'#f4f1ea'}},{name:'Fukugi green',colours:{'outfit.hatColour':'#4f7a4f'}}]},
+  // A model from World's asset catalogue (assets/catalog/johansson-trucker, avatars/hat-assets.js), sold at Sakura Shōten.
+  // Its foam front and bill are the hat colour, its mesh, undervisor, rope and J the accent: each colourway sets both.
+  trucker:{label:'Johansson trucker',category:'Sun & everyday',tags:['trucker cap','baseball cap','snapback','mesh','J','Johansson','premium','sun','quay','boats','Sakura Shōten','konbini'],
+   who:'Kōji, who bought the first one at Sakura; Riku on the cargo quay, Haru on his boat, Jun at the airfield',
+   why:'A well-made trucker cap: a tall foam front with Johansson’s J raised in embroidery, a mesh back that lets the sea wind through, a strap that fits anyone.',
+   supplier:'Sakura Shōten, ¥3,800 (Johansson Headwear JH-712)',
+   colourways:[{name:'Navy & white',colours:{'outfit.hatColour':'#27304d','outfit.accent':'#f4f1ea'}},{name:'Charcoal & grey',colours:{'outfit.hatColour':'#2b2b2b','outfit.accent':'#6d7478'}},{name:'White & navy',colours:{'outfit.hatColour':'#f4f1ea','outfit.accent':'#27304d'}}]},
  },
  earrings:{
   none:{label:'No earrings',category:'Jewellery',tags:[],who:'most islanders',why:'Nothing in the ears.'},

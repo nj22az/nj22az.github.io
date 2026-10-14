@@ -3,12 +3,13 @@ import {shapeHeadPoint} from './head-profile.js';
 
 /**
  * Hats that are models from World's asset catalogue, worn by anyone (the creator, 2026-10-14: "he should be wearing a 3d
- * asset, you should be able to buy a nice hat in the Konbini and wear it"). The first is the Minato Seagulls cap
- * (assets/catalog/seagulls-cap/: built in Blender by its source/build-seagulls-cap.py, checked and published by
- * Johansson Studio).
+ * asset, you should be able to buy a nice hat in the Konbini and wear it"). The first is Johansson's trucker cap
+ * (assets/catalog/johansson-trucker/: built in Blender by its source/build-johansson-trucker.py, checked and published by
+ * Johansson Studio; the creator, the same day: "I want the hat look like a premium product, for now make it a trucker Cap
+ * with the J logo on it").
  *
  * How it works:
- *  - A recipe names the hat (`outfit.hat: 'seagulls-cap'`). ASSET_HATS says which catalogue asset that is, and which of
+ *  - A recipe names the hat (`outfit.hat: 'trucker'`). ASSET_HATS says which catalogue asset that is, and which of
  *    build.js's own hats stands in for it while the model is not in hand (never a bare head).
  *  - Somebody fetches the model once (World: src/catalog/hat-models.js; a test or a tool: the file from disk; the film:
  *    its own copy) and hands its bytes to provideHatModel(). The GLB is read here, without GLTFLoader, so this file runs
@@ -22,14 +23,17 @@ import {shapeHeadPoint} from './head-profile.js';
  *  - The hair: under the crown it is pressed in to the cap's sweatband (`wear.tuck`), above the band line all round,
  *    except in the snapback's opening above the strap, where it shows (and a ponytail comes through). hatTuck() gives
  *    build.js that rule.
- *  - The colours: the cloth material's vertex colour is a shade of the wearer's `hatColour` (one model is a navy, a
- *    white or a green cap); the other materials carry their own colours (the green undervisor, the sweatband, the button,
- *    the straps, the embroidery).
+ *  - The colours: the model says which recipe colour each material takes (`wear.tint`: the trucker's foam front and
+ *    bill the wearer's `hatColour`, its mesh, undervisor, piping, rope and J the `accent`), its vertex colour a shade of
+ *    it; the other materials carry their own colours (the sweatband, the straps, the gold outline, the woven label).
+ *  - See-through parts (`wear.seeThrough`: the trucker's mesh) are not part of the body: assetHatPieces() returns them
+ *    apart, with their texture coordinates, and build.js draws them as the hat's see-through layer (bound to the head,
+ *    hidden with the hat), in the knit of weaveTexture(), so the hair and head show faintly through.
  */
 
 /** Recipe hat id → its catalogue asset, and the hat build.js draws until the model is in hand. */
 export const ASSET_HATS=Object.freeze({
- 'seagulls-cap':Object.freeze({asset:'seagulls-cap',standIn:'cap',name:'Seagulls cap'}),
+ trucker:Object.freeze({asset:'johansson-trucker',standIn:'cap',name:'Johansson trucker cap'}),
 });
 export const isAssetHat=id=>Object.hasOwn(ASSET_HATS,id);
 /** The catalogue ids of every asset hat (what a page fetches before it builds people). */
@@ -38,7 +42,10 @@ export const assetHatIds=()=>[...new Set(Object.values(ASSET_HATS).map(h=>h.asse
 const models=new Map();
 /** True once the model of a hat (a recipe hat id or a catalogue id) is in hand. */
 export function hatModelLoaded(id){const asset=ASSET_HATS[id]?.asset??id;return models.has(asset);}
-/** The parsed model of a catalogue hat, or null: {asset, wear, meshes:[{name, material, ink, position, colour, index}]}. */
+/**
+ * The parsed model of a catalogue hat, or null: {asset, wear, meshes:[{name, material, ink, inkAt, position, colour, uv,
+ * index}]}. `ink` is the node's (extras), `inkAt` each vertex's (its colour's alpha: 0 where the outline must not stand).
+ */
 export const hatModel=id=>models.get(ASSET_HATS[id]?.asset??id)||null;
 
 // ---- Reading the GLB ----------------------------------------------------------------------------------------------
@@ -89,11 +96,12 @@ export function readHatGlb(bytes){
    const P=readAccessor(json,bin,prim.attributes.POSITION),C=prim.attributes.COLOR_0!==undefined?readAccessor(json,bin,prim.attributes.COLOR_0):null;
    const position=new Float32Array(P.count*3),v=new THREE.Vector3();
    for(let i=0;i<P.count;i++){v.fromArray(P.array,i*3).applyMatrix4(world);v.toArray(position,i*3);}
-   const colour=new Float32Array(P.count*3);
-   for(let i=0;i<P.count;i++)for(let k=0;k<3;k++)colour[i*3+k]=C?C.array[i*C.itemSize+k]:1;
+   const colour=new Float32Array(P.count*3),ink=new Float32Array(P.count).fill(1);
+   for(let i=0;i<P.count;i++){for(let k=0;k<3;k++)colour[i*3+k]=C?C.array[i*C.itemSize+k]:1;if(C?.itemSize===4)ink[i]=C.array[i*4+3];}
+   const T=prim.attributes.TEXCOORD_0!==undefined?readAccessor(json,bin,prim.attributes.TEXCOORD_0):null;
    const index=prim.indices!==undefined?Uint32Array.from(readAccessor(json,bin,prim.indices).array):Uint32Array.from({length:P.count},(_,i)=>i);
    const material=prim.material!==undefined?json.materials[prim.material].name||'':'';
-   meshes.push({name:extras.name||node.name||'',material,ink:extras.ink===undefined?1:+extras.ink,position,colour,index});
+   meshes.push({name:extras.name||node.name||'',material,ink:extras.ink===undefined?1:+extras.ink,inkAt:ink,position,colour,uv:T?Float32Array.from(T.array):null,index});
   }
   for(const child of node.children||[])visit(child,world);
  };
@@ -118,7 +126,7 @@ const smooth=(e0,e1,x)=>{const t=Math.min(1,Math.max(0,(x-e0)/(e1-e0)));return t
 /**
  * The band's bottom edge (head radii above the head's centre) at azimuth phi (0 the front, +π/2 the wearer's left): in
  * front it follows the bill's curve from the forehead down to the temples, behind them it settles over the ears to the
- * nape. The same curve the build script cut the crown to (build-seagulls-cap.py band_y).
+ * nape. The same curve the build script cut the crown to (build-johansson-trucker.py band_y).
  */
 export function bandHeight(wear,phi){
  const {front,side,back,billRoot,arch}=wear.band,a=Math.abs(wrap(phi));
@@ -147,16 +155,18 @@ export function hatTuck(recipe){
 
 // ---- Wearing it ------------------------------------------------------------------------------------------------------
 const key=(r,g,b)=>`${Math.round(r*4096)},${Math.round(g*4096)},${Math.round(b*4096)}`;
+/** Which recipe colour a material takes (the model's `wear.tint`; a model without one: its `cloth` takes hatColour). */
+const tintOf=(wear,material)=>(wear.tint||{cloth:'hatColour'})[material]||null;
 /**
  * The hat's pieces on this head, or null when its model is not in hand: [{geometry (non-indexed, positions in the body's
- * model space, normals), colour (THREE.Color, linear), ink (0 or 1), name}], one piece per mesh and colour, for build.js to
- * paint and bind to the head bone. `m` is build.js measure(recipe).
+ * model space, normals; a see-through piece also its `uv`), colour (THREE.Color, linear), ink (0 or 1), name, seeThrough}],
+ * one piece per mesh and colour, for build.js to paint and bind to the head bone. `m` is build.js measure(recipe).
  */
 export function assetHatPieces(recipe,m){
  const model=hatModel(recipe.outfit.hat);
  if(!isAssetHat(recipe.outfit.hat)||!model)return null;
- const {centre,radii}=model.wear.head,R=m.Rh,S=[m.headSX*R,m.headSY*R,R*.98];
- const cloth=new THREE.Color(recipe.outfit.hatColour),u=new THREE.Vector3(),pieces=[];
+ const {centre,radii}=model.wear.head,R=m.Rh,S=[m.headSX*R,m.headSY*R,R*.98],clear=new Set(model.wear.seeThrough||[]);
+ const u=new THREE.Vector3(),pieces=[];
  for(const mesh of model.meshes){
   // Carried onto this head: the place on the head it was built on, in head radii, shaped as this head is.
   const P=mesh.position,count=P.length/3,out=new Float32Array(P.length);
@@ -165,24 +175,54 @@ export function assetHatPieces(recipe,m){
    shapeHeadPoint(u,m.profile);
    out[i*3]=u.x*S[0];out[i*3+1]=m.headCentre+u.y*S[1];out[i*3+2]=u.z*S[2];
   }
-  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(out,3));g.setIndex(new THREE.BufferAttribute(mesh.index,1));
-  g.computeVertexNormals();
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(out,3));
+  if(mesh.uv)g.setAttribute('uv',new THREE.BufferAttribute(mesh.uv,2));
+  g.setIndex(new THREE.BufferAttribute(mesh.index,1));g.computeVertexNormals();
   const flat=g.toNonIndexed();g.dispose();
+  const tint=tintOf(model.wear,mesh.material),base=tint?new THREE.Color(recipe.outfit[tint]):null,seeThrough=clear.has(mesh.material);
   // One piece per colour: a triangle takes its first corner's colour (the model's colours are per face).
-  const groups=new Map(),I=mesh.index,C=mesh.colour,tinted=mesh.material==='cloth';
+  const groups=new Map(),I=mesh.index,C=mesh.colour;
   for(let t=0;t<I.length/3;t++){
    const c=I[t*3],k=key(C[c*3],C[c*3+1],C[c*3+2]);
    if(!groups.has(k))groups.set(k,{shade:[C[c*3],C[c*3+1],C[c*3+2]],tris:[]});
    groups.get(k).tris.push(t);
   }
   for(const {shade,tris} of groups.values()){
-   const pos=new Float32Array(tris.length*9),nrm=new Float32Array(tris.length*9),FP=flat.attributes.position.array,FN=flat.attributes.normal.array;
-   tris.forEach((t,j)=>{pos.set(FP.subarray(t*9,t*9+9),j*9);nrm.set(FN.subarray(t*9,t*9+9),j*9);});
-   const piece=new THREE.BufferGeometry();piece.setAttribute('position',new THREE.BufferAttribute(pos,3));piece.setAttribute('normal',new THREE.BufferAttribute(nrm,3));
-   const colour=tinted?cloth.clone().multiply(new THREE.Color(shade[0],shade[1],shade[2])):new THREE.Color(shade[0],shade[1],shade[2]);
-   pieces.push({geometry:piece,colour,ink:mesh.ink?1:0,name:mesh.name});
+   const piece=new THREE.BufferGeometry();
+   for(const [name,size] of [['position',3],['normal',3],...(seeThrough&&mesh.uv?[['uv',2]]:[])]){
+    const from=flat.attributes[name].array,to=new Float32Array(tris.length*3*size);
+    tris.forEach((t,j)=>to.set(from.subarray(t*3*size,(t+1)*3*size),j*3*size));
+    piece.setAttribute(name,new THREE.BufferAttribute(to,size));
+   }
+   const own=new THREE.Color(shade[0],shade[1],shade[2]),colour=base?base.clone().multiply(own):own;
+   // How much ink each corner carries: the node's, times the vertex's own (its colour's alpha).
+   const inkCorners=new Float32Array(tris.length*3);tris.forEach((t,j)=>{for(let k=0;k<3;k++)inkCorners[j*3+k]=mesh.inkAt[I[t*3+k]];});
+   pieces.push({geometry:piece,colour,ink:mesh.ink&&!seeThrough?1:0,inkCorners,name:mesh.name,seeThrough,weave:seeThrough?model.wear.weave||null:null});
   }
   flat.dispose();
  }
  return pieces;
+}
+
+/**
+ * The knit of a see-through part (the model's `wear.weave`: round holes on a tile, `tile` metres of it): a white tile
+ * whose alpha is the threads, repeated by the part's texture coordinates; one per page. Null where there is no canvas
+ * (Node): the layer is then a plain, half-clear cloth.
+ */
+let weaveCache=null;
+export function weaveTexture(weave){
+ if(weaveCache)return weaveCache;
+ if(typeof document==='undefined')return null;
+ const size=weave?.size||64,c=document.createElement('canvas');c.width=c.height=size;const ctx=c.getContext?.('2d');
+ if(!ctx?.createImageData)return null;
+ const img=ctx.createImageData(size,size),holes=weave?.holes||[[.25,.25],[.75,.75]],r=weave?.radius||.17;
+ for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+  const uu=(x+.5)/size,vv=(y+.5)/size;
+  const d=Math.min(...holes.map(([hu,hv])=>Math.hypot(((uu-hu+1.5)%1)-.5,((vv-hv+1.5)%1)-.5)));
+  const a=Math.min(1,Math.max(0,(d-r)*size/1.5+.5)),i=(y*size+x)*4;
+  img.data[i]=img.data[i+1]=img.data[i+2]=255;img.data[i+3]=Math.round(a*255);
+ }
+ ctx.putImageData(img,0,0);
+ const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;
+ return weaveCache=t;
 }

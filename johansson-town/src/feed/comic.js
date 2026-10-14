@@ -193,7 +193,7 @@ function sceneCamera(data){
 export async function renderComic({panels,place,props={},sitting=false},{base='./',quality=.86}={}){
  // The lettering is set in the interface face; wait for it so the first page is not in a fallback.
  try{await Promise.all(['700 22px','800 40px'].map(f=>document.fonts?.load(f+' Figtree,"LINE Seed JP"','āēīōū Aa')));}catch{}
- // The hats from World's catalogue (the Seagulls cap) before anyone is built, so they wear them and not the stand-in.
+ // The hats from World's catalogue (Johansson's trucker cap) before anyone is built, so they wear them and not the stand-in.
  await loadHatModels();
  const set=(await placeViews(base))[place];
  const layout=pageLayout(panels);

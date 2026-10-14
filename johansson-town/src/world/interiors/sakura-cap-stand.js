@@ -1,12 +1,12 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {placeAsset,catalogCard} from '../../catalog/catalog.js';
-import {SEAGULLS_CAP} from '../../commerce/sakura-caps.js';
+import {JOHANSSON_TRUCKER} from '../../commerce/sakura-caps.js';
 
 /**
- * Sakura's cap tree (commerce/sakura-caps.js SEAGULLS_CAP: why it stands by the east window, who buys the caps): a
- * chromed pole on a weighted cast base, two arms to the shop side, each ending in a cap form, a dome the size of the
- * town's head, with a stack of three Seagulls caps on it, crown up and bill out, as they are worn. The caps are the
- * catalogue's own model (assets/catalog/seagulls-cap, the one a resident wears), each copy in its colourway. A card on
+ * Sakura's cap tree (commerce/sakura-caps.js JOHANSSON_TRUCKER: why it stands by the east window, who buys the caps):
+ * a chromed pole on a weighted cast base, two arms to the shop side, each ending in a cap form, a dome the size of the
+ * town's head, with a stack of three Johansson trucker caps on it, crown up and bill out, as they are worn. The caps are
+ * the catalogue's own model (assets/catalog/johansson-trucker, the one a resident wears), each copy in its colourway. A card on
  * top says what they are and what they cost, in Japanese, as Sakura's other signs do; looking at it tells the rest in
  * English.
  *
@@ -15,13 +15,13 @@ import {SEAGULLS_CAP} from '../../commerce/sakura-caps.js';
  */
 const GOTHIC='"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP","Noto Sans",system-ui,sans-serif';
 
-/** The card on top of the pole: the team, the line, the price with tax, one size. Both faces print the same. */
-export function drawCapCard(ctx,w,h,line=SEAGULLS_CAP){
+/** The card on top of the pole: the maker, the line, the price with tax, one size. Both faces print the same. */
+export function drawCapCard(ctx,w,h,line=JOHANSSON_TRUCKER){
  ctx.fillStyle='#fbf8f0';ctx.fillRect(0,0,w,h);
  ctx.fillStyle='#f4a3bd';ctx.fillRect(0,0,w,h*.2);                  // Sakura's pink band, as on its sale poster
  ctx.textAlign='center';ctx.textBaseline='middle';
  ctx.fillStyle='#ffffff';ctx.font=`bold ${h*.12}px ${GOTHIC}`;ctx.fillText('さくら商店',w/2,h*.105);
- ctx.fillStyle='#27304d';ctx.font=`900 ${h*.13}px ${GOTHIC}`;ctx.fillText(line.jp.team,w/2,h*.33);
+ ctx.fillStyle='#27304d';ctx.font=`900 ${h*.13}px ${GOTHIC}`;ctx.fillText(line.jp.brand,w/2,h*.33);
  ctx.font=`900 ${h*.2}px ${GOTHIC}`;ctx.fillText(line.jp.line,w/2,h*.53);
  ctx.fillStyle='#c5281c';ctx.font=`900 ${h*.17}px ${GOTHIC}`;ctx.fillText(line.jp.price,w*.42,h*.76);
  ctx.font=`bold ${h*.08}px ${GOTHIC}`;ctx.fillText(line.jp.tax,w*.74,h*.78);
@@ -53,7 +53,7 @@ function capForm(){
 }
 
 export function buildCapStand(room,{anchor,action}={}){
- const C=SEAGULLS_CAP,S=C.stand,card=catalogCard(C.asset),A=card.anchors;
+ const C=JOHANSSON_TRUCKER,S=C.stand,card=catalogCard(C.asset),A=card.anchors;
  const group=new THREE.Group();group.name='Sakura cap tree';group.position.set(S.x,0,S.z);group.rotation.y=S.yaw;room.add(group);
  const chrome=new THREE.MeshStandardMaterial({color:0xc9ced3,metalness:.55,roughness:.32});
  const iron=new THREE.MeshStandardMaterial({color:0x4a4f55,roughness:.7});
@@ -75,11 +75,13 @@ export function buildCapStand(room,{anchor,action}={}){
   const dome=add(form,plastic,0,cy,S.reach,'Cap form');dome.scale.set(...radii);
   const armY=cy+radii[1]*(rimBack+.03),back=S.reach-radii[2]*Math.sqrt(1-(rimBack+.03)**2);
   const arm=add(new THREE.CylinderGeometry(.009,.009,back+.03,10),chrome,0,armY,(back+.03)/2,'Cap tree arm');arm.rotation.x=Math.PI/2;
-  colours.forEach((hex,i)=>{
+  colours.forEach((way,i)=>{
+   const {hatColour,accent}=C.colourways.find(w=>w.name===way);
    const cap=placeAsset(C.asset,{parent:group,x:0,y:y0+i*S.nest,z:S.reach,yaw:0,
-    // Each copy has its own materials: the cloth takes this cap's colourway, as `hatColour` does on a head.
-    onModel:copy=>copy.traverse(o=>{if(o.isMesh&&o.material?.name==='cloth')o.material.color.set(hex);})});
-   cap.object.name=`Seagulls cap on the stand (${tier} ${i+1})`;caps.push(cap);ready.push(cap.ready);
+    // Each copy has its own materials: they take this cap's colourway as a head's hatColour and accent do (the model's
+    // `wear.tint`: the front and bill the hat colour, the mesh, undervisor, piping, rope and J the accent).
+    onModel:copy=>copy.traverse(o=>{if(!o.isMesh)return;const n=o.material?.name;if(n==='front')o.material.color.set(hatColour);else if(n==='mesh'||n==='accent')o.material.color.set(accent);})});
+   cap.object.name=`Johansson trucker cap on the stand (${tier} ${i+1}, ${way})`;caps.push(cap);ready.push(cap.ready);
   });
  }
  // The card on top, both faces.
@@ -89,9 +91,10 @@ export function buildCapStand(room,{anchor,action}={}){
  add(new THREE.BoxGeometry(cardW+.02,.012,.012),chrome,0,cardY-cardH/2-.006,0,'Cap tree card holder');
  group.updateMatrixWorld(true);
  const look=new THREE.Vector3(0,1.45,S.reach+.45).applyMatrix4(group.matrixWorld);
- anchor?.(look.toArray(),'Look at the Seagulls caps',()=>action?.('inspect','Sakura · Seagulls caps',
-  `Minato Seagulls caps, ¥${C.price.toLocaleString('en-US')} with tax: Johansson Headwear's six-panel snapback, made in Naha, in the team's night navy, `+
-  'white and fukugi green, the gull embroidered on the front and one size with the strap. Thuan keeps them by the window and the till, '+
-  'where the boats’ crews pay for their lunch. Kōji bought the first navy one for the catch tables.'));
+ anchor?.(look.toArray(),'Look at the Johansson caps',()=>action?.('inspect','Sakura · Johansson trucker caps',
+  `Johansson trucker caps, ¥${C.price.toLocaleString('en-US')} with tax: Johansson Headwear's JH-712, made in Naha. A tall foam `+
+  'front with Johansson’s J raised in embroidery the colour of the mesh, outlined in gold, inside the seal’s rings; a mesh back, piping, a braided rope '+
+  'and a woven label. Navy and white, charcoal and grey, white and navy; one size with the strap. Thuan keeps them by the window and the till. '+
+  'Kōji bought the first one for the catch tables.'));
  return {group,caps,ready:Promise.all(ready).then(all=>all.every(Boolean))};
 }

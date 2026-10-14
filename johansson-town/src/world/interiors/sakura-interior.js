@@ -120,7 +120,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
  buildShelfEdges(room);
  buildSakuraCorners(room,{anchor,action});
  buildSakuraSurfaces(room);
- // The cap tree by the east window: the Seagulls caps, World's catalogue's model (commerce/sakura-caps.js).
+ // The cap tree by the east window: Johansson's trucker caps, World's catalogue's model (commerce/sakura-caps.js).
  const capStand=buildCapStand(room,{anchor,action});
  // Fittings the model came with that nothing stood on (SAKURA_DRESSING). Instanced the
  // same way as the goods, but never restocked: none of it is for sale.

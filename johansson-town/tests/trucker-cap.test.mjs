@@ -9,16 +9,16 @@ import {buildAvatar,buildHatProp,measure,BONES} from '../src/avatars/build.js';
 import {ASSET_HATS,readHatGlb,provideHatModel,hatModelLoaded,hatTuck,bandHeight,assetHatPieces} from '../src/avatars/hat-assets.js';
 import {entryFor,ISLAND_HEX} from '../src/avatars/wardrobe-catalogue.js';
 import {catalogCard} from '../src/catalog/catalog.js';
-import {SEAGULLS_CAP} from '../src/commerce/sakura-caps.js';
+import {JOHANSSON_TRUCKER} from '../src/commerce/sakura-caps.js';
 import {SUPPLIERS} from '../src/commerce/merchandising.js';
 import {SAKURA_LAYOUT} from '../src/world/interiors/sakura-layout.js';
 import {shapeHeadPoint} from '../src/avatars/head-profile.js';
 
 installDOM();
-const glb=await readFile(new URL('../assets/catalog/seagulls-cap/model.glb',import.meta.url));
+const glb=await readFile(new URL('../assets/catalog/johansson-trucker/model.glb',import.meta.url));
 const residents=new Set(JSON.parse(await readFile(new URL('../guide/residents.json',import.meta.url))).map(r=>r.name));
 const HEAD=BONES.indexOf('head');
-const wearing=(r,hat='seagulls-cap',hatColour='#27304d')=>normalizeRecipe({...r,outfit:{...(r.outfit||DEFAULT_RECIPE.outfit),hat,hatColour}});
+const wearing=(r,hat='trucker',hatColour='#27304d',accent='#f4f1ea')=>normalizeRecipe({...r,outfit:{...(r.outfit||DEFAULT_RECIPE.outfit),hat,hatColour,accent}});
 /** The hat's range of a body: its vertices, as built (bind pose), and their skinning. */
 function hatRange(avatar){
  const g=avatar.body.geometry,full=g.attributes.position.count;
@@ -27,50 +27,61 @@ function hatRange(avatar){
 }
 
 test('the cap is World’s catalogue asset: a real GLB, its card, its fit, within a phone’s budget',()=>{
- const card=catalogCard('seagulls-cap');
- assert.equal(card.kind,'prop');assert.ok(card.measured.triangles<=3000&&card.measured.materials<=3,'a few thousand triangles, three materials, no textures');
+ const card=catalogCard('johansson-trucker');
+ assert.equal(card.kind,'prop');assert.ok(card.measured.triangles<=3000&&card.measured.materials<=4,'a few thousand triangles, four materials, one small texture');
  const model=readHatGlb(glb);
- assert.deepEqual([...new Set(model.meshes.map(m=>m.material))].sort(),['cloth','embroidery','trim']);
- for(const part of ['Cap crown','Cap lining','Cap sweatband','Cap bill','Cap undervisor','Cap button','Cap eyelets','Cap snapback strap','Cap embroidery'])
-  assert.ok(model.meshes.some(m=>m.name===part),part+' is modelled');
+ assert.deepEqual([...new Set(model.meshes.map(m=>m.material))].sort(),['accent','front','mesh','trim']);
+ assert.deepEqual(model.wear.tint,{front:'hatColour',mesh:'accent',accent:'accent'});assert.deepEqual(model.wear.seeThrough,['mesh']);
+ assert.ok(model.meshes.find(m=>m.material==='mesh').uv,'the mesh carries the knit’s coordinates');
  // The head it was built on is the town's default adult, as the card's anchors say.
  const m=measure(DEFAULT_RECIPE),[sx,sy,sz]=model.wear.head.radii;
  assert.ok(Math.abs(sx-m.Rh*m.headSX)<1e-4&&Math.abs(sy-m.Rh*m.headSY)<1e-4&&Math.abs(sz-m.Rh*.98)<1e-4);
  assert.ok(Math.abs(card.anchors['head-top'][1]-card.anchors['head-centre'][1]-sy)<2e-4);
- assert.equal(ASSET_HATS['seagulls-cap'].asset,card.id);
+ assert.equal(ASSET_HATS.trucker.asset,card.id);
+ // A trucker's crown stands up off the head: the front's top is well above the head's (a baseball cap's is not).
+ assert.ok(card.anchors['crown-top'][1]-card.anchors['head-centre'][1]>1.15*sy);
 });
 
 test('old recipes do not change: the cap is a new id, and a procedural cap is built as before',()=>{
- assert.equal(PARTS.hat.at(-1),'seagulls-cap','appended, so no saved id moves');
+ assert.equal(PARTS.hat.at(-1),'trucker','appended, so no saved id moves');
  assert.equal(normalizeRecipe({outfit:{hat:'cap'}}).outfit.hat,'cap');
  const before=buildAvatar(wearing(recipeFor('Kōji'),'cap'),{shadows:false}),a=before.body.geometry.attributes.position.array.slice();before.dispose();
- // Until its model is in hand the Seagulls cap is worn as its stand-in, never as a bare head.
- assert.equal(hatModelLoaded('seagulls-cap'),false);
+ // Until its model is in hand the trucker is worn as its stand-in, never as a bare head.
+ assert.equal(hatModelLoaded('trucker'),false);
  const standIn=buildAvatar(wearing(recipeFor('Kōji')),{shadows:false});
  assert.equal(standIn.body.geometry.attributes.position.count,a.length/3,'the stand-in is the procedural cap');standIn.dispose();
- provideHatModel('seagulls-cap',glb);
+ provideHatModel('johansson-trucker',glb);
  const after=buildAvatar(wearing(recipeFor('Kōji'),'cap'),{shadows:false});
  assert.deepEqual(after.body.geometry.attributes.position.array,a,'a cap recipe is drawn exactly as before');after.dispose();
 });
 
-test('worn, it is the model: bound to the head bone, coloured by hatColour, the fixed parts in their own colours',()=>{
- provideHatModel('seagulls-cap',glb);
- const r=wearing(recipeFor('Kōji'),'seagulls-cap','#2f4f8e'),a=buildAvatar(r,{shadows:false}),{g,start,count}=hatRange(a);
- const model=readHatGlb(glb),tris=model.meshes.reduce((n,m)=>n+m.index.length/3,0);
- assert.equal(count,tris*3,'every triangle of the model, and nothing else, is the hat range');
+test('worn, it is the model: bound to the head bone, the front in hatColour, the mesh and J in the accent, the mesh see-through',()=>{
+ provideHatModel('johansson-trucker',glb);
+ const r=wearing(recipeFor('Kōji'),'trucker','#2f4f8e','#f4f1ea'),a=buildAvatar(r,{shadows:false}),{g,start,count}=hatRange(a);
+ const model=readHatGlb(glb),solid=model.meshes.filter(x=>x.material!=='mesh').reduce((n,x)=>n+x.index.length/3,0),clear=model.meshes.filter(x=>x.material==='mesh').reduce((n,x)=>n+x.index.length/3,0);
+ assert.equal(count,solid*3,'every solid triangle of the model, and nothing else, is the hat range of the body');
  const S=g.attributes.skinIndex,W=g.attributes.skinWeight,C=g.attributes.color;
  for(let i=start;i<start+count;i++){assert.equal(S.getX(i),HEAD);assert.equal(W.getX(i),1);}
- // The crown's cloth is the wearer's colour; the undervisor is its own green.
  const colours=new Set();for(let i=start;i<start+count;i++)colours.add(new THREE.Color(C.getX(i),C.getY(i),C.getZ(i)).getHexString());
- assert.ok(colours.has(new THREE.Color('#2f4f8e').getHexString()),'the cloth in hatColour');
- assert.ok(colours.has(new THREE.Color('#2f5a3e').getHexString()),'the green undervisor');
- assert.ok(colours.has(new THREE.Color('#f8f6ef').getHexString()),'the white gull');
- a.setHat(false);assert.equal(a.hatOn,false);a.setHat(true);assert.equal(a.hatOn,true);a.dispose();
- const prop=buildHatProp(r,{mode:'stand'});assert.equal(prop.geometry.attributes.position.count,tris*3,'the hat on its own is the same model');prop.geometry.dispose();
+ assert.ok(colours.has(new THREE.Color('#2f4f8e').getHexString()),'the front in hatColour');
+ assert.ok(colours.has(new THREE.Color('#f4f1ea').getHexString()),'the undervisor, rope and J in the accent');
+ assert.ok(colours.has(new THREE.Color('#c9a54a').getHexString()),'the gold outline');
+ // The mesh is the hat's see-through layer: on the body's skeleton, bound to the head, transparent, hidden with the hat
+ // and with the body (swimwear).
+ const layer=a.body.children.find(o=>o.userData.hatLayer);
+ assert.ok(layer?.isSkinnedMesh&&layer.skeleton===a.body.skeleton);
+ assert.equal(layer.geometry.attributes.position.count,clear*3);
+ assert.ok(layer.material.transparent&&!layer.material.depthWrite);
+ const LS=layer.geometry.attributes.skinIndex;for(let i=0;i<LS.count;i++)assert.equal(LS.getX(i),HEAD);
+ a.setHat(false);assert.equal(a.hatOn,false);assert.equal(layer.visible,false);a.setHat(true);assert.equal(a.hatOn,true);assert.equal(layer.visible,true);
+ a.wear('swim');assert.equal(a.body.visible,false,'the mesh goes with the body it hangs on');a.wear('clothes');
+ a.dispose();
+ const prop=buildHatProp(r,{mode:'stand'});assert.equal(prop.geometry.attributes.position.count,solid*3,'the hat on its own is the same model');
+ assert.equal(prop.children.filter(o=>o.userData.hatLayer).length,1,'with its mesh');prop.geometry.dispose();prop.children[0].userData.dispose();
 });
 
 test('it fits every head: on the head, ears below the band, the hair pressed in under it, nothing through it',()=>{
- provideHatModel('seagulls-cap',glb);
+ provideHatModel('johansson-trucker',glb);
  const model=readHatGlb(glb),wear=model.wear,unit=new THREE.Vector3();
  const heads=[];
  for(const age of AGES)for(const proportion of ['classic','rounded'])for(const size of [0,.5,1])for(const form of ['oval','narrow','wide','heart'])
@@ -95,7 +106,7 @@ test('it fits every head: on the head, ears below the band, the hair pressed in 
 });
 
 test('the hair goes under the cap for every style, and out of the snapback’s opening above the strap',()=>{
- provideHatModel('seagulls-cap',glb);
+ provideHatModel('johansson-trucker',glb);
  for(const style of PARTS.hair){
   const r=wearing({...DEFAULT_RECIPE,hair:{...DEFAULT_RECIPE.hair,style}}),m=measure(r),S=[m.headSX*m.Rh,m.headSY*m.Rh,m.Rh*.98];
   const tuck=hatTuck(r),a=buildAvatar(r,{shadows:false}),{g,start}=hatRange(a),P=g.attributes.position,S0=g.attributes.skinIndex;
@@ -113,21 +124,22 @@ test('the hair goes under the cap for every style, and out of the snapback’s o
  assert.ok(tuck(.8,.6,.2,1.1)<1.07,'under the crown it is pressed in');
 });
 
-test('it is in the wardrobe: a label, who wears it and why, its colourways from the island palette',()=>{
- const e=entryFor('hat','seagulls-cap');
- assert.equal(e.label,'Seagulls cap');assert.ok(e.supplier.includes('Sakura'));
- assert.deepEqual(e.colourways.map(w=>w.colours['outfit.hatColour']),SEAGULLS_CAP.colourways.map(w=>w.hatColour));
- for(const w of e.colourways)assert.ok(ISLAND_HEX.has(w.colours['outfit.hatColour']));
+test('it is in the wardrobe: a label, who wears it and why, colourways that set the front and the mesh',()=>{
+ const e=entryFor('hat','trucker');
+ assert.equal(e.label,'Johansson trucker');assert.ok(e.supplier.includes('Sakura'));
+ assert.deepEqual(e.colourways.map(w=>[w.colours['outfit.hatColour'],w.colours['outfit.accent']]),JOHANSSON_TRUCKER.colourways.map(w=>[w.hatColour,w.accent]));
+ for(const w of e.colourways)for(const v of Object.values(w.colours))assert.ok(ISLAND_HEX.has(v));
 });
 
 test('Sakura stocks it: a 1997 price, real buyers and reasons, its supplier and maker, a stand out of everyone’s way',()=>{
- const c=SEAGULLS_CAP;
+ const c=JOHANSSON_TRUCKER;
  assert.ok(Number.isInteger(c.price)&&c.price>=10&&c.price<=5000,'whole yen, within a konbini’s range');
  assert.ok(c.purpose.for.length&&c.purpose.for.every(n=>residents.has(n)),'bought by people who live here: '+c.purpose.for.join(', '));
  assert.ok(c.purpose.why.length>40&&c.purpose.placed.length>40);
  assert.ok(SUPPLIERS[c.supplier],'Sakura Trading supplies it');assert.match(c.maker.name,/^Johansson /,'a Johansson company makes it');
  assert.equal(catalogCard(c.asset).id,c.asset);assert.ok(PARTS.hat.includes(c.hat));
- assert.ok(c.colourways.every(w=>ISLAND_HEX.has(w.hatColour))&&c.stock.flatMap(s=>s.caps).every(h=>c.colourways.some(w=>w.hatColour===h)));
+ assert.ok(c.colourways.every(w=>ISLAND_HEX.has(w.hatColour)&&ISLAND_HEX.has(w.accent))&&c.stock.flatMap(s=>s.caps).every(n=>c.colourways.some(w=>w.name===n)));
+ assert.ok(c.price>1800&&c.priceWhy.includes('1997'),'a premium cap, priced with its reasons');
  // The stand's box is in the shop's colliders, overlaps no other fitting, and leaves the walk to the counter 0.9 m.
  const box=c.stand.collider,mine=SAKURA_LAYOUT.colliders.filter(o=>o.x===box.x&&o.z===box.z&&o.w===box.w);
  assert.equal(mine.length,1);
@@ -137,5 +149,5 @@ test('Sakura stocks it: a 1997 price, real buyers and reasons, its supplier and 
  assert.ok(counter.x-counter.w/2-(box.x+box.w/2)>=.9,'0.9 m to the counter');
  for(const g of SAKURA_LAYOUT.guestStands)assert.ok(Math.hypot(Math.max(0,Math.abs(g[0]-box.x)-box.w/2),Math.max(0,Math.abs(g[2]-box.z)-box.d/2))>=.35,'the evening guests have room');
  // The card is Japanese, the words a player reads are English.
- assert.match(c.jp.team+c.jp.line,/[゠-ヿ]/);assert.doesNotMatch(c.name,/[぀-ヿ一-鿿]/);
+ assert.match(c.jp.brand+c.jp.line,/[゠-ヿ]/);assert.doesNotMatch(c.name,/[぀-ヿ一-鿿]/);
 });

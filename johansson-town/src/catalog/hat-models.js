@@ -3,7 +3,7 @@ import {catalogCard} from './catalog.js';
 import {assetHatIds,provideHatModel,hatModelLoaded} from '../avatars/hat-assets.js';
 
 /**
- * The models of the hats people wear (src/avatars/hat-assets.js ASSET_HATS: the Seagulls cap), fetched from World's asset
+ * The models of the hats people wear (src/avatars/hat-assets.js ASSET_HATS: Johansson's trucker cap), fetched from World's asset
  * catalogue and handed to the avatar code, which reads them itself so a body is still built in one go. A page that
  * builds people fetches them first: the game's boot (src/boot.js), the resident guide's portraits, the comic feed and
  * Johansson Studio (avatar-creator/studio.js). Until a model is in hand its wearers wear its stand-in (the procedural cap),

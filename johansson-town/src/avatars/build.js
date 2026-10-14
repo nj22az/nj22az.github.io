@@ -14,7 +14,7 @@ import {pleatedSkirtGeometry} from './pleated-skirt.js';
 import {celFrom} from '../render/cel.js';
 import {createTowelFit} from './towel-fit.js';
 import {GARMENT,PLAIN_UV,torsoUV,sleeveUV,paintGarment,SLEEVED_LONG,CAMP_COLLAR,SHIRT_SLEEVES,UNDERSHIRT_ARMS,SLEEVE_END} from './garment.js';
-import {ASSET_HATS,isAssetHat,assetHatPieces,hatTuck} from './hat-assets.js';
+import {ASSET_HATS,isAssetHat,assetHatPieces,hatTuck,weaveTexture} from './hat-assets.js';
 
 /**
  * Builds a Shimanchu from a recipe.
@@ -514,31 +514,63 @@ function addHat(list,recipe,m){
 export function buildHatProp(input,{mode='wall',shadows=true}={}){
  const recipe=normalizeRecipe(input);
  if(recipe.outfit.hat==='none')return null;
- const parts=[];wearHat(parts,recipe,measure(recipe));
+ const parts=[],layers=[];wearHat(parts,recipe,measure(recipe),layers);
  if(!parts.length)return null;
  const geometry=mergeGeometries(parts,false);parts.forEach(g=>g.dispose());
  for(const key of ['skinIndex','skinWeight'])geometry.deleteAttribute(key);
  geometry.computeBoundingBox();
  const b=geometry.boundingBox,c=b.getCenter(new THREE.Vector3());
- geometry.translate(-c.x,mode==='stand'?-b.min.y:-c.y,mode==='stand'?-c.z:-b.min.z);
+ const shift=new THREE.Vector3(-c.x,mode==='stand'?-b.min.y:-c.y,mode==='stand'?-c.z:-b.min.z);geometry.translate(shift.x,shift.y,shift.z);
  geometry.computeBoundingSphere();
  const mesh=new THREE.Mesh(geometry,celFrom(new THREE.MeshStandardMaterial({vertexColors:true}),{bands:'soft3'}));
  mesh.name=(recipe.name||'Resident')+'’s hat';mesh.castShadow=shadows;mesh.receiveShadow=true;
  mesh.userData.hatProp=true;
+ // A see-through part (the trucker's mesh) hangs on it as its own layer, moved as the hat was.
+ const clear=hatLayer(layers,{skinned:false,shadows});
+ if(clear){clear.geometry.translate(shift.x,shift.y,shift.z);clear.geometry.computeBoundingSphere();mesh.add(clear);}
  return mesh;
 }
 
 /**
- * The hat on the head: a model from World's asset catalogue (hat-assets.js: the Seagulls cap), fitted to this head, painted
- * and bound to the head bone like every other part; or one of the hats drawn here (addHat). An asset hat whose model is not
- * in hand yet is drawn as its stand-in (ASSET_HATS: the Seagulls cap as the cap), so nobody is ever bare-headed for it.
+ * The hat on the head: a model from World's asset catalogue (hat-assets.js: Johansson's trucker cap), fitted to this head,
+ * painted * and bound to the head bone like every other part; or one of the hats drawn here (addHat). An asset hat whose model is not
+ * in hand yet is drawn as its stand-in (ASSET_HATS: the trucker as the cap), so nobody is ever bare-headed for it.
  */
-function wearHat(list,recipe,m){
+function wearHat(list,recipe,m,layers=null){
  const hat=recipe.outfit.hat;
  if(!isAssetHat(hat))return addHat(list,recipe,m);
  const pieces=assetHatPieces(recipe,m);
  if(!pieces)return addHat(list,{...recipe,outfit:{...recipe.outfit,hat:ASSET_HATS[hat].standIn}},m);
- for(const p of pieces){const g=part(list,p.geometry,'head',p.colour);if(!p.ink)g.attributes.ink.array.fill(0);}
+ for(const p of pieces){
+  // A see-through part (the trucker's mesh) is not the body, which is opaque: it goes to the hat's own layer (hatLayer).
+  if(p.seeThrough){if(layers)layers.push(p);else p.geometry.dispose();continue;}
+  const g=part(list,p.geometry,'head',p.colour);if(!p.ink)g.attributes.ink.array.fill(0);else if(p.inkCorners)g.attributes.ink.array.set(p.inkCorners);
+ }
+}
+/**
+ * The hat's see-through layer (hat-assets.js: the trucker's mesh panels), or null: bound to the head bone of the body's
+ * skeleton, in the knit's texture (weaveTexture), drawn after the opaque body without writing depth, so the hair and the
+ * head show faintly through it; a child of the body, it is hidden with it (swimwear, the bath) and with the hat (setHat).
+ * `skinned` false gives a plain mesh, for a hat on its own (buildHatProp). No ink: an outline shell would show through.
+ */
+function hatLayer(layers,{skinned=true,shadows=true}={}){
+ if(!layers?.length)return null;
+ const geometries=layers.map(p=>{
+  const g=p.geometry,n=g.attributes.position.count,colour=new Float32Array(n*3);
+  for(let i=0;i<n;i++)colour.set([p.colour.r,p.colour.g,p.colour.b],i*3);
+  g.setAttribute('color',new THREE.BufferAttribute(colour,3));
+  if(!g.attributes.uv)g.setAttribute('uv',new THREE.BufferAttribute(new Float32Array(n*2),2));
+  if(skinned){const index=new Uint16Array(n*4),weight=new Float32Array(n*4);for(let i=0;i<n;i++){index[i*4]=BI.head;weight[i*4]=1;}
+   g.setAttribute('skinIndex',new THREE.Uint16BufferAttribute(index,4));g.setAttribute('skinWeight',new THREE.BufferAttribute(weight,4));}
+  return g;
+ });
+ const geometry=mergeGeometries(geometries,false);geometries.forEach(g=>g.dispose());geometry.computeBoundingSphere();
+ const map=weaveTexture(layers[0].weave);
+ const material=celFrom(new THREE.MeshStandardMaterial({vertexColors:true,map,transparent:true,opacity:map?1:.72,depthWrite:false,side:THREE.DoubleSide,roughness:.4}),{bands:'soft3'});
+ const mesh=skinned?new THREE.SkinnedMesh(geometry,material):new THREE.Mesh(geometry,material);
+ mesh.name='Hat see-through layer';mesh.castShadow=false;mesh.receiveShadow=shadows;mesh.frustumCulled=!skinned;mesh.userData.hatLayer=true;
+ mesh.userData.dispose=()=>{geometry.dispose();material.dispose();};
+ return mesh;
 }
 
 /** A shoe (or boot) on the foot of side s ('L' or 'R'): its upper and its sole, tagged so it can come off. */
@@ -1509,7 +1541,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  const mainHairFrom=parts.length;addHair(parts,recipe,m);const mainHairSpan=hairSpan(parts,mainHairFrom,parts.length);addAccessories(parts,recipe,m);
  // The hat goes in last, so taking it off is drawing one range shorter: people hang it
  // up when they get home (home-residents.js) and put it back on to go out.
- const hatStart=parts.reduce((n,g)=>n+g.attributes.position.count,0);wearHat(parts,recipe,m);
+ const hatStart=parts.reduce((n,g)=>n+g.attributes.position.count,0),hatLayers=[];wearHat(parts,recipe,m,hatLayers);
  const hatHairRanges=[];
  for(const g of parts.slice(mainHairFrom))if(g.userData.hatHair)hatHairRanges.push({original:g.userData.hatHair,tucked:{position:g.attributes.position.array.slice(),normal:g.attributes.normal.array.slice()}});
  let hairCovered=true;
@@ -1524,6 +1556,8 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  const material=bodyMaterial(recipe,m);
  const body=new THREE.SkinnedMesh(geometry,material);body.name='Shimanchu body';
  body.add(bones.root);body.bind(new THREE.Skeleton(list));
+ // The hat's see-through layer (the trucker's mesh), on the body's skeleton: hidden with the body and with the hat.
+ const seeThrough=hatLayer(hatLayers,{shadows});if(seeThrough){seeThrough.bind(body.skeleton,body.bindMatrix);body.add(seeThrough);}
  body.castShadow=shadows;body.receiveShadow=true;body.frustumCulled=false;
  // Swimwear, the bath wrap and the lobby's after-bath clothes are further bodies, swapped in at the onsen.
  let swimBody=null,towelBody=null,towelOutline=null,alternativeBody=null,alternativeOutline=null,alternativeKey=null,afterbathBody=null,afterbathOutline=null;
@@ -1637,7 +1671,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
   recipe,measure:m,root,body,bones,face,height:m.H,outfit:'clothes',hasHat,garment:material.userData.garment,springSetup:swing,springs:null,
   setOpenHands(on){on=!!on;if(handsOpen===on)return;handsOpen=on;geometry.attributes.position.array.set(on?openFingerPositions:closedFingerPositions,fingerStart*3);geometry.attributes.position.needsUpdate=true;},
   /** Hat on or off. Off, it is somebody else's job to show where it went (buildHatProp). */
-  setHat(on){geometry.setDrawRange(0,on||!hasHat?Infinity:hatStart);if(hairCovered!==!!on){hairCovered=!!on;if(hatHairRanges.length)applyHair(mainHair);}},
+  setHat(on){if(seeThrough)seeThrough.visible=!!on;geometry.setDrawRange(0,on||!hasHat?Infinity:hatStart);if(hairCovered!==!!on){hairCovered=!!on;if(hatHairRanges.length)applyHair(mainHair);}},
   get hatOn(){return hasHat&&geometry.drawRange.count===Infinity;},
   /** A shoe on or off ('L' or 'R'). Off, the foot is in its sock (SOCK); where the shoe went is somebody
    *  else's to show (buildShoeProp). */
@@ -1773,6 +1807,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
    return outfit;
   },
   dispose(){
+   seeThrough?.userData.dispose();
    faceObjects.userData.dispose();
    body.customDepthMaterial?.dispose();if(body.towelFit)outline.material.dispose();
    geometry.dispose();material.dispose();material.map?.dispose();face.texture.dispose();face.head.geometry.dispose();face.head.material.dispose();

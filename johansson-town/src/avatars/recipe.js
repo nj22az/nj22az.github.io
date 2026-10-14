@@ -51,7 +51,7 @@ export const PARTS=Object.freeze({
  footwear:Object.freeze(['barefoot','sneakers','sandals','shoes','boots']),
  hat:Object.freeze(['none','cap','captain','police','helmet','straw','headband','kerchief','beanie','beret','bucket','ribbon','squid','teapot','sunflower','paperboat','mountain',
   // Hats that are models from World's asset catalogue (hat-assets.js), sold at Sakura Shōten: appended, so no saved id moves.
-  'seagulls-cap']),
+  'trucker']),
  earrings:Object.freeze(['none','studs','hoops']),
  neckwear:Object.freeze(['none','pendant','scarf']),
 });

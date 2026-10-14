@@ -16,7 +16,7 @@ export function mountResidentPortraits(){
  function release(){renderer?.dispose();renderer?.forceContextLoss();renderer=null;}
  async function draw(){
   if(running)return;running=true;
-  // The hats from World's catalogue (the Seagulls cap), so a resident's portrait shows theirs and not the stand-in.
+  // The hats from World's catalogue (Johansson's trucker cap), so a resident's portrait shows theirs and not the stand-in.
   await loadHatModels();
   try{while(pending.size&&active()){
    const img=pending.values().next().value;pending.delete(img);
