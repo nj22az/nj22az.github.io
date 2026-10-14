@@ -3,6 +3,7 @@ import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {FERRY_SHIP,FERRY_HEIGHTS,FERRY_CAR_PLACES,FERRY_MACHINERY} from './ferry-ship.js';
 import {drawSafetyPlan,canvasPen} from './ferry-safety-plan.js';
 import {FERRY_INTERIOR,FERRY_HOUSE,FERRY_ENGINE_ROOM,FERRY_STAIRS} from './ferry-interior.js';
+import {buildFerryBridge} from './ferry-bridge.js';
 import {liveValue} from './ferry-plant-controls.js';
 
 /**
@@ -437,6 +438,9 @@ export function buildFerryModel({shadows=false}={}){
   const s=R/.53,blade=new THREE.Shape();blade.moveTo(0,0);blade.quadraticCurveTo(.2*s,.18*s,.12*s,.5*s);blade.quadraticCurveTo(-.05*s,.53*s,-.12*s,.4*s);blade.quadraticCurveTo(-.14*s,.15*s,0,0);
   const bladeGeo=new THREE.ShapeGeometry(blade,6);
   for(let b=0;b<4;b++){const holder=new THREE.Group();holder.rotation.z=b*Math.PI/2;const m=new THREE.Mesh(bladeGeo,bronze);m.rotation.set(0,side*.5,0);m.position.y=.1;holder.add(m);screw.add(holder);}
+  // The hub and blades rotate as one: retain their geometry with one draw call per screw.
+  screw.updateMatrixWorld(true);const parts=[];screw.traverse(o=>{if(o.isMesh){const g=o.geometry.clone();g.applyMatrix4(new THREE.Matrix4().copy(screw.matrixWorld).invert().multiply(o.matrixWorld));parts.push(g.index?g.toNonIndexed():g);}});
+  screw.clear();screw.add(new THREE.Mesh(mergeGeometries(parts,false),bronze));for(const g of parts)g.dispose();hub.geometry.dispose();bladeGeo.dispose();
   screw.userData.hand=side;ferry.add(screw);screws.push(screw);
  }
  // The bow-thruster tunnel, 0.9 m, through the forefoot.
@@ -553,7 +557,9 @@ export function buildFerryModel({shadows=false}={}){
  // Maker's plates and labels (johansson-marine.js): lettering on a plate, drawn as its own small textured plane.
  const livePlates=[];for(const pl of FERRY_INTERIOR.plates){const m=plateMesh(pl);if(m){ferry.add(m);if(m.userData.live)livePlates.push(m.userData.live);}}
  /** Shows the plant's readings (ferry-plant.js readings()) on every live dial and the alarm matrix; returns how many were redrawn. */
- ferry.userData.readPlant=readings=>{let n=0;for(const l of livePlates)if(l.show(liveValue(readings,l.key)))n++;return n;};
+ const bridgeEquipment=buildFerryBridge(ferry,kit,{floor:BRIDGE,fore:FERRY_HOUSE.fore,aft:FERRY_HOUSE.wheelhouseAft});
+ ferry.userData.bridgeEquipment=bridgeEquipment;
+ ferry.userData.readPlant=readings=>{bridgeEquipment.readPlant(readings);ferry.userData.bridgePowered=readings.board.live;let n=0;for(const l of livePlates)if(l.show(liveValue(readings,l.key)))n++;return n;};
  ferry.userData.livePlates=livePlates;
  for(const g of FERRY_INTERIOR.glass){win(g.size,g.pos,g.rot);
   // Each pane in an anodised frame, 5 cm, standing 1 cm proud of the plating: no window is a hole in a flat wall.
@@ -789,7 +795,7 @@ export function buildFerryModel({shadows=false}={}){
  ferry.userData.setGate(false);
  // ---- Moving parts: screws turn and the radar sweeps while she is under way.
  ferry.userData.screws=screws;ferry.userData.radar=radar;
- ferry.userData.underway=(dt,speed)=>{for(const s of screws)s.rotation.z+=s.userData.hand*dt*speed*18;radar.rotation.y+=dt*(speed>0?2.6:0);};
+ ferry.userData.underway=(dt,speed)=>{for(const s of screws)s.rotation.z+=s.userData.hand*dt*speed*18;radar.rotation.y+=dt*(speed>0?2.6:0);bridgeEquipment.update(dt,{yaw:ferry.rotation.y,rain:ferry.userData.bridgeRain||false,powered:ferry.userData.bridgePowered!==false});};
  ferry.userData.setNavigationLights=on=>{for(const l of navLights)l.material.color.setHex(on?l.userData.on:0x333333);};
  ferry.userData.setCabinLights=level=>{glassMat.emissiveIntensity=.55*Math.max(0,Math.min(1,level));};
  /** The ramp floodlights (FERRY_LOADS `floodlights`), lit with the deck lights after dark. */
