@@ -440,23 +440,17 @@ export const FERRY_INTERIOR=(()=>{
  // Batch 6e: the magnetic compass periscope, the telegraph's lever box, the VHF handset, the radar hood, the window
  // wipers, the clock, barometer and fire-detection panel on the aft bulkhead, the navigation-lights panel, the PA
  // microphone, the binoculars and the log on the sill, the chart-table lamp, the deckhead lights.
- box([-2.75,BRIDGE,DH1-.7],[2.75,BRIDGE+1.0,DH1-T],0x5c6466,{name:'wheelhouse console'});
- deco([-1.25,BRIDGE+1.0,DH1-.6],[-.55,BRIDGE+1.45,DH1-.2],DARK);deco([-1.15,BRIDGE+1.05,DH1-.62],[-.65,BRIDGE+1.4,DH1-.6],0x1f4a3a);
- for(const x of [.2,.4,.9])bar([x,BRIDGE+1.0,DH1-.45],[x,BRIDGE+1.22,DH1-.5],.018,x>.5?ORANGE:RED);
+ box([-2.75,BRIDGE,DH1-.7],[2.75,BRIDGE+1.0,DH1-T],0x52796f,{name:'wheelhouse console'});
  deco([1.4,BRIDGE+1.0,DH1-.55],[1.9,BRIDGE+1.18,DH1-.25],DARK);
  box([-.25,BRIDGE,DH1-1.5],[.25,BRIDGE+.95,DH1-1.0],0x5c6466,{name:'steering stand'});
  bar([0,BRIDGE+.95,DH1-1.25],[0,F.houseTop-.05,DH1-1.25],.04,0xb08a4a);deco([-.08,BRIDGE+1.5,DH1-1.4],[.08,BRIDGE+1.62,DH1-1.25],0xb08a4a);
  deco([-.12,BRIDGE+.75,DH1-1.52],[.12,BRIDGE+.9,DH1-1.5],0xf0ece0);
- deco([-1.3,BRIDGE+1.45,DH1-.62],[-.5,BRIDGE+1.52,DH1-.18],DARK);
- deco([-.3,BRIDGE+1.0,DH1-.55],[.55,BRIDGE+1.12,DH1-.25],0x3a4244);
  deco([1.3,BRIDGE+1.0,DH1-.5],[1.75,BRIDGE+1.25,DH1-.28],DARK);bar([1.52,BRIDGE+1.25,DH1-.4],[1.52,BRIDGE+1.33,DH1-.4],.045,DARK);bar([1.52,BRIDGE+1.1,DH1-.27],[1.52,BRIDGE+1.2,DH1-.22],.02,DARK);
  bar([2.1,BRIDGE+1.0,DH1-.4],[2.1,BRIDGE+1.28,DH1-.45],.012,STEEL);bar([2.1,BRIDGE+1.28,DH1-.45],[2.1,BRIDGE+1.32,DH1-.45],.035,DARK);
- deco([2.25,BRIDGE+1.0,DH1-.6],[2.65,BRIDGE+1.22,DH1-.3],DARK);deco([2.3,BRIDGE+1.22,DH1-.55],[2.6,BRIDGE+1.24,DH1-.38],0x8fb3c9);
  deco([-2.6,BRIDGE+1.0,DH1-.6],[-1.5,BRIDGE+1.2,DH1-.3],0xd8d2c0);for(let i=0;i<6;i++){const kx=-2.5+i*.18;deco([kx,BRIDGE+1.2,DH1-.5],[kx+.08,BRIDGE+1.23,DH1-.42],[RED,0x2aff70,0xf6f1e2,0xf6f1e2,RED,0x2aff70][i]);}
  for(const kx of [-2.5,-2.1,-1.7])bar([kx,BRIDGE+1.0,DH1-.2],[kx,BRIDGE+1.0,DH1-.18],.06,0xf0ece0);
  deco([-2.9,BRIDGE+1.0,DH1-T-.12],[2.9,BRIDGE+1.03,DH1-T],0xd8d2c0);
  bar([-2.1,BRIDGE+1.03,DH1-.24],[-1.75,BRIDGE+1.03,DH1-.24],.045,DARK);bar([-2.1,BRIDGE+1.03,DH1-.17],[-1.75,BRIDGE+1.03,DH1-.17],.045,DARK);
- for(const kx of [-1.18,0,1.18])bar([kx,BRIDGE+1.05,DH1-.04],[kx+.3,BRIDGE+1.75,DH1-.04],.012,DARK);
  bar([1.4,BRIDGE+1.9,WH0+T/2],[1.4,BRIDGE+1.9,WH0+T/2+.05],.17,0xf4f1e8);bar([1.4,BRIDGE+1.9,WH0+T/2+.05],[1.4,BRIDGE+1.9,WH0+T/2+.06],.14,DARK);
  bar([1.95,BRIDGE+1.9,WH0+T/2],[1.95,BRIDGE+1.9,WH0+T/2+.05],.12,0xb08a4a);
  deco([-1.7,BRIDGE+1.55,WH0+T/2],[-.9,BRIDGE+2.05,WH0+T/2+.06],RED);for(let i=0;i<6;i++)deco([-1.62+i*.12,BRIDGE+1.9,WH0+T/2+.06],[-1.55+i*.12,BRIDGE+1.95,WH0+T/2+.07],0x2aff70);
@@ -464,12 +458,10 @@ export const FERRY_INTERIOR=(()=>{
  for(const kx of [-1.5,1.5])deco([kx-.35,F.houseTop-.06,WH0+1.6],[kx+.35,F.houseTop,WH0+1.9],0xf6f1e2);
  deco([-.3,F.houseTop-.2,DH1-.4],[.3,F.houseTop,DH1-.1],DARK);
  bar([0,F.houseTop,DH1-.9],[0,BRIDGE+1.9,DH1-.9],.006,0xd9cfa8,'paint');deco([-.03,BRIDGE+1.82,DH1-.93],[.03,BRIDGE+1.9,DH1-.87],TEAK);
- bar([0,BRIDGE+1.05,DH1-1.5],[0,BRIDGE+1.05,DH1-1.62],.32,TEAK);
- box([.75,BRIDGE,DH1-1.75],[1.25,BRIDGE+1.15,DH1-1.25],0x4a3f36,{name:'master’s chair'});
+ box([.75,BRIDGE,DH1-1.75],[1.25,BRIDGE+1.15,DH1-1.25],0x4a3f36,{name:'master’s chair',draw:false});
  box([-2.9,BRIDGE,WH0+T/2],[-1.7,BRIDGE+.95,WH0+.85],TEAK,{name:'chart table'});
- deco([-2.5,BRIDGE+.96,WH0+.2],[-2.1,BRIDGE+.99,WH0+.5],0x2f4f8f);deco([-2.85,BRIDGE+.96,WH0+.55],[-2.4,BRIDGE+.97,WH0+.8],0xd8d2c0);
  bar([-2.0,BRIDGE+.97,WH0+.3],[-2.0,BRIDGE+1.0,WH0+.3],.03,DARK);
- bar([-1.75,BRIDGE+.95,WH0+.15],[-1.75,BRIDGE+1.45,WH0+.15],.012,STEEL);deco([-1.95,BRIDGE+1.42,WH0+.05],[-1.55,BRIDGE+1.5,WH0+.35],0x3a4244);
+ bar([-1.75,BRIDGE+.95,WH0+.15],[-1.75,BRIDGE+1.45,WH0+.15],.012,STEEL);
  for(let i=0;i<3;i++)deco([-2.85,BRIDGE+.15+i*.25,WH0+T/2-.005],[-1.75,BRIDGE+.35+i*.25,WH0+T/2],0x6f5a40);deco([-2.85,BRIDGE+.95,WH0+.1],[-1.75,BRIDGE+.96,WH0+.8],0xe8e2cc);
  // (The door aft to the crew's corridor stands open: the crew house, below.)
  floor('wheelhouse',[-(BH-T),BH-T],[WH0,DH1-T],BRIDGE,(x,z,r)=>Math.abs(x)<=BH-T-r&&z>=WH0+T/2+r&&z<=DH1-T-r);
