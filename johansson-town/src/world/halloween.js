@@ -222,7 +222,7 @@ export function buildHalloween(world,{shadows=false}={}){
  for(const [dx,dz,r,y] of [[.12,0,.55,.06],[.45,.3,.7,.05],[.5,-.35,.65,.07],[.95,.05,.85,.04],[.3,.65,.55,.05],[.3,-.65,.55,.06],[1.4,.2,.8,.03],[1.3,-.5,.7,.035],[.08,0,.35,.2],[.1,.15,.3,.3],[.06,-.12,.28,.26]]){const p=mistPuff(r);p.position.set(M.front+dx,y,M.z+dz);mist.add(p);}
  const pocketMist=new THREE.Group();pocketMist.name='Cold air from the take-out pocket';group.add(pocketMist);
  const PM=vendingPoints({pad:true}),pmSeeds=Array.from({length:POCKET_MIST.puffs},(_,i)=>((i*.618034)%1));
- const pmPuffs=pmSeeds.map(()=>{const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:FADE,color:0xdfe9f2,transparent:true,depthWrite:false,opacity:0}));sp.name='Pocket mist';sp.renderOrder=3;pocketMist.add(sp);return sp;});
+ const pmPuffs=pmSeeds.map(()=>{const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:FADE,color:0xdfe9f2,transparent:true,depthWrite:false,opacity:0}));sp.name='Pocket mist';sp.renderOrder=3;sp.raycast=()=>{};pocketMist.add(sp);return sp;});   // (air: nothing to pick or bump into; a sprite cannot be raycast without a camera, and the town's rays have none)
  const placePocketMist=()=>{const k=THREE.MathUtils.clamp(state.pocketMist||0,0,1),ph=state.mistPhase||0;pocketMist.visible=k>0&&!!state.show;
   pmPuffs.forEach((sp,i)=>{const s=((ph+i/pmPuffs.length)%1+1)%1,[lx,ly,lz,r]=pocketMistPath(s,pmSeeds[i],PM),w=vendingToWorld(SAKURA_VENDING,[lx,ly,lz]);
    sp.position.set(w[0],w[1],w[2]);sp.scale.setScalar(r*2);sp.material.opacity=k*.55*Math.min(1,s/.12)*Math.min(1,(1-s)/.3);});};
