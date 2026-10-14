@@ -11,11 +11,12 @@ installDOM();
 
 // Up the pole (FUN_POSES.PoleHug) round a real pole: Johansson Studio's collision check found the nobori pole through Officer
 // Mori's face in The Haunted Vending Machine (the creator, 2026-10-14: "the world should have its collisions intact even when
-// we Make films"), and then a hug beside the pole that read as a man with his arms crossed. Where the pole stands for a body
-// (poleHugPole: ahead of the chest, by the cheek), no part of the body goes into it (a centimetre at most: the film's own
-// tolerance) at any moment of the hold, as the body sways; and the arms go round it, the mitten on the face's side gripping it
-// beyond its middle; by either cheek (PoleHug, PoleHugR).
-for(const side of ['L','R'])test(`every resident hugs a real pole by the ${side==='L'?'right':'left'} cheek without going into it, the mitten on the face's side round it`, ()=>{
+// we Make films"), and then a hug beside the pole that read as a man with his arms crossed. The hug now has the pole before
+// the chest (poleHugPole), the head tipped back and turned out with one cheek to it (PoleHug: the right, PoleHugR: the
+// left), both arms round it. No part of the body goes into the pole (a centimetre at most: the film's own tolerance) at any
+// moment of the hold, as the body sways; and both mittens close round it, one either side, their middles beyond its axis.
+const mitten=(avatar,s)=>avatar.root.worldToLocal(avatar.bones['hand'+s].localToWorld(new THREE.Vector3(0,-avatar.measure.hand*.55,0)));
+for(const side of ['L','R'])test(`every resident hugs a real pole before the chest, the ${side==='L'?'right':'left'} cheek to it, without going into it, both mittens round it`, ()=>{
  for(const [who,recipe] of Object.entries(CAST_RECIPES)){
   const avatar=buildAvatar(recipe),anim=createAvatarAnimator(avatar,{lively:false});
   const [px,pz]=poleHugPole(avatar.measure,POLE_RADIUS,avatar,side);
@@ -31,14 +32,16 @@ for(const side of ['L','R'])test(`every resident hugs a real pole by the ${side=
    }
   }
   assert.ok(deepest<=.01,`${who} (${side}): ${(deepest*1000).toFixed(0)} mm into the pole (${where})`);
-  const hand=avatar.root.worldToLocal(avatar.bones['hand'+side].getWorldPosition(new THREE.Vector3()));
-  assert.ok(hand.z>pz&&Math.abs(hand.x-px)<.14&&(hand.x-px)*(side==='L'?1:-1)>0,`${who} (${side}): the mitten (${hand.x.toFixed(2)}, ${hand.z.toFixed(2)}) is not round the pole (${px.toFixed(2)}, ${pz.toFixed(2)})`);
+  for(const [s,o] of [['L',1],['R',-1]]){
+   const h=mitten(avatar,s);
+   assert.ok(h.z>pz&&(h.x-px)*o>POLE_RADIUS&&Math.abs(h.x-px)<.16,`${who} (${side}): the ${s==='L'?'left':'right'} mitten (${h.x.toFixed(2)}, ${h.z.toFixed(2)}) is not round its side of the pole (${px.toFixed(2)}, ${pz.toFixed(2)})`);
+  }
   avatar.dispose?.();
  }
 });
 
 test('the pole stands ahead of the chest, by the cheek, clear of the turned head, within the arms\' reach', ()=>{
- for(const who of ['Officer Mori','Thuan','Mr Fujita']){
+ for(const who of ['Officer Mori','Thuan','Mr Fujita','Harbour master']){
   const avatar=buildAvatar(CAST_RECIPES[who]),m=avatar.measure,[x,z]=poleHugPole(m,POLE_RADIUS,avatar);
   assert.ok(x<0&&Math.abs(x)<.1,`${who}: by the right cheek (PoleHug turns the face out to the left), not beside the head`);
   assert.deepEqual(poleHugPole(m,POLE_RADIUS,avatar,'R'),[-x,z],'the left cheek\'s pole is the right\'s mirrored');
