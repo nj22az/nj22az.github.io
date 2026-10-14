@@ -112,14 +112,15 @@ function mistPuff(r){
  */
 const FADE=(()=>{const n=64,d=new Uint8Array(n*n*4);for(let y=0;y<n;y++)for(let x=0;x<n;x++){const r=Math.hypot(x-n/2+.5,y-n/2+.5)/(n/2),a=Math.max(0,1-r);d.set([255,255,255,Math.round(255*a*a*(3-2*a))],(y*n+x)*4);}
  const t=new THREE.DataTexture(d,n,n,THREE.RGBAFormat);t.needsUpdate=true;return t;})();
-export const POCKET_MIST=Object.freeze({puffs:22,why:'Cold air from the chute meeting the warm, wet night: it rolls out under the flap, curls over the lip and sinks down the door to the pad, where the ground mist gathers.'});
+export const POCKET_MIST=Object.freeze({puffs:40,why:'Cold air from the chute meeting the warm, wet night: it rolls out under the flap, curls over the lip and sinks down the door to the pad, where the ground mist gathers.'});
 export function pocketMistPath(s,seed,P){
  // P: vendingPoints({pad:true}); s 0 … 1 along the way; returns [x, y, z, radius] in the machine's frame
  const u=seed*.8+.1,x=P.takeOut.x0+.04+(P.takeOut.x1-P.takeOut.x0-.08)*u,F=P.front,fl=P.takeOut.floor;
  const k=(a,b,t)=>a+(b-a)*t,sm=t=>t*t*(3-2*t);
  if(s<.3){const t=sm(s/.3);return [x,fl+.025+.01*t,k(P.takeOut.back+.04,F+.025,t),k(.018,.032,t)];}   // along the chute floor and out under the flap
  if(s<.5){const t=(s-.3)/.2;return [x+(seed-.5)*.03*t,fl+.035+.025*Math.sin(Math.PI*t),k(F+.025,F+.08,t),k(.032,.045,t)];}   // curling up over the lip
- const t=sm((s-.5)/.5);return [x+(seed-.5)*.16*t,k(fl+.03,.06,t),k(F+.08,P.padFront+.08,t),k(.045,.09,t)];   // sinking down the door, spreading on the pad
+ if(s<.75){const t=sm((s-.5)/.25);return [x+(seed-.5)*.1*t,k(fl+.03,.06,t),k(F+.08,P.padFront-.01,t),k(.045,.07,t)];}   // sinking down the door to the pad
+ const t=sm((s-.75)/.25);return [x+(seed-.5)*(.1+.22*t),k(.06,.02,t),k(P.padFront-.01,P.padFront+.32,t),k(.07,.12,t)];   // over the pad's edge, spreading on the pavement
 }
 
 /**
@@ -222,10 +223,11 @@ export function buildHalloween(world,{shadows=false}={}){
  for(const [dx,dz,r,y] of [[.12,0,.55,.06],[.45,.3,.7,.05],[.5,-.35,.65,.07],[.95,.05,.85,.04],[.3,.65,.55,.05],[.3,-.65,.55,.06],[1.4,.2,.8,.03],[1.3,-.5,.7,.035],[.08,0,.35,.2],[.1,.15,.3,.3],[.06,-.12,.28,.26]]){const p=mistPuff(r);p.position.set(M.front+dx,y,M.z+dz);mist.add(p);}
  const pocketMist=new THREE.Group();pocketMist.name='Cold air from the take-out pocket';group.add(pocketMist);
  const PM=vendingPoints({pad:true}),pmSeeds=Array.from({length:POCKET_MIST.puffs},(_,i)=>((i*.618034)%1));
- const pmPuffs=pmSeeds.map(()=>{const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:FADE,color:0xdfe9f2,transparent:true,depthWrite:false,opacity:0}));sp.name='Pocket mist';sp.renderOrder=3;sp.raycast=()=>{};pocketMist.add(sp);return sp;});   // (air: nothing to pick or bump into; a sprite cannot be raycast without a camera, and the town's rays have none)
+ // (40 lighter, more opaque puffs: 22 paler ones read as a grey blur at night)
+ const pmPuffs=pmSeeds.map(()=>{const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:FADE,color:0xf0f5fa,transparent:true,depthWrite:false,opacity:0}));sp.name='Pocket mist';sp.renderOrder=3;sp.raycast=()=>{};pocketMist.add(sp);return sp;});   // (air: nothing to pick or bump into; a sprite cannot be raycast without a camera, and the town's rays have none)
  const placePocketMist=()=>{const k=THREE.MathUtils.clamp(state.pocketMist||0,0,1),ph=state.mistPhase||0;pocketMist.visible=k>0&&!!state.show;
   pmPuffs.forEach((sp,i)=>{const s=((ph+i/pmPuffs.length)%1+1)%1,[lx,ly,lz,r]=pocketMistPath(s,pmSeeds[i],PM),w=vendingToWorld(SAKURA_VENDING,[lx,ly,lz]);
-   sp.position.set(w[0],w[1],w[2]);sp.scale.setScalar(r*2);sp.material.opacity=k*.55*Math.min(1,s/.12)*Math.min(1,(1-s)/.3);});};
+   sp.position.set(w[0],w[1],w[2]);sp.scale.setScalar(r*2);sp.material.opacity=k*.72*Math.min(1,s/.1)*Math.min(1,(1-s)/.25);});};
  let dog=null,dream=null;
  // the drinks machine's own lit window and brand (the town's machine at Sakura): dimmed with its compressor's start.
  // Found afresh each time (the town may swap the machine's materials for its cel ones, or hydrate its model): every
