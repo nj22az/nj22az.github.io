@@ -29,7 +29,7 @@ export const CLASSROOM=Object.freeze({
  walls:{minX:-4.5,maxX:4.5,minZ:-3.6,maxZ:3.6,height:3},
 });
 const W=CLASSROOM.walls;
-const TEACHER="Ms Yonamine",TEACHER_EN='Yonamine-sensei';
+const TEACHER='Miss Higa',TEACHER_EN='Higa-sensei';   // the island's teacher; the bandai at Umi-no-yu in the evenings (people/cast.js)
 
 /** Where the day is, by the clock and the day of the week. */
 export function schoolPhase(minutes,weekday=1){
@@ -81,6 +81,7 @@ const PUPILS=[
  ["Nakasone Taku",false,0xd9723c,0x2c2f36,0xc2453b],["Nakamura Mai",true,0xf3a65a,0x2d3a52,0x3f6fb0],
 ];
 export const CLASS_SIZE=PUPILS.length;
+export const PUPIL_NAMES=Object.freeze(PUPILS.map(p=>p[0]));
 const HAIRS=[0x1b1512,0x231a14,0x16110e,0x2a1e16];
 const SKINS=[0xd9a57c,0xcf9870,0xe0b089,0xc98f66];
 /** The lunch squad this week. */

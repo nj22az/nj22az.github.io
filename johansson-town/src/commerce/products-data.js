@@ -2,7 +2,7 @@
 // Studio or with the johansson-studio tools (avatar-creator/docs/STUDIO-MCP.md). CI refuses a copy that does not match the data.
 const freeze=value=>{if(value&&typeof value==='object'){for(const v of Object.values(value))freeze(v);Object.freeze(value);}return value;};
 /** The sha256 of the products, prints and retired lines (their canonical JSON). */
-export const FINGERPRINT='ede8d998265bd980da18908fa18ce1fdcfd3d7c6ebf99724d9e0885231cf92a5';
+export const FINGERPRINT='f0a8034741547433b67cf4f8f0b92d34180ad52d546380e2f7971b6ad5a60567';
 /** Sakura Shōten's products, in the order Thuan walks the floor (data/studio/products.json says what every field is). */
 export const PRODUCTS=freeze([
  {
@@ -68,7 +68,6 @@ export const PRODUCTS=freeze([
    "zone": "drinks",
    "for": [
     "Grandmother Higa",
-    "Mrs Miyagi",
     "Thuan"
    ],
    "why": "The everyday bottle: with lunch, on a hot walk, on the verandah.",
@@ -147,7 +146,6 @@ export const PRODUCTS=freeze([
   "purpose": {
    "zone": "drinks",
    "for": [
-    "Mr Toguchi",
     "Harbour master",
     "Bus driver",
     "Postman Tōma"
@@ -223,7 +221,6 @@ export const PRODUCTS=freeze([
    "zone": "drinks",
    "for": [
     "Riku",
-    "Haru",
     "Officer Mori"
    ],
    "why": "Spring water for runs, patrols and long afternoons on the quay.",
@@ -310,8 +307,6 @@ export const PRODUCTS=freeze([
   "purpose": {
    "zone": "drinks",
    "for": [
-    "Mina",
-    "Jun",
     "Mrs Nakamura"
    ],
    "why": "Mandarin juice for a child’s lunch, or a breakfast in a hurry.",
@@ -385,8 +380,7 @@ export const PRODUCTS=freeze([
    "zone": "drinks",
    "for": [
     "Kōji",
-    "Riku",
-    "Emi Kado"
+    "Riku"
    ],
    "why": "A cold cola after school or a shift.",
    "placed": "Eye level in the third column: the impulse drink."
@@ -460,9 +454,7 @@ export const PRODUCTS=freeze([
   "purpose": {
    "zone": "drinks",
    "for": [
-    "Vy",
-    "Mina",
-    "Jun"
+    "Vy"
    ],
    "why": "Ramune with the marble: the summer drink children ask for by name.",
    "placed": "Low under the cola, where children look."
@@ -538,8 +530,7 @@ export const PRODUCTS=freeze([
   "purpose": {
    "zone": "drinks",
    "for": [
-    "Mrs Higa",
-    "Mrs Yonamine",
+    "Miss Higa",
     "Thao"
    ],
    "why": "For the morning tea, the children, and the bathhouse fridge when it runs out.",
@@ -618,7 +609,6 @@ export const PRODUCTS=freeze([
    "for": [
     "Barfly",
     "Tetsuo",
-    "Uncle Kinjō",
     "Johansson"
    ],
    "why": "Umineko lager for the evening at home, the boat, or the walk to Minato.",
@@ -777,8 +767,7 @@ export const PRODUCTS=freeze([
    "zone": "fresh",
    "for": [
     "Mr Shimabukuro",
-    "Tetsuo",
-    "Mr Tamaki"
+    "Tetsuo"
    ],
    "why": "A proper lunch for people who cannot leave their work: the power house, the workshop, the office.",
    "placed": "Under the rice balls: the dearer lunch beside the cheap one."
@@ -853,8 +842,7 @@ export const PRODUCTS=freeze([
    "zone": "fresh",
    "for": [
     "Johansson",
-    "Reiko",
-    "Emi Kado"
+    "Reiko"
    ],
    "why": "Egg sandwiches eaten at a desk or on the ferry.",
    "placed": "Middle bay, eye level, over the bread it is made from."
@@ -928,7 +916,6 @@ export const PRODUCTS=freeze([
    "zone": "fresh",
    "for": [
     "Mrs Nakamura",
-    "Mrs Yonamine",
     "Mrs Kinjō"
    ],
    "why": "Milk bread for tomorrow’s breakfast.",
@@ -1078,9 +1065,7 @@ export const PRODUCTS=freeze([
   "purpose": {
    "zone": "fresh",
    "for": [
-    "Mrs Miyagi",
-    "Haru",
-    "Mrs Higa"
+    "Miss Higa"
    ],
    "why": "Plain yoghurt for a light breakfast and a careful stomach.",
    "placed": "Under the pudding, for the people with good intentions."
@@ -1309,7 +1294,6 @@ export const PRODUCTS=freeze([
    "zone": "pantry",
    "for": [
     "Mrs Nakamura",
-    "Mrs Yonamine",
     "Mrs Sato"
    ],
    "why": "Curry roux for a family dinner; Mrs Sato swears it is not for the shop.",
@@ -1374,8 +1358,7 @@ export const PRODUCTS=freeze([
    "zone": "pantry",
    "for": [
     "Mrs Sato",
-    "Thao",
-    "Mrs Miyagi"
+    "Thao"
    ],
    "why": "Soy sauce for a kitchen that ran out mid-service.",
    "placed": "Pantry, back face: the staple, found by people who already know where it is."
@@ -1437,9 +1420,8 @@ export const PRODUCTS=freeze([
   "purpose": {
    "zone": "pantry",
    "for": [
-    "Uncle Kinjō",
-    "Mr Tamaki",
-    "Haru"
+    "Mr Ōshiro",
+    "Barfly"
    ],
    "why": "Tinned tuna for onigiri at home and for the cat that is not officially fed.",
    "placed": "Back face, with the other tins."
@@ -1502,7 +1484,7 @@ export const PRODUCTS=freeze([
    "zone": "pantry",
    "for": [
     "Grandmother Higa",
-    "Mrs Higa"
+    "Miss Higa"
    ],
    "why": "Tinned peaches for visiting someone who is ill, as one does.",
    "placed": "Back face, high: an occasional buy, not in the way."
@@ -1581,8 +1563,7 @@ export const PRODUCTS=freeze([
    "zone": "sweets",
    "for": [
     "Barfly",
-    "Kōji",
-    "Jun"
+    "Kōji"
    ],
    "why": "Salted crisps with a beer or a baseball game on the radio.",
    "placed": "Front face at a grown-up’s eye, seen on the way back from the beer."
@@ -1809,9 +1790,7 @@ export const PRODUCTS=freeze([
   "purpose": {
    "zone": "sweets",
    "for": [
-    "Vy",
-    "Mina",
-    "Jun"
+    "Vy"
    ],
    "why": "Milk chocolate after school.",
    "placed": "Back face, low: at a child’s eye, below a parent’s."
@@ -1884,8 +1863,6 @@ export const PRODUCTS=freeze([
   "purpose": {
    "zone": "sweets",
    "for": [
-    "Mina",
-    "Jun",
     "Vy"
    ],
    "why": "Fruit sweets, the ten-yen kind of treat.",
@@ -1954,9 +1931,8 @@ export const PRODUCTS=freeze([
   "purpose": {
    "zone": "daily",
    "for": [
-    "Mrs Yonamine",
     "Mrs Nakamura",
-    "Mrs Higa"
+    "Miss Higa"
    ],
    "why": "Laundry powder: the bathhouse towels and a family’s week.",
    "placed": "Bottom of the front face: the heaviest thing in the shop, low and near the door out."
@@ -2037,8 +2013,7 @@ export const PRODUCTS=freeze([
   "purpose": {
    "zone": "daily",
    "for": [
-    "Mrs Higa",
-    "Mrs Miyagi",
+    "Miss Higa",
     "Thuan"
    ],
    "why": "Sakura soap for the bath and the shop’s own washroom.",
@@ -2178,8 +2153,6 @@ export const PRODUCTS=freeze([
   "purpose": {
    "zone": "daily",
    "for": [
-    "Haru",
-    "Emi Kado",
     "Johansson"
    ],
    "why": "Mint toothpaste, the thing you notice has run out at night.",
@@ -2404,7 +2377,6 @@ export const PRODUCTS=freeze([
    "zone": "daily",
    "for": [
     "Johansson",
-    "Emi Kado",
     "Nhung"
    ],
    "why": "Harbour postcards for visitors and for letters to the main island.",

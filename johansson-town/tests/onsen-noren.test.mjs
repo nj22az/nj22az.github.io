@@ -23,7 +23,7 @@ test('both noren hang from the rod to a hem at 1.10 m, two panels each with only
   // The heads of the town's people are behind it: every measured head top is under the rod, and their eyes (about
   // 0.28 m under the top) above the hem; the story's cast (faces 1.23–1.33 m) well above it.
   for(const [who,top] of Object.entries(N.tops)){assert.ok(top<N.top-.2,who);assert.ok(top-.28>N.hem+.03,who+'’s eyes are behind the cloth');}
-  for(const who of ['Mr Fujita','Thuan','Thao','Nhung','Tetsuo','Mrs Higa'])assert.ok(N.tops[who]-.28>N.hem+.1,who+'’s face is behind the cloth');
+  for(const who of ['Mr Fujita','Thuan','Thao','Nhung','Tetsuo','Miss Higa'])assert.ok(N.tops[who]-.28>N.hem+.1,who+'’s face is behind the cloth');
  }
  layout.dispose();
 });

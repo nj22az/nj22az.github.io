@@ -141,7 +141,7 @@ test('Fujita’s offering: three coffee milks on the chair’s arm when a story 
  layout.dispose();
 });
 
-test('the noren pole hangs on its hooks behind Mrs Higa, in her reach; the cords wait in their box on the bandai floor',()=>{
+test('the noren pole hangs on its hooks behind Miss Higa, in her reach; the cords wait in their box on the bandai floor',()=>{
  const {room,layout}=build(),NP=ONSEN_PROPS.norenPole,EC=ONSEN_PROPS.extensionCords;
  for(const p of [NP,EC])assert.ok(p.for.length>30&&p.why.length>60&&p.period.length>60,p.id);
  const cane=box(room.getObjectByName('Noren pole cane')),hook=box(room.getObjectByName('Noren pole hook')),rail=meshes(room).find(m=>m.name==='Wainscot rail west'),board=box(room.getObjectByName('Breaker board'));
@@ -202,7 +202,7 @@ test('Tetsuo’s work shoes are at the step only while he is in',()=>{
 
 test('the storyteller knows the war’s things',()=>{
  const onsen=FEED_PLACES.find(p=>p.id==='onsen');
- for(const thing of ['Mrs Higa’s noren pole','the box of extension cords under the bandai','the massage chair’s coin timer'])assert.ok(onsen.things.includes(thing),thing);
+ for(const thing of ['Miss Higa’s noren pole','the box of extension cords under the bandai','the massage chair’s coin timer'])assert.ok(onsen.things.includes(thing),thing);
 });
 
 test('page 5’s paper war: his sign and their manifesto on the crimson noren, a flyer on her book, only when staged',()=>{

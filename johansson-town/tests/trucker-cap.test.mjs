@@ -16,7 +16,8 @@ import {shapeHeadPoint} from '../src/avatars/head-profile.js';
 
 installDOM();
 const glb=await readFile(new URL('../assets/catalog/johansson-trucker/model.glb',import.meta.url));
-const residents=new Set(JSON.parse(await readFile(new URL('../guide/residents.json',import.meta.url))).map(r=>r.name));
+// Who lives here: the cast (src/people/cast.js), the one list of the island's people.
+const {CAST_NAMES}=await import('../src/people/cast.js');const residents=new Set(CAST_NAMES);
 const HEAD=BONES.indexOf('head');
 const wearing=(r,hat='trucker',hatColour='#27304d',accent='#f4f1ea')=>normalizeRecipe({...r,outfit:{...(r.outfit||DEFAULT_RECIPE.outfit),hat,hatColour,accent}});
 /** The hat's range of a body: its vertices, as built (bind pose), and their skinning. */

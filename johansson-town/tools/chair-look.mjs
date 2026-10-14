@@ -140,7 +140,7 @@ try{
    if(s.timer)a.layout.power.chairTimer(s.timer);
    a.layout.props.stage({offering:'none',...(s.props||{})});
    a.step(300);
-   // The town's own people stay out of these photographs: Mrs Higa on the bandai is part of the room; the bathers and the
+   // The town's own people stay out of these photographs: Miss Higa on the bandai is part of the room; the bathers and the
    // player are not (the player only where the view is his).
    const hide=o=>{if(o&&o.visible){o.visible=false;window.__chairHidden.push(o);}};
    for(const p of a.world.people||[])hide(p.g);

@@ -181,7 +181,7 @@ export const CARRY=Object.freeze({under:.755,flank:.017,legs:.818,spread:.12,leg
 function carryJoints(){const C=CARRY;
  return {hips:[C.lean,0,0],chest:[-.04,0,0],thighL:[-.32-C.lean,0,.07],kneeL:[.64,0,0],footL:[-.32,0,-.07],thighR:[-.32-C.lean,0,-.07],kneeR:[.64,0,0],footR:[-.32,0,.07]};}
 /**
- * Mrs Higa's reach back for the supply breaker without looking (ReachBack, "Fujita's Back" 6c and 7a): seated on her stool
+ * Miss Higa's reach back for the supply breaker without looking (ReachBack, "Fujita's Back" 6c and 7a): seated on her stool
  * at the bandai, she reaches back over her left shoulder and puts the lever up with the end of her mitten, her head and eyes
  * down on the account book in her right mitten. Where things are round her, in her frame as she sits (metres: to her left,
  * up from the seat, ahead; onsen-electrics.js ONSEN_CONTRACT and ONSEN_BOARD, onsen.js's stool): the lever's pivot (`lever`),
@@ -291,7 +291,7 @@ export const GESTURES=Object.freeze({
  // Fujita's Back (story v7): held until the next move, or named by the scene as a pose (STORY_POSES).
  BentStuck:Infinity,CrabWalk:Infinity,ChairUncurl:Infinity,FrozenAbsurd:Infinity,CarriedBent:Infinity,CarryFurniture:Infinity,
  CordWrapped:Infinity,BasketHead:Infinity,SitRead:Infinity,TorchUp:Infinity,TorchOff:Infinity,
- // The carry like a plank (CarriedPlank, CarryFurniture, CarryLegs) and Mrs Higa's reach back for the supply breaker
+ // The carry like a plank (CarriedPlank, CarryFurniture, CarryLegs) and Miss Higa's reach back for the supply breaker
  // (ReachBack: up to the lever and pushing it up, held; out over `REACH_BACK.out` when its time ends).
  CarriedPlank:Infinity,CarryLegs:Infinity,ReachBack:3.2,
  // Funny poses for comics, memes and the scene builders (fun-poses.js: what each is for, and its face).
@@ -461,7 +461,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
  /**
   * ReachBack's left arm, for where the lever is from where she sits (in the body's frame: worked out once the move begins, so
   * the arm does not go looking for it as she settles): under the lever, and with it pushed up. By default the contract
-  * breaker's lever from Mrs Higa's stool (REACH_BACK, and the box, the board and the wall round it kept clear of); `s.reachTo`
+  * breaker's lever from Miss Higa's stool (REACH_BACK, and the box, the board and the wall round it kept clear of); `s.reachTo`
   * (a world point) is another place for the mitten's end.
   */
  function reachBack(g,s){

@@ -13,7 +13,7 @@ import {faceObjectPoint} from './face-objects.js';
  *   storyProps(avatar).give('torch')          Tetsuo's pocket torch, clipped to his shirt (or vest) at the left chest
  *   storyProps(avatar).give('basketOnHead')   a locker basket upside down on the head, resting on the head (or its towel)
  *   storyProps(avatar).give('newspaper')      the evening paper, folded, held open between the two mittens while reading
- *   storyProps(avatar).give('paperback')      Mrs Higa's novel, open in her right mitten (the film turns it to her facing)
+ *   storyProps(avatar).give('paperback')      Miss Higa's novel, open in her right mitten (the film turns it to her facing)
  *   storyProps(avatar).give('pumpkinSuit')    a Halloween costume (also 'ghostSheet', 'witchHat'): buildCostume
  *   storyProps(avatar).give('dryerCord')      the vanity dryer's cord, wound round the body and its pinned arms
  *   storyProps(avatar).give('safetyGlasses')  clear safety glasses over his own glasses (WORK_KIT)
@@ -32,7 +32,7 @@ export const STORY_PROPS=Object.freeze({
   where:'The women’s room lockers’ basket (0.40 × 0.40 × 0.22 m, the men’s side’s size), upside down on the crown, askew, resting on her head towel.'}),
  newspaper:Object.freeze({who:'Tetsuo',why:'After his bath he reads the evening paper on the koagari edge, which is why nobody pays him any attention until the lights go.',
   where:'Folded once down the middle and held open like a book in both mittens, at reading distance before the chest.'}),
- paperback:Object.freeze({who:'Mrs Higa',why:'Between customers at the bandai she reads: a paperback novel from Front-Row Books & Stationery’s reading copies, a 1990s edition with its paper band (obi) still on, which is why she never looks up from it.',
+ paperback:Object.freeze({who:'Miss Higa',why:'Between customers at the bandai she reads: a paperback novel from Front-Row Books & Stationery’s reading copies, a 1990s edition with its paper band (obi) still on, which is why she never looks up from it.',
   where:'Held open in her right mitten at reading distance, the mitten under the foot of the spine, the pages turned up to her eyes and the cover with its band to the room.'}),
  pumpkinSuit:Object.freeze({who:'Tetsuo (and a child on the Halloween walk)',why:'The children’s Halloween walk on Sakura Street: Tetsuo explains the haunted vending machine in the pumpkin costume the children talked him into.',
   where:'A round orange pumpkin of eight lobes over the body from the hips to the shoulders, a jack-o’-lantern face on the front, a green leaf collar at the neck and a little stem cap on the head.'}),
@@ -145,7 +145,7 @@ export function buildPaper(){
 }
 
 /**
- * Mrs Higa's paperback (STORY_PROPS.paperback): a bunko-sized novel open in one hand, its two halves in a shallow V (each
+ * Miss Higa's paperback (STORY_PROPS.paperback): a bunko-sized novel open in one hand, its two halves in a shallow V (each
  * turned PAPERBACK.open from flat) about the spine. Each half: the page block (cream, its edges the pages' colour), the
  * reading face with its vertical columns of print, and the cover board a little larger than the block. The front cover
  * (the reader's right half, as a book read right to left opens) is deep teal with a cream title panel and gold rule, and

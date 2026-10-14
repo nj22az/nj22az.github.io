@@ -9,14 +9,14 @@ import {STORY_PROPS,PAPERBACK,buildPaperback,storyProps} from '../src/avatars/st
 
 installDOM();
 
-// Mrs Higa's paperback (the creator, about Fujita's Back: "the lady who works at the Onsen should read a book not hold
+// Miss Higa's paperback (the creator, about Fujita's Back: "the lady who works at the Onsen should read a book not hold
 // whatever that glitchy thing is"): a real book, open in her mitten, its pages up to her eyes, the cover to the room.
 const meshes=o=>{const out=[];o.traverse(x=>{if(x.isMesh)out.push(x);});return out;};
 const points=(o,frame)=>{o.updateMatrixWorld(true);const inv=frame?new THREE.Matrix4().copy(frame.matrixWorld).invert():null,out=[],v=new THREE.Vector3();
  for(const m of meshes(o)){const P=m.geometry.attributes.position;for(let i=0;i<P.count;i++){v.fromBufferAttribute(P,i).applyMatrix4(m.matrixWorld);out.push(inv?v.clone().applyMatrix4(inv):v.clone());}}return out;};
 
 test('the paperback is a whole book: two halves of page block, boards, print, a spine, and a cover with its title and band',()=>{
- const S=STORY_PROPS.paperback;assert.equal(S.who,'Mrs Higa');assert.ok(S.why.length>60&&S.where.length>40);
+ const S=STORY_PROPS.paperback;assert.equal(S.who,'Miss Higa');assert.ok(S.why.length>60&&S.where.length>40);
  const g=buildPaperback(),B=PAPERBACK;assert.equal(g.userData.hold,'facing');
  const front=g.getObjectByName('Paperback front half'),back=g.getObjectByName('Paperback back half');assert.ok(front&&back,'two halves');
  for(const half of [front,back]){const box=new THREE.Box3().setFromObject(half);assert.ok(meshes(half).length>=9,half.name+': block, board, face, print');}
@@ -36,7 +36,7 @@ test('the paperback is a whole book: two halves of page block, boards, print, a 
 });
 
 test('given to her, it is in her right mitten, and held as the film holds it it clears her body and her head: at the counter, reaching back, held up',()=>{
- const avatar=buildAvatar(recipeFor('Mrs Higa'),{shadows:false});avatar.wear('clothes');
+ const avatar=buildAvatar(recipeFor('Miss Higa'),{shadows:false});avatar.wear('clothes');
  const holder=new THREE.Group();holder.add(avatar.root);const animator=createAvatarAnimator(avatar,{lively:false,random:()=>.5});
  const state={seated:true,seatHeight:.4,pose:'SitHold'},m=avatar.measure,step=n=>{for(let i=0;i<n;i++)animator.update(1/60,state);holder.updateMatrixWorld(true);};
  const book=storyProps(avatar).give('paperback');assert.equal(book.parent,avatar.bones.handR,'in her right mitten');

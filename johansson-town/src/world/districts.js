@@ -38,7 +38,7 @@ export function buildDistricts(world,options){
   buildKoban(world,options);
   // Kitahama's houses on the north-east land (island-homes.js).
   buildIslandHomes(world,options);
-  // Kitano hamlet by the pier on Kitano-jima: Johansson's house, Jun's, and one to let (kitano-hamlet.js).
+  // Kitano hamlet by the pier on Kitano-jima: Johansson's house, the Chinen house, and the Shiroma house, to let (kitano-hamlet.js).
   buildKitanoHamlet(world,options);
   for(const batch of batches.values()){const m=new THREE.InstancedMesh(unit,batch.mat,batch.items.length);batch.items.forEach((v,i)=>m.setMatrixAt(i,v));m.castShadow=options.shadows;m.receiveShadow=true;group.add(m);}
   return {shutters,windows,animators,sign,library};

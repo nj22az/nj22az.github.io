@@ -48,7 +48,7 @@ test('the women keep the vanity, the three dryers, the lockers and the plant; th
  for(let i=1;i<=3;i++){const d=room.getObjectByName('Hair dryer '+i);assert.ok(west(d)&&inChanging(d),'dryer '+i+' on the women’s side');}
  assert.equal(named('Mirror').filter(m=>west(m)&&inChanging(m)).length,3,'three mirrors at the women’s vanity');
  assert.ok(named('Locker').length>=12&&named('Locker').every(west),'the lockers');
- assert.ok(west(room.getObjectByName('Rubber plant')),'Mrs Higa’s rubber plant');
+ assert.ok(west(room.getObjectByName('Rubber plant')),'Miss Higa’s rubber plant');
  assert.ok(named('Changing bench').every(east)&&named('Rattan basket').every(east),'bench and baskets on the men’s side');
  assert.ok(east(room.getObjectByName('Towel rail bar')),'the towel rail by the men’s bath door');
  let fan=null;room.traverse(o=>{if(o.isGroup&&o.position.x===3.85&&o.position.z===1.2)fan=o;});assert.ok(fan,'the fan on the men’s side');
@@ -103,7 +103,7 @@ test('everyone reaches their own changing room and the baths; the player may go 
 });
 
 test('residents change on their own side, by their silhouette, in and out through the same noren',()=>{
- assert.equal(onsenSide(recipeFor('Thuan')),'women');assert.equal(onsenSide(recipeFor('Mrs Higa')),'women');
+ assert.equal(onsenSide(recipeFor('Thuan')),'women');assert.equal(onsenSide(recipeFor('Miss Higa')),'women');
  for(const name of ['Mr Fujita','Tetsuo','Johansson'])assert.equal(onsenSide(recipeFor(name)),'men',name);
  const {layout}=build(),resident=blockedFor(layout,'resident');
  const street=new THREE.Group(),scene=new THREE.Group();scene.add(street);

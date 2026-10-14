@@ -695,7 +695,7 @@ export const wearsSwimTop=recipe=>recipe.facial.style==='none'&&(['bob','long','
  * Swimwear (wear('swim')), modest, for Umi-no-yu's shared rock bath and the beach: a one-piece costume from the hips to
  * straight across above the bust, on two straps, with short legs, for anyone who would wear a swimsuit top; bath trunks to
  * mid-thigh for everyone else. A woman of the older generation -- an elder, or drawn with the lines of her years (wrinkles,
- * as Mrs Higa is) -- wears the skirted costume her generation swam in: a little skirt over the hips.
+ * as Miss Higa is) -- wears the skirted costume her generation swam in: a little skirt over the hips.
  */
 export const SWIMSUIT=Object.freeze({top:.79,trunks:.5,legs:.2});
 export const wearsSwimSkirt=recipe=>wearsSwimTop(recipe)&&(recipe.age==='elder'||recipe.wrinkles>=.6);

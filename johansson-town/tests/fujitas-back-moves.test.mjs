@@ -17,7 +17,7 @@ installDOM();
  * The moves Fujita's Back needs (story v7; the shot plan's section 5), each on the person and in the clothes the story gives
  * it: Fujita stuck bent (standing, shuffling sideways, in the massage chair uncurling and stuck in a new shape, carried bent,
  * and carried stiff and level like a plank), the three women carrying him, Thao wound in her dryer's cord, Thuan under a
- * basket, Tetsuo reading and with his torch, Mrs Higa reaching back for the supply breaker; and Fujita's squinting eyes
+ * basket, Tetsuo reading and with his torch, Miss Higa reaching back for the supply breaker; and Fujita's squinting eyes
  * following his face. Each plays as a move and as a pose the scene names, holds, and lets go smoothly
  * and the same every time; the feet, the seat or the carriers hold the body; the mittens are where they belong (on the back,
  * on the knee, under the load, at the paper's edges, round the torch) and in nothing; the props rest on what carries them.
@@ -37,7 +37,7 @@ const CASES=[
  ['CarryLegs',{who:'Thuan',outfit:'towel'}],['CarryLegs',{who:'Thuan',outfit:'towel',state:{speed:.6},walking:true}],
  ['CordWrapped',{who:'Thao',outfit:'towel'}],['BasketHead',{who:'Thuan',outfit:'towel'}],
  ['SitRead',{...T,state:KOAGARI}],['TorchUp',T],['TorchOff',T],
- ['ReachBack',{who:'Mrs Higa',outfit:'clothes',state:STOOL}],
+ ['ReachBack',{who:'Miss Higa',outfit:'clothes',state:STOOL}],
 ];
 const label=(name,c)=>`${name} (${c.who}, ${c.outfit}${c.state?.seated?', seated':''}${c.walking?', walking':''})`;
 function seededRandom(seed=7){let s=seed;return ()=>{s=(s*16807)%2147483647;return s/2147483647;};}
@@ -357,7 +357,7 @@ test('the torch: clipped on his pocket; TorchUp takes it, holds it up and clicks
 });
 
 test('ReachBack: from her stool, the left mitten back over her shoulder to the breaker, up under the lever and pushing it up, eyes on her book',()=>{
- const b=cast({who:'Mrs Higa',outfit:'clothes',state:STOOL}),m=b.m,R=REACH_BACK,seat=STOOL.seatHeight;b.step(40);
+ const b=cast({who:'Miss Higa',outfit:'clothes',state:STOOL}),m=b.m,R=REACH_BACK,seat=STOOL.seatHeight;b.step(40);
  // where things are round her, in her frame (x to her left, y up from the floor, z ahead)
  const here=v=>new THREE.Vector3(v[0],seat+v[1],v[2]),pivot=here(R.lever);
  const boxes=[['the breaker',R.box],['the board',R.board],['the wall',{min:[-1,-1,R.wall-1],max:[1,3,R.wall]}]].map(([n,x])=>[n,new THREE.Box3(here(x.min),here(x.max))]);

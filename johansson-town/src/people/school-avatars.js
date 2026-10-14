@@ -2,6 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar} from '../avatars/build.js';
 import {createAvatarAnimator} from '../avatars/animate.js';
 import {normalizeRecipe} from '../avatars/recipe.js';
+import {recipeFor} from '../avatars/cast.js';
 
 /**
  * The children of the Years 5–6 class and their teacher, as Shimanchu like everyone else in
@@ -32,11 +33,8 @@ export function pupilRecipe({name='',girl=false,shirt=0x5f86b5,bottom=0x2d3a52,h
    shoes:'#f1efe8',hat:smock?'kerchief':'none',hatColour:'#f6f5f0',accent:hex(toe)},
  });
 }
-/** Yonamine-sensei: the fifth-and-sixth-grade teacher, in a cream blouse and a navy skirt. */
-export const TEACHER_RECIPE=normalizeRecipe({name:'Yonamine-sensei',body:{height:.36,build:.45,skin:'#d6a07a'},head:{size:.5,shape:.48,form:'oval',jaw:.4,cheeks:.45},
- hair:{style:'bob',colour:'#241a14'},eyes:{style:'gentle',colour:'#2a1d16',size:.5},brows:{style:'arched',colour:'#241a14',size:.45},
- nose:{style:'line',size:.4},mouth:{style:'smile',colour:'#b8544a',size:.45},glasses:{style:'square',colour:'#3b3f45'},blush:.2,
- outfit:{top:'blouse',topColour:'#e9e4d6',bottom:'longskirt',bottomColour:'#3a4a5e',shoes:'#3a2a1e',accent:'#f4f1ea'}});
+/** The teacher is Miss Higa (avatars/cast.js), in her cream blouse and navy skirt: the same face as at the bandai. */
+export const TEACHER_RECIPE=recipeFor('Miss Higa');
 
 // Sitting at the desk, eating, drinking; ladling and sweeping; pointing at the board.
 const SEATED=new Set(['desk','eat','drink']);
@@ -65,6 +63,6 @@ export function animateFigure(figure,time,seed=0){
  const f=figure.userData.figure;if(!f)return;
  const dt=f.last==null?0:Math.max(0,Math.min(.1,time-f.last));f.last=time;if(!dt&&f.started)return;f.started=true;
  if(f.pose==='point'&&time>f.pointAt){f.animator.play('Point');f.pointAt=time+6+(seed%3);}
- f.animator.update(dt,{speed:0,seated:SEATED.has(f.pose),seatHeight:f.avatar.recipe.name==='Yonamine-sensei'?.42:.4,pose:POSE[f.pose]??undefined,
+ f.animator.update(dt,{speed:0,seated:SEATED.has(f.pose),seatHeight:f.avatar.recipe.name==='Miss Higa'?.42:.4,pose:POSE[f.pose]??undefined,
   expression:f.pose==='eat'?'smile':'neutral'});
 }

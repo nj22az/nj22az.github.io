@@ -15,7 +15,7 @@ import {kitanoLater} from './kitano-on-demand.js';
  * Kitano hamlet, built on the island's group in its own frame (batch 7a; docs/KITANO-JIMA.md): the lane's crushed coral,
  * each plot's slab and walls, its gate with the shisa and the nameplate, and the house at the back: Johansson's red-tile
  * house (his rooms inside are the mayor's home, interiors/town-hall.js, so his futon, post and television come with him),
- * Jun's concrete house, and the red-tile house to let. The walls' and houses' colliders are turned into the world with
+ * the Shiroma house (concrete, to let), and the Chinen house (red tile, Grandmother Chinen's). The walls' and houses' colliders are turned into the world with
  * the island. Each gate is a site, entered the way Kitahama's are (island-homes.js), except Johansson's: his house is
  * the creator's (johansson-house.js), his gate opens onto his yard, and his front door is the site.
  */
@@ -106,8 +106,8 @@ function buildHamletHouses(world,options){
 }
 /**
  * The hamlet as it is read from Minato, until he heads for the island (kitano-on-demand.js): Johansson's house as its
- * drawn walls (0–12 × 0–10 m) up to its eaves under a red hip roof to its ridge (HOUSE_ROOF), Jun's
- * concrete house and the red-tile house to let at their places and sizes, on their yards. No colliders or prompts.
+ * drawn walls (0–12 × 0–10 m) up to its eaves under a red hip roof to its ridge (HOUSE_ROOF), the Shiroma
+ * house (concrete, to let) and the Chinen house (red tile) at their places and sizes, on their yards. No colliders or prompts.
  */
 function hamletFar(world){
  const island=world.airportIsland.group,H=KITANO_HAMLET,far=new THREE.Group();far.name='Kitano hamlet, distant';island.add(far);

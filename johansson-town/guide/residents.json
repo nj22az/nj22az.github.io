@@ -1,10 +1,10 @@
 [
  {
   "name": "Johansson",
-  "role": "Engineer and island resident",
-  "place": "Harbour Office and Dock Electrical & Repairs",
-  "bio": "He came for a broken harbour radio and stayed to run the office upstairs from the ferry hall. Our correspondent spent a day trying to keep up.",
-  "backstory": "Johansson keeps two notebooks. One is for the Harbour Office: tide tables, freight, the service record of every winch on the quay. The other is for everything else, and it is fuller. He walks the long way to the workshop on purpose, he says, because the short way never teaches you anything. It was a dead radio that first brought him to Chin and Tetsuo’s bench, and the habit stuck. On a quiet afternoon you will still find him there, testing something nobody asked him to fix. Upstairs at the Community Hall his desk was the headmaster’s once; the chair still squeaks, and a good-luck moose watches the accounts from its plinth by the wall. He is excited about the airport and stubborn about everything it must not replace: the bookshop, the bathhouse, the working boats, the corner shop where Thuan knows when a long day calls for tea instead of another question. Most evenings end with a late supper at Minato. He insists this is research.",
+  "role": "Mayor of Minato-chō",
+  "place": "The town hall, Minato; home on Kitano-jima",
+  "bio": "He crosses from Kitano-jima on the morning boat, runs Minato-chō from the town hall and still finds time for a broken radio. Our correspondent spent a day trying to keep up.",
+  "backstory": "Johansson is the mayor of Minato-chō, and he keeps two notebooks. One is for the town hall: the assembly minutes, the budget, the ferry timetable and the list of roofs to check before typhoon season. The other is for everything else, and it is fuller. He walks the long way to the workshop on purpose, he says, because the short way never teaches you anything. His day starts on Kitano-jima, at breakfast with Thuan in the house at the end of the hamlet lane, and the morning crossing on the Minato Maru gets him to his office by half past eight. Lunch is at Sato Ramen. The crossing home is at half past six, and Grandmother Chinen at the end of the lane watches him come up it. It was a dead radio that first brought him to Chin and Tetsuo’s bench, and the habit stuck. On a quiet afternoon you will still find him there, testing something nobody asked him to fix. He is stubborn about what the town must not lose: the bookshop, the bathhouse, the working boats, the corner shop where his wife knows when a long day calls for tea instead of another question.",
   "portrait": "assets/images/residents/01.webp",
   "islandPersonality": {
    "title": "Practical dreamer",
@@ -13,17 +13,17 @@
     "dependable",
     "quietly adventurous"
    ],
-   "habit": "Tests repaired radios on the walk back from the quay.",
-   "ambition": "Connect the harbour and airport without losing the island’s small shops.",
+   "habit": "Tests repaired radios at Chin and Tetsuo’s bench on quiet afternoons.",
+   "ambition": "Run the town without losing its small shops, its bath or its working boats.",
    "favourite": "A late supper at Minato"
   },
   "article": {
-   "headline": "The man who reads the island like a wiring diagram",
-   "standfirst": "He came for a broken harbour radio and stayed to run the office upstairs from the ferry hall. Our correspondent spent a day trying to keep up.",
+   "headline": "The mayor who reads the island like a wiring diagram",
+   "standfirst": "He crosses from Kitano-jima on the morning boat, runs Minato-chō from the town hall and still finds time for a broken radio. Our correspondent spent a day trying to keep up.",
    "body": [
-    "Johansson keeps two notebooks. One is for the Harbour Office: tide tables, freight, the service record of every winch on the quay. The other is for everything else, and it is fuller. He walks the long way to the workshop on purpose, he says, because the short way never teaches you anything.",
-    "It was a dead radio that first brought him to Chin and Tetsuo’s bench, and the habit stuck. On a quiet afternoon you will still find him there, testing something nobody asked him to fix. Upstairs at the Community Hall his desk was the headmaster’s once; the chair still squeaks, and a good-luck moose watches the accounts from its plinth by the wall.",
-    "He is excited about the airport and stubborn about everything it must not replace: the bookshop, the bathhouse, the working boats, the corner shop where Thuan knows when a long day calls for tea instead of another question. Most evenings end with a late supper at Minato. He insists this is research."
+    "Johansson is the mayor of Minato-chō, and he keeps two notebooks. One is for the town hall: the assembly minutes, the budget, the ferry timetable and the list of roofs to check before typhoon season. The other is for everything else, and it is fuller. He walks the long way to the workshop on purpose, he says, because the short way never teaches you anything.",
+    "His day starts on Kitano-jima, at breakfast with Thuan in the house at the end of the hamlet lane, and the morning crossing on the Minato Maru gets him to his office by half past eight. Lunch is at Sato Ramen. The crossing home is at half past six, and Grandmother Chinen at the end of the lane watches him come up it.",
+    "It was a dead radio that first brought him to Chin and Tetsuo’s bench, and the habit stuck. On a quiet afternoon you will still find him there, testing something nobody asked him to fix. He is stubborn about what the town must not lose: the bookshop, the bathhouse, the working boats, the corner shop where his wife knows when a long day calls for tea instead of another question."
    ],
    "quote": "A town is a machine that runs on people remembering each other. You keep the small parts oiled.",
    "photos": [
@@ -40,7 +40,7 @@
      "expression": "laugh",
      "backdrop": "sunset",
      "film": "warm",
-     "caption": "Supper at Minato, “for research”.",
+     "caption": "Weekends on Kitano-jima.",
      "with": "Thuan",
      "file": "assets/images/residents/shoot/johansson-2.webp"
     }
@@ -198,10 +198,10 @@
  },
  {
   "name": "Mrs Sato",
-  "role": "Ramen cook and quay storekeeper",
-  "place": "Sato Ramen and Quay Warehouse",
+  "role": "Ramen cook",
+  "place": "Sato Ramen",
   "bio": "Mrs Sato buys her fish at dawn, feeds the harbour at noon and washes every bowl herself. Her autograph boards tell the rest.",
-  "backstory": "Her morning starts at the harbour, choosing fish for the stock while the auction is still shouting. By half past ten she is at the pots in the kitchen she shares with Thao. Lunch runs from eleven to two, and the ticket machine sells your bowl if it is in the mood; when it is not, she takes the money over the counter. Miso ramen with butter and corn is the autumn bowl, ¥500. On the wall hang three autograph boards: a television presenter who came for the Hārī, the 1996 Seagulls squad, and Kayoko Shima, who sang at the harbour hall, ate two bowls and left a tip folded into a crane. At noon Mrs Sato carries two bowls in the aluminium okamochi to the harbour office, very fast and very level. She delivers to the harbour only. Anywhere else, she says, they can walk. After two she washes up and wipes down until three, then takes the first quiet cup of the day with Thao. On Wednesdays the shop is shut so she can make the week’s stock. She notices who has eaten and who has only said so.",
+  "backstory": "Her morning starts at the harbour, choosing fish for the stock while the auction is still shouting. By half past ten she is at the pots in her own kitchen, which she shares with nobody. Lunch runs from eleven to two, and the ticket machine sells your bowl if it is in the mood; when it is not, she takes the money over the counter. Miso ramen with butter and corn is the autumn bowl, ¥500. On the wall hang three autograph boards: a television presenter who came for the Hārī, the 1996 Seagulls squad, and Kayoko Shima, who sang at the harbour hall, ate two bowls and left a tip folded into a crane. At noon Mrs Sato carries two bowls in the aluminium okamochi to the harbour office, very fast and very level. She delivers to the harbour only. Anywhere else, she says, they can walk. After two she washes up and wipes down until three, then takes the first quiet cup of the day. In the evenings she and Thao fight for the same crowd, ramen against the izakaya; they fall out, and make up over a delivery. Dr Kakazu eats here at half past twelve and is not allowed to pay. On Wednesdays the shop is shut so she can make the week’s stock. She notices who has eaten and who has only said so.",
   "portrait": "assets/images/residents/09.webp",
   "age": 68,
   "friend": "Thao",
@@ -221,9 +221,9 @@
    "headline": "Lunch at Sato Ramen is three hours long and sixty years deep",
    "standfirst": "Mrs Sato buys her fish at dawn, feeds the harbour at noon and washes every bowl herself. Her autograph boards tell the rest.",
    "body": [
-    "Her morning starts at the harbour, choosing fish for the stock while the auction is still shouting. By half past ten she is at the pots in the kitchen she shares with Thao. Lunch runs from eleven to two, and the ticket machine sells your bowl if it is in the mood; when it is not, she takes the money over the counter. Miso ramen with butter and corn is the autumn bowl, ¥500.",
+    "Her morning starts at the harbour, choosing fish for the stock while the auction is still shouting. By half past ten she is at the pots in her own kitchen, which she shares with nobody. Lunch runs from eleven to two, and the ticket machine sells your bowl if it is in the mood; when it is not, she takes the money over the counter. Miso ramen with butter and corn is the autumn bowl, ¥500.",
     "On the wall hang three autograph boards: a television presenter who came for the Hārī, the 1996 Seagulls squad, and Kayoko Shima, who sang at the harbour hall, ate two bowls and left a tip folded into a crane. At noon Mrs Sato carries two bowls in the aluminium okamochi to the harbour office, very fast and very level. She delivers to the harbour only. Anywhere else, she says, they can walk.",
-    "After two she washes up and wipes down until three, then takes the first quiet cup of the day with Thao. On Wednesdays the shop is shut so she can make the week’s stock. She notices who has eaten and who has only said so."
+    "After two she washes up and wipes down until three, then takes the first quiet cup of the day. In the evenings she and Thao fight for the same crowd, ramen against the izakaya; they fall out, and make up over a delivery. Dr Kakazu eats here at half past twelve and is not allowed to pay. On Wednesdays the shop is shut so she can make the week’s stock. She notices who has eaten and who has only said so."
    ],
    "quote": "Sit down. You can tell me how your morning went after you have eaten.",
    "photos": [
@@ -251,7 +251,7 @@
   "role": "Bookseller",
   "place": "Front-Row Books",
   "bio": "Front-Row Books has a window seat, a cat who refuses aprons, and Nhung’s paper slips in every other volume.",
-  "backstory": "Nhung’s recommendations come on little slips of paper tucked between the pages. Pocket poetry, island histories and practical sea guides fill the shelves, and the second-hand paperbacks come with her pencil marks in the margins wherever something made her laugh. The eldest of three sisters, she still checks that Thao has eaten and that Thuan has slept. She shares a home with Reiko, so a bookshop day often continues as an argument about the evening paper. Tama the shop cat has refused, on principle and permanently, to wear the tiny apron she once made him. Johansson gets the unusual technical books first; she saves them under the counter. Her ambition is a whole shelf of books by island residents. So far it holds a tide table, a cookbook from the Community Hall and a book of poems she will not say she wrote.",
+  "backstory": "Nhung’s recommendations come on little slips of paper tucked between the pages. Pocket poetry, island histories and practical sea guides fill the shelves, and the second-hand paperbacks come with her pencil marks in the margins wherever something made her laugh. The eldest of three sisters, she still checks that Thao has eaten and that Thuan has slept. Supper is with her husband Kōji, who comes from the fish auction, and their son Riku, who comes from wherever the boats are. She shares the front-row house with Reiko, so a bookshop day often continues as an argument about the evening paper. Tama the shop cat has refused, on principle and permanently, to wear the tiny apron she once made him. Johansson gets the unusual technical books first; she saves them under the counter. Her ambition is a whole shelf of books by island residents. So far it holds a tide table, a cookbook from the Community Hall and a book of poems she will not say she wrote.",
   "portrait": "assets/images/residents/07.webp",
   "age": 31,
   "friend": "Reiko",
@@ -272,7 +272,7 @@
    "standfirst": "Front-Row Books has a window seat, a cat who refuses aprons, and Nhung’s paper slips in every other volume.",
    "body": [
     "Nhung’s recommendations come on little slips of paper tucked between the pages. Pocket poetry, island histories and practical sea guides fill the shelves, and the second-hand paperbacks come with her pencil marks in the margins wherever something made her laugh.",
-    "The eldest of three sisters, she still checks that Thao has eaten and that Thuan has slept. She shares a home with Reiko, so a bookshop day often continues as an argument about the evening paper. Tama the shop cat has refused, on principle and permanently, to wear the tiny apron she once made him. Johansson gets the unusual technical books first; she saves them under the counter.",
+    "The eldest of three sisters, she still checks that Thao has eaten and that Thuan has slept. Supper is with her husband Kōji, who comes from the fish auction, and their son Riku, who comes from wherever the boats are. She shares the front-row house with Reiko, so a bookshop day often continues as an argument about the evening paper. Tama the shop cat has refused, on principle and permanently, to wear the tiny apron she once made him. Johansson gets the unusual technical books first; she saves them under the counter.",
     "Her ambition is a whole shelf of books by island residents. So far it holds a tide table, a cookbook from the Community Hall and a book of poems she will not say she wrote."
    ],
    "quote": "Every book in here has been read at least once on that window seat. Some of them twice.",
@@ -302,7 +302,7 @@
   "role": "Repairman and karaoke champion",
   "place": "Dock Electrical & Repair Workshop",
   "bio": "The dock workshop fixes everything from winches to rice cookers. It also wins karaoke contests.",
-  "backstory": "Chin lines up his tools before he touches anything new, and then he improves it. Ask him to mend a radio and it may come back with a better aerial, a louder speaker and a screw left over, which Tetsuo will find and hold up in silence. The two of them share the workshop and the house, which means their argument about volume has no closing time. Johansson stops by on quiet afternoons; the harbour office’s equipment is in their hands more often than the harbour master admits. On the last Friday of every month he becomes another person entirely: Minato’s karaoke champion, three titles in a row. The prize is a bottle on Thao’s keep shelf with his name on it. He has not opened any of them.",
+  "backstory": "Chin lines up his tools before he touches anything new, and then he improves it. Ask him to mend a radio and it may come back with a better aerial, a louder speaker and a screw left over, which Tetsuo will find and hold up in silence. He and Tetsuo have shared the workshop since school, and their argument about volume has no closing time. Johansson stops by on quiet afternoons; the harbour office’s equipment is in their hands more often than the harbour master admits. On the last Friday of every month he becomes another person entirely: Minato’s karaoke champion, three titles in a row. The prize is a bottle on Thao’s keep shelf with his name on it. He has not opened any of them. Thao, his wife of twelve years, keeps them dusted, and their daughter Vy keeps count. On Sunday mornings he fishes off the seawall at dawn with Mr Shimabukuro. They agree on the bait and on nothing else, least of all who caught the bigger one.",
   "portrait": "assets/images/residents/08.webp",
   "age": 32,
   "friend": "Tetsuo",
@@ -323,8 +323,9 @@
    "standfirst": "The dock workshop fixes everything from winches to rice cookers. It also wins karaoke contests.",
    "body": [
     "Chin lines up his tools before he touches anything new, and then he improves it. Ask him to mend a radio and it may come back with a better aerial, a louder speaker and a screw left over, which Tetsuo will find and hold up in silence.",
-    "The two of them share the workshop and the house, which means their argument about volume has no closing time. Johansson stops by on quiet afternoons; the harbour office’s equipment is in their hands more often than the harbour master admits.",
-    "On the last Friday of every month he becomes another person entirely: Minato’s karaoke champion, three titles in a row. The prize is a bottle on Thao’s keep shelf with his name on it. He has not opened any of them."
+    "He and Tetsuo have shared the workshop since school, and their argument about volume has no closing time. Johansson stops by on quiet afternoons; the harbour office’s equipment is in their hands more often than the harbour master admits.",
+    "On the last Friday of every month he becomes another person entirely: Minato’s karaoke champion, three titles in a row. The prize is a bottle on Thao’s keep shelf with his name on it. He has not opened any of them. Thao, his wife of twelve years, keeps them dusted, and their daughter Vy keeps count.",
+    "On Sunday mornings he fishes off the seawall at dawn with Mr Shimabukuro. They agree on the bait and on nothing else, least of all who caught the bigger one."
    ],
    "quote": "A good repair should look like nobody touched it.",
    "photos": [
@@ -352,7 +353,7 @@
   "role": "Radio repairer",
   "place": "Dock Electrical & Repair Workshop",
   "bio": "The workshop’s radio man treats static as conversation and keeps receivers singing long after their owners give up.",
-  "backstory": "Tetsuo turns a tuning knob as though the radio might answer back, and on a good day it does. Old valve sets, ship receivers, the counter radio at Minato: he handles them gently, and he will not be rushed. Chin has repaired Tetsuo’s own radio twice. Tetsuo keeps finding extra screws. Their disagreements about volume began at the workbench and followed them home, where they now share a house and an opinion that the other one is too loud. In the evenings he sometimes brings a set down to Minato and plays the counter radio for Thao: weather bulletins, enka, the baseball. A clear broadcast after a difficult repair is, he says, the best sound on the island.",
+  "backstory": "Tetsuo turns a tuning knob as though the radio might answer back, and on a good day it does. Old valve sets, ship receivers, the counter radio at Minato: he handles them gently, and he will not be rushed. Chin has repaired Tetsuo’s own radio twice. Tetsuo keeps finding extra screws. Their disagreement about volume began at the workbench when they were at school together, and it has never been settled. After lunch he crosses to the Minato Maru, where he is the ferry’s electrician under contract, and Mr Nakandakari watches him near the switchboard like a hawk. At six he goes to Umi-no-yu to tend the boiler and the pumps, and stays to close up. He takes his time over the gauges. Grandmother Higa sends him in past the bandai; he does not complain. A clear broadcast after a difficult repair is, he says, the best sound on the island, though the boiler running sweet comes close.",
   "portrait": "assets/images/residents/20.webp",
   "age": 40,
   "friend": "Kenji",
@@ -373,8 +374,8 @@
    "standfirst": "The workshop’s radio man treats static as conversation and keeps receivers singing long after their owners give up.",
    "body": [
     "Tetsuo turns a tuning knob as though the radio might answer back, and on a good day it does. Old valve sets, ship receivers, the counter radio at Minato: he handles them gently, and he will not be rushed.",
-    "Chin has repaired Tetsuo’s own radio twice. Tetsuo keeps finding extra screws. Their disagreements about volume began at the workbench and followed them home, where they now share a house and an opinion that the other one is too loud.",
-    "In the evenings he sometimes brings a set down to Minato and plays the counter radio for Thao: weather bulletins, enka, the baseball. A clear broadcast after a difficult repair is, he says, the best sound on the island."
+    "Chin has repaired Tetsuo’s own radio twice. Tetsuo keeps finding extra screws. Their disagreement about volume began at the workbench when they were at school together, and it has never been settled. After lunch he crosses to the Minato Maru, where he is the ferry’s electrician under contract, and Mr Nakandakari watches him near the switchboard like a hawk.",
+    "At six he goes to Umi-no-yu to tend the boiler and the pumps, and stays to close up. He takes his time over the gauges. Grandmother Higa sends him in past the bandai; he does not complain. A clear broadcast after a difficult repair is, he says, the best sound on the island, though the boiler running sweet comes close."
    ],
    "quote": "Static is just a station that has not said its name yet.",
    "photos": [
@@ -504,7 +505,7 @@
   "role": "Harbour master",
   "place": "Harbour Office",
   "bio": "Cargo, ferries, a changing forecast and a lunch delivered by okamochi: a day at the harbour office.",
-  "backstory": "He checks the tide board before the radio forecast and his knees before either. The harbour office desk holds the manifests, the passenger lists and the timetable that the duty clerk reads aloud whenever anyone rings from Minato’s pink telephone. At noon Mrs Sato arrives with two bowls in her aluminium delivery box. She delivers to the harbour only, which he takes as a professional courtesy and the harbour staff take as a perk of the job. A working harbour teaches patience with tides and with people. When equipment misbehaves he sends for the dock workshop; when a visitor is lost he points them to the right door. He likes watching the morning cargo come in, and he likes it more when it arrives on time.",
+  "backstory": "He checks the tide board before the radio forecast and his knees before either. The harbour office desk holds the manifests, the passenger lists and the timetable that the duty clerk reads aloud whenever anyone rings from Minato’s pink telephone. At noon Mrs Sato arrives with two bowls in her aluminium delivery box. She delivers to the harbour only, which he takes as a professional courtesy and the harbour staff take as a perk of the job. A working harbour teaches patience with tides and with people. When equipment misbehaves he sends for the dock workshop; when a visitor is lost he points them to the right door. The freight book is his as well: every crate on the cargo quay gets a line, and every line gets his initials. He likes watching the morning cargo come in, and he likes it more when it arrives on time.",
   "portrait": "assets/images/residents/10.webp",
   "age": 58,
   "friend": "Mrs Sato",
@@ -526,7 +527,7 @@
    "body": [
     "He checks the tide board before the radio forecast and his knees before either. The harbour office desk holds the manifests, the passenger lists and the timetable that the duty clerk reads aloud whenever anyone rings from Minato’s pink telephone.",
     "At noon Mrs Sato arrives with two bowls in her aluminium delivery box. She delivers to the harbour only, which he takes as a professional courtesy and the harbour staff take as a perk of the job.",
-    "A working harbour teaches patience with tides and with people. When equipment misbehaves he sends for the dock workshop; when a visitor is lost he points them to the right door. He likes watching the morning cargo come in, and he likes it more when it arrives on time."
+    "A working harbour teaches patience with tides and with people. When equipment misbehaves he sends for the dock workshop; when a visitor is lost he points them to the right door. The freight book is his as well: every crate on the cargo quay gets a line, and every line gets his initials. He likes watching the morning cargo come in, and he likes it more when it arrives on time."
    ],
    "quote": "The sea is always on time. It is the boats you have to wait for.",
    "photos": [
@@ -553,12 +554,12 @@
   "name": "Bus driver",
   "role": "Master of the Minato Maru",
   "place": "The Minato Maru’s wheelhouse",
-  "bio": "The bus driver collects opening sentences from his passengers and waits at the terminus for the endings.",
-  "backstory": "His route connects work, shopping and the last journey home. He notices who is carrying groceries, who has missed lunch and who just wants a little company at the terminus, and he recognises the regulars by the way they wave at the stop. The airport has brought new faces to remember. He welcomes them without changing his affection for the old stops, the coastal loop in the evening light most of all. Grandmother Higa can still hear a bus coming before it clears the tunnel; her husband drove this route for thirty years. The driver considers that the highest standard in his profession, and drives accordingly. When the Harbour Line became the town ferry he sat his deck licence and went with it; he has been the Minato Maru’s master since 1994, and the island still calls him the bus driver.",
+  "bio": "He drove the Harbour Line bus for twelve years, until the line became a ferry. The town still calls him the bus driver, and he still keeps the old timetable.",
+  "backstory": "When the Harbour Line became the ferry he did not want to give up the route. He sat his deck licence on the cargo boats out of Naha, came home as her mate, and has been master of the Minato Maru since 1994. He is aboard by a quarter past seven and ashore after the last call. He brings her alongside from the port wing, where he can see the pier, with Ms Uezu forward on the bow line and Mr Fujita on the quay to take it. Mr Nakandakari, the chief engineer, says he runs her engines too hard. He says the timetable runs them. Ms Ganaha at the ticket window has to explain any late departure, and makes sure he hears about it. He still notices who is carrying groceries, who has missed lunch and who just wants a little company on the crossing, and he knows the regulars by the way they wave from the quay. At seven he takes the day’s log to the harbour master, an old friend, and they read it over the harbour clock. Grandmother Higa’s husband drove the island bus for thirty years. She can still tell the ferry is late by its whistle. He considers that the highest standard in his profession, and keeps time accordingly.",
   "portrait": "assets/images/residents/11.webp",
   "age": 49,
   "friend": "Grandmother Higa",
-  "dailyLife": "I collect passengers and opening sentences. The best stories start at the last stop.",
+  "dailyLife": "I collect passengers and opening sentences. The best stories start on the last crossing.",
   "islandPersonality": {
    "title": "Collector of stories",
    "traits": [
@@ -566,26 +567,27 @@
     "punctual",
     "curious"
    ],
-   "habit": "Recognises regulars by the way they wave at the stop.",
-   "ambition": "Keep every village connected to the harbour.",
-   "favourite": "The last coastal loop in golden light"
+   "habit": "Knows the regulars by the way they wave from the quay.",
+   "ambition": "Keep every call on time, and the island connected to the harbour.",
+   "favourite": "The last crossing in golden light"
   },
   "article": {
-   "headline": "Every story on the Harbour Line starts at the last stop",
-   "standfirst": "The bus driver collects opening sentences from his passengers and waits at the terminus for the endings.",
+   "headline": "The bus driver who became the master of the Minato Maru",
+   "standfirst": "He drove the Harbour Line bus for twelve years, until the line became a ferry. The town still calls him the bus driver, and he still keeps the old timetable.",
    "body": [
-    "His route connects work, shopping and the last journey home. He notices who is carrying groceries, who has missed lunch and who just wants a little company at the terminus, and he recognises the regulars by the way they wave at the stop.",
-    "The airport has brought new faces to remember. He welcomes them without changing his affection for the old stops, the coastal loop in the evening light most of all.",
-    "Grandmother Higa can still hear a bus coming before it clears the tunnel; her husband drove this route for thirty years. The driver considers that the highest standard in his profession, and drives accordingly."
+    "When the Harbour Line became the ferry he did not want to give up the route. He sat his deck licence on the cargo boats out of Naha, came home as her mate, and has been master of the Minato Maru since 1994. He is aboard by a quarter past seven and ashore after the last call.",
+    "He brings her alongside from the port wing, where he can see the pier, with Ms Uezu forward on the bow line and Mr Fujita on the quay to take it. Mr Nakandakari, the chief engineer, says he runs her engines too hard. He says the timetable runs them. Ms Ganaha at the ticket window has to explain any late departure, and makes sure he hears about it.",
+    "He still notices who is carrying groceries, who has missed lunch and who just wants a little company on the crossing, and he knows the regulars by the way they wave from the quay. At seven he takes the day’s log to the harbour master, an old friend, and they read it over the harbour clock.",
+    "Grandmother Higa’s husband drove the island bus for thirty years. She can still tell the ferry is late by its whistle. He considers that the highest standard in his profession, and keeps time accordingly."
    ],
-   "quote": "People tell a bus driver how their story begins. If you wait at the terminus long enough, you hear how it ends.",
+   "quote": "People tell a bus driver how their story begins. On a ferry you have twenty minutes to hear how it ends.",
    "photos": [
     {
      "pose": "Wave",
      "expression": "smile",
      "backdrop": "sunset",
      "film": "warm",
-     "caption": "The last coastal loop.",
+     "caption": "The last crossing of the day.",
      "file": "assets/images/residents/shoot/bus-driver-1.webp"
     },
     {
@@ -593,55 +595,106 @@
      "expression": "happy",
      "backdrop": "cream",
      "film": "film",
-     "caption": "Mind the step.",
+     "caption": "Mind the step. Mind the ramp.",
      "file": "assets/images/residents/shoot/bus-driver-2.webp"
     }
    ]
   }
  },
  {
-  "name": "Mrs Higa",
-  "role": "Bathhouse attendant",
-  "place": "Umi-no-yu bandai",
+  "name": "Grandmother Chinen",
+  "role": "Keeper of the old Chinen house",
+  "place": "Kitano hamlet, Kitano-jima",
+  "portrait": "assets/images/residents/grandmother-chinen.webp",
+  "islandPersonality": {
+   "title": "The lane’s weather station",
+   "traits": [
+    "Sharp-eyed",
+    "unhurried",
+    "generous with vegetables"
+   ],
+   "habit": "Sweeps the lane in front of her gate at half past six, whatever the weather.",
+   "ambition": "See the old house stand through one more typhoon season.",
+   "favourite": "The breeze at her gate at three in the afternoon"
+  },
+  "bio": "Tetsuo’s mother keeps the red-tile house at the end of Kitano hamlet, sweeps her lane at half past six and knows every boat by its whistle.",
+  "backstory": "She was married into the Chinen house in 1958 and has outlived the roof twice. The typhoon of 1987 took the Shiromas’ roof next door and three of her tiles, which she still counts a win. Every morning at half past six she sweeps the lane in front of her gate, whatever the weather. Her son Tetsuo mends radios in Minato and comes over on the boat when he can. That is not often enough, she says, and he eats like he is still fifteen. She keeps a pot on for him anyway, and asks him nothing at all about the bath at Umi-no-yu. Her neighbours are the mayor and his wife, at the end of the lane. Thuan brings the shop’s day-old bread on Saturdays and goes home with a bag of goya, which Grandmother Chinen calls a fair trade. She watches the mayor come up the lane each evening from her gate, and has views on his hours. At three in the afternoon she stands at the gate for the breeze. The garden takes the rest of the day.",
+  "article": {
+   "headline": "The old Chinen house has lost three tiles in forty years",
+   "standfirst": "Tetsuo’s mother keeps the red-tile house at the end of Kitano hamlet, sweeps her lane at half past six and knows every boat by its whistle.",
+   "body": [
+    "She was married into the Chinen house in 1958 and has outlived the roof twice. The typhoon of 1987 took the Shiromas’ roof next door and three of her tiles, which she still counts a win. Every morning at half past six she sweeps the lane in front of her gate, whatever the weather.",
+    "Her son Tetsuo mends radios in Minato and comes over on the boat when he can. That is not often enough, she says, and he eats like he is still fifteen. She keeps a pot on for him anyway, and asks him nothing at all about the bath at Umi-no-yu.",
+    "Her neighbours are the mayor and his wife, at the end of the lane. Thuan brings the shop’s day-old bread on Saturdays and goes home with a bag of goya, which Grandmother Chinen calls a fair trade. She watches the mayor come up the lane each evening from her gate, and has views on his hours.",
+    "At three in the afternoon she stands at the gate for the breeze. The garden takes the rest of the day."
+   ],
+   "quote": "Three tiles in forty years. The house knows what it is doing.",
+   "photos": [
+    {
+     "pose": "Wave",
+     "expression": "happy",
+     "backdrop": "garden",
+     "film": "warm",
+     "caption": "At her gate, for the breeze.",
+     "file": "assets/images/residents/shoot/grandmother-chinen-1.webp"
+    },
+    {
+     "pose": "Laugh",
+     "expression": "content",
+     "backdrop": "sky",
+     "film": "film",
+     "caption": "A pot on for her son, who eats like he is still fifteen.",
+     "with": "Tetsuo",
+     "file": "assets/images/residents/shoot/grandmother-chinen-2.webp"
+    }
+   ]
+  }
+ },
+ {
+  "name": "Miss Higa",
+  "role": "Schoolteacher; keeps the Umi-no-yu bandai in the evenings and at weekends",
+  "place": "The island school and the Umi-no-yu bandai",
   "portrait": "assets/images/residents/higa.webp",
   "islandPersonality": {
-   "title": "Keeper of the bandai",
+   "title": "Teacher by day, keeper of the bandai by night",
    "traits": [
-    "Unflappable",
+    "Patient",
     "observant",
     "dry"
    ],
-   "habit": "Finishes the crossword clue before taking your coins.",
-   "ambition": "Keep Umi-no-yu a family bath for another thirty years.",
-   "favourite": "The rock bath after dark"
+   "habit": "Marks the class’s homework at the bandai between customers.",
+   "ambition": "Send every pupil in her class on to the mainland high school able to read, reckon and swim.",
+   "favourite": "The rock bath after dark, once the boiler is running sweet"
   },
-  "bio": "Mrs Higa takes your coins without looking up from her crossword, and she has never once missed who came in.",
-  "backstory": "The bandai is a raised seat by the door of Umi-no-yu, the island’s bathhouse, and Mrs Higa has kept it for thirty years. From up there she can see over the counter, which is the point of a bandai. Three hundred yen, swimwear in the bath, please: it is a family bath. She reads, does the crossword and sits very still, and she knows everyone’s bath time better than their families do. The rock bath is best after dark, she will tell you, if you ask, and you should. Her mother-in-law, Grandmother Higa, keeps the family verandah in Nishi-machi and the family opinions everywhere else. Between them, the Higa women have the island’s comings and goings well covered.",
+  "bio": "Miss Higa teaches the island school until half past three. From five she takes your coins at Umi-no-yu, and she still notices who has not done their homework.",
+  "backstory": "The island school is one room and one small mixed class, and Miss Higa teaches all of it. Vy asks the most questions. Riku talks, and is moved to the front row every week. Mai keeps the class rabbit, which is the best-behaved pupil and knows it. Miss Higa is twenty-nine, marks until five, and then walks down to the bath. The bandai is a raised seat by the door of Umi-no-yu, the island’s bathhouse. From up there you can see over the counter, which is the point of a bandai. Three hundred yen, swimwear in the bath, please: it is a family bath. In the evenings and at weekends she keeps it, with the marking on her knee and the crossword under the marking. The bath is her grandmother’s, and so is the opinion that Miss Higa should be married by now. Grandmother Higa says it at breakfast and again over supper. Her elder brother, the ferry’s oiler, says nothing at all and grins, which is worse. After hours Tetsuo comes to tend the boiler and the pumps. He fixes things; she does the till and pretends not to watch. He takes longer over the pressure gauge than any gauge needs. Neither of them has said a word about it, and the whole of Nishi-machi is waiting.",
   "article": {
-   "headline": "Thirty years on the bandai at Umi-no-yu",
-   "standfirst": "Mrs Higa takes your coins without looking up from her crossword, and she has never once missed who came in.",
+   "headline": "By day the blackboard, by night the bandai",
+   "standfirst": "Miss Higa teaches the island school until half past three. From five she takes your coins at Umi-no-yu, and she still notices who has not done their homework.",
    "body": [
-    "The bandai is a raised seat by the door of Umi-no-yu, the island’s bathhouse, and Mrs Higa has kept it for thirty years. From up there she can see over the counter, which is the point of a bandai. Three hundred yen, swimwear in the bath, please: it is a family bath.",
-    "She reads, does the crossword and sits very still, and she knows everyone’s bath time better than their families do. The rock bath is best after dark, she will tell you, if you ask, and you should.",
-    "Her mother-in-law, Grandmother Higa, keeps the family verandah in Nishi-machi and the family opinions everywhere else. Between them, the Higa women have the island’s comings and goings well covered."
+    "The island school is one room and one small mixed class, and Miss Higa teaches all of it. Vy asks the most questions. Riku talks, and is moved to the front row every week. Mai keeps the class rabbit, which is the best-behaved pupil and knows it. Miss Higa is twenty-nine, marks until five, and then walks down to the bath.",
+    "The bandai is a raised seat by the door of Umi-no-yu, the island’s bathhouse. From up there you can see over the counter, which is the point of a bandai. Three hundred yen, swimwear in the bath, please: it is a family bath. In the evenings and at weekends she keeps it, with the marking on her knee and the crossword under the marking.",
+    "The bath is her grandmother’s, and so is the opinion that Miss Higa should be married by now. Grandmother Higa says it at breakfast and again over supper. Her elder brother, the ferry’s oiler, says nothing at all and grins, which is worse.",
+    "After hours Tetsuo comes to tend the boiler and the pumps. He fixes things; she does the till and pretends not to watch. He takes longer over the pressure gauge than any gauge needs. Neither of them has said a word about it, and the whole of Nishi-machi is waiting."
    ],
-   "quote": "Wash first. Then soak. Then tell me the news.",
+   "quote": "Wash first. Then soak. Then tell me why the homework is late.",
    "photos": [
     {
      "pose": "Think",
      "expression": "content",
      "backdrop": "mint",
      "film": "sepia",
-     "caption": "At the bandai, one clue from finishing.",
-     "file": "assets/images/residents/shoot/mrs-higa-1.webp"
+     "caption": "At the bandai, marking between customers.",
+     "file": "assets/images/residents/shoot/miss-higa-1.webp"
     },
     {
-     "pose": "Wave",
-     "expression": "smile",
+     "pose": "Coy",
+     "expression": "shy",
      "backdrop": "peach",
      "film": "warm",
-     "caption": "Three hundred yen, please.",
-     "file": "assets/images/residents/shoot/mrs-higa-2.webp"
+     "caption": "The boiler is fixed. She was not watching.",
+     "with": "Tetsuo",
+     "file": "assets/images/residents/shoot/miss-higa-2.webp"
     }
    ]
   }
@@ -650,8 +703,8 @@
   "name": "Grandmother Higa",
   "role": "Long-time neighbour",
   "place": "Her verandah",
-  "bio": "Her house stood before the war. From its verandah she hears the bus before it leaves the tunnel.",
-  "backstory": "Sit a moment, she says, and you will. Grandmother Higa offers a seat, an observation about Sakura, and practical advice on preparing a house for typhoon season, in that order. Her husband drove the bus for thirty years. She approves of the way Thuan counts change carefully at Sakura, and she will occasionally allow a visitor to correct her about the name of an onion. Her daughter-in-law keeps the bandai at Umi-no-yu. The verandah remains Grandmother Higa’s own, a place where island time slows down enough for anyone to catch up.",
+  "bio": "She owns the bath and the liquor shop, and she knows the ferry by its whistle. From her verandah in Nishi-machi she keeps an eye on the rest.",
+  "backstory": "Sit a moment, she says, and you will. Grandmother Higa offers a seat, an observation about Sakura, and practical advice on preparing a house for typhoon season, in that order. She keeps the counter at Higa Liquor in the morning and the bandai at Umi-no-yu in the afternoon. Every bottle on the island, at Sakura, Minato or Sato Ramen, came through her door first. Her granddaughter teaches the island school and keeps the bandai in the evenings. Grandmother Higa would like her married, and says so. She has noticed that Tetsuo, who keeps her boiler running for a bath and his supper, takes his time over the pumps. She sends him through the front way, past the bandai, on purpose. Grandmother Sakurai bathes an hour before her. They have been rivals since primary school, and neither has ever let the other win a thing: not a bazaar, not a sports day, not a single argument about the price of rice. Mr Fujita soaks his back every morning and tells her the water is never hot enough. She tells Dr Kakazu the same about his advice on her blood pressure. When the Minato Maru is late she hears it in the whistle, and her grandson, who oils the ferry’s engines, hears about it at supper.",
   "portrait": "assets/images/residents/28.webp",
   "islandPersonality": {
    "title": "A living island memory",
@@ -666,11 +719,12 @@
   },
   "article": {
    "headline": "Grandmother Higa has a seat for you and an opinion about your onions",
-   "standfirst": "Her house stood before the war. From its verandah she hears the bus before it leaves the tunnel.",
+   "standfirst": "She owns the bath and the liquor shop, and she knows the ferry by its whistle. From her verandah in Nishi-machi she keeps an eye on the rest.",
    "body": [
-    "Sit a moment, she says, and you will. Grandmother Higa offers a seat, an observation about Sakura, and practical advice on preparing a house for typhoon season, in that order.",
-    "Her husband drove the bus for thirty years. She approves of the way Thuan counts change carefully at Sakura, and she will occasionally allow a visitor to correct her about the name of an onion.",
-    "Her daughter-in-law keeps the bandai at Umi-no-yu. The verandah remains Grandmother Higa’s own, a place where island time slows down enough for anyone to catch up."
+    "Sit a moment, she says, and you will. Grandmother Higa offers a seat, an observation about Sakura, and practical advice on preparing a house for typhoon season, in that order. She keeps the counter at Higa Liquor in the morning and the bandai at Umi-no-yu in the afternoon. Every bottle on the island, at Sakura, Minato or Sato Ramen, came through her door first.",
+    "Her granddaughter teaches the island school and keeps the bandai in the evenings. Grandmother Higa would like her married, and says so. She has noticed that Tetsuo, who keeps her boiler running for a bath and his supper, takes his time over the pumps. She sends him through the front way, past the bandai, on purpose.",
+    "Grandmother Sakurai bathes an hour before her. They have been rivals since primary school, and neither has ever let the other win a thing: not a bazaar, not a sports day, not a single argument about the price of rice. Mr Fujita soaks his back every morning and tells her the water is never hot enough. She tells Dr Kakazu the same about his advice on her blood pressure.",
+    "When the Minato Maru is late she hears it in the whistle, and her grandson, who oils the ferry’s engines, hears about it at supper."
    ],
    "quote": "You are the one who talks to the girl at Sakura every day. Good. Somebody should.",
    "photos": [
@@ -697,8 +751,8 @@
   "name": "Mr Ōshiro",
   "role": "Boatbuilder",
   "place": "Sabani yard",
-  "bio": "Mr Ōshiro built his boat from Yakushima cedar. He still scrapes and tars her by hand.",
-  "backstory": "The cedar came from Yakushima before you could not get it any more. He built her in 1968 and will tell you, if you ask, the difference between a repair and a replacement. Fourth place in the 1979 race remains a perfectly respectable subject for conversation. His son recommends fibreglass. Mr Ōshiro sees no reason to replace something that has carried him this far. His yard is a place to stand and watch patient hands. The airport has changed the horizon; it has not changed the tar.",
+  "bio": "Mr Ōshiro built his boat from Yakushima cedar. He still scrapes and tars her by hand, and he still goes out before the auction.",
+  "backstory": "The cedar came from Yakushima before you could not get it any more. He built her in 1968 and will tell you, if you ask, the difference between a repair and a replacement. Most mornings he takes her out with Kōji, his crewman, and they are in before the auction calls. In the afternoons Kōji comes back to the yard to help with the tar. Kōji recommends fibreglass. He has recommended it every season. Mr Ōshiro sees no reason to replace something that has carried him this far, and says so while Kōji bails. Fourth place in the 1979 sabani race remains, in his view, a perfectly respectable subject for conversation. Mr Fujita, who also raced that year, brings it up whenever they meet, and never mentions where he came himself. His yard on the water is a place to stand and watch patient hands. Mr Higa Jr served his time here on sabani and outboards before he went to the ferry, and still comes back to borrow a clamp.",
   "portrait": "assets/images/residents/04.webp",
   "islandPersonality": {
    "title": "Patient master",
@@ -713,11 +767,12 @@
   },
   "article": {
    "headline": "A sabani from 1968 and the man who will not sell it",
-   "standfirst": "Mr Ōshiro built his boat from Yakushima cedar. He still scrapes and tars her by hand.",
+   "standfirst": "Mr Ōshiro built his boat from Yakushima cedar. He still scrapes and tars her by hand, and he still goes out before the auction.",
    "body": [
-    "The cedar came from Yakushima before you could not get it any more. He built her in 1968 and will tell you, if you ask, the difference between a repair and a replacement.",
-    "Fourth place in the 1979 race remains a perfectly respectable subject for conversation. His son recommends fibreglass. Mr Ōshiro sees no reason to replace something that has carried him this far.",
-    "His yard is a place to stand and watch patient hands. The airport has changed the horizon; it has not changed the tar."
+    "The cedar came from Yakushima before you could not get it any more. He built her in 1968 and will tell you, if you ask, the difference between a repair and a replacement. Most mornings he takes her out with Kōji, his crewman, and they are in before the auction calls. In the afternoons Kōji comes back to the yard to help with the tar.",
+    "Kōji recommends fibreglass. He has recommended it every season. Mr Ōshiro sees no reason to replace something that has carried him this far, and says so while Kōji bails.",
+    "Fourth place in the 1979 sabani race remains, in his view, a perfectly respectable subject for conversation. Mr Fujita, who also raced that year, brings it up whenever they meet, and never mentions where he came himself.",
+    "His yard on the water is a place to stand and watch patient hands. Mr Higa Jr served his time here on sabani and outboards before he went to the ferry, and still comes back to borrow a clamp."
    ],
    "quote": "You do not own a boat like this. You look after her for the next one.",
    "photos": [
@@ -734,55 +789,9 @@
      "expression": "happy",
      "backdrop": "sunset",
      "film": "warm",
-     "caption": "Fourth place, 1979.",
+     "caption": "Back before the auction, with his crew.",
+     "with": "Kōji",
      "file": "assets/images/residents/shoot/mr-oshiro-2.webp"
-    }
-   ]
-  }
- },
- {
-  "name": "Uncle Kinjō",
-  "role": "Fisherman",
-  "place": "Seawall",
-  "bio": "He fishes from the seawall twice a day, guards his bait from the net-shed cat and waits for gurukun.",
-  "backstory": "Uncle Kinjō fishes from five until ten, and again in the late afternoon. The fish are not biting; the tide is wrong; the cat has designs on the bait. He stays anyway. His son runs the quay ice plant, which Kinjō considers proof of sound family judgement. His joke that ice never goes off has yet to receive its due appreciation. Mrs Kinjō’s rice is always ready before he thinks the fishing should stop. Visitors heading to the seawall are often entrusted with that message.",
-  "portrait": "assets/images/residents/05.webp",
-  "islandPersonality": {
-   "title": "Tide-wise teaser",
-   "traits": [
-    "Patient",
-    "mischievous",
-    "stubborn"
-   ],
-   "habit": "Checks his bait twice whenever the net-shed cat appears.",
-   "ambition": "Bring home a catch worthy of Mrs Kinjō’s supper.",
-   "favourite": "The seawall before sunset"
-  },
-  "article": {
-   "headline": "The tide is wrong, says Uncle Kinjō. The tide is always wrong.",
-   "standfirst": "He fishes from the seawall twice a day, guards his bait from the net-shed cat and waits for gurukun.",
-   "body": [
-    "Uncle Kinjō fishes from five until ten, and again in the late afternoon. The fish are not biting; the tide is wrong; the cat has designs on the bait. He stays anyway.",
-    "His son runs the quay ice plant, which Kinjō considers proof of sound family judgement. His joke that ice never goes off has yet to receive its due appreciation.",
-    "Mrs Kinjō’s rice is always ready before he thinks the fishing should stop. Visitors heading to the seawall are often entrusted with that message."
-   ],
-   "quote": "Shh. No, it is fine. They are not biting anyway.",
-   "photos": [
-    {
-     "pose": "Shrug",
-     "expression": "grumpy",
-     "backdrop": "sky",
-     "film": "film",
-     "caption": "The tide, wrong again.",
-     "file": "assets/images/residents/shoot/uncle-kinjo-1.webp"
-    },
-    {
-     "pose": "Laugh",
-     "expression": "laugh",
-     "backdrop": "sunset",
-     "film": "warm",
-     "caption": "The ice joke, one more time.",
-     "file": "assets/images/residents/shoot/uncle-kinjo-2.webp"
     }
    ]
   }
@@ -791,8 +800,8 @@
   "name": "Mrs Kinjō",
   "role": "Florist",
   "place": "Rainflower Florist",
-  "bio": "Mrs Kinjō sells island-grown stems from nine to six, and sends her husband home for supper by anyone walking to the seawall.",
-  "backstory": "Buckets of fresh stems, leafy pots and hand-made wreaths fill the open front of the flower shop on Rainflower Lane. Thuan comes after closing; the bouquets for Sakura’s counter are chosen with care on both sides. Her husband’s fishing timetable rarely agrees with supper. A visitor heading to the seawall may leave with a bouquet and the familiar message that the rice is already waiting. She wraps everything in plain brown paper, because the flowers should be the bright part.",
+  "bio": "Mrs Kinjō sells island-grown stems from half past eight, dresses the town for every festival, and keeps a careful eye on her neighbour’s doorway.",
+  "backstory": "Buckets of fresh stems, leafy pots and hand-made wreaths fill the open front of the flower shop on Rainflower Lane. The morning stems come in at half past eight; by the afternoon she is out on deliveries. Thuan comes after closing, and the bouquets for Sakura’s counter are chosen with care on both sides. She is the town’s decorator as well as its florist. The bunting at the harbour, the paper lanterns at Minato and the flowers on Thao’s counter all come from her back room. Thao says the lanterns cost more than the sake. Mrs Kinjō says that is because the lanterns last. She shares the walkway with Mrs Nakamura’s zenzai counter. They eat lunch at each other’s counters and argue about whose customers block whose doorway, usually in the same conversation. On Sundays she takes tea with Grandmother Sakurai, an old friend, and they agree about almost everything except Grandmother Higa. She wraps everything in plain brown paper, because the flowers should be the bright part.",
   "portrait": "assets/images/residents/37.webp",
   "islandPersonality": {
    "title": "A grower of small joys",
@@ -806,14 +815,15 @@
    "favourite": "Her flower-shop doorway after watering"
   },
   "article": {
-   "headline": "Rainflower Florist wraps every bouquet in brown paper and a message",
-   "standfirst": "Mrs Kinjō sells island-grown stems from nine to six, and sends her husband home for supper by anyone walking to the seawall.",
+   "headline": "Rainflower Florist wraps every bouquet in brown paper",
+   "standfirst": "Mrs Kinjō sells island-grown stems from half past eight, dresses the town for every festival, and keeps a careful eye on her neighbour’s doorway.",
    "body": [
-    "Buckets of fresh stems, leafy pots and hand-made wreaths fill the open front of the flower shop on Rainflower Lane. Thuan comes after closing; the bouquets for Sakura’s counter are chosen with care on both sides.",
-    "Her husband’s fishing timetable rarely agrees with supper. A visitor heading to the seawall may leave with a bouquet and the familiar message that the rice is already waiting.",
+    "Buckets of fresh stems, leafy pots and hand-made wreaths fill the open front of the flower shop on Rainflower Lane. The morning stems come in at half past eight; by the afternoon she is out on deliveries. Thuan comes after closing, and the bouquets for Sakura’s counter are chosen with care on both sides.",
+    "She is the town’s decorator as well as its florist. The bunting at the harbour, the paper lanterns at Minato and the flowers on Thao’s counter all come from her back room. Thao says the lanterns cost more than the sake. Mrs Kinjō says that is because the lanterns last.",
+    "She shares the walkway with Mrs Nakamura’s zenzai counter. They eat lunch at each other’s counters and argue about whose customers block whose doorway, usually in the same conversation. On Sundays she takes tea with Grandmother Sakurai, an old friend, and they agree about almost everything except Grandmother Higa.",
     "She wraps everything in plain brown paper, because the flowers should be the bright part."
    ],
-   "quote": "Tell him the rice is ready. He will say five more minutes. Tell him again.",
+   "quote": "The flowers are the bright part. Everything else should get out of their way. Including that queue.",
    "photos": [
     {
      "pose": "Heart",
@@ -839,8 +849,8 @@
   "name": "Mrs Nakamura",
   "role": "Zenzai shopkeeper",
   "place": "Main Street corner",
-  "bio": "Mrs Nakamura cooks her beans from six in the morning and shaves the ice only when you order.",
-  "backstory": "Kintoki beans, cooked since six. The ice comes from the plant on the quay, and the old shaving machine roars like a tractor; she trusts its work completely. She has served this corner since 1972. The gateball players come after their matches, and Thuan’s Sunday visit has become another small fixture in the week. She notices children growing up, shopkeepers taking their breaks and visitors learning to wait for something good.",
+  "bio": "Mrs Nakamura has the beans on at six, the ice-cream counter open at three and the community kitchen’s andagi in the fryer whenever the town needs feeding.",
+  "backstory": "Kintoki beans, cooked since six. The ice comes from the plant on the quay, and the old shaving machine roars like a tractor; she trusts its work completely. There has been zenzai on this corner since 1972, and she has no plans to stop. At three she crosses to Blue Coral and opens the ice-cream counter for the school crowd. Her daughter Mai arrives at half past with Vy, her best friend, and the pink guava scoop is already set aside. Mrs Nakamura is bringing Mai up on her own, and does it the way she does everything, early and without fuss. She also runs the community kitchen. When there is a festival, a funeral or a typhoon, the andagi come from her fryer, by the hundred. Mrs Kinjō, next door, eats lunch at her counter and complains about the queue in front of the flower buckets. Mrs Nakamura gives her a second bowl and does not move the queue.",
   "portrait": "assets/images/residents/06.webp",
   "islandPersonality": {
    "title": "Keeper of sweet comforts",
@@ -855,11 +865,11 @@
   },
   "article": {
    "headline": "Zenzai since 1972, and the shaving machine still sounds like a tractor",
-   "standfirst": "Mrs Nakamura cooks her beans from six in the morning and shaves the ice only when you order.",
+   "standfirst": "Mrs Nakamura has the beans on at six, the ice-cream counter open at three and the community kitchen’s andagi in the fryer whenever the town needs feeding.",
    "body": [
-    "Kintoki beans, cooked since six. The ice comes from the plant on the quay, and the old shaving machine roars like a tractor; she trusts its work completely.",
-    "She has served this corner since 1972. The gateball players come after their matches, and Thuan’s Sunday visit has become another small fixture in the week.",
-    "She notices children growing up, shopkeepers taking their breaks and visitors learning to wait for something good."
+    "Kintoki beans, cooked since six. The ice comes from the plant on the quay, and the old shaving machine roars like a tractor; she trusts its work completely. There has been zenzai on this corner since 1972, and she has no plans to stop.",
+    "At three she crosses to Blue Coral and opens the ice-cream counter for the school crowd. Her daughter Mai arrives at half past with Vy, her best friend, and the pink guava scoop is already set aside. Mrs Nakamura is bringing Mai up on her own, and does it the way she does everything, early and without fuss.",
+    "She also runs the community kitchen. When there is a festival, a funeral or a typhoon, the andagi come from her fryer, by the hundred. Mrs Kinjō, next door, eats lunch at her counter and complains about the queue in front of the flower buckets. Mrs Nakamura gives her a second bowl and does not move the queue."
    ],
    "quote": "Zenzai is not fast food. Sit down.",
    "photos": [
@@ -876,7 +886,8 @@
      "expression": "laugh",
      "backdrop": "peach",
      "film": "warm",
-     "caption": "The machine is loud. The beans are worth it.",
+     "caption": "Half past three: two ice creams, one of them guava.",
+     "with": "Mai",
      "file": "assets/images/residents/shoot/mrs-nakamura-2.webp"
     }
    ]
@@ -887,7 +898,7 @@
   "role": "Power house keeper",
   "place": "Town power house",
   "bio": "Mr Shimabukuro minds the power house. Every light on the island comes through his engine room.",
-  "backstory": "Hear that? Two diesels, one running, one resting. Mr Shimabukuro listens to the generators the way a doctor listens to a chest, and he hears a fault before the meters show it. The second set is to be overhauled before typhoon season; the town assembly minutes say so, and so does he, at length. Postman Tōma brings his parcels to the power house door. They are usually spare parts.",
+  "backstory": "Hear that? Two diesels, one running, one resting. Mr Shimabukuro listens to the generators the way a doctor listens to a chest, and he hears a fault before the meters show it. The second set is to be overhauled before typhoon season; the town assembly minutes say so, and so does he, at length. Postman Tōma brings his parcels to the power house door. They are usually spare parts. Tetsuo comes over when the switchboard needs a second pair of hands, and they talk about the island’s load as other men talk about the weather. On Sunday mornings he fishes off the seawall with Chin at dawn. Who caught the bigger one is a question that has run for years.",
   "portrait": "assets/images/residents/29.webp",
   "islandPersonality": {
    "title": "The cheerful confidant",
@@ -906,7 +917,8 @@
    "body": [
     "Hear that? Two diesels, one running, one resting. Mr Shimabukuro listens to the generators the way a doctor listens to a chest, and he hears a fault before the meters show it.",
     "The second set is to be overhauled before typhoon season; the town assembly minutes say so, and so does he, at length.",
-    "Postman Tōma brings his parcels to the power house door. They are usually spare parts."
+    "Postman Tōma brings his parcels to the power house door. They are usually spare parts. Tetsuo comes over when the switchboard needs a second pair of hands, and they talk about the island’s load as other men talk about the weather.",
+    "On Sunday mornings he fishes off the seawall with Chin at dawn. Who caught the bigger one is a question that has run for years."
    ],
    "quote": "You only notice electricity when it stops. I would like you never to notice it.",
    "photos": [
@@ -930,153 +942,11 @@
   }
  },
  {
-  "name": "Mrs Yonamine",
-  "role": "Fishmonger",
-  "place": "Fish counter",
-  "bio": "The fish counter opens after the six o’clock auction. By the afternoon it is sold, or claimed by the cat.",
-  "backstory": "Irabu-chā, fresh this morning: the blue one, parrotfish, as sashimi with vinegar miso. Mrs Yonamine recommends it to everyone who looks doubtful, and she is usually right. Kōji brings what the auction leaves; Mr Tamaki’s ice keeps the counter cold. She champions mozuku with the authority of family experience. She judges the day by what has landed rather than by any printed menu.",
-  "portrait": "assets/images/residents/30.webp",
-  "islandPersonality": {
-   "title": "Straight-talking provider",
-   "traits": [
-    "Brisk",
-    "honest",
-    "generous"
-   ],
-   "habit": "Checks each fish before agreeing to the morning’s price.",
-   "ambition": "Give every household a good supper at a fair price.",
-   "favourite": "The fish market just as the boats arrive"
-  },
-  "article": {
-   "headline": "Try the parrotfish before you judge it",
-   "standfirst": "The fish counter opens after the six o’clock auction. By the afternoon it is sold, or claimed by the cat.",
-   "body": [
-    "Irabu-chā, fresh this morning: the blue one, parrotfish, as sashimi with vinegar miso. Mrs Yonamine recommends it to everyone who looks doubtful, and she is usually right.",
-    "Kōji brings what the auction leaves; Mr Tamaki’s ice keeps the counter cold. She champions mozuku with the authority of family experience.",
-    "She judges the day by what has landed rather than by any printed menu."
-   ],
-   "quote": "The sea decides the menu. I just write the prices.",
-   "photos": [
-    {
-     "pose": "Point",
-     "expression": "happy",
-     "backdrop": "sky",
-     "film": "vivid",
-     "caption": "Parrotfish. Try it.",
-     "file": "assets/images/residents/shoot/mrs-yonamine-1.webp"
-    },
-    {
-     "pose": "HandsOnHips",
-     "expression": "content",
-     "backdrop": "cream",
-     "film": "film",
-     "caption": "Sold out by three.",
-     "with": "Kōji",
-     "file": "assets/images/residents/shoot/mrs-yonamine-2.webp"
-    }
-   ]
-  }
- },
- {
-  "name": "Mrs Miyagi",
-  "role": "Keeper of local traditions",
-  "place": "Utaki",
-  "bio": "Mrs Miyagi brings rice, salt and incense to the sacred grove, as she has since she was a girl.",
-  "backstory": "She does not turn round straight away. When she does, she smiles as if she had been expecting you. For Mrs Miyagi the important offering is returning, rather than giving. When the walk becomes too much, her granddaughter will take it up. The grove keeps a different pace from the shopping street. She is happy for visitors to explore it quietly.",
-  "portrait": "assets/images/residents/31.webp",
-  "islandPersonality": {
-   "title": "Festival guardian",
-   "traits": [
-    "Dedicated",
-    "patient",
-    "expressive"
-   ],
-   "habit": "Practises an old dance step while sweeping the hall.",
-   "ambition": "See the next generation lead the island festival.",
-   "favourite": "Music drifting from Community Hall"
-  },
-  "article": {
-   "headline": "Every morning at the utaki",
-   "standfirst": "Mrs Miyagi brings rice, salt and incense to the sacred grove, as she has since she was a girl.",
-   "body": [
-    "She does not turn round straight away. When she does, she smiles as if she had been expecting you.",
-    "For Mrs Miyagi the important offering is returning, rather than giving. When the walk becomes too much, her granddaughter will take it up.",
-    "The grove keeps a different pace from the shopping street. She is happy for visitors to explore it quietly."
-   ],
-   "quote": "You come back. That is the whole of it.",
-   "photos": [
-    {
-     "pose": "Bow",
-     "expression": "content",
-     "backdrop": "mint",
-     "film": "sepia",
-     "caption": "Morning at the utaki.",
-     "file": "assets/images/residents/shoot/mrs-miyagi-1.webp"
-    },
-    {
-     "pose": "Idle",
-     "expression": "smile",
-     "backdrop": "cream",
-     "film": "film",
-     "caption": "Rice, salt and incense.",
-     "file": "assets/images/residents/shoot/mrs-miyagi-2.webp"
-    }
-   ]
-  }
- },
- {
-  "name": "Mr Tamaki",
-  "role": "Ice plant operator",
-  "place": "Quay ice plant",
-  "bio": "The quay ice plant runs on Mr Tamaki, a wet floor and his father’s favourite joke.",
-  "backstory": "Block, crushed, flake. Summer demand can reach forty tonnes a day, and every order is specific. Mind your feet: the floor is wet everywhere, even in August. Especially in August. He runs the plant while his father, Uncle Kinjō, fishes from the seawall and repeats that ice never goes off. Ice is easy to overlook until a delivery is late. His work keeps the catch fresh between the boats, the counter and the outgoing freight.",
-  "portrait": "assets/images/residents/32.webp",
-  "islandPersonality": {
-   "title": "The cool-headed organiser",
-   "traits": [
-    "Methodical",
-    "dependable",
-    "wry"
-   ],
-   "habit": "Counts the ice blocks aloud even when nobody is listening.",
-   "ambition": "Keep every fishing crew supplied on the hottest days.",
-   "favourite": "The hum of a well-maintained ice plant"
-  },
-  "article": {
-   "headline": "Forty tonnes of ice on a summer day",
-   "standfirst": "The quay ice plant runs on Mr Tamaki, a wet floor and his father’s favourite joke.",
-   "body": [
-    "Block, crushed, flake. Summer demand can reach forty tonnes a day, and every order is specific. Mind your feet: the floor is wet everywhere, even in August. Especially in August.",
-    "He runs the plant while his father, Uncle Kinjō, fishes from the seawall and repeats that ice never goes off.",
-    "Ice is easy to overlook until a delivery is late. His work keeps the catch fresh between the boats, the counter and the outgoing freight."
-   ],
-   "quote": "Ice is just time, frozen. I sell people a little more of it.",
-   "photos": [
-    {
-     "pose": "HeelKick",
-     "expression": "happy",
-     "backdrop": "sky",
-     "film": "vivid",
-     "caption": "Loading the morning ice.",
-     "file": "assets/images/residents/shoot/mr-tamaki-1.webp"
-    },
-    {
-     "pose": "Shrug",
-     "expression": "content",
-     "backdrop": "mint",
-     "film": "film",
-     "caption": "Yes, Father. It never goes off.",
-     "file": "assets/images/residents/shoot/mr-tamaki-2.webp"
-    }
-   ]
-  }
- },
- {
   "name": "Kōji",
   "role": "Catch sorter",
   "place": "Fish auction quay",
-  "bio": "Kōji sorts the catch after the auction. He would like you to take the tuna head. It is free.",
-  "backstory": "Auction is done, bro. What is left goes to Mrs Yonamine’s counter or to the freezer, and Kōji sorts it before most of the street is awake. He has watched a skipper fall asleep at the wheel after a full night’s fishing, and it gave him a clear picture of the work behind every landing. He likes practical food. He would especially like you to try tuna-head soup.",
+  "bio": "Kōji is up at half past four for the auction and asleep by noon. In between he sorts the catch, loads the ice and would like you to take the tuna head. It is free.",
+  "backstory": "Before the auction he crews Mr Ōshiro’s sabani, and hears again why she will never be fibreglass. By half past four he is on the auction floor sorting the catch. What the buyers leave goes to Mrs Sato for her stock pot or to the freezer, and Kōji has it sorted before most of the street is awake. At nine he moves to the ice plant and loads the boats for the next night. At noon he goes home to sleep. On Ms Uezu’s week off he works the Minato Maru’s deck as her relief, and he says the ramp is the only thing on the island heavier than a tuna. He is married to Nhung, who sells books and says he smells of fish. He says she smells of books. Their son Riku wants to come out on the boat. He may, Kōji says, when he can swim to the buoy. He likes practical food. He would especially like you to try tuna-head soup.",
   "portrait": "assets/images/residents/33.webp",
   "islandPersonality": {
    "title": "The keen-eyed sorter",
@@ -1091,10 +961,11 @@
   },
   "article": {
    "headline": "The case for tuna-head soup",
-   "standfirst": "Kōji sorts the catch after the auction. He would like you to take the tuna head. It is free.",
+   "standfirst": "Kōji is up at half past four for the auction and asleep by noon. In between he sorts the catch, loads the ice and would like you to take the tuna head. It is free.",
    "body": [
-    "Auction is done, bro. What is left goes to Mrs Yonamine’s counter or to the freezer, and Kōji sorts it before most of the street is awake.",
-    "He has watched a skipper fall asleep at the wheel after a full night’s fishing, and it gave him a clear picture of the work behind every landing.",
+    "Before the auction he crews Mr Ōshiro’s sabani, and hears again why she will never be fibreglass. By half past four he is on the auction floor sorting the catch. What the buyers leave goes to Mrs Sato for her stock pot or to the freezer, and Kōji has it sorted before most of the street is awake.",
+    "At nine he moves to the ice plant and loads the boats for the next night. At noon he goes home to sleep. On Ms Uezu’s week off he works the Minato Maru’s deck as her relief, and he says the ramp is the only thing on the island heavier than a tuna.",
+    "He is married to Nhung, who sells books and says he smells of fish. He says she smells of books. Their son Riku wants to come out on the boat. He may, Kōji says, when he can swim to the buoy.",
     "He likes practical food. He would especially like you to try tuna-head soup."
    ],
    "quote": "You want a tuna head? Free. Great soup.",
@@ -1112,7 +983,8 @@
      "expression": "laugh",
      "backdrop": "sunset",
      "film": "warm",
-     "caption": "Still offering the tuna head.",
+     "caption": "Supper at home. Still offering the tuna head.",
+     "with": "Nhung",
      "file": "assets/images/residents/shoot/koji-2.webp"
     }
    ]
@@ -1122,8 +994,8 @@
   "name": "Postman Tōma",
   "role": "Postman",
   "place": "Town delivery round",
-  "bio": "Postman Tōma walks his round at 10:30 and 16:30. He does not read postcards. The pictures are very nice.",
-  "backstory": "The plate on the postbox says 10:30 and 16:30, and Tōma trusts it even on the days he doubts himself. Letters for the Nakasones, a parcel for Mr Shimabukuro at the power house, a postcard for Sakura from somebody in Hanoi. Letters give him a different map of the island, made of names and remembered doorways. Shopkeepers give him news between parcels. He does not read postcards. He will admit that some of the pictures are very nice.",
+  "bio": "Postman Tōma walks his round at 10:30 and 16:30, and meets the evening boat for the mailbag. He does not read postcards. The pictures are very nice.",
+  "backstory": "The plate on the postbox says 10:30 and 16:30, and Tōma trusts it even on the days he doubts himself. Letters for the Ōshiros, a parcel for Mr Shimabukuro at the power station, a postcard for Sakura from somebody in Hanoi. Letters give him a different map of the island, made of names and remembered doorways. Shopkeepers give him news between parcels, and Reiko gets most of it back by teatime. Officer Mori has asked him, more than once, not to lean his bicycle on the koban’s line. At five he takes the evening mailbag at the Port Terminal. Ms Ganaha sells the tickets there. He lingers at her window longer than any mailbag needs; she is busy, and says so, and has not yet asked him to leave. He does not read postcards. He will admit that some of the pictures are very nice.",
   "portrait": "assets/images/residents/38.webp",
   "islandPersonality": {
    "title": "The cheerful messenger",
@@ -1138,10 +1010,11 @@
   },
   "article": {
    "headline": "Two collections a day, and the postbox is never wrong",
-   "standfirst": "Postman Tōma walks his round at 10:30 and 16:30. He does not read postcards. The pictures are very nice.",
+   "standfirst": "Postman Tōma walks his round at 10:30 and 16:30, and meets the evening boat for the mailbag. He does not read postcards. The pictures are very nice.",
    "body": [
-    "The plate on the postbox says 10:30 and 16:30, and Tōma trusts it even on the days he doubts himself. Letters for the Nakasones, a parcel for Mr Shimabukuro at the power house, a postcard for Sakura from somebody in Hanoi.",
-    "Letters give him a different map of the island, made of names and remembered doorways. Shopkeepers give him news between parcels.",
+    "The plate on the postbox says 10:30 and 16:30, and Tōma trusts it even on the days he doubts himself. Letters for the Ōshiros, a parcel for Mr Shimabukuro at the power station, a postcard for Sakura from somebody in Hanoi.",
+    "Letters give him a different map of the island, made of names and remembered doorways. Shopkeepers give him news between parcels, and Reiko gets most of it back by teatime. Officer Mori has asked him, more than once, not to lean his bicycle on the koban’s line.",
+    "At five he takes the evening mailbag at the Port Terminal. Ms Ganaha sells the tickets there. He lingers at her window longer than any mailbag needs; she is busy, and says so, and has not yet asked him to leave.",
     "He does not read postcards. He will admit that some of the pictures are very nice."
    ],
    "quote": "The post box is never wrong. I am sometimes wrong.",
@@ -1159,7 +1032,8 @@
      "expression": "shy",
      "backdrop": "peach",
      "film": "warm",
-     "caption": "A postcard from Hanoi. He did not read it.",
+     "caption": "The evening mailbag, and a long wait at the ticket window.",
+     "with": "Ms Ganaha",
      "file": "assets/images/residents/shoot/postman-toma-2.webp"
     }
    ]
@@ -1170,7 +1044,7 @@
   "role": "Dock cargo crew",
   "place": "Western quay",
   "bio": "He walks the cargo circuit from the morning supply boat to the evening fish dispatch.",
-  "backstory": "Rice for Sakura, fuses for the workshop: the containers on the western quay look anonymous until Riku tells you what is inside. He works around the hoist, keeps the pedestrian passage clear and watches the horizon for the next supply ship. Emi Kado keeps the paperwork; Riku keeps the crates moving. Between them, very little goes missing.",
+  "backstory": "Rice for Sakura, fuses for the workshop: the containers on the western quay look anonymous until Riku tells you what is inside. He works around the hoist, keeps the pedestrian passage clear and watches the horizon for the next supply ship. The harbour master keeps the freight book; Riku keeps the crates moving. Between them, very little goes missing.",
   "portrait": "assets/images/residents/riku.webp",
   "islandPersonality": {
    "title": "The willing pair of hands",
@@ -1189,7 +1063,7 @@
    "body": [
     "Rice for Sakura, fuses for the workshop: the containers on the western quay look anonymous until Riku tells you what is inside.",
     "He works around the hoist, keeps the pedestrian passage clear and watches the horizon for the next supply ship.",
-    "Emi Kado keeps the paperwork; Riku keeps the crates moving. Between them, very little goes missing."
+    "The harbour master keeps the freight book; Riku keeps the crates moving. Between them, very little goes missing."
    ],
    "quote": "Every crate on this quay belongs to somebody’s day.",
    "photos": [
@@ -1206,245 +1080,9 @@
      "expression": "happy",
      "backdrop": "cream",
      "film": "warm",
-     "caption": "Cargo for Sakura.",
-     "with": "Emi Kado",
+     "caption": "Cargo for Sakura, signed into the freight book.",
+     "with": "Harbour master",
      "file": "assets/images/residents/shoot/riku-2.webp"
-    }
-   ]
-  }
- },
- {
-  "name": "Emi Kado",
-  "role": "Harbour freight clerk",
-  "place": "Western quay dispatch desk",
-  "bio": "Emi Kado records what comes and goes on the quay, and stays to see the late passenger boat home.",
-  "backstory": "Every shipment has a paper trail, and Emi keeps it legible. The Community Hall holds a filed copy of her freight notices for a year. A delivery is checked against a manifest, a correction is initialled, and the dispatch copy waits in the drawer for the question that always comes later. She treats paperwork as a way to help people trust what reached the island.",
-  "portrait": "assets/images/residents/emi-kado.webp",
-  "islandPersonality": {
-   "title": "Keeper of the cargo trail",
-   "traits": [
-    "Precise",
-    "curious",
-    "unflappable"
-   ],
-   "habit": "Puts a pencil dot beside each crate she has checked herself.",
-   "ambition": "Make every island delivery easy to trace from ship to shop.",
-   "favourite": "A reconciled manifest and a fresh cup of tea"
-  },
-  "article": {
-   "headline": "Every parcel gets a line in the freight book",
-   "standfirst": "Emi Kado records what comes and goes on the quay, and stays to see the late passenger boat home.",
-   "body": [
-    "Every shipment has a paper trail, and Emi keeps it legible. The Community Hall holds a filed copy of her freight notices for a year.",
-    "A delivery is checked against a manifest, a correction is initialled, and the dispatch copy waits in the drawer for the question that always comes later.",
-    "She treats paperwork as a way to help people trust what reached the island."
-   ],
-   "quote": "If it is not in the book, it did not arrive.",
-   "photos": [
-    {
-     "pose": "Think",
-     "expression": "thinking",
-     "backdrop": "cream",
-     "film": "mono",
-     "caption": "The manifest checks out.",
-     "file": "assets/images/residents/shoot/emi-kado-1.webp"
-    },
-    {
-     "pose": "Wave",
-     "expression": "smile",
-     "backdrop": "sunset",
-     "film": "warm",
-     "caption": "Waiting for the late boat.",
-     "file": "assets/images/residents/shoot/emi-kado-2.webp"
-    }
-   ]
-  }
- },
- {
-  "name": "Haru",
-  "role": "Fisherman",
-  "place": "Hoshizaki Fishing Village",
-  "bio": "Haru grew up above the village pier. The boats and the weather still set his working day.",
-  "backstory": "Haru lands the morning catch, collects his lunch from Mina’s store and spends the afternoon mending nets. The airport carries some of his parcels now, but the weather still decides whether there is anything to send. What leaves the village as a parcel began as somebody’s early morning. He would like you to remember that.",
-  "portrait": "assets/images/residents/39.webp",
-  "islandPersonality": {
-   "title": "A horizon chaser",
-   "traits": [
-    "Adventurous",
-    "patient",
-    "reserved"
-   ],
-   "habit": "Watches the cloud edges before choosing a fishing route.",
-   "ambition": "Find a dependable new fishing ground beyond the cape.",
-   "favourite": "The first light outside Hoshizaki"
-  },
-  "article": {
-   "headline": "Hoshizaki’s fisherman lands the catch before breakfast",
-   "standfirst": "Haru grew up above the village pier. The boats and the weather still set his working day.",
-   "body": [
-    "Haru lands the morning catch, collects his lunch from Mina’s store and spends the afternoon mending nets.",
-    "The airport carries some of his parcels now, but the weather still decides whether there is anything to send.",
-    "What leaves the village as a parcel began as somebody’s early morning. He would like you to remember that."
-   ],
-   "quote": "The sea gives. You mend the nets anyway.",
-   "photos": [
-    {
-     "pose": "Crouch",
-     "expression": "content",
-     "backdrop": "sky",
-     "film": "film",
-     "caption": "Mending nets after lunch.",
-     "file": "assets/images/residents/shoot/haru-1.webp"
-    },
-    {
-     "pose": "Laugh",
-     "expression": "laugh",
-     "backdrop": "mint",
-     "film": "vivid",
-     "caption": "Mina remembered his lunch.",
-     "with": "Mina",
-     "file": "assets/images/residents/shoot/haru-2.webp"
-    }
-   ]
-  }
- },
- {
-  "name": "Mina",
-  "role": "Village shopkeeper",
-  "place": "Hoshizaki General Store",
-  "bio": "Mina keeps tea, rice crackers and postcards ready, and hears the village news before it becomes a notice.",
-  "backstory": "Her family store opens early and closes before supper. Tea and rice crackers bring the fishing families back; postcards interest the occasional visitor. She is helping to prepare the guesthouse, without letting the village stop being itself. She hears about damaged nets, arriving guests and family errands before anyone writes them down.",
-  "portrait": "assets/images/residents/40.webp",
-  "islandPersonality": {
-   "title": "Village anchor",
-   "traits": [
-    "Practical",
-    "welcoming",
-    "resourceful"
-   ],
-   "habit": "Keeps a small notebook of things her neighbours need.",
-   "ambition": "Help the village prosper without losing its familiar rhythms.",
-   "favourite": "A quiet moment at her shop’s open door"
-  },
-  "article": {
-   "headline": "The store where Hoshizaki meets",
-   "standfirst": "Mina keeps tea, rice crackers and postcards ready, and hears the village news before it becomes a notice.",
-   "body": [
-    "Her family store opens early and closes before supper. Tea and rice crackers bring the fishing families back; postcards interest the occasional visitor.",
-    "She is helping to prepare the guesthouse, without letting the village stop being itself.",
-    "She hears about damaged nets, arriving guests and family errands before anyone writes them down."
-   ],
-   "quote": "Visitors are welcome. They should come at our pace.",
-   "photos": [
-    {
-     "pose": "Bow",
-     "expression": "smile",
-     "backdrop": "peach",
-     "film": "warm",
-     "caption": "Opening up.",
-     "file": "assets/images/residents/shoot/mina-1.webp"
-    },
-    {
-     "pose": "Heart",
-     "expression": "happy",
-     "backdrop": "hearts",
-     "film": "vivid",
-     "caption": "Postcards, three for a hundred.",
-     "file": "assets/images/residents/shoot/mina-2.webp"
-    }
-   ]
-  }
- },
- {
-  "name": "Jun",
-  "role": "Airport clerk",
-  "place": "Kitano-jima Airport",
-  "bio": "Jun checks commuter tickets, cabin bags and the weather before every boarding.",
-  "backstory": "Jun lives in the port and comes over on the first boat; lunch is on the passenger walkway, watching the windsock. Maintenance records go through the dock workshop and the Community Hall; Jun knows a flight depends on people far beyond the boarding counter. The terminals are growing. The job, Jun says, is still about answering one passenger’s question properly.",
-  "portrait": "assets/images/residents/41.webp",
-  "islandPersonality": {
-   "title": "A calm departure companion",
-   "traits": [
-    "Polite",
-    "organised",
-    "quietly ambitious"
-   ],
-   "habit": "Straightens the departure board before the first passenger arrives.",
-   "ambition": "Make the growing airport feel as welcoming as the island itself.",
-   "favourite": "The terminal windows at sunset"
-  },
-  "article": {
-   "headline": "Kitano-jima’s airport clerk checks the sky first",
-   "standfirst": "Jun checks commuter tickets, cabin bags and the weather before every boarding.",
-   "body": [
-    "Jun lives in the port and comes over on the first boat; lunch is on the passenger walkway, watching the windsock.",
-    "Maintenance records go through the dock workshop and the Community Hall; Jun knows a flight depends on people far beyond the boarding counter.",
-    "The terminals are growing. The job, Jun says, is still about answering one passenger’s question properly."
-   ],
-   "quote": "A flight is on time when everybody on the ground was.",
-   "photos": [
-    {
-     "pose": "Point",
-     "expression": "neutral",
-     "backdrop": "sky",
-     "film": "film",
-     "caption": "Boarding in ten minutes.",
-     "file": "assets/images/residents/shoot/jun-1.webp"
-    },
-    {
-     "pose": "Wave",
-     "expression": "happy",
-     "backdrop": "sunset",
-     "film": "warm",
-     "caption": "The last commuter flight.",
-     "file": "assets/images/residents/shoot/jun-2.webp"
-    }
-   ]
-  }
- },
- {
-  "name": "Grandmother Chinen",
-  "role": "Keeper of the old Chinen house",
-  "place": "Kitano hamlet, Kitano-jima",
-  "bio": "Tetsuo’s mother keeps the old red-tile Chinen house at the end of the hamlet lane, and its garden.",
-  "backstory": "She was married into the Chinen house in 1958 and has outlived the roof twice. The typhoon of 1987 took the Shiromas’ roof next door and three of her tiles; she still counts that a win. Her son Tetsuo mends radios in Minato and comes over on the boat when he can, and eats like he is still fifteen. The mayor and his wife live at the end of the lane; Thuan brings her the shop’s day-old bread on Saturdays, and gets a bag of goya for it.",
-  "portrait": "assets/images/residents/grandmother-chinen.webp",
-  "islandPersonality": {
-   "title": "The lane’s weather station",
-   "traits": [
-    "Sharp-eyed",
-    "unhurried",
-    "generous with vegetables"
-   ],
-   "habit": "Sweeps the lane in front of her gate at half past six, whatever the weather.",
-   "ambition": "See the old house stand through one more typhoon season.",
-   "favourite": "The breeze at her gate at three in the afternoon"
-  },
-  "article": {
-   "headline": "The old Chinen house has lost three tiles in forty years",
-   "standfirst": "Tetsuo’s mother keeps the red-tile house at the end of Kitano hamlet, and knows every boat by its whistle.",
-   "body": [
-    "She was married into the Chinen house in 1958 and has outlived the roof twice; the typhoon of 1987 took the Shiromas’ roof next door and three of her tiles, which she still counts a win.",
-    "Her son Tetsuo mends radios in Minato and comes over on the boat when he can. She says he eats like he is still fifteen, and keeps a pot on for him anyway.",
-    "The mayor and his wife live at the end of the lane. Thuan brings the shop’s day-old bread on Saturdays and goes home with a bag of goya, which Grandmother Chinen calls a fair trade."
-   ],
-   "quote": "Three tiles in forty years. The house knows what it is doing.",
-   "photos": [
-    {
-     "pose": "Wave",
-     "expression": "happy",
-     "backdrop": "garden",
-     "film": "warm",
-     "caption": "At her gate, for the breeze.",
-     "file": "assets/images/residents/shoot/grandmother-chinen-1.webp"
-    },
-    {
-     "pose": "Point",
-     "expression": "neutral",
-     "backdrop": "sky",
-     "film": "film",
-     "caption": "Three tiles, she says, in forty years.",
-     "file": "assets/images/residents/shoot/grandmother-chinen-2.webp"
     }
    ]
   }
@@ -1492,149 +1130,6 @@
      "film": "film",
      "caption": "The hard half first. Probably.",
      "file": "assets/images/residents/shoot/vy-2.webp"
-    }
-   ]
-  }
- },
- {
-  "name": "Mr Toguchi",
-  "role": "Fish seller",
-  "place": "His push cart on the main street",
-  "bio": "Mr Toguchi buys off the boats at first light and sells from a push cart on ice until the sun clears the roofs.",
-  "backstory": "He is at the harbour before the auction calls: gurukun when they run, mackerel most days, a bigeye or a parrotfish when the night was kind. By seven his cart is on Main Street, pushed slowly, and he calls out what he has in a voice that carries to the second floor. He keeps a hanging scale he trusts more than any shop’s and a cloth shade he has re-sewn more times than he will admit. Mrs Sato buys for her stock before he has finished setting up. Housewives on the street can tell what kind of morning it was at sea from the first thing he shouts. Whatever is left at eleven goes to Thao at Minato, after a haggle both of them enjoy losing. By then his ice has turned to water and his day is done. He goes home for a nap and says he is the only man on the island who has finished work before the post arrives.",
-  "portrait": "assets/images/residents/mr-toguchi.webp",
-  "islandPersonality": {
-   "title": "The morning caller",
-   "traits": [
-    "Early",
-    "talkative",
-    "proud of his fish"
-   ],
-   "habit": "Taps the side of the cart twice before he names a price.",
-   "ambition": "Sell out before the sun gets over the roofs.",
-   "favourite": "The bigeye that fought him for half an hour"
-  },
-  "article": {
-   "headline": "The fish cart that sets the island’s clock",
-   "standfirst": "Mr Toguchi buys off the boats at first light and sells from a push cart on ice until the sun clears the roofs.",
-   "body": [
-    "He is at the harbour before the auction calls: gurukun when they run, mackerel most days, a bigeye or a parrotfish when the night was kind. By seven his cart is on Main Street, pushed slowly, and he calls out what he has in a voice that carries to the second floor.",
-    "He keeps a hanging scale he trusts more than any shop’s and a cloth shade he has re-sewn more times than he will admit. Mrs Sato buys for her stock before he has finished setting up. Housewives on the street can tell what kind of morning it was at sea from the first thing he shouts.",
-    "Whatever is left at eleven goes to Thao at Minato, after a haggle both of them enjoy losing. By then his ice has turned to water and his day is done. He goes home for a nap and says he is the only man on the island who has finished work before the post arrives."
-   ],
-   "quote": "The sea decides the menu. I only push the cart.",
-   "photos": [
-    {
-     "pose": "Point",
-     "expression": "happy",
-     "backdrop": "sky",
-     "film": "warm",
-     "caption": "Gurukun this morning. Mackerel, always.",
-     "file": "assets/images/residents/shoot/mr-toguchi-1.webp"
-    },
-    {
-     "pose": "Laugh",
-     "expression": "laugh",
-     "backdrop": "sunset",
-     "film": "film",
-     "caption": "Eleven o’clock, haggling with Thao.",
-     "with": "Thao",
-     "file": "assets/images/residents/shoot/mr-toguchi-2.webp"
-    }
-   ]
-  }
- },
- {
-  "name": "Grandmother Tokashiki",
-  "role": "Co-op storekeeper",
-  "place": "Fumoto Co-op Store, at the foot of Mount Aoba",
-  "bio": "Grandmother Tokashiki has kept Fumoto’s co-operative store since the hamlet built it together in 1968.",
-  "backstory": "Every family in Fumoto owns one share of the kyōdō baiten, and Grandmother Tokashiki has kept it for all of them since the day it opened. She opens the sliding doors at seven, when the Ishimines’ tofu arrives still warm, and closes them at seven in the evening, when the last farmer has bought his cup of awamori. She does the accounts on a soroban faster than the till can add them, keeps the hamlet’s only telephone by the door, and knows whose turn it is to clean the well. Her husband carved the shisa on their gate the year the store opened. Her son drives the store’s van to the ferry for the Sakura Trading crates and the Higa awamori. She says a store owned by everybody is a store everybody tells you how to run, and she listens to all of them and does it her way.",
-  "portrait": "assets/images/residents/grandmother-tokashiki.webp",
-  "islandPersonality": {
-   "title": "The hamlet’s ledger",
-   "traits": [
-    "Exact",
-    "kind",
-    "unhurried"
-   ],
-   "habit": "Clicks the soroban beads back to zero before she says hello.",
-   "ambition": "Pay for a second well pump out of the store’s profit.",
-   "favourite": "The first warm tofu of the morning"
-  },
-  "article": {
-   "headline": "The store that everybody owns, and the grandmother who runs it",
-   "standfirst": "Grandmother Tokashiki has kept Fumoto’s co-operative store since the hamlet built it together in 1968.",
-   "body": [
-    "Every family in Fumoto owns one share of the kyōdō baiten. The profit pays for the street lights, the well and the party after the cane cut.",
-    "She opens at seven, when the Ishimines’ tofu arrives still warm, and does the accounts on a soroban faster than the till can add them.",
-    "The telephone by the door is the hamlet’s only one. She will tell you how much a call to Naha costs before you have picked it up."
-   ],
-   "quote": "A store owned by everybody is a store everybody tells you how to run.",
-   "photos": [
-    {
-     "pose": "Think",
-     "expression": "content",
-     "backdrop": "sky",
-     "film": "film",
-     "caption": "Counting the day on the soroban.",
-     "file": "assets/images/residents/shoot/grandmother-tokashiki-1.webp"
-    },
-    {
-     "pose": "Laugh",
-     "expression": "laugh",
-     "backdrop": "mint",
-     "film": "vivid",
-     "caption": "Old Mr Zukeran pays for his awamori in songs again.",
-     "with": "Old Mr Zukeran",
-     "file": "assets/images/residents/shoot/grandmother-tokashiki-2.webp"
-    }
-   ]
-  }
- },
- {
-  "name": "Old Mr Zukeran",
-  "role": "Retired cane farmer and sanshin player",
-  "place": "The asagi square in Fumoto",
-  "bio": "Old Mr Zukeran cut cane at the foot of Mount Aoba for fifty years and now keeps three goats and a sanshin.",
-  "backstory": "He was born in the red-tile house he still lives in, and he cut cane in the fields below it for fifty years, until his son took the fields and moved to Naha and let them back to the Kuniyoshis. Now he keeps three goats in a pen behind the house, weeds the kitchen garden across the lane in the mornings, and sleeps through the hot afternoon. In the evening, when it is too hot indoors and too quiet outside, he takes his sanshin down to the stone bench under the gajumaru and plays until the street lights come on. The snakeskin on the sanshin is older than he is, he says, and the songs are older than that. Children from the hamlet sit on the well curb to listen, and Grandmother Tokashiki pretends not to.",
-  "portrait": "assets/images/residents/old-mr-zukeran.webp",
-  "islandPersonality": {
-   "title": "The evening singer",
-   "traits": [
-    "Sly",
-    "slow",
-    "musical"
-   ],
-   "habit": "Tunes the sanshin for longer than he plays it.",
-   "ambition": "Teach one child in Fumoto the whole of Tanchamē.",
-   "favourite": "The bench under the gajumaru at sunset"
-  },
-  "article": {
-   "headline": "Under the gajumaru, the sanshin comes out at sunset",
-   "standfirst": "Old Mr Zukeran cut cane at the foot of Mount Aoba for fifty years and now keeps three goats and a sanshin.",
-   "body": [
-    "He was born in the red-tile house he still lives in, and cut cane in the fields below it until his son moved to Naha.",
-    "Mornings are for the goats and the kitchen garden across the lane; afternoons are for sleeping through the heat.",
-    "In the evening he plays the sanshin on the stone bench under the gajumaru, and the children sit on the well curb to listen."
-   ],
-   "quote": "The snake was older than me. The songs are older than the snake.",
-   "photos": [
-    {
-     "pose": "Idle",
-     "expression": "content",
-     "backdrop": "sunset",
-     "film": "film",
-     "caption": "The bench under the gajumaru, at the hour it is for.",
-     "file": "assets/images/residents/shoot/old-mr-zukeran-1.webp"
-    },
-    {
-     "pose": "Laugh",
-     "expression": "laugh",
-     "backdrop": "sky",
-     "film": "vivid",
-     "caption": "The brown goat has eaten the hibiscus again.",
-     "file": "assets/images/residents/shoot/old-mr-zukeran-2.webp"
     }
    ]
   }

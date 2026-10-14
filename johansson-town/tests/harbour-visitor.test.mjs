@@ -14,7 +14,7 @@ test('photo-inspired adult is a complete editable recipe and survives sharing',(
 });
 test('outfit can be assigned independently to every female town resident and saved',()=>{
  const values=new Map(),storage={getItem:k=>values.get(k),setItem:(k,v)=>values.set(k,v)};
- for(const name of ['Thuan','Thao','Nhung','Reiko','Mrs Higa','Mina','Emi','Hana']){
+ for(const name of ['Thuan','Thao','Nhung','Reiko','Miss Higa','Mrs Kinjō','Mrs Nakamura','Hana']){
   const original=recipeFor(name),r=normalizeRecipe({...original,outfit:{...original.outfit,...HARBOUR_POLO_OUTFIT}});
   assert.ok(outfitAllowedFor(name,r.outfit));saveResidentRecipe(name,r,storage);const saved=residentRecipe(name,storage);assert.equal(saved.outfit.top,'contrastpolo');assert.deepEqual(saved.hair,original.hair);assert.deepEqual(saved.head,original.head);assert.deepEqual(saved.body,original.body);
  }

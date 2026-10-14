@@ -22,7 +22,7 @@ export const ONSEN_TOWELS=Object.freeze([
   why:'On the customer side of the bandai, beside the noren, so you pick one up as you pay and walk straight through to change. The navy band says it belongs to the bath.'}),
  Object.freeze({id:'rental-reserve',en:'The evening’s second batch of rental towels',count:8,price:TOWEL_PRICE,
   for:'The after-ferry rush.',
-  why:'On the middle shelf, so Mrs Higa can refill the top without leaving the bandai while people are queueing.'}),
+  why:'On the middle shelf, so Miss Higa can refill the top without leaving the bandai while people are queueing.'}),
  Object.freeze({id:'return-basket',en:'Return basket for used rental towels',count:1,
   for:'Everyone leaving with a rental towel.',
   why:'On the bottom shelf by the noren, the last thing you pass on the way out; the basket goes to the laundry every morning.'}),
@@ -31,7 +31,7 @@ export const ONSEN_TOWELS=Object.freeze([
   why:'No towels in the water: you hang yours here on the way in and take it down to dry off before you step back onto the wooden floor.'}),
  Object.freeze({id:'bench',en:'The house towel on the changing-room bench',count:1,
   for:'Whoever comes out of the bath and finds they forgot one.',
-  why:'Mrs Higa leaves it folded at the far end of the bench, away from where people sit to change.'}),
+  why:'Miss Higa leaves it folded at the far end of the bench, away from where people sit to change.'}),
 ]);
 
 /** Terry: soft loops, no sheen. `band` adds the bath's navy stripe. */

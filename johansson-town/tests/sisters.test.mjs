@@ -11,7 +11,7 @@ const who=name=>RESIDENTS.find(p=>p.name===name);
 const age=name=>PROFILES.find(p=>p.name===name)?.age;
 
 test('Nhung, Thao and Thuan are sisters, eldest to youngest, and Nhung has no glasses',()=>{
- assert.ok(age('Nhung')>age('Thao'));assert.equal(age('Thao'),28);
+ assert.ok(age('Nhung')>age('Thao'));assert.equal(age('Thao'),34);   // Thao is 34, so that Vy can be 11 (docs/CAST-PLAN.md)
  assert.equal(recipeFor('Nhung').glasses.style,'none');
  assert.equal(recipeFor('Thao').outfit.top,'tee');assert.equal(recipeFor('Chin').outfit.hat,'cap');
 });

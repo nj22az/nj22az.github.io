@@ -43,7 +43,7 @@ export const JOHANSSON_TRUCKER=Object.freeze({
  ]),
  purpose:Object.freeze({
   zone:'stand',
-  for:Object.freeze(['Kōji','Riku','Haru','Jun','Mr Toguchi']),
+  for:Object.freeze(['Kōji','Riku','Mr Fujita']),
   why:'The quay and the boats work bare-headed under the sun and the glare off the water from first light: a peak, a mesh that lets the sea wind through, a strap that fits anyone. It is the good cap: the one you buy with your first season’s money or for the ferry to Naha, not the one the feed merchant gives away, and Johansson’s J is the town’s own maker.',
   placed:'On its own stand by the east window, between the copy machine and the end of the counter: in the window, where the street sees it; beside the till, where a ¥3,800 thing is watched and a cap can be tried on in the window’s reflection; and out of the walk from the door to the till and of the queue along the counter.',
  }),

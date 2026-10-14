@@ -1836,7 +1836,7 @@
   "milk": {
    "zone": "drinks",
    "for": [
-    "Mrs Higa",
+    "Miss Higa",
     "Mrs Yonamine",
     "Thao"
    ],
@@ -1910,7 +1910,7 @@
    "for": [
     "Mrs Miyagi",
     "Haru",
-    "Mrs Higa"
+    "Miss Higa"
    ],
    "why": "Plain yoghurt for a light breakfast and a careful stomach.",
    "placed": "Under the pudding, for the people with good intentions."
@@ -1969,7 +1969,7 @@
    "zone": "pantry",
    "for": [
     "Grandmother Higa",
-    "Mrs Higa"
+    "Miss Higa"
    ],
    "why": "Tinned peaches for visiting someone who is ill, as one does.",
    "placed": "Back face, high: an occasional buy, not in the way."
@@ -2029,7 +2029,7 @@
    "for": [
     "Mrs Yonamine",
     "Mrs Nakamura",
-    "Mrs Higa"
+    "Miss Higa"
    ],
    "why": "Laundry powder: the bathhouse towels and a family’s week.",
    "placed": "Bottom of the front face: the heaviest thing in the shop, low and near the door out."
@@ -2037,7 +2037,7 @@
   "soap": {
    "zone": "daily",
    "for": [
-    "Mrs Higa",
+    "Miss Higa",
     "Mrs Miyagi",
     "Thuan"
    ],
@@ -2189,7 +2189,7 @@
    },
    "onsen": {
     "name": "Umi-no-yu",
-    "owner": "Mrs Higa",
+    "owner": "Miss Higa",
     "lines": [
      "milk",
      "soda",
@@ -2409,7 +2409,7 @@
    },
    "onsen": {
     "name": "Umi-no-yu",
-    "owner": "Mrs Higa",
+    "owner": "Miss Higa",
     "lines": [
      "seasonal flowers for the bandai"
     ],
@@ -2561,7 +2561,7 @@
    "soup",
    "crackers"
   ],
-  "Mrs Higa": [
+  "Miss Higa": [
    "milk",
    "yogurt",
    "peaches",
