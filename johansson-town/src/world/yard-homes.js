@@ -3,6 +3,7 @@ import {HOUSEHOLDS} from '../people/households.js';
 import {windowGlow} from '../render/dusk.js';
 import {YARD_HOMES} from './yard-homes-layout.js';
 import {glazeWithRoom} from '../render/window-interior.js';
+import {TETSUO_BACK_WINDOW} from './interiors/tetsuo-flat.js';
 
 /**
  * The yard houses behind Front-Row Books & Workshop (yard-homes-layout.js).
@@ -68,8 +69,18 @@ export function buildYardHomes(world,options){
    const cat=mesh(new THREE.SphereGeometry(.14,10,8),std(0xe8a050),doorX-.95,.62,face+front*.4,'Tama asleep on the crates');cat.scale.set(1.3,.7,1);
    mesh(new THREE.CylinderGeometry(.16,.12,.3,10),std(0xf06b9a),doorX+.9,.33,face+front*.45,'Geranium pot');
    mesh(new THREE.SphereGeometry(.2,8,6),std(0x3f8f46),doorX+.9,.62,face+front*.45,'Geranium');
+  }else if(household){
+   // Tetsuo's: a crate of radio chassis waiting for the workshop, and his bicycle. Round the back, the window of
+   // his tatami room, with its shoji (interiors/tetsuo-flat.js TETSUO_BACK_WINDOW).
+   mesh(new THREE.BoxGeometry(.5,.32,.38),std(0x9a7a4c),doorX-1.0,.34,face+front*.42,'Crate of radio chassis');
+   for(let i=0;i<3;i++)mesh(new THREE.BoxGeometry(.3,.12,.2),std([0x5a5048,0x7a6e5e,0x3d4a52][i]),doorX-1.05+i*.04,.56+i*.12,face+front*.42,'Old radio chassis');
+   const sw=Math.sign((spec.door[0]-x)*front)||1,back=z-front*d/2-front*.01,wx=x+front*sw*((TETSUO_BACK_WINDOW.x0+TETSUO_BACK_WINDOW.x1)/2),ww=TETSUO_BACK_WINDOW.x1-TETSUO_BACK_WINDOW.x0,wh=TETSUO_BACK_WINDOW.head-TETSUO_BACK_WINDOW.sill,wy=.18+(TETSUO_BACK_WINDOW.head+TETSUO_BACK_WINDOW.sill)/2;
+   mesh(new THREE.BoxGeometry(ww+.1,wh+.1,.05),std(0xb9bec0,{metalness:.4}),wx,wy,back,'Back window frame (aluminium sash)');
+   const pane=new THREE.MeshStandardMaterial({color:0xb7c4c4,emissive:0xffd89a,emissiveIntensity:0,roughness:.25});glass.push(pane);
+   mesh(new THREE.PlaneGeometry(ww-.04,wh-.04),pane,wx,wy,back-front*.03,'Back window (shoji behind the glass)').rotation.y=front>0?Math.PI:0;
+   mesh(new THREE.BoxGeometry(.04,wh,.06),std(0xb9bec0,{metalness:.4}),wx,wy,back-front*.04,'Back window meeting rail');
   }else{
-   // To let: the agent's board by the door and a swept step; Chin's surfboard went to Kitahama, Tetsuo's crates to Kitano-jima.
+   // To let: the agent's board by the door and a swept step.
    mesh(new THREE.BoxGeometry(.4,.28,.03),std(0xf3efe2),doorX-1.0,1.3,face+front*.02,'To-let board');
    mesh(new THREE.CylinderGeometry(.14,.11,.26,10),std(0x8a6a46),doorX-1.0,.31,face+front*.4,'Empty flower pot');
   }

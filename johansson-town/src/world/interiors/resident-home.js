@@ -31,12 +31,15 @@ export function sharedHomeLayouts(names){
 }
 import {YARD_HOMES} from '../yard-homes-layout.js';
 import {buildYardHomeInterior} from './yard-home.js';
+import {buildTetsuoFlat} from './tetsuo-flat.js';
 import {buildFamilyHome} from './family-home.js';
 export function buildResidentHome({site,profile,room,box,reg,collider,action,exit}){
  if(profile.name===TATAMI_HOME_OWNER)return buildTatamiHome({site,profile,room,box,reg,collider,action,exit});
  // Shared houses are drawn to the house you walked into (docs/BUILDING-AUDIT.md): the
  // Front-Row yard staff houses, and Thuan and Thao's house in Kitahama, which is built
  // like its neighbours.
+ // 2 Front-Row Yard is Tetsuo's flat, built from the creator's diorama (tetsuo-flat.js).
+ if(site?.id==='resident-home-kenji'&&profile.name==='Tetsuo')return buildTetsuoFlat({site,profile,room,reg,action,collider});
  if(site&&YARD_HOMES[site.id])return buildYardHomeInterior({site,room,reg,action,collider});
  if(site?.plot&&site.homeOwners?.length>1)return buildFamilyHome({room,reg,action,collider,title:site.title,kind:site.houseKind||'concrete',residents:site.homeOwners});
  if(householdFor(profile.name)?.residents.length>1)return buildSharedHome({site,profile,room,box,reg,collider,action,exit});
