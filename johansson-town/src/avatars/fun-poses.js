@@ -1,3 +1,4 @@
+import * as THREE from '../../vendor/three.module.js';
 /**
  * Funny poses for comics, memes and the scene builders (the creator, 2026-10-11: "And add more poses and funny
  * expressions"): the body of a joke, held long enough to read. One list for the whole of Johansson World: the animator plays
@@ -26,6 +27,54 @@ const kneesIn=(P,w,bend=.22,inward=.07)=>{for(const [s,k] of [['L',1],['R',-1]])
 const handOnHip=(P,w)=>{P.toward('shoulderL',.15,0,.75,w);P.toward('elbowL',-.3,0,-1.5,w);};
 /** Both hands where `reach` put them. */
 const both=(P,A,w)=>{if(A.R)P.armTo('R',A.R,w,A.handR);if(A.L)P.armTo('L',A.L,w,A.handL);};
+
+/**
+ * PoleHug's pole (the nobori on Sakura Street, a lamp post, a flag pole: 2.2 cm in radius unless said): where its axis
+ * stands in the hugging body's own frame (metres, x to the body's left, z ahead of it), as [x, z]: beside the left cheek
+ * (PoleHug; the right cheek, PoleHugR: a flag hangs from the pole on one side, and the body clings on the other), as wide as
+ * the drawn head reaches to that side, its hair, hat or beret included, however it turns, the pole's radius and 3.5 cm
+ * clear (the head nods and sways as it looks about), and just ahead of the shoulder. A film or a scene puts the body there
+ * from its pole (Johansson Studio: content/haunted-vending-machine, Mori up the nobori), and the arms are solved round it.
+ */
+export const POLE_RADIUS=.022;
+export const poleHugPole=(m,r=POLE_RADIUS,avatar=null,side='L')=>{const x=Math.max(m.Rh*m.headSX,avatar?drawnHeadSide(avatar):0)+r+.035*m.k;return [side==='R'?-x:x,m.depth/2+r+.035*m.k];};
+const poleHugBox=(m,avatar,side,r=POLE_RADIUS)=>{const [x,z]=poleHugPole(m,r,avatar,side);return {min:[x-r,-1,z-r],max:[x+r,4,z+r],clear:.006*m.k};};
+/** How far the drawn head reaches to the body's side: the farthest of its head-bound points (its hair, a hat's brim, a
+ *  beret) from the head's own axis, round which the head turns (a cap's peak swings out to the side as he looks about),
+ *  plus where that axis is (the bind pose's head bone). */
+const headSides=new WeakMap();
+function drawnHeadSide(avatar){
+ if(headSides.has(avatar))return headSides.get(avatar);
+ let side=0;
+ for(const mesh of avatar.root.children.filter(o=>o.isSkinnedMesh&&o.visible&&!o.name.includes('outline'))){
+  const P=mesh.geometry.attributes.position,I=mesh.geometry.attributes.skinIndex,W=mesh.geometry.attributes.skinWeight,head=mesh.skeleton.bones.indexOf(avatar.bones.head);
+  if(head<0)continue;
+  const axis=new THREE.Matrix4().copy(mesh.skeleton.boneInverses[head]).invert(),ax=axis.elements[12],az=axis.elements[14];
+  let r=0;for(let i=0;i<P.count;i++)if(I.getX(i)===head&&W.getX(i)>.5)r=Math.max(r,Math.hypot(P.getX(i)-ax,P.getZ(i)-az));
+  side=Math.max(side,Math.abs(ax)+r);
+ }
+ headSides.set(avatar,side);return side;
+}
+// the hug's body (for its reach too): leant into the pole, the knees drawn up (the knee on the pole's side the higher)
+const POLE_HUG_JOINTS=Object.freeze({
+ L:Object.freeze({chest:[.14,0,0],thighL:[-1.25,0,-.18],kneeL:[1.55,0,0],footL:[.2,0,0],thighR:[-.85,0,.18],kneeR:[1.35,0,0],footR:[.2,0,0]}),
+ R:Object.freeze({chest:[.14,0,0],thighR:[-1.25,0,.18],kneeR:[1.55,0,0],footR:[.2,0,0],thighL:[-.85,0,-.18],kneeL:[1.35,0,0],footL:[.2,0,0]})});
+/** Up the pole with the pole by the `side` cheek: the arm on that side round its far side, the other across the chest, the
+ *  mittens meeting in front of it below the chin (each solved round the pole on every body: reach, the pole a box to keep
+ *  clear of). The arms go a long way round it, so the hug closes over 0.9 s (at 0.6 a shoulder turned 0.2 rad a frame). */
+function poleHug(side){
+ const o=side==='L'?1:-1,far=side==='L'?'R':'L',at=(dx,dy,dz)=>(m,v,a)=>{const [x,z]=poleHugPole(m,POLE_RADIUS,a,side);return [x+o*dx*m.k,m.chestY+dy*m.k,z+dz*m.k];};
+ return Object.freeze({label:side==='L'?'Up the pole':'Up the pole (right)',face:'dismay',d:Infinity,ramp:.9,airborne:true,
+  use:`Up a pole (or a tree) out of fright and not coming down: both arms round it, the knees drawn up against it, clinging on, the pole by the ${side==='L'?'left':'right'} cheek.`,
+  reach:{pose:()=>POLE_HUG_JOINTS[side],head:[-.12,0,0],hair:true,
+   [side]:{on:['root',at(.035,.06,.05)],avoid:(m,a)=>[poleHugBox(m,a,side)],seed:[-1.2,.4,.6,-1.65,0],hand:[0,.25,0]},
+   [far]:{on:['root',at(-.035,.02,.06)],avoid:(m,a)=>[poleHugBox(m,a,side)],seed:[-1.3,.4,.6,-1.6,0],hand:[0,.25,0]}},
+  play(P){const {w,t,m}=P,sway=Math.sin(t*1.7)*.02*w;
+   both(P,P.reach(),w);
+   P.toward('chest',.14+sway,0,0,w);P.add('head',-.12*w);
+   for(const [j,a] of Object.entries(POLE_HUG_JOINTS[side]))if(j!=='chest')P.toward(j,...a,w);
+   return {root:.14*w*m.k};}});
+}
 
 export const FUN_POSES=Object.freeze({
  JawDrop:Object.freeze({label:'Jaw drop',face:'gobsmacked',d:2.6,ramp:.8,
@@ -91,17 +140,12 @@ export const FUN_POSES=Object.freeze({
    P.armTo('R',[-.7,0,-1.9,-.9],up);P.armTo('L',[-.7,0,-1.9,-.9],up);
    P.toward('chest',-.28,0,0,up);P.add('head',-.16*up);P.toward('thighL',-1,0,0,up);P.toward('kneeL',1.4,0,0,up);P.toward('footL',.3,0,0,up);
    return {root:air*.12*m.k};}}),
- PoleHug:Object.freeze({label:'Up the pole',face:'dismay',d:Infinity,ramp:.6,airborne:true,
-  use:'Up a pole (or a tree) out of fright and not coming down: both arms round it, the knees drawn up round it, clinging on.',
-  // The arms go round the pole below the chin, the forearms meeting in front of it: raised round it above the head (as first
-  // drawn) they went 8-15 cm into the big head on every body, and through the tenugui round the neck after the bath. Held up
-  // off the floor by the pole (the body is lifted clear, as a jump is), never hovering a centimetre over it.
-  play(P){const {w,t,m}=P,sway=Math.sin(t*1.7)*.02*w;
-   P.armTo('R',[-1.35,0,.6,-1.6],w,[0,.25,0]);P.armTo('L',[-1.25,0,.6,-1.65],w,[0,.25,0]);
-   P.toward('chest',.14+sway,0,0,w);P.add('head',-.12*w);
-   P.toward('thighL',-1.25,0,-.18,w);P.toward('kneeL',1.55,0,0,w);P.toward('footL',.2,0,0,w);
-   P.toward('thighR',-.85,0,.18,w);P.toward('kneeR',1.35,0,0,w);P.toward('footR',.2,0,0,w);
-   return {root:.14*w*m.k};}}),
+  // A real pole (poleHugPole): the head is wider than the shoulders, so a pole hugged in front of the chest went through
+  // the face (Johansson Studio's collision check, the creator 2026-10-14: "the world should have its collisions intact").
+  // It stands by a cheek, just ahead of the shoulder, and the arms are solved round it. Held up off the floor by the pole
+  // (the body is lifted clear, as a jump is), never hovering a centimetre over it.
+ PoleHug:poleHug('L'),
+ PoleHugR:poleHug('R'),
  Sneak:Object.freeze({label:'Sneak',face:'scheme',d:Infinity,
   use:'Tiptoeing past someone: crouched on the toes, the mittens up like paws, looking sideways.',
   play(P){const {w,t}=P,bob=Math.sin(t*3)*.03*w;
