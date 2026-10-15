@@ -381,7 +381,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    const flipX=v=>own?v:[-v[0],...v.slice(1)];
    // (under: a place at a height above the floor in the move's own stance, where the mitten's top goes: under a load)
    const under=want.under?flipX(want.under(m)):null;
-   const target=want.head?onHead(flipX(want.head)):want.on?posed(own?want.on[0]:want.on[0].replace(/[RL]$/,c=>c==='R'?'L':'R'),flipX(want.on[1](m,volume)))
+   const target=want.head?onHead(flipX(want.head)):want.on?posed(own?want.on[0]:want.on[0].replace(/[RL]$/,c=>c==='R'?'L':'R'),flipX(want.on[1](m,volume,avatar)))
     :under?posed('root',[under[0],under[1]+posed.rise,under[2]])
     :want.root?posed('root',flipX(want.root))
     :want.chest?want.chest(avatar):new THREE.Vector3(...flipX(want.at(m))).sub(chestAt);
@@ -390,9 +390,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    const hand=want.hand?mirror(want.hand):[0,0,0],seed=mirror(spec.seedFrom?reachFor(spec.seedFrom)[side]:[...want.seed,0].slice(0,5));
    // (tip: the end of the mitten goes to the place, not its middle: a lever pushed with the fingers' end)
    const sh=bones['shoulder'+side].position,el=bones['elbow'+side].position,wr=bones['hand'+side].position,mit=new THREE.Vector3(0,-m.hand*(want.tip?1.45:.55),0);
-   // things fixed round the body to keep clear of (a wall, a cabinet): boxes in the body's frame, each point of the forearm
-   // and the mitten at least `clear` outside them
-   const box=r=>(want.avoid||[]).map(b=>new THREE.Box3(new THREE.Vector3(...b.min),new THREE.Vector3(...b.max)).expandByScalar((b.clear??.012*k)+r)),_r=new THREE.Vector3();
+   // things fixed round the body to keep clear of (a wall, a cabinet, the pole a body hugs): boxes in the body's frame (or a
+   // function of the body's measures giving them), each point of the forearm and the mitten at least `clear` outside them
+   const box=r=>(typeof want.avoid==='function'?want.avoid(m,avatar):want.avoid||[]).map(b=>new THREE.Box3(new THREE.Vector3(...b.min),new THREE.Vector3(...b.max)).expandByScalar((b.clear??.012*k)+r)),_r=new THREE.Vector3();
    const boxes=box(0),armBoxes=box(m.armR);
    const inBox=(p,list)=>{if(!list.length)return 0;_r.copy(p).applyMatrix4(posed.toRoot);let d=0;
     for(const b of list)if(b.containsPoint(_r))d=Math.max(d,Math.min(_r.x-b.min.x,b.max.x-_r.x,_r.y-b.min.y,b.max.y-_r.y,_r.z-b.min.z,b.max.z-_r.z));return d;};
