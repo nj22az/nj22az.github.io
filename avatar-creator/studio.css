@@ -202,3 +202,18 @@ body.standalone-studio .shm[data-step] :is(.shm-chips button,.shm-toggle,.shm-ta
 .home-workspace .home-note{font-size:13px;margin:6px 0 8px}
 .home-workspace .home-save{font-weight:600;color:var(--line-text)}
 .home-workspace .scene-choice button:disabled{opacity:.4}
+
+/* Expressions and performance: compact controls that wrap within the preview column. */
+.studio-expression-presets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}
+.studio-expression-presets button,.studio-performance-actions button{min-width:0;min-height:40px;white-space:normal;overflow-wrap:anywhere;font:inherit;}
+.studio-expression-presets button[aria-pressed="true"],.studio-performance-actions button[aria-pressed="true"]{background:#087b48;color:#fff;border-color:#087b48;}
+.studio-performance-actions{display:flex;flex-wrap:wrap;gap:6px;}
+.studio-performance-actions button{flex:1 1 100px;}
+.studio-performance input[type="range"]{width:100%;min-width:0;accent-color:#087b48;}
+.studio-performance output{font-variant-numeric:tabular-nums;}
+.studio-performance .shm-note{margin:4px 0;font-size:12px;line-height:1.5;}
+
+.studio-performance-menu{display:grid;gap:8px;min-width:0;}
+.studio-performance h3{font-size:12px;margin:0 0 8px;}
+.studio-performance label:has(input[type="range"]){grid-template-columns:1fr auto;}
+.studio-performance label input[type="range"]{grid-column:1/-1;}

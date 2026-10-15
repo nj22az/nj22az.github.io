@@ -1,0 +1,28 @@
+/** Character-only controls: body poses and facial performance remain independent of the saved design. */
+export function createPerformancePanel({creator,expression,pose,status}){
+ const root=document.createElement('section');root.className='studio-performance';root.setAttribute('aria-label','Expressions and performance');
+ const title=document.createElement('h3');title.textContent='Performance';root.append(title);
+ const menu=document.createElement('div');menu.className='studio-performance-menu';root.append(menu);
+ const row=(text,input)=>{const label=document.createElement('label');label.append(text,input);menu.append(label);};
+ row('Expression',expression);row('Body pose',pose);
+ const presets=document.createElement('div');presets.className='studio-expression-presets';presets.setAttribute('role','group');presets.setAttribute('aria-label','Expression presets');
+ for(const [mood,label] of [['neutral','Neutral'],['happy','Happy'],['shy','Shy'],['surprised','Surprised'],['thinking','Thinking'],['wink','Wink'],['angry','Angry'],['sad','Sad']]){
+  const button=document.createElement('button');button.type='button';button.textContent=label;button.dataset.mood=mood;
+  button.onclick=()=>{expression.value=mood;expression.dispatchEvent(new Event('change'));};presets.append(button);
+ }
+ menu.append(presets);
+ const strength=document.createElement('input');strength.type='range';strength.min='0';strength.max='100';strength.step='5';strength.value='100';strength.setAttribute('aria-label','Expression strength');
+ const strengthLabel=document.createElement('label'),output=document.createElement('output');output.textContent='100%';
+ strengthLabel.append('Strength ',output,strength);menu.append(strengthLabel);
+ strength.oninput=()=>{output.textContent=strength.value+'%';creator.setPerformance({strength:Number(strength.value)/100});};
+ const actions=document.createElement('div');actions.className='studio-performance-actions';
+ const speak=document.createElement('button');speak.type='button';speak.textContent='Speaking preview';speak.setAttribute('aria-pressed','false');
+ const freeze=document.createElement('button');freeze.type='button';freeze.textContent='Freeze pose';freeze.setAttribute('aria-pressed','false');
+ speak.onclick=()=>{const active=!creator.performance.speaking;creator.setPerformance({speaking:active});speak.setAttribute('aria-pressed',String(active));};
+ freeze.onclick=()=>{const active=!creator.performance.frozen;creator.setPerformance({frozen:active});freeze.textContent=active?'Resume motion':'Freeze pose';freeze.setAttribute('aria-pressed',String(active));status.textContent=active?'Pose frozen. Export PNG keeps this pose and expression.':'Motion resumed.';};
+ actions.append(speak,freeze);menu.append(actions);
+ const hint=document.createElement('p');hint.className='shm-note';hint.textContent='Choose a face and body pose. Freeze the moment, then Export PNG.';menu.append(hint);
+ function sync(){for(const b of presets.children)b.setAttribute('aria-pressed',String(expression.value===b.dataset.mood));creator.setPerformance({});}
+ expression.addEventListener('change',sync);pose.addEventListener('change',sync);sync();
+ return {root,dispose(){expression.removeEventListener('change',sync);pose.removeEventListener('change',sync);root.remove();}};
+}
