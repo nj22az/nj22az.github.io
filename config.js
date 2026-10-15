@@ -243,3 +243,127 @@ const CONFIG = {
       "M13 2 3 14h9l-1 8 10-12h-9l1-8Z",
   },
 };
+
+
+
+/* Homepage project explorer: purpose, first steps and previews. */
+CONFIG.projectExplorer = [
+  {
+    "id": "world",
+    "category": "create",
+    "title": "Johansson World",
+    "eyebrow": "A LITTLE ISLAND LIFE · 1997",
+    "summary": "Step into an Okinawan harbour town. Walk the waterfront, visit the shops and meet the people who live there.",
+    "url": "/johansson-town/",
+    "action": "Explore the town",
+    "format": "3D exploration",
+    "language": "English",
+    "status": "Work in progress",
+    "firstTry": "Start exploring, walk towards Sakura Konbini, then approach a resident or an object to see what you can do.",
+    "features": [
+      "A walkable town with shops, homes and a waterfront",
+      "Residents, everyday routines and small discoveries",
+      "An island setting shared with Johansson Studio"
+    ],
+    "preview": "world"
+  },
+  {
+    "id": "maintenance",
+    "category": "tools",
+    "title": "Maintenance Desk",
+    "eyebrow": "FROM THE ENGINEER’S WORKBENCH",
+    "summary": "Turn equipment care into a clear programme. Try scheduled tasks, inspection checklists and follow-up actions in a fictional workshop.",
+    "url": "/maintenance-demo/",
+    "action": "Try the maintenance demo",
+    "format": "Interactive demo",
+    "language": "English",
+    "status": "Demo",
+    "firstTry": "Open the cooling water pump, choose a maintenance task and record a sample inspection. Your changes stay in your browser.",
+    "features": [
+      "Calendar and operating-hour maintenance schedules",
+      "Risk assessments, checklists and corrective actions",
+      "Service history with backup export and restore"
+    ],
+    "preview": "maintenance"
+  },
+  {
+    "id": "studio",
+    "category": "create",
+    "title": "Johansson Studio",
+    "eyebrow": "A CHARACTER. A SCENE. A STORY.",
+    "summary": "Make a character, give them a pose and place them in Johansson World. Export the result as a picture, a meme or a comic.",
+    "url": "/avatar-creator/",
+    "action": "Create a character",
+    "format": "3D creative tool",
+    "language": "English",
+    "status": "Work in progress",
+    "firstTry": "Choose a character template, change a facial feature or hairstyle, then try a pose and export a PNG.",
+    "features": [
+      "Customisable characters, expressions and poses",
+      "Scenes from Johansson World",
+      "PNG exports for pictures, memes and comics"
+    ],
+    "preview": "studio"
+  },
+  {
+    "id": "course",
+    "category": "learn",
+    "title": "Sjöskolan · Electrical engineering",
+    "eyebrow": "LEARNING THROUGH DOING",
+    "summary": "A practical course space for electrical work on board. Explore the lessons, practise measurements and work through guided exercises.",
+    "url": "/sjoskolan/",
+    "action": "Browse the course",
+    "format": "Course & simulators",
+    "language": "Swedish",
+    "status": "Learning resource",
+    "firstTry": "Open the multimeter simulator and work through a measurement exercise. Course material and instructions are in Swedish.",
+    "features": [
+      "Lessons connecting electrical theory to marine examples",
+      "Interactive simulators and measurement exercises",
+      "Guided laboratory material and formula support"
+    ],
+    "preview": "course",
+    "secondaryUrl": "/sjoskolan/multimetersimulator/",
+    "secondaryAction": "Try the multimeter"
+  },
+  {
+    "id": "book",
+    "category": "learn",
+    "title": "Elteknik och ellära",
+    "eyebrow": "THE BOOK BEHIND THE PRACTICE",
+    "summary": "Electrical engineering for marine and industrial work, collected in one Swedish textbook. Read a free sample before exploring the full book.",
+    "url": "/elteknik/",
+    "action": "Discover the book",
+    "format": "Textbook",
+    "language": "Swedish",
+    "status": "Free sample available",
+    "firstTry": "Download the free sample chapter. The book page provides the full contents and current purchase details.",
+    "features": [
+      "24 chapters spanning marine and industrial electrical engineering",
+      "240 exercises with full solutions",
+      "A formula card and index for reference"
+    ],
+    "preview": "book",
+    "secondaryUrl": "/elteknik/files/provkapitel.pdf",
+    "secondaryAction": "Read the free sample"
+  },
+  {
+    "id": "stepwise",
+    "category": "tools",
+    "title": "StepWise",
+    "eyebrow": "MAKE THE WORKING VISIBLE",
+    "summary": "A calculator designed around working a problem through, step by step. A focused place for calculations and engineering thinking.",
+    "url": "/stepbuddy/",
+    "action": "Open StepWise",
+    "format": "Calculation tool",
+    "language": "English",
+    "status": "Browser tool",
+    "firstTry": "Open the calculator and try a calculation you know. Use the step-by-step approach to follow the working.",
+    "features": [
+      "A dedicated calculation workspace",
+      "A step-by-step approach to the working",
+      "A practical companion to technical problem solving"
+    ],
+    "preview": "stepwise"
+  }
+];

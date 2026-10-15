@@ -21,6 +21,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=Noto+Sans+JP:wght@500;700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script src="/theme-bootstrap.js?v=random-2"></script>
   <link rel="stylesheet" href="/styles.css?v=thuans-storage-wip">
+  <link rel="stylesheet" href="/css/project-explorer.css?v=1">
   <script src="/assets/js/shopify-book-price.js" defer></script>
 </head>
 <body>
@@ -45,7 +46,7 @@
         </ul>
         <div class="hero-actions">
           <a href="#projects" class="btn-primary">
-            View Projects
+            Explore the projects
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
           <a href="#about" class="btn-secondary">About Me</a>
@@ -59,6 +60,27 @@
       </div>
     </section>
 
+    <!-- Project explorer — useful tools, small worlds and practical learning -->
+    <section class="section project-explorer" id="projects" aria-labelledby="project-heading">
+      <div class="container">
+        <div class="px-intro">
+          <div><div class="section-subtitle">From the workshop</div><h2 id="project-heading">Built to use.<br>Made to explore.</h2></div>
+          <p>Practical tools, a small island world and hands-on learning. Choose something to try — each project has a different place to begin.</p>
+        </div>
+        <div class="px-toolbar"><div class="px-filters" role="group" aria-label="Filter projects">
+          <button type="button" data-project-filter="all" aria-pressed="true">All projects <span>6</span></button>
+          <button type="button" data-project-filter="tools" aria-pressed="false">Practical tools <span>2</span></button>
+          <button type="button" data-project-filter="create" aria-pressed="false">Worlds &amp; making <span>2</span></button>
+          <button type="button" data-project-filter="learn" aria-pressed="false">Learning <span>2</span></button>
+        </div><p id="project-count" role="status" aria-live="polite" aria-atomic="true">6 projects to explore</p></div>
+        <div id="project-grid" class="px-grid" data-filter="all"></div>
+        <noscript><div class="px-fallback"><p>Explore the projects:</p><ul><li><a href="/johansson-town/">Johansson World — explore an Okinawan harbour town</a></li><li><a href="/maintenance-demo/">Maintenance Desk — try an equipment maintenance programme</a></li><li><a href="/avatar-creator/">Johansson Studio — make characters and pictures</a></li><li><a href="/sjoskolan/">Sjöskolan — Swedish electrical engineering course</a></li><li><a href="/elteknik/">Elteknik och ellära — textbook and free sample</a></li><li><a href="/stepbuddy/">StepWise — step-by-step calculator</a></li></ul></div></noscript>
+        <div class="px-connections"><div><h3>Beyond the projects</h3><p>Source code, field notes and professional connections.</p></div><div id="project-channels" class="px-channel-links"></div></div>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
     <!-- Schedule — availability table -->
     <section class="section" id="schedule">
       <div class="container">
@@ -71,23 +93,6 @@
       </div>
     </section>
 
-    <!-- Dashed divider -->
-    <hr class="section-divider">
-
-    <!-- Projects — bento grid -->
-    <section class="section" id="projects">
-      <div class="container">
-        <div class="section-header">
-          <div class="section-decor" id="decor-projects"></div>
-          <div class="section-subtitle">Selected Work</div>
-          <h2>Projects &amp; platforms</h2>
-          <p>Practical tools, long-form work, and professional channels built around engineering and making.</p>
-        </div>
-        <div class="bento-grid" id="bento-grid"></div>
-      </div>
-    </section>
-
-    <!-- Dashed divider -->
     <hr class="section-divider">
 
     <!-- Journal — row-style list -->
@@ -159,7 +164,8 @@
 
   <footer id="site-footer" class="site-footer"></footer>
 
-  <script src="/config.js"></script>
+  <script src="/config.js?v=project-explorer-1"></script>
+  <script src="/assets/js/project-explorer.js?v=1" defer></script>
   <script src="/shared.js?v=random-2"></script>
   <script>
     (function () {
@@ -405,39 +411,6 @@
       var leafSvg = '<svg fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="' + CONFIG.icons.leaf + '"/></svg>';
       document.querySelectorAll(".section-decor").forEach(function (el) { el.innerHTML = leafSvg; });
 
-      /* Bento grid — project cards */
-      $("#bento-grid").innerHTML = CONFIG.projects.map(function (p) {
-        var bentoClass = p.bento === "large" ? "bento-large" :
-                         p.bento === "wide" ? "bento-wide" :
-                         p.bento === "tall" ? "bento-tall" : "";
-        var tags = p.tags.map(function (t) {
-          return '<span class="tag">' + t + '</span>';
-        }).join("");
-        var isExternal = new URL(p.url, location.origin).origin !== location.origin;
-        var linkAttrs = isExternal ? ' target="_blank" rel="noopener"' : '';
-        var actionLabel = isExternal ? "Visit site" : "Open project";
-        var cover = p.image
-          ? '<div class="bento-cover"><img src="' + p.image + '" alt="' + p.title + '">' +
-            (p.badge ? '<span class="bento-badge">' + p.badge + '</span>' : '') +
-            '</div>'
-          : '';
-
-        return '<a href="' + p.url + '"' + linkAttrs + ' class="bento-card ' + bentoClass + (p.image ? ' has-cover' : '') + '" aria-label="' + actionLabel + ': ' + p.title + '">' +
-          cover +
-          '<div class="bento-card-top">' +
-            '<div class="bento-icon" data-icon="' + p.icon + '">' + siteIcon(p.icon) + '</div>' +
-            '<div class="bento-arrow"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg></div>' +
-          '</div>' +
-          '<div class="bento-card-body">' +
-            '<h3>' + p.title + '</h3>' +
-            '<p>' + p.description + '</p>' +
-            (p.shopifyProductUrl ? '<p class="shopify-live-price" data-shopify-book-price data-shopify-product-url="' + p.shopifyProductUrl + '" data-loading-text="Fetching live price from Shopify…" data-price-error="Check current price on Shopify">Fetching live price from Shopify…</p>' : '') +
-            '<div class="card-tags">' + tags + '</div>' +
-            '<span class="bento-card-cta">' + actionLabel + '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>' +
-          '</div>' +
-        '</a>';
-      }).join("");
-
       /* Journal posts (WordPress API) — row-style list */
       var API = CONFIG.wordpressApi + "?_embed&per_page=3";
 
@@ -514,3 +487,4 @@
   </script>
 </body>
 </html>
+
