@@ -119,3 +119,8 @@
 #projects .px-mini-window{min-width:0}
 #projects .px-mini-title b{min-width:0;overflow-wrap:anywhere}
 @media(max-width:420px){#projects .px-maintenance{padding:20px 12px}#projects .px-mini-title{font-size:12px}#projects .px-mini-task button{max-width:100px;padding:6px 8px}}
+/* Bookend the full collection with a compact calculation feature. */
+@media(min-width:761px){
+  #projects .px-grid[data-filter=all] .px-card-stepwise{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}
+  #projects .px-grid[data-filter=all] .px-card-stepwise .px-stepwise{height:100%;min-height:320px;display:flex;flex-direction:column;justify-content:center}
+}
