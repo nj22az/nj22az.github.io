@@ -56,6 +56,16 @@ const CONFIG = {
 
   projects: [
     {
+      title: "Maintenance Programme Demo",
+      description:
+        "Try an English maintenance programme for technical equipment. Explore sample assets, scheduled tasks, inspection checklists, risk assessments and service history. Demonstration data; changes stay in your browser.",
+      url: "/maintenance-demo/",
+      icon: "notebook",
+      tags: ["Demo", "Maintenance", "Engineering"],
+      bento: "wide",
+      featured: true,
+    },
+    {
       title: "Sjöskolan – elteknik",
       description:
         "Svenskt elevmaterial för elteknik ombord: presentationer, bildövningar och metodstöd för vecka 37–45. Multimeter, SELV-rigg, trefas och felsökning.",
