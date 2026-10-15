@@ -150,7 +150,7 @@ const CONFIG = {
     {
       title: "StepWise",
       description:
-        "A focused, step-by-step calculator for engineering workflows where precision and clarity matter.",
+        "A test-point planner for measurement tasks: create evenly spaced or percentage targets, convert units, and export the plan.",
       url: "https://nj22az.github.io/stepbuddy/",
       icon: "calculator",
       tags: ["Tool", "Calculator", "Engineering"],
@@ -351,18 +351,18 @@ CONFIG.projectExplorer = [
     "id": "stepwise",
     "category": "tools",
     "title": "StepWise",
-    "eyebrow": "MAKE THE WORKING VISIBLE",
-    "summary": "A calculator designed around working a problem through, step by step. A focused place for calculations and engineering thinking.",
+    "eyebrow": "PLAN THE MEASUREMENT",
+    "summary": "Turn a measurement range into test targets. Choose even spacing or percentage points, add units, then copy or export the plan.",
     "url": "/stepbuddy/",
-    "action": "Open StepWise",
-    "format": "Calculation tool",
+    "action": "Plan test points",
+    "format": "Test-point planner",
     "language": "English",
     "status": "Browser tool",
-    "firstTry": "Open the calculator and try a calculation you know. Use the step-by-step approach to follow the working.",
+    "firstTry": "Load the 0–10 kN example: five points give 0, 2.5, 5, 7.5 and 10 kN. Or try a pressure range or a 4–20 mA signal.",
     "features": [
-      "A dedicated calculation workspace",
-      "A step-by-step approach to the working",
-      "A practical companion to technical problem solving"
+      "Evenly spaced targets or custom percentages of a span",
+      "Force, pressure, signal and other units with conversions",
+      "Named ranges, display precision, copy and CSV export"
     ],
     "preview": "stepwise"
   }
