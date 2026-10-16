@@ -12,7 +12,7 @@ export function createPerformancePainter(avatar,recipe){
   Object.assign(avatar.faceState,s);
   const strength=state.expressionStrength??1,blend=state.expressionBlend??1;
   const key=[s.expression,state.expressionFrom,Math.round(strength*40),Math.round(blend*40),
-   s.blink>.5,Math.round(s.talk*12),s.look?.map(v=>Math.round(v*4)).join(',')].join('|');
+   s.blink>.5,...['blinkLeft','blinkRight','actingBrow','actingSmile'].map(k=>Math.round((s[k]||0)*12)),Math.round(s.talk*12),s.look?.map(v=>Math.round(v*4)).join(',')].join('|');
   if(!changed&&key===lastKey)return false;
   lastKey=key;
   const weights=[1-strength,strength*(1-blend),strength*blend];

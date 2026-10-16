@@ -1,3 +1,8 @@
+import {KNOWN_EXPRESSIONS,KNOWN_POSES} from './scene-catalogue.mjs';
+import {createActingPanel} from './acting/panel.js?v=20261016-1';
+import {sampleTake,normalizeTake} from './acting/takes.mjs';
+import {applyActorFrame} from '../johansson-town/src/avatars/acting.js';
+import {createPerformancePainter} from '../johansson-town/src/avatars/performance-face.js';
 import * as THREE from '../johansson-town/vendor/three.module.js';
 import {buildAvatar} from '../johansson-town/src/avatars/build.js';
 import {drawFace} from '../johansson-town/src/avatars/face.js';
@@ -30,6 +35,7 @@ const choice=(name,label,options)=>`<div class="scene-choice" role="group" aria-
 export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  let state=emptyScene();try{state=normalizeScene(JSON.parse(localStorage.getItem(SCENE_KEY)),normalizeRecipe);}catch{}
  let selected=state.actors[0]?.id??null,step='location',mode='scene',generation=0,pending=Promise.resolve(),valid=false,renderer;
+ let liveActor=null,liveFrame=null,scenePlaying=false,sceneTime=0,playStart=0,playFrame=0,lastActDraw=0;
  const panels=[],avatars=new Map(),portraits=new Map();
  let lastMoment='',world=null,worldId='',views=null,townData=null,capturing=false,queue=Promise.resolve(),boxes=[],layoutStyle='grid',overlayStep='';
  const touch=touchFirst();
@@ -72,6 +78,24 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  const announce=s=>{status.textContent=s;};
  const current=()=>state.actors.find(a=>a.id===selected);
  const keys=['location','characters','pose','text','export'];
+ const acting=createActingPanel({
+  getControls:()=>({expression:current()?.expression||'neutral',pose:current()?.pose||'Idle',strength:1}),
+  onFrame:value=>{if(!current())return;liveActor=selected;liveFrame=value;const now=performance.now();if(!scenePlaying&&now-lastActDraw>=1000/15){lastActDraw=now;pending=draw();}},
+  onStop:()=>{if(liveFrame)pending=draw();},
+  onAssign:(take,loop)=>{const actor=current();if(!actor){announce('Select a character first.');return;}acting.session.hold();actor.take=normalizeTake(take);actor.takeLoop=loop;liveFrame=null;liveActor=null;sceneTime=0;changed();sync();announce('Take assigned to '+actor.name+'. Play the cast to direct the actors together.');}
+ });
+ $('[data-pane="pose"]').append(acting.root);
+ const transport=document.createElement('div');transport.className='studio-acting-transport';
+ transport.innerHTML='<button type="button" data-play-cast>Play cast</button><button type="button" data-rewind-cast>Rewind</button><button type="button" data-clear-take>Remove actor take</button><label>Scene time<input type="range" data-scene-time min="0" max="60" step=".05" value="0"></label><output data-scene-clock>0.0 s</output>';
+ $('[data-pane="pose"]').append(transport);
+ function syncClock(){transport.querySelector('[data-scene-clock]').textContent=sceneTime.toFixed(1)+' s';transport.querySelector('[data-scene-time]').value=String(sceneTime);transport.querySelector('[data-play-cast]').textContent=scenePlaying?'Pause cast':'Play cast';}
+ function stopCast(){scenePlaying=false;cancelAnimationFrame(playFrame);syncClock();sceneFile.schedule();}
+ function playCast(now){if(!scenePlaying||root.hidden)return;sceneTime=Math.min(60,(now-playStart)/1000);syncClock();if(now-lastActDraw>=1000/15){lastActDraw=now;pending=draw();}if(sceneTime>=60){stopCast();return;}playFrame=requestAnimationFrame(playCast);}
+ transport.querySelector('[data-play-cast]').onclick=()=>{if(scenePlaying){stopCast();pending=draw();return;}acting.session.hold();liveFrame=null;liveActor=null;scenePlaying=true;if(sceneTime>=60)sceneTime=0;playStart=performance.now()-sceneTime*1000;playFrame=requestAnimationFrame(playCast);};
+ transport.querySelector('[data-rewind-cast]').onclick=()=>{stopCast();sceneTime=0;syncClock();pending=draw();};
+ transport.querySelector('[data-scene-time]').oninput=e=>{const value=Number(e.target.value);stopCast();sceneTime=value;syncClock();pending=draw();};
+ transport.querySelector('[data-clear-take]').onclick=()=>{const actor=current();if(actor){delete actor.take;delete actor.takeLoop;changed();announce('Take removed from '+actor.name+'.');}};
+
  // Every resident of World as World draws them (with any look published from Studio; World's Thuan among them), the
  // characters made in Studio, and the original Thuận design.
  const resident=field('resident'),optgroup=(label,options)=>{const g=document.createElement('optgroup');g.label=label;g.append(...options);return g;};
@@ -106,7 +130,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
 
  function save(){try{localStorage.setItem(SCENE_KEY,JSON.stringify(state));}catch{announce('Browser storage is unavailable. Download a project to keep your scene.');}}
  function changed(){save();sceneFile.invalidate();pending=draw();syncSelection();}
- function setStep(value){step=value;for(const pane of root.querySelectorAll('[data-pane]'))pane.hidden=pane.dataset.pane!==step;for(const b of root.querySelectorAll('[data-step]')){b.setAttribute('aria-current',b.dataset.step===step?'step':'false');b.onclick=()=>setStep(b.dataset.step);}const i=keys.indexOf(step);$('[data-action="previous"]').disabled=i===0;$('[data-action="next"]').hidden=i===keys.length-1;$('[data-action="next"]').textContent='Next: '+({characters:'Add characters',pose:'Pose & position',text:'Add text',export:'Export'}[keys[i+1]]||'');sync();}
+ function setStep(value){if(value!=='pose'&&scenePlaying)stopCast();step=value;for(const pane of root.querySelectorAll('[data-pane]'))pane.hidden=pane.dataset.pane!==step;for(const b of root.querySelectorAll('[data-step]')){b.setAttribute('aria-current',b.dataset.step===step?'step':'false');b.onclick=()=>setStep(b.dataset.step);}const i=keys.indexOf(step);$('[data-action="previous"]').disabled=i===0;$('[data-action="next"]').hidden=i===keys.length-1;$('[data-action="next"]').textContent='Next: '+({characters:'Add characters',pose:'Pose & position',text:'Add text',export:'Export'}[keys[i+1]]||'');sync();}
 
  // ---- Pose and expression pickers: World's lists, grouped, as labelled buttons. ----
  function picker(name,groups,faces=false){
@@ -147,7 +171,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
   for(const chip of strip.children){const on=chip.dataset.id===selected;chip.toggleAttribute('data-selected',on);chip.firstChild.setAttribute('aria-pressed',String(on));}
   strip.hidden=mode==='comic'||step==='location'||!state.actors.length;$('.scene-hint').hidden=mode==='comic'||step==='location'||!state.actors.length;
  }
- function select(id,{reveal=false}={}){selected=id;if(reveal)overlayStep=step;sync();}
+ function select(id,{reveal=false}={}){if(id!==selected){acting.session.hold();liveFrame=null;liveActor=null;}selected=id;if(reveal)overlayStep=step;sync();}
 
  function sync(){
   for(const c of root.querySelectorAll('[data-camera]'))c.value=state.camera[c.dataset.camera];
@@ -229,7 +253,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
    finally{avatar.root.removeFromParent();avatar.body?.skeleton?.dispose();avatar.dispose();}}
   renderer.setScissorTest(false);return true;
  }
- function draw(){const token=++generation;draws++;valid=false;canvas.setAttribute('aria-busy','true');const snapshot=structuredClone(state);
+ function draw(){const time=sceneTime,capturedActor=liveActor,capturedFrame=liveFrame;const token=++generation;draws++;valid=false;canvas.setAttribute('aria-busy','true');const snapshot=structuredClone(state);
   queue=queue.catch(()=>{}).then(async()=>{
    if(token!==generation)return;
    try{
@@ -249,11 +273,17 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
      // A posed avatar is kept while only its place changes: moving between stools of one height and facing reuses it.
      const position=environment.place(actor),seatShape=position.seat?[Math.round((position.seat.surfaceY-position.y)*100)/100,position.seat.yaw||0]:0;
      const key=JSON.stringify([actor.recipe,actor.pose,actor.expression,actor.turn,actor.size,seatShape]);let entry=avatars.get(actor.id);
-     if(!entry||entry.key!==key){if(entry)clearAvatar(entry);entry={key,avatar:buildAvatar(actor.recipe,{shadows:true,faceSize:256})};entry.avatar.root.userData.studioActor=true;avatars.set(actor.id,entry);}
+     if(!entry||entry.key!==key){if(entry)clearAvatar(entry);entry={key,avatar:buildAvatar(actor.recipe,{shadows:true,faceSize:256})};entry.avatar.paintFace=createPerformancePainter(entry.avatar,actor.recipe);entry.avatar.root.userData.studioActor=true;avatars.set(actor.id,entry);}
      const avatar=entry.avatar;
      // Each avatar is a mesh in the same scene graph as the counter and walls.
      environment.scene.add(avatar.root);avatar.root.position.set(0,0,0);avatar.root.scale.setScalar(actor.size);
-     poseSceneAvatar(avatar,{...actor,seatHeight:position.seat?(position.seat.surfaceY-position.y)/actor.size:0});
+     const performance=capturedActor===actor.id&&capturedFrame?capturedFrame:actor.take?sampleTake(actor.take,time,{loop:actor.takeLoop}):null;
+     const actedPose=performance?.pose==='idle'?'Idle':performance?.pose;
+     const poseName=actedPose&&KNOWN_POSES.has(actedPose)?actedPose:actor.pose;
+     if(entry.poseName!==poseName){poseSceneAvatar(avatar,{...actor,pose:poseName,seatHeight:position.seat?(position.seat.surfaceY-position.y)/actor.size:0});entry.poseName=poseName;entry.basePose=Object.values(avatar.bones).map(b=>[b,b.quaternion.clone()]);entry.rootY=avatar.root.position.y;entry.rootTurn=avatar.root.rotation.y;}
+     else{for(const [bone,q] of entry.basePose)bone.quaternion.copy(q);avatar.root.position.y=entry.rootY;avatar.root.rotation.y=entry.rootTurn;}
+     avatar.paintFace({expression:actor.expression,blink:0,talk:0,look:[0,0],blinkLeft:undefined,blinkRight:undefined,actingBrow:0,actingSmile:0});
+     if(performance)applyActorFrame(avatar,{...performance,expression:KNOWN_EXPRESSIONS.has(performance.expression)?performance.expression:actor.expression});
      if(position.seat)avatar.root.rotation.y=Math.PI+(position.seat.yaw||0);
      placeSceneAvatar(avatar,position,actor.size);
      const box=new THREE.Box3().setFromObject(avatar.root),head=new THREE.Vector3(position.x,box.max.y,position.z),projected=head.clone().project(camera);
@@ -270,7 +300,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
      const behind=corners.some(c=>c.z>1||c.z<-1),xs=corners.map(c=>(c.x+1)/2),ys=corners.map(c=>(1-c.y)/2),f=p.face.clone().project(camera),edge=p.face.clone().addScaledVector(right,p.radius).project(camera),feet=p.feet.project(camera);
      return {id:p.id,visible:p.visible&&!behind,left:Math.max(0,Math.min(...xs)),right:Math.min(1,Math.max(...xs)),top:Math.max(0,Math.min(...ys)),bottom:Math.min(1,Math.max(...ys)),face:{x:(f.x+1)/2,y:(1-f.y)/2,r:Math.abs(edge.x-f.x)/2},feet:{x:(feet.x+1)/2,y:(1-feet.y)/2}};}).filter(b=>b.right>b.left&&b.bottom>b.top);
     drawPortraits(h);renderer.setViewport(0,0,w,h);
-    valid=true;canvas.setAttribute('aria-busy','false');sync();save();if(token===generation)sceneFile.schedule();
+    valid=true;canvas.setAttribute('aria-busy','false');sync();if(!scenePlaying&&!capturedFrame)save();if(token===generation&&!scenePlaying)sceneFile.schedule();
    }catch(e){canvas.setAttribute('aria-busy','false');announce('The 3D location could not load. Select the location again to retry.');console.error('Johansson Studio 3D scene',e);}
   });return queue;
  }
@@ -496,6 +526,6 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  if(matchMedia('(max-width: 800px)').matches)$('.scene-camera-box').open=false;
  new ResizeObserver(()=>syncSelection()).observe(frame);
  setStep('location');renderPanels();
- return {root,show(value){mode=value;root.dataset.mode=value;root.hidden=false;$('.scene-comic').hidden=value!=='comic';$('.scene-steps').hidden=value==='comic';$('.scene-controls').hidden=value==='comic';$('.scene-heading h1').textContent=value==='comic'?'Make a comic':'Build a scene';$('.scene-heading p').textContent=value==='comic'?'Add the scene you built as a panel, arrange up to four panels, then save your comic.':'Choose a place, add characters, then pose them and write your dialogue.';pending=draw();sync();},hide(){root.hidden=true;hideToast();preview.close();},useCharacter(recipe,id){const a=state.actors.find(a=>a.id===id);if(a){a.recipe=normalizeRecipe(recipe);a.name=text(recipe.name)||a.name;selected=a.id;changed();sync();}else add(recipe);setStep('pose');},
-  dispose(){generation++;document.removeEventListener('keydown',onKey);hideToast();sceneFile.dispose();comicFile.dispose();for(const p of panels)URL.revokeObjectURL(p.url);preview.element.remove();for(const entry of avatars.values())clearAvatar(entry);world?.dispose();renderer?.dispose();renderer?.forceContextLoss();root.remove();}};
+ return {root,show(value){mode=value;root.dataset.mode=value;root.hidden=false;$('.scene-comic').hidden=value!=='comic';$('.scene-steps').hidden=value==='comic';$('.scene-controls').hidden=value==='comic';$('.scene-heading h1').textContent=value==='comic'?'Make a comic':'Build a scene';$('.scene-heading p').textContent=value==='comic'?'Add the scene you built as a panel, arrange up to four panels, then save your comic.':'Choose a place, add characters, then pose them and write your dialogue.';pending=draw();sync();},hide(){stopCast();acting.session.hold();root.hidden=true;hideToast();preview.close();},useCharacter(recipe,id){const a=state.actors.find(a=>a.id===id);if(a){a.recipe=normalizeRecipe(recipe);a.name=text(recipe.name)||a.name;selected=a.id;changed();sync();}else add(recipe);setStep('pose');},
+  dispose(){stopCast();acting.dispose();generation++;document.removeEventListener('keydown',onKey);hideToast();sceneFile.dispose();comicFile.dispose();for(const p of panels)URL.revokeObjectURL(p.url);preview.element.remove();for(const entry of avatars.values())clearAvatar(entry);world?.dispose();renderer?.dispose();renderer?.forceContextLoss();root.remove();}};
 }

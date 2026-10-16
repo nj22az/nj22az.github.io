@@ -4,6 +4,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar,wearsBathTowel} from './build.js';
 import {createAvatarAnimator} from './animate.js';
 import {createPerformance} from './performance.js';
+import {applyActorFrame} from './acting.js';
 import {createPerformancePainter} from './performance-face.js';
 import {drawPart,drawFace,EXPRESSION_NAMES,INK_NOSES,FACE_MARKS,PAINTED_MOUSTACHES,PAINTED_BEARDS} from './face.js';
 import {PALETTE,PARTS,PATTERNS,BOTTOM_PATTERNS,NUMBERED_TOPS,normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe,AGES} from './recipe.js';
@@ -422,7 +423,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  if(!document.getElementById('shimanchu-css')){const style=document.createElement('style');style.id='shimanchu-css';style.textContent=CSS;document.head.append(style);}
  let wardrobeOwner=owner||start.name;let recipe=normalizeRecipe({...start,outfit:appropriateOutfit(wardrobeOwner,start.outfit)});const history=[];let featureBaseline=structuredClone(recipe);
  let step=STEPS.some(s=>s[0]===startAt)?startAt:'look',tab='body',page='style',pose='idle',expression='auto',previewFacing=0,hairThumbView='front',wearing='clothes',dress=null,previewFraming='auto';
- const performanceState=createPerformance();let performanceEnabled=false,activePerformanceFace={},walkTurn=0;
+ const performanceState=createPerformance();let performanceEnabled=false,activePerformanceFace={},walkTurn=0,actingFrame=null;
  const el=(tag,props={},...children)=>{const e=Object.assign(document.createElement(tag),props);for(const c of children)if(c!=null)e.append(c);return e;};
 
  // ----- Layout -----
@@ -541,18 +542,26 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
  function attachPerformance(){
   const paint=createPerformancePainter(avatar,recipe);
-  avatar.paintFace=state=>paint({...state,...activePerformanceFace});
+  avatar.paintFace=state=>'actingBrow' in state?paint(state):paint({blinkLeft:undefined,blinkRight:undefined,actingBrow:0,actingSmile:0,...state,...activePerformanceFace});
  }
  function updatePerformance(dt,talking=false){
   const mood=expression!=='auto'?expression:step==='hello'?'happy':pose==='lie'?'dizzy':pose==='EvilLaugh'?'scheme':pose==='Hop'?'happy':pose==='Kachashi'?'laugh':pose==='idle'?'neutral':'smile';
   activePerformanceFace=performanceEnabled?performanceState.update(dt,mood):{};
+  if(talking&&!performanceState.state.speaking)delete activePerformanceFace.talk;
   animator.update(dt,{speed:pose==='walk'?1.2:0,seated:pose==='sit',seatHeight:.42,lying:pose==='lie',talking:talking||performanceEnabled&&performanceState.state.speaking,expression:mood});
+  if(actingFrame)applyActorFrame(avatar,actingFrame);
+ }
+ function setActingFrame(value){
+  if(performanceState.state.frozen&&value)return;
+  actingFrame=value;
+  if(value?.pose){const id=value.pose==='Idle'?'idle':value.pose;if(POSES.some(([known])=>known===id)&&id!==pose){pose=id;if(!['idle','walk','sit','lie'].includes(pose))animator.play(pose);else animator.stop();const input=root.querySelector('[aria-label="Preview pose"]');if(input)input.value=pose;}}
+  if(performanceState.state.frozen)updatePerformance(0);
  }
  function setPerformance(options={}){
   if(!performanceEnabled){performanceEnabled=true;attachPerformance();}
   performanceState.configure(options);
   if(dirty){rebuild();dirty=false;}
-  updatePerformance(0);return performanceState.state;
+  updatePerformance(0);root.dispatchEvent(new Event('studio-performance-change'));return performanceState.state;
  }
  const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
  function facePoint(e){
@@ -1189,5 +1198,5 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
 
  rebuild();dirty=false;renderPoses();goTo(step);loop();close.focus();
- return {close:()=>finish(false),get recipe(){return normalizeRecipe({...recipe,name:name.value});},get root(){return root;},goTo,showIn,setRecipe,setPreview,setPerformance,get performance(){return performanceState.state;},resetFeature,exportPNG,save:()=>finish(true),get wearing(){return wearing;}};
+ return {close:()=>finish(false),get recipe(){return normalizeRecipe({...recipe,name:name.value});},get root(){return root;},goTo,showIn,setRecipe,setPreview,setPerformance,setActingFrame,get performance(){return performanceState.state;},resetFeature,exportPNG,save:()=>finish(true),get wearing(){return wearing;}};
 }

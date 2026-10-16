@@ -22,7 +22,9 @@ export function createPerformancePanel({creator,expression,pose,status}){
  freeze.onclick=()=>{const active=!creator.performance.frozen;creator.setPerformance({frozen:active});freeze.textContent=active?'Resume motion':'Freeze pose';freeze.setAttribute('aria-pressed',String(active));status.textContent=active?'Pose frozen. Export PNG keeps this pose and expression.':'Motion resumed.';};
  actions.append(speak,freeze);menu.append(actions);
  const hint=document.createElement('p');hint.className='shm-note';hint.textContent='Choose a face and body pose. Freeze the moment, then Export PNG.';menu.append(hint);
+ function syncButtons(){const state=creator.performance;freeze.textContent=state.frozen?'Resume motion':'Freeze pose';freeze.setAttribute('aria-pressed',String(state.frozen));speak.setAttribute('aria-pressed',String(state.speaking));}
+ creator.root.addEventListener('studio-performance-change',syncButtons);
  function sync(){for(const b of presets.children)b.setAttribute('aria-pressed',String(expression.value===b.dataset.mood));creator.setPerformance({});}
  expression.addEventListener('change',sync);pose.addEventListener('change',sync);sync();
- return {root,dispose(){expression.removeEventListener('change',sync);pose.removeEventListener('change',sync);root.remove();}};
+ return {root,dispose(){creator.root.removeEventListener('studio-performance-change',syncButtons);expression.removeEventListener('change',sync);pose.removeEventListener('change',sync);root.remove();}};
 }
