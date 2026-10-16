@@ -243,6 +243,8 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-16** Modul 1:s frivilliga revision har fått en stabil 3D-arbetsvy med separat kamerarotation, större probmål, tryck-/dragkoppling, lossning av en prob och Ångra med skyddsspärr. Ett synkroniserat kopplingsschema visar avbrott och lastström. Multimeterns reglage är samlade. Introduktion, fri direktavläsning och dolda felsökningsfall använder samma mätmodell. Samtliga försök, diagnoser och tidigare protokoll bevaras; automatisk återkoppling länkar till teorin. Originalveckan och dess formella uppgifter är oförändrade.
+
 - **2026-10-16** Förtydligat att modul 1:s nya material är frivilligt extra stöd. Originalveckans steg och inlämning visas först; länken till den utökade genomgången ligger efter veckans ordinarie arbetsgång. Modulens ordinarie länk i kursöversikten går fortsatt till originalveckan.
 
 - **2026-10-16** Modul 1 i första kursveckan (vecka 38, mappen vecka-37) har en separat kompletterande revision under `vecka-37/revision/`. Samlad svensk teori, omritade scheman, självrättande träning, automatisk läsregistrering och sex guidade 3D-mätövningar. Revisionslänk tillagd i veckosidans och kursöversiktens generatorer. Originalets innehåll, filer, datum, uppgifter, elevdata och inlämningslänkar behålls. Revisionens lokala elevdata har en egen nyckel. Nedladdningarna innehåller revisionens träningsmaterial, inte originalinlämningarnas skyddade lärarfacit.

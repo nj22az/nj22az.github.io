@@ -27,7 +27,7 @@ export function parsePrediction(text){
  return {value:Number(m[1].replace(',','.'))*scale,unit};
 }
 export function assessExercise(s,e,observation,prediction){
- if(!exerciseChecks(s,e).every(c=>c.done))return {passed:false,kind:'connection',message:'Avläsningen sparades, men uppställningen motsvarar inte uppgiften. Följ Nästa steg och mät igen.'};
+ if(!exerciseChecks(s,e).every(c=>c.done))return {passed:false,kind:'connection',message:'Avläsningen sparades, men uppställningen motsvarar inte uppgiften. Kontrollera uppgiften och använd Visa nästa handgrepp vid behov. Mät sedan igen.'};
  if(observation.code!=='reading'||!Number.isFinite(observation.value))return {passed:false,kind:'instrument',message:observation.detail};
  const p=parsePrediction(prediction);
  if(!p||p.unit!==e.unit)return {passed:false,kind:'unit',message:'Mätningen är sparad. Skriv en ny förutsägelse med rätt enhet ('+e.unit+'), till exempel ett tal följt av enheten.'};
