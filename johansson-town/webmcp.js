@@ -35,14 +35,16 @@ function dispatchKey(code,type='keydown'){
 }
 
 function actionButtons(){
+  if(window.__JOHANSSON_AGENT_CONTEXT__?.()?.concert?.active)return [...document.querySelectorAll('#concert button:not(:disabled)')].filter(b=>b.getClientRects().length);
   return [...document.querySelectorAll('#activityActions button:not(:disabled), #activity .bag-tile:not(:disabled)')].filter(visible);
 }
 
 function getState(){
   const context=window.__JOHANSSON_AGENT_CONTEXT__?.(),allowed=context?.controlsAllowed??true,prompt=document.querySelector('#prompt');
-  const modal=activityOpen();
+  const concert=context?.concert?.active?context.concert:null;
+  const modal=activityOpen()&&!concert;
   const directory=directoryOpen();
-  const buttons=modal?actionButtons().map((b,index)=>({index,label:(b.textContent||'').trim()})):[];
+  const buttons=modal||concert?actionButtons().map((b,index)=>({index,label:(b.textContent||'').trim()})):[];
   const destinations=directory?[...document.querySelectorAll('#directoryGrid .dir-item')].map(b=>({id:b.dataset.id,label:(b.querySelector('b')?.textContent||b.textContent||'').trim(),quickTravel:b.dataset.travel==='ready'})):[];
   return {
     running:gameReady(),
@@ -57,10 +59,11 @@ function getState(){
       body:text('#activityBody'),
       actions:buttons
     }:null,
+    concert:concert?{...concert,actions:buttons,choices:{songs:[...document.querySelectorAll('#concert [name="song"] option')].map(o=>({id:o.value,title:o.textContent})),singers:[...document.querySelectorAll('#concert [name="cast0"] option')].map(o=>o.value),arrangements:['pop','ballad','disco']}}:null,
     directoryOpen:directory,
     directoryDestinations:destinations,
     knownDestinations:context?.destinations||DESTINATIONS,
-    controls:{jump:allowed,interact:allowed,move:allowed,look:allowed,directoryTravel:true,activityChoice:true},
+    controls:{jump:allowed,interact:allowed,move:allowed,look:allowed,directoryTravel:!concert,activityChoice:true},
     webmcp:window.__JOHANSSON_WEBMCP__||{status:'initialising'}
   };
 }
@@ -127,6 +130,7 @@ async function interact(){
 }
 
 async function travel({destination}={}){
+  if(getState().concert)return result(false,{error:'Return to Minato before travelling.'});
   if(!gameReady())return result(false,{error:'Johansson Town is not running.'});
   if(activityOpen())return result(false,{error:'Close the current activity before using the directory.',state:getState()});
   const wanted=normal(destination),destinations=window.__JOHANSSON_AGENT_CONTEXT__?.().destinations||DESTINATIONS;
@@ -143,7 +147,7 @@ async function travel({destination}={}){
 }
 
 async function chooseAction({label,index}={}){
-  if(!activityOpen())return result(false,{error:'No activity dialog is open.',state:getState()});
+  if(!activityOpen()&&!getState().concert)return result(false,{error:'No activity dialog is open.',state:getState()});
   const buttons=actionButtons();
   let button=null;
   if(Number.isInteger(index)&&index>=0&&index<buttons.length)button=buttons[index];
@@ -157,6 +161,7 @@ async function chooseAction({label,index}={}){
 
 async function ui({control}={}){
   if(!gameReady())return result(false,{error:'Johansson Town is not running.'});
+  if(getState().concert)return result(false,{error:'Finish or close the karaoke panel first.',state:getState()});
   const map={
     notebook:'#notebookButton',time:'#timeButton',weather:'#weatherButton',sound:'#soundButton',directory:'#directoryButton',close_activity:'#closeActivity',close_directory:'#closeDirectory'
   };
@@ -169,11 +174,31 @@ async function ui({control}={}){
   return result(true,{action:'ui',control,state:getState()});
 }
 
-const API=Object.freeze({getState,move,look,jump,interact,travel,chooseAction,ui});
+async function concert({song,arrangement,cast,title,lines}={}){
+ const state=getState();if(!state.concert)return result(false,{error:'Use the karaoke machine at Minato first.'});
+ if(state.concert.playing||state.concert.busy)return result(false,{error:'Stop the performance before editing it.'});
+ const set=(name,value)=>{const field=document.querySelector('#concert [name="'+name+'"]');field.value=value;field.dispatchEvent(new Event('change',{bubbles:true}));};
+ if(song!==undefined&&!state.concert.choices.songs.some(s=>s.id===song))return result(false,{error:'Unknown song.'});
+ if(arrangement!==undefined&&!state.concert.choices.arrangements.includes(arrangement))return result(false,{error:'Unknown arrangement.'});
+ if(cast!==undefined&&(!Array.isArray(cast)||cast.length<1||cast.length>4||new Set(cast).size!==cast.length||cast.some(n=>!state.concert.choices.singers.includes(n))))return result(false,{error:'Choose one to four distinct singers from the song book.'});
+ if(title!==undefined&&(typeof title!=='string'||title.length>48))return result(false,{error:'The title is limited to 48 characters.'});
+ if(lines!==undefined&&(!Array.isArray(lines)||lines.length!==4||lines.some(l=>typeof l!=='string'||l.length>64)))return result(false,{error:'Supply four lyric lines of at most 64 characters each.'});
+ if(song!==undefined)set('song',song);if(arrangement!==undefined)set('style',arrangement);
+ if(cast){set('size',String(cast.length));cast.forEach((name,i)=>set('cast'+i,name));}
+ if(title!==undefined)set('title',title);if(lines)lines.forEach((l,i)=>set('line'+i,l));
+ return result(true,{state:getState()});
+}
+const API=Object.freeze({getState,move,look,jump,interact,travel,chooseAction,ui,concert});
 window.__JOHANSSON_AGENT_API__=API;
 window.__JOHANSSON_WEBMCP__={status:'waiting-for-model-context',registered:0,api:'2026-draft',tools:[]};
 
 const tools=[
+  {
+    name:TOOL_PREFIX+'concert',
+    description:'Configure the open Minato karaoke song book. Use the physical karaoke machine first. Choose original song, arrangement, one to four singers, title and four lyric lines. Use choose_action to Perform, Stop, Encore or Return to Minato. A new session costs 100 in-game yen; encores are included.',
+    inputSchema:{type:'object',properties:{song:{type:'string',enum:['harbour','bus','summer']},arrangement:{type:'string',enum:['pop','ballad','disco']},cast:{type:'array',items:{type:'string'},minItems:1,maxItems:4,uniqueItems:true},title:{type:'string',maxLength:48},lines:{type:'array',items:{type:'string',maxLength:64},minItems:4,maxItems:4}},additionalProperties:false},
+    annotations:{readOnlyHint:false,untrustedContentHint:false},execute:concert
+  },
   {
     name:TOOL_PREFIX+'get_state',
     description:'Read the current Johansson Town game state: location, clock, wallet, nearby interaction prompt, open activity and its available buttons. This does not change the game.',
