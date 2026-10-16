@@ -28,11 +28,6 @@
     button.setAttribute('aria-label', playing ? 'Pause port arrival' : finished ? 'Replay port arrival' : 'Play port arrival');
     button.title = playing ? 'Pause animation' : finished ? 'Replay arrival' : 'Play arrival';
   }
-  function signature() {
-    // The stamp is present on the still and returns as the arrival settles.
-    var settled = Number.isFinite(video.duration) && video.currentTime >= video.duration * 2 / 3;
-    root.toggleAttribute('data-signature', video.paused || finished || settled);
-  }
   function reconcile() {
     var permitted = intent === 'play' || (!reduced.matches && !dataSaver());
     var play = loaded && visible && !document.hidden && permitted && intent !== 'pause' && !failed && !blocked && !finished;
@@ -52,10 +47,9 @@
     if (finished) { finished = false; video.currentTime = 0; }
     blocked = false; reconcile();
   });
-  video.addEventListener('playing', function () { root.setAttribute('data-motion',''); caption.textContent = person.name + ' · Minato port'; signature(); label(true); });
-  video.addEventListener('timeupdate', signature);
-  video.addEventListener('ended', function () { finished = true; signature(); label(false); });
-  video.addEventListener('pause', function () { signature(); label(false); });
+  video.addEventListener('playing', function () { root.setAttribute('data-motion',''); caption.textContent = person.name + ' · Minato port'; label(true); });
+  video.addEventListener('ended', function () { finished = true; label(false); });
+  video.addEventListener('pause', function () { label(false); });
   video.addEventListener('error', function () { failed = true; root.removeAttribute('data-motion'); caption.textContent = stillCaption; button.hidden = true; });
   function preferenceChanged() { intent = 'auto'; reconcile(); }
   if (reduced.addEventListener) reduced.addEventListener('change', preferenceChanged);
@@ -73,3 +67,4 @@
   if (document.readyState === 'complete') afterLoad();
   else window.addEventListener('load', afterLoad, {once:true});
 })();
+

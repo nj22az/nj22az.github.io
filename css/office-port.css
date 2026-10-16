@@ -1,10 +1,17 @@
-/* The actual World arrival, rendered ahead of time; no game engine on the homepage. */
-.hero-photo.office-port{position:relative;width:calc(100% - 48px);max-width:1200px;aspect-ratio:16/9;margin:3rem auto 0;overflow:hidden;border-radius:24px;background:#8acde6;isolation:isolate;animation:none;text-align:left}
-.hero-photo.office-port::after{display:none}.hero-photo.office-port>img,.hero-photo.office-port>video{display:block;width:100%;height:100%;object-fit:cover}.hero-photo.office-port>video{position:absolute;inset:0;opacity:0;pointer-events:none}.office-port[data-motion]>video{opacity:1}
-.office-port-signature{position:absolute;top:24px;left:24px;width:clamp(176px,29%,280px);padding:12px;background:#fffdf5f2;color:#273343;border-radius:12px;box-shadow:0 3px 16px #172b4026;pointer-events:none;opacity:1;transform:rotate(-2deg);transition:opacity .35s ease,transform .35s ease}.office-port-signature svg{display:block;width:100%;height:auto}.office-port[data-motion]:not([data-signature]) .office-port-signature{opacity:0;transform:translateY(6px) rotate(0)}
-.office-port-caption{display:flex;flex-direction:column;align-items:flex-start;gap:5px}.office-port-about{display:inline-flex;align-items:center;gap:14px;min-height:44px;padding:0 14px;background:#fffdf5;color:#273343;border-radius:999px;text-decoration:none;font-weight:800;pointer-events:auto}.office-port-about:hover{background:#fff}.office-port-about:focus-visible{outline:3px solid #fff;outline-offset:4px}
-.office-port figcaption{position:absolute;inset:auto 0 0;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:56px;padding:16px 18px 10px;background:linear-gradient(transparent,#172b40aa);font:600 12px/1.4 var(--font-body,system-ui,sans-serif);color:#fff;pointer-events:none}.office-port figcaption span{min-width:0}.office-port button{display:grid;place-items:center;flex:none;width:44px;height:44px;border:1px solid #ffffff88;border-radius:50%;padding:0;background:#182c40aa;color:#fff;cursor:pointer;pointer-events:auto}.office-port button:hover{background:#182c40}.office-port button:focus-visible{outline:3px solid white;outline-offset:3px}.office-port button[hidden]{display:none}.office-port button svg{width:15px;height:15px;fill:currentColor}.office-port [data-icon=pause]{display:none}.office-port[data-playing] [data-icon=pause]{display:block}.office-port[data-playing] [data-icon=play]{display:none}
-@media(max-width:600px){.hero-photo.office-port{width:calc(100% - 24px);border-radius:16px;margin-top:2rem}.office-port figcaption{padding:16px 12px 6px;min-height:50px;font-size:11px}}
-@media(max-width:600px){.office-port-signature{top:12px;left:12px;width:176px;padding:8px;border-radius:9px}.office-port-caption{gap:2px}.office-port-about{min-height:44px;padding:0 12px}}
-@media(prefers-reduced-motion:reduce){.office-port-signature{transition:none;transform:none}}
+/* One small, pre-rendered arrival; the homepage never loads the game engine. */
+.office-port{position:relative;min-width:0;aspect-ratio:16/9;margin:0;overflow:hidden;border-radius:20px;background:#8acde6;isolation:isolate;text-align:left}
+.office-port>img,.office-port>video{display:block;width:100%;height:100%;object-fit:contain;border:0;border-radius:0}
+.office-port>video{position:absolute;inset:0;opacity:0;pointer-events:none}
+.office-port[data-motion]>video{opacity:1}
+.office-port figcaption{position:absolute;inset:auto 0 0;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:64px;padding:20px 16px 12px;background:linear-gradient(transparent,#102639cc);font:600 12px/1.4 var(--font-body,system-ui,sans-serif);color:#fff;pointer-events:none}
+.office-port-caption{min-width:0}
+.office-port button{display:grid;place-items:center;flex:none;width:44px;height:44px;border:1px solid #ffffff88;border-radius:50%;padding:0;background:#182c40cc;color:#fff;cursor:pointer;pointer-events:auto}
+.office-port button:hover{background:#182c40}
+.office-port button:focus-visible{outline:3px solid white;outline-offset:3px}
+.office-port button[hidden]{display:none}
+.office-port button svg{width:15px;height:15px;fill:currentColor}
+.office-port [data-icon=pause]{display:none}
+.office-port[data-playing] [data-icon=pause]{display:block}
+.office-port[data-playing] [data-icon=play]{display:none}
+@media(max-width:600px){.office-port figcaption{padding:16px 12px 8px;font-size:11px}}
 @media print{.office-port video,.office-port button{display:none!important}}
