@@ -4,7 +4,7 @@ The homepage uses twelve complete, silent H.264 videos: Fujita, Johansson, Thuáº
 
 Separate shuffled character and location bags in local storage show every option before resetting, without consecutive repeats. Another arrival selects a different character and viewpoint. Videos play once, keep the final frame, and pause off-screen or in hidden tabs. Explicit pause survives viewport changes. Replay restarts the current clip.
 
-A finished WebP stays visible until playback succeeds and a decoded video frame is ready for presentation. Blocked autoplay and loading failures retain the still. Stale callbacks cannot reveal an old selection. Video loading waits for page load, idle time and viewport visibility; reduced motion and data-saving preferences keep a still until explicit Play.
+A finished WebP stays visible until playback succeeds and a decoded video frame is ready for presentation. Blocked autoplay and loading failures retain the still. Stale callbacks cannot reveal an old selection. Each selection keeps its finished still visible for at least ten seconds before either automatic or requested playback. The countdown starts after the image is presented and advances only while the scene is in view and the tab is visible. Another arrival restarts the full hold. Video loading waits for page load, idle time and viewport visibility; reduced motion and data-saving preferences keep a still until explicit Play.
 
 ## Validation and authoring
 
