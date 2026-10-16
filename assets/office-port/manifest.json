@@ -1,0 +1,49 @@
+{
+  "source": "Johansson World createSpawnScene, minato-maru port opening and actual town geometry",
+  "runtime3D": false,
+  "posterBytes": 62410,
+  "autoplay": "once",
+  "drinks": false,
+  "residents": [
+    {
+      "id": "fujita",
+      "name": "Fujita",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 9,
+      "fps": 15,
+      "videoBytes": 325769
+    },
+    {
+      "id": "johansson",
+      "name": "Johansson",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 9,
+      "fps": 15,
+      "videoBytes": 333684
+    },
+    {
+      "id": "thuan",
+      "name": "Thuận",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 9,
+      "fps": 15,
+      "videoBytes": 331670
+    },
+    {
+      "id": "tetsuo",
+      "name": "Tetsuo",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 9,
+      "fps": 15,
+      "videoBytes": 329601
+    }
+  ]
+}
