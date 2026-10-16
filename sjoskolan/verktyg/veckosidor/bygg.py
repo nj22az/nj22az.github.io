@@ -291,7 +291,7 @@ VECKOR = {
                 lank(LABB['hallkrets'], 'Hållkretslabbet', 'labb', '8 räkna-först-uppgifter, sedan en felsökning med dolt fel'),
             ]},
             {'titel': 'Systematisk felsökning', 'mal': 'Observation, prövbar hypotes och en kontroll som skiljer mellan orsakerna.',
-             'delsida': 'Del_4.html', 'poster': [
+             'delsida': 'Del_4.html', 'ovningsgrupp': ('vecka-45', 'v45_01'), 'poster': [
                 ppt(V45 + 'v45_01_Systematisk_felsokning_elev.pptx', 'Systematisk felsökning', 19),
                 lank('Del_4.html#ovningar', 'Övningar: systematisk felsökning', 'övning', '10 övningar med facit'),
             ]},

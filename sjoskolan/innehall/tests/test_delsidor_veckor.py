@@ -213,6 +213,13 @@ class KallflodeTest(unittest.TestCase):
             self.assertIn(f'href="Del_{n}.html#ovningar"', text)
         self.assertIn('data-kap="v45_01"', text)
 
+    def test_vecka43_veckosidan_raknar_40_ovningar_med_ursprungliga_lagringsnycklar(self):
+        dagsvy = D.dagsvy()
+        data, _ = dagsvy.kursplan_framsteg(43, dagsvy._vecka(43))
+        grupper = dict(data['ovningar'])
+        self.assertEqual(sum(map(len, grupper.values())), 40)
+        self.assertEqual(set(grupper['vecka-45']), {f'v45_01-q{i}' for i in range(1, 11)})
+
     def test_vecka43_alla_lokala_lankar_och_bilder_finns(self):
         from urllib.parse import urljoin, urlsplit, unquote
         from html.parser import HTMLParser
