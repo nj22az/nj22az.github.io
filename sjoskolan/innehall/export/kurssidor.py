@@ -40,6 +40,11 @@ def filer(a):
     ut = {}
     for plats in a.platser(YTA):
         text = (R.SJO / plats).read_text(encoding='utf-8')
+        if plats == 'vecka-43/aktuell/Formelstod_och_ovningar.html' and 'id="alla-fyra-delar"' not in text:
+            text = text.replace('</h1>', '</h1><p class="sj-panel soft" id="alla-fyra-delar">Den här utskriftsversionen '
+                                'innehåller del 1–3. <a href="Ovningar.html">Alla 40 övningar i vecka 43, del 1–4</a> '
+                                'finns i översikten. <a href="Del_4.html#ovningar">Del 4: Systematisk felsökning '
+                                '(övning 1.1–1.10)</a>.</p>', 1)
         text = re.sub(r'<style>\.facit[,{].*?</style>(<!-- facit\.css -->)?', STIL, text, count=1, flags=re.S)
         for del_ in a.delar(YTA, plats):
             pls = a.placeringar(YTA, plats, del_)

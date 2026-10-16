@@ -94,6 +94,13 @@ def _undervisas():
 UNDERVISAS = _undervisas()
 
 
+def elevnavigation(did):
+    """Vecka 43:s bildspel länkar till rätt del, inklusive del 4:s stabila elevadress."""
+    kap = did[:6]
+    del_ = {'v43_01': 1, 'v43_02': 2, 'v43_03': 3, 'v45_01': 4}.get(kap)
+    return {'del': del_, 'exercises': f'../vecka-43/aktuell/Del_{del_}.html#ovningar'} if del_ else {}
+
+
 def visning(week, did=''):
     """Veckan eleven ser och veckosidan, när de skiljer sig från mappen (kursen började vecka 38, vecka-38/ ingår i vecka 40;
     vecka 45:s delar undervisas i vecka 43 och 44)."""
@@ -171,6 +178,7 @@ def build(pptx, force=False):
         'weekUrl': visning(week, did)[1],
         'exercises': f'../vecka-{week}/aktuell/Formelstod_och_ovningar.html#{chapter}' if any(e.startswith(chapter) for e in ex_ids) else None,
         'slides': slides,
+        **elevnavigation(did),
     }
     if visning(week, did)[0] != week:
         data['vecka'] = visning(week, did)[0]
@@ -192,7 +200,8 @@ if __name__ == '__main__':
         d = json.loads(f.read_text())
         # Visad vecka och veckosida kan ändras utan ny rendering.
         vecka, href = visning(d['week'], did)
-        ny = {**{k: v for k, v in d.items() if k != 'vecka'}, 'weekUrl': href, **({'vecka': vecka} if vecka != d['week'] else {})}
+        ny = {**{k: v for k, v in d.items() if k != 'vecka'}, 'weekUrl': href, **({'vecka': vecka} if vecka != d['week'] else {}),
+              **elevnavigation(did)}
         if ny != d:
             f.write_text(json.dumps(ny, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
             print('uppdaterad vecka', did)

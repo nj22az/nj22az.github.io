@@ -4,4 +4,4 @@
 import { provaVecka } from '../../verktyg/inlamning/provvecka.mjs';
 
 provaVecka({ vecka: 43, uppgifter: ['EL-000820', 'EL-000821', 'EL-000822', 'EL-000828'], rattas: 13, sista: 'fredag 23 oktober',
-  delar: [[1, 'Del_1.html'], [2, 'Del_2.html'], [3, 'Del_3.html'], [4, '../../vecka-45/aktuell/Del_1.html']] });
+  delar: [[1, 'Del_1.html'], [2, 'Del_2.html'], [3, 'Del_3.html'], [4, 'Del_4.html']] });

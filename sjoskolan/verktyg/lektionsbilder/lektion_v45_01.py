@@ -8,12 +8,12 @@ avsnitt 4 och efter avsnitt 7. Felsökningsrapporten (inlämning 3 i vecka-45/) 
 """
 
 DELSIDA = 'nj22az.github.io/sjoskolan/vecka-45/aktuell/Del_1.html'
-V45 = '../../vecka-45/aktuell/'
+V43 = '../../vecka-43/aktuell/'
 
 # Läxorna efter lektionen (samma lista på bilden ”Det här gör du nu” och på veckosidan).
 HEMMA = [
-    ('del-4', 'Läs del 4: teorin och de två exemplen. Tryck på ”Jag har läst del 4” längst ned på sidan.', V45 + 'Del_1.html', 'Öppna del 4'),
-    ('ovn-4', 'Gör övning 1.6–1.10 på delsidan för del 4. Ledtrådar och facit finns där.', V45 + 'Del_1.html#v45_01-q6',
+    ('del-4', 'Läs del 4: teorin och de två exemplen. Tryck på ”Jag har läst del 4” längst ned på sidan.', V43 + 'Del_4.html', 'Öppna del 4'),
+    ('ovn-4', 'Gör övning 1.6–1.10 på delsidan för del 4. Ledtrådar och facit finns där.', V43 + 'Del_4.html#v45_01-q6',
      'Öppna övning 1.6'),
     ('rapport', 'Skriv felsökningsrapporten, inlämning 4: felsök två felmoduler i Hållkretslabbet, en i taget, och fyll i '
                 'rapportens fält för båda.', '../../vecka-43/aktuell/Inlamning.html#uppgift-4', 'Öppna felsökningsrapporten'),

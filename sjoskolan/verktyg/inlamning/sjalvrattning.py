@@ -558,8 +558,12 @@ def delsidor(nr):
             if not m or int(m.group(1)) != nr:
                 continue
             mapp = int(f.parent.parent.name.split('-')[1])
+            n = int(m.group(2))
+            # En genererad elevkopia i rätt vecka går före den bevarade originaladressen.
+            if n in ut and mapp != nr and ut[n][2].parent.parent.name == f'vecka-{nr}':
+                continue
             href = f.name if mapp == nr else f'../../vecka-{mapp}/aktuell/{f.name}'
-            ut[int(m.group(2))] = (href, re.sub(r'^Del \d+: ', '', html.unescape(m.group(3))), f)
+            ut[n] = (href, re.sub(r'^Del \d+: ', '', html.unescape(m.group(3))), f)
         _DELSIDOR[nr] = dict(sorted(ut.items()))
     return _DELSIDOR[nr]
 
@@ -569,6 +573,11 @@ def dellank(nr, mappvecka, fil_del):
     for n, (href, _, f) in delsidor(nr).items():
         if f.parent.parent.name == f'vecka-{mappvecka}' and f.name == f'Del_{fil_del}.html':
             return n, href
+    original = SJO / f'vecka-{mappvecka}/aktuell/Del_{fil_del}.html'
+    if original.exists():
+        m = re.search(r'<p class="course-kicker">Vecka (\d+) · Del (\d+) av \d+</p>', original.read_text(encoding='utf-8'))
+        if m and int(m[1]) == nr and int(m[2]) in delsidor(nr):
+            return int(m[2]), delsidor(nr)[int(m[2])][0]
     return None
 
 
@@ -710,6 +719,11 @@ def epost_ruta(epost, vn, pa_sidan):
     """Rutan Så lämnar du in för en självrättande vecka (inlämningssidan; veckosidan länkar dit)."""
     var = 'i rutorna under varje uppgift' if pa_sidan else 'i rutorna på <a href="Inlamning.html">inlämningssidan</a>'
     knapp = '<p><a class="sj-btn" href="#lamna-in">Till Lämna in</a></p>' if pa_sidan else ''
+    classroom = (f'<p class="ri-classroom"><strong>Classroom för vecka 43:</strong> öppna kursens Classroom via länken '
+                 'du fått från skolan och välj uppgiften under <strong>Vecka 43</strong>. Bifoga PDF-filen och bilagorna '
+                 'nedan och slutför inlämningen där. Knappen Lämna in på den här webbsidan skickar inget till Classroom. '
+                 f'Saknar du länken, uppgiften eller åtkomst? <a href="mailto:{epost}">Kontakta läraren</a> före fredag 23 oktober.</p>'
+                 if vn == 43 else '')
     return ('<div class="sj-panel soft handin-mail"><h3>Så lämnar du in</h3>'
             '<p><strong>Skriv dina svar. Tryck Rätta. Du får se vad som är rätt och var du kan läsa om något skiljer sig. '
             'Läraren ser ditt första svar och hur många försök du gjorde.</strong></p>'
@@ -720,7 +734,7 @@ def epost_ruta(epost, vn, pa_sidan):
             f'<li>Lämna in PDF-filen i Google Classroom under Vecka {vn}.{" " + BILAGOR[vn] if vn in BILAGOR else ""}</li></ol>'
             '<p>Ett tal räknas som rätt om det skiljer högst 2 % från rätt värde. Komma eller punkt går bra. '
             'Uträkningar kan du lämna in som foto eller PDF i Classroom, men det behövs bara om läraren ber om det.</p>'
-            f'{knapp}</div>')
+            f'{classroom}{knapp}</div>')
 
 
 def lasdelar(nr):
