@@ -291,9 +291,9 @@ VECKOR = {
                 lank(LABB['hallkrets'], 'Hållkretslabbet', 'labb', '8 räkna-först-uppgifter, sedan en felsökning med dolt fel'),
             ]},
             {'titel': 'Systematisk felsökning', 'mal': 'Observation, prövbar hypotes och en kontroll som skiljer mellan orsakerna.',
-             'delsida': V45 + 'Del_1.html', 'poster': [
+             'delsida': 'Del_4.html', 'ovningsgrupp': ('vecka-45', 'v45_01'), 'poster': [
                 ppt(V45 + 'v45_01_Systematisk_felsokning_elev.pptx', 'Systematisk felsökning', 19),
-                lank(V45 + 'Formelstod_och_ovningar.html#v45_01', 'Övningar: systematisk felsökning', 'övning', '10 övningar med facit'),
+                lank('Del_4.html#ovningar', 'Övningar: systematisk felsökning', 'övning', '10 övningar med facit'),
             ]},
         ],
         'lektioner': {1: (0, 'Måndag', 'online 09.00–11.00'), 2: (1, 'Tisdag', 'online 15.00–17.00'), 3: (4, 'Fredag', 'online 09.00–10.00'), 4: (4, 'Fredag', 'online 10.00–11.00')},
@@ -310,11 +310,11 @@ VECKOR = {
         'veckan': [
             {'id': 'inlamning', 'titel': 'Inlämningen', 'sista': '2026-10-23', 'href': 'Inlamning.html', 'knapp': 'Öppna inlämningen',
              'text': 'Fyra uppgifter: motorns märkskylt, skyddsdata, hållkretsen med nödstopp och felsökningsrapporten.',
-             'hur': 'Formuläret rättar svaren, och du har tre försök per fråga. Tryck Lämna in, ladda ner PDF-filen och lämna in den i Google Classroom under Vecka 43.'},
+             'hur': 'Formuläret rättar svaren, och du har tre försök per fråga. Tryck Lämna in, ladda ner PDF-filen och lämna in den i Google Classroom under Vecka 43. Använd kursens Classroom-länk från skolan. Webbformuläret skickar inte PDF-filen automatiskt. Saknar du länken eller åtkomst, kontakta läraren.'},
             {'id': 'labb', 'titel': 'Hållkretslabbet', 'href': LABB['hallkrets'], 'knapp': 'Öppna labbet',
              'text': 'Först de 8 räkna-först-uppgifterna, sedan en felsökning av ett dolt fel med labbprotokollet.',
              'hur': 'Labbet är underlaget till inlämning 3 och felsökningsrapporten. Läxorna efter tisdagens och fredagens lektion säger vad du gör när.'},
-            {'id': 'ovningar', 'titel': 'Övningarna', 'href': 'Formelstod_och_ovningar.html', 'knapp': 'Alla övningar',
+            {'id': 'ovningar', 'titel': 'Övningarna', 'href': 'Ovningar.html', 'knapp': 'Alla övningar',
              'text': 'Tio övningar till varje del, med ledtrådar och facit. En del gör vi tillsammans på lektionen, resten gör du hemma.',
              'hur': 'Läxorna efter varje lektion säger vilka övningar du gör hemma. Bocka av en övning när du är klar. Övningarna lämnas inte in.'},
         ],

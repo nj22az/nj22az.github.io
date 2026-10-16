@@ -157,6 +157,7 @@ def lektioner(nr, w, sida_mapp=None):
             'amnen': [re.sub(r'^Pass \d+: ', '', t) for _, t in upplagg if _amne(t)],
             'bildspel': f'../../bildspel/?d={deck}', 'pdf': pdf.name if mapp == sida_mapp else f'../../{mapp}/aktuell/{pdf.name}',
             'mapp': mapp, 'lasknapp': lasknapp,
+            'delsida': f'Del_{lek["del"]}.html' if nr == 43 else None,
             'pa_lektionen': [f'{lek["id"]}-q{n.split(".")[1]}' for n in pa_lektionen],
             'pa_lektionen_text': _nummertext(pa_lektionen) if pa_lektionen else '',
             'laxor': [{'id': i, 'text': t, 'href': h, 'knapp': kn, 'ovningar': _laxans_ovningar(t, h)} for i, t, h, kn in mod.HEMMA[lek['id']]],
@@ -199,11 +200,12 @@ def _lektionsblock(lek, flera):
     mal = ''.join(f'<li>{escape(e[0].upper() + e[1:])}</li>' for e in lek['efter'])
     laxor = ''.join(_laxa_html(lek, x) for x in lek['laxor'])
     rubrik = (f'<h3 class="dag-lek-rubrik">{escape(lek["titel"])} <span>{escape(lek["tid"])}</span></h3>' if flera else '')
+    delsida = f'<a class="sj-btn" href="{lek["delsida"]}">Öppna del {lek["del"]}</a>' if lek.get('delsida') else ''
     return (f'<div class="dag-lektion" data-lektion="{lek["id"]}">{rubrik}<p class="dag-under">{escape(lek["under"])}.</p>'
             f'<div class="dag-kolumner"><section><h4>Det här pratar vi om</h4><ol class="dag-upplagg">{upplagg}</ol></section>'
             f'<section><h4>Efter lektionen kan du</h4><ul class="dag-mal">{mal}</ul></section></div>'
             f'<p class="dag-knappar"><a class="sj-btn" href="{lek["bildspel"]}">Öppna presentationen</a>'
-            f'<a href="{lek["pdf"]}">Presentationen som PDF</a></p>'
+            f'{delsida}<a href="{lek["pdf"]}">Presentationen som PDF</a></p>'
             f'<h4>Läxor efter lektionen</h4><ul class="laxor">{laxor}</ul></div>')
 
 

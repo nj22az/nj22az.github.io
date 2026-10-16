@@ -66,7 +66,7 @@ async function viewer() {
   document.documentElement.style.setProperty('--ar', `${d.w}/${d.h}`);
   document.getElementById('nav-week').outerHTML = `<a href="${esc(d.weekUrl)}">Vecka ${vecka}</a>`;
   app.innerHTML = `
-    <div class="deck-head"><div><p class="course-kicker">Vecka ${vecka} · bildspel</p><h1>${esc(d.title)}</h1></div>
+    <div class="deck-head"><div><p class="course-kicker">Vecka ${vecka}${d.del ? ` · Del ${esc(d.del)} av 4` : ''} · bildspel</p><h1>${esc(d.title)}</h1></div>
       <div class="deck-links">${d.exercises ? `<a href="${esc(d.exercises)}">Övningar med facit</a>` : ''}<a href="${esc(d.weekUrl)}">Veckans sida</a><a href="${esc(d.pdf)}">PDF</a><a href="${esc(d.pptx)}">PowerPoint</a></div></div>
     <div class="progress" aria-hidden="true"><span id="prog"></span></div>
     <div class="stage" id="stage"><img id="img" alt="" width="${d.w}" height="${d.h}"><button class="nav-btn prev" id="zprev" aria-label="Föregående bild"></button><button class="nav-btn next" id="znext" aria-label="Nästa bild"></button></div>

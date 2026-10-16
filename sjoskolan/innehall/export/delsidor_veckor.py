@@ -8,6 +8,7 @@ ligger i vecka-NN/aktuell/figurer (verktyg/veckosidor/figurer_ur_presentationer.
 import html
 import json
 import re
+from urllib.parse import urljoin
 
 from pptx import Presentation
 
@@ -20,6 +21,8 @@ VECKOR = range(41, 46)
 # Vecka 45:s delar undervisas i vecka 43 och 44 (verktyg/veckosidor/bygg.py).
 # Filerna ligger kvar i vecka-45/; sidan visar veckan och delen eleven ser. Övningarna behåller sina nummer.
 FLYTTAD = {(45, 1): (43, 4, 4), (45, 2): (44, 4, 5), (45, 3): (44, 5, 5)}
+# Stabil elevadress. Original, övningsankare och lagringsnycklar behålls.
+ELEVADRESS = {(45, 1): 'vecka-43/aktuell/Del_4.html'}
 EMU = 914400
 HOPPA = ('Dagens två pass', 'Pass 2')
 # Lektionsbilderna (verktyg/lektionsbilder, från vecka 42) har egna bilder för lektionens upplägg. De är inte teori.
@@ -224,7 +227,13 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
     antal = len(delar)
     plats = next(i for i, (fv, d, _) in enumerate(delar) if (fv, d) == (int(v), dnr))
     kicker = f'Vecka {vv} · Del {delar[plats][2]} av {antal}'
+    veckotitel = f'Vecka {vv}'
     flyttnotis = (f'<p class="sj-muted">Övningarna i den här delen är numrerade {dnr}.1–{dnr}.10.</p>' if flytt else '')
+    if (int(v), dnr) in ELEVADRESS:
+        flyttnotis = ('<p class="sj-panel soft">Det här är <strong>vecka 43, del 4</strong>, fredag 23 oktober '
+                     '10.00–11.00. Övningarna heter <strong>1.1–1.10 i del 4</strong>, enligt presentationen. '
+                     'PDF- och PowerPoint-filerna heter v45_01 men hör till den här lektionen. '
+                     '<a href="/sjoskolan/vecka-43/aktuell/Del_4.html">Vecka 43:s länk till del 4</a>.</p>')
     h = [f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e(titel)} · Vecka {vv} · Sjöskolan</title><meta name="description" content="{R.attr(veckotitel)}: {R.attr(deltitel)}. Teori, exempel och övningar med ledtrådar och facit."><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{v}/aktuell/Del_{dnr}.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v=20260928"><link rel="stylesheet" href="../../gemensamt/delsida.css?v={V}"><link rel="stylesheet" href="../../gemensamt/beteckningar.css?v=20260928"><link rel="stylesheet" href="../../gemensamt/raknehjalp.css?v=20260929"><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
 <body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="{idx}">Vecka {vv}</a><a href="{inl}">Inlämning</a></nav>
 <main id="main-content" class="course-main del-main"><div class="course-breadcrumb"><a href="{idx}">← Vecka {vv}</a></div>
@@ -256,7 +265,7 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
 <li><strong>Läs teorin ett avsnitt i taget</strong> ({len(teori)} korta avsnitt). Sist i varje avsnitt står vilka övningar du kan göra direkt.</li>
 <li><strong>Följ exemplen</strong> med papper och räknare, steg för steg. Gissa nästa steg innan du läser det.</li>
 <li><strong>Gör övningarna</strong> {dnr}.1–{dnr}.{len(poster)}. Fastnar du: <em>Ledtråd 1</em> visar vilket samband du behöver och var i teorin det förklaras. <em>Ledtråd 2</em> visar hur du börjar och <em>Ledtråd 3</em> exemplet som räknar samma sorts uppgift med andra tal. Öppna facit när du har ett eget svar.</li>
-<li><strong>Lämna in</strong> veckans uppgifter: <a href="Inlamning.html">Veckans inlämning</a>.</li></ol>''')
+<li><strong>Lämna in</strong> veckans uppgifter: <a href="{inl}">Veckans inlämning</a>.</li></ol>''')
     if metod:
         h.append(f'<details class="sj-panel"><summary><strong>Så skriver du en lösning som går att följa</strong></summary>{block_html(metod[2])}</details>')
     h.append(f'<p class="del-mer"><a href="../../bildspel/?d={e(deck[:-5].removesuffix("_elev"))}">Lärarens presentation</a> · <a href="{e(deck[:-5])}.pdf">PDF</a> · <a href="../../gemensamt/Raknehjalp.html">Räknarhjälp</a> · <a href="../../gemensamt/Formelblad_och_begrepp.html">Formelblad</a></p>')
@@ -358,6 +367,9 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
     def lank(i, pil):
         # Länk till del nummer i (0-baserat) i veckans ordning. En del i en annan mapp får också sin rubrik.
         fv, d, n = delar[i]
+        if (fv, d) in ELEVADRESS:
+            text = f'Del {n}: {e(deltitel_for(fv, d))}'
+            return f'<a href="/sjoskolan/{ELEVADRESS[(fv, d)]}">{"← " + text if pil == "<" else text + " →"}</a>'
         if fv == int(v):
             return f'<a href="Del_{d}.html">{"← " if pil == "<" else ""}Del {n}{" →" if pil == ">" else ""}</a>'
         text = f'Del {n}: {e(deltitel_for(fv, d))}'
@@ -394,6 +406,50 @@ for(const b of document.querySelectorAll('.del-alla'))b.addEventListener('click'
 </script></body></html>
 ''')
     return ''.join(h)
+
+
+def elevkopia(text, original, adress):
+    """Samma genererade lektion på elevadressen, utan iframe/omdirigering.
+
+    Resurser får absoluta adresser mot originalmappen; fragment stannar på elevsidan.
+    Lagringsnycklar och alla övnings-id hämtas oförändrade ur originalsidan.
+    """
+    bas = '/sjoskolan/' + original
+    def resurs(m):
+        attr, url = m.groups()
+        if url.startswith(('#', '/')) or re.match(r'[a-z]+:', url):
+            return m.group(0)
+        return f'{attr}="{urljoin(bas, url)}"'
+    text = re.sub(r'(href|src)="([^"]+)"', resurs, text)
+    text = text.replace('data-ri-las-inlamning="../../vecka-43/aktuell/Inlamning.html"',
+                        'data-ri-las-inlamning="Inlamning.html"')
+    return text.replace('https://nj22az.github.io' + bas,
+                        'https://nj22az.github.io/sjoskolan/' + adress)
+
+
+def ovningsoversikt43():
+    """Alla fyra delarna, med samma framsteg som delsidorna och veckosidan."""
+    rader = []
+    for fv, d, n in veckans_delar(43):
+        href = f'Del_{n}.html'
+        kap = f'v{fv}_0{d}'
+        nyckel = f'sj-ovningar:/sjoskolan/vecka-{fv}/aktuell/Formelstod_och_ovningar.html'
+        rader.append(f'<li data-nyckel="{nyckel}" data-kap="{kap}"><h2>Del {n}: {e(deltitel_for(fv, d))}</h2>'
+                     f'<p>Övning {d}.1–{d}.10{" i del 4" if n == 4 else ""} · <span class="ovn-lage" aria-live="polite"></span></p>'
+                     f'<p><a class="sj-btn" href="{href}#ovningar">Öppna övningarna i del {n}</a> '
+                     f'<a href="{href}#teori">Läs teorin i del {n}</a></p></li>')
+    return '''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Alla övningar · Vecka 43 · Sjöskolan</title><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-43/aktuell/Ovningar.html">
+<link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v=20260928">
+<style>.ovn-delar{list-style:none;padding:0}.ovn-delar li{margin:20px 0;padding:16px;border:1px solid #cad8e2;border-radius:12px}.ovn-delar h2{margin-top:0}.ovn-delar li>p:last-child{display:flex;flex-wrap:wrap;align-items:center;gap:12px}.ovn-lage{font-weight:700}</style><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
+<body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="./">Vecka 43</a><a href="Inlamning.html">Inlämning</a></nav>
+<main class="course-main" id="main-content"><article class="course-reading"><p class="course-kicker">Vecka 43 · Alla fyra delar</p><h1>Alla övningar</h1>
+<p>40 övningar med teori, exempel, ledtrådar och facit. Avbockningar sparas i den här webbläsaren och visas också på veckosidan. Övningarna lämnas inte in.</p>
+<p class="sj-panel soft">Del 4, Systematisk felsökning, hör till vecka 43. Övningarna heter 1.1–1.10 i del 4, enligt presentationen. De är skilda från del 1:s övningar med samma nummer.</p>
+<ol class="ovn-delar">''' + ''.join(rader) + '''</ol><p><a href="Formelstod_och_ovningar.html">Formelstöd och utskriftsversion, del 1–3</a></p>
+<p><a href="./">← Vecka 43</a> · <a href="Inlamning.html">Veckans inlämning</a></p></article></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
+<script>(()=>{const visa=()=>{for(const li of document.querySelectorAll('[data-nyckel]')){let k={};try{k=JSON.parse(localStorage.getItem(li.dataset.nyckel)||'{}')||{};}catch{}
+const n=Array.from({length:10},(_,i)=>!!k[li.dataset.kap+'-q'+(i+1)]).filter(Boolean).length;li.querySelector('.ovn-lage').textContent=n+' av 10 klara';}};visa();addEventListener('pageshow',visa);addEventListener('storage',visa);})();</script></body></html>'''
 
 
 _SJALV = []
@@ -459,11 +515,16 @@ def filer(a):
             if pl['plats'].startswith(f'vecka-{v}/'):
                 kf.setdefault(pl['del'], []).append((pl, p))
         for deck in decks:
-            ut[f'vecka-{v}/aktuell/Del_{int(deck[5])}.html'] = sida(a, v, deck, decks, pl_ovn, pres_bild, veckotitel, kf.get(deck[:6], ()))
+            original = f'vecka-{v}/aktuell/Del_{int(deck[5])}.html'
+            ut[original] = sida(a, v, deck, decks, pl_ovn, pres_bild, veckotitel, kf.get(deck[:6], ()))
+            if (v, int(deck[5])) in ELEVADRESS:
+                adress = ELEVADRESS[(v, int(deck[5]))]
+                ut[adress] = elevkopia(ut[original], original, adress)
         if kf:  # kontrollfrågornas rätta svar för lärarsidan med resultatkoder (larare/resultat-vNN.html)
             rader = [{'id': pl['ankare'], 'nummer': pl['nummer'], 'fraga': p['uppgift']['fraga'], 'alternativ': p['uppgift']['alternativ'],
                       'ratt': p['uppgift']['alternativ'].index(p['losning']['kommentar'])} for d in sorted(kf) for pl, p in kf[d]]
             ut[f'vecka-{v}/aktuell/kontrollfragor.gen.mjs'] = ('// GENERERAD FIL · ur sjoskolan/innehall (placeringar/kontrollfragor.json, innehall.py bygg delsidor_veckor).\n'
                                                               '// Redigera posterna i innehall/ovningar/, inte här. Samma frågor och rätta svar som på delsidorna.\n'
                                                               'export const KONTROLLFRAGOR = ' + json.dumps(rader, ensure_ascii=False, indent=1) + ';\n')
+    ut['vecka-43/aktuell/Ovningar.html'] = ovningsoversikt43()
     return ut

@@ -121,7 +121,11 @@ def _ovningsgrupper(nr, w):
     grupper = []
     for i, d in enumerate(w['delar'], 1):
         ds = d.get('delsida')
-        if ds and 'vecka-' in ds:
+        if d.get('ovningsgrupp'):
+            # Elevadressen kan vara ett alias; framsteg följer övningarnas ursprungliga id och lagringsmapp.
+            mapp, kap = d['ovningsgrupp']
+            grupper.append((mapp, kap, f'Del {i}', ds + '#ovningar', d['titel']))
+        elif ds and 'vecka-' in ds:
             mapp = re.search(r'vecka-(\d+)', ds).group(1)
             k = re.search(r'Del_(\d)', ds).group(1)
             grupper.append((f'vecka-{mapp}', f'v{mapp}_0{k}', f'Del {i}', ds + '#ovningar', d['titel']))

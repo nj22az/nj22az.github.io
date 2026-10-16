@@ -169,7 +169,8 @@ class KallflodeTest(unittest.TestCase):
 
     def test_alla_150_kopplingar_genom_databasen_till_bada_lankriktningarna(self):
         self.assertEqual(len(self.source), 150)
-        sidor = {rel: Kortlankar(text) for rel, text in self.filer.items() if rel.endswith('.html')}
+        sidor = {rel: Kortlankar(text) for rel, text in self.filer.items()
+                 if re.fullmatch(r'vecka-4[1-5]/aktuell/Del_[1-3]\.html', rel)}
         self.assertEqual(len(sidor), 15)
         for rel, sida in sidor.items():
             vecka = int(rel.split('/')[0].split('-')[1])
@@ -192,6 +193,56 @@ class KallflodeTest(unittest.TestCase):
         for rel, text in self.filer.items():
             with self.subTest(fil=rel):
                 self.assertEqual((ROT.parent / rel).read_text(encoding='utf-8'), text)
+
+    def test_vecka43_alias_bevarar_ovningar_teori_och_sparade_id(self):
+        original = 'vecka-45/aktuell/Del_1.html'
+        adress = 'vecka-43/aktuell/Del_4.html'
+        self.assertEqual(self.filer[adress], D.elevkopia(self.filer[original], original, adress))
+        gammal, ny = (Kortlankar(self.filer[x]) for x in (original, adress))
+        self.assertEqual(gammal.teori, ny.teori)
+        self.assertEqual(gammal.ovningar, ny.ovningar)
+        self.assertEqual(set(ny.ovningar), {f'v45_01-q{i}' for i in range(1, 11)})
+        for text in (self.filer[original], self.filer[adress]):
+            self.assertIn("sj-ovningar:/sjoskolan/vecka-45/aktuell/Formelstod_och_ovningar.html", text)
+            self.assertIn('data-ri-las-vecka="43" data-ri-las-del="del-4"', text)
+
+    def test_vecka43_har_alla_fyra_delar_i_ovningsoversikten(self):
+        text = self.filer['vecka-43/aktuell/Ovningar.html']
+        self.assertEqual(text.count('data-nyckel='), 4)
+        for n in range(1, 5):
+            self.assertIn(f'href="Del_{n}.html#ovningar"', text)
+        self.assertIn('data-kap="v45_01"', text)
+
+    def test_vecka43_veckosidan_raknar_40_ovningar_med_ursprungliga_lagringsnycklar(self):
+        dagsvy = D.dagsvy()
+        data, _ = dagsvy.kursplan_framsteg(43, dagsvy._vecka(43))
+        grupper = dict(data['ovningar'])
+        self.assertEqual(sum(map(len, grupper.values())), 40)
+        self.assertEqual(set(grupper['vecka-45']), {f'v45_01-q{i}' for i in range(1, 11)})
+
+    def test_vecka43_alla_lokala_lankar_och_bilder_finns(self):
+        from urllib.parse import urljoin, urlsplit, unquote
+        from html.parser import HTMLParser
+        class Resurser(HTMLParser):
+            def __init__(self, text):
+                super().__init__()
+                self.urls = []
+                self.feed(text)
+            def handle_starttag(self, tag, attrs):
+                self.urls += [v for k, v in attrs if k in ('href', 'src') and v]
+        for rel in ['vecka-43/aktuell/Del_4.html', 'vecka-43/aktuell/Ovningar.html']:
+            for url in Resurser(self.filer[rel]).urls:
+                cible = urlsplit(urljoin('/sjoskolan/' + rel, url))
+                if cible.scheme or cible.netloc:
+                    continue
+                f = ROT.parent.parent / unquote(cible.path).lstrip('/')
+                if f.is_dir():
+                    f /= 'index.html'
+                with self.subTest(fil=rel, url=url):
+                    self.assertTrue(f.exists(), str(f))
+                    if cible.fragment and f.suffix == '.html':
+                        text = self.filer.get(str(f.relative_to(ROT.parent)), f.read_text(encoding='utf-8'))
+                        self.assertIn(f'id="{unquote(cible.fragment)}"', text)
 
 
 if __name__ == '__main__':
