@@ -43,5 +43,45 @@
     "source": "Johansson Studio MCP render_portrait",
     "size": 768,
     "background": "transparent"
+  },
+  {
+    "id": "johansson-tada",
+    "name": "Johansson",
+    "pose": "Tada",
+    "expression": "excited",
+    "view": "quarter",
+    "source": "Johansson Studio MCP render_portrait"
+  },
+  {
+    "id": "thuan-peace",
+    "name": "Thuan",
+    "pose": "Peace",
+    "expression": "wink",
+    "view": "front",
+    "source": "Johansson Studio MCP render_portrait"
+  },
+  {
+    "id": "thuan-dance",
+    "name": "Thuan",
+    "pose": "Kachashi",
+    "expression": "happy",
+    "view": "quarter",
+    "source": "Johansson Studio MCP render_portrait"
+  },
+  {
+    "id": "tetsuo-teach",
+    "name": "Tetsuo",
+    "pose": "Point",
+    "expression": "smile",
+    "view": "quarter",
+    "source": "Johansson Studio MCP render_portrait"
+  },
+  {
+    "id": "tetsuo-think",
+    "name": "Tetsuo",
+    "pose": "ChinTap",
+    "expression": "thinking",
+    "view": "front",
+    "source": "Johansson Studio MCP render_portrait"
   }
 ]
