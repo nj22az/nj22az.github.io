@@ -28,7 +28,8 @@ test('published page uses one compiled audio/boot graph with local hashed depend
  // The title menu is an entry too (docs/LOADING.md): it once imported the source tree straight from index.html, so
  // the title screen fetched unminified three.js and sixty modules. Built, it shares the game's chunks (the residents,
  // their personalities, the save) and a few more entries are split out for it.
- assert.ok(Object.keys(manifest).length<=30,'Bound the compiled graph including optional diagnostics: '+Object.keys(manifest).length);
+ // Karaoke is lazy; its shared songs, actor helpers and icons add four entries.
+ assert.ok(Object.keys(manifest).length<=34,'Bound the compiled graph including optional diagnostics: '+Object.keys(manifest).length);
  const titleMenu=manifest['title-menu.js'];assert.ok(titleMenu?.isEntry&&html.includes("from './runtime/"+titleMenu.file+"'"),'the title menu loads from the runtime');
  assert.doesNotMatch(html,/from ['"]\.\/title-menu\.js['"]/,'the title menu is never imported from source');
  const portraits=manifest['src/avatars/guide-portraits.js'];assert.ok(portraits&&html.includes(portraits.file));assert.ok(!html.includes('data-town-runtime href="./runtime/'+portraits.file+'"'),'guide rendering stays lazy');
@@ -36,6 +37,8 @@ test('published page uses one compiled audio/boot graph with local hashed depend
  const game=Object.values(manifest).find(entry=>entry.src?.startsWith('src/game.js'));
  const dependencies=entry=>{const result=new Set([entry.file]);for(const key of entry.imports||[])for(const file of dependencies(manifest[key]))result.add(file);return result;};
  const gameFiles=dependencies(game),audioFiles=dependencies(audio),contexts=[];
+ const concert=manifest['src/music/concert.js'];assert.ok(concert?.isDynamicEntry,'Karaoke loads only when the machine is used');assert.ok(!gameFiles.has(concert.file),'The concert adds no eager rendering or audio code');
+ assert.ok(!html.includes('data-town-runtime href="./runtime/'+concert.file+'"'),'No concert preload on the title screen');
  const graphics=Object.values(manifest).find(entry=>entry.name==='spector.bundle');
  assert.ok(graphics?.isDynamicEntry,'Graphics inspection stays in a separate lazy chunk');
  assert.ok(!gameFiles.has(graphics.file),'Normal gameplay never imports Spector eagerly');
