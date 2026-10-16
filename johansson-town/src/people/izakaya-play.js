@@ -22,7 +22,7 @@ const CALLS=Object.freeze([
  ['Sakura','“Sakura Shōten!” Thuan sounds out of breath. “We close at eight — oh, it’s you. Are you at Thao’s? Order the sardines. Don’t tell her I said so.”'],
 ]);
 
-export function createIzakayaPlay({state,show,close,spend,save,receipt,getMinutes,say,note}){
+export function createIzakayaPlay({state,show,close,spend,save,receipt,getMinutes,say,note,onKaraoke=null}){
  const open=()=>izakayaOpen(getMinutes());
  function phone(){
   show('Pink telephone','A pink public phone on its own little shelf, ¥10 a call. A card taped beside it has three numbers in Thao’s writing.',[
@@ -46,6 +46,7 @@ export function createIzakayaPlay({state,show,close,spend,save,receipt,getMinute
  }
  function karaoke(){
   if(!open()){receipt('Karaoke','The laserdisc player is off and its mics are put away in the cabinet. Karaoke is from opening time, at four.');return;}
+  if(onKaraoke){close();onKaraoke();return;}
   show('Laserdisc karaoke','¥'+SONG_PRICE+' a song. The machine takes a while to find the disc.',[
    ...SONGS.map(song=>[song.title+' · '+song.singer,()=>{if(!spend(SONG_PRICE))return;save();receipt(song.title,song.lines.join('\n')+'\n\n'+song.nao);}]),
    ['Not tonight',close]]);

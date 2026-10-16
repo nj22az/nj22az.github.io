@@ -13,6 +13,7 @@ import {isWorkshopSite} from './src/world/businesses.js';
 import {harbourTimetable} from './src/people/commuter-schedule.js';
 import {sakuraClerkAt} from './src/commerce/sakura-rota.js';
 import {createRamenTicketMachine} from './src/people/ramen-ticket.js';
+import {cleanConcert} from './src/music/songs.js';
 import {createIzakayaPlay} from './src/people/izakaya-play.js';
 import {pendingTownAbsence} from './src/people/town-absence.js';
 import {createShopLedgerView} from './src/commerce/shop-ledger.js';
@@ -82,7 +83,7 @@ import {closingStockPending,shelvesNeedRestock,consumeStorageWonHandshake,applyS
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
  checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen,HOT_SNACKS,buyHotSnack,thuanRecommends} from './src/commerce/konbini.js';
 
-export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{},onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onEat=()=>false,onTreat=()=>{},onDrink=()=>false,onSnack=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,getTipsy=()=>0,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false,getMassageChair=()=>null}) {
+export function createActivities({say,onKaraoke=null,getResidentLocations=()=>null,onOpen=()=>{},onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onEat=()=>false,onTreat=()=>{},onDrink=()=>false,onSnack=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,getTipsy=()=>0,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false,getMassageChair=()=>null}) {
   const $=s=>document.querySelector(s);
   const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1997. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'peninsula',homeDecor:restoreHomeDecor(),pocketAlbum:[]};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
@@ -97,6 +98,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     const {saved,turned}=openYear(read);yearTurned=turned;
     if(saved&&typeof saved==='object'){state.loopYear=saved.loopYear;state.loops=saved.loops|0;pendingAbsence=pendingTownAbsence(saved);state.pendingTownMinutes=pendingAbsence;
       state.homeDecor=restoreHomeDecor(saved.homeDecor);state.pocketAlbum=restoreAlbum(saved.pocketAlbum);state.pocketTaken=Number.isInteger(saved.pocketTaken)&&saved.pocketTaken>0?Math.min(saved.pocketTaken,999999):0;state.pocketSeen=restoreSeen(saved.pocketSeen,state.pocketAlbum);state.diary=restoreDiary(saved.diary);state.news=restoreNews(saved.news);state.post=restorePost(saved.post);awaySince=Number.isFinite(saved.savedAt)?saved.savedAt:0;state.impressions=restoreImpressions(saved.impressions);state.favours=restoreFavours(saved.favours);state.errand=restoreFavourErrand(saved.errand);state.greeted=saved.greeted&&typeof saved.greeted==='object'?Object.fromEntries(Object.entries(saved.greeted).filter(([k,v])=>typeof k==='string'&&Number.isSafeInteger(v)).slice(-60)):{};
+      state.concert=cleanConcert(saved.concert);
       state.heardHappenings=Array.isArray(saved.heardHappenings)?saved.heardHappenings.filter(x=>typeof x==='string').slice(-40):[];
       state.thuanOutfit=['nozomi','sailor'].includes(saved.thuanOutfit)?saved.thuanOutfit:'clothes';{const house=restoreHouseState(saved[HOUSE_SAVE]);if(house)state[HOUSE_SAVE]=house;}state.island=restoreIsland(saved.island);state.documentArchive=restoreArchive(saved.documentArchive);state.sakura=saved.sakura;state.bookshop=saved.bookshop;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.konbini=saved.konbini;state.residentLife=restoreResidentLife(saved.residentLife);state.friendship=restoreFriendship(saved.friendship);state.residentLocations=saved.residentLocations;
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
@@ -382,7 +384,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
         receipt('Thuan',sp.kind==='food'?`One ${sp.name.toLowerCase()}, wrapped in paper. It is in your bag. Eat it while it is warm.`:`One ${sp.name.toLowerCase()}, with a straw. It is in your bag.`);}]),
       ['Maybe later',close]]);
   }
-  function spend(n){if(state.yen<n){say('You do not have enough yen.');return false;}state.yen-=n;const now=getMinutes(),place=getSocialContext().inside||'Town Services',transaction='PLAYER-'+state.documentArchive.sequence+'-'+now;const receipt=fileDocument(state,{type:'Receipt',title:heading.textContent||'Town service payment',organisation:({'market':'Sakura Shop','frontrow':'Front-Row Books','ramen':'Sato Ramen','izakaya':'Minato Izakaya','onsen':'Minato Onsen'})[place]||place,transaction,amount:n,text:'CASH RECEIPT\nService: '+(heading.textContent||'Town service')+'\nPaid: ¥'+n+'\nPayer: visitor\nWallet balance: ¥'+state.yen},now);if(receipt)fileDocument(state,{type:'Ledger entry',title:'Visitor payment posting',organisation:receipt.organisation,transaction,amount:n,links:[receipt.id],text:receipt.text},now);save();return true;}
+  function spend(n,label=null){if(state.yen<n){say('You do not have enough yen.');return false;}state.yen-=n;const now=getMinutes(),place=getSocialContext().inside||'Town Services',transaction='PLAYER-'+state.documentArchive.sequence+'-'+now;const receipt=fileDocument(state,{type:'Receipt',title:label||heading.textContent||'Town service payment',organisation:({'market':'Sakura Shop','frontrow':'Front-Row Books','ramen':'Sato Ramen','izakaya':'Minato Izakaya','onsen':'Minato Onsen'})[place]||place,transaction,amount:n,text:'CASH RECEIPT\nService: '+(label||heading.textContent||'Town service')+'\nPaid: ¥'+n+'\nPayer: visitor\nWallet balance: ¥'+state.yen},now);if(receipt)fileDocument(state,{type:'Ledger entry',title:'Visitor payment posting',organisation:receipt.organisation,transaction,amount:n,links:[receipt.id],text:receipt.text},now);save();return true;}
   /**
    * Dinner with Thuan in Naha (interiors/city-restaurant.js): the scene is fixed and this
    * menu is how the evening goes. `dinner` is the scene's handle: serve, eat, toast, talk,
@@ -465,7 +467,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     show('Diary',page,[...(index+1<days.length?[['An earlier page',()=>diary(index+1)]]:[]),...(index>0?[['A later page',()=>diary(index-1)]]:[]),['Back to the field book',inventory]]);
   }
   const ramenTickets=createRamenTicketMachine({state,show,close,spend,save,receipt,getMinutes});
-  const izakayaPlay=createIzakayaPlay({state,show,close,spend,save,receipt,getMinutes,say,note});
+  const izakayaPlay=createIzakayaPlay({state,show,close,spend,save,receipt,getMinutes,say,note,onKaraoke});
   function inspectItem(item){if(!state.inspectedIds.includes(item.id)){state.inspectedIds.push(item.id);note(item.note);save();}}
   function openURL(){say('The ledger is kept here in town.');}
 
@@ -827,6 +829,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     show('Minato · Tonight’s wall','Thao: Take a seat -- the counter, a table, wherever there is room -- and I will bring you anything on the wall. The stories are on the house.',[
       ['Read the drinks',()=>show('Minato · to drink',Object.values(DRINKS).map(d=>d.jp+' · '+d.en+' · ¥'+d.price).join('\n'),[['Back',izakayaMenu]])],
       ['Read the food',()=>show('Minato · from the kitchen',Object.values(DISHES).map(d=>d.jp+' · '+d.en+' · ¥'+d.price).join('\n'),[['Back',izakayaMenu]])],
+      ['Sing karaoke · solo or with friends',()=>izakayaPlay.karaoke()],
       ['Just looking, thank you',close]
     ]);
   }
