@@ -1,0 +1,50 @@
+{
+  "source": "Johansson World character rigs, Harbour Park and original Blender bench",
+  "runtime3D": false,
+  "residents": [
+    {
+      "id": "fujita",
+      "name": "Fujita",
+      "prop": "Umineko beer can",
+      "width": 480,
+      "height": 360,
+      "seconds": 10,
+      "fps": 12,
+      "posterBytes": 10248,
+      "videoBytes": 25844
+    },
+    {
+      "id": "johansson",
+      "name": "Johansson",
+      "prop": "J-Coffee can",
+      "width": 480,
+      "height": 360,
+      "seconds": 10,
+      "fps": 12,
+      "posterBytes": 11408,
+      "videoBytes": 29881
+    },
+    {
+      "id": "thuan",
+      "name": "Thuận",
+      "prop": null,
+      "width": 480,
+      "height": 360,
+      "seconds": 10,
+      "fps": 12,
+      "posterBytes": 11532,
+      "videoBytes": 28249
+    },
+    {
+      "id": "tetsuo",
+      "name": "Tetsuo",
+      "prop": null,
+      "width": 480,
+      "height": 360,
+      "seconds": 10,
+      "fps": 12,
+      "posterBytes": 10932,
+      "videoBytes": 25262
+    }
+  ]
+}

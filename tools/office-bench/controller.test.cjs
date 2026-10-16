@@ -1,0 +1,18 @@
+const {readFileSync}=require('node:fs');const {runInNewContext}=require('node:vm');const assert=require('node:assert/strict');
+const source=readFileSync(process.env.BENCH_CONTROLLER || 'assets/js/office-bench.js','utf8');
+function setup({reduced=false,saver=false,saved='fujita',random=.5}={}){
+ const listeners={},attrs={},store={value:saved},rootAttrs={};let idle,observer;
+ const eventTarget=()=>({listeners:{},addEventListener(k,f){this.listeners[k]=f;},setAttribute(k,v){this[k]=v;}});
+ const video=Object.assign(eventTarget(),{paused:true,plays:0,pause(){this.paused=true;this.listeners.pause?.();},play(){this.paused=false;this.plays++;this.listeners.playing?.();return Promise.resolve();},getAttribute(k){return this[k]||null;}});
+ const img={},caption={},button=eventTarget(),root={querySelector(s){return s==='img'?img:s==='video'?video:s==='button'?button:caption;},toggleAttribute(k,v){rootAttrs[k]=v;},setAttribute(k,v){rootAttrs[k]=v;},removeAttribute(k){delete rootAttrs[k];}};
+ const media={matches:reduced,addEventListener(k,f){this.change=f;}},connection={saveData:saver,addEventListener(k,f){this.change=f;}};
+ const document={readyState:'loading',hidden:false,getElementById(){return root;},addEventListener(k,f){listeners[k]=f;}};
+ const window={matchMedia(){return media;},requestIdleCallback(f){idle=f;},addEventListener(k,f){listeners[k]=f;},IntersectionObserver:class{constructor(f){observer=f;}observe(){}}};
+ runInNewContext(source,{document,window,navigator:{connection},sessionStorage:{getItem(){return store.value;},setItem(k,v){store.value=v;}},Math:{...Math,floor:Math.floor,random:()=>random},IntersectionObserver:window.IntersectionObserver});
+ return {video,img,button,caption,media,connection,document,rootAttrs,store,load(){listeners.load();idle();},visible(v){observer([{isIntersecting:v,intersectionRatio:v?1:0}]);},visibility(){listeners.visibilitychange();}};
+}
+let s=setup();assert.equal(s.video.src,undefined);assert.equal(s.img.src,'/assets/office-bench/fujita.webp');s.visible(true);assert.equal(s.video.src,undefined,'never fetch video before window load and idle');s.load();assert.equal(s.video.src,'/assets/office-bench/fujita.mp4');assert.equal(s.video.paused,false);s.visible(false);assert.equal(s.video.paused,true);s.visible(true);assert.equal(s.video.paused,false);s.document.hidden=true;s.visibility();assert.equal(s.video.paused,true);s.document.hidden=false;s.visibility();s.button.listeners.click();assert.equal(s.video.paused,true);s.visible(false);s.visible(true);assert.equal(s.video.paused,true,'manual pause survives visibility changes');s.button.listeners.click();assert.equal(s.video.paused,false);
+for(const options of [{reduced:true},{saver:true}]){s=setup(options);s.visible(true);s.load();assert.equal(s.video.src,undefined,'motion/data preferences prevent video fetch');s.button.listeners.click();assert.equal(s.video.paused,false,'explicit play is available');s.media.matches=true;s.media.change();assert.equal(s.video.paused,true);assert.equal(s.rootAttrs['data-motion'],undefined);}
+for(const [id,drink] of [['fujita','beer'],['johansson','J-Coffee'],['thuan',''],['tetsuo','']]){s=setup({saved:id});assert.ok(s.img.src.endsWith(id+'.webp'));if(drink)assert.ok(s.img.alt.includes(drink));else assert.ok(!/beer|coffee/i.test(s.img.alt));}
+s=setup({saved:'invalid',random:.99});assert.equal(s.store.value,'tetsuo');assert.equal(s.video.src,undefined);s.video.listeners.error();assert.equal(s.button.hidden,true);
+console.log('PASS: one resident, deferred loading, viewport/tab pause, manual controls, preferences, safe selection and media failure');
