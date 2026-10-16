@@ -98,16 +98,6 @@ const CONFIG = {
       featured: true,
     },
     {
-      title: "Johansson Studio",
-      description:
-        "The creative companion to Johansson World. Make characters, pose them in the island's real locations, and export photos, memes and comics as PNG.",
-      url: "/avatar-creator/",
-      icon: "user",
-      tags: ["Characters", "Scenes", "Comics"],
-      bento: "wide",
-      featured: true,
-    },
-    {
       title: "GitHub",
       description:
         "Open-source tools, working prototypes, and engineering experiments with an emphasis on practical use.",
@@ -263,7 +253,7 @@ CONFIG.projectExplorer = [
     "features": [
       "A walkable town with shops, homes and a waterfront",
       "Residents, everyday routines and small discoveries",
-      "An island setting shared with Johansson Studio"
+      "A harbour, ferry routes and places to explore"
     ],
     "preview": "world"
   },
@@ -285,25 +275,6 @@ CONFIG.projectExplorer = [
       "Service history with backup export and restore"
     ],
     "preview": "maintenance"
-  },
-  {
-    "id": "studio",
-    "category": "create",
-    "title": "Johansson Studio",
-    "eyebrow": "A CHARACTER. A SCENE. A STORY.",
-    "summary": "Make a character, give them a pose and place them in Johansson World. Export the result as a picture, a meme or a comic.",
-    "url": "/avatar-creator/",
-    "action": "Create a character",
-    "format": "3D creative tool",
-    "language": "English",
-    "status": "Work in progress",
-    "firstTry": "Choose a character template, change a facial feature or hairstyle, then try a pose and export a PNG.",
-    "features": [
-      "Customisable characters, expressions and poses",
-      "Scenes from Johansson World",
-      "PNG exports for pictures, memes and comics"
-    ],
-    "preview": "studio"
   },
   {
     "id": "course",
