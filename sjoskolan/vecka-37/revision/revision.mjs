@@ -1,4 +1,4 @@
-import {renderRevision,questionMarkup,questionSummary,esc,L,t} from './revision-ui.mjs';
+import {renderRevision,questionMarkup,questionSummary,esc,L,t} from './revision-ui.mjs?v=20261016-r2';
 import {evaluate} from './engine.mjs';
 import {startReadingProgress} from './reading-progress.mjs';
 import {selectModuleExport} from './module-tools.mjs';

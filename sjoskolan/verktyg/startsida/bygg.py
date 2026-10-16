@@ -118,7 +118,7 @@ def modulkort(m):
     labb = f'<p class="mod-rad"><span class="mod-etikett">Labb</span><a href="{m["labb"][0]}">{escape(m["labb"][1])}</a></p>' if m['labb'] else ''
     inl = (f'<p class="mod-rad"><span class="mod-etikett">Inlämning</span><a href="{m["inl"]}">Senast {veckodag(m["sista"])} {kort_datum(m["sista"])}</a></p>'
            if m['inl'] else '')
-    revision = ('<p class="mod-rad module-revision-update"><span class="mod-etikett">Revision</span><a href="vecka-37/revision/">Uppdaterad genomgång · 16 okt 2026</a></p>'
+    revision = ('<p class="mod-rad module-revision-update"><span class="mod-etikett">Extra stöd</span><a href="vecka-37/revision/">Frivilligt: utökad genomgång och 3D-multimeter</a></p>'
                 if m['nr'] == 1 else '')
     ovn = json.dumps(m['ovningar'])
     framsteg = (f'<div class="mod-framsteg" data-ovningar=\'{ovn}\'><div class="mod-bar"><span></span></div><p class="mod-antal">'

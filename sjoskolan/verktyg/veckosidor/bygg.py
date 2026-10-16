@@ -605,7 +605,7 @@ ENKEL_CSS = ('<style>'
 
 def revision_notice(nr):
     """Add the complementary revision without replacing the original week."""
-    return '<aside class="module-revision-update" id="revision-modul-1" aria-labelledby="revision-rubrik" style="margin:24px 0;padding:20px;border:2px solid #176844;border-radius:12px;background:#fff"><p class="course-kicker">Uppdatering för tydlighet · 16 oktober 2026</p><h2 id="revision-rubrik">Modul 1 – reviderad genomgång</h2><p>Samlad teori, tydligare kretsscheman, självrättande träning och en guidad interaktiv multimeter. Detta är ett komplement; originalets genomgångar, presentationer, uppgifter och inlämningslänkar finns kvar nedan.</p><p><a class="sj-btn" href="../revision/">Öppna modul 1:s revision</a></p></aside>' if nr == 37 else ''
+    return '<aside class="module-revision-update" id="revision-modul-1" aria-labelledby="revision-rubrik" style="margin:24px 0;padding:16px 20px;border:1px solid #cad8e2;border-radius:12px;background:#f7fafc"><p class="course-kicker">Frivilligt komplement · 16 oktober 2026</p><h2 id="revision-rubrik">Extra stöd till modul 1</h2><p>Vill du repetera eller se kretsarna tydligare? Här finns en kompletterande genomgång med tydligare scheman, extra övningar och en interaktiv 3D-multimeter. Följ veckans ordinarie steg och inlämning ovan.</p><p><a href="../revision/">Öppna den utökade genomgången och simulatorn</a></p></aside>' if nr == 37 else ''
 
 
 def enkel_vecka(nr, w, week_dir, delar_, delsida, labbar, redovisa, skicka, kicker):
@@ -735,9 +735,9 @@ def enkel_vecka(nr, w, week_dir, delar_, delsida, labbar, redovisa, skicka, kick
         sjalv = f'./sjalvrattning.mjs?v={hashlib.sha1(modul.read_bytes()).hexdigest()[:10]}' if modul.exists() else None
         panel = veckopanel_html(nr, w, steg_ids, egna, sjalv)
     return (ENKEL_CSS + f'<header class="course-heading week-heading"><p class="course-kicker">{escape(kicker)}</p><h1>{escape(w["titel"])}</h1>'
-            f'<p class="course-lead">{escape(w["mal"])}</p>{vecko_band(nr, w)}</header>{revision_notice(nr)}{panel}{nasta}'
+            f'<p class="course-lead">{escape(w["mal"])}</p>{vecko_band(nr, w)}</header>{panel}{nasta}'
             f'<section aria-labelledby="vag-rubrik"><h2 id="vag-rubrik">Så gör du den här veckan</h2>{lektionstext}'
-            f'<p class="vag-status" id="vag-status" aria-live="polite"></p><ol class="vag">{"".join(steg)}</ol></section>{kursplan_html(nr, w, med_tal=nr not in PANEL)}{stod}{nu_script}')
+            f'<p class="vag-status" id="vag-status" aria-live="polite"></p><ol class="vag">{"".join(steg)}</ol></section>{revision_notice(nr)}{kursplan_html(nr, w, med_tal=nr not in PANEL)}{stod}{nu_script}')
 
 
 def page(nr, w):
