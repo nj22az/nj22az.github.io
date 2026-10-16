@@ -1,4 +1,4 @@
-/* Lazy live Three.js arrivals. The complete first frame replaces the still atomically. */
+/* Finished video arrivals; no 3D runtime or unfinished frames reach the homepage. */
 (function () {
  'use strict';
  var root=document.getElementById('office-port');if(!root)return;
@@ -8,40 +8,38 @@
  function choose(items,type){var seen=Array.isArray(state[type])?state[type]:[],pool=items.filter(function(p){return !seen.includes(p.id);});if(!pool.length){seen=[];pool=items;}var fresh=pool.filter(function(p){return p.id!==state['last'+type];});if(fresh.length)pool=fresh;var choice=pool[Math.floor(Math.random()*pool.length)];state[type]=seen.concat(choice.id);state['last'+type]=choice.id;return choice;}
  var person=choose(people,'people'),place=choose(places,'places');
  function save(){try{localStorage.setItem(key,JSON.stringify(state));}catch(_){}}save();
- var img=root.querySelector('img'),host=root.querySelector('[data-port-stage]'),caption=root.querySelector('[data-resident]'),button=root.querySelector('[data-port-play]'),next=root.querySelector('[data-next-arrival]');
- if(!host||!button)return;
+ var img=root.querySelector('img'),host=root.querySelector('[data-port-stage]'),caption=root.querySelector('[data-resident]'),button=root.querySelector('[data-port-play]'),next=root.querySelector('[data-next-arrival]');if(!host||!button)return;
  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)'),connection=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
- var loaded=false,visible=false,intent='auto',failed=false,disposed=false,playing=false,finished=false,instance=null,pending=null,revision=0;
+ var loaded=false,visible=false,intent='auto',failed=false,disposed=false,finished=false,video=null,revision=0,attempt=0,starting=false;
  function permitted(){return intent==='play'||(!reduced.matches&&!(connection&&(connection.saveData||/(^|-)2g$/.test(connection.effectiveType||''))));}
- var posterShown=null;
- function poster(){
-  var url='/assets/office-port/'+place.poster,version=revision,title=place.title+' · Johansson World';
-  if(posterShown===url){if(!instance||!permitted()||failed)caption.textContent=title;return;}
-  var alt=place.id==='bridge'?'View from the ferry bridge wing over the port and vehicle loading deck':place.id==='pier'?'The end of Minato pier with the ferry and harbour beyond':'The quay, boats and harbour buildings at Minato port',ready=new Image();
-  ready.onload=function(){if(disposed||version!==revision)return;img.src=url;img.alt=alt;posterShown=url;if(!instance||!permitted()||failed)caption.textContent=title;};ready.src=url;
- }
-
- function label(s){if(failed||disposed)return;playing=s.playing;finished=s.finished;root.toggleAttribute('data-playing',playing);root.toggleAttribute('data-signature',!playing||s.time>=5);button.setAttribute('aria-label',playing?'Pause 3D scene':finished?'Replay 3D arrival':'Play 3D arrival');button.title=playing?'Pause 3D scene':finished?'Replay arrival':'Play 3D arrival';}
- function fail(){failed=true;playing=false;root.removeAttribute('data-motion');root.removeAttribute('data-playing');root.removeAttribute('aria-busy');button.hidden=true;poster();if(instance){instance.dispose();instance=null;}}
  function shouldPlay(){return loaded&&visible&&!document.hidden&&permitted()&&intent!=='pause'&&!failed&&!disposed&&!finished;}
- async function ensure(){
-  if(instance)return instance;if(pending)return pending;var version=revision;root.setAttribute('aria-busy','true');
-  pending=import('/assets/js/office-port-live.js?v=1').then(function(module){return module.createPortScene({host:host,person:person,place:place,onState:label,onError:fail});}).then(function(view){
-   if(disposed||failed){view.dispose();return null;}instance=view;if(version!==revision)instance.select(person,place);root.removeAttribute('aria-busy');if(permitted())root.setAttribute('data-motion','');caption.textContent=person.name+' · '+place.title;return instance;
-  }).catch(function(){if(!disposed)fail();return null;}).finally(function(){pending=null;});return pending;
+ function label(playing){root.toggleAttribute('data-playing',playing);button.setAttribute('aria-label',playing?'Pause arrival':finished?'Replay arrival':'Play arrival');button.title=playing?'Pause arrival':finished?'Replay arrival':'Play arrival';}
+ function poster(){var version=revision,url='/assets/office-port/'+place.poster,ready=new Image();ready.onload=function(){if(disposed||version!==revision)return;img.src=url;img.alt=place.id==='bridge'?'View from the ferry bridge wing over the port and vehicle loading deck':'A finished view of Minato port';};ready.src=url;caption.textContent=place.title+' · Johansson World';}
+ function pause(){attempt++;starting=false;if(video)video.pause();label(false);}
+ function clear(){pause();root.removeAttribute('data-motion');root.removeAttribute('aria-busy');if(video){var old=video;video=null;old.removeAttribute('src');old.load();old.remove();}}
+ function fail(){failed=true;clear();button.hidden=true;poster();}
+ function create(){
+  var v=document.createElement('video'),version=revision;v.muted=true;v.defaultMuted=true;v.playsInline=true;v.preload='auto';v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('aria-hidden','true');v.tabIndex=-1;v.disablePictureInPicture=true;
+  v.addEventListener('error',function(){if(video===v&&version===revision)fail();});
+  v.addEventListener('ended',function(){if(video!==v)return;finished=true;label(false);});
+  v.addEventListener('pause',function(){if(video===v)label(false);});
+  v.src='/assets/office-port/'+(place.id==='quay'?'':place.id+'-')+person.id+'.mp4?v=short-1';host.appendChild(v);video=v;return v;
  }
  function reconcile(){
-  if(!shouldPlay()){if(instance)instance.pause();if(!permitted()||failed){root.removeAttribute('data-motion');poster();}return;}
-  ensure().then(function(view){if(view&&shouldPlay()){root.setAttribute('data-motion','');view.play();}});
+  if(!shouldPlay()){pause();if(!permitted()){root.removeAttribute('data-motion');poster();}return;}
+  if(starting||(video&&!video.paused))return;
+  var v=video||create(),token=++attempt;starting=true;root.setAttribute('aria-busy','true');
+  function current(){return video===v&&token===attempt&&!disposed;}
+  function reveal(){if(!current()||!shouldPlay()||v.readyState<2)return;starting=false;root.removeAttribute('aria-busy');root.setAttribute('data-motion','');caption.textContent=person.name+' · '+place.title;label(true);}
+  Promise.resolve(v.play()).then(function(){if(!current())return;if(!shouldPlay()){pause();return;}if(v.requestVideoFrameCallback)v.requestVideoFrameCallback(reveal);else window.requestAnimationFrame(function(){window.requestAnimationFrame(reveal);});}).catch(function(){if(!current())return;starting=false;root.removeAttribute('aria-busy');intent='pause';label(false);});
  }
  button.hidden=false;if(next)next.hidden=false;
- button.addEventListener('click',function(){intent=playing?'pause':'play';if(finished&&!playing){finished=false;if(instance)instance.play(true);}loaded=true;visible=true;reconcile();});
- if(next)next.addEventListener('click',function(){person=choose(people,'people');place=choose(places,'places');save();revision++;finished=false;playing=false;intent='auto';poster();root.removeAttribute('data-motion');if(instance){try{instance.select(person,place);}catch(error){fail();return;}if(permitted())root.setAttribute('data-motion','');caption.textContent=person.name+' · '+place.title;}reconcile();});
+ button.addEventListener('click',function(){if(video&&!video.paused){intent='pause';reconcile();return;}intent='play';loaded=true;visible=true;if(finished){finished=false;if(video)video.currentTime=0;}reconcile();});
+ if(next)next.addEventListener('click',function(){revision++;clear();person=choose(people,'people');place=choose(places,'places');save();finished=false;failed=false;button.hidden=false;intent='auto';label(false);poster();reconcile();});
  function preferenceChanged(){intent='auto';reconcile();}if(reduced.addEventListener)reduced.addEventListener('change',preferenceChanged);else if(reduced.addListener)reduced.addListener(preferenceChanged);if(connection&&connection.addEventListener)connection.addEventListener('change',preferenceChanged);
  document.addEventListener('visibilitychange',reconcile);
  var observer;if('IntersectionObserver' in window){observer=new IntersectionObserver(function(entries){visible=entries[0].isIntersecting&&entries[0].intersectionRatio>=.15;reconcile();},{threshold:.15});observer.observe(root);}
  function afterLoad(){var start=function(){if(disposed)return;poster();loaded=true;reconcile();};if('requestIdleCallback' in window)window.requestIdleCallback(start,{timeout:2000});else window.setTimeout(start,250);}
  if(document.readyState==='complete')afterLoad();else window.addEventListener('load',afterLoad,{once:true});
- window.addEventListener('pagehide',function(event){if(event.persisted){instance?.pause();return;}disposed=true;observer?.disconnect();instance?.dispose();});
- window.addEventListener('pageshow',function(event){if(event.persisted)reconcile();});
+ window.addEventListener('pagehide',function(event){if(event.persisted){pause();return;}disposed=true;observer?.disconnect();clear();});window.addEventListener('pageshow',function(event){if(event.persisted)reconcile();});
 })();

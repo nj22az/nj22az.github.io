@@ -1,49 +1,169 @@
 {
-  "source": "Johansson World createSpawnScene, minato-maru port opening and actual town geometry",
+  "source": "Johansson World createSpawnScene, quay and pier openings, actual Minato Maru bridge wing and town geometry",
   "runtime3D": false,
-  "posterBytes": 62410,
+  "posterBytes": 27122,
+  "posters": [
+    {
+      "id": "harbour",
+      "bytes": 27122
+    },
+    {
+      "id": "pier",
+      "bytes": 27560
+    },
+    {
+      "id": "bridge",
+      "bytes": 51792
+    }
+  ],
   "autoplay": "once",
+  "selection": "shuffled character and location bags, no consecutive repeats",
   "drinks": false,
   "residents": [
     {
       "id": "fujita",
+      "personId": "fujita",
+      "place": "quay",
       "name": "Fujita",
       "prop": null,
       "width": 960,
       "height": 540,
-      "seconds": 9,
-      "fps": 15,
-      "videoBytes": 325769
+      "seconds": 6,
+      "fps": 24,
+      "videoBytes": 378445
     },
     {
       "id": "johansson",
+      "personId": "johansson",
+      "place": "quay",
       "name": "Johansson",
       "prop": null,
       "width": 960,
       "height": 540,
-      "seconds": 9,
-      "fps": 15,
-      "videoBytes": 333684
+      "seconds": 6,
+      "fps": 24,
+      "videoBytes": 383524
     },
     {
       "id": "thuan",
-      "name": "Thuận",
+      "personId": "thuan",
+      "place": "quay",
+      "name": "Thu\u1eadn",
       "prop": null,
       "width": 960,
       "height": 540,
-      "seconds": 9,
-      "fps": 15,
-      "videoBytes": 331670
+      "seconds": 6,
+      "fps": 24,
+      "videoBytes": 386394
     },
     {
       "id": "tetsuo",
+      "personId": "tetsuo",
+      "place": "quay",
       "name": "Tetsuo",
       "prop": null,
       "width": 960,
       "height": 540,
-      "seconds": 9,
-      "fps": 15,
-      "videoBytes": 329601
+      "seconds": 6,
+      "fps": 24,
+      "videoBytes": 373311
+    },
+    {
+      "id": "pier-fujita",
+      "personId": "fujita",
+      "place": "pier",
+      "name": "Fujita",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 5,
+      "fps": 24,
+      "videoBytes": 284494
+    },
+    {
+      "id": "pier-johansson",
+      "personId": "johansson",
+      "place": "pier",
+      "name": "Johansson",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 5,
+      "fps": 24,
+      "videoBytes": 296586
+    },
+    {
+      "id": "pier-thuan",
+      "personId": "thuan",
+      "place": "pier",
+      "name": "Thu\u1eadn",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 5,
+      "fps": 24,
+      "videoBytes": 287545
+    },
+    {
+      "id": "pier-tetsuo",
+      "personId": "tetsuo",
+      "place": "pier",
+      "name": "Tetsuo",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 5,
+      "fps": 24,
+      "videoBytes": 287860
+    },
+    {
+      "id": "bridge-fujita",
+      "personId": "fujita",
+      "place": "bridge",
+      "name": "Fujita",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 5,
+      "fps": 24,
+      "videoBytes": 250622
+    },
+    {
+      "id": "bridge-johansson",
+      "personId": "johansson",
+      "place": "bridge",
+      "name": "Johansson",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 5,
+      "fps": 24,
+      "videoBytes": 253556
+    },
+    {
+      "id": "bridge-thuan",
+      "personId": "thuan",
+      "place": "bridge",
+      "name": "Thu\u1eadn",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 5,
+      "fps": 24,
+      "videoBytes": 257556
+    },
+    {
+      "id": "bridge-tetsuo",
+      "personId": "tetsuo",
+      "place": "bridge",
+      "name": "Tetsuo",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 5,
+      "fps": 24,
+      "videoBytes": 256085
     }
-  ]
+  ],
+  "edit": "Short camera approaches and character moments, played once, 5\u20136 seconds at 24 fps."
 }
