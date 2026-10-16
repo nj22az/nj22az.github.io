@@ -11,3 +11,11 @@ Kretsmodellen och 3D-bänken är en fryst kopia av den reviderade modulens käll
 Three.js och ElectricalDiagrams behåller sina MIT-licenser i `vendor/THREE-LICENSE.txt` och `licenses/ElectricalDiagrams-MIT.txt`. Nils Johanssons kursmaterial följer repositoryts rättighetsvillkor.
 
 Teknisk verifiering omfattar innehåll, länkar, importberoenden, PDF/PowerPoint, sex övningsförlopp och att tillägget inte ersätter något originalinnehåll. Webbläsargranskning pågår: elevens första mätning och automatisk rättning har körts i publicerad Chrome. Den använda granskningswebbläsaren har WebGL avstängt, så 3D-rendering och fysisk iPadacceptans är fortfarande inte verifierade. `tools/layout-review.html` visar revisionen vid riktiga iframebredder för dator, surfplatta och mobil utan att ändra elevsidan.
+
+## Webbläsargranskning 16 oktober 2026
+
+Alla sex introduktionsövningar genomfördes i publicerad Chrome via de synliga elevreglagen: 12 V, 0 V, 12 V, 0 V, cirka 1,967 A och 6,2 Ω. Sex av sex registrerades automatiskt. Sparade försök behölls vid omladdning. Fri mätning gav direktavläsning. Arbetsvyn och återgången till exakt teoriavsnitt kontrollerades. Layouter vid 1180, 820 och 390 px granskades i riktiga iframebredder; detta är inte fysisk enhetsprovning.
+
+Granskningen rättade tom reservyta, oanvändbara kameraknappar utan WebGL, otydliga handlingsnamn, onödigt matningsfrånslag vid brytarmanövrering, teorilänkar från modal arbetsvy, mobilritningens etiketter, bakgrundsrullning och beskurna teorifigurer i surfplattebredd.
+
+Kvarstående acceptans: granskningswebbläsaren har WebGL avstängt. Renderad Three.js, fysisk pekhantering och prestanda på iPad/telefon är därför inte visuellt verifierade. GLB-geometri, projektion, raycasting, probdragning och vred testas separat med verklig Three.js-geometri och en renderardubbel.

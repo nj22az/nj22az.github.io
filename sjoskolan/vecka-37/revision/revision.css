@@ -73,3 +73,4 @@ html[data-module-theme="line"] .revision-main .lab-panel {padding:20px}
 @media(max-width:600px){.dc-workspace .dc-schema-wide{display:none}.dc-workspace .dc-schema-compact{display:block}.dc-workspace .dc-circuit-compact{min-width:0;width:100%}.dc-workspace .dc-circuit-compact text{font-size:17px}.dc-workspace .dc-circuit-compact .dc-probe-label{font-size:14px}.dc-workspace .dc-circuit-compact .dc-small-note{font-size:13px}.dc-workspace #dc-circuit{overflow-x:visible}}
 
 html.dc-work-open{overflow:hidden}
+@media(min-width:600px){html[data-module-theme="line"] .native-reading .schematic-scroll img,html[data-module-theme="line"] .weekly-bridge .schematic-scroll img{width:100%;max-width:820px;height:auto}}
