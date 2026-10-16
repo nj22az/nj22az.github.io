@@ -22,6 +22,7 @@ GitHub Pages supplies the required HTTPS secure context.
 - `johansson_travel` — use the in-game town directory to travel to a named location.
 - `johansson_choose_action` — press one enabled button in an open dialogue/activity, including quest, shopping and minigame actions.
 - `johansson_ui` — operate notebook, time, weather, sound and modal controls.
+- `johansson_concert` — configure the open Minato karaoke song book: song, arrangement, cast, title and four lyric lines. Read `concert.choices` in the state first. `johansson_choose_action` operates Perform, Stop, Encore and Return to Minato. The machine must be opened in the game; this tool does not teleport or open it remotely. Movement and HUD actions remain blocked during a performance.
 
 ## Character tools
 
