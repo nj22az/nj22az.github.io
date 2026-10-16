@@ -1,22 +1,24 @@
-# Office homepage port arrival
+# Live homepage harbour
 
-The homepage photograph is replaced by a real Minato harbour still and one randomly selected, silent arrival clip. No World JavaScript, model files or Three.js run on the homepage. The former bench feature is removed. None of the four characters carries a drink.
+The homepage keeps its WebP harbour photograph while a compact Three.js scene loads after window load, idle time and viewport visibility. Reduced-motion and data-saving preferences keep the photograph until the visitor explicitly requests 3D. No game boot, town simulation, traffic logic or audio runs on the homepage.
 
-The offline renderer uses World's actual `createTown`, `createTownSky`, `OPENINGS` (`minato-maru`), `createSpawnScene` and player avatar API. It uses the shared collision rectangles and ground heights, moors the ferry and records the opening harbour view, descent, character gesture and gull. Recording stops before the game's return to player control. The final frame holds until the visitor explicitly replays.
+The scene reuses the actual harbour and Minato Maru geometry, and builds the actual Johansson, Thuận, Fujita and Tetsuo avatars with World's shared character and gesture code. Separate shuffled character and location bags in local storage avoid consecutive repeats and show every option before a bag resets. Positions vary slightly within safe standing areas. The three views are the outer quay, pier end and ferry bridge wing overlooking the vehicle deck and port.
 
-The HTML always has a normal WebP harbour photograph. It works without JavaScript and remains visible if video loading/autoplay fails or motion/data-saving preferences prevent autoplay. The small controller selects a resident for the browser session, requests only that resident's clip after window load and idle time while visible, and pauses in hidden tabs or off-screen. It offers pause and explicit replay.
+The complete first frame is revealed only after geometry, textures and shader compilation finish. Loading/rendering errors retain the still; context loss never reloads the page. The short arrival runs at up to 30 fps, settles, then stops requesting frames. It pauses off-screen and in hidden tabs. Replay restarts the current arrival; Another arrival changes character and location. Dragging or left/right arrow keys adjust the camera within a bounded view. The homepage identity and About link remain available.
 
 ## Rebuild
 
-From repository root, using the Town Playwright authoring dependency, Chromium and ffmpeg:
+Install Town's authoring dependencies with `npm ci` in `johansson-town`. Chromium and ffmpeg are authoring tools only. `TOWN_CHROMIUM_PATH` may specify an installed browser; `PORT_BUILD_PACKAGE` may specify an alternative package.json beside installed esbuild.
 
 ```
-node tools/office-port/render.mjs
-node tools/office-port/render.mjs --poster
-node tools/office-port/encode.mjs
+node tools/office-port/bake.mjs
+node tools/office-port/build-live.mjs
+node tools/office-port/live-posters.mjs
 node tools/office-port/controller.test.cjs
 ```
 
-`TOWN_CHROMIUM_PATH` can point to an installed Chromium executable. `--stills` records one opening frame per resident. Temporary PNGs are written under `output/office-port`; commit only the final media, manifest and authoring sources. Video output is 960 × 540, 15 fps, nine seconds, H.264/yuv420p with fast-start metadata and no audio. The encoder rejects any clip over 500 KB or the shared poster over 100 KB.
+`bake.mjs` selects complete nearby meshes from the actual town, freezes and merges them by material, welds vertices, quantises positions to 16-bit buffers, reduces textures to at most 256 pixels, strips game-only material history and packs typed geometry buffers with embedded WebP images. It rejects scene downloads over 4.5 MB. `assets/office-port/scene.json` records the resulting size and geometry statistics. `build-live.mjs` bundles only character/rendering code, with Three.js shared from World's existing vendor module. Commit the generated runtime and scene along with their source.
 
-Inspect wide, descending and close shots for each character when World geometry changes. The controller checks exercise deferred requests, character selection, static fallback, data saving, reduced motion, visibility, manual pause and explicit replay. Actual device layout checks should accompany homepage changes.
+`live-posters.mjs` generates matching still assets from the same live renderer and complete-frame gate. It writes temporary review images under `output/office-port/live`; publish only the finished WebP assets. Existing MP4 files are retained for old cached versions of the page; the current homepage does not request them.
+
+Controller checks cover deferred imports, all character/location choices, preferences, manual controls, complete-frame reveal, failed loading, selection races, tab/viewport visibility, and disposal. Inspect generated compositions before publication; actual device performance and touch layout still require device checks.
