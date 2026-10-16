@@ -1,4 +1,4 @@
-import {SONGS,STYLES,SONG_PRICE,cleanSong,cleanConcert,scoreFor,cueAt} from './songs.js';
+import {SONGS,STYLES,VOICES,PERFORMANCES,SONG_PRICE,cleanSong,cleanConcert,scoreFor,cueAt} from './songs.js';
 import {createConcertAudio} from './audio.js';
 import {createConcertStage} from './stage.js';
 import {CONCERT_CSS} from './styles.js';
@@ -9,15 +9,17 @@ export function createConcert({renderer,getCast,getDraft,saveDraft,pay,onFinish=
  const style=document.createElement('style');style.textContent=CONCERT_CSS;document.head.append(style);
  ui.innerHTML=`<header><div><h2 id="concertTitle">Minato karaoke</h2><p>One microphone. The whole town.</p></div><button type="button" data-close>Return to Minato</button></header>
  <div class="concert-main"><div class="concert-view"><div class="concert-screen"><span class="concert-badge">LASERDISC KARAOKE · 1997</span><span class="concert-count" aria-hidden="true"></span></div><div class="concert-lyrics"><p class="concert-line">Your evening at Minato</p><p class="concert-next">Choose your song and take the stage.</p><div class="concert-progress" role="progressbar" aria-label="Song progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div></div></div>
- <form class="concert-tools"><h3>Tonight’s performance</h3><p class="concert-copy">Choose a song and the people who will sing it. Groups trade verses and sing the last line together.</p><label>Song<select name="song" aria-label="Song"></select></label><label>Arrangement<select name="style" aria-label="Arrangement"></select></label><label>Performers<select name="size" aria-label="Number of performers"><option value="1">Solo</option><option value="2">Duet</option><option value="3">Trio</option><option value="4">Quartet</option></select></label><fieldset><legend>On stage</legend></fieldset><details><summary>Edit the title and lyrics</summary><label>Title<input name="title" maxlength="48" autocomplete="off"></label><div data-lyrics></div><button type="button" class="concert-reset" data-reset>Restore this song</button></details><p class="concert-note">Original songs with electronic singing voices. Your words follow the melody. Short lines work best. Changes are saved with your town.</p></form></div>
- <footer><p class="concert-status" role="status" aria-live="polite">Choose your song.</p><button type="button" data-mute aria-pressed="false">Sound on</button><button type="button" data-camera aria-pressed="false">Camera: auto</button><button type="button" data-edit hidden>Back to songs</button><button type="button" class="concert-primary" data-play>Perform · ¥100</button></footer>`;
+ <form class="concert-tools"><h3>Tonight’s performance</h3><p class="concert-copy">Choose a song and the people who will sing it. Groups trade verses and sing the last line together.</p><label>Song<select name="song" aria-label="Song"></select></label><label>Arrangement<select name="style" aria-label="Arrangement"></select></label><label>Electronic voice<select name="voice" aria-label="Electronic voice"></select></label><label>Stage energy<select name="performance" aria-label="Stage energy"></select></label><label>Performers<select name="size" aria-label="Number of performers"><option value="1">Solo</option><option value="2">Duet</option><option value="3">Trio</option><option value="4">Quartet</option></select></label><fieldset><legend>On stage</legend></fieldset><details><summary>Edit the title and lyrics</summary><label>Title<input name="title" maxlength="48" autocomplete="off"></label><div data-lyrics></div><button type="button" class="concert-reset" data-reset>Restore this song</button></details><p class="concert-note">Original arrangements with foreground electronic singing. These are synthetic voices. Short lyric lines work best. Changes are saved with your town.</p></form></div>
+ <footer><p class="concert-status" role="status" aria-live="polite">Choose your song.</p><button type="button" data-mute aria-pressed="false">Sound on</button><button type="button" data-camera aria-pressed="false">Camera: auto</button><button type="button" data-cheer hidden>Cheer!</button><button type="button" data-edit hidden>Back to songs</button><button type="button" class="concert-primary" data-play>Perform · ¥100</button></footer>`;
  document.body.append(ui);
  const $=q=>ui.querySelector(q),field=n=>$(`[name="${n}"]`),screen=$('.concert-screen'),line=$('.concert-line'),next=$('.concert-next'),status=$('.concert-status'),button=$('[data-play]'),canvas=renderer.domElement;
  const audio=createConcertAudio(),reduced=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
- let stage=null,opened=false,busy=false,playing=false,finished=false,paid=false,muted=false,view='auto',score=null,roster=[],draft=null,home=null,focusBefore=null,request=0,lastCue='',startTime=0,lastProgress=-1,silentClock=false;
+ let stage=null,opened=false,busy=false,playing=false,finished=false,paid=false,muted=false,view='auto',score=null,roster=[],draft=null,home=null,focusBefore=null,request=0,lastCue='',startTime=0,lastProgress=-1,silentClock=false,cheerUntil=0,lastCheer=-Infinity;
  let currentKey='';
  for(const song of SONGS)field('song').add(new Option(song.title,song.id));
  for(const [id,s] of Object.entries(STYLES))field('style').add(new Option(s.label,id));
+ for(const [id,label] of Object.entries(VOICES))field('voice').add(new Option(label,id));
+ for(const [id,label] of Object.entries(PERFORMANCES))field('performance').add(new Option(label,id));
  for(let i=0;i<4;i++){
   const label=document.createElement('label');label.textContent=i?'Singer '+(i+1):'Lead singer';
   const select=document.createElement('select');select.name='cast'+i;select.setAttribute('aria-label',label.textContent);label.append(select);$('fieldset').append(label);
@@ -25,7 +27,7 @@ export function createConcert({renderer,getCast,getDraft,saveDraft,pay,onFinish=
  }
  const announce=text=>status.textContent=text;
  function persist(){const saved=saveDraft({song:cleanSong(draft.song),cast:[...draft.cast],completed:draft.completed});if(saved===false)announce('Saving is unavailable. Keep this page open to retain your song.');return saved;}
- function syncSong(){field('song').value=draft.song.id;field('style').value=draft.song.style;field('title').value=draft.song.title;draft.song.lines.forEach((l,i)=>field('line'+i).value=l);}
+ function syncSong(){field('song').value=draft.song.id;field('style').value=draft.song.style;field('voice').value=draft.song.voice;field('performance').value=draft.song.performance;field('title').value=draft.song.title;draft.song.lines.forEach((l,i)=>field('line'+i).value=l);}
  function flushEdits(){draft.song=cleanSong({...draft.song,title:field('title').value,lines:Array.from({length:4},(_,i)=>field('line'+i).value)});}
  function castList(){
   const size=Math.min(Number(field('size').value),roster.length);
@@ -36,7 +38,7 @@ export function createConcert({renderer,getCast,getDraft,saveDraft,pay,onFinish=
   const key=draft.cast.join('|');if(key!==currentKey){stage.cast(draft.cast.map(n=>roster.find(r=>r.name===n)));currentKey=key;}
  }
  function setup(){
-  playing=false;finished=false;audio.stop();ui.classList.remove('concert-show');button.textContent=paid?'Perform again':'Perform · ¥'+SONG_PRICE;button.disabled=false;$('[data-edit]').hidden=true;
+  playing=false;finished=false;cheerUntil=0;lastCheer=-Infinity;$('[data-cheer]').hidden=true;audio.stop();ui.classList.remove('concert-show');button.textContent=paid?'Perform again':'Perform · ¥'+SONG_PRICE;button.disabled=false;$('[data-edit]').hidden=true;
   $('.concert-count').textContent='';$('.concert-badge').textContent='LASERDISC KARAOKE · 1997';line.textContent=draft.song.title;next.textContent=STYLES[draft.song.style].label+' · '+draft.cast.join(' & ');progress(0);
  }
  function progress(amount){const percent=Math.max(0,Math.min(100,Math.round(amount*100)));if(percent===lastProgress)return;lastProgress=percent;$('.concert-progress').setAttribute('aria-valuenow',String(percent));$('.concert-progress i').style.width=percent+'%';}
@@ -44,7 +46,7 @@ export function createConcert({renderer,getCast,getDraft,saveDraft,pay,onFinish=
   request++;busy=false;setup();announce(message);button.focus();
  }
  function complete(){
-  playing=false;finished=true;audio.stop();draft.completed++;persist();onFinish(draft.song.title,draft.cast);
+  playing=false;finished=true;$('[data-cheer]').hidden=true;audio.stop();draft.completed++;persist();onFinish(draft.song.title,draft.cast);
   line.textContent='Thank you, Minato!';next.textContent=draft.cast.join(' · ');$('.concert-count').textContent='';$('.concert-badge').textContent='THE FINAL BOW';progress(1);
   button.textContent='Encore';$('[data-edit]').hidden=false;announce('The room applauds. Encore, or choose another song.');button.focus();
  }
@@ -58,7 +60,7 @@ export function createConcert({renderer,getCast,getDraft,saveDraft,pay,onFinish=
    if(!audible&&!muted){audio.stop();announce('Sound could not start. Try again, or switch sound off for a silent performance.');return;}
    if(!paid&&!pay(SONG_PRICE)){audio.stop();announce('A song costs ¥100. Your wallet has too few yen.');return;}
    paid=true;playing=true;finished=false;silentClock=!audible;startTime=performance.now()+100;lastCue='';
-   ui.classList.add('concert-show');$('[data-edit]').hidden=true;button.textContent='Stop';
+   ui.classList.add('concert-show');$('[data-edit]').hidden=true;$('[data-cheer]').hidden=false;cheerUntil=0;lastCheer=-Infinity;button.textContent='Stop';
    announce(audible?'Four beats, then you are on.':'Audio is unavailable. The stage and lyrics will play silently.');
    button.focus();
   }catch(error){audio.stop();announce('The disc could not start. Please try again.');console.warn('Concert start failed',error);}
@@ -92,7 +94,7 @@ export function createConcert({renderer,getCast,getDraft,saveDraft,pay,onFinish=
   const t=playing?(silentClock?Math.max(0,(performance.now()-startTime)/1000):audio.elapsed):finished?score.duration-score.beat*.05:0;
   if(playing)audio.update();const c=playing?cue(t):finished?{phase:'bow',line:-1,word:-1}:null;
   if(c?.phase==='finished'){complete();}
-  stage.frame(t,c,score,{view,reduced:!!reduced?.matches});
+  stage.frame(t,c,score,{view,reduced:!!reduced?.matches,cheering:playing&&t<cheerUntil});
   renderer.setRenderTarget(null);renderer.render(stage.scene,stage.camera);
  }
  function open(){
@@ -110,6 +112,8 @@ export function createConcert({renderer,getCast,getDraft,saveDraft,pay,onFinish=
   stage?.dispose();stage=null;onClose();if(focusBefore?.isConnected)focusBefore.focus();
  }
  function syncMute(){$('[data-mute]').textContent=muted?'Sound off':'Sound on';$('[data-mute]').setAttribute('aria-pressed',String(muted));audio.mute(muted);}
+ function cheer(){if(!playing)return;const t=silentClock?Math.max(0,(performance.now()-startTime)/1000):audio.elapsed;if(t-lastCheer<score.beat*2)return;lastCheer=t;cheerUntil=t+score.beat*4;audio.cheer();announce('Hey! The room joins in. H or Cheer! adds another response.');}
+ $('[data-cheer]').onclick=cheer;
  $('[data-play]').onclick=perform;$('[data-close]').onclick=close;$('[data-edit]').onclick=()=>stop('Choose your next song. Encores are included.');
  $('[data-mute]').onclick=()=>{muted=!muted;syncMute();};
  $('[data-camera]').onclick=()=>{view=view==='auto'?'wide':'auto';$('[data-camera]').textContent='Camera: '+view;$('[data-camera]').setAttribute('aria-pressed',String(view==='wide'));};
@@ -119,6 +123,8 @@ export function createConcert({renderer,getCast,getDraft,saveDraft,pay,onFinish=
   if(!opened||playing||busy)return;const name=e.target.name;
   if(name==='song'){draft.song=cleanSong(SONGS.find(s=>s.id===e.target.value));syncSong();}
   if(name==='style')draft.song.style=e.target.value;
+  if(name==='voice')draft.song.voice=e.target.value;
+  if(name==='performance')draft.song.performance=e.target.value;
   if(name==='size')castList();
   if(name.startsWith('cast')){const i=Number(name.slice(4)),old=draft.cast[i],duplicate=draft.cast.indexOf(e.target.value);draft.cast[i]=e.target.value;if(duplicate>=0&&duplicate!==i)draft.cast[duplicate]=old;castList();}
   if(name==='title')draft.song.title=e.target.value;
@@ -127,6 +133,7 @@ export function createConcert({renderer,getCast,getDraft,saveDraft,pay,onFinish=
  };
  const keydown=e=>{
   if(!opened)return;e.stopImmediatePropagation();
+  if(playing&&e.code==='KeyH'){e.preventDefault();cheer();return;}
   if(e.key==='Escape'){e.preventDefault();close();}
   if(e.key==='Tab'){const all=[...ui.querySelectorAll('button,input,select,summary')].filter(o=>!o.disabled&&o.getClientRects().length),index=all.indexOf(document.activeElement);e.preventDefault();all[(index+(e.shiftKey?-1:1)+all.length)%all.length]?.focus();}
  };

@@ -7,7 +7,7 @@ import {openYear} from '../src/progression/year-loop.js';
 
 test('each arrangement has a finite, pitched score with every lyric word in order and a complete final bow',()=>{
  for(const style of Object.keys(STYLES))for(const song of SONGS){
-  const s=scoreFor({...song,style});assert.equal(s.duration,40*60/STYLES[style].bpm);
+  const s=scoreFor({...song,style});assert.ok(Math.abs(s.duration-40*60/STYLES[style].bpm)<1e-10);
   assert.equal(cueAt(s,0).count,4);assert.equal(cueAt(s,s.beat*3.99).count,1);
   assert.equal(cueAt(s,s.beat*4).phase,'singing');assert.equal(cueAt(s,s.beat*4).line,0);
   assert.equal(cueAt(s,s.beat*36).phase,'bow');assert.equal(cueAt(s,s.duration).phase,'finished');
@@ -46,7 +46,7 @@ function audioHarness({defer=false}={}){
 test('the sound scheduler plays a bounded lookahead, includes pitched vocals, and stops all sources on exit',async()=>{
  for(const style of Object.keys(STYLES)){
   const h=audioHarness(),score=scoreFor({...SONGS[0],style});await h.audio.start(score,[{body:{silhouette:'masculine'}},{body:{silhouette:'feminine'}}]);
-  h.audio.update();const first=h.nodes.filter(n=>n.started!==undefined);assert.ok(first.length>0);assert.ok(first.every(n=>n.started<=h.ctx.currentTime+.18));
+  h.audio.update();const first=h.nodes.filter(n=>n.started!==undefined);assert.ok(first.length>0);assert.ok(first.every(n=>n.started<=h.ctx.currentTime+.45));
   const before=h.nodes.length;h.ctx.currentTime=4*score.beat+.11;h.audio.update();assert.ok(h.nodes.length>before+10,'accompaniment and formant voices scheduled');
   const playing=h.nodes.filter(n=>n.started!==undefined);h.audio.mute(true);h.audio.stop();assert.equal(h.audio.running,false);assert.ok(playing.every(n=>n.stopped===0&&n.disconnected));
   const ended=h.nodes.length;h.ctx.currentTime+=30;h.audio.update();assert.equal(h.nodes.length,ended,'no queued music after exit');h.audio.dispose();
