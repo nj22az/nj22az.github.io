@@ -54,3 +54,18 @@ html[data-module-theme="line"] .revision-main .lab-panel {padding:20px}
 @media print{.dc-bench-tools,.dc-mode-tabs,.dc-workspace form,.dc-workspace button,.dc-instrument{display:none}.dc-work-grid{display:block}.dc-log article{break-inside:avoid}}
 
 .dc-workspace #dc-circuit{overflow-x:auto}.dc-workspace .dc-circuit{min-width:640px}
+/* Browser review: compact workbench, clear fallback and native focus management. */
+.dc-workspace-heading{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.dc-workspace-heading .eyebrow{margin:0}.dc-workspace-heading button{font-weight:700}
+.dc-workspace .dc-task{padding:14px 18px;margin:16px 0}.dc-workspace .dc-task p{margin:8px 0}.dc-workspace .dc-task label{margin:0 0 8px}
+.dc-workspace .dc-guidance{padding:10px 12px;background:#e5f4e8;border-radius:8px;font-weight:650;border-left:3px solid #08763a}
+.dc-workspace .dc-view-note{font-size:15px;line-height:1.5;padding:12px;background:#f1f5f2;border:1px solid #c8d4cc;border-radius:8px}
+.dc-workspace .dc-circuit{min-width:0;width:100%}.dc-workspace .dc-circuit text{font-size:22px}.dc-workspace .dc-circuit .dc-probe-label{font-size:19px}
+.dc-workspace #dc-schema{overflow:hidden}.dc-workspace #dc-circuit{overflow-x:visible}
+.dc-work-dialog{box-sizing:border-box;max-width:1500px;max-height:none;width:calc(100% - 32px);height:calc(100% - 32px);margin:16px auto;padding:24px;overflow:auto;border:1px solid #c8d4cc;border-radius:16px;background:white;color:#17251d;font-family:system-ui,sans-serif}
+.dc-work-dialog::backdrop{background:#14271bb3}.dc-work-dialog .dc-workspace>h3{margin:12px 0;font-size:24px}.dc-work-dialog .dc-workspace>p{margin:8px 0}
+.dc-work-dialog .dc-mode-tabs{margin:14px 0}.dc-work-dialog .dc-work-grid{grid-template-columns:minmax(0,1.4fr) minmax(310px,1fr)}
+.dc-work-dialog #dc-task{font-size:16px}.dc-work-dialog .dc-instrument{padding:16px}.dc-work-dialog .dc-instrument .eyebrow{margin:0 0 10px}.dc-work-dialog .dc-instrument #dc-reading-detail{font-size:15px;line-height:1.4}
+.dc-work-dialog .dc-log{margin-top:28px}.dc-work-dialog .dc-log p{margin:8px 0}.dc-work-dialog .dc-log article{border-top:1px solid #c8d4cc}
+@media(max-width:900px){.dc-work-dialog .dc-work-grid{grid-template-columns:1fr}.dc-work-dialog{padding:18px}.dc-workspace .dc-circuit text{font-size:24px}}
+@media(max-width:600px){.dc-work-dialog{width:100%;height:100%;margin:0;border:0;border-radius:0;padding:16px}.dc-workspace .dc-task{padding:12px}.dc-workspace .dc-circuit{min-width:440px}.dc-workspace #dc-circuit{overflow-x:auto}.dc-workspace .dc-circuit text{font-size:25px}.dc-workspace-heading button{width:100%}}
