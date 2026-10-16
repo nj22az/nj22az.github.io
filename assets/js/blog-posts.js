@@ -85,7 +85,8 @@ window.OFFICE_BLOG_POSTS = [
     "title": "The Torn Poster",
     "excerpt": "Tetsuo tears the corner off Thuận’s sale poster. A short film, a nine-page comic and a practical use for Pythagoras’ theorem.",
     "url": "/blog/the-torn-poster/",
-    "date": null,
-    "topic": "Stories"
+    "date": "2026-10-09",
+    "topic": "Stories",
+    "publishedAt": "2026-10-08T22:44:25Z"
   }
 ];
