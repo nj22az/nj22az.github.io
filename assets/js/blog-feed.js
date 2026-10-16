@@ -20,12 +20,11 @@
   if (!base.length) return;
   function node(tag, cls, value) { var el=document.createElement(tag); if(cls)el.className=cls; if(value)el.textContent=value; return el; }
   function render(root) {
-    var list=root.querySelector('[data-blog-list]'), topic=root.dataset.topic || 'All';
-    var filtered=posts.filter(function (p) { return topic==='All' || p.topic===topic; });
-    var limit=Number(root.dataset.limit) || filtered.length, fragment=document.createDocumentFragment();
-    filtered.slice(0,limit).forEach(function (p) {
+    var list=root.querySelector('[data-blog-list]');
+    var limit=Number(root.dataset.limit) || posts.length, fragment=document.createDocumentFragment();
+    posts.slice(0,limit).forEach(function (p) {
       var article=node('article','blog-feed-item'), meta=node('div','blog-feed-meta');
-      meta.appendChild(node('span','blog-feed-topic',p.topic));
+      meta.appendChild(node('span','blog-feed-topic','Article'));
       if(p.date){var date=node('time','',new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',year:'numeric'}).format(new Date(p.date+'T12:00:00Z')));date.dateTime=p.date;meta.appendChild(date);}
       article.appendChild(meta);
       var heading=node(root.dataset.heading || 'h3'), link=node('a','',p.title);link.href=safeUrl(p.url);heading.appendChild(link);article.appendChild(heading);
@@ -35,12 +34,9 @@
       article.appendChild(actions);fragment.appendChild(article);
     });
     list.replaceChildren(fragment);
-    var count=root.querySelector('[data-blog-count]');if(count)count.textContent=filtered.length+' '+(filtered.length===1?'article':'articles');
+    var count=root.querySelector('[data-blog-count]');if(count)count.textContent=posts.length+' '+(posts.length===1?'article':'articles');
   }
-  roots.forEach(function (root) {
-    root.querySelectorAll('[data-blog-topic]').forEach(function (button) { button.addEventListener('click',function () { root.dataset.topic=button.dataset.blogTopic;root.querySelectorAll('[data-blog-topic]').forEach(function (b) { b.setAttribute('aria-pressed',String(b===button)); });render(root); }); });
-    render(root);
-  });
+  roots.forEach(render);
   // The published catalogue is always readable, even if WordPress is unavailable.
   var started=false;
   function refresh() {
@@ -50,3 +46,4 @@
   if('IntersectionObserver' in window){var observer=new IntersectionObserver(function (entries) { if(entries.some(function (e) { return e.isIntersecting; })){observer.disconnect();refresh();} },{rootMargin:'160px'});roots.forEach(function (r) { observer.observe(r); });}
   else window.addEventListener('load',refresh,{once:true});
 })();
+
