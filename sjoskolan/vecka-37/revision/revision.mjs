@@ -1,4 +1,4 @@
-import {renderRevision,questionMarkup,questionSummary,esc,L,t} from './revision-ui.mjs?v=20261016-r7';
+import {renderRevision,questionMarkup,questionSummary,esc,L,t} from './revision-ui.mjs?v=20261016-r8';
 import {evaluate} from './engine.mjs';
 import {startReadingProgress} from './reading-progress.mjs';
 import {selectModuleExport} from './module-tools.mjs';
@@ -15,7 +15,7 @@ try{
  $('#main').innerHTML=renderRevision(data,state,exportsData);
  $('#question-summary').textContent=questionSummary(data.module,state);
  const readingCleanup=startReadingProgress({state:()=>state,save,moduleId:1});
- async function openLab(){if(labStarted)return;labStarted=true;$('#revision-lab').innerHTML='<p>Laddar simulatorn…</p>';try{const {showLab}=await import('./labs.mjs?v=20261016-r7');labCleanup=await showLab('dc',{embedded:true,state:()=>state,save,t,L,esc,shell:html=>{$('#revision-lab').innerHTML=html;},link:(url,label)=>`<a href="${esc(url)}">${esc(label)}</a>`,toast,download});}catch{labStarted=false;$('#revision-lab').innerHTML='<p>Simulatorn kunde inte laddas. Försök igen.</p><button class="btn" id="open-lab">Öppna simulatorn</button>';}}
+ async function openLab(){if(labStarted)return;labStarted=true;$('#revision-lab').innerHTML='<p>Laddar simulatorn…</p>';try{const {showLab}=await import('./labs.mjs?v=20261016-r8');labCleanup=await showLab('dc',{embedded:true,state:()=>state,save,t,L,esc,shell:html=>{$('#revision-lab').innerHTML=html;},link:(url,label)=>`<a href="${esc(url)}">${esc(label)}</a>`,toast,download});}catch{labStarted=false;$('#revision-lab').innerHTML='<p>Simulatorn kunde inte laddas. Försök igen.</p><button class="btn" id="open-lab">Öppna simulatorn</button>';}}
  const observer=typeof IntersectionObserver==='function'?new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting)){observer.disconnect();void openLab();}},{rootMargin:'200px'}):null;observer?.observe($('#revision-lab'));
  document.addEventListener('click',e=>{if(e.target.closest('#open-lab'))void openLab();if(e.target.closest('#download-progress'))download(JSON.stringify({...state,revision:data.revision,originalWeek:'/sjoskolan/vecka-37/aktuell/'},null,2),'Elteknik_modul_1_mina_svar.json','application/json');});
  document.addEventListener('input',e=>{if(e.target.id==='reflection'){state.reflections[1]=e.target.value;save();}const form=e.target.closest('.q-form');if(form){const q=data.module.questions.find(q=>q.id===form.dataset.q);if(q){const a=state.answers[q.id]||{attempts:[]};const f=new FormData(form);state.answers[q.id]={...a,draft:f.get('answer')??'',unit:f.get('unit')||q.unit};save();}}});

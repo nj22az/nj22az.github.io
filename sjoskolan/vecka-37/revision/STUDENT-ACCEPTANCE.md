@@ -33,4 +33,6 @@ Success places the next-exercise button beside the result. The exercise selector
 - Each browser journey uses only rendered guidance and controls, completes all six exercises, captures each instrument, checks page overflow and reload persistence, and tests direct probe lists, wrong-unit correction and tripped-protection recovery.
 - CI retains screenshots, the rendered-3D/fallback state, failure traces and the HTML test report as `module-one-browser-evidence`.
 
-Browser-run results will be recorded after the first CI run. Physical iPad Safari and interactive rendered-3D visual acceptance remain outstanding until separately observed.
+The first browser run passed all six browser tests on commit `226dd1555d63659d405a23ece1c6e91733c0ff92`: 18 completed exercise scenarios across the three projects, plus correction/recovery checks. All three projects created a real WebGL canvas. Captured 3D equipment and instrument screenshots were reviewed; the close return labels overlapped. Their projected placement is now separated, with geometric regression coverage at 390, 820 and 1180 px. The final browser rerun also checks actual 3D terminal clicks, endpoint-list synchronisation and non-overlapping return targets, and captures each scenario’s bench.
+
+Physical iPad Safari, actual touch/drag ergonomics on a device and a real first-time learner study remain outstanding. Browser emulation and an expert walkthrough do not certify those.

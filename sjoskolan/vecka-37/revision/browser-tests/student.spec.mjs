@@ -10,7 +10,16 @@ test('a beginner completes all six exercises using visible next actions',async({
  // Rendering and fallback are recorded separately: a fallback is never called a 3D visual pass.
  await expect(page.locator('#lab-viewport')).not.toContainText('Förbereder');
  await testInfo.attach('3d-state',{body:await page.locator('#lab-viewport').innerText()+`\nCanvas count: ${await page.locator('#lab-viewport canvas').count()}`,contentType:'text/plain'});
- if(await page.locator('#lab-viewport canvas').count())await testInfo.attach('rendered-3d-bench',{body:await page.locator('#lab-viewport').screenshot(),contentType:'image/png'});
+ if(await page.locator('#lab-viewport canvas').count()){
+  await page.locator('#lab-viewport [data-target="loadPlus"]').click();
+  await expect(page.getByLabel('Röd prob – mätpunkt')).toHaveValue('loadPlus');
+  await page.getByRole('button',{name:'Svart prob',exact:true}).click();
+  await page.locator('#lab-viewport [data-target="loadMinus"]').click();
+  await expect(page.getByLabel('Svart prob – mätpunkt')).toHaveValue('loadMinus');
+  const left=await page.locator('#lab-viewport [data-target="returnLeft"]').boundingBox(),right=await page.locator('#lab-viewport [data-target="returnRight"]').boundingBox();
+  expect(left.x+left.width<=right.x||right.x+right.width<=left.x).toBe(true);
+  await testInfo.attach('rendered-3d-bench',{body:await page.locator('#lab-viewport').screenshot(),contentType:'image/png'});
+ }
  for(let i=0;i<6;i++){
   await expect(work.locator('[data-setting="exercise"]')).toHaveValue(String(i));
   for(let n=0;await work.locator('[data-action="guided-step"]').count();n++){
@@ -23,6 +32,7 @@ test('a beginner completes all six exercises using visible next actions',async({
   await expect(page.locator('#dc-result')).toContainText('Kontrollerat');
   await expect(page.locator('#dc-task')).toContainText(`${i+1} av 6`);
   await testInfo.attach(`exercise-${i+1}-instrument`,{body:await page.locator('.dc-instrument').screenshot(),contentType:'image/png'});
+  if(await page.locator('#lab-viewport canvas').count())await testInfo.attach(`exercise-${i+1}-bench`,{body:await page.locator('#lab-viewport').screenshot(),contentType:'image/png'});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
   if(i<5)await work.locator('[data-action="next-exercise"]').click();
  }
