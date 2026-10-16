@@ -1,3 +1,4 @@
+import {normalizeTake} from './acting/takes.mjs';
 import {KNOWN_POSES,KNOWN_EXPRESSIONS} from './scene-catalogue.mjs';
 import {SNAP} from './scene-snap.mjs?v=20261011-2';
 export const SCENE_KEY='nj-studio-scene-v1';
@@ -25,7 +26,7 @@ export function normalizeScene(raw,normalizeRecipe=r=>structuredClone(r)){
   id:'actor-'+i,name:text(a.name)||'Character',recipe:normalizeRecipe(a.recipe),
   x:raw.version===2?clamp(a.x,-SNAP.bounds,SNAP.bounds,0):i*.65,z:raw.version===2?clamp(a.z,-SNAP.bounds,SNAP.bounds,0):0,size:raw.version===2?clamp(a.size,.6,1.4,1):1,seat:raw.version===2?text(a.seat):'',
   turn:clamp(a.turn,-180,180,0),pose:KNOWN_POSES.has(a.pose)?a.pose:'Idle',
-  expression:KNOWN_EXPRESSIONS.has(a.expression)?a.expression:'smile',speech:text(a.speech)
+  expression:KNOWN_EXPRESSIONS.has(a.expression)?a.expression:'smile',speech:text(a.speech),...a.take?{take:safeTake(a.take),takeLoop:a.takeLoop===true}:{}
  }));return out;
 }
 export function addCharacter(state,recipe,name=recipe.name||'Character'){
@@ -56,3 +57,5 @@ export function applyPlacement(state,id,placement){
  return actor;
 }
 export function panelOrder(panels,index,delta){const to=index+delta;if(to<0||to>=panels.length)return;[panels[index],panels[to]]=[panels[to],panels[index]];}
+
+function safeTake(raw){try{return normalizeTake(raw);}catch{return null;}}
