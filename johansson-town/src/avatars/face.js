@@ -117,7 +117,9 @@ export const EXPRESSION_GLYPHS=Object.freeze({neutral:'•ᴗ•',happy:'◠ᴗ�
  */
 export function drawFace(ctx,recipe,state={}){
  const size=state.size||256,k=size/256;
- const mood=MOOD[state.expression]||MOOD.neutral;
+ const baseMood=MOOD[state.expression]||MOOD.neutral;
+ const mood={...baseMood,browLift:baseMood.browLift+(state.actingBrow||0)*12};
+ if(state.actingSmile>.35&&['neutral','calm','content'].includes(state.expression))mood.mouth='smile';
  const L=faceLayout(recipe),skin=recipe.body.skin,line='#2b2623';
  ctx.canvas.__skin=skin;
  ctx.save();ctx.setTransform(k,0,0,k,0,0);
@@ -155,7 +157,7 @@ export function drawFace(ctx,recipe,state={}){
  const eyesState=blink>.5&&!['happy','spiral',...SYMBOL_EYES].includes(mood.eyes)?'closed':mood.eyes;
  // A face that looks somewhere of its own (a sideways smirk, a drowsy look down) looks there.
  const look=mood.look||state.look||[0,0];
- for(const s of [-1,1])drawEye(ctx,128+s*L.spread,L.eyeY,L.eyeS,s,recipe.eyes,eyesState,look,L.eyeTilt,L.eyeW);
+ for(const s of [-1,1]){const captured=s<0?state.blinkLeft:state.blinkRight;const eye=Number.isFinite(captured)?(captured>.5?'closed':mood.eyes):eyesState;drawEye(ctx,128+s*L.spread,L.eyeY,L.eyeS,s,recipe.eyes,eye,look,L.eyeTilt,L.eyeW);}
  // Brows (oneBrow: the viewer's right one goes up on its own, the smug brow).
  if(recipe.brows.style!=='none')for(const s of [-1,1])drawBrow(ctx,128+s*L.browSpread,L.browY-mood.browLift-(s>0?(mood.oneBrow||0)+(recipe.marks?.cocked?7:0):0),L.browS,s,recipe.brows,L.browTilt,mood.brow);
  drawNose(ctx,L.noseX,L.noseY,L.noseS,recipe.nose.style,skin,line);

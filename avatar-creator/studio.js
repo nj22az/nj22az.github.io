@@ -1,8 +1,10 @@
+import {createActingPanel} from './acting/panel.js?v=20261016-1';
+import {createPerformancePanel} from './performance-panel.js?v=20261015-1';
 import {openCreator} from '../johansson-town/src/avatars/creator.js';
 import {ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/src/avatars/cast.js';
 import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js';
 import {normalizeRecipe,decodeRecipe} from '../johansson-town/src/avatars/recipe.js';
-import {createSceneWorkspace} from './scene.js?v=20261011-5';
+import {createSceneWorkspace} from './scene.js?v=20261016-1';
 import {createWorldPanel} from './world-panel.js?v=20261011-1';
 import {createHomeWorkspace} from './home.js?v=20261011-1';
 import {createModelWorkspace} from './model.js?v=20261014-1';
@@ -88,11 +90,11 @@ files.addEventListener('keydown',event=>{if(event.key==='Escape'){files.open=fal
 let noticeTimer;
 const noticeObserver=new MutationObserver(()=>{clearTimeout(noticeTimer);if(status.textContent)noticeTimer=setTimeout(()=>{status.textContent='';},8000);});
 noticeObserver.observe(status,{childList:true});creator.root.querySelector('.shm-top').after(toolbar);
-function cleanup(){titleObserver.disconnect();noticeObserver.disconnect();clearTimeout(noticeTimer);document.removeEventListener('click',closeFiles);}
+function cleanup(){acting.dispose();performancePanel.dispose();titleObserver.disconnect();noticeObserver.disconnect();clearTimeout(noticeTimer);document.removeEventListener('click',closeFiles);}
 
 // Inspect the same character in several views without changing its design.
 const preview=document.createElement('details');preview.className='studio-preview';
-const previewTitle=document.createElement('summary');previewTitle.textContent='Preview';preview.append(previewTitle);
+const previewTitle=document.createElement('summary');previewTitle.textContent='Preview & performance';preview.append(previewTitle);
 const previewMenu=document.createElement('div');previewMenu.className='studio-preview-menu';preview.append(previewMenu);
 function previewSelect(label,options,action){
  const row=document.createElement('label');row.append(label);
@@ -107,6 +109,11 @@ const expressionRow=document.createElement('label');expressionRow.append('Expres
 const pose=creator.root.querySelector('[aria-label="Preview pose"]');
 const poseRow=document.createElement('label');poseRow.append('Pose',pose);previewMenu.append(poseRow);
 const previewOutfit=creator.root.querySelector('[aria-label="Preview outfit"]');const outfitRow=document.createElement('label');outfitRow.append('Preview outfit',previewOutfit);previewMenu.append(outfitRow);
+const performancePanel=createPerformancePanel({creator,expression,pose,status});
+expressionRow.remove();poseRow.remove();
+const acting=createActingPanel({onStart:()=>creator.setPerformance({frozen:false}),onFrame:frame=>creator.setActingFrame(frame),getControls:()=>({expression:expression.value==='auto'?'neutral':expression.value,pose:pose.value,strength:creator.performance.strength}),onStop:()=>creator.setPerformance({frozen:true})});
+performancePanel.root.append(acting.root);
+previewMenu.prepend(performancePanel.root);
 creator.root.querySelector('.shm-side').append(preview);
 const featureReset=document.createElement('button');featureReset.type='button';featureReset.className='studio-reset-feature';featureReset.textContent='Reset feature';featureReset.title='Restore this feature to the loaded template or design. Undo remains available.';
 featureReset.onclick=()=>{creator.resetFeature();status.textContent='Selected feature restored. Undo reverses this change.';};
