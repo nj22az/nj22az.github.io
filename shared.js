@@ -146,7 +146,7 @@
 
   /* ── Navigation — theme-aware hamburger + overlay ── */
 
-  var navIcons = { home: "home", projects: "notebook", shop: "store", journal: "wordpress", about: "user", locations: "mappin" };
+  var navIcons = { home: "home", projects: "notebook", shop: "store", blog: "wordpress", journal: "wordpress", about: "user", locations: "mappin" };
 
   function navLink(item, isHome) {
     var href = item.url || (isHome ? "#" + item.id : "/#" + item.id);
@@ -375,3 +375,4 @@
   window.siteIcon = icon;
 
 })();
+

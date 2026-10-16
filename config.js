@@ -23,7 +23,6 @@ const CONFIG = {
       github: "https://github.com/nj22az",
       linkedin: "https://www.linkedin.com/in/nils-johansson-86744583",
       store: "https://3va6hr-fw.myshopify.com/",
-      wordpress: "https://theofficeofnils.wordpress.com",
     },
     locations: [
       {
@@ -49,7 +48,7 @@ const CONFIG = {
     { id: "home", label: "Home" },
     { id: "projects", label: "Projects" },
     { id: "shop", label: "Shop", url: "https://3va6hr-fw.myshopify.com/" },
-    { id: "journal", label: "Journal" },
+    { id: "blog", label: "Blog", url: "/blog/" },
     { id: "about", label: "About" },
     { id: "locations", label: "Locations" },
   ],
@@ -128,10 +127,10 @@ const CONFIG = {
       featured: true,
     },
     {
-      title: "WordPress Blog",
+      title: "Blog",
       description:
         "Long-form technical dispatches and cultural reflections from engineering work around the world.",
-      url: "https://theofficeofnils.wordpress.com",
+      url: "/blog/",
       icon: "wordpress",
       tags: ["Writing", "Engineering", "Travel"],
       bento: "wide",
@@ -338,3 +337,4 @@ CONFIG.projectExplorer = [
     "preview": "stepwise"
   }
 ];
+

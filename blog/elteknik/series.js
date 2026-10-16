@@ -1,38 +1,42 @@
-/* Genererad lista över bloggserien Elteknik ombord – används av /blog/ */
 window.ELTEKNIK_SERIES = [
   {
-    "title": "Lanternan som lyser svagt",
-    "sub": "Ohms lag och spänningsfall i praktiken",
-    "desc": "Varför lyser en lampa svagt fast batteriet visar 24 V? Ett räkneexempel med kabelresistans, en korroderad plint – och rätt sätt att mäta.",
+    "title": "The navigation light that glows dimly",
+    "sub": "Ohm’s law and voltage drop in practice",
+    "desc": "Why does a lamp glow dimly when the battery reads 24 V? Cable resistance, a corroded terminal and the right way to measure.",
     "url": "/blog/elteknik/lanternan-som-lyser-svagt/",
-    "minutes": 3
+    "minutes": 3,
+    "svUrl": "/blog/elteknik/lanternan-som-lyser-svagt/sv/"
   },
   {
-    "title": "Trefas på 440 V och 60 Hz",
-    "sub": "Y, Δ och effekten i en pumpmotor",
-    "desc": "Huvudspänning och fasspänning, Y- och Δ-koppling och trefaseffekt med ett genomräknat exempel på en pumpmotor ombord.",
+    "title": "Three-phase power at 440 V and 60 Hz",
+    "sub": "Star, delta and the power in a pump motor",
+    "desc": "Line and phase voltage, star and delta connections, and a worked example of three-phase power in a shipboard pump motor.",
     "url": "/blog/elteknik/trefas-440-v-60-hz/",
-    "minutes": 3
+    "minutes": 3,
+    "svUrl": "/blog/elteknik/trefas-440-v-60-hz/sv/"
   },
   {
-    "title": "Innan du öppnar elcentralen",
-    "sub": "Fem säkerhetsregler enligt SS-EN 50110-1",
-    "desc": "De fem grundreglerna för arbete i spänningslöst tillstånd, och varför en elcentral ombord kan matas från fler håll än du tror.",
+    "title": "Before you open the switchboard",
+    "sub": "Five safety rules under SS-EN 50110-1",
+    "desc": "The five basic rules for working dead, and why a shipboard switchboard can have more supply routes than you expect.",
     "url": "/blog/elteknik/fem-sakerhetsregler/",
-    "minutes": 3
+    "minutes": 3,
+    "svUrl": "/blog/elteknik/fem-sakerhetsregler/sv/"
   },
   {
-    "title": "Isolationslarmet som inte går att kvittera",
-    "sub": "Så fungerar IT-systemet ombord",
-    "desc": "Varför ett jordfel ombord inte löser ut något, varför larmet kommer tillbaka och hur man letar upp felet innan det andra kommer.",
+    "title": "The insulation alarm that will not clear",
+    "sub": "How a shipboard IT system works",
+    "desc": "Why the first earth fault does not trip a shipboard IT supply, why the alarm returns, and how to locate the fault before a second occurs.",
     "url": "/blog/elteknik/isolationslarmet/",
-    "minutes": 3
+    "minutes": 3,
+    "svUrl": "/blog/elteknik/isolationslarmet/sv/"
   },
   {
-    "title": "Pumpen som inte startar",
-    "sub": "Systematisk felsökning steg för steg",
-    "desc": "Från symptom till orsak i fem steg: dela upp i huvudkrets och manöverkrets, halvera, mät säkert – och ta reda på varför skyddet löste ut.",
+    "title": "The pump that will not start",
+    "sub": "Systematic fault-finding, step by step",
+    "desc": "From symptom to cause in five steps: separate power and control circuits, narrow the search, measure safely and establish why the protection tripped.",
     "url": "/blog/elteknik/pumpen-som-inte-startar/",
-    "minutes": 3
+    "minutes": 3,
+    "svUrl": "/blog/elteknik/pumpen-som-inte-startar/sv/"
   }
 ];

@@ -26,6 +26,7 @@
   <link rel="stylesheet" href="/css/office-port.css?v=2">
   <script src="/assets/js/office-port.js?v=2" defer></script>
   <script src="/assets/js/shopify-book-price.js" defer></script>
+  <link rel="stylesheet" href="/css/office-blog.css?v=1">
 </head>
 <body>
 
@@ -84,7 +85,7 @@
         </div><p id="project-count" role="status" aria-live="polite" aria-atomic="true">5 projects to explore</p></div>
         <div id="project-grid" class="px-grid" data-filter="all"></div>
         <noscript><div class="px-fallback"><p>Explore the projects:</p><ul><li><a href="/johansson-town/">Johansson World — explore an Okinawan harbour town</a></li><li><a href="/maintenance-demo/">Maintenance Desk — try an equipment maintenance programme</a></li><li><a href="/sjoskolan/">Sjöskolan — Swedish electrical engineering course</a></li><li><a href="/elteknik/">Elteknik och ellära — textbook and free sample</a></li><li><a href="/stepbuddy/">StepWise — step-by-step calculator</a></li></ul></div></noscript>
-        <div class="px-connections"><div><h3>Beyond the projects</h3><p>Source code, field notes and professional connections.</p></div><div id="project-channels" class="px-channel-links"></div></div>
+        <div class="px-connections"><div><h3>Beyond the projects</h3><p>Source code and professional connections.</p></div><div id="project-channels" class="px-channel-links"></div></div>
       </div>
     </section>
 
@@ -104,23 +105,13 @@
 
     <hr class="section-divider">
 
-    <!-- Journal — row-style list -->
-    <section class="section section-alt" id="journal">
+    <!-- Blog — the same English-first feed as /blog/ -->
+    <section class="section section-alt" id="blog">
+      <span id="journal" aria-hidden="true"></span>
       <div class="container section-shell">
-        <div class="decor-blob decor-blob-md decor-blob-tr"></div>
-        <div class="section-header">
-          <div class="section-decor" id="decor-journal"></div>
-          <div class="section-subtitle">Field Notes</div>
-          <h2>From the journal</h2>
-          <p>Technical dispatches and reflections from the field.</p>
-        </div>
-        <div class="journal-list" id="journal-list"></div>
-        <div class="read-all">
-          <a href="/blog/">
-            Read all posts
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
-        </div>
+        <div class="section-header"><div class="section-decor" id="decor-blog"></div><h2>Blog</h2><p>Engineering, life abroad and stories from Johansson World.</p></div>
+        <div data-blog-feed data-limit="3"><div class="blog-feed-list" data-blog-list><article class="blog-feed-item"><div class="blog-feed-meta"><span class="blog-feed-topic">Engineering</span><time datetime="2026-09-23">23 Sep 2026</time></div><h3><a href="/blog/elteknik/lanternan-som-lyser-svagt/">The navigation light that glows dimly</a></h3><p>Why does a lamp glow dimly when the battery reads 24 V? Cable resistance, a corroded terminal and the right way to measure.</p><div class="blog-feed-links"><a class="blog-read" href="/blog/elteknik/lanternan-som-lyser-svagt/" hreflang="en">Read part 1 →</a><a class="blog-swedish" href="/blog/elteknik/lanternan-som-lyser-svagt/sv/" hreflang="sv" lang="sv">Svenska</a></div></article><article class="blog-feed-item"><div class="blog-feed-meta"><span class="blog-feed-topic">Engineering</span><time datetime="2026-09-23">23 Sep 2026</time></div><h3><a href="/blog/elteknik/trefas-440-v-60-hz/">Three-phase power at 440 V and 60 Hz</a></h3><p>Line and phase voltage, star and delta connections, and a worked example of three-phase power in a shipboard pump motor.</p><div class="blog-feed-links"><a class="blog-read" href="/blog/elteknik/trefas-440-v-60-hz/" hreflang="en">Read part 2 →</a><a class="blog-swedish" href="/blog/elteknik/trefas-440-v-60-hz/sv/" hreflang="sv" lang="sv">Svenska</a></div></article><article class="blog-feed-item"><div class="blog-feed-meta"><span class="blog-feed-topic">Engineering</span><time datetime="2026-09-23">23 Sep 2026</time></div><h3><a href="/blog/elteknik/fem-sakerhetsregler/">Before you open the switchboard</a></h3><p>The five basic rules for working dead, and why a shipboard switchboard can have more supply routes than you expect.</p><div class="blog-feed-links"><a class="blog-read" href="/blog/elteknik/fem-sakerhetsregler/" hreflang="en">Read part 3 →</a><a class="blog-swedish" href="/blog/elteknik/fem-sakerhetsregler/sv/" hreflang="sv" lang="sv">Svenska</a></div></article></div></div>
+        <div class="read-all"><a href="/blog/">Browse the Blog →</a></div>
       </div>
     </section>
 
@@ -173,9 +164,9 @@
 
   <footer id="site-footer" class="site-footer"></footer>
 
-  <script src="/config.js?v=public-projects-3"></script>
-  <script src="/assets/js/project-explorer.js?v=4" defer></script>
-  <script src="/shared.js?v=random-2"></script>
+  <script src="/config.js?v=blog-1"></script>
+  <script src="/assets/js/project-explorer.js?v=5" defer></script>
+  <script src="/shared.js?v=blog-1"></script>
   <script>
     (function () {
       "use strict";
@@ -420,44 +411,6 @@
       var leafSvg = '<svg fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="' + CONFIG.icons.leaf + '"/></svg>';
       document.querySelectorAll(".section-decor").forEach(function (el) { el.innerHTML = leafSvg; });
 
-      /* Journal posts (WordPress API) — row-style list */
-      var API = CONFIG.wordpressApi + "?_embed&per_page=3";
-
-      function strip(html) {
-        var el = document.createElement("div");
-        el.innerHTML = html;
-        return el.textContent || "";
-      }
-      function fmtDate(d) {
-        return new Intl.DateTimeFormat("en-US", { year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(d));
-      }
-
-      fetch(API)
-        .then(function (r) { return r.json(); })
-        .then(function (posts) {
-          if (!posts.length) {
-            $("#journal-list").innerHTML = '<p class="journal-empty">New posts coming soon.</p>';
-            return;
-          }
-          $("#journal-list").innerHTML = posts.map(function (post) {
-            var title = strip(post.title.rendered) || "Untitled";
-            return '<a href="' + post.link + '" target="_blank" rel="noopener" class="journal-item reveal">' +
-              '<div class="journal-item-meta">' +
-                '<span class="journal-tag">Journal</span>' +
-                '<time>' + fmtDate(post.date) + '</time>' +
-              '</div>' +
-              '<h3>' + title + '</h3>' +
-            '</a>';
-          }).join("");
-
-          document.querySelectorAll(".journal-item").forEach(function (el) {
-            obs.observe(el);
-          });
-        })
-        .catch(function () {
-          $("#journal-list").innerHTML = '<p class="journal-empty">Could not load posts. <a href="https://theofficeofnils.wordpress.com" target="_blank" rel="noopener">Visit the blog directly.</a></p>';
-        });
-
       /* About */
       $("#about-logo").innerHTML = CONFIG.logo(140);
       $("#about-role").textContent = CONFIG.author.role;
@@ -494,8 +447,11 @@
 
     })();
   </script>
+  <script src="/assets/js/blog-posts.js?v=1"></script>
+  <script src="/assets/js/blog-feed.js?v=1"></script>
 </body>
 </html>
+
 
 
 

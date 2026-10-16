@@ -63,8 +63,9 @@
   if (channels) channels.innerHTML = CONFIG.projects.filter(function(p) {
     return new URL(p.url,location.origin).origin !== location.origin;
   }).map(function(p) {
-    var title = p.title === 'JOJO-Engineering Shop'?'Shop':p.title === 'WordPress Blog'?'Field notes':p.title;
+    var title = p.title === 'JOJO-Engineering Shop'?'Shop':p.title === 'WordPress Blog'?'Blog':p.title;
     return '<a href="'+escape(p.url)+'" target="_blank" rel="noopener noreferrer">'+escape(title)+' <span aria-hidden="true">↗</span><span class="px-sr-only"> (opens in a new tab)</span></a>';
   }).join('');
 })();
+
 

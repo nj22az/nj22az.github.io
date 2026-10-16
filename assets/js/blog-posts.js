@@ -1,0 +1,91 @@
+/* Shared catalogue: English first; Swedish only where available. */
+window.OFFICE_BLOG_POSTS = [
+  {
+    "id": "lanternan-som-lyser-svagt",
+    "title": "The navigation light that glows dimly",
+    "excerpt": "Why does a lamp glow dimly when the battery reads 24 V? Cable resistance, a corroded terminal and the right way to measure.",
+    "url": "/blog/elteknik/lanternan-som-lyser-svagt/",
+    "date": "2026-09-23",
+    "topic": "Engineering",
+    "part": 1,
+    "svUrl": "/blog/elteknik/lanternan-som-lyser-svagt/sv/"
+  },
+  {
+    "id": "trefas-440-v-60-hz",
+    "title": "Three-phase power at 440 V and 60 Hz",
+    "excerpt": "Line and phase voltage, star and delta connections, and a worked example of three-phase power in a shipboard pump motor.",
+    "url": "/blog/elteknik/trefas-440-v-60-hz/",
+    "date": "2026-09-23",
+    "topic": "Engineering",
+    "part": 2,
+    "svUrl": "/blog/elteknik/trefas-440-v-60-hz/sv/"
+  },
+  {
+    "id": "fem-sakerhetsregler",
+    "title": "Before you open the switchboard",
+    "excerpt": "The five basic rules for working dead, and why a shipboard switchboard can have more supply routes than you expect.",
+    "url": "/blog/elteknik/fem-sakerhetsregler/",
+    "date": "2026-09-23",
+    "topic": "Engineering",
+    "part": 3,
+    "svUrl": "/blog/elteknik/fem-sakerhetsregler/sv/"
+  },
+  {
+    "id": "isolationslarmet",
+    "title": "The insulation alarm that will not clear",
+    "excerpt": "Why the first earth fault does not trip a shipboard IT supply, why the alarm returns, and how to locate the fault before a second occurs.",
+    "url": "/blog/elteknik/isolationslarmet/",
+    "date": "2026-09-23",
+    "topic": "Engineering",
+    "part": 4,
+    "svUrl": "/blog/elteknik/isolationslarmet/sv/"
+  },
+  {
+    "id": "pumpen-som-inte-startar",
+    "title": "The pump that will not start",
+    "excerpt": "From symptom to cause in five steps: separate power and control circuits, narrow the search, measure safely and establish why the protection tripped.",
+    "url": "/blog/elteknik/pumpen-som-inte-startar/",
+    "date": "2026-09-23",
+    "topic": "Engineering",
+    "part": 5,
+    "svUrl": "/blog/elteknik/pumpen-som-inte-startar/sv/"
+  },
+  {
+    "id": "wp-81",
+    "wpId": 81,
+    "title": "More Survivor Than Tyrant: The Captain Bligh You Don’t Know",
+    "excerpt": "William Bligh When you hear the name Captain Bligh, one image likely comes to mind: the tyrannical villain of the Mutiny on the Bounty, a cruel master whose brutal leadership drove his men to desperation. It’s the villain role he often…",
+    "url": "/blog/more-survivor-than-tyrant-the-captain-bligh-you-dont-know/",
+    "date": "2025-11-17",
+    "topic": "Reflections",
+    "sourceUrl": "https://theofficeofnils.wordpress.com/2025/11/17/more-survivor-than-tyrant-the-captain-bligh-you-dont-know/"
+  },
+  {
+    "id": "wp-76",
+    "wpId": 76,
+    "title": "The Discipline of Building Something That Lasts",
+    "excerpt": "Every tool promises speed. Every platform promises simplicity. None of them do the work for you. The only thing that produces a finished product is persistence. Quiet, private, repetitive persistence. That is the part nobody celebrates…",
+    "url": "/blog/the-discipline-of-building-something-that-lasts/",
+    "date": "2025-11-16",
+    "topic": "Reflections",
+    "sourceUrl": "https://theofficeofnils.wordpress.com/2025/11/16/the-discipline-of-building-something-that-lasts/"
+  },
+  {
+    "id": "wp-71",
+    "wpId": 71,
+    "title": "Vietnam",
+    "excerpt": "In Vietnam, the streets are a symphony of chaos and calm. From bustling markets to serene mornings, taste the country’s soul through its food and coffee rituals. Let each steaming bowl and slow-drip brew transport you to a world where…",
+    "url": "/blog/vietnam/",
+    "date": "2025-11-10",
+    "topic": "Reflections",
+    "sourceUrl": "https://theofficeofnils.wordpress.com/2025/11/10/vietnam/"
+  },
+  {
+    "id": "the-torn-poster",
+    "title": "The Torn Poster",
+    "excerpt": "Tetsuo tears the corner off Thuận’s sale poster. A short film, a nine-page comic and a practical use for Pythagoras’ theorem.",
+    "url": "/blog/the-torn-poster/",
+    "date": null,
+    "topic": "Stories"
+  }
+];

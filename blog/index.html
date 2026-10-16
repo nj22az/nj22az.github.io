@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Journal – The Office of Nils Johansson</title>
-  <meta name="description" content="Technical dispatches and cultural reflections from field engineering deployments around the world.">
+  <title>Blog – The Office of Nils Johansson</title>
+  <meta name="description" content="Engineering, life abroad and stories from Johansson World. English articles, with Swedish versions where available.">
   <link rel="canonical" href="https://nj22az.github.io/blog/">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Journal – The Office of Nils Johansson">
-  <meta property="og:description" content="Technical dispatches and cultural reflections from field engineering work around the world.">
+  <meta property="og:title" content="Blog – The Office of Nils Johansson">
+  <meta property="og:description" content="Engineering, life abroad and stories from Johansson World.">
   <meta property="og:url" content="https://nj22az.github.io/blog/">
   <meta name="twitter:card" content="summary">
   <meta name="theme-color" content="#343ec9">
@@ -20,150 +20,5 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=Noto+Sans+JP:wght@500;700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script src="/theme-bootstrap.js?v=random-2"></script>
   <link rel="stylesheet" href="/styles.css?v=popwave-icons-2">
-</head>
-<body>
-
-  <a class="skip-link" href="#main-content">Skip to main content</a>
-
-  <nav id="site-nav" class="site-nav"></nav>
-
-  <main id="main-content">
-    <section class="page-hero">
-      <div class="page-eyebrow">Field Notes</div>
-      <h1>Journal</h1>
-      <p>Technical dispatches, textbook series and cultural reflections from field engineering work around the world. Journal articles are published through <a class="page-hero-link" href="https://theofficeofnils.wordpress.com" target="_blank" rel="noopener">The Office of Nils</a>.</p>
-    </section>
-
-    <div class="page-content">
-      <section class="series-feature" aria-labelledby="series-title">
-        <a class="series-feature-cover" href="/blog/elteknik/">
-          <img src="/elteknik/files/omslag.jpg" width="700" height="1000" alt="Cover of Elteknik och ellära för sjöfart och industri">
-        </a>
-        <div class="series-feature-text">
-          <div class="page-eyebrow">New series &middot; in Swedish</div>
-          <h2 id="series-title"><a href="/blog/elteknik/">Elteknik ombord</a></h2>
-          <p>Five real problems on board and in industry, and the electrical engineering needed to solve them &ndash; from a navigation light that glows dim to a pump that will not start. Based on my textbook <a href="/elteknik/">Elteknik och ellära för sjöfart och industri</a>.</p>
-          <ol id="series-parts" class="series-parts"></ol>
-          <a class="post-link" href="/blog/elteknik/">All parts of the series &rarr;</a>
-        </div>
-      </section>
-
-      <section class="series-feature" aria-labelledby="torn-poster-title">
-        <a class="series-feature-cover" href="/blog/the-torn-poster/">
-          <img src="/assets/comics/the-torn-poster/cover.webp" width="1080" height="1350" alt="Cover of the comic The Torn Poster: Mr Tetsuo grinning like a villain, the torn corner in his fist">
-        </a>
-        <div class="series-feature-text">
-          <div class="page-eyebrow">Johansson Town &middot; film and comic</div>
-          <h2 id="torn-poster-title"><a href="/blog/the-torn-poster/">The Torn Poster</a></h2>
-          <p>The most serious man in town tears the corner off Thuan's sale poster, and half a metre of tape and Pythagoras' theorem put it right. Watch the short film, read the nine-page comic, and see why it works.</p>
-          <a class="post-link" href="/blog/the-torn-poster/">Watch and read &rarr;</a>
-        </div>
-      </section>
-
-      <h2 class="journal-heading">From the Journal</h2>
-      <div id="status" class="status-banner">Fetching the most recent posts&hellip;</div>
-      <div id="posts" class="posts-grid"></div>
-      <div class="load-more-wrap"><button id="load-more" class="load-more" type="button" hidden>Load more posts</button></div>
-    </div>
-  </main>
-
-  <footer id="site-footer" class="site-footer"></footer>
-
-  <script src="/config.js"></script>
-  <script src="/shared.js?v=random-2"></script>
-  <script src="/blog/elteknik/series.js"></script>
-  <script>
-    (function () {
-      "use strict";
-
-      var postsEl = document.getElementById("posts");
-      var statusEl = document.getElementById("status");
-      var moreBtn = document.getElementById("load-more");
-      var partsEl = document.getElementById("series-parts");
-      var API = CONFIG.wordpressApi + "?_embed&per_page=6&page=";
-      var page = 1;
-
-      (window.ELTEKNIK_SERIES || []).forEach(function (part, i) {
-        var li = document.createElement("li");
-        var a = document.createElement("a");
-        a.href = part.url;
-        a.innerHTML = '<span class="nr">' + (i + 1) + '</span><span class="t"></span><span class="s"></span>';
-        a.querySelector(".t").textContent = part.title;
-        a.querySelector(".s").textContent = part.sub;
-        li.appendChild(a);
-        partsEl.appendChild(li);
-      });
-
-      function strip(html) {
-        var el = document.createElement("div");
-        el.innerHTML = html;
-        return el.textContent || "";
-      }
-
-      function safe(input) { return strip(input || "").trim(); }
-
-      function fmtDate(d) {
-        return new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(new Date(d));
-      }
-
-      function buildTags(post) {
-        var terms = (post._embedded && post._embedded["wp:term"]) || [];
-        var flat = [].concat.apply([], terms);
-        return flat
-          .filter(function (t) { return t.taxonomy === "post_tag"; })
-          .slice(0, 5)
-          .map(function (t) { return '<span class="tag">' + safe(t.name) + '</span>'; })
-          .join("");
-      }
-
-      function buildPostCard(post) {
-        var title = safe(post.title.rendered) || "Untitled";
-        var excerpt = safe(post.excerpt.rendered);
-        var summary = excerpt.length > 220 ? excerpt.slice(0, 217) + "\u2026" : excerpt;
-        var tags = buildTags(post);
-        var author = (post._embedded && post._embedded.author && post._embedded.author[0])
-          ? safe(post._embedded.author[0].name) : "Nils Johansson";
-
-        return '<article class="post-card">' +
-          '<h2><a href="' + post.link + '" target="_blank" rel="noopener">' + title + '</a></h2>' +
-          '<div class="meta">By ' + author + ' &ndash; ' + fmtDate(post.date) + '</div>' +
-          '<p>' + (summary || "Visit the blog to read the full story.") + '</p>' +
-          (tags ? '<div class="tags">' + tags + '</div>' : '') +
-          '<div class="post-actions">' +
-            '<a href="' + post.link + '" target="_blank" rel="noopener" class="post-link">Read full article &rarr;</a>' +
-          '</div>' +
-        '</article>';
-      }
-
-      function load() {
-        moreBtn.disabled = true;
-        var totalPages = 1;
-        fetch(API + page)
-          .then(function (res) {
-            if (!res.ok) throw new Error("HTTP " + res.status);
-            totalPages = parseInt(res.headers.get("X-WP-TotalPages"), 10) || 1;
-            return res.json();
-          })
-          .then(function (posts) {
-            if (!posts.length && page === 1) {
-              statusEl.textContent = "No posts available yet. Check back soon.";
-              return;
-            }
-            statusEl.hidden = true;
-            postsEl.insertAdjacentHTML("beforeend", posts.map(buildPostCard).join(""));
-            page += 1;
-            moreBtn.hidden = page > totalPages;
-          })
-          .catch(function () {
-            statusEl.hidden = false;
-            statusEl.textContent = "Could not reach the blog right now. Try refreshing in a moment.";
-          })
-          .then(function () { moreBtn.disabled = false; });
-      }
-
-      moreBtn.addEventListener("click", load);
-      load();
-    })();
-  </script>
-</body>
-</html>
+<link rel="stylesheet" href="/css/office-blog.css?v=1"></head>
+<body><a class="skip-link" href="#main-content">Skip to main content</a><nav id="site-nav" class="site-nav"></nav><main id="main-content" class="blog-page"><header><h1>Blog</h1><p>Engineering, life abroad and stories from Johansson World.</p><p>Read in English. The electrical engineering articles also have Swedish versions.</p></header><section data-blog-feed data-heading="h2" aria-label="Blog articles"><div class="blog-filters" role="group" aria-label="Filter articles"><button type="button" data-blog-topic="All" aria-pressed="true">All</button><button type="button" data-blog-topic="Engineering" aria-pressed="false">Engineering</button><button type="button" data-blog-topic="Reflections" aria-pressed="false">Reflections</button><button type="button" data-blog-topic="Stories" aria-pressed="false">Stories</button><span class="blog-count" data-blog-count>9 articles</span></div><div class="blog-feed-list" data-blog-list><article class="blog-feed-item"><div class="blog-feed-meta"><span class="blog-feed-topic">Engineering</span><time datetime="2026-09-23">23 Sep 2026</time></div><h2><a href="/blog/elteknik/lanternan-som-lyser-svagt/">The navigation light that glows dimly</a></h2><p>Why does a lamp glow dimly when the battery reads 24 V? Cable resistance, a corroded terminal and the right way to measure.</p><div class="blog-feed-links"><a class="blog-read" href="/blog/elteknik/lanternan-som-lyser-svagt/" hreflang="en">Read part 1 →</a><a class="blog-swedish" href="/blog/elteknik/lanternan-som-lyser-svagt/sv/" hreflang="sv" lang="sv">Svenska</a></div></article><article class="blog-feed-item"><div class="blog-feed-meta"><span class="blog-feed-topic">Engineering</span><time datetime="2026-09-23">23 Sep 2026</time></div><h2><a href="/blog/elteknik/trefas-440-v-60-hz/">Three-phase power at 440 V and 60 Hz</a></h2><p>Line and phase voltage, star and delta connections, and a worked example of three-phase power in a shipboard pump motor.</p><div class="blog-feed-links"><a class="blog-read" href="/blog/elteknik/trefas-440-v-60-hz/" hreflang="en">Read part 2 →</a><a class="blog-swedish" href="/blog/elteknik/trefas-440-v-60-hz/sv/" hreflang="sv" lang="sv">Svenska</a></div></article><article class="blog-feed-item"><div class="blog-feed-meta"><span class="blog-feed-topic">Engineering</span><time datetime="2026-09-23">23 Sep 2026</time></div><h2><a href="/blog/elteknik/fem-sakerhetsregler/">Before you open the switchboard</a></h2><p>The five basic rules for working dead, and why a shipboard switchboard can have more supply routes than you expect.</p><div class="blog-feed-links"><a class="blog-read" href="/blog/elteknik/fem-sakerhetsregler/" hreflang="en">Read part 3 →</a><a class="blog-swedish" href="/blog/elteknik/fem-sakerhetsregler/sv/" hreflang="sv" lang="sv">Svenska</a></div></article><article class="blog-feed-item"><div class="blog-feed-meta"><span class="blog-feed-topic">Engineering</span><time datetime="2026-09-23">23 Sep 2026</time></div><h2><a href="/blog/elteknik/isolationslarmet/">The insulation alarm that will not clear</a></h2><p>Why the first earth fault does not trip a shipboard IT supply, why the alarm returns, and how to locate the fault before a second occurs.</p><div class="blog-feed-links"><a class="blog-read" href="/blog/elteknik/isolationslarmet/" hreflang="en">Read part 4 →</a><a class="blog-swedish" href="/blog/elteknik/isolationslarmet/sv/" hreflang="sv" lang="sv">Svenska</a></div></article><article class="blog-feed-item"><div class="blog-feed-meta"><span class="blog-feed-topic">Engineering</span><time datetime="2026-09-23">23 Sep 2026</time></div><h2><a href="/blog/elteknik/pumpen-som-inte-startar/">The pump that will not start</a></h2><p>From symptom to cause in five steps: separate power and control circuits, narrow the search, measure safely and establish why the protection tripped.</p><div class="blog-feed-links"><a class="blog-read" href="/blog/elteknik/pumpen-som-inte-startar/" hreflang="en">Read part 5 →</a><a class="blog-swedish" href="/blog/elteknik/pumpen-som-inte-startar/sv/" hreflang="sv" lang="sv">Svenska</a></div></article><article class="blog-feed-item"><div class="blog-feed-meta"><span class="blog-feed-topic">Reflections</span><time datetime="2025-11-17">17 Nov 2025</time></div><h2><a href="/blog/more-survivor-than-tyrant-the-captain-bligh-you-dont-know/">More Survivor Than Tyrant: The Captain Bligh You Don’t Know</a></h2><p>William Bligh When you hear the name Captain Bligh, one image likely comes to mind: the tyrannical villain of the Mutiny on the Bounty, a cruel master whose brutal leadership drove his men to desperation. It’s the villain role he often…</p><div class="blog-feed-links"><a class="blog-read" href="/blog/more-survivor-than-tyrant-the-captain-bligh-you-dont-know/" hreflang="en">Read article →</a></div></article><article class="blog-feed-item"><div class="blog-feed-meta"><span class="blog-feed-topic">Reflections</span><time datetime="2025-11-16">16 Nov 2025</time></div><h2><a href="/blog/the-discipline-of-building-something-that-lasts/">The Discipline of Building Something That Lasts</a></h2><p>Every tool promises speed. Every platform promises simplicity. None of them do the work for you. The only thing that produces a finished product is persistence. Quiet, private, repetitive persistence. That is the part nobody celebrates…</p><div class="blog-feed-links"><a class="blog-read" href="/blog/the-discipline-of-building-something-that-lasts/" hreflang="en">Read article →</a></div></article><article class="blog-feed-item"><div class="blog-feed-meta"><span class="blog-feed-topic">Reflections</span><time datetime="2025-11-10">10 Nov 2025</time></div><h2><a href="/blog/vietnam/">Vietnam</a></h2><p>In Vietnam, the streets are a symphony of chaos and calm. From bustling markets to serene mornings, taste the country’s soul through its food and coffee rituals. Let each steaming bowl and slow-drip brew transport you to a world where…</p><div class="blog-feed-links"><a class="blog-read" href="/blog/vietnam/" hreflang="en">Read article →</a></div></article><article class="blog-feed-item"><div class="blog-feed-meta"><span class="blog-feed-topic">Stories</span></div><h2><a href="/blog/the-torn-poster/">The Torn Poster</a></h2><p>Tetsuo tears the corner off Thuận’s sale poster. A short film, a nine-page comic and a practical use for Pythagoras’ theorem.</p><div class="blog-feed-links"><a class="blog-read" href="/blog/the-torn-poster/" hreflang="en">Read article →</a></div></article></div></section></main><footer id="site-footer" class="site-footer"></footer><script src="/config.js?v=blog-1"></script><script src="/shared.js?v=blog-1"></script><script src="/assets/js/blog-posts.js?v=1"></script><script src="/assets/js/blog-feed.js?v=1"></script></body></html>
