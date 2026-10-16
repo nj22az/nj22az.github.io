@@ -69,3 +69,5 @@ html[data-module-theme="line"] .revision-main .lab-panel {padding:20px}
 .dc-work-dialog .dc-log{margin-top:28px}.dc-work-dialog .dc-log p{margin:8px 0}.dc-work-dialog .dc-log article{border-top:1px solid #c8d4cc}
 @media(max-width:900px){.dc-work-dialog .dc-work-grid{grid-template-columns:1fr}.dc-work-dialog{padding:18px}.dc-workspace .dc-circuit text{font-size:24px}}
 @media(max-width:600px){.dc-work-dialog{width:100%;height:100%;margin:0;border:0;border-radius:0;padding:16px}.dc-workspace .dc-task{padding:12px}.dc-workspace .dc-circuit{min-width:440px}.dc-workspace #dc-circuit{overflow-x:auto}.dc-workspace .dc-circuit text{font-size:25px}.dc-workspace-heading button{width:100%}}
+.dc-schema-compact{display:none}
+@media(max-width:600px){.dc-workspace .dc-schema-wide{display:none}.dc-workspace .dc-schema-compact{display:block}.dc-workspace .dc-circuit-compact{min-width:0;width:100%}.dc-workspace .dc-circuit-compact text{font-size:17px}.dc-workspace .dc-circuit-compact .dc-probe-label{font-size:14px}.dc-workspace .dc-circuit-compact .dc-small-note{font-size:13px}.dc-workspace #dc-circuit{overflow-x:visible}}
