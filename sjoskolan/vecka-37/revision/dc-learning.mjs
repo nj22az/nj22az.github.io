@@ -20,6 +20,16 @@ export function undoWorkbench(w){const previous=w.history.at(-1);if(!canUndo(w.s
 export function readWorkbench(w){const r=readDMM(w.state);w.state=r.state;return r.observation;}
 export function assessDiagnosis(w,answer,reason){const c=FAULT_CASES[w.caseIndex],points=new Set(w.measurements.filter(x=>x.code==='reading'&&x.mode==='dc'&&x.power===true&&!x.hold).map(x=>x.point));if(!['return','switch','source'].includes(answer))return {passed:false,kind:'incomplete',message:'Välj en diagnos och förklara den med dina mätningar.',theory:c.theory};if(!points.has('supply')||!points.has('contact')||!points.has('load'))return {passed:false,kind:'incomplete',message:'Spara spänningsmätningar över källan, brytaren och lasten innan du bedömer felorsaken.',theory:'module-1-v2-voltage'};if(!reason.trim())return {passed:false,kind:'incomplete',message:'Förklara vilka mätningar som stödjer din diagnos.',theory:c.theory};return {passed:answer===c.answer,message:answer===c.answer?'Rätt felorsak. '+c.explain:'Diagnosen stämmer inte med fallet. '+c.explain,theory:c.theory};}
 const E=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+export function circuitStatus(s,concealed=false){
+ if(s.protection)return 'Skyddet har löst ut. Matningen är från. Lossa proberna och återställ skyddet.';
+ if(s.isolated)return 'Källan är frånskild. Ingen yttre matning till lasten. Ω-läget använder egen testström.';
+ if(!s.power)return 'Matningen är från. Ingen lastström. Källan är fortfarande ansluten.';
+ if(concealed)return 'Matningen är till. Undersök de dolda kontaktlägena med voltmetern.';
+ const gaps=[!s.closed?'brytaren är öppen':null,s.fault!=='none'?'returen är bruten':null].filter(Boolean);
+ if(gaps.length)return 'Matningen är till, men '+gaps.join(' och ')+'. Ingen vanlig lastström.';
+ if(s.seriesOpen)return benchLoadCurrent(s)>1e-6?'Mätbryggan är öppen. Lastströmmen går genom multimetern i serie.':'Mätbryggan är öppen. Anslut strömmätaren mellan Källa + och Brytare in för att sluta strömvägen.';
+ return 'Matningen är till. Brytare, retur och mätbrygga är slutna. Lastström går.';
+}
 const P={sourcePlus:[110,85],sourceMinus:[110,265],switchIn:[290,85],switchOut:[410,85],loadPlus:[610,85],loadMinus:[610,265],returnLeft:[290,265],returnRight:[410,265]};
 function compactCircuit(s,concealed,flow){
  const line=d=>`<path class="dc-wire" d="${d}"/>`,contact=(y,closed,title)=>`${concealed?`<rect class="dc-sealed" x="150" y="${y-19}" width="80" height="38" rx="6"/><text x="190" y="${y+6}" text-anchor="middle">?</text>`:line(`M150 ${y}L${closed?230:212} ${closed?y:y-30}`)}<text x="190" y="${y===80?28:310}" text-anchor="middle">${E(title)}</text>`;

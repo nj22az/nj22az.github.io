@@ -18,4 +18,8 @@ Alla sex introduktionsövningar genomfördes i publicerad Chrome via de synliga 
 
 Granskningen rättade tom reservyta, oanvändbara kameraknappar utan WebGL, otydliga handlingsnamn, onödigt matningsfrånslag vid brytarmanövrering, teorilänkar från modal arbetsvy, mobilritningens etiketter, bakgrundsrullning och beskurna teorifigurer i surfplattebredd.
 
-Kvarstående acceptans: granskningswebbläsaren har WebGL avstängt. Renderad Three.js, fysisk pekhantering och prestanda på iPad/telefon är därför inte visuellt verifierade. GLB-geometri, projektion, raycasting, probdragning och vred testas separat med verklig Three.js-geometri och en renderardubbel.
+CI-granskning av denna fortsättning: alla sex webbläsartester passerade i skrivbords-Chromium, telefonemulerad Chromium och surfplatteemulerad WebKit. Alla sex övningar slutfördes i varje projekt. Riktig WebGL-rendering, klick på 3D-terminaler, synkronisering med problistor och separerade returetiketter verifierades. Skärmbilder av bänk och instrument sparades för varje övning. Se `STUDENT-ACCEPTANCE.md`, `student-browser.config.mjs` och arbetsflödet **Module 1 browser acceptance**.
+
+Kvarstående acceptans: fysisk iPad/telefon, verklig pek-/dragkänsla och en faktisk nybörjarstudie är inte verifierade. Den manuella molnwebbläsaren hade WebGL avstängt; CI:s riktiga webbläsare renderade däremot bänken. Geometri, raycasting, probdragning och vred har också separata Three.js-tester.
+
+Fortlöpande vägledning ger ett namngivet handgrepp per klick. Separata problistor, synlig retur, kretsstatus, återställning med bevarade försök och progression vid avläsningsresultatet gör introduktionen lättare att följa. Originalveckan och frivilligheten bevaras.

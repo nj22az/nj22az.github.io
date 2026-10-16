@@ -1,6 +1,6 @@
 import {compatibleUnits,summary} from './engine.mjs';
 import {theoryIntro,nativeTheory} from './chapter-theory.mjs';
-import {weeklyOverview,weeklyBridge,weeklyCase,weeklyProtocol,weeklyCompletion,exportBuilder} from './module-tools.mjs?v=20261016-r8';
+import {weeklyOverview,weeklyBridge,weeklyCase,weeklyProtocol,weeklyCompletion,exportBuilder} from './module-tools.mjs?v=20261016-student-audit-1';
 export const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const L=x=>typeof x==='object'?(x?.sv??''):x;
 export const t=(_en,sv)=>sv;
