@@ -12,6 +12,7 @@ import {gaitOf} from './gait.js';
 import {DUTY_BELT} from './police-data.js';
 import {bodyVolume} from './build.js';
 import {storyProps,pocketSpot,PAPER} from './story-props.js';
+import {MUSIC_MOVES,musicPose} from './music-moves.js';
 
 /**
  * Moves a Shimanchu. There are no animation clips: every pose is a handful of joint
@@ -283,6 +284,7 @@ export const GESTURES=Object.freeze({
  // singing into whatever is in the hand as a microphone (Sing: Laugh's body, held, swaying to the tune).
  HairDry:Infinity,Switch:Infinity,SwitchHigh:Infinity,Sing:Infinity,
  Talk:Infinity,Kachashi:Infinity,Crouch:Infinity,Phone:Infinity,FishIdle:Infinity,Reel:Infinity,
+ ...Object.fromEntries(MUSIC_MOVES.map(([name])=>[name,Infinity])),
  // Fujita's Ten Minutes of Heaven (the shot plan's batch C2). Held until the next move unless a time is given; BowDeep and
  // PoleFlick are one movement that ends in a held pose (with `hold`, the hold takes the extra time, in and out at their pace).
  CupHands:Infinity,CoinToCheek:Infinity,BowDeep:1.8,BowWalk:Infinity,KneelHug:Infinity,PoleFlick:2.4,Peek:Infinity,
@@ -1245,6 +1247,11 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     set('shoulderL',-1.2*q,0,-.2*q);set('shoulderR',-1.2*q,0,.2*q);set('elbowL',-1.6*q);set('elbowR',-1.6*q);
     add('head',.08*q,0,-.25*q);add('chest',.1*q,0,-.06*q);break;
    case 'Talk':set('shoulderR',-.55+Math.sin(t*3.1)*.25,0,-.2);set('elbowR',-1.1+Math.sin(t*4.3)*.3);set('shoulderL',-.35+Math.sin(t*2.3+1)*.2,0,.2);set('elbowL',-1+Math.sin(t*3.7)*.3);add('head',Math.sin(t*2.6)*.06);break;
+   case 'DiscoPoint':case 'IdolDance':case 'AirGuitar':case 'RockBelt':case 'EnkaReach':case 'RobotDance':{
+    const pose=musicPose(g.name,Number.isFinite(s.performBeat)?s.performBeat:t*112/60,s.performEnergy);
+    for(const [joint,angles]of Object.entries(pose.joints))set(joint,...angles);
+    return {root:pose.root};
+   }
    case 'Kachashi':{
     // The kachāshī: hands up at head height, wrists turning, stepping from foot to foot.
     const w=Math.sin(t*5.5),step=Math.sin(t*2.75);

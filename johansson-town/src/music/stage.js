@@ -1,12 +1,12 @@
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar} from '../avatars/build.js';
 import {createAvatarAnimator} from '../avatars/animate.js';
-import {singingPart} from './songs.js';
+import {performanceAt} from './show.js';
 
 /** Compact concert set, drawn with World's renderer. Never allocates a second WebGL context. */
 export function createConcertStage(){
  const scene=new THREE.Scene();scene.background=new THREE.Color(0x102b30);scene.fog=new THREE.Fog(0x102b30,13,25);let previousTime=0;
- const camera=new THREE.PerspectiveCamera(42,1,.1,40),actors=[],bulbs=[],materials=[],geometries=[],textures=[];
+ const camera=new THREE.PerspectiveCamera(42,1,.1,40),actors=[],bulbs=[],materials=[],geometries=[],textures=[],aim=new THREE.Vector3(0,1.15,-.3),cameraGoal=new THREE.Vector3(),aimGoal=new THREE.Vector3();
  const mat=(colour,glow=false)=>{const m=glow?new THREE.MeshBasicMaterial({color:colour}):new THREE.MeshStandardMaterial({color:colour,roughness:.85});materials.push(m);return m;};
  const wood=mat(0x77554a),edge=mat(0xd9af79),dark=mat(0x203238),curtain=mat(0x8e4946),gold=mat(0xf1c780,true),teal=mat(0x4ca99d),cream=mat(0xf8e5bc,true);
  function mesh(g,m,position,parent=scene){geometries.push(g);const o=new THREE.Mesh(g,m);o.position.set(...position);parent.add(o);return o;}
@@ -39,7 +39,13 @@ export function createConcertStage(){
   const lamp=sphere(.17,[side*3.4,2.35,-.8],gold);lamp.scale.z=.7;
   const pool=mesh(new THREE.CircleGeometry(1,40),mat(side<0?0x397f78:0x9e6862),[side*1.7,.005,-.3]);pool.rotation.x=-Math.PI/2;
  }
- function clearCast(){for(const a of actors){a.mic.removeFromParent();for(const o of a.local){o.geometry.dispose();const i=geometries.indexOf(o.geometry);if(i>=0)geometries.splice(i,1);}a.holder.removeFromParent();a.avatar.body.skeleton.dispose();a.avatar.dispose();}actors.length=0;}
+ const discoBall=sphere(.23,[0,3.0,-.7],mat(0xb8ece8));
+ const halos=[];
+ for(const side of [-1,1]){
+  const material=new THREE.MeshBasicMaterial({color:0x73cdca,transparent:true,opacity:.10,depthWrite:false,side:THREE.DoubleSide});materials.push(material);
+  const beam=mesh(new THREE.ConeGeometry(.65,3.5,16,1,true),material,[side*2.5,1.6,-1.3]);beam.rotation.z=side*.25;halos.push(beam);
+ }
+ function clearCast(){for(const a of actors){a.mic.removeFromParent();a.held.removeFromParent();for(const o of a.local){o.geometry.dispose();const i=geometries.indexOf(o.geometry);if(i>=0)geometries.splice(i,1);}a.holder.removeFromParent();a.avatar.body.skeleton.dispose();a.avatar.dispose();}actors.length=0;}
  function setCast(cast){
   clearCast();cast.forEach(({name,recipe,outfit},index)=>{
    const avatar=buildAvatar(recipe,{shadows:false,faceSize:256}),animator=createAvatarAnimator(avatar),holder=new THREE.Group();holder.name=name;
@@ -52,33 +58,37 @@ export function createConcertStage(){
    const foot=mesh(new THREE.CylinderGeometry(.16,.18,.025,16),dark,[0,-micY+.013,0],mic);
    const capsule=sphere(.047,[0,0,0],edge,mic);capsule.scale.set(.8,.8,1.45);
    // Disposed with the actor holder rather than accumulating on cast changes.
-   const local=[stem,foot,capsule];mic.userData.concertMic=true;
-   actors.push({name,avatar,animator,holder,mic,local});
+   const held=new THREE.Group();held.name='Handheld karaoke microphone';held.position.set(0,-.035,.025);avatar.bones.handR.add(held);
+   const grip=mesh(new THREE.CylinderGeometry(.018,.018,.13,10),dark,[0,.035,0],held),head=sphere(.035,[0,.115,0],edge,held);
+   const local=[stem,foot,capsule,grip,head];mic.userData.concertMic=true;held.visible=false;
+   actors.push({name,avatar,animator,holder,mic,held,local,baseX:holder.position.x,baseZ:holder.position.z});
   });
  }
- function frame(seconds,cue,score,{view='auto',reduced=false}={}){
-  const dt=Math.max(0,Math.min(.1,seconds-previousTime));previousTime=seconds;
+ function frame(seconds,cue,score,{view='auto',reduced=false,cheering=false}={}){
+  const reset=seconds<previousTime||!cue,dt=Math.max(0,Math.min(.1,seconds-previousTime));previousTime=seconds;
   const beat=seconds/(score?.beat||.6),performing=cue?.phase==='singing',bow=cue?.phase==='bow',front=actors.length||1;
   for(let i=0;i<actors.length;i++){
-   const a=actors[i],b=a.avatar.bones,active=performing&&singingPart(cue.line,i,front),bounce=reduced?0:Math.sin(beat*Math.PI*2+i*.25);
-   const move=!reduced&&performing?(score.song.style!=='ballad'&&(cue.line===3||!active)?'Kachashi':'Talk'):null;
+   const a=actors[i],b=a.avatar.bones,direction=score?performanceAt(score,seconds,i,front,{reduced,cheering}):null;
+   const move=performing?direction.move:null;
    if(move!==a.move){a.animator.stop();if(move)a.animator.play(move);a.move=move;}
-   a.animator.update(reduced?0:dt,{expression:'smile'});
-   if(performing){
-    b.hips.rotation.z+=bounce*.018;b.chest.rotation.z-=bounce*.045;
-    b.head.rotation.z+=bounce*.055;b.head.rotation.x-=.06;
-   }
+   a.animator.update(reduced?0:dt,{expression:direction?.expression||'smile',performBeat:beat+i*.12,performEnergy:direction?.energy||0});
+   a.holder.position.x=a.baseX+(performing?direction.step:0);a.holder.rotation.y=Math.PI+(performing?direction.turn:0);
+   a.held.visible=performing&&!['AirGuitar','RobotDance'].includes(move);a.mic.visible=!a.held.visible;
    if(bow){const bend=Math.sin(Math.min(1,(beat-36)/3)*Math.PI);b.chest.rotation.x+=bend*.36;b.spine.rotation.x+=bend*.16;b.head.rotation.x+=bend*.18;}
-   a.avatar.paintFace({expression:'smile',blink:0,talk:active&&cue.word>=0&&(beat*3.5%1<.65)?1:0,look:[0,0]});
+   a.avatar.paintFace({expression:direction?.expression||'smile',blink:direction?.blink||0,talk:performing?direction.mouth:0,look:[performing?Math.sin(beat*.3+i)*.12:0,0]});
    a.avatar.root.updateMatrixWorld(true);
   }
   // Slow moves only, never a flash or strobe. A fixed wide view is always available.
-  const auto=view==='auto'&&performing&&!reduced,section=score?Math.floor(seconds/score.beat/8):0;
-  const close=auto&&front===1&&section%2===1;
-  const distance=close?4.3:Math.max(6.4,front*1.9),angle=auto?Math.sin(seconds*.19)*.12:0;
-  camera.position.set(Math.sin(angle)*distance,close?1.6:2.0,Math.cos(angle)*distance);camera.lookAt(0,close?1.10:1.15,-.3);
+  const director=score?performanceAt(score,seconds,0,front,{reduced,cheering}):null;
+  const auto=view==='auto'&&performing&&!reduced,close=auto&&score.song.performance!=='relaxed'&&director.shot==='lead';
+  const distance=close?3.25:Math.max(6.4,front*1.9),angle=auto?Math.sin(seconds*.24)*.18:0,leadX=close?(actors[director.leadIndex]?.holder.position.x||0):0;
+  cameraGoal.set(leadX+Math.sin(angle)*distance,close?1.65:2.0,Math.cos(angle)*distance);aimGoal.set(leadX,close?1.12:1.15,-.15);
+  if(reset||camera.position.lengthSq()===0){camera.position.copy(cameraGoal);aim.copy(aimGoal);}else{const ease=1-Math.exp(-Math.max(dt,.008)*3.3);camera.position.lerp(cameraGoal,ease);aim.lerp(aimGoal,ease);}
+  camera.lookAt(aim);
   camera.updateMatrixWorld();
   for(let i=0;i<bulbs.length;i++)bulbs[i].scale.setScalar(1+(reduced?0:Math.sin(seconds*.8+i*.4)*.06));
+  rim.color.setHex(score?.style.colour||0x73cdca);discoBall.visible=['disco','eurobeat'].includes(score?.song.style);discoBall.rotation.y=reduced?0:seconds*.35;
+  for(let i=0;i<halos.length;i++){halos[i].material.color.setHex(score?.style.colour||0x73cdca);halos[i].material.opacity=cheering?.20:.10;halos[i].rotation.z=(i?1:-1)*(.25+(reduced?0:Math.sin(seconds*.4+i)*.12));}
  }
  return {scene,camera,cast:setCast,frame,get actors(){return actors;},dispose(){clearCast();for(const g of geometries)g.dispose();for(const m of materials)m.dispose();for(const t of textures)t.dispose();}};
 }
