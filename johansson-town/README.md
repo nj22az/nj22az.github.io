@@ -91,3 +91,5 @@ counter ("Ask her something"), conversations it writes for each pair from who th
 ## Minato karaoke
 
 The laserdisc machine at Minato now opens a live 3D performance: solo, duet, trio or quartet, three original songs and arrangements, editable lyrics, electronic vocals, synchronised movement and an encore. Details and verification commands: [Minato karaoke](docs/MINATO-KARAOKE.md).
+
+Showtime karaoke adds six genre arrangements, five electronic voice modes, genre-specific dance/acting routines shared with Studio, directed cameras, handheld microphones and cheering. Recorded human-style vocal tracks remain outstanding; see [Minato karaoke](docs/MINATO-KARAOKE.md).
