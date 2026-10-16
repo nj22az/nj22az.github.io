@@ -1,0 +1,22 @@
+.revision-top {display:flex;flex-wrap:wrap;align-items:center;gap:16px;padding:16px max(18px,calc((100vw - 1120px)/2));border-bottom:1px solid #ddd;background:white;font-size:16px}
+.revision-top a {min-height:44px;display:inline-flex;align-items:center;font-weight:650}
+.revision-top span {font-size:14px;color:#555}
+html[data-module-theme="line"] .revision-main {margin:0 auto;max-width:1200px;padding:40px 28px}
+.revision-main section {scroll-margin-top:24px;margin:36px 0}
+.revision-main h1,.revision-main h2,.revision-main h3 {font-family:inherit;font-weight:700}
+.revision-main p {margin:12px 0}
+.revision-main .native-reading {margin:40px 0;max-width:850px}
+.revision-main .chapter-integrated-nav {position:static;gap:16px}
+.revision-main .module-relations {border:2px solid #a11b1b;background:white;color:#a11b1b;padding:20px;margin:32px 0;border-radius:8px}
+.revision-main .module-relations :is(h2,p,a,li) {color:#a11b1b}
+.revision-main .question {max-width:900px;margin:24px 0}
+.revision-main .question h3 {font-size:22px;line-height:1.5;margin:10px 0 20px}
+.revision-main .feedback {margin-top:16px}
+.revision-main textarea {width:100%;font:inherit;font-size:17px;min-height:120px;padding:12px;border:1px solid #888;border-radius:8px}
+.revision-main .schematic-scroll {max-width:100%;overflow:auto}
+.revision-main .lab-layout {grid-template-columns:minmax(0,1.3fr) minmax(290px,1fr)}
+.revision-return {margin:48px 0}
+html[data-module-theme="line"] .revision-main .lab-panel {padding:20px}
+@media(max-width:1000px){.revision-main .lab-layout {display:flex;flex-direction:column}.revision-main .lab-panel {order:-1;width:100%}.revision-main .lab-layout>div {width:100%}}
+@media(max-width:600px){html[data-module-theme="line"] .revision-main {padding:28px 18px}.revision-top{padding:12px 18px}.revision-main .module-head h1{font-size:34px}}
+@media print{.revision-top,.chapter-integrated-nav,.lab-viewport,.lab-view-controls,.dc-interaction-toolbar,.q-form button,#download-progress{display:none}.revision-main {max-width:none!important;padding:0!important}.question,.module-relations{break-inside:avoid}}

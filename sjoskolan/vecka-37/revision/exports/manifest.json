@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "language": "sv",
+  "modules": {
+    "1": {
+      "title": "Elens grunder och elsäkerhet",
+      "sourceKeys": [
+        "module-1-v2-circuit",
+        "module-1-v2-voltage",
+        "module-1-v2-resistance",
+        "module-1-v2-connections",
+        "module-1-v2-safety",
+        "module-1-v2-case-a",
+        "module-1-v2-case-b",
+        "module-1-v2-evidence",
+        "module-1-v2-ohm-example",
+        "module-1-v2-case-example",
+        "module-1-v2-parallel-example",
+        "module-1-v2-sources"
+      ],
+      "questionIds": [
+        "m1q1",
+        "m1q2",
+        "m1q3",
+        "m1q4",
+        "m1a",
+        "m1w1",
+        "m1w2",
+        "m1w3",
+        "m1w4",
+        "m1w5",
+        "m1w6",
+        "m1s1",
+        "m1s2",
+        "m1s3",
+        "m1s4"
+      ],
+      "files": {
+        "neutral": {
+          "pdf": {
+            "path": "exports/modul-01-neutral.pdf",
+            "bytes": 1072985,
+            "pages": 45,
+            "sha256": "15b467a970458faa202a9d42aadb4be6aea1d58bf16f55b48935b0f5c0cd1aa6"
+          },
+          "pptx": {
+            "path": "exports/modul-01-neutral.pptx",
+            "bytes": 1313063,
+            "pages": 106,
+            "sha256": "c697a0a876ca79fdc23b352ce8b79e94b8ec7fa1b384d872aa81ea92612366a2"
+          }
+        },
+        "school": {
+          "pdf": {
+            "path": "exports/modul-01-school.pdf",
+            "bytes": 1108824,
+            "pages": 45,
+            "sha256": "79561f73bf8a4484d3ed17f933dacff7dc316fe32fd9ded5ae78be06da9eebed"
+          },
+          "pptx": {
+            "path": "exports/modul-01-school.pptx",
+            "bytes": 2669843,
+            "pages": 106,
+            "sha256": "8329bda730fb60b81d1e83da09e3c5fcb8bbc2ac3d56a15d1789da6aeda17f30"
+          }
+        }
+      }
+    }
+  },
+  "revision": "2026-10-16",
+  "publicUrl": "https://nj22az.github.io/sjoskolan/vecka-37/revision/"
+}

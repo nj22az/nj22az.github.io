@@ -243,6 +243,8 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-16** Modul 1 i första kursveckan (vecka 38, mappen vecka-37) har en separat kompletterande revision under `vecka-37/revision/`. Samlad svensk teori, omritade scheman, självrättande träning, automatisk läsregistrering och sex guidade 3D-mätövningar. Revisionslänk tillagd i veckosidans och kursöversiktens generatorer. Originalets innehåll, filer, datum, uppgifter, elevdata och inlämningslänkar behålls. Revisionens lokala elevdata har en egen nyckel. Nedladdningarna innehåller revisionens träningsmaterial, inte originalinlämningarnas skyddade lärarfacit.
+
 - **2026-10-11** Vecka 43 fredag och vecka 44 efter genomgången av lärarmanusen. Ledtråd 3 i övning 3.7 och 3.8 (EL-000177,
   EL-000178) räknade med 24 V och gav därmed svaren på Hållkretslabbets räkna-först-uppgifter (labbet använder 24 V just för att
   inte sammanfalla med kursens 12 V-övningar, regel 22–23); exemplen använder nu 48 V. Isolationslabbet delas på två läxor:

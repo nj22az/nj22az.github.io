@@ -118,6 +118,8 @@ def modulkort(m):
     labb = f'<p class="mod-rad"><span class="mod-etikett">Labb</span><a href="{m["labb"][0]}">{escape(m["labb"][1])}</a></p>' if m['labb'] else ''
     inl = (f'<p class="mod-rad"><span class="mod-etikett">Inlämning</span><a href="{m["inl"]}">Senast {veckodag(m["sista"])} {kort_datum(m["sista"])}</a></p>'
            if m['inl'] else '')
+    revision = ('<p class="mod-rad module-revision-update"><span class="mod-etikett">Revision</span><a href="vecka-37/revision/">Uppdaterad genomgång · 16 okt 2026</a></p>'
+                if m['nr'] == 1 else '')
     ovn = json.dumps(m['ovningar'])
     framsteg = (f'<div class="mod-framsteg" data-ovningar=\'{ovn}\'><div class="mod-bar"><span></span></div><p class="mod-antal">'
                 f'{10 * len(m["ovningar"])} övningar</p></div>') if m['ovningar'] else ''
@@ -127,7 +129,7 @@ def modulkort(m):
             f'<header class="mod-huvud"><span class="mod-nr" aria-hidden="true">{m["nr"]}</span>'
             f'<div><p class="mod-vecka">Modul {m["nr"]} · {m["vecka"]}<span class="mod-status"></span></p>'
             f'<h3><a href="{m["sida"]}">{escape(m["titel"])}</a></h3></div></header>'
-            f'<p class="mod-mal">{escape(m["mal"])}</p>{K.omrade_band(ford, kompakt=True)}<ol class="mod-delar">{delar}</ol>{labb}{inl}{framsteg}</article>')
+            f'<p class="mod-mal">{escape(m["mal"])}</p>{K.omrade_band(ford, kompakt=True)}<ol class="mod-delar">{delar}</ol>{labb}{inl}{revision}{framsteg}</article>')
 
 
 CSS = '''
