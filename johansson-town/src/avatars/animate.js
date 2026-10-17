@@ -13,6 +13,7 @@ import {DUTY_BELT} from './police-data.js';
 import {bodyVolume} from './build.js';
 import {storyProps,pocketSpot,PAPER} from './story-props.js';
 import {MUSIC_MOVES,musicPose} from './music-moves.js';
+import {EXPRESSIVE_POSES} from './expressive-poses.js';
 
 /**
  * Moves a Shimanchu. There are no animation clips: every pose is a handful of joint
@@ -285,6 +286,7 @@ export const GESTURES=Object.freeze({
  HairDry:Infinity,Switch:Infinity,SwitchHigh:Infinity,Sing:Infinity,
  Talk:Infinity,Kachashi:Infinity,Crouch:Infinity,Phone:Infinity,FishIdle:Infinity,Reel:Infinity,
  ...Object.fromEntries(MUSIC_MOVES.map(([name])=>[name,Infinity])),
+ ...Object.fromEntries(Object.keys(EXPRESSIVE_POSES).map(name=>[name,Infinity])),
  // Fujita's Ten Minutes of Heaven (the shot plan's batch C2). Held until the next move unless a time is given; BowDeep and
  // PoleFlick are one movement that ends in a held pose (with `hold`, the hold takes the extra time, in and out at their pace).
  CupHands:Infinity,CoinToCheek:Infinity,BowDeep:1.8,BowWalk:Infinity,KneelHug:Infinity,PoleFlick:2.4,Peek:Infinity,
@@ -304,7 +306,7 @@ const EASED=new Set(['CupHands','CoinToCheek','BowDeep','BowWalk','KneelHug','Po
  'Tape','Offer','Reach','LieKnead','GrenadeCoin','Aim','HoldUp','HoldUpStraws','Call','WriteAbove',
  'BentStuck','CrabWalk','ChairUncurl','FrozenAbsurd','CarriedBent','CarriedPlank','CarryFurniture','CarryLegs','CordWrapped','BasketHead','SitRead','TorchUp','TorchOff','ReachBack',
  // and the funny poses (fun-poses.js): from however the body stands (hands behind the back, in the pockets) and back to it
- ...Object.keys(FUN_POSES)]);
+ ...Object.keys(FUN_POSES),...Object.keys(EXPRESSIVE_POSES)]);
 /** The body that goes with a feeling, played once when the feeling arrives. */
 export const EMOTION_GESTURE=Object.freeze({happy:'Hop',laugh:'Laugh',sad:'Slump',angry:'Stomp',shy:'Fidget',surprised:'Gasp',worried:'Think'});
 
@@ -1247,7 +1249,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     set('shoulderL',-1.2*q,0,-.2*q);set('shoulderR',-1.2*q,0,.2*q);set('elbowL',-1.6*q);set('elbowR',-1.6*q);
     add('head',.08*q,0,-.25*q);add('chest',.1*q,0,-.06*q);break;
    case 'Talk':set('shoulderR',-.55+Math.sin(t*3.1)*.25,0,-.2);set('elbowR',-1.1+Math.sin(t*4.3)*.3);set('shoulderL',-.35+Math.sin(t*2.3+1)*.2,0,.2);set('elbowL',-1+Math.sin(t*3.7)*.3);add('head',Math.sin(t*2.6)*.06);break;
-   case 'DiscoPoint':case 'IdolDance':case 'AirGuitar':case 'RockBelt':case 'EnkaReach':case 'RobotDance':{
+   case 'DiscoPoint':case 'IdolDance':case 'AirGuitar':case 'RockBelt':case 'EnkaReach':case 'RobotDance':case 'ChickenDance':case 'JellyWobble':case 'DramaFinish':{
     const pose=musicPose(g.name,Number.isFinite(s.performBeat)?s.performBeat:t*112/60,s.performEnergy);
     for(const [joint,angles]of Object.entries(pose.joints))set(joint,...angles);
     return {root:pose.root};
@@ -1445,7 +1447,12 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    case 'TorchOff':add('head',.05*w);break;
    // The funny poses (fun-poses.js): each writes its own body; a hand to the head is placed on this body's own head (REACH,
    // the pose's `reach`). Seated, the seat keeps the legs and the bottom where they are (update()).
-   default:{const F=FUN_POSES[g.name];if(!F)break;
+   default:{const pose=EXPRESSIVE_POSES[g.name];if(pose){
+    for(const [bone,angles] of Object.entries(pose.joints))toward(bone,...angles,w);
+    // The small breath is layered over the held pose, never over a fixed root height.
+    add('chest',Math.sin(t*2.4)*.012*w);add('head',0,0,Math.sin(t*1.2)*.008*w);break;
+   }
+    const F=FUN_POSES[g.name];if(!F)break;
     return F.play({t,d,w,q,e,m,seated,set,add,toward,armTo,reach:()=>reachFor('Fun:'+g.name,F.reach)})||null;}
   }
   return null;

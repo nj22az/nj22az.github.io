@@ -64,7 +64,7 @@ export function createConcertStage(){
    actors.push({name,avatar,animator,holder,mic,held,local,baseX:holder.position.x,baseZ:holder.position.z});
   });
  }
- function frame(seconds,cue,score,{view='auto',reduced=false,cheering=false}={}){
+ function frame(seconds,cue,score,{view='auto',reduced=false,cheering=false,vocalCue=null}={}){
   const reset=seconds<previousTime||!cue,dt=Math.max(0,Math.min(.1,seconds-previousTime));previousTime=seconds;
   const beat=seconds/(score?.beat||.6),performing=cue?.phase==='singing',bow=cue?.phase==='bow',front=actors.length||1;
   for(let i=0;i<actors.length;i++){
@@ -75,7 +75,8 @@ export function createConcertStage(){
    a.holder.position.x=a.baseX+(performing?direction.step:0);a.holder.rotation.y=Math.PI+(performing?direction.turn:0);
    a.held.visible=performing&&!['AirGuitar','RobotDance'].includes(move);a.mic.visible=!a.held.visible;
    if(bow){const bend=Math.sin(Math.min(1,(beat-36)/3)*Math.PI);b.chest.rotation.x+=bend*.36;b.spine.rotation.x+=bend*.16;b.head.rotation.x+=bend*.18;}
-   a.avatar.paintFace({expression:direction?.expression||'smile',blink:direction?.blink||0,talk:performing?direction.mouth:0,look:[performing?Math.sin(beat*.3+i)*.12:0,0]});
+   const mouth=vocalCue?vocalCue.speaking&&(vocalCue.line===3||vocalCue.singer===i)?.65+.25*Math.sin(seconds*22):0:direction?.mouth||0;
+   a.avatar.paintFace({expression:direction?.expression||'smile',blink:direction?.blink||0,talk:performing?mouth:0,look:[performing?Math.sin(beat*.3+i)*.12:0,0]});
    a.avatar.root.updateMatrixWorld(true);
   }
   // Slow moves only, never a flash or strobe. A fixed wide view is always available.
