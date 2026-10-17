@@ -1,0 +1,52 @@
+[
+  {
+    "number": "JS127-FUEL-C1-01",
+    "title": "Fuel external routes - plan",
+    "revision": "C1",
+    "scale": "1:50",
+    "pdfPage": 1,
+    "status": "FOR DESIGN REVIEW - CONSTRUCTION NOT APPROVED",
+    "view": "plan"
+  },
+  {
+    "number": "JS127-FUEL-C1-02",
+    "title": "Fuel external routes - profile",
+    "revision": "C1",
+    "scale": "1:50",
+    "pdfPage": 2,
+    "status": "FOR DESIGN REVIEW - CONSTRUCTION NOT APPROVED",
+    "view": "profile"
+  },
+  {
+    "number": "JS127-FUEL-C1-03",
+    "title": "Proposed terminal schedule 1",
+    "revision": "C1",
+    "scale": "NTS",
+    "pdfPage": 3,
+    "status": "FOR DESIGN REVIEW - CONSTRUCTION NOT APPROVED"
+  },
+  {
+    "number": "JS127-FUEL-C1-04",
+    "title": "Proposed terminal schedule 2",
+    "revision": "C1",
+    "scale": "NTS",
+    "pdfPage": 4,
+    "status": "FOR DESIGN REVIEW - CONSTRUCTION NOT APPROVED"
+  },
+  {
+    "number": "JS127-FUEL-C1-05",
+    "title": "Connection disposition and sizing basis",
+    "revision": "C1",
+    "scale": "NTS",
+    "pdfPage": 5,
+    "status": "FOR DESIGN REVIEW - CONSTRUCTION NOT APPROVED"
+  },
+  {
+    "number": "JS127-FUEL-C1-06",
+    "title": "Scope, open holds and revision control",
+    "revision": "C1",
+    "scale": "NTS",
+    "pdfPage": 6,
+    "status": "FOR DESIGN REVIEW - CONSTRUCTION NOT APPROVED"
+  }
+]

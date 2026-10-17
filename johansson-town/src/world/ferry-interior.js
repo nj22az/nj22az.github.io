@@ -2,6 +2,8 @@ import {FERRY_SHIP,FERRY_HEIGHTS,FERRY_ELECTRICS} from './ferry-ship.js';
 import {JOHANSSON_MARINE,makerPlate,WORDMARK} from './johansson-marine.js';
 import {FERRY_PIPING} from './ferry-piping.js';
 import {routePipes,routePipePreview,pipePreviewSegments,pipePreviewBends,pipeRadius} from './ferry-pipe-routes.js';
+import {routeFuelDesign} from './ferry-fuel-design.js';
+import {FUEL_SPOOLS_C1} from './ferry-fuel-spools.js';
 import {PLANT_ALARMS} from './ferry-plant.js';
 
 /**
@@ -1178,7 +1180,13 @@ export const FERRY_INTERIOR=(()=>{
   // Exact, radius-expanded equipment checks replace the old point-only/shrunken-box test. Terminal stubs alone
   // may enter their own equipment. Unresolved routes remain in the issue register and are not drawn as connected pipes.
   // Keep the bounded engineering audit lazy: drawings/tests inspect it, gameplay does not pay its startup cost.
-  routeAudit=()=>{if(!routeAuditCache){const routes=routePipes(FERRY_PIPING,anchors,{y0,y1,W,z0:a,z1:F1,crossings:[f-.22,MS.auxFore-.22,F1-.22],obstacles:solids});routeAuditCache=Object.freeze({routes,issues:routes.issues});}return routeAuditCache;};
+  routeAudit=()=>{if(!routeAuditCache){
+   const legacy=routePipes(FERRY_PIPING,anchors,{y0,y1,W,z0:a,z1:F1,crossings:[f-.22,MS.auxFore-.22,F1-.22],obstacles:solids});
+   const retained=legacy.filter(r=>r.system!=='fuel');
+   const fuel=routeFuelDesign(FERRY_PIPING.find(s=>s.id==='fuel'),anchors,ER,HALF,SH.draft,solids,retained,FUEL_SPOOLS_C1);
+   const routes=Object.freeze([...retained,...fuel.routes]);
+   routeAuditCache=Object.freeze({routes,issues:Object.freeze([...legacy.issues.filter(r=>r.system!=='fuel'),...fuel.issues]),fuel});
+  }return routeAuditCache;};
   // Retain the game's illustrative pipes while CAD/export uses engineeringPipes only. No preview is a validated spool.
   const previewClear=p=>!solids.some(b=>p.every((v,k)=>v>Math.min(b.a[k],b.b[k])+.02&&v<Math.max(b.a[k],b.b[k])-.02));
   const preview=routePipePreview(FERRY_PIPING,anchors,{y0,y1,W,crossings:[f-.22,MS.auxFore-.22,F1-.22],previewClear});
@@ -1187,7 +1195,7 @@ export const FERRY_INTERIOR=(()=>{
   for(const b of pipePreviewBends(preview)){const r=pipeRadius(b.dn)*1.3;cyl(r,r,r*2,b.p,parseInt(b.colour.slice(1),16),{seg:6,cls:'paint',name:'pipe bend'});}
   pipes.push(...preview);
  }
- return Object.freeze({boxes:Object.freeze(boxes),bars:Object.freeze(bars),glass:Object.freeze(glass),floors:Object.freeze(floors),cyls:Object.freeze(cyls),plates:Object.freeze(plates),pipes:Object.freeze(pipes),get engineeringPipes(){return routeAudit().routes;},get pipeRouteIssues(){return routeAudit().issues;},anchors:Object.freeze(anchors)});
+ return Object.freeze({boxes:Object.freeze(boxes),bars:Object.freeze(bars),glass:Object.freeze(glass),floors:Object.freeze(floors),cyls:Object.freeze(cyls),plates:Object.freeze(plates),pipes:Object.freeze(pipes),get fuelEngineering(){return routeAudit().fuel;},get engineeringPipes(){return routeAudit().routes;},get pipeRouteIssues(){return routeAudit().issues;},anchors:Object.freeze(anchors)});
 })();
 
 /** Where the car deck is no floor: under the flights of stair P and S, inside the casings (up to the foot, where the stair takes over). */

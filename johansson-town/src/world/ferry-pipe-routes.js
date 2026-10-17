@@ -23,12 +23,21 @@ function contactNearTerminal(p,q,u,v,t,reach,r){
  const lo=[],hi=[];for(let k=0;k<3;k++){lo[k]=Math.max(Math.min(p[k],q[k])-r,Math.min(u[k],v[k])-r);hi[k]=Math.min(Math.max(p[k],q[k])+r,Math.max(u[k],v[k])+r);if(lo[k]>hi[k])return false;}
  return Math.hypot(...lo.map((n,k)=>Math.max(Math.abs(n-t.pos[k]),Math.abs(hi[k]-t.pos[k]))))<=reach;
 }
-function segmentDistance(a,b,c,d){
+export function pipeSegmentDistance(a,b,c,d){
  let sq=0;for(let k=0;k<3;k++){const gap=Math.max(Math.min(a[k],b[k])-Math.max(c[k],d[k]),Math.min(c[k],d[k])-Math.max(a[k],b[k]),0);sq+=gap*gap;}return Math.sqrt(sq);
 }
 /** Validate the conceptual equipment envelope. A first/last stub may enter a box containing its recorded terminal; physical nozzle ownership is not established by this check. */
 export function validatePipeRoute(points,G,dn,{a,b,existing=[]}={}){
  if(!Number.isFinite(dn)||dn<=0||points.length<2||points.some(p=>!Array.isArray(p)||p.length!==3||p.some(v=>!Number.isFinite(v))))return {ok:false,reason:'invalid pipe geometry'};
+ if(a?.id&&key(points[0])!==key(a.pos)||b?.id&&key(points.at(-1))!==key(b.pos))return {ok:false,reason:'terminal endpoint mismatch'};
+ if(G.strictTerminals)for(const [t,p] of [[a,points[1]],[b,points.at(-2)]]){
+  if(!t)continue;const dir=DIRS[t.dir];
+  if(!dir||p.some((v,k)=>Math.abs(v-t.pos[k]-dir[k]*(t.off??.25))>1e-6))return {ok:false,reason:'terminal stub direction or length mismatch',terminal:t.id};
+ }
+ if(G.strictTerminals){
+  for(let i=1;i<points.length-1;i++)if(points[i].reduce((sum,v,k)=>sum+(v-points[i-1][k])*(points[i+1][k]-v),0)<-1e-9)return {ok:false,reason:'self-overlapping reversal',segment:i};
+  for(let i=1;i<points.length;i++)for(let j=i+2;j<points.length;j++)if(pipeSegmentDistance(points[i-1],points[i],points[j-1],points[j])<1e-7)return {ok:false,reason:'self-intersecting route',segment:i,otherSegment:j};
+ }
  const r=pipeRadius(dn),obstacles=(G.obstacles||[]).map(o=>({...o,...bounds(o)}));
  for(let i=1;i<points.length;i++){
   const p=points[i-1],q=points[i];if([0,1,2].filter(k=>Math.abs(p[k]-q[k])>1e-7).length!==1)return {ok:false,reason:'non-orthogonal segment',segment:i};
@@ -36,13 +45,13 @@ export function validatePipeRoute(points,G,dn,{a,b,existing=[]}={}){
   const terminals=[...(i===1&&a?[a]:[]),...(i===points.length-1&&b?[b]:[])],terminal=terminals.find(t=>t.penetration)||terminals[0]||null;
   if((Math.min(p[1],q[1])<G.y0-.24+r-1e-7||Math.max(p[1],q[1])>G.y1-r+1e-7||Math.max(Math.abs(p[0]),Math.abs(q[0]))>G.W-r+1e-7||(Number.isFinite(G.z0)&&Math.min(p[2],q[2])<G.z0+r-1e-7)||(Number.isFinite(G.z1)&&Math.max(p[2],q[2])>G.z1-r+1e-7))&&!terminal?.penetration)return {ok:false,reason:'outside machinery-space envelope',segment:i};
   for(const o of obstacles){if(!pipeSegmentIntersectsBox(p,q,o,r))continue;
-   if(terminals.some(t=>contains(t.pos,o,r)))continue;
+   if(terminals.some(t=>(contains(t.pos,o,r)||G.strictTerminals&&t.penetrates?.includes(o.name))&&(!G.strictTerminals||((t.owner===o.name||t.penetrates?.includes(o.name))&&Math.hypot(...q.map((v,k)=>v-p[k]))<=(t.off??.25)+1e-7))))continue;
    return {ok:false,reason:'equipment clearance',obstacle:o.name||'equipment',segment:i};}
   if(G.clear){const n=Math.max(1,Math.ceil(Math.hypot(...q.map((v,k)=>v-p[k]))/.02));
    for(let j=0;j<=n;j++){const at=p.map((v,k)=>v+(q[k]-v)*j/n);if(!G.clear(at,r,{terminal,segment:i}))return {ok:false,reason:'clearance callback',segment:i};}}
   for(const other of existing){const rr=r+pipeRadius(other.dn)+.01;
    for(let j=1;j<other.points.length;j++){
-    const u=other.points[j-1],v=other.points[j];if(segmentDistance(p,q,u,v)>=rr-1e-7)continue;
+    const u=other.points[j-1],v=other.points[j];if(pipeSegmentDistance(p,q,u,v)>=rr-1e-7)continue;
     // Branches at the same diagram node may share their short terminal fitting. A shared long main requires explicit spool/junction data.
     const sameTerm=[a,b].filter(Boolean).find(t=>other.terminals?.some(ot=>ot.id===t.id&&key(ot.pos)===key(t.pos)));
     if(sameTerm&&contactNearTerminal(p,q,u,v,sameTerm,.36,rr))continue;

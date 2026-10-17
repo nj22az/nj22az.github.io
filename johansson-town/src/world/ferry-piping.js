@@ -48,7 +48,7 @@ export const FERRY_PIPING=Object.freeze([
   line('bunker','storeP',50,'hose from the lorry; the filling line to each tank'),line('bunker','storeS',50),line('storeP','vP',25),line('storeS','vS',25),line('vP','tp1',25),line('vS','tp2',25),line('vP','tp2',25,'cross-suction'),line('vS','tp1',25),
   line('tp1','purifier',25),line('tp2','purifier',25),line('purifier','service',25),line('purifier','sludge',20,'sludge discharge'),line('service','overflow',32),line('overflow','storeP',32),line('service','qcv',20),
   line('qcv','fuel-mainP',20),line('qcv','fuel-mainS',20),line('qcv','fuel-gen1',15),line('qcv','fuel-gen2',15),line('fuel-mainP','return',15),line('fuel-mainS','return',15),line('return','service',15),
- ],['Transfer: No.1 and No.2 alternate weekly; either tank to either pump through the cross-suction.','Gravity from the service tank, 1.8 m over the engines’ pumps; the quick-closing valve is shut from outside the engine room before CO₂ is released.']),
+ ],['Transfer: No.1 and No.2 alternate weekly; either tank to either pump through the cross-suction.','Service-tank gravity feed is a design intention only: available head at minimum level and engine inlet/return pressures require supplier verification. The quick-closing valve is shut from outside the engine room before CO₂ is released.']),
 
  // ---- 8.2 Lubricating oil: each engine its sump, engine-driven pump, electric priming pump, filters and cooler; the storage tank and the drums.
  system('lube','Lubricating oil','XJV','SAE 40 engine oil','#b08a2a',[
