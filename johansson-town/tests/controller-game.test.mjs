@@ -18,7 +18,7 @@ test('controller and camera controls boot in the game, pause movement in setting
  source=source.replace("import * as THREE from '"+three+"';","import * as THREE from '"+shim+"';");
  source+='\nexport {camera,player,activities,cameraControls,touchSticks,controllerFrame,updateController,simulate,controlsAllowed,resetInput,centreCamera,keys};export const stand=()=>{seated=false;parkSeat=null;};';
  try{
-  const api=await import(data(source));assert.equal(window.__JOHANSSON_RUNNING__,true);api.stand();assert.ok(api.controlsAllowed());
+  const api=await import(data(source));assert.equal(window.__JOHANSSON_RUNNING__,true);assert.equal(window.__JOHANSSON_STABILITY__.ok,true,window.__JOHANSSON_STABILITY__.failures.join(', '));api.stand();assert.ok(api.controlsAllowed());
   const p={id:'CPU standard pad',index:0,mapping:'standard',connected:true,axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};pads=[p];api.updateController(1/60);
   p.axes=[0,0,1,.2];api.updateController(1/60);const before=api.camera.quaternion.clone();api.simulate(.1);assert.ok(api.camera.quaternion.angleTo(before)>.05,'Right stick turns the actual game camera');
   api.cameraControls.open();assert.equal(api.controlsAllowed(),false);api.resetInput();assert.deepEqual(api.touchSticks.move,{x:0,y:0});

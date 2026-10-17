@@ -133,3 +133,15 @@
   #projects .px-calculation i,#projects .px-calculation strong{grid-column:2;overflow-wrap:anywhere}
   #projects .px-stepwise{height:auto;min-height:320px;padding-bottom:42px}
 }
+
+/* Linux has its own project entrance, with the same leaning-in invitation as the private course. */
+#projects .px-linux{background:#e4eadd}
+#projects .px-linux-whisper{display:flex;align-items:center;justify-content:center;gap:16px;height:100%;padding:24px 28px;text-decoration:none;color:#24463d}
+#projects .px-linux-whisper img{width:132px;height:200px;flex:none;object-fit:contain;object-position:bottom;filter:drop-shadow(0 4px 4px #173b3518)}
+#projects .px-whisper-bubble{position:relative;max-width:245px;padding:17px 20px;border:1px solid #9daf9b;border-radius:15px;background:#fffef7;font:400 14px/1.5 system-ui,sans-serif}
+#projects .px-whisper-bubble:before{content:'';position:absolute;left:-6px;top:38px;width:10px;height:10px;transform:rotate(45deg);background:#fffef7;border-left:1px solid #9daf9b;border-bottom:1px solid #9daf9b}
+#projects .px-whisper-bubble strong{display:block;font-size:21px;line-height:1.25;font-weight:650;margin:8px 0 10px;letter-spacing:-.025em}
+#projects .px-whisper-bubble small{display:block;font-size:12px;color:#536b5d}
+#projects .px-linux-whisper:hover .px-whisper-bubble{border-color:#3e6b52}
+#projects .px-linux-whisper:focus-visible{outline:3px solid #1b6d4e;outline-offset:-6px;border-radius:12px}
+@media(max-width:480px){#projects .px-linux-whisper{gap:10px;padding:20px 16px}#projects .px-linux-whisper img{width:104px;height:158px}#projects .px-whisper-bubble{padding:14px;font-size:13px}#projects .px-whisper-bubble strong{font-size:19px}#projects .px-whisper-bubble small{font-size:11px}}
