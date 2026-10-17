@@ -7,6 +7,7 @@ import {FESTIVAL_ALLIES,FESTIVAL_STAGES,restoreFestival,createFestivalBout,stepF
 export function createHarbourFestival({scene,camera,renderer,activities,getStage,canStart,getCalendar=()=>({date:'',year:1997}),onBegin=()=>{},onEnd=()=>{},onFrame=()=>{}}){
  let bout=null,stage=null,actors=[],ring=null,hud=null,accumulator=0,previousPad=[],resultShown=false;
  const keyboard={},edges={};let cameraBefore,spectating=false,tournamentMatch=null;const offered=new Set();let lastOfferCheck=0;
+ const festivalStyle=document.createElement('style');festivalStyle.textContent='.festival-active #hud,.festival-active #mobile{visibility:hidden!important}';document.head.append(festivalStyle);
  const state=()=>activities.state.harbourFestival=restoreFestival(activities.state.harbourFestival);
  function menu(){
   if(bout){finish();return;}
@@ -64,7 +65,7 @@ export function createHarbourFestival({scene,camera,renderer,activities,getStage
  document.addEventListener('keydown',event=>{if(!bout)return;if(['KeyJ','KeyK','KeyL','Space','KeyW','KeyA','KeyS','KeyD','Escape','Enter'].includes(event.code)){event.preventDefault();event.stopImmediatePropagation();if(!keyboard[event.code])edges[event.code]=true;keyboard[event.code]=true;if(event.code==='Escape')finish();}},true);
  document.addEventListener('keyup',event=>{keyboard[event.code]=false;},true);
  addEventListener('blur',()=>{for(const key of Object.keys(keyboard))keyboard[key]=false;});
- return {menu,tournamentMenu,nearby({position}){
+ return {menu,tournamentMenu,...(new URLSearchParams(location.search).has('audit')?{auditStage(id,{watch=false}={}){if(bout)finish();const s=FESTIVAL_STAGES.find(s=>s.id===id);if(!s)throw Error('Unknown festival stage');start(s,{watch});return !!bout;},auditLeave:finish}:{}),nearby({position}){
   if(bout||performance.now()-lastOfferCheck<1000)return;lastOfferCheck=performance.now();
   const progress=state(),next=FESTIVAL_STAGES.find(s=>!progress.completed.includes(s.id)&&!progress.watched.includes(s.id));
   if(!next||offered.has(next.id))return;

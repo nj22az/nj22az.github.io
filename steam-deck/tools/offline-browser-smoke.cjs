@@ -6,7 +6,7 @@ const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwr
  fs.mkdirSync(path.resolve(__dirname,'../dist'),{recursive:true});
  const page=await browser.newPage({viewport:{width:1280,height:800}});
  page.on('pageerror',error=>errors.push(error.message));
- await page.addInitScript(()=>{window.johanssonDesktop={offline:true,version:'0.2.0'};navigator.getGamepads=()=>[];});
+ await page.addInitScript(()=>{window.johanssonDesktop={offline:true,version:'0.2.1'};navigator.getGamepads=()=>[];});
  const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.glb':'model/gltf-binary','.gltf':'model/gltf+json','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.mp3':'audio/mpeg','.ogg':'audio/ogg','.mp4':'video/mp4'};
  await page.route('**/*',async route=>{
   const url=new URL(route.request().url());if(url.hostname!=='world.local'){remote.push(url.href);return route.abort();}
@@ -22,7 +22,7 @@ const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwr
  await page.screenshot({path:path.resolve(__dirname,'../dist/offline-island.png')});
  await page.evaluate(()=>dispatchEvent(new Event('johansson-festival-menu')));
  await page.getByRole('button',{name:'Harbour quay · Chin',exact:true}).click();
- await page.getByRole('button',{name:'Begin exhibition',exact:true}).click();
+ await page.getByRole('button',{name:'Take part',exact:true}).click();
  const stage=await page.locator('#festivalHUD').count();
  if(stage!==1)throw Error('First actual island stage did not open: '+await page.locator('#activityBody').textContent());
  await page.waitForTimeout(1000);await page.screenshot({path:path.resolve(__dirname,'../dist/festival-quay.png')});

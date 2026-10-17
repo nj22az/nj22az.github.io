@@ -7,7 +7,7 @@ command -v python3 >/dev/null 2>&1 || { echo 'Python 3 is required by this insta
 python3 - <<'PY'
 import os,json,hashlib,urllib.request,tarfile,tempfile,shlex
 from pathlib import Path
-version='0.2.0'
+version='0.2.1'
 release='https://github.com/nj22az/nj22az.github.io/releases/download/johansson-world-linux-v'+version+'/'
 def get(url):
  return urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'Johansson-World-Installer'}),timeout=60)
@@ -35,7 +35,7 @@ with tempfile.TemporaryDirectory(prefix='.install-',dir=versions) as work:
   extracted=work/'unpack';extracted.mkdir()
   with tarfile.open(archive) as tar:
    for member in tar.getmembers():
-    if not member.name.startswith('johansson-world/') or '..' in Path(member.name).parts or member.name.startswith('/'):raise SystemExit('Invalid archive path.')
+    if (member.name!='johansson-world' and not member.name.startswith('johansson-world/')) or '..' in Path(member.name).parts or member.name.startswith('/'):raise SystemExit('Invalid archive path.')
    if hasattr(tarfile,'data_filter'):tar.extractall(extracted,filter='data')
    else:tar.extractall(extracted)
   app=extracted/'johansson-world'

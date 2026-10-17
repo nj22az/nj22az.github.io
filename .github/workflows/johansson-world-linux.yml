@@ -39,7 +39,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y xvfb libasound2t64 libnss3 libgbm1
-          timeout 180 xvfb-run -a steam-deck/dist/johansson-world/JohanssonWorld --no-sandbox --windowed --smoke --use-angle=swiftshader --enable-unsafe-swiftshader --disable-dev-shm-usage
+          timeout 300 xvfb-run -a steam-deck/dist/johansson-world/JohanssonWorld --no-sandbox --windowed --smoke --use-angle=swiftshader --enable-unsafe-swiftshader --disable-dev-shm-usage
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -54,3 +54,8 @@ jobs:
           tag="johansson-world-linux-v$version"
           gh release view "$tag" >/dev/null 2>&1 || gh release create "$tag" --target "$GITHUB_SHA" --prerelease --title "Johansson World Linux $version" --notes "Offline island edition for Steam Deck and Linux. Includes local saves, controller pause/HUD controls, Harbour Festival side quest and an in-game update channel. Desktop application uses the existing Three.js world. Physical Steam Deck performance acceptance is pending."
           gh release upload "$tag" steam-deck/dist/johansson-world-linux-x64.tar.gz steam-deck/dist/latest-linux.json steam-deck/dist/SHA256SUMS --clobber
+      - name: Verify public installer and release checksum
+        run: |
+          HOME="$RUNNER_TEMP/install-smoke" XDG_DATA_HOME="$RUNNER_TEMP/install-smoke/data" sh steam-deck/install.sh
+          test -x "$RUNNER_TEMP/install-smoke/.local/bin/johansson-world"
+          test -x "$RUNNER_TEMP/install-smoke/data/johansson-world/current/JohanssonWorld"

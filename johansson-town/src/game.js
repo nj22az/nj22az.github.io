@@ -2188,6 +2188,7 @@ const detailStream=createDetailStream({onChange:()=>{invalidateDetails();walkSur
 // With ?audit in the address, a harness can put the player anywhere and look down on
 // the town from a fixed camera. Nothing reads it otherwise.
 if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__={
+ festival,
  frozen:new URLSearchParams(location.search).has('visual-audit'),
  /** Paint the normal world path without advancing animation, input or the clock. */
  render(){

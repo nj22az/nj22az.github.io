@@ -1,5 +1,5 @@
 const {contextBridge,ipcRenderer}=require('electron');
-contextBridge.exposeInMainWorld('johanssonDesktop',{offline:true,version:'0.2.0'});
+contextBridge.exposeInMainWorld('johanssonDesktop',{offline:true,version:'0.2.1'});
 const snapshot=()=>Object.fromEntries(Object.keys(localStorage).filter(k=>/^(johansson[-:]|avatar[-:]|studio[-:])/.test(k)).map(k=>[k,localStorage.getItem(k)]));
 try{const backup=ipcRenderer.sendSync('read-backup');for(const [key,value] of Object.entries(backup||{}))if(localStorage.getItem(key)===null)localStorage.setItem(key,value);}catch{}
 let panel,status,updateButton,updateAction='check',held=[],cursor=0,nextDirection=0,lastSnapshot='';

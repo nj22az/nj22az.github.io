@@ -41,7 +41,7 @@ app.whenReady().then(async()=>{
  window.webContents.setWindowOpenHandler(()=>{window.webContents.send('offline-link');return {action:'deny'};});
  window.webContents.on('will-navigate',(event,url)=>{if(!url.startsWith('johansson://world/'))event.preventDefault();});
  window.on('close',event=>{if(readyToClose)return;event.preventDefault();window.webContents.send('save-before-close');setTimeout(()=>{readyToClose=true;window?.close();},5000).unref();});
- await window.loadURL('johansson://world/johansson-town/?desktop=1');
+ await window.loadURL('johansson://world/johansson-town/?desktop=1'+(process.argv.includes('--smoke')?'&audit':''));
  if(process.argv.includes('--smoke')){
   // CI exercises the same local protocol and starts the real island.
   window.webContents.on('console-message',details=>console.log(details.message));
@@ -54,6 +54,15 @@ app.whenReady().then(async()=>{
    console.log('FESTIVAL_SMOKE',JSON.stringify(festival));if(!festival.stage)throw Error('Actual quay stage did not start: '+festival.text);
 
    if(process.env.WORLD_SCREENSHOT)fs.writeFileSync(process.env.WORLD_SCREENSHOT,(await window.webContents.capturePage()).toPNG());
+   for(const id of ['park-towel','shopping-ladle','ferry-finale']){
+    const stage=await window.webContents.executeJavaScript(`(async()=>{const ok=window.__JOHANSSON_AUDIT__.festival.auditStage(${JSON.stringify(id)},{watch:true});await new Promise(r=>setTimeout(r,1200));return {ok,text:document.getElementById('activityBody')?.textContent};})()`);
+    console.log('STAGE_SMOKE',id,JSON.stringify(stage));if(!stage.ok)throw Error('Stage failed: '+id+' '+stage.text);
+    if(process.env.WORLD_SCREENSHOT)fs.writeFileSync(process.env.WORLD_SCREENSHOT.replace('.png','-'+id+'.png'),(await window.webContents.capturePage()).toPNG());
+   }
+   const desktop=await window.webContents.executeJavaScript(`(async()=>{window.__JOHANSSON_AUDIT__.festival.auditLeave();dispatchEvent(new KeyboardEvent('keydown',{code:'F10'}));const menu=document.getElementById('desktopMenu');const opened=!menu.hidden;menu.querySelector('[data-action="save"]').click();await new Promise(r=>setTimeout(r,1000));menu.querySelector('[data-action="hud"]').click();const hidden=document.documentElement.classList.contains('desktop-hide-hud');return {opened,hidden,status:document.getElementById('desktopStatus').textContent};})()`);
+   console.log('DESKTOP_SMOKE',JSON.stringify(desktop));if(!desktop.opened||!desktop.hidden)throw Error('Desktop pause/HUD controls failed');
+   if(!readSnapshot(saveDir()))throw Error('Save backup was not written');
+
    readyToClose=true;app.exit(0);
   }catch(error){console.error(error);readyToClose=true;app.exit(1);}},3000);
  }
