@@ -22,7 +22,9 @@ const {chromium}=require('playwright');
  });
  const sampled=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
  const tap=async i=>{await page.evaluate(i=>{window.__pad.buttons[i]={pressed:true,value:1};},i);await sampled();await page.evaluate(i=>{window.__pad.buttons[i]={pressed:false,value:0};},i);await sampled();};
- const axes=async value=>{await page.evaluate(value=>{window.__pad.axes=value;},value);await page.waitForTimeout(250);};
+ // Software-rendered CI frames can take longer than 250 ms. Keep the input held
+ // for real sampled frames so both movement and camera receive the same test input.
+ const axes=async value=>{await page.evaluate(value=>{window.__pad.axes=value;},value);await sampled();await sampled();};
  const state=()=>page.evaluate(()=>window.johanssonDesktopUI.snapshot());
  const click=action=>page.locator(`#desktopMenu [data-action="${action}"]`).last().click();
  console.log('Opening installed site',url);

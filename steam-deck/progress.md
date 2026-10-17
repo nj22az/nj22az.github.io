@@ -19,3 +19,5 @@ Shared cleanup: removed cycling mode/controller and Sakura storage-game prompts/
 Web PR #195 was merged to main: dedicated Linux Port journal with Downloads/install section, comparison, dated changes and consolidation state; homepage reduced to links without install instructions. Published installer remains 0.2.2. Island geometry remains a documented Linux proposal.
 
 Final retirement follow-up: the real browser skill client exposed the startup coverage diagnostic still counting the removed bicycle. It now expects the six remaining street activities, and the full-game controller regression checks actual startup stability. Both web and Linux regression pass. Native/browser acceptance now also require the actual stability result, so a logged startup failure cannot pass unnoticed.
+
+CI browser acceptance built and passed all regression tests, then failed the camera threshold with software rendering. Replace wall-clock-only stick holds with four rendered input frames so the camera actually samples the held axis on slow runners. This changes only the harness. Native Linux acceptance is still pending; do not call this hardware acceptance.
