@@ -8,7 +8,7 @@
 #include <dlfcn.h>
 static bool u32(FILE *f,uint32_t *v){unsigned char b[4];if(fread(b,1,4,f)!=4)return false;*v=(uint32_t)b[0]|(uint32_t)b[1]<<8|(uint32_t)b[2]<<16|(uint32_t)b[3]<<24;return true;}
 static bool f32(FILE *f,float *v){uint32_t bits;if(!u32(f,&bits))return false;memcpy(v,&bits,4);return isfinite(*v);}
-void model_free(NativeModel *m){free(m->vertices);free(m->pixels);memset(m,0,sizeof(*m));}
+void model_free(NativeModel *m){free(m->vertices);free(m->pixels);free(m->pose_indices);free(m->pose_sources);free(m->posed);memset(m,0,sizeof(*m));}
 static FILE *open_model(const char *path,void **memory){
  FILE *f=fopen(path,"rb");if(f)return f;
  char compressed[1024];if(snprintf(compressed,sizeof(compressed),"%s.gz",path)>=(int)sizeof(compressed))return NULL;
@@ -23,6 +23,30 @@ static FILE *open_model(const char *path,void **memory){
  if(!data||got<0||status!=0||used==limit||used==0){free(data);return NULL;}
  f=fmemopen(data,used,"rb");if(!f){free(data);return NULL;}*memory=data;return f;
 }
+/* JWF3 stores triangle corners. Share deformation work across identical skin
+ * inputs, preserving separate UVs, colours and seams in the rendered mesh. */
+static uint32_t skin_hash(const float *v){
+ uint32_t h=2166136261u;for(int k=0;k<24;k++)if(k<6||k>=13){uint32_t b;memcpy(&b,v+k,4);h=(h^b)*16777619u;}return h;
+}
+static bool same_skin(const float *a,const float *b){return !memcmp(a,b,6*sizeof(float))&&!memcmp(a+13,b+13,11*sizeof(float));}
+static bool prepare_pose_cache(NativeModel *m){
+ if(m->bone_count==1)return true;
+ unsigned size=1;while(size<m->count*2)size*=2;
+ unsigned *slots=malloc(size*sizeof(*slots));m->pose_indices=malloc(m->count*sizeof(unsigned));m->pose_sources=malloc(m->count*sizeof(unsigned));m->posed=malloc(m->count*9*sizeof(float));
+ if(!slots||!m->pose_indices||!m->pose_sources||!m->posed){free(slots);return false;}
+ for(unsigned i=0;i<size;i++)slots[i]=UINT32_MAX;
+ for(unsigned i=0;i<m->count;i++){
+  const float *v=m->vertices+i*24;unsigned h=skin_hash(v)&(size-1);
+  while(slots[h]!=UINT32_MAX&&!same_skin(v,m->vertices+m->pose_sources[slots[h]]*24))h=(h+1)&(size-1);
+  if(slots[h]==UINT32_MAX){slots[h]=m->unique_count;m->pose_sources[m->unique_count++]=i;}
+  m->pose_indices[i]=slots[h];
+ }
+ free(slots);
+ void *compact=realloc(m->posed,m->unique_count*9*sizeof(float));if(compact)m->posed=compact;
+ compact=realloc(m->pose_sources,m->unique_count*sizeof(unsigned));if(compact)m->pose_sources=compact;
+ return true;
+}
+static void deform_vertex(const NativeModel *m,unsigned index,float p[3],float n[3],float outline[3]);
 bool model_load(NativeModel *m,const char *path){
  memset(m,0,sizeof(*m));void *memory=NULL;FILE *f=open_model(path,&memory);if(!f){fprintf(stderr,"Cannot load Studio fighter: %s\n",path);return false;}
  uint32_t magic,n,b,w,h,o;bool ok=u32(f,&magic)&&u32(f,&n)&&u32(f,&b)&&u32(f,&w)&&u32(f,&h)&&u32(f,&o)&&f32(f,&m->height_m);
@@ -42,12 +66,14 @@ bool model_load(NativeModel *m,const char *path){
   if(fabsf(sum-1)>.005f||v[9]<0||v[9]>1||v[12]<0||v[12]>2)goto fail;
  }
  if(fread(m->pixels,1,(size_t)w*h*4,f)!=(size_t)w*h*4||fgetc(f)!=EOF)goto fail;
+ if(!prepare_pose_cache(m))goto fail;
  fclose(f);free(memory);return true;
 fail:fprintf(stderr,"Invalid or incomplete Studio fighter: %s\n",path);fclose(f);free(memory);model_free(m);return false;
 }
 static void multiply(float *out,const float *a,const float *b){for(int c=0;c<4;c++)for(int r=0;r<4;r++){out[c*4+r]=0;for(int k=0;k<4;k++)out[c*4+r]+=a[k*4+r]*b[c*4+k];}}
 static float pose_amount(const Fighter *f){if(f->action!=LIGHT&&f->action!=HEAVY&&f->action!=CROSS)return 0;float start=attack_startup(f,f->action),end=attack_end(f,f->action),t=f->frame;if(t<start)return -.18f*sinf(t/start*3.14159265f);if(t<=end)return 1;return fmaxf(0,1-(t-end)/(attack_duration(f,f->action)-end));}
 void model_pose(NativeModel *m,const Fighter *f,float yaw,unsigned tick){
+ m->pose_valid=false;
  float world[MODEL_BONES][16],amount=pose_amount(f);bool karate=f->style==KARATE;
  for(unsigned i=0;i<m->bone_count;i++){
   ModelBone *b=&m->bones[i];float x=0,y=0,z=0,dy=0;const char *name=b->name;
@@ -67,9 +93,15 @@ void model_pose(NativeModel *m,const Fighter *f,float yaw,unsigned tick){
   if(b->parent<0)memcpy(world[i],local,sizeof(local));else multiply(world[i],world[b->parent],local);
   multiply(b->skin,world[i],b->inverse);
  }
+ for(unsigned i=0;i<m->unique_count;i++){float *v=m->posed+i*9;deform_vertex(m,m->pose_sources[i],v,v+3,v+6);}m->pose_valid=m->unique_count>0;
 }
-void model_vertex(const NativeModel *m,unsigned index,float p[3],float n[3],float outline[3]){
+static void deform_vertex(const NativeModel *m,unsigned index,float p[3],float n[3],float outline[3]){
  const float *v=m->vertices+index*24;p[0]=p[1]=p[2]=n[0]=n[1]=n[2]=outline[0]=outline[1]=outline[2]=0;
  for(int j=0;j<4;j++){float w=v[17+j];if(w<.00001f)continue;const float *s=m->bones[(unsigned)v[13+j]].skin;
   for(int k=0;k<3;k++){p[k]+=w*(s[k]*v[0]+s[4+k]*v[1]+s[8+k]*v[2]+s[12+k]);n[k]+=w*(s[k]*v[3]+s[4+k]*v[4]+s[8+k]*v[5]);outline[k]+=w*(s[k]*v[21]+s[4+k]*v[22]+s[8+k]*v[23]);}}
+}
+
+void model_vertex(const NativeModel *m,unsigned index,float p[3],float n[3],float outline[3]){
+ if(m->pose_valid){const float *v=m->posed+m->pose_indices[index]*9;memcpy(p,v,3*sizeof(float));memcpy(n,v+3,3*sizeof(float));memcpy(outline,v+6,3*sizeof(float));return;}
+ deform_vertex(m,index,p,n,outline);
 }

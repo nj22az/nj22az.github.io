@@ -1,6 +1,6 @@
 # Ferry Deck Fighters
 
-A separate native 3D fighting-game prototype with **Thao and Thuan**, set on the **Minato Maru car deck** from Johansson World. Primary target: **Anbernic RG CubeXX (Linux/H700)**. Linux desktop is the development target. No browser or JavaScript runtime is required.
+A separate native 3D fighting-game prototype with **Thao and Thuan**, set on the **Minato Maru car deck** from Johansson World. Primary target: **Anbernic RG CubeXX (Linux/H700)**. Its hardware sets the [design budgets](docs/CUBEXX.md). Linux desktop is the development target. No browser or JavaScript runtime is required.
 
 This is the first playable foundation, not a finished game or a certified PortMaster package. The 60 fps hardware target is **not yet measured on a CubeXX**.
 

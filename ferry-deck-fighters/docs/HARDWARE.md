@@ -13,6 +13,10 @@
 
 These observations are not CubeXX performance results. Desktop software rendering rates must not be presented as handheld benchmarks.
 
+## CubeXX design budgets
+
+The hardware defines the scope and budgets now: see [CubeXX design contract](CUBEXX.md). Deformation sharing reduces evaluations from 109,392 to 20,667 per frame while retaining identical geometry and output. Exact cached/reference checks and an unchanged native framebuffer comparison pass; the model checks also pass ASan/UBSan. These are implementation checks, not handheld timing measurements.
+
 ## Required before a device release
 
 1. Record exact firmware name/version, 32/64-bit userspace, SDL2 version, available video backend, EGL/GLES implementation and controller mapping.

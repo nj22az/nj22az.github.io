@@ -35,7 +35,7 @@ typedef struct {float r,g,b;} Colour;
 typedef struct {Vec p;Colour c;float u,v,mode,alpha;Vec normal;} Vertex;
 static NativeModel models[2];static unsigned textures[4];
 static Vertex vertices[MAX_VERTICES];static int used,static_count;
-static unsigned program,buffers[4],triangles;static int ferry_count,ferry_opaque;static int matrix_location;
+static unsigned program,buffers[4],triangles;static int ferry_count,ferry_opaque;static int matrix_location,outline_location;
 static int width,height;static float aspect=1;
 static Colour rgb(unsigned c){return (Colour){((c>>16)&255)/255.f,((c>>8)&255)/255.f,(c&255)/255.f};}
 static Colour shade(Colour c,float s){return (Colour){c.r*s,c.g*s,c.b*s};}
@@ -76,18 +76,20 @@ static void arena(void){
     ellipsoid((Vec){27,-1.4f,-47},(Vec){27,5,9},rgb(0x96ab91),12,4);
 }
 
-static Vec origin;static float yaw,body_drop,fall;
-static Vec local(Vec p){float c=cosf(yaw),s=sinf(yaw);if(fall>0){float y=p.y*cosf(fall)-p.z*sinf(fall),z=p.y*sinf(fall)+p.z*cosf(fall);p.y=y;p.z=z;}return (Vec){origin.x+p.x*c+p.z*s,origin.y+p.y-body_drop,origin.z-p.x*s+p.z*c};}
+static Vec origin;static float yaw,body_drop,fall,heading_cos,heading_sin,fall_cos,fall_sin;
+static Vec local(Vec p){float c=heading_cos,s=heading_sin;if(fall>0){float y=p.y*fall_cos-p.z*fall_sin,z=p.y*fall_sin+p.z*fall_cos;p.y=y;p.z=z;}return (Vec){origin.x+p.x*c+p.z*s,origin.y+p.y-body_drop,origin.z-p.x*s+p.z*c};}
 static void fighter(const Fighter *f,int who,unsigned tick){
     NativeModel *m=&models[who];origin=(Vec){f->x,.045f,f->z};yaw=atan2f(f->fx,f->fz);
     body_drop=0;fall=f->action==DOWN?fminf(f->frame/24.f,1)*1.5f:0;
+    heading_cos=cosf(yaw);heading_sin=sinf(yaw);fall_cos=cosf(fall);fall_sin=sinf(fall);
+    const Vec light_direction=norm((Vec){-.35f,.85f,.55f});
     disk((Vec){f->x,.038f,f->z},.32f,.23f,rgb(0x3e6261));
     model_pose(m,f,yaw,tick);
     for(unsigned i=0;i<m->count;i++){
         if(used>=MAX_VERTICES){fprintf(stderr,"Studio mesh exceeds vertex budget\n");exit(2);}
         float p[3],n[3],ink[3];model_vertex(m,i,p,n,ink);const float *v=m->vertices+i*24;
-        float c=cosf(yaw),s=sinf(yaw);Vec normal=norm((Vec){n[0]*c+n[2]*s,n[1],-n[0]*s+n[2]*c});
-        float l=dot(normal,norm((Vec){-.35f,.85f,.55f}));float light=l>.65f?1:l>.05f?.94f:.84f;
+        float c=heading_cos,s=heading_sin;Vec normal=norm((Vec){n[0]*c+n[2]*s,n[1],-n[0]*s+n[2]*c});
+        float l=dot(normal,light_direction);float light=l>.65f?1:l>.05f?.94f:.84f;
         vertices[used++]=(Vertex){local((Vec){p[0],p[1],p[2]}),{v[6]*light,v[7]*light,v[8]*light},v[10],v[11],v[12],v[9],{ink[0]*c+ink[2]*s,ink[1],-ink[0]*s+ink[2]*c}};
     }
 }
@@ -202,13 +204,13 @@ bool render_init(bool gles,const char *assets){
     unsigned v=compile_shader(0x8b31,vs),f=compile_shader(0x8b30,fs);if(!v||!f)return false;
     program=glCreateProgram();glAttachShader(program,v);glAttachShader(program,f);glBindAttribLocation(program,0,"a_pos");glBindAttribLocation(program,1,"a_col");glBindAttribLocation(program,2,"a_uv");glBindAttribLocation(program,3,"a_mode");glBindAttribLocation(program,4,"a_alpha");glBindAttribLocation(program,5,"a_normal");glLinkProgram(program);
     int ok=0;glGetProgramiv(program,0x8b82,&ok);if(!ok){char log[1024];glGetProgramInfoLog(program,sizeof(log),NULL,log);fprintf(stderr,"Program: %s\n",log);return false;}
-    glDeleteShader(v);glDeleteShader(f);glUseProgram(program);matrix_location=glGetUniformLocation(program,"u_mvp");glGenBuffers(4,buffers);
+    glDeleteShader(v);glDeleteShader(f);glUseProgram(program);matrix_location=glGetUniformLocation(program,"u_mvp");outline_location=glGetUniformLocation(program,"u_outline");glGenBuffers(4,buffers);
     for(unsigned i=0;i<6;i++)glEnableVertexAttribArray(i);
     glEnable(0x0be2);glBlendFunc(0x0302,0x0303);
     glUniform1i(glGetUniformLocation(program,"u_map"),0);glGenTextures(4,textures);
     for(int i=0;i<3;i++){
         glBindTexture(0x0de1,textures[i]);glTexParameteri(0x0de1,0x2801,0x2601);glTexParameteri(0x0de1,0x2800,0x2601);glTexParameteri(0x0de1,0x2802,0x812f);glTexParameteri(0x0de1,0x2803,0x812f);
-        if(i<2){char path[1024];snprintf(path,sizeof(path),"%s/%s.jwf",assets,i?"thuan":"thao");if(!model_load(&models[i],path))return false;NativeModel *m=&models[i];glTexImage2D(0x0de1,0,0x1908,m->width,m->height,0,0x1908,0x1401,m->pixels);}
+        if(i<2){char path[1024];snprintf(path,sizeof(path),"%s/%s.jwf",assets,i?"thuan":"thao");if(!model_load(&models[i],path))return false;NativeModel *m=&models[i];glTexImage2D(0x0de1,0,0x1908,m->width,m->height,0,0x1908,0x1401,m->pixels);free(m->pixels);m->pixels=NULL;printf("%s: %u triangle corners / %u unique deformations\n",i?"Thuan":"Thao",m->count,m->unique_count);}
         else {unsigned char white[4]={255,255,255,255};glTexImage2D(0x0de1,0,0x1908,1,1,0,0x1908,0x1401,white);}
     }
     used=0;arena();static_count=used;upload(buffers[0],0x88e4);
@@ -240,7 +242,7 @@ void render_frame(const Match *m,int player,bool diagnostic){
     for(int i=0;i<2;i++){
         used=0;fighter(&m->fighters[i],i,m->tick);upload(buffers[1],0x88e0);bind(buffers[1]);glBindTexture(0x0de1,textures[i]);
         int shadow=72,opaque=(int)models[i].opaque_count;
-        glEnable(0x0b44);glCullFace(0x0404);glUniform1f(glGetUniformLocation(program,"u_outline"),1);glDrawArrays(4,shadow,opaque);glUniform1f(glGetUniformLocation(program,"u_outline"),0);glDisable(0x0b44);
+        glEnable(0x0b44);glCullFace(0x0404);glUniform1f(outline_location,1);glDrawArrays(4,shadow,opaque);glUniform1f(outline_location,0);glDisable(0x0b44);
         glDrawArrays(4,0,shadow+opaque);glDepthMask(0);glDrawArrays(4,shadow+opaque,used-shadow-opaque);glDepthMask(1);triangles+=used/3+opaque/3;
     }
     used=0;glBindTexture(0x0de1,textures[2]);
