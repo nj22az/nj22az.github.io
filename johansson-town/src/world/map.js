@@ -1,5 +1,5 @@
 import {KITAHAMA,KITAHAMA_LANES} from './kitahama-layout.js';
-import {ISLAND} from './island-plan.js';
+
 import {HARBOUR_PARK_MAIN,HARBOUR_PARK_EXTENSION,HARBOUR_POND,HARBOUR_PARK_ALIASES} from './harbour-park-plan.js';
 import {townMapBounds} from './map-viewport.js';
 import {airportWorld} from './airport-ground.js';
@@ -28,7 +28,7 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],homes=[],people=[],pl
  ctx.fillStyle='#a9cbd1';ctx.fillRect(0,0,w,h);ctx.save();ctx.beginPath();ctx.rect(pad/2,pad/2,w-pad,h-pad);ctx.clip();
  ctx.fillStyle='#e6e5ca';polygon(COASTLINE);polygon(AIRPORT_OUTLINE_WORLD);
  ctx.fillStyle='#b5caa0';for(const [x,z]of headlandPatches)ctx.fillRect(px(x),pz(z+4),4*scale,4*scale);
- ctx.beginPath();ctx.ellipse(px(ISLAND.mountain.x),pz(ISLAND.mountain.z),12*scale,12*scale,0,0,Math.PI*2);ctx.fill();
+
  const [hx,hz]=airportWorld(...TROPIC_PLACES.lookout);ctx.beginPath();ctx.ellipse(px(hx),pz(hz),20*scale,20*scale,0,0,Math.PI*2);ctx.fill();
  ctx.fillStyle='#eddfb8';rect({minX:BEACH.profile[0][0],maxX:BEACH_DRY_EDGE_X,minZ:BEACH.minZ,maxZ:BEACH.maxZ});
  ctx.fillStyle='#b1c997';rect(HARBOUR_PARK_MAIN);rect(HARBOUR_PARK_EXTENSION);

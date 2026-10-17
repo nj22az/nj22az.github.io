@@ -1,5 +1,5 @@
 import {KITAHAMA,KITAHAMA_RESIDENT_HOMES} from './kitahama-layout.js';
-import {FUMOTO} from './fumoto-layout.js';
+
 import {registerHomeLight,setHomeLight,clearHomeLights} from '../render/window-interior.js';
 
 /**
@@ -76,7 +76,7 @@ export function createHomeLights({people=()=>[]}={}){
   const slot=registerHomeLight([p.minX,KITAHAMA.y,p.minZ],[p.maxX,KITAHAMA.y+8,p.maxZ]);
   homes.push({id:p.id,slot,residents:KITAHAMA_RESIDENT_HOMES[p.id]||null,routine:HOME_ROUTINES[p.id]||null});
  }
- for(const p of FUMOTO.plots)homes.push({id:p.id,slot:registerHomeLight([p.minX,FUMOTO.y,p.minZ],[p.maxX,FUMOTO.y+8,p.maxZ]),residents:null,routine:HOME_ROUTINES[p.id]});
+
  for(const [id,lo,hi] of flatBoxes())homes.push({id,slot:registerHomeLight(lo,hi),residents:null,routine:HOME_ROUTINES[id]});
  const state=new Map();
  return {

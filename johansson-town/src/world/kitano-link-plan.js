@@ -1,12 +1,13 @@
+import {GROUND_LAYER} from './ground-layers.js';
 
 /** Mainland access lane ending on the east lawn. Airport travel is by passenger ferry. */
 export const KITANO_ROAD=Object.freeze({
  id:'kitano-road',title:'Kitano Road',
  /** Corners of the centreline (the carriageway's middle), each rounded by its radius. */
  corners:Object.freeze([[-.5,3.3,0],[29.5,3.3,0]].map(Object.freeze)),
- lane:2.5,
+ lane:2.25,
  /** Offsets across the road, positive to the left of eastbound travel (south). */
- section:Object.freeze({north:-2.6,carriageway:2.5,footway:4.25,parapet:.25,kerb:.12}),
+ section:Object.freeze({north:-2.35,carriageway:2.25,footway:4.0,parapet:.25,kerb:.04}),
  /** Where the rise begins and ends, and the crest. Gradients stay at or under 8 %. */
  profile:Object.freeze({riseFrom:Infinity,crest:0,crestFrom:Infinity,crestTo:Infinity,grade:0,blend:0}),
  /** Town 30 km/h, bridge 40 km/h: scaled to the game's compressed distances (m/s). */
@@ -19,7 +20,7 @@ export const KITANO_ROAD=Object.freeze({
  * The running surface is laid this far over whatever it crosses (the lawn, the quarter's
  * paving, the district's slab), clear of each of their own layers.
  */
-export const KITANO_SURFACE_LIFT=.08;
+export const KITANO_SURFACE_LIFT=GROUND_LAYER.lane;
 
 /** Where the bridge stands on its piers: from the foot of the beach to the district edge. */
 export const KITANO_BRIDGE=Object.freeze({id:'kitano-bridge',removed:true,fromX:Infinity,spans:0});

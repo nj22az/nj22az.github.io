@@ -18,7 +18,7 @@ test('the complete island circuit and Main Street residential connection are cle
  const surface=createWalkSurface({...COAST_BOUNDS,base:planHeight});surface.add(world.group);setWalkSurface(surface);
  try{
   assert.deepEqual(COAST_WALK[0],COAST_WALK.at(-1),'the coastal walk closes');
-  assert.ok(COAST_BOUNDS.maxZ<=258,'unused northern land is trimmed');
+  assert.ok(COAST_BOUNDS.maxZ<=95,'only inhabited urban blocks remain');
   for(const path of [{id:'coastal circuit',points:COAST_WALK},...ISLAND_ROUTES.filter(r=>['island-shopping-lane','rainflower-residential-walk','kitahama-west-link'].includes(r.id))]){
    let previous=null;
    for(let i=1;i<path.points.length;i++){

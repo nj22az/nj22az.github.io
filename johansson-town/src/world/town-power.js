@@ -28,7 +28,7 @@ export function buildTownPower(world,{register,onAction,shadows=false}={}){
  // Aoba Radio, up the hill, is fed by buried cable: a line of poles up an empty slope
  // only cluttered the skyline. The coast feeder follows its landward verge, clear
  // of the Kitahama road centre. Rainflower joins the network at its new town frame.
- const coastal=[nearest(42.25,60),pole(50,70,{tel:false}),pole(45.5,79,{tel:false})];for(let i=1;i<coastal.length;i++)link(coastal[i-1],coastal[i]);
+ const coastal=[nearest(42.25,60),pole(44.7,70,{tel:false})];for(let i=1;i<coastal.length;i++)link(coastal[i-1],coastal[i]);
  // Join the remaining existing street circuits at their nearest poles, subdividing long spans.
  const connected=()=>{const set=new Set([root.id]);let changed=true;while(changed){changed=false;for(const s of spans)if(set.has(s.from)!==set.has(s.to)){set.add(s.from);set.add(s.to);changed=true;}}return set;};
  while(connected().size<nodes.length){const reached=connected();let pair=null,d=Infinity;for(const a of nodes.filter(n=>reached.has(n.id)))for(const b of nodes.filter(n=>!reached.has(n.id))){const m=Math.hypot(a.x-b.x,a.z-b.z);if(m<d){d=m;pair=[a,b];}}

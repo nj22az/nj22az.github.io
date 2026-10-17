@@ -1,12 +1,10 @@
+import {coordinatedStreetPatches} from './street-plan.js';
 import {kitahamaLaneAt} from './kitahama-layout.js';
 import {NIGHT_LANE,inDiningLane} from './dining-layout.js';
 import {GROUND} from '../render/ground-palette.js';
-import {RESIDENTIAL} from './residential-layout.js';
 import * as THREE from '../../vendor/three.module.js';
 import {activeRoutes,routeAt,groundHeight} from './layout.js?snappy=1';
-import {MAIN_ROAD} from './main-road.js';
 import {GROUND_LAYER} from './ground-layers.js';
-import {pavedByTerminus} from './bus-station.js';
 
 // Low garden boundaries make the authored walking network legible. Leave every
 // junction open, including routes supplied by the shopping and dining models.
@@ -24,32 +22,9 @@ export function laneEdges(){
  return edges;
 }
 
-// Partition the union of rectangular streets. Each patch belongs to exactly one
-// route: crossing lanes never produce coplanar, overlapping road meshes.
+// All urban paving, including the coastal circuit, has one junction owner.
 export function lanePatches(routes=activeRoutes().slice(3)) {
-  const rects=[];
-  // Harbour Park draws its level, curved walks as ribbons in park.js.
-  for(const route of routes.filter(r=>!r.terrain&&!r.park&&r.id!=='second-pier'&&r.id!=='fujita-shed-circuit')) {
-    const half=route.width/2;
-    for(let i=1;i<route.points.length;i++) {
-      const a=route.points[i-1],b=route.points[i];
-      if(a[0]!==b[0]&&a[1]!==b[1])throw Error('Non-grid lane: '+route.id);
-      rects.push({minX:Math.min(a[0],b[0])-half,maxX:Math.max(a[0],b[0])+half,minZ:Math.min(a[1],b[1])-half,maxZ:Math.max(a[1],b[1])+half,route});
-    }
-  }
-  const xs=[...new Set([-19,19,-8.1,5.75,MAIN_ROAD.pavementWest,MAIN_ROAD.pavementEast,17.5,22.2,RESIDENTIAL.minX,RESIDENTIAL.maxX,NIGHT_LANE.minX,NIGHT_LANE.maxX,...rects.flatMap(r=>[r.minX,r.maxX])])].sort((a,b)=>a-b);
-  const zs=[...new Set([-50,MAIN_ROAD.minZ,MAIN_ROAD.maxZ,RESIDENTIAL.minZ,RESIDENTIAL.maxZ,NIGHT_LANE.minZ,NIGHT_LANE.maxZ,...rects.flatMap(r=>[r.minZ,r.maxZ])])].sort((a,b)=>a-b);
-  const patches=[];
-  for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++) {
-    const x=(xs[i-1]+xs[i])/2,z=(zs[j-1]+zs[j])/2;
-    if(inDiningLane(x,z))continue;
-    if(x>-8.1&&x<5.75&&z>MAIN_ROAD.minZ&&z<MAIN_ROAD.maxZ)continue;
-    if(Math.abs(x)<19&&z>-50&&z<MAIN_ROAD.minZ)continue;
-    // The retired terminus is now part of the continuous town street.
-    const owner=rects.find(r=>x>r.minX&&x<r.maxX&&z>r.minZ&&z<r.maxZ);
-    if(owner)patches.push({x0:xs[i-1],x1:xs[i],z0:zs[j-1],z1:zs[j],surface:owner.route.id==='home-lane'?'residential':owner.route.surface});
-  }
-  return patches;
+ return coordinatedStreetPatches(routes);
 }
 
 export function buildLaneSurfaces(parent,library) {
@@ -57,41 +32,29 @@ export function buildLaneSurfaces(parent,library) {
   edges.forEach((e,i)=>{dummy.position.set(e.x,e.y+e.height/2,e.z);dummy.scale.set(e.w,e.height,e.d);dummy.updateMatrix();boundary.setMatrixAt(i,dummy.matrix);});
   boundary.name='Low garden lane boundaries';boundary.receiveShadow=true;parent.add(boundary);
   const batches=new Map();
-  const quad=(surface,points)=>{
-    if(!batches.has(surface))batches.set(surface,{positions:[],uv:[],indices:[]});
-    const b=batches.get(surface),n=b.positions.length/3;
-    for(const [x,z] of points){b.positions.push(x,groundHeight(x,z)+(kitahamaLaneAt(x,z)?0:GROUND_LAYER.lane),z);b.uv.push(x/4,z/4);}
-    b.indices.push(n,n+2,n+1,n+1,n+2,n+3);
+  const vertexHeight=(surface,x,z)=>{
+    const base=groundHeight(x,z)-(kitahamaLaneAt(x,z)?GROUND_LAYER.lane:0);
+    return base+GROUND_LAYER.lane;
   };
-  // A patch is laid as a grid rather than as one quad, because the ground under it is
-  // not always flat. A single quad takes its height from its four corners and runs
-  // straight between them, while the east lawn beside it follows the ground on a 1.2m
-  // grid -- so over the graded foot of the park mound the grass rose through the middle
-  // of the path and came out as green wedges lying on the paving.
-  //
-  // How finely a patch is cut up follows the ground under it rather than a constant.
-  // Most of this town is dead flat, and there one quad is exactly right; the 30cm grid
-  // that the park's skirt needs costs nothing where nothing is sloping. A fixed 60cm
-  // grid was both -- too coarse at the mound, where the paving still sank 7mm into the
-  // grass, and three thousand triangles of nothing everywhere else.
-  const FINE=.3,LEVEL=.001,PROBES=5;
-  for(const p of lanePatches()){
-    let low=Infinity,high=-Infinity;
-    for(let i=0;i<=PROBES;i++)for(let j=0;j<=PROBES;j++){
-      const h=groundHeight(p.x0+(p.x1-p.x0)*i/PROBES,p.z0+(p.z1-p.z0)*j/PROBES);
-      if(h<low)low=h;if(h>high)high=h;
-    }
-    const cell=high-low<LEVEL?Math.max(p.x1-p.x0,p.z1-p.z0):FINE;
-    const columns=Math.max(1,Math.ceil((p.x1-p.x0)/cell)),rows=Math.max(1,Math.ceil((p.z1-p.z0)/cell));
-    for(let i=0;i<columns;i++)for(let j=0;j<rows;j++){
-      const x0=p.x0+(p.x1-p.x0)*i/columns,x1=p.x0+(p.x1-p.x0)*(i+1)/columns;
-      const z0=p.z0+(p.z1-p.z0)*j/rows,z1=p.z0+(p.z1-p.z0)*(j+1)/rows;
-      quad(p.surface,[[x0,z0],[x1,z0],[x0,z1],[x1,z1]]);
-    }
-  }
+  const triangle=(surface,a,b,c)=>{
+    if(!batches.has(surface))batches.set(surface,{positions:[],uv:[],indices:[]});
+    const batch=batches.get(surface),n=batch.positions.length/3;
+    for(const [x,z] of [a,b,c]){batch.positions.push(x,vertexHeight(surface,x,z),z);batch.uv.push(x/4,z/4);}
+    batch.indices.push(n,n+2,n+1);
+  };
+  // Only graded ground needs subdivision. Flat district lanes stay inexpensive on mobile.
+  const emit=(surface,a,b,c,depth=0)=>{
+    const mid=(p,q)=>[(p[0]+q[0])/2,(p[1]+q[1])/2],ab=mid(a,b),bc=mid(b,c),ca=mid(c,a);
+    const pts=[a,b,c,ab,bc,ca],hs=pts.map(p=>vertexHeight(surface,...p));
+    const longest=Math.max(Math.hypot(a[0]-b[0],a[1]-b[1]),Math.hypot(b[0]-c[0],b[1]-c[1]),Math.hypot(c[0]-a[0],c[1]-a[1]));
+    if(depth<10&&longest>.6&&Math.max(...hs)-Math.min(...hs)>.001){
+      emit(surface,a,ab,ca,depth+1);emit(surface,ab,b,bc,depth+1);emit(surface,ca,bc,c,depth+1);emit(surface,ab,bc,ca,depth+1);
+    }else triangle(surface,a,b,c);
+  };
+  for(const patch of lanePatches())for(let i=1;i<patch.polygon.length-1;i++)emit(patch.surface,patch.polygon[0],patch.polygon[i],patch.polygon[i+1]);
   for(const [surface,b] of batches){
     const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(b.positions,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(b.uv,2));geometry.setIndex(b.indices);geometry.computeVertexNormals();
-    const material=surface==='residential'?new THREE.MeshStandardMaterial({color:GROUND.concrete,roughness:.94}):library.worldMaterial(surface==='wood'?'timber':surface==='asphalt'?'asphalt':'paving',surface==='wood'?0xc8c1af:surface==='asphalt'?GROUND.asphalt:GROUND.pavers).clone();material.side=THREE.DoubleSide;
+    const material=surface==='concrete'?new THREE.MeshStandardMaterial({color:GROUND.concrete,roughness:.94}):library.worldMaterial(surface==='wood'?'timber':surface==='asphalt'?'asphalt':'paving',surface==='wood'?0xc8c1af:surface==='asphalt'?GROUND.asphalt:GROUND.pavers).clone();material.side=THREE.DoubleSide;
     const mesh=new THREE.Mesh(geometry,material);mesh.name='grid-lanes:'+surface;mesh.receiveShadow=true;parent.add(mesh);
   }
 }
