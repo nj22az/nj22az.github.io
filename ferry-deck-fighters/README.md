@@ -18,6 +18,23 @@ This is the first playable foundation, not a finished game or a certified PortMa
 - Fixed 60 Hz combat simulation independent of rendering cadence.
 - GLES 2.0 compatible vertex-colour renderer. Static arena geometry is uploaded once; fighters use streaming batches with skinning, alpha accessories and source-style ink outlines; the UI uses its own batch. The original face and garment textures are retained in per-character atlases. No network requests or runtime asset downloads.
 
+## Download and install the demo
+
+[Download the portable Steam Deck / x86-64 Linux demo](https://raw.githubusercontent.com/nj22az/nj22az.github.io/be2f8cc77231f5fcc0532d756856299d7303971c/ferry-deck-fighters/demo/Ferry-Deck-Fighters-Linux-Demo.tar.gz).
+
+For a user-account installation on Steam Deck, open Konsole in Desktop Mode:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/nj22az/nj22az.github.io/codex/ferry-deck-fighters/install-ferry-demo.sh -o /tmp/install-ferry-demo.sh
+sh /tmp/install-ferry-demo.sh
+```
+
+The installer verifies a pinned SHA-256 download, installs under your user data folder and creates a **Ferry Deck Fighters** application entry. No build tools or administrator rights are needed. In Steam, choose **Add a Game → Add a Non-Steam Game**, select that entry and leave forced Proton compatibility disabled. Choose a Gamepad controller layout, then return to Gaming Mode. If it is not listed, Browse to the launcher path printed by the installer.
+
+The portable archive contains a glibc 2.17 x86-64 executable, both characters, the ferry arena, a launcher and instructions. Linux SDL2, zlib and GLES2 drivers must be available. The launcher records startup failures under `~/.local/state/ferry-deck-fighters/latest.log` (or XDG_STATE_HOME). It has been tested after extraction and through a clean installation in this Linux environment, including repeat installation and checksum rejection; physical Steam Deck acceptance remains outstanding.
+
+This download is for Steam Deck and Linux PCs. The ARM64 CubeXX build still requires firmware-specific packaging. Source build instructions follow.
+
 ## Build and run on Linux desktop
 
 Requires a C99 compiler, make and the SDL2 runtime (`libSDL2-2.0.so.0`) and zlib (`libz.so.1`) for the compressed Studio assets. SDL2 development headers are not required: the small platform adapter loads a narrow documented SDL2 ABI dynamically.
