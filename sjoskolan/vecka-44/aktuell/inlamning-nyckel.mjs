@@ -5,7 +5,7 @@ export const NYCKEL = {
   "version": 1,
   "vecka": 44,
   "salt": "c0b8414f720e5f9531dc55df73869dd1",
-  "poster": {"EL-000823": 2, "EL-000824": 4, "EL-000825": 2, "EL-000826": 4},
+  "poster": {"EL-000823": 2, "EL-000824": 4, "EL-000825": 2, "EL-000826": 5},
   "falt": {
     "823a-it": {"typ":"val","h":["e46dde46d30140a7"]},
     "823a-tns": {"typ":"val","h":["da70ae085d32fea4"]},
