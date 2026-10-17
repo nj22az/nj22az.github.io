@@ -1,0 +1,9 @@
+.ferry-install{margin:1.5rem 0;padding:clamp(1.1rem,3vw,2rem);border:1px solid #496c70;border-radius:16px;background:#173640;color:#f9f0d6;min-width:0}
+.ferry-install h3{font-size:1.6rem;margin:.35rem 0 .65rem}.ferry-install p{line-height:1.65}
+.ferry-install a{color:#f4ce73;text-decoration:underline;text-underline-offset:.18em}.ferry-install a:hover{color:#fff}
+.ferry-kicker{font-size:.75rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#bbd5cc;margin:0}
+.ferry-command{margin:1rem 0 0;min-width:0}.ferry-command pre{margin:0;padding:1rem;border:1px solid #5b777a;border-radius:9px;background:#102a32;color:#fff;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.85rem;line-height:1.75}
+.ferry-command code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:inherit;color:inherit;background:transparent}
+.ferry-command button{margin-top:.8rem;padding:.7rem 1rem;border:1px solid #f4ce73;border-radius:7px;background:#f4ce73;color:#173640;font:700 .95rem system-ui;cursor:pointer;min-height:44px}
+.ferry-command button:hover{background:#fff0bd}.ferry-command button:focus-visible,.ferry-install a:focus-visible{outline:3px solid #fff;outline-offset:4px}
+.ferry-copy-status{min-height:1.5em;margin:.5rem 0 0;font-size:.9rem;color:#dcebe5}.ferry-small{font-size:.85rem;color:#c3d7ce}

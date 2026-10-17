@@ -29,6 +29,8 @@
   <script src="/assets/js/office-port.js?v=video-3" defer></script>
   <script src="/assets/js/shopify-book-price.js" defer></script>
   <link rel="stylesheet" href="/css/office-blog.css?v=1">
+  <link rel="stylesheet" href="/css/ferry-demo.css?v=1">
+  <script src="/assets/js/ferry-demo-copy.js?v=1" defer></script>
 </head>
 <body class="office-home">
 
@@ -73,6 +75,17 @@
         </div><p id="project-count" role="status" aria-live="polite" aria-atomic="true">5 projects to explore</p></div>
         <div id="project-grid" class="px-grid" data-filter="all"></div>
         <noscript><div class="px-fallback"><p>Explore the projects:</p><ul><li><a href="/johansson-town/">Johansson World — explore an Okinawan harbour town</a></li><li><a href="/maintenance-demo/">Maintenance Desk — try an equipment maintenance programme</a></li><li><a href="/sjoskolan/">Sjöskolan — Swedish electrical engineering course</a></li><li><a href="/elteknik/">Elteknik och ellära — textbook and free sample</a></li><li><a href="/stepbuddy/">StepWise — step-by-step calculator</a></li></ul></div></noscript>
+
+        <aside class="ferry-install" aria-labelledby="ferry-demo-title">
+          <p class="ferry-kicker">Native game demo · Steam Deck &amp; Linux</p>
+          <h3 id="ferry-demo-title"><a href="/ferry-deck-fighters/">Ferry Deck Fighters</a></h3>
+          <p>Thao and Thuan on the Minato Maru car deck. On Steam Deck, open Konsole in Desktop Mode and paste this command:</p>
+          <div class="ferry-command"><pre><code>curl -fsSL https://nj22az.github.io/ferry-deck-fighters/install.sh -o /tmp/ferry-demo.sh &&
+sh /tmp/ferry-demo.sh</code></pre><button type="button" data-ferry-copy>Copy install command</button></div>
+          <p class="ferry-copy-status" role="status" aria-live="polite"></p>
+          <p class="ferry-small">Installs in your user account. No administrator password or compilation required.</p>
+          <p><a href="/ferry-deck-fighters/">Download demo, Steam setup and platform support →</a></p>
+        </aside>
         <div class="px-connections"><div><h3>Beyond the projects</h3><p>Source code and professional connections.</p></div><div id="project-channels" class="px-channel-links"></div></div>
       </div>
     </section>
@@ -440,3 +453,4 @@
   <script src="/assets/js/blog-feed.js?v=2"></script>
 </body>
 </html>
+
