@@ -44,7 +44,7 @@ export function completeFestivalStage(state,id){
  const index=FESTIVAL_STAGES.indexOf(stage);if(FESTIVAL_STAGES.slice(0,index).some(s=>!progress.completed.includes(s.id)&&!progress.watched.includes(s.id)))return false;
  progress.completed.push(id);state.yen=Math.min(999999,(Number(state.yen)||0)+stage.reward);return true;
 }
-const styleOf=name=>name==='Thao'?'kickboxing':name==='Nhung'?'boxing':name==='Thuan'?'karate':'boxing';
+const styleOf=name=>name==='Thao'?'kickboxing':name==='Nhung'?'boxing':name==='Thuan'?'karate':FESTIVAL_STAGES.find(s=>s.opponent===name)?.style||'boxing';
 const MOVES={boxing:{jab:[5,8,20,7,.85],kick:[16,19,39,13,1.1]},kickboxing:{jab:[6,9,22,8,.9],kick:[15,20,40,16,1.25]},karate:{jab:[9,12,29,10,1],kick:[18,22,44,18,1.35]},sumo:{jab:[12,16,34,12,1.05],kick:[22,25,48,19,1.2]}};
 export function createFestivalBout(hero,stage,{spectator=false,tournament=false}={}){
  if((!spectator&&!tournament&&!FESTIVAL_ALLIES.includes(hero))||!FESTIVAL_STAGES.some(s=>s.id===stage.id)||!canFestivalFight(hero,stage.opponent))throw Error('This encounter is not permitted');
