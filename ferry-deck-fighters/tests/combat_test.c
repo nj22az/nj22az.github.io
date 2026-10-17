@@ -6,7 +6,7 @@
 
 static const Input none={0};
 static Match setup(void){Match m;match_init(&m);match_start(&m);for(int i=0;i<90;i++)match_step(&m,none,none);assert(m.phase==FIGHT);return m;}
-static void close_range(Match *m){m->fighters[0].x=-.4f;m->fighters[1].x=.4f;}
+static void close_range(Match *m){m->fighters[0].x=-.32f;m->fighters[1].x=.32f;}
 static void step(Match *m,int n,Input a,Input b){for(int i=0;i<n;i++)match_step(m,a,b);}
 int main(void){
     Match m=setup();close_range(&m);

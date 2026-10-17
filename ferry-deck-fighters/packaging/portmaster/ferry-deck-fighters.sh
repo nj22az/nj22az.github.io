@@ -7,4 +7,4 @@ if [ ! -x ./ferry-deck-fighters.aarch64 ]; then
     echo 'Missing executable: ferry-deck-fighters.aarch64' >&2
     exit 1
 fi
-exec ./ferry-deck-fighters.aarch64 --gles --fullscreen "$@"
+exec ./ferry-deck-fighters.aarch64 --assets ../assets/characters --gles --fullscreen "$@"

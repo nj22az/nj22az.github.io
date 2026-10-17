@@ -16,11 +16,11 @@ This is the first playable foundation, not a finished game or a certified PortMa
 - Keyboard and SDL2 standard controller input, controller reconnection and pause on focus loss.
 - Small synthesised hit/block sounds; audio is optional.
 - Fixed 60 Hz combat simulation independent of rendering cadence.
-- GLES 2.0 compatible vertex-colour renderer. Static arena geometry is uploaded once; fighters and UI use two streaming batches. No textures, network requests, runtime asset downloads or shader-heavy effects.
+- GLES 2.0 compatible vertex-colour renderer. Static arena geometry is uploaded once; fighters use streaming batches with skinning, alpha accessories and source-style ink outlines; the UI uses its own batch. The original face and garment textures are retained in per-character atlases. No network requests or runtime asset downloads.
 
 ## Build and run on Linux desktop
 
-Requires a C99 compiler, make and the SDL2 runtime (`libSDL2-2.0.so.0`). SDL2 development headers are not required: the small platform adapter loads a narrow documented SDL2 ABI dynamically.
+Requires a C99 compiler, make and the SDL2 runtime (`libSDL2-2.0.so.0`) and zlib (`libz.so.1`) for the compressed Studio assets. SDL2 development headers are not required: the small platform adapter loads a narrow documented SDL2 ABI dynamically.
 
 ```sh
 make
@@ -72,8 +72,11 @@ Pillow is used only by the screenshot tool, not by the game.
 
 ## Source relationship and limits
 
-The character palettes, clothing and distinguishing features were transcribed from `johansson-town/src/avatars/cast.js` at commit `0ca25b7dce3beef58ab1fd5cb84ba1629c032157`. These are new lightweight native interpretations; the exact World meshes, rig and wardrobe are not yet exported. The shared character export pipeline is a next step.
+The fighter assets are exported by **Johansson Studio**, using the same `recipeFor` and `buildAvatar` code as World. The reconstructed C characters have been removed. Exact source mesh positions, normals, UVs, skin weights, 28-bone skeletons, painted faces, garment textures and separate glasses are preserved in the JWF3 files. Lighting, camera and combat animation are native, so screenshots are not expected to be pixel-identical to Studio portraits.
 
+In Studio, use **Files → Export native fighter** to download the selected character as `.jwf`. The exporter is `avatar-creator/native-export.js`. The game can load uncompressed `.jwf` files or the included losslessly compressed `.jwf.gz` assets. `assets/characters/manifest.json` records recipes, source commit and SHA-256 hashes of the uncompressed exports.
+
+The committed exports were generated in a real browser using Studio's exporter. `tools/verify-studio.cjs` regenerates the exports and Studio reference portraits, then verifies the actual Files download button. `tools/export-studio.mjs` is an optional Node/canvas build route. Run `make test` for both combat and model checks. [Studio / native comparison](screenshots/Ferry_Deck_Fighters_Studio_Comparison.png).
 The ship dimensions and arrangement follow `johansson-town/src/world/ferry-model.js`: 34.5 x 8.4 m, side casings ending at station 20 m, bow houses beginning at station 30 m, a 4.6 m bow ramp and red/white vehicle barrier at station 29.3 m. The combat origin is station 24 m. The native ferry scene is a simplified recreation, with an added sparring rectangle, not an engineering model or a transfer of the entire ferry.
 
-Open work: exact character asset transfer, animation polish, hand/hit-volume alignment, target controller mapping, CubeXX firmware packaging, device profiling, audio-device verification, throws/combos, accessibility settings and additional arenas. No main website/game files are modified by this project.
+Open work: animation polish, hand/hit-volume alignment, target controller mapping, CubeXX firmware packaging, device profiling, audio-device verification, throws/combos, accessibility settings and additional arenas. Studio gains the reusable native export action; World character definitions remain shared.

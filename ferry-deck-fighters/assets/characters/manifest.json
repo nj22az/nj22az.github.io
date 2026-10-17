@@ -1,0 +1,325 @@
+{
+  "format": "Johansson Studio native fighters",
+  "version": 3,
+  "sourceCommit": "0ca25b7dce3beef58ab1fd5cb84ba1629c032157",
+  "exporter": "avatar-creator/native-export.js",
+  "browser": "Chromium 134",
+  "characters": [
+    {
+      "recipe": {
+        "v": 1,
+        "name": "Thao",
+        "age": "adult",
+        "body": {
+          "height": 0.44,
+          "build": 0.3,
+          "proportion": "classic",
+          "silhouette": "feminine",
+          "skin": "#ecc6a0"
+        },
+        "head": {
+          "size": 0.46,
+          "shape": 0.4,
+          "form": "oval",
+          "jaw": 0.3,
+          "cheeks": 0.4,
+          "roundness": 0
+        },
+        "hair": {
+          "style": "ponytail",
+          "colour": "#1c1714",
+          "flip": false,
+          "length": 0,
+          "volume": 0.5,
+          "tieColour": "#f4f1ea"
+        },
+        "eyes": {
+          "style": "almond",
+          "colour": "#2a1d16",
+          "size": 0.5,
+          "width": 0.5,
+          "spacing": 0.5,
+          "height": 0.5,
+          "tilt": 0.55
+        },
+        "brows": {
+          "style": "straight",
+          "colour": "#1c1714",
+          "size": 0.45,
+          "spacing": 0.5,
+          "height": 0.5,
+          "tilt": 0.42
+        },
+        "nose": {
+          "style": "button",
+          "size": 0.35,
+          "height": 0.5,
+          "x": 0.5
+        },
+        "mouth": {
+          "style": "flat",
+          "colour": "#b8544a",
+          "size": 0.42,
+          "width": 0.5,
+          "height": 0.5,
+          "x": 0.5
+        },
+        "glasses": {
+          "style": "none",
+          "enabled": true,
+          "colour": "#2b2b2b",
+          "size": 0.5,
+          "height": 0.5
+        },
+        "facial": {
+          "colour": "#1c1714",
+          "size": 0.5,
+          "height": 0.5,
+          "width": 0.5,
+          "paint": "none",
+          "moustache": "none",
+          "beard": "none",
+          "style": "none"
+        },
+        "blush": 0.2,
+        "freckles": false,
+        "mole": false,
+        "wrinkles": 0,
+        "moleSpot": {
+          "x": 0.77,
+          "height": 0.33,
+          "size": 0.5
+        },
+        "marks": {
+          "forehead": false,
+          "worry": false,
+          "frown": false,
+          "lids": false,
+          "bags": false,
+          "crowsfeet": false,
+          "smilelines": false,
+          "cheeks": false,
+          "dimples": false,
+          "cleft": false,
+          "stubble": false,
+          "rosy": false,
+          "cocked": false,
+          "blushing": false
+        },
+        "outfit": {
+          "top": "tee",
+          "topColour": "#f4f1ea",
+          "pattern": "none",
+          "bottom": "shorts",
+          "bottomColour": "#7fb0d8",
+          "bottomPattern": "none",
+          "footwear": "sandals",
+          "shoes": "#f4f1ea",
+          "hat": "none",
+          "hatColour": "#f4f1ea",
+          "accent": "#7fb0d8",
+          "belt": "none",
+          "beltColour": "#16171b",
+          "number": 0
+        },
+        "accessories": {
+          "earrings": "studs",
+          "neckwear": "none",
+          "colour": "#e0b93a",
+          "necklaceColour": "#e0b93a",
+          "pin": false
+        },
+        "swim": {
+          "colour": "#2f5f9e",
+          "bath": "towel"
+        },
+        "profile": {
+          "pace": 0.7,
+          "talk": 0.85,
+          "show": 0.4,
+          "outlook": 0.45,
+          "pitch": 0.5,
+          "speed": 0.5,
+          "timbre": "auto",
+          "softness": 0.5,
+          "vibrato": 0,
+          "month": 10,
+          "day": 24,
+          "favourite": "#3fa0c8",
+          "catchphrase": ""
+        }
+      },
+      "vertices": 49914,
+      "opaqueVertices": 49914,
+      "bones": 28,
+      "height": 1.5536,
+      "format": "Johansson Studio native fighter",
+      "version": 3,
+      "texture": {
+        "width": 512,
+        "height": 1024
+      },
+      "source": "buildAvatar + recipeFor (World and Studio shared)",
+      "name": "Thao",
+      "sha256": "20d6b5cc06760d6a7337f1309b2e1e381b1028cf46c2a5197e94ddaf406cd710"
+    },
+    {
+      "recipe": {
+        "v": 1,
+        "name": "Thuan",
+        "age": "adult",
+        "body": {
+          "height": 0.36,
+          "build": 0.35,
+          "proportion": "classic",
+          "silhouette": "feminine",
+          "skin": "#e8bd9e"
+        },
+        "head": {
+          "size": 0.48,
+          "shape": 0.53,
+          "form": "oval",
+          "jaw": 0.48,
+          "cheeks": 0.72,
+          "roundness": 0.72
+        },
+        "hair": {
+          "style": "braids",
+          "colour": "#1c1714",
+          "flip": false,
+          "length": 0,
+          "volume": 0.5,
+          "tieColour": "#f4d23c"
+        },
+        "eyes": {
+          "style": "bright",
+          "colour": "#2a1d16",
+          "size": 0.8,
+          "width": 0.64,
+          "spacing": 0.5,
+          "height": 0.48,
+          "tilt": 0.53
+        },
+        "brows": {
+          "style": "arched",
+          "colour": "#2a1d16",
+          "size": 0.51,
+          "spacing": 0.5,
+          "height": 0.55,
+          "tilt": 0.5
+        },
+        "nose": {
+          "style": "button",
+          "size": 0.27,
+          "height": 0.5,
+          "x": 0.5
+        },
+        "mouth": {
+          "style": "soft",
+          "colour": "#a94f4b",
+          "size": 0.5,
+          "width": 0.57,
+          "height": 0.5,
+          "x": 0.5
+        },
+        "glasses": {
+          "style": "round",
+          "enabled": true,
+          "colour": "#e06a7a",
+          "size": 0.5,
+          "height": 0.5
+        },
+        "facial": {
+          "colour": "#1c1714",
+          "size": 0.5,
+          "height": 0.5,
+          "width": 0.5,
+          "paint": "none",
+          "moustache": "none",
+          "beard": "none",
+          "style": "none"
+        },
+        "blush": 0.38,
+        "freckles": false,
+        "mole": false,
+        "wrinkles": 0,
+        "moleSpot": {
+          "x": 0.77,
+          "height": 0.33,
+          "size": 0.5
+        },
+        "marks": {
+          "forehead": false,
+          "worry": false,
+          "frown": false,
+          "lids": false,
+          "bags": false,
+          "crowsfeet": false,
+          "smilelines": false,
+          "cheeks": false,
+          "dimples": false,
+          "cleft": false,
+          "stubble": false,
+          "rosy": false,
+          "cocked": false,
+          "blushing": false
+        },
+        "outfit": {
+          "top": "blouse",
+          "topColour": "#f4d23c",
+          "pattern": "flowers",
+          "bottom": "trousers",
+          "bottomColour": "#27304d",
+          "bottomPattern": "none",
+          "footwear": "sneakers",
+          "shoes": "#f4f1ea",
+          "hat": "none",
+          "hatColour": "#f4f1ea",
+          "accent": "#f4d23c",
+          "belt": "none",
+          "beltColour": "#16171b",
+          "number": 0
+        },
+        "accessories": {
+          "earrings": "studs",
+          "neckwear": "pendant",
+          "colour": "#e0b93a",
+          "necklaceColour": "#e0b93a",
+          "pin": false
+        },
+        "swim": {
+          "colour": "#e98aa6",
+          "bath": "towel"
+        },
+        "profile": {
+          "pace": 0.7,
+          "talk": 0.35,
+          "show": 0.75,
+          "outlook": 0.75,
+          "pitch": 0.5,
+          "speed": 0.5,
+          "timbre": "auto",
+          "softness": 0.5,
+          "vibrato": 0,
+          "month": 3,
+          "day": 15,
+          "favourite": "#3fa0c8",
+          "catchphrase": ""
+        }
+      },
+      "vertices": 59478,
+      "opaqueVertices": 57558,
+      "bones": 28,
+      "height": 1.5184000000000002,
+      "format": "Johansson Studio native fighter",
+      "version": 3,
+      "texture": {
+        "width": 512,
+        "height": 1024
+      },
+      "source": "buildAvatar + recipeFor (World and Studio shared)",
+      "name": "Thuan",
+      "sha256": "33913ff188fccadae8aeecc6b9d51098b87b3734518c0d15054a3b75c2c0c5c6"
+    }
+  ]
+}

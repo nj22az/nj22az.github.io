@@ -8,9 +8,10 @@
 
 static void help(void){puts("Ferry Deck Fighters\n  --gles         Request OpenGL ES 2.0 (handheld)\n  --fullscreen   Fullscreen square viewport\n  --demo         AI versus AI\n  --frames N     Exit after N rendered frames\n  --capture PATH Save final native framebuffer as PPM\n  --pose NAME    title, arena, jab, kick, guard, victory\n  --size N       Square window size (default 720)\nControls: WASD/stick move, J/X jab, K/Y kick, L/A guard, Space/B dodge\nEnter/Start start/pause, Escape/Back pause/title, Tab/L1 swap, T/R1 training");}
 int main(int argc,char **argv){
-    bool gles=false,fullscreen=false,demo=false;int frames=0,size=720;const char *capture=NULL,*pose=NULL;
+    bool gles=false,fullscreen=false,demo=false;int frames=0,size=720;const char *capture=NULL,*pose=NULL,*assets="assets/characters";
     for(int i=1;i<argc;i++){
-        if(!strcmp(argv[i],"--gles"))gles=true;else if(!strcmp(argv[i],"--fullscreen"))fullscreen=true;else if(!strcmp(argv[i],"--demo"))demo=true;
+        if(!strcmp(argv[i],"--assets")&&i+1<argc)assets=argv[++i];
+        else if(!strcmp(argv[i],"--gles"))gles=true;else if(!strcmp(argv[i],"--fullscreen"))fullscreen=true;else if(!strcmp(argv[i],"--demo"))demo=true;
         else if(!strcmp(argv[i],"--frames")&&i+1<argc)frames=atoi(argv[++i]);
         else if(!strcmp(argv[i],"--size")&&i+1<argc)size=atoi(argv[++i]);
         else if(!strcmp(argv[i],"--capture")&&i+1<argc)capture=argv[++i];
@@ -20,15 +21,15 @@ int main(int argc,char **argv){
     }
     if(size<240||size>2160||frames<0){fprintf(stderr,"Invalid size/frame count\n");return 2;}
     if(!platform_open(gles,fullscreen,size)){fprintf(stderr,"Platform: %s\n",platform_error());platform_close();return 1;}
-    if(!render_init(gles)){platform_close();return 1;}
+    if(!render_init(gles,assets)){platform_close();return 1;}
     Match m;match_init(&m);int player=0,count=0;Controls last={0};
     if(demo||pose){match_start(&m);m.phase=FIGHT;}
     if(pose){
         if(!strcmp(pose,"title"))m.phase=TITLE;
         else if(!strcmp(pose,"arena")){}
-        else if(!strcmp(pose,"jab")){m.fighters[0].x=-.46f;m.fighters[1].x=.46f;m.fighters[0].action=LIGHT;m.fighters[0].frame=8;}
-        else if(!strcmp(pose,"kick")){m.fighters[0].x=-.62f;m.fighters[1].x=.62f;m.fighters[1].action=HEAVY;m.fighters[1].frame=18;}
-        else if(!strcmp(pose,"guard")){m.fighters[0].x=-.46f;m.fighters[1].x=.46f;m.fighters[1].guard=true;}
+        else if(!strcmp(pose,"jab")){m.fighters[0].x=-.32f;m.fighters[1].x=.32f;m.fighters[0].action=LIGHT;m.fighters[0].frame=8;}
+        else if(!strcmp(pose,"kick")){m.fighters[0].x=-.43f;m.fighters[1].x=.43f;m.fighters[1].action=HEAVY;m.fighters[1].frame=18;}
+        else if(!strcmp(pose,"guard")){m.fighters[0].x=-.32f;m.fighters[1].x=.32f;m.fighters[1].guard=true;}
         else if(!strcmp(pose,"victory")){m.phase=RESULT;m.winner=0;m.fighters[0].wins=2;m.fighters[1].hp=0;m.fighters[1].action=DOWN;m.fighters[1].frame=30;}
         else {fprintf(stderr,"Unknown pose: %s\n",pose);render_close();platform_close();return 2;}
     }

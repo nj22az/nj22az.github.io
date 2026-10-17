@@ -7,7 +7,7 @@ static uint32_t random_u32(Match *m){uint32_t x=m->rng;x^=x<<13;x^=x>>17;x^=x<<5
 int attack_startup(Action a){return a==LIGHT?7:17;}
 int attack_end(Action a){return a==LIGHT?10:21;}
 int attack_duration(Action a){return a==LIGHT?23:43;}
-float attack_reach(Action a){return a==LIGHT?1.02f:1.42f;}
+float attack_reach(Action a){return a==LIGHT?.72f:.90f;}
 static bool attacking(Action a){return a==LIGHT||a==HEAVY;}
 
 static void reset_round(Match *m){
@@ -109,11 +109,11 @@ Input match_ai(Match *m,int who){
     Input in={0};if(m->phase!=FIGHT||m->training)return in;
     Fighter *f=&m->fighters[who],*o=&m->fighters[1-who];
     float dx=o->x-f->x,dz=o->z-f->z,d=sqrtf(dx*dx+dz*dz);
-    if(d>.88f){in.x=dx/fmaxf(d,.01f)*.72f;in.z=dz/fmaxf(d,.01f)*.72f;}
+    if(d>.63f){in.x=dx/fmaxf(d,.01f)*.72f;in.z=dz/fmaxf(d,.01f)*.72f;}
     // Decisions occur on a fixed cadence; no input reading or instantaneous counters.
     unsigned rhythm=(m->tick+who*13)%47;
     in.guard=attacking(o->action)&&o->frame>4&&rhythm<25;
-    if(rhythm==0&&d<1.36f){if(random_u32(m)%3)in.light=true;else in.heavy=true;}
+    if(rhythm==0&&d<.90f){if(d<=.72f&&random_u32(m)%3)in.light=true;else in.heavy=true;}
     if(rhythm==33&&d<.72f){in.dodge=true;in.x=-dx/fmaxf(d,.01f);in.z=.5f;}
     return in;
 }
