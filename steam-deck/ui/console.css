@@ -112,3 +112,5 @@
 #desktopIdentity { position:fixed; left:24px; top:76px; z-index:900; color:#fff4da; padding:5px 10px; border-radius:6px; background:#173c38e8; font:600 15px/1.4 system-ui; pointer-events:none }
 #desktopIdentity[hidden],.desktop-hide-hud #desktopIdentity { display:none!important }
 #desktopMenu .console-roster button { overflow-wrap:anywhere }
+.linux-console.festival-active #festivalHUD { top:92px!important }
+.festival-active #desktopIdentity { display:none!important }

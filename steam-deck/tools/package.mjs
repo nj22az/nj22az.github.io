@@ -5,7 +5,7 @@ import {execFileSync} from 'node:child_process';
 const app=resolve(import.meta.dirname,'..'),repo=resolve(app,'..');
 const site=join(app,'site');rmSync(site,{recursive:true,force:true});mkdirSync(site,{recursive:true});
 const omit=new Set(['node_modules','.git','tests','tools','scripts','art','briefs','output']);
-for(const dir of ['johansson-town','avatar-creator','thuans-storage','form-3d-studio','assets','css']){
+for(const dir of ['johansson-town','avatar-creator','form-3d-studio','assets','css']){
  if(existsSync(join(repo,dir)))cpSync(join(repo,dir),join(site,dir),{recursive:true,filter:source=>!omit.has(basename(source))&&!basename(source).startsWith('.')});
 }
 for(const name of ['LICENSE.md','THIRD_PARTY_NOTICES.md','config.js','shared.js','styles.css','theme-bootstrap.js']){

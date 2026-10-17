@@ -82,8 +82,6 @@ import {createContextRail} from './interact/context-actions.js';
 import {createTownSky} from './render/sky.js';
 import {createIndoorCeilings} from './render/indoor-camera.js';
 import {createSpawnScene} from './render/spawn-scene.js';
-import {bicycleRiderFit,bicycleBlocked} from './world/bicycle-fit.js';
-import {createBicycleController} from './world/bicycle-controller.js';
 import {conversationViewport} from './conversation-layout.js';
 import {createBalloonPresenter,projectBalloonPerson,balloonViewport} from './dialogue/world-balloon.js';
 import {portraitConversationShot} from './dialogue/conversation-framing.js';
@@ -403,7 +401,6 @@ let followRealClock=true;
 // something is picked up.
 let itemViewer=null;
 let inspector=null,content=null,castAI=null,hands=null,fists=null,storeService=null,ramenPlayerService=null,venueService=null,izakayaTV=null,seated=false,parkSeat=null,touchRunning=false;
-let bicycleRide=null;
 // PURPOSE BRIEF soft-guides: calendar dayKey soft quests (stand Form 3 / quay / notice).
 // Contextual touch-control state. Declared with the rest of the player state because
 // starting play stamps the touch clock, and that can happen while this module runs.
@@ -498,10 +495,10 @@ let pocket=null,pocketWasThird=null;
 // This game's own player (the key fixed when the town started, as the Studio hand-off uses), never another tab's.
 const pocketModel=()=>{let r=null;try{r=decodeRecipe(localStorage.getItem(studioKeys.player));}catch{}return pocketModelFor(r||decodeRecipe(activities?.state?.avatarRecipe));};
 const pocketSight=new THREE.Vector3(),pocketBox=new THREE.Box3(),pocketUp=new THREE.Vector3(0,.1,0);
-function pocketCanRaise(){return !activeRoomLayout?.fixedCamera&&started&&!catchingUp&&!roomLoading&&!photoLoading&&!photoStudio?.active&&!inspector?.active&&!itemViewer?.active&&!activities?.paused&&!cameraControls.active&&!bicycleRide&&!islandPlay?.cinematic&&$('#directory').classList.contains('hidden');}
+function pocketCanRaise(){return !activeRoomLayout?.fixedCamera&&started&&!catchingUp&&!roomLoading&&!photoLoading&&!photoStudio?.active&&!inspector?.active&&!itemViewer?.active&&!activities?.paused&&!cameraControls.active&&!islandPlay?.cinematic&&$('#directory').classList.contains('hidden');}
 function raisePocket(){
  if(pocket?.raised)return true;
- if(!pocketCanRaise()){if(bicycleRide)say('Both hands are on the handlebars.',2);else if(activeRoomLayout?.fixedCamera)say('The camera stays in the pocket at the dinner table.',2);return false;}
+ if(!pocketCanRaise()){if(activeRoomLayout?.fixedCamera)say('The camera stays in the pocket at the dinner table.',2);return false;}
  spawnScene?.cancel('camera');resetInput();
  pocket??=createPocketViewfinder({source:canvas,count:()=>activities.album.length,model:pocketModel,onShoot:keepPocketPhoto,onLower:()=>{
   // Back to the view he had: behind him again if that is where he was.
@@ -598,7 +595,7 @@ function advanceWeather(){
  const next=nextWeather(weatherKind);if(next!==weatherKind)applyWeather(next,{announce:true});
 }
 
- const world=createTown({scene:town,sites:SITES,mobile,shadows,kitano:'distant',maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:s=>crossThreshold(()=>enterRoom(s)),getPlayerPosition:()=>current?null:player.position,onAction:(...args)=>{if(islandPlay?.action(...args))return;if(args[0]==='ferry-ladder'){ferryLadder(args[1]);return;}if(args[0]==='plant'){plantStation(args[1]);return;}if(args[0]==='bicycle'){startBicycleRide(args[1]);return;}if(args[0]==='dungeon'){enterDungeon();return;}if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person?.g.userData.sleeping){say(args[1]+' is sleeping. You can stay and watch the morning routine.',4);return;}if(person?.g.userData.waking||person?.g.userData.roomTransition){say(args[1]+' is '+person.g.userData.activity+'.',3);return;}if(person){person.g.userData.facePlayerUntil=performance.now()+1600;characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
+ const world=createTown({scene:town,sites:SITES,mobile,shadows,kitano:'distant',maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:s=>crossThreshold(()=>enterRoom(s)),getPlayerPosition:()=>current?null:player.position,onAction:(...args)=>{if(islandPlay?.action(...args))return;if(args[0]==='ferry-ladder'){ferryLadder(args[1]);return;}if(args[0]==='plant'){plantStation(args[1]);return;}if(args[0]==='dungeon'){enterDungeon();return;}if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person?.g.userData.sleeping){say(args[1]+' is sleeping. You can stay and watch the morning routine.',4);return;}if(person?.g.userData.waking||person?.g.userData.roomTransition){say(args[1]+' is '+person.g.userData.activity+'.',3);return;}if(person){person.g.userData.facePlayerUntil=performance.now()+1600;characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
  // Colliders by where they are, for the camera, walking and residents (collider-grid.js).
  const colliderGrid=createColliderGrid(world.colliders);
  // Kitano-jima is built when he heads there (world/kitano-on-demand.js): shaded, lit and compiled as it arrives.
@@ -697,51 +694,7 @@ addEventListener('pageshow',e=>{if(e.persisted)syncFromStudio();});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncFromStudio();});
 function ensureJohansson(){if(!johansson){johansson=createAvatarJohansson({scene});window.__JOHANSSON_MODEL__=johansson;}return johansson;}
 /** The view you chose goes through the door with you, both ways: V or the Town book switches it anywhere. */
-function setThirdPerson(value,announce=true){spawnScene?.cancel('view');if(bicycleRide&&value!==true){if(announce)say('Thuan stays in view while she rides.',2);return;}thirdPerson=!!value;try{localStorage.setItem(VIEW_KEY,thirdPerson?'third':'first');}catch{}if(thirdPerson)ensureJohansson();hands.firstPersonVisible=!thirdPerson;const b=$('#viewButton');if(b){b.textContent=thirdPerson?'Behind him':'His own eyes';b.setAttribute('aria-pressed',String(thirdPerson));}if(announce)say(thirdPerson?'Third-person view · V to look through his eyes again':'First-person view · V to step back',3);}
-function startBicycleRide(entry){
- if(bicycleRide||current||seated)return;
- lowerPocket();   // first, so the ride remembers the view he really had
- const bike=entry||world.bicycle,thuan=world.people.find(p=>p.profile?.name==='Thuan');
- if(!bike||!thuan?.g.userData.visualReady||!thuan.g.userData.character){say('Thuan is still getting ready. Try the bicycle again in a moment.',4);return;}
- const object=bike.object,position=object.getWorldPosition(new THREE.Vector3()),heading=object.rotation.y||0;
- const previousThirdPerson=thirdPerson,colliderIndex=world.colliders.indexOf(bike.collider);
- if(colliderIndex>=0)world.colliders.splice(colliderIndex,1);
- const flagNames=['inWorkplace','inIzakaya','inOnsen','inMarket','inRamen','inHome','indoors','roomTransition','sleeping','sleepBlend','floorHeight','chairBlend','socialPose','seatHeight'];
- const flags=Object.fromEntries(flagNames.map(key=>[key,{exists:Object.hasOwn(thuan.g.userData,key),value:thuan.g.userData[key]}]));
- bicycleRide={bike,thuan,controller:createBicycleController({x:position.x,z:position.z,yaw:heading}),previousThirdPerson,colliderRemoved:colliderIndex>=0,wheelAngle:0,originParent:thuan.g.parent,originPosition:thuan.g.position.clone(),originRotation:thuan.g.rotation.clone(),originVisible:thuan.g.visible,flags};
- player.position.set(position.x,groundHeight(position.x,position.z),position.z);player.quaternion.setFromAxisAngle(yAxis,heading);player.visible=true;
- player.add(object);object.position.set(0,0,0);object.rotation.set(0,0,0);
- player.add(thuan.g);thuan.g.position.set(0,0,0);thuan.g.rotation.set(0,0,0);thuan.g.visible=true;
- for(const key of Object.keys(flags))delete thuan.g.userData[key];
- thuan.g.userData.playerControlled=true;thuan.g.userData.bicyclePhase=0;thuan.g.userData.socialPose='Sit';thuan.g.userData.seatHeight=.92;thuan.g.userData.activity='riding her bicycle';
- const actor=thuan.g.userData.character;if(actor){actor.last.copy(thuan.g.position);actor.speed=0;actor.moving=false;}
- const fit=actor?.isAvatar?bicycleRiderFit(actor.avatar.measure):{scale:1,saddle:.9575};bike.setRiderFit(fit);bike.animateRide(0,true);thuan.g.userData.bicycleFit=fit;
- playerSpeed=0;playerRunning=false;setRunning(false);resetInput();
- setThirdPerson(true,false);yaw=heading;pitch=-.12;thirdDistance=3.6;
- say('Thuan’s bicycle · WASD / left stick to ride · E to dismount',5);
-}
-function stopBicycleRide(){
- if(!bicycleRide)return;
- const ride=bicycleRide,{bike,thuan}=ride,x=ride.controller.state.x,z=ride.controller.state.z,heading=ride.controller.state.yaw;
- bike.animateRide(thuan.g.userData.bicyclePhase||0,false);bike.object.removeFromParent();world.group.add(bike.object);bike.object.position.set(x,groundHeight(x,z),z);bike.object.rotation.set(0,heading,0);
- bike.collider.x=x;bike.collider.z=z;
- bike.collider.w=(Math.abs(Math.cos(heading))*.62+Math.abs(Math.sin(heading))*1.88)*bike.object.scale.x;
- bike.collider.d=(Math.abs(Math.sin(heading))*.62+Math.abs(Math.cos(heading))*1.88)*bike.object.scale.x;
- if(ride.colliderRemoved)world.colliders.push(bike.collider);
- const rightX=Math.cos(heading),rightZ=-Math.sin(heading),thuanX=x-rightX*1.25,thuanZ=z-rightZ*1.25;
- thuan.g.removeFromParent();
- const wasInside=['inWorkplace','inIzakaya','inOnsen','inMarket','inRamen','inHome','indoors'].some(key=>ride.flags[key]?.value),parent=wasInside&&ride.originParent?.parent?ride.originParent:world.group;
- parent.add(thuan.g);
- if(wasInside){thuan.g.position.copy(ride.originPosition);thuan.g.rotation.copy(ride.originRotation);thuan.g.visible=ride.originVisible;}
- else{thuan.g.position.set(thuanX,groundHeight(thuanX,thuanZ),thuanZ);thuan.g.rotation.set(0,heading,0);}
- thuan.g.userData.playerControlled=false;delete thuan.g.userData.bicyclePhase;delete thuan.g.userData.bicycleFit;
- for(const [key,flag] of Object.entries(ride.flags)){delete thuan.g.userData[key];if(flag.exists)thuan.g.userData[key]=flag.value;}
- const [px,pz]=findClear(x+rightX*1.25,z+rightZ*1.25);player.position.set(px,groundHeight(px,pz),pz);
- const actor=thuan.g.userData.character;if(actor){actor.last.copy(thuan.g.position);actor.speed=0;actor.moving=false;}
- player.visible=false;player.quaternion.setFromAxisAngle(yAxis,heading);yaw=heading;playerSpeed=0;playerRunning=false;
- bicycleRide=null;resetInput();setThirdPerson(ride.previousThirdPerson,false);
- say('Thuan parks her bicycle. E to ride again.',3);
-}
+function setThirdPerson(value,announce=true){spawnScene?.cancel('view');thirdPerson=!!value;try{localStorage.setItem(VIEW_KEY,thirdPerson?'third':'first');}catch{}if(thirdPerson)ensureJohansson();hands.firstPersonVisible=!thirdPerson;const b=$('#viewButton');if(b){b.textContent=thirdPerson?'Behind him':'His own eyes';b.setAttribute('aria-pressed',String(thirdPerson));}if(announce)say(thirdPerson?'Third-person view · V to look through his eyes again':'First-person view · V to step back',3);}
 function playMove(name){if(!thirdPerson)setThirdPerson(true,false);ensureJohansson().play(name);}
 function movesMenu(){if(!started||activities.paused)return;activities.menu('Moves','Johansson, sixty-odd, bald and sunburnt, in his kariyushi shirt. What will he do?',[...MOVES.map(([name,label])=>[label,()=>{activities.close();playMove(name);}]),['Back',activities.close]]);}
 const tpPivot=new THREE.Vector3(),tpDir=new THREE.Vector3(),tpRight=new THREE.Vector3(),lookPoint=new THREE.Vector3();
@@ -927,12 +880,12 @@ function updateJohansson(dt){
  const partner=conversationName?(conversationName==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===conversationName)?.g):null;
  if(partner){partner.getWorldPosition(lookPoint);lookPoint.y+=1.5;johansson.lookAt(lookPoint);}else johansson.lookAt(spawnScene?.gaze||null);
  setSwingFocus(camera.position);
- johansson.update(dt,{sleeping:!!linuxLife?.inBed,speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:!!linuxLife?.inBed||islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5:shipRoom()?thirdDistance>=HEAD_CAM:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active&&!bicycleRide});
+ johansson.update(dt,{sleeping:!!linuxLife?.inBed,speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:!!linuxLife?.inBed||islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5:shipRoom()?thirdDistance>=HEAD_CAM:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active});
  // Sakura: one thing in his hand, more in a basket, until he pays (shop-carry.js).
  shopCarry.sync(activities?.state?.konbini?.basket,current?.id==='market'&&johansson.ready);
 }
 if(thirdPerson)setThirdPerson(true,false);
-characters=createCharacters({mobile,shadows,onJump:()=>johansson?.jump(),canJump:()=>!seated&&!bicycleRide&&!pocket?.raised&&controlsAllowed(),isBlocked:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>circleHitsRect(x,z,r,c)),onError:(name,error)=>console.warn('Character construction failed:',name,error)});characters.attach(player,'player',1.82);world.people.forEach(p=>characters.attach(p.g,p.g.userData.name,p.profile?.height));
+characters=createCharacters({mobile,shadows,onJump:()=>johansson?.jump(),canJump:()=>!seated&&!pocket?.raised&&controlsAllowed(),isBlocked:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>circleHitsRect(x,z,r,c)),onError:(name,error)=>console.warn('Character construction failed:',name,error)});characters.attach(player,'player',1.82);world.people.forEach(p=>characters.attach(p.g,p.g.userData.name,p.profile?.height));
 // The people of the new streets: shopkeepers at their counters, the old men at gateball,
 // Grandmother Higa on her verandah, a postman on his round. See people/neighbours.js.
 neighbours=createNeighbours({parent:town,register:reg,characters,blocked:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>circleHitsRect(x,z,r,c)),onAction:(kind,name)=>{
@@ -999,7 +952,7 @@ function overShoulder(near,far,ux,uz,side,out){
 }
 function frameConversation(dt){
  const speaker=conversationLine?.speaker;
- if(!speaker?.visible||bicycleRide)return;
+ if(!speaker?.visible)return;
  speakerHead.copy(characters.conversationTarget(speaker));
  playerHead.set(player.position.x,player.position.y+(johansson?.lens?.head??1.58),player.position.z);
  const dx=speakerHead.x-playerHead.x,dz=speakerHead.z-playerHead.z,dist=Math.hypot(dx,dz);
@@ -1285,7 +1238,7 @@ function welcomeAtCounter(forward){
   if(towards.length()>3||forward.dot(towards.normalize())<.65)return;
   storeWelcomed=true;characters.gesture(storeClerk);
 }
-function interaction(){if(pocket?.raised){active=null;$('#prompt').classList.remove('on');return;}if(bicycleRide){active=null;$('#prompt').textContent=touch?'ACTION · dismount':'E · dismount Thuan’s bicycle';$('#prompt').classList.add('on');return;}if(seated){active=null;const chair=massageChair(),timer=chair?.state();$('#prompt').textContent=chair?'Massage '+(timer.running?timer.reads:'¥'+chair.coin)+' · Stand':Number.isInteger(parkSeat?.ramenSeatId)?(ramenPlayerService?.order?.delivered?'Eat / drink · Stand':ramenPlayerService?.order?'Order on its way · Stand':'Order food · Stand'):'Stand';$('#prompt').classList.add('on');return;}active=null;let best=null,dmax=3.1,bestScore=Infinity;const p=player.position.clone();p.y+=1;const fw=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));welcomeAtCounter(fw);for(const o of interactables){const h=o.userData.hit;const inside=h.inside||!!(o.userData.inMarket&&current?.id==='market');if(o.userData.visualReady===false||!o.visible||current&&!inside||!current&&inside)continue;let visible=true;for(let a=o.parent;a;a=a.parent)if(!a.visible)visible=false;if(!visible)continue;const q=new THREE.Vector3();o.getWorldPosition(q);if(o.userData.sameLevel&&Math.abs(q.y-p.y)>1.2)continue;const target=q.clone(),v=q.sub(p),d=v.length();if(d>dmax)continue;v.y=0;
+function interaction(){if(pocket?.raised){active=null;$('#prompt').classList.remove('on');return;}if(seated){active=null;const chair=massageChair(),timer=chair?.state();$('#prompt').textContent=chair?'Massage '+(timer.running?timer.reads:'¥'+chair.coin)+' · Stand':Number.isInteger(parkSeat?.ramenSeatId)?(ramenPlayerService?.order?.delivered?'Eat / drink · Stand':ramenPlayerService?.order?'Order on its way · Stand':'Order food · Stand'):'Stand';$('#prompt').classList.add('on');return;}active=null;let best=null,dmax=3.1,bestScore=Infinity;const p=player.position.clone();p.y+=1;const fw=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));welcomeAtCounter(fw);for(const o of interactables){const h=o.userData.hit;const inside=h.inside||!!(o.userData.inMarket&&current?.id==='market');if(o.userData.visualReady===false||!o.visible||current&&!inside||!current&&inside)continue;let visible=true;for(let a=o.parent;a;a=a.parent)if(!a.visible)visible=false;if(!visible)continue;const q=new THREE.Vector3();o.getWorldPosition(q);if(o.userData.sameLevel&&Math.abs(q.y-p.y)>1.2)continue;const target=q.clone(),v=q.sub(p),d=v.length();if(d>dmax)continue;v.y=0;
   // What you are facing, not merely what is nearest: things behind you or well off to the
   // side are out (unless you are all but touching them), and people come before things.
   const facingDot=v.lengthSq()?fw.dot(v.normalize()):1;if(facingDot<.3&&d>.9)continue;
@@ -1294,7 +1247,7 @@ function interaction(){if(pocket?.raised){active=null;$('#prompt').classList.rem
   if(o.userData.reach&&d>o.userData.reach)continue;if(o.userData.facing&&facingDot<o.userData.facing&&d>.9)continue;
   const score=o.userData.storeItem?shelfAimScore(camera.position,camera.getWorldDirection(new THREE.Vector3()),target):d*(1+(1-facingDot)*1.4)+(o.userData.promptPenalty||0)-(/^Talk to /.test(h.label)?.6:0);if(score>=bestScore)continue;bestScore=score;best={...h,object:o}}const e=$('#prompt');if(best){active=best;e.textContent=(touch?'':'E · ')+best.label;e.classList.add('on')}else e.classList.remove('on')}
 function standUp(){if(!seated)return;ramenPlayerService?.cancel();if(parkSeat?.stand)player.position.set(...parkSeat.stand);parkSeat=null;seated=false;unstuckPlayer();ensureDailyQuests(activities.state);if(form3NudgeAllowed(activities.state,minutes)){markDailyDone(activities.state,'form3_sell');activities.save();nudge(FORM3_NUDGE,6);}}
-function doInteract(){if(linuxLife?.wake())return;if(concert?.active||concertLoading)return;if(replayPlayer||pocket?.raised)return;spawnScene?.cancel();if(islandPlay?.cinematic)return;if(catchingUp||roomLoading||activities.paused)return;if(bicycleRide){stopBicycleRide();return;}if(seated){if(massageChair())activities.action('massage-chair');else if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else if(parkSeat?.izakaya)activities.action('izakaya-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();if(active)active.fn?.();else if(current?.id==='dungeon')activeRoomLayout?.dungeon?.strike(null);}}
+function doInteract(){if(linuxLife?.wake())return;if(concert?.active||concertLoading)return;if(replayPlayer||pocket?.raised)return;spawnScene?.cancel();if(islandPlay?.cinematic)return;if(catchingUp||roomLoading||activities.paused)return;if(seated){if(massageChair())activities.action('massage-chair');else if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else if(parkSeat?.izakaya)activities.action('izakaya-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();if(active)active.fn?.();else if(current?.id==='dungeon')activeRoomLayout?.dungeon?.strike(null);}}
 // `who`: a room collider with `only` set stops only that walker.
 // `deckY`: standing on the ferry's deck at that height (ferry-walk.js): her own solids are tested there, not the town's
 // bounds (she lies over the water), its fixed colliders (the pier's bitts and fenders beside her) nor the collider that
@@ -1487,11 +1440,9 @@ function updatePlayer(dt){
  if(islandPlay?.cinematic)return;
  // The docks opening holds on the harbour while the town finishes loading (render/spawn-scene.js): he waits for it.
  if(spawnScene?.holding)return;
- if(replayPlayer&&bicycleRide)stopReplay('stopped: the bicycle is not in recordings yet');
- if(replayRecorder?.open&&bicycleRide){replayRecorder.cancel();replayNote='recording stopped: the bicycle is not in recordings yet';}
  // Drink wears off with town time, an hour a drink; sleep clears it.
  tipsy=soberUp(tipsy,minutes-(tipsyClock??minutes));tipsyClock=minutes;
- if(!seated&&!bicycleRide)unstuckPlayer();
+ if(!seated)unstuckPlayer();
  if(replayPlayer){const frame=replayPlayer.next();if(frame)return replayStep(frame);stopReplay('played to the end');}
  const fromX=player.position.x,fromZ=player.position.z;
  const lookX=controllerFrame.look.x+touchSticks.look.x+(keys.KeyL?1:0)-(keys.KeyJ?1:0),lookY=controllerFrame.look.y+touchSticks.look.y+(keys.KeyK?1:0)-(keys.KeyI?1:0);
@@ -1503,24 +1454,9 @@ function updatePlayer(dt){
  const walking=pointWalk.direction(player.position,dt,current);
  walkMarker.visible=pointWalk.active;
  if(pointWalk.destination)walkMarker.position.set(pointWalk.destination.x,(current?0:groundHeight(pointWalk.destination.x,pointWalk.destination.z))+.05,pointWalk.destination.z);
- if(walking&&!bicycleRide){
+ if(walking){
   f=(-Math.sin(yaw)*walking.x-Math.cos(yaw)*walking.z)*walking.strength;
   s=(Math.cos(yaw)*walking.x-Math.sin(yaw)*walking.z)*walking.strength;
- }
- if(bicycleRide){
-  const ride=bicycleRide,oldYaw=ride.controller.state.yaw;
-  const fast=!!(keys.ShiftLeft||keys.ShiftRight||touchRunning||controllerFrame.held[4]);
-  const result=ride.controller.update(dt,{throttle:f,steer:s,fast,blocked:(x,z,heading)=>bicycleBlocked(x,z,heading,ride.bike.object.scale.x,(px,pz,r)=>environmentBlocked(px,pz,r)||overlapsResident(px,pz))});
-  const state=result.state;player.position.set(state.x,groundHeight(state.x,state.z),state.z);player.quaternion.setFromAxisAngle(yAxis,state.yaw);
-  yaw+=state.yaw-oldYaw;playerSpeed=Math.abs(state.speed);playerRunning=fast;player.visible=true;
-  const travel=-Math.sin(state.yaw)*result.dx-Math.cos(state.yaw)*result.dz;
-  ride.wheelAngle-=travel/(.31*ride.bike.object.scale.x);ride.distance=(ride.distance||0)+travel;
-  ride.thuan.g.userData.bicyclePhase=(ride.distance/1.6)%1;ride.bike.animateRide(ride.thuan.g.userData.bicyclePhase,true);
-  ride.bike.wheels?.forEach(wheel=>wheel.rotation.x=ride.wheelAngle);
-  ride.thuan.g.userData.activity=Math.abs(state.speed)>.15?'riding her bicycle':'stopped with her bicycle';
-  camera.position.copy(player.position).add(fwVec.set(0,1.45,0));camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);placeThirdPerson(dt);
-  const fov=cameraControls.settings.fov-controllerFrame.zoom*18;if(Math.abs(camera.fov-fov)>.01){camera.fov=THREE.MathUtils.damp(camera.fov,fov,12,dt);camera.updateProjectionMatrix();}
-  return;
  }
  if(seated){s=0;f=0;}
  // On touch: the stick steers as well as walks, and pushed to its rim it runs.
@@ -1833,7 +1769,7 @@ if(window.johanssonDesktop){
    const actor=ensureJohansson();actor.setRecipe(name==='Johansson'?playerRecipe():recipeFor(name));actor.root.name=name+' (controlled)';
    for(const g of allEntities())if(g!==player&&canonicalResidentName(g.userData.name)===name){linuxBorrowed.set(g,{visible:g.visible,controlled:g.userData.playerControlled});g.userData.playerControlled=true;g.visible=false;}
   },
-  spawnHome:async(person,sleep)=>{if(bicycleRide)stopBicycleRide();if(current)leaveRoom();activities.close();toggleDir(false);spawnScene?.cancel();const site=homeSite(person);await enterRoom(site);if(current?.id!==site.id)throw Error('The home could not open.');const layout=activeRoomLayout;player.position.set(...layout.bedside);yaw=0;pitch=-.1;setThirdPerson(true,false);const bedPosition=[...layout.bed];bedPosition[2]=-2.23+ensureJohansson().avatar.measure.headCentre;return {position:bedPosition,stand:[...layout.bedside],axis:layout.bedAxis};},
+  spawnHome:async(person,sleep)=>{if(current)leaveRoom();activities.close();toggleDir(false);spawnScene?.cancel();const site=homeSite(person);await enterRoom(site);if(current?.id!==site.id)throw Error('The home could not open.');const layout=activeRoomLayout;player.position.set(...layout.bedside);yaw=0;pitch=-.1;setThirdPerson(true,false);const bedPosition=[...layout.bed];bedPosition[2]=-2.23+ensureJohansson().avatar.measure.headCentre;return {position:bedPosition,stand:[...layout.bedside],axis:layout.bedAxis};},
   spawnOutside:point=>{if(point.homeBedside){player.position.set(...point.homeBedside);yaw=point.yaw||0;pitch=-.1;player.quaternion.setFromAxisAngle(yAxis,yaw);return;}if(current)leaveRoom();activities.close();toggleDir(false);standUpAt(point.x,point.z,point.yaw);},
   startQuarrel:(hero,target)=>{if(current)leaveRoom();activities.close();toggleDir(false);festival.quarrel(hero,target,{x:player.position.x,z:player.position.z});},
   menu:activities.menu,close:activities.close,save:activities.save,say,
@@ -1870,7 +1806,6 @@ canvas.addEventListener('click',event=>{
  if(event.button!==0||!controlsAllowed()||touchSticks.suppressClick()||pocket?.raised)return;
  spawnScene?.cancel();
  if(seated){standUp();}
- if(bicycleRide)return;
  const rect=canvas.getBoundingClientRect(),ray=new THREE.Raycaster();
  ray.setFromCamera(new THREE.Vector2((event.clientX-rect.left)/rect.width*2-1,1-(event.clientY-rect.top)/rect.height*2),camera);
  const hits=ray.intersectObjects(scene.children,true).filter(h=>{for(let o=h.object;o;o=o.parent)if(!o.visible||o===player)return false;return h.distance<60;});
@@ -1976,7 +1911,7 @@ function setConversation(name,text=''){for(const g of [...world.people.map(p=>p.
    conversationLine={speaker,name,text};}
   player.visible=false;
  }else{conversationLine=null;if(conversationCamera){player.visible=conversationCamera.playerVisible;conversationCamera=null;}}
-}addEventListener('resize',resizeRenderer);window.visualViewport?.addEventListener('resize',resizeRenderer);function resetInput(){pointWalk.cancel();setRunning(false);Object.keys(keys).forEach(k=>keys[k]=false);touchSticks.reset();}addEventListener('blur',()=>{resetInput();gamepadInput.suspend();});document.addEventListener('visibilitychange',()=>{resetInput();gamepadInput.suspend();if(document.hidden){activities.save();hiddenAt=Date.now();}else{hiddenAt=0;followClock();clock.getDelta();activities.consumeStorageRestock?.();}});addEventListener('focus',()=>activities.consumeStorageRestock?.());addEventListener('pageshow',()=>activities.consumeStorageRestock?.());addEventListener('pagehide',()=>activities.save());addEventListener('johansson-save',()=>activities.save());
+}addEventListener('resize',resizeRenderer);window.visualViewport?.addEventListener('resize',resizeRenderer);function resetInput(){pointWalk.cancel();setRunning(false);Object.keys(keys).forEach(k=>keys[k]=false);touchSticks.reset();}addEventListener('blur',()=>{resetInput();gamepadInput.suspend();});document.addEventListener('visibilitychange',()=>{resetInput();gamepadInput.suspend();if(document.hidden){activities.save();hiddenAt=Date.now();}else{hiddenAt=0;followClock();clock.getDelta();}});addEventListener('pagehide',()=>activities.save());addEventListener('johansson-save',()=>activities.save());
 
 const mapCanvas=$('#minimap'),mapCtx=mapCanvas.getContext('2d');
 function drawMap(){
@@ -2172,7 +2107,7 @@ function updateContextControls(){
  ferryOperations?.update({visible:started&&(aboardFerry||nearShip&&!!ship.operation)});
  document.body.classList.toggle('hud-seated',!!seated);
  const blocked=!controlsAllowed()||catchingUp||!!pocket?.raised;
- const door=roomExitVisible({playing:started,inside:!current,paused:blocked||!!bicycleRide,seated})?doorNearby():null;
+ const door=roomExitVisible({playing:started,inside:!current,paused:blocked,seated})?doorNearby():null;
  doorSite=door;
  const now=performance.now();
  // A room's catalogue assets start loading as its door comes within reach, so walking in seldom waits (at most a try
@@ -2185,7 +2120,7 @@ function updateContextControls(){
  const items=activities.state.inventory?.length||0;hudIcons.count(items);
  // While you walk, the top buttons fade back so the street has the screen.
  document.body.classList.toggle('hud-moving',!blocked&&now<controlsMovingUntil);
- const state=controlVisibility({playing:started,paused:blocked,seated,inside:!!current,moving:now<controlsMovingUntil,running:touchRunning,canDrink:!!hands?.canDrink,hasTarget:!!bicycleRide||now<controlsTargetUntil,hasItems:items>0,pressed:[...pressedControls]});
+ const state=controlVisibility({playing:started,paused:blocked,seated,inside:!!current,moving:now<controlsMovingUntil,running:touchRunning,canDrink:!!hands?.canDrink,hasTarget:now<controlsTargetUntil,hasItems:items>0,pressed:[...pressedControls]});
  for(const [id,visible] of Object.entries(state)){
   const element=$('#'+id);
   if(id==='mobile'){element.classList.toggle('hidden',!visible);continue;}
@@ -2205,7 +2140,7 @@ function updateContextControls(){
  contextRail.update({playing:started,paused:blocked,seated,table,canOrder:table&&serviceOpen&&!pending&&!ramenOrder,
   orderPending:table&&pending,canEat:ramenOrder?.delivered?ramenOrder.left>0&&!ramenDrink:!!(parkSeat?.izakaya&&beerService?.dish?.left>0),
   canDrink:ramenOrder?.delivered?ramenOrder.left>0&&!!ramenDrink:!!(parkSeat?.izakaya&&beerService?.drink?.left>0),
-  heldDrink:!!hands?.canDrink,inside:!!current,canExit:exitNearby&&!linuxLife?.inBed,targetLabel:contextTarget?.label||(bicycleRide?'Dismount bicycle':''),
+  heldDrink:!!hands?.canDrink,inside:!!current,canExit:exitNearby&&!linuxLife?.inBed,targetLabel:contextTarget?.label||'',
   enterLabel:door?'Enter '+door.title:'',pressed:[...pressedControls]});
  if(stickHintUntil&&(now>stickHintUntil||touchSticks.moving)){touchSticks.hint(false);stickHintUntil=0;}
  // Soft quest: quay before evening press (~18:30), once per calendar dayKey if picked.
@@ -2360,7 +2295,6 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  },
  replay:{
   record(note=''){
-   if(bicycleRide)throw Error('The bicycle is not in recordings yet: get off first.');
    stopReplay();spawnScene?.cancel('placement');pointWalk.cancel();walkMotion.reset();touchAutoRun.reset();
    replayRecorder=createRecorder({room:current?.id||null,x:player.position.x,y:player.position.y,z:player.position.z,yaw,pitch,minutes,weather:weatherKind},{note});replayNote='recording';
    return this.status();
@@ -2375,7 +2309,6 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
    const next=createPlayer(rec,{mode});
    if(replayRecorder?.open)throw Error('A recording is running: stop() it first.');
    if(islandPlay?.active||activities.state.island?.journey?.location==='naha')throw Error('Not during the island journey.');
-   if(bicycleRide)throw Error('The bicycle is not in recordings yet: get off first.');
    replayRecorder=null;stopReplay();
    const st=rec.start,room=st.room||null;
    // The time first: a place may be shut at another hour.
@@ -2480,7 +2413,7 @@ let titleElapsed=0,titleFrame=0;
 const titleReduced=matchMedia('(prefers-reduced-motion: reduce)');
 let desktopFrameAt=performance.now(),desktopSampleAt=desktopFrameAt,desktopFrames=0,desktopWorst=0;
 function desktopFrameStats(){if(!window.johanssonDesktop)return;const at=performance.now();desktopFrames++;desktopWorst=Math.max(desktopWorst,at-desktopFrameAt);desktopFrameAt=at;if(at-desktopSampleAt<2000)return;const d=document.documentElement.dataset;d.renderFps=String(Math.round(desktopFrames*1000/(at-desktopSampleAt)));d.frameWorst=desktopWorst.toFixed(1);d.drawCalls=String(renderer.info.render.calls);d.textures=String(renderer.info.memory.textures);desktopSampleAt=at;desktopFrames=0;desktopWorst=0;}
-function loop(){requestAnimationFrame(loop);desktopFrameStats();if(festival?.active){festival.render(Math.min(clock.getDelta(),MAX_FRAME_DT));return;}if(document.documentElement.dataset.desktopMenu==='open'){clock.getDelta();return;}if(graphicsLifecycle?.lost){clock.getDelta();return;}activeRoomLayout?.realUpdate?.();if(concert?.active){const dt=Math.min(clock.getDelta(),MAX_FRAME_DT);updateController(dt);concert.render();return;}if(concertLoading){clock.getDelta();return;}if(window.__JOHANSSON_AUDIT__?.frozen){clock.getDelta();if(detailsStarted&&!document.hidden)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});if(window.__JOHANSSON_AUDIT__.renderFrozen!==false)window.__JOHANSSON_AUDIT__.render();return;}renderer.info.reset?.();lightBudget.update();colliderGrid.refresh();if(pocket?.raised&&!pocketCanRaise())lowerPocket();if(photoStudio?.active){clock.getDelta();photoStudio.render();return;}izakayaTV?.update({camera,active:current?.id==='izakaya'&&izakayaOpen(minutes),paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden&&!catchingUp)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);governResolution(frameDt);updateWantCards(frameDt);sweepCel(frameDt);updateController(frameDt);activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden&&!activities.paused)activeRoomLayout?.ownedUpdate?.(frameDt);activeRoomLayout?.keep?.setPlayerBottle(!!activities.state.izakayaBottle);if(started&&!activities.paused&&!document.hidden)activeRoomLayout?.dungeon?.update(frameDt,player.position);if(fists){fists.visible=!thirdPerson&&!spawnScene?.active;fists.guard(current?.id==='dungeon'&&!!activeRoomLayout?.dungeon?.nearFoe(player.position));fists.update(frameDt);}if(started&&!document.hidden){const paused=catchingUp||cameraControls.active||roomLoading||inspector?.active||itemViewer?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();if(catchingUp)catchUpFrame();else simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused,relax:!!(seated&&!current),ferry:world.ferry?.audio??null});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);updateJohansson(paused?0:frameDt);updateEarDefenders();if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);if(!paused||conversationLine)facing.update(frameDt);}if(!paused||conversationLine)updateConversationLift(frameDt);if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}tickSubtitle(frameDt);if(current&&activeRoomLayout?.fixedCamera&&!window.__JOHANSSON_AUDIT__?.camera){const f=activeRoomLayout.fixedCamera;camera.position.set(...f.pos);camera.lookAt(...f.at);camera.updateMatrixWorld();}if(current&&window.__JOHANSSON_AUDIT__?.camera){const a=window.__JOHANSSON_AUDIT__.camera;camera.position.set(...a.pos);camera.lookAt(...a.at);camera.updateMatrixWorld();}spawnScene?.update(frameDt,{paused,unavailable:!!(islandPlay?.active||window.__JOHANSSON_AUDIT__?.camera)});placeWorldBalloons(frameDt);if(inspector?.active)present(()=>inspector.render(frameDt),inspector.camera);else if(streetFrontageOf(current))present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:streetFrontageOf(current)}));else if(!current)renderOutdoor();else present(()=>renderer.render(scene,camera));pocket?.frame();}else{neighbourChats.cancel();chatBubble.hide();renderTitle(frameDt);}}renderOutdoor();loop();
+function loop(){requestAnimationFrame(loop);desktopFrameStats();if(document.documentElement.dataset.desktopMenu==='open'){clock.getDelta();return;}if(festival?.active){festival.render(Math.min(clock.getDelta(),MAX_FRAME_DT));return;}if(graphicsLifecycle?.lost){clock.getDelta();return;}activeRoomLayout?.realUpdate?.();if(concert?.active){const dt=Math.min(clock.getDelta(),MAX_FRAME_DT);updateController(dt);concert.render();return;}if(concertLoading){clock.getDelta();return;}if(window.__JOHANSSON_AUDIT__?.frozen){clock.getDelta();if(detailsStarted&&!document.hidden)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});if(window.__JOHANSSON_AUDIT__.renderFrozen!==false)window.__JOHANSSON_AUDIT__.render();return;}renderer.info.reset?.();lightBudget.update();colliderGrid.refresh();if(pocket?.raised&&!pocketCanRaise())lowerPocket();if(photoStudio?.active){clock.getDelta();photoStudio.render();return;}izakayaTV?.update({camera,active:current?.id==='izakaya'&&izakayaOpen(minutes),paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden&&!catchingUp)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);governResolution(frameDt);updateWantCards(frameDt);sweepCel(frameDt);updateController(frameDt);activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden&&!activities.paused)activeRoomLayout?.ownedUpdate?.(frameDt);activeRoomLayout?.keep?.setPlayerBottle(!!activities.state.izakayaBottle);if(started&&!activities.paused&&!document.hidden)activeRoomLayout?.dungeon?.update(frameDt,player.position);if(fists){fists.visible=!thirdPerson&&!spawnScene?.active;fists.guard(current?.id==='dungeon'&&!!activeRoomLayout?.dungeon?.nearFoe(player.position));fists.update(frameDt);}if(started&&!document.hidden){const paused=catchingUp||cameraControls.active||roomLoading||inspector?.active||itemViewer?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();if(catchingUp)catchUpFrame();else simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused,relax:!!(seated&&!current),ferry:world.ferry?.audio??null});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);updateJohansson(paused?0:frameDt);updateEarDefenders();if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);if(!paused||conversationLine)facing.update(frameDt);}if(!paused||conversationLine)updateConversationLift(frameDt);if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}tickSubtitle(frameDt);if(current&&activeRoomLayout?.fixedCamera&&!window.__JOHANSSON_AUDIT__?.camera){const f=activeRoomLayout.fixedCamera;camera.position.set(...f.pos);camera.lookAt(...f.at);camera.updateMatrixWorld();}if(current&&window.__JOHANSSON_AUDIT__?.camera){const a=window.__JOHANSSON_AUDIT__.camera;camera.position.set(...a.pos);camera.lookAt(...a.at);camera.updateMatrixWorld();}spawnScene?.update(frameDt,{paused,unavailable:!!(islandPlay?.active||window.__JOHANSSON_AUDIT__?.camera)});placeWorldBalloons(frameDt);if(inspector?.active)present(()=>inspector.render(frameDt),inspector.camera);else if(streetFrontageOf(current))present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:streetFrontageOf(current)}));else if(!current)renderOutdoor();else present(()=>renderer.render(scene,camera));pocket?.frame();}else{neighbourChats.cancel();chatBubble.hide();renderTitle(frameDt);}}renderOutdoor();loop();
 
 // The title shares the live world, assets, camera and render budget with play.
 // Never advance activities, player input, catch-up or saves while previewing.

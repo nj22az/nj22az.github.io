@@ -3,6 +3,7 @@ process.env.PW_TEST_SCREENSHOT_NO_FONTS_READY='1';
 const {chromium}=require('playwright');
 (async()=>{
  const root=path.resolve(__dirname,'../site'),out=path.resolve(__dirname,'../dist/console-qa');fs.mkdirSync(out,{recursive:true});
+ assert.equal(fs.existsSync(path.join(root,'thuans-storage')),false,'Retired storage game is not bundled');
  const errors=[],missing=[],remote=[];
  const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.glb':'model/gltf-binary','.gltf':'model/gltf+json','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.wav':'audio/wav','.mp4':'video/mp4'};
  const server=http.createServer((req,res)=>{const url=new URL(req.url,'http://localhost');let file=path.resolve(root,'.'+decodeURIComponent(url.pathname));if(url.pathname.endsWith('/'))file=path.join(file,'index.html');if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){missing.push(url.pathname);res.writeHead(404);res.end();return;}res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream'});fs.createReadStream(file).pipe(res);});
@@ -63,6 +64,9 @@ const {chromium}=require('playwright');
  // Controller loss stops input and offers a useful recovery screen.
  await page.evaluate(()=>{window.__pad.connected=false;});await page.waitForTimeout(200);assert.equal((await state()).menu,true);assert.equal((await state()).page,'controls');await page.evaluate(()=>{window.__pad.connected=true;});await page.waitForTimeout(150);await tap(1);await click('save');assert.equal(await page.evaluate(()=>window.__saved),true);
  // Four Linux window sizes, including the Deck's touchscreen media queries.
+ await page.evaluate(()=>document.fullscreenElement?document.exitFullscreen():undefined);
+ const windowSession=await context.newCDPSession(page),windowInfo=await windowSession.send('Browser.getWindowForTarget');
+ await windowSession.send('Browser.setWindowBounds',{windowId:windowInfo.windowId,bounds:{windowState:'normal'}});await windowSession.detach();
  for(const [width,height] of [[1280,800],[1280,720],[960,540],[800,600]]){
   await page.setViewportSize({width,height});await click('help');await page.screenshot({path:path.join(out,`help-${width}x${height}.png`)});
   const layout=await page.evaluate(()=>{const p=document.getElementById('desktopMenu'),shell=p.querySelector('.console-shell'),footer=p.querySelector('.console-footer');return {width:innerWidth,height:innerHeight,scrollWidth:shell.scrollWidth,shellWidth:shell.clientWidth,bottom:footer.getBoundingClientRect().bottom};});assert.ok(layout.scrollWidth<=layout.shellWidth+1,'No horizontal squashing');assert.ok(layout.bottom<=height,'Footer stays in viewport');
@@ -92,7 +96,7 @@ const {chromium}=require('playwright');
  const funds=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.activities.state.yen);
  for(let i=0;i<3;i++){await page.getByRole('button',{name:/^Insult Tetsuo/}).click();await page.waitForFunction(count=>window.__JOHANSSON_AUDIT__.activities.state.desktopLife.tempers['Johansson\u0000Tetsuo']?.count===count,i+1);assert.equal(await page.locator('#festivalHUD').count(),0,'Warnings come before a fight');}
  await page.screenshot({path:path.join(out,'11-last-warning.png')});await page.getByRole('button',{name:/^Insult Tetsuo/}).click();await page.waitForSelector('#festivalHUD');
- await sampled();await page.screenshot({path:path.join(out,'12-rare-quarrel.png')});await tap(8);assert.equal(await page.locator('#festivalHUD').count(),0);assert.equal(await page.evaluate(()=>window.__JOHANSSON_AUDIT__.activities.state.yen),funds,'Quarrels award no festival money');
+ await sampled();await page.screenshot({path:path.join(out,'12-rare-quarrel.png')});await tap(9);assert.equal((await state()).menu,true);const pausedBout=await page.locator('#festivalHUD').textContent();await page.waitForTimeout(1200);assert.equal(await page.locator('#festivalHUD').textContent(),pausedBout,'Start pauses the actual quarrel');await tap(9);await tap(8);assert.equal(await page.locator('#festivalHUD').count(),0);assert.equal(await page.evaluate(()=>window.__JOHANSSON_AUDIT__.activities.state.yen),funds,'Quarrels award no festival money');
  await page.getByRole('button',{name:'Walk away',exact:true}).click();
  // Persist a selected character as well as the controls.
  await page.evaluate(async()=>{window.__JOHANSSON_AUDIT__.setTime(60);await window.johanssonLinuxWorld.select('Thuan');window.__JOHANSSON_AUDIT__.activities.save();});await tap(9);

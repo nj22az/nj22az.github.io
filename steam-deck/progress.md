@@ -13,3 +13,7 @@ Linux resident life: added the 31-person canonical cast selector, independent sa
 Island audit/proposal: 31 canonical residents, 17 vacant addresses, all four Fumoto homes vacant; extra per-building road circuits contribute to visual clutter. README records a Linux-only compact Minato/street graph/household plan and purposeful ferry destinations. Geography has not been rebuilt in this pass.
 
 User requested removal of the bicycle and Thuan storage minigames, then explicitly extended that removal to the web edition too. Removing those separately from current main so the other Linux features remain exclusive.
+
+Shared cleanup: removed cycling mode/controller and Sakura storage-game prompts/launcher/return hooks in both web and Linux. The Linux packager omits the separate storage game. Twenty Linux/game/context checks pass, and expanded actual renderer acceptance passed with zero page errors/missing files after removal. A follow-up adds actual quarrel pause verification and moves the bout HUD clear of Menu. CI revealed Chromium enters fullscreen after Start on Linux; the four-window QA explicitly exits fullscreen/restores the test window before resizing. This is test harness window setup, not a game input failure.
+
+Web PR #195 was merged to main: dedicated Linux Port journal with Downloads/install section, comparison, dated changes and consolidation state; homepage reduced to links without install instructions. Published installer remains 0.2.2. Island geometry remains a documented Linux proposal.

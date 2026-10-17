@@ -1,6 +1,6 @@
 # Johansson World — offline Linux edition
 
-The complete island game runs locally in a standalone Electron Linux application using its existing Three.js renderer. This is the Steam Deck edition, not a C rewrite or a CubeXX build. World, residents, shops, ferry, interiors, Studio and stockroom assets are installed locally. Gameplay renderer requests to the internet are blocked.
+The complete island game runs locally in a standalone Electron Linux application using its existing Three.js renderer. This is the Steam Deck edition, not a C rewrite or a CubeXX build. World, residents, shops, ferry, interiors and Studio assets are installed locally. Gameplay renderer requests to the internet are blocked.
 
 ## Controls and saves
 
@@ -30,6 +30,10 @@ The current canonical cast has 31 people. Its home registry lists 17 vacant addr
 - Stream each island as a separate world area, retaining resident/home identities and saves while unloading distant interiors, colliders and AI. Measure frame time and memory before/after on Linux; fewer houses and meshes alone are not proof of a performance gain.
 
 Acceptance for that pass: a readable overview map, no stacked road surfaces, continuous street junctions and door access, no unassigned residents or anonymous empty houses, safe migration of existing checkpoints, and a complete controller-operated outward/return ferry trip. The coastline, roads, terrain, homes and navigation should move together; shrinking only the rendered land would leave invisible walking ground and broken addresses.
+
+The cycling and Thuan storage-room minigames are retired in both editions. Linux no longer bundles the separate storage game. Normal shopping, stocking routines and decorative bikes remain.
+
+Development comparisons and release status are recorded at [Linux Port](https://nj22az.github.io/linux-port/).
 
 ## Updates
 
