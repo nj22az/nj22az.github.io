@@ -27,7 +27,7 @@ export const FUMOTO=Object.freeze({
  /** The level of the hamlet's ground: the island's (coastal-ground.js ISLAND_GROUND_Y). */
  y:-.4,
  /** The main lane: from the coastal road, north between the cane, up to the summit path. */
- mainLane:Object.freeze([[34,272.5],[34,226],[34,180],[42.6,171.9]]),
+ mainLane:Object.freeze([[34,241.2],[34,226],[34,180],[42.6,171.9]]),
  /** The two cross lanes the houses face, west from the main lane. */
  upperLane:Object.freeze([[5,192.5],[32.5,192.5]]),
  lowerLane:Object.freeze([[5,214.5],[32.5,214.5]]),
@@ -38,7 +38,7 @@ export const FUMOTO=Object.freeze({
   * verge to the cane. Trees are kept clear of it (island-landscape.js).
   */
  feeder:Object.freeze([[26.3,137.5],[27.2,160.5],[30.6,175.5],[35.25,186]]),
- lanePoles:Object.freeze([[35.25,186],[35.25,204],[35.25,226],[35.25,244],[35.25,262]]),
+ lanePoles:Object.freeze([[35.25,186],[35.25,204],[35.25,226],[35.25,236]]),
  plots:Object.freeze([
   {id:'fumoto-1',kind:'red-tile',family:'Kuniyoshi',romaji:'Kuniyoshi',minX:7,maxX:19,minZ:178,maxZ:190.5,gate:'north'},
   {id:'fumoto-2',kind:'red-tile',family:'Tokashiki',romaji:'Tokashiki',minX:20,maxX:32,minZ:178,maxZ:190.5,gate:'north'},

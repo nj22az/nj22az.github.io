@@ -72,9 +72,9 @@ export function buildFumoto(kit,solid,ctx){
  for(let i=1;i<feed.length;i++)wiresBetween(kit,feed[i-1],feed[i]);wiresBetween(kit,feed.at(-1),up.at(-1));
  const upper=pole(19.5,F.upperLane[0][1]-F.laneWidth/2+.25,{face:0,transformer:false,lamp:true,seed:921});
  const lower=pole(19.5,F.lowerLane[0][1]-F.laneWidth/2+.25,{face:0,transformer:false,lamp:true,seed:924});
- wiresBetween(kit,up[4],upper,{sag:.55});wiresBetween(kit,up[3],lower,{sag:.55});
+ wiresBetween(kit,up.at(-1),upper,{sag:.55});wiresBetween(kit,up.at(-2),lower,{sag:.55});
  for(const p of F.plots){const near=p.maxZ<F.upperLane[0][1]?upper:lower,x=(p.minX+p.maxX)/2;serviceDrop(kit,near,[x+1.5,y+2.6,p.minZ+3.2]);}
- serviceDrop(kit,up[3],[F.store.minX+.4,y+2.9,F.store.maxZ-1]);
+ serviceDrop(kit,up.at(-2),[F.store.minX+.4,y+2.9,F.store.maxZ-1]);
 }
 
 /**

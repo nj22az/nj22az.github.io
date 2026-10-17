@@ -134,8 +134,9 @@ export function buildCountryside({world,register=()=>{},onAction=()=>{},mobile=f
    else{for(let a=.35;a<2;a+=.65)for(let b=.5;b<2;b+=1){crops.push([x+a,z+b,hash(x+a,z+b,f)]);}}
   }
   // A field track along the field's north edge, where the farmer drives in.
-  const tw=x1-x0;const t=new THREE.Mesh(new THREE.BoxGeometry(tw,.04,1.4),track);t.position.set((x0+x1)/2,groundHeight((x0+x1)/2,z0-.8)+.02,z0-.8);t.name='Field track';
-  if(open((x0+x1)/2,z0-.8,.4))group.add(t);
+  // Clip the entire track against roads and the compact shoreline, not only its midpoint.
+  for(let x=x0;x<x1;x+=.7){const w=Math.min(.7,x1-x),cx=x+w/2,z=z0-.8;if(!open(cx,z,.8))continue;
+   const t=new THREE.Mesh(new THREE.BoxGeometry(w,.04,1.4),track);t.position.set(cx,groundHeight(cx,z)+.02,z);t.name='Field track';t.userData.staticProp=true;group.add(t);}
   anchor((x0+x1)/2,z0+1,1.2,kind==='cane'?'Look at the sugar cane':'Look at the vegetable plots',kind==='cane'?'Sugar cane':'Vegetable plots',
    kind==='cane'?'Cane taller than you, planted in rows on the island’s red earth. It is cut by hand from January and taken on the ferry to the mill on the main island; the stalks you can buy at the shop are for chewing.':
    'Cabbage, beni-imo sweet potato with its purple leaves, spring onions, and a row of shima-rakkyō. Everybody on the island grows a little more than they can eat and gives the rest away.');
