@@ -6,7 +6,7 @@
 #include <string.h>
 #include <math.h>
 
-static void help(void){puts("Ferry Deck Fighters\n  --gles         Request OpenGL ES 2.0 (handheld)\n  --fullscreen   Fullscreen square viewport\n  --demo         AI versus AI\n  --frames N     Exit after N rendered frames\n  --capture PATH Save final native framebuffer as PPM\n  --pose NAME    title, arena, jab, kick, guard, victory\n  --size N       Square window size (default 720)\nControls: WASD/stick move, J/X jab, K/Y kick, L/A guard, Space/B dodge\nEnter/Start start/pause, Escape/Back pause/title, Tab/L1 swap, T/R1 training");}
+static void help(void){puts("Ferry Deck Fighters\n  --gles         Request OpenGL ES 2.0 (handheld)\n  --fullscreen   Fullscreen square viewport\n  --demo         AI versus AI\n  --frames N     Exit after N rendered frames\n  --capture PATH Save final native framebuffer as PPM\n  --pose NAME    title, arena, jab, kick, roundhouse, cross, guard, victory\n  --size N       Square window size (default 720)\nControls: WASD/stick move, J/X jab, K/Y kick, L/A guard, Space/B dodge\nEnter/Start start/pause, Escape/Back pause/title, Tab/L1 swap, T/R1 training");}
 int main(int argc,char **argv){
     bool gles=false,fullscreen=false,demo=false;int frames=0,size=720;const char *capture=NULL,*pose=NULL,*assets="assets/characters";
     for(int i=1;i<argc;i++){
@@ -27,7 +27,9 @@ int main(int argc,char **argv){
     if(pose){
         if(!strcmp(pose,"title"))m.phase=TITLE;
         else if(!strcmp(pose,"arena")){}
-        else if(!strcmp(pose,"jab")){m.fighters[0].x=-.32f;m.fighters[1].x=.32f;m.fighters[0].action=LIGHT;m.fighters[0].frame=8;}
+        else if(!strcmp(pose,"jab")){m.fighters[0].x=-.32f;m.fighters[1].x=.32f;m.fighters[0].action=LIGHT;m.fighters[0].frame=attack_startup(&m.fighters[0],LIGHT)+1;}
+        else if(!strcmp(pose,"roundhouse")){m.fighters[0].x=-.40f;m.fighters[1].x=.40f;m.fighters[0].action=HEAVY;m.fighters[0].frame=attack_startup(&m.fighters[0],HEAVY)+1;}
+        else if(!strcmp(pose,"cross")){m.fighters[0].x=-.35f;m.fighters[1].x=.35f;m.fighters[0].action=CROSS;m.fighters[0].frame=attack_startup(&m.fighters[0],CROSS)+1;}
         else if(!strcmp(pose,"kick")){m.fighters[0].x=-.43f;m.fighters[1].x=.43f;m.fighters[1].action=HEAVY;m.fighters[1].frame=18;}
         else if(!strcmp(pose,"guard")){m.fighters[0].x=-.32f;m.fighters[1].x=.32f;m.fighters[1].guard=true;}
         else if(!strcmp(pose,"victory")){m.phase=RESULT;m.winner=0;m.fighters[0].wins=2;m.fighters[1].hp=0;m.fighters[1].action=DOWN;m.fighters[1].frame=30;}

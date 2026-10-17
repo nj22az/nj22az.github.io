@@ -10,7 +10,7 @@ This is the first playable foundation, not a finished game or a certified PortMa
 
 - Two selectable fighters: Thao (white tee, blue shorts, high ponytail) and Thuan (yellow flower blouse, navy trousers, rose glasses, braids).
 - Fully 3D arena and movement; opponents automatically face one another.
-- Jab, kick, frontal guard, dodge with a limited invulnerable window, recovery, hit stun and hit stop.
+- Individual kickboxing and karate stances, footwork and three moves each. Confirmed punch follow-ups, buffered inputs, timed karate deflection, counter hits, frontal guard, dodge, recovery, hit stun and hit stop. See [combat design and source study](docs/COMBAT.md).
 - Computer opponent, passive training opponent, 60-second rounds and first to two wins.
 - Square-screen HUD, title, pause, results and fighter switching.
 - Keyboard and SDL2 standard controller input, controller reconnection and pause on focus loss.
@@ -77,6 +77,6 @@ The fighter assets are exported by **Johansson Studio**, using the same `recipeF
 In Studio, use **Files → Export native fighter** to download the selected character as `.jwf`. The exporter is `avatar-creator/native-export.js`. The game can load uncompressed `.jwf` files or the included losslessly compressed `.jwf.gz` assets. `assets/characters/manifest.json` records recipes, source commit and SHA-256 hashes of the uncompressed exports.
 
 The committed exports were generated in a real browser using Studio's exporter. `tools/verify-studio.cjs` regenerates the exports and Studio reference portraits, then verifies the actual Files download button. `tools/export-studio.mjs` is an optional Node/canvas build route. Run `make test` for both combat and model checks. [Studio / native comparison](screenshots/Ferry_Deck_Fighters_Studio_Comparison.png).
-The ship dimensions and arrangement follow `johansson-town/src/world/ferry-model.js`: 34.5 x 8.4 m, side casings ending at station 20 m, bow houses beginning at station 30 m, a 4.6 m bow ramp and red/white vehicle barrier at station 29.3 m. The combat origin is station 24 m. The native ferry scene is a simplified recreation, with an added sparring rectangle, not an engineering model or a transfer of the entire ferry.
+The ship is exported directly from `johansson-town/src/world/ferry-model.js`: 34.5 x 8.4 m, side casings ending at station 20 m, bow houses beginning at station 30 m, a 4.6 m bow ramp and red/white vehicle barrier at station 29.3 m. The combat origin is station 24 m. The native arena retains original above-deck structural triangles and forward texture details, including the deck, casings, ramp and barrier. Hidden below-deck geometry and aft texture details are omitted. Source coordinates are translated to the combat origin; ship geometry is not reconstructed. The export is 102,066 vertices with a single static texture atlas.
 
-Open work: animation polish, hand/hit-volume alignment, target controller mapping, CubeXX firmware packaging, device profiling, audio-device verification, throws/combos, accessibility settings and additional arenas. Studio gains the reusable native export action; World character definitions remain shared.
+Open work: animation polish, hand/hit-volume alignment, target controller mapping, CubeXX firmware packaging, device profiling, audio-device verification, throws, expanded move lists, high/mid/low guards, skeletal hit capsules, accessibility settings and additional arenas. Studio gains the reusable native export action; World character definitions remain shared.

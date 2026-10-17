@@ -3,13 +3,13 @@
 ## Established in this development environment
 
 - Native x86-64 Linux executable builds with GCC using `-Wall -Wextra -Wpedantic`.
-- Eleven combat test groups pass, including hit timing, guard, dodge, trading, bounds, pause, timeout, knockout and deterministic AI.
+- Sixteen combat test groups pass, including hit timing, guard, dodge, trading, bounds, pause, timeout, knockout and deterministic AI.
 - Combat tests also pass AddressSanitizer and UndefinedBehaviorSanitizer. LeakSanitizer is disabled because the container cannot inspect `/proc` tasks.
 - Native renderer runs offscreen through Mesa, with its GLES version forced to 2.0.
-- Six 720 x 720 native framebuffer captures were generated and visually inspected. Capture reads use the ES 2.0 guaranteed RGBA/UNSIGNED_BYTE path.
+- Eight 720 x 720 native framebuffer captures were generated and visually inspected. Capture reads use the ES 2.0 guaranteed RGBA/UNSIGNED_BYTE path.
 - A 180-frame AI versus AI run completes with the real fixed-step simulation and renderer.
 - ARM64 binary cross-compiles for Cortex-A53 and glibc 2.17. ELF architecture, interpreter and symbol baseline inspected.
-- Current arena plus fighters: 38,800 base scene triangles and approximately 74,624 triangles including character ink passes. Texture and skinning costs need measurement on the target. Vertex capacity is explicitly checked.
+- Current arena plus fighters: approximately 106,682 rendered triangles including character ink passes. The original ferry export contributes 34,022 triangles and one 2048 x 2048 atlas. Texture and skinning costs need measurement on the target. Vertex capacity is explicitly checked.
 
 These observations are not CubeXX performance results. Desktop software rendering rates must not be presented as handheld benchmarks.
 

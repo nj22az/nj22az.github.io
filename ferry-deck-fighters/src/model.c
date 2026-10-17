@@ -17,7 +17,7 @@ static FILE *open_model(const char *path,void **memory){
  *(void **)(&open_gz)=dlsym(z,"gzopen");*(void **)(&read_gz)=dlsym(z,"gzread");*(void **)(&close_gz)=dlsym(z,"gzclose");
  if(!open_gz||!read_gz||!close_gz){dlclose(z);return NULL;}
  void *stream=open_gz(compressed,"rb");if(!stream){dlclose(z);return NULL;}
- const size_t limit=20*1024*1024;unsigned char *data=malloc(limit);size_t used=0;int got=0;
+ const size_t limit=32*1024*1024;unsigned char *data=malloc(limit);size_t used=0;int got=0;
  if(data)do{got=read_gz(stream,data+used,(unsigned)fmin((double)(limit-used),65536));if(got>0)used+=(unsigned)got;}while(got>0&&used<limit);
  int status=close_gz(stream);dlclose(z);
  if(!data||got<0||status!=0||used==limit||used==0){free(data);return NULL;}
@@ -26,7 +26,7 @@ static FILE *open_model(const char *path,void **memory){
 bool model_load(NativeModel *m,const char *path){
  memset(m,0,sizeof(*m));void *memory=NULL;FILE *f=open_model(path,&memory);if(!f){fprintf(stderr,"Cannot load Studio fighter: %s\n",path);return false;}
  uint32_t magic,n,b,w,h,o;bool ok=u32(f,&magic)&&u32(f,&n)&&u32(f,&b)&&u32(f,&w)&&u32(f,&h)&&u32(f,&o)&&f32(f,&m->height_m);
- if(!ok||magic!=0x3346574a||n>150000||n%3||b==0||b>MODEL_BONES||w!=512||h!=1024||o>n||o%3||m->height_m<.5f||m->height_m>3)goto fail;
+ if(!ok||magic!=0x3346574a||n>150000||n%3||b==0||b>MODEL_BONES||(w!=512&&w!=1024&&w!=2048)||(h!=512&&h!=1024&&h!=2048)||o>n||o%3||m->height_m<.5f||m->height_m>3)goto fail;
  m->count=n;m->opaque_count=o;m->bone_count=b;m->width=w;m->height=h;
  for(unsigned i=0;i<b;i++){
   ModelBone *bone=&m->bones[i];uint32_t parent;
@@ -46,18 +46,20 @@ bool model_load(NativeModel *m,const char *path){
 fail:fprintf(stderr,"Invalid or incomplete Studio fighter: %s\n",path);fclose(f);free(memory);model_free(m);return false;
 }
 static void multiply(float *out,const float *a,const float *b){for(int c=0;c<4;c++)for(int r=0;r<4;r++){out[c*4+r]=0;for(int k=0;k<4;k++)out[c*4+r]+=a[k*4+r]*b[c*4+k];}}
-static float pose_amount(const Fighter *f){if(f->action!=LIGHT&&f->action!=HEAVY)return 0;float start=attack_startup(f->action),end=attack_end(f->action),t=f->frame;if(t<start)return -.18f*sinf(t/start*3.14159265f);if(t<=end)return 1;return fmaxf(0,1-(t-end)/(attack_duration(f->action)-end));}
+static float pose_amount(const Fighter *f){if(f->action!=LIGHT&&f->action!=HEAVY&&f->action!=CROSS)return 0;float start=attack_startup(f,f->action),end=attack_end(f,f->action),t=f->frame;if(t<start)return -.18f*sinf(t/start*3.14159265f);if(t<=end)return 1;return fmaxf(0,1-(t-end)/(attack_duration(f,f->action)-end));}
 void model_pose(NativeModel *m,const Fighter *f,float yaw,unsigned tick){
- float world[MODEL_BONES][16],amount=pose_amount(f);
+ float world[MODEL_BONES][16],amount=pose_amount(f);bool karate=f->style==KARATE;
  for(unsigned i=0;i<m->bone_count;i++){
   ModelBone *b=&m->bones[i];float x=0,y=0,z=0,dy=0;const char *name=b->name;
   if(!strcmp(name,"hips"))dy=sinf(tick*.075f)*.006f;
-  if(!strncmp(name,"shoulder",8)){x=-.62f;z=name[8]=='L'?.13f:-.13f;}
-  if(!strncmp(name,"elbow",5))x=-1.65f;
+  if(!strncmp(name,"shoulder",8)){x=karate?-.36f:-.72f;z=name[8]=='L'?.13f:-.13f;}
+  if(!strncmp(name,"elbow",5))x=karate?-1.25f:-1.75f;
+  if(!strncmp(name,"thigh",5)){x=name[5]=='L'?(karate?-.14f:-.08f):(karate?.14f:.08f);if(f->moving)x+=sinf(tick*(karate?.16f:.24f))*(name[5]=='L'?1:-1)*.32f;}
+  if(!strcmp(name,"hips")){dy+=karate?-.025f:sinf(tick*.18f)*.012f;}
   if(!strcmp(name,"head"))y=-yaw*.25f;
-  if(f->guard){if(!strncmp(name,"shoulder",8))x=-.95f;if(!strncmp(name,"elbow",5))x=-1.65f;}
-  if(f->action==LIGHT){if(!strcmp(name,"shoulderR"))x=-.62f-amount*.95f;if(!strcmp(name,"elbowR"))x=-1.65f+amount*1.60f;if(!strcmp(name,"chest"))y=-amount*.12f;}
-  if(f->action==HEAVY){if(!strcmp(name,"thighR"))x=-amount*1.55f;if(!strcmp(name,"kneeR"))x=amount*.08f;if(!strcmp(name,"spine"))x=amount*.14f;}
+  if(f->guard){if(!strncmp(name,"shoulder",8))x=-.95f;if(!strncmp(name,"elbow",5))x=karate?-1.25f:-1.75f;}
+  if(f->action==LIGHT||f->action==CROSS){const char *arm=f->action==CROSS?"L":"R";if(!strncmp(name,"shoulder",8)&&name[8]==arm[0])x=-.62f-amount*.95f;if(!strncmp(name,"elbow",5)&&name[5]==arm[0])x=-1.65f+amount*1.60f;if(!strcmp(name,"chest"))y=amount*(f->action==CROSS?.28f:-.12f);}
+  if(f->action==HEAVY){if(!strcmp(name,"thighR")){x=-amount*1.55f;if(!karate){z=amount*.72f;y=-amount*.45f;}}if(!strcmp(name,"hips")&&!karate)y=-amount*.45f;if(!strcmp(name,"kneeR")){float t=(float)f->frame/attack_startup(f,HEAVY);float chamber=t<1?sinf(t*3.14159265f):0;x=chamber*1.5f+fmaxf(0,amount)*.08f;}if(!strcmp(name,"thighL"))y=karate?0:-amount*.30f;if(!strcmp(name,"spine"))x=amount*.14f;}
   if(f->action==DODGE){if(!strcmp(name,"hips"))dy-=.13f;if(!strncmp(name,"thigh",5))x=-.4f;if(!strncmp(name,"knee",4))x=.8f;if(!strcmp(name,"spine"))x=.3f;}
   if(f->action==STUN){if(!strcmp(name,"chest"))x=-.22f;if(!strcmp(name,"head"))x=-.15f;}
   float a=cosf(x),s=sinf(x),c=cosf(y),d=sinf(y),e=cosf(z),g=sinf(z);

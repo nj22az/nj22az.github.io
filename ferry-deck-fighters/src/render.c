@@ -33,9 +33,9 @@ GL_FN(const unsigned char*,glGetString,(unsigned));GL_FN(unsigned,glGetError,(vo
 typedef struct {float x,y,z;} Vec;
 typedef struct {float r,g,b;} Colour;
 typedef struct {Vec p;Colour c;float u,v,mode,alpha;Vec normal;} Vertex;
-static NativeModel models[2];static unsigned textures[3];
+static NativeModel models[2];static unsigned textures[4];
 static Vertex vertices[MAX_VERTICES];static int used,static_count;
-static unsigned program,buffers[3],triangles;static int matrix_location;
+static unsigned program,buffers[4],triangles;static int ferry_count,ferry_opaque;static int matrix_location;
 static int width,height;static float aspect=1;
 static Colour rgb(unsigned c){return (Colour){((c>>16)&255)/255.f,((c>>8)&255)/255.f,(c&255)/255.f};}
 static Colour shade(Colour c,float s){return (Colour){c.r*s,c.g*s,c.b*s};}
@@ -65,56 +65,17 @@ static void ellipsoid(Vec p,Vec scale,Colour c,int seg,int rings){
         if(j<rings-1)tri(d,b,e,c,true);
     }
 }
-static void beam(Vec a,Vec b,float r,Colour c,int sides){
-    Vec dir=norm(sub(b,a)),u=norm(cross(dir,fabsf(dir.y)<.95f?(Vec){0,1,0}:(Vec){1,0,0})),v=cross(dir,u);
-    for(int i=0;i<sides;i++){
-        float t=i*2*PI/sides,t1=(i+1)*2*PI/sides;
-        Vec d=mul(add(mul(u,cosf(t)),mul(v,sinf(t))),r),e=mul(add(mul(u,cosf(t1)),mul(v,sinf(t1))),r);
-        quad(add(a,d),add(b,d),add(b,e),add(a,e),c);
-        tri(a,add(a,e),add(a,d),c,true);tri(b,add(b,d),add(b,e),c,true);
-    }
-}
 static void disk(Vec p,float rx,float rz,Colour c){for(int i=0;i<24;i++){float a=i*2*PI/24,b=(i+1)*2*PI/24;tri(p,add(p,(Vec){rx*cosf(a),0,rz*sinf(a)}),add(p,(Vec){rx*cosf(b),0,rz*sinf(b)}),c,false);}}
 
 
 static void arena(void){
-    Colour deck=rgb(0x557a78),white=rgb(0xf1eedb),red=rgb(0xc65746),yellow=rgb(0xf2cf70),rail=rgb(0xdfebdf),navy=rgb(0x183b45);
-    // Native recreation from ferry-ship.js: 34.5 x 8.4 m; combat origin is station 24 m.
-    box((Vec){0,-2,0},(Vec){180,.2f,180},rgb(0x62aaa9));
-    for(int i=0;i<14;i++)box((Vec){(i%2?1:-1)*(12+i*1.8f),-1.87f,-15+i*3.f},(Vec){6,.012f,.035f},rgb(0x9bc8bc));
+    // Environmental backdrop only. All vessel geometry comes from the World asset.
+    box((Vec){0,-1.3f,0},(Vec){180,.2f,180},rgb(0x62aaa9));
+    for(int i=0;i<14;i++)box((Vec){(i%2?1:-1)*(12+i*1.8f),-1.17f,-15+i*3.f},(Vec){6,.012f,.035f},rgb(0x9bc8bc));
     ellipsoid((Vec){-23,-1.1f,-40},(Vec){22,6,8},rgb(0x7c9c85),12,4);
     ellipsoid((Vec){27,-1.4f,-47},(Vec){27,5,9},rgb(0x96ab91),12,4);
-    box((Vec){0,-.18f,-6.75f},(Vec){8.4f,.36f,34.5f},deck);
-    // Raised white sides and continuous handrails.
-    for(int side=-1;side<=1;side+=2){float x=side*4.15f;
-        box((Vec){x,.35f,-6.75f},(Vec){.14f,.7f,34.5f},white);
-        for(int z=-23;z<=10;z+=2)beam((Vec){x,.7f,z},(Vec){x,1.08f,z},.032f,rail,6);
-        beam((Vec){x,1.08f,-24},(Vec){x,1.08f,10.5f},.035f,rail,6);
-        box((Vec){side*3.48f,.01f,1.0f},(Vec){1.16f,.02f,9.8f},red);
-        box((Vec){side*2.78f,.026f,1},(Vec){.07f,.015f,9.8f},yellow);
-        // Aft casings, passenger deck and bow houses retain the source arrangement.
-        box((Vec){side*3.43f,1.32f,-12.5f},(Vec){1.3f,2.64f,17},white);
-        box((Vec){side*3.2f,1.2f,8.2f},(Vec){1.9f,2.4f,4.4f},white);
-        box((Vec){side*2.91f,.78f,-3.94f},(Vec){.43f,.65f,.08f},red);
-        box((Vec){side*2.61f,.25f,-3.8f},(Vec){.12f,.45f,.12f},red);
-        box((Vec){side*2.6f,2.77f,6.32f},(Vec){.08f,.8f,.08f},navy);
-        box((Vec){side*2.6f,3.2f,6.32f},(Vec){.3f,.67f,.18f},navy);
-        for(int l=0;l<3;l++)ellipsoid((Vec){side*2.6f,3.41f-l*.21f,6.44f},(Vec){.075f,.075f,.035f},rgb(l==0?0xf47859:0x354f48),8,4);
-    }
-    box((Vec){0,2.8f,-12.5f},(Vec){8.4f,.28f,17},white);
-    box((Vec){0,3.5f,-13.5f},(Vec){6.8f,1.25f,14},white);
-    for(int x=-3;x<=3;x++)box((Vec){x,3.62f,-6.46f},(Vec){.65f,.53f,.04f},rgb(0x356571));
-    box((Vec){0,4.22f,-13.5f},(Vec){7.3f,.2f,14.4f},white);
-    // Closed bow ramp and red/white vehicle barrier. No ring-out into the sea.
-    box((Vec){0,1.34f,10.35f},(Vec){4.6f,2.68f,.24f},rgb(0x426a68));
-    for(int i=0;i<12;i++)box((Vec){-2.15f+i*.39f,.94f,5.3f},(Vec){.39f,.16f,.13f},i%2?white:red);
-    box((Vec){-2.23f,.46f,5.3f},(Vec){.1f,.9f,.1f},white);box((Vec){2.23f,.46f,5.3f},(Vec){.1f,.9f,.1f},white);
-    // Vehicle-lane markings and a chalk sparring rectangle in the clear forward deck.
-    for(int z=-22;z<5;z+=3)box((Vec){0,.012f,z},(Vec){.05f,.014f,1.3f},yellow);
-    for(int s=-1;s<=1;s+=2){box((Vec){s*2.6f,.027f,0},(Vec){.045f,.018f,5.1f},white);box((Vec){0,.027f,s*2.55f},(Vec){5.2f,.018f,.045f},white);}
-    // Mooring bollards and hose reels remain outside the fighting area.
-    for(int s=-1;s<=1;s+=2){beam((Vec){s*3.6f,.03f,4.4f},(Vec){s*3.6f,.35f,4.4f},.12f,navy,8);beam((Vec){s*3.8f,.3f,4.4f},(Vec){s*3.4f,.3f,4.4f},.08f,navy,8);}
 }
+
 static Vec origin;static float yaw,body_drop,fall;
 static Vec local(Vec p){float c=cosf(yaw),s=sinf(yaw);if(fall>0){float y=p.y*cosf(fall)-p.z*sinf(fall),z=p.y*sinf(fall)+p.z*cosf(fall);p.y=y;p.z=z;}return (Vec){origin.x+p.x*c+p.z*s,origin.y+p.y-body_drop,origin.z-p.x*s+p.z*c};}
 static void fighter(const Fighter *f,int who,unsigned tick){
@@ -197,6 +158,7 @@ static void hud(const Match *m,int player,bool diagnostic){
     panel(20,20,680,104);
     centre("JOHANSSON WORLD",32,2,muted);
     text("THAO",38,62,3,paper);text("THUAN",586,62,3,paper);
+    text(fighter_style(&m->fighters[0])->name,38,84,1.1f,muted);text(fighter_style(&m->fighters[1])->name,564,84,1.1f,muted);
     for(int i=0;i<2;i++){
         float x=i?403:38;rect(x,95,279,12,rgb(0x304c51));
         float health=m->fighters[i].hp/100*275;
@@ -207,7 +169,7 @@ static void hud(const Match *m,int player,bool diagnostic){
     snprintf(number,sizeof(number),"ROUND %d",m->round);centre(number,100,1.5f,muted);
     panel(20,628,680,72);
     text(player?"YOU: THUAN":"YOU: THAO",36,642,2,paper);text(m->training?"TRAINING":"VS COMPUTER",480,642,2,muted);
-    text("X / J  JAB     Y / K  KICK",36,670,2,paper);text("A / L GUARD  B DODGE",412,670,1.7f,muted);
+    text("X / J PUNCH   Y / K KICK",36,670,2,paper);text("A / L GUARD  B DODGE",412,670,1.7f,muted);
     if(m->phase==TITLE){
         panel(55,160,610,414);centre("FERRY DECK",188,6,paper);centre("FIGHTERS",242,7,gold);
         centre("THAO  VS  THUAN",317,3,pink);centre("MINATO MARU - CAR DECK",353,2,muted);
@@ -234,22 +196,34 @@ bool render_init(bool gles,const char *assets){
     LOAD(glViewport);LOAD(glReadPixels);LOAD(glPixelStorei);LOAD(glDeleteBuffers);LOAD(glDeleteProgram);LOAD(glGetString);LOAD(glGetError);
     LOAD(glGenTextures);LOAD(glBindTexture);LOAD(glTexImage2D);LOAD(glTexParameteri);LOAD(glDeleteTextures);LOAD(glUniform1i);LOAD(glBlendFunc);LOAD(glDepthMask);LOAD(glCullFace);LOAD(glUniform1f);
     const char *vs="#ifdef GL_ES\nprecision mediump float;\n#define HIGHP highp\n#else\n#define HIGHP\n#endif\nattribute HIGHP vec3 a_pos;attribute vec3 a_normal;uniform float u_outline;attribute vec3 a_col;attribute vec2 a_uv;attribute float a_mode;attribute float a_alpha;uniform HIGHP mat4 u_mvp;varying vec3 v_col;varying vec2 v_uv;varying float v_mode;varying float v_alpha;void main(){v_col=a_col;v_uv=a_uv;v_mode=a_mode;v_alpha=a_alpha;gl_Position=u_mvp*vec4(a_pos+a_normal*u_outline*.011,1.0);}";
-    const char *fragment="varying vec3 v_col;varying vec2 v_uv;varying float v_mode;varying float v_alpha;uniform sampler2D u_map;uniform float u_outline;void main(){vec4 texel=texture2D(u_map,v_uv);vec3 c=v_col;if(v_mode>1.5)c*=texel.rgb;else if(v_mode>.5)c=mix(c,texel.rgb,texel.a);if(u_outline>.5)c=v_col*vec3(.32,.27,.27);gl_FragColor=vec4(c,v_alpha);}";
+    const char *fragment="varying vec3 v_col;varying vec2 v_uv;varying float v_mode;varying float v_alpha;uniform sampler2D u_map;uniform float u_outline;void main(){vec4 texel=texture2D(u_map,v_uv);vec3 c=v_col;float alpha=v_alpha;if(v_mode>1.5){c*=texel.rgb;alpha*=texel.a;if(alpha<.02)discard;}else if(v_mode>.5)c=mix(c,texel.rgb,texel.a);if(u_outline>.5)c=v_col*vec3(.32,.27,.27);gl_FragColor=vec4(c,alpha);}";
     char fs_buffer[2048];snprintf(fs_buffer,sizeof(fs_buffer),"%s%s",gles?"precision mediump float;":"",fragment);const char *fs=fs_buffer;
 
     unsigned v=compile_shader(0x8b31,vs),f=compile_shader(0x8b30,fs);if(!v||!f)return false;
     program=glCreateProgram();glAttachShader(program,v);glAttachShader(program,f);glBindAttribLocation(program,0,"a_pos");glBindAttribLocation(program,1,"a_col");glBindAttribLocation(program,2,"a_uv");glBindAttribLocation(program,3,"a_mode");glBindAttribLocation(program,4,"a_alpha");glBindAttribLocation(program,5,"a_normal");glLinkProgram(program);
     int ok=0;glGetProgramiv(program,0x8b82,&ok);if(!ok){char log[1024];glGetProgramInfoLog(program,sizeof(log),NULL,log);fprintf(stderr,"Program: %s\n",log);return false;}
-    glDeleteShader(v);glDeleteShader(f);glUseProgram(program);matrix_location=glGetUniformLocation(program,"u_mvp");glGenBuffers(3,buffers);
+    glDeleteShader(v);glDeleteShader(f);glUseProgram(program);matrix_location=glGetUniformLocation(program,"u_mvp");glGenBuffers(4,buffers);
     for(unsigned i=0;i<6;i++)glEnableVertexAttribArray(i);
     glEnable(0x0be2);glBlendFunc(0x0302,0x0303);
-    glUniform1i(glGetUniformLocation(program,"u_map"),0);glGenTextures(3,textures);
+    glUniform1i(glGetUniformLocation(program,"u_map"),0);glGenTextures(4,textures);
     for(int i=0;i<3;i++){
         glBindTexture(0x0de1,textures[i]);glTexParameteri(0x0de1,0x2801,0x2601);glTexParameteri(0x0de1,0x2800,0x2601);glTexParameteri(0x0de1,0x2802,0x812f);glTexParameteri(0x0de1,0x2803,0x812f);
         if(i<2){char path[1024];snprintf(path,sizeof(path),"%s/%s.jwf",assets,i?"thuan":"thao");if(!model_load(&models[i],path))return false;NativeModel *m=&models[i];glTexImage2D(0x0de1,0,0x1908,m->width,m->height,0,0x1908,0x1401,m->pixels);}
         else {unsigned char white[4]={255,255,255,255};glTexImage2D(0x0de1,0,0x1908,1,1,0,0x1908,0x1401,white);}
     }
     used=0;arena();static_count=used;upload(buffers[0],0x88e4);
+    {NativeModel stage;char path[1024];snprintf(path,sizeof(path),"%s/../ferry/minato-maru.jwf",assets);
+     if(!model_load(&stage,path))return false;
+     glBindTexture(0x0de1,textures[3]);glTexParameteri(0x0de1,0x2801,0x2601);glTexParameteri(0x0de1,0x2800,0x2601);glTexParameteri(0x0de1,0x2802,0x812f);glTexParameteri(0x0de1,0x2803,0x812f);
+     glTexImage2D(0x0de1,0,0x1908,stage.width,stage.height,0,0x1908,0x1401,stage.pixels);
+     used=0;for(unsigned i=0;i<stage.count;i++){
+      const float *v=stage.vertices+i*24;Vec normal=norm((Vec){v[3],v[4],v[5]});float l=dot(normal,norm((Vec){-.35f,.85f,.55f}));float light=l>.65f?1:l>.05f?.94f:.84f;
+      if(used>=MAX_VERTICES){model_free(&stage);return false;}
+      vertices[used++]=(Vertex){{v[0],v[1],v[2]},{v[6]*light,v[7]*light,v[8]*light},v[10],v[11],v[12],v[9],{0,0,0}};
+     }
+     ferry_count=used;ferry_opaque=stage.opaque_count;upload(buffers[3],0x88e4);model_free(&stage);
+    }
+
     printf("Renderer: %s | %s\n",glGetString(0x1f01),glGetString(0x1f02));
     return true;
 }
@@ -261,6 +235,8 @@ void render_frame(const Match *m,int player,bool diagnostic){
     float midx=(m->fighters[0].x+m->fighters[1].x)*.5f,midz=(m->fighters[0].z+m->fighters[1].z)*.5f;
     float matrix[16];camera_matrix(matrix,(Vec){midx*.3f,2.9f,4.7f},(Vec){midx*.5f,.9f,midz*.4f});
     glUniformMatrix4fv(matrix_location,1,0,matrix);glBindTexture(0x0de1,textures[2]);bind(buffers[0]);glDrawArrays(4,0,static_count);triangles=static_count/3;
+    glBindTexture(0x0de1,textures[3]);bind(buffers[3]);glDrawArrays(4,0,ferry_opaque);glDepthMask(0);glDrawArrays(4,ferry_opaque,ferry_count-ferry_opaque);glDepthMask(1);triangles+=ferry_count/3;
+
     for(int i=0;i<2;i++){
         used=0;fighter(&m->fighters[i],i,m->tick);upload(buffers[1],0x88e0);bind(buffers[1]);glBindTexture(0x0de1,textures[i]);
         int shadow=72,opaque=(int)models[i].opaque_count;
@@ -290,5 +266,5 @@ bool render_capture(const char *path){
     if(fclose(f)!=0)ok=false;
     free(pixels);return ok;
 }
-void render_close(void){if(program){glDeleteBuffers(3,buffers);glDeleteTextures(3,textures);glDeleteProgram(program);for(int i=0;i<2;i++)model_free(&models[i]);}}
+void render_close(void){if(program){glDeleteBuffers(4,buffers);glDeleteTextures(4,textures);glDeleteProgram(program);for(int i=0;i<2;i++)model_free(&models[i]);}}
 unsigned render_triangles(void){return triangles;}

@@ -8,11 +8,18 @@
 #define ARENA_X 2.28f
 #define ARENA_Z 2.15f
 
-typedef enum { IDLE, LIGHT, HEAVY, STUN, DODGE, DOWN } Action;
+typedef enum { IDLE, LIGHT, HEAVY, CROSS, STUN, DODGE, DOWN } Action;
 typedef enum { TITLE, READY, FIGHT, RESULT, PAUSE } Phase;
 typedef struct { float x,z; bool light,heavy,guard,dodge; } Input;
+typedef enum { KICKBOXING, KARATE } FightingStyle;
+typedef struct {const char *name;int startup,active_end,duration,hitstun,blockstun;float damage,reach,cone;} MoveDef;
+typedef struct {const char *name;float walk,dodge,preferred_range;int dodge_cooldown,parry_window;MoveDef moves[3];} StyleDef;
 typedef struct {
     float x,z,fx,fz,hp;
+    FightingStyle style;
+    int guard_ticks,counter_ticks,stun_ticks,buffer_ticks;
+    Action buffered;
+    bool moving;
     Action action;
     int frame,guard_stun,dodge_cooldown,wins;
     bool guard,connected;
@@ -33,8 +40,10 @@ void match_next(Match *m);
 void match_pause(Match *m);
 void match_step(Match *m,Input a,Input b);
 Input match_ai(Match *m,int who);
-int attack_startup(Action a);
-int attack_end(Action a);
-int attack_duration(Action a);
-float attack_reach(Action a);
+const StyleDef *fighter_style(const Fighter *f);
+const MoveDef *fighter_move(const Fighter *f,Action a);
+int attack_startup(const Fighter *f,Action a);
+int attack_end(const Fighter *f,Action a);
+int attack_duration(const Fighter *f,Action a);
+float attack_reach(const Fighter *f,Action a);
 #endif
