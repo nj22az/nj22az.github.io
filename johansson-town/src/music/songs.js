@@ -8,7 +8,7 @@ export const STYLES=Object.freeze({
  enka:Object.freeze({label:'Midnight enka',bpm:76,colour:0x99a8ec,base:57,melody:[0,2,3,7,10,7,3,2],wave:'sine'}),
  eurobeat:Object.freeze({label:'Turbo eurobeat',bpm:160,colour:0x7dccf5,base:60,melody:[0,7,12,10,7,3,5,7],wave:'sawtooth'}),
 });
-export const VOICES=Object.freeze({cast:'Cast voices',crooner:'Low crooner',alto:'Bright alto',belt:'Stadium belt',chip:'Tiny superstar'});
+export const VOICES=Object.freeze({cast:'Live cast voices',crooner:'Low crooner',alto:'Bright alto',belt:'Stadium belt',chip:'Tiny superstar'});
 export const PERFORMANCES=Object.freeze({relaxed:'Relaxed',showtime:'Showtime',wild:'Go wild'});
 export const SONGS=Object.freeze([
  {id:'harbour',title:'Harbour Lights',style:'ballad',lines:['The ferry horn across the water','The lanterns shine along the quay','I sing beneath the harbour lights','Come home and sing this song with me']},

@@ -11,6 +11,7 @@ import {PALETTE,PARTS,PATTERNS,BOTTOM_PATTERNS,NUMBERED_TOPS,normalizeRecipe,enc
 import {POSITION_FEATURES,hitFaceFeature,draggedFaceFields} from './face-position.js';
 import {CAST_RECIPES,ORIGINAL_THUAN_RECIPE} from './cast.js';
 import {MOVES} from './moves.js';
+import {expressiveEmotion} from './expressive-poses.js';
 import {DIALS,DIAL_STEPS,dialStep,stepValue,personalityOf,voiceOf,MONTHS,daysIn,hello} from './personality.js';
 import {svg} from '../ui/icons.js';
 import {townAudio,unlockTownAudio} from '../audio/town-audio.js';
@@ -559,7 +560,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   avatar.paintFace=state=>'actingBrow' in state?paint(state):paint({blinkLeft:undefined,blinkRight:undefined,actingBrow:0,actingSmile:0,...state,...activePerformanceFace});
  }
  function updatePerformance(dt,talking=false){
-  const mood=expression!=='auto'?expression:step==='hello'?'happy':pose==='lie'?'dizzy':pose==='EvilLaugh'?'scheme':pose==='Hop'?'happy':pose==='Kachashi'?'laugh':pose==='idle'?'neutral':'smile';
+  const mood=expression!=='auto'?expression:step==='hello'?'happy':expressiveEmotion(pose)|| (pose==='lie'?'dizzy':pose==='EvilLaugh'?'scheme':pose==='Hop'?'happy':pose==='Kachashi'?'laugh':pose==='idle'?'neutral':'smile');
   activePerformanceFace=performanceEnabled?performanceState.update(dt,mood):{};
   if(talking&&!performanceState.state.speaking)delete activePerformanceFace.talk;
   animator.update(dt,{speed:pose==='walk'?1.2:0,seated:pose==='sit',seatHeight:.42,lying:pose==='lie',talking:talking||performanceEnabled&&performanceState.state.speaking,expression:mood});

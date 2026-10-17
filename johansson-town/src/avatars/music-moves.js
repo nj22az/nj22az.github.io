@@ -1,7 +1,8 @@
 /** Shared, beat-driven performance poses for World and Studio. Original choreography. */
 export const MUSIC_MOVES=Object.freeze([
  ['DiscoPoint','Disco point'],['IdolDance','Idol step-touch'],['AirGuitar','Air guitar'],
- ['RockBelt','Stadium rock singer'],['EnkaReach','Dramatic ballad'],['RobotDance','Robot dance']
+ ['RockBelt','Stadium rock singer'],['EnkaReach','Dramatic ballad'],['RobotDance','Robot dance'],
+ ['ChickenDance','Chicken dance'],['JellyWobble','Jelly wobble'],['DramaFinish','Overdramatic superstar']
 ].map(Object.freeze));
 const TAU=Math.PI*2;
 export function musicPose(name,beat,energy=1){
@@ -32,6 +33,15 @@ export function musicPose(name,beat,energy=1){
   const tick=Math.floor(beat*2)%4,arm=tick%2?-.35:-1.25;
   joints.shoulderL=[arm,0,.7];joints.shoulderR=[-1.5-arm,0,-.7];joints.elbowL=[-Math.PI/2,0,0];joints.elbowR=[-Math.PI/2,0,0];
   joints.head=[0,(tick-1.5)*.17,0];joints.chest=[0,(tick%2?1:-1)*.18,0];
+ }else if(name==='ChickenDance'){
+  joints.shoulderL=[-.25,0,.8+left*.65];joints.shoulderR=[-.25,0,-.8-right*.65];joints.elbowL=[-1.8,0,.3];joints.elbowR=[-1.8,0,-.3];
+  joints.head=[.15+pulse*.18,0,-swing*.18];joints.chest=[.18,0,-swing*.13];
+ }else if(name==='JellyWobble'){
+  joints.hips=[0,swing*.3*energy,Math.sin(beat*TAU/3)*.14*energy];joints.chest=[Math.sin(beat*TAU/3)*.17,0,-swing*.23*energy];
+  joints.head=[-.1,Math.sin(beat*Math.PI/2)*.3,swing*.25*energy];joints.shoulderL=[-.3,0,.7+left*.4];joints.elbowL=[-.5-pulse*.45,0,0];
+ }else if(name==='DramaFinish'){
+  joints.head=[-.3,Math.sin(beat*Math.PI/4)*.28,0];joints.chest=[-.22,0,-swing*.15];
+  joints.shoulderL=[-.35,0,2.05+left*.25];joints.elbowL=[-.2,0,0];joints.shoulderR=[-1.4,0,-.35];joints.elbowR=[-1.25,0,0];
  }
  return {joints,root:0};
 }

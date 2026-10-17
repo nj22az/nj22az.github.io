@@ -1,5 +1,5 @@
 import {createActingPanel} from './acting/panel.js?v=20261016-1';
-import {createPerformancePanel} from './performance-panel.js?v=20261015-1';
+import {createPerformancePanel} from './performance-panel.js?v=20261017-1';
 import {openCreator} from '../johansson-town/src/avatars/creator.js';
 import {ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/src/avatars/cast.js';
 import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js';

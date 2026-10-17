@@ -180,7 +180,7 @@ async function concert({song,arrangement,voice,performance,cast,title,lines}={})
  const set=(name,value)=>{const field=document.querySelector('#concert [name="'+name+'"]');field.value=value;field.dispatchEvent(new Event('change',{bubbles:true}));};
  if(song!==undefined&&!state.concert.choices.songs.some(s=>s.id===song))return result(false,{error:'Unknown song.'});
  if(arrangement!==undefined&&!state.concert.choices.arrangements.includes(arrangement))return result(false,{error:'Unknown arrangement.'});
- if(voice!==undefined&&!state.concert.choices.voices.includes(voice))return result(false,{error:'Unknown electronic voice.'});
+ if(voice!==undefined&&!state.concert.choices.voices.includes(voice))return result(false,{error:'Unknown character voice.'});
  if(performance!==undefined&&!state.concert.choices.performances.includes(performance))return result(false,{error:'Unknown stage energy.'});
  if(cast!==undefined&&(!Array.isArray(cast)||cast.length<1||cast.length>4||new Set(cast).size!==cast.length||cast.some(n=>!state.concert.choices.singers.includes(n))))return result(false,{error:'Choose one to four distinct singers from the song book.'});
  if(title!==undefined&&(typeof title!=='string'||title.length>48))return result(false,{error:'The title is limited to 48 characters.'});
@@ -197,7 +197,7 @@ window.__JOHANSSON_WEBMCP__={status:'waiting-for-model-context',registered:0,api
 const tools=[
   {
     name:TOOL_PREFIX+'concert',
-    description:'Configure the open Minato karaoke song book. Use the physical karaoke machine first. Choose original song, one of six genre arrangements, electronic voice, stage energy, one to four singers, title and four lyric lines. Cheer! adds a backing response while performing. Use choose_action to Perform, Stop, Encore or Return to Minato. A new session costs 100 in-game yen; encores are included.',
+    description:'Configure the open Minato karaoke song book. Use the physical karaoke machine first. Choose original song, one of six genre arrangements, live text voice, stage energy, one to four singers, title and four custom lyric lines spoken live by device TTS. Go wild adds chicken dancing, jelly wobbling and comic acting. Test voice checks speech availability. Cheer! adds a backing response while performing. Use choose_action to Perform, Stop, Encore or Return to Minato. A new session costs 100 in-game yen; encores are included.',
     inputSchema:{type:'object',properties:{song:{type:'string',enum:['harbour','bus','summer']},arrangement:{type:'string',enum:['pop','ballad','disco','rock','enka','eurobeat']},voice:{type:'string',enum:['cast','crooner','alto','belt','chip']},performance:{type:'string',enum:['relaxed','showtime','wild']},cast:{type:'array',items:{type:'string'},minItems:1,maxItems:4,uniqueItems:true},title:{type:'string',maxLength:48},lines:{type:'array',items:{type:'string',maxLength:64},minItems:4,maxItems:4}},additionalProperties:false},
     annotations:{readOnlyHint:false,untrustedContentHint:false},execute:concert
   },

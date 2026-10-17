@@ -39,3 +39,7 @@ All implementation is original and uses the town's existing types, artwork, cata
 - Published runtime and stylesheet fingerprints pass all three packaging checks. Chunks from the previously published manifest are retained for cached pages.
 
 External web fonts are blocked during isolated browser acceptance; local fallback fonts are used. Streamed model requests intentionally cancelled by World are distinguished from missing assets or script errors.
+
+## Publishing-branch integration
+
+Integrated publishing commit `4db918e` (typed karaoke lyrics and shared expressive poses) after it arrived during implementation. Both source changes are retained; generated-runtime conflicts were resolved by rebuilding the combined sources. The combined revision passes 64 focused checks, including live lyrics, expressive poses, resident guide and runtime packaging. Studio again passes its 73 active checks with the existing skirt TODO unchanged.
