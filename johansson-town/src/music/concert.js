@@ -2,6 +2,7 @@ import {SONGS,STYLES,VOICES,PERFORMANCES,SONG_PRICE,cleanSong,cleanConcert,score
 import {createConcertAudio} from './audio.js';
 import {createConcertStage} from './stage.js';
 import {CONCERT_CSS} from './styles.js';
+import {createLiveLyrics} from './live-lyrics.js';
 
 /** The physical Minato machine opens this set. World keeps its renderer and resumes at the same place on exit. */
 export function createConcert({renderer,getCast,getDraft,saveDraft,pay,onFinish=()=>{},soundEnabled=()=>true,onOpen=()=>{},onClose=()=>{}}){
@@ -9,11 +10,11 @@ export function createConcert({renderer,getCast,getDraft,saveDraft,pay,onFinish=
  const style=document.createElement('style');style.textContent=CONCERT_CSS;document.head.append(style);
  ui.innerHTML=`<header><div><h2 id="concertTitle">Minato karaoke</h2><p>One microphone. The whole town.</p></div><button type="button" data-close>Return to Minato</button></header>
  <div class="concert-main"><div class="concert-view"><div class="concert-screen"><span class="concert-badge">LASERDISC KARAOKE · 1997</span><span class="concert-count" aria-hidden="true"></span></div><div class="concert-lyrics"><p class="concert-line">Your evening at Minato</p><p class="concert-next">Choose your song and take the stage.</p><div class="concert-progress" role="progressbar" aria-label="Song progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div></div></div>
- <form class="concert-tools"><h3>Tonight’s performance</h3><p class="concert-copy">Choose a song and the people who will sing it. Groups trade verses and sing the last line together.</p><label>Song<select name="song" aria-label="Song"></select></label><label>Arrangement<select name="style" aria-label="Arrangement"></select></label><label>Electronic voice<select name="voice" aria-label="Electronic voice"></select></label><label>Stage energy<select name="performance" aria-label="Stage energy"></select></label><label>Performers<select name="size" aria-label="Number of performers"><option value="1">Solo</option><option value="2">Duet</option><option value="3">Trio</option><option value="4">Quartet</option></select></label><fieldset><legend>On stage</legend></fieldset><details><summary>Edit the title and lyrics</summary><label>Title<input name="title" maxlength="48" autocomplete="off"></label><div data-lyrics></div><button type="button" class="concert-reset" data-reset>Restore this song</button></details><p class="concert-note">Original arrangements with foreground electronic singing. These are synthetic voices. Short lyric lines work best. Changes are saved with your town.</p></form></div>
+ <form class="concert-tools"><h3>Tonight’s performance</h3><p class="concert-copy">Choose a song and the people who will sing it. Groups trade verses and sing the last line together.</p><label>Song<select name="song" aria-label="Song"></select></label><label>Arrangement<select name="style" aria-label="Arrangement"></select></label><label>Character voice<select name="voice" aria-label="Character voice"></select></label><label>Stage energy<select name="performance" aria-label="Stage energy"></select></label><label>Performers<select name="size" aria-label="Number of performers"><option value="1">Solo</option><option value="2">Duet</option><option value="3">Trio</option><option value="4">Quartet</option></select></label><fieldset><legend>On stage</legend></fieldset><details open><summary>Write your own song</summary><label>Title<input name="title" maxlength="48" autocomplete="off"></label><div data-lyrics></div><button type="button" data-test-voice>Test voice</button><button type="button" class="concert-reset" data-reset>Restore this song</button></details><p class="concert-note">Write four short lines, choose your music and press Perform. Your device speaks your words live while the cast dances. Go wild adds silly routines. This is rhythmic text-to-speech; available voices vary by device. Your song is saved with your town.</p></form></div>
  <footer><p class="concert-status" role="status" aria-live="polite">Choose your song.</p><button type="button" data-mute aria-pressed="false">Sound on</button><button type="button" data-camera aria-pressed="false">Camera: auto</button><button type="button" data-cheer hidden>Cheer!</button><button type="button" data-edit hidden>Back to songs</button><button type="button" class="concert-primary" data-play>Perform · ¥100</button></footer>`;
  document.body.append(ui);
  const $=q=>ui.querySelector(q),field=n=>$(`[name="${n}"]`),screen=$('.concert-screen'),line=$('.concert-line'),next=$('.concert-next'),status=$('.concert-status'),button=$('[data-play]'),canvas=renderer.domElement;
- const audio=createConcertAudio(),reduced=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
+ const liveLyrics=createLiveLyrics(),audio=createConcertAudio({liveLyrics}),reduced=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
  let stage=null,opened=false,busy=false,playing=false,finished=false,paid=false,muted=false,view='auto',score=null,roster=[],draft=null,home=null,focusBefore=null,request=0,lastCue='',startTime=0,lastProgress=-1,silentClock=false,cheerUntil=0,lastCheer=-Infinity;
  let currentKey='';
  for(const song of SONGS)field('song').add(new Option(song.title,song.id));
@@ -38,6 +39,7 @@ export function createConcert({renderer,getCast,getDraft,saveDraft,pay,onFinish=
   const key=draft.cast.join('|');if(key!==currentKey){stage.cast(draft.cast.map(n=>roster.find(r=>r.name===n)));currentKey=key;}
  }
  function setup(){
+  liveLyrics.stop();
   playing=false;finished=false;cheerUntil=0;lastCheer=-Infinity;$('[data-cheer]').hidden=true;audio.stop();ui.classList.remove('concert-show');button.textContent=paid?'Perform again':'Perform · ¥'+SONG_PRICE;button.disabled=false;$('[data-edit]').hidden=true;
   $('.concert-count').textContent='';$('.concert-badge').textContent='LASERDISC KARAOKE · 1997';line.textContent=draft.song.title;next.textContent=STYLES[draft.song.style].label+' · '+draft.cast.join(' & ');progress(0);
  }
@@ -46,6 +48,7 @@ export function createConcert({renderer,getCast,getDraft,saveDraft,pay,onFinish=
   request++;busy=false;setup();announce(message);button.focus();
  }
  function complete(){
+  liveLyrics.stop();
   playing=false;finished=true;$('[data-cheer]').hidden=true;audio.stop();draft.completed++;persist();onFinish(draft.song.title,draft.cast);
   line.textContent='Thank you, Minato!';next.textContent=draft.cast.join(' · ');$('.concert-count').textContent='';$('.concert-badge').textContent='THE FINAL BOW';progress(1);
   button.textContent='Encore';$('[data-edit]').hidden=false;announce('The room applauds. Encore, or choose another song.');button.focus();
@@ -54,20 +57,22 @@ export function createConcert({renderer,getCast,getDraft,saveDraft,pay,onFinish=
   if(busy)return;if(playing){stop();return;}
   // Keep the cast and score immutable for this take. Editing happens between performances.
   flushEdits();syncSong();score=scoreFor(draft.song);persist();const token=++request;busy=true;button.disabled=true;announce('Finding the disc…');
+  liveLyrics.arm(score,draft.cast.map(n=>roster.find(r=>r.name===n).recipe),{silent:muted});
   try{
    const audible=await audio.start(score,draft.cast.map(n=>roster.find(r=>r.name===n).recipe),{silent:muted});
    if(!opened||request!==token)return;
-   if(!audible&&!muted){audio.stop();announce('Sound could not start. Try again, or switch sound off for a silent performance.');return;}
-   if(!paid&&!pay(SONG_PRICE)){audio.stop();announce('A song costs ¥100. Your wallet has too few yen.');return;}
+   if(!audible&&!muted){audio.stop();liveLyrics.stop();announce('Sound could not start. Try again, or switch sound off for a silent performance.');return;}
+   if(!paid&&!pay(SONG_PRICE)){audio.stop();liveLyrics.stop();announce('A song costs ¥100. Your wallet has too few yen.');return;}
    paid=true;playing=true;finished=false;silentClock=!audible;startTime=performance.now()+100;lastCue='';
    ui.classList.add('concert-show');$('[data-edit]').hidden=true;$('[data-cheer]').hidden=false;cheerUntil=0;lastCheer=-Infinity;button.textContent='Stop';
-   announce(audible?'Four beats, then you are on.':'Audio is unavailable. The stage and lyrics will play silently.');
+   announce(audible?(liveLyrics.notice||'Four beats, then your words go live!'):'Audio is unavailable. The stage and lyrics will play silently.');
    button.focus();
-  }catch(error){audio.stop();announce('The disc could not start. Please try again.');console.warn('Concert start failed',error);}
+  }catch(error){audio.stop();liveLyrics.stop();announce('The disc could not start. Please try again.');console.warn('Concert start failed',error);}
   finally{if(request===token){busy=false;button.disabled=false;}}
  }
  function cue(seconds){
-  const c=cueAt(score,seconds),key=[c.phase,c.line,c.word,c.count].join('|');
+  const c=cueAt(score,seconds),spoken=liveLyrics.cue;if(c.phase==='singing'&&spoken?.line===c.line&&spoken.word>=0)c.word=spoken.word;
+  const key=[c.phase,c.line,c.word,c.count].join('|');
   if(key!==lastCue){lastCue=key;
    $('.concert-count').textContent=c.phase==='count-in'?String(c.count):'';
    if(c.phase==='count-in'){line.textContent=draft.song.title;next.textContent='Get ready · '+draft.cast.join(' & ');}
@@ -94,7 +99,8 @@ export function createConcert({renderer,getCast,getDraft,saveDraft,pay,onFinish=
   const t=playing?(silentClock?Math.max(0,(performance.now()-startTime)/1000):audio.elapsed):finished?score.duration-score.beat*.05:0;
   if(playing)audio.update();const c=playing?cue(t):finished?{phase:'bow',line:-1,word:-1}:null;
   if(c?.phase==='finished'){complete();}
-  stage.frame(t,c,score,{view,reduced:!!reduced?.matches,cheering:playing&&t<cheerUntil});
+  if(playing&&liveLyrics.notice&&status.textContent!==liveLyrics.notice)announce(liveLyrics.notice);
+  stage.frame(t,c,score,{view,reduced:!!reduced?.matches,cheering:playing&&t<cheerUntil,vocalCue:playing?liveLyrics.cue:null});
   renderer.setRenderTarget(null);renderer.render(stage.scene,stage.camera);
  }
  function open(){
@@ -106,17 +112,22 @@ export function createConcert({renderer,getCast,getDraft,saveDraft,pay,onFinish=
   }catch(error){close();throw error;}
  }
  function close(){
-  if(!opened)return;request++;opened=false;playing=false;busy=false;audio.stop();flushEdits();persist();
+  if(!opened)return;request++;opened=false;playing=false;busy=false;audio.stop();liveLyrics.stop();flushEdits();persist();
   ui.hidden=true;document.documentElement.classList.remove('concert-open');
   if(home){home.parent.insertBefore(canvas,home.next?.parentNode===home.parent?home.next:null);canvas.style.cssText=home.style;home=null;}
   stage?.dispose();stage=null;onClose();if(focusBefore?.isConnected)focusBefore.focus();
  }
- function syncMute(){$('[data-mute]').textContent=muted?'Sound off':'Sound on';$('[data-mute]').setAttribute('aria-pressed',String(muted));audio.mute(muted);}
+ function syncMute(){$('[data-mute]').textContent=muted?'Sound off':'Sound on';$('[data-mute]').setAttribute('aria-pressed',String(muted));audio.mute(muted);liveLyrics.mute(muted);}
  function cheer(){if(!playing)return;const t=silentClock?Math.max(0,(performance.now()-startTime)/1000):audio.elapsed;if(t-lastCheer<score.beat*2)return;lastCheer=t;cheerUntil=t+score.beat*4;audio.cheer();announce('Hey! The room joins in. H or Cheer! adds another response.');}
  $('[data-cheer]').onclick=cheer;
  $('[data-play]').onclick=perform;$('[data-close]').onclick=close;$('[data-edit]').onclick=()=>stop('Choose your next song. Encores are included.');
  $('[data-mute]').onclick=()=>{muted=!muted;syncMute();};
  $('[data-camera]').onclick=()=>{view=view==='auto'?'wide':'auto';$('[data-camera]').textContent='Camera: '+view;$('[data-camera]').setAttribute('aria-pressed',String(view==='wide'));};
+ $('[data-test-voice]').onclick=async()=>{
+  if(playing||busy)return;if(muted){announce('Switch sound on before testing your voice.');return;}flushEdits();persist();const token=++request;announce('Testing your device’s text voice…');
+  const result=await liveLyrics.test(draft.song.lines[0],draft.song.voice,roster.find(r=>r.name===draft.cast[0])?.recipe);
+  if(opened&&token===request)announce(result.spoken?'Voice ready. Your edited words will be spoken live.':liveLyrics.notice||'Voice test stopped.');
+ };
  $('[data-reset]').onclick=()=>{draft.song=cleanSong(SONGS.find(s=>s.id===draft.song.id));syncSong();persist();setup();announce('The original title, words and arrangement are restored.');};
  $('form').onsubmit=e=>e.preventDefault();
  $('form').onchange=e=>{
@@ -140,5 +151,5 @@ export function createConcert({renderer,getCast,getDraft,saveDraft,pay,onFinish=
  document.addEventListener('keydown',keydown,true);
  const hidden=()=>{if(opened&&document.hidden){flushEdits();persist();stop('Performance paused while you were away. Press Perform again to restart.');}};
  document.addEventListener('visibilitychange',hidden);const pagehide=()=>{if(opened)stop('Press Perform again to restart.');};window.addEventListener('pagehide',pagehide);
- return {open,close,render,get active(){return opened;},get panel(){return ui;},get playing(){return playing;},snapshot(){return {active:opened,playing,busy,finished,paid,song:score?.song,cast:draft?.cast,elapsed:playing?(silentClock?(performance.now()-startTime)/1000:audio.elapsed):0,phase:playing?cueAt(score,silentClock?(performance.now()-startTime)/1000:audio.elapsed).phase:finished?'finished':'setup',sound:!muted};},dispose(){close();audio.dispose();ui.remove();style.remove();document.removeEventListener('keydown',keydown,true);document.removeEventListener('visibilitychange',hidden);window.removeEventListener('pagehide',pagehide);}};
+ return {open,close,render,get active(){return opened;},get panel(){return ui;},get playing(){return playing;},snapshot(){return {active:opened,playing,busy,finished,paid,song:score?.song,cast:draft?.cast,elapsed:playing?(silentClock?(performance.now()-startTime)/1000:audio.elapsed):0,phase:playing?cueAt(score,silentClock?(performance.now()-startTime)/1000:audio.elapsed).phase:finished?'finished':'setup',sound:!muted,vocalSource:liveLyrics.source,vocalNotice:liveLyrics.notice,vocalCue:liveLyrics.cue};},dispose(){close();liveLyrics.dispose();audio.dispose();ui.remove();style.remove();document.removeEventListener('keydown',keydown,true);document.removeEventListener('visibilitychange',hidden);window.removeEventListener('pagehide',pagehide);}};
 }

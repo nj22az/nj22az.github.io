@@ -233,3 +233,20 @@ body.standalone-studio .shm[data-step] :is(.shm-chips button,.shm-toggle,.shm-ta
 .studio-actor-camera[hidden]{display:none;}
 .studio-acting-note,.studio-acting-body p{font-size:12px;line-height:1.5;margin:0;}
 .studio-acting-status:empty{display:none;}
+
+/* Personality is a Studio inspector; appearance editing keeps its existing feature rail. */
+body.standalone-studio .shm[data-step=profile] .shm-main{grid-template-columns:minmax(220px,1fr) minmax(320px,1fr)}
+body.standalone-studio .shm[data-step=profile] .shm-side{grid-column:1;grid-row:1}
+body.standalone-studio .shm[data-step=profile] .shm-panel{grid-column:2;grid-row:1;display:flex;flex-direction:column}
+body.standalone-studio .shm[data-step=profile] .shm-panel>.shm-body{flex:1;min-height:0}
+body.standalone-studio .shm[data-step=profile] .shm-panel :is(.shm-category-wrap,.shm-pages,.shm-palette){display:none}
+body.standalone-studio .shm[data-step=profile] .shm-type{background:#f2faf5;border-radius:12px;color:var(--line-text);padding:14px}
+body.standalone-studio .shm[data-step=profile] .shm-note{text-align:left;font-size:13px}
+body.standalone-studio .shm .personality-reference h4{font-size:13px;letter-spacing:0}
+@media(max-width:760px){
+ body.standalone-studio .shm[data-step=profile] .shm-main{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(130px,28%) minmax(0,1fr)}
+ body.standalone-studio .shm[data-step=profile] .shm-side{grid-column:1;grid-row:1}
+ body.standalone-studio .shm[data-step=profile] .shm-panel{grid-column:1;grid-row:2}
+ body.standalone-studio .shm[data-step=profile] .shm-side{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:8px}
+ body.standalone-studio .shm[data-step=profile] .shm-dice{grid-column:2;grid-row:1;flex-direction:column;justify-content:center}
+}

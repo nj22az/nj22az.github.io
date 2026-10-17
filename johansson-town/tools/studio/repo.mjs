@@ -134,6 +134,10 @@ export function openRepo(root=defaultRoot()){
   const [text,info]=await Promise.all([readFile(lock,'utf8').catch(()=>null),lstat(lock).catch(()=>null)]);
   if(text===null||!info)return true;
   const pid=Number(text.split(' ')[0]);
+  // Exclusive creation makes the file visible before writeFile fills in its owner.
+  // A contender must wait for that fresh empty file, rather than delete a lock
+  // whose owner is still writing its token. Malformed abandoned files age out.
+  if((!Number.isInteger(pid)||pid<=0)&&Date.now()-info.mtimeMs<LOCK.stale)return false;
   if(Number.isInteger(pid)&&pid>0&&alive(pid)&&Date.now()-info.mtimeMs<LOCK.stale)return false;
   // Only one process clears a left-behind lock, holding the breaker (lock.break): otherwise two can both see it as
   // left behind, one clears it and takes the lock, and the other then deletes that new lock and writes alongside it.

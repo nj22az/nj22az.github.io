@@ -276,6 +276,21 @@ test('the published looks file is checked whole: notes for every field, dates, a
  assert.match(validateLooks(thuan).problems.map(p=>p.sentence).join(' '),/Thuan is drawn as an adult/);
 });
 
+test('a writer waits while another process is filling in a newly created lock',async()=>{
+ const at=await makeRoot('studio-empty-lock-'),lock=resolve(at,PATHS.lock);
+ let writer,entered=false;
+ try{
+  // This is the interval between exclusive creation and writing the owner's token.
+  await writeFile(lock,'',{flag:'wx'});
+  writer=openRepo(at).locked(async()=>{entered=true;});
+  await new Promise(r=>setTimeout(r,150));
+  assert.equal(entered,false,'a fresh empty lock still belongs to its creator');
+  await rm(lock);
+  await writer;
+  assert.equal(entered,true,'the waiting writer proceeds after the owner releases');
+ }finally{await rm(lock,{force:true});await writer;await rm(at,{recursive:true,force:true});}
+});
+
 test('eight writers in eight processes at once: every change and every log entry is kept (the write lock)',{timeout:240000},async()=>{
  const at=await makeRoot('studio-lock-'),cli=resolve(town,'tools/studio/cli.mjs'),env={...process.env,JOHANSSON_STUDIO_ROOT:at};
  try{

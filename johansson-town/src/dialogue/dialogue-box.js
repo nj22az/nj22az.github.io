@@ -1,3 +1,4 @@
+import {voiceOf} from '../avatars/personality.js';
 /**
  * Conversations as scenes: Shenmue's staging, Grim Fandango's words.
  *
@@ -101,7 +102,7 @@ export function voiceFor(name=''){
  return {freq:RYUKYU[2+h%7],type:h&8?'triangle':'sine'};
 }
 
-export function createDialogueBox({modal,heading,body,actions,isOpen,leave,onPhase=()=>{},voice=()=>{},win=globalThis.window}){
+export function createDialogueBox({modal,heading,body,actions,isOpen,leave,onPhase=()=>{},voice=()=>{},voiceProfile=()=>null,win=globalThis.window}){
  const doc=modal.ownerDocument||globalThis.document;
  // Outside a real browser (the tests' stand-in DOM) everything happens at once.
  const animated=typeof win?.matchMedia==='function'&&typeof win?.setTimeout==='function';
@@ -109,7 +110,7 @@ export function createDialogueBox({modal,heading,body,actions,isOpen,leave,onPha
  const reduced=()=>!!win?.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
  // Voices: a soft blip every few letters as a line types out, pitched by speaker. The
  // sound itself is the town's (audio/town-audio.js), so it follows the Sound setting.
- const blip=(name,index)=>{const {freq,type}=voiceFor(name);voice(index%2?freq:freq*1.0595,type);};
+ const blip=(name,index)=>{const profile=voiceProfile(name),v=profile?voiceOf(profile):voiceFor(name);voice(index%2?v.freq:v.freq*(v.swing||1.0595),v.type,v.volume,{vibrato:v.vibrato||0});};
  /** Stops the typewriter and shows the whole line. */
  const finishTyping=()=>{if(typing){win.clearInterval(typing);typing=null;}if(lineEl)lineEl.textContent=fullLine;};
  const choices=()=>[...actions.querySelectorAll('button')].filter(b=>!b.disabled);
@@ -172,6 +173,7 @@ export function createDialogueBox({modal,heading,body,actions,isOpen,leave,onPha
   // The line types itself out, then a beat to take it in before the replies come up.
   // A tap, E or Space finishes it at once.
   listening=true;modal.classList.add('listening');
+  const profile=voiceProfile(speaker),tickMs=profile?voiceOf(profile).letterMs:22;
   let typed=0;
   if(!reduced()&&fullLine.length>1){
    line.textContent='';
@@ -179,10 +181,10 @@ export function createDialogueBox({modal,heading,body,actions,isOpen,leave,onPha
    // Beats written into the line (dialogue/markup.js {p}, or the engine's |) hold the
    // typing where they fall: BEAT_TICKS of the 22 ms tick for each beat.
    let ticks=0,hold=0;
-   typing=win.setInterval(()=>{if(hold>0){hold--;return;}const from=typed;typed=Math.min(chars.length,typed+step);for(let i=from+1;i<=typed;i++)hold+=(pauses?.[i]||0)*BEAT_TICKS;line.textContent=chars.slice(0,typed).join('');if(++ticks%3===1&&/\S/.test(chars[typed-1]||''))blip(speaker,ticks);if(typed>=chars.length){win.clearInterval(typing);typing=null;}},22);
+   typing=win.setInterval(()=>{if(hold>0){hold--;return;}const from=typed;typed=Math.min(chars.length,typed+step);for(let i=from+1;i<=typed;i++)hold+=(pauses?.[i]||0)*BEAT_TICKS;line.textContent=chars.slice(0,typed).join('');if(++ticks%3===1&&/\S/.test(chars[typed-1]||''))blip(speaker,ticks);if(typed>=chars.length){win.clearInterval(typing);typing=null;}},tickMs);
   }
   const beats=Object.values(pauses||{}).reduce((a,b)=>a+(Number(b)||0),0);
-  const typeTime=typing?(Math.ceil([...fullLine].length/Math.max(1,Math.round([...fullLine].length/90)))+beats*BEAT_TICKS)*22:0;
+  const typeTime=typing?(Math.ceil([...fullLine].length/Math.max(1,Math.round([...fullLine].length/90)))+beats*BEAT_TICKS)*tickMs:0;
   beat=win.setTimeout(endBeat,typing?typeTime+Math.min(650,readingBeat(text)):readingBeat(text));
  }
 

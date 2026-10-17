@@ -1,3 +1,4 @@
+import {EXPRESSIVE_POSES} from '../johansson-town/src/avatars/expressive-poses.js';
 /** Character-only controls: body poses and facial performance remain independent of the saved design. */
 export function createPerformancePanel({creator,expression,pose,status}){
  const root=document.createElement('section');root.className='studio-performance';root.setAttribute('aria-label','Expressions and performance');
@@ -21,6 +22,15 @@ export function createPerformancePanel({creator,expression,pose,status}){
  speak.onclick=()=>{const active=!creator.performance.speaking;creator.setPerformance({speaking:active});speak.setAttribute('aria-pressed',String(active));};
  freeze.onclick=()=>{const active=!creator.performance.frozen;creator.setPerformance({frozen:active});freeze.textContent=active?'Resume motion':'Freeze pose';freeze.setAttribute('aria-pressed',String(active));status.textContent=active?'Pose frozen. Export PNG keeps this pose and expression.':'Motion resumed.';};
  actions.append(speak,freeze);menu.append(actions);
+ const match=document.createElement('button');match.type='button';match.textContent='Match pose emotion';
+ match.onclick=()=>{expression.value='auto';expression.dispatchEvent(new Event('change'));status.textContent='Expression follows the body pose. You can still choose a face yourself.';};
+ const surprise=document.createElement('button');surprise.type='button';surprise.textContent='Surprise me';
+ surprise.onclick=()=>{
+  const choices=Object.keys(EXPRESSIVE_POSES).filter(name=>[...pose.options].some(o=>o.value===name));if(!choices.length)return;
+  const alternatives=choices.filter(name=>name!==pose.value),next=(alternatives.length?alternatives:choices)[Math.floor(Math.random()*(alternatives.length||choices.length))];
+  creator.setPerformance({frozen:false});pose.value=next;pose.dispatchEvent(new Event('change'));expression.value='auto';expression.dispatchEvent(new Event('change'));status.textContent=EXPRESSIVE_POSES[next].label+' with its matching expression.';
+ };
+ actions.append(match,surprise);
  const hint=document.createElement('p');hint.className='shm-note';hint.textContent='Choose a face and body pose. Freeze the moment, then Export PNG.';menu.append(hint);
  function syncButtons(){const state=creator.performance;freeze.textContent=state.frozen?'Resume motion':'Freeze pose';freeze.setAttribute('aria-pressed',String(state.frozen));speak.setAttribute('aria-pressed',String(state.speaking));}
  creator.root.addEventListener('studio-performance-change',syncButtons);
