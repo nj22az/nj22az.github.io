@@ -84,7 +84,7 @@ export function buildKitanoLink({parent,colliders=null,shadows=false}){
   if(s>10)for(const o of [S.north-.35,S.footway+.2]){const x=f.x+f.lx*o+f.hx*1.9,z=f.z+f.lz*o+f.hz*1.9;roadSign(group,'crossing',{x,z,y:f.y,ry:Math.atan2(f.hx,f.hz)+Math.PI,colliders});}
  }
  // The stop sign, on the westbound driver's left.
- {const f=frameAt(KITANO_STOP_S+.4),o=S.north-.15;roadSign(group,'stop',{x:f.x+f.lx*o,z:f.z+f.lz*o,y:f.y,ry:Math.atan2(f.hx,f.hz),colliders});}
+ {const f=frameAt(KITANO_STOP_S+.4),o=S.north-.15;roadSign(group,'stop',{x:.35,z:f.z+f.lz*o,y:f.y,ry:Math.atan2(f.hx,f.hz),colliders});}
 
  // ---- Names and directions. ----
  const plate=(text,sub,x,y,z,ry,w=1.6,colour='#1f5aa8')=>{
@@ -97,7 +97,7 @@ export function buildKitanoLink({parent,colliders=null,shadows=false}){
   const m=new THREE.Mesh(new THREE.PlaneGeometry(w,w*c.height/512),new THREE.MeshStandardMaterial({map:t,roughness:.6,side:THREE.DoubleSide}));m.position.set(x,y,z);m.rotation.y=ry;m.name='Sign: '+text;group.add(m);
  };
  // A guide sign at the junction, facing Main Street, and the bridge's name plates.
- {const x=5.15,z=6.45;
+ {const x=.2,z=6.45;
   const post=new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,3.1,8),material(C.lampPost,{metalness:.3,roughness:.5}));post.position.set(x,1.55,z);group.add(post);
   plate('East lawn','Airport ferry · Harbour ↓',x-.05,2.75,z,-Math.PI/2,1.5);colliders?.push({id:'road-sign',x,z,w:.12,d:.12,height:3.1});}
  return {group,piers:[],bridge:null};

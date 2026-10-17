@@ -13,6 +13,8 @@ const insideCoast=polygonTest(COASTLINE);
 export function onIslandLand(x,z){return insideCoast(x,z);}
 /** Surface beyond the authored streets. Water remains outside the playable union. */
 export function coastalSurface(x,z){
+ const access=beachAccessHeight(x,z);if(access!==null)return {id:"beach-access",surface:"stone",y:access};
+ if(z>=16.5&&onIslandLand(x,z)){const n=neighbourhoodHeight(x,z);if(n!==null)return {id:"central-neighbourhood",surface:"grass",y:n};}
  const ramp=beachAccessHeight(x,z);
  if(ramp!==null)return {id:'beach-access',surface:'stone',y:ramp};
  const sand=beachHeight(x,z);

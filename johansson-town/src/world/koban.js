@@ -24,7 +24,7 @@ export function buildKoban(world,options){
  const mesh=(g,m,x,y,z,name)=>{const o=new THREE.Mesh(g,m);o.position.set(x,y,z);o.name=name;o.castShadow=!!options.shadows;o.receiveShadow=true;group.add(o);return o;};
  const {x,z,w,d,height:h,face}=KOBAN,doorZ=KOBAN.door[1],west=face-.01;
  // Forecourt paving from the pavement edge, then the building on a low plinth.
- mesh(new THREE.BoxGeometry(face-5.2+.2,.06,d+.4),std(0xc9c2b0),(face+5.2)/2,.03,z,'Police box forecourt');
+ mesh(new THREE.BoxGeometry(1.4,.06,d+.4),std(0xc9c2b0),face-.6,.03,z,'Police box forecourt');
  mesh(new THREE.BoxGeometry(w+.12,.16,d+.12),std(0x9a968c),x,.08,z,'Police box plinth');
  mesh(new THREE.BoxGeometry(w,h,d),std(0xf1ede2),x,h/2+.16,z,'Police box walls');
  mesh(new THREE.BoxGeometry(w+.02,.5,d+.02),std(0x27304d),x,.41,z,'Police box skirting');
@@ -48,7 +48,7 @@ export function buildKoban(world,options){
  // The notice board and the police bicycle on the forecourt.
  mesh(new THREE.BoxGeometry(.06,.9,1.2),std(0xb98a55),west-.03,1.45,z+.25,'Police notice board');
  const notice=mesh(new THREE.PlaneGeometry(1.1,.8),new THREE.MeshStandardMaterial({map:signTexture([["Notice",52,40],['WANTED: TAMA (CAT)',26,92],['LOST: ONE GLOVE',26,130]],{w:420,h:300,bg:'#fff8e6',ink:'#3b3f55'}),roughness:.9}),west-.07,1.45,z+.25,'Police notices');notice.rotation.y=-Math.PI/2;
- const bike=new THREE.Group();bike.name='Police bicycle';bike.position.set(face-.55,0,z-1.9);bike.rotation.y=Math.PI/2;group.add(bike);
+ const bike=new THREE.Group();bike.name='Police bicycle';bike.position.set(face+.55,0,z-1.9);bike.rotation.y=Math.PI/2;group.add(bike);
  const frame=std(0xf4f1ea),tyre=std(0x1c1c20);
  for(const bx of [-.52,.52]){const wheel=new THREE.Mesh(new THREE.TorusGeometry(.32,.035,6,20),tyre);wheel.position.set(bx,.34,0);bike.add(wheel);}
  const tube=(len,px,py,rz)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,len,6),frame);m.position.set(px,py,0);m.rotation.z=rz;bike.add(m);};
@@ -60,7 +60,7 @@ export function buildKoban(world,options){
  mesh(new THREE.BoxGeometry(.7,.45,.28),std(0xe8e4d8),x+w/2+.16,.5,z+.9,'Air conditioner');
  mesh(new THREE.CylinderGeometry(.2,.16,.32,10),std(0xb95c3c),face-.35,.16,z+1.55,'Plant pot');
  mesh(new THREE.SphereGeometry(.3,8,6),std(0x3f8f46),face-.35,.55,z+1.55,'Plant');
- world.colliders.push({x,z,w:w+.12,d:d+.12,height:h+.5,id:'koban'},{x:face-.55,z:z-1.9,w:.5,d:1.4,height:1.1,id:'koban-bicycle'});
+ world.colliders.push({x,z,w:w+.12,d:d+.12,height:h+.5,id:'koban'},{x:face+.55,z:z-1.9,w:.5,d:1.4,height:1.1,id:'koban-bicycle'});
  const inspect=(pos,label,title,text)=>{const a=new THREE.Object3D();a.position.set(...pos);group.add(a);options.register?.(a,label,()=>options.onAction?.('read',title,text));};
  inspect([face-.3,1.4,z+.25],'Read the police notices','Police box notices','WANTED: Tama, a ginger cat, for sleeping in the fish crates at the quay. LOST: one glove, left hand. The officer is on patrol from 22:00; in an emergency, use the telephone by the door.');
  inspect([face-1.1,1,z-1.9],'Inspect the police bicycle','Police bicycle','A white bicycle with a lamp, a basket and a lockable box on the carrier. Officer Mori rides it to the quay and back on the night patrol, when the streets are too quiet for the siren he does not have.');

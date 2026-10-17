@@ -18,9 +18,9 @@ import {flowerBlock,roofTile,poster} from './okinawa/signs.js';
  */
 export const PORT_TIMETABLE_POSTER=Object.freeze(['MINATO ⇄ KITANO-JIMA','Minato Maru · 18 min','Crossings on request','Commuter boats in:','8:30 · 14:30 · 22:00','Tickets inside']);
 export const PORT_BUILDING=Object.freeze({
- office:Object.freeze({minX:9.7,maxX:16.9,minZ:-48,maxZ:-38.4}),
- hall:Object.freeze({minX:5.6,maxX:9.7,minZ:-48,maxZ:-39.6}),
- tower:Object.freeze({minX:5.6,maxX:8.2,minZ:-48,maxZ:-45.4,height:11}),
+ office:Object.freeze({minX:9.7,maxX:16.9,minZ:-46.9,maxZ:-38.4}),
+ hall:Object.freeze({minX:5.6,maxX:9.7,minZ:-46.9,maxZ:-39.6}),
+ tower:Object.freeze({minX:5.6,maxX:8.2,minZ:-46.9,maxZ:-45.4,height:11}),
  ground:3.4,upper:3,
  /** The waiting hall's glass doors, on the pier side. */
  hallDoor:Object.freeze([5.6,0,-42.6]),

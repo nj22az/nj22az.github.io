@@ -1,3 +1,5 @@
+import {DEPOT_COURT,depotCourtAt} from './architecture-ground.js';
+import {ARCHITECTURE_ROUTES} from './architecture-plan.js';
 import {houseboatSurface} from './fujita-houseboat.js';
 import {routeFinder} from './plan-index.js';
 import {DOCKLANDS,docklandsAt} from './docklands-layout.js';
@@ -59,6 +61,7 @@ export const ROUTES = [
  {id:'market-cut',width:3,surface:'stone',points:[[0,-26],[-5.5,-26]]},
  STAFF_YARD_ROUTE,
  ...ISLAND_ROUTES,
+ ...ARCHITECTURE_ROUTES,
 ];
 export function activeRoutes(){return ROUTES;}
 /** The routes past the first three (asked for on their own in regionAt), through their index (plan-index.js). */
@@ -93,6 +96,7 @@ export function routeAt(x,z,r=0){
  return here;
 }
 function regionAt(x,z,r=0){
+ if(depotCourtAt(x,z))return DEPOT_COURT;
  const boat=houseboatSurface(x,z,r);if(boat)return boat;
 
  if(inDiningLane(x,z))return {id:'shop-pavement',surface:'stone'};
@@ -152,6 +156,7 @@ export function setWalkSurface(surface){globalThis.__JOHANSSON_WALK_SURFACE__=su
 /** Where feet go: the plan's ground, lifted onto whatever slab is drawn over it. */
 export function groundHeight(x,z){const h=planHeight(x,z),walk=globalThis.__JOHANSSON_WALK_SURFACE__;return walk?(walk.level?.(x,z)??(h+walk.lift(x,z))):h;}
 export function planHeight(x,z){
+ if(depotCourtAt(x,z))return 0;
  const boat=houseboatSurface(x,z);if(boat)return boat.y;
  {
   if(x>MAIN_ROAD.pavementEast){const road=kitanoRoadAt(x,z);if(road)return road.y;}
@@ -162,7 +167,7 @@ export function planHeight(x,z){
   // pavement; the drawn-surface sampler cannot lift a person through so large a step.
   const street=x>=MAIN_ROAD.pavementWest&&x<=MAIN_ROAD.pavementEast&&z>=MAIN_ROAD.minZ&&z<=MAIN_ROAD.maxZ;
   const station=x>=BUS_STATION.minX&&x<=BUS_STATION.maxX&&z>=BUS_STATION.minZ&&z<=BUS_STATION.maxZ;
-  if(street||station||westYardAt(x,z)||nishiAt(x,z)||schoolAt(x,z))return 0;
+  if(street||station||eastLawnAt(x,z)||westYardAt(x,z)||nishiAt(x,z)||schoolAt(x,z))return 0;
   if(kitahamaLaneAt(x,z))return KITAHAMA.y+GROUND_LAYER.lane;
   const garden=coastalSurface(x,z);if(garden?.id==='harbour-park')return garden.y;
   const airport=airportSurface(x,z);if(airport)return airport.y;

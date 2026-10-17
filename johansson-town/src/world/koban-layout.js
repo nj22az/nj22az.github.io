@@ -6,9 +6,9 @@
  */
 export const KOBAN=Object.freeze({
  id:'koban',title:'Minato Police Box',jp:"Police station",
- x:8.9,z:21,w:5,d:4.2,height:3.1,
+ x:6.8,z:27,w:5,d:4.2,height:3.1,
  /** The street face is the west wall; the door is in its south half, near the plaza. */
- face:6.4,door:Object.freeze([5.75,21.9]),
+ face:4.3,door:Object.freeze([3.65,27.9]),
  /** Walking in heads east, into the room. */
  inward:-Math.PI/2,
  address:'Minato Police Box, top of Main Street',

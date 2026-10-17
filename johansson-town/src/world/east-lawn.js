@@ -27,7 +27,7 @@ import {broadleafGeometry} from './okinawa/trees.js';
  */
 export const EAST_LAWN=Object.freeze({
  id:'east-lawn',surface:'grass',
- minX:MAIN_ROAD.pavementEast,maxX:33.2,minZ:-38,maxZ:24.6,
+ minX:MAIN_ROAD.pavementEast,maxX:33.2,minZ:-38,maxZ:21.2,
  /**
   * The parapet at the far end, and the south return along the auction apron. The return
   * stops at x 21.65 (southFrom less half its depth), leaving a truck-width gate between
@@ -149,13 +149,14 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
   colliders.push({id:'east-seawall',x,z,w:w+.14,d:d+.14,height:wall.height+.1});
  };
  // Real openings in the mesh and collision wall lead down to the sand.
- let wallFrom=EAST_LAWN.minZ-wall.depth/2;
+ let wallFrom=-36;
  for(const access of [...BEACH.accesses,KITANO_SEAWALL_GAP,{z:EAST_LAWN.maxZ+wall.depth/2,half:0}].sort((a,b)=>a.z-b.z)){
   const wallTo=access.z-access.half;
   if(wallTo>wallFrom)parapet(wall.depth,wallTo-wallFrom,wall.x,(wallFrom+wallTo)/2);
   wallFrom=access.z+access.half;
  }
- parapet(wall.x-wall.southFrom+wall.depth,wall.depth,(wall.southFrom+wall.x)/2,wall.z);
+
+
 
  // Sand from the foot of the wall out into the water, laid as one ribbon of sloped
  // strips so the tide line is a straight edge rather than a stack of steps.
@@ -191,7 +192,7 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
  const gate=SCHOOL.gate,clear=x=>Math.abs(x-gate.x)<gate.half+.9||inKobanPlot(x,treeZ,1.1);// and the police box
  for(let i=0;i<count;i++){
   const x=first+i*(last-first)/(count-1),z=treeZ+(i%3-1)*.45,height=3.6+(i%4)*.45;
-  if(clear(x))continue;
+  if(clear(x)||x>6)continue;
   const tree=new THREE.Mesh(shapes[i%3],treeMat);tree.name='East lawn tree';
   tree.position.set(x,0,z);tree.scale.setScalar(height);tree.rotation.y=i*1.7;tree.castShadow=!!shadows;tree.receiveShadow=true;group.add(tree);
   // The unit broadleaf's trunk flares to a .06 m radius at its roots. Keep that

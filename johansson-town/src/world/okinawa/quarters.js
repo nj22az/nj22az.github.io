@@ -91,13 +91,7 @@ function buildNishiGround(kit,solid){
  // The quarter's ground: crushed coral and sand, and concrete for the walk and lanes.
  kit.block(NISHI.minX,NISHI.maxX,y-.06,y,NISHI.minZ,NISHI.maxZ,GROUND.coral,'sand');
  const P=NISHI.promenade;
- kit.block(P.minX,P.maxX,lane-.06,lane,NISHI.quay.maxZ+.6,NISHI.maxZ,GROUND.concrete);
- for(let z=NISHI.quay.maxZ+2;z<NISHI.maxZ;z+=2.5)kit.box(P.maxX-P.minX,.012,.04,(P.minX+P.maxX)/2,lane+.002,z,0x9d988c);
- for(const l of NISHI.lanes){
-  kit.block(P.maxX,WEST_YARD.minX+.5,lane-.06,lane,l.z-l.half,l.z+l.half,GROUND.concrete);
-  // Concrete gutters with their slotted covers along each side.
-  for(const s of [-1,1])kit.block(P.maxX,WEST_YARD.minX,lane,lane+.015,l.z+s*l.half-(s>0?.28:0),l.z+s*l.half+(s<0?.28:0),0x8d887d);
- }
+ // The shared lane union supplies the promenade and cross streets.
  const Q=NISHI.quay;
  // Laid at the apron height: the second pier's deck runs in under its seaward edge.
  kit.block(Q.minX,Q.maxX,GROUND_LAYER.apron-.06,GROUND_LAYER.apron,Q.minZ,Q.maxZ+.6,GROUND.concrete);
@@ -114,10 +108,9 @@ function buildNishiGround(kit,solid){
   kit.block(x0,x1,GROUND_LAYER.apron,GROUND_LAYER.apron+.12,Q.minZ-.4,Q.minZ-.1,0xe0b93a);
   solid({id:'west-quay-edge',x:(x0+x1)/2,z:Q.minZ-.25,w:x1-x0,d:.3,height:.4});
  }
- for(let x=Q.minX+3;x<Q.maxX-1;x+=6){kit.cyl(.16,.2,.42,x,.24,Q.minZ+.35,0x3a3f42,{segments:10});kit.cyl(.24,.24,.08,x,.47,Q.minZ+.35,0x3a3f42,{segments:10});solid({id:'bollard',x,z:Q.minZ+.35,w:.45,d:.45,height:.5});}
- // At the north end the quarter meets the headland: a stone bank with pandanus on it.
- kit.block(NISHI.minX+3.2,NISHI.maxX,0,.9,NISHI.maxZ,NISHI.maxZ+.6,0xd3cab0,'coral');
- solid({id:'nishi-north-bank',x:(NISHI.minX+3.2+NISHI.maxX)/2,z:NISHI.maxZ+.3,w:NISHI.maxX-NISHI.minX-3.2,d:.6,height:.9});
+ for(const x of [-33.8]){kit.cyl(.16,.2,.42,x,.24,Q.minZ+.35,0x3a3f42,{segments:10});kit.cyl(.24,.24,.08,x,.47,Q.minZ+.35,0x3a3f42,{segments:10});solid({id:'bollard',x,z:Q.minZ+.35,w:.45,d:.45,height:.5});}
+ // The north end opens into the residential street; no bank across the walk.
+
 }
 
 function buildNishiPlots(kit,solid,ctx){
@@ -187,7 +180,7 @@ function walledHouse(kit,solid,p,{anchor,onAction,seed=0,sideGate=null,windbreak
 
 /** The net shed at the quay end: an open-fronted timber shed with a tin roof. */
 function netShed(kit,solid,p,{inspect}){
- const x0=-34.8,x1=-26.4,z0=p.minZ+.6,z1=p.maxZ-.6,h=3.1,tin=0x8c9ea3;
+ const x0=-34.8,x1=-27.4,z0=p.minZ+.6,z1=p.maxZ-.6,h=3.1,tin=0x8c9ea3;
  kit.block(x1-.2,x1,0,h,z0,z1,tin);
  kit.block(x0+2.8,x1,0,h,z0,z0+.2,tin);kit.block(x0+2.8,x1,0,h,z1-.2,z1,tin);
  // Corrugated sheet: ribs up every wall, and the rust where the sheets overlap.
@@ -240,8 +233,8 @@ function buildWestQuay(kit,solid,{inspect,anchor,onAction,vending}){
  // the lane to the hoist and the quay edge. (The red one used to lie inside the Dock
  // Electrical building and the blue one's bow ran into its wall: both were here before
  // the workshop was built. So were a net pile and a stack of fish boxes, inside it.)
- solid(sabani(kit,-34,-46.1));
- solid(sabani(kit,-34,-43.8,{colour:0x8a3b2e}));
+ solid(sabani(kit,-34,-44.5,{ry:Math.PI/2}));
+
  solid(fishCrates(kit,-36.6,-41.6,{rows:2,cols:3,seed:3}));
  inspect(-31.8,1,-45,'Inspect the sabani','Sabani',
   'A narrow island fishing boat, cedar planked and painted, up on blocks for its bottom to be scraped. The sail is rolled along the thwarts. Old men still race these in the summer.');
@@ -325,41 +318,38 @@ function buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes}){
  kit.cyl(.03,.03,2.6,EAST_ROW.minX-.35,1.3,n.maxZ-.4,0x9aa0a4,{segments:6});
  kit.sign(iceFlag(),.42,1.3,EAST_ROW.minX-.35,1.85,n.maxZ-.62,{ry:0,depth:.015,name:'ice flag',both:true});
  kit.rod([EAST_ROW.minX-.35,2.52,n.maxZ-.4],[EAST_ROW.minX-.35,2.52,n.maxZ-.85],.015,0x9aa0a4);
- kit.box(1.4,.08,.4,EAST_ROW.minX-.45,.45,n.minZ+1.4,0x3a6e8f);
- for(const dz of [-.55,.55])kit.box(.06,.42,.36,EAST_ROW.minX-.45,.21,n.minZ+1.4+dz,0x5d6468);
- solid({id:'zenzai-bench',x:EAST_ROW.minX-.45,z:n.minZ+1.4,w:.5,d:1.5,height:.5});
+ kit.box(1.4,.08,.4,EAST_ROW.minX+.35,.45,n.minZ+1.4,0x3a6e8f);
+ for(const dz of [-.55,.55])kit.box(.06,.42,.36,EAST_ROW.minX+.35,.21,n.minZ+1.4+dz,0x5d6468);
+ solid({id:'zenzai-bench',x:EAST_ROW.minX+.35,z:n.minZ+1.4,w:.5,d:1.5,height:.5});
  // The old lane up to the sea bath between the shop-houses is Kitano Road now (kitano-link.js):
  // its stepping stones, lanterns, pot plants and the vending machine made way for the carriageway.
- bicycle(kit,EAST_ROW.minX-.5,EAST_ROW.plots[2].minZ+1.6,{ry:Math.PI/2,colour:0xd9d2c0});
- solid({id:'bicycle',x:EAST_ROW.minX-.5,z:EAST_ROW.plots[2].minZ+1.6,w:.4,d:1.4,height:1.1});
+ bicycle(kit,1,EAST_ROW.plots[2].minZ+1.6,{ry:Math.PI/2,colour:0xd9d2c0});
+ solid({id:'bicycle',x:1,z:EAST_ROW.plots[2].minZ+1.6,w:.4,d:1.4,height:1.1});
  // Behind the row: washing and kitchen-garden supplies.
- solid(gasBottles(kit,EAST_ROW.maxX+.5,15.2,{ry:Math.PI/2}));
- solid(planterBoxes(kit,EAST_ROW.maxX+.6,-4.5,{ry:Math.PI/2,count:4}));
+ gasBottles(kit,EAST_ROW.maxX-.4,15.2,{ry:Math.PI/2});
+ planterBoxes(kit,EAST_ROW.maxX-.6,-4.5,{ry:Math.PI/2,count:3});
 }
 
 function buildYardRow(kit,solid,{anchor,inspect,onAction}){
  const depth=YARD_ROW.maxX-YARD_ROW.minX,x=(YARD_ROW.minX+YARD_ROW.maxX)/2;
  for(const plot of YARD_ROW.plots)shopFront(kit,solid,plot,{x,ry:Math.PI/2,depth,front:YARD_ROW.maxX,out:1},{anchor,inspect,onAction});
  // The yard behind them: fish crates and a garden of greens in fish boxes.
- solid(fishCrates(kit,-17.6,8,{rows:2,cols:2,seed:21}));
- solid(planterBoxes(kit,-23.4,9.5,{ry:Math.PI/2,count:5,seed:22}));
+
+
  // Moved west, beside the second yard house (yard-homes-layout.js), clear of the lane.
- solid(laundry(kit,-23.3,5.2,{ry:Math.PI/2,length:2.2}));
+
  buildYardLife(kit,solid,{anchor,inspect,onAction});
- solid(gasBottles(kit,-16.4,17.8,{ry:Math.PI/2}));
+ gasBottles(kit,-15.4,17.8,{ry:Math.PI/2});
  hibiscus(kit,-23.6,18.6,{seed:23});banana(kit,-23.4,-16.6,{seed:24});
 }
 
 function buildEastBack(kit,solid,ctx){
  // The back lane behind the shops: a concrete strip with a gutter, down to the lawn.
- const L=EAST_BACK.lane;
- kit.block(L.minX,L.maxX,GROUND_LAYER.lane-.05,GROUND_LAYER.lane-.005,EAST_ROW.plots[0].minZ,EAST_ROW.plots[3].maxZ+2.4,GROUND.concrete);
- kit.block(L.maxX-.3,L.maxX,GROUND_LAYER.lane-.005,GROUND_LAYER.lane+.01,EAST_ROW.plots[0].minZ,EAST_ROW.plots[3].maxZ+2.4,0x8d887d);
  EAST_BACK.plots.forEach((p,i)=>walledHouse(kit,solid,p,{...ctx,seed:10+i,windbreak:'east'}));
 }
 
 function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
- const Q=EAST_QUAY,S=Q.shed,I=Q.ice,lane=GROUND_LAYER.lane;
+ const Q=EAST_QUAY,S=Q.shed,I=Q.ice,lane=GROUND_LAYER.apron;
  kit.block(Q.minX+.05,Q.maxX+.4,lane-.06,lane,Q.minZ,Q.maxZ+.55,GROUND.concrete);
  // The gate's paving, from the quay's concrete to the lawn's edge.
  kit.block(Q.gate.minX+.05,Q.gate.maxX,lane-.06,lane,Q.maxZ+.55,Q.gate.maxZ,GROUND.concrete);
@@ -367,7 +357,7 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  kit.block(Q.minX,Q.maxX+.4,-.7,lane,Q.minZ-.45,Q.minZ,0xa9a497);
  kit.block(Q.minX,Q.maxX+.4,lane,lane+.12,Q.minZ-.4,Q.minZ-.1,0xe0b93a);
  solid({id:'east-quay-edge',x:(Q.minX+Q.maxX)/2,z:Q.minZ-.25,w:Q.maxX-Q.minX+.4,d:.3,height:.4});
- for(let x=Q.minX+2.5;x<Q.maxX;x+=4.5){
+ for(const x of [39.5]){
   kit.cyl(.16,.2,.42,x,.24,Q.minZ+.35,0x3a3f42,{segments:10});kit.cyl(.24,.24,.08,x,.47,Q.minZ+.35,0x3a3f42,{segments:10});
   solid({id:'bollard',x,z:Q.minZ+.35,w:.45,d:.45,height:.5});
   kit.cyl(.3,.3,.28,x+1.6,-.35,Q.minZ-.55,0x1f2124,{rx:Math.PI/2,segments:10});
@@ -416,18 +406,11 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  // quay side of the plant, along its wall under the chute, forks to the west: parked in the
  // lane between the shed and the plant it stood in front of the ice door (and 0.3 m into
  // the plant's wall), and Kōji loads ice there.
- kit.at(I.minX+2.8,I.minZ-.65,Math.PI/2,()=>{
-  kit.box(1.1,1,1.8,0,.55,.3,0xe0b93a);kit.box(.9,.06,1.2,0,.2,-.6,0x3a3f42);
-  for(const dx of [-.3,.3])kit.box(.06,2,.06,dx,1,-.7,0x3a3f42);
-  solid(kit.rect(-.6,.6,-1.2,1.2,2,'forklift'));
- });
  // The boxes Kōji sorts the catch into, just inside the shed's front beside him, between two
  // of its columns. In front of the shed they stood through one column and left 1 m of the
  // walk between the shed and the parapet, from the lawn gate to the ice plant.
  solid(fishCrates(kit,Q.minX+2.62,Q.maxZ-2.53,{rows:2,cols:2,seed:31}));
- kit.box(.5,1.4,.4,I.maxX-.4,.7,Q.maxZ-.9,0xc0392b);kit.box(.3,.3,.06,I.maxX-.4,1.1,Q.maxZ-1.12,0xf2efe4);
- solid({id:'fuel-pump',x:I.maxX-.4,z:Q.maxZ-.9,w:.6,d:.5,height:1.4});
- vending(S.minX-.9,S.maxZ-1.9,-Math.PI/2,GROUND_LAYER.lane);   // on the quay's paving (the lane layer), not sunk in it
+ vending(S.minX+1.6,S.maxZ-1.2,-Math.PI/2,GROUND_LAYER.lane);   // on the quay's paving (the lane layer), not sunk in it
  inspect(24.6,1,Q.minZ+.9,'Look at the boats',"Daisan Minatomaru · Minato Maru No. 3",
   'The Daisan Minatomaru, the third fishing boat of the name (the town ferry is the Minato Maru), is back from the reef with her hold iced and her deck hosed. Her skipper is asleep in the wheelhouse with the radio on. The red boat further along goes out for squid at night and has its lamps strung along a boom.');
  anchor(29.5,1,Q.minZ+.9,'Fish from the east quay',()=>onAction?.('fishing'));
@@ -438,7 +421,7 @@ function buildYardLife(kit,solid,{inspect}){
  const G=GOYA,y=GROUND_LAYER.lane;
  // Raised beds of red earth with a path between them, under a trellis the bitter melon
  // has already covered: a roof of leaves, and the gourds hanging through it.
- for(const z of [G.minZ+.9,G.minZ+3.6,G.maxZ-.9]){
+ for(const z of [G.minZ+.55,(G.minZ+G.maxZ)/2,G.maxZ-.55]){
   kit.block(G.minX+.4,G.maxX-.4,y-.02,.24,z-.55,z+.55,0x8a4a32);
   for(let x=G.minX+.8;x<G.maxX-.6;x+=.55)kit.sphere(.18,x,.34,z+(x*7%2?.2:-.2),0x4f7d3e,{sy:.7,detail:0});
   solid({id:'goya-bed',x:(G.minX+G.maxX)/2,z,w:G.maxX-G.minX-.8,d:1.1,height:.3});
@@ -504,12 +487,12 @@ function buildWires(kit,solid){
  const poles=[];
  const pole=(x,z,o={})=>{const p=utilityPole(kit,x,z,o);solid(p.collider);poles.push(p);return p;};
  // Down the east kerb of Main Street, the row's side.
- const east=[-15,-1.5,12.3,19.6].map((z,i)=>pole(MAIN_ROAD.pavementEast-.25,z,{face:-Math.PI/2,transformer:i%2===0,lamp:true,seed:i}));
+ const east=[-15,-1.5,12.3,19.6].map((z,i)=>pole(.35,z,{face:-Math.PI/2,transformer:i%2===0,lamp:true,seed:i}));
  for(let i=0;i<east.length-1;i++)wiresBetween(kit,east[i],east[i+1]);
  for(const [p,z] of [[east[0],-11],[east[1],-4],[east[2],9],[east[3],15.8]])serviceDrop(kit,p,[EAST_ROW.minX+.3,6,z]);
  // Along the seawall walk: three poles, one span to each block. The lanes off it have no
  // poles of their own; a small island lane is fed from the walk, not lined with concrete.
- const walk=[-38,-9.5,20].map((z,i)=>pole(-36.7,z,{face:Math.PI/2,tel:false,transformer:i===1,lamp:i!==1,seed:10+i*2}));
+ const walk=[-38,-9.5,20].map((z,i)=>pole(-39,z,{face:Math.PI/2,tel:false,transformer:i===1,lamp:i!==1,seed:10+i*2}));
  for(let i=0;i<walk.length-1;i++)wiresBetween(kit,walk[i],walk[i+1]);
 }
 
@@ -523,13 +506,7 @@ function buildWires(kit,solid){
  */
 function buildKitahama(kit,solid,ctx){
  const K=KITAHAMA,lane=GROUND_LAYER.lane;
- // Partition the lane union once: overlapping rectangles used to make every junction flicker.
- const xs=[...new Set(KITAHAMA_LANES.flatMap(L=>[L.minX,L.maxX]))].sort((a,b)=>a-b),zs=[...new Set(KITAHAMA_LANES.flatMap(L=>[L.minZ,L.maxZ]))].sort((a,b)=>a-b);
- for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++){
-  const x=(xs[i-1]+xs[i])/2,z=(zs[j-1]+zs[j])/2;
-  if(KITAHAMA_LANES.some(L=>x>L.minX&&x<L.maxX&&z>L.minZ&&z<L.maxZ))kit.block(xs[i-1],xs[i],lane-.06,lane,zs[j-1],zs[j],GROUND.concrete);
- }
-
+ // The shared lane union is drawn by lane-surfaces.js, together with the public plot circuits.
  K.plots.forEach((p,i)=>walledHouse(kit,solid,p,{...ctx,seed:30+i,windbreak:p.gate==='north'?'south':p.gate==='south'?'north':p.gate==='west'?'east':'west'}));
  // The house to let: a board on the gatepost and the shutters closed.
  {const p=K.plots.find(q=>q.romaji==='To let'),x=(p.minX+p.maxX)/2;
@@ -550,9 +527,9 @@ function buildKitahama(kit,solid,ctx){
  // edge: set outside the edge, they stood inside the garden walls.
  const poles=[];
  const pole=(x,z,o={})=>{const p=utilityPole(kit,x,z,o);solid(p.collider);poles.push(p);return p;};
- const up=[30,51].map((z,i)=>pole(K.approach.minX+.25,z,{face:Math.PI/2,transformer:i===1,lamp:true,seed:200+i*3}));
+ const up=[30,51].map((z,i)=>pole(i===0?40:K.approach.maxX-.1,z,{face:Math.PI/2,transformer:i===1,lamp:true,seed:200+i*3}));
  wiresBetween(kit,up[0],up[1]);
- const across=[pole(50,K.lane.maxZ-.25,{face:Math.PI,transformer:false,lamp:true,seed:211})];
+ const across=[pole(44.7,K.lane.maxZ-.25,{face:Math.PI,transformer:false,lamp:true,seed:211})];
  wiresBetween(kit,up[1],across[0],{sag:.5});
  for(const p of K.plots.filter(q=>Number(q.id.split('-')[1])<6)){const {door}=plotGate(p,0);const near=across.reduce((a,b)=>Math.abs(b.anchors[0].x-door[0])<Math.abs(a.anchors[0].x-door[0])?b:a);
   serviceDrop(kit,near,kit.point(door[0]+1.5,2.6,p.gate==='north'?p.minZ+3.2:p.maxZ-3.2).toArray());}

@@ -37,7 +37,7 @@ export const FIELDS=Object.freeze([
 /** Buildings and things that stand alone: [x,z,kind,yaw]. */
 export const STEADS=Object.freeze([
  // The Ōshiro farmstead in the corner of its own cane, the pen beside the house.
- [-39,117,'farmhouse',0],[-28,118,'pen',0],[-33,111.5,'tank',0],[-19,113,'shed',0],
+ [-39,117,'farmhouse',0],[-28,118,'pen',0],[-29.5,110,'tank',0],[-19,113,'shed',0],
  [-46,172,'tomb',-Math.PI/2],[-47,183,'tomb',-Math.PI/2],[-45,194,'tomb',-Math.PI/2],
  [6,92,'trellis',0],[-20,108,'scarecrow',0],[108,180,'shed',Math.PI/2],
 ].map(Object.freeze));
@@ -51,7 +51,7 @@ export function buildCountryside({world,register=()=>{},onAction=()=>{},mobile=f
  const blockedBy=(x,z,pad)=>(world.colliders||[]).some(c=>c.id!=='countryside'&&Math.abs(c.x-x)<(c.w||0)/2+pad&&Math.abs(c.z-z)<(c.d||0)/2+pad);
  /** Open grass, clear of colliders and trees, with `pad` metres to spare all round. */
  const open=(x,z,pad=1)=>{
-  for(const [dx,dz] of [[0,0],[pad,0],[-pad,0],[0,pad],[0,-pad]]){const r=routeAt(x+dx,z+dz);if(!r||r.surface!=='grass'||!OPEN.has(r.id))return false;}
+  for(const [dx,dz] of [[0,0],[pad,0],[-pad,0],[0,pad],[0,-pad]]){const r=routeAt(x+dx,z+dz);if(!r||r.id!=='building-circuit-oshiro-farmhouse'&&(r.surface!=='grass'||!OPEN.has(r.id)))return false;}
   if(blockedBy(x,z,pad))return false;
   return !trees.some(([tx,,tz])=>Math.hypot(tx-x,tz-z)<pad+2.4);
  };

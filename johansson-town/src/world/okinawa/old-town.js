@@ -122,8 +122,8 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  kit.sign(enamel({jp:"Security camera",en:'CCTV in operation',bg:'#f4d23c',ink:'#1f1f1f'}),.28,.42,front+.02,2.05,S.maxZ-.55,{ry:Math.PI/2,depth:.01,name:'camera plate'});
  // Bicycles park in the side service court, leaving the vending face and pavement clear.
  for(const z of [S.maxZ-3.8,S.maxZ-1.8]){
-  bicycle(kit,S.minX-1.9,z,{ry:0,colour:0x3a7a5a});
-  solid({id:'sakura-bikes',x:S.minX-1.9,z,w:1.6,d:.65,height:1.1});
+  bicycle(kit,S.minX-.8,z,{ry:0,colour:0x3a7a5a});
+  solid({id:'sakura-bikes',x:S.minX-.8,z,w:1.6,d:.65,height:1.1});
  }
  kit.box(.95,.62,.32,-12.4,1.4,S.minZ-.2,0xe2e0d8);kit.cyl(.2,.2,.04,-12.2,1.4,S.minZ-.37,0x3a3f42,{rx:Math.PI/2,segments:12});
  for(let y=1.2;y<1.6;y+=.1)kit.box(.5,.02,.02,-12.6,y,S.minZ-.37,0x7b8285);
@@ -245,7 +245,7 @@ function dressOffice(kit,solid,{inspect}){
 
 function dressBookshop(kit,solid,{inspect}){
  // A cart of ¥100 paperbacks out on the pavement, under the eave.
- const x=-7.63,z=4.6;
+ const x=-7.63,z=3.8;
  kit.box(.3,.08,1.3,x,.7,z,0x6b4a33);kit.box(.3,.5,.06,x,.95,z-.62,0x6b4a33);kit.box(.3,.5,.06,x,.95,z+.62,0x6b4a33);
  for(let i=0;i<9;i++)kit.box(.26,.2+(i%3)*.03,.1,x,.84,z-.52+i*.13,[0xb8432f,0x2f6fa8,0xe0c060,0x3f7f5a,0xd8cfb8][i%5]);
  for(const dz of [-.55,.55])kit.box(.06,.66,.06,x,.33,z+dz,0x4a3a2a);

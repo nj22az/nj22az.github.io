@@ -72,13 +72,6 @@ export function buildWestYard({parent,colliders=[],shadows=false}={}){
  // The long side, in lengths between the lane openings, and the return that closes the
  // corner the bus station does not. The south end is open: the yard runs straight on
  // onto the quay apron, which is how a working yard meets a quay.
- const x=WEST_YARD.minX-thickness/2;
- let from=WEST_YARD.minZ-thickness;
- for(const lane of [...WEST_YARD.lanes,Infinity]){
-  const to=Math.min(lane-WEST_YARD.laneHalf,WEST_YARD.maxZ+thickness);
-  if(to-from>.2)wall(thickness,to-from,x,(from+to)/2);
-  from=lane+WEST_YARD.laneHalf;
- }
- wall(WEST_YARD.stationFrom-WEST_YARD.minX,thickness,(WEST_YARD.minX+WEST_YARD.stationFrom)/2,WEST_YARD.maxZ+thickness/2);
+ // Open service streets replace the obsolete internal dividing wall.
  return {group,ground};
 }

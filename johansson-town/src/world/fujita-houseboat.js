@@ -1,3 +1,4 @@
+import {SHED_PIER} from './fujita-layout.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
@@ -8,7 +9,7 @@ export const HOUSEBOAT=Object.freeze({x:-40.5,z:-56.5,deckY:.06,width:3.1,length
  bedside:[.26,.06,-.55],bed:[-.63,.85,-.65],cover:{position:[-.63,.85,-1.5],width:1.12,length:1.55}});
 export function houseboatSurface(x,z,r=0){
  const B=HOUSEBOAT,G=B.gangway,inside=(a,b,c,d)=>x>=a+r&&x<=b-r&&z>=c+r&&z<=d-r;
- if(inside(-38.45,-36.25,-53.75,-49.3)||inside(-38.25,-35,-60,-53.75))return {id:'fujita-boardwalk',surface:'wood',y:.06};
+ if(inside(-38.45,-36.25,-53.75,-49.3)||inside(SHED_PIER.minX,SHED_PIER.maxX,SHED_PIER.minZ,SHED_PIER.maxZ))return {id:'fujita-boardwalk',surface:'wood',y:.06};
  if(inside(G.minX,G.maxX,G.minZ,G.maxZ))return {id:'fujita-gangway',surface:'wood',y:B.deckY};
  if(inside(B.x-1.48,B.x+1.48,B.z-3.2,B.z+3.2))return {id:'fujita-houseboat',surface:'wood',y:B.deckY};
  return null;

@@ -37,13 +37,13 @@ export const FUMOTO=Object.freeze({
   * verge, west of Aoba Radio, to the top of the main lane, then runs down the lane's east
   * verge to the cane. Trees are kept clear of it (island-landscape.js).
   */
- feeder:Object.freeze([[26.3,137.5],[27.2,160.5],[30.6,175.5],[35.25,186]]),
- lanePoles:Object.freeze([[35.25,186],[35.25,204],[35.25,215],[35.25,226]]),
+ feeder:Object.freeze([[26.3,137.5],[27.2,160.5],[35.25,174.5],[35.25,186]]),
+ lanePoles:Object.freeze([[35.25,186],[35.25,208],[35.25,215],[38.5,219.8]]),
  plots:Object.freeze([
-  {id:'fumoto-1',kind:'red-tile',family:'Kuniyoshi',romaji:'Kuniyoshi',minX:7,maxX:19,minZ:178,maxZ:190.5,gate:'north'},
-  {id:'fumoto-2',kind:'red-tile',family:'Tokashiki',romaji:'Tokashiki',minX:20,maxX:32,minZ:178,maxZ:190.5,gate:'north'},
-  {id:'fumoto-3',kind:'concrete',family:'Ishimine',romaji:'Ishimine',minX:7,maxX:19,minZ:200,maxZ:212.5,gate:'north',wall:'block'},
-  {id:'fumoto-4',kind:'red-tile',family:'Zukeran',romaji:'Zukeran',minX:20,maxX:32,minZ:200,maxZ:212.5,gate:'north'},
+  {id:'fumoto-1',kind:'red-tile',family:'Kuniyoshi',romaji:'Kuniyoshi',minX:7,maxX:18,minZ:178,maxZ:190.5,gate:'north'},
+  {id:'fumoto-2',kind:'red-tile',family:'Tokashiki',romaji:'Tokashiki',minX:21,maxX:32,minZ:178,maxZ:190.5,gate:'north'},
+  {id:'fumoto-3',kind:'concrete',family:'Ishimine',romaji:'Ishimine',minX:7,maxX:18,minZ:200,maxZ:212.5,gate:'north',wall:'block'},
+  {id:'fumoto-4',kind:'red-tile',family:'Zukeran',romaji:'Zukeran',minX:21,maxX:32,minZ:200,maxZ:212.5,gate:'north'},
  ].map(Object.freeze)),
  /** The co-operative store, its front (the sliding doors) on the main lane. */
  store:Object.freeze({id:'fumoto-baiten',name:'Fumoto Co-op Store',minX:36.2,maxX:43.4,minZ:194,maxZ:201.5,front:'west'}),

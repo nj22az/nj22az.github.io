@@ -14,7 +14,7 @@ import {onIslandLand} from '../src/world/coastal-ground.js';
 test('the complete island circuit and Main Street residential connection are clear at walking radius',async()=>{
  installDOM();globalThis.self=globalThis;
  const {createTown}=await import('../src/world/town.js');
- const world=createTown({scene:new THREE.Scene(),sites:[],mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
+ const world=createTown({scene:new THREE.Scene(),sites:(await import('../src/world/businesses.js')).createIslandBusinesses(),mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  const surface=createWalkSurface({...COAST_BOUNDS,base:planHeight});surface.add(world.group);setWalkSurface(surface);
  try{
   assert.deepEqual(COAST_WALK[0],COAST_WALK.at(-1),'the coastal walk closes');
@@ -52,7 +52,7 @@ test('the complete island circuit and Main Street residential connection are cle
    assert.deepEqual(world.colliders.filter(c=>standingHitsRect(x,z,.32,groundHeight(x,z),c)).map(c=>c.id),[],id+' doorway clear');
    assert.ok(queue.some(([i,j])=>Math.hypot(minX+i*cell-x,minZ+j*cell-z)<.7),id+' reachable from Main Street');
   }
-  assert.ok(KITAHAMA.plots.filter(p=>p.minX<12&&p.minZ<50).length>=7,'existing houses occupy the former empty central plots');
+  assert.ok(KITAHAMA.plots.filter(p=>p.minX<16&&p.minZ<72).length>=7,'existing houses occupy the former empty central plots');
   assert.ok(SCHOOL.seawall.south<46,'the oversized former school grounds are shortened');
   assert.equal(routeAt(-26,-62,.32),null,'the obsolete seaward platform no longer admits walking');
   for(let z=-46.2;z>=-55.4;z-=.1){const x=-37.35,y=groundHeight(x,z);assert.ok(routeAt(x,z,.32),'Fujita boardwalk ground');assert.deepEqual(world.colliders.filter(c=>standingHitsRect(x,z,.32,y,c)).map(c=>c.id),[],'Fujita boardwalk clear');}

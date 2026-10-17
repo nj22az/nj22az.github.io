@@ -18,18 +18,19 @@ export const HOSHIZAKI_STORE=Object.freeze({
  clerkFace:Object.freeze([0,1]),
  waitingFace:Object.freeze([-1.25,-1.65]),
 });
-export const ISLAND_COAST=[[-52,85],[-63,120],[-73,160],[-68,210],[-42,225],[0,232],[55,238],[110,234],[150,224],[162,190],[156,140],[135,98],[100,70],[70,60]];
+export const ISLAND_COAST=[[-43,85],[-48,120],[-62,160],[-62,210],[-42,222],[0,230],[55,232],[110,226],[154,218],[160,190],[160,174],[145,160],[115,143],[85,122],[66,102],[56,82],[62,64]];
 // The coastal road leaves the existing Kitahama cross lane on solid land. Its old
 // southern bend at [60,49] was outside the coastline and could never be walked.
-export const COAST_ROAD=[[59,66],[63,68],[72,73],[111,105],[139,150],[142,190],[130,215],[100,223],[55,226],[5,221],[-34,216],[-55,200],[-57,150],[-47,110],[-38,82],[-37,48],[-37,30]];
+export const COAST_ROAD=[[43.5,74],[52,82],[55,102],[82,129],[112,150],[139,174],[142,190],[130,215],[100,223],[55,226],[5,221],[-34,216],[-49,200],[-49,150],[-40,110],[-34.5,82],[-34.5,74]];
 /** Continuous pedestrian circuit; its harbour section uses the existing quay and seawall walk. */
 export const COAST_WALK=[
- [50.5,57],[54,60],[59,66],[62,66],[66,76],[76,84],[78,88],[90,94],[105,108],[133,151],
- [136,186],[126,217],[98,217],[55,220],[39,228],[31,228],[7,215],[-29,210],
- [-53,199],[-53,151],[-49,110],[-39,102],[-38,76],[-38,57],[-37,48],[-37.5,30],
- [-37.5,15],[-37.5,-21.5],[-38,-27.5],[-21.5,-26.5],[-19.5,-25.5],[-18,-26],
- [-4.5,-36],[0,-36],[20,-36],[23,-29.5],[30,-25],[31,-25],[31.5,-10],
- [44,-10],[44,40],[43.3,52],[43.3,57],[50.5,57],
+ [50.5,57],[54,60],[56,65],[54,73],[54,82],[59,100],[88,129],[118,150],
+ [143,166],[154.8,177.5],[156,186],[156,198],[154.5,209],[126,219],[98,217],
+ [55,220],[39,228],[31,228],[7,215],[-29,210],[-53,199],[-53,151],[-44,110],
+ [-38,102],[-38,76],[-37,57],[-36.5,48],[-36.7,30],[-36.7,15],[-36.7,-21.5],
+ [-36.7,-27.5],[-24.5,-27.5],[-24.5,-38.5],[-19,-38.5],[-18.5,-35.85],[-8.5,-35.85],[-8.5,-36.5],
+ [0,-36.5],[20,-36.5],[20,-27],[31.8,-27],[31.8,-10],[43.6,-10],[43.6,40],
+ [43.3,52],[43.3,57],[50.5,57],
 ];
 
 export const COAST_CONNECTOR=[[-37,30],[-37,-42],[-18,-42],[0,-36],[17,-36],[31,-25],[43,1],[43,40]];
@@ -40,7 +41,7 @@ export const MOUNTAIN_TRAIL=[[23.5,73],[23.5,95],[23.5,112],[24,134],[28,151],[4
  */
 export const AOBA_SUMMIT=Object.freeze({x:66,z:198});
 export const SUMMIT_PATH=[[40,167],[48.6,177.3],[54.9,174.1],[61.5,172.7],[68.2,173],[74.4,175],[79.7,178.5],[83.8,183.1],[86.4,188.5],[87.6,194.2],[87.2,199.9],[85.4,205.1],[82.4,209.5],[78.4,212.8],[73.9,214.9],[69.1,215.8],[64.5,215.4],[60.3,213.8],[56.7,211.2],[54.1,208],[52.5,204.3],[52,200.5],[52.5,196.8],[53.8,193.6],[55.9,190.9],[58.5,189.1],[61.3,188],[64.2,187.8],[66.9,188.3],[69.1,189.4],[70.9,191.1],[72,193],[72.5,195],[72.5,196.9],[71.9,198.5],[71,199.8],[69.8,200.7],[68.6,201.1]];
-export const ISLAND_ROUTES=[...GARDEN_PATHS,...SHOPPING_LANE_ROUTES,{id:'island-coast-walk',peninsula:true,width:1.8,surface:'stone',points:COAST_WALK},{id:'kitahama-west-link',peninsula:true,width:3,surface:'stone',points:[[-38,57],[-35,57]]},{id:'island-coastal-road',peninsula:true,width:5,segmentWidths:[2.6],surface:'asphalt',points:COAST_ROAD},{id:'island-mountain-trail',peninsula:true,width:2.3,surface:'gravel',points:MOUNTAIN_TRAIL},{id:'aoba-summit-path',peninsula:true,width:1.8,surface:'gravel',points:SUMMIT_PATH},...FUMOTO_ROUTES].map(r=>({...r,terrain:!r.park}));
+export const ISLAND_ROUTES=[...GARDEN_PATHS,...SHOPPING_LANE_ROUTES,{id:'island-coast-walk',peninsula:true,width:2.4,surface:'stone',points:COAST_WALK},{id:'kitahama-west-link',peninsula:true,width:3,surface:'stone',points:[[-37,57],[-35,57]]},{id:'island-coastal-road',peninsula:true,width:5,segmentWidths:[2.6],surface:'asphalt',points:COAST_ROAD},{id:'island-mountain-trail',peninsula:true,width:2.3,surface:'gravel',points:MOUNTAIN_TRAIL},{id:'aoba-summit-path',peninsula:true,width:1.8,surface:'gravel',points:SUMMIT_PATH},...FUMOTO_ROUTES].map(r=>({...r,terrain:!r.park}));
 export function nearestSegment(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],t=Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/(dx*dx+dz*dz||1)));return Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);}
 /** The first island route under (x,z), through its index (plan-index.js): the answer a scan of every segment gives. */
 const findIslandRoute=routeFinder(ISLAND_ROUTES);

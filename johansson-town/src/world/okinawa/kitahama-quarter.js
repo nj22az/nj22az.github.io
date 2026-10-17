@@ -37,7 +37,7 @@ export function buildKitahamaQuarter(kit,solid,{anchor,onAction,vending},{across
  const spine=[18.5,-9].map((x,i)=>pole(x,K.spine.maxZ-.25,{face:Math.PI,transformer:i===1,lamp:true,seed:240+i*2}));
  if(across[0])wiresBetween(kit,across[0],spine[0]);
  for(let i=0;i<spine.length-1;i++)wiresBetween(kit,spine[i],spine[i+1]);
- const north=pole(K.fukugiLane.maxX-.25,51,{face:Math.PI/2,transformer:false,lamp:true,seed:252});
+ const north=pole(-12,39,{face:Math.PI/2,transformer:false,lamp:true,seed:252});
  wiresBetween(kit,spine[0],north,{sag:.5});
  const nearest=(x,z)=>poles.reduce((a,b)=>Math.hypot(b.anchors[0].x-x,b.anchors[0].z-z)<Math.hypot(a.anchors[0].x-x,a.anchors[0].z-z)?b:a);
  for(const p of K.plots.filter(q=>Number(q.id.split('-')[1])>=6)){
@@ -159,7 +159,7 @@ function buildCorner(kit,solid,{anchor,onAction}){
  const sign=poster({title:'RUBBISH',lines:['Burnable: Tue · Fri','Cans, bottles: Wed','Put out by 8:00','Nets over the bags (crows!)'],bg:'#f4ecd6',band:'#2f7a4a'});
  kit.sign(sign,.45,.62,cx,h+.5,cz-d/2-.04,{name:'rubbish sign'});kit.box(.05,1.5,.05,cx,.75,cz-d/2-.06,steel);
  // The notice board on two posts, by the lane.
- const nx=L.minX-.45,nz=L.minZ+3.2;
+ const nx=-14,nz=36.5;
  for(const dz of [-.7,.7])kit.box(.08,1.9,.08,nx,.95,nz+dz,0x6b4a33);
  kit.box(.08,.95,1.6,nx,1.45,nz,0x8a6a45);kit.box(.12,.06,1.7,nx,1.97,nz,0x5d4431);
  const notices=[

@@ -26,10 +26,8 @@ export {tvProgramme} from './fujita-day.js';
  *
  * Pier frame: the shed stands on the west edge of the L-pier, open to the east.
  */
-export const PORT_SHED=Object.freeze({id:'fujita-shed',x:-36.95,z:-58,width:3.6,depth:2.4,y:0,
- chair:[-36.6,-57.2],tv:[-36.8,-59.35]});
-/** The pier's timber deck the shed stands on (measured from the harbour's own deck). */
-export const SHED_PIER=Object.freeze({minX:-38.25,maxX:-35,minZ:-60,maxZ:-53.75});
+export {PORT_SHED,SHED_PIER} from './fujita-layout.js';
+import {PORT_SHED,SHED_PIER} from './fujita-layout.js';
 const S=PORT_SHED;
 
 function corrugated(){
@@ -208,7 +206,7 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
  colliders.push({x:wx-hx,z:wz,w:.12,d:W,height:2.1,portShed:true});
  colliders.push({x:wx,z:wz-hz,w:D,d:.12,height:2.1,portShed:true});
  colliders.push({x:S.tv[0],z:S.tv[1],w:.62,d:.48,height:.95,portShed:true},{x:S.chair[0],z:S.chair[1],w:.7,d:.7,height:.9,portShed:true});
- colliders.push({x:wx+hx-.35,z:wz-hz-.3,w:.55,d:.4,height:.9,portShed:true});
+ // The retired exterior cool box has no collider on the timber walking circuit.
 
  // Timber access only: the old broad L-shaped slab and its unused seaward spur are retired.
  {const P=SHED_PIER,pier=new THREE.Group();pier.name='Fujita timber boardwalk';parent.add(pier);

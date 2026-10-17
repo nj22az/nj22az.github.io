@@ -7,7 +7,7 @@ import {buildShopDoor} from './shop-door.js';
 // Its quay (south) end stood at z -47.9, over the west edge of the ferry's ramp landing (x -10.95, z -50 to -45.6); in
 // 2026-10 it was shortened by 2.5 m at that end (the creator: "the ramp shouldn't poke under the warehouse"), its
 // street end, doors and signs where they were. `halfDepth` is half its length along the quay's road (z).
-export const WAREHOUSE=Object.freeze({x:-13.6,z:-41.15,halfDepth:4.26,scale:.55,yaw:-Math.PI/2,groundY:.095,sourceMinY:-.022709667682647705});
+export const WAREHOUSE=Object.freeze({x:-13.6,z:-41.4,halfDepth:4.1,scale:.55,yaw:-Math.PI/2,groundY:.095,sourceMinY:-.022709667682647705});
 export const WAREHOUSE_PLACE=Object.freeze({
  id:'warehouse',title:'Harbour Warehouse',jp:"港倉庫",sub:'WESTERN QUAY',
  x:WAREHOUSE.x,z:WAREHOUSE.z,color:0x9a9588,accent:'#314d51',

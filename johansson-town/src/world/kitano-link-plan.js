@@ -3,7 +3,7 @@
 export const KITANO_ROAD=Object.freeze({
  id:'kitano-road',title:'Kitano Road',
  /** Corners of the centreline (the carriageway's middle), each rounded by its radius. */
- corners:Object.freeze([[-.5,3.3,0],[24,3.3,40],[29.5,2.28,0]].map(Object.freeze)),
+ corners:Object.freeze([[-.5,3.3,0],[29.5,3.3,0]].map(Object.freeze)),
  lane:2.5,
  /** Offsets across the road, positive to the left of eastbound travel (south). */
  section:Object.freeze({north:-2.6,carriageway:2.5,footway:4.25,parapet:.25,kerb:.12}),

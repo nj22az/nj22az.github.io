@@ -1,3 +1,4 @@
+import {buildArchitectureGround} from './architecture-ground.js';
 import {buildNeighbourhoodGround} from './neighbourhood-ground.js';
 import {onIslandLand} from './coastal-ground.js';
 import {isWeekend} from '../commerce/sakura-rota.js';
@@ -191,27 +192,27 @@ function addStreetLife(world,options,factory){
   const group=world.group,colliders=world.colliders,lights=[];let interactions=addSiteFrontage(world,options,factory,lights);
   const inspect=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('inspect',title,text),options.register);interactions++;};
   const read=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('read',title,text),options.register);interactions++;};
-  const seat=(pos,label,title,text)=>{const marker=anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);marker.userData.seat={position:[3.5,0,17.02],stand:[3.5,0,16.1],surfaceY:.62,eyeY:1.26,yaw:0,pitch:0};interactions++;};
+  const seat=(pos,label,title,text)=>{const marker=anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);marker.userData.seat={position:[.6,0,18.02],stand:[1.6,0,18.1],surfaceY:.62,eyeY:1.26,yaw:0,pitch:0};interactions++;};
   const machine=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('machine',title,text),options.register);interactions++;};
 
   // Keep the x=1.9 pavement route open from Higa to the police box. The bench sits
   // beyond it, clear of the service cars' turning sweep across the kerb.
-  addWithCollider(group,colliders,factory.bench(3.5,17.1,0));
+  addWithCollider(group,colliders,factory.bench(.6,18.1,0));
   seat([3.5,.85,16.1],'Sit on neighbourhood bench','Neighbourhood bench','From here the shop signs, bicycles and overhead cables make the street feel almost domestic.');
 
   const postbox=factory.postbox(.5,15.1,-Math.PI/2);postbox.collider.yaw=-Math.PI/2;
   addWithCollider(group,colliders,postbox);
   inspect([1.4,1,15.1],'Inspect post box','Post box','The collection plate lists two pickups: 10:30 and 16:30. A few handwritten postcards are visible through the slot.');
-  addWithCollider(group,colliders,factory.noticeBoard(5.5,-37.3,0));
-  addSakuraFlyer(group,{position:[5.87,1.55,-37.215],width:.43});
-  anchor(group,[5.5,1,-36.6],'Read Thuan’s shop flyer · harbour notice board',()=>options.onAction?.('sakura-flyer','Harbour notice board'),options.register);interactions++;
+  addWithCollider(group,colliders,factory.noticeBoard(5.5,-33.2,0));
+  addSakuraFlyer(group,{position:[5.87,1.55,-33.115],width:.43});
+  anchor(group,[5.5,1,-32.5],'Read Thuan’s shop flyer · harbour notice board',()=>options.onAction?.('sakura-flyer','Harbour notice board'),options.register);interactions++;
 
   addWithCollider(group,colliders,factory.utilityCabinet(.5,13.2,0));
   inspect([.5,1,12.35],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
 
   // Thuan's bicycle stands on the west footway, a short walk from Sakura, as an interactive ride.
   // On the west footway, between Sakura's front and the kerb (the carriageway is narrower now).
-  const bicycleSpot=({x:-5.8,z:-23.2});
+  const bicycleSpot=({x:.2,z:26.8});
   const bicycle=buildBicycle({...bicycleSpot,shadows:options.shadows,animated:true});
   bicycle.object.name="Thuan's commuter bicycle";
   addWithCollider(group,colliders,bicycle);
@@ -257,6 +258,7 @@ export function createTown(options){
   applyShopAddresses(options.sites);
   const world=createBaseTown(options);
   buildNeighbourhoodGround(world.group,onIslandLand);
+  buildArchitectureGround(world.group);
   // Kitano-jima whole now, or only as seen from across the strait until he heads there (kitano-on-demand.js).
   world.kitano=createKitano(world,{distant:options.kitano==='distant'});
   // Only the street cast lives in the playable town; nothing else may arrive as a person.
@@ -264,18 +266,10 @@ export function createTown(options){
   world.people.length=0;
   const forestEdge=buildForestEdge({parent:world.group,colliders:world.colliders,register:options.register,onAction:options.onAction,shadows:options.shadows,trees:!true});
   world.forestEdge=forestEdge;
+  if(!CAVE_ACTIVE)forestEdge.group.removeFromParent();
   // The road out of town ends at the Minato Tunnel through the headland, which only the
   // bus goes through. See coyote-tunnel.js.
   // Without the cave there is no footpath up to it either.
-  if((!CAVE_ACTIVE)){
-   forestEdge.group.removeFromParent();
-   // The old terminus at the top of Main Street stays at the street's height -- it is the
-   // way round to the police box -- as a lawn on a low bank, over the island ground.
-   const B=BUS_STATION,turf=new THREE.MeshStandardMaterial({color:GROUND.grass,roughness:1});
-   try{const map=paintedTurf().clone();map.needsUpdate=true;map.repeat.set(1/6,1/6);turf.map=map;}catch{}
-   const bank=new THREE.Mesh(new THREE.BoxGeometry(B.maxX-B.minX,.42,B.maxZ-B.minZ),[0,1,2,3,4,5].map(i=>i===2?turf:new THREE.MeshStandardMaterial({color:0x8e8a78,roughness:1})));
-   bank.position.set((B.minX+B.maxX)/2,GROUND_LAYER.grass-.21,(B.minZ+B.maxZ)/2);bank.name='Main Street end lawn';bank.receiveShadow=true;world.group.add(bank);
-  }
   if(CAVE_ACTIVE)world.tunnel=buildCoyoteTunnel({parent:world.group,colliders:world.colliders,
     register:options.register,onAction:options.onAction,shadows:options.shadows});
    // The port is north, the shops are west; the east is the green side of the town and
@@ -327,7 +321,7 @@ export function createTown(options){
     const g=new THREE.Group();g.name='Road standards';world.group.add(g);const ky=KITAHAMA.y;
     for(const [x,z,ry] of [[43.3,67.88,Math.PI],[23.5,64.12,0],[11.5,67.88,Math.PI]])ishiganto(g,{x,z,y:ky,ry});
     stopMarking(g,{x:43.3,z:63.7,y:ky,width:KITAHAMA.approach.maxX-KITAHAMA.approach.minX});
-    roadSign(g,'stop',{x:KITAHAMA.approach.minX+.22,z:63.2,y:ky,ry:Math.PI,colliders:world.colliders});
+    roadSign(g,'stop',{x:KITAHAMA.approach.maxX-.1,z:63.2,y:ky,ry:Math.PI,colliders:world.colliders});
 
    }
    if(!world.eastLawn.useParkGreenery(parkFoliage()))registerDetail(world,{id:'east-lawn-grass',x:19,z:-6,radius:64,load:async()=>
@@ -361,7 +355,7 @@ export function createTown(options){
   // yard, so it stays off. The izakaya is a building on the west pavement and comes
   // back on its own: it is where Thuan has a beer between closing Sakura and the last
   // bus home, and it stands at whichever plot this layout gives it.
-  
+
   buildIzakaya(world,options);
   buildPark(world,options);
   world.flowerShop=buildFlowerShop({world,group:world.group,register:options.register,onAction:options.onAction,sites:options.sites});

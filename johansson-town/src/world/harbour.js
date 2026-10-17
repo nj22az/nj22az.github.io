@@ -131,8 +131,16 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   box([MAIN_ROAD.width,.2,upperRoadLength],[MAIN_ROAD.x,-.10,(MAIN_ROAD.maxZ+BOARDWALK.maxZ)/2],GROUND.asphalt,[0,0,0],'road');
   box([MAIN_ROAD.width,.2,4],[MAIN_ROAD.x,-.10,-40],GROUND.asphalt,[0,0,0],'road');
   const boardwalk=buildBoardwalk(group,{mobile,shadows,maxAnisotropy});
-  for(const [left,right] of [[MAIN_ROAD.pavementWest,MAIN_ROAD.west],[MAIN_ROAD.east,MAIN_ROAD.pavementEast]]){
-    const pavement=directBox([right-left,.10,MAIN_ROAD.maxZ-MAIN_ROAD.minZ],[(left+right)/2,-.062,(MAIN_ROAD.maxZ+MAIN_ROAD.minZ)/2],GROUND.pavers,group,[0,0,0],false,'paving');pavement.name='Main Street footway';
+  // Partition the footways around asphalt courts; each finished surface owns its patch.
+  const footCuts=[MAIN_SERVICE_COURT,MAIN_LOADING_APRON,MAIN_PARKING_LAYBY];
+  for(const [left,right] of [[-8.1,MAIN_ROAD.west],[MAIN_ROAD.east,5.75]]){
+   const xs=[...new Set([left,right,...footCuts.flatMap(p=>[p.minX,p.maxX]).filter(x=>x>left&&x<right)])].sort((a,b)=>a-b);
+   const zs=[...new Set([MAIN_ROAD.minZ,MAIN_ROAD.maxZ,...footCuts.flatMap(p=>[p.minZ,p.maxZ]).filter(z=>z>MAIN_ROAD.minZ&&z<MAIN_ROAD.maxZ)])].sort((a,b)=>a-b);
+   for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++){
+    const x=(xs[i-1]+xs[i])/2,z=(zs[j-1]+zs[j])/2;
+    if(footCuts.some(p=>x>p.minX&&x<p.maxX&&z>p.minZ&&z<p.maxZ))continue;
+    const pavement=directBox([xs[i]-xs[i-1],.10,zs[j]-zs[j-1]],[x,-.01,z],GROUND.pavers,group,[0,0,0],false,'paving');pavement.name='Main Street footway';
+   }
   }
   // The delivery turn stays on asphalt, with a flush entrance through the old kerb.
   const court=MAIN_SERVICE_COURT;const apron=directBox([court.maxX-court.minX,.04,court.maxZ-court.minZ],[(court.minX+court.maxX)/2,.02,(court.minZ+court.maxZ)/2],GROUND.asphalt,group,[0,0,0],false,'road');apron.name='Main Street service turnout';
@@ -163,7 +171,6 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // length of the street (the deck section draws its own to the same spec), and where the
   // road meets the lawn at its north end, 車止め posts rather than a crossing to nowhere.
   edgeLines(group,[[MAIN_ROAD.x,BOARDWALK.maxZ],[MAIN_ROAD.x,MAIN_ROAD.maxZ-.2]],{width:MAIN_ROAD.width});
-  roadEndPosts(group,{x0:MAIN_ROAD.west+.45,x1:MAIN_ROAD.east-.45,z:MAIN_ROAD.maxZ+.4,colliders});
   [[-4.1,18.2,1.15,.45,.2],[-1.7,10,.8,.35,-.3]].forEach(v=>puddle(...v));
 
   // Two perpendicular crossings define the short rectangular shopping blocks. Where
@@ -174,7 +181,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   for(const z of [SHOP_CROSSING_Z,-18]){
     zebraCrossing(group,{x0:MAIN_ROAD.west+.15,x1:MAIN_ROAD.east-.15,z});
     tactileStrip(group,{x:MAIN_ROAD.west-.38,z,w:.3,d:3});tactileStrip(group,{x:MAIN_ROAD.east+.38,z,w:.3,d:3});
-    roadSign(group,'crossing',{x:MAIN_ROAD.west-(z===SHOP_CROSSING_Z?2.65:.42),z:z+1.75,ry:0,colliders});roadSign(group,'crossing',{x:MAIN_ROAD.east+.12,z:z-1.75,ry:Math.PI,colliders});
+    roadSign(group,'crossing',{x:MAIN_ROAD.west-.42,z:z+1.75,ry:0,colliders});roadSign(group,'crossing',{x:MAIN_ROAD.east+.12,z:z-1.75,ry:Math.PI,colliders});
   }
 
   // Shopfronts — masonry and timber with glass where useful.
@@ -241,7 +248,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   // Payphone sits fully on the west footway: narrowing Main Street to six metres
   // left it overhanging the kerb into the carriageway.
-  box([1.1,2.5,1],[-7.1,1.25,17.2],0x457e73);box([.91,1.6,.91],[-7.1,1.55,17.2],0x648c87);box([.35,.65,.28],[-7.1,1.4,17.73],0x3d9c6c);label("Telephone",'TELEPHONE',[-7.1,2.4,17.75],1,.28);anchor([-7.1,1,18.2],'Use payphone',()=>onAction('phone'));obstacle(-7.1,17.2,1.1,1);
+  box([1.1,2.5,1],[-7,1.25,27],0x457e73);box([.91,1.6,.91],[-7,1.55,27],0x648c87);box([.35,.65,.28],[-7,1.4,27.53],0x3d9c6c);label("Telephone",'TELEPHONE',[-7,2.4,27.55],1,.28);anchor([-7,1,28],'Use payphone',()=>onAction('phone'));obstacle(-7,27,1.1,1);
   // The island has no road out: its people come and go by the ferry from the outer pier,
   // and the terminal on the quay takes the bus station's part. Elsewhere, the bus.
   const busStation=buildFerryTerminal({parent:group,colliders,register,onAction,enter,label,shadows});
@@ -316,7 +323,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   anchor([0,1,-47.1],'Cast a fishing line',()=>onAction('fishing'));
 
   // The waiting hall supplies the east-side seating; this west bench leaves the roll-on lane clear.
-  for(const x of [-17.8]){box([1.8,.14,.6],[x,.62,-43.2],0x8d7652,[0,0,0],'wood');for(const dx of [-.65,.65])box([.12,.6,.4],[x+dx,.31,-43.2],0x465355);obstacle(x,-43.2,1.9,.7);const seat=anchor([x,1,-44.1],'Sit on the quay bench',()=>onAction('seat','Quay bench','A place to rest while the boats come and go.'));seat.userData.seat={id:'quay-bench',position:[x,0,-43.2],stand:[x,0,-44.1],surfaceY:.69,eyeY:1.39,yaw:0,pitch:0};}
+  for(const x of [27]){box([1.8,.14,.6],[x,.62,18],0x8d7652,[0,0,0],'wood');for(const dx of [-.65,.65])box([.12,.6,.4],[x+dx,.31,18],0x465355);obstacle(x,18,1.9,.7);const seat=anchor([x,1,17.1],'Sit on the quay bench',()=>onAction('seat','Quay bench','A place to rest while the boats come and go.'));seat.userData.seat={id:'quay-bench',position:[x,0,18],stand:[x,0,17.1],surfaceY:.69,eyeY:1.39,yaw:0,pitch:0};}
 
 
   // Fishing boat with a tapered toon hull, cabin, life-ring, mast and working lights. She lay off the

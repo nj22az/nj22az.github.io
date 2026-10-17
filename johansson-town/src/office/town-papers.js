@@ -61,7 +61,7 @@ export const TOWN_PAPERS=[
     "type": "Notice",
     "title": "Rainflower Florist",
     "organisation": "Town Services",
-    "text": "Fresh stems, potted greenery and hand-made wreaths from Mrs Kinjō. Her counter is beside Harbour Park and Nakamura’s dessert shop. She supplies flowers to Sakura, the izakaya, town office, school and Umi-no-yu. Open 09:00–18:00.",
+    "text": "Fresh stems, potted greenery and hand-made wreaths from Mrs Kinjō. Her counter faces the neighbourhood plaza, east of Main Street. She supplies flowers to Sakura, the izakaya, town office, school and Umi-no-yu. Open 09:00–18:00.",
     "source": "notice:Rainflower Florist"
   },
   {
