@@ -145,3 +145,7 @@
 #projects .px-linux-whisper:hover .px-whisper-bubble{border-color:#3e6b52}
 #projects .px-linux-whisper:focus-visible{outline:3px solid #1b6d4e;outline-offset:-6px;border-radius:12px}
 @media(max-width:480px){#projects .px-linux-whisper{gap:10px;padding:20px 16px}#projects .px-linux-whisper img{width:104px;height:158px}#projects .px-whisper-bubble{padding:14px;font-size:13px}#projects .px-whisper-bubble strong{font-size:19px}#projects .px-whisper-bubble small{font-size:11px}}
+
+.px-mascot-title h3 a{color:inherit;text-decoration:none}.px-mascot-title h3 a:hover{text-decoration:underline;text-underline-offset:.15em}
+
+#projects.project-explorer{word-break:normal;overflow-wrap:break-word;line-break:auto}
