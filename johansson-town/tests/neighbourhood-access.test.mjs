@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {townBoundsBlocked,standingHitsRect,circleHitsRect,canStepBetween} from '../physics.js';
@@ -10,10 +11,11 @@ import {gardenPoint,PARK_ACCESS,GARDEN_BENCHES_AUTHOR} from '../src/world/garden
 import {SHOPPING_LANE} from '../src/world/shopping-lane-plan.js';
 import {HARBOUR_FLORIST,NAKAMURA_DESSERTS,HARBOUR_PARK_SEATS,inHarbourPark} from '../src/world/harbour-park-plan.js';
 import {PARK_BENCH} from '../src/world/park-layout.js';
+import {feedPlace} from '../src/feed/places.js';
 installDOM();globalThis.self=globalThis;
 const {createTown}=await import('../src/world/town.js');const {createBusinesses}=await import('../src/world/businesses.js');
-const prompts=[];
-const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),townMode:'peninsula',mobile:false,shadows:false,register:(object,label)=>prompts.push({object,label}),enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
+const prompts=[],actions=[];
+const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),townMode:'peninsula',mobile:false,shadows:false,register:(object,label,run)=>prompts.push({object,label,run}),enter(){},onAction:(...args)=>actions.push(args),getPlayerPosition:()=>new THREE.Vector3()});
 // Broad phase keeps this whole-town route audit practical without weakening collisions.
 const bins=new Map(),cell=4;
 for(const c of world.colliders){const reach=Math.hypot(c.w,c.d)/2+.5;for(let x=Math.floor((c.x-reach)/cell);x<=Math.floor((c.x+reach)/cell);x++)for(let z=Math.floor((c.z-reach)/cell);z<=Math.floor((c.z+reach)/cell);z++){const key=x+','+z;if(!bins.has(key))bins.set(key,[]);bins.get(key).push(c);}}
@@ -97,6 +99,22 @@ test('dry-weather garden visits use the existing residents and respect rain rout
  assert.equal(homeRoutine(reiko,wake+16).id,'breakfast');assert.equal(residentPlan(reiko,wake+16,false,{}).place,'home','breakfast finishes before the garden trip');
  assert.equal(residentPlan(reiko,690,false,{}).place,'home','the former garden fixture is now inside the authored wake/preparation hour');
  for(const [name,minute] of [['Reiko',wake+65],['Tetsuo',780]]){const profile=RESIDENTS.find(p=>p.name===name),plan=residentPlan(profile,minute,false,{});assert.equal(plan.place,'park');assert.ok(plan.activity.includes('Harbour Park'));assert.deepEqual(plan.target,HARBOUR_PARK_SEATS[name==='Reiko'?0:1].stand);assert.notEqual(residentPlan(profile,minute,true,{}).place,'park');}
+});
+
+test('photo and feed destinations use the reachable park and florist, and Sakura directs ice cream customers to Nakamura',async()=>{
+ const game=await readFile(new URL('../src/game.js',import.meta.url),'utf8');
+ const source=game.match(/function photoSpots\(\)\{[\s\S]*?\n\}/)?.[0];assert.ok(source,'The public photo destinations remain available');
+ const photos=Function('HARBOUR_PARK_SEATS','HARBOUR_FLORIST',source+';return photoSpots();')(HARBOUR_PARK_SEATS,HARBOUR_FLORIST);
+ const nav=createNavigation(playerBlocked);
+ for(const [photoId,feedId,point] of [['photo-garden','garden',HARBOUR_PARK_SEATS[1].stand],['photo-rainflower','rainflower',HARBOUR_FLORIST.approach]]){
+  const photo=photos.find(p=>p.id===photoId),feed=feedPlace(feedId);assert.ok(photo&&feed,'Existing saved IDs remain valid');
+  assert.deepEqual([photo.x,photo.z],point);assert.deepEqual(feed.shot.at,point);assert.equal(feed.shot.lane,undefined,'Capture cameras no longer transform the retired lane');
+  assert.doesNotMatch(photo.title+' '+photo.at+' '+feed.name,/Aoba|Rainflower Lane/);
+  walkPath(arrival(nav,...point),photoId+' public photo approach');
+ }
+ assert.equal(feedPlace('rainflower').name,HARBOUR_FLORIST.name);assert.doesNotMatch(feedPlace('rainflower').things.join(' ')+feedPlace('rainflower').doing.join(' '),/ice cream/);
+ const mural=prompts.find(p=>p.label==='Look at the ice-cream mural');assert.ok(mural);mural.run();
+ assert.match(actions.at(-1)[2],/Blue Coral.*Nakamura.*Harbour Park/);assert.doesNotMatch(actions.at(-1)[2],/Rainflower Lane/);
 });
 
 test('visible garden approaches match walking heights across the whole entrance, not only the path',()=>{

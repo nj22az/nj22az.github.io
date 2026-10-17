@@ -13,8 +13,8 @@ import {VENDING_MACHINE} from '../vending.js';
  * everything that walks in and out of them are exactly as they were.
  *
  *   Sakura      the flat above the shop, its outside stair up the back, the rooftop sign,
- *               a Blue Coral mural on the side wall (an advert for the shop on Rainflower
- *               Lane) and enamel tins on the other.
+ *               a Blue Coral mural on the side wall (now served at Nakamura's counter
+ *               beside Harbour Park) and enamel tins on the other.
  *   Warehouse   its name painted big on the street wall, floats hung on its wall over the ferry's apron.
  *   Office      big-catch flags on a pole by the door, a life ring and the tide board.
  *   Bookshop    a cart of cheap paperbacks out on the pavement.
@@ -108,7 +108,7 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  solid({id:'sakura-trestle',x:front+.36,z:tz,w:.6,d:1.7,height:.8});
  // At the two corners of the frontage, so they mark the shop without standing in front
  // of its window.
- // One flag: the town's ice cream is Blue Coral's, on Rainflower Lane.
+ // One flag: Blue Coral is served at Nakamura's counter beside Harbour Park.
  for(const [z,jp,bg] of [[S.minZ+.45,"Cold drinks",'#c8392e']]){
   kit.cyl(.025,.025,2.8,front+.95,1.4,z,0x9aa0a4,{segments:6});kit.rod([front+.95,2.72,z],[front+.95,2.72,z+.5],.012,0x9aa0a4);
   kit.sign(vertical({jp,bg}),.46,1.9,front+.95,1.75,z+.26,{ry:Math.PI/2,depth:.01,both:true,name:'nobori'});
@@ -209,7 +209,7 @@ function dressSakura(kit,solid,{inspect}){
  kit.sign(enamel({jp:"Ryukyu Cider",en:'Ryukyu cider'}),.7,1.05,S.maxX-2,1.7,S.minZ-.04,{ry:Math.PI,depth:.02,name:'enamel sign'});
  kit.sign(enamel({jp:"Mosquito coil",en:'mosquito coils',bg:'#2a6a4a',ink:'#f4e6b0'}),.7,1.05,S.maxX-3,1.7,S.minZ-.04,{ry:Math.PI,depth:.02,name:'enamel sign'});
  inspect(S.maxX-2.2,1.2,S.maxZ+1.2,'Look at the ice-cream mural','Blue Coral mural',
-  'Painted straight onto the wall in 1981 and touched up every summer since by whoever has the paint. The pink scoop is guava. Thuan says the man who painted it still comes in for his cigarettes and complains that nobody has got the blue right. The scoops themselves are Blue Coral’s, up on Rainflower Lane.');
+  'Painted straight onto the wall in 1981 and touched up every summer since by whoever has the paint. The pink scoop is guava. Thuan says the man who painted it still comes in for his cigarettes and complains that nobody has got the blue right. Blue Coral ice cream is served at Nakamura’s dessert counter beside Harbour Park.');
 }
 
 function dressWarehouse(kit,solid,{inspect}){

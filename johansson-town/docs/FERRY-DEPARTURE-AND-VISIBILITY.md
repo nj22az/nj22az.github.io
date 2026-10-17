@@ -111,7 +111,7 @@ The final handover observation used `boot-BYig4clw.js` and the final source hash
 | 261.3333333334243 s | Both ship and shore completion reports were recorded. |
 | 264.10 s | The head line was coiled. The AB was waiting for the shore hand on the next forward-spring task. |
 
-Throughout this handover, the ship remained at its berth at **x = −8.64, z = −69.45**, with the ramp raised and locked, one truck secured, and its driver upstairs. These checks complete local release verification; publication is a separate step and is not asserted here. Images of the completed prior-build voyage show the ferry [underway](qa/departure-and-dialogue/ferry-underway.png) and [at arrival](qa/departure-and-dialogue/ferry-arrival.png), retaining the build provenance given above.
+Throughout this handover, the ship remained at its berth at **x = −8.64, z = −69.45**, with the ramp raised and locked, one truck secured, and its driver upstairs. These checks completed the ferry release verification. The ferry, dialogue and veranda changes were published in [PR #184](https://github.com/nj22az/nj22az.github.io/pull/184); GitHub Pages succeeded, and the public page, runtime, styles and service worker matched the tested files. The subsequent photo/comic guide correction is recorded in the [Minato implementation notes](MINATO-CONSOLIDATION.md); the build IDs here retain the provenance of the ferry and dialogue checks. Images of the completed prior-build voyage show the ferry [underway](qa/departure-and-dialogue/ferry-underway.png) and [at arrival](qa/departure-and-dialogue/ferry-arrival.png), retaining the build provenance given above.
 
 ### CPU loaded-fixture scope
 
