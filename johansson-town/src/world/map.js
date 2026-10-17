@@ -1,3 +1,4 @@
+import {KITAHAMA,KITAHAMA_LANES} from './kitahama-layout.js';
 import {ISLAND} from './island-plan.js';
 import {HARBOUR_PARK_MAIN,HARBOUR_PARK_EXTENSION,HARBOUR_POND,HARBOUR_PARK_ALIASES} from './harbour-park-plan.js';
 import {townMapBounds} from './map-viewport.js';
@@ -43,7 +44,7 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],homes=[],people=[],pl
  stroke([[TUNNEL.x,MAIN_ROAD.maxZ],[TUNNEL.x,FOREST_EDGE.roadEndZ]],BOARDWALK.width,'#999c96');
  for(const access of BEACH.accesses)stroke([[access.fromX,access.z],[access.toX,access.z]],1,'#cab786');
  const plan=mapPlan(),r=([minX,maxX,minZ,maxZ])=>rect({minX,maxX,minZ,maxZ});
- ctx.fillStyle='#d7d9b9';plan.yards.forEach(r);ctx.fillStyle='#d4cbb5';plan.walks.forEach(r);ctx.fillStyle='#b8b1a4';plan.buildings.forEach(r);
+ ctx.fillStyle='#d7d9b9';plan.yards.forEach(r);ctx.fillStyle='#d4cbb5';plan.walks.forEach(r);ctx.fillStyle='#d4cbb5';KITAHAMA_LANES.forEach(rect);ctx.fillStyle='#b8b1a4';plan.buildings.forEach(r);[...KITAHAMA.plots,KITAHAMA.apartment].forEach(rect);
  ctx.fillStyle='#787f78';rect({minX:TUNNEL.x-TUNNEL.width/2,maxX:TUNNEL.x+TUNNEL.width/2,minZ:TUNNEL.z,maxZ:TUNNEL.z+TUNNEL.depth});
  // Draw the tested walking path over the actual lanes; never connect an unplanned
  // destination to the player with a line through buildings or across the water.

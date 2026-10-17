@@ -35,8 +35,11 @@ export const KITAHAMA=Object.freeze({
  spine:Object.freeze({minX:1,maxX:33,minZ:64.5,maxZ:67.5}),
  fukugiLane:Object.freeze({minX:22,maxX:25,minZ:67.5,maxZ:94}),
  wellLane:Object.freeze({minX:10,maxX:13,minZ:52,maxZ:64.5}),
- /** The footpath down past the school to the old town. */
- footpath:Object.freeze({minX:1,maxX:2.8,minZ:40,maxZ:64.5}),
+ /** Western residential street; the graded Main Street link joins at z=58. */
+ footpath:Object.freeze({minX:.4,maxX:3.4,minZ:58,maxZ:94}),
+ northLane:Object.freeze({minX:.4,maxX:37,minZ:94,maxZ:97}),
+ eastLane:Object.freeze({minX:34,maxX:37,minZ:84.5,maxZ:94}),
+ fieldLane:Object.freeze({minX:37,maxX:59.4,minZ:84.5,maxZ:87.5}),
  /** The apartment block on Fukugi Lane: two flats up, two down, an outside stair. */
  apartment:Object.freeze({id:'kitahama-flats',minX:13.5,maxX:21.5,minZ:79,maxZ:90,name:'Kitahama Heights'}),
  /** The pocket park at the corner of the spine and Well Lane. */
@@ -49,7 +52,7 @@ export const KITAHAMA=Object.freeze({
  y:-.4,
 });
 /** Every lane in Kitahama: the approach, the cross lane, and the quarter's. */
-export const KITAHAMA_LANES=Object.freeze([KITAHAMA.approach,KITAHAMA.lane,KITAHAMA.spine,KITAHAMA.fukugiLane,KITAHAMA.wellLane,KITAHAMA.footpath]);
+export const KITAHAMA_LANES=Object.freeze([KITAHAMA.approach,KITAHAMA.lane,KITAHAMA.spine,KITAHAMA.fukugiLane,KITAHAMA.wellLane,KITAHAMA.footpath,KITAHAMA.northLane,KITAHAMA.eastLane,KITAHAMA.fieldLane]);
 /** Whether a circle of radius r stands on one of Kitahama's lanes. */
 export function kitahamaLaneAt(x,z,r=0){
  return KITAHAMA_LANES.some(L=>x>=L.minX+r&&x<=L.maxX-r&&z>=L.minZ+r&&z<=L.maxZ-r);
