@@ -1790,9 +1790,9 @@ festival=createHarbourFestival({scene,camera,renderer,activities,getCalendar:()=
  getStage:s=>{
   if(s.ship){const ship=world.ferry?.ferry;if(!ship)return null;ship.updateMatrixWorld(true);return {position:ship.localToWorld(new THREE.Vector3(0,ship.userData.deckY??1.1,6.75)),yaw:ship.rotation.y};}
   // Use a clear, flat part of this actual location; never substitute a backdrop.
-  for(const [dx,dz] of [[0,0],[0,2],[0,-2],[2,0],[-2,0]]){
+  for(const [dx,dz] of [[0,0],...[2,4,6].flatMap(r=>Array.from({length:12},(_,i)=>[Math.cos(i*Math.PI/6)*r,Math.sin(i*Math.PI/6)*r]))]){
    const x=s.x+dx,z=s.z+dz,y=groundHeight(x,z);
-   if([-2,0,2].every(a=>[-1.4,0,1.4].every(b=>!environmentBlocked(x+a,z+b,.25)&&Math.abs(groundHeight(x+a,z+b)-y)<.15)))return {position:new THREE.Vector3(x,y+.03,z),yaw:0};
+   if([-1.95,0,1.95].every(a=>[-1.35,0,1.35].every(b=>!environmentBlocked(x+a,z+b,.15)&&Math.abs(groundHeight(x+a,z+b)-y)<.22)))return {position:new THREE.Vector3(x,y+.03,z),yaw:0,heightAt:groundHeight};
   }return null;
  },
  onBegin:()=>{resetInput();spawnScene?.cancel();hands.firstPersonVisible=false;festivalHidden=[johansson?.root,...world.people.filter(p=>['Chin','Tetsuo','Hiroshi','Fujita'].includes(p.profile.name)).map(p=>p.g)].filter(Boolean).map(g=>[g,g.visible]);for(const [g] of festivalHidden)g.visible=false;},

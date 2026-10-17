@@ -44,7 +44,7 @@ jobs:
         if: always()
         with:
           name: linux-world-verification
-          path: steam-deck/dist/linux-world.png
+          path: steam-deck/dist/linux-world*.png
           if-no-files-found: ignore
       - name: Publish playable Linux prerelease
         env:

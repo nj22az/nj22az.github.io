@@ -1,10 +1,15 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';
-import {FESTIVAL_ALLIES,FESTIVAL_STAGES,canFestivalFight,restoreFestival,createFestivalBout,stepFestivalBout,completeFestivalStage,registerTournament,tournamentMatches,recordTournamentResult} from '../src/progression/harbour-festival.js';
+import {FESTIVAL_ALLIES,FESTIVAL_STAGES,canFestivalFight,restoreFestival,createFestivalBout,stepFestivalBout,completeFestivalStage,registerTournament,tournamentMatches,recordTournamentResult,recordFestivalWatch} from '../src/progression/harbour-festival.js';
 test('Johansson and the three sisters cannot oppose one another in either order',()=>{
  for(const a of FESTIVAL_ALLIES)for(const b of FESTIVAL_ALLIES)assert.equal(canFestivalFight(a,b),false,a+' / '+b);
  assert.equal(canFestivalFight('Johansson','Thuận'),false);
  for(const hero of FESTIVAL_ALLIES)for(const stage of FESTIVAL_STAGES){assert.equal(canFestivalFight(hero,stage.opponent),true);assert.equal(createFestivalBout(hero,stage).fighters[1].name,stage.opponent);}
  assert.throws(()=>createFestivalBout('Thuan',{...FESTIVAL_STAGES[0],opponent:'Thao'}));
+});
+test('watching resolves a story chapter without a fighting reward',()=>{
+ const state={yen:1200};assert.equal(recordFestivalWatch(state,FESTIVAL_STAGES[0].id),true);assert.equal(state.yen,1200);
+ assert.equal(completeFestivalStage(state,FESTIVAL_STAGES[1].id),true);assert.equal(state.yen,1320);
+ assert.equal(recordFestivalWatch(state,FESTIVAL_STAGES[0].id),false);
 });
 test('chapter order, save round trip and rewards cannot be farmed',()=>{
  const state={yen:1200};assert.equal(completeFestivalStage(state,FESTIVAL_STAGES[1].id),false);

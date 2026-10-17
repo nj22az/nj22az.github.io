@@ -1,7 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar} from '../avatars/build.js';
 import {recipeFor} from '../avatars/cast.js';
-import {FESTIVAL_ALLIES,FESTIVAL_STAGES,restoreFestival,createFestivalBout,stepFestivalBout,completeFestivalStage,TOURNAMENT_DATE,registerTournament,tournamentMatches,recordTournamentResult} from './harbour-festival.js';
+import {FESTIVAL_ALLIES,FESTIVAL_STAGES,restoreFestival,createFestivalBout,stepFestivalBout,completeFestivalStage,TOURNAMENT_DATE,registerTournament,tournamentMatches,recordTournamentResult,recordFestivalWatch} from './harbour-festival.js';
 
 /** Uses the live island scene and the shared Studio avatars; no painted backdrops. */
 export function createHarbourFestival({scene,camera,renderer,activities,getStage,canStart,getCalendar=()=>({date:'',year:1997}),onBegin=()=>{},onEnd=()=>{},onFrame=()=>{}}){
@@ -13,8 +13,8 @@ export function createHarbourFestival({scene,camera,renderer,activities,getStage
   const progress=state();
   activities.menu('Harbour Festival · The Golden Ladle','An optional, light-contact festival story around the real island. Johansson, Thuan, Thao and Nhung are allies and never fight one another. Everyone goes home as friends.\n\nYour representative: '+progress.hero,[
    ['Choose our representative',()=>activities.menu('One family, one team','Choose who represents the family. The others cheer them on.',FESTIVAL_ALLIES.map(name=>[name,()=>{state().hero=name;activities.save();menu();}]))],
-   ...FESTIVAL_STAGES.map((s,i)=>[progress.completed.includes(s.id)?'Replay · '+s.place:i===0||progress.completed.includes(FESTIVAL_STAGES[i-1].id)?s.place+' · '+s.opponent:'Locked · '+s.place,()=>{
-    if(i&& !state().completed.includes(FESTIVAL_STAGES[i-1].id)){activities.menu('One stage at a time','Finish the earlier festival encounter first.',[['Festival card',menu]]);return;}
+   ...FESTIVAL_STAGES.map((s,i)=>[progress.completed.includes(s.id)||progress.watched.includes(s.id)?'Replay · '+s.place:i===0||(progress.completed.includes(FESTIVAL_STAGES[i-1].id)||progress.watched.includes(FESTIVAL_STAGES[i-1].id))?s.place+' · '+s.opponent:'Locked · '+s.place,()=>{
+    if(i&& !state().completed.includes(FESTIVAL_STAGES[i-1].id)&&!state().watched.includes(FESTIVAL_STAGES[i-1].id)){activities.menu('One stage at a time','Finish the earlier festival encounter first.',[['Festival card',menu]]);return;}
     activities.menu(s.title,s.reason+'\n\nStage: '+s.place+'. Friendly exhibition, no entry fee. Winning this chapter once earns ¥'+s.reward+'.',[['Take part',()=>start(s)],['Watch the exhibition',()=>start(s,{watch:true})],['Festival card',menu]]);
    }]),
    ['Annual Harbour Tournament · 17 October',tournamentMenu],['Return to the island',()=>activities.close()]
@@ -49,6 +49,7 @@ export function createHarbourFestival({scene,camera,renderer,activities,getStage
  function finish(){
   if(!bout)return;
   const result=bout.result,finishedStage=stage,annual=tournamentMatch;
+  if(spectating&&!annual&&result!==null){recordFestivalWatch(activities.state,stage.id);activities.save();}
   if(annual&&['win','lose'].includes(result)){recordTournamentResult(activities.state,annual.year,annual.index,bout.fighters[result==='win'?0:1].name);activities.save();}
   if(result==='win'&&!spectating&&!annual){completeFestivalStage(activities.state,stage.id);activities.save();}
   for(const avatar of actors)avatar.dispose();actors=[];ring.traverse(object=>{if(object.isMesh&&object.geometry?.type==='RingGeometry'){object.geometry.dispose();object.material.dispose();}});ring.removeFromParent();ring=null;
@@ -56,7 +57,7 @@ export function createHarbourFestival({scene,camera,renderer,activities,getStage
   camera.position.copy(cameraBefore.position);camera.quaternion.copy(cameraBefore.quaternion);camera.fov=cameraBefore.fov;camera.updateProjectionMatrix();
   bout=null;stage=null;Object.keys(keyboard).forEach(k=>keyboard[k]=false);onEnd();
   if(annual){if(result!==null)activities.menu('Tournament result',result==='draw'?'A draw. The referee calls for a rematch.':'The bracket has been updated.',[['Return to bracket',tournamentMenu],['Back to exploring',()=>activities.close()]]);return;}
-  if(spectating){if(result!==null)activities.menu('Exhibition complete','A bow, a handshake and tea for both sides. Watching does not award a chapter win.',[['Festival card',menu],['Back to exploring',()=>activities.close()]]);return;}
+  if(spectating){if(result!==null)activities.menu('Exhibition complete','A bow, a handshake and tea for both sides. This chapter is recorded as watched. The story continues; watching does not award a fighting prize.',[['Festival card',menu],['Back to exploring',()=>activities.close()]]);return;}
   if(result==='win')activities.menu('Festival chapter complete',finishedStage.after,[['Festival card',menu],['Back to exploring',()=>activities.close()]]);
   else if(result==='lose'||result==='draw')activities.menu('Tea break',result==='draw'?'A draw. Everyone votes for tea. You can try again whenever you like.':'A cheerful handshake, and another chance whenever you like. Your money and possessions are unchanged.',[['Festival card',menu],['Back to exploring',()=>activities.close()]]);
  }
@@ -65,7 +66,7 @@ export function createHarbourFestival({scene,camera,renderer,activities,getStage
  addEventListener('blur',()=>{for(const key of Object.keys(keyboard))keyboard[key]=false;});
  return {menu,tournamentMenu,nearby({position}){
   if(bout||performance.now()-lastOfferCheck<1000)return;lastOfferCheck=performance.now();
-  const progress=state(),next=FESTIVAL_STAGES.find(s=>!progress.completed.includes(s.id));
+  const progress=state(),next=FESTIVAL_STAGES.find(s=>!progress.completed.includes(s.id)&&!progress.watched.includes(s.id));
   if(!next||offered.has(next.id))return;
   const location=getStage(next);if(!location||location.position.distanceTo(position)>6||canStart(next))return;
   offered.add(next.id);activities.menu(next.title,next.reason,[['Take part',()=>start(next)],['Watch what happens',()=>start(next,{watch:true})],['Perhaps later',()=>activities.close()]]);
@@ -86,7 +87,7 @@ export function createHarbourFestival({scene,camera,renderer,activities,getStage
   for(let i=0;i<2;i++){
    const f=bout.fighters[i],other=bout.fighters[1-i],avatar=actors[i],bones=avatar.bones;
    for(const b of Object.values(bones))b.rotation.set(0,0,0);
-   avatar.root.position.set(f.x,0,f.z);avatar.root.rotation.y=Math.atan2(other.x-f.x,other.z-f.z);
+   avatar.root.position.set(f.x,stage.heightAt?stage.heightAt(stage.position.x+f.x,stage.position.z+f.z)-stage.position.y+.03:0,f.z);avatar.root.rotation.y=Math.atan2(other.x-f.x,other.z-f.z);
    const karate=f.style==='karate';
    for(const side of ['L','R']){bones['shoulder'+side].rotation.x=karate?-.35:-.7;bones['elbow'+side].rotation.x=karate?-1.1:-1.7;}
    if(f.guard){bones.shoulderL.rotation.x=bones.shoulderR.rotation.x=-1.0;}

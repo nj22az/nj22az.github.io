@@ -15,7 +15,7 @@ app.whenReady().then(async()=>{
  // A stable local origin preserves all world/Studio slots between package updates.
  protocol.handle('johansson',request=>{
   try{
-   const url=new URL(request.url);if(url.hostname!=='world')return new Response('Not found',{status:404});
+   const url=new URL(request.url);if(url.pathname==='/')return Response.redirect('johansson://world/johansson-town/');if(url.hostname!=='world')return new Response('Not found',{status:404});
    let relative=decodeURIComponent(url.pathname);
    if(relative.endsWith('/'))relative+='index.html';
    const file=path.resolve(root,'.'+relative);
@@ -44,11 +44,12 @@ app.whenReady().then(async()=>{
  await window.loadURL('johansson://world/johansson-town/?desktop=1');
  if(process.argv.includes('--smoke')){
   // CI exercises the same local protocol and starts the real island.
-  window.webContents.on('console-message',(_event,_level,message)=>console.log(message));
+  window.webContents.on('console-message',details=>console.log(details.message));
   setTimeout(async()=>{try{
    const result=await window.webContents.executeJavaScript('(async()=>{await window.__JOHANSSON_PREVIEW_PROMISE__;document.getElementById("enter").click();await new Promise(r=>setTimeout(r,12000));return {running:!!window.__JOHANSSON_RUNNING__,stability:window.__JOHANSSON_STABILITY__,version:window.__JOHANSSON_RUNTIME_VERSION__};})()');
    console.log('WORLD_SMOKE',JSON.stringify(result));
    if(!result.running)throw Error('World did not start');
+   if(process.env.WORLD_SCREENSHOT)fs.writeFileSync(process.env.WORLD_SCREENSHOT.replace('.png','-island.png'),(await window.webContents.capturePage()).toPNG());
    const festival=await window.webContents.executeJavaScript('(async()=>{dispatchEvent(new Event("johansson-festival-menu"));const press=(text)=>{const b=[...document.querySelectorAll("#activityActions button")].find(b=>b.textContent===text);if(!b)throw Error("Missing festival action: "+text);b.click();};press("Harbour quay · Chin");press("Take part");await new Promise(r=>setTimeout(r,1500));return {stage:!!document.getElementById("festivalHUD"),text:document.getElementById("activityBody")?.textContent};})()');
    console.log('FESTIVAL_SMOKE',JSON.stringify(festival));if(!festival.stage)throw Error('Actual quay stage did not start: '+festival.text);
 
