@@ -28,10 +28,12 @@ function initialise() {
   const hints = document.createElement('div'); hints.id = 'deckHints'; hints.hidden = true;
   hints.innerHTML = '<span><kbd>LS</kbd> Move</span><span><kbd>RS</kbd> Look</span><span><kbd>A</kbd> Interact</span><span><kbd>View</kbd> Town book</span>';
   document.body.append(hints);
+  const identityBadge=document.createElement('div');identityBadge.id='desktopIdentity';identityBadge.hidden=true;document.body.append(identityBadge);
   const playing = () => !!document.getElementById('start')?.classList.contains('hidden');
   const note = text => {status.textContent = text;};
   let page = 'pause', focusBefore, held = [], nextRepeat = 0, lastDirection = '', capture = null, updateAction = 'check', updateLabel = 'Check for updates', updateBusy = false, wasPlaying = false, lastPad = '', lostPad = false;
   const labels = ['A · Interact / confirm', 'B · Back', 'X · Drink', 'Y · Inventory', 'LB · Run', 'RB · Jump', 'LT · Inspect zoom', 'RT · Zoom', 'View · Town book', 'Start · Pause menu', 'L3 · Hide HUD', 'R3 · Centre view', 'D-pad up · Pocket camera', 'D-pad down', 'D-pad left', 'D-pad right'];
+  const escape = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   const button = (action, text, description = '') => `<button data-action="${action}"><span>${text}</span>${description ? `<small>${description}</small>` : ''}</button>`;
   function saveSettings() {
     localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
@@ -43,9 +45,12 @@ function initialise() {
   function showPage(name, focus = true) {
     page = name; capture = null;
     panel.querySelector('.console-close').innerHTML = (playing() ? 'Resume' : 'Back to title') + ' <kbd>Start</kbd>';
-    heading.textContent = {pause: playing() ? 'Take a moment.' : 'Your island awaits.', help: 'Make yourself at home.', controls: 'Make it feel right.', display: 'Your view of the island.', updates: 'Keep the island with you.'}[name];
+    heading.textContent = {pause: playing() ? 'Take a moment.' : 'Your island awaits.', help: 'Make yourself at home.', controls: 'Make it feel right.', display: 'Your view of the island.', updates: 'Keep the island with you.', people: 'Whose day is it?' }[name];
     if (name === 'pause') {
-      content.innerHTML = `<nav class="console-nav" aria-label="Pause menu">${button('resume', playing() ? 'Resume the island' : 'Back to title', 'Return to your game')}${button('help', 'How to play', 'Movement, camera and your first steps')}${button('controls', 'Controls & camera', 'Tune sticks and customise buttons')}${button('save', 'Save progress')}${button('town', 'Town book', 'Places, people and your bag')}${button('festival', 'Harbour Festival')}${button('display', 'Display & performance')}${button('updates', 'Updates')}${button('quit', 'Save & quit to Steam')}</nav><aside class="console-postcard"><img src="../johansson-town/assets/images/title/title-day-landscape.webp" alt="The island harbour in daylight"><div><p class="console-eyebrow">A LITTLE ISLAND LIFE · 1997</p><h2>No hurry. Look around.</h2><p>Use the left stick to walk and the right stick to look. An <kbd>A</kbd> prompt appears when there’s something to do.</p><p><kbd>Start</kbd> always brings you here.</p><p id="desktopControllerStatus" class="console-device"></p></div></aside>`;
+      content.innerHTML = `<nav class="console-nav" aria-label="Pause menu">${button('resume', playing() ? 'Resume the island' : 'Back to title', 'Return to your game')}${button('help', 'How to play', 'Movement, camera and your first steps')}${button('controls', 'Controls & camera', 'Tune sticks and customise buttons')}${button('save', 'Save progress')}${button('town', 'Town book', 'Places, people and your bag')}${button('people', 'People & characters', 'Choose anyone on the island')}${button('home', 'Your home', 'Your own room and bed')}${button('display', 'Display & performance')}${button('updates', 'Updates')}${button('quit', 'Save & quit to Steam')}</nav><aside class="console-postcard"><img src="../johansson-town/assets/images/title/title-day-landscape.webp" alt="The island harbour in daylight"><div><p class="console-eyebrow">A LITTLE ISLAND LIFE · 1997</p><h2>${escape(window.johanssonLinuxWorld?.active || 'No hurry. Look around.')}</h2><p>Use the left stick to walk and the right stick to look. An <kbd>A</kbd> prompt appears when there’s something to do.</p><p><kbd>Start</kbd> always brings you here.</p><p id="desktopControllerStatus" class="console-device"></p></div></aside>`;
+    } else if (name === 'people') {
+      const world = window.johanssonLinuxWorld;
+      content.innerHTML = `<div class="console-page"><p class="console-intro">Choose who you play as. Each person keeps their home and place in the island. At bedtime, they start in their own bed; night workers keep their shifts.</p><div class="console-roster">${world ? world.roster.map(person => `<button data-person="${encodeURIComponent(person.name)}" ${world.busy ? 'disabled' : ''}><span>${escape(person.name)}${person.name === world.active ? ' · Playing' : ''}</span><small>${escape(person.role)}</small><small>Home: ${escape(person.home.address)}</small></button>`).join('') : '<p>The island is still loading. Come back in a moment.</p>'}</div></div>`;
     } else if (name === 'help') {
       content.innerHTML = `<div class="console-page"><p class="console-intro">Walk down to the harbour, stop by a shop, or say hello to a neighbour. Follow your curiosity.</p><div class="console-guide"><article><span class="stick-symbol">L</span><h2>Find your feet</h2><p>Left stick to walk. Hold <kbd>LB</kbd> to run. <kbd>RB</kbd> jumps.</p></article><article><span class="stick-symbol">R</span><h2>Take a look</h2><p>Right stick turns the camera. Click <kbd>R3</kbd> to level it. Hold <kbd>RT</kbd> to zoom.</p></article><article><span class="stick-symbol">A</span><h2>See what happens</h2><p>Walk up to a person, door or object. Press <kbd>A</kbd> when its prompt appears.</p></article></div><div class="console-help-row"><p><kbd>Y</kbd> Inventory · <kbd>View</kbd> Town book · <kbd>↑</kbd> Pocket camera · <kbd>L3</kbd> Hide HUD</p><p>In menus: D-pad or left stick chooses, <kbd>A</kbd> selects, <kbd>B</kbd> goes back. <kbd>Start</kbd> opens and closes this menu.</p></div><div class="console-actions">${button('controls', 'Customise controls')}${button('resume', 'Let’s explore', 'Settings are always a Start press away')}</div></div>`;
     } else if (name === 'controls') {
@@ -84,7 +89,7 @@ function initialise() {
       panel.hidden = true; capture = null; document.documentElement.dataset.desktopMenu = 'closed';
       input.suspend(); window.dispatchEvent(new Event('johansson-desktop-resume'));
       if (playing()) localStorage.setItem('johansson-desktop-introduction-seen', 'true');
-      if (focusBefore?.isConnected) focusBefore.focus();
+      if (!playing()) document.getElementById('enter')?.focus(); else if (focusBefore?.isConnected) focusBefore.focus();
     }
     menuButton.setAttribute('aria-expanded', String(on));
   }
@@ -99,7 +104,8 @@ function initialise() {
   async function act(action) {
     try {
       if (action === 'resume') return openMenu(false);
-      if (['help', 'controls', 'display', 'updates'].includes(action)) return showPage(action);
+      if (['help', 'controls', 'display', 'updates', 'people'].includes(action)) return showPage(action);
+      if (action === 'home') {if (!playing()) {note('Choose your character, then start exploring to visit their home.'); return;} openMenu(false); await window.johanssonLinuxWorld.goHome();}
       if (action === 'save') {await desktop.save(); note('Progress saved to disk.');}
       if (action === 'quit') {await desktop.quit();}
       if (action === 'town') {if (!playing()) {note('Start exploring to open the town book.'); return;} openMenu(false); document.getElementById('directoryButton')?.click();}
@@ -118,6 +124,8 @@ function initialise() {
     } catch (error) {updateBusy = false; if (page === 'updates') showPage('updates'); note(error.message || 'Could not finish. Please try again.');}
   }
   panel.addEventListener('click', event => {
+    const person = event.target.closest('[data-person]');
+    if (person) {person.disabled = true; const world = window.johanssonLinuxWorld; world.select(decodeURIComponent(person.dataset.person), {started: playing()}).then(() => {if (playing()) openMenu(false); else {showPage('people'); note('Selected '+world.active+'. Start exploring when you are ready.');}}).catch(error => {person.disabled = false; note(error.message);});return;}
     const binding = event.target.closest('[data-bind]');
     if (binding) {capture = {index: Number(binding.dataset.bind), ready: false, before: []}; note(`Release all buttons, then press a button for ${labels[capture.index]}. Escape cancels.`); return;}
     const action = event.target.closest('[data-action]')?.dataset.action; if (action) act(action);
@@ -166,6 +174,9 @@ function initialise() {
     const device = document.getElementById('desktopControllerStatus');
     if (device) device.textContent = frame.connected ? frame.pad.id + (frame.pad.mapping === 'standard' ? ' · Connected' : ' · Custom mapping: check the live sticks below') : 'No controller detected. Press a button to wake it. Keyboard and mouse remain available.';
     hints.hidden = !isPlaying || !panel.hidden;
+    identityBadge.hidden = !isPlaying || !panel.hidden;
+    const identityText = 'Playing as '+(window.johanssonLinuxWorld?.active || 'Johansson')+(window.johanssonLinuxWorld?.inBed?' · In bed · A to get up':'');
+    if(identityBadge.textContent!==identityText)identityBadge.textContent=identityText;
     menuButton.hidden = !panel.hidden;
     menuButton.classList.toggle('during-play', isPlaying);
     if (page === 'controls' && !panel.hidden) for (const name of ['move', 'look']) {
@@ -199,7 +210,7 @@ function initialise() {
   }
   // The game already exposes its audit state. This summary also covers the
   // desktop menus for automated controller and layout acceptance.
-  const snapshot = () => ({playing: playing(), menu: !panel.hidden, page, controller: lastPad || null, capture: capture?.index ?? null, hudHidden: document.documentElement.classList.contains('desktop-hide-hud')});
+  const snapshot = () => ({playing: playing(), menu: !panel.hidden, page, controller: lastPad || null, person: window.johanssonLinuxWorld?.active || null, inBed: !!window.johanssonLinuxWorld?.inBed, capture: capture?.index ?? null, hudHidden: document.documentElement.classList.contains('desktop-hide-hud')});
   window.johanssonDesktopUI = {snapshot, open: name => openMenu(true, name || 'pause')};
   const gameText = window.render_game_to_text;
   window.render_game_to_text = () => JSON.stringify({coordinates: 'Game world: x east, y up, z south; sticks: x right, y down', desktop: snapshot(), game: gameText?.() || null});

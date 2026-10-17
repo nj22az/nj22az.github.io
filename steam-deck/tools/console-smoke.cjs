@@ -13,7 +13,7 @@ const {chromium}=require('playwright');
  console.log('Browser launched');
  const context=await browser.newContext({viewport:{width:1280,height:800},hasTouch:true});
  await context.route('**/*',route=>{if(new URL(route.request().url()).origin!==url){remote.push(route.request().url());return route.abort();}return route.continue();});
- page=await context.newPage();page.on('pageerror',e=>{errors.push(e.message);console.log('PAGE_ERROR',e.message);});
+ page=await context.newPage();page.setDefaultTimeout(120000);page.on('pageerror',e=>{errors.push(e.message);console.log('PAGE_ERROR',e.message);});
  await page.addInitScript(()=>{
   window.__pad={id:'Steam Deck test pad',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
   Object.defineProperty(navigator,'getGamepads',{value:()=>window.__pad?[window.__pad]:[],configurable:true});
@@ -26,13 +26,14 @@ const {chromium}=require('playwright');
  const click=action=>page.locator(`#desktopMenu [data-action="${action}"]`).last().click();
  console.log('Opening installed site',url);
  await page.goto(url+'/johansson-town/?desktop=1&audit&cinematic=off',{waitUntil:'domcontentloaded'});
- await page.screenshot({path:path.join(out,'00-loading.png')});console.log('Title loading');
+ console.log('Title loading');
  await page.waitForFunction(()=>document.getElementById('title')?.dataset.scene==='ready',null,{timeout:120000});
+ await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.frozen=true;window.__JOHANSSON_AUDIT__.renderFrozen=false;});
  await page.screenshot({path:path.join(out,'01-title-1280.png')});
  await page.locator('#title .title-guide').click();assert.equal((await state()).page,'help','Title guide uses console instructions');await tap(9);
  await tap(9);assert.equal((await state()).menu,true,'Start opens menu from title');await click('controls');await page.screenshot({path:path.join(out,'02-controls-title.png')});await tap(1);assert.equal((await state()).page,'pause');await tap(1);assert.equal((await state()).menu,false);
  // A begins the actual world without needing a mouse.
- await tap(0);await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__===true,null,{timeout:120000});
+ await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.frozen=false;});await tap(0);await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__===true,null,{timeout:120000});
  await page.waitForTimeout(500);assert.equal((await state()).page,'help');assert.equal((await state()).menu,true,'First entry explains what to do');
  await page.screenshot({path:path.join(out,'03-first-steps-1280.png')});await click('resume');
  // Find the same walkable harbour fixture used by the world audit.
@@ -68,8 +69,38 @@ const {chromium}=require('playwright');
   await tap(1);await click('controls');await page.locator('[data-action=reset]').focus();await page.screenshot({path:path.join(out,`controls-${width}x${height}.png`)});await tap(1);
  }
  await page.setViewportSize({width:1280,height:800});await click('updates');await click('update');assert.match(await page.locator('#desktopStatus').textContent(),/current release/);await tap(1);
+ // Linux residents: all named characters can be selected, with their own beds and schedules.
+ console.log('Controls and layout passed; testing residents');
+ await page.evaluate(()=>window.__JOHANSSON_AUDIT__.setTime(60));await click('people');
+ assert.ok(await page.locator('[data-person]').count()>=30);await page.screenshot({path:path.join(out,'08-character-roster.png')});
+ await page.locator('[data-person="Thuan"]').click();await page.waitForFunction(()=>window.johanssonLinuxWorld?.inBed&&!window.johanssonLinuxWorld.busy);
+ assert.equal(await page.evaluate(()=>window.__JOHANSSON_MODEL__.avatar.recipe.name),'Thuan');
+ await sampled();await page.screenshot({path:path.join(out,'09-thuan-own-bed.png')});await tap(0);assert.equal(await page.evaluate(()=>window.johanssonLinuxWorld.inBed),false,'A gets out of bed');
+ await tap(9);await click('people');await page.locator('[data-person="Officer%20Mori"]').click();await page.waitForFunction(()=>window.johanssonLinuxWorld?.active==='Officer Mori'&&!window.johanssonLinuxWorld.busy);
+ assert.equal(await page.evaluate(()=>window.johanssonLinuxWorld.inBed),false,'Night patrol does not spawn asleep');
+ await tap(9);await click('people');await page.locator('[data-person="Mai"]').click();await page.waitForFunction(()=>window.johanssonLinuxWorld?.inBed&&!window.johanssonLinuxWorld.busy);await page.screenshot({path:path.join(out,'10-mai-own-bed.png')});
+ await axes([0,-1,0,0]);await axes([0,0,0,0]);assert.equal(await page.evaluate(()=>window.johanssonLinuxWorld.inBed),false,'Left stick gets up safely beside the bed');
+ const selectable=await page.evaluate(async()=>{const api=window.johanssonLinuxWorld,result=[];for(const person of api.roster){await api.select(person.name,{started:false});result.push({name:api.active,model:window.__JOHANSSON_MODEL__.avatar.recipe.name});}return result;});
+ console.log('Selected roster',JSON.stringify(selectable));
+ assert.ok(selectable.length>=30);assert.ok(selectable.every(p=>p.name===p.model),'Every roster selection uses its own character recipe');
+ await page.evaluate(async()=>{window.__JOHANSSON_AUDIT__.setTime(720);await window.johanssonLinuxWorld.select('Johansson');});
+ console.log('Testing conversation escalation');
+ if(await page.locator('#exitRoomButton').isVisible()){await page.locator('#exitRoomButton').click();await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).room===null);}
+ await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.teleport(-7,-15,0,0);window.__JOHANSSON_AUDIT__.activities.action('resident','Tetsuo');});
+ console.log('Conversation opened',await page.locator('#activityTitle').textContent());
+ await page.getByRole('button',{name:'Lose your temper…',exact:true}).click();
+ const funds=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.activities.state.yen);
+ for(let i=0;i<3;i++){await page.getByRole('button',{name:/^Insult Tetsuo/}).click();await page.waitForFunction(count=>window.__JOHANSSON_AUDIT__.activities.state.desktopLife.tempers['Johansson\u0000Tetsuo']?.count===count,i+1);assert.equal(await page.locator('#festivalHUD').count(),0,'Warnings come before a fight');}
+ await page.screenshot({path:path.join(out,'11-last-warning.png')});await page.getByRole('button',{name:/^Insult Tetsuo/}).click();await page.waitForSelector('#festivalHUD');
+ await sampled();await page.screenshot({path:path.join(out,'12-rare-quarrel.png')});await tap(8);assert.equal(await page.locator('#festivalHUD').count(),0);assert.equal(await page.evaluate(()=>window.__JOHANSSON_AUDIT__.activities.state.yen),funds,'Quarrels award no festival money');
+ await page.getByRole('button',{name:'Walk away',exact:true}).click();
+ // Persist a selected character as well as the controls.
+ await page.evaluate(async()=>{window.__JOHANSSON_AUDIT__.setTime(60);await window.johanssonLinuxWorld.select('Thuan');window.__JOHANSSON_AUDIT__.activities.save();});await tap(9);
+ await page.addInitScript(()=>{const NativeDate=Date,fixed=new NativeDate();fixed.setHours(1,0,0,0);const timestamp=fixed.getTime();window.Date=class extends NativeDate{constructor(...args){super(...(args.length?args:[timestamp]));}static now(){return timestamp;}};});
  // Settings survive reload at the stable installed origin.
  await click('controls');await page.locator('#desktopMenu [name=invertY]').check();await page.locator('[data-bind="9"]').click();await sampled();await tap(6);await page.reload({waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.johanssonDesktopUI);await tap(6);await click('controls');assert.equal(await page.locator('#desktopMenu [name=invertY]').isChecked(),true);assert.equal(await page.locator('[data-bind="9"] kbd').textContent(),'6','Button remap persists');
+ await tap(6);await tap(0);await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.johanssonLinuxWorld?.active==='Thuan'&&window.johanssonLinuxWorld.inBed&&!window.johanssonLinuxWorld.busy,null,{timeout:120000});await page.screenshot({path:path.join(out,'13-saved-character-night-spawn.png')});
+ const web=await browser.newPage({viewport:{width:1280,height:800}});await web.goto(url+'/johansson-town/?audit&cinematic=off',{waitUntil:'domcontentloaded'});await web.waitForFunction(()=>document.getElementById('title')?.dataset.scene==='ready',null,{timeout:120000});assert.equal(await web.evaluate(()=>window.johanssonLinuxWorld===undefined),true,'Web edition has no Linux character/home system');assert.equal(await web.locator('#desktopMenu').count(),0,'Web edition has no Linux console UI');await web.close();
  fs.writeFileSync(path.join(out,'results.json'),JSON.stringify({passed:true,errors,missing:[...new Set(missing)],blockedRemote:remote.length},null,2));
  assert.deepEqual(errors,[],'No page errors');assert.deepEqual([...new Set(missing)].filter(p=>p!=='/favicon.ico'),[],'No missing packaged files');
  console.log(JSON.stringify({passed:true,errors,missing:[...new Set(missing)],blockedRemote:remote.length,out}));

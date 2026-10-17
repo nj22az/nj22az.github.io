@@ -11,9 +11,25 @@ The complete island game runs locally in a standalone Electron Linux application
 - Standard and unmapped controllers are supported. A held button is ignored until released after reconnect/resume; stick drift does not lock out all controls. Disconnecting pauses the island and opens recovery controls.
 - View opens the town book. Start opens the desktop pause menu.
 - L3 toggles the HUD. F8 does the same on a keyboard; F10 opens the pause menu.
-- Save progress, resume, Harbour Festival, update and Save & quit are in the pause menu.
+- Save progress, resume, People & characters, Your home, updates and Save & quit are in the pause menu.
 - Existing named game slots are retained in the app profile. Disk snapshots keep a previous copy under the application data saves directory. Game updates do not replace this directory.
-- Harbour Festival is an optional side quest in the real island. Johansson, Thuan, Thao and Nhung are allies: none can fight another member of this group.
+- Start → People & characters switches between the island's residents, using each person's appearance, home and saved position. Selection is also available before starting. Nighttime starts use the selected person's bed; night workers retain their own schedules. A or the left stick gets out of bed. Start → Your home returns to their address, and a residential front door opens the same bedroom. Workplace residences and cabins retain their normal public access.
+- Families keep their existing shared addresses; each playable person has an owned bed. Additional scene residents use existing vacant addresses. Identity, personal checkpoints and disputes persist with the normal save.
+- Linux no longer offers recurring festival fights. Conversations offer an explicit “Lose your temper…” choice: three warnings precede a fourth insult starting a personal quarrel. Apologising or leaving avoids escalation; tempers decay and a cooldown prevents immediate repeated fights. Quarrels grant no festival rewards. Children and the established Johansson/Thuan/Thao/Nhung alliance do not fight.
+
+## Linux island redesign direction
+
+This is a proposal for the next geography pass, not a change to the current coastline or ferry timetable. The web edition keeps its existing world.
+
+The current canonical cast has 31 people. Its home registry lists 17 vacant addresses, including all four Fumoto homes and two of the four Kitahama flats. Hoshizaki's three simple building shells do not yet have registered households. The road plan combines Main Street, Kitahama's offset lane grid, the coastal circuit and a separate paved circuit around almost every building; even partitioned paving therefore reads as several competing networks.
+
+- Keep Minato compact: harbour, shopping street and occupied residential blocks form one town. Keep a small inhabited Hoshizaki fishing village, with a short rural stretch between village and town. Reduce the oversized northern land mass instead of filling it with more shells.
+- Author one street graph on a common alignment. Main Street is the spine, with a small number of cross streets and back lanes. Give each door a short approach to a shared lane. Retire redundant building circuits and duplicate parallel lanes. Paving, kerbs, map, walking, traffic, lamps and drains must consume that same graph.
+- Plan households before houses. Preserve established families and housemates; attach every live character to a real home and bed. Retain only occupied houses plus at most one deliberate vacancy. Surplus lots become connected gardens, allotments or shoreline; surplus flat space becomes shared living space. Put actual fishing households in Hoshizaki instead of adding anonymous villagers.
+- Keep the existing Kitano-jima crossing as a real destination. A subsequent small farming island can reuse Fumoto's co-op, well, fields and homes with assigned residents; a later outer island can provide a lighthouse, beach and nature walks. Each island needs a reason to visit, an accessible berth, a return service and useful activity before it is added to the ferry menu.
+- Stream each island as a separate world area, retaining resident/home identities and saves while unloading distant interiors, colliders and AI. Measure frame time and memory before/after on Linux; fewer houses and meshes alone are not proof of a performance gain.
+
+Acceptance for that pass: a readable overview map, no stacked road surfaces, continuous street junctions and door access, no unassigned residents or anonymous empty houses, safe migration of existing checkpoints, and a complete controller-operated outward/return ferry trip. The coastline, roads, terrain, homes and navigation should move together; shrinking only the rendered land would leave invisible walking ground and broken addresses.
 
 ## Updates
 
