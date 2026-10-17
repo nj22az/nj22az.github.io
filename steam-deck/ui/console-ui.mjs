@@ -95,6 +95,7 @@ function initialise() {
   }
   document.documentElement.classList.toggle('desktop-hide-hud', localStorage.getItem('johansson-desktop-hide-hud') === 'true');
   menuButton.onclick = () => openMenu(panel.hidden);
+  document.querySelector('#title .title-guide')?.addEventListener('click', event => {event.preventDefault(); event.stopImmediatePropagation(); openMenu(true, 'help');}, true);
   async function act(action) {
     try {
       if (action === 'resume') return openMenu(false);

@@ -1,4 +1,5 @@
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict');
+process.env.PW_TEST_SCREENSHOT_NO_FONTS_READY='1';
 const {chromium}=require('playwright');
 (async()=>{
  const root=path.resolve(__dirname,'../site'),out=path.resolve(__dirname,'../dist/console-qa');fs.mkdirSync(out,{recursive:true});
@@ -7,7 +8,7 @@ const {chromium}=require('playwright');
  const server=http.createServer((req,res)=>{const url=new URL(req.url,'http://localhost');let file=path.resolve(root,'.'+decodeURIComponent(url.pathname));if(url.pathname.endsWith('/'))file=path.join(file,'index.html');if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){missing.push(url.pathname);res.writeHead(404);res.end();return;}res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream'});fs.createReadStream(file).pipe(res);});
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const url='http://127.0.0.1:'+server.address().port;
  let page;
- const browser=await chromium.launch({headless:true,...(process.env.WORLD_CHROME?{executablePath:process.env.WORLD_CHROME}:{}),args:[]});
+ const browser=await chromium.launch({headless:true,...(process.env.WORLD_CHROME?{executablePath:process.env.WORLD_CHROME}:{}),args:process.platform==='linux'?['--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']:[]});
  try{
  console.log('Browser launched');
  const context=await browser.newContext({viewport:{width:1280,height:800},hasTouch:true});
@@ -18,7 +19,8 @@ const {chromium}=require('playwright');
   Object.defineProperty(navigator,'getGamepads',{value:()=>window.__pad?[window.__pad]:[],configurable:true});
   window.johanssonDesktop={offline:true,version:'0.2.3',save:async()=>{dispatchEvent(new Event('johansson-desktop-save'));dispatchEvent(new Event('johansson-save'));window.__saved=true;},performance:async()=>[{type:'Renderer',workingSetMiB:120}],checkUpdate:async()=>({available:false}),installUpdate:async()=>({ready:false}),quit:async()=>{window.__quit=true;}};
  });
- const tap=async i=>{await page.evaluate(i=>{window.__pad.buttons[i]={pressed:true,value:1};},i);await page.waitForTimeout(110);await page.evaluate(i=>{window.__pad.buttons[i]={pressed:false,value:0};},i);await page.waitForTimeout(110);};
+ const sampled=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ const tap=async i=>{await page.evaluate(i=>{window.__pad.buttons[i]={pressed:true,value:1};},i);await sampled();await page.evaluate(i=>{window.__pad.buttons[i]={pressed:false,value:0};},i);await sampled();};
  const axes=async value=>{await page.evaluate(value=>{window.__pad.axes=value;},value);await page.waitForTimeout(250);};
  const state=()=>page.evaluate(()=>window.johanssonDesktopUI.snapshot());
  const click=action=>page.locator(`#desktopMenu [data-action="${action}"]`).last().click();
@@ -27,6 +29,7 @@ const {chromium}=require('playwright');
  await page.screenshot({path:path.join(out,'00-loading.png')});console.log('Title loading');
  await page.waitForFunction(()=>document.getElementById('title')?.dataset.scene==='ready',null,{timeout:120000});
  await page.screenshot({path:path.join(out,'01-title-1280.png')});
+ await page.locator('#title .title-guide').click();assert.equal((await state()).page,'help','Title guide uses console instructions');await tap(9);
  await tap(9);assert.equal((await state()).menu,true,'Start opens menu from title');await click('controls');await page.screenshot({path:path.join(out,'02-controls-title.png')});await tap(1);assert.equal((await state()).page,'pause');await tap(1);assert.equal((await state()).menu,false);
  // A begins the actual world without needing a mouse.
  await tap(0);await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__===true,null,{timeout:120000});
@@ -45,7 +48,7 @@ const {chromium}=require('playwright');
  await page.locator('#desktopMenu [name=sensitivity]').focus();const oldSensitivity=await page.locator('#desktopMenu [name=sensitivity]').inputValue();await tap(15);assert.ok(Number(await page.locator('#desktopMenu [name=sensitivity]').inputValue())>Number(oldSensitivity));
  await page.locator('#desktopMenu [name=invertY]').focus();await tap(0);assert.equal(await page.locator('#desktopMenu [name=invertY]').isChecked(),true);
  // Custom remap is exercised through the capture UI, including Start itself.
- await page.locator('[data-bind="9"]').click();await page.waitForTimeout(100);await tap(6);assert.match(await page.locator('#desktopStatus').textContent(),/assigned to button 6/);
+ await page.locator('[data-bind="9"]').click();await sampled();await tap(6);assert.match(await page.locator('#desktopStatus').textContent(),/assigned to button 6/);
  assert.equal(await page.locator('[data-bind="9"] kbd').textContent(),'6');
  await tap(6);assert.equal((await state()).menu,false,'Remapped Start closes menu');const pitchBefore=await page.evaluate(()=>window.__JOHANSSON_POSE__.pitch);await axes([0,0,0,.8]);await axes([0,0,0,0]);assert.ok(await page.evaluate(()=>window.__JOHANSSON_POSE__.pitch)>pitchBefore,'Invert Y changes actual camera behaviour');await tap(6);assert.equal((await state()).menu,true,'Remapped Start reopens menu');
  await click('controls');await click('swap');await page.screenshot({path:path.join(out,'06-custom-controls.png')});
@@ -66,7 +69,7 @@ const {chromium}=require('playwright');
  }
  await page.setViewportSize({width:1280,height:800});await click('updates');await click('update');assert.match(await page.locator('#desktopStatus').textContent(),/current release/);await tap(1);
  // Settings survive reload at the stable installed origin.
- await click('controls');await page.locator('#desktopMenu [name=invertY]').check();await page.locator('[data-bind="9"]').click();await page.waitForTimeout(100);await tap(6);await page.reload({waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.johanssonDesktopUI);await tap(6);await click('controls');assert.equal(await page.locator('#desktopMenu [name=invertY]').isChecked(),true);assert.equal(await page.locator('[data-bind="9"] kbd').textContent(),'6','Button remap persists');
+ await click('controls');await page.locator('#desktopMenu [name=invertY]').check();await page.locator('[data-bind="9"]').click();await sampled();await tap(6);await page.reload({waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.johanssonDesktopUI);await tap(6);await click('controls');assert.equal(await page.locator('#desktopMenu [name=invertY]').isChecked(),true);assert.equal(await page.locator('[data-bind="9"] kbd').textContent(),'6','Button remap persists');
  fs.writeFileSync(path.join(out,'results.json'),JSON.stringify({passed:true,errors,missing:[...new Set(missing)],blockedRemote:remote.length},null,2));
  assert.deepEqual(errors,[],'No page errors');assert.deepEqual([...new Set(missing)].filter(p=>p!=='/favicon.ico'),[],'No missing packaged files');
  console.log(JSON.stringify({passed:true,errors,missing:[...new Set(missing)],blockedRemote:remote.length,out}));
