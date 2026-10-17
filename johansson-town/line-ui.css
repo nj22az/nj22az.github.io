@@ -313,28 +313,34 @@ body>.shm .shm-share{background:var(--line-overlay)}body>.shm .shm-share>div{box
 body,body :is(div,p,span,a,b,i,em,strong,small,h1,h2,h3,h4,h5,h6,li,dt,dd,label,legend,summary,button,input,select,textarea,th,td,caption,figcaption,blockquote,time,output,kbd,code){font-family:var(--line-font)!important;letter-spacing:normal}
 
 /* ---- Speech balloons --------------------------------------------------------------------
-   What a resident says is a big, soft white balloon floating over the scene, with a short
-   rounded tail pointing down at whoever is talking: no outline, no name plate, just a faint
-   cool edge, a soft shadow and large, bold, rounded words. One look for both kinds of line:
-   the conversation (dialogue-box.js; the line floats above the replies panel, raised over
-   the speaker's head and its tail turned to them by game.js placeConversationBalloon) and the neighbours' street chats
-   (people/neighbour-chats.js, placed over the speaker's head). Figtree comes first only for
+   A soft white balloon wraps beside the active speaker, with a short rounded tail,
+   a faint cool edge and bold, rounded words. Conversation lines and neighbours' street
+   chats share the same placement, which protects faces, replies and screen margins.
+   The full sentence reserves its footprint while the visible words appear.
+   Figtree comes first only for
    the macron letters it was subset to (index.html); everything else is M PLUS Rounded 1c,
    loaded by tomodachi-ui.css. */
 :root{
  --balloon-font:Figtree,"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","Arial Rounded MT Bold","LINE Seed JP",system-ui,sans-serif;
  --balloon-ink:#2b2f3a;--balloon-paper:#fff;--balloon-edge:#d9e3ee;
  --balloon-shadow:0 0 0 1.5px var(--balloon-edge),0 8px 22px rgb(31 52 82 / .18),0 2px 4px rgb(31 52 82 / .08);
+ --balloon-safe-top:env(safe-area-inset-top,0px);--balloon-safe-right:env(safe-area-inset-right,0px);--balloon-safe-bottom:env(safe-area-inset-bottom,0px);--balloon-safe-left:env(safe-area-inset-left,0px);
 }
 /* The conversation: the line leaves the panel and floats above it (Thuan's free chat, with its
    transcript and input box, stays inside the panel). */
-#activity.conversation.rpg #activityBody:not(:has(.chat-log,.chat-input)){position:absolute;left:50%;bottom:calc(100% + var(--balloon-lift,26px));transform:translateX(calc(-50% + var(--balloon-shift,0px)));
- width:max-content;max-width:min(620px,calc(100vw - 32px));margin:0;min-height:0;z-index:2;pointer-events:none}
-#activity.conversation.rpg #activityBody :is(.rpg-line,.rpg-own){position:relative;width:auto;max-width:none;margin:0;padding:20px 30px 22px;border:0;border-radius:44px;
- background:var(--balloon-paper);color:var(--balloon-ink);box-shadow:var(--balloon-shadow);font:800 clamp(19px,2.6vw,25px)/1.45 var(--balloon-font);letter-spacing:.01em;text-align:left;white-space:pre-line;overflow-wrap:break-word}
-/* The tail: a short rounded point under the middle of the balloon. */
-#activity.conversation.rpg #activityBody :is(.rpg-line,.rpg-own)::after,.neighbour-chat::after{content:"";position:absolute;left:calc(50% + var(--balloon-tail,0px));bottom:-9px;width:22px;height:22px;margin-left:-11px;
- border:0;border-radius:0 0 7px 0;background:var(--balloon-paper);transform:rotate(45deg);box-shadow:1.5px 1.5px 0 0 var(--balloon-edge),5px 5px 10px -4px rgb(31 52 82 / .16)}
+#activity.conversation.rpg #activityBody:not(:has(.chat-log,.chat-input)){position:fixed;left:var(--balloon-x,16px);top:var(--balloon-y,24px);bottom:auto;transform:none;
+ width:var(--balloon-width,320px);max-width:calc(100vw - 24px);height:var(--balloon-height,auto);margin:0;min-height:0;z-index:2;pointer-events:none}
+#activity.conversation.rpg #activityBody :is(.rpg-line,.rpg-own){position:relative;display:grid;width:100%;max-width:none;margin:0;padding:16px 20px 18px;border:0;border-radius:28px;
+ background:var(--balloon-paper);color:var(--balloon-ink);box-shadow:var(--balloon-shadow);font:700 clamp(18px,1.7vw,21px)/1.4 var(--balloon-font);letter-spacing:normal;text-align:left;white-space:pre-wrap;overflow-wrap:anywhere}
+#activity.conversation.rpg #activityBody :is(.rpg-line,.rpg-own)::before{content:attr(data-full-line);grid-area:1/1;visibility:hidden;pointer-events:none}
+#activity.conversation.rpg #activityBody .balloon-text{grid-area:1/1;min-width:0}
+#activity.conversation.rpg #activityBody .rpg-own,#activity.conversation.rpg.player-speaking #activityBody .rpg-line{display:none}
+#activity.conversation.rpg.player-speaking #activityBody .rpg-own{display:grid}
+#activity.conversation.rpg #activityBody[data-balloon-overflow="true"]{overflow:auto;pointer-events:auto;overscroll-behavior:contain;border-radius:24px}
+/* A short side tail points to the active speaker; it does not stretch across a face. */
+#activity.conversation.rpg #activityBody :is(.rpg-line,.rpg-own)::after,.neighbour-chat::after{content:"";position:absolute;left:calc(var(--balloon-tail-x,50%) - 8px);top:calc(var(--balloon-tail-y,100%) - 8px);bottom:auto;width:16px;height:16px;margin:0;
+ border:0;border-radius:3px;background:var(--balloon-paper);transform:rotate(45deg);box-shadow:1.5px 1.5px 0 0 var(--balloon-edge)}
+#activityBody[data-balloon-overflow="true"] :is(.rpg-line,.rpg-own)::after{display:none}
 /* "Tap to go on" sits inside the balloon's corner. */
 #activity.conversation.rpg.listening #activityBody::after,#activity.conversation.rpg.player-speaking #activityBody::after{right:20px;bottom:8px;font-size:12px;color:#8a93a3;z-index:1}
 /* Johansson's own line: the same balloon (the camera is on him while he says it). */
@@ -348,12 +354,12 @@ body,body :is(div,p,span,a,b,i,em,strong,small,h1,h2,h3,h4,h5,h6,li,dt,dd,label,
 }
 @keyframes balloon-pop{from{scale:.9}to{scale:1}}
 /* The street chats: the same balloon, a size smaller. The name stays in the markup only. */
-.neighbour-chat{width:max-content;max-width:min(320px,calc(100vw - 32px));padding:14px 22px 16px;border:0;border-radius:32px;
- background:var(--balloon-paper);color:var(--balloon-ink);box-shadow:var(--balloon-shadow);font:800 17px/1.4 var(--balloon-font);letter-spacing:.01em;text-align:left;margin-top:-14px;transform-origin:50% 100%}
+.neighbour-chat{left:var(--balloon-x,16px);top:var(--balloon-y,80px);width:var(--balloon-width,248px);height:var(--balloon-height,auto);max-width:calc(100vw - 24px);padding:12px 16px 14px;border:0;border-radius:24px;
+ background:var(--balloon-paper);color:var(--balloon-ink);box-shadow:var(--balloon-shadow);font:700 17px/1.4 var(--balloon-font);letter-spacing:normal;text-align:left;margin-top:0;transform:none;white-space:pre-wrap;overflow-wrap:anywhere}
 .neighbour-chat strong{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 @media(max-width:520px){
- #activity.conversation.rpg #activityBody :is(.rpg-line,.rpg-own){padding:16px 24px 18px;border-radius:34px;font-size:19px}
- .neighbour-chat{font-size:16px;padding:12px 18px 14px;border-radius:28px}
+ #activity.conversation.rpg #activityBody :is(.rpg-line,.rpg-own){padding:12px 16px 14px;border-radius:24px;font-size:18px}
+ .neighbour-chat{font-size:16px;padding:10px 14px 12px;border-radius:22px}
 }
 @media(max-height:520px){
  #activity.conversation.rpg #activityBody :is(.rpg-line,.rpg-own){padding:12px 22px 14px;font-size:17px;border-radius:30px}

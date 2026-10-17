@@ -636,6 +636,16 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    else if(pose==='Sleep'||s.sleeping){set('head',.45,0,.15);set('chest',.15);}
    else if(soak){set('thighL',-1.3,0,.25);set('thighR',-1.3,0,-.25);set('kneeL',.9);set('kneeR',.9);set('shoulderL',0,0,.9);set('shoulderR',0,0,-.9);set('head',-.1);}
    else if(pose==='Wake'){const w=Math.max(0,Math.sin(time*.8));set('shoulderL',0,0,.4+w*2.2);set('shoulderR',0,0,-.4-w*2.2);}
+  }else if(s.climbing){
+   // The forecastle ladder is a real vertical connector. Alternate hands and feet
+   // while the body climbs, instead of playing a level walking pose in mid-air.
+   const p=time*2.8,w=Math.sin(p),q=Math.sin(p+Math.PI);
+   set('chest',.12);set('head',-.16);
+   set('shoulderL',-2.25+w*.3,0,.16);set('shoulderR',-2.25+q*.3,0,-.16);
+   set('elbowL',-.5-w*.22);set('elbowR',-.5-q*.22);
+   set('thighL',-.5-Math.max(0,q)*.45);set('thighR',-.5-Math.max(0,w)*.45);
+   set('kneeL',.7+Math.max(0,q)*.5);set('kneeR',.7+Math.max(0,w)*.5);
+   set('footL',-.12);set('footR',-.12);
   }else if(moving){
    // Walking and running: short legs, a quick step and a proper bounce.
    // Their own gait (gait.js) shapes every part of the step; running evens people out.

@@ -13,6 +13,8 @@ import {BUS_STATION} from '../src/world/bus-station.js';
 import {chooseOpening} from '../src/world/openings.js';
 import {circleHitsRect} from '../physics.js';
 import {TURN_LIMITS} from '../src/world/ferry-paths.js';
+import {ferryServiceFixture} from './ferry-service-fixture.mjs';
+import {QUICK_CROSSING} from '../src/world/ferry-quick-crossing.js';
 
 const run=(from,to,step=1/10)=>{const colliders=[],ferry=createFerryRun({parent:new THREE.Group(),colliders});const seen=[];
  for(let m=from;m<to;m+=step){ferry.update(step,m,m);seen.push({m,phase:ferry.phase,x:ferry.ferry.position.x,z:ferry.ferry.position.z,visible:ferry.ferry.visible,yaw:ferry.ferry.rotation.y});}
@@ -127,37 +129,57 @@ test('she rides the water: rolls at her period, a little alongside and more at s
 });
 
 test('her lights, engines and whistle: lit under way after dark, quiet on shore power at night, signals as she leaves and passes the breakwater',()=>{
- const r=createFerryRun({parent:new THREE.Group(),colliders:[]}),nav=()=>r.ferry.getObjectByName('Masthead light').material.color.getHex()!==0x333333;
- r.update(.1,21*60,0);r.parkAt('town');r.update(.1,21*60,.1);assert.equal(nav(),false,'no navigation lights alongside');
+ const r=createFerryRun({parent:new THREE.Group(),colliders:[]}),nav=run=>run.ferry.getObjectByName('Masthead light').material.color.getHex()!==0x333333;
+ r.update(.1,21*60,0);r.parkAt('town');r.update(.1,21*60,.1);assert.equal(nav(r),false,'no navigation lights alongside');
  assert.equal(r.audio.engines,'idle','in service at nine in the evening: a generator running');
  r.update(.1,23*60,.2);assert.equal(r.audio.engines,'off','after the last boat she lies on shore power');
- r.update(.1,21*60,.3);r.beginCrossing('airport');for(let i=1;i<=20;i++){r.update(.1,21*60,.3+i*.1);r.setCrossingProgress(i/40);}
- assert.equal(nav(),true,'navigation lights on under way at night');assert.equal(r.ferry.getObjectByName('Port sidelight').material.color.getHex(),0xff3a2a,'red to port');
- const w=r.audio.whistle;assert.deepEqual(w.log.map(s=>s.kind),['prolonged','astern','prolonged'],'a prolonged blast and three short leaving the berth, a prolonged blast at the breakwater');
+ const s=ferryServiceFixture({minute:21*60}),q=QUICK_CROSSING.town;s.player.position.set(q.stand[0],q.ground,q.stand[1]);s.run.beginCrossing('airport');
+ assert.equal(nav(s.run),false,'a request does not put the vessel under way');s.until(()=>s.run.audio.whistle.log.length===3);
+ assert.equal(nav(s.run),true,'navigation lights on under way at night');assert.equal(s.run.ferry.getObjectByName('Port sidelight').material.color.getHex(),0xff3a2a,'red to port');
+ const w=s.run.audio.whistle;assert.deepEqual(w.log.map(s=>s.kind),['prolonged','astern','prolonged'],'a prolonged blast and three short leaving the berth, a prolonged blast at the breakwater');
  assert.ok(Math.hypot(w.log[2].x-BREAKWATER.minX,w.log[2].z-BREAKWATER.z)<16,'the breakwater signal is sounded at its end');
- assert.ok(['manoeuvring','sea'].includes(r.audio.engines));
- r.update(.1,12*60,5);r.setCrossingProgress(.5);assert.equal(nav(),false,'no navigation lights by day');assert.equal(r.audio.engines,'sea');
+ assert.ok(['manoeuvring','sea'].includes(s.run.audio.engines));
+ s.until(()=>s.run.operation.sailingKind==='sea'&&s.run.audio.engines==='sea');s.run.update(.1,12*60);assert.equal(nav(s.run),false,'no navigation lights by day');assert.equal(s.run.audio.engines,'sea');
  // Her day: generators on before the first boat, shore power after the last.
  assert.ok(FERRY_DAY.generators<FERRY_DAY.inService&&FERRY_DAY.inService<FERRY_DAY.shorePower);
 });
 
-test('alongside at Minato she is moored: four lines from her bitts, through a fairlead at the bulwark, to the pier’s bitts; none at sea',async()=>{
- const {createFerryRun,FERRY_MOORING}=await import('../src/world/ferry.js');
+test('both berths have four working lines whose returned eyes continue through the fairlead to visible coils aboard',async()=>{
+ const {FERRY_MOORING,FERRY_MOORINGS}=await import('../src/world/ferry.js');
  const {MINATO_BERTH}=await import('../src/world/minato-berth.js');
- const parent=new THREE.Group(),colliders=[];const run=createFerryRun({parent,colliders});run.parkAt('town');run.update(1/60,600,0);
+ const s=ferryServiceFixture(),q=QUICK_CROSSING.town,{run,group:parent}=s;s.player.position.set(q.stand[0],q.ground,q.stand[1]);
  assert.equal(run.moored,true);
  const lines=parent.getObjectByName('Minato Maru mooring lines');assert.ok(lines.visible);
  assert.equal(FERRY_MOORING.lines.length,MINATO_BERTH.bitts.length);
- const segs=lines.children;assert.equal(segs.length,FERRY_MOORING.lines.length*2);
+ const segs=lines.children;assert.equal(segs.length,FERRY_MOORING.lines.length*4,'three rope segments and one eye per working line');
  lines.updateMatrixWorld(true);
  for(const [i,l] of FERRY_MOORING.lines.entries()){
-  const outer=segs[i*2+1];const end=new THREE.Vector3(0,1,0).applyMatrix4(outer.matrixWorld);
+  const outer=segs[i*4+2];const end=new THREE.Vector3(0,1,0).applyMatrix4(outer.matrixWorld);
   assert.ok(end.distanceTo(new THREE.Vector3(...l.pier))<.02,l.name+' ends on the pier’s bitt');
   // The run to the pier leaves her side and lands on the pier, never inside her hull.
-  const start=new THREE.Vector3(0,0,0).applyMatrix4(outer.matrixWorld),local=run.ferry.worldToLocal(start.clone());
+  const start=new THREE.Vector3(0,0,0).applyMatrix4(segs[i*4+1].matrixWorld),local=run.ferry.worldToLocal(start.clone());
   assert.ok(Math.abs(local.x)>3.5,l.name+' leaves from her side ('+local.x.toFixed(2)+')');
   assert.ok(start.y>end.y,l.name+' slopes down to the pier');
  }
- run.beginCrossing('airport');run.setCrossingProgress(.3);assert.equal(run.moored,false);assert.ok(!lines.visible,'no lines at sea');
- run.parkAt('airport');run.update(1/60,601,1);assert.equal(run.moored,false,'no lines at Kitano-jima (no bitts there yet)');
+ run.beginCrossing('airport');assert.equal(run.moored,true,'the departure request cannot discard the moorings');s.until(()=>run.operation.stage==='letting-go');
+ const previous=new Map(),observed=new Set();
+ for(let i=0;i<6000&&run.operation.stage!=='passage';i++){
+  s.tick(.1);
+  for(const [j,line] of run.operation.lines.entries()){
+   observed.add(line.status);const eye=segs[j*4+3],before=previous.get(j);
+   if(eye.visible&&before)assert.ok(eye.position.distanceTo(before)<1,line.name+' eye jumped between return and heaving: '+eye.position.distanceTo(before).toFixed(3)+' m in 0.1 s');
+   if(eye.visible)previous.set(j,eye.position.clone());else previous.delete(j);
+  }
+ }
+ assert.equal(run.operation.stage,'passage',JSON.stringify(s.diagnostics()));assert.equal(run.moored,false);
+ for(const status of ['slack','eye-return','heaving','coiled'])assert.ok(observed.has(status),status+' is visibly represented');
+ assert.ok(segs.every(m=>!m.visible),'no working line remains ashore at sea');
+ for(const line of FERRY_MOORING.lines)assert.ok(run.ferry.getObjectByName('Coiled aboard: '+line.name).visible,'the recovered line stays visible on deck');
+ s.until(()=>run.operation.stage==='alongside');assert.equal(run.moored,true);assert.ok(segs.every(m=>m.visible),'lines are made fast at Kitano before access opens');
+ lines.updateMatrixWorld(true);
+ for(const [i,line] of FERRY_MOORINGS.airport.entries()){
+  const end=new THREE.Vector3(0,1,0).applyMatrix4(segs[i*4+2].matrixWorld);assert.ok(end.distanceTo(new THREE.Vector3(...line.pier))<.02);
+  assert.ok(parent.getObjectByName('Kitano ferry pier bitt: '+line.name),'the destination bitt is actually drawn');
+  assert.ok(s.world.colliders.some(c=>c.id==='kitano-ferry-bitt-'+i),'the destination bitt has a physical footprint');
+ }
 });

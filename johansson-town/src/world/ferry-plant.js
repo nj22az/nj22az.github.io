@@ -33,7 +33,7 @@ export function createPlant({minutes=FERRY_DAY.generators}={}){
  const board={MSB:{live:false,shore:false,kW:0},ESB:{live:false,source:null},EG:{state:'stopped'}};
  const tanks={service:.8,fuelStorage:1,freshWater:.9,bilgeAft:.05,bilgeFwd:.05,fwPressure:.3,air:[30,30]};
  const temps={mainP:30,mainS:30,gen1:30,gen2:30};
- let telegraph={mainP:'STOP',mainS:'STOP'},clock=minutes,events=[],underway=false,co2=false,fire=false,log=[];
+ let telegraph={mainP:'STOP',mainS:'STOP'},clock=minutes,events=[],underway=false,co2=false,fire=false,log=[],control='local';
  const note=(what)=>{log.push({at:clock,what});if(log.length>200)log.shift();};
  const m=id=>{const x=machines.get(id);if(!x)throw new RangeError('No machine '+id);return x;};
  const generatorsOnline=()=>['gen1','gen2'].filter(id=>m(id).state==='running'&&m(id).breaker).length;
@@ -43,8 +43,9 @@ export function createPlant({minutes=FERRY_DAY.generators}={}){
  const refuse=why=>({ok:false,why});
  const ok=(what)=>{note(what);return {ok:true,what};};
  const airOk=()=>Math.max(...tanks.air)>=AIR.minimum;
+ const coolingSupplied=id=>{const side=id==='mainP'?'P':'S',other=side==='P'?'S':'P';return valves['chest'+side]||valves.crossover&&valves['chest'+other];};
 
- function start(id){
+ function start(id,{automatic=false}={}){
   const x=m(id);
   if(x.state==='open')return refuse(x.name+' is opened for overhaul: the tag is on its start box.');
   if(x.state==='isolated')return refuse(x.name+' is isolated: open its valves and take the tag off first.');
@@ -54,18 +55,20 @@ export function createPlant({minutes=FERRY_DAY.generators}={}){
    if(!valves.qcv)return refuse('The fuel quick-closing valve is shut: reset it at the service tank.');
    if(tanks.service<.05)return refuse('The service tank is empty: run a transfer pump.');
    if(x.kind==='engine'){const prime=m('prime-'+id);if(!(prime.state==='running'||x.hours>0&&temps[id]>60))return refuse('Prime the lubricating oil first: the priming pump on the engine’s forward end.');
-    const side=id==='mainP'?'P':'S';if(!(valves['chest'+side]||valves.crossover))return refuse('No sea water: the '+side+' sea chest is shut and so is the crossover.');}
-   tanks.air[x.kind==='engine'?0:1]-=AIR.perStart;x.state='running';x.manual=true;return ok(x.name+' started');
+    if(!coolingSupplied(id))return refuse('No sea water: open a sea chest supplying the '+(id==='mainP'?'P':'S')+' cooling circuit.');}
+   // Both bottles feed the starting-air manifold. Consume the bottle which
+   // actually passed the pressure check, never an empty bank beside a full one.
+   const bottle=tanks.air[0]>=tanks.air[1]?0:1;tanks.air[bottle]-=AIR.perStart;x.state='running';x.manual=!automatic;return ok(x.name+' started');
   }
   if(!live())return refuse('The main switchboard is dead: no power for '+x.name+'.');
   if(id==='thruster'&&!thrusterMayStart(generatorsOnline()))return refuse('The thruster starts only with two generators on the board: '+M.bowThruster.interlock+'.');
-  x.state='running';x.manual=true;return ok(x.name+' started');
+  x.state='running';x.manual=!automatic;return ok(x.name+' started');
  }
- function stop(id){
+ function stop(id,{automatic=false}={}){
   const x=m(id);if(x.state!=='running')return refuse(x.name+' is not running.');
   if(x.kind==='engine'&&underway)return refuse('She is under way: the bridge has the engines. Bring the telegraph to STOP first.');
   if(x.kind==='generator'&&x.breaker&&generatorsOnline()===1&&!board.MSB.shore){x.breaker=false;x.state='stopped';blackout();return ok(x.name+' stopped with its breaker in: the board is dead (blackout)');}
-  x.state='stopped';x.breaker=false;x.manual=true;
+  x.state='stopped';x.breaker=false;x.manual=!automatic;
   // The standby takes over a pumped service whose duty stops (FERRY_SERVICES), if it is on standby and has power.
   const sv=serviceOf(id);if(sv&&duty.get(sv.service)===id){const st=machines.get(sv.duty===id?sv.standby:sv.duty);if(st&&st.state==='standby'&&(st.kind!=='pump'||live())){st.state='running';note(st.name+' started by itself: '+sv.service+' standby');}}
   return ok(x.name+' stopped');
@@ -83,19 +86,46 @@ export function createPlant({minutes=FERRY_DAY.generators}={}){
  function blackout(){board.MSB.live=false;for(const x of machines.values())if((x.kind==='pump'||x.kind==='compressor'||x.kind==='fan'||x.kind==='motor')&&x.state==='running'){x.state='stopped';}
   board.ESB.source=null;board.ESB.live=false;events.push({at:clock,kind:'blackout'});note('Blackout: the main board is dead, the emergency generator starting');}
  function valve(name,open){if(!(name in valves))return refuse('No valve '+name);valves[name]=open;if(name==='qcv'&&!open){for(const id of Object.keys(ENGINE_IDS))if(m(id).state==='running'){m(id).state='stopped';m(id).breaker=false;}if(generatorsOnline()===0&&!board.MSB.shore)blackout();return ok('Fuel quick-closing valve pulled: every engine stops');}return ok((open?'Opened ':'Shut ')+name);}
- function setTelegraph(side,order){telegraph[side]=order;return ok('Telegraph '+side+' '+order);}
+ function setTelegraph(side,order){
+  if(!['mainP','mainS'].includes(side)||!['STOP','DEAD SLOW AHEAD','SLOW AHEAD','HALF AHEAD','FULL AHEAD','DEAD SLOW ASTERN','SLOW ASTERN','HALF ASTERN','FULL ASTERN'].includes(order))return refuse('Unknown engine order.');
+  if(order!=='STOP'&&m(side).state!=='running')return refuse(m(side).name+' is not running.');
+  if(telegraph[side]===order)return {ok:true,what:'Order unchanged'};
+  telegraph[side]=order;return ok('Telegraph '+side+' '+order);
+ }
+ function acceptBridgeControl(){
+  if(['mainP','mainS'].some(id=>m(id).state!=='running'))return refuse('Both main engines must be running before the bridge accepts control.');
+  if(Object.values(telegraph).some(o=>o!=='STOP'))return refuse('Both telegraphs must be at STOP for the control handover.');
+  control='bridge';return ok('Engine room: both engines ready; bridge control accepted');
+ }
+ function departureReadiness(){
+  const why=[],r=readings();
+  for(const id of ['mainP','mainS']){
+   if(m(id).state!=='running')why.push(m(id).name+' is '+m(id).state);
+   else{
+    if(r.engines[id].loPress<.2)why.push(m(id).name+' lubricating-oil pressure is low');
+    if(!coolingSupplied(id))why.push(m(id).name+' has no sea-water cooling supply');
+   }
+  }
+  if(board.MSB.shore)why.push('Shore power is still connected');
+  if(!live())why.push('Main switchboard is dead');
+  if(generatorsOnline()<2)why.push('Two generators are required for the harbour manoeuvre');
+  for(const id of ['hpu1','hpu2'])if(m(id).state!=='running')why.push(m(id).name+' is not running');
+  if(control!=='bridge')why.push('The bridge has not accepted engine control');
+  return {ready:why.length===0,reasons:why};
+ }
  function changeOver(service){const sv=FERRY_SERVICES.find(s=>s.service===service);if(!sv)return refuse('No service '+service);const d=machines.get(sv.duty),s=machines.get(sv.standby);if(!d||!s)return refuse(service+' has no second pump aboard.');
   if(s.state!=='standby'&&s.state!=='stopped')return refuse(s.name+' is '+s.state+'.');const wasDuty=duty.get(service)===sv.duty,[from,to]=wasDuty?[d,s]:[s,d];duty.set(service,to.id);if(from.state==='running'){from.state='standby';to.state='running';}else if(to.state==='stopped')to.state='standby';return ok(service+': '+to.name+' takes the duty, '+from.name+' stands by');}
  /** The crew's own day (FERRY_DAY): generators at 6:10, the engines for the first boat, shore power after the last. A machine the player has handled stays as they left it until the next routine step touches it. */
  function routine(minutes){
-  const step=(id,fn)=>{const x=m(id);x.manual=false;fn(x);};
   if(minutes>=FERRY_DAY.generators&&minutes<FERRY_DAY.shorePower){
-   if(m('gen1').state!=='running'&&!m('gen1').manual){if(board.MSB.shore)shore(false);step('gen1',x=>{x.state='running';x.breaker=true;board.MSB.live=true;});for(const id of ['c1','hp1','sp1','fp1'])if(machines.get(id)?.state==='stopped')m(id).state=id==='c1'||id==='hp1'||id==='sp1'?'running':'standby';for(const id of ['c2','hp2','sp2','fp2','tp2','dp2'])if(machines.get(id)?.state==='stopped')m(id).state='standby';
-    if(machines.get('er-fansA'))m('er-fansA').state='running';}
-   if(minutes>=FERRY_DAY.inService-5)for(const id of ['mainP','mainS'])if(m(id).state==='stopped'&&!m(id).manual){m('prime-'+id).state='running';step(id,x=>{x.state='running';});m('prime-'+id).state='stopped';}
+   if(m('gen1').state!=='running'&&!m('gen1').manual&&start('gen1',{automatic:true}).ok){if(board.MSB.shore)shore(false);closeBreaker('gen1');
+    for(const id of ['c1','hp1','sp1','er-fansA'])if(machines.get(id)?.state==='stopped')start(id,{automatic:true});
+    for(const id of ['fp1','c2','hp2','sp2','fp2','tp2','dp2'])if(machines.get(id)?.state==='stopped')standby(id);}
+   if(minutes>=FERRY_DAY.inService)for(const id of ['mainP','mainS'])if(m(id).state==='stopped'&&!m(id).manual){
+    if(start('prime-'+id,{automatic:true}).ok&&start(id,{automatic:true}).ok)stop('prime-'+id,{automatic:true});}
   }else if(minutes>=FERRY_DAY.shorePower||minutes<FERRY_DAY.generators){
-   for(const id of ['mainP','mainS'])if(m(id).state==='running'&&!m(id).manual)step(id,x=>{x.state='stopped';});
-   if(!board.MSB.shore&&!m('gen1').manual){for(const id of ['gen1','gen2'])if(m(id).state==='running'){m(id).breaker=false;m(id).state='stopped';}board.MSB.shore=true;board.MSB.live=true;}
+   for(const id of ['mainP','mainS'])if(m(id).state==='running'&&!m(id).manual)stop(id,{automatic:true});
+   if(!board.MSB.shore&&!m('gen1').manual&&!underway){for(const id of ['gen1','gen2'])if(m(id).state==='running'){if(m(id).breaker)openBreaker(id);stop(id,{automatic:true});}shore(true);}
   }
  }
  /** Time passes: temperatures, air, water, fuel, bilge and hours; the pressure switches; the standby pumps. */
@@ -121,7 +151,7 @@ export function createPlant({minutes=FERRY_DAY.generators}={}){
  }
  /** What the console shows: the dials (0–1 of their scales, as ferry-interior.js draws them) and the alarms that are lit. */
  function readings(){
-  const eng=id=>{const x=m(id),run=x.state==='running';const order=telegraph[id]||'STOP';const rpm=!run?0:x.kind==='generator'?.6:order==='STOP'?.28:order.includes('HALF')?.5:.68;
+  const eng=id=>{const x=m(id),run=x.state==='running';const order=telegraph[id]||'STOP';const rpm=!run?0:x.kind==='generator'?.6:order==='STOP'?.28:order.includes('DEAD SLOW')?.33:order.includes('SLOW')?.4:order.includes('HALF')?.5:.68;
    return {state:x.state,rpm,loPress:run?.55:(machines.get('prime-'+id)?.state==='running'?.3:0),water:Math.min(1,temps[id]/100),exhaust:run?(rpm>.4?.5:.3):0,chargeAir:run?rpm*.6:0,fuel:run?.5:0,loTemp:Math.min(1,(temps[id]-10)/100)};};
   const gens=['gen1','gen2'].map(id=>{const x=m(id),on=x.state==='running'&&x.breaker;const share=on?board.MSB.kW/Math.max(1,generatorsOnline())/E.generators.kW:0;return {id,on,running:x.state==='running',kW:Math.min(1,share),A:Math.min(1,share*E.generators.kW/E.generators.pf/(Math.sqrt(3)*E.volts)*1000/E.generators.amps/E.generators.amps*E.generators.amps),V:x.state==='running'?.88:0,Hz:x.state==='running'?.5:0};});
   const alarms=new Set();
@@ -129,10 +159,10 @@ export function createPlant({minutes=FERRY_DAY.generators}={}){
   if(tanks.service<.3)alarms.add('FUEL LEVEL');if(tanks.bilgeAft>.5)alarms.add('BILGE AFT');if(tanks.bilgeFwd>.5)alarms.add('BILGE FWD');if(fire)alarms.add('FIRE ER');if(co2)alarms.add('CO₂ RELEASED');
   if(Math.max(...tanks.air)<AIR.minimum+2)alarms.add('START AIR');if(tanks.freshWater<.15)alarms.add('FW TANK');if(board.MSB.shore)alarms.add('SHORE');if(board.ESB.source==='EG')alarms.add('EG RUN');
   for(const [id,n] of [['gen1','GEN 1 TRIP'],['gen2','GEN 2 TRIP']])if(m(id).state==='running'&&!m(id).breaker&&!board.MSB.shore&&generatorsOnline()===0)alarms.add(n);
-  return {engines:{mainP:eng('mainP'),mainS:eng('mainS')},generators:gens,board:{live:live(),shore:board.MSB.shore,kW:board.MSB.kW,generatorsOnline:generatorsOnline(),emergency:board.ESB.source==='EG'},air:[...tanks.air],fwPressure:tanks.fwPressure,service:tanks.service,bilgeAft:tanks.bilgeAft,alarms:[...alarms],telegraph:{...telegraph},temps:{...temps},
+  return {engines:{mainP:eng('mainP'),mainS:eng('mainS')},generators:gens,board:{live:live(),shore:board.MSB.shore,kW:board.MSB.kW,generatorsOnline:generatorsOnline(),emergency:board.ESB.source==='EG'},air:[...tanks.air],fwPressure:tanks.fwPressure,service:tanks.service,bilgeAft:tanks.bilgeAft,alarms:[...alarms],telegraph:{...telegraph},temps:{...temps},control,
    sound:board.ESB.source==='EG'&&!live()?'emergency':m('mainP').state==='running'||m('mainS').state==='running'?(underway?'underway':'idle'):generatorsOnline()>0?'generators':'off'};
  }
  function setUnderway(on){underway=on;}
  const snapshot=()=>({machines:[...machines.values()].map(x=>({id:x.id,state:x.state,hours:Math.round(x.hours*10)/10,breaker:x.breaker})),valves:{...valves},board:{...board.MSB},clock});
- return {machines,start,stop,standby,isolate,open:openUp,close:closeUp,closeBreaker,openBreaker,shore,valve,setTelegraph,changeOver,routine,tick,readings,snapshot,setUnderway,serviceOf,dutyOf:service=>duty.get(service),get log(){return log.slice();},get events(){return events.slice();},machine:id=>machines.get(id)||null,get valves(){return {...valves};}};
+ return {machines,start,stop,standby,isolate,open:openUp,close:closeUp,closeBreaker,openBreaker,shore,valve,setTelegraph,acceptBridgeControl,departureReadiness,changeOver,routine,tick,readings,snapshot,setUnderway,serviceOf,dutyOf:service=>duty.get(service),get log(){return log.slice();},get events(){return events.slice();},machine:id=>machines.get(id)||null,get valves(){return {...valves};}};
 }

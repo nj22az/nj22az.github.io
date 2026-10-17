@@ -259,7 +259,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     staffBreak.update(dt,residentPlan(v,minutes,rain,state(),transit).place==='nap');
     routes.delete(g);outside.push(p);continue;
    }
-   if(g.userData.inVehicle||g.userData.inBookshop||g.userData.inWorkplace||g.userData.inIzakaya||g.userData.inOnsen||g.userData.inMarket||g.userData.inRamen||g.userData.inHome)continue;
+   if(g.userData.inVehicle||g.userData.ferryPassenger||g.userData.inBookshop||g.userData.inWorkplace||g.userData.inIzakaya||g.userData.inOnsen||g.userData.inMarket||g.userData.inRamen||g.userData.inHome)continue;
    const phase=commuterMode(v)?townPhase(v,minutes,rain):'town';
    // They leave on the bus, not by ceasing to exist at the kerb. While the service is
    // somewhere up the road they wait in the queue, and they only go once there has

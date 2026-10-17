@@ -162,8 +162,11 @@ export function createDialogueBox({modal,heading,body,actions,isOpen,leave,onPha
   const line=body.querySelector('p')||doc.createElement('p');
   if(!line.parentNode)body.append(line);
   line.classList.add('rpg-line');
-  fullLine=String(text??'');lineEl=line;
-  line.textContent=fullLine;
+  fullLine=String(text??'');
+  // The invisible full line and visible typed span share a grid cell. The balloon
+  // keeps its final wrapping and height from the first letter to the last.
+  line.dataset.fullLine=fullLine;
+  lineEl=doc.createElement('span');lineEl.className='balloon-text';lineEl.textContent=fullLine;line.replaceChildren(lineEl);
   // Johansson's side of the exchange, said over the same spot when he speaks.
   own=doc.createElement('p');own.className='rpg-own';body.append(own);
   choices().forEach((b,i)=>{b.dataset.key=i<9?String(i+1):'';});
@@ -176,12 +179,12 @@ export function createDialogueBox({modal,heading,body,actions,isOpen,leave,onPha
   const profile=voiceProfile(speaker),tickMs=profile?voiceOf(profile).letterMs:22;
   let typed=0;
   if(!reduced()&&fullLine.length>1){
-   line.textContent='';
+   lineEl.textContent='';
    const chars=[...fullLine],step=Math.max(1,Math.round(chars.length/90));
    // Beats written into the line (dialogue/markup.js {p}, or the engine's |) hold the
    // typing where they fall: BEAT_TICKS of the 22 ms tick for each beat.
    let ticks=0,hold=0;
-   typing=win.setInterval(()=>{if(hold>0){hold--;return;}const from=typed;typed=Math.min(chars.length,typed+step);for(let i=from+1;i<=typed;i++)hold+=(pauses?.[i]||0)*BEAT_TICKS;line.textContent=chars.slice(0,typed).join('');if(++ticks%3===1&&/\S/.test(chars[typed-1]||''))blip(speaker,ticks);if(typed>=chars.length){win.clearInterval(typing);typing=null;}},tickMs);
+   typing=win.setInterval(()=>{if(hold>0){hold--;return;}const from=typed;typed=Math.min(chars.length,typed+step);for(let i=from+1;i<=typed;i++)hold+=(pauses?.[i]||0)*BEAT_TICKS;lineEl.textContent=chars.slice(0,typed).join('');if(++ticks%3===1&&/\S/.test(chars[typed-1]||''))blip(speaker,ticks);if(typed>=chars.length){win.clearInterval(typing);typing=null;}},tickMs);
   }
   const beats=Object.values(pauses||{}).reduce((a,b)=>a+(Number(b)||0),0);
   const typeTime=typing?(Math.ceil([...fullLine].length/Math.max(1,Math.round([...fullLine].length/90)))+beats*BEAT_TICKS)*tickMs:0;
@@ -195,7 +198,7 @@ export function createDialogueBox({modal,heading,body,actions,isOpen,leave,onPha
   const said=spokenLine(button.textContent,button.dataset?.say);
   if(!animated||!said){passThrough=true;try{button.click();}finally{passThrough=false;}return true;}
   speakingOwn=true;afterLine=()=>button.click();
-  if(own)own.textContent=said;
+  if(own){own.dataset.fullLine=said;const text=doc.createElement('span');text.className='balloon-text';text.textContent=said;own.replaceChildren(text);}
   modal.classList.add('player-speaking');
   const ms=playerLineTime(said);
   onPhase({phase:'player',speaker:'Johansson',text:said,seconds:ms/1000});

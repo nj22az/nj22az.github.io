@@ -18,3 +18,7 @@ dist/
 # Thuan: reproducible from tools/blender/build-thuan.py and animate-johansson.py --character thuan.
 /art/characters/thuan/*.blend
 __pycache__/
+
+# Unpublished Studio drafts and the active writer's lock stay local.
+/data/studio/draft/
+/data/studio/.lock

@@ -36,7 +36,7 @@ export function createCharacters(options={}){
   }
 
   function face(entity,target,flip=false){if(!entity||!target)return;entity.lookAt(target.position.x,entity.position.y,target.position.z);if(flip)entity.rotateY(Math.PI);}
-  const bodyBusy=entity=>entity.userData.staffBenchPhase||Number.isFinite(entity.userData.seatHeight)||entity.userData.character?.moving||entity.userData.shopping||entity.userData.serving||entity.userData.sleeping||entity.userData.waking||entity.userData.roomTransition;
+  const bodyBusy=entity=>entity.userData.ferryCrew||entity.userData.ferryShoreTask||entity.userData.staffBenchPhase||Number.isFinite(entity.userData.seatHeight)||entity.userData.character?.moving||entity.userData.shopping||entity.userData.serving||entity.userData.sleeping||entity.userData.waking||entity.userData.roomTransition;
 
   function stageConversation(entity){
     if(!playerEntity||!entity||entity===playerEntity)return;
@@ -145,7 +145,7 @@ export function createCharacters(options={}){
       if(u.lying||u.ridingBicycle)continue;
       entity.getWorldPosition(scratch);
       bodies.push({entity,x:scratch.x,z:scratch.z,x0:scratch.x,z0:scratch.z,space:entity.parent,
-        fixed:entity!==playerEntity&&(bodyBusy(entity)&&!entity.userData.character?.moving||conversations.has(entity)||!!u.sleeping||Number.isFinite(u.seatHeight))});
+        fixed:entity!==playerEntity&&(u.ferryCrew||u.ferryShoreTask||bodyBusy(entity)&&!entity.userData.character?.moving||conversations.has(entity)||!!u.sleeping||Number.isFinite(u.seatHeight))});
     }
     if(bodies.length<2)return;
     if(!separateBodies(bodies,{blocked:options.isBlocked}))return;

@@ -1,13 +1,16 @@
 import * as THREE from '../../vendor/three.module.js';
+import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {waveHeight,SEA_LEVEL,setOceanHole} from './ocean.js';
 import {HARBOUR_LINE,BUS_DWELL,nextService} from '../people/commuter-schedule.js';
-import {AIRPORT_FERRY,AIRPORT_FERRY_PORTS,AIRPORT_PASSAGES,airportFerryPose} from './airport-ferry.js';
+import {AIRPORT_FERRY_PORTS,FERRY_SAILINGS} from './airport-ferry.js';
+import {airportWorld} from './airport-ground.js';
 import {PORT_BUILDING} from './port-building.js';
 import {FERRY_DAY,rollPeriod,pitchPeriod} from './ferry-ship.js';
 import {buildFerryModel,GANGWAY_Z,WL,FERRY_HULL,FERRY_RAMP,FERRY_DECKS,FERRY_CASINGS,halfBreadth} from './ferry-model.js';
 import {MINATO_BERTH} from './minato-berth.js';
 import {FERRY_INSPECT,FERRY_LADDER} from './ferry-inspect.js';
 import {createPlant} from './ferry-plant.js';
+import {createFerryOperations,FERRY_PROCEDURE} from './ferry-operations.js';
 import {PLANT_STATIONS,stationLabel,plantSound,telegraphFor} from './ferry-plant-controls.js';
 import {OUTER_PIER} from './layout.js';
 import {BERTH_X,BERTH_Z,townArrival,townDeparture} from './ferry-paths.js';
@@ -15,7 +18,7 @@ import {lanternGlow,windowGlow} from '../render/dusk.js';
 
 /**
  * One Minato–Kitano-jima ferry, the town's Minato Maru (ferry-ship.js, ferry-model.js), carries a hundred
- * passengers and ten cars. At Minato she lies port side to the outer pier on its fenders with her bow
+ * passengers and six cars. At Minato she lies port side to the outer pier on its fenders with her bow
  * ramp on the quay's landing plate and her gangway from the port casing's door to the pier; at
  * Kitano-jima she lands her ramp on the pier. The legacy
  * commuter timetable interface remains available for residents and old saved games.
@@ -64,6 +67,15 @@ export const FERRY_MOORING=Object.freeze({
  fairleads:Object.freeze({aft:Object.freeze([halfBreadth(2.2-HALF_L)-.06,CAR_Y+1.0,2.2-HALF_L]),fwd:Object.freeze([3.78,BH_TOP+.3,34.3-HALF_L])}),
  lines:Object.freeze(MINATO_BERTH.bitts.map(b=>Object.freeze({name:b.line,station:/head|forward/.test(b.line)?'fwd':'aft',pier:Object.freeze([b.x,OUTER_PIER.height+.5,b.z])}))),
  radius:.025,
+});
+/** Kitano's actual pier fittings, beside its rails and clear of the loading centreline. */
+export const KITANO_FERRY_BITTS=Object.freeze([[-54.55,28.45],[-51.4,28.45],[-53.65,33.55],[-54.55,33.55]].map(Object.freeze));
+export const FERRY_MOORINGS=Object.freeze({
+ town:Object.freeze(FERRY_MOORING.lines.map((l,i)=>Object.freeze({...l,id:'line-'+i,shoreTarget:Object.freeze({x:l.pier[0]+.65,y:OUTER_PIER.height,z:l.pier[2]})}))),
+ airport:Object.freeze(KITANO_FERRY_BITTS.map(([u,v],i)=>{
+  const [x,z]=airportWorld(u,v),[sx,sz]=airportWorld(u,v<31?v+.65:v-.65),y=AIRPORT_FERRY_PORTS.airport.height;
+  return Object.freeze({...FERRY_MOORING.lines[i],id:'line-'+i,pier:Object.freeze([x,y+.45,z]),shoreTarget:Object.freeze({x:sx,y,z:sz})});
+ })),
 });
 
 /**
@@ -117,17 +129,40 @@ export function buildFerry({shadows=false}={}){
  */
 export function createFerryRun({parent,shadows=false,colliders,register=null,onAction=()=>{}}={}){
  const ferry=buildFerry({shadows});parent.add(ferry);
- // Her mooring lines (FERRY_MOORING): two straight runs each (bitt to fairlead, fairlead to the pier's bitt), laid
- // each frame while she lies alongside at Minato, so they stay on her bitts as she heaves and rolls.
+ // Each line keeps its own eye, paid-out length and coil. Returning an eye is visible from the pier
+ // to the receiving seaman, then the rope is heaved through the fairlead; it is never hidden as a group.
  const lines=new THREE.Group();lines.name='Minato Maru mooring lines';lines.visible=false;lines.userData.walkSurface=false;lines.userData.dynamicProp=true;lines.userData.horizon=true;parent.add(lines);   // drawn wherever she is in view, like her (render/town-sections.js)
  const ropeGeo=new THREE.CylinderGeometry(FERRY_MOORING.radius,FERRY_MOORING.radius,1,6);ropeGeo.translate(0,.5,0);
  const ropeMat=new THREE.MeshStandardMaterial({color:0xd9cfa8,roughness:.92});
- const segs=FERRY_MOORING.lines.flatMap(l=>[0,1].map(()=>{const m=new THREE.Mesh(ropeGeo,ropeMat);m.name='Mooring line: '+l.name;lines.add(m);return m;}));
+ const coilRings=Array.from({length:4},(_,i)=>{const g=new THREE.TorusGeometry(.16+i*.028,.017,5,14);g.rotateX(Math.PI/2);g.translate(0,i*.023,0);return g;});
+ const coilGeometry=mergeGeometries(coilRings);for(const g of coilRings)g.dispose();
+ const ropeSets=FERRY_MOORING.lines.map(l=>{
+  const segments=[0,1,2].map(()=>{const m=new THREE.Mesh(ropeGeo,ropeMat);m.name='Mooring line: '+l.name;lines.add(m);return m;});
+  const eye=new THREE.Mesh(new THREE.TorusGeometry(.13,FERRY_MOORING.radius,5,12),ropeMat);eye.name='Returned eye: '+l.name;lines.add(eye);
+  const coil=new THREE.Mesh(coilGeometry,ropeMat);coil.name='Coiled aboard: '+l.name;ferry.add(coil);
+  return {segments,eye,coil};
+ });
+ for(const [i,l] of FERRY_MOORINGS.airport.entries()){
+  const bitt=new THREE.Mesh(new THREE.CylinderGeometry(.12,.16,.45,10),new THREE.MeshStandardMaterial({color:0x424b50,roughness:.8}));
+  bitt.name='Kitano ferry pier bitt: '+l.name;bitt.position.set(l.pier[0],l.pier[1]-.225,l.pier[2]);parent.add(bitt);
+  colliders?.push({id:'kitano-ferry-bitt-'+i,x:l.pier[0],z:l.pier[2],r:.16,height:l.pier[1]});
+ }
  const vA=new THREE.Vector3(),vB=new THREE.Vector3(),vD=new THREE.Vector3(),UP=new THREE.Vector3(0,1,0);
  const lay=(m,a,b)=>{vD.subVectors(b,a);const L=vD.length();m.position.copy(a);m.scale.set(1,Math.max(.01,L),1);m.quaternion.setFromUnitVectors(UP,vD.normalize());};
- const moor=on=>{lines.visible=on;if(!on)return;
-  FERRY_MOORING.lines.forEach((l,i)=>{const bitt=ferry.localToWorld(vA.set(...FERRY_MOORING.bitts[l.station])).clone(),lead=ferry.localToWorld(vB.set(...FERRY_MOORING.fairleads[l.station])).clone();
-   lay(segs[i*2],bitt,lead);lay(segs[i*2+1],lead,vB.set(...l.pier));});};
+ const moor=(list,visible=true)=>{lines.visible=visible;
+  list.forEach((l,i)=>{
+   const {segments,eye,coil}=ropeSets[i],bitt=ferry.localToWorld(vA.set(...FERRY_MOORING.bitts[l.station])).clone(),lead=ferry.localToWorld(vB.set(...FERRY_MOORING.fairleads[l.station])).clone(),shore=new THREE.Vector3(...l.pier),p=l.progress||0,status=l.status||'fast';
+   const coiled=status==='coiled';for(const m of segments)m.visible=!coiled;eye.visible=!coiled;
+   coil.visible=visible&&(coiled||status==='heaving'||status==='paying-out');
+   coil.position.set(l.station==='fwd'?3.45:3.3,l.station==='fwd'?BH_TOP+.08:CAR_Y+.03,l.station==='fwd'?14.55+(i%2)*.65:-14.8-(i%2)*1.5);
+   const fraction=status==='eye-return'?1-(p-.25)*4:status==='paying-out'?Math.min(1,p*2):1;
+   // The returned eye reaches the fairlead before it is hauled inboard. Continue from
+   // that same point: restarting a heaving segment at the pier would throw it ashore again.
+   const end=status==='heaving'?lead.clone().lerp(bitt,Math.max(0,Math.min(1,(p-.5)*2))):lead.clone().lerp(shore,Math.max(0,Math.min(1,fraction))),middle=lead.clone().lerp(end,.5);
+   if(status!=='fast')middle.y-=Math.min(.65,lead.distanceTo(end)*.06);
+   lay(segments[0],bitt,lead);lay(segments[1],lead,middle);lay(segments[2],middle,end);eye.position.copy(end);eye.rotation.set(Math.PI/2,0,0);
+  });
+ };
  // What you can look at aboard (ferry-inspect.js): prompts that move with her, offered only on the deck you stand on.
  if(register)for(const p of FERRY_INSPECT){const a=new THREE.Object3D();a.name='Ferry: '+p.title;a.position.set(...p.pos);a.userData.sameLevel=true;a.userData.reach=p.reach??2.2;a.userData.facing=p.facing??.55;ferry.add(a);
   register(a,p.label,()=>onAction('inspect',p.title,p.text));}
@@ -138,7 +173,7 @@ export function createFerryRun({parent,shadows=false,colliders,register=null,onA
  if(register){const a=new THREE.Object3D();a.name='Ferry: purser';a.position.set(-2.3,FERRY_DECKS.upper.y+1.2,FERRY_DECKS.saloon.aft+3.1);a.userData.sameLevel=true;ferry.add(a);
   register(a,'Ask the purser for the crossing',()=>onAction(run.berth==='airport'?'airport-return':'airport-ferry'));}
  let phase='away',t=0,service=null,serviceAt=null,lastMinutes=null,clock=0,yaw=0,x=FERRY_BERTH.x,z=FERRY_BERTH.z,exposure=0,shipSeconds=null,plan=null;
- let berth='town',localService=false,crossing=null;
+ let berth='town',localService=false,crossing=null,crewController=null,vehicleController=null,accessGuard=()=>true;
  const DOOR=[FERRY_TERMINAL.queue[0],FERRY_TERMINAL.queue[1]];
  // Her whistle: every signal she sounds, in order (the town's sound plays each one where she is).
  const whistle={count:0,kind:null,x,z,log:[]};
@@ -156,7 +191,8 @@ export function createFerryRun({parent,shadows=false,colliders,register=null,onA
  * steps, so an engine that the crew started at 6:25 is warm with its hours on the counter when the player comes aboard
  * at two, not one that has just been started.
  */
- const runPlant=minutes=>{
+ const runPlant=(minutes,dt=0)=>{
+  if(operations.active){plant.tick(Math.min(.25,Math.max(0,dt))/60);plantMinute=minutes;showPlant();return;}
   const m=((minutes%1440)+1440)%1440;
   if(plantMinute===null||minutes<plantMinute||minutes-plantMinute>180){const day=minutes-m;for(let t=0;t<m;t+=5){plant.routine(t);plant.tick(Math.min(5,m-t));}plantMinute=minutes;plant.routine(m);}
   const dm=minutes-plantMinute;if(dm>0){plant.tick(dm);if(Math.floor(minutes)!==Math.floor(plantMinute))plant.routine(m);plantMinute=minutes;}
@@ -180,17 +216,18 @@ export function createFerryRun({parent,shadows=false,colliders,register=null,onA
   setOceanHole(x,z,yaw,FERRY_HULL.beam/2-.15,11,-.25);
  };
  const place=()=>{
-  const moored=phase==='waiting';
+  const operation=operations.snapshot(),moored=phase==='waiting',access=operation?.gangway.out??(moored&&berth==='town'?1:0);
   pose();
-  ferry.userData.gangway.visible=moored&&berth==='town';ferry.userData.setGate?.(moored&&berth==='town');
+  ferry.userData.gangway.visible=true;ferry.userData.setGangway?.(access);ferry.userData.setGate?.(access);
   // Down, the ramp rests on its landing: the steel plate in Minato's quay, Kitano-jima's pier.
   const landing=berth==='airport'?AIRPORT_FERRY_PORTS.airport.height:MINATO_BERTH.landing.top,down=run.rampDown;
   if(down>=1)ferry.userData.restRamp?.(landing);else ferry.userData.setRamp?.(down,rampSlope(landing));
-  if(moored&&berth==='town')ferry.userData.restGangway?.(OUTER_PIER.height);
-  moor(moored&&berth==='town');
+  ferry.userData.setRampLocked?.(operation?.ramp.locked??!moored);
+  if(access>=1&&berth==='town')ferry.userData.restGangway?.(OUTER_PIER.height);
+  moor(operation?.lines||FERRY_MOORINGS[berth].map(l=>({...l,status:'fast',progress:0})),ferry.visible);
   // Her screws turn and the radar sweeps while she moves; alongside both are still.
   const moved=Math.hypot(x-last.x,z-last.z),dt=clock-last.t;last.x=x;last.z=z;last.t=clock;
-  if(dt>0&&dt<1)ferry.userData.underway?.(dt,moored?0:Math.min(6,moved/dt));
+  if(dt>0&&dt<1)ferry.userData.underway?.(dt,moored?0:Math.min(6,moved/dt),plant.readings());
  };
  const last={x,z,t:0};
  /**
@@ -209,7 +246,13 @@ export function createFerryRun({parent,shadows=false,colliders,register=null,onA
  // hull alongside stops the player stepping off the pier's open flank onto the water.
  const solid=colliders?{id:'ferry',moving:true,x:FERRY_BERTH.x,z:FERRY_BERTH.z,w:FERRY.beam,d:FERRY.length,height:3}:null;
  if(solid)colliders.push(solid);
- const trackSolid=()=>{if(!ferry.visible)setOceanHole(0,0,0,0,0);if(!solid)return;const here=ferry.visible&&phase==='waiting';solid.x=here?x:1e6;solid.z=here?z:1e6;solid.yaw=yaw;};
+ const trackSolid=()=>{if(!ferry.visible)setOceanHole(0,0,0,0,0);if(!solid)return;const here=ferry.visible&&!['crossing','away'].includes(phase);solid.x=here?x:1e6;solid.z=here?z:1e6;solid.yaw=yaw;};
+ const operations=createFerryOperations({plant,sailings:FERRY_SAILINGS,getBerth:()=>berth,getMinutes:()=>lastMinutes??0,getLines:location=>FERRY_MOORINGS[location],
+  getCrew:()=>crewController,getVehicles:()=>vehicleController,accessClear:()=>accessGuard(),
+  onStage:stage=>{phase=stage==='alongside'?'waiting':['passage','departing'].includes(stage)?'crossing':['arriving','making-fast','opening-access'].includes(stage)?'arriving':stage==='held'&&operations.snapshot()?.heldFrom==='passage'?'crossing':'preparing';},
+  onPose:(p,op)=>{signalsBetween(FERRY_SAILINGS[op.destination],crossing?.seconds??-1,p.seconds+(p.progress>=1?1e-6:0));if(crossing)crossing.seconds=p.seconds;set(p.x,p.z,p.yaw);exposure=p.exposure;},
+  onBerth:destination=>{berth=destination;exposure=0;const p=AIRPORT_FERRY_PORTS[destination];set(p.berth[0],p.berth[1],p.yaw);serviceAt=lastMinutes??0;},
+ });
  park();ferry.visible=false;trackSolid();
  const run={
   ferry,
@@ -217,64 +260,61 @@ export function createFerryRun({parent,shadows=false,colliders,register=null,onA
   get bus(){return ferry;},
   get phase(){return phase;},
   get berth(){return berth;},
-  get destination(){return crossing?.destination||null;},
-  get crossingProgress(){return crossing?.progress??null;},
-  get automaticCrossing(){return crossing?.automatic===true;},
+  get destination(){return operations.active?operations.snapshot().destination:null;},
+  get crossingProgress(){return operations.active?operations.snapshot().progress:null;},
+  get automaticCrossing(){return operations.active&&operations.snapshot().automatic===true;},
+  get gangwayOut(){return operations.snapshot()?.gangway.out??(phase==='waiting'&&berth==='town'?1:0);},
+  get operation(){return operations.snapshot();},
+  procedure:FERRY_PROCEDURE,
+  get completedVoyages(){return operations.completed;},
+  bindCrewController(controller){crewController=controller;},
+  bindVehicleController(controller){vehicleController=controller;},
+  setAccessGuard(guard){accessGuard=typeof guard==='function'?guard:()=>true;},
   /** Both passengers and vehicles use this single ferry group and these ports. */
   parkAt(location){
    if(!AIRPORT_FERRY_PORTS[location])throw new RangeError('Unknown ferry berth');
+   if(!operations.reset())return false;
    const p=AIRPORT_FERRY_PORTS[location];berth=location;localService=true;crossing=null;phase='waiting';exposure=0;
    serviceAt=lastMinutes??0;service=service??0;set(p.berth[0],p.berth[1],p.yaw);ferry.visible=true;place();trackSolid();
    if(lastMinutes!==null)lights(lastMinutes,false);
-  },
-  get moored(){return lines.visible;},
-  beginCrossing(destination,{automatic=false}={}){
-   if(phase==='crossing'||!AIRPORT_FERRY_PORTS[destination]||destination===berth)return false;
-   moor(false);
-   localService=true;phase='crossing';crossing={destination,progress:0,automatic:!!automatic,elapsed:0,seconds:null};ferry.userData.gangway.visible=false;ferry.userData.setGate?.(false);run.setCrossingProgress(0);trackSolid();return true;
-  },
-  /** The island simulation advances unaccompanied cargo runs without taking the camera. */
-  advanceAutomaticCrossing(dt){
-   if(!crossing?.automatic)return null;
-   crossing.elapsed+=Number.isFinite(dt)?Math.max(0,dt):0;
-   run.setCrossingProgress(crossing.elapsed/AIRPORT_FERRY.ride);
-   if(crossing.progress<1)return null;
-   const destination=crossing.destination;run.parkAt(destination);return destination;
-  },
-  setCrossingProgress(progress){
-   if(!crossing)return false;crossing.progress=Math.max(0,Math.min(1,progress));
-   const p=airportFerryPose(crossing.destination,crossing.progress),passage=AIRPORT_PASSAGES[crossing.destination];
-   // Her whistle: the signals between where she was and where she is now (the first call sounds the one at the start).
-   signalsBetween(passage,crossing.seconds===null?-1:crossing.seconds,p.seconds+(crossing.progress>=1?1e-6:0));crossing.seconds=p.seconds;
-   set(p.x,p.z,p.yaw);exposure=p.exposure;pose();ferry.userData.setRamp(0);
-   const moved=Math.hypot(p.x-last.x,p.z-last.z),dt=clock-last.t;last.x=p.x;last.z=p.z;last.t=clock;if(dt>0&&dt<1)ferry.userData.underway?.(dt,Math.min(6,moved/dt));
-   if(lastMinutes!==null)lights(lastMinutes,true);
    return true;
+  },
+  get moored(){const op=operations.snapshot();return ferry.visible&&(op?op.lines.every(l=>l.status==='fast'):phase==='waiting');},
+  beginCrossing(destination,{automatic=false}={}){
+   if(!AIRPORT_FERRY_PORTS[destination]||destination===berth||!operations.request(destination,{automatic}))return false;
+   localService=true;crossing={destination,seconds:null};ferry.visible=true;place();trackSolid();return true;
+  },
+  /** Kept for old observers. Only update() owns elapsed physical time. */
+  advanceAutomaticCrossing(){return null;},
+  setCrossingProgress(progress){
+   return operations.active&&Number.isFinite(progress)&&Math.abs(progress-run.crossingProgress)<1e-9;
   },
   get door(){return [...DOOR];},
   /** A queue across the pier end from the gangway, south of the crate stack and clear of the bollards. */
   queueSpot(place=0){return [DOOR[0]+place*.75,DOOR[1]-.35-(place%2)*.3];},
   /** On board: the deck beyond the gangway. */
   get doorway(){return [FERRY_BERTH.x+FERRY.beam/2-.9,FERRY_BERTH.gangwayZ];},
-  get boarding(){return phase==='waiting'&&berth==='town';},
+  get boarding(){return run.canLoad&&berth==='town';},
+  get canLoad(){return ferry.visible&&['alongside','preparing'].includes(operations.stage)&&run.rampDown>=1;},
+  get canUnload(){return ferry.visible&&!operations.active&&phase==='waiting'&&run.rampDown>=1&&run.moored;},
   /** Town minutes since it came alongside, while it is alongside. */
   get alongsideFor(){return phase==='waiting'&&Number.isFinite(serviceAt)?Math.max(0,lastMinutes-serviceAt):null;},
   /** The bow ramp: down a minute after it berths, up again a minute before it leaves. */
-  get rampDown(){if(localService)return phase==='waiting'?1:0;const e=run.alongsideFor;if(e===null)return 0;const s=u=>{u=Math.max(0,Math.min(1,u));return u*u*(3-2*u);};return Math.min(s(e-.2),s(BUS_DWELL-.4-e));},
+  get rampDown(){if(localService)return operations.snapshot()?.ramp.down??(phase==='waiting'?1:0);const e=run.alongsideFor;if(e===null)return 0;const s=u=>{u=Math.max(0,Math.min(1,u));return u*u*(3-2*u);};return Math.min(s(e-.2),s(BUS_DWELL-.4-e));},
   get service(){return service;},
   /** Her plant (ferry-plant.js) and the stations the player works it at; `refreshPlant` after the player's hand. */
   get plant(){return plant;},get stations(){return stations.map(s=>s.st);},refreshPlant(){showPlant();},
   /** What the town's sound needs: where she is, what she is doing, her engines and her whistle. */
   get audio(){
-   const m=((lastMinutes??0)%1440+1440)%1440,underway=!['waiting','away'].includes(phase);
+   const m=((lastMinutes??0)%1440+1440)%1440,underway=operations.active?['passage','arriving'].includes(operations.stage):!['waiting','away'].includes(phase);
    const engines=!ferry.visible?'off':plantSound(plant.readings(),{underway,exposure});
    return {phase,x,z,engines,whistle:{count:whistle.count,kind:whistle.kind,x:whistle.x,z:whistle.z,log:[...whistle.log]}};
   },
   update(dt,minutes=0,time){
    if(!(dt>0))return;
    clock=Number.isFinite(time)?time:clock+dt;
-   runPlant(minutes);
-   if(localService){lastMinutes=minutes;if(phase==='waiting'){place();lights(minutes,false);}trackSolid();return;}
+   runPlant(minutes,dt);
+   if(localService){lastMinutes=minutes;operations.tick(dt);place();lights(minutes,['passage','arriving'].includes(operations.stage));trackSolid();return;}
    try{
     if(lastMinutes===null||minutes<lastMinutes||minutes-lastMinutes>dt+1){
      phase='away';service=null;serviceAt=null;ferry.visible=false;plan=null;shipSeconds=null;
@@ -288,6 +328,7 @@ export function createFerryRun({parent,shadows=false,colliders,register=null,onA
    }finally{trackSolid();}
   },
   step(dt,minutes=0){
+   if(localService||operations.active)return;
    // Everything is read off the clock rather than added up frame by frame, so the ferry is
    // where the timetable says whatever the frame rate or the clock's speed.
    const T=FERRY_TIMES,inbound=T.sea+T.harbour;

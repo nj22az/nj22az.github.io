@@ -156,7 +156,7 @@ The crew's day: shore power until 06:10, No.1 generator on the board, the engine
 | stopped | Generator No.2, Fuel transfer pump No.1, Priming pump, Priming pump, General-service pump JP-32, Bilge pump JP-25, Fire and bilge pump No.2 (8.6), Ballast pump JP-32, General-service pump (standby, 8.3), Emergency fire pump, Steering power unit No.1, Steering power unit No.2, Ramp pump No.1, Ramp pump No.2, Engine-room supply fans feeder 2, Car-deck exhaust fans feeder 1, Car-deck exhaust fans feeder 2, Bow thruster (star-delta, two-generator interlock), Anchor windlass and warping heads, Aft mooring capstan, Ramp power pack pump (one of two runs) feeder 1, Ramp power pack pump (one of two runs) feeder 2, Fuel purifier, Oily-water separator, Rescue-boat davit winch |
 | standby | Fuel transfer pump No.2, Fire and GS pump No.1 JP-40, Fire and bilge pump No.2 JP-40, Starting-air compressor No.1 JC-30, Starting-air compressor No.2 JC-30, Hydrophore pump No.1, Hydrophore pump No.2, Sanitary pump No.2 JP-15 |
 
-Readings at 14:00: board 1 generator(s) on the board, 16 kW; starting air 29 / 28 bar; service tank 48 %; fresh-water pressure 0.31 MPa; alarms: none. The player works the plant at 20 stations (start, stop, standby, isolate and tag out, open for overhaul, breakers, change-overs); the console's dials, readout and alarm matrix read the plant.
+Readings at 14:00: board 1 generator(s) on the board, 16 kW; starting air 26 / 25 bar; service tank 48 %; fresh-water pressure 0.31 MPa; alarms: none. The player works the plant at 20 stations (start, stop, standby, isolate and tag out, open for overhaul, breakers, change-overs); the console's dials, readout and alarm matrix read the plant.
 
 ## 7. The design programme: built and open
 

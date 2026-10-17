@@ -6,6 +6,7 @@ import {createFerryWalk,FERRY_FLOORS,FERRY_STEP} from '../src/world/ferry-walk.j
 import {FERRY_DECKS,FERRY_CASINGS,GATE,FERRY_HULL} from '../src/world/ferry-model.js';
 import {groundHeight} from '../src/world/layout.js';
 import {townBoundsBlocked} from '../physics.js';
+import {ferryServiceFixture} from './ferry-service-fixture.mjs';
 
 const R=.28,HALF=FERRY_HULL.length/2;
 /** The Minato Maru lying at a berth, still (no heave), her walk worked out. */
@@ -78,15 +79,22 @@ test('down the bow ramp onto the quay\'s landing plate, and back up',()=>{
 });
 
 test('under way her decks are still walked (he sails aboard), but the gangway and the ramp are in: no way on or off',()=>{
- const {run,walk,colliders}=alongside();
- run.beginCrossing('airport');run.setCrossingProgress(.5);walk.update();
+ const service=ferryServiceFixture(),{run,walk,world:{colliders}}=service;
+ // This fixture begins with its rider aboard, clear of both boarding openings.
+ service.player.position.copy(world(run,0,FERRY_DECKS.car.y,0));
+ assert.equal(service.aboard(),true);
+ assert.equal(run.beginCrossing('airport'),true);
+ // Reach the open sea through the actual crew, plant and mooring procedure.
+ // Moving the hull directly would skip the very access closure this test checks.
+ service.until(()=>run.operation?.stage==='passage'&&run.crossingProgress>=.5);walk.update();
  const p=world(run,0,FERRY_DECKS.car.y,0);
  assert.ok(walk.floorAt(p.x,p.z,p.y),'her car deck is a floor at sea');
  assert.ok(!walk.partOpen('gangway')&&!walk.partOpen('ramp'),'no gangway, no ramp at sea');
  // Off her side at the gate: the bulwark is open there, the gangway is not out, and the sea is no floor.
  const gate=world(run,4.0,FERRY_DECKS.car.y,GATE.z),off=world(run,5.5,FERRY_DECKS.car.y,GATE.z);
  const r=stroll(walk,colliders,[gate.x,gate.z,gate.y],[[off.x,off.z]]);assert.notEqual(r.stopped,null,'stopped at the gate, not into the sea');
- run.parkAt('town');walk.update();
+ service.until(()=>run.operation?.stage==='alongside');walk.update();
+ assert.equal(run.berth,'airport','the same physical voyage reaches Kitano');
  const q=world(run,0,FERRY_DECKS.car.y,0);assert.ok(walk.floorAt(q.x,q.z,q.y),'alongside again');
 });
 

@@ -278,11 +278,13 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
    const on=now!=='off';
    tvGlow.intensity=on?.8+Math.sin(clock*13)*.18+Math.sin(clock*5.3)*.12:0;
    bulbMat.emissiveIntensity=night?1.4:0;bulbLight.intensity=night?1.6:0;
-   routine.update(dt,minutes,now);
+   // The same resident walks the ferry's shore lines. That controller releases
+   // him at his chair before the television/houseboat routine resumes.
+   if(!fujita.userData.ferryShoreTask)routine.update(dt,minutes,now);
    boat.tick({sleeping:fujita.userData.sleepBlend>.01,player:getPlayerPosition()});
    // The beer: the crates, the floor, the bottle he is on, the glass. The pile stays in the shed overnight, when he
    // has gone aboard Shiosai, until the Higas' van takes it at six.
-   const b=fujitaBeer(minutes),u=fujita.userData,seated=routine.state==='watching',pouring=seated&&b.phase==='pour';
+   const b=fujitaBeer(minutes),u=fujita.userData,seated=!u.ferryShoreTask&&routine.state==='watching',pouring=seated&&b.phase==='pour';
    for(const mesh of full)mesh.count=b.full;
    // The third crate, on top, only on a day of more than forty: he drinks from the top crate down.
    crates[2].visible=b.bottles>40;

@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {createBalloonPresenter,projectBalloonPerson,balloonViewport} from '../dialogue/world-balloon.js';
 import {lineFeeling} from '../avatars/body-language.js';
 import {recipeFor} from '../avatars/cast.js';
 import {writtenChat} from './chat-lines.js';
@@ -113,18 +114,19 @@ export function createNeighbourChats({world,observer,blocked=()=>false,state=()=
 const PLACE_NAMES={street:'the harbour street',izakaya:'the izakaya',onsen:'the bathhouse',market:'the market',ramen:'Mrs Sato’s ramen counter',home:'a neighbour’s home'};
 const placeName=p=>PLACE_NAMES[place(p)]||'the '+String(place(p)).replace(/-/g,' ');
 
-export function createChatBubble({camera,canvas,target,blocked=()=>false}){
+export function createChatBubble({camera,canvas,target,blocked=()=>false,project=null}){
  const bubble=document.createElement('div'),name=document.createElement('strong'),line=document.createElement('span');bubble.className='neighbour-chat';bubble.hidden=true;bubble.setAttribute('aria-hidden','true');bubble.append(name,line);document.body.append(bubble);
- return {render(chat){
+ const placement=createBalloonPresenter(bubble,{ambient:true});
+ return {render(chat,dt=0){
   bubble.hidden=true;if(!chat||!visible(chat.speaker.g))return;
   const head=target(chat.speaker.g),eye=camera.getWorldPosition(new THREE.Vector3());if(head.distanceTo(eye)>12||blocked(eye,head))return;
-  const p=head.clone();p.y+=.45;p.project(camera);if(p.z< -1||p.z>1||Math.abs(p.x)>.94||Math.abs(p.y)>.85)return;
+  const p=head.clone().project(camera);if(p.z< -1||p.z>1||Math.abs(p.x)>1||Math.abs(p.y)>1)return;
   const rect=canvas.getBoundingClientRect?.()||{left:0,top:0,width:innerWidth,height:innerHeight};
-  const x=rect.left+(p.x+1)*rect.width/2,y=rect.top+(1-p.y)*rect.height/2;
-  if(y<100||y>rect.top+rect.height*.72)return;
   name.textContent=chat.speaker.profile.name;line.textContent=chat.text;bubble.hidden=false;
-  // Kept whole on screen: half the balloon's own width (or the old fixed 116 px) from each edge.
-  const half=Math.max(116,(bubble.offsetWidth||0)/2+12);
-  bubble.style.left=Math.max(half,Math.min(innerWidth-half,x))+'px';bubble.style.top=y+'px';
- },hide(){bubble.hidden=true;}};
+  const person=project?.(chat.speaker.g)||projectBalloonPerson(camera,rect,head,chat.speaker.g.getWorldPosition(new THREE.Vector3()));
+  const others=(chat.pair||[]).filter(p=>p!==chat.speaker).map(p=>project?.(p.g)||projectBalloonPerson(camera,rect,target(p.g),p.g.getWorldPosition(new THREE.Vector3()))).filter(Boolean);
+  const controls=[...document.querySelectorAll?.('#contextActions,#directoryButton,#waypoint,#stick,#movementActions')||[]].filter(e=>!e.hidden&&e.getClientRects?.().length&&globalThis.getComputedStyle?.(e).visibility!=='hidden').map(e=>({...e.getBoundingClientRect().toJSON(),weight:80}));
+  bubble.balloonActors=[{name:chat.speaker.profile.name,...person},...others.map(p=>({...p}))].filter(p=>p.face);
+  placement.place({person,obstacles:[...others.flatMap(p=>[p.face,p.body]),...controls],viewport:balloonViewport(rect,{top:56,element:bubble}),key:chat.speaker.profile.name,text:chat.text,line,dt,reduced:!!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches});
+ },hide(){bubble.hidden=true;placement.reset();}};
 }
