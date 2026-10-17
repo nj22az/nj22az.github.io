@@ -4,7 +4,7 @@ import {canonicalHomeId} from './households.js';
 import {KITAHAMA,KITAHAMA_FLATS,plotGate} from '../world/kitahama-layout.js';
 import {YARD_HOMES} from '../world/yard-homes-layout.js';
 import {NISHI,EAST_BACK,EAST_ROW,YARD_ROW} from '../world/okinawa/layout.js';
-import {FUMOTO} from '../world/fumoto-layout.js';
+
 import {HARBOUR_OFFICE} from '../world/business-layout.js';
 import {KOBAN} from '../world/koban-layout.js';
 import {SCHOOL} from '../world/school-layout.js';
@@ -41,8 +41,8 @@ const makeTarget=(id,title,p,extra={})=>finite(p)?{id,title,...p,door:[p.x,p.y,p
 function homeGeometry(h){
  if(h.retired)return null;
  const id=h.home;
- const plot=KITAHAMA.plots.find(p=>p.id===id)||FUMOTO.plots.find(p=>p.id===id)||NISHI.plots.find(p=>p.id===id)||EAST_BACK.plots.find(p=>p.id===id);
- if(plot){const g=plotGate(plot);return {...point(g.door),y:id.startsWith('kitahama-')?KITAHAMA.y+.02:id.startsWith('fumoto-')?FUMOTO.y+.02:.02,entryFacing:g.inward};}
+ const plot=KITAHAMA.plots.find(p=>p.id===id)||NISHI.plots.find(p=>p.id===id)||EAST_BACK.plots.find(p=>p.id===id);
+ if(plot){const g=plotGate(plot);return {...point(g.door),y:id.startsWith('kitahama-')?KITAHAMA.y+.02:.02,entryFacing:g.inward};}
  const unit=KITAHAMA_FLATS.find(p=>p.id===id);
  if(unit)return {...point(unit.approachPosition),entrancePosition:[...unit.door],entryFacing:unit.approachFacing};
  if(YARD_HOMES[id])return {...point(YARD_HOMES[id].door),y:.02,entryFacing:YARD_HOMES[id].inward};

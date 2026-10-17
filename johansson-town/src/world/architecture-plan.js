@@ -1,5 +1,5 @@
 import {SHED_CIRCUIT} from './fujita-layout.js';
-import {FUMOTO} from './fumoto-layout.js';
+
 import {SCHOOL} from './school-layout.js';
 import {KOBAN} from './koban-layout.js';
 import {KITAHAMA,KITAHAMA_LANES} from './kitahama-layout.js';
@@ -18,19 +18,8 @@ export const TOWN_WALK_PLOTS=Object.freeze([
  {...plot('fish-auction',20.8,29.2,-46.8,-40.6),walkBounds:[19.3,30.5,-48.3,-36.9]},
  plot('ice-plant',31.8,36.2,-46.4,-40.4),
  plot('fuel-depot',36.9,42.1,-35.1,-29.9),
- plot('west-lighthouse',-55.6,-52.4,202.4,205.6),
- plot('west-field-shed',-20.6,-17.4,111.7,114.3),
- plot('east-field-shed',106.7,109.3,178.4,181.6),
  plot('park-shrine',10.225,11.375,-35.025,-34.175),
  plot('town-hall-bike-shed',34,37.1,25.3,28),
- plot('oshiro-farmhouse',-43.7,-34.3,112.8,121.2),
- ...FUMOTO.plots,
- plot('fumoto-store',35.9,43.4,190.4,203.2),
- plot('radio-station',30,40.1,158.3,168.2),
- plot('hoshizaki-family',123.5,130.5,175,181),
- plot('hoshizaki-store',122.5,129.5,199,205),
- plot('hoshizaki-guesthouse',145.5,152.5,197,203),
- plot('hoshizaki-net-shed',145.5,150.5,177.5,182.5),
  {...plot('sakura',-20.2,-7.45,-34.43,-20.17),walkBounds:[-22.6,-4.35,-35.93,-18.67]},
  {...plot('minato-and-ramen',-17.1,-7.8,-16.54,-6.1),walkBounds:[-18.6,-4.35,-18.04,-4.6]},
  plot('koban',KOBAN.x-KOBAN.w/2-.06,KOBAN.x+KOBAN.w/2+.06,KOBAN.z-KOBAN.d/2-.06,KOBAN.z+KOBAN.d/2+.06),
@@ -57,7 +46,7 @@ export const ARCHITECTURE_ROUTES=[
  {id:'main-west-footway-extension',width:2.55,surface:'stone',points:[[-6.275,20.5],[-6.275,46]]},
  {id:'main-east-footway-extension',width:3.6,surface:'stone',points:[[1.3,20.5],[1.3,46]]},
  ...KITAHAMA_LANES.map((p,i)=>{const horizontal=p.maxX-p.minX>p.maxZ-p.minZ,w=horizontal?p.maxZ-p.minZ:p.maxX-p.minX;return {id:'planned-neighbourhood-lane-'+i,width:w,surface:'stone',points:horizontal?[[p.minX+w/2,(p.minZ+p.maxZ)/2],[p.maxX-w/2,(p.minZ+p.maxZ)/2]]:[[(p.minX+p.maxX)/2,p.minZ+w/2],[(p.minX+p.maxX)/2,p.maxZ-w/2]]};}),
- {id:'north-residential-cross-lane',width:3,surface:'stone',points:[[-34.5,89.5],[4.5,89.5]]},
+ {id:'north-residential-cross-lane',width:3,surface:'stone',points:[[-21.5,89.5],[4.5,89.5]]},
  ...TOWN_WALK_PLOTS.map(p=>({id:'building-circuit-'+p.id,width:2,surface:'stone',points:plotCircuit(p)})),
  // The common service lanes connect every shop's rear circuit to the quay and town.
  {id:'east-service-walk',width:2.4,surface:'stone',points:[[14.9,-13],[14.9,7],[14.9,24],[1.25,24]]},
