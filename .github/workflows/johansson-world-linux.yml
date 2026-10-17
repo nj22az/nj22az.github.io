@@ -1,0 +1,61 @@
+name: Johansson World Linux release
+on:
+  push:
+    branches: [codex/johansson-world-steam-deck]
+    paths: ['steam-deck/**', 'johansson-town/**', '.github/workflows/johansson-world-linux.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: johansson-world-linux-release
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Build tools
+        run: |
+          npm install --prefix .world-build --ignore-scripts --no-audit --no-fund vite@7.3.6 spectorjs@0.9.33
+          ln -s ../.world-build/node_modules johansson-town/node_modules
+          cd steam-deck
+          npm ci --no-audit --no-fund
+          node node_modules/electron/install.js
+      - name: Tests and world runtime
+        run: |
+          node --test johansson-town/tests/harbour-festival.test.mjs johansson-town/tests/detail-stream.test.mjs johansson-town/tests/context-actions.test.mjs
+          npm test --prefix steam-deck
+          cd johansson-town
+          node scripts/build-runtime.mjs
+      - name: Package complete offline island
+        run: npm run package --prefix steam-deck
+      - name: Start real offline Linux application
+        env:
+          WORLD_SCREENSHOT: steam-deck/dist/linux-world.png
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libasound2t64 libnss3 libgbm1
+          timeout 300 xvfb-run -a steam-deck/dist/johansson-world/JohanssonWorld --no-sandbox --windowed --smoke --use-angle=swiftshader --enable-unsafe-swiftshader --disable-dev-shm-usage
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: linux-world-verification
+          path: steam-deck/dist/linux-world*.png
+          if-no-files-found: ignore
+      - name: Publish playable Linux prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(node -p "require('./steam-deck/package.json').version")
+          tag="johansson-world-linux-v$version"
+          gh release view "$tag" >/dev/null 2>&1 || gh release create "$tag" --target "$GITHUB_SHA" --prerelease --title "Johansson World Linux $version" --notes "Offline island edition for Steam Deck and Linux. Includes local saves, controller pause/HUD controls, Harbour Festival side quest and an in-game update channel. Desktop application uses the existing Three.js world. Physical Steam Deck performance acceptance is pending."
+          gh release upload "$tag" steam-deck/dist/johansson-world-linux-x64.tar.gz steam-deck/dist/latest-linux.json steam-deck/dist/SHA256SUMS --clobber
+      - name: Verify public installer and release checksum
+        run: |
+          HOME="$RUNNER_TEMP/install-smoke" XDG_DATA_HOME="$RUNNER_TEMP/install-smoke/data" sh steam-deck/install.sh
+          test -x "$RUNNER_TEMP/install-smoke/.local/bin/johansson-world"
+          test -x "$RUNNER_TEMP/install-smoke/data/johansson-world/current/JohanssonWorld"
