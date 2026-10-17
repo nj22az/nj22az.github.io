@@ -20,7 +20,7 @@ test('Mr Fujita walks to his berth at 23:30 and returns at six without beer or a
 test('night boot is in the berth with the same resident',()=>{const {shed}=make();shed.tick(0,90);assert.equal(shed.routine.state,'sleeping');for(let i=0;i<20;i++)shed.tick(.1,90);assert.equal(shed.fujita.parent,shed.group);assert.ok(!shed.boat.group.getObjectByName('Mr Fujita'));shed.dispose();});
 test('pier, gangway and every walking segment are clear',()=>{
  const {shed,colliders}=make(),G=HOUSEBOAT.gangway,path=fujitaBoatRoute(PORT_SHED.chair);
- for(let x=G.minX+.25;x<G.maxX-.2;x+=.15){assert.ok(routeAt(x,-54.2,.2));assert.equal(groundHeight(x,-54.2),x>=-38.3?0:HOUSEBOAT.deckY);}
+ for(let x=G.minX+.25;x<G.maxX-.2;x+=.15){assert.ok(routeAt(x,-54.2,.2));assert.equal(groundHeight(x,-54.2),HOUSEBOAT.deckY);}
  for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i],n=Math.ceil(Math.hypot(b[0]-a[0],b[2]-a[2])/.05);for(let k=1;k<=n;k++){const x=a[0]+(b[0]-a[0])*k/n,z=a[2]+(b[2]-a[2])*k/n;if(i===1&&z<-56.65)continue;assert.ok(routeAt(x,z,.2),`surface ${x},${z}`);assert.ok(!colliders.some(c=>circleHitsRect(x,z,.2,c)),`clear ${x},${z}`);}}
  for(let z=-64;z<-50;z+=.1)assert.ok(!colliders.some(c=>circleHitsRect(-35.3,z,.3,c)));shed.dispose();
 });

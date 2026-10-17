@@ -34,10 +34,10 @@ export function buildKitahamaQuarter(kit,solid,{anchor,onAction,vending},{across
  // ---- The pole line: along the spine from the cross lane, then up Fukugi Lane.
  const poles=[];
  const pole=(x,z,o={})=>{const p=utilityPole(kit,x,z,o);solid(p.collider);poles.push(p);return p;};
- const spine=[27.5,6].map((x,i)=>pole(x,K.spine.maxZ-.25,{face:Math.PI,transformer:i===1,lamp:true,seed:240+i*2}));
+ const spine=[18.5,-9].map((x,i)=>pole(x,K.spine.maxZ-.25,{face:Math.PI,transformer:i===1,lamp:true,seed:240+i*2}));
  if(across[0])wiresBetween(kit,across[0],spine[0]);
  for(let i=0;i<spine.length-1;i++)wiresBetween(kit,spine[i],spine[i+1]);
- const north=pole(K.fukugiLane.minX+.25,89,{face:Math.PI/2,transformer:false,lamp:true,seed:252});
+ const north=pole(K.fukugiLane.maxX-.25,51,{face:Math.PI/2,transformer:false,lamp:true,seed:252});
  wiresBetween(kit,spine[0],north,{sag:.5});
  const nearest=(x,z)=>poles.reduce((a,b)=>Math.hypot(b.anchors[0].x-x,b.anchors[0].z-z)<Math.hypot(a.anchors[0].x-x,a.anchors[0].z-z)?b:a);
  for(const p of K.plots.filter(q=>Number(q.id.split('-')[1])>=6)){

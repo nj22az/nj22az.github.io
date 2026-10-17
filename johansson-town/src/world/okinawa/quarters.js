@@ -523,12 +523,13 @@ function buildWires(kit,solid){
  */
 function buildKitahama(kit,solid,ctx){
  const K=KITAHAMA,lane=GROUND_LAYER.lane;
- for(const L of KITAHAMA_LANES){
-  kit.block(L.minX,L.maxX,lane-.06,lane,L.minZ,L.maxZ,GROUND.concrete);
-  const alongZ=L.maxZ-L.minZ>L.maxX-L.minX;
-  if(alongZ)kit.block(L.maxX-.28,L.maxX,lane,lane+.015,L.minZ,L.maxZ,0x8d887d);
-  else kit.block(L.minX,L.maxX,lane,lane+.015,L.minZ,L.minZ+.28,0x8d887d);
+ // Partition the lane union once: overlapping rectangles used to make every junction flicker.
+ const xs=[...new Set(KITAHAMA_LANES.flatMap(L=>[L.minX,L.maxX]))].sort((a,b)=>a-b),zs=[...new Set(KITAHAMA_LANES.flatMap(L=>[L.minZ,L.maxZ]))].sort((a,b)=>a-b);
+ for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++){
+  const x=(xs[i-1]+xs[i])/2,z=(zs[j-1]+zs[j])/2;
+  if(KITAHAMA_LANES.some(L=>x>L.minX&&x<L.maxX&&z>L.minZ&&z<L.maxZ))kit.block(xs[i-1],xs[i],lane-.06,lane,zs[j-1],zs[j],GROUND.concrete);
  }
+
  K.plots.forEach((p,i)=>walledHouse(kit,solid,p,{...ctx,seed:30+i,windbreak:p.gate==='north'?'south':p.gate==='south'?'north':p.gate==='west'?'east':'west'}));
  // The house to let: a board on the gatepost and the shutters closed.
  {const p=K.plots.find(q=>q.romaji==='To let'),x=(p.minX+p.maxX)/2;
@@ -549,9 +550,9 @@ function buildKitahama(kit,solid,ctx){
  // edge: set outside the edge, they stood inside the garden walls.
  const poles=[];
  const pole=(x,z,o={})=>{const p=utilityPole(kit,x,z,o);solid(p.collider);poles.push(p);return p;};
- const up=[30,60].map((z,i)=>pole(K.approach.minX+.25,z,{face:Math.PI/2,transformer:i===1,lamp:true,seed:200+i*3}));
+ const up=[30,51].map((z,i)=>pole(K.approach.minX+.25,z,{face:Math.PI/2,transformer:i===1,lamp:true,seed:200+i*3}));
  wiresBetween(kit,up[0],up[1]);
- const across=[pole(42,K.lane.maxZ-.25,{face:Math.PI,transformer:false,lamp:true,seed:211})];
+ const across=[pole(50,K.lane.maxZ-.25,{face:Math.PI,transformer:false,lamp:true,seed:211})];
  wiresBetween(kit,up[1],across[0],{sag:.5});
  for(const p of K.plots.filter(q=>Number(q.id.split('-')[1])<6)){const {door}=plotGate(p,0);const near=across.reduce((a,b)=>Math.abs(b.anchors[0].x-door[0])<Math.abs(a.anchors[0].x-door[0])?b:a);
   serviceDrop(kit,near,kit.point(door[0]+1.5,2.6,p.gate==='north'?p.minZ+3.2:p.maxZ-3.2).toArray());}

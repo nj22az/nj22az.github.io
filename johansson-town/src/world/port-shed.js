@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {createAvatarActor,updateAvatarActor} from '../avatars/actors.js';
 import {reach} from '../avatars/consume.js';
 import {buildBeerBottle} from '../people/izakaya-serving-visuals.js';
@@ -28,7 +29,7 @@ export {tvProgramme} from './fujita-day.js';
 export const PORT_SHED=Object.freeze({id:'fujita-shed',x:-36.95,z:-58,width:3.6,depth:2.4,y:0,
  chair:[-36.6,-57.2],tv:[-36.8,-59.35]});
 /** The pier's timber deck the shed stands on (measured from the harbour's own deck). */
-export const SHED_PIER=Object.freeze({minX:-38.25,maxX:-33.75,minZ:-64.3,maxZ:-48});
+export const SHED_PIER=Object.freeze({minX:-38.25,maxX:-35,minZ:-60,maxZ:-53.75});
 const S=PORT_SHED;
 
 function corrugated(){
@@ -209,12 +210,23 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
  colliders.push({x:S.tv[0],z:S.tv[1],w:.62,d:.48,height:.95,portShed:true},{x:S.chair[0],z:S.chair[1],w:.7,d:.7,height:.9,portShed:true});
  colliders.push({x:wx+hx-.35,z:wz-hz-.3,w:.55,d:.4,height:.9,portShed:true});
 
- // ---- The pier under it: timber piles along both edges into the water, and a fender
- // beam, so the deck reads as a pier standing in the harbour rather than a slab on it.
- {const P=SHED_PIER,pier=new THREE.Group();pier.name='Pier piles';parent.add(pier);
-  const pile=new THREE.CylinderGeometry(.13,.15,1.7,8),pileMat=std(0x4a3b2c,.95),beam=std(0x5a4632,.9);
-  for(let z=P.maxZ-1.5;z>=P.minZ;z-=2.4)for(const x of [P.minX+.05,P.maxX-.05]){const m=new THREE.Mesh(pile,pileMat);m.position.set(x,-.82,z);m.castShadow=shadows;pier.add(m);}
-  for(const x of [P.minX-.04,P.maxX+.04]){const b=new THREE.Mesh(new THREE.BoxGeometry(.12,.22,P.maxZ-P.minZ-1),beam);b.position.set(x,-.1,(P.minZ+P.maxZ)/2-.5);pier.add(b);}
+ // Timber access only: the old broad L-shaped slab and its unused seaward spur are retired.
+ {const P=SHED_PIER,pier=new THREE.Group();pier.name='Fujita timber boardwalk';parent.add(pier);
+  const plank=std(0x896b4c,.94),beam=std(0x59432f,.95),pileMat=std(0x49392c,.96);
+  const boxes=[];
+  const timber=(name,w,h,d,x,y,z,material)=>{const g=new THREE.BoxGeometry(w,h,d);g.translate(x,y,z);boxes.push({name,g,material});};
+  const deck=(x0,x1,z0,z1)=>{
+   const count=Math.ceil((z1-z0)/.18),pitch=(z1-z0)/count;
+   for(let i=0;i<count;i++){
+    const z=z0+(i+.5)*pitch,underShed=z>=S.z-S.width/2&&z<=S.z+S.width/2;
+    const spans=underShed?[[x0,Math.min(x1,S.x-S.depth/2)],[Math.max(x0,S.x+S.depth/2),x1]]:[[x0,x1]];
+    for(const [a,b] of spans)if(b>a)timber('Weathered board',b-a,.08,pitch-.008,(a+b)/2,.02,z,plank);
+   }
+   for(const x of [x0+.18,x1-.18])timber('Timber bearer',.14,.2,z1-z0,x,-.12,(z0+z1)/2,beam);
+   for(let z=z0+.35;z<z1;z+=2.1)for(const x of [x0+.18,x1-.18]){const post=new THREE.Mesh(new THREE.CylinderGeometry(.11,.13,1.6,8),pileMat);post.position.set(x,-.78,z);post.name='Timber support pile';post.castShadow=shadows;pier.add(post);}
+  };
+  deck(-38.45,-36.25,P.maxZ,-49.3);deck(P.minX,P.maxX,P.minZ,P.maxZ);
+  for(const material of [plank,beam]){const parts=boxes.filter(b=>b.material===material),mesh=new THREE.Mesh(mergeGeometries(parts.map(b=>b.g)),material);mesh.name=material===plank?'Boardwalk planks':'Boardwalk bearers';mesh.receiveShadow=true;mesh.castShadow=shadows;pier.add(mesh);parts.forEach(b=>b.g.dispose());}
  }
  // ---- Mr Fujita, in his chair.
  const fujita=new THREE.Group();fujita.name='Mr Fujita';fujita.userData.name='Mr Fujita';fujita.userData.walkSurface=false;

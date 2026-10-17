@@ -77,7 +77,7 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],homes=[],people=[],pl
  const named=new Map([['market','Sakura'],['harbour-park','Harbour Park'],['onsen','Umi-no-yu'],['rainflower-florist','Rainflower Florist'],['nakamura','Nakamura / Blue Coral'],['ferry-terminal','Minato ferry'],['koban','Police box'],['warehouse','Harbour Warehouse']]);
  for(const s of destinations)if(named.has(s.id))label(named.get(s.id),s.x??s.side*11.8,s.z);
  if(showHomes&&scale>4)for(const home of homes)label(home.address||home.title,home.x,home.z,{size:12,colour:'#765246'});
- if(scale<5){label('Kitahama',36,75,{size:15});label('Nishi-machi',-35,-5);}
+ if(scale<5){label('Kitahama',9,52,{size:15});label('Nishi-machi',-35,-5);}
  ctx.restore();
  ctx.fillStyle='#214c50';ctx.font='700 16px sans-serif';ctx.fillText(mode==='world'?'Johansson World':'Minato · local walking map',pad,25);
  ctx.font='700 13px sans-serif';ctx.fillText('N ↑',w-pad-36,25);

@@ -50,7 +50,7 @@ export const ROUTES = [
  {id:'shop-crossing',width:3,surface:'stone',points:[[MAIN_ROAD.pavementWest,SHOP_CROSSING_Z],[MAIN_ROAD.pavementEast,SHOP_CROSSING_Z]]},
  {id:'south-shop-crossing',width:3,surface:'stone',points:[[MAIN_ROAD.pavementWest,-18],[MAIN_ROAD.pavementEast,-18]]},
  {id:'east-alley',width:3,surface:'stone',points:[[0,18.4],[8.4,18.4]]},
- {id:'second-pier',width:4.6,surface:'wood',points:[[-36,-44],[-36,-62],[-26,-62]]},
+ {id:'second-pier',width:2.2,surface:'wood',points:[[-37.35,-46.2],[-37.35,-55.5]]},
  {id:'izakaya-door',width:3,surface:'asphalt',points:IZAKAYA_LANE},
  {id:'ramen-door',width:2.8,surface:'stone',points:[[0,DINING.ramenDoor[1]],DINING.ramenDoor]},
  {id:'office-door',width:2.6,surface:'stone',points:[[13.3,-36],[13.3,-37.55]]},
@@ -163,6 +163,7 @@ export function planHeight(x,z){
   const street=x>=MAIN_ROAD.pavementWest&&x<=MAIN_ROAD.pavementEast&&z>=MAIN_ROAD.minZ&&z<=MAIN_ROAD.maxZ;
   const station=x>=BUS_STATION.minX&&x<=BUS_STATION.maxX&&z>=BUS_STATION.minZ&&z<=BUS_STATION.maxZ;
   if(street||station||westYardAt(x,z)||nishiAt(x,z)||schoolAt(x,z))return 0;
+  if(kitahamaLaneAt(x,z))return KITAHAMA.y+GROUND_LAYER.lane;
   const garden=coastalSurface(x,z);if(garden?.id==='harbour-park')return garden.y;
   const airport=airportSurface(x,z);if(airport)return airport.y;
   const ramp=beachAccessHeight(x,z);if(ramp!==null)return ramp;

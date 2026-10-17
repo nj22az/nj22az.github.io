@@ -1,3 +1,4 @@
+import {neighbourhoodHeight} from './neighbourhood-ground.js';
 import {inShoppingLane,shoppingLaneGroundHeight} from './shopping-lane-plan.js';
 import {parkPathAt} from './harbour-park-plan.js';
 import {inGarden,gardenHeight,gardenPondAt,gardenGroundHeight,GARDEN} from './garden-layout.js';
@@ -17,6 +18,8 @@ export function coastalSurface(x,z){
  const sand=beachHeight(x,z);
  if(sand!==null&&sand>=BEACH.waterY+.025)return {id:BEACH.id,surface:BEACH.surface,y:sand};
  if(inGarden(x,z)){const y=gardenHeight(x,z);if(gardenPondAt(x,z)&&y<0)return null;return {id:GARDEN.id,surface:parkPathAt(x,z)?.surface||'grass',y};}
+ const neighbourhood=onIslandLand(x,z)?neighbourhoodHeight(x,z):null;
+ if(neighbourhood!==null)return {id:'central-neighbourhood',surface:'grass',y:neighbourhood};
  if(inShoppingLane(x,z))return {id:'kitahama-connector',surface:islandRouteAt(x,z)?.surface||'grass',y:shoppingLaneGroundHeight(x,z)??0};
  const heights=[gardenGroundHeight(x,z),shoppingLaneGroundHeight(x,z)].filter(h=>h!==null),park=heights.length?Math.max(...heights):null;
  if(park!=null)return {id:'garden-approach',surface:islandRouteAt(x,z)?.surface||'grass',y:park};

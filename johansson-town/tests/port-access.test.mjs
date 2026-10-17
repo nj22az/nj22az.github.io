@@ -12,7 +12,7 @@ test('you can walk from the quay yard onto the pier and into Mr Fujita’s shed'
  const {PORT_SHED,SHED_PIER}=await import('../src/world/port-shed.js');
  const world=createTown({scene:new THREE.Scene(),sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));
- const nav=createNavigation(blocked);
+ const nav=createNavigation(blocked,{step:.5,bounds:{minX:-40,maxX:-7,minZ:-61,maxZ:-35}});
  const door=world.warehouse.place.door;
  const goal={x:PORT_SHED.x-.55,z:PORT_SHED.z+.4};
  const path=nav.path({x:door[0],z:door[2]},goal);

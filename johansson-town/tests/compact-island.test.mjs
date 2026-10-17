@@ -7,6 +7,8 @@ import {groundHeight,planHeight,setWalkSurface,routeAt} from '../src/world/layou
 import {createWalkSurface} from '../src/world/walk-surface.js';
 import {COAST_BOUNDS} from '../src/world/island-coast.js';
 import {COAST_WALK,ISLAND_ROUTES} from '../src/world/island-plan.js';
+import {KITAHAMA,plotGate} from '../src/world/kitahama-layout.js';
+import {SCHOOL} from '../src/world/school-layout.js';
 import {onIslandLand} from '../src/world/coastal-ground.js';
 
 test('the complete island circuit and Main Street residential connection are clear at walking radius',async()=>{
@@ -29,5 +31,31 @@ test('the complete island circuit and Main Street residential connection are cle
     }
    }
   }
+  // Relocated blocks and town-hall entrances must belong to the same walkable component.
+  const minX=-40,minZ=18,cell=.5,nx=191,nz=125,cache=new Map();
+  const sample=(i,j)=>{
+   const key=j*nx+i;if(cache.has(key))return cache.get(key);
+   const x=minX+i*cell,z=minZ+j*cell,y=groundHeight(x,z),v={x,z,y,blocked:!routeAt(x,z,.32)||world.colliders.some(c=>standingHitsRect(x,z,.32,y,c))};cache.set(key,v);return v;
+  };
+  const start=[Math.round((1.9-minX)/cell),Math.round((18.5-minZ)/cell)],queue=[start],seen=new Set([start[1]*nx+start[0]]);
+  for(let at=0;at<queue.length;at++){
+   const [i,j]=queue[at],a=sample(i,j);
+   for(const [di,dj] of [[1,0],[-1,0],[0,1],[0,-1]]){
+    const ii=i+di,jj=j+dj,key=jj*nx+ii;if(ii<0||jj<0||ii>=nx||jj>=nz||seen.has(key))continue;
+    const b=sample(ii,jj);if(b.blocked||Math.abs(b.y-a.y)>.24)continue;
+    const x=(a.x+b.x)/2,z=(a.z+b.z)/2,y=groundHeight(x,z);if(!routeAt(x,z,.32)||world.colliders.some(c=>standingHitsRect(x,z,.32,y,c)))continue;
+    seen.add(key);queue.push([ii,jj]);
+   }
+  }
+  const targets=[...KITAHAMA.plots.map(p=>({id:p.id,point:plotGate(p).door})),{id:'town hall',point:[SCHOOL.genkan.x,SCHOOL.building.minZ-1.4]},{id:'power house',point:SCHOOL.powerHouse.door}];
+  for(const {id,point:[x,z]} of targets){
+   assert.deepEqual(world.colliders.filter(c=>standingHitsRect(x,z,.32,groundHeight(x,z),c)).map(c=>c.id),[],id+' doorway clear');
+   assert.ok(queue.some(([i,j])=>Math.hypot(minX+i*cell-x,minZ+j*cell-z)<.7),id+' reachable from Main Street');
+  }
+  assert.ok(KITAHAMA.plots.filter(p=>p.minX<12&&p.minZ<50).length>=7,'existing houses occupy the former empty central plots');
+  assert.ok(SCHOOL.seawall.south<46,'the oversized former school grounds are shortened');
+  assert.equal(routeAt(-26,-62,.32),null,'the obsolete seaward platform no longer admits walking');
+  for(let z=-46.2;z>=-55.4;z-=.1){const x=-37.35,y=groundHeight(x,z);assert.ok(routeAt(x,z,.32),'Fujita boardwalk ground');assert.deepEqual(world.colliders.filter(c=>standingHitsRect(x,z,.32,y,c)).map(c=>c.id),[],'Fujita boardwalk clear');}
+
  }finally{setWalkSurface(null);}
 });

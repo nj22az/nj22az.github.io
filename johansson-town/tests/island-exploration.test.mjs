@@ -34,7 +34,7 @@ test('dry ground around the island is admitted and the sea remains blocked',()=>
  for(const p of [[-20,32],[-31,32],[43,33],[44,55],[8,54]])assert.equal(townBoundsBlocked(...p,.32),false,'Unbuilt dry land '+p);
  for(const p of [[-41,0],[48,10],[45.9,10],[48,40],[12,-51],[0,315]])assert.equal(townBoundsBlocked(...p,.32),true,'Sea '+p);
  assert.equal(townBoundsBlocked(45.5,10,.32),true,'The whole body must stay on dry sand');
- assert.equal(groundHeight(47,50),-.4,'Feet rest on the visible coastal slab');assert.ok(Math.abs(groundHeight(44,55)-(-.4+.04))<1e-9,'Feet rest on the Kitahama lane, laid on the island ground');
+ assert.equal(groundHeight(47,50),0,'Feet rest on the new town-level neighbourhood ground');assert.ok(Math.abs(groundHeight(44,55)-.04)<1e-9,'Feet rest on the Kitahama lane at the shared town datum');
  assert.ok(beachHeight(47,0)<BEACH.waterY,'Underwater sand stays outside walking limits');
 });
 

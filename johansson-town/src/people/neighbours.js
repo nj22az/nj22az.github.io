@@ -1,3 +1,4 @@
+import {SCHOOL} from '../world/school-layout.js';
 import {groundHeight} from '../world/layout.js';
 import {createNavigation} from './navmesh.js';
 import {airportWorld} from '../world/airport-ground.js';
@@ -51,7 +52,7 @@ const ALL_NEIGHBOURS=Object.freeze([
    "Welcome! Zenzai? Kintoki beans, cooked since six this morning. The ice is from the plant on the quay, shaved to order. ¥250.",
    'Thuan-chan comes on Sundays and orders the small one and then eats half of mine. Tell her I said so.',
    'Since 1972 on this corner. Zenzai, sata andagi and Blue Coral scoops all come from this counter now. Mai and Vy usually arrive together after school.']},
- {name:'Mr Shimabukuro',look:'Mr Tanabe',height:1.66,role:'minding the generators',at:[20.7,31.2],y:0,face:[1,0],pose:'Idle',hours:[[H(7),H(19)]],
+ {name:'Mr Shimabukuro',look:'Mr Tanabe',height:1.66,role:'minding the generators',at:[SCHOOL.powerHouse.door[0]+.6,SCHOOL.powerHouse.door[1]-.9],y:0,face:[1,0],pose:'Idle',hours:[[H(7),H(19)]],
   lines:[
    'Hear that? Two diesels, one running, one resting. Every light on this island comes through that switchboard. Mind the yellow line.',
    'I used to cut hair on Main Street. Then the town needed somebody who understood engines more than it needed another barber. The post office has my old shop now; I still live upstairs.',
