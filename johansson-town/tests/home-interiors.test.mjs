@@ -21,9 +21,10 @@ function residentRoom(name,{material=null,castShadow=true,receiveShadow=true,sit
  return {room,layout,collides};
 }
 for(const household of HOUSEHOLDS.filter(h=>h.residents.length>1)){
- test(household.residents.join(' / ')+' have furniture and routines in the same shared room',()=>{
+ const walkingRoommates=household.residents.filter(name=>RESIDENTS.some(p=>p.name===name));
+ test(walkingRoommates.join(' / ')+' have furniture and routines in the same shared room',()=>{
   const {room,layout,collides}=residentRoom(household.residents[0]);
-  for(const name of household.residents){
+  for(const name of walkingRoommates){
    const own=layout.homeLayouts[name],b=layout.bounds,bed=room.getObjectByName(name+' futon');
    assert.ok(bed,name+' has bedding');assert.equal(own.bed[0],bed.position.x,'sleep pose uses the rendered bed');
    for(const point of [own.bed,own.bedside,own.table,own.door,own.cover.position,own.hatHook.position])assert.ok(point[0]>=b.minX&&point[0]<=b.maxX&&point[2]>=b.minZ&&point[2]<=b.maxZ,name+' routine is inside this home');
@@ -32,11 +33,11 @@ for(const household of HOUSEHOLDS.filter(h=>h.residents.length>1)){
    assert.equal(collides(own.door[0],own.door[2]),false,name+' can leave');
   }
  });
- test(household.residents.join(' / ')+' sleep, walk to breakfast and leave their actual house at 60 Hz',()=>{
+ test(walkingRoommates.join(' / ')+' sleep, walk to breakfast and leave their actual house at 60 Hz',()=>{
   const site={id:household.residents[0]==='Thuan'?'resident-home-thuan':household.id,title:household.title,homeOwner:household.residents[0],homeOwners:household.residents,
    ...(household.residents[0]==='Thuan'?{plot:'kitahama-1',houseKind:'red-tile'}:{})};
   const {layout,collides}=residentRoom(household.residents[0],{site});
-  for(const name of household.residents){
+  for(const name of walkingRoommates){
    const street=new THREE.Group(),parent=new THREE.Group(),profile=RESIDENTS.find(p=>p.name===name),g=new THREE.Group();
    g.userData={name,hit:{inside:false},indoors:'home'};g.position.set(profile.home[0],0,profile.home[1]);street.add(g);
    const world={people:[{profile,g}],homes:new Map()},guests=createHomeResidents({world,parent,collides}),{wake}=sleepHours(profile);

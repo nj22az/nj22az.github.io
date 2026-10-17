@@ -115,6 +115,12 @@ import {createNeighbours} from './people/neighbours.js';
 import {sakuraClerkAt} from './commerce/sakura-rota.js';
 import {createFerryCrewAboard} from './people/ferry-crew-aboard.js';
 import {drawTownMap} from './world/map.js?snappy=1';
+import {residentCards,canonicalHomeSites} from './people/home-directory.js';
+import {renderTownDirectory} from './ui/town-directory.js';
+import {createWalkingRoute} from './navigation/walking-route.js';
+import {HARBOUR_PARK_ALIASES} from './world/harbour-park-plan.js';
+import {MAIN_ROAD,SHOP_CROSSING_Z} from './world/main-road.js';
+import {AIRPORT_LANDING,AIRPORT_LANDING_HEIGHT} from './world/airport-ground.js';
 import * as THREE from '../vendor/three.module.js';
 import { createTown } from './world/town.js?snappy=1';
 import { createActivities } from '../activities.js?snappy=1';
@@ -401,6 +407,7 @@ let stickHintUntil=0;
 const pressedControls=new Set();
 let neighbours=null,ferryCrew=null,islandPlay=null;let photoOrigin=null,photoReturning=false;
 let conversationName=null,conversationCamera=null,navigationTarget=null,beerService=null,tipsy=0,tipsyClock=null;
+let navigationPlan=null,navigationPath=[],navigationLeg=null,navigationIndex=1,navigationGeneration=0,navigationRecheck=0,navigationCorridorCheck=0,navigationStarted=0,directoryView=null,directoryResidents=[],mapMode='local';
 let activeRoomLayout=null;
 let photoStudio=null,photoLoading=false,spawnScene=null;
 let concert=null,concertLoading=false;
@@ -617,7 +624,7 @@ if(benchSeat){
   seated=true;world.spawn=benchSeat.stand;
 }else if(konbiniDoor){player.position.copy(konbiniDoor);yaw=konbini.streetFrontage?.yaw??Math.PI/2;world.spawn=player.position.toArray();}
 else if(world.spawn)player.position.set(...world.spawn);
-activities=createActivities({say,onKaraoke:openKaraoke,onOpen:()=>toggleDir(false),onOutfit:on=>wearSwim(on),getOutfit:()=>swimwear,getMassageChair:()=>massageChair(),onMove:name=>{johansson?.play(name);},getBeerTable:()=>beerService?{drink:beerService.drink,dish:beerService.dish,order:beerService.pending,naoHere:!!world.people.find(p=>p.profile.name==='Thao'&&p.g.userData.inIzakaya&&p.g.visible)}:null,onOrderDrink:kind=>!!beerService?.order(kind,parkSeat?.izakaya),getTipsy:()=>tipsy,onSip:()=>sipDrink(),onEat:()=>eatDish(),onSnack:item=>{const inv=activities.state.inventory,i=inv.indexOf(item);if(i<0)return false;inv.splice(i,1);activities.save();activities.close();hands.bite(SPECIAL_BY_NAME[item]?.bite||(HOT_SNACKS.some(snack=>snack.id==='nikuman'&&snack.name===item)?'bun':'rice'));johansson?.play(seated?'SitEat':'Eat');say(item+'. Still warm.',3);return true;},onTreat:name=>{const g=world.people.find(p=>p.profile.name===name)?.g;if(g){g.userData.residentSpeech={text:"Cheers!",until:minutes+4};characters?.gesture?.(g);}},onInspectModel:item=>inspector.open(item),onInspectShopGood:item=>{resetInput();document.exitPointerLock?.();(itemViewer??=createItemViewer()).open(item);},getResidentLocations:()=>castAI?.snapshot?.(),getTableService:()=>current?.id==='ramen'&&Number.isInteger(parkSeat?.ramenSeatId)?ramenPlayerService:null,onStand:standUp,onConversation:setConversation,onDialoguePhase,getMinutes:()=>minutes,getSocialContext:()=>({inside:current?.id,thuanAvailable:sakuraClerkAt(minutes)==='Grandmother Sakurai'||world.people.some(p=>p.profile.name===sakuraClerkAt(minutes)&&p.g.userData.inMarket&&p.g.visible&&!p.g.userData.sleeping),names:current?.id==='izakaya'?izakayaGuests.sync(minutes):current?.id==='ramen'?ramenGuests.sync(minutes):[]}),onMap:()=>{const c=document.createElement("canvas");c.width=680;c.height=640;c.style.width="100%";c.style.height="auto";c.style.position="static";c.setAttribute("aria-label","Folded visitor map, Minato Machi, 1997");drawTownMap(c.getContext("2d"),c.width,c.height,{sites:SITES,landmarks:world.landmarks,people:world.people,player:current?doors.get(current.id):player.position,yaw,visited:activities.state.visited});return c;},onPhone:()=>{const p=world.people.find(p=>p.g.userData.name==='Harbour master');if(p&&(p.g.position.z<-37)){characters.gesture(p.g);activities.close();say('The harbour master answers from the quay.',4);return true;}return false;},onPurchase:name=>{const p=new THREE.Vector3();active?.object?.getWorldPosition(p);hands.offer(name,p);return true;},onSeat:name=>{if(active?.object?.userData.reservedBy){say('That seat is occupied.',3);return true;}const selected=active?.object?.userData.seat;if(selected?.position&&occupiedByPerson(selected.position[0],selected.position[2])){say('That seat is occupied.',3);return true;}if((selected?.soak||selected?.wash)&&!activities.onsenPaid()){say('Pay ¥300 at the bandai by the door first.',4);return true;}if(selected?.soak||selected?.wash)wearSwim(true);{const inside=selected?.izakaya?'inIzakaya':Number.isInteger(selected?.ramenSeatId)?'inRamen':null;if(inside&&world.people.some(p=>p.g.userData[inside]&&p.g.visible&&Math.hypot(p.g.position.x-selected.position[0],p.g.position.z-selected.position[2])<.4)){say('Someone is already sitting there.',3);return true;}}if(selected?.storeSeatId&&(storeService?.occupied(selected.storeSeatId)||world.people.some(p=>p.g.userData.inMarket&&p.g.userData.storeSeatId===selected.storeSeatId))){say('That chair is occupied.',3);return true;}activities.close();const ax=player.position.x,az=player.position.z,ay=player.position.y,seat=active?.object?.userData.seat,approachClear=!environmentBlocked(ax,az)&&!occupiedByPerson(ax,az);const sit=seat?.position||[ax,ay,az];const stand=approachClear?[ax,ay,az]:seat?.stand||(()=>{const p=findClear(ax,az);return [p[0],ay,p[1]];})();parkSeat={seatId:seat?.id,ramenSeatId:seat?.ramenSeatId,storeSeatId:seat?.storeSeatId,izakaya:seat?.izakaya||null,surfaceY:seat?.surfaceY,table:seat?.table?[...seat.table]:null,soak:!!seat?.soak,wash:!!seat?.wash,beachCorner:!!seat?.beachCorner,position:sit,stand,eyeY:seat?.eyeY??1.15,yaw:Number.isFinite(seat?.yaw)?seat.yaw:yaw,pitch:Number.isFinite(seat?.pitch)?seat.pitch:pitch};player.position.set(...parkSeat.position);if(Number.isFinite(parkSeat.yaw))yaw=parkSeat.yaw;if(Number.isFinite(parkSeat.pitch))pitch=parkSeat.pitch;seated=true;johansson?.seat(parkSeat.soak?'Soak':'Sit');resetInput();say(Number.isInteger(parkSeat.ramenSeatId)?'Ramen counter · Make yourself comfortable.':name+' · Make yourself comfortable.',5);return true;},onDrink:name=>{activities.close();if(hands.held===name)hands.drink();else hands.offer(name,player.position,true);return true;},onEscort:()=>{activities.state.kenjiEscort='walking';activities.save();},onWeather:command=>command==='cycle'?cycleWeather():startWeather(),onTime:value=>{
+activities=createActivities({say,onKaraoke:openKaraoke,onOpen:()=>toggleDir(false),onOutfit:on=>wearSwim(on),getOutfit:()=>swimwear,getMassageChair:()=>massageChair(),onMove:name=>{johansson?.play(name);},getBeerTable:()=>beerService?{drink:beerService.drink,dish:beerService.dish,order:beerService.pending,naoHere:!!world.people.find(p=>p.profile.name==='Thao'&&p.g.userData.inIzakaya&&p.g.visible)}:null,onOrderDrink:kind=>!!beerService?.order(kind,parkSeat?.izakaya),getTipsy:()=>tipsy,onSip:()=>sipDrink(),onEat:()=>eatDish(),onSnack:item=>{const inv=activities.state.inventory,i=inv.indexOf(item);if(i<0)return false;inv.splice(i,1);activities.save();activities.close();hands.bite(SPECIAL_BY_NAME[item]?.bite||(HOT_SNACKS.some(snack=>snack.id==='nikuman'&&snack.name===item)?'bun':'rice'));johansson?.play(seated?'SitEat':'Eat');say(item+'. Still warm.',3);return true;},onTreat:name=>{const g=world.people.find(p=>p.profile.name===name)?.g;if(g){g.userData.residentSpeech={text:"Cheers!",until:minutes+4};characters?.gesture?.(g);}},onInspectModel:item=>inspector.open(item),onInspectShopGood:item=>{resetInput();document.exitPointerLock?.();(itemViewer??=createItemViewer()).open(item);},getResidentLocations:()=>castAI?.snapshot?.(),getTableService:()=>current?.id==='ramen'&&Number.isInteger(parkSeat?.ramenSeatId)?ramenPlayerService:null,onStand:standUp,onConversation:setConversation,onDialoguePhase,getMinutes:()=>minutes,getSocialContext:()=>({inside:current?.id,thuanAvailable:sakuraClerkAt(minutes)==='Grandmother Sakurai'||world.people.some(p=>p.profile.name===sakuraClerkAt(minutes)&&p.g.userData.inMarket&&p.g.visible&&!p.g.userData.sleeping),names:current?.id==='izakaya'?izakayaGuests.sync(minutes):current?.id==='ramen'?ramenGuests.sync(minutes):[]}),onMap:()=>{const c=document.createElement("canvas");c.width=680;c.height=640;c.style.width="100%";c.style.height="auto";c.style.position="static";c.setAttribute("aria-label","Folded visitor map, Minato Machi, 1997");drawTownMap(c.getContext("2d"),c.width,c.height,{sites:SITES,landmarks:world.landmarks,homes:canonicalHomeSites(directoryCards()),people:world.people,player:mapPlayer(),yaw,visited:activities.state.visited,target:navigationTarget,route:navigationPath});return c;},onPhone:()=>{const p=world.people.find(p=>p.g.userData.name==='Harbour master');if(p&&(p.g.position.z<-37)){characters.gesture(p.g);activities.close();say('The harbour master answers from the quay.',4);return true;}return false;},onPurchase:name=>{const p=new THREE.Vector3();active?.object?.getWorldPosition(p);hands.offer(name,p);return true;},onSeat:name=>{if(active?.object?.userData.reservedBy){say('That seat is occupied.',3);return true;}const selected=active?.object?.userData.seat;if(selected?.position&&occupiedByPerson(selected.position[0],selected.position[2])){say('That seat is occupied.',3);return true;}if((selected?.soak||selected?.wash)&&!activities.onsenPaid()){say('Pay ¥300 at the bandai by the door first.',4);return true;}if(selected?.soak||selected?.wash)wearSwim(true);{const inside=selected?.izakaya?'inIzakaya':Number.isInteger(selected?.ramenSeatId)?'inRamen':null;if(inside&&world.people.some(p=>p.g.userData[inside]&&p.g.visible&&Math.hypot(p.g.position.x-selected.position[0],p.g.position.z-selected.position[2])<.4)){say('Someone is already sitting there.',3);return true;}}if(selected?.storeSeatId&&(storeService?.occupied(selected.storeSeatId)||world.people.some(p=>p.g.userData.inMarket&&p.g.userData.storeSeatId===selected.storeSeatId))){say('That chair is occupied.',3);return true;}activities.close();const ax=player.position.x,az=player.position.z,ay=player.position.y,seat=active?.object?.userData.seat,approachClear=!environmentBlocked(ax,az)&&!occupiedByPerson(ax,az);const sit=seat?.position||[ax,ay,az];const stand=approachClear?[ax,ay,az]:seat?.stand||(()=>{const p=findClear(ax,az);return [p[0],ay,p[1]];})();parkSeat={seatId:seat?.id,ramenSeatId:seat?.ramenSeatId,storeSeatId:seat?.storeSeatId,izakaya:seat?.izakaya||null,surfaceY:seat?.surfaceY,table:seat?.table?[...seat.table]:null,soak:!!seat?.soak,wash:!!seat?.wash,beachCorner:!!seat?.beachCorner,position:sit,stand,eyeY:seat?.eyeY??1.15,yaw:Number.isFinite(seat?.yaw)?seat.yaw:yaw,pitch:Number.isFinite(seat?.pitch)?seat.pitch:pitch};player.position.set(...parkSeat.position);if(Number.isFinite(parkSeat.yaw))yaw=parkSeat.yaw;if(Number.isFinite(parkSeat.pitch))pitch=parkSeat.pitch;seated=true;johansson?.seat(parkSeat.soak?'Soak':'Sit');resetInput();say(Number.isInteger(parkSeat.ramenSeatId)?'Ramen counter · Make yourself comfortable.':name+' · Make yourself comfortable.',5);return true;},onDrink:name=>{activities.close();if(hands.held===name)hands.drink();else hands.offer(name,player.position,true);return true;},onEscort:()=>{activities.state.kenjiEscort='walking';activities.save();},onWeather:command=>command==='cycle'?cycleWeather():startWeather(),onTime:value=>{
   // time passes in the telling. The TIME button says what time and day it is in town.
   if(value&&typeof value==='object'){if(!followRealClock)minutes=value.restore;return;}
   if(value==='cycle'){if(followRealClock){clockMenu();return;}timePreset=(timePreset+1)%4;minutes=[1002,1110,1230,540][timePreset];}
@@ -1355,7 +1362,9 @@ function placeAtEntrance(s,leave=false){
  let x0,z0;
  if(!leave&&s.approachPosition){x0=s.approachPosition[0];z0=s.approachPosition[2];}
  else if(s.exitPosition){x0=s.exitPosition[0];z0=s.exitPosition[2];}
+ else if(!leave&&s.isResidence&&Array.isArray(s.door)){x0=s.door[0];z0=s.door.length>2?s.door[2]:s.door[1];}
  else if(mapped){x0=mapped.x;z0=mapped.z+(leave?.6:s.id==='izakaya'?-1.2:.7);}
+ else if(Array.isArray(s.door)){x0=s.door[0];z0=s.door.length>2?s.door[2]:s.door[1];}
  else return;
  ensureKitanoAt(x0,z0);
  yaw=leave?(s.entryFacing!=null?s.entryFacing+Math.PI:0):(s.entryFacing??(s.id==='izakaya'?Math.PI:s.side?-s.side*Math.PI/2:0));
@@ -1568,35 +1577,97 @@ function syncView(){
  player.visible=false;window.__JOHANSSON_CAMERA_MODE__='first';
 }
  const placeDirections=s=>s.directions||((s.id==='izakaya'?'Take the eastern lane from the main street and follow the dining-lane sign.':'Follow the main street to '+s.title+'.'));
-function markPlace(s){navigationTarget=s;toggleDir(false);drawMap();say(placeDirections(s)+(current?' Use Exit to street to start walking.':''),7);return false;}
+function mapPlayer(){return current?doors.get(current.id)||player.position:player.position;}
+function directoryCards(){world.group.updateMatrixWorld(true);return residentCards({sites:SITES,landmarks:world.landmarks,people:world.people,neighbours:world.neighbours,minutes});}
+function targetPoint(s){
+ const p=s?.approachPosition||s?.exitPosition||s?.door;
+ if(Array.isArray(p))return {x:p[0],y:p.length>2?p[1]:groundHeight(p[0],p[1]),z:p.length>2?p[2]:p[1]};
+ return Number.isFinite(s?.x)&&Number.isFinite(s?.z)?{x:s.x,y:s.y??groundHeight(s.x,s.z),z:s.z}:null;
+}
+function clearNavigation(){navigationGeneration++;navigationTarget=null;navigationPlan=null;navigationLeg=null;navigationPath=[];navigationIndex=1;}
+function walkingSample(start){
+ const inRoad=p=>p.x>MAIN_ROAD.west&&p.x<MAIN_ROAD.east&&p.z>MAIN_ROAD.minZ&&p.z<MAIN_ROAD.maxZ;
+ return (x,z)=>{
+  const y=groundHeight(x,z),crossing=Math.min(Math.abs(z+18),Math.abs(z-SHOP_CROSSING_Z))<1.25;
+  // Directions use the marked crossings. A player already in the carriageway may
+  // finish crossing before joining the pavement route.
+  const road=inRoad({x,z})&&!crossing&&!(inRoad(start)&&Math.hypot(x-start.x,z-start.z)<5.5);
+  const blocked=road||townBoundsBlocked(x,z,PLAYER_RADIUS)||colliderGrid.some(x,z,PLAYER_RADIUS,c=>
+   !c.moving&&(!c.only||c.only==='player')&&standingHitsRect(x,z,PLAYER_RADIUS,y,c));
+  return {blocked,y};
+ };
+}
+function walkingSegmentClear(a,b,maxLength=Infinity){
+ const distance=Math.hypot(b.x-a.x,b.z-a.z),length=Math.min(distance,maxLength),steps=Math.max(1,Math.ceil(length/.14)),sample=walkingSample(a);
+ let previous=sample(a.x,a.z),previousZ=a.z;if(previous.blocked)return false;
+ for(let i=1;i<=steps;i++){const t=distance?length/distance*i/steps:1,x=a.x+(b.x-a.x)*t,z=a.z+(b.z-a.z)*t,next=sample(x,z),component=sample(x,previousZ);if(next.blocked||component.blocked||Math.abs(component.y-previous.y)>.24||Math.abs(next.y-component.y)>.24)return false;previous=next;previousZ=z;}return true;
+}
+function startWalkingDirections(){
+ const generation=++navigationGeneration,stand=!current&&seated?(parkSeat?.stand||world.sakuraBench?.seat?.stand):null,
+  start=stand?{x:stand[0],z:stand[2]??stand[1]}:{x:mapPlayer().x,z:mapPlayer().z},destination=targetPoint(navigationTarget);
+ navigationStarted=performance.now();navigationPath=[];navigationIndex=1;navigationLeg=null;
+ if(!destination){navigationPlan={status:'unreachable',reason:'missing-entrance'};return;}
+ const hereKitano=world.kitano.near(start.x,start.z),thereKitano=navigationTarget.island==='kitano'||world.kitano.near(destination.x,destination.z);
+ if(!current&&(islandPlay?.active||deckUnder())){
+  navigationLeg={transfer:true,waitingForLanding:true,from:hereKitano?'kitano':'minato',title:'Ferry',
+   instructions:navigationTarget.aboard?'You’re aboard the Minato Maru. This home is aboard the ferry.':'Continue by ferry. Walking directions resume when you are ashore.'};
+  navigationPlan={status:'transfer',reason:'ferry-in-progress'};return;
+ }
+ if(hereKitano===thereKitano)ensureKitanoAt(destination.x,destination.z);
+ let goal=destination;
+ if(navigationTarget.aboard||hereKitano!==thereKitano){
+  const stop=hereKitano?{id:'kitano-ferry-landing',title:'Kitano ferry landing',door:[AIRPORT_LANDING[0],AIRPORT_LANDING_HEIGHT,AIRPORT_LANDING[1]]}:[...SITES,...(world.landmarks||[])].find(s=>s.id==='ferry-terminal');
+  const entrance=targetPoint(stop);
+  if(entrance){goal=entrance;navigationLeg={transfer:true,from:hereKitano?'kitano':'minato',title:hereKitano?'Kitano ferry landing':'Port Terminal',goal,
+   instructions:navigationTarget.aboard?'Check the Minato Maru’s berth at the terminal. The home is aboard the ferry.':'Take the ferry to '+(thereKitano?'Kitano-jima':'Minato')+'. Directions continue after you arrive.'};}
+ }
+ navigationPlan=createWalkingRoute({start,goal,sample:walkingSample(start),cell:.5,maxVisited:40000,margin:18});
+ const advance=()=>{
+  if(generation!==navigationGeneration||!navigationTarget)return;
+  // Sampling is incremental: finding a route does not freeze the controls on phones.
+  navigationPlan.step(mobile?300:600);
+  if(navigationPlan.status==='searching'){requestAnimationFrame(advance);return;}
+  if(navigationPlan.status==='found'){navigationPath=navigationPlan.path.map(p=>({...p}));navigationIndex=Math.min(1,navigationPath.length-1);}
+  updateWaypoint();if(!$('#directory').classList.contains('hidden'))drawMap();
+ };
+ requestAnimationFrame(advance);
+}
+function markPlace(s){
+ if(!s)return false;
+ const alias=HARBOUR_PARK_ALIASES[s.id];if(alias)s=[...SITES,...(world.landmarks||[])].find(p=>p.id===alias)||s;
+ const point=targetPoint(s);navigationTarget={...s,...point};toggleDir(false);startWalkingDirections();drawMap();
+ say(placeDirections(s)+(current?' Use Exit to street to start walking.':''),7);return false;
+}
 function visitPlace(s){
  if(islandPlay?.active)return false;
  if(s?.id==='airport-island')return markPlace({...s,directions:'Take the Minato Maru from the outer pier: board her at the gangway, or cross quickly from the landing sign beside it.'});
  if(!s)return false;
  // The gate lives at the action itself, so stale buttons and WebMCP share it.
  if(!travelProgress(activities.state).unlocked)return markPlace(s);
- if(current)leaveRoom();placeAtEntrance(s);resetInput();toggleDir(false);navigationTarget=null;drawMap();say(s.title+' · You took a familiar shortcut.',5);return true;
+ if(current)leaveRoom();placeAtEntrance(s);resetInput();toggleDir(false);clearNavigation();drawMap();say(s.title+' · You took a familiar shortcut.',5);return true;
 }
 function toggleDir(open){if(inspector?.active)return;if(open){updateDirectory();document.exitPointerLock?.();resetInput();}$('#directory').classList.toggle('hidden',!open);document.body.classList.toggle('town-menu-open',!!open);$('#directoryButton').setAttribute('aria-expanded',String(open));if(open)$('#closeDirectory').focus();else $('#directoryButton').focus();}
-$('#directoryButton').onclick=()=>toggleDir(true);$('#residentRecordsButton').onclick=()=>{toggleDir(false);activities.residentRecords(world.people.map(p=>p.profile.name));};$('#closeDirectory').onclick=()=>toggleDir(false);
+$('#directoryButton').onclick=()=>toggleDir(true);$('#residentRecordsButton').onclick=()=>{toggleDir(false);activities.residentRecords(directoryCards().map(p=>p.name));};$('#closeDirectory').onclick=()=>toggleDir(false);
 function updateDirectory(){
- // The camera tile is named after the model the player carries.
  {const m=pocketModel(),tile=$('#pocketButton');if(tile){tile.textContent=m.name;tile.setAttribute('aria-label',`Raise the ${m.name} camera (F)`);}}
- const grid=$('#directoryGrid');grid.replaceChildren();
- const section=t=>{const h=document.createElement('h3');h.className='directory-section';h.textContent=t;grid.append(h);};
- const row=(title,sub,fn,id)=>{const b=document.createElement('button');b.className='dir-item';if(id)b.dataset.id=id;const strong=document.createElement('b'),small=document.createElement('span');strong.textContent=title;small.textContent=sub;b.append(strong,small);b.onclick=fn;grid.append(b);};
- const progress=travelProgress(activities.state);
- // Looks, wardrobes and the home are made in Johansson Studio; what is saved there shows up here (src/studio-handoff.js).
- row('Johansson Studio','Change how you look, what the residents wear and how your home is decorated.',()=>{activities.save();location.href=new URL('../avatar-creator/',location.href).href;},'studio');
- row(progress.unlocked?'Town shortcuts unlocked':'Town shortcuts · '+progress.completed+'/'+progress.total+' favours',progress.unlocked?'Quick travel is ready. Choose a place below.':'Bring Tama home and finish Chin’s workshop escort.',()=>{toggleDir(false);activities.action('travel-progress');},'travel-progress');
- const destination=(site,title)=>{row(title||site.title,progress.unlocked?site.sub:placeDirections(site),()=>visitPlace(site),site.id);grid.lastChild.dataset.travel=progress.unlocked?'ready':'locked';};
- const izakaya=SITES.find(s=>s.id==='izakaya');
- if(izakaya){destination(izakaya,'Minato Izakaya');grid.lastChild.className+=' izakaya-shortcut';}
- section('Street');SITES.filter(s=>s.id!=='izakaya').forEach(s=>destination(s));
- (world.landmarks||[]).forEach(s=>destination(s));
- section('Residents');const wantNames=wantPool();world.people.forEach(p=>{const name=p.g.userData.name,want=openWant(activities.state,minutes,wantNames,name),hearts=heartLine(activities.state.friendship?.[name]?.points||0);row(name,hearts+' · '+(want?'Would like '+withArticle(want.item.toLowerCase()):p.g.userData.activity||'On the street'),()=>{toggleDir(false);activities.residentRecord(name);});});
- section('Reading and records');content.items.forEach(i=>row(i.title,i.place,()=>{const site=SITES.find(s=>s.id===i.siteId);if(site)markPlace(site);else toggleDir(false);}));
-  section('Signals');[['82.1 Harbour Service',RADIO_821],['89.4 JOJO','Journal requests'],['95.7 Sports','Prefectural baseball'],['Payphone','Near the bookshop'],['Minato–Kitano Ferry','Outer pier · Passengers and occasional cars']].forEach(([a,b])=>row(a,b,()=>{toggleDir(false);say(a==='82.1 Harbour Service'?b:a+' · '+b,4);}));
+ directoryResidents=directoryCards();
+ const seen=new Set();
+ const places=[...SITES,...(world.landmarks||[])].filter(s=>{
+  if(s.toLet||s.isResidence||s.home||s.homeEntry||s.familyHome||/^(home-|resident-home-)/.test(s.id)||s.id==='mayor-home')return false;
+  const id=HARBOUR_PARK_ALIASES[s.id]||s.id;if(id!==s.id||seen.has(id))return false;seen.add(id);return !!targetPoint(s);
+ });
+ directoryView?.destroy();
+ directoryView=renderTownDirectory($('#directoryGrid'),{cards:directoryResidents,places,progress:travelProgress(activities.state),
+  onShowHome:target=>markPlace(target),
+  onFindPerson:(target,card)=>{const live=directoryCards().find(c=>c.name===card.name)||card,position=live.personTarget||target;return markPlace({...position,trackPerson:card.name,directions:(live.current.source==='schedule'?'Scheduled location: ':'Current location: ')+live.current.locationLabel+'. '+(position.directions||'Follow the walking route.')});},
+  onPlace:markPlace,onShortcut:visitPlace,
+  canRecord:activities.canResidentRecord,onRecord:name=>{toggleDir(false);activities.residentRecord(name);},
+  onStudio:()=>{activities.save();location.href=new URL('../avatar-creator/',location.href).href;},
+  onTravelProgress:()=>{toggleDir(false);activities.action('travel-progress');}});
+ const extras=document.createElement('details');extras.className='town-records';const title=document.createElement('summary');title.textContent='Reading and radio';extras.append(title);
+ for(const item of content.items){const button=document.createElement('button');button.textContent=item.title+' · '+item.place;button.onclick=()=>{const site=SITES.find(s=>s.id===item.siteId);if(site)markPlace(site);};extras.append(button);}
+ const radio=document.createElement('p');radio.textContent='82.1 Harbour Service · '+RADIO_821+' · 89.4 JOJO · 95.7 Sports';extras.append(radio);$('#directoryGrid').append(extras);
+ drawMap();
 }
 /**
  * Where the game starts (world/openings.js): one of a few good moments in town, picked
@@ -1800,14 +1871,63 @@ function setConversation(name,text=''){for(const g of [...world.people.map(p=>p.
  }else{conversationLine=null;if(conversationCamera){player.visible=conversationCamera.playerVisible;conversationCamera=null;}}
 }addEventListener('resize',resizeRenderer);window.visualViewport?.addEventListener('resize',resizeRenderer);function resetInput(){pointWalk.cancel();setRunning(false);Object.keys(keys).forEach(k=>keys[k]=false);touchSticks.reset();}addEventListener('blur',()=>{resetInput();gamepadInput.suspend();});document.addEventListener('visibilitychange',()=>{resetInput();gamepadInput.suspend();if(document.hidden){activities.save();hiddenAt=Date.now();}else{hiddenAt=0;followClock();clock.getDelta();activities.consumeStorageRestock?.();}});addEventListener('focus',()=>activities.consumeStorageRestock?.());addEventListener('pageshow',()=>activities.consumeStorageRestock?.());addEventListener('pagehide',()=>activities.save());addEventListener('johansson-save',()=>activities.save());
 
-const mapCanvas=$('#minimap'),mapCtx=mapCanvas.getContext('2d');function drawMap(){drawTownMap(mapCtx,mapCanvas.width,mapCanvas.height,{sites:SITES,landmarks:world.landmarks,people:world.people,player:current?doors.get(current.id):player.position,yaw,visited:activities.state.visited,target:navigationTarget});updateWaypoint();}
+const mapCanvas=$('#minimap'),mapCtx=mapCanvas.getContext('2d');
+function drawMap(){
+ updateWaypoint();
+ if($('#directory').classList.contains('hidden'))return;
+ const homes=canonicalHomeSites(directoryResidents.length?directoryResidents:directoryCards());
+ // Map lettering is measured in screen pixels. Shrinking a fixed 720px canvas
+ // to a phone made the address labels only six pixels high.
+ const width=Math.max(280,Math.round(mapCanvas.getBoundingClientRect?.().width||720)),height=Math.round(width*620/720),dpr=Math.min(2,globalThis.devicePixelRatio||1);
+ if(mapCanvas.width!==Math.round(width*dpr)||mapCanvas.height!==Math.round(height*dpr)){mapCanvas.width=Math.round(width*dpr);mapCanvas.height=Math.round(height*dpr);}
+ mapCtx.setTransform?.(dpr,0,0,dpr,0,0);
+ drawTownMap(mapCtx,width,height,{sites:SITES,landmarks:world.landmarks,homes,people:world.people,player:mapPlayer(),yaw,visited:activities.state.visited,target:navigationTarget,route:navigationPath,mode:mapMode});
+ const caption=$('#mapDescription');if(caption)caption.textContent=navigationTarget?
+  (navigationTarget.address||navigationTarget.title)+(navigationTarget.residents?.length?' · '+navigationTarget.residents.join(', '):'')+' · '+(navigationLeg?.instructions||(navigationPlan?.status==='unreachable'?'A walking route could not be found from here.':navigationPlan?.status==='searching'?'Finding a walking route…':'The coloured line follows the walking route.')):
+  'Find a resident in the Town Book and choose Show home to mark their entrance.';
+}
 function updateWaypoint(){
  const button=$('#waypoint');button.classList.toggle('hidden',!navigationTarget);if(!navigationTarget)return;
- const p=current?doors.get(current.id):player.position,d=doors.get(navigationTarget.id),distance=Math.hypot(d.x-p.x,d.z-p.z);
- const angle=Math.atan2(-(d.x-p.x),-(d.z-p.z))-yaw,index=((Math.round(angle/(Math.PI/4))%8)+8)%8,arrow=['↑','↖','←','↙','↓','↘','→','↗'][index];
- button.textContent=(current?'Outside · ':arrow+' ')+navigationTarget.title+' · '+(distance<3?'You’re here':Math.round(distance)+' m')+' ×';button.setAttribute('aria-label','Clear directions to '+navigationTarget.title);
+ const p=mapPlayer(),now=performance.now();
+ const aboard=!current&&!!(islandPlay?.active||deckUnder());
+ if(aboard){
+  button.textContent=navigationTarget.title+' · '+(navigationTarget.aboard?'You’re aboard the Minato Maru. This home is aboard the ferry.':'Continue by ferry · walking directions resume ashore')+' ×';
+  button.setAttribute('aria-label','Clear directions to '+navigationTarget.title);return;
+ }
+ if(navigationLeg?.transfer&&(navigationLeg.waitingForLanding||!navigationTarget.aboard&&navigationLeg.from!==(world.kitano.near(p.x,p.z)?'kitano':'minato'))&&!walkingSample(p)(p.x,p.z).blocked)startWalkingDirections();
+ if(navigationTarget.trackPerson&&now-navigationRecheck>5000){
+  navigationRecheck=now;const card=directoryCards().find(c=>c.name===navigationTarget.trackPerson),next=card?.personTarget;
+  if(!next){navigationGeneration++;navigationPath=[];navigationPlan={status:'unreachable',reason:'person-unavailable'};navigationTarget.trackingUnavailable=true;}
+  else if(navigationTarget.trackingUnavailable||next.id!==navigationTarget.id||Math.hypot(next.x-navigationTarget.x,next.z-navigationTarget.z)>2.5){
+   navigationTarget={...next,trackPerson:card.name,directions:(card.current.source==='schedule'?'Scheduled location: ':'Current location: ')+card.current.locationLabel+'.'};startWalkingDirections();
+  }
+ }
+ let detail='Finding a walking route…';
+ if(navigationPlan?.status==='unreachable')detail=navigationPlan.reason==='person-unavailable'?'Current location unavailable · check People in the Town Book':'Walking route unavailable · check the map';
+ if(navigationPath.length){
+  while(navigationIndex<navigationPath.length-1&&Math.hypot(navigationPath[navigationIndex].x-p.x,navigationPath[navigationIndex].z-p.z)<.45&&walkingSegmentClear(p,navigationPath[navigationIndex+1]))navigationIndex++;
+  const next=navigationPath[Math.min(navigationIndex,navigationPath.length-1)],end=navigationPath.at(-1);
+  const lastDistance=Math.hypot(end.x-p.x,end.z-p.z);
+  let distance=Math.hypot(next.x-p.x,next.z-p.z);for(let i=navigationIndex+1;i<navigationPath.length;i++)distance+=Math.hypot(navigationPath[i].x-navigationPath[i-1].x,navigationPath[i].z-navigationPath[i-1].z);
+  const angle=Math.atan2(-(next.x-p.x),-(next.z-p.z))-yaw,index=((Math.round(angle/(Math.PI/4))%8)+8)%8,arrow=['↑','↖','←','↙','↓','↘','→','↗'][index];
+  const arrived=navigationIndex===navigationPath.length-1&&distance<1.1&&walkingSegmentClear(p,end);
+  detail=arrived?(navigationLeg?.instructions|| (navigationPlan.reason==='goal-approach'?'Entrance nearby':'You’re here')):arrow+' '+Math.round(distance)+' m on foot';
+  // If the player leaves the marked path, calculate a fresh route from where they
+  // actually stand. A straight arrow to the original door would point through walls.
+  if(!current&&!seated&&now-navigationStarted>2500&&!arrived&&now-navigationCorridorCheck>700){
+   navigationCorridorCheck=now;
+   let nearest=navigationPath.length===1?lastDistance:Infinity;
+   for(let i=Math.max(1,navigationIndex-1);i<navigationPath.length;i++){
+    const a=navigationPath[i-1],b=navigationPath[i],dx=b.x-a.x,dz=b.z-a.z,t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.z-a.z)*dz)/(dx*dx+dz*dz||1)));
+    nearest=Math.min(nearest,Math.hypot(p.x-a.x-dx*t,p.z-a.z-dz*t));
+   }
+   if(nearest>1.2||!walkingSegmentClear(p,next,6))startWalkingDirections();
+  }
+ }
+ button.textContent=(current?'Exit to street · ':seated?'Stand to follow the route · ':'')+(navigationLeg?.title?navigationLeg.title+' → ':'')+navigationTarget.title+' · '+detail+' ×';button.setAttribute('aria-label','Clear directions to '+navigationTarget.title);
 }
-$('#waypoint').onclick=()=>{navigationTarget=null;drawMap();};
+$('#waypoint').onclick=()=>{clearNavigation();drawMap();};
+$('#mapScope').onclick=()=>{mapMode=mapMode==='local'?'world':'local';$('#mapScope').textContent=mapMode==='local'?'Show whole world':'Show local map';$('#mapScope').setAttribute('aria-pressed',String(mapMode==='world'));drawMap();};
 let elapsed=0,mapTick=0,stepTick=0,accumulator=0,saveTick=0;
 // The clock runs at real time: a minute a minute. While the town is catching up on time
 // you were away it runs at the old fast-forward rate, a town minute a simulated second.
@@ -2046,7 +2166,7 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
    spawnScene?.update(dt,{paused:!!paused,unavailable:!!(islandPlay?.active||this.camera)});
   }}finally{followRealClock=following;}
   const view=this.camera;if(view){camera.position.set(...view.pos);camera.lookAt(...view.at);camera.updateMatrixWorld();}
-  setTime();updateContextControls();if(!activities.paused&&!roomLoading&&!cameraControls.active&&!inspector?.active&&!itemViewer?.active&&$('#directory').classList.contains('hidden'))interaction();else $('#prompt').classList.remove('on');$('#clock').textContent=fmt(minutes);this.render();pocket?.frame();
+  setTime();updateContextControls();if(!activities.paused&&!roomLoading&&!cameraControls.active&&!inspector?.active&&!itemViewer?.active&&$('#directory').classList.contains('hidden'))interaction();else $('#prompt').classList.remove('on');$('#clock').textContent=fmt(minutes);drawMap();this.render();pocket?.frame();
  },
  /** What the renderer is carrying: shader programs, draw calls, triangles, geometries, textures. */
  get programKeys(){return (renderer.info.programs||[]).map(p=>p.name+' | '+p.cacheKey.slice(0,600));},
@@ -2097,6 +2217,8 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  get sites(){return SITES.map(s=>({id:s.id,title:s.title,x:s.x,z:s.z,door:s.door,entryFacing:s.entryFacing,exitPosition:s.exitPosition,approachPosition:s.approachPosition}));},
  /** Read-only coordinates of visible interactions in the current coordinate frame. */
  get targets(){return interactables.flatMap(o=>{const hit=o.userData.hit;if(!hit||!!hit.inside!==!!current)return [];for(let p=o;p;p=p.parent)if(!p.visible)return [];const pos=o.getWorldPosition(new THREE.Vector3()),distance=pos.distanceTo(player.position);return current||distance<35?[{label:hit.label,position:pos.toArray(),distance,inside:!!hit.inside}]:[];});},
+ get homeDirectory(){return directoryCards();},
+ get walkingDirections(){return navigationTarget?{target:navigationTarget,status:navigationPlan?.status||'searching',reason:navigationPlan?.reason,path:navigationPath.map(p=>({...p})),leg:navigationLeg}:null;},
  get roomNavigation(){return current?{id:current.id,title:current.title,bounds:activeRoomLayout?.bounds||{minX:-5,maxX:5,minZ:-5,maxZ:5},spawn:activeRoomLayout?.spawn||[0,0,4.3],exit:activeRoomLayout?.exit||activeRoomLayout?.spawn||[0,0,4.3],yaw:activeRoomLayout?.yaw||0}:null;},
  /** The ground and the surface under a point, as the simulation reads them (clipping audits). */
  ground(x,z){return groundHeight(x,z);},route(x,z){const r=routeAt(x,z);return r?{id:r.id,surface:r.surface}:null;},

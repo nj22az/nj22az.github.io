@@ -49,7 +49,7 @@ export const linesFor=name=>Object.entries(MERCHANDISING).filter(([,m])=>m.for.i
  *   frontrow      Front-Row Books & Stationery: paper, ledgers, pens and envelopes for the town's
  *                 offices, the school and the police box.
  *
- *   rainflower-florist  Rainflower Florist on the lane: decorations — the season's window dressing,
+ *   rainflower-florist  Rainflower Florist at the park entrance: decorations — the season's window dressing,
  *                 festival trimmings, lanterns and wreaths — for the shops, the bar and the town hall.
  *
  * Only places that are open trade (src/people/cast.js PLACES): the Fumoto co-op has closed, so Sakura and the Higas

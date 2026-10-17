@@ -57,7 +57,7 @@ test('the residential quarter: lanes you can walk, every gate on a lane, a park,
  const areas=[...KITAHAMA.plots,KITAHAMA.apartment,KITAHAMA.park];
  for(let i=0;i<areas.length;i++){for(let j=i+1;j<areas.length;j++)assert.ok(!over(areas[i],areas[j]),'overlap '+i+' '+j);for(const L of KITAHAMA_LANES)assert.ok(!over(areas[i],L),'on a lane: '+(areas[i].id||i));}
  // The shared places are there to use.
- for(const label of ['Read the Kitahama Heights mailboxes','Sit on the park bench','Push the swing','Read the Kitahama notice board','Read the Gushiken nameplate'])
+ for(const label of ['Read the Kitahama Heights mailboxes','Sit on the park bench','Push the swing','Read the Kitahama notice board','9 Kitahama · To let'])
   assert.ok(labels.some(l=>l.label===label),label);
  const bench=labels.find(l=>l.label==='Sit on the park bench').o.userData.seat;
  assert.ok(bench&&!blocked(bench.stand[0],bench.stand[2],.25),'the bench can be reached');

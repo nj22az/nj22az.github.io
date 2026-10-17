@@ -15,6 +15,7 @@ import {readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {STREET_CAST_NAMES} from '../src/people/residents.js';
+import {residentCards,canonicalHomeSites} from '../src/people/home-directory.js';
 
 // The town's clock follows the real one (town-clock.js), so without this the smoke test
 // depended on the hour it was run at: after 20:00 Sakura had already shut and restocked
@@ -56,6 +57,12 @@ const atDoor=(p,spawn)=>{assert.equal(p[1],spawn[1]);assert.ok(Math.hypot(p[0]-s
 test('Published island boots, shares the wooden bookshop/workshop and visits every interior',async()=>{
   try {
     fixtures.installDOM();
+    // The Town Book uses semantic nested cards and prepends each person's avatar.
+    // Keep this browser double local to the full-game test; the real UI module runs.
+    const createElement=document.createElement.bind(document);
+    document.createElement=tag=>{const element=createElement(tag);element.tagName=tag.toUpperCase();element.ownerDocument=document;
+      element.prepend=(...items)=>element.children.unshift(...items);return element;};
+    Object.assign(document.querySelector('#minimap'),{width:720,height:620});
     // The game starts at one of several openings (world/openings.js); this test walks from the Sakura bench.
     globalThis.location.search='?spawn=sakura-bench&cinematic=off';
     globalThis.innerHeight=768;
@@ -94,7 +101,7 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     const threeImport="import * as THREE from '"+threeUrl+"';";
     assert.ok(source.includes(threeImport),'Expected canonical vendored Three.js import');
     source=source.replace(threeImport,"import * as THREE from '"+rendererShim+"';");
-    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,advanceAbsentTown,catchUpFrame,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,groundHeight,characters,interaction,resizeRenderer,doInteract,touchSticks,residentBlocked,occupiedByPerson,updateContextControls};\nexport const reviewRoom=()=>room;export const reviewShop=()=>sakuraShop;export const reviewSetActive=o=>active={...o.userData.hit,object:o};\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>{followRealClock=false;minutes=value;};export const reviewSetYaw=value=>yaw=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
+    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,advanceAbsentTown,catchUpFrame,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,groundHeight,characters,interaction,resizeRenderer,doInteract,touchSticks,residentBlocked,occupiedByPerson,environmentBlocked,updateContextControls,navigationLeg};\nexport const reviewRoom=()=>room;export const reviewShop=()=>sakuraShop;export const reviewSetActive=o=>active={...o.userData.hit,object:o};\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>{followRealClock=false;minutes=value;};export const reviewSetYaw=value=>yaw=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
     // Exercise the new geometry in the full game, including actual room exits.
     const originalFetch=globalThis.fetch;
     globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:2048,height:2048,close(){}});
@@ -116,7 +123,7 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     const {SAKURA_SHOP}=await import('../src/world/sakura-bench.js');
     const {circleHitsRect}=await import('../physics.js?snappy=1');
     assert.deepEqual(api.SITES.map(s=>s.id).sort(),['clinic','community-kitchen','form3d','frontrow','home-fumoto-1','home-fumoto-2','home-fumoto-3','home-fumoto-4','home-kitahama-10','home-kitahama-11','home-kitahama-12','home-kitahama-3','home-kitahama-4','home-kitahama-5','home-kitahama-6','home-kitahama-7','home-kitahama-8','home-kitahama-9','home-kitano-2','home-kitano-3','izakaya','koban','market','mayor-home','mayor-office','office','onsen','ramen','resident-home-aya','resident-home-kenji','resident-home-mrs-sato','resident-home-thuan','school']);
-    assert.deepEqual(api.world.landmarks.map(s=>s.id).sort(),['airport-island','aoba-garden','aoba-utaki','aoba-viewpoint','ferry-terminal','fumoto','hoshizaki','rainflower-lane','warehouse','west-lighthouse']);
+    assert.deepEqual(api.world.landmarks.map(s=>s.id).sort(),['airport-island','aoba-utaki','aoba-viewpoint','ferry-terminal','fumoto','harbour-park','home-kitahama-flat-1','home-kitahama-flat-2','home-kitahama-flat-3','home-kitahama-flat-4','hoshizaki','nakamura','rainflower-florist','warehouse','west-lighthouse']);
     assert.deepEqual(api.world.harbourShops.map(s=>s.id).sort(),['form3d','frontrow','office']);
     assert.ok(api.world.group.getObjectByName('west-shop:frontrow'));
     assert.equal(api.world.group.getObjectByName('west-shop:form3d'),undefined,'Only one bookshop/workshop exterior');
@@ -135,7 +142,7 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     waiting.position.copy(savedPosition);waiting.visible=savedVisibility;
 
     const market=api.SITES.find(s=>s.id==='market'),books=api.SITES.find(s=>s.id==='frontrow');
-    const destinations=[...api.SITES,...api.world.landmarks],bench=api.world.sakuraBench;
+    const bench=api.world.sakuraBench;
     // The bus stop is an outdoor destination; the warehouse has an interior.
     const interiors=[...api.SITES,api.world.landmarks.find(s=>s.id==='warehouse')];
     assert.equal(bench.source,'blender');
@@ -147,9 +154,11 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     assert.ok(api.player.position.distanceTo(openingSit)>.2,'The first movement stands up and walks immediately');
     assert.ok(!api.world.colliders.some(c=>circleHitsRect(bench.seat.stand[0],bench.seat.stand[2],.28,c)),'Clear stand-up point');
     assert.ok(api.player.position.distanceTo(new Vector3(...bench.seat.stand))<.5,'Movement begins at the clear bench stand point');
-    api.player.position.set(0,0,14);api.reviewSetYaw(0);api.simulate(1/60);
+    // The kerb furniture now stands at x=.5; exercise Run/strafe on the clear
+    // middle of the east pavement instead of walking into the utility cabinet.
+    api.player.position.set(2.5,0,14);api.reviewSetYaw(0);api.simulate(1/60);
     const runningStart=api.player.position.clone();
-    for(let ahead=0;ahead<=.8;ahead+=.1)assert.ok(!api.world.colliders.some(c=>circleHitsRect(runningStart.x,runningStart.z-ahead,.34,c)),'Clear movement test route');
+    for(let ahead=0;ahead<=.8;ahead+=.1){const hits=api.world.colliders.filter(c=>circleHitsRect(runningStart.x,runningStart.z-ahead,.34,c));assert.equal(hits.length,0,'Clear movement test route '+runningStart.toArray()+': '+JSON.stringify(hits));}
     api.touchSticks.move.y=-1;api.simulate(.1);const walked=api.player.position.distanceTo(runningStart);
     api.player.position.copy(runningStart);document.querySelector('#run').onpointerdown({button:0,pointerType:'touch',preventDefault(){},stopPropagation(){}});api.simulate(.1);
     assert.ok(api.player.position.distanceTo(runningStart)>walked*1.6,'Touch Run increases speed');
@@ -165,12 +174,40 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     assert.equal(api.scene.fog,null);assertFiniteTransforms(api,'outdoor startup');
 
     const directory=()=>document.querySelector('#directoryButton').onclick();
-    const find=id=>document.querySelector('#directoryGrid').children.find(b=>b.dataset.id===id);
-    directory();{const dock=find('form3d');assert.ok(!dock||/Dock/.test(dock.children[0]?.textContent||''),'The only workshop destination besides the bookshop is the dock workshop');}
+    const descendants=node=>[node,...(node.children||[]).flatMap(descendants)];
+    const directoryNodes=()=>descendants(document.querySelector('#directoryGrid'));
+    const find=id=>directoryNodes().find(b=>b.dataset?.id===id);
+    const shortcut=id=>directoryNodes().find(b=>b.dataset?.shortcut===id);
+    const section=id=>{const tab=directoryNodes().find(b=>b.tagName==='BUTTON'&&b.dataset?.townFilter===id);assert.ok(tab,'Town Book section: '+id);tab.onclick();};
+    directory();section('places');{const dock=find('form3d');assert.ok(dock&&/Dock/.test(dock.children[0]?.textContent||''),'The dock workshop remains an explicit public destination');}
+    const publicIds=directoryNodes().filter(b=>b.dataset?.id).map(b=>b.dataset.id);
+    for(const id of ['frontrow','form3d','market','clinic','office','koban','izakaya','onsen','harbour-park','rainflower-florist','nakamura'])assert.ok(publicIds.includes(id),'Public business or place remains in Places: '+id);
+    for(const id of ['aoba-garden','rainflower-lane','home-kitahama-flat-3','home-kitahama-flat-4','home-tamaki','home-kamiya'])assert.ok(!publicIds.includes(id),'Retired or vacant address is not a public destination: '+id);
+    assert.equal(new Set(publicIds).size,publicIds.length,'Public destinations appear once');
+    api.world.group.updateMatrixWorld(true);
+    const homeTargets=canonicalHomeSites(residentCards({sites:api.SITES,landmarks:api.world.landmarks,people:api.world.people,neighbours:api.world.neighbours,minutes:600}));
+    section('homes');assert.equal(homeTargets.length,24);assert.deepEqual(directoryNodes().filter(b=>b.dataset?.id).map(b=>b.dataset.id).sort(),homeTargets.map(h=>h.id).sort(),'Every occupied home has one address action');
+    section('people');assert.equal(directoryNodes().filter(b=>b.dataset?.personId).length,31,'The full cast is discoverable');
     const walkingStart=api.player.position.clone();
-    for(const site of destinations){directory();assert.equal(find(site.id).dataset.travel,'locked');find(site.id).onclick();assert.deepEqual(api.player.position.toArray(),walkingStart.toArray(),'Locked shortcut: '+site.id);}
+    for(const [filter,ids]of [['places',publicIds],['homes',homeTargets.map(h=>h.id)]])for(const id of ids){
+      directory();section(filter);assert.equal(find(id).dataset.travel,'locked');assert.equal(shortcut(id),undefined,'No shortcut before favours: '+id);
+      find(id).onclick();assert.deepEqual(api.player.position.toArray(),walkingStart.toArray(),'Directions never move the player: '+id);
+      if(id==='mayor-home'){
+        const terminal=api.world.landmarks.find(s=>s.id==='ferry-terminal'),door=terminal.approachPosition||terminal.exitPosition||terminal.door;
+        assert.equal(api.navigationLeg?.transfer,true,'Kitano home directions begin with a ferry leg even though the terminal is a landmark');
+        assert.equal(api.navigationLeg.from,'minato');
+        assert.deepEqual(api.navigationLeg.goal,{x:door[0],y:door[1],z:door[2]},'Use the actual public terminal entrance');
+      }
+    }
     api.activities.state.quest=3;api.activities.state.kenjiEscort='done';
-    directory();assert.equal(find('frontrow').dataset.travel,'ready');find('frontrow').onclick();
+    for(const home of homeTargets){
+      directory();section('homes');assert.equal(find(home.id).dataset.travel,'locked','Show home remains walking-only after unlock');
+      const before=api.player.position.clone();find(home.id).onclick();assert.deepEqual(api.player.position.toArray(),before.toArray(),'Unlocked Show home still marks a route');
+      directory();section('homes');assert.equal(shortcut(home.id)?.dataset.travel,'ready','Occupied home shortcut: '+home.id);shortcut(home.id).onclick();
+      assert.ok(Math.hypot(api.player.position.x-home.x,api.player.position.z-home.z)<1.25,'Home shortcut arrives at its actual entrance: '+home.id);
+      assert.equal(api.environmentBlocked(api.player.position.x,api.player.position.z),false,'Home shortcut has standing clearance: '+home.id);
+    }
+    directory();section('places');assert.equal(find('frontrow').dataset.travel,'locked');assert.equal(shortcut('frontrow').dataset.travel,'ready');shortcut('frontrow').onclick();
     assert.ok(Math.hypot(api.player.position.x-books.door[0],api.player.position.z-books.door[2])<1.2);
     api.simulate(1/60);api.interaction();api.updateContextControls();assert.equal(document.querySelector('#enterBuildingButton').hidden,false,'The doorway remains available beside a nearby conversation');assert.match(document.querySelector('#enterBuildingButton').children.find(c=>c.className==='context-label').textContent,/Enter Front-Row Books/);
     // The street action includes the real asynchronous threshold animation.

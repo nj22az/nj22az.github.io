@@ -11,7 +11,8 @@ import {buildPortHall} from '../src/world/interiors/port-hall.js';
 import {buildAirportArrivals} from '../src/world/interiors/airport-arrivals.js';
 import {buildOfficeShell,buildOfficeWorkplace} from '../src/world/interiors/office-workplace.js';
 import {buildMayorOffice,buildMayorHome} from '../src/world/interiors/town-hall.js';
-import {PARK_BENCH,PARK_BENCH_FIT,benchPoint,activePark} from '../src/world/park-layout.js';
+import {PARK_BENCH} from '../src/world/park-layout.js';
+import {HARBOUR_BENCH_DIMENSIONS} from '../src/world/harbour-bench-dimensions.js';
 
 function validateSeats(root,targets,colliders,{streamed=new Set()}={}){
  root.updateMatrixWorld(true);
@@ -43,10 +44,21 @@ test('every outdoor public seat has physical support and a clear standing point'
  installDOM();const targets=[];
  const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),mobile:true,shadows:false,register:(object,label)=>targets.push({object,label}),enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  const seats=targets.filter(t=>t.object.userData.seat);
- assert.ok(seats.length>=25,'Public benches and airport gates all offer usable seats');
+ // The two-garden count included retired furniture. Hold the actual public seat
+ // roster to its usable interactions instead of requiring extra scenery to pass.
+ const expected=[
+  'port-canopy-bench','quay-bench','beach-chair-0','beach-chair-1',
+  'Soak your feet in the footbath','Cool off on the bench',
+  'seawall-bench--20','seawall-bench-4','seawall-bench-22','kitahama-park-bench',
+  'Sit on neighbourhood bench','Sit and look at Sakura','Sit on the staff bench','Sit at the radio lookout',
+  'airport-gate-a0','airport-gate-a1','airport-gate-a2','airport-gate-a3',
+  'kitano-lookout','kitano-coral-bay-0','kitano-coral-bay-1','kitano-turtle-cove',
+  'Sit under the harbour cherry','Sit beside the garden pond',
+ ];
+ assert.deepEqual(seats.map(t=>t.object.userData.seat.id||t.label).sort(),expected.sort(),'Every retained public bench, bath seat and airport gate offers its seat');
  validateSeats(world.group,seats,world.colliders,{streamed:new Set(['Soak your feet in the footbath','Cool off on the bench'])});
  assert.equal(PARK_BENCH.yaw,Math.PI/2,'Harbour bench faces away from its east backrest');
- const p=activePark();assert.ok(Math.abs(PARK_BENCH.surfaceY-(p.lift+benchPoint(0,PARK_BENCH_FIT.seat,0)[1]*p.scale))<1e-9);
+ assert.equal(PARK_BENCH.surfaceY,.02+HARBOUR_BENCH_DIMENSIONS.seatHeight,'The measured bench stands on the level park ground');
  const kitahama=seats.find(t=>t.object.userData.seat.id==='kitahama-park-bench');assert.equal(kitahama.object.userData.seat.yaw,Math.PI/2);
 });
 

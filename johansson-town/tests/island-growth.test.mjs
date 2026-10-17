@@ -2,7 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {createTown} from '../src/world/town.js';
-import {islandTerrainHeight,MOUNTAIN_VERTICES,TERRAIN_GRID,COAST_ROAD} from '../src/world/island-plan.js';import {GARDEN,gardenPoint,gardenPondAt,GARDEN_BRIDGE_AUTHOR_Z} from '../src/world/garden-layout.js';import {routeAt,groundHeight} from '../src/world/layout.js';import {circleHitsRect} from '../physics.js';
+import {islandTerrainHeight,MOUNTAIN_VERTICES,TERRAIN_GRID,COAST_ROAD} from '../src/world/island-plan.js';import {HARBOUR_POND,HARBOUR_PARK_PATHS,harbourPondAt} from '../src/world/harbour-park-plan.js';import {routeAt,groundHeight} from '../src/world/layout.js';import {circleHitsRect} from '../physics.js';
 import {onIslandLand} from '../src/world/coastal-ground.js';
 import {AIRPORT_LANDING,AIRPORT_COUNTER,airportWorld,AIRPORT_PAVEMENT_HEIGHT} from '../src/world/airport-ground.js';
 import {TROPIC_TRAILS,TROPIC_PLACES} from '../src/world/tropical-island.js';
@@ -11,7 +11,13 @@ import {auditArchive,YEAR_MINUTES,retainArchive} from '../src/office/archive.js'
 
 test('mountain triangles and grounded height share each vertex; existing town heights remain stable',()=>{try{const g=TERRAIN_GRID,n=Math.round((g.maxX-g.minX)/g.step)+1;for(let i=0;i<MOUNTAIN_VERTICES.length;i+=7)assert.ok(Math.abs(islandTerrainHeight(g.minX+i%n*g.step,g.minZ+Math.floor(i/n)*g.step)-MOUNTAIN_VERTICES[i])<1e-8);assert.ok(groundHeight(40,175)<1);assert.equal(groundHeight(0,-44),0);for(let i=1;i<COAST_ROAD.length;i++){const a=COAST_ROAD[i-1],b=COAST_ROAD[i],steps=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.1);for(let n=0;n<=steps;n++){const x=a[0]+(b[0]-a[0])*n/steps,z=a[1]+(b[1]-a[1])*n/steps;assert.ok(routeAt(x,z,.32),'road walk bounds '+x+','+z);for(let k=0;k<8;k++){const angle=k*Math.PI/4;assert.ok(onIslandLand(x+Math.cos(angle)*.32,z+Math.sin(angle)*.32),'road over water '+x+','+z);}}}assert.equal(routeAt(400,400,.32),null);}finally{}});
 
-test('garden pond cannot be walked on; bridge, gate, loop and relocated bath approaches remain clear',()=>{try{installDOM();const world=createTown({scene:new THREE.Scene(),sites:[],townMode:'peninsula',mobile:true,shadows:false,register(){},enter(){},onAction(){}}),blocked=(x,z)=>!routeAt(x,z,.32)||world.colliders.some(c=>circleHitsRect(x,z,.32,c));assert.equal(gardenPondAt(...gardenPoint(-34,129)),true);assert.equal(blocked(...gardenPoint(-34,129)),true);for(const [a,b] of [[[-28,108],[-28,117]],[[-43,GARDEN_BRIDGE_AUTHOR_Z],[-25,GARDEN_BRIDGE_AUTHOR_Z]]])for(let t=0;t<=1;t+=.025){const [x,z]=gardenPoint(a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t);assert.equal(blocked(x,z),false,'garden passage '+x+','+z);}assert.equal(groundHeight(...gardenPoint(-34,GARDEN_BRIDGE_AUTHOR_Z)),.1);assert.ok(world.landmarks.some(s=>s.id==='aoba-garden'));}finally{}});
+test('the one park pond is not walkable and its circuit, quay gate and onsen approach stay clear',()=>{
+ installDOM();const world=createTown({scene:new THREE.Scene(),sites:[],townMode:'peninsula',mobile:true,shadows:false,register(){},enter(){},onAction(){}});
+ const blocked=(x,z)=>!routeAt(x,z,.32)||world.colliders.some(c=>circleHitsRect(x,z,.32,c));
+ assert.equal(harbourPondAt(HARBOUR_POND.x,HARBOUR_POND.z),true);assert.equal(blocked(HARBOUR_POND.x,HARBOUR_POND.z),true);
+ for(const route of HARBOUR_PARK_PATHS.filter(r=>['park-approach','garden-onsen-approach','garden-pond-loop','garden-quay-walk'].includes(r.id)))for(let i=1;i<route.points.length;i++)for(let t=0;t<=1;t+=.025){const a=route.points[i-1],b=route.points[i],x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;assert.equal(blocked(x,z),false,route.id+' '+[x,z]);}
+ assert.equal(world.landmarks.filter(s=>s.id==='harbour-park').length,1);assert.equal(world.landmarks.some(s=>s.id==='aoba-garden'),false);
+});
 
 test('airport landing connects to passenger counter while the runway and sewage plant remain inaccessible',()=>{
  try{

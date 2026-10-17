@@ -212,7 +212,7 @@
           <p class="resident-bio">${escape(a.standfirst)}</p>
           <details class="resident-story"><summary>Read the article</summary>
             <div class="article-body">${body}</div>
-            <dl class="resident-facts"><dt>Usually found</dt><dd>${escape(r.place)}</dd>${r.age ? '<dt>Age</dt><dd>' + escape(r.age) + '</dd>' : ''}${r.friend ? '<dt>Close friend</dt><dd>' + escape(r.friend) + '</dd>' : ''}${p ? '<dt>In a word</dt><dd>' + escape(p.title) + ' · ' + p.traits.map(escape).join(', ') + '</dd><dt>Ambition</dt><dd>' + escape(p.ambition) + '</dd>' : ''}</dl>
+            <dl class="resident-facts">${r.home ? '<dt>Home</dt><dd>' + escape(r.home.address) + '<br>' + r.home.residents.map(escape).join(' · ') + '</dd>' : ''}${(r.secondaryHomes||[]).map(home=>'<dt>Weekday room</dt><dd>'+escape(home.address)+'</dd>').join('')}<dt>Usually found</dt><dd>${escape(r.place)}</dd>${r.age ? '<dt>Age</dt><dd>' + escape(r.age) + '</dd>' : ''}${r.friend ? '<dt>Close friend</dt><dd>' + escape(r.friend) + '</dd>' : ''}${p ? '<dt>In a word</dt><dd>' + escape(p.title) + ' · ' + p.traits.map(escape).join(', ') + '</dd><dt>Ambition</dt><dd>' + escape(p.ambition) + '</dd>' : ''}</dl>
           </details>
           ${r.start != null || r.always ? '<p class="duty"><span class="flag"></span></p>' : ''}
         </div>
@@ -221,7 +221,7 @@
   }
 
   const catalogueSearch=document.getElementById('residentSearch');
-  catalogueSearch?.addEventListener('input',()=>{const q=catalogueSearch.value.trim().toLowerCase();let n=0;rollGrid.querySelectorAll('[data-resident]').forEach(card=>{const r=RESIDENTS.find(r=>r.name===card.dataset.resident);card.hidden=!`${r.name} ${r.role} ${r.place} ${r.article?.headline||''}`.toLowerCase().includes(q);if(!card.hidden)n++;});document.getElementById('catalogueCount').textContent=`${n} residents`;});
+  catalogueSearch?.addEventListener('input',()=>{const fold=text=>String(text).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(),q=fold(catalogueSearch.value.trim());let n=0;rollGrid.querySelectorAll('[data-resident]').forEach(card=>{const r=RESIDENTS.find(r=>r.name===card.dataset.resident);card.hidden=!fold([r.name,r.role,r.place,r.article?.headline||'',r.home?.address,...r.home?.residents||[],...(r.secondaryHomes||[]).map(h=>h.address)].join(' ')).includes(q);if(!card.hidden)n++;});document.getElementById('catalogueCount').textContent=`${n} residents`;});
   function tick() {
     if (start.classList.contains("hidden")) return;
     const now = Date.now();

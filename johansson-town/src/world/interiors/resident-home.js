@@ -76,7 +76,9 @@ export function buildResidentHome({site,profile,room,box,reg,collider,action,exi
 }
 
 function buildSharedHome({site,profile,room,box,reg,collider,action,exit}){
- const household=householdFor(profile.name),layout=SHARED_HOME_LAYOUT,homeLayouts=sharedHomeLayouts(household.residents);
+ // This archived generic room hosts the street-engine adults. Vy has her own authored
+ // bedroom in the live Kitahama house above and is animated by the neighbours engine.
+ const household=householdFor(profile.name),roomResidents=household.residents.filter(name=>RESIDENTS.some(p=>p.name===name)),layout=SHARED_HOME_LAYOUT,homeLayouts=sharedHomeLayouts(roomResidents);
  const part=(size,pos,color,solid=false)=>{const mesh=box(size,pos,color,room,false);if(solid)collider(pos[0],pos[2],size[0],size[2],pos[1]+size[1]/2);return mesh;};
  const detailBox=(size,pos,c,name)=>{const m=part(size,pos,c);m.name=name;return m;};
  part([7,.12,6.8],[0,-.06,0],0xbbaa87);
@@ -84,7 +86,7 @@ function buildSharedHome({site,profile,room,box,reg,collider,action,exit}){
  residentShell(part([7,2.8,.12],[0,1.4,-3.4],0xe3d8bd));
  residentShell(part([7,.08,6.8],[0,2.84,0],0xf1ead9),'Ceiling').receiveShadow=false;
  part([1.9,.12,.7],[0,.68,1.35],0x98724e,true);
- household.residents.forEach((name,i)=>{
+ roomResidents.forEach((name,i)=>{
   const side=i?-1:1,style=residentPersonality(name),p=RESIDENTS.find(p=>p.name===name),routine=homeLayouts[name],hours=sleepHours(p),x=routine.bed[0];
   const bed=part([1.2,.18,2.15],[x,.36,-1.05],0xe9dfc8,true);bed.name=name+' futon';
   part([1.1,.055,1.62],[x,.48,-.77],style.top);part([.92,.16,.48],[x,.57,-1.57],0xf3e8d2);
@@ -99,9 +101,9 @@ function buildSharedHome({site,profile,room,box,reg,collider,action,exit}){
  });
  addIkeaFurniture({room,box,collider,reg,action,kind:'lack',x:2.95,z:.55});
  addIkeaFurniture({room,box,collider,reg,action,kind:'ivar',x:-2.85,z:.75});
- addKitchen(part,detailBox,reg,action,household.residents);
- addTeaSetting(detailBox,{x:0,y:.745,z:1.3,people:household.residents.length});
- addFamilyPhoto(detailBox,{x:0,z:-3.33,members:household.residents.map(name=>({name}))});
+ addKitchen(part,detailBox,reg,action,roomResidents);
+ addTeaSetting(detailBox,{x:0,y:.745,z:1.3,people:roomResidents.length});
+ addFamilyPhoto(detailBox,{x:0,z:-3.33,members:roomResidents.map(name=>({name}))});
  addEntryDetails(part,0,3.15);
  registerHomeSeats({parent:room,reg,action,layouts:homeLayouts});
  const door=new THREE.Object3D();door.position.set(...layout.exit);room.add(door);reg(door,homeExitLabel(site,profile),exit,true);

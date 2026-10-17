@@ -41,11 +41,14 @@ async function people(ctx){
  const c=await load(),data=await c.apply.readData(ctx.repo),{looks,published}=data;
  let guide=[];try{guide=JSON.parse(await codeFile('johansson-town/guide/residents.json'));}catch{}
  const {PROFILES}=await import('../../src/people/profiles.js');
+ const {homeForResident,secondaryHomesFor}=await import('../../src/people/island-households.js');
+ const residence=h=>h?{id:h.home,address:h.address,residents:[...h.residents],unitNumber:h.unitNumber,island:h.island,entranceSiteId:h.entranceSiteId}:null;
  const roles=new Map([...PROFILES.map(p=>[p.name,p.role]),...guide.map(g=>[g.name,g.role])]);
  const groupOf=name=>Object.entries(c.cast.RESIDENT_GROUPS).find(([,names])=>names.includes(name))?.[0];
  const sha=v=>c.sha.recordSha256(v??null);
  const resident=name=>{const look=own(looks.looks,name),was=own(published.looks,name);
-  return {kind:'resident',name,group:groupOf(name),look,publishedLook:was,unpublished:sha(look?.set)!==sha(was?.set),recipe:c.change.lookedRecipe(name,look?.set),role:roles.get(name)||''};};
+  return {kind:'resident',name,group:groupOf(name),look,publishedLook:was,unpublished:sha(look?.set)!==sha(was?.set),recipe:c.change.lookedRecipe(name,look?.set),role:roles.get(name)||'',
+   home:residence(homeForResident(name)),secondaryHomes:secondaryHomesFor(name).map(residence)};};
  const studio=id=>{const r=looks.characters[id],was=own(published.characters,id);
   return {kind:'studio',id,name:r.name,group:'studio',record:r,unpublished:!was||sha(was)!==sha(r),recipe:r.recipe,role:r.card?.role||''};};
  /** A resident by name, or a Studio character by id or name; failing that, the one person whose name matches without accents or capitals. */
@@ -280,7 +283,7 @@ export const TOOLS=[
   async run({group,query},ctx){
    const {c,looks,resident,studio}=await people(ctx),q=query===undefined?null:c.rules.foldName(query);
    const all=[...c.cast.RESIDENT_NAMES.map(resident),...Object.keys(looks.characters).map(studio)]
-    .map(p=>({name:p.name,...p.id?{id:p.id}:{},group:p.group,role:p.role,edited:p.kind==='studio'||!!p.look,unpublished:p.unpublished}));
+    .map(p=>({name:p.name,...p.id?{id:p.id}:{},group:p.group,role:p.role,home:p.home||null,secondaryHomes:p.secondaryHomes||[],edited:p.kind==='studio'||!!p.look,unpublished:p.unpublished}));
    const list=all.filter(p=>(!group||p.group===group)&&(!q||c.rules.foldName(p.name+' '+p.role).includes(q)));
    return {count:list.length,characters:list};
   }},
@@ -291,7 +294,7 @@ export const TOOLS=[
    const source=who.kind==='studio'?'a Studio-only character (data/studio/looks.json); World does not place them yet':
     {cast:'drawn in src/avatars/cast.js (CAST_RECIPES)',neighbour:'drawn in src/avatars/cast.js (NEIGHBOUR_RECIPES)',townsfolk:'made from their name and personality (cast.js baseRecipe)'}[who.group];
    const {profile,...recipe}=who.recipe;
-   return {name:who.name,id:who.id,group:who.group,role:who.role,source,look:who.kind==='resident'?who.look:null,
+   return {name:who.name,id:who.id,group:who.group,role:who.role,home:who.home||null,secondaryHomes:who.secondaryHomes||[],source,look:who.kind==='resident'?who.look:null,
     published:who.kind==='resident'?who.publishedLook:undefined,unpublished:who.unpublished,card:who.record?.card,recipe,profile,
     note:'profile (gait and voice) is read-only: a look changes how somebody looks, not who they are. A resident keeps the life stage World draws them at.',
     options:options?c.looks.LOOK_FIELDS:undefined};

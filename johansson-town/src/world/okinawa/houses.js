@@ -162,12 +162,23 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
  kit.block(-W,W,0,H,-D,back,colour,'plaster');
  kit.block(-W,-open,0,ground,back,D,colour,'plaster');kit.block(open,W,0,ground,back,D,colour,'plaster');
  kit.block(-W,W,ground,H,back,D,colour,'plaster');
- kit.block(-W-.02,W+.02,0,.3,-D-.02,D+.02,0xb3ad9f);
+ const fitted=interior==='liquor',floor=.08;
+ if(fitted){
+  // The foundation belongs under the walls, not across the open shop floor. The
+  // old 30 cm plinth buried the 8 cm tiles and was too tall for the walking surface.
+  kit.block(-W-.02,W+.02,0,.3,-D-.02,back,0xb3ad9f);
+  kit.block(-W-.02,-open,0,.3,back,D+.02,0xb3ad9f);
+  kit.block(open,W+.02,0,.3,back,D+.02,0xb3ad9f);
+ }else kit.block(-W-.02,W+.02,0,.3,-D-.02,D+.02,0xb3ad9f);
  // Inside: floor, back wall, shelves of goods, a counter; lit, so it glows at night.
- kit.block(-open,open,.02,.08,back,D-.05,0x9d9486);
- kit.block(-open,open,.08,ground-.3,back,back+.06,0xefe6d2,'glow');
+ kit.block(-open,open,fitted?0:.02,floor,back,fitted?D+.02:D-.05,0x9d9486);
+ kit.block(-open,open,floor,ground-.3,back,back+.06,0xefe6d2,'glow');
  kit.block(-open,open,ground-.3,ground,back,D-.3,0xd8d2c4,'glow');
- shopInterior(kit,interior,{open,back,D,r,stock});
+ let furniture;
+ // Draw and collide fittings in the same local frame, standing on the finished
+ // floor. Other shop-house interiors retain their existing layout.
+ if(fitted)kit.at(0,0,0,()=>{furniture=shopInterior(kit,interior,{open,back,D,r,stock});},floor);
+ else furniture=shopInterior(kit,interior,{open,back,D,r,stock});
  // The rolled-up shutter's box over the opening, and the fascia board above it.
  kit.block(-open,open,ground-.42,ground-.08,D-.35,D-.05,0x8e9699,'metal');
  kit.block(-W,W,ground,ground+.1,D,D+.08,trim);
@@ -215,7 +226,7 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
  if(wantsAd&&typeof document!=='undefined'&&document.createElement)try{
   kit.sign(wallAd(ad,seed),Math.min(2.6,d*.38),Math.min(3.4,(H-ground)*1.1),adSide*(W+.035),ground+1.55,D*.18,{ry:adSide*Math.PI/2,depth:.02,edge:colour,name:'painted wall advert sign'});
  }catch{}
- return [kit.rect(-W-.05,W+.05,-D-.05,back+.02,H+.6,'shop-house'),kit.rect(-W-.05,-open,back,D,ground,'shop-house'),kit.rect(open,W+.05,back,D,ground,'shop-house')];
+ return [kit.rect(-W-.05,W+.05,-D-.05,back+.02,H+.6,'shop-house'),kit.rect(-W-.05,-open,back,D,ground,'shop-house'),kit.rect(open,W+.05,back,D,ground,'shop-house'),...furniture];
 }
 
 /**
@@ -342,26 +353,46 @@ export function potPlant(kit,x,z,{seed=9,size=.35}={}){
  * because a fish shop that looks like a general store is a general store.
  */
 function shopInterior(kit,kind,{open,back,D,r,stock}){
+ const furniture=[],fitted=kind==='liquor';
  const shelves=(levels=4,colours=stock,tall=false)=>{
+  let top=0;
   for(let level=0;level<levels;level++){
    const y=.4+level*.62;
    kit.box(open*2-.3,.04,.42,0,y,back+.28,0xb9b0a0);
-   for(let i=0;i<Math.floor(open*2/(tall?.18:.32));i++){
-    const x=-open+.3+i*(tall?.18:.32);
-    if(tall)kit.cyl(.055,.06,.3+r.next()*.1,x,y+.2,back+.28,r.pick(colours),{segments:6,finish:'glow'});
+   top=Math.max(top,y+.02);
+   const spacing=tall?.18:.32,columns=tall?Math.floor((open*2-.42)/spacing)+1:Math.floor(open*2/spacing);
+   for(let i=0;i<columns;i++){
+    // Centre the bottles within the shelf, rather than letting the last one
+    // overhang its end and run into the side wall.
+    const x=tall?(i-(columns-1)/2)*spacing:-open+.3+i*spacing;
+    if(tall){const h=.3+r.next()*.1;kit.cyl(.055,.06,h,x,y+.2,back+.28,r.pick(colours),{segments:6,finish:'glow'});top=Math.max(top,y+.2+h/2);}
     else kit.box(.24,.26+r.next()*.14,.28,x,y+.17,back+.28,r.pick(colours),{finish:'glow'});
    }
   }
+  if(fitted)furniture.push(kit.rect(-open+.15,open-.15,back+.07,back+.49,top,'liquor-shelves'));
  };
- const counter=(x,width,colour=0x7d6a55)=>{kit.box(width,.95,.6,x,.48,back+1.2,colour);kit.box(width+.06,.05,.66,x,.98,back+1.2,0xcfc5b3);};
+ const counter=(x,width,colour=0x7d6a55)=>{
+  kit.box(width,.95,.6,x,.48,back+1.2,colour);kit.box(width+.06,.05,.66,x,.98,back+1.2,0xcfc5b3);
+  if(fitted)furniture.push(kit.rect(x-(width+.06)/2,x+(width+.06)/2,back+.87,back+1.53,1.005,'liquor-counter'));
+ };
  if(kind==='zenzai'){
-  // A counter with the ice shaver on it and the glass bowls, two tables and their stools.
+  // The ice shaver and bowls share Nakamura's counter with Blue Coral's small
+  // teal display, replacing the table in the same corner of the frontage.
   shelves(2,[0xe8e2d0,0xd9b04a,0x9c3b2e]);
   counter(-open*.35,open*1.1);
   kit.cyl(.12,.14,.45,-open*.35,1.22,back+1.2,0xc0392b,{segments:10});kit.cyl(.16,.16,.08,-open*.35,1.5,back+1.2,0xd0d4d6,{segments:10});
   for(const x of [-open*.7,0])kit.cyl(.09,.06,.1,x,1.05,back+1.35,0xdfeef2,{segments:8,finish:'gloss'});
-  for(const x of [open*.45]){kit.cyl(.35,.35,.05,x,.75,D-1.4,0xe8e2d0,{segments:14});kit.cyl(.05,.05,.72,x,.37,D-1.4,0x6d7478,{segments:6});
-   for(const dz of [-.55,.55])kit.cyl(.16,.16,.45,x,.23,D-1.4+dz,0xc0392b,{segments:10});}
+  const displayX=open*.45,displayZ=D-1.4;
+  kit.box(.7,.6,.5,displayX,.6,displayZ,0x55b7ad);
+  kit.box(.74,.04,.54,displayX,.92,displayZ,0xf2ede0);
+  for(const [i,colour] of [0xf2e2b7,0xf4b7c7,0xa6cedc].entries()){
+   const x=displayX+(i-1)*.21;
+   kit.box(.18,.055,.28,x,.965,displayZ,0xd7e3df,{finish:'metal'});
+   kit.sphere(.085,x,1.015,displayZ,colour,{sy:.7,detail:1});
+  }
+  for(const x of [displayX-.34,displayX+.34])kit.box(.025,.27,.5,x,1.055,displayZ,0x429b95);
+  kit.box(.74,.035,.54,displayX,1.19,displayZ,0x55b7ad);
+  furniture.push(kit.rect(displayX-.37,displayX+.37,displayZ-.27,displayZ+.27,1.21,'ice-cream-display'));
  }else if(kind==='post'){
   // The counter with its glass screen and brass scale, the wall of pigeonholes behind,
   // the form rack, and the round red post box out on the pavement.
@@ -402,10 +433,14 @@ function shopInterior(kit,kind,{open,back,D,r,stock}){
  }else if(kind==='liquor'){
   // Bottles, tall and in rows, and the clay pots at the back that are not for sale.
   shelves(4,[0x3b4a2c,0x6a4a2a,0xd8d0b0,0x2c5a6a,0x8a3b2e],true);
-  for(const x of [-open*.6,open*.6])kit.sphere(.34,x,.34,back+1.3,0x6a4a36,{sy:1.1,finish:'gloss'});
+  for(const x of [-open*.6,open*.6]){
+   kit.sphere(.34,x,.34,back+1.3,0x6a4a36,{sy:1.1,finish:'gloss'});
+   furniture.push(kit.rect(x-.34,x+.34,back+.96,back+1.64,.714,'liquor-pot'));
+  }
   counter(0,open*.8);
  }else{
   shelves();
   counter(-open*.3,open*1.1);
  }
+ return furniture;
 }

@@ -45,7 +45,7 @@ test('the drawn park sits on its own ground, with its bench where the seat is an
  assert.ok(benchBytes.byteLength<=80_000,'the bench export stays within its local download budget');
  const park=world.park.group;let meshes=0;park.traverse(o=>{if(o.isMesh){meshes++;assert.ok(!o.isSkinnedMesh);}});
  assert.ok(meshes<=24,'The park is a handful of draws, not '+meshes);
- const ground=park.getObjectByName('Harbour Park ground');assert.ok(ground,'the mound is built');
+ const ground=park.getObjectByName('Harbour Park ground');assert.ok(ground,'the level park ground is built');
  for(const [x,z] of [[2.06,0],[.7,0],[-8,-13.9],[-6,-7],[10,10]].map(([x,z])=>[PARK.x+x*PARK.scale,PARK.z+z*PARK.scale])){
   const hits=new THREE.Raycaster(new THREE.Vector3(x,20,z),new THREE.Vector3(0,-1,0)).intersectObject(ground,false);
   assert.ok(hits.length,'no ground at '+x+','+z);assert.ok(Math.abs(hits[0].point.y-parkHeight(x,z))<.03,'the ground is off the walkable height at '+x+','+z);
@@ -57,13 +57,13 @@ test('the drawn park sits on its own ground, with its bench where the seat is an
  assert.equal(new THREE.Raycaster(eye,direction,.1,25).intersectObject(park,true).length,0,'Bench view towards the port is unobstructed');
  // The cherry stands on its collider, in one dress at a time.
  const {blossom,leaf}=world.park.trees;assert.ok(blossom.visible!==leaf.visible,'the cherry wears both dresses at once');
- const tx=PARK.x+PARK_TREE[0]*PARK.scale;assert.ok(world.colliders.some(c=>circleHitsRect(tx,PARK.z,.1,c)),'the trunk has no collider');
+ const tx=PARK.x+PARK_TREE[0]*PARK.scale,tz=PARK.z+PARK_TREE[1]*PARK.scale;assert.ok(world.colliders.some(c=>circleHitsRect(tx,tz,.1,c)),'the trunk has no collider');
 });
 
 test('the western approach is clear',()=>{
  installDOM();
  const world={group:new THREE.Group(),colliders:[]};buildPark(world,{register(){},onAction(){},shadows:false});
- const x=PARK.x-10.374*PARK.scale,z=PARK.z+.4*PARK.scale;assert.equal(world.colliders.some(c=>circleHitsRect(x,z,.32,c)),false,'The western approach has a ghost collider');
+ const [x,z]=[6,-20.8];assert.equal(world.colliders.some(c=>circleHitsRect(x,z,.32,c)),false,'The western approach has a ghost collider');
 });
 
 test('bench collision matches its visible frame and leaves the camera clear above the backrest',()=>{

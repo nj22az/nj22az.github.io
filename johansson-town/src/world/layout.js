@@ -9,6 +9,7 @@ import {DINING,NIGHT_LANE,inDiningLane,IZAKAYA_LANE} from './dining-layout.js';
 import {oilJettyAt} from './oil-jetty-layout.js';
 const OIL_JETTY_ROUTE=Object.freeze({id:'oil-jetty',surface:'stone'});
 import {PARK,parkHeight,parkApproachHeight,parkSkirtHeight} from './park-layout.js';
+import {inHarbourPark,harbourPondAt,parkPathAt} from './harbour-park-plan.js';
 import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
 import {BUS_STATION,BUS_STATION_ROUTES} from './bus-station.js';
 import {FOREST_EDGE} from './forest-edge.js';
@@ -54,17 +55,6 @@ export const ROUTES = [
  {id:'ramen-door',width:2.8,surface:'stone',points:[[0,DINING.ramenDoor[1]],DINING.ramenDoor]},
  {id:'office-door',width:2.6,surface:'stone',points:[[13.3,-36],[13.3,-37.55]]},
  {id:'office-crossing',width:3,surface:'stone',points:[[0,-36],[18,-36]]},
- {id:'park-walk',width:4,surface:'stone',points:[[0,-36],[4.6,-36],[4.6,PARK.z]]},
- {id:'park-approach',width:3,surface:'stone',points:[[4.6,PARK.z],[PARK.x-PARK.half+.35,PARK.z]]},
- // The pavement stops two metres short of the park, so the lawn could only be reached
- // through one slot halfway along it and the rest read as an invisible wall. This is
- // the apron between the two: ground you can actually walk along beside the grass.
- // The pavement stopped two metres short of the park, so the lawn could only be
- // reached through one slot halfway along it and the rest read as an invisible wall.
- // This is the apron between them. It stops at the plinth on purpose: the park is
- // raised by up to 1.2m and only the approach ramps up to it, so running the apron
- // over the edge would pop the player up the side of it.
- {id:'park-edge',width:3.4,surface:'stone',points:[[PARK.x-PARK.half-1.65,PARK.z-PARK.half+.8],[PARK.x-PARK.half-1.65,PARK.z+PARK.half-.8]]},
  {id:'south-cut',width:3,surface:'stone',points:[[0,-36],[-12,-36]]},
  {id:'market-cut',width:3,surface:'stone',points:[[0,-26],[-5.5,-26]]},
  STAFF_YARD_ROUTE,
@@ -93,6 +83,7 @@ export const LANDINGS=[];
  */
 const RIM=[[1,0],[-1,0],[0,1],[0,-1],[.7071,.7071],[.7071,-.7071],[-.7071,.7071],[-.7071,-.7071]];
 export function routeAt(x,z,r=0){
+ if(harbourPondAt(x,z,r))return null;
  if(globalThis.__JOHANSSON_WALK_SURFACE__?.level?.(x,z)!=null)return {id:"building-stairs",surface:"stone"};
  const strict=regionAt(x,z,r);
  if(strict||!(r>0))return strict;
@@ -114,7 +105,7 @@ function regionAt(x,z,r=0){
  // Kitano Road and its bridge, east of Main Street's kerb: asked before the lawn, the beach
  // and the airport, which it crosses on its own level. See kitano-link-plan.js.
  if((x>MAIN_ROAD.pavementEast)){const road=kitanoRoadAt(x,z,r);if(road)return road;}
- if(Math.abs(x-PARK.x)<=PARK.half-r&&Math.abs(z-PARK.z)<=PARK.half-r)return PARK;
+ if(inHarbourPark(x,z,-r))return parkPathAt(x,z)||PARK;
  if(oilJettyAt(x,z,r))return OIL_JETTY_ROUTE;
  // The park is asked first, so the lawn is the ground around its mound rather than a
  // lid over it, and its ramp keeps its own paving where the two overlap.
@@ -172,7 +163,7 @@ export function planHeight(x,z){
   const street=x>=MAIN_ROAD.pavementWest&&x<=MAIN_ROAD.pavementEast&&z>=MAIN_ROAD.minZ&&z<=MAIN_ROAD.maxZ;
   const station=x>=BUS_STATION.minX&&x<=BUS_STATION.maxX&&z>=BUS_STATION.minZ&&z<=BUS_STATION.maxZ;
   if(street||station||westYardAt(x,z)||nishiAt(x,z)||schoolAt(x,z))return 0;
-  const garden=coastalSurface(x,z);if(garden?.id==='aoba-garden')return garden.y;
+  const garden=coastalSurface(x,z);if(garden?.id==='harbour-park')return garden.y;
   const airport=airportSurface(x,z);if(airport)return airport.y;
   const ramp=beachAccessHeight(x,z);if(ramp!==null)return ramp;
   const coast=coastalSurface(x,z);if(coast&&coast.id!=='island-ground')return coast.y;

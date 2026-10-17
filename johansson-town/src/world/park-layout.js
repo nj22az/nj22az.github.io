@@ -1,134 +1,32 @@
-import {PARK_HEIGHTS} from './park-height.js';
 import {GROUND} from '../render/ground-palette.js';
 import {GATEBALL,GATEBALL_ACTIVE} from './okinawa/layout.js';
 import {HARBOUR_BENCH_DIMENSIONS} from './harbour-bench-dimensions.js';
-/** Inside the gateball court the ground stays level; a low wall holds the hill back (quarters.js). */
+import {HARBOUR_PARK_MAIN,HARBOUR_PARK_SEATS,inHarbourPark,harbourParkHeight,parkPathAt} from './harbour-park-plan.js';
+
 export const inGateball=(x,z)=>GATEBALL_ACTIVE&&x>GATEBALL.minX&&x<GATEBALL.maxX&&z>GATEBALL.minZ&&z<GATEBALL.maxZ;
-/**
- * The gateball court stands on a level terrace up at the hill's own ground, not in a pit
- * cut into its foot. Toward the hill (west and south) the terrace is graded into it with
- * grass banks; toward the sea it is held up by a stone wall. It runs east past the court
- * to take the elders' shelter and meets the seawall's inner face.
- */
 export const COURT_TERRACE=Object.freeze({minX:GATEBALL.minX,maxX:33.2,minZ:GATEBALL.minZ,maxZ:GATEBALL.maxZ,height:.7,bank:2.2});
-export const onCourtTerrace=(x,z)=>{const T=COURT_TERRACE;return x>=T.minX&&x<=T.maxX&&z>=T.minZ&&z<=T.maxZ;};
-/**
- * The terrace and its banks, given the ground that would be there without it; null where
- * the terrace does not reach. North of the terrace is the retaining wall, so no bank.
- */
-export function courtTerraceHeight(x,z,natural=0){
- if(!GATEBALL_ACTIVE)return null;
- const T=COURT_TERRACE,p=activePark();
- if(onCourtTerrace(x,z))return T.height;
- if(x>T.maxX||(z<T.minZ&&x>=T.minX))return null;
- // Round the north-west corner off steeply: the lawn there is a strip half a metre wide
- // before the port, and a long bank would carry the rise out onto the quay.
- // To the south the hill's own square begins half a metre off, so the bank has to have
- // arrived at the hill's height by its edge; past the square's corner it widens again.
- const gap=p.plaza?T.bank:p.z-p.half-T.maxZ;
- const south=Math.min(T.bank,Math.max(.3,gap+Math.max(0,x-(p.x+p.half))+Math.max(0,p.x-p.half-x)));
- const dx=Math.max(0,T.minX-x)/T.bank,dz=Math.max(0,z-T.maxZ)/south+Math.max(0,T.minZ-z)*5/T.bank,t=Math.hypot(dx,dz);
- if(t>=1)return null;
- const s=t*t*(3-2*t);
- return T.height+(natural-T.height)*s;
-}
-/**
- * What the supplied park's ground textures are multiplied by.
- *
- * They are bright spring greens and near-white paving, and the town's sun, its 1.75
- * fill and the grade's exposure together push them past white: the mound came out as
- * a cream dome with the paths lost in it. Bringing the materials' own colour down puts
- * the textures back inside the range the ramp can band. The lawn outside the park uses
- * the same green, so the two are one field.
- */
+export const onCourtTerrace=(x,z)=>GATEBALL_ACTIVE&&x>=COURT_TERRACE.minX&&x<=COURT_TERRACE.maxX&&z>=COURT_TERRACE.minZ&&z<=COURT_TERRACE.maxZ;
+export const courtTerraceHeight=(x,z)=>onCourtTerrace(x,z)?COURT_TERRACE.height:null;
 export const TURF_TINT=GROUND.grass,PARK_PATH_TINT=0xcfc2a0;
 export const PARK_TERRAIN_SEGMENTS=96;
-export const PARK={id:'harbour-park',x:15.8,z:-23.8,half:7.84,lift:1,scale:.56,surface:'stone'};
-export const COMPACT_PARK={id:'harbour-park',x:14.2,z:-16.4,half:4.2,halfX:5.2,halfZ:4,lift:0,plaza:true,surface:'stone'};
-export function activePark(){return PARK;}
-export function parkHeight(x,z){
- const p=activePark();
- if(p.plaza){
-  if(Math.abs(x-p.x)<=(p.halfX||p.half)&&Math.abs(z-p.z)<=(p.halfZ||p.half))return 0;
-  return null;
- }
- const s=p.scale||1,lx=(x-p.x)/s,lz=(z-p.z)/s;
- if(Math.abs(lx)>14+1e-7||Math.abs(lz)>14+1e-7)return null;
- const gx=Math.max(0,Math.min(56,(lx+14)*2)),gz=Math.max(0,Math.min(56,(lz+14)*2));
- if(gx<0||gz<0||gx>56||gz>56)return null;
- const ix=Math.min(55,Math.floor(gx)),iz=Math.min(55,Math.floor(gz)),u=gx-ix,v=gz-iz;
- const a=PARK_HEIGHTS[iz*57+ix]*(1-u)+PARK_HEIGHTS[iz*57+ix+1]*u,b=PARK_HEIGHTS[(iz+1)*57+ix]*(1-u)+PARK_HEIGHTS[(iz+1)*57+ix+1]*u;
- return p.lift+(a*(1-v)+b*v)*s;
-}
-/**
- * How far the mound's foot is graded out into the ground around it.
- *
- * The park was modelled as a plinth: a heightfield with a vertical face all round, so
- * from the lawn it was a 0.65m step on one side and a 1.4m wall on another, and the
- * only way up was the one authored ramp. The skirt grades the edge height down to the
- * surrounding ground over this distance, so the mound can be walked up from anywhere.
- */
-export const PARK_SKIRT=4.5;
-/**
- * Except toward the town, where the pavement's east kerb is only 2.76m from the
- * square: run the skirt under an authored paved route and it lifts the player off
- * the paving. The mound's low side faces that way, so the short skirt is the gentle
- * one anyway.
- */
-export const PARK_SKIRT_WEST=2.7;
-/**
- * The graded ground just outside the park square. It meets parkHeight exactly at the
- * square's edge, so the two together are one continuous surface.
- */
-export function parkSkirtHeight(x,z){
- const p=activePark();if(p.plaza)return null;
- const ex=Math.min(Math.max(x,p.x-p.half),p.x+p.half),ez=Math.min(Math.max(z,p.z-p.half),p.z+p.half);
- const d=Math.hypot(x-ex,z-ez);
- if(d<=0)return null;
- // The reach turns with the outward direction rather than switching at the face, or
- // the skirt would step by its own width along the corner where the rule flipped.
- const west=d?Math.max(0,(ex-x)/d):0;
- const reach=PARK_SKIRT+(PARK_SKIRT_WEST-PARK_SKIRT)*west;
- const edge=d<reach?parkHeight(ex,ez):null;
- const natural=edge===null?null:edge*(1-d/reach);
- const terrace=courtTerraceHeight(x,z,natural??0);
- return terrace??natural;
-}
-export function parkApproachHeight(x,z){
- const p=activePark();if(p.plaza)return null;
- const edge=p.x-p.half,start=edge-2.8;
- const across=Math.abs(z-p.z);
- // Full height across the approach route itself, then faded out over the next metre
- // and a half. Ending the ramp at a hard edge left a 0.68m cliff where the apron ran
- // alongside it: one step sideways off the ramp and the ground dropped away.
- if(x<start||x>=edge||across>3)return null;
- const lateral=Math.min(1,Math.max(0,(3-across)/1.5));
- const target=parkHeight(edge,z);
- if(target==null)return 0;
- // Fade out into the skirt rather than to nothing. Fading to zero was right while the
- // ground around the mound was flat; now that the skirt grades the whole foot, fading
- // to zero put a step back beside the ramp it was added to remove.
- const base=parkSkirtHeight(x,z)??0;
- return base+(((x-start)/(edge-start))*target-base)*lateral;
-}
-/**
- * The park model is laid out at 0.56 scale, which left its bench with a seat 21 cm off the
- * ground: anyone sitting on it had their feet through the path. The bench alone is scaled
- * back up about its own foot (model units) so the seat stands at a real 42 cm.
- */
+const b=HARBOUR_PARK_MAIN;
+/** The raised imported mound is retired. The park, its porch walk and the lawn share datum zero. */
+export const PARK=Object.freeze({id:'harbour-park',title:'Minato Harbour Park',x:(b.minX+b.maxX)/2,z:(b.minZ+b.maxZ)/2,half:(b.maxZ-b.minZ)/2,halfX:(b.maxX-b.minX)/2,halfZ:(b.maxZ-b.minZ)/2,lift:0,scale:.56,surface:'grass',level:true,bounds:b});
+export const COMPACT_PARK=PARK;
+export const activePark=()=>PARK;
+export const parkHeight=harbourParkHeight;
+export const PARK_SKIRT=0,PARK_SKIRT_WEST=0;
+export const parkSkirtHeight=(x,z)=>inHarbourPark(x,z)?harbourParkHeight(x,z):null;
+export const parkApproachHeight=(x,z)=>parkPathAt(x,z)?.park?0:null;
+// Retained export for old bench imports; current geometry uses its measured dimensions below.
 export const PARK_BENCH_FIT=Object.freeze({x:2.12,y:1.58,z:0,scale:2,seat:1.96,top:2.51,width:.52,length:1.86});
-/** A park-model point on the bench, after the bench has been scaled up. */
 export const benchPoint=(x,y,z)=>{const f=PARK_BENCH_FIT;return [f.x+(x-f.x)*f.scale,f.y+(y-f.y)*f.scale,f.z+(z-f.z)*f.scale];};
-/** Blender bench dimensions and placement share the generator's measured design. */
-export function parkBenchGeometry(p=activePark()){
- const d=HARBOUR_BENCH_DIMENSIONS,s=p.scale||1,k=s/d.referenceParkScale;
- return {dimensions:d,scale:k,x:p.x+d.parkModelX*s,z:p.z,footY:p.lift+d.parkModelFootY*s,
-  seatY:p.lift+d.parkModelFootY*s+d.seatHeight*k,width:d.footprintDepth*k,length:d.length*k,top:d.backHeight*k};
+export function parkBenchGeometry(){
+ const d=HARBOUR_BENCH_DIMENSIONS,s=HARBOUR_PARK_SEATS[0],footY=.02;
+ return {dimensions:d,scale:1,x:s.x,z:s.z,footY,seatY:footY+d.seatHeight,width:d.footprintDepth,length:d.length,top:d.backHeight};
 }
-export function parkBench(p=activePark()){
- if(p.plaza)return {position:[p.x,0,p.z+.35],surfaceY:.54,eyeY:1.3,yaw:0,pitch:0,stand:[p.x,0,p.z+1.45]};
- // Sit near the front slat so short shins clear the seat; its height and length stay independent of the walking approach.
- const g=parkBenchGeometry(p),d=g.dimensions,s=p.scale||1,bx=g.x+d.sitZ*g.scale,bz=p.z,h=parkHeight(bx,bz)??p.lift,standX=p.x+d.standModelX*s;
- return {position:[bx,h,bz],surfaceY:g.seatY,eyeY:g.seatY+.75,yaw:Math.PI/2,pitch:0,stand:[standX,parkHeight(standX,p.z)??h,p.z]};
+export function parkBench(){
+ const g=parkBenchGeometry(),s=HARBOUR_PARK_SEATS[0];
+ return {position:[g.x+g.dimensions.sitZ,0,g.z],surfaceY:g.seatY,eyeY:g.seatY+.75,yaw:s.yaw,pitch:0,stand:[s.stand[0],0,s.stand[1]]};
 }
-export const PARK_BENCH=parkBench(PARK);
+export const PARK_BENCH=Object.freeze(parkBench());

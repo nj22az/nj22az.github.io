@@ -99,3 +99,22 @@ test('activity saves restore relationship memories in the correct player slot',(
  addPlayer(localStorage,'Another player',100);const c=createActivities(options);
  assert.deepEqual(c.state.relationships,{});assert.equal(relationshipBetween(b.state,'Chin','Tetsuo').totals.meal,1);
 });
+
+test('directory record capability keeps Thuan and only offers existing readable records',()=>{
+ const dom=installDOM(),a=createActivities({say(){},onWeather(){},onTime(){}});
+ for(const name of ['Thuan','Chin','Mr Fujita'])assert.equal(a.canResidentRecord(name),true,name+' already has a record');
+ for(const name of ['Vy','Grandmother Higa','Johansson','Not a resident'])assert.equal(a.canResidentRecord(name),false,name+' has no established record data');
+ const saved=JSON.stringify(a.state);
+ a.residentRecords(['Chin','Thuan','Vy','Chin','Mr Fujita']);
+ const body=document.querySelector('#activityBody'),names=()=>body.children.find(e=>e.className==='resident-list').children.map(b=>b.textContent);
+ assert.deepEqual(names(),['Chin','Thuan','Mr Fujita'],'Thuan appears once and unsupported cards do not become inactive list buttons');
+ body.children.find(e=>e.className==='resident-list').children.find(b=>b.textContent==='Thuan').onclick();
+ assert.equal(document.querySelector('#activityTitle').textContent,'Resident record · Thuan');
+ assert.ok(body.children.some(e=>e.textContent==='Personality dials'));
+ assert.ok(document.querySelector('#activity').classList.contains('resident-record'));
+ dom.button('Back to residents');assert.deepEqual(names(),['Chin','Thuan','Mr Fujita'],'Returning preserves the offered records');
+ const title=document.querySelector('#activityTitle').textContent;
+ a.residentRecord('Vy');assert.equal(document.querySelector('#activityTitle').textContent,title,'An unsupported record does not replace the current activity');
+ a.close();assert.equal(a.paused,false);
+ assert.equal(JSON.stringify(a.state),saved,'Browsing records never changes the save');
+});

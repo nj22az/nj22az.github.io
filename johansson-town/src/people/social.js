@@ -1,7 +1,7 @@
 import {onSakuraShift,isWeekend} from '../commerce/sakura-rota.js';
 import {townCalendarAt} from '../town-clock.js';
 import {izakayaJob} from './izakaya-hours.js';
-import {gardenPoint} from '../world/garden-layout.js';
+import {HARBOUR_PARK_SEATS} from '../world/harbour-park-plan.js';
 import {bookshopVisitPlan} from './bookshop-visits.js';
 import {marketVisitsForDay,RAMEN_VISITS,marketVisitPurpose} from './market-visits.js';
 export {marketVisitsForDay,RAMEN_VISITS} from './market-visits.js';
@@ -84,7 +84,7 @@ const THUAN_WALK=Object.freeze([
  {until:896,place:'nap',target:BENCH_STAND,activity:'asleep on the bench behind the shop'},
  {until:906,place:'park',target:PARK_STAND,activity:'walking up to the park',pace:STROLLING},
  {until:912,place:'stroll',target:PARK_STAND,activity:'sitting in the park',pace:STROLLING},
- {until:916,place:'stroll',target:[31.6,1.5],activity:'walking the sea wall',pace:STROLLING},
+ {until:916,place:'stroll',target:[31.5,-10],activity:'walking the Harbour Park shore',pace:STROLLING},
  // Start home while the break is still active. Waiting until the schedule flipped
  // back to "work" left only ten seconds to cross the town, which encouraged route
  // shortcuts and made the old loose facing gate look acceptable.
@@ -121,7 +121,7 @@ export function thuanAfternoon(profile,minutes,rain=false){
 export const NAO_DAY=Object.freeze([
  {until:815,place:'market',target:MARKET_THRESHOLD,activity:'buying Ramune soda at Sakura'},
  {until:850,place:'park',target:[PARK_STAND[0]-1.4,PARK_STAND[1]+1.2],activity:'walking around the west side of the park',pace:.78},
- {until:905,place:'stroll',target:[31.6,1.5],activity:'walking around the park to the sea wall',pace:.78},
+ {until:905,place:'stroll',target:[31.5,-10],activity:'walking around the park to the sea wall',pace:.78},
  {until:935,place:'park',target:[PARK_STAND[0]+1.1,PARK_STAND[1]-.8],activity:'finishing her park circuit',pace:.78},
  {until:960,place:'izakaya',target:IZAKAYA_DOOR,activity:'tidying Minato before opening'},
 ].map(Object.freeze));
@@ -171,7 +171,7 @@ const AFTER_WORK=Object.freeze({
  // where Thao is behind the bar (afterWorkPlan).
  Nhung:Object.freeze([
   {until:60,place:'market',target:MARKET_THRESHOLD,activity:'visiting her little sister Thuan at the Sakura counter'},
-  {until:90,place:'stroll',target:SAKURA_FREEZER[1],activity:'waiting outside Sakura with two Blue Coral cones from the lane, for Thuan to lock up'},
+  {until:90,place:'stroll',target:SAKURA_FREEZER[1],activity:'waiting outside Sakura with two Blue Coral cones from Nakamura’s, for Thuan to lock up'},
   {until:105,place:'stroll',target:SAKURA_FREEZER[1],activity:'sharing Blue Coral cones with Thuan outside Sakura'},
   {until:180,place:'izakaya',target:IZAKAYA_DOOR,activity:'at Minato with her sisters Thao and Thuan',withThuan:true},
  ]),
@@ -441,7 +441,7 @@ export function residentPlan(profile,minutes,rain=false,state=null){
  // Park's bench and the sea wall, ten minutes from the counter. Aoba Garden is 170 m
  // away, and redirecting her there left the plan and the walk in two places at once.
  if((!rain)&&['Reiko','Tetsuo'].includes(profile.name)&&['park','stroll'].includes(plan.place)&&Math.hypot(plan.target[0]-PARK_STAND[0],plan.target[1]-PARK_STAND[1])<3){
-  return {...plan,place:'park',target:gardenPoint(profile.name==='Reiko'?-42:-26,profile.name==='Reiko'?144.9:143.9),activity:plan.activity+' at Aoba Garden'};
+  return {...plan,place:'park',target:HARBOUR_PARK_SEATS[profile.name==='Reiko'?0:1].stand,activity:plan.activity+' at Harbour Park'};
  }
  return plan;
 }

@@ -351,15 +351,19 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
     body.scrollTop=bagBrowse.scroll;
     if(bagBrowse.item){const selected=[...grid.children].find(b=>b.dataset.item===bagBrowse.item);selected?.focus?.({preventScroll:true});}
   }
+  // The home directory has more people than the established personality records.
+  // Use the same capability check for its buttons, this list and the record itself.
+  const recordProfile=name=>RESIDENTS.find(p=>p.name===name)||PROFILES.find(p=>p.name===name);
+  const canResidentRecord=name=>!!recordProfile(name);
   let recordNames=RESIDENTS.map(p=>p.name);
   function residentRecords(names=recordNames){
-    recordNames=[...new Set(names)].filter(name=>PROFILES.some(p=>p.name===name));
+    recordNames=[...new Set(names)].filter(canResidentRecord);
     show('Residents','Read their personalities, interests and connections in this save.',[['Back to the Town Book',()=>{close();document.querySelector('#directoryButton')?.click();}],['Close',close]]);
     const list=document.createElement('div');list.className='resident-list';
     for(const name of recordNames){const button=document.createElement('button');button.type='button';button.textContent=name;button.onclick=()=>residentRecord(name);list.append(button);}body.append(list);
   }
   function residentRecord(name,compareName=''){
-    const profile=RESIDENTS.find(p=>p.name===name)||PROFILES.find(p=>p.name===name);if(!profile)return;
+    const profile=recordProfile(name);if(!profile)return;
     const recipe=recipeFor(name),type=personalityOf(recipe.profile),taste=residentPersonality(name);
     show('Resident record · '+name,type.name+' · '+type.line,[['Back to residents',()=>residentRecords()],['Close',close]]);
     modal.classList.add('resident-record');
@@ -1422,5 +1426,5 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);
   // Storage restock handshake may arrive while the tab was on thuans-storage.
   consumeStorageRestock();$('#soundButton').textContent=state.sound?'On':'Off';radioStation=state.radioStation||0;save();{const label=onWeather?.('start');if(typeof label==='string')$('#weatherButton').textContent=label;}
-  return {action,documentArchive,inventory,bag,residentRecord,residentRecords,close,save,keepPhoto,letGoPhoto,pocketAlbum,get album(){return state.pocketAlbum||[];},post,deliverPost,favourCard,get unreadPost(){return unreadCount(ensurePost(state).box);},spend,players,menu:show,dialogue:dialogueBox,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,consumeStorageRestock,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
+  return {action,documentArchive,inventory,bag,residentRecord,residentRecords,canResidentRecord,close,save,keepPhoto,letGoPhoto,pocketAlbum,get album(){return state.pocketAlbum||[];},post,deliverPost,favourCard,get unreadPost(){return unreadCount(ensurePost(state).box);},spend,players,menu:show,dialogue:dialogueBox,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,consumeStorageRestock,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
 }

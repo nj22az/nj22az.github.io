@@ -1,9 +1,9 @@
 import {KITAHAMA} from './kitahama-layout.js';
-/** Rainflower links Main Street, Aoba Garden and Kitahama on the same street grid. */
+/** Retained public paths link Main Street and Kitahama through the former Rainflower plots. */
 export const SHOPPING_LANE_SCALE=.6;
 export const SHOPPING_LANE=Object.freeze({minX:-4.5,maxX:11.1,minZ:30,maxZ:53.6,x:3.3,z:41.4,y:0,entry:Object.freeze([3.3,30]),exit:Object.freeze([3.3,53.2]),crosswalks:Object.freeze([36.9,44.7])});
-// The existing shop composition keeps its full height, with the same compact plan
-// scale as the adjacent garden. All geometry, collision and people use this frame.
+// Legacy author-coordinate helpers remain available for old data. The facades
+// and their collisions are retired; current businesses use harbour-park-plan.js.
 export const shoppingLanePoint=(x,z)=>[SHOPPING_LANE.x+(x-90)*SHOPPING_LANE_SCALE,SHOPPING_LANE.z+(z-113)*SHOPPING_LANE_SCALE];
 export function placeShoppingLaneGroup(group){const [x,z]=shoppingLanePoint(group.position.x,group.position.z);group.position.x=x;group.position.z=z;group.scale.x*=SHOPPING_LANE_SCALE;group.scale.z*=SHOPPING_LANE_SCALE;}
 export function placeShoppingLaneColliders(colliders,start=0){for(const c of colliders.slice(start)){const [x,z]=shoppingLanePoint(c.x,c.z);Object.assign(c,{x,z,w:c.w*SHOPPING_LANE_SCALE,d:c.d*SHOPPING_LANE_SCALE,rainflower:true});}}

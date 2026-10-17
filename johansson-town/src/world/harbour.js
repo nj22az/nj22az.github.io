@@ -6,7 +6,6 @@ import {buildHarbourOffice} from './harbour-office.js';
 import {GROUND} from '../render/ground-palette.js';
 import {WEST_SHOPS,buildWestShop} from './west-shops.js';
 import {buildIslandCoast} from './island-coast.js';
-import {buildBicycle} from './bicycle.js';
 import {buildBoardwalk} from './boardwalk.js?snappy=1';
 import {buildWarehouse} from './warehouse.js';
 import {BOARDWALK,BREAKWATER} from './layout.js?snappy=1';
@@ -246,12 +245,6 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // The island has no road out: its people come and go by the ferry from the outer pier,
   // and the terminal on the quay takes the bus station's part. Elsewhere, the bus.
   const busStation=buildFerryTerminal({parent:group,colliders,register,onAction,enter,label,shadows});
-
-  // The one at [-7.4,-33] stood against the konbini's frontage, in front of the only
-  // window the shop is read through from the street. The others are along the harbour.
-  for(const [x,z] of [[3.9,-22]]){
-    const bicycle=buildBicycle({x,z,shadows});group.add(bicycle.object);obstacle(x,z,bicycle.collider.w,bicycle.collider.d);
-  }
 
   // ----- Working harbour district -----
   // Quay is deliberately built as one elevated slab with chunky edge geometry; no coplanar white strips.

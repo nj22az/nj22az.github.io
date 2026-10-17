@@ -1,5 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
-import {createKit,paint} from './okinawa/kit.js';
+import {createKit} from './okinawa/kit.js';
+import {nameplate} from './okinawa/signs.js';
 import {redTileHouse,concreteHouse,coralWall,blockWall,shisa,hinpun,fukugi,hibiscus,potPlant,banana,gajumaru} from './okinawa/houses.js';
 import {bicycle,laundry,planterBoxes} from './okinawa/props.js';
 import {AIRPORT_ISLAND} from './airport-island.js';
@@ -8,7 +9,7 @@ import {SEA_LEVEL,setOceanPits} from './ocean.js';
 import {KITANO_HAMLET,KITANO_DUG,hamletGate,houseIsland,houseRect} from './kitano-hamlet-layout.js';
 import {buildHouseExterior,houseLocal} from './johansson-house-build.js';
 import {HOUSE_OPENINGS,HOUSE_SITE,HOUSE_ROOF} from './johansson-house.js';
-import {householdAtHome,residentsLine} from '../people/island-households.js';
+import {householdAtHome,residentsLine,householdTitle,homeNameplate} from '../people/island-households.js';
 import {kitanoLater} from './kitano-on-demand.js';
 
 /**
@@ -25,18 +26,20 @@ export function buildKitanoHamlet(world,options){
  const H=KITANO_HAMLET,A=AIRPORT_ISLAND;
  // The gates as sites, their prompts and the court door: always, for the doors, the Town Book and the residents' homes.
  for(const p of H.plots){
-  const household=householdAtHome(p.id),toLet=!household;
+  const household=householdAtHome(p.id),toLet=!household||household.toLet;
   // The gate as a site: Johansson's front door is the mayor's home (its rooms come with him); the others are family homes.
   const {door,inward}=p.kind==='johansson-house'?frontDoor(p):hamletGate(p),[wx,wz]=airportWorld(door[0],door[1]),y=airportSurface(wx,wz)?.y??SEA_LEVEL+H.laneTop,facing=inward+A.yaw;
-  const title=p.id==='kitano-1'?'Johansson & Thuan’s House':toLet?'House to let':household.members.map(m=>m.name).join(' & ')+'’s home';
+  const title=p.id==='kitano-1'?'Johansson & Thuan’s House':householdTitle(household);
   const site={id:p.id==='kitano-1'?'mayor-home':'home-'+p.id,title,jp:p.family,sub:'KITANO-JIMA',color:0xd4c6ad,accent:'#776953',
-   line:household?.address||'Kitano hamlet, by the pier',door:[wx,y,wz],exitPosition:[wx,y,wz],approachPosition:[wx,y,wz],entryFacing:facing,x:wx,z:wz,opens:'00:00',plot:p.id};
+   line:household?.address||'Kitano hamlet, by the pier',door:[wx,y,wz],exitPosition:[wx,y,wz],approachPosition:[wx,y,wz],entryFacing:facing,x:wx,z:wz,opens:'00:00',plot:p.id,
+   homeId:p.id,isResidence:true,status:household?.status||'vacant',residents:[...(household?.residents||[])]};
   if(p.id!=='kitano-1')Object.assign(site,{familyHome:household||{members:[],toLet:true},houseKind:p.kind,ownRoom:true});
   options.sites.push(site);
   const anchor=new THREE.Object3D();anchor.name='kitano gate:'+p.id;anchor.position.set(wx,y+1.3,wz);world.group.add(anchor);
   options.register?.(anchor,p.id==='kitano-1'?'Go home':(toLet?'Look round the ':'Visit ')+title,()=>options.enter(site));
   const plate=new THREE.Object3D();plate.name='kitano nameplate:'+p.id;const gateAt=hamletGate(p).door,[px,pz]=airportWorld(gateAt[0]+(p.gate==='north'?1.3:-1.3),gateAt[1]-(p.gate==='north'?.4:-.4));plate.position.set(px,y+1,pz);world.group.add(plate);
-  options.register?.(plate,`Read the ${p.romaji} nameplate`,()=>options.onAction?.('read',`${p.family} · the ${p.romaji} house`,[KITANO_PLATES[p.id],residentsLine(p.id)].filter(Boolean).join('\n\n')));
+  const label=homeNameplate(p.id);
+  options.register?.(plate,label?label.address+' · '+label.owners:`Read the ${p.romaji} nameplate`,()=>options.onAction?.('read',title,[residentsLine(p.id),KITANO_PLATES[p.id]].filter(Boolean).join('\n\n')));
   if(p.kind==='johansson-house'){
    // The basement's own door, at the foot of the garden stair in the court (D-BEXT).
    const o=HOUSE_OPENINGS.find(q=>q.id==='D-BEXT'),[cu,cv]=houseIsland((o.from+o.to)/2,-.5),[cx,cz]=airportWorld(cu,cv);
@@ -59,9 +62,6 @@ function buildHamletHouses(world,options){
  const solid=list=>{for(const c of [].concat(list)){if(!c)continue;const [x,z]=airportWorld(c.x,c.z);colliders.push({...c,x,z,yaw:(c.yaw??0)+A.yaw,minY:SEA_LEVEL+(c.minY??0)});}};
  // The lane: crushed coral between the row and Johansson's plot.
  kit.block(H.lane.minX,H.lane.maxX,.6,H.laneTop,H.lane.minZ,H.lane.maxZ,CORAL_SAND);
- const nameplate=(family,romaji)=>paint(256,128,(c,w,h)=>{c.fillStyle='#f3efe4';c.fillRect(0,0,w,h);c.strokeStyle='#5a4a3a';c.lineWidth=6;c.strokeRect(6,6,w-12,h-12);
-  c.fillStyle='#2b2b2b';c.textAlign='center';c.textBaseline='middle';c.font='bold 54px "Hiragino Mincho ProN","Noto Serif JP",serif';c.fillText(family,w/2,h*.4);
-  c.font='26px sans-serif';c.fillText(romaji,w/2,h*.78);});
  for(const [i,p] of H.plots.entries()){
   const W=p.maxX-p.minX,D=p.maxZ-p.minZ,hw=W/2,hd=D/2,ry=p.gate==='north'?0:Math.PI,seed=30+i;
   // The yard's slab (cut where Johansson's court and lightwell are dug), then everything else in the plot's frame on
@@ -74,7 +74,8 @@ function buildHamletHouses(world,options){
    solid(wall(-hw,-hd,-hw,hd,{seed:70+seed}));
    solid(wall(hw,-hd,hw,hd,{seed:80+seed}));
    for(const gx of gate)shisa(kit,gx,1.53,hd,0,.7);
-   kit.sign(nameplate(p.family,p.romaji),.42,.21,gate[1]+.45,1.05,hd+.24,{name:'nameplate '+p.id});
+   const label=homeNameplate(p.id);
+   kit.sign(nameplate(label.address,label.owners),.95,.32,gate[1]+.65,1.15,hd+.24,{name:'nameplate '+p.id});
    hibiscus(kit,gate[0]-1.1,hd-.9,{seed:90+seed});
    if(p.kind==='johansson-house')johanssonYard(kit,solid,p,hw,hd,seed);
    else if(p.kind==='red-tile'){

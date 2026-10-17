@@ -7,7 +7,12 @@ test('WebMCP reports locked walking directions and only travels after unlock',as
  document.modelContext={registerTool(){}};
  const button=new Element(),label=new Element();button.dataset={id:'izakaya',travel:'locked'};label.textContent='Minato Izakaya';button.querySelector=()=>label;
  let marked=0,moved=0;button.click=()=>{if(button.dataset.travel==='ready')moved++;else marked++;};
- const query=document.querySelector;document.querySelector=s=>s.includes('[data-id=')?button:query(s);
+ const query=document.querySelector;document.querySelector=s=>{
+  // This fixture represents the legacy directory: new search/filter/shortcut
+  // selectors must be absent, as they are in an actual older page.
+  if(s==='.menu-places'||s.includes('.town-search')||s.includes('[data-town-filter=')||s.includes('[data-shortcut='))return null;
+  return s.includes('[data-id=')?button:query(s);
+ };
  document.querySelectorAll=s=>s.includes('#directoryGrid')?[button]:[];
  document.querySelector('#directoryButton').click=()=>document.querySelector('#directory').classList.remove('hidden');
  await import('../webmcp.js');const api=window.__JOHANSSON_AGENT_API__;

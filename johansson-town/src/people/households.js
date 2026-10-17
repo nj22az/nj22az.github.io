@@ -1,17 +1,28 @@
-// One household is one room and one save destination. Roommates retain individual schedules.
-export const HOUSEHOLDS=Object.freeze([
- // Thuan, Thao and Chin, Thao's husband (batch 7b): Thuan's weekday room; her home is Johansson's on Kitano-jima.
- {id:'yuri-home',entry:'one',number:'1',residents:['Thuan','Thao','Chin']},
- {id:'resident-home-aya',entry:'two',number:'2',residents:['Nhung','Reiko']},
- // 2 Front-Row Yard: Tetsuo alone since Chin moved in with Thao (the creator, 2026-10-12: only Johansson and Thuan live in the hamlet; Tetsuo's mother keeps the old Chinen house there).
- {id:'resident-home-kenji',entry:'three',number:'3',residents:['Tetsuo']},
- {id:'resident-home-mrs-sato',entry:'four',number:'4A',residents:['Mrs Sato']},
- {id:'resident-home-officer-mori',entry:'four',number:'4B',residents:['Officer Mori']},
- {id:'resident-home-harbour-master',entry:'five',number:'5A',residents:['Harbour master']},
- {id:'resident-home-bus-driver',entry:'five',number:'5B',residents:['Bus driver']},
-].map(h=>Object.freeze({...h,residents:Object.freeze(h.residents),address:h.number+' Main Street',title:(h.residents.length>2?h.residents.slice(0,-1).join(', ')+' & '+h.residents.at(-1):h.residents.join(' & '))+'’s home'})));
-export const HOME_ALIASES=Object.freeze({'resident-home-nao':'yuri-home','resident-home-reiko':'resident-home-aya','resident-home-tetsuo':'resident-home-kenji'});
+import {householdAtHome,householdTitle} from './island-households.js';
+
+// The walking residents' playable rooms. Historical street-entry keys survive only for archived layouts.
+const ROOMS=[
+ {home:'kitahama-1',entry:'one',number:'1'},
+ {home:'resident-home-aya',entry:'two',number:'1'},
+ {home:'resident-home-kenji',entry:'three',number:'2'},
+ {home:'kitahama-2',entry:'four',number:'2'},
+ {home:'koban',entry:'four'},
+ {home:'office',entry:'five'},
+ {home:'kitahama-6',entry:'five',number:'6'},
+];
+export const HOUSEHOLDS=Object.freeze(ROOMS.map(room=>{
+ const h=householdAtHome(room.home);
+ return Object.freeze({...room,id:h.entranceSiteId,homeId:h.home,residents:h.residents,address:h.address,title:householdTitle(h)});
+}));
+/** Existing saves and old room links resolve to the same surviving entrance. */
+export const HOME_ALIASES=Object.freeze({
+ 'yuri-home':'resident-home-thuan','resident-home-nao':'resident-home-thuan',
+ 'resident-home-thao':'resident-home-thuan','resident-home-chin':'resident-home-thuan',
+ 'resident-home-reiko':'resident-home-aya','resident-home-tetsuo':'resident-home-kenji',
+ 'resident-home-officer-mori':'koban','resident-home-harbour-master':'office',
+ 'resident-home-bus-driver':'home-kitahama-6',
+});
 export const canonicalHomeId=id=>HOME_ALIASES[id]||id;
 export const householdFor=name=>HOUSEHOLDS.find(h=>h.residents.includes(name));
-export const householdAt=site=>HOUSEHOLDS.find(h=>h.id===canonicalHomeId(site?.id))||householdFor(site?.homeOwner);
+export const householdAt=site=>HOUSEHOLDS.find(h=>h.id===canonicalHomeId(site?.id)||h.homeId===site?.plot)||householdFor(site?.homeOwner);
 export const householdNames=site=>site?.homeOwners||householdAt(site)?.residents||(site?.homeOwner?[site.homeOwner]:[]);

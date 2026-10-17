@@ -36,7 +36,7 @@ function dispatchKey(code,type='keydown'){
 
 function actionButtons(){
   if(window.__JOHANSSON_AGENT_CONTEXT__?.()?.concert?.active)return [...document.querySelectorAll('#concert button:not(:disabled)')].filter(b=>b.getClientRects().length);
-  return [...document.querySelectorAll('#activityActions button:not(:disabled), #activity .bag-tile:not(:disabled)')].filter(visible);
+  return [...document.querySelectorAll('#activityActions button:not(:disabled), #activity .bag-tile:not(:disabled), #activity .resident-list button:not(:disabled)')].filter(visible);
 }
 
 function getState(){
@@ -45,7 +45,7 @@ function getState(){
   const modal=activityOpen()&&!concert;
   const directory=directoryOpen();
   const buttons=modal||concert?actionButtons().map((b,index)=>({index,label:(b.textContent||'').trim()})):[];
-  const destinations=directory?[...document.querySelectorAll('#directoryGrid .dir-item')].map(b=>({id:b.dataset.id,label:(b.querySelector('b')?.textContent||b.textContent||'').trim(),quickTravel:b.dataset.travel==='ready'})):[];
+  const destinations=directory?[...document.querySelectorAll('#directoryGrid [data-id]')].map(b=>({id:b.dataset.id,label:(b.querySelector('b')?.textContent||b.textContent||'').trim(),quickTravel:b.dataset.travel==='ready'})):[];
   return {
     running:gameReady(),
     place:text('#place'),
@@ -138,7 +138,12 @@ async function travel({destination}={}){
   if(!id)return result(false,{error:'Unknown destination.',destinations});
   if(!directoryOpen())document.querySelector('#directoryButton')?.click();
   await sleep(20);
-  const button=document.querySelector(`#directoryGrid .dir-item[data-id="${CSS.escape(id)}"]`);
+  const disclosure=document.querySelector('.menu-places');if(disclosure&&!disclosure.open)disclosure.querySelector('summary')?.click();
+  const search=document.querySelector('#directoryGrid .town-search');if(search){search.value='';search.dispatchEvent(new Event('input',{bubbles:true}));}
+  const places=document.querySelector('#directoryGrid [data-town-filter="places"]');places?.click();
+  const target=()=>document.querySelector(`#directoryGrid [data-shortcut="${CSS.escape(id)}"]`)||document.querySelector(`#directoryGrid [data-id="${CSS.escape(id)}"]`);
+  let button=target();
+  if(!button){document.querySelector('#directoryGrid [data-town-filter="homes"]')?.click();button=target();}
   if(!button)return result(false,{error:'Destination button is unavailable.',destination:id,state:getState()});
   if(button.dataset.travel!=='ready'){button.click();return result(false,{error:'Quick travel is locked. Bring Tama home and finish Chin’s workshop escort. Walking directions are marked.',destination:id,state:getState()});}
   button.click();
@@ -167,8 +172,14 @@ async function ui({control}={}){
   };
   const selector=map[control];
   if(!selector)return result(false,{error:'Unknown control.',controls:Object.keys(map)});
+  if(['notebook','time','weather','sound'].includes(control)&&!directoryOpen()){
+    document.querySelector('#directoryButton')?.click();await sleep(20);
+  }
   const button=document.querySelector(selector);
   if(!button)return result(false,{error:'Control is unavailable.',control});
+  // Open each enclosing disclosure through its summary, as a player would.
+  const disclosures=[];for(let p=button.parentElement;p;p=p.parentElement)if(p.tagName==='DETAILS'&&!p.open)disclosures.unshift(p);
+  for(const details of disclosures)details.querySelector('summary')?.click();
   button.click();
   await sleep(60);
   return result(true,{action:'ui',control,state:getState()});

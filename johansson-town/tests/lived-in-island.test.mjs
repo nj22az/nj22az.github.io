@@ -4,7 +4,6 @@ import {installDOM} from './fixtures.mjs';
 import {cargoVisit,buildCargoShipping,CARGO_CALLS} from '../src/world/cargo-shipping.js';
 import {CARGO_BERTH} from '../src/world/minato-berth.js';
 import {buildFlowerShop,FLOWER_SHOP} from '../src/world/flower-shop.js';
-import {shoppingLanePoint,SHOPPING_LANE_ROWS} from '../src/world/shopping-lane-plan.js';
 import {NEIGHBOURS} from '../src/people/neighbours.js';
 import {recipeFor} from '../src/avatars/cast.js';
 import {SHARED_DINING_BOUNDS as bounds,SHARED_DINING_FLOOR as floorPolygon,SHARED_DINING_COLLIDERS as colliders} from '../src/world/interiors/shared-dining-layout.js';
@@ -30,7 +29,7 @@ test('cargo ships arrive twice, stay alongside, depart continuously and reopen c
 test('flower shop uses the existing Mrs Kinjō actor and preserves a walkable shop entrance',()=>{
  const world={colliders:[]},group=new THREE.Group(),prompts=[],actions=[];buildFlowerShop({world,group,register:(o,label,fn)=>prompts.push({label,fn}),onAction:(...args)=>actions.push(args)});
  const staff=NEIGHBOURS.filter(n=>n.name===FLOWER_SHOP.staff);assert.equal(staff.length,1);assert.deepEqual(staff[0].at,FLOWER_SHOP.staffAt);assert.match(staff[0].role,/flowers/);
- for(let x=94;x<=100.2;x+=.25){const [px,pz]=shoppingLanePoint(x,SHOPPING_LANE_ROWS[0]);assert.ok(!world.colliders.some(c=>circleHitsRect(px,pz,.32,c)),'walkable at '+px);}
+ for(let x=4.8;x<=6.45;x+=.15)assert.ok(!world.colliders.some(c=>circleHitsRect(x,-16.7,.32,c)),'Walkable public approach to the new flower counter at '+x);
  prompts.find(p=>p.label==='Buy a Rainflower bouquet · ¥250').fn();assert.equal(actions.at(-1)[2].cost,250);
  assert.equal(recipeFor('Hana').outfit.top,'sailor');assert.equal(recipeFor('Hana').outfit.bottom,'pleatedskirt');
 });

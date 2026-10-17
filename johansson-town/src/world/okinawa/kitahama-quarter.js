@@ -1,10 +1,10 @@
 import {stairFlight,stairLanding} from './stairs.js';
-import {KITAHAMA} from '../kitahama-layout.js';
+import {KITAHAMA,KITAHAMA_FLATS} from '../kitahama-layout.js';
 import {plotGate} from './layout.js';
 import {poster,nameplate} from './signs.js';
 import {gajumaru,potPlant,hibiscus,blockWall} from './houses.js';
 import {utilityPole,wiresBetween,serviceDrop,bicycle,laundry,gasBottles} from './props.js';
-import {householdAtHome} from '../../people/island-households.js';
+import {homeNameplate,residentsLine} from '../../people/island-households.js';
 
 /**
  * Kitahama's residential quarter (docs/RESIDENTIAL-PLAN.md §2), west of the cross lane:
@@ -72,13 +72,15 @@ function buildFlats(kit,solid,{anchor,onAction}){
  kit.block(cx1-.04,cx1,H+.9,H+.95,z0,z1,steel);
  for(let z=z0;z<=z1;z+=.12)kit.box(.02,.9,.02,cx1-.02,H+.45,z,steel);
  // Doors and kitchen windows, two flats a floor, numbered.
- const flats=[[0,z0+2.2,'1'],[0,z1-2.2,'2'],[H,z0+2.2,'3'],[H,z1-2.2,'4']];
- for(const [y,z,n] of flats){
+ for(const unit of KITAHAMA_FLATS){
+  const y=unit.level,z=unit.door[2],n=unit.unitNumber,plate=homeNameplate(unit.id);
   kit.box(.06,2.0,.85,x1+.03,y+1.0,z,door);
   kit.box(.04,.14,.24,x1+.07,y+1.55,z-.2,0xf2efe4);
   kit.box(.05,.6,.9,x1+.03,y+1.45,z+1.25,0x6f8a92,{finish:'window'});
   kit.box(.4,.35,.3,x1+.2,y+.35,z+1.25,0xe6e4de);
-  kit.sign(nameplate('Flat '+n,'Kitahama Heights'),.24,.12,x1+.08,y+1.75,z+.55,{ry:Math.PI/2,name:'flat number'});
+  kit.sign(nameplate('Flat '+n,plate.owners),.55,.25,x1+.08,y+1.75,z+.55,{ry:Math.PI/2,name:'flat number'});
+  const at=kit.point(unit.door[0],y+1.3,z);
+  anchor(at.x,at.y,at.z,'Flat '+n+' · '+plate.owners,()=>onAction?.('read',plate.title,residentsLine(unit.id)));
  }
  // The lane side's lower windows and the west side's balconies with washing.
  for(const y of [0,H])for(const z of [z0+2.2,z1-2.2]){
@@ -104,9 +106,8 @@ function buildFlats(kit,solid,{anchor,onAction}){
  // A low block wall along the lane with an opening for the stair and the doors.
  solid(blockWall(kit,A.maxX,A.minZ,A.maxX,A.maxZ,{height:.9,gaps:[[A.minZ+1.2,A.minZ+4.2],[A.maxZ-4.2,A.maxZ-1.8]]}));
  const at=kit.point(A.maxX+.5,1,mz);
- const h=householdAtHome(A.id);
  anchor(at.x,at.y,at.z,'Read the Kitahama Heights mailboxes',()=>onAction?.('read','Kitahama Heights · the mailboxes',
-  'Four flats, two up and two down, with the stair at the end and the corridor along the lane side. The names on the mailboxes:\n\n'+(h?h.members.map(m=>'· '+m.name+', '+m.purpose).join('\n'):'')+'\n· Flat 4: empty. The key is at the town hall.'));
+  'Four flats, two up and two down, with the stair at the end and the corridor along the lane side.\n\n'+residentsLine(A.id)+'\n\nVacant flats: enquire at the town hall.'));
 }
 
 /** The pocket park at the corner of the spine and Well Lane. */

@@ -8,6 +8,7 @@ import {createTown} from '../src/world/town.js?snappy=1';
 import {createPropFactory} from '../prop-factory.js';
 import {circleHitsRect} from '../physics.js?snappy=1';
 import {preloadSakuraBench,buildSakuraBench,sakuraBenchSeat,SAKURA_SHOP,SAKURA_BENCH_PLACE} from '../src/world/sakura-bench.js';
+import {HARBOUR_PARK_PATHS} from '../src/world/harbour-park-plan.js';
 
 function lookDot(from,yaw){
   const fw=[-Math.sin(yaw),-Math.cos(yaw)];
@@ -44,6 +45,11 @@ test('authored cedar bench sits the player looking at Sakura from across the str
     assert.ok(world.group.getObjectByName('sakura-bench-seat'));
     assert.equal(world.colliders.some(c=>circleHitsRect(seat.stand[0],seat.stand[2],.28,c)),false,'Stand-up is clear of the bench');
     assert.equal(world.colliders.some(c=>circleHitsRect(seat.position[0],seat.position[2],.28,c)),true,'Sit point is on the bench');
+    const collider=world.colliders.find(c=>c.id==='sakura-bench');
+    assert.equal(collider.yaw,SAKURA_BENCH_PLACE.yaw,'The collider turns with the visible frame');
+    assert.ok(Math.abs(collider.w-(bounds.max.x-bounds.min.x))<.001);
+    assert.ok(collider.d-(bounds.max.z-bounds.min.z)<.07,'At most 7cm covers both the model and its fallback');
+    assert.ok(Math.abs(collider.height-bounds.max.y)<.01);
   }finally{
     globalThis.fetch=previous.fetch;globalThis.createImageBitmap=previous.bitmap;globalThis.self=previous.self;
   }
@@ -57,4 +63,13 @@ test('harbour town keeps the viewing bench and the neighbourhood bench',()=>{
   assert.ok(world.sakuraBench?.seat);
   const seat=world.sakuraBench.seat;
   assert.ok(lookDot(seat.position,seat.yaw)>.97);
+  assert.equal(world.colliders.some(c=>circleHitsRect(seat.stand[0],seat.stand[2],.32,c)),false,'Relocated stand-up space stays clear');
+  const approach=HARBOUR_PARK_PATHS.find(r=>r.id==='park-approach');
+  for(let i=1;i<approach.points.length;i++){
+    const a=approach.points[i-1],b=approach.points[i],dx=b[0]-a[0],dz=b[1]-a[1],length=Math.hypot(dx,dz);
+    for(let t=0;t<=1;t+=.05)for(const side of [-1,0,1]){
+      const edge=side*(approach.width/2-.34),x=a[0]+dx*t-dz/length*edge,z=a[1]+dz*t+dx/length*edge;
+      assert.equal(world.colliders.some(c=>circleHitsRect(x,z,.32,c)),false,'Clear complete crossing approach at '+[x,z]);
+    }
+  }
 });

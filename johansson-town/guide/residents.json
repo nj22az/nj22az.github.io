@@ -45,14 +45,25 @@
      "file": "assets/images/residents/shoot/johansson-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "kitano-1",
+   "address": "Johansson & Thuan’s House, Kitano hamlet",
+   "residents": [
+    "Johansson",
+    "Thuan"
+   ],
+   "island": "kitano",
+   "entranceSiteId": "mayor-home"
+  },
+  "secondaryHomes": []
  },
  {
   "name": "Thuan",
   "role": "Vietnamese shopkeeper",
   "place": "Sakura Shop",
   "bio": "From a notebook of supplier names to the island’s best-run shelves: Thuan built Sakura Shōten one delivery at a time.",
-  "backstory": "Thuan came from Vietnam after her two elder sisters, with a notebook and a plan, and wrote every supplier’s name in it the first year. Now she can tell the harbour cart from the bakery van by the sound of its wheels. The shelves are tea, rice, soap and batteries, but the regulars come for the advice, and for the onigiri she sets aside before the lunch crowd arrives. Her name is on nearly every line of the staff roster in the back room. At the bottom, in her own hand, she has appointed an assistant manager: the potted palm. In the corner by the delivery door stands a figurine of her, a present from the mayor’s office. She says it is too much. She dusts it every morning before the rice comes in. She is the youngest of three sisters. Nhung, the eldest, sells books across Main Street; Thao, the middle one, runs Minato, and the two of them share a house where Thao’s evenings end as Thuan’s mornings begin; they trade leftovers, gossip and instructions to sleep. After closing she walks, visits Mrs Kinjō for flowers, and chooses a good meal with the seriousness of a buyer at auction. Johansson has become a regular companion at those dinners. The plans for Sakura’s future are hers, and she will build them at her own pace.",
+  "backstory": "Thuan came from Vietnam after her two elder sisters, with a notebook and a plan, and wrote every supplier’s name in it the first year. Now she can tell the harbour cart from the bakery van by the sound of its wheels. The shelves are tea, rice, soap and batteries, but the regulars come for the advice, and for the onigiri she sets aside before the lunch crowd arrives. Her name is on nearly every line of the staff roster in the back room. At the bottom, in her own hand, she has appointed an assistant manager: the potted palm. In the corner by the delivery door stands a figurine of her, a present from the mayor’s office. She says it is too much. She dusts it every morning before the rice comes in. She is the youngest of three sisters. Nhung, the eldest, sells books across Main Street; Thao, the middle one, runs Minato and lives with Chin and their daughter Vy at 1 Kitahama. Thuan’s primary home is with her husband Johansson on Kitano-jima, and she keeps a weekday room with Thao’s family in Minato. They trade leftovers, gossip and instructions to sleep. After closing she walks, visits Mrs Kinjō for flowers, and chooses a good meal with the seriousness of a buyer at auction. Her husband Johansson is a regular companion at those dinners. The plans for Sakura’s future are hers, and she will build them at her own pace.",
   "portrait": "assets/images/residents/02.webp",
   "islandPersonality": {
    "title": "Neighbourhood spark",
@@ -71,7 +82,7 @@
    "body": [
     "Thuan came from Vietnam after her two elder sisters, with a notebook and a plan, and wrote every supplier’s name in it the first year. Now she can tell the harbour cart from the bakery van by the sound of its wheels. The shelves are tea, rice, soap and batteries, but the regulars come for the advice, and for the onigiri she sets aside before the lunch crowd arrives.",
     "Her name is on nearly every line of the staff roster in the back room. At the bottom, in her own hand, she has appointed an assistant manager: the potted palm. In the corner by the delivery door stands a figurine of her, a present from the mayor’s office. She says it is too much. She dusts it every morning before the rice comes in.",
-    "She is the youngest of three sisters. Nhung, the eldest, sells books across Main Street; Thao, the middle one, runs Minato, and the two of them share a house where Thao’s evenings end as Thuan’s mornings begin; they trade leftovers, gossip and instructions to sleep. After closing she walks, visits Mrs Kinjō for flowers, and chooses a good meal with the seriousness of a buyer at auction. Johansson has become a regular companion at those dinners. The plans for Sakura’s future are hers, and she will build them at her own pace."
+    "She is the youngest of three sisters. Nhung, the eldest, sells books across Main Street; Thao, the middle one, runs Minato and lives with Chin and their daughter Vy at 1 Kitahama. Thuan’s primary home is with her husband Johansson on Kitano-jima, and she keeps a weekday room with Thao’s family in Minato. They trade leftovers, gossip and instructions to sleep. After closing she walks, visits Mrs Kinjō for flowers, and chooses a good meal with the seriousness of a buyer at auction. Her husband Johansson is a regular companion at those dinners. The plans for Sakura’s future are hers, and she will build them at her own pace."
    ],
    "quote": "People think a shop sells things. A shop remembers people.",
    "photos": [
@@ -93,14 +104,38 @@
      "file": "assets/images/residents/shoot/thuan-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "kitano-1",
+   "address": "Johansson & Thuan’s House, Kitano hamlet",
+   "residents": [
+    "Johansson",
+    "Thuan"
+   ],
+   "island": "kitano",
+   "entranceSiteId": "mayor-home"
+  },
+  "secondaryHomes": [
+   {
+    "id": "kitahama-1",
+    "address": "1 Kitahama",
+    "residents": [
+     "Thuan",
+     "Thao",
+     "Chin",
+     "Vy"
+    ],
+    "island": "minato",
+    "entranceSiteId": "resident-home-thuan"
+   }
+  ]
  },
  {
   "name": "Thao",
   "role": "Izakaya owner",
   "place": "Minato Izakaya",
   "bio": "Thao’s izakaya opens at four. The pink telephone, the bottle keep and the karaoke all answer to her.",
-  "backstory": "At four o’clock Thao hangs the noren and the evening begins: lanterns, the pink ¥10 telephone by the door, a laserdisc karaoke that takes its time finding the disc. Regulars keep their own bottles on the shelf behind the counter, each with a tag in Thao’s careful hand. Keep one yourself and she will warn you that being a regular is worse for you than it sounds. Chin has won the last-Friday karaoke contest three times running. The police notice by the door asks drivers not to drink; Officer Mori put it up himself and then sat under it with a beer. He walked home. Thao tells this story more often than Mori would like. At three in the morning the cushions are stacked and Thao wipes the counter down while the Barfly mops. She goes home to the house she shares with Thuan, the youngest of the three sisters, sleeps until noon, buys the two of them Blue Coral cones on the lane when Nhung is not looking, and is back at her station by three to prep. The amber corner by the window is kept for unhurried conversations. She will not turn it into a hurried table, however full the room.",
+  "backstory": "At four o’clock Thao hangs the noren and the evening begins: lanterns, the pink ¥10 telephone by the door, a laserdisc karaoke that takes its time finding the disc. Regulars keep their own bottles on the shelf behind the counter, each with a tag in Thao’s careful hand. Keep one yourself and she will warn you that being a regular is worse for you than it sounds. Chin has won the last-Friday karaoke contest three times running. The police notice by the door asks drivers not to drink; Officer Mori put it up himself and then sat under it with a beer. He walked home. Thao tells this story more often than Mori would like. At three in the morning the cushions are stacked and Thao wipes the counter down while the Barfly mops. She goes home to Chin and their daughter Vy at 1 Kitahama, where her youngest sister Thuan keeps a weekday room. After sleeping until noon she buys Blue Coral cones at Mrs Nakamura’s counter, and is back at Minato by three to prep. The amber corner by the window is kept for unhurried conversations. She will not turn it into a hurried table, however full the room.",
   "portrait": "assets/images/residents/03.webp",
   "age": 28,
   "friend": "Thuan",
@@ -122,7 +157,7 @@
    "body": [
     "At four o’clock Thao hangs the noren and the evening begins: lanterns, the pink ¥10 telephone by the door, a laserdisc karaoke that takes its time finding the disc. Regulars keep their own bottles on the shelf behind the counter, each with a tag in Thao’s careful hand. Keep one yourself and she will warn you that being a regular is worse for you than it sounds.",
     "Chin has won the last-Friday karaoke contest three times running. The police notice by the door asks drivers not to drink; Officer Mori put it up himself and then sat under it with a beer. He walked home. Thao tells this story more often than Mori would like.",
-    "At three in the morning the cushions are stacked and Thao wipes the counter down while the Barfly mops. She goes home to the house she shares with Thuan, the youngest of the three sisters, sleeps until noon, buys the two of them Blue Coral cones on the lane when Nhung is not looking, and is back at her station by three to prep. The amber corner by the window is kept for unhurried conversations. She will not turn it into a hurried table, however full the room."
+    "At three in the morning the cushions are stacked and Thao wipes the counter down while the Barfly mops. She goes home to Chin and their daughter Vy at 1 Kitahama, where her youngest sister Thuan keeps a weekday room. After sleeping until noon she buys Blue Coral cones at Mrs Nakamura’s counter, and is back at Minato by three to prep. The amber corner by the window is kept for unhurried conversations. She will not turn it into a hurried table, however full the room."
    ],
    "quote": "The spare chair is for whoever arrives last. Somebody always does.",
    "photos": [
@@ -144,14 +179,27 @@
      "file": "assets/images/residents/shoot/thao-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "kitahama-1",
+   "address": "1 Kitahama",
+   "residents": [
+    "Thuan",
+    "Thao",
+    "Chin",
+    "Vy"
+   ],
+   "island": "minato",
+   "entranceSiteId": "resident-home-thuan"
+  },
+  "secondaryHomes": []
  },
  {
   "name": "Barfly",
   "role": "Minato regular",
   "place": "Minato Izakaya",
   "bio": "He has a stool, a tab and a broom. We asked the Barfly how a man ends up working off his drinks one sweep at a time.",
-  "backstory": "Nobody at Minato uses his name; the Barfly prefers it that way. He sits on the stool at the kitchen end of the counter, the one with the best view of the lanterns, and he knows when a hook is loose before anyone looks up. Last buses come and go without disturbing the arrangement. When Minato shuts at three he stacks the cushions. From four until ten he sleeps on that same stool, and somebody always puts a jacket over him. Then he works off his tab: sweeping until noon, washing and polishing the glasses until two, mopping, and wiping the tables down for the evening while Thao preps. He says the tab is nearly paid. Thao says the same thing, in a different tone. Both of them seem quite happy with the arrangement, which has outlasted several menus and one karaoke machine.",
+  "backstory": "Nobody at Minato uses his name; the Barfly prefers it that way. He sits on the stool at the kitchen end of the counter, the one with the best view of the lanterns, and he knows when a hook is loose before anyone looks up. Last boats come and go without disturbing the arrangement. When Minato shuts at three he stacks the cushions. From four until ten he sleeps on that same stool, and somebody always puts a jacket over him. Then he works off his tab: sweeping until noon, washing and polishing the glasses until two, mopping, and wiping the tables down for the evening while Thao preps. He says the tab is nearly paid. Thao says the same thing, in a different tone. Both of them seem quite happy with the arrangement, which has outlasted several menus and one karaoke machine.",
   "portrait": "assets/images/residents/27.webp",
   "age": 43,
   "friend": "Nao",
@@ -171,7 +219,7 @@
    "headline": "The regular who lives at the end of the counter",
    "standfirst": "He has a stool, a tab and a broom. We asked the Barfly how a man ends up working off his drinks one sweep at a time.",
    "body": [
-    "Nobody at Minato uses his name; the Barfly prefers it that way. He sits on the stool at the kitchen end of the counter, the one with the best view of the lanterns, and he knows when a hook is loose before anyone looks up. Last buses come and go without disturbing the arrangement.",
+    "Nobody at Minato uses his name; the Barfly prefers it that way. He sits on the stool at the kitchen end of the counter, the one with the best view of the lanterns, and he knows when a hook is loose before anyone looks up. Last boats come and go without disturbing the arrangement.",
     "When Minato shuts at three he stacks the cushions. From four until ten he sleeps on that same stool, and somebody always puts a jacket over him. Then he works off his tab: sweeping until noon, washing and polishing the glasses until two, mopping, and wiping the tables down for the evening while Thao preps.",
     "He says the tab is nearly paid. Thao says the same thing, in a different tone. Both of them seem quite happy with the arrangement, which has outlasted several menus and one karaoke machine."
    ],
@@ -194,7 +242,17 @@
      "file": "assets/images/residents/shoot/barfly-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "izakaya",
+   "address": "Minato Izakaya · Barfly’s home",
+   "residents": [
+    "Barfly"
+   ],
+   "island": "minato",
+   "entranceSiteId": "izakaya"
+  },
+  "secondaryHomes": []
  },
  {
   "name": "Mrs Sato",
@@ -244,14 +302,24 @@
      "file": "assets/images/residents/shoot/mrs-sato-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "kitahama-2",
+   "address": "2 Kitahama",
+   "residents": [
+    "Mrs Sato"
+   ],
+   "island": "minato",
+   "entranceSiteId": "resident-home-mrs-sato"
+  },
+  "secondaryHomes": []
  },
  {
   "name": "Nhung",
   "role": "Bookseller",
   "place": "Front-Row Books",
   "bio": "Front-Row Books has a window seat, a cat who refuses aprons, and Nhung’s paper slips in every other volume.",
-  "backstory": "Nhung’s recommendations come on little slips of paper tucked between the pages. Pocket poetry, island histories and practical sea guides fill the shelves, and the second-hand paperbacks come with her pencil marks in the margins wherever something made her laugh. The eldest of three sisters, she still checks that Thao has eaten and that Thuan has slept. Supper is with her husband Kōji, who comes from the fish auction, and their son Riku, who comes from wherever the boats are. She shares the front-row house with Reiko, so a bookshop day often continues as an argument about the evening paper. Tama the shop cat has refused, on principle and permanently, to wear the tiny apron she once made him. Johansson gets the unusual technical books first; she saves them under the counter. Her ambition is a whole shelf of books by island residents. So far it holds a tide table, a cookbook from the Community Hall and a book of poems she will not say she wrote.",
+  "backstory": "Nhung’s recommendations come on little slips of paper tucked between the pages. Pocket poetry, island histories and practical sea guides fill the shelves, and the second-hand paperbacks come with her pencil marks in the margins wherever something made her laugh. The eldest of three sisters, she still checks that Thao has eaten and that Thuan has slept. Supper is at 3 Kitahama with her husband Kōji, who comes from the fish auction, and their son Riku, who comes from school or watching the boats. She shares 1 Front-Row Yard with Reiko, so a bookshop day often continues as an argument about the evening paper. Tama the shop cat has refused, on principle and permanently, to wear the tiny apron she once made him. Johansson gets the unusual technical books first; she saves them under the counter. Her ambition is a whole shelf of books by island residents. So far it holds a tide table, a cookbook from the Community Hall and a book of poems she will not say she wrote.",
   "portrait": "assets/images/residents/07.webp",
   "age": 31,
   "friend": "Reiko",
@@ -272,7 +340,7 @@
    "standfirst": "Front-Row Books has a window seat, a cat who refuses aprons, and Nhung’s paper slips in every other volume.",
    "body": [
     "Nhung’s recommendations come on little slips of paper tucked between the pages. Pocket poetry, island histories and practical sea guides fill the shelves, and the second-hand paperbacks come with her pencil marks in the margins wherever something made her laugh.",
-    "The eldest of three sisters, she still checks that Thao has eaten and that Thuan has slept. Supper is with her husband Kōji, who comes from the fish auction, and their son Riku, who comes from wherever the boats are. She shares the front-row house with Reiko, so a bookshop day often continues as an argument about the evening paper. Tama the shop cat has refused, on principle and permanently, to wear the tiny apron she once made him. Johansson gets the unusual technical books first; she saves them under the counter.",
+    "The eldest of three sisters, she still checks that Thao has eaten and that Thuan has slept. Supper is at 3 Kitahama with her husband Kōji, who comes from the fish auction, and their son Riku, who comes from school or watching the boats. She shares 1 Front-Row Yard with Reiko, so a bookshop day often continues as an argument about the evening paper. Tama the shop cat has refused, on principle and permanently, to wear the tiny apron she once made him. Johansson gets the unusual technical books first; she saves them under the counter.",
     "Her ambition is a whole shelf of books by island residents. So far it holds a tide table, a cookbook from the Community Hall and a book of poems she will not say she wrote."
    ],
    "quote": "Every book in here has been read at least once on that window seat. Some of them twice.",
@@ -295,7 +363,18 @@
      "file": "assets/images/residents/shoot/nhung-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "resident-home-aya",
+   "address": "1 Front-Row Yard",
+   "residents": [
+    "Nhung",
+    "Reiko"
+   ],
+   "island": "minato",
+   "entranceSiteId": "resident-home-aya"
+  },
+  "secondaryHomes": []
  },
  {
   "name": "Chin",
@@ -346,7 +425,20 @@
      "file": "assets/images/residents/shoot/chin-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "kitahama-1",
+   "address": "1 Kitahama",
+   "residents": [
+    "Thuan",
+    "Thao",
+    "Chin",
+    "Vy"
+   ],
+   "island": "minato",
+   "entranceSiteId": "resident-home-thuan"
+  },
+  "secondaryHomes": []
  },
  {
   "name": "Tetsuo",
@@ -397,7 +489,17 @@
      "file": "assets/images/residents/shoot/tetsuo-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "resident-home-kenji",
+   "address": "2 Front-Row Yard",
+   "residents": [
+    "Tetsuo"
+   ],
+   "island": "minato",
+   "entranceSiteId": "resident-home-kenji"
+  },
+  "secondaryHomes": []
  },
  {
   "name": "Reiko",
@@ -448,7 +550,18 @@
      "file": "assets/images/residents/shoot/reiko-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "resident-home-aya",
+   "address": "1 Front-Row Yard",
+   "residents": [
+    "Nhung",
+    "Reiko"
+   ],
+   "island": "minato",
+   "entranceSiteId": "resident-home-aya"
+  },
+  "secondaryHomes": []
  },
  {
   "name": "Officer Mori",
@@ -498,7 +611,17 @@
      "file": "assets/images/residents/shoot/officer-mori-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "koban",
+   "address": "Officer Mori’s residence, Minato Police Box",
+   "residents": [
+    "Officer Mori"
+   ],
+   "island": "minato",
+   "entranceSiteId": "koban"
+  },
+  "secondaryHomes": []
  },
  {
   "name": "Harbour master",
@@ -548,7 +671,17 @@
      "file": "assets/images/residents/shoot/harbour-master-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "office",
+   "address": "Harbour Office · residence behind the screen",
+   "residents": [
+    "Harbour master"
+   ],
+   "island": "minato",
+   "entranceSiteId": "office"
+  },
+  "secondaryHomes": []
  },
  {
   "name": "Bus driver",
@@ -599,7 +732,17 @@
      "file": "assets/images/residents/shoot/bus-driver-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "kitahama-6",
+   "address": "6 Kitahama",
+   "residents": [
+    "Bus driver"
+   ],
+   "island": "minato",
+   "entranceSiteId": "home-kitahama-6"
+  },
+  "secondaryHomes": []
  },
  {
   "name": "Grandmother Chinen",
@@ -648,7 +791,17 @@
      "file": "assets/images/residents/shoot/grandmother-chinen-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "kitano-3",
+   "address": "Chinen house, Kitano hamlet",
+   "residents": [
+    "Grandmother Chinen"
+   ],
+   "island": "kitano",
+   "entranceSiteId": "home-kitano-3"
+  },
+  "secondaryHomes": []
  },
  {
   "name": "Miss Higa",
@@ -697,12 +850,23 @@
      "file": "assets/images/residents/shoot/miss-higa-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "higa",
+   "address": "Higa house, Nishi-machi",
+   "residents": [
+    "Miss Higa",
+    "Grandmother Higa"
+   ],
+   "island": "minato",
+   "entranceSiteId": "home-higa"
+  },
+  "secondaryHomes": []
  },
  {
   "name": "Grandmother Higa",
-  "role": "Long-time neighbour",
-  "place": "Her verandah",
+  "role": "Owner of Umi-no-yu and Higa Liquor",
+  "place": "Higa Liquor, Umi-no-yu and her Nishi-machi verandah",
   "bio": "She owns the bath and the liquor shop, and she knows the ferry by its whistle. From her verandah in Nishi-machi she keeps an eye on the rest.",
   "backstory": "Sit a moment, she says, and you will. Grandmother Higa offers a seat, an observation about Sakura, and practical advice on preparing a house for typhoon season, in that order. She keeps the counter at Higa Liquor in the morning and the bandai at Umi-no-yu in the afternoon. Every bottle on the island, at Sakura, Minato or Sato Ramen, came through her door first. Her granddaughter teaches the island school and keeps the bandai in the evenings. Grandmother Higa would like her married, and says so. She has noticed that Tetsuo, who keeps her boiler running for a bath and his supper, takes his time over the pumps. She sends him through the front way, past the bandai, on purpose. Grandmother Sakurai bathes an hour before her. They have been rivals since primary school, and neither has ever let the other win a thing: not a bazaar, not a sports day, not a single argument about the price of rice. Mr Fujita soaks his back every morning and tells her the water is never hot enough. She tells Dr Kakazu the same about his advice on her blood pressure. When the Minato Maru is late she hears it in the whistle, and her grandson, who oils the ferry’s engines, hears about it at supper.",
   "portrait": "assets/images/residents/28.webp",
@@ -745,7 +909,18 @@
      "file": "assets/images/residents/shoot/grandmother-higa-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "higa",
+   "address": "Higa house, Nishi-machi",
+   "residents": [
+    "Miss Higa",
+    "Grandmother Higa"
+   ],
+   "island": "minato",
+   "entranceSiteId": "home-higa"
+  },
+  "secondaryHomes": []
  },
  {
   "name": "Mr Ōshiro",
@@ -794,14 +969,24 @@
      "file": "assets/images/residents/shoot/mr-oshiro-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "oshiro",
+   "address": "Ōshiro house, Nishi-machi",
+   "residents": [
+    "Mr Ōshiro"
+   ],
+   "island": "minato",
+   "entranceSiteId": "home-oshiro"
+  },
+  "secondaryHomes": []
  },
  {
   "name": "Mrs Kinjō",
   "role": "Florist",
-  "place": "Rainflower Florist",
-  "bio": "Mrs Kinjō sells island-grown stems from half past eight, dresses the town for every festival, and keeps a careful eye on her neighbour’s doorway.",
-  "backstory": "Buckets of fresh stems, leafy pots and hand-made wreaths fill the open front of the flower shop on Rainflower Lane. The morning stems come in at half past eight; by the afternoon she is out on deliveries. Thuan comes after closing, and the bouquets for Sakura’s counter are chosen with care on both sides. She is the town’s decorator as well as its florist. The bunting at the harbour, the paper lanterns at Minato and the flowers on Thao’s counter all come from her back room. Thao says the lanterns cost more than the sake. Mrs Kinjō says that is because the lanterns last. She shares the walkway with Mrs Nakamura’s zenzai counter. They eat lunch at each other’s counters and argue about whose customers block whose doorway, usually in the same conversation. On Sundays she takes tea with Grandmother Sakurai, an old friend, and they agree about almost everything except Grandmother Higa. She wraps everything in plain brown paper, because the flowers should be the bright part.",
+  "place": "Rainflower Florist, Harbour Park’s Sakura entrance",
+  "bio": "Mrs Kinjō sells island-grown stems from half past eight, dresses the town for every festival, and keeps a careful eye on the town’s flowers.",
+  "backstory": "Buckets of fresh stems, leafy pots and hand-made wreaths fill the Rainflower flower stand at Harbour Park’s Sakura entrance. The morning stems come in at half past eight; by the afternoon she is out on deliveries. Thuan comes after closing, and the bouquets for Sakura’s counter are chosen with care on both sides. She is the town’s decorator as well as its florist. The bunting at the harbour, the paper lanterns at Minato and the flowers on Thao’s counter are all arranged by her. Thao says the lanterns cost more than the sake. Mrs Kinjō says that is because the lanterns last. She trades lunch visits with Mrs Nakamura at the Nakamura counter. Their old argument about whose queue was longer has survived the florist’s move to the park. On Sundays she takes tea with Grandmother Sakurai, an old friend, and they agree about almost everything except Grandmother Higa. She wraps everything in plain brown paper, because the flowers should be the bright part.",
   "portrait": "assets/images/residents/37.webp",
   "islandPersonality": {
    "title": "A grower of small joys",
@@ -816,11 +1001,11 @@
   },
   "article": {
    "headline": "Rainflower Florist wraps every bouquet in brown paper",
-   "standfirst": "Mrs Kinjō sells island-grown stems from half past eight, dresses the town for every festival, and keeps a careful eye on her neighbour’s doorway.",
+   "standfirst": "Mrs Kinjō sells island-grown stems from half past eight, dresses the town for every festival, and keeps a careful eye on the town’s flowers.",
    "body": [
-    "Buckets of fresh stems, leafy pots and hand-made wreaths fill the open front of the flower shop on Rainflower Lane. The morning stems come in at half past eight; by the afternoon she is out on deliveries. Thuan comes after closing, and the bouquets for Sakura’s counter are chosen with care on both sides.",
-    "She is the town’s decorator as well as its florist. The bunting at the harbour, the paper lanterns at Minato and the flowers on Thao’s counter all come from her back room. Thao says the lanterns cost more than the sake. Mrs Kinjō says that is because the lanterns last.",
-    "She shares the walkway with Mrs Nakamura’s zenzai counter. They eat lunch at each other’s counters and argue about whose customers block whose doorway, usually in the same conversation. On Sundays she takes tea with Grandmother Sakurai, an old friend, and they agree about almost everything except Grandmother Higa.",
+    "Buckets of fresh stems, leafy pots and hand-made wreaths fill the Rainflower flower stand at Harbour Park’s Sakura entrance. The morning stems come in at half past eight; by the afternoon she is out on deliveries. Thuan comes after closing, and the bouquets for Sakura’s counter are chosen with care on both sides.",
+    "She is the town’s decorator as well as its florist. The bunting at the harbour, the paper lanterns at Minato and the flowers on Thao’s counter are all arranged by her. Thao says the lanterns cost more than the sake. Mrs Kinjō says that is because the lanterns last.",
+    "She trades lunch visits with Mrs Nakamura at the Nakamura counter. Their old argument about whose queue was longer has survived the florist’s move to the park. On Sundays she takes tea with Grandmother Sakurai, an old friend, and they agree about almost everything except Grandmother Higa.",
     "She wraps everything in plain brown paper, because the flowers should be the bright part."
    ],
    "quote": "The flowers are the bright part. Everything else should get out of their way. Including that queue.",
@@ -830,7 +1015,7 @@
      "expression": "happy",
      "backdrop": "hearts",
      "film": "vivid",
-     "caption": "Fresh stems, Rainflower Lane.",
+     "caption": "Fresh stems at Harbour Park’s Sakura entrance.",
      "file": "assets/images/residents/shoot/mrs-kinjo-1.webp"
     },
     {
@@ -843,14 +1028,24 @@
      "file": "assets/images/residents/shoot/mrs-kinjo-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "kinjo",
+   "address": "Kinjō house, Nishi-machi",
+   "residents": [
+    "Mrs Kinjō"
+   ],
+   "island": "minato",
+   "entranceSiteId": "home-kinjo"
+  },
+  "secondaryHomes": []
  },
  {
   "name": "Mrs Nakamura",
-  "role": "Zenzai shopkeeper",
-  "place": "Main Street corner",
+  "role": "Zenzai and Blue Coral shopkeeper",
+  "place": "Nakamura frontage, Main Street",
   "bio": "Mrs Nakamura has the beans on at six, the ice-cream counter open at three and the community kitchen’s andagi in the fryer whenever the town needs feeding.",
-  "backstory": "Kintoki beans, cooked since six. The ice comes from the plant on the quay, and the old shaving machine roars like a tractor; she trusts its work completely. There has been zenzai on this corner since 1972, and she has no plans to stop. At three she crosses to Blue Coral and opens the ice-cream counter for the school crowd. Her daughter Mai arrives at half past with Vy, her best friend, and the pink guava scoop is already set aside. Mrs Nakamura is bringing Mai up on her own, and does it the way she does everything, early and without fuss. She also runs the community kitchen. When there is a festival, a funeral or a typhoon, the andagi come from her fryer, by the hundred. Mrs Kinjō, next door, eats lunch at her counter and complains about the queue in front of the flower buckets. Mrs Nakamura gives her a second bowl and does not move the queue.",
+  "backstory": "Kintoki beans, cooked since six. The ice comes from the plant on the quay, and the old shaving machine roars like a tractor; she trusts its work completely. There has been zenzai on this corner since 1972, and she has no plans to stop. At three she serves the Blue Coral ice cream from the same Nakamura frontage for the school crowd. Her daughter Mai arrives at half past with Vy, her best friend, and the pink guava scoop is already set aside. Mrs Nakamura is bringing Mai up on her own, and does it the way she does everything, early and without fuss. She also runs the community kitchen. When there is a festival, a funeral or a typhoon, the andagi come from her fryer, by the hundred. Mrs Kinjō comes over from the park’s flower stand for lunch and asks how the ice-cream queue is doing. Mrs Nakamura gives her a second bowl and does not move the queue.",
   "portrait": "assets/images/residents/06.webp",
   "islandPersonality": {
    "title": "Keeper of sweet comforts",
@@ -868,8 +1063,8 @@
    "standfirst": "Mrs Nakamura has the beans on at six, the ice-cream counter open at three and the community kitchen’s andagi in the fryer whenever the town needs feeding.",
    "body": [
     "Kintoki beans, cooked since six. The ice comes from the plant on the quay, and the old shaving machine roars like a tractor; she trusts its work completely. There has been zenzai on this corner since 1972, and she has no plans to stop.",
-    "At three she crosses to Blue Coral and opens the ice-cream counter for the school crowd. Her daughter Mai arrives at half past with Vy, her best friend, and the pink guava scoop is already set aside. Mrs Nakamura is bringing Mai up on her own, and does it the way she does everything, early and without fuss.",
-    "She also runs the community kitchen. When there is a festival, a funeral or a typhoon, the andagi come from her fryer, by the hundred. Mrs Kinjō, next door, eats lunch at her counter and complains about the queue in front of the flower buckets. Mrs Nakamura gives her a second bowl and does not move the queue."
+    "At three she serves the Blue Coral ice cream from the same Nakamura frontage for the school crowd. Her daughter Mai arrives at half past with Vy, her best friend, and the pink guava scoop is already set aside. Mrs Nakamura is bringing Mai up on her own, and does it the way she does everything, early and without fuss.",
+    "She also runs the community kitchen. When there is a festival, a funeral or a typhoon, the andagi come from her fryer, by the hundred. Mrs Kinjō comes over from the park’s flower stand for lunch and asks how the ice-cream queue is doing. Mrs Nakamura gives her a second bowl and does not move the queue."
    ],
    "quote": "Zenzai is not fast food. Sit down.",
    "photos": [
@@ -891,7 +1086,18 @@
      "file": "assets/images/residents/shoot/mrs-nakamura-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "nakamura",
+   "address": "Above Nakamura Zenzai",
+   "residents": [
+    "Mrs Nakamura",
+    "Mai"
+   ],
+   "island": "minato",
+   "entranceSiteId": "home-nakamura"
+  },
+  "secondaryHomes": []
  },
  {
   "name": "Mr Shimabukuro",
@@ -901,15 +1107,15 @@
   "backstory": "Hear that? Two diesels, one running, one resting. Mr Shimabukuro listens to the generators the way a doctor listens to a chest, and he hears a fault before the meters show it. The second set is to be overhauled before typhoon season; the town assembly minutes say so, and so does he, at length. Postman Tōma brings his parcels to the power house door. They are usually spare parts. Tetsuo comes over when the switchboard needs a second pair of hands, and they talk about the island’s load as other men talk about the weather. On Sunday mornings he fishes off the seawall with Chin at dawn. Who caught the bigger one is a question that has run for years.",
   "portrait": "assets/images/residents/29.webp",
   "islandPersonality": {
-   "title": "The cheerful confidant",
+   "title": "The careful keeper",
    "traits": [
-    "Chatty",
-    "careful",
-    "discreet"
+    "Observant",
+    "patient",
+    "dependable"
    ],
-   "habit": "Brushes the chair clean before a customer reaches it.",
-   "ambition": "Make his barbershop a place people leave feeling lighter.",
-   "favourite": "The first appointment of a fine morning"
+   "habit": "Listens to the generators before checking the meters.",
+   "ambition": "Keep the island’s lights on through the typhoon season.",
+   "favourite": "Fishing with Chin on a Sunday morning"
   },
   "article": {
    "headline": "Two diesels, one running, one resting: the man who keeps the lights on",
@@ -939,7 +1145,17 @@
      "file": "assets/images/residents/shoot/mr-shimabukuro-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "shimabukuro",
+   "address": "Above the post office",
+   "residents": [
+    "Mr Shimabukuro"
+   ],
+   "island": "minato",
+   "entranceSiteId": "home-shimabukuro"
+  },
+  "secondaryHomes": []
  },
  {
   "name": "Kōji",
@@ -988,7 +1204,18 @@
      "file": "assets/images/residents/shoot/koji-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "kitahama-3",
+   "address": "3 Kitahama",
+   "residents": [
+    "Kōji",
+    "Riku"
+   ],
+   "island": "minato",
+   "entranceSiteId": "home-kitahama-3"
+  },
+  "secondaryHomes": []
  },
  {
   "name": "Postman Tōma",
@@ -1037,42 +1264,52 @@
      "file": "assets/images/residents/shoot/postman-toma-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "kitahama-4",
+   "address": "4 Kitahama",
+   "residents": [
+    "Postman Tōma"
+   ],
+   "island": "minato",
+   "entranceSiteId": "home-kitahama-4"
+  },
+  "secondaryHomes": []
  },
  {
   "name": "Riku",
-  "role": "Dock cargo crew",
-  "place": "Western quay",
-  "bio": "He walks the cargo circuit from the morning supply boat to the evening fish dispatch.",
-  "backstory": "Rice for Sakura, fuses for the workshop: the containers on the western quay look anonymous until Riku tells you what is inside. He works around the hoist, keeps the pedestrian passage clear and watches the horizon for the next supply ship. The harbour master keeps the freight book; Riku keeps the crates moving. Between them, very little goes missing.",
+  "role": "Island school pupil",
+  "place": "Island school, the quay and Harbour Park",
+  "bio": "Riku is nine, Nhung and Kōji’s son, and lives at 3 Kitahama. After school he watches the boats and plays football in Harbour Park.",
+  "backstory": "Riku lives with his father Kōji at 3 Kitahama. His mother Nhung keeps her room at 1 Front-Row Yard with Reiko, and comes to Kitahama for family supper. Vy is his cousin, and the island school is part of both their days. After school he watches the fishing boats come in. Kōji sorts the catch and sometimes crews the ferry; Riku wants to join him on the boat. He may, his father says, when he can swim to the buoy. Harbour Park has room for football before supper. By half past six he is home at 3 Kitahama, with stories about the quay for Nhung and questions about the boats for Kōji.",
   "portrait": "assets/images/residents/riku.webp",
   "islandPersonality": {
-   "title": "The willing pair of hands",
+   "title": "The boat watcher",
    "traits": [
-    "Strong",
-    "cheerful",
-    "conscientious"
+    "Curious",
+    "quick",
+    "determined"
    ],
-   "habit": "Checks a pallet strap twice before signalling the lift.",
-   "ambition": "Become the crew member everyone trusts with a difficult load.",
-   "favourite": "A break by the quay after unloading"
+   "habit": "Watches the boats after school.",
+   "ambition": "Swim to the buoy so he can join his father on the boat.",
+   "favourite": "Football in Harbour Park before supper"
   },
   "article": {
-   "headline": "Which crate is yours? Ask Riku.",
-   "standfirst": "He walks the cargo circuit from the morning supply boat to the evening fish dispatch.",
+   "headline": "After school, Riku is watching the boats",
+   "standfirst": "Riku is nine, Nhung and Kōji’s son, and lives at 3 Kitahama. After school he watches the boats and plays football in Harbour Park.",
    "body": [
-    "Rice for Sakura, fuses for the workshop: the containers on the western quay look anonymous until Riku tells you what is inside.",
-    "He works around the hoist, keeps the pedestrian passage clear and watches the horizon for the next supply ship.",
-    "The harbour master keeps the freight book; Riku keeps the crates moving. Between them, very little goes missing."
+    "Riku lives with his father Kōji at 3 Kitahama. His mother Nhung keeps her room at 1 Front-Row Yard with Reiko, and comes to Kitahama for family supper. Vy is his cousin, and the island school is part of both their days.",
+    "After school he watches the fishing boats come in. Kōji sorts the catch and sometimes crews the ferry; Riku wants to join him on the boat. He may, his father says, when he can swim to the buoy.",
+    "Harbour Park has room for football before supper. By half past six he is home at 3 Kitahama, with stories about the quay for Nhung and questions about the boats for Kōji."
    ],
-   "quote": "Every crate on this quay belongs to somebody’s day.",
+   "quote": "Dad says I can come on the boat when I can swim to the buoy.",
    "photos": [
     {
      "pose": "Point",
      "expression": "neutral",
      "backdrop": "sky",
      "film": "film",
-     "caption": "The morning supply boat.",
+     "caption": "Watching the boats after school.",
      "file": "assets/images/residents/shoot/riku-1.webp"
     },
     {
@@ -1080,19 +1317,30 @@
      "expression": "happy",
      "backdrop": "cream",
      "film": "warm",
-     "caption": "Cargo for Sakura, signed into the freight book.",
+     "caption": "Asking the harbour master about the next boat.",
      "with": "Harbour master",
      "file": "assets/images/residents/shoot/riku-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "kitahama-3",
+   "address": "3 Kitahama",
+   "residents": [
+    "Kōji",
+    "Riku"
+   ],
+   "island": "minato",
+   "entranceSiteId": "home-kitahama-3"
+  },
+  "secondaryHomes": []
  },
  {
   "name": "Vy",
-  "role": "High-school student",
-  "place": "Bus stop, Sakura and the park",
-  "bio": "The school bus leaves at twenty past seven. By mid-afternoon Vy is back, satchel full of kanji, and heading straight for the Blue Coral counter.",
-  "backstory": "Vy is in her second year of high school and wears the sailor uniform like a reasonable compromise. She takes the twenty-past-seven bus across the bridge and knows every driver by the way they brake. Her verdict on the island’s one bus driver is that he is “gentle, but late on purpose”. Her first stop on the way home is Blue Coral on Rainflower Lane, where the lady at the counter keeps the pink guava scoop aside for her. The lady says this is good customer service. Vy says it is a contract. Then she spreads her homework across a park bench and does the hard half first, or says she will. When she is thinking she counts the pleats in her skirt. When she is not, she is watching the jan-ken-pon games in the park and keeping score for the three sisters, who all claim to be winning. She would like to be a ferry captain, or a translator, or both on alternate days.",
+  "role": "Island school pupil",
+  "place": "Island school, Nakamura’s Blue Coral counter and Harbour Park",
+  "bio": "Vy is eleven and lives with Thao and Chin at 1 Kitahama. After school she meets Mai for a Blue Coral ice cream at Nakamura, then takes her homework to Harbour Park.",
+  "backstory": "Vy is eleven, Thao and Chin’s daughter, and lives at 1 Kitahama. Her aunt Thuan keeps a weekday room there, and her cousin Riku lives at 3 Kitahama. The island school fills her morning; after class she has plans of her own. Her first stop after school is the Blue Coral counter at Nakamura, where Mrs Nakamura keeps the pink guava scoop aside for her. Mai arrives at the same counter. The lady says this is good customer service. Vy says it is a contract. Then she opens her satchel at a Harbour Park bench, spreads out her homework and does the hard half first, or says she will. When she is thinking she counts the pleats in her skirt. When she is not, she is watching the jan-ken-pon games in Harbour Park and keeping score for the three sisters, who all claim to be winning. She would like to be a ferry captain, or a translator, or both on alternate days.",
   "portrait": "assets/images/residents/vy.webp",
   "islandPersonality": {
    "title": "The rule maker",
@@ -1107,11 +1355,11 @@
   },
   "article": {
    "headline": "Ice cream before homework: the rule Vy made and keeps",
-   "standfirst": "The school bus leaves at twenty past seven. By mid-afternoon Vy is back, satchel full of kanji, and heading straight for the Blue Coral counter.",
+   "standfirst": "Vy is eleven and lives with Thao and Chin at 1 Kitahama. After school she meets Mai for a Blue Coral ice cream at Nakamura, then takes her homework to Harbour Park.",
    "body": [
-    "Vy is in her second year of high school and wears the sailor uniform like a reasonable compromise. She takes the twenty-past-seven bus across the bridge and knows every driver by the way they brake. Her verdict on the island’s one bus driver is that he is “gentle, but late on purpose”.",
-    "Her first stop on the way home is Blue Coral on Rainflower Lane, where the lady at the counter keeps the pink guava scoop aside for her. The lady says this is good customer service. Vy says it is a contract. Then she spreads her homework across a park bench and does the hard half first, or says she will.",
-    "When she is thinking she counts the pleats in her skirt. When she is not, she is watching the jan-ken-pon games in the park and keeping score for the three sisters, who all claim to be winning. She would like to be a ferry captain, or a translator, or both on alternate days."
+    "Vy is eleven, Thao and Chin’s daughter, and lives at 1 Kitahama. Her aunt Thuan keeps a weekday room there, and her cousin Riku lives at 3 Kitahama. The island school fills her morning; after class she has plans of her own.",
+    "Her first stop after school is the Blue Coral counter at Nakamura, where Mrs Nakamura keeps the pink guava scoop aside for her. Mai arrives at the same counter. The lady says this is good customer service. Vy says it is a contract. Then she opens her satchel at a Harbour Park bench, spreads out her homework and does the hard half first, or says she will.",
+    "When she is thinking she counts the pleats in her skirt. When she is not, she is watching the jan-ken-pon games in Harbour Park and keeping score for the three sisters, who all claim to be winning. She would like to be a ferry captain, or a translator, or both on alternate days."
    ],
    "quote": "Homework is easier with guava. That is not an opinion, it is research.",
    "photos": [
@@ -1132,6 +1380,19 @@
      "file": "assets/images/residents/shoot/vy-2.webp"
     }
    ]
-  }
+  },
+  "home": {
+   "id": "kitahama-1",
+   "address": "1 Kitahama",
+   "residents": [
+    "Thuan",
+    "Thao",
+    "Chin",
+    "Vy"
+   ],
+   "island": "minato",
+   "entranceSiteId": "resident-home-thuan"
+  },
+  "secondaryHomes": []
  }
 ]
