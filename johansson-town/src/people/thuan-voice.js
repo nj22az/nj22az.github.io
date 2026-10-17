@@ -49,8 +49,8 @@ export function selectVoice(voices,preference=DEFAULT_PREFERENCE){
  * @param {VoicePreference} [options.preference]
  * @param {number} [options.maxChars] longer lines are spoken truncated rather than forever
  */
-export function createThuanVoice({face=null,synth=globalThis.speechSynthesis,preference=DEFAULT_PREFERENCE,maxChars=320}={}){
- const supported=!!(synth&&typeof synth.speak==='function'&&typeof globalThis.SpeechSynthesisUtterance==='function');
+export function createThuanVoice({face=null,synth=globalThis.speechSynthesis,Utterance=globalThis.SpeechSynthesisUtterance,preference=DEFAULT_PREFERENCE,maxChars=320}={}){
+ const supported=!!(synth&&typeof synth.speak==='function'&&typeof Utterance==='function');
  let voice=null,active=null,muted=false;
 
  function refreshVoice(){
@@ -72,7 +72,7 @@ export function createThuanVoice({face=null,synth=globalThis.speechSynthesis,pre
   * @param {string} text
   * @returns {Promise<{spoken:boolean,reason?:string}>}
   */
- function speak(text){
+ function speak(text,{rate=.98,pitch=1.06,volume=1,preference:linePreference=null,onBoundary=null,onStart=null,timeout=null}={}){
   const line=String(text||'').trim();
   cancel();
   if(!line)return Promise.resolve({spoken:false,reason:'empty'});
@@ -80,28 +80,31 @@ export function createThuanVoice({face=null,synth=globalThis.speechSynthesis,pre
   if(muted)return Promise.resolve({spoken:false,reason:'muted'});
 
   return new Promise(resolve=>{
-   const utterance=new globalThis.SpeechSynthesisUtterance(line.slice(0,maxChars));
+   const utterance=new Utterance(line.slice(0,maxChars));
    if(!voice)refreshVoice();
-   if(voice){utterance.voice=voice;utterance.lang=voice.lang;}
-   utterance.rate=.98;utterance.pitch=1.06;
+   let chosen=voice;try{if(linePreference)chosen=selectVoice(synth.getVoices?.()||[],linePreference);}catch{}
+   if(chosen){utterance.voice=chosen;utterance.lang=chosen.lang;}
+   utterance.rate=Math.max(.5,Math.min(2.5,Number(rate)||.98));utterance.pitch=Math.max(.1,Math.min(2,Number(pitch)||1.06));utterance.volume=Math.max(0,Math.min(1,volume));
    let settled=false;
    const finish=result=>{
     if(settled)return;
     settled=true;
+    if(active?.utterance===utterance)clearTimeout(active.timer);
     if(active?.utterance===utterance)active=null;
     stopFace();
     resolve(result);
    };
-   utterance.onstart=()=>face?.setSpeaking?.(true);
+   utterance.onstart=()=>{if(settled)return;face?.setSpeaking?.(true);onStart?.();};
+   utterance.onboundary=event=>{if(!settled)onBoundary?.(event);};
    utterance.onend=()=>finish({spoken:true});
    utterance.onerror=event=>finish({spoken:false,reason:event?.error||'error'});
    active={utterance,finish};
    try{
-    synth.speak(utterance);
     // iOS refuses to speak outside a user gesture and fires nothing at all. Give up
     // after a bound proportional to the line so the caller is never left waiting.
-    const bound=2000+line.length*110;
-    active.timer=setTimeout(()=>finish({spoken:false,reason:'timeout'}),bound);
+    const bound=timeout??2000+line.length*110;
+    active.timer=setTimeout(()=>cancel('timeout'),bound);
+    synth.speak(utterance);
    }catch(error){finish({spoken:false,reason:String(error?.message||error)});}
   });
  }
@@ -110,12 +113,12 @@ export function createThuanVoice({face=null,synth=globalThis.speechSynthesis,pre
   * Stops any line in progress and settles its promise. With nothing in flight this is
   * a no-op: telling the face to stop speaking when it never started would stutter it.
   */
- function cancel(){
+ function cancel(reason='cancelled'){
   const pending=active;
   if(pending?.timer)clearTimeout(pending.timer);
   active=null;
   if(supported){try{synth.cancel();}catch{}}
-  pending?.finish?.({spoken:false,reason:'cancelled'});   // finish() releases the face
+  pending?.finish?.({spoken:false,reason});   // finish() releases the face
  }
 
  return {
@@ -126,7 +129,7 @@ export function createThuanVoice({face=null,synth=globalThis.speechSynthesis,pre
   get muted(){return muted;},
   speak,cancel,refreshVoice,
   dispose(){
-   cancel();
+   if(active)cancel();
    if(supported&&'onvoiceschanged' in synth)synth.removeEventListener?.('voiceschanged',refreshVoice);
   }
  };

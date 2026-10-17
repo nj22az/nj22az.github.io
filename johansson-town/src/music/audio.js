@@ -8,7 +8,7 @@ export const VOICE_PROFILES=Object.freeze({
  belt:{shift:-5,formant:.96,vibrato:6.3,depth:.015,level:.23},
  chip:{shift:12,formant:1.35,vibrato:7,depth:.006,level:.16}
 });
-export function createConcertAudio({Context=globalThis.AudioContext||globalThis.webkitAudioContext}={}){
+export function createConcertAudio({Context=globalThis.AudioContext||globalThis.webkitAudioContext,liveLyrics=null}={}){
  let ctx=null,out=null,band=null,vocals=null,mix=null,score=null,origin=0,nextBeat=0,nextVoice=0,cast=[],on=false,muted=false,generation=0,lastCheer=-Infinity;
  const sources=new Set();
  function source(node,at,duration){sources.add(node);node.onended=()=>{sources.delete(node);node.disconnect();};node.start(at);node.stop(at+duration);return node;}
@@ -80,8 +80,9 @@ export function createConcertAudio({Context=globalThis.AudioContext||globalThis.
    origin=ctx.currentTime+.10;nextBeat=0;nextVoice=0;lastCheer=-Infinity;on=true;return true;
   },
   update(){if(!on||!score||ctx.state!=='running')return;const edge=ctx.currentTime+.45;
+   liveLyrics?.update(Math.max(0,ctx.currentTime-origin));
    while(nextBeat<40&&origin+nextBeat*score.beat<edge){const at=origin+nextBeat*score.beat;if(at>=ctx.currentTime-.05)percussion(nextBeat,at);nextBeat++;}
-   while(nextVoice<score.syllables.length&&origin+score.syllables[nextVoice].start<edge){const s=score.syllables[nextVoice++];if(origin+s.start<ctx.currentTime-.05)continue;for(let i=0;i<cast.length;i++)if(singingPart(s.line,i,cast.length))voice(s,i);}
+   while(nextVoice<score.syllables.length&&origin+score.syllables[nextVoice].start<edge){const s=score.syllables[nextVoice++];if(origin+s.start<ctx.currentTime-.05||liveLyrics?.source==='live-text')continue;for(let i=0;i<cast.length;i++)if(singingPart(s.line,i,cast.length))voice(s,i);}
   },
   cheer(){if(!on||!score||ctx.currentTime-lastCheer<score.beat*2)return false;lastCheer=ctx.currentTime;chant(ctx.currentTime+.025);noise(ctx.currentTime+.025,.12,.10,1000);return true;},
   get elapsed(){return on?Math.max(0,ctx.currentTime-origin):0;},
