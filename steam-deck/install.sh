@@ -7,7 +7,7 @@ command -v python3 >/dev/null 2>&1 || { echo 'Python 3 is required by this insta
 python3 - <<'PY'
 import os,json,hashlib,urllib.request,tarfile,tempfile,shlex
 from pathlib import Path
-version='0.2.1'
+version='0.2.2'
 release='https://github.com/nj22az/nj22az.github.io/releases/download/johansson-world-linux-v'+version+'/'
 def get(url):
  return urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'Johansson-World-Installer'}),timeout=60)

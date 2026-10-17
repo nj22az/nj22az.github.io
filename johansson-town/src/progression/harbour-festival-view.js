@@ -44,7 +44,7 @@ export function createHarbourFestival({scene,camera,renderer,activities,getStage
   actors=bout.fighters.map(f=>{const avatar=buildAvatar(recipeFor(f.name),{shadows:false,faceSize:256});avatar.root.rotation.y=0;ring.add(avatar.root);return avatar;});
   const line=new THREE.Mesh(new THREE.RingGeometry(2.45,2.48,48),new THREE.MeshBasicMaterial({color:0xf4e4ab,side:THREE.DoubleSide,depthWrite:false}));line.rotation.x=-Math.PI/2;line.position.y=.025;ring.add(line);
   hud=document.createElement('section');hud.id='festivalHUD';hud.style.cssText='position:fixed;left:3%;right:3%;top:4%;z-index:1000;pointer-events:none;color:#fff;font:700 17px system-ui;text-shadow:0 2px 3px #000';
-  hud.innerHTML='<div style="display:flex;justify-content:space-between;gap:10px"><span data-hero></span><span data-clock></span><span data-foe></span></div><p data-stage style="text-align:center"></p><p style="position:fixed;bottom:20px;left:4%;right:4%;text-align:center">X / J punch · Y / K kick · Hold A / L guard · B / Space dodge · View / Esc leave</p>';
+  hud.innerHTML='<div style="display:flex;justify-content:space-between;gap:10px"><span data-hero></span><span data-clock></span><span data-foe></span></div><p data-stage style="text-align:center"></p><p style="position:fixed;bottom:20px;left:4%;right:4%;text-align:center">'+(window.johanssonDesktop?'X punch · Y kick · Hold A guard · B dodge · View leave':'X / J punch · Y / K kick · Hold A / L guard · B / Space dodge · View / Esc leave')+'</p>';
   document.body.append(hud);document.documentElement.classList.add('festival-active');
  }
  function finish(){

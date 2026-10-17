@@ -31,6 +31,7 @@ app.whenReady().then(async()=>{
  updater=createUpdater({version:app.getVersion(),installRoot:process.env.JOHANSSON_INSTALL_ROOT});
  ipcMain.on('read-backup',event=>{event.returnValue=readSnapshot(saveDir());});
  ipcMain.handle('save-backup',(_event,data)=>writeSnapshot(saveDir(),data));
+ ipcMain.handle('performance-info',()=>app.getAppMetrics().map(p=>({type:p.type,workingSetMiB:Math.round(p.memory.workingSetSize/1024)})));
  ipcMain.handle('app-info',()=>({version:app.getVersion(),savePath:saveDir(),offline:true}));
  ipcMain.handle('check-update',()=>updater.check());
  ipcMain.handle('install-update',()=>updater.install());

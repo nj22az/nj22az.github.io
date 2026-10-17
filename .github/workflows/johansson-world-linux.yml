@@ -27,7 +27,7 @@ jobs:
           node node_modules/electron/install.js
       - name: Tests and world runtime
         run: |
-          node --test johansson-town/tests/harbour-festival.test.mjs
+          node --test johansson-town/tests/harbour-festival.test.mjs johansson-town/tests/detail-stream.test.mjs johansson-town/tests/context-actions.test.mjs
           npm test --prefix steam-deck
           cd johansson-town
           node scripts/build-runtime.mjs
