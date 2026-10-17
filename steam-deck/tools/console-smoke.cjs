@@ -4,7 +4,7 @@ const {chromium}=require('playwright');
 (async()=>{
  const root=path.resolve(__dirname,'../site'),out=path.resolve(__dirname,'../dist/console-qa');fs.mkdirSync(out,{recursive:true});
  assert.equal(fs.existsSync(path.join(root,'thuans-storage')),false,'Retired storage game is not bundled');
- const errors=[],missing=[],remote=[];
+ const errors=[],missing=[],remote=[],audioRequests=[];
  const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.glb':'model/gltf-binary','.gltf':'model/gltf+json','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.wav':'audio/wav','.mp4':'video/mp4'};
  const server=http.createServer((req,res)=>{const url=new URL(req.url,'http://localhost');let file=path.resolve(root,'.'+decodeURIComponent(url.pathname));if(url.pathname.endsWith('/'))file=path.join(file,'index.html');if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){missing.push(url.pathname);res.writeHead(404);res.end();return;}res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream'});fs.createReadStream(file).pipe(res);});
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const url='http://127.0.0.1:'+server.address().port;
@@ -15,6 +15,7 @@ const {chromium}=require('playwright');
  const context=await browser.newContext({viewport:{width:1280,height:800},hasTouch:true});
  await context.route('**/*',route=>{if(new URL(route.request().url()).origin!==url){remote.push(route.request().url());return route.abort();}return route.continue();});
  page=await context.newPage();page.setDefaultTimeout(120000);page.on('pageerror',e=>{errors.push(e.message);console.log('PAGE_ERROR',e.message);});
+ page.on('request',request=>{if(request.url().includes('/audio/'))audioRequests.push(request.url());});
  await page.addInitScript(()=>{
   window.__pad={id:'Steam Deck test pad',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
   Object.defineProperty(navigator,'getGamepads',{value:()=>window.__pad?[window.__pad]:[],configurable:true});
@@ -40,6 +41,7 @@ const {chromium}=require('playwright');
  await page.waitForTimeout(500);assert.equal((await state()).page,'help');assert.equal((await state()).menu,true,'First entry explains what to do');
  assert.equal(await page.evaluate(()=>window.__JOHANSSON_STABILITY__?.ok),true,'Real world startup checks pass');
  await page.screenshot({path:path.join(out,'03-first-steps-1280.png')});await click('resume');
+ if(await page.locator('#exitRoomButton').isVisible()){await page.locator('#exitRoomButton').click();await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).room===null);}
  // Find the same walkable harbour fixture used by the world audit.
  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.teleport(-7,-15,0,0));
  let before=await page.evaluate(()=>({...window.__JOHANSSON_POSE__}));await axes([0,-1,0,0]);await page.waitForTimeout(500);await axes([0,0,0,0]);
@@ -47,6 +49,39 @@ const {chromium}=require('playwright');
  before=after;await axes([0,0,.85,.5]);await page.waitForTimeout(350);await axes([0,0,0,0]);after=await page.evaluate(()=>({...window.__JOHANSSON_POSE__}));assert.ok(Math.abs(after.yaw-before.yaw)>.05,'Right stick rotates actual camera');assert.ok(Math.abs(after.pitch-before.pitch)>.02,'Right stick tilts actual camera');
  await tap(11);await page.waitForTimeout(100);assert.ok(Math.abs(await page.evaluate(()=>window.__JOHANSSON_POSE__.pitch))<.01,'R3 centres camera');
  await page.screenshot({path:path.join(out,'04-gameplay-1280.png')});
+ // Night harbour: the old tonal cricket loop must never be loaded in Linux.
+ if(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room!==null)){await page.locator('#exitRoomButton').click();await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).room===null);}
+ await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.setTime(1380);window.__JOHANSSON_AUDIT__.teleport(4.9,-42.6,-Math.PI/2,0);});
+ await sampled();await page.waitForTimeout(1200);
+ assert.equal(audioRequests.some(url=>url.includes('/crickets.wav')),false,'No repeating electronic cricket beep at night');
+ await page.evaluate(()=>document.fullscreenElement?document.exitFullscreen():undefined);
+ const nightWindow=await context.newCDPSession(page),nightWindowInfo=await nightWindow.send('Browser.getWindowForTarget');
+ await nightWindow.send('Browser.setWindowBounds',{windowId:nightWindowInfo.windowId,bounds:{windowState:'normal'}});await nightWindow.detach();
+ await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.frozen=true;});
+ // Use the real context control with a full ferry action description. This catches
+ // inherited width/clamping even when the nearby raycast happens to choose a short label.
+ await page.evaluate(()=>{
+  const rail=document.getElementById('contextActions'),button=document.getElementById('act');
+  window.__contextBefore={html:button.innerHTML,buttons:[...rail.querySelectorAll('button')].map(b=>({id:b.id,hidden:b.hidden,disabled:b.disabled,className:b.className}))};
+  rail.querySelectorAll('button').forEach(b=>{b.hidden=true;b.classList.add('hidden');});
+  rail.hidden=false;button.hidden=false;button.disabled=false;button.classList.remove('hidden','control-off');button.classList.add('context-primary');
+  button.innerHTML='<span class="context-label">Read the ferry timetable and check the next departure to Kitano-jima</span><kbd>E</kbd>';
+  document.getElementById('subtitle').textContent='Minato Port · Walk up to the waiting hall to buy a ticket or ask about the ferry.';document.getElementById('subtitle').classList.add('on');
+ });
+ for(const [width,height] of [[1280,800],[1280,720],[960,540],[800,600]]){
+  await page.setViewportSize({width,height});await sampled();await page.evaluate(()=>window.__JOHANSSON_AUDIT__.render());await sampled();
+  const layout=await page.evaluate(()=>{
+   const label=document.querySelector('#act .context-label'),box=label.getBoundingClientRect(),range=document.createRange();range.selectNodeContents(label);
+   const text=range.getBoundingClientRect(),caption=document.getElementById('subtitle').getBoundingClientRect(),rail=document.getElementById('contextActions').getBoundingClientRect();
+   return {clamp:getComputedStyle(label).webkitLineClamp,height:box.height,textHeight:text.height,scroll:label.scrollHeight,client:label.clientHeight,captionRight:caption.right,railLeft:rail.left,railRight:rail.right,railBottom:rail.bottom,width:innerWidth,heightLimit:innerHeight};
+  });
+  assert.equal(layout.clamp,'none','Full action labels have no line clamp');
+  assert.ok(layout.scroll<=layout.client+1&&layout.textHeight<=layout.height+1,'Complete action text is visible');
+  assert.ok(layout.captionRight<layout.railLeft,'Caption and action descriptions do not overlap');
+  assert.ok(layout.railRight<=layout.width&&layout.railBottom<=layout.heightLimit,'Action rail stays on screen');
+  await page.screenshot({path:path.join(out,`night-actions-${width}x${height}.png`)});
+ }
+ await page.setViewportSize({width:1280,height:800});await page.evaluate(()=>{const before=window.__contextBefore;document.getElementById('act').innerHTML=before.html;for(const saved of before.buttons){const button=document.getElementById(saved.id);button.hidden=saved.hidden;button.disabled=saved.disabled;button.className=saved.className;}delete window.__contextBefore;window.__JOHANSSON_AUDIT__.frozen=false;window.__JOHANSSON_AUDIT__.setTime(720);window.__JOHANSSON_AUDIT__.teleport(-7,-15,0,0);});await sampled();
  await tap(9);assert.equal((await state()).menu,true);before=await page.evaluate(()=>({...window.__JOHANSSON_POSE__}));await axes([0,-1,1,1]);await page.waitForTimeout(250);await axes([0,0,0,0]);after=await page.evaluate(()=>({...window.__JOHANSSON_POSE__}));assert.equal(after.x,before.x);assert.equal(after.yaw,before.yaw,'Pause blocks movement and camera');
  await click('controls');await page.screenshot({path:path.join(out,'05-controls-1280.png')});
  // D-pad changes a slider and checkbox without pointer input.

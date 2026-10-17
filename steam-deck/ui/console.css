@@ -1,5 +1,5 @@
 /* Installed Linux edition only. The world keeps the whole viewport. */
-.linux-console { --console-ink:#173c38; --console-paper:#f7f1e4; --console-green:#255b4b; --console-accent:#ffd681; }
+.linux-console { --console-ink:#173c38; --console-paper:#f7f1e4; --console-green:#255b4b; --console-accent:#ffd681; --console-action-width:clamp(280px,32vw,420px); }
 .linux-console #mobile,.linux-console #directoryButton,.linux-console #fullscreenButton,.linux-console #hud .timecard,.linux-console #worldEdition { display:none!important }
 .linux-console #start { padding:0!important; width:100vw; height:100dvh; overflow:hidden }
 .linux-console .title-screen { width:100%; height:100dvh; min-height:0; max-height:none; border:0; border-radius:0 }
@@ -11,20 +11,24 @@
 .linux-console #hud .placard small { display:none!important }
 .linux-console #clock { font:600 18px/1.4 system-ui!important }
 .linux-console #hud .status-stack { margin-right:150px }
-.linux-console #subtitle { top:auto!important; bottom:88px!important; left:50%!important; right:auto!important; transform:translateX(-50%)!important; height:auto!important; width:min(680px,calc(100vw - 80px))!important; max-width:calc(100vw - 80px)!important; background:#173c38ec!important; color:#fff7e9!important; box-shadow:none!important; border:1px solid #ffffff38!important; border-radius:10px!important; font:18px/1.5 system-ui!important; padding:12px 18px!important }
-.linux-console #contextActions { bottom:22px!important; right:24px!important; gap:8px!important; max-width:calc(100vw - 48px)!important }
+.linux-console #subtitle { top:auto!important; bottom:112px!important; left:24px!important; right:auto!important; transform:none!important; height:auto!important; width:min(680px,calc(100vw - var(--console-action-width) - 72px))!important; max-width:calc(100vw - var(--console-action-width) - 72px)!important; background:#173c38ec!important; color:#fff7e9!important; box-shadow:none!important; border:1px solid #ffffff38!important; border-radius:10px!important; font:18px/1.5 system-ui!important; padding:12px 18px!important; white-space:normal; overflow-wrap:anywhere }
+.linux-console #contextActions { bottom:22px!important; right:24px!important; gap:8px!important; width:var(--console-action-width)!important; max-width:calc(100vw - 48px)!important; max-height:calc(100dvh - 180px); overflow:auto; padding:4px; pointer-events:auto }
 .linux-console #contextActions button { display:flex!important; align-items:center!important; gap:10px!important; min-height:46px!important; box-shadow:none!important; background:#173c38ed!important; color:#fff4da!important; border:1px solid #ffffff70!important; border-radius:10px!important; font:600 17px/1.3 system-ui!important; letter-spacing:0!important; padding:10px 14px!important }
-.linux-console #contextActions .context-label { flex:1; min-width:0; overflow-wrap:normal; word-break:normal }
+.linux-console #contextActions button { flex-shrink:0; white-space:normal; height:auto!important }
+.linux-console #contextActions .context-label { display:block; flex:1; min-width:0; -webkit-line-clamp:unset; line-clamp:unset; overflow:visible; white-space:normal; overflow-wrap:anywhere; word-break:normal }
 .linux-console #contextActions .context-glyph { display:none!important }
-.linux-console #contextActions kbd { font-size:0!important }
+.linux-console #contextActions kbd { display:none!important }
+.linux-console #contextActions .context-primary kbd { display:block!important; flex:none; font-size:0!important }
 .linux-console #contextActions .context-primary kbd:after { content:'A'; font:700 16px system-ui; border:1px solid currentColor; border-radius:50%; padding:2px 6px }
 .linux-console :is(#activityActions,#directory,#titleSlots) button { min-height:46px!important; font-size:17px!important; letter-spacing:0!important }
+.linux-console :is(#activityActions,#directoryGrid,#titleSlots) button { height:auto; white-space:normal; overflow-wrap:anywhere; text-overflow:clip }
+.linux-console #start .title-player b { max-width:none; overflow:visible; white-space:normal; overflow-wrap:anywhere }
 .linux-console :is(#activity,#directory) :is(p,dd,summary) { font-size:max(16px,1em) }
 .linux-console :is(#activity,#directory,#titleSlots) :is(button,input,select,summary):focus { outline:4px solid #e99d3d!important; outline-offset:3px!important }
 .linux-console .desktop-hide-hud #hud,.linux-console.desktop-hide-hud #hud,.linux-console.desktop-hide-hud #festivalHUD,.linux-console.desktop-hide-hud #deckHints { visibility:hidden!important }
 #desktopOpenMenu { position:fixed; top:20px; right:24px; z-index:950; display:flex; gap:9px; align-items:center; background:#173c38ed; color:#fff4da; border:1px solid #ffffff70; border-radius:9px; min-height:46px; padding:8px 13px; font:600 16px system-ui; letter-spacing:0; cursor:pointer }
 #desktopOpenMenu:focus-visible { outline:4px solid #ffd681; outline-offset:3px }
-#deckHints { position:fixed; left:24px; bottom:24px; display:flex; flex-wrap:wrap; gap:8px 20px; max-width:56vw; z-index:900; pointer-events:none; color:#fff8e9; text-shadow:0 2px 3px #152c28; font:600 15px/1.5 system-ui }
+#deckHints { position:fixed; left:24px; bottom:24px; display:flex; flex-wrap:wrap; gap:8px 20px; max-width:calc(100vw - var(--console-action-width) - 72px); z-index:900; pointer-events:none; color:#fff8e9; text-shadow:0 2px 3px #152c28; font:600 15px/1.5 system-ui }
 #deckHints span { white-space:nowrap }
 .festival-active #deckHints { display:none }
 #desktopMenu[hidden],#deckHints[hidden],#desktopOpenMenu[hidden] { display:none!important }

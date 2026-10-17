@@ -32,3 +32,13 @@ test('levels drift with the minutes, never step',()=>{
  let last=ambience({minutes:at(8,1,0)});
  for(let m=1;m<1440;m++){const now=ambience({minutes:at(8,1,0)+m});for(const l of LAYERS)assert.ok(Math.abs(now[l]-last[l])<.06,l+' jumps at minute '+m);last=now;}
 });
+
+test('Linux quiet nights omit the tonal cricket loop while preserving the rest of the harbour',()=>{
+ for(const rain of [false,true])for(const inside of [false,true]){
+  const options={minutes:at(10,17,23),harbour:1,rain,inside};
+  const web=ambience(options),linux=ambience({...options,quietNight:true});
+  assert.ok(web.crickets>0,'web night ambience stays unchanged');
+  assert.equal(linux.crickets,0);
+  for(const layer of LAYERS.filter(l=>l!=='crickets'))assert.equal(linux[layer],web[layer],layer);
+ }
+});
