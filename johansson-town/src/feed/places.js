@@ -1,3 +1,5 @@
+import {HARBOUR_POND,HARBOUR_PARK_SEATS,HARBOUR_FLORIST} from '../world/harbour-park-plan.js';
+
 /**
  * The real places the town feed's stories happen in. Each is a room or street in the game,
  * with the backdrop tools/render-feed-backdrops.mjs captures from it (`shot`: a room the
@@ -65,16 +67,16 @@ export const FEED_PLACES=Object.freeze([
   doing:['playing jan-ken-pon','doing homework on the bench','walking the raised path','resting under the banyan tree'],
   activity:{hold:['can','coffee'],chance:.6,sit:.55},
   shot:{at:[12,-23.8],camera:{pos:[8.4,2.6,-23.8],at:[18,1.2,-23.8]}}},
- {id:'garden',name:'Aoba Japanese Garden',short:'the garden',kind:'outdoor',regulars:['Mrs Kinjō'],
-  things:['the koi pond','the stepping stones','the stone lantern','the raked gravel','the little bridge'],
-  doing:['feeding the koi','crossing the stepping stones','raking the gravel','sitting by the pond'],
+ {id:'garden',name:'the pond in Harbour Park',short:'the park pond',kind:'outdoor',regulars:['Tetsuo'],
+  things:['the garden pond','the gravel circuit','the pond bench','the bathhouse roof','the shore walk'],
+  doing:['watching the pond','walking the gravel circuit','resting on the pond bench','looking toward the bathhouse'],
   activity:{hold:['coffee'],chance:.3,sit:0},
-  shot:{at:[-23.4,40.6],camera:{pos:[-25,2.4,47.5],at:[-23.4,1,40.6]}}},
- {id:'rainflower',name:'Rainflower Lane',short:'Rainflower Lane',kind:'outdoor',regulars:['Mrs Kinjō'],
-  things:['the flower buckets','the ice cream counter','a hand-made wreath','the lane’s paper lanterns'],
-  doing:['choosing flowers','queueing for ice cream','admiring a wreath','strolling the lane'],
+  shot:{at:HARBOUR_PARK_SEATS[1].stand,camera:{pos:[20.3,2.4,-38],at:[HARBOUR_POND.x,1,HARBOUR_POND.z]}}},
+ {id:'rainflower',name:HARBOUR_FLORIST.name,short:HARBOUR_FLORIST.name,kind:'outdoor',regulars:[HARBOUR_FLORIST.owner],
+  things:['the flower buckets','the open counter','a hand-made wreath','the green pavilion roof'],
+  doing:['choosing flowers','collecting a bouquet','admiring a wreath','reading the flower-shop sign'],
   activity:{hold:['can','coffee'],chance:.5,sit:0},
-  shot:{lane:{at:[90,112],cam:[91,125],look:[90,99],height:2.2}}},
+  shot:{at:HARBOUR_FLORIST.approach,camera:{pos:[HARBOUR_FLORIST.approach[0]-3.4,2.2,HARBOUR_FLORIST.approach[1]-1.2],at:[HARBOUR_FLORIST.x,1.2,HARBOUR_FLORIST.z]}}},
  {id:'coral-bay',name:'Coral Bay on Kitano-jima',short:'Coral Bay',kind:'outdoor',regulars:['Thuan'],
   things:['the beach bar','a rented parasol','the leaning coconut palms','the turquoise shallows','a bottle of Umineko on ice','the Coral Bay notice'],
   doing:['dozing under a rented parasol','paddling in the shallows','queueing at the beach bar','reading on the bench','watching the commuter plane climb away','burying someone’s feet in the sand'],

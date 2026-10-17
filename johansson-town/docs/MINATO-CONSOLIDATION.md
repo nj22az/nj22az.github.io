@@ -102,3 +102,22 @@ node --test tests/runtime-package.test.mjs
 ```
 
 For visual verification, start `tools/mcp/server.mjs`, open a compiled test session at Sakura's bench at 12:00, search People, use Show home, stand through Interact and follow the returned walking path. Repeat Directions for Umi-no-yu and verify its actual doorway and interior. The MCP session uses an isolated test save.
+
+
+## Photo and story guide consistency follow-up
+
+A final check found active photo and story references still pointing to the retired Aoba garden and Rainflower Lane. The Photo Studio, pocket-camera captions and feed now share the current park and florist definitions. Existing `photo-garden`, `photo-rainflower`, `garden` and `rainflower` IDs are retained so saved records can still resolve.
+
+| Feature | Current destination |
+|---|---|
+| Garden photo destination | Harbour Park pond; the public pond-bench approach at (26, −34.2). |
+| Florist photo destination | Rainflower Florist; its public approach at (5, −16.7). |
+| Garden story setting | The pond, gravel circuit, bench, bathhouse roof and shore walk in Harbour Park. |
+| Florist story setting | Mrs Kinjō’s open park-edge pavilion and flower counter. |
+| Sakura ice-cream mural | Its historical mural story remains, followed by current directions to Nakamura’s dessert counter beside Harbour Park. |
+
+The cached garden and florist scenery is also recaptured from the current game. Each location has a main image and four matched colour/depth views; their camera and standing-position records are updated together. The garden camera looks across a dry foreground path towards the pond, leaving room for the characters. All eight colour/depth pairs passed alignment checks. Actual comic character placement is dry and clear at both locations, and the existing feed and seating regressions passed 11/11. The [capture evidence](qa/minato/feed-cache-refresh.json) records the standing-position, framing and depth checks, including the single rasterized-edge depth sample. The other 126 feed files and 14 cached location records remain unchanged.
+
+The affected source checks passed **16/16**, including collision-aware walks to both public photo destinations and the actual Sakura mural interaction. Native boot and all interior visits passed. The final packaging group passed **3/3**; the final camera correction changes the lazy feed chunk while the tested boot and game bundles remain identical. The compiled graph guard now explicitly allows one additional, 2,521-byte shared Harbour Park data module, keeping the canonical location definitions in one place; all dependency, lazy-loading, audio and stylesheet assertions remain in force.
+
+Detailed release evidence is recorded in [guide-consistency.json](qa/minato/guide-consistency.json). The [new park view](../assets/images/feed/garden.webp) and [florist view](../assets/images/feed/rainflower.webp) show the current consolidated locations.

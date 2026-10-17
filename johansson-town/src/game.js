@@ -110,7 +110,6 @@ import {emptyFor,canColour} from './commerce/vending-catalogue.js';
 import {SPECIAL_BY_NAME} from './commerce/sakura-specials.js';
 import {HOT_SNACKS} from './commerce/konbini.js';
 import {routeAt,groundHeight,planHeight,setWalkSurface} from './world/layout.js?snappy=1';
-import {shoppingLanePoint} from './world/shopping-lane-plan.js';
 import {createWalkSurface} from './world/walk-surface.js';
 import {COAST_BOUNDS} from './world/island-coast.js';
 import {createNeighbours} from './people/neighbours.js';
@@ -122,7 +121,7 @@ import {renderTownDirectory} from './ui/town-directory.js';
 import {createFerryOperationsView} from './ui/ferry-operations-view.js';
 import {crewOnDuty} from './people/ferry-crew.js';
 import {createWalkingRoute} from './navigation/walking-route.js';
-import {HARBOUR_PARK_ALIASES} from './world/harbour-park-plan.js';
+import {HARBOUR_PARK_ALIASES,HARBOUR_PARK_SEATS,HARBOUR_FLORIST} from './world/harbour-park-plan.js';
 import {MAIN_ROAD,SHOP_CROSSING_Z} from './world/main-road.js';
 import {AIRPORT_LANDING,AIRPORT_LANDING_HEIGHT} from './world/airport-ground.js';
 import * as THREE from '../vendor/three.module.js';
@@ -473,7 +472,19 @@ async function openKaraoke(){
 $('#photoButton').onclick=openPhotoStudio;
 function openCamera(){if(!started||inspector?.active||activities?.paused)return;cameraControls.open();}
 /** Named places that are not a building: the photo studio's locations, and where the pocket camera says a photo was taken. */
-function photoSpots(){const lane=shoppingLanePoint(90,99);return [{id:'photo-harbour',title:'Working harbour',at:'at the working harbour',x:-22,z:-39},{id:'photo-main',title:'Main shopping street',at:'on the main shopping street',x:-3,z:-20},{id:'photo-beach',title:'East beach',at:'on the east beach',x:38,z:-12},{id:'photo-garden',title:'Aoba pond garden',at:'in the Aoba pond garden',x:-23.4,z:40.6},{id:'photo-rainflower',title:'Rainflower Lane',at:'on Rainflower Lane',x:lane[0],z:lane[1]},{id:'photo-village',title:'Hoshizaki fishing village',at:'in Hoshizaki fishing village',x:132,z:190},{id:'photo-lighthouse',title:'West Cape lighthouse',at:'at the West Cape lighthouse',x:-54,z:204}];}
+function photoSpots(){
+ const pond=HARBOUR_PARK_SEATS[1].stand,florist=HARBOUR_FLORIST.approach;
+ // Keep the saved photo IDs while following the park and florist's current public approaches.
+ return [
+  {id:'photo-harbour',title:'Working harbour',at:'at the working harbour',x:-22,z:-39},
+  {id:'photo-main',title:'Main shopping street',at:'on the main shopping street',x:-3,z:-20},
+  {id:'photo-beach',title:'East beach',at:'on the east beach',x:38,z:-12},
+  {id:'photo-garden',title:'Harbour Park pond',at:'beside the pond in Harbour Park',x:pond[0],z:pond[1]},
+  {id:'photo-rainflower',title:HARBOUR_FLORIST.name,at:'at Rainflower Florist by Harbour Park',x:florist[0],z:florist[1]},
+  {id:'photo-village',title:'Hoshizaki fishing village',at:'in Hoshizaki fishing village',x:132,z:190},
+  {id:'photo-lighthouse',title:'West Cape lighthouse',at:'at the West Cape lighthouse',x:-54,z:204},
+ ];
+}
 // The pocket camera the player carries, a Pocket Gentleman or a Pocket Lady by the look they chose (pocket-models.js;
 // src/photo/pocket-viewfinder.js): raised to the eye, it shows the view in its four
 // shades; the shutter keeps that frame in the album (activities.keepPhoto) with who and where it shows.
