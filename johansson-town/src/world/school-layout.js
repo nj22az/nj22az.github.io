@@ -14,40 +14,40 @@
 export const SCHOOL=Object.freeze({
  id:'school-grounds',surface:'stone',
  /** The yard you can walk on, wall to wall. */
- minX:12.4,maxX:40.6,minZ:24.6,maxZ:51.3,
+ minX:12.4,maxX:40.6,minZ:24.6,maxZ:45.1,
  /** The classroom block: field face (north), sea face (south). */
  // One storey since October 2026: the town hall is a single concrete building, not the
  // old two-storey school (school.js buildTownHall).
- building:Object.freeze({minX:14.5,maxX:39.5,minZ:40.5,maxZ:48.5,floor:.15,storey:3.3,roof:3.45,parapet:4.05}),
+ building:Object.freeze({minX:14.5,maxX:39.5,minZ:36.5,maxZ:44.5,floor:.15,storey:3.3,roof:3.45,parapet:4.05}),
  /** The open breezeway along the field face, under the upper corridor. */
- corridor:Object.freeze({minZ:38.1,maxZ:40.5}),
+ corridor:Object.freeze({minZ:34.1,maxZ:36.5}),
  /** Column lines along the breezeway, one per structural bay. */
  bays:7,
  /** The stair tower over the entrance, with the clock. */
- tower:Object.freeze({minX:18.4,maxX:22.6,minZ:40.5,maxZ:44.5,top:9.9}),
+ tower:Object.freeze({minX:18.4,maxX:22.6,minZ:36.5,maxZ:40.5,top:9.9}),
  /** The entrance (shōkōguchi) in the field face, lined up on the gate. */
- genkan:Object.freeze({x:20.5,half:.95,z:40.5}),
+ genkan:Object.freeze({x:20.5,half:.95,z:36.5}),
  /** The sports ground. */
- field:Object.freeze({minX:13.2,maxX:39.8,minZ:28.8,maxZ:37.3}),
+ field:Object.freeze({minX:13.2,maxX:39.8,minZ:28.8,maxZ:33.3}),
  /** The gate through the windbreak from the lawn. */
  gate:Object.freeze({x:20.5,half:1.75,z:24.6}),
  /** Sea on two sides: the seawall's inner faces. */
- seawall:Object.freeze({east:41,south:51.6,height:1.05}),
+ seawall:Object.freeze({east:41,south:45.1,height:1.05}),
  /** The perimeter wall against the headland. */
  westWall:12,
- bikeShed:Object.freeze({minX:12.8,maxX:17.4,minZ:25.3,maxZ:28}),
- wash:Object.freeze({x:37.1,z:37.55,w:2.8,d:.7}),
+ bikeShed:Object.freeze({minX:33.5,maxX:38.1,minZ:25.3,maxZ:28}),
+ wash:Object.freeze({x:37.1,z:33.55,w:2.8,d:.7}),
  bars:Object.freeze({x:38.3,z:32.5,w:2.6}),
- flagpole:Object.freeze({x:30.5,z:37.35}),
+ flagpole:Object.freeze({x:30.5,z:32.8}),
  sandpit:Object.freeze({minX:35.8,maxX:39.4,minZ:29.6,maxZ:31.6}),
  /**
   * Since the school became the town hall (港町役場 · 公民館): the island's power house,
   * built on the west end of the old sports ground, the car park where the sandpit and
   * the iron bars were, and a concrete canopy over the entrance.
   */
- powerHouse:Object.freeze({minX:13.9,maxX:19.4,minZ:29.4,maxZ:34.8,height:3.6,door:Object.freeze([20.1,32.1]),tank:Object.freeze([16.6,36.2])}),
+ powerHouse:Object.freeze({minX:13.9,maxX:19.4,minZ:24.4,maxZ:29.8,height:3.6,door:Object.freeze([20.1,27.1]),tank:Object.freeze([16.6,31.2])}),
  parking:Object.freeze({minX:31,maxX:39.6,minZ:28.9,maxZ:32.4}),
- canopy:Object.freeze({minX:18.8,maxX:22.2,minZ:35.9,maxZ:38.1,height:3.0}),
+ canopy:Object.freeze({minX:18.8,maxX:22.2,minZ:31.9,maxZ:34.1,height:3.0}),
 });
 const B=SCHOOL.building;
 /** x of each column line along the breezeway, west to east. */
@@ -55,9 +55,9 @@ export const SCHOOL_COLUMNS=Object.freeze(Array.from({length:SCHOOL.bays+1},(_,i
 
 /** Fukugi, planted close as a windbreak along the headland wall and the field's east side. */
 export const FUKUGI=Object.freeze([
- ...Array.from({length:10},(_,i)=>[12.95,26.9+i*2.45]),
+ ...Array.from({length:8},(_,i)=>[12.95,26.9+i*2.45]),
  ...Array.from({length:4},(_,i)=>[40.05,26.2+i*2.55]),
- [13.4,49.6],[16.2,50.4],[37.6,50.2],[40.1,49.6],
+ [13.4,44.7],[16.2,44.7],[37.6,44.7],[40.1,44.7],
 ].map(p=>Object.freeze(p)));
 
 export function schoolAt(x,z,r=0){

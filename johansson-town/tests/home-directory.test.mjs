@@ -5,7 +5,7 @@ import {CAST} from '../src/people/cast.js';
 import {ISLAND_HOUSEHOLDS,homeForResident,homeUnits,householdAtHome,homeNameplate} from '../src/people/island-households.js';
 import {HOUSEHOLDS,canonicalHomeId} from '../src/people/households.js';
 import {residentCards,canonicalHomeSites,residentHome,activeResidentHome} from '../src/people/home-directory.js';
-import {KITAHAMA,KITAHAMA_FLATS,kitahamaHomeFor} from '../src/world/kitahama-layout.js';
+import {KITAHAMA,KITAHAMA_FLATS,kitahamaHomeFor,plotGate} from '../src/world/kitahama-layout.js';
 import {buildIslandHomes} from '../src/world/island-homes.js';
 import {buildResidentHome} from '../src/world/interiors/resident-home.js';
 import {createKit} from '../src/world/okinawa/kit.js';
@@ -29,7 +29,7 @@ test('all 31 cast members have one canonical primary home; shared and weekday ho
  }
  assert.equal(residentHome('Thuan').id,'kitano-1');assert.equal(activeResidentHome('Thuan').id,'kitahama-1');
  assert.deepEqual(homeForResident('Vy').residents,['Thuan','Thao','Chin','Vy']);
- assert.deepEqual(kitahamaHomeFor('Vy').door,[37.55,64.7]);
+ assert.deepEqual(kitahamaHomeFor('Vy').door,plotGate(KITAHAMA.plots[0]).door);
  assert.equal(residentHome('Mr Fujita').id,'fujita-houseboat');assert.equal(residentHome('Barfly').id,'izakaya');
  assert.equal(homeNameplate('kitahama-3').owners,'Kōji · Riku');assert.equal(homeNameplate('kitahama-11').owners,'To let');
  assert.deepEqual(homeUnits('kitahama-flats').map(h=>h.residents),[['Mr Higa Jr'],['Ms Ganaha'],[],[]]);
@@ -66,7 +66,7 @@ test('numbered flat approaches and the upper stair agree with the drawn surface 
  const solid=cs=>colliders.push(...[].concat(cs).filter(Boolean));
  kit.at(0,0,0,()=>buildKitahamaQuarter(kit,solid,{anchor:(x,y,z,label)=>{anchors.push({x,y,z,label});return {userData:{}};},onAction(){},vending(){}}),KITAHAMA.y);
  kit.finish(group,'Kitahama quarter');
- const surface=createWalkSurface({minX:10,maxX:26,minZ:76,maxZ:92,base:planHeight});surface.add(group);
+ const A=KITAHAMA.apartment;const surface=createWalkSurface({minX:A.minX-3,maxX:A.maxX+5,minZ:A.minZ-3,maxZ:A.maxZ+3,base:planHeight});surface.add(group);
  const height=(x,z)=>surface.level(x,z)??planHeight(x,z)+surface.lift(x,z);
  const check=([x,y,z])=>{
   assert.ok(Math.abs(height(x,z)-y)<.03,'route height matches floor at '+[x,z]);
@@ -82,13 +82,13 @@ test('numbered flat approaches and the upper stair agree with the drawn surface 
   assert.ok(Math.hypot(plate.x-site.x,plate.z-site.z)<2.7,'the real nameplate is within normal interaction range');
  }
  // Ground-floor markers never inherit the upper corridor's floor.
- assert.equal(height(...[KITAHAMA_FLATS[0].door[0],KITAHAMA_FLATS[0].door[2]]),2.48);
+ assert.equal(height(...[KITAHAMA_FLATS[0].door[0],KITAHAMA_FLATS[0].door[2]]),KITAHAMA.y+2.88);
  for(const unit of KITAHAMA_FLATS.slice(0,2)){
-  for(let x=23.5;x>=unit.approachPosition[0];x-=.1)check([x,height(x,unit.door[2]),unit.door[2]]);
+  for(let x=(KITAHAMA.fukugiLane.minX+KITAHAMA.fukugiLane.maxX)/2;x>=unit.approachPosition[0];x-=.1)check([x,height(x,unit.door[2]),unit.door[2]]);
   const c=residentHome(unit.unitNumber==='1'?'Mr Higa Jr':'Ms Ganaha',{landmarks:world.landmarks});assert.deepEqual(c.target.entrancePosition,unit.door);assert.deepEqual(c.target.door,unit.approachPosition);
  }
  // An actual walk from the stair foot to both upper unit doors, with ordinary step heights.
- const route=[[14.4,79.1],[20.2,79.1],[20.2,86.8]];let previous=null;
+ const route=[[A.minX+.9,A.minZ+.1],[A.maxX-1.3,A.minZ+.1],[A.maxX-1.3,A.minZ+7.8]];let previous=null;
  for(let i=1;i<route.length;i++){
   const [ax,az]=route[i-1],[bx,bz]=route[i],n=Math.ceil(Math.hypot(bx-ax,bz-az)/.09);
   for(let j=0;j<=n;j++){const x=ax+(bx-ax)*j/n,z=az+(bz-az)*j/n,y=height(x,z);check([x,y,z]);if(previous!==null)assert.ok(canStepBetween(previous,y),'each stair step is climbable');previous=y;}

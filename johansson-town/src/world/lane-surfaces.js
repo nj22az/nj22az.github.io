@@ -28,7 +28,7 @@ export function laneEdges(){
 export function lanePatches(routes=activeRoutes().slice(3)) {
   const rects=[];
   // Harbour Park draws its level, curved walks as ribbons in park.js.
-  for(const route of routes.filter(r=>!r.terrain&&!r.park)) {
+  for(const route of routes.filter(r=>!r.terrain&&!r.park&&r.id!=='second-pier')) {
     const half=route.width/2;
     for(let i=1;i<route.points.length;i++) {
       const a=route.points[i-1],b=route.points[i];

@@ -1,3 +1,5 @@
+import {buildNeighbourhoodGround} from './neighbourhood-ground.js';
+import {onIslandLand} from './coastal-ground.js';
 import {isWeekend} from '../commerce/sakura-rota.js';
 import {createKitano} from './kitano-on-demand.js';
 import {buildCountryside} from './countryside.js';
@@ -254,6 +256,7 @@ export function createTown(options){
   beginPowerPlan();
   applyShopAddresses(options.sites);
   const world=createBaseTown(options);
+  buildNeighbourhoodGround(world.group,onIslandLand);
   // Kitano-jima whole now, or only as seen from across the strait until he heads there (kitano-on-demand.js).
   world.kitano=createKitano(world,{distant:options.kitano==='distant'});
   // Only the street cast lives in the playable town; nothing else may arrive as a person.

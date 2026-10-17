@@ -4,11 +4,12 @@ import {assetURL} from '../assets.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 // West of the working pier: the cargo ship uses the eastern side.
 export const HOUSEBOAT=Object.freeze({x:-40.5,z:-56.5,deckY:.06,width:3.1,length:6.8,
- gangway:{minX:-39.45,maxX:-37.55,minZ:-54.65,maxZ:-53.75},
+ gangway:{minX:-39.45,maxX:-38.25,minZ:-54.65,maxZ:-53.75},
  bedside:[.26,.06,-.55],bed:[-.63,.85,-.65],cover:{position:[-.63,.85,-1.5],width:1.12,length:1.55}});
 export function houseboatSurface(x,z,r=0){
  const B=HOUSEBOAT,G=B.gangway,inside=(a,b,c,d)=>x>=a+r&&x<=b-r&&z>=c+r&&z<=d-r;
- if(inside(G.minX,G.maxX,G.minZ,G.maxZ))return {id:'fujita-gangway',surface:'wood',y:x>=-38.3?0:B.deckY};
+ if(inside(-38.45,-36.25,-53.75,-49.3)||inside(-38.25,-35,-60,-53.75))return {id:'fujita-boardwalk',surface:'wood',y:.06};
+ if(inside(G.minX,G.maxX,G.minZ,G.maxZ))return {id:'fujita-gangway',surface:'wood',y:B.deckY};
  if(inside(B.x-1.48,B.x+1.48,B.z-3.2,B.z+3.2))return {id:'fujita-houseboat',surface:'wood',y:B.deckY};
  return null;
 }
@@ -75,7 +76,12 @@ export function createHouseboatModel(hull=null,{shadows=false}={}){
 }
 export function buildFujitaHouseboat({parent,colliders,register,onAction,shadows=false}){
  const B=HOUSEBOAT,group=createHouseboatModel(null,{shadows});group.position.set(B.x,0,B.z);parent.add(group);
- const G=B.gangway,gangway=new THREE.Mesh(new THREE.BoxGeometry(G.maxX-G.minX,.08,G.maxZ-G.minZ),new THREE.MeshStandardMaterial({color:0x896b4c,roughness:.9}));gangway.name='Houseboat gangway';gangway.position.set((G.minX+G.maxX)/2,.02,(G.minZ+G.maxZ)/2);gangway.receiveShadow=true;gangway.userData.walkLevels=[{...G,y:B.deckY}];parent.add(gangway);
+ const G=B.gangway,gangway=new THREE.Group();gangway.name='Houseboat wooden gangway';
+ const material=new THREE.MeshStandardMaterial({color:0x896b4c,roughness:.94});
+ const count=Math.ceil((G.maxX-G.minX)/.17),pitch=(G.maxX-G.minX)/count;
+ for(let i=0;i<count;i++){const board=new THREE.Mesh(new THREE.BoxGeometry(pitch-.008,.08,G.maxZ-G.minZ),material);board.position.set(G.minX+(i+.5)*pitch,.02,(G.minZ+G.maxZ)/2);board.name='Gangway plank';board.receiveShadow=true;gangway.add(board);}
+ for(const z of [G.minZ+.12,G.maxZ-.12]){const bearer=new THREE.Mesh(new THREE.BoxGeometry(G.maxX-G.minX,.12,.1),material);bearer.position.set((G.minX+G.maxX)/2,-.08,z);bearer.name='Gangway bearer';gangway.add(bearer);}
+ gangway.userData.walkLevels=[{...G,y:B.deckY}];parent.add(gangway);
  group.userData.walkLevels=[{minX:B.x-1.48,maxX:B.x+1.48,minZ:B.z-3.2,maxZ:B.z+3.2,y:B.deckY}];
  for(const z of [-2.8,2.8]){const rope=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(1.42,.18,z),new THREE.Vector3(2.05,-.08,z-.1),new THREE.Vector3(2.32,.05,z)]),new THREE.LineBasicMaterial({color:0x7d7154}));rope.name='Mooring rope';group.add(rope);}
  const solid=(x,z,w,d,height)=>colliders.push({x:B.x+x,z:B.z+z,w,d,height,houseboat:true});
