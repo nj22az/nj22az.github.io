@@ -134,7 +134,7 @@ test('the crew: eight posts by her safe manning, four of them filled by islander
  const posts=new Set(FERRY_MANNING.map(m=>m.post));assert.equal(FERRY_MANNING.length,FERRY_SHIP.crew);
  for(const c of FERRY_CREW)assert.ok(posts.has(c.post),c.post+' is a post of her manning');
  const living=new Map(ISLAND_HOUSEHOLDS.flatMap(h=>h.members.map(m=>[m.name,h])));
- assert.deepEqual(FERRY_CREW.map(c=>c.post),['master','chief','oiler','deck']);
+ assert.deepEqual(FERRY_CREW.map(c=>c.post),FERRY_MANNING.map(c=>c.post));
  assert.equal(FERRY_CREW.filter(c=>c.new).length,1,'one new resident: the chief engineer');
  for(const c of FERRY_CREW){assert.ok(c.why.length>60,c.name+' has a reason');assert.ok(c.lives,c.name+' lives somewhere');}
  for(const name of ['Mr Nakandakari','Mr Higa Jr','Ms Uezu','Kōji','Ms Ganaha','Mr Fujita'])assert.ok(living.has(name),name+' is on the island');
@@ -144,7 +144,7 @@ test('the crew: eight posts by her safe manning, four of them filled by islander
  assert.ok(FERRY_PEOPLE.length>=8);
 });
 
-test('the deck hand works a week on and a week off, and Kōji covers her week',()=>{
+test('the bosun works a week on and a week off, and the legacy rota lookup still resolves her relief',()=>{
  assert.equal(deckHandFor(0),'Ms Uezu');assert.equal(deckHandFor(6*1440+1439),'Ms Uezu');
  assert.equal(deckHandFor(7*1440),'Kōji');assert.equal(deckHandFor(14*1440),'Ms Uezu');
  assert.equal(crewFor('master'),'Bus driver');assert.equal(crewFor('linesman'),'Mr Fujita');
@@ -153,10 +153,10 @@ test('the deck hand works a week on and a week off, and Kōji covers her week',(
 test('every phase of a call has the right people at their stations',()=>{
  for(const phase of ['arriving','waiting','reversing','swinging','leaving','crossing']){
   const posts=new Set(Object.keys(FERRY_WATCH[phase]));
-  for(const p of ['master','chief','oiler','deck'])assert.ok(posts.has(p),phase+' has the '+p);
+  for(const {post:p} of FERRY_MANNING)assert.ok(posts.has(p),phase+' has the '+p);
   for(const d of crewDoing(phase))assert.ok(d.name&&d.where&&d.doing.length>15,phase+' '+d.post);
  }
- for(const phase of ['arriving','reversing']){const w=FERRY_WATCH[phase];assert.equal(w.deck[0],'bow');assert.equal(w.oiler[0],'stern');assert.equal(w.linesman[0],'quay');}
+ for(const phase of ['arriving','reversing']){const w=FERRY_WATCH[phase];assert.equal(w.deck[0],'bow');assert.equal(w.bosun[0],'stern');assert.equal(w.oiler[0],'engine-room');assert.equal(w.linesman[0],'quay');}
  assert.equal(FERRY_WATCH.night.chief[0],'mess','the chief lives aboard');
  assert.throws(()=>crewDoing('dancing'));
 });

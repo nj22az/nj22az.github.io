@@ -50,11 +50,15 @@ export function shisa(kit,x,y,z,ry=0,scale=1){
  * (the amahaji), plaster sides, and a hipped roof in pointed tile.
  */
 export function redTileHouse(kit,{w=8.4,d=6.8,seed=1,wall=C.plaster}={}){
- const r=rng(seed),W=w/2,D=d/2,floor=.45,eaves=2.85,front=D-1.1;
- kit.block(-W,W,0,floor,-D,D,C.stone,'coral');                       // stone footing
+ const r=rng(seed),W=w/2,D=d/2,floor=.45,eaves=2.85,front=D-1.1,deckBottom=floor-.04;
+ kit.block(-W,W,0,floor,-D,front,C.stone,'coral');                  // house footing
+ // The veranda's support stops at the timber underside. The old full-height
+ // footing penetrated the deck, drawing stone and timber on the same 4 cm-high
+ // front and side faces; those faces flashed as the camera moved past Higa.
+ kit.block(-W,W,0,deckBottom,front,D,C.stone,'coral');
  kit.block(-W+.05,W-.05,floor,eaves,-D+.05,front,wall,'plaster');               // the house body
  // The verandah deck in front of the doors, and the posts that carry the eave.
- kit.block(-W,W,floor-.04,floor+.02,front,D,C.timberLight);   // clear of the footing's top
+ kit.block(-W,W,deckBottom,floor+.02,front,D,C.timberLight);
  for(let i=0;i<=4;i++){const x=-W+.12+i*(w-.24)/4;kit.box(.14,eaves-floor,.14,x,(floor+eaves)/2,D-.12,C.timber);}
  kit.box(w,.18,.16,0,eaves-.09,D-.12,C.timber);                        // the beam over them
  // The front: sliding doors, a timber rail at knee height and paper-and-glass above it.

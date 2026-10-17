@@ -168,11 +168,11 @@ async function ui({control}={}){
   if(!gameReady())return result(false,{error:'Johansson Town is not running.'});
   if(getState().concert)return result(false,{error:'Finish or close the karaoke panel first.',state:getState()});
   const map={
-    notebook:'#notebookButton',time:'#timeButton',weather:'#weatherButton',sound:'#soundButton',directory:'#directoryButton',close_activity:'#closeActivity',close_directory:'#closeDirectory'
+    notebook:'#notebookButton',time:'#timeButton',weather:'#weatherButton',sound:'#soundButton',directory:'#directoryButton',close_activity:'#closeActivity',close_directory:'#closeDirectory',ferry_operations:'#ferryOperationsButton',close_ferry_operations:'#closeFerryOperations',ferry_sequence:'#ferryProcedureToggle',ferry_crew:'#ferryCrewToggle',ferry_reports:'#ferryReportsToggle'
   };
   const selector=map[control];
   if(!selector)return result(false,{error:'Unknown control.',controls:Object.keys(map)});
-  if(['notebook','time','weather','sound'].includes(control)&&!directoryOpen()){
+  if(['notebook','time','weather','sound','ferry_operations'].includes(control)&&!directoryOpen()){
     document.querySelector('#directoryButton')?.click();await sleep(20);
   }
   const button=document.querySelector(selector);
@@ -263,8 +263,8 @@ const tools=[
   },
   {
     name:TOOL_PREFIX+'ui',
-    description:'Operate a Johansson Town HUD control: notebook, time, weather, sound, directory, close_activity, or close_directory.',
-    inputSchema:{type:'object',properties:{control:{type:'string',enum:['notebook','time','weather','sound','directory','close_activity','close_directory']}},required:['control'],additionalProperties:false},
+    description:'Operate a Johansson Town HUD control, including the read-only ferry departure and crew view.',
+    inputSchema:{type:'object',properties:{control:{type:'string',enum:['notebook','time','weather','sound','directory','close_activity','close_directory','ferry_operations','close_ferry_operations','ferry_sequence','ferry_crew','ferry_reports']}},required:['control'],additionalProperties:false},
     annotations:{readOnlyHint:false,untrustedContentHint:false},
     execute:ui
   }

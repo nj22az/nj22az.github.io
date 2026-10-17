@@ -4,6 +4,7 @@ import {AIRPORT_LANDING,AIRPORT_LANDING_HEIGHT,airportWorld} from './airport-gro
 import {SEA_LEVEL} from './ocean.js';
 import {GANGWAY_Z,FERRY_HULL,FERRY_DECKS} from './ferry-model.js';
 import {BERTH_X,BERTH_Z,TOWN_UNBERTHING,TOWN_BERTHING,HARBOUR_MOUTH,passage,roundedTrack} from './ferry-paths.js';
+import {timeFerryPassage} from './ferry-sailing-profile.js';
 
 /**
  * Shared passenger and car crossing on the town ferry, the Minato Maru (ferry-ship.js).
@@ -93,6 +94,8 @@ const inbound=passage(inboundRoute.keys,inboundRoute.legs(CROSSING-harbourMinute
 export const AIRPORT_FERRY=Object.freeze({length:FERRY_HULL.length,beam:FERRY_HULL.beam,deck:FERRY_DECKS.car.y,duration:CROSSING,ride:Math.round(CROSSING*.6)});
 /** Each way's passage (ferry-paths.js), for the game, its sounds and the tests. */
 export const AIRPORT_PASSAGES=Object.freeze({airport:outbound,town:inbound});
+/** Visible motion has one clock, including unaccompanied vehicle voyages. */
+export const FERRY_SAILINGS=Object.freeze({airport:timeFerryPassage(outbound),town:timeFerryPassage(inbound)});
 
 /**
  * Where she is a share `progress` (0–1) of the way through a crossing: the passage played at

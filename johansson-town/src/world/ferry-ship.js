@@ -99,7 +99,7 @@ export const FERRY_GA=Object.freeze([
  space('fore-peak','hold',[30.5,34.5],[-2.5,2.5],[0,2.8],'Fore peak: 6 m³ of ballast, and the two chain lockers under the windlasses','Trim, and the anchors’ cables'),
  // ---- The car deck (3.0 m above the keel, 1.1 m above the water); covered by the passenger deck from z 0 to 23, open to the sky forward.
  space('aft-mooring','car',[0,2.5],[-4.1,4.1],[H.carDeck,H.passengerDeck],'Aft mooring station: the 5.5 kW capstan, two pairs of bitts, closed fairleads, the steering-gear hatch','Stern lines',{exits:['lower-lobby','casing-p']}),
- space('lower-lobby','car',[2.5,12.6],[-2.75,2.75],[H.carDeck,H.carDeck+2.5],'Lower lobby (batch 6f), the car deck’s level aft of the lanes, between the casings under a 2.5 m deckhead: the drivers’ waiting benches along the casings, the bicycle rack and the baggage shelf either side of the crew door in the aft bulkhead, a drink machine and the safety plan on the forward bulkhead, lifejacket lockers; the engine-room door (casing P) and its escape (casing S), the feet of both passenger stairs, the foyer from the gangway, the crew door aft to the mooring station, and two 1.1 m sliding fire doors forward onto the lanes','Where the drivers wait, the islanders’ bicycles ride, and every way below and above begins: the ways are found, not hunted for',{exits:['car-deck','stair-p','stair-s','er-stair-p','aft-mooring','foyer']}),
+ space('lower-lobby','car',[2.5,12.6],[-2.75,2.75],[H.carDeck,H.carDeck+2.5],'Lower lobby (batch 6f), the car deck’s level aft of the lanes, between the casings under a 2.5 m deckhead: the drivers’ waiting benches along the casings, the bicycle rack and the baggage shelf either side of the crew door in the aft bulkhead, a drink machine and the safety plan on the forward bulkhead, lifejacket lockers; the engine-room door (casing P) and its escape (casing S), the feet of both passenger stairs, the foyer from the gangway, the crew door aft to the mooring station, and two 1.1 m sliding fire doors forward onto the lanes','Where drivers pass between the vehicle deck and passenger stairs, the islanders’ bicycles ride, and every way below and above begins: the ways are found, not hunted for',{exits:['car-deck','stair-p','stair-s','er-stair-p','aft-mooring','foyer']}),
  space('car-deck','car',[12.6,30],[-2.75,2.75],[H.carDeck,H.passengerDeck],'Vehicle lanes, 17.4 m: two of 2.75 m, yellow lane lines and numbers, 24 cloverleaf lashing sockets on a 1.25 × 2.5 m grid, wheel-chock racks, six scuppers a side with flaps and freeing ports forward, waterproof tube lights, two exhaust fans, four hydrants, powder extinguishers; the signs “engine off” and “no entry to the car deck at sea”','Six cars; a truck on the centreline forward by the loading plan',{exits:['ramp','lower-lobby','casing-p','casing-s']}),
  // The gangway door is in the port casing, the side she lies to at Minato (port side to the outer pier); the
  // brief had it to starboard, which would have faced the open water there (batch 5).
@@ -311,13 +311,13 @@ export const FERRY_SAFETY=Object.freeze({
  muster:Object.freeze({A:'saloon',B:'open-deck',alarm:'Seven short and one long blast on the whistle and the bells'}),
  extinguishers:Object.freeze({powder:Object.freeze({car:4,passenger:4,engine:4}),foam45:1,co2:Object.freeze(['wheelhouse','galley','eg-room','bow-house-s'])}),
  firemenOutfits:2,
- notices:Object.freeze(['Capacity: passengers 100, crew 8, in all 108','The safety leaflet in every seat pocket','How to put on a life jacket','No smoking','No entry to the car deck at sea','Drivers: engine off, handbrake on, in gear']),
+ notices:Object.freeze(['Capacity: passengers 100, crew 8, in all 108','The safety leaflet in every seat pocket','How to put on a life jacket','No smoking','No entry to the car deck at sea','Drivers: engine off, parking brake on, transmission secured for the vehicle']),
 });
 
 /**
  * Safe manning (§5): eight posts for a passenger ship of her size and area, with the licences of the
- * period (海技士). people/ferry-crew.js signs people on to them; the four posts the town has filled so
- * far are the master, the chief engineer, the oiler and the deck hand; the others are still to sign on.
+ * period (海技士). people/ferry-crew.js signs people on to them; all eight posts are represented
+ * aboard, with the deck and machinery departments reporting to the master.
  */
 export const FERRY_MANNING=Object.freeze([
  Object.freeze({post:'master',title:'Master',jp:'senchō',licence:'Fourth-grade deck officer (yon-kyū kaigishi, navigation)'}),

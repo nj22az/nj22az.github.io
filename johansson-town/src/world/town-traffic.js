@@ -11,6 +11,7 @@ import {SEA_LEVEL} from './ocean.js';
 import {AIRPORT_ISLAND} from './airport-island.js';
 import {AIRPORT_HEIGHT,airportWorld} from './airport-ground.js';
 import {AIRPORT_VEHICLE_YARD as Y,airportVehiclePoint,airportVehicleBay} from './airport-vehicle-yard.js';
+import {buildWheelSecuring} from './ferry-vehicle-securing.js';
 
 /** Owned vehicles travel on Main Street, the quay and the airport cargo court.
  * A single car shares the ferry's open foredeck with its existing resident driver.
@@ -133,38 +134,60 @@ export function createTownTraffic({parent,colliders=null,ferry=null,getPlayerPos
   const path=shore==='airport'?net.path(['airport-stage-'+bay]):net.path([...(v.role==='islander'?['quay-out-'+v.homeBay,v.homeBay===LAYBY_BAY?'layby-north':'main-north','service-in-1','service-out-1']:['service-out-'+bay]),'main-south','town-ferry-stage']);
   traffic.drive(v,path,{onArrive:()=>{v.where='waiting-ferry';v.stageOrigin=shore;}});return true;
  }
- function sitOnDeck(v){ferry.ferry.updateMatrixWorld();const p=new THREE.Vector3(FERRY_VEHICLE_DECK_X,ferry.ferry.userData.deckY,FERRY_VEHICLE_DECK_Z).applyMatrix4(ferry.ferry.matrixWorld);v.g.position.copy(p);v.g.quaternion.copy(ferry.ferry.quaternion);v.g.visible=ferry.ferry.visible&&drivers.has(v);}
+ function sitOnDeck(v){ferry.ferry.updateMatrixWorld();const p=new THREE.Vector3(FERRY_VEHICLE_DECK_X,ferry.ferry.userData.deckY,FERRY_VEHICLE_DECK_Z).applyMatrix4(ferry.ferry.matrixWorld);v.g.position.copy(p);v.g.quaternion.copy(ferry.ferry.quaternion);v.g.visible=ferry.ferry.visible;}
  function unload(v){
+  if(!ferry.canUnload||!drivers.atWheel(v)||v.securing?.progress>0)return false;
   const shore=ferry.berth,directHome=shore==='town'&&v.role==='islander';const bay=directHome?v.homeBay:reserve(shore);if(bay===null)return false;
-  const lanes=ferryLanes(ferry.ferry,0,shore);v.where='driving';v.transfer='off';v.shore=shore;v.bay=bay;
+  const lanes=ferryLanes(ferry.ferry,0,shore);v.where='driving';v.transfer='off';v.shore=shore;v.bay=bay;v.securing=null;
   const tail=shore==='airport'?['airport-in-'+bay]:directHome?(bay===LAYBY_BAY?['quay-in-'+bay]:['main-north','service-in-1','service-out-1','main-south','quay-in-'+bay]):['main-north','service-in-'+bay];
   traffic.drive(v,net.path([lanes.off,...tail]),{onArrive:()=>{v.transfer=null;v.shipDestination=null;parkAt(v,shore==='airport'?airportVehicleBay(bay):directHome?quayBay(bay):serviceBay(bay));if(shore===v.home)drivers.release(v,{restore:v.home==='airport'});}});return true;
  }
  function updateFerry(){
   if(!ferry)return;
   for(const v of all)if(v.where==='aboard')sitOnDeck(v);
-  if(ferry.phase!=='waiting'){requestedCrossing=null;return;}
-  const aboard=all.find(v=>v.where==='aboard');if(aboard&&aboard.shipDestination===ferry.berth){unload(aboard);return;}
+  if(!ferry.canLoad&&!ferry.canUnload)return;
+  const aboard=all.find(v=>v.where==='aboard');if(aboard&&aboard.shipDestination===ferry.berth){if(ferry.canUnload)unload(aboard);return;}
   if(aboard||all.some(v=>v.transfer))return;
   const next=all.find(v=>v.where==='waiting-ferry'&&v.stageOrigin===ferry.berth&&v.shipDestination===requestedCrossing);
-  if(!next||!drivers.has(next)||ferry.rampDown<.95)return;
+  if(!next||!drivers.has(next)||!ferry.canLoad||ferry.rampDown<1)return;
   const lanes=ferryLanes(ferry.ferry,0,ferry.berth);next.where='driving';next.transfer='on';
   traffic.drive(next,net.path([lanes.on]),{reverse:true,onArrive:()=>{next.transfer=null;next.where='aboard';sitOnDeck(next);}});
  }
  const loadingCount=()=>all.filter(v=>v.transfer).length;
- return {group,network:net,traffic,fleet,islanders,appointments,drivers,serviceCourt:MAIN_SERVICE_COURT,
+ const aboardVehicles=()=>all.filter(v=>v.where==='aboard');
+ const vehicleObstacles=()=>aboardVehicles().map(v=>({id:v.id,x:FERRY_VEHICLE_DECK_X,z:FERRY_VEHICLE_DECK_Z,w:v.width,d:v.length,y:FERRY_DECKS.car.y,height:2}));
+ const api={group,network:net,traffic,fleet,islanders,appointments,drivers,serviceCourt:MAIN_SERVICE_COURT,
   prepareCrossing(destination){requestedCrossing=destination;updateFerry();if(all.some(v=>v.where==='aboard'&&v.shipDestination===destination)&&!loadingCount())return true;const active=all.some(v=>v.transfer||v.where==='driving'&&v.stageOrigin===ferry?.berth&&v.shipDestination===destination);const waiting=all.some(v=>v.where==='waiting-ferry'&&v.stageOrigin===ferry?.berth&&v.shipDestination===destination);return !active&&!waiting;},
   pendingVehicleJourney(){const v=all.find(v=>v.where==='aboard'||v.transfer==='on')||all.find(v=>v.where==='waiting-ferry');return v?.shipDestination?{id:v.id,origin:v.stageOrigin||v.shore,destination:v.shipDestination}:null;},
+  vehicleObstacles,
+  securingStation(){const v=aboardVehicles()[0];return v?{x:FERRY_VEHICLE_DECK_X+v.width/2+.32,y:FERRY_DECKS.car.y,z:FERRY_VEHICLE_DECK_Z+(v.g.userData.wheels?.find(w=>w.z>0)?.z||1)}:undefined;},
+  beginSecuring(operation){for(const v of aboardVehicles()){
+   if(v.securing?.operation===operation)continue;
+   v.securing={operation,elapsed:0,progress:0,engineOff:true,parkingBrake:false,transmission:'pending',chocks:false,straps:false};
+   v.secureRig??=buildWheelSecuring(v.g);drivers.leaveForPassenger(v,ferry.ferry,{obstacles:vehicleObstacles});
+  }},
+  advanceSecuring(dt,operation){for(const v of aboardVehicles()){
+   const s=v.securing;if(!s||s.operation!==operation)continue;s.elapsed=Math.min(12,s.elapsed+Math.max(0,dt));s.progress=s.elapsed/12;
+   s.parkingBrake=s.elapsed>=2;s.transmission=s.elapsed>=4?(v.g.userData.transmission==='automatic'?'Park':'neutral'):'pending';s.chocks=s.elapsed>=6;s.straps=s.elapsed>=12;v.secureRig.set(Math.max(0,(s.elapsed-4)/8));
+  }},
+  advanceUnsecuring(dt){for(const v of aboardVehicles()){
+   const s=v.securing;if(!s)continue;if(!ferry.moored)return;
+   s.progress=Math.max(0,s.progress-Math.max(0,dt)/12);v.secureRig.set(s.progress);
+   if(s.progress<=0){s.chocks=false;s.straps=false;drivers.returnToVehicle(v);}
+  }},
+  securingSummary(){const list=aboardVehicles();return {aboard:list.length,secured:list.filter(v=>v.securing?.engineOff&&v.securing.parkingBrake&&v.securing.transmission!=='pending'&&v.securing.chocks&&v.securing.straps&&v.securing.progress>=1).length,driversClear:list.filter(v=>drivers.passengerClear(v)).length};},
+  readyToDisembark(){return aboardVehicles().every(v=>(v.securing?.progress??0)<=0&&drivers.atWheel(v));},
   /** Offline time settles the errands and returns each borrowed resident to town life. */
   reconcileAbsent(){
    requestedCrossing=null;airportTaken.clear();townTaken.clear();
-   for(const v of all){drivers.release(v,{restore:true});v.transfer=null;v.shipDestination=null;v.hold=false;v.blocker=null;v.waited=0;v.personWait=0;
+   for(const v of all){drivers.release(v,{restore:true});v.securing=null;v.secureRig?.set(0);v.transfer=null;v.shipDestination=null;v.hold=false;v.blocker=null;v.waited=0;v.personWait=0;
     if(v.home==='airport'){airportTaken.add(v.homeBay);parkAt(v,airportVehicleBay(v.homeBay));}else parkAt(v,quayBay(v.homeBay));
    }
    if(ferry)ferry.loadingVehicles=0;
   },
   get loadingVehicles(){return loadingCount();},
-  snapshot:()=>all.map(v=>({id:v.id,owner:v.owner,driver:v.driver,purpose:v.purpose,location:v.where,shore:v.shore,destination:v.shipDestination??null,driving:!!v.trip,occupied:drivers.has(v),transfer:v.transfer??null,position:v.g.position.toArray()})),
-  update(dt,minutes){if(Number.isFinite(minutes))for(const v of all){if(!['quay','service','airport'].includes(v.where))continue;const want=wantedShore(v,minutes);if(want!==v.shore)stage(v,want);}updateFerry();if(ferry)ferry.loadingVehicles=loadingCount();traffic.update(dt);for(const v of all)if(v.trip&&!drivers.has(v)){v.hold=true;v.speed=0;}}
+  snapshot:()=>all.map(v=>({id:v.id,owner:v.owner,driver:v.driver,purpose:v.purpose,location:v.where,shore:v.shore,destination:v.shipDestination??null,driving:!!v.trip,occupied:drivers.atWheel(v),driverState:drivers.snapshot(v),securing:v.securing?{...v.securing}:null,transfer:v.transfer??null,position:v.g.position.toArray()})),
+  update(dt,minutes){if(Number.isFinite(minutes))for(const v of all){if(!['quay','service','airport'].includes(v.where))continue;const want=wantedShore(v,minutes);if(want!==v.shore)stage(v,want);}updateFerry();drivers.update(dt);if(ferry)ferry.loadingVehicles=loadingCount();traffic.update(dt);for(const v of all)if(v.trip&&!drivers.atWheel(v)){v.hold=true;v.speed=0;}}
  };
+ ferry?.bindVehicleController?.(api);if(ferry)ferry.vehicleObstacles=vehicleObstacles;return api;
 }

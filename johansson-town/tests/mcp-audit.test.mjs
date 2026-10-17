@@ -72,3 +72,12 @@ test('door transitions do not invent a travelled distance between world and room
  session.observe=async()=>states.shift();session.page={keyboard:{down:async()=>{},up:async()=>{}},evaluate:async()=>{},waitForTimeout:async()=>{}};
  const result=await session.input({control:'interact',durationMs:17});assert.equal(result.coordinateFrameChanged,true);assert.equal(result.displacement,null);assert.equal(result.moved,false);
 });
+
+test('MCP honours the cinematic lock while allowing normal movement on a walking ferry crossing',async()=>{
+ const session=new TownAuditSession(),state={game:{room:null,player:[0,1.1,0],island:{crossing:{progress:.5},cinematic:true}},blocked:{},ui:{}};
+ let keys=0;session.observe=async()=>state;
+ session.page={keyboard:{down:async()=>keys++,up:async()=>{}},evaluate:async()=>{},waitForTimeout:async()=>{}};
+ assert.equal((await session.input({control:'forward',durationMs:17})).accepted,false);assert.equal(keys,0);
+ state.game.island.cinematic=false;
+ assert.equal((await session.input({control:'forward',durationMs:17})).accepted,true);assert.equal(keys,1);
+});

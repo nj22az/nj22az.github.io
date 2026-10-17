@@ -2,72 +2,142 @@ import * as THREE from '../../vendor/three.module.js';
 import {FERRY_SHIP,FERRY_HEIGHTS,FERRY_DAY} from '../world/ferry-ship.js';
 import {FERRY_ENGINE_ROOM} from '../world/ferry-interior.js';
 import {FERRY_CREW,FERRY_WATCH,crewFor} from './ferry-crew.js';
+import {crewRoute,stepCrewRoute,crewBlocked,crewObstacleAt} from './ferry-crew-walk.js';
+import {createFerryShoreCrew} from './ferry-shore-crew.js';
 import {wearEarDefenders} from '../avatars/ear-defenders.js';
-/** The places below the car deck, where the engines are: whoever stands there wears ear defenders. */
 export const BELOW_DECK_PLACES=Object.freeze(['engine-room','steering-gear']);
-
-/**
- * The Minato Maru's crew at their posts (Kitano-jima batch 7c; docs/KITANO-JIMA.md §4): one body per post, a child of
- * her group so it rides with her, standing where FERRY_WATCH puts that post in her phase, facing its work. The master is
- * the bus driver (ferry-crew.js): his body in town is hidden while he is aboard. At night only the chief (who lives
- * aboard) and, on her week on, the deck hand are there. Each has a prompt with a line about what they are doing.
- */
 const HALF=FERRY_SHIP.length/2,Z=zy=>zy-HALF,Y=yk=>yk-FERRY_SHIP.draft;
 const CAR=Y(FERRY_HEIGHTS.carDeck),PASS=Y(FERRY_HEIGHTS.passengerDeck),BRIDGE=Y(FERRY_HEIGHTS.bridgeDeck),FP=FERRY_ENGINE_ROOM.floor;
-/** Where each place of FERRY_WATCH is on her (her frame) and which way the work faces (yaw π looks forward). */
+/** Work positions are actual walkable deck coordinates, in the ship's frame. */
 export const CREW_POSTS=Object.freeze({
  wheelhouse:{pos:[.45,BRIDGE,Z(20.7)],yaw:Math.PI},
  'port-wing':{pos:[3.55,BRIDGE,Z(20.6)],yaw:Math.PI},
- 'engine-room':{pos:[-3.1,FP,Z(10.4)],yaw:Math.PI/2},   // at the console's forward end, facing the panel (6r-2: the switchboard's front is the player's to work; the chief stood in the booth door)
+ 'engine-room':{pos:[-3.1,FP,Z(10.4)],yaw:Math.PI/2},
  'steering-gear':{pos:[0,FP,Z(9.6)],yaw:0},
  stern:{pos:[1.2,CAR,Z(1.6)],yaw:0},
- bow:{pos:[0,CAR,Z(31.5)],yaw:Math.PI},
+ bow:{pos:[3.55,3.56,16.35],yaw:Math.PI/2},
  gangway:{pos:[3.4,CAR,Z(12.6)],yaw:Math.PI},
  'car-deck':{pos:[0,CAR,Z(18.5)],yaw:Math.PI},
+ ramp:{pos:[2.75,CAR,11.35],yaw:Math.PI},
  saloon:{pos:[0,PASS,Z(17.0)],yaw:Math.PI},
- mess:{pos:[0,BRIDGE,Z(15.2)],yaw:Math.PI/2},
- cabin:{pos:[0,BRIDGE,Z(10.2)],yaw:Math.PI/2},
+ purser:{pos:[-1.6,PASS,Z(8.6)],yaw:-Math.PI/2},
+ kiosk:{pos:[1.4,PASS,Z(8.6)],yaw:Math.PI/2},
+ mess:{pos:[1.6,BRIDGE,Z(14.55)],yaw:Math.PI},
+ galley:{pos:[-1.6,BRIDGE,Z(15.2)],yaw:Math.PI/2},
+ cabin:{pos:[1.4,BRIDGE,Z(9.55)],yaw:Math.PI/2},
 });
-/** Where a post stands when two share a place: the oiler on the floor plates by the engines, not in the chief's booth. */
-const POST_SPOTS=Object.freeze({oiler:Object.freeze({'engine-room':{pos:[0,FP,Z(12.2)],yaw:-Math.PI/2}})});
+const POST_SPOTS=Object.freeze({
+ oiler:Object.freeze({'engine-room':{pos:[0,FP,Z(12.2)],yaw:-Math.PI/2}}),
+ cook:Object.freeze({mess:CREW_POSTS.galley}),
+});
 const PHASES=new Set(Object.keys(FERRY_WATCH));
-/** Her phase for the watch table: the run's own, or the night outside her service. */
 export function watchPhase(run,minutes){
+ const op=run.operation;
+ if(op&&!['alongside','held'].includes(op.stage))return ['passage','departing'].includes(op.stage)?'crossing':op.stage==='arriving'||op.stage==='making-fast'?'arriving':'waiting';
  const m=((minutes%1440)+1440)%1440;
  if(m<FERRY_DAY.generators||m>=FERRY_DAY.shorePower)return 'night';
  const p=run.phase;return PHASES.has(p)?p:(p==='away'?'crossing':'waiting');
 }
-/** Who stands where in a phase: [{post, name, where, doing, pos, yaw}] for the posts that are aboard. */
+function stationFor(post,where){return POST_SPOTS[post]?.[where]||CREW_POSTS[where];}
 export function crewPlaces(phase,minutes=0){
  const watch=FERRY_WATCH[phase]||{};
- return FERRY_CREW.map(c=>{const w=watch[c.post];if(!w)return null;const at=POST_SPOTS[c.post]?.[w[0]]||CREW_POSTS[w[0]];if(!at)return null;return {post:c.post,title:c.title,name:crewFor(c.post,minutes),where:w[0],doing:w[1],pos:at.pos,yaw:at.yaw};}).filter(Boolean);
+ return FERRY_CREW.map(c=>{const w=watch[c.post];if(!w)return null;const at=stationFor(c.post,w[0]);if(!at)return null;return {post:c.post,title:c.title,name:crewFor(c.post,minutes),where:w[0],doing:w[1],pos:at.pos,yaw:at.yaw};}).filter(Boolean);
 }
-export function createFerryCrewAboard({run,characters,register,onAction,townBody=()=>null}){
- const ferry=run.ferry,bodies=new Map();let phase=null,day=-1;
- const body=name=>{
-  if(bodies.has(name))return bodies.get(name);
-  const g=new THREE.Group();g.name='Crew: '+name;g.userData.name=name;g.userData.ferryCrew=true;g.userData.hit=null;ferry.add(g);
-  const actor=characters?.attach(g,name)||null;
-  const a=new THREE.Object3D();a.name='Crew prompt: '+name;a.position.set(0,1.2,0);a.userData.sameLevel=true;g.add(a);
-  const b={g,prompt:a,name,text:'',actor,earDefenders:false};bodies.set(name,b);
-  register?.(a,'Talk to '+name,()=>onAction?.('inspect',name,b.text));
-  return b;
- };
- const crew=FERRY_CREW.reduce((m,c)=>(m[c.post]=c,m),{});
+
+/** One body per signed-on post, moving through the real ship before it can report a task complete. */
+export function createFerryCrewAboard({run,characters,register,onAction,townBody=()=>null,portShed,shoreParent,shoreColliders=[]}){
+ const ferry=run.ferry,bodies=new Map(),records=new Map(),shore=createFerryShoreCrew({portShed,shoreParent,shoreColliders,characters,register,onAction});
+ let phase=null,day=-1,operationId=null;
+ const profiles=Object.fromEntries(FERRY_CREW.map(c=>[c.post,c]));
+ function body(c){
+  if(bodies.has(c.name))return bodies.get(c.name);
+  const g=new THREE.Group();g.name='Crew: '+c.name;g.userData.name=c.name;g.userData.ferryCrew=true;g.userData.hit=null;ferry.add(g);
+  const actor=characters?.attach(g,c.name)||null;
+  const a=new THREE.Object3D();a.name='Crew prompt: '+c.name;a.position.set(0,1.2,0);a.userData.sameLevel=true;g.add(a);
+  const b={g,prompt:a,name:c.name,post:c.post,title:c.title,text:'',actor,earDefenders:false,route:[],routeIndex:0,goal:null,where:c.where,taskId:null,state:'at station',blocked:null,initialised:false};
+  bodies.set(c.name,b);register?.(a,'Talk to '+c.name,()=>onAction?.('inspect',c.name,b.text));return b;
+ }
+ const obstacles=()=>run.vehicleObstacles?.()||[];
+ function destination(b,at,key){
+  if(!at){b.blocked='Unknown crew station';b.state='blocked';return;}
+  const occupied=obstacles(),stamp=occupied.map(c=>[c.id,c.x,c.z,c.w,c.d].join(',')).join('|');
+  if(b.goalKey===key&&(!b.blocked||b.obstacleStamp===stamp))return;
+  if(b.g.userData.climbing){b.deferred={at,key};return;}
+  b.goalKey=key;b.goal=[...at.pos];b.yaw=at.yaw;b.blocked=null;b.routeIndex=0;
+  b.obstacleStamp=stamp;
+  const plan=crewRoute(b.g.position.toArray(),b.goal,{obstacles:occupied});
+  b.route=plan.path||[];b.blocked=plan.ok?null:plan.reason;b.state=plan.ok?'walking':'blocked';
+ }
  function place(minutes){
   const p=watchPhase(run,minutes),d=Math.floor(minutes/1440);
-  if(p===phase&&d===day)return;phase=p;day=d;
-  const aboard=new Set();
+  phase=p;day=d;const aboard=new Set(),op=run.operation,active=op?.tasks||[];
+  if(op?.id!==operationId){operationId=op?.id??null;records.clear();}
   for(const c of crewPlaces(p,minutes)){
-   const b=body(c.name);aboard.add(c.name);
-   b.g.visible=true;b.g.position.set(...c.pos);b.g.rotation.y=c.yaw;
-   b.earDefenders=BELOW_DECK_PLACES.includes(c.where);if(b.actor?.avatar)wearEarDefenders(b.actor.avatar,b.earDefenders);
-   b.text=`${c.name}, ${c.title.toLowerCase()} of the Minato Maru: ${c.doing}.${b.earDefenders?' Ear defenders on: nobody goes below without them.':''} ${crew[c.post].why}`;
+   const b=body(c);aboard.add(c.name);b.g.visible=true;b.post=c.post;b.title=c.title;
+   if(!b.initialised){
+    b.g.position.set(...c.pos);b.g.rotation.y=c.yaw;b.initialised=true;b.actor?.last?.copy(b.g.position);
+    b.earDefenders=b.g.position.y<CAR-.35;if(b.actor?.avatar)wearEarDefenders(b.actor.avatar,b.earDefenders);
+   }
+   const task=active.find(t=>t.post===c.post),where=task?.station||c.where;
+   const target=task?.target&&[task.target.x,task.target.y,task.target.z].every(Number.isFinite)?{pos:[task.target.x,task.target.y,task.target.z],yaw:stationFor(c.post,where)?.yaw??c.yaw}:stationFor(c.post,where);
+   b.where=where;b.taskId=task?.id??null;b.doing=task?.action||c.doing;
+   destination(b,target,(task?.id||'watch:'+p+':'+d+':'+c.post));
+   if(task&&!records.has(task.id))records.set(task.id,{task,b,elapsed:0,done:false});
+   b.text=c.name+', '+c.title.toLowerCase()+' of the Minato Maru: '+b.doing+'. '+profiles[c.post].why;
+   b.g.userData.activity=b.doing;
   }
-  for(const [name,b] of bodies)if(!aboard.has(name))b.g.visible=false;
-  // The master's body in town is the bus driver's: hidden while he is aboard.
-  const town=townBody('Bus driver');if(town){const masterAboard=aboard.has('Bus driver');town.userData.aboardFerry=masterAboard;if(masterAboard)town.visible=false;}
+  for(const [name,b] of bodies)if(!aboard.has(name)){b.g.visible=false;b.g.userData.climbing=false;}
+  // Named residents keep a single visible body while their ferry watch owns them.
+  for(const name of ['Bus driver','Mr Higa Jr','Ms Uezu','Kōji']){
+   const town=townBody(name);if(!town)continue;town.userData.aboardFerry=aboard.has(name);if(aboard.has(name))town.visible=false;
+  }
  }
- return {place,update(dt,minutes){place(minutes);const town=townBody('Bus driver');if(town?.userData.aboardFerry)town.visible=false;},get phase(){return phase;},bodies,
-  snapshot(){return [...bodies.values()].filter(b=>b.g.visible).map(b=>({name:b.name,pos:b.g.position.toArray(),earDefenders:b.earDefenders}));}};
+ const atStation=b=>b.g.visible&&!b.blocked&&b.goal&&b.g.position.distanceTo(new THREE.Vector3(...b.goal))<.075&&!crewBlocked(b.g.position.toArray())&&!crewObstacleAt(b.g.position.toArray(),obstacles())&&b.routeIndex>=b.route.length;
+ function taskAtStation(id){const r=records.get(id);return r? r.b.taskId===id&&r.b.goalKey===id&&atStation(r.b):shore.taskAtStation(id);}
+ function taskReady(id){const r=records.get(id);return r? r.done&&taskAtStation(id):shore.taskReady(id);}
+ const controller={
+  place,bodies,taskAtStation,taskReady,
+  update(dt,minutes){
+   place(minutes);const seconds=Math.min(Math.max(dt,0),.5),op=run.operation;
+   // A line handoff starts only after both people have reached their stations.
+   // Arrival stays independent so the operation can acknowledge each person.
+   const lineWorkReady=!['letting-go','making-fast'].includes(op?.stage)||(op?.tasks||[]).every(t=>t.acknowledged);
+   for(const b of bodies.values()){
+    if(!b.g.visible)continue;
+    if(!b.blocked){
+     const movement=stepCrewRoute(b,seconds,{obstacles:obstacles()});
+     b.state=movement.arrived?'at station':movement.climbing?'climbing':'walking';
+     b.g.userData.walking=!movement.arrived;
+     if(movement.arrived){b.g.rotation.y=b.yaw??b.g.rotation.y;b.g.userData.climbing=false;}
+     if(b.deferred&&!b.g.userData.climbing){const next=b.deferred;b.deferred=null;destination(b,next.at,next.key);}
+    }else{b.state='blocked';b.g.userData.walking=false;b.g.userData.climbing=false;}
+    const record=b.taskId&&records.get(b.taskId),arrived=record?taskAtStation(b.taskId):atStation(b);
+    if(record&&arrived&&lineWorkReady){
+     record.elapsed=Math.min(record.task.seconds||0,record.elapsed+seconds);
+     record.done=record.elapsed>=(record.task.seconds||0);
+     b.state=record.done?'reported complete':'working';
+     b.g.userData.socialPose=record.done?'Idle':'Interact';
+    }else{
+     b.g.userData.socialPose='Idle';
+     if(record&&arrived)b.state='waiting for shore hand';
+    }
+    const below=b.g.position.y<CAR-.35;
+    if(below!==b.earDefenders){b.earDefenders=below;if(b.actor?.avatar)wearEarDefenders(b.actor.avatar,below);}
+    b.g.userData.activity=b.blocked?b.doing+' — waiting for a clear walking route':b.state==='waiting for shore hand'?'At the '+b.where+' station; waiting for the shore line hand':b.state==='walking'||b.state==='climbing'?'Going to '+b.where+' to '+b.doing.toLowerCase():b.doing;
+   }
+   shore.update(seconds,(op?.tasks||[]).filter(t=>t.post==='shore'),lineWorkReady);
+   for(const name of ['Bus driver','Mr Higa Jr','Ms Uezu','Kōji']){const town=townBody(name);if(town?.userData.aboardFerry)town.visible=false;}
+  },
+  get phase(){return phase;},
+  snapshot(){
+   const ship=[...bodies.values()].filter(b=>b.g.visible).map(b=>{
+    const r=b.taskId&&records.get(b.taskId);
+    return {name:b.name,post:b.post,title:b.title,pos:b.g.position.toArray(),space:'ship',where:b.where,earDefenders:b.earDefenders,
+     task:b.taskId,action:b.doing,state:b.state,atStation:atStation(b),progress:r?Math.min(1,r.elapsed/Math.max(.01,r.task.seconds||0)):0,
+     blocked:b.blocked,remainingWaypoints:Math.max(0,b.route.length-b.routeIndex)};
+   });
+   return [...ship,...shore.snapshot()];
+  },
+ };
+ run.bindCrewController?.(controller);return controller;
 }

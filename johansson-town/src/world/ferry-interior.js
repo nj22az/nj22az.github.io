@@ -549,7 +549,9 @@ export const FERRY_INTERIOR=(()=>{
   box([-(BH-T),BRIDGE,Z(14.2)],[-(BH-T-.6),BRIDGE+.9,Z(15.0)],0x9aa3a2,{name:'range'});box([-(BH-T),BRIDGE+1.55,Z(14.2)],[-(BH-T-.6),BRIDGE+1.9,Z(15.0)],STEEL,{camera:false,name:'hood'});
   box([-(BH-T),BRIDGE,Z(15.0)],[-(BH-T-.6),BRIDGE+.9,Z(15.9)],0xc8c8c0,{name:'sink'});bar([-(BH-T-.3),BRIDGE+.9,Z(15.45)],[-(BH-T-.3),BRIDGE+1.1,Z(15.45)],.09,0xf0ece0);
   box([-(BH-T),BRIDGE,Z(15.9)],[-(BH-T-.65),BRIDGE+1.75,Z(16.5)-T/2],0xe8e6dc,{name:'fridge-freezer'});
-  box([-(CW+T+.6),BRIDGE,Z(14)+T/2+.05],[-(CW+T),BRIDGE+1.9,Z(14)+.55],0xb9b3a0,{name:'provision locker'});
+  // Keep the locker aft of the doorway's turning space: its former .55 m end
+  // left only a centimetre between the door jamb and an adult's clearance.
+  box([-(CW+T+.6),BRIDGE,Z(14)+T/2+.05],[-(CW+T),BRIDGE+1.9,Z(14)+.30],0xb9b3a0,{name:'provision locker'});
   // Chief engineer's and master's cabins.
   bunk(1,WH0-T/2-2.0,WH0-T/2-.05);desk(1,Z(16.5)+.1,Z(16.5)+.9);locker(1,Z(16.5)+T/2+.02);
   bunk(-1,WH0-T/2-2.0,WH0-T/2-.05);desk(-1,Z(16.5)+.1,Z(16.5)+1.1);locker(-1,Z(16.5)+T/2+.02);

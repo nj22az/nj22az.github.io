@@ -17,3 +17,6 @@ __pycache__/
 sjoskolan/verktyg/qa/week43-results/
 sjoskolan/verktyg/qa/week43-report/
 sjoskolan/vaxelstromslabbet-utkast/node_modules
+
+# Local Studio previews; published World assets remain tracked.
+/output/studio-mcp/

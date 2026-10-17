@@ -9,7 +9,7 @@ export const DRIVER_SEATS=Object.freeze({car:{x:-.34,y:.46,z:.05,roof:1.78},'kei
 
 export function buildVehicle(kind,colour){
  const g=new THREE.Group();g.name='Road '+kind;
- const opaque=[],lamps=[],color=new THREE.Color(),trim=0x30393d,metal=0xb2b9ba;
+ const opaque=[],lamps=[],wheelPoints=[],color=new THREE.Color(),trim=0x30393d,metal=0xb2b9ba;
  function add(geometry,hex,target=opaque){
   const geo=geometry.index?geometry.toNonIndexed():geometry;geo.deleteAttribute('uv');color.set(hex);
   const c=new Float32Array(geo.attributes.position.count*3);for(let i=0;i<c.length;i+=3)c.set([color.r,color.g,color.b],i);
@@ -19,6 +19,7 @@ export function buildVehicle(kind,colour){
  function rod(a,b,r,c=colour){const A=new THREE.Vector3(...a),B=new THREE.Vector3(...b),delta=B.clone().sub(A),geo=new THREE.CylinderGeometry(r,r,delta.length(),8);geo.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),delta.normalize()));geo.translate(...A.add(B).multiplyScalar(.5).toArray());add(geo,c);}
  function profile(points,width,x=0,c=colour){const shape=new THREE.Shape();points.forEach(([z,y],i)=>shape[i?'lineTo':'moveTo'](-z,y));shape.closePath();const geo=new THREE.ExtrudeGeometry(shape,{depth:width,bevelEnabled:false,steps:1});geo.rotateY(Math.PI/2);geo.translate(x-width/2,0,0);add(geo,c);}
  function wheel(x,z,r){
+  wheelPoints.push(Object.freeze({x,z,r}));
   // Rounded tyre shoulders, silver steel wheel, dark centre and four lug nuts.
   const tyre=new THREE.CylinderGeometry(r*.91,r*.91,.17,16);tyre.rotateZ(Math.PI/2);tyre.translate(x,r,z);add(tyre,0x22272b);
   for(const dx of [-.075,.075]){const shoulder=new THREE.TorusGeometry(r*.78,r*.22,6,16);shoulder.rotateY(Math.PI/2);shoulder.translate(x+dx,r,z);add(shoulder,0x22272b);}
@@ -107,6 +108,7 @@ export function buildVehicle(kind,colour){
  finish(opaque,'Sculpted vehicle body, cabin and wheels',new THREE.MeshStandardMaterial({vertexColors:true,roughness:.6}));
  finish(lamps,'Vehicle lamps',new THREE.MeshStandardMaterial({vertexColors:true,roughness:.35}));
  g.userData.driverSeat={...seat};
+ g.userData.wheels=Object.freeze(wheelPoints);
  // Where the driver's hands go (people/vehicle-driver.js): the rim at nine and three.
  g.userData.steeringWheel={x:seat.x,y:belt+.10,z:seat.z+.32,r:.13};g.userData.vehicleStyle=car?'1990s Japanese compact hatchback':delivery?'1990s Japanese cab-over delivery truck':'1990s Japanese kei pickup';
  g.visible=false;g.userData.dynamicProp=true;g.userData.walkSurface=false;return g;

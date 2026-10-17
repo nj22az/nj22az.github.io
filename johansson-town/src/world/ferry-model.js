@@ -751,6 +751,15 @@ export function buildFerryModel({shadows=false}={}){
   const bl=Math.min(1.5,len*.6);r.barrel.scale.set(1,bl,1);r.barrel.quaternion.copy(q);r.barrel.position.copy(r.pivot).addScaledVector(dir,bl/2);
   const rl=len-bl*.55;r.rod.scale.set(1,rl,1);r.rod.quaternion.copy(q);r.rod.position.copy(pin).addScaledVector(dir,-rl/2);}};
  ferry.userData.ramp=ramp;ferry.userData.flap=flap;
+ const rampControl=new THREE.Group();rampControl.name='Bow ramp local hydraulic control';rampControl.position.set(3.22,CAR,11.35);ferry.add(rampControl);
+ {const controls=createKit(shadows);controls.box('paint',[.18,.85,.20],[0,.425,0],0x58646a);controls.box('paint',[.40,.32,.36],[0,.99,0],0x5b7776);
+  for(const [z,hex] of [[-.095,0x4d9567],[.095,0xa53f36]])controls.add('paint',new THREE.SphereGeometry(.035,8,6),hex,[-.205,1.04,z]);controls.finish(rampControl);}
+ ferry.userData.rampControl=rampControl;
+ const lockingPins=new THREE.InstancedMesh(new THREE.CylinderGeometry(.055,.055,.42,8),rodMat,2);lockingPins.name='Port and starboard ramp locking pins';ferry.add(lockingPins);
+ const pinMatrix=new THREE.Matrix4(),pinRotation=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,0,1),Math.PI/2),pinScale=new THREE.Vector3(1,1,1);
+ ferry.userData.setRampLocked=locked=>{if(ferry.userData.rampLocked===!!locked)return;ferry.userData.rampLocked=!!locked;
+  [1,-1].forEach((side,i)=>{pinMatrix.compose(new THREE.Vector3(side*(locked?2.16:2.48),CAR+2.2,HALF+.06),pinRotation,pinScale);lockingPins.setMatrixAt(i,pinMatrix);});lockingPins.instanceMatrix.needsUpdate=true;lockingPins.computeBoundingSphere();};
+ ferry.userData.setRampLocked(false);
  /** 0 raised (the leaf closes the bow, the flap folded back against it), 1 down at `slope` (radians below level), the flap in line. */
  ferry.userData.setRamp=(down,slope=.13)=>{ramp.rotation.x=-1.52*(1-down)+slope*down;flap.rotation.x=(1-down)*3.0;placeRams();setBarrier(down>=1?1:0);setSignals(down>=1);};
  /**
@@ -775,6 +784,7 @@ export function buildFerryModel({shadows=false}={}){
   for(const dz of [-.68,.68]){k4.box('metal',[G,.04,.04],[G/2,.9,dz],WHITE);for(const x of [.1,G/2,G-.1])k4.box('metal',[.03,.9,.03],[x,.45,dz],WHITE);}k4.finish(gangway);}
  gangway.position.set(halfBreadth(GANGWAY_Z)-.05,CAR,GANGWAY_Z);gangway.rotation.z=-.2;
  ferry.userData.gangway=gangway;
+ ferry.userData.setGangway=out=>{const n=Math.max(0,Math.min(1,Number(out)||0));ferry.userData.gangwayOut=n;gangway.rotation.z=-.2*n+(Math.PI/2)*(1-n);};
  /** Its foot rests on the pier (`pierY`, world) as she moves, the way the ramp rests on the quay. */
  ferry.userData.restGangway=(pierY,length=GANGWAY_LENGTH)=>{
   ferry.updateMatrixWorld(true);const e=ferry.matrixWorld.elements,g=gangway.position;
@@ -791,11 +801,19 @@ export function buildFerryModel({shadows=false}={}){
  const door=new THREE.Group();door.name='Gangway door';door.position.set(HB-.04,CAR,GATE.to-.03);ferry.add(door);
  {const k6=createKit(shadows);k6.box('paint',[.04,1.96,1.3],[0,.99,-.66],DOOR);k6.box('metal',[.05,.04,.14],[-.03,1.02,-1.2],STEEL);k6.finish(door);}
  ferry.userData.gangwayDoor=door;
- ferry.userData.setGate=open=>{gate.rotation.y=open?Math.PI:0;gate.position.x=halfBreadth(GATE.to)+(open?.04:-.1);door.rotation.y=open?Math.PI/2:0;};
+ ferry.userData.setGate=open=>{const n=Math.max(0,Math.min(1,Number(open)||0));gate.rotation.y=n*Math.PI;gate.position.x=halfBreadth(GATE.to)-.1+n*.14;door.rotation.y=n*Math.PI/2;};
  ferry.userData.setGate(false);
  // ---- Moving parts: screws turn and the radar sweeps while she is under way.
  ferry.userData.screws=screws;ferry.userData.radar=radar;
- ferry.userData.underway=(dt,speed)=>{for(const s of screws)s.rotation.z+=s.userData.hand*dt*speed*18;radar.rotation.y+=dt*(speed>0?2.6:0);bridgeEquipment.update(dt,{yaw:ferry.rotation.y,rain:ferry.userData.bridgeRain||false,powered:ferry.userData.bridgePowered!==false});};
+ ferry.userData.underway=(dt,speed,readings)=>{
+  for(const s of screws){
+   const id=s.userData.hand>0?'mainP':'mainS',order=readings?.telegraph?.[id]||'STOP',engine=readings?.engines?.[id];
+   // The reverse gear disengages at STOP; the engine can idle without driving its screw.
+   const rpm=readings?(engine?.state==='running'&&order!=='STOP'?(engine.rpm*FERRY_MACHINERY.mains.rpm/FERRY_MACHINERY.gears.ratio)*(order.includes('ASTERN')?-1:1):0):speed*18*60/(2*Math.PI);
+   s.rotation.z+=s.userData.hand*dt*rpm*2*Math.PI/60;
+  }
+  const powered=readings?.board?.live??speed>0;radar.rotation.y+=dt*(powered?2.6:0);bridgeEquipment.update(dt,{yaw:ferry.rotation.y,rain:ferry.userData.bridgeRain||false,powered});
+ };
  ferry.userData.setNavigationLights=on=>{for(const l of navLights)l.material.color.setHex(on?l.userData.on:0x333333);};
  ferry.userData.setCabinLights=level=>{glassMat.emissiveIntensity=.55*Math.max(0,Math.min(1,level));};
  /** The ramp floodlights (FERRY_LOADS `floodlights`), lit with the deck lights after dark. */

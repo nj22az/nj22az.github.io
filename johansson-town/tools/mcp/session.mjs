@@ -50,13 +50,17 @@ export class TownAuditSession{
    a.scene.updateMatrixWorld(true);a.scene.traverse(o=>{if(!o.matrixWorld.elements.every(Number.isFinite))invalid.push(o.name||o.type);});
    const people=[...a.world.people,...(a.world.neighbours||[]).filter(g=>!a.world.people.some(p=>p.g===g)).map(g=>({g}))];
    const residents=people.map(p=>{const g=p.g,u=g.userData,position=g.getWorldPosition(g.position.clone()).toArray();let visible=true;for(let o=g;o;o=o.parent)if(!o.visible)visible=false;return {name:p.profile?.name||u.name||g.name,position,visible,parent:g.parent?.name,activity:u.activity,pose:u.socialPose,indoors:u.indoors,inVehicle:u.inVehicle,inBookshop:u.inBookshop,inMarket:u.inMarket,inWorkplace:u.inWorkplace};});
-   return {game:state,ui:window.__JOHANSSON_AGENT_API__.getState(),view:a.mouse,blocked:a.blocked,paused:a.paused,seated:a.seated,nearby:a.near(),sites:a.sites,targets:a.targets,roomNavigation:a.roomNavigation,homeDirectory:a.homeDirectory,walkingDirections:a.walkingDirections,landmarks:(a.world.landmarks||[]).map(s=>({id:s.id,title:s.title,x:s.x,z:s.z,door:s.door})),residents,shop:a.shop,vehicles:a.world.traffic.snapshot(),ferry:{phase:a.world.ferry.phase,berth:a.world.ferry.berth,loading:a.world.ferry.loadingVehicles},playerClearance:a.navigation(state.player[0],state.player[2]),invalidTransforms:invalid};
+   const speechBubbles=[...document.querySelectorAll('#activity.conversation.rpg #activityBody,.neighbour-chat')].filter(e=>!e.hidden&&e.getClientRects().length&&!e.querySelector('.chat-input,.chat-log')).map(e=>{
+    const line=e.matches('.neighbour-chat')?e.querySelector('span'):e.querySelector(document.querySelector('#activity').classList.contains('player-speaking')?'.rpg-own':'.rpg-line');
+    return {kind:e.matches('.neighbour-chat')?'ambient':'conversation',side:e.dataset.balloonSide,tail:e.dataset.balloonTail,box:e.getBoundingClientRect().toJSON(),text:line?.textContent,fullText:line?.dataset.fullLine||line?.textContent,scrollable:e.dataset.balloonOverflow==='true',protectedActors:e.balloonActors||[]};
+   });
+   return {game:state,ui:window.__JOHANSSON_AGENT_API__.getState(),view:a.mouse,blocked:a.blocked,paused:a.paused,seated:a.seated,nearby:a.near(),sites:a.sites,targets:a.targets,roomNavigation:a.roomNavigation,homeDirectory:a.homeDirectory,walkingDirections:a.walkingDirections,landmarks:(a.world.landmarks||[]).map(s=>({id:s.id,title:s.title,x:s.x,z:s.z,door:s.door})),residents,speechBubbles,shop:a.shop,vehicles:a.world.traffic.snapshot(),ferry:{phase:a.world.ferry.phase,berth:a.world.ferry.berth,position:a.world.ferry.ferry.position.toArray(),yaw:a.world.ferry.ferry.rotation.y,destination:a.world.ferry.destination,progress:a.world.ferry.crossingProgress,loading:a.world.ferry.loadingVehicles,canLoad:a.world.ferry.canLoad,canUnload:a.world.ferry.canUnload,operation:a.world.ferry.operation,crew:a.ferryCrew,plant:a.world.ferry.plant?.readings(),completedVoyages:a.world.ferry.completedVoyages,view:(()=>{const e=document.getElementById('ferryOperations');return e&&!e.hidden?{open:e.open,box:e.getBoundingClientRect().toJSON(),text:e.innerText}:null;})()},playerClearance:a.navigation(state.player[0],state.player[2]),invalidTransforms:invalid};
   });return {...result,errors:this.errors.slice(-30),recentInputs:this.history.slice(-20)};
  }
  async controlState(){return this.requirePage().evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;return {game:JSON.parse(window.render_game_to_text()),view:a.mouse,blocked:a.blocked,paused:a.paused,seated:a.seated,ui:{activity:!document.querySelector('#activity').classList.contains('hidden')}};});}
  async input({control,durationMs=300,run=false,_compact=false}){
   const page=this.requirePage(),before=await (_compact?this.controlState():this.observe());
-  const b=before.blocked,locked=before.paused||b.catchingUp||b.roomLoading||b.camera||b.inspector||b.viewer||b.photo||b.directory||b.hidden||!!before.game.island.crossing;
+  const b=before.blocked,locked=before.paused||b.catchingUp||b.roomLoading||b.camera||b.inspector||b.viewer||b.photo||b.directory||b.hidden||!!before.game.island?.cinematic;
   if(locked&&!['interact','close','directory'].includes(control))return {accepted:false,reason:'Controls are blocked by the current game view or activity.',before};
   if(control==='close'&&b.viewer){await page.locator('.iv-close').click();return {accepted:true,before,after:await this.observe()};}
   if(control==='close'&&b.photo&&await page.locator('#photoStudio [data-close]').isVisible()){await page.locator('#photoStudio [data-close]').click();return {accepted:true,before,after:await this.observe()};}
@@ -72,7 +76,7 @@ export class TownAuditSession{
  }
  async look({degrees=45,verticalDegrees=0,_compact=false}){
   const page=this.requirePage(),before=await (_compact?this.controlState():this.observe()),b=before.blocked;
-  if(before.paused||b.catchingUp||b.roomLoading||b.camera||b.inspector||b.viewer||b.photo||b.directory||b.hidden||before.game.island.crossing)return {accepted:false,reason:'Camera controls are blocked.',before};
+  if(before.paused||b.catchingUp||b.roomLoading||b.camera||b.inspector||b.viewer||b.photo||b.directory||b.hidden||before.game.island?.cinematic)return {accepted:false,reason:'Camera controls are blocked.',before};
   const box=await page.locator('#game').boundingBox(),x=box.x+box.width/2,y=box.y+box.height/2;
   let dx=-degrees*Math.PI/180/.0023,dy=verticalDegrees*Math.PI/180/.0018;
   for(let i=0;i<20&&(Math.abs(dx)>.1||Math.abs(dy)>.1);i++){
@@ -146,8 +150,9 @@ export class TownAuditSession{
   return {reached:true,before,after:await this.observe(),route};
  }
  async ui({control}){
-  const selectors={exit_room:'#exitRoomButton',close_activity:'#closeActivity',close_directory:'#closeDirectory',town_menu:'#directoryButton',settings:'#directory .menu-settings > summary',map:'#directory .menu-map > summary',map_scope:'#mapScope',field_book:'#notebookButton',clock:'#timeButton',weather:'#weatherButton',moves:'#movesButton',bag:'#bagButton',residents:'#residentRecordsButton'};
-  if(['settings','field_book','clock','weather','moves','bag','residents'].includes(control)){
+  if(control==='ferry_operations'&&await this.requirePage().locator('#directory').evaluate(e=>e.classList.contains('hidden')))await this.requirePage().locator('#directoryButton').click();
+  const selectors={exit_room:'#exitRoomButton',close_activity:'#closeActivity',close_directory:'#closeDirectory',town_menu:'#directoryButton',settings:'#directory .menu-settings > summary',map:'#directory .menu-map > summary',map_scope:'#mapScope',field_book:'#notebookButton',clock:'#timeButton',weather:'#weatherButton',moves:'#movesButton',bag:'#bagButton',residents:'#residentRecordsButton',ferry_operations:'#ferryOperationsButton',close_ferry_operations:'#closeFerryOperations',ferry_sequence:'#ferryProcedureToggle',ferry_crew:'#ferryCrewToggle',ferry_reports:'#ferryReportsToggle'};
+  if(['settings','field_book','clock','weather','moves','bag','residents','ferry_operations'].includes(control)){
    const tools=this.requirePage().locator('#directory .menu-tools:not([open]) > summary');
    if(await tools.isVisible())await tools.click();
   }

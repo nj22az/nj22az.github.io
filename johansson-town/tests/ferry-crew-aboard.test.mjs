@@ -4,6 +4,7 @@ import * as THREE from '../vendor/three.module.js';
 import {createFerryRun} from '../src/world/ferry.js';
 import {createFerryWalk} from '../src/world/ferry-walk.js';
 import {FERRY_WATCH,FERRY_CREW} from '../src/people/ferry-crew.js';
+import {FERRY_MANNING} from '../src/world/ferry-ship.js';
 import {crewPlaces,createFerryCrewAboard,watchPhase,CREW_POSTS} from '../src/people/ferry-crew-aboard.js';
 
 function alongside(berth='town'){
@@ -23,15 +24,21 @@ test('every post of every phase stands on one of her floors, facing its work',()
    assert.ok(!walk.blocked(p.x,f.y,p.z,.2),`${phase}: ${c.name} at ${c.where} is not inside a wall`);
   }
  }
- for(const where of Object.keys(CREW_POSTS))assert.ok(Object.values(FERRY_WATCH).some(w=>Object.values(w).some(([at])=>at===where)),where+' is used by the watch');
+ for(const [where,at] of Object.entries(CREW_POSTS)){
+  const p=new THREE.Vector3(...at.pos).applyMatrix4(run.ferry.matrixWorld),f=walk.floorAt(p.x,p.z,p.y,.3);
+  assert.ok(f&&!walk.blocked(p.x,f.y,p.z,.2),where+' is a usable watch or operation station');
+ }
 });
 
-test('alongside by day all four are aboard; at night only the chief, and the deck hand on her week on',()=>{
+test('all eight declared posts are aboard by day; the established overnight residents remain aboard',()=>{
  const {run}=alongside();
  assert.equal(watchPhase(run,600),'waiting');assert.equal(watchPhase(run,23*60),'night');assert.equal(watchPhase(run,5*60),'night');
- assert.deepEqual(crewPlaces('waiting',600).map(c=>c.post),['master','chief','oiler','deck']);
- assert.deepEqual(crewPlaces('night',23*60).map(c=>c.post).sort(),['chief','deck']);
- assert.deepEqual(crewPlaces('crossing',700).map(c=>c.where),['wheelhouse','engine-room','engine-room','car-deck']);
+ assert.deepEqual(crewPlaces('waiting',600).map(c=>c.post),FERRY_MANNING.map(c=>c.post));
+ assert.deepEqual(crewPlaces('night',23*60).map(c=>c.post).sort(),['bosun','chief']);
+ for(const phase of ['waiting','arriving','crossing']){
+  const places=crewPlaces(phase,700);assert.equal(places.length,8);
+  for(let i=0;i<places.length;i++)for(let j=i+1;j<places.length;j++)assert.ok(new THREE.Vector3(...places[i].pos).distanceTo(new THREE.Vector3(...places[j].pos))>.4,phase+': distinct physical posts');
+ }
 });
 
 test('the bodies ride with her and the bus driver’s town body is hidden while he is her master',()=>{
@@ -40,7 +47,7 @@ test('the bodies ride with her and the bus driver’s town body is hidden while 
  const crew=createFerryCrewAboard({run,characters:{attach:(g,name)=>attached.push(name)},register(){},onAction(){},townBody:name=>name==='Bus driver'?town:null});
  crew.update(1/60,600);
  assert.deepEqual(attached.sort(),FERRY_CREW.map(c=>c.name).sort());
- assert.equal(crew.snapshot().length,4);assert.equal(town.visible,false);assert.equal(town.userData.aboardFerry,true);
+ assert.equal(crew.snapshot().length,8);assert.equal(town.visible,false);assert.equal(town.userData.aboardFerry,true);
  const master=crew.bodies.get('Bus driver').g;assert.equal(master.parent,run.ferry,'a child of the ship');
  crew.update(1/60,23*60);
  assert.equal(crew.snapshot().length,2);assert.equal(town.userData.aboardFerry,false);
