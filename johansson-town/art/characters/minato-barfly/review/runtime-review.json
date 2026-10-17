@@ -1,0 +1,70 @@
+{
+  "threeParse": true,
+  "scheduleAndServicePreserved": true,
+  "webGLVerified": false,
+  "samples": [
+    {
+      "minutes": 179,
+      "clip": "Barfly_Drink_Loop",
+      "skinnedMeshes": 15,
+      "minY": 0.23058822982760493,
+      "maxY": 1.5983999636352075,
+      "seatHeight": 0.565,
+      "finite": true
+    },
+    {
+      "minutes": 180,
+      "clip": "Barfly_Sleep_Loop",
+      "skinnedMeshes": 15,
+      "minY": 0.23058822982760493,
+      "maxY": 1.5904026014404198,
+      "seatHeight": 0.565,
+      "finite": true
+    },
+    {
+      "minutes": 599,
+      "clip": "Barfly_Sleep_Loop",
+      "skinnedMeshes": 15,
+      "minY": 0.23058822982760493,
+      "maxY": 1.5904026014404198,
+      "seatHeight": 0.565,
+      "finite": true
+    },
+    {
+      "minutes": 600,
+      "clip": "Barfly_Drink_Loop",
+      "skinnedMeshes": 15,
+      "minY": 0.23058822982760493,
+      "maxY": 1.5983999636352075,
+      "seatHeight": 0.565,
+      "finite": true
+    },
+    {
+      "minutes": 1100,
+      "clip": "Barfly_Drink_Loop",
+      "skinnedMeshes": 15,
+      "minY": 0.23058822982760493,
+      "maxY": 1.5983999636352075,
+      "seatHeight": 0.565,
+      "finite": true
+    },
+    {
+      "minutes": 1439,
+      "clip": "Barfly_Drink_Loop",
+      "skinnedMeshes": 15,
+      "minY": 0.23058822982760493,
+      "maxY": 1.5983999636352075,
+      "seatHeight": 0.565,
+      "finite": true
+    },
+    {
+      "minutes": 1440,
+      "clip": "Barfly_Drink_Loop",
+      "skinnedMeshes": 15,
+      "minY": 0.23058822982760493,
+      "maxY": 1.5983999636352075,
+      "seatHeight": 0.565,
+      "finite": true
+    }
+  ]
+}
