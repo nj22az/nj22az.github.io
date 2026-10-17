@@ -435,3 +435,13 @@ Public verification found /johansson-world/ is shadowed by the separate nj22az/j
 ## 2026-10-17 · Consistent project mascot placement
 
 Moved Vy into the same .px-mascot-title grid and .px-mascot image class used by Johansson, Thuận and Tetsuo. The shared rules set every project mascot to 80 × 112 px on desktop and 60 × 96 px on small screens. Removed the separate oversized whisper preview; Linux now shows a screenshot of the real candidate’s controller settings above its title, labelled as a development candidate. Actual browser checks compare all six mascot bounding boxes and title-row parents at 1440, 800, 390 and 320 px. Preview image, direct links and overflow pass; desktop/phone screenshots inspected.
+
+## 2026-10-17 · Unified availability header, shortcuts and book cover
+
+Moved the Office availability into the header’s month calendar and removed the old lower-page widget and its duplicate script. The calendar retains the selected location, weekday/weekend pattern, public holidays, ISO week numbers and prominent today. Date buttons show the availability detail. Holiday loading is deferred until opening, cached per country/year, and failures explicitly leave holiday exceptions unconfirmed. Fixed date-click dismissal and the menu backdrop intercepting header controls.
+
+Added labelled SVG shortcuts for Projects, Johansson World, Blog, Sjöskolan and Linux. Small screens use a second header row. Reworked the hamburger into More, containing only Shop, About, Locations and appearance settings. Duplicate quick destinations are removed. More supports keyboard entry and Escape; calendar and More close each other correctly.
+
+Created a new Swedish book cover with large type and a three-phase contactor/motor illustration. Editable source: elteknik/art/cover.svg; reproducible export: scripts/render-book-cover.cjs. Replaced the existing omslag.jpg at 2100 × 3000 px, preserving its path and the book’s 7:10 aspect. Website image references are versioned. Encrypted book contents and Shopify files are not changed.
+
+Actual browser checks pass at 1440, 800, 390 and 320 px: shortcuts, availability details, mocked holiday/weekend/weekday states, location persistence, today, failure fallback, More menu deduplication and keyboard/pointer access, calendar/menu handoff, course/blog navigation, overflow and panel bounds. Screenshots inspected; changed JS and diff checks pass. All seven existing public destinations return HTTP 200 without a route change: /, /sjoskolan/, /elteknik/, /blog/, /world/, /linux-port/, /johansson-town/. No Sjöskolan files change; its baseline tree is 78b9e18eed0ec98e138c2cb3176e435957ab3396. Course URLs and all 2165 local course files remain in place.

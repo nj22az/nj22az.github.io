@@ -82,7 +82,7 @@ const CONFIG = {
       url: "/elteknik/",
       shopifyProductUrl: "https://3va6hr-fw.myshopify.com/products/elteknik-och-ellara.js",
       icon: "notebook",
-      image: "/elteknik/files/omslag.jpg",
+      image: "/elteknik/files/omslag.jpg?v=20261017",
       tags: ["Book", "Elteknik", "YH"],
       bento: "wide",
       featured: true,
