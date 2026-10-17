@@ -1,3 +1,4 @@
+import {kitahamaLaneAt} from './kitahama-layout.js';
 import {NIGHT_LANE,inDiningLane} from './dining-layout.js';
 import {GROUND} from '../render/ground-palette.js';
 import {RESIDENTIAL} from './residential-layout.js';
@@ -28,7 +29,7 @@ export function laneEdges(){
 export function lanePatches(routes=activeRoutes().slice(3)) {
   const rects=[];
   // Harbour Park draws its level, curved walks as ribbons in park.js.
-  for(const route of routes.filter(r=>!r.terrain&&!r.park&&r.id!=='second-pier')) {
+  for(const route of routes.filter(r=>!r.terrain&&!r.park&&r.id!=='second-pier'&&r.id!=='fujita-shed-circuit')) {
     const half=route.width/2;
     for(let i=1;i<route.points.length;i++) {
       const a=route.points[i-1],b=route.points[i];
@@ -36,15 +37,15 @@ export function lanePatches(routes=activeRoutes().slice(3)) {
       rects.push({minX:Math.min(a[0],b[0])-half,maxX:Math.max(a[0],b[0])+half,minZ:Math.min(a[1],b[1])-half,maxZ:Math.max(a[1],b[1])+half,route});
     }
   }
-  const xs=[...new Set([-19,19,MAIN_ROAD.pavementWest,MAIN_ROAD.pavementEast,17.5,22.2,RESIDENTIAL.minX,RESIDENTIAL.maxX,NIGHT_LANE.minX,NIGHT_LANE.maxX,...rects.flatMap(r=>[r.minX,r.maxX])])].sort((a,b)=>a-b);
+  const xs=[...new Set([-19,19,-8.1,5.75,MAIN_ROAD.pavementWest,MAIN_ROAD.pavementEast,17.5,22.2,RESIDENTIAL.minX,RESIDENTIAL.maxX,NIGHT_LANE.minX,NIGHT_LANE.maxX,...rects.flatMap(r=>[r.minX,r.maxX])])].sort((a,b)=>a-b);
   const zs=[...new Set([-50,MAIN_ROAD.minZ,MAIN_ROAD.maxZ,RESIDENTIAL.minZ,RESIDENTIAL.maxZ,NIGHT_LANE.minZ,NIGHT_LANE.maxZ,...rects.flatMap(r=>[r.minZ,r.maxZ])])].sort((a,b)=>a-b);
   const patches=[];
   for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++) {
     const x=(xs[i-1]+xs[i])/2,z=(zs[j-1]+zs[j])/2;
     if(inDiningLane(x,z))continue;
-    if(x>MAIN_ROAD.pavementWest&&x<MAIN_ROAD.pavementEast&&z>MAIN_ROAD.minZ&&z<MAIN_ROAD.maxZ)continue;
+    if(x>-8.1&&x<5.75&&z>MAIN_ROAD.minZ&&z<MAIN_ROAD.maxZ)continue;
     if(Math.abs(x)<19&&z>-50&&z<MAIN_ROAD.minZ)continue;
-    if(pavedByTerminus(x,z))continue;
+    // The retired terminus is now part of the continuous town street.
     const owner=rects.find(r=>x>r.minX&&x<r.maxX&&z>r.minZ&&z<r.maxZ);
     if(owner)patches.push({x0:xs[i-1],x1:xs[i],z0:zs[j-1],z1:zs[j],surface:owner.route.id==='home-lane'?'residential':owner.route.surface});
   }
@@ -59,7 +60,7 @@ export function buildLaneSurfaces(parent,library) {
   const quad=(surface,points)=>{
     if(!batches.has(surface))batches.set(surface,{positions:[],uv:[],indices:[]});
     const b=batches.get(surface),n=b.positions.length/3;
-    for(const [x,z] of points){b.positions.push(x,groundHeight(x,z)+GROUND_LAYER.lane,z);b.uv.push(x/4,z/4);}
+    for(const [x,z] of points){b.positions.push(x,groundHeight(x,z)+(kitahamaLaneAt(x,z)?0:GROUND_LAYER.lane),z);b.uv.push(x/4,z/4);}
     b.indices.push(n,n+2,n+1,n+1,n+2,n+3);
   };
   // A patch is laid as a grid rather than as one quad, because the ground under it is

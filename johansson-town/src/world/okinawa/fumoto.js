@@ -38,7 +38,7 @@ export function buildFumoto(kit,solid,ctx){
  // The goats of 4 Fumoto, in a pen of posts and rails on the strip behind the house (the house is empty;
  // the goats stay with it until the cast plan decides, docs/CAST-PLAN.md):
  // three Ryukyu goats (hīja), white and brown, with a hay rack and a water pan.
- {const x0=21,x1=27.5,z0=195.6,z1=199.4,post=0x6d5238,rail=0x8a6a46;
+ {const x0=22.5,x1=28.5,z0=195,z1=197.4,post=0x6d5238,rail=0x8a6a46;
   for(const x of [x0,(x0+x1)/2,x1])for(const z of [z0,z1])kit.block(x-.06,x+.06,0,1.1,z-.06,z+.06,post);
   for(const z of [z0+1.9])for(const x of [x0,x1])kit.block(x-.06,x+.06,0,1.1,z-.06,z+.06,post);
   for(const y of [.45,.95]){for(const z of [z0,z1])kit.block(x0,x1,y-.04,y+.04,z-.03,z+.03,rail);for(const x of [x0,x1])kit.block(x-.03,x+.03,y-.04,y+.04,z0,z1,rail);}
@@ -55,9 +55,9 @@ export function buildFumoto(kit,solid,ctx){
   solid([kit.rect(x0-.1,x1+.1,z0-.1,z0+.1,1.1,'goat pen'),kit.rect(x0-.1,x1+.1,z1-.1,z1+.1,1.1,'goat pen'),kit.rect(x0-.1,x0+.1,z0,z1,1.1,'goat pen'),kit.rect(x1-.1,x1+.1,z0,z1,1.1,'goat pen')]);
   inspect((x0+x1)/2,1,z0-.9,'Look at the goats','Hīja, the goats','Three island goats, two white and one brown, who eat the cane tops and the hibiscus. The house they belong to is empty; the board on its gate says to ask at the town hall, and whoever takes the house takes the goats.');}
  // The fukugi row behind the hamlet, against the north wind of the winter monsoon.
- for(let x=F.plots[0].minX;x<=F.plots[1].maxX;x+=2.3)solid(fukugi(kit,x,F.plots[0].minZ-1.1,{h:5.6+((x*7)%3)*.4,seed:700+Math.round(x)}));
+ for(let x=F.plots[0].minX;x<=F.plots[1].maxX;x+=2.3)solid(fukugi(kit,x,F.plots[0].minZ-3.5,{h:5.6+((x*7)%3)*.4,seed:700+Math.round(x)}));
  // The hamlet's name stone at the foot of the main lane, where it leaves the cane.
- {const x=F.mainLane[1][0]+2.2,z=F.bounds.maxZ+.4;
+ {const x=F.mainLane[1][0]+2.2,z=F.bounds.maxZ-4.5;
   kit.box(.9,1.5,.55,x,.75,z,0xe2dccb,{finish:'coral'});kit.box(1,.12,.62,x,1.56,z,0xd6cfbd,{finish:'coral'});
   kit.sign(fascia({jp:'Fumoto',en:'FUMOTO'}),.86,.2,x,1.15,z+.29,{depth:.02,name:'hamlet name sign'});
   solid(kit.rect(x-.5,x+.5,z-.32,z+.32,1.6,'hamlet stone'));
@@ -70,8 +70,8 @@ export function buildFumoto(kit,solid,ctx){
  // The feeder up the trail from the Rainflower circuit (town-power.js joins its first pole).
  const feed=F.feeder.slice(0,-1).map(([x,z],i)=>pole(x,z,{face:Math.PI/2,transformer:false,tel:false,seed:940+i*3}));
  for(let i=1;i<feed.length;i++)wiresBetween(kit,feed[i-1],feed[i]);wiresBetween(kit,feed.at(-1),up.at(-1));
- const upper=pole(19.5,F.upperLane[0][1]-F.laneWidth/2+.25,{face:0,transformer:false,lamp:true,seed:921});
- const lower=pole(19.5,F.lowerLane[0][1]-F.laneWidth/2+.25,{face:0,transformer:false,lamp:true,seed:924});
+ const upper=pole(4,F.upperLane[0][1]-F.laneWidth/2+.25,{face:0,transformer:false,lamp:true,seed:921});
+ const lower=pole(4,F.lowerLane[0][1]-F.laneWidth/2-2.75,{face:0,transformer:false,lamp:true,seed:924});
  wiresBetween(kit,up.at(-1),upper,{sag:.55});wiresBetween(kit,up.at(-2),lower,{sag:.55});
  for(const p of F.plots){const near=p.maxZ<F.upperLane[0][1]?upper:lower,x=(p.minX+p.maxX)/2;serviceDrop(kit,near,[x+1.5,y+2.6,p.minZ+3.2]);}
  serviceDrop(kit,up.at(-2),[F.store.minX+.4,y+2.9,F.store.maxZ-1]);
@@ -171,7 +171,7 @@ function square(kit,solid,{inspect}){
  solid([kit.rect(sx-1.65,sx+1.65,sz-.3,sz+.3,.5,'square bench')]);
  inspect(sx,1,sz+.9,'Sit a while under the gajumaru','The asagi square','The open ground every hamlet keeps: for the harvest dance, the tug of war at the old new year, and the hot evenings, when somebody brought a sanshin out to the bench under the gajumaru. The houses round it are empty now, and the square is quiet.');
  // The notice board on the square's lane side, facing the lane.
- {const x=F.square.minX+.35,z=F.notices[1]+2.6;
+ {const x=F.square.minX+.35,z=F.notices[1]+5;
   for(const dz of [-.9,.9])kit.block(x-.05,x+.05,0,1.9,z+dz-.05,z+dz+.05,0x6d5238);
   kit.block(x-.03,x+.03,.9,1.9,z-1,z+1,0x8a6a46);kit.block(x-.12,x+.12,1.9,1.98,z-1.1,z+1.1,0x5d4431);
   const notes=[poster({title:'To let',lines:['1–4 Fumoto','ask at the','town hall'],band:'#3f7f86'}),poster({title:'Store closed',lines:['for groceries:','Sakura Shōten','Minato']}),poster({title:'Well',lines:['not for','drinking','town water only']})];

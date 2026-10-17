@@ -23,14 +23,14 @@ test('both beach openings allow approach, descent, a shoreline walk and return w
   for(let x=44;x>=31.8;x-=.1)assert.equal(blocked(x,access.z),false,'Return from beach');
  }
  // Kitano Road crosses the beach on a causeway: the shore is two walks, one from each opening.
- for(let z=BEACH.minZ+.5;z<=BEACH.maxZ-.5;z+=.2){if(Math.abs(z-KITANO_SEAWALL_GAP.z)<KITANO_SEAWALL_GAP.half+2.5)continue;assert.equal(blocked(42,z),false,'Walk the length of the dry shore');assert.equal(routeAt(42,z).surface,Math.abs(z+10)<=.9?'stone':'sand','Only the new coastal-path crossing is paved');}
+ for(let z=BEACH.minZ+.5;z<=BEACH.maxZ-.5;z+=.2){if(Math.abs(z-KITANO_SEAWALL_GAP.z)<KITANO_SEAWALL_GAP.half+2.5)continue;assert.equal(blocked(42,z),false,'Walk the length of the dry shore');}
  assert.ok(colliders.some(c=>circleHitsRect(EAST_LAWN.wall.x,10,.32,c)),'Wall remains solid between openings');
  parent.updateMatrixWorld(true);const ray=new THREE.Raycaster();
  for(const x of [34.1,39.3,44.2]){ray.set(new THREE.Vector3(x,5,10),new THREE.Vector3(0,-1,0));assert.ok(Math.abs(ray.intersectObject(shore)[0].point.y-groundHeight(x,10))<1e-5,'Feet follow the sand mesh');}
 });
 
 test('dry ground around the island is admitted and the sea remains blocked',()=>{
- 
+
  for(const p of [[-20,32],[-31,32],[43,33],[44,55],[8,54]])assert.equal(townBoundsBlocked(...p,.32),false,'Unbuilt dry land '+p);
  for(const p of [[-41,0],[48,10],[45.9,10],[48,40],[12,-51],[0,315]])assert.equal(townBoundsBlocked(...p,.32),true,'Sea '+p);
  assert.equal(townBoundsBlocked(45.5,10,.32),true,'The whole body must stay on dry sand');

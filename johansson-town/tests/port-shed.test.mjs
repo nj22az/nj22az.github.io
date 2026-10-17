@@ -36,7 +36,7 @@ test('Mr Fujita’s shed: channels flipping, a glass in his hand, the empties ro
  const empties=()=>shed.group.children.find(o=>o.name==='Empty Umineko bottles').count;
  shed.tick(.1,6*60+10);assert.equal(empties(),0);shed.tick(.1,22*60);assert.ok(empties()>=20,'a day’s bottles round him');
  // The walk along the pier past the open front stays clear.
- for(let z=-66;z<=-50;z+=.5)assert.ok(!colliders.some(c=>circleHitsRect(-35.3,z,.3,c)),'pier walk is open at z='+z);
+ for(let z=-66;z<=-50;z+=.5)assert.ok(!colliders.some(c=>circleHitsRect(PORT_SHED.x+PORT_SHED.depth/2+.65,z,.3,c)),'pier walk is open at z='+z);
  // He sits facing his set.
  assert.ok(PORT_SHED.tv[1]<PORT_SHED.chair[1],'the TV is in front of him (to the south, where he faces)');
  // It stands wholly on the pier's deck, not over the water.

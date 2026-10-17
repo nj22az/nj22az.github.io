@@ -3,7 +3,7 @@ export const OIL_JETTY=Object.freeze({
  root:Object.freeze([44.2,-45.5]),
  deck:Object.freeze({minX:44.2,maxX:63,minZ:-46.6,maxZ:-44.4,y:.12}),
  head:Object.freeze({minX:59,maxX:64,minZ:-47.6,maxZ:-43.4}),
- depot:Object.freeze({x:40.6,z:-45.6,r:1.7,h:3.2}),
+ depot:Object.freeze({x:39.5,z:-32.5,r:1.7,h:3.2}),
  berth:Object.freeze({x:54,z:-49.6}),
 });
 /** Every third day, alongside from 08:00 to 15:00, half an hour in and out. */

@@ -10,44 +10,44 @@ import {householdAtHome,activeHomeForResident,homeNameplate} from '../people/isl
  */
 export const KITAHAMA=Object.freeze({
  /** From the north end of the beach, between the town hall's seawall and the shore. */
- approach:Object.freeze({minX:42,maxX:44.6,minZ:30.5,maxZ:55.5}),
+ approach:Object.freeze({minX:42,maxX:45,minZ:30.5,maxZ:75}),
  /** The cross lane the houses face. */
- lane:Object.freeze({minX:19.5,maxX:50.5,minZ:55.5,maxZ:58.5}),
+ lane:Object.freeze({minX:-35,maxX:45,minZ:57.5,maxZ:61.5}),
  plots:Object.freeze([
-  {id:'kitahama-1',kind:'red-tile',family:"Tuan Thao",romaji:'Thuan, Thao & Chin',minX:21,maxX:29.1,minZ:46,maxZ:55,gate:'north'},
-  {id:'kitahama-2',kind:'concrete',family:"Sato",romaji:'Sato',minX:32.5,maxX:41.5,minZ:46,maxZ:55,gate:'north'},
-  {id:'kitahama-3',kind:'concrete',family:"Uehara",romaji:'Uehara',minX:20,maxX:28.3,minZ:59,maxZ:68.5,gate:'south'},
-  {id:'kitahama-4',kind:'red-tile',family:"For the time being",romaji:'Tōma',minX:28.8,maxX:37.1,minZ:59,maxZ:68.5,gate:'south'},
-  {id:'kitahama-5',kind:'concrete',family:"Rental house",romaji:'To let',minX:37.6,maxX:45.9,minZ:59,maxZ:68.5,gate:'south'},
+  {id:'kitahama-1',kind:'red-tile',family:"Tuan Thao",romaji:'Thuan, Thao & Chin',minX:20,maxX:28,minZ:48,maxZ:57,gate:'north'},
+  {id:'kitahama-2',kind:'concrete',family:"Sato",romaji:'Sato',minX:33,maxX:41,minZ:48,maxZ:57,gate:'north'},
+  {id:'kitahama-3',kind:'concrete',family:"Uehara",romaji:'Uehara',minX:7,maxX:15,minZ:62,maxZ:71,gate:'south'},
+  {id:'kitahama-4',kind:'red-tile',family:"For the time being",romaji:'Tōma',minX:20,maxX:28,minZ:62,maxZ:71,gate:'south'},
+  {id:'kitahama-5',kind:'concrete',family:"Rental house",romaji:'To let',minX:33,maxX:41,minZ:62,maxZ:71,gate:'south'},
   // The residential quarter (docs/RESIDENTIAL-PLAN.md): the spine lane west, Fukugi
   // Lane north and Well Lane south. `family` and `romaji` are what the nameplate on the gate says (the
   // house's own sign); who lives there is the cast (people/cast.js), and a house nobody in it lives in is to let.
-  {id:'kitahama-6',kind:'red-tile',family:'Taira',romaji:'Taira',minX:-7.5,maxX:0.5,minZ:33,maxZ:42.5,gate:'south'},
-  {id:'kitahama-7',kind:'concrete',family:'Chinen',romaji:'Chinen',minX:3.5,maxX:11.5,minZ:33,maxZ:42.5,gate:'south'},
-  {id:'kitahama-8',kind:'concrete',family:'Uezu',romaji:'Uezu',minX:-7.5,maxX:0,minZ:46,maxZ:55.5,gate:'south'},
-  {id:'kitahama-9',kind:'red-tile',family:'Gushiken',romaji:'Gushiken',minX:3.5,maxX:11.5,minZ:46.5,maxZ:55.5,gate:'north'},
-  {id:'kitahama-10',kind:'red-tile',family:'Tamashiro',romaji:'Tamashiro',minX:-23,maxX:-12.2,minZ:30.8,maxZ:39.8,gate:'north'},
-  {id:'kitahama-11',kind:'concrete',family:'Iha',romaji:'Iha',minX:-32,maxX:-24,minZ:32,maxZ:39,gate:'west'},
-  {id:'kitahama-12',kind:'concrete',family:'Kohagura',romaji:'Kohagura',minX:-32,maxX:-24,minZ:39.5,maxZ:46.5,gate:'west'},
+  {id:'kitahama-6',kind:'red-tile',family:'Taira',romaji:'Taira',minX:-32,maxX:-24,minZ:48,maxZ:57,gate:'north'},
+  {id:'kitahama-7',kind:'concrete',family:'Chinen',romaji:'Chinen',minX:-19,maxX:-11,minZ:48,maxZ:57,gate:'north'},
+  {id:'kitahama-8',kind:'concrete',family:'Uezu',romaji:'Uezu',minX:-6,maxX:2,minZ:48,maxZ:57,gate:'north'},
+  {id:'kitahama-9',kind:'red-tile',family:'Gushiken',romaji:'Gushiken',minX:7,maxX:15,minZ:48,maxZ:57,gate:'north'},
+  {id:'kitahama-10',kind:'red-tile',family:'Tamashiro',romaji:'Tamashiro',minX:-32,maxX:-24,minZ:62,maxZ:71,gate:'south'},
+  {id:'kitahama-11',kind:'concrete',family:'Iha',romaji:'Iha',minX:-19,maxX:-11,minZ:62,maxZ:71,gate:'south'},
+  {id:'kitahama-12',kind:'concrete',family:'Kohagura',romaji:'Kohagura',minX:-6,maxX:2,minZ:62,maxZ:71,gate:'south'},
  ].map(p=>{const plate=homeNameplate(p.id);return Object.freeze({...p,wall:'block',family:plate.address,romaji:plate.owners});})),
- field:Object.freeze({minX:65,maxX:75,minZ:86,maxZ:90.2}),
+ field:Object.freeze({minX:37,maxX:47,minZ:84,maxZ:88.2}),
  /** The quarter's lanes, each 3 m: the spine west from the cross lane, and two dead ends. */
- spine:Object.freeze({minX:-35,maxX:19.5,minZ:55.5,maxZ:58.5}),
- fukugiLane:Object.freeze({minX:-11.5,maxX:-8.5,minZ:30.5,maxZ:55.5}),
- wellLane:Object.freeze({minX:-23.5,maxX:-20.5,minZ:52,maxZ:55.5}),
+ spine:Object.freeze({minX:-35,maxX:45,minZ:72,maxZ:75}),
+ fukugiLane:Object.freeze({minX:-23,maxX:-20,minZ:30.5,maxZ:91}),
+ wellLane:Object.freeze({minX:-17.5,maxX:-14.5,minZ:26.8,maxZ:30.8}),
  /** Main Street continues directly through the relocated residential blocks. */
- footpath:Object.freeze({minX:0.7,maxX:3.1,minZ:29.3,maxZ:55.5}),
- northLane:Object.freeze({minX:19.5,maxX:50.5,minZ:70,maxZ:73}),
- eastLane:Object.freeze({minX:-35,maxX:-32.2,minZ:30.5,maxZ:55.5}),
- southLane:Object.freeze({minX:-35,maxX:-8.5,minZ:29.3,maxZ:30.5}),
- westCrossLane:Object.freeze({minX:-24,maxX:-8.5,minZ:40,maxZ:43}),
- middleLane:Object.freeze({minX:-8.5,maxX:11.5,minZ:43,maxZ:46}),
- mainCrossLane:Object.freeze({minX:-8.5,maxX:11.5,minZ:30.5,maxZ:33}),
- fieldLane:Object.freeze({minX:47.5,maxX:50.5,minZ:58.5,maxZ:70}),
+ footpath:Object.freeze({minX:3,maxX:6,minZ:30.5,maxZ:91}),
+ northLane:Object.freeze({minX:-35,maxX:45,minZ:44.5,maxZ:47.5}),
+ eastLane:Object.freeze({minX:-36,maxX:-33,minZ:30.5,maxZ:91}),
+ southLane:Object.freeze({minX:-36,maxX:6,minZ:29.3,maxZ:32.3}),
+ westCrossLane:Object.freeze({minX:-36,maxX:-20,minZ:44.5,maxZ:47.5}),
+ middleLane:Object.freeze({minX:16,maxX:19,minZ:45.1,maxZ:75}),
+ mainCrossLane:Object.freeze({minX:-7.55,maxX:6,minZ:30.5,maxZ:33.5}),
+ fieldLane:Object.freeze({minX:29,maxX:32,minZ:45.1,maxZ:75}),
  /** The apartment block on Fukugi Lane: two flats up, two down, an outside stair. */
- apartment:Object.freeze({id:'kitahama-flats',minX:-20,maxX:-12,minZ:43,maxZ:54,name:'Kitahama Heights'}),
+ apartment:Object.freeze({id:'kitahama-flats',minX:-32,maxX:-24,minZ:33.5,maxZ:44.5,name:'Kitahama Heights'}),
  /** The pocket park at the corner of the spine and Well Lane. */
- park:Object.freeze({minX:13.5,maxX:19.5,minZ:46,maxZ:55}),
+ park:Object.freeze({minX:-19,maxX:-11,minZ:34.5,maxZ:43.5}),
  /** The compact residential blocks share the town datum. neighbourhood-ground.js
   * supplies their ground and grades the outer edge back to the island. */
  y:0,

@@ -198,12 +198,12 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
   kit.box(.04,1.12,.06,x,ground+1.55,D+.07,0xb8bec0,{finish:'metal'});
   kit.box(1.8,.07,.18,x,ground+.9,D+.08,0xc9c2b4);
  }
- kit.box(.72,.5,.26,W-.7,ground+.55,D+.14,0xe2e0d8);
+ kit.box(.72,.5,.26,0,ground+2.25,D+.14,0xe2e0d8);
  // The tall board stands off the front corner, square to it, so it reads from up and
  // down the street.
  if(upright){
-  kit.sign(upright,.6,2.2,W-.32,ground+1.55,D+.48,{ry:Math.PI/2,depth:.08,name:'shop upright',both:true});
-  for(const y of [ground+.55,ground+2.55])kit.box(.05,.05,.5,W-.32,y,D+.22,C.steel);
+  kit.sign(upright,.6,2.2,W-.32,ground+2.5,D+.48,{ry:Math.PI/2,depth:.08,name:'shop upright',both:true});
+  for(const y of [ground+1.4,ground+3.2])kit.box(.05,.05,.5,W-.32,y,D+.22,C.steel);
  }
  // Roof: parapet, tank, aerial; rust runs down the front from the parapet's fixings.
  for(const [x0,x1,z0,z1] of [[-W,W,-D,-D+.14],[-W,W,D-.14,D],[-W,-W+.14,-D,D],[W-.14,W,-D,D]])kit.block(x0,x1,H,H+.5,z0,z1,colour,'plaster');

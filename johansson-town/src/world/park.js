@@ -15,7 +15,7 @@ import {GROUND_LAYER} from './ground-layers.js';
 import {townCalendarAt} from '../town-clock.js';
 import {poster} from './okinawa/signs.js';
 export const PARK_TREE=Object.freeze([(HARBOUR_CHERRY[0]-PARK.x)/PARK.scale,(HARBOUR_CHERRY[1]-PARK.z)/PARK.scale]);
-const LAMP_POSITIONS=Object.freeze([[7.8,-26.8],[19.2,-34.9],[30.7,-13.4]]);
+const LAMP_POSITIONS=Object.freeze([[7.8,-26.8],[17.7,-34.9],[29.8,-13.4]]);
 export const PARK_LAMPS=Object.freeze(LAMP_POSITIONS.map(([x,z])=>[(x-PARK.x)/PARK.scale,(z-PARK.z)/PARK.scale]));
 const BLOSSOM={light:0xf7b8cf,mid:0xe98fb2,core:0xb4587f,bark:0x5a4030};
 const LEAF={light:0x6cb544,mid:0x48a23a,core:0x1f5226,bark:0x5a4030};

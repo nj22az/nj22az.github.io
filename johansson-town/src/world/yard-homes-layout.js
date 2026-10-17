@@ -13,8 +13,8 @@
  */
 export const YARD_RESIDENT_NAMES=Object.freeze(['Nhung','Reiko','Tetsuo']);
 export const YARD_HOMES=Object.freeze({
- 'resident-home-aya':Object.freeze({x:-19.6,z:-1.2,w:5.6,d:3.2,height:2.8,door:Object.freeze([-18.9,1.05]),doorFace:.4,inward:0,
+ 'resident-home-aya':Object.freeze({x:-21.3,z:-1.2,w:5.6,d:3.2,height:2.8,door:Object.freeze([-20.6,1.05]),doorFace:.4,inward:0,
   number:'1',address:'1 Front-Row Yard',walls:0xd9ece2,trim:0x5f8f6a,roof:'tile'}),
- 'resident-home-kenji':Object.freeze({x:-19.6,z:4.6,w:5.6,d:3.6,height:2.7,door:Object.freeze([-18.9,2.15]),doorFace:2.8,inward:Math.PI,
+ 'resident-home-kenji':Object.freeze({x:-21.3,z:5.5,w:5.6,d:3.6,height:2.7,door:Object.freeze([-20.6,3.05]),doorFace:3.7,inward:Math.PI,
   number:'2',address:'2 Front-Row Yard',walls:0xf1e6cf,trim:0x2a8fcc,roof:'flat'}),
 });

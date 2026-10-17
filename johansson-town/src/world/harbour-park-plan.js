@@ -13,7 +13,7 @@ export const HARBOUR_PARK_SEATS=Object.freeze([
  Object.freeze({id:'garden-pond-bench',x:26,z:-35.2,yaw:Math.PI,stand:point(26,-34.2)}),
 ]);
 export const HARBOUR_PARK_STUDY=Object.freeze([point(9.1,-27.4),point(10.6,-26.7)]);
-export const HARBOUR_FLORIST=Object.freeze({id:'rainflower-florist',name:'Rainflower Florist',owner:'Mrs Kinjō',x:7.8,z:-16.8,bounds:rect(5.8,9.8,-18.4,-15.2),approach:point(5.0,-16.7),staffAt:point(8.65,-16.3),open:540,close:1080});
+export const HARBOUR_FLORIST=Object.freeze({id:'rainflower-florist',name:'Rainflower Florist',owner:'Mrs Kinjō',x:21,z:17,bounds:rect(19,23,15.4,18.6),approach:point(18.2,17.1),staffAt:point(21.85,17.5),open:540,close:1080});
 export const NAKAMURA_DESSERTS=Object.freeze({id:'nakamura',alias:'blue-coral',name:'Nakamura · zenzai & Blue Coral',owner:'Mrs Nakamura',x:5.7,z:-10.9,approach:point(4.5,-10.0),staffAt:point(7.35,-10.55),open:600,close:1140});
 const inside=(b,x,z,pad=0)=>x>=b.minX-pad&&x<=b.maxX+pad&&z>=b.minZ-pad&&z<=b.maxZ+pad;
 export const inHarbourPark=(x,z,pad=0)=>inside(HARBOUR_PARK_MAIN,x,z,pad)||inside(HARBOUR_PARK_EXTENSION,x,z,pad);

@@ -37,7 +37,7 @@ export const NISHI=Object.freeze({
   {id:'kinjo',kind:'concrete',family:"Kinjo",romaji:'Kinjō',minZ:-11.2,maxZ:-.2,gate:'north'},
   {id:'oshiro',kind:'red-tile',family:"Oshiro",romaji:'Ōshiro',minZ:3.3,maxZ:14.2,gate:'south'},
   {id:'utaki',kind:'grove',minZ:17.8,maxZ:28.8},
- ].map(p=>Object.freeze({...p,minX:-36.1,maxX:-25.6}))),
+ ].map(p=>Object.freeze({...p,minX:-34.7,maxX:-27}))),
 });
 
 /** Shop-houses along the east kerb of Main Street, facing the road (-x). */
@@ -46,11 +46,11 @@ export const EAST_ROW=Object.freeze({
  /** The lane between them that leads up to Umi-no-yu's door. */
  onsenLane:Object.freeze({minZ:-1,maxZ:5.9}),
  plots:Object.freeze([
-  {id:'nakamura',minZ:-14.2,maxZ:-7.6,colour:0xe9dfc4,trim:0x3f7f86},
-  {id:'shimabukuro',minZ:-7,maxZ:-1,colour:0xd6e2dc,trim:0x2f5f8e},
-  {id:'higa-saketen',minZ:5.9,maxZ:11.6,colour:0xecd2c6,trim:0x8a3b2e},
+  {id:'nakamura',minZ:-14.2,maxZ:-9.2,colour:0xe9dfc4,trim:0x3f7f86},
+  {id:'shimabukuro',minZ:-6.6,maxZ:-1.6,colour:0xd6e2dc,trim:0x2f5f8e},
+  {id:'higa-saketen',minZ:5.9,maxZ:10.9,colour:0xecd2c6,trim:0x8a3b2e},
   // Stops short of the alley at z 18.4, which is the way through to the school gate.
-  {id:'arakaki',minZ:12.1,maxZ:16.8,colour:0xdfe3e6,trim:0x2d6f63},
+  {id:'arakaki',minZ:13.5,maxZ:18.5,colour:0xdfe3e6,trim:0x2d6f63},
  ].map(Object.freeze)),
 });
 
@@ -58,8 +58,8 @@ export const EAST_ROW=Object.freeze({
 export const YARD_ROW=Object.freeze({
  minX:-15.8,maxX:MAIN_ROAD.pavementWest-.45,
  plots:Object.freeze([
-  {id:'yonamine',minZ:7.2,maxZ:13.3,colour:0xeee2b8,trim:0x9a4a2a},
-  {id:'coin-laundry',minZ:13.9,maxZ:20,colour:0xd9e4ea,trim:0x3a6a9a},
+  {id:'yonamine',minZ:10,maxZ:15.4,colour:0xeee2b8,trim:0x9a4a2a},
+  {id:'coin-laundry',minZ:18,maxZ:23.4,colour:0xd9e4ea,trim:0x3a6a9a},
  ].map(Object.freeze)),
 });
 
@@ -69,9 +69,9 @@ export const YARD_ROW=Object.freeze({
  */
 export const EAST_QUAY=Object.freeze({
  id:'east-quay',surface:'stone',
- minX:19,maxX:37.4,minZ:-49.6,maxZ:-38.9,
- shed:Object.freeze({minX:20.8,maxX:29.2,minZ:-48.2,maxZ:-40.6,height:4.4}),
- ice:Object.freeze({minX:30.6,maxX:36.2,minZ:-46.4,maxZ:-40.4,height:7.2}),
+ minX:19,maxX:41,minZ:-49.6,maxZ:-38.9,
+ shed:Object.freeze({minX:20.8,maxX:29.2,minZ:-46.8,maxZ:-40.6,height:4.4}),
+ ice:Object.freeze({minX:31.8,maxX:36.2,minZ:-46.4,maxZ:-40.4,height:7.2}),
  /**
   * The gate from the lawn into the auction apron, where the lawn's parapet stops short
   * (east-lawn.js): truck-width, paved level with the quay across the parapet's line.
@@ -92,8 +92,8 @@ export const EAST_BACK=Object.freeze({
  lane:Object.freeze({minX:EAST_ROW.maxX,maxX:EAST_ROW.maxX+2.6}),
  plots:Object.freeze([
   // Gates on the green in front of Umi-no-yu, with the houses backed onto the trees.
-  {id:'nakasone',kind:'red-tile',family:"Nakasone",romaji:'Nakasone',minX:16.2,maxX:24.6,minZ:10.4,maxZ:21.6,gate:'south'},
-  {id:'miyagi',kind:'red-tile',family:"Miyagi",romaji:'Miyagi',minX:25.4,maxX:32.9,minZ:10.4,maxZ:21.6,gate:'south'},
+  {id:'nakasone',kind:'red-tile',family:"Nakasone",romaji:'Nakasone',minX:-19,maxX:-11,minZ:78,maxZ:87,gate:'south'},
+  {id:'miyagi',kind:'red-tile',family:"Miyagi",romaji:'Miyagi',minX:-6,maxX:2,minZ:78,maxZ:87,gate:'south'},
  ].map(Object.freeze)),
 });
 
@@ -132,7 +132,7 @@ export function mapPlan(){
  */
 export const GATEBALL_ACTIVE=false;
 export const GATEBALL=Object.freeze({minX:20,maxX:31.4,minZ:-37.5,maxZ:-32.2});
-export const GOYA=Object.freeze({minX:-23.4,maxX:-17.4,minZ:-11.4,maxZ:-4.2});
+export const GOYA=Object.freeze({minX:-23.4,maxX:-20,minZ:-10.8,maxZ:-7.8});
 
 // Kitahama lives in its own dependency-free module so residents.js can read it.
 export {KITAHAMA,plotGate} from '../kitahama-layout.js';

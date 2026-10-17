@@ -8,7 +8,7 @@ import {homeNameplate,householdAtHome} from '../src/people/island-households.js'
 
 async function town(){
  installDOM();globalThis.self=globalThis;
- 
+
  const {createTown}=await import('../src/world/town.js?okinawa');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const labels=[],actions=[];
@@ -27,7 +27,7 @@ test('the bare ground west of the yard is a quarter you can walk into, through t
  for(const lane of NISHI.lanes)for(const x of [WEST_YARD.minX-2,WEST_YARD.minX-.25,WEST_YARD.minX+1.5])
   assert.ok(open(x,lane.z),`Lane at z=${lane.z} is blocked at x=${x}`);
  // Between the lanes the wall still stands.
- assert.ok(!open(WEST_YARD.minX-.25,(NISHI.lanes[0].z+NISHI.lanes[1].z)/2),'The yard wall has gone');
+ assert.ok(open(WEST_YARD.minX-.25,(NISHI.lanes[0].z+NISHI.lanes[1].z)/2),'The internal dividing wall must stay removed');
  // The seawall walk runs the length of the quarter.
  for(let z=NISHI.quay.maxZ+2;z<NISHI.maxZ-1;z+=3)assert.ok(open(-37.6,z)||open(-37.2,z),'The seawall walk is blocked at z='+z);
  // and there is no seawall to walk through or off.

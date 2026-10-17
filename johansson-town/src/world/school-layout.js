@@ -35,7 +35,7 @@ export const SCHOOL=Object.freeze({
  seawall:Object.freeze({east:41,south:45.1,height:1.05}),
  /** The perimeter wall against the headland. */
  westWall:12,
- bikeShed:Object.freeze({minX:33.5,maxX:38.1,minZ:25.3,maxZ:28}),
+ bikeShed:Object.freeze({minX:34,maxX:37.1,minZ:25.3,maxZ:28}),
  wash:Object.freeze({x:37.1,z:33.55,w:2.8,d:.7}),
  bars:Object.freeze({x:38.3,z:32.5,w:2.6}),
  flagpole:Object.freeze({x:30.5,z:32.8}),
@@ -45,7 +45,7 @@ export const SCHOOL=Object.freeze({
   * built on the west end of the old sports ground, the car park where the sandpit and
   * the iron bars were, and a concrete canopy over the entrance.
   */
- powerHouse:Object.freeze({minX:13.9,maxX:19.4,minZ:24.4,maxZ:29.8,height:3.6,door:Object.freeze([20.1,27.1]),tank:Object.freeze([16.6,31.2])}),
+ powerHouse:Object.freeze({minX:25.2,maxX:30.5,minZ:24.4,maxZ:29.8,height:3.6,door:Object.freeze([31.2,27.1]),tank:Object.freeze([16.6,31.2])}),
  parking:Object.freeze({minX:31,maxX:39.6,minZ:28.9,maxZ:32.4}),
  canopy:Object.freeze({minX:18.8,maxX:22.2,minZ:31.9,maxZ:34.1,height:3.0}),
 });

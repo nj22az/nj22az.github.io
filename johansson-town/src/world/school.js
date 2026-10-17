@@ -226,9 +226,9 @@ function buildTownHallDressing(group,options){
  for(const x of [c.minX+.2,c.maxX-.2])kit.cyl(.14,.14,c.height,x,c.height/2,c.minZ+.2,0xe4e1d3,{segments:12});
  // The forecourt remains clear for people; working vehicles use Main Street and the quay.
  // A monument sign of polished stone at the gate, the way every town hall has one.
- const g=SCHOOL.gate;kit.box(2.4,1.3,.4,g.x+3.4,.65,g.z+.6,0x4a4f52,{finish:'gloss'});kit.box(2.6,.15,.55,g.x+3.4,.07,g.z+.6,0x9a958a);
+ const g=SCHOOL.gate;kit.box(2.4,1.3,.4,15,.65,30,0x4a4f52,{finish:'gloss'});kit.box(2.6,.15,.55,15,.07,30,0x9a958a);
  kit.finish(group,'Town hall dressing');
- plate(group,"Community Hall · Community Hall",{w:2.1,h:.62,at:[g.x+3.4,.75,g.z+.39],rotY:Math.PI,bg:'#4a4f52',fg:'#efe6cc',size:.36,sub:'MINATO TOWN HALL · COMMUNITY CENTRE',name:'Town hall monument'});
+ plate(group,"Community Hall · Community Hall",{w:2.1,h:.62,at:[15,.75,29.79],rotY:Math.PI,bg:'#4a4f52',fg:'#efe6cc',size:.36,sub:'MINATO TOWN HALL · COMMUNITY CENTRE',name:'Town hall monument'});
  plate(group,"Power plant",{w:1.4,h:.4,at:[ph.maxX+.06,3.2,ph.door[1]],rotY:Math.PI/2,bg:'#e6ecef',fg:'#2f4f5a',size:.6,name:'Power house sign'});
  // Flags on the old school's pole: Japan and the town.
  const flag=(y,draw)=>{const t=canvasTexture(140,96,draw);const f=new THREE.Mesh(new THREE.PlaneGeometry(1.4,.95),new THREE.MeshStandardMaterial({map:t,side:THREE.DoubleSide,roughness:.9}));f.position.set(SCHOOL.flagpole.x-.74,y,SCHOOL.flagpole.z);f.rotation.y=Math.PI;f.name='Town hall flag';group.add(f);};
