@@ -1,3 +1,4 @@
+import {createHarbourFestival} from './progression/harbour-festival-view.js';
 import {CAST_RECIPES,recipeFor} from './avatars/cast.js';
 import {createLensOcclusion} from './render/lens-occlusion.js';
 import {FERRY_LADDER} from './world/ferry-inspect.js';
@@ -418,12 +419,13 @@ let ferryWalk=null;
 let current=null,active=null,started=false,yaw=0,pitch=-.05,minutes=realTownMinutes(),subtitleTimer=0,weather=false,activities=null,timePreset=0,characters=null;
 const keys={},clock=new THREE.Clock();
 const gamepadInput=createGamepadInput(),menuRepeat=createMenuRepeat();
+let festival=null;
 let controllerFrame=gamepadInput.sample([]),controllerConnected=false;
 const cameraControls=createCameraControls({onChange:()=>syncView(),onCentre:centreCamera,onOpen:()=>resetInput(),onClose:()=>resetInput()});
 camera.fov=cameraControls.settings.fov;camera.updateProjectionMatrix();
 document.documentElement.classList.toggle('touch-controls',touch);
 function centreCamera(){spawnScene?.cancel();pitch=0;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);}
-function controlsAllowed(){return !concert?.active&&!concertLoading&&!islandPlay?.cinematic&&!spawnScene?.holding&&!photoStudio?.active&&!photoLoading&&!photoReturning&&started&&!document.hidden&&!roomLoading&&!activities?.paused&&!inspector?.active&&!itemViewer?.active&&!cameraControls.active&&$('#directory').classList.contains('hidden')&&$('#qte').classList.contains('hidden');}
+function controlsAllowed(){return !festival?.active&&document.documentElement.dataset.desktopMenu!=='open'&&!concert?.active&&!concertLoading&&!islandPlay?.cinematic&&!spawnScene?.holding&&!photoStudio?.active&&!photoLoading&&!photoReturning&&started&&!document.hidden&&!roomLoading&&!activities?.paused&&!inspector?.active&&!itemViewer?.active&&!cameraControls.active&&$('#directory').classList.contains('hidden')&&$('#qte').classList.contains('hidden');}
 // Swipes scale to the screen and barely tip the view when they are mostly sideways (input/touch-feel.js).
 function dragLook(dx,dy){spawnScene?.cancel();const turn=swipeLook(dx,dy,innerWidth,cameraControls.settings);yaw+=turn.yaw;pitch=THREE.MathUtils.clamp(pitch+turn.pitch,-1.25,1.15);}
 const walkMotion=createMotion(),touchAutoRun=createAutoRun();
@@ -1764,10 +1766,42 @@ function enterWorld(){
  window.__JOHANSSON_TITLE_PREVIEW__=false;
  townSky.mesh.rotation.y=0;
  startWeather();
-const opening=beginAtOpening();
+let opening=beginAtOpening();
+if(window.johanssonDesktop){const cp=activities.state.desktopCheckpoint;if(cp&&!cp.ship&&[cp.x,cp.z,cp.yaw].every(Number.isFinite)&&Math.abs(cp.x)<1000&&Math.abs(cp.z)<1000&&!environmentBlocked(cp.x,cp.z,PLAYER_RADIUS)){
+ seated=false;parkSeat=null;player.position.set(cp.x,groundHeight(cp.x,cp.z),cp.z);yaw=cp.yaw;pitch=Number.isFinite(cp.pitch)?Math.max(-1.25,Math.min(1.15,cp.pitch)):0;opening={caption:'Welcome back. Your island progress is restored.'};
+}}
 started=true;controlsTouchedAt=performance.now();if(mobile){touchSticks.hint(true);stickHintUntil=performance.now()+4500;}$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(opening?.caption||(seated?'Stand — Sakura is across the street.':'Sakura — step up to meet Thuan.'),5);runStabilityChecks();
 if(opening?.room)openInside(opening);else startArrivalScene(opening);
 }
+
+function desktopCheckpoint(){
+ if(!started||!window.johanssonDesktop||festival?.active)return;
+ const at=current?doors.get(current.id):player.position;if(!at)return;
+ activities.state.desktopCheckpoint={x:at.x,z:at.z,y:current?groundHeight(at.x,at.z):player.position.y,yaw,pitch,ship:!!deckUnder()};
+ activities.save();
+}
+addEventListener('johansson-desktop-save',desktopCheckpoint);
+addEventListener('johansson-desktop-pause',resetInput);
+addEventListener('johansson-desktop-resume',()=>{gamepadInput.suspend();clock.getDelta();resetInput();});
+if(window.johanssonDesktop)setInterval(desktopCheckpoint,30000);
+let festivalHidden=[];
+festival=createHarbourFestival({scene,camera,renderer,activities,getCalendar:()=>({date:townDateOf(minutes).key,year:activities.state.loopYear}),
+ canStart:s=>current?'Step outside onto the island before joining the festival.':s.ship&&(world.ferry?.berth!=='town'||world.ferry?.phase!=='waiting')?'Wait until Minato Maru is stationary at the town quay. The final stage uses her actual car deck.':null,
+ getStage:s=>{
+  if(s.ship){const ship=world.ferry?.ferry;if(!ship)return null;ship.updateMatrixWorld(true);return {position:ship.localToWorld(new THREE.Vector3(0,ship.userData.deckY??1.1,6.75)),yaw:ship.rotation.y};}
+  // Use a clear, flat part of this actual location; never substitute a backdrop.
+  for(const [dx,dz] of [[0,0],[0,2],[0,-2],[2,0],[-2,0]]){
+   const x=s.x+dx,z=s.z+dz,y=groundHeight(x,z);
+   if([-2,0,2].every(a=>[-1.4,0,1.4].every(b=>!environmentBlocked(x+a,z+b,.25)&&Math.abs(groundHeight(x+a,z+b)-y)<.15)))return {position:new THREE.Vector3(x,y+.03,z),yaw:0};
+  }return null;
+ },
+ onBegin:()=>{resetInput();spawnScene?.cancel();hands.firstPersonVisible=false;festivalHidden=[johansson?.root,...world.people.filter(p=>['Chin','Tetsuo','Hiroshi','Fujita'].includes(p.profile.name)).map(p=>p.g)].filter(Boolean).map(g=>[g,g.visible]);for(const [g] of festivalHidden)g.visible=false;},
+ onEnd:()=>{for(const [g,visible] of festivalHidden)g.visible=visible;festivalHidden=[];hands.firstPersonVisible=!thirdPerson;gamepadInput.suspend();resetInput();clock.getDelta();},
+ onFrame:stage=>{if(detailsStarted)detailStream.update(stage.position);}
+});
+addEventListener('johansson-festival-menu',()=>{if(started)festival.menu();});
+const festivalButton=document.createElement('button');festivalButton.type='button';festivalButton.id='festivalButton';festivalButton.className='app-tile';festivalButton.textContent='Harbour Festival';festivalButton.onclick=()=>festival.menu();document.getElementById('townControls').append(festivalButton);
+
 window.__JOHANSSON_ENTER_WORLD__=enterWorld;
 if(!window.__JOHANSSON_TITLE_PREVIEW__)enterWorld();
 else {
@@ -2048,6 +2082,7 @@ function catchUpFrame(){
 }
 
 function updateController(dt){
+ if(festival?.active||document.documentElement.dataset.desktopMenu==='open'){gamepadInput.suspend();return;}
  let pads=[];try{if(!document.hidden)pads=navigator.getGamepads?.()||[];}catch{}
  controllerFrame=gamepadInput.sample(pads,cameraControls.settings.deadzone);const f=controllerFrame;
  if(controllerConnected!==f.connected){controllerConnected=f.connected;cameraControls.status(f.connected);if(f.connected)say('Controller connected · Left stick move · Right stick look · Menu opens town book',5);}
@@ -2073,7 +2108,7 @@ function updateController(dt){
  // The pocket camera: up on the D-pad raises it; A takes the photo, B or up again lowers it.
  if(pocket?.raised){if(f.pressed[0])pocket.shoot();if(f.pressed[1]||f.pressed[12])lowerPocket();if(f.pressed[9]||f.pressed[8]){lowerPocket();toggleDir(true);}return;}
  if(f.pressed[12]){raisePocket();return;}
- if(f.pressed[9]||f.pressed[8]){toggleDir(true);return;}
+ if(f.pressed[8]||f.pressed[9]&&!window.johanssonDesktop){toggleDir(true);return;}
  if(f.pressed[3]){activities.inventory();return;}
  if(f.pressed[11])centreCamera();
  if(f.pressed[0]){interaction();updateContextControls();if(!contextRail.activatePrimary())doInteract();return;}
@@ -2089,6 +2124,7 @@ addEventListener('pointerdown',()=>{controlsTouchedAt=performance.now();});
 // rule: a button being held stays on screen until the finger leaves it.
 $('#jump').addEventListener?.('pointerdown',()=>pressedControls.add('jump'));
 function updateContextControls(){
+ if(started&&!current&&!activities.paused&&controlsAllowed())festival?.nearby({position:player.position});
  if(!current)syncExteriorPlace();
  const ship=world.ferry,aboardFerry=!current&&!!deckUnder(),nearShip=!current&&ship&&Math.hypot(player.position.x-ship.ferry.position.x,player.position.z-ship.ferry.position.z)<45;
  ferryOperations?.update({visible:started&&(aboardFerry||nearShip&&!!ship.operation)});
@@ -2399,7 +2435,7 @@ let detailsStarted=false;
 
 let titleElapsed=0,titleFrame=0;
 const titleReduced=matchMedia('(prefers-reduced-motion: reduce)');
-function loop(){requestAnimationFrame(loop);if(graphicsLifecycle?.lost){clock.getDelta();return;}activeRoomLayout?.realUpdate?.();if(concert?.active){const dt=Math.min(clock.getDelta(),MAX_FRAME_DT);updateController(dt);concert.render();return;}if(concertLoading){clock.getDelta();return;}if(window.__JOHANSSON_AUDIT__?.frozen){clock.getDelta();if(detailsStarted&&!document.hidden)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});if(window.__JOHANSSON_AUDIT__.renderFrozen!==false)window.__JOHANSSON_AUDIT__.render();return;}renderer.info.reset?.();lightBudget.update();colliderGrid.refresh();if(pocket?.raised&&!pocketCanRaise())lowerPocket();if(photoStudio?.active){clock.getDelta();photoStudio.render();return;}izakayaTV?.update({camera,active:current?.id==='izakaya'&&izakayaOpen(minutes),paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden&&!catchingUp)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);governResolution(frameDt);updateWantCards(frameDt);sweepCel(frameDt);updateController(frameDt);activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden&&!activities.paused)activeRoomLayout?.ownedUpdate?.(frameDt);activeRoomLayout?.keep?.setPlayerBottle(!!activities.state.izakayaBottle);if(started&&!activities.paused&&!document.hidden)activeRoomLayout?.dungeon?.update(frameDt,player.position);if(fists){fists.visible=!thirdPerson&&!spawnScene?.active;fists.guard(current?.id==='dungeon'&&!!activeRoomLayout?.dungeon?.nearFoe(player.position));fists.update(frameDt);}if(started&&!document.hidden){const paused=catchingUp||cameraControls.active||roomLoading||inspector?.active||itemViewer?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();if(catchingUp)catchUpFrame();else simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused,relax:!!(seated&&!current),ferry:world.ferry?.audio??null});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);updateJohansson(paused?0:frameDt);updateEarDefenders();if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);if(!paused||conversationLine)facing.update(frameDt);}if(!paused||conversationLine)updateConversationLift(frameDt);if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}tickSubtitle(frameDt);if(current&&activeRoomLayout?.fixedCamera&&!window.__JOHANSSON_AUDIT__?.camera){const f=activeRoomLayout.fixedCamera;camera.position.set(...f.pos);camera.lookAt(...f.at);camera.updateMatrixWorld();}if(current&&window.__JOHANSSON_AUDIT__?.camera){const a=window.__JOHANSSON_AUDIT__.camera;camera.position.set(...a.pos);camera.lookAt(...a.at);camera.updateMatrixWorld();}spawnScene?.update(frameDt,{paused,unavailable:!!(islandPlay?.active||window.__JOHANSSON_AUDIT__?.camera)});placeWorldBalloons(frameDt);if(inspector?.active)present(()=>inspector.render(frameDt),inspector.camera);else if(streetFrontageOf(current))present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:streetFrontageOf(current)}));else if(!current)renderOutdoor();else present(()=>renderer.render(scene,camera));pocket?.frame();}else{neighbourChats.cancel();chatBubble.hide();renderTitle(frameDt);}}renderOutdoor();loop();
+function loop(){requestAnimationFrame(loop);if(festival?.active){festival.render(Math.min(clock.getDelta(),MAX_FRAME_DT));return;}if(document.documentElement.dataset.desktopMenu==='open'){clock.getDelta();return;}if(graphicsLifecycle?.lost){clock.getDelta();return;}activeRoomLayout?.realUpdate?.();if(concert?.active){const dt=Math.min(clock.getDelta(),MAX_FRAME_DT);updateController(dt);concert.render();return;}if(concertLoading){clock.getDelta();return;}if(window.__JOHANSSON_AUDIT__?.frozen){clock.getDelta();if(detailsStarted&&!document.hidden)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});if(window.__JOHANSSON_AUDIT__.renderFrozen!==false)window.__JOHANSSON_AUDIT__.render();return;}renderer.info.reset?.();lightBudget.update();colliderGrid.refresh();if(pocket?.raised&&!pocketCanRaise())lowerPocket();if(photoStudio?.active){clock.getDelta();photoStudio.render();return;}izakayaTV?.update({camera,active:current?.id==='izakaya'&&izakayaOpen(minutes),paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden&&!catchingUp)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);governResolution(frameDt);updateWantCards(frameDt);sweepCel(frameDt);updateController(frameDt);activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden&&!activities.paused)activeRoomLayout?.ownedUpdate?.(frameDt);activeRoomLayout?.keep?.setPlayerBottle(!!activities.state.izakayaBottle);if(started&&!activities.paused&&!document.hidden)activeRoomLayout?.dungeon?.update(frameDt,player.position);if(fists){fists.visible=!thirdPerson&&!spawnScene?.active;fists.guard(current?.id==='dungeon'&&!!activeRoomLayout?.dungeon?.nearFoe(player.position));fists.update(frameDt);}if(started&&!document.hidden){const paused=catchingUp||cameraControls.active||roomLoading||inspector?.active||itemViewer?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();if(catchingUp)catchUpFrame();else simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused,relax:!!(seated&&!current),ferry:world.ferry?.audio??null});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);updateJohansson(paused?0:frameDt);updateEarDefenders();if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);if(!paused||conversationLine)facing.update(frameDt);}if(!paused||conversationLine)updateConversationLift(frameDt);if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}tickSubtitle(frameDt);if(current&&activeRoomLayout?.fixedCamera&&!window.__JOHANSSON_AUDIT__?.camera){const f=activeRoomLayout.fixedCamera;camera.position.set(...f.pos);camera.lookAt(...f.at);camera.updateMatrixWorld();}if(current&&window.__JOHANSSON_AUDIT__?.camera){const a=window.__JOHANSSON_AUDIT__.camera;camera.position.set(...a.pos);camera.lookAt(...a.at);camera.updateMatrixWorld();}spawnScene?.update(frameDt,{paused,unavailable:!!(islandPlay?.active||window.__JOHANSSON_AUDIT__?.camera)});placeWorldBalloons(frameDt);if(inspector?.active)present(()=>inspector.render(frameDt),inspector.camera);else if(streetFrontageOf(current))present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:streetFrontageOf(current)}));else if(!current)renderOutdoor();else present(()=>renderer.render(scene,camera));pocket?.frame();}else{neighbourChats.cancel();chatBubble.hide();renderTitle(frameDt);}}renderOutdoor();loop();
 
 // The title shares the live world, assets, camera and render budget with play.
 // Never advance activities, player input, catch-up or saves while previewing.
