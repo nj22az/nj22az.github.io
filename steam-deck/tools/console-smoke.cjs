@@ -36,6 +36,7 @@ const {chromium}=require('playwright');
  // A begins the actual world without needing a mouse.
  await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.frozen=false;});await tap(0);await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__===true,null,{timeout:120000});
  await page.waitForTimeout(500);assert.equal((await state()).page,'help');assert.equal((await state()).menu,true,'First entry explains what to do');
+ assert.equal(await page.evaluate(()=>window.__JOHANSSON_STABILITY__?.ok),true,'Real world startup checks pass');
  await page.screenshot({path:path.join(out,'03-first-steps-1280.png')});await click('resume');
  // Find the same walkable harbour fixture used by the world audit.
  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.teleport(-7,-15,0,0));

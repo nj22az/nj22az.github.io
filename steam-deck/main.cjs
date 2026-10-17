@@ -49,7 +49,7 @@ app.whenReady().then(async()=>{
   setTimeout(async()=>{try{
    const result=await window.webContents.executeJavaScript('(async()=>{await window.__JOHANSSON_PREVIEW_PROMISE__;document.getElementById("enter").click();await new Promise(r=>setTimeout(r,12000));return {running:!!window.__JOHANSSON_RUNNING__,stability:window.__JOHANSSON_STABILITY__,version:window.__JOHANSSON_RUNTIME_VERSION__};})()');
    console.log('WORLD_SMOKE',JSON.stringify(result));
-   if(!result.running)throw Error('World did not start');
+   if(!result.running||!result.stability?.ok)throw Error('World startup checks failed: '+JSON.stringify(result.stability));
    await window.webContents.executeJavaScript('document.querySelector("#desktopMenu:not([hidden]) [data-action=resume]")?.click();window.johanssonLinuxWorld?.wake();if(!document.getElementById("exitRoomButton").classList.contains("hidden"))document.getElementById("exitRoomButton").click();window.__JOHANSSON_AUDIT__.teleport(-7,-15,0,0);');
    if(process.env.WORLD_SCREENSHOT)fs.writeFileSync(process.env.WORLD_SCREENSHOT.replace('.png','-island.png'),(await window.webContents.capturePage()).toPNG());
    const festival=await window.webContents.executeJavaScript('(async()=>{dispatchEvent(new Event("johansson-festival-menu"));const press=(text)=>{const b=[...document.querySelectorAll("#activityActions button")].find(b=>b.textContent===text);if(!b)throw Error("Missing festival action: "+text);b.click();};press("Harbour quay · Chin");press("Take part");await new Promise(r=>setTimeout(r,1500));return {stage:!!document.getElementById("festivalHUD"),text:document.getElementById("activityBody")?.textContent};})()');
