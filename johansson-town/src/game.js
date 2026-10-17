@@ -472,7 +472,7 @@ async function openKaraoke(){
  finally{concertLoading=false;}
 }
 $('#photoButton').onclick=openPhotoStudio;
-function openCamera(){if(!started||inspector?.active||activities?.paused)return;cameraControls.open();}
+function openCamera(){if(!started||inspector?.active||activities?.paused)return;if(window.johanssonDesktopUI){window.johanssonDesktopUI.open('controls');return;}cameraControls.open();}
 /** Named places that are not a building: the photo studio's locations, and where the pocket camera says a photo was taken. */
 function photoSpots(){
  const pond=HARBOUR_PARK_SEATS[1].stand,florist=HARBOUR_FLORIST.approach;
@@ -2084,8 +2084,8 @@ function catchUpFrame(){
 function updateController(dt){
  if(festival?.active||document.documentElement.dataset.desktopMenu==='open'){gamepadInput.suspend();return;}
  let pads=[];try{if(!document.hidden)pads=navigator.getGamepads?.()||[];}catch{}
- controllerFrame=gamepadInput.sample(pads,cameraControls.settings.deadzone);const f=controllerFrame;
- if(controllerConnected!==f.connected){controllerConnected=f.connected;cameraControls.status(f.connected);if(f.connected)say('Controller connected · Left stick move · Right stick look · Menu opens town book',5);}
+ controllerFrame=(window.johanssonDesktopInput||gamepadInput).sample(pads,cameraControls.settings.deadzone);const f=controllerFrame;
+ if(controllerConnected!==f.connected){controllerConnected=f.connected;cameraControls.status(f.connected);if(f.connected)say(window.johanssonDesktop?'Controller connected · Left stick move · Right stick look · Start opens pause menu':'Controller connected · Left stick move · Right stick look · Menu opens town book',5);}
  if(!started||document.hidden||catchingUp)return;
  if(!$('#qte').classList.contains('hidden')){if(f.pressed[1]||f.pressed[9])activities.close();else window.__JOHANSSON_TOUCH_UI__?.controller?.(f);return;}
  const direction=menuRepeat(f,dt);
@@ -2233,7 +2233,7 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
   if(photoStudio?.active)return this.render();
   const seconds=Math.min(300000,Math.max(0,Number(milliseconds)||0))/1000,following=followRealClock;followRealClock=false;
   try{for(let elapsed=0;elapsed<seconds;elapsed+=SIM_STEP){
-   const dt=Math.min(SIM_STEP,seconds-elapsed),paused=activities.paused||roomLoading||cameraControls.active||inspector?.active||itemViewer?.active||!$('#directory').classList.contains('hidden');
+   const dt=Math.min(SIM_STEP,seconds-elapsed),paused=document.documentElement.dataset.desktopMenu==='open'||activities.paused||roomLoading||cameraControls.active||inspector?.active||itemViewer?.active||!$('#directory').classList.contains('hidden');
    simulate(dt,!!paused);tickSubtitle(dt);hands?.update(paused?0:dt);updateJohansson(paused?0:dt);characters?.update(dt);castAI?.pose(dt);facing.update(dt);updateConversationLift(dt);
    spawnScene?.update(dt,{paused:!!paused,unavailable:!!(islandPlay?.active||this.camera)});
   }}finally{followRealClock=following;}
@@ -2382,7 +2382,7 @@ if(window.__JOHANSSON_AUDIT__){
  window.__JOHANSSON_AUDIT__.replay.root=window.__JOHANSSON_AUDIT__;
  window.__JOHANSSON_GRAPHICS__=createGraphicsInspector({canvas,renderer,canCapture:()=>!graphicsLifecycle?.lost&&started&&!document.hidden});
  window.advanceTime=ms=>window.__JOHANSSON_AUDIT__.step(ms);
- window.render_game_to_text=()=>JSON.stringify({coordinates:'x/z in metres; y is height; interiors use local coordinates',room:current?.id||null,home:activeRoomLayout?.snapshot?.()||null,calendar:activeRoomLayout?.calendar?.()||null,discoveries:activeRoomLayout?.discoveries?.()||null,minutes,player:player.position.toArray(),seat:seated&&parkSeat?{surfaceY:parkSeat.surfaceY,position:parkSeat.position,stand:parkSeat.stand}:null,customers:bookshopCustomers.snapshot(),island:islandPlay?.snapshot(),arrival:spawnScene?.snapshot()});
+ window.render_game_to_text=()=>JSON.stringify({coordinates:'x/z in metres; y is height; interiors use local coordinates',room:current?.id||null,...(window.johanssonDesktopUI?{desktop:window.johanssonDesktopUI.snapshot()}:{}),home:activeRoomLayout?.snapshot?.()||null,calendar:activeRoomLayout?.calendar?.()||null,discoveries:activeRoomLayout?.discoveries?.()||null,minutes,player:player.position.toArray(),seat:seated&&parkSeat?{surfaceY:parkSeat.surfaceY,position:parkSeat.position,stand:parkSeat.stand}:null,customers:bookshopCustomers.snapshot(),island:islandPlay?.snapshot(),arrival:spawnScene?.snapshot()});
 }
 // Where the player is standing and what they are standing on. Read-only, and the same
 // answer the simulation uses, so a screenshot can be tied to a place on the ground.

@@ -73,11 +73,11 @@ export function createHarbourFestival({scene,camera,renderer,activities,getStage
   offered.add(next.id);activities.menu(next.title,next.reason,[['Take part',()=>start(next)],['Watch what happens',()=>start(next,{watch:true})],['Perhaps later',()=>activities.close()]]);
  },get active(){return !!bout;},render(dt){
   if(!bout)return;
-  const pad=Array.from(navigator.getGamepads?.()||[]).find(p=>p?.connected&&p.mapping==='standard'),buttons=pad?.buttons.map(b=>b.pressed)||[],edge=i=>buttons[i]&&!previousPad[i];
+  const pads=navigator.getGamepads?.()||[],desktop=window.johanssonDesktopInput?.read(pads),pad=desktop?.pad||Array.from(pads).find(p=>p?.connected&&p.mapping==='standard'),buttons=desktop?.held||pad?.buttons.map(b=>b.pressed)||[],edge=i=>buttons[i]&&!previousPad[i];
   if(edge(8)){previousPad=buttons;finish();return;}
   const paused=document.hidden||document.documentElement.dataset.desktopMenu==='open';
   if(!paused){
-   let input={x:(keyboard.KeyD?1:0)-(keyboard.KeyA?1:0)+(pad?.axes[0]||0),z:(keyboard.KeyS?1:0)-(keyboard.KeyW?1:0)+(pad?.axes[1]||0),punch:!!edges.KeyJ||edge(2),kick:!!edges.KeyK||edge(3),guard:!!keyboard.KeyL||!!buttons[0],dodge:!!edges.Space||edge(1)};
+   let input={x:(keyboard.KeyD?1:0)-(keyboard.KeyA?1:0)+(desktop?.move.x??pad?.axes[0]??0),z:(keyboard.KeyS?1:0)-(keyboard.KeyW?1:0)+(desktop?.move.y??pad?.axes[1]??0),punch:!!edges.KeyJ||edge(2),kick:!!edges.KeyK||edge(3),guard:!!keyboard.KeyL||!!buttons[0],dodge:!!edges.Space||edge(1)};
    if(Math.abs(input.x)<.16)input.x=0;if(Math.abs(input.z)<.16)input.z=0;
    accumulator+=Math.min(.1,dt);
    let consumed=false;while(accumulator>=1/60){const spectatorInput={x:Math.abs(bout.fighters[1].x-bout.fighters[0].x)>.65?(bout.fighters[1].x>bout.fighters[0].x?.55:-.55):0,z:(bout.fighters[1].z-bout.fighters[0].z)*.3,punch:bout.tick%41===0,kick:bout.tick%97===0,guard:bout.tick%91<17};stepFestivalBout(bout,spectating?spectatorInput:consumed?{...input,punch:false,kick:false,dodge:false}:input);consumed=true;accumulator-=1/60;}

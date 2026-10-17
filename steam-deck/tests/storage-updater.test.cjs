@@ -18,9 +18,9 @@ test('verified update is staged separately and switches only on explicit restart
   const manifest={version:'0.3.0',archiveUrl:url,bytes:bytes.length,sha256:crypto.createHash('sha256').update(bytes).digest('hex')};
   const fetchImpl=async value=>value.includes('/api.github.com/')||value.includes('api.github.com')?new Response(JSON.stringify([{tag_name:'johansson-world-linux-v0.3.0',assets:[{name:'latest-linux.json',browser_download_url:url.replace('game.tar.gz','latest-linux.json')}]}])):value.endsWith('latest-linux.json')?new Response(JSON.stringify(manifest)):new Response(bytes);
   const updater=createUpdater({version:'0.2.0',installRoot:root,fetchImpl});assert.equal((await updater.check()).available,true);assert.equal((await updater.install()).ready,true);
-  assert.equal(fs.realpathSync(path.join(root,'current')),old);
+  assert.equal(fs.realpathSync(path.join(root,'current')),fs.realpathSync(old));
   assert.equal(updater.readyExecutable(),path.join(root,'versions/v0.3.0/JohanssonWorld'));
-  assert.equal(fs.realpathSync(path.join(root,'previous')),old);assert.equal(fs.realpathSync(path.join(root,'current')),path.join(root,'versions/v0.3.0'));
+  assert.equal(fs.realpathSync(path.join(root,'previous')),fs.realpathSync(old));assert.equal(fs.realpathSync(path.join(root,'current')),fs.realpathSync(path.join(root,'versions/v0.3.0')));
  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 test('update version ordering and source boundaries',()=>{

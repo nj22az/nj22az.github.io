@@ -8,7 +8,7 @@ import {installDOM} from './fixtures.mjs';
 test('controller and camera controls boot in the game, pause movement in settings and resume cleanly',async()=>{
  installDOM();globalThis.innerHeight=768;globalThis.matchMedia=()=>({matches:false});globalThis.addEventListener=()=>{};
  globalThis.requestAnimationFrame=()=>1;globalThis.cancelAnimationFrame=()=>{};document.querySelectorAll=()=>[];
- document.hidden=false;window.devicePixelRatio=1;
+ document.head=document.createElement('head');document.getElementById=id=>document.querySelector('#'+id);document.hidden=false;window.devicePixelRatio=1;
  let pads=[];Object.defineProperty(navigator,'getGamepads',{configurable:true,value:()=>pads});
  const fetchBefore=globalThis.fetch;globalThis.fetch=async()=>new Response('',{status:404});
  const moduleUrl=new URL('../src/game.js',import.meta.url),three=new URL('../vendor/three.module.js',import.meta.url).href;
@@ -27,6 +27,14 @@ test('controller and camera controls boot in the game, pause movement in setting
   p.buttons[9].pressed=false;api.updateController(1/60);p.buttons[1].pressed=true;api.updateController(1/60);assert.equal(document.querySelector('#directory').classList.contains('hidden'),true);
   pads=[];api.updateController(1/60);assert.deepEqual(api.controllerFrame.look,{x:0,y:0});assert.deepEqual(api.controllerFrame.move,{x:0,y:0});
   api.centreCamera();assert.equal(api.camera.rotation.x,0);assert.equal(window.__JOHANSSON_CAMERA_MODE__,'first');
+  const {createDesktopInput}=await import('../../steam-deck/ui/controller.mjs');
+  window.johanssonDesktop={offline:true};window.johanssonDesktopInput=createDesktopInput(()=>({}));
+  p.mapping='';p.buttons.forEach(b=>{b.pressed=false;b.value=0;});p.axes=[0,-1,.8,.2];pads=[p];
+  const linuxBefore=api.player.position.clone(),linuxView=api.camera.quaternion.clone();
+  for(let i=0;i<12;i++){api.updateController(1/60);api.simulate(1/60);}
+  assert.ok(api.player.position.distanceTo(linuxBefore)>.05,'Unmapped Linux left stick moves the actual player');
+  assert.ok(api.camera.quaternion.angleTo(linuxView)>.05,'Unmapped Linux right stick rotates the actual camera');
+  pads=[];api.updateController(1/60);assert.deepEqual(api.controllerFrame.move,{x:0,y:0});
  }catch(error){if(error.stack)error.stack=error.stack.split('\n').map(line=>line.length>500?line.slice(0,200)+'…':line).join('\n');throw error;}
  finally{globalThis.fetch=fetchBefore;}
 });

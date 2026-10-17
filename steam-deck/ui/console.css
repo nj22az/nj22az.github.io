@@ -1,0 +1,105 @@
+/* Installed Linux edition only. The world keeps the whole viewport. */
+.linux-console { --console-ink:#173c38; --console-paper:#f7f1e4; --console-green:#255b4b; --console-accent:#ffd681; }
+.linux-console #mobile,.linux-console #directoryButton,.linux-console #fullscreenButton,.linux-console #hud .timecard,.linux-console #worldEdition { display:none!important }
+.linux-console #start { padding:0!important; width:100vw; height:100dvh; overflow:hidden }
+.linux-console .title-screen { width:100%; height:100dvh; min-height:0; max-height:none; border:0; border-radius:0 }
+.linux-console .title-center { max-height:100dvh }
+.linux-console #hud { padding:20px 24px!important }
+.linux-console #hud .topbar { gap:18px!important; align-items:flex-start!important }
+.linux-console #hud .placard,.linux-console #clock { background:#173c38e8!important; color:#fff4da!important; border:1px solid #ffffff38!important; border-radius:9px!important; box-shadow:none!important; padding:9px 13px!important; min-width:0!important }
+.linux-console #hud .placard b { font:700 16px/1.35 system-ui!important; letter-spacing:.04em!important }
+.linux-console #hud .placard small { display:none!important }
+.linux-console #clock { font:600 18px/1.4 system-ui!important }
+.linux-console #hud .status-stack { margin-right:150px }
+.linux-console #subtitle { bottom:88px!important; width:min(680px,calc(100vw - 80px))!important; background:#173c38ec!important; color:#fff7e9!important; box-shadow:none!important; border:1px solid #ffffff38!important; border-radius:10px!important; font:18px/1.5 system-ui!important; padding:12px 18px!important }
+.linux-console #contextActions { bottom:22px!important; right:24px!important; gap:8px!important; max-width:calc(100vw - 48px)!important }
+.linux-console #contextActions button { min-height:46px!important; box-shadow:none!important; background:#173c38ed!important; color:#fff4da!important; border:1px solid #ffffff70!important; border-radius:10px!important; font:600 17px/1.3 system-ui!important; letter-spacing:0!important; padding:10px 14px!important }
+.linux-console #contextActions .context-glyph { display:none!important }
+.linux-console #contextActions kbd { font-size:0!important }
+.linux-console #contextActions .context-primary kbd:after { content:'A'; font:700 16px system-ui; border:1px solid currentColor; border-radius:50%; padding:2px 6px }
+.linux-console :is(#activityActions,#directory,#titleSlots) button { min-height:46px!important; font-size:17px!important; letter-spacing:0!important }
+.linux-console :is(#activity,#directory) :is(p,dd,summary) { font-size:max(16px,1em) }
+.linux-console :is(#activity,#directory,#titleSlots) :is(button,input,select,summary):focus { outline:4px solid #e99d3d!important; outline-offset:3px!important }
+.linux-console .desktop-hide-hud #hud,.linux-console.desktop-hide-hud #hud,.linux-console.desktop-hide-hud #festivalHUD,.linux-console.desktop-hide-hud #deckHints { visibility:hidden!important }
+#desktopOpenMenu { position:fixed; top:20px; right:24px; z-index:950; display:flex; gap:9px; align-items:center; background:#173c38ed; color:#fff4da; border:1px solid #ffffff70; border-radius:9px; min-height:46px; padding:8px 13px; font:600 16px system-ui; letter-spacing:0; cursor:pointer }
+#desktopOpenMenu:focus-visible { outline:4px solid #ffd681; outline-offset:3px }
+#deckHints { position:fixed; left:24px; bottom:24px; display:flex; flex-wrap:wrap; gap:8px 20px; max-width:56vw; z-index:900; pointer-events:none; color:#fff8e9; text-shadow:0 2px 3px #152c28; font:600 15px/1.5 system-ui }
+#deckHints span { white-space:nowrap }
+.festival-active #deckHints { display:none }
+#desktopMenu[hidden],#deckHints[hidden],#desktopOpenMenu[hidden] { display:none!important }
+#desktopMenu { position:fixed; inset:0; z-index:100000; padding:clamp(16px,3vh,36px) clamp(16px,3vw,48px); background:#102b2be8; display:grid; place-items:center; color:var(--console-ink); font:17px/1.5 system-ui; letter-spacing:0; isolation:isolate }
+#desktopMenu *,#desktopOpenMenu { box-sizing:border-box }
+#desktopMenu .console-shell { display:grid; grid-template-rows:auto minmax(0,1fr) auto; width:min(1160px,100%); height:min(850px,100%); min-height:0; overflow:hidden; border:1px solid #f5e5bc55; border-radius:22px; background:var(--console-paper); box-shadow:0 20px 80px #001b1d55 }
+#desktopMenu .console-header { padding:22px 28px 20px; display:flex; align-items:center; justify-content:space-between; gap:24px; border-bottom:1px solid #d7d7c5 }
+#desktopMenu .console-eyebrow { margin:0 0 6px; color:#526b5e; font-size:12px; font-weight:750; letter-spacing:.15em }
+#desktopMenu .console-eyebrow span { margin-left:12px; font-size:10px }
+#desktopMenu h1 { font:600 clamp(26px,3.2vw,40px)/1.12 Georgia,serif; margin:0; letter-spacing:-.025em }
+#desktopMenu h2 { font:600 24px/1.25 Georgia,serif; margin:0 0 12px; letter-spacing:-.01em }
+#desktopMenu p { margin:0 0 14px }
+#desktopMenu button,#desktopMenu select { appearance:none; font:600 17px/1.35 system-ui; letter-spacing:0; color:#173c38; background:#e7ecdf; border:1px solid #b9cbb7; border-radius:9px; min-height:46px; padding:10px 14px; cursor:pointer }
+#desktopMenu button { text-align:left }
+#desktopMenu button:hover { background:#d9e7d3 }
+#desktopMenu button:focus,#desktopMenu :is(input,select):focus { outline:4px solid #c37921; outline-offset:3px; box-shadow:0 0 0 7px #fff9ee; z-index:1 }
+#desktopMenu button:disabled { opacity:.5; cursor:wait }
+#desktopMenu button small { display:block; font:400 13px/1.35 system-ui; margin-top:4px; color:#486157 }
+#desktopMenu .console-close { background:transparent; white-space:nowrap }
+#desktopMenu .console-content { min-height:0; overflow:auto; overscroll-behavior:contain; display:grid; grid-template-columns:minmax(270px,.9fr) minmax(0,1.35fr); gap:30px; padding:24px 28px; scrollbar-gutter:stable }
+#desktopMenu .console-content:has(.console-page) { display:block }
+#desktopMenu .console-nav { display:grid; gap:9px; align-content:start; padding:4px }
+#desktopMenu .console-nav button { width:100% }
+#desktopMenu .console-nav button:first-child,#desktopMenu .console-actions button:last-child { background:var(--console-green); color:#fff5da; border-color:var(--console-green) }
+#desktopMenu .console-nav button:first-child small { color:#e0e8d6 }
+#desktopMenu .console-postcard { border-radius:14px; overflow:hidden; background:#e5e7d7; align-self:start; min-width:0 }
+#desktopMenu .console-postcard img { width:100%; height:clamp(145px,25vh,255px); display:block; object-fit:cover }
+#desktopMenu .console-postcard>div { padding:24px }
+#desktopMenu .console-device { font-size:13px; color:#536a60; overflow-wrap:anywhere }
+#desktopMenu .console-footer { padding:16px 28px; border-top:1px solid #d7d7c5; background:#eeeddd; display:flex; justify-content:space-between; align-items:center; gap:16px; font-size:13px; line-height:1.5 }
+#desktopMenu .console-footer p { margin:0; max-width:65ch; overflow-wrap:anywhere }
+#desktopMenu .console-footer>div { white-space:nowrap }
+#desktopMenu kbd,#deckHints kbd,#desktopOpenMenu kbd { display:inline-block; background:#ffffff19; border:1px solid currentColor; border-radius:5px; padding:1px 5px; font:700 .86em/1.5 system-ui; margin-right:3px; text-shadow:none }
+#desktopMenu .console-page { max-width:100%; padding:4px }
+#desktopMenu .console-back { margin-bottom:22px; background:transparent }
+#desktopMenu .console-intro { font-size:20px; max-width:76ch; margin-bottom:24px }
+#desktopMenu .console-guide { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; margin:0 0 24px }
+#desktopMenu .console-guide article { padding:22px; background:#e5e9da; border-radius:14px }
+#desktopMenu .console-guide p { margin:0 }
+#desktopMenu .stick-symbol { display:grid; place-items:center; width:52px; height:52px; border:2px solid #779484; border-radius:50%; font-size:23px; font-weight:750; margin-bottom:18px }
+#desktopMenu .console-help-row { padding:20px 0 4px; border-top:1px solid #d7d7c5 }
+#desktopMenu .console-actions { display:flex; justify-content:space-between; gap:20px; margin-top:18px }
+#desktopMenu .console-settings-grid { display:grid; grid-template-columns:1fr 1fr; gap:46px }
+#desktopMenu .console-setting { display:block; margin:0 0 18px }
+#desktopMenu .console-setting>span { display:flex; justify-content:space-between; gap:10px }
+#desktopMenu .console-setting output { font-weight:700 }
+#desktopMenu .console-setting select { display:block; width:100%; margin-top:8px; font-size:15px }
+#desktopMenu input[type=range] { display:block; width:100%; height:34px; accent-color:var(--console-green); cursor:pointer }
+#desktopMenu input[type=checkbox] { width:23px; height:23px; accent-color:var(--console-green); flex:none }
+#desktopMenu .console-check { display:flex; gap:12px; align-items:center; margin:14px 0 }
+#desktopMenu .console-small { font-size:14px; color:#536a60 }
+#desktopMenu .console-bindings { display:grid; gap:9px; margin-bottom:22px }
+#desktopMenu .console-bindings button { display:flex; justify-content:space-between; align-items:center; gap:10px; width:100%; font-size:16px }
+#desktopMenu .console-axis { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:14px; font-size:15px }
+#desktopMenu .console-stick-test { display:flex; justify-content:space-around; padding:22px 0; gap:22px }
+#desktopMenu .console-stick-test>span { display:grid; justify-items:center; gap:12px; font-size:12px; letter-spacing:.12em; font-weight:700 }
+#desktopMenu .console-stick-test i { display:block; width:24px; height:24px; margin:18px 25px; border-radius:50%; background:#255b4b; outline:18px solid #cedbc9; border:2px solid #6b8a76 }
+#desktopMenu .console-stick-test output { font:13px ui-monospace,monospace; letter-spacing:0 }
+@media(max-height:700px) { #desktopMenu .console-header { padding:16px 24px } #desktopMenu .console-content { padding:18px 24px } #desktopMenu .console-footer { padding:12px 24px } #desktopMenu .console-postcard>div { padding:18px } }
+@media(max-width:850px) { #desktopMenu .console-content { gap:20px; grid-template-columns:minmax(240px,1fr) minmax(0,1fr) } #desktopMenu .console-settings-grid { gap:26px } #desktopMenu .console-header { gap:14px } #desktopMenu .console-eyebrow span { display:none } #desktopMenu .console-footer { flex-wrap:wrap; gap:8px } #desktopMenu .console-guide { gap:14px } #desktopMenu .console-guide article { padding:16px } #deckHints { max-width:52vw; font-size:13px; gap:6px 12px } }
+@media(max-width:600px) { #desktopMenu { padding:12px } #desktopMenu .console-header { align-items:flex-start; padding:18px } #desktopMenu .console-close { font-size:14px; padding:8px; white-space:normal } #desktopMenu .console-content { display:block; padding:18px } #desktopMenu .console-postcard { display:none } #desktopMenu .console-settings-grid,#desktopMenu .console-guide { grid-template-columns:1fr } #desktopMenu .console-settings-grid { gap:30px } #desktopMenu .console-guide article { display:block } #desktopMenu .console-footer { padding:12px 18px } #desktopMenu .console-actions { flex-wrap:wrap } #desktopOpenMenu { right:16px; top:16px } #deckHints { max-width:65vw; bottom:16px; left:16px } }
+.linux-console #hud .placard b { color:#fff4da!important }
+.linux-console #start .title-screen { height:100dvh; min-height:0; width:100%; overflow:hidden }
+.linux-console #start .title-center { align-items:flex-start; max-height:calc(100dvh - 48px); padding:42px 52px 16px }
+.linux-console #start .title-logo { align-items:flex-start; text-align:left }
+.linux-console #start .title-world-space { min-height:20px; flex:1 }
+.linux-console #start .title-settings,.linux-console #start .title-wip { display:none }
+.linux-console #start .title-menu { width:360px; max-width:calc(100vw - 104px); margin-top:20px }
+.linux-console #start .title-player { font-size:14px }
+.linux-console #start .title-player b { font-size:17px }
+.linux-console #start #titleActionHint { font-size:14px }
+.linux-console #start #title .title-menu .title-secondary :is(button,.title-guide) { font-size:16px; min-height:46px }
+.linux-console #start .title-foot { justify-content:flex-start; padding-left:52px }
+.linux-console #start .title-loading { margin-top:20px }
+@media(max-height:600px) { .linux-console #start .title-center { padding:22px 32px 8px } .linux-console #start .title-tag { margin-top:6px } .linux-console #start .title-foot { padding-left:32px } .linux-console #start .title-menu { margin-top:10px; gap:8px; padding:12px } }
+#desktopMenu .console-actions button:last-child small { color:#e0e8d6 }
+#desktopMenu #desktopScrollHint { font-size:12px; font-weight:750; color:#526b5e }
+#desktopMenu .console-footer>div:first-child { white-space:normal; flex:1; min-width:0 }
+#desktopMenu .console-footer>div:last-child { flex:none }
