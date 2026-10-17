@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ferry Deck Fighters — Download &amp; install | Nils Johansson</title>
+<meta name="description" content="Download the native Ferry Deck Fighters demo for Steam Deck and Linux. Copy the terminal installer, then add the game to Steam.">
+<link rel="canonical" href="https://nj22az.github.io/ferry-deck-fighters/">
+<link rel="icon" href="/assets/images/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/ferry-demo.css?v=1">
+<script src="/assets/js/ferry-demo-copy.js?v=1" defer></script>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f2e9;color:#173640;font:16px/1.65 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main,header,footer{max-width:1060px;margin:auto;padding:1.3rem clamp(1.1rem,4vw,2.5rem)}header{display:flex;gap:1rem;justify-content:space-between;flex-wrap:wrap;border-bottom:1px solid #ccd3c8}a{color:#215b60;text-underline-offset:.2em}a:focus-visible{outline:3px solid #305eaa;outline-offset:4px}header a{font-weight:700}h1{font-size:clamp(2.3rem,6vw,4.2rem);line-height:1.05;letter-spacing:-.045em;margin:.7rem 0 1rem}h2{font-size:1.4rem;line-height:1.3;margin:1.7rem 0 .7rem}p{margin:.6rem 0 1rem}.hero{display:grid;grid-template-columns:1fr 300px;gap:2rem;align-items:center;margin:1rem 0 1.5rem}.hero img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid #aebfb5}.eyebrow{font-size:.78rem;letter-spacing:.12em;font-weight:700;text-transform:uppercase}.badge{display:inline-block;padding:.2rem .65rem;border:1px solid #aebfb5;border-radius:30px;font-size:.8rem}.download{display:inline-block;padding:.7rem 1rem;background:#173640;color:#fff;border-radius:7px;font-weight:700;text-decoration:none}.download:hover{background:#27555b}ol{padding-left:1.4rem}li{margin:.6rem 0}table{width:100%;border-collapse:collapse;margin:1rem 0}th,td{text-align:left;padding:.8rem;border-bottom:1px solid #ccd3c8;vertical-align:top}th{background:#e7ece1}code{font-size:.9em;overflow-wrap:anywhere}footer{font-size:.85rem;border-top:1px solid #ccd3c8;color:#526964}.details{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+@media(max-width:700px){.hero{grid-template-columns:1fr}.hero img{max-width:340px}.details{grid-template-columns:1fr;gap:0}th,td{padding:.6rem .4rem;font-size:.9rem}}
+</style>
+</head>
+<body>
+<header><a href="/">The Office of Nils Johansson</a><a href="/#projects">All projects</a></header>
+<main>
+<section class="hero" aria-labelledby="page-title">
+<div><p class="eyebrow">Johansson World · Native game demo</p><h1 id="page-title">Ferry Deck Fighters</h1>
+<p>Thao and Thuan spar on the Minato Maru car deck, with the characters and ferry from Johansson World.</p>
+<p>Thao uses kickboxing; Thuan has a karate-inspired style. Play against the computer or practise in training mode.</p>
+<p><span class="badge">Prototype · 17 October 2026</span></p>
+<a class="download" href="https://raw.githubusercontent.com/nj22az/nj22az.github.io/be2f8cc77231f5fcc0532d756856299d7303971c/ferry-deck-fighters/demo/Ferry-Deck-Fighters-Linux-Demo.tar.gz">Download Linux demo · 848 KiB</a>
+</div><figure style="margin:0"><img src="./arena.png" width="720" height="720" alt="Actual native game capture: Thao and Thuan face each other on the Minato Maru ferry car deck"><figcaption style="font-size:.8rem;margin-top:.4rem">Actual game capture.</figcaption></figure>
+</section>
+<section class="ferry-install" aria-labelledby="install-heading">
+<p class="ferry-kicker">Steam Deck &amp; x86-64 Linux</p><h2 id="install-heading" style="margin-top:.5rem">Copy, paste and install</h2>
+<p>On Steam Deck, switch to <strong>Desktop Mode</strong> and open <strong>Konsole</strong>. Copy this command and paste it into the terminal:</p>
+<div class="ferry-command"><pre><code>curl -fsSL https://nj22az.github.io/ferry-deck-fighters/install.sh -o /tmp/ferry-demo.sh &&
+sh /tmp/ferry-demo.sh</code></pre><button type="button" data-ferry-copy>Copy install command</button></div>
+<p class="ferry-copy-status" role="status" aria-live="polite"></p>
+<p class="ferry-small">The installer checks the download’s SHA-256 checksum, installs in your user account and adds an application entry. No compilation, administrator password or SteamOS system changes are required.</p>
+</section>
+<section aria-labelledby="steam-heading"><h2 id="steam-heading">Add it to Steam</h2>
+<ol><li>In Desktop Mode, open Steam and choose <strong>Add a Game → Add a Non-Steam Game</strong>.</li>
+<li>Select <strong>Ferry Deck Fighters</strong>. If it is not listed, choose Browse and select <code>Launch-Ferry-Deck-Fighters.sh</code> inside the installation folder printed by the installer.</li>
+<li>Leave forced Proton compatibility disabled. Select a <strong>Gamepad</strong> controller layout.</li>
+<li>Return to Gaming Mode and launch. The square playfield has borders on the Deck’s widescreen display.</li></ol>
+<p>The default installation folder is <code>~/.local/share/ferry-deck-fighters/demo-2026.10.17.1/</code>.</p>
+</section>
+<section aria-labelledby="platform-heading"><h2 id="platform-heading">Which version should I use?</h2>
+<table><thead><tr><th scope="col">Platform</th><th scope="col">Current support</th></tr></thead><tbody>
+<tr><th scope="row">Steam Deck</th><td>Use the installer above. Native x86-64 Linux build; physical Steam Deck acceptance is pending.</td></tr>
+<tr><th scope="row">Linux PC</th><td>Same installer or portable download. Requires x86-64 Linux, glibc 2.17+, SDL2, zlib and GLES2 drivers.</td></tr>
+<tr><th scope="row">RG CubeXX</th><td>The ARM64 build exists. An easy-install package still needs to match your firmware: stock Anbernic, muOS or KNULLI. Do not use this x86-64 installer.</td></tr>
+<tr><th scope="row">Mac</th><td>No macOS download yet. A separate Mac executable and platform adaptation are required; the Linux builds will not run on macOS.</td></tr>
+</tbody></table></section>
+<div class="details"><section aria-labelledby="controls-heading"><h2 id="controls-heading">Controls</h2>
+<ul><li>Stick / D-pad: move and sidestep</li><li>X: punch; repeat after contact for a follow-up</li><li>Y: kick · Hold A: guard · B + direction: dodge</li><li>Start: start, pause or continue · Select: pause / title</li><li>L1: change fighter · R1: toggle training<br><small>Use these shoulder shortcuts on the title or pause screen.</small></li></ul>
+</section><section aria-labelledby="help-heading"><h2 id="help-heading">If it does not start</h2>
+<p>Open <code>~/.local/state/ferry-deck-fighters/latest.log</code> to see the startup error. Custom XDG data or state folders are respected.</p>
+<p>The download includes a portable launcher, game assets and instructions. It does not install missing system libraries.</p>
+<p>Installer and native launch checks pass on Linux. Sustained handheld performance and device-specific controls remain to be verified.</p>
+</section></div>
+<p><a href="https://github.com/nj22az/nj22az.github.io/tree/codex/ferry-deck-fighters/ferry-deck-fighters">Source code and development notes on GitHub</a> · <a href="https://raw.githubusercontent.com/nj22az/nj22az.github.io/be2f8cc77231f5fcc0532d756856299d7303971c/ferry-deck-fighters/demo/Ferry-Deck-Fighters-Linux-Demo.tar.gz.sha256">Download checksum</a></p>
+</main><footer>Johansson World / Johansson Studio · Original characters and ferry assets · Native Linux demo</footer>
+</body>
+</html>
+
