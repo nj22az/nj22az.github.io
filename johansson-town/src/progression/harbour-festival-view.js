@@ -1,11 +1,11 @@
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar} from '../avatars/build.js';
 import {recipeFor} from '../avatars/cast.js';
-import {FESTIVAL_ALLIES,FESTIVAL_STAGES,restoreFestival,createFestivalBout,stepFestivalBout,completeFestivalStage,TOURNAMENT_DATE,registerTournament,tournamentMatches,recordTournamentResult,recordFestivalWatch} from './harbour-festival.js';
+import {FESTIVAL_ALLIES,FESTIVAL_STAGES,restoreFestival,createFestivalBout,createDisputeBout,stepFestivalBout,completeFestivalStage,TOURNAMENT_DATE,registerTournament,tournamentMatches,recordTournamentResult,recordFestivalWatch} from './harbour-festival.js';
 
 /** Uses the live island scene and the shared Studio avatars; no painted backdrops. */
 export function createHarbourFestival({scene,camera,renderer,activities,getStage,canStart,getCalendar=()=>({date:'',year:1997}),onBegin=()=>{},onEnd=()=>{},onFrame=()=>{}}){
- let bout=null,stage=null,actors=[],ring=null,hud=null,accumulator=0,previousPad=[],resultShown=false;
+ let dispute=false,bout=null,stage=null,actors=[],ring=null,hud=null,accumulator=0,previousPad=[],resultShown=false;
  const keyboard={},edges={};let cameraBefore,spectating=false,tournamentMatch=null;const offered=new Set();let lastOfferCheck=0;
  const festivalStyle=document.createElement('style');festivalStyle.textContent='.festival-active #hud,.festival-active #mobile{visibility:hidden!important}';document.head.append(festivalStyle);
  const state=()=>activities.state.harbourFestival=restoreFestival(activities.state.harbourFestival);
@@ -36,13 +36,14 @@ export function createHarbourFestival({scene,camera,renderer,activities,getStage
   ]);
  }
  function start(s,options={}){
+  if(options.dispute){const problem=canStart(s),frame=problem?null:getStage(s);if(problem||!frame){activities.menu('Walk away','There is no room here. You back away and give each other space.',[['Leave',()=>activities.close()]],{desktopSocial:false});return;}}
   const problem=canStart(s);if(problem){activities.menu('Stage not ready',problem,[['Festival card',menu],['Return',()=>activities.close()]]);return;}
   const frame=getStage(s);if(!frame){activities.menu('Stage unavailable','The real stage could not be placed safely. Your progress is unchanged.',[['Return',menu]]);return;}
-  stage={...s,...frame};spectating=!!options.watch;tournamentMatch=options.tournament||null;const hero=options.hero||(spectating?(s.opponent==='Tetsuo'?'Chin':'Tetsuo'):state().hero);bout=createFestivalBout(hero,s,{spectator:spectating,tournament:!!tournamentMatch});resultShown=false;accumulator=0;
+  stage={...s,...frame};spectating=!!options.watch;tournamentMatch=options.tournament||null;const hero=options.hero||(spectating?(s.opponent==='Tetsuo'?'Chin':'Tetsuo'):state().hero);dispute=!!options.dispute;bout=dispute?createDisputeBout(hero,s.opponent):createFestivalBout(hero,s,{spectator:spectating,tournament:!!tournamentMatch});resultShown=false;accumulator=0;
   activities.close();onBegin(stage);cameraBefore={position:camera.position.clone(),quaternion:camera.quaternion.clone(),fov:camera.fov};
   ring=new THREE.Group();ring.name='Harbour Festival at '+s.place;ring.position.copy(stage.position);ring.rotation.y=stage.yaw||0;scene.add(ring);
   actors=bout.fighters.map(f=>{const avatar=buildAvatar(recipeFor(f.name),{shadows:false,faceSize:256});avatar.root.rotation.y=0;ring.add(avatar.root);return avatar;});
-  const line=new THREE.Mesh(new THREE.RingGeometry(2.45,2.48,48),new THREE.MeshBasicMaterial({color:0xf4e4ab,side:THREE.DoubleSide,depthWrite:false}));line.rotation.x=-Math.PI/2;line.position.y=.025;ring.add(line);
+  const line=new THREE.Mesh(new THREE.RingGeometry(2.45,2.48,48),new THREE.MeshBasicMaterial({color:0xf4e4ab,side:THREE.DoubleSide,depthWrite:false}));line.rotation.x=-Math.PI/2;line.position.y=.025;line.visible=!dispute;ring.add(line);
   hud=document.createElement('section');hud.id='festivalHUD';hud.style.cssText='position:fixed;left:3%;right:3%;top:4%;z-index:1000;pointer-events:none;color:#fff;font:700 17px system-ui;text-shadow:0 2px 3px #000';
   hud.innerHTML='<div style="display:flex;justify-content:space-between;gap:10px"><span data-hero></span><span data-clock></span><span data-foe></span></div><p data-stage style="text-align:center"></p><p style="position:fixed;bottom:20px;left:4%;right:4%;text-align:center">'+(window.johanssonDesktop?'X punch · Y kick · Hold A guard · B dodge · View leave':'X / J punch · Y / K kick · Hold A / L guard · B / Space dodge · View / Esc leave')+'</p>';
   document.body.append(hud);document.documentElement.classList.add('festival-active');
@@ -52,11 +53,12 @@ export function createHarbourFestival({scene,camera,renderer,activities,getStage
   const result=bout.result,finishedStage=stage,annual=tournamentMatch;
   if(spectating&&!annual&&result!==null){recordFestivalWatch(activities.state,stage.id);activities.save();}
   if(annual&&['win','lose'].includes(result)){recordTournamentResult(activities.state,annual.year,annual.index,bout.fighters[result==='win'?0:1].name);activities.save();}
-  if(result==='win'&&!spectating&&!annual){completeFestivalStage(activities.state,stage.id);activities.save();}
+  if(result==='win'&&!spectating&&!annual&&!dispute){completeFestivalStage(activities.state,stage.id);activities.save();}
   for(const avatar of actors)avatar.dispose();actors=[];ring.traverse(object=>{if(object.isMesh&&object.geometry?.type==='RingGeometry'){object.geometry.dispose();object.material.dispose();}});ring.removeFromParent();ring=null;
   hud?.remove();hud=null;document.documentElement.classList.remove('festival-active');
   camera.position.copy(cameraBefore.position);camera.quaternion.copy(cameraBefore.quaternion);camera.fov=cameraBefore.fov;camera.updateProjectionMatrix();
   bout=null;stage=null;Object.keys(keyboard).forEach(k=>keyboard[k]=false);onEnd();
+  if(dispute){dispute=false;activities.menu('Tempers cool',result===null?'You back away. Give each other space.':'The quarrel is over. No prize money, and no reason to keep fighting.',[['Walk away',()=>activities.close()]],{desktopSocial:false});return;}
   if(annual){if(result!==null)activities.menu('Tournament result',result==='draw'?'A draw. The referee calls for a rematch.':'The bracket has been updated.',[['Return to bracket',tournamentMenu],['Back to exploring',()=>activities.close()]]);return;}
   if(spectating){if(result!==null)activities.menu('Exhibition complete','A bow, a handshake and tea for both sides. This chapter is recorded as watched. The story continues; watching does not award a fighting prize.',[['Festival card',menu],['Back to exploring',()=>activities.close()]]);return;}
   if(result==='win')activities.menu('Festival chapter complete',finishedStage.after,[['Festival card',menu],['Back to exploring',()=>activities.close()]]);
@@ -65,19 +67,19 @@ export function createHarbourFestival({scene,camera,renderer,activities,getStage
  document.addEventListener('keydown',event=>{if(!bout)return;if(['KeyJ','KeyK','KeyL','Space','KeyW','KeyA','KeyS','KeyD','Escape','Enter'].includes(event.code)){event.preventDefault();event.stopImmediatePropagation();if(!keyboard[event.code])edges[event.code]=true;keyboard[event.code]=true;if(event.code==='Escape')finish();}},true);
  document.addEventListener('keyup',event=>{keyboard[event.code]=false;},true);
  addEventListener('blur',()=>{for(const key of Object.keys(keyboard))keyboard[key]=false;});
- return {menu,tournamentMenu,...(new URLSearchParams(location.search).has('audit')?{auditStage(id,{watch=false}={}){if(bout)finish();const s=FESTIVAL_STAGES.find(s=>s.id===id);if(!s)throw Error('Unknown festival stage');start(s,{watch});return !!bout;},auditLeave:finish}:{}),nearby({position}){
-  if(bout||performance.now()-lastOfferCheck<1000)return;lastOfferCheck=performance.now();
+ return {menu,tournamentMenu,quarrel(hero,opponent,where){start({id:'personal-quarrel',place:'A quiet patch of the island',opponent,x:where.x,z:where.z,title:'A quarrel',dispute:true},{hero,dispute:true});return !!bout;},...(new URLSearchParams(location.search).has('audit')?{auditStage(id,{watch=false}={}){if(bout)finish();const s=FESTIVAL_STAGES.find(s=>s.id===id);if(!s)throw Error('Unknown festival stage');start(s,{watch});return !!bout;},auditLeave:finish}:{}),nearby({position}){
+  if(window.johanssonDesktop||bout||performance.now()-lastOfferCheck<1000)return;lastOfferCheck=performance.now();
   const progress=state(),next=FESTIVAL_STAGES.find(s=>!progress.completed.includes(s.id)&&!progress.watched.includes(s.id));
   if(!next||offered.has(next.id))return;
   const location=getStage(next);if(!location||location.position.distanceTo(position)>6||canStart(next))return;
   offered.add(next.id);activities.menu(next.title,next.reason,[['Take part',()=>start(next)],['Watch what happens',()=>start(next,{watch:true})],['Perhaps later',()=>activities.close()]]);
  },get active(){return !!bout;},render(dt){
   if(!bout)return;
-  const pad=Array.from(navigator.getGamepads?.()||[]).find(p=>p?.connected&&p.mapping==='standard'),buttons=pad?.buttons.map(b=>b.pressed)||[],edge=i=>buttons[i]&&!previousPad[i];
+  const pads=navigator.getGamepads?.()||[],desktop=window.johanssonDesktopInput?.read(pads),pad=desktop?.pad||Array.from(pads).find(p=>p?.connected&&p.mapping==='standard'),buttons=desktop?.held||pad?.buttons.map(b=>b.pressed)||[],edge=i=>buttons[i]&&!previousPad[i];
   if(edge(8)){previousPad=buttons;finish();return;}
   const paused=document.hidden||document.documentElement.dataset.desktopMenu==='open';
   if(!paused){
-   let input={x:(keyboard.KeyD?1:0)-(keyboard.KeyA?1:0)+(pad?.axes[0]||0),z:(keyboard.KeyS?1:0)-(keyboard.KeyW?1:0)+(pad?.axes[1]||0),punch:!!edges.KeyJ||edge(2),kick:!!edges.KeyK||edge(3),guard:!!keyboard.KeyL||!!buttons[0],dodge:!!edges.Space||edge(1)};
+   let input={x:(keyboard.KeyD?1:0)-(keyboard.KeyA?1:0)+(desktop?.move.x??pad?.axes[0]??0),z:(keyboard.KeyS?1:0)-(keyboard.KeyW?1:0)+(desktop?.move.y??pad?.axes[1]??0),punch:!!edges.KeyJ||edge(2),kick:!!edges.KeyK||edge(3),guard:!!keyboard.KeyL||!!buttons[0],dodge:!!edges.Space||edge(1)};
    if(Math.abs(input.x)<.16)input.x=0;if(Math.abs(input.z)<.16)input.z=0;
    accumulator+=Math.min(.1,dt);
    let consumed=false;while(accumulator>=1/60){const spectatorInput={x:Math.abs(bout.fighters[1].x-bout.fighters[0].x)>.65?(bout.fighters[1].x>bout.fighters[0].x?.55:-.55):0,z:(bout.fighters[1].z-bout.fighters[0].z)*.3,punch:bout.tick%41===0,kick:bout.tick%97===0,guard:bout.tick%91<17};stepFestivalBout(bout,spectating?spectatorInput:consumed?{...input,punch:false,kick:false,dodge:false}:input);consumed=true;accumulator-=1/60;}

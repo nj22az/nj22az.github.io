@@ -1,0 +1,53 @@
+name: Linux console acceptance
+on:
+  pull_request:
+    branches: [codex/johansson-world-steam-deck]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: linux-console-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install build and acceptance tools
+        run: |
+          npm install --prefix .world-build --ignore-scripts --no-audit --no-fund vite@7.3.6 spectorjs@0.9.33
+          ln -s ../.world-build/node_modules johansson-town/node_modules
+          npm ci --prefix steam-deck --no-audit --no-fund
+          node steam-deck/node_modules/electron/install.js
+          steam-deck/node_modules/.bin/playwright install --with-deps chromium
+      - name: Controller, gameplay, save and update regression tests
+        run: |
+          npm test --prefix steam-deck
+          node --test johansson-town/tests/controller-game.test.mjs johansson-town/tests/harbour-festival.test.mjs johansson-town/tests/detail-stream.test.mjs johansson-town/tests/context-actions.test.mjs johansson-town/tests/soundscape.test.mjs
+      - name: Build offline Linux candidate
+        run: |
+          node johansson-town/scripts/build-runtime.mjs
+          npm run package --prefix steam-deck
+      - name: Real world controller and handheld layout acceptance
+        run: npm run test:console --prefix steam-deck
+      - name: Verify native application and disk saves
+        env:
+          WORLD_SCREENSHOT: steam-deck/dist/linux-world.png
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libasound2t64 libnss3 libgbm1
+          timeout 300 xvfb-run -a steam-deck/dist/johansson-world/JohanssonWorld --no-sandbox --windowed --smoke --use-angle=swiftshader --enable-unsafe-swiftshader --disable-dev-shm-usage
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: linux-console-candidate
+          path: |
+            steam-deck/dist/johansson-world-linux-x64.tar.gz
+            steam-deck/dist/SHA256SUMS
+            steam-deck/dist/console-qa/
+            steam-deck/dist/linux-world*.png
+          if-no-files-found: warn

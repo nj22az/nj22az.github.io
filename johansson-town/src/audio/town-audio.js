@@ -127,7 +127,7 @@ const ENGINE=Object.freeze({off:[0,.85],generators:[.06,.78],idle:[.12,.82],mano
 function updateScape(player,{minutes,rain,inside,paused,ferry}){
  // Gulls want the water: the harbour is to the south of the town, past z = -35.
  const harbour=Math.max(0,Math.min(1,(-player.z-25)/25));
- const mix=paused?Object.fromEntries(Object.keys(SYNTH_LEVEL).concat(Object.keys(LOOPED)).map(k=>[k,0])):ambience({minutes,rain,inside,harbour});
+ const mix=paused?Object.fromEntries(Object.keys(SYNTH_LEVEL).concat(Object.keys(LOOPED)).map(k=>[k,0])):ambience({minutes,rain,inside,harbour,quietNight:!!window.johanssonDesktop});
  if(!scape){if(!Object.values(mix).some(v=>v>.01))return;scape=startScape();}
  const t=ctx.currentTime;
  for(const [layer,[file,rate,base]] of Object.entries(LOOPED)){

@@ -51,6 +51,12 @@ export function createFestivalBout(hero,stage,{spectator=false,tournament=false}
  const fighter=(name,x,style)=>({name,x,z:0,hp:100,style,action:'idle',age:0,connected:false,guard:false,cooldown:0});
  return {hero,stage:stage.id,fighters:[fighter(hero,-1,styleOf(hero)),fighter(stage.opponent,1,stage.style)],tick:0,remaining:3600,result:null,hitstop:0};
 }
+/** A rare personal quarrel uses the same combat simulation, with no festival progression or reward. */
+export function createDisputeBout(hero,opponent){
+ if(!hero||!opponent||nameOf(hero)===nameOf(opponent))throw Error('A quarrel needs two different people');
+ const fighter=(name,x)=>({name,x,z:0,hp:100,style:styleOf(name),action:'idle',age:0,connected:false,guard:false,cooldown:0});
+ return {hero,stage:'personal-quarrel',fighters:[fighter(hero,-1),fighter(opponent,1)],tick:0,remaining:3600,result:null,hitstop:0};
+}
 export function stepFestivalBout(bout,human={},opponent=null){
  if(bout.result!==null)return;
  if(bout.hitstop>0){bout.hitstop--;return;}

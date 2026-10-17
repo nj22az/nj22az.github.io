@@ -50,11 +50,11 @@ function hourly(h){
 }
 /**
  * The mix for a town minute.
- * @param {{minutes:number,rain?:boolean,inside?:boolean,harbour?:number}} options
+ * @param {{minutes:number,rain?:boolean,inside?:boolean,harbour?:number,quietNight?:boolean}} options
  *   harbour: 0–1, how close to the water the listener is (gulls).
  * @returns {Record<string,number>} a level per LAYERS entry
  */
-export function ambience({minutes,rain=false,inside=false,harbour=0}){
+export function ambience({minutes,rain=false,inside=false,harbour=0,quietNight=false}){
  const h=(((minutes%1440)+1440)%1440)/60,season=SEASON[okinawaSeason(minutes)],shape=hourly(h);
  const out={};
  for(const layer of LAYERS){
@@ -67,5 +67,8 @@ export function ambience({minutes,rain=false,inside=false,harbour=0}){
  }
  // Indoors, the outside comes through the walls.
  if(inside)for(const layer of LAYERS)out[layer]*=layer==='rain'?.45:.2;
+ // The original cricket recording is a 3.6 kHz tone pulsing 4.6 times a second.
+ // Omit that alarm-like loop in the installed edition; keep the other night sounds.
+ if(quietNight)out.crickets=0;
  return out;
 }

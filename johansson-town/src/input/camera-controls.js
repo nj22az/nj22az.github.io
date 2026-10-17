@@ -32,6 +32,7 @@ export function createCameraControls({onChange,onCentre,onOpen,onClose}){
   if(e.code==='Escape'){e.preventDefault();e.stopPropagation();close();}
   if(e.key==='Tab'){const items=focusableControls(panel),i=items.indexOf(document.activeElement);e.preventDefault();items[(i+(e.shiftKey?-1:1)+items.length)%items.length]?.focus();}
  });
+ addEventListener('johansson-controller-settings',()=>{if(!window.johanssonDesktop)return;try{settings=cameraSettings(JSON.parse(localStorage.getItem(KEY)));sync();onChange(settings);}catch{}});
  sync();return {panel,get active(){return opened;},get settings(){return settings;},close,
   open(){if(opened)return;focusBefore=document.activeElement;opened=true;panel.hidden=false;document.exitPointerLock?.();document.documentElement.classList.add('camera-controls-open');onOpen();panel.querySelector('[data-close]').focus();},
   status(connected){const text=connected?'Controller connected · left stick walks, right stick looks.':'Connect a controller, then press a button to wake it.';const label=panel.querySelector('#controllerStatus');if(label.textContent!==text)label.textContent=text;},

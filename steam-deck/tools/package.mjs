@@ -5,7 +5,7 @@ import {execFileSync} from 'node:child_process';
 const app=resolve(import.meta.dirname,'..'),repo=resolve(app,'..');
 const site=join(app,'site');rmSync(site,{recursive:true,force:true});mkdirSync(site,{recursive:true});
 const omit=new Set(['node_modules','.git','tests','tools','scripts','art','briefs','output']);
-for(const dir of ['johansson-town','avatar-creator','thuans-storage','form-3d-studio','assets','css']){
+for(const dir of ['johansson-town','avatar-creator','form-3d-studio','assets','css']){
  if(existsSync(join(repo,dir)))cpSync(join(repo,dir),join(site,dir),{recursive:true,filter:source=>!omit.has(basename(source))&&!basename(source).startsWith('.')});
 }
 for(const name of ['LICENSE.md','THIRD_PARTY_NOTICES.md','config.js','shared.js','styles.css','theme-bootstrap.js']){
@@ -13,7 +13,11 @@ for(const name of ['LICENSE.md','THIRD_PARTY_NOTICES.md','config.js','shared.js'
 }
 function patch(directory){for(const entry of readdirSync(directory,{withFileTypes:true})){const p=join(directory,entry.name);if(entry.isDirectory())patch(p);else if(entry.name.endsWith('.html')){let html=readFileSync(p,'utf8');html=html.replace(/<link\b[^>]*href=["']https?:\/\/fonts\.(?:googleapis|gstatic)\.com[^>]*>/g,'');writeFileSync(p,html);}}}
 patch(site);
-writeFileSync(join(site,'johansson-town','desktop-build.json'),JSON.stringify({version:'0.2.2',source:process.env.GITHUB_SHA||execFileSync('git',['rev-parse','HEAD'],{cwd:repo,encoding:'utf8'}).trim(),offline:true}));
+cpSync(join(app,'ui'),join(site,'desktop'),{recursive:true});
+const townIndex=join(site,'johansson-town/index.html');
+writeFileSync(townIndex,readFileSync(townIndex,'utf8').replace('</head>','<link rel="stylesheet" href="../desktop/console.css"><script type="module" src="../desktop/console-ui.mjs"></script></head>'));
+
+writeFileSync(join(site,'johansson-town','desktop-build.json'),JSON.stringify({version:JSON.parse(readFileSync(join(app,'package.json'))).version,source:process.env.GITHUB_SHA||execFileSync('git',['rev-parse','HEAD'],{cwd:repo,encoding:'utf8'}).trim(),offline:true}));
 if(process.argv.includes('--site-only'))process.exit(0);
 const electron=join(app,'node_modules/electron/dist'),out=join(app,'dist'),bundle=join(out,'johansson-world');
 rmSync(bundle,{recursive:true,force:true});mkdirSync(out,{recursive:true});cpSync(electron,bundle,{recursive:true});
