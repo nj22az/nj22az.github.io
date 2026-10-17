@@ -83,5 +83,20 @@
     "expression": "thinking",
     "view": "front",
     "source": "Johansson Studio MCP render_portrait"
+  },
+  {
+    "id": "vy-psst",
+    "name": "Vy",
+    "pose": "Shush",
+    "expression": "excited",
+    "view": "quarter",
+    "source": "Johansson Studio MCP render_portrait",
+    "size": 768,
+    "background": "transparent",
+    "output": [
+      368,
+      512
+    ],
+    "script": "scripts/render-vy-whisper.cjs"
   }
 ]
