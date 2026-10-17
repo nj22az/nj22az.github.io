@@ -22,7 +22,6 @@ export const ISLAND_HOMES=Object.freeze([
  // Unit assignments are explicit in CAST, never derived from the order of the people list.
  ...Array.from({length:4},(_,i)=>home('kitahama-flat-'+(i+1),'Flat '+(i+1)+', Kitahama Heights, Fukugi Lane','Kitahama',
   'home-kitahama-flat-'+(i+1),{buildingId:'kitahama-flats',unitNumber:String(i+1)})),
- ...Array.from({length:4},(_,i)=>home('fumoto-'+(i+1),(i+1)+' Fumoto','Fumoto','home-fumoto-'+(i+1))),
  ...[['higa','Higa'],['kinjo','Kinjō'],['oshiro','Ōshiro']].map(([id,name])=>home(id,name+' house, Nishi-machi','Nishi-machi','home-'+id)),
  ...[['nakasone','Nakasone'],['miyagi','Miyagi']].map(([id,name])=>home(id,name+' house, east back','East back','home-'+id)),
  // Save-era identities remain recognisable after the two empty buildings are removed.

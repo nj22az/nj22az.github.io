@@ -3,7 +3,7 @@ import {householdAtHome,activeHomeForResident,homeNameplate} from '../people/isl
 /**
  * Kitahama (北浜), the new district on the north-east land the island gained in
  * October 2026: one lane up from the east beach past the town hall's seawall, one lane
- * across, five walled house plots and a sugar-cane field towards the point. The plots
+ * across, five walled house plots on a compact street grid. The plots
  * are the same standard walled houses as Nishi-machi (red-tile or concrete, gate,
  * shisa, nameplate), so the island has one way of building a home. Who lives in each
  * is island-homes.js; the gate faces the lane.
@@ -38,7 +38,7 @@ export const KITAHAMA=Object.freeze({
  /** Main Street continues directly through the relocated residential blocks. */
  footpath:Object.freeze({minX:3,maxX:6,minZ:30.5,maxZ:91}),
  northLane:Object.freeze({minX:-35,maxX:45,minZ:44.5,maxZ:47.5}),
- eastLane:Object.freeze({minX:-36,maxX:-33,minZ:30.5,maxZ:91}),
+ eastLane:Object.freeze({minX:-36,maxX:-33,minZ:30.5,maxZ:75}),
  southLane:Object.freeze({minX:-36,maxX:6,minZ:29.3,maxZ:32.3}),
  westCrossLane:Object.freeze({minX:-36,maxX:-20,minZ:44.5,maxZ:47.5}),
  middleLane:Object.freeze({minX:16,maxX:19,minZ:45.1,maxZ:75}),

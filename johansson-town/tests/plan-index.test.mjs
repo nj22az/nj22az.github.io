@@ -24,7 +24,7 @@ test('the polygon grid and the edges near a point give the crossing test and the
  const exact=(x,z)=>{let k=false;for(let i=0,j=COASTLINE.length-1;i<COASTLINE.length;j=i++){const [ax,az]=COASTLINE[i],[bx,bz]=COASTLINE[j];if((az>z)!==(bz>z)&&x<(bx-ax)*(z-az)/(bz-az)+ax)k=!k;}return k;};
  const seg=(x,z,ax,az,bx,bz)=>{const dx=bx-ax,dz=bz-az,t=Math.max(0,Math.min(1,((x-ax)*dx+(z-az)*dz)/(dx*dx+dz*dz||1)));return Math.hypot(x-ax-dx*t,z-az-dz*t);};
  let land=0;
- for(const [x,z] of points(40000,11)){
+ for(const [x,z] of points(40000,11,[-120,130,-130,180])){
   const k=inside(x,z);assert.equal(k,exact(x,z),`inside differs at ${x},${z}`);if(k)land++;
   let all=80;for(let i=0;i<COASTLINE.length;i++){const a=COASTLINE[i],b=COASTLINE[(i+1)%COASTLINE.length];all=Math.min(all,seg(x,z,a[0],a[1],b[0],b[1]));}
   let some=80;const e=near(x,z);for(let i=0;i<e.length;i+=4)some=Math.min(some,seg(x,z,e[i],e[i+1],e[i+2],e[i+3]));

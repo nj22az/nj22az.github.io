@@ -1,3 +1,4 @@
+import {KITANO_ROAD} from './kitano-link-plan.js';
 import {japaneseSign,signText} from './okinawa/signs.js';
 import {QUAY_BAYS} from './town-traffic.js';
 import {GROUND_LAYER} from './ground-layers.js';
@@ -128,11 +129,14 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // Base town and road. Markings are non-coplanar decal planes to eliminate white-line z fighting.
   buildIslandCoast(group);
   const upperRoadLength=MAIN_ROAD.maxZ-BOARDWALK.maxZ;
-  box([MAIN_ROAD.width,.2,upperRoadLength],[MAIN_ROAD.x,-.10,(MAIN_ROAD.maxZ+BOARDWALK.maxZ)/2],GROUND.asphalt,[0,0,0],'road');
-  box([MAIN_ROAD.width,.2,4],[MAIN_ROAD.x,-.10,-40],GROUND.asphalt,[0,0,0],'road');
+  box([MAIN_ROAD.width,.2,upperRoadLength],[MAIN_ROAD.x,GROUND_LAYER.lane-.10,(MAIN_ROAD.maxZ+BOARDWALK.maxZ)/2],GROUND.asphalt,[0,0,0],'road');
+  box([MAIN_ROAD.width,.2,4],[MAIN_ROAD.x,GROUND_LAYER.lane-.10,-40],GROUND.asphalt,[0,0,0],'road');
   const boardwalk=buildBoardwalk(group,{mobile,shadows,maxAnisotropy});
   // Partition the footways around asphalt courts; each finished surface owns its patch.
-  const footCuts=[MAIN_SERVICE_COURT,MAIN_LOADING_APRON,MAIN_PARKING_LAYBY];
+  const K=KITANO_ROAD;
+  const commercialMouth={minX:K.corners[0][0],maxX:K.corners.at(-1)[0],minZ:K.corners[0][1]-K.section.footway,maxZ:K.corners[0][1]-K.section.north};
+  const cargoCourt={minX:MAIN_ROAD.east,maxX:3.2,minZ:-47.6,maxZ:-32.8};
+  const footCuts=[MAIN_SERVICE_COURT,MAIN_LOADING_APRON,MAIN_PARKING_LAYBY,commercialMouth,cargoCourt];
   for(const [left,right] of [[-8.1,MAIN_ROAD.west],[MAIN_ROAD.east,5.75]]){
    const xs=[...new Set([left,right,...footCuts.flatMap(p=>[p.minX,p.maxX]).filter(x=>x>left&&x<right)])].sort((a,b)=>a-b);
    const zs=[...new Set([MAIN_ROAD.minZ,MAIN_ROAD.maxZ,...footCuts.flatMap(p=>[p.minZ,p.maxZ]).filter(z=>z>MAIN_ROAD.minZ&&z<MAIN_ROAD.maxZ)])].sort((a,b)=>a-b);
@@ -143,13 +147,19 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
    }
   }
   // The delivery turn stays on asphalt, with a flush entrance through the old kerb.
-  const court=MAIN_SERVICE_COURT;const apron=directBox([court.maxX-court.minX,.04,court.maxZ-court.minZ],[(court.minX+court.maxX)/2,.02,(court.minZ+court.maxZ)/2],GROUND.asphalt,group,[0,0,0],false,'road');apron.name='Main Street service turnout';
-  const loading=MAIN_LOADING_APRON,loadingPaving=directBox([loading.maxX-loading.minX,.04,loading.maxZ-loading.minZ],[(loading.minX+loading.maxX)/2,.02,(loading.minZ+loading.maxZ)/2],GROUND.asphalt,group,[0,0,0],false,'road');loadingPaving.name='Main Street freight pullout';
-  const layby=MAIN_PARKING_LAYBY,laybyPaving=directBox([layby.maxX-layby.minX,.04,layby.maxZ-layby.minZ],[(layby.minX+layby.maxX)/2,.02,(layby.minZ+layby.maxZ)/2],GROUND.asphalt,group,[0,0,0],false,'road');laybyPaving.name='Main Street parking lay-by';
-  for(const z of [layby.minZ+.25,layby.maxZ-.25]){const line=directBox([layby.maxX-layby.minX-.2,.012,.09],[(layby.minX+layby.maxX)/2+.1,.046,z],0xd6c8a7,group);line.name='Lay-by bay marking';line.material=line.material.clone();Object.assign(line.material,{depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});line.raycast=()=>{};}
+  const court=MAIN_SERVICE_COURT;
+  for(const [a,b] of [[court.minX,MAIN_ROAD.west],[MAIN_ROAD.east,court.maxX]]){
+   const apron=directBox([b-a,.04,court.maxZ-court.minZ],[(a+b)/2,GROUND_LAYER.lane-.02,(court.minZ+court.maxZ)/2],GROUND.asphalt,group,[0,0,0],false,'road');apron.name='Main Street service turnout';
+  }
+  const loading=MAIN_LOADING_APRON,loadingPaving=directBox([MAIN_ROAD.west-loading.minX,.04,loading.maxZ-loading.minZ],[(loading.minX+MAIN_ROAD.west)/2,GROUND_LAYER.lane-.02,(loading.minZ+loading.maxZ)/2],GROUND.asphalt,group,[0,0,0],false,'road');loadingPaving.name='Main Street freight pullout';
+  const layby=MAIN_PARKING_LAYBY,laybyPaving=directBox([layby.maxX-layby.minX,.04,layby.maxZ-layby.minZ],[(layby.minX+layby.maxX)/2,GROUND_LAYER.lane-.02,(layby.minZ+layby.maxZ)/2],GROUND.asphalt,group,[0,0,0],false,'road');laybyPaving.name='Main Street parking lay-by';
+  for(const z of [layby.minZ+.25,layby.maxZ-.25]){const line=directBox([layby.maxX-layby.minX-.2,.012,.09],[(layby.minX+layby.maxX)/2+.1,GROUND_LAYER.lane+.006,z],0xd6c8a7,group);line.name='Lay-by bay marking';line.material=line.material.clone();Object.assign(line.material,{depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});line.raycast=()=>{};}
   // The working quay bays connect to Main Street through a marked, flush driveway.
   // Drivers straighten clear of the Port Building canopy before crossing the footway.
-  const cargoDrive=directBox([3.9,.04,14.8],[1.25,GROUND_LAYER.grass-.02,-40.2],GROUND.asphalt,group,[0,0,0],false,'road');cargoDrive.name='Quay cargo driveway';
+  for(const [x0,x1,z0,z1] of [[cargoCourt.minX,cargoCourt.maxX,cargoCourt.minZ,layby.minZ],[layby.maxX,cargoCourt.maxX,layby.minZ,cargoCourt.maxZ]]){
+   const cargoDrive=directBox([x1-x0,.04,z1-z0],[(x0+x1)/2,GROUND_LAYER.lane-.02,(z0+z1)/2],GROUND.asphalt,group,[0,0,0],false,'road');cargoDrive.name='Quay cargo driveway';
+  }
+
   // The lay-by (QUAY_BAYS[1]) carries its own end marks, drawn with its paving above.
   for(const [x,z] of QUAY_BAYS.slice(0,1))for(const dx of [-1.02,1.02]){const line=directBox([.09,.012,4.5],[x+dx,GROUND_LAYER.grass+.006,z],0xd6c8a7,group);line.name='Working quay bay marking';line.material=line.material.clone();Object.assign(line.material,{depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});line.raycast=()=>{};}
 
@@ -159,7 +169,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   {
     const kerb=new THREE.MeshStandardMaterial({color:0xd9d6cc,roughness:.9});
     for(const x of [MAIN_ROAD.west-.09,MAIN_ROAD.east+.09]){
-      const gaps=[...([SHOP_CROSSING_Z,-18].map(z=>[z-1.6,z+1.6])),[court.minZ,court.maxZ],...(x<MAIN_ROAD.x?[[loading.minZ,loading.maxZ]]:[[MAIN_PARKING_LAYBY.minZ,MAIN_PARKING_LAYBY.kerbTo]])].sort((a,b)=>a[0]-b[0]);
+      const gaps=[...([SHOP_CROSSING_Z,-18].map(z=>[z-1.6,z+1.6])),...(x>MAIN_ROAD.x?[[commercialMouth.minZ,commercialMouth.maxZ],[cargoCourt.minZ,cargoCourt.maxZ]]:[]),[court.minZ,court.maxZ],...(x<MAIN_ROAD.x?[[loading.minZ,loading.maxZ]]:[[MAIN_PARKING_LAYBY.minZ,MAIN_PARKING_LAYBY.kerbTo]])].sort((a,b)=>a[0]-b[0]);
       let z0=MAIN_ROAD.minZ;
       for(const [a,b] of [...gaps,[MAIN_ROAD.maxZ,MAIN_ROAD.maxZ]]){
         if(b>z0&&a>z0){const len=a-z0;const k=new THREE.Mesh(new THREE.BoxGeometry(.18,.11,len),kerb);k.position.set(x,.025,z0+len/2);k.name='Main Street kerb';k.receiveShadow=true;k.castShadow=false;group.add(k);}
@@ -170,7 +180,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // Road paint to the 1997 standard (road-standards.js): solid white edge lines the
   // length of the street (the deck section draws its own to the same spec), and where the
   // road meets the lawn at its north end, 車止め posts rather than a crossing to nowhere.
-  edgeLines(group,[[MAIN_ROAD.x,BOARDWALK.maxZ],[MAIN_ROAD.x,MAIN_ROAD.maxZ-.2]],{width:MAIN_ROAD.width});
+  edgeLines(group,[[MAIN_ROAD.x,BOARDWALK.maxZ],[MAIN_ROAD.x,MAIN_ROAD.maxZ-.2]],{width:MAIN_ROAD.width,heightAt:()=>GROUND_LAYER.lane});
   [[-4.1,18.2,1.15,.45,.2],[-1.7,10,.8,.35,-.3]].forEach(v=>puddle(...v));
 
   // Two perpendicular crossings define the short rectangular shopping blocks. Where
@@ -179,9 +189,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // Both crossings: white zebra bars, kerbs dropped (see the kerbstones above), yellow
   // warning blocks at each end, and the blue crossing sign on the footway.
   for(const z of [SHOP_CROSSING_Z,-18]){
-    zebraCrossing(group,{x0:MAIN_ROAD.west+.15,x1:MAIN_ROAD.east-.15,z});
+    zebraCrossing(group,{x0:MAIN_ROAD.west+.15,x1:MAIN_ROAD.east-.15,z,y:GROUND_LAYER.lane});
     tactileStrip(group,{x:MAIN_ROAD.west-.38,z,w:.3,d:3});tactileStrip(group,{x:MAIN_ROAD.east+.38,z,w:.3,d:3});
-    roadSign(group,'crossing',{x:MAIN_ROAD.west-.42,z:z+1.75,ry:0,colliders});roadSign(group,'crossing',{x:MAIN_ROAD.east+.12,z:z-1.75,ry:Math.PI,colliders});
+    roadSign(group,'crossing',{x:MAIN_ROAD.pavementWest+.2,z:z+1.75,ry:0,colliders});roadSign(group,'crossing',{x:MAIN_ROAD.east+.12,z:z-1.75,ry:Math.PI,colliders});
   }
 
   // Shopfronts — masonry and timber with glass where useful.

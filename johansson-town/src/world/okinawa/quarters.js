@@ -16,8 +16,8 @@ import {buildKitahamaQuarter} from './kitahama-quarter.js';
 import {plotGate} from './layout.js';
 import {residentsLine,homeNameplate} from '../../people/island-households.js';
 import {dressOldTown} from './old-town.js';
-import {buildFumoto} from './fumoto.js';
-import {FUMOTO} from '../fumoto-layout.js';
+
+
 import {MAIN_ROAD} from '../main-road.js';
 import {WEST_YARD} from '../west-yard.js';
 import {createVendingMachine,vendingReady,hydrateVending,VENDING_MACHINE} from '../vending.js';
@@ -66,8 +66,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildWires(kit,solid);
  // Kitahama stands on the island's ground, below the old town's datum.
  kit.at(0,0,0,()=>buildKitahama(kit,solid,{anchor,inspect,onAction,vending:(x,z,ry)=>vending(x,z,ry,KITAHAMA.y)}),KITAHAMA.y);
- // Fumoto, the hamlet at the foot of Mount Aoba, on the same island ground.
- kit.at(0,0,0,()=>buildFumoto(kit,solid,{anchor,inspect,onAction,walledHouse,vending:(x,z,ry)=>vending(x,z,ry,FUMOTO.y+GROUND_LAYER.grass)}),FUMOTO.y);   // the co-op's machine on the hamlet's ground
+
  const old=dressOldTown(kit,solid,{inspect,anchor,onAction,vending,group});
 
  const {meshes,materials}=kit.finish(group,'Okinawan quarter');
@@ -511,17 +510,6 @@ function buildKitahama(kit,solid,ctx){
  // The house to let: a board on the gatepost and the shutters closed.
  {const p=K.plots.find(q=>q.romaji==='To let'),x=(p.minX+p.maxX)/2;
   kit.sign(poster({title:"Rental house",lines:['FOR RENT','2DK · ¥28,000',"Office To the Residents Division"],bg:'#f4ecd6',band:'#c8432f'}),.6,.8,x-1.6,1.1,p.minZ-.3,{ry:Math.PI,name:'to-let sign'});}
- // Sugar cane towards the point: rows of tall leaves, a little lighter at the tips.
- const F=K.field,r=rng(303);
- kit.block(F.minX,F.maxX,GROUND_LAYER.gravel,GROUND_LAYER.gravel+.03,F.minZ,F.maxZ,0x8a7a5a,'sand');
- for(let x=F.minX+.5;x<F.maxX;x+=1.1)for(let z=F.minZ+.4;z<F.maxZ;z+=.8){
-  const h=1.9+r.next()*.7;
-  kit.box(.12,h,.12,x+(r.next()-.5)*.2,h/2,z,0x8aa04a);
-  kit.box(.7,.05,.18,x,h-.1,z,0x5f8f3a,{ry:r.next()*3,rz:.4});
- }
- solid({id:'cane-field',x:(F.minX+F.maxX)/2,z:(F.minZ+F.maxZ)/2,w:F.maxX-F.minX,d:F.maxZ-F.minZ,height:2});
- ctx.inspect((F.minX+F.maxX)/2,1.2,F.minZ-.8,'Look at the cane field',"Sugar cane · Sugar cane",
-  'Head-high cane in rows, rattling in the wind off the point. Postman Tōma and the Ueharas share it; in January everybody on the lane cuts for a fortnight and the lorry comes over on the ferry to take it to the mill on the main island.');
  // The pole line: up the approach lane from the beach, then along the cross lane, with
  // a drop to every house. Poles stand on the lane's own verge, a quarter-metre in from its
  // edge: set outside the edge, they stood inside the garden walls.

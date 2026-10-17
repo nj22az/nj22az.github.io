@@ -26,6 +26,15 @@ test('every registered building has a clear complete circuit connected to Main S
  try{
   assert.ok(world.colliders.some(c=>Math.abs(c.x+12.95)<.1&&Math.abs(c.z+27.3)<.1&&c.w>10),'Sakura exists in the test scene');
   assert.ok(world.colliders.some(c=>c.id?.startsWith('west-shop:frontrow')),'Front-Row exists in the test scene');
+  assert.ok(COAST_BOUNDS.maxZ<=95,'rural land is removed, not hidden');
+  for(const [x,z] of [[40,158],[66,198],[132,190],[-54,204],[-38,117],[42,86]]){
+   assert.equal(onIslandLand(x,z),false,'retired district is sea: '+[x,z]);
+   assert.equal(routeAt(x,z,.32),null,'retired district has no active ground: '+[x,z]);
+  }
+  const retired=/Fumoto|Hoshizaki|Aoba|Utaki banyan|Lighthouse|Honesty stand|cane-field|farmhouse|field-shed/i;
+  world.group.traverse(o=>assert.equal(retired.test(o.name),false,'retired scenery: '+o.name));
+  assert.equal(world.colliders.some(c=>retired.test(c.id||'')),false,'no phantom rural colliders');
+  assert.equal(world.landmarks.some(l=>l.z>95&&l.x<80),false,'no retired map targets');
   const targets=[],failures=[];
   for(const loop of loops){
    assert.deepEqual(loop.points[0],loop.points.at(-1),loop.id+' closes');
@@ -66,6 +75,6 @@ test('every registered building has a clear complete circuit connected to Main S
   }
   for(const {id,point:[x,z]} of targets){let reachable=false;const ix=Math.round((x-minX)/cell),iz=Math.round((z-minZ)/cell);for(let dx=-1;dx<=1;dx++)for(let dz=-1;dz<=1;dz++)if(seen[(iz+dz)*nx+ix+dx])reachable=true;assert.ok(reachable,id+' circuit connects to Main Street');}
   const area=Math.abs(COASTLINE.reduce((n,p,i)=>{const q=COASTLINE[(i+1)%COASTLINE.length];return n+p[0]*q[1]-q[0]*p[1];},0))/2;
-  assert.ok(area<40000,'shoreline fits the retained town and landmarks');
+  assert.ok(area<12000,'shoreline is limited to the compact urban island');
  }finally{setWalkSurface(null);}
 });
