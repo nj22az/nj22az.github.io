@@ -75,7 +75,9 @@ export function voiceOf(profile={}){
  const pitch=clamp01(profile.pitch),speed=clamp01(profile.speed);
  return {
   freq:RYUKYU[Math.round(pitch*(RYUKYU.length-1))],
-  type:clamp01(profile.talk)>.62?'triangle':'sine',
+  type:['sine','triangle'].includes(profile.timbre)?profile.timbre:clamp01(profile.talk)>.62?'triangle':'sine',
+  volume:.06*(1.5-clamp01(profile.softness)),
+  vibrato:clamp01(profile.vibrato??0),
   letterMs:Math.round(34-speed*20),
   swing:clamp01(profile.show)>.5?1.0595:1,
  };
@@ -86,6 +88,9 @@ const DAYS_IN=[31,29,31,30,31,30,31,31,30,31,30,31];
 export const daysIn=month=>DAYS_IN[Math.min(11,Math.max(0,month-1))];
 export const birthdayText=profile=>`${clampDay(profile.month,profile.day)} ${MONTHS[(profile.month||1)-1]}`;
 function clampDay(month,day){return Math.min(daysIn(month||1),Math.max(1,day|0||1));}
+
+/** Legacy dialogue voices remain name-based until a voice control has been changed. */
+export const hasVoiceRefinement=p=>!!p&&(p.pitch!==undefined&&p.pitch!==.5||p.speed!==undefined&&p.speed!==.5||p.timbre!==undefined&&p.timbre!=='auto'||p.softness!==undefined&&p.softness!==.5||p.vibrato>0);
 
 /** What they say when they first meet you. */
 export function hello(recipe){

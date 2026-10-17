@@ -358,3 +358,20 @@ body,body :is(div,p,span,a,b,i,em,strong,small,h1,h2,h3,h4,h5,h6,li,dt,dd,label,
 @media(max-height:520px){
  #activity.conversation.rpg #activityBody :is(.rpg-line,.rpg-own){padding:12px 22px 14px;font-size:17px;border-radius:30px}
 }
+/* Bag browsing and read-only resident records share the town's controls and touch sizes. */
+.bag-controls{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.bag-controls select,.bag-controls input,.resident-compare select{min-width:0;min-height:44px;padding:10px 12px;border:1px solid #cbd3ce;border-radius:10px;background:#fff;color:#26372f;font:inherit}
+.bag-controls select{flex:1 1 140px}.bag-controls input{flex:2 1 180px}
+.bag-status{font-size:14px;color:#53655a}
+.resident-compare{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:16px 0}.resident-compare select{max-width:100%}
+.personality-reference summary{min-height:44px;padding:10px 0;cursor:pointer;font-weight:700}
+.personality-reference-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:10px}
+.personality-reference article{border-left:4px solid;padding:12px;background:#f5f8f6;border-radius:8px}
+.personality-reference article h4,.personality-reference article p{margin:0 0 6px}
+#activity.resident-record #activityBody h3{font-size:16px;line-height:1.4;margin:18px 0 6px}
+#activity.resident-record #activityBody p{font-size:16px;line-height:1.5;margin:0 0 10px}
+#activity.resident-record .personality-reference small{font-size:12px}
+@media(max-width:520px){.bag-controls select,.bag-controls input{flex-basis:100%;width:100%}}
+.resident-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(140px,100%),1fr));gap:8px;margin:12px 0}
+.resident-list button{min-height:48px;border:1px solid var(--line-border);border-radius:10px;background:#fff;color:var(--line-text);font:600 16px var(--line-font);padding:12px;cursor:pointer}
+.resident-list button:focus-visible{outline:3px solid var(--line-green);outline-offset:2px}

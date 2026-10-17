@@ -201,12 +201,14 @@ export const townAudio={
     }
   },
   /** A dialogue voice blip: one short soft note (dialogue-box.js picks it per speaker). */
-  blip(freq,type='sine',volume=.06){
+  blip(freq,type='sine',volume=.06,{vibrato=0}={}){
     if(!enabled||!ctx||ctx.state!=='running')return;
     const t=ctx.currentTime,osc=ctx.createOscillator(),env=ctx.createGain();
     osc.type=type;osc.frequency.setValueAtTime(freq,t);
+    if(vibrato>0){const lfo=ctx.createOscillator(),depth=ctx.createGain();lfo.frequency.value=5;depth.gain.value=freq*.015*Math.min(1,vibrato);lfo.connect(depth).connect(osc.frequency);lfo.start(t);lfo.stop(t+.07);lfo.onended=()=>{lfo.disconnect();depth.disconnect();};}
     env.gain.setValueAtTime(.0001,t);env.gain.exponentialRampToValueAtTime(volume,t+.006);env.gain.exponentialRampToValueAtTime(.0001,t+.06);
     osc.connect(env).connect(master);osc.start(t);osc.stop(t+.07);
+    osc.onended=()=>{osc.disconnect();env.disconnect();};
   },
   get enabled(){return enabled;}
 };

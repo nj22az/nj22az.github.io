@@ -929,7 +929,7 @@ const chatBlocked=(a,b)=>!clearChatLine(a,b,current?roomColliders:world.collider
 // The neighbours' small talk: written lines, or the town's language model when the
 // player has turned it on (it then starts by itself on later visits). See town-mind.js.
 const neighbourWriter=createNeighbourWriter({mind:sharedMind()});startMindIfChosen();
-const neighbourChats=createNeighbourChats({world,observer:()=>player.position,blocked:chatBlocked,state:()=>activities.state,writer:neighbourWriter});
+const neighbourChats=createNeighbourChats({world,observer:()=>player.position,blocked:chatBlocked,state:()=>activities.state,onMemory:()=>activities.save(),writer:neighbourWriter});
 const chatBubble=createChatBubble({camera,canvas,target:g=>characters.conversationTarget(g),blocked:chatBlocked});
 // Whoever you are talking to turns to face you, unless they are mid-something, in
 // which case they answer over their shoulder. See people/facing.js.
@@ -1578,7 +1578,7 @@ function visitPlace(s){
  if(current)leaveRoom();placeAtEntrance(s);resetInput();toggleDir(false);navigationTarget=null;drawMap();say(s.title+' · You took a familiar shortcut.',5);return true;
 }
 function toggleDir(open){if(inspector?.active)return;if(open){updateDirectory();document.exitPointerLock?.();resetInput();}$('#directory').classList.toggle('hidden',!open);document.body.classList.toggle('town-menu-open',!!open);$('#directoryButton').setAttribute('aria-expanded',String(open));if(open)$('#closeDirectory').focus();else $('#directoryButton').focus();}
-$('#directoryButton').onclick=()=>toggleDir(true);$('#closeDirectory').onclick=()=>toggleDir(false);
+$('#directoryButton').onclick=()=>toggleDir(true);$('#residentRecordsButton').onclick=()=>{toggleDir(false);activities.residentRecords(world.people.map(p=>p.profile.name));};$('#closeDirectory').onclick=()=>toggleDir(false);
 function updateDirectory(){
  // The camera tile is named after the model the player carries.
  {const m=pocketModel(),tile=$('#pocketButton');if(tile){tile.textContent=m.name;tile.setAttribute('aria-label',`Raise the ${m.name} camera (F)`);}}
@@ -1594,7 +1594,7 @@ function updateDirectory(){
  if(izakaya){destination(izakaya,'Minato Izakaya');grid.lastChild.className+=' izakaya-shortcut';}
  section('Street');SITES.filter(s=>s.id!=='izakaya').forEach(s=>destination(s));
  (world.landmarks||[]).forEach(s=>destination(s));
- section('Residents');const wantNames=wantPool();world.people.forEach(p=>{const name=p.g.userData.name,want=openWant(activities.state,minutes,wantNames,name),hearts=heartLine(activities.state.friendship?.[name]?.points||0);row(name,hearts+' · '+(want?'Would like '+withArticle(want.item.toLowerCase()):p.g.userData.activity||'On the street'),()=>{activities.note(p.g.userData.name+' · '+(p.g.userData.activity||'on the street'));toggleDir(false);});});
+ section('Residents');const wantNames=wantPool();world.people.forEach(p=>{const name=p.g.userData.name,want=openWant(activities.state,minutes,wantNames,name),hearts=heartLine(activities.state.friendship?.[name]?.points||0);row(name,hearts+' · '+(want?'Would like '+withArticle(want.item.toLowerCase()):p.g.userData.activity||'On the street'),()=>{toggleDir(false);activities.residentRecord(name);});});
  section('Reading and records');content.items.forEach(i=>row(i.title,i.place,()=>{const site=SITES.find(s=>s.id===i.siteId);if(site)markPlace(site);else toggleDir(false);}));
   section('Signals');[['82.1 Harbour Service',RADIO_821],['89.4 JOJO','Journal requests'],['95.7 Sports','Prefectural baseball'],['Payphone','Near the bookshop'],['Minato–Kitano Ferry','Outer pier · Passengers and occasional cars']].forEach(([a,b])=>row(a,b,()=>{toggleDir(false);say(a==='82.1 Harbour Service'?b:a+' · '+b,4);}));
 }
