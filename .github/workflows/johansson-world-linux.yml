@@ -52,7 +52,7 @@ jobs:
         run: |
           version=$(node -p "require('./steam-deck/package.json').version")
           tag="johansson-world-linux-v$version"
-          gh release view "$tag" >/dev/null 2>&1 || gh release create "$tag" --target "$GITHUB_SHA" --prerelease --title "Johansson World Linux $version" --notes "Offline island edition for Steam Deck and Linux. Includes local saves, controller pause/HUD controls, Harbour Festival side quest and an in-game update channel. Desktop application uses the existing Three.js world. Physical Steam Deck performance acceptance is pending."
+          gh release view "$tag" >/dev/null 2>&1 || gh release create "$tag" --target "$GITHUB_SHA" --prerelease --title "Johansson World Linux $version" --notes "Offline island preview for Steam Deck and x86-64 Linux. Version 0.2.3 adds console menus and first-play help, configurable controller sticks/camera/buttons, playable residents, owned homes and beds, and rare quarrels after repeated insults. The cycling and Thuan storage minigames are removed. Existing saves and the in-game update channel are retained. Automated controller/gameplay and native Linux checks passed before release. Physical Steam Deck performance acceptance is pending; please report your device, controller and any issues."
           gh release upload "$tag" steam-deck/dist/johansson-world-linux-x64.tar.gz steam-deck/dist/latest-linux.json steam-deck/dist/SHA256SUMS --clobber
       - name: Verify public installer and release checksum
         run: |
