@@ -90,7 +90,7 @@ files.addEventListener('keydown',event=>{if(event.key==='Escape'){files.open=fal
 let noticeTimer;
 const noticeObserver=new MutationObserver(()=>{clearTimeout(noticeTimer);if(status.textContent)noticeTimer=setTimeout(()=>{status.textContent='';},8000);});
 noticeObserver.observe(status,{childList:true});creator.root.querySelector('.shm-top').after(toolbar);
-function cleanup(){acting.dispose();performancePanel.dispose();titleObserver.disconnect();noticeObserver.disconnect();clearTimeout(noticeTimer);document.removeEventListener('click',closeFiles);}
+function cleanup(){profileObserver.disconnect();acting.dispose();performancePanel.dispose();titleObserver.disconnect();noticeObserver.disconnect();clearTimeout(noticeTimer);document.removeEventListener('click',closeFiles);}
 
 // Inspect the same character in several views without changing its design.
 const preview=document.createElement('details');preview.className='studio-preview';
@@ -126,6 +126,11 @@ creator.root.addEventListener('pointerdown',event=>{if(!preview.contains(event.t
 const modelExport=creator.root.querySelector('.shm-poses button');
 if(modelExport){modelExport.textContent='Download 3D model (.glb)';fileMenu.append(modelExport);}
 const addToScene=button(editingId?'Apply to scene':'Use in scene',()=>{const recipe=creator.recipe;const id=editingId;switchMode('scene');workspace.useCharacter(recipe,id);editingId=null;},true);
+// Studio hides the maker's four-step footer; personality needs an explicit, visible route here.
+const profileButton=button('Personality & voice',()=>creator.goTo(creator.root.dataset.step==='profile'?'look':'profile'));
+const syncProfile=()=>{const active=creator.root.dataset.step==='profile';profileButton.textContent=active?'Appearance':'Personality & voice';profileButton.setAttribute('aria-pressed',String(active));featureReset.hidden=active;if(active)creator.root.querySelector('.shm-part-title').textContent='Personality & voice';};
+const profileObserver=new MutationObserver(syncProfile);profileObserver.observe(creator.root,{attributes:true,attributeFilter:['data-step']});syncProfile();
+
 creator.root.setAttribute('role','region');creator.root.removeAttribute('aria-modal');
 creator.root.addEventListener('keydown',event=>{
  if(event.key!=='Tab'||creator.root.querySelector('.shm-share'))return;

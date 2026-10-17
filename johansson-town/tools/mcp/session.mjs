@@ -125,7 +125,7 @@ export class TownAuditSession{
   return {reached:true,before,after:await this.observe(),route};
  }
  async ui({control}){
-  const selectors={exit_room:'#exitRoomButton',close_activity:'#closeActivity',close_directory:'#closeDirectory',town_menu:'#directoryButton',settings:'#directory .menu-settings > summary',field_book:'#notebookButton',clock:'#timeButton',weather:'#weatherButton',moves:'#movesButton',bag:'#bagButton'};
+  const selectors={exit_room:'#exitRoomButton',close_activity:'#closeActivity',close_directory:'#closeDirectory',town_menu:'#directoryButton',settings:'#directory .menu-settings > summary',field_book:'#notebookButton',clock:'#timeButton',weather:'#weatherButton',moves:'#movesButton',bag:'#bagButton',residents:'#residentRecordsButton'};
   const button=this.requirePage().locator(selectors[control]);
   if(!await button.isVisible()||!await button.isEnabled())return {accepted:false,reason:'This normal game button is not currently available.',state:await this.observe()};
   await button.click();await this.page.waitForTimeout(250);this.history.push({control:'ui',button:control});

@@ -121,7 +121,7 @@ export const DEFAULT_RECIPE=Object.freeze({
  swim:Object.freeze({colour:'#2f5f9e',bath:'towel'}),
  // Who they are (personality.js): four dials, a voice, a birthday, a favourite colour
  // and a catchphrase. Old recipes without one get this middle-of-the-road islander.
- profile:Object.freeze({pace:.5,talk:.5,show:.5,outlook:.5,pitch:.5,speed:.5,month:7,day:1,favourite:'#3fa0c8',catchphrase:''}),
+ profile:Object.freeze({pace:.5,talk:.5,show:.5,outlook:.5,pitch:.5,speed:.5,timbre:'auto',softness:.5,vibrato:0,month:7,day:1,favourite:'#3fa0c8',catchphrase:''}),
 });
 
 /** Any object in, a complete and safe recipe out. Unknown fields are dropped. */
@@ -151,7 +151,7 @@ export function normalizeRecipe(input={}){
   accessories:sub('accessories',{earrings:(v,f)=>pick(PARTS.earrings,v,f),neckwear:(v,f)=>pick(PARTS.neckwear,v,f),colour:col,necklaceColour:(v,f)=>col(v,col(r.accessories?.colour,f)),pin:flag}),
   swim:sub('swim',{colour:col,bath:(v,f)=>v==='swimwear'||v==='towel'?v:f}),
   profile:(()=>{
-   const out=sub('profile',{pace:num,talk:num,show:num,outlook:num,pitch:num,speed:num,month:(v,f)=>Number.isInteger(+v)&&+v>=1&&+v<=12?+v:f,day:(v,f)=>Number.isInteger(+v)&&+v>=1&&+v<=31?+v:f,favourite:col,
+   const out=sub('profile',{pace:num,talk:num,show:num,outlook:num,pitch:num,speed:num,timbre:(v,f)=>['auto','sine','triangle'].includes(v)?v:f,softness:num,vibrato:num,month:(v,f)=>Number.isInteger(+v)&&+v>=1&&+v<=12?+v:f,day:(v,f)=>Number.isInteger(+v)&&+v>=1&&+v<=31?+v:f,favourite:col,
     catchphrase:(v,f)=>v===undefined?f:String(v).replace(/[\u0000-\u001f<>]/g,'').slice(0,40)});
    out.day=Math.min(out.day,[31,29,31,30,31,30,31,31,30,31,30,31][out.month-1]);return out;
   })(),

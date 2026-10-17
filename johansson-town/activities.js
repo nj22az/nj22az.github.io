@@ -1,3 +1,7 @@
+import {bagEntries,BAG_CATEGORIES} from './src/commerce/bag-catalogue.js';
+import {personalityOf,DIALS,dialStep,hasVoiceRefinement} from './src/avatars/personality.js';
+import {personalityReference} from './src/avatars/personality-questions.js';
+import {restoreRelationships,rememberEncounter,connectionsFor,connectionSummary,relationshipBetween} from './src/people/relationships.js';
 import {openYear,realYear} from './src/progression/year-loop.js';
 import {MINATO_MEMORY_STORY,MINATO_RECIPE_CARD} from './src/world/interiors/izakaya-exploration.js';
 import {foodArtForItem} from './src/commerce/food-art.js';
@@ -37,7 +41,7 @@ import {createWorkshopUI} from './src/workshop/interface.js';
 import {loadWorkshopModel,printedItem} from './src/workshop/models.js';
 import {loadOfficeWorkbooks,createOfficeWorkbookView} from './src/office/workbooks.js';
 import {STORE_MENU} from './src/commerce/store-menu.js';
-import {restoreResidentLife} from './src/people/resident-personalities.js';
+import {restoreResidentLife,residentPersonality} from './src/people/resident-personalities.js';
 import {travelProgress,travelStatusText} from './src/progression/travel.js';
 import {restoreHomeDecor} from './src/progression/home-decor.js';
 import {readStudioChoices,applyStudioChoices} from './src/studio-handoff.js';
@@ -98,7 +102,7 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
     const {saved,turned}=openYear(read);yearTurned=turned;
     if(saved&&typeof saved==='object'){state.loopYear=saved.loopYear;state.loops=saved.loops|0;pendingAbsence=pendingTownAbsence(saved);state.pendingTownMinutes=pendingAbsence;
       state.homeDecor=restoreHomeDecor(saved.homeDecor);state.pocketAlbum=restoreAlbum(saved.pocketAlbum);state.pocketTaken=Number.isInteger(saved.pocketTaken)&&saved.pocketTaken>0?Math.min(saved.pocketTaken,999999):0;state.pocketSeen=restoreSeen(saved.pocketSeen,state.pocketAlbum);state.diary=restoreDiary(saved.diary);state.news=restoreNews(saved.news);state.post=restorePost(saved.post);awaySince=Number.isFinite(saved.savedAt)?saved.savedAt:0;state.impressions=restoreImpressions(saved.impressions);state.favours=restoreFavours(saved.favours);state.errand=restoreFavourErrand(saved.errand);state.greeted=saved.greeted&&typeof saved.greeted==='object'?Object.fromEntries(Object.entries(saved.greeted).filter(([k,v])=>typeof k==='string'&&Number.isSafeInteger(v)).slice(-60)):{};
-      state.concert=cleanConcert(saved.concert);
+      state.concert=cleanConcert(saved.concert);state.relationships=restoreRelationships(saved.relationships);
       state.heardHappenings=Array.isArray(saved.heardHappenings)?saved.heardHappenings.filter(x=>typeof x==='string').slice(-40):[];
       state.thuanOutfit=['nozomi','sailor'].includes(saved.thuanOutfit)?saved.thuanOutfit:'clothes';{const house=restoreHouseState(saved[HOUSE_SAVE]);if(house)state[HOUSE_SAVE]=house;}state.island=restoreIsland(saved.island);state.documentArchive=restoreArchive(saved.documentArchive);state.sakura=saved.sakura;state.bookshop=saved.bookshop;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.konbini=saved.konbini;state.residentLife=restoreResidentLife(saved.residentLife);state.friendship=restoreFriendship(saved.friendship);state.residentLocations=saved.residentLocations;
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
@@ -116,6 +120,7 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
 
   if(!Number.isInteger(state.loopYear)){state.loopYear=realYear();state.loops=0;}
   if(yearTurned)setTimeout(()=>say('1 January 1997, again. The year has started over; your friends still know you.',8),6000);
+  state.relationships=restoreRelationships(state.relationships);
   state.story=restoreStory(state.story);
   ensureDailyQuests(state);
   // Back after a week or more: the closest friends write to say so, with today's post (src/mail/post.js).
@@ -135,7 +140,7 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
 
   const characterControl=()=>window.__JOHANSSON_CHARACTER_CONTROL__;
   const modal=$('#activity'),heading=$('#activityTitle'),body=$('#activityBody'),actions=$('#activityActions');
-  const dialogueBox=createDialogueBox({modal,heading,body,actions,isOpen:()=>modalOpen,leave:()=>close(),onPhase:phase=>onDialoguePhase(phase),voice:(freq,type)=>{if(state.sound!==false)townAudio.blip(freq,type);}});
+  const dialogueBox=createDialogueBox({modal,heading,body,actions,isOpen:()=>modalOpen,leave:()=>close(),onPhase:phase=>onDialoguePhase(phase),voiceProfile:name=>{const p=recipeFor(name).profile;return hasVoiceRefinement(p)?p:null;},voice:(freq,type,volume,options)=>{if(state.sound!==false)townAudio.blip(freq,type,volume,options);}});
 
   const workshopUI=createWorkshopUI({state,show,close,save,say,note,getContext:getSocialContext,getMinutes,preview:previewPrint,body,modal});
 
@@ -156,10 +161,10 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
     $('#wallet').textContent=`¥${state.yen.toLocaleString()}`;
     return saved;
   }
-  function close(){dialogueBox.close();modal.classList.remove('bag-view','flyer-view','letter-view','pocket-album-view');ledgerView=null;magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
+  function close(){dialogueBox.close();modal.classList.remove('bag-view','flyer-view','letter-view','pocket-album-view','resident-record');ledgerView=null;magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
   // options.mood: how Thuan's face looks for this line (her lines only; others release it).
   function show(title,text,buttons=[],options={}){
-    modal.classList.remove('bag-view','flyer-view','letter-view','pocket-album-view');ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modal.classList.remove('office-records');
+    modal.classList.remove('bag-view','flyer-view','letter-view','pocket-album-view','resident-record');ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modal.classList.remove('office-records');
     magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');
     modalRevision++;const revision=modalRevision;
     townAudio.stopSpeech();clearInterval(timer);timer=null;if(!modalOpen){onOpen();previousFocus=document.activeElement;}modalOpen=true;document.exitPointerLock?.();
@@ -273,7 +278,7 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
     const speak=(r,speaker)=>{const l=favourLine(f,e,r.step,{speaker,temper:temperOf(speaker),playerName:playerName()});show(talkTitle(speaker),l.text,[['See you soon',close]],cue(l));showHearts(speaker);};
     // The favour is done (a delivery handed over, or a return brought back): the town remembers it, the friendships
     // grow, and the asker writes the next morning.
-    const finish=r=>{takeOne(f.item);recordMoment(state,getMinutes(),r.moment);for(const [who,points] of Object.entries(f.friendship))helped(state,who,points);
+    const finish=r=>{if(['done','handOver'].includes(r.step))rememberEncounter(state,f.from,f.to,{kind:'help',minutes:getMinutes(),place:'favour'});takeOne(f.item);recordMoment(state,getMinutes(),r.moment);for(const [who,points] of Object.entries(f.friendship))helped(state,who,points);
       sendLetter(state,{id:'helped:'+f.id,day:Math.floor(getMinutes()/1440)+1,occasion:'helped',from:f.from,body:f.thanks||null});};
     if(name===e.from){const r=favourVisit(state,name,{minutes:m});if(r){if(r.step==='late')takeOne(r.item);if(r.moment)finish(r);line=favourLine(f,e,r.step,{speaker:name,temper:temperOf(name),playerName:playerName(),minutes:m});save();}}
     const thing=f.item[0].toLowerCase()+f.item.slice(1);
@@ -313,23 +318,71 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
     modal.style.setProperty('--letter-ink',paper.ink);
   }
   // The bag: what you are carrying, as a tray of icons. Tap one to use it or look at it.
+  const bagBrowse={category:'all',query:'',scroll:0,item:null};
   function bag(){
-    const counts=new Map();for(const item of state.inventory)counts.set(item,(counts.get(item)||0)+1);
-    if(!counts.size){receipt('Bag','Your bag is empty.');return;}
     const models=new Set(printedModels(state.inventory).map(m=>m.name));
     show('Bag',`${state.inventory.length} thing${state.inventory.length===1?'':'s'} · ¥${state.yen.toLocaleString()}`,[['Field book',inventory],['Close',close]]);
     modal.classList.add('bag-view');
-    const grid=document.createElement('div');grid.className='bag-grid';
-    for(const [item,n] of counts){
-      const tile=document.createElement('button');tile.type='button';tile.className='bag-tile';
-      const art=foodArtForItem(item);if(art){const image=document.createElement('img');image.src=art;image.alt='';image.width=70;image.height=70;image.style.objectFit='contain';tile.append(image);}else tile.innerHTML=svg(itemIcon(item,{printed:models.has(item)}),{size:34});
-      const label=document.createElement('span');label.className='bag-name';label.textContent=item;tile.append(label);
-      if(n>1){const count=document.createElement('b');count.className='bag-n';count.textContent='×'+n;tile.append(count);}
-      tile.setAttribute('aria-label',n>1?`${item}, ${n}`:item);
-      tile.onclick=()=>bagItem(item);grid.append(tile);
+    const controls=document.createElement('div');controls.className='bag-controls';
+    const filter=document.createElement('select');filter.setAttribute('aria-label','Bag category');
+    const all=bagEntries(state.inventory),available=new Set(all.map(e=>e.category));
+    for(const category of BAG_CATEGORIES.filter(c=>c.id==='all'||available.has(c.id)||c.id===bagBrowse.category)){
+      const option=document.createElement('option');option.value=category.id;const n=all.filter(e=>category.id==='all'||e.category===category.id).reduce((n,e)=>n+e.count,0);option.textContent=category.label+' · '+n;filter.append(option);
     }
-    body.append(grid);
+    filter.value=bagBrowse.category;
+    const search=document.createElement('input');search.type='search';search.placeholder='Find something in your bag';search.setAttribute('aria-label','Search your bag');search.value=bagBrowse.query;
+    const status=document.createElement('p');status.className='bag-status';status.setAttribute('role','status');
+    const grid=document.createElement('div');grid.className='bag-grid';
+    function fill(){
+      grid.replaceChildren();const entries=bagEntries(state.inventory,bagBrowse);
+      status.textContent=!state.inventory.length?'Your bag is empty.':entries.length?`${entries.length} different item${entries.length===1?'':'s'}`:'No items match. Choose All or clear the search.';
+      for(const {item,count:n} of entries){
+        const tile=document.createElement('button');tile.type='button';tile.className='bag-tile';tile.dataset.item=item;
+        const art=foodArtForItem(item);if(art){const image=document.createElement('img');image.src=art;image.alt='';image.width=70;image.height=70;image.style.objectFit='contain';tile.append(image);}else tile.innerHTML=svg(itemIcon(item,{printed:models.has(item)}),{size:34});
+        const label=document.createElement('span');label.className='bag-name';label.textContent=item;tile.append(label);
+        if(n>1){const count=document.createElement('b');count.className='bag-n';count.textContent='×'+n;tile.append(count);}
+        tile.setAttribute('aria-label',n>1?`${item}, ${n}`:item);
+        tile.onclick=()=>{bagBrowse.scroll=body.scrollTop||0;bagBrowse.item=item;bagItem(item);};grid.append(tile);
+      }
+    }
+    filter.onchange=()=>{bagBrowse.category=filter.value;bagBrowse.scroll=0;bagBrowse.item=null;fill();};
+    search.oninput=()=>{bagBrowse.query=search.value;bagBrowse.scroll=0;bagBrowse.item=null;fill();};
+    controls.append(filter,search);body.append(controls,status,grid);fill();
+    body.scrollTop=bagBrowse.scroll;
+    if(bagBrowse.item){const selected=[...grid.children].find(b=>b.dataset.item===bagBrowse.item);selected?.focus?.({preventScroll:true});}
   }
+  let recordNames=RESIDENTS.map(p=>p.name);
+  function residentRecords(names=recordNames){
+    recordNames=[...new Set(names)].filter(name=>PROFILES.some(p=>p.name===name));
+    show('Residents','Read their personalities, interests and connections in this save.',[['Back to the Town Book',()=>{close();document.querySelector('#directoryButton')?.click();}],['Close',close]]);
+    const list=document.createElement('div');list.className='resident-list';
+    for(const name of recordNames){const button=document.createElement('button');button.type='button';button.textContent=name;button.onclick=()=>residentRecord(name);list.append(button);}body.append(list);
+  }
+  function residentRecord(name,compareName=''){
+    const profile=RESIDENTS.find(p=>p.name===name)||PROFILES.find(p=>p.name===name);if(!profile)return;
+    const recipe=recipeFor(name),type=personalityOf(recipe.profile),taste=residentPersonality(name);
+    show('Resident record · '+name,type.name+' · '+type.line,[['Back to residents',()=>residentRecords()],['Close',close]]);
+    modal.classList.add('resident-record');
+    const section=(title,text)=>{const h=document.createElement('h3'),p=document.createElement('p');h.textContent=title;p.textContent=text;body.append(h,p);};
+    section('About '+name,profile.role.charAt(0).toUpperCase()+profile.role.slice(1)+'. '+type.strength);
+    section('Personality dials',DIALS.map(d=>d.label+': '+dialStep(recipe.profile[d.key])+'/8 ('+(dialStep(recipe.profile[d.key])>4?d.high:d.low)+')').join(' · '));
+    section('Interests',taste.interests.map(interestWord).join(', '));
+    section('Established connection',profile.friend?'Their story names '+profile.friend+' as a friend.':'Their established story remains unchanged.');
+    const connections=connectionsFor(state,name);
+    section('Encounters in this save',connections.length?connections.map(c=>c.name+': '+connectionSummary(c.record)).join('\n'):'No completed encounters recorded yet.');
+    const label=document.createElement('label'),select=document.createElement('select');label.className='resident-compare';label.textContent='Compare with ';select.setAttribute('aria-label','Compare resident');
+    const blank=document.createElement('option');blank.value='';blank.textContent='Choose a resident';select.append(blank);
+    for(const other of PROFILES.filter(p=>p.name!==name)){const option=document.createElement('option');option.value=other.name;option.textContent=other.name;select.append(option);}
+    select.value=compareName;select.onchange=()=>residentRecord(name,select.value);label.append(select);body.append(label);
+    if(compareName&&PROFILES.some(p=>p.name===compareName)&&compareName!==name){
+      const other=residentPersonality(compareName),shared=taste.interests.filter(i=>other.interests.includes(i)),r=relationshipBetween(state,name,compareName);
+      section('Temperaments',name+': '+type.name+'. '+compareName+': '+personalityOf(recipeFor(compareName).profile).name+'.');
+      section('Common ground',shared.length?shared.map(interestWord).join(', '):'Different interests can still make a good friendship.');
+      section('Shared history',r?connectionSummary(r):'No completed encounters recorded for this pair.');
+    }
+    body.append(personalityReference());
+  }
+  const interestWord=i=>({read:'Reading',inspect:'Exploring',seat:'Taking a quiet break',shop:'Shopping',arcade:'Arcade games',machine:'Machines',radio:'Radio',office:'Harbour work',fish:'Fishing',phone:'Keeping in touch',post:'Letters',drink:'A drink with friends'}[i]||i);
   function sakuraFlyer(location='Bag'){
     fileDocument(state,FLYER_PAPER,getMinutes());save();
     const owned=state.inventory.includes(FLYER_ITEM);
@@ -342,7 +395,7 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
     const image=document.createElement('img');image.src=FLYER_PATH;image.alt=FLYER_PAPER.text;image.width=900;image.height=1280;image.style.cssText='display:block;width:100%;height:auto;max-width:620px;margin:12px auto;box-shadow:0 4px 18px #0003';body.append(image);
   }
   function bagItem(item){
-    if(item===MINATO_RECIPE_CARD){receipt(MINATO_RECIPE_CARD,MINATO_MEMORY_STORY);return;}
+    if(item===MINATO_RECIPE_CARD){show(MINATO_RECIPE_CARD,MINATO_MEMORY_STORY,[['Back to the bag',bag],['Close',close]]);return;}
     if(item===FLYER_ITEM){sakuraFlyer();return;}
     const model=printedModels(state.inventory).find(m=>m.name===item);
     const special=SPECIAL_BY_NAME[item],hotSnack=HOT_SNACKS.find(snack=>snack.name===item);
@@ -1369,5 +1422,5 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);
   // Storage restock handshake may arrive while the tab was on thuans-storage.
   consumeStorageRestock();$('#soundButton').textContent=state.sound?'On':'Off';radioStation=state.radioStation||0;save();{const label=onWeather?.('start');if(typeof label==='string')$('#weatherButton').textContent=label;}
-  return {action,documentArchive,inventory,bag,close,save,keepPhoto,letGoPhoto,pocketAlbum,get album(){return state.pocketAlbum||[];},post,deliverPost,favourCard,get unreadPost(){return unreadCount(ensurePost(state).box);},spend,players,menu:show,dialogue:dialogueBox,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,consumeStorageRestock,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
+  return {action,documentArchive,inventory,bag,residentRecord,residentRecords,close,save,keepPhoto,letGoPhoto,pocketAlbum,get album(){return state.pocketAlbum||[];},post,deliverPost,favourCard,get unreadPost(){return unreadCount(ensurePost(state).box);},spend,players,menu:show,dialogue:dialogueBox,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,consumeStorageRestock,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
 }

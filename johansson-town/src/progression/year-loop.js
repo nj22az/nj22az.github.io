@@ -1,3 +1,4 @@
+import {relationshipsNextYear} from '../people/relationships.js';
 /**
  * The island's year starts over. The calendar follows the real date, always in 1997 (town-clock.js); when the real year
  * turns, the next time a save is opened it is 1 January 1997 again on the island. What the player built up with people
@@ -25,6 +26,7 @@ export function openYear(saved,now=new Date()){
  if(!Number.isInteger(saved.loopYear))return {saved:{...saved,loopYear:realYear(now),loops:saved.loops|0},turned:false};
  if(!newYearDue(saved,now))return {saved,turned:false};
  const next={loopYear:realYear(now),loops:(saved.loops|0)+1};
+ if(saved.relationships)next.relationships=relationshipsNextYear(saved.relationships);
  for(const key of YEAR_KEEPS)if(saved[key]!==undefined)next[key]=structuredClone(saved[key]);
  // A favour's thing goes with the favour: the errand is not kept, so neither is what he was carrying for it.
  const carried=saved.errand?.favour&&typeof saved.errand.item==='string'?saved.errand.item:null;

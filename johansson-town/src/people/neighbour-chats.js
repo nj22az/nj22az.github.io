@@ -3,6 +3,8 @@ import {lineFeeling} from '../avatars/body-language.js';
 import {recipeFor} from '../avatars/cast.js';
 import {writtenChat} from './chat-lines.js';
 import {residentPlan} from './social.js';
+import {residentPersonality} from './resident-personalities.js';
+import {rememberEncounter,connectionWeight,relationshipChat} from './relationships.js';
 
 const EXCHANGES=[
  ['Nhung','Emi',['Did Tama agree to the apron?','He has asked for a larger salary.','Payment in sardines, presumably.']],
@@ -48,20 +50,24 @@ export const CHAT_REACH=Object.freeze({apart:4.6,near:.85,observer:14,cooldown:1
 // come from the town's language model when the player has it running (town-mind.js),
 // written ahead for pairs who are about to meet; otherwise from the written small talk,
 // in each speaker's own temperament (chat-lines.js).
-export function createNeighbourChats({world,observer,blocked=()=>false,state=()=>({}),writer=null,random=Math.random}){
+export function createNeighbourChats({world,observer,blocked=()=>false,state=()=>({}),onMemory=()=>{},writer=null,random=Math.random}){
  let clock=0,nextScan=2,active=null,sequence=0;const cooldown=new Map(),recent=new Map();
  const point=p=>{const v=p.g.getWorldPosition(new THREE.Vector3());v.y+=(p.profile.height||1.7)*.8;return v;};
  const signature=(p,minutes,rain)=>residentPlan(p.profile,minutes,rain,state()).place+'/'+place(p);
  const person=p=>({name:p.profile.name,age:p.profile.age,role:p.profile.role,personality:p.profile.personality,gossip:p.profile.gossip,profile:recipeFor(p.profile.name).profile});
  const pairKey=(a,b)=>[a.profile.name,b.profile.name].sort().join('|');
  function cancel(){if(active){for(const p of active.pair){delete p.g.userData.chat;delete p.g.userData.chatHold;if(p.g.userData.lookSource==='chat'){delete p.g.userData.lookTarget;delete p.g.userData.lookSource;}cooldown.set(p.profile.name,clock+CHAT_REACH.cooldown+random()*10);}active=null;}nextScan=clock+CHAT_REACH.between;}
- function eligible(p){return visible(p.g)&&!p.g.userData.sleeping&&!p.g.userData.waking&&!p.g.userData.roomTransition&&!p.g.userData.shopping&&!p.g.userData.serving&&!p.g.userData.usingTownObject&&!p.g.userData.mealState&&(!p.g.userData.indoors||place(p)!=='street')&&!(p.g.userData.facePlayerUntil>performance.now())&&!(p.profile.name==='Chin'&&state().kenjiEscort==='walking')&&p.g.position.distanceTo(observer())<CHAT_REACH.observer;}
+ function eligible(p){return visible(p.g)&&!p.g.userData.sleeping&&!p.g.userData.waking&&!p.g.userData.roomTransition&&!p.g.userData.shopping&&!p.g.userData.serving&&!p.g.userData.usingTownObject&&(!p.g.userData.mealState||p.g.userData.mealState==='finished')&&(!p.g.userData.indoors||place(p)!=='street')&&!(p.g.userData.facePlayerUntil>performance.now())&&!(p.profile.name==='Chin'&&state().kenjiEscort==='walking')&&p.g.position.distanceTo(observer())<CHAT_REACH.observer;}
  function update(dt,minutes,rain=false){
   clock+=dt;
   if(active){
    if(active.pair.some((p,i)=>!eligible(p)||signature(p,minutes,rain)!==active.signatures[i])||blocked(point(active.pair[0]),point(active.pair[1]))){cancel();return;}
    const elapsed=clock-active.start;
-   let turn=active.ends.findIndex(t=>elapsed<t);if(turn<0){cancel();return;}
+   let turn=active.ends.findIndex(t=>elapsed<t);if(turn<0){
+    const [a,b]=active.pair.map(p=>p.profile.name);
+    const changed=rememberEncounter(state(),a,b,{kind:active.relationshipKind,minutes,place:place(active.pair[0])});
+    cancel();if(changed)onMemory();return;
+   }
    const speaker=active.pair[active.speakers[turn]];active.speaker=speaker;active.text=active.lines[turn];active.turn=turn;
    // The speaker wears the feeling of the line; their personality decides the move.
    if(active.feltTurn!==turn){active.feltTurn=turn;const f=lineFeeling(active.text);speaker.g.userData.lineFeeling=f?{expression:f,until:performance.now()+4000}:null;}
@@ -82,19 +88,23 @@ export function createNeighbourChats({world,observer,blocked=()=>false,state=()=
    if(d>CHAT_REACH.apart||(cooldown.get(a.profile.name)||0)>clock||(cooldown.get(b.profile.name)||0)>clock||blocked(point(a),point(b)))continue;
    const written=EXCHANGES.filter(e=>[a.profile.name,b.profile.name].includes(e[0])&&[a.profile.name,b.profile.name].includes(e[1])),authored=written.length?written[Math.floor(random()*written.length)]:null;
    const ready=writer?.has?.(person(a),person(b));
-   const score=d+(ready?-6:0)+(authored&&!recent.get(pairKey(a,b))?.includes('authored')?-4:0);if(!best||score<best.score)best={a,b,authored,score};
+   const score=d+(ready?-6:0)+(authored&&!recent.get(pairKey(a,b))?.includes('authored')?-4:0)-connectionWeight(state(),a.profile.name,b.profile.name);if(!best||score<best.score)best={a,b,authored,score};
   }
   const context={minutes,rain,place:placeName(people[0]||{g:{userData:{}}})};
   if(soon&&writer?.ready&&!writer.busy)writer.prepare(person(soon.a),person(soon.b),{...context,place:placeName(soon.a)});
   if(!best)return;
   let {a,b,authored}=best;
   const seen=recent.get(pairKey(a,b))||[];
-  let chat=writer?.take?.(person(a),person(b));
+  const interests=residentPersonality(a.profile.name).interests.filter(i=>residentPersonality(b.profile.name).interests.includes(i));
+  let chat=relationshipChat(state(),a.profile.name,b.profile.name,{minutes,sharedInterests:interests});
+  if(chat&&seen.includes(chat.topic))chat=null;
+  chat??=writer?.take?.(person(a),person(b));
   if(!chat&&authored&&!seen.includes('authored')){if(a.profile.name!==authored[0])[a,b]=[b,a];chat={topic:'authored',lines:authored[2],speakers:authored[2].map((_,i)=>i%2)};}
   if(!chat){if(random()<.5)[a,b]=[b,a];chat=writtenChat(person(a),person(b),{minutes,rain,random,avoid:seen});}
   recent.set(pairKey(a,b),[...seen.slice(-6),chat.topic]);sequence++;
   let t=0;const ends=chat.lines.map(l=>t+=lineSeconds(l));
-  active={pair:[a,b],lines:chat.lines,speakers:chat.speakers,ends,topic:chat.topic,generated:!!chat.generated,start:clock,signatures:[signature(a,minutes,rain),signature(b,minutes,rain)],speaker:a,text:chat.lines[0]};
+  const meal=[a,b].every(p=>p.g.userData.mealState==='finished')&&['izakaya','ramen'].includes(place(a));
+  active={pair:[a,b],lines:chat.lines,speakers:chat.speakers,ends,topic:chat.topic,relationshipKind:chat.relationshipKind||(meal?'meal':'chat'),generated:!!chat.generated,start:clock,signatures:[signature(a,minutes,rain),signature(b,minutes,rain)],speaker:a,text:chat.lines[0]};
   update(0,minutes,rain);
  }
  return {update,cancel,get current(){return active;},get count(){return sequence;}};

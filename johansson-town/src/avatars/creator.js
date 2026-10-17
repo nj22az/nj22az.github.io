@@ -13,6 +13,8 @@ import {CAST_RECIPES,ORIGINAL_THUAN_RECIPE} from './cast.js';
 import {MOVES} from './moves.js';
 import {DIALS,DIAL_STEPS,dialStep,stepValue,personalityOf,voiceOf,MONTHS,daysIn,hello} from './personality.js';
 import {svg} from '../ui/icons.js';
+import {townAudio,unlockTownAudio} from '../audio/town-audio.js';
+import {PERSONALITY_QUESTIONS,answeredPersonality,personalityReference} from './personality-questions.js';
 import {headProfile,shapeHeadPoint} from './head-profile.js';
 
 /** Front silhouettes drawn from the same profile deformation as the game head. */
@@ -404,6 +406,18 @@ const CSS=`
 .shm[data-step=look] .shm-palette .shm-swatches{flex-wrap:nowrap;overflow-x:auto;padding:3px 3px 6px}
 .shm-palette .shm-swatches button{flex:0 0 auto}
 
+
+.shm-questions,.shm-wearing,.personality-reference{margin:8px 0 14px;font-size:14px;line-height:1.5}
+.shm summary{cursor:pointer;min-height:44px;padding:10px 0;font-weight:700}
+.shm-questions fieldset{min-width:0;border:1px solid #c8d1cb;border-radius:12px;padding:12px;margin:12px 0}
+.shm-questions legend{font-weight:700;padding:0 4px}
+.shm-questions label{display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 0;cursor:pointer}
+.shm-questions input{flex:0 0 auto;width:20px;height:20px;accent-color:#347d69}
+.shm .personality-reference-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:10px}
+.shm .personality-reference article{border-left:4px solid;padding:10px;background:#fff;border-radius:8px}
+.shm .personality-reference h4,.shm .personality-reference p{margin:0 0 6px}
+.shm .shm-wearing{margin:0;font-size:12px}.shm .shm-wearing summary{min-height:32px;padding:4px 0}.shm .shm-wearing p{margin:2px 0}
+
 `;
 
 /**
@@ -419,9 +433,9 @@ const CSS=`
  * @param {boolean} [options.keepOpenOnSave] save without leaving the editor
  * @returns {object} creator controls, current recipe and transparent PNG export
  */
-export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},onClose=()=>{},saveLabel='Save and play',shareLink=null,startAt='look',voice=()=>{},owner=null,templates=null,keepOpenOnSave=false}={}){
+export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},onClose=()=>{},saveLabel='Save and play',shareLink=null,startAt='look',voice=null,owner=null,templates=null,keepOpenOnSave=false}={}){
  if(!document.getElementById('shimanchu-css')){const style=document.createElement('style');style.id='shimanchu-css';style.textContent=CSS;document.head.append(style);}
- let wardrobeOwner=owner||start.name;let recipe=normalizeRecipe({...start,outfit:appropriateOutfit(wardrobeOwner,start.outfit)});const history=[];let featureBaseline=structuredClone(recipe);
+ let wardrobeOwner=owner||start.name;let recipe=normalizeRecipe({...start,outfit:appropriateOutfit(wardrobeOwner,start.outfit)});const history=[];const viewPositions=new Map();let featureBaseline=structuredClone(recipe);
  let step=STEPS.some(s=>s[0]===startAt)?startAt:'look',tab='body',page='style',pose='idle',expression='auto',previewFacing=0,hairThumbView='front',wearing='clothes',dress=null,previewFraming='auto';
  const performanceState=createPerformance();let performanceEnabled=false,activePerformanceFace={},walkTurn=0,actingFrame=null;
  const el=(tag,props={},...children)=>{const e=Object.assign(document.createElement(tag),props);for(const c of children)if(c!=null)e.append(c);return e;};
@@ -701,13 +715,13 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   set(recipe,at,value);if(at==='glasses.style')recipe.glasses.enabled=true;recipe=normalizeRecipe(recipe);dirty=true;
   if(at.startsWith('outfit'))numberSync?.();
  }
- function chooseTab(id){endDrag();tab=id;category.value=id;const t=TABS.find(x=>x.id===id);if(!t.controls.some(c=>c.page===page))page='style';for(const c of t.controls)chipFor.delete(c.at);renderTabs();renderBody();body.scrollTop=0;syncFocus();}
+ function chooseTab(id){endDrag();viewPositions.set(tab+'/'+page,body.scrollTop);tab=id;category.value=id;const t=TABS.find(x=>x.id===id);if(!t.controls.some(c=>c.page===page))page='style';renderTabs();renderBody();body.scrollTop=viewPositions.get(tab+'/'+page)||0;syncFocus();}
  category.onchange=()=>chooseTab(category.value);
  function renderTabs(){
   if(!tabs.children.length)tabs.append(...TABS.map(t=>{const b=el('button',{role:'tab',id:'shm-tab-'+t.id,ariaLabel:t.name,title:t.name});b.innerHTML=featureIcon(t.id);b.append(el('span',{textContent:t.name}));b.setAttribute('aria-controls','shm-body');b.onclick=()=>chooseTab(t.id);return b;}));
   [...tabs.children].forEach((b,i)=>{const active=TABS[i].id===tab;b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1;});
   const t=TABS.find(x=>x.id===tab);
-  pages.replaceChildren(...PAGES.filter(([id])=>t.controls.some(c=>c.page===id)).map(([id,label])=>{const b=el('button',{role:'tab',textContent:label});b.setAttribute('aria-selected',String(id===page));b.onclick=()=>{page=id;renderTabs();renderBody();};return b;}));
+  pages.replaceChildren(...PAGES.filter(([id])=>t.controls.some(c=>c.page===id)).map(([id,label])=>{const b=el('button',{role:'tab',textContent:label});b.setAttribute('aria-selected',String(id===page));b.onclick=()=>{viewPositions.set(tab+'/'+page,body.scrollTop);page=id;renderTabs();renderBody();body.scrollTop=viewPositions.get(tab+'/'+page)||0;};return b;}));
   body.setAttribute('aria-label',TABS.find(t=>t.id===tab).name);partTitle.textContent=TABS.find(t=>t.id===tab).name;
   const positioning=step==='look'&&POSITION_FEATURES.has(tab);
   dragHint.textContent=positioning?'Drag the '+tab+' on the face to position them. Adjustment buttons also work.':'';
@@ -782,7 +796,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   const t=TABS.find(x=>x.id===tab),host=wardrobeArea;host.replaceChildren();
   prunePictures();
   if(wardrobeQuery){searchResults(host);return;}
-  found.textContent='';controlsInto(host,t);
+  found.textContent='';const wearing=el('details',{className:'shm-wearing'});wearing.append(el('summary',{textContent:'Currently wearing'}));for(const [slot,colour] of [['top','topColour'],['bottom','bottomColour'],['footwear','shoes'],['hat','hatColour']])wearing.append(el('p',{textContent:labelFor(slot,recipe.outfit[slot])+' · '+(ISLAND_PALETTE.find(c=>c.hex===recipe.outfit[colour])?.name||recipe.outfit[colour])}));host.append(wearing);controlsInto(host,t);
  }
  /** A picture tile for a wardrobe part or an outfit set: its picture, its short label, and a name that holds the label. */
  function wardrobeTile(entry,draw,onPick){
@@ -1035,7 +1049,13 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   const wear=el('button',{type:'button',className:'shm-pill',textContent:'Wear it'});wear.onclick=()=>change('outfit.topColour',recipe.profile.favourite);
   body.append(swatches,el('div',{className:'shm-row',style:'margin-top:8px'},wear));
   body.append(el('h4',{textContent:'Personality'}));
-  const card=el('div',{className:'shm-type',role:'status'});
+  const questions=el('details',{className:'shm-questions'}),questionTitle=el('summary',{textContent:'Choose their personality with four questions'});
+  const answers={},result=el('p',{className:'shm-note',role:'status',textContent:'Answer all four, then apply. You can still adjust the dials yourself.'}),apply=el('button',{type:'button',className:'shm-pill',textContent:'Apply answers',disabled:true});
+  questions.append(questionTitle);
+  for(const q of PERSONALITY_QUESTIONS){const field=el('fieldset',{},el('legend',{textContent:q.question}));q.answers.forEach((text,i)=>{const input=el('input',{type:'radio',name:'personality-'+q.key,value:String(i)});input.onchange=()=>{answers[q.key]=i;const dials=answeredPersonality(answers);apply.disabled=!dials;result.textContent=dials?'Their island personality: '+personalityOf(dials).name:'Answer all four, then apply.';};field.append(el('label',{},input,el('span',{textContent:text})));});questions.append(field);}
+  apply.onclick=()=>{const dials=answeredPersonality(answers);if(!dials)return;const y=body.scrollTop;remember();Object.assign(recipe.profile,dials);dirty=true;renderBody();body.scrollTop=y;body.querySelector('.shm-type').focus({preventScroll:true});};
+  questions.append(result,apply);body.append(questions,personalityReference());
+  const card=el('div',{className:'shm-type',role:'status',tabIndex:-1});
   const paintCard=()=>{const type=personalityOf(recipe.profile);card.style.borderColor=type.colour;card.replaceChildren(el('small',{textContent:'ISLAND PERSONALITY'}),el('strong',{textContent:type.name}),el('span',{textContent:type.line}),el('div',{className:'shm-persona-moment'},el('b',{textContent:'♡ At their best'}),el('p',{textContent:type.strength})),el('div',{className:'shm-persona-moment'},el('b',{textContent:'☀ An island moment'}),el('p',{textContent:type.islandMoment})));};
   for(const dial of DIALS){
    const pips=el('div',{className:'shm-pips',role:'group',ariaLabel:dial.label});
@@ -1047,6 +1067,8 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   paintCard();body.prepend(card);
   body.append(el('h4',{textContent:'Voice'}));
   body.append(stepper('Pitch',at('pitch'),'Lower voice','Higher voice',()=>sayLine('La la la!')),stepper('Speed',at('speed'),'Slower voice','Faster voice',()=>sayLine('La la la!')));
+  const timbre=el('select',{className:'shm-select',ariaLabel:'Voice timbre'},el('option',{value:'auto',textContent:'Timbre: personality'}),el('option',{value:'sine',textContent:'Timbre: rounded'}),el('option',{value:'triangle',textContent:'Timbre: bright'}));timbre.value=p.timbre;timbre.onchange=()=>{change(at('timbre'),timbre.value);sayLine('La la la!');};
+  body.append(timbre,stepper('Softness',at('softness'),'Firmer voice','Softer voice',()=>sayLine('La la la!')),stepper('Vibrato',at('vibrato'),'Less vibrato','More vibrato',()=>sayLine('La la la!')));
   const hear=el('button',{type:'button',className:'shm-pill',textContent:'Hear them'});hear.onclick=()=>sayLine(hello({...recipe,name:name.value}).split('\n')[0]);
   body.append(el('div',{className:'shm-row'},hear));
   body.append(el('h4',{textContent:'Catchphrase'}));
@@ -1062,6 +1084,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
  /** The colour tray under the pictures: the tab's first colour, as worn now (a colourway put on changes it). */
  function renderTray(){
+  const worn=body.querySelector('.shm-wearing');if(worn){const o=recipe.outfit;[...worn.querySelectorAll('p')].forEach((p,i)=>{const [slot,colour]=[['top','topColour'],['bottom','bottomColour'],['footwear','shoes'],['hat','hatColour']][i];p.textContent=labelFor(slot,o[slot])+' · '+(ISLAND_PALETTE.find(c=>c.hex===o[colour])?.name||o[colour]);});}
   paletteTray.replaceChildren();paletteTray.hidden=true;if(step!=='look'||page!=='style')return;
   const colour=TABS.find(t=>t.id===tab).controls.find(c=>c.kind==='colours'&&(!c.when||c.when(recipe)));
   if(colour){paletteTray.hidden=false;paletteTray.append(el('h4',{textContent:colour.label}),swatchRow(colour,hex=>{change(colour.at,hex);renderPictures();},colour.label+' ',{tray:true}));}
@@ -1072,12 +1095,12 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  // paced from the profile, and the mouth moves while it does.
  let speech=null;
  function sayLine(text,show=false){
-  stopSpeech();
+  stopSpeech();if(!voice)unlockTownAudio();
   const v=voiceOf(recipe.profile);let i=0;speech={typing:true,timer:0};
   if(show){bubble.hidden=false;bubble.textContent='';}
   speech.timer=setInterval(()=>{
    i++;if(show)bubble.textContent=text.slice(0,i);
-   const ch=text[i-1]||'';if(i%2&&/\w/.test(ch))voice(i%4===1?v.freq:v.freq*v.swing,v.type);
+   const ch=text[i-1]||'';if(i%2&&/\w/.test(ch))(voice||townAudio.blip.bind(townAudio))(i%4===1?v.freq:v.freq*v.swing,v.type,v.volume,{vibrato:v.vibrato});
    if(i>=text.length){clearInterval(speech.timer);speech.typing=false;}
   },v.letterMs);
  }
@@ -1159,7 +1182,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  close.onclick=()=>finish(false);
 
  /** Replace the editable character without closing the studio. */
- function setRecipe(value){endDrag();remember();recipe=normalizeRecipe(value);featureBaseline=structuredClone(recipe);wardrobeOwner=recipe.name;name.value=recipe.name;dirty=true;faces=[];renderBody();}
+ function setRecipe(value){endDrag();remember();chipFor.clear();viewPositions.clear();recipe=normalizeRecipe(value);featureBaseline=structuredClone(recipe);wardrobeOwner=recipe.name;name.value=recipe.name;dirty=true;faces=[];renderBody();}
  /** Restore only controls belonging to the selected feature, as one undoable edit. */
  function resetFeature(){
   endDrag();const next=structuredClone(recipe),controls=TABS.find(t=>t.id===tab).controls;
