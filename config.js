@@ -47,6 +47,7 @@ const CONFIG = {
   navigation: [
     { id: "home", label: "Home" },
     { id: "projects", label: "Projects" },
+    { id: "linux-port", label: "Linux Port", url: "/linux-port/" },
     { id: "shop", label: "Shop", url: "https://3va6hr-fw.myshopify.com/" },
     { id: "blog", label: "Blog", url: "/blog/" },
     { id: "about", label: "About" },
