@@ -83,7 +83,6 @@ import {townDate as townDateOf} from './src/town-clock.js';
 import {planFavours,favourWaiting,clueFor,favourLine,askFavour,replyFavour,favourExpire,favourVisit,restoreFavours,restoreFavourErrand,favourById} from './src/people/favours.js';
 import {recipeFor} from './src/avatars/cast.js';
 import {GROCERY_ITEMS} from './src/commerce/catalogue.js';
-import {closingStockPending,shelvesNeedRestock,consumeStorageWonHandshake,applyStorageOutcome,acknowledgeStorageOutcome,closingDay} from './src/commerce/shop-stock.js';
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
  checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen,HOT_SNACKS,buyHotSnack,thuanRecommends} from './src/commerce/konbini.js';
 
@@ -1316,38 +1315,6 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
     try{const catalogue=await loadOfficeWorkbooks();if(!modalOpen||revision!==modalRevision)return;body.replaceChildren(createOfficeWorkbookView(catalogue,id,officeRecords));}
     catch{if(!modalOpen||revision!==modalRevision)return;show('Harbour office records','The records could not be loaded. Please try again.',[['Try again',()=>officeRecords(id)],['Close records',close]]);}
   }
-  function storageRestock(){
-    state.sakura=restoreSakura(state.sakura);
-    const minutes=getMinutes();
-    if(!(closingStockPending(state,minutes)||shelvesNeedRestock(state))){
-      show('Stockroom','Shelves are already set.',[['Leave',close]]);
-      return;
-    }
-    const day=closingDay(minutes)??Math.floor(minutes/1440);
-    const player=readPlayers(localStorage).active;
-    const bridge='&player='+encodeURIComponent(player);
-    if(!save()){show('Stockroom','Progress could not be saved. Please try again.',[['Leave',close]]);return;}
-    show('Thuan\'s stockroom','Cartons wait in the back room. Restock the shelves before the next open.\n\nThere is a hole at the back of the stockroom now, down to the old sea cave, and something big comes up through it at night. Somebody from town, in a suit. Mind the aisles.',[
-      ['Play as Thuan',()=>{close();location.href='/thuans-storage/?from=johansson-town&mode=play&day='+day+bridge;}],
-      ['Let Thuan restock',()=>{close();location.href='/thuans-storage/?from=johansson-town&mode=auto&day='+day+bridge;}],
-      ['Leave',close],
-    ]);
-  }
-  function consumeStorageRestock(){
-    const player=readPlayers(localStorage).active;
-    const handshake=consumeStorageWonHandshake(player,{retain:true});
-    if(!handshake)return false;
-    if(handshake.day!==null&&handshake.day>Math.floor(Math.max(getMinutes(),state.minutes??0)/1440))return false;
-    state.sakura=restoreSakura(state.sakura);
-    const {applied,yen}=applyStorageOutcome(state,getMinutes(),handshake,player);
-    if(!applied){if(save())acknowledgeStorageOutcome(handshake);return false;}
-    // The night's boss from the sea cave (thuans-storage): seen off, it leaves its cave coins behind.
-    const boss=handshake.boss;
-    if(yen){note('Saw off '+(boss?boss.who+' in a '+boss.animal+' suit':'a Bizarro visitor')+' in Thuan’s stockroom: ¥'+handshake.yen+' in old cave coins.');}
-    if(save())acknowledgeStorageOutcome(handshake);
-    say(boss?.defeated?'Shelves restocked. And '+boss.who+' -- the '+boss.animal+' in the stockroom -- has gone back down the hole, leaving ¥'+handshake.yen+' in cave coins.':boss?'Shelves restocked, with a '+boss.animal+' still loose in the back room.':'Shelves restocked.',6);
-    return true;
-  }
   function action(kind,name,detail){
     body.classList.remove('signal');
     switch(kind){
@@ -1360,7 +1327,6 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
       case 'shop-ledger':shopLedger();break;
       case 'magazine-rack':magazineRack();break;
       case 'sakura-hot-snacks':thuanConversation('hot-case');break;
-      case 'storage-restock':storageRestock();break;
       case 'store-catalogue':show('Thuan’s mail-order book',realShop.enabled?'Real-world products. Current prices and Shopify checkout are shown separately from town yen.':'A pink ribbon marks the next page. Thuan is still preparing the mail-order selection.',[...STORE_ITEMS.filter(i=>realShop.enabled&&SHOPIFY_CONFIG.products[i.id]).map(i=>[i.name,()=>realProduct(i)]),['Close',close]]);break;
       case 'travel-progress':show('Earn your town shortcuts',travelStatusText(state),[['Back to exploring',close]]);break;
       case 'vending':vending();break;
@@ -1424,7 +1390,6 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
   document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
 
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);
-  // Storage restock handshake may arrive while the tab was on thuans-storage.
-  consumeStorageRestock();$('#soundButton').textContent=state.sound?'On':'Off';radioStation=state.radioStation||0;save();{const label=onWeather?.('start');if(typeof label==='string')$('#weatherButton').textContent=label;}
-  return {action,documentArchive,inventory,bag,residentRecord,residentRecords,canResidentRecord,close,save,keepPhoto,letGoPhoto,pocketAlbum,get album(){return state.pocketAlbum||[];},post,deliverPost,favourCard,get unreadPost(){return unreadCount(ensurePost(state).box);},spend,players,menu:show,dialogue:dialogueBox,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,consumeStorageRestock,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
+  $('#soundButton').textContent=state.sound?'On':'Off';radioStation=state.radioStation||0;save();{const label=onWeather?.('start');if(typeof label==='string')$('#weatherButton').textContent=label;}
+  return {action,documentArchive,inventory,bag,residentRecord,residentRecords,canResidentRecord,close,save,keepPhoto,letGoPhoto,pocketAlbum,get album(){return state.pocketAlbum||[];},post,deliverPost,favourCard,get unreadPost(){return unreadCount(ensurePost(state).box);},spend,players,menu:show,dialogue:dialogueBox,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
 }

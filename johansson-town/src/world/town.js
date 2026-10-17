@@ -17,7 +17,6 @@ import {createTownTraffic} from './town-traffic.js';
 import {buildKitanoLink} from './kitano-link.js';
 import {buildOilJetty} from './oil-jetty.js';
 import {GROUND} from '../render/ground-palette.js';
-import {buildBicycle} from './bicycle.js';
 import {registerDetail} from './detail-stream.js';
 import {buildPark,parkFoliage,preloadPark} from './park.js?snappy=1';
 import {buildIzakaya} from './izakaya.js?snappy=1';
@@ -210,15 +209,6 @@ function addStreetLife(world,options,factory){
   addWithCollider(group,colliders,factory.utilityCabinet(.5,13.2,0));
   inspect([.5,1,12.35],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
 
-  // Thuan's bicycle stands on the west footway, a short walk from Sakura, as an interactive ride.
-  // On the west footway, between Sakura's front and the kerb (the carriageway is narrower now).
-  const bicycleSpot=({x:.2,z:26.8});
-  const bicycle=buildBicycle({...bicycleSpot,shadows:options.shadows,animated:true});
-  bicycle.object.name="Thuan's commuter bicycle";
-  addWithCollider(group,colliders,bicycle);
-  anchor(bicycle.object,[1,.9,0],'Ride Thuan’s bicycle',()=>options.onAction?.('bicycle',bicycle),options.register);
-    interactions++;
-
   addWithCollider(group,colliders,factory.convexMirror(-7.4,6.2,.02));
   inspect([-6.85,1,5.7],'Inspect traffic mirror','Convex traffic mirror','The mirror gives a broad view of the narrow side street and helps cyclists see around the corner.');
   // Bins stand by the park’s street edge, clear of the broad crossing-to-Onsen path.
@@ -229,7 +219,7 @@ function addStreetLife(world,options,factory){
   // (The harbour hand pump that stood by the ferry's ramp head is gone: the creator, 2026-10-11, cleared the ramp's
   // approach of everything in the way.)
 
-  return {interactions,lights,bicycle};
+  return {interactions,lights};
 }
 
 /** Paint the actual coastal paving, including its graded garden-bank triangles. */
@@ -330,7 +320,6 @@ export function createTown(options){
   const cableSegments=replaceCableLines(world.group,options.mobile),pier=addWalkablePier(world,options,factory),street=addStreetLife(world,options,factory),sea=findSea(world.group);
   // The street's lamp lights, for a renderer that sets the hour once (src/scene/scene-world.js) rather than ticking the town.
   world.streetLights=street.lights;
-  world.bicycle=street.bicycle;
   world.docklandsLife=buildDocklandsLife(world,options);
   buildSakuraBench(world,{shadows:options.shadows,register:options.register,onAction:options.onAction,factory});
   // Thuan's break. Only the island has a yard behind the shop to put it in.
