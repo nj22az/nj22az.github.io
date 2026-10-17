@@ -66,22 +66,24 @@ test('indoors a piece must leave the 0.78 m way between the doors, the table and
  buildMayorHome({room,reg(){},action(){},collider:(x,z,w,d,height=2.8,minY=0)=>colliders.push({x,z,w,d,height,minY}),exit(){}});
  const placements=make({group:room.getObjectByName('Mayor’s home'),colliders,factory:homeFurnitureFactory(),walkable:MAYOR_HOME_FLOOR.walkable,
   heightAt:()=>0,doors:MAYOR_HOME_FLOOR.keepClear,lookup,needWhy:false,passage:HOME_PASSAGE,passageOnLoad:false});
- // Between the low table and the television: the way in from the hall's doorway.
- assert.match(placements.check({kind:'side-table',x:-1.9,z:1.4})[0],/less than 0\.78 m to walk past it/);
+ // Rounded walking clearance fits the 0.81 m diagonal gap at the old spot.
+ assert.deepEqual(placements.check({kind:'side-table',x:-1.9,z:1.4}),[],'the diagonal gap remains walkable');
+ // Moving 0.1 m towards the low table reduces that gap to 0.73 m and blocks the way in from the hall.
+ assert.match(placements.check({kind:'side-table',x:-2,z:1.4})[0],/less than 0\.78 m to walk past it/);
  // Against the west wall: out of everybody's way.
  assert.deepEqual(placements.check({kind:'side-table',x:-5.3,z:2.6}),[]);
  // A saved room where a side table already stands in the way is shown as it was, not hidden by the newer rule ...
- assert.deepEqual(placements.load([{id:'p1',kind:'side-table',x:-1.9,z:1.4,yaw:0,note:''}]),[]);
+ assert.deepEqual(placements.load([{id:'p1',kind:'side-table',x:-2,z:1.4,yaw:0,note:''}]),[]);
  // ... an Undo puts it back where it was ...
  assert.equal(placements.remove('p1'),true);assert.equal(placements.undo().ok,true);
  assert.equal(placements.list().length,1);
  // ... and moved anywhere, the rule applies again.
- assert.match(placements.move('p1',{x:-1.9,z:1.5}).problems[0],/0\.78 m/);
+ assert.match(placements.move('p1',{x:-2,z:1.5}).problems[0],/0\.78 m/);
  assert.deepEqual(placements.move('p1',{x:-5.3,z:2.6}).ok,true);
- assert.equal(placements.move('p1',{x:-1.9,z:1.4}).ok,true,'its saved spot stays its own: it may go back there');
+ assert.equal(placements.move('p1',{x:-2,z:1.4}).ok,true,'its saved spot stays its own: it may go back there');
  // Turned there by float arithmetic (0.3 + 0.1 − 0.1 is not exactly 0.3), it is still its own spot.
  const turned=make({group:new THREE.Group(),colliders:colliders.filter(c=>!c.placementId),factory:homeFurnitureFactory(),walkable:MAYOR_HOME_FLOOR.walkable,
   heightAt:()=>0,doors:MAYOR_HOME_FLOOR.keepClear,lookup,needWhy:false,passage:HOME_PASSAGE,passageOnLoad:false});
- assert.deepEqual(turned.load([{id:'p7',kind:'side-table',x:-1.9,z:1.4,yaw:.3,note:''}]),[]);
+ assert.deepEqual(turned.load([{id:'p7',kind:'side-table',x:-2,z:1.4,yaw:.3,note:''}]),[]);
  assert.equal(turned.move('p7',{yaw:(.3+.1)-.1}).ok,true);
 });

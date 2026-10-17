@@ -3,12 +3,12 @@ import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
 import {registerDetail} from './detail-stream.js';
 
-// Cedar bench on the east sidewalk, looking across the street at Sakura Shōten.
+// Cedar bench at Harbour Park's quiet western edge, looking across at Sakura Shōten.
 export const SAKURA_SHOP=Object.freeze({x:-7.45,z:-26.8});
 export const SAKURA_BENCH_PLACE=Object.freeze({
-  x:4.42,
-  z:-19.8,
-  yaw:Math.atan2(4.42-SAKURA_SHOP.x,-19.8-SAKURA_SHOP.z),
+  x:6.6,
+  z:-32,
+  yaw:Math.atan2(6.6-SAKURA_SHOP.x,-32-SAKURA_SHOP.z),
   pitch:-.08,
   eyeY:1.16,
   surfaceY:.4675,
@@ -79,8 +79,10 @@ export function buildSakuraBench(world,{shadows=false,register,onAction,factory}
       const model=source.clone(true);model.traverse(mesh=>{if(mesh.isMesh){mesh.castShadow=shadows;mesh.receiveShadow=true;}});group.add(model);world.group.add(group);object.removeFromParent();world.sakuraBench.object=group;world.sakuraBench.source='blender';return true;
     }});
   }
-  // Axis-aligned footprint, not the rotated mesh AABB, so the stand-up point stays clear.
-  world.colliders.push({x,z,w:1.6,d:1.0,height:.95,minY:0});
+  // The collider turns with the visible cedar bench. The 64 cm depth contains
+  // both the authored frame and its temporary local fallback, within 7 cm.
+  const offset=-.025;
+  world.colliders.push({id:'sakura-bench',x:x+Math.sin(yaw)*offset,z:z+Math.cos(yaw)*offset,w:1.78,d:.64,yaw,height:.91,minY:0});
   const seat=sakuraBenchSeat();
   const marker=new THREE.Object3D();marker.name='sakura-bench-seat';
   marker.position.set(seat.position[0],1,seat.position[2]);marker.userData.seat=seat;

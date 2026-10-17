@@ -5,6 +5,7 @@ import {createHash} from 'node:crypto';
 import vm from 'node:vm';
 import {ACTIVE_RESIDENT_NAMES} from '../src/people/residents.js';
 import {NEIGHBOURS} from '../src/people/neighbours.js';
+import {homeForResident,secondaryHomesFor} from '../src/people/island-households.js';
 const root=new URL('../',import.meta.url);
 const read=path=>readFile(new URL(path,root));
 test('every resident the player can meet has a photo article and real model portrait',async()=>{
@@ -13,6 +14,8 @@ test('every resident the player can meet has a photo article and real model port
  assert.deepEqual(catalogue.map(r=>r.name).sort(),expected.sort());
  assert.equal(new Set(catalogue.map(r=>r.name)).size,catalogue.length);
  for(const r of catalogue){
+  const home=homeForResident(r.name);assert.equal(r.home.id,home.home,r.name+' has the canonical primary home');assert.equal(r.home.address,home.address);assert.deepEqual(r.home.residents,[...home.residents]);
+  assert.deepEqual(r.secondaryHomes.map(h=>h.id),secondaryHomesFor(r.name).map(h=>h.home),r.name+' has every secondary residence');
   assert.ok(r.islandPersonality?.ambition&&r.islandPersonality?.habit&&r.islandPersonality?.traits?.length===3,r.name+' has an island personality');assert.doesNotMatch(r.backstory,/Nils|homage|real life|fictional character|creator of this town/);
   for(const field of ['role','place','bio','backstory'])assert.ok(r[field]?.length>0,r.name+' '+field);
   const a=r.article;assert.ok(a?.headline&&a.standfirst&&a.quote,r.name+' has a headline, standfirst and quote');

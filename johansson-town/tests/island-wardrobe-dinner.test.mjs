@@ -30,10 +30,12 @@ test('Thuan greets served food, presents her own plate and releases it before ea
  for(let i=0;i<10;i++)r.tick(.1);
  assert.equal(r.dinner.state.eaten,1);
 });
-test('Blue Coral has an accessible counter and purchases use actual advertised prices',()=>{
+test('Blue Coral uses Nakamura’s frontage and the advertised price and hours without a second attendant',()=>{
  const world={colliders:[]},group=new THREE.Group(),anchors=[],actions=[];
  const shop=buildBlueCoralShop({world,group,register:(object,label,fn)=>anchors.push({object,label,fn}),onAction:(...args)=>actions.push(args)});
- for(const x of [96,96.5,97,98,99])assert.ok(!world.colliders.some(c=>circleHitsRect(x,121,.32,c)),'Entrance blocked at '+x);
- anchors.find(a=>a.label==='Buy an island scoop at Blue Coral').fn();assert.equal(actions.at(-1)[2].cost,150);
- anchors.find(a=>a.label==='Talk to the Blue Coral attendant').fn();shop.update();assert.equal(actions.at(-1)[0],'read');
+ assert.equal(shop.merged,true);assert.equal(shop.landmark.id,'nakamura');assert.equal(world.colliders.length,0,'No second shop or counter blocks the frontage');
+ assert.equal(anchors.some(a=>/attendant/i.test(a.label)),false);assert.ok(group.getObjectByName('Nakamura Blue Coral menu'));
+ const buy=anchors.find(a=>a.label==='Buy Blue Coral island ice cream · ¥150');assert.ok(buy);assert.equal(buy.object.position.x,4.45);
+ shop.update(10*60);buy.fn();assert.equal(actions.at(-1)[0],'buy');assert.equal(actions.at(-1)[2].cost,150);
+ shop.update(19*60);buy.fn();assert.equal(actions.at(-1)[0],'read');assert.match(actions.at(-1)[1],/closed/);
 });

@@ -7,6 +7,7 @@ import {installDOM} from './fixtures.mjs';
 import {preloadPark,parkFoliage} from '../src/world/park.js?snappy=1';
 import {EAST_LAWN,buildEastLawn} from '../src/world/east-lawn.js';
 import {PARK,COURT_TERRACE,courtTerraceHeight} from '../src/world/park-layout.js';
+import {harbourPondAt} from '../src/world/harbour-park-plan.js';
 const nearTerraceWall=(x,z)=>z<COURT_TERRACE.minZ+.1&&x>COURT_TERRACE.minX-.6&&x<COURT_TERRACE.maxX;
 import {paintedTurf} from '../src/render/toy-surfaces.js';
 import {MAIN_ROAD} from '../src/world/main-road.js';
@@ -23,13 +24,13 @@ test('the east of the town is one green from the kerb to the seawall',async()=>{
  // is what it was not: the park was an island and the rest was scenery below the kerb.
  const off=[],steps=[];
  for(let x=MAIN_ROAD.pavementEast;x<EAST_LAWN.maxX-.6;x+=.4)for(let z=EAST_LAWN.minZ+.6;z<EAST_LAWN.maxZ-.6;z+=1.2){
-  if(!routeAt(x,z,.4))off.push(x.toFixed(1)+','+z.toFixed(1));
+  if(!routeAt(x,z,.4)&&!harbourPondAt(x,z,.4))off.push(x.toFixed(1)+','+z.toFixed(1));
   // Walking east must never be a step up. The park used to be a plinth with a
   // vertical face, and excluding its square from the lawn left a dead band one body
   // wide at its foot: you walked into an invisible wall on open grass.
   // The gateball terrace ends in a retaining wall on its seaward side.
   // Kitano Road's embankment has retaining walls of its own; the lawn meets them, not the road.
-  else if(!nearTerraceWall(x,z)&&!nearTerraceWall(x+.4,z)&&!kitanoRoadAt(x,z,-.5)&&!kitanoRoadAt(x+.4,z,-.5)&&routeAt(x,z,.4).id===EAST_LAWN.id&&routeAt(x+.4,z,.4)?.id===EAST_LAWN.id
+  else if(!nearTerraceWall(x,z)&&!nearTerraceWall(x+.4,z)&&!kitanoRoadAt(x,z,-.5)&&!kitanoRoadAt(x+.4,z,-.5)&&routeAt(x,z,.4)?.id===EAST_LAWN.id&&routeAt(x+.4,z,.4)?.id===EAST_LAWN.id
    &&Math.abs(groundHeight(x+.4,z)-groundHeight(x,z))>.2)
    steps.push(x.toFixed(1)+','+z.toFixed(1)+' '+(groundHeight(x+.4,z)-groundHeight(x,z)).toFixed(2));
  }
@@ -45,9 +46,9 @@ test('the east of the town is one green from the kerb to the seawall',async()=>{
   for(let x=MAIN_ROAD.pavementEast-.6;x<=MAIN_ROAD.pavementEast+.6;x+=.15)
    if(!routeAt(x,z,.32))kerb.push(x.toFixed(2)+','+z.toFixed(1));
  assert.deepEqual(kerb.slice(0,6),[],'An invisible wall runs along the east kerb');
- // The park is asked first, so the lawn is the ground around its mound, not a lid.
+ // The park shares the lawn datum; its own mesh leaves the pond open.
  assert.equal(routeAt(PARK.x,PARK.z).id,PARK.id);
- assert.ok(groundHeight(PARK.x,PARK.z)>1,'The park keeps its mound');
+ assert.equal(groundHeight(PARK.x,PARK.z),0,'The retired mound cannot become a plinth again');
  // and the lawn stops where the town does.
  assert.equal(routeAt(EAST_LAWN.maxX+1.5,10)?.surface,'sand','The beach beyond the seawall is walkable');
 });
@@ -59,11 +60,13 @@ test('the seawall stops you, and the sand below it stays above the ground it lie
  const wall=colliders.filter(c=>c.id==='east-seawall');
  assert.equal(wall.length,5,'The wall retains its south return, two beach openings and the opening for Kitano Road');
  for(const z of [-30,-15,10,19])assert.ok(wall.some(c=>circleHitsRect(EAST_LAWN.wall.x,z,.36,c)),'You can walk through the seawall at z='+z);
- // The north end is closed by something you can see rather than by ground that simply
- // stops, so the treeline is solid and stands where the trees are drawn.
- const trees=colliders.find(c=>c.id==='east-lawn-trees');
- assert.ok(trees,'The north end is left open onto unbuilt land');
- assert.ok(trees.z-trees.d/2>EAST_LAWN.maxZ-2.2,'The treeline eats the green it is meant to close');
+ // Retained trees keep their own solid trunks. Their gaps, including the police
+ // box's visible clearing, must not acquire a continuous hidden collision strip.
+ const trees=colliders.filter(c=>c.id==='east-lawn-tree'),drawn=[];
+ parent.traverse(o=>{if(o.name==='East lawn tree')drawn.push(o);});
+ assert.ok(trees.length>0);assert.equal(trees.length,drawn.length);
+ for(const tree of drawn)assert.ok(trees.some(c=>c.x===tree.position.x&&c.z===tree.position.z&&circleHitsRect(c.x,c.z,.28,c)),'Every visible trunk stays solid');
+ assert.equal(trees.some(c=>circleHitsRect(12,23.314692,.28,c)),false,'The reproduced Koban obstruction stays clear');
 
  // Dry sand has to draw above the island's own ground or the land shows through it,
  // and it has to reach below the water or the beach ends in a step.
@@ -190,7 +193,8 @@ test('the paths across the green lie on the ground rather than through it',async
    if(clearance<-.005)sunk.push(x.toFixed(1)+','+z.toFixed(1)+' by '+(-clearance*100).toFixed(1)+'cm');
   }
  }
- assert.ok(checked>1200,'The lanes are not subdivided at all: '+checked+' triangles');
+ // Level park terrain no longer needs the removed mound’s dense subdivisions.
+ assert.ok(checked>0,'Every generated grid-lane triangle is sampled');
  assert.deepEqual(sunk.slice(0,6),[],'Paving sunk under the grass it is laid on');
 });
 

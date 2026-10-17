@@ -6,7 +6,7 @@ import {ONSEN_SIGNS} from './interiors/onsen-signs.js';
 import {frostedGlassTexture} from './interiors/onsen-front.js';
 
 /**
- * Umi-no-yu, the town's public bath (a 潮湯, heated sea water: Okinawa had no hot springs), on the flat of the east lawn below the park mound.
+ * Umi-no-yu, the town's public sea-water bath, in the level Harbour Park opposite Sakura.
  *
  * The bathhouse faces the town with the footbath out front where anybody crossing the
  * park can sit and put their feet in; the rock bath is behind it inside a bamboo fence
@@ -16,8 +16,8 @@ import {frostedGlassTexture} from './interiors/onsen-front.js';
  *
  * Collision and prompts are in place from the start and the model streams in when you
  * come near, the way every other building here does: loading a model never moves a
- * wall. The noren, the signs, the frosted door glass and the steam are made here; the
- * noren, the name board and the door glass go up with the building.
+ * wall. A lightweight shell, noren, signs, door glass and steam are visible from the
+ * first frame, including when the detailed asset is unavailable.
  */
 import {ONSEN,ONSEN_DOOR,ONSEN_APPROACH,onsenPoint,onsenOpen} from './onsen-layout.js';
 export {ONSEN,onsenPoint,onsenOpen};
@@ -39,6 +39,35 @@ export const ONSEN_COLLIDERS=Object.freeze([
  ...[[.15,6.15],[3.65,6.15],[.15,8.05],[3.65,8.05]].map(([x,z])=>rect(x,z,.2,.2,2.4)),
  rect(-2.9,6.6,.16,.16,1.8),
 ]);
+
+/** Visible from the first frame and after a failed model request. Its solid parts use the real collision plan. */
+export function buildOnsenFallback(){
+ const group=new THREE.Group();group.name='Umi-no-yu fallback shell';
+ const materials=new Map(),mat=colour=>{if(!materials.has(colour))materials.set(colour,new THREE.MeshStandardMaterial({color:colour,roughness:.9}));return materials.get(colour);};
+ const box=(name,w,h,d,x,y,z,colour)=>{const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(colour));mesh.position.set(x,y,z);mesh.name=name;mesh.receiveShadow=true;group.add(mesh);return mesh;};
+ ONSEN_COLLIDERS.forEach((c,i)=>{
+  const x=c.z-ONSEN.z,z=ONSEN.x-c.x,w=c.d,d=c.w;
+  if(i===3){
+   // A visible enclosed bathing yard explains why this exterior footprint stays solid.
+   box('Fallback bath yard',w,.04,d,x,.02,z,0xaca58c);
+   for(const side of [-1,1])box('Fallback bath side fence',.12,c.height,d,x+side*(w/2-.06),c.height/2,z,0x8e9c6e);
+   box('Fallback sea bath fence',w,.95,.12,x,.475,z-d/2+.06,0x8e9c6e);
+   const water=new THREE.Mesh(new THREE.CircleGeometry(1,32),new THREE.MeshStandardMaterial({color:0x668e89,roughness:.22,transparent:true,opacity:.85,depthWrite:false}));water.rotation.x=-Math.PI/2;water.scale.set(2.35,1.75,1);water.position.set(.2,.2,-3.9);water.name='Fallback sea bath water';group.add(water);return;
+  }
+  const colour=i<3?0xc9c0a7:i===8?0x949989:i>=9&&i<=12?0x5b5548:i===6?0xd9d8c5:0x76624c;
+  box(i<3?'Fallback bathhouse wall':'Fallback onsen fitting',w,c.height,d,x,c.height/2,z,colour);
+ });
+ for(const side of [-1,1]){const roof=box('Fallback bathhouse roof',8.4,.14,3.2,0,3.9,2.1+side*1.4,0x4c5960);roof.rotation.x=side*.46;}
+ box('Fallback roof ridge',8.6,.22,.3,0,4.62,2.1,0x4c5960);
+ box('Fallback footbath roof',4.3,.15,2.7,1.9,2.45,7.1,0x4c5960);
+ box('Fallback porch roof',2.7,.14,1.4,-1.4,2.8,4.8,0x4c5960);
+ box('Fallback entrance threshold',1.8,.06,1.7,-1.4,.03,4.4,0xb2ada0);
+ box('Fallback footbath water',2.7,.015,1.08,1.9,.51,7.1,0x668e89);
+ // A streamed model replaces this group. Baking its meshes into a static batch
+ // would leave a second shell behind after fallback.visible becomes false.
+ group.traverse(mesh=>{if(mesh.isMesh)mesh.userData.staticProp=false;});
+ return group;
+}
 
 
 function canvasTexture(width,height,draw){
@@ -144,14 +173,18 @@ function steam(group){
 export function buildParkOnsen(world,{register,onAction,enter,sites,shadows=false}={}){
  const group=new THREE.Group();group.name='Umi-no-yu';group.position.set(ONSEN.x,0,ONSEN.z);group.rotation.y=ONSEN.yaw;world.group.add(group);
  world.colliders.push(...ONSEN_COLLIDERS.map(c=>({...c})));
- // The noren and the name board hang on the bathhouse, so they arrive with it.
+ // Readable frontage exists immediately, with the fallback or the detailed model.
  const {notice,kanban}=signs(group),curtain=noren(),frosting=doorGlass(),plumes=steam(group);
+ const fallback=buildOnsenFallback();group.add(fallback,kanban,curtain,frosting);
+ // The continuous porch apron covers the old model's loose stepping stones and joins the park paving.
+ const apron=new THREE.Mesh(new THREE.BoxGeometry(2.4,.08,5.6),new THREE.MeshStandardMaterial({color:0xc8bea5,roughness:.95}));
+ apron.name='Umi-no-yu continuous porch approach';apron.position.set(-1.4,.04,6.5);apron.receiveShadow=true;group.add(apron);
  const anchor=(x,y,z,label,fn)=>{const o=new THREE.Object3D();o.position.set(x,y,z);group.add(o);register?.(o,label,fn);return o;};
  // Through the noren: the bathhouse is a room you walk into (interiors/onsen.js).
  const [doorX,doorZ]=ONSEN_DOOR,[outX,outZ]=ONSEN_APPROACH;
  const site={id:'onsen',title:'Umi-no-yu',jp:"Sea Bath",sub:'PUBLIC BATH · SEA WATER',x:doorX,z:doorZ,color:0x3f5f7a,accent:'#253a5e',
   line:'Bath 10:00–22:00 · adults ¥300 · swimwear please',door:[doorX,0,doorZ],exitPosition:[outX,0,outZ],approachPosition:[outX,0,outZ],
-  entryFacing:ONSEN.yaw,opens:'10:00'};
+  entryFacing:ONSEN.yaw,opens:'10:00',directions:'From Sakura, use the marked crossing and follow the broad park path to Umi-no-yu. The free footbath is beside the entrance.'};
  sites?.push(site);
  anchor(-1.4,1.2,4.75,'Go into Umi-no-yu',()=>enter?enter(site):onAction?.('onsen'));
  register?.(notice,'Read the onsen notice',()=>onAction?.('read','Umi-no-yu notice',
@@ -173,7 +206,7 @@ export function buildParkOnsen(world,{register,onAction,enter,sites,shadows=fals
   scene.traverse(o=>{if(o.isMesh){o.castShadow=!!shadows&&!o.material.transparent;o.receiveShadow=!!shadows;
    // The model's glass and water are its only see-through surfaces; drawn after the rest.
    if(o.material.transparent){o.material.depthWrite=false;o.renderOrder=2;}}});
-  group.add(scene,kanban,curtain,frosting);model=scene;return true;
+  group.add(scene);fallback.visible=false;model=scene;return true;
  }});
 
  function tick(time){
@@ -188,5 +221,5 @@ export function buildParkOnsen(world,{register,onAction,enter,sites,shadows=fals
   }
  }
  tick(0);
- return {group,tick,get model(){return model;}};
+ return {group,tick,fallback,get model(){return model;}};
 }

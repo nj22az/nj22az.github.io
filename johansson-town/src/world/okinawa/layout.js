@@ -85,8 +85,8 @@ export const eastQuayAt=(x,z,r=0)=>{
 };
 
 /**
- * Houses on the lawn behind the east row, either side of Umi-no-yu, reached by the back
- * lane that runs behind the shops.
+ * Occupied homes behind the east row, reached by the back lane. The former vacant
+ * Kamiya and Tamaki plots now belong to Harbour Park and its Onsen garden.
  */
 export const EAST_BACK=Object.freeze({
  lane:Object.freeze({minX:EAST_ROW.maxX,maxX:EAST_ROW.maxX+2.6}),
@@ -94,9 +94,6 @@ export const EAST_BACK=Object.freeze({
   // Gates on the green in front of Umi-no-yu, with the houses backed onto the trees.
   {id:'nakasone',kind:'red-tile',family:"Nakasone",romaji:'Nakasone',minX:16.2,maxX:24.6,minZ:10.4,maxZ:21.6,gate:'south'},
   {id:'miyagi',kind:'red-tile',family:"Miyagi",romaji:'Miyagi',minX:25.4,maxX:32.9,minZ:10.4,maxZ:21.6,gate:'south'},
-  {id:'tamaki',kind:'concrete',family:"Tamaki",romaji:'Tamaki',minX:16.2,maxX:24.2,minZ:-14.4,maxZ:-3.6,gate:'north'},
-  // Between the park and the seawall, its gate on the garden with the pond.
-  {id:'kamiya',kind:'red-tile',family:"Kamiya",romaji:'Kamiya',minX:24.8,maxX:32.9,minZ:-30.8,maxZ:-19.6,gate:'north'},
  ].map(Object.freeze)),
 });
 

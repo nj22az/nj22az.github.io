@@ -1,4 +1,3 @@
-import {DOCK_CREW_ROUTE} from '../world/docklands-layout.js';
 import {groundHeight} from '../world/layout.js';
 import {createNavigation} from './navmesh.js';
 import {airportWorld} from '../world/airport-ground.js';
@@ -9,6 +8,9 @@ import * as THREE from '../../vendor/three.module.js';
 import {inGateball,COURT_TERRACE} from '../world/park-layout.js';
 import {GROUND_LAYER} from '../world/ground-layers.js';
 import {FLOWER_SHOP} from '../world/flower-shop.js';
+import {NAKAMURA_DESSERTS,HARBOUR_PARK_STUDY} from '../world/harbour-park-plan.js';
+import {kitahamaHomeFor} from '../world/kitahama-layout.js';
+const VY_HOME=Object.freeze(kitahamaHomeFor('Vy').door),RIKU_HOME=Object.freeze(kitahamaHomeFor('Riku').door);
 
 /**
  * The people who live and work in the new streets.
@@ -25,7 +27,11 @@ import {FLOWER_SHOP} from '../world/flower-shop.js';
 const H=(h,m=0)=>h*60+m;
 
 const ALL_NEIGHBOURS=Object.freeze([
- {name:'Riku',look:'Chin',height:1.7,role:'checking the cargo yard',walk:true,route:DOCK_CREW_ROUTE,speed:.65,at:[-35.8,-38.3],face:[0,-1],hours:[[420,1320]],lines:['Rice for Sakura, fuses for the workshop, ice for the fishing boats. This quay keeps the whole island going.','The early boat brings supplies; the evening boat takes fish and outgoing post. Keep the workshop doorway clear, please.']},
+ {name:'Riku',look:'Riku',height:1.32,role:'at home at 3 Kitahama',at:RIKU_HOME,home:RIKU_HOME,face:[0,1],hours:[[H(7),H(19)]],
+  routine:[{from:0,at:RIKU_HOME,role:'at home at 3 Kitahama',home:true},{from:H(7,40),at:[RIKU_HOME[0],RIKU_HOME[1]-.8],role:'leaving for school'},{from:H(8,15),at:RIKU_HOME,role:'at school',away:true},{from:H(15,30),at:[12.5,-26.4],role:'playing in Harbour Park'},{from:H(17),at:[18,-9],role:'playing football on the park lawn'},{from:H(18,30),at:RIKU_HOME,role:'home with Kōji and Nhung at 3 Kitahama',home:true}],
+  lines:['I live at 3 Kitahama with Dad. Mum is Nhung at the bookshop; she comes for supper. Vy is my cousin.',
+   'Dad sorts the catch on the quay. I can watch the boats, but I am not allowed out on one until I can swim to the buoy.',
+   'The open lawn beside Harbour Park is our football place. We keep the ball away from Mrs Kinjō’s flowers and the pond.']},
  {name:'Grandmother Chinen',look:'Fumiko',height:1.48,role:'at her gate in Kitano hamlet',at:CHINEN_GATE,face:[0,1],hours:[[H(6,30),H(18,30)]],home:CHINEN_GATE,routine:[{from:0,at:CHINEN_GATE,role:'at home',home:true},{from:H(6,30),at:CHINEN_LANE,face:[0,-1],role:'sweeping the lane in front of her gate'},{from:H(9),at:CHINEN_GATE,role:'at home',home:true},{from:H(15),at:CHINEN_GATE,face:[0,1],role:'sitting at her gate for the breeze'},{from:H(18,30),at:CHINEN_GATE,role:'at home',home:true}],
   lines:['This is the old Chinen house. The typhoon of 1987 took the Shiromas’ roof next door; it only took three of our tiles.','My son Tetsuo mends radios in Minato. He comes over on the boat when he can, and eats like he is still fifteen.','The mayor and his wife are at the end of the lane. Thuan brings me the shop’s day-old bread on Saturdays.']},
 
@@ -40,11 +46,11 @@ const ALL_NEIGHBOURS=Object.freeze([
    'Cedar, this. From Yakushima, before you could not get it any more. I built her in 1968 and I will be buried before she is.',
    'Weed and barnacles, every spring. You scrape to the wood, you let her dry a week, then tar. Kōji says buy a fibreglass one. Kōji also says buy a microwave.',
    'In June the whole island races these, sail and paddle, Zamami to Naha. I came fourth in 1979. Fourth! Ask anyone.']},
- {name:'Mrs Nakamura',look:'Yoshiko',height:1.52,role:'at the zenzai counter',at:[7.35,-10.55],y:.08,face:[-1,0],pose:'Idle',hours:[[H(10),H(19)]],
+ {name:'Mrs Nakamura',look:'Yoshiko',height:1.52,role:'serving zenzai and Blue Coral ice cream',at:NAKAMURA_DESSERTS.staffAt,y:.08,face:[-1,0],pose:'Idle',hours:[[H(10),H(19)]],
   lines:[
    "Welcome! Zenzai? Kintoki beans, cooked since six this morning. The ice is from the plant on the quay, shaved to order. ¥250.",
    'Thuan-chan comes on Sundays and orders the small one and then eats half of mine. Tell her I said so.',
-   'Since 1972 on this corner. The machine is older than the shop. It sounds like a tractor and it makes the best ice on the island.']},
+   'Since 1972 on this corner. Zenzai, sata andagi and Blue Coral scoops all come from this counter now. Mai and Vy usually arrive together after school.']},
  {name:'Mr Shimabukuro',look:'Mr Tanabe',height:1.66,role:'minding the generators',at:[20.7,31.2],y:0,face:[1,0],pose:'Idle',hours:[[H(7),H(19)]],
   lines:[
    'Hear that? Two diesels, one running, one resting. Every light on this island comes through that switchboard. Mind the yellow line.',
@@ -56,16 +62,15 @@ const ALL_NEIGHBOURS=Object.freeze([
    'The Minato Maru came in at four with a full hold and the skipper is asleep on the wheel. That is the life.']},
  {name:'Mrs Kinjō',look:'Emi',height:1.58,role:'arranging flowers at Rainflower Florist',at:FLOWER_SHOP.staffAt,face:[-1,0],pose:'Interact',hours:[[H(9),H(18)]],
   lines:['Welcome to Rainflower. Fresh stems, a small bouquet, or something green for your windowsill? I wrap everything by hand.',
-   'Nakamura-san and I share the walkway. Her customers stand in my doorway with their ice; my buckets stand in hers. We have lunch at each other’s counters and say nothing about it.']},
- // Vy, at the high school on the mainland: the ferry to school from twenty past seven, then after
- // school an ice cream at the Blue Coral counter on Rainflower Lane and her homework in the park.
- {name:'Vy',look:'Vy',height:1.56,role:'waiting for the ferry to school',at:[-2.4,-57],face:[0,-1],hours:[[H(7,20),H(8)],[H(15,40),H(18,40)]],
-  routine:[{from:0,at:[-2.4,-57],face:[0,-1],role:'waiting for the ferry to school'},{from:H(15,40),at:[7.1,48.6],face:[1,0],role:'eating a Blue Coral ice cream after school'},{from:H(16,20),at:[18.2,-21.8],face:[-1,0],role:'doing her homework in the park'},{from:H(18,10),at:[-2.4,-57],face:[0,-1],role:'waiting for the ferry home'}],
+   'Nakamura-san and I share this park entrance. Her Blue Coral scoops and my flowers are neighbours now. The wide path stays clear all the way to Umi-no-yu.']},
+ // Vy lives with Thao and Chin at 1 Kitahama. School is off-scene until it has a current public entrance.
+ {name:'Vy',look:'Vy',height:1.56,role:'at home with Thao and Chin',at:VY_HOME,home:VY_HOME,face:[0,-1],hours:[[H(7),H(20)]],
+  routine:[{from:0,at:VY_HOME,face:[0,-1],role:'at home at 1 Kitahama',home:true},{from:H(7,40),at:[VY_HOME[0]+1.0,VY_HOME[1]-.8],face:[0,-1],role:'leaving for school'},{from:H(8,15),at:VY_HOME,face:[0,-1],role:'at school',away:true},{from:H(15,30),at:NAKAMURA_DESSERTS.approach,face:[1,0],role:'eating a Blue Coral ice cream with Mai'},{from:H(16,20),at:HARBOUR_PARK_STUDY[0],face:[-1,0],role:'doing her homework in Harbour Park'},{from:H(18,30),at:VY_HOME,face:[0,-1],role:'home with Thao and Chin at 1 Kitahama',home:true}],
   lines:[
    'Ice cream before homework. It is a rule. I made the rule, but it is still a rule.',
-   'Kanji test tomorrow. Two hundred characters. I know one hundred and ninety. The other ten are probably not important.',
-   'The lady at Blue Coral saves me the pink one. Do not tell anyone; she says it is a secret menu.',
-   'My skirt has exactly twenty-four pleats. Our teacher counts them.']},
+   'My parents are Thao and Chin. Our home is 1 Kitahama, with Aunt Thuan on school nights.',
+   'Mrs Nakamura saves me the pink Blue Coral scoop. Mai and I share the walk to Harbour Park afterwards.',
+   'The pond is right beside the bathhouse now. I can finish my homework while everybody goes for a soak.']},
  // The postman, on his round.
  {name:'Postman Tōma',look:'Kenta',height:1.7,role:'on his round',walk:true,speed:1.25,hours:[[H(9),H(13)],[H(14),H(17)]],
   route:[[2.6,15.2],[2.6,-14.6],[4.3,-15.2],[4.3,-1.6],[5.4,2.4],[14,2.4],[14,9.2],[14,2.4],[5.4,2.4],[4.3,-1.6],[2.6,-1.2]],
@@ -137,7 +142,7 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
    const now=performance.now();
    for(const p of people){
     const {g,spec}=p;
-    if(spec.routine){const m=((minutes%1440)+1440)%1440,phase=[...spec.routine].reverse().find(p=>m>=p.from);if(!p.routine){g.position.set(phase.at[0],groundAt(...phase.at),phase.at[1]);p.routine=phase;}if(p.routine!==phase){p.routine=phase;p.path=navigation.path(g.position,{x:phase.at[0],z:phase.at[1]});}g.userData.activity=phase.role;if(!g.userData.playerConversation&&p.path?.length){const to=p.path[0],dx=to[0]-g.position.x,dz=to[1]-g.position.z,len=Math.hypot(dx,dz),step=Math.min(len,dt*.75);if(len<.07)p.path.shift();else {const x=g.position.x+dx/len*step,z=g.position.z+dz/len*step;if(!blocked(x,z,.32)){g.position.set(x,groundAt(x,z),z);faceAlong(g,dx,dz);}}}if(phase.home&&!p.path?.length){g.visible=false;continue;}}
+    if(spec.routine){const m=((minutes%1440)+1440)%1440,phase=[...spec.routine].reverse().find(p=>m>=p.from);if(!p.routine){g.position.set(phase.at[0],groundAt(...phase.at),phase.at[1]);p.routine=phase;}if(p.routine!==phase){p.routine=phase;p.path=phase.away?[]:navigation.path(g.position,{x:phase.at[0],z:phase.at[1]});}g.userData.activity=phase.role;g.userData.scheduledAway=!!phase.away;if(phase.away){g.visible=false;continue;}if(!g.userData.playerConversation&&p.path?.length){const to=p.path[0],dx=to[0]-g.position.x,dz=to[1]-g.position.z,len=Math.hypot(dx,dz),step=Math.min(len,dt*.75);if(len<.07)p.path.shift();else {const x=g.position.x+dx/len*step,z=g.position.z+dz/len*step;if(!blocked(x,z,.32)){g.position.set(x,groundAt(x,z),z);faceAlong(g,dx,dz);}}}if(phase.home&&!p.path?.length){g.visible=false;continue;}}
     const awake=neighbourAwake(spec,minutes);
     const near=!viewer||Math.hypot(g.position.x-viewer.x,g.position.z-viewer.z)<45;
     g.visible=awake&&near;

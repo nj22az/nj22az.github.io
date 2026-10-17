@@ -3,7 +3,12 @@ import {routeAt} from './src/world/layout.js?snappy=1';
 // Kept independent of Three.js so the core movement rules can be regression-tested.
 export function circleHitsRect(x,z,r,c){
   let dx=x-c.x,dz=z-c.z;if(c.yaw){const co=Math.cos(c.yaw),si=Math.sin(c.yaw),u=co*dx-si*dz;dz=si*dx+co*dz;dx=u;}
-  return Math.abs(dx)<c.w/2+r&&Math.abs(dz)<c.d/2+r;
+  const ax=Math.abs(dx),az=Math.abs(dz),halfW=c.w/2,halfD=c.d/2;
+  // A point inside the rectangle still hits when its radius is zero. Outside it,
+  // measure to the closest point: adding r to both axes made corners square walls.
+  if(ax<halfW&&az<halfD)return true;
+  const gapX=Math.max(ax-halfW,0),gapZ=Math.max(az-halfD,0);
+  return gapX*gapX+gapZ*gapZ<r*r;
 }
 
 export function circleHitsCircle(ax,az,ar,bx,bz,br){

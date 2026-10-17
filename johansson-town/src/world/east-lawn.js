@@ -5,7 +5,7 @@ import {GROUND} from '../render/ground-palette.js';
 import {MAIN_ROAD} from './main-road.js';
 import {PARK,TURF_TINT,PARK_TERRAIN_SEGMENTS} from './park-layout.js';
 import {GROUND_LAYER} from './ground-layers.js';
-import {buildEastGarden} from './east-garden.js';
+import {HARBOUR_PARK_EXTENSION,inHarbourPark} from './harbour-park-plan.js';
 import {SCHOOL} from './school-layout.js';
 import {BEACH,beachHeight} from './beach-layout.js';
 import {inKobanPlot} from './koban-layout.js';
@@ -22,8 +22,8 @@ import {broadleafGeometry} from './okinawa/trees.js';
  * metre below the pavement, so the town had a walking lane rather than a side.
  *
  * It is now lawn at pavement level, from the pavement's east kerb to a seawall, with
- * sand and the sea below the wall. The park keeps its mound and its ramp: routeAt asks
- * the park first, so the lawn is the ground around it, not a lid over it.
+ * sand and the sea below the wall. Harbour Park shares this level ground; its own
+ * turf has an opening for the pond, so the surrounding lawn must leave that footprint clear.
  */
 export const EAST_LAWN=Object.freeze({
  id:'east-lawn',surface:'grass',
@@ -112,12 +112,12 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
  // hairline gaps when a coarse triangle bridges a bend in a finer border.
  // The gateball court's edges too: the court is level ground cut into the hill's foot,
  // and the lawn stops at its retaining wall rather than sloping in under the sand.
- const boundary=axis=>Array.from({length:PARK_TERRAIN_SEGMENTS+1},(_,i)=>PARK[axis]-PARK.half+i/PARK_TERRAIN_SEGMENTS*PARK.half*2);
- const xs=lines(EAST_LAWN.minX,EAST_LAWN.maxX,...boundary('x'),GATEBALL.minX,GATEBALL.maxX);
- const zs=lines(EAST_LAWN.minZ,EAST_LAWN.maxZ,...boundary('z'),GATEBALL.minZ,GATEBALL.maxZ);
+ const boundary=axis=>{const half=axis==='x'?PARK.halfX:PARK.halfZ;return Array.from({length:PARK_TERRAIN_SEGMENTS+1},(_,i)=>PARK[axis]-half+i/PARK_TERRAIN_SEGMENTS*half*2);};
+ const xs=lines(EAST_LAWN.minX,EAST_LAWN.maxX,...boundary('x'),HARBOUR_PARK_EXTENSION.minX,HARBOUR_PARK_EXTENSION.maxX,GATEBALL.minX,GATEBALL.maxX);
+ const zs=lines(EAST_LAWN.minZ,EAST_LAWN.maxZ,...boundary('z'),HARBOUR_PARK_EXTENSION.minZ,HARBOUR_PARK_EXTENSION.maxZ,GATEBALL.minZ,GATEBALL.maxZ);
  const onCourt=(x,z)=>GATEBALL_ACTIVE&&x>GATEBALL.minX&&x<GATEBALL.maxX&&z>GATEBALL.minZ&&z<GATEBALL.maxZ;
  const height=(x,z)=>heightAt?heightAt(x,z):0;
- const onMound=(x,z)=>Math.abs(x-PARK.x)<=PARK.half+.01&&Math.abs(z-PARK.z)<=PARK.half+.01;
+ const onPark=(x,z)=>inHarbourPark(x,z);
  const vertices=[],turfUV=[],faces=[];
  // Under a path the turf is tucked a few centimetres down. Its 1.2m grid runs straight
  // between samples while the paving follows the slope on a finer one, so where the ground
@@ -127,7 +127,7 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
  for(const z of zs)for(const x of xs){vertices.push(x,height(x,z)+GROUND_LAYER.grass-tuck(x,z),z);turfUV.push(x/TURF_METRES,z/TURF_METRES);}
  for(let j=0;j<zs.length-1;j++)for(let i=0;i<xs.length-1;i++){
   const mx=(xs[i]+xs[i+1])/2,mz=(zs[j]+zs[j+1])/2;
-  if(onMound(mx,mz)||onCourt(mx,mz))continue;
+  if(onPark(mx,mz)||onCourt(mx,mz))continue;
   const a=j*xs.length+i,b=a+1,c=a+xs.length,d=c+1;
   faces.push(a,c,b,b,c,d);
  }
@@ -194,10 +194,11 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
   if(clear(x))continue;
   const tree=new THREE.Mesh(shapes[i%3],treeMat);tree.name='East lawn tree';
   tree.position.set(x,0,z);tree.scale.setScalar(height);tree.rotation.y=i*1.7;tree.castShadow=!!shadows;tree.receiveShadow=true;group.add(tree);
+  // The unit broadleaf's trunk flares to a .06 m radius at its roots. Keep that
+  // solid footprint with the tree, so the school and police-box gaps stay open.
+  const trunkWidth=height*.12;
+  colliders.push({id:'east-lawn-tree',x,z,w:trunkWidth,d:trunkWidth,height:height*.48});
  }
- const west=first-1.1,eastEnd=last+1.1,g0=gate.x-gate.half-.35,g1=gate.x+gate.half+.35;
- colliders.push({id:'east-lawn-trees',x:(west+g0)/2,z:treeZ+.35,w:g0-west,d:1.5,height:5.4},
-  {id:'east-lawn-trees',x:(g1+eastEnd)/2,z:treeZ+.35,w:eastEnd-g1,d:1.5,height:5.4});
 
  // No shrub clumps on the green. They were round balls on flat grass, and from the hill
  // they read as a scatter of boulders rather than as planting; the treeline, the park's
@@ -205,7 +206,7 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
 
  const marker=new THREE.Object3D();marker.name='east-seawall-view';marker.position.set(wall.x-1.1,1.2,-6);group.add(marker);
  register(marker,'Look out over the seawall',()=>onAction('inspect','East seawall','Concrete coping warm from the afternoon. Below it the sand runs down to the water, and the tide has left a line of weed and one blue float.'));
- const garden=buildEastGarden({parent:group,colliders,shadows,heightAt,register,onAction});
+ const garden={retired:true,tick(){}};
  /**
   * Lay the supplied park's own grass and leaf over the green, so the lawn and the mound
   * it runs up to are one field rather than two parks meeting along an edge. The model

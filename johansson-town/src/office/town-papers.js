@@ -24,10 +24,10 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
-    "title": "Blue Coral attendant",
+    "title": "Nakamura is closed",
     "organisation": "Town Services",
-    "text": "Welcome! The ube scoop is our favourite. Take your time at the glass counter; the little benches outside catch the sea breeze.",
-    "source": "notice:Blue Coral attendant"
+    "text": "Mrs Nakamura serves zenzai and Blue Coral ice cream here from 10:00 to 19:00. Her family lives upstairs.",
+    "source": "notice:Nakamura is closed"
   },
   {
     "type": "Notice",
@@ -54,14 +54,14 @@ export const TOWN_PAPERS=[
     "type": "Notice",
     "title": "Rainflower is closed",
     "organisation": "Town Services",
-    "text": "Mrs Kinjō serves flowers from 09:00 to 18:00. You may still look around the open shop.",
+    "text": "Mrs Kinjō serves flowers from 09:00 to 18:00. The flowers stay on display at the park entrance.",
     "source": "notice:Rainflower is closed"
   },
   {
     "type": "Notice",
     "title": "Rainflower Florist",
     "organisation": "Town Services",
-    "text": "Fresh stems, potted greenery and hand-made wreaths. Mrs Kinjō works here from 09:00 to 18:00, and makes the lanterns and flowers for the izakaya and the town’s festivals. The flowers are refreshed when the supply boat brings its morning delivery.",
+    "text": "Fresh stems, potted greenery and hand-made wreaths from Mrs Kinjō. Her counter is beside Harbour Park and Nakamura’s dessert shop. She supplies flowers to Sakura, the izakaya, town office, school and Umi-no-yu. Open 09:00–18:00.",
     "source": "notice:Rainflower Florist"
   },
   {
@@ -212,25 +212,11 @@ export const TOWN_PAPERS=[
     "source": "notice:Kitahama notice board"
   },
   {
-    "type": "Notice",
-    "title": "Your neighbourhood garden",
-    "organisation": "Town Services",
-    "text": "The garden is just along the paved walk beyond the terminal. Follow the green park signs to the stone gate, the pond and Umi-no-yu. The western homes also have a direct walk from the seawall.",
-    "source": "notice:Your neighbourhood garden"
-  },
-  {
     "type": "Flyer",
     "title": "Umi-no-yu notice",
     "organisation": "Town Services",
     "text": "Harbour bath, heated sea water (shio-yu). Bath 10:00–22:00, adults ¥300, children ¥150. The footbath is free and never closes. Sea water from the harbour, heated to 42°C at the spout — good for cold hands and long shifts on the quay. Please wash before you bathe.",
     "source": "notice:Umi-no-yu notice"
-  },
-  {
-    "type": "Notice",
-    "title": "Minato Park",
-    "organisation": "Town Services",
-    "text": "Laid out in 1972 on the old lookout mound. The kanhizakura was planted by the class of that year and flowers in January, the first cherry in Japan. Please take your rubbish home. No ball games on the mound. — Minato Town Office",
-    "source": "notice:Minato Park"
   },
   {
     "type": "Notice",
@@ -257,7 +243,7 @@ export const TOWN_PAPERS=[
     "type": "Notice",
     "title": "Minato power station",
     "organisation": "Town Services",
-    "text": "The two diesel generators feed the island at 6,600 volts through a buried cable to the outgoing pole. The northern feeder serves the terminal and homes; the eastern feeder serves Kitahama and Rainflower Lane, and a buried cable runs up the hill to Aoba Radio. Pole transformers reduce the voltage for shops and houses. The station keeps a standby generator for storms.",
+    "text": "The two diesel generators feed the island at 6,600 volts through a buried cable to the outgoing pole. The northern feeder serves the terminal and homes; the eastern feeder serves Kitahama and the eastern neighbourhood, and a buried cable runs up the hill to Aoba Radio. Pole transformers reduce the voltage for shops and houses. The station keeps a standby generator for storms.",
     "source": "notice:Minato power station"
   },
   {

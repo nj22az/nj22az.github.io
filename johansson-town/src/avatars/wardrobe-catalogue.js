@@ -62,7 +62,7 @@ const PART_ENTRIES={
    why:'The 1994-pattern police jacket: navy, notched lapels, three dark-gold buttons, shoulder straps, the rank plate on the left breast and the emblem on the right arm, over a white shirt and tie.'},
   hoodie:{label:'Hooded sweater',category:'Everyday',tags:['hoodie','rain','early boats','pier'],who:'Chin, Daichi, Masaru, Kenta, Hiroshi and the Cold-storage kid',why:'A hood and a pocket for the early boats, the rainy season and the windy pier.'},
   cardigan:{label:'Cardigan',category:'Everyday',tags:['knit','January','winter','bookshop','florist'],who:'Mrs Kinjō on January mornings; Nhung in the air-conditioned bookshop',why:'A knitted layer for the north wind of January, and for air-conditioning.'},
-  overalls:{label:'Work overalls',category:'Work & uniform',tags:['cargo yard','quay','repair','workshop'],who:'Riku in the cargo yard; Chin on a repair',why:'A bib with pockets that takes the grease and the crates.'},
+  overalls:{label:'Work overalls',category:'Work & uniform',tags:['cargo yard','quay','repair','workshop'],who:'Kōji at the auction; Chin on a repair',why:'A bib with pockets that takes the grease and the crates.'},
   sundress:{label:'Sundress bodice',category:'Everyday',tags:['dress','summer','Sunday','beach'],who:'Mai and Vy at the beach',why:'The coolest thing to wear on a hot Sunday.'},
   festival:{label:'Happi coat',category:'Island & festival',tags:['happi','festival coat','eisa','tug-of-war','Obon','steward','andagi'],who:'the stewards at the eisa night, the tug-of-war and the andagi stall',why:'A happi coat shows who is helping to run the festival.'},
   lighthouse:{label:'Lighthouse costume',category:'Costume',tags:['costume','parade','Port Festival','lighthouse'],who:PROPOSED_PARADE,why:'The white lighthouse on the breakwater head with its red lamp: the harbour’s landmark.'},
@@ -120,7 +120,7 @@ const PART_ENTRIES={
   cap:{label:'Cap',category:'Sun & everyday',tags:['baseball cap','sun','post','bus'],who:'Postman Tōma, the bus driver and Chin',why:'A peak to keep the sun out of the eyes.'},
   captain:{label:'Captain’s cap',category:'Work',tags:['harbour master','ferry','harbour office'],who:'the harbour master',why:'His cap, so the ferry knows who gives the berth.'},
   police:{label:'Police cap',category:'Work',tags:['police','officer','uniform','peaked cap','1994'],who:'Officer Mori',why:'The peaked police cap: a navy crown, a black band, a black visor and chin strap, and the island police badge.'},
-  helmet:{label:'Helmet',category:'Work',tags:['hard hat','safety','cargo yard','ice plant'],who:'Riku in the cargo yard; Masaru and the Cold-storage kid under the ice chute',why:'A hard hat where crates and blocks of ice swing overhead.'},
+  helmet:{label:'Helmet',category:'Work',tags:['hard hat','safety','cargo yard','ice plant'],who:'Kōji at the ice plant and the quay workers under the ice chute',why:'A hard hat where crates and blocks of ice swing overhead.'},
   straw:{label:'Straw hat',category:'Sun & everyday',tags:['sun','sabani','gateball','garden'],who:'Mr Ōshiro on his sabani; the elders at gateball',why:'Wide shade for the open water and the court at noon.'},
   headband:{label:'Headband',category:'Work',tags:['sweat','fish counter','ice plant','post'],who:'Kōji at the auction and Naoko',why:'A band to keep sweat and hair out of the eyes while they work.'},
   kerchief:{label:'Kerchief',category:'Work',tags:['kitchen','shop','school lunch','hair covered','headscarf','sankakukin','engine room'],who:'Mrs Sato, Mrs Nakamura, Kōji, Mr Higa Jr, Hiroshi and the school’s lunch squad',
@@ -137,7 +137,7 @@ const PART_ENTRIES={
   // A model from World's asset catalogue (assets/catalog/johansson-trucker, avatars/hat-assets.js), sold at Sakura Shōten.
   // Its foam front and bill are the hat colour, its mesh, undervisor, rope and J the accent: each colourway sets both.
   trucker:{label:'Johansson trucker',category:'Sun & everyday',tags:['trucker cap','baseball cap','snapback','mesh','J','Johansson','premium','sun','quay','boats','Sakura Shōten','konbini'],
-   who:'Kōji, who bought the first one at Sakura; Riku on the cargo quay, Mr Fujita at the bow bollards',
+   who:'Kōji, who bought the first one at Sakura; Mr Fujita at the bow bollards',
    why:'A well-made trucker cap: a tall foam front with Johansson’s J raised in embroidery, a mesh back that lets the sea wind through, a strap that fits anyone.',
    supplier:'Sakura Shōten, ¥3,800 (Johansson Headwear JH-712)',
    colourways:[{name:'Navy & white',colours:{'outfit.hatColour':'#27304d','outfit.accent':'#f4f1ea'}},{name:'Charcoal & grey',colours:{'outfit.hatColour':'#2b2b2b','outfit.accent':'#6d7478'}},{name:'White & navy',colours:{'outfit.hatColour':'#f4f1ea','outfit.accent':'#27304d'}}]},

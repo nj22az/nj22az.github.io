@@ -32,7 +32,7 @@ export const CAST=Object.freeze([
   day:[['07:00','kitahama-1','breakfast'],['09:00','workshop','the repair bench'],['12:00','sato-ramen','lunch'],['13:00','workshop','the repair bench'],['19:00','izakaya','behind the counter with Thao'],['23:30','kitahama-1','home']]}),
  person('Vy',{sex:'f',age:11,home:'kitahama-1',work:'school',family:'Nguyen',purpose:'Thao and Chin’s daughter; a pupil at the island school',
   day:[['07:00','kitahama-1','breakfast'],['08:15','school','school'],['15:30','blue-coral','an ice cream with Mai'],['16:20','park','homework in the park'],['18:30','kitahama-1','home']]}),
- // Nhung's family, at 3 Kitahama (Nhung still walks home to 1 Front-Row Yard until the plan's batch 2 moves her in).
+ // Nhung keeps her established room with Reiko; she visits Kōji and Riku at 3 Kitahama.
  person('Nhung',{sex:'f',age:37,home:'resident-home-aya',work:'books',family:'Nguyen',purpose:'bookshop assistant at Front-Row Books; the eldest sister; Sakura’s weekend clerk',
   day:[['07:00','resident-home-aya','breakfast'],['09:30','books','opening Front-Row Books'],['13:00','park','lunch with her sisters'],['14:00','books','the bookshop'],['18:30','kitahama-3','supper with Kōji and Riku'],['22:00','resident-home-aya','home']]}),
  person('Kōji',{sex:'m',age:38,home:'kitahama-3',work:'fish-auction',family:'Nguyen',purpose:'sorts the catch at the fish auction and the ice plant; crews Mr Ōshiro’s boat; the ferry’s relief deck hand on Ms Uezu’s week off',
@@ -56,8 +56,8 @@ export const CAST=Object.freeze([
   day:[['09:00','koban','asleep after the night patrol'],['13:00','sato-ramen','lunch'],['16:00','koban','the desk'],['21:00','main-street','the night patrol'],['02:00','koban','home behind the koban']]}),
  person('Harbour master',{sex:'m',age:58,home:'office',work:'office',family:'Kaneshiro',purpose:'runs the harbour office, the moorings, the cargo yard and the freight book',
   day:[['06:00','office','the morning boats'],['12:00','sato-ramen','ramen, every day'],['13:00','cargo-yard','the cargo yard'],['18:00','office','the evening boat'],['21:00','office','home behind the screen']]}),
- person('Barfly',{sex:'m',age:43,home:'kitahama-11',work:'warehouse',family:'Iha',purpose:'night watchman at the Quay Warehouse; Thao’s most loyal regular',
-  day:[['12:00','kitahama-11','asleep'],['17:00','sato-ramen','the ramen he can’t afford'],['18:30','izakaya','his stool at Minato'],['22:00','warehouse','the night watch'],['06:00','kitahama-11','home to sleep']]}),
+ person('Barfly',{sex:'m',age:43,home:'izakaya',work:'izakaya',family:'Iha',purpose:'Minato’s resident regular; helps Thao clean and prepare the izakaya in return for his room and board',
+  day:[['04:00','izakaya','asleep on his Minato stool'],['10:00','izakaya','cleaning and setting up with Thao'],['16:00','izakaya','his stool at Minato']]}),
  person('Grandmother Sakurai',{sex:'f',age:74,home:'market',work:'sakura',family:'Sakurai',purpose:'owns Sakura Shōten, which her parents opened in 1963; does the books and minds the shop when Thuan is at the depot',
   day:[['07:00','market','the flat over the shop'],['08:00','warehouse','the Sakura depot'],['11:00','sakura','the books'],['15:00','onsen','her bath, an hour before Grandmother Higa’s'],['17:00','market','home']]}),
  person('Postman Tōma',{sex:'m',age:38,home:'kitahama-4',work:'post-office',family:'Tōma',purpose:'runs the post office and the round: collections at 10:30 and 16:30',
@@ -78,14 +78,14 @@ export const CAST=Object.freeze([
  person('Mr Nakandakari',{sex:'m',age:61,home:'ferry',work:'ferry',family:'Nakandakari',purpose:'chief engineer of the Minato Maru; lives aboard in the chief engineer’s cabin',
   day:[['05:30','ferry','the engine room'],['12:00','ferry','lunch in the mess'],['13:00','ferry','the engine room'],['19:30','izakaya','one beer at Minato'],['21:00','ferry','his cabin']]}),
  // Kept from the cut list: the Minato Maru's safe manning needs her oiler (ferry-crew.js), so the post stays filled.
- person('Mr Higa Jr',{sex:'m',age:32,home:'kitahama-flats',work:'ferry',family:'Higa',purpose:'oiler on the Minato Maru, after his time at Mr Ōshiro’s boatyard; Miss Higa’s elder brother',
-  day:[['06:00','ferry','the engine room with the chief'],['12:00','ferry','lunch in the mess'],['13:00','ferry','the gangway and the stern lines'],['19:00','higa','supper at his grandmother’s'],['21:00','kitahama-flats','home']]}),
+ person('Mr Higa Jr',{sex:'m',age:32,home:'kitahama-flat-1',work:'ferry',family:'Higa',purpose:'oiler on the Minato Maru, after his time at Mr Ōshiro’s boatyard; Miss Higa’s elder brother',
+  day:[['06:00','ferry','the engine room with the chief'],['12:00','ferry','lunch in the mess'],['13:00','ferry','the gangway and the stern lines'],['19:00','higa','supper at his grandmother’s'],['21:00','kitahama-flat-1','home']]}),
  person('Ms Uezu',{sex:'f',age:44,home:'kitahama-8',work:'ferry',family:'Uezu',purpose:'bosun of the Minato Maru, a week on (living aboard) and a week off',
   day:[['06:00','ferry','the deck and the ramp'],['12:00','ferry','lunch in the mess'],['13:00','ferry','the deck and the ramp'],['19:00','sato-ramen','supper'],['20:30','kitahama-8','home (in her week off)']]}),
- person('Ms Ganaha',{sex:'f',age:27,home:'kitahama-flats',work:'port',family:'Ganaha',purpose:'sells the Minato Maru’s tickets at the Port Terminal window',
-  day:[['07:00','kitahama-flats','breakfast'],['08:00','port','the ticket window'],['12:00','park','lunch on the bench'],['13:00','port','the ticket window'],['18:30','kitahama-flats','home']]}),
- person('Mr Fujita',{sex:'m',age:63,home:'kitahama-flats',work:'port',family:'Fujita',purpose:'the port’s linesman: takes the Minato Maru’s lines at every call; a retired fisherman with a bad back',
-  day:[['06:00','port','the first call'],['10:00','onsen','a soak for his back'],['12:00','sato-ramen','lunch'],['13:00','port','the afternoon calls'],['19:00','kitahama-flats','home']]}),
+ person('Ms Ganaha',{sex:'f',age:27,home:'kitahama-flat-2',work:'port',family:'Ganaha',purpose:'sells the Minato Maru’s tickets at the Port Terminal window',
+  day:[['07:00','kitahama-flat-2','breakfast'],['08:00','port','the ticket window'],['12:00','park','lunch on the bench'],['13:00','port','the ticket window'],['18:30','kitahama-flat-2','home']]}),
+ person('Mr Fujita',{sex:'m',age:63,home:'fujita-houseboat',work:'port',family:'Fujita',purpose:'the port’s linesman: takes the Minato Maru’s lines at every call; a retired fisherman with a bad back',
+  day:[['06:00','port','the first call'],['10:00','onsen','a soak for his back'],['12:00','sato-ramen','lunch'],['13:00','port','the afternoon calls'],['19:00','fujita-shed','television in his pier shed'],['23:30','fujita-houseboat','home aboard Shiosai']]}),
  person('Mr Shimabukuro',{sex:'m',age:55,home:'shimabukuro',work:'power-station',family:'Shimabukuro',purpose:'runs the power station and keeps the island lit; Chin’s fishing partner',
   day:[['05:30','seawall','fishing with Chin (Sundays)'],['07:00','power-station','the generators'],['12:00','shimabukuro','lunch upstairs'],['13:00','power-station','the switchboard'],['19:00','shimabukuro','home']]}),
 ]);
@@ -130,7 +130,7 @@ export const RELATIONSHIPS=Object.freeze([
  pair('Thao','Mrs Sato','rivals','The evening crowd: izakaya against ramen.','They fall out, then make up over a delivery.'),
  pair('Barfly','Mrs Sato','a hopeless crush','He orders the ramen he can’t afford.','She does not notice, or pretends not to.'),
  pair('Barfly','Thao','her most loyal regular','His stool at Minato.','His tab.'),
- pair('Barfly','Officer Mori','the night shift','They meet at the warehouse on the night patrol.','Mori counts his beers.'),
+ pair('Barfly','Officer Mori','the late hours','Mori stops at Minato on the night patrol.','Mori counts his beers.'),
  pair('Grandmother Sakurai','Thuan','owner and shopkeeper','Thuan keeps her shop.','The books must balance to the yen.'),
  pair('Mrs Kinjō','Mrs Nakamura','neighbouring shops','Lunch at each other’s counters.','Whose customers block whose doorway.'),
  pair('Mrs Kinjō','Thao','supplier','The izakaya’s flowers and lanterns.'),
@@ -174,7 +174,7 @@ export const relationshipsOf=name=>RELATIONSHIPS.filter(r=>r.a===name||r.b===nam
  */
 export const PLACES=Object.freeze({
  sakura:{name:'Sakura Shōten',keepers:['Thuan','Grandmother Sakurai','Nhung','Chin']},
- izakaya:{name:'Minato Izakaya',keepers:['Thao','Chin']},
+ izakaya:{name:'Minato Izakaya',keepers:['Thao','Chin','Barfly']},
  'sato-ramen':{name:'Sato Ramen',keepers:['Mrs Sato']},
  books:{name:'Front-Row Books & Stationery',keepers:['Nhung','Reiko']},
  workshop:{name:'Chin & Tetsuo Repairs',keepers:['Chin','Tetsuo']},
@@ -194,7 +194,7 @@ export const PLACES=Object.freeze({
  'fish-auction':{name:'Fish auction and the ice plant',keepers:['Kōji']},
  ferry:{name:'Minato Maru',keepers:['Bus driver','Mr Nakandakari','Mr Higa Jr','Ms Uezu','Tetsuo']},
  port:{name:'Port Terminal',keepers:['Ms Ganaha','Mr Fujita']},
- warehouse:{name:'Quay Warehouse and the Sakura depot',keepers:['Barfly','Grandmother Sakurai']},
+ warehouse:{name:'Quay Warehouse and the Sakura depot',keepers:['Harbour master','Grandmother Sakurai']},
  // Nobody keeps these any more (docs/CAST-PLAN.md section 3, who goes).
  'yonamine-fish':{name:'Yonamine Fresh Fish',closed:'Mrs Yonamine has gone; the morning catch is sold at the auction'},
  'aragaki-sweets':{name:'Aragaki Confectionery',closed:'Mr Arakaki has gone'},

@@ -9,7 +9,8 @@ import {buildMinatoFacade} from '../src/world/minato-facade.js';
 import {buildSakuraInterior} from '../src/world/interiors/sakura-interior.js';
 import {createTown} from '../src/world/town.js';
 import {createBusinesses} from '../src/world/businesses.js';
-import {clock,PALETTE} from '../src/render/dusk.js';
+import {clock,windowGlow,PALETTE} from '../src/render/dusk.js';
+import {harbourPondAt,HARBOUR_POND} from '../src/world/harbour-park-plan.js';
 
 test('Minato lanterns and sign still change on the visible cel materials after batching',()=>{
  installDOM();const parent=new THREE.Group(),facade=buildMinatoFacade({parent});
@@ -30,19 +31,22 @@ test('Minato lanterns and sign still change on the visible cel materials after b
  for(const mesh of facade.lanterns)assert.equal((Array.isArray(mesh.material)?mesh.material[4]:mesh.material).emissiveIntensity,0);
 });
 
-test('world updates keep garden animation and existing harbour lights on the same dusk clock',()=>{
+test('world updates keep Harbour Park animation and existing harbour lights on the same dusk clock',()=>{
  installDOM();const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),mobile:false,shadows:true,register(){},onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});
  applyCelShading(world.group);
  const globes=[];let points=0;
  world.group.traverse(o=>{if(o.isMesh&&o.geometry.type==='SphereGeometry'&&o.geometry.parameters.radius===.25)globes.push(o);if(o.isPointLight)points++;});
  assert.ok(globes.length>0);
- let elapsed=0;
+ const parkLamps=[];world.park.group.traverse(o=>{if(o.isMesh&&o.material?.userData?.kitFinish==='lamp')parkLamps.push(o);});assert.ok(parkLamps.length,'Park lamps are present after cel conversion');
+ assert.equal(world.eastLawn.garden.retired,true);
+ let previousFish=world.park.fish.map(f=>f.position.toArray()),elapsed=0;
  for(const minutes of [1020,1050,1110,1200,1230,1440,1800,1860]){
   const c=clock(minutes);world.update(.016,++elapsed,c.day,minutes);
   for(const globe of globes)assert.equal(globe.material.emissiveIntensity,.12+c.lanternGlow*.82);
-  const {pond,fireflies}=world.eastLawn.garden;
-  assert.equal(pond.material.uniforms.uTime.value,elapsed);
-  const m=minutes%1440;assert.equal(fireflies.visible,m>=1110||m<360);
+  for(const lamp of parkLamps){assert.equal(lamp.layers.mask,1,'Live lamp stays rendered');assert.equal(lamp.material.emissiveIntensity,.1+windowGlow(minutes)*1.6);}
+  assert.equal(world.park.pools.material.opacity,c.lanternGlow*.5);assert.equal(world.park.pools.group.visible,c.lanternGlow>.02);
+  const fish=world.park.fish.map(f=>f.position.toArray());assert.notDeepEqual(fish,previousFish,'Koi use elapsed animation time');previousFish=fish;
+  for(const [x,y,z] of fish){assert.ok(harbourPondAt(x,z));assert.ok(y<HARBOUR_POND.waterY);}
  }
  let after=0;world.group.traverse(o=>{if(o.isPointLight)after++;});assert.equal(after,points);
 });

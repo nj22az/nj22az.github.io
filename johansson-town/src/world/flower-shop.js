@@ -1,35 +1,37 @@
 import * as THREE from '../../vendor/three.module.js';
-import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
-import {SHOPPING_LANE_ROWS,shoppingLanePoint,placeShoppingLaneGroup,placeShoppingLaneColliders} from './shopping-lane-plan.js';
-const authorX=99.3,authorZ=SHOPPING_LANE_ROWS[0],[x,z]=shoppingLanePoint(authorX,authorZ);
-export const FLOWER_SHOP={name:'Rainflower Florist',staff:'Mrs Kinjō',x,z,staffAt:Object.freeze(shoppingLanePoint(102,authorZ-1.3)),open:540,close:1080};
-/** Open-front florist, using the existing Mrs Kinjō actor rather than a new clerk. */
-export function buildFlowerShop({world,group,register,onAction,authored=false}){
- const colliderStart=world.colliders.length,root=new THREE.Group();root.name=FLOWER_SHOP.name;root.position.set(authorX,0,authorZ);group.add(root);const materials=new Map(),parts=new Map();
- const mat=c=>{if(!materials.has(c))materials.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.85}));return materials.get(c);};
- const box=(n,s,p,c,solid=false)=>{const g=new THREE.BoxGeometry(...s);g.translate(...p);if(!parts.has(c))parts.set(c,[]);parts.get(c).push(g);if(solid)world.colliders.push({id:n,x:authorX+p[0],z:authorZ+p[2],w:s[0],d:s[2],height:p[1]+s[1]/2});};
- const small=(geo,p,c)=>{geo.translate(...p);if(!parts.has(c))parts.set(c,[]);parts.get(c).push(geo);};
- box('Florist tiled floor',[7,.08,8.5],[0,.04,0],0xc5bea6);box('Florist cedar back',[.16,3.1,8.5],[3.44,1.55,0],0x8f7857,true);
- for(const z of [-4.18,4.18])box('Florist side wall',[7,3.1,.16],[0,1.55,z],0xcbbd9e,true);
- box('Flower wrapping counter',[.75,.9,2.0],[2.1,.45,.5],0x7f674a,true);box('Wrapping paper',[.53,.025,.38],[2.1,.923,.6],0xd9ceae);box('Till',[.32,.2,.25],[2.1,1.01,-.1],0x536956);
- // Leave a broad central route from the pavement to the counter.
- for(const [x,z] of [[-2.4,-2.8],[-1.3,-2.8],[.1,-2.8],[1.4,-2.8],[-2.4,2.8],[-.8,2.8],[.6,2.8]]){
-  small(new THREE.CylinderGeometry(.24,.18,.48,12),[x,.3,z],0x55675f);world.colliders.push({id:'flower-bucket',x:authorX+x,z:authorZ+z,w:.52,d:.52,height:1.25});
-  for(let i=0;i<7;i++){
-   const sx=x+(i%3-1)*.13,sz=z+(Math.floor(i/3)-1)*.12,y=.94+(i%3)*.07;
-   small(new THREE.CylinderGeometry(.012,.012,.68,5),[sx,.68,sz],0x486a43);
-   const colour=[0xf0cc62,0xeee5c7,0xc4677c][i%3];small(new THREE.SphereGeometry(.042,6,4),[sx,y,sz],0xbaa05f);
-   for(let k=0;k<5;k++)small(new THREE.SphereGeometry(.045,6,4),[sx+Math.cos(k*Math.PI*.4)*.065,y,sz+Math.sin(k*Math.PI*.4)*.065],colour);
-  }
+import {createKit} from './okinawa/kit.js';
+import {poster} from './okinawa/signs.js';
+import {HARBOUR_FLORIST} from './harbour-park-plan.js';
+import {GROUND_LAYER} from './ground-layers.js';
+export const FLOWER_SHOP=Object.freeze({...HARBOUR_FLORIST,staff:HARBOUR_FLORIST.owner});
+export const flowerShopOpen=minutes=>{const m=((minutes%1440)+1440)%1440;return m>=FLOWER_SHOP.open&&m<FLOWER_SHOP.close;};
+/** Mrs Kinjō's one open flower counter, beside the park entrance. */
+export function buildFlowerShop({world,group=world.group,register,onAction}){
+ const root=new THREE.Group();root.name=FLOWER_SHOP.name;group.add(root);const kit=createKit();
+ const b=FLOWER_SHOP.bounds,base=GROUND_LAYER.apron;
+ kit.box(b.maxX-b.minX,base,b.maxZ-b.minZ,FLOWER_SHOP.x,base/2,FLOWER_SHOP.z,0xcac2a9);
+ const solid=(id,x,z,w,d,height,minY=0)=>world.colliders.push({id,x,z,w,d,height,minY,business:FLOWER_SHOP.id});
+ // An open pavilion: a cedar back, roof and four visible posts; no invisible shop-sized box.
+ kit.box(.14,2.5,3.2,b.maxX-.07,1.25,FLOWER_SHOP.z,0x9a8160);solid('florist-back',b.maxX-.07,FLOWER_SHOP.z,.14,3.2,2.5);
+ for(const [x,z] of [[5.95,-18.25],[5.95,-15.35],[9.65,-18.25],[9.65,-15.35]]){kit.box(.12,2.5,.12,x,1.25,z,0x61745f);solid('florist-post',x,z,.12,.12,2.5);}
+ kit.box(4.2,.12,3.35,FLOWER_SHOP.x,2.56,FLOWER_SHOP.z,0x476c58);
+ kit.box(.7,.88,1.8,7.5,.44,-16.35,0x8e7150);solid('florist-counter',7.5,-16.35,.7,1.8,.88);
+ kit.box(.73,.04,1.85,7.5,.9,-16.35,0xd8cbb0);kit.box(.28,.22,.3,7.5,1.02,-15.85,0x485f4d);
+ for(const [x,z,tone] of [[6.35,-17.85,0xe9c969],[8.6,-17.85,0xcb748f],[6.35,-15.7,0xe7debf]]){
+  kit.cyl(.22,.17,.43,x,.215,z,0x667a6d,{segments:9});solid('flower-bucket',x,z,.45,.45,.92);
+  for(let i=0;i<5;i++){const a=i*Math.PI*2/5,sx=x+Math.cos(a)*.11,sz=z+Math.sin(a)*.11;kit.cyl(.012,.012,.52,sx,.61,sz,0x547545,{segments:5});kit.sphere(.09,sx,.9+(i%2)*.07,sz,tone,{detail:0});}
  }
- for(const z of [-2.6,0,2.6]){const wreath=new THREE.TorusGeometry(.25,.075,6,16);wreath.rotateY(Math.PI/2);small(wreath,[3.31,1.95,z],0x3c6953);for(let i=0;i<5;i++)small(new THREE.SphereGeometry(.065,7,4),[3.22,1.95+Math.cos(i*Math.PI*.4)*.23,z+Math.sin(i*Math.PI*.4)*.23],0xc89869);}
- for(const [c,list] of parts){const m=new THREE.Mesh(mergeGeometries(list,false),mat(c));m.receiveShadow=true;root.add(m);list.forEach(g=>g.dispose());}
- const sign=(text,pos,w,h)=>{const c=document.createElement('canvas');c.width=768;c.height=256;const x=c.getContext('2d');x.fillStyle='#376a51';x.fillRect(0,0,768,256);x.fillStyle='#f4ecd4';x.textAlign='center';x.font='bold 52px Georgia';text.split('\n').forEach((t,i)=>x.fillText(t,384,76+i*72,735));const texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:texture}));m.position.set(...pos);m.rotation.y=-Math.PI/2;root.add(m);};
- sign('雨花生花店\nRainflower Florist · island-grown',[-3.58,3.5,0],5.7,.8);sign('季節の花束\nBouquet ¥250 · 09:00–18:00',[3.31,2.6,.2],3.2,.7);
+ kit.sign(poster({title:'雨花生花店',lines:['RAINFLOWER FLORIST','Mrs Kinjō · 09:00–18:00','Bouquets ¥250'],band:'#376a51',bg:'#efe7ce'}),2.5,.68,5.79,2.18,-16.8,{ry:-Math.PI/2,name:'Rainflower Florist park sign'});
+ kit.finish(root,'Rainflower flower counter');
  let minutes=720;
- const anchor=(pos,label,fn)=>{const a=new THREE.Object3D();a.position.set(...pos);root.add(a);register(a,label,fn);};
- anchor([.6,1,.5],'Buy a Rainflower bouquet · ¥250',()=>((minutes%1440)+1440)%1440>=540&&((minutes%1440)+1440)%1440<1080?onAction('buy','Rainflower bouquet',{cost:250,item:'Rainflower bouquet',text:'Mrs Kinjō wraps island-grown stems in brown paper. A little colour for a home, a dinner table or someone you care about.'}):onAction('read','Rainflower is closed','Mrs Kinjō serves flowers from 09:00 to 18:00. You may still look around the open shop.'));
- anchor([.1,1,-2.3],'Browse the flower buckets',()=>onAction('read','Rainflower Florist','Fresh stems, potted greenery and hand-made wreaths. Mrs Kinjō works here from 09:00 to 18:00, and makes the lanterns and flowers for the izakaya and the town’s festivals. The flowers are refreshed when the supply boat brings its morning delivery.'));
- if(!authored){placeShoppingLaneGroup(root);placeShoppingLaneColliders(world.colliders,colliderStart);}
- return {root,update(value){minutes=value;}};
+ const buy=()=>flowerShopOpen(minutes)?onAction?.('buy','Rainflower bouquet',{cost:250,item:'Rainflower bouquet',text:'Mrs Kinjō wraps island-grown stems in brown paper at her Harbour Park counter. A little colour for a home, a dinner table or someone you care about.'}):onAction?.('read','Rainflower is closed','Mrs Kinjō serves flowers from 09:00 to 18:00. The flowers stay on display at the park entrance.');
+ const anchor=(x,z,label,fn)=>{const a=new THREE.Object3D();a.position.set(x,1,z);a.userData.placeId=FLOWER_SHOP.id;root.add(a);register?.(a,label,fn);return a;};
+ // Every purchase prompt shares the same clock-aware callback, including the street-facing one.
+ anchor(5.0,-16.7,'Buy a Rainflower bouquet · ¥250',buy);
+ anchor(6.45,-16.65,'Order flowers from Mrs Kinjō',buy);
+ anchor(5.05,-17.7,'Browse Rainflower flowers',()=>onAction?.('read','Rainflower Florist','Fresh stems, potted greenery and hand-made wreaths from Mrs Kinjō. Her counter is beside Harbour Park and Nakamura’s dessert shop. She supplies flowers to Sakura, the izakaya, town office, school and Umi-no-yu. Open 09:00–18:00.'));
+ const [x,z]=FLOWER_SHOP.approach;
+ const landmark={id:FLOWER_SHOP.id,title:FLOWER_SHOP.name,owner:FLOWER_SHOP.owner,parentId:'harbour-park',sub:'HARBOUR PARK · FLOWERS',x,z,exitPosition:[x,0,z],entryFacing:Math.PI/2,line:'Mrs Kinjō’s flower counter at the park entrance · 09:00–18:00.'};
+ if(!(world.landmarks??=[]).some(s=>s.id===landmark.id))world.landmarks.push(landmark);
+ return {root,landmark,update(value){if(Number.isFinite(value))minutes=value;},isOpen(){return flowerShopOpen(minutes);}};
 }

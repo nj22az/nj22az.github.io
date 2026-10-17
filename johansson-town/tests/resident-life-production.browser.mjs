@@ -12,7 +12,7 @@ try{
  await session.input({control:'forward',durationMs:350});
  const menu=await session.ui({control:'town_menu'});assert.equal(menu.accepted,true);
  console.log('Town Book opened');
- await session.page.getByRole('button',{name:'Residents',exact:true}).click({timeout:10000});await session.page.getByRole('button',{name:'Chin',exact:true}).click({timeout:10000});
+ assert.equal((await session.ui({control:'residents'})).accepted,true);assert.equal((await session.choose({label:'Chin'})).accepted,true);
  await session.page.getByLabel('Compare resident',{exact:true}).selectOption('Tetsuo',{timeout:10000});
  assert.match(await session.page.locator('#activityBody').textContent(),/Common ground/);
  await writeFile('output/resident-life/world-record.png',await session.screenshot());

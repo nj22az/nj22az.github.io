@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {COAST_BOUNDS} from '../src/world/island-coast.js';
-import {GARDEN_BRIDGE_AUTHOR_Z,GARDEN_BENCHES_AUTHOR,gardenPoint} from '../src/world/garden-layout.js';
+import {HARBOUR_PARK_PATHS,HARBOUR_PARK_SEATS} from '../src/world/harbour-park-plan.js';
 import {ONSEN_APPROACH,onsenPoint} from '../src/world/onsen-layout.js';
 import {MOUNTAIN_TRAIL,COAST_ROAD} from '../src/world/island-plan.js';
 import {onIslandLand} from '../src/world/coastal-ground.js';
@@ -11,7 +11,7 @@ import {createWalkSurface} from '../src/world/walk-surface.js';
 import {groundHeight,planHeight,setWalkSurface} from '../src/world/layout.js';
 import {townBoundsBlocked,standingHitsRect,canStepBetween} from '../physics.js';
 
-test('garden bridge, bench and outer-island trails connect on real supported floors with ordinary collision',async()=>{
+test('Harbour Park walks, footbath, benches and outer-island trails connect on real supported floors with ordinary collision',async()=>{
  installDOM();globalThis.self=globalThis;
  const {createTown}=await import('../src/world/town.js');
  const world=createTown({scene:new THREE.Scene(),sites:[],townMode:'peninsula',mobile:true,shadows:false,register(){},enter(){},onAction(){}});
@@ -43,13 +43,12 @@ test('garden bridge, bench and outer-island trails connect on real supported flo
   assert.ok(position.y-hit.point.y>.004&&position.y-hit.point.y<.012,'edge paint must clear the actual asphalt cap at '+position.toArray());
  }});
  try{
-  const z=gardenPoint(-34,GARDEN_BRIDGE_AUTHOR_Z)[1];
-  walk([[-23.4,40.6],[-20.4,44.8],[-18.85,44.8],[-18.85,z],[-20.4,z],[-33.6,z],[-33.6,49]],'southern approach and east-to-west crossing');
-  walk([[-33.6,49],[-33.6,z],[-20.4,z],[-20.4,52],[-23.4,54.6],[-23.4,56.8]],'west-to-east crossing and northern circuit');
-  const bench=gardenPoint(...GARDEN_BENCHES_AUTHOR[1].stand);
-  walk([[-23.4,56.8],[-23.4,bench[1]],bench],'northern circuit to the real garden bench stand');
-  walk([[-20.4,z],[-18.85,z],[-18.85,44.8],ONSEN_APPROACH],'bridge to bathhouse porch');
-  walk([[-20.4,44.8],[-21.7,44.8],onsenPoint(1.9,8.5)],'southern circuit to footbath seat approach');
+  for(const route of HARBOUR_PARK_PATHS)walk(route.points,route.id);
+  const loop=HARBOUR_PARK_PATHS.find(r=>r.id==='garden-pond-loop');walk([...loop.points].reverse(),'pond circuit reverse');
+  walk([[22,-34.2],HARBOUR_PARK_SEATS[1].stand],'pond circuit to bench stand');
+  walk([[6,-20.8],[8.9,-24.8],[9,-29.8],HARBOUR_PARK_SEATS[0].stand],'crossing to cherry bench stand');
+  walk([[12,-22.4],ONSEN_APPROACH],'park to bathhouse porch');
+  walk([[12,-22.4],[13.4,-22.4],[13.4,-18.7],onsenPoint(1.9,8.5)],'park to footbath seat approach');
   walk([[23.5,90],...MOUNTAIN_TRAIL.slice(0,5)],'Fukugi Lane to Aoba Radio');
   const radio=[[40,158],[39.3,159.2],[39.3,160],[39.3,166.16],[39.1,166.8],[37.5,166.8],[36.2,164.8],[34.8,165.8]];
   walk(radio,'radio outside stair and public lookout');

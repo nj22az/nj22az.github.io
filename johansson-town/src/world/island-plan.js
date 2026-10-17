@@ -30,7 +30,7 @@ export const MOUNTAIN_TRAIL=[[23.5,94],[23.5,112],[24,134],[28,151],[40,158],[40
  */
 export const AOBA_SUMMIT=Object.freeze({x:66,z:198});
 export const SUMMIT_PATH=[[40,167],[48.6,177.3],[54.9,174.1],[61.5,172.7],[68.2,173],[74.4,175],[79.7,178.5],[83.8,183.1],[86.4,188.5],[87.6,194.2],[87.2,199.9],[85.4,205.1],[82.4,209.5],[78.4,212.8],[73.9,214.9],[69.1,215.8],[64.5,215.4],[60.3,213.8],[56.7,211.2],[54.1,208],[52.5,204.3],[52,200.5],[52.5,196.8],[53.8,193.6],[55.9,190.9],[58.5,189.1],[61.3,188],[64.2,187.8],[66.9,188.3],[69.1,189.4],[70.9,191.1],[72,193],[72.5,195],[72.5,196.9],[71.9,198.5],[71,199.8],[69.8,200.7],[68.6,201.1]];
-export const ISLAND_ROUTES=[...GARDEN_PATHS,...SHOPPING_LANE_ROUTES,{id:'island-coastal-road',peninsula:true,width:5,segmentWidths:[2.6],surface:'asphalt',points:COAST_ROAD},{id:'island-mountain-trail',peninsula:true,width:2.3,surface:'gravel',points:MOUNTAIN_TRAIL},{id:'aoba-summit-path',peninsula:true,width:1.8,surface:'gravel',points:SUMMIT_PATH},...FUMOTO_ROUTES].map(r=>({...r,terrain:true}));
+export const ISLAND_ROUTES=[...GARDEN_PATHS,...SHOPPING_LANE_ROUTES,{id:'island-coastal-road',peninsula:true,width:5,segmentWidths:[2.6],surface:'asphalt',points:COAST_ROAD},{id:'island-mountain-trail',peninsula:true,width:2.3,surface:'gravel',points:MOUNTAIN_TRAIL},{id:'aoba-summit-path',peninsula:true,width:1.8,surface:'gravel',points:SUMMIT_PATH},...FUMOTO_ROUTES].map(r=>({...r,terrain:!r.park}));
 export function nearestSegment(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],t=Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/(dx*dx+dz*dz||1)));return Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);}
 /** The first island route under (x,z), through its index (plan-index.js): the answer a scan of every segment gives. */
 const findIslandRoute=routeFinder(ISLAND_ROUTES);
@@ -54,6 +54,5 @@ export const ISLAND_LANDMARKS=[
  {id:'fumoto',title:'Fumoto',x:34,z:203,line:'The farming hamlet at the foot of Mount Aoba: four walled houses, the co-op store and the well under the gajumaru.'},
  {id:'hoshizaki',title:'Hoshizaki Fishing Village',x:132,z:190,line:'Fishing families, a small general store and the far-coast pier.'},
  {id:'west-lighthouse',title:'West Cape Lighthouse',x:-54,z:204,line:'A quiet headland above the coastal road.'},
- {id:'rainflower-lane',title:'Rainflower Shopping Lane',x:SHOPPING_LANE.entry[0],z:SHOPPING_LANE.entry[1],line:'Weathered shop-houses on the walking grid between town, Aoba Garden and Kitahama.'},
- {id:'aoba-garden',title:'Aoba Traditional Garden',x:GARDEN.entry[0],z:GARDEN.entry[1],line:'The neighbourhood pond garden: stone gate, shrine and Umi-no-yu, a short stroll from town.'},
-].map(s=>({...s,sub:'ISLAND COAST & NEIGHBOURHOODS',exitPosition:[s.x,islandTerrainHeight(s.x,s.z)??-.4,s.z],entryFacing:0}));
+ {id:'harbour-park',title:'Minato Harbour Park',aliases:['park','aoba-garden','japanese-garden','east-garden'],x:GARDEN.entry[0],z:GARDEN.entry[1],line:'The park opposite Sakura: Umi-no-yu, one cherry, the pond, Rainflower Florist and an open shore walk.'},
+].map(s=>({...s,sub:'ISLAND COAST & NEIGHBOURHOODS',exitPosition:[s.x,s.id==='harbour-park'?0:islandTerrainHeight(s.x,s.z)??-.4,s.z],entryFacing:0}));

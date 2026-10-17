@@ -20,10 +20,11 @@ test('every timetable in town tells the same service: on request, with the commu
  assert.match(source('src/people/izakaya-play.js'),/goes on request/);
 });
 
-test('nobody waits for a bus that does not run: Vy waits for the ferry',()=>{
+test('Vy lives on Minato and school absence is scheduled without a fictitious ferry commute',()=>{
  const vy=NEIGHBOURS.find(n=>n.name==='Vy');assert.ok(vy);
- for(const role of [vy.role,...vy.routine.map(r=>r.role)])assert.doesNotMatch(role,/\bbus\b/,'Vy: '+role);
- assert.ok(vy.routine.some(r=>/ferry to school/.test(r.role))&&vy.routine.some(r=>/ferry home/.test(r.role)));
+ for(const role of [vy.role,...vy.routine.map(r=>r.role)])assert.doesNotMatch(role,/\b(bus|ferry)\b/,'Vy: '+role);
+ assert.ok(vy.routine.some(r=>r.away&&r.role==='at school'));
+ assert.ok(vy.routine.some(r=>r.home&&/1 Kitahama/.test(r.role)));
 });
 
 test('Okinawa runs at 60 hertz: the power house’s needles and the ferry’s shore supply agree',async()=>{

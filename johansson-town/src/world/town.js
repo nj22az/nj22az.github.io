@@ -8,7 +8,8 @@ import {buildParkAccess} from './park-access.js';
 import {buildDocklandsLife} from './docklands-life.js';
 import {addSakuraFlyer} from './sakura-flyers.js';
 import {buildIslandLandscape} from './island-landscape.js';
-import {buildTraditionalGarden} from './traditional-garden.js';
+import {buildFlowerShop} from './flower-shop.js';
+import {buildBlueCoralShop} from './blue-coral-shop.js';
 import {createTownTraffic} from './town-traffic.js';
 import {buildKitanoLink} from './kitano-link.js';
 import {buildOilJetty} from './oil-jetty.js';
@@ -188,20 +189,23 @@ function addStreetLife(world,options,factory){
   const group=world.group,colliders=world.colliders,lights=[];let interactions=addSiteFrontage(world,options,factory,lights);
   const inspect=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('inspect',title,text),options.register);interactions++;};
   const read=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('read',title,text),options.register);interactions++;};
-  const seat=(pos,label,title,text)=>{const marker=anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);marker.userData.seat={position:[2.05,0,17.02],stand:[.85,0,16.1],surfaceY:.62,eyeY:1.26,yaw:0,pitch:0};interactions++;};
+  const seat=(pos,label,title,text)=>{const marker=anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);marker.userData.seat={position:[3.5,0,17.02],stand:[3.5,0,16.1],surfaceY:.62,eyeY:1.26,yaw:0,pitch:0};interactions++;};
   const machine=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('machine',title,text),options.register);interactions++;};
 
-  addWithCollider(group,colliders,factory.bench(2.05,17.1,0));
-  seat([.85,.85,16.1],'Sit on neighbourhood bench','Neighbourhood bench','From here the shop signs, bicycles and overhead cables make the street feel almost domestic.');
+  // Keep the x=1.9 pavement route open from Higa to the police box. The bench sits
+  // beyond it, clear of the service cars' turning sweep across the kerb.
+  addWithCollider(group,colliders,factory.bench(3.5,17.1,0));
+  seat([3.5,.85,16.1],'Sit on neighbourhood bench','Neighbourhood bench','From here the shop signs, bicycles and overhead cables make the street feel almost domestic.');
 
-  addWithCollider(group,colliders,factory.postbox(2.4,16.4,Math.PI/2));
-  inspect([1.75,1,16.4],'Inspect post box','Post box','The collection plate lists two pickups: 10:30 and 16:30. A few handwritten postcards are visible through the slot.');
+  const postbox=factory.postbox(.5,15.1,-Math.PI/2);postbox.collider.yaw=-Math.PI/2;
+  addWithCollider(group,colliders,postbox);
+  inspect([1.4,1,15.1],'Inspect post box','Post box','The collection plate lists two pickups: 10:30 and 16:30. A few handwritten postcards are visible through the slot.');
   addWithCollider(group,colliders,factory.noticeBoard(5.5,-37.3,0));
   addSakuraFlyer(group,{position:[5.87,1.55,-37.215],width:.43});
   anchor(group,[5.5,1,-36.6],'Read Thuan’s shop flyer · harbour notice board',()=>options.onAction?.('sakura-flyer','Harbour notice board'),options.register);interactions++;
 
-  addWithCollider(group,colliders,factory.utilityCabinet(3.7,13.8,0));// The east footway leaves the freight pullout clear.
-  inspect([2.9,1,13.2],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
+  addWithCollider(group,colliders,factory.utilityCabinet(.5,13.2,0));
+  inspect([.5,1,12.35],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
 
   // Thuan's bicycle stands on the west footway, a short walk from Sakura, as an interactive ride.
   // On the west footway, between Sakura's front and the kerb (the carriageway is narrower now).
@@ -214,13 +218,10 @@ function addStreetLife(world,options,factory){
 
   addWithCollider(group,colliders,factory.convexMirror(-7.4,6.2,.02));
   inspect([-6.85,1,5.7],'Inspect traffic mirror','Convex traffic mirror','The mirror gives a broad view of the narrow side street and helps cyclists see around the corner.');
-  // Moved along the pavement, not across it. These stood at z=-19.8, which the cedar
-  // bench was later placed across: the bench runs to x=5.07 and the bins began at 4.52,
-  // so half a metre of it grew out of a bin. Going east instead would have put them on
-  // the middle of the walk beside the park, so they go south of the bench.
-  const recycleGroup=new THREE.Group();recycleGroup.position.set(5.05,0,-21.7);group.add(recycleGroup);
-  for(const [dx,c] of [[-.28,0x4c6f62],[.28,0x6a6651]]){factory.cylinder(recycleGroup,.25,.78,[dx,.49,0],c,10);factory.box(recycleGroup,[.54,.08,.54],[dx,.91,0],0x384547);}colliders.push({x:5.05,z:-21.7,w:1.1,d:.65});
-  inspect([4.55,1,-21.2],'Inspect recycling bins','Neighbourhood recycling','Glass bottles are separated from steel cans. The labels are faded from sun and salt air.');
+  // Bins stand by the park’s street edge, clear of the broad crossing-to-Onsen path.
+  const recycleGroup=new THREE.Group();recycleGroup.position.set(5.3,0,-29);group.add(recycleGroup);
+  for(const [dx,c] of [[-.28,0x4c6f62],[.28,0x6a6651]]){factory.cylinder(recycleGroup,.25,.78,[dx,.49,0],c,10);factory.box(recycleGroup,[.54,.08,.54],[dx,.91,0],0x384547);}colliders.push({id:'recycling-bins',x:5.3,z:-29,w:1.1,d:.65,height:.95,minY:.1});
+  inspect([4.45,1,-28.5],'Inspect recycling bins','Neighbourhood recycling','Glass bottles are separated from steel cans. The labels are faded from sun and salt air.');
 
   // (The harbour hand pump that stood by the ferry's ramp head is gone: the creator, 2026-10-11, cleared the ramp's
   // approach of everything in the way.)
@@ -304,7 +305,7 @@ export function createTown(options){
    // north than the park's own radius, so it asks for the asset on its own account.
    // Minato school, through the gate at the lawn's south end. See school.js.
    world.school=buildSchool(world,{register:options.register,onAction:options.onAction,enter:options.enter,sites:options.sites,shadows:options.shadows});
-   // Umi-no-yu, on the flat of the lawn below the park. See park-onsen.js.
+   // Umi-no-yu faces Sakura across the level Harbour Park. See park-onsen.js.
    world.onsen=buildParkOnsen(world,{register:options.register,onAction:options.onAction,enter:options.enter,sites:options.sites,shadows:options.shadows});
    // The streets that fill the rest of the island in: Nishi-machi behind the west
    // yard, and shop-houses along both kerbs of Main Street. See okinawa/layout.js.
@@ -339,7 +340,7 @@ export function createTown(options){
   world.staffBench=buildStaffBench({parent:world.group,factory,colliders:world.colliders,
    shadows:options.shadows,register:options.register,onAction:options.onAction});
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
-  world.islandLandscape=buildIslandLandscape({world,register:options.register,onAction:options.onAction,mobile:options.mobile});addCoastalRoadPaint(world);world.traditionalGarden=buildTraditionalGarden({world,register:options.register,onAction:options.onAction});world.parkAccess=buildParkAccess(world,{register:options.register,onAction:options.onAction});world.powerNetwork=buildTownPower(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});world.quietLife=buildQuietLife(world);world.countrysideLife=buildCountryside({world,register:options.register,onAction:options.onAction,mobile:options.mobile});
+  world.islandLandscape=buildIslandLandscape({world,register:options.register,onAction:options.onAction,mobile:options.mobile});addCoastalRoadPaint(world);world.parkAccess=buildParkAccess(world,{register:options.register,onAction:options.onAction});world.powerNetwork=buildTownPower(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});world.quietLife=buildQuietLife(world);world.countrysideLife=buildCountryside({world,register:options.register,onAction:options.onAction,mobile:options.mobile});
   const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station','ferry-terminal'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);if(site.industrialWorkshop)return h>=540&&h<1140;if(site.id==='market')return true;if(site.id==='frontrow'&&isWeekend(minutes))return false;const close=site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
   // Minato's regular comes back with them: he lives in the izakaya and keeps it
   // company when it is shut (people/izakaya-hours.js), so it is never empty.
@@ -360,6 +361,8 @@ export function createTown(options){
   
   buildIzakaya(world,options);
   buildPark(world,options);
+  world.flowerShop=buildFlowerShop({world,group:world.group,register:options.register,onAction:options.onAction,sites:options.sites});
+  world.blueCoral=buildBlueCoralShop({world,group:world.group,register:options.register,onAction:options.onAction,sites:options.sites});
   const plants=buildStreetPlants(world.group,world.plantSites,options);
   if(!plants.count)registerDetail(world,{id:'street-plants',x:0,z:20,radius:70,load:async()=>{
     if(!await preloadStreetPlants())return false;buildStreetPlants(world.group,world.plantSites,options);return true;
@@ -390,9 +393,10 @@ export function createTown(options){
   // are, and this runs at frame rate.
   const doorTraffic=[];
   world.update=(dt,time,day,minutes=1002)=>{
+    world.minutes=minutes;
     world.updateHours(minutes);world.updateDiningStreet?.(day);
     world.quietLife?.update(time);world.countrysideLife?.update(time);world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.beachCorner?.tick(dt,options.getPlayerPosition?.());world.portShed?.tick(dt,minutes);world.homeLights?.update(minutes);world.airportIsland?.update(dt,minutes,day,options.getPlayerPosition?.());world.oilJetty?.update(dt,minutes,time);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
-    world.docklandsLife?.update(time,minutes);world.shoppingLane?.update(world.weather,minutes);
+    world.docklandsLife?.update(time,minutes);world.shoppingLane?.update(world.weather,minutes);world.flowerShop?.update(minutes);world.blueCoral?.update(minutes);world.park?.update(time);
     world.busStation?.update(minutes,day);world.tunnel?.update?.(day);
     // Three daily services, each with a fifteen-minute stop.
     world.ferry?.update(dt,minutes,time);world.traffic?.update(dt,minutes);world.bus?.update(dt,minutes);

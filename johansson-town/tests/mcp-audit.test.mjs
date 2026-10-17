@@ -13,9 +13,10 @@ test('actual MCP stdio handshake lists bounded tools, rejects invalid controls a
  const client=new Client({name:'town-audit-test',version:'1'});
  try{
   await client.connect(transport,{timeout:240000});const tools=(await client.listTools()).tools;
-  assert.deepEqual(tools.map(t=>t.name).sort(),['choose_action','close_session','follow_path','get_state','inspect_navigation','look','press_control','report_finding','screenshot','start_session','ui_control','wait','walk_to']);
+  assert.deepEqual(tools.map(t=>t.name).sort(),['choose_action','close_session','directory_action','follow_path','get_state','inspect_navigation','look','press_control','report_finding','screenshot','start_session','ui_control','wait','walk_to']);
   const move=tools.find(t=>t.name==='press_control');assert.ok(move.inputSchema.properties.durationMs.maximum<=2500);
   const invalid=await client.callTool({name:'press_control',arguments:{control:'teleport'}});assert.equal(invalid.isError,true);
+  const invalidDirectory=await client.callTool({name:'directory_action',arguments:{section:'people',action:'teleport'}});assert.equal(invalidDirectory.isError,true);
   const missing=await client.callTool({name:'get_state',arguments:{}});assert.equal(missing.isError,true);assert.match(missing.content[0].text,/Start a test session/);
   assert.ok((await client.listPrompts()).prompts.some(p=>p.name==='audit_town'));
  }finally{await client.close();}

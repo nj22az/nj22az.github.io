@@ -4,23 +4,25 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {buildPark} from '../src/world/park.js';
 import {buildEastLawn} from '../src/world/east-lawn.js';
-import {PARK} from '../src/world/park-layout.js';
+import {HARBOUR_PARK_MAIN,HARBOUR_PARK_EXTENSION,HARBOUR_POND} from '../src/world/harbour-park-plan.js';
 import {groundHeight} from '../src/world/layout.js';
 
-test('park and lawn share border positions, shading, texture scale and grass colour',()=>{
+test('park and lawn meet at the same level, colour and texture scale around both footprints',()=>{
  installDOM();const world={group:new THREE.Group(),colliders:[]};
- const lawn=buildEastLawn({parent:world.group,heightAt:groundHeight}).lawn;
- buildPark(world,{register(){},onAction(){}});
- const mound=world.park.group.getObjectByName('Harbour Park ground');
- assert.equal(mound.material.map.image,lawn.material.map.image);
- const boundary=g=>{const p=g.attributes.position,n=g.attributes.normal,uv=g.attributes.uv,result=new Map();
-  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);
-   if((Math.abs(Math.abs(x-PARK.x)-PARK.half)<.00001&&Math.abs(z-PARK.z)<=PARK.half+.00001)||
-      (Math.abs(Math.abs(z-PARK.z)-PARK.half)<.00001&&Math.abs(x-PARK.x)<=PARK.half+.00001))result.set(x.toFixed(4)+','+z.toFixed(4),{y:p.getY(i),normal:[n.getX(i),n.getY(i),n.getZ(i)],uv:[uv.getX(i),uv.getY(i)]});}
-  return result;};
- const outside=boundary(lawn.geometry),inside=boundary(mound.geometry);
- for(const [key,edge] of inside){const other=outside.get(key);assert.ok(other,'Lawn misses park edge at '+key);assert.ok(Math.abs(edge.y-other.y)<.0001,'Visible crack at '+key);
-  edge.normal.forEach((n,i)=>assert.ok(Math.abs(n-other.normal[i])<.001,'Lighting seam at '+key));assert.deepEqual(edge.uv,other.uv);}
- const colors=mound.geometry.attributes.color,turf=new THREE.Color().setHex(lawn.material.color.getHex());
- assert.ok(Array.from({length:colors.count},(_,i)=>i).some(i=>Math.abs(colors.getX(i)-turf.r)<.00001&&Math.abs(colors.getY(i)-turf.g)<.00001&&Math.abs(colors.getZ(i)-turf.b)<.00001));
+ const lawn=buildEastLawn({parent:world.group,heightAt:groundHeight}).lawn;buildPark(world,{register(){},onAction(){}});
+ for(const [name,b] of [['Harbour Park ground',HARBOUR_PARK_MAIN],['Harbour Park beach lawn',HARBOUR_PARK_EXTENSION]]){
+  const ground=world.park.group.getObjectByName(name);assert.equal(ground.material.map.image,lawn.material.map.image);assert.equal(ground.material.color.getHex(),lawn.material.color.getHex());
+  const lp=lawn.geometry.attributes.position,ln=lawn.geometry.attributes.normal,lu=lawn.geometry.attributes.uv;
+  const boundary=new Map();for(let i=0;i<lp.count;i++)boundary.set(lp.getX(i).toFixed(4)+','+lp.getZ(i).toFixed(4),i);
+  const {position:p,normal:n,uv}=ground.geometry.attributes;let corners=0;
+  for(let i=0;i<p.count;i++){
+   const x=p.getX(i),z=p.getZ(i);if(!([b.minX,b.maxX].some(v=>Math.abs(x-v)<1e-5)&&[b.minZ,b.maxZ].some(v=>Math.abs(z-v)<1e-5)))continue;
+   const j=boundary.get(x.toFixed(4)+','+z.toFixed(4));assert.notEqual(j,undefined,'Lawn shares corner '+[x,z]);corners++;
+   assert.ok(Math.abs(p.getY(i)-lp.getY(j))<1e-4,'No vertical crack');assert.ok(Math.abs(n.getY(i)-ln.getY(j))<.001,'No shading seam');assert.ok(Math.abs(uv.getX(i)-lu.getX(j))<1e-5&&Math.abs(uv.getY(i)-lu.getY(j))<1e-5,'Continuous metre-based UVs');
+  }
+  assert.equal(corners,4,'Four measured rectangle corners');
+ }
+ world.group.updateMatrixWorld(true);const p=HARBOUR_POND,ray=new THREE.Raycaster(new THREE.Vector3(p.x,1,p.z),new THREE.Vector3(0,-1,0));
+ assert.equal(ray.intersectObject(lawn).length,0,'Surrounding lawn leaves the pond opening clear');
+ assert.equal(ray.intersectObject(world.park.group.getObjectByName('Harbour Park ground')).length,0,'Park turf has a real pond hole');
 });

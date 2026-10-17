@@ -14,7 +14,7 @@ import {GROUND_LAYER} from '../ground-layers.js';
 import {KITAHAMA_LANES} from '../kitahama-layout.js';
 import {buildKitahamaQuarter} from './kitahama-quarter.js';
 import {plotGate} from './layout.js';
-import {residentsLine} from '../../people/island-households.js';
+import {residentsLine,homeNameplate} from '../../people/island-households.js';
 import {dressOldTown} from './old-town.js';
 import {buildFumoto} from './fumoto.js';
 import {FUMOTO} from '../fumoto-layout.js';
@@ -22,6 +22,7 @@ import {MAIN_ROAD} from '../main-road.js';
 import {WEST_YARD} from '../west-yard.js';
 import {createVendingMachine,vendingReady,hydrateVending,VENDING_MACHINE} from '../vending.js';
 import {windowGlow} from '../../render/dusk.js';
+import {dessertShopOpen} from '../blue-coral-shop.js';
 
 /**
  * Builds the streets that fill the island in: Nishi-machi to the west, the shop-houses
@@ -58,7 +59,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildWestQuay(kit,solid,{inspect,anchor,onAction,vending});
  buildPromenade(kit,solid,{anchor,onAction});
  buildYardRow(kit,solid,{anchor,inspect,onAction});
- buildEastRow(kit,solid,{anchor,inspect,onAction,vending});
+ buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes:()=>world.minutes??720});
  buildEastBack(kit,solid,{anchor,inspect,onAction});
  if(GATEBALL_ACTIVE)buildGateball(kit,solid,{anchor,inspect,onAction});
  buildEastQuay(kit,solid,{anchor,inspect,onAction,vending});
@@ -152,9 +153,10 @@ function walledHouse(kit,solid,p,{anchor,onAction,seed=0,sideGate=null,windbreak
   solid(wall(-hw,-hd,-hw,hd,{gaps:side<0?[[-.6,.6]]:[],seed:70+seed}));
   solid(wall(hw,-hd,hw,hd,{gaps:side>0?[[-.6,.6]]:[],seed:80+seed}));
   for(const gx of gate)shisa(kit,gx,1.53,hd,0,.7);
-  kit.sign(nameplate(p.family,p.romaji),.42,.21,gate[1]+.45,1.05,hd+.24,{name:'nameplate'});
+  const plate=homeNameplate(p.id);
+  kit.sign(nameplate(plate?.address||p.family,plate?.owners||p.romaji),.95,.32,gate[1]+.65,1.15,hd+.24,{name:'nameplate'});
   const at=kit.point(gate[1]+.45,1,hd+1);
-  anchor(at.x,at.y,at.z,`Read the ${p.romaji} nameplate`,()=>onAction?.('read',`${p.family} · the ${p.romaji} house`,[NAMEPLATES[p.id],residentsLine(p.id)].filter(Boolean).join('\n\n')));
+  anchor(at.x,at.y,at.z,plate?plate.address+' · '+plate.owners:`Read the ${p.romaji} nameplate`,()=>onAction?.('read',plate?.title||`${p.family} · the ${p.romaji} house`,[residentsLine(p.id),NAMEPLATES[p.id]].filter(Boolean).join('\n\n')));
   hibiscus(kit,gate[0]-1.1,hd-.9,{seed:90+seed});
   if(p.kind==='red-tile'){
    solid(hinpun(kit,0,hd-2,Math.min(2.6,W-3)));
@@ -276,7 +278,7 @@ function buildPromenade(kit,solid,{anchor,onAction}){
 /* ------------------------------- Shop-houses ------------------------------ */
 
 const SHOPS=Object.freeze({
- nakamura:{interior:'zenzai',jp:"Nakamura Zenzai",en:'Nakamura · shaved ice & zenzai',bg:'#f6efd9',accent:'#2f7fa8',mark:"Ice",upright:"Zenzai",uprightBg:'#2f7fa8',
+ nakamura:{interior:'zenzai',jp:"Nakamura Zenzai",en:'Nakamura · zenzai & Blue Coral',bg:'#f6efd9',accent:'#2f7fa8',mark:"Ice",upright:"Zenzai",uprightBg:'#2f7fa8',
   buy:{label:'Buy a zenzai',title:"Nakamura Zenzai · Nakamura Zenzai",cost:250,item:'Zenzai',text:'Okinawan zenzai: a mountain of shaved ice over sweet kintoki beans and little white mochi, in a glass bowl that sweats on the counter. Mrs Nakamura has been making it on this corner since the Americans left.'},
   // The island's one sweet counter: when Aragaki Confectionery shut, Mrs Nakamura took on the sata andagi.
   more:[{label:'Buy sata andagi',title:"Nakamura Zenzai · sata andagi",cost:120,item:'Sata andagi',text:'Okinawan doughnuts, fried in the back in the morning until they crack open and smile, to the recipe from the old sweet shop over the road. Three to a paper bag, still warm, sugar on your fingers.',dz:1.3}]},
@@ -298,21 +300,22 @@ const SHOPS=Object.freeze({
   inspect:{label:'Look into the coin laundry',title:'Coin laundry',text:'Four washers, two dryers and a bench, with a stack of old manga and a sign about not leaving washing overnight that everybody ignores. One dryer is going round with somebody’s towels in it. It smells of warm cotton.'}},
 });
 
-function shopFront(kit,solid,plot,frame,{anchor,inspect,onAction}){
+function shopFront(kit,solid,plot,frame,{anchor,inspect,onAction,getMinutes=()=>720}){
  const spec=SHOPS[plot.id],w=plot.maxZ-plot.minZ-.1,d=frame.depth;
  const sign=fascia({jp:spec.jp,en:spec.en,bg:spec.bg,accent:spec.accent,mark:spec.mark||''});
  const upright=vertical({jp:spec.upright,bg:spec.uprightBg});
  kit.at(frame.x,(plot.minZ+plot.maxZ)/2,frame.ry,()=>solid(shopHouse(kit,{w,d,colour:plot.colour,trim:plot.trim,sign,upright,interior:spec.interior,awning:spec.awning!==false,seed:plot.minZ*7|0})));
  const front=frame.front,out=frame.out,z=(plot.minZ+plot.maxZ)/2;
- const act=spec.buy?()=>onAction?.('buy',spec.buy.title,{cost:spec.buy.cost,item:spec.buy.item,text:spec.buy.text}):()=>onAction?.('inspect',spec.inspect.title,spec.inspect.text);
+ const buy=item=>()=>plot.id==='nakamura'&&!dessertShopOpen(getMinutes())?onAction?.('read','Nakamura is closed','Mrs Nakamura serves zenzai, sata andagi and Blue Coral ice cream from 10:00 to 19:00.'):onAction?.('buy',item.title,{cost:item.cost,item:item.item,text:item.text});
+ const act=spec.buy?buy(spec.buy):()=>onAction?.('inspect',spec.inspect.title,spec.inspect.text);
  // Off to one side where somebody works the counter, so talking to them wins over the shop.
  anchor(front+out*.9,1.1,z+(spec.anchorDz||0),(spec.buy||spec.inspect).label,act);
- for(const m of spec.more||[])anchor(front+out*.9,1.1,z+m.dz,m.label,()=>onAction?.('buy',m.title,{cost:m.cost,item:m.item,text:m.text}));
+ for(const m of spec.more||[])anchor(front+out*.9,1.1,z+m.dz,m.label,buy(m));
 }
 
-function buildEastRow(kit,solid,{anchor,inspect,onAction,vending}){
+function buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes}){
  const depth=EAST_ROW.maxX-EAST_ROW.minX,x=(EAST_ROW.minX+EAST_ROW.maxX)/2;
- for(const plot of EAST_ROW.plots)shopFront(kit,solid,plot,{x,ry:-Math.PI/2,depth,front:EAST_ROW.minX,out:-1},{anchor,inspect,onAction});
+ for(const plot of EAST_ROW.plots)shopFront(kit,solid,plot,{x,ry:-Math.PI/2,depth,front:EAST_ROW.minX,out:-1},{anchor,inspect,onAction,getMinutes});
  // The strip of ground between the pavement and the shop fronts, paved to match.
  // Kitano Road crosses it where the old lane was, and lays its own surface there.
  for(const [z0,z1] of [[EAST_ROW.plots[0].minZ,EAST_ROW.onsenLane.minZ],[EAST_ROW.onsenLane.maxZ,EAST_ROW.plots[3].maxZ]])
@@ -563,7 +566,7 @@ const NAMEPLATES=Object.freeze({
  nakasone:'An empty red-tile house facing the lawn in front of Umi-no-yu. The shutters are down and the shisa still sit on the gateposts.',
  miyagi:'An empty red-tile house, the oldest on this side. A typhoon took the roof off everything else here, but not this one. The shisa on the ridge is older than the house.',
  kamiya:'An empty red-tile house, swept, with the water off at the main.',
- 'kitahama-1':'Thuan and Thao\'s house: a red-tile roof, a hinpun, and a row of herb pots that Thuan names after customers. Thao comes home at half past eleven at night and the gate latch is oiled so it does not wake anybody.',
+ 'kitahama-1':'Thao, Chin and Vy\'s house, with Thuan\'s weekday room: a red-tile roof, a hinpun, and a row of herb pots that Thuan names after customers. The gate latch is oiled so the late shift does not wake anybody.',
  'kitahama-2':'Mrs Sato\'s house, concrete and very tidy, with a stock pot always on the back step to cool. She walks down to the morning auction at half past five and has the ramen stock on by seven.',
  'kitahama-3':'Kōji\'s house, and Riku\'s. A wetsuit on the line, fish boxes stacked by the gate, a football in the yard and a radio that plays the weather on the hour.',
  'kitahama-4':'Tōma. The postman lives here: his red Super Cub stands in the yard at night with its box padlocked, and he grows goya over the gate.',
@@ -577,7 +580,7 @@ const NAMEPLATES=Object.freeze({
  'kitahama-8':'Ms Uezu\'s house: a week of washing on the line when she is home, and the shutters down the week she is on the ferry. A neighbour waters the bougainvillea.',
  'kitahama-9':'An old red-tile house with a deep verandah, empty, its shutters down.',
  'kitahama-10':'An empty red-tile house: goya gone to seed over the wall, and the papaya by the gate left unpicked.',
- 'kitahama-11':'A concrete house with its shutters down until noon: the man who lives here keeps the night watch at the Quay Warehouse and sleeps through the morning.',
+ 'kitahama-11':'An empty concrete house on Fukugi Lane. Its plate says to let; enquiries are at the town hall.',
  'kitahama-12':'An empty concrete house at the end of Fukugi Lane, its shutters down and its gate tied shut with wire.',
  tamaki:'An empty concrete house near the east quay, its shutters down and the water off at the main.',
  oshiro:'The Ōshiros. Mr Ōshiro builds and mends sabani at the boatyard; his own boat is the red one on the west quay. There is a bunch of bananas ripening by the kitchen door and, if you believe the neighbours, a habu in the fukugi that nobody has seen for years.',

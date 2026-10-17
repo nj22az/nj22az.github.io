@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {circleHitsRect} from '../physics.js';
-import {GATEBALL_ACTIVE} from '../src/world/okinawa/layout.js';
+import {GATEBALL_ACTIVE,EAST_BACK} from '../src/world/okinawa/layout.js';
+import {homeNameplate,householdAtHome} from '../src/people/island-households.js';
 
 async function town(){
  installDOM();globalThis.self=globalThis;
@@ -48,8 +49,19 @@ test('Main Street has buildings on both kerbs, and the shops do things',async()=
  zenzai.fn();
  assert.deepEqual(actions.at(-1).slice(0,1),['buy']);
  assert.equal(actions.at(-1)[2].item,'Zenzai');
- for(const label of ['Pray at the utaki','Inspect the auction shed','Inspect the ice plant','Fish from the seawall','Read the Higa nameplate',
-  'Look at the ice-cream mural','Browse the ¥100 cart','Read the tide board','Look at the goya trellis',...(GATEBALL_ACTIVE?['Watch the gateball']:[]),'Read the Kamiya nameplate'])
+ const higa=homeNameplate('higa'),higaPlate=labels.find(l=>l.label===higa.address+' · '+higa.owners);
+ assert.ok(higaPlate,'The Higa gate names its address and actual household');
+ higaPlate.fn();
+ assert.equal(actions.at(-1)[0],'read');assert.equal(actions.at(-1)[1],higa.title);
+ for(const name of householdAtHome('higa').residents)assert.ok(actions.at(-1)[2].includes(name),'The Higa nameplate identifies '+name);
+ assert.match(actions.at(-1)[2],/Nishi-machi/);
+ for(const id of ['kamiya','tamaki']){
+  assert.equal(householdAtHome(id).status,'retired','The removed empty plot is not an active home');
+  assert.equal(EAST_BACK.plots.some(p=>p.id===id),false,'The park no longer builds the empty '+id+' house');
+  assert.equal(labels.some(l=>new RegExp('Read the '+id+' nameplate','i').test(l.label)),false,'No prompt leads to the removed '+id+' house');
+ }
+ for(const label of ['Pray at the utaki','Inspect the auction shed','Inspect the ice plant','Fish from the seawall',
+  'Look at the ice-cream mural','Browse the ¥100 cart','Read the tide board','Look at the goya trellis',...(GATEBALL_ACTIVE?['Watch the gateball']:[])])
   assert.ok(labels.some(l=>l.label===label),'Nothing to '+label);
 });
 

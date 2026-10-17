@@ -1,66 +1,32 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {routeAt,groundHeight} from '../src/world/layout.js';
+import {parkApproachHeight} from '../src/world/park-layout.js';
+import {HARBOUR_PARK_MAIN,HARBOUR_PARK_EXTENSION,HARBOUR_PARK_PATHS,inHarbourPark} from '../src/world/harbour-park-plan.js';
+const RADIUS=.34,walkable=(x,z)=>!!routeAt(x,z,RADIUS);
 
-
-const {routeAt,groundHeight,ROUTES}=await import('../src/world/layout.js');
-const {PARK,parkApproachHeight}=await import('../src/world/park-layout.js');
-
-const RADIUS=.34;
-const walkable=(x,z)=>!!routeAt(x,z,RADIUS);
-
-test('the lawn can be walked the length of, not reached through one slot',()=>{
- const edge=PARK.x-PARK.half;
- let reachable=0,total=0;
- for(let z=PARK.z-PARK.half+1;z<=PARK.z+PARK.half-1;z+=.5){
-  total++;
-  // Somewhere in the two metres of ground immediately west of the park.
-  for(let x=edge-2;x<edge;x+=.25)if(walkable(x,z)){reachable++;break;}
- }
- assert.ok(reachable/total>.9,
-  'The ground beside the lawn is walkable along it, not blocked except at one approach: '
-  +reachable+' of '+total+' places');
+test('the level park has an open western edge along its street frontage',()=>{
+ const b=HARBOUR_PARK_MAIN;let reachable=0,total=0;
+ for(let z=b.minZ+1;z<=b.maxZ-1;z+=.5){total++;for(let x=b.minX-2;x<b.minX;x+=.25)if(walkable(x,z)){reachable++;break;}}
+ assert.ok(reachable/total>.9,'Open frontage at '+reachable+' of '+total+' sample sections');
 });
-
-test('the apron joins the street rather than floating beside the park',()=>{
- // Walk west from the park edge at a few depths and expect to meet the main street
- // without crossing blocked ground.
- for(const z of [PARK.z-6,PARK.z-3,PARK.z,PARK.z+3,PARK.z+6]){
-  let x=PARK.x-PARK.half-1,steps=0;
-  assert.ok(walkable(x,z),'The apron exists at z='+z.toFixed(1));
-  while(x>-4&&walkable(x-.25,z)){x-=.25;steps++;}
-  assert.ok(x<=0,'From the park edge at z='+z.toFixed(1)+
-   ' the ground runs west to the street, but it stops at x='+x.toFixed(2));
- }
+test('the park apron joins the street at several points along the frontage',()=>{
+ for(const z of [-33,-29,-25,-22]){let x=HARBOUR_PARK_MAIN.minX-.5;assert.ok(walkable(x,z));while(x>0&&walkable(x-.25,z))x-=.25;assert.ok(x<=0,'Street connection stops at '+[x,z]);}
 });
-
-test('no walkable ground hides a step the player would be popped up',()=>{
- // The park sits on a plinth of up to 1.2m and only its approach ramps onto it. A
- // walkable strip that crosses the plinth anywhere else would lift the player up the
- // side of it, which is worse than the wall it replaced.
- const worst={rise:0,at:null};
- for(let z=PARK.z-PARK.half-3;z<=PARK.z+PARK.half+3;z+=.25){
-  for(let x=PARK.x-PARK.half-5;x<=PARK.x+PARK.half+1;x+=.25){
-   if(!walkable(x,z))continue;
-   const here=groundHeight(x,z);
-   for(const [dx,dz] of [[.25,0],[0,.25]]){
-    if(!walkable(x+dx,z+dz))continue;
-    const rise=Math.abs(groundHeight(x+dx,z+dz)-here);
-    if(rise>worst.rise){worst.rise=rise;worst.at=[+x.toFixed(2),+z.toFixed(2)];}
-   }
+test('the whole consolidated park and its street edge have no concealed height cliffs',()=>{
+ const b=HARBOUR_PARK_MAIN,e=HARBOUR_PARK_EXTENSION,worst={rise:0,at:null};
+ for(let z=b.minZ;z<=e.maxZ;z+=.25)for(let x=b.minX-2;x<=b.maxX;x+=.25){
+  if(!inHarbourPark(x,z,2)||!walkable(x,z))continue;
+  for(const [dx,dz] of [[.25,0],[0,.25]]){if(!walkable(x+dx,z+dz))continue;const rise=Math.abs(groundHeight(x+dx,z+dz)-groundHeight(x,z));if(rise>worst.rise){worst.rise=rise;worst.at=[x,z];}}
+ }
+ assert.ok(worst.rise<.24,'A step of '+worst.rise+'m at '+JSON.stringify(worst.at));
+});
+test('the crossing and bathhouse approach are level across their complete paved widths',()=>{
+ for(const route of HARBOUR_PARK_PATHS.filter(r=>['park-approach','garden-onsen-approach'].includes(r.id)))for(let i=1;i<route.points.length;i++){
+  const a=route.points[i-1],b=route.points[i],dx=b[0]-a[0],dz=b[1]-a[1],length=Math.hypot(dx,dz);
+  for(let step=0;step<=10;step++)for(const side of [-1,0,1]){
+   const offset=side*(route.width/2-.05),x=a[0]+dx*step/10-dz/length*offset,z=a[1]+dz*step/10+dx/length*offset;
+   assert.equal(parkApproachHeight(x,z),0,route.id+' level paved edge at '+[x,z]);assert.ok(walkable(x,z),route.id+' open edge at '+[x,z]);
   }
- }
- assert.ok(worst.rise<.25,
-  'Ground rises '+worst.rise.toFixed(2)+'m over a quarter metre at '+JSON.stringify(worst.at));
-});
-
-test('the approach ramp is at least as wide as the route that uses it',()=>{
- const approach=ROUTES.find(r=>r.id==='park-approach');
- const half=approach.width/2;
- // Every walkable point on the approach is ramped, all the way to its edges.
- for(const z of [PARK.z-half+.1,PARK.z,PARK.z+half-.1]){
-  const x=PARK.x-PARK.half-.4;
-  if(!walkable(x,z))continue;
-  assert.notEqual(parkApproachHeight(x,z),null,
-   'The approach is walkable at z='+z.toFixed(2)+' but not ramped there');
  }
 });

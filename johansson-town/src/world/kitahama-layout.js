@@ -1,3 +1,5 @@
+import {householdAtHome,activeHomeForResident,homeNameplate} from '../people/island-households.js';
+
 /**
  * Kitahama (北浜), the new district on the north-east land the island gained in
  * October 2026: one lane up from the east beach past the town hall's seawall, one lane
@@ -27,7 +29,7 @@ export const KITAHAMA=Object.freeze({
   {id:'kitahama-10',kind:'red-tile',family:'Tamashiro',romaji:'Tamashiro',minX:22,maxX:32.8,minZ:55,maxZ:64,gate:'north'},
   {id:'kitahama-11',kind:'concrete',family:'Iha',romaji:'Iha',minX:25.5,maxX:33.5,minZ:79,maxZ:86,gate:'west'},
   {id:'kitahama-12',kind:'concrete',family:'Kohagura',romaji:'Kohagura',minX:25.5,maxX:33.5,minZ:86.5,maxZ:93.5,gate:'west'},
- ].map(p=>Object.freeze({...p,wall:'block'}))),
+ ].map(p=>{const plate=homeNameplate(p.id);return Object.freeze({...p,wall:'block',family:plate.address,romaji:plate.owners});})),
  field:Object.freeze({minX:35,maxX:53,minZ:79,maxZ:83.2}),
  /** The quarter's lanes, each 3 m: the spine west from the cross lane, and two dead ends. */
  spine:Object.freeze({minX:1,maxX:33,minZ:64.5,maxZ:67.5}),
@@ -61,18 +63,26 @@ export function plotGate(p,out=.7){
  return {door:[p.minX-out,cz],inward:-Math.PI/2};
 }
 
-/** The walking residents who live in Kitahama, by plot. */
+/** Canonical occupants of the two homes with the shared walking-resident interior. */
 export const KITAHAMA_RESIDENT_HOMES=Object.freeze({
- 'kitahama-1':Object.freeze(['Thuan','Thao','Chin']),
- 'kitahama-2':Object.freeze(['Mrs Sato']),
+ 'kitahama-1':householdAtHome('kitahama-1').residents,
+ 'kitahama-2':householdAtHome('kitahama-2').residents,
 });
 export const ISLAND_RESIDENT_NAMES=Object.freeze(Object.values(KITAHAMA_RESIDENT_HOMES).flat());
-const ADDRESSES=Object.freeze({'kitahama-1':'1 Kitahama','kitahama-2':'2 Kitahama'});
 /** The home record a walking resident's profile reads (residents.js). */
 export function kitahamaHomeFor(name){
- for(const [id,names] of Object.entries(KITAHAMA_RESIDENT_HOMES))if(names.includes(name)){
-  const p=KITAHAMA.plots.find(q=>q.id===id),{door}=plotGate(p);
-  return {door:[...door],address:ADDRESSES[id],plot:id};
- }
- return null;
+ const h=activeHomeForResident(name),p=KITAHAMA.plots.find(q=>q.id===h?.home);
+ if(!p)return null;
+ return {door:[...plotGate(p).door],address:h.address,plot:p.id};
 }
+
+/** Exact numbered doors of the existing block. Ground-floor units are 1 and 2. */
+export const KITAHAMA_FLATS=Object.freeze(Array.from({length:4},(_,i)=>{
+ const A=KITAHAMA.apartment,x=A.maxX-1.9,z=i%2?A.maxZ-3.2:A.minZ+3.2,level=i<2?0:2.8;
+ return Object.freeze({id:'kitahama-flat-'+(i+1),unitNumber:String(i+1),level,
+  door:Object.freeze([x+.65,KITAHAMA.y+(level?level+.08:.02),z]),
+  // The outdoor height field takes the upper corridor at the same x/z. Route ground-floor
+  // visitors to their separate street openings, keeping the real numbered door recorded.
+  approachPosition:Object.freeze([level?x+.65:KITAHAMA.fukugiLane.minX+.2,KITAHAMA.y+(level?level+.08:.04),z]),
+  faceX:x+.03,inward:-Math.PI/2,approachFacing:level?0:-Math.PI/2});
+}));

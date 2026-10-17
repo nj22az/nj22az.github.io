@@ -15,7 +15,7 @@ const hhmm=t=>{const [h,m]=t.split(':').map(Number);return h*60+m;};
 
 test('everyone has a home that stands, a purpose and a place they work',()=>{
  assert.equal(new Set(CAST_NAMES).size,CAST.length,'one entry each');
- const homes=new Set(ISLAND_HOMES.map(h=>h.home));
+ const homes=new Set(ISLAND_HOMES.filter(h=>!h.retired).map(h=>h.home));
  for(const p of CAST){
   assert.ok(homes.has(p.home),p.name+' lives at '+p.home+', a home on the island');
   for(const h of p.alsoAt)assert.ok(homes.has(h),p.name+'’s second home '+h);
@@ -28,12 +28,12 @@ test('everyone has a home that stands, a purpose and a place they work',()=>{
  for(const p of CAST.filter(p=>p.age!=null&&p.age<16))assert.equal(p.work,'school',p.name+' goes to school');
 });
 
-test('everyone has a day that takes them out and brings them home',()=>{
+test('everyone has a useful day and returns home, including residents who live at their workplace',()=>{
  for(const p of CAST){
   assert.ok(p.day.length>=3,p.name+' has at least three stops');
   for(const [t,where,doing] of p.day){assert.match(t,/^\d\d:\d\d$/);assert.ok(where&&doing,p.name+' at '+t);}
   const homes=new Set([p.home,...p.alsoAt]);
-  assert.ok(p.day.some(([,where])=>!homes.has(where)),p.name+' leaves home');
+  assert.ok(p.day.some(([,where])=>!homes.has(where))||p.home===p.work&&new Set(p.day.map(([,where,doing])=>doing)).size>=3,p.name+' has work and activity beyond sleeping');
   assert.ok(homes.has(p.day.at(-1)[1])||p.home==='ferry'||p.home===p.work,p.name+' ends the day at home');
   assert.ok(p.day.some(([,where])=>where===p.work),p.name+' goes to '+p.work);
   // The stops are in the order of the day (one may run past midnight).
@@ -75,9 +75,10 @@ test('nobody in the world is outside the cast',()=>{
  assert.ok(BATCH_2.size<=7,'only the old pupils wait for batch 2');
 });
 
-test('the registry is built from the cast: one home each, and an empty home is to let',()=>{
+test('the registry is built from the cast: one home each, empty standing homes to let, removed homes retired',()=>{
  for(const h of ISLAND_HOUSEHOLDS){
-  assert.equal(Boolean(h.toLet),h.members.length===0,h.home);
+  assert.equal(Boolean(h.toLet),h.members.length===0&&!h.retired,h.home);
+  if(h.retired){assert.equal(h.members.length,0);assert.equal(h.status,'retired');}
   for(const m of h.members){const p=castMember(m.name);assert.ok(p.home===h.home||p.alsoAt.includes(h.home));}
  }
  for(const p of CAST)assert.ok(ISLAND_HOUSEHOLDS.find(h=>h.home===p.home).members.some(m=>m.name===p.name),p.name+' is on the nameplate');

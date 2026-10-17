@@ -50,7 +50,7 @@ export class TownAuditSession{
    a.scene.updateMatrixWorld(true);a.scene.traverse(o=>{if(!o.matrixWorld.elements.every(Number.isFinite))invalid.push(o.name||o.type);});
    const people=[...a.world.people,...(a.world.neighbours||[]).filter(g=>!a.world.people.some(p=>p.g===g)).map(g=>({g}))];
    const residents=people.map(p=>{const g=p.g,u=g.userData,position=g.getWorldPosition(g.position.clone()).toArray();let visible=true;for(let o=g;o;o=o.parent)if(!o.visible)visible=false;return {name:p.profile?.name||u.name||g.name,position,visible,parent:g.parent?.name,activity:u.activity,pose:u.socialPose,indoors:u.indoors,inVehicle:u.inVehicle,inBookshop:u.inBookshop,inMarket:u.inMarket,inWorkplace:u.inWorkplace};});
-   return {game:state,ui:window.__JOHANSSON_AGENT_API__.getState(),view:a.mouse,blocked:a.blocked,paused:a.paused,seated:a.seated,nearby:a.near(),sites:a.sites,targets:a.targets,roomNavigation:a.roomNavigation,landmarks:(a.world.landmarks||[]).map(s=>({id:s.id,title:s.title,x:s.x,z:s.z,door:s.door})),residents,shop:a.shop,vehicles:a.world.traffic.snapshot(),ferry:{phase:a.world.ferry.phase,berth:a.world.ferry.berth,loading:a.world.ferry.loadingVehicles},playerClearance:a.navigation(state.player[0],state.player[2]),invalidTransforms:invalid};
+   return {game:state,ui:window.__JOHANSSON_AGENT_API__.getState(),view:a.mouse,blocked:a.blocked,paused:a.paused,seated:a.seated,nearby:a.near(),sites:a.sites,targets:a.targets,roomNavigation:a.roomNavigation,homeDirectory:a.homeDirectory,walkingDirections:a.walkingDirections,landmarks:(a.world.landmarks||[]).map(s=>({id:s.id,title:s.title,x:s.x,z:s.z,door:s.door})),residents,shop:a.shop,vehicles:a.world.traffic.snapshot(),ferry:{phase:a.world.ferry.phase,berth:a.world.ferry.berth,loading:a.world.ferry.loadingVehicles},playerClearance:a.navigation(state.player[0],state.player[2]),invalidTransforms:invalid};
   });return {...result,errors:this.errors.slice(-30),recentInputs:this.history.slice(-20)};
  }
  async controlState(){return this.requirePage().evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;return {game:JSON.parse(window.render_game_to_text()),view:a.mouse,blocked:a.blocked,paused:a.paused,seated:a.seated,ui:{activity:!document.querySelector('#activity').classList.contains('hidden')}};});}
@@ -83,10 +83,31 @@ export class TownAuditSession{
   this.history.push({control:'look',degrees,verticalDegrees});return {accepted:true,before,after:await (_compact?this.controlState():this.observe())};
  }
  async choose({label}){
-  const page=this.requirePage(),buttons=await page.locator('#activityActions button:visible:not(:disabled), #activity .bag-tile:visible:not(:disabled)').all();
+  const page=this.requirePage(),buttons=await page.locator('#activityActions button:visible:not(:disabled), #activity .bag-tile:visible:not(:disabled), #activity .resident-list button:visible:not(:disabled)').all();
   const button=(await Promise.all(buttons.map(async b=>({b,text:(await b.textContent()).trim()})))).find(o=>o.text===label);
   if(!button)return {accepted:false,reason:'No enabled action with that exact label.',state:await this.observe()};
   await button.b.click();await page.waitForTimeout(70);this.history.push({control:'choose',label});return {accepted:true,state:await this.observe()};
+ }
+ /** Search and select the Town Book through its visible controls, exactly as a player does. */
+ async directory({section='people',query='',action='search',id}={}){
+  const page=this.requirePage();
+  if(await page.locator('#directory').evaluate(e=>e.classList.contains('hidden')))await page.locator('#directoryButton').click();
+  const details=page.locator('.menu-places');if(!await details.getAttribute('open')){
+   if(!await details.evaluate(e=>e.open))await details.locator('summary').click();
+  }
+  const tab=page.locator(`button[data-town-filter="${section}"]`);if(!await tab.isVisible())return {accepted:false,reason:'The searchable Town Book is unavailable.',state:await this.observe()};
+  await tab.click();await page.locator('.town-search').fill(query);
+  if(action!=='search'){
+   const attribute={show_home:'data-show-home',find_person:'data-find-person',directions:'data-id',shortcut:'data-shortcut'}[action];
+   const buttons=await page.locator(`.town-cards button[${attribute}]:visible:not(:disabled)`).all();
+   let chosen=null;for(const b of buttons)if(await b.getAttribute(attribute)===id){chosen=b;break;}
+   if(!chosen)return {accepted:false,reason:'No visible enabled Town Book action matches that id.',state:await this.observe()};
+   await chosen.click();await page.waitForTimeout(70);
+   if(action!=='shortcut')await page.waitForFunction(()=>window.__JOHANSSON_AUDIT__.walkingDirections?.status!=='searching',null,{timeout:120000});
+  }
+  this.history.push({control:'directory',section,query,action,id});
+  const cards=await page.locator('.town-cards article').allTextContents();
+  return {accepted:true,cards,state:await this.observe()};
  }
  async grid({x,z,width=12,depth=12,cell=.5,radius=.28}){
   const columns=Math.floor(width/cell)+1,rows=Math.floor(depth/cell)+1;if(columns*rows>4096)throw Error('Navigation grid exceeds 4096 cells; inspect a smaller region.');
@@ -125,7 +146,15 @@ export class TownAuditSession{
   return {reached:true,before,after:await this.observe(),route};
  }
  async ui({control}){
-  const selectors={exit_room:'#exitRoomButton',close_activity:'#closeActivity',close_directory:'#closeDirectory',town_menu:'#directoryButton',settings:'#directory .menu-settings > summary',field_book:'#notebookButton',clock:'#timeButton',weather:'#weatherButton',moves:'#movesButton',bag:'#bagButton',residents:'#residentRecordsButton'};
+  const selectors={exit_room:'#exitRoomButton',close_activity:'#closeActivity',close_directory:'#closeDirectory',town_menu:'#directoryButton',settings:'#directory .menu-settings > summary',map:'#directory .menu-map > summary',map_scope:'#mapScope',field_book:'#notebookButton',clock:'#timeButton',weather:'#weatherButton',moves:'#movesButton',bag:'#bagButton',residents:'#residentRecordsButton'};
+  if(['settings','field_book','clock','weather','moves','bag','residents'].includes(control)){
+   const tools=this.requirePage().locator('#directory .menu-tools:not([open]) > summary');
+   if(await tools.isVisible())await tools.click();
+  }
+  if(['clock','weather'].includes(control)){
+   const settings=this.requirePage().locator('#directory .menu-settings:not([open]) > summary');
+   if(await settings.isVisible())await settings.click();
+  }
   const button=this.requirePage().locator(selectors[control]);
   if(!await button.isVisible()||!await button.isEnabled())return {accepted:false,reason:'This normal game button is not currently available.',state:await this.observe()};
   await button.click();await this.page.waitForTimeout(250);this.history.push({control:'ui',button:control});

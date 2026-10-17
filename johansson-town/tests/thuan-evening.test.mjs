@@ -7,6 +7,7 @@ import {installDOM} from './fixtures.mjs';
 import {STAFF_BENCH} from '../src/world/staff-bench.js';
 import {PARK_BENCH} from '../src/world/park-layout.js';
 import {EAST_LAWN} from '../src/world/east-lawn.js';
+import {HARBOUR_PARK_PATHS,inHarbourPark} from '../src/world/harbour-park-plan.js';
 import {COMMUTER_SHIFTS} from '../src/people/commuter-schedule.js';
 import {RESIDENTS} from '../src/people/residents.js';
 import {MARKET_THRESHOLD} from '../src/world/town-grid.js';
@@ -40,7 +41,7 @@ test('the beer is a commuter habit, not something bolted onto every layout',()=>
 });
 
 
-test('Thuan has an afternoon: the park bench, the sea wall, and back to the shop',()=>{
+test('Thuan has an afternoon: the park bench, the shore walk, and back to the shop',()=>{
  izakayaPlot();
  try{
   // On shift either side of it she is behind her own counter.
@@ -54,12 +55,12 @@ test('Thuan has an afternoon: the park bench, the sea wall, and back to the shop
    if(legs.at(-1)?.activity!==leg.activity)legs.push(leg);
    assert.equal(plan(m).activity,leg.activity,'The plan disagrees with the walk at '+m);
   }
-  // Round the back for a sleep first, then the park and the sea wall.
+  // Round the back for a sleep first, then the park and its shore walk.
   assert.equal(legs.length,6,'The break is missing a deliberate return leg');
   assert.match(legs[0].activity,/back/i);
   assert.match(legs[1].activity,/asleep/i);
   assert.match(legs[2].activity,/park/i);
-  assert.match(legs.at(-2).activity,/sea wall/i);
+  assert.match(legs.at(-2).activity,/Harbour Park shore/i);
   assert.match(legs.at(-1).activity,/back to Sakura/i);
   // The pace has to survive into the plan, or the leisurely legs are walked at the
   // town's errand speed and the unhurried cycle her model carries never plays at all.
@@ -83,14 +84,17 @@ test('Thuan has an afternoon: the park bench, the sea wall, and back to the shop
   // or she sits down on the first bench she passes and never reaches the park. The
   // nap is its own place because it has its own bench and its own pose.
   assert.deepEqual(legs.map(l=>l.place),['nap','nap','park','stroll','stroll','market']);
-  // The leisure legs happen out on the east green, inside it rather than over the
-  // water. The final leg deliberately returns to Sakura.
+  // The leisure legs stay in the consolidated park on the east green, inside it
+  // rather than over the water. The final leg deliberately returns to Sakura.
   for(const leg of legs.slice(2,-1)){
    const [x,z]=leg.target;
+   assert.ok(inHarbourPark(x,z),'The leisure target belongs to the consolidated park');
    assert.ok(x>EAST_LAWN.minX&&x<EAST_LAWN.maxX,'Off the lawn at x='+x);
    assert.ok(z>EAST_LAWN.minZ&&z<EAST_LAWN.maxZ,'Off the lawn at z='+z);
   }
-  assert.ok(legs.at(-2).target[0]>EAST_LAWN.maxX-6,'The sea wall leg is nowhere near the sea wall');
+  assert.ok(legs.at(-2).target[0]>EAST_LAWN.maxX-6,'The shore leg stays beside the coast');
+  const shore=HARBOUR_PARK_PATHS.find(p=>p.id==='garden-shore-walk');
+  assert.ok(shore.points.some(([x,z])=>x===legs.at(-2).target[0]&&z===legs.at(-2).target[1]),'The shore leg ends on the drawn shore walk');
   assert.deepEqual(legs.at(-1).target,MARKET_THRESHOLD);
 
   // Rain keeps her in, and nobody else gets her walk.

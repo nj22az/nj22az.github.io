@@ -41,3 +41,18 @@ test('the bath keeps its hours and charges its fee; the footbath is free',()=>{
  minutes=23*60;const before=acts.state.yen;acts.action('onsen');
  assert.match(document.querySelector('#activityBody').firstChild.textContent,/locked/);assert.equal(acts.state.yen,before);
 });
+
+test('a readable, collision-sized bathhouse survives failed streaming and cleanly yields to the real model',async()=>{
+ installDOM();const {buildParkOnsen}=await import('../src/world/park-onsen.js');const {batchStaticProps}=await import('../src/render/static-props.js');
+ const world={group:new THREE.Group(),colliders:[]},sites=[],bath=buildParkOnsen(world,{sites,register(){},onAction(){}});
+ assert.equal(bath.fallback.visible,true);assert.ok(bath.group.getObjectByName('Umi-no-yu sign'));assert.ok(bath.group.getObjectByName('Umi-no-yu noren'));
+ bath.fallback.traverse(o=>{if(o.isMesh)assert.equal(o.userData.staticProp,false,'Replaceable shell must not enter a permanent static batch');});batchStaticProps(world.group);assert.equal(bath.fallback.visible,true);
+ world.group.updateMatrixWorld(true);const box=new THREE.Box3().setFromObject(bath.fallback);
+ for(const c of ONSEN_COLLIDERS){assert.ok(c.x-c.w/2>=box.min.x-.05&&c.x+c.w/2<=box.max.x+.05);assert.ok(c.z-c.d/2>=box.min.z-.05&&c.z+c.d/2<=box.max.z+.05);}
+ const load=world.details.find(d=>d.id==='park-onsen').load,original=globalThis.fetch;
+ try{
+  globalThis.fetch=async()=>new Response('',{status:404});assert.equal(await load(),false);assert.equal(bath.fallback.visible,true);assert.equal(bath.model,null);
+  globalThis.fetch=async()=>new Response(await readFile(new URL('../assets/models/onsen/umi-no-yu.glb',import.meta.url)));assert.equal(await load(),true);assert.equal(bath.fallback.visible,false);assert.ok(bath.model);assert.ok(bath.group.getObjectByName('Umi-no-yu sign').visible);
+ }finally{globalThis.fetch=original;}
+ assert.equal(sites[0].id,'onsen');assert.equal(sites[0].entryFacing,-Math.PI/2);assert.ok(sites[0].door[0]>sites[0].approachPosition[0],'Public door opens westward onto the park');
+});
