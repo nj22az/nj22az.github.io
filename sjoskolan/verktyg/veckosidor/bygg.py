@@ -401,9 +401,9 @@ VECKOR = {
         ],
         'plan': [
             (0, '09:00', 'Måndag', 'Online 09.00–11.00', 'Frågestund inför tentamen. Instruktion till det praktiska provet. Boka din tid för den muntliga avstämningen.', 'Frågestund online'),
-            (0, '11:00', 'Måndag 2–onsdag 4 november', 'Hemma', 'Tre protokoll som PDF och en riskbedömning som PDF i ett mejl till nils@sjoskolan.se senast onsdag 4 november kl. 20.00. Ämnesrad: Praktiskt prov: för- och efternamn. Se provsidan för besked om tidigare protokoll.', 'Praktiskt prov'),
+            (0, '11:00', 'Måndag 2–onsdag 4 november', 'Hemma', 'Tre protokoll som PDF och en riskbedömning som PDF i ett mejl till nils@sjoskolan.se senast onsdag 4 november kl. 20.00. Ämnesrad: Praktiskt prov: för- och efternamn. Kompletta egna protokoll för station 2 och 3 får återanvändas; komplettera luckor och behåll tidigare uppgifter.', 'Praktiskt prov'),
             (3, '00:00', 'Torsdag 5–fredag 6 november', 'Online, 15 min per elev', 'På din bokade tid: kamera, skärmdelning, egna protokoll och ett nytt okänt fel. Bokningsmetod, tillgängliga tider och möteslänk meddelas av läraren.', 'Muntlig avstämning'),
-            (None, None, 'Enligt lärarens besked', 'Online', '120 minuter, cirka 50 % teori och 50 % beräkningar efter poäng, öppen bok och individuella talvärden. Datum, start- och sluttid, åtkomst och inlämning är ännu inte publicerade. Se sidan Tentamen.', 'Skriftlig tentamen'),
+            (None, None, 'Enligt lärarens besked', 'Online', '120 minuter, cirka 50 % teori och 50 % beräkningar efter poäng, öppen bok och individuella talvärden. Den skriftliga tentamen är ännu inte schemalagd. Datum, start- och sluttid, åtkomst och inlämning meddelas senare. Se sidan Tentamen.', 'Skriftlig tentamen'),
         ],
         'redovisa_lista': [(V45 + 'Inlamning.html#uppgift-2', 'Övningstentan, rättad (frivillig, inte betygsatt)'),
                            ('../../praktiskt-prov.html#lamna', 'Protokollen från det praktiska provet')],
