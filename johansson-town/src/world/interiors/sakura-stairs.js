@@ -44,7 +44,7 @@ export function buildSakuraStoreys({room,reg,action,exit}){
  for(const [x,z,w,d,top,bottom] of [[-3.15,-4.02,2.9,.06,3.05,0],[-5.64,-5.375,.06,2.75,H+1,0],[-3.15,-5.375,2.7,.06,H/2+1,H/2],[-3.85,-4,3.6,.06,H+1,H],[-2.05,-4.8,.06,1.5,H+1,H]]){
   box(w,top-bottom,d,x,(top+bottom)/2,z,'Sakura stair guard');solid(x,z,w,d,top,bottom);
  }
- for(const [x,y,z,turn] of [[-3.15,H/4+1,-4.07,-1],[-3.15,H*.75+1,-6.67,1]]){
+ for(const [x,y,z,turn] of [[-3.15,H/4+1,-4.07,1],[-3.15,H*.75+1,-6.67,-1]]){
   const rail=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,Math.hypot(2.7,H/2),8),material);
   rail.position.set(x,y,z);rail.rotation.z=turn*Math.atan2(2.7,H/2);rail.name='Sakura stair handrail';room.add(rail);
  }
