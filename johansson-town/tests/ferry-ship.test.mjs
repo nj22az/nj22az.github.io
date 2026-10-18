@@ -130,15 +130,15 @@ test('lifesaving and fire appliances for 108 persons',()=>{
  assert.ok(gaSpace(F.muster.A)&&gaSpace(F.muster.B));assert.ok(gaSpace(F.rescueBoat.where));
 });
 
-test('the crew: eight posts by her safe manning, four of them filled by islanders and a new chief engineer',()=>{
+test('the crew: eight posts by her safe manning, named islanders and Johansson as chief engineer',()=>{
  const posts=new Set(FERRY_MANNING.map(m=>m.post));assert.equal(FERRY_MANNING.length,FERRY_SHIP.crew);
  for(const c of FERRY_CREW)assert.ok(posts.has(c.post),c.post+' is a post of her manning');
  const living=new Map(ISLAND_HOUSEHOLDS.flatMap(h=>h.members.map(m=>[m.name,h])));
  assert.deepEqual(FERRY_CREW.map(c=>c.post),FERRY_MANNING.map(c=>c.post));
- assert.equal(FERRY_CREW.filter(c=>c.new).length,1,'one new resident: the chief engineer');
+ assert.equal(FERRY_CREW.filter(c=>c.new).length,0,'existing villagers keep the crew posts');assert.equal(crewFor('chief'),'Johansson');
  for(const c of FERRY_CREW){assert.ok(c.why.length>60,c.name+' has a reason');assert.ok(c.lives,c.name+' lives somewhere');}
  for(const name of ['Mr Nakandakari','Mr Higa Jr','Ms Uezu','Kōji','Ms Ganaha','Mr Fujita'])assert.ok(living.has(name),name+' is on the island');
- assert.equal(living.get('Mr Nakandakari').home,'ferry');
+ assert.equal(living.get('Mr Nakandakari').members.find(m=>m.name==='Mr Nakandakari').primaryHome,'kitahama-flat-3');
  for(const name of ['Ms Uezu','Mr Higa Jr','Kōji','Mr Fujita'])assert.match(living.get(name).members.find(m=>m.name===name).purpose,/ferry|Minato Maru/);
  for(const minutes of [0,7*1440]){const names=crewOnDuty(minutes).map(c=>c.name);assert.equal(new Set(names).size,names.length);}
  assert.ok(FERRY_PEOPLE.length>=8);

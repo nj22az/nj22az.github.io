@@ -1,3 +1,4 @@
+import {GROUND_LAYER} from './ground-layers.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GROUND} from '../render/ground-palette.js';
 import {paintedAsphalt} from '../render/toy-surfaces.js';
@@ -18,7 +19,7 @@ export function buildBoardwalk(parent,options={}){
  const length=BOARDWALK.maxZ-BOARDWALK.minZ;
  map.repeat.set(BOARDWALK.width/4,length/4);map.needsUpdate=true;
  const mat=new THREE.MeshStandardMaterial({color:GROUND.asphalt,map,roughness:.9});mat.name='main-street-asphalt';
- const deck=new THREE.Mesh(new THREE.BoxGeometry(BOARDWALK.width,.20,length),mat);deck.name='harbour-boardwalk-deck';deck.position.set(BOARDWALK.x,-.10,(BOARDWALK.minZ+BOARDWALK.maxZ)/2);deck.receiveShadow=true;parent.add(deck);
+ const deck=new THREE.Mesh(new THREE.BoxGeometry(BOARDWALK.width,.20,length),mat);deck.name='harbour-boardwalk-deck';deck.position.set(BOARDWALK.x,GROUND_LAYER.lane-.10,(BOARDWALK.minZ+BOARDWALK.maxZ)/2);deck.receiveShadow=true;parent.add(deck);
  // Paint and iron lie in the road's own plane, so they win the depth test on a polygon
  // offset rather than on height: two millimetres of daylight flickers on a phone.
  const decal=()=>({depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
@@ -29,18 +30,18 @@ export function buildBoardwalk(parent,options={}){
  joints.name='main-street-edge-lines';joints.receiveShadow=true;joints.renderOrder=1;
  let n=0;for(const side of [-1,1])for(let i=0;i<dashes;i++){
   // Solid, not dashed: an edge line (外側線) is continuous; the dashes butt end to end.
-  dummy.position.set(BOARDWALK.x+side*(BOARDWALK.width/2-.3),0,BOARDWALK.minZ+1.5+i*3);dummy.scale.set(.15,.003,3.02);dummy.updateMatrix();joints.setMatrixAt(n++,dummy.matrix);}
+  dummy.position.set(BOARDWALK.x+side*(BOARDWALK.width/2-.3),GROUND_LAYER.lane,BOARDWALK.minZ+1.5+i*3);dummy.scale.set(.15,.003,3.02);dummy.updateMatrix();joints.setMatrixAt(n++,dummy.matrix);}
  joints.instanceMatrix.needsUpdate=true;joints.computeBoundingSphere();parent.add(joints);
  // Gutters: a darker concrete strip against each kerb.
  const edgeMaterial=new THREE.MeshStandardMaterial({color:0x8d918f,roughness:.95,...decal()});
  const edges=new THREE.InstancedMesh(new THREE.BoxGeometry(.22,.003,length),edgeMaterial,2);edges.name='main-street-gutters';edges.renderOrder=1;
- for(const [i,side] of [-1,1].entries()){dummy.position.set(BOARDWALK.x+side*(BOARDWALK.width/2-.11),0,(BOARDWALK.minZ+BOARDWALK.maxZ)/2);dummy.scale.set(1,1,1);dummy.updateMatrix();edges.setMatrixAt(i,dummy.matrix);}
+ for(const [i,side] of [-1,1].entries()){dummy.position.set(BOARDWALK.x+side*(BOARDWALK.width/2-.11),GROUND_LAYER.lane,(BOARDWALK.minZ+BOARDWALK.maxZ)/2);dummy.scale.set(1,1,1);dummy.updateMatrix();edges.setMatrixAt(i,dummy.matrix);}
  edges.instanceMatrix.needsUpdate=true;edges.computeBoundingSphere();edges.receiveShadow=true;parent.add(edges);
  // Manhole covers down the crown, every twelve metres or so.
  const iron=new THREE.MeshStandardMaterial({color:0x5d6265,roughness:.7,...decal()});
  const covers=Math.floor(length/12),manholes=new THREE.InstancedMesh(new THREE.CylinderGeometry(.32,.32,.004,20),iron,covers);
  manholes.name='main-street-manholes';manholes.renderOrder=1;manholes.receiveShadow=true;
- for(let i=0;i<covers;i++){dummy.position.set(BOARDWALK.x+(i%2?.6:-.4),0,BOARDWALK.minZ+6+i*12);dummy.scale.set(1,1,1);dummy.updateMatrix();manholes.setMatrixAt(i,dummy.matrix);}
+ for(let i=0;i<covers;i++){dummy.position.set(BOARDWALK.x+(i%2?.6:-.4),GROUND_LAYER.lane,BOARDWALK.minZ+6+i*12);dummy.scale.set(1,1,1);dummy.updateMatrix();manholes.setMatrixAt(i,dummy.matrix);}
  manholes.instanceMatrix.needsUpdate=true;manholes.computeBoundingSphere();parent.add(manholes);
  return {deck,joints,edges,setRain(wet){mat.roughness=wet?.4:.9;}};
 }

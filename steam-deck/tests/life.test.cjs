@@ -1,12 +1,11 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const policy=()=>import('../../johansson-town/src/desktop/life-state.js');
-test('every playable character has a stable home, including extra scene characters',async()=>{
+test('every playable character has a canonical home without reviving removed vacancies',async()=>{
  const {playableRoster}=await policy(),roster=playableRoster(['Cold-storage kid','Fujita','Johansson']);
  assert.equal(new Set(roster.map(p=>p.name)).size,roster.length);assert.ok(roster.length>=30);
  for(const p of roster){assert.ok(p.home.id);assert.ok(p.home.siteId);assert.ok(p.home.address);}
  assert.equal(roster.find(p=>p.name==='Johansson').home.id,'kitano-1');assert.equal(roster.find(p=>p.name==='Thuan').home.id,'kitano-1');
- const {ISLAND_HOUSEHOLDS}=await import('../../johansson-town/src/people/island-households.js');
- assert.ok(ISLAND_HOUSEHOLDS.some(h=>h.toLet&&h.id===roster.find(p=>p.name==='Cold-storage kid').home.id),'Extra scene characters occupy real spare homes');
+ assert.equal(roster.some(p=>p.name==='Cold-storage kid'),false,'Unassigned background figures must not displace established households');
 });
 test('bedtime spawning honours individual night shifts and children’s schedules',async()=>{
  const {shouldSleep}=await policy();assert.equal(shouldSleep('Johansson',60),true);assert.equal(shouldSleep('Mai',60),true);

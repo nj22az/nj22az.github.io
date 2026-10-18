@@ -1,17 +1,16 @@
 import {CAST,castMember} from '../people/cast.js';
-import {homeForResident,ISLAND_HOUSEHOLDS} from '../people/island-households.js';
+import {homeForResident} from '../people/island-households.js';
 import {homeRoutine} from '../people/home-life.js';
 import {RESIDENTS} from '../people/residents.js';
 const minute=value=>((value%1440)+1440)%1440;
 export const canonicalResidentName=name=>castMember(name)?.name||name;
 export function playableRoster(names=[]){
  const canonical=canonicalResidentName;
- const unique=[...new Set([...CAST.map(p=>p.name),...names].filter(Boolean).map(canonical))];
- // Scene residents outside the main cast reuse real vacant addresses. They never
- // receive an imaginary room at the ferry terminal or displace an existing family.
- const spare=ISLAND_HOUSEHOLDS.filter(h=>h.toLet&&h.island==='minato'),extra=unique.filter(name=>!homeForResident(name)).sort();
+ // Housing consolidation deliberately removed spare homes. Only residents with
+ // a canonical household can be selected; background figures are not tenants.
+ const unique=[...new Set([...CAST.map(p=>p.name),...names].filter(Boolean).map(canonical))].filter(name=>homeForResident(name));
  return unique.map(name=>{
-  const person=castMember(name),home=homeForResident(name)||spare[extra.indexOf(name)%spare.length];
+  const person=castMember(name),home=homeForResident(name);
   return {name,age:person?.age??null,role:person?.purpose||'Island resident',home:{id:home.id,address:home.address,siteId:home.entranceSiteId,island:home.island}};
  });
 }

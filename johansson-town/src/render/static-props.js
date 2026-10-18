@@ -44,7 +44,7 @@ export function batchStaticProps(root,cellSize=24){
  * it is for a view through glass, not for a room you stand in.
  */
 const MERGEABLE=new Set(['MeshStandardMaterial','MeshBasicMaterial','MeshToonMaterial','MeshPhysicalMaterial','MeshLambertMaterial']);
-export function createStandIn(root,{name='stand-in'}={}){
+export function createStandIn(root,{name='stand-in',keepLive=()=>false}={}){
  root.updateMatrixWorld(true);
  const inverse=new THREE.Matrix4().copy(root.matrixWorld).invert(),buckets=new Map(),sources=[];
  const visible=o=>{for(let p=o;p&&p!==root;p=p.parent)if(!p.visible)return false;return true;};
@@ -52,6 +52,8 @@ export function createStandIn(root,{name='stand-in'}={}){
  // frozen shut in the doorway while the street's door slides open), and they are not drawn from outside either.
  const moves=o=>{for(let p=o;p&&p!==root;p=p.parent)if(p.userData.dynamicProp)return true;return false;},moving=[];
  root.traverse(o=>{
+  // Live occupants are drawn alongside the merged fittings, never flattened or hidden.
+  for(let p=o;p&&p!==root;p=p.parent)if(keepLive(p))return;
   if(o.isMesh&&visible(o)&&o.layers.isEnabled(0)&&moves(o)){moving.push(o);return;}
   if(!o.isMesh||o.isSkinnedMesh||Array.isArray(o.material)||!MERGEABLE.has(o.material.type)||!visible(o)||!o.layers.isEnabled(0))return;
   const m=o.material,r=v=>Math.round((v??0)*20)/20;

@@ -27,7 +27,7 @@ jobs:
       - name: Controller, gameplay, save and update regression tests
         run: |
           npm test --prefix steam-deck
-          node --test johansson-town/tests/controller-game.test.mjs johansson-town/tests/harbour-festival.test.mjs johansson-town/tests/detail-stream.test.mjs johansson-town/tests/context-actions.test.mjs johansson-town/tests/soundscape.test.mjs johansson-town/tests/thuan-studio-design.test.mjs
+          node --test johansson-town/tests/controller-game.test.mjs johansson-town/tests/harbour-festival.test.mjs johansson-town/tests/detail-stream.test.mjs johansson-town/tests/context-actions.test.mjs johansson-town/tests/soundscape.test.mjs johansson-town/tests/thuan-studio-design.test.mjs johansson-town/tests/housing-consolidation.test.mjs johansson-town/tests/sakura-stairs.test.mjs johansson-town/tests/shop-street-view.test.mjs
       - name: Build offline Linux candidate
         run: |
           node johansson-town/scripts/build-runtime.mjs

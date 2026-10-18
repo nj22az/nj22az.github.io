@@ -21,7 +21,7 @@ export function createFujitaRoutine(entity,{origin,chair,cover,boat}){
     else{entity.position.addScaledVector(delta,remaining/distance);break;}}
    u.activity=state==='to-shed'?'returning to his shed':'walking aboard Shiosai to sleep';
   }
-  if(state==='settling'){rest=Math.min(1,rest+Math.min(dt,.2));entity.position.copy(path.at(-1)).lerp(bed,rest);entity.quaternion.identity().slerp(lying,rest);u.socialPose='Sleep';u.sleepBlend=rest;u.activity='getting into his berth';if(rest===1)state='sleeping';}
+  if(state==='settling'){rest=Math.min(1,rest+Math.min(dt,.2));entity.position.copy(path.at(-1)).lerp(bed,rest);entity.quaternion.identity().slerp(lying,rest);u.socialPose='Sleep';u.sleepBlend=rest;u.activity='settling onto his sofa';if(rest===1)state='sleeping';}
   if(state==='sleeping'){flags();entity.position.copy(bed);entity.quaternion.copy(lying);u.socialPose='Sleep';u.sleeping=true;u.sleepBlend=1;u.hatOff=true;u.activity='sleeping aboard Shiosai';}
   if(state==='watching'){entity.position.copy(path[0]);entity.rotation.set(0,chairYaw,0);u.sleeping=false;u.sleepBlend=0;delete u.hatOff;u.seatHeight=chairSeatHeight;u.socialPose='Drink';u.heldItem='beer';u.heldPortion=Math.max(0,.6*Math.min(1,(1410-(((minutes%1440)+1440)%1440))/30));u.activity=programme==='baseball'?'watching the ballgame with a beer':programme==='news'?'watching the evening news':'watching television with a beer';}
   u.houseboatRoutine=state;u.walking=state==='to-boat'||state==='to-shed';cover?.update(dt,rest);boat?.tick({sleeping:rest>.01});return state;

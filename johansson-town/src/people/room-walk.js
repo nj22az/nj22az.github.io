@@ -2,7 +2,8 @@ import {alignedStep,forwardOnly,travelError,travelYaw} from './facing.js';
 import {createNavigation,NAV_MARGIN} from './navmesh.js?snappy=1';
 
 // Routes share the player's furniture collision geometry. No timeout teleports.
-export function createRoomWalk(blocked=()=>false,{bounds={minX:-8,maxX:8,minZ:-8,maxZ:8},smoothTurn=false,radius=.3}={}){
+export function createRoomWalk(blocked=()=>false,{bounds={minX:-8,maxX:8,minZ:-8,maxZ:8},smoothTurn=false,radius=.3,height=0}={}){
+ const collision=blocked;blocked=(x,z,r)=>collision(x,z,r,height);
  const nav=createNavigation(blocked,{step:.2,heightAt:()=>0,bounds,radius:Math.max(radius,NAV_MARGIN)}),routes=new Map();
  return {move(person,target,dt){
   const g=person.g,tag=target.join(','),smooth=smoothTurn||person.profile?.name==='Thuan'||g.userData.name==='Thuan';
@@ -28,7 +29,7 @@ export function createRoomWalk(blocked=()=>false,{bounds={minX:-8,maxX:8,minZ:-8
   }
   if(step<=0)return false;
   const x=g.position.x+dx/d*step,z=g.position.z+dz/d*step;
-  if(!blocked(x,z,radius)){g.position.set(x,0,z);route.stuck=0;}
+  if(!blocked(x,z,radius)){g.position.set(x,target[1],z);route.stuck=0;}
   // The smoothed route checks its shortcuts every ten centimetres, and a corner can fall
   // between two checks: the step into it is refused and, with nothing to change the
   // route, a walker would stand at that corner for good. Blocked for a moment, fall back

@@ -8,7 +8,7 @@ import {circleHitsCircle} from '../physics.js';
 import {installDOM} from './fixtures.mjs';
 
 test('actual ambient neighbours block the player and appear in the same MCP navigation query',async()=>{
- installDOM();const parent=new THREE.Group(),neighbours=createNeighbours({parent});neighbours.update(0,750);
+ installDOM();const parent=new THREE.Group(),neighbours=createNeighbours({parent});neighbours.update(0,840);
  const source=await readFile(new URL('../src/game.js',import.meta.url),'utf8');
  const start=source.indexOf('function indoorNpc('),end=source.indexOf('function collides(',start);
  const nav=source.indexOf(' navigation(x,z,radius=',source.indexOf('window.__JOHANSSON_AUDIT__={'));

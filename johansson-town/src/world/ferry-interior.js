@@ -477,10 +477,10 @@ export const FERRY_INTERIOR=(()=>{
  {const HT=F.houseTop,ceil=HT-.08,CW=.45;
   const rooms=[
    // [side, from, to, id, name]
-   [1,Z(9),Z(11.5),'crew-cabin','Crew cabin'],[-1,Z(9),Z(11.5),'mate-cabin','Chief officer’s cabin'],
+   [1,Z(9),Z(11.5),'crew-cabin','Crew cabin · Uezu and Nakandakari duty berths'],[-1,Z(9),Z(11.5),'mate-cabin','Chief officer’s cabin'],
    [1,Z(11.5),Z(14),'deckhand-cabin','Deckhand’s cabin'],[-1,Z(11.5),Z(14),'crew-wc','Crew WC and shower'],
    [1,Z(14),Z(16.5),'mess','Mess room'],[-1,Z(14),Z(16.5),'galley','Galley'],
-   [1,Z(16.5),WH0,'chief-cabin','Chief engineer’s cabin'],[-1,Z(16.5),WH0,'master-cabin','Master’s cabin'],
+   [1,Z(16.5),WH0,'chief-cabin','Johansson · chief engineer’s duty cabin'],[-1,Z(16.5),WH0,'master-cabin','Master’s cabin'],
   ];
   const doorZ=(a,b)=>a+.55;
   // The house's outer walls: aft (the two rooms' doors), the sides with a square port in each room.
@@ -533,7 +533,8 @@ export const FERRY_INTERIOR=(()=>{
    deco([X[0]+.04,y+.45,z0+.05],[X[1]-.04,y+.55,z1-.05],0xe8e4d8);if(two)deco([X[0]+.04,y+1.3,z0+.05],[X[1]-.04,y+1.4,z1-.05],0xe8e4d8);};
   const locker=(s,z0,x0=CW+T,w=.55)=>box([S2(s,x0,x0+w)[0],BRIDGE,z0],[S2(s,x0,x0+w)[1],BRIDGE+1.9,z0+.5],0xb9b3a0,{name:'locker'});
   const desk=(s,z0,z1)=>{const X=S2(s,BH-T-.55,BH-T);box([X[0],BRIDGE+.72,z0],[X[1],BRIDGE+.77,z1],TEAK,{name:'desk'});box([X[0],BRIDGE,z0],[X[1],BRIDGE+.72,z0+.4],TEAK,{name:'desk'});};
-  bunk(1,Z(9)+T/2+.05,Z(9)+2.0,BRIDGE,true);locker(1,Z(11.5)-T/2-.55);
+  bunk(1,Z(9)+T/2+.05,Z(9)+2.0,BRIDGE,true);
+  plate(['UEZU · DUTY BERTH','NAKANDAKARI · RELIEF ENGINEER'],.7,.18,[CW+T+.05,BRIDGE+1.6,Z(9)+.8],Math.PI/2,{name:'Named engineering relief berth'});locker(1,Z(11.5)-T/2-.55);
   bunk(-1,Z(9)+T/2+.05,Z(9)+2.0);desk(-1,Z(11.5)-.75,Z(11.5)-T/2-.05);locker(-1,Z(11.5)-T/2-.52,CW+T,.5);
   bunk(1,Z(11.5)+T/2+.05,Z(11.5)+2.0);locker(1,Z(14)-T/2-.52);
   // Crew WC and shower: the WC, the basin, the shower tray and its curtain.

@@ -15,8 +15,9 @@ import {assetHatIds,provideHatModel,hatModelLoaded} from '../avatars/hat-assets.
  */
 const loading=new Map(),warned=new Set();
 
-export function loadHatModels(ids=assetHatIds(),{timeout=15000}={}){
- return Promise.all(ids.map(id=>loadHatModel(id,timeout))).then(all=>all.every(Boolean));
+export function loadHatModels(ids=assetHatIds(),{timeout=15000,onProgress=()=>{}}={}){
+ let done=0,failed=0;onProgress(done,ids.length,failed);
+ return Promise.all(ids.map(id=>loadHatModel(id,timeout).then(ok=>{if(!ok)failed++;onProgress(++done,ids.length,failed);return ok;}))).then(all=>all.every(Boolean));
 }
 
 function loadHatModel(id,timeout){

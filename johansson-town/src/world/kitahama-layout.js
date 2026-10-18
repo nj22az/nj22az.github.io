@@ -3,7 +3,7 @@ import {householdAtHome,activeHomeForResident,homeNameplate} from '../people/isl
 /**
  * Kitahama (北浜), the new district on the north-east land the island gained in
  * October 2026: one lane up from the east beach past the town hall's seawall, one lane
- * across, five walled house plots and a sugar-cane field towards the point. The plots
+ * across, five walled house plots on a compact street grid. The plots
  * are the same standard walled houses as Nishi-machi (red-tile or concrete, gate,
  * shisa, nameplate), so the island has one way of building a home. Who lives in each
  * is island-homes.js; the gate faces the lane.
@@ -23,12 +23,7 @@ export const KITAHAMA=Object.freeze({
   // Lane north and Well Lane south. `family` and `romaji` are what the nameplate on the gate says (the
   // house's own sign); who lives there is the cast (people/cast.js), and a house nobody in it lives in is to let.
   {id:'kitahama-6',kind:'red-tile',family:'Taira',romaji:'Taira',minX:-32,maxX:-24,minZ:48,maxZ:57,gate:'north'},
-  {id:'kitahama-7',kind:'concrete',family:'Chinen',romaji:'Chinen',minX:-19,maxX:-11,minZ:48,maxZ:57,gate:'north'},
   {id:'kitahama-8',kind:'concrete',family:'Uezu',romaji:'Uezu',minX:-6,maxX:2,minZ:48,maxZ:57,gate:'north'},
-  {id:'kitahama-9',kind:'red-tile',family:'Gushiken',romaji:'Gushiken',minX:7,maxX:15,minZ:48,maxZ:57,gate:'north'},
-  {id:'kitahama-10',kind:'red-tile',family:'Tamashiro',romaji:'Tamashiro',minX:-32,maxX:-24,minZ:62,maxZ:71,gate:'south'},
-  {id:'kitahama-11',kind:'concrete',family:'Iha',romaji:'Iha',minX:-19,maxX:-11,minZ:62,maxZ:71,gate:'south'},
-  {id:'kitahama-12',kind:'concrete',family:'Kohagura',romaji:'Kohagura',minX:-6,maxX:2,minZ:62,maxZ:71,gate:'south'},
  ].map(p=>{const plate=homeNameplate(p.id);return Object.freeze({...p,wall:'block',family:plate.address,romaji:plate.owners});})),
  field:Object.freeze({minX:37,maxX:47,minZ:84,maxZ:88.2}),
  /** The quarter's lanes, each 3 m: the spine west from the cross lane, and two dead ends. */
@@ -38,7 +33,7 @@ export const KITAHAMA=Object.freeze({
  /** Main Street continues directly through the relocated residential blocks. */
  footpath:Object.freeze({minX:3,maxX:6,minZ:30.5,maxZ:91}),
  northLane:Object.freeze({minX:-35,maxX:45,minZ:44.5,maxZ:47.5}),
- eastLane:Object.freeze({minX:-36,maxX:-33,minZ:30.5,maxZ:91}),
+ eastLane:Object.freeze({minX:-36,maxX:-33,minZ:30.5,maxZ:75}),
  southLane:Object.freeze({minX:-36,maxX:6,minZ:29.3,maxZ:32.3}),
  westCrossLane:Object.freeze({minX:-36,maxX:-20,minZ:44.5,maxZ:47.5}),
  middleLane:Object.freeze({minX:16,maxX:19,minZ:45.1,maxZ:75}),
@@ -90,3 +85,10 @@ export const KITAHAMA_FLATS=Object.freeze(Array.from({length:4},(_,i)=>{
   approachPosition:Object.freeze([level?x+.65:KITAHAMA.fukugiLane.minX+.2,KITAHAMA.y+(level?level+.08:.04),z]),
   faceX:x+.03,inward:-Math.PI/2,approachFacing:level?0:-Math.PI/2});
 }));
+
+/** Measured street-to-upper-door connector. The general street raster stops at the stair foot. */
+export function flatAccessRoute(id){
+ const unit=KITAHAMA_FLATS.find(u=>u.id===id&&u.level);if(!unit)return null;
+ const A=KITAHAMA.apartment,z=A.minZ+.1,x0=A.maxX-1.9-4.9,x1=A.maxX-1.9;
+ return [[x0-.4,z],...Array.from({length:56},(_,i)=>[x0+(x1-x0)*i/55,z]),[unit.door[0],z],[unit.door[0],unit.door[2]]];
+}

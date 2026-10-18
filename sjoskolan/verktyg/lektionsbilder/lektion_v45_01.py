@@ -3,8 +3,8 @@
 Filerna ligger kvar i vecka-45/ (delsidan vecka-45/aktuell/Del_1.html, övningarna heter 1.1–1.10), men delen undervisas i
 vecka 43 som del 4 av 4: 'vecka': 43, 'del': 4. Läxornas adresser skrivs ../../vecka-45/aktuell/… så att de fungerar både
 från veckosidan i vecka-43/ och från delsidan i vecka-45/.
-Rubrikerna och ordningen är desamma som förut (teorikorten bygger på dem). Övning 1.1–1.5 görs tillsammans, efter
-avsnitt 4 och efter avsnitt 7. Felsökningsrapporten (inlämning 3 i vecka-45/) har inga svar här.
+Rubrikerna och ordningen bevaras (teorikorten bygger på dem). Kärnövningar: 1.2, 1.3 och 1.10.
+Övriga övningar är frivillig egen träning. Felsökningsrapporten (inlämning 4 i vecka 43) har inga svar här.
 """
 
 DELSIDA = 'nj22az.github.io/sjoskolan/vecka-45/aktuell/Del_1.html'
@@ -13,8 +13,8 @@ V43 = '../../vecka-43/aktuell/'
 # Läxorna efter lektionen (samma lista på bilden ”Det här gör du nu” och på veckosidan).
 HEMMA = [
     ('del-4', 'Läs del 4: teorin och de två exemplen. Tryck på ”Jag har läst del 4” längst ned på sidan.', V43 + 'Del_4.html', 'Öppna del 4'),
-    ('ovn-4', 'Gör övning 1.6–1.10 på delsidan för del 4. Ledtrådar och facit finns där.', V43 + 'Del_4.html#v45_01-q6',
-     'Öppna övning 1.6'),
+    ('extra-4', 'Frivillig extra träning: övning 1.1, 1.4–1.9 i del 4. Prioritera inlämningen. Ledtrådar och facit finns på delsidan.', V43 + 'Del_4.html#v45_01-q1',
+     'Öppna extraövningarna'),
     ('rapport', 'Skriv felsökningsrapporten, inlämning 4: felsök två felmoduler i Hållkretslabbet, en i taget, och fyll i '
                 'rapportens fält för båda.', '../../vecka-43/aktuell/Inlamning.html#uppgift-4', 'Öppna felsökningsrapporten'),
 ]
@@ -44,9 +44,9 @@ LEKTION = {
         ('upplagg', [
             ('10.00', 'Start och startfråga'),
             ('10.05', 'Pass 2: Observation, arbetsgång och halvering (avsnitt 1–4) och ett exempel'),
-            ('10.20', 'Övning 1.1, 1.2 och 1.3 tillsammans'),
-            ('10.30', 'Avbrott, glapp och en skiljande kontroll (avsnitt 5–7) och ett exempel'),
-            ('10.40', 'Övning 1.4 och 1.5 tillsammans'),
+            ('10.15', 'Eget försök och jämförelse: övning 1.2 och 1.3'),
+            ('10.27', 'Avbrott, glapp och en skiljande kontroll (avsnitt 5–7)'),
+            ('10.37', 'Lampkretsen: välj kontroll. Övning 1.10: verifiera och dokumentera'),
             ('10.50', 'Avslutsfråga, sammanfattning och det här gör du nu'),
         ]),
         ('teori', {
@@ -104,8 +104,8 @@ LEKTION = {
             'slutsats': 'Det finns ännu inget bevis för en viss felkomponent. Mellanpunkten ska skilja två delområden åt.',
         }),
         ('ovningar', {
-            'nummer': ['1.1', '1.2', '1.3'],
-            'instruktion': 'Tre minuter per övning. Skriv ditt svar i chatten. Ledtrådar och facit finns på delsidan.',
+            'nummer': ['1.2', '1.3'],
+            'instruktion': 'Arbeta själv i åtta minuter. Ange sökområde och motivera nästa kontroll. Använd ledtråd vid behov. Jämför sedan med facit och diskutera resonemanget i fyra minuter.',
         }),
         ('teori', {
             'avsnitt': 5, 'rubrik': 'Avbrott och kortslutning',
@@ -152,8 +152,8 @@ LEKTION = {
             'alt': '12 V-källa, en extra serieresistans på 1 Ω och en last med 10 V vid 2 A.',
         }),
         ('ovningar', {
-            'nummer': ['1.4', '1.5'],
-            'instruktion': 'Fem minuter per övning. Skriv ditt svar i chatten. Övning 1.6–1.10 gör du själv efter lektionen.',
+            'nummer': ['1.10'],
+            'instruktion': 'Först åtta minuter med lampkretsen: två hypoteser, mätpunkter, driftläge och förväntat resultat. Sedan fem minuter med övning 1.10 och egen jämförelse med facit. Använd inga labbfelmoduler här.',
         }),
         ('avslut', None),
         ('lista', {

@@ -26,14 +26,14 @@ import {shopProductTemplate,shopProductMaterials} from '../../commerce/shop-prod
  * shelf tops measured off the model.
  */
 export const BACKROOM=Object.freeze({
- rack:Object.freeze({units:[[-5.50,-2.29],[-2.04,1.17]],front:-4.86,back:-4.12,levels:[.219,.823,1.427,2.031]}),
+ rack:Object.freeze({units:[[-.45,.25],[.35,1.17]],front:-4.86,back:-4.12,levels:[.219,.823,1.427,2.031]}),
  noticeboard:Object.freeze({x:-5.645,y:1.62,z:-5.85}),
  exitSign:Object.freeze({x:3.63,y:2.48,z:-6.74}),
- crates:Object.freeze({x:-5.19,z:-6.52,w:.86,d:.36}),
+ crates:Object.freeze({x:.65,z:-6.52,w:.86,d:.36}),
  bundle:Object.freeze({x:5.51,z:-5.67,w:.26,d:.74}),
  // Parked at the dead-end west end: by the rack's east end it stood on Thuan's line
  // from the passage to the stockroom and she could not get round it on restock runs.
- daisha:Object.freeze({x:-5.27,z:-5.4,w:.66,d:.96}),
+ daisha:Object.freeze({x:-1.1,z:-6.1,w:.66,d:.96}),
  extinguisher:Object.freeze({x:4.66,z:-6.58,r:.15}),
  // The Thuan figurine, on a plinth in the east corner by the delivery door, facing the room.
  figurine:Object.freeze({x:5.42,z:-6.42,plinth:.4,height:.85,yaw:-1.1}),

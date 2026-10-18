@@ -22,7 +22,7 @@ const head=new THREE.Vector3(),feet=new THREE.Vector3();
  */
 export const PLACE_PHRASES=Object.freeze({
  'mayor-home':'at home','mayor-office':'in the mayor’s office',school:'in the town hall classroom','community-kitchen':'in the community kitchen',
- dungeon:'in the Old Sea Cave',fumoto:'in Fumoto',hoshizaki:'in Hoshizaki Fishing Village','aoba-garden':'in the Aoba Traditional Garden',
+ dungeon:'in the Old Sea Cave','aoba-garden':'in the Aoba Traditional Garden',
  'harbour-park':'in Minato Harbour Park','rainflower-florist':'at Rainflower Florist','nakamura':'at Nakamura’s dessert counter',
  'rainflower-lane':'on Rainflower Shopping Lane',
 });

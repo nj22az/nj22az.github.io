@@ -82,7 +82,8 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
   for(let x=-width/2-.2;x<=width/2+.2;x+=.26){const rib=new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,.7,6),ridge);rib.rotation.x=Math.PI/2;rib.position.set(x,.045,.2);hood.add(rib);}
   const cap=new THREE.Mesh(new THREE.BoxGeometry(width+.56,.1,.12),ridge);cap.position.set(0,.04,-.12);hood.add(cap);}
  const logo=new THREE.Object3D();logo.position.set(0,3.24,.38);group.add(logo);group.updateMatrixWorld(true);site.streetFrontage={position:group.localToWorld(new THREE.Vector3(0,.18,.02)).toArray(),yaw};buildSignboard(group,{width});
- const glazing=createShopGlass();
+ // A light haze softens the view without a refraction framebuffer on phones.
+ const glazing=createShopGlass({haze:.12});
  // Glass to either side of the doorway, whatever the frontage is: a pane list authored
  // for a ten-metre shop leaves a wall of nothing when the shop is fourteen.
  const DOOR=1.9,JAMB=.15,panes=[[doorX,DOOR]];

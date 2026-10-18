@@ -9,28 +9,30 @@ export const ISLAND_HOMES=Object.freeze([
  home('kitano-2','Shiroma house, Kitano hamlet','Kitano hamlet','home-kitano-2'),
  home('kitano-3','Chinen house, Kitano hamlet','Kitano hamlet','home-kitano-3'),
  home('office','Harbour Office · residence behind the screen','Harbour','office'),
- home('clinic','Doctor’s flat, Town Hall Clinic','Town Hall','clinic'),
- home('ferry','Chief engineer’s cabin, Minato Maru','Harbour','ferry-terminal',{aboard:true}),
+ home('clinic','Doctor’s flat, Town Hall Clinic','Town Hall','home-clinic'),
+ home('ferry-chief-cabin','Johansson’s duty cabin, Minato Maru','Harbour','ferry-chief-cabin',{aboard:true,secondaryOnly:true}),
+ home('ferry-engineer-duty-berth','Relief engineer’s duty berth, Minato Maru','Harbour','ferry-engineer-duty-berth',{aboard:true,secondaryOnly:true}),
+ home('ferry','Former chief engineer home identity','Harbour','ferry-terminal',{retired:true}),
  home('koban','Officer Mori’s residence, Minato Police Box','Main Street','koban'),
- home('izakaya','Minato Izakaya · Barfly’s home','Main Street','izakaya'),
+ home('izakaya','Minato Izakaya · Barfly’s home','Main Street','home-izakaya'),
  home('fujita-houseboat','Shiosai houseboat, west pier','Harbour','fujita-houseboat'),
  home('resident-home-aya','1 Front-Row Yard','Front-Row Yard','resident-home-aya'),
  home('resident-home-kenji','2 Front-Row Yard','Front-Row Yard','resident-home-kenji'),
- home('market','Flat above Sakura Shōten','Sakura','market'),
+ home('market','Sakura main office and kitchenette','Sakura','market',{retired:true}),
  ...Array.from({length:12},(_,i)=>home('kitahama-'+(i+1),(i+1)+' Kitahama','Kitahama',
-  i===0?'resident-home-thuan':i===1?'resident-home-mrs-sato':'home-kitahama-'+(i+1))),
+  i===0?'resident-home-thuan':i===1?'resident-home-mrs-sato':'home-kitahama-'+(i+1),
+  {retired:[7,9,10,11,12].includes(i+1)})),
  // Unit assignments are explicit in CAST, never derived from the order of the people list.
  ...Array.from({length:4},(_,i)=>home('kitahama-flat-'+(i+1),'Flat '+(i+1)+', Kitahama Heights, Fukugi Lane','Kitahama',
   'home-kitahama-flat-'+(i+1),{buildingId:'kitahama-flats',unitNumber:String(i+1)})),
- ...Array.from({length:4},(_,i)=>home('fumoto-'+(i+1),(i+1)+' Fumoto','Fumoto','home-fumoto-'+(i+1))),
  ...[['higa','Higa'],['kinjo','Kinjō'],['oshiro','Ōshiro']].map(([id,name])=>home(id,name+' house, Nishi-machi','Nishi-machi','home-'+id)),
- ...[['nakasone','Nakasone'],['miyagi','Miyagi']].map(([id,name])=>home(id,name+' house, east back','East back','home-'+id)),
+ ...[['nakasone','Nakasone'],['miyagi','Miyagi']].map(([id,name])=>home(id,name+' house, east back','East back','home-'+id,{retired:true})),
  // Save-era identities remain recognisable after the two empty buildings are removed.
  ...[['tamaki','Tamaki'],['kamiya','Kamiya']].map(([id,name])=>home(id,name+' house, east back','East back','home-'+id,{retired:true})),
  home('nakamura','Above Nakamura Zenzai','Main Street','home-nakamura'),
  home('shimabukuro','Above the post office','Main Street','home-shimabukuro'),
- home('arakaki','Above Aragaki Confectionery Store','Main Street','home-arakaki'),
- home('yonamine','Above Yonamine Fresh Fish Store','Main Street','home-yonamine'),
+ home('arakaki','Above Aragaki Confectionery Store','Main Street','home-arakaki',{retired:true}),
+ home('yonamine','Above Yonamine Fresh Fish Store','Main Street','home-yonamine',{retired:true}),
 ]);
 
 export const ISLAND_HOUSEHOLDS=Object.freeze(ISLAND_HOMES.map(def=>{
@@ -52,7 +54,7 @@ export const householdAtHome=id=>id==='kitahama-flats'?FLAT_BUILDING:BY_HOME.get
 export const homeForResident=name=>householdAtHome(castMember(name)?.home);
 export const secondaryHomesFor=name=>(castMember(name)?.alsoAt||[]).map(householdAtHome).filter(Boolean);
 /** Walking Thuan retains her weekday room. The primary home remains clearly labelled on her card. */
-export const activeHomeForResident=name=>secondaryHomesFor(name)[0]||homeForResident(name);
+export const activeHomeForResident=name=>secondaryHomesFor(name).find(h=>!h.aboard)||homeForResident(name);
 export const homeUnits=buildingId=>ISLAND_HOUSEHOLDS.filter(h=>h.buildingId===buildingId);
 export const householdTitle=id=>{
  const h=typeof id==='string'?householdAtHome(id):id;

@@ -5,21 +5,11 @@ import {TUNNEL} from './coyote-tunnel.js';
 import {paintedTurf} from '../render/toy-surfaces.js';
 
 // One shoreline shared by the ground, visible retaining edge and visitor map.
-// A closed headland: water separates every edge from the distant islands.
-// The north-west shore runs out under the tunnel hill. It used to stop at z≈36, which
-// put the hill, its boulders and the last few metres of the bus road out over open
-// water: from the road you saw a band of sea at the foot of the cliff and the painting
-// floating above it. The headland now carries the rock it is holding up.
-// South of the lawn the land runs out to the school's seawall and the tetrapods beyond it.
-// October 2026: the island grew and lost its corners (docs/AMPLIFY-AUDIT.md, §12). What is
-// built stays where it was: the Nishi-machi seawall (x -40) and the harbour front (z -50)
-// are man-made and straight, and the beach keeps its line. The natural shore around
-// them is now irregular: a rocky point north-west of Nishi-machi, the new Kitahama
-// district and its cane field rounding the north-east, and a softened south-east corner.
+// The shoreline fits the port, shops, park and inhabited residential blocks.
 export const COASTLINE=[
- [-40,-50],[-40,30],[-43,32],[-47,36],[-49.5,41],[-48.5,46],[-44,49.5],[-38,50.5],
+ [-40,-50],
  ...ISLAND_COAST,
- [62,64],[59,57],[55,52],[51,48.5],[48.5,46],
+ [49,48],
  [47.5,40],[45,29],[45,-43],
  [44,-46.5],[41.5,-49],[38,-50],[20,-50]];
 /** The land's bounding box, for the map and the residents' navigation grid. */

@@ -31,7 +31,8 @@ test('published page uses one compiled audio/boot graph with local hashed depend
  // Karaoke is lazy; its shared songs, actor helpers and icons add four entries.
  // The world, photo targets and lazy town feed share one small harbour-park-plan data chunk.
  // Its canonical place/path constants add one entry to the bounded graph.
- assert.ok(Object.keys(manifest).length<=35,'Bound the compiled graph including optional diagnostics: '+Object.keys(manifest).length);
+ // The shop and the comic interiors now share the existing house-walk helper for the office stairs.
+ assert.ok(Object.keys(manifest).length<=36,'Bound the compiled graph including optional diagnostics: '+Object.keys(manifest).length);
  const titleMenu=manifest['title-menu.js'];assert.ok(titleMenu?.isEntry&&html.includes("from './runtime/"+titleMenu.file+"'"),'the title menu loads from the runtime');
  assert.doesNotMatch(html,/from ['"]\.\/title-menu\.js['"]/,'the title menu is never imported from source');
  const portraits=manifest['src/avatars/guide-portraits.js'];assert.ok(portraits&&html.includes(portraits.file));assert.ok(!html.includes('data-town-runtime href="./runtime/'+portraits.file+'"'),'guide rendering stays lazy');

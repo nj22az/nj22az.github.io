@@ -94,6 +94,7 @@ export const FRONT_ENDCAPS=Object.freeze([
 export const CASH_CORNER=Object.freeze({atm:Object.freeze({x:-2.66,z:-3.66,w:.58,d:.5,h:1.42}),film:Object.freeze({x:-3.42,z:-3.72,w:.44,d:.38,h:1.12})});
 /** The copy machine by the east window, its fax on a table beside it. */
 export const COPY_MACHINE=Object.freeze({x:2.1,z:3.5,w:.62,d:.56});
+export const BASKET_STACK=Object.freeze({x:-1.84,z:3.48,w:.36,d:.42,height:.53});
 export const SAKURA_LAYOUT={
  bounds:{minX:-6.8,maxX:6.8,minZ:-6.78,maxZ:3.88},
  floorPolygon:[[-6.8,3.88],[6.8,3.88],[6.8,-3.95],[5.7,-3.95],[5.7,-6.78],[-5.7,-6.78],[-5.7,-3.95],[-6.8,-3.95]],
@@ -118,7 +119,7 @@ export const SAKURA_LAYOUT={
   // The restroom's east wall: two jambs either side of its doorway (z -3.66..-2.78).
   rect(-4.02,-3.81,.12,.31),rect(-4.02,-2.6,.12,.33),rect(-5.4,-2.48,2.82,.12),
   rect(4.60,-2.6,.12,2.7),rect(4.86,-1.17,.56,.12),rect(6.56,-1.17,.56,.12),
-  rect(-2.16,-4.49,6.88,.86,2.3),rect(-6.26,-3.26,1.0,1.2,1.2),
+  rect(.36,-4.49,1.88,.86,2.3),rect(-6.26,-3.26,1.0,1.2,1.2),
   // Thuan's desk in the back office (sakura-cheer.js BACK_OFFICE).
   rect(6.4,-2.7,.7,1.2,.8),
   // Lived-in pieces (sakura-life.js): Jaga-bō on his plinth, the assistant manager, the
@@ -128,14 +129,15 @@ export const SAKURA_LAYOUT={
   // The cap tree by the east window, its base and the caps on it (sakura-cap-stand.js).
   (({x,z,w,d,height})=>rect(x,z,w,d,height))(JOHANSSON_TRUCKER.stand.collider),
   rect(-2.45,3.42,.72,.72,1.3),rect(-1.35,3.45,.42,.42,1.2),rect(1.2,3.55,.3,.3,1.0),
-  rect(4.98,-3.62,.48,.5,1.2),rect(5.35,-5.0,.4,.6,1.1),rect(-.95,-6.35,.5,.4,.9),rect(3.6,-5.7,.45,.6,1.2),
+  rect(4.98,-3.62,.48,.5,1.2),rect(5.35,-5.0,.4,.6,1.1),rect(1.65,-6.35,.5,.4,.9),rect(3.6,-5.7,.45,.6,1.2),
   // The stocked back room (sakura-backroom.js BACKROOM): bottle crates and the daisha at the
   // west end, the cardboard bundle on the east wall, the extinguisher by the delivery door.
   // In the restroom (sakura-restroom.js): the pedestal basin on the south wall.
   rect(-5.18,-3.72,.66,.46,1.0),
-  rect(-5.19,-6.52,.86,.36,.9),rect(-5.27,-5.4,.66,.96,1.1),rect(5.51,-5.67,.26,.74,.6),rect(4.66,-6.58,.28,.28,.6),
+  rect(.65,-6.52,.86,.36,.9),rect(-1.1,-6.1,.66,.96,1.1),rect(5.51,-5.67,.26,.74,.6),rect(4.66,-6.58,.28,.28,.6),
   // The Thuan figurine on her plinth in the east corner.
   rect(5.42,-6.42,.36,.36,1.2),
+  rect(BASKET_STACK.x,BASKET_STACK.z,BASKET_STACK.w,BASKET_STACK.d,BASKET_STACK.height),
  ]
 };
 // Each stocked unit has a real position. Opposite sides of an aisle use opposite

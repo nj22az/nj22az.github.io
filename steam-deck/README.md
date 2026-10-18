@@ -24,19 +24,9 @@ The complete island game runs locally in a standalone Electron Linux application
 
 Linux/Steam Deck is the first development and test platform; macOS, iPad and iPhone ports are planned. The icon catalogue associates original cross-platform SVGs with semantic SF Symbol names for future native Apple shells. See the [interface audit](docs/INTERFACE-AUDIT-2026-10-18.md) for reference research, the visual direction, input decisions and acceptance limits.
 
-## Linux island redesign direction
+## Shared world integration
 
-This is a proposal for the next geography pass, not a change to the current coastline or ferry timetable. The web edition keeps its existing world.
-
-The current canonical cast has 31 people. Its home registry lists 17 vacant addresses, including all four Fumoto homes and two of the four Kitahama flats. Hoshizaki's three simple building shells do not yet have registered households. The road plan combines Main Street, Kitahama's offset lane grid, the coastal circuit and a separate paved circuit around almost every building; even partitioned paving therefore reads as several competing networks.
-
-- Keep Minato compact: harbour, shopping street and occupied residential blocks form one town. Keep a small inhabited Hoshizaki fishing village, with a short rural stretch between village and town. Reduce the oversized northern land mass instead of filling it with more shells.
-- Author one street graph on a common alignment. Main Street is the spine, with a small number of cross streets and back lanes. Give each door a short approach to a shared lane. Retire redundant building circuits and duplicate parallel lanes. Paving, kerbs, map, walking, traffic, lamps and drains must consume that same graph.
-- Plan households before houses. Preserve established families and housemates; attach every live character to a real home and bed. Retain only occupied houses plus at most one deliberate vacancy. Surplus lots become connected gardens, allotments or shoreline; surplus flat space becomes shared living space. Put actual fishing households in Hoshizaki instead of adding anonymous villagers.
-- Keep the existing Kitano-jima crossing as a real destination. A subsequent small farming island can reuse Fumoto's co-op, well, fields and homes with assigned residents; a later outer island can provide a lighthouse, beach and nature walks. Each island needs a reason to visit, an accessible berth, a return service and useful activity before it is added to the ferry menu.
-- Stream each island as a separate world area, retaining resident/home identities and saves while unloading distant interiors, colliders and AI. Measure frame time and memory before/after on Linux; fewer houses and meshes alone are not proof of a performance gain.
-
-Acceptance for that pass: a readable overview map, no stacked road surfaces, continuous street junctions and door access, no unassigned residents or anonymous empty houses, safe migration of existing checkpoints, and a complete controller-operated outward/return ferry trip. The coastline, roads, terrain, homes and navigation should move together; shrinking only the rendered land would leave invisible walking ground and broken addresses.
+0.2.8 combines the published 0.2.7 controls and patch updater with the browser world's compact Minato, consolidated occupied households, Sakura office and internal stairs, refined houseboat, scenery and indoor visibility/stability changes. The canonical household registry supplies the playable roster; unassigned background figures do not claim removed vacant homes. Existing save slots and the application profile remain intact.
 
 The cycling and Thuan storage-room minigames are retired in both editions. Linux no longer bundles the separate storage game. Normal shopping, stocking routines and decorative bikes remain.
 

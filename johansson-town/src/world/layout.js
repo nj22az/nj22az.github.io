@@ -1,3 +1,4 @@
+import {streetClass,STREET_STANDARD} from './street-plan.js';
 import {DEPOT_COURT,depotCourtAt} from './architecture-ground.js';
 import {ARCHITECTURE_ROUTES} from './architecture-plan.js';
 import {houseboatSurface} from './fujita-houseboat.js';
@@ -62,7 +63,7 @@ export const ROUTES = [
  STAFF_YARD_ROUTE,
  ...ISLAND_ROUTES,
  ...ARCHITECTURE_ROUTES,
-];
+].map(route=>{const street=streetClass(route);return {...route,street,access:route.park?'pedestrians':STREET_STANDARD[street].access};});
 export function activeRoutes(){return ROUTES;}
 /** The routes past the first three (asked for on their own in regionAt), through their index (plan-index.js). */
 const findRoute=routeFinder(ROUTES,{from:3});

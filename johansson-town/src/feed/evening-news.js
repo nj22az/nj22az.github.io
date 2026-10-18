@@ -61,7 +61,7 @@ export function tomorrowItems(minutes,{weather=true}={}){
   const storm=weather&&h.dry&&timed&&typhoonAt(start+h.hours[0])&&typhoonAt(start+h.hours[1]-1);
   items.push(storm?`Tomorrow: ${title}, though with Typhoon No. ${storm.number} near it is likely to be called off.`:timed?`Tomorrow: ${title}, from ${atWords(h.hours[0])}.`:`Tomorrow: ${title}.`);
  }
- for(const who of birthdaysOn(next))items.push(who==='Johansson'?'Tomorrow is the mayor’s birthday.':`Tomorrow is ${who}’s birthday.`);
+ for(const who of birthdaysOn(next))items.push(who==='Johansson'?'Tomorrow is chief engineer Johansson’s birthday.':`Tomorrow is ${who}’s birthday.`);
  return items;
 }
 
