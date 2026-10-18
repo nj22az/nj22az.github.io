@@ -32,7 +32,7 @@ try{
   const a=window.__JOHANSSON_AUDIT__;await a.enter('market');a.setTime(145);a.activities.menu('Audit','Checking indoor continuity',[]);const before=a.minutes;a.step(120000);a.activities.close();const p=a.world.people.find(p=>p.profile.name==='Tetsuo');
   return {before,after:a.minutes,tetsuo:{indoors:p.g.userData.indoors,position:p.g.position.toArray()},roomVisible:a.room.visible};
  });
- assert.ok(continuity.after>=continuity.before+1);assert.equal(continuity.roomVisible,true);assert.equal(continuity.tetsuo.indoors,'home');report.continuity=continuity;
+ console.log('Continuity result',JSON.stringify(continuity));report.continuity=continuity;assert.ok(continuity.after>=continuity.before+1,JSON.stringify(continuity));assert.equal(continuity.roomVisible,true);assert.equal(continuity.tetsuo.indoors,'home');report.continuity=continuity;
  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.setTime(30));await capture('sakura-night',[0,1.7,1],[0,1.6,-3]);
  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.leave());await capture('street-night',[8,2,-21],[-12,1.6,-27.3]);
  const last=report.cycles.filter(c=>c.venue==='izakaya');assert.ok(last.at(-1).exterior.info.geometries<=last[1].exterior.info.geometries+30,'Repeated entry must not accumulate room geometry');
