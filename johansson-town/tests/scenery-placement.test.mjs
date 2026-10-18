@@ -6,6 +6,7 @@ import {COASTLINE} from '../src/world/island-coast.js';
 import {onIslandLand} from '../src/world/coastal-ground.js';
 import {circleHitsRect} from '../physics.js';
 import {OUTER_PIER} from '../src/world/layout.js';
+import {HOUSEBOAT} from '../src/world/fujita-houseboat.js';
 import {SHED_PIER} from '../src/world/fujita-layout.js';
 import {OIL_JETTY} from '../src/world/oil-jetty-layout.js';
 import {FLOWER_SHOP} from '../src/world/flower-shop.js';
@@ -30,7 +31,7 @@ const within=(b,x,z)=>x>=b.minX-1e-4&&x<=b.maxX+1e-4&&z>=b.minZ-1e-4&&z<=b.maxZ+
 // bounded allowances: moving one further into the sea must still fail.
 function harbourSupport(c){
  if(c.portShed)return (x,z)=>within(SHED_PIER,x,z);
- if(c.houseboat)return (x,z)=>within({minX:-42.1,maxX:-38.5,minZ:-59.3,maxZ:-53.2},x,z);
+ if(c.houseboat)return (x,z)=>within({minX:HOUSEBOAT.x-HOUSEBOAT.width/2,maxX:HOUSEBOAT.x+HOUSEBOAT.width/2,minZ:HOUSEBOAT.z-HOUSEBOAT.length/2-HOUSEBOAT.sternExtension/2,maxZ:HOUSEBOAT.z+HOUSEBOAT.length/2-HOUSEBOAT.sternExtension/2},x,z);
  if(/^jetty-(manifold|crane)$/.test(c.id))return (x,z)=>within(OIL_JETTY.head,x,z);
  // The seaward face of the existing retaining kerb intentionally straddles land.
  if(c.id==='east-quay-edge')return (x,z)=>within({minX:18.8,maxX:41.2,minZ:-50.01,maxZ:-49.69},x,z);

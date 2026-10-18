@@ -231,7 +231,7 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
  fujita.position.set(cx,.02,cz-.08);g.add(fujita);
  let actor=null;try{actor=createAvatarActor(fujita,'Mr Fujita',{shadows});}catch{actor=null;}
  Object.assign(fujita.userData,{socialPose:'Drink',seatHeight:.38,heldItem:'beer',heldPortion:.6,activity:'watching the ballgame with a beer'});
- register(fujita,'Talk to Mr Fujita',()=>fujita.userData.sleeping?onAction('read','Mr Fujita is asleep','He is asleep in his berth aboard Shiosai. He returns to the shed at six in the morning.'):onAction('resident','Mr Fujita'));
+ register(fujita,'Talk to Mr Fujita',()=>fujita.userData.sleeping?onAction('read','Mr Fujita is asleep','He is asleep on his sofa aboard Shiosai. He returns to the shed at six in the morning.'):onAction('resident','Mr Fujita'));
  const tvAnchor=new THREE.Object3D();tvAnchor.position.set(tx,1,tz+.4);g.add(tvAnchor);
  register(tvAnchor,'Watch the shed television',()=>onAction('read','Mr Fujita’s television',
   'A portable set older than the boat, on a fish crate, the aerial bent to find the signal from across the water. Mr Fujita does not look away from it. "Sit, sit. The eighth innings is the only one worth watching. Have a can; they are cold, the box is new."'));

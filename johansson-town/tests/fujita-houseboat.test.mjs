@@ -3,21 +3,21 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {buildPortShed,PORT_SHED} from '../src/world/port-shed.js';
-import {HOUSEBOAT} from '../src/world/fujita-houseboat.js';
+import {HOUSEBOAT,houseboatSurface,createHouseboatModel} from '../src/world/fujita-houseboat.js';
 import {fujitaAsleep,fujitaBoatRoute} from '../src/world/fujita-routine.js';
 import {buildCargoShipping} from '../src/world/cargo-shipping.js';
 import {circleHitsRect} from '../physics.js';
 import {routeAt,groundHeight} from '../src/world/layout.js';
 installDOM();
 const make=()=>{const colliders=[];return {shed:buildPortShed({parent:new THREE.Group(),colliders,register(){},onAction(){}}),colliders};};
-test('Mr Fujita walks to his berth at 23:30 and returns at six without beer or a tilted walking body',()=>{
+test('Mr Fujita walks to his sofa at 23:30 and returns at six without beer or a tilted walking body',()=>{
  const {shed,colliders}=make();const chairSeatHeight=shed.fujita.userData.seatHeight;shed.tick(.1,1409);assert.equal(shed.routine.state,'watching');
  for(let i=0;i<600;i++){shed.tick(.1,1410);const p=shed.fujita.getWorldPosition(new THREE.Vector3());if(shed.routine.state==='to-boat'&&p.z>-56.65)assert.ok(!colliders.some(c=>circleHitsRect(p.x,p.z,.2,c)),`clear ${p.x},${p.z}`);}
  assert.equal(shed.routine.state,'sleeping');assert.equal(shed.fujita.userData.heldItem,undefined);assert.equal(shed.fujita.userData.seatHeight,undefined);assert.equal(shed.fujita.userData.sleeping,true);
  const p=shed.fujita.getWorldPosition(new THREE.Vector3());assert.ok(Math.abs(p.x-HOUSEBOAT.x-HOUSEBOAT.bed[0])<.001);assert.ok(Math.abs(p.z-HOUSEBOAT.z-HOUSEBOAT.bed[2])<.001);
  shed.tick(.1,0);assert.equal(shed.routine.state,'sleeping');for(let i=0;i<600;i++)shed.tick(.1,360);assert.equal(shed.routine.state,'watching');assert.equal(shed.fujita.userData.seatHeight,chairSeatHeight);assert.equal(shed.fujita.rotation.x,0);assert.equal(shed.fujita.userData.hatOff,undefined);shed.dispose();
 });
-test('night boot is in the berth with the same resident',()=>{const {shed}=make();shed.tick(0,90);assert.equal(shed.routine.state,'sleeping');for(let i=0;i<20;i++)shed.tick(.1,90);assert.equal(shed.fujita.parent,shed.group);assert.ok(!shed.boat.group.getObjectByName('Mr Fujita'));shed.dispose();});
+test('night boot is on the sofa with the same resident',()=>{const {shed}=make();shed.tick(0,90);assert.equal(shed.routine.state,'sleeping');for(let i=0;i<20;i++)shed.tick(.1,90);assert.equal(shed.fujita.parent,shed.group);assert.ok(!shed.boat.group.getObjectByName('Mr Fujita'));shed.dispose();});
 test('pier, gangway and every walking segment are clear',()=>{
  const {shed,colliders}=make(),G=HOUSEBOAT.gangway,path=fujitaBoatRoute(PORT_SHED.chair);
  for(let x=G.minX+.25;x<G.maxX-.2;x+=.15){assert.ok(routeAt(x,-54.2,.2));assert.equal(groundHeight(x,-54.2),HOUSEBOAT.deckY);}
@@ -36,4 +36,18 @@ test('the open cabin approach clears a standing player beside the freshwater tan
  const {shed,colliders}=make();
  for(let z=HOUSEBOAT.z+2.3;z>HOUSEBOAT.z+.8;z-=.05)assert.ok(!colliders.some(c=>circleHitsRect(HOUSEBOAT.x+.65,z,.28,c)),`player approach ${z}`);
  shed.dispose();
+});
+
+
+test('extended cabin has a sofa and stored futon, with furniture beside the clear aisle',()=>{
+ const model=createHouseboatModel(),parts=[];model.traverse(o=>parts.push(o.name,...(o.userData.parts||[])));
+ assert.ok(parts.includes('Worn sofa cushion'));assert.ok(parts.includes('Folded futon'));
+ assert.ok(!parts.some(n=>/Berth|mattress/i.test(n)));
+ assert.equal(houseboatSurface(HOUSEBOAT.x,HOUSEBOAT.z-3.65,.1)?.id,'fujita-houseboat');
+ assert.equal(houseboatSurface(HOUSEBOAT.x,HOUSEBOAT.z-4.1,.1),null);
+ const {shed,colliders}=make();
+ for(let z=HOUSEBOAT.z-2.7;z<=HOUSEBOAT.z+.2;z+=.05){
+  assert.ok(!colliders.some(c=>circleHitsRect(HOUSEBOAT.x+.26,z,.2,c)),`cabin aisle ${z}`);
+ }
+ assert.ok(model.children.filter(o=>o.isMesh).length<30,'fittings remain batched');shed.dispose();
 });

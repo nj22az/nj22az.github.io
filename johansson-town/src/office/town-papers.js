@@ -82,7 +82,7 @@ export const TOWN_PAPERS=[
     "type": "Notice",
     "title": "Shiosai — Mr Fujita’s houseboat",
     "organisation": "Town Services",
-    "text": "Mr Fujita rebuilt this little working boat into a home: one berth, a kettle and a radio. At half past eleven he switches off the shed television and comes aboard. The gangway must stay clear.",
+    "text": "Mr Fujita rebuilt this little working boat into a home: a worn sofa, a folded futon, a kettle and a radio. He usually falls asleep on the sofa; the futon is stored beneath the radio. At half past eleven he switches off the shed television and comes aboard. The gangway must stay clear.",
     "source": "notice:Shiosai — Mr Fujita’s houseboat"
   },
   {
@@ -229,7 +229,7 @@ export const TOWN_PAPERS=[
     "type": "Notice",
     "title": "Mr Fujita is asleep",
     "organisation": "Town Services",
-    "text": "He is asleep in his berth aboard Shiosai. He returns to the shed at six in the morning.",
+    "text": "He is asleep on his sofa aboard Shiosai. He returns to the shed at six in the morning.",
     "source": "notice:Mr Fujita is asleep"
   },
   {
