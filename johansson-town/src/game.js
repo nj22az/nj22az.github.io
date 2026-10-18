@@ -154,13 +154,20 @@ import {loadHatModels} from './catalog/hat-models.js';
 // The hats people wear from World's catalogue (Johansson's trucker cap) are in hand before the town's people are built, so
 // nobody starts in the stand-in. Loaded here, not in boot.js, so the boot chunk stays small and three.js stays in this chunk
 // (tests/runtime-package.test.mjs). A failure leaves the stand-in (src/catalog/hat-models.js).
+const loadingProgress=window.__JOHANSSON_LOADING__;
+// Yield before large synchronous jobs so their real stage/count can be painted.
+const paintLoading=()=>new Promise(resolve=>{requestAnimationFrame(()=>setTimeout(resolve,0));setTimeout(resolve,120);});
+loadingProgress?.complete('code');loadingProgress?.watch(THREE.DefaultLoadingManager);
 const launchReport=createLaunchReport({storage:(()=>{try{return globalThis.localStorage;}catch{return null;}})(),events:globalThis});
 let firstPlayFrame=false,reportNextAt=0;
 const startupRecovery=createStartupRecovery({storage:(()=>{try{return globalThis.sessionStorage;}catch{return null;}})(),search:location.search,events:globalThis});
 window.__JOHANSSON_SAFE_GRAPHICS__=startupRecovery.safe;
 // A full-effects retry is one attempt, never a permanent override of recovery.
 if(new URLSearchParams(location.search).get('graphics')==='full'){const url=new URL(location.href);url.searchParams.delete('graphics');history.replaceState(history.state,'',url);}
-await loadHatModels(undefined,{timeout:8000}).catch(error=>{console.warn('Hat models unavailable:',error);return false;});
+loadingProgress?.start('accessories');
+await loadHatModels(undefined,{timeout:8000,onProgress:(done,total,failed)=>loadingProgress?.fileProgress('accessories',done,total,failed)}).catch(error=>{console.warn('Hat models unavailable:',error);return false;});
+
+loadingProgress?.complete('accessories');
 
 // Change the emitted game chunk URL when repairing a cached live runtime.
 window.__JOHANSSON_RUNTIME_VERSION__='ios-colour-2';
@@ -229,6 +236,8 @@ function governResolution(dt){
  if(dprGovernor.cooldown>0||average<1/24||dprScale<=.62)return;
  dprScale=Math.max(.6,dprScale-.13);dprGovernor.cooldown=5;resizeRenderer();
 }
+loadingProgress?.start('graphics');
+await paintLoading();
 launchReport.stage('Creating graphics context');
 const renderer=new THREE.WebGLRenderer({canvas,antialias:graphics.antialias,powerPreference:'high-performance',alpha:false,stencil:false,preserveDrawingBuffer:false});
 // Counted per frame, across every pass, so renderInfo (audit) reads a whole frame's draw calls.
@@ -316,6 +325,7 @@ function buildInk(){
  catch(error){pipeline=null;console.warn('Ink pipeline unavailable, rendering plain:',error.message);renderPlain();return false;}
 }
 buildInk();
+loadingProgress?.complete('graphics');
 // One lifecycle below owns both context events and pauses every render path.
 let graphicsLifecycle=null;
 window.__JOHANSSON_LOOK__={get ink(){return !!pipeline;},get inkFailures(){return inkRecovery.failures;},get inkRetrying(){return !pipeline&&inkRecovery.retrying;},cel:celPass.stats,
@@ -353,14 +363,18 @@ sweepCel(0);
  * dropped once, tone mapping comes back, and the town keeps running. Being playable
  * beats being drawn.
  */
+function firstFrameReady(){
+ if(!started||firstPlayFrame||roomLoading||catchingUp)return;
+ firstPlayFrame=true;loadingProgress?.complete('frame');
+}
 function present(draw,view=camera){
  if(graphicsLifecycle?.lost)return;
  if(!pipeline){
   if(graphics.postprocess&&inkRecovery.ready())buildInk();
-  if(!pipeline){draw(renderer);return;}
+  if(!pipeline){draw(renderer);firstFrameReady();return;}
  }
  pipeline.setCamera(view);
- try{pipeline.render(draw);}
+ try{pipeline.render(draw);firstFrameReady();}
  catch(error){
   const again=inkRecovery.failed();
   console.warn('Ink pipeline failed, rendering plain'+(again?', retrying shortly':' for good')+':',error.message);
@@ -370,7 +384,7 @@ function present(draw,view=camera){
   // allowed to fail too rather than take the frame down with it.
   try{renderer.setRenderTarget?.(null);}catch{}
   renderPlain();
-  draw(renderer);
+  draw(renderer);firstFrameReady();
  }
 }
 loadTownEnvironment(scene,renderer);
@@ -394,7 +408,7 @@ const ambient=new THREE.HemisphereLight(0xdbe7f2,0x6b5f8c,1.15);scene.add(ambien
 const bounce=new THREE.DirectionalLight(0x9db6e8,1.25);bounce.position.set(26,16,-22);scene.add(bounce);
 const UPLIGHT=.35,uplight=new THREE.DirectionalLight(0xc9b9e0,UPLIGHT);uplight.position.set(4,-18,6);scene.add(uplight);
 const sun=new THREE.DirectionalLight(0xffdca8,highTier?2.6:2.3);sun.position.set(-28,38,18);sun.castShadow=shadows;
-if(shadows){sun.shadow.mapSize.set(graphics.shadowSize,graphics.shadowSize);sun.shadow.camera.left=-26;sun.shadow.camera.right=26;sun.shadow.camera.top=26;sun.shadow.camera.bottom=-26;sun.shadow.camera.near=.5;sun.shadow.camera.far=120;sun.shadow.bias=-.00035;sun.shadow.normalBias=.045}scene.add(sun);
+if(shadows){sun.shadow.mapSize.set(graphics.shadowSize,graphics.shadowSize);sun.shadow.camera.left=-graphics.shadowRadius;sun.shadow.camera.right=graphics.shadowRadius;sun.shadow.camera.top=graphics.shadowRadius;sun.shadow.camera.bottom=-graphics.shadowRadius;sun.shadow.camera.near=.5;sun.shadow.camera.far=120;sun.shadow.bias=-.00035;sun.shadow.normalBias=.045}scene.add(sun);
 
 // Separate bookshop, dock workshop and harbour office keep their own addresses.
 const SITES=createIslandBusinesses();
@@ -600,10 +614,13 @@ function advanceWeather(){
  const next=nextWeather(weatherKind);if(next!==weatherKind)applyWeather(next,{announce:true});
 }
 
+ loadingProgress?.start('town');
+ await paintLoading();
  launchReport.stage('Building town');
  const world=createTown({scene:town,sites:SITES,mobile,shadows,kitano:'distant',maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:s=>crossThreshold(()=>enterRoom(s)),getPlayerPosition:()=>current?null:player.position,onAction:(...args)=>{if(islandPlay?.action(...args))return;if(args[0]==='dessert-menu'){activities.menu(args[1],'Mrs Nakamura serves shaved ice, warm andagi and Blue Coral scoops. Open 10:00–19:00.',[...args[2].map(p=>[p.title+' · ¥'+p.cost,()=>world.blueCoral.isOpen()?activities.action('buy',p.title,p):activities.action('read','Nakamura is closed','The counter closes at 19:00 and opens at 10:00.')]),['Keep walking',activities.close]]);return;}if(args[0]==='ferry-ladder'){ferryLadder(args[1]);return;}if(args[0]==='plant'){plantStation(args[1]);return;}if(args[0]==='dungeon'){enterDungeon();return;}if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person?.g.userData.sleeping){say(args[1]+' is sleeping. You can stay and watch the morning routine.',4);return;}if(person?.g.userData.waking||person?.g.userData.roomTransition){say(args[1]+' is '+person.g.userData.activity+'.',3);return;}if(person){person.g.userData.facePlayerUntil=performance.now()+1600;characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
  // Colliders by where they are, for the camera, walking and residents (collider-grid.js).
  const colliderGrid=createColliderGrid(world.colliders);
+ loadingProgress?.complete('town');
  // Kitano-jima is built when he heads there (world/kitano-on-demand.js): shaded, lit and compiled as it arrives.
  world.kitano.onLoaded.push(island=>{celPass.apply(scene);lightBudget.update();townSections.invalidate();shopStreetView.invalidate();if(island)compileTown(island,{async:true});neighbours?.replan?.();});
  /** Before he is put anywhere on or by Kitano-jima, the island is whole (at once: he arrives behind a veil or a cut). */
@@ -889,6 +906,8 @@ function updateJohansson(dt){
  shopCarry.sync(activities?.state?.konbini?.basket,current?.id==='market'&&johansson.ready);
 }
 if(thirdPerson)setThirdPerson(true,false);
+loadingProgress?.start('residents');
+await paintLoading();
 characters=createCharacters({mobile,shadows,onJump:()=>johansson?.jump(),canJump:()=>!seated&&!pocket?.raised&&controlsAllowed(),isBlocked:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>circleHitsRect(x,z,r,c)),onError:(name,error)=>console.warn('Character construction failed:',name,error)});characters.attach(player,'player',1.82);world.people.forEach(p=>characters.attach(p.g,p.g.userData.name,p.profile?.height));
 // The people of the new streets: shopkeepers at their counters, the old men at gateball,
 // Grandmother Higa on her verandah, a postman on his round. See people/neighbours.js.
@@ -896,6 +915,7 @@ neighbours=createNeighbours({parent:town,register:reg,characters,getRain:()=>wea
  const who=neighbours.talkTo(name,player.position);if(who)characters.gesture(who);activities.action(kind,name);
 }});
 world.neighbours=neighbours.entities;world.homeNeighbours=neighbours.people;
+loadingProgress?.complete('residents');
 // The Minato Maru's crew at their posts, riding with her (people/ferry-crew-aboard.js).
 if(world.ferry){
  ferryCrew=createFerryCrewAboard({run:world.ferry,characters,register:reg,playerIdentity:()=>playerRecipe().name||'Johansson',onAction:(kind,title,text)=>activities.action(kind,title,text),townBody:name=>world.people.find(p=>p.profile.name===name)?.g||world.neighbours?.find(g=>g.userData.name===name)||null,portShed:world.portShed,shoreParent:world.group,shoreColliders:world.colliders});
@@ -1715,7 +1735,7 @@ function enterWorld(){
  townSky.mesh.rotation.y=0;
  startWeather();
 const opening=beginAtOpening();
-started=true;controlsTouchedAt=performance.now();if(mobile){touchSticks.hint(true);stickHintUntil=performance.now()+4500;}$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;startupRecovery.running();camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(opening?.caption||(seated?'Stand — Sakura is across the street.':'Sakura — step up to meet Thuan.'),5);runStabilityChecks();
+started=true;controlsTouchedAt=performance.now();if(mobile){touchSticks.hint(true);stickHintUntil=performance.now()+4500;}if(!window.__JOHANSSON_BOOTING__)$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;startupRecovery.running();camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(opening?.caption||(seated?'Stand — Sakura is across the street.':'Sakura — step up to meet Thuan.'),5);runStabilityChecks();
 if(opening?.room)openInside(opening);else startArrivalScene(opening);
 }
 window.__JOHANSSON_ENTER_WORLD__=enterWorld;
@@ -2095,9 +2115,12 @@ function updateContextControls(){
 const invalidateDetails=()=>{townSections.invalidate();shopStreetView.invalidate();};
 // Feet on whatever is drawn: lanes, aprons, decks (walk-surface.js). Laid once now and
 // again whenever a streamed detail arrives.
+loadingProgress?.start('walking');
+await paintLoading();
 launchReport.stage('Preparing walking surface');
 const walkSurface=createWalkSurface({minX:COAST_BOUNDS.minX-2,maxX:COAST_BOUNDS.maxX+2,minZ:COAST_BOUNDS.minZ-2,maxZ:COAST_BOUNDS.maxZ+2,base:planHeight});
 {const t0=performance.now();walkSurface.add(town);setWalkSurface(walkSurface);window.__JOHANSSON_WALK__={ms:Math.round(performance.now()-t0),get triangles(){return walkSurface.triangles;}};}
+loadingProgress?.complete('walking');
 const detailStream=createDetailStream({enabled:graphics.streamDetails,onStart:id=>launchReport.stage('Loading detail: '+id),onChange:()=>{invalidateDetails();walkSurface.add(town);}});window.__JOHANSSON_STREAMING__=detailStream.stats;
 // With ?audit in the address, a harness can put the player anywhere and look down on
 // the town from a fixed camera. Nothing reads it otherwise.
@@ -2381,7 +2404,6 @@ function renderOutdoor(){
   const audit=window.__JOHANSSON_AUDIT__?.camera;
   if(audit){camera.position.set(...audit.pos);camera.lookAt(...audit.at);camera.updateMatrixWorld();}
   present(()=>townSections.render({renderer,scene,camera,town,position:player.position}));
-  if(first)firstPlayFrame=true;
   if(started&&performance.now()>=reportNextAt){reportNextAt=performance.now()+5000;const buffer=renderer.getDrawingBufferSize(new THREE.Vector2());launchReport.stage(graphics.postprocess?'Playing':'Playing · single pass',{textures:renderer.info.memory?.textures,geometries:renderer.info.memory?.geometries,programs:renderer.info.programs?.length,drawCalls:renderer.info.render?.calls,triangles:renderer.info.render?.triangles,bufferWidth:buffer.x,bufferHeight:buffer.y});}
   if(window.__JOHANSSON_STARTUP__&&!window.__JOHANSSON_STARTUP__.firstFrameMs){window.__JOHANSSON_STARTUP__.firstFrameMs=performance.now()-window.__JOHANSSON_STARTUP__.startedAt;window.__JOHANSSON_STARTUP__.stage='playing';}
 }

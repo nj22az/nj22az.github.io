@@ -18,7 +18,7 @@ export function separateBodies(bodies,{radius=BODY_RADIUS,blocked=null,passes=3}
       if(a.space!==b.space||(a.fixed&&b.fixed))continue;
       let dx=b.x-a.x,dz=b.z-a.z,d=Math.hypot(dx,dz);
       if(d>=gap)continue;
-      if(d<1e-6){dx=1;dz=0;d=1;}else{dx/=d;dz/=d;}
+      if(d<1e-6){dx=1;dz=0;}else{dx/=d;dz/=d;}
       const overlap=gap-Math.min(d,gap)+.002;
       let wa=a.fixed?0:b.fixed?1:.5,wb=1-wa;
       const can=(o,s)=>!blocked||!blocked(o.x+dx*s,o.z+dz*s,radius);

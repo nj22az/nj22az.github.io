@@ -1,0 +1,44 @@
+// Compiled-game WebKit smoke: held real request, honest task count, then park views.
+import assert from 'node:assert/strict';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {resolve} from 'node:path';
+import {webkit} from 'playwright';
+const out=resolve('docs/qa/loading-render-audit');await mkdir(out,{recursive:true});
+const report={physicalDevice:false,engine:'Linux WebKit',views:[]};let failure;
+const browser=await webkit.launch({headless:true,env:{...process.env,LIBGL_ALWAYS_SOFTWARE:'1'}});
+try{
+ const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:3,hasTouch:true,isMobile:true,serviceWorkers:'block',userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1'});
+ const page=await context.newPage();page.setDefaultTimeout(120000);const errors=[];
+ page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error'&&/WebGL|shader|framebuffer|INVALID_/i.test(m.text()))errors.push(m.text());});
+ let release,requestSeen;const held=new Promise(resolve=>release=resolve),requested=new Promise(resolve=>requestSeen=resolve);let delayed=0;
+ await page.route('**/assets/catalog/**',async route=>{if(new URL(route.request().url()).pathname.endsWith('.glb')){delayed++;requestSeen();await held;}await route.continue();});
+ await page.addInitScript(()=>{localStorage.setItem('johansson-town-clock',JSON.stringify({start:'12:00',speed:1}));});
+ await page.goto('http://127.0.0.1:8765/johansson-town/?audit&spawn=park-bench',{waitUntil:'domcontentloaded'});
+ await page.locator('#enter').click();
+ await page.waitForFunction(()=>window.__JOHANSSON_LOADING__?.snapshot().label==='Loading character accessories');
+ await Promise.race([requested,page.waitForTimeout(10000).then(()=>{throw Error('No catalog model request reached the loading gate');})]);
+ assert.ok(delayed>0,'A real model request is held');
+ const pending=await page.evaluate(()=>({state:window.__JOHANSSON_LOADING__.snapshot(),width:document.querySelector('#bootProgress span').style.width}));
+ await page.waitForTimeout(900);
+ const waiting=await page.evaluate(()=>({state:window.__JOHANSSON_LOADING__.snapshot(),width:document.querySelector('#bootProgress span').style.width}));
+ assert.equal(waiting.state.completed,pending.state.completed);assert.equal(waiting.width,pending.width,'Time alone must not fill the bar');
+ assert.ok(waiting.state.completed<waiting.state.total);report.heldRequest=waiting;
+ await page.screenshot({path:resolve(out,'measured-loading.png')});release();
+ await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_LOADING__.snapshot().completed===8&&document.querySelector('#start').classList.contains('hidden'));
+ report.completed=await page.evaluate(()=>window.__JOHANSSON_LOADING__.snapshot());
+ assert.equal(report.completed.percent,100);
+ await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.frozen=true;a.renderFrozen=false;a.setTime(720);a.teleport(12,-29.8);a.camera={pos:[18,2.3,-21],at:[11,1.2,-31]};a.render();});
+ await page.addStyleTag({content:'#hud,#activity,#directory,#mobile{visibility:hidden!important}'});
+ const capture=async label=>{
+  const state=await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__,r=a.renderer;a.render();const look=window.__JOHANSSON_LOOK__;return {ink:look.ink,effects:look.state,buffer:[r.domElement.width,r.domElement.height],shadowSize:look.lights.sun.shadow.mapSize.toArray(),shadowWidth:look.lights.sun.shadow.camera.right-look.lights.sun.shadow.camera.left,gpuError:r.getContext().getError()};});
+  assert.equal(state.ink,true);assert.equal(state.effects.fxaa,true);assert.equal(state.gpuError,0);assert.ok(state.buffer[0]*state.buffer[1]<=650000);assert.equal(state.shadowWidth,28);
+  await page.locator('#game').screenshot({path:resolve(out,label+'.png')});report.views.push({label,...state});console.log('Captured',label);
+ };
+ await capture('park-portrait');assert.ok(report.views[0].buffer[0]*report.views[0].buffer[1]>600000,'Use the existing pixel budget instead of a fixed 1x picture');
+ await page.setViewportSize({width:844,height:390});await capture('park-landscape');
+ await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__;a.camera=null;await a.enter('market');a.setTime(1260);a.camera={pos:[2,1.8,4],at:[0,1.1,-4]};a.render();});
+ await page.waitForFunction(()=>!window.__JOHANSSON_AUDIT__.blocked.roomLoading);await capture('sakura-interior');
+ assert.deepEqual(errors,[]);await context.close();
+}catch(error){failure=error;report.failure=error.stack;}
+finally{await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2)+'\n');await browser.close();}
+if(failure)throw failure;
