@@ -6,12 +6,9 @@ import {MAIN_ROAD} from './main-road.js';
 import {PARK,TURF_TINT,PARK_TERRAIN_SEGMENTS} from './park-layout.js';
 import {GROUND_LAYER} from './ground-layers.js';
 import {HARBOUR_PARK_EXTENSION,inHarbourPark} from './harbour-park-plan.js';
-import {SCHOOL} from './school-layout.js';
 import {BEACH,beachHeight} from './beach-layout.js';
-import {inKobanPlot} from './koban-layout.js';
 import {GATEBALL,GATEBALL_ACTIVE} from './okinawa/layout.js';
 import {paintedTurf} from '../render/toy-surfaces.js';
-import {broadleafGeometry} from './okinawa/trees.js';
 
 /**
  * The east side of the town: one green from the boardwalk out to the water.
@@ -184,26 +181,9 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
  }
 
 
- // A treeline closes the north end, where the land carries on past anything built.
- const treeMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.9});
- const shapes=[0,1,2].map(variant=>broadleafGeometry({variant}));
- const treeZ=EAST_LAWN.maxZ-.6,first=EAST_LAWN.minX+1.4,last=wall.x-1.6,count=13;
- // With a gap for the school gate, which the lawn's path runs through.
- const gate=SCHOOL.gate,clear=x=>Math.abs(x-gate.x)<gate.half+.9||inKobanPlot(x,treeZ,1.1);// and the police box
- for(let i=0;i<count;i++){
-  const x=first+i*(last-first)/(count-1),z=treeZ+(i%3-1)*.45,height=3.6+(i%4)*.45;
-  if(clear(x)||x>6)continue;
-  const tree=new THREE.Mesh(shapes[i%3],treeMat);tree.name='East lawn tree';
-  tree.position.set(x,0,z);tree.scale.setScalar(height);tree.rotation.y=i*1.7;tree.castShadow=!!shadows;tree.receiveShadow=true;group.add(tree);
-  // The unit broadleaf's trunk flares to a .06 m radius at its roots. Keep that
-  // solid footprint with the tree, so the school and police-box gaps stay open.
-  const trunkWidth=height*.12;
-  colliders.push({id:'east-lawn-tree',x,z,w:trunkWidth,d:trunkWidth,height:height*.48});
- }
-
- // No shrub clumps on the green. They were round balls on flat grass, and from the hill
- // they read as a scatter of boulders rather than as planting; the treeline, the park's
- // tree and the gardens carry the green without them.
+ // The former north-edge treeline belongs to the retired layout. The town hall,
+ // police box and residential access now occupy that edge; planting belongs to
+ // the park and the individual gardens, without a second decorative tree system.
 
  const marker=new THREE.Object3D();marker.name='east-seawall-view';marker.position.set(wall.x-1.1,1.2,-6);group.add(marker);
  register(marker,'Look out over the seawall',()=>onAction('inspect','East seawall','Concrete coping warm from the afternoon. Below it the sand runs down to the water, and the tide has left a line of weed and one blue float.'));

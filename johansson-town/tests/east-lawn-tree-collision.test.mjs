@@ -21,17 +21,9 @@ test('the MCP-reproduced police-box approach stays open in both directions',()=>
  assert.equal(blocked(12,23.314692),false,'the former invisible strip has no obstacle');
 });
 
-test('every retained visible tree has its own solid trunk, with open space between trees',()=>{
- assert.ok(trees.length>1);
- assert.equal(trunks.length,trees.length);
- for(const tree of trees){
-  const {x,z}=tree.position;
-  const trunk=trunks.find(c=>c.x===x&&c.z===z);
-  assert.ok(trunk,'visible tree has a collider at its actual position');
-  assert.ok(standingHitsRect(x,z,.28,0,trunk),'walking through its trunk is blocked');
-  assert.ok(trunk.w<.7&&trunk.d<.7,'the crown does not become a wall');
-  assert.equal(standingHitsRect(x+.75,z,.28,0,trunk),false,'a person can pass beside the trunk');
- }
+test('the retired lawn treeline adds neither meshes nor invisible trunk collision',()=>{
+ assert.equal(trees.length,0);
+ assert.equal(trunks.length,0);
 });
 
 test('the visible school-gate clearing is not closed by tree collision',()=>{

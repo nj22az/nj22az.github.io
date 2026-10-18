@@ -242,7 +242,7 @@ function buildWestQuay(kit,solid,{inspect,anchor,onAction,vending}){
 
 function buildPromenade(kit,solid,{anchor,onAction}){
  const x=-38.35;
- // Benches along the walk, under a couple of sea almond trees, and a lamp every so often.
+ // Benches and lamps along the seawall walk.
  // Facing the sea over the low parapet, with room for your legs in front and the back on
  // the landward side; each one is a seat.
  for(const z of [-20,4,22]){
@@ -252,11 +252,8 @@ function buildPromenade(kit,solid,{anchor,onAction}){
   const seat=anchor(x+.6,1,z,'Sit on the seawall bench',()=>onAction?.('seat','Seawall bench','You sit with your back to the town. Over the parapet the reef goes green, then blue; the tetrapods at the foot of the wall break each wave into spray and a long hiss.'));
   if(seat)seat.userData.seat={id:'seawall-bench-'+z,position:[x,0,z],stand:[x+.85,0,z],surfaceY:.5,eyeY:1.12,yaw:Math.PI/2,pitch:-.03};
  }
- for(const z of [-8,12]){
-  kit.cyl(.16,.22,2.6,-38.9,1.3,z,0x6e5a44,{segments:7});
-  kit.sphere(1.9,-38.6,3.2,z,0x4d7a43,{sy:.45});kit.sphere(1.4,-38.2,3.6,z+.6,0x5b8a4b,{sy:.5});
-  solid({id:'sea-almond',x:-38.9,z,w:.5,d:.5,height:4});
- }
+ // The narrow seawall strip is seating and circulation, not a second planting
+ // system. The park and walled gardens supply the town's shared broadleaf trees.
  for(const z of [-44.5,-26,-2,18]){
   kit.cyl(.05,.07,3.6,-39.05,1.8,z,0x5d6468,{segments:6});
   kit.rod([-39.05,3.6,z],[-38.5,3.7,z],.035,0x5d6468);
