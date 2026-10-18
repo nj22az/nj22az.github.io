@@ -28,3 +28,15 @@ test('leaving an interior releases resources immediately and preserves borrowed 
   assert.deepEqual(context.interactables,[persistent]);assert.equal(context.roomColliders.length,0);assert.equal(context.town.visible,true);
  }
 });
+
+test('the actual indoor simulation advances time and resident controllers while player input is paused',()=>{
+ const calls={life:0,cast:0,neighbours:0,shop:0};const noop=()=>{},service={update:noop,sync:noop};
+ const start=source.indexOf('function advanceTown('),end=source.indexOf('/** Keeps the town on the device clock',start);
+ const simStart=source.indexOf('function simulate(frameDt'),simEnd=source.indexOf('\nconst absence=',simStart);
+ const context={minutes:145,elapsed:0,accumulator:0,saveTick:0,SIM_STEP:1/60,MAX_FRAME_DT:.1,townClock:{speed:1},current:{id:'market'},catchingUp:false,
+  deckUnder:()=>null,islandPlay:null,activities:{tick:noop,save:noop},evictIfClosed:noop,izakayaGuests:service,onsenGuests:service,activeRoomLayout:null,homeOwner:()=>false,homeGuests:service,
+  venueService:null,beerService:null,ramenPlayerService:null,workplaceResidents:service,bookshopCustomers:service,castAI:{update:()=>calls.cast++},sakuraShop:{update:()=>calls.shop++},ramenGuests:service,ramenMeals:service,satoKitchen:null,neighbourChats:service,
+  world:{updateLife:()=>calls.life++},ferryCrew:null,neighbours:{update:()=>calls.neighbours++},weather:false,daylight:()=>1,advanceWeather:noop,updatePost:noop,followClock:noop};
+ vm.runInNewContext(source.slice(start,end)+'\n'+source.slice(simStart,simEnd)+'\nfor(let i=0;i<7200;i++)simulate(1/60,true);',context);
+ assert.ok(Math.abs(context.minutes-147)<1e-6);for(const name of Object.keys(calls))assert.equal(calls[name],7200,name+' continues without rendering');
+});
