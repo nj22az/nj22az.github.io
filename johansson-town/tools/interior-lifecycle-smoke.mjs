@@ -29,8 +29,8 @@ try{
  }
  console.log('Advancing indoor simulation for three minutes');
  const continuity=await page.evaluate(async()=>{
-  const a=window.__JOHANSSON_AUDIT__;await a.enter('market');a.setTime(145);a.activities.menu('Audit','Checking indoor continuity',[]);const before=window.__JOHANSSON_POSE__.minutes;a.step(180000);a.activities.close();const p=a.world.people.find(p=>p.profile.name==='Grandmother Sakurai');
-  return {before,after:window.__JOHANSSON_POSE__.minutes,resident:{name:p.profile.name,indoors:p.g.userData.indoors,position:p.g.position.toArray()},roomVisible:a.room.visible};
+  const a=window.__JOHANSSON_AUDIT__;await a.enter('market');const p=a.world.people.find(p=>p.profile.name==='Grandmother Sakurai');if(p.g.parent!==a.world.group)throw Error('Shore fixture actor is borrowed');delete p.g.userData.indoors;p.g.visible=true;p.g.position.set(0,.04,10);a.setTime(145);a.activities.menu('Audit','Checking indoor continuity',[]);const before=window.__JOHANSSON_POSE__.minutes;a.step(180000);a.activities.close();
+  return {before,after:window.__JOHANSSON_POSE__.minutes,start:[0,.04,10],resident:{name:p.profile.name,indoors:p.g.userData.indoors,position:p.g.position.toArray()},roomVisible:a.room.visible};
  });
  console.log('Continuity result',JSON.stringify(continuity));report.continuity=continuity;assert.ok(continuity.after>=continuity.before+1,JSON.stringify(continuity));assert.equal(continuity.roomVisible,true);assert.equal(continuity.resident.indoors,'home');report.continuity=continuity;
  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.setTime(30));await capture('sakura-night',[0,1.7,1],[0,1.6,-3]);
