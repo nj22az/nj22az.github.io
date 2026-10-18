@@ -401,9 +401,9 @@ VECKOR = {
         ],
         'plan': [
             (0, '09:00', 'Måndag', 'Online 09.00–11.00', 'Frågestund inför tentamen. Instruktion till det praktiska provet. Boka din tid för den muntliga avstämningen.', 'Frågestund online'),
-            (0, '11:00', 'Måndag–onsdag', 'Hemma', 'Gör de tre stationerna med protokoll. Skicka protokollen med e-post senast onsdag kl. 20.', 'Praktiskt prov'),
-            (3, '09:00', 'Torsdag–fredag', 'Online, 15 min per elev', 'På din bokade tid: du delar skärmen, gör om en mätning och förklarar dina val.', 'Muntlig avstämning'),
-            (4, '09:00', 'Enligt lärarens besked', 'Online', 'Datum, tid och länk meddelas av läraren.', 'Skriftlig tentamen'),
+            (0, '11:00', 'Måndag 2–onsdag 4 november', 'Hemma', 'Tre protokoll som PDF och en riskbedömning som PDF i ett mejl till nils@sjoskolan.se senast onsdag 4 november kl. 20.00. Ämnesrad: Praktiskt prov: för- och efternamn. Se provsidan för besked om tidigare protokoll.', 'Praktiskt prov'),
+            (3, '00:00', 'Torsdag 5–fredag 6 november', 'Online, 15 min per elev', 'På din bokade tid: kamera, skärmdelning, egna protokoll och ett nytt okänt fel. Bokningsmetod, tillgängliga tider och möteslänk meddelas av läraren.', 'Muntlig avstämning'),
+            (None, None, 'Enligt lärarens besked', 'Online', '120 minuter, cirka 50 % teori och 50 % beräkningar efter poäng, öppen bok och individuella talvärden. Datum, start- och sluttid, åtkomst och inlämning är ännu inte publicerade. Se sidan Tentamen.', 'Skriftlig tentamen'),
         ],
         'redovisa_lista': [(V45 + 'Inlamning.html#uppgift-2', 'Övningstentan, rättad (frivillig, inte betygsatt)'),
                            ('../../praktiskt-prov.html#lamna', 'Protokollen från det praktiska provet')],
@@ -563,9 +563,9 @@ def veckoplan(nr, w, n, delsidor):
         (f'{dag(4).isoformat()}T{"16:00" if nr == 41 else "11:00"}', 'Fredag kväll och helgen' if nr == 41 else 'Fredag eftermiddag och helgen', 'Hemma', f'Övning {n}.6–{n}.10 på {del_(n)}{kontroll(n)}. Gör klart labbprotokollet och inlämningen. Skicka mejlet senast {sista_dag(w["sista"])}.{skicka}'),
     ]
     if w.get('plan'):  # vecka 42–45: planen står i VECKOR (dag, starttid, rubrik, typ, vad)
-        steg = [(f'{dag(k).isoformat()}T{hh}', f'{d} {fmt(dag(k))}' if d in ('Måndag', 'Tisdag', 'Fredag') else d, t, escape(x))
+        steg = [(f'{dag(k).isoformat()}T{hh}' if k is not None else '', f'{d} {fmt(dag(k))}' if k is not None and d in ('Måndag', 'Tisdag', 'Fredag') else d, t, escape(x))
                 for k, hh, d, t, x, *_ in w['plan']]
-    rader = ''.join(f'<li data-start="{s0}"><span class="plan-nar"><b>{escape(d)}</b> {escape(t)}</span><span class="plan-vad">{x}</span></li>' for s0, d, t, x in steg)
+    rader = ''.join(('<li' + (f' data-start="{s0}"' if s0 else '') + f'><span class="plan-nar"><b>{escape(d)}</b> {escape(t)}</span><span class="plan-vad">{x}</span></li>') for s0, d, t, x in steg)
     return ('<style>.veckoplan{margin:0 0 26px}.veckoplan h2{font-size:22px;margin:0 0 8px}.veckoplan ol{list-style:none;margin:0;padding:0;border-top:1px solid #cad8e2}'
             '.veckoplan li{display:grid;grid-template-columns:minmax(11em,15em) 1fr;gap:4px 16px;padding:10px 8px;border-bottom:1px solid #cad8e2}'
             '.veckoplan .plan-nar{color:#4d6579;font-size:15px}.veckoplan .plan-nar b{display:block;color:#163248}'
@@ -660,13 +660,14 @@ def enkel_vecka(nr, w, week_dir, delar_, delsida, labbar, redovisa, skicka, kick
     if w.get('plan'):
         for rad in w['plan']:
             k, hh, dag, typ, text = rad[:5]
-            start = f'{(mandag + _dt.timedelta(days=k)).isoformat()}T{hh}'
-            datumtext = f'{dag} {(mandag + _dt.timedelta(days=k)).day}/{(mandag + _dt.timedelta(days=k)).month}' if dag in dagnamn else dag
+            start = f'{(mandag + _dt.timedelta(days=k)).isoformat()}T{hh}' if k is not None else ''
+            start_attr = f' data-start="{start}"' if start else ''
+            datumtext = f'{dag} {(mandag + _dt.timedelta(days=k)).day}/{(mandag + _dt.timedelta(days=k)).month}' if k is not None and dag in dagnamn else dag
             ar_lektion = typ.lower().startswith('online')
             delar_har = [i for i, v in sorted(lektion.items()) if ar_lektion and v[0] == k and i <= len(delar_)] if not w.get('tenta') else []
             rubrik_ = rad[5] if len(rad) > 5 else ('Lektion online' if ar_lektion else ('Hemma' if typ == 'Hemma' else typ))
             innehall = ''.join(delkort(i) for i in delar_har)
-            steg.append(f'<li id="steg-{len(steg) + 1}" class="{"lektion" if ar_lektion else "hemma"}" data-start="{start}"><p class="vag-nar">{escape(datumtext)} · {escape(typ)}</p>'
+            steg.append(f'<li id="steg-{len(steg) + 1}" class="{"lektion" if ar_lektion else "hemma"}"{start_attr}><p class="vag-nar">{escape(datumtext)} · {escape(typ)}</p>'
                         f'<h3>{escape(rubrik_)}</h3><p>{escape(text)}</p>{innehall}{klar_ruta}</li>')
             sista_start = start
     else:
