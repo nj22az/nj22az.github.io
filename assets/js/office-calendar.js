@@ -11,7 +11,7 @@
       course:'M13 2 3 14h9l-1 8 10-12h-9l1-8Z'
     };
     var shortcuts = [
-      ['Projects','#projects','Projects',paths.projects],
+      ['Projects',location.pathname==='/'||location.pathname==='/index.html'?'#projects':'/#projects','Projects',paths.projects],
       ['Johansson World','/world/','World',paths.world],
       ['Blog','/blog/','Blog',CONFIG.icons.notebook],
       ['Sjöskolan — electronics course','/sjoskolan/','Sjöskolan',paths.course],
