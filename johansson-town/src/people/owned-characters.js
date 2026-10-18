@@ -31,5 +31,11 @@ export function addOwnedCharacter({parent,kind,position=[0,0,0],yaw=0,height=nul
   holder.add(model);mixer=new THREE.AnimationMixer(model);for(const clip of (spec.static||staticDisplay?[]:g.animations))actions.set(clip.name,mixer.clipAction(clip));play(spec.clip||'Idle');holder.userData.rigged=actions.size>0;holder.userData.ready=true;return true;
  }).catch(e=>{holder.userData.loadError=true;console.warn('Owned character unavailable: '+kind,e);return false;});
  if(!lazy)start();
- return {holder,get ready(){return ready??Promise.resolve(false);},load:start,play,update(dt){if(!disposed&&holder.visible)mixer?.update(Math.min(.1,Math.max(0,dt)));},dispose(){disposed=true;mixer?.stopAllAction();if(model)mixer?.uncacheRoot(model);holder.removeFromParent();}};
+ return {holder,get ready(){return ready??Promise.resolve(false);},load:start,play,update(dt){if(!disposed&&holder.visible)mixer?.update(Math.min(.1,Math.max(0,dt)));},dispose(){
+  if(disposed)return;disposed=true;mixer?.stopAllAction();
+  if(model){mixer?.uncacheRoot(model);const skeletons=new Set();model.traverse(o=>{if(o.isSkinnedMesh)skeletons.add(o.skeleton);});for(const skeleton of skeletons)skeleton.dispose();}
+  // Geometry/materials belong to the cached asset; each cloned skeleton owns its
+  // GPU bone texture. Removing the mascot alone leaked one texture per visit.
+  holder.removeFromParent();
+ }};
 }

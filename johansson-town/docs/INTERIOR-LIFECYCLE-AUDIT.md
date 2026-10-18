@@ -15,6 +15,8 @@ The available interactive cloud Chrome browser failed to initialise WebGL at sta
 - The simultaneous main-cast test reproduced Nhung remaining in the shared alley. Turns repeatedly reset the stall timer, preventing a detour. Only actual travel now resets progress. The test also exposed a 12 cm walker / 18 cm planner kerb mismatch on Mrs Sato’s homeward journey; both now permit the planned 18 cm step. Main schedule collisions use the same height-aware obstacle rule as secondary residents.
 - Outdoor visibility entries retained disposed window-copy meshes while indoors. Invalidating the section list now drops those references immediately.
 
+- Fresh WebKit repetition exposed one retained GPU bone texture per izakaya visit. Owned mascots now dispose their cloned skeletons (idempotently) while preserving cached geometry and paint. A ten-cycle ownership regression and a strict post-warm-up texture-count assertion cover the correction.
+
 ## Preserved behaviour
 
 The town clock, cast schedules, shop jobs, neighbour navigation and relevant world journeys already advance indoors. No schedule freeze was added. Interior views retain only the real street geometry intersecting an actual window portal; turning away from windows uses a single room pass. No refraction framebuffer, offscreen town render target or extra background asset stream was added. Sakura retains live staff and customers through its existing inexpensive haze glazing.
@@ -26,7 +28,7 @@ The town clock, cast schedules, shop jobs, neighbour navigation and relevant wor
 - All 10 main street residents reach home and scheduled indoor destinations against the production schedule collision predicate. A further test runs all ten together through five home/work/night/morning changes with the town hidden. This does not prove every possible crowd interaction or ferry connection.
 - The canonical inventory covers 31 identities. Johansson is the player, Fujita has his dedicated shed/houseboat controller, and the Barfly has the izakaya resident controller. Existing home, overnight, Fujita, shop-cycle, stair, camera and collision checks are retained.
 - Regression tests check immediate room disposal, preservation of shared resources, live storefront people, instanced stock reuse and ten portal cache release cycles.
-- Final local validation: 137 regression checks and three production runtime-package checks pass. Two legacy tests expecting the Barfly to sleep on the public counter were corrected to assert his implemented private-room sleep/wake routine. The browser harness bounds its full-animation clock exercise to three minutes; longer daily journeys are covered by deterministic simulation tests.
+- Final local validation: 138 regression checks and three production runtime-package checks pass. Two legacy tests expecting the Barfly to sleep on the public counter were corrected to assert his implemented private-room sleep/wake routine. The browser harness bounds its full-animation clock exercise to three minutes; longer daily journeys are covered by deterministic simulation tests.
 
 The accompanying GitHub Actions workflow runs Linux WebKit with an iPhone-like portrait viewport, repeated Sakura/izakaya entry and exit, day/night views, renderer counts, runtime exceptions and an indoor clock/journey check. Its report explicitly identifies a simulated browser, not a physical iPhone. See the workflow result and attached report for the outcome of that run.
 

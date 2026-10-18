@@ -24,7 +24,7 @@ jobs:
       - run: npm ci
       # The unchanged application source already passed the full journey suite.
       # Repeat resource checks and the updated private-room regressions here.
-      - run: node --test --test-force-exit tests/interior-lifecycle.test.mjs tests/shop-street-view.test.mjs tests/stand-in.test.mjs tests/sakura-light-transitions.test.mjs tests/continuous-life.test.mjs tests/izakaya-hours.test.mjs tests/living-town.test.mjs tests/fujita-day.test.mjs
+      - run: node --test --test-force-exit tests/owned-character-lifecycle.test.mjs tests/interior-lifecycle.test.mjs tests/shop-street-view.test.mjs tests/stand-in.test.mjs tests/sakura-light-transitions.test.mjs tests/continuous-life.test.mjs tests/izakaya-hours.test.mjs tests/living-town.test.mjs tests/fujita-day.test.mjs
       - run: npm run build:runtime
       - run: node --test tests/runtime-package.test.mjs
       - run: npx playwright install --with-deps webkit

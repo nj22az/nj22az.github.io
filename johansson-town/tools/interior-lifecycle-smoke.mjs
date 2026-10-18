@@ -36,6 +36,7 @@ try{
  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.setTime(30));await capture('sakura-night',[0,1.7,1],[0,1.6,-3]);
  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.leave());await capture('street-night',[8,2,-21],[-12,1.6,-27.3]);
  const last=report.cycles.filter(c=>c.venue==='izakaya');assert.ok(last.at(-1).exterior.info.geometries<=last[1].exterior.info.geometries+30,'Repeated entry must not accumulate room geometry');
+ assert.ok(last.at(-1).exterior.info.textures<=last[1].exterior.info.textures,'Repeated entry must not accumulate mascot bone textures');
  assert.deepEqual(errors,[]);report.errors=errors;await page.close();
 }catch(error){failure=error;report.failure=error.stack;}
 finally{await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2)+'\n');await browser.close();}
