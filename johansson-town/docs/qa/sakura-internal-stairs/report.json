@@ -5,7 +5,7 @@
     {
       "label": "office-day",
       "minutes": 720,
-      "mean": 194.74599565389454,
+      "mean": 194.14640324473962,
       "player": {
         "position": [
           -0.7999999999999943,
@@ -31,7 +31,33 @@
     {
       "label": "office-midnight",
       "minutes": 30,
-      "mean": 130.96512613902465,
+      "mean": 130.58684439365328,
+      "player": {
+        "position": [
+          -0.7999999999999943,
+          4.01,
+          -2.500000000000014
+        ],
+        "yaw": -2.872425160804093,
+        "room": "market"
+      },
+      "fixtures": [
+        {
+          "visible": true,
+          "toneMapped": false
+        },
+        {
+          "visible": true,
+          "toneMapped": false
+        }
+      ],
+      "ink": true,
+      "gpuError": 0
+    },
+    {
+      "label": "office-overview-midnight",
+      "minutes": 30,
+      "mean": 140.3110238561109,
       "player": {
         "position": [
           -0.7999999999999943,
@@ -57,7 +83,7 @@
     {
       "label": "stairs-midnight",
       "minutes": 30,
-      "mean": 116.19432397341407,
+      "mean": 133.74088276534616,
       "player": {
         "position": [
           3.7999999999999945,
@@ -143,7 +169,7 @@
       4.01,
       -5.15
     ],
-    "yaw": -3.141592653589793,
+    "yaw": -2.356194490192345,
     "room": "market",
     "floor": true
   }
