@@ -42,12 +42,11 @@ for(const spec of NEIGHBOURS)test(spec.name+' completes authored street journeys
 import {WORLD_CAST} from '../src/people/residents.js';
 import {createCastAI} from '../src/people/schedules.js';
 import {residentPlan} from '../src/people/social.js';
-import {circleHitsRect} from '../physics.js';
 for(const profile of WORLD_CAST.filter(p=>p.name!=='Barfly'))test(profile.name+' reaches home and daily indoor destinations against runtime street colliders',()=>{
  const parent=new THREE.Group();parent.visible=false;const g=new THREE.Group();g.userData={name:profile.name,hit:{inside:false}};parent.add(g);
  const person={g,profile},state={inventory:[],residentLocations:{[profile.name]:{position:profile.home,indoors:'home'}}};
  // This is the exact predicate used by game.js for the main schedule controller.
- const runtimeBlocked=(x,z,r)=>townBoundsBlocked(x,z,r)||grid.some(x,z,r,c=>circleHitsRect(x,z,r,c));
+ const runtimeBlocked=(x,z,r)=>townBoundsBlocked(x,z,r)||grid.some(x,z,r,c=>standingHitsRect(x,z,r,groundHeight(x,z),c));
  const system=createCastAI({world:{people:[person],homes:new Map()},player:new THREE.Vector3(100,0,100),state:()=>state,paused:()=>false,collides:runtimeBlocked});
  let key=null;
  for(let m=0;m<=1440+720;m+=15){
@@ -58,5 +57,18 @@ for(const profile of WORLD_CAST.filter(p=>p.name!=='Barfly'))test(profile.name+'
    if(!indoor||g.userData.indoors===plan.place)break;
   }
   if(indoor)assert.equal(g.userData.indoors,plan.place,profile.name+' cannot reach '+plan.place+' at '+m+'; position '+g.position.toArray()+' target '+plan.target);
+ }
+});
+
+test('main residents complete simultaneous home/work changes while their town is hidden',()=>{
+ const parent=new THREE.Group();parent.visible=false;
+ const people=WORLD_CAST.filter(p=>p.name!=='Barfly').map(profile=>{const g=new THREE.Group();g.userData={name:profile.name,hit:{inside:false}};parent.add(g);return {g,profile};});
+ const state={inventory:[],residentLocations:Object.fromEntries(people.map(p=>[p.profile.name,{position:p.profile.home,indoors:'home'}]))};
+ const system=createCastAI({world:{people,homes:new Map()},player:{position:new THREE.Vector3(100,0,100)},state:()=>state,paused:()=>false,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||grid.some(x,z,r,c=>standingHitsRect(x,z,r,groundHeight(x,z),c))});
+ for(const m of [720,1260,145,620,2160]){
+  const expected=people.map(p=>({p,plan:residentPlan(p.profile,m,false,state)})).filter(({p,plan})=>['home','bookshop','izakaya','ramen','market','onsen'].includes(plan.place)||plan.place==='work'&&p.profile.workSite);
+  let arrived=false;
+  for(let i=0;i<9000;i++){system.update(.1,m,false);if(expected.every(({p,plan})=>p.g.userData.indoors===plan.place)){arrived=true;break;}}
+  assert.ok(arrived,'Unfinished journeys at '+m+': '+expected.filter(({p,plan})=>p.g.userData.indoors!==plan.place).map(({p,plan})=>p.profile.name+' to '+plan.place+' at '+p.g.position.toArray()).join('; '));
  }
 });

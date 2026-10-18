@@ -12,6 +12,7 @@ The available interactive cloud Chrome browser failed to initialise WebGL at sta
 - Closing a nonpersistent room hid it but retained its owned geometry, materials and textures until another room was entered. Leaving now restores borrowed actors, disposes room-owned resources, clears colliders/interactions, and leaves Sakura's persistent live storefront intact.
 - Interior window index caches lacked explicit disposal. They now release private index buffers on room changes, without disposing borrowed vertex buffers. Cache byte counts are exposed in the existing audit diagnostics.
 - Spatial partition construction used growable arrays of boxed triangle indices. It now uses packed typed arrays, including 16-bit indices where possible.
+- The simultaneous main-cast test reproduced Nhung remaining in the shared alley. Turns repeatedly reset the stall timer, preventing a detour. Only actual travel now resets progress. The test also exposed a 12 cm walker / 18 cm planner kerb mismatch on Mrs Sato’s homeward journey; both now permit the planned 18 cm step. Main schedule collisions use the same height-aware obstacle rule as secondary residents.
 - Outdoor visibility entries retained disposed window-copy meshes while indoors. Invalidating the section list now drops those references immediately.
 
 ## Preserved behaviour
@@ -22,9 +23,9 @@ The town clock, cast schedules, shop jobs, neighbour navigation and relevant wor
 
 - Baseline: 21 rendering, housing and overnight checks passed.
 - New journeys: all 18 secondary residents reach each authored destination through the real world colliders, occupy their homes overnight and depart the next morning with their parent town hidden. Destinations are held long enough to test reachability independently of time compression; the postman's working round is covered separately.
-- All 10 main street residents reach home and scheduled indoor destinations against the production schedule collision predicate. Tests isolate actors; these do not prove every simultaneous crowd interaction or ferry connection.
+- All 10 main street residents reach home and scheduled indoor destinations against the production schedule collision predicate. A further test runs all ten together through five home/work/night/morning changes with the town hidden. This does not prove every possible crowd interaction or ferry connection.
 - The canonical inventory covers 31 identities. Johansson is the player, Fujita has his dedicated shed/houseboat controller, and the Barfly has the izakaya resident controller. Existing home, overnight, Fujita, shop-cycle, stair, camera and collision checks are retained.
 - Regression tests check immediate room disposal, preservation of shared resources, live storefront people, instanced stock reuse and ten portal cache release cycles.
-- Production runtime build and package integrity checks pass.
+- The initial complete local regression run passed 93 checks; the added simultaneous case passes after the movement fixes. Production runtime build and package integrity checks also pass; the final workflow repeats validation after these fixes.
 
 The accompanying GitHub Actions workflow runs Linux WebKit with an iPhone-like portrait viewport, repeated Sakura/izakaya entry and exit, day/night views, renderer counts, runtime exceptions and an indoor clock/journey check. Its report explicitly identifies a simulated browser, not a physical iPhone. See the workflow result and attached report for the outcome of that run.
