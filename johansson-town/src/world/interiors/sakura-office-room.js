@@ -26,6 +26,7 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},exit,inte
  box([O.width,.12,.14],[0,2.3,front-.08],0xc2b69a,'Town blind');box([.14,.12,5.7],[hw-.08,2.3,1.5],0xc2b69a,'Harbour blind');
  box([.12,H,4.15],[hw,H/2,back+2.075],0xece1ca,'Office south rear wall');
  box([1.4,.08,.8],[5.05,.74,3.2],0x775638,'Main accounts desk',true);
+ for(const x of [4.5,5.6])for(const z of [2.9,3.5])box([.075,.7,.075],[x,.35,z],0x775638,'Main accounts desk leg');
  box([.55,.44,.55],[4.1,.22,3.2],0x58665a,'Desk chair');
  const chair=anchor([4.1,1,3.2],'Sit at the harbour desk',()=>action('seat','Sakura main office','The harbour and Minato Maru lie beyond the south window.'));
  chair.userData.seat={position:[4.1,0,3.2],stand:[3.4,0,3.2],surfaceY:.44,eyeY:1.12,yaw:-2.63,pitch:0};
@@ -36,6 +37,7 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},exit,inte
  for(let i=0;i<8;i++)box([.12,.28,.24],[-hw+.35,.95,back+.5+i*.25],[0x5d7164,0xb29a73,0x88564b][i%3],'Account book');
  box([1.4,.4,.6],[-2,.2,1.1],0x7e8b72,'Visitor bench',true);
  box([.85,.07,.65],[-2,.48,2.2],0x775638,'Visitor tea table',true);
+ for(const x of [-2.32,-1.68])for(const z of [1.97,2.43])box([.055,.445,.055],[x,.2225,z],0x775638,'Visitor tea table leg');
  // Kitchenette stays clear of the internal stair opening.
  const kitchenBack=back+(internal?1.9:0);
  box([2.4,.88,.6],[-2.7,.44,kitchenBack+.38],0xd3c8ae,'Kitchenette cupboards',true);

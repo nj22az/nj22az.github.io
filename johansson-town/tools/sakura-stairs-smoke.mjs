@@ -32,6 +32,8 @@ try{
  };
  await capture('office-day',720,[.2,H+1.65,-2.7],[4.5,H+1.2,2.5]);
  await capture('office-midnight',30,[.2,H+1.65,-2.7],[4.5,H+1.2,2.5]);
+ await page.setViewportSize({width:844,height:390});await page.waitForFunction(()=>{const c=document.querySelector('#game');return c.width>c.height;});
+ await capture('office-overview-midnight',30,[5.7,H+2.2,3],[-3,H+.8,-3]);
  report.down=await walk([...route].reverse(),30);
  await capture('stairs-midnight',30,[-1.1,1.65,-4.6],[-4.9,2.7,-4.9]);
  await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__;a.leave();await a.enter('sakura-office');});
