@@ -35,7 +35,10 @@ try{
   await page.locator('#game').screenshot({path:resolve(out,label+'.png')});report.views.push({label,...state});console.log('Captured',label);
  };
  await capture('park-portrait');assert.ok(report.views[0].buffer[0]*report.views[0].buffer[1]>600000,'Use the existing pixel budget instead of a fixed 1x picture');
- await page.setViewportSize({width:844,height:390});await capture('park-landscape');
+ await page.setViewportSize({width:844,height:390});
+ await page.waitForFunction(()=>{const canvas=document.querySelector('#game');return canvas.width>canvas.height;});
+ await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ await capture('park-landscape');assert.ok(report.views[1].buffer[0]>report.views[1].buffer[1],'Landscape evidence must use the resized drawing buffer');
  await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__;a.camera=null;await a.enter('market');a.setTime(1260);a.camera={pos:[2,1.8,4],at:[0,1.1,-4]};a.render();});
  await page.waitForFunction(()=>!window.__JOHANSSON_AUDIT__.blocked.roomLoading);await capture('sakura-interior');
  assert.deepEqual(errors,[]);await context.close();
