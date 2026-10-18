@@ -1,8 +1,9 @@
 // Compiled-game WebKit smoke: held real request, honest task count, then park views.
 import assert from 'node:assert/strict';
-import {mkdir,writeFile} from 'node:fs/promises';
+import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {webkit} from 'playwright';
+import {PNG} from 'pngjs';
 const out=resolve('docs/qa/loading-render-audit');await mkdir(out,{recursive:true});
 const report={physicalDevice:false,engine:'Linux WebKit',views:[]};let failure;
 const browser=await webkit.launch({headless:true,env:{...process.env,LIBGL_ALWAYS_SOFTWARE:'1'}});
@@ -27,12 +28,16 @@ try{
  await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_LOADING__.snapshot().completed===8&&document.querySelector('#start').classList.contains('hidden'));
  report.completed=await page.evaluate(()=>window.__JOHANSSON_LOADING__.snapshot());
  assert.equal(report.completed.percent,100);
- await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.frozen=true;a.renderFrozen=false;a.setTime(720);a.teleport(12,-29.8);a.camera={pos:[18,2.3,-21],at:[11,1.2,-31]};a.render();});
+ await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.frozen=true;a.renderFrozen=true;a.setTime(720);a.teleport(12,-29.8);a.camera={pos:[18,2.3,-21],at:[11,1.2,-31]};a.render();});
  await page.addStyleTag({content:'#hud,#activity,#directory,#mobile{visibility:hidden!important}'});
  const capture=async label=>{
   const state=await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__,r=a.renderer;a.render();const look=window.__JOHANSSON_LOOK__;return {ink:look.ink,effects:look.state,buffer:[r.domElement.width,r.domElement.height],shadowSize:look.lights.sun.shadow.mapSize.toArray(),shadowWidth:look.lights.sun.shadow.camera.right-look.lights.sun.shadow.camera.left,gpuError:r.getContext().getError()};});
   assert.equal(state.ink,true);assert.equal(state.effects.fxaa,true);assert.equal(state.gpuError,0);assert.ok(state.buffer[0]*state.buffer[1]<=650000);assert.equal(state.shadowWidth,28);
-  await page.locator('#game').screenshot({path:resolve(out,label+'.png')});report.views.push({label,...state});console.log('Captured',label);
+  const path=resolve(out,label+'.png');await page.locator('#game').screenshot({path});
+  const png=PNG.sync.read(await readFile(path));let minimum=255,maximum=0;const colours=new Set();
+  for(let i=0;i<png.data.length;i+=64){const rgb=[...png.data.subarray(i,i+3)];minimum=Math.min(minimum,...rgb);maximum=Math.max(maximum,...rgb);colours.add(rgb.join(','));}
+  assert.ok(maximum-minimum>96&&colours.size>32,label+' must contain a drawn scene, not a cleared drawing buffer');
+  report.views.push({label,...state,image:{minimum,maximum,colours:colours.size}});console.log('Captured',label);
  };
  await capture('park-portrait');assert.ok(report.views[0].buffer[0]*report.views[0].buffer[1]>600000,'Use the existing pixel budget instead of a fixed 1x picture');
  await page.setViewportSize({width:844,height:390});
