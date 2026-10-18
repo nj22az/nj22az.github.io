@@ -568,7 +568,7 @@ import {unlockTownAudio} from './runtime/audio-CbrYD3VV.js';
     document.getElementById('start').classList.remove('guide-open');
     document.getElementById('start').classList.add('booting');
     loadingFacts.start();
-    progress.start('frame');
+    if(progress.snapshot().completed===7)progress.start('frame');
     window.__JOHANSSON_STARTUP__={startedAt:performance.now(),stage:'code'};
     try{unlockTownAudio();}catch(error){console.warn('Town audio unavailable:',error);}
     if(!isIPhone||standalone())fullscreen();
