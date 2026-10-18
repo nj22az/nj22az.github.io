@@ -5,6 +5,7 @@ const {chromium}=require('playwright');
  const root=path.resolve(__dirname,'../site'),out=path.resolve(__dirname,'../dist/console-qa');fs.mkdirSync(out,{recursive:true});
  assert.equal(fs.existsSync(path.join(root,'thuans-storage')),false,'Retired storage game is not bundled');
  const errors=[],missing=[],remote=[],audioRequests=[];
+ const version=require('../package.json').version;
  const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.glb':'model/gltf-binary','.gltf':'model/gltf+json','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.wav':'audio/wav','.mp4':'video/mp4'};
  const server=http.createServer((req,res)=>{const url=new URL(req.url,'http://localhost');let file=path.resolve(root,'.'+decodeURIComponent(url.pathname));if(url.pathname.endsWith('/'))file=path.join(file,'index.html');if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){missing.push(url.pathname);res.writeHead(404);res.end();return;}res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream'});fs.createReadStream(file).pipe(res);});
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const url='http://127.0.0.1:'+server.address().port;
@@ -16,11 +17,11 @@ const {chromium}=require('playwright');
  await context.route('**/*',route=>{if(new URL(route.request().url()).origin!==url){remote.push(route.request().url());return route.abort();}return route.continue();});
  page=await context.newPage();page.setDefaultTimeout(120000);page.on('pageerror',e=>{errors.push(e.message);console.log('PAGE_ERROR',e.message);});
  page.on('request',request=>{if(request.url().includes('/audio/'))audioRequests.push(request.url());});
- await page.addInitScript(()=>{
+ await page.addInitScript(version=>{
   window.__pad={id:'Steam Deck test pad',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
   Object.defineProperty(navigator,'getGamepads',{value:()=>window.__pad?[window.__pad]:[],configurable:true});
-  window.johanssonDesktop={offline:true,version:'0.2.4',save:async()=>{dispatchEvent(new Event('johansson-desktop-save'));dispatchEvent(new Event('johansson-save'));window.__saved=true;},performance:async()=>[{type:'Renderer',workingSetMiB:120}],checkUpdate:async()=>({available:false}),installUpdate:async()=>({ready:false}),quit:async()=>{window.__quit=true;}};
- });
+  window.johanssonDesktop={offline:true,version,save:async()=>{dispatchEvent(new Event('johansson-desktop-save'));dispatchEvent(new Event('johansson-save'));window.__saved=true;},performance:async()=>[{type:'Renderer',workingSetMiB:120}],checkUpdate:async()=>({available:false}),installUpdate:async()=>({ready:false}),quit:async()=>{window.__quit=true;}};
+ },version);
  const sampled=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
  const tap=async i=>{await sampled();await page.evaluate(i=>{window.__pad.buttons[i]={pressed:true,value:1};},i);await sampled();await page.evaluate(i=>{window.__pad.buttons[i]={pressed:false,value:0};},i);await sampled();};
  // Software-rendered CI frames can take longer than 250 ms. Keep the input held
@@ -115,11 +116,34 @@ const {chromium}=require('playwright');
  await tap(6);await click('controls');await click('reset');
  await click('resume');await tap(13);assert.equal((await state()).hudHidden,true);assert.equal(await page.locator('#desktopOpenMenu').isVisible(),true,'Menu remains accessible with HUD hidden');await tap(13);assert.equal((await state()).hudHidden,false);
  await tap(8);await page.waitForTimeout(150);assert.equal(await page.locator('#directory').isVisible(),true,'View opens town book');await tap(1);assert.equal(await page.locator('#directory').isVisible(),false);
- await tap(3);assert.equal(await page.locator('#activity').isVisible(),true,'Y opens inventory');await page.screenshot({path:path.join(out,'05-inventory.png')});await tap(1);assert.equal(await page.locator('#activity').isVisible(),false);
+ await tap(3);assert.equal(await page.locator('#activity').isVisible(),true,'Y opens Bag');assert.equal(await page.locator('#activityTitle').textContent(),'Bag');await page.screenshot({path:path.join(out,'05-bag.png')});await tap(1);assert.equal(await page.locator('#activity').isVisible(),false);
  // An unmapped USB controller still drives both sticks and Start.
- await page.evaluate(()=>{window.__pad.mapping='';window.__pad.id='USB custom controller';});await page.waitForTimeout(150);await tap(9);assert.equal((await state()).menu,true);await click('controls');await page.screenshot({path:path.join(out,'07-unmapped-controller.png')});await click('resume');
+ await page.evaluate(()=>{window.__pad.mapping='';window.__pad.id='USB custom controller';});await sampled();assert.equal((await state()).menu,true,'Replacing the active device opens recovery');assert.equal((await state()).page,'controls');await page.screenshot({path:path.join(out,'07-unmapped-controller.png')});await click('resume');
  // Controller loss stops input and offers a useful recovery screen.
- await page.evaluate(()=>{window.__pad.connected=false;});await page.waitForTimeout(200);assert.equal((await state()).menu,true);assert.equal((await state()).page,'controls');await page.evaluate(()=>{window.__pad.connected=true;});await page.waitForTimeout(150);await tap(1);await click('save');assert.equal(await page.evaluate(()=>window.__saved),true);
+ // Polling fallback: deliberately omit a native event, as some Steam Input
+ // transitions do. Wait for sampled state rather than a fixed wall-clock frame.
+ before=await page.evaluate(()=>({...window.__JOHANSSON_POSE__}));
+ await page.evaluate(()=>{window.__pad.connected=false;});await sampled();
+ assert.equal((await state()).menu,true);assert.equal((await state()).page,'controls');
+ assert.equal((await state()).connected,false);
+ await page.evaluate(()=>{window.__pad.connected=true;for(const i of [0,1,9])window.__pad.buttons[i]={pressed:true,value:1};});
+ await sampled();await sampled();
+ assert.equal((await state()).menu,true,'Held Menu/Back/Confirm cannot dismiss recovery');
+ assert.equal((await state()).page,'controls');
+ after=await page.evaluate(()=>({...window.__JOHANSSON_POSE__}));assert.equal(after.x,before.x,'Disconnect keeps the world paused');
+ await page.evaluate(()=>{window.__pad.buttons.forEach(b=>{b.pressed=false;b.value=0;});});await sampled();
+ await tap(1);await click('save');assert.equal(await page.evaluate(()=>window.__saved),true);
+ // Same-ID reconnect at a different index; cancel an in-progress remap and
+ // prove the event handler opens recovery before another animation frame.
+ await click('controls');await page.locator('[data-bind="9"]').click();
+ await page.evaluate(()=>{window.__pad.connected=false;const event=new Event('gamepaddisconnected');Object.defineProperty(event,'gamepad',{value:window.__pad});window.dispatchEvent(event);});
+ assert.equal((await state()).capture,null);assert.equal((await state()).page,'controls');
+ await page.evaluate(()=>{window.__pad.index=2;window.__pad.connected=true;window.__pad.buttons[9]={pressed:true,value:1};});await sampled();await sampled();
+ assert.equal((await state()).menu,true);await page.evaluate(()=>{window.__pad.buttons[9]={pressed:false,value:0};});await sampled();await tap(9);
+ assert.equal((await state()).menu,false,'A fresh Menu press resumes after reconnect');
+ await tap(3);assert.equal(await page.locator('#activityTitle').textContent(),'Bag','Bag shortcut still works after reconnect');await tap(1);
+ await tap(9);await click('bag');assert.equal(await page.locator('#activityTitle').textContent(),'Bag','Pause and Y open the same Bag');await tap(1);await tap(9);
+
  // Four Linux window sizes, including the Deck's touchscreen media queries.
  await page.evaluate(()=>document.fullscreenElement?document.exitFullscreen():undefined);
  const windowSession=await context.newCDPSession(page),windowInfo=await windowSession.send('Browser.getWindowForTarget');
@@ -129,7 +153,7 @@ const {chromium}=require('playwright');
   const layout=await page.evaluate(()=>{const p=document.getElementById('desktopMenu'),shell=p.querySelector('.console-shell'),footer=p.querySelector('.console-footer');return {width:innerWidth,height:innerHeight,scrollWidth:shell.scrollWidth,shellWidth:shell.clientWidth,bottom:footer.getBoundingClientRect().bottom};});assert.ok(layout.scrollWidth<=layout.shellWidth+1,'No horizontal squashing');assert.ok(layout.bottom<=height,'Footer stays in viewport');
   await tap(1);await page.screenshot({path:path.join(out,`pause-${width}x${height}.png`)});await click('controls');await page.locator('[data-action=reset]').focus();await page.locator('[data-action=reset]').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(out,`controls-${width}x${height}.png`)});await tap(1);
  }
- await page.setViewportSize({width:1280,height:800});await click('updates');await click('update');assert.match(await page.locator('#desktopStatus').textContent(),/current release/);await tap(1);
+ await page.setViewportSize({width:1280,height:800});await click('updates');assert.match(await page.locator('#desktopContent').textContent(),new RegExp('Linux edition '+version.replaceAll('.', '\\.')));await click('update');assert.match(await page.locator('#desktopStatus').textContent(),/current release/);await tap(1);
  // Linux residents: all named characters can be selected, with their own beds and schedules.
  console.log('Controls and layout passed; testing residents');
  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.setTime(60));await page.locator('#desktopTabs [data-tab=people]').click();
