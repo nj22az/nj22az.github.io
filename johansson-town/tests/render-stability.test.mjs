@@ -63,7 +63,7 @@ test('unsupported half-float colour buffers use safe targets and keep antialiasi
 });
 
 test('every failed post-processing pass restores the previous render target for plain fallback',()=>{
- for(const failAt of [1,2,3]){
+ for(const failAt of [1,2]){
   const draw=renderer(),prior={name:'outer framebuffer'};draw.target=prior;
   draw.render=function(){if(++this.draws===failAt)throw Error('GPU pass failed');};
   const pipeline=createInkPipeline(draw,{superScale:1});
@@ -93,4 +93,43 @@ test('mobile recovery caps real postprocess buffers and avoids float/MSAA alloca
   assert.equal(pipeline.sceneTarget.samples,0);
   assert.equal(pipeline.state.ink,true);assert.equal(pipeline.state.grade,true);assert.equal(pipeline.state.fxaa,true);
  }finally{pipeline.dispose();}
+});
+
+test('full phone effects use two bounded colour targets and never sample their own output',async()=>{
+ const {graphicsProfile}=await import('../src/render/startup-recovery.js');
+ const profile=graphicsProfile({mobile:true,ios:true}),r=renderer({float:true});
+ r.getDrawingBufferSize=size=>size.set(4096,2732);
+ const draws=[];r.render=function(scene){
+  const material=scene.children[0].material;
+  assert.notEqual(material.uniforms.tDiffuse.value,this.target?.texture,'No framebuffer feedback');
+  draws.push({target:this.target,material});
+ };
+ const pipeline=createInkPipeline(r,profile);
+ pipeline.render(()=>{});
+ const targets=[...new Set(r.targets)];
+ assert.equal(targets.length,2,'Scene + graded colour only; no linear ink intermediate');
+ assert.equal(draws.length,2,'Ink and grading share a draw; FXAA is the second draw');
+ assert.equal(draws[1].target,null,'FXAA reaches the screen');
+ assert.equal(draws[0].material.uniforms.uInkEnabled.value,1);
+ assert.equal(draws[0].material.uniforms.uAmount.value,1);
+ const bytes=targets.reduce((total,t)=>{
+  assert.equal(t.texture.type,THREE.UnsignedByteType);assert.equal(t.samples,0);
+  return total+t.width*t.height*(4+(t.depthBuffer?4:0));
+ },0);
+ assert.ok(bytes<=650000*12,'At most 7.8 MB of colour and depth pixel storage, excluding driver overhead');
+ let disposed=0;for(const target of targets)target.addEventListener('dispose',()=>disposed++);
+ pipeline.dispose();assert.equal(disposed,2,'Both targets are released for context recovery');
+});
+
+test('all effect toggles preserve the final colour conversion and screen output',()=>{
+ for(const ink of [false,true])for(const grade of [false,true])for(const fxaa of [false,true]){
+  const r=renderer(),passes=[];
+  r.render=function(scene){passes.push({target:this.target,uniforms:scene.children[0].material.uniforms});};
+  const pipeline=createInkPipeline(r,{superScale:1});Object.assign(pipeline.state,{ink,grade,fxaa});
+  pipeline.render(()=>{});
+  assert.equal(passes.length,fxaa?2:1);assert.equal(passes.at(-1).target,null);
+  assert.equal(passes[0].uniforms.uInkEnabled.value,ink?1:0);
+  assert.equal(passes[0].uniforms.uAmount.value,grade?1:0);
+  pipeline.dispose();
+ }
 });

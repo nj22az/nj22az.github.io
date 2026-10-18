@@ -7,8 +7,11 @@ export function createStartupRecovery({storage,now=()=>Date.now(),search='',even
  const remove=key=>{try{storage?.removeItem(key);}catch{}};
  let prior=null;try{prior=JSON.parse(read(KEY)||'null');}catch{}
  const interrupted=!!prior&&['starting','entering'].includes(prior.stage)&&now()-prior.at>=0&&now()-prior.at<180000;
- const safe=new URLSearchParams(search).get('graphics')==='safe'||read(SAFE)==='1'||interrupted;
- if(safe)write(SAFE,'1');
+ const requested=new URLSearchParams(search).get('graphics');
+ // A deliberate retry can leave a remembered reduced mode, but an interrupted
+ // attempt always wins. The caller consumes the full query before allocating.
+ const safe=requested==='safe'||interrupted||(requested!=='full'&&read(SAFE)==='1');
+ if(safe)write(SAFE,'1');else if(requested==='full')remove(SAFE);
  let timer=null;
  const checkpoint=stage=>write(KEY,JSON.stringify({stage,at:now()}));
  const close=()=>{cancel(timer);remove(KEY);};
@@ -21,17 +24,20 @@ export function createStartupRecovery({storage,now=()=>Date.now(),search='',even
   dispose(){close();events?.removeEventListener('pagehide',close);}
  };
 }
-/** FXAA keeps the illustrated edges without duplicate native/offscreen MSAA buffers. */
+/** Full cartoon effects share the same bounded pipeline on every device. */
 export function graphicsProfile({mobile=false,tablet=false,safe=false,ios=false}={}){
- const basic=safe||(ios&&!tablet),lean=mobile||basic;
- return Object.freeze({dpr:basic?1:lean?1.25:2,shadows:!lean,antialias:!lean,
-  samples:lean?0:4,pixelBudget:lean?1.2e6:4.6e6,superScale:lean?1:1.25,
-  precompile:!lean,preferHalfFloat:!lean,postprocess:!basic,
-  streamDetails:!basic,cinematic:!basic,quietOpening:basic,
-  canvasPixels:basic?650000:null});
+ const phone=ios&&!tablet,lean=mobile||safe||phone;
+ const compact=phone||safe;
+ return Object.freeze({dpr:compact?1:lean?1.25:2,shadows:!safe&&(!lean||phone),antialias:!lean,
+  shadowSize:safe?0:phone?512:tablet?1024:2048,
+  samples:lean?0:4,pixelBudget:compact?650000:lean?1.2e6:4.6e6,superScale:lean?1:1.25,
+  precompile:!lean,preferHalfFloat:!lean,postprocess:!safe,
+  // Full effects do not imply full-world model streaming or a cinematic launch.
+  streamDetails:!compact,cinematic:!compact,quietOpening:compact,
+  canvasPixels:compact?650000:null});
 }
 /** Bound the screen buffer too; an offscreen cap alone leaves the native canvas large. */
 export function drawingDpr({width,height,deviceDpr=1,profile,scale=1}){
- const base=Math.max(1,Math.min(deviceDpr||1,profile.dpr)*scale);
+ const base=Math.max(.5,Math.min(deviceDpr||1,profile.dpr)*scale);
  return profile.canvasPixels?Math.min(base,Math.sqrt(profile.canvasPixels/Math.max(1,width*height))):base;
 }
