@@ -258,13 +258,17 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
         kunna = [('p', re.sub(r'^\d+\.\s*', '', b[1])) for b in kp[efter + 1:] if b[0] != 'fig'] if efter is not None else []
         sf = next((b[2] for b in bilder if b[1] == 'Startfråga'), [])
         fraga = [b for b in sf if b[0] != 'fig'][:1]
+    ovningsval = {
+        'v43_03': 'enligt Din del ovan: 3.6, 3.7 och 3.9 på fredagen. 3.1–3.5 är förarbete; 3.8 och 3.10 är frivillig extra träning',
+        'v45_01': 'enligt Din del ovan: 1.2, 1.3 och 1.10 på fredagen. 1.1 och 1.4–1.9 är frivillig extra träning',
+    }.get(deck[:6], f'{dnr}.1–{dnr}.{len(poster)}')
     h.append(f'''<section id="oversikt" class="del-block"><h2><span>1</span> Översikt</h2>
 <div class="sj-panel soft"><h3>Det här ska du kunna</h3><ul>{''.join(f'<li>{R.h(b[1])}</li>' for b in kunna)}</ul></div>
 {f'<p class="del-start"><strong>Fundera först:</strong> {" ".join(R.h(b[1]) for b in fraga)} Svaret finns i teorin nedan.</p>' if fraga else ''}
 <h3>Så gör du</h3><ol class="del-gor">
 <li><strong>Läs teorin ett avsnitt i taget</strong> ({len(teori)} korta avsnitt). Sist i varje avsnitt står vilka övningar du kan göra direkt.</li>
 <li><strong>Följ exemplen</strong> med papper och räknare, steg för steg. Gissa nästa steg innan du läser det.</li>
-<li><strong>Gör övningarna</strong> {dnr}.1–{dnr}.{len(poster)}. Fastnar du: <em>Ledtråd 1</em> visar vilket samband du behöver och var i teorin det förklaras. <em>Ledtråd 2</em> visar hur du börjar och <em>Ledtråd 3</em> exemplet som räknar samma sorts uppgift med andra tal. Öppna facit när du har ett eget svar.</li>
+<li><strong>Gör övningarna</strong> {ovningsval}. Fastnar du: <em>Ledtråd 1</em> visar vilket samband du behöver och var i teorin det förklaras. <em>Ledtråd 2</em> visar hur du börjar och <em>Ledtråd 3</em> exemplet som räknar samma sorts uppgift med andra tal. Öppna facit när du har ett eget svar.</li>
 <li><strong>Lämna in</strong> veckans uppgifter: <a href="{inl}">Veckans inlämning</a>.</li></ol>''')
     if metod:
         h.append(f'<details class="sj-panel"><summary><strong>Så skriver du en lösning som går att följa</strong></summary>{block_html(metod[2])}</details>')
@@ -444,7 +448,7 @@ def ovningsoversikt43():
 <style>.ovn-delar{list-style:none;padding:0}.ovn-delar li{margin:20px 0;padding:16px;border:1px solid #cad8e2;border-radius:12px}.ovn-delar h2{margin-top:0}.ovn-delar li>p:last-child{display:flex;flex-wrap:wrap;align-items:center;gap:12px}.ovn-lage{font-weight:700}</style><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
 <body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="./">Vecka 43</a><a href="Inlamning.html">Inlämning</a></nav>
 <main class="course-main" id="main-content"><article class="course-reading"><p class="course-kicker">Vecka 43 · Alla fyra delar</p><h1>Alla övningar</h1>
-<p>40 övningar med teori, exempel, ledtrådar och facit. Avbockningar sparas i den här webbläsaren och visas också på veckosidan. Övningarna lämnas inte in.</p>
+<p>40 övningar med teori, exempel, ledtrådar och facit. Avbockningar sparas i den här webbläsaren och visas också på veckosidan. Övningarna lämnas inte in. Fredagens kärnövningar är 3.6, 3.7 och 3.9 i del 3 samt 1.2, 1.3 och 1.10 i del 4. Övriga fredagsövningar är frivillig extra träning. Prioritera inlämningen före extraövningarna. Räknarna visar även frivillig träning.</p>
 <p class="sj-panel soft">Del 4, Systematisk felsökning, hör till vecka 43. Övningarna heter 1.1–1.10 i del 4, enligt presentationen. De är skilda från del 1:s övningar med samma nummer.</p>
 <ol class="ovn-delar">''' + ''.join(rader) + '''</ol><p><a href="Formelstod_och_ovningar.html">Formelstöd och utskriftsversion, del 1–3</a></p>
 <p><a href="./">← Vecka 43</a> · <a href="Inlamning.html">Veckans inlämning</a></p></article></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>

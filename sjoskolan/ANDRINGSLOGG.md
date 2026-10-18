@@ -243,6 +243,8 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-18** Vecka 43 fredag: 15 minuter eget arbete i del 3 (3.6, 3.7, 3.9), 12 minuter med 1.2–1.3 och 13 minuter med lampkretsens mätplan och 1.10 i del 4. Alla teoriavsnitt, exempel, nummer och länkar bevaras. Upprepade övningar är tydligt frivilliga och räknas inte som ogjorda läxor. Samma inlämning, facit, skyddade lärarfiler och sista dag. Lärarinstruktionen i Google Docs följer tiderna och samlar avslutningen, utan genomgång av bedömda labbfel.
+
 - **2026-10-16** Modul 1 visuellt granskad i publicerad webbläsare: första mätningen ger rätt värde och återkoppling. Reservvyn fick bort den tomma 3D-rutan och oanvändbara kameraknappar. Nästa handgrepp visas direkt; en separat arbetsvy använder dialog med återställd fokus. Fortsättningens 24 V-protokoll skiljs tydligt från introduktionen på 12 V. Ingen diagnos avslöjas vid tomt val. Layoutkontroll finns separat för 1180, 820 och 390 px; WebGL är avstängt i granskningswebbläsaren, så renderad 3D och fysisk iPad är inte godkända på den grunden.
 
 - **2026-10-16** Modul 1:s frivilliga revision har fått en stabil 3D-arbetsvy med separat kamerarotation, större probmål, tryck-/dragkoppling, lossning av en prob och Ångra med skyddsspärr. Ett synkroniserat kopplingsschema visar avbrott och lastström. Multimeterns reglage är samlade. Introduktion, fri direktavläsning och dolda felsökningsfall använder samma mätmodell. Samtliga försök, diagnoser och tidigare protokoll bevaras; automatisk återkoppling länkar till teorin. Originalveckan och dess formella uppgifter är oförändrade.

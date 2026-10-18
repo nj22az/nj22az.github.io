@@ -169,7 +169,8 @@ def _lektion_data(l):
     """Lektionen som dagsvy.mjs behöver den: läxorna som id, övningarna på lektionen och i varje läxa som ankare."""
     return ({k: l[k] for k in ('id', 'del', 'dag', 'datum', 'datumtext', 'start', 'slut', 'tid', 'satt', 'farg', 'titel', 'amnen',
                                 'bildspel', 'mapp', 'lasknapp', 'pa_lektionen')}
-            | {'laxor': [x['id'] for x in l['laxor']], 'laxovn': {x['id']: x['ovningar'] for x in l['laxor'] if x['ovningar']}})
+            | {'laxor': [x['id'] for x in l['laxor'] if not x['id'].startswith('extra-')],
+               'laxovn': {x['id']: x['ovningar'] for x in l['laxor'] if x['ovningar'] and not x['id'].startswith('extra-')}})
 
 
 def _lank_fran(href, nr, mapp, sida):
@@ -185,6 +186,10 @@ def _lank_fran(href, nr, mapp, sida):
 
 
 def _laxa_html(lek, x):
+    if x['id'].startswith('extra-'):
+        return (f'<li><div><p>{escape(x["text"])}</p>'
+                f'<a href="{escape(x["href"], quote=True)}">{escape(x["knapp"])}</a></div>'
+                '<span class="laxa-lage">Frivilligt</span></li>')
     if x.get('ovningar') or x['id'].startswith('ovn-') or (x['id'].startswith('del-') and lek['lasknapp']):
         lage = '<span class="laxa-lage" data-lage></span>'  # läget kommer från delsidan och övningarna (dagsvy.mjs)
     else:
