@@ -35,3 +35,13 @@ Static town construction, before attaching animated character models or optional
 ## Continuing the work
 
 Use `MINATO-HOMES-PLAN.md` for the approved decisions and `minato-home-assignments.json` for the checked assignment inventory. Do not add another home for Thuan, move Johansson back into the town hall, restore retired houses or rebuild Kitano terrain. Start the remaining visual/device review at Sakura’s rear stair and office, then inspect every numbered Heights doorway, both private residential stairs, sleep/wake, shop trading and ferry travel. Record actual device and browser results separately.
+
+## Subsequent office access and lighting verification
+
+The office now connects directly to the konbini through a continuous internal
+stockroom stair, while retaining the outside stair. See
+[SAKURA-INTERNAL-STAIRS.md](SAKURA-INTERNAL-STAIRS.md) and
+`docs/qa/sakura-internal-stairs/` for the 60 focused/package checks, actual-input
+up/down replay and reviewed daylight/midnight WebKit captures. This supplies
+rendered office/stair evidence after the original housing implementation. Physical
+iPhone Safari testing and the broader housing device review remain outstanding.
