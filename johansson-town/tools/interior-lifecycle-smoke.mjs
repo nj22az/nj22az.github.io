@@ -27,12 +27,12 @@ try{
   const exterior=await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.camera=null;a.leave();a.render();return {roomChildren:a.room.children.length,roomVisible:a.room.visible,portalBytes:window.__JOHANSSON_SHOP_VIEW__.cacheBytes,info:a.renderInfo};});
   assert.equal(exterior.roomChildren,0);assert.equal(exterior.roomVisible,false);assert.equal(exterior.portalBytes,0);report.cycles.push({cycle,venue,indoor,exterior});
  }
- console.log('Advancing indoor simulation for two minutes');
+ console.log('Advancing indoor simulation for three minutes');
  const continuity=await page.evaluate(async()=>{
-  const a=window.__JOHANSSON_AUDIT__;await a.enter('market');a.setTime(145);a.activities.menu('Audit','Checking indoor continuity',[]);const before=window.__JOHANSSON_POSE__.minutes;a.step(120000);a.activities.close();const p=a.world.people.find(p=>p.profile.name==='Tetsuo');
-  return {before,after:window.__JOHANSSON_POSE__.minutes,tetsuo:{indoors:p.g.userData.indoors,position:p.g.position.toArray()},roomVisible:a.room.visible};
+  const a=window.__JOHANSSON_AUDIT__;await a.enter('market');a.setTime(145);a.activities.menu('Audit','Checking indoor continuity',[]);const before=window.__JOHANSSON_POSE__.minutes;a.step(180000);a.activities.close();const p=a.world.people.find(p=>p.profile.name==='Grandmother Sakurai');
+  return {before,after:window.__JOHANSSON_POSE__.minutes,resident:{name:p.profile.name,indoors:p.g.userData.indoors,position:p.g.position.toArray()},roomVisible:a.room.visible};
  });
- console.log('Continuity result',JSON.stringify(continuity));report.continuity=continuity;assert.ok(continuity.after>=continuity.before+1,JSON.stringify(continuity));assert.equal(continuity.roomVisible,true);assert.equal(continuity.tetsuo.indoors,'home');report.continuity=continuity;
+ console.log('Continuity result',JSON.stringify(continuity));report.continuity=continuity;assert.ok(continuity.after>=continuity.before+1,JSON.stringify(continuity));assert.equal(continuity.roomVisible,true);assert.equal(continuity.resident.indoors,'home');report.continuity=continuity;
  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.setTime(30));await capture('sakura-night',[0,1.7,1],[0,1.6,-3]);
  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.leave());await capture('street-night',[8,2,-21],[-12,1.6,-27.3]);
  const last=report.cycles.filter(c=>c.venue==='izakaya');assert.ok(last.at(-1).exterior.info.geometries<=last[1].exterior.info.geometries+30,'Repeated entry must not accumulate room geometry');
