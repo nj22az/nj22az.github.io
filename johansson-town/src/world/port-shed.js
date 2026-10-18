@@ -231,7 +231,7 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
  fujita.position.set(cx,.02,cz-.08);g.add(fujita);
  let actor=null;try{actor=createAvatarActor(fujita,'Mr Fujita',{shadows});}catch{actor=null;}
  Object.assign(fujita.userData,{socialPose:'Drink',seatHeight:.38,heldItem:'beer',heldPortion:.6,activity:'watching the ballgame with a beer'});
- register(fujita,'Talk to Mr Fujita',()=>fujita.userData.sleeping?onAction('read','Mr Fujita is asleep','He is asleep in his berth aboard Shiosai. He returns to the shed at six in the morning.'):onAction('resident','Mr Fujita'));
+ register(fujita,'Talk to Mr Fujita',()=>fujita.userData.sleeping?onAction('read','Mr Fujita is asleep','He is asleep on his sofa aboard Shiosai. He returns to the shed at six in the morning.'):onAction('resident','Mr Fujita'));
  const tvAnchor=new THREE.Object3D();tvAnchor.position.set(tx,1,tz+.4);g.add(tvAnchor);
  register(tvAnchor,'Watch the shed television',()=>onAction('read','Mr Fujita’s television',
   'A portable set older than the boat, on a fish crate, the aerial bent to find the signal from across the water. Mr Fujita does not look away from it. "Sit, sit. The eighth innings is the only one worth watching. Have a can; they are cold, the box is new."'));
@@ -279,18 +279,23 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
    stream.position.copy(from).add(to).multiplyScalar(.5);stream.scale.set(1,Math.max(.01,from.y-to.y),1);stream.visible=true;
   }
  }
+ // The journey and sleeping state continue when the shed cannot be seen.
+ const advance=(dt,minutes=720)=>{
+  clock+=dt;
+  if(!fujita.userData.ferryShoreTask)routine.update(dt,minutes,tvProgramme(minutes));
+ };
  return {
-  group:g,actor,fujita,boat,routine,
+  group:g,actor,fujita,boat,routine,advance,
   /** Once a frame: the picture, the light it throws, the beer, and what he is doing about all of it. */
-  tick(dt,minutes=720){
-   clock+=dt;const now=tvProgramme(minutes),m=((minutes%1440)+1440)%1440,night=m<6*60||m>=18*60+30;
+  tick(dt,minutes=720,{advanceLife=true}={}){
+   if(advanceLife)advance(dt,minutes);
+   const now=tvProgramme(minutes),m=((minutes%1440)+1440)%1440,night=m<6*60||m>=18*60+30;
    if(now!==programme||(redraw-=dt)<=0){programme=now;redraw=now==='snow'?.08:.25;if(screenCtx){drawTV(screenCtx,160,120,now,clock);screenTex.needsUpdate=true;}}
    const on=now!=='off';
    tvGlow.intensity=on?.8+Math.sin(clock*13)*.18+Math.sin(clock*5.3)*.12:0;
    bulbMat.emissiveIntensity=night?1.4:0;bulbLight.intensity=night?1.6:0;
    // The same resident walks the ferry's shore lines. That controller releases
    // him at his chair before the television/houseboat routine resumes.
-   if(!fujita.userData.ferryShoreTask)routine.update(dt,minutes,now);
    boat.tick({sleeping:fujita.userData.sleepBlend>.01,player:getPlayerPosition()});
    // The beer: the crates, the floor, the bottle he is on, the glass. The pile stays in the shed overnight, when he
    // has gone aboard Shiosai, until the Higas' van takes it at six.

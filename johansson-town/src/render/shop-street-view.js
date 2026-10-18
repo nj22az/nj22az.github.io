@@ -9,10 +9,10 @@ export const SHOP_STREET_PORTAL_CLEARANCE=.13;
 // The room uses its own coordinates. Map its front glazing onto the real shop
 // frontage and render the street first; opaque room surfaces mask that view.
 export function mapShopCamera(source,target,frontage){
- const rotation=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),frontage.yaw);
- target.copy(source);target.position.copy(source.position).sub(new THREE.Vector3(0,0,frontage.interiorZ??6.3)).applyQuaternion(rotation).add(new THREE.Vector3(...frontage.position));
+ const rotation=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),(frontage.yaw-(frontage.interiorYaw||0)));
+ target.copy(source);target.position.copy(source.position).sub(new THREE.Vector3(...(frontage.interiorOrigin||[0,0,frontage.interiorZ??6.3]))).applyQuaternion(rotation).add(new THREE.Vector3(...frontage.position));
  target.quaternion.copy(rotation).multiply(source.quaternion);target.updateMatrixWorld(true);
- const outward=new THREE.Vector3(0,0,1).applyQuaternion(rotation);
+ const outward=new THREE.Vector3(Math.sin(frontage.yaw),0,Math.cos(frontage.yaw));
  return new THREE.Plane().setFromNormalAndCoplanarPoint(outward,new THREE.Vector3(...frontage.position));
 }
 
@@ -47,12 +47,12 @@ export function createShopStreetView(){
    else if(!o.geometry.boundingBox)o.geometry.computeBoundingBox();
    const bounds=(o.isInstancedMesh?o.boundingBox:o.geometry.boundingBox).clone().applyMatrix4(o.matrixWorld);
    let dynamic=o.isSkinnedMesh;for(let p=o;p&&p!==town;p=p.parent)if(p.userData.name||p.userData.character||p.userData.dynamicProp)dynamic=true;
-   if(!dynamic&&!batches.has(o))batches.set(o,createWindowBatch(o));
-   entries.push({object:o,bounds,dynamic,batch:batches.get(o)});
+   entries.push({object:o,bounds,dynamic});
   });cachedTown=town;stats.total=entries.length;
  }
  return {stats,invalidate(){cachedTown=null;},render({renderer,scene,camera,town,room,frontage}){
   const frontZ=frontage?.interiorZ??6.3,S=frontage?.span||SAKURA_SPAN;glazing.min.set(S.minX,S.minY,frontZ-.05);glazing.max.set(S.maxX,S.maxY,frontZ+.05);
+  if(frontage?.interiorOrigin){const centre=new THREE.Vector3(...frontage.interiorOrigin),half=new THREE.Vector3((S.maxX-S.minX)/2,(S.maxY-S.minY)/2,.05);if(frontage.interiorYaw)half.set(.05,half.y,(S.maxX-S.minX)/2);centre.y+=(S.minY+S.maxY)/2;glazing.set(centre.clone().sub(half),centre.clone().add(half));}
   camera.updateMatrixWorld(true);frustum.setFromProjectionMatrix(matrix.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse));
   if(!frontage||!frustum.intersectsBox(glazing)){stats.visible=0;stats.culled=stats.total;stats.passes=0;renderer.render(scene,camera);return;}
   const plane=mapShopCamera(camera,exteriorCamera,frontage);
@@ -67,16 +67,27 @@ export function createShopStreetView(){
    // clipping plane removes the shop shell behind its actual front glazing.
    for(const o of scene.children)if(o!==town&&!o.isLight)o.visible=false;
    for(const entry of entries){
-    const o=entry.object;if(!o.visible)continue;
+    const o=entry.object;
+    // The town itself is hidden while indoors; respect every descendant's
+    // visibility and render layers, including the original unbatched scenery.
+    let shown=o.layers.test(exteriorCamera.layers);
+    for(let p=o;shown&&p&&p!==town;p=p.parent)if(!p.visible)shown=false;
+    if(!shown)continue;
     // Seen from inside, a frontage's own outward glazing (painted warm, to read as a lit
     // room from the pavement) would stand between the room and the street.
     if(frontage.hideGlazing&&o.userData.clearWindow){hidden.push(o);o.visible=false;continue;}
-    if(entry.batch)stats.batchTriangles+=entry.batch.totalTriangles;
     if(entry.dynamic){o.updateWorldMatrix(true,false);entry.bounds.setFromObject(o);}
     let visible=boxThroughWindow(entry.bounds,planes,frustum);
-    if(visible&&entry.batch){
-     visible=entry.batch.select(bounds=>boxThroughWindow(bounds,planes,frustum));
-     if(visible){swapped.push([o,o.geometry]);o.geometry=entry.batch.geometry;stats.submittedBatchTriangles+=entry.batch.triangles;}
+    // Partition only geometry which can actually appear through this opening.
+    // Preparing every hidden building at the first doorway spikes CPU memory.
+    if(visible&&!entry.dynamic){
+     if(!batches.has(o))batches.set(o,createWindowBatch(o));
+     const batch=batches.get(o);
+     if(batch){
+      stats.batchTriangles+=batch.totalTriangles;
+      visible=batch.select(bounds=>boxThroughWindow(bounds,planes,frustum));
+      if(visible){swapped.push([o,o.geometry]);o.geometry=batch.geometry;stats.submittedBatchTriangles+=batch.triangles;}
+     }
     }
     if(!visible){hidden.push(o);o.visible=false;}else stats.visible++;
    }

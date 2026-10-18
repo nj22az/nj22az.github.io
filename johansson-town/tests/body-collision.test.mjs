@@ -36,3 +36,12 @@ test('a crowd settles without anyone overlapping', ()=>{
   separateBodies(crowd,{passes:30});
   for(let i=0;i<crowd.length;i++)for(let j=i+1;j<crowd.length;j++)assert.ok(dist(crowd[i],crowd[j])>=BODY_RADIUS*2-1e-3);
 });
+
+test('exactly coincident residents separate by a full body width in one resolution',()=>{
+ for(const fixed of [false,true]){
+  const a={x:0,z:0,fixed},b={x:0,z:0};
+  separateBodies([a,b],{passes:1});
+  assert.ok(dist(a,b)>=BODY_RADIUS*2,'A zero-distance pair must not receive only a 2 mm nudge');
+  if(fixed)assert.deepEqual([a.x,a.z],[0,0]);
+ }
+});

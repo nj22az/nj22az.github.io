@@ -13,7 +13,7 @@
     },
     {
       "id": "bridge",
-      "bytes": 51792
+      "bytes": 40262
     }
   ],
   "autoplay": "once",
@@ -48,7 +48,7 @@
       "id": "thuan",
       "personId": "thuan",
       "place": "quay",
-      "name": "Thu\u1eadn",
+      "name": "Thuận",
       "prop": null,
       "width": 960,
       "height": 540,
@@ -96,7 +96,7 @@
       "id": "pier-thuan",
       "personId": "thuan",
       "place": "pier",
-      "name": "Thu\u1eadn",
+      "name": "Thuận",
       "prop": null,
       "width": 960,
       "height": 540,
@@ -124,9 +124,9 @@
       "prop": null,
       "width": 960,
       "height": 540,
-      "seconds": 5,
+      "seconds": 6,
       "fps": 24,
-      "videoBytes": 250622
+      "videoBytes": 181353
     },
     {
       "id": "bridge-johansson",
@@ -136,21 +136,21 @@
       "prop": null,
       "width": 960,
       "height": 540,
-      "seconds": 5,
+      "seconds": 6,
       "fps": 24,
-      "videoBytes": 253556
+      "videoBytes": 184580
     },
     {
       "id": "bridge-thuan",
       "personId": "thuan",
       "place": "bridge",
-      "name": "Thu\u1eadn",
+      "name": "Thuận",
       "prop": null,
       "width": 960,
       "height": 540,
-      "seconds": 5,
+      "seconds": 6,
       "fps": 24,
-      "videoBytes": 257556
+      "videoBytes": 185684
     },
     {
       "id": "bridge-tetsuo",
@@ -160,10 +160,11 @@
       "prop": null,
       "width": 960,
       "height": 540,
-      "seconds": 5,
+      "seconds": 6,
       "fps": 24,
-      "videoBytes": 256085
+      "videoBytes": 181675
     }
   ],
-  "edit": "Short camera approaches and character moments, played once, 5\u20136 seconds at 24 fps."
+  "edit": "Short camera approaches and character moments, played once, 5–6 seconds at 24 fps.",
+  "bridgeRevision": "2026-10-18 · 操舵室 / WHEELHOUSE signs; bridge-films.mjs"
 }

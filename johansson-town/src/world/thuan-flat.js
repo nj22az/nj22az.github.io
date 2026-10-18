@@ -1,69 +1,70 @@
 import * as THREE from '../../vendor/three.module.js';
+import {createKit} from './okinawa/kit.js';
+import {SAKURA_OFFICE} from './interiors/sakura-office-room.js';
 
-/**
- * The flat over the shop, where the Sakurai family who own Sakura live: Grandmother
- * Sakurai, whose parents opened the shop in 1963. Thuan keeps the shop for her and goes
- * home to Kitahama at night (people/island-households.js). The function keeps its old
- * name.
- *
- * The floor above Sakura belongs to the Okinawan quarter's kit building: a plaster
- * front about a metre behind the shop's glass, with a balcony rail along it. Measured
- * in the storefront's own frame (it faces +z): the wall at z -1.05 from y 4.2 to 7, the
- * balcony rail at z -0.2 round y 5. Dressed here so it reads as someone's home from the
- * pavement — curtains, washing on a line with her yellow shirt, pots on the balcony, an
- * air-conditioner, a wind chime and her name on the door.
- */
-const MARU='"Hiragino Maru Gothic ProN","M PLUS Rounded 1c","Yu Gothic","Noto Sans CJK JP",sans-serif';
-const WALL=-1.03,FLOOR=4.2,LINE_Y=6.05,LINE_Z=-.55;
-const tex=(w,h,draw)=>{const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;return t;};
-
-export function buildThuanFlat(parent,{halfWidth=4.6}={}){
- const group=new THREE.Group();group.name="The Sakurai flat";parent.add(group);
- const std=(color,extra={})=>new THREE.MeshStandardMaterial({color,roughness:.8,...extra});
- const mesh=(g,m,x,y,z,name)=>{const o=new THREE.Mesh(g,m);o.position.set(x,y,z);o.name=name;o.castShadow=true;group.add(o);return o;};
- // Curtains in the two windows either end: pink gingham, drawn back with ties.
- const gingham=tex(128,128,(ctx,w,h)=>{ctx.fillStyle='#fff3f6';ctx.fillRect(0,0,w,h);ctx.fillStyle='rgba(240,107,154,.45)';for(let i=0;i<8;i++){ctx.fillRect(i*16,0,8,h);ctx.fillRect(0,i*16,w,8);}});
- gingham.wrapS=gingham.wrapT=THREE.RepeatWrapping;gingham.repeat.set(2,3);
- const curtain=new THREE.MeshStandardMaterial({map:gingham,roughness:.9,side:THREE.DoubleSide});
- for(const x of [-halfWidth+.1,halfWidth-.1])for(const s of [-1,1]){
-  const panel=mesh(new THREE.PlaneGeometry(.42,1.25,6,1),curtain,x+s*.42,5.75,WALL+.015,"Sakurai curtain");
-  // A gathered edge: the panel is waved along its width.
-  const p=panel.geometry.attributes.position;for(let i=0;i<p.count;i++)p.setZ(i,Math.sin(p.getX(i)*28)*.02);panel.geometry.computeVertexNormals();
-  mesh(new THREE.TorusGeometry(.05,.012,6,12),std(0xf06b9a),x+s*.33,5.5,WALL+.04,"Curtain tie");
- }
- // The washing line, pole to pole across the balcony, and what is pegged on it.
- for(const x of [-halfWidth+.5,halfWidth-.5])mesh(new THREE.CylinderGeometry(.018,.018,1.9,8),std(0xc9ced2,{metalness:.4}),x,FLOOR+.95,LINE_Z,'Washing pole');
- const line=mesh(new THREE.CylinderGeometry(.005,.005,halfWidth*2-1,4),std(0xffffff),0,LINE_Y,LINE_Z,'Washing line');line.rotation.z=Math.PI/2;
- const cloth=(w,h,x,colour,shape,name)=>{
-  const t=tex(128,128,(ctx,W,H)=>{ctx.clearRect(0,0,W,H);ctx.fillStyle=colour;
-   if(shape==='shirt'){ctx.beginPath();ctx.moveTo(30,0);ctx.lineTo(98,0);ctx.lineTo(128,30);ctx.lineTo(104,46);ctx.lineTo(100,128);ctx.lineTo(28,128);ctx.lineTo(24,46);ctx.lineTo(0,30);ctx.closePath();ctx.fill();ctx.fillStyle='#ffffff';for(const [a,b] of [[50,60],[80,90],[60,100]]){ctx.beginPath();ctx.arc(a,b,7,0,Math.PI*2);ctx.fill();}}
-   else if(shape==='sock'){ctx.fillRect(40,0,40,90);ctx.beginPath();ctx.ellipse(70,100,34,22,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffffff';ctx.fillRect(40,0,40,14);}
-   else{ctx.fillRect(0,0,W,H);ctx.fillStyle='rgba(255,255,255,.5)';ctx.fillRect(0,H-16,W,6);}
-  });
-  const m=mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({map:t,transparent:true,alphaTest:.1,side:THREE.DoubleSide,roughness:.95}),x,LINE_Y-h/2-.01,LINE_Z,name);
-  m.rotation.y=(x*.7)%.3;
-  for(const s of [-1,1])mesh(new THREE.BoxGeometry(.018,.04,.018),std(0xf06b9a),x+s*w*.35,LINE_Y,LINE_Z,'Clothes peg');
-  return m;
- };
- cloth(.55,.6,-2.4,'#f4d23c','shirt',"Yellow shirt");
- cloth(.5,.55,-1.4,'#9fd6f0','towel','Towel');
- cloth(.18,.26,-.7,'#ff9dc6','sock','Sock');cloth(.18,.26,-.45,'#ff9dc6','sock','Sock');
- cloth(.55,.6,.4,'#27304d','shirt','Work trousers on the line');
- cloth(.6,.5,1.5,'#ffffff','towel','Sakura apron');
- // Pots along the balcony floor, a watering can, and the outdoor air-conditioner unit.
- [[-3.3,0x2a8fcc,0x3f8f46],[-2.9,0xf06b9a,0x57a52f],[2.2,0xffc93c,0x3f8f46]].forEach(([x,pot,leaf])=>{
-  mesh(new THREE.CylinderGeometry(.14,.1,.22,12),std(pot),x,FLOOR+.11,-.45,'Balcony pot');
-  for(let i=0;i<5;i++){const l=mesh(new THREE.SphereGeometry(.09,8,6),std(leaf),x+Math.cos(i*1.3)*.06,FLOOR+.3+i*.04,-.45+Math.sin(i*1.3)*.06,'Balcony plant');l.scale.set(1,.6,1);}
- });
- mesh(new THREE.BoxGeometry(.7,.52,.3),std(0xf2f2ee),3.3,FLOOR+.27,-.78,'Air-conditioner unit');
- const fan=mesh(new THREE.CircleGeometry(.18,20),std(0x6b6f7a),3.2,FLOOR+.27,-.62,'Air-conditioner fan');void fan;
- mesh(new THREE.CylinderGeometry(.04,.05,.1,10),std(0x7ccc4a),-2.55,FLOOR+.05,-.35,'Watering can');
- // A glass wind chime by the balcony door, with its paper tail.
- mesh(new THREE.SphereGeometry(.06,12,8,0,Math.PI*2,0,Math.PI*.55),std(0xbfe6ff,{transparent:true,opacity:.7,side:THREE.DoubleSide}),-.9,6.45,-.5,'Furin');
- const tail=tex(64,160,(ctx,w,h)=>{ctx.fillStyle='#fff7df';ctx.fillRect(0,0,w,h);ctx.fillStyle='#d7263d';ctx.font=`bold 30px ${MARU}`;ctx.textAlign='center';ctx.fillText("Summer",w/2,60);ctx.fillStyle='#2a8fcc';ctx.fillRect(10,100,44,6);});
- mesh(new THREE.PlaneGeometry(.07,.18),new THREE.MeshStandardMaterial({map:tail,side:THREE.DoubleSide}),-.9,6.25,-.5,'Furin tail');
- // The family's nameplate by the balcony door.
- const plate=tex(256,96,(ctx,w,h)=>{ctx.fillStyle='#f4e4c8';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#6b4a1c';ctx.lineWidth=6;ctx.strokeRect(3,3,w-6,h-6);ctx.fillStyle='#3b3f55';ctx.font=`bold 48px ${MARU}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText("Sakurai",w/2,h/2);});
- mesh(new THREE.PlaneGeometry(.36,.135),new THREE.MeshStandardMaterial({map:plate,roughness:.8}),.95,5.95,WALL+.02,"Sakurai nameplate");
- return group;
+/** Historical module name retained; Sakura's upper floor now belongs to the business. */
+export function buildThuanFlat(parent,{colliders=[],sites=[],register,enter}={}){
+ const O=SAKURA_OFFICE,hw=O.width/2,D=O.depth,F=O.floor,kit=createKit({shadows:true});
+ parent.updateWorldMatrix(true,false);
+ const p=parent.getWorldPosition(new THREE.Vector3()),yaw=parent.rotation.y;
+ // All solids and walking levels are emitted in the real storefront's world frame.
+ kit.at(p.x,p.z,yaw,()=>{
+  // A modest concrete shop building: the shop's warm plaster, bronze sashes and
+  // red tile hood continue upstairs. All trim stays outside the existing room.
+  const plaster=0xeee7d1,concrete=0xd5d0bd,frame=0x5b4a37,tile=0xb5523a,ridge=0x8f3c2a;
+  kit.block(-hw,hw,F-.12,F,-D,-.95,concrete);
+  kit.block(-hw,hw,F,F+2.8,-D-.12,-D,plaster);
+  kit.block(-hw-.12,-hw,F,F+2.8,-D,-.95,plaster);
+  kit.block(hw,hw+.12,F,F+2.8,-D,-6.85,plaster);
+  for(const [a,b] of [[F,F+.9],[F+2.35,F+2.8]]){
+   kit.block(-hw,hw,a,b,-1.07,-.95,plaster);
+   kit.block(hw,hw+.12,a,b,-6.85,-.95,plaster);
+  }
+  // Projecting sills and thin sliding-sash divisions give the long windows scale.
+  for(const y of [.9,2.35]){
+   kit.box(O.width+.2,.075,.22,0,F+y,-.9,frame);
+   kit.box(.22,.075,5.95,hw+.06,F+y,-3.9,frame);
+  }
+  for(let i=0;i<=8;i++)kit.box(i%2?.045:.075,1.45,.12,-hw+i*O.width/8,F+1.625,-.9,frame);
+  for(const z of [-6.85,-5.425,-4,-2.575,-1.05])kit.box(.12,1.45,.06,hw+.06,F+1.625,z,frame);
+  kit.box(O.width+.36,.1,.32,0,F+.84,-.88,concrete);
+  kit.box(.32,.1,6.08,hw+.1,F+.84,-3.9,concrete);
+  // A shallow red tile sun/rain hood repeats the shop's existing tile profile.
+  // Geometry ribs remain crisp in the cel pass without another image texture.
+  const hoodY=F+2.46;
+  kit.box(O.width+.42,.07,.72,0,hoodY,-.72,tile,{rx:.18});
+  for(let x=-hw-.12;x<=hw+.12;x+=.26)kit.cyl(.035,.035,.72,x,hoodY+.045,-.72,ridge,{segments:6,rx:Math.PI/2+.18});
+  kit.box(O.width+.46,.1,.1,0,hoodY+.11,-1.06,ridge);
+  kit.box(.65,.11,6.04,hw+.2,hoodY,-3.91,tile);
+  for(let z=-6.8;z<-.95;z+=.26)kit.cyl(.035,.035,.65,hw+.2,hoodY+.07,z,ridge,{segments:6,rz:Math.PI/2});
+  // The roof slab and low parapet belong to the same concrete structure below.
+  kit.block(-hw-.22,hw+.22,F+2.8,F+2.98,-D-.2,-.78,concrete);
+  for(const z of [-D-.12,-.88]){
+   kit.box(O.width+.3,.3,.14,0,F+3.13,z,plaster);
+   kit.box(O.width+.42,.055,.24,0,F+3.305,z,concrete);
+  }
+  for(const x of [-hw-.08,hw+.08]){
+   kit.box(.14,.3,D-.88,x,F+3.13,(-D-.12-.88)/2,plaster);
+   kit.box(.24,.055,D-.78,x,F+3.305,(-D-.12-.88)/2,concrete);
+  }
+  for(const x of [-hw-.06,hw+.06])kit.box(.16,2.8,.2,x,F+1.4,-1,concrete);
+  // Drainage is at the service corner, clear of both outlooks and the stair door.
+  kit.cyl(.045,.045,2.95,-hw-.17,F+1.48,-D+.16,0x7b8285,{segments:8});
+  const glazing=new THREE.MeshStandardMaterial({color:0x92a9a5,roughness:.4,emissive:0xffd9a0,emissiveIntensity:0});
+  glazing.userData.kitFinish='glow';
+  const glass=new THREE.Mesh(new THREE.PlaneGeometry(O.width,1.45),glazing);
+  glass.name='Sakura main office glazing';glass.position.set(0,F+1.625,-.94);parent.add(glass);
+  const sideGlass=new THREE.Mesh(new THREE.PlaneGeometry(5.9,1.45),glass.material);
+  sideGlass.name='Sakura harbour office glazing';sideGlass.rotation.y=Math.PI/2;sideGlass.position.set(hw+.01,F+1.625,-3.9);parent.add(sideGlass);
+ },0);
+ const target=parent.parent;kit.finish(target,'Sakura office stair and upper shell');
+ const door=new THREE.Vector3(-18.8,F,-26.66);
+ // The office room's origin is the middle of the upper floor; portals identify the actual east/south openings.
+ const origin=parent.localToWorld(new THREE.Vector3(0,F,-D/2));
+ const portal=(local,interiorYaw,span)=>({position:parent.localToWorld(new THREE.Vector3(local[0],F,local[2]-D/2)).toArray(),yaw:yaw+interiorYaw,interiorOrigin:local,interiorYaw,span,hideGlazing:true});
+ const site={id:'sakura-office',title:'Sakura main office & kitchenette',sub:'SAKURA · MAIN OFFICE',line:'Accounts and supplier orders upstairs; daily till administration remains downstairs.',
+  x:door.x,z:door.z,door:door.toArray(),exitPosition:door.toArray(),approachPosition:door.toArray(),entryFacing:-Math.PI/2,opens:'00:00',
+  officeOrigin:origin.toArray(),officePortals:[portal([0,0,O.front],0,{minX:-hw,maxX:hw,minY:.9,maxY:2.35}),portal([hw,0,1.5],Math.PI/2,{minX:-2.85,maxX:2.85,minY:.9,maxY:2.35})]};
+ sites.push(site);const anchor=new THREE.Object3D();anchor.name='Sakura main office entrance';anchor.position.copy(door).add(new THREE.Vector3(0,1.1,0));target.add(anchor);register?.(anchor,'Enter Sakura main office',()=>enter(site));
+ return {site};
 }

@@ -3,7 +3,7 @@ import * as THREE from '../../vendor/three.module.js';
 /**
  * The 3D-to-2D pass: what turns a lit 3D town into a drawn one.
  *
- *   scene -> rtScene (colour + depth)  ->  ink  ->  grade  ->  fxaa  ->  screen
+ *   scene -> rtScene (colour + depth) -> ink + grade -> rtColour -> FXAA -> screen
  *
  * Ported from Sakura Crossing by Kenton-GMI (MIT). The shading maths is theirs; the
  * plumbing is not, because this town does not render in one call. Outdoors goes
@@ -47,32 +47,32 @@ varying vec2 vUv;
 void main(){vUv=uv;gl_Position=vec4(position.xy,0.0,1.0);}
 `;
 
-const INK_FRAGMENT=`
+const INK_FUNCTIONS=`
 #include <packing>
 uniform sampler2D tDiffuse;
 uniform sampler2D tDepth;
 uniform vec2 uTexel;
-uniform float uNear,uFar;
+uniform float uNear,uFar,uInkEnabled;
 uniform vec3 uInk;
 uniform float uThickness,uSens,uConcave,uConcaveAmount;
 uniform float uFadeStart,uFadeEnd,uStrength,uSkyDepth;
-varying vec2 vUv;
 
 float linearDepth(vec2 uv){
  float d=texture2D(tDepth,uv).x;
  return -perspectiveDepthToViewZ(d,uNear,uFar);
 }
 
-void main(){
- vec3 col=texture2D(tDiffuse,vUv).rgb;
+vec3 inkColour(vec2 uv){
+ vec3 col=texture2D(tDiffuse,uv).rgb;
+ if(uInkEnabled<0.5)return col;
  vec2 t=uTexel*uThickness;
- float dc=linearDepth(vUv);
- if(dc>uSkyDepth){gl_FragColor=vec4(col,1.0);return;}
+ float dc=linearDepth(uv);
+ if(dc>uSkyDepth){return col;}
 
- float dl=linearDepth(vUv-vec2(t.x,0.0));
- float dr=linearDepth(vUv+vec2(t.x,0.0));
- float du=linearDepth(vUv+vec2(0.0,t.y));
- float dd=linearDepth(vUv-vec2(0.0,t.y));
+ float dl=linearDepth(uv-vec2(t.x,0.0));
+ float dr=linearDepth(uv+vec2(t.x,0.0));
+ float du=linearDepth(uv+vec2(0.0,t.y));
+ float dd=linearDepth(uv-vec2(0.0,t.y));
 
  float sx=(dl+dr-2.0*dc)/dc;
  float sy=(du+dd-2.0*dc)/dc;
@@ -87,15 +87,13 @@ void main(){
 
  // The line keeps a whisper of the colour under it, so it never looks pasted on.
  vec3 line=mix(uInk,col*0.42,0.22);
- gl_FragColor=vec4(mix(col,line,clamp(edge,0.0,1.0)),1.0);
+ return mix(col,line,clamp(edge,0.0,1.0));
 }
 `;
 
-const GRADE_FRAGMENT=`
-uniform sampler2D tDiffuse;
+const GRADE_FUNCTIONS=`
 uniform vec3 uShadowTint,uLightTint;
 uniform float uSaturation,uLift,uVignette,uWarmth,uAmount,uExposure;
-varying vec2 vUv;
 
 vec3 linearToSRGB(vec3 c){
  return mix(c*12.92,1.055*pow(max(c,vec3(0.0031308)),vec3(1.0/2.4))-0.055,step(0.0031308,c));
@@ -112,8 +110,8 @@ vec3 shoulder(vec3 c){
  return c*(t/m);
 }
 
-void main(){
- vec3 raw=shoulder(texture2D(tDiffuse,vUv).rgb*uExposure);
+vec3 gradeColour(vec3 source,vec2 uv){
+ vec3 raw=shoulder(source*uExposure);
  vec3 c=raw;
  float l=dot(c,vec3(0.2126,0.7152,0.0722));
 
@@ -126,15 +124,25 @@ void main(){
  c=c+uLift*(1.0-k);
  c=mix(vec3(l),c,uSaturation);
 
- float r=length(vUv-0.5)*1.42;
+ float r=length(uv-0.5)*1.42;
  c*=1.0-uVignette*pow(clamp(r,0.0,1.0),2.6);
 
  // uAmount 0 leaves a plain linear->sRGB blit, so the grade can be compared away
  // without the pass dropping out of the chain and taking the picture with it.
  c=mix(raw,c,uAmount);
 
- gl_FragColor=vec4(linearToSRGB(max(c,vec3(0.0))),1.0);
+ return linearToSRGB(max(c,vec3(0.0)));
 }
+`;
+
+// The grade consumes the ink result in the same fragment. It stays linear until
+// the final sRGB conversion; FXAA still samples the graded image as before. This
+// removes a full-screen colour target and one draw without changing effect order.
+const COMPOSITE_FRAGMENT=`
+varying vec2 vUv;
+${INK_FUNCTIONS}
+${GRADE_FUNCTIONS}
+void main(){gl_FragColor=vec4(gradeColour(inkColour(vUv),vUv),1.0);}
 `;
 
 const FXAA_FRAGMENT=`
@@ -190,42 +198,42 @@ function makeQuad(fragmentShader,uniforms){
  * @param {number} [options.pixelBudget] hard ceiling on render-target pixels
  * @param {boolean} [options.fxaa]
  * @param {number} [options.samples] MSAA samples for the scene target (WebGL2 only)
+ * @param {boolean} [options.preferHalfFloat] Allow eight-bit targets on constrained devices
  * @param {number} [options.ink] ink colour
  */
-export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxaa=true,samples=4,ink=0x2b2a33,inkOptions={},gradeOptions={}}={}){
+export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxaa=true,samples=4,preferHalfFloat=true,ink=0x2b2a33,inkOptions={},gradeOptions={}}={}){
  const capabilities=renderer.capabilities||{};
  // Half-float keeps the grade from banding. Where it is not available the chain
  // still runs, just on eight bits.
  // WebGL2 supports half-float textures, but rendering into them still requires a
  // colour-buffer extension. Unsupported attachments can produce a black frame
  // without throwing, so choose the safe target format before allocating anything.
- const halfFloat=capabilities.isWebGL2!==false&&!!(renderer.extensions?.has('EXT_color_buffer_float')||renderer.extensions?.has('EXT_color_buffer_half_float'));
+ const halfFloat=preferHalfFloat&&capabilities.isWebGL2!==false&&!!(renderer.extensions?.has('EXT_color_buffer_float')||renderer.extensions?.has('EXT_color_buffer_half_float'));
  const targetOptions={
   type:halfFloat?THREE.HalfFloatType:THREE.UnsignedByteType,
   minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,
   stencilBuffer:false,
   colorSpace:THREE.NoColorSpace
  };
- // Hardware multisampling on the scene itself: the geometry edges are resolved before
- // the ink and the grade ever see them, which supersampling alone only approximated
- // (and the pixel budget turned off on large tablets). Tile-based mobile GPUs resolve
- // MSAA on chip, so on an iPad it costs next to nothing.
+ // Native and offscreen multisampling both retain storage. Callers with a
+ // constrained graphics budget use samples:0 and keep the final FXAA pass.
  const msaa=capabilities.isWebGL2!==false&&samples>0?Math.min(samples,capabilities.maxSamples??4):0;
  const rtScene=new THREE.WebGLRenderTarget(2,2,{...targetOptions,depthBuffer:true,samples:msaa});
  rtScene.depthTexture=new THREE.DepthTexture(2,2);
  rtScene.depthTexture.format=THREE.DepthFormat;
  rtScene.depthTexture.type=THREE.UnsignedIntType;
  rtScene.depthTexture.minFilter=rtScene.depthTexture.magFilter=THREE.NearestFilter;
- const rtA=new THREE.WebGLRenderTarget(2,2,{...targetOptions,depthBuffer:false});
- const rtB=new THREE.WebGLRenderTarget(2,2,{...targetOptions,type:THREE.UnsignedByteType,depthBuffer:false});
+ // Once graded the image is sRGB, so an eight-bit target is sufficient even
+ // when the scene uses HDR. No second linear intermediate or depth attachment.
+ const rtColour=new THREE.WebGLRenderTarget(2,2,{...targetOptions,type:THREE.UnsignedByteType,depthBuffer:false});
 
  const settings={...INK_DEFAULTS,...inkOptions};
  const grading={...GRADE_DEFAULTS,...gradeOptions};
 
- const inkPass=makeQuad(INK_FRAGMENT,{
+ const compositePass=makeQuad(COMPOSITE_FRAGMENT,{
   tDiffuse:{value:null},tDepth:{value:rtScene.depthTexture},
   uTexel:{value:new THREE.Vector2(1,1)},
-  uNear:{value:0.1},uFar:{value:220},
+  uNear:{value:0.1},uFar:{value:220},uInkEnabled:{value:1},
   uInk:{value:new THREE.Color(ink)},
   uThickness:{value:settings.thickness},
   uSens:{value:settings.sensitivity},
@@ -234,10 +242,7 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
   uFadeStart:{value:settings.fadeStart},
   uFadeEnd:{value:settings.fadeEnd},
   uStrength:{value:settings.strength},
-  uSkyDepth:{value:settings.skyDepth}
- });
- const gradePass=makeQuad(GRADE_FRAGMENT,{
-  tDiffuse:{value:null},
+  uSkyDepth:{value:settings.skyDepth},
   uShadowTint:{value:new THREE.Color(grading.shadowTint)},
   uLightTint:{value:new THREE.Color(grading.lightTint)},
   uSaturation:{value:grading.saturation},
@@ -264,12 +269,12 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
   const rw=Math.max(2,Math.floor(w*scale)),rh=Math.max(2,Math.floor(h*scale));
   if(rw===width&&rh===height)return false;
   width=rw;height=rh;size.set(rw,rh);
-  rtScene.setSize(rw,rh);rtA.setSize(rw,rh);rtB.setSize(rw,rh);
+  rtScene.setSize(rw,rh);rtColour.setSize(rw,rh);
   const texel=new THREE.Vector2(1/rw,1/rh);
-  inkPass.material.uniforms.uTexel.value.copy(texel);
+  compositePass.material.uniforms.uTexel.value.copy(texel);
   fxaaPass.material.uniforms.uTexel.value.copy(texel);
   // Keep the line roughly two device pixels wide whatever we are rendering at.
-  inkPass.material.uniforms.uThickness.value=(settings.thickness/1.35)*(1.05+0.55*Math.max(1,scale))*Math.min(1,scale);
+  compositePass.material.uniforms.uThickness.value=(settings.thickness/1.35)*(1.05+0.55*Math.max(1,scale))*Math.min(1,scale);
   return true;
  }
 
@@ -285,19 +290,19 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
    */
   tune(values={}){
    for(const [name,value] of Object.entries(values)){
-    const uniform=inkPass.material.uniforms[name]||gradePass.material.uniforms[name];
+    const uniform=compositePass.material.uniforms[name];
     if(!uniform)continue;
     if(uniform.value&&uniform.value.isColor)uniform.value.set(value);
     else uniform.value=value;
    }
   },
   /** Time of day still lifts the picture; with tone mapping off the grade carries it. */
-  setExposure(value){gradePass.material.uniforms.uExposure.value=value;},
+  setExposure(value){compositePass.material.uniforms.uExposure.value=value;},
   /** Camera clip planes feed the depth linearisation; re-read them each frame. */
   setCamera(camera){
    if(!camera)return;
-   inkPass.material.uniforms.uNear.value=camera.near;
-   inkPass.material.uniforms.uFar.value=camera.far;
+   compositePass.material.uniforms.uNear.value=camera.near;
+   compositePass.material.uniforms.uFar.value=camera.far;
   },
   /**
    * Runs `draw(renderer)` into the offscreen target, then the chain onto the screen.
@@ -312,24 +317,16 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
     renderer.clear();
     draw(renderer);
 
-    let source=rtScene.texture;
-    if(state.ink){
-     inkPass.material.uniforms.tDiffuse.value=source;
-     renderer.setRenderTarget(rtA);
-     inkPass.render(renderer);
-     source=rtA.texture;
-    }
-
-    // The grade is not optional as a *pass*: everything upstream is linear and it is
-    // what converts to sRGB, so skipping it would put a washed-out image on screen.
-    // Turning the grade "off" zeroes its look and leaves the conversion.
-    gradePass.material.uniforms.uAmount.value=state.grade?1:0;
-    gradePass.material.uniforms.tDiffuse.value=source;
-    renderer.setRenderTarget(state.fxaa?rtB:null);
-    gradePass.render(renderer);
+    // Ink and grade share one draw and one sample of the scene colour. A
+    // disabled ink/grade changes uniforms, never the linear -> sRGB conversion.
+    compositePass.material.uniforms.uInkEnabled.value=state.ink?1:0;
+    compositePass.material.uniforms.uAmount.value=state.grade?1:0;
+    compositePass.material.uniforms.tDiffuse.value=rtScene.texture;
+    renderer.setRenderTarget(state.fxaa?rtColour:null);
+    compositePass.render(renderer);
 
     if(state.fxaa){
-     fxaaPass.material.uniforms.tDiffuse.value=rtB.texture;
+     fxaaPass.material.uniforms.tDiffuse.value=rtColour.texture;
      renderer.setRenderTarget(null);
      fxaaPass.render(renderer);
     }
@@ -342,8 +339,8 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
   /** The target the town is drawn into: shaders compiled ahead of time are compiled for it (game.js compileTown). */
   get sceneTarget(){return rtScene;},
   dispose(){
-   [rtScene,rtA,rtB].forEach(rt=>rt.dispose());
-   [inkPass,gradePass,fxaaPass].forEach(p=>p.dispose());
+   [rtScene,rtColour].forEach(rt=>rt.dispose());
+   [compositePass,fxaaPass].forEach(p=>p.dispose());
   }
  };
 }

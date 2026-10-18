@@ -18,7 +18,7 @@ import {installDOM} from './fixtures.mjs';
 test('all 31 cast members have one canonical primary home; shared and weekday households map once',()=>{
  const cards=residentCards(),targets=canonicalHomeSites(cards);
  assert.equal(cards.length,31);assert.deepEqual(cards.map(c=>c.name),CAST.map(c=>c.name));
- assert.equal(targets.length,24);assert.equal(new Set(targets.map(t=>t.homeId)).size,targets.length);
+ assert.equal(targets.filter(t=>!t.aboard).length,24);assert.equal(new Set(targets.map(t=>t.homeId)).size,targets.length);
  for(const card of cards){
   assert.ok(card.home.residents.includes(card.name),card.name+' belongs to the listed home');
   assert.equal(card.home.id,homeForResident(card.name).home);
@@ -31,8 +31,8 @@ test('all 31 cast members have one canonical primary home; shared and weekday ho
  assert.deepEqual(homeForResident('Vy').residents,['Thuan','Thao','Chin','Vy']);
  assert.deepEqual(kitahamaHomeFor('Vy').door,plotGate(KITAHAMA.plots[0]).door);
  assert.equal(residentHome('Mr Fujita').id,'fujita-houseboat');assert.equal(residentHome('Barfly').id,'izakaya');
- assert.equal(homeNameplate('kitahama-3').owners,'Kōji · Riku');assert.equal(homeNameplate('kitahama-11').owners,'To let');
- assert.deepEqual(homeUnits('kitahama-flats').map(h=>h.residents),[['Mr Higa Jr'],['Ms Ganaha'],[],[]]);
+ assert.equal(homeNameplate('kitahama-3').owners,'Kōji · Riku');assert.equal(homeNameplate('kitahama-11'),null);
+ assert.deepEqual(homeUnits('kitahama-flats').map(h=>h.residents),[['Mr Higa Jr'],['Grandmother Sakurai'],['Mr Nakandakari'],['Ms Ganaha']]);
  assert.ok(HOUSEHOLDS.every(h=>!h.address.includes('Main Street')),'legacy street-entry numbers do not become displayed addresses');
  for(const id of ['resident-home-nao','resident-home-thao','resident-home-chin','yuri-home'])assert.equal(canonicalHomeId(id),'resident-home-thuan');
  for(const id of ['tamaki','kamiya']){const h=householdAtHome(id);assert.equal(h.status,'retired');assert.equal(h.toLet,false);assert.ok(!targets.some(t=>t.homeId===id));}
@@ -85,7 +85,7 @@ test('numbered flat approaches and the upper stair agree with the drawn surface 
  assert.equal(height(...[KITAHAMA_FLATS[0].door[0],KITAHAMA_FLATS[0].door[2]]),KITAHAMA.y+2.88);
  for(const unit of KITAHAMA_FLATS.slice(0,2)){
   for(let x=(KITAHAMA.fukugiLane.minX+KITAHAMA.fukugiLane.maxX)/2;x>=unit.approachPosition[0];x-=.1)check([x,height(x,unit.door[2]),unit.door[2]]);
-  const c=residentHome(unit.unitNumber==='1'?'Mr Higa Jr':'Ms Ganaha',{landmarks:world.landmarks});assert.deepEqual(c.target.entrancePosition,unit.door);assert.deepEqual(c.target.door,unit.approachPosition);
+  const c=residentHome(unit.unitNumber==='1'?'Mr Higa Jr':'Grandmother Sakurai',{landmarks:world.landmarks});assert.deepEqual(c.target.entrancePosition,unit.door);assert.deepEqual(c.target.door,unit.approachPosition);
  }
  // An actual walk from the stair foot to both upper unit doors, with ordinary step heights.
  const route=[[A.minX+.9,A.minZ+.1],[A.maxX-1.3,A.minZ+.1],[A.maxX-1.3,A.minZ+7.8]];let previous=null;

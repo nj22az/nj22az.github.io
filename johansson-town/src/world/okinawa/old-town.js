@@ -149,48 +149,7 @@ export const SAKURA_VENDING=Object.freeze({x:SAKURA_BOX.maxX+.24+.03+VENDING_MAC
 
 function dressSakura(kit,solid,{inspect}){
  const S=SAKURA_BOX,roof=S.roof;
- // The flat upstairs, set back from the frontage so the shop's sign keeps the street.
- const x0=S.minX+.15,x1=S.maxX-1.05,z0=S.minZ+.5,z1=S.maxZ-.5,top=roof+2.7,wall=0xe7dcc2;
- kit.block(x0,x1,roof,top,z0,z1,wall,'plaster');
- kit.block(x0-.04,x1+.04,roof,roof+.25,z0-.04,z1+.04,0xc9bfa6);
- for(const [a,b,c,d] of [[x0,x1,z0,z0+.14],[x0,x1,z1-.14,z1],[x0,x0+.14,z0,z1],[x1-.14,x1,z0,z1]])kit.block(a,b,top,top+.45,c,d,wall,'plaster');
- kit.block(x1-.02,x1+.06,top+.4,top+.5,z0,z1,0xb84e45);
- // Windows on the street, one of them a door out onto the terrace over the shop.
- const window=(z,y,w,h)=>{
-  kit.box(.06,h+.12,w+.12,x1+.03,y,z,0xb8bec0,{finish:'metal'});
-  kit.box(.05,h,w,x1+.05,y,z,C.glass,{finish:'window'});
-  kit.box(.06,h,.04,x1+.07,y,z,0xb8bec0,{finish:'metal'});
- };
- window(-31.4,roof+1.4,1.9,1.2);window(-27.3,roof+1.15,1.5,2);window(-23.2,roof+1.4,1.9,1.2);
- for(const z of [-29.4,-25.2])kit.box(.28,.5,.78,x1+.18,roof+2.1,z,0xe2e0d8);
- // The back and the north end have their windows too: a kitchen, a bathroom, a bedroom.
- for(const [z,w] of [[-26,1.6],[-22.6,1.2]]){
-  kit.box(.06,1.12,w+.12,x0-.03,roof+1.45,z,0xb8bec0,{finish:'metal'});
-  kit.box(.05,1,w,x0-.05,roof+1.45,z,C.glass,{finish:'window'});
- }
- kit.box(.8,.5,.3,x0-.2,roof+.7,-24.3,0xe2e0d8);
- for(const x of [-15.6,-11.6]){
-  kit.box(1.5,1.12,.06,x,roof+1.45,z1+.03,0xb8bec0,{finish:'metal'});
-  kit.box(1.38,1,.05,x,roof+1.45,z1+.05,C.glass,{finish:'window'});
- }
- // The terrace: the strip of shop roof in front of the flat, railed, with washing and pots.
- for(let z=S.minZ+.5;z<=S.maxZ-.5;z+=1.1)kit.rod([S.maxX-.2,roof,z],[S.maxX-.2,roof+1,z],.02,0x9aa0a4);
- kit.rod([S.maxX-.2,roof+1,S.minZ+.5],[S.maxX-.2,roof+1,S.maxZ-.5],.025,0x9aa0a4);
- kit.rod([S.maxX-.2,roof+.5,S.minZ+.5],[S.maxX-.2,roof+.5,S.maxZ-.5],.018,0x9aa0a4);
- for(const z of [-32.6,-30.4,-24.4,-21.4])potPlant(kit,S.maxX-.62,z,{seed:Math.round(-z),size:.25});
- kit.rod([x1+.3,roof+1.75,-26.2],[S.maxX-.5,roof+1.75,-26.2],.015,0xd0d4d6);
- kit.rod([x1+.3,roof+1.75,-22.4],[S.maxX-.5,roof+1.75,-22.4],.015,0xd0d4d6);
- for(let k=0;k<5;k++)kit.box(.015,.55+(k%2)*.2,.4,(x1+S.maxX)/2,roof+1.45-(k%2)*.1,-26+k*.85,[0xf4f1ea,0xe8a0a8,0x7fb0d8,0xf1d27a,0xffffff][k],{finish:'thin'});
- // On the roof: two tanks, the aerial and the shop's name on a steel frame.
- for(const z of [-32,-30.4]){
-  kit.box(1,.8,1,x0+1.6,top+.4,z,0x8e979a,{finish:'metal'});
-  kit.cyl(.52,.52,1.1,x0+1.6,top+1.35,z,C.tank,{segments:12,finish:'gloss'});
- }
- kit.rod([x0+3,top,-22],[x0+3,top+2.6,-22],.025,0x8e979a);
- for(const y of [top+2,top+2.35])kit.rod([x0+3,y,-22.6],[x0+3,y,-21.4],.015,0x8e979a);
- for(const z of [-29,-25.6]){kit.rod([x1-.9,top+.45,z],[x1-.9,top+2.4,z],.05,0x6d7478);}
- kit.box(.08,.08,4,x1-.9,top+2.4,-27.3,0x6d7478);
- kit.sign(fascia({jp:"Sakura Shop",en:'Sakura · food & daily goods',bg:'#fbf3dc',accent:'#b84e45',ink:'#a6333c',mark:"Sakura"}),4.2,1.2,x1-.84,top+1.55,-27.3,{ry:Math.PI/2,depth:.08,name:'Sakura rooftop sign'});
+ // The office's open upper shell and windows are owned by thuan-flat.js.
  // A full-length flight along the yard wall, with a clear foot and door landing.
  const sx=S.minX-.85,from=S.minZ+.3,to=from+6.72;
  stairFlight(kit,solid,{id:'sakura-stair',x:sx,z:from,length:to-from,height:roof});

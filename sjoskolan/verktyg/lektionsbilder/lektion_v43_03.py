@@ -1,7 +1,7 @@
 """Vecka 43 fredag, första timmen: del 3 Elscheman och dokumentation (mallen i bygg.py, reglerna i lektioner.py).
 
 Eleverna läser del 3 hemma tisdag kväll till torsdag och gör övning 3.1–3.5 där. Timmen är en genomgång av delen med
-elevernas frågor och övning 3.6 och 3.7 tillsammans. Bilderna har ändå alla teoriavsnitt, eftersom delsidan läses ur
+elevernas frågor och eget arbete med övning 3.6, 3.7 och 3.9. Bilderna har ändå alla teoriavsnitt, eftersom delsidan läses ur
 presentationen: rubrikerna och ordningen är desamma som förut (teorikorten och Hållkretslabbets hänvisningar
 ”Genomgång del 3, avsnitt 4 och 6” bygger på dem). Exempel 1 heter ”Hållkretsens start” (Hållkretslabbets hänvisning).
 Inlämningen (motorns märkskylt, skyddsdata, hållkretsen med nödstopp) och felsökningsrapporten har inga svar här.
@@ -11,7 +11,7 @@ DELSIDA = 'nj22az.github.io/sjoskolan/vecka-43/aktuell/Del_3.html'
 
 # Läxorna efter lektionen (samma lista på bilden ”Det här gör du nu” och på veckosidan). Adresser relativt vecka-43/aktuell/.
 HEMMA = [
-    ('ovn-3', 'Gör övning 3.8–3.10 på delsidan. Ledtrådar och facit finns där.', 'Del_3.html#v43_03-q8', 'Öppna övning 3.8'),
+    ('extra-3', 'Frivillig extra träning: övning 3.8 och 3.10. Prioritera inlämningen. Ledtrådar och facit finns på delsidan.', 'Del_3.html#v43_03-q8', 'Öppna övning 3.8'),
     ('labb', 'Hållkretslabbet: välj ”Ny felmodul”, felsök det dolda felet och fyll i labbprotokollet. '
              'Protokollet är underlaget till felsökningsrapporten.', '../../hallkretslabbet/#labbprotokoll', 'Öppna labben'),
 ]
@@ -39,9 +39,10 @@ LEKTION = {
         ('start', {'instruktion': 'Skriv ett kort svar i chatten.'}),
         ('upplagg', [
             ('09.00', 'Start och startfråga'),
-            ('09.05', 'Pass 1: Genomgång av del 3 med era frågor (avsnitt 1–7)'),
-            ('09.30', 'Övning 3.6 och 3.7 tillsammans'),
-            ('09.40', 'Avslutsfråga, sammanfattning och det här gör du nu'),
+            ('09.05', 'Pass 1: Era frågor om scheman och mätpunkter (avsnitt 1–7)'),
+            ('09.20', 'Eget försök: övning 3.6, 3.7 och 3.9'),
+            ('09.35', 'Jämför resonemang och avslutsfråga'),
+            ('09.45', 'Frågor och nästa steg'),
             ('09.50', 'Paus'),
         ]),
         ('teori', {
@@ -148,8 +149,8 @@ LEKTION = {
             'alt': '9 V-krets med en öppen seriekontakt och en ohmsk last: 9 V över kontakten, 0 V över lasten och ingen ström.',
         }),
         ('ovningar', {
-            'nummer': ['3.6', '3.7'],
-            'instruktion': 'Fem minuter per övning. Skriv ditt svar i chatten. Övning 3.8–3.10 gör du själv efter lektionen.',
+            'nummer': ['3.6', '3.7', '3.9'],
+            'instruktion': 'Fem minuter per övning: försök själv, använd ledtråd vid behov och jämför sedan med facit. Ange mätpunkter och driftläge i 3.6–3.7. Spara din motivering.',
         }),
         ('avslut', None),
         ('lista', {

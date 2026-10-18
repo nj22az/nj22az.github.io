@@ -46,6 +46,18 @@ class LektionernasOvningar(unittest.TestCase):
             hemma = {a for x in lek['laxor'] for a in x['ovningar'] or []}
             self.assertFalse(hemma & set(lek['pa_lektionen']), f'{lek["id"]}: samma övning på lektionen och i läxan')
 
+    def test_frivillig_traning_ger_inte_ogjorda_laxor(self):
+        for lek in self.lektioner():
+            data = dagsvy._lektion_data(lek)
+            for x in lek['laxor']:
+                if x['id'].startswith('extra-'):
+                    self.assertNotIn(x['id'], data['laxor'])
+                    self.assertNotIn(x['id'], data['laxovn'])
+                    html = dagsvy._laxa_html(lek, x)
+                    self.assertIn('Frivilligt', html)
+                    self.assertNotIn('<input', html)
+                    self.assertIn(x['href'], html)
+
     def test_nummertext(self):
         self.assertEqual(dagsvy._nummertext(['1.2', '1.3', '1.4', '1.5', '1.1']), '1.1–1.5')
         self.assertEqual(dagsvy._nummertext(['3.6', '3.7']), '3.6 och 3.7')

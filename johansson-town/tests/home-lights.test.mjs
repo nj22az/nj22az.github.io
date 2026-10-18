@@ -22,11 +22,12 @@ test('Kitahama’s windows follow the people who live there',()=>{
  assert.ok(!residentUpAtHome(person('Thao',{indoors:'home'},{start:960,retire:1620}),H(5)));
  // The grandparents are in bed by half past eight; Mr Iha is up past eleven.
  lights.update(4*day+H(22));
- assert.equal(homeLightLevel(slot('kitahama-6')),0);assert.equal(homeLightLevel(slot('kitahama-11')),1);
+ assert.equal(homeLightLevel(slot('kitahama-6')),0);assert.ok(!lights.homes.some(h=>h.id==='kitahama-11'));
  // The house to let and the empty flat never light.
- assert.equal(homeLightLevel(slot('kitahama-5')),0);assert.equal(homeLightLevel(slot('flat-4')),0);
+ assert.equal(homeLightLevel(slot('kitahama-5')),0);assert.equal(homeLightLevel(slot('flat-4')),1);
  // The flats are lit one by one.
- assert.equal(homeLightLevel(slot('flat-1')),1);assert.equal(homeLightLevel(slot('flat-3')),0,'Mr Fujita is in his shed');
+ assert.equal(homeLightLevel(slot('flat-1')),1);assert.equal(homeLightLevel(slot('flat-3')),0,'Nakandakari has retired for the night');
+ lights.update(4*day+H(20));assert.equal(homeLightLevel(slot('kitahama-5')),1,'Chinen’s occupied home lights in the evening');assert.equal(homeLightLevel(slot('flat-2')),1,'Sakurai’s ground-floor home is occupied');
 });
 
 test('the ferry deckhand is away every other week, and the nurse is called out some nights',()=>{

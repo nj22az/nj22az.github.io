@@ -4,7 +4,7 @@ import {buildNeighbourhoodGround} from './neighbourhood-ground.js';
 import {onIslandLand} from './coastal-ground.js';
 import {isWeekend} from '../commerce/sakura-rota.js';
 import {createKitano} from './kitano-on-demand.js';
-import {buildCountryside} from './countryside.js';
+
 import {buildQuietLife} from './quiet-life.js';
 import {buildTownPower} from './town-power.js';
 import {beginPowerPlan} from './okinawa/props.js';
@@ -328,7 +328,7 @@ export function createTown(options){
   world.staffBench=buildStaffBench({parent:world.group,factory,colliders:world.colliders,
    shadows:options.shadows,register:options.register,onAction:options.onAction});
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
-  world.islandLandscape=buildIslandLandscape({world,register:options.register,onAction:options.onAction,mobile:options.mobile});addCoastalRoadPaint(world);world.parkAccess=buildParkAccess(world,{register:options.register,onAction:options.onAction});world.powerNetwork=buildTownPower(world,{fast:options.desktop,register:options.register,onAction:options.onAction,shadows:options.shadows});world.quietLife=buildQuietLife(world);world.countrysideLife=buildCountryside({world,register:options.register,onAction:options.onAction,mobile:options.mobile});
+  world.islandLandscape=buildIslandLandscape({world,register:options.register,onAction:options.onAction,mobile:options.mobile});addCoastalRoadPaint(world);world.parkAccess=buildParkAccess(world,{register:options.register,onAction:options.onAction});world.powerNetwork=buildTownPower(world,{fast:options.desktop,register:options.register,onAction:options.onAction,shadows:options.shadows});world.quietLife=buildQuietLife(world);
   const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station','ferry-terminal'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);if(site.industrialWorkshop)return h>=540&&h<1140;if(site.id==='market')return true;if(site.id==='frontrow'&&isWeekend(minutes))return false;const close=site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
   // Minato's regular comes back with them: he lives in the izakaya and keeps it
   // company when it is shut (people/izakaya-hours.js), so it is never empty.
@@ -352,7 +352,7 @@ export function createTown(options){
   world.flowerShop=buildFlowerShop({world,group:world.group,register:options.register,onAction:options.onAction,sites:options.sites});
   world.blueCoral=buildBlueCoralShop({world,group:world.group,register:options.register,onAction:options.onAction,sites:options.sites});
   const plants=buildStreetPlants(world.group,world.plantSites,options);
-  if(!plants.count)registerDetail(world,{id:'street-plants',x:0,z:20,radius:70,load:async()=>{
+  if(world.plantSites.length&&!plants.count)registerDetail(world,{id:'street-plants',x:0,z:20,radius:70,load:async()=>{
     if(!await preloadStreetPlants())return false;buildStreetPlants(world.group,world.plantSites,options);return true;
   }});
   // The quay's upper surface receives the same detailed concrete as its walls.
@@ -380,14 +380,21 @@ export function createTown(options){
   // Reused every frame rather than rebuilt: the doors only need to know where people
   // are, and this runs at frame rate.
   const doorTraffic=[];
-  world.update=(dt,time,day,minutes=1002)=>{
+  // Logical journeys continue indoors without animating unseen scenery,
+  // repainting the shed TV or updating the ocean's geometry.
+  world.updateLife=(dt,time,day,minutes=1002)=>{
     world.minutes=minutes;
+    world.portShed?.advance(dt,minutes);
+    world.airportIsland?.update(dt,minutes,day,options.getPlayerPosition?.());
+    world.oilJetty?.update(dt,minutes,time);
+    world.ferry?.update(dt,minutes,time);world.traffic?.update(dt,minutes);world.bus?.update(dt,minutes);
+  };
+  world.update=(dt,time,day,minutes=1002)=>{
+    world.updateLife(dt,time,day,minutes);
     world.updateHours(minutes);world.updateDiningStreet?.(day);
-    world.quietLife?.update(time);world.countrysideLife?.update(time);world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.beachCorner?.tick(dt,options.getPlayerPosition?.());world.portShed?.tick(dt,minutes);world.homeLights?.update(minutes);world.airportIsland?.update(dt,minutes,day,options.getPlayerPosition?.());world.oilJetty?.update(dt,minutes,time);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
+    world.quietLife?.update(time);world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.beachCorner?.tick(dt,options.getPlayerPosition?.());world.portShed?.tick(dt,minutes,{advanceLife:false});world.homeLights?.update(minutes);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
     world.docklandsLife?.update(time,minutes);world.shoppingLane?.update(world.weather,minutes);world.flowerShop?.update(minutes);world.blueCoral?.update(minutes);world.park?.update(time);
     world.busStation?.update(minutes,day);world.tunnel?.update?.(day);
-    // Three daily services, each with a fifteen-minute stop.
-    world.ferry?.update(dt,minutes,time);world.traffic?.update(dt,minutes);world.bus?.update(dt,minutes);
     // The shop doors open for whoever walks up to them. Everybody who is outdoors
     // counts, so a customer arriving is a door opening rather than a person ending.
     if(world.shopDoors?.length){

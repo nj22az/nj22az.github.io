@@ -1,3 +1,4 @@
+import {buildFamilyHome} from '../src/world/interiors/family-home.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
@@ -26,7 +27,7 @@ function roomFor(p){
  const room=new THREE.Group(),colliders=[],site=[...actualSites,...actualWorld.landmarks].find(s=>s.homeOwners?.includes(p.profile.name)||s.homeOwner===p.profile.name);
  assert.ok(site,p.profile.name+' has an actual live home site');
  const shared={site,room,box:(size,pos,c,parent)=>{const g=new THREE.Mesh(new THREE.BoxGeometry(...size),new THREE.MeshBasicMaterial({color:c}));g.position.set(...pos);parent.add(g);return g;},reg(){},collider:(x,z,w,d,height)=>colliders.push({x,z,w,d,height}),action(){},exit(){}};
- const built=site.id==='koban'?buildKobanInterior(shared):site.id==='office'?buildSuppliedRoom(shared):buildResidentHome({...shared,profile:p.profile});
+ const built=site.id==='koban'?buildKobanInterior(shared):site.id==='office'?buildSuppliedRoom(shared):site.familyHome?buildFamilyHome({...shared,household:site.familyHome,residents:site.residents,kind:site.houseKind}):buildResidentHome({...shared,profile:p.profile});
  const metadata={...site,...built,homeLayouts:{...site.homeLayouts,...built.homeLayouts}},b=metadata.bounds;
  return {room,metadata,collides:(x,z,r=.32)=>x<b.minX+r||x>b.maxX-r||z<b.minZ+r||z>b.maxZ-r||colliders.some(c=>circleHitsRect(x,z,r,c))};
 }
@@ -40,7 +41,7 @@ test('two complete days give every resident work, meals and uninterrupted sleep 
    if(homeRoutine(profile,minutes).id==='sleep')assert.equal(plan.place,'home',profile.name+' must not be called out during sleep at '+minutes);
   }
   assert.ok(places.has('home'),profile.name+' returns to their home each day');
-  const work=profile.name==='Thao'?'izakaya':profile.name==='Thuan'?'market':profile.name==='Officer Mori'?'patrol':profile.name==='Mrs Sato'?'ramen':profile.name==='Bus driver'?'station':'work';
+  const work=profile.name==='Thao'||profile.name==='Barfly'?'izakaya':profile.name==='Grandmother Sakurai'?'market':profile.name==='Thuan'?'market':profile.name==='Officer Mori'?'patrol':profile.name==='Mrs Sato'?'ramen':profile.name==='Bus driver'?'station':'work';
   assert.ok(places.has(work),profile.name+' retains their job');
  }
  const nao=RESIDENTS.find(p=>p.name==='Thao'),freeTime=[850,880,910].map(m=>homeRoutine(nao,m).activity);
@@ -111,4 +112,35 @@ test('camera rank cannot remove a visible street resident',()=>{
 test('Chin retains quest dialogue with his own 1980s American slang',()=>{
  assert.match(DIALOGUE.Chin.find(r=>r[0]==='hello')[1],/Yo, bro/);assert.ok(DIALOGUE.Chin.some(r=>r[2]==='book'));assert.ok(DIALOGUE.Chin.some(r=>r[2]==='keychain'));
  assert.ok(DIALOGUE.Chin.every(r=>!r[3]),'Old spoken recordings must not contradict new lines');
+});
+
+test('Tetsuo completes his walk home while the street scene is hidden indoors',()=>{
+ const street=new THREE.Group(),p=person('Tetsuo',street),[hx,hz]=p.profile.home;
+ const from=[hx+8,hz+8],saved={inventory:[],residentLocations:{Tetsuo:{position:from,indoors:null}}};
+ const ai=createCastAI({world:{people:[p]},player:new THREE.Group(),getObserverPosition:()=>new THREE.Vector3(0,0,0),state:()=>saved,paused:()=>false,collides:()=>false});
+ street.visible=false;
+ const minute=300; // Tetsuo's late shift ends after midnight; he is homeward at 05:00.
+ assert.equal(residentPlan(p.profile,minute).place,'home');
+ ai.update(0,minute,false);
+ assert.ok(Math.hypot(p.g.position.x-hx,p.g.position.z-hz)>5,'The saved resident starts on his journey');
+ for(let i=0;i<3600;i++)ai.update(1/30,minute+i/1800,false);
+ assert.equal(p.g.userData.indoors,'home',JSON.stringify({pos:p.g.position.toArray(),home:p.profile.home,data:p.g.userData}));
+ assert.ok(Math.hypot(p.g.position.x-hx,p.g.position.z-hz)<1,'He reaches the actual home entrance');
+ assert.equal(street.visible,false,'Simulation never needs to reveal the town');
+ assert.equal(ai.snapshot().Tetsuo.indoors,'home','The completed journey survives saving');
+});
+
+test('the hidden town advances Fujita to bed without updating exterior decoration',()=>{
+ const world=actualWorld;world.group.visible=false;
+ let pictures=0;const original=world.portShed.tick;
+ world.portShed.tick=(...args)=>{pictures++;return original.apply(world.portShed,args);};
+ try{
+  world.updateLife(0,0,.5,1409);
+  assert.equal(world.portShed.routine.state,'watching');
+  for(let i=0;i<600;i++)world.updateLife(.1,i*.1,.5,1410+i/600);
+  assert.equal(world.portShed.routine.state,'sleeping');
+  assert.equal(world.portShed.fujita.userData.sleeping,true);
+  assert.equal(pictures,0,'The unseen TV and decorative props are not refreshed');
+  assert.equal(world.group.visible,false);
+ }finally{world.portShed.tick=original;world.group.visible=true;}
 });

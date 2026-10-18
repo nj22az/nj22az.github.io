@@ -44,11 +44,11 @@ test('Main Street has buildings on both kerbs, and the shops do things',async()=
  // None of them stands on the pavements.
  for(const c of world.colliders.filter(c=>c.id==='shop-house'))
   assert.ok(c.x-c.w/2>=MAIN_ROAD.pavementEast-.01||c.x+c.w/2<=MAIN_ROAD.pavementWest+.01,'A shop-house is on the pavement at '+c.x);
- const zenzai=labels.find(l=>l.label==='Buy a zenzai');
+ const zenzai=labels.find(l=>l.label==='Order at Nakamura · zenzai & ice cream');
  assert.ok(zenzai,'Nakamura’s sells no zenzai');
  zenzai.fn();
- assert.deepEqual(actions.at(-1).slice(0,1),['buy']);
- assert.equal(actions.at(-1)[2].item,'Zenzai');
+ assert.deepEqual(actions.at(-1).slice(0,1),['dessert-menu']);
+ assert.equal(actions.at(-1)[2][0].item,'Zenzai');
  const higa=homeNameplate('higa'),higaPlate=labels.find(l=>l.label===higa.address+' · '+higa.owners);
  assert.ok(higaPlate,'The Higa gate names its address and actual household');
  higaPlate.fn();

@@ -20,17 +20,17 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=Noto+Sans+JP:wght@500;700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script src="/theme-bootstrap.js?v=random-2"></script>
-  <link rel="stylesheet" href="/styles.css?v=thuans-storage-wip">
-  <link rel="stylesheet" href="/css/project-explorer.css?v=1">
+  <link rel="stylesheet" href="/styles.css?v=linux-port-20261017">
+  <link rel="stylesheet" href="/css/project-explorer.css?v=world-linux-link-025">
   <link rel="stylesheet" href="/css/office-mascots.css?v=2">
   <link rel="stylesheet" href="/css/office-port.css?v=video-2">
-  <link rel="stylesheet" href="/css/office-home.css?v=1">
+  <link rel="stylesheet" href="/css/office-home.css?v=calendar-2">
+  <link rel="stylesheet" href="/css/office-calendar.css?v=availability-5">
   <link rel="stylesheet" href="/css/office-private-course.css?v=1">
-  <script src="/assets/js/office-port.js?v=video-3" defer></script>
+  <script src="/assets/js/office-port.js?v=wheelhouse-025" defer></script>
   <script src="/assets/js/shopify-book-price.js" defer></script>
   <link rel="stylesheet" href="/css/office-blog.css?v=1">
-  <link rel="stylesheet" href="/css/ferry-demo.css?v=1">
-  <script src="/assets/js/ferry-demo-copy.js?v=1" defer></script>
+
 </head>
 <body class="office-home">
 
@@ -68,25 +68,14 @@
           <p>Practical tools, a small island world and hands-on learning. Choose something to try — each project has a different place to begin.</p>
         </div>
         <div class="px-toolbar"><div class="px-filters" role="group" aria-label="Filter projects">
-          <button type="button" data-project-filter="all" aria-pressed="true">All projects <span>5</span></button>
+          <button type="button" data-project-filter="all" aria-pressed="true">All projects <span>6</span></button>
           <button type="button" data-project-filter="tools" aria-pressed="false">Practical tools <span>2</span></button>
-          <button type="button" data-project-filter="create" aria-pressed="false">Worlds &amp; making <span>1</span></button>
+          <button type="button" data-project-filter="create" aria-pressed="false">Worlds &amp; making <span>2</span></button>
           <button type="button" data-project-filter="learn" aria-pressed="false">Learning <span>2</span></button>
-        </div><p id="project-count" role="status" aria-live="polite" aria-atomic="true">5 projects to explore</p></div>
+        </div><p id="project-count" role="status" aria-live="polite" aria-atomic="true">6 projects to explore</p></div>
         <div id="project-grid" class="px-grid" data-filter="all"></div>
-        <noscript><div class="px-fallback"><p>Explore the projects:</p><ul><li><a href="/johansson-town/">Johansson World — explore an Okinawan harbour town</a></li><li><a href="/maintenance-demo/">Maintenance Desk — try an equipment maintenance programme</a></li><li><a href="/sjoskolan/">Sjöskolan — Swedish electrical engineering course</a></li><li><a href="/elteknik/">Elteknik och ellära — textbook and free sample</a></li><li><a href="/stepbuddy/">StepWise — step-by-step calculator</a></li></ul></div></noscript>
+        <noscript><div class="px-fallback"><p>Explore the projects:</p><ul><li><a href="/world/">Johansson World — discover the island</a> · <a href="/johansson-town/">Start the game</a></li><li><a href="/linux-port/">Linux Port — downloads and development journal</a></li><li><a href="/maintenance-demo/">Maintenance Desk — try an equipment maintenance programme</a></li><li><a href="/sjoskolan/">Sjöskolan — Swedish electrical engineering course</a></li><li><a href="/elteknik/">Elteknik och ellära — textbook and free sample</a></li><li><a href="/stepbuddy/">StepWise — step-by-step calculator</a></li></ul></div></noscript>
 
-        <aside class="ferry-install" aria-labelledby="world-download-title">
-          <p class="ferry-kicker">Johansson World · Offline Linux edition</p>
-          <h3 id="world-download-title"><a href="/johansson-world/">Take the island to Steam Deck</a></h3>
-          <p>The whole island, local saves and in-game updates. Harbour Festival is an optional story with real island stages: watch an encounter or take part, and enter the annual tournament.</p>
-          <p>On Steam Deck, open Konsole in Desktop Mode and paste:</p>
-          <div class="ferry-command"><pre><code>curl -fsSL https://nj22az.github.io/johansson-world/install.sh -o /tmp/johansson-world-install.sh &&
-sh /tmp/johansson-world-install.sh</code></pre><button type="button" data-ferry-copy>Copy install command</button></div>
-          <p class="ferry-copy-status" role="status" aria-live="polite"></p>
-          <p class="ferry-small">No compilation or administrator password required. Start opens the pause menu; L3 hides the HUD.</p>
-          <p><a href="/johansson-world/">Download, installation and controller guide →</a> · <a href="/johansson-town/">Explore the browser showcase</a></p>
-        </aside>
         <div class="px-connections"><div><h3>Beyond the projects</h3><p>Source code and professional connections.</p></div><div id="project-channels" class="px-channel-links"></div></div>
       </div>
     </section>
@@ -97,20 +86,6 @@ sh /tmp/johansson-world-install.sh</code></pre><button type="button" data-ferry-
         <span class="whisper-note"><span>Psst… the classroom is this way.</span><br><strong>Private course <span aria-hidden="true">→</span></strong><small>Elteknik och ellära · sign-in required</small></span>
       </a>
     </aside>
-
-    <hr class="section-divider">
-
-    <!-- Schedule — availability table -->
-    <section class="section" id="schedule">
-      <div class="container">
-        <div class="section-header section-header--compact">
-          <div class="section-subtitle">Availability</div>
-          <h2>Working week at a glance</h2>
-          <p>Current office-hours availability, adjusted for location and public holidays.</p>
-        </div>
-        <div id="schedule-widget"></div>
-      </div>
-    </section>
 
     <hr class="section-divider">
 
@@ -173,242 +148,15 @@ sh /tmp/johansson-world-install.sh</code></pre><button type="button" data-ferry-
 
   <footer id="site-footer" class="site-footer"></footer>
 
-  <script src="/config.js?v=blog-1"></script>
-  <script src="/assets/js/project-explorer.js?v=5" defer></script>
-  <script src="/shared.js?v=blog-1"></script>
+  <script src="/config.js?v=header-cover-20261017"></script>
+  <script src="/assets/js/project-explorer.js?v=world-linux-link-025" defer></script>
+  <script src="/shared.js?v=office-pages-026"></script>
+  <script src="/assets/js/office-calendar.js?v=office-pages-026" defer></script>
   <script>
     (function () {
       "use strict";
 
       function $(sel) { return document.querySelector(sel); }
-
-      /* Schedule — interactive week calendar */
-      if (CONFIG.author.schedule && CONFIG.author.locations) {
-        var sched = CONFIG.author.schedule;
-        var locations = CONFIG.author.locations;
-        var weekOffset = 0;
-        var holidayCache = {}; // key: "year-CC" -> array
-        var selectedLocIdx = parseInt(localStorage.getItem("nj-sched-loc") || sched.defaultLocation || "0", 10);
-        if (selectedLocIdx >= locations.length) selectedLocIdx = 0;
-        var locDropdownOpen = false;
-        var legendOpen = false;
-
-        var DAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
-        var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-        function getWeekNumber(d) {
-          var date = new Date(d.getTime());
-          date.setHours(0, 0, 0, 0);
-          date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
-          var week1 = new Date(date.getFullYear(), 0, 4);
-          return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
-        }
-
-        function getMondayOfWeek(offset) {
-          var now = new Date();
-          var day = now.getDay();
-          var diff = now.getDate() - day + (day === 0 ? -6 : 1) + (offset * 7);
-          return new Date(now.getFullYear(), now.getMonth(), diff);
-        }
-
-        function isSameDay(a, b) {
-          return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
-        }
-
-        function renderCalendar(holidays) {
-          var monday = getMondayOfWeek(weekOffset);
-          var wk = getWeekNumber(monday);
-          var today = new Date();
-          var loc = locations[selectedLocIdx];
-
-          // Build holiday map for this week
-          var holidayMap = {};
-          if (holidays && holidays.length) {
-            for (var h = 0; h < holidays.length; h++) {
-              var parts = holidays[h].date.split("-");
-              var hDate = new Date(+parts[0], +parts[1] - 1, +parts[2]);
-              var diff = Math.round((hDate - monday) / 86400000);
-              if (diff >= 0 && diff < 7) {
-                holidayMap[diff] = holidays[h].localName || holidays[h].name;
-              }
-            }
-          }
-
-          // Month label
-          var sunday = new Date(monday.getTime() + 6 * 86400000);
-          var monthLabel = MONTHS[monday.getMonth()];
-          if (monday.getMonth() !== sunday.getMonth()) {
-            monthLabel = MONTHS[monday.getMonth()] + " – " + MONTHS[sunday.getMonth()];
-          }
-
-          // Day cells
-          var dayCells = '';
-          var FULL_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-          for (var i = 0; i < 7; i++) {
-            var d = new Date(monday.getTime() + i * 86400000);
-            var isToday = isSameDay(d, today);
-            var isWeekend = i >= 5;
-            var isHoliday = !!holidayMap[i];
-            var classes = ["schedule-day"];
-            if (isToday) classes.push("today");
-            if (isWeekend) classes.push("weekend");
-            if (isHoliday) classes.push("holiday");
-
-            // Build popup info
-            var popupParts = [FULL_DAYS[i] + " " + d.getDate() + " " + MONTHS[d.getMonth()]];
-            if (isToday) popupParts.push("Today");
-            if (isHoliday) popupParts.push(holidayMap[i]);
-            if (isWeekend && !isHoliday) popupParts.push("Weekend");
-
-            dayCells += '<button class="' + classes.join(" ") + '" data-popup="' + popupParts.join(" · ") + '">' +
-              '<span class="schedule-day-name">' + DAYS[i] + '</span>' +
-              '<span class="schedule-day-num">' + d.getDate() + '</span>' +
-            '</button>';
-          }
-
-          // Holiday names
-          var holidayNames = [];
-          for (var idx in holidayMap) { holidayNames.push(holidayMap[idx]); }
-          var holidayNote = holidayNames.length ?
-            '<p class="schedule-holidays">' + holidayNames.join(" &middot; ") + '</p>' : '';
-
-          // Location dropdown items
-          var locItems = '';
-          for (var li = 0; li < locations.length; li++) {
-            var active = li === selectedLocIdx ? ' active' : '';
-            locItems += '<button class="schedule-loc-item' + active + '" data-loc-idx="' + li + '">' +
-              locations[li].name + ', ' + locations[li].label + '</button>';
-          }
-
-          var pinIcon = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:14px;height:14px"><path d="' + CONFIG.icons.mappin + '"/></svg>';
-          var chevLeft = '<svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M15 18l-6-6 6-6"/></svg>';
-          var chevRight = '<svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M9 18l6-6-6-6"/></svg>';
-
-          $("#schedule-widget").innerHTML =
-            '<div class="schedule-frame">' +
-              '<div class="schedule-header">' +
-                '<div class="schedule-nav">' +
-                  '<button class="schedule-nav-btn" data-dir="-1" aria-label="Previous week">' + chevLeft + '</button>' +
-                  '<span class="schedule-week">Wk ' + wk + '</span>' +
-                  '<button class="schedule-nav-btn" data-dir="1" aria-label="Next week">' + chevRight + '</button>' +
-                '</div>' +
-                '<div class="schedule-loc-wrap">' +
-                  '<button class="schedule-location" aria-label="Change location">' + pinIcon +
-                    '<span class="schedule-location-town">' + loc.name + '</span>, ' +
-                    '<span class="schedule-location-country">' + loc.label + '</span>' +
-                  '</button>' +
-                  '<div class="schedule-loc-dropdown' + (locDropdownOpen ? ' open' : '') + '">' + locItems + '</div>' +
-                '</div>' +
-                '<span class="schedule-header-right">' +
-                  '<span class="schedule-month">' + monthLabel + ' ' + monday.getFullYear() + '</span>' +
-                  '<button class="schedule-info-btn' + (legendOpen ? ' active' : '') + '" aria-label="Legend" type="button">i</button>' +
-                '</span>' +
-              '</div>' +
-              '<div class="schedule-legend"' + (legendOpen ? '' : ' hidden') + '>' +
-                '<div class="schedule-legend-item"><span class="schedule-legend-dot today-sample"></span> Today</div>' +
-                '<div class="schedule-legend-item"><span class="schedule-legend-dot weekend-sample"></span> Weekend</div>' +
-                '<div class="schedule-legend-item"><span class="schedule-legend-dot holiday-sample"></span> Holiday</div>' +
-              '</div>' +
-              '<div class="schedule-days">' + dayCells + '</div>' +
-              '<div class="schedule-popup" hidden></div>' +
-              holidayNote +
-              '<p class="schedule-note">' + sched.note + '</p>' +
-            '</div>';
-
-          // Day cell click — show popup
-          var popup = document.querySelector(".schedule-popup");
-          document.querySelectorAll(".schedule-day").forEach(function (dayEl) {
-            dayEl.addEventListener("click", function (e) {
-              e.stopPropagation();
-              var text = dayEl.dataset.popup;
-              if (popup.hidden === false && popup.textContent === text) {
-                popup.hidden = true;
-                return;
-              }
-              popup.textContent = text;
-              popup.hidden = false;
-            });
-          });
-          document.addEventListener("click", function dismissPopup() {
-            if (popup && !popup.hidden) popup.hidden = true;
-            document.removeEventListener("click", dismissPopup);
-          });
-
-          // Event listeners
-          document.querySelectorAll(".schedule-nav-btn").forEach(function (btn) {
-            btn.addEventListener("click", function () {
-              weekOffset += parseInt(btn.dataset.dir, 10);
-              fetchAndRender();
-            });
-          });
-
-          var locBtn = document.querySelector(".schedule-location");
-          if (locBtn) {
-            locBtn.addEventListener("click", function (e) {
-              e.stopPropagation();
-              locDropdownOpen = !locDropdownOpen;
-              var dd = document.querySelector(".schedule-loc-dropdown");
-              if (dd) dd.classList.toggle("open", locDropdownOpen);
-            });
-          }
-
-          document.querySelectorAll(".schedule-loc-item").forEach(function (item) {
-            item.addEventListener("click", function () {
-              selectedLocIdx = parseInt(item.dataset.locIdx, 10);
-              localStorage.setItem("nj-sched-loc", selectedLocIdx);
-              locDropdownOpen = false;
-              fetchAndRender();
-            });
-          });
-
-          var infoBtn = document.querySelector(".schedule-info-btn");
-          var legend = document.querySelector(".schedule-legend");
-          if (infoBtn && legend) {
-            infoBtn.addEventListener("click", function () {
-              legendOpen = !legendOpen;
-              legend.hidden = !legendOpen;
-              infoBtn.classList.toggle("active", legendOpen);
-            });
-          }
-
-          // Close dropdown on outside click
-          document.addEventListener("click", function closeLocDd() {
-            if (locDropdownOpen) {
-              locDropdownOpen = false;
-              var dd = document.querySelector(".schedule-loc-dropdown");
-              if (dd) dd.classList.remove("open");
-            }
-            document.removeEventListener("click", closeLocDd);
-          });
-        }
-
-        function fetchAndRender() {
-          var loc = locations[selectedLocIdx];
-          var monday = getMondayOfWeek(weekOffset);
-          var year = monday.getFullYear();
-          var cc = loc.countryCode;
-
-          if (!cc) { renderCalendar(null); return; }
-
-          var cacheKey = year + "-" + cc;
-          if (holidayCache[cacheKey]) {
-            renderCalendar(holidayCache[cacheKey]);
-            return;
-          }
-
-          // Render immediately without holidays, then update
-          renderCalendar(null);
-          fetch("https://date.nager.at/api/v3/PublicHolidays/" + year + "/" + cc)
-            .then(function (r) { return r.ok ? r.json() : []; })
-            .then(function (data) {
-              holidayCache[cacheKey] = data;
-              renderCalendar(data);
-            })
-            .catch(function () { /* silent */ });
-        }
-
-        fetchAndRender();
-      }
 
       /* Decorative leaf icons above section headers */
       var leafSvg = '<svg fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="' + CONFIG.icons.leaf + '"/></svg>';

@@ -57,7 +57,9 @@ export const SCHOOL_COLUMNS=Object.freeze(Array.from({length:SCHOOL.bays+1},(_,i
 export const FUKUGI=Object.freeze([
  ...Array.from({length:8},(_,i)=>[12.95,26.9+i*2.45]),
  ...Array.from({length:4},(_,i)=>[40.05,26.2+i*2.55]),
- [13.4,44.7],[16.2,44.7],[37.6,44.7],[40.1,44.7],
+ // Only the corner trees fit beside the shortened hall. The 0.6 m rear strip
+ // cannot hold a 0.7 m trunk without intersecting the building or the boundary.
+ [13.4,44.7],[40.1,44.7],
 ].map(p=>Object.freeze(p)));
 
 export function schoolAt(x,z,r=0){

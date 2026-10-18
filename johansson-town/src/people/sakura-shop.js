@@ -1,3 +1,4 @@
+import {createCheckoutFeedback} from '../world/interiors/sakura-checkout.js';
 import {sakuraClerkAt} from '../commerce/sakura-rota.js';
 import * as THREE from '../../vendor/three.module.js';
 import {circleHitsRect} from '../../physics.js?snappy=1';
@@ -13,12 +14,8 @@ import {PALETTE,fluorescent} from '../render/dusk.js';
 import {createStandIn} from '../render/static-props.js';
 import {townAudio} from '../audio/town-audio.js?snappy=1';
 
-/** Within this of the shop (a few seconds' walk from its door) its back room's figurine is fetched; the docks openings
- * are farther, so it does not compete with what they stream (docs/LOADING.md batch 5). */
-const BACK_ROOMS_NEAR=30;
-
 // A single persistent shop owns stock, staff and customer jobs everywhere in town.
-export function createSakuraShop({world,scene,state,ledger,register,action,exit,getMinutes,getPlayerPosition,isInside,onBorrow=()=>{},getRain=()=>false,save=()=>{}}){
+export function createSakuraShop({world,scene,state,ledger,register,action,exit,officeExit=exit,getMinutes,getPlayerPosition,isInside,onBorrow=()=>{},getRain=()=>false,save=()=>{}}){
  // Re-checked twice a second too: the interior's lights arrive when its model loads.
  let lightsInside=null,lightCheck=0;
  const group=new THREE.Group();group.name='Sakura Shōten continuous shop';group.userData.sharedAsset=true;group.visible=false;scene.add(group);
@@ -38,11 +35,14 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
  const reg=(object,label,fn,inside=true)=>{object.userData.persistentShop=true;register(object,label,fn,inside);};
  const blocked=(x,z,r=.3)=>suppliedRoomBoundsBlocked(layout,x,z,r)||colliders.some(c=>circleHitsRect(x,z,r,c));
  const isOccupied=(x,z,r,excluded)=>{
-  const player=isInside()&&getPlayerPosition();if(player&&Math.hypot(player.x-x,player.z-z)<r+.28)return true;
+  const player=isInside()&&getPlayerPosition();if(player&&(player.y??0)<1&&Math.hypot(player.x-x,player.z-z)<r+.28)return true;
   return world.people.some(p=>p!==excluded&&p.g.userData.inMarket&&p.g.visible&&Math.hypot(p.g.position.x-x,p.g.position.z-z)<r+(p===person?layout.clearance:.35));
  };
- let backRoomsFetched=false,backRoomCheck=0;const shopAt=new THREE.Vector3();
- const display=buildSakuraInterior({room:group,reg,action,exit});display.updateStock(state.sakura.stock);
+ let backRoomsFetched=false;
+ const display=buildSakuraInterior({room:group,reg,action,exit,officeExit});display.updateStock(state.sakura.stock);
+ const checkout=createCheckoutFeedback({drawer:display.cashDrawer,
+  getSale:()=>state.sakura.journal?.findLast(entry=>entry.kind==='Sale'),
+  onSale:()=>townAudio.bells([[1568,0],[2093,.09]],.16)});
  const retail=createShopRetail({world,state,ledger,display,collides:blocked,getMinutes,isOccupied});
  let attention=createShopAttention({clerk:person.g,world,retail,colliders,isInside,getPlayerPosition});
  let service;
@@ -54,12 +54,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   isOccupied});
  service=bindClerk();
  const followRota=()=>{const next=clerkFor(getMinutes());if(!next||next===person)return;service?.prepareToLeave();person=next;attention=createShopAttention({clerk:person.g,world,retail,colliders,isInside,getPlayerPosition});service=bindClerk();};
- /**
-  * The staff and customers, as distinct from the fittings. They are hidden while the
-  * shop is only being looked at through its window: nothing drives their animation
-  * from out there, and a person frozen mid-stride behind the glass reads worse than
-  * an empty aisle.
-  */
+ // Staff and customers remain live behind the glazing as their routines advance.
  const showPeople=on=>{
   // Staff are reparented in by the clerk service rather than added at the top, so this
   // has to look through the whole shop, not just its direct children. It does not look
@@ -117,7 +112,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
 
  // Rooms behind the shop floor: nobody sees them through the front windows, so from the
  // street they are not drawn (about 200 draw calls on a phone). Inside, they are.
- const BEHIND=new Set(['Sakura back room stock','Sakura restroom','Sakura office life']);
+ const BEHIND=new Set(['Sakura back room stock','Sakura restroom','Sakura office life','Sakura internal stairwell']);
  const backRooms=on=>group.traverse(o=>{if(BEHIND.has(o.name))o.visible=on;});
  /**
   * From the street the shop floor is a stand-in: the same shelves merged into a few
@@ -128,16 +123,18 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
  const windowView=on=>{
   if(on){
    const key=JSON.stringify(state.sakura.stock)+'/'+Math.floor(getMinutes()/1440);
-   if(key!==standKey||!standIn){standIn?.dispose();standIn=createStandIn(group,{name:'Sakura window stand-in'});group.add(standIn.group);standKey=key;}
+   if(key!==standKey||!standIn){standIn?.dispose();standIn=createStandIn(group,{name:'Sakura window stand-in',keepLive:o=>!!(o.userData?.name||o.userData?.character)});group.add(standIn.group);standKey=key;}
    standIn.show(true);
   }else standIn?.show(false);
  };
- return {group,colliders,service,retail,display,blocked,layout,ready:display.ready,
+ return {group,colliders:display.layout.colliders,service,retail,display,blocked,layout:display.layout,ready:display.ready,
   enter(parent){
    if(!backRoomsFetched){backRoomsFetched=true;display.loadBackRooms?.();}
    parent.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);
    const frame=frontFrame();if(frame)frame.visible=true;
-   windowView(false);lit(false);backRooms(true);
+   // The expanded street copy is unnecessary indoors. Release its buffers before
+   // the full shop and window view allocate their rendering resources.
+   windowView(false);standIn?.dispose();standIn=null;standKey='';lit(false);backRooms(true);
    group.visible=true;showPeople(true);display.updateStock(state.sakura.stock);
    syncLightVisibility(true);
    // The door chime: a bright little arpeggio of our own as the automatic door opens.
@@ -154,6 +151,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    * @param {{position:number[],yaw:number}} frontage
    */
   street(parent,frontage){
+   checkout.update(0,false);
    if(!parent||!frontage?.position)return false;
    parent.add(group);
    const fit=WINDOW_FIT;
@@ -163,7 +161,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
     .add(new THREE.Vector3(0,0,-fit*(layout.frontZ??3.91)).applyAxisAngle(UP,frontage.yaw));
    const frame=frontFrame();if(frame)frame.visible=false;
    lit(true);backRooms(false);
-   group.visible=true;showPeople(false);
+   group.visible=true;showPeople(true);
    display.updateStock(state.sakura.stock);
    windowView(true);
    // Window mounting can finish after the outside light scan. Synchronise the new
@@ -171,17 +169,14 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    syncLightVisibility(false);
    return true;
   },
-  hide(){windowView(false);scene.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);group.visible=false;lit(false);backRooms(true);const frame=frontFrame();if(frame)frame.visible=true;showPeople(true);syncLightVisibility(false);},
+  hide(){checkout.update(0,false);windowView(false);scene.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);group.visible=false;lit(false);backRooms(true);const frame=frontFrame();if(frame)frame.visible=true;showPeople(true);syncLightVisibility(false);},
   update(dt){
-   // The back room's figurine comes when he is near the shop on the street (not parked out of sight at the origin) or
-   // goes in (sakura-backroom.js); a check a second.
-   if(!backRoomsFetched&&(backRoomCheck-=dt)<=0){backRoomCheck=1;const p=!isInside()&&getPlayerPosition();if(p&&group.visible&&group.parent&&group.parent!==scene&&group.getWorldPosition(shopAt).distanceTo(p)<BACK_ROOMS_NEAR){backRoomsFetched=true;display.loadBackRooms?.();}}
    // The shop's lights are for the inside of the shop. The interior stays in the street
    // scene so you can see it through the glass, but a light has no walls: left on, its
    // hemisphere fill brightened the whole town and its tubes threw a 17 m halo over the
    // roof and the road. Outside, the shop shows through the window by its own glow.
    {const inside=!!isInside();lightCheck-=dt;if(inside!==lightsInside||lightCheck<=0)syncLightVisibility(inside);}
-   display.tick?.(performance.now()/1000);followRota();if(!person.g.userData.playerControlled){residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);}display.refrigerator.update(dt);display.updateStock(state.sakura.stock);
+   display.tick?.(performance.now()/1000);followRota();if(!person.g.userData.playerControlled){residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);}checkout.update(dt,!!isInside());display.refrigerator.update(dt);display.updateStock(state.sakura.stock);
    // The office door opens for whoever is in the shop and near it: the player, Thuan, anyone borrowed in.
    // The front door, from inside, opens the same way (the street side has its own).
    if(display.officeDoor){const points=[];if(isInside()){const p=getPlayerPosition();points.push([p.x,p.z]);}for(const other of world.people)if(other.g.parent===group)points.push([other.g.position.x,other.g.position.z]);display.officeDoor.update(dt,points);display.frontDoor?.update(dt,points);}},

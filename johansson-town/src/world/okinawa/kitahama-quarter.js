@@ -46,10 +46,6 @@ export function buildKitahamaQuarter(kit,solid,{anchor,onAction,vending},{across
   serviceDrop(kit,nearest(door[0],door[1]),target.toArray());
  }
  {const A=K.apartment;serviceDrop(kit,north,kit.point(A.maxX-1.9,5.3,(A.minZ+A.maxZ)/2).toArray());}
- // ---- Somebody's life: a dog house inside the yard.
- {const p=K.plots.find(q=>q.id==='kitahama-10'),x=p.maxX-1.3,z=p.maxZ-1.4;
-  kit.box(.7,.5,.8,x,.25,z,0x9a6a3e);kit.box(.82,.06,.95,x,.56,z,0x7a4b2e,{rz:.18});kit.box(.82,.06,.95,x,.56,z,0x7a4b2e,{rz:-.18});kit.box(.32,.32,.02,x,.22,z+.41,0x2a2420);
-  solid(kit.rect(x-.4,x+.4,z-.45,z+.45,.7,'dog-house'));}
  return {poles};
 }
 
@@ -96,7 +92,7 @@ function buildFlats(kit,solid,{anchor,onAction}){
  kit.level(cx0,cx1,z0,z1,H+.08,'flats-corridor');
  solid({...kit.rect(cx1-.05,cx1+.025,sz0,z1,1,'flats-corridor-rail'),minY:kit.point(0,H+.08,0).y});
  // The name on the parapet, mailboxes at the foot of the stair, bicycles by the door.
- kit.sign(poster({title:'KITAHAMA HEIGHTS',lines:['4 FLATS · ENQUIRIES AT THE TOWN HALL'],bg:'#f2ede0',band:'#3f6f8a'}),1.6,.5,x1+.04,H*2+.15,(z0+z1)/2,{ry:Math.PI/2,name:'flats sign'});
+ kit.sign(poster({title:'KITAHAMA HEIGHTS',lines:['FOUR OCCUPIED HOMES'],bg:'#f2ede0',band:'#3f6f8a'}),1.6,.5,x1+.04,H*2+.15,(z0+z1)/2,{ry:Math.PI/2,name:'flats sign'});
  const mx=A.maxX-.55,mz=A.minZ+1.6;
  kit.box(.1,1.05,.1,mx,.52,mz,steel);
  for(let i=0;i<4;i++)kit.box(.3,.22,.34,mx,1.0+(i%2)*.24,mz-.18+Math.floor(i/2)*.36,[0xc8432f,0x3f6f8a,0xd8b13c,0x5f8f5a][i]);
@@ -107,7 +103,7 @@ function buildFlats(kit,solid,{anchor,onAction}){
  solid(blockWall(kit,A.maxX,A.minZ,A.maxX,A.maxZ,{height:.9,gaps:[[A.minZ+1.2,A.minZ+4.2],[A.maxZ-4.2,A.maxZ-1.8]]}));
  const at=kit.point(A.maxX+.5,1,mz);
  anchor(at.x,at.y,at.z,'Read the Kitahama Heights mailboxes',()=>onAction?.('read','Kitahama Heights · the mailboxes',
-  'Four flats, two up and two down, with the stair at the end and the corridor along the lane side.\n\n'+residentsLine(A.id)+'\n\nVacant flats: enquire at the town hall.'));
+  'Four flats, two up and two down, with the stair at the end and the corridor along the lane side.\n\n'+residentsLine(A.id)));
 }
 
 /** The pocket park at the corner of the spine and Well Lane. */

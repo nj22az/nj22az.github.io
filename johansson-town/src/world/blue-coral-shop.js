@@ -1,21 +1,31 @@
 import * as THREE from '../../vendor/three.module.js';
 import {createKit} from './okinawa/kit.js';
 import {poster} from './okinawa/signs.js';
+import {NAKAMURA_HOME_DOOR} from './nakamura-plan.js';
 import {NAKAMURA_DESSERTS} from './harbour-park-plan.js';
 export const BLUE_CORAL=NAKAMURA_DESSERTS;
 export const dessertShopOpen=minutes=>{const m=((minutes%1440)+1440)%1440;return m>=BLUE_CORAL.open&&m<BLUE_CORAL.close;};
 /** Blue Coral is a menu at Nakamura's existing shop, served by Mrs Nakamura. */
 export function buildBlueCoralShop({world,group=world.group,register,onAction}){
  const root=new THREE.Group();root.name='Blue Coral at Nakamura';group.add(root);const kit=createKit();
- // The shop-house builder owns its ice display and physical counter; this is one fascia menu.
- kit.sign(poster({title:'BLUE CORAL',lines:['at Nakamura’s','Island scoops ¥150','Tea ¥120 · soda ¥100','10:00–19:00'],band:'#376f87',bg:'#f2ebd6'}),1.55,1.0,5.64,2.2,-9.55,{ry:-Math.PI/2,name:'Nakamura Blue Coral menu'});
+ // Menu lives on the counter's back wall, leaving the family door clear.
+ kit.sign(poster({title:'NAKAMURA · BLUE CORAL',lines:['Zenzai ¥250 · andagi ¥120','Island ice cream ¥150','Tea ¥120 · soda ¥100','10:00–19:00'],band:'#246c79',bg:'#fff0d5'}),2.45,.95,7.79,2.32,-12.2,{ry:-Math.PI/2,name:'Nakamura dessert menu'});
+ kit.sign(poster({title:'NAKAMURA',lines:['Family entrance','Home upstairs'],band:'#416d72',bg:'#f2ebd6'}),.78,.34,5.64,2.49,-10.05,{ry:-Math.PI/2,name:'Nakamura family nameplate'});
  kit.finish(root,'Nakamura dessert menu');
  let minutes=720;
- const sell=(title,cost,item,text)=>()=>dessertShopOpen(minutes)?onAction?.('buy',title,{cost,item,text}):onAction?.('read','Nakamura is closed','Mrs Nakamura serves zenzai and Blue Coral ice cream here from 10:00 to 19:00. Her family lives upstairs.');
- const anchor=(z,label,fn)=>{const a=new THREE.Object3D();a.position.set(4.45,1.1,z);a.userData.placeId='nakamura';root.add(a);register?.(a,label,fn);};
- anchor(-8.7,'Buy Blue Coral island ice cream · ¥150',sell('Blue Coral island ice cream',150,'Blue Coral ice cream','A freshly scooped cone: ube and island vanilla. Mrs Nakamura serves Blue Coral beside her zenzai counter, at the edge of Harbour Park.'));
- anchor(-7.85,'Buy Blue Coral island tea · ¥120',sell('Blue Coral island tea',120,'Green tea','A chilled bottle of island tea from Nakamura’s shared dessert counter.'));
- anchor(-11.9,'Buy a cold island soda · ¥100',sell('Cold island soda',100,'Cold island soda','A cold bottle of island soda from Nakamura’s shared ice case.'));
+ const anchor=(x,z,label,fn,place='nakamura')=>{const a=new THREE.Object3D();a.position.set(x,1.1,z);a.userData.placeId=place;root.add(a);register?.(a,label,fn);};
+ const products=[
+  {title:'Zenzai',cost:250,item:'Zenzai',text:'Shaved ice over slow-cooked kintoki beans and white mochi, prepared by Mrs Nakamura.'},
+  {title:'Sata andagi',cost:120,item:'Sata andagi',text:'Three freshly fried Okinawan doughnuts in a paper bag.'},
+  {title:'Blue Coral island ice cream',cost:150,item:'Blue Coral ice cream',text:'A freshly scooped cone of beni-imo and island vanilla.'},
+  {title:'Island tea',cost:120,item:'Green tea',text:'A chilled bottle of island tea.'},
+  {title:'Cold island soda',cost:100,item:'Cold island soda',text:'A cold bottle from Nakamura’s ice case.'}
+ ];
+ anchor(5.1,-12.4,'Order at Nakamura · zenzai & ice cream',()=>dessertShopOpen(minutes)?onAction?.('dessert-menu','Nakamura · zenzai & Blue Coral',products):onAction?.('read','Nakamura is closed','Open 10:00–19:00. Mrs Nakamura and Mai live upstairs; the separate family door is beside the counter.'));
+ const [hx,,hz]=NAKAMURA_HOME_DOOR;
+ anchor(hx-.25,hz,'Read the Nakamura family nameplate',()=>onAction?.('read','Nakamura family · upstairs','Mrs Nakamura and Mai live above the shop. The separate front door leads to their private stairwell. Mrs Nakamura closes the counter at 19:00 and walks upstairs.'),'home-nakamura');
+ const home={id:'home-nakamura',title:'Nakamura family · upstairs',sub:'MAIN STREET · FAMILY HOME',homeId:'nakamura',isResidence:true,residents:['Mrs Nakamura','Mai'],x:hx,z:hz,exitPosition:[hx,0,hz],entryFacing:Math.PI/2,line:'Separate family entrance beside Nakamura’s dessert counter; stairs to the flat upstairs.'};
+ if(!(world.landmarks??=[]).some(s=>s.id===home.id))world.landmarks.push(home);
  const [x,z]=BLUE_CORAL.approach,landmark={id:'nakamura',title:BLUE_CORAL.name,owner:BLUE_CORAL.owner,aliases:['blue-coral','zenzai'],sub:'MAIN STREET · DESSERTS',x,z,exitPosition:[x,0,z],entryFacing:Math.PI/2,line:'One counter for zenzai, sata andagi and Blue Coral island ice cream · Mrs Nakamura · 10:00–19:00.'};
  if(!(world.landmarks??=[]).some(s=>s.id===landmark.id))world.landmarks.push(landmark);
  return {root,landmark,merged:true,update(value){if(Number.isFinite(value))minutes=value;},isOpen(){return dessertShopOpen(minutes);}};

@@ -72,3 +72,22 @@ test('large street batches submit selected cells while preserving original geome
  assert.equal(batch.select(()=>false),false);assert.equal(batch.geometry.drawRange.count,0);
  batch.select(()=>true);assert.equal(batch.geometry.drawRange.count,positions.length/3);
 });
+
+
+test('the first window view does not partition hidden or offscreen town geometry',()=>{
+ const scene=new THREE.Scene(),town=new THREE.Group(),room=new THREE.Group();scene.add(town,room);town.visible=false;
+ const counts=new Map();
+ const add=(name,x,z,parent=town)=>{
+  const g=new THREE.PlaneGeometry(4,4,30,30),m=new THREE.Mesh(g,new THREE.MeshBasicMaterial());m.name=name;m.position.set(x,1,z);parent.add(m);
+  const get=g.index.getX.bind(g.index);g.index.getX=i=>{counts.set(name,(counts.get(name)||0)+1);return get(i);};return m;
+ };
+ const hidden=new THREE.Group();hidden.visible=false;town.add(hidden);
+ add('hidden-parent',0,2,hidden);add('offscreen',200,2);const layer=add('unrendered-layer',0,2);layer.layers.set(31);
+ add('visible',0,2);
+ const camera=new THREE.PerspectiveCamera(100,1.6,.07,220);camera.position.set(0,1.7,0);camera.rotation.y=Math.PI;
+ const renderer={autoClear:true,clippingPlanes:[],clearDepth(){},render(){}};
+ const view=createShopStreetView();view.render({renderer,scene,camera,town,room,frontage:{position:[0,0,0],yaw:0}});
+ assert.equal(counts.get('hidden-parent'),undefined);assert.equal(counts.get('offscreen'),undefined);assert.equal(counts.get('unrendered-layer'),undefined);
+ assert.ok(counts.get('visible')>0,'Visible geometry is considered for spatial partitioning');
+ assert.equal(view.stats.visible,1);assert.equal(hidden.visible,false);assert.equal(layer.layers.mask,2**31);
+});

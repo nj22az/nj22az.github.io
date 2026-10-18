@@ -16,8 +16,8 @@ import {buildKitahamaQuarter} from './kitahama-quarter.js';
 import {plotGate} from './layout.js';
 import {residentsLine,homeNameplate} from '../../people/island-households.js';
 import {dressOldTown} from './old-town.js';
-import {buildFumoto} from './fumoto.js';
-import {FUMOTO} from '../fumoto-layout.js';
+
+
 import {MAIN_ROAD} from '../main-road.js';
 import {WEST_YARD} from '../west-yard.js';
 import {createVendingMachine,vendingReady,hydrateVending,VENDING_MACHINE} from '../vending.js';
@@ -66,8 +66,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildWires(kit,solid);
  // Kitahama stands on the island's ground, below the old town's datum.
  kit.at(0,0,0,()=>buildKitahama(kit,solid,{anchor,inspect,onAction,vending:(x,z,ry)=>vending(x,z,ry,KITAHAMA.y)}),KITAHAMA.y);
- // Fumoto, the hamlet at the foot of Mount Aoba, on the same island ground.
- kit.at(0,0,0,()=>buildFumoto(kit,solid,{anchor,inspect,onAction,walledHouse,vending:(x,z,ry)=>vending(x,z,ry,FUMOTO.y+GROUND_LAYER.grass)}),FUMOTO.y);   // the co-op's machine on the hamlet's ground
+
  const old=dressOldTown(kit,solid,{inspect,anchor,onAction,vending,group});
 
  const {meshes,materials}=kit.finish(group,'Okinawan quarter');
@@ -243,7 +242,7 @@ function buildWestQuay(kit,solid,{inspect,anchor,onAction,vending}){
 
 function buildPromenade(kit,solid,{anchor,onAction}){
  const x=-38.35;
- // Benches along the walk, under a couple of sea almond trees, and a lamp every so often.
+ // Benches and lamps along the seawall walk.
  // Facing the sea over the low parapet, with room for your legs in front and the back on
  // the landward side; each one is a seat.
  for(const z of [-20,4,22]){
@@ -253,11 +252,8 @@ function buildPromenade(kit,solid,{anchor,onAction}){
   const seat=anchor(x+.6,1,z,'Sit on the seawall bench',()=>onAction?.('seat','Seawall bench','You sit with your back to the town. Over the parapet the reef goes green, then blue; the tetrapods at the foot of the wall break each wave into spray and a long hiss.'));
   if(seat)seat.userData.seat={id:'seawall-bench-'+z,position:[x,0,z],stand:[x+.85,0,z],surfaceY:.5,eyeY:1.12,yaw:Math.PI/2,pitch:-.03};
  }
- for(const z of [-8,12]){
-  kit.cyl(.16,.22,2.6,-38.9,1.3,z,0x6e5a44,{segments:7});
-  kit.sphere(1.9,-38.6,3.2,z,0x4d7a43,{sy:.45});kit.sphere(1.4,-38.2,3.6,z+.6,0x5b8a4b,{sy:.5});
-  solid({id:'sea-almond',x:-38.9,z,w:.5,d:.5,height:4});
- }
+ // The narrow seawall strip is seating and circulation, not a second planting
+ // system. The park and walled gardens supply the town's shared broadleaf trees.
  for(const z of [-44.5,-26,-2,18]){
   kit.cyl(.05,.07,3.6,-39.05,1.8,z,0x5d6468,{segments:6});
   kit.rod([-39.05,3.6,z],[-38.5,3.7,z],.035,0x5d6468);
@@ -300,6 +296,7 @@ function shopFront(kit,solid,plot,frame,{anchor,inspect,onAction,getMinutes=()=>
  kit.at(frame.x,(plot.minZ+plot.maxZ)/2,frame.ry,()=>solid(shopHouse(kit,{w,d,colour:plot.colour,trim:plot.trim,sign,upright,interior:spec.interior,awning:spec.awning!==false,seed:plot.minZ*7|0})));
  const front=frame.front,out=frame.out,z=(plot.minZ+plot.maxZ)/2;
  const buy=item=>()=>plot.id==='nakamura'&&!dessertShopOpen(getMinutes())?onAction?.('read','Nakamura is closed','Mrs Nakamura serves zenzai, sata andagi and Blue Coral ice cream from 10:00 to 19:00.'):onAction?.('buy',item.title,{cost:item.cost,item:item.item,text:item.text});
+ if(plot.id==='nakamura')return; // One shared dessert menu owns all orders.
  const act=spec.buy?buy(spec.buy):()=>onAction?.('inspect',spec.inspect.title,spec.inspect.text);
  // Off to one side where somebody works the counter, so talking to them wins over the shop.
  anchor(front+out*.9,1.1,z+(spec.anchorDz||0),(spec.buy||spec.inspect).label,act);
@@ -311,22 +308,26 @@ function buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes}){
  for(const plot of EAST_ROW.plots)shopFront(kit,solid,plot,{x,ry:-Math.PI/2,depth,front:EAST_ROW.minX,out:-1},{anchor,inspect,onAction,getMinutes});
  // The strip of ground between the pavement and the shop fronts, paved to match.
  // Kitano Road crosses it where the old lane was, and lays its own surface there.
- for(const [z0,z1] of [[EAST_ROW.plots[0].minZ,EAST_ROW.onsenLane.minZ],[EAST_ROW.onsenLane.maxZ,EAST_ROW.plots[3].maxZ]])
+ for(const [z0,z1] of [[EAST_ROW.plots[0].minZ,EAST_ROW.onsenLane.minZ],[EAST_ROW.onsenLane.maxZ,EAST_ROW.plots.at(-1).maxZ]])
   kit.block(MAIN_ROAD.pavementEast-.05,EAST_ROW.minX+.05,GROUND_LAYER.apron-.05,GROUND_LAYER.apron,z0,z1,0xb9b0a0);
  // The shaved-ice flag outside Nakamura's, and a bench for eating it on.
  const n=EAST_ROW.plots[0];
  kit.cyl(.03,.03,2.6,EAST_ROW.minX-.35,1.3,n.maxZ-.4,0x9aa0a4,{segments:6});
  kit.sign(iceFlag(),.42,1.3,EAST_ROW.minX-.35,1.85,n.maxZ-.62,{ry:0,depth:.015,name:'ice flag',both:true});
  kit.rod([EAST_ROW.minX-.35,2.52,n.maxZ-.4],[EAST_ROW.minX-.35,2.52,n.maxZ-.85],.015,0x9aa0a4);
- kit.box(1.4,.08,.4,EAST_ROW.minX+.35,.45,n.minZ+1.4,0x3a6e8f);
- for(const dz of [-.55,.55])kit.box(.06,.42,.36,EAST_ROW.minX+.35,.21,n.minZ+1.4+dz,0x5d6468);
- solid({id:'zenzai-bench',x:EAST_ROW.minX+.35,z:n.minZ+1.4,w:.5,d:1.5,height:.5});
+ // A usable park-side eating bench; the shop's threshold stays clear.
+ const bx=7.3,bz=-17.6;
+ kit.box(.44,.08,1.4,bx,.45,bz,0x3a6e8f);
+ for(const dz of [-.55,.55])kit.box(.36,.42,.06,bx,.21,bz+dz,0x5d6468);
+ solid({id:'zenzai-bench',x:bx,z:bz,w:.44,d:1.4,height:.5});
+ const seat=anchor(bx-.65,1,bz,'Sit beside Nakamura with your dessert',()=>onAction?.('seat','Nakamura dessert bench','A place in the park breeze for zenzai, warm andagi or an ice-cream cone.'));
+ if(seat)seat.userData.seat={id:'nakamura-dessert-bench',position:[bx,0,bz],stand:[bx-.8,0,bz],surfaceY:.49,eyeY:1.12,yaw:-Math.PI/2,pitch:-.03};
  // The old lane up to the sea bath between the shop-houses is Kitano Road now (kitano-link.js):
  // its stepping stones, lanterns, pot plants and the vending machine made way for the carriageway.
  bicycle(kit,1,EAST_ROW.plots[2].minZ+1.6,{ry:Math.PI/2,colour:0xd9d2c0});
  solid({id:'bicycle',x:1,z:EAST_ROW.plots[2].minZ+1.6,w:.4,d:1.4,height:1.1});
  // Behind the row: washing and kitchen-garden supplies.
- gasBottles(kit,EAST_ROW.maxX-.4,15.2,{ry:Math.PI/2});
+
  planterBoxes(kit,EAST_ROW.maxX-.6,-4.5,{ry:Math.PI/2,count:3});
 }
 
@@ -489,7 +490,7 @@ function buildWires(kit,solid){
  // Down the east kerb of Main Street, the row's side.
  const east=[-15,-1.5,12.3,19.6].map((z,i)=>pole(.35,z,{face:-Math.PI/2,transformer:i%2===0,lamp:true,seed:i}));
  for(let i=0;i<east.length-1;i++)wiresBetween(kit,east[i],east[i+1]);
- for(const [p,z] of [[east[0],-11],[east[1],-4],[east[2],9],[east[3],15.8]])serviceDrop(kit,p,[EAST_ROW.minX+.3,6,z]);
+ for(const [p,z] of [[east[0],-11],[east[1],-4],[east[2],9]])serviceDrop(kit,p,[EAST_ROW.minX+.3,6,z]);
  // Along the seawall walk: three poles, one span to each block. The lanes off it have no
  // poles of their own; a small island lane is fed from the walk, not lined with concrete.
  const walk=[-38,-9.5,20].map((z,i)=>pole(-39,z,{face:Math.PI/2,tel:false,transformer:i===1,lamp:i!==1,seed:10+i*2}));
@@ -508,20 +509,6 @@ function buildKitahama(kit,solid,ctx){
  const K=KITAHAMA,lane=GROUND_LAYER.lane;
  // The shared lane union is drawn by lane-surfaces.js, together with the public plot circuits.
  K.plots.forEach((p,i)=>walledHouse(kit,solid,p,{...ctx,seed:30+i,windbreak:p.gate==='north'?'south':p.gate==='south'?'north':p.gate==='west'?'east':'west'}));
- // The house to let: a board on the gatepost and the shutters closed.
- {const p=K.plots.find(q=>q.romaji==='To let'),x=(p.minX+p.maxX)/2;
-  kit.sign(poster({title:"Rental house",lines:['FOR RENT','2DK · ¥28,000',"Office To the Residents Division"],bg:'#f4ecd6',band:'#c8432f'}),.6,.8,x-1.6,1.1,p.minZ-.3,{ry:Math.PI,name:'to-let sign'});}
- // Sugar cane towards the point: rows of tall leaves, a little lighter at the tips.
- const F=K.field,r=rng(303);
- kit.block(F.minX,F.maxX,GROUND_LAYER.gravel,GROUND_LAYER.gravel+.03,F.minZ,F.maxZ,0x8a7a5a,'sand');
- for(let x=F.minX+.5;x<F.maxX;x+=1.1)for(let z=F.minZ+.4;z<F.maxZ;z+=.8){
-  const h=1.9+r.next()*.7;
-  kit.box(.12,h,.12,x+(r.next()-.5)*.2,h/2,z,0x8aa04a);
-  kit.box(.7,.05,.18,x,h-.1,z,0x5f8f3a,{ry:r.next()*3,rz:.4});
- }
- solid({id:'cane-field',x:(F.minX+F.maxX)/2,z:(F.minZ+F.maxZ)/2,w:F.maxX-F.minX,d:F.maxZ-F.minZ,height:2});
- ctx.inspect((F.minX+F.maxX)/2,1.2,F.minZ-.8,'Look at the cane field',"Sugar cane · Sugar cane",
-  'Head-high cane in rows, rattling in the wind off the point. Postman Tōma and the Ueharas share it; in January everybody on the lane cuts for a fortnight and the lorry comes over on the ferry to take it to the mill on the main island.');
  // The pole line: up the approach lane from the beach, then along the cross lane, with
  // a drop to every house. Poles stand on the lane's own verge, a quarter-metre in from its
  // edge: set outside the edge, they stood inside the garden walls.
@@ -548,7 +535,7 @@ const NAMEPLATES=Object.freeze({
  'kitahama-2':'Mrs Sato\'s house, concrete and very tidy, with a stock pot always on the back step to cool. She walks down to the morning auction at half past five and has the ramen stock on by seven.',
  'kitahama-3':'Kōji\'s house, and Riku\'s. A wetsuit on the line, fish boxes stacked by the gate, a football in the yard and a radio that plays the weather on the hour.',
  'kitahama-4':'Tōma. The postman lives here: his red Super Cub stands in the yard at night with its box padlocked, and he grows goya over the gate.',
- 'kitahama-5':'An empty concrete house on Fukugi Lane, with the board on the gate: to let, ask at the town hall.',
+ 'kitahama-5':'Grandmother Chinen’s ground-access home. Tetsuo visits from his workshop; the entrance stays clear for her.',
  'kitahama-6':'The oldest house on the lane: red tile, and a hinpun with a crack the 1959 typhoon put there. The ferry\'s master lives here now; he is gone to the bridge by half past six and home at eight.',
  'fumoto-1':'The oldest house in Fumoto, red tile behind a hinpun, and empty. The shutters are down and the yard has gone to grass.',
  'fumoto-2':'An empty red-tile house. Hand-carved shisa still sit on the gate, from the year the co-op store opened.',

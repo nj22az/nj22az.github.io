@@ -1,3 +1,5 @@
+import {GROUND} from '../render/ground-palette.js';
+import {paintedAsphalt,paintedPaving} from '../render/toy-surfaces.js';
 import * as THREE from '../../vendor/three.module.js';
 import {KITANO_ROAD,KITANO_ROAD_LENGTH,KITANO_SURFACE_LIFT,roadPoint,roadHeight,leftOf} from './kitano-link-plan.js';
 
@@ -8,7 +10,7 @@ import {KITANO_STOP_S} from './town-traffic.js';
 const STEP=.5;
 /** The road is laid as an apron over whatever it crosses, so the lawn's grass never shows through. */
 const LIFT=KITANO_SURFACE_LIFT;
-const C={asphalt:0x5f6366,footway:0xbab4a6,kerb:0xd3cec2,coral:0xd9cfb3,concrete:0xcfcbc0,girder:0xbcb8ad,pier:0xc4c0b5,rock:0x8f8a80,lampPost:0x9aa3a6,lamp:0xfff3d0,yellow:0xe8b923,carPark:0x666a6c};
+const C={asphalt:GROUND.asphalt,footway:GROUND.pavers,kerb:0xd3cec2,coral:0xd9cfb3,concrete:0xcfcbc0,girder:0xbcb8ad,pier:0xc4c0b5,rock:0x8f8a80,lampPost:0x9aa3a6,lamp:0xfff3d0,yellow:0xe8b923,carPark:0x666a6c};
 
 function frameAt(s){const [x,z,hx,hz]=roadPoint(s),[lx,lz]=leftOf(hx,hz);return {x,z,hx,hz,lx,lz,y:roadHeight(s)};}
 
@@ -34,7 +36,9 @@ export function buildKitanoLink({parent,colliders=null,shadows=false}){
  ribbon(S.carriageway,S.footway,footFrom,end,LIFT+S.kerb,C.footway);
  for(const [colour,list] of ribbons){
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(list,3));g.computeVertexNormals();
-  const m=new THREE.Mesh(g,material(colour,{side:THREE.DoubleSide}));m.receiveShadow=true;m.name=colour===C.asphalt?'Kitano Road carriageway':colour===C.footway?'Kitano Road footway':'Kitano Road gutter';group.add(m);
+  const finish=material(colour,{side:THREE.DoubleSide}).clone();
+  if(colour===C.asphalt||colour===C.footway){finish.map=colour===C.asphalt?paintedAsphalt():paintedPaving();const pos=g.attributes.position,uv=[];for(let i=0;i<pos.count;i++)uv.push(pos.getX(i)/4,pos.getZ(i)/4);g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));}
+  const m=new THREE.Mesh(g,finish);m.receiveShadow=true;m.name=colour===C.asphalt?'Kitano Road carriageway':colour===C.footway?'Kitano Road footway':'Kitano Road gutter';group.add(m);
  }
 
  // ---- Boxes along the road: one instanced mesh per material. ----

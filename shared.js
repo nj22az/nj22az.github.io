@@ -164,6 +164,7 @@
     nav.setAttribute("aria-label", "Primary navigation");
 
     var isHome = (location.pathname === "/" || location.pathname === "/index.html");
+    var compactOffice = isHome || document.body.classList.contains("world-pages");
     var navLinks = CONFIG.navigation.filter(function (item) { return item.id !== "home"; }).map(function (item) {
       var link = navLink(item, isHome);
       return '<a class="nav-link" href="' + link.href + '"' + link.attrs + '>' + item.label + '</a>';
@@ -174,19 +175,21 @@
         '<a href="/" class="nav-brand logo-seal">' + CONFIG.navLogo(34) + '</a>' +
         '<div class="nav-links">' + navLinks + '</div>' +
         '<div class="nav-actions">' +
-          '<button id="nav-hamburger" class="nav-hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="menu-overlay">' +
-            icon("menu") +
+          '<button id="nav-hamburger" class="nav-hamburger" aria-label="' + (compactOffice ? "More options" : "Open menu") + '" aria-expanded="false" aria-controls="menu-overlay">' +
+            (compactOffice ? '<span>More</span>' : icon("menu")) +
           '</button>' +
         '</div>' +
       '</div>';
 
     // Full-screen overlay menu
     var overlay = document.createElement("div");
-    overlay.className = "menu-overlay";
+    overlay.className = "menu-overlay" + (compactOffice ? " office-more" : "");
     overlay.id = "menu-overlay";
     overlay.setAttribute("aria-hidden", "true");
 
-    var menuRows = CONFIG.navigation.map(function (n) {
+    var menuRows = CONFIG.navigation.filter(function (n) {
+      return !compactOffice || !["home", "projects", "world", "blog", "linux-port", "course"].includes(n.id);
+    }).map(function (n) {
       var link = navLink(n, isHome);
       var iconName = navIcons[n.id] || "arrow";
       return '<a href="' + link.href + '"' + link.attrs + ' class="menu-row">' +
@@ -241,6 +244,7 @@
     document.body.appendChild(backdrop);
 
     var hamburger = $("#nav-hamburger");
+    if (compactOffice) {hamburger.classList.add("office-more-toggle");overlay.setAttribute("role", "region");overlay.setAttribute("aria-label", "More options");}
     var themeDisclosure = $("#theme-disclosure");
     var themeOptionsPanel = $("#theme-options");
 
@@ -256,8 +260,8 @@
         overlay.setAttribute("aria-hidden", "true");
         backdrop.classList.remove("open");
         document.body.classList.remove("menu-open");
-        hamburger.innerHTML = icon("menu");
-        hamburger.setAttribute("aria-label", "Open menu");
+        hamburger.innerHTML = isHome ? "<span>More</span>" : icon("menu");
+        hamburger.setAttribute("aria-label", isHome ? "More options" : "Open menu");
         hamburger.setAttribute("aria-expanded", "false");
         closeThemeSwitcher();
       } else {
@@ -265,8 +269,8 @@
         overlay.setAttribute("aria-hidden", "false");
         backdrop.classList.add("open");
         document.body.classList.add("menu-open");
-        hamburger.innerHTML = icon("close");
-        hamburger.setAttribute("aria-label", "Close menu");
+        hamburger.innerHTML = isHome ? "<span>Close</span>" : icon("close");
+        hamburger.setAttribute("aria-label", isHome ? "Close more options" : "Close menu");
         hamburger.setAttribute("aria-expanded", "true");
       }
     }
@@ -275,14 +279,20 @@
       overlay.setAttribute("aria-hidden", "true");
       backdrop.classList.remove("open");
       document.body.classList.remove("menu-open");
-      hamburger.innerHTML = icon("menu");
-      hamburger.setAttribute("aria-label", "Open menu");
+      hamburger.innerHTML = isHome ? "<span>More</span>" : icon("menu");
+      hamburger.setAttribute("aria-label", isHome ? "More options" : "Open menu");
       hamburger.setAttribute("aria-expanded", "false");
       closeThemeSwitcher();
     }
 
     hamburger.addEventListener("click", toggleMenu);
+    if (isHome) hamburger.addEventListener("keydown", function (event) {
+      if (overlay.classList.contains("open") && ((event.key === "Tab" && !event.shiftKey) || event.key === "ArrowDown")) {
+        event.preventDefault();overlay.querySelector(".menu-row")?.focus();
+      }
+    });
     backdrop.addEventListener("click", closeMenu);
+    if (isHome) nav.querySelector(".nav-links")?.addEventListener("click", function (event) { if (event.target.closest("a")) closeMenu(); });
 
     document.addEventListener("keydown", function (event) {
       if (event.key === "Escape" && overlay.classList.contains("open")) {

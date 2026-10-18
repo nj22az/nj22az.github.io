@@ -52,3 +52,14 @@ test('street copies preserve each stocked flavour without requiring an instance 
  assert.deepEqual(Array.from(geometry.attributes.atlasShift.array),[0,0,.125,.25],'The live stock shader keeps its own instance choices');
  copy.dispose();
 });
+
+test('live shop occupants stay animated and visible beside the merged furnishings',()=>{
+ const room=new THREE.Group(),body=new THREE.Group();body.userData.name='Thuan';room.add(body);
+ const mesh=new THREE.Mesh(new THREE.BoxGeometry(),new THREE.MeshStandardMaterial());body.add(mesh);
+ room.add(new THREE.Mesh(new THREE.BoxGeometry(),new THREE.MeshStandardMaterial()));
+ const copy=createStandIn(room,{keepLive:o=>!!o.userData.name});room.add(copy.group);copy.show(true);
+ assert.equal(copy.sources,1,'Only the fittings are flattened');
+ assert.equal(mesh.layers.isEnabled(0),true,'The real worker remains in the street render');
+ body.position.x=2;room.updateMatrixWorld(true);assert.equal(mesh.getWorldPosition(new THREE.Vector3()).x,2);
+ copy.dispose();assert.equal(mesh.layers.isEnabled(0),true);
+});

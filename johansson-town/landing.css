@@ -720,12 +720,13 @@
 .title-bar span {
   display: block;
   height: 100%;
-  width: 40%;
+  width: 0%;
   border-radius: .3rem;
   background: repeating-linear-gradient(-45deg, var(--ts-red) 0 8px, #ef5a6b 8px 16px);
-  animation: bar-run 1.3s ease-in-out infinite;
+  animation: none;
+  transform: none;
 }
-@keyframes bar-run { 0% { transform: translateX(-100%); } 100% { transform: translateX(250%); } }
+
 #start .title-loading #bootStatus {
   margin-top: 1rem;
   padding: .4rem .6rem;
@@ -780,7 +781,7 @@
   .splash { display: none; }
   .title-screen *, .title-screen *::before, .title-screen *::after { animation: none !important; }
   .title-cursor { opacity: 1; }
-  .title-bar span { width: 100%; opacity: .7; }
+  .title-bar span { opacity: .7; }
 }
 
 /* ==== Sakura shop ledger (sakura-ledger.css) ==== */
@@ -857,7 +858,7 @@
   .island-fact { padding: .65rem 1rem; margin-bottom: .75rem; }
   #start .title-loading { margin-top: .75rem; }
 }
-@media (prefers-reduced-motion: reduce) { .title-bar span { animation: none; width: 100%; opacity: .65; } }
+@media (prefers-reduced-motion: reduce) { .title-bar span { animation: none; opacity: .65; } }
 
 /* LINE entry and guide controls, including title/loading and player slots. */
 #start{font-family:var(--gothic);font-size:20px;background:#f7f8f9;color:#000}

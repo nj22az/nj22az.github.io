@@ -18,11 +18,11 @@ test('every place is whole, and each of its facts is still in the game', () => {
   assert.ok(p.checks.length>=1,p.id+' is held to the game');
   for(const [file,text] of p.checks)assert.ok(read(file).includes(text),`${p.id}: "${text}" in ${file}`);
  }
- assert.ok(islandPlaces('kitano').length>=5&&islandPlaces('johansson').length>=5);
+ assert.ok(islandPlaces('kitano').length>=5&&islandPlaces('johansson').length>=1);
  assert.match(placeSays(islandPlace('airport')),new RegExp(FLIGHT_TIMES.map(stamp).join(', ').replace(/, ([^,]*)$/,' and $1')),'the flights from the timetable');
  // What the town has funded changes her answers: the guesthouse's 11:00 flight, the coastal bus.
  assert.match(placeSays(islandPlace('airport'),{island:{projects:['guesthouse']}}),/11:00/);
- assert.match(placeSays(islandPlace('hoshizaki'),{island:{projects:['bus']}}),/coastal bus runs/);
+ assert.equal(islandPlace('hoshizaki'),null,'retired village is not advertised');
 });
 
 test('she never promises what is not built', () => {
@@ -30,8 +30,8 @@ test('she never promises what is not built', () => {
  // No live turtles: she only repeats what the cove's own sign says, and that she has never seen one.
  assert.match(placeSays(islandPlace('turtle-cove')),/they say/);
  // No village bus, no guesthouse, no keeper, no summer flight, no fare.
- assert.match(placeSays(islandPlace('hoshizaki')),/no village bus yet/);assert.match(placeSays(islandPlace('kitano-hamlet')),/Mayor/,'she knows whom she is talking to');assert.match(placeSays(islandPlace('hoshizaki')),/only a sign so far/);
- assert.match(placeSays(islandPlace('west-cape')),/the log says/);
+ for(const id of ['hoshizaki','fumoto','aoba','aoba-radio','west-cape','oshiro-stand'])assert.equal(islandPlace(id),null);
+ assert.match(placeSays(islandPlace('kitano-hamlet')),/Mayor/);
  assert.doesNotMatch(all,/summer flight|Gate 2|parasol|¥400 (ferry|return)/i);
 });
 

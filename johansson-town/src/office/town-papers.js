@@ -26,8 +26,15 @@ export const TOWN_PAPERS=[
     "type": "Notice",
     "title": "Nakamura is closed",
     "organisation": "Town Services",
-    "text": "Mrs Nakamura serves zenzai and Blue Coral ice cream here from 10:00 to 19:00. Her family lives upstairs.",
+    "text": "Open 10:00–19:00. Mrs Nakamura and Mai live upstairs; the separate family door is beside the counter.",
     "source": "notice:Nakamura is closed"
+  },
+  {
+    "type": "Notice",
+    "title": "Nakamura family · upstairs",
+    "organisation": "Town Services",
+    "text": "Mrs Nakamura and Mai live above the shop. The separate front door leads to their private stairwell. Mrs Nakamura closes the counter at 19:00 and walks upstairs.",
+    "source": "notice:Nakamura family · upstairs"
   },
   {
     "type": "Notice",
@@ -75,7 +82,7 @@ export const TOWN_PAPERS=[
     "type": "Notice",
     "title": "Shiosai — Mr Fujita’s houseboat",
     "organisation": "Town Services",
-    "text": "Mr Fujita rebuilt this little working boat into a home: one berth, a kettle and a radio. At half past eleven he switches off the shed television and comes aboard. The gangway must stay clear.",
+    "text": "Mr Fujita rebuilt this little working boat into a home: a worn sofa, a folded futon, a kettle and a radio. He usually falls asleep on the sofa; the futon is stored beneath the radio. At half past eleven he switches off the shed television and comes aboard. The gangway must stay clear.",
     "source": "notice:Shiosai — Mr Fujita’s houseboat"
   },
   {
@@ -133,6 +140,20 @@ export const TOWN_PAPERS=[
     "organisation": "Town Services",
     "text": "Ferry punch cards are sold at Sakura. Thuan keeps this shelf stocked with leaflets; the cards themselves are sold at Sakura, over the counter.",
     "source": "notice:Ferry punch cards"
+  },
+  {
+    "type": "Notice",
+    "title": "Sakura main office",
+    "organisation": "Town Services",
+    "text": "Orders, deliveries and the monthly accounts. The downstairs office keeps the till float and daily shop paperwork.",
+    "source": "notice:Sakura main office"
+  },
+  {
+    "type": "Notice",
+    "title": "Sakura kitchenette",
+    "organisation": "Town Services",
+    "text": "Fill the kettle at the sink. Cups, tea and the staff lunch boxes stay in the cupboards and small fridge.",
+    "source": "notice:Sakura kitchenette"
   },
   {
     "type": "Notice",
@@ -222,7 +243,7 @@ export const TOWN_PAPERS=[
     "type": "Notice",
     "title": "Mr Fujita is asleep",
     "organisation": "Town Services",
-    "text": "He is asleep in his berth aboard Shiosai. He returns to the shed at six in the morning.",
+    "text": "He is asleep on his sofa aboard Shiosai. He returns to the shed at six in the morning.",
     "source": "notice:Mr Fujita is asleep"
   },
   {

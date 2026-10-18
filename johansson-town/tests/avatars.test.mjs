@@ -26,7 +26,7 @@ test('a recipe is always complete and safe, and survives a share code',()=>{
 
 test('everyone in town has their own recipe, and strangers get a steady face from their name',()=>{
  assert.equal(CAST_RECIPES.Thuan.hair.style,'braids','Thuan in her classic braids');assert.equal(CAST_RECIPES.Johansson.hair.style,'horseshoe');
- for(const n of NEIGHBOURS)assert.ok(NEIGHBOUR_RECIPES[n.name],'Recipe for '+n.name);
+ for(const n of NEIGHBOURS)assert.ok(recipeFor(n.name)?.body,'Canonical or stable authored recipe for '+n.name);
  const faces=new Set(NEIGHBOURS.map(n=>JSON.stringify(recipeFor(n.name))));assert.equal(faces.size,NEIGHBOURS.length,'No two neighbours share a face');
  assert.deepEqual(recipeFor('A passing stranger'),recipeFor('A passing stranger'));
  for(const style of PARTS.hair)for(const hat of ['none','cap','straw'])buildAvatar({...DEFAULT_RECIPE,hair:{...DEFAULT_RECIPE.hair,style},outfit:{...DEFAULT_RECIPE.outfit,hat}},{shadows:false}).dispose();

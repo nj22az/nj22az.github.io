@@ -52,3 +52,13 @@ test('the bodies ride with her and the bus driver’s town body is hidden while 
  crew.update(1/60,23*60);
  assert.equal(crew.snapshot().length,2);assert.equal(town.userData.aboardFerry,false);
 });
+
+
+test('Johansson as player is never duplicated: Nakandakari keeps the day watch and returns ashore at night',()=>{
+ const {run}=alongside(),shore=new THREE.Group();
+ const crew=createFerryCrewAboard({run,playerIdentity:()=> 'Johansson',townBody:name=>name==='Mr Nakandakari'?shore:null,characters:{attach(){}},register(){},onAction(){}});
+ crew.update(1/60,600);
+ assert.equal(crew.snapshot().length,8);assert.ok(!crew.snapshot().some(p=>p.name==='Johansson'));
+ assert.equal(crew.snapshot().find(p=>p.post==='chief').name,'Mr Nakandakari');assert.equal(shore.userData.aboardFerry,true);
+ crew.update(1/60,1380);assert.equal(shore.userData.aboardFerry,false);
+});

@@ -45,7 +45,7 @@ export function crewPlaces(phase,minutes=0){
 }
 
 /** One body per signed-on post, moving through the real ship before it can report a task complete. */
-export function createFerryCrewAboard({run,characters,register,onAction,townBody=()=>null,portShed,shoreParent,shoreColliders=[]}){
+export function createFerryCrewAboard({run,characters,register,onAction,townBody=()=>null,portShed,shoreParent,shoreColliders=[],playerIdentity=()=>null}){
  const ferry=run.ferry,bodies=new Map(),records=new Map(),shore=createFerryShoreCrew({portShed,shoreParent,shoreColliders,characters,register,onAction});
  let phase=null,day=-1,operationId=null;
  const profiles=Object.fromEntries(FERRY_CREW.map(c=>[c.post,c]));
@@ -72,7 +72,10 @@ export function createFerryCrewAboard({run,characters,register,onAction,townBody
   const p=watchPhase(run,minutes),d=Math.floor(minutes/1440);
   phase=p;day=d;const aboard=new Set(),op=run.operation,active=op?.tasks||[];
   if(op?.id!==operationId){operationId=op?.id??null;records.clear();}
-  for(const c of crewPlaces(p,minutes)){
+  for(const watch of crewPlaces(p,minutes)){
+   // The player is the chief engineer. His relief takes the working watch rather than spawning a second Johansson.
+   if(watch.post==='chief'&&watch.name===playerIdentity()&&p==='night')continue;
+   const c=watch.post==='chief'&&watch.name===playerIdentity()?{...watch,name:'Mr Nakandakari',title:'Relief engineer · chief’s working watch'}:watch;
    const b=body(c);aboard.add(c.name);b.g.visible=true;b.post=c.post;b.title=c.title;
    if(!b.initialised){
     b.g.position.set(...c.pos);b.g.rotation.y=c.yaw;b.initialised=true;b.actor?.last?.copy(b.g.position);
@@ -88,7 +91,7 @@ export function createFerryCrewAboard({run,characters,register,onAction,townBody
   }
   for(const [name,b] of bodies)if(!aboard.has(name)){b.g.visible=false;b.g.userData.climbing=false;}
   // Named residents keep a single visible body while their ferry watch owns them.
-  for(const name of ['Bus driver','Mr Higa Jr','Ms Uezu','Kōji']){
+  for(const name of ['Bus driver','Mr Higa Jr','Ms Uezu','Kōji','Mr Nakandakari']){
    const town=townBody(name);if(!town)continue;town.userData.aboardFerry=aboard.has(name);if(aboard.has(name))town.visible=false;
   }
  }
@@ -126,7 +129,7 @@ export function createFerryCrewAboard({run,characters,register,onAction,townBody
     b.g.userData.activity=b.blocked?b.doing+' — waiting for a clear walking route':b.state==='waiting for shore hand'?'At the '+b.where+' station; waiting for the shore line hand':b.state==='walking'||b.state==='climbing'?'Going to '+b.where+' to '+b.doing.toLowerCase():b.doing;
    }
    shore.update(seconds,(op?.tasks||[]).filter(t=>t.post==='shore'),lineWorkReady);
-   for(const name of ['Bus driver','Mr Higa Jr','Ms Uezu','Kōji']){const town=townBody(name);if(town?.userData.aboardFerry)town.visible=false;}
+   for(const name of ['Bus driver','Mr Higa Jr','Ms Uezu','Kōji','Mr Nakandakari']){const town=townBody(name);if(town?.userData.aboardFerry)town.visible=false;}
   },
   get phase(){return phase;},
   snapshot(){

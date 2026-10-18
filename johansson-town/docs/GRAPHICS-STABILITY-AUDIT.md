@@ -64,3 +64,65 @@ night, on desktop and phone viewports. It checks actual GPU rendering and waits 
 assets before comparing strict references. An opt-in Spector inspector captures WebGL
 commands; ordinary visits do not load its dependency. Physical phone GPU acceptance
 remains separate from phone-sized Chromium screenshots.
+
+## 18 October 2026 — bounded full cartoon effects on iPhone
+
+The phone profile now retains the actual ink, grade and FXAA effects rather than
+replacing their whole chain with single-pass colour. Ink and grading run in one
+fragment shader, in their original order and colour space. FXAA still runs on the
+graded sRGB image. Desktop uses the same optimisation.
+
+The pipeline has two colour targets: a scene with sampled depth and a graded image
+for FXAA. The previous linear ink intermediate is gone. Every effect toggle still
+finishes with the colour conversion and an image on the screen; exceptions restore
+the previous target, and context loss disposes both targets.
+
+| iPhone resource | Limit |
+| --- | --- |
+| Native canvas | 650,000 pixels |
+| Each postprocessing target | 650,000 pixels |
+| Postprocessing colour/depth storage | At most 7,800,000 bytes (two RGBA8 targets plus 32-bit scene depth) |
+| Sun shadow map | 512 × 512 |
+| Native/offscreen MSAA | Disabled; final FXAA retained |
+| Half-float postprocessing | Disabled |
+| Background detail streaming, cinematic launch, whole-scene precompile | Remain disabled |
+
+At the same resolution the old three-colour-target byte pipeline needed 16 bytes
+per pixel including scene depth; this version needs 12, a 25% reduction. The old
+mobile full-effects ceiling was 1.2 million pixels (19.2 MB); the phone's new ceiling
+is 650,000 pixels (7.8 MB). These are pixel-storage calculations, not total GPU or
+process-memory measurements: canvas, shadow, model and texture storage and driver
+overhead are additional. No claim of physical iPhone performance follows from them.
+
+The resolution governor can now reduce a 1× phone buffer under load: its previous
+minimum of 1× made the governor ineffective on the phone profile. Explicit and
+automatic safe mode still omit effects and shadows. `?graphics=full` permits a
+one-time retry of remembered safe mode, while an interrupted launch still wins.
+The game removes that query before GPU allocation so a later recovery cannot be
+held in full mode by a stale URL. Saved-game keys and contents are unchanged.
+
+Focused material, pipeline, resource, recovery, launch-report and runtime-package
+checks pass (50 checks). The additional dusk, graphics-inspector and lifecycle checks
+pass. An existing visual-audit fixture fails with `conversationLine is not defined`;
+that failure was reproduced against the unchanged main-branch game source and is
+separate from this renderer change.
+
+`tools/iphone-render-smoke.mjs` compares GPU output against the previous renderer at
+commit `a42fad65dc19c577f7f9b5707be152618aa92180` with all effect switches and both
+scene-buffer formats. It also captures the compiled town at street level, overhead
+and inside Sakura at night, rotates the phone viewport and checks context recovery.
+Run against a repository-root HTTP server on port 8765 with Playwright browsers
+installed. Its report and screenshots go to `docs/qa/iphone-full-effects/`.
+Physical iPhone Safari testing remains required; emulated phone viewports and Linux
+WebKit are not hardware acceptance.
+
+Browser verification completed successfully on 18 October: Chromium and Linux
+WebKit each passed 16 GPU comparisons against the previous shader. The largest
+mean absolute channel difference was below 0.014/255. Fourteen compiled-town views
+passed across desktop, portrait phone and landscape phone configurations, with
+ink, grade, FXAA and shadows active, no reported GPU errors, and the same player,
+room and game instance retained after induced context loss. Desktop and WebKit
+phone street captures and the WebKit Sakura interior capture were visually
+reviewed. The phone exterior still uses the existing restricted detail-streaming
+policy; the fuller shop interior loads when visited. This remains a rendering
+update, not a claim of desktop asset parity or physical-device performance.

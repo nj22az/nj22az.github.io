@@ -2,9 +2,9 @@ import * as THREE from '../../vendor/three.module.js';
 
 // Neutral, inexpensive glazing for the mobile renderer. Do not tint the panes
 // with the shop's sign colour, or let a transparent pane occlude the room.
-export function createShopGlass(){
+export function createShopGlass({haze=.055}={}){
  return new THREE.MeshBasicMaterial({name:'Clear shop glass',color:0xffffff,
-  transparent:true,opacity:.055,depthWrite:false,side:THREE.DoubleSide,toneMapped:false});
+  transparent:true,opacity:haze,depthWrite:false,side:THREE.DoubleSide,toneMapped:false});
 }
 
 // Measured inner panes in minato-benmaher-exterior.glb (SHA-256 82093918…):

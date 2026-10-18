@@ -11,6 +11,8 @@ test('exploration offers a single named next action and no generic idle button',
  assert.deepEqual(ids({targetLabel:'E · Talk to Thuan'}),['act']);
  assert.equal(primary({targetLabel:'E · Talk to Thuan'})[0].label,'Talk to Thuan');
  assert.deepEqual(ids({targetLabel:'Enter Sakura',enterLabel:'Enter Sakura'}),['enterBuildingButton']);
+ assert.deepEqual(ids({targetLabel:'Come into Minato Izakaya',enterLabel:'Enter Minato Izakaya'}),['enterBuildingButton']);
+ assert.deepEqual(ids({targetLabel:'Come into Sato Ramen',enterLabel:'Enter Sato Ramen'}),['enterBuildingButton']);
  assert.equal(primary({targetLabel:'Enter Sakura',enterLabel:'Enter Sakura'}).length,1);
  assert.deepEqual(ids({targetLabel:'Talk to Reiko',enterLabel:'Enter Front-Row Books'}),['act','enterBuildingButton']);
  assert.equal(primary({targetLabel:'Talk to Reiko',enterLabel:'Enter Front-Row Books'})[0].id,'act');

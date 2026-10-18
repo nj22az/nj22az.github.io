@@ -6,7 +6,10 @@ const startup=window.__JOHANSSON_STARTUP__;if(startup){startup.codeMs=performanc
 status.textContent='Building the town…';
 // One frame for the status to be painted (or a moment, in a tab in the background): the town's build holds the page.
 await new Promise(resolve=>{requestAnimationFrame(()=>setTimeout(resolve,0));setTimeout(resolve,120);});
+window.__JOHANSSON_LOADING__?.start('controls');
 await import('../touch-ui.js?ui=controls-3');
+window.__JOHANSSON_LOADING__?.complete('controls');
+window.__JOHANSSON_LOADING__?.start('code');
 await import('./game.js?snappy=1');
 void import('../webmcp.js').then(()=>import('../webmcp-characters.js')).catch(error=>console.warn('Town browser tools unavailable:',error));
 
