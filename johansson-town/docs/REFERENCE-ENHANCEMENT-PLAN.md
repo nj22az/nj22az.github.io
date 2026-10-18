@@ -1,16 +1,17 @@
 # Johansson World reference enhancement plan
 
 Updated: 18 October 2026.
-Status: T01 source/reference audit complete; T02 awaits Sakurai's replacement dwelling. No runtime changes made by this programme.
+Status: T01 complete; T02 housing prerequisite and office implementation complete in main, visual/device acceptance open. This reconciliation changes documentation only.
 Execution rule: one active task at a time. Complete and verify it before starting the next task.
 
 ## Start here for Claude or another developer
 
-Read repository AGENTS.md and CLAUDE.md, johansson-town/AGENTS.md and johansson-town/CLAUDE.md, then this plan and docs/MINATO-HOMES-PLAN.md. Owner decisions in those instructions govern household assignments and ship roles. This plan adds an interior/reference work queue; it does not replace the housing programme.
+Read repository AGENTS.md and CLAUDE.md, johansson-town/AGENTS.md and johansson-town/CLAUDE.md, then this plan, [MINATO-HOMES-IMPLEMENTATION.md](MINATO-HOMES-IMPLEMENTATION.md) and docs/MINATO-HOMES-PLAN.md. The implementation record and current source supersede the earlier proposed assignments. Owner decisions in those instructions govern household assignments and ship roles. This plan adds an interior/reference work queue; it does not replace the housing programme.
 
 T01 is complete: see [REFERENCE-ENHANCEMENT-AUDIT.md](REFERENCE-ENHANCEMENT-AUDIT.md).
-Current next task: **T02 prerequisite A — complete Grandmother Sakurai's replacement dwelling before the office conversion**. Confirm Flat 4 access suitability or the documented Flat 2/4 exchange first.
-The audit inspected main `c5e36e578a3aa7ba6dea6b07a9cb89284edbfad9`. Source checks passed; rendered and physical-device acceptance remain unverified. Refresh main before implementation.
+Current next task: **T02 acceptance review — inspect the existing Sakura office; do not rebuild it or Sakurai's home.** Housing commit `dc3a15bbc5b3b5549bd4563cce3ebb48002b1459` already moved Sakurai to ground-floor Flat 2 and Ganaha to Flat 4, authored their homes and converted upstairs. T02 is not fully accepted until its remaining checks below pass. T03 is the next new interior implementation only after that gate.
+
+Reconciled source: main `6b9f5ea56d71e581355384e77ada0c4f987c7f55` (18 October 2026), which contains the housing commit and later iPhone cel-shading work. The original T01 audit at `c5e36e578a3aa7ba6dea6b07a9cb89284edbfad9` is historical; use the current reconciliation at the top of [REFERENCE-ENHANCEMENT-AUDIT.md](REFERENCE-ENHANCEMENT-AUDIT.md), not its superseded prerequisite.
 
 Only work on the first incomplete eligible task. If it is blocked, record the concrete dependency and resolve it within the existing stability/housing programme. Do not silently start another feature. Break each multi-room queue item into one named room or household per change.
 
@@ -20,7 +21,7 @@ Use the reference to improve coherent, inhabited interiors and reusable characte
 
 Keep Minato compact; preserve its road hierarchy, coast, working businesses, port/ferry, park and Umi-no-yu. Existing loading, geometry, scenery-placement and iPhone Safari defects take priority over additional content. Check their current status rather than assuming old reports are still unresolved.
 
-Preserve the owner's established households. Johansson is chief engineer with a duty cabin and a shared tropical primary home with Thuan. Thuan also has her room with Thao and Chin. Sakura upstairs is the main office/kitchenette, with harbour and town views; the small downstairs office remains. Grandmother Sakurai needs a completed replacement home before her former room is converted.
+Preserve the owner's established households. Johansson is chief engineer with a duty cabin and a shared tropical primary home with Thuan. Thuan also has her room with Thao and Chin. Sakura upstairs is the main office/kitchenette, with harbour and town views; the small downstairs office remains. Grandmother Sakurai now lives in the completed ground-floor Flat 2; Ganaha lives in Flat 4. Preserve those implemented assignments and the existing office conversion.
 
 Use existing furniture, placement, interaction, save and story systems where possible. Build reusable components only when the current room needs them; do not create a speculative furnishing framework. New props should have a named user, purpose and story use. Avatar-related work must remain compatible with Johansson Studio and all supported residents.
 
@@ -85,7 +86,7 @@ Record actual workbook tab, cell, image URL and variant when a specific feature 
 
 ## Sequential work queue
 
-T01 is complete as a source/reference audit. T02–T09 remain pending; T02 first requires Sakurai's replacement dwelling.
+T01 is complete as a source/reference audit. T02 implementation is complete, but acceptance remains open. T03–T09 remain pending. Keep T02 acceptance as the sole active task; no later room starts while it is unresolved.
 
 ### T01 Reconcile references and current implementation
 
@@ -116,9 +117,24 @@ Done when: each pilot requirement has an identified code owner and reuse/new-wor
 
 ### T02 Sakura upstairs office and kitchenette
 
-Status: pending. First execute prerequisite A as one household task: inspect the proposed flat's access, complete its usable room and sleeping place, then migrate Sakurai's occupancy, routine, directory and save references. If Flat 2/4 exchange is needed, complete both affected homes together. The current registry still assigns her to market; do not convert upstairs first.
+Status: **implemented; acceptance open**. Prerequisite A is complete, including the Flat 2/4 mobility exchange, furnished private rooms, entrances, sleeping places, occupancy, routines, directory and idempotent save migration. Do not repeat the move. The enterable main office/kitchenette is also implemented; retain the downstairs office, shop and stockroom.
 
-Prerequisites: T01 complete, stable enough for comparison, and Sakurai's replacement home functional under MINATO-HOMES-PLAN.md. Coordinate with any existing Sakura work rather than building a second conversion.
+Evidence: [MINATO-HOMES-IMPLEMENTATION.md](MINATO-HOMES-IMPLEMENTATION.md), housing commit `dc3a15bbc5b3b5549bd4563cce3ebb48002b1459`, and the current-source/test reconciliation in [REFERENCE-ENHANCEMENT-AUDIT.md](REFERENCE-ENHANCEMENT-AUDIT.md). The housing report's 130 focused tests and runtime build are prior implementation evidence, not this session's test count.
+
+Current owners: `src/world/interiors/sakura-office-room.js::buildSakuraOfficeRoom` and `SAKURA_OFFICE`; `src/world/thuan-flat.js::buildThuanFlat` (historical filename, now office shell/entrance/portals); `src/game.js::addRoomProps` dispatch and `streetFrontageOf`; `src/render/shop-street-view.js`. Reuse these; do not create a second upstairs room or portal system.
+
+| Acceptance area | Verified implementation / automated evidence | Still required before T02 closes |
+| --- | --- | --- |
+| Replacement homes and routines | Sakurai Flat 2, Ganaha Flat 4; registered doors, bedding, room routes, shore schedules and upper-flat outward/return walking tests pass. | Observe the moved residents' entry, sleep/wake and return in the running game. |
+| Street → rear stair → office → exit | Office entry/exit and room spawn exist; town stair/landing clearance tests pass. | Walk the entire street-to-office route both ways with normal controls; inspect landing, door, collision and camera transitions. Stair sampling is not an end-to-end player walkthrough. |
+| Harbour and town outlooks | Two live street portals; seated observer maps to the same world position at y=5.13; directions east/town and south/harbour pass geometry tests. | Capture actual standing and seated camera views, confirm the harbour/Minato Maru and town are visible, with no opaque shell, clipping, wrong origin or blocked view. Compass transforms alone do not prove the scenery is visible. |
+| Furniture and interactions | Desk, chair, visitor bench/table, ledger, telephone, shelves, sink, cupboards, kettle and fridge exist. CPU paths reach ledger, tea and both outlook prompts. | Exercise reachable prompts and desk sit/stand with supported avatar sizes; inspect seat contact and clipping, visitor seating and stair/window clearance. Generic seating tests do not certify this chair. Tea is an existing read action; telephone/storage are props, and the visitor bench has no separately registered seating action in this builder. Verify required use without claiming an appliance simulation. |
+| Existing shop and saves | Housing migration/idempotence and save-safety suites pass; Sakura shop budget and runtime-package checks pass. | Exercise downstairs trading/stockroom and a legacy-save → enter/exit → save/reload cycle in the running game. |
+| Mobile rendering and resources | iPhone/safe single-pass profile, no background detail streaming, DPR/pixel limits and recovery checks pass; existing cel-shading path retained. | Phone viewport/touch inspection and comparable resource measurements, then physical iPhone Safari start/play/reload and sustained office use. Emulation is separate evidence. |
+
+Feasible visual attempt on 18 October: the public game was opened in remote desktop Chrome. The title UI appeared, but Start Exploring reported that the 3D graphics engine could not start, also after one Retry. No playable office view, mobile viewport review, draw-call/frame-rate baseline or physical iPhone check was obtained. This is a limitation of that observed session, not proof of the cause or of a general site failure. Do not waive acceptance or change safeguards to force this environment through it.
+
+Prerequisites for closure: T01 and the housing move are satisfied. Use a working GPU browser to finish the acceptance checks above; fix only a demonstrated T02 defect, then rerun its focused checks. Preserve the original Office/Kitchen reference requirements and exact workbook cells recorded in the audit. No new room is authorised by this acceptance task.
 
 Scope: upstairs only, plus shared components strictly required by it. Main desk with real harbour outlook; second town sightline; modest visitor seating; ledgers, telephone and storage; kitchenette with sink, worktop, cupboards, kettle and small fridge. Furnish for 1997. Keep windows and stair landing clear.
 
@@ -186,21 +202,20 @@ A successful build does not establish that a room is visually correct or that ph
 
 Update this section after every completed task or interrupted session. Keep exactly one active task.
 
-- Last completed task: T01 source/reference audit.
-- Active implementation task: none.
-- Next task: T02 prerequisite A — Sakurai's replacement dwelling.
-- Runtime changes in this programme: none.
-- Audited starting commit: main c5e36e578a3aa7ba6dea6b07a9cb89284edbfad9.
-- Audit commit: 8f57583c316f80de6f0af2fdbb6450f451dcc0f1.
-- Changed files: docs/REFERENCE-ENHANCEMENT-AUDIT.md and this plan.
-- Checks actually run: source-module Node assertions for cast uniqueness, household counts, Sakura occupancy, Flat 4 vacancy and iPhone graphics policy; XLSX formula/row inspection; source ownership and current PR/merge review.
-- Checks not run: production build, full runtime tests, game walkthrough, save migration, rendered/performance baseline or physical iPhone Safari.
-- Blocker: Sakurai remains assigned to market; the proposed replacement flats are exterior landmarks without promised authored interiors. Complete the chosen accessible dwelling before the office.
-- Exact next action: refresh main, read the audit and housing plan, inspect KITAHAMA_FLATS stair/door access and room dispatch, record the unit decision, then implement only that prerequisite household move.
-- Rollback: documentation only; no game state or runtime geometry changed.
+- Last completed work: T01 source/reference audit; T02 housing prerequisite and office implementation integrated by the housing programme at `dc3a15bbc5b3b5549bd4563cce3ebb48002b1459`.
+- Active task: T02 acceptance review only; not a new construction task.
+- First genuinely incomplete work: rendered harbour/town outlooks and normal-control office route/furniture review, followed by mobile and physical-device acceptance. T03 remains queued.
+- Current audited source: main `6b9f5ea56d71e581355384e77ada0c4f987c7f55`.
+- Historical T01 audit commit: `8f57583c316f80de6f0af2fdbb6450f451dcc0f1`; its old home/office findings are explicitly superseded in the audit addendum.
+- This reconciliation: documentation only in this plan and `docs/REFERENCE-ENHANCEMENT-AUDIT.md`; no runtime, asset, save identifier or resource-policy changes.
+- Checks actually rerun: 14 tests across housing-consolidation and runtime-package; 29 across building-stairs, player-seating, save-safety, sakura-budget, shop-street-view, startup-recovery and single-pass-colour. Runtime build passed; its 3 package checks passed again after building. See audit for exact commands and limits.
+- Visual result: remote Chrome title/start attempt and one Retry ended in graphics-engine startup failure. No office screenshots or physical iPhone results exist from this review.
+- Remaining gate: all outstanding cells in T02's acceptance table; no missing replacement home or missing office implementation.
+- Exact next action: refresh main and read the implementation record plus current audit addendum; in a working GPU browser walk Sakura's rear stair to the existing office, capture standing/seated harbour and town outlooks, exercise ledger/tea and desk sit/stand, return to the street, and record device, viewport, source build and results. Then finish mobile/save/shop checks; do not start T03 until T02 is accepted.
+- Rollback: revert this documentation reconciliation only; retain the housing/office implementation. If a later runtime defect needs rollback, identify its own commit and preserve saves rather than reverting all housing.
 
 For later sessions append: task ID and scope; commit/PR; changed files; decisions and reasons; checks and results; screenshots when available; remaining defects; exact next action; rollback commit. Never mark a task complete while its required checks remain unresolved.
 
 ## Continuation instruction
 
-"Read johansson-town/docs/REFERENCE-ENHANCEMENT-PLAN.md and the applicable AGENTS.md/CLAUDE.md files. Refresh the recorded state against current main. Continue only the first incomplete eligible task: T02 prerequisite A, as recorded in the audit and handover. Preserve the Minato housing decisions, 1997 setting, save compatibility and Safari safeguards. Update the handover with real evidence before starting another task."
+"Read johansson-town/docs/REFERENCE-ENHANCEMENT-PLAN.md and the applicable AGENTS.md/CLAUDE.md files. Refresh the recorded state against current main. Continue only the first incomplete eligible task: T02 acceptance of the existing office, as recorded in its acceptance table and current audit addendum. Sakurai's Flat 2 home, Ganaha's Flat 4 home and Sakura's upstairs office already exist; do not reconstruct them. T03 is the next new interior only after T02 acceptance closes. Preserve the Minato housing decisions, 1997 setting, save compatibility and Safari safeguards. Update the handover with real evidence before starting another task."
