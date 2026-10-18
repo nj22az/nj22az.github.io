@@ -231,3 +231,11 @@
 
 #desktopMenu .console-portrait{position:relative;overflow:hidden}
 #desktopMenu .console-portrait .console-resident-photo{position:absolute;width:250%;height:250%;max-width:none;left:-75%;top:0;object-fit:cover;border:0;border-radius:0}
+
+/* Original vending-machine identity; UI lettering remains crisp and native. */
+.linux-console #titleLogo{position:relative}
+.console-brand-icon{object-fit:cover;border-radius:18px;box-shadow:0 8px 24px #101c4a40;margin:0 0 18px}
+#desktopMenu .console-eyebrow{display:flex;align-items:center;gap:8px}
+.console-menu-brand{border-radius:9px;object-fit:cover}
+@media(max-height:700px){.console-brand-icon{width:56px;height:56px;border-radius:13px;margin-bottom:10px}}
+@media(max-height:600px){.console-brand-icon{position:absolute;left:calc(100% + 18px);top:0;width:64px;height:64px}}

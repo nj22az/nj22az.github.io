@@ -23,9 +23,10 @@ const electron=join(app,'node_modules/electron/dist'),out=join(app,'dist'),bundl
 rmSync(bundle,{recursive:true,force:true});mkdirSync(out,{recursive:true});cpSync(electron,bundle,{recursive:true});
 renameSync(join(bundle,'electron'),join(bundle,'JohanssonWorld'));
 const resources=join(bundle,'resources/app');mkdirSync(resources,{recursive:true});
-for(const name of ['package.json','main.cjs','preload.cjs','storage.cjs','updater.cjs'])cpSync(join(app,name),join(resources,name));
+for(const name of ['package.json','main.cjs','preload.cjs','storage.cjs','updater.cjs','desktop-integration.cjs'])cpSync(join(app,name),join(resources,name));
 cpSync(site,join(resources,'site'),{recursive:true});
 cpSync(join(app,'README.md'),join(bundle,'README.md'));
+cpSync(join(app,'install.sh'),join(bundle,'install.sh'));
 execFileSync('tar',['-czf',join(out,'johansson-world-linux-x64.tar.gz'),'-C',out,'johansson-world']);
 const file=join(out,'johansson-world-linux-x64.tar.gz'),sha256=createHash('sha256').update(readFileSync(file)).digest('hex');
 const version=JSON.parse(readFileSync(join(app,'package.json'))).version,tag='johansson-world-linux-v'+version;

@@ -27,7 +27,7 @@ jobs:
           node node_modules/electron/install.js
       - name: Tests and world runtime
         run: |
-          node --test johansson-town/tests/harbour-festival.test.mjs johansson-town/tests/detail-stream.test.mjs johansson-town/tests/context-actions.test.mjs johansson-town/tests/soundscape.test.mjs
+          node --test johansson-town/tests/harbour-festival.test.mjs johansson-town/tests/detail-stream.test.mjs johansson-town/tests/context-actions.test.mjs johansson-town/tests/soundscape.test.mjs johansson-town/tests/thuan-studio-design.test.mjs johansson-town/tests/controller-game.test.mjs
           npm test --prefix steam-deck
           cd johansson-town
           node scripts/build-runtime.mjs
@@ -52,8 +52,8 @@ jobs:
         run: |
           version=$(node -p "require('./steam-deck/package.json').version")
           tag="johansson-world-linux-v$version"
-          gh release view "$tag" >/dev/null 2>&1 || gh release create "$tag" --target "$GITHUB_SHA" --prerelease --title "Johansson World Linux $version" --notes "Steam Deck and x86-64 Linux preview 0.2.4. New icon-led Island guide with white/indigo/coral styling, resident portraits, shoulder-button sections and a first-steps controller guide. New control preset: R2 run, L2 look closely, X jump, Y bag; existing saved mappings are preserved. Controller prompts detect reported Steam Deck, Xbox, PlayStation and Nintendo devices; unknown face buttons use a highlighted position diamond. Manual symbol overrides remain available. Context actions display complete labels with D-pad cycling. Pause retains open conversations; B stands or leaves rooms. Gecko beeps and the pulsing cricket tone are replaced with sparse natural noise textures, shared with web. Existing saves, homes and rare quarrels remain. Linux is the first installed-platform test pipeline; semantic icon names are prepared for future Apple SF Symbols rendering. Automated checks are recorded with this build; physical Steam Deck validation remains pending."
-          gh release upload "$tag" steam-deck/dist/johansson-world-linux-x64.tar.gz steam-deck/dist/latest-linux.json steam-deck/dist/SHA256SUMS --clobber
+          gh release view "$tag" >/dev/null 2>&1 || gh release create "$tag" --target "$GITHUB_SHA" --prerelease --title "Johansson World Linux $version" --notes-file "steam-deck/releases/$version.md"
+          gh release upload "$tag" steam-deck/dist/johansson-world-linux-x64.tar.gz steam-deck/dist/latest-linux.json steam-deck/dist/SHA256SUMS steam-deck/install.sh steam-deck/ui/icons/johansson-world-512.png --clobber
       - name: Verify public installer and release checksum
         run: |
           HOME="$RUNNER_TEMP/install-smoke" XDG_DATA_HOME="$RUNNER_TEMP/install-smoke/data" sh steam-deck/install.sh

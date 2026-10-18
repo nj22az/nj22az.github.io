@@ -4,6 +4,7 @@ const fs=require('node:fs');
 const {pathToFileURL}=require('node:url');
 const {writeSnapshot,readSnapshot}=require('./storage.cjs');
 const {createUpdater}=require('./updater.cjs');
+const {syncDesktopIcon}=require('./desktop-integration.cjs');
 app.setName('Johansson World');
 protocol.registerSchemesAsPrivileged([{scheme:'johansson',privileges:{standard:true,secure:true,supportFetchAPI:true,stream:true,corsEnabled:true}}]);
 let window,readyToClose=false,updater;
@@ -12,6 +13,7 @@ const saveDir=()=>path.join(app.getPath('userData'),'saves');
 if(!process.argv.includes('--smoke')&&!app.requestSingleInstanceLock())app.quit();
 app.on('second-instance',()=>{window?.show();window?.focus();});
 app.whenReady().then(async()=>{
+ try{syncDesktopIcon({installRoot:process.env.JOHANSSON_INSTALL_ROOT});}catch(error){console.warn('Launcher icon could not refresh:',error.message);}
  // A stable local origin preserves all world/Studio slots between package updates.
  protocol.handle('johansson',request=>{
   try{
@@ -38,7 +40,7 @@ app.whenReady().then(async()=>{
  ipcMain.handle('restart-update',()=>{const executable=updater.readyExecutable();if(!executable)throw Error('No verified update is ready');readyToClose=true;app.relaunch({execPath:executable,args:[]});app.exit(0);});
  ipcMain.handle('quit-world',()=>window?.close());
  ipcMain.on('close-saved',()=>{readyToClose=true;window?.close();});
- window=new BrowserWindow({width:1280,height:800,minWidth:800,minHeight:600,fullscreen:!process.argv.includes('--windowed'),backgroundColor:'#f7f8f9',autoHideMenuBar:true,icon:path.join(root,'johansson-town/assets/icons/town-192.png'),webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true,backgroundThrottling:true}});
+ window=new BrowserWindow({width:1280,height:800,minWidth:800,minHeight:600,fullscreen:!process.argv.includes('--windowed'),backgroundColor:'#f7f8f9',autoHideMenuBar:true,icon:path.join(root,'desktop/icons/johansson-world-256.png'),webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true,backgroundThrottling:true}});
  window.webContents.setWindowOpenHandler(()=>{window.webContents.send('offline-link');return {action:'deny'};});
  window.webContents.on('will-navigate',(event,url)=>{if(!url.startsWith('johansson://world/'))event.preventDefault();});
  window.on('close',event=>{if(readyToClose)return;event.preventDefault();window.webContents.send('save-before-close');setTimeout(()=>{readyToClose=true;window?.close();},5000).unref();});

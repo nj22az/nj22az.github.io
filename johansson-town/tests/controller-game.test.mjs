@@ -34,6 +34,15 @@ test('controller and camera controls boot in the game, pause movement in setting
   for(let i=0;i<12;i++){api.updateController(1/60);api.simulate(1/60);}
   assert.ok(api.player.position.distanceTo(linuxBefore)>.05,'Unmapped Linux left stick moves the actual player');
   assert.ok(api.camera.quaternion.angleTo(linuxView)>.05,'Unmapped Linux right stick rotates the actual camera');
+  p.axes=[0,-.5,0,0];
+  const origin=api.player.position.clone(),distances=[];
+  for(const hz of [30,60,90]){
+   api.player.position.copy(origin);api.resetInput();
+   for(let i=0;i<hz;i++){api.updateController(1/hz);api.simulate(1/hz);}
+   distances.push(api.player.position.distanceTo(origin));
+  }
+  assert.ok(distances.every(d=>d>.05),'Movement must remain real at all refresh rates');
+  assert.ok(Math.max(...distances)-Math.min(...distances)<.10,'One second of movement must not accelerate on a 90 Hz Deck');
   pads=[];api.updateController(1/60);assert.deepEqual(api.controllerFrame.move,{x:0,y:0});
  }catch(error){if(error.stack)error.stack=error.stack.split('\n').map(line=>line.length>500?line.slice(0,200)+'…':line).join('\n');throw error;}
  finally{globalThis.fetch=fetchBefore;}
