@@ -35,6 +35,12 @@ export function buildSakuraStoreys({room,reg,action,exit}){
  const material=new THREE.MeshStandardMaterial({color:0x8d7458,roughness:.88});
  const box=(w,h,d,x,y,z,name)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);m.position.set(x,y,z);m.name=name;room.add(m);return m;};
  const solid=(x,z,w,d,height,minY=0)=>colliders.push({x,z,w,d,height,minY});
+ // Continue the stockroom enclosure up to the office roof; no open strip above the old ceiling.
+ const plaster=new THREE.MeshStandardMaterial({color:0xece1ca,roughness:.9});
+ for(const [w,h,d,x,y,z] of [[.08,H+2.8,2.78,-5.7,(H+2.8)/2,-5.39],[5.1,H+2.8,.08,-3.15,(H+2.8)/2,-6.78],[.08,H+2.8,.64,-.6,(H+2.8)/2,-6.46],[5.1,.12,.64,-3.15,H+2.86,-6.46]]){
+  const wall=box(w,h,d,x,y,z,'Sakura enclosed stairwell');wall.material=plaster;
+  if(h>1)solid(x,z,w,d,h);
+ }
  for(let i=0;i<12;i++){
   const t=(i+.5)/12,y=(i+1)*H/24;
   box(2.7/12,.1,1.1,-1.8-t*2.7,y-.05,-4.6,'Sakura lower stair tread');
