@@ -3,13 +3,18 @@ import * as THREE from '../../../vendor/three.module.js';
 export const SAKURA_OFFICE=Object.freeze({width:12.8,depth:11,floor:4.01,front:4.55,harbourX:6.4,
  desk:[4.8,0,3.2],deskStand:[3.85,0,3.2],townWindow:[0,0,3.6],harbourWindow:[5.9,0,4.05]});
 /** Clear glazing uses the existing street renderer: both outlooks show the live town, with no backdrop texture. */
-export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},exit}){
+export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},exit,internal=false}){
  const O=SAKURA_OFFICE,hw=O.width/2,back=-O.depth/2,front=O.front,H=2.8,mats=new Map();
  const mat=c=>{if(!mats.has(c))mats.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.83}));return mats.get(c);};
  const box=(size,pos,c,name,solid=false)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.position.set(...pos);m.name=name||'';room.add(m);if(solid)collider(pos[0],pos[2],size[0],size[2],pos[1]+size[1]/2);return m;};
  const anchor=(at,label,fn)=>{const a=new THREE.Object3D();a.position.set(...at);a.userData.npcInteraction=false;room.add(a);reg(a,label,fn,true);return a;};
- box([O.width,.12,front-back],[0,-.06,(front+back)/2],0x947354,'Office timber floor');
- for(const x of [-3.5,3.5])box([5.8,H,.12],[x,H/2,back],0xece1ca,'Office rear wall');
+ if(internal){
+  for(const [x0,x1,z0,z1] of [[-hw,hw,-3.36,front],[-hw,-5.65,back,-3.36],[-2.05,hw,back,-3.36]])box([x1-x0,.12,z1-z0],[(x0+x1)/2,-.06,(z0+z1)/2],0x947354,'Office timber floor');
+  for(const [x0,x1] of [[-hw,-5.65],[.6,hw]])box([x1-x0,H,.12],[(x0+x1)/2,H/2,back],0xece1ca,'Office rear wall');
+ }else{
+  box([O.width,.12,front-back],[0,-.06,(front+back)/2],0x947354,'Office timber floor');
+  for(const x of [-3.5,3.5])box([5.8,H,.12],[x,H/2,back],0xece1ca,'Office rear wall');
+ }
  box([1.2,.7,.12],[0,2.45,back],0xece1ca,'Rear door lintel');
  box([.12,H,front-back],[-hw,H/2,(front+back)/2],0xece1ca,'Office north wall');
  box([O.width,.12,front-back],[0,H+.06,(front+back)/2],0xf1eadb,'Office ceiling');
@@ -31,17 +36,25 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},exit}){
  for(let i=0;i<8;i++)box([.12,.28,.24],[-hw+.35,.95,back+.5+i*.25],[0x5d7164,0xb29a73,0x88564b][i%3],'Account book');
  box([1.4,.4,.6],[-2,.2,1.1],0x7e8b72,'Visitor bench',true);
  box([.85,.07,.65],[-2,.48,2.2],0x775638,'Visitor tea table',true);
- // Kitchenette at the rear, never across either window: sink, kettle, cupboards and a small fridge.
- box([2.4,.88,.6],[-2.7,.44,back+.38],0xd3c8ae,'Kitchenette cupboards',true);
- box([2.45,.04,.64],[-2.7,.9,back+.38],0xb2bab5,'Kitchenette worktop');
- box([.6,.025,.4],[-3.25,.93,back+.38],0x737f7c,'Kitchenette sink');
- box([.04,.25,.04],[-3.25,1.04,back+.13],0xb4beb8,'Kitchenette tap');
- box([.23,.28,.23],[-2,1.06,back+.38],0xd5d6cb,'Electric kettle');
- box([.62,1.15,.62],[-4.35,.575,back+.4],0xe1dfd0,'Office fridge',true);
- anchor([-2,1,back+1.05],'Make office tea',()=>action('read','Sakura kitchenette','Fill the kettle at the sink. Cups, tea and the staff lunch boxes stay in the cupboards and small fridge.'));
+ // Kitchenette stays clear of the internal stair opening.
+ const kitchenBack=back+(internal?1.9:0);
+ box([2.4,.88,.6],[-2.7,.44,kitchenBack+.38],0xd3c8ae,'Kitchenette cupboards',true);
+ box([2.45,.04,.64],[-2.7,.9,kitchenBack+.38],0xb2bab5,'Kitchenette worktop');
+ box([.6,.025,.4],[-3.25,.93,kitchenBack+.38],0x737f7c,'Kitchenette sink');
+ box([.04,.25,.04],[-3.25,1.04,kitchenBack+.13],0xb4beb8,'Kitchenette tap');
+ box([.23,.28,.23],[-2,1.06,kitchenBack+.38],0xd5d6cb,'Electric kettle');
+ box([.62,1.15,.62],[-4.35,.575,kitchenBack+.4],0xe1dfd0,'Office fridge',true);
+ anchor([-2,1,kitchenBack+1.05],'Make office tea',()=>action('read','Sakura kitchenette','Fill the kettle at the sink. Cups, tea and the staff lunch boxes stay in the cupboards and small fridge.'));
  anchor([0,1.2,3.55],'Look over the town',()=>action('inspect','Town outlook','Main Street and the town are visible through the east glazing.'));
  anchor([5.9,1.2,4.05],'Look over the harbour',()=>action('inspect','Harbour outlook','The south window looks towards the port, with no tall storage across the view.'));
- anchor([0,1.1,back+.35],'Return to Sakura’s outside stair',exit);
- room.add(new THREE.HemisphereLight(0xffefd7,0x7e8071,1.2));
+ anchor([0,1.1,back+.35],internal?'Exit via Sakura’s outside stair':'Return to Sakura’s outside stair',exit);
+ // Steady fluorescent fittings; the shared shop fill lights the internal office too.
+ const tube=new THREE.MeshBasicMaterial({color:0xfff1ce,toneMapped:false});
+ tube.userData.keepPhysical=true;tube.userData.keepPhysicalStrict=true;
+ for(const [x,z] of [[-2,-1.5],[3,1.5]]){
+  box([1.35,.08,.25],[x,2.64,z],0x777e79,'Office fluorescent housing');
+  const light=new THREE.Mesh(new THREE.BoxGeometry(1.2,.035,.12),tube);light.position.set(x,2.59,z);light.name='Office fluorescent diffuser';room.add(light);
+ }
+ if(!internal){const fill=new THREE.HemisphereLight(0xffefd7,0x7e8071,1.2);fill.name='Sakura office steady indoor fill';room.add(fill);}
  return {bounds:{minX:-hw+.1,maxX:hw-.1,minZ:back+.1,maxZ:front-.1},spawn:[0,0,back+.8],exit:[0,1.1,back+.35],office:true};
 }

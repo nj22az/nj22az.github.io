@@ -10,6 +10,7 @@ import {createShopRefrigerator} from './shop-refrigerator.js';
 import {townCalendarAt} from '../../town-clock.js';
 import {buildMedicineShelf,hangWallPosters,createWindowDecorations} from './sakura-dressing.js';
 import {SAKURA_LAYOUT,SAKURA_SHELVES,SAKURA_DRESSING,SAKURA_BACKBAR,SAKURA_TILL_CABINET,BUN_STEAMER,COPY_MACHINE} from './sakura-layout.js';
+import {buildSakuraStoreys,sakuraStoreys} from './sakura-stairs.js';
 import {buildSakuraShell} from './sakura-shell.js';
 import {PALETTE,fluorescent} from '../../render/dusk.js';
 import {buildSakuraCheer,buildSakuraBand} from './sakura-cheer.js';
@@ -74,8 +75,8 @@ function dressBackbar(room,anchor,action,materials){
  const look=SAKURA_BACKBAR.find(p=>p.id==='osusume');
  if(look)anchor([look.x-.15,1.2,look.z],'Buy from the till counter',()=>action('sakura-counter-goods'));
 }
-export function buildSakuraInterior({room,reg,action,exit}){
- const layout=SAKURA_LAYOUT,unitPositions=new Map(),unitApproaches=new Map(),batches=[],materials=shopProductMaterials(),dummy=new THREE.Object3D(),zero=new THREE.Matrix4().makeScale(0,0,0);
+export function buildSakuraInterior({room,reg,action,exit,officeExit=exit}){
+ const layout=sakuraStoreys(SAKURA_LAYOUT),unitPositions=new Map(),unitApproaches=new Map(),batches=[],materials=shopProductMaterials(),dummy=new THREE.Object3D(),zero=new THREE.Matrix4().makeScale(0,0,0);
  const refrigerator=createShopRefrigerator(room,reg);
  const advertising=createStoreAdvertising({room,reg,action,posterSpecs:[]});
  const anchor=(pos,label,fn)=>{const o=new THREE.Object3D();o.position.set(...pos);room.add(o);reg(o,label,fn,true);return o;};
@@ -162,13 +163,14 @@ export function buildSakuraInterior({room,reg,action,exit}){
  buildSpecialsBoard(room,{anchor,action});
  buildSakuraBand(room);
  const life=buildSakuraLife(room,{anchor,action});
+ const upstairs=buildSakuraStoreys({room,reg,action,exit:officeExit});layout.colliders=[...layout.colliders,...upstairs.colliders];
  anchor([4.50,1.2,.6],'Ring service bell',()=>action('resident','Thuan'));
  dressBackbar(room,anchor,action,materials);
  anchor([4.5,1.2,2.35],'Browse mail-order catalogue',()=>action('store-catalogue'));
  anchor(layout.exit,'Exit to street',exit);
  // Back-room cartons: open Thuan's Storage restock (navigate, not iframe).
  // Stock cartons carry the same generated Sakura label as delivered cartons.
- const carton=shopProductTemplate('stock');for(const z of [-5.95,-6.25])for(const x of [-4.6,-3.7,-2.8,-1.9]){const group=new THREE.Group();group.position.set(x,.25,z);room.add(group);group.add(new THREE.Mesh(carton.body,materials[0]),new THREE.Mesh(carton.art,materials[1]));}
+ const carton=shopProductTemplate('stock');for(const z of [-5.95,-6.25])for(const x of [.15,.65,1.15]){const group=new THREE.Group();group.position.set(x,.25,z);room.add(group);group.add(new THREE.Mesh(carton.body,materials[0]),new THREE.Mesh(carton.art,materials[1]));}
  // Bright, even konbini light: warm white from the tubes, a pale floor bounce rather
  // than the old green-grey, so the shop reads cheerful instead of dim.
  const fill=new THREE.HemisphereLight(PALETTE.sakuraTube,0xd8d2c4,1.7);room.add(fill);

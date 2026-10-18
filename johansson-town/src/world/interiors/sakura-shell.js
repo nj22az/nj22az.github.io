@@ -127,7 +127,8 @@ function buildCeilingAndFloor(page){
  const S=SAKURA_SHELL,out=[];
  {const {span,mesh}=parts('sakura-ceiling');
   span(S.westX,S.eastX,S.ceiling,S.ceiling+.04,S.partitionZ,S.floorFront,C.ceiling);
-  span(S.backWestX,S.backEastX,S.ceiling,S.ceiling+.04,S.backZ,S.partitionZ,0xe6e2d8);
+  // Open the ceiling over both flights and the turning landing.
+  span(-.6,S.backEastX,S.ceiling,S.ceiling+.04,S.backZ,S.partitionZ,0xe6e2d8);
   out.push(mesh(material()));}
  // Terrazzo on the shop floor, grey concrete in the back room.
  // A shade under white, so the tubes' sheen (sakura-surfaces.js) shows on it.

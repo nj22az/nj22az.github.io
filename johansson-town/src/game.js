@@ -94,7 +94,7 @@ import {HOUSE_SAVE} from './world/johansson-house.js';
 import {createHomeCustomization} from './world/interiors/home-customization.js';
 import {buildCityRestaurant,CITY_RESTAURANT} from './world/interiors/city-restaurant.js';
 import {buildUpperHome} from './world/interiors/upper-home.js';
-import {buildSakuraOfficeRoom} from './world/interiors/sakura-office-room.js';
+import {SAKURA_STAIR} from './world/interiors/sakura-stairs.js';
 import {buildFamilyHome} from './world/interiors/family-home.js';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js?ui=compact-3';
@@ -262,7 +262,7 @@ function signTex(a,b,accent='#9b4035'){const c=document.createElement('canvas');
 const townSections=createTownSections({mobile});window.__JOHANSSON_SECTIONS__=townSections.stats;
 const shopStreetView=createShopStreetView();window.__JOHANSSON_SHOP_VIEW__=shopStreetView.stats;
 /** Rooms that look out on the real street through their front: Sakura's glass, Minato's door and window. */
-function streetFrontageOf(site){if(site?.officePortals){const dir=camera.getWorldDirection(new THREE.Vector3());return site.officePortals.reduce((a,b)=>{const score=p=>dir.x*Math.sin(p.interiorYaw||0)+dir.z*Math.cos(p.interiorYaw||0);return score(b)>score(a)?b:a;});}if(!site?.streetFrontage)return null;if(site.id==='market')return {...site.streetFrontage,interiorZ:sakuraShop.layout.frontZ};return site.id==='izakaya'?site.streetFrontage:null;}
+function streetFrontageOf(site){if(site?.id==='market'&&player.position.y>SAKURA_STAIR.height-.3){const office=SITES.find(s=>s.id==='sakura-office');if(office)return streetFrontageOf({...office,officePortals:office.officePortals.map(p=>({...p,interiorOrigin:[p.interiorOrigin[0],SAKURA_STAIR.height,p.interiorOrigin[2]+SAKURA_STAIR.officeZ]}))});}if(site?.officePortals){const dir=camera.getWorldDirection(new THREE.Vector3());return site.officePortals.reduce((a,b)=>{const score=p=>dir.x*Math.sin(p.interiorYaw||0)+dir.z*Math.cos(p.interiorYaw||0);return score(b)>score(a)?b:a;});}if(!site?.streetFrontage)return null;if(site.id==='market')return {...site.streetFrontage,interiorZ:sakuraShop.layout.frontZ};return site.id==='izakaya'?site.streetFrontage:null;}
 const town=new THREE.Group(),room=new THREE.Group();scene.add(town,room);room.visible=false;
 
 // The drawn look, after Sakura Crossing (Kenton-GMI, MIT): quantised light with
@@ -1079,7 +1079,7 @@ const ramenMeals=createVenueService({room:ramenLife,place:'ramen',getMinutes:()=
  ...(({staffName:'Mrs Sato',venueName:'Sato Ramen',getStaff:()=>world.people.find(p=>p.profile.name==='Mrs Sato')?.g||null,
   kitchen:satoKitchen,meal:MEALS.lunch,drinkFor:name=>SATO_LUNCH_DRINK[name]||'mugicha',tableFor:p=>SATO_GUEST_SEATS[p.g.userData.ramenSeat]?.table}))});
 let storeClerk=world.people.find(p=>p.profile.name==='Thuan').g,storeWelcomed=false;
-const sakuraShop=createSakuraShop({world,scene,state:activities.state,ledger:residentLedger,register:reg,action:activities.action,exit:leaveRoom,getMinutes:()=>minutes,getPlayerSeat:()=>parkSeat?.storeSeatId,getPlayerPosition:()=>player.position,isInside:()=>current?.id==='market',pay:activities.spend,say,onBorrow:npcActivities.release,getRain:()=>weather,save:()=>{if(!catchingUp)activities.save();}});
+const sakuraShop=createSakuraShop({world,scene,state:activities.state,ledger:residentLedger,register:reg,action:activities.action,exit:leaveRoom,officeExit:()=>crossThreshold(()=>{leaveRoom();const office=SITES.find(s=>s.id==='sakura-office');if(office)placeAtEntrance(office,true);}),getMinutes:()=>minutes,getPlayerSeat:()=>parkSeat?.storeSeatId,getPlayerPosition:()=>player.position,isInside:()=>current?.id==='market',pay:activities.spend,say,onBorrow:npcActivities.release,getRain:()=>weather,save:()=>{if(!catchingUp)activities.save();}});
 storeService=sakuraShop.service;
 /**
  * Puts the real shop behind the real glazing, and retires the stand-in shelves that
@@ -1119,7 +1119,7 @@ function roomShell(s){
  clearRoom();town.visible=false;room.visible=true;
  const shared={site:s,room,reg,collider:roomCollider,action:(...args)=>{if(!islandPlay?.action(...args))activities.action(...args);},exit:leaveRoom};
  if(s.id==='dungeon'){activeRoomLayout=dungeonLayout(shared);return;}
- if(s.id==='market'){activeRoomLayout=SAKURA_LAYOUT;return;}
+ if(s.id==='market'){activeRoomLayout={...sakuraShop.layout,blocked:(x,z,r)=>suppliedRoomBoundsBlocked(player.position.y>SAKURA_STAIR.height-.24?{bounds:{minX:-6.4,maxX:6.4,minZ:-6.14,maxZ:3.91}}:SAKURA_LAYOUT,x,z,r)};return;}
  if(s.id==='school'){activeRoomLayout=buildClassroom(shared);return;}
  if(s.id==='mayor-office'){activeRoomLayout=buildMayorOffice(shared);return;}
  if(s.id==='community-kitchen'){activeRoomLayout=buildCommunityKitchen(shared);return;}
@@ -1133,7 +1133,6 @@ function roomShell(s){
   say('Naha, the top floor of the Hotel Ryūsei. E for the dinner menu.',4);
   setTimeout(()=>{if(!photoStudio?.active&&current?.id===CITY_RESTAURANT.id&&activeRoomLayout?.dinner===dinner)activities.action('city-dinner',CITY_RESTAURANT.title,dinner);},1400);
   return;}
- if(s.id==='sakura-office'){activeRoomLayout=buildSakuraOfficeRoom(shared);return;}
  if(s.familyHome){activeRoomLayout=(s.upperHome?buildUpperHome:buildFamilyHome)({...shared,household:s.familyHome,residents:s.residents,title:s.title,kind:s.houseKind});return;}
  if(s.id==='mayor-home'){activeRoomLayout=buildMayorHome({...shared,sleep:sleepUntilMorning,player:()=>player.position.toArray(),
   // The sliding doors keep their state by id, under the house's own name (johansson-house.js RF6).
@@ -1207,7 +1206,8 @@ const loadRoomAssets=s=>Promise.all((ROOM_ASSETS[s.id]||[]).map(id=>loadAsset(id
 let roomAssetsTry=0;
 async function enterRoom(s){replayInterrupted();lowerPocket();spawnScene?.cancel('room');
  if(roomLoading)return;
- s=SITES.find(site=>site.id===businessId(s.id))||s;
+ const officeEntry=s.id==='sakura-office';
+ s=SITES.find(site=>site.id===(officeEntry?'market':businessId(s.id)))||s;
  if(s.id==='market'){roomLoading=true;resetInput();let ready=false;try{ready=await sakuraShop.ready();}finally{roomLoading=false;}if(!ready){say('Could not open Sakura. Please try the door again.',5);return;}}
  // Buildings remain accessible; business hours govern staff and service only.
  if((s.id==='izakaya'||(s.id==='ramen'))&&!izakayaReady('interior')){
@@ -1222,7 +1222,7 @@ async function enterRoom(s){replayInterrupted();lowerPocket();spawnScene?.cancel
  }
  parkSeat=null;seated=false;activities.close();if(!photoStudio?.active&&!photoReturning)activities.visit(s.id);
  const streetYaw=yaw,streetPitch=pitch;
- current=s;roomShell(s);addRoomProps(s);content=buildBusinessContent({site:s,room,register:reg,onAction:activities.action,onInspect:item=>inspector.open(item)});if(!activeRoomLayout?.storeys)room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});activeRoomLayout?.follow?.({x:0,y:activeRoomLayout.spawn?.[1]??0,z:0});indoorCeilings=createIndoorCeilings(room,{from:activeRoomLayout?.ceilingsFrom});const spawn=activeRoomLayout?.spawn||[0,0,4.3];
+ current=s;roomShell(s);addRoomProps(s);content=buildBusinessContent({site:s,room,register:reg,onAction:activities.action,onInspect:item=>inspector.open(item)});if(!activeRoomLayout?.storeys)room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});activeRoomLayout?.follow?.({x:0,y:activeRoomLayout.spawn?.[1]??0,z:0});indoorCeilings=createIndoorCeilings(room,{from:activeRoomLayout?.ceilingsFrom});const spawn=officeEntry?[0,SAKURA_STAIR.height,-5.15]:activeRoomLayout?.spawn||[0,0,4.3];
  player.position.set(...spawn);
  // With the camera behind him, start a step inside so it is not up against the door.
  if(thirdPerson){const inward=activeRoomLayout?.yaw??0,dx=-Math.sin(inward),dz=-Math.cos(inward);for(let d=.1;d<=1.2;d+=.1){const x=spawn[0]+dx*d,z=(spawn[2]??0)+dz*d;if(cameraBlocked(x,z,player.position.y+.9,.35))break;player.position.x=x;player.position.z=z;}}
@@ -1327,7 +1327,7 @@ function indoorNpc(g){return g.userData.inBookshop||g.userData.inWorkplace||g.us
 function residentInView(g){if(g.userData.visualReady===false||g.userData.inVehicle)return false;for(let node=g;node;node=node.parent)if(!node.visible)return false;return current?!!indoorNpc(g):!indoorNpc(g);}
 const residentPoint=new THREE.Vector3();
 function residentEntities(){return [...world.people.map(p=>p.g),...(world.neighbours||[])];}
-function residentsAt(x,z,radius=PLAYER_RADIUS){return residentEntities().filter(g=>{if(g.userData.playerControlled||!residentInView(g))return false;g.getWorldPosition(residentPoint);return circleHitsCircle(x,z,radius,residentPoint.x,residentPoint.z,NPC_RADIUS);});}
+function residentsAt(x,z,radius=PLAYER_RADIUS){return residentEntities().filter(g=>{if(g.userData.playerControlled||!residentInView(g))return false;g.getWorldPosition(residentPoint);return (!roomWalk()||Math.abs(residentPoint.y-player.position.y)<1.5)&&circleHitsCircle(x,z,radius,residentPoint.x,residentPoint.z,NPC_RADIUS);});}
 function overlapsResident(x,z){return residentsAt(x,z).length>0;}
 function residentBlocked(x,z){if(!current&&inEntrance(x,z))return false;return overlapsResident(x,z);}
 function collides(x,z){
@@ -2233,7 +2233,7 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  /** Read the same standing collision rules used by actual player movement. */
  navigation(x,z,radius=PLAYER_RADIUS){
   if(!Number.isFinite(x)||!Number.isFinite(z)||!Number.isFinite(radius)||radius<.1||radius>.6)throw Error('Invalid navigation probe');
-  const y=current?0:groundHeight(x,z),bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,radius):roomBoundsBlocked(x,z,radius)):townBoundsBlocked(x,z,radius);
+  const y=current?player.position.y:groundHeight(x,z),bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,radius):roomBoundsBlocked(x,z,radius)):townBoundsBlocked(x,z,radius);
   const solids=(current?roomColliders:world.colliders).filter(c=>standingHitsRect(x,z,radius,y,c)).map(c=>({id:c.id||'solid',x:c.x,z:c.z,w:c.w,d:c.d,yaw:c.yaw||0}));
   const residents=residentsAt(x,z,radius).map(g=>g.userData.name||g.name);
   return {x,z,y,radius,room:current?.id||null,bounds,staticBlocked:bounds||solids.length>0,residentBlocked:residents.length>0&&!(!current&&inEntrance(x,z)),solids,residents,route:this.route(x,z)};
