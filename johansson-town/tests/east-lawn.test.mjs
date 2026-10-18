@@ -64,7 +64,7 @@ test('the seawall stops you, and the sand below it stays above the ground it lie
  // box's visible clearing, must not acquire a continuous hidden collision strip.
  const trees=colliders.filter(c=>c.id==='east-lawn-tree'),drawn=[];
  parent.traverse(o=>{if(o.name==='East lawn tree')drawn.push(o);});
- assert.ok(trees.length>0);assert.equal(trees.length,drawn.length);
+ assert.equal(trees.length,0,'The retired treeline cannot return as invisible collision');assert.equal(trees.length,drawn.length);
  for(const tree of drawn)assert.ok(trees.some(c=>c.x===tree.position.x&&c.z===tree.position.z&&circleHitsRect(c.x,c.z,.28,c)),'Every visible trunk stays solid');
  assert.equal(trees.some(c=>circleHitsRect(12,23.314692,.28,c)),false,'The reproduced Koban obstruction stays clear');
 
