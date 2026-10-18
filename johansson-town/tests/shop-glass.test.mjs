@@ -12,10 +12,10 @@ import {RESIDENTS} from '../src/people/residents.js';
 import {MAIN_ROAD} from '../src/world/main-road.js';
 import {WEST_SHOPS} from '../src/world/west-shops.js';
 
-function assertGlass(material){
+function assertGlass(material,maxOpacity=.06){
  assert.equal(material.color.getHex(),0xffffff);
  assert.equal(material.transparent,true);
- assert.ok(material.opacity>0&&material.opacity<=.06);
+ assert.ok(material.opacity>0&&material.opacity<=maxOpacity);
  assert.equal(material.depthWrite,false);
  assert.equal(material.side,THREE.DoubleSide);
  assert.equal(material.toneMapped,false);
@@ -62,13 +62,13 @@ test('an unexpected izakaya asset is not made transparent',()=>{
  assert.equal(mesh.material.transparent,false);
 });
 
-test('Sakura keeps its full-size frontage and clear street glazing',()=>{
+test('Sakura keeps its full-size frontage and lightly hazed, see-through street glazing',()=>{
  installDOM();
  const parent=new THREE.Group(),site={id:'market',side:-1,z:-28,title:'Sakura'};
  const facade=buildStorefront({parent,site,label(){},register(){},enter(){},placement:{x:-7.45,z:-28,yaw:Math.PI/2,scale:1}});
  assert.deepEqual(facade.scale.toArray(),[1,1,1]);
  const panes=facade.children.filter(o=>o.userData.clearWindow);
- assert.equal(panes.length,3);panes.forEach(o=>assertGlass(o.material));
+ assert.equal(panes.length,3);panes.forEach(o=>{assertGlass(o.material,.15);assert.equal(o.material.opacity,.12);});
 });
 
 

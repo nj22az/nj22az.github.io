@@ -4,10 +4,10 @@ export function createDetailStream({enabled=true,onStart=()=>{},onChange=()=>{},
  const remove=(list,id)=>{const i=list.indexOf(id);if(i>=0)list.splice(i,1);};
  function add(entry){const state={...entry,status:'idle',attempts:0,retryAt:0,pending:false};entries.push(state);return state;}
  function update(position,direction){
-  if(!enabled||busy)return;
+  if(busy)return;
   const ahead={x:position.x+(direction?.x||0)*16,z:position.z+(direction?.z||0)*16};
   const distance=(entry,point)=>entry.distance?entry.distance(point):Math.hypot(point.x-entry.x,point.z-entry.z);
-  const entry=entries.filter(e=>!e.pending&&(e.status==='idle'||e.status==='failed'&&e.attempts<maxAttempts&&now()>=e.retryAt))
+  const entry=entries.filter(e=>(enabled||e.requiredNearby)&&!e.pending&&(e.status==='idle'||e.status==='failed'&&e.attempts<maxAttempts&&now()>=e.retryAt))
    .map(e=>({e,d:Math.min(distance(e,position),distance(e,ahead))}))
    .filter(v=>v.d<=(v.e.radius??40)).sort((a,b)=>((a.e.priority??2)*12+a.d)-((b.e.priority??2)*12+b.d))[0]?.e;
   if(!entry)return;
@@ -25,7 +25,7 @@ export function createDetailStream({enabled=true,onStart=()=>{},onChange=()=>{},
    .finally(()=>{if(!timedOut)clearTimeout(timer);busy=false;stats.active=null;});
  }
  /** Whether anything within its reach of `position` has still to load (not a failure waiting to retry). */
- function pendingNear(position){return enabled&&entries.some(e=>(e.status==='idle'||e.status==='loading')&&(e.distance?e.distance(position):Math.hypot(position.x-e.x,position.z-e.z))<=(e.radius??40));}
+ function pendingNear(position){return entries.some(e=>(enabled||e.requiredNearby)&&(e.status==='idle'||e.status==='loading')&&(e.distance?e.distance(position):Math.hypot(position.x-e.x,position.z-e.z))<=(e.radius??40));}
  return {add,update,stats,pendingNear};
 }
 export function registerDetail(world,entry){(world.details??=[]).push(entry);}

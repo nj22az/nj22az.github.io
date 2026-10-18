@@ -41,3 +41,12 @@ test('constrained startup leaves optional fallbacks in place without fetching or
  for(let i=0;i<10;i++)stream.update({x:0,z:0});await tick();
  assert.equal(calls,0);assert.equal(changes,0);assert.equal(stream.stats.active,null);assert.equal(stream.stats.enabled,false);assert.equal(stream.pendingNear({x:0,z:0}),false);
 });
+
+test('a phone loads only the required nearby shop window and retains the optional scenery cap',async()=>{
+ const calls=[],stream=createDetailStream({enabled:false});
+ stream.add({id:'scenery',x:0,z:0,load:()=>{calls.push('scenery');return true;}});
+ stream.add({id:'Sakura window',requiredNearby:true,x:0,z:0,radius:18,load:()=>{calls.push('Sakura');return true;}});
+ stream.update({x:40,z:0});await tick();assert.deepEqual(calls,[]);
+ stream.update({x:10,z:0});await tick();assert.deepEqual(calls,['Sakura']);
+ stream.update({x:0,z:0});await tick();assert.deepEqual(calls,['Sakura']);
+});

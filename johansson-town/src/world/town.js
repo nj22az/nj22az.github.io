@@ -378,14 +378,21 @@ export function createTown(options){
   // Reused every frame rather than rebuilt: the doors only need to know where people
   // are, and this runs at frame rate.
   const doorTraffic=[];
-  world.update=(dt,time,day,minutes=1002)=>{
+  // Logical journeys continue indoors without animating unseen scenery,
+  // repainting the shed TV or updating the ocean's geometry.
+  world.updateLife=(dt,time,day,minutes=1002)=>{
     world.minutes=minutes;
+    world.portShed?.advance(dt,minutes);
+    world.airportIsland?.update(dt,minutes,day,options.getPlayerPosition?.());
+    world.oilJetty?.update(dt,minutes,time);
+    world.ferry?.update(dt,minutes,time);world.traffic?.update(dt,minutes);world.bus?.update(dt,minutes);
+  };
+  world.update=(dt,time,day,minutes=1002)=>{
+    world.updateLife(dt,time,day,minutes);
     world.updateHours(minutes);world.updateDiningStreet?.(day);
-    world.quietLife?.update(time);world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.beachCorner?.tick(dt,options.getPlayerPosition?.());world.portShed?.tick(dt,minutes);world.homeLights?.update(minutes);world.airportIsland?.update(dt,minutes,day,options.getPlayerPosition?.());world.oilJetty?.update(dt,minutes,time);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
+    world.quietLife?.update(time);world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.beachCorner?.tick(dt,options.getPlayerPosition?.());world.portShed?.tick(dt,minutes,{advanceLife:false});world.homeLights?.update(minutes);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
     world.docklandsLife?.update(time,minutes);world.shoppingLane?.update(world.weather,minutes);world.flowerShop?.update(minutes);world.blueCoral?.update(minutes);world.park?.update(time);
     world.busStation?.update(minutes,day);world.tunnel?.update?.(day);
-    // Three daily services, each with a fifteen-minute stop.
-    world.ferry?.update(dt,minutes,time);world.traffic?.update(dt,minutes);world.bus?.update(dt,minutes);
     // The shop doors open for whoever walks up to them. Everybody who is outdoors
     // counts, so a customer arriving is a door opening rather than a person ending.
     if(world.shopDoors?.length){

@@ -1,9 +1,11 @@
+import {CANONICAL_REST} from './canonical-rest.js';
 import {activeHomeForResident} from './island-households.js';
 import {TATAMI_HOME_LAYOUT,TATAMI_HOME_OWNER} from '../world/interiors/tatami-home-layout.js';
 import {householdFor,householdNames} from './households.js';
 // Repeatable household routines use the saved town clock, including night workers.
 const minute=m=>((m%1440)+1440)%1440;
 export function sleepHours(profile){
+ if(profile.canonicalDay&&CANONICAL_REST[profile.name])return CANONICAL_REST[profile.name];
  if(profile.name==='Barfly')return {sleep:240,wake:600};
  if(profile.name==='Officer Mori')return {sleep:420,wake:900};
  // On the island he lives in the office and keeps early hours (social.js HARBOUR_MASTER_DAY).

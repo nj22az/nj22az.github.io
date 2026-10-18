@@ -21,7 +21,7 @@ export function contextActions(state={}){
   if(table&&canOrder)add('orderButton','Order food & drinks','basket');
   add('standButton','Stand up','stand');
  }else{
-  const targetIsDoor=/^(?:enter|exit|leave|step outside|go in|go out)\b/i.test(target);
+  const targetIsDoor=/^(?:enter|exit|leave|step outside|go in|go out|come into)\b/i.test(target);
   if(target&&!targetIsDoor){const face=actionFor(target);add('act',target,face.icon,'E');if(enter)add('enterBuildingButton',enter,'door');}
   else if(enter)add('enterBuildingButton',enter,'door','E');
   else if(target&&/^(?:exit|leave|step outside|go out)\b/i.test(target))add('exitRoomButton','Exit to street','exit','E');

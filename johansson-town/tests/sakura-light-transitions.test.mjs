@@ -21,11 +21,19 @@ test('late Sakura street mounting cannot expose interior lights before another s
   shop.update(0);
   assert.ok(lights().length>0,'The actual authored shop contains its hemisphere fill');
   assert.ok(lights().every(l=>!l.visible),'The initial outside scan hides interior lighting');
+  const worker=new THREE.Group(),customer=new THREE.Group();worker.userData.name='window clerk';customer.userData.name='window customer';
+  for(const person of [worker,customer]){person.visible=false;person.add(new THREE.Mesh(new THREE.BoxGeometry(.2,.7,.2),new THREE.MeshBasicMaterial()));shop.group.add(person);}
   assert.equal(shop.street(street,{position:[-11,0,-28],yaw:0}),true);
   const strip=shop.group.getObjectByName('Sakura shopfront strip lights');
   assert.equal(strip?.children.filter(o=>o.isPointLight).length,2,'Mounting creates the real shopfront tube lights');
   assert.ok(lights().every(l=>!l.visible),'Newly mounted tube lights must not brighten the street, roof or paving');
+  const copy=shop.group.getObjectByName('Sakura window stand-in');
+  assert.ok(copy,'The street has its merged window copy');
+  for(const person of [worker,customer]){assert.equal(person.visible,true,'Street view reveals live occupants');assert.equal(person.children[0].layers.isEnabled(0),true,'The stand-in never hides live people');}
+  let released=0;copy.traverse(o=>o.geometry?.addEventListener('dispose',()=>released++));
   inside=true;shop.enter(scene);
+  assert.equal(shop.group.getObjectByName('Sakura window stand-in'),undefined,'Entry releases the expanded exterior copy');
+  assert.ok(released>0,'The exterior geometry buffers are disposed');
   assert.ok(lights().every(l=>l.visible),'The actual shop lights turn on immediately when entered');
   inside=false;shop.street(street,{position:[-11,0,-28],yaw:0});
   assert.ok(lights().every(l=>!l.visible),'Returning to the pavement immediately restores exterior lighting');

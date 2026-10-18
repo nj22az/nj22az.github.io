@@ -123,7 +123,7 @@ const faceAlong=(g,dx,dz)=>{if(dx||dz)g.rotation.y=Math.atan2(dx,dz)+Math.PI;};
  * @param {(kind:string,name:string)=>void} options.onAction
  * @param {{attach:Function}} [options.characters]
  */
-export function createNeighbours({parent,register,onAction,characters,blocked=()=>false,getRain=()=>false}={}){
+export function createNeighbours({parent,register,onAction,characters,blocked=()=>false,getRain=()=>false,getState=()=>({})}={}){
  const people=NEIGHBOURS.map((spec,i)=>{
   const g=new THREE.Group();g.name=spec.name;g.userData.name=spec.name;g.userData.neighbour=true;
   g.userData.activity=spec.role;g.userData.socialPose=spec.pose||null;
@@ -137,6 +137,10 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
  const navigation=createNavigation(blocked,{step:.5});let talking=null,talkUntil=0;
  return {
   people,
+  snapshot(){return Object.fromEntries(people.map(({g,spec})=>{
+   const home=g.userData.indoors==='home'||g.userData.inHome,h=home&&activeResidentHome(spec.name)?.target;
+   return [spec.name,{position:h?[h.x,h.z]:[g.position.x,g.position.z],indoors:home?'home':null,place:g.userData.place}];
+  }));},
   entities:people.map(p=>p.g),
   /** New walls (Kitano-jima built on demand): forget which ground was clear, and plan each walk again from where they are. */
   replan(){navigation.clearCache?.();for(const p of people)if(p.routine)p.path=navigation.path(p.g.position,{x:p.routine.at[0],z:p.routine.at[1]});},
@@ -166,7 +170,11 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
       p.roundIndex=stop;phase.target=[...spec.route[stop]];
      }else p.roundIndex=0;
      const key=phase.place+':'+phase.target.join(',');
-     if(!p.initialised){g.position.set(phase.target[0],groundAt(...phase.target),phase.target[1]);p.initialised=true;}
+     if(!p.initialised){
+      const saved=getState().residentLocations?.[spec.name],at=saved?.position;
+      const valid=Array.isArray(at)&&at.length===2&&at.every(Number.isFinite)&&Math.abs(at[0])<300&&Math.abs(at[1])<300;
+      const start=valid?at:phase.target;g.position.set(start[0],groundAt(...start),start[1]);p.initialised=true;
+     }
      if(p.phaseKey!==key){p.phaseKey=key;p.path=canonicalStreetRoute(navigation,spec.name,g.position,phase.target);}
      g.userData.activity=phase.activity;g.userData.place=phase.place;
      if(!g.userData.playerConversation&&!g.userData.aboardFerry&&p.path?.length){
@@ -175,6 +183,8 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
      }
      const arrived=Math.hypot(g.position.x-phase.target[0],g.position.z-phase.target[1])<.35;
      if(arrived&&phase.place==='home')g.userData.indoors='home';else delete g.userData.indoors;
+     g.userData.sleeping=arrived&&phase.place==='home'&&phase.rest==='sleep';
+     g.userData.walking=!arrived&&!!p.path?.length&&!g.userData.aboardFerry;
      g.visible=!g.userData.aboardFerry&&!(arrived&&(phase.place==='home'||phase.school));
      continue;
     }

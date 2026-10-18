@@ -1,3 +1,8 @@
+import {canonicalRest} from './canonical-rest.js';
+import {FLOWER_SHOP} from '../world/flower-shop.js';
+import {NAKAMURA_DESSERTS,HARBOUR_PARK_STUDY} from '../world/harbour-park-plan.js';
+import {ONSEN_DOOR} from '../world/onsen-layout.js';
+import {RAMEN_DOOR} from '../world/dining-layout.js';
 import {townCalendarAt} from '../town-clock.js';
 import {rotaWeek} from './ferry-crew.js';
 import {flatAccessRoute} from '../world/kitahama-layout.js';
@@ -13,10 +18,10 @@ const HOME_TARGETS=new Map();
 const activeTarget=name=>{if(!HOME_TARGETS.has(name))HOME_TARGETS.set(name,activeResidentHome(name)?.target);return HOME_TARGETS.get(name);};
 const minute=t=>{const [h,m]=t.split(':').map(Number);return h*60+m;};
 const points={izakaya:IZAKAYA_DOOR,sakura:MARKET_THRESHOLD,market:MARKET_THRESHOLD,warehouse:[-9.7,-41.4],
- school:[SCHOOL.genkan.x,SCHOOL.building.minZ-1.4],park:[12,-26],onsen:[17,-19],
+ school:[SCHOOL.genkan.x,SCHOOL.building.minZ-1.4],park:HARBOUR_PARK_STUDY[0],onsen:ONSEN_DOOR,
  port:[8,-38],ferry:[8,-38],office:[8,-38],koban:[0,28],
- 'sato-ramen':[-6,-14],books:TOWN_DESTINATIONS.books,workshop:TOWN_DESTINATIONS.workshop,
- florist:[18.5,16.5],zenzai:[5.1,-12.4],'blue-coral':[5.1,-12.4],
+ 'sato-ramen':RAMEN_DOOR,books:TOWN_DESTINATIONS.books,workshop:TOWN_DESTINATIONS.workshop,
+ florist:FLOWER_SHOP.staffAt,zenzai:NAKAMURA_DESSERTS.staffAt,'blue-coral':NAKAMURA_DESSERTS.staffAt,
  'fish-auction':[25,-39.6],'ice-plant':[31,-41],boatyard:[-31.8,-45],sea:[-31.8,-45],
  'higa-liquor':[4.8,8.4],clinic:[34.1,35.1],'cargo-yard':[17,-40],'post-office':[4.8,-4.1],
  'power-station':[SCHOOL.powerHouse.door[0]+.6,SCHOOL.powerHouse.door[1]-.9],quay:[20,-40],
@@ -35,6 +40,8 @@ export function canonicalDay(name,minutes,rain=false){
  const m=((minutes%1440)+1440)%1440,phases=DAYS.get(p.name);
  const phase=phases.filter(s=>s.from<=m).at(-1)||phases.at(-1),isHome=(phase.place===p.home||p.alsoAt.includes(phase.place))&&!/sweeping|the garden|at her gate/.test(phase.activity)&&(p.home!==p.work||/home|breakfast|asleep|sleep/.test(phase.activity));
  const homePlan=activity=>{const h=activeTarget(name);return {place:'home',target:[h.x,h.z],activity,rain:!!rain};};
+ const rest=canonicalRest(name,minutes);
+ if(rest)return {...homePlan(rest.activity),rest:rest.id};
  const weekday=townCalendarAt(minutes).weekday,weekend=weekday===0||weekday===6;
  if(name==='Ms Uezu'&&rotaWeek(minutes)===1&&phase.place==='ferry')return homePlan('off watch at her shore home');
  if(name==='Kōji'&&rotaWeek(minutes)===1&&m>=360&&m<1140)return {place:'ferry',target:[...points.ferry],activity:'relief bosun’s working week'};
@@ -50,6 +57,8 @@ export function canonicalDay(name,minutes,rain=false){
 
 /** One continuous outdoor path, using the measured upper-flat connector in either direction. */
 export function canonicalStreetRoute(navigation,name,from,target){
+ // Staying home is not a journey down the shared stair and back upstairs.
+ if(Math.hypot(from.x-target[0],from.z-target[1])<.06)return [];
  const access=flatAccessRoute(activeHomeForResident(name)?.home),home=access?.at(-1),near=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1])<.5;
  if(!access)return navigation.path(from,{x:target[0],z:target[1]});
  const here=[from.x,from.z],foot=access[0],leaving=near(here,home),entering=near(target,home);
