@@ -24,7 +24,7 @@ try{
   assert.equal(exterior.roomChildren,0);assert.equal(exterior.roomVisible,false);assert.equal(exterior.portalBytes,0);report.cycles.push({cycle,venue,indoor,exterior});
  }
  const continuity=await page.evaluate(async()=>{
-  const a=window.__JOHANSSON_AUDIT__;await a.enter('market');a.setTime(1260);const before=a.minutes;a.step(300000);const p=a.world.people.find(p=>p.profile.name==='Tetsuo');
+  const a=window.__JOHANSSON_AUDIT__;await a.enter('market');a.setTime(145);const before=a.minutes;a.step(300000);const p=a.world.people.find(p=>p.profile.name==='Tetsuo');
   return {before,after:a.minutes,tetsuo:{indoors:p.g.userData.indoors,position:p.g.position.toArray()},roomVisible:a.room.visible};
  });
  assert.ok(continuity.after>=continuity.before+4);assert.equal(continuity.roomVisible,true);assert.equal(continuity.tetsuo.indoors,'home');report.continuity=continuity;
