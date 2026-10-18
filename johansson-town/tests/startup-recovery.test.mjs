@@ -25,6 +25,7 @@ test('iPhone retains all postprocess effects and bounded shadows without enablin
  assert.equal(p.postprocess,true);assert.equal(p.shadows,true);assert.equal(p.shadowSize,512);
  assert.equal(p.streamDetails,false);assert.equal(p.cinematic,false);assert.equal(p.quietOpening,true);
  assert.equal(p.pixelBudget,650000);assert.equal(p.canvasPixels,650000);
+ assert.equal(p.dpr,1.5);assert.equal(p.shadowRadius,14);
  assert.equal(p.samples,0);assert.equal(p.preferHalfFloat,false);assert.equal(p.antialias,false);
  for(const [width,height] of [[430,932],[932,430],[4096,2732]]){
   const dpr=drawingDpr({width,height,deviceDpr:3,profile:p});assert.ok(width*height*dpr*dpr<=650001);

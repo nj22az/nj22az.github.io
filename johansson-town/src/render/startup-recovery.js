@@ -28,8 +28,8 @@ export function createStartupRecovery({storage,now=()=>Date.now(),search='',even
 export function graphicsProfile({mobile=false,tablet=false,safe=false,ios=false}={}){
  const phone=ios&&!tablet,lean=mobile||safe||phone;
  const compact=phone||safe;
- return Object.freeze({dpr:compact?1:lean?1.25:2,shadows:!safe&&(!lean||phone),antialias:!lean,
-  shadowSize:safe?0:phone?512:tablet?1024:2048,
+ return Object.freeze({dpr:safe?1:phone?1.5:lean?1.25:2,shadows:!safe&&(!lean||phone),antialias:!lean,
+  shadowSize:safe?0:phone?512:tablet?1024:2048,shadowRadius:phone?14:26,
   samples:lean?0:4,pixelBudget:compact?650000:lean?1.2e6:4.6e6,superScale:lean?1:1.25,
   precompile:!lean,preferHalfFloat:!lean,postprocess:!safe,
   // Full effects do not imply full-world model streaming or a cinematic launch.
