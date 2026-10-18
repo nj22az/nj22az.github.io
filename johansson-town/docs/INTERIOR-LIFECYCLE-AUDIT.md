@@ -1,0 +1,30 @@
+# Interior rendering and resident continuity — 18 October 2026
+
+Baseline: main `14a10d6fad4a35be62e58447664efa98acff2315` (includes PRs #226 and #228).
+
+## Reproduction limit
+
+The available interactive cloud Chrome browser failed to initialise WebGL at startup. It therefore could not reproduce entering Sakura on current main. This is an environment limitation, not evidence that the reported physical iPhone crash has been resolved. No physical iPhone Safari acceptance has been performed.
+
+## Verified defects and corrections
+
+- Sakura's merged street window copy expanded already-instanced shelf products into duplicate vertex arrays. The procedural fixture measured 31,559,736 bytes / 285,954 triangles before, and 3,266,664 bytes / 29,246 triangles afterwards: 28,293,072 fewer duplicate bytes. Products now keep their existing instanced buffers and stock updates. This is fixture geometry data, not total browser/GPU memory.
+- Closing a nonpersistent room hid it but retained its owned geometry, materials and textures until another room was entered. Leaving now restores borrowed actors, disposes room-owned resources, clears colliders/interactions, and leaves Sakura's persistent live storefront intact.
+- Interior window index caches lacked explicit disposal. They now release private index buffers on room changes, without disposing borrowed vertex buffers. Cache byte counts are exposed in the existing audit diagnostics.
+- Spatial partition construction used growable arrays of boxed triangle indices. It now uses packed typed arrays, including 16-bit indices where possible.
+- Outdoor visibility entries retained disposed window-copy meshes while indoors. Invalidating the section list now drops those references immediately.
+
+## Preserved behaviour
+
+The town clock, cast schedules, shop jobs, neighbour navigation and relevant world journeys already advance indoors. No schedule freeze was added. Interior views retain only the real street geometry intersecting an actual window portal; turning away from windows uses a single room pass. No refraction framebuffer, offscreen town render target or extra background asset stream was added. Sakura retains live staff and customers through its existing inexpensive haze glazing.
+
+## Verification scope
+
+- Baseline: 21 rendering, housing and overnight checks passed.
+- New journeys: all 18 secondary residents reach each authored destination through the real world colliders, occupy their homes overnight and depart the next morning with their parent town hidden. Destinations are held long enough to test reachability independently of time compression; the postman's working round is covered separately.
+- All 10 main street residents reach home and scheduled indoor destinations against the production schedule collision predicate. Tests isolate actors; these do not prove every simultaneous crowd interaction or ferry connection.
+- The canonical inventory covers 31 identities. Johansson is the player, Fujita has his dedicated shed/houseboat controller, and the Barfly has the izakaya resident controller. Existing home, overnight, Fujita, shop-cycle, stair, camera and collision checks are retained.
+- Regression tests check immediate room disposal, preservation of shared resources, live storefront people, instanced stock reuse and ten portal cache release cycles.
+- Production runtime build and package integrity checks pass.
+
+The accompanying GitHub Actions workflow runs Linux WebKit with an iPhone-like portrait viewport, repeated Sakura/izakaya entry and exit, day/night views, renderer counts, runtime exceptions and an indoor clock/journey check. Its report explicitly identifies a simulated browser, not a physical iPhone. See the workflow result and attached report for the outcome of that run.
