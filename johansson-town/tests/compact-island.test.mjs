@@ -52,7 +52,7 @@ test('the complete island circuit and Main Street residential connection are cle
    assert.deepEqual(world.colliders.filter(c=>standingHitsRect(x,z,.32,groundHeight(x,z),c)).map(c=>c.id),[],id+' doorway clear');
    assert.ok(queue.some(([i,j])=>Math.hypot(minX+i*cell-x,minZ+j*cell-z)<.7),id+' reachable from Main Street');
   }
-  assert.ok(KITAHAMA.plots.filter(p=>p.minX<16&&p.minZ<72).length>=7,'existing houses occupy the former empty central plots');
+  assert.deepEqual(KITAHAMA.plots.map(p=>p.id).sort(),['kitahama-1','kitahama-2','kitahama-3','kitahama-4','kitahama-5','kitahama-6','kitahama-8'].sort(),'only occupied houses remain on the compact blocks');
   assert.ok(SCHOOL.seawall.south<46,'the oversized former school grounds are shortened');
   assert.equal(routeAt(-26,-62,.32),null,'the obsolete seaward platform no longer admits walking');
   for(let z=-46.2;z>=-55.4;z-=.1){const x=-37.35,y=groundHeight(x,z);assert.ok(routeAt(x,z,.32),'Fujita boardwalk ground');assert.deepEqual(world.colliders.filter(c=>standingHitsRect(x,z,.32,y,c)).map(c=>c.id),[],'Fujita boardwalk clear');}

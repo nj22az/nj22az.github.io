@@ -164,6 +164,7 @@
     nav.setAttribute("aria-label", "Primary navigation");
 
     var isHome = (location.pathname === "/" || location.pathname === "/index.html");
+    var compactOffice = isHome || document.body.classList.contains("world-pages");
     var navLinks = CONFIG.navigation.filter(function (item) { return item.id !== "home"; }).map(function (item) {
       var link = navLink(item, isHome);
       return '<a class="nav-link" href="' + link.href + '"' + link.attrs + '>' + item.label + '</a>';
@@ -174,20 +175,20 @@
         '<a href="/" class="nav-brand logo-seal">' + CONFIG.navLogo(34) + '</a>' +
         '<div class="nav-links">' + navLinks + '</div>' +
         '<div class="nav-actions">' +
-          '<button id="nav-hamburger" class="nav-hamburger" aria-label="' + (isHome ? "More options" : "Open menu") + '" aria-expanded="false" aria-controls="menu-overlay">' +
-            (isHome ? '<span>More</span>' : icon("menu")) +
+          '<button id="nav-hamburger" class="nav-hamburger" aria-label="' + (compactOffice ? "More options" : "Open menu") + '" aria-expanded="false" aria-controls="menu-overlay">' +
+            (compactOffice ? '<span>More</span>' : icon("menu")) +
           '</button>' +
         '</div>' +
       '</div>';
 
     // Full-screen overlay menu
     var overlay = document.createElement("div");
-    overlay.className = "menu-overlay" + (isHome ? " office-more" : "");
+    overlay.className = "menu-overlay" + (compactOffice ? " office-more" : "");
     overlay.id = "menu-overlay";
     overlay.setAttribute("aria-hidden", "true");
 
     var menuRows = CONFIG.navigation.filter(function (n) {
-      return !isHome || !["home", "projects", "world", "blog", "linux-port", "course"].includes(n.id);
+      return !compactOffice || !["home", "projects", "world", "blog", "linux-port", "course"].includes(n.id);
     }).map(function (n) {
       var link = navLink(n, isHome);
       var iconName = navIcons[n.id] || "arrow";
@@ -243,7 +244,7 @@
     document.body.appendChild(backdrop);
 
     var hamburger = $("#nav-hamburger");
-    if (isHome) {hamburger.classList.add("office-more-toggle");overlay.setAttribute("role", "region");overlay.setAttribute("aria-label", "More options");}
+    if (compactOffice) {hamburger.classList.add("office-more-toggle");overlay.setAttribute("role", "region");overlay.setAttribute("aria-label", "More options");}
     var themeDisclosure = $("#theme-disclosure");
     var themeOptionsPanel = $("#theme-options");
 

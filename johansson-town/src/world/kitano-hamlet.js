@@ -26,6 +26,7 @@ export function buildKitanoHamlet(world,options){
  const H=KITANO_HAMLET,A=AIRPORT_ISLAND;
  // The gates as sites, their prompts and the court door: always, for the doors, the Town Book and the residents' homes.
  for(const p of H.plots){
+  if(p.id==='kitano-3')continue; // Historical house retained on the separate island; no active Minato home prompt.
   const household=householdAtHome(p.id),toLet=!household||household.toLet;
   // The gate as a site: Johansson's front door is the mayor's home (its rooms come with him); the others are family homes.
   const {door,inward}=p.kind==='johansson-house'?frontDoor(p):hamletGate(p),[wx,wz]=airportWorld(door[0],door[1]),y=airportSurface(wx,wz)?.y??SEA_LEVEL+H.laneTop,facing=inward+A.yaw;
@@ -181,5 +182,5 @@ function frontDoor(p){
 const KITANO_PLATES=Object.freeze({
  'kitano-1':'Johansson and Thuan’s house: the big concrete house at the end of the lane under a red-tile roof, two floors and a basement, its front to the pier, so he hears the Minato Maru’s whistle before he sees her. He moved out here from his rooms in the town hall’s east wing; the office is still in Minato, a crossing away, and the futon, the television and the letter box came with him. Thuan, his wife, keeps Sakura Shōten in town on weekdays from her room at 1 Kitahama and comes home on the Friday boat; her futon lies beside his.',
  'kitano-2':'The Shiroma house, to let: concrete, after the typhoon of 1987 took the roof off the old one; the Shiromas moved to their daughter’s in Naha. Enquire at the town hall.',
- 'kitano-3':'The Chinen house: the old red-tile house, Tetsuo’s mother’s. Her son mends radios in Minato and comes over on the boat; the mayor and his wife are at the end of the lane.',
+ 'kitano-3':'The former Chinen house. Grandmother Chinen now lives at 5 Kitahama, within walking distance of Tetsuo’s workshop. Johansson and Thuan keep their home at the end of this lane.',
 });

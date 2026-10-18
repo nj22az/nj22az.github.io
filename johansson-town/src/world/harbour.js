@@ -220,7 +220,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
        const storefront=buildStorefront({parent:group,site:s,register,enter,label,span,placement:{x:front,z:centre,yaw:Math.PI/2,scale:1}});
        shopDoors.push(storefront.shopDoor);
        // Upstairs is the Sakurai family's flat (thuan-flat.js).
-       buildThuanFlat(storefront);
+       buildThuanFlat(storefront,{colliders,sites,register,enter});
        s.x=front;s.door=[front+1.95,0,centre];
        // Turned a quarter: the frontage runs along z and the shop runs back along -x.
        obstacle(front-span.depth/2,centre,span.depth,span.width);return;

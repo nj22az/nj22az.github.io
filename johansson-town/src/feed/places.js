@@ -42,7 +42,7 @@ export const FEED_PLACES=Object.freeze([
   doing:['paying at the bandai','choosing a bottle of milk','reading the price board','waiting for the bath to cool','resetting a tripped breaker','putting the supply breaker back up in the dark','making tea at the bandai','folding rental towels','drying their hair at the mirror','combing their hair at the men’s mirror','hanging a towel on the rail','fanning themselves with an uchiwa'],
   activity:{hold:['bottle','can'],chance:.6,sit:0},
   shot:{room:'onsen'}},
- {id:'town-hall',name:'the mayor’s office',short:'the town hall',kind:'civic',regulars:['Johansson'],
+ {id:'town-hall',name:'the town office',short:'the town hall',kind:'civic',regulars:['Dr Kakazu','Postman Tōma'],
   things:['the island map','the Merry Moose statue','the flag','the filing cabinet','the visitors’ sofa'],
   doing:['studying the island map','filing a complaint','waiting on the visitors’ sofa','saluting the Merry Moose'],
   activity:{hold:['coffee'],chance:.5,sit:.35},

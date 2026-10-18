@@ -26,6 +26,6 @@ test('on a birthday they say so, on his everyone wishes him many happy returns, 
  const his=greetingFor({speaker:'Chin',temper:'sunny',playerName:'Johansson',situation:{hisBirthday:birthdayOn('Johansson',on(1,30))}});
  assert.equal(his.id,'hisBirthday');assert.match(his.text,/birthday/i);
  assert.deepEqual(birthdaysOn(on(1,30)),['Johansson']);
- assert.ok(tomorrowItems(on(1,29,19)).includes('Tomorrow is the mayor’s birthday.'));
+ assert.ok(tomorrowItems(on(1,29,19)).includes('Tomorrow is chief engineer Johansson’s birthday.'));
  assert.ok(tomorrowItems(on(10,23,19)).includes('Tomorrow is Thao’s birthday.'));
 });

@@ -51,3 +51,16 @@ test('extended cabin has a sofa and stored futon, with furniture beside the clea
  }
  assert.ok(model.children.filter(o=>o.isMesh).length<30,'fittings remain batched');shed.dispose();
 });
+
+test('standing player clearance follows Fujita through the gangway and cabin in both directions',()=>{
+ const {shed,colliders}=make(),path=fujitaBoatRoute(PORT_SHED.chair).slice(3);
+ for(const route of [path,[...path].reverse()])for(let i=1;i<route.length;i++){
+  const a=route[i-1],b=route[i],steps=Math.ceil(Math.hypot(b[0]-a[0],b[2]-a[2])/.025);
+  for(let k=0;k<=steps;k++){
+   const x=a[0]+(b[0]-a[0])*k/steps,z=a[2]+(b[2]-a[2])*k/steps;
+   assert.ok(routeAt(x,z,.28),`supported player ${x},${z}`);
+   assert.ok(!colliders.some(c=>circleHitsRect(x,z,.28,c)),`clear player ${x},${z}`);
+  }
+ }
+ shed.dispose();
+});

@@ -11,13 +11,13 @@ const shot=(pose,expression,backdrop,film,caption,extra={})=>({pose,expression,b
 
 export const ARTICLES={
  Johansson:{
-  headline:'The mayor who reads the island like a wiring diagram',
-  standfirst:'He crosses from Kitano-jima on the morning boat, runs Minato-chō from the town hall and still finds time for a broken radio. Our correspondent spent a day trying to keep up.',
+  headline:"The chief engineer who reads the island like a wiring diagram",
+  standfirst:"Johansson keeps the ferry’s machinery running, with a duty cabin aboard and his primary home with Thuan on Kitano-jima.",
   body:[
-   'Johansson is the mayor of Minato-chō, and he keeps two notebooks. One is for the town hall: the assembly minutes, the budget, the ferry timetable and the list of roofs to check before typhoon season. The other is for everything else, and it is fuller. He walks the long way to the workshop on purpose, he says, because the short way never teaches you anything.',
-   'His day starts on Kitano-jima, at breakfast with Thuan in the house at the end of the hamlet lane, and the morning crossing on the Minato Maru gets him to his office by half past eight. Lunch is at Sato Ramen. The crossing home is at half past six, and Grandmother Chinen at the end of the lane watches him come up it.',
-   'It was a dead radio that first brought him to Chin and Tetsuo’s bench, and the habit stuck. On a quiet afternoon you will still find him there, testing something nobody asked him to fix. He is stubborn about what the town must not lose: the bookshop, the bathhouse, the working boats, the corner shop where his wife knows when a long day calls for tea instead of another question.',
-  ],
+   "Johansson is chief engineer of the Minato Maru. His notebooks hold machinery readings, maintenance jobs and the small details that make a reliable crossing. Nakandakari is his experienced relief engineer; Tetsuo maintains the electrical equipment under contract.",
+   "He and Thuan share their primary home on Kitano-jima. He has a duty cabin aboard the ferry, while Thuan keeps her weekday room with Thao, Chin and Vy at 1 Kitahama. Neither arrangement creates another empty house in Minato.",
+   "Lunch is often at Sato Ramen. A broken radio still brings him to Chin and Tetsuo’s workshop, and an evening meal brings him to Minato. Grandmother Chinen now lives at 5 Kitahama, a short walk from her son’s bench."
+],
   quote:'A town is a machine that runs on people remembering each other. You keep the small parts oiled.',
   photos:[shot('Think','thinking','sky','film','Plans for a quay that still has room for the boats.'),shot('Laugh','laugh','sunset','warm','Weekends on Kitano-jima.',{with:'Thuan'})],
  },
@@ -26,7 +26,7 @@ export const ARTICLES={
   standfirst:'From a notebook of supplier names to the island’s best-run shelves: Thuan built Sakura Shōten one delivery at a time.',
   body:[
    'Thuan came from Vietnam after her two elder sisters, with a notebook and a plan, and wrote every supplier’s name in it the first year. Now she can tell the harbour cart from the bakery van by the sound of its wheels. The shelves are tea, rice, soap and batteries, but the regulars come for the advice, and for the onigiri she sets aside before the lunch crowd arrives.',
-   'Her name is on nearly every line of the staff roster in the back room. At the bottom, in her own hand, she has appointed an assistant manager: the potted palm. In the corner by the delivery door stands a figurine of her, a present from the mayor’s office. She says it is too much. She dusts it every morning before the rice comes in.',
+   'Her name is on nearly every line of the staff roster in the back room. At the bottom, in her own hand, she has appointed an assistant manager: the potted palm. In the corner by the delivery door stands a figurine of her, a present from Johansson’s shipmates. She says it is too much. She dusts it every morning before the rice comes in.',
    'She is the youngest of three sisters. Nhung, the eldest, sells books across Main Street; Thao, the middle one, runs Minato, and the two of them share a house where Thao’s evenings end as Thuan’s mornings begin; they trade leftovers, gossip and instructions to sleep. After closing she walks, visits Mrs Kinjō for flowers, and chooses a good meal with the seriousness of a buyer at auction. Johansson has become a regular companion at those dinners. The plans for Sakura’s future are hers, and she will build them at her own pace.',
   ],
   quote:'People think a shop sells things. A shop remembers people.',
@@ -137,7 +137,7 @@ export const ARTICLES={
   standfirst:'He drove the Harbour Line bus for twelve years, until the line became a ferry. The town still calls him the bus driver, and he still keeps the old timetable.',
   body:[
    'When the Harbour Line became the ferry he did not want to give up the route. He sat his deck licence on the cargo boats out of Naha, came home as her mate, and has been master of the Minato Maru since 1994. He is aboard by a quarter past seven and ashore after the last call.',
-   'He brings her alongside from the port wing, where he can see the pier, with Ms Uezu forward on the bow line and Mr Fujita on the quay to take it. Mr Nakandakari, the chief engineer, says he runs her engines too hard. He says the timetable runs them. Ms Ganaha at the ticket window has to explain any late departure, and makes sure he hears about it.',
+   'He brings her alongside from the port wing, where he can see the pier, with Ms Uezu forward on the bow line and Mr Fujita on the quay to take it. Mr Nakandakari, the relief engineer, says he runs her engines too hard. He says the timetable runs them. Ms Ganaha at the ticket window has to explain any late departure, and makes sure he hears about it.',
    'He still notices who is carrying groceries, who has missed lunch and who just wants a little company on the crossing, and he knows the regulars by the way they wave from the quay. At seven he takes the day’s log to the harbour master, an old friend, and they read it over the harbour clock.',
    'Grandmother Higa’s husband drove the island bus for thirty years. She can still tell the ferry is late by its whistle. He considers that the highest standard in his profession, and keeps time accordingly.',
   ],
@@ -145,14 +145,13 @@ export const ARTICLES={
   photos:[shot('Wave','smile','sunset','warm','The last crossing of the day.'),shot('Bow','happy','cream','film','Mind the step. Mind the ramp.')],
  },
  'Grandmother Chinen':{
-  headline:'The old Chinen house has lost three tiles in forty years',
-  standfirst:'Tetsuo’s mother keeps the red-tile house at the end of Kitano hamlet, sweeps her lane at half past six and knows every boat by its whistle.',
+  headline:"A ground-floor home, and a son within walking distance",
+  standfirst:"Tetsuo’s mother keeps a ground-access home at 5 Kitahama, close enough for her son to visit on foot.",
   body:[
-   'She was married into the Chinen house in 1958 and has outlived the roof twice. The typhoon of 1987 took the Shiromas’ roof next door and three of her tiles, which she still counts a win. Every morning at half past six she sweeps the lane in front of her gate, whatever the weather.',
-   'Her son Tetsuo mends radios in Minato and comes over on the boat when he can. That is not often enough, she says, and he eats like he is still fifteen. She keeps a pot on for him anyway, and asks him nothing at all about the bath at Umi-no-yu.',
-   'Her neighbours are the mayor and his wife, at the end of the lane. Thuan brings the shop’s day-old bread on Saturdays and goes home with a bag of goya, which Grandmother Chinen calls a fair trade. She watches the mayor come up the lane each evening from her gate, and has views on his hours.',
-   'At three in the afternoon she stands at the gate for the breeze. The garden takes the rest of the day.',
-  ],
+   "Grandmother Chinen remembers the red-tile house on Kitano-jima, but her home is now 5 Kitahama in Minato. Its level entrance and clear walking route matter more than a grand address.",
+   "She sweeps by her gate in the morning, tends her plants and keeps a pot ready for Tetsuo. He can visit from his workshop without waiting for a boat, and still eats like he is fifteen.",
+   "Thuan brings day-old bread from Sakura. Johansson is the ferry’s chief engineer; he and Thuan keep their shared home across the water. Chinen has opinions about his hours, but no longer watches for him at the end of the tropical lane."
+],
   quote:'Three tiles in forty years. The house knows what it is doing.',
   photos:[shot('Wave','happy','garden','warm','At her gate, for the breeze.'),shot('Laugh','content','sky','film','A pot on for her son, who eats like he is still fifteen.',{with:'Tetsuo'})],
  },

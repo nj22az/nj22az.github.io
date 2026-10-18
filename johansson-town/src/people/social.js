@@ -1,3 +1,4 @@
+import {canonicalDay} from './canonical-day.js';
 import {onSakuraShift,isWeekend} from '../commerce/sakura-rota.js';
 import {townCalendarAt} from '../town-clock.js';
 import {izakayaJob} from './izakaya-hours.js';
@@ -407,11 +408,13 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
 }
 /** Every caller shares one daily plan, including sleep in the residents' actual homes. */
 export function residentPlan(profile,minutes,rain=false,state=null){
+ if(profile?.canonicalDay){const plan=canonicalDay(profile.name,minutes,rain);if(plan)return plan;}
  // Minato's regular never joins the Harbour Line or leaves the room. He sleeps on
  // his usual stool from 03:00 until 10:00 and drinks at the counter the rest of day.
  if(profile?.name==='Barfly'){
   // Closed hours he cleans to pay off his tab (izakaya-hours.js), and sleeps 04:00-10:00.
   const minute=minuteOfDay(minutes),sleeping=minute>=240&&minute<600,job=izakayaJob('Barfly',minutes);
+  if(sleeping||minute>=600&&minute<660)return {place:'home',target:profile.home,activity:homeRoutine(profile,minutes).activity+' in his private room'};
   return {place:'izakaya',target:IZAKAYA_DOOR,activity:job?job.activity:sleeping?'asleep on his Minato stool':'having another beer at Minato',barflySleeping:sleeping};
  }
  // Thuan's weekend is on Kitano-jima, before her Kitahama room's sleep and breakfast are read.

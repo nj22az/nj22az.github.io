@@ -16,6 +16,9 @@ export const HOUSEHOLDS=Object.freeze(ROOMS.map(room=>{
 }));
 /** Existing saves and old room links resolve to the same surviving entrance. */
 export const HOME_ALIASES=Object.freeze({
+ 'home-kitano-3':'home-kitahama-5',
+ 'home-market':'home-kitahama-flat-2','home-ferry':'home-kitahama-flat-3',
+ ...Object.fromEntries(['kitahama-7','kitahama-9','kitahama-10','kitahama-11','kitahama-12','nakasone','miyagi','arakaki','yonamine'].flatMap(id=>[[id,'mayor-office'],['home-'+id,'mayor-office']])),
  'yuri-home':'resident-home-thuan','resident-home-nao':'resident-home-thuan',
  'resident-home-thao':'resident-home-thuan','resident-home-chin':'resident-home-thuan',
  'resident-home-reiko':'resident-home-aya','resident-home-tetsuo':'resident-home-kenji',
@@ -25,4 +28,4 @@ export const HOME_ALIASES=Object.freeze({
 export const canonicalHomeId=id=>HOME_ALIASES[id]||id;
 export const householdFor=name=>HOUSEHOLDS.find(h=>h.residents.includes(name));
 export const householdAt=site=>HOUSEHOLDS.find(h=>h.id===canonicalHomeId(site?.id)||h.homeId===site?.plot)||householdFor(site?.homeOwner);
-export const householdNames=site=>site?.homeOwners||householdAt(site)?.residents||(site?.homeOwner?[site.homeOwner]:[]);
+export const householdNames=site=>site?.homeOwners||site?.residents||householdAt(site)?.residents||(site?.homeOwner?[site.homeOwner]:[]);

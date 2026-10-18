@@ -10,7 +10,7 @@ test('a summer day: kumazemi in the morning, aburazemi in the afternoon, higuras
  assert.ok(morning.kumazemi>.8&&morning.kumazemi>morning.aburazemi);
  assert.ok(afternoon.aburazemi>.8&&afternoon.kumazemi<.05);
  assert.ok(dusk.higurashi>.5&&dusk.higurashi>dusk.aburazemi);
- assert.ok(night.crickets>.8&&night.geckos>.8&&night.kumazemi===0&&night.aburazemi===0);
+ assert.ok(night.crickets>.8&&night.kumazemi===0&&night.aburazemi===0);
  assert.ok(morning.birds>.4);
 });
 
@@ -31,4 +31,9 @@ test('rain quiets the insects and birds, wakes the frogs and is heard itself; wa
 test('levels drift with the minutes, never step',()=>{
  let last=ambience({minutes:at(8,1,0)});
  for(let m=1;m<1440;m++){const now=ambience({minutes:at(8,1,0)+m});for(const l of LAYERS)assert.ok(Math.abs(now[l]-last[l])<.06,l+' jumps at minute '+m);last=now;}
+});
+
+test('neither edition schedules the retired gecko tones',()=>{
+ assert.equal(LAYERS.includes('geckos'),false);
+ for(const month of [1,4,7,10])for(const hour of [0,5,12,20,23]){const mix=ambience({minutes:at(month,17,hour)});assert.equal(mix.geckos,undefined);}
 });

@@ -1,3 +1,4 @@
+import {canonicalHomeId} from './people/households.js';
 import {migratedVisits} from './world/businesses.js';
 import {RENAMED_RESIDENTS,renameResidents} from './people/renamed.js';
 export {RENAMED_RESIDENTS,renameResidents};
@@ -21,6 +22,15 @@ export function migrateThuan(saved){
   if(Array.isArray(saved.sakura?.journal))for(const row of saved.sakura.journal)if(row&&typeof row==='object')row.buyer=renameResidents(row.buyer);
   if(Array.isArray(saved.documentArchive))for(const doc of saved.documentArchive)if(doc&&typeof doc==='object')doc.author=renameResidents(doc.author);
   return saved;
+}
+/** One-time, idempotent housing migration. Never treats a shop visit as an old home visit. */
+export function migrateHousing(saved){
+ if(saved.housingRevision>=1)return saved;
+ const moved=['Grandmother Chinen','Grandmother Sakurai','Mr Nakandakari','Ms Ganaha'];
+ for(const name of moved)if(saved.residentLocations)delete saved.residentLocations[name];
+ for(const name of moved){const life=saved.residentLife?.[name];if(life){delete life.home;delete life.homeId;delete life.sleepingPlace;}}
+ for(const key of ['homeTarget','navigationTarget','lastHome'])if(typeof saved[key]==='string')saved[key]=canonicalHomeId(saved[key]);
+ saved.housingRevision=1;return saved;
 }
 /**
  * Local players. Everybody who plays on this device can have their own save: a name and
@@ -78,6 +88,6 @@ export function rescueSave(storage,key){
 export const activeSlot=storage=>slotKey(readPlayers(storage).active);
 export function readSave(storage){
   const slot=slotKey(readPlayers(storage).active);
-  for(const key of slot===SAVE_KEY?[SAVE_KEY,SAVE_KEY+PREV_SUFFIX,...LEGACY_KEYS]:[slot,slot+PREV_SUFFIX])try{const value=JSON.parse(storage.getItem(key));if(value&&typeof value==='object'&&!Array.isArray(value)){if(Array.isArray(value.visited))value.visited=migratedVisits(value.visited.filter(id=>typeof id==='string'));const out=migrateThuan(value);Object.defineProperty(out,'readFrom',{value:key,enumerable:false});return out;}}catch{}
+  for(const key of slot===SAVE_KEY?[SAVE_KEY,SAVE_KEY+PREV_SUFFIX,...LEGACY_KEYS]:[slot,slot+PREV_SUFFIX])try{const value=JSON.parse(storage.getItem(key));if(value&&typeof value==='object'&&!Array.isArray(value)){if(Array.isArray(value.visited))value.visited=migratedVisits(value.visited.filter(id=>typeof id==='string'));const out=migrateHousing(migrateThuan(value));Object.defineProperty(out,'readFrom',{value:key,enumerable:false});return out;}}catch{}
   return null;
 }

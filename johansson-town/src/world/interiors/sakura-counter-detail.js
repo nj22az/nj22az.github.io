@@ -1,3 +1,4 @@
+import {SAKURA_FONT,refreshSakuraPrint} from './sakura-print.js';
 import {FURNITURE_HEIGHTS,TILL_TOP} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
@@ -36,7 +37,8 @@ const materialForPrints=()=>{
  if(typeof document!=='undefined'){
   const canvas=document.createElement('canvas');canvas.width=COLS*CELL_W;canvas.height=ROWS*CELL_H;
   const ctx=canvas.getContext('2d');drawSakuraDetailPrints(ctx);
-  texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=4;
+  texture=new THREE.CanvasTexture(canvas);
+  refreshSakuraPrint(texture,drawSakuraDetailPrints,SAKURA_DETAIL_PRINTS.map(p=>p.title+p.line+p.foot).join(''));texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=4;
  }
  printMaterial=new THREE.MeshBasicMaterial({map:texture,color:texture?0xffffff:0xf4ead4,toneMapped:false});
  printMaterial.name='Sakura equipment and category print atlas';return printMaterial;
@@ -50,9 +52,9 @@ export function drawSakuraDetailPrints(ctx){
   ctx.fillStyle=lcd?'#bfd2ad':'#fff8e7';ctx.fillRect(4,4,248,120);
   ctx.fillStyle=lcd?'#2c4934':'#356052';ctx.fillRect(8,8,240,30);
   ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#fff7df';
-  ctx.font='bold 19px sans-serif';ctx.fillText(p.title,128,23,226);
-  ctx.fillStyle=lcd?'#243d2b':'#34352b';ctx.font='bold 20px sans-serif';ctx.fillText(p.line,128,65,226);
-  ctx.fillStyle='#9c4734';ctx.font='bold 15px sans-serif';ctx.fillText(p.foot,128,103,226);
+  ctx.font=`700 19px ${SAKURA_FONT}`;ctx.fillText(p.title,128,23,226);
+  ctx.fillStyle=lcd?'#243d2b':'#34352b';ctx.font=`700 20px ${SAKURA_FONT}`;ctx.fillText(p.line,128,65,226);
+  ctx.fillStyle='#9c4734';ctx.font=`700 15px ${SAKURA_FONT}`;ctx.fillText(p.foot,128,103,226);
   ctx.restore();
  });
 }
@@ -90,8 +92,8 @@ export function buildSakuraCounterDetail(room){
  const cream=0xe3e5d8,dark=0x3d4946,key=0xf2efe3,steel=0x9aa9a4;
  const top=FURNITURE_HEIGHTS.serviceCounter,registerZ=1.17,dz=registerZ-.75;
  // The low register sits beside the clerk's face line, with all equipment on the counter.
- box(.38,.075,.38,4.80,top+.0375,registerZ,cream);box(.30,.05,.31,4.81,top+.10,registerZ,dark);
- box(.012,.018,.30,4.608,top+.031,registerZ,dark);box(.035,.016,.11,4.635,top+.093,.62+dz,steel);
+ box(.38,.075,.38,4.80,top+.0375,registerZ,cream);box(.012,.018,.30,4.608,top+.031,registerZ,dark);box(.30,.05,.31,4.81,top+.10,registerZ,dark);
+ box(.035,.016,.11,4.635,top+.093,.62+dz,steel);
  box(.10,.12,.12,4.87,top+.185,.80+dz,cream);box(.095,.13,.28,4.68,top+.185,registerZ,dark);
  print('pos',.232,.10,[4.6285,top+.185,registerZ],-Math.PI/2);
  for(let r=0;r<4;r++)for(let c=0;c<3;c++)box(.034,.012,.032,4.84+r*.027,top+.1375,.60+c*.041+dz,c===2&&r===3?0x5f916a:key);
@@ -131,7 +133,10 @@ export function buildSakuraCounterDetail(room){
  box(.29,.002,.028,P.x,.537,P.z-.303,0xf7f2e2);
  // Canopy cards face the aisle, not the wall; separate bays make the offer readable.
  for(const [id,z] of [['rice',-.93],['sandwich',.43],['dairy',1.79]])print(id,1.19,.13,[CHILLER.x1-.172,CHILLER.canopy+.092,z],Math.PI/2);
- const group=b.finish();room.add(group);return group;
+ const group=b.finish();
+ const drawer=new THREE.Mesh(new THREE.BoxGeometry(.24,.045,.28),new THREE.MeshStandardMaterial({color:dark,roughness:.68}));
+ drawer.name='Sakura cash drawer';drawer.position.set(4.84,top+.035,registerZ);group.add(drawer);
+ room.add(group);return group;
 }
 
 /** Three occupied trays in the current hot case, in one shared vertex-colour draw. */

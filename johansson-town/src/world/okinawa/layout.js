@@ -50,7 +50,6 @@ export const EAST_ROW=Object.freeze({
   {id:'shimabukuro',minZ:-6.6,maxZ:-1.6,colour:0xd6e2dc,trim:0x2f5f8e},
   {id:'higa-saketen',minZ:5.9,maxZ:10.9,colour:0xecd2c6,trim:0x8a3b2e},
   // Stops short of the alley at z 18.4, which is the way through to the school gate.
-  {id:'arakaki',minZ:13.5,maxZ:18.5,colour:0xdfe3e6,trim:0x2d6f63},
  ].map(Object.freeze)),
 });
 
@@ -58,7 +57,6 @@ export const EAST_ROW=Object.freeze({
 export const YARD_ROW=Object.freeze({
  minX:-15.8,maxX:MAIN_ROAD.pavementWest-.45,
  plots:Object.freeze([
-  {id:'yonamine',minZ:10,maxZ:15.4,colour:0xeee2b8,trim:0x9a4a2a},
   {id:'coin-laundry',minZ:18,maxZ:23.4,colour:0xd9e4ea,trim:0x3a6a9a},
  ].map(Object.freeze)),
 });
@@ -92,8 +90,6 @@ export const EAST_BACK=Object.freeze({
  lane:Object.freeze({minX:EAST_ROW.maxX,maxX:EAST_ROW.maxX+2.6}),
  plots:Object.freeze([
   // Gates on the green in front of Umi-no-yu, with the houses backed onto the trees.
-  {id:'nakasone',kind:'red-tile',family:"Nakasone",romaji:'Nakasone',minX:-19,maxX:-11,minZ:78,maxZ:87,gate:'south'},
-  {id:'miyagi',kind:'red-tile',family:"Miyagi",romaji:'Miyagi',minX:-6,maxX:2,minZ:78,maxZ:87,gate:'south'},
  ].map(Object.freeze)),
 });
 
@@ -113,7 +109,7 @@ export function mapPlan(){
   ...NISHI.lanes.map(l=>[NISHI.promenade.maxX,WEST_YARD.minX,l.z-l.half,l.z+l.half]),
   [EAST_QUAY.minX,EAST_QUAY.maxX,EAST_QUAY.minZ,EAST_QUAY.maxZ],
   [EAST_QUAY.gate.minX,EAST_QUAY.gate.maxX,EAST_QUAY.gate.minZ,EAST_QUAY.gate.maxZ],
-  [EAST_BACK.lane.minX,EAST_BACK.lane.maxX,EAST_ROW.plots[0].minZ,EAST_ROW.plots[3].maxZ+2.4],
+  [EAST_BACK.lane.minX,EAST_BACK.lane.maxX,EAST_ROW.plots[0].minZ,EAST_ROW.plots.at(-1).maxZ+2.4],
   [MAIN_ROAD.pavementEast,EAST_ROW.maxX+.5,EAST_ROW.onsenLane.minZ,EAST_ROW.onsenLane.maxZ]];
  const yards=[...NISHI.plots,...EAST_BACK.plots].map(p=>[p.minX,p.maxX,p.minZ,p.maxZ]);
  const buildings=[...EAST_ROW.plots.map(p=>[EAST_ROW.minX,EAST_ROW.maxX,p.minZ,p.maxZ]),...YARD_ROW.plots.map(p=>[YARD_ROW.minX,YARD_ROW.maxX,p.minZ,p.maxZ]),
