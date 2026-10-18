@@ -47,7 +47,7 @@ export function buildIslandHomes(world,options){
  // Separate residential entrances: customers never cross a private sleeping room.
  addHome(householdAtHome('nakamura'),[...NAKAMURA_HOME_DOOR],{upperHome:true,entryFacing:Math.PI/2});
  const post=EAST_ROW.plots.find(p=>p.id==='shimabukuro');
- addHome(householdAtHome('shimabukuro'),[EAST_ROW.maxX+.75,.04,(post.minZ+post.maxZ)/2],{upperHome:true,entryFacing:-Math.PI/2,doorPanel:true,panelPosition:[EAST_ROW.maxX+.04,1.065,(post.minZ+post.maxZ)/2]});
+ addHome(householdAtHome('shimabukuro'),[EAST_ROW.maxX+.75,.04,(post.minZ+post.maxZ)/2],{upperHome:true,entryFacing:Math.PI/2,doorPanel:true,panelPosition:[EAST_ROW.maxX+.04,1.065,(post.minZ+post.maxZ)/2]});
  addHome(householdAtHome('clinic'),[37.7,.04,35.1],{entrancePosition:[37.7,.15,36.4],entryFacing:Math.PI});
  addHome(householdAtHome('izakaya'),[-17.65,.04,-9.0],{doorPanel:true,panelPosition:[-17.14,1.065,-9]});
  function addHome(h,door,extra={}){

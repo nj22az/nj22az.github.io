@@ -1,9 +1,9 @@
 {
-  "included": 1027,
-  "meshes": 290,
-  "vertices": 491960,
-  "triangles": 440270,
-  "bytes": 12797600,
-  "headerBytes": 1693821,
-  "gzipBytes": 4233162
+  "included": 993,
+  "meshes": 283,
+  "vertices": 446015,
+  "triangles": 396958,
+  "bytes": 11625004,
+  "headerBytes": 1715227,
+  "gzipBytes": 3787206
 }

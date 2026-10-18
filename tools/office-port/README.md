@@ -13,3 +13,5 @@ Run `node tools/office-port/controller.test.cjs` for deferred downloads, present
 The manifest records the twelve published clips and fallback images. Chromium and ffmpeg are offline authoring dependencies only. The retained `render.mjs` / `encode.mjs` scripts are the original quay-only authoring pipeline; they do not reproduce the additional pier and bridge clips and must not overwrite the twelve-clip manifest. The published location clips are retained as finished assets.
 
 Live-rendering source and baked geometry remain available for future authoring experiments, but are not requested by the homepage.
+
+Bridge-wing refresh: run `node tools/office-port/bake.mjs` then `node tools/office-port/bridge-films.mjs` with `TOWN_CHROMIUM_PATH` set to a local Chrome executable. The latter records four deterministic 6-second/24-fps clips and the matching fallback, updates their manifest entries and fully decodes each encoded movie. It requires cwebp for the still. The model now selects the teal 操舵室 / WHEELHOUSE atlas strip above both bridge doors; the red ENGINE ROOM sign remains at the actual machinery-space entrance.

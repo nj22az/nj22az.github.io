@@ -249,6 +249,8 @@ CONFIG.projectExplorer = [
     "titleUrl": "/world/",
     "secondaryUrl": "/world/",
     "secondaryAction": "About the world",
+    "downloadUrl": "/linux-port/",
+    "platforms": ["Linux", "x86-64", "Steam Deck"],
     "format": "3D exploration",
     "language": "English",
     "status": "Work in progress",
@@ -259,27 +261,6 @@ CONFIG.projectExplorer = [
       "A harbour, ferry routes and places to explore"
     ],
     "preview": "world"
-  },
-  {
-    "id": "linux-port",
-    "category": "create",
-    "title": "Linux Port",
-    "eyebrow": "JOHANSSON WORLD · LINUX & STEAM DECK",
-    "summary": "Follow Johansson World as it grows into a console game. Compare the Linux and web editions, read the change log and find the latest downloads.",
-    "url": "/linux-port/",
-    "action": "Explore the Linux Port",
-    "secondaryUrl": "/linux-port/#downloads",
-    "secondaryAction": "Downloads",
-    "format": "Linux / Steam Deck",
-    "language": "English",
-    "status": "In development",
-    "firstTry": "Open the Linux Port page to see the published release, the next candidate and what is still a proposal.",
-    "features": [
-      "Downloads and release information in one place",
-      "Changes compared with the web game",
-      "Linux experiments and possible shared improvements"
-    ],
-    "preview": "linux"
   },
   {
     "id": "maintenance",

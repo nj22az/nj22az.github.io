@@ -46,3 +46,16 @@ test('the yard houses are home sites you can walk up to and into, clear of the p
   doors.find(d=>/Tetsuo/.test(d.label)).fn();assert.equal(doors.entered,'resident-home-kenji');
  }finally{}
 });
+
+
+test('the home above the post office exits into the east lane, clear of the building wall',async()=>{
+ installDOM();
+ const {buildIslandHomes}=await import('../src/world/island-homes.js');
+ const {EAST_ROW}=await import('../src/world/okinawa/layout.js');
+ const sites=[],world={group:new THREE.Group(),colliders:[]};
+ buildIslandHomes(world,{sites,register(){},enter(){}});
+ const home=sites.find(s=>s.id==='home-shimabukuro');assert.ok(home);
+ const exitX=home.exitPosition[0]+Math.sin(home.entryFacing)*.6;
+ assert.ok(exitX>EAST_ROW.maxX+.32,'The player capsule leaves on the street side of the wall');
+ assert.equal(home.exitPosition[2],home.approachPosition[2],'The return stays at its own doorway');
+});
