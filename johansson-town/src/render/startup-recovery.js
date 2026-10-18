@@ -22,9 +22,16 @@ export function createStartupRecovery({storage,now=()=>Date.now(),search='',even
  };
 }
 /** FXAA keeps the illustrated edges without duplicate native/offscreen MSAA buffers. */
-export function graphicsProfile({mobile=false,tablet=false,safe=false}={}){
- const lean=mobile||safe;
- return Object.freeze({dpr:lean?1.25:2,shadows:!lean,antialias:!lean,
+export function graphicsProfile({mobile=false,tablet=false,safe=false,ios=false}={}){
+ const basic=safe||(ios&&!tablet),lean=mobile||basic;
+ return Object.freeze({dpr:basic?1:lean?1.25:2,shadows:!lean,antialias:!lean,
   samples:lean?0:4,pixelBudget:lean?1.2e6:4.6e6,superScale:lean?1:1.25,
-  precompile:!lean,preferHalfFloat:!lean});
+  precompile:!lean,preferHalfFloat:!lean,postprocess:!basic,
+  streamDetails:!basic,cinematic:!basic,quietOpening:basic,
+  canvasPixels:basic?650000:null});
+}
+/** Bound the screen buffer too; an offscreen cap alone leaves the native canvas large. */
+export function drawingDpr({width,height,deviceDpr=1,profile,scale=1}){
+ const base=Math.max(1,Math.min(deviceDpr||1,profile.dpr)*scale);
+ return profile.canvasPixels?Math.min(base,Math.sqrt(profile.canvasPixels/Math.max(1,width*height))):base;
 }

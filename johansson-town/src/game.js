@@ -1,4 +1,5 @@
-import {createStartupRecovery,graphicsProfile} from './render/startup-recovery.js';
+import {createLaunchReport} from './render/launch-report.js';
+import {createStartupRecovery,graphicsProfile,drawingDpr} from './render/startup-recovery.js';
 import {CAST_RECIPES,recipeFor} from './avatars/cast.js';
 import {createLensOcclusion} from './render/lens-occlusion.js';
 import {FERRY_LADDER} from './world/ferry-inspect.js';
@@ -150,23 +151,25 @@ import {loadHatModels} from './catalog/hat-models.js';
 // The hats people wear from World's catalogue (Johansson's trucker cap) are in hand before the town's people are built, so
 // nobody starts in the stand-in. Loaded here, not in boot.js, so the boot chunk stays small and three.js stays in this chunk
 // (tests/runtime-package.test.mjs). A failure leaves the stand-in (src/catalog/hat-models.js).
+const launchReport=createLaunchReport({storage:(()=>{try{return globalThis.localStorage;}catch{return null;}})(),events:globalThis});
+let firstPlayFrame=false,reportNextAt=0;
 const startupRecovery=createStartupRecovery({storage:(()=>{try{return globalThis.sessionStorage;}catch{return null;}})(),search:location.search,events:globalThis});
 window.__JOHANSSON_SAFE_GRAPHICS__=startupRecovery.safe;
 await loadHatModels(undefined,{timeout:8000}).catch(error=>{console.warn('Hat models unavailable:',error);return false;});
 
 // Change the emitted game chunk URL when repairing a cached live runtime.
-window.__JOHANSSON_RUNTIME_VERSION__='minato-concert-1';
+window.__JOHANSSON_RUNTIME_VERSION__='ios-single-pass-1';
 
 const $=s=>document.querySelector(s);
 const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const touch=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;
 const mobile=isIOS||touch,tabletLike=touch&&Math.min(innerWidth,innerHeight)>=700;
-const graphics=graphicsProfile({mobile,tablet:tabletLike,safe:startupRecovery.safe});
+const graphics=graphicsProfile({mobile,tablet:tabletLike,safe:startupRecovery.safe,ios:isIOS});
 const highTier=graphics.shadows,shadows=graphics.shadows,canvas=$('#game');
 // Mobile buffers have a fixed cap before the first frame; the frame-rate governor
 // cannot prevent a memory-pressure restart while the first buffers are allocated.
 let dprScale=1;
-const renderDpr=()=>Math.max(1,Math.min(window.devicePixelRatio||1,graphics.dpr)*dprScale);
+const renderDpr=()=>drawingDpr({width:innerWidth,height:innerHeight,deviceDpr:window.devicePixelRatio||1,profile:graphics,scale:dprScale});
 /**
  * Keeps the frame rate up on slower devices: if frames average slower than about 24 a
  * second for a few seconds, the drawing buffer steps down a notch (never below 1x), and
@@ -221,6 +224,7 @@ function governResolution(dt){
  if(dprGovernor.cooldown>0||average<1/24||dprScale<=.62)return;
  dprScale=Math.max(.6,dprScale-.13);dprGovernor.cooldown=5;resizeRenderer();
 }
+launchReport.stage('Creating graphics context');
 const renderer=new THREE.WebGLRenderer({canvas,antialias:graphics.antialias,powerPreference:'high-performance',alpha:false,stencil:false,preserveDrawingBuffer:false});
 // Counted per frame, across every pass, so renderInfo (audit) reads a whole frame's draw calls.
 renderer.info.autoReset=false;
@@ -302,6 +306,7 @@ function compileTown(object,{async=false}={}){
 /** Plain output, for while the ink is away. */
 function renderPlain(){renderer.toneMapping=THREE.AgXToneMapping;renderer.toneMappingExposure=.96;}
 function buildInk(){
+ if(!graphics.postprocess){renderPlain();return true;}
  try{pipeline=createInkPipeline(renderer,INK_OPTIONS);renderer.toneMapping=THREE.NoToneMapping;renderer.toneMappingExposure=1;return true;}
  catch(error){pipeline=null;console.warn('Ink pipeline unavailable, rendering plain:',error.message);renderPlain();return false;}
 }
@@ -346,7 +351,7 @@ sweepCel(0);
 function present(draw,view=camera){
  if(graphicsLifecycle?.lost)return;
  if(!pipeline){
-  if(inkRecovery.ready())buildInk();
+  if(graphics.postprocess&&inkRecovery.ready())buildInk();
   if(!pipeline){draw(renderer);return;}
  }
  pipeline.setCamera(view);
@@ -590,6 +595,7 @@ function advanceWeather(){
  const next=nextWeather(weatherKind);if(next!==weatherKind)applyWeather(next,{announce:true});
 }
 
+ launchReport.stage('Building town');
  const world=createTown({scene:town,sites:SITES,mobile,shadows,kitano:'distant',maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:s=>crossThreshold(()=>enterRoom(s)),getPlayerPosition:()=>current?null:player.position,onAction:(...args)=>{if(islandPlay?.action(...args))return;if(args[0]==='ferry-ladder'){ferryLadder(args[1]);return;}if(args[0]==='plant'){plantStation(args[1]);return;}if(args[0]==='dungeon'){enterDungeon();return;}if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person?.g.userData.sleeping){say(args[1]+' is sleeping. You can stay and watch the morning routine.',4);return;}if(person?.g.userData.waking||person?.g.userData.roomTransition){say(args[1]+' is '+person.g.userData.activity+'.',3);return;}if(person){person.g.userData.facePlayerUntil=performance.now()+1600;characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
  // Colliders by where they are, for the camera, walking and residents (collider-grid.js).
  const colliderGrid=createColliderGrid(world.colliders);
@@ -1643,7 +1649,7 @@ function updateDirectory(){
  * the bench unless it names an opening with ?spawn=.
  */
 function beginAtOpening(){
- const params=new URLSearchParams(location.search),force=params.get('spawn');
+ const params=new URLSearchParams(location.search),force=params.get('spawn')||(graphics.quietOpening?'sakura-bench':null);
  if(params.has('audit')&&!force)return null;
  if(activities.state.island?.journey.location!=='town'&&activities.state.island){islandPlay.recover();return null;}
  const opening=chooseOpening({minutes,rain:weather,force,context:{ferryAlongside:world.ferry?.berth==='town'&&world.ferry?.phase==='waiting'}});
@@ -1688,6 +1694,7 @@ spawnScene=createSpawnScene({scene,camera,getActor:ensureJohansson,blocked:arriv
 /** What the docks opening waits for: the details near him still streaming in, once the stream has started. */
 function openingLoads(){return detailsStarted&&detailStream.pendingNear(player.position);}
 function startArrivalScene(opening){
+ if(!graphics.cinematic)return;
  const params=new URLSearchParams(location.search);
  if(params.has('visual-audit')||params.has('audit')&&!params.has('spawn')||params.get('cinematic')==='off')return;
  spawnScene.start({id:opening?.id||'sakura-bench',inside:!!current,yaw:parkSeat?.yaw??yaw,establish:!!opening?.docks,hold:openingLoads});
@@ -1697,7 +1704,7 @@ function startArrivalScene(opening){
 lightBudget.update();if(graphics.precompile)compileTown(scene);
 function enterWorld(){
  if(started)return;
- startupRecovery.entering();
+ startupRecovery.entering();launchReport.stage('Entering town');
  window.__JOHANSSON_TITLE_PREVIEW__=false;
  townSky.mesh.rotation.y=0;
  startWeather();
@@ -1710,7 +1717,7 @@ if(!window.__JOHANSSON_TITLE_PREVIEW__)enterWorld();
 else {
  startWeather();
  $('#title').dataset.scene='ready';
- $('#bootStatus').textContent=startupRecovery.safe?'Island ready · reduced graphics':'Island ready';
+ $('#bootStatus').textContent=graphics.postprocess?'Island ready':'Island ready · reduced graphics';
 }
 addEventListener('johansson-title-weather',()=>{if(!started)startWeather();});
 let mouseLooking=false,mouseLast=null;
@@ -2082,9 +2089,10 @@ function updateContextControls(){
 const invalidateDetails=()=>{townSections.invalidate();shopStreetView.invalidate();};
 // Feet on whatever is drawn: lanes, aprons, decks (walk-surface.js). Laid once now and
 // again whenever a streamed detail arrives.
+launchReport.stage('Preparing walking surface');
 const walkSurface=createWalkSurface({minX:COAST_BOUNDS.minX-2,maxX:COAST_BOUNDS.maxX+2,minZ:COAST_BOUNDS.minZ-2,maxZ:COAST_BOUNDS.maxZ+2,base:planHeight});
 {const t0=performance.now();walkSurface.add(town);setWalkSurface(walkSurface);window.__JOHANSSON_WALK__={ms:Math.round(performance.now()-t0),get triangles(){return walkSurface.triangles;}};}
-const detailStream=createDetailStream({onChange:()=>{invalidateDetails();walkSurface.add(town);}});window.__JOHANSSON_STREAMING__=detailStream.stats;
+const detailStream=createDetailStream({enabled:graphics.streamDetails,onStart:id=>launchReport.stage('Loading detail: '+id),onChange:()=>{invalidateDetails();walkSurface.add(town);}});window.__JOHANSSON_STREAMING__=detailStream.stats;
 // With ?audit in the address, a harness can put the player anywhere and look down on
 // the town from a fixed camera. Nothing reads it otherwise.
 if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__={
@@ -2331,7 +2339,7 @@ detailStream.add({id:'warehouse',priority:1,x:WAREHOUSE.x,z:WAREHOUSE.z,radius:3
 }
 let detailsStarted=false;
 
-let titleElapsed=0,titleFrame=0;
+let titleElapsed=0,titleFrame=0,titleReported=false;
 const titleReduced=matchMedia('(prefers-reduced-motion: reduce)');
 function loop(){requestAnimationFrame(loop);if(graphicsLifecycle?.lost){clock.getDelta();return;}activeRoomLayout?.realUpdate?.();if(concert?.active){const dt=Math.min(clock.getDelta(),MAX_FRAME_DT);updateController(dt);concert.render();return;}if(concertLoading){clock.getDelta();return;}if(window.__JOHANSSON_AUDIT__?.frozen){clock.getDelta();if(detailsStarted&&!document.hidden)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});if(window.__JOHANSSON_AUDIT__.renderFrozen!==false)window.__JOHANSSON_AUDIT__.render();return;}renderer.info.reset?.();lightBudget.update();colliderGrid.refresh();if(pocket?.raised&&!pocketCanRaise())lowerPocket();if(photoStudio?.active){clock.getDelta();photoStudio.render();return;}izakayaTV?.update({camera,active:current?.id==='izakaya'&&izakayaOpen(minutes),paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden&&!catchingUp)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);governResolution(frameDt);updateWantCards(frameDt);sweepCel(frameDt);updateController(frameDt);activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden&&!activities.paused)activeRoomLayout?.ownedUpdate?.(frameDt);activeRoomLayout?.keep?.setPlayerBottle(!!activities.state.izakayaBottle);if(started&&!activities.paused&&!document.hidden)activeRoomLayout?.dungeon?.update(frameDt,player.position);if(fists){fists.visible=!thirdPerson&&!spawnScene?.active;fists.guard(current?.id==='dungeon'&&!!activeRoomLayout?.dungeon?.nearFoe(player.position));fists.update(frameDt);}if(started&&!document.hidden){const paused=catchingUp||cameraControls.active||roomLoading||inspector?.active||itemViewer?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();if(catchingUp)catchUpFrame();else simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused,relax:!!(seated&&!current),ferry:world.ferry?.audio??null});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);updateJohansson(paused?0:frameDt);updateEarDefenders();if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);if(!paused||conversationLine)facing.update(frameDt);}if(!paused||conversationLine)updateConversationLift(frameDt);if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}tickSubtitle(frameDt);if(current&&activeRoomLayout?.fixedCamera&&!window.__JOHANSSON_AUDIT__?.camera){const f=activeRoomLayout.fixedCamera;camera.position.set(...f.pos);camera.lookAt(...f.at);camera.updateMatrixWorld();}if(current&&window.__JOHANSSON_AUDIT__?.camera){const a=window.__JOHANSSON_AUDIT__.camera;camera.position.set(...a.pos);camera.lookAt(...a.at);camera.updateMatrixWorld();}spawnScene?.update(frameDt,{paused,unavailable:!!(islandPlay?.active||window.__JOHANSSON_AUDIT__?.camera)});placeWorldBalloons(frameDt);if(inspector?.active)present(()=>inspector.render(frameDt),inspector.camera);else if(streetFrontageOf(current))present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:streetFrontageOf(current)}));else if(!current)renderOutdoor();else present(()=>renderer.render(scene,camera));pocket?.frame();}else{neighbourChats.cancel();chatBubble.hide();renderTitle(frameDt);}}renderOutdoor();loop();
 
@@ -2357,13 +2365,18 @@ function renderTitle(dt){
  actor.update(titleReduced.matches?0:titleDt,{speed:0,visible:true,seated:false});
  townSky.mesh.rotation.y=titleElapsed*.002;
  setTime();
+ if(!titleReported)launchReport.stage('Rendering title preview');
  present(()=>townSections.render({renderer,scene,camera,town,position:{x:x+3,z:z-7}}));
+ if(!titleReported){titleReported=true;launchReport.stage('Ready to enter town');}
 }
 
 function renderOutdoor(){
+  const first=started&&!firstPlayFrame;if(first)launchReport.stage('Rendering first gameplay frame');
   const audit=window.__JOHANSSON_AUDIT__?.camera;
   if(audit){camera.position.set(...audit.pos);camera.lookAt(...audit.at);camera.updateMatrixWorld();}
   present(()=>townSections.render({renderer,scene,camera,town,position:player.position}));
+  if(first)firstPlayFrame=true;
+  if(started&&performance.now()>=reportNextAt){reportNextAt=performance.now()+5000;const buffer=renderer.getDrawingBufferSize(new THREE.Vector2());launchReport.stage(graphics.postprocess?'Playing':'Playing · single pass',{textures:renderer.info.memory?.textures,geometries:renderer.info.memory?.geometries,programs:renderer.info.programs?.length,drawCalls:renderer.info.render?.calls,triangles:renderer.info.render?.triangles,bufferWidth:buffer.x,bufferHeight:buffer.y});}
   if(window.__JOHANSSON_STARTUP__&&!window.__JOHANSSON_STARTUP__.firstFrameMs){window.__JOHANSSON_STARTUP__.firstFrameMs=performance.now()-window.__JOHANSSON_STARTUP__.startedAt;window.__JOHANSSON_STARTUP__.stage='playing';}
 }
 // Open on the device's clock: a save from earlier today is fast-forwarded to now so the

@@ -34,3 +34,10 @@ test('late success updates the live model and removes a timeout without a duplic
  stream.update({x:0,z:0});await new Promise(resolve=>setTimeout(resolve,10));stream.update({x:0,z:0});assert.equal(loads,1);
  finish(true);await tick();assert.equal(entry.status,'ready');assert.deepEqual(stream.stats.failed,[]);assert.equal(changed,1);
 });
+
+test('constrained startup leaves optional fallbacks in place without fetching or holding the arrival camera',async()=>{
+ let calls=0,changes=0;const stream=createDetailStream({enabled:false,onChange:()=>changes++});
+ stream.add({id:'large-building',x:0,z:0,radius:100,load:()=>{calls++;return true;}});
+ for(let i=0;i<10;i++)stream.update({x:0,z:0});await tick();
+ assert.equal(calls,0);assert.equal(changes,0);assert.equal(stream.stats.active,null);assert.equal(stream.stats.enabled,false);assert.equal(stream.pendingNear({x:0,z:0}),false);
+});
