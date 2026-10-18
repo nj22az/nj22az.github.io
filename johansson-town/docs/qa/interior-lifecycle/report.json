@@ -10,10 +10,10 @@
         "children": 1,
         "info": {
           "programs": 117,
-          "calls": 8719,
-          "triangles": 18288460,
+          "calls": 8265,
+          "triangles": 17666696,
           "geometries": 1064,
-          "textures": 429
+          "textures": 428
         }
       },
       "exterior": {
@@ -22,10 +22,10 @@
         "portalBytes": 0,
         "info": {
           "programs": 157,
-          "calls": 14967,
-          "triangles": 27291741,
+          "calls": 14807,
+          "triangles": 26867789,
           "geometries": 1332,
-          "textures": 453
+          "textures": 452
         }
       }
     },
@@ -37,10 +37,10 @@
         "children": 67,
         "info": {
           "programs": 201,
-          "calls": 16175,
-          "triangles": 31845305,
+          "calls": 16015,
+          "triangles": 31421353,
           "geometries": 1389,
-          "textures": 466
+          "textures": 465
         }
       },
       "exterior": {
@@ -49,10 +49,10 @@
         "portalBytes": 0,
         "info": {
           "programs": 235,
-          "calls": 19127,
-          "triangles": 47549116,
+          "calls": 18909,
+          "triangles": 46538797,
           "geometries": 1410,
-          "textures": 471
+          "textures": 469
         }
       }
     },
@@ -63,11 +63,11 @@
         "visible": true,
         "children": 1,
         "info": {
-          "programs": 294,
-          "calls": 20043,
-          "triangles": 49592696,
+          "programs": 270,
+          "calls": 19825,
+          "triangles": 48582377,
           "geometries": 1418,
-          "textures": 471
+          "textures": 469
         }
       },
       "exterior": {
@@ -75,11 +75,11 @@
         "roomVisible": false,
         "portalBytes": 0,
         "info": {
-          "programs": 304,
-          "calls": 20447,
-          "triangles": 51073655,
+          "programs": 272,
+          "calls": 20229,
+          "triangles": 50063336,
           "geometries": 1410,
-          "textures": 471
+          "textures": 469
         }
       }
     },
@@ -90,11 +90,11 @@
         "visible": true,
         "children": 67,
         "info": {
-          "programs": 353,
-          "calls": 21245,
-          "triangles": 54178474,
+          "programs": 275,
+          "calls": 21027,
+          "triangles": 53168155,
           "geometries": 1431,
-          "textures": 477
+          "textures": 475
         }
       },
       "exterior": {
@@ -102,11 +102,11 @@
         "roomVisible": false,
         "portalBytes": 0,
         "info": {
-          "programs": 353,
-          "calls": 21612,
-          "triangles": 55513175,
+          "programs": 300,
+          "calls": 21394,
+          "triangles": 54502856,
           "geometries": 1410,
-          "textures": 472
+          "textures": 469
         }
       }
     },
@@ -117,11 +117,11 @@
         "visible": true,
         "children": 1,
         "info": {
-          "programs": 353,
-          "calls": 22509,
-          "triangles": 57554965,
+          "programs": 359,
+          "calls": 22291,
+          "triangles": 56544646,
           "geometries": 1418,
-          "textures": 472
+          "textures": 469
         }
       },
       "exterior": {
@@ -129,11 +129,11 @@
         "roomVisible": false,
         "portalBytes": 0,
         "info": {
-          "programs": 353,
-          "calls": 22913,
-          "triangles": 59035924,
+          "programs": 369,
+          "calls": 22695,
+          "triangles": 58025605,
           "geometries": 1410,
-          "textures": 472
+          "textures": 469
         }
       }
     },
@@ -144,11 +144,11 @@
         "visible": true,
         "children": 67,
         "info": {
-          "programs": 359,
-          "calls": 23711,
-          "triangles": 62140743,
+          "programs": 415,
+          "calls": 23493,
+          "triangles": 61130424,
           "geometries": 1431,
-          "textures": 478
+          "textures": 475
         }
       },
       "exterior": {
@@ -156,11 +156,11 @@
         "roomVisible": false,
         "portalBytes": 0,
         "info": {
-          "programs": 353,
-          "calls": 24078,
-          "triangles": 63475444,
+          "programs": 417,
+          "calls": 23860,
+          "triangles": 62465125,
           "geometries": 1410,
-          "textures": 473
+          "textures": 469
         }
       }
     },
@@ -171,11 +171,11 @@
         "visible": true,
         "children": 1,
         "info": {
-          "programs": 353,
-          "calls": 24975,
-          "triangles": 65517234,
+          "programs": 417,
+          "calls": 24757,
+          "triangles": 64506915,
           "geometries": 1418,
-          "textures": 473
+          "textures": 469
         }
       },
       "exterior": {
@@ -183,11 +183,11 @@
         "roomVisible": false,
         "portalBytes": 0,
         "info": {
-          "programs": 353,
-          "calls": 25379,
-          "triangles": 66998193,
+          "programs": 417,
+          "calls": 25161,
+          "triangles": 65987874,
           "geometries": 1410,
-          "textures": 473
+          "textures": 469
         }
       }
     },
@@ -198,11 +198,11 @@
         "visible": true,
         "children": 67,
         "info": {
-          "programs": 359,
-          "calls": 26177,
-          "triangles": 70103012,
+          "programs": 423,
+          "calls": 25959,
+          "triangles": 69092693,
           "geometries": 1431,
-          "textures": 479
+          "textures": 475
         }
       },
       "exterior": {
@@ -210,11 +210,11 @@
         "roomVisible": false,
         "portalBytes": 0,
         "info": {
-          "programs": 353,
-          "calls": 26544,
-          "triangles": 71437713,
+          "programs": 417,
+          "calls": 26326,
+          "triangles": 70427394,
           "geometries": 1410,
-          "textures": 474
+          "textures": 469
         }
       }
     }
@@ -224,11 +224,11 @@
       "label": "street-day",
       "gpuError": 0,
       "render": {
-        "programs": 112,
-        "calls": 1725,
-        "triangles": 3810120,
-        "geometries": 1059,
-        "textures": 427
+        "programs": 90,
+        "calls": 1498,
+        "triangles": 3513957,
+        "geometries": 923,
+        "textures": 387
       },
       "portal": {
         "total": 0,
@@ -245,10 +245,10 @@
       "gpuError": 0,
       "render": {
         "programs": 124,
-        "calls": 9015,
-        "triangles": 18684216,
-        "geometries": 1172,
-        "textures": 440
+        "calls": 8560,
+        "triangles": 17963480,
+        "geometries": 1171,
+        "textures": 439
       },
       "portal": {
         "total": 0,
@@ -265,10 +265,10 @@
       "gpuError": 0,
       "render": {
         "programs": 151,
-        "calls": 11967,
-        "triangles": 22602331,
+        "calls": 11807,
+        "triangles": 22178379,
         "geometries": 1261,
-        "textures": 445
+        "textures": 444
       },
       "portal": {
         "total": 2860,
@@ -285,10 +285,10 @@
       "gpuError": 0,
       "render": {
         "programs": 204,
-        "calls": 16232,
-        "triangles": 32413673,
+        "calls": 16072,
+        "triangles": 31989721,
         "geometries": 1397,
-        "textures": 468
+        "textures": 467
       },
       "portal": {
         "total": 3735,
@@ -305,10 +305,10 @@
       "gpuError": 0,
       "render": {
         "programs": 208,
-        "calls": 17077,
-        "triangles": 39664257,
+        "calls": 16859,
+        "triangles": 38653938,
         "geometries": 1405,
-        "textures": 471
+        "textures": 470
       },
       "portal": {
         "total": 3735,
@@ -324,11 +324,11 @@
       "label": "sakura-night",
       "gpuError": 0,
       "render": {
-        "programs": 363,
-        "calls": 27711,
-        "triangles": 73854311,
+        "programs": 427,
+        "calls": 27493,
+        "triangles": 72843992,
         "geometries": 1421,
-        "textures": 475
+        "textures": 470
       },
       "portal": {
         "total": 2870,
@@ -344,11 +344,11 @@
       "label": "street-night",
       "gpuError": 0,
       "render": {
-        "programs": 398,
-        "calls": 32004,
-        "triangles": 79770017,
+        "programs": 462,
+        "calls": 31786,
+        "triangles": 78759698,
         "geometries": 1499,
-        "textures": 488
+        "textures": 483
       },
       "portal": {
         "total": 2870,
