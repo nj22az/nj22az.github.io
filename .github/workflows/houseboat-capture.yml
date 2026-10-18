@@ -1,0 +1,32 @@
+name: Houseboat visual capture
+on:
+  push:
+    branches: ['codex/houseboat-visual-audit']
+    paths: ['.github/workflows/houseboat-capture.yml', 'johansson-town/tools/capture-sofa-houseboat.mjs']
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Install capture runner
+        run: |
+          npm install --prefix .audit-deps --no-package-lock --ignore-scripts --no-audit --no-fund playwright@1.61.0
+          ln -s "$GITHUB_WORKSPACE/.audit-deps/node_modules" johansson-town/node_modules
+          node .audit-deps/node_modules/playwright/cli.js install --with-deps chromium
+      - name: Capture current compiled game
+        env:
+          AUDIT_GAME_COMMIT: a42fad65dc19c577f7f9b5707be152618aa92180
+        run: node johansson-town/tools/capture-sofa-houseboat.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: houseboat-visual-capture
+          path: johansson-town/docs/qa/fujita-sofa-capture/
+          retention-days: 14
