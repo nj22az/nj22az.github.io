@@ -1,5 +1,51 @@
 # Johansson World reference enhancement audit
 
+## Current reconciliation — 18 October 2026
+
+Audited source: main `6b9f5ea56d71e581355384e77ada0c4f987c7f55`. Confirmed that housing commit `dc3a15bbc5b3b5549bd4563cce3ebb48002b1459` is an ancestor. This addendum supersedes the occupancy, missing-office and next-worker instructions in the historical T01 snapshot below. Reference provenance and reuse requirements remain applicable.
+
+**Decision: T02 implementation and prerequisite A are complete; T02 visual/device acceptance remains open.** The first incomplete task is acceptance of the existing office, not construction of another home or office. Keep T03 queued until T02's acceptance table in [REFERENCE-ENHANCEMENT-PLAN.md](REFERENCE-ENHANCEMENT-PLAN.md) closes. This review changes documentation only.
+
+### Source verified now
+
+- `src/people/cast.js::CAST`, `island-households.js` and `home-directory.js`: Sakurai's home is `kitahama-flat-2`, Ganaha's is `kitahama-flat-4`; Sakura remains Sakurai's workplace. Tests confirm 31 canonical villagers, 23 occupied Minato primary households, one shared tropical primary home, registered entrances and no active vacant Minato homes. The nine redundant dwellings are retired and their tested plots clear.
+- `src/world/interiors/sakura-office-room.js::buildSakuraOfficeRoom`, `SAKURA_OFFICE`: authored office floor, walls/openings, desk and chair, visitor bench/table, ledger, telephone, shelves and kitchenette with sink, cupboards, worktop, kettle and fridge. No bedding. Layout returns an office spawn, bounds and exit; ledger, tea and outlook anchors are registered. The tea prompt is a read action; the telephone and storage are props, not appliance simulations. The visitor bench has geometry but no separately registered seating action in this builder; assess this against the required furniture use rather than assuming it is interactive. Do not claim additional interactions beyond those implemented.
+- `src/world/thuan-flat.js::buildThuanFlat`: historical module name now owns the office shell and registered `sakura-office` entrance at `[-18.8,4.01,-26.66]`, plus two live street portals. `src/game.js::addRoomProps` dispatches that ID to the existing office builder; `streetFrontageOf` selects an outlook. The old instruction to add a separate upstairs contract is satisfied.
+- `src/render/shop-street-view.js::mapShopCamera`: CPU checks map both portals from the seated desk to one physical observer at world y=5.13; normals face east/town and south/harbour. This confirms transforms, not actual visible scenery, occlusion or the seated framing.
+- `src/save.js::migrateHousing`: revision 1 clears obsolete moved-resident location/home caches and canonicalises old home destinations without treating a shop visit as a residential move. Idempotence, unrelated shop/inventory/friendship data and tropical home preservation pass the housing fixture. Keep existing save keys and IDs. A real old-save gameplay/reload cycle remains unverified.
+- `src/render/startup-recovery.js::graphicsProfile`, `drawingDpr`: iPhone/basic and explicit recovery retain no postprocess, no detail streaming, no shadows/native antialiasing, DPR cap 1 and 650,000 canvas pixels. Current main includes later cartoon/cel-shading work (#221); do not revert that work or increase framebuffer allocations to obtain office views.
+
+### Checks actually performed in this reconciliation
+
+From `johansson-town`:
+
+```sh
+node --test tests/housing-consolidation.test.mjs tests/runtime-package.test.mjs
+# 14 passed; 0 failed
+node --test tests/building-stairs.test.mjs tests/player-seating.test.mjs tests/save-safety.test.mjs tests/sakura-budget.test.mjs tests/shop-street-view.test.mjs tests/startup-recovery.test.mjs tests/single-pass-colour.test.mjs
+# 29 passed; 0 failed
+npm run build:runtime
+# passed after npm ci --ignore-scripts supplied the checkout dependencies
+node --test tests/runtime-package.test.mjs
+# 3 passed; 0 failed (post-build)
+```
+
+The build's first attempt lacked `rollup`; dependency installation resolved it, and the runtime build succeeded (35 published files; Vite's large-chunk advisory remains). Build-only pruning of the previous cached runtime generation is excluded from this documentation change. No runtime behaviour was edited. These are focused checks, not a full `npm test` result. The housing implementation report's 130-test gate remains historical author evidence, not a count rerun here. See [MINATO-HOMES-IMPLEMENTATION.md](MINATO-HOMES-IMPLEMENTATION.md) for that gate and its documented unrelated legacy failures.
+
+Housing tests exercise real builder collision/doors, bedding and CPU room walking, moved upper-flat outward/homeward routines, private residential stairs, reachable office prompts, migration and outlook transforms. `building-stairs` samples real town stair/landing clearance including Sakura. `player-seating` tests general avatar seat contact, not the office chair in a rendered scene. `shop-street-view` tests window render-state/parallax/clip handling, not a screenshot of this office. Do not turn these results into an end-to-end normal-control office walkthrough claim.
+
+### Visual attempt and remaining acceptance
+
+On 18 October 2026, opened `https://nj22az.github.io/johansson-town/` in available remote desktop Chrome (observed viewport 1363 × 936). The title UI appeared; Start Exploring displayed START FAILED and the message “The browser could not start the 3D graphics engine.” One Retry was attempted; subsequent start returned the same message. The screen was inspected visually. No office was entered, and no standing/seated office screenshot was obtained. The deployed build's exact source SHA was not established; this attempt does not replace local-source verification and does not diagnose a general website failure.
+
+Outstanding: normal-control street/rear-stair/landing/door/office/exit route; actual harbour and town views from standing and seated camera positions; desk sit/stand and body/furniture contact at supported sizes; reachable interaction execution, visitor seating and clear windows/landing; moved residents' sleep/wake; downstairs trading and stockroom; legacy save/reload gameplay; phone viewport/touch layout; comparable GPU/resource and sustained-play measurements. **No physical iPhone Safari testing occurred.** Browser emulation, when performed later, must be recorded separately.
+
+Next worker: refresh main, read this addendum, the housing implementation and T02's acceptance table. Use the existing `sakura-office` room in a working GPU browser. Record browser/device, viewport, build/source SHA and camera positions with standing/seated harbour and town captures; walk in/out and exercise existing office actions. Record failures precisely and fix only the demonstrated room defect. Finish mobile/save/shop checks before closing T02; then name T03's single domestic pilot before editing. Do not reconstruct Flat 2/4, reassign residents, recreate upstairs, restore retired plots or weaken Safari limits.
+
+## Historical T01 snapshot — superseded implementation state
+
+The remainder records the original inspection of `c5e36e578a3aa7ba6dea6b07a9cb89284edbfad9` before housing integration. Its present-tense source descriptions and prerequisite instructions are historical, not the current work queue. Use the current addendum and plan handover for continuation.
+
 Date: 18 October 2026.
 Task: T01 complete as a source and reference audit.
 Audited main: `c5e36e578a3aa7ba6dea6b07a9cb89284edbfad9`.
@@ -24,7 +70,7 @@ The housing plan proposes Sakurai in Flat 4, subject to measured stair suitabili
 
 The cast also still describes Johansson as mayor and Nakandakari as chief engineer. These are pre-existing conflicts with the owner's instructions, to reconcile within the housing/ship-role programme rather than silently expanding an office decoration change.
 
-**Next task: T02 prerequisite A — inspect Sakurai's proposed flat access and prepare her actual replacement dwelling.** Confirm the route and unit choice first; then implement that one household move, including interior, bed, entry, schedule, directory and compatibility. Keep Sakura upstairs residential until the replacement works.
+**Historical next task (now completed by the housing implementation): T02 prerequisite A — Sakurai's replacement dwelling.** Confirm the route and unit choice first; then implement that one household move, including interior, bed, entry, schedule, directory and compatibility. Keep Sakura upstairs residential until the replacement works.
 
 ## Existing implementation owners
 
@@ -100,4 +146,4 @@ Performed:
 
 Not performed: production build, full game tests, a running game walkthrough, save migration, actual stair route tests, rendered screenshots, draw-call/resource baseline, physical iPhone Safari. Only documentation changes result from T01; these runtime acceptance checks belong to the implementation tasks. No GPU browser was launched for this audit.
 
-Next worker: start T02 prerequisite A by inspecting `KITAHAMA_FLATS`, its stair/door geometry and actual room dispatch, with the Sakurai fallback in MINATO-HOMES-PLAN.md. Record the unit decision and baseline before changing occupancy. Complete that one move before converting Sakura upstairs. Do not start T03 while this dependency remains unresolved.
+Superseded T01 handover (do not execute; see current addendum): start T02 prerequisite A by inspecting `KITAHAMA_FLATS`, its stair/door geometry and actual room dispatch, with the Sakurai fallback in MINATO-HOMES-PLAN.md. Record the unit decision and baseline before changing occupancy. Complete that one move before converting Sakura upstairs. Do not start T03 while this dependency remains unresolved.
