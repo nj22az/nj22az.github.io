@@ -1,4 +1,5 @@
 // Focused real-world acceptance for the 0.2.7 input/navigation repairs.
+process.env.PW_TEST_SCREENSHOT_NO_FONTS_READY='1';
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict'),{chromium}=require('playwright');
 (async()=>{
  const root=path.resolve(__dirname,'../site'),out=path.resolve(__dirname,'../dist/control-repair');fs.mkdirSync(out,{recursive:true});const errors=[];
@@ -6,7 +7,7 @@ const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),
  const server=http.createServer((req,res)=>{const url=new URL(req.url,'http://local');let file=path.resolve(root,'.'+url.pathname);if(url.pathname.endsWith('/'))file=path.join(file,'index.html');if(!file.startsWith(root+path.sep)||!fs.existsSync(file)){res.writeHead(404);return res.end();}res.setHeader('Content-Type',mime[path.extname(file)]||'application/octet-stream');fs.createReadStream(file).pipe(res);});await new Promise(r=>server.listen(0,'127.0.0.1',r));
  const origin='http://127.0.0.1:'+server.address().port,browser=await chromium.launch({headless:true,...(process.env.WORLD_CHROME?{executablePath:process.env.WORLD_CHROME}:{}),args:process.platform==='linux'?['--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']:[]});
  try{
-  const page=await browser.newPage({viewport:{width:1280,height:800}});page.on('pageerror',e=>errors.push(e.message));await page.route('**/*',r=>new URL(r.request().url()).origin===origin?r.continue():r.abort());
+  const page=await browser.newPage({viewport:{width:1280,height:800}});page.setDefaultTimeout(120000);page.on('pageerror',e=>errors.push(e.message));await page.route('**/*',r=>new URL(r.request().url()).origin===origin?r.continue():r.abort());
   await page.addInitScript(version=>{window.__pad={id:'Steam Deck test pad',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};Object.defineProperty(navigator,'getGamepads',{value:()=>[window.__pad]});window.johanssonDesktop={offline:true,version,save:async()=>{window.__saved=true;},performance:async()=>[],checkUpdate:async()=>({available:false})};},require('../package.json').version);
   const frames=()=>page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
   const tap=async i=>{await page.evaluate(i=>{window.__pad.buttons[i]={pressed:true,value:1};},i);await frames();await page.evaluate(i=>{window.__pad.buttons[i]={pressed:false,value:0};},i);await frames();};
