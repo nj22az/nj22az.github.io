@@ -14,11 +14,11 @@ import {createActivities} from '../activities.js?snappy=1';
 import {installDOM} from './fixtures.mjs';
 
 
-test('the Barfly stays in Minato, drinks without a purchase and sleeps overnight',()=>{
+test('the Barfly works in Minato and sleeps and wakes in his private room',()=>{
  const person=PROFILES.find(p=>p.name==='Barfly');assert.ok(person);
- // After closing he helps clean up (03:00-04:00, izakaya-hours.js), then sleeps until ten.
- for(const minute of [0,180,239,600,1439]){const plan=residentPlan(person,minute);assert.equal(plan.place,'izakaya');assert.equal(plan.barflySleeping,false);}
- for(const minute of [240,300,599]){const plan=residentPlan(person,minute);assert.equal(plan.place,'izakaya');assert.equal(plan.barflySleeping,true);}
+ // The occupied-home implementation moved his rest off the public stool.
+ for(const minute of [0,180,239,660,1439]){const plan=residentPlan(person,minute);assert.equal(plan.place,'izakaya');assert.equal(plan.barflySleeping,false);}
+ for(const minute of [240,300,599,600,659]){const plan=residentPlan(person,minute);assert.equal(plan.place,'home');assert.deepEqual(plan.target,person.home);assert.match(plan.activity,/private room/);}
 });
 
 test('the Barfly drinks indefinitely without a bill and sleeps through the night',()=>{

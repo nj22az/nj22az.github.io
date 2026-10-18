@@ -6,12 +6,13 @@ import {PROFILES} from '../src/people/profiles.js';
 import {SHARED_DINING_COLLIDERS} from '../src/world/interiors/shared-dining-layout.js';
 
 const profile=name=>PROFILES.find(p=>p.name===name);
-test('Minato always has somebody in it, and while it is closed they are cleaning or asleep',()=>{
+test('Minato staff clean while closed and the Barfly rests in his private room',()=>{
  for(let m=0;m<1440;m+=10){
+  const barfly=residentPlan(profile('Barfly'),m);
+  if(barfly.place==='home'){assert.ok(m>=240&&m<660,'Rest stays within his home hours');assert.match(barfly.activity,/private room/);continue;}
   const inside=['Barfly','Thao'].filter(n=>residentPlan(profile(n),m).place==='izakaya');
   assert.ok(inside.length>0,'Somebody is in Minato at '+m);
   if(izakayaOpen(m))continue;
-  const barfly=residentPlan(profile('Barfly'),m);
   const job=izakayaJob('Barfly',m);
   assert.ok(job||barfly.barflySleeping,'The Barfly is cleaning or asleep while closed, at '+m);
   if(job)assert.ok(CLEANING_POSES.includes(job.pose),job.pose+' is a cleaning pose');
