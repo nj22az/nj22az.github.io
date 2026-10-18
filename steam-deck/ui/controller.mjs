@@ -7,6 +7,7 @@ export function profileSettings(saved = {}) {
     moveAxes: [index(saved.moveAxes?.[0], 0), index(saved.moveAxes?.[1], 1)],
     lookAxes: [index(saved.lookAxes?.[0], 2), index(saved.lookAxes?.[1], 3)],
     bindings: DEFAULT_BINDINGS.map((value, i) => index(saved.bindings?.[i], value)),
+    glyphs: saved.glyphs === 'xbox' ? 'xbox' : 'deck',
     controller: typeof saved.controller === 'string' ? saved.controller : '',
   };
 }
@@ -52,3 +53,7 @@ export function createDesktopInput(getProfile) {
     },
   };
 }
+
+const DECK=['A','B','X','Y','L1','R1','L2','R2','▣','☰','L3','R3','↑','↓','←','→','Steam'];
+const XBOX=['A','B','X','Y','LB','RB','LT','RT','View','Menu','L3','R3','↑','↓','←','→','Guide'];
+export function buttonGlyph(action,profile={}){const p=profileSettings(profile),index=p.bindings[action];return (p.glyphs==='xbox'?XBOX:DECK)[index]||'Button '+index;}

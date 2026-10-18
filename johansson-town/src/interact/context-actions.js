@@ -45,7 +45,7 @@ export function contextActions(state={}){
 export function createContextRail({doc=globalThis.document,onAction=()=>{}}={}){
  const rail=doc.querySelector('#contextActions'),status=doc.querySelector('#contextActionStatus');
  const buttons=new Map(IDs.map(id=>[id,doc.querySelector('#'+id)]).filter(([,button])=>button));
- let model={actions:[],status:''},signatures=new Map();
+ let model={actions:[],status:''},signatures=new Map(),lastState={},selection=null,contextKey='';
  for(const [id,button] of buttons){
   button.onpointerdown=event=>{
    if(event.button!==undefined&&event.button!==0||button.hidden||button.disabled)return;
@@ -56,7 +56,9 @@ export function createContextRail({doc=globalThis.document,onAction=()=>{}}={}){
  }
  return {
   update(state){
+   const nextKey=[state.targetLabel,state.enterLabel,state.inside,state.seated].join('/');if(nextKey!==contextKey){selection=null;contextKey=nextKey;}lastState=state;
    model=contextActions({...state,previousActions:model.actions});
+   if(selection&&model.actions.some(a=>a.id===selection)&&!state.pressed?.length){for(const a of model.actions){a.primary=a.id===selection;a.key=a.primary?'E':'';}}
    const shown=new Map(model.actions.map(a=>[a.id,a]));
    for(const [id,button] of buttons){
     const descriptor=shown.get(id),visible=!!descriptor;
@@ -80,6 +82,7 @@ export function createContextRail({doc=globalThis.document,onAction=()=>{}}={}){
    if(rail){rail.hidden=!model.actions.length&&!model.status;rail.setAttribute('aria-hidden',String(rail.hidden));}
    return model;
   },
+  cycle(step){if(model.actions.length<2)return false;const at=model.actions.findIndex(a=>a.primary);selection=model.actions[(at+step+model.actions.length)%model.actions.length].id;this.update(lastState);return true;},
   get primary(){return model.actions.find(a=>a.primary)||null;},
   activatePrimary(){const primary=model.actions.find(a=>a.primary);if(!primary)return false;onAction(primary.id,{detail:0});return true;},
  };

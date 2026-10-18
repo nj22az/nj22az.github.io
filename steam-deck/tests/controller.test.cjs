@@ -26,3 +26,9 @@ test('selected controller and hotplug keep the active device stable',async()=>{
  assert.equal(input.read([a,b]).pad.id,'USB pad');assert.equal(input.sample([a,b]).move.y,-1);
  assert.equal(input.read([b,a]).pad.id,'USB pad');b.connected=false;assert.equal(input.read([a,b]).pad.id,'Deck');
 });
+test('Deck prompts name physical Menu/View/shoulder controls and follow remapping',async()=>{
+ const {buttonGlyph,profileSettings}=await load(),profile=profileSettings({});assert.equal(buttonGlyph(9,profile),'☰');assert.equal(buttonGlyph(8,profile),'▣');assert.equal(buttonGlyph(4,profile),'L1');profile.bindings[9]=6;assert.equal(buttonGlyph(9,profile),'L2');assert.equal(buttonGlyph(4,{glyphs:'xbox'}),'LB');
+});
+test('D-pad follows the visible grid, preserves rows and stops at an edge',async()=>{
+ const {directionalIndex}=await import('../ui/menu-navigation.mjs');const rects=[{left:0,top:0,width:100,height:40},{left:120,top:0,width:100,height:40},{left:0,top:60,width:100,height:40},{left:120,top:60,width:100,height:40}];assert.equal(directionalIndex(rects,0,'right'),1);assert.equal(directionalIndex(rects,0,'down'),2);assert.equal(directionalIndex(rects,1,'down'),3);assert.equal(directionalIndex(rects,0,'left'),0);assert.equal(directionalIndex(rects,3,'right'),3);
+});

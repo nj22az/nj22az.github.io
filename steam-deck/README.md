@@ -5,15 +5,18 @@ The complete island game runs locally in a standalone Electron Linux application
 ## Controls and saves
 
 - Left stick moves, right stick looks; A interacts, B backs out, Y opens inventory. R3 levels the camera; LB runs, RB jumps, RT zooms.
-- Start opens a controller-navigable pause menu from both the title and the island. B returns one page; Start resumes. An always-visible Menu button and F10/Escape provide keyboard/mouse access.
-- The first visit explains the controls and suggests first steps. Start → How to play reopens that guide.
-- Start → Controls & camera has sensitivity, dead zone, FOV, invert Y, walking camera motion, live stick feedback, axis selection, stick swapping and button remapping. Assignments and camera settings persist with saves. Conflicting button assignments swap so other actions remain accessible.
+- The Deck’s ☰ Menu button opens pause from both the title and the island. L1/R1 switches Island, People and Settings; B returns a page or resumes from a section. ☰ always resumes. An always-visible Menu button and F10/Escape provide keyboard/mouse access.
+- The first visit explains the controls and suggests first steps. ☰ → Island → How to play reopens that guide.
+- ☰ → Settings → Controls & camera has sensitivity, dead zone, FOV, invert Y, walking camera motion, live stick feedback, axis selection, stick swapping and button remapping. Assignments and camera settings persist with saves. Conflicting button assignments swap so other actions remain accessible.
 - Standard and unmapped controllers are supported. A held button is ignored until released after reconnect/resume; stick drift does not lock out all controls. Disconnecting pauses the island and opens recovery controls.
-- View opens the town book. Start opens the desktop pause menu.
+- View (▣) opens the town book. ☰ opens the desktop pause menu.
+- One complete A prompt is shown at a time. D-pad left/right selects other nearby actions. B stands up or exits a room when available; in dialogues B goes back. Prompts follow remapped physical buttons.
+- Deck symbols are the default (☰/▣/L1/R1/L2/R2); Xbox symbols can be selected under controls.
+- Gecko tones and the pulsing cricket WAV are retired in both editions. Sparse, low filtered-noise calls keep the night quiet without pitched electronic beeps. Rain, waves and ferry signals remain.
 - L3 toggles the HUD. F8 does the same on a keyboard; F10 opens the pause menu.
-- Save progress, resume, People & characters, Your home, updates and Save & quit are in the pause menu.
+- Island contains Resume, Town book, Bag, Go home, Save and How to play. People selects a resident. Settings contains controls, display, updates and a confirmed Save & quit. X quick-saves while paused.
 - Existing named game slots are retained in the app profile. Disk snapshots keep a previous copy under the application data saves directory. Game updates do not replace this directory.
-- Start → People & characters switches between the island's residents, using each person's appearance, home and saved position. Selection is also available before starting. Nighttime starts use the selected person's bed; night workers retain their own schedules. A or the left stick gets out of bed. Start → Your home returns to their address, and a residential front door opens the same bedroom. Workplace residences and cabins retain their normal public access.
+- ☰ → People switches between the island's residents, using each person's appearance, home and saved position. Selection is also available before starting. Nighttime starts use the selected person's bed; night workers retain their own schedules. A or the left stick gets out of bed. ☰ → Island → Go home returns to their address, and a residential front door opens the same bedroom. Workplace residences and cabins retain their normal public access.
 - Families keep their existing shared addresses; each playable person has an owned bed. Additional scene residents use existing vacant addresses. Identity, personal checkpoints and disputes persist with the normal save.
 - Linux no longer offers recurring festival fights. Conversations offer an explicit “Lose your temper…” choice: three warnings precede a fourth insult starting a personal quarrel. Apologising or leaving avoids escalation; tempers decay and a cooldown prevents immediate repeated fights. Quarrels grant no festival rewards. Children and the established Johansson/Thuan/Thao/Nhung alliance do not fight.
 
@@ -37,7 +40,7 @@ Development comparisons and release status are recorded at [Linux Port](https://
 
 ## Updates
 
-Pause → Check for updates connects to this repository's Linux release channel on request. A newer build downloads into a separate version folder and is checked against its published SHA-256 and byte count. Save & restart switches to that version. The previous version is retained. Checking for updates requires internet; playing the installed game does not.
+☰ → Settings → Check for updates connects to this repository's Linux release channel on request. A newer build downloads into a separate version folder and is checked against its published SHA-256 and byte count. Save & restart switches to that version. The previous version is retained. Checking for updates requires internet; playing the installed game does not.
 
 ## Development
 
