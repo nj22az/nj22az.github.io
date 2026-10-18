@@ -22,8 +22,8 @@ test('every florist purchase uses the same opening hours and the public counter 
 test('Nakamura serves the preserved Blue Coral items and soda through one hours-aware menu',()=>{
  installDOM();const world={group:new THREE.Group(),colliders:[]},prompts=[],actions=[];
  const shop=buildBlueCoralShop({world,register:(object,label,run)=>prompts.push({object,label,run}),onAction:(...args)=>actions.push(args)});
- assert.equal(prompts.length,3);assert.equal(shop.merged,true);assert.equal(world.colliders.length,0);assert.equal(world.landmarks[0].id,'nakamura');
- shop.update(600);for(const p of prompts)p.run();assert.deepEqual(actions.map(a=>[a[2].item,a[2].cost]),[['Blue Coral ice cream',150],['Green tea',120],['Cold island soda',100]]);
+ assert.equal(prompts.length,2);assert.equal(shop.merged,true);assert.equal(world.colliders.length,0);assert.ok(world.landmarks.some(p=>p.id==='nakamura'));assert.ok(world.landmarks.some(p=>p.id==='home-nakamura'));
+ shop.update(600);prompts[0].run();assert.equal(actions[0][0],'dessert-menu');assert.deepEqual(actions[0][2].map(p=>[p.item,p.cost]),[['Zenzai',250],['Sata andagi',120],['Blue Coral ice cream',150],['Green tea',120],['Cold island soda',100]]);
  shop.update(1140);for(const p of prompts){p.run();assert.equal(actions.at(-1)[0],'read');}assert.equal(dessertShopOpen(1139),true);assert.equal(dessertShopOpen(1140),false);
  assert.equal(NEIGHBOURS.filter(n=>n.name==='Mrs Nakamura').length,1);assert.deepEqual(NEIGHBOURS.find(n=>n.name==='Mrs Nakamura').at,NAKAMURA_DESSERTS.staffAt);
 });
@@ -40,6 +40,6 @@ test('the original Nakamura zenzai and sata-andagi prompts obey the same shared-
  installDOM();const {buildOkinawaQuarters}=await import('../src/world/okinawa/quarters.js');
  const world={group:new THREE.Group(),colliders:[],minutes:720},prompts=[],actions=[];
  buildOkinawaQuarters(world,{register:(object,label,run)=>prompts.push({label,run}),onAction:(...args)=>actions.push(args)});
- const orders=prompts.filter(p=>['Buy a zenzai','Buy sata andagi'].includes(p.label));assert.equal(orders.length,2);
+ const orders=prompts.filter(p=>['Buy a zenzai','Buy sata andagi'].includes(p.label));assert.equal(orders.length,0,'The unified counter owns orders; no overlapping legacy prompts');
  for(const [minutes,kind] of [[599,'read'],[600,'buy'],[1139,'buy'],[1140,'read']]){world.minutes=minutes;for(const p of orders){p.run();assert.equal(actions.at(-1)[0],kind,p.label+' at '+minutes);}}
 });

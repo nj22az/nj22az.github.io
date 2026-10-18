@@ -26,8 +26,15 @@ export const TOWN_PAPERS=[
     "type": "Notice",
     "title": "Nakamura is closed",
     "organisation": "Town Services",
-    "text": "Mrs Nakamura serves zenzai and Blue Coral ice cream here from 10:00 to 19:00. Her family lives upstairs.",
+    "text": "Open 10:00–19:00. Mrs Nakamura and Mai live upstairs; the separate family door is beside the counter.",
     "source": "notice:Nakamura is closed"
+  },
+  {
+    "type": "Notice",
+    "title": "Nakamura family · upstairs",
+    "organisation": "Town Services",
+    "text": "Mrs Nakamura and Mai live above the shop. The separate front door leads to their private stairwell. Mrs Nakamura closes the counter at 19:00 and walks upstairs.",
+    "source": "notice:Nakamura family · upstairs"
   },
   {
     "type": "Notice",
