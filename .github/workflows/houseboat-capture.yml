@@ -7,6 +7,7 @@ permissions:
   contents: read
 jobs:
   capture:
+    if: github.sha == '5475a92860d51d6feaa952d81e08afa2a840f995'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -29,4 +30,29 @@ jobs:
         with:
           name: houseboat-visual-capture
           path: johansson-town/docs/qa/fujita-sofa-capture/
+          retention-days: 14
+
+  geometry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Install capture runner
+        run: |
+          npm install --prefix .audit-deps --no-package-lock --ignore-scripts --no-audit --no-fund playwright@1.61.0
+          ln -s "$GITHUB_WORKSPACE/.audit-deps/node_modules" johansson-town/node_modules
+          node .audit-deps/node_modules/playwright/cli.js install --with-deps chromium
+      - name: Inspect production boat and sleeping body
+        env:
+          AUDIT_GAME_COMMIT: a42fad65dc19c577f7f9b5707be152618aa92180
+        run: node johansson-town/tools/capture-sofa-geometry.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: houseboat-geometry-capture
+          path: johansson-town/docs/qa/fujita-sofa-geometry/
           retention-days: 14
