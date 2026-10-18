@@ -1667,7 +1667,7 @@ function updateDirectory(){
   onFindPerson:(target,card)=>{const live=directoryCards().find(c=>c.name===card.name)||card,position=live.personTarget||target;return markPlace({...position,trackPerson:card.name,directions:(live.current.source==='schedule'?'Scheduled location: ':'Current location: ')+live.current.locationLabel+'. '+(position.directions||'Follow the walking route.')});},
   onPlace:markPlace,onShortcut:visitPlace,
   canRecord:activities.canResidentRecord,onRecord:name=>{toggleDir(false);activities.residentRecord(name);},
-  onStudio:()=>{activities.save();location.href=new URL('../avatar-creator/',location.href).href;},
+  onStudio:()=>activities.saveBeforeLeaving(()=>{location.href=new URL('../avatar-creator/',location.href).href;}),
   onTravelProgress:()=>{toggleDir(false);activities.action('travel-progress');}});
  const extras=document.createElement('details');extras.className='town-records';const title=document.createElement('summary');title.textContent='Reading and radio';extras.append(title);
  for(const item of content.items){const button=document.createElement('button');button.textContent=item.title+' · '+item.place;button.onclick=()=>{const site=SITES.find(s=>s.id===item.siteId);if(site)markPlace(site);};extras.append(button);}
