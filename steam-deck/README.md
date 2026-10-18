@@ -46,6 +46,10 @@ Development comparisons and release status are recorded at [Linux Port](https://
 
 ☰ → Settings → Check for updates connects to this repository's Linux release channel on request. A newer build downloads into a separate version folder and is checked against its published SHA-256 and byte count. Save & restart switches to that version. The previous version is retained. Checking for updates requires internet; playing the installed game does not.
 
+The terminal installer shows a vending-machine delivery animation during upgrades, including actual download progress and verification stages. Redirected logs are plain; set JOHANSSON_NO_ANIMATION=1 for quiet terminal output or NO_COLOR=1 to omit color. The launcher gains the new original vending-machine icon after an installer-managed update starts. Existing Steam shortcuts may keep Steam's cached custom artwork; the release also includes the PNG for manual artwork selection.
+
+Updates currently download the complete archive. Content-only patches will need a separate verified file manifest and engine compatibility fallback; they are not implemented yet.
+
 ## Development
 
 Run npm ci in this folder. Rebuild the world runtime after source changes, then run node tools/package.mjs --site-only and npm start. npm run package makes the Linux tarball and release manifest. npm test checks controllers, saves and updater boundaries. npm run test:console exercises the actual packaged island with a simulated controller at 1280×800, 1280×720, 960×540 and 800×600; run playwright install chromium first. WORLD_CHROME can select a local Chromium executable. The Linux console acceptance workflow also runs the native Linux application and produces a downloadable candidate archive without changing the website or published release.

@@ -27,7 +27,7 @@ jobs:
           node node_modules/electron/install.js
       - name: Tests and world runtime
         run: |
-          node --test johansson-town/tests/harbour-festival.test.mjs johansson-town/tests/detail-stream.test.mjs johansson-town/tests/context-actions.test.mjs johansson-town/tests/soundscape.test.mjs
+          node --test johansson-town/tests/harbour-festival.test.mjs johansson-town/tests/detail-stream.test.mjs johansson-town/tests/context-actions.test.mjs johansson-town/tests/soundscape.test.mjs johansson-town/tests/thuan-studio-design.test.mjs johansson-town/tests/controller-game.test.mjs
           npm test --prefix steam-deck
           cd johansson-town
           node scripts/build-runtime.mjs
@@ -52,8 +52,8 @@ jobs:
         run: |
           version=$(node -p "require('./steam-deck/package.json').version")
           tag="johansson-world-linux-v$version"
-          gh release view "$tag" >/dev/null 2>&1 || gh release create "$tag" --target "$GITHUB_SHA" --prerelease --title "Johansson World Linux $version" --notes "Steam Deck and x86-64 Linux preview 0.2.6. Y now opens the actual Bag, matching the pause-menu shortcut; the Field book remains available inside Bag. The Updates screen reads the running application version instead of a stale label. Controller loss pauses immediately through native disconnect events, with polling fallback for Steam Input changes. Reconnecting or replacing a controller keeps the game paused and ignores held confirm/back/Menu buttons until released; pending remaps are cancelled safely. Existing saves and custom controls are preserved. Automated controller/world and native Linux acceptance are recorded with this release. Physical Steam Deck and hardware-controller testing remains pending. See the website demo guide for the full playable scope and remaining limitations."
-          gh release upload "$tag" steam-deck/dist/johansson-world-linux-x64.tar.gz steam-deck/dist/latest-linux.json steam-deck/dist/SHA256SUMS --clobber
+          gh release view "$tag" >/dev/null 2>&1 || gh release create "$tag" --target "$GITHUB_SHA" --prerelease --title "Johansson World Linux $version" --notes-file "steam-deck/releases/$version.md"
+          gh release upload "$tag" steam-deck/dist/johansson-world-linux-x64.tar.gz steam-deck/dist/latest-linux.json steam-deck/dist/SHA256SUMS steam-deck/install.sh steam-deck/ui/icons/johansson-world-512.png --clobber
       - name: Verify public installer and release checksum
         run: |
           HOME="$RUNNER_TEMP/install-smoke" XDG_DATA_HOME="$RUNNER_TEMP/install-smoke/data" sh steam-deck/install.sh
