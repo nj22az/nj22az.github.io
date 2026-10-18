@@ -15,6 +15,6 @@ test('the single-pass colour treatment survives recovery without targets or dupl
  assert.equal(chunk.replace(TOWN_TONE_MAPPING,'vec3 CustomToneMapping( vec3 color ) { return color; }'),before);
  assert.match(TOWN_TONE_MAPPING,/toneMappingExposure/,'the clock still controls exposure');
  assert.doesNotMatch(TOWN_TONE_MAPPING,/texture2D|sampler|uniform/,'colour requires no extra textures or uniform plumbing');
- const phone=graphicsProfile({mobile:true,ios:true});
+ const phone=graphicsProfile({mobile:true,ios:true,safe:true});
  assert.equal(phone.postprocess,false);assert.equal(phone.streamDetails,false);assert.equal(phone.canvasPixels,650000);
 });

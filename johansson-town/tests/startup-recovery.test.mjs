@@ -19,11 +19,30 @@ test('lean graphics profiles avoid MSAA, half-float and whole-scene compilation'
  const desktop=graphicsProfile();assert.equal(desktop.samples,4);assert.equal(desktop.precompile,true);assert.equal(desktop.shadows,true);
 });
 
-test('iPhone and explicit recovery omit postprocessing, background streaming and cinematic; other profiles retain them',async()=>{
+test('iPhone retains all postprocess effects and bounded shadows without enabling asset streaming',async()=>{
  const {drawingDpr}=await import('../src/render/startup-recovery.js');
- for(const input of [{mobile:true,ios:true},{safe:true}]){
-  const p=graphicsProfile(input);assert.equal(p.postprocess,false);assert.equal(p.streamDetails,false);assert.equal(p.cinematic,false);assert.equal(p.quietOpening,true);
-  for(const [width,height] of [[430,932],[932,430],[4096,2732]]){const dpr=drawingDpr({width,height,deviceDpr:3,profile:p});assert.ok(width*height*dpr*dpr<=650001);}
+ const p=graphicsProfile({mobile:true,ios:true});
+ assert.equal(p.postprocess,true);assert.equal(p.shadows,true);assert.equal(p.shadowSize,512);
+ assert.equal(p.streamDetails,false);assert.equal(p.cinematic,false);assert.equal(p.quietOpening,true);
+ assert.equal(p.pixelBudget,650000);assert.equal(p.canvasPixels,650000);
+ assert.equal(p.samples,0);assert.equal(p.preferHalfFloat,false);assert.equal(p.antialias,false);
+ for(const [width,height] of [[430,932],[932,430],[4096,2732]]){
+  const dpr=drawingDpr({width,height,deviceDpr:3,profile:p});assert.ok(width*height*dpr*dpr<=650001);
  }
- for(const input of [{mobile:true},{mobile:true,ios:true,tablet:true},{}]){const p=graphicsProfile(input);assert.equal(p.postprocess,true);assert.equal(p.streamDetails,true);assert.equal(p.cinematic,true);}
+ const normal=drawingDpr({width:430,height:932,deviceDpr:3,profile:p});
+ const slower=drawingDpr({width:430,height:932,deviceDpr:3,profile:p,scale:.6});
+ assert.ok(slower<normal,'the phone governor must actually lower a 1x buffer');
+ const safe=graphicsProfile({mobile:true,ios:true,safe:true});
+ assert.equal(safe.postprocess,false);assert.equal(safe.shadows,false);assert.equal(safe.streamDetails,false);
+ for(const input of [{mobile:true},{mobile:true,ios:true,tablet:true},{}]){
+  const other=graphicsProfile(input);assert.equal(other.postprocess,true);assert.equal(other.streamDetails,true);assert.equal(other.cinematic,true);
+ }
+});
+
+test('a deliberate full-effects retry clears reduced mode but cannot override an interrupted launch',()=>{
+ const f=fixture();createStartupRecovery({...f,search:'?graphics=safe',now:()=>1000});f.hide();
+ const retry=createStartupRecovery({...f,search:'?graphics=full',now:()=>1100});assert.equal(retry.safe,false);
+ f.hide();assert.equal(createStartupRecovery({...f,now:()=>1200}).safe,false);
+ const interrupted=createStartupRecovery({...f,search:'?graphics=full',now:()=>1300});
+ assert.equal(interrupted.interrupted,true);assert.equal(interrupted.safe,true);
 });

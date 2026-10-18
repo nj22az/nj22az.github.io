@@ -158,6 +158,8 @@ const launchReport=createLaunchReport({storage:(()=>{try{return globalThis.local
 let firstPlayFrame=false,reportNextAt=0;
 const startupRecovery=createStartupRecovery({storage:(()=>{try{return globalThis.sessionStorage;}catch{return null;}})(),search:location.search,events:globalThis});
 window.__JOHANSSON_SAFE_GRAPHICS__=startupRecovery.safe;
+// A full-effects retry is one attempt, never a permanent override of recovery.
+if(new URLSearchParams(location.search).get('graphics')==='full'){const url=new URL(location.href);url.searchParams.delete('graphics');history.replaceState(history.state,'',url);}
 await loadHatModels(undefined,{timeout:8000}).catch(error=>{console.warn('Hat models unavailable:',error);return false;});
 
 // Change the emitted game chunk URL when repairing a cached live runtime.
@@ -175,7 +177,7 @@ let dprScale=1;
 const renderDpr=()=>drawingDpr({width:innerWidth,height:innerHeight,deviceDpr:window.devicePixelRatio||1,profile:graphics,scale:dprScale});
 /**
  * Keeps the frame rate up on slower devices: if frames average slower than about 24 a
- * second for a few seconds, the drawing buffer steps down a notch (never below 1x), and
+ * second for a few seconds, the drawing buffer steps down a notch, and
  * it never steps back up within the session, so the picture does not pump.
  */
 const dprGovernor={time:0,frames:0,cooldown:4};
@@ -275,7 +277,7 @@ const celPass=createCelPass();
  * plain path after the retries, which is where it used to start.
  */
 const INK_OPTIONS={
- // Mobile keeps ink, grading and FXAA, using single-sample eight-bit targets.
+ // Mobile keeps ink, grading and FXAA in two single-sample eight-bit targets.
  // Avoid allocating native MSAA and another multisampled half-float scene buffer
  // at the same time: a browser process may restart before the FPS governor runs.
  superScale:graphics.superScale,samples:graphics.samples,preferHalfFloat:graphics.preferHalfFloat,
@@ -392,7 +394,7 @@ const ambient=new THREE.HemisphereLight(0xdbe7f2,0x6b5f8c,1.15);scene.add(ambien
 const bounce=new THREE.DirectionalLight(0x9db6e8,1.25);bounce.position.set(26,16,-22);scene.add(bounce);
 const UPLIGHT=.35,uplight=new THREE.DirectionalLight(0xc9b9e0,UPLIGHT);uplight.position.set(4,-18,6);scene.add(uplight);
 const sun=new THREE.DirectionalLight(0xffdca8,highTier?2.6:2.3);sun.position.set(-28,38,18);sun.castShadow=shadows;
-if(shadows){sun.shadow.mapSize.set(tabletLike?1024:2048,tabletLike?1024:2048);sun.shadow.camera.left=-26;sun.shadow.camera.right=26;sun.shadow.camera.top=26;sun.shadow.camera.bottom=-26;sun.shadow.camera.near=.5;sun.shadow.camera.far=120;sun.shadow.bias=-.00035;sun.shadow.normalBias=.045}scene.add(sun);
+if(shadows){sun.shadow.mapSize.set(graphics.shadowSize,graphics.shadowSize);sun.shadow.camera.left=-26;sun.shadow.camera.right=26;sun.shadow.camera.top=26;sun.shadow.camera.bottom=-26;sun.shadow.camera.near=.5;sun.shadow.camera.far=120;sun.shadow.bias=-.00035;sun.shadow.normalBias=.045}scene.add(sun);
 
 // Separate bookshop, dock workshop and harbour office keep their own addresses.
 const SITES=createIslandBusinesses();
