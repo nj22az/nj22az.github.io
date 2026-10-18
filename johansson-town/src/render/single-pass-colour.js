@@ -2,7 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 
 // The ink pipeline's hue-preserving highlight shoulder, fused into the ordinary
 // material draw. No render targets, depth textures, extra passes or model loads.
-// Cel bands and photographic surface grain continue to come from cel.js.
+// Cel bands and painted surface grain continue to come from cel.js.
 export const TOWN_TONE_MAPPING=`vec3 CustomToneMapping( vec3 color ) {
  color = max( color * toneMappingExposure * 1.04, vec3(0.0) );
  float peak = max(color.r, max(color.g, color.b));
@@ -15,10 +15,10 @@ export const TOWN_TONE_MAPPING=`vec3 CustomToneMapping( vec3 color ) {
  float paper = smoothstep(0.02,0.55,light);
  // A restrained violet shadow and warm paper light; no grey shadow lift, so
  // night, dark hair and the shaded counter retain their depth.
- color *= mix(vec3(0.90,0.88,0.96),vec3(1.0,0.97,0.91),paper);
+ color *= mix(vec3(0.93,0.92,1.0),vec3(1.0,0.99,0.96),paper);
  color += vec3(0.007,0.00315,0.0)*light;
  float grey = dot(color, vec3(0.2126,0.7152,0.0722));
- return clamp(mix(vec3(grey),color,1.08),0.0,1.0);
+ return clamp(mix(vec3(grey),color,1.12),0.0,1.0);
 }`;
 
 export function useTownColour(renderer){
