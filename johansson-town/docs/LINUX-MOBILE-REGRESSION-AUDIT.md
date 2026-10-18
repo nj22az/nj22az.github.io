@@ -87,7 +87,22 @@ The browser check `tools/loading-audit-smoke.mjs` holds an actual model request,
 confirms that time alone cannot advance the bar, releases it and requires 8/8 tasks
 and a hidden loading overlay only after first-frame readiness. It captures the park
 in portrait and landscape and Sakura's interior using Linux WebKit with an iPhone
-viewport. Results are stored in `docs/qa/loading-render-audit/` when run.
+viewport. The completed run's evidence is stored in `docs/qa/loading-render-audit/`.
+Portrait, landscape and interior captures passed with full effects and no WebGL
+error; the landscape drawing buffer was verified after resize.
+The held-download check passed: the bar remained at 2/8 tasks (25%) while a
+catalog model request was blocked, then reached 8/8 after entry. The portrait
+render used 548 × 1186 scene pixels (649,928), with ink, grading and FXAA enabled
+and no WebGL error. These are Linux WebKit measurements, not a physical-phone
+benchmark. The first landscape capture raced the resize; the harness now waits
+for a landscape drawing buffer before recording that view.
+
+Visual review of the park portrait still shows conspicuous layered bands on the
+tree canopy. The pointed leaf geometry predates the port, but that fact does not
+establish that every aspect of its current shading is satisfactory. This remains
+a visual issue to investigate, and the camera is a park test view rather than an
+exact reproduction of the supplied screenshot. The native Steam Deck image has
+not been captured alongside it for an equivalent comparison.
 Physical iPhone Safari performance and an exact reproduction of the user's crowd
 scene remain separate acceptance work.
 
