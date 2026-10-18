@@ -34,7 +34,8 @@ VECKOR = {
     44: {'titel': 'Elsystem, mätteknik och repetition', 'sista': '2026-10-30',
          'notis': 'Inlämning 4, analysen av mätdata, bygger på del 4 (Analys av mätresultat). Den lämnas in med vecka 44.'},
     45: {'titel': 'Felsökning, analys och övningstenta', 'sista': None, 'frivillig': True, 'lamnas_med': S.LAMNAS_MED,
-         'notis': 'Vecka 45 har ingen inlämning som betygsätts. Felsökningsrapporten lämnar du med vecka 43, senast fredag 23 oktober, och analysen av mätdata med vecka 44, senast fredag 30 oktober. Övningstentan är frivillig och betygsätts inte.'},
+         'notis': 'Övningstentan på den här sidan är frivillig och betygsätts inte. Det praktiska provet i vecka 45 bedöms separat: tre protokoll och en riskbedömning lämnas som PDF i ett mejl senast onsdag 4 november kl. 20.00. Felsökningsrapporten lämnar du med vecka 43, senast fredag 23 oktober, och analysen av mätdata med vecka 44, senast fredag 30 oktober.',
+         'notis_lank': ('../../praktiskt-prov.html#lamna', 'Praktiskt prov: så lämnar du in')},
 }
 
 
