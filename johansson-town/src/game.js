@@ -634,7 +634,7 @@ function takeNahaBoat(){
  activities.action('city-trip',null,{go:()=>crossThreshold(async()=>{if(current)leaveRoom();await enterRoom(NAHA_TRIP);})});
 }
 SITES.forEach(s=>doors.set(s.id,new THREE.Vector3(...(s.door||[s.side*4,0,s.z+2.5]))));
-for(const place of world.landmarks||[])doors.set(place.id,new THREE.Vector3(...place.exitPosition));
+for(const place of world.landmarks||[])if(place.exitPosition)doors.set(place.id,new THREE.Vector3(...place.exitPosition));
 // Start seated on the east sidewalk, looking across at Sakura Shōten.
 const konbini=SITES.find(site=>site.id==='market');
 const konbiniDoor=doors.get('market');
