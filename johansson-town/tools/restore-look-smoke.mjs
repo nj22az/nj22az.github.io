@@ -3,6 +3,7 @@ import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {PNG} from 'pngjs';
 import {webkit} from 'playwright';
+const parkOnly=process.argv.includes('--park-only');
 const out=resolve('docs/qa/october-11-look');await mkdir(out,{recursive:true});
 const report={engine:'Linux WebKit',physicalDevice:false,reference:'716bc0c1309ef7d0392e5183d32b6b8a0151c5ad',views:[]};let failure;
 const browser=await webkit.launch({headless:true,env:{...process.env,LIBGL_ALWAYS_SOFTWARE:'1'}});
@@ -22,6 +23,11 @@ try{
    for(let i=0;i<png.data.length;i+=64){const v=(png.data[i]+png.data[i+1]+png.data[i+2])/3;sum+=v;n++;min=Math.min(min,v);max=Math.max(max,v);}
    assert.ok(max-min>90&&sum/n>8);report.views.push({version,label,mean:sum/n,...state});
   };
+  if(parkOnly){
+   const tree=await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__,t=a.scene.getObjectByName('Harbour Park cherry blossom');const p=t.getWorldPosition(t.position.clone());a.teleport(p.x-2.3,p.z);return p.toArray();});
+   await capture('park-relative-day',720,[tree[0]+6,tree[1]+2.3,tree[2]+8.8],[tree[0]-1,tree[1]+1.2,tree[2]-1.2]);
+   assert.deepEqual(errors,[]);await context.close();continue;
+  }
   await capture('park-day',720,[18,2.3,-21],[11,1.2,-31]);
   await page.setViewportSize({width:844,height:390});await page.waitForFunction(()=>{const c=document.querySelector('#game');return c.width>c.height;});
   await capture('street-day',720,[9,2.1,-16],[-12,3.8,-27.3]);
@@ -41,5 +47,5 @@ try{
   assert.deepEqual(errors,[]);await context.close();
  }
 }catch(error){failure=error;report.failure=error.stack;}
-finally{await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2)+'\n');await browser.close();}
+finally{await writeFile(resolve(out,parkOnly?'foliage-report.json':'report.json'),JSON.stringify(report,null,2)+'\n');await browser.close();}
 if(failure)throw failure;

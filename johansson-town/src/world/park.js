@@ -106,7 +106,9 @@ export function buildPark(world,options={}){
  pondBench.userData.seat={position:[second.x,0,second.z+.08],stand:[second.stand[0],0,second.stand[1]],surfaceY:seatY,eyeY:1.21,yaw:second.yaw,pitch:0};
  const [tx,tz]=HARBOUR_CHERRY,treeMaterial=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.85});
  const trees={blossom:new THREE.Mesh(broadleafGeometry({greens:BLOSSOM,variant:2}),treeMaterial),leaf:new THREE.Mesh(broadleafGeometry({greens:LEAF,variant:2}),treeMaterial)};
- for(const [key,tree] of Object.entries(trees)){tree.name='Harbour Park cherry '+key;tree.position.set(tx,0,tz);tree.scale.set(6.4,6.2,6.4);tree.rotation.y=.6;tree.castShadow=shadows;tree.receiveShadow=true;group.add(tree);}
+ // A coarse phone shadow atlas projects contour stripes across the smooth crown.
+ // Keep its cel ramp and its ground shadow, without shadowing the crown against itself.
+ for(const [key,tree] of Object.entries(trees)){tree.name='Harbour Park cherry '+key;tree.position.set(tx,0,tz);tree.scale.set(6.4,6.2,6.4);tree.rotation.y=.6;tree.castShadow=shadows;tree.receiveShadow=!options.mobile;group.add(tree);}
  world.colliders.push({id:'harbour-cherry',x:tx,z:tz,w:.48,d:.48,height:6.2,park:true});
  const dress=minutes=>{const bloom=townCalendarAt(minutes).date.getMonth()<=1;trees.blossom.visible=bloom;trees.leaf.visible=!bloom;};dress(0);
  for(const [x,z] of LAMP_POSITIONS){kit.cyl(.07,.1,.16,x,.08,z,0x8a8979,{segments:8});kit.cyl(.04,.05,2.55,x,1.4,z,0x35584c,{segments:8});kit.sphere(.16,x,2.77,z,0xfff4dc,{finish:'lamp'});world.colliders.push({id:'park-lamp',x,z,w:.2,d:.2,height:2.93,park:true});}
