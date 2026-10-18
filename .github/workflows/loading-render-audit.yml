@@ -24,7 +24,7 @@ jobs:
           cache: npm
           cache-dependency-path: johansson-town/package-lock.json
       - run: npm ci
-      - run: node --test tests/runtime-package.test.mjs tests/loading-progress.test.mjs tests/startup-recovery.test.mjs tests/body-collision.test.mjs tests/graphics-lifecycle.test.mjs tests/title-preview-save.test.mjs tests/render-stability.test.mjs tests/cel-look.test.mjs
+      - run: node --test tests/loading-progress.test.mjs tests/startup-recovery.test.mjs tests/body-collision.test.mjs tests/graphics-lifecycle.test.mjs tests/title-preview-save.test.mjs tests/render-stability.test.mjs tests/cel-look.test.mjs
       - run: npm run build:runtime
       - run: node --test tests/runtime-package.test.mjs
       - run: npx playwright install --with-deps webkit
