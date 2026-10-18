@@ -36,7 +36,7 @@ function initialise() {
   const identityBadge=document.createElement('div');identityBadge.id='desktopIdentity';identityBadge.hidden=true;document.body.append(identityBadge);
   const playing = () => !!document.getElementById('start')?.classList.contains('hidden');
   const note = text => {status.textContent = text;};
-  let page = 'pause', focusBefore, rawHeld=[], held = [], nextRepeat = 0, lastDirection = '', capture = null, updateAction = 'check', updateLabel = 'Check for updates', updateBusy = false, wasPlaying = false, lastPad = '', lostPad = false;
+  let page = 'pause', focusBefore, rawHeld=[], held = [], nextRepeat = 0, lastDirection = '', capture = null, updateAction = 'check', updateLabel = 'Check for updates', updateBusy = false, wasPlaying = false, lastPad = '', lastPadKey = '', lostPad = false;
   const labels = ['Interact / confirm', 'Back / stand up', 'Use held drink', 'Bag', 'Run', 'Jump', 'Inspect zoom out', 'Look closely / zoom', 'Town book', 'Pause menu', 'Hide HUD', 'Centre view', 'Pocket camera', 'Unused', 'Previous action', 'Next action'];
   const escape = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   const button = (action, text, description = '') => `<button data-action="${action}" data-description="${escape(description)}"><span class="console-tile-icon">${icon(action)}</span><span class="console-button-label">${text}</span></button>`;
@@ -88,7 +88,7 @@ function initialise() {
       const world = window.johanssonLinuxWorld;
       content.innerHTML = `<div class="console-page"><p class="console-intro">Choose whose day to follow. Everyone has a home to return to.</p><div class="console-roster">${world ? world.roster.map(person => `<button data-person="${encodeURIComponent(person.name)}" aria-pressed="${person.name===world.active}" ${world.busy ? 'disabled' : ''}>${residentPortrait(person.name)}<span class="console-resident-name">${escape(person.name)}</span>${person.name === world.active ? '<span class="console-playing">Playing</span>' : ''}<small>${escape(person.name==='Johansson'?'Chief engineer':person.role.split(';')[0])}</small><small>${icon("home")}${escape(person.home.address)}</small></button>`).join('') : '<p>The island is still loading. Come back in a moment.</p>'}</div></div>`;
     } else if (name === 'help') {
-      content.innerHTML = `<div class="console-page"><p class="console-intro">Walk down to the harbour, stop by a shop, or say hello to a neighbour. Follow your curiosity.</p>${controlDiagram()}<div class="console-guide"><article>${icon("move")}<span class="stick-symbol">L</span><h2>Find your feet</h2><p>Left stick to walk. Hold <kbd data-glyph="4">R2</kbd> to run. <kbd data-glyph="5">X</kbd> jumps.</p></article><article>${icon("look")}<span class="stick-symbol">R</span><h2>Take a look</h2><p>Right stick turns the camera. Click <kbd data-glyph="11">R3</kbd> to level it. Hold <kbd data-glyph="7">L2</kbd> to look closely.</p></article><article>${icon("talk")}<span class="stick-symbol" data-glyph="0">A</span><h2>See what happens</h2><p>Walk up to a person, door or object. Press <kbd data-glyph="0">A</kbd> when its prompt appears.</p></article></div><div class="console-help-row"><p><kbd data-glyph="3">Y</kbd> Inventory · <kbd data-glyph="8">▣</kbd> Town book · <kbd data-glyph="12">↑</kbd> Pocket camera · <kbd data-glyph="10">↓</kbd> Hide HUD</p><p>In menus: D-pad or left stick chooses, <kbd data-glyph="0">A</kbd> selects, <kbd data-glyph="1">B</kbd> goes back. <kbd data-glyph="9">☰</kbd> pauses and resumes. The default on Steam Deck is the ☰ Menu button near ABXY.</p></div><div class="console-actions">${button('controls', 'Customise controls')}${button('resume', 'Let’s explore', 'Settings are always a Menu press away')}</div></div>`;
+      content.innerHTML = `<div class="console-page"><p class="console-intro">Walk down to the harbour, stop by a shop, or say hello to a neighbour. Follow your curiosity.</p>${controlDiagram()}<div class="console-guide"><article>${icon("move")}<span class="stick-symbol">L</span><h2>Find your feet</h2><p>Left stick to walk. Hold <kbd data-glyph="4">R2</kbd> to run. <kbd data-glyph="5">X</kbd> jumps.</p></article><article>${icon("look")}<span class="stick-symbol">R</span><h2>Take a look</h2><p>Right stick turns the camera. Click <kbd data-glyph="11">R3</kbd> to level it. Hold <kbd data-glyph="7">L2</kbd> to look closely.</p></article><article>${icon("talk")}<span class="stick-symbol" data-glyph="0">A</span><h2>See what happens</h2><p>Walk up to a person, door or object. Press <kbd data-glyph="0">A</kbd> when its prompt appears.</p></article></div><div class="console-help-row"><p><kbd data-glyph="3">Y</kbd> Bag · <kbd data-glyph="8">▣</kbd> Town book · <kbd data-glyph="12">↑</kbd> Pocket camera · <kbd data-glyph="10">↓</kbd> Hide HUD</p><p>In menus: D-pad or left stick chooses, <kbd data-glyph="0">A</kbd> selects, <kbd data-glyph="1">B</kbd> goes back. <kbd data-glyph="9">☰</kbd> pauses and resumes. The default on Steam Deck is the ☰ Menu button near ABXY.</p></div><div class="console-actions">${button('controls', 'Customise controls')}${button('resume', 'Let’s explore', 'Settings are always a Menu press away')}</div></div>`;
     } else if (name === 'controls') {
       const pads = Array.from(navigator.getGamepads?.() || []).filter(p => p?.connected);
       const active = input.read(pads).pad;
@@ -195,18 +195,43 @@ function initialise() {
   window.addEventListener('johansson-offline-link', () => {openMenu(); note('That link needs the internet. The installed island is available offline.');});
   window.addEventListener('johansson-save-failed', () => {openMenu(); note('Could not save to disk. Try Save progress again before quitting.');});
   window.addEventListener('blur', () => {held = []; input.suspend(); if (playing()) openMenu();});
+  function controllerLost() {
+    input.suspend(); held=[]; rawHeld=[]; nextRepeat=0; lastDirection='';
+    if (playing() && !lostPad) {
+      lostPad=true; openMenu(true, 'controls');
+      note('Controller disconnected. Reconnect it, or use the keyboard.');
+    }
+  }
+  // Native hot-plug events pause immediately, including between slow rendered
+  // frames. Polling below also catches Steam Input/device changes without events.
+  window.addEventListener('gamepaddisconnected', event => {
+    if (lastPadKey === event.gamepad.index + ':' + event.gamepad.id) {
+      controllerLost(); lastPadKey='';
+    }
+  });
   function poll(now) {
     let pads = []; try {pads = navigator.getGamepads?.() || [];} catch {}
     const frame = input.read(pads, camera.deadzone), buttons = frame.held, edge = i => buttons[i] && !held[i];
     const raw=Array.from(frame.pad?.buttons||[],b=>b.pressed||b.value>.55),rawEdge=i=>raw[i]&&!rawHeld[i];
+    const key=frame.connected ? frame.pad.index+':'+frame.pad.id : '';
+    if (key !== lastPadKey) {
+      if (lastPadKey) controllerLost();
+      lastPadKey=key; input.suspend();
+      // A held confirm, back or Menu on the returning/replacement controller
+      // must be released before it can act. Reconnection never resumes play.
+      held=buttons; rawHeld=raw; nextRepeat=0; lastDirection='';
+      if (frame.connected && lostPad) {
+        note('Controller connected. Release held buttons, then choose when to resume.');
+        lostPad=false;
+      }
+    }
     detectedId=frame.pad?.id||'';const nextFamily=controllerFamily(detectedId,profile.glyphs);
     if(nextFamily!==promptFamily){promptFamily=nextFamily;document.documentElement.dataset.controllerFamily=nextFamily;syncGlyphs();}
 
     const isPlaying = playing();
     if (isPlaying && !wasPlaying && !localStorage.getItem('johansson-desktop-introduction-seen')) openMenu(true, 'help');
     wasPlaying = isPlaying;
-    if (!frame.connected && lastPad && isPlaying && !lostPad) {lostPad = true; openMenu(true, 'controls'); note('Controller disconnected. Reconnect it, or use the keyboard.');}
-    if (frame.connected) {lastPad = frame.pad.id; lostPad = false;}
+    if (frame.connected) lastPad = frame.pad.id;
     const device = document.getElementById('desktopControllerStatus');
     if (device) device.textContent = frame.connected ? frame.pad.id + (frame.pad.mapping === 'standard' ? ' · Connected' : ' · Custom mapping: check the live sticks below') : 'No controller detected. Press a button to wake it. Keyboard and mouse remain available.';
     const activity=document.getElementById('activity'),activityOpen=activity&&!activity.classList.contains('hidden'),bookOpen=!document.getElementById('directory').classList.contains('hidden');
@@ -263,7 +288,7 @@ function initialise() {
   }
   // The game already exposes its audit state. This summary also covers the
   // desktop menus for automated controller and layout acceptance.
-  const snapshot = () => ({playing: playing(), menu: !panel.hidden, page, controller: lastPad || null, person: window.johanssonLinuxWorld?.active || null, inBed: !!window.johanssonLinuxWorld?.inBed, capture: capture?.index ?? null, hudHidden: document.documentElement.classList.contains('desktop-hide-hud')});
+  const snapshot = () => ({playing: playing(), menu: !panel.hidden, page, controller: lastPad || null, connected: !!lastPadKey, person: window.johanssonLinuxWorld?.active || null, inBed: !!window.johanssonLinuxWorld?.inBed, capture: capture?.index ?? null, hudHidden: document.documentElement.classList.contains('desktop-hide-hud')});
   window.johanssonDesktopUI = {snapshot,prompt:action=>buttonPrompt(action,profile,detectedId),refreshPrompts:syncGlyphs,navigate:moveMenuFocus, open: name => openMenu(true, name || 'pause')};
   const gameText = window.render_game_to_text;
   window.render_game_to_text = () => JSON.stringify({coordinates: 'Game world: x east, y up, z south; sticks: x right, y down', desktop: snapshot(), game: gameText?.() || null});

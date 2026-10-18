@@ -668,7 +668,7 @@ export function buildFerryModel({shadows=false}={}){
    pieces.push(decal([2,2,1,2],.45,.45,[side*(hullX(.2,Z(29))+.014),.2,Z(29)],rot));
    pieces.push(decal([3,2,1,1],.8,.4,[side*(dw+.03),PASS+2.2,DH0+1.9],rot));
    // The wheelhouse's wing doors: 操舵室 over each.
-   pieces.push(decal([3,1,1,.3],.9,.28,[side*(3+.045),BRIDGE+2.1,Z(20.0)],rot));
+   pieces.push(decal([3,1+88/128,1,34/128],.9,.28,[side*(3+.045),BRIDGE+2.1,Z(20.0)],rot));
    pieces.push(decal([1,1,2,1],1.6,.4,[side*(3+.09),BRIDGE+2.25,DH0+3.2],rot));                      // her name board on each side of the bridge house
    pieces.push(decal([0,1,1,1],.7,.7,[side*3.35+side*.46,Y(H.funnelTop)-1.3,FZ],rot));             // the anchor on each funnel
   }

@@ -2092,7 +2092,7 @@ function updateController(dt){
  }
  if(f.pressed[12]){raisePocket();return;}
  if(f.pressed[8]||f.pressed[9]&&!window.johanssonDesktop){toggleDir(true);return;}
- if(f.pressed[3]){activities.inventory();return;}
+ if(f.pressed[3]){if(window.johanssonDesktop)activities.bag();else activities.inventory();return;}
  if(f.pressed[11])centreCamera();
  if(f.pressed[0]){if(linuxLife?.wake())return;interaction();updateContextControls();if(!contextRail.activatePrimary())doInteract();return;}
  if(f.pressed[2])drinkNow();

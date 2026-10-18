@@ -2,6 +2,7 @@
 import os,sys,io,json,tarfile,hashlib,tempfile,urllib.request
 from pathlib import Path
 mode=sys.argv[1]
+version=json.loads(Path(__file__).resolve().parents[1].joinpath('package.json').read_text())['version']
 source=Path(__file__).resolve().parents[1].joinpath('install.sh').read_text().split("python3 - <<'PY'\n",1)[1].rsplit('\nPY',1)[0]
 with tempfile.TemporaryDirectory() as folder:
  home=Path(folder);os.environ['HOME']=folder;os.environ['XDG_DATA_HOME']=str(home/'data');os.environ['TERM']='xterm-256color';os.environ['NO_COLOR']='1'
@@ -13,8 +14,8 @@ with tempfile.TemporaryDirectory() as folder:
   for name,data in [('JohanssonWorld',b'#!/bin/sh\nexit 0\n'),('padding',os.urandom(4096)),('resources/app/site/desktop/icons/johansson-world-512.png',b'png-fixture')]:
    info=tarfile.TarInfo('johansson-world/'+name);info.size=len(data);info.mode=0o755 if name=='JohanssonWorld' else 0o644;t.addfile(info,io.BytesIO(data))
  archive=buffer.getvalue();sha=hashlib.sha256(archive).hexdigest()
- url='https://github.com/nj22az/nj22az.github.io/releases/download/johansson-world-linux-v0.2.5/'
- manifest={'version':'0.2.5','archiveUrl':url+'johansson-world-linux-x64.tar.gz','bytes':len(archive),'sha256':'0'*64 if mode=='bad' else sha}
+ url='https://github.com/nj22az/nj22az.github.io/releases/download/johansson-world-linux-v'+version+'/'
+ manifest={'version':version,'archiveUrl':url+'johansson-world-linux-x64.tar.gz','bytes':len(archive),'sha256':'0'*64 if mode=='bad' else sha}
  def fetch(request,timeout=0):
   assert request.full_url in [url+'latest-linux.json',manifest['archiveUrl']]
   return io.BytesIO(json.dumps(manifest).encode() if request.full_url.endswith('.json') else archive)
@@ -28,10 +29,10 @@ with tempfile.TemporaryDirectory() as folder:
  text=output.getvalue()
  assert save.read_text()=='keep-my-island'
  if mode=='bad':
-  assert failed and (base/'current').resolve()==old.resolve() and not (base/'versions/v0.2.5').exists()
+  assert failed and (base/'current').resolve()==old.resolve() and not (base/('versions/v'+version)).exists()
   assert '\x1b[?25h' in text and 'Ding!' not in text
  else:
-  assert not failed and (base/'current').resolve()==(base/'versions/v0.2.5').resolve()
+  assert not failed and (base/'current').resolve()==(base/('versions/v'+version)).resolve()
   assert (base/'previous').resolve()==old.resolve()
   assert os.access(base/'current/JohanssonWorld',os.X_OK)
   assert 'Icon=' in (home/'data/applications/johansson-world.desktop').read_text()

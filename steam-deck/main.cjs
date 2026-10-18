@@ -6,6 +6,8 @@ const {writeSnapshot,readSnapshot}=require('./storage.cjs');
 const {createUpdater}=require('./updater.cjs');
 const {syncDesktopIcon}=require('./desktop-integration.cjs');
 app.setName('Johansson World');
+// Acceptance must not load or overwrite a player's saved preferences/progress.
+if(process.argv.includes('--smoke'))app.setPath('userData',fs.mkdtempSync(path.join(app.getPath('temp'),'johansson-world-smoke-')));
 protocol.registerSchemesAsPrivileged([{scheme:'johansson',privileges:{standard:true,secure:true,supportFetchAPI:true,stream:true,corsEnabled:true}}]);
 let window,readyToClose=false,updater;
 const root=path.join(__dirname,'site');
@@ -34,7 +36,7 @@ app.whenReady().then(async()=>{
  ipcMain.on('read-backup',event=>{event.returnValue=readSnapshot(saveDir());});
  ipcMain.handle('save-backup',(_event,data)=>writeSnapshot(saveDir(),data));
  ipcMain.handle('performance-info',()=>app.getAppMetrics().map(p=>({type:p.type,workingSetMiB:Math.round(p.memory.workingSetSize/1024)})));
- ipcMain.handle('app-info',()=>({version:app.getVersion(),savePath:saveDir(),offline:true}));
+ ipcMain.on('app-info',event=>{event.returnValue={version:app.getVersion(),offline:true};});
  ipcMain.handle('check-update',()=>updater.check());
  ipcMain.handle('install-update',()=>updater.install());
  ipcMain.handle('restart-update',()=>{const executable=updater.readyExecutable();if(!executable)throw Error('No verified update is ready');readyToClose=true;app.relaunch({execPath:executable,args:[]});app.exit(0);});
@@ -49,8 +51,9 @@ app.whenReady().then(async()=>{
   // CI exercises the same local protocol and starts the real island.
   window.webContents.on('console-message',details=>console.log(details.message));
   setTimeout(async()=>{try{
-   const result=await window.webContents.executeJavaScript('(async()=>{await window.__JOHANSSON_PREVIEW_PROMISE__;document.getElementById("enter").click();await new Promise(r=>setTimeout(r,12000));return {running:!!window.__JOHANSSON_RUNNING__,stability:window.__JOHANSSON_STABILITY__,version:window.__JOHANSSON_RUNTIME_VERSION__};})()');
+   const result=await window.webContents.executeJavaScript('(async()=>{await window.__JOHANSSON_PREVIEW_PROMISE__;document.getElementById("enter").click();await new Promise(r=>setTimeout(r,12000));return {running:!!window.__JOHANSSON_RUNNING__,stability:window.__JOHANSSON_STABILITY__,version:window.__JOHANSSON_RUNTIME_VERSION__,desktopVersion:window.johanssonDesktop.version};})()');
    console.log('WORLD_SMOKE',JSON.stringify(result));
+   if(result.desktopVersion!==app.getVersion())throw Error('Displayed version differs from running application');
    if(!result.running||!result.stability?.ok)throw Error('World startup checks failed: '+JSON.stringify(result.stability));
    await window.webContents.executeJavaScript('document.querySelector("#desktopMenu:not([hidden]) [data-action=resume]")?.click();window.johanssonLinuxWorld?.wake();if(!document.getElementById("exitRoomButton").classList.contains("hidden"))document.getElementById("exitRoomButton").click();window.__JOHANSSON_AUDIT__.teleport(-7,-15,0,0);');
    if(process.env.WORLD_SCREENSHOT)fs.writeFileSync(process.env.WORLD_SCREENSHOT.replace('.png','-island.png'),(await window.webContents.capturePage()).toPNG());
