@@ -36,8 +36,9 @@ export function boxThroughWindow(bounds,planes,frustum){
 export function createShopStreetView(){
  const exteriorCamera=new THREE.PerspectiveCamera(),frustum=new THREE.Frustum(),matrix=new THREE.Matrix4();
  const glazing=new THREE.Box3(new THREE.Vector3(-6.65,.05,6.25),new THREE.Vector3(6.65,3.1,6.35));
- let cachedTown=null,entries=[];const batches=new WeakMap();
- const stats={total:0,visible:0,culled:0,passes:0,batchTriangles:0,submittedBatchTriangles:0};
+ let cachedTown=null,entries=[];const batches=new Map();
+ const stats={total:0,visible:0,culled:0,passes:0,batchTriangles:0,submittedBatchTriangles:0,cacheBytes:0};
+ function dispose(){for(const batch of batches.values())batch?.dispose();batches.clear();cachedTown=null;entries=[];stats.cacheBytes=0;}
  function cache(town){
   town.updateWorldMatrix(true,true);entries=[];
   town.traverse(o=>{
@@ -50,7 +51,7 @@ export function createShopStreetView(){
    entries.push({object:o,bounds,dynamic});
   });cachedTown=town;stats.total=entries.length;
  }
- return {stats,invalidate(){cachedTown=null;},render({renderer,scene,camera,town,room,frontage}){
+ return {stats,dispose,invalidate(){dispose();},render({renderer,scene,camera,town,room,frontage}){
   const frontZ=frontage?.interiorZ??6.3,S=frontage?.span||SAKURA_SPAN;glazing.min.set(S.minX,S.minY,frontZ-.05);glazing.max.set(S.maxX,S.maxY,frontZ+.05);
   if(frontage?.interiorOrigin){const centre=new THREE.Vector3(...frontage.interiorOrigin),half=new THREE.Vector3((S.maxX-S.minX)/2,(S.maxY-S.minY)/2,.05);if(frontage.interiorYaw)half.set(.05,half.y,(S.maxX-S.minX)/2);centre.y+=(S.minY+S.maxY)/2;glazing.set(centre.clone().sub(half),centre.clone().add(half));}
   camera.updateMatrixWorld(true);frustum.setFromProjectionMatrix(matrix.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse));
@@ -81,7 +82,7 @@ export function createShopStreetView(){
     // Partition only geometry which can actually appear through this opening.
     // Preparing every hidden building at the first doorway spikes CPU memory.
     if(visible&&!entry.dynamic){
-     if(!batches.has(o))batches.set(o,createWindowBatch(o));
+     if(!batches.has(o)){const batch=createWindowBatch(o);batches.set(o,batch);stats.cacheBytes+=batch?.bytes||0;}
      const batch=batches.get(o);
      if(batch){
       stats.batchTriangles+=batch.totalTriangles;

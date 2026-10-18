@@ -116,14 +116,16 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
  const backRooms=on=>group.traverse(o=>{if(BEHIND.has(o.name))o.visible=on;});
  /**
   * From the street the shop floor is a stand-in: the same shelves merged into a few
-  * dozen meshes instead of about five hundred. It is rebuilt when the stock changes or
+  * dozen meshes instead of about five hundred. Shelf products keep their existing
+  * instanced buffers: expanding them would duplicate hundreds of thousands of
+  * triangles just for a window. It is rebuilt when the stock changes or
   * a new day restocks the racks, and the real room comes back the moment you go in.
   */
  let standIn=null,standKey='';
  const windowView=on=>{
   if(on){
    const key=JSON.stringify(state.sakura.stock)+'/'+Math.floor(getMinutes()/1440);
-   if(key!==standKey||!standIn){standIn?.dispose();standIn=createStandIn(group,{name:'Sakura window stand-in',keepLive:o=>!!(o.userData?.name||o.userData?.character)});group.add(standIn.group);standKey=key;}
+   if(key!==standKey||!standIn){standIn?.dispose();standIn=createStandIn(group,{name:'Sakura window stand-in',keepInstances:true,keepLive:o=>!!(o.userData?.name||o.userData?.character)});group.add(standIn.group);standKey=key;}
    standIn.show(true);
   }else standIn?.show(false);
  };

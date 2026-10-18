@@ -44,7 +44,7 @@ export function batchStaticProps(root,cellSize=24){
  * it is for a view through glass, not for a room you stand in.
  */
 const MERGEABLE=new Set(['MeshStandardMaterial','MeshBasicMaterial','MeshToonMaterial','MeshPhysicalMaterial','MeshLambertMaterial']);
-export function createStandIn(root,{name='stand-in',keepLive=()=>false}={}){
+export function createStandIn(root,{name='stand-in',keepLive=()=>false,keepInstances=false}={}){
  root.updateMatrixWorld(true);
  const inverse=new THREE.Matrix4().copy(root.matrixWorld).invert(),buckets=new Map(),sources=[];
  const visible=o=>{for(let p=o;p&&p!==root;p=p.parent)if(!p.visible)return false;return true;};
@@ -55,7 +55,7 @@ export function createStandIn(root,{name='stand-in',keepLive=()=>false}={}){
   // Live occupants are drawn alongside the merged fittings, never flattened or hidden.
   for(let p=o;p&&p!==root;p=p.parent)if(keepLive(p))return;
   if(o.isMesh&&visible(o)&&o.layers.isEnabled(0)&&moves(o)){moving.push(o);return;}
-  if(!o.isMesh||o.isSkinnedMesh||Array.isArray(o.material)||!MERGEABLE.has(o.material.type)||!visible(o)||!o.layers.isEnabled(0))return;
+  if(!o.isMesh||o.isSkinnedMesh||keepInstances&&o.isInstancedMesh||Array.isArray(o.material)||!MERGEABLE.has(o.material.type)||!visible(o)||!o.layers.isEnabled(0))return;
   const m=o.material,r=v=>Math.round((v??0)*20)/20;
   const key=[m.type,m.map?.uuid,m.alphaMap?.uuid,m.transparent,r(m.opacity),m.side,m.alphaTest,m.depthWrite,m.depthTest,m.toneMapped,m.blending,r(m.roughness),r(m.metalness),m.fog,m.polygonOffset&&m.polygonOffsetFactor,o.renderOrder].join('/');
   if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push(o);sources.push(o);
