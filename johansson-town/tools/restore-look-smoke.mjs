@@ -13,6 +13,7 @@ try{
   const page=await context.newPage();page.setDefaultTimeout(180000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
   const enter=async()=>{await page.locator('#enter').click();await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_AUDIT__);await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.frozen=true;a.renderFrozen=true;a.teleport(12,-29.8);});};
   await page.goto(`http://127.0.0.1:${port}/johansson-town/?audit`,{waitUntil:'domcontentloaded'});await enter();
+  if(version==='restored')await page.waitForFunction(()=>['park-onsen','harbour-park-bench','sakura-bench'].every(id=>window.__JOHANSSON_STREAMING__.loaded.includes(id)));
   const capture=async(label,minutes,pos,at)=>{
    const state=await page.evaluate(({minutes,pos,at})=>{const a=window.__JOHANSSON_AUDIT__,look=window.__JOHANSSON_LOOK__;a.setTime(minutes);a.camera={pos,at};a.renderer.info.reset();a.render();return {ink:look.ink,effects:look.state,buffer:[a.renderer.domElement.width,a.renderer.domElement.height],safe:window.__JOHANSSON_SAFE_GRAPHICS__,gpuError:a.renderer.getContext().getError()};},{minutes,pos,at});
    assert.equal(state.ink,true);assert.equal(state.gpuError,0);
