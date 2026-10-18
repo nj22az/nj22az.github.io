@@ -1,15 +1,16 @@
 # Johansson World reference enhancement plan
 
 Updated: 18 October 2026.
-Status: planning complete; no runtime changes made by this plan.
+Status: T01 source/reference audit complete; T02 awaits Sakurai's replacement dwelling. No runtime changes made by this programme.
 Execution rule: one active task at a time. Complete and verify it before starting the next task.
 
 ## Start here for Claude or another developer
 
 Read repository AGENTS.md and CLAUDE.md, johansson-town/AGENTS.md and johansson-town/CLAUDE.md, then this plan and docs/MINATO-HOMES-PLAN.md. Owner decisions in those instructions govern household assignments and ship roles. This plan adds an interior/reference work queue; it does not replace the housing programme.
 
-Current next task: **T01 — reconcile the reference shortlist with the live code**.
-No implementation task is marked complete. The reviewed repository tree was main `9b3db1ffe03056d440a6696ff57d9a499bddda11`; refresh main and inspect intervening work before editing. File paths below were verified to exist, but their implementations have not been audited in this reference review.
+T01 is complete: see [REFERENCE-ENHANCEMENT-AUDIT.md](REFERENCE-ENHANCEMENT-AUDIT.md).
+Current next task: **T02 prerequisite A — complete Grandmother Sakurai's replacement dwelling before the office conversion**. Confirm Flat 4 access suitability or the documented Flat 2/4 exchange first.
+The audit inspected main `c5e36e578a3aa7ba6dea6b07a9cb89284edbfad9`. Source checks passed; rendered and physical-device acceptance remain unverified. Refresh main before implementation.
 
 Only work on the first incomplete eligible task. If it is blocked, record the concrete dependency and resolve it within the existing stability/housing programme. Do not silently start another feature. Break each multi-room queue item into one named room or household per change.
 
@@ -84,9 +85,11 @@ Record actual workbook tab, cell, image URL and variant when a specific feature 
 
 ## Sequential work queue
 
-All tasks below are pending. T01 is the next task, not a completed audit.
+T01 is complete as a source/reference audit. T02–T09 remain pending; T02 first requires Sakurai's replacement dwelling.
 
 ### T01 Reconcile references and current implementation
+
+Status: complete. Findings, measured code coordinates, reuse decisions, source assertions and verification limits are in [REFERENCE-ENHANCEMENT-AUDIT.md](REFERENCE-ENHANCEMENT-AUDIT.md).
 
 Scope: read-only source/runtime audit plus a small documentation shortlist. Do not alter rooms yet.
 
@@ -112,6 +115,8 @@ Deliverable: docs/REFERENCE-ENHANCEMENT-AUDIT.md, containing current commit, exa
 Done when: each pilot requirement has an identified code owner and reuse/new-work decision; no duplicate framework is proposed; blockers and unavailable visual checks are explicit.
 
 ### T02 Sakura upstairs office and kitchenette
+
+Status: pending. First execute prerequisite A as one household task: inspect the proposed flat's access, complete its usable room and sleeping place, then migrate Sakurai's occupancy, routine, directory and save references. If Flat 2/4 exchange is needed, complete both affected homes together. The current registry still assigns her to market; do not convert upstairs first.
 
 Prerequisites: T01 complete, stable enough for comparison, and Sakurai's replacement home functional under MINATO-HOMES-PLAN.md. Coordinate with any existing Sakura work rather than building a second conversion.
 
@@ -181,19 +186,21 @@ A successful build does not establish that a room is visually correct or that ph
 
 Update this section after every completed task or interrupted session. Keep exactly one active task.
 
-- Last completed task: reference research and this plan only.
+- Last completed task: T01 source/reference audit.
 - Active implementation task: none.
-- Next task: T01.
+- Next task: T02 prerequisite A — Sakurai's replacement dwelling.
 - Runtime changes in this programme: none.
-- Branch / starting commit: record at T01 start; research tree SHA above.
-- Changed files / owning functions: this planning document only.
-- Checks actually run: workbook XML/formula inspection; 12 linked interior images visually reviewed; repository instructions, housing plan, package scripts and source paths inspected.
-- Checks not run: game build, runtime tests, room walkthrough, performance measurement or physical iPhone Safari.
-- Blockers: T01 must establish current stability and housing dependencies; do not treat earlier status reports as current test evidence.
-- Exact next action: refresh main, read the listed instructions, inspect existing Sakura upstairs ownership and household occupancy, then write the T01 audit without changing runtime code.
+- Audited starting commit: main c5e36e578a3aa7ba6dea6b07a9cb89284edbfad9.
+- Audit commit: 8f57583c316f80de6f0af2fdbb6450f451dcc0f1.
+- Changed files: docs/REFERENCE-ENHANCEMENT-AUDIT.md and this plan.
+- Checks actually run: source-module Node assertions for cast uniqueness, household counts, Sakura occupancy, Flat 4 vacancy and iPhone graphics policy; XLSX formula/row inspection; source ownership and current PR/merge review.
+- Checks not run: production build, full runtime tests, game walkthrough, save migration, rendered/performance baseline or physical iPhone Safari.
+- Blocker: Sakurai remains assigned to market; the proposed replacement flats are exterior landmarks without promised authored interiors. Complete the chosen accessible dwelling before the office.
+- Exact next action: refresh main, read the audit and housing plan, inspect KITAHAMA_FLATS stair/door access and room dispatch, record the unit decision, then implement only that prerequisite household move.
+- Rollback: documentation only; no game state or runtime geometry changed.
 
 For later sessions append: task ID and scope; commit/PR; changed files; decisions and reasons; checks and results; screenshots when available; remaining defects; exact next action; rollback commit. Never mark a task complete while its required checks remain unresolved.
 
 ## Continuation instruction
 
-"Read johansson-town/docs/REFERENCE-ENHANCEMENT-PLAN.md and the applicable AGENTS.md/CLAUDE.md files. Refresh the recorded state against current main. Continue only the first incomplete eligible task, starting with T01. Preserve the Minato housing decisions, 1997 setting, save compatibility and Safari safeguards. Update the handover with real evidence before starting another task."
+"Read johansson-town/docs/REFERENCE-ENHANCEMENT-PLAN.md and the applicable AGENTS.md/CLAUDE.md files. Refresh the recorded state against current main. Continue only the first incomplete eligible task: T02 prerequisite A, as recorded in the audit and handover. Preserve the Minato housing decisions, 1997 setting, save compatibility and Safari safeguards. Update the handover with real evidence before starting another task."
