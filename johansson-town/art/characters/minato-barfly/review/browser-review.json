@@ -1,0 +1,78 @@
+[
+  {
+    "width": 1280,
+    "baselineCalls": 10,
+    "candidateCalls": 23,
+    "extraDrawCalls": 13,
+    "poses": [
+      {
+        "minutes": 1100,
+        "socialPose": "Drink",
+        "heldItem": "beer",
+        "calls": 23
+      },
+      {
+        "minutes": 180,
+        "socialPose": "Sleep",
+        "heldItem": null,
+        "calls": 23
+      },
+      {
+        "minutes": 599,
+        "socialPose": "Sleep",
+        "heldItem": null,
+        "calls": 23
+      },
+      {
+        "minutes": 600,
+        "socialPose": "Drink",
+        "heldItem": "beer",
+        "calls": 23
+      }
+    ],
+    "glbLoaded": true,
+    "baselineRenderP95Ms": 0.3999999985098839,
+    "devicePixelRatio": 1,
+    "renderAndAnimationP50Ms": 0.29999999701976776,
+    "renderAndAnimationP95Ms": 3.2000000029802322,
+    "renderer": "WebKit WebGL"
+  },
+  {
+    "width": 390,
+    "baselineCalls": 9,
+    "candidateCalls": 22,
+    "extraDrawCalls": 13,
+    "poses": [
+      {
+        "minutes": 1100,
+        "socialPose": "Drink",
+        "heldItem": "beer",
+        "calls": 22
+      },
+      {
+        "minutes": 180,
+        "socialPose": "Sleep",
+        "heldItem": null,
+        "calls": 22
+      },
+      {
+        "minutes": 599,
+        "socialPose": "Sleep",
+        "heldItem": null,
+        "calls": 22
+      },
+      {
+        "minutes": 600,
+        "socialPose": "Drink",
+        "heldItem": "beer",
+        "calls": 22
+      }
+    ],
+    "glbLoaded": true,
+    "baselineRenderP95Ms": 0.5,
+    "devicePixelRatio": 2,
+    "renderAndAnimationP50Ms": 0.30000000074505806,
+    "renderAndAnimationP95Ms": 4.5,
+    "renderer": "WebKit WebGL"
+  }
+]

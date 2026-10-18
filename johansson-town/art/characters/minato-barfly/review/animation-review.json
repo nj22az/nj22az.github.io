@@ -1,0 +1,217 @@
+{
+  "samples": [
+    {
+      "clip": "Barfly_Drink_Loop",
+      "time": 0,
+      "mouthToGlassM": 0.6694583553971877,
+      "headCenterY": 1.3967499465905124,
+      "eyeMorphs": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "finite": true
+    },
+    {
+      "clip": "Barfly_Drink_Loop",
+      "time": 1.5,
+      "mouthToGlassM": 0.00946961158755286,
+      "headCenterY": 1.3967499465905124,
+      "eyeMorphs": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "finite": true
+    },
+    {
+      "clip": "Barfly_Drink_Loop",
+      "time": 2,
+      "mouthToGlassM": 0.0074797219842828175,
+      "headCenterY": 1.3967499465905124,
+      "eyeMorphs": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "finite": true
+    },
+    {
+      "clip": "Barfly_Drink_Loop",
+      "time": 2.5,
+      "mouthToGlassM": 0.0074797219842828175,
+      "headCenterY": 1.3967499465905124,
+      "eyeMorphs": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "finite": true
+    },
+    {
+      "clip": "Barfly_Drink_Loop",
+      "time": 3,
+      "mouthToGlassM": 0.15004146320708303,
+      "headCenterY": 1.3967499465905124,
+      "eyeMorphs": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "finite": true
+    },
+    {
+      "clip": "Barfly_Drink_Loop",
+      "time": 6.040666507720947,
+      "mouthToGlassM": 0.6694583553971877,
+      "headCenterY": 1.3967499465905124,
+      "eyeMorphs": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "finite": true
+    },
+    {
+      "clip": "Barfly_Drink_Loop",
+      "time": 6.051666507720947,
+      "mouthToGlassM": 0.6694583553971877,
+      "headCenterY": 1.3967499465905124,
+      "eyeMorphs": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "finite": true
+    },
+    {
+      "clip": "Barfly_Drink_Loop",
+      "time": 12.093333015441894,
+      "mouthToGlassM": 0.6694583553971877,
+      "headCenterY": 1.3967499465905124,
+      "eyeMorphs": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "finite": true
+    },
+    {
+      "clip": "Barfly_Sleep_Loop",
+      "time": 0,
+      "mouthToGlassM": 0.6547901352416918,
+      "headCenterY": 1.382808826261713,
+      "eyeMorphs": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "finite": true
+    },
+    {
+      "clip": "Barfly_Sleep_Loop",
+      "time": 1.5,
+      "mouthToGlassM": 0.6547901350804345,
+      "headCenterY": 1.3820379784093049,
+      "eyeMorphs": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "finite": true
+    },
+    {
+      "clip": "Barfly_Sleep_Loop",
+      "time": 2,
+      "mouthToGlassM": 0.6547901352960657,
+      "headCenterY": 1.3816346176566852,
+      "eyeMorphs": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "finite": true
+    },
+    {
+      "clip": "Barfly_Sleep_Loop",
+      "time": 2.5,
+      "mouthToGlassM": 0.6547901352792134,
+      "headCenterY": 1.3813098127119199,
+      "eyeMorphs": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "finite": true
+    },
+    {
+      "clip": "Barfly_Sleep_Loop",
+      "time": 3,
+      "mouthToGlassM": 0.6547901354324835,
+      "headCenterY": 1.3811634860044466,
+      "eyeMorphs": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "finite": true
+    },
+    {
+      "clip": "Barfly_Sleep_Loop",
+      "time": 6.040666507720947,
+      "mouthToGlassM": 0.6547901352494254,
+      "headCenterY": 1.382808804676529,
+      "eyeMorphs": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "finite": true
+    },
+    {
+      "clip": "Barfly_Sleep_Loop",
+      "time": 6.051666507720947,
+      "mouthToGlassM": 0.6547901352416918,
+      "headCenterY": 1.382808826261713,
+      "eyeMorphs": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "finite": true
+    },
+    {
+      "clip": "Barfly_Sleep_Loop",
+      "time": 12.093333015441894,
+      "mouthToGlassM": 0.6547901352416918,
+      "headCenterY": 1.382808826261713,
+      "eyeMorphs": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "finite": true
+    }
+  ],
+  "drinkContactPassed": true,
+  "sleepClosedThroughout": true,
+  "sleepHeadExcursionM": 0.001645340257266481,
+  "primitiveBudgetPassed": true,
+  "passed": true
+}
