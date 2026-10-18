@@ -33,6 +33,7 @@ export function createDesktopInput(getProfile) {
       move: radialStick(pad.axes[profile.moveAxes[0]], pad.axes[profile.moveAxes[1]], deadzone),
       look: radialStick(pad.axes[profile.lookAxes[0]], pad.axes[profile.lookAxes[1]], deadzone),
       held: buttons.map(b => b.pressed || b.value > .55),
+      navigation: Array.from(pad.buttons,b=>!!b.pressed||b.value>.55),
       zoom: clamp(buttons[7]?.value, 0, 1),
     };
   }

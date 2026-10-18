@@ -1,3 +1,4 @@
+import {createInputMode} from './input-mode.mjs';
 import {moveMenuFocus,menuControls} from './menu-navigation.mjs';
 import {icon, residentPortrait, controlDiagram} from './icons.mjs';
 import {createDesktopInput, profileSettings, buttonGlyph, buttonPrompt, physicalGlyph, controllerFamily} from './controller.mjs';
@@ -15,9 +16,12 @@ function initialise() {
   const panel = document.createElement('div');
   panel.id = 'desktopMenu'; panel.hidden = true; panel.role = 'dialog';
   panel.setAttribute('aria-modal', 'true'); panel.setAttribute('aria-labelledby', 'desktopHeading');
-  panel.innerHTML = `<section class="console-shell"><header class="console-header"><div><p class="console-eyebrow"><img class="console-menu-brand" src="../desktop/icons/johansson-world-64.png" alt="" width="36" height="36"> JOHANSSON WORLD <span>ISLAND GUIDE</span></p><h1 id="desktopHeading">Paused</h1></div><button data-action="resume" class="console-close"><kbd data-glyph="9">☰</kbd> Resume</button></header><nav id="desktopTabs" aria-label="Pause sections"><span><kbd data-physical="4">L1</kbd></span><button data-tab="pause">${icon("island")}<span>Island</span></button><button data-tab="people">${icon("people")}<span>People</span></button><button data-tab="settings">${icon("settings")}<span>Settings</span></button><span><kbd data-physical="5">R1</kbd></span></nav><div id="desktopContent" class="console-content"></div><div id="desktopSelection" class="console-selection" aria-live="polite"></div><footer class="console-footer"><div><p id="desktopStatus" role="status" aria-live="polite">Progress stays on this device.</p><span id="desktopScrollHint" hidden>More below · ↓</span></div><div><kbd data-glyph="0">A</kbd> Select <kbd data-glyph="1">B</kbd> Back <span id="desktopSaveHint"><kbd data-physical="2">X</kbd> Save</span></div></footer></section>`;
+  panel.innerHTML = `<section class="console-shell"><header class="console-header"><div><p class="console-eyebrow">JOHANSSON WORLD <span>ISLAND GUIDE</span></p><h1 id="desktopHeading">Paused</h1></div><button data-action="resume" class="console-close"><kbd data-glyph="9">☰</kbd> Resume</button></header><nav id="desktopTabs" aria-label="Pause sections"><span><kbd data-physical="4">L1</kbd></span><button data-tab="pause">${icon("island")}<span>Island</span></button><button data-tab="people">${icon("people")}<span>People</span></button><button data-tab="settings">${icon("settings")}<span>Settings</span></button><span><kbd data-physical="5">R1</kbd></span></nav><div id="desktopContent" class="console-content"></div><div id="desktopSelection" class="console-selection" aria-live="polite"></div><footer class="console-footer"><div><p id="desktopStatus" role="status" aria-live="polite">Progress stays on this device.</p><span id="desktopScrollHint" hidden>More below · ↓</span></div><div><kbd data-glyph="0">A</kbd> Select <kbd data-glyph="1">B</kbd> Back <span id="desktopSaveHint"><kbd data-physical="2">X</kbd> Save</span></div></footer></section>`;
   document.body.append(panel);
-  const brandIcon=document.createElement('img');brandIcon.src='../desktop/icons/johansson-world-128.png';brandIcon.alt='';brandIcon.width=80;brandIcon.height=80;brandIcon.className='console-brand-icon';document.querySelector('#titleLogo')?.prepend(brandIcon);
+  const inputMode=createInputMode(mode=>{document.documentElement.dataset.inputMode=mode;});
+  document.addEventListener('pointermove',event=>inputMode.pointer(event),true);
+  document.addEventListener('pointerdown',()=>inputMode.click(),true);
+  document.addEventListener('keydown',()=>inputMode.keyboard(),true);
   const content = panel.querySelector('#desktopContent'), heading = panel.querySelector('#desktopHeading');
   const status = panel.querySelector('#desktopStatus');
   const scrollHint = panel.querySelector('#desktopScrollHint');
@@ -37,7 +41,7 @@ function initialise() {
   const playing = () => !!document.getElementById('start')?.classList.contains('hidden');
   const note = text => {status.textContent = text;};
   let page = 'pause', focusBefore, rawHeld=[], held = [], nextRepeat = 0, lastDirection = '', capture = null, updateAction = 'check', updateLabel = 'Check for updates', updateBusy = false, wasPlaying = false, lastPad = '', lastPadKey = '', lostPad = false;
-  const labels = ['Interact / confirm', 'Back / stand up', 'Use held drink', 'Bag', 'Run', 'Jump', 'Inspect zoom out', 'Look closely / zoom', 'Town book', 'Pause menu', 'Hide HUD', 'Centre view', 'Pocket camera', 'Unused', 'Previous action', 'Next action'];
+  const labels = ['Interact / confirm', 'Back / stand / exit', 'Use held drink', 'Bag', 'Run', 'Jump', 'Inspect zoom out', 'Look closely / zoom', 'Town book', 'Pause menu', 'Hide HUD', 'Centre view', 'Pocket camera', 'Unused', 'Previous action', 'Next action'];
   const escape = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   const button = (action, text, description = '') => `<button data-action="${action}" data-description="${escape(description)}"><span class="console-tile-icon">${icon(action)}</span><span class="console-button-label">${text}</span></button>`;
   function saveSettings() {
@@ -88,12 +92,12 @@ function initialise() {
       const world = window.johanssonLinuxWorld;
       content.innerHTML = `<div class="console-page"><p class="console-intro">Choose whose day to follow. Everyone has a home to return to.</p><div class="console-roster">${world ? world.roster.map(person => `<button data-person="${encodeURIComponent(person.name)}" aria-pressed="${person.name===world.active}" ${world.busy ? 'disabled' : ''}>${residentPortrait(person.name)}<span class="console-resident-name">${escape(person.name)}</span>${person.name === world.active ? '<span class="console-playing">Playing</span>' : ''}<small>${escape(person.name==='Johansson'?'Chief engineer':person.role.split(';')[0])}</small><small>${icon("home")}${escape(person.home.address)}</small></button>`).join('') : '<p>The island is still loading. Come back in a moment.</p>'}</div></div>`;
     } else if (name === 'help') {
-      content.innerHTML = `<div class="console-page"><p class="console-intro">Walk down to the harbour, stop by a shop, or say hello to a neighbour. Follow your curiosity.</p>${controlDiagram()}<div class="console-guide"><article>${icon("move")}<span class="stick-symbol">L</span><h2>Find your feet</h2><p>Left stick to walk. Hold <kbd data-glyph="4">R2</kbd> to run. <kbd data-glyph="5">X</kbd> jumps.</p></article><article>${icon("look")}<span class="stick-symbol">R</span><h2>Take a look</h2><p>Right stick turns the camera. Click <kbd data-glyph="11">R3</kbd> to level it. Hold <kbd data-glyph="7">L2</kbd> to look closely.</p></article><article>${icon("talk")}<span class="stick-symbol" data-glyph="0">A</span><h2>See what happens</h2><p>Walk up to a person, door or object. Press <kbd data-glyph="0">A</kbd> when its prompt appears.</p></article></div><div class="console-help-row"><p><kbd data-glyph="3">Y</kbd> Bag · <kbd data-glyph="8">▣</kbd> Town book · <kbd data-glyph="12">↑</kbd> Pocket camera · <kbd data-glyph="10">↓</kbd> Hide HUD</p><p>In menus: D-pad or left stick chooses, <kbd data-glyph="0">A</kbd> selects, <kbd data-glyph="1">B</kbd> goes back. <kbd data-glyph="9">☰</kbd> pauses and resumes. The default on Steam Deck is the ☰ Menu button near ABXY.</p></div><div class="console-actions">${button('controls', 'Customise controls')}${button('resume', 'Let’s explore', 'Settings are always a Menu press away')}</div></div>`;
+      content.innerHTML = `<div class="console-page"><p class="console-intro">Walk down to the harbour, stop by a shop, or say hello to a neighbour. Follow your curiosity.</p>${controlDiagram()}<div class="console-guide"><article>${icon("move")}<span class="stick-symbol">L</span><h2>Find your feet</h2><p>Left stick to walk. Hold <kbd data-glyph="4">R2</kbd> to run. <kbd data-glyph="5">X</kbd> jumps.</p></article><article>${icon("look")}<span class="stick-symbol">R</span><h2>Take a look</h2><p>Right stick turns the camera. Click <kbd data-glyph="11">R3</kbd> to level it. Hold <kbd data-glyph="7">L2</kbd> to look closely.</p></article><article>${icon("talk")}<span class="stick-symbol" data-glyph="0">A</span><h2>See what happens</h2><p>Walk up to a person, door or object. Press <kbd data-glyph="0">A</kbd> when its prompt appears.</p></article></div><div class="console-help-row"><p><kbd data-glyph="3">Y</kbd> Bag · <kbd data-glyph="8">▣</kbd> Town book · <kbd data-glyph="12">↑</kbd> Pocket camera · <kbd data-glyph="10">↓</kbd> Hide HUD</p><p>In menus: D-pad or left stick chooses, <kbd data-glyph="0">A</kbd> selects, <kbd data-glyph="1">B</kbd> goes back. <kbd data-glyph="9">☰</kbd> pauses and resumes. The default on Steam Deck is the ☰ Menu button near ABXY.</p></div><details class="console-full-controls"><summary>Every button & context</summary><dl class="console-control-list">${labels.map((label,i)=>i===13?'':`<div><dt><kbd data-glyph="${i}"></kbd></dt><dd>${label}</dd></div>`).join('')}</dl><p>Left stick walks at analogue speed; right stick looks. Camera: <kbd data-glyph="0">A</kbd> takes a photo; <kbd data-glyph="1">B</kbd> or <kbd data-glyph="12">↑</kbd> lowers it. Inspect: right stick rotates, <kbd data-glyph="6">L1</kbd> zooms out, <kbd data-glyph="7">L2</kbd> zooms in, <kbd data-glyph="11">R3</kbd> resets. Menus: stick / D-pad chooses, <kbd data-glyph="0">A</kbd> selects, <kbd data-glyph="1">B</kbd> returns, <kbd data-physical="4">L1</kbd> / <kbd data-physical="5">R1</kbd> changes pause tabs, <kbd data-physical="2">X</kbd> saves while paused. Quarrels only: <kbd data-glyph="5">X</kbd> punches, <kbd data-glyph="3">Y</kbd> kicks, hold <kbd data-glyph="0">A</kbd> to guard, <kbd data-glyph="1">B</kbd> dodges with the stick, <kbd data-glyph="8">View</kbd> leaves. L3 has no assigned action. Steam / Quick Access and rear paddles are configured in Steam Input.</p></details><div class="console-actions">${button('controls', 'Customise controls')}${button('resume', 'Let’s explore', 'Settings are always a Menu press away')}</div></div>`;
     } else if (name === 'controls') {
       const pads = Array.from(navigator.getGamepads?.() || []).filter(p => p?.connected);
       const active = input.read(pads).pad;
       const range = (name, label, min, max, step, unit) => `<label class="console-setting"><span>${label}<output data-value="${name}">${name === 'deadzone' ? Math.round(camera[name] * 100) : camera[name]}${unit}</output></span><input type="range" name="${name}" min="${min}" max="${max}" step="${step}" value="${camera[name]}"></label>`;
-      content.innerHTML = `<div class="console-page"><p class="console-intro" id="desktopControllerStatus"></p><div class="console-settings-grid"><div>${controlDiagram()}<h2>Sticks & camera</h2><label class="console-setting">Button symbols<select name="glyphs"><option value="auto">Auto-detect</option><option value="deck">Steam Deck</option><option value="xbox">Xbox</option><option value="playstation">PlayStation</option><option value="nintendo">Nintendo</option><option value="positions">Button positions</option></select></label><label class="console-setting">Controller<select name="controller"><option value="">Auto-detect</option></select></label>${range('sensitivity', 'Look sensitivity', .3, 2.5, .1, '×')}${range('deadzone', 'Stick dead zone', .05, .35, .01, '%')}${range('fov', 'Field of view', 45, 85, 1, '°')}<label class="console-check"><input type="checkbox" name="invertY" ${camera.invertY ? 'checked' : ''}> Invert vertical look</label><label class="console-check"><input type="checkbox" name="bob" ${camera.bob ? 'checked' : ''}> Walking camera motion</label><div class="console-stick-test" aria-label="Live stick test"><span>MOVE <i id="moveTest"></i><output id="moveReadout"></output></span><span>LOOK <i id="lookTest"></i><output id="lookReadout"></output></span></div><p class="console-small">Move each stick to check it. Raise the dead zone if the view drifts.</p>${button('swap', 'Swap left / right sticks')}<div id="axisSettings"></div></div><div><h2>Button assignments</h2><p class="console-small">Select an action, then press the button you want to use. Escape cancels.</p><div class="console-bindings">${[0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12].map(i => `<button data-bind="${i}"><span>${labels[i]}</span><kbd data-glyph="${i}">${escape(glyph(i))}</kbd></button>`).join('')}</div>${button('reset', 'Use island controls')}</div></div></div>`;
+      content.innerHTML = `<div class="console-page"><p class="console-intro" id="desktopControllerStatus"></p><div class="console-settings-grid"><div>${controlDiagram()}<h2>Sticks & camera</h2><label class="console-setting">Button symbols<select name="glyphs"><option value="auto">Auto-detect</option><option value="deck">Steam Deck</option><option value="xbox">Xbox</option><option value="playstation">PlayStation</option><option value="nintendo">Nintendo</option><option value="positions">Button positions</option></select></label><label class="console-setting">Controller<select name="controller"><option value="">Auto-detect</option></select></label>${range('sensitivity', 'Look sensitivity', .3, 2.5, .1, '×')}${range('deadzone', 'Stick dead zone', .05, .35, .01, '%')}${range('fov', 'Field of view', 45, 85, 1, '°')}<label class="console-check"><input type="checkbox" name="invertY" ${camera.invertY ? 'checked' : ''}> Invert vertical look</label><label class="console-check"><input type="checkbox" name="bob" ${camera.bob ? 'checked' : ''}> Walking camera motion</label><div class="console-stick-test" aria-label="Live stick test"><span>MOVE <i id="moveTest"></i><output id="moveReadout"></output></span><span>LOOK <i id="lookTest"></i><output id="lookReadout"></output></span></div><p class="console-small">Move each stick to check it. Raise the dead zone if the view drifts.</p>${button('swap', 'Swap left / right sticks')}<div id="axisSettings"></div></div><div><h2>Button assignments</h2><p class="console-small">Select an action, then press its new button. Tap Back to cancel; hold Back for one second to assign it. Menu always cancels an assignment.</p><div class="console-bindings">${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15].map(i => `<button data-bind="${i}"><span>${labels[i]}</span><kbd data-glyph="${i}">${escape(glyph(i))}</kbd></button>`).join('')}</div>${button('reset', 'Use island controls')}</div></div></div>`;
       content.querySelector('[name=glyphs]').value=profile.glyphs;
       const select = content.querySelector('[name=controller]');
       for (const p of pads) select.add(new Option(p.id, p.id));
@@ -109,7 +113,7 @@ function initialise() {
     } else if (name === 'display') {
       content.innerHTML = `<div class="console-page"><p class="console-intro">The island fills the screen. Menus keep readable text and their own scrolling area.</p>${button('hud', document.documentElement.classList.contains('desktop-hide-hud') ? 'Show HUD' : 'Hide HUD', 'D-pad down changes this with the island controls')}${button('performance', 'Show performance & memory')}<p class="console-small">Keyboard: F10 or Escape for the menu · F8 for HUD · F11 for full screen.</p></div>`;
     } else if (name === 'updates') {
-      content.innerHTML = `<div class="console-page"><p class="console-intro">Linux edition ${desktop.version}</p><p>You can play offline. Checking for updates needs a connection. Updates keep your progress and retain the previous installation.</p>${button('update', updateLabel)}</div>`;
+      content.innerHTML = `<div class="console-page"><p class="console-intro">Linux edition ${desktop.version}</p><p>You can play offline. Checking for updates needs a connection. Compatible updates download a smaller file patch. Engine changes use the complete package. Updates keep your progress and retain the previous installation.</p>${button('update', updateLabel)}</div>`;
       content.querySelector('[data-action=update]').disabled = updateBusy;
     }
     content.scrollTop=0;
@@ -156,7 +160,7 @@ function initialise() {
         updateBusy = true; content.querySelector('[data-action=update]').disabled = true;
         if (updateAction === 'restart') await desktop.restartUpdate();
         else if (updateAction === 'install') {note('Downloading and verifying…'); const result = await desktop.installUpdate(); if (result.ready) {updateAction = 'restart'; updateLabel = 'Save & restart into ' + result.version; note('Update verified. Your saves are retained.');}}
-        else {note('Checking release information…'); const result = await desktop.checkUpdate(); if (result.available && result.canInstall) {updateAction = 'install'; updateLabel = 'Download update ' + result.next; note('Update available.');} else note(result.available ? 'Run the Linux installer to enable in-game updates.' : 'This is the current release.');}
+        else {note('Checking release information…'); const result = await desktop.checkUpdate(); if (result.available && result.canInstall) {updateAction = 'install'; updateLabel = 'Download ' + (result.kind==='patch'?'patch ':'update ') + result.next; note(`${result.kind==='patch'?'File patch':'Full package'} · ${(result.downloadBytes/1048576).toFixed(1)} MiB. Your progress is retained.`);} else note(result.available ? 'Run the Linux installer to enable in-game updates.' : 'This is the current release.');}
         updateBusy = false; if (page === 'updates') showPage('updates');
       }
     } catch (error) {updateBusy = false; if (page === 'updates') showPage('updates'); note(error.message || 'Could not finish. Please try again.');}
@@ -166,7 +170,7 @@ function initialise() {
     const person = event.target.closest('[data-person]');
     if (person) {person.disabled = true; const world = window.johanssonLinuxWorld; world.select(decodeURIComponent(person.dataset.person), {started: playing()}).then(() => {if (playing()) openMenu(false); else {showPage('people'); note('Selected '+world.active+'. Start exploring when you are ready.');}}).catch(error => {person.disabled = false; note(error.message);});return;}
     const binding = event.target.closest('[data-bind]');
-    if (binding) {capture = {index: Number(binding.dataset.bind), ready: false, before: []}; note(`Release all buttons, then press a button for ${labels[capture.index]}. Escape cancels.`); return;}
+    if (binding) {capture = {index: Number(binding.dataset.bind), ready: false, before: []}; note(`Release all buttons, then press a button for ${labels[capture.index]}. Tap ${glyph(1)} to cancel; hold it for one second to assign. Menu or Escape cancels.`); return;}
     const action = event.target.closest('[data-action]')?.dataset.action; if (action) act(action);
   });
   panel.addEventListener('input', event => {
@@ -179,7 +183,7 @@ function initialise() {
   });
   const focusables=menuControls;
   function navigate(root,direction){moveMenuFocus(root,direction);}
-  function back(){if(capture){capture=null;note('Button assignment cancelled.');}else if(['controls','display','updates','quit'].includes(page))showPage('settings');else if(page==='help')showPage('pause');else openMenu(false);}
+  function back(){if(capture){capture=null;note('Button assignment cancelled.');content.querySelector('[data-bind]:focus')?.focus();}else if(['controls','display','updates','quit'].includes(page))showPage('settings');else if(page==='help')showPage('pause');else openMenu(false);}
   function changeTab(step){const tabs=['pause','people','settings'],at=tabs.indexOf(groupFor(page));showPage(tabs[(at+step+tabs.length)%tabs.length]);}
   document.addEventListener('keydown', event => {
     if(event.repeat&&['F10','Escape'].includes(event.code)){event.preventDefault();return;}
@@ -192,11 +196,12 @@ function initialise() {
     // Keep game shortcuts from acting underneath the pause menu.
     event.stopImmediatePropagation();
   }, true);
+  window.addEventListener('johansson-desktop-toggle-hud',toggleHUD);
   window.addEventListener('johansson-offline-link', () => {openMenu(); note('That link needs the internet. The installed island is available offline.');});
   window.addEventListener('johansson-save-failed', () => {openMenu(); note('Could not save to disk. Try Save progress again before quitting.');});
   window.addEventListener('blur', () => {held = []; input.suspend(); if (playing()) openMenu();});
   function controllerLost() {
-    input.suspend(); held=[]; rawHeld=[]; nextRepeat=0; lastDirection='';
+    input.suspend(); held=[]; rawHeld=[]; nextRepeat=0; lastDirection=''; capture=null;
     if (playing() && !lostPad) {
       lostPad=true; openMenu(true, 'controls');
       note('Controller disconnected. Reconnect it, or use the keyboard.');
@@ -225,6 +230,7 @@ function initialise() {
         lostPad=false;
       }
     }
+    inputMode.pad(frame,raw.map((down,i)=>down&&!rawHeld[i]));
     detectedId=frame.pad?.id||'';const nextFamily=controllerFamily(detectedId,profile.glyphs);
     if(nextFamily!==promptFamily){promptFamily=nextFamily;document.documentElement.dataset.controllerFamily=nextFamily;syncGlyphs();}
 
@@ -260,7 +266,12 @@ function initialise() {
     if (capture) {
       const raw = Array.from(frame.pad?.buttons || [], b => b.pressed || b.value > .55);
       if (!raw.some(Boolean)) capture.ready = true;
-      const pressed = raw.findIndex((down, i) => down && !capture.before[i]); capture.before = raw;
+      let pressed = raw.findIndex((down, i) => down && !capture.before[i]);
+      const backButton=profile.bindings[1];
+      if(capture.ready&&(rawEdge(9)||edge(9))){back();held=buttons;rawHeld=raw;requestAnimationFrame(poll);return;}
+      if(capture.ready&&raw[backButton]){capture.backAt??=now;pressed=now-capture.backAt>=1000?backButton:-1;}
+      else if(capture.backAt!==undefined){back();held=buttons;rawHeld=raw;requestAnimationFrame(poll);return;}
+      capture.before = raw;
       if (capture.ready && pressed >= 0) {
         const index = capture.index, old = profile.bindings[index], conflict = profile.bindings.indexOf(pressed);
         if (conflict >= 0 && conflict !== index) profile.bindings[conflict] = old;
@@ -275,10 +286,9 @@ function initialise() {
       else if(!panel.hidden&&rawEdge(5))changeTab(1);
       else if(!panel.hidden&&rawEdge(2)&&isPlaying)act('save');
       else if(panel.hidden&&!isPlaying&&edge(1)&&!document.getElementById('titleSlots')?.classList.contains('hidden')){document.getElementById('titleSlotsClose')?.click();document.getElementById('enter')?.focus();}
-      else if (isPlaying && panel.hidden && edge(10)) toggleHUD();
       else if (!panel.hidden || !isPlaying) {
         const root = !panel.hidden ? content : document.querySelector('#titleSlots:not(.hidden)') || document.getElementById('title');
-        const direction = buttons[12] || frame.move.y < -.55 ? 'up' : buttons[13] || frame.move.y > .55 ? 'down' : buttons[14] || frame.move.x < -.55 ? 'left' : buttons[15] || frame.move.x > .55 ? 'right' : '';
+        const direction = raw[12] || frame.move.y < -.55 ? 'up' : raw[13] || frame.move.y > .55 ? 'down' : raw[14] || frame.move.x < -.55 ? 'left' : raw[15] || frame.move.x > .55 ? 'right' : '';
         if (direction && (direction !== lastDirection || now >= nextRepeat)) {navigate(root, direction); nextRepeat = now + (direction !== lastDirection ? 360 : 130);}
         lastDirection = direction;
         if (edge(0)) {const items = focusables(root), selected = document.activeElement; if (!items.includes(selected)) {const first = !panel.hidden ? items[0] : document.getElementById('enter'); first?.focus(); if (first && !first.disabled) first.click();} else if (selected.type === 'checkbox') {selected.checked = !selected.checked; selected.dispatchEvent(new Event('input', {bubbles: true}));} else if (selected.type !== 'range' && selected.tagName !== 'SELECT') selected.click();}
@@ -288,7 +298,7 @@ function initialise() {
   }
   // The game already exposes its audit state. This summary also covers the
   // desktop menus for automated controller and layout acceptance.
-  const snapshot = () => ({playing: playing(), menu: !panel.hidden, page, controller: lastPad || null, connected: !!lastPadKey, person: window.johanssonLinuxWorld?.active || null, inBed: !!window.johanssonLinuxWorld?.inBed, capture: capture?.index ?? null, hudHidden: document.documentElement.classList.contains('desktop-hide-hud')});
+  const snapshot = () => ({playing: playing(), menu: !panel.hidden, page, controller: lastPad || null, connected: !!lastPadKey, person: window.johanssonLinuxWorld?.active || null, inBed: !!window.johanssonLinuxWorld?.inBed, capture: capture?.index ?? null, inputMode:inputMode.mode,hudHidden: document.documentElement.classList.contains('desktop-hide-hud')});
   window.johanssonDesktopUI = {snapshot,prompt:action=>buttonPrompt(action,profile,detectedId),refreshPrompts:syncGlyphs,navigate:moveMenuFocus, open: name => openMenu(true, name || 'pause')};
   const gameText = window.render_game_to_text;
   window.render_game_to_text = () => JSON.stringify({coordinates: 'Game world: x east, y up, z south; sticks: x right, y down', desktop: snapshot(), game: gameText?.() || null});

@@ -1,3 +1,4 @@
+import {indexedPaving} from '../desktop/startup-queries.js';
 import {buildArchitectureGround} from './architecture-ground.js';
 import {buildNeighbourhoodGround} from './neighbourhood-ground.js';
 import {onIslandLand} from './coastal-ground.js';
@@ -237,8 +238,9 @@ function addCoastalRoadPaint(world){
 function findSea(group){let sea=null;group.traverse(o=>{if(o.isMesh&&(o.name==='Island surrounding sea'||o.name==='Harbour basin')){if(!sea||o.name==='Harbour basin')sea=o;}});return sea;}
 
 /** Whether a point lies under the paving the lane builder lays. */
-function pavedAt(){
+function pavedAt(fast=false){
   const patches=lanePatches();
+  if(fast)return indexedPaving(patches);
   return (x,z)=>patches.some(p=>x>=p.x0-.01&&x<=p.x1+.01&&z>=p.z0-.01&&z<=p.z1+.01);
 }
 
@@ -272,7 +274,7 @@ export function createTown(options){
    world.kitanoLink=buildKitanoLink({parent:world.group,colliders:world.colliders,shadows:options.shadows});
    world.traffic=createTownTraffic({parent:world.group,colliders:world.colliders,ferry:world.ferry,getPlayerPosition:options.getPlayerPosition,people:()=>world.people||[],register:options.register,onAction:options.onAction});
    world.eastLawn=buildEastLawn({parent:world.group,colliders:world.colliders,shadows:options.shadows,anisotropy:options.maxAnisotropy||4,
-    heightAt:groundHeight,paved:pavedAt(),register:options.register,onAction:options.onAction});
+    heightAt:groundHeight,paved:pavedAt(options.desktop),register:options.register,onAction:options.onAction});
    // Crabs on the wet sand below the wall and fish leaping offshore. See beach-life.js.
    world.beachLife=buildBeachLife({parent:world.group,shadows:options.shadows});
    // A quiet corner at the north end to sit and listen to the sea. See beach-corner.js.
@@ -326,7 +328,7 @@ export function createTown(options){
   world.staffBench=buildStaffBench({parent:world.group,factory,colliders:world.colliders,
    shadows:options.shadows,register:options.register,onAction:options.onAction});
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
-  world.islandLandscape=buildIslandLandscape({world,register:options.register,onAction:options.onAction,mobile:options.mobile});addCoastalRoadPaint(world);world.parkAccess=buildParkAccess(world,{register:options.register,onAction:options.onAction});world.powerNetwork=buildTownPower(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});world.quietLife=buildQuietLife(world);world.countrysideLife=buildCountryside({world,register:options.register,onAction:options.onAction,mobile:options.mobile});
+  world.islandLandscape=buildIslandLandscape({world,register:options.register,onAction:options.onAction,mobile:options.mobile});addCoastalRoadPaint(world);world.parkAccess=buildParkAccess(world,{register:options.register,onAction:options.onAction});world.powerNetwork=buildTownPower(world,{fast:options.desktop,register:options.register,onAction:options.onAction,shadows:options.shadows});world.quietLife=buildQuietLife(world);world.countrysideLife=buildCountryside({world,register:options.register,onAction:options.onAction,mobile:options.mobile});
   const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station','ferry-terminal'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);if(site.industrialWorkshop)return h>=540&&h<1140;if(site.id==='market')return true;if(site.id==='frontrow'&&isWeekend(minutes))return false;const close=site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
   // Minato's regular comes back with them: he lives in the izakaya and keeps it
   // company when it is shut (people/izakaya-hours.js), so it is never empty.

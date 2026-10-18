@@ -31,8 +31,16 @@ jobs:
           npm test --prefix steam-deck
           cd johansson-town
           node scripts/build-runtime.mjs
+      - name: Prepare compatible patch base
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node steam-deck/tools/prepare-patch.mjs
       - name: Package complete offline island
         run: npm run package --prefix steam-deck
+      - name: Controller repair acceptance
+        run: |
+          steam-deck/node_modules/.bin/playwright install --with-deps chromium
+          node steam-deck/tools/control-repair-smoke.cjs
       - name: Start real offline Linux application
         env:
           WORLD_SCREENSHOT: steam-deck/dist/linux-world.png
@@ -53,7 +61,10 @@ jobs:
           version=$(node -p "require('./steam-deck/package.json').version")
           tag="johansson-world-linux-v$version"
           gh release view "$tag" >/dev/null 2>&1 || gh release create "$tag" --target "$GITHUB_SHA" --prerelease --title "Johansson World Linux $version" --notes-file "steam-deck/releases/$version.md"
-          gh release upload "$tag" steam-deck/dist/johansson-world-linux-x64.tar.gz steam-deck/dist/latest-linux.json steam-deck/dist/SHA256SUMS steam-deck/install.sh steam-deck/ui/icons/johansson-world-512.png --clobber
+          gh release upload "$tag" steam-deck/dist/johansson-world-linux-x64.tar.gz steam-deck/dist/latest-linux.json steam-deck/dist/bundle-manifest.json steam-deck/dist/SHA256SUMS steam-deck/install.sh steam-deck/ui/icons/johansson-world-512.png --clobber
+          for patch in steam-deck/dist/*.patch.tar.gz; do
+            if [ -f "$patch" ]; then gh release upload "$tag" "$patch" --clobber; fi
+          done
       - name: Verify public installer and release checksum
         run: |
           HOME="$RUNNER_TEMP/install-smoke" XDG_DATA_HOME="$RUNNER_TEMP/install-smoke/data" sh steam-deck/install.sh

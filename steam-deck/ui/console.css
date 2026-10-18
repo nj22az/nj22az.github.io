@@ -239,3 +239,9 @@
 .console-menu-brand{border-radius:9px;object-fit:cover}
 @media(max-height:700px){.console-brand-icon{width:56px;height:56px;border-radius:13px;margin-bottom:10px}}
 @media(max-height:600px){.console-brand-icon{position:absolute;left:calc(100% + 18px);top:0;width:64px;height:64px}}
+
+/* Controller focus is the cursor, including buttons with their own cursor rule. */
+html.linux-console[data-input-mode=controller],html.linux-console[data-input-mode=controller] *{cursor:none!important}
+.console-control-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 24px}
+.console-control-list>div{display:flex;align-items:center;gap:12px}.console-control-list dt{min-width:50px}.console-control-list dd{margin:0}
+@media(max-width:700px){.console-control-list{grid-template-columns:1fr}}
