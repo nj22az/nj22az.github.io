@@ -1,3 +1,4 @@
+import {SAKURA_FONT,refreshSakuraPrint} from './sakura-print.js';
 import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
@@ -17,7 +18,7 @@ export {CASH_CORNER};
  *
  * Boxes are merged into one vertex-coloured mesh, and every print comes from one canvas.
  */
-const MARU='"Hiragino Maru Gothic ProN","M PLUS Rounded 1c","Yu Gothic","Noto Sans CJK JP",sans-serif';
+const MARU=SAKURA_FONT;
 
 // The print sheet: one canvas, cells by name, each [x,y,w,h] in pixels.
 const SHEET={w:2048,h:1024};
@@ -28,7 +29,8 @@ const CELLS={
  atmHeader:[0,448,512,128],atmScreen:[512,448,256,192],atmFace:[768,448,256,256],film:[1024,584,256,360],keypad:[0,576,256,256],
 };
 function sheet(){
- const c=document.createElement('canvas');c.width=SHEET.w;c.height=SHEET.h;const ctx=c.getContext('2d');
+ const c=document.createElement('canvas');c.width=SHEET.w;c.height=SHEET.h;
+ const draw=ctx=>{
  const at=(name,draw)=>{const [x,y,w,h]=CELLS[name];ctx.save();ctx.translate(x,y);ctx.beginPath();ctx.rect(0,0,w,h);ctx.clip();draw(ctx,w,h);ctx.restore();};
  const text=(s,x,y,size,colour,weight=900)=>{ctx.fillStyle=colour;ctx.font=`${weight} ${size}px ${MARU}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(s,x,y,1000);};
  // Aisle cards: Sakura's stripe along the top, the aisle in Japanese, English under it.
@@ -80,7 +82,10 @@ function sheet(){
  at('atmFace',(c,w,h)=>{c.fillStyle='#d8dde2';c.fillRect(0,0,w,h);c.fillStyle='#3a3f44';c.fillRect(40,40,176,14);c.fillStyle='#6a7076';c.fillRect(40,170,176,30);text('CARD',w/2,26,20,'#3a3f44',800);text('CASH',w/2,150,20,'#3a3f44',800);});
  at('keypad',(c,w,h)=>{c.fillStyle='#b9c0c6';c.fillRect(0,0,w,h);for(let r=0;r<4;r++)for(let k=0;k<3;k++){c.fillStyle=r===3&&k===2?'#3a9a4a':r===3&&k===0?'#d9433a':'#f4f6f8';c.fillRect(24+k*72,20+r*58,60,46);}text('1  2  3',w/2,43,26,'#3a3f44',800);});
  at('film',(c,w,h)=>{c.fillStyle='#f2b705';c.fillRect(0,0,w,h);c.fillStyle='#d7263d';c.fillRect(0,0,w,78);text("写真プリント",w/2,40,34,'#ffffff');text('PHOTO PRINTS',w/2,118,26,'#3b2a1a',800);c.fillStyle='#3b2a1a';c.fillRect(48,160,160,22);text('Film in here',w/2,215,20,'#3b2a1a',700);text('Prints in 3 days',w/2,250,20,'#3b2a1a',700);text('24 shots ¥680',w/2,300,26,'#c8102e',900);});
- const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;return t;
+ };
+ draw(c.getContext('2d'));
+ const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;
+ refreshSakuraPrint(t,draw,'カップ麺・食品お菓子日用品今月のイチ押し！宝くじ配達宅配便お月見写真プリントABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789¥');return t;
 }
 /** A plane carrying one cell of the sheet. */
 function printed(name,w,h){

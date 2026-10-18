@@ -1,3 +1,4 @@
+import {SAKURA_FONT,refreshSakuraPrint} from './sakura-print.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {assetURL} from '../../assets.js';
 import {STORE_BRANDS,BRAND_ATLAS_KEYS,ATLAS_CELLS} from '../../commerce/brands.js';
@@ -102,6 +103,14 @@ function emblem(ctx,kind,x,y,r,color){
  }
  ctx.restore();
 }
+function drawShelfPrices(ctx){
+ for(const item of STORE_ITEMS){
+  const index=priceSlot(item.id),x=index%COLS*TW,y=Math.floor(index/COLS)*TH,b=STORE_BRANDS[item.id];
+  ctx.save();ctx.translate(x,y);ctx.fillStyle='#fff4d9';ctx.fillRect(0,0,TW,TH);ctx.fillStyle='#b63831';ctx.fillRect(0,0,TW,8);
+  ctx.textAlign='left';ctx.fillStyle='#41362a';ctx.font=`700 23px ${SAKURA_FONT}`;ctx.fillText(b.name,10,37,236);
+  ctx.font=`400 17px ${SAKURA_FONT}`;ctx.fillText(item.jp,10,63,236);ctx.textAlign='right';ctx.fillStyle='#a62e28';ctx.font=`700 45px ${SAKURA_FONT}`;ctx.fillText('¥'+item.cost,244,112,230);ctx.restore();
+ }
+}
 export function createLabelAtlas(){
  const canvas=document.createElement('canvas');canvas.width=ATLAS_SPAN*TW;canvas.height=ROWS*TH;
  // Read back for every flavour (paintFlavourCell): a canvas kept in memory reads back at once, where a GPU canvas
@@ -121,12 +130,7 @@ export function createLabelAtlas(){
   ctx.fillStyle=['water','cola','biscuit','buns','milk'].includes(id)?b.ink:'#fff2d4';
   ctx.font='bold 16px sans-serif';ctx.fillText(b.line,128,105,226);ctx.restore();
  }
- for(const item of STORE_ITEMS){
-  const index=priceSlot(item.id),x=index%COLS*TW,y=Math.floor(index/COLS)*TH,b=STORE_BRANDS[item.id];
-  ctx.save();ctx.translate(x,y);ctx.fillStyle='#fff4d9';ctx.fillRect(0,0,TW,TH);ctx.fillStyle='#b63831';ctx.fillRect(0,0,TW,8);
-  ctx.textAlign='left';ctx.fillStyle='#41362a';ctx.font='bold 23px serif';ctx.fillText(b.name,10,37,236);
-  ctx.font='17px sans-serif';ctx.fillText(item.jp,10,63,236);ctx.textAlign='right';ctx.fillStyle='#a62e28';ctx.font='bold 45px sans-serif';ctx.fillText('¥'+item.cost,244,112,230);ctx.restore();
- }
+ drawShelfPrices(ctx);
  paintFlavours(ctx);
  return canvas;
 }
@@ -139,6 +143,7 @@ export function createLabelAtlas(){
 export function getLabelMaterial(){
  if(!labelMaterial){const texture=new THREE.CanvasTexture(createLabelAtlas());texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=2;
   labelMaterial=new THREE.MeshBasicMaterial({map:texture,toneMapped:false});labelMaterial.name='Sakura fictional packaging atlas';
+  refreshSakuraPrint(texture,drawShelfPrices,STORE_ITEMS.map(item=>STORE_BRANDS[item.id].name+item.jp+'¥'+item.cost).join(''));
   const designed=new Map(),repaint=ctx=>{paintDesigned(ctx,designed);paintFlavours(ctx);texture.needsUpdate=true;};
   for(const [row,file] of [[0,'packaging-atlas.webp'],[1,'packaging-groceries.webp']])new THREE.ImageLoader().load(assetURL('graphics/konbini/'+file),image=>{const canvas=texture.image,ctx=canvas.getContext('2d');ctx.drawImage(image,0,row*512,COLS*TW,512);repaint(ctx);},undefined,()=>{});
   for(const p of DESIGNED)new THREE.ImageLoader().load(assetURL('graphics/'+p.label.image),image=>{designed.set(p.cells.brand,image);repaint(texture.image.getContext('2d'));},undefined,()=>{console.warn('Sakura label unavailable: '+p.label.image+'; the shelf keeps its drawn label.');});}

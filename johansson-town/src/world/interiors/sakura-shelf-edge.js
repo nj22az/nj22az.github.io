@@ -1,3 +1,4 @@
+import {SAKURA_FONT,refreshSakuraPrint} from './sakura-print.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import {SAKURA_SHELVES} from './sakura-layout.js';
@@ -12,23 +13,28 @@ import {SAKURA_SHELVES} from './sakura-layout.js';
  *
  * Fridges carry their own strips (shop-refrigerator.js) and are left alone.
  */
-const TALKERS=Object.freeze([
- ['NEW!','#d7263d','#ffffff'],['Popular','#ffcf3f','#3b2a1a'],['¥10 off','#2a8fcc','#ffffff'],['Limited','#f06ba8','#ffffff'],
+// These describe the shelf, never an unimplemented discount or limited-stock offer.
+export const SAKURA_TALKERS=Object.freeze([
+ ['おすすめ','STAFF PICKS','#d7263d','#ffffff'],['定番','EVERYDAY','#ffcf3f','#3b2a1a'],
+ ['日用品','DAILY GOODS','#2a8fcc','#ffffff'],['食品','PANTRY','#3f6e58','#ffffff'],
 ]);
-/** Which boards carry a talker: one in a few, chosen so no aisle has two side by side. */
-const TALKER_AT=Object.freeze({chips:[0,0],noodles:[1,2],chocolate:[2,0],soap:[3,0],curry:[0,0],pudding:[1,1],battery:[2,0]});
+/** One small category card per selected board, clear of its actual price tag. */
+const TALKER_AT=Object.freeze({chips:[0,0],noodles:[3,2],chocolate:[0,0],soap:[2,0],curry:[3,0],pudding:[1,1],battery:[2,0]});
 
 function colourise(geometry,hex){
  const c=new THREE.Color(hex),a=new Float32Array(geometry.attributes.position.count*3);
  for(let i=0;i<a.length;i+=3)a.set(c.toArray(),i);geometry.setAttribute('color',new THREE.BufferAttribute(a,3));return geometry;
 }
 function talkerTexture(){
- const c=document.createElement('canvas');c.width=512;c.height=128;const ctx=c.getContext('2d');
- TALKERS.forEach(([text,bg,ink],i)=>{
-  const x=i*128;ctx.fillStyle=bg;ctx.beginPath();ctx.arc(x+64,64,60,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle=ink;ctx.font=`bold ${text.length>5?24:34}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,x+64,64,112);
+ const c=document.createElement('canvas');c.width=1024;c.height=256;
+ const draw=ctx=>SAKURA_TALKERS.forEach(([jp,en,bg,ink],i)=>{
+  const x=i*256;ctx.clearRect(x,0,256,256);ctx.fillStyle=bg;ctx.fillRect(x+8,28,240,200);
+  ctx.fillStyle=ink;ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.font=`700 48px ${SAKURA_FONT}`;ctx.fillText(jp,x+128,110,218);
+  ctx.font=`700 25px ${SAKURA_FONT}`;ctx.fillText(en,x+128,172,218);
  });
- const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;
+ draw(c.getContext('2d'));const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;
+ refreshSakuraPrint(t,draw,SAKURA_TALKERS.map(t=>t[0]+t[1]).join(''));return t;
 }
 
 export function buildShelfEdges(room){
@@ -46,7 +52,7 @@ export function buildShelfEdges(room){
     // Two cards back to back, so it reads the right way round from either end of the aisle.
     for(const side of [1,-1]){
      const kind=talker[0],g=new THREE.PlaneGeometry(.12,.12),uv=g.attributes.uv;
-     for(let j=0;j<uv.count;j++)uv.setX(j,(kind+uv.getX(j))/TALKERS.length);
+     for(let j=0;j<uv.count;j++)uv.setX(j,(kind+uv.getX(j))/SAKURA_TALKERS.length);
      g.rotateY(side*Math.PI/2);g.translate(side*.002,0,0);cards.push(put(g,shelf.width/2-.25,.07,.2));
     }
    }
