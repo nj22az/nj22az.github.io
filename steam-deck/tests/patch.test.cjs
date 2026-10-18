@@ -1,6 +1,6 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),os=require('node:os'),crypto=require('node:crypto'),{execFileSync}=require('node:child_process');
 const {inventory,validateInventory,verify}=require('../release-files.cjs'),{createUpdater}=require('../updater.cjs'),{buildPatch}=require('../tools/build-patch.cjs');
-for(const scenario of ['patch','modified base','different engine','corrupt patch','symlink patch','wrong target'])test('real file updater: '+scenario,async()=>{
+for(const scenario of ['patch','linked install','modified base','different engine','corrupt patch','symlink patch','wrong target'])test('real file updater: '+scenario,async()=>{
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'world-patch-'));
  try{
   const root=path.join(dir,'install'),old=path.join(root,'versions/v0.2.7'),bundle=path.join(dir,'new/johansson-world'),out=path.join(dir,'out');
@@ -22,9 +22,9 @@ for(const scenario of ['patch','modified base','different engine','corrupt patch
   }
   const downloads=[];
   const fetchImpl=async url=>{if(url.includes('api.github.com'))return new Response(JSON.stringify([{tag_name:'johansson-world-linux-v0.2.7',assets:[{name:'latest-linux.json'}]},{tag_name:'johansson-world-linux-v0.2.8',assets:[{name:'latest-linux.json',browser_download_url:releaseURL+'/latest-linux.json'}]}]));if(url.endsWith('latest-linux.json'))return new Response(JSON.stringify(manifest));downloads.push(url);return new Response(url.endsWith('/full.tar.gz')?bytes:scenario==='corrupt patch'?Buffer.from('corrupt'):fs.readFileSync(path.join(out,new URL(url).pathname.split('/').pop())));};
-  const updater=createUpdater({version:'0.2.7',installRoot:root,bundleRoot:old,fetchImpl});const check=await updater.check();assert.equal(check.next,'0.2.8','Highest version wins, even if release publication order differs');assert.equal(check.kind,patch?'patch':'full');
+  const updater=createUpdater({version:'0.2.7',installRoot:root,bundleRoot:scenario==='linked install'?path.join(root,'current'):old,fetchImpl});const check=await updater.check();assert.equal(check.next,'0.2.8','Highest version wins, even if release publication order differs');assert.equal(check.kind,patch?'patch':'full');
   if(['corrupt patch','symlink patch','wrong target'].includes(scenario)){await assert.rejects(updater.install());assert.equal(updater.readyExecutable(),null);}else{
-   const result=await updater.install();assert.equal(result.kind,scenario==='patch'?'patch':'full');assert.equal(downloads.length,1);
+   const result=await updater.install();assert.equal(result.kind,['patch','linked install'].includes(scenario)?'patch':'full');assert.equal(downloads.length,1);
    const staged=path.join(root,'versions/v0.2.8');verify(staged,target);assert.ok(!fs.existsSync(path.join(staged,'resources/app/site/old.js')));assert.equal(fs.realpathSync(path.join(root,'current')),fs.realpathSync(old),'Install stages only');
    assert.equal(updater.readyExecutable(),path.join(staged,'JohanssonWorld'));assert.equal(fs.realpathSync(path.join(root,'previous')),fs.realpathSync(old));
   }

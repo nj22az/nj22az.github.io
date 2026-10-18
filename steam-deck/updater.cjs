@@ -15,6 +15,9 @@ function trustedURL(value){try{const u=new URL(value);return u.protocol==='https
 function validateManifest(m){if(!m||!semver(m.version)||!trustedURL(m.archiveUrl)||!/^[a-f0-9]{64}$/.test(m.sha256)||!Number.isSafeInteger(m.bytes)||m.bytes<1024||m.bytes>MAX_ARCHIVE)throw Error('Invalid update manifest');return m;}
 function validateMembers(text){for(const name of text.trim().split('\n')){if(name!=='johansson-world/'&&(!name.startsWith('johansson-world/')||name.split('/').includes('..')||name.includes('\\')||/[\x00-\x1f\x7f]/.test(name)))throw Error('Unsafe update archive');}}
 function createUpdater({version,installRoot,bundleRoot,fetchImpl=fetch}){
+ // Launchers run through current/, which can itself be a symlink. Always copy
+ // its real version directory so staging can never alias the running game.
+ if(bundleRoot){try{bundleRoot=fs.realpathSync(bundleRoot);}catch{bundleRoot=undefined;}}
  let candidate=null,ready=null,busy=false,patch=null;
  function installed(){try{const m=validateInventory(JSON.parse(fs.readFileSync(path.join(bundleRoot,'bundle-manifest.json'))));return m.version===version?m:null;}catch{return null;}}
  const owned=()=>installRoot&&fs.existsSync(path.join(installRoot,'.johansson-world-install'));

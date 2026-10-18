@@ -20,7 +20,7 @@ function initialise() {
   document.body.append(panel);
   const inputMode=createInputMode(mode=>{document.documentElement.dataset.inputMode=mode;});
   document.addEventListener('pointermove',event=>inputMode.pointer(event),true);
-  document.addEventListener('pointerdown',()=>inputMode.click(),true);
+  document.addEventListener('pointerdown',event=>{if(event.pointerType==='mouse')inputMode.click();},true);
   document.addEventListener('keydown',()=>inputMode.keyboard(),true);
   const content = panel.querySelector('#desktopContent'), heading = panel.querySelector('#desktopHeading');
   const status = panel.querySelector('#desktopStatus');
