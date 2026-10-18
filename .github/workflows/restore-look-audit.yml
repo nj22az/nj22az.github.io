@@ -1,0 +1,53 @@
+name: Restore October 11 picture quality
+on:
+  push:
+    branches: [codex/restore-october-11-look]
+    paths: ['.github/workflows/restore-look-audit.yml', 'johansson-town/src/**', 'johansson-town/tools/restore-look-smoke.mjs']
+permissions:
+  contents: write
+concurrency:
+  group: restore-look-audit
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: johansson-town
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 716bc0c1309ef7d0392e5183d32b6b8a0151c5ad
+          path: reference
+      - uses: actions/checkout@v4
+        with:
+          ref: aa99bf46a11ec9168f1235d2bbbaa3cab2e2aca0
+          path: before
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: johansson-town/package-lock.json
+      - run: npm ci
+      - run: node --test --test-force-exit tests/startup-recovery.test.mjs tests/resolution-governor.test.mjs tests/ink-recovery.test.mjs tests/render-stability.test.mjs tests/graphics-lifecycle.test.mjs tests/single-pass-colour.test.mjs tests/sakura-stairs.test.mjs tests/shop-street-view.test.mjs tests/sakura-light-transitions.test.mjs tests/cel-look.test.mjs
+      - run: npm run build:runtime
+      - run: node --test tests/runtime-package.test.mjs
+      - run: npx playwright install --with-deps webkit
+      - run: |
+          python3 tools/serve-audit.py --port 8765 > /tmp/restored-server.log 2>&1 &
+          python3 -m http.server 8766 --bind 127.0.0.1 --directory ../reference > /tmp/reference-server.log 2>&1 &
+          python3 -m http.server 8767 --bind 127.0.0.1 --directory ../before > /tmp/before-server.log 2>&1 &
+          node tools/restore-look-smoke.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: october-11-look
+          path: johansson-town/docs/qa/october-11-look
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add runtime index.html creator/index.html sw.js docs/qa/october-11-look
+          git diff --cached --quiet || git commit -m 'Record October 11 reference and restored mobile rendering'
+          git push origin HEAD:codex/restore-october-11-look

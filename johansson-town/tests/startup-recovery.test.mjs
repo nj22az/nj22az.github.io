@@ -26,18 +26,29 @@ test('iPhone retains all postprocess effects and bounded shadows without enablin
  assert.equal(p.streamDetails,false);assert.equal(p.cinematic,false);assert.equal(p.quietOpening,true);
  assert.equal(p.pixelBudget,650000);assert.equal(p.canvasPixels,650000);
  assert.equal(p.dpr,1.5);assert.equal(p.shadowRadius,14);
- assert.equal(p.samples,0);assert.equal(p.preferHalfFloat,false);assert.equal(p.antialias,false);
+ assert.equal(p.samples,2);assert.equal(p.preferHalfFloat,true);assert.equal(p.antialias,false);
  for(const [width,height] of [[430,932],[932,430],[4096,2732]]){
   const dpr=drawingDpr({width,height,deviceDpr:3,profile:p});assert.ok(width*height*dpr*dpr<=650001);
  }
  const normal=drawingDpr({width:430,height:932,deviceDpr:3,profile:p});
  const slower=drawingDpr({width:430,height:932,deviceDpr:3,profile:p,scale:.6});
- assert.ok(slower<normal,'the phone governor must actually lower a 1x buffer');
+ assert.ok(slower<normal);assert.ok(slower>=1,'normal phone sizes retain a CSS-pixel resolution floor');
  const safe=graphicsProfile({mobile:true,ios:true,safe:true});
  assert.equal(safe.postprocess,false);assert.equal(safe.shadows,false);assert.equal(safe.streamDetails,false);
  for(const input of [{mobile:true},{mobile:true,ios:true,tablet:true},{}]){
   const other=graphicsProfile(input);assert.equal(other.postprocess,true);assert.equal(other.streamDetails,true);assert.equal(other.cinematic,true);
  }
+});
+
+test('obsolete automatic recovery markers cannot permanently remove cartoon effects',()=>{
+ const f=fixture();f.storage.setItem('johansson-safe-graphics-v1','1');
+ const a=createStartupRecovery({...f,now:()=>1000});
+ assert.equal(a.safe,false);assert.equal(a.reduced,false);assert.equal(f.storage.getItem('johansson-safe-graphics-v1'),undefined);
+ a.entering();const recovery=createStartupRecovery({...f,now:()=>1100});
+ assert.equal(recovery.safe,true);assert.equal(recovery.reduced,false);
+ const p=graphicsProfile({mobile:true,ios:true,safe:recovery.safe,reduced:recovery.reduced});
+ assert.equal(p.postprocess,true);assert.equal(p.preferHalfFloat,true);assert.equal(p.samples,0);assert.equal(p.shadows,false);assert.equal(p.canvasPixels,650000);
+ recovery.running();f.settle();assert.equal(createStartupRecovery({...f,now:()=>1200}).safe,false);
 });
 
 test('a deliberate full-effects retry clears reduced mode but cannot override an interrupted launch',()=>{

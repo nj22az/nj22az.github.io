@@ -112,11 +112,13 @@ test('full phone effects use two bounded colour targets and never sample their o
  assert.equal(draws[1].target,null,'FXAA reaches the screen');
  assert.equal(draws[0].material.uniforms.uInkEnabled.value,1);
  assert.equal(draws[0].material.uniforms.uAmount.value,1);
+ assert.equal(targets[0].texture.type,THREE.HalfFloatType);assert.equal(targets[0].samples,2);
+ assert.equal(targets[1].texture.type,THREE.UnsignedByteType);assert.equal(targets[1].samples,0);
  const bytes=targets.reduce((total,t)=>{
-  assert.equal(t.texture.type,THREE.UnsignedByteType);assert.equal(t.samples,0);
-  return total+t.width*t.height*(4+(t.depthBuffer?4:0));
+  const colour=t.texture.type===THREE.HalfFloatType?8:4,depth=t.depthBuffer?4:0;
+  return total+t.width*t.height*(colour+depth)*(1+t.samples);
  },0);
- assert.ok(bytes<=650000*12,'At most 7.8 MB of colour and depth pixel storage, excluding driver overhead');
+ assert.ok(bytes<=650000*40,'Configured attachments stay within 26 MB; driver sample rounding/overhead is separate');
  let disposed=0;for(const target of targets)target.addEventListener('dispose',()=>disposed++);
  pipeline.dispose();assert.equal(disposed,2,'Both targets are released for context recovery');
 });
