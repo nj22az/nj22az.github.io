@@ -33,7 +33,9 @@ jobs:
           node johansson-town/scripts/build-runtime.mjs
           npm run package --prefix steam-deck
       - name: Real world controller and handheld layout acceptance
-        run: npm run test:console --prefix steam-deck
+        run: |
+          node steam-deck/tools/control-repair-smoke.cjs
+          npm run test:console --prefix steam-deck
       - name: Verify native application and disk saves
         env:
           WORLD_SCREENSHOT: steam-deck/dist/linux-world.png
@@ -48,6 +50,9 @@ jobs:
           path: |
             steam-deck/dist/johansson-world-linux-x64.tar.gz
             steam-deck/dist/SHA256SUMS
+            steam-deck/dist/latest-linux.json
+            steam-deck/dist/bundle-manifest.json
             steam-deck/dist/console-qa/
+            steam-deck/dist/control-repair/
             steam-deck/dist/linux-world*.png
           if-no-files-found: warn

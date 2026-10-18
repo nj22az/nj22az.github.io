@@ -4,7 +4,7 @@ The complete island game runs locally in a standalone Electron Linux application
 
 ## Controls and saves
 
-- Left stick moves, right stick looks; A interacts, B backs out, Y opens inventory. R3 levels the camera; R2 runs, X jumps, L2 looks closely. Existing saved assignments are preserved; “Use island controls” applies the new defaults.
+- Left stick moves, right stick looks; A interacts, B backs out, Y opens Bag. R3 levels the camera; R2 runs, X jumps, L2 looks closely. Existing saved assignments are preserved; “Use island controls” applies the new defaults.
 - The Deck’s ☰ Menu button opens pause from both the title and the island. L1/R1 switches Island, People and Settings; B returns a page or resumes from a section. ☰ always resumes. An always-visible Menu button and F10/Escape provide keyboard/mouse access.
 - The first visit explains the controls and suggests first steps. ☰ → Island → How to play reopens that guide.
 - ☰ → Settings → Controls & camera has sensitivity, dead zone, FOV, invert Y, walking camera motion, live stick feedback, axis selection, stick swapping and button remapping. Assignments and camera settings persist with saves. Conflicting button assignments swap so other actions remain accessible.
@@ -48,7 +48,13 @@ Development comparisons and release status are recorded at [Linux Port](https://
 
 The terminal installer shows a vending-machine delivery animation during upgrades, including actual download progress and verification stages. Redirected logs are plain; set JOHANSSON_NO_ANIMATION=1 for quiet terminal output or NO_COLOR=1 to omit color. The launcher gains the new original vending-machine icon after an installer-managed update starts. Existing Steam shortcuts may keep Steam's cached custom artwork; the release also includes the PNG for manual artwork selection.
 
-Updates currently download the complete archive. Content-only patches will need a separate verified file manifest and engine compatibility fallback; they are not implemented yet.
+0.2.7 is the full bootstrap update that installs patch support. Later releases publish a patch from the immediately previous version when the Electron runtime matches; Settings → Updates shows the selected download type and MiB before downloading. Only changed shell/game files and assets travel. Added files, removed files and file modes are recorded in a SHA-256 inventory. The updater checks the installed base, stages a separate target, verifies every target file and switches only on Save & restart. The previous installation and save profile remain intact. A modified base, skipped version or engine change uses the complete package; a corrupt patch fails without switching. The standalone installer remains a complete download for fresh installs and repairs, and prints the target version in the terminal.
+
+The vending-machine icon is launcher artwork. It is absent from the game's title/loading screen and pause header. The installer sets the Linux desktop shortcut icon and prints the PNG path for Steam shortcut artwork; existing Steam shortcuts can cache their prior artwork and may need it selected manually in Steam Desktop Mode.
+
+Menus use physical D-pad directions independently of gameplay remaps. D-pad Down navigates a list without toggling the gameplay HUD. Back leaves Controls and cancels a pending assignment; holding Back for one second deliberately assigns it. Menu cancels an assignment before it can close the pause screen. Gamepad activity hides the cursor; deliberate mouse movement/clicks restore it. Idle pad drift does not steal the pointer. The guide's “Every button & context” lists exploration, inspection, camera, menu and rare-quarrel controls with the current symbols.
+
+Linux startup uses exact spatial filtering for paving and wire-obstruction queries. A local Chrome/Mac comparison measured title readiness at 10.7 seconds before and 5.6 seconds after; this is not a Steam Deck benchmark. Geometry, triangle hit tests, cel shading and the web edition's query paths are preserved.
 
 ## Development
 

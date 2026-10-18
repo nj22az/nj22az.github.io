@@ -36,7 +36,7 @@ with tempfile.TemporaryDirectory() as folder:
   assert (base/'previous').resolve()==old.resolve()
   assert os.access(base/'current/JohanssonWorld',os.X_OK)
   assert 'Icon=' in (home/'data/applications/johansson-world.desktop').read_text()
-  assert 'Updating Johansson World' in text and 'Ding!' in text
+  assert 'Updating Johansson World '+version in text and 'Downloading Johansson World '+version in text and 'Ding!' in text
   if mode=='plain':assert '\x1b' not in text
   else:assert '\x1b[?25l' in text and '\x1b[?25h' in text and 'SHA-256' in text
  print(json.dumps({'mode':mode,'passed':True,'transcript':text}))

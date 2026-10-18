@@ -43,3 +43,12 @@ test('auto-detected controller symbols preserve physical positions and fall back
  assert.equal(buttonGlyph(1,{glyphs:'playstation'},'Generic USB'),'○');
  const saved=Array.from({length:17},(_,i)=>i);assert.deepEqual(profileSettings({bindings:saved}).bindings,saved,'Existing custom layouts are preserved');
 });
+
+test('desktop menu directions use physical D-pad, independent of HUD and camera remaps',async()=>{
+ const {createDesktopInput}=await load(),{createMenuRepeat}=await import('../../johansson-town/src/input/analogue.js'),p=pad(),input=createDesktopInput(()=>({}));input.sample([p]);p.buttons[13].pressed=true;
+ const frame=input.sample([p]);assert.equal(frame.held[10],true,'D-pad down still toggles HUD in play');assert.equal(frame.held[13],false);assert.equal(createMenuRepeat()(frame,1/60),'down','The same physical Down navigates menus');
+});
+test('controller activity hides cursor, idle/drift does not; genuine mouse movement restores it',async()=>{
+ const {createInputMode}=await import('../ui/input-mode.mjs'),changes=[],mode=createInputMode(value=>changes.push(value)),frame={move:{x:.1,y:.1},look:{x:0,y:0}};
+ mode.pad(frame,[]);assert.equal(mode.mode,'pointer');mode.pad(frame,[true]);assert.equal(mode.mode,'controller');mode.pointer({pointerType:'mouse',clientX:100,clientY:100});mode.pointer({pointerType:'mouse',clientX:101,clientY:100});assert.equal(mode.mode,'controller');mode.pointer({pointerType:'mouse',clientX:110,clientY:100});assert.equal(mode.mode,'pointer');mode.pad(frame,[]);assert.equal(mode.mode,'pointer');mode.pad({...frame,look:{x:.8,y:0}},[]);assert.equal(mode.mode,'controller');assert.deepEqual(changes,['controller','pointer','controller']);
+});

@@ -32,7 +32,7 @@ app.whenReady().then(async()=>{
  // update request may fetch the GitHub release channel.
  session.defaultSession.webRequest.onBeforeRequest({urls:['http://*/*','https://*/*','ws://*/*','wss://*/*']},(_details,callback)=>callback({cancel:true}));
  session.defaultSession.setPermissionRequestHandler((_contents,permission,callback)=>callback(['fullscreen','pointerLock'].includes(permission)));
- updater=createUpdater({version:app.getVersion(),installRoot:process.env.JOHANSSON_INSTALL_ROOT});
+ updater=createUpdater({version:app.getVersion(),bundleRoot:path.resolve(__dirname,'../..'),installRoot:process.env.JOHANSSON_INSTALL_ROOT});
  ipcMain.on('read-backup',event=>{event.returnValue=readSnapshot(saveDir());});
  ipcMain.handle('save-backup',(_event,data)=>writeSnapshot(saveDir(),data));
  ipcMain.handle('performance-info',()=>app.getAppMetrics().map(p=>({type:p.type,workingSetMiB:Math.round(p.memory.workingSetSize/1024)})));
