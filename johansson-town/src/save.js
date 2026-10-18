@@ -50,9 +50,15 @@ export function readPlayers(storage){
 }
 export function writePlayers(storage,roster){try{storage.setItem(PLAYERS_KEY,JSON.stringify(roster));return true;}catch{return false;}}
 export const activePlayer=storage=>{const roster=readPlayers(storage);return roster.players.find(p=>p.id===roster.active);};
-export function addPlayer(storage,name,now=Date.now()){
+// Imported progress is written before its slot becomes active. A failed write
+// must leave the current player selected, rather than opening an empty story.
+export function addPlayer(storage,name,now=Date.now(),initialSave=null){
   const roster=readPlayers(storage),id='player-'+now.toString(36)+Math.floor(Math.random()*1296).toString(36);
-  roster.players.push({id,name:cleanName(name)||'Visitor',created:now,lastPlayed:now});roster.active=id;writePlayers(storage,roster);return id;
+  if(initialSave!==null)try{storage.setItem(slotKey(id),JSON.stringify(initialSave));}catch{return null;}
+  roster.players.push({id,name:cleanName(name)||'Visitor',created:now,lastPlayed:now});roster.active=id;
+  if(writePlayers(storage,roster))return id;
+  if(initialSave!==null)try{storage.removeItem(slotKey(id));}catch{}
+  return null;
 }
 export function switchPlayer(storage,id){const roster=readPlayers(storage);if(!roster.players.some(p=>p.id===id))return false;roster.active=id;return writePlayers(storage,roster);}
 export function renamePlayer(storage,name){const roster=readPlayers(storage),p=roster.players.find(p=>p.id===roster.active);if(!p||!cleanName(name))return false;p.name=cleanName(name);return writePlayers(storage,roster);}

@@ -68,11 +68,12 @@ export function createTitleMenu({launch}){
   const f=file.files?.[0];if(!f)return;
   try{
    const data=JSON.parse(await f.text());
-   if(!['johansson-town','johansson-world'].includes(data?.game)||!data.state||typeof data.state!=='object')throw Error('not a save');
-   const id=addPlayer(storage,data.player||f.name.replace(/\.json$/,''));storage.setItem(slotKey(id),JSON.stringify(data.state));
+   if(!['johansson-town','johansson-world'].includes(data?.game)||!data.state||typeof data.state!=='object'||Array.isArray(data.state))throw Error('not a save');
+   const id=addPlayer(storage,data.player||f.name.replace(/\.json$/,''),Date.now(),data.state);
+   if(!id){$('titlePlayerSummary').textContent='This device could not save the imported player. Your current player is unchanged.';return;}
    location.reload();
   }catch{$('titlePlayerSummary').textContent='That file is not a Johansson World save.';}
-  file.value='';
+  finally{file.value='';}
  });
  refresh();
  return {refresh,open,close};
