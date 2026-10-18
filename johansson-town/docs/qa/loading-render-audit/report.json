@@ -21,7 +21,12 @@
         512
       ],
       "shadowWidth": 28,
-      "gpuError": 0
+      "gpuError": 0,
+      "image": {
+        "minimum": 0,
+        "maximum": 254,
+        "colours": 26687
+      }
     },
     {
       "label": "park-landscape",
@@ -42,7 +47,12 @@
         512
       ],
       "shadowWidth": 28,
-      "gpuError": 0
+      "gpuError": 0,
+      "image": {
+        "minimum": 0,
+        "maximum": 254,
+        "colours": 33302
+      }
     },
     {
       "label": "sakura-interior",
@@ -63,7 +73,12 @@
         512
       ],
       "shadowWidth": 28,
-      "gpuError": 0
+      "gpuError": 0,
+      "image": {
+        "minimum": 0,
+        "maximum": 254,
+        "colours": 30169
+      }
     }
   ],
   "heldRequest": {
@@ -88,7 +103,7 @@
     "label": "Island ready",
     "error": null,
     "assets": {
-      "completed": 14,
+      "completed": 19,
       "total": 21,
       "failed": 0
     }
