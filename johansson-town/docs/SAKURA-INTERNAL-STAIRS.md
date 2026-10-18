@@ -33,3 +33,18 @@ midnight, plus the stair at night; it checks image content, lighting fixtures,
 full postprocessing, GPU errors and outside-door entry. Results are recorded in
 `docs/qa/sakura-internal-stairs/` after verification. Physical iPhone Safari
 testing remains unavailable; Linux WebKit is not a physical-phone benchmark.
+
+## Recorded result
+
+The final release passed 60 focused and runtime-package checks. Linux WebKit
+completed 419 actual input steps upstairs and 419 downstairs with zero recorded
+position drift. The outside office entrance also placed the player on the same
+upper floor. Four captures were reviewed: office daylight, office at 00:30,
+whole-office overview at 00:30 and the stairwell at 00:30. Fixtures remained on,
+full postprocessing remained active and each view reported no WebGL error.
+
+The full-game replay caught an initial boundary error at the rear upper landing;
+its correction is included in both the runtime boundary helper and the traversal
+check. Image review also corrected missing desk/tea-table supports and enclosed
+the shaft above the old stockroom ceiling. These results concern this office and
+stair route; they do not constitute physical iPhone or whole-town acceptance.
