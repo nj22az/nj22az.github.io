@@ -45,7 +45,7 @@ export function createHarbourFestival({scene,camera,renderer,activities,getStage
   actors=bout.fighters.map(f=>{const avatar=buildAvatar(recipeFor(f.name),{shadows:false,faceSize:256});avatar.root.rotation.y=0;ring.add(avatar.root);return avatar;});
   const line=new THREE.Mesh(new THREE.RingGeometry(2.45,2.48,48),new THREE.MeshBasicMaterial({color:0xf4e4ab,side:THREE.DoubleSide,depthWrite:false}));line.rotation.x=-Math.PI/2;line.position.y=.025;line.visible=!dispute;ring.add(line);
   hud=document.createElement('section');hud.id='festivalHUD';hud.style.cssText='position:fixed;left:3%;right:3%;top:4%;z-index:1000;pointer-events:none;color:#fff;font:700 17px system-ui;text-shadow:0 2px 3px #000';
-  hud.innerHTML='<div style="display:flex;justify-content:space-between;gap:10px"><span data-hero></span><span data-clock></span><span data-foe></span></div><p data-stage style="text-align:center"></p><p style="position:fixed;bottom:20px;left:4%;right:4%;text-align:center">'+(window.johanssonDesktop?'X punch · Y kick · Hold A guard · B dodge · View leave':'X / J punch · Y / K kick · Hold A / L guard · B / Space dodge · View / Esc leave')+'</p>';
+  hud.innerHTML='<div style="display:flex;justify-content:space-between;gap:10px"><span data-hero></span><span data-clock></span><span data-foe></span></div><p data-stage style="text-align:center"></p><p style="position:fixed;bottom:20px;left:4%;right:4%;text-align:center">'+(window.johanssonDesktop?'<kbd data-glyph="5">X</kbd> punch · <kbd data-glyph="3">Y</kbd> kick · Hold <kbd data-glyph="0">A</kbd> guard · <kbd data-glyph="1">B</kbd> dodge · <kbd data-glyph="8">View</kbd> leave':'X / J punch · Y / K kick · Hold A / L guard · B / Space dodge · View / Esc leave')+'</p>';
   document.body.append(hud);document.documentElement.classList.add('festival-active');
  }
  function finish(){
@@ -79,7 +79,7 @@ export function createHarbourFestival({scene,camera,renderer,activities,getStage
   if(edge(8)){previousPad=buttons;finish();return;}
   const paused=document.hidden||document.documentElement.dataset.desktopMenu==='open';
   if(!paused){
-   let input={x:(keyboard.KeyD?1:0)-(keyboard.KeyA?1:0)+(desktop?.move.x??pad?.axes[0]??0),z:(keyboard.KeyS?1:0)-(keyboard.KeyW?1:0)+(desktop?.move.y??pad?.axes[1]??0),punch:!!edges.KeyJ||edge(2),kick:!!edges.KeyK||edge(3),guard:!!keyboard.KeyL||!!buttons[0],dodge:!!edges.Space||edge(1)};
+   let input={x:(keyboard.KeyD?1:0)-(keyboard.KeyA?1:0)+(desktop?.move.x??pad?.axes[0]??0),z:(keyboard.KeyS?1:0)-(keyboard.KeyW?1:0)+(desktop?.move.y??pad?.axes[1]??0),punch:!!edges.KeyJ||edge(window.johanssonDesktop?5:2),kick:!!edges.KeyK||edge(3),guard:!!keyboard.KeyL||!!buttons[0],dodge:!!edges.Space||edge(1)};
    if(Math.abs(input.x)<.16)input.x=0;if(Math.abs(input.z)<.16)input.z=0;
    accumulator+=Math.min(.1,dt);
    let consumed=false;while(accumulator>=1/60){const spectatorInput={x:Math.abs(bout.fighters[1].x-bout.fighters[0].x)>.65?(bout.fighters[1].x>bout.fighters[0].x?.55:-.55):0,z:(bout.fighters[1].z-bout.fighters[0].z)*.3,punch:bout.tick%41===0,kick:bout.tick%97===0,guard:bout.tick%91<17};stepFestivalBout(bout,spectating?spectatorInput:consumed?{...input,punch:false,kick:false,dodge:false}:input);consumed=true;accumulator-=1/60;}

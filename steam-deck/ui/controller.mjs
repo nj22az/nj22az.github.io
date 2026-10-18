@@ -1,12 +1,13 @@
 const finite = (value, fallback = 0) => Number.isFinite(value) ? value : fallback;
 const clamp = (value, min, max) => Math.max(min, Math.min(max, finite(value)));
-export const DEFAULT_BINDINGS = Object.freeze(Array.from({length: 17}, (_, i) => i));
+export const DEFAULT_BINDINGS = Object.freeze([0,1,5,3,7,2,4,6,8,9,13,11,12,10,14,15,16]);
 export function profileSettings(saved = {}) {
   const index = (value, fallback) => Number.isInteger(value) && value >= 0 && value < 64 ? value : fallback;
   return {
     moveAxes: [index(saved.moveAxes?.[0], 0), index(saved.moveAxes?.[1], 1)],
     lookAxes: [index(saved.lookAxes?.[0], 2), index(saved.lookAxes?.[1], 3)],
     bindings: DEFAULT_BINDINGS.map((value, i) => index(saved.bindings?.[i], value)),
+    glyphs: ['auto','deck','xbox','playstation','nintendo','positions'].includes(saved.glyphs) ? saved.glyphs : 'auto',
     controller: typeof saved.controller === 'string' ? saved.controller : '',
   };
 }
@@ -51,4 +52,32 @@ export function createDesktopInput(getProfile) {
       return {...result, pressed};
     },
   };
+}
+
+const DECK=['A','B','X','Y','L1','R1','L2','R2','▣','☰','L3','R3','↑','↓','←','→','Steam'];
+const XBOX=['A','B','X','Y','LB','RB','LT','RT','View','Menu','L3','R3','↑','↓','←','→','Guide'];
+const PLAYSTATION=['×','○','□','△','L1','R1','L2','R2','Create','Options','L3','R3','↑','↓','←','→','PS'];
+const NINTENDO=['B','A','Y','X','L','R','ZL','ZR','−','+','L3','R3','↑','↓','←','→','Home'];
+const POSITIONS=['Bottom','Right','Left','Top','L1','R1','L2','R2','View','Menu','L3','R3','↑','↓','←','→','Guide'];
+const SETS={deck:DECK,xbox:XBOX,playstation:PLAYSTATION,nintendo:NINTENDO,positions:POSITIONS};
+export function controllerFamily(id='',override='auto'){
+ if(SETS[override])return override;
+ // Steam Input can intentionally expose a virtual Xbox pad. Respect the device
+ // the browser actually reports; offer an override for that translation layer.
+ if(/Steam.?Deck|Valve.*(Neptune|Jupiter)|Neptune.*Valve/i.test(id))return 'deck';
+ if(/DualSense|DualShock|PlayStation|PS[345] Controller|054c|Sony/i.test(id))return 'playstation';
+ if(/Nintendo|Switch.*Pro|Pro Controller|Joy.?Con|057e/i.test(id))return 'nintendo';
+ if(/Xbox|XInput|045e|Microsoft/i.test(id))return 'xbox';
+ return 'positions';
+}
+export function physicalGlyph(index,profile={},id=''){
+ const family=controllerFamily(id,profile.glyphs);
+ return SETS[family][index]||'Button '+index;
+}
+export function buttonGlyph(action,profile={},id=''){const p=profileSettings(profile);return physicalGlyph(p.bindings[action],p,id);}
+export function buttonPrompt(action,profile={},id='',physical=false){
+ const p=profileSettings(profile),index=physical?action:p.bindings[action],family=controllerFamily(id,p.glyphs);
+ if(family!=='positions'||index>3)return physicalGlyph(index,p,id);
+ const points=[[22,34],[34,22],[10,22],[22,10]];
+ return `<svg class="console-button-diamond" viewBox="0 0 44 44" role="img" aria-label="${POSITIONS[index]} face button">${points.map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="7" fill="${i===index?'#e84d6b':'#d0daef'}" stroke="${i===index?'#ffffff':'#7285ad'}" stroke-width="${i===index?2:1}"/>`).join('')}</svg>`;
 }

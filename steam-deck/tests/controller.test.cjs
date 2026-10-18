@@ -26,3 +26,20 @@ test('selected controller and hotplug keep the active device stable',async()=>{
  assert.equal(input.read([a,b]).pad.id,'USB pad');assert.equal(input.sample([a,b]).move.y,-1);
  assert.equal(input.read([b,a]).pad.id,'USB pad');b.connected=false;assert.equal(input.read([a,b]).pad.id,'Deck');
 });
+test('Deck prompts name physical Menu/View/shoulder controls and follow remapping',async()=>{
+ const {buttonGlyph,profileSettings}=await load(),profile=profileSettings({});assert.equal(buttonGlyph(9,profile,'Steam Deck'),'☰');assert.equal(buttonGlyph(8,profile,'Steam Deck'),'▣');assert.equal(buttonGlyph(4,profile,'Steam Deck'),'R2');profile.bindings[9]=6;assert.equal(buttonGlyph(9,profile),'L2');assert.equal(buttonGlyph(4,{glyphs:'xbox'}),'RT');
+});
+test('D-pad follows the visible grid, preserves rows and stops at an edge',async()=>{
+ const {directionalIndex}=await import('../ui/menu-navigation.mjs');const rects=[{left:0,top:0,width:100,height:40},{left:120,top:0,width:100,height:40},{left:0,top:60,width:100,height:40},{left:120,top:60,width:100,height:40}];assert.equal(directionalIndex(rects,0,'right'),1);assert.equal(directionalIndex(rects,0,'down'),2);assert.equal(directionalIndex(rects,1,'down'),3);assert.equal(directionalIndex(rects,0,'left'),0);assert.equal(directionalIndex(rects,3,'right'),3);
+});
+
+test('auto-detected controller symbols preserve physical positions and fall back to a highlighted diamond',async()=>{
+ const {controllerFamily,buttonGlyph,buttonPrompt,profileSettings}=await load();
+ assert.equal(controllerFamily('DualSense Wireless Controller (054c-0ce6)'),'playstation');
+ assert.equal(buttonGlyph(1,{},'DualSense'),'○');assert.equal(buttonGlyph(0,{},'DualSense'),'×');
+ assert.equal(buttonGlyph(0,{},'Nintendo Switch Pro Controller'),'B');assert.equal(buttonGlyph(1,{},'Nintendo Switch Pro Controller'),'A');
+ assert.equal(buttonGlyph(5,{},'Xbox Wireless'),'X');assert.equal(buttonGlyph(4,{},'Steam Deck'),'R2');assert.equal(buttonGlyph(7,{},'Steam Deck'),'L2');
+ const unknown=buttonPrompt(1,{},'Generic USB Controller');assert.match(unknown,/Right face button/);assert.equal((unknown.match(/<circle/g)||[]).length,4);assert.equal((unknown.match(/#e84d6b/g)||[]).length,1);
+ assert.equal(buttonGlyph(1,{glyphs:'playstation'},'Generic USB'),'○');
+ const saved=Array.from({length:17},(_,i)=>i);assert.deepEqual(profileSettings({bindings:saved}).bindings,saved,'Existing custom layouts are preserved');
+});

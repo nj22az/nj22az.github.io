@@ -1,6 +1,7 @@
 import {assetURL} from '../assets.js';
 import {BEACH_CORNER} from '../world/beach-layout.js';
 import {ambience} from './soundscape.js';
+import {naturalNightCall} from './night-texture.js';
 let ctx=null,master=null,enabled=true,buffers=new Map(),loops=new Map(),lastTrain=-1,speech=null,speechRequest=0;
 export function unlockTownAudio(){
   const Context=window.AudioContext||window.webkitAudioContext;if(!Context)return;
@@ -65,15 +66,13 @@ function updateShore(player,{inside,paused,relax}){
 /**
  * The living soundscape (soundscape.js decides the levels; this plays them). Two cicada
  * species are the one recording at two pitches -- the big kumazemi slower and deeper in the
- * morning, the aburazemi quicker in the afternoon -- and everything else is synthesised,
- * so nothing loops audibly: the rain, the frogs of the rainy season, the yamori geckos on
- * the eaves, the morning birds, the higurashi's falling evening call and the harbour
+ * morning, the aburazemi quicker in the afternoon -- and the other layers use noise or synthesis: the rain, sparse low croaks, irregular night-insect rustles, the morning birds, the higurashi's falling evening call and the harbour
  * gulls. Each layer has its own gain and moves with a slow time constant, so the morning
  * fades into the afternoon rather than switching.
  */
 let scape=null;
-const LOOPED=Object.freeze({kumazemi:['cicadas',.82,.3],aburazemi:['cicadas',1.14,.24],crickets:['crickets',1,.26]});
-const SYNTH_LEVEL=Object.freeze({frogs:.22,geckos:.12,birds:.1,higurashi:.09,gulls:.1,rain:.3});
+const LOOPED=Object.freeze({kumazemi:['cicadas',.82,.3],aburazemi:['cicadas',1.14,.24]});
+const SYNTH_LEVEL=Object.freeze({frogs:.1,crickets:.08,birds:.1,higurashi:.09,gulls:.1,rain:.3});
 function startScape(){
  const bus={};for(const name of Object.keys(SYNTH_LEVEL)){bus[name]=ctx.createGain();bus[name].gain.value=0;bus[name].connect(master);}
  // Rain: white noise, hiss on top and a soft roar under it.
@@ -83,7 +82,7 @@ function startScape(){
  const roarGain=ctx.createGain();roarGain.gain.value=1.6;
  rain.connect(hiss).connect(bus.rain);rain.connect(roar).connect(roarGain).connect(bus.rain);rain.start();
  const t=ctx.currentTime;
- return {bus,loops:{},next:{frogs:t,geckos:t+3,birds:t,higurashi:t+2,gulls:t+4},level:{},whistleFree:0};
+ return {bus,loops:{},next:{frogs:t+5,crickets:t+4,birds:t,higurashi:t+2,gulls:t+4},level:{},whistleFree:0};
 }
 function note(out,at,from,to,length,level,type='sine'){
  const osc=ctx.createOscillator(),env=ctx.createGain();osc.type=type;
@@ -92,10 +91,9 @@ function note(out,at,from,to,length,level,type='sine'){
  osc.connect(env).connect(out);osc.start(at);osc.stop(at+length+.02);
 }
 const CALLS={
- // A pair of short low croaks, sometimes three.
- frogs(out,t){const base=150+Math.random()*60;for(let k=0;k<1+Math.floor(Math.random()*3);k++)note(out,t+k*.16,base,base*.78,.1,.5,'square');return .35+Math.random()*1.1;},
- // The yamori: a dry run of chirps.
- geckos(out,t){const n=5+Math.floor(Math.random()*4);for(let k=0;k<n;k++)note(out,t+k*.085,2700-k*40,2300,.028,.6);return 7+Math.random()*12;},
+ // Filtered, irregular air and insect rustles, never a pure electronic tone.
+ frogs(out,t){return naturalNightCall(ctx,out,t,'frogs');},
+ crickets(out,t){return naturalNightCall(ctx,out,t);},
  // A bulbul's three notes, or a white-eye's thin trill.
  birds(out,t){if(Math.random()<.6){for(let k=0;k<3;k++){const f=1700+Math.random()*1500;note(out,t+k*.17,f,f*(.8+Math.random()*.5),.14,.45);}}else for(let k=0;k<6;k++)note(out,t+k*.05,4200+Math.random()*500,3900,.04,.3);return .7+Math.random()*2.6;},
  // Kana-kana-kana: a falling, slowing run.
@@ -127,7 +125,7 @@ const ENGINE=Object.freeze({off:[0,.85],generators:[.06,.78],idle:[.12,.82],mano
 function updateScape(player,{minutes,rain,inside,paused,ferry}){
  // Gulls want the water: the harbour is to the south of the town, past z = -35.
  const harbour=Math.max(0,Math.min(1,(-player.z-25)/25));
- const mix=paused?Object.fromEntries(Object.keys(SYNTH_LEVEL).concat(Object.keys(LOOPED)).map(k=>[k,0])):ambience({minutes,rain,inside,harbour,quietNight:!!window.johanssonDesktop});
+ const mix=paused?Object.fromEntries(Object.keys(SYNTH_LEVEL).concat(Object.keys(LOOPED)).map(k=>[k,0])):ambience({minutes,rain,inside,harbour});
  if(!scape){if(!Object.values(mix).some(v=>v>.01))return;scape=startScape();}
  const t=ctx.currentTime;
  for(const [layer,[file,rate,base]] of Object.entries(LOOPED)){

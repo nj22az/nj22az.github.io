@@ -2061,7 +2061,8 @@ function updateController(dt){
  if(festival?.active||document.documentElement.dataset.desktopMenu==='open'){gamepadInput.suspend();return;}
  let pads=[];try{if(!document.hidden)pads=navigator.getGamepads?.()||[];}catch{}
  controllerFrame=(window.johanssonDesktopInput||gamepadInput).sample(pads,cameraControls.settings.deadzone);const f=controllerFrame;
- if(controllerConnected!==f.connected){controllerConnected=f.connected;cameraControls.status(f.connected);if(f.connected)say(window.johanssonDesktop?'Controller connected · Left stick move · Right stick look · Start opens pause menu':'Controller connected · Left stick move · Right stick look · Menu opens town book',5);}
+ if(window.johanssonDesktop&&f.pressed[9])return; // The Deck Menu button belongs to the pause layer, even over a dialogue.
+ if(controllerConnected!==f.connected){controllerConnected=f.connected;cameraControls.status(f.connected);if(f.connected)say(window.johanssonDesktop?'Controller connected · Left stick move · Right stick look · ☰ Menu pauses the island':'Controller connected · Left stick move · Right stick look · Menu opens town book',5);}
  if(!started||document.hidden||catchingUp)return;
  if(!$('#qte').classList.contains('hidden')){if(f.pressed[1]||f.pressed[9])activities.close();else window.__JOHANSSON_TOUCH_UI__?.controller?.(f);return;}
  const direction=menuRepeat(f,dt);
@@ -2077,12 +2078,16 @@ function updateController(dt){
   if(f.pressed[1]||f.pressed[9]){if(concert?.active){concert.close();return;}if(cameraControls.active)cameraControls.close();else if(activities.paused)activities.close();else toggleDir(false);return;}
   // In a conversation, A finishes the line being typed, then takes the highlighted reply.
   if(root.id==='activity'&&activities.dialogue?.active&&f.pressed[0]){activities.dialogue.confirm();return;}
-  navigateControls(root,direction);
+  if(window.johanssonDesktopUI)window.johanssonDesktopUI.navigate(root.id==='activity'&&activities.dialogue?.active?$('#activityActions'):root,direction);else navigateControls(root,direction);
   if(f.pressed[0]){const items=focusableControls(root);if(items.includes(document.activeElement))document.activeElement.click();else items[0]?.focus();}return;
  }
  if(!controlsAllowed())return;
  // The pocket camera: up on the D-pad raises it; A takes the photo, B or up again lowers it.
  if(pocket?.raised){if(f.pressed[0])pocket.shoot();if(f.pressed[1]||f.pressed[12])lowerPocket();if(f.pressed[9]||f.pressed[8]){lowerPocket();toggleDir(true);}return;}
+ if(window.johanssonDesktop){
+  if(f.pressed[14]||f.pressed[15]){contextRail.cycle(f.pressed[14]?-1:1);return;}
+  if(f.pressed[1]){if(seated){standUp();return;}const exit=$('#exitRoomButton');if(!exit.hidden&&!exit.disabled){exit.click();return;}}
+ }
  if(f.pressed[12]){raisePocket();return;}
  if(f.pressed[8]||f.pressed[9]&&!window.johanssonDesktop){toggleDir(true);return;}
  if(f.pressed[3]){activities.inventory();return;}

@@ -19,15 +19,19 @@ const {chromium}=require('playwright');
  await page.addInitScript(()=>{
   window.__pad={id:'Steam Deck test pad',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
   Object.defineProperty(navigator,'getGamepads',{value:()=>window.__pad?[window.__pad]:[],configurable:true});
-  window.johanssonDesktop={offline:true,version:'0.2.3',save:async()=>{dispatchEvent(new Event('johansson-desktop-save'));dispatchEvent(new Event('johansson-save'));window.__saved=true;},performance:async()=>[{type:'Renderer',workingSetMiB:120}],checkUpdate:async()=>({available:false}),installUpdate:async()=>({ready:false}),quit:async()=>{window.__quit=true;}};
+  window.johanssonDesktop={offline:true,version:'0.2.4',save:async()=>{dispatchEvent(new Event('johansson-desktop-save'));dispatchEvent(new Event('johansson-save'));window.__saved=true;},performance:async()=>[{type:'Renderer',workingSetMiB:120}],checkUpdate:async()=>({available:false}),installUpdate:async()=>({ready:false}),quit:async()=>{window.__quit=true;}};
  });
  const sampled=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
- const tap=async i=>{await page.evaluate(i=>{window.__pad.buttons[i]={pressed:true,value:1};},i);await sampled();await page.evaluate(i=>{window.__pad.buttons[i]={pressed:false,value:0};},i);await sampled();};
+ const tap=async i=>{await sampled();await page.evaluate(i=>{window.__pad.buttons[i]={pressed:true,value:1};},i);await sampled();await page.evaluate(i=>{window.__pad.buttons[i]={pressed:false,value:0};},i);await sampled();};
  // Software-rendered CI frames can take longer than 250 ms. Keep the input held
  // for real sampled frames so both movement and camera receive the same test input.
  const axes=async value=>{await page.evaluate(value=>{window.__pad.axes=value;},value);await sampled();await sampled();};
  const state=()=>page.evaluate(()=>window.johanssonDesktopUI.snapshot());
- const click=action=>page.locator(`#desktopMenu [data-action="${action}"]`).last().click();
+ const click=async action=>{
+  const target=page.locator(`#desktopMenu [data-action="${action}"]`).last();
+  if(!await target.isVisible())await page.locator(`#desktopTabs [data-tab="${['controls','display','updates','quit'].includes(action)?'settings':action==='people'?'people':'pause'}"]`).click();
+  if(action==='people')return;await page.locator(`#desktopMenu [data-action="${action}"]`).last().click();
+ };
  console.log('Opening installed site',url);
  await page.goto(url+'/johansson-town/?desktop=1&audit&cinematic=off',{waitUntil:'domcontentloaded'});
  console.log('Title loading');
@@ -35,22 +39,36 @@ const {chromium}=require('playwright');
  await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.frozen=true;window.__JOHANSSON_AUDIT__.renderFrozen=false;});
  await page.screenshot({path:path.join(out,'01-title-1280.png')});
  await page.locator('#title .title-guide').click();assert.equal((await state()).page,'help','Title guide uses console instructions');await tap(9);
- await tap(9);assert.equal((await state()).menu,true,'Start opens menu from title');await click('controls');await page.screenshot({path:path.join(out,'02-controls-title.png')});await tap(1);assert.equal((await state()).page,'pause');await tap(1);assert.equal((await state()).menu,false);
+ await tap(9);assert.equal((await state()).menu,true,'Start opens menu from title');await click('controls');await page.screenshot({path:path.join(out,'02-controls-title.png')});await tap(1);assert.equal((await state()).page,'settings');await tap(1);assert.equal((await state()).menu,false);
+ assert.equal(await page.locator('#desktopTabs [data-tab]').count(),3);assert.equal(await page.locator('#desktopOpenMenu kbd').textContent(),'☰');
+ await tap(9);await tap(5);assert.equal((await state()).page,'people','R1 opens People');await tap(5);assert.equal((await state()).page,'settings','R1 opens Settings');await tap(4);assert.equal((await state()).page,'people','L1 returns to People');await tap(9);
+ // Hot-plug reported families updates prompts without changing their physical roles.
+ for(const [id,family,backGlyph] of [['DualSense Wireless Controller','playstation','○'],['Nintendo Switch Pro Controller','nintendo','A'],['Xbox Wireless Controller','xbox','B']]){
+  await page.evaluate(id=>{window.__pad.id=id;},id);await tap(9);await page.waitForFunction(f=>document.documentElement.dataset.controllerFamily===f,family);
+  assert.equal(await page.locator('.console-footer [data-glyph="1"]').textContent(),backGlyph);await page.screenshot({path:path.join(out,`symbols-${family}.png`)});await tap(9);
+ }
+ await page.evaluate(()=>{window.__pad.id='Generic USB Controller';});await tap(9);
+ assert.equal(await page.locator('.console-footer [data-glyph="1"] svg').getAttribute('aria-label'),'Right face button');
+ await page.screenshot({path:path.join(out,'symbols-unknown.png')});await click('controls');await page.locator('[name=glyphs]').selectOption('playstation');assert.equal(await page.locator('[data-bind="1"] kbd').textContent(),'○');await page.locator('[name=glyphs]').selectOption('auto');await tap(9);
+ await page.evaluate(()=>{window.__pad.id='Steam Deck test pad';});
+ await page.locator('#titleLoad').click();await tap(1);assert.equal(await page.locator('#titleSlots').isVisible(),false,'B closes the title save list');
  // A begins the actual world without needing a mouse.
  await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.frozen=false;});await tap(0);await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__===true,null,{timeout:120000});
  await page.waitForTimeout(500);assert.equal((await state()).page,'help');assert.equal((await state()).menu,true,'First entry explains what to do');
  assert.equal(await page.evaluate(()=>window.__JOHANSSON_STABILITY__?.ok),true,'Real world startup checks pass');
  await page.screenshot({path:path.join(out,'03-first-steps-1280.png')});await click('resume');
- if(await page.locator('#exitRoomButton').isVisible()){await page.locator('#exitRoomButton').click();await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).room===null);}
+ if(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room!==null&&!window.johanssonLinuxWorld.inBed)){await tap(1);await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).room===null);}
  // Find the same walkable harbour fixture used by the world audit.
  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.teleport(-7,-15,0,0));
  let before=await page.evaluate(()=>({...window.__JOHANSSON_POSE__}));await axes([0,-1,0,0]);await page.waitForTimeout(500);await axes([0,0,0,0]);
  let after=await page.evaluate(()=>({...window.__JOHANSSON_POSE__}));assert.ok(Math.hypot(after.x-before.x,after.z-before.z)>.1,'Left stick moves the actual world player');
  before=after;await axes([0,0,.85,.5]);await page.waitForTimeout(350);await axes([0,0,0,0]);after=await page.evaluate(()=>({...window.__JOHANSSON_POSE__}));assert.ok(Math.abs(after.yaw-before.yaw)>.05,'Right stick rotates actual camera');assert.ok(Math.abs(after.pitch-before.pitch)>.02,'Right stick tilts actual camera');
  await tap(11);await page.waitForTimeout(100);assert.ok(Math.abs(await page.evaluate(()=>window.__JOHANSSON_POSE__.pitch))<.01,'R3 centres camera');
+ await tap(9);await tap(2);assert.equal(await page.evaluate(()=>window.__saved),true,'X quick-saves only in pause');
+ await click('quit');assert.equal(await page.evaluate(()=>!!window.__quit),false,'Opening Quit never closes the game');await tap(1);assert.equal((await state()).page,'settings');await tap(9);
  await page.screenshot({path:path.join(out,'04-gameplay-1280.png')});
  // Night harbour: the old tonal cricket loop must never be loaded in Linux.
- if(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room!==null)){await page.locator('#exitRoomButton').click();await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).room===null);}
+ if(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room!==null)){await tap(1);await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).room===null);}
  await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.setTime(1380);window.__JOHANSSON_AUDIT__.teleport(4.9,-42.6,-Math.PI/2,0);});
  await sampled();await page.waitForTimeout(1200);
  assert.equal(audioRequests.some(url=>url.includes('/crickets.wav')),false,'No repeating electronic cricket beep at night');
@@ -75,6 +93,7 @@ const {chromium}=require('playwright');
    const text=range.getBoundingClientRect(),caption=document.getElementById('subtitle').getBoundingClientRect(),rail=document.getElementById('contextActions').getBoundingClientRect();
    return {clamp:getComputedStyle(label).webkitLineClamp,height:box.height,textHeight:text.height,scroll:label.scrollHeight,client:label.clientHeight,captionRight:caption.right,railLeft:rail.left,railRight:rail.right,railBottom:rail.bottom,width:innerWidth,heightLimit:innerHeight};
   });
+  assert.equal(await page.locator('#act .console-action-key').textContent() === 'A',true,'Action prompt displays the mapped A button');
   assert.equal(layout.clamp,'none','Full action labels have no line clamp');
   assert.ok(layout.scroll<=layout.client+1&&layout.textHeight<=layout.height+1,'Complete action text is visible');
   assert.ok(layout.captionRight<layout.railLeft,'Caption and action descriptions do not overlap');
@@ -89,14 +108,14 @@ const {chromium}=require('playwright');
  await page.locator('#desktopMenu [name=invertY]').focus();await tap(0);assert.equal(await page.locator('#desktopMenu [name=invertY]').isChecked(),true);
  // Custom remap is exercised through the capture UI, including Start itself.
  await page.locator('[data-bind="9"]').click();await sampled();await tap(6);assert.match(await page.locator('#desktopStatus').textContent(),/assigned to button 6/);
- assert.equal(await page.locator('[data-bind="9"] kbd').textContent(),'6');
+ assert.equal(await page.locator('[data-bind="9"] kbd').textContent(),'L2');
  await tap(6);assert.equal((await state()).menu,false,'Remapped Start closes menu');const pitchBefore=await page.evaluate(()=>window.__JOHANSSON_POSE__.pitch);await axes([0,0,0,.8]);await axes([0,0,0,0]);assert.ok(await page.evaluate(()=>window.__JOHANSSON_POSE__.pitch)>pitchBefore,'Invert Y changes actual camera behaviour');await tap(6);assert.equal((await state()).menu,true,'Remapped Start reopens menu');
  await click('controls');await click('swap');await page.screenshot({path:path.join(out,'06-custom-controls.png')});
  await click('resume');before=await page.evaluate(()=>({...window.__JOHANSSON_POSE__}));await axes([.8,0,0,0]);await page.waitForTimeout(250);await axes([0,0,0,0]);after=await page.evaluate(()=>({...window.__JOHANSSON_POSE__}));assert.ok(Math.abs(after.yaw-before.yaw)>.05,'Swapped look stick changes actual camera');
  await tap(6);await click('controls');await click('reset');
- await click('resume');await tap(10);assert.equal((await state()).hudHidden,true);assert.equal(await page.locator('#desktopOpenMenu').isVisible(),true,'Menu remains accessible with HUD hidden');await tap(10);assert.equal((await state()).hudHidden,false);
+ await click('resume');await tap(13);assert.equal((await state()).hudHidden,true);assert.equal(await page.locator('#desktopOpenMenu').isVisible(),true,'Menu remains accessible with HUD hidden');await tap(13);assert.equal((await state()).hudHidden,false);
  await tap(8);await page.waitForTimeout(150);assert.equal(await page.locator('#directory').isVisible(),true,'View opens town book');await tap(1);assert.equal(await page.locator('#directory').isVisible(),false);
- await tap(3);assert.equal(await page.locator('#activity').isVisible(),true,'Y opens inventory');await tap(1);assert.equal(await page.locator('#activity').isVisible(),false);
+ await tap(3);assert.equal(await page.locator('#activity').isVisible(),true,'Y opens inventory');await page.screenshot({path:path.join(out,'05-inventory.png')});await tap(1);assert.equal(await page.locator('#activity').isVisible(),false);
  // An unmapped USB controller still drives both sticks and Start.
  await page.evaluate(()=>{window.__pad.mapping='';window.__pad.id='USB custom controller';});await page.waitForTimeout(150);await tap(9);assert.equal((await state()).menu,true);await click('controls');await page.screenshot({path:path.join(out,'07-unmapped-controller.png')});await click('resume');
  // Controller loss stops input and offers a useful recovery screen.
@@ -108,28 +127,29 @@ const {chromium}=require('playwright');
  for(const [width,height] of [[1280,800],[1280,720],[960,540],[800,600]]){
   await page.setViewportSize({width,height});await click('help');await page.screenshot({path:path.join(out,`help-${width}x${height}.png`)});
   const layout=await page.evaluate(()=>{const p=document.getElementById('desktopMenu'),shell=p.querySelector('.console-shell'),footer=p.querySelector('.console-footer');return {width:innerWidth,height:innerHeight,scrollWidth:shell.scrollWidth,shellWidth:shell.clientWidth,bottom:footer.getBoundingClientRect().bottom};});assert.ok(layout.scrollWidth<=layout.shellWidth+1,'No horizontal squashing');assert.ok(layout.bottom<=height,'Footer stays in viewport');
-  await tap(1);await click('controls');await page.locator('[data-action=reset]').focus();await page.screenshot({path:path.join(out,`controls-${width}x${height}.png`)});await tap(1);
+  await tap(1);await page.screenshot({path:path.join(out,`pause-${width}x${height}.png`)});await click('controls');await page.locator('[data-action=reset]').focus();await page.locator('[data-action=reset]').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(out,`controls-${width}x${height}.png`)});await tap(1);
  }
  await page.setViewportSize({width:1280,height:800});await click('updates');await click('update');assert.match(await page.locator('#desktopStatus').textContent(),/current release/);await tap(1);
  // Linux residents: all named characters can be selected, with their own beds and schedules.
  console.log('Controls and layout passed; testing residents');
- await page.evaluate(()=>window.__JOHANSSON_AUDIT__.setTime(60));await click('people');
- assert.ok(await page.locator('[data-person]').count()>=30);await page.screenshot({path:path.join(out,'08-character-roster.png')});
+ await page.evaluate(()=>window.__JOHANSSON_AUDIT__.setTime(60));await page.locator('#desktopTabs [data-tab=people]').click();
+ assert.ok(await page.locator('[data-person]').count()>=30);await page.evaluate(()=>Promise.all([...document.querySelectorAll('.console-roster img')].filter(img=>img.getBoundingClientRect().top<innerHeight).map(img=>img.decode())));await page.screenshot({path:path.join(out,'08-character-roster.png')});
  await page.locator('[data-person="Thuan"]').click();await page.waitForFunction(()=>window.johanssonLinuxWorld?.inBed&&!window.johanssonLinuxWorld.busy);
  assert.equal(await page.evaluate(()=>window.__JOHANSSON_MODEL__.avatar.recipe.name),'Thuan');
- await sampled();await page.screenshot({path:path.join(out,'09-thuan-own-bed.png')});await tap(0);assert.equal(await page.evaluate(()=>window.johanssonLinuxWorld.inBed),false,'A gets out of bed');
- await tap(9);await click('people');await page.locator('[data-person="Officer%20Mori"]').click();await page.waitForFunction(()=>window.johanssonLinuxWorld?.active==='Officer Mori'&&!window.johanssonLinuxWorld.busy);
+ await sampled();await page.screenshot({path:path.join(out,'09-thuan-own-bed.png')});await tap(0);assert.equal(await page.evaluate(()=>window.johanssonLinuxWorld.inBed),false,'A gets out of bed');await tap(1);await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).room===null);assert.equal(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room),null,'B leaves the home without a mouse');
+ await tap(9);await page.locator('#desktopTabs [data-tab=people]').click();await page.locator('[data-person="Officer%20Mori"]').click();await page.waitForFunction(()=>window.johanssonLinuxWorld?.active==='Officer Mori'&&!window.johanssonLinuxWorld.busy);
  assert.equal(await page.evaluate(()=>window.johanssonLinuxWorld.inBed),false,'Night patrol does not spawn asleep');
- await tap(9);await click('people');await page.locator('[data-person="Mai"]').click();await page.waitForFunction(()=>window.johanssonLinuxWorld?.inBed&&!window.johanssonLinuxWorld.busy);await page.screenshot({path:path.join(out,'10-mai-own-bed.png')});
+ await tap(9);await page.locator('#desktopTabs [data-tab=people]').click();await page.locator('[data-person="Mai"]').click();await page.waitForFunction(()=>window.johanssonLinuxWorld?.inBed&&!window.johanssonLinuxWorld.busy);await page.screenshot({path:path.join(out,'10-mai-own-bed.png')});
  await axes([0,-1,0,0]);await axes([0,0,0,0]);assert.equal(await page.evaluate(()=>window.johanssonLinuxWorld.inBed),false,'Left stick gets up safely beside the bed');
  const selectable=await page.evaluate(async()=>{const api=window.johanssonLinuxWorld,result=[];for(const person of api.roster){await api.select(person.name,{started:false});result.push({name:api.active,model:window.__JOHANSSON_MODEL__.avatar.recipe.name});}return result;});
  console.log('Selected roster',JSON.stringify(selectable));
  assert.ok(selectable.length>=30);assert.ok(selectable.every(p=>p.name===p.model),'Every roster selection uses its own character recipe');
  await page.evaluate(async()=>{window.__JOHANSSON_AUDIT__.setTime(720);await window.johanssonLinuxWorld.select('Johansson');});
  console.log('Testing conversation escalation');
- if(await page.locator('#exitRoomButton').isVisible()){await page.locator('#exitRoomButton').click();await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).room===null);}
+ if(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room!==null&&!window.johanssonLinuxWorld.inBed)){await tap(1);await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).room===null);}
  await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.teleport(-7,-15,0,0);window.__JOHANSSON_AUDIT__.activities.action('resident','Tetsuo');});
  console.log('Conversation opened',await page.locator('#activityTitle').textContent());
+ const conversationTitle=await page.locator('#activityTitle').textContent();await tap(9);assert.equal((await state()).menu,true);await tap(1);assert.equal((await state()).menu,false);assert.equal(await page.locator('#activity').isVisible(),true,'Menu pause retains the open conversation');assert.equal(await page.locator('#activityTitle').textContent(),conversationTitle);
  await page.getByRole('button',{name:'Lose your temper…',exact:true}).click();
  const funds=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.activities.state.yen);
  for(let i=0;i<3;i++){await page.getByRole('button',{name:/^Insult Tetsuo/}).click();await page.waitForFunction(count=>window.__JOHANSSON_AUDIT__.activities.state.desktopLife.tempers['Johansson\u0000Tetsuo']?.count===count,i+1);assert.equal(await page.locator('#festivalHUD').count(),0,'Warnings come before a fight');}
@@ -140,7 +160,7 @@ const {chromium}=require('playwright');
  await page.evaluate(async()=>{window.__JOHANSSON_AUDIT__.setTime(60);await window.johanssonLinuxWorld.select('Thuan');window.__JOHANSSON_AUDIT__.activities.save();});await tap(9);
  await page.addInitScript(()=>{const NativeDate=Date,fixed=new NativeDate();fixed.setHours(1,0,0,0);const timestamp=fixed.getTime();window.Date=class extends NativeDate{constructor(...args){super(...(args.length?args:[timestamp]));}static now(){return timestamp;}};});
  // Settings survive reload at the stable installed origin.
- await click('controls');await page.locator('#desktopMenu [name=invertY]').check();await page.locator('[data-bind="9"]').click();await sampled();await tap(6);await page.reload({waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.johanssonDesktopUI);await tap(6);await click('controls');assert.equal(await page.locator('#desktopMenu [name=invertY]').isChecked(),true);assert.equal(await page.locator('[data-bind="9"] kbd').textContent(),'6','Button remap persists');
+ await click('controls');await page.locator('#desktopMenu [name=invertY]').check();await page.locator('[data-bind="9"]').click();await sampled();await tap(6);await page.reload({waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.johanssonDesktopUI);await tap(6);await click('controls');assert.equal(await page.locator('#desktopMenu [name=invertY]').isChecked(),true);assert.equal(await page.locator('[data-bind="9"] kbd').textContent(),'L2','Button remap persists');
  await tap(6);await tap(0);await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.johanssonLinuxWorld?.active==='Thuan'&&window.johanssonLinuxWorld.inBed&&!window.johanssonLinuxWorld.busy,null,{timeout:120000});await page.screenshot({path:path.join(out,'13-saved-character-night-spawn.png')});
  // Release the full Linux world before starting the separate web-only world.
  // Keeping both live exhausts the software renderer on the Linux runner.
