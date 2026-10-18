@@ -93,6 +93,8 @@ import {buildMayorOffice,buildMayorHome,buildCommunityKitchen,buildClinic,MAYOR_
 import {HOUSE_SAVE} from './world/johansson-house.js';
 import {createHomeCustomization} from './world/interiors/home-customization.js';
 import {buildCityRestaurant,CITY_RESTAURANT} from './world/interiors/city-restaurant.js';
+import {buildUpperHome} from './world/interiors/upper-home.js';
+import {buildSakuraOfficeRoom} from './world/interiors/sakura-office-room.js';
 import {buildFamilyHome} from './world/interiors/family-home.js';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js?ui=compact-3';
@@ -249,7 +251,7 @@ function signTex(a,b,accent='#9b4035'){const c=document.createElement('canvas');
 const townSections=createTownSections({mobile});window.__JOHANSSON_SECTIONS__=townSections.stats;
 const shopStreetView=createShopStreetView();window.__JOHANSSON_SHOP_VIEW__=shopStreetView.stats;
 /** Rooms that look out on the real street through their front: Sakura's glass, Minato's door and window. */
-function streetFrontageOf(site){if(!site?.streetFrontage)return null;if(site.id==='market')return {...site.streetFrontage,interiorZ:sakuraShop.layout.frontZ};return site.id==='izakaya'?site.streetFrontage:null;}
+function streetFrontageOf(site){if(site?.officePortals){const dir=camera.getWorldDirection(new THREE.Vector3());return site.officePortals.reduce((a,b)=>{const score=p=>dir.x*Math.sin(p.interiorYaw||0)+dir.z*Math.cos(p.interiorYaw||0);return score(b)>score(a)?b:a;});}if(!site?.streetFrontage)return null;if(site.id==='market')return {...site.streetFrontage,interiorZ:sakuraShop.layout.frontZ};return site.id==='izakaya'?site.streetFrontage:null;}
 const town=new THREE.Group(),room=new THREE.Group();scene.add(town,room);room.visible=false;
 
 // The drawn look, after Sakura Crossing (Kenton-GMI, MIT): quantised light with
@@ -888,13 +890,13 @@ if(thirdPerson)setThirdPerson(true,false);
 characters=createCharacters({mobile,shadows,onJump:()=>johansson?.jump(),canJump:()=>!seated&&!pocket?.raised&&controlsAllowed(),isBlocked:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>circleHitsRect(x,z,r,c)),onError:(name,error)=>console.warn('Character construction failed:',name,error)});characters.attach(player,'player',1.82);world.people.forEach(p=>characters.attach(p.g,p.g.userData.name,p.profile?.height));
 // The people of the new streets: shopkeepers at their counters, the old men at gateball,
 // Grandmother Higa on her verandah, a postman on his round. See people/neighbours.js.
-neighbours=createNeighbours({parent:town,register:reg,characters,blocked:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>circleHitsRect(x,z,r,c)),onAction:(kind,name)=>{
+neighbours=createNeighbours({parent:town,register:reg,characters,getRain:()=>weather,blocked:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>standingHitsRect(x,z,r,groundHeight(x,z),c)),onAction:(kind,name)=>{
  const who=neighbours.talkTo(name,player.position);if(who)characters.gesture(who);activities.action(kind,name);
 }});
-world.neighbours=neighbours.entities;
+world.neighbours=neighbours.entities;world.homeNeighbours=neighbours.people;
 // The Minato Maru's crew at their posts, riding with her (people/ferry-crew-aboard.js).
 if(world.ferry){
- ferryCrew=createFerryCrewAboard({run:world.ferry,characters,register:reg,onAction:(kind,title,text)=>activities.action(kind,title,text),townBody:name=>world.people.find(p=>p.profile.name===name)?.g||null,portShed:world.portShed,shoreParent:world.group,shoreColliders:world.colliders});
+ ferryCrew=createFerryCrewAboard({run:world.ferry,characters,register:reg,playerIdentity:()=>playerRecipe().name||'Johansson',onAction:(kind,title,text)=>activities.action(kind,title,text),townBody:name=>world.people.find(p=>p.profile.name===name)?.g||world.neighbours?.find(g=>g.userData.name===name)||null,portShed:world.portShed,shoreParent:world.group,shoreColliders:world.colliders});
  ferryOperations=createFerryOperationsView({parent:$('#hud'),run:world.ferry,getMinutes:()=>minutes,getCrew:crewOnDuty,getProcedure:()=>world.ferry.procedure||{}});
 }
 // Thuan is the heaviest single asset in the town and she is kept at full detail, so
@@ -1048,7 +1050,7 @@ const ramenLife=new THREE.Group();ramenLife.name='Inakaya continuous dining';ram
 // On the island the ramen counter is Sato Ramen, inside Minato's building (world/sato-ramen-layout.js).
 const ramenBlocked=(x,z,r=.3)=>(suppliedRoomBoundsBlocked(SATO_ROOM,x,z,r)||SATO_COLLIDERS.some(c=>circleHitsRect(x,z,r,c)));
 function hideRamen(){scene.add(ramenLife);ramenLife.visible=false;}
-const ramenGuests=createIndoorResidents({world,parent:ramenLife,collides:ramenBlocked,getRain:()=>weather,place:'ramen',onBorrow:npcActivities.release,getState:()=>activities.state}),homeGuests=createHomeResidents({world,parent:scene,getPlayerSeat:()=>seated?parkSeat?.position:null,getState:()=>activities.state,collides:environmentBlocked,onBorrow:npcActivities.release,getRain:()=>weather});
+const ramenGuests=createIndoorResidents({world,parent:ramenLife,collides:ramenBlocked,getRain:()=>weather,place:'ramen',onBorrow:npcActivities.release,getState:()=>activities.state}),homeGuests=createHomeResidents({world,parent:scene,getPlayerSeat:()=>seated?parkSeat?.position:null,getState:()=>activities.state,collides:(x,z,r,y)=>environmentBlocked(x,z,r,'player',y),onBorrow:npcActivities.release,getRain:()=>weather});
 // Mrs Sato's kitchen: she cooks and carries every bowl, the regulars' and yours (people/ramen-kitchen.js).
 const satoKitchen=createRamenKitchen({isAfterLunch:()=>{const m=((minutes%1440)+1440)%1440;return m>=SATO_RAMEN.close&&m<SATO_RAMEN.close+60;},getCook:()=>{const g=world.people.find(p=>p.profile.name==='Mrs Sato')?.g;return g&&g.visible&&g.userData.inRamen&&!g.userData.roomTransition?g:null;}});
 const ramenMeals=createVenueService({room:ramenLife,place:'ramen',getMinutes:()=>minutes,ledger:residentLedger,getCustomers:()=>world.people.filter(p=>p.g.userData.inRamen),
@@ -1082,7 +1084,7 @@ function addRoomProps(s){
     if(s.id==='ramen'){room.add(ramenLife);ramenLife.visible=true;ramenGuests.sync(minutes);ramenPlayerService=createRamenPlayerService({room,getSeat:()=>Number.isInteger(parkSeat?.ramenSeatId)?parkSeat:null,getMinutes:()=>minutes,getBalance:()=>activities.state.yen,pay:activities.spend,say,ticket:{has:item=>hasRamenTicket(activities.state,item),use:item=>{const used=useRamenTicket(activities.state,item);if(used)activities.save?.();return used;}},
       onMouthful:ramenMouthful,canOrder:item=>item.prop==='beer'&&!wantsAnother(tipsy,DRINKS.bottle.alcohol)?"Mrs Sato shakes her head: You’ve had enough. Have a cold barley tea instead.":true,
       ...({menu:SATO_MENU,isOpen:satoRamenOpen,title:SATO_RAMEN.title,server:'Mrs Sato',kitchen:satoKitchen,closedLine:'Sato Ramen serves lunch, 11:00 to 14:00. Mrs Sato has put the stools up.'})});}
-    if(homeOwner(s)){activeRoomLayout.tick?.(0,minutes,elapsed);homeGuests.enter(activeRoomLayout.prepareBedding?{...s,homeLayouts:{[homeOwner(s)]:activeRoomLayout}}:activeRoomLayout.homeLayouts?{...s,homeLayouts:{...s.homeLayouts,...activeRoomLayout.homeLayouts}}:s,minutes);}
+    if(homeOwner(s)){activeRoomLayout.tick?.(0,minutes,elapsed);homeGuests.enter(activeRoomLayout.prepareBedding?{...s,homeLayouts:{[homeOwner(s)]:activeRoomLayout}}:activeRoomLayout.homeLayouts?{...s,entranceRoute:activeRoomLayout.entranceRoute,homeLayouts:{...s.homeLayouts,...activeRoomLayout.homeLayouts}}:s,minutes);}
     return;
   }
   if(s.id==='izakaya'){shopStreetView.invalidate();activeRoomLayout=buildIzakayaRoom({room,box,reg,collider:roomCollider,action:activities.action,exit:leaveRoom,signTexture:signTex,getMinutes:()=>minutes,exploration:{state:activities.state,show:activities.menu,save:activities.save,close:activities.close}});if(!izakayaOpen(minutes))say(closedGreeting(minutes),6);izakayaTV=activeRoomLayout.television;izakayaGuests.sync(minutes);startVenueService('izakaya');beerService=createBeerService({room,say,blocked:environmentBlocked,getNao:()=>{const n=world.people.find(p=>p.profile.name==='Thao')?.g;return n&&n.userData.inIzakaya&&n.visible&&!n.userData.roomTransition?n:null;}});const light=new THREE.HemisphereLight(0xffdfaa,0x886d5f,1.6);room.add(light);return;}
@@ -1109,7 +1111,8 @@ function roomShell(s){
   say('Naha, the top floor of the Hotel Ryūsei. E for the dinner menu.',4);
   setTimeout(()=>{if(!photoStudio?.active&&current?.id===CITY_RESTAURANT.id&&activeRoomLayout?.dinner===dinner)activities.action('city-dinner',CITY_RESTAURANT.title,dinner);},1400);
   return;}
- if(s.familyHome){activeRoomLayout=buildFamilyHome({...shared,household:s.familyHome,title:s.title,kind:s.houseKind});return;}
+ if(s.id==='sakura-office'){activeRoomLayout=buildSakuraOfficeRoom(shared);return;}
+ if(s.familyHome){activeRoomLayout=(s.upperHome?buildUpperHome:buildFamilyHome)({...shared,household:s.familyHome,residents:s.residents,title:s.title,kind:s.houseKind});return;}
  if(s.id==='mayor-home'){activeRoomLayout=buildMayorHome({...shared,sleep:sleepUntilMorning,player:()=>player.position.toArray(),
   // The sliding doors keep their state by id, under the house's own name (johansson-house.js RF6).
   doors:{get:id=>activities.state[HOUSE_SAVE]?.doors?.[id],set:(id,open)=>{const h=activities.state[HOUSE_SAVE]??={schema:2,doors:{}};(h.doors??={})[id]=!!open;activities.save();}},post:{unread:()=>activities.unreadPost,open:()=>activities.post()},television:()=>{const typhoon=weatherMode==='random'&&typhoonAt(minutes);if(!newsOn(minutes))return typhoon?typhoonBulletin(typhoon,minutes):null;const news=eveningNews(activities.state,minutes,{weather:weatherMode==='random'});activities.save();return news;}});

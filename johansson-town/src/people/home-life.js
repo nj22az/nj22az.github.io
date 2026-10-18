@@ -1,8 +1,10 @@
+import {activeHomeForResident} from './island-households.js';
 import {TATAMI_HOME_LAYOUT,TATAMI_HOME_OWNER} from '../world/interiors/tatami-home-layout.js';
 import {householdFor,householdNames} from './households.js';
 // Repeatable household routines use the saved town clock, including night workers.
 const minute=m=>((m%1440)+1440)%1440;
 export function sleepHours(profile){
+ if(profile.name==='Barfly')return {sleep:240,wake:600};
  if(profile.name==='Officer Mori')return {sleep:420,wake:900};
  // On the island he lives in the office and keeps early hours (social.js HARBOUR_MASTER_DAY).
  if((profile.name==='Harbour master'))return {sleep:1260,wake:330};
@@ -25,7 +27,7 @@ export function homeRoutine(profile,minutes){
  const leisure=[{id:'read',activity:'reading',pose:'Read',item:'paper'},{id:'tea',activity:'having tea',pose:'Drink',item:'tea'},{id:'plan',activity:'planning tomorrow’s errands',pose:'Read',item:'paper'}];
  return leisure[(Math.floor(m/30)+profile.name.length)%leisure.length];
 }
-export const homeSiteId=name=>householdFor(name)?.id||'resident-home-'+name.toLowerCase().replace(/[^a-z0-9]+/g,'-');
+export const homeSiteId=name=>householdFor(name)?.id||activeHomeForResident(name)?.entranceSiteId||'resident-home-'+name.toLowerCase().replace(/[^a-z0-9]+/g,'-');
 export const homeOwner=site=>householdNames(site)[0]||null;
 
 export const HOME_LAYOUT={bounds:{minX:-3,maxX:3,minZ:-3,maxZ:3},spawn:[1.5,0,2],exit:[1.5,1.1,2.9],

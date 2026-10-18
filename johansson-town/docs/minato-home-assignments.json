@@ -1,5 +1,5 @@
 {
-  "status": "plan-only; no household migration applied",
+  "status": "runtime implementation; CPU verification performed; rendered views and physical iPhone checks remain outstanding",
   "auditedMain": "e1b606d50a58d5c5fab0781e590fe773bb3472fd",
   "canonDate": "2026-10-18",
   "residentCount": 31,
@@ -97,7 +97,7 @@
     },
     {
       "name": "Grandmother Sakurai",
-      "home": "kitahama-flat-4",
+      "home": "kitahama-flat-2",
       "secondary": []
     },
     {
@@ -154,7 +154,7 @@
     },
     {
       "name": "Ms Ganaha",
-      "home": "kitahama-flat-2",
+      "home": "kitahama-flat-4",
       "secondary": []
     },
     {
@@ -192,6 +192,8 @@
   "notes": [
     "kitano-1 is the existing Johansson/Thuan home in the airport/tropical island frame. Preserve its save identity; verify its actual entrance and remove stale mayor-only descriptions without building a duplicate home.",
     "Mr Nakandakari remains a Minato resident. Proposed role is experienced engineer/relief engineer; do not retain a competing sole chief-engineer role.",
-    "Standalone empty homes may be removed after routes, interactions, saves and story references are migrated. Mixed-use closed Arakaki and Yonamine buildings have no registered occupants or active trade; verify all non-residential uses before removal."
-  ]
+    "Standalone empty homes may be removed after routes, interactions, saves and story references are migrated. Mixed-use closed Arakaki and Yonamine buildings have no registered occupants or active trade; verify all non-residential uses before removal.",
+    "Approved mobility exchange applied: Sakurai occupies ground-floor Flat 2; Ganaha occupies upper Flat 4. See MINATO-HOMES-IMPLEMENTATION.md for evidence and limits."
+  ],
+  "implementationBase": "c5e36e578a3aa7ba6dea6b07a9cb89284edbfad9"
 }

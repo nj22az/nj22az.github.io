@@ -9,10 +9,10 @@ export const SHOP_STREET_PORTAL_CLEARANCE=.13;
 // The room uses its own coordinates. Map its front glazing onto the real shop
 // frontage and render the street first; opaque room surfaces mask that view.
 export function mapShopCamera(source,target,frontage){
- const rotation=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),frontage.yaw);
- target.copy(source);target.position.copy(source.position).sub(new THREE.Vector3(0,0,frontage.interiorZ??6.3)).applyQuaternion(rotation).add(new THREE.Vector3(...frontage.position));
+ const rotation=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),(frontage.yaw-(frontage.interiorYaw||0)));
+ target.copy(source);target.position.copy(source.position).sub(new THREE.Vector3(...(frontage.interiorOrigin||[0,0,frontage.interiorZ??6.3]))).applyQuaternion(rotation).add(new THREE.Vector3(...frontage.position));
  target.quaternion.copy(rotation).multiply(source.quaternion);target.updateMatrixWorld(true);
- const outward=new THREE.Vector3(0,0,1).applyQuaternion(rotation);
+ const outward=new THREE.Vector3(Math.sin(frontage.yaw),0,Math.cos(frontage.yaw));
  return new THREE.Plane().setFromNormalAndCoplanarPoint(outward,new THREE.Vector3(...frontage.position));
 }
 
@@ -53,6 +53,7 @@ export function createShopStreetView(){
  }
  return {stats,invalidate(){cachedTown=null;},render({renderer,scene,camera,town,room,frontage}){
   const frontZ=frontage?.interiorZ??6.3,S=frontage?.span||SAKURA_SPAN;glazing.min.set(S.minX,S.minY,frontZ-.05);glazing.max.set(S.maxX,S.maxY,frontZ+.05);
+  if(frontage?.interiorOrigin){const centre=new THREE.Vector3(...frontage.interiorOrigin),half=new THREE.Vector3((S.maxX-S.minX)/2,(S.maxY-S.minY)/2,.05);if(frontage.interiorYaw)half.set(.05,half.y,(S.maxX-S.minX)/2);centre.y+=(S.minY+S.maxY)/2;glazing.set(centre.clone().sub(half),centre.clone().add(half));}
   camera.updateMatrixWorld(true);frustum.setFromProjectionMatrix(matrix.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse));
   if(!frontage||!frustum.intersectsBox(glazing)){stats.visible=0;stats.culled=stats.total;stats.passes=0;renderer.render(scene,camera);return;}
   const plane=mapShopCamera(camera,exteriorCamera,frontage);

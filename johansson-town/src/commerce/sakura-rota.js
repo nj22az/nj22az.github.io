@@ -3,7 +3,7 @@ import {townCalendarAt} from '../town-clock.js';
  * Sakura Shōten is open 24 hours, every day (the creator, 2026-10-12: "Sakura is always open, it should change to 24-7
  * and have Chin work the night shift"; docs/KITANO-JIMA.md §3). The rota: Thuan keeps the day shift on weekdays, Nhung
  * covers it at the weekend while Thuan is home on Kitano-jima, Chin (Thao's husband) works every night, and Grandmother
- * Sakurai, who owns the shop and lives above it, takes the till between the night shift and the day shift.
+ * Sakurai, who owns the shop and lives in Flat 2, Kitahama Heights, takes the till between the night shift and the day shift.
  */
 const minute=m=>((m%1440)+1440)%1440;
 // The day clerk hands over at 20:30: the last half hour is her end-of-day restock (shop-stock.js closingDay, from 20:00)
@@ -20,6 +20,6 @@ export function sakuraClerkAt(minutes){
  return 'Grandmother Sakurai';
 }
 /** The walking residents who take a shift at Sakura. */
-export const SAKURA_STAFF=Object.freeze(['Thuan','Nhung','Chin']);
+export const SAKURA_STAFF=Object.freeze(['Thuan','Nhung','Chin','Grandmother Sakurai']);
 /** Whether this resident is on their Sakura shift at this minute. */
 export const onSakuraShift=(name,minutes)=>sakuraClerkAt(minutes)===name;

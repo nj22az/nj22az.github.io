@@ -143,6 +143,20 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
+    "title": "Sakura main office",
+    "organisation": "Town Services",
+    "text": "Orders, deliveries and the monthly accounts. The downstairs office keeps the till float and daily shop paperwork.",
+    "source": "notice:Sakura main office"
+  },
+  {
+    "type": "Notice",
+    "title": "Sakura kitchenette",
+    "organisation": "Town Services",
+    "text": "Fill the kettle at the sink. Cups, tea and the staff lunch boxes stay in the cupboards and small fridge.",
+    "source": "notice:Sakura kitchenette"
+  },
+  {
+    "type": "Notice",
     "title": "The fishermen’s co-op calendar",
     "organisation": "Town Services",
     "text": "A free calendar from the Minato fishermen’s co-op. Two dates ringed: the day his mother’s gas cylinder is due on Kitano-jima, and the boiler service at Umi-no-yu.",

@@ -21,7 +21,7 @@ const H=(h,m=0)=>h*60+m;
 export const HOME_ROUTINES=Object.freeze({
  'kitahama-3':{wake:H(4,30),bed:H(21,30)},
  'kitahama-4':{wake:H(6),bed:H(22,30)},
- 'kitahama-5':{empty:true},
+ 'kitahama-5':{wake:H(6,30),bed:H(21)},
  'kitahama-6':{wake:H(5,30),bed:H(20,30)},
  'kitahama-7':{wake:H(6),bed:H(23),nightCall:day=>day%4===1},
  'kitahama-8':{wake:H(6,30),bed:H(23,30),away:day=>Math.floor(day/7)%2===0},
@@ -35,10 +35,10 @@ export const HOME_ROUTINES=Object.freeze({
  'fumoto-3':{wake:H(3,45),bed:H(21)},
  'fumoto-4':{wake:H(5,45),bed:H(22)},
  'flat-1':{wake:H(6),bed:H(23)},
- 'flat-2':{wake:H(6,30),bed:H(24,30)},
+ 'flat-2':{wake:H(5),bed:H(21)},
  // Mr Fujita sleeps in his shed more often than not; he comes back to wash at dawn.
- 'flat-3':{wake:H(5,30),bed:H(6,15)},
- 'flat-4':{empty:true},
+ 'flat-3':{wake:H(5),bed:H(22)},
+ 'flat-4':{wake:H(6,30),bed:H(22,30)},
 });
 
 const between=(m,a,b)=>{a=((a%1440)+1440)%1440;b=((b%1440)+1440)%1440;return a<=b?m>=a&&m<b:m>=a||m<b;};

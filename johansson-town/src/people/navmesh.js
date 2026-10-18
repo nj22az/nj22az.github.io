@@ -15,7 +15,7 @@ export function createNavigation(blocked,{step=1,bounds=MAP_BOUNDS,heightAt=grou
   const edgeClear=(a,b)=>{const k=key(...a)+'>'+key(...b);if(!edges.has(k)){
     const dx=b[0]-a[0],dz=b[1]-a[1],n=Math.max(1,Math.ceil(Math.hypot(dx,dz)*step/.15));let safe=true,lastHeight=heightAt(a[0]*step,a[1]*step);
     for(let i=1;i<=n;i++){const x=(a[0]+dx*i/n)*step,z=(a[1]+dz*i/n)*step,height=heightAt(x,z);
-      if(blocked(x,z,radius)||Math.abs(height-lastHeight)>.18){safe=false;break;}lastHeight=height;
+      if(blocked(x,z,radius)||Math.abs(height-lastHeight)>.180001){safe=false;break;}lastHeight=height;
     }edges.set(k,safe);
   }return edges.get(k);};
   function nearest(x,z){const gx=Math.round(x/step),gz=Math.round(z/step);for(let r=0;r<=5;r++)for(let dx=-r;dx<=r;dx++)for(let dz=-r;dz<=r;dz++)if(clear(gx+dx,gz+dz)&&edgeClear([x/step,z/step],[gx+dx,gz+dz]))return [gx+dx,gz+dz];return null;}

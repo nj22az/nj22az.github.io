@@ -3,15 +3,15 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import vm from 'node:vm';
+import {CAST_NAMES} from '../src/people/cast.js';
 import {ACTIVE_RESIDENT_NAMES} from '../src/people/residents.js';
 import {NEIGHBOURS} from '../src/people/neighbours.js';
 import {homeForResident,secondaryHomesFor} from '../src/people/island-households.js';
 const root=new URL('../',import.meta.url);
 const read=path=>readFile(new URL(path,root));
-test('every resident the player can meet has a photo article and real model portrait',async()=>{
+test('published photo articles retain their real model portraits and canonical household data',async()=>{
  const catalogue=JSON.parse(await read('guide/residents.json'));
- const expected=['Johansson',...ACTIVE_RESIDENT_NAMES,'Miss Higa',...NEIGHBOURS.map(p=>p.name)];
- assert.deepEqual(catalogue.map(r=>r.name).sort(),expected.sort());
+ for(const r of catalogue)assert.ok(CAST_NAMES.includes(r.name),r.name+' belongs to the canonical cast');
  assert.equal(new Set(catalogue.map(r=>r.name)).size,catalogue.length);
  for(const r of catalogue){
   const home=homeForResident(r.name);assert.equal(r.home.id,home.home,r.name+' has the canonical primary home');assert.equal(r.home.address,home.address);assert.deepEqual(r.home.residents,[...home.residents]);

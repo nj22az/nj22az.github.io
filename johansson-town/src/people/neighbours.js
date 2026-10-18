@@ -1,10 +1,10 @@
+import {CAST,castMember} from './cast.js';
+import {activeResidentHome} from './home-directory.js';
+import {canonicalDay,canonicalStreetRoute} from './canonical-day.js';
 import {SCHOOL} from '../world/school-layout.js';
 import {groundHeight} from '../world/layout.js';
 import {createNavigation} from './navmesh.js';
-import {airportWorld} from '../world/airport-ground.js';
-import {KITANO_HAMLET,hamletGate} from '../world/kitano-hamlet-layout.js';
-// Tetsuo's mother keeps the old Chinen house, kitano-3 (the creator, 2026-10-12: "Tetsuo's mother lives on the hamlet in an old house").
-const CHINEN=KITANO_HAMLET.plots.find(p=>p.id==='kitano-3'),CHINEN_GATE=airportWorld(...hamletGate(CHINEN).door),CHINEN_LANE=airportWorld((CHINEN.minX+CHINEN.maxX)/2,CHINEN.maxZ+1.6);
+const CHINEN_GATE=kitahamaHomeFor('Grandmother Chinen').door,CHINEN_LANE=[CHINEN_GATE[0],CHINEN_GATE[1]-1];
 import * as THREE from '../../vendor/three.module.js';
 import {inGateball,COURT_TERRACE} from '../world/park-layout.js';
 import {GROUND_LAYER} from '../world/ground-layers.js';
@@ -34,8 +34,8 @@ const ALL_NEIGHBOURS=Object.freeze([
   lines:['I live at 3 Kitahama with Dad. Mum is Nhung at the bookshop; she comes for supper. Vy is my cousin.',
    'Dad sorts the catch on the quay. I can watch the boats, but I am not allowed out on one until I can swim to the buoy.',
    'The open lawn beside Harbour Park is our football place. We keep the ball away from Mrs Kinjō’s flowers and the pond.']},
- {name:'Grandmother Chinen',look:'Fumiko',height:1.48,role:'at her gate in Kitano hamlet',at:CHINEN_GATE,face:[0,1],hours:[[H(6,30),H(18,30)]],home:CHINEN_GATE,routine:[{from:0,at:CHINEN_GATE,role:'at home',home:true},{from:H(6,30),at:CHINEN_LANE,face:[0,-1],role:'sweeping the lane in front of her gate'},{from:H(9),at:CHINEN_GATE,role:'at home',home:true},{from:H(15),at:CHINEN_GATE,face:[0,1],role:'sitting at her gate for the breeze'},{from:H(18,30),at:CHINEN_GATE,role:'at home',home:true}],
-  lines:['This is the old Chinen house. The typhoon of 1987 took the Shiromas’ roof next door; it only took three of our tiles.','My son Tetsuo mends radios in Minato. He comes over on the boat when he can, and eats like he is still fifteen.','The mayor and his wife are at the end of the lane. Thuan brings me the shop’s day-old bread on Saturdays.']},
+ {name:'Grandmother Chinen',look:'Fumiko',height:1.48,role:'at her gate at 5 Kitahama',at:CHINEN_GATE,face:[0,1],hours:[[H(6,30),H(18,30)]],home:CHINEN_GATE,routine:[{from:0,at:CHINEN_GATE,role:'at home',home:true},{from:H(6,30),at:CHINEN_LANE,face:[0,-1],role:'sweeping the lane in front of her gate'},{from:H(9),at:CHINEN_GATE,role:'at home',home:true},{from:H(15),at:CHINEN_GATE,face:[0,1],role:'sitting at her gate for the breeze'},{from:H(18,30),at:CHINEN_GATE,role:'at home',home:true}],
+  lines:['This is the old Chinen house. The typhoon of 1987 took the Shiromas’ roof next door; it only took three of our tiles.','My son Tetsuo mends radios in Minato. He comes over on the boat when he can, and eats like he is still fifteen.','Johansson is the ferry’s chief engineer. Thuan brings me the shop’s day-old bread on Saturdays.']},
 
  {name:'Grandmother Higa',look:'Fumiko',height:1.46,role:'on her verandah',at:[-29.8,-20.7],y:.47,face:[0,-1],pose:'Interact',hours:[[H(7),H(18,30)]],
   lines:[
@@ -84,7 +84,16 @@ const ALL_NEIGHBOURS=Object.freeze([
    'Letters for the Ōshiros, a parcel for Mr Shimabukuro at the power house, and a postcard for Sakura from somebody in Hanoi. I do not read postcards. The picture was very nice.']},
 ]);
 /** Who is about today. Everyone here is in the cast (cast.js); the plan's batch 2 moves them onto its schedules. */
-export const NEIGHBOURS=ALL_NEIGHBOURS;
+const walking=new Set(['Johansson','Thuan','Thao','Chin','Nhung','Reiko','Tetsuo','Mrs Sato','Officer Mori','Harbour master','Barfly','Mr Fujita','Grandmother Sakurai']);
+// Named shore residents and off-watch crew all use their canonical household and day.
+export const NEIGHBOURS=Object.freeze(CAST.filter(p=>!walking.has(p.name)).map(p=>{
+ const old=ALL_NEIGHBOURS.find(n=>n.name===p.name),home=activeResidentHome(p.name)?.target;
+ const at=home?[home.x,home.z]:old?.at;
+ return {...old,name:p.name,look:old?.look||p.name,height:old?.height||(p.age<16?1.4:p.sex==='f'?1.58:1.7),
+  at:old?.at||at,home:at,face:old?.face||[0,1],role:p.purpose,hours:[[0,1440]],canonical:true,
+  lines:old?.lines||[p.purpose,'My home is '+home?.address+'.'],
+  profile:{name:p.name,age:p.age,home:at,start:420,retire:1260,canonicalDay:true}};
+}));
 
 /** Everything they can say, by name, for the conversation box. */
 export const NEIGHBOUR_TALK=Object.freeze(Object.fromEntries(NEIGHBOURS.map(n=>[n.name,n])));
@@ -114,7 +123,7 @@ const faceAlong=(g,dx,dz)=>{if(dx||dz)g.rotation.y=Math.atan2(dx,dz)+Math.PI;};
  * @param {(kind:string,name:string)=>void} options.onAction
  * @param {{attach:Function}} [options.characters]
  */
-export function createNeighbours({parent,register,onAction,characters,blocked=()=>false}={}){
+export function createNeighbours({parent,register,onAction,characters,blocked=()=>false,getRain=()=>false}={}){
  const people=NEIGHBOURS.map((spec,i)=>{
   const g=new THREE.Group();g.name=spec.name;g.userData.name=spec.name;g.userData.neighbour=true;
   g.userData.activity=spec.role;g.userData.socialPose=spec.pose||null;
@@ -123,9 +132,9 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
   parent.add(g);
   characters?.attach(g,spec.look,spec.height);
   register?.(g,'Talk to '+spec.name,()=>onAction?.('neighbour',spec.name));
-  return {g,spec,travelled:i*7};
+  return {g,spec,profile:spec.profile,travelled:i*7};
  });
- const navigation=createNavigation(blocked);let talking=null,talkUntil=0;
+ const navigation=createNavigation(blocked,{step:.5});let talking=null,talkUntil=0;
  return {
   people,
   entities:people.map(p=>p.g),
@@ -147,6 +156,28 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
    const now=performance.now();
    for(const p of people){
     const {g,spec}=p;
+    if(g.userData.inHome)continue;
+    if(spec.canonical){
+     const phase=canonicalDay(spec.name,minutes,getRain());
+     if(!phase?.target){g.visible=false;continue;}
+     if(spec.walk&&phase.place==='main-street'){
+      let stop=p.roundIndex||0;
+      if(p.initialised&&!p.path?.length&&Math.hypot(g.position.x-spec.route[stop][0],g.position.z-spec.route[stop][1])<.12)stop=(stop+1)%spec.route.length;
+      p.roundIndex=stop;phase.target=[...spec.route[stop]];
+     }else p.roundIndex=0;
+     const key=phase.place+':'+phase.target.join(',');
+     if(!p.initialised){g.position.set(phase.target[0],groundAt(...phase.target),phase.target[1]);p.initialised=true;}
+     if(p.phaseKey!==key){p.phaseKey=key;p.path=canonicalStreetRoute(navigation,spec.name,g.position,phase.target);}
+     g.userData.activity=phase.activity;g.userData.place=phase.place;
+     if(!g.userData.playerConversation&&!g.userData.aboardFerry&&p.path?.length){
+      const to=p.path[0],dx=to[0]-g.position.x,dz=to[1]-g.position.z,len=Math.hypot(dx,dz),step=Math.min(len,dt*(spec.profile.age>65?.7:1));
+      if(len<.06)p.path.shift();else {const x=g.position.x+dx/len*step,z=g.position.z+dz/len*step;if(!blocked(x,z,.3)){g.position.set(x,groundAt(x,z),z);faceAlong(g,dx,dz);}}
+     }
+     const arrived=Math.hypot(g.position.x-phase.target[0],g.position.z-phase.target[1])<.35;
+     if(arrived&&phase.place==='home')g.userData.indoors='home';else delete g.userData.indoors;
+     g.visible=!g.userData.aboardFerry&&!(arrived&&(phase.place==='home'||phase.school));
+     continue;
+    }
     if(spec.routine?.some(phase=>phase.route)){
      const m=((minutes%1440)+1440)%1440,phase=[...spec.routine].reverse().find(p=>m>=p.from);
      if(!p.routine){p.routine=phase;const at=phase.home?phase.route.at(-1):[spec.at[0],spec.y??0,spec.at[1]];g.position.set(...at);p.steps=[];}

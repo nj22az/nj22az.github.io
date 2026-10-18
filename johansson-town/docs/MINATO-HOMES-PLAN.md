@@ -1,6 +1,6 @@
 # Minato homes: occupied households, no surplus empty houses
 
-Status: implementation plan, 18 October 2026. Household moves, removals, Sakura's upper-floor conversion and ship-role changes below have **not** been applied to the runtime. The separate colour/Nakamura correction is PR #206.
+Status: runtime implementation, 18 October 2026. See [MINATO-HOMES-IMPLEMENTATION.md](MINATO-HOMES-IMPLEMENTATION.md) for performed checks and outstanding visual/device verification. The ordered plan below records the approved scope; it is not evidence that unperformed device tests passed.
 
 ## Owner decisions
 
@@ -39,9 +39,9 @@ Keep established family relationships and primary homes wherever possible. All r
 | 6 Kitahama | Ferry master (legacy name `Bus driver`) | Retain; do not turn him into Johansson's engineering role. |
 | 8 Kitahama | Ms Uezu | Retain her shore home and work-week duty berth. |
 | Kitahama Heights, Flat 1 | Mr Higa Jr | Retain; author a usable room behind the measured door. |
-| Kitahama Heights, Flat 2 | Ms Ganaha | Retain the existing ground-floor assignment. |
+| Kitahama Heights, Flat 2 | Grandmother Sakurai | Ground-floor exchange used for level daily access. |
 | Kitahama Heights, Flat 3 | Mr Nakandakari | Occupy this existing vacant unit; retain an engineering colleague/relief role and suitable duty berth. |
-| Kitahama Heights, Flat 4 | Grandmother Sakurai | Occupy this existing vacant unit; verify stair access and mobility before finalising. |
+| Kitahama Heights, Flat 4 | Ms Ganaha | Occupied upper unit with its measured exterior stair route. |
 | Higa house | Miss Higa, Grandmother Higa | Retain both occupants and their own sleeping places. |
 | Kinjō house | Mrs Kinjō | Retain; verify the florist/home route. |
 | Ōshiro house | Mr Ōshiro | Retain; verify the boatyard/home route. |

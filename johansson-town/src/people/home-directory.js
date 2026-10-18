@@ -1,3 +1,4 @@
+import {NAKAMURA_HOME_DOOR} from '../world/nakamura-plan.js';
 import {CAST,castMember} from './cast.js';
 import {householdAtHome,homeForResident,secondaryHomesFor,activeHomeForResident,householdTitle} from './island-households.js';
 import {canonicalHomeId} from './households.js';
@@ -16,12 +17,12 @@ import {AIRPORT_ISLAND} from '../world/airport-island.js';
 import {airportWorld,airportSurface} from '../world/airport-ground.js';
 
 /** Read-only directory data. No DOM, renderer, save writes, clock changes or character movement. */
-const ROLES=Object.freeze({Johansson:'Mayor',Thuan:'Sakura shopkeeper','Grandmother Chinen':'Neighbour',Thao:'Izakaya owner',Chin:'Repairman',
+const ROLES=Object.freeze({Johansson:'Chief engineer',Thuan:'Sakura shopkeeper','Grandmother Chinen':'Neighbour',Thao:'Izakaya owner',Chin:'Repairman',
  Vy:'School pupil',Nhung:'Bookseller','Kōji':'Catch sorter',Riku:'School pupil','Miss Higa':'Teacher and bathhouse attendant',
  'Grandmother Higa':'Bathhouse and liquor-shop owner',Tetsuo:'Radio repairer',Reiko:'Newspaper editor','Mrs Sato':'Ramen cook',
  'Officer Mori':'Police officer','Harbour master':'Harbour master',Barfly:'Minato regular','Grandmother Sakurai':'Sakura owner',
  'Postman Tōma':'Postman','Dr Kakazu':'Doctor','Mr Ōshiro':'Fisherman and boatbuilder','Mrs Kinjō':'Florist',
- 'Mrs Nakamura':'Zenzai and ice-cream shopkeeper',Mai:'School pupil','Bus driver':'Ferry master','Mr Nakandakari':'Chief engineer',
+ 'Mrs Nakamura':'Zenzai and ice-cream shopkeeper',Mai:'School pupil','Bus driver':'Ferry master','Mr Nakandakari':'Relief engineer',
  'Mr Higa Jr':'Ferry oiler','Ms Uezu':'Ferry bosun','Ms Ganaha':'Port ticket clerk','Mr Fujita':'Linesman','Mr Shimabukuro':'Power-house keeper'});
 const PLACE_IDS=Object.freeze({sakura:'market',books:'frontrow',workshop:'form3d','sato-ramen':'ramen','town-hall':'mayor-office',
  port:'ferry-terminal',ferry:'ferry-terminal','post-office':'home-shimabukuro','higa-liquor':'higa-saketen',
@@ -54,12 +55,14 @@ function homeGeometry(h){
  }
  if(id==='office')return {...point(HARBOUR_OFFICE.door),entryFacing:0};
  if(id==='koban')return {...point(KOBAN.door),y:.02,entryFacing:KOBAN.inward};
- if(id==='clinic')return {x:34.1,y:0,z:SCHOOL.building.minZ-1.4,entryFacing:Math.PI};
- if(id==='ferry')return {x:PORT_BUILDING.hallDoor[0]-.7,y:0,z:PORT_BUILDING.hallDoor[2],entryFacing:-Math.PI/2};
+ if(id==='clinic')return {x:37.7,y:0,z:SCHOOL.building.minZ-1.4,entryFacing:Math.PI};
+ if(id==='ferry'||h.aboard)return {x:PORT_BUILDING.hallDoor[0]-.7,y:0,z:PORT_BUILDING.hallDoor[2],entryFacing:-Math.PI/2};
  if(id==='fujita-houseboat')return {x:HOUSEBOAT.gangway.maxX+.35,y:0,z:(HOUSEBOAT.gangway.minZ+HOUSEBOAT.gangway.maxZ)/2,entryFacing:Math.PI/2};
  if(id==='market')return {x:-5.5,y:0,z:-28.5,entryFacing:Math.PI/2};
  // The published island's established Minato entrance, used only before runtime site registration.
- if(id==='izakaya')return {x:-7.05,y:0,z:-10.43,entryFacing:Math.PI/2};
+ if(id==='izakaya')return {x:-17.65,y:.04,z:-9,entryFacing:-Math.PI/2};
+ if(id==='nakamura')return {...point(NAKAMURA_HOME_DOOR),entryFacing:Math.PI/2};
+ if(id==='shimabukuro'){const p=EAST_ROW.plots.find(p=>p.id===id);return {x:EAST_ROW.maxX+.75,y:.04,z:(p.minZ+p.maxZ)/2,entryFacing:-Math.PI/2};}
  for(const row of [EAST_ROW,YARD_ROW]){
   const p=row.plots.find(p=>p.id===id);if(p)return {x:row===EAST_ROW?row.minX-.9:row.maxX+.9,y:.02,z:(p.minZ+p.maxZ)/2,entryFacing:row===EAST_ROW?-Math.PI/2:Math.PI/2};
  }
