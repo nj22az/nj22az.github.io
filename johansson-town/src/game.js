@@ -132,6 +132,7 @@ import {createItemViewer} from './world/interiors/item-viewer.js';
 import { createCastAI } from './people/schedules.js?snappy=1';
 import { createCharacters } from './people/characters.js?snappy=1';
 import { circleHitsRect,circleHitsCircle,standingHitsRect,canStepBetween,roomBoundsBlocked,townBoundsBlocked } from '../physics.js?snappy=1';
+import {useTownColour} from './render/single-pass-colour.js';
 import { createCelPass } from './render/cel.js?snappy=1';
 import { createInkPipeline, GRADE_DEFAULTS } from './render/ink-pipeline.js?snappy=1';
 import { createInkRecovery } from './render/ink-recovery.js';
@@ -158,7 +159,7 @@ window.__JOHANSSON_SAFE_GRAPHICS__=startupRecovery.safe;
 await loadHatModels(undefined,{timeout:8000}).catch(error=>{console.warn('Hat models unavailable:',error);return false;});
 
 // Change the emitted game chunk URL when repairing a cached live runtime.
-window.__JOHANSSON_RUNTIME_VERSION__='ios-single-pass-1';
+window.__JOHANSSON_RUNTIME_VERSION__='ios-colour-2';
 
 const $=s=>document.querySelector(s);
 const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
@@ -304,7 +305,7 @@ function compileTown(object,{async=false}={}){
  }catch{}finally{renderer.setRenderTarget(previous);}
 }
 /** Plain output, for while the ink is away. */
-function renderPlain(){renderer.toneMapping=THREE.AgXToneMapping;renderer.toneMappingExposure=.96;}
+function renderPlain(){useTownColour(renderer);}
 function buildInk(){
  if(!graphics.postprocess){renderPlain();return true;}
  try{pipeline=createInkPipeline(renderer,INK_OPTIONS);renderer.toneMapping=THREE.NoToneMapping;renderer.toneMappingExposure=1;return true;}
@@ -596,7 +597,7 @@ function advanceWeather(){
 }
 
  launchReport.stage('Building town');
- const world=createTown({scene:town,sites:SITES,mobile,shadows,kitano:'distant',maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:s=>crossThreshold(()=>enterRoom(s)),getPlayerPosition:()=>current?null:player.position,onAction:(...args)=>{if(islandPlay?.action(...args))return;if(args[0]==='ferry-ladder'){ferryLadder(args[1]);return;}if(args[0]==='plant'){plantStation(args[1]);return;}if(args[0]==='dungeon'){enterDungeon();return;}if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person?.g.userData.sleeping){say(args[1]+' is sleeping. You can stay and watch the morning routine.',4);return;}if(person?.g.userData.waking||person?.g.userData.roomTransition){say(args[1]+' is '+person.g.userData.activity+'.',3);return;}if(person){person.g.userData.facePlayerUntil=performance.now()+1600;characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
+ const world=createTown({scene:town,sites:SITES,mobile,shadows,kitano:'distant',maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:s=>crossThreshold(()=>enterRoom(s)),getPlayerPosition:()=>current?null:player.position,onAction:(...args)=>{if(islandPlay?.action(...args))return;if(args[0]==='dessert-menu'){activities.menu(args[1],'Mrs Nakamura serves shaved ice, warm andagi and Blue Coral scoops. Open 10:00–19:00.',[...args[2].map(p=>[p.title+' · ¥'+p.cost,()=>world.blueCoral.isOpen()?activities.action('buy',p.title,p):activities.action('read','Nakamura is closed','The counter closes at 19:00 and opens at 10:00.')]),['Keep walking',activities.close]]);return;}if(args[0]==='ferry-ladder'){ferryLadder(args[1]);return;}if(args[0]==='plant'){plantStation(args[1]);return;}if(args[0]==='dungeon'){enterDungeon();return;}if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person?.g.userData.sleeping){say(args[1]+' is sleeping. You can stay and watch the morning routine.',4);return;}if(person?.g.userData.waking||person?.g.userData.roomTransition){say(args[1]+' is '+person.g.userData.activity+'.',3);return;}if(person){person.g.userData.facePlayerUntil=performance.now()+1600;characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
  // Colliders by where they are, for the camera, walking and residents (collider-grid.js).
  const colliderGrid=createColliderGrid(world.colliders);
  // Kitano-jima is built when he heads there (world/kitano-on-demand.js): shaded, lit and compiled as it arrives.
@@ -1688,7 +1689,7 @@ async function openInside(opening){
  startArrivalScene(opening);
 }
 // The six remaining street activities are required after retiring the bicycle ride.
-function runStabilityChecks(){const failures=[];if(!townBoundsBlocked(400,0,PLAYER_RADIUS))failures.push('town edge');if(!roomBoundsBlocked(5.5,0,PLAYER_RADIUS))failures.push('room edge');if(world.colliders.length<20)failures.push('world collider coverage');if((world.quality?.streetInteractions||0)<6)failures.push('street interaction coverage');for(const [id,p] of doors){const site=SITES.find(s=>s.id===id)||(world.landmarks||[]).find(s=>s.id===id);const facing=site?.exitPosition||id==='warehouse'||homeOwner(site)?site?.entryFacing:null,exitStep=site?.exitPosition ? .6 : .7;const ex=Number.isFinite(facing)?p.x+Math.sin(facing)*exitStep:p.x,ez=Number.isFinite(facing)?p.z+Math.cos(facing)*exitStep:p.z+(id==='izakaya'?-.7:.7);if(environmentBlocked(p.x,p.z,PLAYER_RADIUS)||(environmentBlocked(ex,ez,PLAYER_RADIUS)))failures.push(`door spawn ${id}`);}window.__JOHANSSON_STABILITY__={ok:failures.length===0,failures,colliders:world.colliders.length,characterCount:world.people.length+1,streetInteractions:world.quality?.streetInteractions||0,renderDpr:renderer.getPixelRatio(),toneMapping:'AgX',shadows};if(failures.length)console.error('Johansson Town stability checks failed',failures);else console.info('Johansson Town stability checks passed',window.__JOHANSSON_STABILITY__)}
+function runStabilityChecks(){const failures=[];if(!townBoundsBlocked(400,0,PLAYER_RADIUS))failures.push('town edge');if(!roomBoundsBlocked(5.5,0,PLAYER_RADIUS))failures.push('room edge');if(world.colliders.length<20)failures.push('world collider coverage');if((world.quality?.streetInteractions||0)<6)failures.push('street interaction coverage');for(const [id,p] of doors){const site=SITES.find(s=>s.id===id)||(world.landmarks||[]).find(s=>s.id===id);const facing=site?.exitPosition||id==='warehouse'||homeOwner(site)?site?.entryFacing:null,exitStep=site?.exitPosition ? .6 : .7;const ex=Number.isFinite(facing)?p.x+Math.sin(facing)*exitStep:p.x,ez=Number.isFinite(facing)?p.z+Math.cos(facing)*exitStep:p.z+(id==='izakaya'?-.7:.7);if(environmentBlocked(p.x,p.z,PLAYER_RADIUS)||(environmentBlocked(ex,ez,PLAYER_RADIUS)))failures.push(`door spawn ${id}`);}window.__JOHANSSON_STABILITY__={ok:failures.length===0,failures,colliders:world.colliders.length,characterCount:world.people.length+1,streetInteractions:world.quality?.streetInteractions||0,renderDpr:renderer.getPixelRatio(),toneMapping:pipeline?'Ink grade':'Town single-pass',shadows};if(failures.length)console.error('Johansson Town stability checks failed',failures);else console.info('Johansson Town stability checks passed',window.__JOHANSSON_STABILITY__)}
 
 spawnScene=createSpawnScene({scene,camera,getActor:ensureJohansson,blocked:arrivalLensBlocked,ground:(x,z)=>current?0:groundHeight(x,z),onActive:active=>{hands.firstPersonVisible=!active&&!thirdPerson;}});
 /** What the docks opening waits for: the details near him still streaming in, once the stream has started. */

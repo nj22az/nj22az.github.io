@@ -9,6 +9,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {inGateball,COURT_TERRACE} from '../world/park-layout.js';
 import {GROUND_LAYER} from '../world/ground-layers.js';
 import {FLOWER_SHOP} from '../world/flower-shop.js';
+import {NAKAMURA_GO_HOME,NAKAMURA_HOME_DOOR} from '../world/nakamura-plan.js';
 import {NAKAMURA_DESSERTS,HARBOUR_PARK_STUDY} from '../world/harbour-park-plan.js';
 import {kitahamaHomeFor} from '../world/kitahama-layout.js';
 const VY_HOME=Object.freeze(kitahamaHomeFor('Vy').door),RIKU_HOME=Object.freeze(kitahamaHomeFor('Riku').door);
@@ -47,7 +48,10 @@ const ALL_NEIGHBOURS=Object.freeze([
    'Cedar, this. From Yakushima, before you could not get it any more. I built her in 1968 and I will be buried before she is.',
    'Weed and barnacles, every spring. You scrape to the wood, you let her dry a week, then tar. Kōji says buy a fibreglass one. Kōji also says buy a microwave.',
    'In June the whole island races these, sail and paddle, Zamami to Naha. I came fourth in 1979. Fourth! Ask anyone.']},
- {name:'Mrs Nakamura',look:'Yoshiko',height:1.52,role:'serving zenzai and Blue Coral ice cream',at:NAKAMURA_DESSERTS.staffAt,y:.08,face:[-1,0],pose:'Idle',hours:[[H(10),H(19)]],
+ {name:'Mrs Nakamura',look:'Yoshiko',height:1.52,role:'serving zenzai and Blue Coral ice cream',at:NAKAMURA_DESSERTS.staffAt,y:.08,face:[-1,0],pose:'Idle',hours:[[0,1440]],
+  routine:[{from:0,at:[NAKAMURA_HOME_DOOR[0],NAKAMURA_HOME_DOOR[2]],route:NAKAMURA_GO_HOME,role:'at home upstairs with Mai',home:true},
+   {from:H(10),at:NAKAMURA_DESSERTS.staffAt,route:[...NAKAMURA_GO_HOME].reverse().concat([[NAKAMURA_DESSERTS.staffAt[0],.08,NAKAMURA_DESSERTS.staffAt[1]]]),role:'serving zenzai and Blue Coral ice cream'},
+   {from:H(19),at:[NAKAMURA_HOME_DOOR[0],NAKAMURA_HOME_DOOR[2]],route:NAKAMURA_GO_HOME,role:'closing the counter and going upstairs',home:true}],
   lines:[
    "Welcome! Zenzai? Kintoki beans, cooked since six this morning. The ice is from the plant on the quay, shaved to order. ¥250.",
    'Thuan-chan comes on Sundays and orders the small one and then eats half of mine. Tell her I said so.',
@@ -143,6 +147,19 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
    const now=performance.now();
    for(const p of people){
     const {g,spec}=p;
+    if(spec.routine?.some(phase=>phase.route)){
+     const m=((minutes%1440)+1440)%1440,phase=[...spec.routine].reverse().find(p=>m>=p.from);
+     if(!p.routine){p.routine=phase;const at=phase.home?phase.route.at(-1):[spec.at[0],spec.y??0,spec.at[1]];g.position.set(...at);p.steps=[];}
+     if(p.routine!==phase){p.routine=phase;p.steps=phase.route.map(a=>[...a]);}
+     g.userData.activity=phase.role;
+     if(!g.userData.playerConversation&&p.steps.length){
+      const to=p.steps[0],dx=to[0]-g.position.x,dy=to[1]-g.position.y,dz=to[2]-g.position.z,len=Math.hypot(dx,dy,dz),step=Math.min(len,dt*.75);
+      if(len<.025)p.steps.shift();else {g.position.x+=dx/len*step;g.position.y+=dy/len*step;g.position.z+=dz/len*step;faceAlong(g,dx,dz);}
+     }
+     g.visible=!!p.steps.length||!phase.home;
+     if(g.visible&&!p.steps.length)faceAlong(g,...spec.face);
+     continue;
+    }
     if(spec.routine){const m=((minutes%1440)+1440)%1440,phase=[...spec.routine].reverse().find(p=>m>=p.from);if(!p.routine){g.position.set(phase.at[0],groundAt(...phase.at),phase.at[1]);p.routine=phase;}if(p.routine!==phase){p.routine=phase;p.path=phase.away?[]:navigation.path(g.position,{x:phase.at[0],z:phase.at[1]});}g.userData.activity=phase.role;g.userData.scheduledAway=!!phase.away;if(phase.away){g.visible=false;continue;}if(!g.userData.playerConversation&&p.path?.length){const to=p.path[0],dx=to[0]-g.position.x,dz=to[1]-g.position.z,len=Math.hypot(dx,dz),step=Math.min(len,dt*.75);if(len<.07)p.path.shift();else {const x=g.position.x+dx/len*step,z=g.position.z+dz/len*step;if(!blocked(x,z,.32)){g.position.set(x,groundAt(x,z),z);faceAlong(g,dx,dz);}}}if(phase.home&&!p.path?.length){g.visible=false;continue;}}
     const awake=neighbourAwake(spec,minutes);
     const near=!viewer||Math.hypot(g.position.x-viewer.x,g.position.z-viewer.z)<45;

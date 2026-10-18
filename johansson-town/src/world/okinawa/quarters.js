@@ -299,6 +299,7 @@ function shopFront(kit,solid,plot,frame,{anchor,inspect,onAction,getMinutes=()=>
  kit.at(frame.x,(plot.minZ+plot.maxZ)/2,frame.ry,()=>solid(shopHouse(kit,{w,d,colour:plot.colour,trim:plot.trim,sign,upright,interior:spec.interior,awning:spec.awning!==false,seed:plot.minZ*7|0})));
  const front=frame.front,out=frame.out,z=(plot.minZ+plot.maxZ)/2;
  const buy=item=>()=>plot.id==='nakamura'&&!dessertShopOpen(getMinutes())?onAction?.('read','Nakamura is closed','Mrs Nakamura serves zenzai, sata andagi and Blue Coral ice cream from 10:00 to 19:00.'):onAction?.('buy',item.title,{cost:item.cost,item:item.item,text:item.text});
+ if(plot.id==='nakamura')return; // One shared dessert menu owns all orders.
  const act=spec.buy?buy(spec.buy):()=>onAction?.('inspect',spec.inspect.title,spec.inspect.text);
  // Off to one side where somebody works the counter, so talking to them wins over the shop.
  anchor(front+out*.9,1.1,z+(spec.anchorDz||0),(spec.buy||spec.inspect).label,act);
@@ -317,9 +318,13 @@ function buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes}){
  kit.cyl(.03,.03,2.6,EAST_ROW.minX-.35,1.3,n.maxZ-.4,0x9aa0a4,{segments:6});
  kit.sign(iceFlag(),.42,1.3,EAST_ROW.minX-.35,1.85,n.maxZ-.62,{ry:0,depth:.015,name:'ice flag',both:true});
  kit.rod([EAST_ROW.minX-.35,2.52,n.maxZ-.4],[EAST_ROW.minX-.35,2.52,n.maxZ-.85],.015,0x9aa0a4);
- kit.box(1.4,.08,.4,EAST_ROW.minX+.35,.45,n.minZ+1.4,0x3a6e8f);
- for(const dz of [-.55,.55])kit.box(.06,.42,.36,EAST_ROW.minX+.35,.21,n.minZ+1.4+dz,0x5d6468);
- solid({id:'zenzai-bench',x:EAST_ROW.minX+.35,z:n.minZ+1.4,w:.5,d:1.5,height:.5});
+ // A usable park-side eating bench; the shop's threshold stays clear.
+ const bx=7.3,bz=-15.65;
+ kit.box(.44,.08,1.4,bx,.45,bz,0x3a6e8f);
+ for(const dz of [-.55,.55])kit.box(.36,.42,.06,bx,.21,bz+dz,0x5d6468);
+ solid({id:'zenzai-bench',x:bx,z:bz,w:.44,d:1.4,height:.5});
+ const seat=anchor(bx-.65,1,bz,'Sit beside Nakamura with your dessert',()=>onAction?.('seat','Nakamura dessert bench','A place in the park breeze for zenzai, warm andagi or an ice-cream cone.'));
+ if(seat)seat.userData.seat={id:'nakamura-dessert-bench',position:[bx,0,bz],stand:[bx-.8,0,bz],surfaceY:.49,eyeY:1.12,yaw:-Math.PI/2,pitch:-.03};
  // The old lane up to the sea bath between the shop-houses is Kitano Road now (kitano-link.js):
  // its stepping stones, lanterns, pot plants and the vending machine made way for the carriageway.
  bicycle(kit,1,EAST_ROW.plots[2].minZ+1.6,{ry:Math.PI/2,colour:0xd9d2c0});
