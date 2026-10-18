@@ -79,16 +79,34 @@ test('only photographic surfaces are flattened, never drawn signage',()=>{
  assert.equal(celFrom(withMap()).userData.flatten.value,FLATTEN);
 });
 
-test('the people keep their physical shading',()=>{
- const skin=standard();
- assert.equal(keepsPhysical(skin,{skinned:true}),true,
-  'Thuan is meant to read as a person, not as three flat bands');
+test('animated residents share the town cel ramp without changing their skeleton or textures',()=>{
+ const skin=standard({map:new THREE.Texture()});
+ assert.equal(keepsPhysical(skin,{skinned:true}),false);
  const mesh=new THREE.SkinnedMesh(new THREE.BufferGeometry(),skin);
+ const skeleton=new THREE.Skeleton([new THREE.Bone()]);
+ mesh.bind(skeleton);
  const root=new THREE.Group();root.add(mesh);
  const stats=applyCelShading(root);
- assert.equal(mesh.material,skin,'her material is untouched');
- assert.equal(stats.converted,0);
- assert.equal(stats.skipped,1);
+ assert.equal(mesh.material.type,'MeshToonMaterial');
+ assert.equal(mesh.material.map,skin.map);
+ assert.equal(mesh.skeleton,skeleton,'toon shading must not replace the animation rig');
+ assert.equal(mesh.material.gradientMap,gradientMap(bandsFor(skin)));
+ assert.equal(stats.converted,1);
+ assert.equal(stats.skipped,0);
+ skin.opacity=.6;skin.emissiveIntensity=2;
+ assert.equal(mesh.material.opacity,.6);
+ assert.equal(mesh.material.emissiveIntensity,2);
+});
+
+test('glass and explicitly protected effects retain physical shading on residents too',()=>{
+ const glass=standard({transparent:true,opacity:.4});
+ glass.userData.keepPhysical=true;
+ const effect=standard();effect.userData.keepPhysical=true;effect.userData.keepPhysicalStrict=true;
+ for(const material of [glass,effect]){
+  const mesh=new THREE.SkinnedMesh(new THREE.BufferGeometry(),material);
+  applyCelShading(mesh);
+  assert.equal(mesh.material,material);
+ }
 });
 
 test('conversion carries a material across and drops only what a ramp cannot use',()=>{

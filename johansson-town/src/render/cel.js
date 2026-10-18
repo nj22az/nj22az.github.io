@@ -191,13 +191,11 @@ export function bandsFor(material){
 /**
  * True for a material that should keep its physical shading.
  *
- * Skinned meshes are the people, and Thuan in particular is meant to read as a real
- * person rather than a drawing — flattening her to three bands would undo that. She
- * still goes through the ink and the grade with everything else, so she sits in the
- * same picture; she is just not cel-shaded in it.
+ * Animated residents use the same ramp as the town. Skinning is a vertex-stage
+ * operation supported by MeshToonMaterial; it is not a reason to bypass the look.
+ * Glass and explicitly protected effects retain their physical shading.
  */
-export function keepsPhysical(material,{skinned=false}={}){
- if(skinned)return true;
+export function keepsPhysical(material){
  if(material.userData?.keepPhysical!==true)return false;
  // Architecture used to be tagged keepPhysical wholesale, which left every wall, roof
  // and frontage physically lit beside toon props: two renderers in one picture
