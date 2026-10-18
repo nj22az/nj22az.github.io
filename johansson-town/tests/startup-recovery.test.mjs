@@ -14,7 +14,16 @@ test('old attempts and unavailable storage do not block launch; explicit recover
  const broken={getItem(){throw Error('denied');},setItem(){throw Error('denied');},removeItem(){throw Error('denied');}};assert.equal(createStartupRecovery({storage:broken}).safe,false);
  createStartupRecovery({...f,search:'?graphics=safe',now:()=>300000});f.hide();assert.equal(createStartupRecovery({...f,now:()=>300100}).safe,true);
 });
-test('mobile and recovery targets avoid MSAA, half-float and whole-scene compilation while keeping postprocessing',()=>{
+test('lean graphics profiles avoid MSAA, half-float and whole-scene compilation',()=>{
  for(const input of [{mobile:true},{mobile:true,tablet:true},{safe:true}]){const p=graphicsProfile(input);assert.equal(p.samples,0);assert.equal(p.antialias,false);assert.equal(p.preferHalfFloat,false);assert.equal(p.precompile,false);assert.ok(p.pixelBudget<=1.2e6);assert.equal(p.shadows,false);}
  const desktop=graphicsProfile();assert.equal(desktop.samples,4);assert.equal(desktop.precompile,true);assert.equal(desktop.shadows,true);
+});
+
+test('iPhone and explicit recovery omit postprocessing, background streaming and cinematic; other profiles retain them',async()=>{
+ const {drawingDpr}=await import('../src/render/startup-recovery.js');
+ for(const input of [{mobile:true,ios:true},{safe:true}]){
+  const p=graphicsProfile(input);assert.equal(p.postprocess,false);assert.equal(p.streamDetails,false);assert.equal(p.cinematic,false);assert.equal(p.quietOpening,true);
+  for(const [width,height] of [[430,932],[932,430],[4096,2732]]){const dpr=drawingDpr({width,height,deviceDpr:3,profile:p});assert.ok(width*height*dpr*dpr<=650001);}
+ }
+ for(const input of [{mobile:true},{mobile:true,ios:true,tablet:true},{}]){const p=graphicsProfile(input);assert.equal(p.postprocess,true);assert.equal(p.streamDetails,true);assert.equal(p.cinematic,true);}
 });
