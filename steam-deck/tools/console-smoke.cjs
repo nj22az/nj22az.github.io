@@ -19,7 +19,7 @@ const {chromium}=require('playwright');
  await page.addInitScript(()=>{
   window.__pad={id:'Steam Deck test pad',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
   Object.defineProperty(navigator,'getGamepads',{value:()=>window.__pad?[window.__pad]:[],configurable:true});
-  window.johanssonDesktop={offline:true,version:'0.2.4',save:async()=>{dispatchEvent(new Event('johansson-desktop-save'));dispatchEvent(new Event('johansson-save'));window.__saved=true;},performance:async()=>[{type:'Renderer',workingSetMiB:120}],checkUpdate:async()=>({available:false}),installUpdate:async()=>({ready:false}),quit:async()=>{window.__quit=true;}};
+  window.johanssonDesktop={offline:true,version:'0.2.5',save:async()=>{dispatchEvent(new Event('johansson-desktop-save'));dispatchEvent(new Event('johansson-save'));window.__saved=true;},performance:async()=>[{type:'Renderer',workingSetMiB:120}],checkUpdate:async()=>({available:false}),installUpdate:async()=>({ready:false}),quit:async()=>{window.__quit=true;}};
  });
  const sampled=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
  const tap=async i=>{await sampled();await page.evaluate(i=>{window.__pad.buttons[i]={pressed:true,value:1};},i);await sampled();await page.evaluate(i=>{window.__pad.buttons[i]={pressed:false,value:0};},i);await sampled();};
