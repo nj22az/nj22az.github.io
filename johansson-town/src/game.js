@@ -274,7 +274,9 @@ const INK_OPTIONS={
  // With MSAA on the scene target (ink-pipeline.js) supersampling is no longer what
  // keeps edges clean, so mobile renders at its drawing buffer and spends the budget
  // on resolution instead.
- superScale:mobile?1:1.25,samples:4,
+ // Installed Linux renders ink at native resolution too: MSAA/FXAA keep the
+ // edges clean without 56% more offscreen pixels on the Deck.
+ superScale:mobile||window.johanssonDesktop?1:1.25,samples:4,
  pixelBudget:mobile?2.4e6:4.6e6,
  // FXAA is a single pass and it is the one that resolves the line work, so it is
  // worth having on the devices whose buffers need it most.

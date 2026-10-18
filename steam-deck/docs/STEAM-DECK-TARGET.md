@@ -4,7 +4,7 @@ Primary sources: [Valve LCD specification](https://www.steamdeck.com/en/tech/dec
 
 Both have a 4-core/8-thread Zen 2 CPU, 8 RDNA 2 compute units, 16 GB shared RAM and a 1280×800 display. LCD refresh is 60 Hz; OLED supports up to 90 Hz. These specifications define a budget, not a measured performance result.
 
-The Linux renderer already caps its pixel ratio at 1, requests the high-performance GPU, keeps desktop scene/shadows and preloads nearby detail with bounded concurrency. The primary UI target is 1280×800, also checked at 1280×720, 960×540 and 800×600. Text is native and unaffected by imagery treatments. Gamepad navigation covers all normal menus.
+The Linux renderer caps its pixel ratio and ink-pass scale at 1, requests the high-performance GPU, keeps desktop scene/shadows and preloads nearby detail with bounded concurrency. The primary UI target is 1280×800, also checked at 1280×720, 960×540 and 800×600. Text is native and unaffected by imagery treatments. Gamepad navigation covers all normal menus.
 
 Movement uses the existing 1/60-second simulation accumulator, bounded frame deltas, and elapsed-time camera/animation updates. Faster rendering must not accelerate walking or town time. Pausing/resuming resets elapsed time. Do not make a faster GPU run the world faster or burn memory by preloading everything.
 

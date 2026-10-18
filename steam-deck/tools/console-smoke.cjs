@@ -36,6 +36,7 @@ const {chromium}=require('playwright');
  await page.goto(url+'/johansson-town/?desktop=1&audit&cinematic=off',{waitUntil:'domcontentloaded'});
  console.log('Title loading');
  await page.waitForFunction(()=>document.getElementById('title')?.dataset.scene==='ready',null,{timeout:120000});
+ const ink=await page.evaluate(()=>window.__JOHANSSON_LOOK__.state);assert.equal(ink.scale,1,'Linux ink pass runs at native resolution');assert.equal(ink.samples,4);assert.equal(ink.fxaa,true);
  await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.frozen=true;window.__JOHANSSON_AUDIT__.renderFrozen=false;});
  await page.screenshot({path:path.join(out,'01-title-1280.png')});
  await page.locator('#title .title-guide').click();assert.equal((await state()).page,'help','Title guide uses console instructions');await tap(9);
@@ -119,7 +120,7 @@ const {chromium}=require('playwright');
  // An unmapped USB controller still drives both sticks and Start.
  await page.evaluate(()=>{window.__pad.mapping='';window.__pad.id='USB custom controller';});await page.waitForTimeout(150);await tap(9);assert.equal((await state()).menu,true);await click('controls');await page.screenshot({path:path.join(out,'07-unmapped-controller.png')});await click('resume');
  // Controller loss stops input and offers a useful recovery screen.
- await page.evaluate(()=>{window.__pad.connected=false;});await page.waitForTimeout(200);assert.equal((await state()).menu,true);assert.equal((await state()).page,'controls');await page.evaluate(()=>{window.__pad.connected=true;});await page.waitForTimeout(150);await tap(1);await click('save');assert.equal(await page.evaluate(()=>window.__saved),true);
+ await page.evaluate(()=>{window.__pad.connected=false;});await page.waitForFunction(()=>{const s=window.johanssonDesktopUI.snapshot();return s.menu&&s.page==='controls';},null,{timeout:15000});assert.equal((await state()).menu,true);assert.equal((await state()).page,'controls');await page.evaluate(()=>{window.__pad.connected=true;});await page.waitForTimeout(150);await tap(1);await click('save');assert.equal(await page.evaluate(()=>window.__saved),true);
  // Four Linux window sizes, including the Deck's touchscreen media queries.
  await page.evaluate(()=>document.fullscreenElement?document.exitFullscreen():undefined);
  const windowSession=await context.newCDPSession(page),windowInfo=await windowSession.send('Browser.getWindowForTarget');
