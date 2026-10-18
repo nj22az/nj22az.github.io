@@ -89,13 +89,15 @@ and a hidden loading overlay only after first-frame readiness. It captures the p
 in portrait and landscape and Sakura's interior using Linux WebKit with an iPhone
 viewport. The completed run's evidence is stored in `docs/qa/loading-render-audit/`.
 Portrait, landscape and interior captures passed with full effects and no WebGL
-error; the landscape drawing buffer was verified after resize.
+error. Their images also passed a scene-content check and were visually reviewed.
 The held-download check passed: the bar remained at 2/8 tasks (25%) while a
 catalog model request was blocked, then reached 8/8 after entry. The portrait
 render used 548 × 1186 scene pixels (649,928), with ink, grading and FXAA enabled
 and no WebGL error. These are Linux WebKit measurements, not a physical-phone
-benchmark. The first landscape capture raced the resize; the harness now waits
-for a landscape drawing buffer before recording that view.
+benchmark. The initial landscape evidence raced the resize and paused drawing before its
+screenshot. Visual review caught the blank image despite the GPU-state assertions
+passing. The corrected harness waits for the resized buffer, keeps rendering and
+rejects captures without a drawn scene. The final landscape buffer is 1186 × 548.
 
 Visual review of the park portrait still shows conspicuous layered bands on the
 tree canopy. The pointed leaf geometry predates the port, but that fact does not
