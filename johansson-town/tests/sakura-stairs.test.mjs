@@ -3,14 +3,15 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {standingHitsRect} from '../physics.js';
 import {SAKURA_LAYOUT} from '../src/world/interiors/sakura-layout.js';
-import {SAKURA_STAIR,buildSakuraStoreys,sakuraStoreys} from '../src/world/interiors/sakura-stairs.js';
+import {SAKURA_STAIR,buildSakuraStoreys,sakuraStoreys,sakuraBoundsAt} from '../src/world/interiors/sakura-stairs.js';
+import {suppliedRoomBoundsBlocked} from '../src/world/supplied-rooms.js';
 import {createIndoorCeilings} from '../src/render/indoor-camera.js';
 import {buildSakuraShell} from '../src/world/interiors/sakura-shell.js';
 import {fluorescent} from '../src/render/dusk.js';
 
 test('walk from the stockroom up both flights to the office and down at normal player radius',()=>{
  const room=new THREE.Group(),stairs=buildSakuraStoreys({room,reg(){},action(){},exit(){}}),layout=sakuraStoreys(SAKURA_LAYOUT);
- const colliders=[...SAKURA_LAYOUT.colliders,...stairs.colliders],blocked=(x,y,z)=>colliders.some(c=>standingHitsRect(x,z,.28,y,c));
+ const colliders=[...SAKURA_LAYOUT.colliders,...stairs.colliders],blocked=(x,y,z)=>suppliedRoomBoundsBlocked(sakuraBoundsAt(SAKURA_LAYOUT,y),x,z,.28)||colliders.some(c=>standingHitsRect(x,z,.28,y,c));
  const H=SAKURA_STAIR.height,route=[[3.8,0,-3.3],[3.8,0,-4.7],[2.95,0,-4.7],[2.95,0,-5.3],[-1.2,0,-5.3],[-1.2,0,-4.6],[-1.8,0,-4.6],[-4.5,H/2,-4.6],[-5.05,H/2,-4.6],[-5.05,H/2,-6.15],[-4.5,H/2,-6.15],[-1.8,H,-6.15],[-1.2,H,-6.15],[-1.2,H,-3.95],[-.8,H,-2.5]];
  let [x,y,z]=route[0];
  for(const target of [...route.slice(1),...route.slice(0,-1).reverse()]){

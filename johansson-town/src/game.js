@@ -94,7 +94,7 @@ import {HOUSE_SAVE} from './world/johansson-house.js';
 import {createHomeCustomization} from './world/interiors/home-customization.js';
 import {buildCityRestaurant,CITY_RESTAURANT} from './world/interiors/city-restaurant.js';
 import {buildUpperHome} from './world/interiors/upper-home.js';
-import {SAKURA_STAIR} from './world/interiors/sakura-stairs.js';
+import {SAKURA_STAIR,sakuraBoundsAt} from './world/interiors/sakura-stairs.js';
 import {buildFamilyHome} from './world/interiors/family-home.js';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js?ui=compact-3';
@@ -1119,7 +1119,7 @@ function roomShell(s){
  clearRoom();town.visible=false;room.visible=true;
  const shared={site:s,room,reg,collider:roomCollider,action:(...args)=>{if(!islandPlay?.action(...args))activities.action(...args);},exit:leaveRoom};
  if(s.id==='dungeon'){activeRoomLayout=dungeonLayout(shared);return;}
- if(s.id==='market'){activeRoomLayout={...sakuraShop.layout,blocked:(x,z,r)=>suppliedRoomBoundsBlocked(player.position.y>SAKURA_STAIR.height-.24?{bounds:{minX:-6.4,maxX:6.4,minZ:-6.14,maxZ:3.91}}:SAKURA_LAYOUT,x,z,r)};return;}
+ if(s.id==='market'){activeRoomLayout={...sakuraShop.layout,blocked:(x,z,r)=>suppliedRoomBoundsBlocked(sakuraBoundsAt(SAKURA_LAYOUT,player.position.y),x,z,r)};return;}
  if(s.id==='school'){activeRoomLayout=buildClassroom(shared);return;}
  if(s.id==='mayor-office'){activeRoomLayout=buildMayorOffice(shared);return;}
  if(s.id==='community-kitchen'){activeRoomLayout=buildCommunityKitchen(shared);return;}
@@ -1225,7 +1225,7 @@ async function enterRoom(s){replayInterrupted();lowerPocket();spawnScene?.cancel
  current=s;roomShell(s);addRoomProps(s);content=buildBusinessContent({site:s,room,register:reg,onAction:activities.action,onInspect:item=>inspector.open(item)});if(!activeRoomLayout?.storeys)room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});activeRoomLayout?.follow?.({x:0,y:activeRoomLayout.spawn?.[1]??0,z:0});indoorCeilings=createIndoorCeilings(room,{from:activeRoomLayout?.ceilingsFrom});const spawn=officeEntry?[0,SAKURA_STAIR.height,-5.15]:activeRoomLayout?.spawn||[0,0,4.3];
  player.position.set(...spawn);
  // With the camera behind him, start a step inside so it is not up against the door.
- if(thirdPerson){const inward=activeRoomLayout?.yaw??0,dx=-Math.sin(inward),dz=-Math.cos(inward);for(let d=.1;d<=1.2;d+=.1){const x=spawn[0]+dx*d,z=(spawn[2]??0)+dz*d;if(cameraBlocked(x,z,player.position.y+.9,.35))break;player.position.x=x;player.position.z=z;}}
+ if(thirdPerson&&!officeEntry){const inward=activeRoomLayout?.yaw??0,dx=-Math.sin(inward),dz=-Math.cos(inward);for(let d=.1;d<=1.2;d+=.1){const x=spawn[0]+dx*d,z=(spawn[2]??0)+dz*d;if(cameraBlocked(x,z,player.position.y+.9,.35))break;player.position.x=x;player.position.z=z;}}
  unstuckPlayer();workplaceResidents.enter(s,minutes);bookshopCustomers.enter(s,minutes);
  // The dungeon is left by its rope, not by walking back through where you came in.
 

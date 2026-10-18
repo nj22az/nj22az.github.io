@@ -35,7 +35,7 @@ try{
  report.down=await walk([...route].reverse(),30);
  await capture('stairs-midnight',30,[-1.1,1.65,-4.6],[-4.9,2.7,-4.9]);
  await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__;a.leave();await a.enter('sakura-office');});
- report.outsideEntry=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.player);assert.equal(report.outsideEntry.room,'market');assert.ok(Math.abs(report.outsideEntry.position[1]-H)<.03);
+ report.outsideEntry=await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__,p=a.player;return {...p,floor:!!a.layout.walk.floorAt(...[p.position[0],p.position[2],p.position[1]])};});assert.equal(report.outsideEntry.room,'market');assert.equal(report.outsideEntry.floor,true);assert.ok(Math.abs(report.outsideEntry.position[1]-H)<.03);
  assert.deepEqual(errors,[]);await page.close();
 }catch(error){failure=error;report.failure=error.stack;}
 finally{await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2)+'\n');await browser.close();}

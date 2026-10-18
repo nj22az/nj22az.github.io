@@ -8,6 +8,10 @@ export const SAKURA_STAIR=Object.freeze({height:4.01,officeZ:-.64,
  hole:{minX:-5.65,maxX:-2.05,minZ:-6.14,maxZ:-4},
  bottom:[-1.25,0,-4.6],top:[-1.25,4.01,-3.5]});
 
+// Upper bounds include the stair landing behind the office's rear wall.
+export const sakuraBoundsAt=(base,y)=>y>SAKURA_STAIR.height-.24?
+ {bounds:{minX:-6.4,maxX:6.4,minZ:-6.78,maxZ:3.91}}:base;
+
 export function sakuraStoreys(base){
  const H=SAKURA_STAIR.height;
  const floors=[
