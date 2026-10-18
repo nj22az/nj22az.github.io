@@ -80,3 +80,17 @@ test('large Retina buffers cannot bypass the render-target pixel ceiling',()=>{
  assert.ok(pipeline.width<7680&&pipeline.height<4320,'The budget must also apply below native buffer resolution');
  pipeline.dispose();
 });
+
+test('mobile recovery caps real postprocess buffers and avoids float/MSAA allocations even on capable hardware',async()=>{
+ const {graphicsProfile}=await import('../src/render/startup-recovery.js');
+ const r=renderer({float:true}),profile=graphicsProfile({mobile:true,tablet:true});
+ r.getDrawingBufferSize=size=>size.set(4096,2732);
+ const pipeline=createInkPipeline(r,profile);
+ try{
+  pipeline.resize();
+  assert.ok(pipeline.width*pipeline.height<=profile.pixelBudget);
+  assert.equal(pipeline.sceneTarget.texture.type,THREE.UnsignedByteType);
+  assert.equal(pipeline.sceneTarget.samples,0);
+  assert.equal(pipeline.state.ink,true);assert.equal(pipeline.state.grade,true);assert.equal(pipeline.state.fxaa,true);
+ }finally{pipeline.dispose();}
+});
