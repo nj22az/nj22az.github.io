@@ -6,7 +6,11 @@ on:
       - '.github/workflows/loading-render-audit.yml'
       - 'johansson-town/src/**'
       - 'johansson-town/loading-progress.js'
+      - 'johansson-town/index.html'
       - 'johansson-town/tools/loading-audit-smoke.mjs'
+concurrency:
+  group: loading-render-audit
+  cancel-in-progress: true
 permissions:
   contents: write
 jobs:
