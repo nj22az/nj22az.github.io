@@ -94,6 +94,7 @@ export const FRONT_ENDCAPS=Object.freeze([
 export const CASH_CORNER=Object.freeze({atm:Object.freeze({x:-2.66,z:-3.66,w:.58,d:.5,h:1.42}),film:Object.freeze({x:-3.42,z:-3.72,w:.44,d:.38,h:1.12})});
 /** The copy machine by the east window, its fax on a table beside it. */
 export const COPY_MACHINE=Object.freeze({x:2.1,z:3.5,w:.62,d:.56});
+export const BASKET_STACK=Object.freeze({x:-1.84,z:3.48,w:.36,d:.42,height:.53});
 export const SAKURA_LAYOUT={
  bounds:{minX:-6.8,maxX:6.8,minZ:-6.78,maxZ:3.88},
  floorPolygon:[[-6.8,3.88],[6.8,3.88],[6.8,-3.95],[5.7,-3.95],[5.7,-6.78],[-5.7,-6.78],[-5.7,-3.95],[-6.8,-3.95]],
@@ -136,6 +137,7 @@ export const SAKURA_LAYOUT={
   rect(-5.19,-6.52,.86,.36,.9),rect(-5.27,-5.4,.66,.96,1.1),rect(5.51,-5.67,.26,.74,.6),rect(4.66,-6.58,.28,.28,.6),
   // The Thuan figurine on her plinth in the east corner.
   rect(5.42,-6.42,.36,.36,1.2),
+  rect(BASKET_STACK.x,BASKET_STACK.z,BASKET_STACK.w,BASKET_STACK.d,BASKET_STACK.height),
  ]
 };
 // Each stocked unit has a real position. Opposite sides of an aisle use opposite

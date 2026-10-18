@@ -1,3 +1,4 @@
+import {buildSakuraBaskets} from './sakura-baskets.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {buildSpecialsBoard} from './sakura-specials-board.js';
 import {SHOP_STOCK} from '../../commerce/shop-stock.js';
@@ -155,7 +156,8 @@ export function buildSakuraInterior({room,reg,action,exit}){
  // The ledger lives on Thuan's desk in the back office now; the counter carries the hot
  // case, the oden and the bell (sakura-cheer.js).
  buildSakuraCheer(room,{anchor,action});
- buildSakuraCounterDetail(room);
+ const equipment=buildSakuraCounterDetail(room);
+ buildSakuraBaskets(room);
  // The specials board on the wall behind the counter (sakura-specials-board.js).
  buildSpecialsBoard(room,{anchor,action});
  buildSakuraBand(room);
@@ -180,7 +182,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
   }
  };
  let mounted=false,disposed=false,last='';
- return {dispose:()=>{disposed=true;life.dispose();},officeDoor:life.officeDoor,frontDoor:life.frontDoor,loadBackRooms:life.loadBackRooms,layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:time=>{decorations.tick(time);life.tick(time);},accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const [ok]=await Promise.all([preloadSakuraInterior(),life.ready,capStand.ready]);if(disposed)return false;if(ok&&!mounted){
+ return {dispose:()=>{disposed=true;life.dispose();},cashDrawer:equipment.getObjectByName('Sakura cash drawer'),officeDoor:life.officeDoor,frontDoor:life.frontDoor,loadBackRooms:life.loadBackRooms,layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:time=>{decorations.tick(time);life.tick(time);},accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const [ok]=await Promise.all([preloadSakuraInterior(),life.ready,capStand.ready]);if(disposed)return false;if(ok&&!mounted){
    const interior=model.clone(true);
    interior.traverse(o=>{if(o.isMesh&&o.name==='sakura-light'){
     const prepare=m=>{const mat=m.clone();mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;return mat;};
