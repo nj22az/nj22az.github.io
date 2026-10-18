@@ -8,7 +8,7 @@ export function createLinuxLife({state,names,getMinutes,getPose,getEntityPose,ap
  function wake(){if(!inBed)return false;inBed=false;spawnOutside({homeBedside:bed.stand,yaw:0});say(life.active+' gets out of bed. Your home is here whenever you need it.',5);checkpoint();save();return true;}
  async function goHome({sleep=shouldSleep(life.active,getMinutes())}={}){
   if(busy)throw Error('The home is still opening.');busy=true;const ticket=++generation;
-  try{const layout=await spawnHome(current(),sleep);if(ticket!==generation)return;bed=layout;inBed=!!sleep;checkpoint();save();say(sleep?life.active+' is in their own bed. Press A or move the left stick to get up.':life.active+' is home at '+current().home.address+'.',7);}finally{busy=false;}
+  try{const layout=await spawnHome(current(),sleep);if(ticket!==generation)return;bed=layout;inBed=!!sleep;checkpoint();save();say(sleep?life.active+' is in their own bed. Move the left stick to get up.':life.active+' is home at '+current().home.address+'.',7);}finally{busy=false;}
  }
  async function select(name,{started=true}={}){
   const person=roster.find(p=>p.name===name);if(!person)throw Error('That character is not in this island.');if(busy)throw Error('Wait for the home to finish opening.');

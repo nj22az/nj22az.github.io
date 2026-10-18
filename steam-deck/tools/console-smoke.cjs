@@ -42,6 +42,15 @@ const {chromium}=require('playwright');
  await tap(9);assert.equal((await state()).menu,true,'Start opens menu from title');await click('controls');await page.screenshot({path:path.join(out,'02-controls-title.png')});await tap(1);assert.equal((await state()).page,'settings');await tap(1);assert.equal((await state()).menu,false);
  assert.equal(await page.locator('#desktopTabs [data-tab]').count(),3);assert.equal(await page.locator('#desktopOpenMenu kbd').textContent(),'☰');
  await tap(9);await tap(5);assert.equal((await state()).page,'people','R1 opens People');await tap(5);assert.equal((await state()).page,'settings','R1 opens Settings');await tap(4);assert.equal((await state()).page,'people','L1 returns to People');await tap(9);
+ // Hot-plug reported families updates prompts without changing their physical roles.
+ for(const [id,family,backGlyph] of [['DualSense Wireless Controller','playstation','○'],['Nintendo Switch Pro Controller','nintendo','A'],['Xbox Wireless Controller','xbox','B']]){
+  await page.evaluate(id=>{window.__pad.id=id;},id);await tap(9);await page.waitForFunction(f=>document.documentElement.dataset.controllerFamily===f,family);
+  assert.equal(await page.locator('.console-footer [data-glyph="1"]').textContent(),backGlyph);await page.screenshot({path:path.join(out,`symbols-${family}.png`)});await tap(9);
+ }
+ await page.evaluate(()=>{window.__pad.id='Generic USB Controller';});await tap(9);
+ assert.equal(await page.locator('.console-footer [data-glyph="1"] svg').getAttribute('aria-label'),'Right face button');
+ await page.screenshot({path:path.join(out,'symbols-unknown.png')});await click('controls');await page.locator('[name=glyphs]').selectOption('playstation');assert.equal(await page.locator('[data-bind="1"] kbd').textContent(),'○');await page.locator('[name=glyphs]').selectOption('auto');await tap(9);
+ await page.evaluate(()=>{window.__pad.id='Steam Deck test pad';});
  await page.locator('#titleLoad').click();await tap(1);assert.equal(await page.locator('#titleSlots').isVisible(),false,'B closes the title save list');
  // A begins the actual world without needing a mouse.
  await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.frozen=false;});await tap(0);await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__===true,null,{timeout:120000});
@@ -84,7 +93,7 @@ const {chromium}=require('playwright');
    const text=range.getBoundingClientRect(),caption=document.getElementById('subtitle').getBoundingClientRect(),rail=document.getElementById('contextActions').getBoundingClientRect();
    return {clamp:getComputedStyle(label).webkitLineClamp,height:box.height,textHeight:text.height,scroll:label.scrollHeight,client:label.clientHeight,captionRight:caption.right,railLeft:rail.left,railRight:rail.right,railBottom:rail.bottom,width:innerWidth,heightLimit:innerHeight};
   });
-  assert.equal(await page.locator('#act').evaluate(el=>getComputedStyle(el,'::after').content.includes('A')),true,'Action prompt displays the mapped A button');
+  assert.equal(await page.locator('#act .console-action-key').textContent() === 'A',true,'Action prompt displays the mapped A button');
   assert.equal(layout.clamp,'none','Full action labels have no line clamp');
   assert.ok(layout.scroll<=layout.client+1&&layout.textHeight<=layout.height+1,'Complete action text is visible');
   assert.ok(layout.captionRight<layout.railLeft,'Caption and action descriptions do not overlap');
@@ -104,9 +113,9 @@ const {chromium}=require('playwright');
  await click('controls');await click('swap');await page.screenshot({path:path.join(out,'06-custom-controls.png')});
  await click('resume');before=await page.evaluate(()=>({...window.__JOHANSSON_POSE__}));await axes([.8,0,0,0]);await page.waitForTimeout(250);await axes([0,0,0,0]);after=await page.evaluate(()=>({...window.__JOHANSSON_POSE__}));assert.ok(Math.abs(after.yaw-before.yaw)>.05,'Swapped look stick changes actual camera');
  await tap(6);await click('controls');await click('reset');
- await click('resume');await tap(10);assert.equal((await state()).hudHidden,true);assert.equal(await page.locator('#desktopOpenMenu').isVisible(),true,'Menu remains accessible with HUD hidden');await tap(10);assert.equal((await state()).hudHidden,false);
+ await click('resume');await tap(13);assert.equal((await state()).hudHidden,true);assert.equal(await page.locator('#desktopOpenMenu').isVisible(),true,'Menu remains accessible with HUD hidden');await tap(13);assert.equal((await state()).hudHidden,false);
  await tap(8);await page.waitForTimeout(150);assert.equal(await page.locator('#directory').isVisible(),true,'View opens town book');await tap(1);assert.equal(await page.locator('#directory').isVisible(),false);
- await tap(3);assert.equal(await page.locator('#activity').isVisible(),true,'Y opens inventory');await tap(1);assert.equal(await page.locator('#activity').isVisible(),false);
+ await tap(3);assert.equal(await page.locator('#activity').isVisible(),true,'Y opens inventory');await page.screenshot({path:path.join(out,'05-inventory.png')});await tap(1);assert.equal(await page.locator('#activity').isVisible(),false);
  // An unmapped USB controller still drives both sticks and Start.
  await page.evaluate(()=>{window.__pad.mapping='';window.__pad.id='USB custom controller';});await page.waitForTimeout(150);await tap(9);assert.equal((await state()).menu,true);await click('controls');await page.screenshot({path:path.join(out,'07-unmapped-controller.png')});await click('resume');
  // Controller loss stops input and offers a useful recovery screen.
@@ -124,7 +133,7 @@ const {chromium}=require('playwright');
  // Linux residents: all named characters can be selected, with their own beds and schedules.
  console.log('Controls and layout passed; testing residents');
  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.setTime(60));await page.locator('#desktopTabs [data-tab=people]').click();
- assert.ok(await page.locator('[data-person]').count()>=30);await page.screenshot({path:path.join(out,'08-character-roster.png')});
+ assert.ok(await page.locator('[data-person]').count()>=30);await page.evaluate(()=>Promise.all([...document.querySelectorAll('.console-roster img')].filter(img=>img.getBoundingClientRect().top<innerHeight).map(img=>img.decode())));await page.screenshot({path:path.join(out,'08-character-roster.png')});
  await page.locator('[data-person="Thuan"]').click();await page.waitForFunction(()=>window.johanssonLinuxWorld?.inBed&&!window.johanssonLinuxWorld.busy);
  assert.equal(await page.evaluate(()=>window.__JOHANSSON_MODEL__.avatar.recipe.name),'Thuan');
  await sampled();await page.screenshot({path:path.join(out,'09-thuan-own-bed.png')});await tap(0);assert.equal(await page.evaluate(()=>window.johanssonLinuxWorld.inBed),false,'A gets out of bed');await tap(1);await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).room===null);assert.equal(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room),null,'B leaves the home without a mouse');
