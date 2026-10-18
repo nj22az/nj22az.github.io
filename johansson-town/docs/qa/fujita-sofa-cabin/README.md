@@ -35,3 +35,11 @@ node --test tests/sakura-*.test.mjs tests/island-coast.test.mjs tests/detail-str
 Results: 23 focused integration tests and 73 regression tests pass. Checks include overnight spawn, 23:30 arrival, 06:00 return, clock reversal, sampled cargo clearances, land/deck support and the full gangway/cabin approach sampled every 25 mm at a 0.28 m player radius in both directions. The sleeping endpoint matches the sofa anchor; these numerical checks do not establish the rendered body's appearance.
 
 Visual acceptance remains outstanding on the integrated build. A fresh Playwright launch failed because the Chromium headless executable is absent. No desktop/mobile screenshots or physical iPhone Safari result are claimed. Inspect the sofa/pillow/blanket alignment, sleeping and waking transitions, stern hull and cabin roof from pedestrian and overhead views; then walk the harbour, gangway and cabin on an actual iPhone before closing physical-device acceptance.
+
+## Screenshot audit — 18 October 2026
+
+Fresh desktop and phone-sized Chromium captures of game commit `a42fad65dc19c577f7f9b5707be152618aa92180` are available in [visual-audit/](visual-audit/README.md). The captured runtime stamp was also checked against the published game.
+
+The visual review found three unresolved defects: the pillow does not support Fujita’s sleeping head, the folded futon is enclosed by the cupboard’s opaque body, and third-person cabin framing is obstructed by the player and a ceiling fitting. Night-time legibility is an additional polish concern. Walking into the cabin and back, the overnight routine and roof cutaway passed the exercised checks. **Visual acceptance remains open.** Physical iPhone Safari and frame-rate acceptance are not established by these Chromium captures.
+
+The evidence includes 20 accepted game screenshots, six isolated production-geometry images, raw reports and the written audit. Four invalid staging/camera captures were excluded. See [the full audit](visual-audit/Shiosai-Audit.txt) and [overview](visual-audit/Shiosai-visual-audit.png).
