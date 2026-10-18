@@ -1,3 +1,4 @@
+import {createStartupRecovery,graphicsProfile} from './render/startup-recovery.js';
 import {CAST_RECIPES,recipeFor} from './avatars/cast.js';
 import {createLensOcclusion} from './render/lens-occlusion.js';
 import {FERRY_LADDER} from './world/ferry-inspect.js';
@@ -149,6 +150,8 @@ import {loadHatModels} from './catalog/hat-models.js';
 // The hats people wear from World's catalogue (Johansson's trucker cap) are in hand before the town's people are built, so
 // nobody starts in the stand-in. Loaded here, not in boot.js, so the boot chunk stays small and three.js stays in this chunk
 // (tests/runtime-package.test.mjs). A failure leaves the stand-in (src/catalog/hat-models.js).
+const startupRecovery=createStartupRecovery({storage:(()=>{try{return globalThis.sessionStorage;}catch{return null;}})(),search:location.search,events:globalThis});
+window.__JOHANSSON_SAFE_GRAPHICS__=startupRecovery.safe;
 await loadHatModels(undefined,{timeout:8000}).catch(error=>{console.warn('Hat models unavailable:',error);return false;});
 
 // Change the emitted game chunk URL when repairing a cached live runtime.
@@ -157,11 +160,13 @@ window.__JOHANSSON_RUNTIME_VERSION__='minato-concert-1';
 const $=s=>document.querySelector(s);
 const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const touch=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;
-const mobile=isIOS||touch,tabletLike=touch&&Math.min(innerWidth,innerHeight)>=700,highTier=!mobile||tabletLike,shadows=highTier,canvas=$('#game');
-// Tablets draw close to their screen: at 1.45 a 2x iPad stretched a small picture up and
-// every edge stair-stepped. Phones stay a little lower to keep the frame rate.
+const mobile=isIOS||touch,tabletLike=touch&&Math.min(innerWidth,innerHeight)>=700;
+const graphics=graphicsProfile({mobile,tablet:tabletLike,safe:startupRecovery.safe});
+const highTier=graphics.shadows,shadows=graphics.shadows,canvas=$('#game');
+// Mobile buffers have a fixed cap before the first frame; the frame-rate governor
+// cannot prevent a memory-pressure restart while the first buffers are allocated.
 let dprScale=1;
-const renderDpr=()=>Math.max(1,Math.min(window.devicePixelRatio||1,mobile?(tabletLike?1.85:1.5):2)*dprScale);
+const renderDpr=()=>Math.max(1,Math.min(window.devicePixelRatio||1,graphics.dpr)*dprScale);
 /**
  * Keeps the frame rate up on slower devices: if frames average slower than about 24 a
  * second for a few seconds, the drawing buffer steps down a notch (never below 1x), and
@@ -216,7 +221,7 @@ function governResolution(dt){
  if(dprGovernor.cooldown>0||average<1/24||dprScale<=.62)return;
  dprScale=Math.max(.6,dprScale-.13);dprGovernor.cooldown=5;resizeRenderer();
 }
-const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance',alpha:false,stencil:false,preserveDrawingBuffer:false});
+const renderer=new THREE.WebGLRenderer({canvas,antialias:graphics.antialias,powerPreference:'high-performance',alpha:false,stencil:false,preserveDrawingBuffer:false});
 // Counted per frame, across every pass, so renderInfo (audit) reads a whole frame's draw calls.
 renderer.info.autoReset=false;
 renderer.setPixelRatio(renderDpr());renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.NoToneMapping;renderer.toneMappingExposure=1;renderer.shadowMap.enabled=shadows;renderer.shadowMap.type=THREE.PCFShadowMap;
@@ -263,15 +268,11 @@ const celPass=createCelPass();
  * plain path after the retries, which is where it used to start.
  */
 const INK_OPTIONS={
- // Supersampling is what keeps the line work clean, and it is also the most
- // expensive thing here. renderDpr already holds a phone's draw buffer well below
- // its screen, so a modest factor there costs little and is what stops the ink
- // stair-stepping when the small buffer is scaled back up to a 3x display.
- // With MSAA on the scene target (ink-pipeline.js) supersampling is no longer what
- // keeps edges clean, so mobile renders at its drawing buffer and spends the budget
- // on resolution instead.
- superScale:mobile?1:1.25,samples:4,
- pixelBudget:mobile?2.4e6:4.6e6,
+ // Mobile keeps ink, grading and FXAA, using single-sample eight-bit targets.
+ // Avoid allocating native MSAA and another multisampled half-float scene buffer
+ // at the same time: a browser process may restart before the FPS governor runs.
+ superScale:graphics.superScale,samples:graphics.samples,preferHalfFloat:graphics.preferHalfFloat,
+ pixelBudget:graphics.pixelBudget,
  // FXAA is a single pass and it is the one that resolves the line work, so it is
  // worth having on the devices whose buffers need it most.
  fxaa:true,
@@ -1693,14 +1694,15 @@ function startArrivalScene(opening){
 }
 // Queue shared shaders once. This renderer's async poll can outlive materials replaced
 // by the detail stream; compile queues GPU work without retaining disposed materials.
-lightBudget.update();compileTown(scene);
+lightBudget.update();if(graphics.precompile)compileTown(scene);
 function enterWorld(){
  if(started)return;
+ startupRecovery.entering();
  window.__JOHANSSON_TITLE_PREVIEW__=false;
  townSky.mesh.rotation.y=0;
  startWeather();
 const opening=beginAtOpening();
-started=true;controlsTouchedAt=performance.now();if(mobile){touchSticks.hint(true);stickHintUntil=performance.now()+4500;}$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(opening?.caption||(seated?'Stand — Sakura is across the street.':'Sakura — step up to meet Thuan.'),5);runStabilityChecks();
+started=true;controlsTouchedAt=performance.now();if(mobile){touchSticks.hint(true);stickHintUntil=performance.now()+4500;}$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;startupRecovery.running();camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(opening?.caption||(seated?'Stand — Sakura is across the street.':'Sakura — step up to meet Thuan.'),5);runStabilityChecks();
 if(opening?.room)openInside(opening);else startArrivalScene(opening);
 }
 window.__JOHANSSON_ENTER_WORLD__=enterWorld;
@@ -1708,7 +1710,7 @@ if(!window.__JOHANSSON_TITLE_PREVIEW__)enterWorld();
 else {
  startWeather();
  $('#title').dataset.scene='ready';
- $('#bootStatus').textContent='Island ready';
+ $('#bootStatus').textContent=startupRecovery.safe?'Island ready · reduced graphics':'Island ready';
 }
 addEventListener('johansson-title-weather',()=>{if(!started)startWeather();});
 let mouseLooking=false,mouseLast=null;
@@ -1815,7 +1817,7 @@ graphicsLifecycle=createGraphicsLifecycle({canvas,getRunning:()=>started,
  dropPipeline:()=>{const old=pipeline;pipeline=null;try{old?.dispose();}finally{renderPlain();}},
  restoreGraphics:()=>{renderer.setRenderTarget?.(null);resizeRenderer();inkRecovery.restored();if(!buildInk())inkRecovery.failed();setTime();},
  resetClock:()=>clock.getDelta(),followClock,
- onLost:()=>{const d=$('#fatal');if(d){d.classList.remove('hidden');d.querySelector('p').textContent='Graphics paused safely. Your town will resume when the display recovers.';d.querySelector('button').hidden=true;}},
+ onLost:()=>{startupRecovery.entering();const d=$('#fatal');if(d){d.classList.remove('hidden');d.querySelector('p').textContent='Graphics paused safely. Your town will resume when the display recovers.';d.querySelector('button').hidden=true;}},
  onRestored:()=>{const d=$('#fatal');if(d){d.classList.add('hidden');d.querySelector('button').hidden=false;}},
  onError:(error,phase)=>{console.warn('Graphics '+phase+':',error.message);if(phase==='restore'){const d=$('#fatal');if(d){d.querySelector('p').textContent='Graphics are still paused. Retry when the display is available.';d.querySelector('button').hidden=false;}}}
 });
