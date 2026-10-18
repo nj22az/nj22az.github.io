@@ -5,6 +5,8 @@ const {pathToFileURL}=require('node:url');
 const {writeSnapshot,readSnapshot}=require('./storage.cjs');
 const {createUpdater}=require('./updater.cjs');
 app.setName('Johansson World');
+// Acceptance must not load or overwrite a player's saved preferences/progress.
+if(process.argv.includes('--smoke'))app.setPath('userData',fs.mkdtempSync(path.join(app.getPath('temp'),'johansson-world-smoke-')));
 protocol.registerSchemesAsPrivileged([{scheme:'johansson',privileges:{standard:true,secure:true,supportFetchAPI:true,stream:true,corsEnabled:true}}]);
 let window,readyToClose=false,updater;
 const root=path.join(__dirname,'site');
