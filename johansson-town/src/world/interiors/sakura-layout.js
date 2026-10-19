@@ -3,6 +3,7 @@ import {MAGAZINE_RACK} from './sakura-magazine-rack.js';
 import {shelfCapacity} from '../../commerce/shop-stock.js';
 import {PRODUCTS} from '../../commerce/products-data.js';
 import {JOHANSSON_TRUCKER} from '../../commerce/sakura-caps.js';
+import {SAKURA_CLERK_POINT,SAKURA_CLERK_APPROACH,SAKURA_QUEUE,SAKURA_BROWSE} from './sakura-queue.js';
 // Measured from the supplied convenience-store model, in metres at floor Y=0.
 const rect=(x,z,w,d,height=2.9)=>({x,z,w,d,height});
 
@@ -108,7 +109,11 @@ export const SAKURA_LAYOUT={
  // it: the street seen from inside, and the real interior seen from the street.
  frontZ:3.91,
  clearance:CLERK_CLEARANCE,
- staff:[5.5,0,.85],staffYaw:Math.PI/2,checkout:[3.9,0,.85],stockroom:[.7,0,-5.5],register:[4.88,FURNITURE_HEIGHTS.serviceCounter+.12,1.17],
+ // The clerk's stand point is 0.75 m behind the counter's front (sakura-queue.js, New Yokosuka's konbini); a clerk-sized
+ // walker is routed to `staffApproach` and steps the last 0.21 m forward (retail-clerk.js). The paying customer stands
+ // at `checkout`, the first of the two queue spots; the queue and the browsing spots are sakura-queue.js's.
+ staff:[...SAKURA_CLERK_POINT],staffApproach:[...SAKURA_CLERK_APPROACH],staffYaw:Math.PI/2,checkout:[SAKURA_QUEUE[0].x,0,SAKURA_QUEUE[0].z],
+ queue:SAKURA_QUEUE,browse:SAKURA_BROWSE,stockroom:[.7,0,-5.5],register:[4.88,FURNITURE_HEIGHTS.serviceCounter+.12,1.17],
  colliders:[
   ...GONDOLA.map(([id,r])=>turned(id,r)),
   rect(CASH_CORNER.atm.x,CASH_CORNER.atm.z,CASH_CORNER.atm.w,CASH_CORNER.atm.d,1.6),rect(CASH_CORNER.film.x,CASH_CORNER.film.z,CASH_CORNER.film.w,CASH_CORNER.film.d,1.2),

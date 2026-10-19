@@ -6,7 +6,7 @@ import {buildSakuraInterior} from '../world/interiors/sakura-interior.js';
 import {SAKURA_LAYOUT} from '../world/interiors/sakura-layout.js';
 import {suppliedRoomBoundsBlocked} from '../world/supplied-rooms.js?snappy=1';
 import {createIndoorResidents} from './indoor-residents.js';
-import {createRetailClerk} from './retail-clerk.js';
+import {createRetailClerk,inTillPocket,tillStep} from './retail-clerk.js';
 import {createShopAttention} from './shop-attention.js';
 import {createShopRetail} from './shop-retail.js';
 import {returnShopStock} from '../commerce/shop-stock.js';
@@ -39,7 +39,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   const player=isInside()&&getPlayerPosition();if(player&&(player.y??0)<1&&Math.hypot(player.x-x,player.z-z)<r+.28)return true;
   return world.people.some(p=>p!==excluded&&p.g.userData.inMarket&&p.g.visible&&Math.hypot(p.g.position.x-x,p.g.position.z-z)<r+(p===person?layout.clearance:.35));
  };
- let backRoomsFetched=false;
+ let backRoomsFetched=false,lastDt=1/60;
  const display=buildSakuraInterior({room:group,reg,action,exit});display.updateStock(state.sakura.stock);
  const checkout=createCheckoutFeedback({drawer:display.cashDrawer,
   getSale:()=>state.sakura.journal?.findLast(entry=>entry.kind==='Sale'),
@@ -50,8 +50,9 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
  const residents=createIndoorResidents({world,parent:group,layout,collides:blocked,place:'market',getState:()=>state,getRain,
   onBorrow:(p,time)=>{onBorrow(p,time);retail.arriving(p,time);},getStandingVisit:retail.standing,
   isOccupied,radiusFor:p=>p===person?layout.clearance:.35,validateSpawn:true,
-  canLeave:p=>p!==person||service?.prepareToLeave()!==false});
- const bindClerk=()=>createRetailClerk({person,room:group,layout,collides:blocked,getWork:retail.work,completeWork:job=>{retail.complete(job);save();},cancelWork:retail.cancelWork,accessShelf:display.accessShelf,
+  // A clerk the rota has just relieved may still be at the till: out of the pocket first, facing the way she steps.
+  canLeave:p=>{if(p!==person&&inTillPocket(p.g,layout)){tillStep(p.g,layout.staffApproach,lastDt);return false;}return p!==person||service?.prepareToLeave()!==false;}});
+ const bindClerk=()=>createRetailClerk({person,room:group,layout,collides:blocked,getMinutes,getWork:retail.work,completeWork:job=>{retail.complete(job);save();},cancelWork:retail.cancelWork,accessShelf:display.accessShelf,
   isOccupied});
  service=bindClerk();
  const followRota=()=>{const next=clerkFor(getMinutes());if(!next||next===person)return;service?.prepareToLeave();person=next;attention=createShopAttention({clerk:person.g,world,retail,colliders,isInside,getPlayerPosition});service=bindClerk();};
@@ -179,7 +180,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    // hemisphere fill brightened the whole town and its tubes threw a 17 m halo over the
    // roof and the road. Outside, the shop shows through the window by its own glow.
    {const inside=!!isInside();lightCheck-=dt;if(inside!==lightsInside||lightCheck<=0)syncLightVisibility(inside);}
-   display.tick?.(performance.now()/1000);followRota();if(!person.g.userData.playerControlled){residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);}checkout.update(dt,!!isInside());display.refrigerator.update(dt);display.updateStock(state.sakura.stock);
+   lastDt=dt;display.tick?.(performance.now()/1000);followRota();if(!person.g.userData.playerControlled){residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);}checkout.update(dt,!!isInside());display.refrigerator.update(dt);display.updateStock(state.sakura.stock);
    // The office door opens for whoever is in the shop and near it: the player, Thuan, anyone borrowed in.
    // The front door, from inside, opens the same way (the street side has its own).
    if(display.officeDoor){const points=[];if(isInside()){const p=getPlayerPosition();points.push([p.x,p.z]);}for(const other of world.people)if(other.g.parent===group)points.push([other.g.position.x,other.g.position.z]);display.officeDoor.update(dt,points);display.frontDoor?.update(dt,points);}},

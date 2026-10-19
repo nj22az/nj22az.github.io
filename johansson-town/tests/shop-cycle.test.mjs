@@ -1,4 +1,7 @@
 import test from 'node:test';
+import {inTillPocket} from '../src/people/retail-clerk.js';
+import {TILL_BODY} from '../src/world/interiors/sakura-queue.js';
+import {standNow} from '../src/people/stand-points.js';
 import assert from 'node:assert/strict';
 import * as T from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
@@ -60,11 +63,14 @@ test('a customer picks visible goods, waits for the till, pays once and funds an
   phases.add(f.shop.service.phase);const r=f.state.residentLife['Harbour master']?.shopping;
   if(r?.picked&&!r.paid){picked=true;assert.equal(f.state.sakura.stock.notebook.shelf,capacity-1);assert.equal(f.state.sakura.sales,0,'Taking an item is not yet a sale');assert.equal(customer.g.userData.heldItem,'shop-notebook');assert.ok(visibleInstances(f.shop.group)<original,'The actual instanced product disappears');hiddenLabels ||= nonzero()<labelsBefore;}
   if(r?.paid)paid=true;
-  if(['checkout','stock-fetch','stock-carry','stock-place'].includes(f.shop.service.phase))assert.equal(f.shop.blocked(clerk.position.x,clerk.position.z,.25),false,'Work stays outside furniture at '+clerk.position.toArray()+' '+f.shop.service.phase);
+  // At the till she stands 0.75 m behind the counter's front (sakura-queue.js): her body (TILL_BODY) is what clears it there.
+  if(['checkout','stock-fetch','stock-carry','stock-place'].includes(f.shop.service.phase))assert.equal(f.shop.blocked(clerk.position.x,clerk.position.z,inTillPocket(clerk,f.shop.layout)?TILL_BODY:.25),false,'Work stays outside furniture at '+clerk.position.toArray()+' '+f.shop.service.phase);
   for(const item of Object.values(f.state.sakura.stock))assert.ok(item.shelf>=0&&item.reserve>=0);
  });
  const spec=stockSpec('notebook');assert.ok(picked&&paid&&hiddenLabels);assert.ok(f.state.residentLife['Harbour master'].shopping.finished);assert.equal(f.state.sakura.sales,spec.cost);assert.equal(f.state.sakura.profit,spec.cost-spec.unitCost);
- assert.equal(f.shop.service.phase,'counter');assert.equal(clerk.userData.socialPose,'CounterIdle','The actual retail controller selects the relaxed counter pose after serving');
+ assert.equal(f.shop.service.phase,'counter');// Between customers she keeps her stand points (stand-sequences.js sakura-floor): the till's relaxed pose, or the cooler's or the window's.
+ {const stand=standNow('Thuan',f.minutes,'sakura','sakura-floor');const on=Math.hypot(clerk.position.x-stand.point.x,clerk.position.z-stand.point.z)<.13;
+  assert.equal(clerk.userData.socialPose,on?stand.point.pose:undefined,'The actual retail controller selects the stand point’s pose after serving, and none while she walks to it');}
  assert.equal(f.state.sakura.stockSpent,spec.unitCost);assert.equal(f.state.sakura.cash,spec.cost-spec.unitCost);assert.equal(f.ledger.account('Harbour master',f.minutes).yen,2400-spec.cost);
  assert.equal(f.state.sakura.stock.notebook.shelf,capacity-1,'The shelf stays depleted during the day');assert.equal(f.state.sakura.stock.notebook.reserve,1);assert.ok(!f.state.sakura.journal.some(r=>r.kind==='Restocked'));
  f.time(1200);f.step(110,()=>{phases.add(f.shop.service.phase);if(['stock-fetch','stock-carry','stock-place'].includes(f.shop.service.phase)){assert.notEqual(clerk.userData.socialPose,'CounterIdle','Release the counter pose before walking or handling goods');assert.equal(f.shop.blocked(clerk.position.x,clerk.position.z,.25),false,'Restock route '+clerk.position.toArray());}});
