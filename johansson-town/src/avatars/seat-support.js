@@ -17,7 +17,9 @@ export function createSeatSupport(avatar){
     // the seat under them (towel-fit.js), so the wrap never lifts anyone off the seat.
     if(towelFit?.getX(i)>.5)continue;
     const y=position.getY(i);
-    if(y<m.hipY-m.thigh||y>m.hipY+m.legR*.5)continue;
+    // The pelvis and the tops of the thighs: on a round body the seat of the thigh reaches a leg's radius above the
+    // hip joint, and that is what the floor meets.
+    if(y<m.hipY-m.thigh||y>m.hipY+m.legR)continue;
     const bones=[skinIndex.getX(i),skinIndex.getY(i),skinIndex.getZ(i),skinIndex.getW(i)];
     const weights=[skinWeight.getX(i),skinWeight.getY(i),skinWeight.getZ(i),skinWeight.getW(i)];
     if(!bones.every((b,j)=>weights[j]<.001||['hips','thighL','thighR'].includes(mesh.skeleton.bones[b]?.name)))continue;
