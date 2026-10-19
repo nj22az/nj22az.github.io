@@ -17,18 +17,19 @@ import {AIRPORT_ISLAND} from '../world/airport-island.js';
 import {airportWorld,airportSurface} from '../world/airport-ground.js';
 
 /** Read-only directory data. No DOM, renderer, save writes, clock changes or character movement. */
-const ROLES=Object.freeze({Johansson:'Chief engineer',Thuan:'Sakura owner','Grandmother Chinen':'Neighbour',Thao:'Izakaya owner',Chin:'Ferry motorman and repairman',
- Vy:'School pupil',Nhung:'Bookseller','Kōji':'Catch sorter',Riku:'School pupil','Miss Higa':'Teacher and bathhouse attendant',
- 'Grandmother Higa':'Bathhouse and liquor-shop owner',Tetsuo:'Radio repairer',Reiko:'Newspaper editor','Mrs Sato':'Ramen cook',
- 'Officer Mori':'Police officer','Harbour master':'Harbour master',Barfly:'Minato regular','Grandmother Sakurai':'Retired shopkeeper',
- 'Postman Tōma':'Postman','Dr Kakazu':'Doctor','Mr Ōshiro':'Fisherman and boatbuilder','Mrs Kinjō':'Retired florist',
- 'Mrs Nakamura':'Zenzai and ice-cream shopkeeper',Mai:'School pupil','Bus driver':'Retired ferry master',Mac:'Relief engineer',
- 'Mr Higa Jr':'Boatyard hand','Ms Uezu':'Ferry bosun','Ms Ganaha':'Port clerk: tickets, parcels and post','Mr Fujita':'Ferry master','Mr Shimabukuro':'Power-house keeper',
+const ROLES=Object.freeze({Johansson:'Chief engineer',Thuan:'Sakura owner',Thao:'Izakaya owner',Chin:'Ferry motorman and repairman',
+ Vy:'School pupil',Nhung:'Bookseller and the town’s paper','Kōji':'Fisherman and catch sorter',Riku:'School pupil','Miss Higa':'Teacher and bathhouse attendant',
+ 'Grandmother Higa':'Bathhouse and liquor-shop owner',Tetsuo:'Radio repairer and electrician','Mrs Sato':'Ramen cook',
+ 'Officer Mori':'Police officer','Harbour master':'Harbour master',
+ 'Dr Kakazu':'Doctor',
+ 'Mrs Nakamura':'Zenzai and ice-cream shopkeeper',Mai:'School pupil',Mac:'Relief engineer',
+ 'Ms Uezu':'Ferry bosun','Ms Ganaha':'Port clerk: tickets, parcels and post','Mr Fujita':'Ferry master',
  Ryo:'Ferry chief officer',Ren:'Ferry deck hand',Aya:'Ferry purser',Jun:'Ferry cook-steward',Kai:'Kitano line hand'});
-// The post and parcel counter is at the Port Terminal (phase 3), so a schedule that says 'post-office' points there.
+// The post and parcel counter is at the Port Terminal (phase 3), so a saved 'post-office' points there; the flowers are
+// Sakura's (addendum 3), so 'florist' points at the shop.
 const PLACE_IDS=Object.freeze({sakura:'market',books:'frontrow',workshop:'form3d','sato-ramen':'ramen','town-hall':'mayor-office',
  port:'ferry-terminal',ferry:'ferry-terminal','post-office':'ferry-terminal','higa-liquor':'higa-saketen',
- florist:'rainflower-florist',zenzai:'nakamura','blue-coral':'nakamura','power-station':'power-station'});
+ florist:'market',zenzai:'nakamura','blue-coral':'nakamura','power-station':'power-station'});
 const INDOOR_FLAGS=Object.freeze({inMarket:'market',inIzakaya:'izakaya',inRamen:'ramen',inOnsen:'onsen',inBookshop:'frontrow',inWorkshop:'form3d'});
 const minute=value=>((value%1440)+1440)%1440;
 const hhmm=s=>{const [h,m]=s.split(':').map(Number);return h*60+m;};
@@ -49,8 +50,8 @@ const FALLBACK_GEOMETRY=Object.freeze({
 });
 /**
  * Existing entrance geometry is preferred to any fallback, so relocating a site relocates its directions. A retired
- * home whose identity still walks (Mr Higa Jr and Grandmother Sakurai until phase 4) resolves to the roster's fallback,
- * the retained public place its saved records land at, so the directory, the neighbours and their day all agree.
+ * home resolves to the roster's fallback, the retained public place its saved records land at (nobody lives in one:
+ * the retired identities have no body since phase 4).
  */
 function homeGeometry(h){
  if(h.retired)return h.fallback&&FALLBACK_GEOMETRY[h.fallback]?FALLBACK_GEOMETRY[h.fallback]():null;
@@ -75,7 +76,6 @@ function homeGeometry(h){
  // The published island's established Minato entrance, used only before runtime site registration.
  if(id==='izakaya')return {x:-17.65,y:.04,z:-9,entryFacing:-Math.PI/2};
  if(id==='nakamura')return {...point(NAKAMURA_HOME_DOOR),entryFacing:Math.PI/2};
- if(id==='shimabukuro'){const p=EAST_ROW.plots.find(p=>p.id===id);return {x:EAST_ROW.maxX+.75,y:.04,z:(p.minZ+p.maxZ)/2,entryFacing:-Math.PI/2};}
  for(const row of [EAST_ROW,YARD_ROW]){
   const p=row.plots.find(p=>p.id===id);if(p)return {x:row===EAST_ROW?row.minX-.9:row.maxX+.9,y:.02,z:(p.minZ+p.maxZ)/2,entryFacing:row===EAST_ROW?-Math.PI/2:Math.PI/2};
  }
@@ -105,10 +105,8 @@ function placeTarget(place,siteIndex){
  if(p)return makeTarget(site.id,site.title,p,{entryFacing:site.entryFacing??0,island:'minato',directions:site.directions||'Follow the walking route to '+site.title+'.'});
  const home=householdAtHome(place);if(home)return recordForHome(home,siteIndex)?.target||null;
  if(place==='home-nakamura')return recordForHome(householdAtHome('nakamura'),siteIndex)?.target;
- if(place==='home-shimabukuro')return recordForHome(householdAtHome('shimabukuro'),siteIndex)?.target;
  // The public service fronts share the same reachable threshold as the home upstairs.
  if(['zenzai','blue-coral'].includes(place))return recordForHome(householdAtHome('nakamura'),siteIndex)?.target;
- if(place==='post-office')return recordForHome(householdAtHome('shimabukuro'),siteIndex)?.target;
  if(place==='fujita-shed')return makeTarget('fujita-shed','Mr Fujita’s pier shed',{x:-36.6,y:.02,z:-55.6},{island:'minato'});
  return null;
 }

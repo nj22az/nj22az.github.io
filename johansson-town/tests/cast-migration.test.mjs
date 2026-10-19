@@ -30,7 +30,7 @@ test('old names move to the live identity; a record already under the live name 
  assert.equal(castKey('mac'),'Mac');assert.equal(castKey('Mr Nakandakari'),'Mac');assert.equal(castKey('jack'),'Harbour master');assert.equal(castKey('fuji'),'Mr Fujita');
  // The live names are the current ones, so nothing that walks today moves.
  for(const name of CAST_NAMES)assert.equal(castKey(name),name,name);
- for(const p of RETIRED)assert.equal(castKey(p.name),p.name,p.name+' still has a body');
+ for(const p of RETIRED)assert.equal(castKey(p.name),null,p.name+' is retired (phase 4): the record is dropped');
  for(const p of CORE)assert.equal(castKey(p.id),liveNameFor(p.id),p.id+' resolves to the body walking today');
  // Phase 2 gave the supporting crew bodies, so their old job-role names move to them.
  assert.equal(castKey('Chief officer'),'Ryo');assert.equal(castKey('Kitano line hand'),'Kai');
@@ -60,10 +60,8 @@ test('a save pointing into a home that goes loads at a retained public place, in
  const sites=createBusinesses(),world=createTown({scene:new THREE.Scene(),sites,mobile:true,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  const places=new Map([...sites,...(world.landmarks||[])].map(s=>[s.id,s]));
  for(const target of new Set(Object.values(RETIRED_HOMES))){const site=places.get(target);assert.ok(site&&!site.isResidence,target+' is a retained public place in the built town');}
- // The houses themselves still stand today (phase 4 removes them): the migration maps them regardless. The Heights'
- // Flats 1 and 2 went with its upper storey in phase 3, so they are no home at all any more.
- for(const id of ['home-kitahama-4','home-kitahama-5','home-kitahama-6','home-kinjo','home-oshiro','resident-home-aya','home-shimabukuro']){const site=places.get(id);assert.ok(site&&(site.isResidence||site.homeOwner||site.homeId),id+' is a home today');}
- for(const id of ['home-kitahama-flat-1','home-kitahama-flat-2'])assert.equal(places.get(id),undefined,id+' is gone with the upper storey');
+ // None of the homes that go stands any more (phase 4; the Heights' Flats 1 and 2 went with its upper storey in phase 3).
+ for(const id of ['home-kitahama-4','home-kitahama-5','home-kitahama-6','home-kinjo','home-oshiro','resident-home-aya','home-shimabukuro','home-izakaya','home-kitano-3','home-kitahama-flat-1','home-kitahama-flat-2','rainflower-florist'])assert.equal(places.get(id),undefined,id+' is gone');
  const cases={'home-kitahama-4':'mayor-office','kitahama-5':'mayor-office','home-kitahama-6':'mayor-office','kinjo':'mayor-office','home-oshiro':'mayor-office','resident-home-aya':'mayor-office',
   'home-kitano-3':'mayor-office','kitano-3':'mayor-office','home-kitahama-flat-1':'mayor-office','kitahama-flat-2':'mayor-office','home-shimabukuro':'ferry-terminal','post-office':'ferry-terminal',
   'rainflower-florist':'market','florist':'market','home-izakaya':'izakaya','home-kitahama-7':'mayor-office','home-market':'mayor-office'};
@@ -76,13 +74,34 @@ test('a save pointing into a home that goes loads at a retained public place, in
  for(const id of ['resident-home-thuan','home-kitahama-flat-3','home-kitahama-flat-4','fujita-houseboat','mayor-home','home-higa','koban','office'])assert.equal(migrateCast({homeTarget:id}).homeTarget,id,id);
 });
 
+test('a save made inside a removed building, with a retired resident’s records, loads at the retained place with the records gone, and reads the same twice',()=>{
+ const s=store(),old={yen:420,inventory:['Awamori miniature'],homeTarget:'home-oshiro',navigationTarget:'home-shimabukuro',lastHome:'resident-home-aya',visited:['home-kinjo','market','home-kitano-3'],
+  residentLocations:{Reiko:{position:[-20,1],indoors:'home',home:'resident-home-aya'},'Postman Tōma':{position:[2,3]},'Bus driver':{position:[0,28]},Thao:{position:[2,2]}},
+  friendship:{Barfly:{points:3},'Mr Ōshiro':{points:1},Thao:{points:1}},treats:{'Mrs Kinjō':1,Thuan:2},greeted:{'Mr Shimabukuro':2},impressions:{'Grandmother Chinen':'kind'},
+  relationships:{'Barfly|Thao':{totals:{drink:2}},'Thao|Thuan':{totals:{chat:1}},'Mr Higa Jr|Grandmother Sakurai':{totals:{}}},
+  bookshop:{completed:{'2:Reiko':true,'3:Nhung':true}},errand:{from:'Bus driver',kind:'deliver'},residentLife:{Reiko:{day:1},Thao:{day:1,yen:50}}};
+ s.setItem(SAVE_KEY,JSON.stringify(old));
+ const read=readSave(s);
+ assert.equal(read.castRevision,CAST_REVISION);
+ assert.equal(read.homeTarget,'mayor-office','inside the Ōshiro house: the town hall');assert.equal(read.navigationTarget,'ferry-terminal','the flat over the post office: the terminal, where its post went');assert.equal(read.lastHome,'mayor-office');
+ assert.deepEqual(read.visited,['mayor-office','market'],'visits to removed homes land at the retained place once');
+ assert.deepEqual(read.residentLocations,{Thao:{position:[2,2]}},'the retired residents’ locations are dropped');
+ assert.deepEqual(read.friendship,{Thao:{points:1}});assert.deepEqual(read.treats,{Thuan:2});assert.deepEqual(read.greeted,{});assert.deepEqual(read.impressions,{});
+ assert.deepEqual(read.relationships,{'Thao|Thuan':{totals:{chat:1}}},'a pair with a retired person goes');
+ assert.deepEqual(read.bookshop.completed,{'3:Nhung':true});assert.equal(read.errand,undefined,'an errand from a retired person is dropped');
+ assert.deepEqual(read.residentLife,{Thao:{day:1,yen:50}});
+ assert.equal(read.yen,420);assert.deepEqual(read.inventory,['Awamori miniature']);
+ writeSave(s,SAVE_KEY,JSON.stringify(read));assert.deepEqual(readSave(s),read,'a second load changes nothing');
+ for(const r of RETIRED)for(const name of [r.name,r.id,...r.was])assert.equal(castKey(name),null,name+' has no live record');
+});
+
 test('Nhung’s own home fields follow her to 3 Kitahama; her position and everybody else’s records stay',()=>{
  const saved={residentLocations:{Nhung:{position:[-20,1],indoors:'home',home:'resident-home-aya'},Reiko:{position:[-20,1],indoors:'home',home:'resident-home-aya'},Thao:{position:[2,2]}},
   residentLife:{Nhung:{day:2,yen:50,homeId:'resident-home-aya',sleepingPlace:'home-kitahama-3'}}};
  migrateCast(saved);
  assert.deepEqual(saved.residentLocations.Nhung,{position:[-20,1],indoors:'home',home:'kitahama-3'});
  assert.deepEqual(saved.residentLife.Nhung,{day:2,yen:50,homeId:'kitahama-3',sleepingPlace:'home-kitahama-3'});
- assert.equal(saved.residentLocations.Reiko.home,'resident-home-aya','Reiko is not Nhung; phase 4 retires her record');
+ assert.equal(saved.residentLocations.Reiko,undefined,'Reiko is not Nhung: retired in phase 4, her record is dropped');
  assert.deepEqual(saved.residentLocations.Thao,{position:[2,2]});
 });
 

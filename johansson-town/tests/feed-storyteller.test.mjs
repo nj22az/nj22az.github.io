@@ -1,3 +1,4 @@
+import {isRetired} from '../src/people/roster.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
@@ -51,7 +52,8 @@ test('a day always tells the same stories, and different days differ',()=>{
  assert.ok(a.some(p=>p.type==='comic'),'Every edition has a comic');
  const week=Array.from({length:30},(_,i)=>dailyEdition(new Date(Date.UTC(2026,9,1+i)),catalogue)).flat();
  assert.ok(new Set(week.filter(p=>p.type==='comic').map(p=>p.genre)).size>=8,'A month uses most genres');
- assert.ok(new Set(week.flatMap(p=>p.cast)).size>=20,'A month features most of the town');
+ assert.ok(new Set(week.flatMap(p=>p.cast)).size>=Math.min(20,catalogue.length-2),'A month features most of the town');
+ for(const p of week)for(const name of p.cast)assert.ok(!isRetired(name),name+' is retired and tells no story');
 });
 
 test('every place has its backdrop from the game',async()=>{

@@ -42,7 +42,7 @@ test('two complete days give every resident work, meals and uninterrupted sleep 
   }
   assert.ok(places.has('home'),profile.name+' returns to their home each day');
   // Chin's job is the ferry's motorman post (social.js, ferry-crew.js): his street body waits at the terminal while the ship has him.
-  const work=profile.name==='Thao'||profile.name==='Barfly'?'izakaya':profile.name==='Grandmother Sakurai'?'market':profile.name==='Thuan'?'market':profile.name==='Officer Mori'?'patrol':profile.name==='Mrs Sato'?'ramen':profile.name==='Bus driver'?'station':profile.name==='Chin'?'ferry':'work';
+  const work=profile.name==='Thao'?'izakaya':profile.name==='Thuan'?'market':profile.name==='Officer Mori'?'patrol':profile.name==='Mrs Sato'?'ramen':profile.name==='Chin'?'ferry':'work';
   assert.ok(places.has(work),profile.name+' retains their job');
  }
  const nao=RESIDENTS.find(p=>p.name==='Thao'),freeTime=[850,880,910].map(m=>homeRoutine(nao,m).activity);
@@ -52,7 +52,7 @@ test('two complete days give every resident work, meals and uninterrupted sleep 
 test('indoor saves follow moved homes and venues, then depart from that same door when the schedule changes',()=>{
  const cases=HOME_OWNERS.flatMap(p=>[[p.name,'home',(sleepHours(p).sleep+5)%1440,p.home,true],[p.name,'home',departureFor(p),p.home,false]]);
  const market=[...MARKET_THRESHOLD];
- for(const [name,place,door] of [['Nhung','ramen',RAMEN_DOOR],['Thao','izakaya',IZAKAYA_DOOR],['Reiko','market',market]]){
+ for(const [name,place,door] of [['Nhung','ramen',RAMEN_DOOR],['Thao','izakaya',IZAKAYA_DOOR],['Nhung','market',market]]){
   const profile=RESIDENTS.find(p=>p.name===name),inside=Array.from({length:1440},(_,m)=>m).find(m=>residentPlan(profile,m).place===place),outside=Array.from({length:1440},(_,offset)=>(inside+offset+1)%1440).find(m=>residentPlan(profile,m).place!==place);
   assert.ok(inside!==undefined&&outside!==undefined,name+' has an actual '+place+' visit');cases.push([name,place,inside,door,true],[name,place,outside,door,false]);
  }

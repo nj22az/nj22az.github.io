@@ -15,20 +15,16 @@ import {planHeight} from '../src/world/layout.js';
 import {standingHitsRect,townBoundsBlocked,canStepBetween} from '../physics.js';
 import {installDOM} from './fixtures.mjs';
 
-test('all 36 cast members have one canonical primary home; shared households map once; the crew’s cabins are aboard; a retired flat resolves to the fallback',()=>{
+test('all 26 cast members have one canonical primary home; shared households map once; the crew’s cabins are aboard; no card points at a retired home',()=>{
  const cards=residentCards(),targets=canonicalHomeSites(cards);
- assert.equal(cards.length,36);assert.deepEqual(cards.map(c=>c.name),CAST.map(c=>c.name));
- // 22 shore homes of the 31 (the two retired flats of the Heights are no home pin), and Kai's rented Shiroma house; the four who live aboard point at the terminal.
- assert.equal(targets.filter(t=>!t.aboard).length,23);assert.equal(new Set(targets.map(t=>t.homeId)).size,targets.length);
+ assert.equal(cards.length,26);assert.deepEqual(cards.map(c=>c.name),CAST.map(c=>c.name));
+ // The 14 households' homes and Kai's rented Shiroma house are the shore home pins (phase 4: no retired flat, no removed house); the four who live aboard point at the terminal.
+ assert.equal(targets.filter(t=>!t.aboard).length,15);assert.equal(new Set(targets.map(t=>t.homeId)).size,targets.length);
  for(const name of ['Ryo','Ren','Aya','Jun'])assert.equal(cards.find(c=>c.name===name).home.aboard,true,name+' sleeps aboard');
  assert.equal(cards.find(c=>c.name==='Kai').home.id,'kitano-2');assert.equal(cards.find(c=>c.name==='Kai').home.target.id,'home-kitano-2');
  for(const card of cards){
   assert.equal(card.home.id,homeForResident(card.name).home);
-  if(card.home.retired){
-   // Mr Higa Jr and Grandmother Sakurai, until phase 4: their flats went with the Heights' upper storey, so the card points at the roster's fallback.
-   assert.ok(['Mr Higa Jr','Grandmother Sakurai'].includes(card.name),card.name);assert.equal(card.home.target.id,'mayor-office');assert.equal(card.home.target.isResidence,false);
-   assert.match(card.home.target.directions,/removed/);continue;
-  }
+  assert.equal(card.home.retired,false,card.name+' lives in a home that stands');
   assert.ok(card.home.residents.includes(card.name),card.name+' belongs to the listed home');
   for(const home of [card.home,...card.secondaryHomes]){
    assert.ok(home.target&&[home.target.x,home.target.y,home.target.z].every(Number.isFinite),card.name+' has an exterior target');
@@ -39,8 +35,11 @@ test('all 36 cast members have one canonical primary home; shared households map
  assert.equal(residentHome('Thuan').id,'kitano-1');assert.equal(activeResidentHome('Thuan').id,'kitano-1');assert.deepEqual(cards.find(c=>c.name==='Thuan').secondaryHomes,[]);
  assert.deepEqual(homeForResident('Vy').residents,['Thao','Chin','Vy']);
  assert.deepEqual(kitahamaHomeFor('Vy').door,plotGate(KITAHAMA.plots[0]).door);
- assert.deepEqual(homeForResident('Nhung').residents,['Nhung','Kōji','Riku']);assert.equal(kitahamaHomeFor('Nhung').plot,'kitahama-3');assert.deepEqual(homeForResident('Reiko').residents,['Reiko']);
- assert.equal(residentHome('Mr Fujita').id,'fujita-houseboat');assert.equal(residentHome('Barfly').id,'izakaya');
+ assert.deepEqual(homeForResident('Nhung').residents,['Nhung','Kōji','Riku']);assert.equal(kitahamaHomeFor('Nhung').plot,'kitahama-3');
+ assert.equal(residentHome('Mr Fujita').id,'fujita-houseboat');
+ // A retired identity has no home record and no card (phase 4); its former home is a removal in the registry.
+ for(const name of ['Reiko','Barfly','Postman Tōma','Grandmother Chinen'])assert.equal(residentHome(name),null,name);
+ for(const id of ['resident-home-aya','izakaya','kitahama-4','kitahama-5','kitahama-6','kinjo','oshiro','shimabukuro','kitano-3']){const h=householdAtHome(id);assert.equal(h.status,'retired',id);assert.deepEqual([...h.residents],[]);assert.ok(!targets.some(t=>t.homeId===id),id+' is no home pin');}
  assert.equal(homeNameplate('kitahama-3').owners,'Nhung · Kōji · Riku');assert.equal(homeNameplate('kitahama-11'),null);assert.equal(homeNameplate('kitahama-1').secondary,'');
  // Kitahama Heights: two houses, A and B, the ids kept for the saves; the old flats retired.
  assert.deepEqual(homeUnits('kitahama-flats').map(h=>[h.id,h.unit,h.address,[...h.residents]]),[['kitahama-flat-3','A','Kitahama Heights A, Fukugi Lane',['Mac']],['kitahama-flat-4','B','Kitahama Heights B, Fukugi Lane',['Ms Ganaha']]]);
@@ -66,9 +65,9 @@ test('Find person uses live world transforms, exterior doors for indoor actors, 
  thuan.userData={name:'Thuan',inHome:true};
  const atHome=residentCards({sites,people:[{g:thuan}],minutes:1380}).find(c=>c.name==='Thuan');
  assert.equal(atHome.personTarget.homeId,'kitano-1');assert.equal(atHome.homeTarget.homeId,'kitano-1');assert.notDeepEqual(atHome.personTarget.door,[1,0,1]);
- const aboard=new THREE.Group();aboard.userData={name:'Mr Higa Jr',ferryCrew:true};
- const crew=residentCards({sites,neighbours:[{g:aboard}],minutes:600}).find(c=>c.name==='Mr Higa Jr');
- assert.equal(crew.personTarget.id,'ferry-terminal');assert.equal(crew.current.aboard,true);assert.equal(crew.home.retired,true);assert.equal(crew.home.unit,undefined);
+ const aboard=new THREE.Group();aboard.userData={name:'Mac',ferryCrew:true};
+ const crew=residentCards({sites,neighbours:[{g:aboard}],minutes:600}).find(c=>c.name==='Mac');
+ assert.equal(crew.personTarget.id,'ferry-terminal');assert.equal(crew.current.aboard,true);assert.equal(crew.home.id,'kitahama-flat-3');assert.equal(crew.home.unit,'A');
  vy.userData.scheduledAway=true;vy.visible=false;
  const pupil=residentCards({sites,neighbours:[{g:vy,spec:{name:'Vy',routine:[{from:495,away:true,role:'at school'}]}}],minutes:600}).find(c=>c.name==='Vy');
  assert.equal(pupil.current.source,'schedule');assert.equal(pupil.current.locationLabel,'At school');assert.equal(pupil.personTarget,null);assert.equal(pupil.homeTarget.homeId,'kitahama-1');
@@ -126,7 +125,7 @@ test('Studio read tools report the same canonical primary and secondary residenc
   const fujita=await callTool('character_get',{name:'Mr Fujita'},ctx);assert.equal(fujita.error,undefined);assert.equal(fujita.home.id,'fujita-houseboat');
   const thuan=await callTool('character_get',{name:'Thuan'},ctx);assert.equal(thuan.home.id,'kitano-1');assert.deepEqual(thuan.secondaryHomes,[]);
   const nhung=await callTool('character_get',{name:'Nhung'},ctx);assert.equal(nhung.home.id,'kitahama-3');assert.deepEqual(nhung.home.residents,['Nhung','Kōji','Riku']);
-  const reiko=await callTool('character_get',{name:'Reiko'},ctx);assert.equal(reiko.home.id,'resident-home-aya');assert.deepEqual(reiko.home.residents,['Reiko']);
+  const tetsuo=await callTool('character_get',{name:'Tetsuo'},ctx);assert.equal(tetsuo.home.id,'resident-home-kenji');assert.deepEqual(tetsuo.home.residents,['Tetsuo']);
   const list=await callTool('character_list',{query:'Fujita'},ctx);assert.equal(list.characters[0].home.id,'fujita-houseboat');
  }finally{await ctx.close();}
 });

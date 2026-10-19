@@ -17,12 +17,11 @@ export const KITAHAMA=Object.freeze({
   {id:'kitahama-1',kind:'red-tile',family:"Tuan Thao",romaji:'Thuan, Thao & Chin',minX:20,maxX:28,minZ:48,maxZ:57,gate:'north'},
   {id:'kitahama-2',kind:'concrete',family:"Sato",romaji:'Sato',minX:33,maxX:41,minZ:48,maxZ:57,gate:'north'},
   {id:'kitahama-3',kind:'concrete',family:"Uehara",romaji:'Uehara',minX:7,maxX:15,minZ:62,maxZ:71,gate:'south'},
-  {id:'kitahama-4',kind:'red-tile',family:"For the time being",romaji:'Tōma',minX:20,maxX:28,minZ:62,maxZ:71,gate:'south'},
-  {id:'kitahama-5',kind:'concrete',family:"Rental house",romaji:'To let',minX:33,maxX:41,minZ:62,maxZ:71,gate:'south'},
-  // The residential quarter (docs/RESIDENTIAL-PLAN.md): the spine lane west, Fukugi
-  // Lane north and Well Lane south. `family` and `romaji` are what the nameplate on the gate says (the
-  // house's own sign); who lives there is the cast (people/cast.js), and a house nobody in it lives in is to let.
-  {id:'kitahama-6',kind:'red-tile',family:'Taira',romaji:'Taira',minX:-32,maxX:-24,minZ:48,maxZ:57,gate:'north'},
+  // 4 and 5 Kitahama (x 20–28 and 33–41 on the north row) and 6 Kitahama (x −32..−24 on the south row) were removed in
+  // phase 4 of docs/CAST-CONSOLIDATION.md with their residents (the postman, Grandmother Chinen, the former master);
+  // 7, 9, 10, 11 and 12 by the housing project before it. Their lots are KITAHAMA_CLEARED (okinawa/lots.js), waiting
+  // for the dressing pass the owner deferred (addendum 2). `family` and `romaji` are what the nameplate on the gate
+  // says (the house's own sign); who lives there is the cast (people/cast.js).
   {id:'kitahama-8',kind:'concrete',family:'Uezu',romaji:'Uezu',minX:-6,maxX:2,minZ:48,maxZ:57,gate:'north'},
  ].map(p=>{const plate=homeNameplate(p.id);return Object.freeze({...p,wall:'block',family:plate.address,romaji:plate.owners});})),
  field:Object.freeze({minX:37,maxX:47,minZ:84,maxZ:88.2}),
@@ -36,9 +35,17 @@ export const KITAHAMA=Object.freeze({
  eastLane:Object.freeze({minX:-36,maxX:-33,minZ:30.5,maxZ:75}),
  southLane:Object.freeze({minX:-36,maxX:6,minZ:29.3,maxZ:32.3}),
  westCrossLane:Object.freeze({minX:-36,maxX:-20,minZ:44.5,maxZ:47.5}),
- middleLane:Object.freeze({minX:16,maxX:19,minZ:45.1,maxZ:75}),
+ /**
+  * The two side lanes between the houses of the south row (1 and 2 Kitahama, and the cleared 9) run from the north
+  * lane to the cross lane. They used to carry on to the spine between 3, 4 and 5 Kitahama; with 4 and 5 gone (phase 4)
+  * nothing stood on either side of those 10 m, so the lanes end at the cross lane, and the cleared ground behind it
+  * is one block from the middle of 3 Kitahama's east wall to the approach (KITAHAMA_CLEARED, okinawa/lots.js). The
+  * spine stays: it is the loop that joins the east lane, Fukugi Lane, the footpath and the approach, and the rubbish
+  * truck's and the cane lorry's way round.
+  */
+ middleLane:Object.freeze({minX:16,maxX:19,minZ:45.1,maxZ:61.5}),
  mainCrossLane:Object.freeze({minX:-7.55,maxX:6,minZ:30.5,maxZ:33.5}),
- fieldLane:Object.freeze({minX:29,maxX:32,minZ:45.1,maxZ:75}),
+ fieldLane:Object.freeze({minX:29,maxX:32,minZ:45.1,maxZ:61.5}),
  /** Kitahama Heights on Fukugi Lane: two attached ground-floor houses (KITAHAMA_HEIGHTS), the lot kept at the block's size. */
  apartment:Object.freeze({id:'kitahama-flats',minX:-32,maxX:-24,minZ:33.5,maxZ:44.5,name:'Kitahama Heights'}),
  /** The pocket park at the corner of the spine and Well Lane. */
@@ -47,7 +54,7 @@ export const KITAHAMA=Object.freeze({
   * supplies their ground and grades the outer edge back to the island. */
  y:0,
 });
-/** Every lane in Kitahama: the approach, the cross lane, and the quarter's. */
+/** Every lane in Kitahama: the approach, the cross lane, and the quarter's. The map, the walk surface, the gutters and the walking tests read this list. */
 export const KITAHAMA_LANES=Object.freeze([KITAHAMA.approach,KITAHAMA.lane,KITAHAMA.spine,KITAHAMA.fukugiLane,KITAHAMA.wellLane,KITAHAMA.footpath,KITAHAMA.northLane,KITAHAMA.eastLane,KITAHAMA.fieldLane,KITAHAMA.southLane,KITAHAMA.westCrossLane,KITAHAMA.middleLane,KITAHAMA.mainCrossLane]);
 /** Whether a circle of radius r stands on one of Kitahama's lanes. */
 export function kitahamaLaneAt(x,z,r=0){

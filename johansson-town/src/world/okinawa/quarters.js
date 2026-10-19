@@ -288,12 +288,6 @@ const SHOPS=Object.freeze({
   buy:{label:'Buy a zenzai',title:"Nakamura Zenzai · Nakamura Zenzai",cost:250,item:'Zenzai',text:'Okinawan zenzai: a mountain of shaved ice over sweet kintoki beans and little white mochi, in a glass bowl that sweats on the counter. Mrs Nakamura has been making it on this corner since the Americans left.'},
   // The island's one sweet counter: when Aragaki Confectionery shut, Mrs Nakamura took on the sata andagi.
   more:[{label:'Buy sata andagi',title:"Nakamura Zenzai · sata andagi",cost:120,item:'Sata andagi',text:'Okinawan doughnuts, fried in the back in the morning until they crack open and smile, to the recipe from the old sweet shop over the road. Three to a paper bag, still warm, sugar on your fingers.',dz:1.3}]},
- // The former post office, in the shop-house that was the barber's and then, briefly, the power station before that
- // moved to the town hall grounds. Its counter is shut (phase 3 of docs/CAST-CONSOLIDATION.md): post and parcels are
- // Ms Ganaha's window at the Port Terminal now, and Tōma's round starts from the terminal's mailbag. Mr Shimabukuro
- // still rents the flat upstairs; phase 4 takes the shop-house down.
- shimabukuro:{interior:'post',jp:"Minato Town Post Office",en:'Minato post office · counter closed',bg:'#f4f1ea',accent:'#c8102e',mark:'〒',upright:"Postal",uprightBg:'#c8102e',
-  inspect:{label:'Look into the old post office',title:"Minato Post Office · counter closed",text:'The counter with its brass scale is shut, a notice taped to the glass: post and parcels are at Ms Ganaha’s window at the Port Terminal now, noon to 22:15. The wall of pigeonholes is empty. The red post box outside still takes letters, collections at 10:30 and 16:30. The mail goes over on the evening boat to Naha; a parcel from Naha takes two days, from Tokyo four.'}},
  'higa-saketen':{interior:'liquor',jp:"Higa Liquor Store",en:'Higa liquor · awamori',bg:'#f7ead6',accent:'#8a3b2e',upright:"Awamori",uprightBg:'#8a3b2e',
   buy:{label:'Buy a bottle of awamori',title:"Higa Liquor · Higa Liquor Store",cost:600,item:'Awamori miniature',text:'Awamori in every size, from the little 180 ml bottles by the till to the old clay pots at the back that Grandmother Higa will not sell you however you ask. The shop is hers, and she keeps the counter in the mornings. She wraps a miniature in newspaper and tells you to keep it for a guest.'}},
  // Aragaki Confectionery, closed (cast.js PLACES): nobody keeps it, and nobody lives behind it. The faded
@@ -324,10 +318,11 @@ function shopFront(kit,solid,plot,frame,{anchor,inspect,onAction,getMinutes=()=>
 function buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes}){
  const depth=EAST_ROW.maxX-EAST_ROW.minX,x=(EAST_ROW.minX+EAST_ROW.maxX)/2;
  for(const plot of EAST_ROW.plots)shopFront(kit,solid,plot,{x,ry:-Math.PI/2,depth,front:EAST_ROW.minX,out:-1},{anchor,inspect,onAction,getMinutes});
- // The strip of ground between the pavement and the shop fronts, paved to match.
- // Kitano Road crosses it where the old lane was, and lays its own surface there.
- for(const [z0,z1] of [[EAST_ROW.plots[0].minZ,EAST_ROW.onsenLane.minZ],[EAST_ROW.onsenLane.maxZ,EAST_ROW.plots.at(-1).maxZ]])
-  kit.block(MAIN_ROAD.pavementEast-.05,EAST_ROW.minX+.05,GROUND_LAYER.apron-.05,GROUND_LAYER.apron,z0,z1,0xb9b0a0);
+ // The strip of ground between the pavement and each shop front, paved to match. Kitano Road crosses the row where
+ // the old lane was and lays its own surface there; where the post-office shop-house stood (phase 4, EAST_ROW_CLEARED
+ // in lots.js) the lawn comes out to the footway instead, so each standing shop has its own apron.
+ for(const plot of EAST_ROW.plots)
+  kit.block(MAIN_ROAD.pavementEast-.05,EAST_ROW.minX+.05,GROUND_LAYER.apron-.05,GROUND_LAYER.apron,plot.minZ,plot.maxZ,0xb9b0a0);
  // The shaved-ice flag outside Nakamura's, and a bench for eating it on.
  const n=EAST_ROW.plots[0];
  kit.cyl(.03,.03,2.6,EAST_ROW.minX-.35,1.3,n.maxZ-.4,0x9aa0a4,{segments:6});
@@ -342,11 +337,9 @@ function buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes}){
  if(seat)seat.userData.seat={id:'nakamura-dessert-bench',position:[bx,0,bz],stand:[bx-.8,0,bz],surfaceY:.49,eyeY:1.12,yaw:-Math.PI/2,pitch:-.03};
  // The old lane up to the sea bath between the shop-houses is Kitano Road now (kitano-link.js):
  // its stepping stones, lanterns, pot plants and the vending machine made way for the carriageway.
- bicycle(kit,1,EAST_ROW.plots[2].minZ+1.6,{ry:Math.PI/2,colour:0xd9d2c0});
- solid({id:'bicycle',x:1,z:EAST_ROW.plots[2].minZ+1.6,w:.4,d:1.4,height:1.1});
- // Behind the row: washing and kitchen-garden supplies.
-
- planterBoxes(kit,EAST_ROW.maxX-.6,-4.5,{ry:Math.PI/2,count:3});
+ const liquor=EAST_ROW.plots.find(p=>p.id==='higa-saketen');
+ bicycle(kit,1,liquor.minZ+1.6,{ry:Math.PI/2,colour:0xd9d2c0});
+ solid({id:'bicycle',x:1,z:liquor.minZ+1.6,w:.4,d:1.4,height:1.1});
 }
 
 function buildYardRow(kit,solid,{anchor,inspect,onAction}){
@@ -544,7 +537,8 @@ function buildWires(kit,solid){
  // Down the east kerb of Main Street, the row's side.
  const east=[-15,-1.5,12.3,19.6].map((z,i)=>pole(.35,z,{face:-Math.PI/2,transformer:i%2===0,lamp:true,seed:i}));
  for(let i=0;i<east.length-1;i++)wiresBetween(kit,east[i],east[i+1]);
- for(const [p,z] of [[east[0],-11],[east[1],-4],[east[2],9]])serviceDrop(kit,p,[EAST_ROW.minX+.3,6,z]);
+ // A drop to each shop-house that stands: Nakamura's and Higa Liquor (the post office's went with it, phase 4).
+ for(const [p,z] of [[east[0],-11],[east[2],9]])serviceDrop(kit,p,[EAST_ROW.minX+.3,6,z]);
  // Along the seawall walk: three poles, one span to each block. The lanes off it have no
  // poles of their own; a small island lane is fed from the walk, not lined with concrete.
  const walk=[-38,-9.5,20].map((z,i)=>pole(-39,z,{face:Math.PI/2,tel:false,transformer:i===1,lamp:i!==1,seed:10+i*2}));
@@ -555,9 +549,9 @@ function buildWires(kit,solid){
 
 /**
  * The new district on the north-east land: the approach lane up from the beach, the
- * cross lane, five standard walled homes (walledHouse, the same as Nishi-machi), a
+ * cross lane, the standard walled homes that stand (walledHouse, the same as Nishi-machi), a
  * sugar-cane field and the pole line that brings power up from the station on Main
- * Street. One plot is to let, with the board on its gate.
+ * Street.
  */
 function buildKitahama(kit,solid,ctx){
  const K=KITAHAMA,lane=GROUND_LAYER.lane;
@@ -581,16 +575,12 @@ function buildKitahama(kit,solid,ctx){
 /** What the nameplates say when you stop to read one. */
 const NAMEPLATES=Object.freeze({
  higa:'The Higas. Grandmother Higa sits on the verandah every evening shelling beans into a bowl and knows the time of every ferry by the sound of its horn off the breakwater. The shisa on the left gatepost has its mouth open to let luck in; the one on the right has it shut, to keep it.',
- kinjo:'The Kinjōs built in concrete after the 1971 typhoon took their old roof. Their son is a welder in Naha and sends money for the water tank to be painted every other year. The flower-block wall was his first job.',
  nakasone:'An empty red-tile house facing the lawn in front of Umi-no-yu. The shutters are down and the shisa still sit on the gateposts.',
  miyagi:'An empty red-tile house, the oldest on this side. A typhoon took the roof off everything else here, but not this one. The shisa on the ridge is older than the house.',
  kamiya:'An empty red-tile house, swept, with the water off at the main.',
  'kitahama-1':'Thao, Chin and Vy\'s house: a red-tile roof, a hinpun, and a row of herb pots that Thuan named after customers when she stayed here. The gate latch is oiled so the late shift does not wake anybody.',
  'kitahama-2':'Mrs Sato\'s house, concrete and very tidy, with a stock pot always on the back step to cool. She walks down to the morning auction at half past five and has the ramen stock on by seven.',
  'kitahama-3':'Nhung, Kōji and Riku\'s house. A wetsuit on the line, fish boxes stacked by the gate, a football in the yard, a crate of reading copies from the bookshop in the genkan, and a radio that plays the weather on the hour.',
- 'kitahama-4':'Tōma. The postman lives here: his red Super Cub stands in the yard at night with its box padlocked, and he grows goya over the gate.',
- 'kitahama-5':'Grandmother Chinen’s ground-access home. Tetsuo visits from his workshop; the entrance stays clear for her.',
- 'kitahama-6':'The oldest house on the lane: red tile, and a hinpun with a crack the 1959 typhoon put there. The ferry\'s master lives here now; he is gone to the bridge by half past six and home at eight.',
  'fumoto-1':'The oldest house in Fumoto, red tile behind a hinpun, and empty. The shutters are down and the yard has gone to grass.',
  'fumoto-2':'An empty red-tile house. Hand-carved shisa still sit on the gate, from the year the co-op store opened.',
  'fumoto-3':'An empty concrete house, rebuilt after Typhoon Della in 1977. The back kitchen once made the hamlet’s tofu; it is dark now, with the water off at the main.',
@@ -602,5 +592,4 @@ const NAMEPLATES=Object.freeze({
  'kitahama-11':'An empty concrete house on Fukugi Lane. Its plate says to let; enquiries are at the town hall.',
  'kitahama-12':'An empty concrete house at the end of Fukugi Lane, its shutters down and its gate tied shut with wire.',
  tamaki:'An empty concrete house near the east quay, its shutters down and the water off at the main.',
- oshiro:'The Ōshiros. Mr Ōshiro builds and mends sabani at the boatyard; his own boat is the red one on the west quay. There is a bunch of bananas ripening by the kitchen door and, if you believe the neighbours, a habu in the fukugi that nobody has seen for years.',
 });

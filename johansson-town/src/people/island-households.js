@@ -20,7 +20,8 @@ export const ISLAND_HOMES=Object.freeze([
  home('kitano-1','Johansson & Thuan’s House, Kitano hamlet','Kitano hamlet','mayor-home'),
  // Kai's, the Kitano line hand's (people/roster.js QUARTERS): rented, supporting accommodation, not a core household.
  home('kitano-2','Shiroma house, Kitano hamlet','Kitano hamlet','home-kitano-2',{quarters:true}),
- home('kitano-3','Chinen house, Kitano hamlet','Kitano hamlet','home-kitano-3'),
+ // Removed in phase 4 (addendum 5): the Chinen house is gone from the hamlet's lane; the island's own ground is back.
+ home('kitano-3','Former Chinen house, Kitano hamlet','Kitano hamlet','home-kitano-3',{retired:true}),
  home('office','Harbour Office · residence behind the screen','Harbour','office'),
  home('clinic','Doctor’s flat, Town Hall Clinic','Town Hall','home-clinic'),
  home('ferry-chief-cabin','Johansson’s duty cabin, Minato Maru','Harbour','ferry-chief-cabin',{aboard:true,secondaryOnly:true}),
@@ -32,32 +33,38 @@ export const ISLAND_HOMES=Object.freeze([
  home('ferry-crew-cabin','Crew accommodation, Minato Maru','Harbour','ferry-crew-cabin',{aboard:true,quarters:true}),
  home('ferry','Former chief engineer home identity','Harbour','ferry-terminal',{retired:true}),
  home('koban','Officer Mori’s quarters, Minato Police Station','Main Street','koban'),
- home('izakaya','Minato Izakaya · Barfly’s home','Main Street','home-izakaya'),
+ // Barfly's registration retired in phase 4 (brief §6, §8): the izakaya is a business only; the room is Thao's store.
+ home('izakaya','Minato Izakaya · former private room','Main Street','home-izakaya',{retired:true}),
  home('fujita-houseboat','Shiosai houseboat, west pier','Harbour','fujita-houseboat'),
- home('resident-home-aya','1 Front-Row Yard','Front-Row Yard','resident-home-aya'),
+ // Removed in phase 4 (brief §8): Reiko retired and Nhung had moved to 3 Kitahama; the yard behind the shop is Tetsuo's alone.
+ home('resident-home-aya','Former 1 Front-Row Yard','Front-Row Yard','resident-home-aya',{retired:true}),
  home('resident-home-kenji','2 Front-Row Yard','Front-Row Yard','resident-home-kenji'),
  home('market','Sakura main office and kitchenette','Sakura','market',{retired:true}),
+ // 7, 9, 10, 11 and 12 Kitahama were removed by the housing project of 18 October 2026; 4, 5 and 6 by phase 4 of the
+ // consolidation (brief §8: the postman's, Grandmother Chinen's and the former master's houses).
  ...Array.from({length:12},(_,i)=>home('kitahama-'+(i+1),(i+1)+' Kitahama','Kitahama',
   i===0?'resident-home-thuan':i===1?'resident-home-mrs-sato':'home-kitahama-'+(i+1),
-  {retired:[7,9,10,11,12].includes(i+1)})),
+  {retired:[4,5,6,7,9,10,11,12].includes(i+1)})),
  // Unit assignments are explicit in CAST, never derived from the order of the people list.
  ...HEIGHTS_HOUSES.map(h=>home(h.id,h.name+', Fukugi Lane','Kitahama','home-'+h.id,{buildingId:'kitahama-flats',unit:h.house})),
- // The two logical units that went with the upper storey (phase 3): a save that names one lands at the roster's
- // fallback, and the two retired identities still walking (people/cast.js) are registered here with no home standing.
+ // The two logical units that went with the upper storey (phase 3): a save that names one lands at the roster's fallback.
  ...[1,2].map(n=>home('kitahama-flat-'+n,'Former Flat '+n+', Kitahama Heights','Kitahama','home-kitahama-flat-'+n,{retired:true,buildingId:'kitahama-flats'})),
- ...[['higa','Higa'],['kinjo','Kinjō'],['oshiro','Ōshiro']].map(([id,name])=>home(id,name+' house, Nishi-machi','Nishi-machi','home-'+id)),
+ home('higa','Higa house, Nishi-machi','Nishi-machi','home-higa'),
+ // Removed in phase 4 (brief §8): the Kinjō and Ōshiro houses on the seawall walk are gone with their residents.
+ ...[['kinjo','Kinjō'],['oshiro','Ōshiro']].map(([id,name])=>home(id,'Former '+name+' house, Nishi-machi','Nishi-machi','home-'+id,{retired:true})),
  ...[['nakasone','Nakasone'],['miyagi','Miyagi']].map(([id,name])=>home(id,name+' house, east back','East back','home-'+id,{retired:true})),
  // Save-era identities remain recognisable after the two empty buildings are removed.
  ...[['tamaki','Tamaki'],['kamiya','Kamiya']].map(([id,name])=>home(id,name+' house, east back','East back','home-'+id,{retired:true})),
  home('nakamura','Above Nakamura Zenzai','Main Street','home-nakamura'),
- home('shimabukuro','Above the post office','Main Street','home-shimabukuro'),
+ // Removed in phase 4 (addendum 3): the former post-office shop-house on Main Street came down once the counter was the terminal's.
+ home('shimabukuro','Former flat above the post office','Main Street','home-shimabukuro',{retired:true}),
  home('arakaki','Above Aragaki Confectionery Store','Main Street','home-arakaki',{retired:true}),
  home('yonamine','Above Yonamine Fresh Fish Store','Main Street','home-yonamine',{retired:true}),
 ]);
 
 export const ISLAND_HOUSEHOLDS=Object.freeze(ISLAND_HOMES.map(def=>{
- // A retired home has no household: whoever still names it (a retired identity waiting for phase 4) sleeps at the
- // roster's fallback (retiredHomeFallback) and is on no nameplate.
+ // A retired home has no household and is on no nameplate; a save that names it lands at the roster's fallback
+ // (retiredHomeFallback).
  const members=def.retired?[]:CAST.filter(p=>p.home===def.home||p.alsoAt.includes(def.home)).map(p=>Object.freeze({
   name:p.name,purpose:p.purpose,primaryHome:p.home,secondary:p.home!==def.home,
  }));

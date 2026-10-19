@@ -14,11 +14,11 @@ function renameKeys(records,key=k=>RENAMED_RESIDENTS[k]){
 }
 /**
  * The save-era renames (Yuri and Yui to Thuan, Aya to Nhung, Nao to Thao, Kenji to Chin, Mrs Higa to Miss Higa). They
- * apply once, to a save from before the consolidated roster: from castRevision 1 on, Yui, Aya and Nao are the
- * teacher, the purser and the bosun (people/roster.js), and a record under those names is theirs.
+ * apply once, to a save from before the consolidated roster: from castRevision 1 (SAVE_ERA_REVISION) on, Yui, Aya and
+ * Nao are the teacher, the purser and the bosun (people/roster.js), and a record under those names is theirs.
  */
 export function migrateThuan(saved){
-  if((saved.castRevision|0)>=CAST_REVISION)return saved;
+  if((saved.castRevision|0)>=SAVE_ERA_REVISION)return saved;
   // Keep the existing home IDs (resident-home-aya, yuri-home) and move only the renamed
   // residents' records.
   for(const key of ['residentLocations','residentLife','friendship','treats'])renameKeys(saved[key]);
@@ -45,14 +45,20 @@ export function migrateHousing(saved){
  * applied to every load, it moves nothing a second time.
  *  - Names: a record kept under a historical name (the roster's `was`, or an id) moves to the name the live cast uses
  *    today (cast.js liveNameFor), so it follows each phase's renames by itself: 'Mr Fujita' stays 'Mr Fujita' until
- *    cast.js calls him Fuji, then moves. A retired person's record is dropped once they have no body (phase 4); a
- *    display name that is not live yet ('Emi' before phase 5) is left alone, it may be somebody else's.
+ *    cast.js calls him Fuji, then moves. A retired person's record (a location, a friendship, a treat, a greeting, an
+ *    impression, a relationship pair, a bookshop job, an errand) is dropped, since they have no body (phase 4, castRevision
+ *    2); a display name that is not live yet ('Emi' before phase 5) is left alone, it may be somebody else's.
  *  - Homes: a saved location that names a home that goes (RETIRED_HOMES) lands at a retained public place, whether or
- *    not the building still stands; a person's own home fields follow their move (Nhung to 3 Kitahama).
+ *    not the building still stands (since phase 4 none of them does: 4, 5 and 6 Kitahama, the Kinjō and Ōshiro houses,
+ *    1 Front-Row Yard and the Chinen house at the town hall; the flat over the former post office at the terminal, where
+ *    its post went; Barfly's room at the izakaya, which stands); a person's own home fields follow their move (Nhung to
+ *    3 Kitahama).
  *  - Prose: notes, the shop ledger and the archive read the historical names as the live ones, except the player's,
  *    whose surname is in 'Johansson Harbour Office' and the like.
+ * Revisions: 1 the roster and its aliases (phase 1); 2 the retirements (phase 4). Every step is a no-op on a save that
+ * has had it, so the stamp records what the save has been through, not what still has to run.
  */
-export const CAST_REVISION=1;
+export const CAST_REVISION=2,SAVE_ERA_REVISION=1;
 const historical=key=>{const who=identityOf(key);return who&&(who.category==='retired'||who.id===key||who.was.includes(key))?who:null;};
 /** Where a record under `key` sits now: itself, the live name, or null for a retired person with no body. */
 export function castKey(key){

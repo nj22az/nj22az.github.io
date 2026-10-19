@@ -6,13 +6,12 @@ import {glazeWithRoom} from '../render/window-interior.js';
 import {TETSUO_BACK_WINDOW} from './interiors/tetsuo-flat.js';
 
 /**
- * The yard houses behind Front-Row Books & Workshop (yard-homes-layout.js).
+ * The yard house behind Front-Row Books & Workshop (yard-homes-layout.js).
  *
- * Two small Okinawan concrete-block houses: Reiko's (Nhung's too, until she moved home to
- * 3 Kitahama) with a red-tiled roof and a shisa on the ridge, Tetsuo's flat-roofed with a
- * water tank and a TV aerial. Each is a home site, so its door works like every other door in town — walk
- * in at any hour, including while the people who live there are asleep in bed
- * (home-residents.js puts them there). Windows light up in the evening.
+ * A small Okinawan concrete-block house, Tetsuo's, flat-roofed with a water tank and a TV aerial (the tiled one
+ * beside it, 1 Front-Row Yard, went in phase 4 of the consolidation). It is a home site, so its door works like
+ * every other door in town — walk in at any hour, including while he is asleep in bed (home-residents.js puts him
+ * there). Windows light up in the evening.
  */
 const MARU='"Hiragino Maru Gothic ProN","M PLUS Rounded 1c","Yu Gothic","Noto Sans CJK JP",sans-serif';
 
@@ -21,7 +20,7 @@ export function buildYardHomes(world,options){
  const std=(color,extra={})=>new THREE.MeshStandardMaterial({color,roughness:.85,...extra});
  const mesh=(g,m,x,y,z,name)=>{const o=new THREE.Mesh(g,m);o.position.set(x,y,z);o.name=name;o.castShadow=!!options.shadows;o.receiveShadow=true;group.add(o);return o;};
  const glass=[],homes=world.homes instanceof Map?world.homes:new Map();
- // Every yard house is built; the one without a household (2 Front-Row Yard since batch 7b) is to let.
+ // Every yard house in the layout is built; one without a household would be to let.
  for(const [id,spec] of Object.entries(YARD_HOMES)){
   const household=HOUSEHOLDS.find(h=>h.id===id)||null,title=household?.title||'House to let';
   const {x,z,w,d,height:h}=spec,front=Math.sign(spec.doorFace-z);
@@ -63,13 +62,7 @@ export function buildYardHomes(world,options){
   const tex=new THREE.CanvasTexture(plate);tex.colorSpace=THREE.SRGBColorSpace;
   mesh(new THREE.PlaneGeometry(.5,.19),new THREE.MeshStandardMaterial({map:tex,roughness:.8}),doorX+.75,1.55,face+front*.02,'Yard home nameplate').rotation.y=front>0?0:Math.PI;
   // A little of who lives there by the door.
-  if(id==='resident-home-aya'){
-   // Book crates and a sleeping cat on the step (Tama, from the shop window).
-   for(let i=0;i<2;i++)mesh(new THREE.BoxGeometry(.45,.3,.35),std(0xb98a55),doorX-.95-i*.5,.33,face+front*.4,'Book crate');
-   const cat=mesh(new THREE.SphereGeometry(.14,10,8),std(0xe8a050),doorX-.95,.62,face+front*.4,'Tama asleep on the crates');cat.scale.set(1.3,.7,1);
-   mesh(new THREE.CylinderGeometry(.16,.12,.3,10),std(0xf06b9a),doorX+.9,.33,face+front*.45,'Geranium pot');
-   mesh(new THREE.SphereGeometry(.2,8,6),std(0x3f8f46),doorX+.9,.62,face+front*.45,'Geranium');
-  }else if(household){
+  if(household){
    // Tetsuo's: a crate of radio chassis waiting for the workshop, and his bicycle. Round the back, the window of
    // his tatami room, with its shoji (interiors/tetsuo-flat.js TETSUO_BACK_WINDOW).
    mesh(new THREE.BoxGeometry(.5,.32,.38),std(0x9a7a4c),doorX-1.0,.34,face+front*.42,'Crate of radio chassis');

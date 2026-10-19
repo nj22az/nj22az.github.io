@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {residentPlan,thuanWeekendAway} from '../src/people/social.js';
-import {RESIDENTS} from '../src/people/residents.js';
+import {RESIDENTS,residentHomeDescription} from '../src/people/residents.js';
 import {sakuraClerkAt,isWeekend,sakuraOpenAt,SAKURA_STAFF} from '../src/commerce/sakura-rota.js';
 import {SUPPLIERS} from '../src/commerce/merchandising.js';
 import {NEIGHBOURS} from '../src/people/neighbours.js';
@@ -45,14 +45,17 @@ test('Sakura is Thuan’s outright and keeps shop hours: Thuan on weekdays, Nhun
  assert.notEqual(residentPlan(profile('Chin'),at(1,1400)).place,'ferry','and ashore after he signs off');
 });
 
-test('Tetsuo lives in the Front-Row yard and never takes the boat; his mother keeps the old Chinen house',()=>{
+test('Tetsuo lives in the Front-Row yard and never takes the boat; the Chinen house on Kitano-jima is gone with his mother, the history kept',()=>{
  const tetsuo=profile('Tetsuo');
  assert.equal(tetsuo.homeAddress,'2 Front-Row Yard');
  assert.equal(residentPlan(tetsuo,at(1,720)).place,'ramen');assert.equal(residentPlan(tetsuo,at(1,1100)).place,'work');
  for(let m=0;m<1440;m+=15)assert.notEqual(residentPlan(tetsuo,at(1,m)).place,'away',''+m);
- const mother=NEIGHBOURS.find(n=>n.name==='Grandmother Chinen'),plot=KITANO_HAMLET.plots.find(p=>p.id==='kitano-3'),gate=airportWorld(...hamletGate(plot).door);
- assert.deepEqual(mother.home,gate);assert.ok(mother.routine.some(p=>/sweeping the lane/.test(p.role))&&mother.routine.some(p=>p.home));
- assert.ok(mother.lines.some(l=>/Tetsuo/.test(l)));
+ // Phase 4 (docs/CAST-CONSOLIDATION.md §6, addendum 5): Grandmother Chinen retired and the Chinen house came down; the
+ // hamlet is Johansson's house and the Shiroma house (Kai's), and only the family history stays in Tetsuo's own words.
+ assert.equal(NEIGHBOURS.find(n=>n.name==='Grandmother Chinen'),undefined,'no body');assert.equal(castMember('Grandmother Chinen'),null);
+ assert.deepEqual(KITANO_HAMLET.plots.map(p=>p.id),['kitano-1','kitano-2']);
+ for(const p of KITANO_HAMLET.plots){const [x,z]=airportWorld(...hamletGate(p).door);assert.ok(Number.isFinite(x)&&Number.isFinite(z));}
+ assert.match(residentHomeDescription('Tetsuo'),/Chinen/);assert.doesNotMatch(residentHomeDescription('Tetsuo'),/5 Kitahama/);
 });
 
 test('the airport’s ticket clerk Jun has left the island: the Minato Maru’s tickets are sold at the Port Terminal window',()=>{

@@ -9,7 +9,6 @@ import {OUTER_PIER} from '../src/world/layout.js';
 import {HOUSEBOAT} from '../src/world/fujita-houseboat.js';
 import {SHED_PIER,FUJITA_PIER} from '../src/world/fujita-layout.js';
 import {OIL_JETTY} from '../src/world/oil-jetty-layout.js';
-import {FLOWER_SHOP} from '../src/world/flower-shop.js';
 
 // Check whole footprints, including edges and interiors across the concave coast.
 // A small boundary tolerance accommodates Float32 rendered vertices, not scenery in water.
@@ -75,8 +74,8 @@ test('retained planting roots do not intersect occupied building footprints',()=
  assert.equal(world.colliders.some(c=>c.id==='sea-almond'||c.id==='east-lawn-tree'),false,'retired planting styles cannot return');
 });
 
-test('lawn, service foundations and the florist stall remain within the compact land',()=>{
- const names=['east-lawn-grass','Compact neighbourhood ground','Fuel depot service court',FLOWER_SHOP.name];
+test('lawn and service foundations remain within the compact land',()=>{
+ const names=['east-lawn-grass','Compact neighbourhood ground','Fuel depot service court'];
  const found=new Set(),point=new THREE.Vector3();
  world.group.traverse(o=>{
   if(!names.includes(o.name))return;found.add(o.name);

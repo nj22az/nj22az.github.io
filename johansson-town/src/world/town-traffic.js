@@ -129,7 +129,7 @@ export function createTownTraffic({parent,colliders=null,ferry=null,getPlayerPos
  // was Chin's, but Chin is the ferry's motorman through the ship's day (ferry-crew.js), his body the ship's then, and the
  // driver code refuses a body the ship has (vehicle-driver.js), so a truck of his would stand in its bay all day; the
  // workshop's airport freight is Tetsuo's islander run above.
- const fleet=[make('kei truck',0xf2f0ea,'ferry','Thao','Deliver airport dry goods to Minato Izakaya'),make('car',0x3f7fc0,'ferry','Reiko','Deliver airport newspapers to Main Street'),make('kei truck',0x2f6f9f,'ferry','Mrs Sato','Deliver airport kitchen supplies to Main Street'),make('car',0xc8432f,'ferry','Nhung','Deliver airport book orders to Main Street')];
+ const fleet=[make('kei truck',0xf2f0ea,'ferry','Thao','Deliver airport dry goods to Minato Izakaya'),make('kei truck',0x2f6f9f,'ferry','Mrs Sato','Deliver airport kitchen supplies to Main Street'),make('car',0xc8432f,'ferry','Nhung','Deliver airport book orders to Main Street')];
  fleet.forEach((v,i)=>{v.home='airport';v.appointment={leave:600+i*180,back:690+i*180};const bay=reserve('airport');v.homeBay=bay;parkAt(v,airportVehicleBay(bay));});
  const all=[...islanders,...fleet];
  const wantedShore=(v,minutes)=>{const m=((minutes%1440)+1440)%1440,a=v.appointment;return m>=a.leave&&m<a.back?(v.home==='town'?'airport':'town'):v.home;};

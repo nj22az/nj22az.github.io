@@ -1,4 +1,4 @@
-import {HARBOUR_POND,HARBOUR_PARK_SEATS,HARBOUR_FLORIST} from '../world/harbour-park-plan.js';
+import {HARBOUR_POND,HARBOUR_PARK_SEATS} from '../world/harbour-park-plan.js';
 
 /**
  * The real places the town feed's stories happen in. Each is a room or street in the game,
@@ -6,7 +6,8 @@ import {HARBOUR_POND,HARBOUR_PARK_SEATS,HARBOUR_FLORIST} from '../world/harbour-
  * audit hook enters, or a street camera), and the nouns a story can pick up there.
  *
  * kind: shop, food, bar, work, bath, civic, outdoor. `regulars` are the residents who belong
- * there; anyone else is a visitor. `things` are objects actually in the place, `doing` are
+ * there; anyone else is a visitor (nobody the roster retired is a regular anywhere: the storyteller leaves them out of
+ * the catalogue too, storyteller.js). `things` are objects actually in the place, `doing` are
  * verbs phrases that make sense there ("{who} was {doing}"). `activity` is what people do
  * there in a comic: the drinks they may hold (izakaya-serving-visuals.js kinds), how likely
  * they are to (chance) and how likely to be sitting (sit).
@@ -22,7 +23,7 @@ export const FEED_PLACES=Object.freeze([
   doing:['waiting for the bus','carrying out a delivery crate','reading the shop window','sheltering under the awning'],
   activity:{hold:['can','coffee'],chance:.7,sit:0},
   shot:{at:[-1,-24],camera:{pos:[3.5,1.7,-21.5],at:[-5.5,2,-27.3]}}},
- {id:'minato',name:'Minato Izakaya',short:'Minato',kind:'bar',regulars:['Thao','Barfly'],
+ {id:'minato',name:'Minato Izakaya',short:'Minato',kind:'bar',regulars:['Thao','Chin','Mr Fujita'],
   things:['the bottle keep','the karaoke machine','the pink telephone','the yakitori grill','the red stools','the oden pot','the lantern'],
   doing:['queueing for karaoke','tidying the bottle keep','fanning the yakitori grill','sharing a plate of edamame','writing a name on a bottle tag'],
   activity:{hold:['draft','draft','bottle','sake','awamori'],chance:.95,sit:.65},
@@ -32,9 +33,9 @@ export const FEED_PLACES=Object.freeze([
   doing:['feeding the ticket machine','waiting for a bowl of shoyu ramen','watching the stock pot','slurping noodles','mending something at the window table'],
   activity:{hold:['coffee','can'],chance:.5,sit:.8},
   shot:{room:'ramen'}},
- {id:'books',name:'Front-Row Books',short:'Front-Row Books',kind:'shop',regulars:['Nhung','Reiko'],
-  things:['the window seat','the evening paper','the poetry shelf','a paper bookmark slip','the printing bench','Tama the cat'],
-  doing:['reading on the window seat','proofreading the evening paper','tucking slips into books','negotiating with Tama the cat'],
+ {id:'books',name:'Front-Row Books',short:'Front-Row Books',kind:'shop',regulars:['Nhung'],
+  things:['the window seat','the town paper','the poetry shelf','a paper bookmark slip','the printing bench','Tama the cat'],
+  doing:['reading on the window seat','proofreading the town paper','tucking slips into books','negotiating with Tama the cat'],
   activity:{hold:['coffee'],chance:.35,sit:0},
   shot:{room:'frontrow'}},
  {id:'onsen',name:'Umi-no-yu bathhouse',short:'Umi-no-yu',kind:'bath',regulars:['Miss Higa','Grandmother Higa'],
@@ -42,7 +43,7 @@ export const FEED_PLACES=Object.freeze([
   doing:['paying at the bandai','choosing a bottle of milk','reading the price board','waiting for the bath to cool','resetting a tripped breaker','putting the supply breaker back up in the dark','making tea at the bandai','folding rental towels','drying their hair at the mirror','combing their hair at the men’s mirror','hanging a towel on the rail','fanning themselves with an uchiwa'],
   activity:{hold:['bottle','can'],chance:.6,sit:0},
   shot:{room:'onsen'}},
- {id:'town-hall',name:'the town office',short:'the town hall',kind:'civic',regulars:['Dr Kakazu','Postman Tōma'],
+ {id:'town-hall',name:'the town office',short:'the town hall',kind:'civic',regulars:['Dr Kakazu','Officer Mori'],
   things:['the island map','the Merry Moose statue','the flag','the filing cabinet','the visitors’ sofa'],
   doing:['studying the island map','filing a complaint','waiting on the visitors’ sofa','saluting the Merry Moose'],
   activity:{hold:['coffee'],chance:.5,sit:.35},
@@ -57,7 +58,7 @@ export const FEED_PLACES=Object.freeze([
   doing:['fishing off the pier','watching the sunset','reading the night warning sign','feeding a gull'],
   activity:{hold:['can','draft'],chance:.6,sit:0},
   shot:{at:[-.6,-83.2],camera:{pos:[-1.2,1.8,-80.2],at:[-1.6,1,-94.2]},time:1080}},
- {id:'ferry',name:'the Minato Maru',short:'the ferry',kind:'work',regulars:['Bus driver','Harbour master'],
+ {id:'ferry',name:'the Minato Maru',short:'the ferry',kind:'work',regulars:['Mr Fujita','Harbour master'],
   things:['the gangway','the bow ramp','the bow line on its bollard','the wheelhouse wing','the orange life floats','the funnel','the name on her bow','the draft marks','the stern capstan','the car lashings'],
   doing:['waiting for the gangway','watching the ramp come down','backing a kei truck aboard','reading the name on her bow','reading the draft marks','coiling the bow line','waving from the wheelhouse wing','counting the cars aboard'],
   activity:{hold:['can','coffee'],chance:.5,sit:0},
@@ -72,11 +73,6 @@ export const FEED_PLACES=Object.freeze([
   doing:['watching the pond','walking the gravel circuit','resting on the pond bench','looking toward the bathhouse'],
   activity:{hold:['coffee'],chance:.3,sit:0},
   shot:{at:HARBOUR_PARK_SEATS[1].stand,camera:{pos:[20.3,2.4,-38],at:[HARBOUR_POND.x,1,HARBOUR_POND.z]}}},
- {id:'rainflower',name:HARBOUR_FLORIST.name,short:HARBOUR_FLORIST.name,kind:'outdoor',regulars:[HARBOUR_FLORIST.owner],
-  things:['the flower buckets','the open counter','a hand-made wreath','the green pavilion roof'],
-  doing:['choosing flowers','collecting a bouquet','admiring a wreath','reading the flower-shop sign'],
-  activity:{hold:['can','coffee'],chance:.5,sit:0},
-  shot:{at:HARBOUR_FLORIST.approach,camera:{pos:[HARBOUR_FLORIST.approach[0]-3.4,2.2,HARBOUR_FLORIST.approach[1]-1.2],at:[HARBOUR_FLORIST.x,1.2,HARBOUR_FLORIST.z]}}},
  {id:'coral-bay',name:'Coral Bay on Kitano-jima',short:'Coral Bay',kind:'outdoor',regulars:['Thuan'],
   things:['the beach bar','a rented parasol','the leaning coconut palms','the turquoise shallows','a bottle of Umineko on ice','the Coral Bay notice'],
   doing:['dozing under a rented parasol','paddling in the shallows','queueing at the beach bar','reading on the bench','watching the commuter plane climb away','burying someone’s feet in the sand'],

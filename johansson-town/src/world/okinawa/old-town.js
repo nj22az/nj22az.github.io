@@ -31,6 +31,8 @@ export function dressOldTown(kit,solid,{inspect,anchor,onAction,vending,group}){
 
 /** Sakura's hours are the rota's (commerce/sakura-rota.js): 9:00–20:30, every day, the shutter down in between. */
 export const sakuraOpenAt=rotaOpenAt;
+/** Where you stand to buy a bouquet: in front of the flower buckets beyond the fruit trestle (sakuraShopfront), the town's flower stand since phase 4. */
+export const SAKURA_FLOWER_STAND=Object.freeze([-7.45+.95,-27.3+1.6+1.2+1.35]);
 
 /** The roller shutter's face: galvanised slats and the shop's hours painted across it. */
 function shutterTexture(){

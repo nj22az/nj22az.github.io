@@ -60,11 +60,6 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
    return {...seat,height:seat.surfaceY,soak:true,side,via:[ONSEN_DOORWAYS[side].changeAt]};
   }
   const seats=sato?SATO_GUEST_SEATS:place==='market'?STORE_SEATS:IZAKAYA_GUEST_SEATS;
-  if(place==='izakaya'&&name==='Barfly'){
-   // His own stool, at the kitchen end of the counter, where he sleeps when Minato is shut.
-   const index=4;if([...borrowed.values()].some(v=>v.index===index&&!v.seat.staff))return null;
-   return {...seats[index],index};
-  }
   // A seat the player is sitting on is taken: at Minato they may have any free stool.
   const mine=getPlayerSeat(),taken=s=>Array.isArray(mine)&&Math.hypot(s.position[0]-mine[0],s.position[2]-mine[2])<.4;
   const index=seats.findIndex((s,i)=>(place!=='market'||i>=2&&s.id!==mine)&&!taken(s)&&![...borrowed.values()].some(v=>v.index===i&&!v.seat.staff));
@@ -125,7 +120,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
    if(place==='onsen')onsenDress(g,saved);
    // Closed Minato: whoever is there works through their cleaning stations
    // (izakaya-hours.js), walking from one to the next; when the job ends they go back
-   // to their own place (the Barfly to his stool).
+   // to their own place.
    if(place==='izakaya'&&['seated','arriving'].includes(saved.phase)&&wanted(p)){
     const job=izakayaJob(p.profile.name,clock),key=job?.key||null;
     if(key!==(saved.jobKey??null)){
