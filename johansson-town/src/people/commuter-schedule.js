@@ -5,8 +5,9 @@ const shifts={
  // Work hours stay unchanged. Departure identifies the service's arrival time.
  Thuan:{arrival:510,start:540,finish:1200,departure:1320},
  Nhung:{arrival:510,start:540,finish:1110,departure:1320},
- // Chin: Sakura's night shift (20:30–06:00, sakura-rota.js), sleep till the early afternoon, then the workshop bench.
- Chin:{arrival:510,start:840,finish:1140,departure:1320},
+ // Chin: the ferry's motorman (ferry-crew.js FERRY_WORKING_DAY, 06:05–22:20, social.js keeps his street body at the
+ // terminal meanwhile); the evening after he signs off is his, the workshop bench and the izakaya.
+ Chin:{arrival:360,start:365,finish:1340,departure:1320},
  'Mrs Sato':{arrival:510,start:540,finish:1260,departure:1320},
  Reiko:{arrival:870,start:900,finish:1470,departure:1950},
  // Tetsuo lives in the Front-Row yard (never takes the boat): lunch at Sato, the bench from five until midnight (the workshop's evening).

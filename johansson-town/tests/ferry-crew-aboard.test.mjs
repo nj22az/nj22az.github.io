@@ -41,24 +41,43 @@ test('all eight declared posts are aboard by day; the established overnight resi
  }
 });
 
-test('the bodies ride with her and the bus driver’s town body is hidden while he is her master',()=>{
+test('the bodies ride with her and Fujita’s shed body is hidden while he is her master',()=>{
  const {run}=alongside();const attached=[];
  const town=new THREE.Group();town.visible=true;
- const crew=createFerryCrewAboard({run,characters:{attach:(g,name)=>attached.push(name)},register(){},onAction(){},townBody:name=>name==='Bus driver'?town:null});
+ const crew=createFerryCrewAboard({run,characters:{attach:(g,name)=>attached.push(name)},register(){},onAction(){},townBody:name=>name==='Mr Fujita'?town:null});
  crew.update(1/60,600);
  assert.deepEqual(attached.sort(),FERRY_CREW.map(c=>c.name).sort());
  assert.equal(crew.snapshot().length,8);assert.equal(town.visible,false);assert.equal(town.userData.aboardFerry,true);
- const master=crew.bodies.get('Bus driver').g;assert.equal(master.parent,run.ferry,'a child of the ship');
+ const master=crew.bodies.get('Mr Fujita').g;assert.equal(master.parent,run.ferry,'a child of the ship');
  crew.update(1/60,23*60);
  assert.equal(crew.snapshot().length,2);assert.equal(town.userData.aboardFerry,false);
 });
 
+test('the eight posts are held by the roster’s people: no job-role body, no anonymous duplicate beside a named one',()=>{
+ const {run}=alongside();const attached=[];
+ const crew=createFerryCrewAboard({run,characters:{attach:(g,name)=>attached.push(name)},register(){},onAction(){}});
+ crew.update(1/60,600);
+ const names=crew.snapshot().map(c=>c.name);
+ assert.deepEqual(new Set(names),new Set(['Mr Fujita','Ryo','Johansson','Chin','Ms Uezu','Ren','Aya','Jun']));
+ assert.equal(new Set(names).size,8,'one body per post');
+ for(const old of ['Chief officer','Deck hand','Purser','Cook-steward','Bus driver','Mr Higa Jr'])assert.ok(!attached.includes(old),old+' has no body aboard');
+ for(const c of crew.snapshot())assert.equal(crew.bodies.get(c.name).text.includes(c.name),true,c.name+'’s prompt names them');
+});
 
-test('Johansson as player is never duplicated: Nakandakari keeps the day watch and returns ashore at night',()=>{
+test('the bosun’s relief sleeps at home: the crew cabin is the signed-on bosun’s at night',()=>{
+ const {run}=alongside();
+ const crew=createFerryCrewAboard({run,characters:{attach(){}},register(){},onAction(){}});
+ crew.update(1/60,23*60);assert.deepEqual(crew.snapshot().map(c=>c.name).sort(),['Johansson','Ms Uezu']);
+ crew.update(1/60,7*1440+23*60);assert.deepEqual(crew.snapshot().map(c=>c.name),['Johansson'],'Kōji goes home to 3 Kitahama');
+ crew.update(1/60,7*1440+600);assert.equal(crew.snapshot().find(c=>c.post==='bosun').name,'Kōji','and holds the post by day on his week');
+});
+
+test('Johansson as player is never duplicated: Mac keeps the day watch and returns ashore at night',()=>{
  const {run}=alongside(),shore=new THREE.Group();
- const crew=createFerryCrewAboard({run,playerIdentity:()=> 'Johansson',townBody:name=>name==='Mr Nakandakari'?shore:null,characters:{attach(){}},register(){},onAction(){}});
+ const crew=createFerryCrewAboard({run,playerIdentity:()=> 'Johansson',townBody:name=>name==='Mac'?shore:null,characters:{attach(){}},register(){},onAction(){}});
  crew.update(1/60,600);
  assert.equal(crew.snapshot().length,8);assert.ok(!crew.snapshot().some(p=>p.name==='Johansson'));
- assert.equal(crew.snapshot().find(p=>p.post==='chief').name,'Mr Nakandakari');assert.equal(shore.userData.aboardFerry,true);
+ const relief=crew.snapshot().find(p=>p.post==='chief');assert.equal(relief.name,'Mac');assert.equal(shore.userData.aboardFerry,true);
+ assert.match(crew.bodies.get('Mac').text,/Mac Turner/,'the prompt tells his own biography');
  crew.update(1/60,1380);assert.equal(shore.userData.aboardFerry,false);
 });
