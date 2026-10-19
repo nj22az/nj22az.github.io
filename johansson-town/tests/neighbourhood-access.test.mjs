@@ -126,12 +126,13 @@ test('photo and feed destinations use the reachable park and Sakura’s flower s
 test('visible garden approaches match walking heights across the whole entrance, not only the path',async()=>{
  // Nishi's slabs, the former terminus lawn, Kitahama's compact ground and its lanes' paving cover the garden bank at
  // the south approach. Compare physics to those finished floors, including where they overlap.
- world.group.updateMatrixWorld(true);const surfaces=[];world.group.traverse(o=>{if(['Continuous neighbourhood garden ground','Compact neighbourhood ground','Aoba lowland shared terrain','Island land','Main Street end lawn'].includes(o.name)||/^Okinawan quarter:(matte|sand)\||^grid-lanes:/.test(o.name))surfaces.push(o);});
+ world.group.updateMatrixWorld(true);const surfaces=[];world.group.traverse(o=>{if(['Compact neighbourhood ground','Aoba lowland shared terrain','Island land','Main Street end lawn'].includes(o.name)||/^Okinawan quarter:(matte|sand)\||^grid-lanes:/.test(o.name))surfaces.push(o);});
  const {gutterRings,openEdgeRuns}=await import('../src/world/okinawa/lane-edges.js');const rings=gutterRings(),gutters=[...rings,...openEdgeRuns(rings)].map(r=>r.band);
  const ray=new THREE.Raycaster();for(const x of [-34,-29,-24,-19,-14,-9])for(const z of [29,30.5,32,33.5,35]){if(playerBlocked(x,z,.05))continue;   // inside the Heights, a wall or the park's railing: nobody stands there
   // A lane's U-gutter is drawn 28 mm proud of the paving, a lid's lip (okinawa/lane-edges.js GUTTER), and the walking
   // surface the game installs carries the step onto it (the paths test above walks them with it installed).
   if(gutters.some(b=>x>=b.minX-.01&&x<=b.maxX+.01&&z>=b.minZ-.01&&z<=b.maxZ+.01))continue;
   ray.set(new THREE.Vector3(x,1,z),new THREE.Vector3(0,-1,0));const hit=ray.intersectObjects(surfaces,false)[0];assert.ok(hit,'drawn ground at '+[x,z]);assert.ok(Math.abs(hit.point.y-groundHeight(x,z))<.025,'visible height disagrees at '+[x,z]+': '+hit.point.y+' / '+groundHeight(x,z));}
- const {position,normal}=world.group.getObjectByName('Continuous neighbourhood garden ground').geometry.attributes;for(let i=0;i<position.count;i++)assert.ok(normal.getY(i)>0,'upward terrain normal');
+ assert.equal(world.group.getObjectByName('Continuous neighbourhood garden ground'),undefined,'the buried garden ground mesh is gone (west-shore.js)');
+ const {position,normal}=world.group.getObjectByName('Compact neighbourhood ground').geometry.attributes;for(let i=0;i<position.count;i++)assert.ok(normal.getY(i)>0,'upward terrain normal');
 });
