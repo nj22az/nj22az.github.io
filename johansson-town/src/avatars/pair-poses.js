@@ -245,24 +245,29 @@ function fitHug(ctx){
 }
 
 /**
- * The kiss: a peck on the cheek. B stands still, stiff with surprise, the hands at the sides; A comes to B's right side,
- * facing B's cheek (B faces to A's right), the hands behind the back, eyes closed, and leans in. A shorter A goes up on
- * the toes and tips the head back; taller, A leans and bends the knees; a much taller B (a grandmother and a child) bends
- * down to it and tips the cheek. The two heads come as near as their hair and noses allow, the lips at the cheek.
+ * The kiss: a peck on the cheek, the classic (the owner, 2026-10-19: "The kiss should look cuter"). A comes at B from the
+ * front and a little to the side (about 60° off B's facing), up on the toes of one foot with the other kicked up behind,
+ * the torso tipped toward B, the hands clasped behind the back, the head tilted, eyes shut and lips puckered, landing on
+ * B's right cheek; B goes stiff and red to the ears, leaning back a touch, the arms held a little out from the sides,
+ * eyes wide. A shorter A rises on the toes and tips the head back; a taller A tips further in and bends the standing knee;
+ * a much taller B (a grandmother and a child) bends down to it and tips the cheek. The two heads come as near as their
+ * hair and noses allow, the lips at the cheek.
  */
 function fitKiss(ctx){
- const {A,B}=ctx,yawB=-Math.PI/2;
- // (both bodies' arms are the pose's own: A's behind the back, B's stiff at the sides; written as armTo takes them)
- // (B's arms hang stiff and straight at the sides, the mittens splayed: swung out they would meet A's belly)
- const armsA={L:[.38,0,-.18,-.95,0],R:[.38,0,-.18,-.95,0]},armsB={L:[.06,0,-.17,-.06,0],R:[.06,0,-.17,-.06,0],handL:[0,0,-.35],handR:[0,0,-.35]};
+ const {A,B}=ctx,yawB=-2.1;
+ // (both bodies' arms are the pose's own: A's clasped behind the back, B's a little out from the sides, the mittens
+ // splayed; written as armTo takes them)
+ const armsA={L:[.42,0,-.14,-1.05,0],R:[.42,0,-.14,-1.05,0]},armsB={L:[.08,0,-.3,-.1,0],R:[.08,0,-.3,-.1,0],handL:[0,0,-.3],handR:[0,0,-.3]};
  const behind=withArms({},armsA),stiff=withArms({},armsB);
- // A: s>0 rises (the toes, the head back), s<0 comes down (a squat, leaning in, the head down); B: v>0 bends down to A
- // (the chest and the head rolled toward A, the knees bent), v<0 rises on the toes to A
- const poseA=u=>({...behind,spine:[u<0?.08*-u:0,0,0],chest:[u<0?.3*-u:.1-.08*u,0,0],neck:[0,0,0],head:[u<0?.25*-u:-.32*u,0,-.08],
-  ...(u<0?crouch(-u):{thighL:[-.05,0,.03],kneeL:[.08,0,0],footL:[-.03+.85*u,0,-.03],thighR:[-.05,0,-.03],kneeR:[.08,0,0],footR:[-.03+.85*u,0,.03]})});
- const poseB=v=>({...stiff,spine:[0,0,v>0?.1*v:0],chest:[v>0?.12*v:0,0,v>0?.3*v:0],head:[0,0,v>0?.4*v:.12],
-  ...(v>0?{thighL:[-.6*v,0,.08],kneeL:[1.1*v,0,0],footL:[-.5*v,0,-.08],thighR:[-.6*v,0,-.08],kneeR:[1.1*v,0,0],footR:[-.5*v,0,.08]}
-   :{thighL:[-.05,0,.03],kneeL:[.08,0,0],footL:[-.03-.85*v,0,-.03],thighR:[-.05,0,-.03],kneeR:[.08,0,0],footR:[-.03-.85*v,0,.03]})});
+ // A: always up on the left toes with the right foot kicked up behind, tipped toward B; u>0 rises further (the toes
+ // pointed, the head back), u<0 comes down (tipped further in, the head down, the standing knee bent). B: v>0 bends down to
+ // A (the chest and the head tipped toward A, the knees bent), v<0 rises on the toes to A.
+ const poseA=u=>{const dn=Math.max(0,-u),up=Math.max(0,u),knee=.9*dn,thigh=-.5*dn;
+  return {...behind,hips:[0,0,0],spine:[.06+.06*dn,0,0],chest:[.22+.3*dn,0,0],neck:[.04,0,0],head:[.22*dn-.3*up,0,-.14],
+   thighL:[thigh,0,.03],kneeL:[knee,0,0],footL:[-(thigh+knee)+.55+.4*up,0,-.03],thighR:[.55,0,-.06],kneeR:[1.5,0,0],footR:[.4,0,.06]};};
+ const poseB=v=>{const dn=Math.max(0,v),up=Math.max(0,-v);
+  return {...stiff,hips:[0,0,0],spine:[0,0,.08*dn],chest:[-.1+.3*dn,0,.3*dn],neck:[0,0,0],head:[-.06+.12*dn,0,.1+.3*dn],
+   thighL:[-.6*dn,0,.06],kneeL:[1.1*dn,0,0],footL:[-.5*dn+.85*up,0,-.06],thighR:[-.6*dn,0,-.06],kneeR:[1.1*dn,0,0],footR:[-.5*dn+.85*up,0,.06]};};
  const lipsA=F=>_v.set(0,A.hc-.3*A.S[1],A.S[2]*.95).applyMatrix4(F.bone('head')).clone(),cheekB=F=>_v.set(-B.S[0]*.95,B.hc-.3*B.S[1],0).applyMatrix4(F.bone('head')).clone();
  const split=s=>s>=0?[Math.min(s,1),Math.max(0,s-1)]:[Math.max(s,-1),Math.min(0,s+1)];
  const mismatch=s=>{const [u,v]=split(s);return cheekB(posed(B,poseB(v))).y-lipsA(posed(A,poseA(u))).y;};
@@ -273,7 +278,7 @@ function fitKiss(ctx){
  // B's cheek before A's lips: across, and as near as the heads (hair, noses) allow, then no nearer than the bodies allow
  const dxFor=dz=>lips.x-new THREE.Vector3().copy(cheek).applyMatrix4(pairMatrix({dx:0,dz,yawB})).x;
  let dz=bisect(.15,1.2,v=>headGap(A,pA,B,pB,pairMatrix({dx:dxFor(v),dz:v,yawB}))>=PAIR_GAP.lips);
- // (the heads are placed already, by the lips' gap: this stage keeps the bodies and the hanging arms apart)
+ // (the heads are placed already, by the lips' gap: this stage keeps the bodies and the arms apart)
  dz=bisect(dz,1.2,v=>bodyGap(A,pA,B,pB,pairMatrix({dx:dxFor(v),dz:v,yawB}),armsA,armsB,false)>=PAIR_GAP.bodies);
  const dx=dxFor(dz);
  return {dx,dz,yawB,A:{joints:pA},B:{joints:pB}};
@@ -318,8 +323,8 @@ export const PAIR_POSES=Object.freeze({
  Hug:Object.freeze({label:'Hug',d:3.2,ramp:.8,faces:Object.freeze({A:'happy',B:'shy'}),
   use:'Someone to hold, after a scare, a parting or good news: side by side for the camera, heads leaning together, A\u2019s arm over B\u2019s shoulders and B\u2019s round A\u2019s waist, the free hands up in a peace sign.',
   fit:fitHug,life:(P,role)=>{P.add('chest',Math.sin(P.t*2)*.008*P.w);}}),
- Kiss:Object.freeze({label:'Kiss',d:2.8,ramp:.7,faces:Object.freeze({A:'kiss',B:'embarrassed'}),
-  use:'A peck on the cheek, cartoon-cute: A up on the toes with the hands behind the back and the eyes shut, B frozen stiff and blushing to the ears.',
+ Kiss:Object.freeze({label:'Kiss',d:2.8,ramp:.7,faces:Object.freeze({A:'kiss',B:'flustered'}),
+  use:'A peck on the cheek, cartoon-cute: A tipped in from the front-side, up on one foot with the other kicked up behind, hands clasped behind the back, eyes shut; B stiff, eyes wide and red to the ears.',
   fit:fitKiss,life:(P,role)=>{if(role==='B')P.add('head',0,0,Math.sin(P.t*24)*.006*P.w);}}),
  Fight:Object.freeze({label:'Fight',d:3,ramp:.6,faces:Object.freeze({A:'raging',B:'pain'}),
   use:'The squabble: A has B by the collar with both fists, leaning in and yelling; B, yanked forward, leans back from it with both arms flung up.',

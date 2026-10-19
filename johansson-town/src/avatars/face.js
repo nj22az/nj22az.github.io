@@ -97,6 +97,9 @@ const MOOD=Object.freeze({
  // puckered out, a deep blush: pouting puckers too, but with an angry brow and the cheeks puffed).
  scared:{eyes:'shock',brow:-1.5,browLift:14,mouth:'wail',blush:0,fx:['sweat'],mouthDY:4},
  kiss:{eyes:'closed',brow:-.3,browLift:5,mouth:'pucker',blush:.9},
+ // ...and the one kissed: eyes wide, red to the ears, a bead of sweat (embarrassed hides its eyes; shock and surprised do
+ // not blush)
+ flustered:{eyes:'wide',brow:-.5,browLift:12,mouth:'wobble',blush:1,fx:['sweat']},
 });
 export const EXPRESSION_NAMES=Object.freeze(Object.keys(MOOD));
 /** What each funny face is for, in a line: for the Studio's lists, the photo studio and whoever writes a panel. */
@@ -119,12 +122,13 @@ export const EXPRESSION_INFO=Object.freeze({
  eyeroll:'Give me a break: the eyes rolled to the ceiling over a flat mouth.',
  scared:'Fright: brows up, tiny pupils in wide eyes, the mouth open in a yell and a bead of sweat; the panic run.',
  kiss:'The peck: eyes closed, lips puckered out and a deep blush.',
+ flustered:'Kissed: eyes wide, mouth wobbling, red to the ears and a bead of sweat.',
 });
 /** A small face for each expression (the photo studio's chips), so every list shows the same faces. */
 export const EXPRESSION_GLYPHS=Object.freeze({neutral:'•ᴗ•',happy:'◠ᴗ◠',laugh:'≧▽≦',smile:'•◡•',sad:'•︵•',angry:'>︿<',shy:'˶ᴗ˶',surprised:'⊙o⊙',worried:'•﹏•',
  thinking:'•_•',grumpy:'¬_¬',content:'˘ᴗ˘',sleep:'－ᴗ－',excited:'☆ᴗ☆',dizzy:'@_@',scheme:'¬ᴗ¬',embarrassed:'>﹏<;',pain:'>_<',bliss:'˘▽˘',shock:'°□°',
  dismay:'•_•;',calm:'•‿•',daze:'◔_◔',dry:'－_－',hope:'•̀ᴗ•́',focus:'•̀_•́',relieved:'˘◡˘',gobsmacked:'⊙Д⊙',smug:'¬‿¬',bawling:'ToT',starstruck:'★ᴗ★',
- sweatdrop:'^^;',blank:'○_○',pouting:'(•3•)',bleh:'^ڡ^',drowsy:'＝o＝',lovestruck:'♥ᴗ♥',fuming:'>д<',drooling:'¯﹃¯',wink:'•ᴗ<',raging:'>口<',seething:'^_^#',eyeroll:'◑_◑',scared:'°Д°;',kiss:'˘3˘'});
+ sweatdrop:'^^;',blank:'○_○',pouting:'(•3•)',bleh:'^ڡ^',drowsy:'＝o＝',lovestruck:'♥ᴗ♥',fuming:'>д<',drooling:'¯﹃¯',wink:'•ᴗ<',raging:'>口<',seething:'^_^#',eyeroll:'◑_◑',scared:'°Д°;',kiss:'˘3˘',flustered:'⊙﹏⊙;'});
 
 /**
  * @param {CanvasRenderingContext2D} ctx
