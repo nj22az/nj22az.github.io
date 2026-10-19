@@ -10,6 +10,7 @@ import {restoreIsland} from './src/island/services.js';
 import {HOUSE_SAVE,restoreHouseState} from './src/world/johansson-house.js';
 import {MOTOR_LINKS} from './src/workshop/motor-bench.js';
 import {playerRecipe} from './src/avatars/actors.js';
+import {BUDGET,WEB_PURSE} from './src/edition.js';
 import {encodeRecipe} from './src/avatars/recipe.js';
 import {restoreArchive,seedArchive,fileDocument,retainArchive} from './src/office/archive.js';
 import {createArchiveView} from './src/office/archive-ui.js';
@@ -20,7 +21,7 @@ import {createRamenTicketMachine} from './src/people/ramen-ticket.js';
 import {cleanConcert} from './src/music/songs.js';
 import {createIzakayaPlay} from './src/people/izakaya-play.js';
 import {pendingTownAbsence} from './src/people/town-absence.js';
-import {createShopLedgerView} from './src/commerce/shop-ledger.js';
+import {createPaperworkView} from './src/commerce/paperwork.js';
 import {createMagazineReader} from './src/ui/magazine-reader.js';
 import {townCalendarAt} from './src/town-clock.js';
 import {happeningLine,happeningOutcome} from './src/people/happenings.js';
@@ -76,7 +77,7 @@ import {restoreNews} from './src/feed/evening-news.js';
 import {restorePost,ensurePost,postRound,sendLetter,lettersForReturn,ROUND} from './src/mail/post.js';
 import {letterText,letterLabel,openLetter,unreadCount,STATIONERY,stationerySvg} from './src/mail/letters.js';
 import {temperamentOf} from './src/people/chat-lines.js';
-import {greetingFor,daysBetween} from './src/people/greetings.js';
+import {greetingFor,shortGreeting,daysBetween} from './src/people/greetings.js';
 import {happeningsOn} from './src/people/happenings.js';
 import {typhoonAt,typhoonPostDay,clockWords} from './src/world/typhoons.js';
 import {townDate as townDateOf} from './src/town-clock.js';
@@ -126,6 +127,9 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
   for(const letter of lettersForReturn({friendship:state.friendship,daysAway:daysBetween(awaySince),day:Math.floor(getMinutes()/1440)}))sendLetter(state,letter);
   state.konbini=restoreKonbini(state.konbini);
   state.sakura=restoreSakura(state.sakura);
+  // The web edition's wallet never runs out (edition.js countedMoney; the owner, 19 October 2026: "Unlimited money on the
+  // web"): every price is still on its label and paid at the till, and nothing is refused for want of yen. Linux counts.
+  if(!BUDGET.countedMoney)Object.defineProperty(state,'yen',{get:()=>WEB_PURSE,set(){},enumerable:true,configurable:true});
   state.townCleanup=restoreTownCleanup(state.townCleanup);
   state.workshop=restoreWorkshop(state.workshop,state.inventory);
   state.homeDecor=restoreHomeDecor(state.homeDecor);
@@ -149,13 +153,15 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
     catch{if(!modalOpen||revision!==modalRevision)return;show('Form 3D','The model could not be loaded. Your inventory is unchanged.',[['Try again',()=>previewPrint(model)],['Close',close]]);}
   }
 
+  /** What the wallet says: the count on Linux, plenty on the web (edition.js). */
+  function purse(){return BUDGET.countedMoney?'¥'+state.yen.toLocaleString():'plenty of yen';}
   function save(){
     if(globalThis.__JOHANSSON_TITLE_PREVIEW__)return false;
     let saved=false;
     if(travelProgress(state).unlocked&&!state.quickTravelNotified){state.quickTravelNotified=true;state.notes.push('Earned the town shortcuts: Tama is home and Chin’s workshop route is complete.');say('Town shortcuts unlocked! Quick travel is now in your Town Book.',7);}
     try {state.avatarRecipe=encodeRecipe(playerRecipe());retainArchive(state.documentArchive,getMinutes());const locations=getResidentLocations();if(locations)state.residentLocations=locations;state.minutes=getMinutes();const savedAt=Date.now();saved=writeSave(localStorage,activeSlot(localStorage),JSON.stringify({...state,savedAt}));if(!saved)throw Error('storage full');state.savedAt=savedAt;touchPlayer(localStorage,savedAt);$('#saveState').textContent='PROGRESS SAVED';}
     catch {$('#saveState').textContent='SAVING UNAVAILABLE';}
-    $('#wallet').textContent=`¥${state.yen.toLocaleString()}`;
+    $('#wallet').textContent=purse();
     return saved;
   }
   // Navigation must not discard the live session after a rejected storage write.
@@ -328,7 +334,7 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
   const bagBrowse={category:'all',query:'',scroll:0,item:null};
   function bag(){
     const models=new Set(printedModels(state.inventory).map(m=>m.name));
-    show('Bag',`${state.inventory.length} thing${state.inventory.length===1?'':'s'} · ¥${state.yen.toLocaleString()}`,[['Field book',inventory],['Close',close]]);
+    show('Bag',`${state.inventory.length} thing${state.inventory.length===1?'':'s'} · ${purse()}`,[['Field book',inventory],['Close',close]]);
     modal.classList.add('bag-view');
     const controls=document.createElement('div');controls.className='bag-controls';
     const filter=document.createElement('select');filter.setAttribute('aria-label','Bag category');
@@ -474,7 +480,7 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
   function receipt(title,text){show(title,text,[['Back',close]]);}
   function inventory(){
     const quest=['Speak to Nhung beside the bookshop.','Find Tama, Nhung’s cat, near the ramen stall. A fish might help.','Return to Nhung with news of Tama.','Tama is safely home. Nhung has paid you ¥500.'][state.quest];
-    show('Field book',`${state.notes.join('\n')}\n\n${quest}\n\n${travelStatusText(state)}\n\nCash: ¥${state.yen} · Fish caught: ${state.fish}\nBag: ${state.inventory.length?state.inventory.join(', '):'Empty'}\nPlaces visited: ${state.visited.length}\nMachines tried: ${state.operated.length}\nStar Port best: ${state.best}`,[...['Canned coffee','Green tea'].filter(i=>state.inventory.includes(i)).map(i=>['Drink '+i,()=>{close();onDrink(i);}]),...printedModels(state.inventory).map(model=>['Inspect '+model.name,()=>previewPrint(model)]),['Diary',()=>diary()],['Pocket album',pocketAlbum],['Konbini passport',konbiniPassport],['Back to town',close]]);
+    show('Field book',`${state.notes.join('\n')}\n\n${quest}\n\n${travelStatusText(state)}\n\nCash: ${purse()} · Fish caught: ${state.fish}\nBag: ${state.inventory.length?state.inventory.join(', '):'Empty'}\nPlaces visited: ${state.visited.length}\nMachines tried: ${state.operated.length}\nStar Port best: ${state.best}`,[...['Canned coffee','Green tea'].filter(i=>state.inventory.includes(i)).map(i=>['Drink '+i,()=>{close();onDrink(i);}]),...printedModels(state.inventory).map(model=>['Inspect '+model.name,()=>previewPrint(model)]),['Diary',()=>diary()],['Pocket album',pocketAlbum],['Konbini passport',konbiniPassport],['Back to town',close]]);
     const map=onMap();if(map)body.append(map);
   }
 
@@ -743,8 +749,24 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
     return greetingFor({speaker:name,temper:temperamentOf(recipe?.profile||{}),playerName:playerName(),catchphrase:recipe?.profile?.catchphrase||'',day:dayNow,
      situation:{theirBirthday:birthdayOn(name,nowM),hisBirthday:birthdayOn('Johansson',nowM),daysAway:dayNow===returnDay?daysBetween(awaySince):0,weather:state.typhoon?'typhoon':state.weather?'rain':'sunny',hour:Math.floor(((nowM%1440)+1440)%1440/60)}});
   }
+  /**
+   * The web edition's talk (edition.js `conversations` off; the owner, 19 October 2026: "simple behaviour for the NPCs
+   * on web … and not too much dialogue"): one short line for the moment, and whatever they sell or serve. The full
+   * conversations, favours and the day's happenings are the Linux edition's.
+   */
+  function shortTalk(name,title,buttons=[]){
+    const recipe=recipeFor(name),nowM=getMinutes();
+    const line=shortGreeting({speaker:name,temper:temperamentOf(recipe?.profile||{}),playerName:playerName(),day:Math.floor(nowM/1440),
+     situation:{weather:state.typhoon?'typhoon':state.weather?'rain':'sunny',hour:Math.floor(((nowM%1440)+1440)%1440/60)}});
+    talked(state,name,nowM);save();
+    show(title||name,line.text,[...buttons,['See you',close]],{face:line.face});
+  }
   function neighbour(name){
     const spec=NEIGHBOUR_TALK[name];if(!spec){close();return;}
+    if(!BUDGET.conversations){
+      const sales=NEIGHBOUR_SALES[name],list=!sales?[]:Array.isArray(sales[0])?sales:[sales];
+      shortTalk(name,name+' · '+spec.role,list.map(sale=>[sale[0],()=>{if(sale[1]&&!spend(sale[1]))return;onTime(2);addItem(sale[2]);tone(700,.12);show(name+' · '+spec.role,sale[3],[['Thank you',close]]);}]));return;
+    }
     const turn=neighbourTurns.get(name)||0;neighbourTurns.set(name,turn+1);
     const favour=favourTalk(name);if(favour.handled)return;
     const greeting=openingGreeting(name);
@@ -765,7 +787,15 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
         receipt('Sakura Shōten',early?'The bell rings on in the empty shop. From upstairs, Grandmother Sakurai: “Thuan opens at nine, dear. Come back with the ferry.”':'The bell rings on. Thuan is away from the counter for a minute; the radio keeps the shop company.');
         return;
       }
+      if(!BUDGET.conversations){shortTalk('Thuan','Thuan');return;}
       thuanConversation();return;
+    }
+    if(!BUDGET.conversations){
+      const buttons=[];
+      if(name==='Thao'&&getSocialContext().inside!=='ramen')buttons.push(['What is cooking?',()=>izakayaMenu()]);
+      if(name==='Mrs Sato')buttons.push(['Umeboshi rice ball · ¥80',()=>{if(spend(80)){state.sprintUntil=performance.now()+20000;note('Umeboshi rice ball. Ready to move.');close();}}]);
+      if(name==='Cold-storage kid')buttons.push(['Ice · ¥20',()=>{if(spend(20)){addItem('Ice');receipt(name,'Keep it out of the sun.');}}]);
+      shortTalk(name,name,buttons);return;
     }
 
     // A favour comes first (people/favours.js): the ask takes the conversation; the asker's
@@ -867,7 +897,7 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
   /** Minato's wall, one list for drink and one for food. What you cannot pay for is marked, not hidden. */
   function izakayaOrder(kind){
     const items=Object.values(kind==='drinks'?DRINKS:DISHES);
-    show(kind==='drinks'?'Minato · to drink':'Minato · from the kitchen','You have ¥'+state.yen+'. Thao waits with her pad.',[
+    show(kind==='drinks'?'Minato · to drink':'Minato · from the kitchen','You have '+purse()+'. Thao waits with her pad.',[
       ...items.map(item=>[item.jp+' · ¥'+item.price+(state.yen<item.price?' (not enough yen)':item.alcohol>0&&!wantsAnother(getTipsy(),item.alcohol)?' (Thao says enough)':''),()=>{
         if(state.yen<item.price){receipt('Minato',"Thao smiles: Next time. Next time, then. You have ¥"+state.yen+'.');return;}
         if(item.alcohol>0&&!wantsAnother(getTipsy(),item.alcohol)){receipt('Minato',"Thao puts a glass of water in front of you: You’ve had enough. Enough for tonight -- drink this, and then home.");return;}
@@ -1148,6 +1178,8 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
     show(name,detail,[['See the full strip-down',open(MOTOR_LINKS.stripDown)],['Watch Erik’s routine',open(MOTOR_LINKS.routine)],['Close',close]]);
   }
   function operate(name,detail){
+    // On the web the machines are display pieces (edition.js `machinery`): what they are, nothing to work.
+    if(!BUDGET.machinery){show(name,detail||'A working machine from the late 1980s.',[['Leave',close]]);return;}
     const already=state.operated.includes(name);
     show(name,detail||'A working machine from the late 1980s.',[
       ['Operate',()=>{if(!state.operated.includes(name))state.operated.push(name);tone(520,.18);onTime(5);save();receipt(name,already?'The controls respond with a familiar mechanical click.':'The machine completes a short test cycle. Five minutes pass.');}],
@@ -1183,8 +1215,11 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
   }
   function shopLedger(){
     if(getSocialContext().inside!=='market'){receipt('Sakura sales ledger','The stock and sales books are in the back office at Sakura.');return;}
+    // On the web the books are the folder on the desk, as printed (src/commerce/paperwork.js); on Linux, the live shop's.
+    if(!BUDGET.liveDocuments){show('Sakura Shōten · Office folder','The till roll, the stock book, the rota and this month’s delivery notes and invoices.',[['Close the folder',close]]);modal.classList.add('sakura-records');ledgerView=createPaperworkView();body.replaceChildren(ledgerView.element);return;}
     show('Sakura Shōten · Shop ledger','Thuan’s sales, purchases and stock records.',[['Close ledger',close]]);modal.classList.add('sakura-records');
-    ledgerView=createShopLedgerView(state,getMinutes);body.replaceChildren(ledgerView.element);
+    // The live books are the Linux edition's, and are fetched only there (edition.js).
+    const revision=modalRevision;import('./src/commerce/shop-ledger.js').then(({createShopLedgerView})=>{if(!modalOpen||revision!==modalRevision)return;ledgerView=createShopLedgerView(state,getMinutes);body.replaceChildren(ledgerView.element);});
   }
   // A konbini is not a vending machine: things go in the basket and are paid for at the
   // counter, where Thuan rings them through.
@@ -1326,7 +1361,7 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
   function action(kind,name,detail){
     body.classList.remove('signal');
     switch(kind){
-      case 'workshop':workshopUI.printer();break;
+      case 'workshop':if(BUDGET.machinery)workshopUI.printer();else show('Form 3D printer','Chin and Tetsuo’s Form 3D printer on the workshop bench.',[['Leave',close]]);break;
       case 'town-cleanup':{const result=collectTownFind(state,name);if(!result.ok){receipt('Town clean-up',result.message);break;}save();receipt('Street tidied',result.name+' is in your bag. Thuan offers ¥'+result.price+' when the shop has enough takings.');break;}
       case 'stepwise':if(isWorkshopSite(getSocialContext().inside))inspectItem({id:'stepwise',note:'Checked the workshop calculator.'});workshopUI.stepwise();break;
       case 'document-archive':documentArchive();break;

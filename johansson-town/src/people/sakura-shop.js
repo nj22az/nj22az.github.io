@@ -9,7 +9,8 @@ import {createIndoorResidents} from './indoor-residents.js';
 import {createRetailClerk} from './retail-clerk.js';
 import {createShopAttention} from './shop-attention.js';
 import {createShopRetail} from './shop-retail.js';
-import {returnShopStock} from '../commerce/shop-stock.js';
+import {returnShopStock,webShelves} from '../commerce/shop-stock.js';
+import {BUDGET} from '../edition.js';
 import {PALETTE,fluorescent} from '../render/dusk.js';
 import {createStandIn} from '../render/static-props.js';
 import {townAudio} from '../audio/town-audio.js?snappy=1';
@@ -174,6 +175,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   },
   hide(){checkout.update(0,false);windowView(false);scene.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);group.visible=false;lit(false);backRooms(true);const frame=frontFrame();if(frame)frame.visible=true;showPeople(true);syncLightVisibility(false);},
   update(dt){
+   if(!BUDGET.trade)webShelves(state,getMinutes());
    // The shop's lights are for the inside of the shop. The interior stays in the street
    // scene so you can see it through the glass, but a light has no walls: left on, its
    // hemisphere fill brightened the whole town and its tubes threw a 17 m halo over the
