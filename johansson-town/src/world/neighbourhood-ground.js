@@ -5,11 +5,16 @@ import {GROUND_LAYER} from './ground-layers.js';
 import {paintedTurf} from '../render/toy-surfaces.js';
 import {SCHOOL} from './school-layout.js';
 import {applyTerrainNormals} from './terrain-surface.js';
-/** The relocated blocks share Main Street's datum. Outside, a four-metre bank meets the island. */
+import {WEST_SHORE} from './west-shore.js';
+/**
+ * The relocated blocks share Main Street's datum. Outside, a four-metre bank meets the island, except along the
+ * west shore north of the seawall, where the ground stays level out to the bank's coping (west-shore.js).
+ */
 export const NEIGHBOURHOOD=Object.freeze({minX:-37,maxX:51.5,minZ:20.5,maxZ:92,margin:4});
 const smooth=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);};
 export function neighbourhoodHeight(x,z){
- const B=NEIGHBOURHOOD,d=Math.hypot(Math.max(B.minX-x,0,x-B.maxX),Math.max(B.minZ-z,0,z-B.maxZ));
+ const B=NEIGHBOURHOOD,minX=z>=WEST_SHORE.level.minZ&&z<=WEST_SHORE.level.maxZ?WEST_SHORE.coast:B.minX;
+ const d=Math.hypot(Math.max(minX-x,0,x-B.maxX),Math.max(B.minZ-z,0,z-B.maxZ));
  if(d>B.margin)return null;
  let h=d===0?0:-.4*smooth(d/B.margin);
  // Preserve the north beach opening and grade its sand into the new coastal walk.

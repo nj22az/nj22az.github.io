@@ -247,6 +247,13 @@ export const TOWN_PAPERS=[
     "source": "notice:Minato power station"
   },
   {
+    "type": "Notice",
+    "title": "The west-shore bank",
+    "organisation": "Town Services",
+    "text": "North of the seawall the shore is pitched in coral stone, down to a strip of sand the waves wash over, with a chain along the top. Over the reef the water goes green, then blue; on a winter day the spray comes over the stones.",
+    "source": "notice:The west-shore bank"
+  },
+  {
     "title": "Petitions to the mayor",
     "type": "Notice",
     "organisation": "Community Hall",

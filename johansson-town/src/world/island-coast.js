@@ -3,6 +3,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {GROUND} from '../render/ground-palette.js';
 import {TUNNEL} from './coyote-tunnel.js';
 import {paintedTurf} from '../render/toy-surfaces.js';
+import {westShoreCovers} from './west-shore.js';
 
 // One shoreline shared by the ground, visible retaining edge and visitor map.
 // The shoreline fits the port, shops, park and inhabited residential blocks.
@@ -15,7 +16,8 @@ export const COASTLINE=[
 /** The land's bounding box, for the map and the residents' navigation grid. */
 export const COAST_BOUNDS=Object.freeze({minX:Math.min(...COASTLINE.map(p=>p[0])),maxX:Math.max(...COASTLINE.map(p=>p[0])),minZ:Math.min(...COASTLINE.map(p=>p[1])),maxZ:Math.max(...COASTLINE.map(p=>p[1]))});
 // The shore runs under the headland the tunnel goes through, and a boulder there stands
-// in the tunnel's road. Along Nishi-machi the seawall is the shore, so no boulders there.
+// in the tunnel's road. Along Nishi-machi the seawall is the shore, and north of it the
+// west-shore bank (west-shore.js): no boulders and no retaining stone where they stand.
 const underTunnel=(x,z)=>Math.abs(x-TUNNEL.x)<TUNNEL.bore.half+1.5&&z>TUNNEL.z-1;
 export function buildIslandCoast(parent){
  const shape=new THREE.Shape();COASTLINE.forEach(([x,z],i)=>i?shape.lineTo(x,-z):shape.moveTo(x,-z));shape.closePath();
@@ -25,16 +27,19 @@ export function buildIslandCoast(parent){
  if(typeof document!=='undefined'&&document.createElement){try{const turf=paintedTurf().clone();turf.needsUpdate=true;turf.repeat.set(1/6,1/6);groundMaterial.map=turf;}catch{}}
  const ground=new THREE.Mesh(new THREE.ShapeGeometry(shape),groundMaterial);ground.rotation.x=-Math.PI/2;ground.position.y=-.4;ground.name='Island land';parent.add(ground);
  const positions=[],indices=[];
+ // Each edge of the coast as a stone face, except the spans the bank stands on (sampled every quarter metre).
  for(let i=0;i<COASTLINE.length;i++){
-  const a=COASTLINE[i],b=COASTLINE[(i+1)%COASTLINE.length],n=positions.length/3;
-  positions.push(a[0],-.38,a[1],a[0],-1.5,a[1],b[0],-.38,b[1],b[0],-1.5,b[1]);indices.push(n,n+1,n+2,n+2,n+1,n+3);
+  const a=COASTLINE[i],b=COASTLINE[(i+1)%COASTLINE.length],steps=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.25));
+  let from=null;const face=(p,q)=>{const n=positions.length/3;positions.push(p[0],-.38,p[1],p[0],-1.5,p[1],q[0],-.38,q[1],q[0],-1.5,q[1]);indices.push(n,n+1,n+2,n+2,n+1,n+3);};
+  for(let s=0;s<=steps;s++){const t=s/steps,p=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t],mid=[a[0]+(b[0]-a[0])*(s+.5)/steps,a[1]+(b[1]-a[1])*(s+.5)/steps];
+   const open=s<steps&&!westShoreCovers(mid[0],mid[1]);if(open&&from===null)from=p;if(!open&&from!==null){face(from,p);from=null;}}
  }
  const edge=new THREE.BufferGeometry();edge.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));edge.setIndex(indices);edge.computeVertexNormals();
  const wall=new THREE.Mesh(edge,new THREE.MeshStandardMaterial({color:0x79847c,roughness:1,side:THREE.DoubleSide}));wall.name='Coastal retaining stone';parent.add(wall);
  const rocks=[],dummy=new THREE.Object3D();
  for(let i=0;i<COASTLINE.length;i++){
   const a=COASTLINE[i],b=COASTLINE[(i+1)%COASTLINE.length],count=Math.floor(Math.hypot(b[0]-a[0],b[1]-a[1])/3);
-  for(let j=0;j<count;j++){const t=(j+.5)/count,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;if(z< -40||underTunnel(x,z)||x< -39&&z<30||x>44&&z>-43&&z<40)continue;rocks.push({x,z,size:.65+.25*Math.sin(i*9+j*2.3)});}
+  for(let j=0;j<count;j++){const t=(j+.5)/count,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;if(z< -40||underTunnel(x,z)||x< -39&&z<30||westShoreCovers(x,z)||x>44&&z>-43&&z<40)continue;rocks.push({x,z,size:.65+.25*Math.sin(i*9+j*2.3)});}
  }
  const shore=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,0),new THREE.MeshStandardMaterial({color:0x859080,roughness:1}),rocks.length);
  rocks.forEach((r,i)=>{dummy.position.set(r.x,-.35,r.z);dummy.scale.set(r.size*1.6,r.size*.7,r.size);dummy.rotation.set(.2,i*1.7,.15);dummy.updateMatrix();shore.setMatrixAt(i,dummy.matrix);});shore.name='Rocky island shore';parent.add(shore);
