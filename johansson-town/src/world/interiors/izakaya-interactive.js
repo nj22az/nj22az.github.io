@@ -19,7 +19,7 @@ export const KARAOKE=Object.freeze({x:5.86,z:5.2,w:.62,d:.48,h:.72});
 const POSTER_LINES=Object.freeze({
  beer:['Umineko Beer · Summer 1997','The summer campaign is still up in October. Thao says she will take it down when the brewery rep brings the winter one, and the brewery rep says the same about her.'],
  enka:['Harbour Lights · Kayoko Shima','An enka evening at the harbour hall on Saturday the 25th. Mr Higa has two tickets and has not yet decided who the second one is for.'],
- police:['If you drink, don’t drive','The police box’s notice. Officer Mori put it up himself, then sat down under it with a beer. He walked home.'],
+ police:['If you drink, don’t drive','The police station’s notice. Officer Mori put it up himself, then sat down under it with a beer. He walked home.'],
  karaoke:['Karaoke contest','Last Friday of the month, from nine. The prize is a bottle on the keep shelf with your name on it. Chin has won it three times running.'],
  baseball:['Minato Seagulls · autumn fixtures','Home to Aoba on the 25th. The Seagulls have not beaten Aoba since 1989, and the whole counter will tell you why.'],
 });

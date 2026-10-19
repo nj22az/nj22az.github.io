@@ -2234,7 +2234,7 @@
     "delivery": "With the first ferry, on the harbour cart."
    },
    "koban": {
-    "name": "Minato Police Box",
+    "name": "Minato Police Station",
     "owner": "Officer Mori",
     "lines": [
      "water",
@@ -2463,13 +2463,13 @@
     "delivery": "The week before term, in boxes the children carry in."
    },
    "koban": {
-    "name": "Minato Police Box",
+    "name": "Minato Police Station",
     "owner": "Officer Mori",
     "lines": [
      "the incident book",
      "ballpoint pens"
     ],
-    "why": "The incident book has to be the right kind, and pens disappear from a police box.",
+    "why": "The incident book has to be the right kind, and pens disappear from a police station.",
     "delivery": "Officer Mori collects it himself."
    },
    "market": {

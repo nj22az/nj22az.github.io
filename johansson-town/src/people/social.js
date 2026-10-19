@@ -305,8 +305,8 @@ function workplaceResidentPlan(profile,minutes,rain=false,state=null){
  const day=MORI_DAY;
  if(inTimeRange(m,day.patrol,day.patrolEnd+1440))return {place:'patrol',target:NIGHT_PATROL[0],activity:'night patrol'};
  if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'supper from Sakura before the night patrol'};
- if(inTimeRange(m,day.desk,day.patrol))return {place:'work',target:profile.work,activity:'at the front desk of the police box'};
- return {...home,activity:'resting in the room behind the police box'};
+ if(inTimeRange(m,day.desk,day.patrol))return {place:'work',target:profile.work,activity:'at the front desk of the police station'};
+ return {...home,activity:'resting in his quarters above the police station'};
 }
 /**
  * On the island the commute is by ferry, and what people are doing says so. One place
