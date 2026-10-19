@@ -84,7 +84,9 @@ const ALL_NEIGHBOURS=Object.freeze([
    'Letters for the Ōshiros, a parcel for Mr Shimabukuro at the power house, and a postcard for Sakura from somebody in Hanoi. I do not read postcards. The picture was very nice.']},
 ]);
 /** Who is about today. Everyone here is in the cast (cast.js); the plan's batch 2 moves them onto its schedules. */
-const walking=new Set(['Johansson','Thuan','Thao','Chin','Nhung','Reiko','Tetsuo','Mrs Sato','Officer Mori','Harbour master','Barfly','Mr Fujita','Grandmother Sakurai']);
+const walking=new Set(['Johansson','Thuan','Thao','Chin','Nhung','Reiko','Tetsuo','Mrs Sato','Officer Mori','Harbour master','Barfly','Mr Fujita','Grandmother Sakurai',
+ // The supporting crew's bodies are the ship's (ferry-crew-aboard.js) and the Kitano pier's (ferry-shore-crew.js).
+ ...CAST.filter(p=>p.supporting).map(p=>p.name)]);
 // Named shore residents and off-watch crew all use their canonical household and day.
 export const NEIGHBOURS=Object.freeze(CAST.filter(p=>!walking.has(p.name)).map(p=>{
  const old=ALL_NEIGHBOURS.find(n=>n.name===p.name),home=activeResidentHome(p.name)?.target;

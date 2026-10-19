@@ -6,12 +6,18 @@ const home=(id,address,district,entranceSiteId,extra={})=>Object.freeze({
 });
 export const ISLAND_HOMES=Object.freeze([
  home('kitano-1','Johansson & Thuan’s House, Kitano hamlet','Kitano hamlet','mayor-home'),
- home('kitano-2','Shiroma house, Kitano hamlet','Kitano hamlet','home-kitano-2'),
+ // Kai's, the Kitano line hand's (people/roster.js QUARTERS): rented, supporting accommodation, not a core household.
+ home('kitano-2','Shiroma house, Kitano hamlet','Kitano hamlet','home-kitano-2',{quarters:true}),
  home('kitano-3','Chinen house, Kitano hamlet','Kitano hamlet','home-kitano-3'),
  home('office','Harbour Office · residence behind the screen','Harbour','office'),
  home('clinic','Doctor’s flat, Town Hall Clinic','Town Hall','home-clinic'),
  home('ferry-chief-cabin','Johansson’s duty cabin, Minato Maru','Harbour','ferry-chief-cabin',{aboard:true,secondaryOnly:true}),
  home('ferry-engineer-duty-berth','Relief engineer’s duty berth, Minato Maru','Harbour','ferry-engineer-duty-berth',{aboard:true,secondaryOnly:true}),
+ // The supporting crew's quarters aboard (roster.js QUARTERS; world/ferry-ship.js FERRY_GA mate-cabin, deckhand-cabin and
+ // crew-cabin): their primary accommodation, registered so the directory and the nameplates know where they sleep, and
+ // flagged `quarters` so the housing code never counts a cabin as a shore household or invents a house for them.
+ home('ferry-officer-cabin','Chief officer’s cabin, Minato Maru','Harbour','ferry-officer-cabin',{aboard:true,quarters:true}),
+ home('ferry-crew-cabin','Crew accommodation, Minato Maru','Harbour','ferry-crew-cabin',{aboard:true,quarters:true}),
  home('ferry','Former chief engineer home identity','Harbour','ferry-terminal',{retired:true}),
  home('koban','Officer Mori’s residence, Minato Police Box','Main Street','koban'),
  home('izakaya','Minato Izakaya · Barfly’s home','Main Street','home-izakaya'),
@@ -56,11 +62,17 @@ export const secondaryHomesFor=name=>(castMember(name)?.alsoAt||[]).map(househol
 /** Walking Thuan retains her weekday room. The primary home remains clearly labelled on her card. */
 export const activeHomeForResident=name=>secondaryHomesFor(name).find(h=>!h.aboard)||homeForResident(name);
 export const homeUnits=buildingId=>ISLAND_HOUSEHOLDS.filter(h=>h.buildingId===buildingId);
+/** The households proper: occupied primary homes ashore that are not supporting quarters (roster.js HOUSEHOLDS). */
+export const CORE_HOUSEHOLDS=Object.freeze(ISLAND_HOUSEHOLDS.filter(h=>h.status==='occupied'&&!h.quarters&&!h.secondaryOnly));
+/** Supporting accommodation: the crew's cabins aboard and Kai's rented house (roster.js QUARTERS). */
+export const SUPPORTING_QUARTERS=Object.freeze(ISLAND_HOUSEHOLDS.filter(h=>h.quarters));
 export const householdTitle=id=>{
  const h=typeof id==='string'?householdAtHome(id):id;
  if(!h||h.toLet)return 'House to let';
  if(h.retired)return 'Former home';
  if(h.status==='building')return 'Kitahama Heights';
+ // A cabin aboard is named for what it is; its occupants are on the directory card.
+ if(h.aboard&&h.quarters)return h.address.replace(/,.*$/,'');
  const names=h.residents;
  return (names.length>2?names.slice(0,-1).join(', ')+' & '+names.at(-1):names.join(' & '))+'’s home';
 };
