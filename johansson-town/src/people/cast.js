@@ -1,3 +1,4 @@
+import {namesOf} from './roster.js';
 /**
  * The cast: everybody who lives on the island, in one list (docs/CAST-PLAN.md).
  *
@@ -91,7 +92,19 @@ export const CAST=Object.freeze([
 ]);
 
 export const CAST_NAMES=Object.freeze(CAST.map(p=>p.name));
-export const castMember=name=>CAST.find(p=>p.name===name||p.was.includes(name))||null;
+/**
+ * A member by the name this list uses, by a name they had before (`was`), or by any name or id the consolidated roster
+ * (roster.js) gives them: castMember('Fuji') is Mr Fujita until the phase that renames him here, so stories, saves and
+ * looks written under either name find the one body. Nobody the roster knows but this list does not (the supporting
+ * crew before phase 2, the retired after phase 4) is null.
+ */
+export const castMember=name=>CAST.find(p=>p.name===name||p.was.includes(name))||rosterMember(name);
+function rosterMember(name){
+ const names=namesOf(name);
+ return names.length?CAST.find(p=>names.includes(p.name)||p.was.some(w=>names.includes(w)))||null:null;
+}
+/** The name the live cast uses today for a person known by any of their names, or null while they have no body. */
+export const liveNameFor=name=>castMember(name)?.name??null;
 
 /**
  * Who loves, teases and quarrels with whom (docs/CAST-PLAN.md section 4). A pair has a kind, and `tension` when there

@@ -8,6 +8,7 @@
  */
 import * as THREE from '../../vendor/three.module.js';
 import {applyCelShading} from '../render/cel.js';
+import {createLampGlow} from './light-pools.js';
 import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
 import {BOOKSHOP_WORKSHOP_PLOT} from './bookshop-workshop-layout.js';
 
@@ -16,6 +17,9 @@ export const LAMP_EMISSIVE=0xf0a65c;
 export const LAMP_BASE_GLOW=0.12;
 export const LAMP_GLOW_SCALE=0.85;
 export const POLE_HEIGHT=4.2;
+/** The pool of light on the footway under each head (light-pools.js), and the halo round the head. */
+export const LAMP_POOL_RADIUS=3;
+export const LAMP_HALO_SIZE=1.5;
 
 /**
  * Poles sit at building corners on the west footway — street-side of the
@@ -87,13 +91,13 @@ function sharedMaterials(){
 
 /**
  * @param {{parent:THREE.Object3D,colliders?:Array,shadows?:boolean,mobile?:boolean,placements?:typeof STREET_LAMP_PLACEMENTS}} options
- * @returns {{group:THREE.Group,heads:THREE.Mesh[],placements:ReadonlyArray,count:number,pointLights:number,update:(lanternGlow:number)=>void}}
+ * @returns {{group:THREE.Group,heads:THREE.Mesh[],placements:ReadonlyArray,count:number,pointLights:number,glow:object,update:(lanternGlow:number)=>void}}
  */
 export function buildStreetLamps({parent,colliders=[],shadows=false,mobile=false,placements=STREET_LAMP_PLACEMENTS}={}){
  const group=new THREE.Group();group.name='street-glow-poles';
  const geos=sharedGeometries();
  const mats=sharedMaterials();
- const heads=[];
+ const heads=[],lampSpots=[];
  const pointLights=0; // emissive-only — no new PointLights
 
  for(const spot of placements){
@@ -146,6 +150,8 @@ export function buildStreetLamps({parent,colliders=[],shadows=false,mobile=false
   head.userData.streetLampHead=true;
   lamp.add(head);
   heads.push(head);
+  // The pool on the footway lies under the head, out along the arm, not at the foot of the pole.
+  lampSpots.push({head:{x:spot.x+tipX,y:tipY-.12,z:spot.z},ground:{x:spot.x+tipX,y:0,z:spot.z},radius:LAMP_POOL_RADIUS,size:LAMP_HALO_SIZE});
 
   void mobile; // reserved: optional cheap PointLights stay at zero for this PR
 
@@ -155,13 +161,20 @@ export function buildStreetLamps({parent,colliders=[],shadows=false,mobile=false
 
  parent?.add(group);
  applyCelShading(group);
+ // The light on the ground and round the head: decals and sprites, not lights (light-pools.js).
+ const glow=createLampGlow(group,lampSpots,{pool:{strength:.65}});
 
- function update(lanternGlow=0){
-  const glow=LAMP_BASE_GLOW+Math.max(0,Math.min(1,lanternGlow))*LAMP_GLOW_SCALE;
+ /**
+  * @param {number} lanternGlow the heads, 0–1 (dusk.js lanternGlow)
+  * @param {number} [poolGlow] the pools and halos, 0–1 (dusk.js poolGlow: the lantern glow as the daylight goes)
+  */
+ function update(lanternGlow=0,poolGlow=lanternGlow){
+  const lit=Math.max(0,Math.min(1,lanternGlow));
   for(const head of heads){
    head.material.emissive.setHex(LAMP_EMISSIVE);
-   head.material.emissiveIntensity=glow;
+   head.material.emissiveIntensity=LAMP_BASE_GLOW+lit*LAMP_GLOW_SCALE;
   }
+  glow.update(poolGlow);
  }
  update(0);
 
@@ -171,6 +184,7 @@ export function buildStreetLamps({parent,colliders=[],shadows=false,mobile=false
   placements:placements.slice(),
   count:placements.length,
   pointLights,
+  glow,
   update,
   road:MAIN_ROAD,
  };

@@ -5,7 +5,7 @@ import {installDOM} from './fixtures.mjs';
 import {buildPortShed,PORT_SHED,SHED_PIER,tvProgramme} from '../src/world/port-shed.js';
 import {shoeHeight,seatContactHeight} from './seating-contact.mjs';
 import {updateAvatarActor} from '../src/avatars/actors.js';
-import {circleHitsRect} from '../physics.js';
+import {circleHitsRect,standingHitsRect} from '../physics.js';
 installDOM();
 
 test('the television picture is clear through its open bezel',()=>{
@@ -36,14 +36,14 @@ test('Mr Fujita’s shed: channels flipping, a glass in his hand, the empties ro
  const empties=()=>shed.group.children.find(o=>o.name==='Empty Umineko bottles').count;
  shed.tick(.1,6*60+10);assert.equal(empties(),0);shed.tick(.1,22*60);assert.ok(empties()>=20,'a day’s bottles round him');
  // The walk along the pier past the open front stays clear.
- for(let z=-66;z<=-50;z+=.5)assert.ok(!colliders.some(c=>circleHitsRect(PORT_SHED.x+PORT_SHED.depth/2+.65,z,.3,c)),'pier walk is open at z='+z);
+ for(let z=-66;z<=-50;z+=.5){const x=PORT_SHED.x+PORT_SHED.depth/2+.65;assert.ok(!colliders.some(c=>standingHitsRect(x,z,.3,0,c)),'pier walk is open at z='+z);}// (overhead: the roof is the lens's collider, not a walker's)
  // He sits facing his set.
  assert.ok(PORT_SHED.tv[1]<PORT_SHED.chair[1],'the TV is in front of him (to the south, where he faces)');
  // It stands wholly on the pier's deck, not over the water.
  const P=SHED_PIER,hx=PORT_SHED.depth/2,hz=PORT_SHED.width/2;
  assert.ok(PORT_SHED.x-hx>=P.minX&&PORT_SHED.x+hx<=P.maxX&&PORT_SHED.z-hz>=P.minZ&&PORT_SHED.z+hz<=P.maxZ,'the shed is on the deck');
  // You can walk in through the end towards the quay, beside his chair.
- for(const z of [PORT_SHED.z+hz+.6,PORT_SHED.z+hz-.4,PORT_SHED.z+.5])assert.ok(!colliders.some(c=>circleHitsRect(PORT_SHED.x-.55,z,.25,c)),'the way in is open at z='+z);
+ for(const z of [PORT_SHED.z+hz+.6,PORT_SHED.z+hz-.4,PORT_SHED.z+.5])assert.ok(!colliders.some(c=>standingHitsRect(PORT_SHED.x-.55,z,.25,0,c)),'the way in is open at z='+z);
  shed.dispose();
 });
 

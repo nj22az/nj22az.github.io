@@ -7,6 +7,7 @@ import {fujitaBeer,laughingAt,seeded,tvProgramme} from './fujita-day.js';
 import {buildFujitaHouseboat,HOUSEBOAT} from './fujita-houseboat.js';
 import {createFujitaRoutine} from './fujita-routine.js';
 import {createSleepCover} from '../people/sleep-cover.js';
+import {poolGlow} from '../render/dusk.js';
 export {tvProgramme} from './fujita-day.js';
 
 /**
@@ -206,6 +207,9 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
  colliders.push({x:wx-hx,z:wz,w:.12,d:W,height:2.1,portShed:true});
  colliders.push({x:wx,z:wz-hz,w:D,d:.12,height:2.1,portShed:true});
  colliders.push({x:S.tv[0],z:S.tv[1],w:.62,d:.48,height:.95,portShed:true},{x:S.chair[0],z:S.chair[1],w:.7,d:.7,height:.9,portShed:true});
+ // The roof is solid to the lens (an overhead collider, above a standing head): the houseboat opening's shot of him was
+ // taken from 8 cm over this roof, a screenful of corrugated iron with his hat at its edge (2026-10-19).
+ colliders.push({id:'fujita-shed-roof',x:wx+.2,z:wz,w:D+.6,d:W+.3,minY:2.05,height:.38,portShed:true});
  // The retired exterior cool box has no collider on the timber walking circuit.
 
  // Timber access only: the old broad L-shaped slab and its unused seaward spur are retired.
@@ -298,7 +302,7 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
    bulbMat.emissiveIntensity=night?1.4:0;bulbLight.intensity=night?1.6:0;
    // The same resident walks the ferry's shore lines. That controller releases
    // him at his chair before the television/houseboat routine resumes.
-   boat.tick({sleeping:fujita.userData.sleepBlend>.01,player:getPlayerPosition()});
+   boat.tick({sleeping:fujita.userData.sleepBlend>.01,player:getPlayerPosition(),night:poolGlow(minutes)});
    // The beer: the crates, the floor, the bottle he is on, the glass. The pile stays in the shed overnight, when he
    // has gone aboard Shiosai, until the Higas' van takes it at six.
    const b=fujitaBeer(minutes),u=fujita.userData,seated=!u.ferryShoreTask&&routine.state==='watching',pouring=seated&&b.phase==='pour';

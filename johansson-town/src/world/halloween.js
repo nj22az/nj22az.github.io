@@ -40,7 +40,7 @@ export const HALLOWEEN=Object.freeze({
    chute:w([P.takeOut.x,P.takeOut.y,P.takeOut.z]),cordExit:w([P.cordExit.x,P.cordExit.y,P.cordExit.z])});})(),
  socket:Object.freeze({at:Object.freeze([SAKURA_BOX.maxX+.01,.5,SAKURA_BOX.minZ+.18]),why:'The drinks machine’s own outdoor socket on the corner pier, between the corner’s downpipe and the shutter’s guide: the machine’s cord runs to it along the foot of the shutter. There all year (the machine lives on it); only Halloween’s reel takes its place.'}),
  rcd:Object.freeze({at:Object.freeze([SAKURA_BOX.maxX+.01,1.2,SAKURA_BOX.minZ+.18]),why:'After the fix: the lanterns’ own outdoor socket, with an RCD (earth-leakage breaker) and its test button, put in by Tetsuo.'}),
- // the street's ground here: the Main Street footway (harbour.js), whose top is 12 mm below the town's datum
+ // the street's ground here: the Main Street footway (harbour.js), whose top is the lane layer (ground-layers.js)
  ground:SAKURA_VENDING.y,
  // Sakura's corner paving (exterior-details.js: 0.55 m square, its top 65 mm up) at the frontage's south corner: the
  // cords cross over it, nothing stands in it
@@ -217,7 +217,7 @@ export function buildHalloween(world,{shadows=false}={}){
   for(let i=0;i<5;i++){const a=i/5*Math.PI*2;put(Math.cos(a)*.058,.006,Math.sin(a)*.058,-Math.PI/2+(i-2)*.45);}
   for(let i=0;i<3;i++){const a=(i+.5)/3*Math.PI*2;put(Math.cos(a)*.036,.006+Hc,Math.sin(a)*.036,-Math.PI/2+(i-1)*.4);}
   put(.07,.006+Hc+D/2*Math.sin(.5),-.02,-Math.PI/2,.5);}
- // (the séance's candles, the salt, the rice ball and the bucket stand on the footway, 12 mm below the datum)
+ // (the séance's candles, the salt, the rice ball and the bucket stand on the footway)
  for(const o of [candles,salt,riceBall,bucket])o.position.y=G;
  const mist=new THREE.Group();mist.name='Mist from the can chute';mist.position.y=G;group.add(mist);
  for(const [dx,dz,r,y] of [[.12,0,.55,.06],[.45,.3,.7,.05],[.5,-.35,.65,.07],[.95,.05,.85,.04],[.3,.65,.55,.05],[.3,-.65,.55,.06],[1.4,.2,.8,.03],[1.3,-.5,.7,.035],[.08,0,.35,.2],[.1,.15,.3,.3],[.06,-.12,.28,.26]]){const p=mistPuff(r);p.position.set(M.front+dx,y,M.z+dz);mist.add(p);}

@@ -13,7 +13,8 @@ import {buildWarehouse} from './warehouse.js';
 import {BOARDWALK,BREAKWATER} from './layout.js?snappy=1';
 import {MINATO_BERTH,QUAY_FISHING_BOAT} from './minato-berth.js';
 import {MAIN_ROAD,MAIN_SERVICE_COURT,MAIN_LOADING_APRON,MAIN_PARKING_LAYBY,SHOP_CROSSING_Z} from './main-road.js';
-import {edgeLines,zebraCrossing,tactileStrip,roadSign,roadEndPosts} from './road-standards.js';
+import {edgeLines,zebraCrossing,tactileStrip,roadSign,roadEndPosts,roadPaintMaterial} from './road-standards.js';
+import {createLampGlow} from './light-pools.js';
 import {buildStreetLamps,STREET_LAMP_PLACEMENTS} from './street-lamps.js';
 import {createHarbourInstances} from '../render/harbour-instances.js';
 import {addHorizon} from './horizon.js';
@@ -24,7 +25,7 @@ import {SAKURA_FRONT} from './interiors/sakura-layout.js';
 
 import {buildFerryTerminal} from './ferry.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
-import {lanternGlow, windowGlow} from '../render/dusk.js';
+import {lanternGlow, windowGlow, poolGlow} from '../render/dusk.js';
 import * as THREE from '../../vendor/three.module.js';
 
 // Johansson Town original harbour geometry, using the shared PBR surface maps.
@@ -32,7 +33,7 @@ import * as THREE from '../../vendor/three.module.js';
 export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,register,enter,onAction,getPlayerPosition,harbourCellSize=48,harbourBatching=true}) {
   const group=new THREE.Group();scene.add(group);
   const harbourShops=[],plantSites=[],details=[],shopDoors=[];
-  const materials=new Map(),geometries=new Map(),batches=new Map(),colliders=[],lamps=[],lampLights=[],people=[],water=[],wetMeshes=[];
+  const materials=new Map(),geometries=new Map(),batches=new Map(),colliders=[],lamps=[],lampLights=[],lampSpots=[],people=[],water=[],wetMeshes=[];
 
   const bands=new Uint8Array([
     38,38,38,255,
@@ -111,6 +112,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   function lantern(x,z){
     const lm=material(0xf0a65c,null,.12),m=new THREE.Mesh(new THREE.SphereGeometry(.25,12,10),lm);m.scale.set(.8,1.4,.8);m.position.set(x,2.55,z);m.castShadow=false;group.add(m);lamps.push(m);box([.26,.05,.26],[x,2.91,z],0x3c3430);
     if(shadows){const light=new THREE.PointLight(0xffb96e,0,8,2);light.position.set(x,2.55,z);group.add(light);lampLights.push(light);}
+    // The pool on the quay under it and the halo round it (light-pools.js): what says "lit" from along the quay.
+    lampSpots.push({head:{x,y:2.55,z},ground:{x,y:0,z},radius:3,size:1.6});
   }
   function glassPanel(x,y,z,w,h,angle){
     const mat=new THREE.MeshPhysicalMaterial({color:0x355662,roughness:.40,metalness:.02,clearcoat:.12,clearcoatRoughness:.18,emissive:0xdba978,emissiveIntensity:.16});
@@ -121,10 +124,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     const mat=new THREE.MeshPhysicalMaterial({color:0x263c43,roughness:.14,metalness:.08,transparent:true,opacity:.34,depthWrite:false});
     const m=new THREE.Mesh(new THREE.CircleGeometry(1,28),mat);m.rotation.x=-Math.PI/2;m.rotation.z=rot;m.position.set(x,-.031,z);m.scale.set(sx,sz,1);m.visible=false;m.renderOrder=2;group.add(m);wetMeshes.push(m);
   }
-  const markingMaterials=new Map();
+  // Unlit paint, shared with every street and dimmed with the night (road-standards.js roadPaintMaterial).
   function roadMark(w,d,x,z,c=0xb7aa80){
-    if(!markingMaterials.has(c))markingMaterials.set(c,new THREE.MeshBasicMaterial({color:c,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));
-    const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),markingMaterials.get(c));m.rotation.x=-Math.PI/2;m.position.set(x,.004,z);m.renderOrder=1;group.add(m);return m;
+    const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),roadPaintMaterial(c));m.rotation.x=-Math.PI/2;m.position.set(x,.004,z);m.renderOrder=1;group.add(m);return m;
   }
 
   addHorizon(group);
@@ -221,9 +223,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
        const centre=s.z+1.2,span={width:SAKURA_FRONT.width,depth:SAKURA_FRONT.depth,doorX:0};
        const storefront=buildStorefront({parent:group,site:s,register,enter,label,span,placement:{x:front,z:centre,yaw:Math.PI/2,scale:1}});
        shopDoors.push(storefront.shopDoor);
-       // Upstairs is the Sakurai family's flat (thuan-flat.js).
-       buildThuanFlat(storefront,{colliders,sites,register,enter});
        s.x=front;s.door=[front+1.95,0,centre];
+       // Upstairs is Sakura's main office (thuan-flat.js), entered through the shop.
+       buildThuanFlat(storefront,{sites,shopDoor:s.door});
        // Turned a quarter: the frontage runs along z and the shop runs back along -x.
        obstacle(front-span.depth/2,centre,span.depth,span.width);return;
       }
@@ -240,8 +242,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   for(const [px,pz] of [[-7.2,-32],[2.05,-32]]){
    cyl(.10,.85,[px,.425,pz],0x3b4848);box([.22,.10,.22],[px,.9,pz],0xe7c080);obstacle(px,pz,.25,.25);
    // A 0.9 m deck light throws a pool round its foot, not a 14 m wash: at that reach the west one lit the whole of
-   // Sakura's shutter beige at night.
-   const light=new THREE.PointLight(0xffd7a0,0,5.5,2);light.userData.nightIntensity=18;light.position.set(px,1,pz);group.add(light);lampLights.push(light);
+   // Sakura's shutter beige at night. It is a pool decal, not a point light: the light cut a hard-edged disc at the
+   // footway's kerb (the kerb's top face took it, the road beside it did not), and the pool lies over both.
+   lampSpots.push({head:{x:px,y:.9,z:pz},ground:{x:px,y:0,z:pz},radius:2.2,size:.9});
   }
   // The shopping street is fed from the Main Street line (okinawa/quarters.js): a second
   // and third row of poles a few metres from it was clutter.
@@ -384,12 +387,15 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   for(const mesh of createHarbourInstances(batches.values(),{shadows,cellSize:harbourCellSize,consolidate:harbourBatching}))group.add(mesh);
 
+  // Every quay lamp's pool and halo, faded with the heads (lanternGlow).
+  const lampGlow=createLampGlow(group,lampSpots,{pool:{strength:.6}});
+
   let wet=false;const rainCount=mobile?260:600,positions=new Float32Array(rainCount*6);
   for(let i=0;i<rainCount;i++){const x=(Math.random()-.5)*32,y=Math.random()*16,z=(Math.random()-.5)*70;positions.set([x,y,z,x+.025,y+.65,z-.01],i*6);}
   const rainGeo=new THREE.BufferGeometry();rainGeo.setAttribute('position',new THREE.BufferAttribute(positions,3));const rain=new THREE.LineSegments(rainGeo,new THREE.LineBasicMaterial({color:0xadc8ca,transparent:true,opacity:.36,depthWrite:false}));rain.visible=false;rain.name='Local rain streaks';rain.userData.dynamicProp=true;group.add(rain);
 
   return {
-    group,colliders,people,cat,details,warehouse:harbourWarehouse,busStation,streetLamps,
+    group,colliders,people,cat,details,warehouse:harbourWarehouse,busStation,streetLamps,lampGlow,
     landmarks:[harbourWarehouse?.place,busStation.place].filter(Boolean),
     harbourShops,boardwalk,plantSites,shopDoors:shopDoors.filter(Boolean),
     setRain(value){
@@ -399,9 +405,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     update(dt,time,day,minutes=1002){
       boat.rotation.z=Math.sin(time*.7)*.022;boat.position.y=-.18+Math.sin(time*.9)*.06;
       tickOcean(time);
-      const lantern=lanternGlow(minutes),glass=windowGlow(minutes);
+      const lantern=lanternGlow(minutes),glass=windowGlow(minutes),pool=poolGlow(minutes);
       for(const m of lamps){m.material.emissive.set(0xf0a65c);m.material.emissiveIntensity=.12+lantern*.82;}
-      streetLamps.update(lantern);
+      streetLamps.update(lantern,pool);lampGlow.update(pool);harbourWarehouse?.glow?.update(pool);
       lampLights.forEach((l,i)=>l.intensity=lantern*(l.userData.nightIntensity||6));
       shopGlass.forEach(m=>{m.material.emissiveIntensity=.035+glass*.31;m.material.roughness=wet?.18:.24;});
       wetMeshes.forEach((m,i)=>{if(wet)m.material.opacity=.28+Math.sin(time*.7+i)*.045;});
