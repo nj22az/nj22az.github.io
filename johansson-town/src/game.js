@@ -972,7 +972,7 @@ content={items:BUSINESS_CONTENT_CATALOGUE,objects:new Map()};
 const residentLedger=createResidentLedger(()=>activities.state);
 const townCleanup=createTownCleanup({parent:town,register:reg,action:activities.action,getState:()=>activities.state,blocked:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>circleHitsRect(x,z,r,c))});
 const npcActivities=createTownActivities({getTargets:()=>interactables,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>circleHitsRect(x,z,r,c)),getPlayerPosition:()=>current?null:player.position,ledger:residentLedger,getState:()=>activities.state});
-castAI=createCastAI({activities:npcActivities,world,player,attends:g=>attention.attends(g),getObserverPosition:()=>current?doors.get(current.id):player.position,state:()=>activities.state,paused:()=>false,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>standingHitsRect(x,z,r,groundHeight(x,z),c))});
+castAI=createCastAI({activities:npcActivities,world,player,attends:g=>attention.attends(g),detourRetryMinutes:BUDGET.detourRetryMinutes||0,getObserverPosition:()=>current?doors.get(current.id):player.position,state:()=>activities.state,paused:()=>false,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>standingHitsRect(x,z,r,groundHeight(x,z),c))});
 // Stand points (people/stand-points.js): on Linux for everybody; on the web for the residents in view, near, or in the
 // room the player is in, and the rest keep one target a phase (edition.js, full-life.js).
 if(!BUDGET.residentsEverywhere){

@@ -70,7 +70,7 @@ DIALOGUE.Thuan.push(['home',residentHomeDescription('Thuan')+' The plants by the
 // Apply the recorded clips last: a later rewrite of a resident's lines must not
 // leave a published subtitle disagreeing with the audio it plays.
 for(const clip of VOICE_LINES){const row=DIALOGUE[clip.resident]?.find(row=>row[0]===clip.topic);if(row){row[1]=clip.en;row[3]=null;}} // Retire Japanese-only recordings in the English game.
-export function createCastAI({world,player,state,paused,collides,getObserverPosition=()=>player.position,activities=null,attends=()=>true}){
+export function createCastAI({world,player,state,paused,collides,getObserverPosition=()=>player.position,activities=null,attends=()=>true,detourRetryMinutes=0}){
  // Keep scheduled targets off the forest bus road and painted coyote-tunnel mouth.
  // WalkFix owns how they walk there; we only refuse the arch as a stand/queue point.
  //
@@ -164,7 +164,10 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   // on the kerb for the rest of the evening (Thuan and Tetsuo at Main Street, on the way to the izakaya).
   const facing=route.stalled>1?world.people.find(p=>p.g!==g&&p.g.visible&&!p.g.userData.indoors&&Math.hypot(p.g.position.x-g.position.x,p.g.position.z-g.position.z)<.9):null;
   const faceToFace=!!facing&&(route.stalled>2.5||String(person.profile?.name||'')<String(facing.profile?.name||''));
-  if(route.stalled>3||faceToFace){
+  // The web edition (edition.js detourRetryMinutes): a walker whose detour search found no way round keeps still for a
+  // while instead of searching again every three seconds (a 200 ms search each time, for nothing).
+  if((route.stalled>3||faceToFace)&&route.noDetourUntil>clockMinutes){route.stalled=0;route.checkpoint.copy(g.position);}
+  else if(route.stalled>3||faceToFace){
    const obstacles=world.people.filter(p=>p.g!==g&&!p.g.userData.indoors&&!p.g.userData.inIzakaya&&!p.g.userData.inOnsen&&!p.g.userData.inMarket&&!p.g.userData.inRamen&&!p.g.userData.inHome).map(p=>p.g.position.clone());
    // Somebody already standing within the margin must not wall off the start of the
    // detour: a point is only refused for being nearer them than the walker is now, so
@@ -173,7 +176,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    const hx=g.position.x,hz=g.position.z;
    const detour=createNavigation((x,z,r)=>collides(x,z,r)||obstacles.some(o=>{const d=Math.hypot(x-o.x,z-o.z);return d<r+.34&&d<Math.hypot(hx-o.x,hz-o.z)-.01;}));
    const points=detour.path(g.position,{x:target[0],z:target[1]});
-   if(points.length){route.points=points;route.at=0;}route.stalled=0;route.checkpoint.copy(g.position);
+   if(points.length){route.points=points;route.at=0;}else if(detourRetryMinutes)route.noDetourUntil=clockMinutes+detourRetryMinutes;route.stalled=0;route.checkpoint.copy(g.position);
   }
   const goal=route.points[route.at];if(!goal)return;const dx=goal[0]-g.position.x,dz=goal[1]-g.position.z,d=Math.hypot(dx,dz);if(d<Math.min(.16,arrival)){route.at++;return;}
   // A leg may ask for its own pace: an afternoon by the sea is not an errand.

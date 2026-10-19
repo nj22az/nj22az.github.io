@@ -44,6 +44,8 @@ export const BUDGETS=Object.freeze({
   /** Residents farther than this from the player (or the door of the room he is in) keep their timetable without
    *  walking it: no route searches, no steps, placed where their day has them. Nearer, they live as on Linux. */
   residentRadius:45,
+  /** A seen resident whose detour search found no way round tries again after this many town minutes, not every 3 s. */
+  detourRetryMinutes:.5,
   neighbourChats:false,
   /** One short line for the moment (people/greetings.js shortGreeting) and whatever they sell or serve. */
   conversations:false,
