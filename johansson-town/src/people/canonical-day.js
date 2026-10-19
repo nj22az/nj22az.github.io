@@ -5,8 +5,6 @@ import {ONSEN_DOOR} from '../world/onsen-layout.js';
 import {RAMEN_DOOR} from '../world/dining-layout.js';
 import {townCalendarAt} from '../town-clock.js';
 import {rotaWeek,FERRY_WORKING_DAY} from './ferry-crew.js';
-import {flatAccessRoute} from '../world/kitahama-layout.js';
-import {activeHomeForResident} from './island-households.js';
 import {CAST,castMember} from './cast.js';
 import {activeResidentHome,residentHome} from './home-directory.js';
 import {SCHOOL} from '../world/school-layout.js';
@@ -64,14 +62,9 @@ export function canonicalDay(name,minutes,rain=false){
  return {place:isHome?'home':phase.place==='sakura'?'market':phase.place,target,activity:phase.activity,school:phase.place==='school',rain:!!rain};
 }
 
-/** One continuous outdoor path, using the measured upper-flat connector in either direction. */
+/** One continuous outdoor path. Every home door is at ground level now (Kitahama Heights lost its stair in phase 3), so the street raster reaches them all. */
 export function canonicalStreetRoute(navigation,name,from,target){
- // Staying home is not a journey down the shared stair and back upstairs.
+ // Staying home is not a journey.
  if(Math.hypot(from.x-target[0],from.z-target[1])<.06)return [];
- const access=flatAccessRoute(activeHomeForResident(name)?.home),home=access?.at(-1),near=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1])<.5;
- if(!access)return navigation.path(from,{x:target[0],z:target[1]});
- const here=[from.x,from.z],foot=access[0],leaving=near(here,home),entering=near(target,home);
- const a=leaving?foot:here,b=entering?foot:target,path=navigation.path({x:a[0],z:a[1]},{x:b[0],z:b[1]});
- if(!path.length)return [];
- return [...(leaving?[...access].reverse():[]),...path,...(entering?access:[])];
+ return navigation.path(from,{x:target[0],z:target[1]});
 }

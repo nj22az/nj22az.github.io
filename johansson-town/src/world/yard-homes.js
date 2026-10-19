@@ -8,9 +8,9 @@ import {TETSUO_BACK_WINDOW} from './interiors/tetsuo-flat.js';
 /**
  * The yard houses behind Front-Row Books & Workshop (yard-homes-layout.js).
  *
- * Two small Okinawan concrete-block houses: Nhung and Reiko's with a red-tiled roof and
- * a shisa on the ridge, Chin and Tetsuo's flat-roofed with a water tank and a TV
- * aerial. Each is a home site, so its door works like every other door in town — walk
+ * Two small Okinawan concrete-block houses: Reiko's (Nhung's too, until she moved home to
+ * 3 Kitahama) with a red-tiled roof and a shisa on the ridge, Tetsuo's flat-roofed with a
+ * water tank and a TV aerial. Each is a home site, so its door works like every other door in town — walk
  * in at any hour, including while the people who live there are asleep in bed
  * (home-residents.js puts them there). Windows light up in the evening.
  */

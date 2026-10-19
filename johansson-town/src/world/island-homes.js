@@ -11,10 +11,10 @@ import {householdFor} from '../people/households.js';
  * The doors of the Kitahama houses (okinawa/layout.js KITAHAMA), as sites like every
  * door in town. The houses themselves are built with the Okinawan quarter (quarters.js).
  *
- * Thuan & Thao and Mrs Sato are walking residents: their houses are home sites with a
- * homeOwner, so home-residents.js puts them to bed there and they no longer leave on
- * the ferry at night. The others are families from the household registry, whose room
- * is built by family-home.js; the house to let is empty.
+ * Thao, Chin and Vy, Mrs Sato, and Nhung with Kōji and Riku (phase 3 of the consolidation) are walking residents:
+ * their houses are home sites with a homeOwner, so home-residents.js puts them to bed there and they no longer leave
+ * on the ferry at night. The others are families from the household registry, whose room is built by
+ * family-home.js; the house to let is empty.
  */
 import {KITAHAMA_RESIDENT_HOMES} from './kitahama-layout.js';
 export {KITAHAMA_RESIDENT_HOMES,ISLAND_RESIDENT_NAMES,kitahamaHomeFor} from './kitahama-layout.js';
@@ -36,10 +36,11 @@ export function buildIslandHomes(world,options){
   const anchor=new THREE.Object3D();anchor.name='kitahama entrance:'+p.id;anchor.position.set(door[0],1.3,door[1]);world.group.add(anchor);
   options.register?.(anchor,(household?.toLet?'Look round ':'Visit ')+title+' · '+site.line,()=>options.enter(site));
  }
- // Every occupied unit has an Enter action, its own room and its own exit height.
- for(const unit of KITAHAMA_FLATS){
-  const h=householdAtHome(unit.id),[x,y,z]=unit.approachPosition;
-  addHome(h,[x,y,z],{entrancePosition:[...unit.door],entryFacing:unit.approachFacing,unitNumber:unit.unitNumber});
+ // Kitahama Heights: two attached ground-floor houses (kitahama-layout.js KITAHAMA_HEIGHTS), each with its own Enter
+ // action at its gate on Fukugi Lane, its own room and its own front door at ground level.
+ for(const house of KITAHAMA_FLATS){
+  const h=householdAtHome(house.id),[x,y,z]=house.approachPosition;
+  addHome(h,[x,y,z],{entrancePosition:[...house.door],entryFacing:house.approachFacing,unit:house.house,houseKind:'concrete'});
  }
  for(const p of NISHI.plots.filter(p=>['higa','kinjo','oshiro'].includes(p.id))){
   const {door,inward}=plotGate(p);addHome(householdAtHome(p.id),[door[0],.04,door[1]],{entryFacing:inward,houseKind:p.kind});

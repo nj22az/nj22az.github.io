@@ -1,7 +1,7 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import {rng} from './kit.js';
-import {KITAHAMA,KITAHAMA_LANES} from '../kitahama-layout.js';
+import {KITAHAMA,KITAHAMA_LANES,KITAHAMA_HEIGHTS} from '../kitahama-layout.js';
 import {lanePatches} from '../lane-surfaces.js?snappy=1';
 import {TOWN_WALK_PLOTS} from '../architecture-plan.js';
 import {NEIGHBOURHOOD,neighbourhoodHeight} from '../neighbourhood-ground.js';
@@ -48,9 +48,10 @@ export function gutterRings(lots=[]){
  const owners=[
   ...KITAHAMA.plots.map(p=>({id:p.id,rect:p,walls:{north:true,south:true,east:true,west:true},gates:houseGates(p)})),
   ...lots.map(l=>({id:l.id,rect:l.rect,walls:Object.fromEntries(Object.entries(l.walls).map(([k,v])=>[k,!!v])),gates:l.gates})),
-  // Kitahama Heights: its block wall on the lane side (the west side is its balconies' terrace).
+  // Kitahama Heights: its block wall on the lane side, a gate for each of its two houses (kitahama-layout.js
+  // KITAHAMA_HEIGHTS); its north and south sides run up to the lanes and take the open gutter there.
   {id:KITAHAMA.apartment.id,rect:KITAHAMA.apartment,walls:{east:true},only:['east'],
-   gates:{east:[[KITAHAMA.apartment.minZ+1.2,KITAHAMA.apartment.minZ+4.2],[KITAHAMA.apartment.maxZ-4.2,KITAHAMA.apartment.maxZ-1.8]]}},
+   gates:{east:KITAHAMA_HEIGHTS.houses.map(h=>[...h.gate])}},
  ];
  const runs=[],G=GUTTER;
  for(const o of owners)for(const side of o.only||['north','south','east','west']){

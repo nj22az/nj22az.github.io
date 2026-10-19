@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {residentPlan,thuanWeekendAway} from '../src/people/social.js';
 import {RESIDENTS} from '../src/people/residents.js';
-import {sakuraClerkAt,isWeekend} from '../src/commerce/sakura-rota.js';
+import {sakuraClerkAt,isWeekend,sakuraOpenAt,SAKURA_STAFF} from '../src/commerce/sakura-rota.js';
+import {SUPPLIERS} from '../src/commerce/merchandising.js';
 import {NEIGHBOURS} from '../src/people/neighbours.js';
 import {KITANO_HAMLET,hamletGate} from '../src/world/kitano-hamlet-layout.js';
 import {airportWorld} from '../src/world/airport-ground.js';
@@ -24,12 +25,18 @@ test('Thuan spends the weekend at home on Kitano-jima: the Friday 22:00 boat out
  assert.match(residentPlan(thuan,at(5,520)).activity,/arriving on the ferry from Kitano-jima/);
  assert.equal(residentPlan(thuan,at(5,600)).place,'market','Monday she is back at Sakura');
  assert.ok(!thuanWeekendAway(at(1,1400))&&!thuanWeekendAway(at(2,1319)),'Weekdays and Friday before the boat are in town');
- assert.equal(residentPlan(thuan,at(1,1400)).place,'home','On a weekday night she sleeps at 1 Kitahama');
+ // Her weekday room at 1 Kitahama is gone (addendum 4): on a weekday night she is away, home on Kitano-jima, and back on the morning boat.
+ assert.equal(residentPlan(thuan,at(1,1400)).place,'away','On a weekday night she is home on Kitano-jima');assert.match(residentPlan(thuan,at(1,1400)).activity,/Kitano-jima/);
+ assert.equal(residentPlan(thuan,at(1,1300)).place,'bus','after the evening she waits for the last boat, never walks to a Kitahama room');
+ assert.equal(residentPlan(thuan,at(1,520)).place,'bus');assert.match(residentPlan(thuan,at(1,520)).activity,/arriving/);
+ assert.equal(thuan.homeAddress,'Kitano hamlet, Kitano-jima');
 });
 
-test('Sakura’s rota: Thuan on weekdays, Nhung at the weekend, the owner’s night counter; Chin, the motorman, never',()=>{
+test('Sakura is Thuan’s outright and keeps shop hours: Thuan on weekdays, Nhung at the weekend, nobody at night; Chin, the motorman, never',()=>{
+ assert.equal(SUPPLIERS.sakura.owner,'Thuan');assert.deepEqual([...SAKURA_STAFF],['Thuan','Nhung']);assert.deepEqual([...PLACES.sakura.keepers],['Thuan','Nhung']);
  assert.equal(sakuraClerkAt(at(1,600)),'Thuan');assert.equal(sakuraClerkAt(at(3,600)),'Nhung');assert.equal(sakuraClerkAt(at(4,1229)),'Nhung');
- for(const day of [1,3,5]){assert.equal(sakuraClerkAt(at(day,1230)),'Grandmother Sakurai');assert.equal(sakuraClerkAt(at(day,180)),'Grandmother Sakurai');assert.equal(sakuraClerkAt(at(day,420)),'Grandmother Sakurai');}
+ for(const day of [1,3,5]){for(const m of [1230,180,420,539]){assert.equal(sakuraClerkAt(at(day,m)),null,'nobody at the counter at '+m);assert.equal(sakuraOpenAt(at(day,m)),false,'shut at '+m);}assert.equal(sakuraOpenAt(at(day,540)),true);assert.equal(sakuraOpenAt(at(day,1229)),true);}
+ for(let m=0;m<1440;m+=5)for(const day of [1,3])assert.notEqual(sakuraClerkAt(at(day,m)),'Grandmother Sakurai','the retired owner keeps no counter at '+m);
  for(let m=0;m<1440;m+=5)for(const day of [1,3])assert.notEqual(sakuraClerkAt(at(day,m)),'Chin','Chin has no Sakura shift at '+m);
  assert.ok(isWeekend(at(3,0))&&isWeekend(at(4,1439))&&!isWeekend(at(5,0)));
  for(let m=0;m<1440;m+=5)assert.equal(residentPlan(profile('Nhung'),at(3,m)).place==='bookshop',false,'Front Row is closed on Saturday: '+m);

@@ -3,8 +3,13 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {CAST} from '../src/people/cast.js';
-import {ISLAND_HOUSEHOLDS,homeForResident,CORE_HOUSEHOLDS,SUPPORTING_QUARTERS} from '../src/people/island-households.js';
+import {ISLAND_HOUSEHOLDS,homeForResident,CORE_HOUSEHOLDS,SUPPORTING_QUARTERS,householdAtHome} from '../src/people/island-households.js';
 import {residentHome} from '../src/people/home-directory.js';
+import {HOUSEHOLDS as ROSTER_HOUSEHOLDS,identityOf} from '../src/people/roster.js';
+import {residentPlan} from '../src/people/social.js';
+import {RESIDENTS} from '../src/people/residents.js';
+import {buildResidentHome} from '../src/world/interiors/resident-home.js';
+import {KITAHAMA,KITAHAMA_HEIGHTS,plotGate} from '../src/world/kitahama-layout.js';
 import {createBusinesses} from '../src/world/businesses.js';
 import {createTown} from '../src/world/town.js';
 import {buildFamilyHome} from '../src/world/interiors/family-home.js';
@@ -19,13 +24,24 @@ import {migrateHousing} from '../src/save.js';
 installDOM();globalThis.self=globalThis;
 const sites=createBusinesses(),world=createTown({scene:new THREE.Scene(),sites,mobile:true,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
 
-test('31 villagers have 23 occupied Minato primary households and one shared tropical home; the five supporting crew have quarters, not households',()=>{
+test('31 villagers have 21 occupied Minato primary homes and one shared tropical home; the five supporting crew have quarters, not households',()=>{
  assert.equal(CAST.length,36);assert.equal(CAST.filter(p=>!p.supporting).length,31);
+ // 24 primary home ids: 21 standing on Minato, the Kitano house, and the two retired flats of the Heights that Mr Higa Jr and
+ // Grandmother Sakurai still name until phase 4 (resolved to the roster's fallback, no household).
  const core=CAST.filter(p=>!p.supporting),primaries=new Set(core.map(p=>p.home));assert.equal(primaries.size,24);
- assert.equal([...primaries].filter(id=>ISLAND_HOUSEHOLDS.find(h=>h.id===id).island==='minato').length,23);
+ assert.equal([...primaries].filter(id=>{const h=ISLAND_HOUSEHOLDS.find(h=>h.id===id);return h.island==='minato'&&!h.retired;}).length,21);
  assert.deepEqual(CAST.filter(p=>p.home==='kitano-1').map(p=>p.name),['Johansson','Thuan']);
+ assert.deepEqual(CAST.filter(p=>p.home==='kitahama-3').map(p=>p.name),['Nhung','Kōji','Riku'],'Nhung’s family is one household');
+ assert.deepEqual(CAST.filter(p=>p.home==='kitahama-1').map(p=>p.name),['Thao','Chin','Vy']);assert.deepEqual(CAST.find(p=>p.name==='Thuan').alsoAt,[],'no weekday room');
  assert.equal(ISLAND_HOUSEHOLDS.filter(h=>h.island==='minato'&&h.toLet).length,0);
- assert.equal(homeForResident('Grandmother Sakurai').home,'kitahama-flat-2');
+ for(const [name,id] of [['Grandmother Sakurai','kitahama-flat-2'],['Mr Higa Jr','kitahama-flat-1']]){const h=homeForResident(name);assert.equal(h.home,id);assert.equal(h.retired,true,name+'’s flat went with the upper storey');assert.equal(h.fallback,'mayor-office');assert.deepEqual(h.residents,[]);}
+ // The roster's 14 households are in the registry member for member (brief §13); the other occupied homes are the retired
+ // identities' houses, which stand until phase 4 removes them.
+ const live=new Map(CORE_HOUSEHOLDS.map(h=>[h.home,h.residents.map(n=>identityOf(n).id).sort()]));
+ assert.equal(ROSTER_HOUSEHOLDS.length,14);
+ for(const h of ROSTER_HOUSEHOLDS)assert.deepEqual(live.get(h.home),[...h.members].sort(),h.home);
+ const extra=CORE_HOUSEHOLDS.filter(h=>!ROSTER_HOUSEHOLDS.some(r=>r.home===h.home));
+ for(const h of extra)assert.ok(h.residents.every(n=>identityOf(n)?.category==='retired'),h.home+' is a retired identity’s house until phase 4: '+h.residents.join(', '));
  // Quarters (island-households.js SUPPORTING_QUARTERS; roster.js QUARTERS): the two cabins aboard and the Shiroma house.
  assert.deepEqual(SUPPORTING_QUARTERS.map(h=>h.home).sort(),['ferry-crew-cabin','ferry-officer-cabin','kitano-2']);
  assert.deepEqual(SUPPORTING_QUARTERS.flatMap(h=>h.residents).sort(),['Aya','Jun','Kai','Ren','Ryo']);
@@ -35,8 +51,9 @@ test('31 villagers have 23 occupied Minato primary households and one shared tro
 
 test('all retained household targets are registered doors on land, clear at their real foot height',()=>{
  for(const id of new Set(CAST.map(p=>p.home))){
-  // Johansson's house is the island's own; the crew's cabins are aboard the ship (their directions point at the terminal).
-  if(id==='kitano-1'||ISLAND_HOUSEHOLDS.find(h=>h.id===id).aboard)continue;
+  // Johansson's house is the island's own; the crew's cabins are aboard the ship (their directions point at the terminal);
+  // a retired flat's target is the public fallback, tested with the save migration.
+  if(id==='kitano-1'||ISLAND_HOUSEHOLDS.find(h=>h.id===id).aboard||ISLAND_HOUSEHOLDS.find(h=>h.id===id).retired)continue;
   const resident=CAST.find(p=>p.home===id),home=residentHome(resident.name,{sites,landmarks:world.landmarks}),d=home.target;
   assert.ok(sites.some(s=>s.id===d.id)||id==='fujita-houseboat'&&world.landmarks.some(s=>s.id===d.id),id+' has a registered entrance or open walkable dwelling');
   assert.equal(townBoundsBlocked(d.x,d.z,.28),false,id+' approach is on land');
@@ -90,7 +107,34 @@ test('housing migration is idempotent and preserves shops, inventory, relationsh
  const before=JSON.stringify(saved);migrateHousing(saved);assert.equal(JSON.stringify(saved),before);
 });
 
-test('upper-flat residents walk continuously down the real stair, reach the terminal and return through their own doors',async()=>{
+test('3 Kitahama is Nhung, Kōji and Riku’s: three sleeping places, a walk to each, and the family home, eats, rests and sleeps there',()=>{
+ const site=sites.find(s=>s.id==='home-kitahama-3');assert.ok(site);
+ assert.deepEqual(site.homeOwners,['Nhung','Kōji','Riku']);assert.equal(site.homeEntry,'kitahama-3');assert.deepEqual(site.residents,site.homeOwners);
+ const gate=plotGate(KITAHAMA.plots.find(p=>p.id==='kitahama-3')).door;assert.deepEqual([site.x,site.z],gate);
+ const room=new THREE.Group(),colliders=[];
+ const layout=buildResidentHome({site,profile:{name:'Nhung'},room,reg(){},action(){},exit(){},collider:(x,z,w,d,height,minY=0)=>colliders.push({x,z,w,d,height,minY})});
+ const beds=new Set();
+ for(const name of site.homeOwners){
+  const own=layout.homeLayouts[name];assert.ok(own,name+' has a place in the house');beds.add(own.bed.join(','));assert.ok(room.getObjectByName('Futon '+name),name+' has a futon');
+  const y=own.door[1],b=layout.bounds,blocked=(x,z,r=.3)=>x<b.minX+r||x>b.maxX-r||z<b.minZ+r||z>b.maxZ-r||colliders.some(c=>standingHitsRect(x,z,r,y,c));
+  const walker=createRoomWalk(blocked,{bounds:b}),g=new THREE.Group(),p={g,profile:{name,age:40}};g.position.set(...own.door);
+  for(const target of [own.bedside,own.tableStand||own.table,own.door]){let reached=false;for(let i=0;i<60*55;i++)if(walker.move(p,target,1/60)){reached=true;break;}assert.ok(reached,name+' can walk to '+target);}
+ }
+ assert.equal(beds.size,3,'three separate beds');
+ // Nhung, the walking resident, goes home to 3 Kitahama's gate to eat and sleep; Kōji and Riku's canonical day ends there too.
+ const nhung=RESIDENTS.find(p=>p.name==='Nhung');assert.deepEqual([...nhung.home],gate);assert.equal(nhung.homeAddress,'3 Kitahama');
+ // Day 15 is a Thursday (town-clock.js: day 0 is Wednesday 1 January 1997) in the bosun's week on, so Kōji is fishing, not
+ // relieving her (ferry-crew.js rotaWeek); at the weekend Nhung keeps Sakura instead of the bookshop.
+ for(const m of [15*1440+60,15*1440+1380]){const plan=residentPlan(nhung,m,false,{});assert.equal(plan.place,'home',m+'');assert.deepEqual(plan.target,gate);assert.match(plan.activity,/home|sleep|bed|breakfast/);}
+ assert.equal(residentPlan(nhung,15*1440+720,false,{}).place,'work','and keeps the bookshop by day');
+ for(const name of ['Kōji','Riku']){
+  const night=canonicalDay(name,15*1440+1380),breakfast=canonicalDay(name,15*1440+(name==='Riku'?440:240));
+  assert.equal(night.place,'home');assert.deepEqual(night.target,gate);assert.equal(night.rest,'sleep');
+  assert.equal(breakfast.place,'home');assert.equal(breakfast.rest,'breakfast',name+' eats at home');
+ }
+});
+
+test('the Heights’ two residents walk continuously from their own front doors to the terminal and back; no upper floor is left',async()=>{
  const {createNeighbours}=await import('../src/people/neighbours.js');
  const {createColliderGrid}=await import('../src/world/collider-grid.js');
  const {createWalkSurface}=await import('../src/world/walk-surface.js');
@@ -116,6 +160,14 @@ test('upper-flat residents walk continuously down the real stair, reach the term
    }
    assert.ok(arrived,'both residents complete the '+(clock===600?'outward':'homeward')+' walk');
   }
+  // Their homes are the two ground-level front doors (kitahama-layout.js KITAHAMA_HEIGHTS), nothing above them.
+  for(const [name,id] of [['Mac','kitahama-flat-3'],['Ms Ganaha','kitahama-flat-4']]){
+   const house=KITAHAMA_HEIGHTS.houses.find(h=>h.id===id),home=canonicalDay(name,23*60);
+   assert.deepEqual(home.target,[house.approachPosition[0],house.approachPosition[2]]);assert.equal(house.door[1],KITAHAMA.y+.02,'a door at ground level');
+   assert.ok(!world.colliders.some(c=>standingHitsRect(house.door[0],house.door[2],.28,groundHeight(house.door[0],house.door[2]),c)),id+' front door is clear');
+  }
+  assert.equal(KITAHAMA_HEIGHTS.houses.length,2);assert.ok(!world.colliders.some(c=>/flats-(stair|landing|corridor)/.test(c.id)),'no stair, landing or corridor collider remains');
+  for(const id of ['kitahama-flat-1','kitahama-flat-2'])assert.equal(householdAtHome(id).status,'retired');
  }finally{setWalkSurface(null);}
 });
 

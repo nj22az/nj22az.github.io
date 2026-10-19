@@ -17,7 +17,7 @@ const shift=COMMUTER_SHIFTS.Thuan;
 /** The commuter plan, which is the one the island runs. */
 const plan=minutes=>residentPlan(THUAN,minutes,false,{},true);
 
-test('Thuan locks up, has an occasional beer, and walks home',()=>{
+test('Thuan locks up, has an occasional beer, and takes the last boat home',()=>{
  izakayaPlot();
  assert.equal(plan(1190).place,'market');
  // First an ice cream with Nhung at the chest freezer outside the shop.
@@ -28,10 +28,11 @@ test('Thuan locks up, has an occasional beer, and walks home',()=>{
  assert.deepEqual(plan(1260).target,IZAKAYA_DOOR);
  assert.match(plan(1260).activity,/beer/);
  assert.ok(izakayaOpen(1260));
- assert.equal(plan(1290).place,'home');
- assert.deepEqual(plan(1290).target,THUAN.home);
- assert.equal(plan(1440+1260).place,'home','alternate evening stays at home');
- assert.equal(residentPlan(THUAN,1260,true,{}).place,'home','rain sends her home');
+ // Home is Kitano-jima (addendum 4): after the beer she waits at the terminal for the 22:00 boat, and is away once it has gone.
+ assert.equal(plan(1290).place,'bus');assert.match(plan(1290).activity,/last boat home to Kitano-jima/);
+ assert.equal(plan(1335).place,'away');assert.match(plan(1335).activity,/Kitano-jima/);
+ assert.equal(plan(1440+1260).place,'bus','alternate evening goes straight for the boat');
+ assert.equal(residentPlan(THUAN,1260,true,{}).place,'bus','rain sends her to the boat');
  assert.equal(thuanAtMinato(THUAN,1260,true),false);
 });
 
@@ -111,9 +112,8 @@ test('the whole day runs commute, shop, noodles, break, beer and home without a 
   // Out to the shared ten o'clock service.
   for(let m=510;m<1350;m+=5){const p=plan(m);if(seen.at(-1)?.place!==p.place)seen.push({m,place:p.place});}
   const order=seen.map(s=>s.place);
-  // Arrives on the bus, opens up, takes her walk, comes back, has a beer, catches it.
-  // Comes in from Kitahama, opens up, takes her walk, comes back, has a beer, walks home.
-  assert.deepEqual(order,['market','ramen','market','nap','park','stroll','market','stroll','izakaya','home']);
+  // Arrives on the morning boat, opens up, takes her walk, comes back, has a beer, waits for the last boat and is gone on it.
+  assert.deepEqual(order,['bus','market','ramen','market','nap','park','stroll','market','stroll','izakaya','bus','away']);
   // and every one of those is somewhere she can actually stand.
   for(const {m} of seen){const p=plan(m);assert.ok(Array.isArray(p.target)&&p.target.length===2,'No target at '+m);}
  }finally{izakayaPlot();}

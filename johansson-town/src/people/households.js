@@ -4,6 +4,8 @@ import {householdAtHome,householdTitle} from './island-households.js';
 const ROOMS=[
  {home:'kitahama-1',entry:'one',number:'1'},
  {home:'resident-home-aya',entry:'two',number:'1'},
+ // Nhung's, with Kōji and Riku (phase 3 of docs/CAST-CONSOLIDATION.md); the archived street entry is her old one.
+ {home:'kitahama-3',entry:'two',number:'3'},
  {home:'resident-home-kenji',entry:'three',number:'2'},
  {home:'kitahama-2',entry:'four',number:'2'},
  {home:'koban',entry:'four'},

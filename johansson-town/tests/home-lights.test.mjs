@@ -10,12 +10,13 @@ test('Kitahama’s windows follow the people who live there',()=>{
  let people=[];
  const lights=createHomeLights({people:()=>people});
  const slot=id=>lights.homes.find(h=>h.id===id).slot;
- // Thuan home and up at nine in the evening: her house is lit; out, or asleep, it is dark.
- people=[person('Thuan',{indoors:'home'}),person('Thao',{},{start:960,retire:1620})];
+ // Chin home and up at nine in the evening: 1 Kitahama is lit; everybody out, or asleep, it is dark. Thuan lives on
+ // Kitano-jima (phase 3): her being in somebody's house lights nothing here.
+ people=[person('Chin',{indoors:'home'},{start:365,retire:1340}),person('Thao',{},{start:960,retire:1620})];
  lights.update(3*day+H(21));assert.equal(homeLightLevel(slot('kitahama-1')),1);
- people=[person('Thuan',{}),person('Thao',{})];
+ people=[person('Chin',{}),person('Thao',{}),person('Thuan',{indoors:'home'})];
  lights.update(3*day+H(21,5));assert.equal(homeLightLevel(slot('kitahama-1')),0,'nobody home, the light is off');
- people=[person('Thuan',{indoors:'home',sleeping:true})];
+ people=[person('Chin',{indoors:'home',sleeping:true})];
  lights.update(3*day+H(23,50));assert.equal(homeLightLevel(slot('kitahama-1')),0,'asleep, the light is off');
  // Thao comes in from the izakaya at three and is up for a while; Thuan is asleep.
  assert.ok(residentUpAtHome(person('Thao',{indoors:'home'},{start:960,retire:1620}),H(2,30)));
@@ -23,11 +24,15 @@ test('Kitahama’s windows follow the people who live there',()=>{
  // The grandparents are in bed by half past eight; Mr Iha is up past eleven.
  lights.update(4*day+H(22));
  assert.equal(homeLightLevel(slot('kitahama-6')),0);assert.ok(!lights.homes.some(h=>h.id==='kitahama-11'));
- // The house to let and the empty flat never light.
- assert.equal(homeLightLevel(slot('kitahama-5')),0);assert.equal(homeLightLevel(slot('flat-4')),1);
- // The flats are lit one by one.
- assert.equal(homeLightLevel(slot('flat-1')),1);assert.equal(homeLightLevel(slot('flat-3')),0,'Nakandakari has retired for the night');
- lights.update(4*day+H(20));assert.equal(homeLightLevel(slot('kitahama-5')),1,'Chinen’s occupied home lights in the evening');assert.equal(homeLightLevel(slot('flat-2')),1,'Sakurai’s ground-floor home is occupied');
+ // Chinen's house is in bed by nine; Ms Ganaha's is lit until she is home from the last boat's window.
+ assert.equal(homeLightLevel(slot('kitahama-5')),0);assert.equal(homeLightLevel(slot('kitahama-flat-4')),1);
+ // The Heights' two houses are lit one by one: Mac has turned in for the generators.
+ assert.equal(homeLightLevel(slot('kitahama-flat-3')),0,'Mac has retired for the night');assert.ok(!lights.homes.some(h=>/^flat-|kitahama-flat-[12]$/.test(h.id)),'no flat of the old block has a light');
+ lights.update(4*day+H(20));assert.equal(homeLightLevel(slot('kitahama-5')),1,'Chinen’s occupied home lights in the evening');assert.equal(homeLightLevel(slot('kitahama-flat-3')),1,'Mac’s house is lit at eight');
+ // 3 Kitahama: Kōji and Riku's routine lights it while Nhung is still at the bookshop, and Nhung lights it herself after their bedtime.
+ people=[person('Nhung',{})];lights.update(4*day+H(19));assert.equal(homeLightLevel(slot('kitahama-3')),1,'the household’s routine lights 3 Kitahama');
+ people=[person('Nhung',{indoors:'home'},{start:540,retire:1320})];lights.update(4*day+H(21,45));assert.equal(homeLightLevel(slot('kitahama-3')),1,'Nhung up at home lights it after Kōji’s bedtime');
+ people=[person('Nhung',{})];lights.update(4*day+H(21,45));assert.equal(homeLightLevel(slot('kitahama-3')),0);
 });
 
 test('the ferry deckhand is away every other week, and the nurse is called out some nights',()=>{

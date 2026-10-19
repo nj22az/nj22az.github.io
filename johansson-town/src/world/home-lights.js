@@ -1,4 +1,4 @@
-import {KITAHAMA,KITAHAMA_RESIDENT_HOMES} from './kitahama-layout.js';
+import {KITAHAMA,KITAHAMA_HEIGHTS,KITAHAMA_RESIDENT_HOMES} from './kitahama-layout.js';
 
 import {registerHomeLight,setHomeLight,clearHomeLights} from '../render/window-interior.js';
 
@@ -6,12 +6,14 @@ import {registerHomeLight,setHomeLight,clearHomeLights} from '../render/window-i
  * The lights in Kitahama's and Fumoto's windows follow the people who live behind them
  * (docs/RESIDENTIAL-PLAN.md: "a home's lights follow its residents").
  *
- * - Thuan and Thao's house and Mrs Sato's follow the walking residents themselves: lit
+ * - Thao and Chin's house and Mrs Sato's follow the walking residents themselves: lit
  *   when one of them is in and up, dark when they are out or asleep.
  * - The other households keep a routine of their own: the grandparents are in bed by
  *   nine, the auction hand is up at half past four, the nurse's light comes on for a
  *   night call now and then, the ferry deckhand's house is dark every other week.
- * - Kitahama Heights is four flats, each its own light.
+ * - A house with both (3 Kitahama: Nhung walks, Kōji and Riku keep the household's
+ *   routine) is lit when either says so.
+ * - Kitahama Heights is two ground-floor houses, each its own light.
  *
  * Lights only show after dark (the window shader mixes them in by its night glow), so the
  * routines can be simple: when somebody is up at home, the light is on.
@@ -34,11 +36,10 @@ export const HOME_ROUTINES=Object.freeze({
  'fumoto-2':{wake:H(6),bed:H(22)},
  'fumoto-3':{wake:H(3,45),bed:H(21)},
  'fumoto-4':{wake:H(5,45),bed:H(22)},
- 'flat-1':{wake:H(6),bed:H(23)},
- 'flat-2':{wake:H(5),bed:H(21)},
- // Mr Fujita sleeps in his shed more often than not; he comes back to wash at dawn.
- 'flat-3':{wake:H(5),bed:H(22)},
- 'flat-4':{wake:H(6,30),bed:H(22,30)},
+ // Kitahama Heights (addendum 6 of docs/CAST-CONSOLIDATION.md): Mac in A, up for the generators and in bed by ten;
+ // Ms Ganaha in B, home from the last boat's window after half past ten.
+ 'kitahama-flat-3':{wake:H(5),bed:H(22)},
+ 'kitahama-flat-4':{wake:H(6,30),bed:H(23)},
 });
 
 const between=(m,a,b)=>{a=((a%1440)+1440)%1440;b=((b%1440)+1440)%1440;return a<=b?m>=a&&m<b:m>=a||m<b;};
@@ -62,10 +63,10 @@ export function residentUpAtHome(person,minutes){
  return between(m,p.start-75,p.retire);
 }
 
-/** The flats' boxes, matching okinawa/kitahama-quarter.js buildFlats. */
-function flatBoxes(){
- const A=KITAHAMA.apartment,y=KITAHAMA.y,x0=A.minX+.5,x1=A.maxX-1.9,z0=A.minZ+1,z1=A.maxZ-1,mid=(z0+z1)/2,S=2.8;
- return [['flat-1',y,z0,mid],['flat-2',y,mid,z1],['flat-3',y+S,z0,mid],['flat-4',y+S,mid,z1]].map(([id,lo,a,b])=>[id,[x0-1.2,lo,a],[x1+.2,lo+S-.01,b]]);
+/** The two houses' boxes, matching okinawa/kitahama-quarter.js buildHeights: each half of the body, to its roof. */
+function heightsBoxes(){
+ const B=KITAHAMA_HEIGHTS,y=KITAHAMA.y;
+ return B.houses.map(h=>[h.id,[B.x0-.2,y,h.minZ],[B.x1+.2,y+B.height-.01,h.maxZ]]);
 }
 
 export function createHomeLights({people=()=>[]}={}){
@@ -77,7 +78,7 @@ export function createHomeLights({people=()=>[]}={}){
   homes.push({id:p.id,slot,residents:KITAHAMA_RESIDENT_HOMES[p.id]||null,routine:HOME_ROUTINES[p.id]||null});
  }
 
- for(const [id,lo,hi] of flatBoxes())homes.push({id,slot:registerHomeLight(lo,hi),residents:null,routine:HOME_ROUTINES[id]});
+ for(const [id,lo,hi] of heightsBoxes())homes.push({id,slot:registerHomeLight(lo,hi),residents:null,routine:HOME_ROUTINES[id]});
  const state=new Map();
  return {
   homes,
@@ -85,7 +86,8 @@ export function createHomeLights({people=()=>[]}={}){
   update(minutes){
    const list=people();
    for(const h of homes){
-    const lit=h.residents?h.residents.some(name=>residentUpAtHome(list.find(p=>p.profile?.name===name),minutes)):routineLit(h.routine,minutes);
+    // A walking resident in and up lights the house; so does the household's own routine where it has one.
+    const lit=!!(h.residents?.some(name=>residentUpAtHome(list.find(p=>p.profile?.name===name),minutes)))||routineLit(h.routine,minutes);
     if(state.get(h.id)!==lit){state.set(h.id,lit);setHomeLight(h.slot,lit?1:0);}
    }
   },
