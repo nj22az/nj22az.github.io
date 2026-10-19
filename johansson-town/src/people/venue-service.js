@@ -1,13 +1,12 @@
-import {izakayaJob} from './izakaya-hours.js';
 import * as THREE from '../../vendor/three.module.js';
 import {DRINKS,createDrinkProp,createDishProp,setPropPortion,updatePropPortion,disposeServing} from './izakaya-beer.js';
 import {consumptionPhase} from '../avatars/consume.js';
 import {LIMIT,wantsAnother,drink as drinkUp} from './drunk.js';
+import {izakayaJob} from './izakaya-hours.js';
 
 // A beer at Minato is a draught; a round comes every ROUND_GAP town minutes for as long
-// as there is room under the limit (drunk.js). The Barfly drinks one every BARFLY_PACE
-// real seconds until he is drunk, then sits with the empty glass until it wears off.
-const BEER=DRINKS.draft.alcohol,ROUND_GAP=20,MAX_ROUNDS=4,BARFLY_PACE=100;
+// as there is room under the limit (drunk.js).
+const BEER=DRINKS.draft.alcohol,ROUND_GAP=20,MAX_ROUNDS=4;
 import {createResidentLedger,residentPersonality} from './resident-personalities.js';
 
 const LABELS={beer:'beer',tea:'green tea',coffee:'hot coffee',mugicha:'cold barley tea',rice:'rice',yakitori:'yakitori',fish:'grilled fish',ramen:'ramen'};
@@ -84,22 +83,6 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
   for(const p of [...settings.keys()])if(!present.includes(p))remove(p);
   for(const person of present){
    const name=person.profile.name;
-   if(name==='Barfly'){
-    // While he is cleaning, the closed-hours job has him (izakaya-hours.js, indoor-residents.js).
-    if(izakayaJob('Barfly',minutes)){delete person.g.userData.sleeping;continue;}
-    // No order ledger, payment or finite meal cycle: his drink animation repeats
-    // indefinitely, with the overnight sleep pose taking over from 04:00 to 10:00.
-    const sleeping=((minutes%1440)+1440)%1440>=240&&((minutes%1440)+1440)%1440<600,u=person.g.userData;
-    // Drunk, but he stops before the floor: at the limit he rests, and starts again a drink below it.
-    u.barflyResting=!wantsAnother(u.tipsy,BEER)||(u.barflyResting&&(u.tipsy||0)>LIMIT-1);
-    const drinking=!sleeping&&!u.barflyResting;
-    if(drinking)u.tipsy=drinkUp(u.tipsy,BEER*dt/BARFLY_PACE);
-    u.sleeping=sleeping;
-    u.socialPose=sleeping?'Sleep':drinking?'Drink':'Sit';
-    if(drinking)u.heldItem='beer';else delete u.heldItem;
-    u.activity=sleeping?'asleep on his Minato stool':drinking?'drinking beer at Minato':'swaying on his stool over an empty glass';
-    continue;
-   }
    const account=ledger.account(name,minutes),taste=residentPersonality(name);account.meals??={};
    const record=account.meals[place]??={item:place==='ramen'?'ramen':taste.meal,drink:place==='ramen'?drinkFor?.(name)||'tea':(drinkFor?.(name)||taste.drink)==='beer'&&!wantsAnother(person.g.userData.tipsy,BEER)?'tea':(drinkFor?.(name)||taste.drink),delivered:false,eaten:0,finished:false};
    let setting=settings.get(person);if(setting&&setting.record!==record){remove(person);setting=null;}

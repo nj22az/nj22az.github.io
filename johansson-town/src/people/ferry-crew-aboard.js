@@ -1,9 +1,10 @@
 import * as THREE from '../../vendor/three.module.js';
 import {FERRY_SHIP,FERRY_HEIGHTS,FERRY_DAY} from '../world/ferry-ship.js';
 import {FERRY_ENGINE_ROOM} from '../world/ferry-interior.js';
-import {FERRY_CREW,FERRY_WATCH,crewFor} from './ferry-crew.js';
+import {FERRY_CREW,FERRY_WATCH,FERRY_RELIEF,FERRY_PEOPLE,crewFor} from './ferry-crew.js';
 import {crewRoute,stepCrewRoute,crewBlocked,crewObstacleAt} from './ferry-crew-walk.js';
 import {createFerryShoreCrew} from './ferry-shore-crew.js';
+import {createMasterCommute} from './master-commute.js';
 import {wearEarDefenders} from '../avatars/ear-defenders.js';
 export const BELOW_DECK_PLACES=Object.freeze(['engine-room','steering-gear']);
 const HALF=FERRY_SHIP.length/2,Z=zy=>zy-HALF,Y=yk=>yk-FERRY_SHIP.draft;
@@ -45,8 +46,11 @@ export function crewPlaces(phase,minutes=0){
 }
 
 /** One body per signed-on post, moving through the real ship before it can report a task complete. */
-export function createFerryCrewAboard({run,characters,register,onAction,townBody=()=>null,portShed,shoreParent,shoreColliders=[],playerIdentity=()=>null}){
- const ferry=run.ferry,bodies=new Map(),records=new Map(),shore=createFerryShoreCrew({portShed,shoreParent,shoreColliders,characters,register,onAction});
+export function createFerryCrewAboard({run,characters,register,onAction,townBody:townBodyOf=()=>null,portShed,shoreParent,shoreColliders=[],playerIdentity=()=>null}){
+ // The master's town body is the shed's (world/port-shed.js), which the street does not list.
+ const townBody=name=>townBodyOf(name)||(portShed?.fujita?.userData.name===name?portShed.fujita:null);
+ const ferry=run.ferry,bodies=new Map(),records=new Map(),shore=createFerryShoreCrew({shoreParent,shoreColliders,characters,register,onAction,townBody});
+ const commute=portShed?.fujita&&FERRY_CREW.find(c=>c.post==='master').name===portShed.fujita.userData.name?createMasterCommute({shed:portShed,run,shoreColliders}):null;
  let phase=null,day=-1,operationId=null;
  const profiles=Object.fromEntries(FERRY_CREW.map(c=>[c.post,c]));
  function body(c){
@@ -75,7 +79,9 @@ export function createFerryCrewAboard({run,characters,register,onAction,townBody
   for(const watch of crewPlaces(p,minutes)){
    // The player is the chief engineer. His relief takes the working watch rather than spawning a second Johansson.
    if(watch.post==='chief'&&watch.name===playerIdentity()&&p==='night')continue;
-   const c=watch.post==='chief'&&watch.name===playerIdentity()?{...watch,name:'Mr Nakandakari',title:'Relief engineer · chief’s working watch'}:watch;
+   // The bosun's relief has a family at 3 Kitahama and sleeps there; only the signed-on bosun lives aboard on her week on.
+   if(watch.post==='bosun'&&p==='night'&&watch.name===FERRY_RELIEF.bosun.name)continue;
+   const c=watch.post==='chief'&&watch.name===playerIdentity()?{...watch,name:FERRY_RELIEF.chief.name,title:'Relief engineer · chief’s working watch'}:watch;
    const b=body(c);aboard.add(c.name);b.g.visible=true;b.post=c.post;b.title=c.title;
    if(!b.initialised){
     b.g.position.set(...c.pos);b.g.rotation.y=c.yaw;b.initialised=true;b.actor?.last?.copy(b.g.position);
@@ -86,12 +92,13 @@ export function createFerryCrewAboard({run,characters,register,onAction,townBody
    b.where=where;b.taskId=task?.id??null;b.doing=task?.action||c.doing;
    destination(b,target,(task?.id||'watch:'+p+':'+d+':'+c.post));
    if(task&&!records.has(task.id))records.set(task.id,{task,b,elapsed:0,done:false});
-   b.text=c.name+', '+c.title.toLowerCase()+' of the Minato Maru: '+b.doing+'. '+profiles[c.post].why;
+   b.text=c.name+', '+c.title.toLowerCase()+' of the Minato Maru: '+b.doing+'. '+(c.name===FERRY_RELIEF.chief.name?FERRY_RELIEF.chief.why:profiles[c.post].why);
    b.g.userData.activity=b.doing;
   }
   for(const [name,b] of bodies)if(!aboard.has(name)){b.g.visible=false;b.g.userData.climbing=false;}
-  // Named residents keep a single visible body while their ferry watch owns them.
-  for(const name of ['Bus driver','Mr Higa Jr','Ms Uezu','Kōji','Mr Nakandakari']){
+  // Everyone the ship signs on keeps a single visible body: their town body (a street resident, a neighbour, the master
+  // in his shed) is hidden while their ferry watch owns them. Those who live aboard have no town body.
+  for(const name of FERRY_PEOPLE){
    const town=townBody(name);if(!town)continue;town.userData.aboardFerry=aboard.has(name);if(aboard.has(name))town.visible=false;
   }
  }
@@ -99,7 +106,7 @@ export function createFerryCrewAboard({run,characters,register,onAction,townBody
  function taskAtStation(id){const r=records.get(id);return r? r.b.taskId===id&&r.b.goalKey===id&&atStation(r.b):shore.taskAtStation(id);}
  function taskReady(id){const r=records.get(id);return r? r.done&&taskAtStation(id):shore.taskReady(id);}
  const controller={
-  place,bodies,taskAtStation,taskReady,
+  place,bodies,taskAtStation,taskReady,shore,commute,
   update(dt,minutes){
    place(minutes);const seconds=Math.min(Math.max(dt,0),.5),op=run.operation;
    // A line handoff starts only after both people have reached their stations.
@@ -128,8 +135,9 @@ export function createFerryCrewAboard({run,characters,register,onAction,townBody
     if(below!==b.earDefenders){b.earDefenders=below;if(b.actor?.avatar)wearEarDefenders(b.actor.avatar,below);}
     b.g.userData.activity=b.blocked?b.doing+' — waiting for a clear walking route':b.state==='waiting for shore hand'?'At the '+b.where+' station; waiting for the shore line hand':b.state==='walking'||b.state==='climbing'?'Going to '+b.where+' to '+b.doing.toLowerCase():b.doing;
    }
-   shore.update(seconds,(op?.tasks||[]).filter(t=>t.post==='shore'),lineWorkReady);
-   for(const name of ['Bus driver','Mr Higa Jr','Ms Uezu','Kōji','Mr Nakandakari']){const town=townBody(name);if(town?.userData.aboardFerry)town.visible=false;}
+   shore.update(seconds,(op?.tasks||[]).filter(t=>t.post==='shore'),lineWorkReady,minutes);
+   commute?.update(seconds,minutes);
+   for(const name of FERRY_PEOPLE){const town=townBody(name);if(town?.userData.aboardFerry)town.visible=false;}
   },
   get phase(){return phase;},
   snapshot(){

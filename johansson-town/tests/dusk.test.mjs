@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {
  clock,daylight,duskAmount,windowGlow,lanternGlow,fluorescent,
- periodLabel,sunColor,skyColor,gradeWarmth,PALETTE,
+ periodLabel,sunColor,skyColor,gradeWarmth,morningAmount,decalLight,poolGlow,PALETTE,
 } from '../src/render/dusk.js';
 import {atmosphere} from '../src/render/atmosphere.js';
 
@@ -47,18 +47,53 @@ test('Sakura fluorescent stays cold, on into the evening, and does not follow du
  assert.equal(fluorescent(at(12)),1);
  assert.equal(fluorescent(at(18,30)),1);
  assert.equal(fluorescent(at(20,43)),1,'still lit after closing while the till is cashed up');
- assert.equal(fluorescent(at(23)),1,'open all night since the 24-hour change');
- assert.equal(fluorescent(at(2)),1);
+ assert.equal(fluorescent(at(23)),.6,'the night light over the till once the shop is shut (sakura-rota.js: nobody keeps a night counter)');
+ assert.equal(fluorescent(at(2)),.6);assert.equal(fluorescent(at(8,15)),.6,'before the clerk’s boat');assert.equal(fluorescent(at(8,30)),1);
  assert.notEqual(PALETTE.sakuraTube,PALETTE.lanternPaper);
  assert.notEqual(PALETTE.sakuraTube,PALETTE.sunDusk);
 });
 
-test('period labels include DUSK between afternoon and evening',()=>{
+test('period labels follow the sun: morning, midday, afternoon, evening, night',()=>{
+ assert.equal(periodLabel(at(6)),'MORNING');
+ assert.equal(periodLabel(at(7,30)),'MORNING');
+ assert.equal(periodLabel(at(12)),'MIDDAY');
  assert.equal(periodLabel(at(16,42)),'AFTERNOON');
- assert.equal(periodLabel(at(17,30)),'DUSK');
+ assert.equal(periodLabel(at(17,30)),'EVENING');
  assert.equal(periodLabel(at(18,30)),'EVENING');
+ assert.equal(periodLabel(at(20,30)),'NIGHT');
  assert.equal(periodLabel(at(21)),'NIGHT');
- assert.equal(periodLabel(at(6)),'EARLY MORNING');
+ assert.equal(periodLabel(at(3)),'NIGHT');
+ for(const label of [periodLabel(at(4,59)),periodLabel(at(10,29)),periodLabel(at(13,59)),periodLabel(at(19,59))])assert.ok(['NIGHT','MORNING','MIDDAY','AFTERNOON','EVENING'].includes(label));
+});
+
+test('the morning grade is its own: cool gold at seven, gone by half past eight, never at dusk',()=>{
+ assert.equal(morningAmount(at(5)),0);
+ assert.equal(morningAmount(at(7)),1);
+ assert.ok(morningAmount(at(8))>0&&morningAmount(at(8))<1);
+ assert.equal(morningAmount(at(8,30)),0);
+ assert.equal(morningAmount(at(17,40)),0);
+ const seven=clock(at(7)),evening=clock(at(18,30)),noon=clock(at(12));
+ assert.equal(seven.morning,1);assert.equal(evening.morning,0);assert.equal(noon.morning,0);
+ assert.equal(seven.sun,PALETTE.sunMorning);assert.notEqual(seven.sun,clock(at(17,40)).sun);
+ assert.ok(seven.gradeWarmth>noon.gradeWarmth&&seven.gradeWarmth<evening.gradeWarmth,'warmer than noon, not as warm as the apricot evening');
+ // Cooler than the evening: more blue in the sun, the sky and the fill.
+ const blue=hex=>(hex&255)/((hex>>16)&255);
+ assert.ok(blue(seven.sun)>blue(evening.sun)&&blue(seven.sun)>blue(clock(at(17,40)).sun));assert.ok(blue(seven.sky)>blue(evening.sky));assert.ok(blue(seven.skyFill)>blue(evening.skyFill));
+});
+
+test('a lamp\'s pool shows as the daylight goes, not the moment the lamp comes on',()=>{
+ assert.equal(poolGlow(at(12)),0);
+ assert.equal(lanternGlow(at(17,40)),1);assert.ok(poolGlow(at(17,40))<.15,'barely there in the golden hour');
+ assert.ok(poolGlow(at(18,30))>.3&&poolGlow(at(18,30))<.5);
+ assert.equal(poolGlow(at(20)),1);assert.equal(poolGlow(at(23)),1);
+ assert.ok(poolGlow(at(5,30))<lanternGlow(at(5,30)));assert.equal(poolGlow(at(6,30)),0);
+});
+
+test('road paint is dimmed with the night and full by day',()=>{
+ assert.ok(Math.abs(decalLight(at(12))-1)<1e-9);
+ assert.ok(decalLight(at(22))<.35&&decalLight(at(22))>.2);
+ assert.ok(decalLight(at(17,40))>decalLight(at(20,30)));
+ assert.equal(clock(at(22)).decal,decalLight(at(22)));
 });
 
 test('sun goes apricot at dusk and cool at night, never a second light',()=>{

@@ -12,16 +12,19 @@ import {residentPlan} from '../src/people/social.js';
 import {TOWN_DESTINATIONS} from '../src/world/town-grid.js';
 import {circleHitsRect} from '../physics.js';
 import {suppliedRoomBoundsBlocked} from '../src/world/supplied-rooms.js';
+// The visit is staged on a weekday of the town's calendar (Front Row is shut at the weekend, bookshop-visits.js) on which
+// the customer both chats and buys (bookshop-customers.js: (index+day)%2 and %3 are 0).
+import {isWeekend} from '../src/commerce/sakura-rota.js';
 
 test('bookshop visits leave meals and travelling residents in their existing plans',()=>{
  const work={place:'work',target:[0,0]},meal={place:'ramen',target:[0,0]},away={place:'away',target:[0,0]};
- assert.equal(bookshopVisitPlan({name:'Chin'},920,work).place,'bookshop');assert.equal(bookshopVisitPlan({name:'Chin'},940,work),work);assert.equal(bookshopVisitPlan({name:'Nhung'},920,work),work);assert.equal(bookshopVisitPlan({name:'Chin'},920,meal),meal);assert.equal(bookshopVisitPlan({name:'Chin'},920,away),away);
+ assert.equal(bookshopVisitPlan({name:'Mrs Sato'},945,work).place,'bookshop');assert.equal(bookshopVisitPlan({name:'Mrs Sato'},965,work),work);assert.equal(bookshopVisitPlan({name:'Nhung'},945,work),work);assert.equal(bookshopVisitPlan({name:'Mrs Sato'},945,meal),meal);assert.equal(bookshopVisitPlan({name:'Mrs Sato'},920,away),away);
 });
 
 test('a real resident browses, speaks to Nhung, buys once, and walks back out without duplicated actors',()=>{
  try{
   installDOM();const sites=createIslandBusinesses(),scene=new THREE.Scene(),world=createTown({scene,sites,mobile:true,shadows:false,register(o,label,fn,inside){o.userData.hit={label,fn,inside};},enter(){},onAction(){}});assignWorkplaces(world,sites);
-  const customer=world.people.find(p=>p.profile.name==='Chin'),index=world.people.indexOf(customer),day=(6-index%6)%6,minutes=day*1440+912,state={},ledger=createResidentLedger(()=>state);ledger.account('Chin',minutes).shopping={finished:true};
+  const customer=world.people.find(p=>p.profile.name==='Mrs Sato'),index=world.people.indexOf(customer),day=[...Array(60).keys()].find(d=>(index+d)%6===0&&!isWeekend(d*1440+945)),minutes=day*1440+945,state={},ledger=createResidentLedger(()=>state);ledger.account('Mrs Sato',minutes).shopping={finished:true};
   assert.equal(residentPlan(customer.profile,minutes,false,state).place,'bookshop');
   const room=new THREE.Group(),colliders=[];scene.add(room);const layout=buildCompactShop({site:sites.find(s=>s.id==='frontrow'),room,reg(){},collider:(x,z,w,d)=>colliders.push({x,z,w,d}),action(){},exit(){}}),blocked=(x,z,r=.3)=>colliders.some(c=>circleHitsRect(x,z,r,c));
   const aya=world.people.find(p=>p.profile.name==='Nhung');scene.add(aya.g);aya.g.position.set(...layout.staff.Nhung);aya.g.visible=true;aya.g.userData.inWorkplace='frontrow';aya.g.userData.hit.inside=true;
@@ -29,7 +32,7 @@ test('a real resident browses, speaks to Nhung, buys once, and walks back out wi
   const service=createBookshopCustomers({world,parent:scene,getLayout:()=>layout,getPlayerPosition:()=>null,collides:blocked,getState:()=>state,ledger,save:()=>saved++});service.enter(sites.find(s=>s.id==='frontrow'),minutes);
   const phases=new Set(),positions=[],speech=new Set();
   for(let i=0;i<3000;i++){service.update(.1,minutes+i*.1/60);const snapshot=service.snapshot()[0];if(snapshot){phases.add(snapshot.phase);positions.push(customer.g.position.clone());assert.equal(blocked(customer.g.position.x,customer.g.position.z,.28),false);}if(customer.g.userData.residentSpeech)speech.add(customer.g.userData.residentSpeech.text);if(aya.g.userData.residentSpeech)speech.add(aya.g.userData.residentSpeech.text);}
-  assert.ok(phases.has('browse'));assert.ok(phases.has('counter'));assert.ok(phases.has('leave'));assert.ok(speech.size>=3,'customer and bookseller exchange lines');assert.equal(world.people.length,count);assert.equal(state.bookshop.sales.length,1);assert.ok(saved>0);assert.equal(state.documentArchive.records.filter(r=>r.type==='Receipt').length,1);assert.equal(ledger.account('Chin',minutes).purchases.filter(p=>p.id==='bookshop-paperback').length,1);
+  assert.ok(phases.has('browse'));assert.ok(phases.has('counter'));assert.ok(phases.has('leave'));assert.ok(speech.size>=3,'customer and bookseller exchange lines');assert.equal(world.people.length,count);assert.equal(state.bookshop.sales.length,1);assert.ok(saved>0);assert.equal(state.documentArchive.records.filter(r=>r.type==='Receipt').length,1);assert.equal(ledger.account('Mrs Sato',minutes).purchases.filter(p=>p.id==='bookshop-paperback').length,1);
   for(let i=1;i<positions.length;i++)assert.ok(positions[i].distanceTo(positions[i-1])<=.11,'walks between stops');
   service.restore();assert.equal(customer.g.parent,originalParent);assert.equal(customer.g.userData.inBookshop,undefined);assert.equal(aya.g.userData.bookshopServing,undefined);
  }finally{}
@@ -38,12 +41,12 @@ test('a real resident browses, speaks to Nhung, buys once, and walks back out wi
 function crowdedBookshop({staffPosition=null,playerPosition=null}={}){
  installDOM();const sites=createIslandBusinesses(),scene=new THREE.Scene(),site=sites.find(s=>s.id==='frontrow');
  const world=createTown({scene,sites,townMode:'peninsula',mobile:true,shadows:false,register(o,label,fn,inside){o.userData.hit={label,fn,inside};},enter(){},onAction(){}});assignWorkplaces(world,sites);
- const customer=world.people.find(p=>p.profile.name==='Chin'),index=world.people.indexOf(customer),day=(6-index%6)%6,minutes=day*1440+912,state={townMode:'peninsula'},ledger=createResidentLedger(()=>state);ledger.account('Chin',minutes).shopping={finished:true};
+ const customer=world.people.find(p=>p.profile.name==='Mrs Sato'),index=world.people.indexOf(customer),day=[...Array(60).keys()].find(d=>(index+d)%6===0&&!isWeekend(d*1440+945)),minutes=day*1440+945,state={townMode:'peninsula'},ledger=createResidentLedger(()=>state);ledger.account('Mrs Sato',minutes).shopping={finished:true};
  const room=new THREE.Group(),colliders=[];scene.add(room);
  const layout=buildCompactShop({site,room,reg(){},collider:(x,z,w,d)=>colliders.push({x,z,w,d}),action(){},exit(){}});
  const blocked=(x,z,r=.3)=>suppliedRoomBoundsBlocked(layout,x,z,r)||colliders.some(c=>circleHitsRect(x,z,r,c));
  const staff=[world.people.find(p=>p.profile.name==='Nhung')];
- if(staffPosition)staff.push(world.people.find(p=>p.profile.name==='Reiko'));
+ if(staffPosition)staff.push(world.people.find(p=>p.profile.name==='Tetsuo'));
  for(const person of staff){scene.add(person.g);person.g.position.set(...(person.profile.name==='Nhung'?layout.staff.Nhung:staffPosition));person.g.visible=true;person.g.userData.inWorkplace=site.id;person.g.userData.hit.inside=true;assert.equal(blocked(person.g.position.x,person.g.position.z,.3),false,'Staff stands clear of furniture');}
  customer.g.position.set(TOWN_DESTINATIONS.books[0],0,TOWN_DESTINATIONS.books[1]);customer.g.userData.indoors='bookshop';customer.g.visible=false;
  let player=playerPosition?new THREE.Vector3(...playerPosition):null;
@@ -56,7 +59,7 @@ function finishCrowdedVisit(f,{beforeStep=()=>{},afterStep=()=>{}}={}){
  const dt=1/60,phases=new Set();let complete=false,elapsed=0;
  for(let i=0;i<300/dt;i++){
   elapsed=i*dt;beforeStep(elapsed);const before=f.customer.g.position.clone();f.service.update(dt,f.minutes+elapsed/60);
-  const snapshot=f.service.snapshot().find(p=>p.name==='Chin');
+  const snapshot=f.service.snapshot().find(p=>p.name==='Mrs Sato');
   if(!snapshot){complete=true;break;}
   phases.add(snapshot.phase);const pos=f.customer.g.position;
   assert.ok(pos.distanceTo(before)<=dt+1e-6,'Customer walks at most one metre per second; never skips past an obstacle');
@@ -68,7 +71,7 @@ function finishCrowdedVisit(f,{beforeStep=()=>{},afterStep=()=>{}}={}){
  assert.ok(complete,'Customer completes the visit within five minutes');
  for(const phase of ['browse','counter','leave'])assert.ok(phases.has(phase),'Customer reaches '+phase);
  assert.equal(f.state.bookshop.sales.length,1);assert.equal(f.state.documentArchive.records.filter(r=>r.type==='Receipt').length,1);
- assert.equal(f.ledger.account('Chin',f.minutes).purchases.filter(p=>p.id==='bookshop-paperback').length,1);
+ assert.equal(f.ledger.account('Mrs Sato',f.minutes).purchases.filter(p=>p.id==='bookshop-paperback').length,1);
  assert.equal(f.world.people.length,f.count);assert.equal(f.customer.g.parent,f.originalParent);assert.equal(f.customer.g.userData.inBookshop,undefined);
  return elapsed;
 }

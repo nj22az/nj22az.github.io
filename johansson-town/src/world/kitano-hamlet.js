@@ -15,8 +15,8 @@ import {kitanoLater} from './kitano-on-demand.js';
 /**
  * Kitano hamlet, built on the island's group in its own frame (batch 7a; docs/KITANO-JIMA.md): the lane's crushed coral,
  * each plot's slab and walls, its gate with the shisa and the nameplate, and the house at the back: Johansson's red-tile
- * house (his rooms inside are the mayor's home, interiors/town-hall.js, so his futon, post and television come with him),
- * the Shiroma house (concrete, to let), and the Chinen house (red tile, Grandmother Chinen's). The walls' and houses' colliders are turned into the world with
+ * house (his rooms inside are the mayor's home, interiors/town-hall.js, so his futon, post and television come with him)
+ * and the Shiroma house (concrete, Kai's). The Chinen house went in phase 4. The walls' and houses' colliders are turned into the world with
  * the island. Each gate is a site, entered the way Kitahama's are (island-homes.js), except Johansson's: his house is
  * the creator's (johansson-house.js), his gate opens onto his yard, and his front door is the site.
  */
@@ -26,7 +26,6 @@ export function buildKitanoHamlet(world,options){
  const H=KITANO_HAMLET,A=AIRPORT_ISLAND;
  // The gates as sites, their prompts and the court door: always, for the doors, the Town Book and the residents' homes.
  for(const p of H.plots){
-  if(p.id==='kitano-3')continue; // Historical house retained on the separate island; no active Minato home prompt.
   const household=householdAtHome(p.id),toLet=!household||household.toLet;
   // The gate as a site: Johansson's front door is the mayor's home (its rooms come with him); the others are family homes.
   const {door,inward}=p.kind==='johansson-house'?frontDoor(p):hamletGate(p),[wx,wz]=airportWorld(door[0],door[1]),y=airportSurface(wx,wz)?.y??SEA_LEVEL+H.laneTop,facing=inward+A.yaw;
@@ -108,8 +107,8 @@ function buildHamletHouses(world,options){
 }
 /**
  * The hamlet as it is read from Minato, until he heads for the island (kitano-on-demand.js): Johansson's house as its
- * drawn walls (0–12 × 0–10 m) up to its eaves under a red hip roof to its ridge (HOUSE_ROOF), the Shiroma
- * house (concrete, to let) and the Chinen house (red tile) at their places and sizes, on their yards. No colliders or prompts.
+ * drawn walls (0–12 × 0–10 m) up to its eaves under a red hip roof to its ridge (HOUSE_ROOF) and the Shiroma
+ * house (concrete) at its place and size, on its yard. No colliders or prompts.
  */
 function hamletFar(world){
  const island=world.airportIsland.group,H=KITANO_HAMLET,far=new THREE.Group();far.name='Kitano hamlet, distant';island.add(far);
@@ -180,7 +179,6 @@ function frontDoor(p){
  return {door:[cx-x,cz-z],inward:Math.PI};
 }
 const KITANO_PLATES=Object.freeze({
- 'kitano-1':'Johansson and Thuan’s house: the big concrete house at the end of the lane under a red-tile roof, two floors and a basement, its front to the pier, so he hears the Minato Maru’s whistle before he sees her. He moved out here from his rooms in the town hall’s east wing; the office is still in Minato, a crossing away, and the futon, the television and the letter box came with him. Thuan, his wife, keeps Sakura Shōten in town on weekdays from her room at 1 Kitahama and comes home on the Friday boat; her futon lies beside his.',
- 'kitano-2':'The Shiroma house, to let: concrete, after the typhoon of 1987 took the roof off the old one; the Shiromas moved to their daughter’s in Naha. Enquire at the town hall.',
- 'kitano-3':'The former Chinen house. Grandmother Chinen now lives at 5 Kitahama, within walking distance of Tetsuo’s workshop. Johansson and Thuan keep their home at the end of this lane.',
+ 'kitano-1':'Johansson and Thuan’s house: the big concrete house at the end of the lane under a red-tile roof, two floors and a basement, its front to the pier, so he hears the Minato Maru’s whistle before he sees her. He moved out here from his rooms in the town hall’s east wing; the office is still in Minato, a crossing away, and the futon, the television and the letter box came with him. Thuan, his wife, keeps Sakura Shōten in town and comes home on the last boat every night; her futon lies beside his.',
+ 'kitano-2':'The Shiroma house: concrete, after the typhoon of 1987 took the roof off the old one. The Shiromas moved to their daughter’s in Naha and let it to Kai, the line hand at the pier across the lane.',
 });

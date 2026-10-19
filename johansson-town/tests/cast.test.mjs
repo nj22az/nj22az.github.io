@@ -4,6 +4,8 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {CAST,CAST_NAMES,RELATIONSHIPS,PLACES,relationshipsOf,castMember} from '../src/people/cast.js';
 import {ISLAND_HOUSEHOLDS,ISLAND_HOMES} from '../src/people/island-households.js';
+import {isRetired,RETIRED,RETIRED_HOME_IDS} from '../src/people/roster.js';
+import {homeNameplate} from '../src/people/island-households.js';
 import {NEIGHBOURS} from '../src/people/neighbours.js';
 import {WORLD_CAST,ACTIVE_RESIDENT_NAMES} from '../src/people/residents.js';
 import {FERRY_PEOPLE} from '../src/people/ferry-crew.js';
@@ -12,12 +14,14 @@ import {PUPIL_NAMES} from '../src/world/interiors/classroom.js';
 // Who the world still shows that the plan's batch 2 replaces: the classroom's eight pupils become Vy, Riku and Mai.
 const BATCH_2=new Set(PUPIL_NAMES.filter(n=>!castMember(n)));
 const hhmm=t=>{const [h,m]=t.split(':').map(Number);return h*60+m;};
+// Nobody in the cast names a retired home: the retired identities have no body since phase 4.
+const homeGone=p=>isRetired(p.name)&&!!ISLAND_HOUSEHOLDS.find(h=>h.home===p.home)?.retired;
 
 test('everyone has a home that stands, a purpose and a place they work',()=>{
  assert.equal(new Set(CAST_NAMES).size,CAST.length,'one entry each');
  const homes=new Set(ISLAND_HOMES.filter(h=>!h.retired).map(h=>h.home));
  for(const p of CAST){
-  assert.ok(homes.has(p.home),p.name+' lives at '+p.home+', a home on the island');
+  assert.ok(homes.has(p.home)||homeGone(p),p.name+' lives at '+p.home+', a home on the island');
   for(const h of p.alsoAt)assert.ok(homes.has(h),p.name+'’s second home '+h);
   assert.ok(p.purpose?.length>20,p.name+' has a purpose');
   assert.ok(p.work,p.name+' has a place to be');
@@ -81,7 +85,30 @@ test('the registry is built from the cast: one home each, empty standing homes t
   if(h.retired){assert.equal(h.members.length,0);assert.equal(h.status,'retired');}
   for(const m of h.members){const p=castMember(m.name);assert.ok(p.home===h.home||p.alsoAt.includes(h.home));}
  }
- for(const p of CAST)assert.ok(ISLAND_HOUSEHOLDS.find(h=>h.home===p.home).members.some(m=>m.name===p.name),p.name+' is on the nameplate');
+ for(const p of CAST)assert.ok(homeGone(p)?ISLAND_HOUSEHOLDS.find(h=>h.home===p.home).retired:ISLAND_HOUSEHOLDS.find(h=>h.home===p.home).members.some(m=>m.name===p.name),p.name+' is on the nameplate');
+ assert.deepEqual(CAST.filter(homeGone).map(p=>p.name),[],'nobody in the cast names a retired home');
+});
+
+test('the ten retired identities have no body, household, shift, nameplate, place or relationship anywhere (phase 4)',()=>{
+ assert.equal(RETIRED.length,10);
+ const bodies=[...NEIGHBOURS.map(n=>n.name),...WORLD_CAST.map(p=>p.name),...FERRY_PEOPLE];
+ for(const r of RETIRED){
+  for(const name of [r.name,...r.was,r.id]){
+   assert.equal(castMember(name),null,name+' has no cast entry');
+   assert.ok(!bodies.includes(name),name+' has no body in the street, the shops or aboard');
+   assert.ok(!ACTIVE_RESIDENT_NAMES.includes(name),name+' walks no schedule');
+   assert.ok(!ISLAND_HOUSEHOLDS.some(h=>h.members.some(m=>m.name===name)),name+' is in no household');
+   assert.ok(!Object.values(PLACES).some(p=>p.keepers?.includes(name)),name+' keeps no place');
+   assert.ok(!RELATIONSHIPS.some(p=>p.a===name||p.b===name),name+' is in no relationship pair');
+  }
+  const home=ISLAND_HOUSEHOLDS.find(h=>h.home===r.home);
+  assert.ok(home?.retired,r.home+' is a registry record of a removal');assert.equal(home.members.length,0);assert.equal(homeNameplate(r.home),null,r.home+' has no nameplate');
+ }
+ for(const id of RETIRED_HOME_IDS)assert.equal(ISLAND_HOUSEHOLDS.find(h=>h.home===id)?.retired,true,id+' retired');
+ // No duplicate bodies: a street neighbour is never also a walking resident, and every neighbour is one body.
+ assert.equal(new Set(NEIGHBOURS.map(n=>n.name)).size,NEIGHBOURS.length);
+ for(const n of NEIGHBOURS)assert.ok(!WORLD_CAST.some(p=>p.name===n.name),n.name+' has one body');
+ assert.equal(CAST.filter(p=>!p.supporting).length,21);assert.equal(CAST.length,26);
 });
 
 test('the guide shows only the cast',async()=>{

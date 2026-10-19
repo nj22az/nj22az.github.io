@@ -28,9 +28,12 @@ export const OPENINGS=Object.freeze([
  {id:'minato-maru',docks:true,weight:2,hours:[0,1440],when:c=>c.ferryAlongside,stand:[1.2,-66],facing:Math.PI/2,caption:'The outer pier · the Minato Maru alongside, bound for Kitano-jima.'},
  // On the pier's east side while the island cargo boat is alongside (cargo-shipping.js CARGO_CALLS), watching her unload.
  {id:'cargo-boat',docks:true,weight:2,open:m=>{const h=((m%1440)+1440)%1440;return CARGO_CALLS.some(c=>h>=c.alongside&&h<c.departure);},stand:[1.8,-59],facing:-Math.PI/2,caption:'The outer pier · the island cargo boat unloading.'},
- // At the open west side of the fish auction shed on the east quay (okinawa/layout.js EAST_QUAY), looking along the day's
- // catch in its crates to the price board at the far end.
- {id:'fish-auction',docks:true,weight:2,hours:[0,1440],stand:[20.4,-44.4],facing:-Math.PI/2,caption:'The fish auction shed · today’s catch in its crates.'},
+ // At the fish auction shed's open north-west corner on the east quay (okinawa/layout.js EAST_QUAY), by the lawn gate and
+ // Kōji's sorting crates, looking in along the day's catch in its crates to the price board at the far end. Outside the
+ // roof's edge: under the eaves (x 20.4, z −44.4 until 2026-10-19) the only high view of the harbour was from over the
+ // shed, and the arrival lens came down through its roof, between two purlins (the creator, on his phone: "I spawned in
+ // a beam"). From the corner the harbour is seen high from the lawn, and the lens comes down clear of the shed.
+ {id:'fish-auction',docks:true,weight:2,hours:[0,1440],stand:[19.8,-40],facing:-1.03,caption:'The fish auction shed · today’s catch in its crates.'},
  // On the shed pier, looking at Mr Fujita's houseboat, the Shiosai.
  {id:'houseboat',docks:true,weight:2,hours:[0,1440],stand:[-36.8,-53.2],facing:.86,caption:'The shed pier · Mr Fujita’s houseboat, the Shiosai.'},
  // At the quay's edge past the port building, looking down at the fishing boat alongside (minato-berth.js QUAY_FISHING_BOAT).

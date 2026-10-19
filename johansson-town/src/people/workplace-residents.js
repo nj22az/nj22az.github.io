@@ -24,7 +24,8 @@ export function createWorkplaceResidents({world,parent,getTargets,collides,getPl
  }
  function update(dt,minutes,rain,initial=false){
   clock=minutes;if(!site)return;
-  const working=p=>residentPlan(p.profile,minutes,rain,getState()).place==='work'&&!(p.profile.name==='Chin'&&getState().kenjiEscort==='walking');
+  // A worker the ferry has called to the quay for her lines (ferry-shore-crew.js) walks out of the room like anyone whose day moves on.
+  const working=p=>residentPlan(p.profile,minutes,rain,getState()).place==='work'&&!(p.profile.name==='Chin'&&getState().kenjiEscort==='walking')&&!p.g.userData.ferryShoreTask;
   // One worker uses the narrow exit at a time. Otherwise two converging routes
   // can stop shoulder to shoulder, each rejecting the other's next step forever.
   const leaving=[...borrowed.keys()].filter(person=>!working(person));

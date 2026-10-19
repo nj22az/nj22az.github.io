@@ -5,7 +5,7 @@ import * as T from '../vendor/three.module.js';
 import {installDOM} from '../tests/fixtures.mjs';
 import {surveyInterior,khaakaPlan} from './building-survey.mjs';
 import {buildOnsenInterior} from '../src/world/interiors/onsen.js';
-import {buildKobanInterior} from '../src/world/interiors/koban.js';
+import {buildPoliceStationInterior} from '../src/world/interiors/police-station.js';
 import {buildClinic,buildCommunityKitchen,buildMayorOffice,buildMayorHome} from '../src/world/interiors/town-hall.js';
 import {buildCompactShop} from '../src/world/interiors/compact-shops.js';
 import {CLASSROOM} from '../src/world/interiors/classroom.js';
@@ -21,7 +21,7 @@ if(inputDiff.trim())throw Error('Survey inputs differ from the requested source 
 const analysis=JSON.parse(readFileSync(folder+'analysis.json'));
 const entries=[
  ['onsen',buildOnsenInterior,{},[['Lobby / genkan',-1,4.1],['Changing / lockers',-2,.4],['Washing area',-4,-2.1],['Indoor bath',1.4,-3.1],['Rock bath',-1,-6.7]]],
- ['koban',buildKobanInterior,{}],['clinic',buildClinic,{}],['community-kitchen',buildCommunityKitchen,{}],['mayor-office',buildMayorOffice,{}],['mayor-home',buildMayorHome,{}],
+ ['koban',buildPoliceStationInterior,{}],['clinic',buildClinic,{}],['community-kitchen',buildCommunityKitchen,{}],['mayor-office',buildMayorOffice,{}],['mayor-home',buildMayorHome,{}],
  ['frontrow',buildCompactShop,{site:{id:'frontrow',title:'Front-Row Books',bookshop:true}}],
  ['form3d',buildCompactShop,{site:{id:'form3d',title:'Dock Electrical & Repair',industrialWorkshop:true}}],
  // Both doors use the same polygon on current main; do not invent a dividing wall

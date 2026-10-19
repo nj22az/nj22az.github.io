@@ -56,15 +56,16 @@ test('Sakura tubes load at the current hour and glow, and the shelving does not'
  const old=fetch;globalThis.fetch=async input=>String(input).startsWith('blob:')?old(input):new Response(await readFile(new URL('../assets/'+new URL(input).pathname.split('/assets/')[1],import.meta.url)));
  try{
   const room=new THREE.Group(),display=buildSakuraInterior({room,reg(){},action(){},exit(){}});
-  display.updateLighting(1400);assert.ok(await display.ready());applyCelShading(room);
+  display.updateLighting(1210);assert.ok(await display.ready());applyCelShading(room);
   const tube=room.getObjectByName('sakura-light'),shelf=room.getObjectByName('sakura-shelf');
   assert.ok(tube&&shelf);assert.notEqual(tube.material,shelf.material);
-  assert.equal(tube.material.emissiveIntensity,1,'open 24 hours: the tubes burn at full strength all night');
+  assert.equal(tube.material.emissiveIntensity,1,'the tubes burn at full strength through the closing restock');
   assert.equal(tube.material.type,'MeshStandardMaterial','the tubes keep the physical material that lets them glow');
   // The fittings join the town's toon shading like every other building.
   assert.equal(shelf.material.type,'MeshToonMaterial');
   assert.equal(shelf.material.emissive.getHex(),0);
-  for(const [minutes,level] of [[540,1],[1110,1],[1199,1],[1243,1],[1380,1],[1440,1]]){
+  // The night light over the till once the shop is shut (sakura-rota.js: nobody keeps a night counter).
+  for(const [minutes,level] of [[540,1],[1110,1],[1199,1],[1243,1],[1380,.6],[1440,.6]]){
    display.updateLighting(minutes);
    assert.equal(tube.material.emissive.getHex(),PALETTE.sakuraTube);
    assert.equal(tube.material.emissiveIntensity,level);

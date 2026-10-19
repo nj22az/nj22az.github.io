@@ -10,7 +10,7 @@ import {sleepHours,homeRoutine,homeLayoutFor,homeSiteId} from '../src/people/hom
 import {createHomeResidents} from '../src/people/home-residents.js';
 import {createIndoorResidents} from '../src/people/indoor-residents.js';
 import {buildResidentHome} from '../src/world/interiors/resident-home.js';
-import {buildKobanInterior} from '../src/world/interiors/koban.js';
+import {buildPoliceStationInterior} from '../src/world/interiors/police-station.js';
 import {buildSuppliedRoom} from '../src/world/supplied-rooms.js';
 import {createTown} from '../src/world/town.js';
 import {createBusinesses} from '../src/world/businesses.js';
@@ -27,7 +27,7 @@ function roomFor(p){
  const room=new THREE.Group(),colliders=[],site=[...actualSites,...actualWorld.landmarks].find(s=>s.homeOwners?.includes(p.profile.name)||s.homeOwner===p.profile.name);
  assert.ok(site,p.profile.name+' has an actual live home site');
  const shared={site,room,box:(size,pos,c,parent)=>{const g=new THREE.Mesh(new THREE.BoxGeometry(...size),new THREE.MeshBasicMaterial({color:c}));g.position.set(...pos);parent.add(g);return g;},reg(){},collider:(x,z,w,d,height)=>colliders.push({x,z,w,d,height}),action(){},exit(){}};
- const built=site.id==='koban'?buildKobanInterior(shared):site.id==='office'?buildSuppliedRoom(shared):site.familyHome?buildFamilyHome({...shared,household:site.familyHome,residents:site.residents,kind:site.houseKind}):buildResidentHome({...shared,profile:p.profile});
+ const built=site.id==='koban'?buildPoliceStationInterior(shared):site.id==='office'?buildSuppliedRoom(shared):site.familyHome?buildFamilyHome({...shared,household:site.familyHome,residents:site.residents,kind:site.houseKind}):buildResidentHome({...shared,profile:p.profile});
  const metadata={...site,...built,homeLayouts:{...site.homeLayouts,...built.homeLayouts}},b=metadata.bounds;
  return {room,metadata,collides:(x,z,r=.32)=>x<b.minX+r||x>b.maxX-r||z<b.minZ+r||z>b.maxZ-r||colliders.some(c=>circleHitsRect(x,z,r,c))};
 }
@@ -41,7 +41,8 @@ test('two complete days give every resident work, meals and uninterrupted sleep 
    if(homeRoutine(profile,minutes).id==='sleep')assert.equal(plan.place,'home',profile.name+' must not be called out during sleep at '+minutes);
   }
   assert.ok(places.has('home'),profile.name+' returns to their home each day');
-  const work=profile.name==='Thao'||profile.name==='Barfly'?'izakaya':profile.name==='Grandmother Sakurai'?'market':profile.name==='Thuan'?'market':profile.name==='Officer Mori'?'patrol':profile.name==='Mrs Sato'?'ramen':profile.name==='Bus driver'?'station':'work';
+  // Chin's job is the ferry's motorman post (social.js, ferry-crew.js): his street body waits at the terminal while the ship has him.
+  const work=profile.name==='Thao'?'izakaya':profile.name==='Thuan'?'market':profile.name==='Officer Mori'?'patrol':profile.name==='Mrs Sato'?'ramen':profile.name==='Chin'?'ferry':'work';
   assert.ok(places.has(work),profile.name+' retains their job');
  }
  const nao=RESIDENTS.find(p=>p.name==='Thao'),freeTime=[850,880,910].map(m=>homeRoutine(nao,m).activity);
@@ -51,7 +52,7 @@ test('two complete days give every resident work, meals and uninterrupted sleep 
 test('indoor saves follow moved homes and venues, then depart from that same door when the schedule changes',()=>{
  const cases=HOME_OWNERS.flatMap(p=>[[p.name,'home',(sleepHours(p).sleep+5)%1440,p.home,true],[p.name,'home',departureFor(p),p.home,false]]);
  const market=[...MARKET_THRESHOLD];
- for(const [name,place,door] of [['Nhung','ramen',RAMEN_DOOR],['Thao','izakaya',IZAKAYA_DOOR],['Reiko','market',market]]){
+ for(const [name,place,door] of [['Nhung','ramen',RAMEN_DOOR],['Thao','izakaya',IZAKAYA_DOOR],['Nhung','market',market]]){
   const profile=RESIDENTS.find(p=>p.name===name),inside=Array.from({length:1440},(_,m)=>m).find(m=>residentPlan(profile,m).place===place),outside=Array.from({length:1440},(_,offset)=>(inside+offset+1)%1440).find(m=>residentPlan(profile,m).place!==place);
   assert.ok(inside!==undefined&&outside!==undefined,name+' has an actual '+place+' visit');cases.push([name,place,inside,door,true],[name,place,outside,door,false]);
  }
@@ -97,9 +98,9 @@ test('every resident sleeps, wakes, eats breakfast and leaves their actual furni
 
 test('residents travelling home cannot be teleported into a visited apartment',()=>{
  const street=new THREE.Group(),parent=new THREE.Group(),p=person('Chin',street);p.g.position.set(0,0,40);
- const homes=createHomeResidents({world:{people:[p]},parent});homes.enter({homeOwner:'Chin'},365); // 06:05, home from the night shift
+ const homes=createHomeResidents({world:{people:[p]},parent});homes.enter({homeOwner:'Chin'},1430); // 23:50, home from the ship and the izakaya
  assert.equal(p.g.parent,street);assert.equal(p.g.visible,true);
- p.g.position.set(p.profile.home[0],0,p.profile.home[1]);homes.update(1/30,366);assert.equal(p.g.parent,parent);assert.equal(p.g.userData.roomTransition,true);
+ p.g.position.set(p.profile.home[0],0,p.profile.home[1]);homes.update(1/30,1431);assert.equal(p.g.parent,parent);assert.equal(p.g.userData.roomTransition,true);
 });
 test('camera rank cannot remove a visible street resident',()=>{
  const street=new THREE.Group(),player=new THREE.Group(),world={people:RESIDENTS.map(p=>person(p.name,street))},saved={inventory:[]};

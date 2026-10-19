@@ -24,7 +24,7 @@ test('Kitano-jima at startup: its ground, airport, sites and a distant view, non
  for(const n of ['Kitano-jima plants','Coconut palms','Kitano hamlet','Airport terminal plaza'])assert.equal(island.getObjectByName(n),undefined,n+' built at startup');
  for(const id of KITANO_COLLIDERS)assert.ok(!world.colliders.some(c=>c.id===id),id+' collider at startup');
  // What the doors, the Town Book and the residents read is there from the start.
- for(const id of ['mayor-home','home-kitano-2','home-kitano-3'])assert.ok(sites.some(s=>s.id===id),'no site '+id);
+ for(const id of ['mayor-home','home-kitano-2'])assert.ok(sites.some(s=>s.id===id),'no site '+id);assert.ok(!sites.some(s=>s.id==='home-kitano-3'),'the Chinen house is gone (phase 4)');
  assert.ok(prompts.includes('Go home')&&prompts.includes('Airport ferry back to Minato'));
  // The distant view is light: a few thousand triangles where the plants are hundreds of thousands.
  let tris=0;island.getObjectByName('Kitano-jima distant plants').traverse(o=>{if(o.isInstancedMesh)tris+=o.geometry.attributes.position.count/3*o.count;});

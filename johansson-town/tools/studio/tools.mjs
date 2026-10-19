@@ -42,7 +42,7 @@ async function people(ctx){
  let guide=[];try{guide=JSON.parse(await codeFile('johansson-town/guide/residents.json'));}catch{}
  const {PROFILES}=await import('../../src/people/profiles.js');
  const {homeForResident,secondaryHomesFor}=await import('../../src/people/island-households.js');
- const residence=h=>h?{id:h.home,address:h.address,residents:[...h.residents],unitNumber:h.unitNumber,island:h.island,entranceSiteId:h.entranceSiteId}:null;
+ const residence=h=>h?{id:h.home,address:h.address,residents:[...h.residents],unit:h.unit,island:h.island,entranceSiteId:h.entranceSiteId}:null;
  const roles=new Map([...PROFILES.map(p=>[p.name,p.role]),...guide.map(g=>[g.name,g.role])]);
  const groupOf=name=>Object.entries(c.cast.RESIDENT_GROUPS).find(([,names])=>names.includes(name))?.[0];
  const sha=v=>c.sha.recordSha256(v??null);
@@ -278,8 +278,8 @@ const PRODUCT_TOOLS=[
 ];
 
 export const TOOLS=[
- {name:'character_list',readOnly:true,description:'List the people Studio can draw: World\'s cast, its neighbours, the townsfolk (drawn from their name and personality), and Studio-only characters. Says whose look Studio has changed, and which changes are still only in Studio\'s draft (unpublished).',
-  input:object({group:{enum:['cast','neighbour','townsfolk','studio']},query:{type:'string',maxLength:40,description:'Part of a name or role (accents and capitals may be left out).'}}),
+ {name:'character_list',readOnly:true,description:'List the people Studio can draw: World\'s cast, its neighbours, the ferry\'s crew and the port clerk (by the names World calls them: Mac, Ms Ganaha), the townsfolk (drawn from their name and personality), and Studio-only characters. Says whose look Studio has changed, and which changes are still only in Studio\'s draft (unpublished).',
+  input:object({group:{enum:['cast','neighbour','crew','townsfolk','studio']},query:{type:'string',maxLength:40,description:'Part of a name or role (accents and capitals may be left out).'}}),
   async run({group,query},ctx){
    const {c,looks,resident,studio}=await people(ctx),q=query===undefined?null:c.rules.foldName(query);
    const all=[...c.cast.RESIDENT_NAMES.map(resident),...Object.keys(looks.characters).map(studio)]
@@ -292,7 +292,7 @@ export const TOOLS=[
   async run({name,options},ctx){
    const {c,find,unknown}=await people(ctx),who=find(name);if(!who)throw unknown(name);
    const source=who.kind==='studio'?'a Studio-only character (data/studio/looks.json); World does not place them yet':
-    {cast:'drawn in src/avatars/cast.js (CAST_RECIPES)',neighbour:'drawn in src/avatars/cast.js (NEIGHBOUR_RECIPES)',townsfolk:'made from their name and personality (cast.js baseRecipe)'}[who.group];
+    {cast:'drawn in src/avatars/cast.js (CAST_RECIPES)',neighbour:'drawn in src/avatars/cast.js (NEIGHBOUR_RECIPES)',crew:'drawn in src/avatars/cast.js (CREW_LOOKS), by the name the live cast uses',townsfolk:'made from their name and personality (cast.js baseRecipe)'}[who.group];
    const {profile,...recipe}=who.recipe;
    return {name:who.name,id:who.id,group:who.group,role:who.role,home:who.home||null,secondaryHomes:who.secondaryHomes||[],source,look:who.kind==='resident'?who.look:null,
     published:who.kind==='resident'?who.publishedLook:undefined,unpublished:who.unpublished,card:who.record?.card,recipe,profile,

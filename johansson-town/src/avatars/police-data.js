@@ -109,6 +109,6 @@ export const DUTY_BELT=Object.freeze({
 });
 
 /** Who it is for: the wardrobe catalogue and the stories read these. */
-export const POLICE_PURPOSE=Object.freeze({who:'Officer Mori at the Minato police box',
+export const POLICE_PURPOSE=Object.freeze({who:'Officer Mori at Minato Police Station',
  why:'The island police officer in his 1994-pattern uniform, so anyone can find him at the desk or on night patrol.'});
 

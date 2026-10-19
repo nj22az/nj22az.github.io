@@ -1,5 +1,7 @@
 # The cast plan: fewer people, each with a life
 
+> **Superseded on 19 October 2026 by [CAST-CONSOLIDATION.md](CAST-CONSOLIDATION.md)** (the owner's cast, household and crew consolidation; its addendum wins). This document is kept as dependency evidence of the earlier design; where it names Johansson mayor, gives Grandmother Sakurai Sakura or a home, keeps Thuan a weekday room, or counts 31 residents and 23/24 households, the consolidation's 21 core and 5 supporting identities, 14 households and ten retirements are the plan of record (`src/people/roster.js`, `docs/cast-roster.json`). Corrections below are marked *(superseded …)*.
+
 The creator (2026-10-13): "We need a plan to reduce the amount of people on the island everyone should have a life
 and a purpose and they should be able to flirt among each other and have relationships and quarrel and get angry and
 happy and laugh together, when walking around town it's like we are a part of a lived in world. Thao, Nhung and Thuan
@@ -56,9 +58,9 @@ Every place that is open must have someone running it. A shop nobody keeps is cl
 
 | Who | Age | Purpose | Home |
 |---|---|---|---|
-| Johansson | — | Mayor of Minato-chō (the player) | Kitano-jima |
-| Thuan | 25 | His wife; keeps Sakura Shōten | Kitano-jima, with a weekday room in Minato as now |
-| Grandmother Chinen | 70s | Tetsuo's mother; the hamlet's one neighbour | Kitano-jima |
+| Johansson | — | ~~Mayor of Minato-chō~~ Chief engineer of the Minato Maru (the player) *(superseded 19 Oct 2026: Nils is chief engineer, not mayor)* | Kitano-jima |
+| Thuan | 25 | His wife; ~~keeps~~ owns and runs Sakura Shōten outright *(superseded 19 Oct 2026)* | Kitano-jima ~~, with a weekday room in Minato as now~~ *(the weekday room is dropped, 19 Oct 2026)* |
+| Grandmother Chinen | 70s | Tetsuo's mother; the hamlet's one neighbour *(superseded 19 Oct 2026: retired; only family history for Tetsu)* | Kitano-jima |
 
 ### Thao's family
 
@@ -95,7 +97,7 @@ son. The cousins are in the same tiny class.
 | Officer Mori | The island's police officer | Reiko's favourite source, and her favourite target |
 | Harbour master | The harbour and the moorings | Widower; Mrs Sato's old flame from school |
 | Barfly | Night watchman at the Quay Warehouse; Thao's most loyal regular | Given a job; the town's comic chorus |
-| Grandmother Sakurai | Owns Sakura Shōten | Old rival of Grandmother Higa since primary school |
+| Grandmother Sakurai | ~~Owns Sakura Shōten~~ *(superseded 19 Oct 2026: retired; Thuan owns Sakura)* | Old rival of Grandmother Higa since primary school |
 | Postman Tōma | The post office and the round | Carries everyone's letters and gossip |
 | Dr Kakazu | The clinic | Posted from Naha; the outsider everyone feeds |
 | Mr Ōshiro | Fisherman; builds and mends sabani | Kōji's boss |
@@ -103,7 +105,7 @@ son. The cousins are in the same tiny class.
 | Mrs Nakamura | Blue Coral (ice cream and zenzai, merged into one shop) | Single mother |
 | Mai | ~10, pupil | Mrs Nakamura's daughter; Vy's best friend |
 | Ferry master | Master of the Minato Maru | The old bus driver, at sea |
-| Mr Nakandakari | Chief engineer of the Minato Maru | Lives aboard |
+| Mr Nakandakari | ~~Chief engineer of the Minato Maru~~ Relief engineer *(superseded 19 Oct 2026: Johansson is chief engineer; the identity becomes Mac Turner, with a shore flat and a duty berth)* | ~~Lives aboard~~ |
 | Ms Uezu | Bosun of the Minato Maru | Week on, week off; Kōji relieves her |
 | Mr Shimabukuro | Runs the power station | Keeps the island lit; Chin's fishing partner |
 | Mr Higa Jr | Oiler on the Minato Maru | Miss Higa's elder brother; kept because her safe manning needs an oiler |
@@ -135,7 +137,7 @@ are the starting points; the engine moves them.
 
 | Pair | Kind | Story it makes |
 |---|---|---|
-| Johansson and Thuan | Married | The mayor's long days against her shop hours; weekends on Kitano-jima |
+| Johansson and Thuan | Married | The ~~mayor's~~ chief engineer's watches against her shop hours *(superseded 19 Oct 2026)*; weekends on Kitano-jima |
 | Thao and Chin | Married, twelve years | They bicker about the workshop's hours and laugh at the izakaya counter at closing |
 | Nhung and Kōji | Married | He smells of fish; she smells of books; the morning auction against the bookshop's opening |
 | Thuan, Thao and Nhung | Sisters | Rock-paper-scissors in the park (as now), borrowed clothes, the eldest who knows best |

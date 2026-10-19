@@ -12,7 +12,6 @@ import {buildParkAccess} from './park-access.js';
 import {buildDocklandsLife} from './docklands-life.js';
 import {addSakuraFlyer} from './sakura-flyers.js';
 import {buildIslandLandscape} from './island-landscape.js';
-import {buildFlowerShop} from './flower-shop.js';
 import {buildBlueCoralShop} from './blue-coral-shop.js';
 import {createTownTraffic} from './town-traffic.js';
 import {buildKitanoLink} from './kitano-link.js';
@@ -24,7 +23,6 @@ import {buildIzakaya} from './izakaya.js?snappy=1';
 import {buildStaffBench} from './staff-bench.js';
 import {batchStaticProps} from '../render/static-props.js';
 import {WORLD_CAST} from '../people/residents.js';
-import {IZAKAYA_DOOR} from './dining-layout.js';
 import {izakayaOpen} from '../people/social.js';
 import {OUTER_PIER,QUAY_SOUTH,groundHeight} from './layout.js?snappy=1';
 import {MINATO_BERTH,CARGO_BERTH} from './minato-berth.js';
@@ -60,7 +58,8 @@ import {buildCoyoteTunnel,CAVE_ACTIVE} from './coyote-tunnel.js';
 import {buildOkinawaQuarters} from './okinawa/quarters.js';
 import {buildHalloween} from './halloween.js';
 import {createFerryRun} from './ferry.js';
-import {windowGlow} from '../render/dusk.js';
+import {windowGlow,lanternGlow,poolGlow} from '../render/dusk.js';
+import {createLampGlow} from './light-pools.js';
 import {setWindowLight} from '../render/window-interior.js';
 import {isOceanMaterial,tickOcean} from './ocean.js';
 
@@ -154,20 +153,24 @@ function addWalkablePier(world,options,factory){
   {const buoy=new THREE.Group();buoy.position.set(A.lifebuoy[0],.78,A.lifebuoy[1]);group.add(buoy);
    for(let i=0;i<4;i++){const arc=new THREE.Mesh(new THREE.TorusGeometry(.3,.07,8,10,Math.PI/2),factory.material(null,i%2?0xf1ece0:0xd9542e,.8,0));arc.rotation.z=i*Math.PI/2;arc.castShadow=false;arc.userData.staticProp=true;buoy.add(arc);}}
 
+  const lamps=[],lampSpots=[];
   for(const z of B.lamps){
     factory.cylinder(group,.07,3.1,[0,1.65,z],steel,10);
     factory.box(group,[.68,.12,.24],[0,3.05,z],steel);
-    const lampMat=factory.material(null,0xd9ad68,.78,0,0xd9ad68,.32),lamp=new THREE.Mesh(new THREE.BoxGeometry(.42,.18,.20),lampMat);lamp.position.set(0,2.88,z);lamp.castShadow=false;group.add(lamp);
+    const lampMat=factory.material(null,0xd9ad68,.78,0,0xd9ad68,.32),lamp=new THREE.Mesh(new THREE.BoxGeometry(.42,.18,.20),lampMat);lamp.position.set(0,2.88,z);lamp.castShadow=false;lamp.userData.dynamicProp=true;group.add(lamp);lamps.push(lamp);
+    // Its pool on the pier deck and its halo (light-pools.js), with the quay's other lamps.
+    lampSpots.push({head:{x:0,y:2.88,z},ground:{x:0,y:OUTER_PIER.height,z},radius:3,size:1.4});
   }
+  const glow=createLampGlow(group,lampSpots);
 
   anchor(group,[A.fishing[0],1,A.fishing[1]],'Fish from the outer pier',()=>options.onAction?.('fishing'),options.register);
   anchor(group,[A.bait[0],1.1,A.bait[1]+.75],'Inspect bait station',()=>options.onAction?.('inspect','Harbour bait station','Ice, hooks, sinkers and bait tins are arranged for the evening fishermen. The counter is scarred by years of salt water.'),options.register);
   anchor(group,[A.winch[0]-.05,1,A.winch[1]+.65],'Operate pier winch',()=>options.onAction?.('machine','Pier winch','A compact electric winch at the end of the pier, for hauling a basket of catch or a skiff up from the water. The guarded drum turns slowly during a test cycle.'),options.register);
   anchor(group,[A.rope[0],.8,A.rope[1]+.6],'Inspect mooring rope',()=>options.onAction?.('inspect','Mooring rope','Heavy natural-fibre rope has been coiled neatly after the morning fishing boats departed.'),options.register);
-  return {posts:posts.length,collidersAdded:B.bitts.length+CARGO_BERTH.bitts.length+3};
+  return {posts:posts.length,collidersAdded:B.bitts.length+CARGO_BERTH.bitts.length+3,lamps,glow};
 }
 
-function addSiteFrontage(world,options,factory,lights){
+function addSiteFrontage(world,options,factory,lights,lanternSpots=[]){
   const group=world.group,colliders=world.colliders;let interactions=0;
   const inspect=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('inspect',title,text),options.register);interactions++;};
   (options.sites||[]).forEach((s,i)=>{
@@ -182,6 +185,8 @@ function addSiteFrontage(world,options,factory,lights){
     const px=side*6.48,pz=s.z+3.78;world.plantSites.push({x:px,z:pz,height:1.1});colliders.push({x:px,z:pz,w:.52,d:.52});
     const lantern=factory.box(group,[.24,.44,.24],[side*6.88,2.58,s.z+1.68],0xd7a45f,null,false);lantern.material=factory.material(null,0xd7a45f,.8,0,0xd7a45f,.28);
     if(options.shadows&&!options.mobile){const l=new THREE.PointLight(0xffbd77,0,5.2,2);l.position.copy(lantern.position);group.add(l);lights.push(l);}
+    // Its pool on the footway and halo (light-pools.js), on every device; the point light above is the desktop's extra.
+    lanternSpots.push({head:{x:side*6.88,y:2.58,z:s.z+1.68},ground:{x:side*6.88,y:0,z:s.z+1.68},radius:2.4,size:1.2});
     inspect([side*6.18,1,s.z+.72],`Inspect ${s.title} window`,`${s.title} display`,`${s.line} The display includes handwritten price cards, paper notices and period shop fittings.`);
     if(awn)awn.userData.site=s.id;
   });
@@ -189,14 +194,16 @@ function addSiteFrontage(world,options,factory,lights){
 }
 
 function addStreetLife(world,options,factory){
-  const group=world.group,colliders=world.colliders,lights=[];let interactions=addSiteFrontage(world,options,factory,lights);
+  const group=world.group,colliders=world.colliders,lights=[],lanternSpots=[];let interactions=addSiteFrontage(world,options,factory,lights,lanternSpots);
+  const glow=createLampGlow(group,lanternSpots);
   const inspect=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('inspect',title,text),options.register);interactions++;};
   const read=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('read',title,text),options.register);interactions++;};
-  const seat=(pos,label,title,text)=>{const marker=anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);marker.userData.seat={position:[.6,0,18.02],stand:[1.6,0,18.1],surfaceY:.62,eyeY:1.26,yaw:0,pitch:0};interactions++;};
+  const seat=(pos,label,title,text)=>{const marker=anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);marker.userData.seat={position:[.6,0,18.02],stand:[.6,0,17.2],surfaceY:.62,eyeY:1.26,yaw:0,pitch:0};interactions++;};
   const machine=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('machine',title,text),options.register);interactions++;};
 
-  // Keep the x=1.9 pavement route open from Higa to the police box. The bench sits
-  // beyond it, clear of the service cars' turning sweep across the kerb.
+  // Keep the x=1.9 pavement route open from Higa to the police station. The bench sits
+  // beyond it, clear of the service cars' turning sweep across the kerb; a sitter stands up in front of it (yaw 0
+  // faces −z, as the other benches), not on its end, which its own collider covers.
   addWithCollider(group,colliders,factory.bench(.6,18.1,0));
   seat([3.5,.85,16.1],'Sit on neighbourhood bench','Neighbourhood bench','From here the shop signs, bicycles and overhead cables make the street feel almost domestic.');
 
@@ -220,7 +227,7 @@ function addStreetLife(world,options,factory){
   // (The harbour hand pump that stood by the ferry's ramp head is gone: the creator, 2026-10-11, cleared the ramp's
   // approach of everything in the way.)
 
-  return {interactions,lights};
+  return {interactions,lights,glow};
 }
 
 /** Paint the actual coastal paving, including its graded garden-bank triangles. */
@@ -311,7 +318,9 @@ export function createTown(options){
    // gets its white edge lines.
    {
     const g=new THREE.Group();g.name='Road standards';world.group.add(g);const ky=KITAHAMA.y;
-    for(const [x,z,ry] of [[43.3,67.88,Math.PI],[23.5,64.12,0],[11.5,67.88,Math.PI]])ishiganto(g,{x,z,y:ky,ry});
+    // (the stone in the south wall of 4 Kitahama, where the walk from 1 Kitahama's gate ran at it, went with the
+    // house in phase 4: the lot is open grass to the spine now, so nothing runs into anything there)
+    for(const [x,z,ry] of [[43.3,67.88,Math.PI],[11.5,67.88,Math.PI]])ishiganto(g,{x,z,y:ky,ry});
     stopMarking(g,{x:43.3,z:63.7,y:ky,width:KITAHAMA.approach.maxX-KITAHAMA.approach.minX});
     roadSign(g,'stop',{x:KITAHAMA.approach.maxX-.1,z:63.2,y:ky,ry:Math.PI,colliders:world.colliders});
 
@@ -330,10 +339,8 @@ export function createTown(options){
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
   world.islandLandscape=buildIslandLandscape({world,register:options.register,onAction:options.onAction,mobile:options.mobile});addCoastalRoadPaint(world);world.parkAccess=buildParkAccess(world,{register:options.register,onAction:options.onAction});world.powerNetwork=buildTownPower(world,{fast:options.desktop,register:options.register,onAction:options.onAction,shadows:options.shadows});world.quietLife=buildQuietLife(world);
   const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station','ferry-terminal'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);if(site.industrialWorkshop)return h>=540&&h<1140;if(site.id==='market')return true;if(site.id==='frontrow'&&isWeekend(minutes))return false;const close=site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
-  // Minato's regular comes back with them: he lives in the izakaya and keeps it
-  // company when it is shut (people/izakaya-hours.js), so it is never empty.
   for(const profile of WORLD_CAST){
-   const spawn=profile.name==='Barfly'?[IZAKAYA_DOOR[0],IZAKAYA_DOOR[1]]:profile.work;
+   const spawn=profile.work;
    let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(spawn[0],groundHeight(...spawn),spawn[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(spawn[0],groundHeight(...spawn),spawn[1]);
   }
   for(const s of originalSites){if(world.harbourShops.some(shop=>shop.id===s.id)||!Number.isFinite(s.side))continue;const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}
@@ -349,7 +356,6 @@ export function createTown(options){
 
   buildIzakaya(world,options);
   buildPark(world,options);
-  world.flowerShop=buildFlowerShop({world,group:world.group,register:options.register,onAction:options.onAction,sites:options.sites});
   world.blueCoral=buildBlueCoralShop({world,group:world.group,register:options.register,onAction:options.onAction,sites:options.sites});
   const plants=buildStreetPlants(world.group,world.plantSites,options);
   if(world.plantSites.length&&!plants.count)registerDetail(world,{id:'street-plants',x:0,z:20,radius:70,load:async()=>{
@@ -368,7 +374,11 @@ export function createTown(options){
   {const glass=new Set(),lamps=new Set();
    const collect=root=>root.traverse(o=>{if(!o.isMesh)return;for(const m of Array.isArray(o.material)?o.material:[o.material]){const kind=m?.userData?.kitFinish;if(kind==='glow')glass.add(m.userData.celFrom||m);else if(kind==='lamp')lamps.add(m.userData.celFrom||m);}});
    collect(world.group);world.glow={glass,lamps,collect};
-   (world.hourly??=[]).push(minutes=>{const glow=windowGlow(minutes);setWindowLight(glow);for(const m of glass)m.emissiveIntensity=glow*.75;for(const m of lamps)m.emissiveIntensity=.1+glow*1.6;});}
+   // The pool on the lane under every pole lamp (Kitahama, Fumoto: okinawa/props.js utilityPole) and the halo round
+   // its head, on the lamps' own clock. Decals and sprites, no lights (light-pools.js).
+   const poleLamps=[];world.group.traverse(o=>{for(const p of o.userData.powerNetwork?.nodes||[])if(p.lamp)poleLamps.push({head:p.lamp,ground:{x:p.lamp.x,y:p.y||0,z:p.lamp.z},radius:3,size:1.6});});
+   world.lampPools=createLampGlow(world.group,poleLamps,{pool:{strength:.65}});
+   (world.hourly??=[]).push(minutes=>{const glow=windowGlow(minutes);setWindowLight(glow);for(const m of glass)m.emissiveIntensity=glow*.75;for(const m of lamps)m.emissiveIntensity=.1+glow*1.6;world.lampPools.update(poolGlow(minutes));});}
   world.isOpen=isOpen;world.updateHours=minutes=>{for(const fn of world.hourly||[])fn(minutes);for(const {mesh,id} of districts.shutters){const open=isOpen(options.sites.find(s=>s.id===id),minutes);mesh.position.y=1.3;mesh.visible=false;mesh.userData.closed=!open;}const glow=windowGlow(minutes);for(const m of districts.windows)m.material.emissiveIntensity=.02+glow*.78;};
   const setBridgeRain=world.setRain.bind(world);
   world.setRain=value=>{setBridgeRain(value);if(world.ferry?.ferry)world.ferry.ferry.userData.bridgeRain=!!value;};
@@ -393,7 +403,7 @@ export function createTown(options){
     world.updateLife(dt,time,day,minutes);
     world.updateHours(minutes);world.updateDiningStreet?.(day);
     world.quietLife?.update(time);world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.beachCorner?.tick(dt,options.getPlayerPosition?.());world.portShed?.tick(dt,minutes,{advanceLife:false});world.homeLights?.update(minutes);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
-    world.docklandsLife?.update(time,minutes);world.shoppingLane?.update(world.weather,minutes);world.flowerShop?.update(minutes);world.blueCoral?.update(minutes);world.park?.update(time);
+    world.docklandsLife?.update(time,minutes);world.shoppingLane?.update(world.weather,minutes);world.blueCoral?.update(minutes);world.park?.update(time);
     world.busStation?.update(minutes,day);world.tunnel?.update?.(day);
     // The shop doors open for whoever walks up to them. Everybody who is outdoors
     // counts, so a customer arriving is a door opening rather than a person ending.
@@ -406,6 +416,9 @@ export function createTown(options){
     for(const shop of world.harbourShops)shop.update(true,day);
     baseUpdate(dt,time,day,minutes);
     for(const l of street.lights)l.intensity=THREE.MathUtils.damp(l.intensity,(1-day)*1.55,4,dt);
+    street.glow.update(poolGlow(minutes));
+    // The outer pier's lamps come on with the quay's lanterns, and throw their pools as the light goes.
+    {const lantern=lanternGlow(minutes);for(const lamp of pier.lamps)lamp.material.emissiveIntensity=.12+lantern*.82;pier.glow.update(poolGlow(minutes));}
     if(sea){
       if(isOceanMaterial(sea.material))tickOcean(time);
       else{const tick=Math.floor(time*10);if(tick!==normalTick){normalTick=tick;sea.geometry.computeVertexNormals();sea.geometry.attributes.normal.needsUpdate=true;}}

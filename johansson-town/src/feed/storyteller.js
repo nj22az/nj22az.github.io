@@ -1,6 +1,7 @@
-import {FEED_PLACES,feedPlace} from './places.js';
+import {STORY_PLACES,feedPlace} from './places.js';
 import {choosePanelFx} from './manga-fx.js';
 import {belongingsOf} from '../people/belongings.js';
+import {isRetired} from '../people/roster.js';
 import {GENRES,ENDINGS,OPENINGS,REACTIONS,FOODS,DRINKS,SNACKS,WEATHER,HOURS,RECIPE,COURSE,OVERHEARD} from './stories.js';
 
 /**
@@ -59,12 +60,16 @@ export function expand(text,ctx,rng,depth=0){
  return out;
 }
 
+/** The catalogue without anyone the roster retired (roster.js RETIRED): a guide entry that lingers summons nobody. */
+export const living=catalogue=>catalogue.filter(r=>r&&!isRetired(r.name));
 /** Picks the cast and the place: a resident, someone who plausibly shares a scene with them, and where. */
 function stage(rng,catalogue,{need=2,place=null,who=null}={}){
- const people=catalogue.map(castMember);
+ const people=living(catalogue).map(castMember);
  const A=who?people.find(p=>p.name===who):rng.pick(people);
- const home=FEED_PLACES.filter(p=>p.regulars.includes(A.name));
- const where=place||(home.length&&rng.chance(.6)?rng.pick(home):rng.pick(FEED_PLACES));
+ // Only a place with its backdrops photographed (places.js STORY_PLACES) is set; a regular of a place still waiting
+ // for its pictures is a visitor elsewhere meanwhile.
+ const home=STORY_PLACES.filter(p=>p.regulars.includes(A.name));
+ const where=place||(home.length&&rng.chance(.6)?rng.pick(home):rng.pick(STORY_PLACES));
  let B=null;
  if(need>1){
   const friend=people.find(p=>p.name===A.friend),regular=people.filter(p=>p.name!==A.name&&where.regulars.includes(p.name));
@@ -91,14 +96,14 @@ export function tellComic(rng,catalogue,opts={}){
  // A genre that needs a particular kind of place is only told there.
  const fits=g=>!g.places||!opts.place||g.places.includes(opts.place.id);
  const genre=opts.genre?GENRES.find(g=>g.id===opts.genre):rng.pick(GENRES.filter(fits));
- const place=opts.place||(genre.places?feedPlace(rng.pick(genre.places)):null);
+ const place=opts.place||(genre.places?feedPlace(rng.pick(genre.places.filter(id=>STORY_PLACES.some(p=>p.id===id)))):null);
  const ctx={...stage(rng,catalogue,{need:genre.cast,...opts,place}),vars:{}};
  // A story about one of A's own things (belongings.js) binds it, its tale and where it is kept.
  if(genre.belonging){const b=rng.pick(ctx.A.belongings);if(!b)throw Error(ctx.A.name+' owns nothing for a '+genre.id+' story');Object.assign(ctx.vars,{lost:b.what,tale:b.tale,keeps:b.keeps});}
  for(const [k,options] of Object.entries(genre.bind||{}))ctx.vars[k]=expand(rng.pick(options),ctx,rng);
  let previous=null;const panels=[];
  // A third resident, in case the ending wants someone to walk in.
- ctx.C=castMember(rng.pick(catalogue.filter(r=>r.name!==ctx.A.name&&r.name!==ctx.B?.name)));
+ ctx.C=castMember(rng.pick(living(catalogue).filter(r=>r.name!==ctx.A.name&&r.name!==ctx.B?.name)));
  const twist=!genre.beats[3].some(o=>o.cast==='C')&&rng.chance(.28);
  genre.beats.forEach((options,index)=>{
   if(index===3&&twist)options=ENDINGS.filter(e=>ctx.B||(!e.line.includes('{B')&&!e.b));

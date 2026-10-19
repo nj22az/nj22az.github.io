@@ -1,3 +1,7 @@
+import {buildFishingBoat,EAST_QUAY_BOAT_LOOKS} from '../harbour-boats.js';
+import {hangingRope} from '../timber-pier.js';
+import {SEA_LEVEL} from '../ocean.js';
+import {SHED_WALKWAY,FUJITA_PIER} from '../fujita-layout.js';
 import {COURT_TERRACE} from '../park-layout.js';
 import {GROUND} from '../../render/ground-palette.js';
 /** The east lawn's south edge (east-lawn.js EAST_LAWN.minZ), where the seawall's return begins. */
@@ -9,13 +13,15 @@ import {createMaterials} from '../../render/materials.js';
 import {NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK,GATEBALL,GATEBALL_ACTIVE,GOYA,KITAHAMA} from './layout.js';
 import {fascia,vertical,nameplate,iceFlag,poster,coralStone,roofTile,flowerBlock,coralSand} from './signs.js';
 import {redTileHouse,concreteHouse,shopHouse,coralWall,blockWall,hinpun,shisa,fukugi,gajumaru,hibiscus,banana,potPlant,OKINAWA_COLOURS as C} from './houses.js';
-import {utilityPole,wiresBetween,serviceDrop,bicycle,laundry,gasBottles,fishCrates,buoys,netPile,sabani,planterBoxes,fishingBoat} from './props.js';
+import {utilityPole,wiresBetween,serviceDrop,bicycle,laundry,gasBottles,fishCrates,buoys,netPile,sabani,planterBoxes} from './props.js';
 import {GROUND_LAYER} from '../ground-layers.js';
 import {KITAHAMA_LANES} from '../kitahama-layout.js';
 import {buildKitahamaQuarter} from './kitahama-quarter.js';
 import {plotGate} from './layout.js';
 import {residentsLine,homeNameplate} from '../../people/island-households.js';
 import {dressOldTown} from './old-town.js';
+import {buildStreetLots} from './lots.js';
+import {buildLaneEdges} from './lane-edges.js';
 
 
 import {MAIN_ROAD} from '../main-road.js';
@@ -45,7 +51,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  const solid=list=>{for(const c of [].concat(list))if(c)colliders.push(c);};
  const anchor=(x,y,z,label,fn)=>{const a=new THREE.Object3D();a.position.set(x,y,z);group.add(a);register?.(a,label,fn);return a;};
  const inspect=(x,y,z,label,title,text)=>anchor(x,y,z,label,()=>onAction?.('inspect',title,text));
- const vendings=[];
+ const vendings=[],ropeMaterial=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.92});
  const vending=(x,z,ry,y=0)=>{
   const machine=createVendingMachine({shadows});machine.position.set(x,y,z);machine.rotation.y=ry;group.add(machine);vendings.push(machine);
   // its collider is its footprint: the cabinet and the pad's lip in front of it (so nobody stands on the pad's edge)
@@ -62,10 +68,18 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes:()=>world.minutes??720});
  buildEastBack(kit,solid,{anchor,inspect,onAction});
  if(GATEBALL_ACTIVE)buildGateball(kit,solid,{anchor,inspect,onAction});
- buildEastQuay(kit,solid,{anchor,inspect,onAction,vending});
+ buildEastQuay(kit,solid,{anchor,inspect,onAction,vending,eastQuayBoat:(x,z,ry,opts)=>{
+  // Her bow along the plan's +x turned by ry (as props.js drew her); she lies quay side to, her lines to the kerb.
+  const face=EAST_QUAY.minZ-.45,side=Math.cos(ry)>0?-1:1,gap=face-(z+opts.beam/2);
+  const boat=buildFishingBoat({...opts,shadows,name:opts.look.name,quayFenders:{side,radius:Math.min(.22,gap/2)}});boat.position.set(x,SEA_LEVEL,z);boat.rotation.y=ry+Math.PI/2;group.add(boat);boat.updateMatrixWorld(true);
+  for(const f of boat.userData.fairleads){const p=boat.localToWorld(new THREE.Vector3(...f)),ring=[p.x+(p.x>x?1.2:-1.2),.22,EAST_QUAY.minZ-.25];kit.box(.12,.05,.12,ring[0],.205,ring[2],0x2b2f30);group.add(new THREE.Mesh(hangingRope(p.toArray(),ring,{sag:.08}),ropeMaterial));}
+ }});
  buildWires(kit,solid);
  // Kitahama stands on the island's ground, below the old town's datum.
  kit.at(0,0,0,()=>buildKitahama(kit,solid,{anchor,inspect,onAction,vending:(x,z,ry)=>vending(x,z,ry,KITAHAMA.y)}),KITAHAMA.y);
+ // What stands where the surplus houses stood (lots.js), and the gutter-and-weed edge every Kitahama lane has (lane-edges.js).
+ buildStreetLots(kit,solid,{anchor,onAction});
+ const laneEdges=buildLaneEdges(kit,group);
 
  const old=dressOldTown(kit,solid,{inspect,anchor,onAction,vending,group});
 
@@ -80,7 +94,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
   old.shutter.update(minutes);
  });
  if(!vendingReady())for(const machine of vendings)(world.details??=[]).push({id:'okinawa-vending-'+machine.id,x:machine.position.x,z:machine.position.z,radius:44,load:()=>hydrateVending(machine,{shadows})});
- return {group,meshes,colliders,materials,shutter:old.shutter};
+ return {group,meshes,colliders,materials,shutter:old.shutter,laneEdges};
 }
 
 /* ------------------------------ Nishi-machi ------------------------------ */
@@ -99,9 +113,12 @@ function buildNishiGround(kit,solid){
  kit.block(S.x-S.thickness/2,S.x+S.thickness/2,-.7,S.height,NISHI.minZ,NISHI.maxZ+.4,0xb9b4a6);
  kit.block(S.x-S.thickness/2-.04,S.x+S.thickness/2+.04,S.height,S.height+.08,NISHI.minZ,NISHI.maxZ+.4,0xa9a497);
  solid({id:'seawall',x:S.x,z:(NISHI.minZ+NISHI.maxZ)/2,w:S.thickness+.1,d:NISHI.maxZ-NISHI.minZ+.4,height:S.height});
- // The quay edge, its yellow kerb and its solid edge, with a gap where the timber pier
- // (port-shed.js SHED_PIER) runs out from it, so you can walk onto the pier.
- const PIER_GAP=[-38.4,-33.6];
+ // The quay edge, its yellow kerb and its solid edge, with a gap the width of the timber pier's walkway
+ // (fujita-layout.js SHED_WALKWAY) where it lands, so you can walk onto the pier. The wall runs on under the
+ // walkway as the shelf its stringers rest on (timber-pier.js); the gap was 4.8 m wide for the old L-shaped slab,
+ // and left 2.6 m of the shore's grass for a quay wall beside the pier (2026-10-19).
+ const PIER_GAP=[SHED_WALKWAY.minX,SHED_WALKWAY.maxX];
+ kit.block(PIER_GAP[0],PIER_GAP[1],-.7,FUJITA_PIER.top-.045-.15,Q.minZ-.45,Q.minZ,0xa9a497);
  for(const [x0,x1] of [[Q.minX-.6,PIER_GAP[0]],[PIER_GAP[1],Q.maxX]]){
   kit.block(x0,x1,-.7,GROUND_LAYER.apron,Q.minZ-.45,Q.minZ,0xa9a497);
   kit.block(x0,x1,GROUND_LAYER.apron,GROUND_LAYER.apron+.12,Q.minZ-.4,Q.minZ-.1,0xe0b93a);
@@ -226,7 +243,7 @@ function utaki(kit,solid,p,{anchor,onAction,inspect}){
 function buildWestQuay(kit,solid,{inspect,anchor,onAction,vending}){
  const Q=NISHI.quay;
  // Two sabani hauled out side by side in the yard, square to it, up on blocks: the blue
- // one against the staging container, Mr Ōshiro's red one in front of it, with a lane
+ // one against the staging container, the red one that was Mr Ōshiro's (Chin mends it now) in front of it, with a lane
  // between them. Their sterns stop 2.1 m short of the seawall, so the way along it to
  // Mr Fujita's pier stays open, and their bows 1.5 m short of the Dock Electrical wall,
  // the lane to the hoist and the quay edge. (The red one used to lie inside the Dock
@@ -271,11 +288,6 @@ const SHOPS=Object.freeze({
   buy:{label:'Buy a zenzai',title:"Nakamura Zenzai · Nakamura Zenzai",cost:250,item:'Zenzai',text:'Okinawan zenzai: a mountain of shaved ice over sweet kintoki beans and little white mochi, in a glass bowl that sweats on the counter. Mrs Nakamura has been making it on this corner since the Americans left.'},
   // The island's one sweet counter: when Aragaki Confectionery shut, Mrs Nakamura took on the sata andagi.
   more:[{label:'Buy sata andagi',title:"Nakamura Zenzai · sata andagi",cost:120,item:'Sata andagi',text:'Okinawan doughnuts, fried in the back in the morning until they crack open and smile, to the recipe from the old sweet shop over the road. Three to a paper bag, still warm, sugar on your fingers.',dz:1.3}]},
- // The post office, in the shop-house that was the barber's and then, briefly, the
- // power station before that moved to the town hall grounds. Postman Tōma's round starts
- // and ends here; Mr Shimabukuro still rents the flat upstairs.
- shimabukuro:{interior:'post',jp:"Minato Town Post Office",en:'Minato post office',bg:'#f4f1ea',accent:'#c8102e',mark:'〒',upright:"Postal",uprightBg:'#c8102e',
-  inspect:{label:'Look into the post office',title:"Minato Post Office · Minato Town Post Office",text:'A counter with a brass scale, a rack of forms, the savings-book window and a wall of pigeonholes, one for every household on the island. Collections at 10:30 and 16:30. The mail goes over on the morning ferry and comes back on the afternoon one; a parcel from Naha takes two days, from Tokyo four.'}},
  'higa-saketen':{interior:'liquor',jp:"Higa Liquor Store",en:'Higa liquor · awamori',bg:'#f7ead6',accent:'#8a3b2e',upright:"Awamori",uprightBg:'#8a3b2e',
   buy:{label:'Buy a bottle of awamori',title:"Higa Liquor · Higa Liquor Store",cost:600,item:'Awamori miniature',text:'Awamori in every size, from the little 180 ml bottles by the till to the old clay pots at the back that Grandmother Higa will not sell you however you ask. The shop is hers, and she keeps the counter in the mornings. She wraps a miniature in newspaper and tells you to keep it for a guest.'}},
  // Aragaki Confectionery, closed (cast.js PLACES): nobody keeps it, and nobody lives behind it. The faded
@@ -306,10 +318,11 @@ function shopFront(kit,solid,plot,frame,{anchor,inspect,onAction,getMinutes=()=>
 function buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes}){
  const depth=EAST_ROW.maxX-EAST_ROW.minX,x=(EAST_ROW.minX+EAST_ROW.maxX)/2;
  for(const plot of EAST_ROW.plots)shopFront(kit,solid,plot,{x,ry:-Math.PI/2,depth,front:EAST_ROW.minX,out:-1},{anchor,inspect,onAction,getMinutes});
- // The strip of ground between the pavement and the shop fronts, paved to match.
- // Kitano Road crosses it where the old lane was, and lays its own surface there.
- for(const [z0,z1] of [[EAST_ROW.plots[0].minZ,EAST_ROW.onsenLane.minZ],[EAST_ROW.onsenLane.maxZ,EAST_ROW.plots.at(-1).maxZ]])
-  kit.block(MAIN_ROAD.pavementEast-.05,EAST_ROW.minX+.05,GROUND_LAYER.apron-.05,GROUND_LAYER.apron,z0,z1,0xb9b0a0);
+ // The strip of ground between the pavement and each shop front, paved to match. Kitano Road crosses the row where
+ // the old lane was and lays its own surface there; where the post-office shop-house stood (phase 4, EAST_ROW_CLEARED
+ // in lots.js) the lawn comes out to the footway instead, so each standing shop has its own apron.
+ for(const plot of EAST_ROW.plots)
+  kit.block(MAIN_ROAD.pavementEast-.05,EAST_ROW.minX+.05,GROUND_LAYER.apron-.05,GROUND_LAYER.apron,plot.minZ,plot.maxZ,0xb9b0a0);
  // The shaved-ice flag outside Nakamura's, and a bench for eating it on.
  const n=EAST_ROW.plots[0];
  kit.cyl(.03,.03,2.6,EAST_ROW.minX-.35,1.3,n.maxZ-.4,0x9aa0a4,{segments:6});
@@ -324,11 +337,9 @@ function buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes}){
  if(seat)seat.userData.seat={id:'nakamura-dessert-bench',position:[bx,0,bz],stand:[bx-.8,0,bz],surfaceY:.49,eyeY:1.12,yaw:-Math.PI/2,pitch:-.03};
  // The old lane up to the sea bath between the shop-houses is Kitano Road now (kitano-link.js):
  // its stepping stones, lanterns, pot plants and the vending machine made way for the carriageway.
- bicycle(kit,1,EAST_ROW.plots[2].minZ+1.6,{ry:Math.PI/2,colour:0xd9d2c0});
- solid({id:'bicycle',x:1,z:EAST_ROW.plots[2].minZ+1.6,w:.4,d:1.4,height:1.1});
- // Behind the row: washing and kitchen-garden supplies.
-
- planterBoxes(kit,EAST_ROW.maxX-.6,-4.5,{ry:Math.PI/2,count:3});
+ const liquor=EAST_ROW.plots.find(p=>p.id==='higa-saketen');
+ bicycle(kit,1,liquor.minZ+1.6,{ry:Math.PI/2,colour:0xd9d2c0});
+ solid({id:'bicycle',x:1,z:liquor.minZ+1.6,w:.4,d:1.4,height:1.1});
 }
 
 function buildYardRow(kit,solid,{anchor,inspect,onAction}){
@@ -340,8 +351,35 @@ function buildYardRow(kit,solid,{anchor,inspect,onAction}){
  // Moved west, beside the second yard house (yard-homes-layout.js), clear of the lane.
 
  buildYardLife(kit,solid,{anchor,inspect,onAction});
+ laundrySideWall(kit,solid,YARD_ROW.plots.find(p=>p.id==='coin-laundry'));
  gasBottles(kit,-15.4,17.8,{ry:Math.PI/2});
  hibiscus(kit,-23.6,18.6,{seed:23});banana(kit,-23.4,-16.6,{seed:24});
+ for(const [i,z] of YARD_WINDBREAK.z.entries())solid(fukugi(kit,YARD_WINDBREAK.x,z,{h:5.4+(i%3)*.5,seed:500+i}));
+}
+
+/**
+ * Fukugi along the yard's west edge, where the old yard wall stood: the shops' yard takes the west wind off the sea
+ * through the Nishi lanes, and the row shades Thuan's break bench (staff-bench.js) and the goya bed in the afternoon.
+ * Planted between the lane openings (WEST_YARD.lanes), clear of the tyres and of the building circuits (the stretch
+ * beside the yard houses is left for the housing consolidation).
+ */
+export const YARD_WINDBREAK=Object.freeze({x:-24.1,z:Object.freeze([-25.2,-23.1,-21,-18.9])});
+
+/**
+ * The coin laundry's long south wall, which faces Main Street's crossing and was blank: its own painted name and
+ * hours for the street, the two gas dryers' vent hoods (with the lint they stain the wall with), the gas line from
+ * the bottles at the back corner, and the downpipe.
+ */
+function laundrySideWall(kit,solid,plot){
+ const z=plot.minZ+.05,x0=YARD_ROW.minX,x1=YARD_ROW.maxX,steel=0x9aa2a6;
+ if(typeof document!=='undefined'&&document.createElement)kit.sign(fascia({jp:'Coin laundry wall',en:'Open 24 hours · wash · dry',bg:'#e9f0f6',accent:'#3a6a9a'}),3.4,.64,(x0+x1)/2+1,4.5,z-.03,{ry:Math.PI,depth:.03,edge:0x3a6a9a,name:'coin laundry wall sign'});
+ for(const x of [x1-3.4,x1-4.3]){
+  kit.box(.34,.3,.2,x,2.45,z-.1,steel,{finish:'metal'});kit.box(.3,.04,.22,x,2.28,z-.11,0x6d7477);
+  kit.box(.28,.7,.01,x,1.95,z-.005,0xc3ced3);
+ }
+ // The gas comes from the pair of bottles already standing at the back corner (buildYardRow).
+ kit.rod([x0+.6,1.5,z-.04],[x1-3.4,1.5,z-.04],.015,0x6d7477);kit.rod([x1-3.4,1.5,z-.04],[x1-3.4,2.3,z-.04],.015,0x6d7477);
+ kit.rod([x0+.15,6.2,z-.08],[x0+.15,.2,z-.08],.045,0x8e9699);kit.box(.12,.1,.22,x0+.15,.13,z-.16,0x8e9699);
 }
 
 function buildEastBack(kit,solid,ctx){
@@ -349,7 +387,7 @@ function buildEastBack(kit,solid,ctx){
  EAST_BACK.plots.forEach((p,i)=>walledHouse(kit,solid,p,{...ctx,seed:10+i,windbreak:'east'}));
 }
 
-function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
+function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending,eastQuayBoat}){
  const Q=EAST_QUAY,S=Q.shed,I=Q.ice,lane=GROUND_LAYER.apron;
  kit.block(Q.minX+.05,Q.maxX+.4,lane-.06,lane,Q.minZ,Q.maxZ+.55,GROUND.concrete);
  // The gate's paving, from the quay's concrete to the lawn's edge.
@@ -370,7 +408,14 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  for(const [x,z] of cols){kit.box(.22,S.height,.22,x,S.height/2,z,0x5e7078,{finish:'metal'});solid({id:'auction-column',x,z,w:.3,d:.3,height:S.height});}
  kit.gableRoof(S.maxX-S.minX,S.maxZ-S.minZ,.9,(S.minX+S.maxX)/2,S.height,(S.minZ+S.maxZ)/2,0x7a8f96,{overhang:.7});
  for(let x=S.minX-.6;x<S.maxX+.7;x+=.45)kit.box(.04,.04,S.maxZ-S.minZ+1.4,x,S.height+.46,(S.minZ+S.maxZ)/2,0x6c8088,{rx:0});
+ // The roof is solid to the lens, eaves to ridge with its purlins: the fish-auction opening's arrival shot began over it
+ // and came down through it between two purlins (the creator, 2026-10-19, on his phone: "I spawned in a beam"). An
+ // overhead collider (minY above a standing head), so nobody walking under the roof meets it (physics.js
+ // standingHitsRect, build/placements.js); the lens does (game.js cameraBlocked, spawn-scene.js clearArrivalLens).
+ solid({id:'auction-roof',x:(S.minX+S.maxX)/2,z:(S.minZ+S.maxZ)/2,w:S.maxX-S.minX+1.4,d:S.maxZ-S.minZ+1.4,minY:S.height-.1,height:1.1});
  kit.sign(fascia({jp:"Port Fisheries Association Auction market",en:'Minato fisheries co-op · fish auction',bg:'#eef3f1',accent:'#2f6f8a',mark:"Fish"}),6,.9,(S.minX+S.maxX)/2,S.height-.3,S.maxZ+.02,{name:'auction sign'});
+ // The sign on the fascia, solid to the lens the same way (the lens came down past it a hand's width off).
+ solid({id:'auction-sign',x:(S.minX+S.maxX)/2,z:S.maxZ+.02,w:6,d:.12,minY:S.height-.75,height:.9});
  // Inside: rows of crates with the morning's catch, a scale and the price board.
  // The crates are sorted by kind, as at a real auction: one fish to a crate, the auction's fish in turn (fish.js). What
  // is left now is the fish nobody bid for: the tuna (laid out whole, never crated) and the squid went first.
@@ -401,8 +446,10 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  inspect(I.minX-1,1.2,I.minZ+2.7,'Inspect the ice plant',"Minato ice plant · Ice factory",
   'Block ice, crushed ice, flake ice. The chute swings out over the boats and fills a hold in four minutes with a roar you can hear out on the ferry. Inside it is winter all year; the men who work it wear jumpers in August and sit out on the quay at lunch to thaw.');
  // Boats lying to the quay, a forklift, crates, the fuel pump.
- fishingBoat(kit,24.6,Q.minZ-2.1,{ry:0,colour:0x2f6fb8,name:"Daisan Minatomaru"});
- fishingBoat(kit,33.6,Q.minZ-2.2,{ry:Math.PI,colour:0x8a3b2e,length:7.2});
+ // Two inshore boats lie here, drawn like the main quay's (harbour-boats.js), each on fat fenders against the face (it
+ // has one tyre, at x 41.1) and tied to ringbolts in the kerb fore and aft.
+ eastQuayBoat(24.6,Q.minZ-2.1,0,{length:8,beam:2.3,look:EAST_QUAY_BOAT_LOOKS[0]});
+ eastQuayBoat(33.6,Q.minZ-2.2,Math.PI,{length:7.2,beam:2.3,look:EAST_QUAY_BOAT_LOOKS[1]});
  // The forklift runs ice from the plant's door to the boats. Between runs it waits on the
  // quay side of the plant, along its wall under the chute, forks to the west: parked in the
  // lane between the shed and the plant it stood in front of the ice door (and 0.3 m into
@@ -490,7 +537,8 @@ function buildWires(kit,solid){
  // Down the east kerb of Main Street, the row's side.
  const east=[-15,-1.5,12.3,19.6].map((z,i)=>pole(.35,z,{face:-Math.PI/2,transformer:i%2===0,lamp:true,seed:i}));
  for(let i=0;i<east.length-1;i++)wiresBetween(kit,east[i],east[i+1]);
- for(const [p,z] of [[east[0],-11],[east[1],-4],[east[2],9]])serviceDrop(kit,p,[EAST_ROW.minX+.3,6,z]);
+ // A drop to each shop-house that stands: Nakamura's and Higa Liquor (the post office's went with it, phase 4).
+ for(const [p,z] of [[east[0],-11],[east[2],9]])serviceDrop(kit,p,[EAST_ROW.minX+.3,6,z]);
  // Along the seawall walk: three poles, one span to each block. The lanes off it have no
  // poles of their own; a small island lane is fed from the walk, not lined with concrete.
  const walk=[-38,-9.5,20].map((z,i)=>pole(-39,z,{face:Math.PI/2,tel:false,transformer:i===1,lamp:i!==1,seed:10+i*2}));
@@ -501,9 +549,9 @@ function buildWires(kit,solid){
 
 /**
  * The new district on the north-east land: the approach lane up from the beach, the
- * cross lane, five standard walled homes (walledHouse, the same as Nishi-machi), a
+ * cross lane, the standard walled homes that stand (walledHouse, the same as Nishi-machi), a
  * sugar-cane field and the pole line that brings power up from the station on Main
- * Street. One plot is to let, with the board on its gate.
+ * Street.
  */
 function buildKitahama(kit,solid,ctx){
  const K=KITAHAMA,lane=GROUND_LAYER.lane;
@@ -527,16 +575,12 @@ function buildKitahama(kit,solid,ctx){
 /** What the nameplates say when you stop to read one. */
 const NAMEPLATES=Object.freeze({
  higa:'The Higas. Grandmother Higa sits on the verandah every evening shelling beans into a bowl and knows the time of every ferry by the sound of its horn off the breakwater. The shisa on the left gatepost has its mouth open to let luck in; the one on the right has it shut, to keep it.',
- kinjo:'The Kinjōs built in concrete after the 1971 typhoon took their old roof. Their son is a welder in Naha and sends money for the water tank to be painted every other year. The flower-block wall was his first job.',
  nakasone:'An empty red-tile house facing the lawn in front of Umi-no-yu. The shutters are down and the shisa still sit on the gateposts.',
  miyagi:'An empty red-tile house, the oldest on this side. A typhoon took the roof off everything else here, but not this one. The shisa on the ridge is older than the house.',
  kamiya:'An empty red-tile house, swept, with the water off at the main.',
- 'kitahama-1':'Thao, Chin and Vy\'s house, with Thuan\'s weekday room: a red-tile roof, a hinpun, and a row of herb pots that Thuan names after customers. The gate latch is oiled so the late shift does not wake anybody.',
+ 'kitahama-1':'Thao, Chin and Vy\'s house: a red-tile roof, a hinpun, and a row of herb pots that Thuan named after customers when she stayed here. The gate latch is oiled so the late shift does not wake anybody.',
  'kitahama-2':'Mrs Sato\'s house, concrete and very tidy, with a stock pot always on the back step to cool. She walks down to the morning auction at half past five and has the ramen stock on by seven.',
- 'kitahama-3':'Kōji\'s house, and Riku\'s. A wetsuit on the line, fish boxes stacked by the gate, a football in the yard and a radio that plays the weather on the hour.',
- 'kitahama-4':'Tōma. The postman lives here: his red Super Cub stands in the yard at night with its box padlocked, and he grows goya over the gate.',
- 'kitahama-5':'Grandmother Chinen’s ground-access home. Tetsuo visits from his workshop; the entrance stays clear for her.',
- 'kitahama-6':'The oldest house on the lane: red tile, and a hinpun with a crack the 1959 typhoon put there. The ferry\'s master lives here now; he is gone to the bridge by half past six and home at eight.',
+ 'kitahama-3':'Nhung, Kōji and Riku\'s house. A wetsuit on the line, fish boxes stacked by the gate, a football in the yard, a crate of reading copies from the bookshop in the genkan, and a radio that plays the weather on the hour.',
  'fumoto-1':'The oldest house in Fumoto, red tile behind a hinpun, and empty. The shutters are down and the yard has gone to grass.',
  'fumoto-2':'An empty red-tile house. Hand-carved shisa still sit on the gate, from the year the co-op store opened.',
  'fumoto-3':'An empty concrete house, rebuilt after Typhoon Della in 1977. The back kitchen once made the hamlet’s tofu; it is dark now, with the water off at the main.',
@@ -548,5 +592,4 @@ const NAMEPLATES=Object.freeze({
  'kitahama-11':'An empty concrete house on Fukugi Lane. Its plate says to let; enquiries are at the town hall.',
  'kitahama-12':'An empty concrete house at the end of Fukugi Lane, its shutters down and its gate tied shut with wire.',
  tamaki:'An empty concrete house near the east quay, its shutters down and the water off at the main.',
- oshiro:'The Ōshiros. Mr Ōshiro builds and mends sabani at the boatyard; his own boat is the red one on the west quay. There is a bunch of bananas ripening by the kitchen door and, if you believe the neighbours, a habu in the fukugi that nobody has seen for years.',
 });

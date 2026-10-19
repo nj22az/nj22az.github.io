@@ -5,7 +5,7 @@ import * as THREE from '../vendor/three.module.js';
 import {
  buildStreetLamps,STREET_LAMP_PLACEMENTS,placementsClearOfInfrastructure,
  placementsClearOfShopDoors,DOOR_KEEP_CLEAR,
- LAMP_BASE_GLOW,LAMP_GLOW_SCALE,LAMP_EMISSIVE,POLE_HEIGHT,
+ LAMP_BASE_GLOW,LAMP_GLOW_SCALE,LAMP_EMISSIVE,POLE_HEIGHT,LAMP_POOL_RADIUS,
 } from '../src/world/street-lamps.js';
 import {lanternGlow} from '../src/render/dusk.js';
 import {SHOP_CROSSING_Z} from '../src/world/main-road.js';
@@ -25,12 +25,13 @@ test('two west-corner poles clear of Sakura south storefront',()=>{
  assert.ok(!STREET_LAMP_PLACEMENTS.some(p=>Math.abs(p.z+35)<1.2&&Math.abs(p.x+7.3)<0.4));
  for(const p of STREET_LAMP_PLACEMENTS){
   assert.ok(Math.abs(p.z-SHOP_CROSSING_Z)>=1.2);
+  // On the west footway, kerb side: clear of the facades (-7.8) and of their signs.
   assert.ok(p.x>-7.45);
-  assert.ok(p.x<-6.8);
+  assert.ok(p.x<-5.3);
  }
  assert.deepEqual(
   STREET_LAMP_PLACEMENTS.map(p=>({x:p.x,z:p.z})),
-  [{x:-7.25,z:-15.0},{x:-7.25,z:-3.05}]
+  [{x:-5.6,z:-15.0},{x:-5.45,z:-3.05}]
  );
 });
 
@@ -66,6 +67,27 @@ test('milk-glass heads track lanternGlow',()=>{
    assert.ok(Math.abs(head.material.emissiveIntensity-expected)<1e-9);
   }
  }
+});
+
+test('every street lamp throws a pool on the footway under its head and wears a halo, lit with the head',()=>{
+ const lamps=buildStreetLamps({parent:new THREE.Group()});
+ const pools=lamps.glow.pools.group.children,halos=lamps.glow.halos.group.children;
+ assert.equal(pools.length,lamps.count);assert.equal(halos.length,lamps.count);
+ lamps.group.updateMatrixWorld(true);
+ for(const [i,head] of lamps.heads.entries()){
+  const h=head.getWorldPosition(new THREE.Vector3()),pool=pools[i],halo=halos[i];
+  assert.ok(pool.userData.lightPool&&Math.abs(pool.position.x-h.x)<.01&&Math.abs(pool.position.z-h.z)<.01,'the pool lies under the head, not at the foot of the pole');
+  assert.ok(pool.position.y<.1&&pool.position.y>0,'a decal a few centimetres over the footway');
+  assert.ok(pool.geometry.parameters.radius>=LAMP_POOL_RADIUS-1e-9,'about three metres across the footway');
+  assert.ok(halo.isSprite&&halo.position.distanceTo(h)<.01,'the halo sits on the head');
+  assert.equal(halo.material.blending,THREE.AdditiveBlending);assert.equal(pool.material.blending,THREE.AdditiveBlending);
+ }
+ let points=0;lamps.group.traverse(o=>{if(o.isPointLight)points++;});assert.equal(points,0,'no light of their own');
+ lamps.update(0);assert.equal(lamps.glow.pools.group.visible,false);assert.equal(lamps.glow.halos.group.visible,false);
+ lamps.update(1);assert.ok(lamps.glow.pools.group.visible&&lamps.glow.halos.group.visible);
+ const full=lamps.glow.pools.material.opacity;assert.ok(full>0&&lamps.glow.halos.material.opacity>0);
+ const half=lanternGlow(at(17,15));assert.ok(half>0&&half<1);
+ lamps.update(half);assert.ok(lamps.glow.pools.material.opacity>0&&lamps.glow.pools.material.opacity<full,'fades in with the lanterns');
 });
 
 test('harbour wires street lamps without PointLights',async()=>{

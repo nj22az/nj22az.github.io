@@ -43,7 +43,7 @@ test('every dock sight stands him on the docks, clear of everything, facing what
  const {routeAt,groundHeight}=await import('../src/world/layout.js');const {standingHitsRect}=await import('../physics.js');
  const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),townMode:'peninsula',mobile:true,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  // What each looks at: a point on it.
- const LOOKS={ferry:[6.9,-46.7],'minato-maru':[-8.64,-66],pier:[34,-106],'cargo-boat':[6.9,-60],'fish-auction':[24.75,-44.4],houseboat:[-40.5,-56.5],'fishing-boat':[16.65,-51.6],'landing-sign':[270,-290]};
+ const LOOKS={ferry:[6.9,-46.7],'minato-maru':[-8.64,-66],pier:[34,-106],'cargo-boat':[6.9,-60],'fish-auction':[25.5,-43.4],houseboat:[-40.5,-56.5],'fishing-boat':[16.65,-51.6],'landing-sign':[270,-290]};
  for(const o of OPENINGS.filter(o=>o.docks)){
   const [x,z]=o.stand,y=groundHeight(x,z);
   assert.ok(routeAt(x,z,.28),o.id+' is not on walkable ground');

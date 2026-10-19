@@ -1,25 +1,33 @@
 import {townCalendarAt} from '../town-clock.js';
 /**
- * Sakura Shōten is open 24 hours, every day (the creator, 2026-10-12: "Sakura is always open, it should change to 24-7
- * and have Chin work the night shift"; docs/KITANO-JIMA.md §3). The rota: Thuan keeps the day shift on weekdays, Nhung
- * covers it at the weekend while Thuan is home on Kitano-jima, Chin (Thao's husband) works every night, and Grandmother
- * Sakurai, who owns the shop and lives in Flat 2, Kitahama Heights, takes the till between the night shift and the day shift.
+ * Sakura Shōten is Thuan's outright (docs/CAST-CONSOLIDATION.md §3, the owner's ruling of 19 October 2026): the
+ * purchasing, the accounts, the stock, the shop and the supply business. The rota is honest about who can stand at
+ * the counter: Thuan keeps the day on weekdays, over on the 08:30 boat from Kitano-jima and home on the 22:00 one
+ * (people/commuter-schedule.js), and Nhung keeps it at the weekend while Thuan stays on the island. Nobody keeps a
+ * night counter: Grandmother Sakurai, who did, has retired (§6), and Chin is the ferry's motorman with no Sakura clerk,
+ * till, stock-cover or relief duties (§3), so the shop closes overnight rather than conjure a second body for anyone.
+ * That supersedes the 24-hour opening of 12 October 2026, which the night keeper made possible.
+ *
+ * The day: open 09:00, the till closes at 20:00, and the last half hour (shop-stock.js closingDay, from 20:00) is the
+ * clerk's restock with the shutter coming down behind her at 20:30.
  */
 const minute=m=>((m%1440)+1440)%1440;
-// The day clerk hands over at 20:30: the last half hour is her end-of-day restock (shop-stock.js closingDay, from 20:00)
-// with the night clerk already in the shop.
-export const SAKURA_DAY_SHIFT=Object.freeze([540,1230]);
-export const SAKURA_NIGHT_SHIFT=Object.freeze([1230,360]);
+export const SAKURA_HOURS=Object.freeze({open:540,till:1200,close:1230});
+export const SAKURA_DAY_SHIFT=Object.freeze([SAKURA_HOURS.open,SAKURA_HOURS.close]);
 export const isWeekend=minutes=>{const w=townCalendarAt(minutes).weekday;return w===0||w===6;};
-export const sakuraNightShift=minutes=>{const m=minute(minutes);return m>=SAKURA_NIGHT_SHIFT[0]||m<SAKURA_NIGHT_SHIFT[1];};
 export const sakuraDayShift=minutes=>{const m=minute(minutes);return m>=SAKURA_DAY_SHIFT[0]&&m<SAKURA_DAY_SHIFT[1];};
-/** Who is at the counter at this minute. */
+/** Whether the shop is open at this minute: the day shift, every day. */
+export const sakuraOpenAt=sakuraDayShift;
+/** Whether the till takes money: until 20:00; the last half hour is the restock. */
+export const sakuraTillOpen=minutes=>{const m=minute(minutes);return m>=SAKURA_HOURS.open&&m<SAKURA_HOURS.till;};
+/** Who is at the counter at this minute, or null while the shop is shut. */
 export function sakuraClerkAt(minutes){
- if(sakuraDayShift(minutes))return isWeekend(minutes)?'Nhung':'Thuan';
- if(sakuraNightShift(minutes))return 'Chin';
- return 'Grandmother Sakurai';
+ if(!sakuraDayShift(minutes))return null;
+ return isWeekend(minutes)?'Nhung':'Thuan';
 }
-/** The walking residents who take a shift at Sakura. */
-export const SAKURA_STAFF=Object.freeze(['Thuan','Nhung','Chin','Grandmother Sakurai']);
+/** The walking residents who take a shift at Sakura. Never Chin (above). */
+export const SAKURA_STAFF=Object.freeze(['Thuan','Nhung']);
 /** Whether this resident is on their Sakura shift at this minute. */
-export const onSakuraShift=(name,minutes)=>sakuraClerkAt(minutes)===name;
+export const onSakuraShift=(name,minutes)=>!!name&&sakuraClerkAt(minutes)===name;
+/** The hours as the signs print them. */
+export const SAKURA_HOURS_TEXT='9:00–20:30';

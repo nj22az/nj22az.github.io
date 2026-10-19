@@ -14,28 +14,18 @@ import {createActivities} from '../activities.js?snappy=1';
 import {installDOM} from './fixtures.mjs';
 
 
-test('the Barfly works in Minato and sleeps and wakes in his private room',()=>{
- const person=PROFILES.find(p=>p.name==='Barfly');assert.ok(person);
- // The occupied-home implementation moved his rest off the public stool.
- for(const minute of [0,180,239,660,1439]){const plan=residentPlan(person,minute);assert.equal(plan.place,'izakaya');assert.equal(plan.barflySleeping,false);}
- for(const minute of [240,300,599,600,659]){const plan=residentPlan(person,minute);assert.equal(plan.place,'home');assert.deepEqual(plan.target,person.home);assert.match(plan.activity,/private room/);}
-});
-
-test('the Barfly drinks indefinitely without a bill and sleeps through the night',()=>{
- const profile=PROFILES.find(p=>p.name==='Barfly'),person={profile,g:{visible:true,userData:{}}},room=new THREE.Group();
- let minutes=1200;
- const service=createVenueService({room,place:'izakaya',getCustomers:()=>[person],getMinutes:()=>minutes,
-  ledger:{account(){throw Error('Barfly must not open a meal ledger');},purchase(){throw Error('Barfly must never be charged');}}});
- service.update(1);assert.equal(person.g.userData.socialPose,'Drink');assert.equal(person.g.userData.heldItem,'beer');
- minutes=240;service.update(1);assert.equal(person.g.userData.socialPose,'Sleep');assert.equal(person.g.userData.heldItem,undefined);
- service.dispose();
+test('nobody lives in Minato: the live-in regular was retired in phase 4, so no profile sleeps on a stool or drinks without a bill',()=>{
+ assert.equal(RESIDENTS.find(p=>p.name==='Barfly'),undefined);
+ for(const p of RESIDENTS)for(const minute of [0,300,660,1200])assert.notEqual(residentPlan(p,minute).barflySleeping,true,p.name+' at '+minute);
+ for(const p of RESIDENTS)assert.ok(!/private room|his stool/.test(residentPlan(p,300).activity),p.name);
 });
 
 test('izakaya borrows existing entities, updates guests and restores interaction ownership without duplicates',()=>{
  const street=new THREE.Group(),scene=new THREE.Group(),world={people:PROFILES.map((profile,i)=>{const g=new THREE.Group();g.userData.name=profile.name;g.userData.hit={inside:false};g.position.set(i,0,i+1);street.add(g);return {g,profile};})};scene.add(street);
  const before=world.people.map(p=>({g:p.g,pos:p.g.position.clone(),hit:p.g.userData.hit}));const guests=createIzakayaGuests({world,parent:scene});
- for(const p of world.people)if(residentPlan(p.profile,1135).place==='izakaya'){p.g.position.set(IZAKAYA_DOOR[0],0,IZAKAYA_DOOR[1]);p.g.userData.indoors='izakaya';}
- const names=guests.sync(1135);assert.ok(names.length>1);assert.equal(new Set(world.people.map(p=>p.g.uuid)).size,PROFILES.length);
+ // Supper at half past eight: Nhung and Thao are there (nobody lives in the bar since phase 4).
+ for(const p of world.people)if(residentPlan(p.profile,1230).place==='izakaya'){p.g.position.set(IZAKAYA_DOOR[0],0,IZAKAYA_DOOR[1]);p.g.userData.indoors='izakaya';}
+ const names=guests.sync(1230);assert.ok(names.length>1);assert.equal(new Set(world.people.map(p=>p.g.uuid)).size,PROFILES.length);
  for(const name of names){const g=world.people.find(p=>p.g.userData.name===name).g;assert.equal(g.parent,scene);assert.equal(g.userData.hit.inside,true);assert.ok(g.userData.socialPose||g.userData.name==='Thao');}
  const laterNames=guests.sync(1335);guests.restore();guests.restore();assert.equal(guests.names().length,0);
  for(const {g,pos,hit} of before){

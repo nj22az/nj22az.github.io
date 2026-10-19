@@ -1,5 +1,4 @@
-import {stairFlight,stairLanding} from './stairs.js';
-import {KITAHAMA,KITAHAMA_FLATS} from '../kitahama-layout.js';
+import {KITAHAMA,KITAHAMA_HEIGHTS} from '../kitahama-layout.js';
 import {plotGate} from './layout.js';
 import {poster,nameplate} from './signs.js';
 import {gajumaru,potPlant,hibiscus,blockWall} from './houses.js';
@@ -12,8 +11,8 @@ import {homeNameplate,residentsLine} from '../../people/island-households.js';
  * one. The walled houses on it are built with the rest of Kitahama (walledHouse); this
  * adds what makes a quarter rather than a row of plots:
  *
- * - Kitahama Heights, a small two-storey block of four flats with an open corridor and
- *   an outside stair, washing on the balconies and the mailboxes at the foot of the stair;
+ * - Kitahama Heights, two attached ground-floor houses with their own gates and gardens
+ *   on the lane, the washing out and the mailboxes on the gate piers;
  * - a pocket park at the corner, with a swing, a sandpit, a bench under a gajumaru and a
  *   bank of vending machines facing the lane;
  * - the rubbish point at the end of Well Lane, bags under a green net in a wire cage, and
@@ -21,14 +20,14 @@ import {homeNameplate,residentsLine} from '../../people/island-households.js';
  * - the pole line carried along the spine and up Fukugi Lane, with a transformer and a
  *   drop to every house;
  * - and the odd sign of somebody's life: a dog house and
- *   bicycles at the flats.
+ *   bicycles at the Heights.
  *
  * Built inside Kitahama's frame (kit.at(..., KITAHAMA.y)): local y = 0 is the ground.
  * Anchors take world coordinates, so they go through kit.point.
  */
 export function buildKitahamaQuarter(kit,solid,{anchor,onAction,vending},{across=[]}={}){
  const K=KITAHAMA;
- buildFlats(kit,solid,{anchor,onAction});
+ buildHeights(kit,solid,{anchor,onAction});
  buildPark(kit,solid,{anchor,onAction,vending});
  buildCorner(kit,solid,{anchor,onAction});
  // ---- The pole line: along the spine from the cross lane, then up Fukugi Lane.
@@ -45,65 +44,63 @@ export function buildKitahamaQuarter(kit,solid,{anchor,onAction,vending},{across
   const target=kit.point(door[0]+inX+(inX?0:1.5),2.6,door[1]+inZ);
   serviceDrop(kit,nearest(door[0],door[1]),target.toArray());
  }
- {const A=K.apartment;serviceDrop(kit,north,kit.point(A.maxX-1.9,5.3,(A.minZ+A.maxZ)/2).toArray());}
+ // A drop to each of the Heights' two houses, over its front door.
+ for(const h of KITAHAMA_HEIGHTS.houses)serviceDrop(kit,north,kit.point(KITAHAMA_HEIGHTS.x1+.1,2.6,h.z).toArray());
  return {poles};
 }
 
-/** Kitahama Heights: four flats, an open corridor on the lane side, a stair at the south end. */
-function buildFlats(kit,solid,{anchor,onAction}){
- const A=KITAHAMA.apartment,x0=A.minX+.5,x1=A.maxX-1.9,z0=A.minZ+1,z1=A.maxZ-1,H=2.8;
- const wall=0xe9e3d3,trim=0x8f9a96,steel=0x6c7476,door=0x5b4636;
- // The block itself, two storeys and a parapet, in 'plaster'.
- kit.block(x0,x1,0,H*2+.5,z0,z1,wall,'plaster');
- kit.block(x0-.05,x1+.05,H-.08,H+.08,z0-.05,z1+.05,trim);
- kit.block(x0-.08,x1+.08,H*2+.5,H*2+.62,z0-.08,z1+.08,trim);
- solid(kit.rect(x0,x1,z0,z1,6,'kitahama-flats'));
- // Two black water tanks and an aerial on the roof.
- for(const z of [z0+1.6,z0+3.4])kit.cyl(.55,.55,1.1,x0+1.4,H*2+1.1,z,0x2b2d2f,{segments:14});
- kit.rod([x0+3,H*2+.5,z1-1],[x0+3,H*2+2.4,z1-1],.02,0x9aa0a4);kit.rod([x0+2.5,H*2+2.2,z1-1],[x0+3.5,H*2+2.2,z1-1],.015,0x9aa0a4);
- // The open corridor on the east (lane) side at first-floor level, with a steel rail.
- const cx0=x1,cx1=x1+1.25;
- kit.block(cx0,cx1,H-.08,H+.08,z0,z1,0xcfc9bb);
- for(let z=z0+.2;z<=z1;z+=1.8){kit.box(.08,H,.08,cx1-.05,H/2,z,steel);solid(kit.rect(cx1-.1,cx1,z-.05,z+.05,H,'flats-post'));}
- kit.block(cx1-.04,cx1,H+.9,H+.95,z0,z1,steel);
- for(let z=z0;z<=z1;z+=.12)kit.box(.02,.9,.02,cx1-.02,H+.45,z,steel);
- // Doors and kitchen windows, two flats a floor, numbered.
- for(const unit of KITAHAMA_FLATS){
-  const y=unit.level,z=unit.door[2],n=unit.unitNumber,plate=homeNameplate(unit.id);
-  kit.box(.06,2.0,.85,x1+.03,y+1.0,z,door);
-  kit.box(.04,.14,.24,x1+.07,y+1.55,z-.2,0xf2efe4);
-  kit.box(.05,.6,.9,x1+.03,y+1.45,z+1.25,0x6f8a92,{finish:'window'});
-  kit.box(.4,.35,.3,x1+.2,y+.35,z+1.25,0xe6e4de);
-  kit.sign(nameplate('Flat '+n,plate.owners),.55,.25,x1+.08,y+1.75,z+.55,{ry:Math.PI/2,name:'flat number'});
-  const at=kit.point(unit.door[0],y+1.3,z);
-  anchor(at.x,at.y,at.z,'Flat '+n+' · '+plate.owners,()=>onAction?.('read',plate.title,residentsLine(unit.id)));
+/**
+ * Kitahama Heights: two attached ground-floor houses, A to the north and B to the south (kitahama-layout.js
+ * KITAHAMA_HEIGHTS; docs/CAST-CONSOLIDATION.md addendum 6). One single-storey concrete body in the quarter's own style
+ * (the plinth, the plaster, the aluminium windows, the parapet and the tank on the roof of every concrete house here),
+ * a party wall through it, and on the lane side a front door, a kitchen window and a canopy for each; in front of
+ * them a strip of garden behind the low block wall, a gate and a nameplate for each house, and the mailboxes on the
+ * gate piers. No corridor, no stair, no upper floor: the lane, the gate and the door are all at ground level.
+ */
+function buildHeights(kit,solid,{anchor,onAction}){
+ const B=KITAHAMA_HEIGHTS,A=B.lot,{x0,x1,z0,z1,party}=B,H=B.height;
+ const wall=0xe9e3d3,trim=0x8f9a96,steel=0x6c7476,door=0x5b4636,glass=0x6f8a92,metal=0xb8bec0;
+ // The body: one storey on a dark plinth, the roof slab's lip and a parapet all round, the party wall carried through
+ // the parapet so the two roofs read as two.
+ kit.block(x0,x1,0,H,z0,z1,wall,'plaster');
+ kit.block(x0-.02,x1+.02,0,.35,z0-.02,z1+.02,0xb9b3a6);
+ kit.block(x0-.12,x1+.12,H,H+.1,z0-.12,z1+.12,trim);
+ for(const [a,b,c,d] of [[x0,x1,z0,z0+.14],[x0,x1,z1-.14,z1],[x0,x0+.14,z0,z1],[x1-.14,x1,z0,z1],[x0,x1,party-.07,party+.07]])kit.block(a,b,H+.1,H+.55,c,d,wall,'plaster');
+ kit.box(.05,H-.35,.06,x1+.02,.35+(H-.35)/2,party,0xd2cbbb);   // the party line on the front, a shadow between the two renders
+ solid(kit.rect(x0,x1,z0,z1,H+.6,'kitahama-heights'));
+ const window=(zc,wd,ht,y)=>{kit.box(.06,ht+.12,wd+.12,x1+.03,y,zc,metal,{finish:'metal'});kit.box(.05,ht,wd,x1+.05,y,zc,glass,{finish:'window'});kit.box(.06,ht,.04,x1+.08,y,zc,metal,{finish:'metal'});};
+ for(const h of B.houses){
+  const z=h.z,plate=homeNameplate(h.id),end=h.side==='north'?z1:z0,out=h.side==='north'?1:-1;
+  // The front door under its thin canopy, a window either side of it, and the nameplate's twin on the door frame.
+  kit.box(.06,2.06,1.03,x1+.03,1.03,z,metal,{finish:'metal'});kit.box(.05,2.0,.91,x1+.05,1.0,z,door);
+  kit.box(.02,1.1,.22,x1+.085,1.25,z-.2,0xc9d6d8);kit.box(.05,.22,.04,x1+.1,1.0,z+.33,0xd8dcdc,{finish:'metal'});
+  kit.box(.9,.1,1.46,x1+.45,2.25,z,0xc8c2b5);
+  window(z-1.45,1.2,1.2,1.45);window(z+1.45,1.2,1.2,1.45);
+  // On the roof, the tank on its frame and the aerial; on the end wall, the air conditioner.
+  const tx=x0+1.3,tz=z+out*.4;
+  for(const [dx,dz] of [[-.4,-.4],[.4,-.4],[.4,.4],[-.4,.4]])kit.box(.07,.8,.07,tx+dx,H+.5,tz+dz,steel,{finish:'metal'});
+  kit.box(.95,.08,.95,tx,H+.94,tz,steel,{finish:'metal'});kit.cyl(.5,.5,1.1,tx,H+1.53,tz,0x2b2d2f,{segments:14,finish:'gloss'});kit.cyl(.18,.18,.1,tx,H+2.13,tz,0x2b2d2f,{segments:10});
+  kit.rod([x1-1,H+.1,z-out*1.2],[x1-1,H+2.2,z-out*1.2],.02,0x9aa0a4);kit.rod([x1-1.5,H+2.0,z-out*1.2],[x1-.5,H+2.0,z-out*1.2],.015,0x9aa0a4);
+  kit.box(.8,.55,.3,x0+1.6,1.8,end+out*.18,0xe2e0d8);
+  // The garden: stepping stones from the gate to the door, a hibiscus by the wall, pots by the step, the washing out
+  // and a bicycle; the gas bottles round the end of the house.
+  for(const x of [A.maxX-.55,A.maxX-1.25,A.maxX-1.95])kit.box(.48,.03,.44,x,.015,z,0xcfc8b4);
+  hibiscus(kit,x1+1.9,z+out*1.9,{seed:h.side==='north'?281:282,flower:h.side==='north'?0xe8b12c:0xd95a5a});
+  potPlant(kit,x1+.5,z+.9,{seed:h.side==='north'?283:284,size:.3});potPlant(kit,x1+.5,z-.9,{seed:h.side==='north'?285:286,size:.25});
+  kit.at(x1+1.4,z-out*1.5,Math.PI/2,()=>laundry(kit,0,0,{length:1.5,seed:h.side==='north'?287:288}));
+  bicycle(kit,A.maxX-.7,z-out*2.0,{ry:0,colour:h.side==='north'?0x3d6f8f:0xd8b13c});
+  solid(gasBottles(kit,x0+.9,end+out*.35,{ry:0}));
+  // The gate's nameplate and mailbox, and what they say.
+  kit.sign(nameplate(plate.address,plate.owners),.55,.25,A.maxX+.11,.85,z+.95+.5,{ry:Math.PI/2,name:'nameplate'});
+  kit.box(.14,.26,.34,A.maxX+.17,.95,z-.95-.3,[0xc8432f,0x3f6f8a][h.side==='north'?0:1]);
+  const at=kit.point(A.maxX+.6,1,z+1.1);
+  anchor(at.x,at.y,at.z,plate.address+' · '+plate.owners,()=>onAction?.('read',plate.title,residentsLine(h.id)));
  }
- // The lane side's lower windows and the west side's balconies with washing.
- for(const y of [0,H])for(const z of [z0+2.2,z1-2.2]){
-  kit.box(.06,1.3,1.6,x0-.03,y+1.4,z,0x6f8a92,{finish:'window'});
-  kit.block(x0-1.0,x0,y+.02,y+.12,z-1.2,z+1.2,0xcfc9bb);
-  kit.block(x0-1.0,x0-.96,y+.12,y+1.0,z-1.2,z+1.2,0xd8d2c4);
-  kit.at(x0-.55,z,Math.PI/2,()=>laundry(kit,0,0,{length:1.9,seed:Math.round(z*7+y)}),y+.1);
- }
- // A broad flight reaches the same finished level as the open corridor.
- const sz0=z0-1.6,sz1=z0-.2,sx0=x1-4.9;
- stairFlight(kit,solid,{id:'flats-stair',x:sx0,z:(sz0+sz1)/2,length:4.9,height:H+.08,axis:'x'});
- stairLanding(kit,{id:'flats-landing',x0:x1,x1:cx1,z0:sz0,z1:z0+.1,y:H+.08},solid);
- kit.level(cx0,cx1,z0,z1,H+.08,'flats-corridor');
- solid({...kit.rect(cx1-.05,cx1+.025,sz0,z1,1,'flats-corridor-rail'),minY:kit.point(0,H+.08,0).y});
- // The name on the parapet, mailboxes at the foot of the stair, bicycles by the door.
- kit.sign(poster({title:'KITAHAMA HEIGHTS',lines:['FOUR OCCUPIED HOMES'],bg:'#f2ede0',band:'#3f6f8a'}),1.6,.5,x1+.04,H*2+.15,(z0+z1)/2,{ry:Math.PI/2,name:'flats sign'});
- const mx=A.maxX-.55,mz=A.minZ+1.6;
- kit.box(.1,1.05,.1,mx,.52,mz,steel);
- for(let i=0;i<4;i++)kit.box(.3,.22,.34,mx,1.0+(i%2)*.24,mz-.18+Math.floor(i/2)*.36,[0xc8432f,0x3f6f8a,0xd8b13c,0x5f8f5a][i]);
- solid(kit.rect(mx-.2,mx+.2,mz-.4,mz+.4,1.3,'flats-mailboxes'));
- bicycle(kit,A.maxX-.6,z1-.6,{ry:Math.PI/2,colour:0x3d6f8f});bicycle(kit,A.maxX-.6,z1-1.6,{ry:Math.PI/2,colour:0xd8b13c});
- gasBottles(kit,x0+.4,z1+.45,{ry:0});
- // A low block wall along the lane with an opening for the stair and the doors.
- solid(blockWall(kit,A.maxX,A.minZ,A.maxX,A.maxZ,{height:.9,gaps:[[A.minZ+1.2,A.minZ+4.2],[A.maxZ-4.2,A.maxZ-1.8]]}));
- const at=kit.point(A.maxX+.5,1,mz);
+ // The low block wall along the lane, a gate for each house.
+ solid(blockWall(kit,A.maxX,A.minZ,A.maxX,A.maxZ,{height:1.2,gaps:B.houses.map(h=>[...h.gate])}));
+ const at=kit.point(A.maxX+.6,1,party);
  anchor(at.x,at.y,at.z,'Read the Kitahama Heights mailboxes',()=>onAction?.('read','Kitahama Heights · the mailboxes',
-  'Four flats, two up and two down, with the stair at the end and the corridor along the lane side.\n\n'+residentsLine(A.id)));
+  'Two houses under one roof, A to the north and B to the south, each with its own gate, front door and strip of garden on Fukugi Lane.\n\n'+residentsLine(A.id)));
 }
 
 /** The pocket park at the corner of the spine and Well Lane. */
@@ -160,13 +157,13 @@ function buildCorner(kit,solid,{anchor,onAction}){
  kit.box(.08,.95,1.6,nx,1.45,nz,0x8a6a45);kit.box(.12,.06,1.7,nx,1.97,nz,0x5d4431);
  const notices=[
   poster({title:'CANE CUT',lines:['Mon 12 January, 7:00','Everybody on the lane','Lunch at Sato Ramen'],bg:'#f4e7c4',band:'#8a6a2f'}),
-  poster({title:'TO LET',lines:['7, 9, 10, 11, 12','Kitahama','Ask at the town hall'],bg:'#eef1e4',band:'#c8432f'}),
+  poster({title:'FOUND',lines:['A child’s blue sandal','left foot','Ask at number 3'],bg:'#eef1e4',band:'#c8432f'}),
   poster({title:'TYPHOON',lines:['Tie down tanks','Fill the bath','Shutters by Friday'],bg:'#f2ede0',band:'#3f6f8a'}),
  ];
  notices.forEach((t,i)=>kit.sign(t,.42,.6,nx+.06,1.45,nz-.5+i*.5,{ry:Math.PI/2,name:'notice'}));
  solid(kit.rect(nx-.1,nx+.1,nz-.8,nz+.8,2,'notice-board'));
  const at=kit.point(nx+.6,1,nz);
  anchor(at.x,at.y,at.z,'Read the Kitahama notice board',()=>onAction?.('read','Kitahama notice board',
-  'Rubbish: burnable on Tuesdays and Fridays, cans and bottles on Wednesdays, out by eight and under the nets, because of the crows.\n\nThe cane cut is on Monday the 12th of January from seven. Everybody on the lane, lunch at Sato Ramen.\n\nTo let: numbers 7, 9, 10, 11 and 12. Ask at the town hall.\n\nTyphoon season: tie down your water tanks, fill the bath, shutters up by Friday. Mr Shimabukuro will check the lane lights.\n\nFound: a child\'s blue sandal, left foot. Ask at number 3.'));
+  'Rubbish: burnable on Tuesdays and Fridays, cans and bottles on Wednesdays, out by eight and under the nets, because of the crows.\n\nThe cane cut is on Monday the 12th of January from seven. Everybody on the lane, lunch at Sato Ramen.\n\nTyphoon season: tie down your water tanks, fill the bath, shutters up by Friday. Tetsuo will check the lane lights.\n\nFound: a child\'s blue sandal, left foot. Ask at number 3.'));
  potPlant(kit,L.maxX-.4,L.minZ+.4,{seed:280});
 }

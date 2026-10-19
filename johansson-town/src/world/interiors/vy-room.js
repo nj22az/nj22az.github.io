@@ -37,20 +37,18 @@ export function buildVyFamilyHome({room,reg,action,collider=()=>{},exit=()=>{}})
  solid([.55,1.25,.55],[-2.85,.625,1.9],0xa3c9b3,'Family refrigerator');
  solid([1.2,.55,.7],[-.9,.275,1.25],0x795036,'Family dining table');
  for(const [x,z] of [[-.9,.52],[-.9,1.98],[-1.95,1.25]])box([.45,.07,.45],[x,.035,z],0x637e76,'Family zabuton');
- // The weekday guest bedding has a separate place; it cannot replace Vy's futon.
- const guest=kit.futon(-2.1,1.35,0x749c8f,'Futon Thuan',{width:.9,length:1.9});
+ // Thuan's weekday guest bedding went with her weekday room (docs/CAST-CONSOLIDATION.md addendum 4): the household is
+ // Thao, Chin and Vy, each with their own futon, and the floor by the kitchen is clear.
  const homeLayouts={};
  for(const [name,x,c] of [['Thao',-2.5,0x63817e],['Chin',-1.3,0x526d8d]])homeLayouts[name]={...VY_HOME_LAYOUT,...kit.futon(x,-1.55,c,'Futon '+name),table:[-.9,0,name==='Thao'?1.98:.52],tableStand:[.2,0,.7],tableSeatHeight:.07,tableSeatYaw:name==='Thao'?0:Math.PI,door:[0,0,2.2]};
- homeLayouts.Thuan={...VY_HOME_LAYOUT,...guest,table:[-1.95,0,1.25],tableStand:[-1.95,0,1.7],tableSeatHeight:.07,door:[0,0,2.2],hatHook:{position:[-3.14,1.6,2.4],yaw:Math.PI/2}};
  const members=householdAtHome('kitahama-1').members,details=householdDetails(members);
  addFamilyPhoto(box,{x:-3.14,z:.2,westWall:true,members});
  details.slice(0,2).forEach((detail,i)=>addPersonalObject(box,{x:-1.1+i*.4,y:.552,z:1.2,detail,scale:.65}));
- addTeaSetting(box,{x:-.8,y:.552,z:1.45,people:4});
+ addTeaSetting(box,{x:-.8,y:.552,z:1.45,people:members.length});
  box([.2,.15,.2],[-2.88,1.02,.25],0xb57655,'Cooking pot');
  box([.09,.06,.09],[-2.88,.962,1.1],0xd9e5df,'Washed rice bowl');
  for(const dx of [-.08,.08])box([.12,.065,.24],[-.4+dx,.033,2.5],0x556c61,'Household shoes');
  anchor([-.9,1,.95],'Inspect the household’s everyday things',()=>action('inspect','1 Kitahama',details.map(d=>d.owner+' · '+d.text).join('\n')));
- addHatPeg(box,homeLayouts.Thuan.hatHook);
  // 4.5 small mats: four full mats and a centre half mat, no four-corner junction.
  // 2.52 m square fits this existing bedroom; the diorama's eight giant mats do not.
  const s=.84,x0=.22,z0=-2.7;

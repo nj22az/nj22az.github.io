@@ -10,7 +10,7 @@ import {createHomeCustomization} from '../src/world/interiors/home-customization
 
 test('new staff and Thuan home camera fixtures are inside their real plans and clear of partition faces',()=>{
  installDOM();
- for(const [id,owner] of [['resident-home-aya','Nhung'],['resident-home-thuan','Thuan']]){
+ for(const [id,owner] of [['resident-home-kenji','Tetsuo'],['resident-home-thuan','Thuan']]){
   const room=new THREE.Group(),colliders=[];
   const args={room,reg(){},action(){},collider(x,z,w,d,height){colliders.push({x,z,w,d,height});}};
   const layout=id==='resident-home-thuan'?buildFamilyHome({...args,kind:'red-tile',residents:['Thuan','Thao','Chin']}):buildYardHomeInterior({...args,site:{id,homeOwner:owner}});

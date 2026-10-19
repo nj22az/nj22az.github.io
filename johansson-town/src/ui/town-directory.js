@@ -72,8 +72,8 @@ export function renderTownDirectory(container,{cards=[],places=[],progress={},on
   const title=home.residents.length?home.residents.join(' · '):'Vacant home';
   const {article}=makeCard('home',title,home.island==='kitano'?'Kitano-jima':'Minato Island');article.dataset.homeId=home.id;
   article.append(el('p','town-address',home.address));
-  if(home.unitNumber)article.append(el('p','town-activity',Number(home.unitNumber)<=2?'Ground floor':'Upper floor · outside stair'));
-  if(card.secondaryHomes?.some(h=>h.id===home.id))article.append(el('p','town-activity','Includes '+card.name+'’s weekday room'));
+  if(home.unit)article.append(el('p','town-activity','Ground floor · its own gate and front door on Fukugi Lane'));
+  if(card.secondaryHomes?.some(h=>h.id===home.id))article.append(el('p','town-activity',card.name+'’s duty berth aboard'));
   const actions=el('div','town-actions'),show=action('',()=>onShowHome?.(home.target,card,home),home.target,'town-action town-primary');
   show.dataset.showHome=home.id;show.dataset.id=home.target.id;show.dataset.travel='locked';show.setAttribute('aria-label','Show home at '+home.address);
   show.append(el('b','town-sr-only',home.target.title||home.address),el('span','','Show home'));actions.append(show);

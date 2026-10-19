@@ -50,7 +50,7 @@ test('every outdoor public seat has physical support and a clear standing point'
   'port-canopy-bench','quay-bench','beach-chair-0','beach-chair-1',
   'Soak your feet in the footbath','Cool off on the bench',
   'seawall-bench--20','seawall-bench-4','seawall-bench-22','kitahama-park-bench',
-  'Sit on neighbourhood bench','Sit and look at Sakura','Sit on the staff bench','Sit at the radio lookout',
+  'Sit on neighbourhood bench','Sit and look at Sakura','Sit on the staff bench','Sit on the bench by the station','nakamura-dessert-bench',
   'airport-gate-a0','airport-gate-a1','airport-gate-a2','airport-gate-a3',
   'kitano-lookout','kitano-coral-bay-0','kitano-coral-bay-1','kitano-turtle-cove',
   'Sit under the harbour cherry','Sit beside the garden pond',
@@ -86,7 +86,7 @@ test('every household chair and tea cushion supports visitors with a clear stand
   validateSeats(f.room,seats,f.colliders);
   for(const {object} of seats){const [x,,z]=object.userData.seat.stand;assert.ok(x>=-2.9&&x<=2.9&&z>=-2.5&&z<=2.5,'Standing leaves space inside the house walls');}
  }
- for(const [id,homeOwner] of [['resident-home-aya','Nhung']]){
+ for(const [id,homeOwner] of [['resident-home-kenji','Tetsuo']]){
   const f=fixture(args=>buildYardHomeInterior({...args,site:{id,homeOwner}}));
   validateSeats(f.room,f.targets,f.colliders);
  }

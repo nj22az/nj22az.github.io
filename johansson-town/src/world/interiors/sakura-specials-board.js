@@ -56,7 +56,7 @@ export function drawSpecialsBoard(ctx,W,H,specials=SAKURA_SPECIALS){
   if(i<specials.length-1){ctx.save();ctx.setLineDash([6,10]);chalkStroke(ctx,()=>{ctx.moveTo(W*.18,y+row*.48);ctx.lineTo(W*.9,y+row*.48);},'rgba(243,241,232,.35)',2);ctx.restore();}
  });
  // Footer: the hours, and a cherry blossom for the shop.
- chalkText(ctx,'hot case 9:00–20:00 · open 24 hours',W/2,H*.92,Math.round(H*.034),CHALK,{align:'center',font:'Georgia,serif',weight:'normal'});
+ chalkText(ctx,'hot case 9:00–20:00 · open 9:00–20:30',W/2,H*.92,Math.round(H*.034),CHALK,{align:'center',font:'Georgia,serif',weight:'normal'});
  for(let k=0;k<5;k++){const a=k*Math.PI*2/5-Math.PI/2;chalkStroke(ctx,()=>{ctx.ellipse(W*.9+Math.cos(a)*14,H*.92+Math.sin(a)*14,9,6,a,0,7);},PINK,3);}
 }
 

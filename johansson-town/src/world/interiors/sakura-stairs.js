@@ -29,7 +29,7 @@ export function sakuraStoreys(base){
 }
 
 /** Same real office, mounted over the shop, with a hole rather than a solid floor across its stairs. */
-export function buildSakuraStoreys({room,reg,action,exit}){
+export function buildSakuraStoreys({room,reg,action}){
  const parent=room;room=new THREE.Group();room.name='Sakura internal stairwell';parent.add(room);
  const S=SAKURA_STAIR,H=S.height,colliders=[];
  const material=new THREE.MeshStandardMaterial({color:0x8d7458,roughness:.88});
@@ -59,7 +59,7 @@ export function buildSakuraStoreys({room,reg,action,exit}){
   rail.position.set(x,y,z);rail.rotation.z=turn*Math.atan2(2.7,H/2);rail.name='Sakura stair handrail';room.add(rail);
  }
  const office=new THREE.Group();office.name='Sakura upstairs main office';office.position.set(0,H,S.officeZ);room.add(office);
- buildSakuraOfficeRoom({room:office,reg,action,exit,internal:true,
+ buildSakuraOfficeRoom({room:office,reg,action,internal:true,
   collider:(x,z,w,d,height)=>solid(x,z+S.officeZ,w,d,height+H,H)});
  // Seats are stored in room coordinates, not the nested office's local frame.
  office.traverse(o=>{const seat=o.userData.seat;if(!seat)return;for(const key of ['position','stand'])if(seat[key]){seat[key][1]+=H;seat[key][2]+=S.officeZ;}for(const key of ['surfaceY','eyeY'])if(Number.isFinite(seat[key]))seat[key]+=H;});

@@ -9,7 +9,8 @@ import {groundHeight,planHeight,routeAt,setWalkSurface} from '../src/world/layou
 import {standingHitsRect,canStepBetween} from '../physics.js';
 import {MAIN_ROAD,SHOP_CROSSING_Z} from '../src/world/main-road.js';
 import {ONSEN_APPROACH,ONSEN_DOOR} from '../src/world/onsen-layout.js';
-import {HARBOUR_PARK_ENTRY,HARBOUR_FLORIST,NAKAMURA_DESSERTS,HARBOUR_PARK_PATHS} from '../src/world/harbour-park-plan.js';
+import {SAKURA_FLOWER_STAND} from '../src/world/okinawa/old-town.js';
+import {HARBOUR_PARK_ENTRY,NAKAMURA_DESSERTS,HARBOUR_PARK_PATHS} from '../src/world/harbour-park-plan.js';
 import {KOBAN} from '../src/world/koban-layout.js';
 import {KITAHAMA,plotGate} from '../src/world/kitahama-layout.js';
 import {NISHI} from '../src/world/okinawa/layout.js';
@@ -50,9 +51,11 @@ function walk(path,label,probe=sample){
 
 test('actual Minato collision and drawn floors carry Sakura walks to the consolidated services and homes',()=>{
  const destinations=[['Harbour Park',HARBOUR_PARK_ENTRY],['Onsen approach',ONSEN_APPROACH],['Onsen door',ONSEN_DOOR],['Koban',KOBAN.door],
-  ['Higa Liquor',[4.8,8.75]],['Florist',HARBOUR_FLORIST.approach],['Nakamura',NAKAMURA_DESSERTS.approach],
-  ...['kitahama-1','kitahama-7','kitahama-12'].map(id=>[id,plotGate(KITAHAMA.plots.find(p=>p.id===id)).door]),
-  ...['higa','kinjo','oshiro'].map(id=>['Nishi '+id,plotGate(NISHI.plots.find(p=>p.id===id)).door])];
+  ['Higa Liquor',[4.8,8.75]],['Sakura flowers',SAKURA_FLOWER_STAND],['Nakamura',NAKAMURA_DESSERTS.approach],
+  // The houses that stand (phase 4 took 4, 5 and 6 Kitahama and the Kinjō and Ōshiro houses), and the lane through the
+  // cleared Nishi ground to the Front-Row yard, which stays the way to Tetsuo's door.
+  ...['kitahama-1','kitahama-3','kitahama-8'].map(id=>[id,plotGate(KITAHAMA.plots.find(p=>p.id===id)).door]),
+  ...['higa'].map(id=>['Nishi '+id,plotGate(NISHI.plots.find(p=>p.id===id)).door]),['Nishi lane to the yard',[-30.85,1.5]],['Nishi cleared ground',[-30.85,-5.7]]];
  for(const [label,p] of destinations){
   const goal={x:p[0],z:p[1]},route=createWalkingRoute({start,goal,sample,margin:18,maxVisited:40000});
   let turns=0;while(route.status==='searching'&&turns++<20000)route.step(600);

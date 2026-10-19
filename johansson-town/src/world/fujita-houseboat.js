@@ -3,6 +3,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
+import {createLampGlow} from './light-pools.js';
 // West of the working pier: the cargo ship uses the eastern side.
 export const HOUSEBOAT=Object.freeze({x:-40.5,z:-56.5,deckY:.06,width:3.1,length:7.4,sternExtension:.6,
  gangway:{minX:-39.45,maxX:-38.25,minZ:-54.65,maxZ:-53.75},
@@ -23,10 +24,13 @@ export function createHouseboatModel(hull=null,{shadows=false}={}){
  const box=(name,size,at,m)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(...size),m);o.name=name;o.position.set(...at);o.castShadow=shadows;o.receiveShadow=true;g.add(o);return o;};
  if(hull){hull.scale.z*=7.4/6.8;hull.position.z-=.3;g.add(hull);}else box('Temporary hull',[3.05,.6,7.3],[0,-.39,-.3],blue.clone()).userData.temporaryHull=true;
  box('Deck',[3.12,.1,7.4],[0,.01,-.3],wood);
- for(let x=-1.4;x<1.5;x+=.22)box('Deck caulking',[.013,.005,7.25],[x,.063,-.3],mat(0x433a30));
+ // The caulked seams lie 3 mm over the deck: pulled forward by a polygon offset too, so they never flicker into it at range.
+ for(let x=-1.4;x<1.5;x+=.22)box('Deck caulking',[.013,.005,7.25],[x,.063,-.3],mat(0x433a30,{polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}));
  for(const side of [-1,1]){
   box('Cream rubbing strake',[.08,.12,6.8],[side*1.62,-.19,-.3],trim);
-  for(const z of [-2.9,-1.3,.7,2.9]){const f=new THREE.Mesh(new THREE.TorusGeometry(.19,.07,6,12),mat(0x252a2b));f.name='Tyre fender';f.rotation.y=Math.PI/2;f.position.set(side*1.73,-.24,z);g.add(f);}
+  // Tyres on her outboard (port) side only: to starboard she lies on the pier's fender piles (fujita-layout.js), and
+  // tyres there stood inside the piles.
+  if(side<0)for(const z of [-2.9,-1.3,.7,2.9]){const f=new THREE.Mesh(new THREE.TorusGeometry(.19,.07,6,12),mat(0x252a2b));f.name='Tyre fender';f.rotation.y=Math.PI/2;f.position.set(side*1.73,-.24,z);g.add(f);}
  }
  // Timber cabin. Windows have clear openings; the sliding door is parked open.
  for(const side of [-1,1]){
@@ -37,6 +41,10 @@ export function createHouseboatModel(hull=null,{shadows=false}={}){
  }
  box('Cabin stern wall',[2.55,2.12,.09],[0,1.12,-3.2],wood);box('Cabin front left',[1.3,2.12,.09],[-.61,1.12,.7],wood);
  box('Door lintel',[1.2,.24,.13],[.65,2.06,.7],trim).userData.houseboatRoof=true;box('Door jamb',[.09,1.86,.13],[1.23,1.04,.7],trim);
+ // A deck bulb under the lintel, outside the door: the one warm light on the water at the end of the pier after dark
+ // (tick's night), with its halo and its pool on the deck boards (light-pools.js).
+ const bulb=box('Deck bulb',[.1,.13,.1],[.65,1.88,.86],mat(0xffe0a5,{emissive:0xffc77f,emissiveIntensity:0}));bulb.castShadow=false;bulb.userData.houseboatBulb=true;
+ g.userData.deckGlow=createLampGlow(g,[{head:{x:.65,y:1.88,z:.86},ground:{x:.65,y:.06,z:1.35},radius:1.7,size:1}]);
  box('Open sliding door',[.95,1.82,.08],[-.52,1.01,.78],blue);box('Door frosted panel',[.78,.68,.015],[-.52,1.34,.828],glass);
  box('Houseboat cutaway roof',[2.85,.14,4.32],[0,2.24,-1.22],metal).userData.houseboatRoof=true;
  for(let x=-1.3;x<=1.3;x+=.15)box('Roof corrugation',[.025,.025,4.27],[x,2.32,-1.22],metal).userData.houseboatRoof=true;
@@ -87,11 +95,23 @@ export function createHouseboatModel(hull=null,{shadows=false}={}){
  const clock=new THREE.Mesh(new THREE.CylinderGeometry(.16,.16,.04,20),trim);clock.rotation.x=Math.PI/2;clock.position.set(.28,1.72,-2.53);clock.name='Cabin clock';g.add(clock);
  for(const [w,h,x,y] of [[.015,.12,.28,1.76],[.1,.015,.31,1.72]])box('Clock hand',[w,h,.015],[x,y,-2.501],blue);
  box('Entrance mat',[.82,.025,.55],[.66,.08,1.08],mat(0x506e58));
- for(const x of [-1.48,1.48])for(const z of [1.2,3.2])box('Deck rail post',[.045,.65,.045],[x,.39,z],trim);
- box('Bow rail',[3,.045,.045],[0,.72,3.2],trim);box('Port rail',[.045,.045,2],[-1.48,.72,2.2],trim);
+ // The foredeck rail: stout timber posts, a mid rail and a broad capping rail to hold on to (it was a frame of cream
+ // sticks). Round the bow and down the port side; to starboard the gangway comes aboard between the two gate posts.
+ const rail=wood;
+ for(const [x,z] of [[-1.48,1.2],[-1.48,2.2],[-1.48,3.2],[-.5,3.2],[.5,3.2],[1.48,3.2],[1.48,1.2]])box('Deck rail post',[.08,.7,.08],[x,.41,z],rail);
+ box('Bow capping rail',[3.04,.045,.11],[0,.78,3.2],rail);box('Port capping rail',[.11,.045,1.89],[-1.48,.78,2.2],rail);
+ box('Bow mid rail',[2.88,.06,.04],[0,.45,3.2],rail);box('Port mid rail',[.04,.06,1.92],[-1.48,.45,2.2],rail);
  for(const x of [-1.05,1.05])box('Mooring cleat',[.3,.07,.08],[x,.12,2.95],metal);
- box('Freshwater tank',[.45,.46,.35],[-.98,.3,2.55],mat(0xd4d9cc));box('Boot tray',[.5,.03,.3],[-.92,.1,1.15],blue);
- for(const x of [-1.05,-.81])box('Boat slippers',[.16,.05,.25],[x,.145,1.15],trim);
+ // Her stern line's cleat, on the stern deck to starboard (port-shed.js leads the line to the pier's kerb cleat).
+ box('Stern mooring cleat',[.08,.07,.3],[1.2,.1,-3.55],metal);
+ // Her fresh water: a 200-litre poly tank, filled by hose from the quay tap each week, on a timber stand on the foredeck,
+ // its hose run along the deck and in under the cabin front to the galley tap.
+ {const tank=new THREE.Mesh(new THREE.CylinderGeometry(.21,.21,.5,14),blue);tank.name='Freshwater tank';tank.position.set(-.98,.36,2.55);g.add(tank);
+  const lid=new THREE.Mesh(new THREE.CylinderGeometry(.09,.09,.05,12),mat(0xeee1bd));lid.name='Freshwater tank lid';lid.position.set(-.98,.635,2.55);g.add(lid);}
+ box('Tank stand',[.5,.05,.5],[-.98,.085,2.55],wood);box('Tank tap',[.05,.05,.08],[-.98,.2,2.31],metal);
+ box('Freshwater hose',[.035,.03,1.5],[-.98,.075,1.53],mat(0x403c34));
+ box('Boot tray',[.5,.03,.3],[-.62,.1,1.15],blue);
+ for(const x of [-.75,-.51])box('Boat slippers',[.16,.05,.25],[x,.145,1.15],trim);
  Object.assign(box('Cabin lamp',[.14,.08,.14],[.55,2.06,-.3],mat(0xffe0a5,{emissive:0xffc77f,emissiveIntensity:0})).userData,{houseboatLamp:true,houseboatRoof:true});
  box('Shiosai name board',[.025,.25,1.25],[-1.306,1.94,-1.02],blue);
  if(typeof document!=='undefined'){
@@ -101,7 +121,7 @@ export function createHouseboatModel(hull=null,{shadows=false}={}){
  }
  const batches=new Map();
  for(const mesh of [...g.children]){
-  if(!mesh.isMesh||mesh.material.transparent||mesh.material.map||mesh.userData.temporaryHull||mesh.userData.houseboatLamp)continue;
+  if(!mesh.isMesh||mesh.material.transparent||mesh.material.map||mesh.userData.temporaryHull||mesh.userData.houseboatLamp||mesh.userData.houseboatBulb)continue;
   const key=mesh.material.uuid+(mesh.userData.houseboatRoof?'roof':'fixed');let batch=batches.get(key);
   if(!batch)batches.set(key,batch={material:mesh.material,roof:!!mesh.userData.houseboatRoof,parts:[],geometry:[]});
   mesh.updateMatrix();batch.geometry.push(mesh.geometry.clone().applyMatrix4(mesh.matrix));batch.parts.push(mesh.name);mesh.removeFromParent();mesh.geometry.dispose();
@@ -111,22 +131,26 @@ export function createHouseboatModel(hull=null,{shadows=false}={}){
 }
 export function buildFujitaHouseboat({parent,colliders,register,onAction,shadows=false}){
  const B=HOUSEBOAT,group=createHouseboatModel(null,{shadows});group.position.set(B.x,0,B.z);parent.add(group);
+ // The boarding plank (ayumi-ita) across the gap from her deck edge (x −38.94) to the pier's (−38.55), flush with both:
+ // the old one lay across the whole width of both decks at the same level, and flickered against them.
  const G=B.gangway,gangway=new THREE.Group();gangway.name='Houseboat wooden gangway';
- const material=new THREE.MeshStandardMaterial({color:0x896b4c,roughness:.94});
- const count=Math.ceil((G.maxX-G.minX)/.17),pitch=(G.maxX-G.minX)/count;
- for(let i=0;i<count;i++){const board=new THREE.Mesh(new THREE.BoxGeometry(pitch-.008,.08,G.maxZ-G.minZ),material);board.position.set(G.minX+(i+.5)*pitch,.02,(G.minZ+G.maxZ)/2);board.name='Gangway plank';board.receiveShadow=true;gangway.add(board);}
- for(const z of [G.minZ+.12,G.maxZ-.12]){const bearer=new THREE.Mesh(new THREE.BoxGeometry(G.maxX-G.minX,.12,.1),material);bearer.position.set((G.minX+G.maxX)/2,-.08,z);bearer.name='Gangway bearer';gangway.add(bearer);}
+ const material=new THREE.MeshStandardMaterial({color:0x896b4c,roughness:.94}),x0=B.x+1.56,x1=SHED_PIER.minX;
+ const count=Math.round((G.maxZ-G.minZ)/.15),pitch=(G.maxZ-G.minZ)/count;
+ for(let i=0;i<count;i++){const board=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,.045,pitch-.01),material);board.position.set((x0+x1)/2,B.deckY-.0225,G.minZ+(i+.5)*pitch);board.name='Gangway plank';board.receiveShadow=true;gangway.add(board);}
+ for(const z of [G.minZ+.08,G.maxZ-.08]){const bearer=new THREE.Mesh(new THREE.BoxGeometry(x1-x0+.3,.08,.09),material);bearer.position.set((x0+x1)/2,B.deckY-.09,z);bearer.name='Gangway bearer';gangway.add(bearer);}
  gangway.userData.walkLevels=[{...G,y:B.deckY}];parent.add(gangway);
  group.userData.walkLevels=[{minX:B.x-1.48,maxX:B.x+1.48,minZ:B.z-3.2-B.sternExtension,maxZ:B.z+3.2,y:B.deckY}];
- for(const z of [-2.8,2.8]){const rope=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(1.42,.18,z),new THREE.Vector3(2.05,-.08,z-.1),new THREE.Vector3(2.32,.05,z)]),new THREE.LineBasicMaterial({color:0x7d7154}));rope.name='Mooring rope';group.add(rope);}
+ // Her lines are drawn with the pier (port-shed.js), which knows where they are made fast.
  const solid=(x,z,w,d,height)=>colliders.push({x:B.x+x,z:B.z+z,w,d,height,houseboat:true});
- solid(-1.25,-1.25,.12,4,2.2);solid(1.25,-1.25,.12,4,2.2);solid(0,-3.2,2.55,.12,2.2);solid(-.61,.7,1.3,.12,2.2);solid(1.23,.7,.1,.12,2.2);solid(-.67,-1.7,1.03,2.4,.85);solid(-.94,.13,.59,.72,.97);solid(.9,-.87,.52,.62,.49);solid(.93,-1.98,.6,1.02,.95);solid(-1.48,2.2,.09,2,.78);solid(0,3.2,3,.09,.78);solid(-.98,2.55,.45,.35,.52);
+ solid(-1.25,-1.25,.12,4,2.2);solid(1.25,-1.25,.12,4,2.2);solid(0,-3.2,2.55,.12,2.2);solid(-.61,.7,1.3,.12,2.2);solid(1.23,.7,.1,.12,2.2);solid(-.67,-1.7,1.03,2.4,.85);solid(-.94,.13,.59,.72,.97);solid(.9,-.87,.52,.62,.49);solid(.93,-1.98,.6,1.02,.95);solid(-1.48,2.2,.12,2.08,.82);solid(0,3.2,3.04,.12,.82);solid(-.98,2.55,.5,.5,.66);
  const at=new THREE.Object3D();at.position.set(.65,1,1.2);group.add(at);register(at,'Mr Fujita’s houseboat',()=>onAction('read','Shiosai — Mr Fujita’s houseboat','Mr Fujita rebuilt this little working boat into a home: a worn sofa, a folded futon, a kettle and a radio. He usually falls asleep on the sofa; the futon is stored beneath the radio. At half past eleven he switches off the shed television and comes aboard. The gangway must stay clear.'));
  let disposed=false,ready=Promise.resolve(false);
  if(typeof window!=='undefined'&&typeof window.fetch==='function')ready=fetch(assetURL('models/harbour/fujita-houseboat-hull.glb')).then(r=>{if(!r.ok)throw Error('Houseboat hull HTTP '+r.status);return r.arrayBuffer();}).then(data=>new GLTFLoader().parseAsync(data,'')).then(({scene})=>{
   if(disposed){scene.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose();}});return false;}
   const fallback=group.getObjectByName('Temporary hull');fallback?.removeFromParent();fallback?.geometry.dispose();fallback?.material.dispose();scene.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=true;}});scene.scale.z*=7.4/6.8;scene.position.z-=.3;group.add(scene);return true;
  }).catch(e=>{console.warn('Houseboat hull unavailable; using local hull.',e.message);return false;});
- const roofs=[],lamps=[];group.traverse(o=>{if(o.userData.houseboatRoof)roofs.push(o);if(o.userData.houseboatLamp)lamps.push(o);});
- return {group,gangway,ready,tick({sleeping=false,player=null}={}){const inside=player&&Math.abs(player.x-B.x)<1.5&&player.z>B.z-3.6&&player.z<B.z+1.3;for(const o of roofs)o.visible=!(sleeping||inside);for(const o of lamps)o.material.emissiveIntensity=sleeping?0:.7;},dispose(){disposed=true;}};
+ const roofs=[],lamps=[],bulbs=[],deckGlow=group.userData.deckGlow;group.traverse(o=>{if(o.userData.houseboatRoof)roofs.push(o);if(o.userData.houseboatLamp)lamps.push(o);if(o.userData.houseboatBulb)bulbs.push(o);});
+ /** @param {{sleeping?:boolean,player?:object,night?:number}} state night is 0–1 (dusk.js poolGlow): the deck bulb burns by it */
+ return {group,gangway,ready,deckGlow,tick({sleeping=false,player=null,night=0}={}){const inside=player&&Math.abs(player.x-B.x)<1.5&&player.z>B.z-3.6&&player.z<B.z+1.3;for(const o of roofs)o.visible=!(sleeping||inside);for(const o of lamps)o.material.emissiveIntensity=sleeping?0:.7;
+  const lit=Math.max(0,Math.min(1,night||0));for(const o of bulbs)o.material.emissiveIntensity=lit*1.4;deckGlow?.update(lit);},dispose(){disposed=true;}};
 }

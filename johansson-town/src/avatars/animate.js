@@ -6,12 +6,13 @@ import {consumptionPhase,poseAvatarConsumption,drinkHeadTilt} from './consume.js
 import {bodyLanguage,CONVERSATION_BIG} from './body-language.js';
 import {createFootGrounder,createLieGrounder,createSoleFinder} from './foot-ground.js';
 import {FUN_POSES,STILL_AT} from './fun-poses.js';
-export {FUN_POSES,STILL_AT};
+import {PAIR_POSES,PAIR_ROLES,fitPair,solveRole,playPair,placePair} from './pair-poses.js';
+export {FUN_POSES,STILL_AT,PAIR_POSES,playPair,placePair,fitPair};
 import {createSeatSupport} from './seat-support.js';
 import {gaitOf} from './gait.js';
 import {DUTY_BELT} from './police-data.js';
 import {bodyVolume} from './build.js';
-import {storyProps,pocketSpot,PAPER} from './story-props.js';
+import {storyProps,pocketSpot,PAPER,posedPoints} from './story-props.js';
 import {MUSIC_MOVES,musicPose} from './music-moves.js';
 import {EXPRESSIVE_POSES} from './expressive-poses.js';
 
@@ -113,6 +114,10 @@ const REACH=Object.freeze({
  GrenadeCoin:{head:[.08,0,0],R:{head:[-1,-.35,.25,.08],seed:[-1.63,.19,-1.01,-1.64]},L:{at:m=>[0,m.shoulderY-.1*m.k,m.depth/2+.13*m.k],seed:[-.89,.96,.19,-1.48]}},
  BannerUp:{head:[-.08,0,0],R:{at:m=>[-(m.Rh*m.headSX+.09*m.k),m.headCentre+.03*m.k,.06*m.k],seed:[-2.98,.1,-.21,-.01]}},
  HoldUp:{R:{at:m=>[-.04*m.k,m.headCentre-m.Rh*m.headSY*1.2,m.Rh*1.35],seed:[-1.29,.59,.18,-1.26]}},
+ // Aim: the right arm straight out ahead (AIM_RIGHT, as armTo turns it); the left mitten under the middle of that
+ // forearm, a forearm's thickness below it, wherever this body's arm puts it.
+ Aim:{only:'L',L:{at:m=>{const e=new THREE.Euler(AIM_RIGHT[0],AIM_RIGHT[1],AIM_RIGHT[2]),d=new THREE.Vector3(0,-1,0).applyEuler(e);
+   return [-m.shoulderX+d.x*(m.upper+m.fore*.5),m.shoulderY+d.y*(m.upper+m.fore*.5)-m.armR*1.1,d.z*(m.upper+m.fore*.5)];},seed:[-1.12,.84,.5,-.72],hand:[-.7,0,0]}},
  HoldUpStraws:{R:{at:m=>[-(m.Rh*m.headSX+.06*m.k),m.headCentre-m.Rh*m.headSY*1.13,m.Rh*1.25],seed:[-.95,.08,-.35,-1.56]}},
  // ---- Fujita's Back (story v7). A place carried by a bone (`on`: the bone, and the place in the body's frame at rest) is
  // found with the body in the move's own pose (`pose`), so a mitten lands on the small of a bent back or on a knee.
@@ -130,8 +135,8 @@ const REACH=Object.freeze({
  // Carrying furniture (or a man stiff as a plank): the forearms forward under the load at the waist, the mittens a
  // little under a shoulder's width apart, palms up, their tops at the load's underside (CARRY.under above the floor, in the
  // move's own stance: the knees bent, the back straight and leaning in a little). CarryLegs: the same under his legs.
- CarryFurniture:{pose:()=>carryJoints(),R:{under:m=>[-CARRY.spread*m.k,CARRY.under+CARRY.flank,m.depth/2+CARRY.reach*m.k],level:true,seed:[-.35,.1,.05,-1.4,0],hand:[-.7,0,0]}},
- CarryLegs:{pose:()=>carryJoints(),seedFrom:'CarryFurniture',R:{under:m=>[-CARRY.legSpread*m.k,CARRY.legs,m.depth/2+CARRY.reach*m.k],level:true,seed:[-.35,.1,.05,-1.4,0],hand:[-.7,0,0]}},
+ CarryFurniture:{pose:m=>carryJoints(m),R:{under:m=>[-CARRY.spread*m.k,CARRY.under+CARRY.flank,m.depth/2+CARRY.reach*m.k],level:true,seed:[-.35,.1,.05,-1.4,0],hand:[-.7,0,0]}},
+ CarryLegs:{pose:m=>carryJoints(m),seedFrom:'CarryFurniture',R:{under:m=>[-CARRY.legSpread*m.k,CARRY.legs,m.depth/2+CARRY.reach*m.k],level:true,seed:[-.35,.1,.05,-1.4,0],hand:[-.7,0,0]}},
  // Carried stiff as a plank, both mittens laid on his belly, side by side (CarriedPlank).
  PlankHands:{pose:()=>({}),R:{touch:true,rest:true,on:['spine',(m,v)=>onFront(m,v,-1,PLANK.hands,.5)],elbow:m=>[-(m.width/2+m.armR*.4),m.hipY+m.torso*.42,m.depth*.25],seed:[-.35,.3,.1,-1.6,0],hand:[.2,-1.07,0]}},
  // Reading the paper held open low over the lap, the mittens at its outer edges (SitRead: SIT_READ).
@@ -180,8 +185,15 @@ export const CARRY=Object.freeze({under:.755,flank:.017,legs:.818,spread:.12,leg
   Object.freeze({at:'waist',move:'CarryFurniture',side:-1,along:.16,out:.42}),
   Object.freeze({at:'knees',move:'CarryLegs',side:1,along:-.2,out:.36}),
  ])});
-function carryJoints(){const C=CARRY;
- return {hips:[C.lean,0,0],chest:[-.04,0,0],thighL:[-.32-C.lean,0,.07],kneeL:[.64,0,0],footL:[-.32,0,-.07],thighR:[-.32-C.lean,0,-.07],kneeR:[.64,0,0],footR:[-.32,0,.07]};}
+function carryJoints(m){const C=CARRY;
+ // The stance of three short women. A taller carrier (Thuan since her 18 October design) cannot hold her forearms level
+ // at his underside from that stance: her elbows hang too high. She bends her knees as much further as brings her
+ // shoulders down to where her upper arm reaches the load: the crouch of someone carrying low.
+ let knee=.64;
+ if(m){const drop=(m.shoulderY-m.upper)-(C.under+C.flank+m.armR*1.1),leg=m.thigh+m.shin,half=a=>leg*(1-Math.cos(a/2));
+  if(drop>half(knee))knee=Math.min(1.9,2*Math.acos(Math.max(-1,1-drop/leg)));}
+ const thigh=-knee/2-C.lean,foot=-knee/2;
+ return {hips:[C.lean,0,0],chest:[-.04,0,0],thighL:[thigh,0,.07],kneeL:[knee,0,0],footL:[foot,0,-.07],thighR:[thigh,0,-.07],kneeR:[knee,0,0],footR:[foot,0,.07]};}
 /**
  * Miss Higa's reach back for the supply breaker without looking (ReachBack, "Fujita's Back" 6c and 7a): seated on her stool
  * at the bandai, she reaches back over her left shoulder and puts the lever up with the end of her mitten, her head and eyes
@@ -196,6 +208,8 @@ function carryJoints(){const C=CARRY;
  * seconds; it pushes the lever up `push` (over the next 0.2 s) and holds it there; back to the book the same way
  * over the last `out` seconds. `s.reachTo` (a world point) sends the mitten's end somewhere else.
  */
+/** Aim (6b): the right arm straight out ahead, as armTo turns the shoulder (x, y, z) and the elbow. */
+const AIM_RIGHT=Object.freeze([-1.2,0,.14,0]);
 export const REACH_BACK=Object.freeze({lever:Object.freeze([.07,.768,-.358]),
  box:Object.freeze({min:Object.freeze([.015,.715,-.44]),max:Object.freeze([.125,.905,-.365])}),
  board:Object.freeze({min:Object.freeze([.19,.45,-.44]),max:Object.freeze([.71,1.07,-.265])}),
@@ -300,13 +314,15 @@ export const GESTURES=Object.freeze({
  CarriedPlank:Infinity,CarryLegs:Infinity,ReachBack:3.2,
  // Funny poses for comics, memes and the scene builders (fun-poses.js: what each is for, and its face).
  ...Object.fromEntries(Object.entries(FUN_POSES).map(([name,p])=>[name,p.d])),
+ // The two roles of each pair pose (pair-poses.js: a hug, a kiss, a squabble), `Hug:A` and `Hug:B`, played together by playPair.
+ ...Object.fromEntries(Object.entries(PAIR_ROLES).map(([name,p])=>[name,p.d])),
 });
 /** The moves that ease in from wherever the body is and back to it (the story's: they lerp from the pose under them). */
 const EASED=new Set(['CupHands','CoinToCheek','BowDeep','BowWalk','KneelHug','PoleFlick','Peek','BannerUp','FanWild','HoldOn','FingerStop',
  'Tape','Offer','Reach','LieKnead','GrenadeCoin','Aim','HoldUp','HoldUpStraws','Call','WriteAbove',
  'BentStuck','CrabWalk','ChairUncurl','FrozenAbsurd','CarriedBent','CarriedPlank','CarryFurniture','CarryLegs','CordWrapped','BasketHead','SitRead','TorchUp','TorchOff','ReachBack',
  // and the funny poses (fun-poses.js): from however the body stands (hands behind the back, in the pockets) and back to it
- ...Object.keys(FUN_POSES),...Object.keys(EXPRESSIVE_POSES)]);
+ ...Object.keys(FUN_POSES),...Object.keys(PAIR_ROLES),...Object.keys(EXPRESSIVE_POSES)]);
 /** The body that goes with a feeling, played once when the feeling arrives. */
 export const EMOTION_GESTURE=Object.freeze({happy:'Hop',laugh:'Laugh',sad:'Slump',angry:'Stomp',shy:'Fidget',surprised:'Gasp',worried:'Think'});
 
@@ -372,7 +388,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   const hairAt=p=>{if(!shell)return 1;const q=_p[4].copy(p).sub(headAt).applyQuaternion(qInv);return shell(q.x/S[0],(q.y-hc)/S[1],q.z/S[2]);};
   const out={};
   // A place carried by a bone, with the body in the move's pose: where it is in the chest's frame then.
-  const posed=spec.pose?posedPlaces(spec.pose()):null,hipsM=spec.pose?chestToHips(spec.pose()):null,_h=new THREE.Vector3();
+  const posed=spec.pose?posedPlaces(spec.pose(m)):null,hipsM=spec.pose?chestToHips(spec.pose(m)):null,_h=new THREE.Vector3();
   // how far a point (in the chest's frame) is from the torso: bent, from the hips' part or the chest's, whichever is nearer
   // (and, posed, from the legs too: each a round limb of the leg's thickness and its clothes)
   const _s=new THREE.Line3(),_n=new THREE.Vector3();
@@ -392,12 +408,19 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    const upC=posed?posed.up:new THREE.Vector3(0,1,0),_d=new THREE.Vector3(),_top=new THREE.Vector3(),targetUp=target.dot(upC);
    const elbowAt=want.elbow?new THREE.Vector3(...flipX(want.elbow(m))).sub(chestAt):null;
    const hand=want.hand?mirror(want.hand):[0,0,0],seed=mirror(spec.seedFrom?reachFor(spec.seedFrom)[side]:[...want.seed,0].slice(0,5));
+   // (bounds: how far each angle may go, [low, high] per angle in the right arm's terms (pair-poses.js): an arm reaching
+   // for a partner's collar stays an arm reaching forward, never one windmilled up over the head to come down on it)
+   const bounds=want.bounds?want.bounds.map((b,i)=>b&&sg<0&&(i===1||i===2||i===4)?[-b[1],-b[0]]:b):null;
    // (tip: the end of the mitten goes to the place, not its middle: a lever pushed with the fingers' end)
    const sh=bones['shoulder'+side].position,el=bones['elbow'+side].position,wr=bones['hand'+side].position,mit=new THREE.Vector3(0,-m.hand*(want.tip?1.45:.55),0);
    // things fixed round the body to keep clear of (a wall, a cabinet, the pole a body hugs): boxes in the body's frame (or a
    // function of the body's measures giving them), each point of the forearm and the mitten at least `clear` outside them
    const box=r=>(typeof want.avoid==='function'?want.avoid(m,avatar):want.avoid||[]).map(b=>new THREE.Box3(new THREE.Vector3(...b.min),new THREE.Vector3(...b.max)).expandByScalar((b.clear??.012*k)+r)),_r=new THREE.Vector3();
    const boxes=box(0),armBoxes=box(m.armR);
+   // (keepOut: another body, posed and placed beside this one, as a signed distance in this body's frame (pair-poses.js):
+   // the whole arm kept an arm's thickness out of it, the mitten laid on it and no further)
+   const keep=want.keepOut||null,keepArm=m.armR*1.08+.004*k,_k=new THREE.Vector3();
+   const outside=(p,need)=>{const d=keep(_k.copy(p).applyMatrix4(posed.toRoot));return d<need?((need-d)/k)**2*2000:0;};
    const inBox=(p,list)=>{if(!list.length)return 0;_r.copy(p).applyMatrix4(posed.toRoot);let d=0;
     for(const b of list)if(b.containsPoint(_r))d=Math.max(d,Math.min(_r.x-b.min.x,b.max.x-_r.x,_r.y-b.min.y,b.max.y-_r.y,_r.z-b.min.z,b.max.z-_r.z));return d;};
    const qHand=new THREE.Quaternion().setFromEuler(_eu.set(...hand));
@@ -416,15 +439,20 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     if(want.level){const u=_d.copy(W).sub(E).normalize().dot(upC);c+=u*u*8;}
     // (upper: the upper arm out of the head and the things round the body too, for an arm raised beside the head)
     if(want.upper)for(let i=1;i<=4;i++){const p=_p[3].copy(sh).lerp(E,i/4),r=headR(p),near=hairAt(p)+m.armR*1.2/m.Rh;if(r<near)c+=(near-r)**2*60;
-     if(armBoxes.length){const b=inBox(p,armBoxes);if(b>0)c+=((b+.004*k)/k)**2*2000;}}
+     if(armBoxes.length){const b=inBox(p,armBoxes);if(b>0)c+=((b+.004*k)/k)**2*2000;}
+     if(keep)c+=outside(p,keepArm);}
     // the forearm and the mitten out of the head and the chest
     for(let i=0;i<=4;i++){const p=_p[3].copy(E).lerp(W,i/4),r=headR(p),near=hairAt(p)+m.armR*1.15/m.Rh;if(r<near)c+=(near-r)**2*40;
      // (a mitten laid on the body (touch) brings its wrist to it: there only the forearm's upper part is kept off; a forearm
      // that rests on the body too (rest) only out of it)
      if(want.touch&&i>2)continue;
      const d=torso(p),fc=want.rest?m.armR*.95:m.armR*1.1;if(d<fc&&(hipsM||p.y+chestAt.y>m.hipY+.1*k))c+=((fc-d)/k)**2*400;
-     if(armBoxes.length){const b=inBox(p,armBoxes);if(b>0)c+=((b+.004*k)/k)**2*2000;}}
+     if(armBoxes.length){const b=inBox(p,armBoxes);if(b>0)c+=((b+.004*k)/k)**2*2000;}
+     if(keep)c+=outside(p,i<3?keepArm:m.armR*.9+.003*k);}
     if(boxes.length)for(const q of TOUCH){const b=inBox(_t.set(q[0]*m.hand,q[1]*m.hand,q[2]*m.hand).applyQuaternion(_q[3]).add(W),boxes);if(b>0)c+=((b+.004*k)/k)**2*2000;}
+    // (press: a mitten laid on the other body's clothes may press this envelope, which stands a centimetre off the drawn
+    // mitten, that far into them, so the drawn mitten rests on the shirt and not a centimetre over it)
+    if(keep)for(const q of TOUCH)c+=outside(_t.set(q[0]*m.hand,q[1]*m.hand,q[2]*m.hand).applyQuaternion(_q[3]).add(W),(want.press?-.008:.002)*k);
     const rm=headR(M),nearM=hairAt(M)+m.hand*.85/m.Rh;if(rm<nearM)c+=(nearM-rm)**2*300;
     // (cover: the whole mitten outside the head and its hair, not only its middle, by `cover` metres (6 mm unless said): a
     // mitten laid on the face or the crown)
@@ -433,6 +461,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     // laid on the body, the whole mitten stays on it, not in it: its tip and the backs of its sides
     if(want.touch)for(const q of TOUCH){const d=torso(_t.set(q[0]*m.hand,q[1]*m.hand,q[2]*m.hand).applyQuaternion(_q[3]).add(W));if(d<.009*k)c+=((.009*k-d)/k)**2*2000;}
     for(let i=0;i<5;i++)c+=.01*(x[i]-seed[i])**2;if(x[3]>0)c+=x[3]**2;if(x[3]<-2.6)c+=(x[3]+2.6)**2;
+    if(bounds)for(let i=0;i<5;i++){const b=bounds[i];if(!b)continue;if(x[i]<b[0])c+=(b[0]-x[i])**2*5;else if(x[i]>b[1])c+=(x[i]-b[1])**2*5;}
     // (a move may keep the upper arm's and the forearm's twist near its seed, so the arm is not wound round to get there)
     if(want.twist)c+=want.twist*((x[1]-seed[1])**2+(x[4]-seed[4])**2);
     return c;};
@@ -977,12 +1006,20 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    const A=reachFor('FloorSit:'+a.toFixed(3)+':'+knee.toFixed(3)+':'+along.toFixed(2),{pose:()=>joints,
     R:{touch:true,on:['thighR',()=>place(along)],seed:[-.55,.1,-.1,-.5,0],hand:[-.3,0,0]}});
    const was=JOINTS.map(j=>bones[j].rotation.toArray().slice(0,3));put(joints);
-   bones.shoulderR.rotation.set(A.R[0],A.R[1],A.R[2]);bones.elbowR.rotation.set(A.R[3],A.R[4]||0,0);bones.handR.rotation.set(...(A.handR||[0,0,0]));root.updateMatrixWorld(true);
-   // how near the mitten's surface (TOUCH) comes to the thigh's
-   const q=new THREE.Vector3(),p=new THREE.Vector3(),thigh=new THREE.Line3(inBody(bones.thighR.getWorldPosition(new THREE.Vector3())),inBody(bones.kneeR.getWorldPosition(new THREE.Vector3())));
-   let off=Infinity;for(const t of TOUCH){inBody(bones.handR.localToWorld(p.set(t[0]*m.hand,t[1]*m.hand,t[2]*m.hand)));off=Math.min(off,thigh.closestPointToPoint(p,true,q).distanceTo(p)-m.legR*1.15);}
+   // (the arms as armTo sets them: the left's turns mirrored)
+   for(const s of ['R','L']){const sg=s==='R'?1:-1,a=A[s],h=A['hand'+s]||[0,0,0];bones['shoulder'+s].rotation.set(a[0],a[1]*sg,a[2]*sg);bones['elbow'+s].rotation.set(a[3],(a[4]||0)*sg,0);bones['hand'+s].rotation.set(h[0],h[1]*sg,h[2]*sg);}
+   root.updateMatrixWorld(true);
+   // how near each mitten, as it is drawn, comes to its thigh: both of them, since each arm is solved on its own (an arm
+   // just long enough can bring one mitten to the thigh and leave the other in the air), and the mitten's skin rather
+   // than its envelope (TOUCH), which stands off the drawn mitten by a centimetre
+   const q=new THREE.Vector3();let off=-Infinity;
+   for(const s of ['R','L']){
+    const thigh=new THREE.Line3(inBody(bones['thigh'+s].getWorldPosition(new THREE.Vector3())),inBody(bones['knee'+s].getWorldPosition(new THREE.Vector3())));
+    let near=Infinity;for(const p of posedPoints(avatar,root,()=>true,1,new Set(['hand'+s])))near=Math.min(near,thigh.closestPointToPoint(p,true,q).distanceTo(p)-m.legR*1.15);
+    off=Math.max(off,near);
+   }
    JOINTS.forEach((j,i)=>bones[j].rotation.set(...was[i]));root.updateMatrixWorld(true);
-   if(off<.012*m.k)return hands=A;
+   if(off<.022*m.k)return hands=A;
    return hands=reachFor('FloorSitSide:'+a.toFixed(3)+':'+knee.toFixed(3),{pose:()=>joints,
     R:{root:[-(m.hipX+m.legR*1.15+m.hand*.9+FLOOR_SIT.side*m.k),rest+m.hand*1.1,-FLOOR_SIT.behind*m.k],seed:[.1,0,-.2,-.15,0],hand:[0,0,0]}});}};
   floorShapes.set(key,shape);return shape;
@@ -1130,12 +1167,18 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    toward('thigh'+side,tx-BENT.hips,0,z,w);toward('knee'+side,kn,0,0,w);toward('foot'+side,-(tx+kn),0,-z,w);
   }
  }
+ /** The fit of a pair role for this body: its partner's (avatar.pair, set by playPair), else its own, as both roles. */
+ const soloFits=new Map();
+ function pairFit(R){
+  const p=avatar.pair;if(p&&p.name===R.pair&&p.role===R.role&&p.fit)return p.fit[R.role];
+  if(!soloFits.has(R.pair))soloFits.set(R.pair,fitPair(R.pair,avatar,avatar));return soloFits.get(R.pair)[R.role];
+ }
  function applyGesture(g,s,seated=false){
   const t=g.t,d=g.d,e=d===Infinity?1:env(t,d),q=d===Infinity?Math.min(1,t/.3):ease(t,d);
   // the moves for Fujita's Ten Minutes of Heaven come in smoothly over half a second (big ones slower); a pose the scene
   // names comes in and goes out on its own ramp
   const raw=g.ramp!==undefined?g.ramp:THREE.MathUtils.clamp(Math.min(t/.5,d===Infinity?1:(d-t)/.5),0,1);
-  const w=g.ramp!==undefined?smooth(g.ramp):inOut(t,d,...[RAMP_TIME[g.name]||FUN_POSES[g.name]?.ramp||.5].flat()),soak=s.seat==='Soak'||s.pose==='Soak';
+  const w=g.ramp!==undefined?smooth(g.ramp):inOut(t,d,...[RAMP_TIME[g.name]||FUN_POSES[g.name]?.ramp||PAIR_ROLES[g.name]?.ramp||.5].flat()),soak=s.seat==='Soak'||s.pose==='Soak';
   switch(g.name){
    case 'Wave':set('shoulderR',-.2,0,-2.55*q);set('elbowR',0,0,-.45+Math.sin(t*10)*.45*q);add('head',0,0,.08*q);break;
    case 'Bow':add('chest',.95*e*bowDepth);add('spine',.25*e*bowDepth);add('head',.2*e*bowDepth);set('shoulderL',.1,0,clear?.13+clear:.05);set('shoulderR',.1,0,clear?-.13-clear:-.05);break;
@@ -1358,7 +1401,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    // from the right cheek, the left mitten a fist before the chest, hunched forward, tense; the face clear for the lens.
    case 'GrenadeCoin':{const A=reachFor('GrenadeCoin');add('chest',.12*w);add('head',.08*w);armTo('R',A.R,w);armTo('L',A.L,w);break;}
    // A hair dryer aimed like a pistol (6b): the right arm straight out ahead, the left mitten under the forearm steadying it.
-   case 'Aim':add('head',.04*w);armTo('R',[-1.2,0,.14,0],w);armTo('L',[-1.12,.84,.5,-.72],w);break;
+   case 'Aim':add('head',.04*w);armTo('R',AIM_RIGHT,w);armTo('L',reachFor('Aim').L,w);break;
    // Holding one thing up to show it (8a: the tiny screwdriver, upright before his face like a sacred object).
    case 'HoldUp':armTo('R',reachFor('HoldUp').R,w);break;
    // Showing a fan of straws (9b–d): held up in the right mitten beside the right of the face (both read), chest to eye height.
@@ -1462,10 +1505,17 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     // The small breath is layered over the held pose, never over a fixed root height.
     add('chest',Math.sin(t*2.4)*.012*w);add('head',0,0,Math.sin(t*1.2)*.008*w);break;
    }
-    const F=FUN_POSES[g.name];if(!F)break;
-    return F.play({t,d,w,q,e,m,seated,set,add,toward,armTo,reach:()=>reachFor('Fun:'+g.name,F.reach)})||null;}
+    const F=FUN_POSES[g.name];
+    if(F)return F.play({t,d,w,q,e,m,seated,set,add,toward,armTo,reach:()=>reachFor('Fun:'+g.name,F.reach)})||null;
+    // A role of a pair pose (pair-poses.js): its body from the fit for this body and its partner (playPair; played alone,
+    // the fit of this body with itself), the arms solved on the partner's body the first time (or by playPair, at once).
+    const R=PAIR_ROLES[g.name];if(!R)break;
+    const fit=pairFit(R);
+    return R.play({t,d,w,q,e,m,seated,set,add,toward,armTo,fit,reach:()=>fit.arms!==null?fit.arms:(fit.arms=solveRole(fit,(key,spec)=>reachFor('Pair:'+key,spec)))})||null;}
   }
   return null;
  }
- return {update,play,stop,style,gait,get gesture(){return gesture?.name||null;},get consumption(){return consumption;}};
+ return {update,play,stop,style,gait,get gesture(){return gesture?.name||null;},get consumption(){return consumption;},
+  /** The body this animates, and its reach solver (for a pair's arms, solved on the partner's body: pair-poses.js playPair). */
+  get avatar(){return avatar;},solveReach:(key,spec)=>reachFor('Pair:'+key,spec)};
 }

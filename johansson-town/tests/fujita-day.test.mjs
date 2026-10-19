@@ -1,11 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {FUJITA_DAY,bottlesFor,fujitaBeer,laughingAt,tvProgramme} from '../src/world/fujita-day.js';
+import {FERRY_WORKING_DAY} from '../src/people/ferry-crew.js';
 
-test('Mr Fujita gets through 24 to 49 bottles a day, and the days differ', () => {
+test('Mr Fujita gets through three to six bottles an evening, after he signs off, and the days differ', () => {
  const n=Array.from({length:400},(_,d)=>bottlesFor(d));
- assert.ok(n.every(v=>v>=24&&v<=49));
- assert.ok(Math.min(...n)<=26&&Math.max(...n)>=47,'the whole range turns up');
+ assert.ok(n.every(v=>v>=3&&v<=6));
+ assert.ok(Math.min(...n)===3&&Math.max(...n)===6,'the whole range turns up');
+ // The master (people/ferry-crew.js) is sober on watch: the first bottle is poured when he signs off, never earlier.
+ assert.equal(FUJITA_DAY.start,FERRY_WORKING_DAY.signOff);
+ for(let m=0;m<FUJITA_DAY.start;m+=5){const b=fujitaBeer(m);assert.ok(b.phase==='doze'&&m<FUJITA_DAY.collect||b.phase==='waiting',`sober at ${m}`);if(m>=FUJITA_DAY.collect)assert.equal(b.tipsy,0);}
 });
 
 test('the empties pile up all day, go with the morning van, and every bottle is accounted for', () => {
@@ -35,18 +39,20 @@ test('he empties a glass before he pours the next, and pours without a dry bottl
  }
 });
 
-test('he flips channels, the ballgame only in the afternoon, the set off at night', () => {
+test('he flips channels in the evening, the night game before eleven, the set off on watch and at night', () => {
  assert.equal(tvProgramme(3*60),'off');
  assert.equal(tvProgramme(23*60+45),'off');
+ for(let m=FUJITA_DAY.collect;m<FUJITA_DAY.start;m+=7)assert.equal(tvProgramme(m),'off',`on watch at ${m}`);
  const seen=new Set();let flips=0,last='';
- for(let m=6*60+30;m<22*60+50;m+=1){const c=tvProgramme(m);seen.add(c);if(c!==last)flips++;last=c;
-  if(c==='baseball')assert.ok(m>=13*60&&m<18*60,`baseball at ${m}`);}
- assert.ok(flips>60,'many channel changes a day');
+ for(let day=0;day<30;day++)for(let m=FUJITA_DAY.start;m<FUJITA_DAY.signOff;m+=1){const c=tvProgramme(day*1440+m);seen.add(c);if(c!==last)flips++;last=c;
+  if(c==='baseball')assert.ok(m<23*60+12,`baseball at ${m}`);}   // a stay begun before eleven may run twelve minutes past it
+ assert.ok(flips>60,'several channel changes an evening');
  for(const c of ['variety','drama','cooking','baseball','news'])assert.ok(seen.has(c),c);
+ assert.equal(tvProgramme(FUJITA_DAY.signOff+2),'snow');
 });
 
 test('he laughs now and then, never at a dark set', () => {
  let laughs=0,was=false;
  for(let s=0;s<24*3600;s+=.5){const l=laughingAt(s/60);if(l&&!was)laughs++;was=l;if(l)assert.notEqual(tvProgramme(s/60),'off');}
- assert.ok(laughs>200&&laughs<2000,`${laughs} laughs`);
+ assert.ok(laughs>10&&laughs<300,`${laughs} laughs`);
 });

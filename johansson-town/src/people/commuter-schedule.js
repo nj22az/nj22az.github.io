@@ -3,12 +3,13 @@ import {YARD_RESIDENT_NAMES} from '../world/yard-homes-layout.js';
 const shifts={
  // Day staff share the evening service; night staff return on the morning bus.
  // Work hours stay unchanged. Departure identifies the service's arrival time.
+ // Thuan: the 08:30 boat from Kitano-jima, the shop 09:00–20:00 and its closing restock, the 22:00 boat home (docs/CAST-CONSOLIDATION.md addendum 4).
  Thuan:{arrival:510,start:540,finish:1200,departure:1320},
  Nhung:{arrival:510,start:540,finish:1110,departure:1320},
- // Chin: Sakura's night shift (20:30–06:00, sakura-rota.js), sleep till the early afternoon, then the workshop bench.
- Chin:{arrival:510,start:840,finish:1140,departure:1320},
+ // Chin: the ferry's motorman (ferry-crew.js FERRY_WORKING_DAY, 06:05–22:20, social.js keeps his street body at the
+ // terminal meanwhile); the evening after he signs off is his, the workshop bench and the izakaya.
+ Chin:{arrival:360,start:365,finish:1340,departure:1320},
  'Mrs Sato':{arrival:510,start:540,finish:1260,departure:1320},
- Reiko:{arrival:870,start:900,finish:1470,departure:1950},
  // Tetsuo lives in the Front-Row yard (never takes the boat): lunch at Sato, the bench from five until midnight (the workshop's evening).
  Tetsuo:{arrival:870,start:1020,finish:1440,departure:1950},
  // Thao takes the morning service so her Konbini errand and park walk happen before
@@ -16,7 +17,6 @@ const shifts={
  Thao:{arrival:510,start:960,finish:1620,departure:1950},
  'Officer Mori':{arrival:870,start:1200,finish:1800,departure:1950},
  'Harbour master':{permanent:true},
- 'Bus driver':{permanent:true},
 };
 export const COMMUTER_SHIFTS=Object.freeze(Object.fromEntries(Object.entries(shifts).map(([name,shift])=>[name,Object.freeze(shift)])));
 const minuteOfDay=m=>((m%1440)+1440)%1440;
@@ -109,9 +109,9 @@ export function shiftActive(profile,minutes){
 /** On the island the Front-Row staff live in the yard behind the shop and never take the bus. */
 export const livesInYard=profile=>YARD_RESIDENT_NAMES.includes(typeof profile==='string'?profile:profile?.name);
 /**
- * Since the island grew, Thuan, Thao and Mrs Sato live in Kitahama (kitahama-layout.js).
- * They keep their own days -- the shop, the bench break, the beer at Minato, the lunch
- * counter -- but where the timetable used to put them on the ferry, they walk home.
+ * Since the island grew, Thao, Mrs Sato and (since phase 3) Nhung live in Kitahama (kitahama-layout.js). They keep
+ * their own days -- the izakaya, the lunch counter, the bookshop -- but where the timetable used to put them on the
+ * ferry, they walk home. Thuan is not among them any more: she really does take the boat (addendum 4).
  */
 export const livesInKitahama=profile=>ISLAND_RESIDENT_NAMES.includes(typeof profile==='string'?profile:profile?.name);
 /** commuterPhase as the town sees it: somebody who lives on the island is never 'away'. */

@@ -1,11 +1,11 @@
 /**
- * The post: letters written to the mayor, carried by Postman Tōma on his morning round,
- * and dropped through the door of the mayor's home into the box inside it.
+ * The post: letters written to the mayor, brought up from the mailbag at Ms Ganaha's counter at the Port Terminal
+ * (people/ganaha.js, since phase 3 of docs/CAST-CONSOLIDATION.md; the postman retired in phase 4) and dropped through
+ * the door of the mayor's home into the box inside it.
  *
  * A letter is sent for a day (the favour's, or the morning after something happened) and
- * is written when Tōma brings it, so the sender's P.S. points at what is true that day.
- * The town's data gives Tōma's collections at 10:30 and 16:30 (island-households.js); the
- * morning round brings the post as well, so a letter for a day arrives at half past ten. A
+ * is written when the round brings it, so the sender's P.S. points at what is true that day.
+ * The mailbag comes off the morning boat and is sorted by half past ten (ROUND), so a letter for a day arrives then. A
  * letter for an earlier day that could not be delivered (a box full of unread letters)
  * waits for the next round rather than being lost.
  *
@@ -41,7 +41,7 @@ export function sendLetter(state,{id,day,occasion,from,gift=null,place=null,body
 export const dueBy=(day,minutes)=>dayOf(minutes)>day||(dayOf(minutes)===day&&((minutes%DAY)+DAY)%DAY>=ROUND);
 
 /**
- * Tōma's round: every letter that is due is written and put in the box.
+ * The round: every letter that is due is written and put in the box.
  * `senderOf(name)` gives {name, temper, favourite?, clue?}. Returns the letters delivered.
  */
 export function postRound(state,minutes,{senderOf,playerName='Johansson'}){
