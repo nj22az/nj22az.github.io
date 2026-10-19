@@ -89,6 +89,7 @@ import {portraitConversationShot} from './dialogue/conversation-framing.js';
 import {shelfAimScore} from './interact/aim.js';
 import {atmosphere} from './render/atmosphere.js?dusk-1';
 import {clock as duskClock, daylight} from './render/dusk.js';
+import {setRoadPaintLight} from './world/road-standards.js';
 import {setOceanLight} from './world/ocean.js';
 import {eveningNews,newsOn} from './feed/evening-news.js';
 import {typhoonAt,typhoonBulletin} from './world/typhoons.js';
@@ -433,6 +434,8 @@ let nightLift=0;
 const ambient=new THREE.HemisphereLight(0xdbe7f2,0x6b5f8c,1.15);scene.add(ambient);
 const bounce=new THREE.DirectionalLight(0x9db6e8,1.25);bounce.position.set(26,16,-22);scene.add(bounce);
 const UPLIGHT=.35,uplight=new THREE.DirectionalLight(0xc9b9e0,UPLIGHT);uplight.position.set(4,-18,6);scene.add(uplight);
+/** How far the sun (and the moon) stand from the shadow camera's target, at every hour. */
+const SUN_REACH=46;
 const sun=new THREE.DirectionalLight(0xffdca8,highTier?2.6:2.3);sun.position.set(-28,38,18);sun.castShadow=shadows;
 if(shadows){sun.shadow.mapSize.set(graphics.shadowSize,graphics.shadowSize);sun.shadow.camera.left=-graphics.shadowRadius;sun.shadow.camera.right=graphics.shadowRadius;sun.shadow.camera.top=graphics.shadowRadius;sun.shadow.camera.bottom=-graphics.shadowRadius;sun.shadow.camera.near=.5;sun.shadow.camera.far=120;sun.shadow.bias=-.00035;sun.shadow.normalBias=.045}scene.add(sun);
 
@@ -1571,7 +1574,12 @@ function setTime({updateHours=true}={}){
  ambient.groundColor.set(c.groundFill);
  scene.environmentIntensity=(.12+day*.22)*(current?.4:weather?.65:overcast?.85:1);
  const cell=graphics.shadowRadius*2/Math.max(1,graphics.shadowSize),sx=Math.round(player.position.x/cell)*cell,sz=Math.round(player.position.z/cell)*cell;
- sun.position.set(sx-30,12+day*25,sz+12);sun.target.position.set(sx,0,sz);sun.target.updateMatrixWorld();
+ // The sun stands where the clock puts it (dusk.js sunPath): east and low in the morning, high over the south at
+ // noon, low over the western sea through the evening, the moon's place at night. Its reach is fixed, so the shadow
+ // camera's depth range holds at every hour. The cool bounce keeps to the quarter opposite it, so the shadow side
+ // stays coloured whichever way the light comes from.
+ {const d=c.sunDirection;sun.position.set(sx+d.x*SUN_REACH,d.y*SUN_REACH,sz+d.z*SUN_REACH);sun.target.position.set(sx,0,sz);sun.target.updateMatrixWorld();
+  bounce.position.set(-d.x*30,16,-d.z*30);}
  townSky.update(camera,day,weather,!!current,c.sky,overcast);
  setOceanLight({day,dusk:c.dusk});
  const air=atmosphere(day,weather,!!current,minutes);
@@ -1582,8 +1590,10 @@ function setTime({updateHours=true}={}){
  pipeline?.setExposure(air.exposure*CEL_EXPOSURE);
  // Night is moonlight: the grade's light and shadow tints go blue as the day goes, so the
  // street reads as night and the lit windows and lamps stand out warm against it.
- {const night=Math.max(0,1-day-c.dusk*.6)*(current?0:1),mix=(a,b,t)=>new THREE.Color(a).lerp(new THREE.Color(b),t).getHex();
-  pipeline?.tune({uLightTint:mix(NIGHT_TINT.light,0xb4c2f4,night*.6),uShadowTint:mix(NIGHT_TINT.shadow,0x6470b4,night*.85)});
+ // The morning is the other way about: gold in the light, a cool blue in the shade, which is what makes seven o'clock
+ // look like seven o'clock and not six in the evening (the dusk is apricot through and through).
+ {const night=Math.max(0,1-day-c.dusk*.6)*(current?0:1),morning=c.morning*(current?0:1),mix=(a,b,t)=>new THREE.Color(a).lerp(new THREE.Color(b),t).getHex();
+  pipeline?.tune({uLightTint:mix(mix(NIGHT_TINT.light,0xfff1d6,morning*.6),0xb4c2f4,night*.6),uShadowTint:mix(mix(NIGHT_TINT.shadow,0xc8d4f4,morning*.55),0x6470b4,night*.85)});
   // and the shadow lift that keeps the day's shade from going black is mostly taken off at night: lifted, a night street
   // sat behind a milky grey veil (the lamps and windows could not stand out against it). Dusk and dawn keep their lift.
   nightLift=night;}
@@ -1600,6 +1610,8 @@ function setTime({updateHours=true}={}){
  pipeline?.tune({uLift:current?.id==='dungeon'?.003:(INK_OPTIONS.gradeOptions.lift??GRADE_DEFAULTS.lift)*(1-.7*nightLift)});
  // Warmth only. Ink, shadow tint and flatten stay on their cel defaults.
  pipeline?.tune({uWarmth:c.gradeWarmth});
+ // Road paint takes no light of its own: dimmed with the town's fill, or it glows white on a night street.
+ setRoadPaintLight(c.decal);
  $('.timecard small').textContent=c.period;
  return day;
 }
