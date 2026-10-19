@@ -3,14 +3,12 @@ import {householdAtHome,householdTitle} from './island-households.js';
 // The walking residents' playable rooms. Historical street-entry keys survive only for archived layouts.
 const ROOMS=[
  {home:'kitahama-1',entry:'one',number:'1'},
- {home:'resident-home-aya',entry:'two',number:'1'},
  // Nhung's, with Kōji and Riku (phase 3 of docs/CAST-CONSOLIDATION.md); the archived street entry is her old one.
  {home:'kitahama-3',entry:'two',number:'3'},
  {home:'resident-home-kenji',entry:'three',number:'2'},
  {home:'kitahama-2',entry:'four',number:'2'},
  {home:'koban',entry:'four'},
  {home:'office',entry:'five'},
- {home:'kitahama-6',entry:'five',number:'6'},
 ];
 export const HOUSEHOLDS=Object.freeze(ROOMS.map(room=>{
  const h=householdAtHome(room.home);
@@ -18,14 +16,17 @@ export const HOUSEHOLDS=Object.freeze(ROOMS.map(room=>{
 }));
 /** Existing saves and old room links resolve to the same surviving entrance. */
 export const HOME_ALIASES=Object.freeze({
- 'home-kitano-3':'home-kitahama-5',
  'home-market':'home-kitahama-flat-2','home-ferry':'home-kitahama-flat-3',
- ...Object.fromEntries(['kitahama-7','kitahama-9','kitahama-10','kitahama-11','kitahama-12','nakasone','miyagi','arakaki','yonamine'].flatMap(id=>[[id,'mayor-office'],['home-'+id,'mayor-office']])),
+ // Removed homes land at the retained public place their records go to (roster.js RETIRED_HOMES): the housing project's
+ // nine (18 October 2026) and phase 4's (the three Kitahama houses, the two Nishi houses, 1 Front-Row Yard, the Chinen
+ // house on Kitano-jima; the flat over the former post office at the terminal, where its post went; Barfly's room at the bar).
+ ...Object.fromEntries(['kitahama-4','kitahama-5','kitahama-6','kitahama-7','kitahama-9','kitahama-10','kitahama-11','kitahama-12','nakasone','miyagi','arakaki','yonamine','kinjo','oshiro','kitano-3'].flatMap(id=>[[id,'mayor-office'],['home-'+id,'mayor-office']])),
+ 'resident-home-aya':'mayor-office','resident-home-reiko':'mayor-office','resident-home-bus-driver':'mayor-office',
+ shimabukuro:'ferry-terminal','home-shimabukuro':'ferry-terminal','home-izakaya':'izakaya',
  'yuri-home':'resident-home-thuan','resident-home-nao':'resident-home-thuan',
  'resident-home-thao':'resident-home-thuan','resident-home-chin':'resident-home-thuan',
- 'resident-home-reiko':'resident-home-aya','resident-home-tetsuo':'resident-home-kenji',
+ 'resident-home-tetsuo':'resident-home-kenji',
  'resident-home-officer-mori':'koban','resident-home-harbour-master':'office',
- 'resident-home-bus-driver':'home-kitahama-6',
 });
 export const canonicalHomeId=id=>HOME_ALIASES[id]||id;
 export const householdFor=name=>HOUSEHOLDS.find(h=>h.residents.includes(name));
