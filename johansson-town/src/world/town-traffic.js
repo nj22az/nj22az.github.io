@@ -125,9 +125,10 @@ export function createTownTraffic({parent,colliders=null,ferry=null,getPlayerPos
  const serviceBay=i=>{const [x,z]=SERVICE_BAYS[i];return {where:'service',bay:i,x,y:0,z,yaw:Math.PI};};
  const islanders=[make('kei truck',0x5f8f5a,'islander','Tetsuo','Collect airport cargo for the workshop'),make('car',0xe9e6dc,'islander','Harbour master','Inspect airport cargo manifests')];
  const appointments=[{leave:690,back:750},{leave:960,back:1020}];islanders.forEach((v,i)=>{v.home='town';v.homeBay=i;v.appointment=appointments[i];parkAt(v,quayBay(i));});
- // The workshop's second run is Tetsuo's too (Chin is the ferry's motorman by day, ferry-crew.js; his street body is
- // the ship's then, and a borrowed driver would be a second Chin): the freight down in the morning, the collection at noon.
- const fleet=[make('kei truck',0xf2f0ea,'ferry','Tetsuo','Deliver airport repair freight to the workshop'),make('car',0x3f7fc0,'ferry','Reiko','Deliver airport newspapers to Main Street'),make('kei truck',0x2f6f9f,'ferry','Mrs Sato','Deliver airport kitchen supplies to Main Street'),make('car',0xc8432f,'ferry','Nhung','Deliver airport book orders to Main Street')];
+ // Chin's truck (the workshop's airport freight) waits in its bay while he is the ferry's motorman (ferry-crew.js): the
+ // driver code refuses a body the ship has (vehicle-driver.js), so the run happens only when he is ashore, never as a
+ // second Chin. A run that fits his watches is the docks-and-boats job's, since no sailing follows his sign-off.
+ const fleet=[make('kei truck',0xf2f0ea,'ferry','Chin','Deliver airport repair freight to the workshop'),make('car',0x3f7fc0,'ferry','Reiko','Deliver airport newspapers to Main Street'),make('kei truck',0x2f6f9f,'ferry','Mrs Sato','Deliver airport kitchen supplies to Main Street'),make('car',0xc8432f,'ferry','Nhung','Deliver airport book orders to Main Street')];
  fleet.forEach((v,i)=>{v.home='airport';v.appointment={leave:600+i*180,back:690+i*180};const bay=reserve('airport');v.homeBay=bay;parkAt(v,airportVehicleBay(bay));});
  const all=[...islanders,...fleet];
  const wantedShore=(v,minutes)=>{const m=((minutes%1440)+1440)%1440,a=v.appointment;return m>=a.leave&&m<a.back?(v.home==='town'?'airport':'town'):v.home;};
