@@ -14,7 +14,7 @@ import {createBusinesses} from '../src/world/businesses.js';
 import {createTown} from '../src/world/town.js';
 import {buildFamilyHome} from '../src/world/interiors/family-home.js';
 import {buildUpperHome} from '../src/world/interiors/upper-home.js';
-import {buildSakuraOfficeRoom} from '../src/world/interiors/sakura-office-room.js';
+import {buildSakuraOfficeRoom,SAKURA_UPSTAIRS} from '../src/world/interiors/sakura-office-room.js';
 import {createRoomWalk} from '../src/people/room-walk.js';
 import {standingHitsRect,townBoundsBlocked} from '../physics.js';
 import {groundHeight} from '../src/world/layout.js';
@@ -85,16 +85,23 @@ test('canonical shore schedules resolve home, school and work destinations throu
  }
 });
 
-test('Sakura office has reachable business fittings and no bedding',()=>{
+test('Sakura office has reachable business fittings; the only bedding is the rest room’s futon in its cupboard',()=>{
  const room=new THREE.Group(),colliders=[],prompts=[];
  const layout=buildSakuraOfficeRoom({room,reg:(o,label)=>prompts.push({o,label}),action(){},exit(){},collider:(x,z,w,d,height)=>colliders.push({x,z,w,d,height})});
- const names=[];room.traverse(o=>names.push(o.name));assert.ok(!names.some(n=>/futon|bunk|bedroom/i.test(n)));
- for(const n of ['Kitchenette sink','Electric kettle','Office fridge','1997 desk telephone','Supplier ledger','Main accounts desk'])assert.ok(names.includes(n),n);
+ const names=[];room.traverse(o=>names.push(o.name));assert.ok(!names.some(n=>/bunk|bedroom/i.test(n)));
+ // The owner, 19 October 2026: a rest room upstairs. A staff 休憩室, not a home: one folded futon, on the cupboard's shelf.
+ const futons=[];room.traverse(o=>{if(/futon/i.test(o.name))futons.push(o);});assert.ok(futons.length>0);
+ const K=SAKURA_UPSTAIRS.oshiire;for(const f of futons)assert.ok(f.position.x>K.minX&&f.position.x<K.maxX&&f.position.z>K.minZ&&f.position.z<K.maxZ,f.name+' is in the futon cupboard');
+ assert.ok(!ISLAND_HOUSEHOLDS.some(h=>!h.retired&&h.id==='market')&&!CAST.some(p=>p.home==='market'),'nobody lives at Sakura');
+ for(const n of ['Kitchenette sink','Electric kettle','Office fridge','Desk telephone','Till ledger','Office desk top'])assert.ok(names.includes(n),n);
  const b=layout.bounds,blocked=(x,z,r=.3)=>x<b.minX+r||x>b.maxX-r||z<b.minZ+r||z>b.maxZ-r||colliders.some(c=>standingHitsRect(x,z,r,0,c));
- for(const label of ['Read Sakura’s supplier ledger','Make office tea','Look over the town','Look over the harbour']){
-  const target=prompts.find(p=>p.label===label).o.position.toArray();target[1]=0;
+ for(const label of ['Read the till ledger','Make office tea','Look over Main Street','Look over the harbour','Lie down for a minute']){
+  // A prompt sits on the thing (the ledger on the desk, the futon in its cupboard): walk to the nearest clear floor.
+  const at=prompts.find(p=>p.label===label).o.position;let target=null;
+  for(let r=0;r<=1.3&&!target;r+=.05)for(let k=0;k<32&&!target;k++){const x=at.x+Math.cos(k*Math.PI/16)*r,z=at.z+Math.sin(k*Math.PI/16)*r;if(!blocked(x,z,.42))target=[x,0,z];}
+  assert.ok(target,label+' has clear floor within reach');
   const g=new THREE.Group();g.position.set(...layout.spawn);const walker=createRoomWalk(blocked,{bounds:b}),visitor={g,profile:{name:'visitor',age:40}};let ok=false;
-  for(let i=0;i<60*50;i++)if(walker.move(visitor,target,1/60)){ok=true;break;}
+  for(let i=0;i<60*120;i++)if(walker.move(visitor,target,1/60)){ok=true;break;}
   assert.ok(ok,label+' is reachable');
  }
 });
@@ -235,14 +242,20 @@ test('the surplus dwellings, the housing project’s nine and phase 4’s eight,
  assert.ok(!(world.landmarks||[]).some(s=>s.id==='rainflower-florist'));assert.ok(!world.colliders.some(c=>c.business==='rainflower-florist'));assert.ok(!prompts.some(l=>/flower counter|Mrs Kinjō/.test(l)));
 });
 
-test('both office outlooks map the seated desk to the same physical upper floor, facing harbour and town',async()=>{
+test('both office outlooks map the seated desk to the same physical upper floor: Main Street east, the ferry berth south through the desk’s own window',async()=>{
  const {mapShopCamera}=await import('../src/render/shop-street-view.js');
- const site=sites.find(s=>s.id==='sakura-office');assert.equal(site.officePortals.length,2);
- const source=new THREE.PerspectiveCamera();source.position.set(4.1,1.12,3.2);
+ const {BERTH_X,BERTH_Z}=await import('../src/world/ferry-paths.js');
+ const site=sites.find(s=>s.id==='sakura-office'),shop=sites.find(s=>s.id==='market');assert.equal(site.officePortals.length,2);
+ const chair=SAKURA_UPSTAIRS.items.find(i=>i.id==='chair').at,source=new THREE.PerspectiveCamera();source.position.set(chair[0],1.12,chair[2]);
  const mapped=site.officePortals.map(portal=>{const camera=new THREE.PerspectiveCamera();const plane=mapShopCamera(source,camera,portal);return {camera,plane};});
  assert.ok(mapped[0].camera.position.distanceTo(mapped[1].camera.position)<1e-8,'changing outlook cannot jump the observer');
  assert.ok(Math.abs(mapped[0].camera.position.y-5.13)<1e-8,'seated eye is above the 4.01 m office floor');
  assert.deepEqual(mapped.map(v=>v.plane.normal.toArray().map(n=>Math.round(n))),[[1,0,0],[0,0,-1]],'east faces town; south faces harbour');
+ assert.ok(Math.abs(site.officePortals[0].yaw-shop.streetFrontage.yaw)<1e-9,'the town window faces the street the shop door opens onto');
+ // From the desk chair, the line of sight to the berthed ferry passes through the harbour window's opening.
+ const p=site.officePortals[1],eye=mapped[1].camera.position,n=new THREE.Vector3(Math.sin(p.yaw),0,Math.cos(p.yaw)),centre=new THREE.Vector3(...p.position),across=new THREE.Vector3(1,0,0).applyAxisAngle(new THREE.Vector3(0,1,0),p.yaw);
+ for(const y of [1.5,4,7]){const to=new THREE.Vector3(BERTH_X,y,BERTH_Z).sub(eye),k=centre.clone().sub(eye).dot(n)/to.dot(n),hit=eye.clone().add(to.multiplyScalar(k)).sub(centre);
+  assert.ok(Math.abs(hit.dot(across))<p.span.maxX&&hit.y>p.span.minY&&hit.y<p.span.maxY,'the berth at '+y+' m is framed by the harbour window');}
 });
 
 test('the retired neighbours have no body: nobody walks the postman’s round, tidies the pavilion, minds the generators or scrapes a sabani',async()=>{

@@ -2,12 +2,13 @@ import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {createKit} from './okinawa/kit.js';
 import {SAKURA_BACK} from './okinawa/old-town.js';
-import {SAKURA_OFFICE} from './interiors/sakura-office-room.js';
+import {SAKURA_OFFICE,sakuraOfficePortals} from './interiors/sakura-office-room.js';
 
 /**
  * The office storey's back wall over Nishi-machi, in the storefront's frame (x along the frontage, the back wall at
- * z -depth, heights above the office floor). Two sliding sashes light the office's back half; a small frosted pane
- * lights the head of the inside stair beside the kitchenette, whose extract vent is over it; the fire door at the head
+ * z -depth, heights above the office floor). Two sliding sashes light the back of the floor (since the upstairs replan
+ * of 19 October, the archive: interiors/sakura-office-room.js SAKURA_UPSTAIRS); a small frosted pane
+ * lights the inside stair, whose extract vent is over it; the fire door at the head
  * of the stair opens onto the fire escape (okinawa/old-town.js SAKURA_BACK.fireEscape, where it is placed in the town).
  */
 export const SAKURA_OFFICE_BACK=Object.freeze({
@@ -15,6 +16,7 @@ export const SAKURA_OFFICE_BACK=Object.freeze({
  frosted:Object.freeze({x0:-3.9,x1:-3.1,sill:1.25,head:2.05}),
  vent:Object.freeze({x:-3.5,y:2.5}),
  why:'Windows on the back, as the creator asked (2026-10-19): the office looks over Nishi-machi as well as the street and the harbour, its back half gets daylight and a through draught in summer, and the stair head and kitchenette their own light.',
+ inside:'Replanned the same day (the owner: "maybe two windows you can look out from"): the shell keeps these sashes, but the floor behind them is now the archive, so they give it daylight and the through draught a paper store needs in the damp; you look out only from the office’s two windows, Main Street and the harbour.',
 });
 
 /** Historical module name retained; Sakura's upper floor now belongs to the business. */
@@ -108,7 +110,7 @@ export function buildThuanFlat(parent,{sites=[],shopDoor}={}){
  const portal=(local,interiorYaw,span)=>({position:parent.localToWorld(new THREE.Vector3(local[0],F,local[2]-D/2)).toArray(),yaw:yaw+interiorYaw,interiorOrigin:local,interiorYaw,span,hideGlazing:true});
  const site={id:'sakura-office',title:'Sakura main office & kitchenette',sub:'SAKURA · MAIN OFFICE',line:'Accounts and supplier orders upstairs; daily till administration remains downstairs.',
   x:door.x,z:door.z,door:door.toArray(),exitPosition:door.toArray(),approachPosition:door.toArray(),entryFacing:yaw,opens:'00:00',
-  officeOrigin:origin.toArray(),officePortals:[portal([0,0,O.front],0,{minX:-hw,maxX:hw,minY:.9,maxY:2.35}),portal([hw,0,1.5],Math.PI/2,{minX:-2.85,maxX:2.85,minY:.9,maxY:2.35})]};
+  officeOrigin:origin.toArray(),officePortals:sakuraOfficePortals().map(p=>({id:p.id,...portal(p.local,p.interiorYaw,p.span)}))};
  sites.push(site);
  return {site};
 }
