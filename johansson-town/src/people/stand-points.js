@@ -1,5 +1,6 @@
 import {CAST,castMember} from './cast.js';
 import {STAND_SEQUENCES} from './stand-sequences.js';
+import {fullLife} from './full-life.js';
 
 /**
  * Stand points in a resident's day (docs/research/new-yokosuka-lessons.md §2.3, §6, C6; approved by the owner on
@@ -74,7 +75,16 @@ export function dayPhase(name,minutes){
  * ('world' for the street, or a room's id: 'sakura', 'frontrow', 'ramen', 'koban'); otherwise null. `sequence` may
  * be given to read a sequence the controller chose itself (Sakura's clerk, whoever the rota puts at the counter).
  */
+const memo=new Map();
 export function standNow(name,minutes,frame=null,sequenceId=null){
+ if(!fullLife())return null;
+ // Read every frame by several controllers: worked out once per town second and resident, then reused.
+ const key=name+'|'+frame+'|'+sequenceId,second=Math.floor(minutes*60),hit=memo.get(key);
+ if(hit&&hit.second===second)return hit.value;
+ const value=standFresh(name,minutes,frame,sequenceId);
+ if(memo.size>256)memo.clear();memo.set(key,{second,value});return value;
+}
+function standFresh(name,minutes,frame,sequenceId){
  const phase=dayPhase(name,minutes);if(!phase)return null;
  const id=sequenceId||phase.stand;if(!id)return null;
  const sequence=STAND_SEQUENCES[id];if(!sequence||(frame&&sequence.frame!==frame))return null;

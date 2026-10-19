@@ -1,6 +1,7 @@
 import {QUAY_SPOTS} from '../world/quay-spots.js';
 import {hash01,yawFacing} from './stand-points.js';
 import {rotaWeek,FERRY_WORKING_DAY} from './ferry-crew.js';
+import {fullLife} from './full-life.js';
 
 /**
  * Who takes a break on the quay, when, and on which shared spot (world/quay-spots.js; docs/research/new-yokosuka-
@@ -62,17 +63,27 @@ export function quayLedger(d){
  if(ledgers.size>8)ledgers.clear();ledgers.set(d,ledger);return ledger;
 }
 /** A worker's claim at this minute, if they are on a break that found a spot: {spot, start, end, activity, yaw}. */
+const claims=new Map();
 export function quayClaim(name,minutes){
+ if(!fullLife()||!QUAY_BREAKERS.some(q=>q.name===name))return null;
  const b=quayLedger(day(minutes)).find(b=>b.name===name&&b.spot&&minutes>=b.start&&minutes<b.end);
- return b?{...b,yaw:yawFacing(b.spot.facing)}:null;
+ if(!b)return null;
+ // One claim object per break, reused every frame it is read.
+ if(!claims.has(b)){if(claims.size>32)claims.clear();claims.set(b,Object.freeze({...b,yaw:yawFacing(b.spot.facing)}));}
+ return claims.get(b);
 }
 /** Every claim held at this minute (spot id → worker). */
 export function quayClaimsAt(minutes){
  return new Map(quayLedger(day(minutes)).filter(b=>b.spot&&minutes>=b.start&&minutes<b.end).map(b=>[b.spot.id,b.name]));
 }
 /** The plan a street or neighbour controller follows while the worker is on a claimed break. */
+const plans=new Map();
 export function quayBreakPlan(name,minutes){
  const c=quayClaim(name,minutes);if(!c)return null;
+ if(plans.get(name)?.claim===c)return plans.get(name).plan;
+ const plan=quayPlanFor(c);plans.set(name,{claim:c,plan});return plan;
+}
+function quayPlanFor(c){
  return {place:'quay-break',target:[c.spot.x,c.spot.z],activity:c.activity+' ('+c.spot.name+')',
   stand:Object.freeze({yaw:c.yaw,pose:c.spot.pose,tool:null,spot:c.spot.id,why:c.spot.why})};
 }

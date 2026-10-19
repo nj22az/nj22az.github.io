@@ -170,3 +170,17 @@ for(const name of ['Grandmother Higa','Kōji'])test(name+' walks the stand point
  for(const i of scheduled)assert.ok(visited.has(i),'reached '+seq.points[i].activity);assert.ok(posed>100,'and worked at');
  setWalkSurface(surface);
 });
+
+test('one switch (full-life.js) turns stand points and quay breaks off for a lighter edition, and back on',async()=>{
+ const {setFullLife,fullLife}=await import('../src/people/full-life.js');
+ const {quayLedger,quayClaim}=await import('../src/people/quay-breaks.js');
+ const b=quayLedger(20740).find(b=>b.spot),m=20740*1440+7*60+40;
+ assert.equal(fullLife(),true,'on by default');
+ assert.ok(standNow('Grandmother Higa',m,'world')&&quayClaim(b.name,b.start+1));
+ setFullLife(false);
+ try{
+  assert.equal(standNow('Grandmother Higa',m,'world'),null);assert.equal(quayClaim(b.name,b.start+1),null);
+  const plan=canonicalDay('Grandmother Higa',m);assert.equal(plan.stand,undefined,'one target for the phase');
+ }finally{setFullLife(true);}
+ assert.ok(standNow('Grandmother Higa',m,'world'));
+});
