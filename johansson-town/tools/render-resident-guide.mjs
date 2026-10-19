@@ -5,7 +5,7 @@
 import {createServer} from 'node:http';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {resolve,extname} from 'node:path';
-import {createHash} from 'node:crypto';
+import {portraitSourceHash} from '../scripts/portrait-source.mjs';
 import {createRequire} from 'node:module';
 const root=resolve(new URL('..',import.meta.url).pathname),require=createRequire(import.meta.url);
 let playwright;
@@ -53,7 +53,6 @@ try {
  // outfit-constants.js: the outfits residents' own looks are built from (the harbour polo, Thuan's sailor set, the after-bath
  // clothes). The wardrobe sets in outfits.js change with every new set and are not hashed.
  const sourceFiles=['guide/residents.json','src/avatars/build.js','src/avatars/cast.js','src/avatars/looks.js','src/avatars/looks-data.js','src/avatars/recipe.js','src/avatars/outfit-constants.js','src/avatars/face.js','src/avatars/head-profile.js','src/avatars/garment.js','src/people/resident-personalities.js','src/render/cel.js'];
- const hash=createHash('sha256');for(const path of sourceFiles)hash.update(path+'\0').update(await readFile(resolve(root,path))).update('\0');
- await writeFile(resolve(root,'guide/portraits.json'),JSON.stringify({sourceFiles,sha256:hash.digest('hex'),count:portraits.length},null,2)+'\n');
+ await writeFile(resolve(root,'guide/portraits.json'),JSON.stringify({sourceFiles,sha256:await portraitSourceHash(root,sourceFiles),count:portraits.length},null,2)+'\n');
  console.log('Rendered',portraits.length,'resident portraits from the live avatar pipeline.');
 }finally{await browser?.close();await new Promise(r=>server.close(r));}
