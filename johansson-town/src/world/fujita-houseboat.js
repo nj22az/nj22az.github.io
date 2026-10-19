@@ -6,7 +6,9 @@ import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 // West of the working pier: the cargo ship uses the eastern side.
 export const HOUSEBOAT=Object.freeze({x:-40.5,z:-56.5,deckY:.06,width:3.1,length:7.4,sternExtension:.6,
  gangway:{minX:-39.45,maxX:-38.25,minZ:-54.65,maxZ:-53.75},
- bedside:[.26,.06,-.55],bed:[-.63,.85,-.65],cover:{position:[-.63,.85,-1.5],width:.85,length:1.55}});
+ bedside:[.26,.06,-.55],bed:[-.63,.85,-.65],cover:{position:[-.63,.85,-1.2],width:.85,length:.95}});
+// The camera treatment ends at the cabin door; the bow, gangway and pier keep the town camera.
+export function houseboatCabinAt(x,z){return Math.abs(x-HOUSEBOAT.x)<1.2&&z>HOUSEBOAT.z-3.14&&z<HOUSEBOAT.z+.68;}
 export function houseboatSurface(x,z,r=0){
  const B=HOUSEBOAT,G=B.gangway,inside=(a,b,c,d)=>x>=a+r&&x<=b-r&&z>=c+r&&z<=d-r;
  if(inside(-38.45,-36.25,-53.75,-49.3)||inside(SHED_PIER.minX,SHED_PIER.maxX,SHED_PIER.minZ,SHED_PIER.maxZ))return {id:'fujita-boardwalk',surface:'wood',y:.06};
@@ -34,22 +36,29 @@ export function createHouseboatModel(hull=null,{shadows=false}={}){
   for(const z of [-1.15,.1]){box('Cabin window',[.02,.87,z<0?1.25:.85],[x,1.25,z],glass);box('Window sill',[.13,.06,z<0?1.4:1],[x,.8,z],trim);}
  }
  box('Cabin stern wall',[2.55,2.12,.09],[0,1.12,-3.2],wood);box('Cabin front left',[1.3,2.12,.09],[-.61,1.12,.7],wood);
- box('Door lintel',[1.2,.24,.13],[.65,2.06,.7],trim);box('Door jamb',[.09,1.86,.13],[1.23,1.04,.7],trim);
+ box('Door lintel',[1.2,.24,.13],[.65,2.06,.7],trim).userData.houseboatRoof=true;box('Door jamb',[.09,1.86,.13],[1.23,1.04,.7],trim);
  box('Open sliding door',[.95,1.82,.08],[-.52,1.01,.78],blue);box('Door frosted panel',[.78,.68,.015],[-.52,1.34,.828],glass);
  box('Houseboat cutaway roof',[2.85,.14,4.32],[0,2.24,-1.22],metal).userData.houseboatRoof=true;
  for(let x=-1.3;x<=1.3;x+=.15)box('Roof corrugation',[.025,.025,4.27],[x,2.32,-1.22],metal).userData.houseboatRoof=true;
  // A worn sofa is Fujita's usual sleeping place; the futon stays folded away.
- const olive=mat(0x777b49),fabric=mat(0x657d78),paper=mat(0xd8cfb6);
+ // Restrained cabin bounce on the furnishings, without another light or framebuffer.
+ const olive=mat(0x777b49,{emissive:0x777b49,emissiveIntensity:.055}),fabric=mat(0x657d78,{emissive:0x657d78,emissiveIntensity:.04}),paper=mat(0xd8cfb6,{emissive:0xd8cfb6,emissiveIntensity:.025});
  box('Sofa timber base',[1.03,.27,2.25],[-.67,.27,-1.7],wood);
  box('Sofa back',[.16,.76,2.25],[-1.12,.72,-1.7],olive);
  for(const z of [-2.81,-.59])box('Sofa arm',[1.03,.46,.15],[-.67,.59,z],olive);
  for(const z of [-2.38,-1.7,-1.02])box('Worn sofa cushion',[.85,.18,.65],[-.62,.53,z],olive);
- box('Creased sofa pillow',[.65,.16,.32],[-.63,.7,-2.56],trim);
+ // The sleeping avatar's head centre is at z=-1.925, with its back at y=.65.
+ // The thin pillow settles into the .62 m seat and compresses slightly beneath his head.
+ box('Creased sofa pillow',[.65,.08,.48],[-.61,.65,-1.925],paper);
  box('Blanket over sofa arm',[.75,.06,.36],[-.63,.85,-.59],fabric);
  box('Blanket hanging end',[.06,.38,.36],[-.22,.65,-.59],fabric);
- box('Futon cupboard',[.52,.85,.65],[-.94,.49,.13],wood);
+ // Open towards the aisle (+X), within the old cupboard's footprint. No opaque front/body.
+ box('Futon cupboard back',[.035,.85,.65],[-1.1825,.49,.13],wood);
+ for(const z of [-.1775,.4375])box('Futon cupboard side',[.52,.85,.035],[-.94,.49,z],wood);
+ box('Futon cupboard lower shelf',[.52,.04,.65],[-.94,.145,.13],wood);
+ box('Futon cupboard quilt shelf',[.52,.04,.65],[-.94,.54,.13],wood);
  for(let i=0;i<3;i++)box('Folded futon',[.45,.11,.55],[-.94,.22+i*.12,.13],paper);
- box('Stored futon quilt',[.45,.13,.55],[-.94,.59,.13],fabric);
+ box('Stored futon quilt',[.45,.13,.55],[-.94,.625,.13],fabric);
  box('Cupboard top',[.59,.06,.72],[-.94,.94,.13],wood);
  box('Radio',[.24,.16,.11],[-.94,1.05,.13],mat(0x403c34));
  // Keep the centre aisle and the sliding entrance free of floor clutter.
@@ -62,8 +71,8 @@ export function createHouseboatModel(hull=null,{shadows=false}={}){
  for(let i=0;i<3;i++)box('Stacked nautical log',[.34,.055,.24],[.82,.1+i*.055,-1.31],mat([0x435c70,0x99624c,0x707c54][i]));
  // Short drying line above the sofa, away from the door and walking headroom.
  box('Indoor drying line',[.018,.018,1.65],[-.81,1.98,-1.8],wood);
- for(const [z,color] of [[-2.35,0x435c70],[-1.8,0xd8cfb6],[-1.25,0x777b49]]){
-  box('Drying hand towel',[.035,.32,.3],[-.81,1.81,z],mat(color));
+ for(const [z,material] of [[-2.35,mat(0x435c70)],[-1.8,paper],[-1.25,olive]]){
+  box('Drying hand towel',[.035,.32,.3],[-.81,1.81,z],material);
   for(const dz of [-.1,.1])box('Wooden clothes peg',[.05,.07,.025],[-.81,1.99,z+dz],wood);
  }
  for(const z of [-2.9,-2.35,-1.8,-1.25,-.7])box('Faded cabin lining',[.008,.54,.48],[-1.204,.47,z],paper);
@@ -83,7 +92,7 @@ export function createHouseboatModel(hull=null,{shadows=false}={}){
  for(const x of [-1.05,1.05])box('Mooring cleat',[.3,.07,.08],[x,.12,2.95],metal);
  box('Freshwater tank',[.45,.46,.35],[-.98,.3,2.55],mat(0xd4d9cc));box('Boot tray',[.5,.03,.3],[-.92,.1,1.15],blue);
  for(const x of [-1.05,-.81])box('Boat slippers',[.16,.05,.25],[x,.145,1.15],trim);
- box('Cabin lamp',[.14,.08,.14],[.55,2.06,-.3],mat(0xffe0a5,{emissive:0xffc77f,emissiveIntensity:0})).userData.houseboatLamp=true;
+ Object.assign(box('Cabin lamp',[.14,.08,.14],[.55,2.06,-.3],mat(0xffe0a5,{emissive:0xffc77f,emissiveIntensity:0})).userData,{houseboatLamp:true,houseboatRoof:true});
  box('Shiosai name board',[.025,.25,1.25],[-1.306,1.94,-1.02],blue);
  if(typeof document!=='undefined'){
   const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;const ctx=canvas.getContext('2d');

@@ -4,6 +4,7 @@ import {createResolutionGovernor} from './render/resolution-governor.js';
 import {redrawReleasedCanvases,paintBack} from './render/canvas-release.js';
 import {CAST_RECIPES,recipeFor} from './avatars/cast.js';
 import {createLensOcclusion} from './render/lens-occlusion.js';
+import {houseboatCabinAt} from './world/fujita-houseboat.js';
 import {FERRY_LADDER} from './world/ferry-inspect.js';
 import {PLANT_STATIONS,stationMenu} from './world/ferry-plant-controls.js';
 import {BELOW_DECK_FLOORS} from './world/ferry-interior.js';
@@ -771,6 +772,7 @@ const lensOcclusion=createLensOcclusion({root:scene,skip:o=>o===room||o===player
 /** Outdoors, when a wall or awning has pulled the lens right up to him, it would sit inside his own head: look over it instead of through it. */
 const headPoint=new THREE.Vector3();
 function lensInsideHead(){headPoint.set(player.position.x,player.position.y+1.45,player.position.z);return camera.position.distanceTo(headPoint)<.62;}
+function houseboatCabin(){return !current&&houseboatCabinAt(player.position.x,player.position.z);}
 /**
  * How far the third-person lens can stand back behind him at a heading, inside the room he has
  * just entered (the same boom and ceiling test the lens uses each frame).
@@ -802,9 +804,12 @@ function placeThirdPerson(dt){
  const lens=johansson?.lens,tall=lens?lens.eye-1.6:0;
  // In the ferry's rooms (a 2 m deckhead, walls a metre or two off) the lens pivots at his chest, stands closer and
  // rises sooner to look down over him: the room, not the back of his head.
- const room=!current&&shipRoom();
+ const room=!current&&shipRoom(),cabin=houseboatCabin();
  const eye=(seated&&parkSeat?(parkSeat.soak?1.25:Math.min(1.45,parkSeat.eyeY-player.position.y)+.3):room?1.3:1.6)+tall;
- tpDir.set(-Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),-Math.cos(yaw)*Math.cos(pitch));tpRight.set(Math.cos(yaw),0,-Math.sin(yaw));
+ // Shiosai's open roof gives a raised view over the shoulder. Keep the player's yaw/pitch
+ // intact so V and walking back onto the deck restore their usual controls immediately.
+ const viewPitch=cabin?Math.min(pitch,-.64):pitch;if(cabin)camera.rotation.x=viewPitch;
+ tpDir.set(-Math.sin(yaw)*Math.cos(viewPitch),Math.sin(viewPitch),-Math.cos(yaw)*Math.cos(viewPitch));tpRight.set(Math.cos(yaw),0,-Math.sin(yaw));
  tpPivot.set(player.position.x,player.position.y+eye+(camera.aspect<1?.18:0),player.position.z);
  if(current)tpPivot.y=Math.min(tpPivot.y,indoorCeilings?.limit(tpPivot.x,tpPivot.z,player.position.y)??Infinity);
  // Seated outdoors, the bench or chair under him is not a wall to stand the lens in front of.
@@ -813,7 +818,7 @@ function placeThirdPerson(dt){
  const own=!current&&seated?c=>circleHitsRect(player.position.x,player.position.z,.3,c):null;
  // On a portrait screen (an iPad held upright) the frame is narrow and his big Shimanchu
  // head filled a third of it: the lens stands further back and a little higher there.
- const portrait=camera.aspect<1,want=(current?2.2:room?2.0:3.2)*(portrait?1.32:1);
+ const portrait=camera.aspect<1,want=(current?2.2:cabin?2.15:room?2.0:3.2)*(portrait?1.32:1);
  // The whole boom, from a pivot `side` metres to his right; indoors the ceiling too. -1: the pivot is in a wall.
  // Outdoors the boom also stops at what is drawn rather than walked into (an awning, a canopy,
  // a shop's glass): otherwise the lens slid under the valance or behind a window and looked out through it.
@@ -845,7 +850,7 @@ function placeThirdPerson(dt){
  // The head camera in her rooms (ferry batch 6f): with less than HEAD_CAM behind him the lens does not stand pressed
  // against the wall at his back, where the near plane cut the wall in half across the frame (the gangway passage, the
  // foyer, the stairs); it moves to his eyes, a hand's breadth back, and he is hidden.
- const headCam=room&&thirdDistance<HEAD_CAM;
+ const headCam=(room||cabin)&&thirdDistance<HEAD_CAM;
  if(headCam)camera.position.set(player.position.x,player.position.y+1.6+tall,player.position.z).addScaledVector(tpDir,-.12);
  // Close in, the lens rises over his shoulder and looks down at him, so a narrow alley or a
  // small room still shows him rather than the back of his head or nothing at all. Eased, so a
@@ -926,7 +931,7 @@ function updateJohansson(dt){
  const partner=conversationName?(conversationName==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===conversationName)?.g):null;
  if(partner){partner.getWorldPosition(lookPoint);lookPoint.y+=1.5;johansson.lookAt(lookPoint);}else johansson.lookAt(spawnScene?.gaze||null);
  setSwingFocus(camera.position);
- johansson.update(dt,{speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5:shipRoom()?thirdDistance>=HEAD_CAM:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active});
+ johansson.update(dt,{speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5:shipRoom()||houseboatCabin()?thirdDistance>=HEAD_CAM:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active});
  // Sakura: one thing in his hand, more in a basket, until he pays (shop-carry.js).
  shopCarry.sync(activities?.state?.konbini?.basket,current?.id==='market'&&johansson.ready);
 }

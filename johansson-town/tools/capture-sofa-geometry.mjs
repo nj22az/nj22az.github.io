@@ -1,9 +1,9 @@
 import {chromium} from 'playwright';
 import {serveGame} from './mcp/static-server.mjs';
 import {mkdir,writeFile} from 'node:fs/promises';
-const out=new URL('../docs/qa/fujita-sofa-geometry/',import.meta.url);await mkdir(out,{recursive:true});
+const out=new URL((process.env.AUDIT_OUTPUT||'../docs/qa/fujita-sofa-geometry/').replace(/\/?$/,'/'),import.meta.url);await mkdir(out,{recursive:true});
 const server=await serveGame(new URL('..',import.meta.url).pathname);
-const browser=await chromium.launch({headless:true,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
+const browser=await chromium.launch({headless:true,...(process.env.TOWN_AUDIT_CHROMIUM?{executablePath:process.env.TOWN_AUDIT_CHROMIUM}:{}),args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
 const report={gameCommit:process.env.AUDIT_GAME_COMMIT,kind:'Isolated production geometry under diagnostic lighting; not the game renderer or physical iPhone',views:[],errors:[]};
 try{
  const context=await browser.newContext({viewport:{width:1200,height:900},deviceScaleFactor:1});
@@ -39,8 +39,9 @@ try{
  await capture('02-stern',[-44.8,4.1,-63.8],[-40.5,.5,-58],false);
  await capture('03-sofa-sleep-side',[-43.8,2.6,-55.4],[-41.1,.75,-58.1],true);
  await capture('04-sofa-sleep-overhead',[-40.5,6.2,-57.8],[-40.5,.3,-57.8],true);
- await capture('05-sofa-sleep-close',[-41.3,2.7,-54.8],[-41.13,.8,-58.1],true);
+ await capture('05-sofa-sleep-close',[-40.0,1.2,-57.55],[-41.1,.72,-58.4],true);
  await capture('06-cabin-aisle',[-39.95,1.65,-55.8],[-40.6,.9,-59],true);
+ await capture('07-open-futon-cabinet',[-40.05,1.15,-56.6],[-41.44,.5,-56.37],true);
  report.passed=report.errors.length===0;
 }catch(e){report.passed=false;report.failure=e.stack;process.exitCode=1;}
 finally{await browser.close();await server.close();await writeFile(new URL('report.json',out),JSON.stringify(report,null,2));}
