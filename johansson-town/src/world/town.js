@@ -59,7 +59,8 @@ import {buildCoyoteTunnel,CAVE_ACTIVE} from './coyote-tunnel.js';
 import {buildOkinawaQuarters} from './okinawa/quarters.js';
 import {buildHalloween} from './halloween.js';
 import {createFerryRun} from './ferry.js';
-import {windowGlow} from '../render/dusk.js';
+import {windowGlow,poolGlow} from '../render/dusk.js';
+import {createLampGlow} from './light-pools.js';
 import {setWindowLight} from '../render/window-interior.js';
 import {isOceanMaterial,tickOcean} from './ocean.js';
 
@@ -166,7 +167,7 @@ function addWalkablePier(world,options,factory){
   return {posts:posts.length,collidersAdded:B.bitts.length+CARGO_BERTH.bitts.length+3};
 }
 
-function addSiteFrontage(world,options,factory,lights){
+function addSiteFrontage(world,options,factory,lights,lanternSpots=[]){
   const group=world.group,colliders=world.colliders;let interactions=0;
   const inspect=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('inspect',title,text),options.register);interactions++;};
   (options.sites||[]).forEach((s,i)=>{
@@ -181,6 +182,8 @@ function addSiteFrontage(world,options,factory,lights){
     const px=side*6.48,pz=s.z+3.78;world.plantSites.push({x:px,z:pz,height:1.1});colliders.push({x:px,z:pz,w:.52,d:.52});
     const lantern=factory.box(group,[.24,.44,.24],[side*6.88,2.58,s.z+1.68],0xd7a45f,null,false);lantern.material=factory.material(null,0xd7a45f,.8,0,0xd7a45f,.28);
     if(options.shadows&&!options.mobile){const l=new THREE.PointLight(0xffbd77,0,5.2,2);l.position.copy(lantern.position);group.add(l);lights.push(l);}
+    // Its pool on the footway and halo (light-pools.js), on every device; the point light above is the desktop's extra.
+    lanternSpots.push({head:{x:side*6.88,y:2.58,z:s.z+1.68},ground:{x:side*6.88,y:0,z:s.z+1.68},radius:2.4,size:1.2});
     inspect([side*6.18,1,s.z+.72],`Inspect ${s.title} window`,`${s.title} display`,`${s.line} The display includes handwritten price cards, paper notices and period shop fittings.`);
     if(awn)awn.userData.site=s.id;
   });
@@ -188,7 +191,8 @@ function addSiteFrontage(world,options,factory,lights){
 }
 
 function addStreetLife(world,options,factory){
-  const group=world.group,colliders=world.colliders,lights=[];let interactions=addSiteFrontage(world,options,factory,lights);
+  const group=world.group,colliders=world.colliders,lights=[],lanternSpots=[];let interactions=addSiteFrontage(world,options,factory,lights,lanternSpots);
+  const glow=createLampGlow(group,lanternSpots);
   const inspect=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('inspect',title,text),options.register);interactions++;};
   const read=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('read',title,text),options.register);interactions++;};
   const seat=(pos,label,title,text)=>{const marker=anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);marker.userData.seat={position:[.6,0,18.02],stand:[1.6,0,18.1],surfaceY:.62,eyeY:1.26,yaw:0,pitch:0};interactions++;};
@@ -219,7 +223,7 @@ function addStreetLife(world,options,factory){
   // (The harbour hand pump that stood by the ferry's ramp head is gone: the creator, 2026-10-11, cleared the ramp's
   // approach of everything in the way.)
 
-  return {interactions,lights};
+  return {interactions,lights,glow};
 }
 
 /** Paint the actual coastal paving, including its graded garden-bank triangles. */
@@ -366,7 +370,11 @@ export function createTown(options){
   {const glass=new Set(),lamps=new Set();
    const collect=root=>root.traverse(o=>{if(!o.isMesh)return;for(const m of Array.isArray(o.material)?o.material:[o.material]){const kind=m?.userData?.kitFinish;if(kind==='glow')glass.add(m.userData.celFrom||m);else if(kind==='lamp')lamps.add(m.userData.celFrom||m);}});
    collect(world.group);world.glow={glass,lamps,collect};
-   (world.hourly??=[]).push(minutes=>{const glow=windowGlow(minutes);setWindowLight(glow);for(const m of glass)m.emissiveIntensity=glow*.75;for(const m of lamps)m.emissiveIntensity=.1+glow*1.6;});}
+   // The pool on the lane under every pole lamp (Kitahama, Fumoto: okinawa/props.js utilityPole) and the halo round
+   // its head, on the lamps' own clock. Decals and sprites, no lights (light-pools.js).
+   const poleLamps=[];world.group.traverse(o=>{for(const p of o.userData.powerNetwork?.nodes||[])if(p.lamp)poleLamps.push({head:p.lamp,ground:{x:p.lamp.x,y:p.y||0,z:p.lamp.z},radius:3,size:1.6});});
+   world.lampPools=createLampGlow(world.group,poleLamps);
+   (world.hourly??=[]).push(minutes=>{const glow=windowGlow(minutes);setWindowLight(glow);for(const m of glass)m.emissiveIntensity=glow*.75;for(const m of lamps)m.emissiveIntensity=.1+glow*1.6;world.lampPools.update(poolGlow(minutes));});}
   world.isOpen=isOpen;world.updateHours=minutes=>{for(const fn of world.hourly||[])fn(minutes);for(const {mesh,id} of districts.shutters){const open=isOpen(options.sites.find(s=>s.id===id),minutes);mesh.position.y=1.3;mesh.visible=false;mesh.userData.closed=!open;}const glow=windowGlow(minutes);for(const m of districts.windows)m.material.emissiveIntensity=.02+glow*.78;};
   const setBridgeRain=world.setRain.bind(world);
   world.setRain=value=>{setBridgeRain(value);if(world.ferry?.ferry)world.ferry.ferry.userData.bridgeRain=!!value;};
@@ -404,6 +412,7 @@ export function createTown(options){
     for(const shop of world.harbourShops)shop.update(true,day);
     baseUpdate(dt,time,day,minutes);
     for(const l of street.lights)l.intensity=THREE.MathUtils.damp(l.intensity,(1-day)*1.55,4,dt);
+    street.glow.update(poolGlow(minutes));
     if(sea){
       if(isOceanMaterial(sea.material))tickOcean(time);
       else{const tick=Math.floor(time*10);if(tick!==normalTick){normalTick=tick;sea.geometry.computeVertexNormals();sea.geometry.attributes.normal.needsUpdate=true;}}
