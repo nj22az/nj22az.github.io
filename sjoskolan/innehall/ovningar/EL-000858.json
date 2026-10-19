@@ -3,7 +3,7 @@
   "titel": "Riskbedömning före arbete",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -18,7 +18,45 @@
     ]
   },
   "uppgift": {
-    "fraga": "En belysningsgrupp i maskinrummet ska felsökas. Arbetsplanen säger: ”Säkringen F12 är urtagen, börja arbeta.” Gruppen kan även matas från nödtavlan. Beskriv minst tre brister och vad som ska göras innan arbete utan spänning får börja."
+    "fraga": "En belysningsgrupp i maskinrummet ska felsökas. Arbetsplanen säger: ”Säkringen F12 är urtagen, börja arbeta.” Gruppen kan även matas från nödtavlan. Beskriv minst tre brister och vad som ska göras innan arbete utan spänning får börja.",
+    "delfragor": [
+      {
+        "id": "a",
+        "typ": "flerval",
+        "text": "Vilken matning saknas i den beskrivna arbetsplanen?",
+        "alternativ": [
+          "Den möjliga matningen från nödtavlan.",
+          "Endast strömmen genom lampornas neutralledare.",
+          "Ingen, det räcker att F12 är urtagen.",
+          "Endast en tänkt trefastransformator som inte nämns i underlaget."
+        ],
+        "ratt": 0
+      },
+      {
+        "id": "b",
+        "typ": "flerval",
+        "text": "Vad saknas för att hindra återinkoppling?",
+        "alternativ": [
+          "Enbart ett muntligt antagande att ingen sätter tillbaka säkringen.",
+          "Att hålla en START-knapp intryckt.",
+          "Att ställa multimetern på resistansmätning.",
+          "Säkring mot återinkoppling genom låsning och märkning av berörda frånskiljningar."
+        ],
+        "ratt": 3
+      },
+      {
+        "id": "c",
+        "typ": "flerval",
+        "text": "Vilken kontroll och vilket besked behövs före arbete utan spänning?",
+        "alternativ": [
+          "Enbart att säkringen ser hel ut.",
+          "Ett startbesked innan den andra matningen har utretts.",
+          "Kontroll av spänningslöshet på arbetsstället och tydligt startbesked inom angiven arbetsgräns.",
+          "Enbart att belysningen är släckt."
+        ],
+        "ratt": 2
+      }
+    ]
   },
   "referenser": {
     "ursprung": [
@@ -37,6 +75,10 @@
     "kalla": "Övningstentans lösning"
   },
   "bedomning": {
-    "kursniva": "Veckor: v42"
+    "kursniva": "Veckor: v42",
+    "kriterier": [
+      "Kopplar minst tre konkreta brister i planen till motsvarande åtgärder.",
+      "Beskriver ansvar, arbetsgräns och villkor för att arbete får börja."
+    ]
   }
 }

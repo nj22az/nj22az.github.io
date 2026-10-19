@@ -3,7 +3,7 @@
   "titel": "Uppfyller spänningen kravet?",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -20,7 +20,45 @@
     ]
   },
   "uppgift": {
-    "fraga": "Kravet är 230 V ±1 %. Instrumentet visar 229,4 V med specifikationen ±(0,8 % + 3 siffror) och upplösningen 0,1 V. Kan du intyga att kravet är uppfyllt?"
+    "fraga": "Kravet är 230 V ±1 %. Instrumentet visar 229,4 V med specifikationen ±(0,8 % + 3 siffror) och upplösningen 0,1 V. Kan du intyga att kravet är uppfyllt?",
+    "delfragor": [
+      {
+        "id": "a",
+        "typ": "flerval",
+        "text": "Vilket spänningsintervall tillåter kravet?",
+        "alternativ": [
+          "227,7–232,3 V",
+          "229,0–231,0 V",
+          "228,4–230,4 V",
+          "230,0–232,3 V"
+        ],
+        "ratt": 0
+      },
+      {
+        "id": "b",
+        "typ": "flerval",
+        "text": "Vilken felgräns och vilket mätintervall får du efter avrundning?",
+        "alternativ": [
+          "Cirka ±0,3 V och 229,1–229,7 V",
+          "Cirka ±1,8 V och 227,6–231,2 V",
+          "Cirka ±0,021 V och 229,379–229,421 V",
+          "Cirka ±2,1 V och 227,3–231,5 V"
+        ],
+        "ratt": 3
+      },
+      {
+        "id": "c",
+        "typ": "flerval",
+        "text": "Vilken slutsats kan du dra om kravet?",
+        "alternativ": [
+          "Spänningen är säkert för hög.",
+          "Spänningen är säkert för låg.",
+          "Kravet kan inte intygas med detta mätresultat; ett noggrannare underlag behövs.",
+          "Kravet är säkert uppfyllt eftersom visningen ligger inom gränserna."
+        ],
+        "ratt": 2
+      }
+    ]
   },
   "referenser": {
     "ursprung": [
@@ -64,6 +102,10 @@
     }
   },
   "bedomning": {
-    "kursniva": "Veckor: v38, v45"
+    "kursniva": "Veckor: v38, v45",
+    "kriterier": [
+      "Visar kravintervallet och felgränsens båda delar, inklusive upplösningen.",
+      "Jämför hela mätintervallet med kravet och motiverar slutsats och nästa åtgärd."
+    ]
   }
 }

@@ -3,7 +3,7 @@
   "titel": "IT-nätet ombord",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -19,7 +19,45 @@
     ]
   },
   "uppgift": {
-    "fraga": "Ett 440 V IT-nät larmar för låg isolation. Isolationsprovning av en utgående grupp med 500 V DC ger en läckström på 0,80 mA. Fartygets instruktion anger minst 1 MΩ. a) Beräkna isolationsresistansen och bedöm den. b) Anta ett fullständigt jordfel på L1. Vilken spänning har L2 och L3 mot skrovet? c) Vad händer vid ett andra jordfel på L2?"
+    "fraga": "Ett 440 V IT-nät larmar för låg isolation. Isolationsprovning av en utgående grupp med 500 V DC ger en läckström på 0,80 mA. Fartygets instruktion anger minst 1 MΩ. a) Beräkna isolationsresistansen och bedöm den. b) Anta ett fullständigt jordfel på L1. Vilken spänning har L2 och L3 mot skrovet? c) Vad händer vid ett andra jordfel på L2?",
+    "delfragor": [
+      {
+        "id": "a",
+        "typ": "flerval",
+        "text": "Vilken isolationsresistans får du, och uppfylls instruktionens gräns?",
+        "alternativ": [
+          "1,60 MΩ; värdet är över 1 MΩ.",
+          "0,625 MΩ; värdet är under 1 MΩ.",
+          "625 MΩ; värdet är över 1 MΩ.",
+          "0,000625 MΩ; värdet är över 1 MΩ."
+        ],
+        "ratt": 1
+      },
+      {
+        "id": "b",
+        "typ": "flerval",
+        "text": "Vilken spänning får de friska faserna mot skrovet vid det antagna fullständiga jordfelet?",
+        "alternativ": [
+          "Omkring 440 V",
+          "Omkring 254 V",
+          "0 V",
+          "Omkring 880 V"
+        ],
+        "ratt": 0
+      },
+      {
+        "id": "c",
+        "typ": "flerval",
+        "text": "Vad innebär ett andra jordfel på L2 enligt uppgiftens förutsättningar?",
+        "alternativ": [
+          "Att första jordfelet automatiskt försvinner.",
+          "Att nätet blir ett friskt TN-system.",
+          "Att felströmmen säkert blir mindre än vid första felet.",
+          "En kortslutningsväg mellan L1 och L2 via skrovet, där skydden ska koppla bort felet."
+        ],
+        "ratt": 3
+      }
+    ]
   },
   "referenser": {
     "ursprung": [
@@ -57,6 +95,10 @@
     }
   },
   "bedomning": {
-    "kursniva": "Veckor: v44"
+    "kursniva": "Veckor: v44",
+    "kriterier": [
+      "Visar isolationsberäkningen med enhetsomvandling och bedömer den mot instruktionen.",
+      "Förklarar fasernas potentialer samt strömväg och risk vid andra jordfelet."
+    ]
   }
 }

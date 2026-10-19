@@ -72,7 +72,7 @@ MODULER = [
          labb_del=('isolationslabbet/?del=matning', 'Isolationsmätning och Mätaren påverkar'),
          inl_del=('vecka-44/aktuell/Inlamning.html#uppgift-4', 'Uppgift 4: Analys av mätdata'),
          ovningar=[('vecka-44', 'v44_01-q'), ('vecka-44', 'v44_02-q'), ('vecka-44', 'v44_03-q'), ('vecka-45', 'v45_02-q')]),
-    dict(nr=9, ankare=11, titel='Repetition och tentamen', mal='Välj formel efter storhet och metod efter frågan. Övningstentan med lösningar.',
+    dict(nr=9, ankare=11, titel='Repetition och tentamen', mal='Välj formel efter storhet och metod efter frågan. Övningstentan med separat facit att ladda ner.',
          vecka='Vecka 44–45', start='2026-10-26', sista='2026-11-06', sida='vecka-45/aktuell/',
          delar=[('vecka-45/aktuell/Del_3.html', 'Repetition inför tentamen'), ('tentamen.html', 'Tentamen och övningstenta'),
                 ('praktiskt-prov.html', 'Praktiskt prov')],
