@@ -17,6 +17,7 @@ import {plotGate} from './layout.js';
 import {residentsLine,homeNameplate} from '../../people/island-households.js';
 import {dressOldTown} from './old-town.js';
 import {buildStreetLots} from './lots.js';
+import {buildKitahamaLots,KITAHAMA_LOTS,KITAHAMA_LOT_STAINS} from './kitahama-lots.js';
 import {buildLaneEdges} from './lane-edges.js';
 
 
@@ -68,9 +69,10 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildWires(kit,solid);
  // Kitahama stands on the island's ground, below the old town's datum.
  kit.at(0,0,0,()=>buildKitahama(kit,solid,{anchor,inspect,onAction,vending:(x,z,ry)=>vending(x,z,ry,KITAHAMA.y)}),KITAHAMA.y);
- // What stands where the surplus houses stood (lots.js), and the gutter-and-weed edge every Kitahama lane has (lane-edges.js).
+ // What stands where the surplus houses stood, and the gutter-and-weed edge every Kitahama lane has (lots.js, lane-edges.js).
  buildStreetLots(kit,solid,{anchor,onAction});
- const laneEdges=buildLaneEdges(kit,group);
+ const lots=buildKitahamaLots(kit,solid,{anchor,onAction,group,hourly:(world.hourly??=[])});
+ const laneEdges=buildLaneEdges(kit,group,{lots:KITAHAMA_LOTS,stains:KITAHAMA_LOT_STAINS});
 
  const old=dressOldTown(kit,solid,{inspect,anchor,onAction,vending,group});
 
@@ -85,7 +87,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
   old.shutter.update(minutes);
  });
  if(!vendingReady())for(const machine of vendings)(world.details??=[]).push({id:'okinawa-vending-'+machine.id,x:machine.position.x,z:machine.position.z,radius:44,load:()=>hydrateVending(machine,{shadows})});
- return {group,meshes,colliders,materials,shutter:old.shutter,laneEdges};
+ return {group,meshes,colliders,materials,shutter:old.shutter,lots,laneEdges};
 }
 
 /* ------------------------------ Nishi-machi ------------------------------ */

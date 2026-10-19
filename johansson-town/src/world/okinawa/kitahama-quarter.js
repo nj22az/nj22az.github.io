@@ -160,13 +160,13 @@ function buildCorner(kit,solid,{anchor,onAction}){
  kit.box(.08,.95,1.6,nx,1.45,nz,0x8a6a45);kit.box(.12,.06,1.7,nx,1.97,nz,0x5d4431);
  const notices=[
   poster({title:'CANE CUT',lines:['Mon 12 January, 7:00','Everybody on the lane','Lunch at Sato Ramen'],bg:'#f4e7c4',band:'#8a6a2f'}),
-  poster({title:'TO LET',lines:['7, 9, 10, 11, 12','Kitahama','Ask at the town hall'],bg:'#eef1e4',band:'#c8432f'}),
+  poster({title:'GATEBALL',lines:['Every morning 7:00','The new Kitahama ground','New members welcome'],bg:'#eef1e4',band:'#c8432f'}),
   poster({title:'TYPHOON',lines:['Tie down tanks','Fill the bath','Shutters by Friday'],bg:'#f2ede0',band:'#3f6f8a'}),
  ];
  notices.forEach((t,i)=>kit.sign(t,.42,.6,nx+.06,1.45,nz-.5+i*.5,{ry:Math.PI/2,name:'notice'}));
  solid(kit.rect(nx-.1,nx+.1,nz-.8,nz+.8,2,'notice-board'));
  const at=kit.point(nx+.6,1,nz);
  anchor(at.x,at.y,at.z,'Read the Kitahama notice board',()=>onAction?.('read','Kitahama notice board',
-  'Rubbish: burnable on Tuesdays and Fridays, cans and bottles on Wednesdays, out by eight and under the nets, because of the crows.\n\nThe cane cut is on Monday the 12th of January from seven. Everybody on the lane, lunch at Sato Ramen.\n\nTo let: numbers 7, 9, 10, 11 and 12. Ask at the town hall.\n\nTyphoon season: tie down your water tanks, fill the bath, shutters up by Friday. Mr Shimabukuro will check the lane lights.\n\nFound: a child\'s blue sandal, left foot. Ask at number 3.'));
+  'Rubbish: burnable on Tuesdays and Fridays, cans and bottles on Wednesdays, out by eight and under the nets, because of the crows.\n\nThe cane cut is on Monday the 12th of January from seven. Everybody on the lane, lunch at Sato Ramen.\n\nGateball: every morning at seven on the new ground north of the spine, where the Nakasone and Miyagi houses were. New members welcome; bring your own mallet.\n\nTyphoon season: tie down your water tanks, fill the bath, shutters up by Friday. Mr Shimabukuro will check the lane lights.\n\nFound: a child\'s blue sandal, left foot. Ask at number 3.'));
  potPlant(kit,L.maxX-.4,L.minZ+.4,{seed:280});
 }

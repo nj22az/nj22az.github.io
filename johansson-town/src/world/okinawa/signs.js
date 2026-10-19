@@ -236,3 +236,9 @@ export function wallAd({jp,en,line='',bg,ink,accent}=WALL_ADS[0],seed=1){
   for(let i=0;i<46;i++){const edge=r()<.5,x=edge?(r()<.5?r()*40:w-r()*40):r()*w,y=edge?r()*h:(r()<.5?r()*36:h-r()*36);ctx.beginPath();ctx.ellipse(x,y,6+r()*18,4+r()*10,r()*3,0,Math.PI*2);ctx.fill();}
  });
 }
+
+/** What Kitahama's lots have painted on them (kitahama-lots.js): the honesty stand's card and the gateball slate. */
+export const LOT_SIGNS=Object.freeze({
+ honestyStand:Object.freeze({title:'無人販売',lines:Object.freeze(['ひとふくろ 100円','お金は缶へ','知念'])}),
+ gateballSlate:Object.freeze({title:'本日',lines:Object.freeze(['赤 3 − 白 2','北浜ゲートボール'])}),
+});
