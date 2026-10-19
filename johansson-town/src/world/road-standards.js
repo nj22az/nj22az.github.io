@@ -114,16 +114,24 @@ function tactileTexture(){return tactileFace??=canvasTexture(64,64,(ctx,w)=>{
  ctx.strokeStyle='#c99a18';ctx.lineWidth=2;ctx.strokeRect(1,1,w-2,w-2);
 });}
 
+/** The 330 sign's plate outline (the face's white border, stopFace), seen from the back: an inverted triangle. */
+export function stopPlateShape(size){
+ const p=(px,py)=>[(px/128-.5)*size,(.5-py/128)*size],shape=new THREE.Shape();
+ const [a,b,c]=[p(2,6),p(126,6),p(64,124)];shape.moveTo(...a);shape.lineTo(...c);shape.lineTo(...b);shape.closePath();
+ return new THREE.ShapeGeometry(shape);
+}
 const steel=()=>new THREE.MeshStandardMaterial({color:0x9aa3a6,roughness:.5,metalness:.3});
 /** A sign plate on a galvanised post, facing ry. 407-A crossing or 330 stop. */
 export function roadSign(parent,kind,{x,z,y=0,ry=0,colliders=null}={}){
  const g=new THREE.Group();g.name=kind==='stop'?'Stop sign (一時停止)':'Crossing sign (横断歩道)';g.position.set(x,y,z);g.rotation.y=ry;parent.add(g);
  const post=new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,2.5,8),steel());post.position.y=1.25;g.add(post);
  const face=kind==='stop'?stopFace():crossingFace(),size=kind==='stop'?.7:.6;
- const plate=new THREE.Mesh(new THREE.PlaneGeometry(size,size),new THREE.MeshStandardMaterial({map:face,color:face?0xffffff:(kind==='stop'?0xc8202a:0x1f5aa8),roughness:.6,transparent:kind==='stop',alphaTest:.5,side:THREE.DoubleSide}));
- plate.position.set(0,2.45,.035);g.add(plate);
- const back=new THREE.Mesh(new THREE.PlaneGeometry(size*.98,size*.98),new THREE.MeshStandardMaterial({color:0x8d9497,roughness:.6}));back.position.set(0,2.45,.03);back.rotation.y=Math.PI;
- if(kind!=='stop')g.add(back);
+ // The face is printed on the front only; from behind, a sign is its grey aluminium plate. (The stop face was drawn
+ // double-sided, so 止まれ read mirrored to everyone walking away from the junction.)
+ const plate=new THREE.Mesh(new THREE.PlaneGeometry(size,size),new THREE.MeshStandardMaterial({map:face,color:face?0xffffff:(kind==='stop'?0xc8202a:0x1f5aa8),roughness:.6,transparent:kind==='stop',alphaTest:.5}));
+ plate.position.set(0,2.45,.035);plate.name=g.name+' face';g.add(plate);
+ const back=new THREE.Mesh(kind==='stop'?stopPlateShape(size):new THREE.PlaneGeometry(size*.98,size*.98),new THREE.MeshStandardMaterial({color:0x8d9497,roughness:.6}));back.position.set(0,2.45,.03);back.rotation.y=Math.PI;
+ back.name=g.name+' back plate';g.add(back);
  colliders?.push({id:'road-sign',x,z,w:.12,d:.12,height:y+2.8});
  return g;
 }
