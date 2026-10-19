@@ -1,4 +1,6 @@
 import {canonicalDay} from './canonical-day.js';
+import {calledToQuay} from './shore-duty.js';
+import {onWatch} from './ferry-crew.js';
 import {onSakuraShift,isWeekend} from '../commerce/sakura-rota.js';
 import {townCalendarAt} from '../town-clock.js';
 import {izakayaJob} from './izakaya-hours.js';
@@ -257,9 +259,11 @@ function satoLunch(profile,minutes){
 }
 /** Yard residents whose evening runs longer than the usual two hours. */
 const YARD_EVENING=Object.freeze({Nhung:180});
+/** Where Chin's street body waits while the ship has him: the terminal, where he steps ashore when he signs off. */
+const ABOARD_AS_MOTORMAN=Object.freeze({place:'ferry',target:[8,-38],activity:'motorman aboard the Minato Maru'});
 function yardResidentPlan(profile,minutes,rain=false,state=null){
- // Sakura's 24 hours (commerce/sakura-rota.js): Chin's night shift, Nhung's weekend day shift covering for Thuan.
- if(onSakuraShift(profile.name,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:profile.name==='Chin'?'the night shift at Sakura':'minding Sakura’s counter for Thuan'};
+ // Sakura's 24 hours (commerce/sakura-rota.js): Nhung's weekend day shift covering for Thuan.
+ if(onSakuraShift(profile.name,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'minding Sakura’s counter for Thuan'};
  const lunch=satoLunch(profile,minutes);if(lunch)return lunch;
  const play=sistersAtPlay(profile,minutes,rain);if(play)return play;
  if(shiftActive(profile,minutes)&&!(profile.name==='Nhung'&&isWeekend(minutes)))return {place:'work',target:profile.work,activity:profile.role};
@@ -274,24 +278,28 @@ function yardResidentPlan(profile,minutes,rain=false,state=null){
  return {place:'home',target:profile.home,activity:rain?'sheltering at home':'at home in the yard'};
 }
 /**
- * The two who live at their work. The harbour master keeps the office from half past
- * six until five, walks the quay in the early evening and turns in behind the screen
- * in the office by half past nine. Officer Mori sleeps through the morning in the
- * tatami room behind the police box, keeps the front desk from four, takes supper at
- * Sakura and walks the night patrol from ten until six.
+ * The two who live at their work. The harbour master (Jack, the harbour agent: docs/CAST-CONSOLIDATION.md §4, §9)
+ * keeps the office through the ship's day, six until the last boat is fast at half past ten: the berth radio and the
+ * freight book between calls, and the shore end of every line at each call (ferry-shore-crew.js takes him to the
+ * bitts; shore-duty.js lets the day's plan and any room he is in release him). After the last boat he walks the quay to
+ * check the moorings and turns in behind the screen in the office by eleven. Officer Mori sleeps through the morning in
+ * the tatami room behind the police box, keeps the front desk from four, takes supper at Sakura and walks the night
+ * patrol from ten until six.
  */
-export const HARBOUR_MASTER_DAY=Object.freeze({start:390,finish:1020,turnIn:1230});
+export const HARBOUR_MASTER_DAY=Object.freeze({start:360,finish:1350,turnIn:1380});
+/** Where a shore line hand called by the ferry is going (ferry-shore-crew.js walks the body; this only lets him out). */
+const QUAY_LINES=Object.freeze({place:'quay-lines',target:[0,-48],activity:'taking the ferry’s lines at the outer pier'});
 export const MORI_DAY=Object.freeze({desk:960,patrol:1320,patrolEnd:360});
 function workplaceResidentPlan(profile,minutes,rain=false,state=null){
  const m=minuteOfDay(minutes),home={place:'home',target:profile.home};
  if(profile.name==='Harbour master'){
   const day=HARBOUR_MASTER_DAY;
+  if(calledToQuay(profile.name))return {...QUAY_LINES};
   const lunch=satoLunch(profile,minutes);if(lunch)return lunch;
   if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'buying lunch at Sakura'};
-  if(inTimeRange(m,day.start,day.finish))return {place:'work',target:profile.work,activity:'on duty at the harbour office'};
-  if(!rain&&inTimeRange(m,day.finish,day.finish+75))return {place:'stroll',target:[0,-44],activity:'walking the quay to check the moorings'};
-  if(!rain&&inTimeRange(m,day.finish+75,day.turnIn-60))return {place:'park',target:[PARK_STAND[0]+.8,PARK_STAND[1]-.9],activity:'watching the evening from the park'};
-  return {...home,activity:inTimeRange(m,day.turnIn-60,day.start+1440)?'in his bed nook at the office':'at home in the office'};
+  if(inTimeRange(m,day.start,day.finish))return {place:'work',target:profile.work,activity:'on duty at the harbour office: the berth radio and the freight book'};
+  if(!rain&&inTimeRange(m,day.finish,day.turnIn))return {place:'stroll',target:[0,-44],activity:'walking the quay to check the moorings after the last boat'};
+  return {...home,activity:inTimeRange(m,day.turnIn-30,day.start+1440)?'in his bed nook at the office':'at home in the office'};
  }
  const day=MORI_DAY;
  if(inTimeRange(m,day.patrol,day.patrolEnd+1440))return {place:'patrol',target:NIGHT_PATROL[0],activity:'night patrol'};
@@ -377,7 +385,7 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
   if(minuteOfDay(minutes-SATO_SHIFT.arrival)<SATO_SHIFT.start-SATO_SHIFT.arrival)return {place:'stroll',target:[3.2,-44],activity:'buying fish for the stock at the harbour'};
  }
  if(profile.name==='Bus driver')return {place:'station',target:transitStop().driver,activity:'running the Harbour Line'};
- if(profile.name==='Harbour master')return {place:'work',target:profile.work,activity:'on duty at the harbour office'};
+ if(profile.name==='Harbour master')return calledToQuay(profile.name)?{...QUAY_LINES}:{place:'work',target:profile.work,activity:'on duty at the harbour office'};
  if(profile.name==='Officer Mori')return shiftActive(profile,minutes)?{place:'patrol',target:(NIGHT_PATROL)[0],activity:'night patrol'}:bus('waiting for the night shift bus');
  if(profile.name==='Thao'){
   const morning=naoBeforeShift(profile,minutes,rain);
@@ -409,6 +417,10 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
 /** Every caller shares one daily plan, including sleep in the residents' actual homes. */
 export function residentPlan(profile,minutes,rain=false,state=null){
  if(profile?.canonicalDay){const plan=canonicalDay(profile.name,minutes,rain);if(plan)return plan;}
+ // Chin is the ferry's motorman (ferry-crew.js): signed on through the ship's day, his body the crew controller's
+ // (ferry-crew-aboard.js hides this one), before any errand, happening or Saturday night; the bench and the izakaya
+ // are for after he signs off.
+ if(profile?.name==='Chin'&&onWatch(minutes))return {...ABOARD_AS_MOTORMAN};
  // Minato's regular never joins the Harbour Line or leaves the room. He sleeps on
  // his usual stool from 03:00 until 10:00 and drinks at the counter the rest of day.
  if(profile?.name==='Barfly'){
