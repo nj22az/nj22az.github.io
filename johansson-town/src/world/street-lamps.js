@@ -161,7 +161,7 @@ export function buildStreetLamps({parent,colliders=[],shadows=false,mobile=false
  parent?.add(group);
  applyCelShading(group);
  // The light on the ground and round the head: decals and sprites, not lights (light-pools.js).
- const glow=createLampGlow(group,lampSpots);
+ const glow=createLampGlow(group,lampSpots,{pool:{strength:.65}});
 
  /**
   * @param {number} lanternGlow the heads, 0–1 (dusk.js lanternGlow)

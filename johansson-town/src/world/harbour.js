@@ -388,7 +388,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   for(const mesh of createHarbourInstances(batches.values(),{shadows,cellSize:harbourCellSize,consolidate:harbourBatching}))group.add(mesh);
 
   // Every quay lamp's pool and halo, faded with the heads (lanternGlow).
-  const lampGlow=createLampGlow(group,lampSpots);
+  const lampGlow=createLampGlow(group,lampSpots,{pool:{strength:.6}});
 
   let wet=false;const rainCount=mobile?260:600,positions=new Float32Array(rainCount*6);
   for(let i=0;i<rainCount;i++){const x=(Math.random()-.5)*32,y=Math.random()*16,z=(Math.random()-.5)*70;positions.set([x,y,z,x+.025,y+.65,z-.01],i*6);}
@@ -407,7 +407,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       tickOcean(time);
       const lantern=lanternGlow(minutes),glass=windowGlow(minutes),pool=poolGlow(minutes);
       for(const m of lamps){m.material.emissive.set(0xf0a65c);m.material.emissiveIntensity=.12+lantern*.82;}
-      streetLamps.update(lantern,pool);lampGlow.update(pool);
+      streetLamps.update(lantern,pool);lampGlow.update(pool);harbourWarehouse?.glow?.update(pool);
       lampLights.forEach((l,i)=>l.intensity=lantern*(l.userData.nightIntensity||6));
       shopGlass.forEach(m=>{m.material.emissiveIntensity=.035+glass*.31;m.material.roughness=wet?.18:.24;});
       wetMeshes.forEach((m,i)=>{if(wet)m.material.opacity=.28+Math.sin(time*.7+i)*.045;});

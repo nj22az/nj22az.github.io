@@ -59,7 +59,7 @@ import {buildCoyoteTunnel,CAVE_ACTIVE} from './coyote-tunnel.js';
 import {buildOkinawaQuarters} from './okinawa/quarters.js';
 import {buildHalloween} from './halloween.js';
 import {createFerryRun} from './ferry.js';
-import {windowGlow,poolGlow} from '../render/dusk.js';
+import {windowGlow,lanternGlow,poolGlow} from '../render/dusk.js';
 import {createLampGlow} from './light-pools.js';
 import {setWindowLight} from '../render/window-interior.js';
 import {isOceanMaterial,tickOcean} from './ocean.js';
@@ -154,17 +154,21 @@ function addWalkablePier(world,options,factory){
   {const buoy=new THREE.Group();buoy.position.set(A.lifebuoy[0],.78,A.lifebuoy[1]);group.add(buoy);
    for(let i=0;i<4;i++){const arc=new THREE.Mesh(new THREE.TorusGeometry(.3,.07,8,10,Math.PI/2),factory.material(null,i%2?0xf1ece0:0xd9542e,.8,0));arc.rotation.z=i*Math.PI/2;arc.castShadow=false;arc.userData.staticProp=true;buoy.add(arc);}}
 
+  const lamps=[],lampSpots=[];
   for(const z of B.lamps){
     factory.cylinder(group,.07,3.1,[0,1.65,z],steel,10);
     factory.box(group,[.68,.12,.24],[0,3.05,z],steel);
-    const lampMat=factory.material(null,0xd9ad68,.78,0,0xd9ad68,.32),lamp=new THREE.Mesh(new THREE.BoxGeometry(.42,.18,.20),lampMat);lamp.position.set(0,2.88,z);lamp.castShadow=false;group.add(lamp);
+    const lampMat=factory.material(null,0xd9ad68,.78,0,0xd9ad68,.32),lamp=new THREE.Mesh(new THREE.BoxGeometry(.42,.18,.20),lampMat);lamp.position.set(0,2.88,z);lamp.castShadow=false;lamp.userData.dynamicProp=true;group.add(lamp);lamps.push(lamp);
+    // Its pool on the pier deck and its halo (light-pools.js), with the quay's other lamps.
+    lampSpots.push({head:{x:0,y:2.88,z},ground:{x:0,y:OUTER_PIER.height,z},radius:3,size:1.4});
   }
+  const glow=createLampGlow(group,lampSpots);
 
   anchor(group,[A.fishing[0],1,A.fishing[1]],'Fish from the outer pier',()=>options.onAction?.('fishing'),options.register);
   anchor(group,[A.bait[0],1.1,A.bait[1]+.75],'Inspect bait station',()=>options.onAction?.('inspect','Harbour bait station','Ice, hooks, sinkers and bait tins are arranged for the evening fishermen. The counter is scarred by years of salt water.'),options.register);
   anchor(group,[A.winch[0]-.05,1,A.winch[1]+.65],'Operate pier winch',()=>options.onAction?.('machine','Pier winch','A compact electric winch at the end of the pier, for hauling a basket of catch or a skiff up from the water. The guarded drum turns slowly during a test cycle.'),options.register);
   anchor(group,[A.rope[0],.8,A.rope[1]+.6],'Inspect mooring rope',()=>options.onAction?.('inspect','Mooring rope','Heavy natural-fibre rope has been coiled neatly after the morning fishing boats departed.'),options.register);
-  return {posts:posts.length,collidersAdded:B.bitts.length+CARGO_BERTH.bitts.length+3};
+  return {posts:posts.length,collidersAdded:B.bitts.length+CARGO_BERTH.bitts.length+3,lamps,glow};
 }
 
 function addSiteFrontage(world,options,factory,lights,lanternSpots=[]){
@@ -373,7 +377,7 @@ export function createTown(options){
    // The pool on the lane under every pole lamp (Kitahama, Fumoto: okinawa/props.js utilityPole) and the halo round
    // its head, on the lamps' own clock. Decals and sprites, no lights (light-pools.js).
    const poleLamps=[];world.group.traverse(o=>{for(const p of o.userData.powerNetwork?.nodes||[])if(p.lamp)poleLamps.push({head:p.lamp,ground:{x:p.lamp.x,y:p.y||0,z:p.lamp.z},radius:3,size:1.6});});
-   world.lampPools=createLampGlow(world.group,poleLamps);
+   world.lampPools=createLampGlow(world.group,poleLamps,{pool:{strength:.65}});
    (world.hourly??=[]).push(minutes=>{const glow=windowGlow(minutes);setWindowLight(glow);for(const m of glass)m.emissiveIntensity=glow*.75;for(const m of lamps)m.emissiveIntensity=.1+glow*1.6;world.lampPools.update(poolGlow(minutes));});}
   world.isOpen=isOpen;world.updateHours=minutes=>{for(const fn of world.hourly||[])fn(minutes);for(const {mesh,id} of districts.shutters){const open=isOpen(options.sites.find(s=>s.id===id),minutes);mesh.position.y=1.3;mesh.visible=false;mesh.userData.closed=!open;}const glow=windowGlow(minutes);for(const m of districts.windows)m.material.emissiveIntensity=.02+glow*.78;};
   const setBridgeRain=world.setRain.bind(world);
@@ -413,6 +417,8 @@ export function createTown(options){
     baseUpdate(dt,time,day,minutes);
     for(const l of street.lights)l.intensity=THREE.MathUtils.damp(l.intensity,(1-day)*1.55,4,dt);
     street.glow.update(poolGlow(minutes));
+    // The outer pier's lamps come on with the quay's lanterns, and throw their pools as the light goes.
+    {const lantern=lanternGlow(minutes);for(const lamp of pier.lamps)lamp.material.emissiveIntensity=.12+lantern*.82;pier.glow.update(poolGlow(minutes));}
     if(sea){
       if(isOceanMaterial(sea.material))tickOcean(time);
       else{const tick=Math.floor(time*10);if(tick!==normalTick){normalTick=tick;sea.geometry.computeVertexNormals();sea.geometry.attributes.normal.needsUpdate=true;}}
