@@ -34,8 +34,11 @@ export const NISHI=Object.freeze({
  plots:Object.freeze([
   {id:'net-shed',kind:'shed',minZ:-37.8,maxZ:-29.3},
   {id:'higa',kind:'red-tile',family:"Higa",romaji:'Higa',minZ:-25.7,maxZ:-14.8,gate:'south'},
-  {id:'kinjo',kind:'concrete',family:"Kinjo",romaji:'Kinjō',minZ:-11.2,maxZ:-.2,gate:'north'},
-  {id:'oshiro',kind:'red-tile',family:"Oshiro",romaji:'Ōshiro',minZ:3.3,maxZ:14.2,gate:'south'},
+  // The Kinjō (concrete, z −11.2..−0.2) and Ōshiro (red tile, z 3.3..14.2) plots between the Higa house and the utaki
+  // were cleared in phase 4 of docs/CAST-CONSOLIDATION.md with their residents. The lanes at z −13, 1.5 and 16 stay:
+  // the first is the Higa house's north side, the second the way through the yard wall to 2 Front-Row Yard, the third
+  // the utaki's approach. The cleared ground is the quarter's coral sand (NISHI_CLEARED, lots.js), walkable from the
+  // seawall walk to the yard, until the dressing pass.
   {id:'utaki',kind:'grove',minZ:17.8,maxZ:28.8},
  ].map(p=>Object.freeze({...p,minX:-34.7,maxX:-27}))),
 });
@@ -47,7 +50,9 @@ export const EAST_ROW=Object.freeze({
  onsenLane:Object.freeze({minZ:-1,maxZ:5.9}),
  plots:Object.freeze([
   {id:'nakamura',minZ:-14.2,maxZ:-9.2,colour:0xe9dfc4,trim:0x3f7f86},
-  {id:'shimabukuro',minZ:-6.6,maxZ:-1.6,colour:0xd6e2dc,trim:0x2f5f8e},
+  // The post-office shop-house (z −6.6..−1.6, the barber's before that) came down in phase 4 of
+  // docs/CAST-CONSOLIDATION.md (addendum 3): its counter had moved to the Port Terminal and its tenant retired. The
+  // park's lawn runs out to Main Street between Nakamura's and Kitano Road now (EAST_ROW_CLEARED, lots.js).
   {id:'higa-saketen',minZ:5.9,maxZ:10.9,colour:0xecd2c6,trim:0x8a3b2e},
   // Stops short of the alley at z 18.4, which is the way through to the school gate.
  ].map(Object.freeze)),

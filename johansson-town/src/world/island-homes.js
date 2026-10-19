@@ -3,7 +3,7 @@ import {KITAHAMA,KITAHAMA_FLATS,plotGate} from './kitahama-layout.js';
 
 import {householdAtHome,householdTitle} from '../people/island-households.js';
 import {HOUSEBOAT} from './fujita-houseboat.js';
-import {NISHI,EAST_ROW} from './okinawa/layout.js';
+import {NISHI} from './okinawa/layout.js';
 import {NAKAMURA_HOME_DOOR} from './nakamura-plan.js';
 import {householdFor} from '../people/households.js';
 
@@ -42,17 +42,16 @@ export function buildIslandHomes(world,options){
   const h=householdAtHome(house.id),[x,y,z]=house.approachPosition;
   addHome(h,[x,y,z],{entrancePosition:[...house.door],entryFacing:house.approachFacing,unit:house.house,houseKind:'concrete'});
  }
- for(const p of NISHI.plots.filter(p=>['higa','kinjo','oshiro'].includes(p.id))){
+ // The Higa house: the one Nishi-machi home that stands (the Kinjō and Ōshiro houses went in phase 4).
+ for(const p of NISHI.plots.filter(p=>p.id==='higa')){
   const {door,inward}=plotGate(p);addHome(householdAtHome(p.id),[door[0],.04,door[1]],{entryFacing:inward,houseKind:p.kind});
  }
  // Separate residential entrances: customers never cross a private sleeping room.
  addHome(householdAtHome('nakamura'),[...NAKAMURA_HOME_DOOR],{upperHome:true,entryFacing:Math.PI/2});
- const post=EAST_ROW.plots.find(p=>p.id==='shimabukuro');
- addHome(householdAtHome('shimabukuro'),[EAST_ROW.maxX+.75,.04,(post.minZ+post.maxZ)/2],{upperHome:true,entryFacing:Math.PI/2,doorPanel:true,panelPosition:[EAST_ROW.maxX+.04,1.065,(post.minZ+post.maxZ)/2]});
  addHome(householdAtHome('clinic'),[37.7,.04,35.1],{entrancePosition:[37.7,.15,36.4],entryFacing:Math.PI});
- addHome(householdAtHome('izakaya'),[-17.65,.04,-9.0],{doorPanel:true,panelPosition:[-17.14,1.065,-9]});
+ // (The flat over the former post office and Barfly's room at the izakaya were retired in phase 4: no door, no site.)
  function addHome(h,door,extra={}){
-  const id=h.home==='clinic'?'home-clinic':h.home==='izakaya'?'home-izakaya':h.entranceSiteId;
+  const id=h.home==='clinic'?'home-clinic':h.entranceSiteId;
   const site={id,title:householdTitle(h),sub:'PRIVATE HOME',homeId:h.home,isResidence:true,status:h.status,
    residents:[...h.residents],homeOwner:h.residents[0],homeOwners:[...h.residents],familyHome:h,houseKind:'concrete',ownRoom:true,
    door,exitPosition:[...door],approachPosition:[...door],x:door[0],z:door[2],opens:'00:00',line:h.address,...extra};

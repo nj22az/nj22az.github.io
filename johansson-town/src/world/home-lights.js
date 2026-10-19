@@ -8,9 +8,8 @@ import {registerHomeLight,setHomeLight,clearHomeLights} from '../render/window-i
  *
  * - Thao and Chin's house and Mrs Sato's follow the walking residents themselves: lit
  *   when one of them is in and up, dark when they are out or asleep.
- * - The other households keep a routine of their own: the grandparents are in bed by
- *   nine, the auction hand is up at half past four, the nurse's light comes on for a
- *   night call now and then, the ferry deckhand's house is dark every other week.
+ * - The other households keep a routine of their own: the auction hand is up at half
+ *   past four, the bosun's house is dark every other week.
  * - A house with both (3 Kitahama: Nhung walks, Kōji and Riku keep the household's
  *   routine) is lit when either says so.
  * - Kitahama Heights is two ground-floor houses, each its own light.
@@ -22,15 +21,8 @@ const H=(h,m=0)=>h*60+m;
 /** Ambient households: [wake, bed] in minutes of the day; `away(day)` empties the house. */
 export const HOME_ROUTINES=Object.freeze({
  'kitahama-3':{wake:H(4,30),bed:H(21,30)},
- 'kitahama-4':{wake:H(6),bed:H(22,30)},
- 'kitahama-5':{wake:H(6,30),bed:H(21)},
- 'kitahama-6':{wake:H(5,30),bed:H(20,30)},
- 'kitahama-7':{wake:H(6),bed:H(23),nightCall:day=>day%4===1},
+ // (4, 5, 6, 7 and 9–12 Kitahama have no routine: they are gone, phase 4 and the housing project before it.)
  'kitahama-8':{wake:H(6,30),bed:H(23,30),away:day=>Math.floor(day/7)%2===0},
- 'kitahama-9':{wake:H(5,45),bed:H(21)},
- 'kitahama-10':{wake:H(5,30),bed:H(21,30)},
- 'kitahama-11':{wake:H(6,30),bed:H(23,30)},
- 'kitahama-12':{wake:H(7),bed:H(23)},
  // Fumoto: farmers' hours. The Ishimines' kitchen is lit from a quarter to four, for the tofu.
  'fumoto-1':{wake:H(5,30),bed:H(21,30)},
  'fumoto-2':{wake:H(6),bed:H(22)},
