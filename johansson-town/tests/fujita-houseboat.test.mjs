@@ -49,7 +49,20 @@ test('extended cabin has a sofa and stored futon, with furniture beside the clea
  for(let z=HOUSEBOAT.z-2.7;z<=HOUSEBOAT.z+.2;z+=.05){
   assert.ok(!colliders.some(c=>circleHitsRect(HOUSEBOAT.x+.26,z,.2,c)),`cabin aisle ${z}`);
  }
- assert.ok(model.children.filter(o=>o.isMesh).length<30,'fittings remain batched');shed.dispose();
+ // The batches, the cabin lamp, the deck bulb and the lettering are the live meshes; every other fitting is merged.
+ assert.ok(model.children.filter(o=>o.isMesh).length<31,'fittings remain batched');shed.dispose();
+});
+
+test('a deck bulb outside the cabin door burns after dark, with its halo and its pool on the deck boards',()=>{
+ const {shed}=make(),boat=shed.boat,bulb=boat.group.getObjectByName('Deck bulb');
+ assert.ok(bulb?.userData.houseboatBulb,'a live fitting, not batched away');
+ boat.tick({night:0});assert.equal(bulb.material.emissiveIntensity,0);assert.equal(boat.deckGlow.pools.group.visible,false);
+ boat.tick({night:1});assert.ok(bulb.material.emissiveIntensity>1);assert.ok(boat.deckGlow.pools.group.visible&&boat.deckGlow.halos.group.visible);
+ const pool=boat.deckGlow.pools.group.children[0];assert.ok(pool.userData.lightPool&&pool.position.y>HOUSEBOAT.deckY&&pool.position.y<HOUSEBOAT.deckY+.1,'a decal on the deck');
+ let points=0;boat.group.traverse(o=>{if(o.isPointLight)points++;});assert.equal(points,0,'no light of its own');
+ // The shed passes the clock's lantern glow on: dark at noon, lit at nine.
+ shed.tick(.1,720);assert.equal(bulb.material.emissiveIntensity,0);shed.tick(.1,1260);assert.ok(bulb.material.emissiveIntensity>1);
+ shed.dispose();
 });
 
 test('standing player clearance follows Fujita through the gangway and cabin in both directions',()=>{

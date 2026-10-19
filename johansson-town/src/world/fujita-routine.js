@@ -1,5 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {HOUSEBOAT as B} from './fujita-houseboat.js';
+import {poolGlow} from '../render/dusk.js';
 export const FUJITA_HOURS=Object.freeze({bedtime:1410,wake:360});
 export function fujitaAsleep(minutes){const m=((minutes%1440)+1440)%1440;return m<FUJITA_HOURS.wake||m>=FUJITA_HOURS.bedtime;}
 export function fujitaBoatRoute(chair){return [[chair[0],.02,chair[1]],[-36.6,.02,-55.6],[-37.5,.02,-55.6],[-37.5,.06,-54.2],[-39.2,.06,-54.2],[B.x+.3,.06,-54.2],[B.x+.3,.06,B.z+1.1],[B.x+.65,.06,B.z+1.1],[B.x+.65,.06,B.z+.15],[B.x+B.bedside[0],B.bedside[1],B.z+B.bedside[2]]];}
@@ -24,7 +25,7 @@ export function createFujitaRoutine(entity,{origin,chair,cover,boat}){
   if(state==='settling'){rest=Math.min(1,rest+Math.min(dt,.2));entity.position.copy(path.at(-1)).lerp(bed,rest);entity.quaternion.identity().slerp(lying,rest);u.socialPose='Sleep';u.sleepBlend=rest;u.activity='settling onto his sofa';if(rest===1)state='sleeping';}
   if(state==='sleeping'){flags();entity.position.copy(bed);entity.quaternion.copy(lying);u.socialPose='Sleep';u.sleeping=true;u.sleepBlend=1;u.hatOff=true;u.activity='sleeping aboard Shiosai';}
   if(state==='watching'){entity.position.copy(path[0]);entity.rotation.set(0,chairYaw,0);u.sleeping=false;u.sleepBlend=0;delete u.hatOff;u.seatHeight=chairSeatHeight;u.socialPose='Drink';u.heldItem='beer';u.heldPortion=Math.max(0,.6*Math.min(1,(1410-(((minutes%1440)+1440)%1440))/30));u.activity=programme==='baseball'?'watching the ballgame with a beer':programme==='news'?'watching the evening news':'watching television with a beer';}
-  u.houseboatRoutine=state;u.walking=state==='to-boat'||state==='to-shed';cover?.update(dt,rest);boat?.tick({sleeping:rest>.01});return state;
+  u.houseboatRoutine=state;u.walking=state==='to-boat'||state==='to-shed';cover?.update(dt,rest);boat?.tick({sleeping:rest>.01,night:poolGlow(minutes)});return state;
  }
  return {update,get state(){return state;}};
 }
