@@ -8,6 +8,7 @@ import {residentPersonality} from '../people/resident-personalities.js';
 import {withTownDials} from './personality.js';
 import {applyLook} from './looks.js';
 import {LOOKS} from './looks-data.js';
+import {identityOf} from '../people/roster.js';
 
 /**
  * Who everybody is, as recipes. Johansson and Thuan are drawn from the photographs the
@@ -194,10 +195,16 @@ export const CREW_LOOKS=Object.freeze({
  'Ms Ganaha':R({name:'Ms Ganaha',age:'adult',head:{size:.48,shape:.5,form:'oval',jaw:0.4,cheeks:0.6},body:{height:.4,build:.5,silhouette:'feminine',skin:'#cf9d76'},hair:{style:'bob',colour:'#4a423c'},eyes:{style:'gentle'},brows:{style:'arched'},nose:{style:'button'},mouth:{style:'smile'},glasses:{style:'half',colour:'#7a5a3a'},wrinkles:.35,outfit:{top:'vest',topColour:'#b4583c',accent:'#f4f1ea',bottom:'skirt',bottomColour:'#27304d',footwear:'shoes',shoes:'#2b2b2b',pattern:'none'}}),
 });
 export function baseRecipe(name=''){return withBirthday(drawnRecipe(name),name);}
+// Only for a name with no drawing of its own: the old townsfolk profile Emi (Mrs Kinjō's look) keeps her face until phase 5
+// retires that profile, even though Emi is Mrs Nakamura's display name in the roster.
+const authoredNameFor=name=>{if(PROFILES.some(p=>p.name===name))return null;const avatar=identityOf(name)?.avatar;return avatar&&avatar!==name?avatar:null;};
 function drawnRecipe(name){
  if(CAST_RECIPES[name])return aged(CAST_RECIPES[name],name);
  if(NEIGHBOUR_RECIPES[name])return aged(normalizeRecipe(withTownDials(NEIGHBOUR_RECIPES[name],name)),name);
  if(CREW_LOOKS[name])return aged(CREW_LOOKS[name],name);
+ // A person the consolidated roster knows (people/roster.js `avatar`) is drawn as the name World draws them under today:
+ // recipeFor('Fuji') is Mr Fujita's drawing, and Jack's is the Harbour master's, until phase 2 decides otherwise.
+ const authored=authoredNameFor(name);if(authored)return drawnRecipe(authored);
  const style=residentPersonality(name),r=seeded(name),any=list=>list[Math.floor(r()*list.length)];
  const feminine=PROFILES.find(p=>p.name===name)?.female??(/female/.test(style.source||'')||/^(Mrs |Ms |Nhung|Reiko|Hana|Yoshiko|Naoko|Fumiko|Yui)/.test(name));
  const grey=/^#[a-f0-9]{6}$/i.test(style.hair||'')&&parseInt(style.hair.slice(1,3),16)>150;

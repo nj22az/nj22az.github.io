@@ -1,13 +1,15 @@
 # Current interior inventory — 18 October 2026
 
-This inventory follows active building registrations and the runtime room builders, not screenshots or a claim of visual completion. All 24 occupied primary households have interior geometry: 23 in Minato and Johansson/Thuan's primary home on Kitano-jima. An individual interior and a shared residential layout are distinguished below. Resident routines must not depend on a bespoke bedroom being finished.
+> **Superseded on 19 October 2026 by [CAST-CONSOLIDATION.md](CAST-CONSOLIDATION.md)** (the owner's cast, household and crew consolidation; its addendum wins). This document is kept as dependency evidence of the earlier design; where it names Johansson mayor, gives Grandmother Sakurai Sakura or a home, keeps Thuan a weekday room, or counts 31 residents and 23/24 households, the consolidation's 21 core and 5 supporting identities, 14 households and ten retirements are the plan of record (`src/people/roster.js`, `docs/cast-roster.json`). Corrections below are marked *(superseded …)*.
+
+This inventory follows active building registrations and the runtime room builders, not screenshots or a claim of visual completion. All 24 occupied primary households have interior geometry: 23 in Minato and Johansson/Thuan's primary home on Kitano-jima *(superseded 19 Oct 2026: the target is 14 core households; see CAST-CONSOLIDATION.md §7–§8 for which of these go)*. An individual interior and a shared residential layout are distinguished below. Resident routines must not depend on a bespoke bedroom being finished.
 
 ## Individual home interiors
 
 | Home | Residents | Builder / arrangement |
 | --- | --- | --- |
 | Kitano family house | Johansson and Thuan | `johansson-house-interior.js`; primary home |
-| 1 Kitahama | Thao, Chin, Vy; Thuan's weekday room | `vy-room.js`; family rooms and separate sleeping places |
+| 1 Kitahama | Thao, Chin, Vy; ~~Thuan's weekday room~~ *(dropped 19 Oct 2026)* | `vy-room.js`; family rooms and separate sleeping places |
 | 1 Front-Row Yard | Nhung and Reiko | `yard-home.js`; shared yard home |
 | 2 Front-Row Yard | Tetsuo | `tetsuo-flat.js`; individual flat |
 | 2 Kitahama | Mrs Sato | `tatami-home.js`; individual tatami home |
