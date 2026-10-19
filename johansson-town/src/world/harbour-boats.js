@@ -171,7 +171,18 @@ export const QUAY_FISHING_BOAT_LOOK=Object.freeze({
  }),
 });
 
-export function buildFishingBoat({length=6.3,beam=2.9,look=QUAY_FISHING_BOAT_LOOK,shadows=false,name='Fishing boat'}={}){
+/**
+ * @param {{length?:number,beam?:number,look?:object,shadows?:boolean,name?:string,quayFenders?:{side:1|-1,radius:number}|null}} options
+ *   quayFenders: big fenders hung on the side she lies to a quay with no tyres of its own (side −1 starboard, 1 port),
+ *   as fat as the gap; without it she lies on the quay's tyres and carries two small ones ready on her port side.
+ */
+/** The two boats that lie at the east quay in front of the auction shed (okinawa/quarters.js). */
+export const EAST_QUAY_BOAT_LOOKS=Object.freeze([
+ Object.freeze({...QUAY_FISHING_BOAT_LOOK,name:'第三 みなと丸',registration:'OK2-20419'}),
+ Object.freeze({...QUAY_FISHING_BOAT_LOOK,name:'第八 栄福丸',registration:'OK2-27753',colours:Object.freeze({...QUAY_FISHING_BOAT_LOOK.colours,stripe:0x8a3b2e})}),
+]);
+
+export function buildFishingBoat({length=6.3,beam=2.9,look=QUAY_FISHING_BOAT_LOOK,shadows=false,name='Fishing boat',quayFenders=null}={}){
  const kit=createBoatKit(name),half=length/2,hb=beam/2,C=look.colours;
  const hull=fairedHull(kit,{length,colours:C,flare:.12,rake:.6,rakeFrom:half*.2,stations:{
   breadth:[[-half,hb*.86],[-half*.4,hb],[half*.25,hb*.95],[half*.7,hb*.62],[half,0]],
@@ -220,8 +231,9 @@ export function buildFishingBoat({length=6.3,beam=2.9,look=QUAY_FISHING_BOAT_LOO
  for(let i=0;i<3;i++)kit.box(.62,.24,.42,-.55,deckY(-1.95)+.12+i*.245,-1.95,0x2f6fb8,'paint');
  // Fenders: two white ones hung ready on her port side, for a boat that comes alongside her; to starboard she lies on
  // the quay's own tyres (harbour.js), which take her side at her waterline.
- for(const z of [-1.6,.2])kit.cyl(.11,.11,.46,wide(z,top(z)-.35)+.11,top(z)-.5,z,0xf0eee6,'rubber',{segments:10});
- for(const z of [-1.6,.2])kit.rod([wide(z,top(z))-.02,top(z)+.02,z],[wide(z,top(z)-.35)+.11,top(z)-.27,z],.008,0x9b825e,'paint');
+ {const side=quayFenders?quayFenders.side:1,r=quayFenders?quayFenders.radius:.11,at=quayFenders?[-length*.3,0,length*.25]:[-1.6,.2];
+  for(const z of at){kit.cyl(r,r,.5,side*(wide(z,top(z)-.4)+r),top(z)-.62,z,0xf0eee6,'rubber',{segments:10});
+   kit.rod([side*(wide(z,top(z))-.02),top(z)+.02,z],[side*(wide(z,top(z)-.4)+r),top(z)-.37,z],.008,0x9b825e,'paint');}}
  // Wear: rust from the bitts' fastenings and the scuppers, scuffing along her quay side.
  for(const [z,h] of [[half*.62,.3],[-half+.45,.35],[-.7,.25]])for(const side of [1,-1])kit.add(hullQuad(wide,side,z-.025,z+.025,top(z)-.32-h,top(z)-.32,{off:.006,shift:sh}),0xa66a42,'wear');
  for(const z of [-1.2,.3])kit.add(hullQuad(wide,-1,z-.45,z+.45,.32,.38,{off:.006}),0xb4b0a4,'wear');
@@ -231,11 +243,13 @@ export function buildFishingBoat({length=6.3,beam=2.9,look=QUAY_FISHING_BOAT_LOO
   atlas.onHull(0,wide,side,z-.75,z+.75,yN-.15,yN+.15,sh);atlas.onHull(1,wide,side,z-.55,z+.55,yR-.11,yR+.11,sh);}
  // Her lines leave from the starboard bitts through fairleads in the cap (stern line, then the forward spring); on deck,
  // each runs from its bitt to the fairlead, and its tail lies coiled beside the bitt.
- const fairleads=[-half+.45,half*.62].map(z=>{const x=-(wide(z,top(z))-.32),fx=-(wide(z,top(z))-.02);
+ const lead=side=>[-half+.45,half*.62].map(z=>{const x=side*(wide(z,top(z))-.32),fx=side*(wide(z,top(z))-.02);
   kit.rod([x,deckY(z)+.24,z],[fx,top(z)+.03,z],.022,0x9b825e,'paint');
-  for(let k=0;k<3;k++)kit.torus(.16-k*.035,.022,x+.3,deckY(z)+.025+k*.03,z+(z>0?-.35:.35),0x9b825e,'paint',{rx:Math.PI/2});
+  for(let k=0;k<3;k++)kit.torus(.16-k*.035,.022,x-side*.3,deckY(z)+.025+k*.03,z+(z>0?-.35:.35),0x9b825e,'paint',{rx:Math.PI/2});
   kit.box(.1,.06,.16,fx,top(z)+.05,z,0x2f3437,'metal');
-  return [fx-.03,top(z)+.04,z];});
+  return [fx+side*.03,top(z)+.04,z];});
+ // Her lines go from the side she lies to the quay: starboard at the main quay, either at the east quay.
+ const fairleads=lead(quayFenders?.side??-1);
  kit.finish(shadows);atlas.finish(kit.group);
  Object.assign(kit.group.userData,{look,fairleads});
  return kit.group;

@@ -1,3 +1,6 @@
+import {buildFishingBoat,EAST_QUAY_BOAT_LOOKS} from '../harbour-boats.js';
+import {hangingRope} from '../timber-pier.js';
+import {SEA_LEVEL} from '../ocean.js';
 import {SHED_WALKWAY,FUJITA_PIER} from '../fujita-layout.js';
 import {COURT_TERRACE} from '../park-layout.js';
 import {GROUND} from '../../render/ground-palette.js';
@@ -10,7 +13,7 @@ import {createMaterials} from '../../render/materials.js';
 import {NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK,GATEBALL,GATEBALL_ACTIVE,GOYA,KITAHAMA} from './layout.js';
 import {fascia,vertical,nameplate,iceFlag,poster,coralStone,roofTile,flowerBlock,coralSand} from './signs.js';
 import {redTileHouse,concreteHouse,shopHouse,coralWall,blockWall,hinpun,shisa,fukugi,gajumaru,hibiscus,banana,potPlant,OKINAWA_COLOURS as C} from './houses.js';
-import {utilityPole,wiresBetween,serviceDrop,bicycle,laundry,gasBottles,fishCrates,buoys,netPile,sabani,planterBoxes,fishingBoat} from './props.js';
+import {utilityPole,wiresBetween,serviceDrop,bicycle,laundry,gasBottles,fishCrates,buoys,netPile,sabani,planterBoxes} from './props.js';
 import {GROUND_LAYER} from '../ground-layers.js';
 import {KITAHAMA_LANES} from '../kitahama-layout.js';
 import {buildKitahamaQuarter} from './kitahama-quarter.js';
@@ -46,7 +49,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  const solid=list=>{for(const c of [].concat(list))if(c)colliders.push(c);};
  const anchor=(x,y,z,label,fn)=>{const a=new THREE.Object3D();a.position.set(x,y,z);group.add(a);register?.(a,label,fn);return a;};
  const inspect=(x,y,z,label,title,text)=>anchor(x,y,z,label,()=>onAction?.('inspect',title,text));
- const vendings=[];
+ const vendings=[],ropeMaterial=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.92});
  const vending=(x,z,ry,y=0)=>{
   const machine=createVendingMachine({shadows});machine.position.set(x,y,z);machine.rotation.y=ry;group.add(machine);vendings.push(machine);
   // its collider is its footprint: the cabinet and the pad's lip in front of it (so nobody stands on the pad's edge)
@@ -63,7 +66,12 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes:()=>world.minutes??720});
  buildEastBack(kit,solid,{anchor,inspect,onAction});
  if(GATEBALL_ACTIVE)buildGateball(kit,solid,{anchor,inspect,onAction});
- buildEastQuay(kit,solid,{anchor,inspect,onAction,vending});
+ buildEastQuay(kit,solid,{anchor,inspect,onAction,vending,eastQuayBoat:(x,z,ry,opts)=>{
+  // Her bow along the plan's +x turned by ry (as props.js drew her); she lies quay side to, her lines to the kerb.
+  const face=EAST_QUAY.minZ-.45,side=Math.cos(ry)>0?-1:1,gap=face-(z+opts.beam/2);
+  const boat=buildFishingBoat({...opts,shadows,name:opts.look.name,quayFenders:{side,radius:Math.min(.22,gap/2)}});boat.position.set(x,SEA_LEVEL,z);boat.rotation.y=ry+Math.PI/2;group.add(boat);boat.updateMatrixWorld(true);
+  for(const f of boat.userData.fairleads){const p=boat.localToWorld(new THREE.Vector3(...f)),ring=[p.x+(p.x>x?1.2:-1.2),.22,EAST_QUAY.minZ-.25];kit.box(.12,.05,.12,ring[0],.205,ring[2],0x2b2f30);group.add(new THREE.Mesh(hangingRope(p.toArray(),ring,{sag:.08}),ropeMaterial));}
+ }});
  buildWires(kit,solid);
  // Kitahama stands on the island's ground, below the old town's datum.
  kit.at(0,0,0,()=>buildKitahama(kit,solid,{anchor,inspect,onAction,vending:(x,z,ry)=>vending(x,z,ry,KITAHAMA.y)}),KITAHAMA.y);
@@ -353,7 +361,7 @@ function buildEastBack(kit,solid,ctx){
  EAST_BACK.plots.forEach((p,i)=>walledHouse(kit,solid,p,{...ctx,seed:10+i,windbreak:'east'}));
 }
 
-function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
+function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending,eastQuayBoat}){
  const Q=EAST_QUAY,S=Q.shed,I=Q.ice,lane=GROUND_LAYER.apron;
  kit.block(Q.minX+.05,Q.maxX+.4,lane-.06,lane,Q.minZ,Q.maxZ+.55,GROUND.concrete);
  // The gate's paving, from the quay's concrete to the lawn's edge.
@@ -412,8 +420,10 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  inspect(I.minX-1,1.2,I.minZ+2.7,'Inspect the ice plant',"Minato ice plant · Ice factory",
   'Block ice, crushed ice, flake ice. The chute swings out over the boats and fills a hold in four minutes with a roar you can hear out on the ferry. Inside it is winter all year; the men who work it wear jumpers in August and sit out on the quay at lunch to thaw.');
  // Boats lying to the quay, a forklift, crates, the fuel pump.
- fishingBoat(kit,24.6,Q.minZ-2.1,{ry:0,colour:0x2f6fb8,name:"Daisan Minatomaru"});
- fishingBoat(kit,33.6,Q.minZ-2.2,{ry:Math.PI,colour:0x8a3b2e,length:7.2});
+ // Two inshore boats lie here, drawn like the main quay's (harbour-boats.js), each on fat fenders against the face (it
+ // has one tyre, at x 41.1) and tied to ringbolts in the kerb fore and aft.
+ eastQuayBoat(24.6,Q.minZ-2.1,0,{length:8,beam:2.3,look:EAST_QUAY_BOAT_LOOKS[0]});
+ eastQuayBoat(33.6,Q.minZ-2.2,Math.PI,{length:7.2,beam:2.3,look:EAST_QUAY_BOAT_LOOKS[1]});
  // The forklift runs ice from the plant's door to the boats. Between runs it waits on the
  // quay side of the plant, along its wall under the chute, forks to the west: parked in the
  // lane between the shed and the plant it stood in front of the ice door (and 0.3 m into
