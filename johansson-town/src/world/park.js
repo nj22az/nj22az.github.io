@@ -10,15 +10,12 @@ import {lanternGlow} from '../render/dusk.js';
 import {paintedTurf,paintedPaving} from '../render/toy-surfaces.js';
 import {createKit} from './okinawa/kit.js';
 import {hibiscus} from './okinawa/houses.js';
-import {broadleafGeometry} from './okinawa/trees.js';
+import {buildCherryTree} from './cherry-tree.js';
 import {GROUND_LAYER} from './ground-layers.js';
-import {townCalendarAt} from '../town-clock.js';
 import {poster} from './okinawa/signs.js';
 export const PARK_TREE=Object.freeze([(HARBOUR_CHERRY[0]-PARK.x)/PARK.scale,(HARBOUR_CHERRY[1]-PARK.z)/PARK.scale]);
 const LAMP_POSITIONS=Object.freeze([[7.8,-26.8],[17.7,-34.9],[29.8,-13.4]]);
 export const PARK_LAMPS=Object.freeze(LAMP_POSITIONS.map(([x,z])=>[(x-PARK.x)/PARK.scale,(z-PARK.z)/PARK.scale]));
-const BLOSSOM={light:0xf7b8cf,mid:0xe98fb2,core:0xb4587f,bark:0x5a4030};
-const LEAF={light:0x6cb544,mid:0x48a23a,core:0x1f5226,bark:0x5a4030};
 let benchSource=null,benchPending=null;
 /** Small original Blender prop; the lawn/tree remain the town's procedural geometry. */
 export function preloadPark(){
@@ -104,11 +101,11 @@ export function buildPark(world,options={}){
  world.colliders.push({id:second.id,x:second.x,z:second.z,w:2.08,d:.52,height:.99,park:true});
  const pondBench=anchor(...second.stand,'Sit beside the garden pond','seat','Garden pond bench','The pond reflects the cherry and the bathhouse roof. The shore walk remains open beside you.');
  pondBench.userData.seat={position:[second.x,0,second.z+.08],stand:[second.stand[0],0,second.stand[1]],surfaceY:seatY,eyeY:1.21,yaw:second.yaw,pitch:0};
- const [tx,tz]=HARBOUR_CHERRY,treeMaterial=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.85});
- const trees={blossom:new THREE.Mesh(broadleafGeometry({greens:BLOSSOM,variant:2}),treeMaterial),leaf:new THREE.Mesh(broadleafGeometry({greens:LEAF,variant:2}),treeMaterial)};
- for(const [key,tree] of Object.entries(trees)){tree.name='Harbour Park cherry '+key;tree.position.set(tx,0,tz);tree.scale.set(6.4,6.2,6.4);tree.rotation.y=.6;tree.castShadow=shadows;tree.receiveShadow=true;group.add(tree);}
+ // The harbour cherry is a kanhizakura: green in October, in flower late January to February (cherry-tree.js).
+ const [tx,tz]=HARBOUR_CHERRY,cherry=buildCherryTree({scale:6.2,shadows});cherry.group.position.set(tx,0,tz);cherry.group.rotation.y=.6;group.add(cherry.group);
+ const trees={blossom:cherry.meshes.blossom,leaf:cherry.meshes.leaf,cherry};
  world.colliders.push({id:'harbour-cherry',x:tx,z:tz,w:.48,d:.48,height:6.2,park:true});
- const dress=minutes=>{const bloom=townCalendarAt(minutes).date.getMonth()<=1;trees.blossom.visible=bloom;trees.leaf.visible=!bloom;};dress(0);
+ const dress=minutes=>cherry.dress(minutes);dress(0);
  for(const [x,z] of LAMP_POSITIONS){kit.cyl(.07,.1,.16,x,.08,z,0x8a8979,{segments:8});kit.cyl(.04,.05,2.55,x,1.4,z,0x35584c,{segments:8});kit.sphere(.16,x,2.77,z,0xfff4dc,{finish:'lamp'});world.colliders.push({id:'park-lamp',x,z,w:.2,d:.2,height:2.93,park:true});}
  // Low planting stays outside the view from Sakura and every walking strip.
  for(const [x,z,seed] of [[6.3,-33.8,3],[14.4,-31.2,5],[28.5,-12.9,8]])kit.at(x,z,0,()=>hibiscus(kit,0,0,{seed,size:.5}));
