@@ -21,6 +21,7 @@ import {createRamenTicketMachine} from './src/people/ramen-ticket.js';
 import {cleanConcert} from './src/music/songs.js';
 import {createIzakayaPlay} from './src/people/izakaya-play.js';
 import {pendingTownAbsence} from './src/people/town-absence.js';
+import {createShopLedgerView} from './src/commerce/shop-ledger.js';
 import {createPaperworkView} from './src/commerce/paperwork.js';
 import {createMagazineReader} from './src/ui/magazine-reader.js';
 import {townCalendarAt} from './src/town-clock.js';
@@ -1218,8 +1219,7 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
     // On the web the books are the folder on the desk, as printed (src/commerce/paperwork.js); on Linux, the live shop's.
     if(!BUDGET.liveDocuments){show('Sakura Shōten · Office folder','The till roll, the stock book, the rota and this month’s delivery notes and invoices.',[['Close the folder',close]]);modal.classList.add('sakura-records');ledgerView=createPaperworkView();body.replaceChildren(ledgerView.element);return;}
     show('Sakura Shōten · Shop ledger','Thuan’s sales, purchases and stock records.',[['Close ledger',close]]);modal.classList.add('sakura-records');
-    // The live books are the Linux edition's, and are fetched only there (edition.js).
-    const revision=modalRevision;import('./src/commerce/shop-ledger.js').then(({createShopLedgerView})=>{if(!modalOpen||revision!==modalRevision)return;ledgerView=createShopLedgerView(state,getMinutes);body.replaceChildren(ledgerView.element);});
+    ledgerView=createShopLedgerView(state,getMinutes);body.replaceChildren(ledgerView.element);
   }
   // A konbini is not a vending machine: things go in the basket and are paid for at the
   // counter, where Thuan rings them through.
