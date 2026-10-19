@@ -21,6 +21,22 @@ import {commuterPhase,townPhase} from './commuter-schedule.js';
 import * as THREE from '../../vendor/three.module.js';
 import {alignedStep,forwardOnly,travelError,travelYaw} from './facing.js';
 const HOME_RESIDENT_NAMES=new Set(HOME_OWNERS.map(p=>p.name));
+/** How close a walker comes to a stand point or a quay spot before standing on it (stand-points.js). */
+const STAND_STOP=.12;
+/**
+ * On a stand point (stand-points.js) or a claimed quay spot (quay-breaks.js): turn to its facing at a walker's turning
+ * pace, then take its pose and tool; off it, put down only what this set (another controller's pose is left alone).
+ */
+function standOnPoint(g,stand,dt){
+ const u=g.userData;
+ if(stand){
+  const diff=Math.atan2(Math.sin(stand.yaw-g.rotation.y),Math.cos(stand.yaw-g.rotation.y));
+  g.rotation.y+=Math.max(-dt*2.6,Math.min(dt*2.6,diff));
+  if(Math.abs(diff)<.05){u.socialPose=stand.pose||'Idle';if(stand.tool)u.tool=stand.tool;else delete u.tool;u.standPose=true;}
+  return;
+ }
+ if(u.standPose){delete u.socialPose;delete u.tool;delete u.standPose;}
+}
 export const DIALOGUE={
  Thuan:[['hello',"Welcome.\nWelcome to Sakura Shōten. Take your time; the kettle has only just boiled."],['pink',"This shirt is my favorite.\nThis yellow flower set is my favourite. My aunt says the shop is easier to find when I stand outside."],['work',"Afternoon stocking has finished.\nThe afternoon shelves are ready. Cold tea is in the cooler; postcards are beside the biscuits."],['harbour',"Would you like to take a walk to the port?\nWalking to the harbour? The light turns the water pink just before supper."],['catalogue',"Click here for the order form.\nThe mail-order book is on the counter. I keep those orders separate from the daily till."]],
  Nhung:[['books','The Swedish engineer keeps leaving historical novels here as if they were spare parts.'],['shelf','Six books. The shelf has requested a structural assessment.'],['century','Which century did you like? The seventeenth leaks through the shutters.','book'],['job','So he does have a real job. I assumed he only wrote about captains.','cv'],['cat','Tama has not read them. He reviews the binding by sleeping on it.'],['rain','Please leave the rain outside. The histories have enough disasters.'],['chair','The window chair is free. Twenty seconds of peace is an excellent bargain.'],['water','The harbour office tray is towards the water. Documents, not treasure.']],
@@ -103,7 +119,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   g.rotation.y+=THREE.MathUtils.clamp(delta,-turnRate*dt,turnRate*dt);
   return forwardOnly(g.rotation.y,dx,dz);
  }
- function move(person,target,dt,tag,pace=0){const g=person.g,arrival=tag==='onsen'?ONSEN_ENTRY_RADIUS:person===thuan&&tag==='nap'?STAFF_BENCH.approachRadius:.7;if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<arrival)return;
+ function move(person,target,dt,tag,pace=0,stopAt=0){const g=person.g,arrival=stopAt||(tag==='onsen'?ONSEN_ENTRY_RADIUS:person===thuan&&tag==='nap'?STAFF_BENCH.approachRadius:.7);if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<arrival)return;
   // Somebody standing inside a collider can never leave it. Every step out of one is
   // still in one, so the walker refuses all of them -- and the route it would have
   // followed comes back empty anyway, because the path starts in an obstacle. Getting
@@ -326,7 +342,10 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<1)state().kenjiEscort='done';
    }
    // Venue thresholds must not be displaced by generic crowd spacing.
-   if(!(tag==='work'&&v.workSite)&&!['home','bookshop','izakaya','ramen','market','onsen','bus','station','nap'].includes(tag)&&!tag.startsWith('patrol')&&!tag.startsWith('town-activity'))target=destination(p,target,tag);
+   // A stand point or a claimed quay spot (plan.stand) is its own mark, measured and held: never spread for the crowd.
+   if(!plan.stand&&!(tag==='work'&&v.workSite)&&!['home','bookshop','izakaya','ramen','market','onsen','bus','station','nap'].includes(tag)&&!tag.startsWith('patrol')&&!tag.startsWith('town-activity'))target=destination(p,target,tag);
+   // Each stand point is its own leg, so the walk is planned again from one to the next.
+   if(plan.stand&&Number.isFinite(plan.stand.index))tag+='-'+plan.stand.index;
    if(!initialised.has(g)){
     initialised.add(g);
     const remembered=state().residentLocations?.[v.name],valid=remembered&&Array.isArray(remembered.position)&&remembered.position.length===2&&remembered.position.every(Number.isFinite)&&Math.abs(remembered.position[0])<300&&Math.abs(remembered.position[1])<300;
@@ -357,8 +376,9 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     move(p,yieldTarget,dt,'yield-thuan');
    }else if(!g.userData.indoors&&!g.userData.usingTownObject&&!g.userData.chatHold&&!(g.userData.facePlayerUntil>performance.now())&&!(tag==='escort'&&g.position.distanceTo(player.position)>6)){
     // Unseen and out of reach on the web (people/attention.js), they keep the timetable without walking it.
-    if(attends(g)||!settle(g,target,tag))move(p,target,dt,tag,plan.pace);
+    if(attends(g)||!settle(g,target,tag))move(p,target,dt,tag,plan.pace,plan.stand?STAND_STOP:0);
    }
+   standOnPoint(g,plan.stand&&!yieldTarget&&!g.userData.usingTownObject&&!g.userData.chatHold&&Math.hypot(g.position.x-target[0],g.position.z-target[1])<STAND_STOP+.02?plan.stand:null,dt);
    // Playing (social.js sistersAtPlay): once both are there, they turn to each other,
    // keep their eyes on each other and play; until then, whoever is first waits.
    const partner=plan.play?world.people.find(q=>q.profile?.name===plan.play):null;

@@ -1,6 +1,7 @@
 import {createLaunchReport} from './render/launch-report.js';
 import {BUDGET} from './edition.js';
 import {createAttention} from './people/attention.js';
+import {setStandFilter} from './people/full-life.js';
 import {createStartupRecovery,graphicsProfile,drawingDpr} from './render/startup-recovery.js';
 import {createResolutionGovernor} from './render/resolution-governor.js';
 import {redrawReleasedCanvases,paintBack} from './render/canvas-release.js';
@@ -972,6 +973,12 @@ const residentLedger=createResidentLedger(()=>activities.state);
 const townCleanup=createTownCleanup({parent:town,register:reg,action:activities.action,getState:()=>activities.state,blocked:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>circleHitsRect(x,z,r,c))});
 const npcActivities=createTownActivities({getTargets:()=>interactables,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>circleHitsRect(x,z,r,c)),getPlayerPosition:()=>current?null:player.position,ledger:residentLedger,getState:()=>activities.state});
 castAI=createCastAI({activities:npcActivities,world,player,attends:g=>attention.attends(g),getObserverPosition:()=>current?doors.get(current.id):player.position,state:()=>activities.state,paused:()=>false,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>standingHitsRect(x,z,r,groundHeight(x,z),c))});
+// Stand points (people/stand-points.js): on Linux for everybody; on the web for the residents in view, near, or in the
+// room the player is in, and the rest keep one target a phase (edition.js, full-life.js).
+if(!BUDGET.residentsEverywhere){
+ const bodies=new Map();const bodyOf=name=>{if(!bodies.has(name))bodies.set(name,world.people.find(p=>p.profile?.name===name)?.g||world.neighbours?.find(g=>g.userData.name===name)||null);return bodies.get(name);};
+ setStandFilter(name=>{const g=bodyOf(name);if(!g)return true;for(let p=g.parent;p;p=p.parent)if(p===room)return true;return attention.attends(g);});
+}
 const workplaceResidents=createWorkplaceResidents({world,parent:scene,getEntrance:()=>activeRoomLayout?.spawn||[0,0,5.2],getLayout:()=>activeRoomLayout,getTargets:()=>interactables,collides:environmentBlocked,getPlayerPosition:()=>player.position,getState:()=>activities.state,ledger:residentLedger,onBorrow:npcActivities.release});
 const bookshopCustomers=createBookshopCustomers({world,parent:scene,getLayout:()=>activeRoomLayout,getPlayerPosition:()=>player.position,collides:environmentBlocked,getState:()=>activities.state,ledger:residentLedger,onBorrow:npcActivities.release,save:()=>activities.save()});
 const chatBlocked=(a,b)=>!clearChatLine(a,b,current?roomColliders:world.colliders);
@@ -1113,7 +1120,7 @@ const ramenBlocked=(x,z,r=.3)=>(suppliedRoomBoundsBlocked(SATO_ROOM,x,z,r)||SATO
 function hideRamen(){scene.add(ramenLife);ramenLife.visible=false;}
 const ramenGuests=createIndoorResidents({world,parent:ramenLife,collides:ramenBlocked,getRain:()=>weather,place:'ramen',onBorrow:npcActivities.release,getState:()=>activities.state}),homeGuests=createHomeResidents({world,parent:scene,getPlayerSeat:()=>seated?parkSeat?.position:null,getState:()=>activities.state,collides:(x,z,r,y)=>environmentBlocked(x,z,r,'player',y),onBorrow:npcActivities.release,getRain:()=>weather});
 // Mrs Sato's kitchen: she cooks and carries every bowl, the regulars' and yours (people/ramen-kitchen.js).
-const satoKitchen=createRamenKitchen({isAfterLunch:()=>{const m=((minutes%1440)+1440)%1440;return m>=SATO_RAMEN.close&&m<SATO_RAMEN.close+60;},getCook:()=>{const g=world.people.find(p=>p.profile.name==='Mrs Sato')?.g;return g&&g.visible&&g.userData.inRamen&&!g.userData.roomTransition?g:null;}});
+const satoKitchen=createRamenKitchen({getMinutes:()=>minutes,isAfterLunch:()=>{const m=((minutes%1440)+1440)%1440;return m>=SATO_RAMEN.close&&m<SATO_RAMEN.close+60;},getCook:()=>{const g=world.people.find(p=>p.profile.name==='Mrs Sato')?.g;return g&&g.visible&&g.userData.inRamen&&!g.userData.roomTransition?g:null;}});
 const ramenMeals=createVenueService({room:ramenLife,place:'ramen',getMinutes:()=>minutes,ledger:residentLedger,getCustomers:()=>world.people.filter(p=>p.g.userData.inRamen),
  ...(({staffName:'Mrs Sato',venueName:'Sato Ramen',getStaff:()=>world.people.find(p=>p.profile.name==='Mrs Sato')?.g||null,
   kitchen:satoKitchen,meal:MEALS.lunch,drinkFor:name=>SATO_LUNCH_DRINK[name]||'mugicha',tableFor:p=>SATO_GUEST_SEATS[p.g.userData.ramenSeat]?.table}))});

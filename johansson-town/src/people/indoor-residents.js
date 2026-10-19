@@ -4,6 +4,7 @@ import {groundHeight} from '../world/layout.js?snappy=1';
 import {STORE_CLERK_POSITION,STORE_SEATS} from '../world/interiors/store-layout.js';
 import {residentPlan,RAMEN_DOOR,IZAKAYA_DOOR,IZAKAYA_SEATS} from './social.js';
 import {createRoomWalk,atDestination} from './room-walk.js';
+import {tillStep} from './retail-clerk.js';
 import {izakayaJob} from './izakaya-hours.js';
 import {ONSEN_DOOR,ONSEN_ENTRY_RADIUS} from '../world/onsen-layout.js';
 import {ONSEN_SEATS} from '../world/interiors/onsen.js';
@@ -40,7 +41,9 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
  function seatFor(p){
   const name=p.profile.name;
   const standing=getStandingVisit(p,clock);if(standing)return {position:standing,stand:standing,yaw:0,managed:true};
-  if(place==='market'&&name===sakuraClerkAt(clock))return {position:layout?.staff||STORE_CLERK_POSITION,stand:layout?.staff||STORE_CLERK_POSITION,yaw:layout?.staffYaw??Math.PI,staff:true};
+  // The clerk walks to the approach behind the counter and steps forward to the till (sakura-queue.js: 0.75 m behind
+  // the counter's front, nearer than a clerk-sized clearance circle is routed).
+  if(place==='market'&&name===sakuraClerkAt(clock))return {position:layout?.staff||STORE_CLERK_POSITION,stand:layout?.staffApproach||layout?.staff||STORE_CLERK_POSITION,yaw:layout?.staffYaw??Math.PI,staff:true};
   if(place==='market'&&layout?.guestStands){
    // A finished errand can still be followed by an evening browse. These are
    // standing places in the actual shop, never the older store's removed chairs.
@@ -147,7 +150,11 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
     }else if(saved.phase==='leaving'){
      if(walkVia(p,saved,seat.via||[],entrance,dt,'out'))restore(p);
     }else if(saved.phase==='arriving'){
-     if(walkVia(p,saved,seat.via||[],seat.stand,dt,'in')){g.rotation.set(0,seat.yaw,0);saved.phase=seat.standing?'seated':'sitting';}
+     if(walkVia(p,saved,seat.via||[],seat.stand,dt,'in')){if(hasSeat(seat)||!seat.staff)g.rotation.set(0,seat.yaw,0);saved.phase=seat.standing?'seated':'sitting';}
+    }else if(saved.phase==='sitting'&&!hasSeat(seat)&&seat.staff){
+     // A standing place at work (Sakura's till, sakura-queue.js): walked onto from wherever the routed walk stopped,
+     // facing the way the step goes, never slid or set down on it.
+     if(tillStep(g,seat.position,dt)){g.rotation.set(0,seat.yaw,0);saved.blend=1;saved.phase='seated';}
     }else if(saved.phase==='sitting'){
      saved.blend=Math.min(1,saved.blend+dt*2);moveAcrossSeat(g,seat.stand,seat.position,saved.blend);chairPose(g,seat,saved.blend);if(saved.blend===1)saved.phase='seated';
     }
