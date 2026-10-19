@@ -88,6 +88,39 @@ Johansson), a rename being a sweep of its own (the portraits, the wardrobe keys 
 them). Sakura's products are for the living (`data/studio/products.json`), the wardrobe's and outfits' "who wears it"
 lines too, and the docs that describe the cast of before the consolidation carry a history banner.
 
+## Owner's decision — 19 October 2026: the web is a gorgeous demo for the Linux game
+
+The owner: "It looks really pretty but slow to load and stalling while I play. Can some parts be offloaded on web while
+still looking pretty as now? I'm thinking expensive NPC behaviour maybe belongs in the Linux version; the web should be a
+gorgeous demo for the Linux game." The rule lives in one place, `src/edition.js`: the Linux edition (`steam-deck/`, the
+Electron shell, `window.johanssonDesktop` set) runs everything; the web edition draws exactly what Linux draws (the
+graphics ruling above stands: shadows, multisampling, HDR, detail streaming, the Ink grade on every device) and simulates
+less, by the named budgets there. Nothing else asks which edition it is. Later rulings the same day, all part of it:
+
+- **Residents** (the owner: "I think you can program some simple behaviour for the NPCs on web while still, and not too
+  much dialogue"). On the web a resident near the player (within `residentRadius`) or in view walks and behaves as on
+  Linux; out of sight and out of reach they keep their timetable without walking it (`people/attention.js`,
+  `schedules.js` settle, `neighbours.js`): no route searched, no step taken, so nobody is ever seen to jump. No chats
+  between residents, no happenings chains, no multi-line conversations: talking to a resident is one short line for the
+  moment (`greetings.js shortGreeting`, at most 35 characters) and whatever they sell or serve. The full conversations,
+  favours, chats and happenings are Linux's.
+- **Trade and machinery** (the owner: "the convoluted business backend doesn't need to work on the web either … even if
+  we model the houses and engine room and workshop realistically, they will be like a display piece on the web"). Rooms
+  and machines are built and drawn as on Linux; on the web their operation prompts read what the thing is instead of
+  working it (the ferry's plant stations, the town's machines, the workshop printer), and no orders, deliveries,
+  closing restocks or stock counts run.
+- **Unlimited money on the web**: the wallet never runs out (`WEB_PURSE`, shown as "plenty of yen"); prices stay on the
+  labels and are paid at the till.
+- **The shop's magical supply** (the owner: "it can be back next day: if you buy all the coffee in one day, they will
+  have more tomorrow"): what the player takes stays gone for the rest of that trading day, in the save, and every shelf
+  is full again at the next opening, 9:00 (`shop-stock.js webShelves`). Other customers do not empty facings.
+- **Realistic paperwork** (the owner: "I'd like the documents and spreadsheets to be realistic"): on the web Sakura's
+  office folder is a deterministic snapshot made from the data, as a 1997 Okinawan shop wrote it: the Z report, the stock
+  book, the rota, the depot's delivery note, Higa Liquor's and Front-Row's invoices, every total the sum of its lines
+  (`commerce/paperwork.js`, `tests/paperwork.test.mjs`). On Linux the ledger is the live shop's.
+- Outside a page (node's suites) the edition is Linux unless `JOHANSSON_EDITION=web`; `tests/edition.test.mjs` holds
+  the web budgets and the Linux path.
+
 ## Verification
 
 Use focused geometry, collision, navigation and schedule checks. For runtime changes run `npm run build:runtime` and `node --test tests/runtime-package.test.mjs`. Check real pedestrian and overhead views, including mobile, wherever a GPU browser is available; state when physical-device or visual checks are unavailable. Do not claim screenshots or tests that were not performed.
