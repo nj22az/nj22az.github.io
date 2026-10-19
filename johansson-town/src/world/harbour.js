@@ -140,7 +140,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   const boardwalk=buildBoardwalk(group,{mobile,shadows,maxAnisotropy});
   // Partition the footways around asphalt courts; each finished surface owns its patch.
   const K=KITANO_ROAD;
-  const commercialMouth={minX:K.corners[0][0],maxX:K.corners.at(-1)[0],minZ:K.corners[0][1]-K.section.footway,maxZ:K.corners[0][1]-K.section.north};
+  // Kitano Road's mouth takes only its carriageway out of the footway: its own footway on the harbour side starts at the
+  // footway's kerb (kitano-link.js), so cutting the footway's width too left the corner by the drinks corner unpaved.
+  const commercialMouth={minX:K.corners[0][0],maxX:K.corners.at(-1)[0],minZ:K.corners[0][1]+K.section.north,maxZ:K.corners[0][1]-K.section.north};
   const cargoCourt={minX:MAIN_ROAD.east,maxX:3.2,minZ:-47.6,maxZ:-32.8};
   const footCuts=[MAIN_SERVICE_COURT,MAIN_LOADING_APRON,MAIN_PARKING_LAYBY,commercialMouth,cargoCourt];
   for(const [left,right] of [[-8.1,MAIN_ROAD.west],[MAIN_ROAD.east,5.75]]){

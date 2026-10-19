@@ -70,10 +70,12 @@ test('rendered paths remain connected after the game installs its walking surfac
   // The walking raster can carry a neighbouring slab edge by a few centimetres;
   // require a real supporting facet within 6 cm, well below the 24 cm step limit.
   const support=(x,z)=>{const y=groundHeight(x,z);ray.set(new THREE.Vector3(x,y+.24,z),new THREE.Vector3(0,-1,0));return ray.intersectObjects(floorBins.get(Math.floor(x/4)+','+Math.floor(z/4))||[],false).some(hit=>hit.point.y>=y-.06&&hit.point.y<=y+.06);};
-  walkPath([[1.9,14],[1.9,27],[-5.4,27],[-8,34.6],[-5.4,36.9],[1.9,36.9],[1.9,66]],'town to Kitahama footpath',support);
-  walkPath([[1.9,14],[1.9,27],[3.3,27],SHOPPING_LANE.entry,SHOPPING_LANE.exit,[1.9,SHOPPING_LANE.exit[1]],[1.9,66]],'Main Street through the cleared connector to Kitahama',support);
+  // Main Street's east footway to z 46, then Kitahama's footpath (KITAHAMA.footpath, x 3–6) past 8 and 9 Kitahama.
+  const footpath=(KITAHAMA.footpath.minX+KITAHAMA.footpath.maxX)/2;
+  walkPath([[1.9,14],[1.9,27],[-5.4,27],[-8,34.6],[-5.4,36.9],[1.9,36.9],[1.9,46],[footpath,46],[footpath,66]],'town to Kitahama footpath',support);
+  walkPath([[1.9,14],[1.9,27],[3.3,27],SHOPPING_LANE.entry,SHOPPING_LANE.exit,[1.9,SHOPPING_LANE.exit[1]],[1.9,46],[footpath,46],[footpath,66]],'Main Street through the cleared connector to Kitahama',support);
   for(const z of SHOPPING_LANE.crosswalks)walkPath([[-5.4,z],[10.8,z]],'Retained neighbourhood cross street '+z,support);
-  walkPath([[3.3,36.9],[-5.4,36.9],[-5.4,40],[-23.4,40.6]],'Cleared lane to western neighbourhood',support);
+  walkPath([[3.3,36.9],[-5.4,36.9],[-5.4,46],[-21.5,46],[-21.5,40.6],[-23.4,40.6]],'Cleared lane to western neighbourhood, round the pocket park',support);
   const shops=createNavigation(playerBlocked);
   walkPath(arrival(shops,...SAKURA_FLOWER_STAND),'Sakura flower stand',support);
   walkPath(arrival(shops,...NAKAMURA_DESSERTS.approach),'Nakamura shared dessert counter',support);
@@ -121,10 +123,15 @@ test('photo and feed destinations use the reachable park and Sakura’s flower s
  assert.match(actions.at(-1)[2],/Blue Coral.*Nakamura.*Harbour Park/);assert.doesNotMatch(actions.at(-1)[2],/Rainflower Lane/);
 });
 
-test('visible garden approaches match walking heights across the whole entrance, not only the path',()=>{
- // Nishi's slabs and the former terminus lawn cover the garden bank at the south
- // approach. Compare physics to those finished floors, including where they overlap.
- world.group.updateMatrixWorld(true);const surfaces=[];world.group.traverse(o=>{if(['Continuous neighbourhood garden ground','Aoba lowland shared terrain','Island land','Main Street end lawn'].includes(o.name)||/^Okinawan quarter:(matte|sand)\|/.test(o.name))surfaces.push(o);});
- const ray=new THREE.Raycaster();for(const x of [-34,-29,-24,-19,-14,-9])for(const z of [29,30.5,32,33.5,35]){ray.set(new THREE.Vector3(x,1,z),new THREE.Vector3(0,-1,0));const hit=ray.intersectObjects(surfaces,false)[0];assert.ok(hit,'drawn ground at '+[x,z]);assert.ok(Math.abs(hit.point.y-groundHeight(x,z))<.025,'visible height disagrees at '+[x,z]+': '+hit.point.y+' / '+groundHeight(x,z));}
+test('visible garden approaches match walking heights across the whole entrance, not only the path',async()=>{
+ // Nishi's slabs, the former terminus lawn, Kitahama's compact ground and its lanes' paving cover the garden bank at
+ // the south approach. Compare physics to those finished floors, including where they overlap.
+ world.group.updateMatrixWorld(true);const surfaces=[];world.group.traverse(o=>{if(['Continuous neighbourhood garden ground','Compact neighbourhood ground','Aoba lowland shared terrain','Island land','Main Street end lawn'].includes(o.name)||/^Okinawan quarter:(matte|sand)\||^grid-lanes:/.test(o.name))surfaces.push(o);});
+ const {gutterRings,openEdgeRuns}=await import('../src/world/okinawa/lane-edges.js');const rings=gutterRings(),gutters=[...rings,...openEdgeRuns(rings)].map(r=>r.band);
+ const ray=new THREE.Raycaster();for(const x of [-34,-29,-24,-19,-14,-9])for(const z of [29,30.5,32,33.5,35]){if(playerBlocked(x,z,.05))continue;   // inside the Heights, a wall or the park's railing: nobody stands there
+  // A lane's U-gutter is drawn 28 mm proud of the paving, a lid's lip (okinawa/lane-edges.js GUTTER), and the walking
+  // surface the game installs carries the step onto it (the paths test above walks them with it installed).
+  if(gutters.some(b=>x>=b.minX-.01&&x<=b.maxX+.01&&z>=b.minZ-.01&&z<=b.maxZ+.01))continue;
+  ray.set(new THREE.Vector3(x,1,z),new THREE.Vector3(0,-1,0));const hit=ray.intersectObjects(surfaces,false)[0];assert.ok(hit,'drawn ground at '+[x,z]);assert.ok(Math.abs(hit.point.y-groundHeight(x,z))<.025,'visible height disagrees at '+[x,z]+': '+hit.point.y+' / '+groundHeight(x,z));}
  const {position,normal}=world.group.getObjectByName('Continuous neighbourhood garden ground').geometry.attributes;for(let i=0;i<position.count;i++)assert.ok(normal.getY(i)>0,'upward terrain normal');
 });

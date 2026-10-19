@@ -191,7 +191,7 @@ test('the surplus dwellings, the housing project’s nine and phase 4’s eight,
  const {TOWN_WALK_PLOTS}=await import('../src/world/architecture-plan.js');
  const {canonicalHomeId}=await import('../src/people/households.js');
  const {HOME_ROUTINES}=await import('../src/world/home-lights.js');
- const {CLEARED_LOTS}=await import('../src/world/okinawa/lots.js');
+ const {CLEARED_LOTS,clearedLot}=await import('../src/world/okinawa/lots.js');
  // The housing project's nine (18 October 2026), then phase 4's: 4, 5 and 6 Kitahama, the Kinjō and Ōshiro houses, 1 Front-Row
  // Yard, the flat over the post-office shop-house and Barfly's registration at the izakaya (the bar itself stands).
  const removed=[['kitahama-7',-15,52.5],['kitahama-9',11,52.5],['kitahama-10',-28,66.5],['kitahama-11',-15,66.5],['kitahama-12',-2,66.5],['nakasone',-15,82.5],['miyagi',-2,82.5],['arakaki',9.55,16],['yonamine',-11.95,12.7],
@@ -205,24 +205,31 @@ test('the surplus dwellings, the housing project’s nine and phase 4’s eight,
   const standing=world.colliders.find(c=>standingHitsRect(x,z,.35,groundHeight(x,z),c));
   // (the Arakaki lot is the one the police station grew into, the owner's 19 October ask: its collider is the station's)
   if(id==='arakaki')assert.equal(standing?.id,'police-station',id+' lot carries the police station');
-  else assert.equal(standing,undefined,id+' plot is physically clear');
+  // A cleared lot is dressed now (lots.js CLEARED_LOTS): whatever stands where the house stood is that lot's own dressing
+  // (its cane, its parking, a garden bed), never a house.
+  else if(standing){const lot=clearedLot(id),own=lot&&[lot,...CLEARED_LOTS.filter(l=>l.dressing.partOf===lot.id||lot.dressing.partOf===l.id)].flatMap(l=>l.dressing.props.map(p=>'lot-'+p.id));
+   assert.ok(own?.includes(standing.id),id+' plot carries only its own dressing, not '+standing.id);}
   assert.equal(canonicalHomeId(id.startsWith('resident-home-')?id:'home-'+id),id==='shimabukuro'?'ferry-terminal':id==='izakaya'?'izakaya':'mayor-office');
  }
- // Every lot phase 4 cleared on Minato is recorded with its reason and is clear ground, nothing solid standing in it.
+ // Every lot phase 4 cleared on Minato is recorded with its reason, and what stands on it now is its dressing and nothing
+ // else: every solid at its centre is the dressing's (tests/lot-dressing.test.mjs checks each against its data).
  for(const lot of CLEARED_LOTS.filter(l=>l.district!=='Kitano hamlet'&&!/-block$/.test(l.id))){
-  assert.ok(lot.why.length>20&&lot.dressing,lot.id+' carries its reason');
-  const cx=(lot.rect.minX+lot.rect.maxX)/2,cz=(lot.rect.minZ+lot.rect.maxZ)/2;
-  assert.equal(world.colliders.find(c=>standingHitsRect(cx,cz,.35,groundHeight(cx,cz),c)),undefined,lot.id+' is clear at its centre');
+  assert.ok(lot.why.length>20&&lot.dressing&&lot.dressing!=='deferred',lot.id+' carries its reason and its dressing');
+  const cx=(lot.rect.minX+lot.rect.maxX)/2,cz=(lot.rect.minZ+lot.rect.maxZ)/2,at=world.colliders.find(c=>standingHitsRect(cx,cz,.35,groundHeight(cx,cz),c));
+  assert.ok(!at||/^lot-/.test(at.id),lot.id+' carries only its dressing at its centre, not '+at?.id);
   // And nothing without a collider is left standing on the grass either (an ishiganto set in a wall that is gone, a
-  // nameplate, a step): every mesh of its own inside the lot, under 2 m, is listed by name. The quarter's batched
-  // chunks (named `…|cell|cell`, spanning several lots) are the lanes' own surfaces and are read by the collider check.
-  const left=[],box=new THREE.Box3();
+  // nameplate, a step): every mesh of its own inside the lot, under 2 m, is listed by name, and only the dressing's own
+  // signs and drinks machines may be there. The quarter's batched chunks (named `…|cell|cell`, spanning several lots)
+  // are the lanes' own surfaces and the dressing's, read by the collider check.
+  const left=[],box=new THREE.Box3(),signs=new Set([lot,clearedLot(lot.dressing.partOf)].filter(Boolean).flatMap(l=>l.dressing.signs?.map(s=>s.name)||[]));
   world.group.traverse(o=>{
-   if(!o.isMesh||/\|-?\d+\|-?\d+$/.test(o.name))return;box.setFromObject(o);if(box.isEmpty()||box.max.x-box.min.x>20||box.max.z-box.min.z>20)return;
+   if(!o.isMesh||/\|-?\d+\|-?\d+$/.test(o.name)||signs.has(o.name))return;
+   for(let p=o.parent;p;p=p.parent)if(p.userData?.vending||/vending/i.test(p.name||''))return;
+   box.setFromObject(o);if(box.isEmpty()||box.max.x-box.min.x>20||box.max.z-box.min.z>20)return;
    const x=(box.min.x+box.max.x)/2,z=(box.min.z+box.max.z)/2;
    if(x>lot.rect.minX+.05&&x<lot.rect.maxX-.05&&z>lot.rect.minZ+.05&&z<lot.rect.maxZ-.05&&box.min.y<2)left.push(o.name||'(unnamed)');
   });
-  assert.deepEqual(left,[],lot.id+' has nothing of its own left standing on it');
+  assert.deepEqual(left,[],lot.id+' has nothing of its own left standing on it but its dressing');
  }
  // The Rainflower pavilion is gone with its landmark, prompts and colliders (addendum 3).
  assert.ok(!(world.landmarks||[]).some(s=>s.id==='rainflower-florist'));assert.ok(!world.colliders.some(c=>c.business==='rainflower-florist'));assert.ok(!prompts.some(l=>/flower counter|Mrs Kinjō/.test(l)));
