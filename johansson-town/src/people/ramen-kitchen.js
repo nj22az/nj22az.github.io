@@ -1,6 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {createDrinkProp,createDishProp,disposeServing} from './izakaya-beer.js';
 import {SATO_KITCHEN as K} from '../world/sato-ramen-layout.js';
+import {standNow,hash01} from './stand-points.js';
 
 /**
  * Mrs Sato's kitchen at lunch. Every order, yours or a regular's, is cooked where it would
@@ -26,7 +27,7 @@ const IDLE=[['pots',7,'stirring the stock pots'],['prep',6,'chopping spring onio
 /** After lunch (14:00–15:00, commuter-schedule.js SATO_SHIFT): washing up and wiping down, cloth or glass in hand. */
 const WASHUP=[['pass',9,'wiping the counter down after lunch','Wipe','cloth'],['prep',10,'washing up the lunch bowls','Wipe','cloth'],['drinks',8,'drying and polishing the glasses','Polish','glass'],['pots',9,'scrubbing out the stock pots','Wipe','cloth'],['toppings',7,'wiping down the topping tray','Wipe','cloth']];
 
-export function createRamenKitchen({getCook,isAfterLunch=()=>false}){
+export function createRamenKitchen({getCook,isAfterLunch=()=>false,getMinutes=()=>null}){
  const queue=[];let task=null,idle=null,idleIndex=0,cook=null;
  const passX=x=>THREE.MathUtils.clamp(x,K.minX,K.maxX);
  const spot=(name,x)=>name==='pass'?[passX(x),K.passZ]:K[name];
@@ -111,10 +112,18 @@ export function createRamenKitchen({getCook,isAfterLunch=()=>false}){
     }
     return;
    }
-   // Between orders: a round of small jobs, never standing about.
-   if(!idle){const list=isAfterLunch()?WASHUP:IDLE,[name,seconds,activity,workPose='Use',tool=null]=list[idleIndex++%list.length];idle={name,seconds,activity,workPose,tool,x:K.minX+.4+Math.random()*(K.maxX-K.minX-.8),path:null,phase:'walking'};idle.path=route(g,spot(name,idle.x));pose(g,{tool,activity:'on the way to the '+name});}
+   // Between orders: a round of small jobs, never standing about. In a phase of her day with stand points
+   // (stand-sequences.js ramen-stock, ramen-lunch) the seeded clock says which station and for how long; after lunch,
+   // and with no clock, the washing-up round and the small jobs in turn.
+   const minutes=getMinutes(),stand=Number.isFinite(minutes)&&!isAfterLunch()?standNow('Mrs Sato',minutes,'ramen'):null,key=stand?stand.loop+'/'+stand.index:null;
+   if(idle&&idle.key!==key)idle=null;
+   if(!idle){
+    if(stand){const P=stand.point;idle={key,name:P.station,seconds:Infinity,activity:P.activity,workPose:P.pose,tool:P.tool,x:P.x,yaw:stand.yaw,path:null,phase:'walking'};idle.path=route(g,[P.x,P.z]);}
+    else{const list=isAfterLunch()?WASHUP:IDLE,i=idleIndex++,[name,seconds,activity,workPose='Use',tool=null]=list[i%list.length];idle={key,name,seconds,activity,workPose,tool,x:K.minX+.4+hash01('sato-pass',i)*(K.maxX-K.minX-.8),path:null,phase:'walking'};idle.path=route(g,spot(name,idle.x));}
+    pose(g,{tool:idle.tool,activity:'on the way to the '+idle.name});
+   }
    if(idle.phase==='walking'){if(walk(g,idle.path,dt))idle.phase='turning';}
-   else if(idle.phase==='turning'){if(turnTo(g,facing(idle.name),dt)){idle.phase='working';pose(g,{socialPose:idle.workPose,tool:idle.tool,activity:idle.activity});}}
+   else if(idle.phase==='turning'){if(turnTo(g,idle.yaw??facing(idle.name),dt)){idle.phase='working';pose(g,{socialPose:idle.workPose,tool:idle.tool,activity:idle.activity});}}
    else if((idle.seconds-=dt)<=0)idle=null;
   },
   dispose(){if(task)drop(task);task=null;queue.length=0;idle=null;if(cook)for(const k of ['kitchen','serving','socialPose','carrying','tool'])delete cook.userData[k];cook=null;}

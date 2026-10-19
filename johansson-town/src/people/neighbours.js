@@ -91,6 +91,21 @@ export function routePoint(route,distance){
  const [a]=legs[0];return {x:a[0],z:a[1],dx:0,dz:1,total};
 }
 
+/**
+ * A stand point (stand-points.js) or a claimed quay spot (quay-breaks.js), once they are on it: turn to its facing at a
+ * person's pace (never a snap), then take its pose with its tool in hand; on the way to the next, the pose is put down
+ * and their own (spec.pose) comes back.
+ */
+function standAtPoint(g,spec,stand,onIt,dt){
+ const u=g.userData;
+ if(stand&&onIt){
+  const diff=Math.atan2(Math.sin(stand.yaw-g.rotation.y),Math.cos(stand.yaw-g.rotation.y));
+  g.rotation.y+=Math.max(-dt*2.6,Math.min(dt*2.6,diff));
+  if(Math.abs(diff)<.05){u.socialPose=stand.pose||null;if(stand.tool)u.tool=stand.tool;else delete u.tool;u.standPose=true;}
+  return;
+ }
+ if(u.standPose){u.socialPose=spec.pose||null;delete u.tool;delete u.standPose;}
+}
 /** The ground under a neighbour: the gateball court stands on its terrace, everywhere else is level. */
 const groundAt=(x,z)=>inGateball(x,z)?COURT_TERRACE.height+GROUND_LAYER.apron:groundHeight(x,z);
 const faceAlong=(g,dx,dz)=>{if(dx||dz)g.rotation.y=Math.atan2(dx,dz)+Math.PI;};
@@ -164,6 +179,7 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
      if(arrived&&phase.place==='home')g.userData.indoors='home';else delete g.userData.indoors;
      g.userData.sleeping=arrived&&phase.place==='home'&&phase.rest==='sleep';
      g.userData.walking=!arrived&&!!p.path?.length&&!g.userData.aboardFerry;
+     standAtPoint(g,spec,phase.stand,arrived&&!p.path?.length&&!g.userData.playerConversation,dt);
      g.visible=!g.userData.aboardFerry&&!(arrived&&(phase.place==='home'||phase.school));
      continue;
     }
