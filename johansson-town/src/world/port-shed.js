@@ -207,6 +207,9 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
  colliders.push({x:wx-hx,z:wz,w:.12,d:W,height:2.1,portShed:true});
  colliders.push({x:wx,z:wz-hz,w:D,d:.12,height:2.1,portShed:true});
  colliders.push({x:S.tv[0],z:S.tv[1],w:.62,d:.48,height:.95,portShed:true},{x:S.chair[0],z:S.chair[1],w:.7,d:.7,height:.9,portShed:true});
+ // The roof is solid to the lens (an overhead collider, above a standing head): the houseboat opening's shot of him was
+ // taken from 8 cm over this roof, a screenful of corrugated iron with his hat at its edge (2026-10-19).
+ colliders.push({id:'fujita-shed-roof',x:wx+.2,z:wz,w:D+.6,d:W+.3,minY:2.05,height:.38,portShed:true});
  // The retired exterior cool box has no collider on the timber walking circuit.
 
  // Timber access only: the old broad L-shaped slab and its unused seaward spur are retired.

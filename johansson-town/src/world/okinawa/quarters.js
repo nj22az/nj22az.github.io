@@ -370,7 +370,14 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  for(const [x,z] of cols){kit.box(.22,S.height,.22,x,S.height/2,z,0x5e7078,{finish:'metal'});solid({id:'auction-column',x,z,w:.3,d:.3,height:S.height});}
  kit.gableRoof(S.maxX-S.minX,S.maxZ-S.minZ,.9,(S.minX+S.maxX)/2,S.height,(S.minZ+S.maxZ)/2,0x7a8f96,{overhang:.7});
  for(let x=S.minX-.6;x<S.maxX+.7;x+=.45)kit.box(.04,.04,S.maxZ-S.minZ+1.4,x,S.height+.46,(S.minZ+S.maxZ)/2,0x6c8088,{rx:0});
+ // The roof is solid to the lens, eaves to ridge with its purlins: the fish-auction opening's arrival shot began over it
+ // and came down through it between two purlins (the creator, 2026-10-19, on his phone: "I spawned in a beam"). An
+ // overhead collider (minY above a standing head), so nobody walking under the roof meets it (physics.js
+ // standingHitsRect, build/placements.js); the lens does (game.js cameraBlocked, spawn-scene.js clearArrivalLens).
+ solid({id:'auction-roof',x:(S.minX+S.maxX)/2,z:(S.minZ+S.maxZ)/2,w:S.maxX-S.minX+1.4,d:S.maxZ-S.minZ+1.4,minY:S.height-.1,height:1.1});
  kit.sign(fascia({jp:"Port Fisheries Association Auction market",en:'Minato fisheries co-op · fish auction',bg:'#eef3f1',accent:'#2f6f8a',mark:"Fish"}),6,.9,(S.minX+S.maxX)/2,S.height-.3,S.maxZ+.02,{name:'auction sign'});
+ // The sign on the fascia, solid to the lens the same way (the lens came down past it a hand's width off).
+ solid({id:'auction-sign',x:(S.minX+S.maxX)/2,z:S.maxZ+.02,w:6,d:.12,minY:S.height-.75,height:.9});
  // Inside: rows of crates with the morning's catch, a scale and the price board.
  // The crates are sorted by kind, as at a real auction: one fish to a crate, the auction's fish in turn (fish.js). What
  // is left now is the fish nobody bid for: the tuna (laid out whole, never crated) and the squid went first.

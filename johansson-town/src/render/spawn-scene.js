@@ -82,11 +82,13 @@ export function createSpawnScene({scene,camera,getActor,blocked,ground,onActive=
   // Keep a safe existing view if the counter leaves no room for a front shot.
   from??=camera.position.clone();to??=from.clone();
   // The harbour first: high and wide on the same side as the shot of him, the other side, or round behind him (under a
-  // roof he faces into, the front is closed above), lower if it must be, or not at all.
+  // roof he faces into, the front is closed above), lower if it must be, or not at all. The way down to the shot of him
+  // is checked as well as the views from it: a fan of clear sightlines still let the lens descend through a column of the
+  // auction shed, beside its sign (2026-10-19).
   let establish=null;
   if(options.establish&&!options.inside)search:for(const [reach,height] of [[15,9],[11,6]])for(const angle of [preset.angle*1.3,-preset.angle*1.3,preset.angle*.6,-preset.angle*.6,2.3,-2.3,Math.PI]){
    const a=base+angle,high=origin.clone().add(new THREE.Vector3(-Math.sin(a)*reach,height,-Math.cos(a)*reach));
-   if(clearArrivalLens(target,high,{blocked,ground})&&[.25,.5,.75].every(t=>clearArrivalLens(target,high.clone().lerp(from,t),{blocked,ground}))){establish={high,angle:0,hold:options.hold,released:null};break search;}
+   if(clearArrivalLens(target,high,{blocked,ground})&&clearArrivalLens(from,high,{blocked,ground})&&[.25,.5,.75].every(t=>clearArrivalLens(target,high.clone().lerp(from,t),{blocked,ground}))){establish={high,angle:0,hold:options.hold,released:null};break search;}
   }
   // Nowhere clear above him: the hold is kept on the shot of him itself, turning slowly round him from where it starts.
   if(options.establish&&!options.inside&&!establish)establish={high:from.clone(),angle:0,hold:options.hold,released:null};
