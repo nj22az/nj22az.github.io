@@ -10,7 +10,7 @@ import {sleepHours,homeRoutine,homeLayoutFor,homeSiteId} from '../src/people/hom
 import {createHomeResidents} from '../src/people/home-residents.js';
 import {createIndoorResidents} from '../src/people/indoor-residents.js';
 import {buildResidentHome} from '../src/world/interiors/resident-home.js';
-import {buildKobanInterior} from '../src/world/interiors/koban.js';
+import {buildPoliceStationInterior} from '../src/world/interiors/police-station.js';
 import {buildSuppliedRoom} from '../src/world/supplied-rooms.js';
 import {createTown} from '../src/world/town.js';
 import {createBusinesses} from '../src/world/businesses.js';
@@ -27,7 +27,7 @@ function roomFor(p){
  const room=new THREE.Group(),colliders=[],site=[...actualSites,...actualWorld.landmarks].find(s=>s.homeOwners?.includes(p.profile.name)||s.homeOwner===p.profile.name);
  assert.ok(site,p.profile.name+' has an actual live home site');
  const shared={site,room,box:(size,pos,c,parent)=>{const g=new THREE.Mesh(new THREE.BoxGeometry(...size),new THREE.MeshBasicMaterial({color:c}));g.position.set(...pos);parent.add(g);return g;},reg(){},collider:(x,z,w,d,height)=>colliders.push({x,z,w,d,height}),action(){},exit(){}};
- const built=site.id==='koban'?buildKobanInterior(shared):site.id==='office'?buildSuppliedRoom(shared):site.familyHome?buildFamilyHome({...shared,household:site.familyHome,residents:site.residents,kind:site.houseKind}):buildResidentHome({...shared,profile:p.profile});
+ const built=site.id==='koban'?buildPoliceStationInterior(shared):site.id==='office'?buildSuppliedRoom(shared):site.familyHome?buildFamilyHome({...shared,household:site.familyHome,residents:site.residents,kind:site.houseKind}):buildResidentHome({...shared,profile:p.profile});
  const metadata={...site,...built,homeLayouts:{...site.homeLayouts,...built.homeLayouts}},b=metadata.bounds;
  return {room,metadata,collides:(x,z,r=.32)=>x<b.minX+r||x>b.maxX-r||z<b.minZ+r||z>b.maxZ-r||colliders.some(c=>circleHitsRect(x,z,r,c))};
 }

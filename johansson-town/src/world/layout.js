@@ -52,7 +52,8 @@ export const ROUTES = [
  ...BUS_STATION_ROUTES,
  {id:'shop-crossing',width:3,surface:'stone',points:[[MAIN_ROAD.pavementWest,SHOP_CROSSING_Z],[MAIN_ROAD.pavementEast,SHOP_CROSSING_Z]]},
  {id:'south-shop-crossing',width:3,surface:'stone',points:[[MAIN_ROAD.pavementWest,-18],[MAIN_ROAD.pavementEast,-18]]},
- {id:'east-alley',width:3,surface:'stone',points:[[0,18.4],[8.4,18.4]]},
+ // Ends at the footway's edge: the police station stands on the lawn it used to run into (police-station-layout.js).
+ {id:'east-alley',width:3,surface:'stone',points:[[0,18.4],[5.65,18.4]]},
  {id:'second-pier',width:2.2,surface:'wood',points:[[-37.35,-46.2],[-37.35,-55.5]]},
  {id:'izakaya-door',width:3,surface:'asphalt',points:IZAKAYA_LANE},
  {id:'ramen-door',width:2.8,surface:'stone',points:[[0,DINING.ramenDoor[1]],DINING.ramenDoor]},

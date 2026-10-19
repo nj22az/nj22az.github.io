@@ -47,9 +47,11 @@ test('the harbour cherry is a kanhizakura: green in October, in flower late Janu
  assert.ok(tris<12000,'light enough for a phone: '+tris+' triangles');
 });
 
-test('the police box says 交番',async()=>{
+test('the police station says 警察署, and its counter window keeps the police box’s 交番',async()=>{
  const {japaneseSign}=await import('../src/world/okinawa/signs.js');
- assert.equal(japaneseSign(KOBAN.jp),'交番');
+ assert.equal(japaneseSign(KOBAN.jp),'警察署');
+ assert.equal(japaneseSign('Minato Police Station'),'港警察署');
+ assert.equal(japaneseSign('Police box'),'交番');
 });
 
 test('the coastal walk over the east beach is the beach’s wet sand, and the park keeps one paving family',async()=>{

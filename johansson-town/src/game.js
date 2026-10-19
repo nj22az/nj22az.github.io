@@ -42,7 +42,7 @@ import {buildBusinessContent,BUSINESS_CONTENT_CATALOGUE} from './world/interiors
 import {WAREHOUSE} from './world/warehouse.js';
 import {assignWorkplaces} from './people/workplaces.js';
 import {createHomeResidents} from './people/home-residents.js';
-import {buildKobanInterior} from './world/interiors/koban.js';
+import {buildPoliceStationInterior} from './world/interiors/police-station.js';
 import {buildPortHall} from './world/interiors/port-hall.js';
 import {PORT_BUILDING} from './world/port-building.js';
 import {chooseOpening,OPENINGS} from './world/openings.js';
@@ -1177,7 +1177,7 @@ function roomShell(s){
   activeRoomLayout.snapshot=()=>({decor:decor.snapshot(),furniture:furniture.placements.list()});return;}
  // Who is at the street door and who is past the step (their shoes are there): the player, unnamed, and the bathers.
  if(s.id==='onsen'){activeRoomLayout=buildOnsenInterior({...shared,people:()=>[{name:null,x:player.position.x,z:player.position.z},...world.people.filter(p=>p.g.userData.inOnsen&&p.g.visible).map(p=>({name:p.profile.name,x:p.g.position.x,z:p.g.position.z}))]});return;}
- if(s.id==='koban'){activeRoomLayout=buildKobanInterior(shared);return;}
+ if(s.id==='koban'){activeRoomLayout=buildPoliceStationInterior(shared);return;}
  if((s.id==='ramen')){activeRoomLayout=buildSatoRamenRoom({...shared,getMinutes:()=>minutes});return;}
  // A home with a room of its own (the office, the police box) keeps it; everyone else gets a flat.
  activeRoomLayout=homeOwner(s)&&!s.ownRoom?buildResidentHome({...shared,profile:world.people.find(p=>p.profile.name===homeOwner(s)).profile,box}):s.id==='warehouse'?buildWarehouseInterior(shared):buildCompactShop(shared)||buildSuppliedRoom(shared);
