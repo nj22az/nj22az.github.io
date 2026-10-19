@@ -13,8 +13,8 @@ import {STREET_CAST_NAMES,RESIDENTS} from './residents.js';
 export const CAST_TIERS=Object.freeze({
  core:Object.freeze(['Johansson','Thuan']),
  key:Object.freeze(['Thao','Mrs Sato','Officer Mori','Harbour master']),
- // Kept for now (you asked to keep Nhung and Chin); Reiko and Tetsuo share their yard homes.
- kept:Object.freeze(['Nhung','Chin','Reiko','Tetsuo']),
+ // Kept for now (you asked to keep Nhung and Chin); Tetsuo in his yard home.
+ kept:Object.freeze(['Nhung','Chin','Tetsuo']),
 });
 
 const LIFE=Object.freeze({
@@ -25,7 +25,6 @@ const LIFE=Object.freeze({
  'Harbour master':{dayOff:'Sunday',leisure:['Mr Fujita’s shed on the pier, for the ballgame','the quay at dusk']},
  Nhung:{dayOff:'Tuesday',leisure:['the window chair at Front-Row','the beach']},
  Chin:{dayOff:'Sunday',leisure:['Star Port at the arcade cabinet','Minato']},
- Reiko:{dayOff:'Sunday',leisure:['Front-Row print bench (she cannot help it)','Umi-no-yu']},
  Tetsuo:{dayOff:'Monday',leisure:['the pier with his radio','Minato']},
 });
 
