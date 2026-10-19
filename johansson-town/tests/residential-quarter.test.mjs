@@ -4,6 +4,7 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {circleHitsRect} from '../physics.js';
 import {createWalkSurface} from '../src/world/walk-surface.js';
+import {ISLAND_HOUSEHOLDS,householdAtHome} from '../src/people/island-households.js';
 import {COAST_BOUNDS} from '../src/world/island-coast.js';
 
 async function town(){
@@ -11,22 +12,24 @@ async function town(){
 
  const {createTown}=await import('../src/world/town.js?quarter');
  const {createBusinesses}=await import('../src/world/businesses.js');
- const labels=[];
+ const labels=[],actions=[];
  const world=createTown({scene:new THREE.Scene(),sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),
-  mobile:false,shadows:false,register:(o,label,fn)=>labels.push({label,fn,o}),enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
- return {world,labels};
+  mobile:false,shadows:false,register:(o,label,fn)=>labels.push({label,fn,o}),enter(){},onAction:(...args)=>actions.push(args),getPlayerPosition:()=>new THREE.Vector3()});
+ return {world,labels,actions};
 }
 
 test('the residential quarter: lanes you can walk, every gate on a lane, a park, flats and a rubbish point',async()=>{
- const {world,labels}=await town();
+ const {world,labels,actions}=await town();
  const {KITAHAMA,KITAHAMA_LANES,kitahamaLaneAt,plotGate}=await import('../src/world/kitahama-layout.js');
  const {groundHeight,planHeight,setWalkSurface}=await import('../src/world/layout.js');
  const surface=createWalkSurface({minX:COAST_BOUNDS.minX-2,maxX:COAST_BOUNDS.maxX+2,minZ:COAST_BOUNDS.minZ-2,maxZ:COAST_BOUNDS.maxZ+2,base:planHeight});surface.add(world.group);setWalkSurface(surface);
  try{
  const blocked=(x,z,r=.3)=>world.colliders.some(c=>circleHitsRect(x,z,r,c));
  world.group.updateMatrixWorld(true);const floorMeshes=[];world.group.traverse(o=>{if(o.isMesh&&!o.material?.transparent)floorMeshes.push(o);});const floorRay=new THREE.Raycaster();
- // Ten to twelve homes and more: the five old plots, seven new ones and the flats.
- assert.ok(KITAHAMA.plots.length>=12);
+ // Only occupied plots survive consolidation; save-era retired identities stay absent.
+ const retained=ISLAND_HOUSEHOLDS.filter(h=>h.district==='Kitahama'&&!h.unitNumber&&h.status==='occupied');
+ assert.deepEqual(KITAHAMA.plots.map(p=>p.id).sort(),retained.map(h=>h.id).sort());
+ for(const p of KITAHAMA.plots)assert.ok(householdAtHome(p.id).residents.length,p.id+' is occupied');
  // Down the middle of every lane, nothing in the way, and the ground is the lane's.
  for(const L of KITAHAMA_LANES){
   const alongZ=L.maxZ-L.minZ>L.maxX-L.minX,mid=alongZ?(L.minX+L.maxX)/2:(L.minZ+L.maxZ)/2;
@@ -57,8 +60,12 @@ test('the residential quarter: lanes you can walk, every gate on a lane, a park,
  const areas=[...KITAHAMA.plots,KITAHAMA.apartment,KITAHAMA.park];
  for(let i=0;i<areas.length;i++){for(let j=i+1;j<areas.length;j++)assert.ok(!over(areas[i],areas[j]),'overlap '+i+' '+j);for(const L of KITAHAMA_LANES)assert.ok(!over(areas[i],L),'on a lane: '+(areas[i].id||i));}
  // The shared places are there to use.
- for(const label of ['Read the Kitahama Heights mailboxes','Sit on the park bench','Push the swing','Read the Kitahama notice board','9 Kitahama · To let'])
+ for(const label of ['Read the Kitahama Heights mailboxes','Sit on the park bench','Push the swing','Read the Kitahama notice board'])
   assert.ok(labels.some(l=>l.label===label),label);
+ const notice=labels.find(l=>l.label==='Read the Kitahama notice board');
+ // Capture the real read interaction, not just the visible paper.
+ notice.fn();assert.ok(actions.some(([kind,title,text])=>kind==='read'&&title==='Kitahama notice board'&&text.includes('homes and flats are occupied')&&!/To let/i.test(text)));
+ assert.ok(!labels.some(l=>/Kitahama.*To let/i.test(l.label)),'removed homes are not advertised');
  const bench=labels.find(l=>l.label==='Sit on the park bench').o.userData.seat;
  assert.ok(bench&&!blocked(bench.stand[0],bench.stand[2],.25),'the bench can be reached');
  }finally{setWalkSurface(null);}

@@ -33,21 +33,23 @@ const NEIGHBOURHOOD={
  Reiko:{clue:'The evening papers are at Nhung’s counter. My printing bench is at the back.'},
  Chin:{clue:'Star Port is inside our repair shop. Beat my score and I will show you around.'},
 };
+// Locations stay live when the town layout changes.
+const live=(profile,key,get)=>Object.defineProperty(profile,key,{get,enumerable:true,configurable:true});
 // Existing identities and saved routines use the supplied street’s shared entrances.
 export const RESIDENTS=ACTIVE_RESIDENT_NAMES.map(name=>{
  const source=name==='Thuan'?THUAN_PROFILE:name==='Grandmother Sakurai'?{name,age:74,role:'Sakura owner',height:1.52,home:KITAHAMA_FLATS[1].approachPosition.filter((_,i)=>i!==1),homeAddress:'Flat 2, Kitahama Heights',homeEntry:'flat-2',work:[-5.5,-26.8],start:360,close:1020,retire:1260,canonicalDay:true,hello:'The books must balance to the yen.',gossip:'Thuan keeps the shop; I keep its accounts.',clue:'The main office and kitchenette are upstairs, the till office is downstairs.'}:PROFILES.find(p=>p.name===name);
  const diningPoint=point=>point&&point[0]===24&&point[1]>=18&&point[1]<=25?restaurantApproach('izakaya'):point;
  const shopFloor={Nhung:'books',Reiko:'books',Chin:'workshop',Tetsuo:'workshop'}[name];
- const profile={...source,...NEIGHBOURHOOD[name],work:({'Harbour master':[HARBOUR_OFFICE.door[0],HARBOUR_OFFICE.door[2]],'Bus driver':TOWN_DESTINATIONS.bus,'Officer Mori':[0,28],Thao:IZAKAYA_DOOR})[name]||diningPoint(source.work),evening:({Nhung:[.15,18.7],Chin:[.15,17.6], 'Mrs Sato':TOWN_DESTINATIONS.bus,'Harbour master':[0,-48],Reiko:[-4,4],Tetsuo:[.15,16.5],'Bus driver':TOWN_DESTINATIONS.bus,'Officer Mori':[0,28],Thao:IZAKAYA_DOOR})[name]||diningPoint(source.evening),...residentialHome(name)};
+ const profile={...source,...NEIGHBOURHOOD[name],work:({'Harbour master':[HARBOUR_OFFICE.door[0],HARBOUR_OFFICE.door[2]],'Bus driver':TOWN_DESTINATIONS.bus,'Officer Mori':[0,28],Thao:IZAKAYA_DOOR})[name]||diningPoint(source.work),evening:({Nhung:[.15,18.7],Chin:[.15,17.6], 'Mrs Sato':TOWN_DESTINATIONS.bus,'Harbour master':[0,-48],Reiko:[-4,4],Tetsuo:[.15,16.5],'Bus driver':TOWN_DESTINATIONS.bus,'Officer Mori':[0,28],Thao:IZAKAYA_DOOR})[name]||diningPoint(source.evening||source.home),...residentialHome(name)};
  // The shop staff stand at their own shop's door, and where that door is depends on
  // the layout, which is not known yet. Read it when somebody asks.
- if(shopFloor)Object.defineProperty(profile,'work',{get:()=>TOWN_DESTINATIONS[shopFloor],enumerable:true,configurable:true});
+ if(shopFloor)live(profile,'work',()=>TOWN_DESTINATIONS[shopFloor]);
  // The same for home: on the island the shop's staff live in the yard houses behind
  // Front-Row (yard-homes-layout.js); elsewhere, the Main Street flats they always had.
  if(YARD_RESIDENT_NAMES.includes(name)||WORKPLACE_HOMES[name]||kitahamaHomeFor(name)||KITANO_RESIDENT_NAMES.includes(name)){
   const yard=()=>(WORKPLACE_HOMES[name]?.()||kitahamaHomeFor(name)||kitanoHomeFor(name)||YARD_HOMES[householdFor(name)?.id]),street={home:profile.home,homeAddress:profile.homeAddress};
-  Object.defineProperty(profile,'home',{get:()=>yard()?[...yard().door]:street.home,enumerable:true,configurable:true});
-  Object.defineProperty(profile,'homeAddress',{get:()=>yard()?.address||street.homeAddress,enumerable:true,configurable:true});
+  live(profile,'home',()=>{const h=yard();return h?[...h.door]:street.home;});
+  live(profile,'homeAddress',()=>yard()?.address||street.homeAddress);
  }
  if(name==='Barfly')profile.homeEntry='izakaya-private';
  return profile;

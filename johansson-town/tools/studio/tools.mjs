@@ -469,9 +469,9 @@ async function publishCheck(ctx,{tests,signal}){
  const {runtimeSourceHash}=await import('../../scripts/runtime-source.mjs');
  const recorded=JSON.parse(await readFile(resolve(town,'runtime/source.json'),'utf8')).sha256,current=await runtimeSourceHash(town);
  add('runtime build',recorded===current,recorded===current?'runtime/ matches the source.':'runtime/ is older than the source: run (cd johansson-town && npm run build:runtime) before publishing.');
- const manifest=JSON.parse(await readFile(resolve(town,'guide/portraits.json'),'utf8')),{createHash}=await import('node:crypto'),hash=createHash('sha256');
- for(const path of manifest.sourceFiles)hash.update(path+'\0').update(await readFile(resolve(town,path))).update('\0');
- const portraits=hash.digest('hex')===manifest.sha256;
+ const {portraitSourceHash}=await import('../../scripts/portrait-source.mjs');
+ const manifest=JSON.parse(await readFile(resolve(town,'guide/portraits.json'),'utf8'));
+ const portraits=await portraitSourceHash(town,manifest.sourceFiles)===manifest.sha256;
  add('guide portraits',portraits,portraits?'The resident guide\'s portraits match the avatar source.':'The guide portraits are older than the avatar source or the looks: run node johansson-town/tools/render-resident-guide.mjs.');
  try{
   const main=(await git('rev-parse','--verify','origin/main')).trim(),merged=await run('git',['merge-base','--is-ancestor',main,'HEAD'],{cwd:code,signal}).then(()=>true,()=>false);
