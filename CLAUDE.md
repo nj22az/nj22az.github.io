@@ -131,6 +131,10 @@ that makes more or better stories.
   it, and why it is placed where it is. Shops are merchandised with a philosophy (traffic, impulse,
   daily needs, the people who actually live here); record that reasoning with the data so it can be
   tested and so stories can use it.
+- **Permanent inspiration: New Yokosuka** (<https://github.com/brynnb/new-yokosuka>, a browser recreation of Shenmue's
+  Yokosuka): the catalogue of real home interiors, convenience stores, shops, bars, harbour and back lanes we plan
+  Minato's from. The owner (19 October 2026): its 1986 does not matter, small-town Japan keeps its old parts in the
+  90s and today. Study and measure there, never copy: `johansson-town/docs/research/new-yokosuka.md`.
 - **The town's trade** (`johansson-town/src/commerce/merchandising.js`): Sakura Shōten, Thuan's outright, is a konbini
   *and* the town's supplier of everyday goods, from its depot in the Quay Warehouse (Sakura Trading), and of flowers and
   decorations since Mrs Kinjō retired (the consolidation's ruling 3; Rainflower Florist no longer supplies anything).
