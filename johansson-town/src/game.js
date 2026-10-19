@@ -1,5 +1,6 @@
 import {createLaunchReport} from './render/launch-report.js';
 import {createStartupRecovery,graphicsProfile,drawingDpr} from './render/startup-recovery.js';
+import {createResolutionGovernor} from './render/resolution-governor.js';
 import {CAST_RECIPES,recipeFor} from './avatars/cast.js';
 import {createLensOcclusion} from './render/lens-occlusion.js';
 import {FERRY_LADDER} from './world/ferry-inspect.js';
@@ -176,18 +177,17 @@ const $=s=>document.querySelector(s);
 const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const touch=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;
 const mobile=isIOS||touch,tabletLike=touch&&Math.min(innerWidth,innerHeight)>=700;
-const graphics=graphicsProfile({mobile,tablet:tabletLike,safe:startupRecovery.safe,ios:isIOS});
+const graphics=graphicsProfile({mobile,tablet:tabletLike,safe:startupRecovery.safe,reduced:startupRecovery.reduced,ios:isIOS});
 const highTier=graphics.shadows,shadows=graphics.shadows,canvas=$('#game');
 // Mobile buffers have a fixed cap before the first frame; the frame-rate governor
 // cannot prevent a memory-pressure restart while the first buffers are allocated.
-let dprScale=1;
-const renderDpr=()=>drawingDpr({width:innerWidth,height:innerHeight,deviceDpr:window.devicePixelRatio||1,profile:graphics,scale:dprScale});
+const dprGovernor=createResolutionGovernor();
+const renderDpr=()=>drawingDpr({width:innerWidth,height:innerHeight,deviceDpr:window.devicePixelRatio||1,profile:graphics,scale:dprGovernor.scale});
 /**
  * Keeps the frame rate up on slower devices: if frames average slower than about 24 a
- * second for a few seconds, the drawing buffer steps down a notch, and
- * it never steps back up within the session, so the picture does not pump.
+ * second for a few seconds, the drawing buffer steps down a notch. Sustained
+ * headroom restores detail slowly, with a settling interval between changes.
  */
-const dprGovernor={time:0,frames:0,cooldown:4};
 /**
  * A "!" card over anyone who wants something today (people/friendship.js), the way a
  * life sim shows who has something to ask. Checked every couple of seconds, not every frame.
@@ -229,12 +229,8 @@ function updateWantCards(dt){
  }
 }
 function governResolution(dt){
- if(!mobile||document.hidden)return;
- dprGovernor.cooldown-=dt;dprGovernor.time+=dt;dprGovernor.frames++;
- if(dprGovernor.time<3)return;
- const average=dprGovernor.time/dprGovernor.frames;dprGovernor.time=0;dprGovernor.frames=0;
- if(dprGovernor.cooldown>0||average<1/24||dprScale<=.62)return;
- dprScale=Math.max(.6,dprScale-.13);dprGovernor.cooldown=5;resizeRenderer();
+ if(!mobile)return;
+ if(dprGovernor.sample(dt,{active:started&&!document.hidden&&!roomLoading&&!activities?.paused}))resizeRenderer();
 }
 loadingProgress?.start('graphics');
 await paintLoading();
@@ -286,9 +282,8 @@ const celPass=createCelPass();
  * plain path after the retries, which is where it used to start.
  */
 const INK_OPTIONS={
- // Mobile keeps ink, grading and FXAA in two single-sample eight-bit targets.
- // Avoid allocating native MSAA and another multisampled half-float scene buffer
- // at the same time: a browser process may restart before the FPS governor runs.
+ // Phone: one bounded HDR scene target with two samples, then one byte colour
+ // target. No native canvas MSAA, third colour target or increased pixel ceiling.
  superScale:graphics.superScale,samples:graphics.samples,preferHalfFloat:graphics.preferHalfFloat,
  pixelBudget:graphics.pixelBudget,
  // FXAA is a single pass and it is the one that resolves the line work, so it is
