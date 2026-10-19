@@ -4,8 +4,9 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {seeded,tellComic,tellRecipe,tellCourse,tellOverheard,dailyEdition} from '../src/feed/storyteller.js';
 import {GENRES} from '../src/feed/stories.js';
-import {FEED_PLACES} from '../src/feed/places.js';
+import {FEED_PLACES,STORY_PLACES} from '../src/feed/places.js';
 import {POSES,EXPRESSIONS} from '../src/photo/layout.js';
+import {CAST_NAMES} from '../src/people/cast.js';
 const root=new URL('../',import.meta.url);
 const catalogue=JSON.parse(await readFile(new URL('guide/residents.json',root)));
 const names=new Set(catalogue.map(r=>r.name));
@@ -15,8 +16,23 @@ const clean=(text,what)=>{
  assert.doesNotMatch(text,/[぀-ヿ一-鿿]/,what+' is English (Japanese belongs in fillText): '+text);
 };
 
+test('every place’s regulars are the live cast, every resident is a regular somewhere, and the police station is a place',()=>{
+ for(const place of FEED_PLACES)for(const name of place.regulars)assert.ok(CAST_NAMES.includes(name)&&!isRetired(name),name+' is a regular at '+place.id+' but not in the cast');
+ const regulars=new Set(FEED_PLACES.flatMap(p=>p.regulars));
+ for(const name of CAST_NAMES)assert.ok(regulars.has(name),name+' is a regular nowhere');
+ assert.deepEqual(catalogue.map(r=>r.name).sort(),[...CAST_NAMES].sort(),'the guide is exactly the live cast');
+ const station=FEED_PLACES.find(p=>p.id==='police-station');assert.equal(station.shot.room,'koban');assert.ok(station.regulars.includes('Officer Mori'));
+ assert.ok(FEED_PLACES.find(p=>p.id==='port-hall').regulars.includes('Ms Ganaha'),'the port clerk’s counter is a place');
+ // A place still waiting for its backdrops (captured:false) is never a story's set, so no comic is drawn on nothing.
+ const pending=FEED_PLACES.filter(p=>p.captured===false).map(p=>p.id);
+ for(const id of pending)assert.ok(!STORY_PLACES.some(p=>p.id===id));
+ const month=Array.from({length:40},(_,i)=>dailyEdition(new Date(Date.UTC(2026,9,1+i)),catalogue)).flat();
+ for(const post of month)assert.ok(!pending.includes(post.place),post.place+' has no backdrop yet and still hosts a story');
+ for(const place of STORY_PLACES)for(const r of catalogue)assert.ok(tellComic(seeded('set'+place.id+r.name),catalogue,{place,who:r.name}).place===place.id);
+});
+
 test('every genre tells a whole story with every resident at every real place',()=>{
- for(const genre of GENRES)for(const place of FEED_PLACES)for(const r of catalogue){
+ for(const genre of GENRES)for(const place of STORY_PLACES)for(const r of catalogue){
   const story=tellComic(seeded(genre.id+place.id+r.name),catalogue,{genre:genre.id,place,who:r.name});
   assert.ok(story.panels.length>=4&&story.panels.length<=8,genre.id+' is four to eight panels');assert.equal(story.place,place.id);
   clean(story.title,genre.id+' title');
@@ -57,7 +73,7 @@ test('a day always tells the same stories, and different days differ',()=>{
 });
 
 test('every place has its backdrop from the game',async()=>{
- for(const place of FEED_PLACES){
+ for(const place of STORY_PLACES){
   const data=await readFile(new URL('assets/images/feed/'+place.id+'.webp',root));
   assert.equal(data.subarray(0,4).toString(),'RIFF',place.id);assert.ok(data.length>8000,place.id+' has detail');
  }
@@ -82,7 +98,7 @@ test('the Sunday page lays panels out in rows, establishing shots and stares acr
 
 test('every place was captured from the game with depth, a camera and somewhere to stand',async()=>{
  const views=JSON.parse(await readFile(new URL('assets/images/feed/views.json',root)));
- for(const place of FEED_PLACES){
+ for(const place of STORY_PLACES){
   const set=views[place.id];assert.ok(set?.wide&&set.push,place.id+' has its views');
   for(const [name,view] of Object.entries(set)){
    assert.equal(view.camera.position.length,3);assert.equal(view.camera.quaternion.length,4);assert.ok(view.camera.fov>10);

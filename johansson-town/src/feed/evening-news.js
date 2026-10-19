@@ -5,7 +5,7 @@ import {typhoonTomorrow,typhoonAt} from '../world/typhoons.js';
 import {birthdaysOn} from '../people/birthdays.js';
 
 /**
- * The Minato Evening News, on the mayor's television from six in the evening.
+ * The Minato Evening News, on the town's televisions from six in the evening (Mr Fujita's shed set after he signs off).
  *
  * Tomodachi Life's nightly news reports what really happened on the island that day, and
  * it is a story the player did not have to write (docs/ANIMAL-CROSSING-STUDY.md, section 7).
