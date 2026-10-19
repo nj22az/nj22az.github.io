@@ -9,6 +9,9 @@ import {SEA_LEVEL} from './ocean.js';
  * shop goods, post and repair parts twice a day and takes chilled catch and outgoing mail away. She lies
  * at the outer pier's east face (minato-berth.js CARGO_BERTH), starboard side to, bow to the quay.
  *
+ * She is a visitor with her own crew, a skipper and two hands who never come ashore in the game and are never the
+ * ferry's people (docs/CAST-CONSOLIDATION.md §9: the ferry crew are never borrowed for cargo work, and no cargo crew
+ * has a house ashore). Her calls fall between the ferry's, so the two never work the pier at once.
  * Her calls are real passages (docs/FERRY-AUDIT.md §6, batch 4b). In: up from the south through the open
  * water east of the harbour, round the breakwater's east end, across the eastern basin on a slant to the
  * pier and alongside, the stern brought in last. Out: the stern sprung off, astern until her bow is
@@ -93,7 +96,7 @@ export function buildCargoShipping(world,{register,onAction}={}){
  const placeLines=on=>{for(const [i,m] of lines.entries()){m.visible=on;if(!on)continue;from.copy(fairleads[i]);ship.localToWorld(from);const to=m.userData.bitt;dir.subVectors(to,from);const len=dir.length();m.position.copy(from).addScaledVector(dir,.5);m.quaternion.setFromUnitVectors(up,dir.normalize());m.scale.set(1,len,1);}};
  let visit=cargoVisit(0);
  const times=CARGO_CALLS.map(c=>'in '+clock(c.arrival)+' · alongside '+clock(c.alongside)+'–'+clock(c.departure)+' · clear '+clock(c.gone));
- const a=new THREE.Object3D();a.position.set(-20,1,-49.3);world.group.add(a);register?.(a,'Read the cargo arrival board',()=>onAction?.('read','Island cargo calls','ISLAND SUPPLY SERVICE · outer pier, east side\nMorning: '+times[0]+'.\nAfternoon: '+times[1]+'.\n'+visit.name+' is '+visit.phase+'. Rice, shop goods, post and repair parts come in; chilled catch and outgoing mail leave. Riku runs them along the quay to the depot. Keep the pier’s east side clear while she berths.'));
+ const a=new THREE.Object3D();a.position.set(-20,1,-49.3);world.group.add(a);register?.(a,'Read the cargo arrival board',()=>onAction?.('read','Island cargo calls','ISLAND SUPPLY SERVICE · outer pier, east side\nMorning: '+times[0]+'.\nAfternoon: '+times[1]+'.\n'+visit.name+' is '+visit.phase+'. Rice, shop goods, post and repair parts come in; chilled catch and outgoing mail leave. Her own two hands work her hatches, and the depot at the Quay Warehouse takes the goods in from the quay. Keep the pier’s east side clear while she berths.'));
  return {ship,update(time,minutes){
   visit=cargoVisit(minutes);ship.visible=visit.visible;
   const p=cargoPose(minutes);

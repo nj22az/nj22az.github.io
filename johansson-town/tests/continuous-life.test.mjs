@@ -41,7 +41,8 @@ test('two complete days give every resident work, meals and uninterrupted sleep 
    if(homeRoutine(profile,minutes).id==='sleep')assert.equal(plan.place,'home',profile.name+' must not be called out during sleep at '+minutes);
   }
   assert.ok(places.has('home'),profile.name+' returns to their home each day');
-  const work=profile.name==='Thao'||profile.name==='Barfly'?'izakaya':profile.name==='Grandmother Sakurai'?'market':profile.name==='Thuan'?'market':profile.name==='Officer Mori'?'patrol':profile.name==='Mrs Sato'?'ramen':profile.name==='Bus driver'?'station':'work';
+  // Chin's job is the ferry's motorman post (social.js, ferry-crew.js): his street body waits at the terminal while the ship has him.
+  const work=profile.name==='Thao'||profile.name==='Barfly'?'izakaya':profile.name==='Grandmother Sakurai'?'market':profile.name==='Thuan'?'market':profile.name==='Officer Mori'?'patrol':profile.name==='Mrs Sato'?'ramen':profile.name==='Bus driver'?'station':profile.name==='Chin'?'ferry':'work';
   assert.ok(places.has(work),profile.name+' retains their job');
  }
  const nao=RESIDENTS.find(p=>p.name==='Thao'),freeTime=[850,880,910].map(m=>homeRoutine(nao,m).activity);
