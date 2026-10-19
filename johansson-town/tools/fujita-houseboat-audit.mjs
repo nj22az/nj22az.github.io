@@ -6,7 +6,7 @@ const session=new TownAuditSession({launch:async o=>{
  const browser=await chromium.launch({...o,...(process.env.TOWN_AUDIT_CHROMIUM?{executablePath:process.env.TOWN_AUDIT_CHROMIUM,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']}: {})}),create=browser.newContext.bind(browser);
  browser.newContext=async config=>{const context=await create(config);await context.route('https://fonts.googleapis.com/**',r=>r.fulfill({status:200,contentType:'text/css',body:''}));return context;};return browser;
 }});
-const out=new URL('../docs/qa/fujita-houseboat/',import.meta.url);await mkdir(out,{recursive:true});const report={screens:[],externalFonts:'Google font CSS stubbed because the execution network blocks it; local fallback fonts used.'};
+const out=new URL((process.env.AUDIT_OUTPUT||'../docs/qa/fujita-houseboat/').replace(/\/?$/,'/'),import.meta.url);await mkdir(out,{recursive:true});const report={screens:[],externalFonts:'Google font CSS stubbed because the execution network blocks it; local fallback fonts used.'};
 try{
  for(const viewport of (process.env.TOWN_AUDIT_PHONE_ONLY?['phone']:['desktop','phone'])){
   console.log('Starting',viewport);await session.start({viewport,spawn:'pier',time:'23:29'});const page=session.page;
