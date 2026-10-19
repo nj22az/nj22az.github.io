@@ -1,3 +1,4 @@
+import {japaneseSign} from './okinawa/signs.js';
 import * as THREE from '../../vendor/three.module.js';
 import {windowGlow} from '../render/dusk.js';
 import {KOBAN} from './koban-layout.js';
@@ -38,11 +39,11 @@ export function buildKoban(world,options){
  mesh(new THREE.BoxGeometry(.06,1.0,1.4),std(0x9aa3a0),west,1.65,z-1.1,'Police box window frame');
  glazeWithRoom(mesh(new THREE.PlaneGeometry(1.3,.9),pane(),west-.02,1.65,z-1.1,'Police box window')).rotation.y=-Math.PI/2;
  for(let i=0;i<5;i++)mesh(new THREE.BoxGeometry(.02,.03,1.28),std(0xe8e4d8),west-.04,1.3+i*.17,z-1.1,'Window blind slat');
- const sign=mesh(new THREE.PlaneGeometry(2.6,.46),new THREE.MeshStandardMaterial({map:signTexture([["交番",70,62],['MINATO POLICE BOX',30,128]]),roughness:.8}),west-.02,2.95,z,'Police box sign');sign.rotation.y=-Math.PI/2;
+ const sign=mesh(new THREE.PlaneGeometry(2.6,.46),new THREE.MeshStandardMaterial({map:signTexture([[japaneseSign("Police box"),70,62],['MINATO POLICE BOX',30,128]]),roughness:.8}),west-.02,2.95,z,'Police box sign');sign.rotation.y=-Math.PI/2;
  // The plaza side is what you see stepping off the bus: the sign again, and the red
  // lamp on the corner, where it shows up Main Street and across the plaza both.
  const south=z+d/2+.01;
- const plaza=mesh(new THREE.PlaneGeometry(2.6,.46),new THREE.MeshStandardMaterial({map:signTexture([["交番",70,62],['MINATO POLICE BOX',30,128]]),roughness:.8}),x-.9,2.95,south,'Police box plaza sign');void plaza;
+ const plaza=mesh(new THREE.PlaneGeometry(2.6,.46),new THREE.MeshStandardMaterial({map:signTexture([[japaneseSign("Police box"),70,62],['MINATO POLICE BOX',30,128]]),roughness:.8}),x-.9,2.95,south,'Police box plaza sign');void plaza;
  mesh(new THREE.SphereGeometry(.22,16,12),new THREE.MeshStandardMaterial({color:0xff3b30,emissive:0xff2a1a,emissiveIntensity:1.2,roughness:.3}),face-.2,3.25,south+.2,'Red police lamp');
  mesh(new THREE.BoxGeometry(.3,.06,.3),std(0x9aa3a0),face-.1,3.0,south+.1,'Lamp bracket');
  // The notice board and the police bicycle on the forecourt.

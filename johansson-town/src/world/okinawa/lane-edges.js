@@ -143,7 +143,7 @@ export function buildLaneEdges(kit,group,{lots=[],stains=[]}={}){
   // The strip of earth, and the weeds out of it, except across a gate.
   const S=run.soil;if(!S)continue;kit.block(S.minX,S.maxX,.015,G.soilTop,S.minZ,S.maxZ,0x6f6048);
   const s0=along?S.minX:S.minZ,s1=along?S.maxX:S.maxZ;
-  for(let u=s0+.08;u<s1-.05;u+=.16+r.next()*.12){
+  for(let u=s0+.08;u<s1-.05;u+=.2+r.next()*.14){
    if(run.gates.some(([a,b])=>u>a-.12&&u<b+.12))continue;
    const w=run.weedLine+(r.next()-.5)*.05,[x,z]=along?[u,w]:[w,u];
    tufts.push([x,z,.07+r.next()*(run.walled?.16:.1),r.next()]);
@@ -158,9 +158,10 @@ export function buildLaneEdges(kit,group,{lots=[],stains=[]}={}){
 function weedMesh(tufts){
  const colour=new THREE.Color(),parts=[],palette=[0x5e8c3a,0x4f7d34,0x6f9a44,0x7a8f3e];
  const paint=(g,hex)=>{const out=g.index?g.toNonIndexed():g;out.deleteAttribute('uv');colour.set(hex);const n=out.attributes.position.count,c=new Float32Array(n*3);for(let i=0;i<n;i++)c.set([colour.r,colour.g,colour.b],i*3);out.setAttribute('color',new THREE.BufferAttribute(c,3));return out;};
- const blade=new THREE.ConeGeometry(.05,1,4,1,true).translate(0,.5,0);
+ // Two blades of three facets a tuft: about twelve triangles, so a whole quarter of weeds stays light on a phone.
+ const blade=new THREE.ConeGeometry(.055,1,3,1,true).translate(0,.5,0);
  for(const [x,z,h,u] of tufts){
-  for(let k=0;k<3;k++){const a=u*6+k*2.1,t=.18+k*.08;parts.push(paint(blade.clone().scale(1,h*(1-k*.18),1).rotateZ(Math.cos(a)*t).rotateX(Math.sin(a)*t).translate(x+Math.cos(a)*.03,GUTTER.soilTop,z+Math.sin(a)*.03),palette[(Math.floor(u*16)+k)%palette.length]));}
+  for(let k=0;k<2;k++){const a=u*6+k*2.6,t=.2+k*.1;parts.push(paint(blade.clone().scale(1,h*(1-k*.18),1).rotateZ(Math.cos(a)*t).rotateX(Math.sin(a)*t).translate(x+Math.cos(a)*.03,GUTTER.soilTop,z+Math.sin(a)*.03),palette[(Math.floor(u*16)+k)%palette.length]));}
   if(u>.86){const f=new THREE.SphereGeometry(.022,5,3).translate(x,GUTTER.soilTop+h*.9,z);parts.push(paint(f,0xe8c73a));}
  }
  const geometry=mergeGeometries(parts,false);parts.forEach(p=>p.dispose());blade.dispose();geometry.computeVertexNormals();

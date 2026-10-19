@@ -18,8 +18,8 @@ export const lotRect=(minX,maxX,minZ,maxZ)=>Object.freeze({minX,maxX,minZ,maxZ})
 const rect=lotRect;
 export const STREET_LOTS=Object.freeze([
  Object.freeze({
-  id:'higa-crate-yard',formerly:'yonamine',use:'crate-yard',jp:'比嘉酒店 空き瓶置場',name:'Higa Liquor’s crate yard',
-  rect:rect(-15.9,-8.25,9.1,15.5),walls:Object.freeze({north:'block',south:'block',east:'block',west:'block'}),gates:Object.freeze({east:Object.freeze([[10.8,13.2]])}),
+  id:'higa-crate-yard',formerly:'yonamine',use:'crate-yard',name:'Higa Liquor’s crate yard',
+  rect:rect(-15.9,-8.25,9.35,15.25),walls:Object.freeze({north:'block',south:'block',east:'block',west:'block'}),gates:Object.freeze({east:Object.freeze([[10.8,13.2]])}),
   owner:'Grandmother Higa (Higa Liquor, across Main Street)',users:'Higa Liquor',
   why:'Higa Liquor supplies the whole island’s drink and has no yard of its own behind the shop. Empties come back in crates and wait here, stacked, for the brewery’s boat.',
   hours:'Crates sorted at 07:30; the hand truck goes back and forth across Main Street all morning.',
@@ -69,7 +69,7 @@ function crateYard(kit,solid,lot,{anchor,onAction}){
  for(const dx of [0,.4])kit.cyl(.1,.1,.06,hx+dx,.1,hz-.08,0x222326,{segments:10,rz:Math.PI/2});
  kit.box(.44,.28,.58,hx+.2,.33,hz+.15,0xd8b13c);
  solid(kit.rect(hx-.2,hx+.6,hz-.25,hz+.5,1.2,'hand-truck'));
- kit.sign(poster({title:'比嘉酒店',lines:['空き瓶置場','関係者以外','立入禁止'],bg:'#f2ede0',band:'#8a3b2e'}),.6,.8,R.maxX+.14,1.25,lot.gates.east[0][0]-.9,{ry:Math.PI/2,name:'crate yard sign'});
+ kit.sign(poster({title:'Higa empty-bottle yard',lines:['HIGA LIQUOR','EMPTIES','STAFF ONLY'],bg:'#f2ede0',band:'#8a3b2e'}),.6,.8,R.maxX+.14,1.25,lot.gates.east[0][0]-.9,{ry:Math.PI/2,name:'crate yard sign'});
  const at=kit.point(R.maxX+.9,0,(lot.gates.east[0][0]+lot.gates.east[0][1])/2);lotRead(anchor,onAction,at.x,at.z,'Look into Higa Liquor’s crate yard',lot);
 }
 

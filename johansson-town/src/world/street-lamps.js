@@ -25,7 +25,7 @@ export const STREET_LAMP_PLACEMENTS=Object.freeze([
  // Two west poles. Sakura-face zs dropped (south -34 quay opening; north -21 still on facade).
  // Gap Minato↔Sakura at -15.0: ≥1.5 m north of crossing strip end -16.5, south of Minato gable.
  // At the kerb like the Front-Row pole, not against the facade: there it stood in front of Sato Ramen's sign.
- {x:-5.45,z:-15.0,side:'west'}, // Minato↔Sakura gap
+ {x:-5.6,z:-15.0,side:'west'}, // Minato↔Sakura gap (clear of the ramen circuit at x -4.35)
  {x:-5.45,z:-3.05,side:'west'}, // Front-Row south gable — street-side of WEST_FRONT -7.8
 ]);
 

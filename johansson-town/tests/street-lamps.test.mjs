@@ -31,7 +31,7 @@ test('two west-corner poles clear of Sakura south storefront',()=>{
  }
  assert.deepEqual(
   STREET_LAMP_PLACEMENTS.map(p=>({x:p.x,z:p.z})),
-  [{x:-5.45,z:-15.0},{x:-5.45,z:-3.05}]
+  [{x:-5.6,z:-15.0},{x:-5.45,z:-3.05}]
  );
 });
 

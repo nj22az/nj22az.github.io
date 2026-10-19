@@ -9,13 +9,11 @@ import {createLightPools} from './light-pools.js';
 import {lanternGlow} from '../render/dusk.js';
 import {paintedTurf,paintedPaving} from '../render/toy-surfaces.js';
 import {createKit} from './okinawa/kit.js';
-import {hibiscus,gajumaru} from './okinawa/houses.js';
+import {hibiscus} from './okinawa/houses.js';
 import {coralSand,poster} from './okinawa/signs.js';
 import {buildCherryTree} from './cherry-tree.js';
 import {GROUND_LAYER} from './ground-layers.js';
 export const PARK_TREE=Object.freeze([(HARBOUR_CHERRY[0]-PARK.x)/PARK.scale,(HARBOUR_CHERRY[1]-PARK.z)/PARK.scale]);
-/** The gajumaru behind the garden shrine (clear of the cherry walk, inside the park's south edge). */
-export const HARBOUR_SHRINE_TREE=Object.freeze([9.3,-35.5]);
 const LAMP_POSITIONS=Object.freeze([[7.8,-26.8],[17.7,-34.9],[29.8,-13.4]]);
 export const PARK_LAMPS=Object.freeze(LAMP_POSITIONS.map(([x,z])=>[(x-PARK.x)/PARK.scale,(z-PARK.z)/PARK.scale]));
 let benchSource=null,benchPending=null;
@@ -119,9 +117,6 @@ export function buildPark(world,options={}){
  const shrine=HARBOUR_SHRINE;kit.box(1.15,.15,.85,shrine.x,.075,shrine.z,0x8a897c);kit.box(.74,1.05,.54,shrine.x,.68,shrine.z,0x94604b);kit.box(1.1,.12,.8,shrine.x,1.3,shrine.z,0x4e665b);kit.box(.35,.55,.025,shrine.x,.65,shrine.z+.285,0x453e31);
  world.colliders.push({id:'garden-shrine',x:shrine.x,z:shrine.z,w:1.15,d:.85,height:1.36,park:true});
  anchor(...shrine.approach,'Visit the garden shrine','shrine','Garden shrine','A small island shrine in Harbour Park, kept beside the cherry and pond.');
- // The shrine's gajumaru: every prayer place on the island has its tree, and a gajumaru is where the kijimuna live,
- // the red-haired tree sprites who help fishermen and play tricks on everybody else. Behind the shrine, off the walk.
- {const [gx,gz]=HARBOUR_SHRINE_TREE;world.colliders.push({...gajumaru(kit,gx,gz,{seed:61,size:.72}),park:true});}
  // One readable board, outside the approach: the building itself is the onsen sign ahead.
  kit.box(.08,1.3,.08,6.1,.65,-23.4,0x68563e);kit.sign(poster({title:'Minato Harbour Park',lines:['MINATO HARBOUR PARK','Umi-no-yu · pond · beach'],band:'#355d46',bg:'#eee5cc'}),1.6,.65,6.1,1.24,-23.4,{ry:-Math.PI/2,name:'Minato Harbour Park board',both:true});
  world.colliders.push({id:'park-board-post',x:6.1,z:-23.4,w:.1,d:.1,height:1.6,park:true});
