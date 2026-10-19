@@ -16,6 +16,7 @@ import {buildKitahamaQuarter} from './kitahama-quarter.js';
 import {plotGate} from './layout.js';
 import {residentsLine,homeNameplate} from '../../people/island-households.js';
 import {dressOldTown} from './old-town.js';
+import {buildStreetLots} from './lots.js';
 import {buildLaneEdges} from './lane-edges.js';
 
 
@@ -67,7 +68,8 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildWires(kit,solid);
  // Kitahama stands on the island's ground, below the old town's datum.
  kit.at(0,0,0,()=>buildKitahama(kit,solid,{anchor,inspect,onAction,vending:(x,z,ry)=>vending(x,z,ry,KITAHAMA.y)}),KITAHAMA.y);
- // The gutter-and-weed edge every Kitahama lane has (lane-edges.js).
+ // What stands where the surplus houses stood (lots.js), and the gutter-and-weed edge every Kitahama lane has (lane-edges.js).
+ buildStreetLots(kit,solid,{anchor,onAction});
  const laneEdges=buildLaneEdges(kit,group);
 
  const old=dressOldTown(kit,solid,{inspect,anchor,onAction,vending,group});
