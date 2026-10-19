@@ -16,6 +16,8 @@ import {buildKitahamaQuarter} from './kitahama-quarter.js';
 import {plotGate} from './layout.js';
 import {residentsLine,homeNameplate} from '../../people/island-households.js';
 import {dressOldTown} from './old-town.js';
+import {buildStreetLots} from './lots.js';
+import {buildLaneEdges} from './lane-edges.js';
 
 
 import {MAIN_ROAD} from '../main-road.js';
@@ -66,6 +68,9 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildWires(kit,solid);
  // Kitahama stands on the island's ground, below the old town's datum.
  kit.at(0,0,0,()=>buildKitahama(kit,solid,{anchor,inspect,onAction,vending:(x,z,ry)=>vending(x,z,ry,KITAHAMA.y)}),KITAHAMA.y);
+ // What stands where the surplus houses stood (lots.js), and the gutter-and-weed edge every Kitahama lane has (lane-edges.js).
+ buildStreetLots(kit,solid,{anchor,onAction});
+ const laneEdges=buildLaneEdges(kit,group);
 
  const old=dressOldTown(kit,solid,{inspect,anchor,onAction,vending,group});
 
@@ -80,7 +85,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
   old.shutter.update(minutes);
  });
  if(!vendingReady())for(const machine of vendings)(world.details??=[]).push({id:'okinawa-vending-'+machine.id,x:machine.position.x,z:machine.position.z,radius:44,load:()=>hydrateVending(machine,{shadows})});
- return {group,meshes,colliders,materials,shutter:old.shutter};
+ return {group,meshes,colliders,materials,shutter:old.shutter,laneEdges};
 }
 
 /* ------------------------------ Nishi-machi ------------------------------ */
@@ -340,8 +345,35 @@ function buildYardRow(kit,solid,{anchor,inspect,onAction}){
  // Moved west, beside the second yard house (yard-homes-layout.js), clear of the lane.
 
  buildYardLife(kit,solid,{anchor,inspect,onAction});
+ laundrySideWall(kit,solid,YARD_ROW.plots.find(p=>p.id==='coin-laundry'));
  gasBottles(kit,-15.4,17.8,{ry:Math.PI/2});
  hibiscus(kit,-23.6,18.6,{seed:23});banana(kit,-23.4,-16.6,{seed:24});
+ for(const [i,z] of YARD_WINDBREAK.z.entries())solid(fukugi(kit,YARD_WINDBREAK.x,z,{h:5.4+(i%3)*.5,seed:500+i}));
+}
+
+/**
+ * Fukugi along the yard's west edge, where the old yard wall stood: the shops' yard takes the west wind off the sea
+ * through the Nishi lanes, and the row shades Thuan's break bench (staff-bench.js) and the goya bed in the afternoon.
+ * Planted between the lane openings (WEST_YARD.lanes), clear of the tyres and of the building circuits (the stretch
+ * beside the yard houses is left for the housing consolidation).
+ */
+export const YARD_WINDBREAK=Object.freeze({x:-24.1,z:Object.freeze([-25.2,-23.1,-21,-18.9])});
+
+/**
+ * The coin laundry's long south wall, which faces Main Street's crossing and was blank: its own painted name and
+ * hours for the street, the two gas dryers' vent hoods (with the lint they stain the wall with), the gas line from
+ * the bottles at the back corner, and the downpipe.
+ */
+function laundrySideWall(kit,solid,plot){
+ const z=plot.minZ+.05,x0=YARD_ROW.minX,x1=YARD_ROW.maxX,steel=0x9aa2a6;
+ if(typeof document!=='undefined'&&document.createElement)kit.sign(fascia({jp:'Coin laundry wall',en:'Open 24 hours · wash · dry',bg:'#e9f0f6',accent:'#3a6a9a'}),3.4,.64,(x0+x1)/2+1,4.5,z-.03,{ry:Math.PI,depth:.03,edge:0x3a6a9a,name:'coin laundry wall sign'});
+ for(const x of [x1-3.4,x1-4.3]){
+  kit.box(.34,.3,.2,x,2.45,z-.1,steel,{finish:'metal'});kit.box(.3,.04,.22,x,2.28,z-.11,0x6d7477);
+  kit.box(.28,.7,.01,x,1.95,z-.005,0xc3ced3);
+ }
+ // The gas comes from the pair of bottles already standing at the back corner (buildYardRow).
+ kit.rod([x0+.6,1.5,z-.04],[x1-3.4,1.5,z-.04],.015,0x6d7477);kit.rod([x1-3.4,1.5,z-.04],[x1-3.4,2.3,z-.04],.015,0x6d7477);
+ kit.rod([x0+.15,6.2,z-.08],[x0+.15,.2,z-.08],.045,0x8e9699);kit.box(.12,.1,.22,x0+.15,.13,z-.16,0x8e9699);
 }
 
 function buildEastBack(kit,solid,ctx){
