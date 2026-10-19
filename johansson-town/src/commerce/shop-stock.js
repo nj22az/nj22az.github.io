@@ -125,3 +125,17 @@ export function applyStorageOutcome(state,minutes,outcome,expectedPlayer='player
  state.yen=(state.yen||0)+yen;shop.storageOutcomeDay=day;
  return {...result,applied:true,yen};
 }
+
+/**
+ * The web edition's shelves (edition.js `trade` off; the owner, 19 October 2026: "The shop restocks even if she doesn't
+ * order anything; she has a magical supply", and "it can be back next day: if you buy all the coffee in one day, they
+ * will have more tomorrow"). Nothing is ordered, delivered or counted in a back room: what the player takes stays gone
+ * for the rest of that trading day (the shelf counts in the save), and every shelf is full again when the shop next
+ * opens at 9:00. Returns true when it refilled them.
+ */
+export const openingDay=minutes=>{const day=Math.floor(minutes/1440),m=((minutes%1440)+1440)%1440;return m>=540?day:day-1;};
+export function webShelves(state,minutes){
+ const shop=state?.sakura;if(!shop||!Number.isFinite(minutes))return false;
+ const day=openingDay(minutes);if(shop.shelvesDay===day)return false;
+ shop.stock=restoreShopStock(null);shop.shelvesDay=day;return true;
+}

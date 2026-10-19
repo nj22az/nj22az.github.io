@@ -3,6 +3,7 @@ import * as THREE from '../../vendor/three.module.js';
 
 import {SHOP_STOCK,stockSpec,takeShopStock,returnShopStock,restockItem,depletedShelf,closingDay,closingStockPending,closingPreparationPending,SOLD_OUT} from '../commerce/shop-stock.js';
 import {recordSakuraSale,shopEntry,advanceDeliveries} from '../commerce/sakura-economy.js';
+import {BUDGET} from '../edition.js';
 import {createRoomWalk} from './room-walk.js';
 import {marketVisitPurpose} from './market-visits.js';
 import {residentPersonality} from './resident-personalities.js';
@@ -42,7 +43,7 @@ export function createShopRetail({world,state,ledger,display,collides,getMinutes
  function face(g,yaw,dt){const angle=Math.atan2(Math.sin(yaw-g.rotation.y),Math.cos(yaw-g.rotation.y));g.rotation.y+=THREE.MathUtils.clamp(angle,-dt*2.6,dt*2.6);return Math.abs(angle)<.025;}
  function clear(person){for(const key of ['heldItem','shopGoods','shopReach','shopping'])delete person.g.userData[key];}
  function finish(person,record){
-  if(record.picked&&!record.paid){returnShopStock(state,{item:record.item});record.picked=false;}
+  if(record.picked&&!record.paid){if(BUDGET.trade)returnShopStock(state,{item:record.item});record.picked=false;}
   record.finished=true;record.phase='finished';clear(person);customers.delete(person);walkers.get(person)?.walker.clear();walkers.delete(person);
  }
  function choices(person){
@@ -64,7 +65,7 @@ export function createShopRetail({world,state,ledger,display,collides,getMinutes
   places=assignSakuraQueue(entries);
  }
  function update(dt){
-  const minutes=getMinutes(),open=true;advanceDeliveries(state,minutes);queuePlaces();
+  const minutes=getMinutes(),open=true;if(BUDGET.trade)advanceDeliveries(state,minutes);queuePlaces();
   for(const person of world.people){
    if(person.profile.name===sakuraClerkAt(minutes))continue;const account=ledger.account(person.profile.name,minutes),record=account.shopping,previous=customers.get(person);
    if(previous&&previous!==record)finish(person,previous);
@@ -78,7 +79,7 @@ export function createShopRetail({world,state,ledger,display,collides,getMinutes
    }else if(record.phase==='pickup'){
     const count=state.sakura.stock[record.item].shelf;if(!count){soldOut(person,record);continue;}
     if(!face(g,SAKURA_SHELVES[record.item].yaw,dt))continue;display.accessShelf(record.item);g.userData.shopReach=point(record.item,count-1);record.timer-=dt;
-    if(record.timer<=0){const claim=takeShopStock(state,record.item);delete g.userData.shopReach;if(!claim){record.item=null;record.phase='browse';continue;}record.picked=true;record.phase='queue';record.queuedAt=minutes;}
+    if(record.timer<=0){const claim=BUDGET.trade?takeShopStock(state,record.item):{item:record.item,virtual:true};delete g.userData.shopReach;if(!claim){record.item=null;record.phase='browse';continue;}record.picked=true;record.phase='queue';record.queuedAt=minutes;}
    }else if(record.phase==='queue'){
     const place=places.get(person.profile.name)||{kind:'hold'},name=stockSpec(record.item).name.toLowerCase();
     record.queueSpot=place.kind==='hold'?record.queueSpot||null:place;
@@ -107,6 +108,8 @@ export function createShopRetail({world,state,ledger,display,collides,getMinutes
   // The customer on the paying spot: the one the queue has put first (assignSakuraQueue).
   const waiting=open&&[...customers].find(([p,record])=>record.phase==='queue'&&!record.paid&&places.get(p.profile.name)?.kind==='queue'&&places.get(p.profile.name).index===0);
   if(waiting){const [customer,record]=waiting;activeJob={type:'checkout',customer,record,ready:()=>record.atCounter,position:layout.staff,yaw:layout.staffYaw};return activeJob;}
+  // The web edition has no closing restock (edition.js `trade`): the shelves are full again at the next opening.
+  if(!BUDGET.trade)return null;
   const preparation=closingPreparationPending(state,minutes);
   if(!preparation&&!closingStockPending(state,minutes))return null;
   const item=depletedShelf(state);

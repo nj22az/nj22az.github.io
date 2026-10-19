@@ -92,3 +92,18 @@ export function greetingFor({speaker,temper='easy',situation={},playerName='Joha
  const rendered=renderLine(source,{name:playerName,speaker,catchphrase,seed:seedOf(speaker,day)});
  return {id:found.id,why:found.why,source,...rendered,text:rendered.text.trim()};
 }
+
+/** The longest line a resident says on the web edition (edition.js `conversations` off). */
+export const SHORT_GREETING=35;
+/**
+ * One short line for the web edition (the owner, 19 October 2026: "simple behaviour for the NPCs on web … and not too
+ * much dialogue"): the first sentence of the greeting this moment would get, when it fits in SHORT_GREETING
+ * characters, or a plain greeting for the hour. Pure, like greetingFor.
+ */
+export function shortGreeting(options={}){
+ const full=greetingFor(options),first=full.text.split('\n')[0].match(/^.*?[.!?…](?=\s|$)/)?.[0]?.trim()||full.text.split('\n')[0].trim();
+ if(first&&first.length<=SHORT_GREETING)return {id:full.id,text:first,face:full.faces?.[0]?.face||null};
+ const h=options.situation?.hour??12,part=h<11?'Good morning':h<17?'Good afternoon':'Good evening',name=options.playerName||'Johansson';
+ const text=(part+', '+name+'.').length<=SHORT_GREETING?part+', '+name+'.':part+'!';
+ return {id:full.id,text,face:null};
+}

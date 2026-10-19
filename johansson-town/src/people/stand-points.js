@@ -1,6 +1,6 @@
 import {CAST,castMember} from './cast.js';
 import {STAND_SEQUENCES} from './stand-sequences.js';
-import {fullLife} from './full-life.js';
+import {fullLife,standsFor} from './full-life.js';
 
 /**
  * Stand points in a resident's day (docs/research/new-yokosuka-lessons.md §2.3, §6, C6; approved by the owner on
@@ -77,7 +77,7 @@ export function dayPhase(name,minutes){
  */
 const memo=new Map();
 export function standNow(name,minutes,frame=null,sequenceId=null){
- if(!fullLife())return null;
+ if(!fullLife()||!standsFor(name))return null;
  // Read every frame by several controllers: worked out once per town second and resident, then reused.
  const key=name+'|'+frame+'|'+sequenceId,second=Math.floor(minutes*60),hit=memo.get(key);
  if(hit&&hit.second===second)return hit.value;
