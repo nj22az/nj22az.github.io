@@ -51,7 +51,7 @@ export function createTownSections({mobile=false}={}){
     });
     cached=town;stats.total=entries.length;
   }
-  return {stats,invalidate(){cached=null;},render({renderer,scene,camera,town,position}){
+  return {stats,invalidate(){cached=null;entries=[];},render({renderer,scene,camera,town,position}){
     if(cached!==town)cache(town);
     const direction=camera.getWorldDirection(new THREE.Vector3());
     const x=position.x,z=position.z,reach=mobile?36:54;

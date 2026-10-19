@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {releaseAfterUpload} from '../render/canvas-release.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {FERRY_SHIP,FERRY_HEIGHTS,FERRY_CAR_PLACES,FERRY_MACHINERY} from './ferry-ship.js';
 import {drawSafetyPlan,canvasPen} from './ferry-safety-plan.js';
@@ -227,15 +228,17 @@ function deckAndBulwarks(){
  * raised diamonds, a seam every 0.6 m) or `grating` (bars over the red bilge). Texts are drawn on a canvas once;
  * patterns repeat across the plane.
  */
-function plateMesh(pl){
+function plateMesh(pl,{deferred=false}={}){
  if(typeof document==='undefined')return null;
  // The canvas has the plate's own proportions (a 0.76 × 0.03 m label gets a 25 : 1 canvas), so no lettering is stretched.
  const kind=pl.kind||'text',c=document.createElement('canvas');let H=Math.max(64,Math.round(512*pl.h/pl.w)),W=Math.min(2048,Math.max(64,Math.round(H*pl.w/pl.h))),repeat=null;
  if(kind==='dial')W=H=pl.live?384:256;if(kind==='chequer'||kind==='grating'){W=H=256;repeat=[pl.w/.6,pl.h/.6];}if(kind==='safety-plan'||kind==='alarms'||kind==='readout'||kind==='scope'){W=1024;H=Math.round(1024*pl.h/pl.w);}
  c.width=W;c.height=H;const x=c.getContext('2d');
- drawPlate(x,W,H,pl,pl.kind==='alarms'?[]:pl.kind==='readout'?pl.lines:pl.value);
+ const still=ctx=>drawPlate(ctx,W,H,pl,pl.kind==='alarms'?[]:pl.kind==='readout'?pl.lines:pl.value);
+ if(pl.live||!deferred)still(x);
  const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=4;
  if(repeat){tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.repeat.set(repeat[0],repeat[1]);}
+ if(!pl.live)releaseAfterUpload(tex,still,{width:W,height:H,deferred});
  const flat=repeat!==null,mat=new THREE.MeshStandardMaterial({map:tex,roughness:flat?.62:.5,metalness:flat?.35:.3,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4});
  const geo=kind==='dial'?new THREE.CircleGeometry(pl.w/2,24):new THREE.PlaneGeometry(pl.w,pl.h);
  const mesh=new THREE.Mesh(geo,mat);
@@ -555,7 +558,11 @@ export function buildFerryModel({shadows=false}={}){
  for(const r of FERRY_INTERIOR.bars)kit.bar(r.cls,r.a,r.b,r.r,r.hex,r.r>.2?14:6);
  for(const c of FERRY_INTERIOR.cyls)kit.cyl(c.cls,c.rt,c.rb,c.h,c.pos,c.hex,c.rot,c.seg);
  // Maker's plates and labels (johansson-marine.js): lettering on a plate, drawn as its own small textured plane.
- const livePlates=[];for(const pl of FERRY_INTERIOR.plates){const m=plateMesh(pl);if(m){ferry.add(m);if(m.userData.live)livePlates.push(m.userData.live);}}
+ // The engine room's plates lie wholly below the car deck, where nothing outside the hull sees them: game.js draws
+ // them (and first uploads their pictures) only with the camera aboard (updateBelowDeck), not every frame she is in view.
+ const belowDeck=new THREE.Group();belowDeck.name='Engine room plates';ferry.add(belowDeck);
+ ferry.userData.belowDeck={plates:belowDeck,halfBeam:HB,halfLength:HALF,carDeck:CAR};
+ const livePlates=[];for(const pl of FERRY_INTERIOR.plates){const hidden=pl.pos[1]+Math.max(pl.w,pl.h)/2<CAR,m=plateMesh(pl,{deferred:hidden});if(m){(hidden?belowDeck:ferry).add(m);if(m.userData.live)livePlates.push(m.userData.live);}}
  /** Shows the plant's readings (ferry-plant.js readings()) on every live dial and the alarm matrix; returns how many were redrawn. */
  const bridgeEquipment=buildFerryBridge(ferry,kit,{floor:BRIDGE,fore:FERRY_HOUSE.fore,aft:FERRY_HOUSE.wheelhouseAft});
  ferry.userData.bridgeEquipment=bridgeEquipment;

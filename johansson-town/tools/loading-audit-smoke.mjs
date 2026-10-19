@@ -1,4 +1,4 @@
-// Compiled-game WebKit smoke: held real request, honest task count, then park views.
+// Compiled-game WebKit smoke: a held real request cannot carry the bar past its step, then park views.
 import assert from 'node:assert/strict';
 import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
@@ -15,24 +15,26 @@ try{
  await page.route('**/assets/catalog/**',async route=>{if(new URL(route.request().url()).pathname.endsWith('.glb')){delayed++;requestSeen();await held;}await route.continue();});
  await page.addInitScript(()=>{localStorage.setItem('johansson-town-clock',JSON.stringify({start:'12:00',speed:1}));});
  await page.goto('http://127.0.0.1:8765/johansson-town/?audit&spawn=park-bench',{waitUntil:'domcontentloaded'});
- await page.locator('#enter').click();
+ // The island loads behind the title; START stays the bar until it is ready.
  await page.waitForFunction(()=>window.__JOHANSSON_LOADING__?.snapshot().label==='Loading character accessories');
  await Promise.race([requested,page.waitForTimeout(10000).then(()=>{throw Error('No catalog model request reached the loading gate');})]);
  assert.ok(delayed>0,'A real model request is held');
- const pending=await page.evaluate(()=>({state:window.__JOHANSSON_LOADING__.snapshot(),width:document.querySelector('#bootProgress span').style.width}));
+ const pending=await page.evaluate(()=>({state:window.__JOHANSSON_LOADING__.snapshot()}));
  await page.waitForTimeout(900);
- const waiting=await page.evaluate(()=>({state:window.__JOHANSSON_LOADING__.snapshot(),width:document.querySelector('#bootProgress span').style.width}));
- assert.equal(waiting.state.completed,pending.state.completed);assert.equal(waiting.width,pending.width,'Time alone must not fill the bar');
+ const waiting=await page.evaluate(()=>({state:window.__JOHANSSON_LOADING__.snapshot()}));
+ assert.equal(waiting.state.completed,pending.state.completed);assert.equal(waiting.state.target,pending.state.target,'Time alone cannot carry the bar past the running step');
  assert.ok(waiting.state.completed<waiting.state.total);report.heldRequest=waiting;
+ assert.equal(await page.locator('#enter').isDisabled(),true,'START waits for the island');
  await page.screenshot({path:resolve(out,'measured-loading.png')});release();
- await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_LOADING__.snapshot().completed===8&&document.querySelector('#start').classList.contains('hidden'));
+ await page.locator('#enter').click();
+ await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_LOADING__.snapshot().completed===window.__JOHANSSON_LOADING__.snapshot().total&&document.querySelector('#start').classList.contains('hidden'));
  report.completed=await page.evaluate(()=>window.__JOHANSSON_LOADING__.snapshot());
  assert.equal(report.completed.percent,100);
  await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.frozen=true;a.renderFrozen=true;a.setTime(720);a.teleport(12,-29.8);a.camera={pos:[18,2.3,-21],at:[11,1.2,-31]};a.render();});
  await page.addStyleTag({content:'#hud,#activity,#directory,#mobile{visibility:hidden!important}'});
  const capture=async label=>{
-  const state=await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__,r=a.renderer;a.render();const look=window.__JOHANSSON_LOOK__;return {ink:look.ink,effects:look.state,buffer:[r.domElement.width,r.domElement.height],shadowSize:look.lights.sun.shadow.mapSize.toArray(),shadowWidth:look.lights.sun.shadow.camera.right-look.lights.sun.shadow.camera.left,gpuError:r.getContext().getError()};});
-  assert.equal(state.ink,true);assert.equal(state.effects.fxaa,true);assert.equal(state.gpuError,0);assert.ok(state.buffer[0]*state.buffer[1]<=650000);assert.equal(state.shadowWidth,28);
+  const state=await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__,r=a.renderer;a.render();const look=window.__JOHANSSON_LOOK__;return {ink:look.ink,effects:look.state,buffer:[r.domElement.width,r.domElement.height],shadows:r.shadowMap.enabled,gpuError:r.getContext().getError()};});
+  assert.equal(state.ink,true);assert.equal(state.effects.fxaa,true);assert.equal(state.gpuError,0);assert.ok(state.buffer[0]*state.buffer[1]<=2.4e6);assert.equal(state.shadows,false,'phones draw the 16 October look: no shadow map');
   const path=resolve(out,label+'.png');await page.locator('#game').screenshot({path});
   const png=PNG.sync.read(await readFile(path));let minimum=255,maximum=0;const colours=new Set();
   for(let i=0;i<png.data.length;i+=64){const rgb=[...png.data.subarray(i,i+3)];minimum=Math.min(minimum,...rgb);maximum=Math.max(maximum,...rgb);colours.add(rgb.join(','));}

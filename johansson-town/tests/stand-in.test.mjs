@@ -63,3 +63,15 @@ test('live shop occupants stay animated and visible beside the merged furnishing
  body.position.x=2;room.updateMatrixWorld(true);assert.equal(mesh.getWorldPosition(new THREE.Vector3()).x,2);
  copy.dispose();assert.equal(mesh.layers.isEnabled(0),true);
 });
+
+test('Sakura can merge fittings while preserving instanced shelf products without expanded copies',()=>{
+ const room=new THREE.Group(),geometry=new THREE.BoxGeometry(.1,.2,.1),material=new THREE.MeshBasicMaterial(),stock=new THREE.InstancedMesh(geometry,material,1000);
+ room.add(stock,new THREE.Mesh(geometry,material));
+ const copy=createStandIn(room,{keepInstances:true});room.add(copy.group);copy.show(true);
+ assert.equal(stock.layers.mask,1,'Shelf instances remain live and renderable');
+ assert.equal(copy.sources,1,'Only the unbatched fitting is duplicated');
+ assert.equal(copy.group.children[0].geometry.attributes.position.count,36,'No per-product vertex expansion');
+ let sourceDisposals=0;geometry.addEventListener('dispose',()=>sourceDisposals++);material.addEventListener('dispose',()=>sourceDisposals++);
+ copy.dispose();assert.equal(sourceDisposals,0,'Entry does not dispose shared product buffers or materials');
+ assert.equal(stock.count,1000);assert.equal(stock.layers.mask,1);
+});

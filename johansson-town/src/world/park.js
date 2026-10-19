@@ -91,7 +91,7 @@ export function buildPark(world,options={}){
  const kit=createKit({shadows});
  const anchor=(x,z,label,kind,title,text)=>{const a=new THREE.Object3D();a.position.set(x,1,z);group.add(a);options.register?.(a,label,()=>options.onAction?.(kind,title,text));return a;};
  const benchGeometry=parkBenchGeometry();let benchObject=makeParkBench(benchGeometry,shadows);group.add(benchObject);
- if(!benchSource)registerDetail(world,{id:'harbour-park-bench',x:benchGeometry.x,z:benchGeometry.z,radius:40,priority:0,load:async()=>{
+ if(!benchSource)registerDetail(world,{id:'harbour-park-bench',requiredNearby:true,x:benchGeometry.x,z:benchGeometry.z,radius:40,priority:0,load:async()=>{
   if(!await preloadPark())return false;const object=makeParkBench(benchGeometry,shadows);group.add(object);benchObject.removeFromParent();benchObject=object;world.park.benchObject=object;world.park.benchSource='blender';return true;
  }});
  world.colliders.push({id:'harbour-park-bench',x:benchGeometry.x,z:benchGeometry.z,w:benchGeometry.width,d:benchGeometry.length,minY:benchGeometry.footY,height:benchGeometry.seatY+benchGeometry.top-benchGeometry.footY,park:true});

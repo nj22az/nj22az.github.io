@@ -179,17 +179,17 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   const atMarketDoor=tag==='market'&&d<2.8;
   const candidates=atMarketDoor?[[nx,nz],[nx,g.position.z],[g.position.x,nz]]:[[nx,nz],[nx,g.position.z],[g.position.x,nz],[g.position.x-dz/d*step,g.position.z+dx/d*step],[g.position.x+dz/d*step,g.position.z-dx/d*step]];
   const beforeX=g.position.x,beforeZ=g.position.z;
-  // Only turning toward the route itself is progress. Two people who meet head-on
-  // otherwise turn to a sidestep, turn back to the route the next frame, and turn to the
-  // sidestep again, and since every turn restarted the stall clock the detour round
-  // each other was never planned: they stood nose to nose until one of their plans moved on.
-  const turned=onRoute=>{route.speed=0;if(onRoute){route.stalled=0;route.checkpoint.copy(g.position);}};
-  for(const [i,[x,z]] of candidates.entries()){
+  // A turn changes orientation, not progress along the street. Resetting the
+  // stall clock on every forward candidate lets an actor alternate between a
+  // blocked step and its sidestep forever, never reaching the detour planner.
+  // The three-second allowance already leaves time for an ordinary turn.
+  const turned=()=>{route.speed=0;};
+  for(const [x,z] of candidates){
    if(Math.hypot(x-beforeX,z-beforeZ)<.000001)continue;
    // A slope is taken at its gradient; a kerb of a hand's height is stepped up in one go.
-   // The pier's deck stands ten centimetres above the quay, and without the kerb allowance
-   // everybody walking out to the ferry stopped dead at its edge.
-   if(!clearOfPeople(x,z)||collides(x,z,.3)||Math.abs(groundHeight(x,z)-g.position.y)>Math.max(step*.65+.025,.12))continue;
+   // Match the navigation raster's 18 cm step allowance. A route over an
+   // ordinary kerb must not be accepted by the planner and refused by the walker.
+   if(!clearOfPeople(x,z)||collides(x,z,.3)||Math.abs(groundHeight(x,z)-g.position.y)>Math.max(step*.65+.025,.180001))continue;
    // Face the actual clear step, including a detour, before advancing. Turning after
    // translation lets the walk clip carry them backwards or sideways around corners.
    const stepDx=x-beforeX,stepDz=z-beforeZ;
@@ -198,15 +198,15 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    if(!faceStep(g,stepDx,stepDz,dt)){
     // A deliberate turn is progress, not a blockage. Replanning mid-turn can choose
     // a grid point behind them and make them turn back and forth without leaving it.
-    turned(i===0);return;
+    turned();return;
    }
    // faceStep may have completed the last fraction of the turn this frame. Measure
    // alignment again after it, so translation always agrees with the rendered body.
    const travel=alignedStep(travelError(g.rotation.y,stepDx,stepDz));
-   if(travel<=0){turned(i===0);return;}
+   if(travel<=0){turned();return;}
    const ax=beforeX+stepDx*travel,az=beforeZ+stepDz*travel;
    if(travel<1&&(!clearOfPeople(ax,az)||collides(ax,az,.3))){
-    turned(i===0);return;
+    turned();return;
    }
    g.position.set(ax,groundHeight(ax,az),az);route.speed=speed;break;
   }

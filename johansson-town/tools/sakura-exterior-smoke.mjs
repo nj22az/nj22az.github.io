@@ -10,7 +10,7 @@ try{
  const page=await browser.newPage({viewport:{width:844,height:390},deviceScaleFactor:3,isMobile:true,hasTouch:true,serviceWorkers:'block',userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1'});
  page.setDefaultTimeout(120000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('http://127.0.0.1:8765/johansson-town/?audit',{waitUntil:'domcontentloaded'});await page.locator('#enter').click();
- await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_LOADING__.snapshot().completed===8);
+ await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_LOADING__.snapshot().completed===window.__JOHANSSON_LOADING__.snapshot().total);
  await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.frozen=true;a.renderFrozen=true;a.teleport(-2,-25);});
  const capture=async(label,minutes,pos,at)=>{
   const state=await page.evaluate(({minutes,pos,at})=>{const a=window.__JOHANSSON_AUDIT__;a.setTime(minutes);a.camera={pos,at};a.render();const panes=[];a.scene.traverse(o=>{if(/Sakura (main|harbour) office glazing/.test(o.name))panes.push({name:o.name,emissive:(o.material.userData.celFrom||o.material).emissiveIntensity});});return {ink:window.__JOHANSSON_LOOK__.ink,gpuError:a.renderer.getContext().getError(),panes,render:a.renderInfo};},{minutes,pos,at});

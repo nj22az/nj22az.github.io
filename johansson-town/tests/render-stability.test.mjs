@@ -81,15 +81,15 @@ test('large Retina buffers cannot bypass the render-target pixel ceiling',()=>{
  pipeline.dispose();
 });
 
-test('mobile recovery caps real postprocess buffers and avoids float/MSAA allocations even on capable hardware',async()=>{
+test('recovery caps real postprocess buffers and avoids MSAA allocations even on capable hardware',async()=>{
  const {graphicsProfile}=await import('../src/render/startup-recovery.js');
- const r=renderer({float:true}),profile=graphicsProfile({mobile:true,tablet:true});
+ const r=renderer({float:true}),profile=graphicsProfile({mobile:true,tablet:true,safe:true,reduced:false});
  r.getDrawingBufferSize=size=>size.set(4096,2732);
  const pipeline=createInkPipeline(r,profile);
  try{
   pipeline.resize();
   assert.ok(pipeline.width*pipeline.height<=profile.pixelBudget);
-  assert.equal(pipeline.sceneTarget.texture.type,THREE.UnsignedByteType);
+  assert.equal(pipeline.sceneTarget.texture.type,THREE.HalfFloatType);
   assert.equal(pipeline.sceneTarget.samples,0);
   assert.equal(pipeline.state.ink,true);assert.equal(pipeline.state.grade,true);assert.equal(pipeline.state.fxaa,true);
  }finally{pipeline.dispose();}
@@ -97,7 +97,7 @@ test('mobile recovery caps real postprocess buffers and avoids float/MSAA alloca
 
 test('full phone effects use two bounded colour targets and never sample their own output',async()=>{
  const {graphicsProfile}=await import('../src/render/startup-recovery.js');
- const profile=graphicsProfile({mobile:true,ios:true}),r=renderer({float:true});
+ const profile=graphicsProfile({mobile:true}),r=renderer({float:true});
  r.getDrawingBufferSize=size=>size.set(4096,2732);
  const draws=[];r.render=function(scene){
   const material=scene.children[0].material;
@@ -112,11 +112,13 @@ test('full phone effects use two bounded colour targets and never sample their o
  assert.equal(draws[1].target,null,'FXAA reaches the screen');
  assert.equal(draws[0].material.uniforms.uInkEnabled.value,1);
  assert.equal(draws[0].material.uniforms.uAmount.value,1);
+ assert.equal(targets[0].texture.type,THREE.HalfFloatType);assert.equal(targets[0].samples,4);
+ assert.equal(targets[1].texture.type,THREE.UnsignedByteType);assert.equal(targets[1].samples,0);
  const bytes=targets.reduce((total,t)=>{
-  assert.equal(t.texture.type,THREE.UnsignedByteType);assert.equal(t.samples,0);
-  return total+t.width*t.height*(4+(t.depthBuffer?4:0));
+  const colour=t.texture.type===THREE.HalfFloatType?8:4,depth=t.depthBuffer?4:0;
+  return total+t.width*t.height*(colour+depth)*(1+t.samples);
  },0);
- assert.ok(bytes<=650000*12,'At most 7.8 MB of colour and depth pixel storage, excluding driver overhead');
+ assert.ok(bytes<=profile.pixelBudget*64,'Configured attachments stay within the pixel budget; driver sample rounding/overhead is separate');
  let disposed=0;for(const target of targets)target.addEventListener('dispose',()=>disposed++);
  pipeline.dispose();assert.equal(disposed,2,'Both targets are released for context recovery');
 });

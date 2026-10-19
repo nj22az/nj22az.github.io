@@ -1,4 +1,3 @@
-import {rayCandidates} from '../desktop/startup-queries.js';
 import * as THREE from '../../vendor/three.module.js';
 import {createKit} from './okinawa/kit.js';
 import {utilityPole,takePowerPlan,drawPlannedPole,SPAN_WIRES,spanWire} from './okinawa/props.js';
@@ -10,7 +9,7 @@ import {SCHOOL} from './school-layout.js';
 /** A tree's collider is its trunk; its crown spreads well past it. */
 const TREE=/fukugi|tree|gajumaru|banyan|palm|pine|crown/i;
 /** One 6.6 kV radial network, with the diesel station as its source. */
-export function buildTownPower(world,{register,onAction,shadows=false,fast=false}={}){
+export function buildTownPower(world,{register,onAction,shadows=false}={}){
  const nodes=[],spans=[];world.group.traverse(o=>{const n=o.userData.powerNetwork;if(n){nodes.push(...n.nodes);spans.push(...n.spans);}});
  const group=new THREE.Group();group.name='Minato power station outgoing feeders';world.group.add(group);const kit=createKit({shadows});
  const solid=c=>world.colliders.push(c);
@@ -38,15 +37,18 @@ export function buildTownPower(world,{register,onAction,shadows=false,fast=false
  // Draw it: every pole, and every wire that keeps clear of buildings and trees. A wire
  // that would pass through a roof or a crown is left off rather than drawn through it.
  for(const p of planned?.poles||[])drawPlannedPole(kit,p);
- world.group.updateMatrixWorld(true);const wireMeshes=[];world.group.traverse(o=>{if(o.isMesh)wireMeshes.push(o);});
- const candidates=fast?rayCandidates(wireMeshes,THREE):()=>wireMeshes;
- const wireRay=new THREE.Raycaster(),rayA=new THREE.Vector3(),rayB=new THREE.Vector3(),rayDir=new THREE.Vector3();
+ // What a wire could meet, each with its box, so a chord only tests the meshes its own box reaches: the flat ground
+ // is never reached (scanning its 140k triangles for every chord was half the town's build). Moving things are left
+ // out: the ferry waits out of service at the origin, under Main Street's wires, while the town is built.
+ world.group.updateMatrixWorld(true);const wireMeshes=[];
+ const collect=o=>{if(o.userData.dynamicProp)return;if(o.isMesh)wireMeshes.push({mesh:o,box:new THREE.Box3().setFromObject(o)});for(const c of o.children)collect(c);};collect(world.group);
+ const wireRay=new THREE.Raycaster(),rayA=new THREE.Vector3(),rayB=new THREE.Vector3(),rayDir=new THREE.Vector3(),chordBox=new THREE.Box3(),reached=[];
  const blockers=world.colliders.filter(c=>c.id!=='utility-pole'),clipped=[],wires=[];
  const clear=(from,to,sag)=>{const curve=sagCurve(new THREE.Vector3(...from),new THREE.Vector3(...to),sag*Math.min(1.6,Math.hypot(to[0]-from[0],to[1]-from[1],to[2]-from[2])/14)),v=new THREE.Vector3();
   for(let t=.06;t<.95;t+=.04){curve.getPoint(t,v);for(const c of blockers){const pad=TREE.test(c.id||'')?1.4:.15;if(circleHitsRect(v.x,v.z,pad,c)&&v.y<(c.minY||0)+(c.height??3)+.4&&v.y>(c.minY||0)-.2)return false;}}
   // Chords follow the same public sag curve as the drawn line.
   const length=new THREE.Vector3(...from).distanceTo(new THREE.Vector3(...to)),start=1.4/Math.max(3.08,length);
-  for(let t=start;t<1-start-1e-6;t+=.2){curve.getPoint(t,rayA);curve.getPoint(Math.min(1-start,t+.2),rayB);rayDir.subVectors(rayB,rayA);wireRay.far=rayDir.length();wireRay.set(rayA,rayDir.normalize());if(wireRay.intersectObjects(candidates(wireRay),false).length)return false;}
+  for(let t=start;t<1-start-1e-6;t+=.2){curve.getPoint(t,rayA);curve.getPoint(Math.min(1-start,t+.2),rayB);rayDir.subVectors(rayB,rayA);chordBox.makeEmpty().expandByPoint(rayA).expandByPoint(rayB);reached.length=0;for(const w of wireMeshes)if(w.box.intersectsBox(chordBox))reached.push(w.mesh);if(!reached.length)continue;wireRay.far=rayDir.length();wireRay.set(rayA,rayDir.normalize());if(wireRay.intersectObjects(reached,false).length)return false;}
   return true;};
  for(const {a,b,sag} of strung)for(const i of SPAN_WIRES){if(!a.anchors[i]||!b.anchors[i])continue;const w=spanWire(a,b,i,sag);if(clear(w[0],w[1],w[2])){kit.wire(...w);wires.push(w);}else clipped.push(a.id+'>'+b.id+'#'+i);}
  for(const {pole:p,to} of planned?.drops||[])if(p.anchors.at(-1).distanceTo(new THREE.Vector3(...to))<14&&clear(p.anchors.at(-1).toArray(),to,.25))kit.wire(p.anchors.at(-1).toArray(),to,.25,.014,0x2b2a30);
