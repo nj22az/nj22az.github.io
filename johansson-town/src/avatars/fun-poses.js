@@ -35,7 +35,16 @@ const akimbo=(m,side)=>[side*(m.shoulderX+m.upper*.72),m.shoulderY-m.upper*.62,.
  *  onFront lays one: the body's own surface, the mitten's thickness out from it. For arms folded across the chest. */
 const onTorso=(m,vol,side,t,off=.9)=>{const p=vol.surf(side*.3,t);return p.addScaledVector(vol.normal(p),m.hand*off).toArray();};
 /** Both hands where `reach` put them. */
-const both=(P,A,w)=>{if(A.R)P.armTo('R',A.R,w,A.handR);if(A.L)P.armTo('L',A.L,w,A.handL);};
+export const both=(P,A,w)=>{if(A.R)P.armTo('R',A.R,w,A.handR);if(A.L)P.armTo('L',A.L,w,A.handL);};
+/**
+ * A leg of a frozen stride (Walk, Run, Dash, Skip, Tiptoe): the thigh swung `a` (forward negative), the knee folded `b`, and
+ * the foot turned `f` more than level (0: the sole flat on the floor, whatever the thigh and the knee do: the foot's pitch
+ * is the three added up). A planted foot is level, so the whole sole stands on the floor; a lifted foot points its toes.
+ */
+export const leg=(P,side,a,b,f,w,spread=0)=>{const k=side==='L'?1:-1;P.toward('thigh'+side,a,0,k*spread,w);P.toward('knee'+side,b,0,0,w);P.toward('foot'+side,-(a+b)+f,0,-k*spread,w);};
+/** The knee fold of a rear leg swung back `a2` that stands its sole at the height of a front leg's (`a1` swung, `b1` folded), so
+ *  both planted feet are flat on the floor at once: neither floats. */
+export const matchKnee=(a1,b1,a2)=>Math.acos(Math.min(1,Math.max(-1,Math.cos(a1)+Math.cos(a1+b1)-Math.cos(a2))))-a2;
 
 /**
  * PoleHug's pole (the nobori on Sakura Street, a lamp post, a flag pole: 2.2 cm in radius unless said): where its axis
@@ -236,4 +245,43 @@ export const FUN_POSES=Object.freeze({
    P.armTo('R',[.08,0,-.26,-.08],w,[-.5,0,0]);P.armTo('L',[.08,0,-.26,-.08],w,[-.5,0,0]);
    P.toward('chest',-.06+tremble,0,0,w);P.add('head',.06*w,0,tremble);
    for(const s of ['L','R']){P.toward('thigh'+s,0,0,0,w);P.toward('knee'+s,0,0,0,w);}}}),
+ // Moves (the creator, 2026-10-19: "And running and walking, and kissing and hugging and fighting", for the stickers and
+ // the panels, "so anyone can use these"): a gait frozen at its most readable frame, the way a comic draws it, and held as
+ // a short burst with a little life in it (the arms pump, the lifted foot flicks). The frame is the still from the first
+ // moment it is in, so a sticker taken at STILL_AT and a panel's held pose are the same picture. The planted foot is level,
+ // its whole sole on the floor (leg: the foot's pitch undoes the thigh's and the knee's); a lifted foot is bent at the knee
+ // with the toes pointed, well off the floor, so nothing floats. Written for the left foot forward (the right arm forward
+ // with it); the body leans from the spine and the chest, not the hips, so the legs keep their line.
+ Walk:Object.freeze({label:'Walk',face:'calm',d:2.4,ramp:.5,
+  use:'On the way somewhere, in no hurry: mid-stride, the left foot forward, both soles flat, the arms swinging easy, a relaxed face.',
+  play(P){const {w,t}=P,sw=Math.sin(t*4)*.04*w;
+   // (the rear knee folds just enough to stand its sole as low as the front one's: both feet flat)
+   leg(P,'L',-.5,.08,0,w,.03);leg(P,'R',.46,matchKnee(-.5,.08,.46),0,w,.03);
+   P.armTo('R',[-.55+sw,0,-.12,-.32],w);P.armTo('L',[.5+sw,0,-.12,-.26],w);
+   P.toward('hips',0,.1,0,w);P.toward('spine',.02,0,0,w);P.toward('chest',.03,-.1,0,w);P.add('head',-.02*w,.04*w,0);}}),
+ Run:Object.freeze({label:'Run',face:'excited',d:2.2,ramp:.4,
+  use:'Flat out, late or thrilled: leaning into the sprint, the left foot planted ahead, the right heel kicked up behind, the arms pumping.',
+  play(P){const {w,t}=P,pump=Math.sin(t*9)*.08*w,flick=Math.max(0,Math.sin(t*9))*.1*w;
+   leg(P,'L',-.9,.3,0,w,.02);leg(P,'R',.5,1.45+flick,.35,w,.02);
+   P.armTo('R',[-.95-pump,0,-.18,-1.5],w);P.armTo('L',[.85+pump,0,-.2,-1.35],w);
+   P.toward('hips',0,.08,0,w);P.toward('spine',.1,0,0,w);P.toward('chest',.22,-.08,0,w);P.toward('neck',.02,0,0,w);P.add('head',-.2*w,.03*w,0);}}),
+ Dash:Object.freeze({label:'Dash',face:'scared',d:2,ramp:.35,
+  use:'The panic run, something terrible behind: leaning right into it, the left foot planted ahead, the right kicked up, both arms trailing straight back, the mouth wide.',
+  play(P){const {w,t}=P,flap=Math.sin(t*12)*.06*w,scramble=Math.max(0,Math.sin(t*12))*.12*w;
+   leg(P,'L',-1,.55,0,w,.02);leg(P,'R',.65,1.3+scramble,.4,w,.02);
+   P.armTo('R',[1.15+flap,0,-.3,-.1],w,[-.35,0,0]);P.armTo('L',[1.15-flap,0,-.3,-.1],w,[-.35,0,0]);
+   P.toward('hips',0,.05,0,w);P.toward('spine',.14,0,0,w);P.toward('chest',.28,0,0,w);P.toward('neck',-.05,0,0,w);P.add('head',-.4*w);}}),
+ Skip:Object.freeze({label:'Skip',face:'happy',d:2,ramp:.4,
+  use:'Too happy to walk: a skip, up on the left foot with the right knee hitched high, the left arm swung up ahead, the chin up.',
+  play(P){const {w,t}=P,bounce=Math.sin(t*5)*.06*w;
+   leg(P,'L',-.08,.05,0,w,.02);leg(P,'R',-1.1-bounce,1.35,.5,w,.02);
+   P.armTo('R',[.55,0,-.25,-.4],w);P.armTo('L',[-1-bounce,0,-.3,-.7],w);
+   P.toward('hips',0,.06,.03,w);P.toward('chest',-.06,-.05,-.03,w);P.add('head',-.1*w,0,.04*w);}}),
+ Tiptoe:Object.freeze({label:'Tiptoe',face:'focus',d:2.6,ramp:.5,
+  use:'Up on the toes, reaching for the top shelf or peering over a fence: tall, the heels up, the arms a little out for balance.',
+  play(P){const {w,t}=P,sway=Math.sin(t*2.6)*.015*w;
+   // (both feet pointed past level: the toes are the lowest thing on the body, and the floor meets them)
+   leg(P,'L',-.06,.12,.85,w,.02);leg(P,'R',-.06,.12,.85,w,.02);
+   P.armTo('R',[-.1,0,-.5,-.3],w,[0,0,-.25]);P.armTo('L',[-.1,0,-.5,-.3],w,[0,0,-.25]);
+   P.toward('chest',.05,0,sway,w);P.add('head',-.05*w,0,-sway);}}),
 });
