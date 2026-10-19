@@ -25,8 +25,8 @@ try{
   await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.teleport(-40.15,-56.65,Math.PI/2);a.step(200);});
   await session.look({degrees:12,verticalDegrees:38});await page.evaluate(()=>window.__JOHANSSON_AUDIT__.step(500));await capture('open-cabinet-day');
   await session.look({verticalDegrees:-38});
-  // Advance the production routine alone for staging; the controls audit separately walks
-  // the complete game clock through bedtime and wake-up. Avoid 45 s of unrelated town work.
+  // Advance the production routine alone for staging; focused routine tests exercise
+  // bedtime and wake-up. Avoid 45 s of unrelated town work in these visual captures.
   await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__,s=a.world.portShed;a.setTime(1410);for(let i=0;i<500;i++)s.tick(.1,1410);a.teleport(-40.18,-57.05,0,-.05);a.step(1500);});
   await capture('first-person-night');
   await session.input({control:'view',durationMs:17});await page.evaluate(()=>window.__JOHANSSON_AUDIT__.step(1500));await capture('third-person-night');

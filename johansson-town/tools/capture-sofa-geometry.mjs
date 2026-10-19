@@ -39,7 +39,7 @@ try{
  await capture('02-stern',[-44.8,4.1,-63.8],[-40.5,.5,-58],false);
  await capture('03-sofa-sleep-side',[-43.8,2.6,-55.4],[-41.1,.75,-58.1],true);
  await capture('04-sofa-sleep-overhead',[-40.5,6.2,-57.8],[-40.5,.3,-57.8],true);
- await capture('05-sofa-sleep-close',[-41.3,2.7,-54.8],[-41.13,.8,-58.1],true);
+ await capture('05-sofa-sleep-close',[-40.0,1.2,-57.55],[-41.1,.72,-58.4],true);
  await capture('06-cabin-aisle',[-39.95,1.65,-55.8],[-40.6,.9,-59],true);
  await capture('07-open-futon-cabinet',[-40.05,1.15,-56.6],[-41.44,.5,-56.37],true);
  report.passed=report.errors.length===0;
