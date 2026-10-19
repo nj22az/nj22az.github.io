@@ -388,7 +388,7 @@ function updateBelowDeck(view){
  if((near||inside)&&!below.uploaded){
   let sent=0;below.uploaded=true;
   // Inside already (a start below deck, a film's lens): all at once, before the first frame that shows them.
-  for(const plate of below.plates.children){const map=plate.material.map;if(!map||map.userData.uploaded)continue;if(!inside&&sent++>=6){below.uploaded=false;break;}paintBack(map);renderer.initTexture(map);map.userData.uploaded=true;}
+  for(const plate of below.plates.children){const map=plate.material.map;if(!map||map.userData.uploaded)continue;if(!inside&&sent++>=6){below.uploaded=false;break;}paintBack(map);renderer.initTexture?.(map);map.userData.uploaded=true;}
  }
 }
 function present(draw,view=camera){
