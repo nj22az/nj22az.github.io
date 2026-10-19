@@ -26,10 +26,10 @@ test('cargo ships arrive twice, stay alongside, depart continuously and reopen c
  assert.equal(cargoVisit(720).visible,false);assert.notEqual(cargoVisit(480).name,cargoVisit(480+1440).name);
  const world={group:new THREE.Group()},service=buildCargoShipping(world);service.update(0,480);assert.equal(service.ship.visible,true);assert.equal(service.ship.position.z,CARGO_BERTH.z);service.update(0,CARGO_CALLS[0].arrival+.01);assert.ok(service.ship.position.z< -300,'She comes in from beyond sight');service.update(0,720);assert.equal(service.ship.visible,false);
 });
-test('flower shop uses the existing Mrs Kinjō actor and preserves a walkable shop entrance',()=>{
+test('the old flower pavilion keeps the existing Mrs Kinjō actor, a walkable entrance, and sends buyers to Sakura',()=>{
  const world={colliders:[]},group=new THREE.Group(),prompts=[],actions=[];buildFlowerShop({world,group,register:(o,label,fn)=>prompts.push({label,fn}),onAction:(...args)=>actions.push(args)});
  const staff=NEIGHBOURS.filter(n=>n.name===FLOWER_SHOP.staff);assert.equal(staff.length,1);assert.deepEqual(staff[0].at,FLOWER_SHOP.staffAt);assert.match(staff[0].role,/flowers/);
- for(let x=4.8;x<=6.45;x+=.15)assert.ok(!world.colliders.some(c=>circleHitsRect(x,-16.7,.32,c)),'Walkable public approach to the new flower counter at '+x);
- prompts.find(p=>p.label==='Buy a Rainflower bouquet · ¥250').fn();assert.equal(actions.at(-1)[2].cost,250);
+ for(let x=4.8;x<=6.45;x+=.15)assert.ok(!world.colliders.some(c=>circleHitsRect(x,-16.7,.32,c)),'Walkable public approach to the old flower counter at '+x);
+ prompts.find(p=>p.label==='Ask about flowers').fn();assert.equal(actions.at(-1)[0],'read');assert.match(actions.at(-1)[2],/Sakura/);
  assert.equal(recipeFor('Hana').outfit.top,'sailor');assert.equal(recipeFor('Hana').outfit.bottom,'pleatedskirt');
 });

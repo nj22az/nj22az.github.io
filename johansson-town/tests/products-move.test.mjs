@@ -26,6 +26,13 @@ const leave=(o,key)=>{if(Array.isArray(o)){o.forEach(x=>leave(x));return;}if(!o|
  if(Array.isArray(o.for)){o.for=o.for.filter(n=>castMember(n)&&!castMember(n).supporting);if(!o.for.length&&(key==='tuna'||o.id==='tuna'))o.for=[...TUNA_BUYERS];}
  for(const [k,v] of Object.entries(o))if(k!=='for')leave(v,k);};
 leave(legacy.MERCHANDISING);leave(legacy.GROCERY_ITEMS);leave(legacy.SHOP_STOCK);
+// Phase 3 of the consolidation moved the florist's trade to Sakura (docs/CAST-CONSOLIDATION.md addendum 3): the Rainflower
+// supplier and its accounts are gone, Sakura's supplier record carries the decorations, and the four businesses that took
+// their decorations from Mrs Kinjō now take them on their Sakura account (decor, with the why and delivery extended). The
+// shelf lines of those accounts, and everything else, are unchanged.
+delete legacy.SUPPLIERS['rainflower-florist'];delete legacy.ACCOUNTS['rainflower-florist'];
+legacy.SUPPLIERS.sakura={...legacy.SUPPLIERS.sakura,goods:now.SUPPLIERS.sakura.goods,decor:now.SUPPLIERS.sakura.decor};
+for(const site of ['izakaya','onsen','mayor-office','school']){const was=legacy.ACCOUNTS.sakura[site],is=now.ACCOUNTS.sakura[site];assert.deepEqual(is.lines,was.lines,site+' keeps its shelf lines');legacy.ACCOUNTS.sakura[site]={...was,why:is.why,delivery:is.delivery,decor:is.decor};}
 for(const name of Object.keys(legacy.linesFor))if(!castMember(name)||castMember(name).supporting)delete legacy.linesFor[name];
 for(const name of TUNA_BUYERS){const want=now.linesFor[name];assert.deepEqual(want.filter(l=>l!=='tuna'),legacy.linesFor[name]);legacy.linesFor[name]=want;}
 

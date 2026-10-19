@@ -106,15 +106,19 @@ test('checkout refuses while Thuan is away mid-hours but still works when she is
  const ok=checkout(present,{},850,true);
  assert.equal(ok.ok,true);
  assert.equal(present.yen<5000,true);
- // Open 24 hours: at night the clerk away from the counter is the away message, not a closed till.
+ // In the shop's hours the clerk away from the counter is the away message; at night the till is simply closed (sakura-rota.js).
+ const afternoon=shopper();fill(afternoon);addToBasket(afternoon,'tea');
+ assert.match(checkout(afternoon,{},900,false).message,/away from the counter/);
  const night=shopper();fill(night);addToBasket(night,'tea');
- assert.match(checkout(night,{},1300,false).message,/away from the counter/);
+ assert.match(checkout(night,{},1300,false).message,/till is closed/);
 });
 
-test('the till is open round the clock (Sakura is 24 hours) and short money is refused',()=>{
+test('the till keeps Sakura’s hours (9:00–20:00, then the restock; shut at night) and short money is refused',()=>{
  const shut=shopper();fill(shut);addToBasket(shut,'tea');
- assert.equal(checkout(shut,{},1300).ok,true,'open at 21:40');
- const early=shopper();fill(early);addToBasket(early,'tea');assert.equal(checkout(early,{},300).ok,true,'open at 05:00');
+ assert.equal(checkout(shut,{},1300).ok,false,'shut at 21:40');assert.match(checkout(shut,{},1300).message,/9:00–20:30/);
+ const restock=shopper();fill(restock);addToBasket(restock,'tea');assert.equal(checkout(restock,{},1210).ok,false,'the till is cashed up during the restock');
+ const early=shopper();fill(early);addToBasket(early,'tea');assert.equal(checkout(early,{},300).ok,false,'shut at 05:00');
+ const nine=shopper();fill(nine);addToBasket(nine,'tea');assert.equal(checkout(nine,{},540).ok,true,'open at 09:00');
  const broke=shopper({yen:50});fill(broke);addToBasket(broke,'battery');
  assert.match(checkout(broke,{},600).message,/enough yen/);
  assert.equal(broke.sakura.stock.battery.shelf>0,true,'and the battery stays on the shelf');

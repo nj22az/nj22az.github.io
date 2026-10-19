@@ -96,6 +96,14 @@ export function buildPortHall({room,reg,collider=()=>{},action,naha=()=>{},upsta
  box('Date stamp',[.06,.09,.06],[mid-.28,top+.045,cz-.24],0x2b3436);
  box('Telephone',[.2,.07,.16],[mid+.5,top+.035,cz-.22],0x3a5a48);box('Telephone receiver',[.2,.04,.05],[mid+.5,top+.09,cz-.27],0x3a5a48);
  box('Passenger slip pad',[.15,.01,.2],[mid+.22,top+.005,cz-.24],0xf6f1e2);
+ // The post and parcel counter (people/ganaha.js GANAHA.post): the 〒 plate over her window, the parcel shelf behind
+ // her and the scale on the counter, moved here from the old post office on Main Street (phase 3 of the consolidation).
+ panel('Post counter plate',.72,.2,[mid,top+1.02,cz-.03],0,(x,cw,ch)=>{x.fillStyle='#c8102e';x.fillRect(0,0,cw,ch);x.fillStyle='#ffffff';x.textAlign='center';x.textBaseline='middle';
+  x.font=`700 ${ch*.62}px ${GOTHIC}`;x.fillText('〒',cw*.12,ch*.5);x.font=`700 ${ch*.34}px system-ui`;x.fillText('POST & PARCELS',cw*.58,ch*.5);},512);
+ box('Parcel shelf',[1.4,.04,.3],[mid,1.65,cz-.62],0x8a6a46);
+ for(const [i,c] of [0xd8c6a4,0xc9b58f,0xe3d7bd].entries())box('Parcel',[.3,.22,.24],[mid-.45+i*.45,1.78,cz-.62],c);
+ box('Brass scale',[.22,.09,.16],[mid-.75,top+.045,cz-.22],0xc9a64a);
+ const post=spot([mid-.5,1.25,cz+.6],'Post and parcels',()=>action('read','Post and parcels · Port Terminal',GANAHA.post.text+(ganahaAtWindow(minutes)?'':' The window opens at noon.')));
  panel('Window closed plate',.72,.2,[mid,top+.34,cz-.03],0,(x,cw,ch)=>{x.fillStyle='#f6f1e2';x.fillRect(0,0,cw,ch);x.strokeStyle='#2b5a78';x.lineWidth=ch*.05;x.strokeRect(0,0,cw,ch);x.fillStyle='#2b3436';x.textAlign='center';x.textBaseline='middle';
   // Each line is fitted to the plate (never cut at its edges).
   const fit=(text,weight,size,y)=>{let px=size;do{x.font=`${weight} ${px}px system-ui`;}while(x.measureText(text).width>cw*.9&&--px>8);x.fillText(text,cw/2,y);};
@@ -106,9 +114,9 @@ export function buildPortHall({room,reg,collider=()=>{},action,naha=()=>{},upsta
  const ganaha=typeof document!=='undefined'&&document.createElement?buildAvatar(recipeFor(GANAHA.name),{shadows:false,faceSize:256}):null,ganahaMotion=ganaha&&createAvatarAnimator(ganaha);
  if(ganaha)clerk.add(ganaha.root);
  const talk=spot([mid+.45,1.25,cz+.6],'Talk to Ms Ganaha',()=>action('ganaha',GANAHA.name,{buy:windows[1].go}));
- let time=0;
- function tick(dt=0,minutes=720){
-  time+=dt;const here=ganahaAtWindow(minutes);
+ let time=0,minutes=720;
+ function tick(dt=0,now=720){
+  time+=dt;minutes=now;const here=ganahaAtWindow(minutes);
   clerk.visible=here;talk.visible=here;if(closedPlate)closedPlate.visible=!here;
   // Before noon her window sells nothing: the oiler sells the morning tickets at the gangway (people/ferry-crew.js).
   const hit=windows[1].spot.userData.hit;
@@ -124,7 +132,7 @@ export function buildPortHall({room,reg,collider=()=>{},action,naha=()=>{},upsta
   const rows=[['—','KITANO-JIMA','On request'],['—','CARS & FOOT','Shared ferry'],['17:00','NAHA (evening)','Outer pier']];
   x.font=`600 ${ch*.1}px ui-monospace,monospace`;rows.forEach(([t,dest,where],i)=>{const y=ch*(.36+i*.13);x.fillText(t,cw*.04,y);x.fillText(dest,cw*.22,y);x.fillText(where,cw*.68,y);});
  },1024,true);
- spot([-.4,1.4,cz+.9],'Read the departures board',()=>action('read','Ferry departures','The shared car and passenger ferry crosses to Kitano-jima on request. Buy a return passenger ticket at the airport-ferry window (Ms Ganaha, noon to 22:15; in the morning from the oiler at the gangway) and board from the outer pier. The evening boat to Naha opens at 17:00.'));
+ spot([-.4,1.4,cz+.9],'Read the departures board',()=>action('read','Ferry departures','The shared car and passenger ferry crosses to Kitano-jima on request. Buy a return passenger ticket at the airport-ferry window (Ms Ganaha, noon to 22:15; in the morning from the oiler at the gangway) and board from the outer pier. The evening boat to Naha opens at 17:00. Post and parcels are handled at the same window.'));
 
  // Benches: two rows of moulded seats facing the pier windows.
  const seatColours=[0x2f6a70,0xd27a3a];

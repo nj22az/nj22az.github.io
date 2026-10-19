@@ -5,6 +5,7 @@ import {fascia,iceMural,enamel,catchFlag,poster,vertical} from './signs.js';
 import {potPlant,OKINAWA_COLOURS as C} from './houses.js';
 import {buoys,bicycle} from './props.js';
 import {VENDING_MACHINE} from '../vending.js';
+import {sakuraOpenAt as rotaOpenAt,SAKURA_HOURS_TEXT} from '../../commerce/sakura-rota.js';
 
 /**
  * The buildings that were here before the quarters went up, brought up to the street
@@ -28,8 +29,8 @@ export function dressOldTown(kit,solid,{inspect,anchor,onAction,vending,group}){
  return {shutter};
 }
 
-/** Sakura is open 24 hours, every day (commerce/sakura-rota.js): the shutter stays up. */
-export const sakuraOpenAt=minutes=>Number.isFinite(minutes)||true;
+/** Sakura's hours are the rota's (commerce/sakura-rota.js): 9:00–20:30, every day, the shutter down in between. */
+export const sakuraOpenAt=rotaOpenAt;
 
 /** The roller shutter's face: galvanised slats and the shop's hours painted across it. */
 function shutterTexture(){
@@ -39,7 +40,7 @@ function shutterTexture(){
   for(let y=0;y<h;y+=9){ctx.fillStyle='rgba(60,66,70,.35)';ctx.fillRect(0,y,w,2);ctx.fillStyle='rgba(255,255,255,.25)';ctx.fillRect(0,y+2,w,1);}
   ctx.fillStyle='#a6333c';ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.font='bold 64px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';ctx.fillText("Sakura Shop",w/2,h*.46);
-  ctx.font='bold 22px sans-serif';ctx.fillText("SAKURA · OPEN 24 HOURS · 年中無休",w/2,h*.72);
+  ctx.font='bold 22px sans-serif';ctx.fillText("SAKURA · OPEN "+SAKURA_HOURS_TEXT+" · 年中無休",w/2,h*.72);
   ctx.fillStyle='rgba(110,70,40,.25)';for(const x of [60,w-80])ctx.fillRect(x,h*.2,3,h*.7);
  });
 }
@@ -106,6 +107,18 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  const fruit=[[0xf0a63c,'mango'],[0x8fbf4a,'goya'],[0xe0574a,'dragon fruit'],[0xe8c84a,'shiquasa']];
  fruit.forEach(([colour],i)=>{const z=tz-.6+i*.4;kit.cyl(.17,.13,.12,front+.36,.8,z,0xb48a4a,{segments:10});for(let k=0;k<3;k++)kit.sphere(.06,front+.32+(k%2)*.08,.9,z-.06+k*.06,colour,{detail:0});});
  solid({id:'sakura-trestle',x:front+.36,z:tz,w:.6,d:1.7,height:.8});
+ // The flower buckets beyond the trestle: Sakura took over the town's flowers and decorations when Mrs Kinjō retired
+ // (docs/CAST-CONSOLIDATION.md addendum 3; commerce/merchandising.js), so the bouquets are sold at Thuan's door now, in
+ // the shop's own hours. The buckets are the florist's own, and the stems are cut the way she taught Thuan.
+ let clock=720;
+ for(const [z,tone] of [[tz+1.15,0xe9c969],[tz+1.55,0xcb748f]]){
+  kit.cyl(.2,.16,.42,front+.34,.21,z,0x667a6d,{segments:9});solid({id:'sakura-flowers',x:front+.34,z,w:.42,d:.42,height:.9});
+  for(let i=0;i<5;i++){const a=i*Math.PI*2/5,sx=front+.34+Math.cos(a)*.1,sz=z+Math.sin(a)*.1;kit.cyl(.012,.012,.5,sx,.6,sz,0x547545,{segments:5});kit.sphere(.08,sx,.88+(i%2)*.06,sz,tone,{detail:0});}
+ }
+ kit.sign(enamel({jp:"Flowers",en:'BOUQUETS ¥250',bg:'#efe7ce',ink:'#376a51'}),.34,.26,front+.02,1.15,tz+1.35,{ry:Math.PI/2,depth:.01,name:'flower bucket sign'});
+ anchor(front+.95,1,tz+1.35,'Buy a bouquet · ¥250',()=>sakuraOpenAt(clock)
+  ?onAction?.('buy','Rainflower bouquet',{cost:250,item:'Rainflower bouquet',text:'Island-grown stems from the buckets by Sakura’s door, wrapped in brown paper at the till. Thuan cuts them the way Mrs Kinjō taught her. A little colour for a home, a dinner table or someone you care about.'})
+  :onAction?.('read','Sakura is closed','The bouquets are sold in the shop’s hours, '+SAKURA_HOURS_TEXT+'. The buckets stay out by the door.'));
  // At the two corners of the frontage, so they mark the shop without standing in front
  // of its window.
  // One flag: Blue Coral is served at Nakamura's counter beside Harbour Park.
@@ -131,8 +144,8 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  return {
   set:setShutter,
   get open(){return open;},
-  /** Follows the rota (always open, so always up), taking a few seconds to move when a fixture has set it. */
-  update(minutes,dt=1/60,{snap=false}={}){const want=sakuraOpenAt(minutes)?1:0;if(snap){setShutter(want);return;}const step=dt/2.5;if(open!==want)setShutter(Math.abs(want-open)<=step?want:open+Math.sign(want-open)*step);},
+  /** Follows the rota: up at nine, down at half past eight, taking a few seconds to move. */
+  update(minutes,dt=1/60,{snap=false}={}){clock=minutes;const want=sakuraOpenAt(minutes)?1:0;if(snap){setShutter(want);return;}const step=dt/2.5;if(open!==want)setShutter(Math.abs(want-open)<=step?want:open+Math.sign(want-open)*step);},
  };
 }
 

@@ -4,8 +4,14 @@ import {poster} from './okinawa/signs.js';
 import {HARBOUR_FLORIST} from './harbour-park-plan.js';
 import {GROUND_LAYER} from './ground-layers.js';
 export const FLOWER_SHOP=Object.freeze({...HARBOUR_FLORIST,staff:HARBOUR_FLORIST.owner});
-export const flowerShopOpen=minutes=>{const m=((minutes%1440)+1440)%1440;return m>=FLOWER_SHOP.open&&m<FLOWER_SHOP.close;};
-/** Mrs Kinjō's one open flower counter, beside the park entrance. */
+/**
+ * The pavilion sells nothing any more: Mrs Kinjō has retired and Sakura supplies the town's flowers and decorations
+ * (docs/CAST-CONSOLIDATION.md §6, addendum 3; commerce/merchandising.js). The bouquets are bought at Sakura's door
+ * (okinawa/old-town.js) in the shop's hours. The pavilion itself stands until phase 4 removes it, so a visitor who
+ * walks up to it is told where the flowers went.
+ */
+export const flowerShopOpen=()=>false;
+/** The former Rainflower pavilion beside the park entrance: Mrs Kinjō's old counter, kept tidy, selling nothing. */
 export function buildFlowerShop({world,group=world.group,register,onAction}){
  const root=new THREE.Group();root.name=FLOWER_SHOP.name;group.add(root);const kit=createKit();
  const dx=FLOWER_SHOP.x-7.8,dz=FLOWER_SHOP.z+16.8;root.position.set(dx,0,dz);
@@ -22,17 +28,17 @@ export function buildFlowerShop({world,group=world.group,register,onAction}){
   kit.cyl(.22,.17,.43,x,.215,z,0x667a6d,{segments:9});solid('flower-bucket',x,z,.45,.45,.92);
   for(let i=0;i<5;i++){const a=i*Math.PI*2/5,sx=x+Math.cos(a)*.11,sz=z+Math.sin(a)*.11;kit.cyl(.012,.012,.52,sx,.61,sz,0x547545,{segments:5});kit.sphere(.09,sx,.9+(i%2)*.07,sz,tone,{detail:0});}
  }
- kit.sign(poster({title:'雨花生花店',lines:['RAINFLOWER FLORIST','Mrs Kinjō · 09:00–18:00','Bouquets ¥250'],band:'#376a51',bg:'#efe7ce'}),2.5,.68,5.79,2.18,-16.8,{ry:-Math.PI/2,name:'Rainflower Florist park sign'});
+ kit.sign(poster({title:'雨花生花店',lines:['RAINFLOWER FLORIST','Flowers now at Sakura Shōten','Thank you · Mrs Kinjō'],band:'#376a51',bg:'#efe7ce'}),2.5,.68,5.79,2.18,-16.8,{ry:-Math.PI/2,name:'Rainflower Florist park sign'});
  kit.finish(root,'Rainflower flower counter');
  let minutes=720;
- const buy=()=>flowerShopOpen(minutes)?onAction?.('buy','Rainflower bouquet',{cost:250,item:'Rainflower bouquet',text:'Mrs Kinjō wraps island-grown stems in brown paper at her neighbourhood counter. A little colour for a home, a dinner table or someone you care about.'}):onAction?.('read','Rainflower is closed','Mrs Kinjō serves flowers from 09:00 to 18:00. The flowers stay on display at the park entrance.');
+ const moved=()=>onAction?.('read','Rainflower Florist has closed','Mrs Kinjō has retired. The town’s flowers and decorations come from Sakura Shōten now: the bouquets are in the buckets by Thuan’s door, ¥250, in the shop’s hours. The pavilion stays until the council takes it down.');
  const anchor=(x,z,label,fn)=>{const a=new THREE.Object3D();a.position.set(x,1,z);a.userData.placeId=FLOWER_SHOP.id;root.add(a);register?.(a,label,fn);return a;};
- // Every purchase prompt shares the same clock-aware callback, including the street-facing one.
- anchor(5.0,-16.7,'Buy a Rainflower bouquet · ¥250',buy);
- anchor(6.45,-16.65,'Order flowers from Mrs Kinjō',buy);
- anchor(5.05,-17.7,'Browse Rainflower flowers',()=>onAction?.('read','Rainflower Florist','Fresh stems, potted greenery and hand-made wreaths from Mrs Kinjō. Her counter faces the neighbourhood plaza, east of Main Street. She supplies flowers to Sakura, the izakaya, town office, school and Umi-no-yu. Open 09:00–18:00.'));
+ // The old purchase prompts, street side and counter side, now say where the flowers went.
+ anchor(5.0,-16.7,'Ask about flowers',moved);
+ anchor(6.45,-16.65,'Ask Mrs Kinjō about flowers',moved);
+ anchor(5.05,-17.7,'Browse the old flower counter',()=>onAction?.('read','Rainflower Florist','The buckets are empty and rinsed, the wreath hooks bare. Mrs Kinjō’s counter faced the neighbourhood plaza, east of Main Street, until she retired; Sakura supplies the izakaya, the town office, the school and Umi-no-yu with their flowers and decorations now.'));
  const [x,z]=FLOWER_SHOP.approach;
- const landmark={id:FLOWER_SHOP.id,title:FLOWER_SHOP.name,owner:FLOWER_SHOP.owner,parentId:'kitahama',sub:'NEIGHBOURHOOD PLAZA · FLOWERS',x,z,exitPosition:[x,0,z],entryFacing:Math.PI/2,line:'Mrs Kinjō’s flower counter on the neighbourhood plaza · 09:00–18:00.'};
+ const landmark={id:FLOWER_SHOP.id,title:FLOWER_SHOP.name,owner:FLOWER_SHOP.owner,parentId:'kitahama',sub:'NEIGHBOURHOOD PLAZA · CLOSED',x,z,exitPosition:[x,0,z],entryFacing:Math.PI/2,line:'Mrs Kinjō’s old flower counter on the neighbourhood plaza · closed; flowers at Sakura.'};
  if(!(world.landmarks??=[]).some(s=>s.id===landmark.id))world.landmarks.push(landmark);
  return {root,landmark,update(value){if(Number.isFinite(value))minutes=value;},isOpen(){return flowerShopOpen(minutes);}};
 }

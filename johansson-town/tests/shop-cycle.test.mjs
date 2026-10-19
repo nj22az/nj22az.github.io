@@ -37,11 +37,11 @@ test('the street uses the same stocked room with its real walls; entering restor
  assert.equal(visibleInstances(group),stockBefore);
 });
 
-test('the town clock keeps Sakura’s strip lights on all night (open 24 hours) without advancing staff jobs',()=>{
+test('the town clock dims Sakura’s strip lights to the night light once the shop is shut, without advancing staff jobs',()=>{
  const f=fixture();f.shop.street(f.shop.group.parent,{position:[0,0,0],yaw:0});
  const strip=f.shop.group.getObjectByName('Sakura shopfront strip lights');assert.equal(strip.children.length,2);
  const phase=f.shop.service.phase,position=f.world.people[0].g.position.clone();
- for(const [minutes,level] of [[540,1],[1110,1],[1243,1],[1380,1],[1440,1]]){
+ for(const [minutes,level] of [[540,1],[1110,1],[1243,1],[1380,.6],[1440,.6]]){
   f.time(minutes);for(const update of f.world.hourly)update(minutes);
   assert.deepEqual(strip.children.map(l=>l.intensity),[150*level,110*level]);
   for(const lamp of strip.children)assert.equal(lamp.color.getHex(),0xfff1ce);
