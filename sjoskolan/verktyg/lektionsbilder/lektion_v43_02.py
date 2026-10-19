@@ -137,7 +137,7 @@ LEKTION = {
         }),
         ('ovningar', {
             'nummer': ['2.5'],
-            'instruktion': 'Fem minuter. Skriv ditt svar i chatten. Övning 2.6–2.10 gör du själv efter lektionen.',
+            'instruktion': 'Fem minuter. Skriv synkront varvtal i r/min och eftersläpning i procent i chatten. Övning 2.6–2.10 gör du själv efter lektionen.',
         }),
         ('paus', {'text': 'Vi fortsätter 16.05'}),
         ('teori', {

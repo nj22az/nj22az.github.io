@@ -147,7 +147,7 @@ class KallflodeTest(unittest.TestCase):
             'EL-000151': 'Kontaktor och relä',
             'EL-000158': 'Selektivitet',
             'EL-000163': 'Asynkronmotorns roterande fält',
-            'EL-000165': 'Eftersläpning',
+            'EL-000891': 'Eftersläpning',
             'EL-000168': 'Frekvensomriktarens delar',
             'EL-000178': 'Mätpunkter och referens',
             'EL-000181': 'TN-system',

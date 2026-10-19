@@ -2362,14 +2362,7 @@
    "publik": "elev",
    "titel": "Eftersläpning",
    "typ": "berakning",
-   "placeringar": [
-    {
-     "yta": "kurs-formelstod",
-     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
-     "nummer": "Övning 2.5",
-     "ankare": "v43_02-q5"
-    }
-   ]
+   "placeringar": []
   },
   {
    "id": "EL-000166",
@@ -7500,6 +7493,22 @@
      "plats": "vecka-42/aktuell/Quiz.html",
      "nummer": "Text 4",
      "ankare": "text-4"
+    }
+   ]
+  },
+  {
+   "id": "EL-000891",
+   "revision": 2,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Varvtal och eftersläpning",
+   "typ": "berakning",
+   "placeringar": [
+    {
+     "yta": "kurs-formelstod",
+     "plats": "vecka-43/aktuell/Formelstod_och_ovningar.html",
+     "nummer": "Övning 2.5",
+     "ankare": "v43_02-q5"
     }
    ]
   }
