@@ -73,7 +73,7 @@ export function buildSakuraBench(world,{shadows=false,register,onAction,factory}
     const built=fallbackBench(factory);world.group.add(built.object);object=built.object;
     // Keep a temporary bench out of static batches so a late model can replace it.
     object.traverse(mesh=>{if(mesh.isMesh)mesh.userData.staticProp=false;});
-    registerDetail(world,{id:'sakura-bench',requiredNearby:true,x,z,radius:18,load:async()=>{
+    registerDetail(world,{id:'sakura-bench',requiredNearby:true,x,z,radius:28,load:async()=>{
       if(!await preloadSakuraBench())return false;
       const group=new THREE.Group();group.name='sakura-viewing-bench';group.position.set(x,0,z);group.rotation.y=yaw;
       const model=source.clone(true);model.traverse(mesh=>{if(mesh.isMesh){mesh.castShadow=shadows;mesh.receiveShadow=true;}});group.add(model);world.group.add(group);object.removeFromParent();world.sakuraBench.object=group;world.sakuraBench.source='blender';return true;

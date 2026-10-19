@@ -7,7 +7,9 @@ const DURATION=5.6,RETURN_TIME=.9;
  * rest of the town"), at least ESTABLISH seconds and at most HOLD_MAX (on a slow line he is not kept standing longer:
  * what has not come by then streams in as he walks), then DESCEND seconds down to the shot of him.
  */
-const ESTABLISH=2.2,DESCEND=2.4,HOLD_MAX=20,ORBIT=.05;
+// The hold no longer outlasts the establishing shot (the creator, 2026-10-19: loading felt clunky and seemed to
+// start again after START): what has not arrived by then streams in as he walks.
+const ESTABLISH=2.2,DESCEND=2.4,HOLD_MAX=ESTABLISH,ORBIT=.05;
 const SHOTS={
  'sakura-bench':{angle:.85,distance:4.5,height:1.9,action:'Think'},
  'park-bench':{angle:-.9,distance:5.1,height:2.5,action:'LookAround',bird:true},

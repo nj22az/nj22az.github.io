@@ -21,7 +21,7 @@ try{
   const capture=async(label,minutes,pos,at)=>{
    const state=await page.evaluate(({minutes,pos,at})=>{const a=window.__JOHANSSON_AUDIT__,look=window.__JOHANSSON_LOOK__;a.setTime(minutes);a.camera={pos,at};a.renderer.info.reset();a.render();return {ink:look.ink,effects:look.state,buffer:[a.renderer.domElement.width,a.renderer.domElement.height],safe:window.__JOHANSSON_SAFE_GRAPHICS__,gpuError:a.renderer.getContext().getError()};},{minutes,pos,at});
    assert.equal(state.ink,true);assert.equal(state.gpuError,0);
-   if(version==='restored'){assert.equal(state.effects.hdr,true);assert.equal(state.effects.samples,2);assert.equal(state.effects.fxaa,true);assert.ok(state.buffer[0]*state.buffer[1]<=650000);assert.equal(state.safe,false);}
+   if(version==='restored'){assert.equal(state.effects.hdr,true);assert.equal(state.effects.samples,4);assert.equal(state.effects.fxaa,true);assert.ok(state.buffer[0]*state.buffer[1]<=2.4e6);assert.equal(state.safe,false);}
    const path=resolve(out,version+'-'+label+'.png');await page.locator('#game').screenshot({path});const png=PNG.sync.read(await readFile(path));let sum=0,n=0,min=255,max=0;
    for(let i=0;i<png.data.length;i+=64){const v=(png.data[i]+png.data[i+1]+png.data[i+2])/3;sum+=v;n++;min=Math.min(min,v);max=Math.max(max,v);}
    assert.ok(max-min>90&&sum/n>8);report.views.push({version,label,mean:sum/n,...state});
@@ -44,9 +44,9 @@ try{
   if(version==='restored'){
    await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__;a.leave();await a.enter('sakura-office');});
    await capture('office-midnight',30,[.2,5.66,-2.7],[4.5,5.21,2.5]);
-   // Simulate a process interrupted during entry. Automatic recovery must keep
+   // Simulate a second process interrupted during entry in a row. Automatic recovery must keep
    // ink, grading and HDR while avoiding multisampling and the shadow atlas.
-   await page.addInitScript(()=>{sessionStorage.setItem('johansson-startup-attempt-v1',JSON.stringify({stage:'entering',at:Date.now()-1000}));});
+   await page.addInitScript(()=>{sessionStorage.setItem('johansson-startup-attempt-v1',JSON.stringify({stage:'entering',at:Date.now()-1000,strikes:2}));});
    await page.reload({waitUntil:'domcontentloaded'});await enter();
    report.recovery=await page.evaluate(()=>({safe:window.__JOHANSSON_SAFE_GRAPHICS__,ink:window.__JOHANSSON_LOOK__.ink,effects:window.__JOHANSSON_LOOK__.state}));
    assert.equal(report.recovery.safe,true);assert.equal(report.recovery.ink,true);assert.equal(report.recovery.effects.samples,0);assert.equal(report.recovery.effects.hdr,true);

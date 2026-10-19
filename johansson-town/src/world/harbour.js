@@ -5,6 +5,7 @@ import {GROUND_LAYER} from './ground-layers.js';
 import {buildDockWorkshop} from './dock-workshop.js';
 import {buildHarbourOffice} from './harbour-office.js';
 import {GROUND} from '../render/ground-palette.js';
+import {releaseAfterUpload} from '../render/canvas-release.js';
 import {WEST_SHOPS,buildWestShop} from './west-shops.js';
 import {buildIslandCoast} from './island-coast.js';
 import {buildBoardwalk} from './boardwalk.js?snappy=1';
@@ -90,8 +91,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   function label(text,sub,p,width,height,angle=0,bg='#e9dcc1',fg='#283d3e',glow=false,twoFaced=false){
     // The canvas takes the board's own proportions, so lettering is never stretched.
     const W=Math.max(256,Math.min(2048,Math.round(256*width/height)));
-    const canvas=document.createElement('canvas');canvas.width=W;canvas.height=256;const ctx=canvas.getContext('2d');ctx.fillStyle=bg;ctx.fillRect(0,0,W,256);ctx.strokeStyle=fg;ctx.lineWidth=8;ctx.strokeRect(12,12,W-24,232);ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=fg;ctx.font='800 136px "Yu Gothic",system-ui';signText(ctx,japaneseSign(text),W/2,104,W-68,136);ctx.font='700 32px system-ui';signText(ctx,sub,W/2,206,W-68,32);
-    const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=Math.min(maxAnisotropy,8);
+    const draw=ctx=>{ctx.fillStyle=bg;ctx.fillRect(0,0,W,256);ctx.strokeStyle=fg;ctx.lineWidth=8;ctx.strokeRect(12,12,W-24,232);ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=fg;ctx.font='800 136px "Yu Gothic",system-ui';signText(ctx,japaneseSign(text),W/2,104,W-68,136);ctx.font='700 32px system-ui';signText(ctx,sub,W/2,206,W-68,32);};
+    const canvas=document.createElement('canvas');canvas.width=W;canvas.height=256;draw(canvas.getContext('2d'));
+    const tex=releaseAfterUpload(new THREE.CanvasTexture(canvas),draw);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=Math.min(maxAnisotropy,8);
     const mat=new THREE.MeshStandardMaterial({map:tex,emissive:0xffffff,emissiveMap:tex,emissiveIntensity:glow?.55:.05});
     const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,height),mat);mesh.position.set(...p);mesh.rotation.y=angle;mesh.castShadow=false;mesh.receiveShadow=false;group.add(mesh);
     // A plain panel behind it. These used to be double-sided, so walking round one —

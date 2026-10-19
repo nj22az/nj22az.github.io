@@ -31,34 +31,34 @@
 <link rel="stylesheet" href="./quiet-ui.css?h=55d47e4a">
 <link rel="stylesheet" href="./context-rail.css?h=a4e11923">
 <link rel="stylesheet" href="./line-ui.css?h=c648d84f">
-<link rel="stylesheet" href="./title-screen.css?h=f01ccfcf">
+<link rel="stylesheet" href="./title-screen.css?h=d00ff286">
 <link rel="stylesheet" href="./town-directory.css?h=92990b9c">
 <link rel="stylesheet" href="./ferry-operations.css?h=1625ed17">
-<link rel="modulepreload" data-town-runtime href="./runtime/title-menu-BUN5e1Ff.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/title-menu-CIBbiHct.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/save-D2hz5f0D.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/friendship-DAOqKJun.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/friendship-kiojgzTU.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/resident-personalities-BvVFle1G.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/fish-DYqiA7XA.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/fish-1lL7oyyd.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/world-uv-Dzv5VOhE.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/harbour-park-plan-UP5Z-Es8.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/assets-DNfyrzgA.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/beach-layout-AD0-Fcfp.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-AncY1NyN.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-CZ83NUI7.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/preload-helper-PPVm8Dsz.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/icons-DfeBIm6m.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-D34cMzo7.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-DtzYVMVD.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-DCdLzlVw.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/hat-models-F9M8xcly.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/halloween-gFcx7dPK.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/halloween-P6z4soe4.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/actors-BIhrva4R.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/animate-B5zVV8sB.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/town-audio-CgFXF7gG.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/onsen-C-IVZjmu.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/catalog-rUZM7EOr.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/sakura-interior-yhimmHp-.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/compact-shops-f4tn6k5O.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/sato-ramen-DZOAhi81.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/town-hall--jeJkwrH.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/onsen-DGJTTm0E.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/catalog-DhK5nB5E.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/sakura-interior-QWkMDRL4.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/compact-shops-Dgbwu3sV.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/sato-ramen-aw4N7xLQ.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/town-hall-BTVrB6Rw.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/studio-handoff-B2Xwy7OV.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/house-walk-C9XGK0pa.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/thuan-voice-Dz-XGNqd.js">
@@ -83,7 +83,7 @@
       <div class="title-world-space" aria-hidden="true"></div>
       <div class="title-menu">
         <p id="titleSave" class="title-player" aria-live="polite"><b id="titlePlayerName">Visitor</b><span id="titlePlayerSummary">Your island story awaits</span></p>
-        <button id="enter" type="button" data-mode="explore"><b>Start Exploring</b><span id="titleActionHint">Welcome to the island</span></button>
+        <button id="enter" type="button" data-mode="explore" class="loading" disabled><i class="enter-fill" data-load-fill aria-hidden="true"></i><b>Start Exploring</b><span id="titleActionHint">Welcome to the island</span><span class="enter-loading"><strong>Loading the island</strong><span><i data-load-percent>0%</i> · <i data-load-label>Preparing controls</i></span></span></button>
         <nav class="title-secondary" aria-label="Island navigation">
           <button id="titleLoad" type="button">Load</button>
           <button id="titleNew" type="button">New Game</button>
@@ -101,10 +101,10 @@
       </div>
       <div class="title-loading">
         <aside class="island-fact" aria-label="Island fact"><span class="island-fact-icon" aria-hidden="true">✿</span><p class="island-fact-label">A LITTLE ISLAND LIFE</p><p id="loadingFact" aria-live="polite" aria-atomic="true"></p></aside>
-        <div class="title-bar" id="bootProgress" role="progressbar" aria-label="Startup tasks completed" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0" aria-describedby="bootCount"><span style="width:0%"></span></div>
-        <p id="bootCount">0 of 8 startup tasks completed</p>
-        <p id="bootFiles"></p>
-        <div id="bootStatus" role="status">Loading the island…</div>
+        <div class="load-meter">
+          <p class="load-meter-head"><span id="bootStatus" role="status">Loading the island…</span><b data-load-percent>0%</b></p>
+          <div class="title-bar" id="bootProgress" role="progressbar" aria-label="Loading the island" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span data-load-fill></span></div>
+        </div>
       </div>
     </div>
     <footer class="title-foot"><a id="openStudio" href="/avatar-creator/" class="title-studio">Johansson Studio <span aria-hidden="true">↗</span></a><span>© 1997 JOHANSSON CO.</span></footer>
@@ -401,7 +401,7 @@
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON WORLD</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>INSTALL JOHANSSON WORLD</h2><p>On iPhone or iPad, open this page in Safari. Tap Share, then Add to Home Screen, and turn on Open as Web App if offered. Open the town from its new icon. Your save stays on this device; installed apps and Safari may have separate saves. Reopen while online to get the latest town updates. Previously visited content can load offline.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
 <script src="./resident-guide.js?h=c1817fcb"></script>
-<script>window.JOHANSSON_FEED_MODULE="./runtime/feed-BiSjwKwR.js";</script>
+<script>window.JOHANSSON_FEED_MODULE="./runtime/feed-B0XVZpkN.js";</script>
 <script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-DMkDz0y4.js";</script>
 <script src="./landing.js?h=208a1c37"></script>
 <script>
@@ -526,21 +526,43 @@
 })();
 </script>
 <script type="module">
-import {createLoadingFacts} from './loading-facts.js';
-import {createLoadingProgress} from './loading-progress.js';
-import {createTitleMenu} from './runtime/title-menu-BUN5e1Ff.js';
+import {createLoadingFacts} from './loading-facts.js?h=2738098f';
+import {createLoadingProgress} from './loading-progress.js?h=282b5bd3';
+import {createTitleMenu} from './runtime/title-menu-CIBbiHct.js';
 import {unlockTownAudio} from './runtime/audio-CbrYD3VV.js';
 (() => {
   const enter=document.getElementById('enter');
   const status=document.getElementById('bootStatus');
-  const progress=window.__JOHANSSON_LOADING__=createLoadingProgress({onChange:state=>{
-    const bar=document.getElementById('bootProgress');
-    bar.setAttribute('aria-valuenow',state.completed);bar.setAttribute('aria-valuemax',state.total);
-    bar.querySelector('span').style.width=state.percent+'%';
-    document.getElementById('bootCount').textContent=state.completed+' of '+state.total+' startup tasks completed';
-    document.getElementById('bootFiles').textContent=state.assets.total?state.assets.completed+' of '+state.assets.total+' file requests completed'+(state.assets.failed?' · '+state.assets.failed+' unavailable':''):'';
+  // One bar, on the START button while the island loads and on the loading card after START (loading-progress.js).
+  // It glides towards the running step's end as a transform animation, which the compositor keeps playing while
+  // the town is built in one blocking stretch. Each glide starts where the bar is now by the clock (never from a
+  // stale frame, so it cannot jump back), and the number beside it is the same position.
+  const bar=document.getElementById('bootProgress'),fills=[...document.querySelectorAll('[data-load-fill]')];
+  const still=matchMedia('(prefers-reduced-motion: reduce)');let glide={from:0,to:0,at:0,ms:1},glides=[];
+  const position=()=>glide.from+(glide.to-glide.from)*Math.min(1,Math.max(0,(performance.now()-glide.at)/glide.ms));
+  const moveTo=(to,seconds)=>{
+    if(to<=glide.to)return;
+    const from=position();glide={from,to,at:performance.now(),ms:still.matches?1:Math.max(1,seconds*1000)};
+    for(const g of glides)g.cancel();
+    glides=fills.map(fill=>{fill.style.transform='scaleX('+to+')';const g=fill.animate([{transform:'scaleX('+from+')'},{transform:'scaleX('+to+')'}],{duration:glide.ms});g.startTime=glide.at;return g;});
+  };
+  const showPercent=()=>{
+    const p=Math.round(position()*100);
+    for(const el of document.querySelectorAll('[data-load-percent]'))el.textContent=p+'%';
+    bar.setAttribute('aria-valuenow',p);if(enter.disabled)enter.setAttribute('aria-label','Loading the island, '+p+' percent');else enter.removeAttribute('aria-label');
+  };
+  const progress=window.__JOHANSSON_LOADING__=createLoadingProgress({now:()=>performance.now(),onChange:state=>{
+    if(!state.error)moveTo(state.target/100,state.seconds);
     status.textContent=state.label;
+    for(const el of document.querySelectorAll('[data-load-label]'))el.textContent=state.label;
+    if(!window.__JOHANSSON_BOOTING__){
+      const waiting=!state.ready&&!state.error;
+      enter.classList.toggle('loading',waiting);
+      if(enter.disabled!==waiting){enter.disabled=waiting;if(!waiting&&document.activeElement===document.body)enter.focus({preventScroll:true});}
+    }
+    showPercent();
   }});
+  const ticker=setInterval(()=>{showPercent();const s=progress.snapshot();if(s.completed===s.total||s.error)clearInterval(ticker);},120);
   const loadingFacts=createLoadingFacts(document.getElementById('loadingFact'));
   const fatal=document.getElementById('fatal');
   const retry=document.getElementById('retry');
@@ -569,7 +591,7 @@ import {unlockTownAudio} from './runtime/audio-CbrYD3VV.js';
     document.getElementById('start').classList.remove('guide-open');
     document.getElementById('start').classList.add('booting');
     loadingFacts.start();
-    if(progress.snapshot().completed===7)progress.start('frame');
+    if(progress.snapshot().ready)progress.start('frame');
     window.__JOHANSSON_STARTUP__={startedAt:performance.now(),stage:'code'};
     try{unlockTownAudio();}catch(error){console.warn('Town audio unavailable:',error);}
     if(!isIPhone||standalone())fullscreen();
@@ -607,7 +629,7 @@ import {unlockTownAudio} from './runtime/audio-CbrYD3VV.js';
 
   window.__JOHANSSON_TITLE_PREVIEW__=true;
   async function loadPreview(){
-    try { await import('./runtime/boot-AncY1NyN.js'); } catch (error) {
+    try { await import('./runtime/boot-CZ83NUI7.js'); } catch (error) {
         if (!/fetch|module|import|404/i.test(error.message||'')) throw error;
         const response=await fetch('./index.html',{cache:'no-store'});
         if(!response.ok)throw error;

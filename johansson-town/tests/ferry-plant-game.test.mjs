@@ -8,6 +8,7 @@ import {FERRY_INTERIOR,FERRY_MACHINERY_SPACES} from '../src/world/ferry-interior
 import {FERRY_INSPECT} from '../src/world/ferry-inspect.js';
 import {PLANT_STATIONS,stationMenu,stationLabel,liveValue,plantSound,telegraphFor} from '../src/world/ferry-plant-controls.js';
 import {createPlant,PLANT_ALARMS} from '../src/world/ferry-plant.js';
+import {paintBack} from '../src/render/canvas-release.js';
 installDOM();
 
 const boot=minutes=>{const prompts=[];const run=createFerryRun({parent:new THREE.Group(),colliders:[],register:(o,label,fn)=>{o.userData.hit={label,fn};prompts.push(o);}});run.parkAt('town');run.update(1/60,minutes,0);return {run,prompts};};
@@ -71,8 +72,9 @@ test('every live plate reads a number or the alarm list from the plant, and the 
  assert.ok(run.plant.stop('mainP').ok);assert.ok(f.userData.readPlant(run.plant.readings())>=6,'the port engine’s dials fall');
 });
 
+// Hidden engine-room plates are painted just before their first upload (render/canvas-release.js); paint them to measure.
 test('no plate’s lettering is stretched: every canvas has its plate’s own proportions',()=>{
  const {run}=boot(FERRY_DAY.inService+5);let n=0;const bad=[];
- run.ferry.traverse(o=>{if(!o.userData.plate||o.userData.plate==='chequer'||o.userData.plate==='grating')return;n++;const img=o.material.map.image,g=o.geometry.parameters;const pw=g.width??g.radius*2,ph=g.height??g.radius*2;const r=(img.width/img.height)/(pw/ph);if(Math.abs(r-1)>.02)bad.push(o.name+' '+r.toFixed(2));});
+ run.ferry.traverse(o=>{if(!o.userData.plate||o.userData.plate==='chequer'||o.userData.plate==='grating')return;n++;paintBack(o.material.map);const img=o.material.map.image,g=o.geometry.parameters;const pw=g.width??g.radius*2,ph=g.height??g.radius*2;const r=(img.width/img.height)/(pw/ph);if(Math.abs(r-1)>.02)bad.push(o.name+' '+r.toFixed(2));});
  assert.ok(n>150,n+' plates');assert.deepEqual(bad,[]);
 });
