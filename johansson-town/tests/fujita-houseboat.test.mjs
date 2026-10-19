@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {buildPortShed,PORT_SHED} from '../src/world/port-shed.js';
-import {HOUSEBOAT,houseboatSurface,createHouseboatModel} from '../src/world/fujita-houseboat.js';
+import {HOUSEBOAT,houseboatSurface,houseboatCabinAt,createHouseboatModel} from '../src/world/fujita-houseboat.js';
 import {fujitaAsleep,fujitaBoatRoute} from '../src/world/fujita-routine.js';
 import {buildCargoShipping} from '../src/world/cargo-shipping.js';
 import {circleHitsRect} from '../physics.js';
@@ -62,5 +62,41 @@ test('standing player clearance follows Fujita through the gangway and cabin in 
    assert.ok(!colliders.some(c=>circleHitsRect(x,z,.28,c)),`clear player ${x},${z}`);
   }
  }
+ shed.dispose();
+});
+
+test('the actual sleeping head rests on the pillow, which rests on the sofa',()=>{
+ const {shed}=make();shed.tick(0,1410);for(let i=0;i<100;i++)shed.tick(.1,1410);
+ shed.boat.group.updateMatrixWorld(true);shed.group.updateMatrixWorld(true);
+ const head=new THREE.Box3().setFromObject(shed.actor.avatar.face.head,true),centre=head.getCenter(new THREE.Vector3());
+ const ray=new THREE.Raycaster(new THREE.Vector3(centre.x,head.min.y+.1,centre.z),new THREE.Vector3(0,-1,0));
+ const hits=ray.intersectObject(shed.boat.group,true),pillow=hits[0];
+ assert.equal(pillow?.object.material.color.getHex(),0xd8cfb6,'the first support is the cream pillow');
+ assert.ok(Math.abs(pillow.point.y-head.min.y)<.05,'soft contact with the animated head, without a gap');
+ const seat=hits.find(h=>h.object.material.color.getHex()===0x777b49);
+ assert.ok(seat&&pillow.point.y-seat.point.y>.04&&pillow.point.y-seat.point.y<.1,'a thin compressed pillow on the seat');
+ ray.set(new THREE.Vector3(HOUSEBOAT.x-.31,1.3,centre.z),new THREE.Vector3(0,-1,0));
+ assert.equal(ray.intersectObject(shed.boat.group,true)[0]?.object.material.color.getHex(),0xd8cfb6,'the pillow edge is visible beside his head, above the blanket edge');
+ shed.dispose();
+});
+
+test('the folded bedding is the first visible surface through the cupboard opening from the aisle',()=>{
+ const model=createHouseboatModel();model.updateMatrixWorld(true);
+ for(const [y,colour] of [[.22,0xd8cfb6],[.34,0xd8cfb6],[.46,0xd8cfb6],[.625,0x657d78]]){
+  const ray=new THREE.Raycaster(new THREE.Vector3(.26,y,.13),new THREE.Vector3(-1,0,0));
+  const hit=ray.intersectObject(model,true)[0];
+  assert.equal(hit?.object.material.color.getHex(),colour,`bedding visible at ${y} m, not an opaque cupboard body`);
+  assert.ok(hit.point.x>-.74&&hit.point.x<-.69,'the front of the stored bedding is exposed');
+ }
+});
+
+test('roof fittings cut away with the roof and cabin camera bounds exclude the exterior',()=>{
+ const {shed}=make(),lamp=shed.boat.group.getObjectByName('Cabin lamp');
+ assert.equal(lamp.userData.houseboatRoof,true);
+ shed.boat.tick({player:{x:HOUSEBOAT.x+.26,z:HOUSEBOAT.z-.55}});assert.equal(lamp.visible,false);
+ shed.boat.tick({sleeping:false});assert.equal(lamp.visible,true);
+ shed.boat.tick({sleeping:true});assert.equal(lamp.visible,false);
+ assert.equal(houseboatCabinAt(HOUSEBOAT.x+.26,HOUSEBOAT.z-.55),true);
+ for(const [x,z] of [[HOUSEBOAT.x,HOUSEBOAT.z+.8],[HOUSEBOAT.x,HOUSEBOAT.z-3.3],[-38.9,-54.2],[-37.5,-54.2],[0,0]])assert.equal(houseboatCabinAt(x,z),false);
  shed.dispose();
 });
