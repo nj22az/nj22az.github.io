@@ -101,7 +101,9 @@ less, by the named budgets there. Nothing else asks which edition it is. Later r
   much dialogue"). On the web a resident near the player (within `residentRadius`) or in view walks and behaves as on
   Linux; out of sight and out of reach they keep their timetable without walking it (`people/attention.js`,
   `schedules.js` settle, `neighbours.js`): no route searched, no step taken, so nobody is ever seen to jump. No chats
-  between residents, no happenings chains, no multi-line conversations: talking to a resident is one short line for the
+  between residents, no happenings chains, no multi-line conversations. Stand points (`full-life.js setStandFilter`) are
+  kept for residents in view, near or in the player's room; a seen resident whose detour finds no way round waits half a
+  town minute before searching again (`detourRetryMinutes`): talking to a resident is one short line for the
   moment (`greetings.js shortGreeting`, at most 35 characters) and whatever they sell or serve. The full conversations,
   favours, chats and happenings are Linux's.
 - **Trade and machinery** (the owner: "the convoluted business backend doesn't need to work on the web either … even if
