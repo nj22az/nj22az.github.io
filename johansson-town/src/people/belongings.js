@@ -50,6 +50,30 @@ export const BELONGINGS=Object.freeze({
   tale:'Riku kicks it through Harbour Park before supper.'}],
  Vy:[{what:'satchel',from:'own',keeps:'over her shoulder',canon:true,
   tale:'It is full of kanji, minus the ten Vy has not learned.'}],
+ // The eleven who joined the guide in phase 5 of docs/CAST-CONSOLIDATION.md: the ship's people, the port clerk, the
+ // doctor, Mai and the relief engineer, each with the one thing their work or their day puts in their hand.
+ 'Dr Kakazu':[{what:'doctor’s bag',from:'work',keeps:'by the clinic door',canon:false,
+  tale:'House calls are on foot, with the bag.'}],
+ Mai:[{what:'rabbit-feed tin',from:'own',keeps:'under the class rabbit’s hutch',canon:false,
+  tale:'The rabbit eats before the class does, every morning.'}],
+ Mac:[{what:'reading glasses',from:'own',keeps:'in his boiler-suit breast pocket',canon:false,
+  tale:'He needs them for the gauges and denies it.'}],
+ 'Ms Uezu':[{what:'marlinspike',from:'work',keeps:'on her belt, aft',canon:false,
+  tale:'Every splice on the ferry’s lines is hers.'}],
+ 'Ms Ganaha':[{what:'date stamp',from:'work',keeps:'on the counter by her window',canon:false,
+  tale:'Every parcel on the shelf carries its mark.'}],
+ 'Mr Fujita':[{what:'television remote',from:'own',keeps:'on the arm of his chair in the shed',canon:false,
+  tale:'He has the remote and no patience.'}],
+ Ryo:[{what:'fifth-grade deck licence',from:'own',keeps:'in his cabin drawer',canon:true,
+  tale:'Six years on the Kerama ferries, and it says so.'}],
+ Ren:[{what:'heaving line',from:'work',keeps:'on its hook at the forward station, coiled',canon:true,
+  tale:'Kai on the Kitano pier catches it most times.'}],
+ Aya:[{what:'passenger book',from:'work',keeps:'in the drawer at the purser’s window',canon:true,
+  tale:'The count goes to the bridge before she does.'}],
+ Jun:[{what:'galley ladle',from:'own',keeps:'on its hook over the three-plate range',canon:false,
+  tale:'Twenty years of cargo-boat galleys in one handle.'}],
+ Kai:[{what:'straw hat',from:'own',keeps:'on the nail inside the Shiroma house door',canon:true,
+  tale:'The sun on the water is the sun twice over.'}],
 });
 
 /** A resident's things (empty if they have none on record). */

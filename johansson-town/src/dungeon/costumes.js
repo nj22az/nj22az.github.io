@@ -19,15 +19,21 @@ export const COSTUMES=Object.freeze({
  'Harbour master':{animal:'seagull',colour:'#f2f0ea',belly:'#b9bec2',lines:['All ships must sink on time.','The tide is out, so it is in.','Permission to leave port: denied, go ahead.']},
  Chin:{animal:'shark',colour:'#5f7f95',belly:'#e8eef0',lines:['Beat my score and I will lose it for you, bro.','Star Port is a boat, bro. Everybody knows.','Nobody swims faster backwards than me.']},
  Nhung:{animal:'owl',colour:'#8a6a4a',belly:'#e8d8b8',lines:['Shh! This is the loud section.','All our books are blank this week.','Who? Who? Not me. Who?']},
+ Tetsuo:{animal:'bear',colour:'#5a3d2b',belly:'#b58a64',lines:['I only break radios now.','Grr. Welcome. Grr.','Every clock in the shop is right twice a year.']},
+});
+/**
+ * The suits of the retired (people/roster.js RETIRED): Reiko's fox and the Bus driver's gorilla stay buildable for a
+ * history story, out of COSTUMES so the dungeon (dungeon.js, which spawns every COSTUMED name) never dresses them.
+ */
+export const RETIRED_COSTUMES=Object.freeze({
  Reiko:{animal:'fox',colour:'#d9782e',belly:'#f4efe6',lines:['Tomorrow’s news: nothing happened yesterday.','Read all about it, or do not.','The evening paper comes out in the morning.']},
  'Bus driver':{animal:'gorilla',colour:'#2e2a28',belly:'#7d7068',lines:['Hoo hoo! Doors opening! Doors closing! Doors opening!','Next stop: this one. Last stop: also this one.','Please stand clear of the bananas. Fares are free, exact change only.']},
- Tetsuo:{animal:'bear',colour:'#5a3d2b',belly:'#b58a64',lines:['I only break radios now.','Grr. Welcome. Grr.','Every clock in the shop is right twice a year.']},
 });
 export const COSTUMED=Object.freeze(Object.keys(COSTUMES));
 
 /** A townsperson's recipe with the suit on: the animal's colours head to foot, no hat. */
 export function costumeRecipe(recipe,name){
- const c=COSTUMES[name];if(!c)return recipe;
+ const c=COSTUMES[name]||RETIRED_COSTUMES[name];if(!c)return recipe;
  return {...recipe,outfit:{...recipe.outfit,top:'jacket',topColour:c.colour,pattern:'none',bottom:'trousers',bottomColour:c.colour,shoes:c.belly,hat:'none',accent:c.belly}};
 }
 

@@ -29,7 +29,9 @@ import {namesOf} from './roster.js';
  * roster says (RETIRED[].transfer): Kōji fishes on his own and Chin mends the boats, Tetsuo keeps the island's
  * electrics, Nhung prints the town's small paper beside the bookshop, the regulars at Minato are the residents
  * themselves. Only compatible history stays (Tetsuo's mother was a Chinen; Mr Fujita keeps the old seamen's
- * stories). The short display names (Fuji, Jack, Nao, Koji) wait for phase 5's directory and story sweep.
+ * stories). Phase 5 (the stories and directories): the guide, the feed's places and the Studio tools list exactly this
+ * cast; the short display names of the brief (Fuji, Jack, Nao, Koji, Mika, Yui, Tetsu, Aki, Dr Ken, Emi, Nils) are the
+ * roster's and resolve through castMember, while this list keeps the names the world, its saves and its drawings use.
  */
 const person=(name,o)=>Object.freeze({name,sex:o.sex,age:o.age??null,home:o.home,alsoAt:Object.freeze(o.alsoAt||[]),
  purpose:o.purpose,work:o.work,family:o.family||null,was:Object.freeze(o.was||[]),supporting:!!o.supporting,day:Object.freeze(o.day.map(s=>Object.freeze(s)))});
@@ -72,9 +74,11 @@ export const CAST=Object.freeze([
  // The town's people.
  person('Mrs Sato',{sex:'f',age:68,home:'kitahama-2',work:'sato-ramen',family:'Sato',purpose:'cooks at Sato Ramen; buys fish at the morning auction; the izakaya’s rival for the evening crowd',
   day:[['05:30','fish-auction','the morning auction'],['07:00','sato-ramen','the stock pot'],['11:00','sato-ramen','lunch service'],['21:00','kitahama-2','home']]}),
- person('Officer Mori',{sex:'m',age:45,home:'koban',work:'koban',family:'Mori',purpose:'the island’s police officer: the desk at the koban from four, the night patrol',
-  day:[['09:00','koban','asleep after the night patrol'],['13:00','sato-ramen','lunch'],['16:00','koban','the desk'],['21:00','main-street','the night patrol'],['02:00','koban','home behind the koban']]}),
- person('Harbour master',{sex:'m',age:58,home:'office',work:'office',family:'Kaneshiro',purpose:'runs the harbour office, the moorings, the cargo yard and the freight book',
+ person('Officer Mori',{sex:'m',age:45,home:'koban',work:'koban',family:'Mori',purpose:'the island’s police officer: the desk at Minato Police Station from four, the night patrol',
+  day:[['09:00','koban','asleep after the night patrol'],['13:00','sato-ramen','lunch'],['16:00','koban','the desk'],['21:00','main-street','the night patrol'],['02:00','koban','home upstairs at the station']]}),
+  // Jack Reed (roster.js: the Harbour master's keys and Mr Fujita's Minato linesman duty since phase 2): the harbour
+ // agent, an American former merchant seaman long settled here; the town still calls him the harbour master.
+ person('Harbour master',{sex:'m',age:58,home:'office',work:'office',family:'Reed',purpose:'harbour agent: runs the harbour office, the berth radio, the moorings, the cargo yard and the freight book, and takes the Minato Maru’s lines at every call; an American former merchant seaman, long settled here',
   day:[['06:00','office','the morning boats'],['12:00','sato-ramen','ramen, every day'],['13:00','cargo-yard','the cargo yard'],['18:00','office','the evening boat'],['21:00','office','home behind the screen']]}),
  person('Dr Kakazu',{sex:'m',age:34,home:'clinic',work:'clinic',family:'Kakazu',purpose:'the island doctor, posted from Naha for two years: surgery at the town hall clinic, on call at night',
   day:[['07:30','clinic','breakfast'],['09:00','clinic','morning surgery'],['12:30','sato-ramen','lunch, which Mrs Sato won’t let him pay for'],['14:00','clinic','house calls'],['19:00','izakaya','supper'],['21:00','clinic','home, on call']]}),
@@ -94,8 +98,12 @@ export const CAST=Object.freeze([
  // to the last boat (people/ganaha.js GANAHA); the mailbag and the parcel shelf before it opens. Kitahama Heights B.
  person('Ms Ganaha',{sex:'f',age:27,home:'kitahama-flat-4',work:'port',family:'Ganaha',purpose:'port clerk at the Port Terminal: the Minato Maru’s tickets, parcels and the post, at one window',
   day:[['07:00','kitahama-flat-4','breakfast'],['09:30','port','the mailbag off the morning boat: parcels on the shelf, letters in the pigeonholes'],['11:15','sato-ramen','an early lunch before the window opens'],['12:00','port','the window: tickets, parcels and post, and the ferry desk telephone'],['22:30','kitahama-flat-4','home']]}),
- person('Mr Fujita',{sex:'m',age:63,home:'fujita-houseboat',work:'port',family:'Fujita',purpose:'the port’s linesman: takes the Minato Maru’s lines at every call; a retired fisherman with a bad back',
-  day:[['06:00','port','the first call'],['10:00','onsen','a soak for his back'],['12:00','sato-ramen','lunch'],['13:00','port','the afternoon calls'],['19:00','fujita-shed','television in his pier shed'],['23:30','fujita-houseboat','home aboard Shiosai']]}),
+  // The master (roster.js SHIP_POSTS; phase 2): signed on 06:05–22:20 with the rest of the crew (ferry-crew.js
+ // FERRY_WORKING_DAY, master-commute.js walks his one body between the shed and the gangway), sober the whole watch;
+ // the shed, the set and the beer only after the shore power (world/fujita-day.js). He still takes the lines when she
+ // is not sailing and he is ashore for a soak (the old fisherman's back; Dr Kakazu would like him to rest it).
+ person('Mr Fujita',{sex:'m',age:63,home:'fujita-houseboat',work:'ferry',family:'Fujita',purpose:'master of the Minato Maru: the bridge from the generators to the shore power, every berthing conned himself, sober on watch; the pier shed and a beer only after he signs off; a fisherman once, with a bad back',
+  day:[['05:40','fujita-houseboat','up aboard Shiosai; the kettle on in the shed'],['06:05','ferry','signs on: the bridge, the log and the first sailing'],['12:00','ferry','lunch in the mess, alongside'],['13:00','ferry','the afternoon sailings'],['22:20','fujita-shed','signed off: the set and the first bottle in his pier shed'],['23:30','fujita-houseboat','home aboard Shiosai']]}),
  // The supporting crew (roster.js SUPPORTING; docs/CAST-CONSOLIDATION.md §5): the four who live aboard, in the cabins of
  // the ship's general arrangement (island-households.js binds them), and the Kitano line hand in the Shiroma house across
  // the lane from his pier. Their bodies are the ferry's (ferry-crew-aboard.js, ferry-shore-crew.js), not the street's;
@@ -162,7 +170,7 @@ export const RELATIONSHIPS=Object.freeze([
  pair('Mac','Tetsuo','relief engineer and contract electrician','The ship’s switchboard.','Mac guards his switchboard.'),
  pair('Mac','Ms Uezu','engine room and deck','The ferry’s two halves.','Deck against engine room, every day.'),
  pair('Ms Ganaha','Mr Fujita','the port','The ticket window and the lines.'),
- pair('Mr Fujita','Grandmother Higa','an onsen regular','A soak for his back every morning.','He says the bath is never hot enough.'),
+ pair('Mr Fujita','Grandmother Higa','an onsen regular','A soak for his back whenever the sailings let him.','He says the bath is never hot enough.'),
  pair('Mr Fujita','Dr Kakazu','patient and doctor','His back.','He will not rest it.'),
  pair('Dr Kakazu','Mrs Sato','the outsider everyone feeds','Lunch he is not allowed to pay for.'),
  pair('Dr Kakazu','Grandmother Higa','doctor and patient','Her blood pressure.','She ignores his advice.'),
