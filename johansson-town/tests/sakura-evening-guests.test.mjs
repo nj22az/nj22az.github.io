@@ -1,4 +1,6 @@
 import test from 'node:test';
+import {inTillPocket} from '../src/people/retail-clerk.js';
+import {TILL_BODY} from '../src/world/interiors/sakura-queue.js';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
@@ -37,6 +39,8 @@ function fixture({finished=false,player=null}={}){
 function assertClear(f,p,radius){
  if(!p.g.userData.inMarket)return;
  const {x,z}=p.g.position;
+ // At the till the clerk stands 0.75 m behind the counter's front (sakura-queue.js, C1): her body, not her clearance circle.
+ if(inTillPocket(p.g,f.shop.layout))radius=TILL_BODY;
  assert.equal(f.shop.blocked(x,z,radius),false,p.profile.name+' intersects another actual shop fitting');
  if(f.player)assert.ok(Math.hypot(x-f.player.x,z-f.player.z)>=radius+.28-1e-6,p.profile.name+' overlaps Johansson');
  for(const other of f.world.people)if(other!==p&&other.g.visible&&other.g.userData.inMarket)assert.ok(p.g.position.distanceTo(other.g.position)>=radius+(other===f.clerk?.36:.35)-1e-6,p.profile.name+' overlaps '+other.profile.name);
