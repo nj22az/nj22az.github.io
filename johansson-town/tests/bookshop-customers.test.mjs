@@ -43,7 +43,7 @@ function crowdedBookshop({staffPosition=null,playerPosition=null}={}){
  const layout=buildCompactShop({site,room,reg(){},collider:(x,z,w,d)=>colliders.push({x,z,w,d}),action(){},exit(){}});
  const blocked=(x,z,r=.3)=>suppliedRoomBoundsBlocked(layout,x,z,r)||colliders.some(c=>circleHitsRect(x,z,r,c));
  const staff=[world.people.find(p=>p.profile.name==='Nhung')];
- if(staffPosition)staff.push(world.people.find(p=>p.profile.name==='Reiko'));
+ if(staffPosition)staff.push(world.people.find(p=>p.profile.name==='Tetsuo'));
  for(const person of staff){scene.add(person.g);person.g.position.set(...(person.profile.name==='Nhung'?layout.staff.Nhung:staffPosition));person.g.visible=true;person.g.userData.inWorkplace=site.id;person.g.userData.hit.inside=true;assert.equal(blocked(person.g.position.x,person.g.position.z,.3),false,'Staff stands clear of furniture');}
  customer.g.position.set(TOWN_DESTINATIONS.books[0],0,TOWN_DESTINATIONS.books[1]);customer.g.userData.indoors='bookshop';customer.g.visible=false;
  let player=playerPosition?new THREE.Vector3(...playerPosition):null;

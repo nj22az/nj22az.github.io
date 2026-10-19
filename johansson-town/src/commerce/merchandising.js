@@ -129,7 +129,7 @@ export const ACCOUNTS=Object.freeze({
  frontrow:{
   office:{name:'Johansson Harbour Office',owner:'Johansson',lines:['log books for tides and freight','A4 copy paper','carbon receipt books'],
    why:'The harbour’s records: tide tables, freight manifests and receipts for the ferry.',
-   delivery:'Reiko drops it off on her way to the evening press.'},
+   delivery:'Nhung brings it down from Front-Row with the morning paper.'},
   'mayor-office':{name:'the mayor’s office',owner:'Johansson',lines:['A4 copy paper','envelopes','account ledgers','cellophane tape'],
    why:'Minutes, letters to the main island, the town accounts and the notice board.',
    delivery:'With the Monday paper round.'},

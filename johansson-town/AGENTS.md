@@ -43,6 +43,28 @@ Phase 2 (the ship posts and shore roles) is in: `src/people/ferry-crew.js` reads
 
 Phase 3 (the households) is in: Nhung lives at 3 Kitahama with Kōji and Riku (`kitahama-layout.js` KITAHAMA_RESIDENT_HOMES, her room `households.js`, the family house `interiors/family-home.js` with three futons); Thuan's weekday room is gone and she lives on Kitano-jima only, over on the 08:30 boat and home on the 22:00 one (`kitano-residents.js`, `commuter-schedule.js`), Nhung keeping Sakura at the weekend; Kitahama Heights is two attached ground-floor houses, A (Mac, id `kitahama-flat-3`) and B (Ms Ganaha, id `kitahama-flat-4`), each with its own gate, door and garden on Fukugi Lane and no stair (`kitahama-layout.js` KITAHAMA_HEIGHTS, `okinawa/kitahama-quarter.js`), the logical units `kitahama-flat-1`/`-2` retired in the registry with Mr Higa Jr and Grandmother Sakurai resolving to the roster's fallback (`home-directory.js`) until phase 4 takes their bodies; Thuan owns and runs Sakura outright and the shop keeps honest hours, 9:00–20:30 every day with nobody at night (`commerce/sakura-rota.js`, superseding the 24-hour opening of 12 October that the retired night keeper made possible); Sakura supplies the town's flowers and decorations and sells the bouquets at its door (`merchandising.js`, `okinawa/old-town.js`), the Rainflower pavilion selling nothing until phase 4 removes it; the post and parcel counter is Ms Ganaha's window at the Port Terminal (`ganaha.js`, `interiors/port-hall.js`), the old post office counter shut until phase 4 removes the shop-house, Tōma's round running from the terminal meanwhile.
 
+Phase 4 (the retirements and removals) is in: the ten retired identities (roster.js RETIRED: the Bus driver, Mr Higa Jr,
+Grandmother Sakurai, Grandmother Chinen, Postman Tōma, Mr Shimabukuro, Mr Ōshiro, Mrs Kinjō, Barfly and Reiko) are out of
+`people/cast.js`, so they have no body in the street, the shops, the izakaya or aboard, no household, shift, nameplate,
+home pin, place or relationship pair, and the save migration (`save.js`, castRevision 2) drops their records and lands a
+save made inside a removed building at the retained place (`roster.js RETIRED_HOMES`, `households.js HOME_ALIASES`).
+What they did went where the roster says: Kōji fishes his own sabani and Chin mends the boats, Tetsuo keeps the power
+house's switchboard, Nhung prints the town's small paper at the bookshop's back bench, the izakaya's regulars are the
+residents (nobody lives in the bar; Thao cleans after last orders), the post round is the terminal's mailbag, the
+harbour master's favour is Mrs Sato's delivery box (both ends must walk the town), and the stories' catalogue leaves the
+retired out (`feed/storyteller.js living`). Removed, with their foundations, walls, gates, nameplates, drops, lights,
+prompts, interiors and directory and map entries: 4, 5 and 6 Kitahama, the Kinjō and Ōshiro houses on the seawall walk,
+1 Front-Row Yard, the post-office shop-house on the East Row, the Rainflower pavilion (the bouquets are at Sakura's door,
+`okinawa/old-town.js SAKURA_FLOWER_STAND`; a saved photo or destination at the old id lands there) and the Chinen house on
+Kitano-jima (the island's ground and plantings take the plot back). The registry keeps each as a record of a removal
+(`island-households.js`, `retired`), distinct from the housing project's nine of 18 October. The streets closed up where
+they could without touching the Kitahama lots (ruling 2) or the police lot (ruling 1): the two Kitahama side lanes north
+of the cross lane that served only 4 and 5 end at the cross lane (`kitahama-layout.js`), the East Row's apron is paved
+per standing shop so the park's lawn meets Main Street where the shop-house stood, the Nishi lanes stay (the Higa house's
+side, the way to 2 Front-Row Yard, the utaki's approach), and every cleared lot is recorded with its ground and the reason
+it is clear in `okinawa/lots.js CLEARED_LOTS` for the deferred dressing pass. Two walkers who meet face to face now step
+round one at a time (`schedules.js`): the changed timing had Thuan and Tetsuo mirroring each other's detour on the kerb.
+
 ## Verification
 
 Use focused geometry, collision, navigation and schedule checks. For runtime changes run `npm run build:runtime` and `node --test tests/runtime-package.test.mjs`. Check real pedestrian and overhead views, including mobile, wherever a GPU browser is available; state when physical-device or visual checks are unavailable. Do not claim screenshots or tests that were not performed.

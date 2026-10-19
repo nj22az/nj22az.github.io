@@ -15,8 +15,8 @@ function person(name,parent=new THREE.Group(),work){
 function marker(parent,label,x=0,z=0,inside=false){const o=new THREE.Object3D();o.position.set(x,1,z);o.userData.hit={label,inside,fn:()=>{throw Error('NPC called player action');}};parent.add(o);return o;}
 const step=(service,seconds)=>{for(let i=0;i<seconds*60;i++)service.update(1/60);};
 
-test('Minato serves actual beer and meals; the bus driver and officer choose tea and payments survive re-entry',()=>{
- const room=new THREE.Group(),state={yen:600},ledger=createResidentLedger(()=>state),kenji=person('Chin'),driver=person('Bus driver'),nao=person('Thao');
+test('Minato serves actual beer and meals; the officer chooses tea and payments survive re-entry',()=>{
+ const room=new THREE.Group(),state={yen:600},ledger=createResidentLedger(()=>state),kenji=person('Chin'),driver=person('Officer Mori'),nao=person('Thao');
  for(const [i,p] of [kenji,driver].entries()){p.g.position.set(i*1.5,0,-1.42);p.g.userData.inIzakaya=true;p.g.userData.seatHeight=.71;}
  nao.g.userData.inIzakaya=true;
  const options={room,place:'izakaya',getCustomers:()=>[kenji,driver],getStaff:()=>nao.g,getMinutes:()=>1100,ledger};

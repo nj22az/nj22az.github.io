@@ -1,5 +1,4 @@
 import {canonicalRest} from './canonical-rest.js';
-import {FLOWER_SHOP} from '../world/flower-shop.js';
 import {NAKAMURA_DESSERTS,HARBOUR_PARK_STUDY} from '../world/harbour-park-plan.js';
 import {ONSEN_DOOR} from '../world/onsen-layout.js';
 import {RAMEN_DOOR} from '../world/dining-layout.js';
@@ -21,9 +20,9 @@ const points={izakaya:IZAKAYA_DOOR,sakura:MARKET_THRESHOLD,market:MARKET_THRESHO
  school:[SCHOOL.genkan.x,SCHOOL.building.minZ-1.4],park:HARBOUR_PARK_STUDY[0],onsen:ONSEN_DOOR,
  port:[8,-38],ferry:[8,-38],office:[8,-38],koban:[5.05,20.3],
  'sato-ramen':RAMEN_DOOR,books:TOWN_DESTINATIONS.books,workshop:TOWN_DESTINATIONS.workshop,
- florist:FLOWER_SHOP.staffAt,zenzai:NAKAMURA_DESSERTS.staffAt,'blue-coral':NAKAMURA_DESSERTS.staffAt,
+ zenzai:NAKAMURA_DESSERTS.staffAt,'blue-coral':NAKAMURA_DESSERTS.staffAt,
  'fish-auction':[25,-39.6],'ice-plant':[31,-41],boatyard:[-31.8,-45],sea:[-31.8,-45],
- 'higa-liquor':[4.8,8.4],clinic:[34.1,35.1],'cargo-yard':[17,-40],'post-office':[4.8,-4.1],
+ 'higa-liquor':[4.8,8.4],clinic:[34.1,35.1],'cargo-yard':[17,-40],
  'power-station':[SCHOOL.powerHouse.door[0]+.6,SCHOOL.powerHouse.door[1]-.9],quay:[20,-40],
  'main-street':[1,0],seawall:[-36.7,-20],'kitano-pier':airportWorld(...KITANO_PIER_STAND)};
 export function canonicalDestination(name,place){
@@ -42,11 +41,11 @@ export function canonicalDay(name,minutes,rain=false){
  const homePlan=activity=>{const h=activeTarget(name);return {place:'home',target:[h.x,h.z],activity,rain:!!rain};};
  // The bosun's rota (ferry-crew.js bosunFor): Ms Uezu's week on and week off, Kōji her relief. On his week the ship has
  // him for her whole working day (FERRY_WORKING_DAY, the crew controller draws him aboard and hides this body), so he
- // is never at the auction, the ice plant or Mr Ōshiro's boat while he is signed on, and his fisherman's early night
+ // is never at the auction, the ice plant or his own sabani while he is signed on, and his fisherman's early night
  // waits for the shore power; on her week off she is at home.
  if(name==='Kōji'&&rotaWeek(minutes)===1){
   if(m>=FERRY_WORKING_DAY.signOn-15&&m<FERRY_WORKING_DAY.signOff)return {place:'ferry',target:[...points.ferry],activity:'relief bosun’s working week'};
-  if(m<FERRY_WORKING_DAY.signOn-15)return homePlan('a late start on his relief week; the auction is Mr Ōshiro’s');
+  if(m<FERRY_WORKING_DAY.signOn-15)return homePlan('a late start on his relief week; the sabani stays on the quay');
  }
  const rest=canonicalRest(name,minutes);
  if(rest)return {...homePlan(rest.activity),rest:rest.id};

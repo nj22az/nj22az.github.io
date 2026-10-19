@@ -12,7 +12,7 @@ import {poster} from './signs.js';
  * is open); `gates` are the openings, in world coordinates along that side. The old house's centre is kept clear of
  * anything solid (tests/housing-consolidation.test.mjs: no house stands there).
  *
- * The Yonamine shop-house on Main Street is the lot here. Kitahama's cleared plots are kitahama-lots.js.
+ * The Yonamine shop-house on Main Street is the lot here. The lots that wait for their dressing are CLEARED_LOTS below.
  */
 export const lotRect=(minX,maxX,minZ,maxZ)=>Object.freeze({minX,maxX,minZ,maxZ});
 const rect=lotRect;
@@ -27,6 +27,40 @@ export const STREET_LOTS=Object.freeze([
  }),
 ]);
 export const streetLot=id=>STREET_LOTS.find(l=>l.id===id);
+
+/**
+ * The lots that are clear and wait for their dressing: where a house stood and nothing stands now. Phase 4 of
+ * docs/CAST-CONSOLIDATION.md cleared the retired residents' houses (brief §8, addendum 3 and 5), and the housing project
+ * of 18 October 2026 cleared five Kitahama plots before it. The owner deferred their dressing (addendum 2: gardens,
+ * 月極 parking, bike sheds and hedges follow on the final layout, after the police station and the docks), so each lot is
+ * recorded here with what its ground is now and why it is clear, for that pass and for the tests
+ * (tests/housing-consolidation.test.mjs: nothing solid stands on one, no door, no circuit). Nothing is built on them
+ * here: no fence, no placeholder, no speculative attraction. `ground` is what the lot is today: Kitahama's level grass
+ * (neighbourhood-ground.js), the quarter's coral sand (quarters.js buildNishiGround), the Front-Row yard's lawn
+ * (west-yard.js), the lawn east of Main Street, or Kitano-jima's own ground and plantings (tropical-island.js).
+ */
+const cleared=(id,formerly,district,r,ground,cleared,why)=>Object.freeze({id,formerly,district,rect:r,ground,cleared,why,dressing:'deferred (docs/CAST-CONSOLIDATION.md addendum 2)'});
+const PHASE_4='2026-10-19, phase 4 of docs/CAST-CONSOLIDATION.md',HOUSING='2026-10-18, the housing project (docs/MINATO-HOMES-IMPLEMENTATION.md)';
+export const CLEARED_LOTS=Object.freeze([
+ cleared('kitahama-4-lot','kitahama-4','Kitahama',rect(20,28,62,71),'grass',PHASE_4,'the postman’s house: the post is Ms Ganaha’s counter at the terminal, and the round went with him'),
+ cleared('kitahama-5-lot','kitahama-5','Kitahama',rect(33,41,62,71),'grass',PHASE_4,'Grandmother Chinen’s house: she retired with only her family history kept, as Tetsuo’s mother'),
+ cleared('kitahama-6-lot','kitahama-6','Kitahama',rect(-32,-24,48,57),'grass',PHASE_4,'the former master’s house: Fuji is the master and keeps Shiosai, not this house too'),
+ cleared('kitahama-north-block','kitahama-4 and kitahama-5 with the ends of the middle and field lanes','Kitahama',rect(16,42,62,72),'grass',PHASE_4,'with 4 and 5 gone nothing stood on either side of the two side lanes north of the cross lane, so they end at it (kitahama-layout.js) and the ground from 3 Kitahama’s east wall to the approach is one block behind the cross lane'),
+ cleared('kitahama-7-lot','kitahama-7','Kitahama',rect(-19,-11,48,57),'grass',HOUSING,'an empty house the housing project removed'),
+ cleared('kitahama-9-lot','kitahama-9','Kitahama',rect(7,15,48,57),'grass',HOUSING,'an empty house the housing project removed'),
+ cleared('kitahama-10-lot','kitahama-10','Kitahama',rect(-32,-24,62,71),'grass',HOUSING,'an empty house the housing project removed'),
+ cleared('kitahama-11-lot','kitahama-11','Kitahama',rect(-19,-11,62,71),'grass',HOUSING,'an empty house the housing project removed'),
+ cleared('kitahama-12-lot','kitahama-12','Kitahama',rect(-6,2,62,71),'grass',HOUSING,'an empty house the housing project removed'),
+ cleared('kinjo-lot','kinjo','Nishi-machi',rect(-34.7,-27,-11.2,-.2),'coral sand',PHASE_4,'Mrs Kinjō’s house: the flowers are Sakura’s; the lane at z −13 stays as the Higa house’s side'),
+ cleared('oshiro-lot','oshiro','Nishi-machi',rect(-34.7,-27,3.3,14.2),'coral sand',PHASE_4,'Mr Ōshiro’s house: Kōji fishes on his own and Chin mends the boats; the lanes at z 1.5 (to 2 Front-Row Yard) and 16 (the utaki) stay'),
+ cleared('front-row-yard-1','resident-home-aya','Front-Row Yard',rect(-24.15,-18.45,-2.85,.45),'lawn',PHASE_4,'1 Front-Row Yard: Nhung had moved home to 3 Kitahama and Reiko retired; the path from the lane gap to Tetsuo’s door runs past it'),
+ cleared('post-office-lot','shimabukuro','Main Street, the East Row',rect(5.7,13.4,-6.6,-1.6),'lawn',PHASE_4,'the post-office shop-house: its counter is the terminal’s and its tenant retired; the park’s lawn meets Main Street between Nakamura’s and Kitano Road'),
+ cleared('rainflower-lot','rainflower-florist','the lawn east of Main Street',rect(19,23,15.4,18.6),'lawn',PHASE_4,'the Rainflower pavilion: the flowers are sold at Sakura’s door (addendum 3)'),
+ cleared('kitano-3-lot','kitano-3','Kitano hamlet',rect(-33,-23,38,48),'the island’s ground and plantings (island frame)',PHASE_4,'the Chinen house on Kitano-jima (addendum 5): Grandmother Chinen retired; the island takes the plot back'),
+]);
+export const clearedLot=id=>CLEARED_LOTS.find(l=>l.id===id||l.formerly===id);
+/** The Kitahama lots the deferred dressing pass will plan (addendum 2). */
+export const KITAHAMA_CLEARED=Object.freeze(CLEARED_LOTS.filter(l=>l.district==='Kitahama'));
 
 export const LOT_COLOURS=Object.freeze({earth:0x9a5f40,earthDry:0xb07a52,coral:0xd9cdb0,concrete:0xb9b4a8,steel:0x9aa0a4,galv:0xa9b1b3,
  timber:0x8a6a45,timberDark:0x5d4431,leaf:0x4f7d3e,leafDark:0x3c6a35,net:0x2f5a4a,roof:0x8c9ea3});

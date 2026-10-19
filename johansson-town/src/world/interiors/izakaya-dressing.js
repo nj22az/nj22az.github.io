@@ -27,7 +27,7 @@ export const BOTTLE_KEEP=Object.freeze([
  {name:'Officer Mori',drink:'Shochu, barley',colour:0xd8dccf},{name:'Hiroshi',drink:'Awamori, 10 years',colour:0x5a3b22},
  {name:'Tetsuo',drink:'Shochu, sweet potato',colour:0x34465a},{name:'Harbour master',drink:'Awamori, 5 years',colour:0x2c4a33},
  {name:'Mr Fujita',drink:'Shochu, rice',colour:0xd8dccf},{name:'Masaru',drink:'Awamori',colour:0x5a3b22},
- {name:'Reiko',drink:'Plum wine',colour:0x7a2b2b},{name:'Mr Tanabe',drink:'Awamori, 3 years',colour:0x34465a},
+ {name:'Ms Uezu',drink:'Plum wine',colour:0x7a2b2b},{name:'Mr Tanabe',drink:'Awamori, 3 years',colour:0x34465a},
  {name:'Nhung',drink:'Plum wine',colour:0x7a2b2b},{name:'Daichi',drink:'Shochu, barley',colour:0xd8dccf},
 ]);
 /** The shelf, on the west wall beside the counter's end. */

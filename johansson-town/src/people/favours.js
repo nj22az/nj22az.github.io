@@ -50,36 +50,39 @@ export const FAVOURS=Object.freeze([
   friendship:Object.freeze({Nhung:10,Thao:3}),
  }),
  Object.freeze({
-  id:'harbour-timetable',kind:'deliver',from:'Harbour master',to:'Bus driver',item:'Bus timetable',at:'the harbour office',
+  // Phase 4 of docs/CAST-CONSOLIDATION.md retired the Bus driver this favour went to. It is Mrs Sato's delivery box
+  // now, the one that carries his noon bowls up from Sato Ramen (people/belongings.js); the id is kept, so a save in
+  // the middle of it carries on. The favour calendar (one-day-slice) asks that both ends walk the town: she does.
+  id:'harbour-timetable',kind:'deliver',from:'Harbour master',to:'Mrs Sato',item:'Delivery box',at:'the harbour office',
   why:[
-   'Harbour master (people/residents.js, his gossip): "The bus driver brings stories from the last stop. I check his timetable against the harbour clock."',
-   'Bus driver (people/residents.js, his gossip): "I bring him a fresh story with the morning timetable."',
-   'Harbour master (activities.js): "The harbour office is staffed around the clock. I stay on the quay." So he cannot take it himself.',
-   'Hours (profiles.json): the harbour master 5:00 to 14:00, the bus driver 9:00 to 18:00 at the terminal.',
+   'Mrs Sato (people/belongings.js): her aluminium delivery box "at noon carries two bowls to the harbour office".',
+   'Harbour master and Mrs Sato (people/cast.js RELATIONSHIPS): old flames; "he eats her ramen every day and never says why".',
+   'Harbour master (activities.js): "The harbour office is staffed around the clock. I stay on the quay." So he cannot take it back himself.',
+   'Hours (profiles.json): the harbour master 5:00 to 14:00, Mrs Sato at Sato Ramen 9:00 to 21:00.',
   ],
-  // Asked before the harbour master goes off at two; handed over at the terminal before six.
+  // Asked before the harbour master goes off at two; handed over at Sato Ramen before six.
   askBy:12*60+30,
-  // Asked while the harbour master is in (until 14:00), leaving time to reach the terminal before the driver's last run at six.
+  // Asked while the harbour master is in (until 14:00), leaving the afternoon to walk the box up Main Street.
   askUntil:13*60+45,doneBy:18*60,
-  letter:'A small matter of time. The bus driver left his morning timetable on my desk. Call in at the harbour office before two, if you would.',
-  thanks:'Thank you for taking the timetable back. He came by this morning with the next one, and a story to make up for yesterday. I have checked the timetable. I have not checked the story.',
+  letter:'A small matter of a box. Mrs Sato’s delivery box came up with the noon bowls and she will want it back for the evening. Call in at the harbour office before two, if you would.',
+  thanks:'Thank you for taking the box back. The bowls came up at noon as they always do, and she said nothing, as she always does. I have checked the box. I have not checked the bowls.',
   lines:Object.freeze({
-   ask:'{face:dry}Every morning the bus driver brings me his timetable and a story.{p} I check the timetable.{p:2} Today he left it behind.{p} {face:smile}Would you take it to him at the terminal?{p} I do not leave the quay.',
-   accepted:'{face:smile}Thank you.{p} Tell him the harbour clock agrees with him.{p} Today.',
-   checkIn:'{face:dry}The terminal,{p} at the end of the line.{p} He will be telling somebody a story.',
-   checkInAfter:'{face:dry}His last run has gone by now.{p} Never mind.{p} The timetable can wait for the morning.',
-   handOver:'{face:surprised}My timetable!{p} I wondered why the morning felt short.{p:2} {face:smile}Did he check it?{p} Of course he checked it.{p} Tell him the story was true.{p} Mostly.',
-   done:'{face:smile}He has it back?{p} Good.{p} Tomorrow he will bring me two stories to make up for it.{p} Thank you,{p} {name}.',
-   late:'{face:dry}The day ran out,{p} and so did the timetable.{p} Never mind.{p} I will give it to him in the morning,{p} with a story of my own for once.',
+   ask:'{face:dry}Every noon Mrs Sato sends two bowls up in her box,{p} and every noon the box goes back empty.{p:2} Today it is still on my desk.{p} {face:smile}Would you take it down to Sato Ramen for me?{p} I do not leave the quay.',
+   accepted:'{face:smile}Thank you.{p} Tell her the bowls were good.{p} Today.',
+   checkIn:'{face:dry}Sato Ramen,{p} on Main Street.{p} She is at the stove until nine;{p} she will pretend not to see the box.',
+   checkInAfter:'{face:dry}The afternoon has gone by now,{p} and the box is not going anywhere tonight.{p} Never mind.{p} It can wait for the morning.',
+   handOver:'{face:surprised}My box!{p} I was going to send Tetsuo for it.{p:2} {face:smile}Did he eat both bowls?{p} Of course he ate both bowls.{p} Tell him nothing.{p} He knows.',
+   done:'{face:smile}She has it back?{p} Good.{p} Tomorrow there will be three bowls,{p} and no explanation.{p} Thank you,{p} {name}.',
+   late:'{face:dry}The day ran out,{p} and the box is still here.{p} Never mind.{p} I will send it down in the morning,{p} with a note of my own for once.',
   }),
   moments:Object.freeze({
-   accepted:{text:'The harbour master gave me the bus driver’s morning timetable to take back to him at the terminal.',kind:'friend'},
-   declined:{text:'The harbour master asked me to take the timetable back to the bus driver. I said not today.',kind:'note'},
-   done:{text:'Took the timetable back to the bus driver. The harbour clock agreed with him.',kind:'friend',
-    news:'The bus driver has his timetable back, checked against the harbour clock. The harbour office says the two agree, for now.'},
-   late:{text:'I promised the harbour master I would take the timetable to the bus driver, and the day ran out.',kind:'note'},
+   accepted:{text:'The harbour master gave me Mrs Sato’s delivery box to take back to her at Sato Ramen.',kind:'friend'},
+   declined:{text:'The harbour master asked me to take the delivery box back to Mrs Sato. I said not today.',kind:'note'},
+   done:{text:'Took the delivery box back to Mrs Sato at Sato Ramen. She said nothing about the harbour master, at length.',kind:'friend',
+    news:'Mrs Sato’s delivery box is back at Sato Ramen from the harbour office. The noon bowls will go up tomorrow as usual; nobody at either end has said why.'},
+   late:{text:'I promised the harbour master I would take the delivery box to Mrs Sato, and the day ran out.',kind:'note'},
   }),
-  friendship:Object.freeze({'Harbour master':10,'Bus driver':3}),
+  friendship:Object.freeze({'Harbour master':10,'Mrs Sato':3}),
  }),
  Object.freeze({
   id:'nhung-rain-book',kind:'return',from:'Nhung',to:'Harbour master',item:'Rain-stained book',at:'Front-Row Books',

@@ -29,7 +29,6 @@ export const TOWN_WALK_PLOTS=Object.freeze([
  plot('power-house',SCHOOL.powerHouse.minX,SCHOOL.powerHouse.maxX,SCHOOL.powerHouse.minZ,SCHOOL.powerHouse.maxZ),
  plot('town-hall',12.1,41.2,24.6,45),
  plot('onsen',15.2,30.5,-24.4,-16.8),
- plot('rainflower',19,23,15.4,18.6),
  ...KITAHAMA.plots,KITAHAMA.apartment,
  ...NISHI.plots.filter(p=>p.kind!=='grove'&&p.kind!=='shed'),...EAST_BACK.plots,
  ...EAST_ROW.plots.map(p=>({...p,minX:EAST_ROW.minX,maxX:EAST_ROW.maxX})),

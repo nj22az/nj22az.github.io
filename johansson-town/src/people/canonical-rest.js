@@ -2,13 +2,13 @@
 // established home-life.js hours; these cover the canonical neighbour controller.
 const H=(sleep,wake)=>Object.freeze({sleep,wake});
 export const CANONICAL_REST=Object.freeze({
- 'Grandmother Chinen':H(1260,360),Vy:H(1260,420),'Kōji':H(1260,225),Riku:H(1260,420),
- 'Miss Higa':H(1380,420),'Grandmother Higa':H(1260,390),'Grandmother Sakurai':H(1260,330),
- 'Postman Tōma':H(1320,420),'Dr Kakazu':H(1380,450),'Mr Ōshiro':H(1260,270),
- 'Mrs Kinjō':H(1320,420),'Mrs Nakamura':H(1290,315),Mai:H(1260,420),
- 'Bus driver':H(1320,330),Mac:H(1320,285),'Mr Higa Jr':H(1320,315),
+ Vy:H(1260,420),'Kōji':H(1260,225),Riku:H(1260,420),
+ 'Miss Higa':H(1380,420),'Grandmother Higa':H(1260,390),
+ 'Dr Kakazu':H(1380,450),
+ 'Mrs Nakamura':H(1290,315),Mai:H(1260,420),
+ Mac:H(1320,285),
  // Ms Ganaha keeps the port window until 22:15 (ganaha.js) and is home by half past.
- 'Ms Uezu':H(1320,315),'Ms Ganaha':H(1380,420),'Mr Shimabukuro':H(1320,285),
+ 'Ms Uezu':H(1320,315),'Ms Ganaha':H(1380,420),
 });
 const minute=m=>((m%1440)+1440)%1440;
 /** A home stays occupied through midnight and breakfast, even without a modelled bedroom. */

@@ -115,9 +115,9 @@ test('phase 2: every person resolves to one body in cast.js; the supporting crew
  assert.equal(castMember('Fuji').name,'Mr Fujita');assert.equal(castMember('Jack').name,'Harbour master');assert.equal(castMember('Nao').name,'Ms Uezu');assert.equal(castMember('Koji').name,'Kōji');
  assert.equal(castMember('Mac').name,'Mac');assert.equal(castMember('Mr Nakandakari').name,'Mac');
  for(const p of SUPPORTING){const live=castMember(p.name);assert.equal(live?.name,p.name,p.name+' has a body of their own');assert.ok(live.supporting,p.name+' is marked supporting in the cast');for(const w of p.was)assert.equal(castMember(w)?.name,p.name,w+' resolves to '+p.name);}
- for(const p of RETIRED)assert.equal(castMember(p.name)?.name,p.name,p.name+' still walks until phase 4');
+ for(const p of RETIRED)for(const name of [p.name,p.id,...p.was])assert.equal(castMember(name),null,name+' has no body (phase 4)');
  for(const name of CAST_NAMES)assert.equal(castMember(name).name,name,'cast.js lookups are untouched');
- assert.equal(CAST.length,36,'the 31 of phase 1 and the five supporting crew');
+ assert.equal(CAST.length,26,'the 21 core and the five supporting crew');
  assert.equal(CAST.filter(p=>p.supporting).length,5);
  const bare=r=>JSON.stringify({...r,name:null});
  // Emi is the one display name that already has a drawing of its own (the old townsfolk profile, Mrs Kinjō's look): it keeps it until phase 5.

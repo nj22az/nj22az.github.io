@@ -70,8 +70,8 @@ test('public seats respect reservations made by another seating controller',()=>
 });
 
 test('indoor visitors lower into chairs and finish standing before returning to navigation',()=>{
- const street=new THREE.Group(),room=new THREE.Group(),profile=RESIDENTS.find(p=>p.name==='Reiko'),g=new THREE.Group();
- g.userData={name:'Reiko',hit:{inside:false}};g.position.set(RAMEN_DOOR[0],0,RAMEN_DOOR[1]);street.add(g);
+ const street=new THREE.Group(),room=new THREE.Group(),profile=RESIDENTS.find(p=>p.name==='Tetsuo'),g=new THREE.Group();
+ g.userData={name:'Tetsuo',hit:{inside:false}};g.position.set(RAMEN_DOOR[0],0,RAMEN_DOOR[1]);street.add(g);
  const seat=SATO_GUEST_SEATS[0],visitors=createIndoorResidents({world:{people:[{g,profile}]},parent:room,place:'ramen',layout:{entrance:seat.stand},collides:()=>false});
  visitors.sync(740,0);visitors.sync(740,.1);
  assert.equal(g.userData.socialPose,'Sit');assert.equal(g.userData.chairBlend,.2);

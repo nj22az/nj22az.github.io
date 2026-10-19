@@ -74,7 +74,7 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],homes=[],people=[],pl
   label(target.address||target.title,target.x,target.z,{priority:true,colour:'#823f36',size:15});
  }
  if(inView(player.x,player.z)){ctx.save();ctx.translate(px(player.x),pz(player.z));ctx.rotate(Math.PI+yaw);ctx.fillStyle='#214e69';ctx.strokeStyle='#fffdf2';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-8);ctx.lineTo(5.5,6);ctx.lineTo(0,3);ctx.lineTo(-5.5,6);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();}
- const named=new Map([['market','Sakura'],['harbour-park','Harbour Park'],['onsen','Umi-no-yu'],['rainflower-florist','Rainflower Florist'],['nakamura','Nakamura / Blue Coral'],['ferry-terminal','Minato ferry'],['koban','Police station'],['warehouse','Harbour Warehouse']]);
+ const named=new Map([['market','Sakura'],['harbour-park','Harbour Park'],['onsen','Umi-no-yu'],['nakamura','Nakamura / Blue Coral'],['ferry-terminal','Minato ferry'],['koban','Police station'],['warehouse','Harbour Warehouse']]);
  for(const s of destinations)if(named.has(s.id))label(named.get(s.id),s.x??s.side*11.8,s.z);
  if(showHomes&&scale>4)for(const home of homes)label(home.address||home.title,home.x,home.z,{size:12,colour:'#765246'});
  if(scale<5){label('Kitahama',9,52,{size:15});label('Nishi-machi',-35,-5);}

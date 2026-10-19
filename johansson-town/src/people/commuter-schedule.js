@@ -10,7 +10,6 @@ const shifts={
  // terminal meanwhile); the evening after he signs off is his, the workshop bench and the izakaya.
  Chin:{arrival:360,start:365,finish:1340,departure:1320},
  'Mrs Sato':{arrival:510,start:540,finish:1260,departure:1320},
- Reiko:{arrival:870,start:900,finish:1470,departure:1950},
  // Tetsuo lives in the Front-Row yard (never takes the boat): lunch at Sato, the bench from five until midnight (the workshop's evening).
  Tetsuo:{arrival:870,start:1020,finish:1440,departure:1950},
  // Thao takes the morning service so her Konbini errand and park walk happen before
@@ -18,7 +17,6 @@ const shifts={
  Thao:{arrival:510,start:960,finish:1620,departure:1950},
  'Officer Mori':{arrival:870,start:1200,finish:1800,departure:1950},
  'Harbour master':{permanent:true},
- 'Bus driver':{permanent:true},
 };
 export const COMMUTER_SHIFTS=Object.freeze(Object.fromEntries(Object.entries(shifts).map(([name,shift])=>[name,Object.freeze(shift)])));
 const minuteOfDay=m=>((m%1440)+1440)%1440;

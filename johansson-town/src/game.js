@@ -127,7 +127,8 @@ import {renderTownDirectory} from './ui/town-directory.js';
 import {createFerryOperationsView} from './ui/ferry-operations-view.js';
 import {crewOnDuty} from './people/ferry-crew.js';
 import {createWalkingRoute} from './navigation/walking-route.js';
-import {HARBOUR_PARK_ALIASES,HARBOUR_PARK_SEATS,HARBOUR_FLORIST} from './world/harbour-park-plan.js';
+import {HARBOUR_PARK_ALIASES,HARBOUR_PARK_SEATS} from './world/harbour-park-plan.js';
+import {SAKURA_FLOWER_STAND} from './world/okinawa/old-town.js';
 import {MAIN_ROAD,SHOP_CROSSING_Z} from './world/main-road.js';
 import {AIRPORT_LANDING,AIRPORT_LANDING_HEIGHT} from './world/airport-ground.js';
 import * as THREE from '../vendor/three.module.js';
@@ -206,8 +207,8 @@ function wantCard(){
  wantCardTexture=new THREE.CanvasTexture(c);wantCardTexture.colorSpace=THREE.SRGBColorSpace;return wantCardTexture;
 }
 /**
- * Postman Tōma's round (src/mail/post.js), checked every couple of town seconds as part of
- * the simulation: what came is said once, and the box inside the mayor's door shows it.
+ * The post round (src/mail/post.js: the mailbag up from Ms Ganaha's counter at half past ten), checked every couple
+ * of town seconds as part of the simulation: what came is said once, and the box inside the mayor's door shows it.
  */
 let postTimer=0,postNotice=null;
 function updatePost(dt){
@@ -524,14 +525,15 @@ $('#photoButton').onclick=openPhotoStudio;
 function openCamera(){if(!started||inspector?.active||activities?.paused)return;cameraControls.open();}
 /** Named places that are not a building: the photo studio's locations, and where the pocket camera says a photo was taken. */
 function photoSpots(){
- const pond=HARBOUR_PARK_SEATS[1].stand,florist=HARBOUR_FLORIST.approach;
- // Keep the saved photo IDs while following the park and florist's current public approaches.
+ const pond=HARBOUR_PARK_SEATS[1].stand,florist=SAKURA_FLOWER_STAND;
+ // Keep the saved photo IDs while following the park's current public approach and the flowers, which are at Sakura's
+ // door since the Rainflower pavilion came down (phase 4 of docs/CAST-CONSOLIDATION.md).
  return [
   {id:'photo-harbour',title:'Working harbour',at:'at the working harbour',x:-22,z:-39},
   {id:'photo-main',title:'Main shopping street',at:'on the main shopping street',x:-3,z:-20},
   {id:'photo-beach',title:'East beach',at:'on the east beach',x:38,z:-12},
   {id:'photo-garden',title:'Harbour Park pond',at:'beside the pond in Harbour Park',x:pond[0],z:pond[1]},
-  {id:'photo-rainflower',title:HARBOUR_FLORIST.name,at:'at Rainflower Florist by Harbour Park',x:florist[0],z:florist[1]},
+  {id:'photo-rainflower',title:'Sakura’s flower buckets',at:'at the flower buckets by Sakura’s door',x:florist[0],z:florist[1]},
   {id:'photo-village',title:'Hoshizaki fishing village',at:'in Hoshizaki fishing village',x:132,z:190},
   {id:'photo-lighthouse',title:'West Cape lighthouse',at:'at the West Cape lighthouse',x:-54,z:204},
  ];

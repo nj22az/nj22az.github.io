@@ -11,7 +11,6 @@ import {buildParkAccess} from './park-access.js';
 import {buildDocklandsLife} from './docklands-life.js';
 import {addSakuraFlyer} from './sakura-flyers.js';
 import {buildIslandLandscape} from './island-landscape.js';
-import {buildFlowerShop} from './flower-shop.js';
 import {buildBlueCoralShop} from './blue-coral-shop.js';
 import {createTownTraffic} from './town-traffic.js';
 import {buildKitanoLink} from './kitano-link.js';
@@ -23,7 +22,6 @@ import {buildIzakaya} from './izakaya.js?snappy=1';
 import {buildStaffBench} from './staff-bench.js';
 import {batchStaticProps} from '../render/static-props.js';
 import {WORLD_CAST} from '../people/residents.js';
-import {IZAKAYA_DOOR} from './dining-layout.js';
 import {izakayaOpen} from '../people/social.js';
 import {OUTER_PIER,QUAY_SOUTH,groundHeight} from './layout.js?snappy=1';
 import {MINATO_BERTH,CARGO_BERTH} from './minato-berth.js';
@@ -317,7 +315,9 @@ export function createTown(options){
    // gets its white edge lines.
    {
     const g=new THREE.Group();g.name='Road standards';world.group.add(g);const ky=KITAHAMA.y;
-    for(const [x,z,ry] of [[43.3,67.88,Math.PI],[23.5,64.12,0],[11.5,67.88,Math.PI]])ishiganto(g,{x,z,y:ky,ry});
+    // (the stone in the south wall of 4 Kitahama, where the walk from 1 Kitahama's gate ran at it, went with the
+    // house in phase 4: the lot is open grass to the spine now, so nothing runs into anything there)
+    for(const [x,z,ry] of [[43.3,67.88,Math.PI],[11.5,67.88,Math.PI]])ishiganto(g,{x,z,y:ky,ry});
     stopMarking(g,{x:43.3,z:63.7,y:ky,width:KITAHAMA.approach.maxX-KITAHAMA.approach.minX});
     roadSign(g,'stop',{x:KITAHAMA.approach.maxX-.1,z:63.2,y:ky,ry:Math.PI,colliders:world.colliders});
 
@@ -336,10 +336,8 @@ export function createTown(options){
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
   world.islandLandscape=buildIslandLandscape({world,register:options.register,onAction:options.onAction,mobile:options.mobile});addCoastalRoadPaint(world);world.parkAccess=buildParkAccess(world,{register:options.register,onAction:options.onAction});world.powerNetwork=buildTownPower(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});world.quietLife=buildQuietLife(world);
   const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station','ferry-terminal'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);if(site.industrialWorkshop)return h>=540&&h<1140;if(site.id==='market')return true;if(site.id==='frontrow'&&isWeekend(minutes))return false;const close=site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
-  // Minato's regular comes back with them: he lives in the izakaya and keeps it
-  // company when it is shut (people/izakaya-hours.js), so it is never empty.
   for(const profile of WORLD_CAST){
-   const spawn=profile.name==='Barfly'?[IZAKAYA_DOOR[0],IZAKAYA_DOOR[1]]:profile.work;
+   const spawn=profile.work;
    let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(spawn[0],groundHeight(...spawn),spawn[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(spawn[0],groundHeight(...spawn),spawn[1]);
   }
   for(const s of originalSites){if(world.harbourShops.some(shop=>shop.id===s.id)||!Number.isFinite(s.side))continue;const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}
@@ -355,7 +353,6 @@ export function createTown(options){
 
   buildIzakaya(world,options);
   buildPark(world,options);
-  world.flowerShop=buildFlowerShop({world,group:world.group,register:options.register,onAction:options.onAction,sites:options.sites});
   world.blueCoral=buildBlueCoralShop({world,group:world.group,register:options.register,onAction:options.onAction,sites:options.sites});
   const plants=buildStreetPlants(world.group,world.plantSites,options);
   if(world.plantSites.length&&!plants.count)registerDetail(world,{id:'street-plants',x:0,z:20,radius:70,load:async()=>{
@@ -403,7 +400,7 @@ export function createTown(options){
     world.updateLife(dt,time,day,minutes);
     world.updateHours(minutes);world.updateDiningStreet?.(day);
     world.quietLife?.update(time);world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.beachCorner?.tick(dt,options.getPlayerPosition?.());world.portShed?.tick(dt,minutes,{advanceLife:false});world.homeLights?.update(minutes);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
-    world.docklandsLife?.update(time,minutes);world.shoppingLane?.update(world.weather,minutes);world.flowerShop?.update(minutes);world.blueCoral?.update(minutes);world.park?.update(time);
+    world.docklandsLife?.update(time,minutes);world.shoppingLane?.update(world.weather,minutes);world.blueCoral?.update(minutes);world.park?.update(time);
     world.busStation?.update(minutes,day);world.tunnel?.update?.(day);
     // The shop doors open for whoever walks up to them. Everybody who is outdoors
     // counts, so a customer arriving is a door opening rather than a person ending.
