@@ -40,7 +40,8 @@ test('Mr Fujita’s shed: an evening of channels flipping and a glass in his han
  const empties=()=>shed.group.children.find(o=>o.name==='Empty Umineko bottles').count;
  shed.tick(.1,6*60+10);assert.equal(empties(),0);shed.tick(.1,22*60);assert.equal(empties(),0,'nothing before he signs off');shed.tick(.1,23*60+29);assert.ok(empties()>=3,'the evening’s bottles round him');
  // The walk along the pier past the open front stays clear.
- for(let z=-66;z<=-50;z+=.5){const x=PORT_SHED.x+PORT_SHED.depth/2+.65;assert.ok(!colliders.some(c=>standingHitsRect(x,z,.3,0,c)),'pier walk is open at z='+z);}// (overhead: the roof is the lens's collider, not a walker's)
+ // (along the platform, between its south and north rails: off its ends is the sea)
+ for(let z=SHED_PIER.minZ+.45;z<=SHED_PIER.maxZ-.45;z+=.5){const x=PORT_SHED.x+PORT_SHED.depth/2+.65;assert.ok(!colliders.some(c=>standingHitsRect(x,z,.3,0,c)),'pier walk is open at z='+z);}// (overhead: the roof is the lens's collider, not a walker's)
  // He sits facing his set.
  assert.ok(PORT_SHED.tv[1]<PORT_SHED.chair[1],'the TV is in front of him (to the south, where he faces)');
  // It stands wholly on the pier's deck, not over the water.
