@@ -1,4 +1,6 @@
 import {createLaunchReport} from './render/launch-report.js';
+import {BUDGET} from './edition.js';
+import {createAttention} from './people/attention.js';
 import {createStartupRecovery,graphicsProfile,drawingDpr} from './render/startup-recovery.js';
 import {createResolutionGovernor} from './render/resolution-governor.js';
 import {redrawReleasedCanvases,paintBack} from './render/canvas-release.js';
@@ -946,7 +948,9 @@ await paintLoading();
 characters=createCharacters({mobile,shadows,onJump:()=>johansson?.jump(),canJump:()=>!seated&&!pocket?.raised&&controlsAllowed(),isBlocked:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>circleHitsRect(x,z,r,c)),onError:(name,error)=>console.warn('Character construction failed:',name,error)});characters.attach(player,'player',1.82);world.people.forEach(p=>characters.attach(p.g,p.g.userData.name,p.profile?.height));
 // The people of the new streets: shopkeepers at their counters, the old men at gateball,
 // Grandmother Higa on her verandah, a postman on his round. See people/neighbours.js.
-neighbours=createNeighbours({parent:town,register:reg,characters,getRain:()=>weather,getState:()=>activities.state,blocked:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>standingHitsRect(x,z,r,groundHeight(x,z),c)),onAction:(kind,name)=>{
+// Who is simulated in full this frame: everybody on Linux; on the web, whoever is near or in view (edition.js).
+const observerAt={x:0,z:0,inside:false},attention=createAttention({camera,getObserver:()=>{const at=current?doors.get(current.id):player.position;if(!at)return null;observerAt.x=at.x;observerAt.z=at.z;observerAt.inside=!!current;return observerAt;}});
+neighbours=createNeighbours({parent:town,register:reg,characters,attends:g=>attention.attends(g),getRain:()=>weather,getState:()=>activities.state,blocked:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>standingHitsRect(x,z,r,groundHeight(x,z),c)),onAction:(kind,name)=>{
  const who=neighbours.talkTo(name,player.position);if(who)characters.gesture(who);activities.action(kind,name);
 }});
 world.neighbours=neighbours.entities;world.homeNeighbours=neighbours.people;
@@ -967,7 +971,7 @@ content={items:BUSINESS_CONTENT_CATALOGUE,objects:new Map()};
 const residentLedger=createResidentLedger(()=>activities.state);
 const townCleanup=createTownCleanup({parent:town,register:reg,action:activities.action,getState:()=>activities.state,blocked:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>circleHitsRect(x,z,r,c))});
 const npcActivities=createTownActivities({getTargets:()=>interactables,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>circleHitsRect(x,z,r,c)),getPlayerPosition:()=>current?null:player.position,ledger:residentLedger,getState:()=>activities.state});
-castAI=createCastAI({activities:npcActivities,world,player,getObserverPosition:()=>current?doors.get(current.id):player.position,state:()=>activities.state,paused:()=>false,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>standingHitsRect(x,z,r,groundHeight(x,z),c))});
+castAI=createCastAI({activities:npcActivities,world,player,attends:g=>attention.attends(g),getObserverPosition:()=>current?doors.get(current.id):player.position,state:()=>activities.state,paused:()=>false,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>standingHitsRect(x,z,r,groundHeight(x,z),c))});
 const workplaceResidents=createWorkplaceResidents({world,parent:scene,getEntrance:()=>activeRoomLayout?.spawn||[0,0,5.2],getLayout:()=>activeRoomLayout,getTargets:()=>interactables,collides:environmentBlocked,getPlayerPosition:()=>player.position,getState:()=>activities.state,ledger:residentLedger,onBorrow:npcActivities.release});
 const bookshopCustomers=createBookshopCustomers({world,parent:scene,getLayout:()=>activeRoomLayout,getPlayerPosition:()=>player.position,collides:environmentBlocked,getState:()=>activities.state,ledger:residentLedger,onBorrow:npcActivities.release,save:()=>activities.save()});
 const chatBlocked=(a,b)=>!clearChatLine(a,b,current?roomColliders:world.colliders);
@@ -1344,6 +1348,8 @@ function ferryLadder(way){
 function plantStation(id,line=null){
  const run=world.ferry,st=PLANT_STATIONS.find(s=>s.id===id);if(!run||!st)return;
  const menu=stationMenu(run.plant,st);
+ // On the web the engine room is a display piece (edition.js `machinery`): the station reads as it stands, nothing to work.
+ if(!BUDGET.machinery){activities.menu(menu.title,menu.line,[['Close',activities.close]]);return;}
  activities.menu(menu.title,(line?line+'\n\n':'')+menu.line,[...menu.items.map(it=>[it.label,()=>{const r=it.act();run.refreshPlant();plantStation(id,r.ok?r.what:r.why);}]),['Close',activities.close]]);
 }
 /** Below the car deck (BELOW_DECK_FLOORS: the ladder, the floor plates, the booth) everybody wears ear defenders. */
@@ -2010,7 +2016,7 @@ function advanceTown(dt,playerPaused,fastForward=false){
     // The ramen counter: an order is cooked for five seconds, then set down in front of you.
     venueService?.update(dt);beerService?.update(dt);ramenPlayerService?.update(dt);
     workplaceResidents.update(dt,minutes,weather);bookshopCustomers.update(dt,minutes);
-    castAI?.update(dt,minutes,weather);sakuraShop.update(dt);ramenGuests.sync(minutes,dt);ramenMeals.update(dt);satoKitchen?.update(dt);neighbourChats.update(dt,minutes,weather);
+    castAI?.update(dt,minutes,weather);sakuraShop.update(dt);ramenGuests.sync(minutes,dt);ramenMeals.update(dt);satoKitchen?.update(dt);if(BUDGET.neighbourChats)neighbourChats.update(dt,minutes,weather);
     if(current&&!catchingUp)world.updateLife(dt,elapsed,daylight(minutes),minutes);
     if(!catchingUp){ferryCrew?.update(dt,minutes);neighbours?.update(dt,minutes,current?null:player.position);}
     if(!current&&!catchingUp){const swell=hold();world.update(dt,elapsed,daylight(minutes),minutes);carry(swell);if(!activities.state.quickTravelNotified&&travelProgress(activities.state).unlocked)activities.save();world.beats?.update(dt,elapsed,minutes);}
@@ -2024,7 +2030,7 @@ function followClock(){
  if(gap>5)advanceAbsentTown(gap);
  else if(gap>.05||gap<-.05)minutes=real;
 }
-function simulate(frameDt,playerPaused=false){advanceWeather();updatePost(frameDt);
+function simulate(frameDt,playerPaused=false){advanceWeather();updatePost(frameDt);attention.update();
  followClock();
  accumulator+=Math.min(frameDt,MAX_FRAME_DT);
  while(accumulator>=SIM_STEP){advanceTown(SIM_STEP,playerPaused);accumulator-=SIM_STEP;}

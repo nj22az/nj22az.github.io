@@ -102,7 +102,7 @@ const faceAlong=(g,dx,dz)=>{if(dx||dz)g.rotation.y=Math.atan2(dx,dz)+Math.PI;};
  * @param {(kind:string,name:string)=>void} options.onAction
  * @param {{attach:Function}} [options.characters]
  */
-export function createNeighbours({parent,register,onAction,characters,blocked=()=>false,getRain=()=>false,getState=()=>({})}={}){
+export function createNeighbours({parent,register,onAction,characters,blocked=()=>false,getRain=()=>false,getState=()=>({}),attends=()=>true}={}){
  const people=NEIGHBOURS.map((spec,i)=>{
   const g=new THREE.Group();g.name=spec.name;g.userData.name=spec.name;g.userData.neighbour=true;
   g.userData.activity=spec.role;g.userData.socialPose=spec.pose||null;
@@ -154,7 +154,13 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
       const valid=Array.isArray(at)&&at.length===2&&at.every(Number.isFinite)&&Math.abs(at[0])<300&&Math.abs(at[1])<300;
       const start=valid?at:phase.target;g.position.set(start[0],groundAt(...start),start[1]);p.initialised=true;
      }
-     if(p.phaseKey!==key){p.phaseKey=key;p.path=canonicalStreetRoute(navigation,spec.name,g.position,phase.target);}
+     if(p.phaseKey!==key){
+      p.phaseKey=key;
+      // Unseen and out of reach on the web (people/attention.js), the new phase starts where it ends: no route searched.
+      const [tx,tz]=phase.target;
+      if(!attends(g)&&!blocked(tx,tz,.3)){g.position.set(tx,groundAt(tx,tz),tz);p.path=[];}
+      else p.path=canonicalStreetRoute(navigation,spec.name,g.position,phase.target);
+     }
      g.userData.activity=phase.activity;g.userData.place=phase.place;
      if(!g.userData.playerConversation&&!g.userData.aboardFerry&&p.path?.length){
       const to=p.path[0],dx=to[0]-g.position.x,dz=to[1]-g.position.z,len=Math.hypot(dx,dz),step=Math.min(len,dt*(spec.profile.age>65?.7:1));

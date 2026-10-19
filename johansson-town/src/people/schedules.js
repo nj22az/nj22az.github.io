@@ -54,7 +54,7 @@ DIALOGUE.Thuan.push(['home',residentHomeDescription('Thuan')+' The plants by the
 // Apply the recorded clips last: a later rewrite of a resident's lines must not
 // leave a published subtitle disagreeing with the audio it plays.
 for(const clip of VOICE_LINES){const row=DIALOGUE[clip.resident]?.find(row=>row[0]===clip.topic);if(row){row[1]=clip.en;row[3]=null;}} // Retire Japanese-only recordings in the English game.
-export function createCastAI({world,player,state,paused,collides,getObserverPosition=()=>player.position,activities=null}){
+export function createCastAI({world,player,state,paused,collides,getObserverPosition=()=>player.position,activities=null,attends=()=>true}){
  // Keep scheduled targets off the forest bus road and painted coyote-tunnel mouth.
  // WalkFix owns how they walk there; we only refuse the arch as a stand/queue point.
  //
@@ -219,6 +219,17 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   if(Math.hypot(movedX,movedZ)<.0001)route.speed=0;
  }
 
+ /**
+  * The web edition's walk for somebody nobody can see (attention.js): they are where their day has them, on the
+  * clear point their walk would have ended on, with no route searched and no step taken. False when the point is not
+  * clear to stand on, and they walk there as on Linux. Never called on Linux.
+  */
+ function settle(g,target,tag){
+  if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<(tag==='onsen'?ONSEN_ENTRY_RADIUS*.5:.3)){routes.delete(g);return true;}
+  // A target inside something (a threshold in a door's collider) is walked to as on Linux.
+  if(collides(target[0],target[1],.3))return false;
+  routes.delete(g);g.position.set(target[0],groundHeight(target[0],target[1]),target[1]);return true;
+ }
  /** True while the Harbour Line is standing at the terminus with its doors to you. */
  const atTheStop=()=>{const run=world.ferry||world.bus;return !run||['waiting','turning'].includes(run.phase);};
  /**
@@ -344,7 +355,10 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     delete g.userData.chatHold;delete g.userData.chat;
     g.userData.activity='making way for Thuan';
     move(p,yieldTarget,dt,'yield-thuan');
-   }else if(!g.userData.indoors&&!g.userData.usingTownObject&&!g.userData.chatHold&&!(g.userData.facePlayerUntil>performance.now())&&!(tag==='escort'&&g.position.distanceTo(player.position)>6))move(p,target,dt,tag,plan.pace);
+   }else if(!g.userData.indoors&&!g.userData.usingTownObject&&!g.userData.chatHold&&!(g.userData.facePlayerUntil>performance.now())&&!(tag==='escort'&&g.position.distanceTo(player.position)>6)){
+    // Unseen and out of reach on the web (people/attention.js), they keep the timetable without walking it.
+    if(attends(g)||!settle(g,target,tag))move(p,target,dt,tag,plan.pace);
+   }
    // Playing (social.js sistersAtPlay): once both are there, they turn to each other,
    // keep their eyes on each other and play; until then, whoever is first waits.
    const partner=plan.play?world.people.find(q=>q.profile?.name===plan.play):null;
