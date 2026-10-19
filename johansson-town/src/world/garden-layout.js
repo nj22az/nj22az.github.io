@@ -18,8 +18,12 @@ export function gardenPoint(x,z){
 export const gardenLocal=(x,z)=>[(x-HARBOUR_POND.x)/GARDEN_SCALE-34,(z-HARBOUR_POND.z)/GARDEN_SCALE+132];
 /** Retain the useful public connectors through the former Aoba/Rainflower grounds. */
 export const PARK_ACCESS=Object.freeze([
- {id:'neighbourhood-residential-connector',peninsula:true,width:1.8,surface:'stone',points:[[-23.4,40.6],[-5.4,40],[-5.4,36.9],[1.9,36.9],[1.9,46]],heights:[0,0,0,0,0]},
- {id:'neighbourhood-town-connector',peninsula:true,width:2.5,surface:'stone',points:[[3,10],[1.9,14],[1.9,27],[-5.4,27],[-8,34.6],[-23.4,34.6]]},
+ // Round Kitahama's pocket park, not through it: up Fukugi Lane to the north lane and along it (kitahama-layout.js). It
+ // used to run straight across the ground the park now stands on, through its railing, its sandpit and its bench.
+ {id:'neighbourhood-residential-connector',peninsula:true,width:1.8,surface:'stone',points:[[-23.4,40.6],[-21.5,40.6],[-21.5,46],[-5.4,46],[-5.4,36.9],[1.9,36.9],[1.9,46]],heights:[0,0,0,0,0,0,0]},
+ // Along Kitahama's south lane and up Fukugi Lane to the Heights' corner: the straight line at z 34.6 ran along the
+ // pocket park's railing and into the Heights' lot.
+ {id:'neighbourhood-town-connector',peninsula:true,width:2.5,surface:'stone',points:[[3,10],[1.9,14],[1.9,27],[-5.4,27],[-8,31],[-21.5,31],[-21.5,34.6],[-23.4,34.6]]},
  {id:'neighbourhood-west-connector',peninsula:true,width:2.5,surface:'stone',points:[[-37.6,20],[-37.6,32],[-23.4,32],[-23.4,34.6],[-23.4,40.6]]},
 ]);
 export const GARDEN_PATHS=Object.freeze([...HARBOUR_PARK_PATHS,...PARK_ACCESS]);
