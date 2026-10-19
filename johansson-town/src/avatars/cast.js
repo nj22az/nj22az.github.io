@@ -8,7 +8,8 @@ import {residentPersonality} from '../people/resident-personalities.js';
 import {withTownDials} from './personality.js';
 import {applyLook} from './looks.js';
 import {LOOKS} from './looks-data.js';
-import {identityOf} from '../people/roster.js';
+import {identityOf,isRetired,RETIRED} from '../people/roster.js';
+import {liveNameFor} from '../people/cast.js';
 
 /**
  * Who everybody is, as recipes. Johansson and Thuan are drawn from the photographs the
@@ -130,7 +131,9 @@ export const NEIGHBOUR_RECIPES=castSet({
   outfit:{top:'sailor',topColour:'#f4f1ea',bottom:'pleatedskirt',bottomColour:'#27304d',footwear:'shoes',shoes:'#2b2b2b',accent:'#d8342c'}}),
  Riku:R({body:{silhouette:'masculine',height:.56,build:.55,skin:'#c89a74'},hair:{style:'crop',colour:'#33271f'},eyes:{style:'round'},brows:{style:'thick'},mouth:{style:'smile'},outfit:{top:'polo',topColour:'#587d83',bottom:'trousers',bottomColour:'#505f65',hat:'helmet',hatColour:'#dabb55'}}),
 
- // Tetsuo's mother, who keeps the old Chinen house in Kitano hamlet (people/neighbours.js): small, a grey bun, a blouse and wide pants.
+ // Retired in phase 4 (roster.js RETIRED; RETIRED_RECIPES keeps the drawings for Studio and history): Grandmother Sakurai,
+// Grandmother Chinen (Tetsuo's mother, who kept the old Chinen house in Kitano hamlet), Mr Ōshiro, Mr Shimabukuro,
+// Mrs Kinjō and Postman Tōma. Nothing live spawns them.
  'Grandmother Sakurai':R({name:'Grandmother Sakurai',age:'elder',body:{height:.2,build:.55,silhouette:'feminine',skin:'#d6a67c'},hair:{style:'bob',colour:'#c6c3ba'},eyes:{style:'gentle'},brows:{style:'thin',colour:'#8d8984'},mouth:{style:'small'},glasses:{style:'round',colour:'#6a4b3c'},wrinkles:.8,outfit:{top:'cardigan',topColour:'#ad7b83',bottom:'widepants',bottomColour:'#4a4b50',shoes:'#3d3833'}}),
  'Dr Kakazu':R({name:'Dr Kakazu',age:'adult',body:{height:.5,build:.4,silhouette:'masculine',skin:'#dfb58f'},hair:{style:'sidepart',colour:'#24201c'},eyes:{style:'gentle'},brows:{style:'straight'},mouth:{style:'small'},outfit:{top:'smock',topColour:'#efeee6',bottom:'trousers',bottomColour:'#3b4c52',shoes:'#2d3030'}}),
  Mai:R({name:'Mai',age:'child',body:{height:.45,build:.35,silhouette:'feminine',skin:'#e8bf98'},hair:{style:'bob',colour:'#2c211b'},eyes:{style:'round'},brows:{style:'thin'},mouth:{style:'smile'},outfit:{top:'tee',topColour:'#e59c72',bottom:'skirt',bottomColour:'#2d3a52',shoes:'#3f6fb0'}}),
@@ -168,14 +171,6 @@ export function recipeFor(name='',{looks=LOOKS}={}){
  return look?.set?normalizeRecipe(applyLook(baseRecipe(name),look.set)):baseRecipe(name);
 }
 
-/**
- * Who may have a published Studio look: the residents World draws, by how they are drawn. Harbour visitor is in
- * CAST_RECIPES only as a starting template for the maker (creator.js), not as a resident, so it is not among them.
- */
-const TEMPLATES=new Set(['Harbour visitor']);
-export const RESIDENT_GROUPS=Object.freeze({cast:Object.freeze(Object.keys(CAST_RECIPES).filter(n=>!TEMPLATES.has(n))),neighbour:Object.freeze(Object.keys(NEIGHBOUR_RECIPES)),
- townsfolk:Object.freeze(PROFILES.map(p=>p.name).filter(n=>!CAST_RECIPES[n]&&!NEIGHBOUR_RECIPES[n]))});
-export const RESIDENT_NAMES=Object.freeze(Object.values(RESIDENT_GROUPS).flat());
 
 /** The recipe World draws somebody with, before any saved or published look. */
 /**
@@ -212,9 +207,33 @@ export const CREW_LOOKS=Object.freeze({
  // men of the hamlet dress for a pier in the sun.
  Kai:R({name:'Kai',age:'adult',head:{size:.48,shape:.46,form:'narrow',jaw:0.5,cheeks:0.3},body:{height:.55,build:.38,silhouette:'masculine',skin:'#a86a43'},hair:{style:'crop',colour:'#2a1f18'},eyes:{style:'narrow'},brows:{style:'straight',colour:'#2a1f18'},nose:{style:'line',size:.45},mouth:{style:'soft'},facial:{style:'stubble',colour:'#2a1f18'},wrinkles:.4,outfit:{top:'tee',topColour:'#8fa7b8',bottom:'shorts',bottomColour:'#6d7478',footwear:'sandals',shoes:'#6d4a32',hat:'straw',hatColour:'#e0c078',accent:'#f4f1ea'}}),
 });
+/**
+ * Who may have a published Studio look: the residents World draws, by how they are drawn. Harbour visitor is in
+ * CAST_RECIPES only as a starting template for the maker (creator.js), not as a resident, so it is not among them.
+ * Nobody the roster retired is among them either (RETIRED_RECIPES, below): their drawings stay, their names do not
+ * stand in any live list. The crew group is the people drawn in CREW_LOOKS, by the name the live cast uses (Mac, not
+ * Mr Nakandakari), so Studio finds the relief engineer and the port clerk by the names World calls them.
+ */
+const TEMPLATES=new Set(['Harbour visitor']);
+const live=name=>!TEMPLATES.has(name)&&!isRetired(name);
+export const RESIDENT_GROUPS=Object.freeze({cast:Object.freeze(Object.keys(CAST_RECIPES).filter(live)),neighbour:Object.freeze(Object.keys(NEIGHBOUR_RECIPES).filter(live)),
+ crew:Object.freeze([...new Set(Object.keys(CREW_LOOKS).filter(live).map(n=>liveNameFor(n)||n))]),
+ // A townsfolk profile whose name the roster now gives to somebody else (Emi is Mrs Nakamura's display name) is not a
+ // resident of its own: its face is kept only as the drawing authoredNameFor falls back to.
+ townsfolk:Object.freeze(PROFILES.map(p=>p.name).filter(n=>!CAST_RECIPES[n]&&!NEIGHBOUR_RECIPES[n]&&!CREW_LOOKS[n]&&!isRetired(n)&&(!identityOf(n)||liveNameFor(n)===n)))});
+export const RESIDENT_NAMES=Object.freeze(Object.values(RESIDENT_GROUPS).flat());
+/**
+ * The retired identities' drawings (people/roster.js RETIRED; phase 5 of docs/CAST-CONSOLIDATION.md): kept so that
+ * Studio and a history story can still build them (recipeFor works for every one of the ten, the two without a drawing
+ * generated from their personality as before), never spawned: no live list (RESIDENT_GROUPS, people/cast.js CAST,
+ * neighbours.js, the dungeon's costumes) names them. tests/retired-recipes.test.mjs holds both halves.
+ */
+export const RETIRED_RECIPES=Object.freeze(Object.fromEntries(RETIRED.map(p=>p.name).filter(n=>CAST_RECIPES[n]||NEIGHBOUR_RECIPES[n]||CREW_LOOKS[n]).map(n=>[n,CAST_RECIPES[n]||NEIGHBOUR_RECIPES[n]||CREW_LOOKS[n]])));
+export const RETIRED_RECIPE_NAMES=Object.freeze(RETIRED.map(p=>p.name));
 export function baseRecipe(name=''){return withBirthday(drawnRecipe(name),name);}
-// Only for a name with no drawing of its own: the old townsfolk profile Emi (Mrs Kinjō's look) keeps her face until phase 5
-// retires that profile, even though Emi is Mrs Nakamura's display name in the roster.
+// Only for a name with no drawing of its own. The old townsfolk profile Emi keeps the face it had (its PROFILES entry
+// stays as the seed of that drawing) although Emi is Mrs Nakamura's display name in the roster; it is no longer listed
+// as a resident of its own (RESIDENT_GROUPS.townsfolk).
 const authoredNameFor=name=>{if(PROFILES.some(p=>p.name===name))return null;const avatar=identityOf(name)?.avatar;return avatar&&avatar!==name?avatar:null;};
 /** A job-role name that was a crew drawing before phase 2 ('Chief officer') draws the person who holds it now (Ryo). */
 const bearerOf=name=>{const who=identityOf(name);return who&&who.name!==name&&who.was.includes(name)&&CREW_LOOKS[who.name]?who.name:null;};

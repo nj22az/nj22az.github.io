@@ -50,7 +50,7 @@ test('every outdoor public seat has physical support and a clear standing point'
   'port-canopy-bench','quay-bench','beach-chair-0','beach-chair-1',
   'Soak your feet in the footbath','Cool off on the bench',
   'seawall-bench--20','seawall-bench-4','seawall-bench-22','kitahama-park-bench',
-  'Sit on neighbourhood bench','Sit and look at Sakura','Sit on the staff bench','Sit at the radio lookout',
+  'Sit on neighbourhood bench','Sit and look at Sakura','Sit on the staff bench','Sit on the bench by the station','nakamura-dessert-bench',
   'airport-gate-a0','airport-gate-a1','airport-gate-a2','airport-gate-a3',
   'kitano-lookout','kitano-coral-bay-0','kitano-coral-bay-1','kitano-turtle-cove',
   'Sit under the harbour cherry','Sit beside the garden pond',

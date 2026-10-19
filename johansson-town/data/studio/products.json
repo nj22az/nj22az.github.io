@@ -144,8 +144,8 @@
         "zone": "drinks",
         "for": [
           "Harbour master",
-          "Bus driver",
-          "Postman Tōma"
+          "Ms Ganaha",
+          "Mac"
         ],
         "why": "A sweet canned coffee before a dawn shift or between rounds.",
         "placed": "Under the tea, where a working hand reaches without looking."
@@ -604,7 +604,7 @@
       "purpose": {
         "zone": "drinks",
         "for": [
-          "Barfly",
+          "Mac",
           "Tetsuo",
           "Johansson"
         ],
@@ -696,7 +696,7 @@
         "for": [
           "Thuan",
           "Chin",
-          "Postman Tōma",
+          "Ms Ganaha",
           "Officer Mori"
         ],
         "why": "The lunch eaten standing up: plum onigiri, made this afternoon.",
@@ -763,7 +763,7 @@
       "purpose": {
         "zone": "fresh",
         "for": [
-          "Mr Shimabukuro",
+          "Harbour master",
           "Tetsuo"
         ],
         "why": "A proper lunch for people who cannot leave their work: the power house, the workshop, the office.",
@@ -839,7 +839,7 @@
         "zone": "fresh",
         "for": [
           "Johansson",
-          "Reiko"
+          "Nhung"
         ],
         "why": "Egg sandwiches eaten at a desk or on the ferry.",
         "placed": "Middle bay, eye level, over the bread it is made from."
@@ -913,7 +913,7 @@
         "zone": "fresh",
         "for": [
           "Mrs Nakamura",
-          "Mrs Kinjō"
+          "Ms Ganaha"
         ],
         "why": "Milk bread for tomorrow’s breakfast.",
         "placed": "Under the sandwiches: the household buy below the snack."
@@ -1141,7 +1141,7 @@
         "zone": "pantry",
         "for": [
           "Kōji",
-          "Barfly",
+          "Mac",
           "Riku"
         ],
         "why": "Cup noodles for a late night or a typhoon day indoors.",
@@ -1215,8 +1215,8 @@
       "purpose": {
         "zone": "pantry",
         "for": [
-          "Mrs Kinjō",
-          "Mr Ōshiro",
+          "Mac",
+          "Ms Uezu",
           "Thao"
         ],
         "why": "Miso sachets for one bowl when cooking a pot is too much.",
@@ -1417,8 +1417,8 @@
       "purpose": {
         "zone": "pantry",
         "for": [
-          "Mr Ōshiro",
-          "Barfly"
+          "Nhung",
+          "Mac"
         ],
         "why": "Tinned tuna for onigiri at home and for the cat that is not officially fed.",
         "placed": "Back face, with the other tins."
@@ -1559,7 +1559,7 @@
       "purpose": {
         "zone": "sweets",
         "for": [
-          "Barfly",
+          "Mr Fujita",
           "Kōji"
         ],
         "why": "Salted crisps with a beer or a baseball game on the radio.",
@@ -1634,8 +1634,8 @@
         "zone": "sweets",
         "for": [
           "Grandmother Higa",
-          "Mr Ōshiro",
-          "Mrs Kinjō"
+          "Mrs Sato",
+          "Dr Kakazu"
         ],
         "why": "Soy rice crackers with tea, for visitors.",
         "placed": "Front face, the low boards: a big bag for visitors, easy to lift down, under the crisps."
@@ -1710,7 +1710,7 @@
         "zone": "sweets",
         "for": [
           "Nhung",
-          "Reiko",
+          "Miss Higa",
           "Thuan"
         ],
         "why": "Butter biscuits for a reading afternoon or a night at the press.",
@@ -2080,8 +2080,8 @@
       "purpose": {
         "zone": "daily",
         "for": [
-          "Mrs Kinjō",
-          "Reiko",
+          "Miss Higa",
+          "Dr Kakazu",
           "Officer Mori"
         ],
         "why": "Tissues for hay fever, a cold, or a sad film.",
@@ -2300,7 +2300,7 @@
         "zone": "daily",
         "for": [
           "Johansson",
-          "Reiko",
+          "Nhung",
           "Vy"
         ],
         "why": "Pocket notebooks for tide times, articles and homework.",
@@ -2439,7 +2439,7 @@
         "zone": "counter",
         "for": [
           "Officer Mori",
-          "Bus driver",
+          "Ms Uezu",
           "Kōji",
           "Vy"
         ],

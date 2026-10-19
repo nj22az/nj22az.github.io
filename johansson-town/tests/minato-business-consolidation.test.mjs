@@ -24,11 +24,15 @@ test('Nakamura serves the preserved Blue Coral items and soda through one hours-
  assert.equal(NEIGHBOURS.filter(n=>n.name==='Mrs Nakamura').length,1);assert.deepEqual(NEIGHBOURS.find(n=>n.name==='Mrs Nakamura').at,NAKAMURA_DESSERTS.staffAt);
 });
 
-test('Vy and Riku have their canonical homes, scheduled school absences and real park destinations',()=>{
+test('Vy and Riku have their canonical homes, scheduled school absences and real park destinations',async()=>{
  installDOM();const attached=[],neighbours=createNeighbours({parent:new THREE.Group(),characters:{attach:(g,look,height)=>attached.push({name:g.name,look,height})}});
- for(const name of ['Vy','Riku']){const person=neighbours.people.find(p=>p.spec.name===name);assert.deepEqual(person.spec.home,kitahamaHomeFor(name).door);assert.ok(person.spec.routine.some(r=>r.away&&r.role==='at school'));}
- neighbours.update(.016,720);for(const name of ['Vy','Riku']){const g=neighbours.people.find(p=>p.spec.name===name).g;assert.equal(g.visible,false);assert.equal(g.userData.scheduledAway,true);assert.equal(g.userData.activity,'at school');}
- neighbours.update(.016,980);const vy=neighbours.people.find(p=>p.spec.name==='Vy');assert.deepEqual(vy.routine.at,HARBOUR_PARK_STUDY[0]);assert.equal(vy.g.userData.scheduledAway,false);
+ // The two pupils keep the cast's canonical day (neighbours.js NEIGHBOURS, canonical-day.js): school at noon, where the
+ // classroom owns them, and Vy's homework bench in Harbour Park at twenty past four.
+ const {canonicalDay}=await import('../src/people/canonical-day.js');
+ for(const name of ['Vy','Riku']){const person=neighbours.people.find(p=>p.spec.name===name);assert.ok(person.spec.canonical);assert.deepEqual(person.spec.home,kitahamaHomeFor(name).door);assert.equal(canonicalDay(name,720).school,true,name+' is at school at noon');}
+ neighbours.update(.016,720);for(const name of ['Vy','Riku']){const g=neighbours.people.find(p=>p.spec.name===name).g;assert.equal(g.visible,false,name+' is in the classroom, not the street');assert.equal(g.userData.place,'school');}
+ const vy=neighbours.people.find(p=>p.spec.name==='Vy');for(let i=0;i<400;i++)neighbours.update(.25,980);
+ assert.deepEqual(canonicalDay('Vy',980).target,HARBOUR_PARK_STUDY[0],'Vy’s homework bench is the park study bench');assert.equal(vy.g.userData.place,'park');assert.equal(vy.g.visible,true);
  const riku=attached.find(p=>p.name==='Riku');assert.equal(riku.look,'Riku');assert.equal(riku.height,1.32);assert.equal(NEIGHBOURS.find(n=>n.name==='Riku').walk,undefined,'A nine-year-old is not the adult cargo-route worker');
 });
 
