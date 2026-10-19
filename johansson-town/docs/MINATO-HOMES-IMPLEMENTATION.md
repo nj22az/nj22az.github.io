@@ -39,7 +39,7 @@ Use `MINATO-HOMES-PLAN.md` for the approved decisions and `minato-home-assignmen
 ## Subsequent office access and lighting verification
 
 The office now connects directly to the konbini through a continuous internal
-stockroom stair, while retaining the outside stair. See
+stockroom stair; the outside stair was removed on 19 October 2026 for a fire escape. See
 [SAKURA-INTERNAL-STAIRS.md](SAKURA-INTERNAL-STAIRS.md) and
 `docs/qa/sakura-internal-stairs/` for the 60 focused/package checks, actual-input
 up/down replay and reviewed daylight/midnight WebKit captures. This supplies

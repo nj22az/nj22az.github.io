@@ -1,6 +1,6 @@
-import {stairFlight,stairLanding} from './stairs.js';
 import * as THREE from '../../../vendor/three.module.js';
-import {paint} from './kit.js';
+import {paint,trs} from './kit.js';
+import {GROUND_LAYER} from '../ground-layers.js';
 import {fascia,iceMural,enamel,catchFlag,poster,vertical} from './signs.js';
 import {potPlant,OKINAWA_COLOURS as C} from './houses.js';
 import {buoys,bicycle} from './props.js';
@@ -12,8 +12,8 @@ import {VENDING_MACHINE} from '../vending.js';
  * from outside, against the footprints the town already keeps, so the interiors and
  * everything that walks in and out of them are exactly as they were.
  *
- *   Sakura      the flat above the shop, its outside stair up the back, the rooftop sign,
- *               a Blue Coral mural on the side wall (now served at Nakamura's counter
+ *   Sakura      the office over the shop (its windows, fire door and fire escape on the back),
+ *               the service apron behind it, a Blue Coral mural on the side wall (now served at Nakamura's counter
  *               beside Harbour Park) and enamel tins on the other.
  *   Warehouse   its name painted big on the street wall, floats hung on its wall over the ferry's apron.
  *   Office      big-catch flags on a pole by the door, a life ring and the tide board.
@@ -143,32 +143,168 @@ export const SAKURA_BOX=Object.freeze({minX:-18.45,maxX:-7.45,minZ:-34.43,maxZ:-
  * shutter, as a machine does, so the shutter comes down behind it at night: its back is 3 cm clear of the shutter's
  * bottom rail (the curtain hangs at the front +.18, its rail reaches the front +.24), with its cord in that gap.
  */
-export const SAKURA_VENDING=Object.freeze({x:SAKURA_BOX.maxX+.24+.03+VENDING_MACHINE.size.depth/2,y:-.012,   // on the Main Street footway (harbour.js), its top 12 mm below the datum
+export const SAKURA_VENDING=Object.freeze({x:SAKURA_BOX.maxX+.24+.03+VENDING_MACHINE.size.depth/2,y:GROUND_LAYER.lane,   // on the Main Street footway (harbour.js), whose top is the lane layer
  z:SAKURA_BOX.minZ+1.7,ry:Math.PI/2,
  why:'In front of the shutter at the frontage’s south end, by the corner pier with its outdoor socket: open all night when the shop is shut, and seen from the quay road.'});
 
 function dressSakura(kit,solid,{inspect}){
- const S=SAKURA_BOX,roof=S.roof;
- // The office's open upper shell and windows are owned by thuan-flat.js.
- // A full-length flight along the yard wall, with a clear foot and door landing.
- const sx=S.minX-.85,from=S.minZ+.3,to=from+6.72;
- stairFlight(kit,solid,{id:'sakura-stair',x:sx,z:from,length:to-from,height:roof});
- stairLanding(kit,{id:'sakura-landing',x0:sx-.7,x1:S.minX+.02,z0:to,z1:to+1.5,y:roof},solid);
- kit.rod([sx-.725,roof+1,to],[sx-.725,roof+1,to+1.5],.03,0x788386);
- solid({...kit.rect(sx-.75,sx-.7,to,to+1.5,1,'sakura-landing-rail'),minY:kit.point(0,roof,0).y});
- kit.rod([sx-.725,roof+1,to+1.5],[S.minX,roof+1,to+1.5],.03,0x788386);
- solid({...kit.rect(sx-.75,S.minX,to+1.475,to+1.525,1,'sakura-landing-end'),minY:kit.point(0,roof,0).y});
- kit.box(.06,2,.9,S.minX-.02,roof+1,to+.75,0x7b8a8e);
- // The back wall: condensers up out of reach, the pipes and the meters.
- for(const z of [-24.6,-23.1])kit.box(.32,.6,.85,S.minX-.2,2.7,z,0xe2e0d8);
- for(const z of [-24.2,-22.7])kit.rod([S.minX-.08,.1,z],[S.minX-.08,2.4,z],.03,0x9aa0a4);
- kit.box(.2,.45,.35,S.minX-.12,1.6,-22.8,0x8a8578);kit.box(.18,.35,.3,S.minX-.12,1.6,-21.9,0x9a958a);
+ const S=SAKURA_BOX;
+ // The office's upper shell, its windows and its fire door are owned by thuan-flat.js; the office is reached by the
+ // stair inside the shop (interiors/sakura-stairs.js), so the back carries a fire escape and no way in.
+ sakuraFireEscape(kit,solid,{inspect});
+ sakuraBackServices(kit,solid);
+ sakuraServiceStrip(kit);
+ // The meters on the back wall, between the extractor and the bicycles.
+ const W=SAKURA_BACK.wall;
+ kit.box(.2,.45,.35,W-.1,1.6,-22.8,0x8a8578);kit.box(.18,.35,.3,W-.09,1.6,-21.9,0x9a958a);
  // Side walls: the ice-cream mural facing up the street, enamel tins facing the quay.
  kit.sign(iceMural(),7.4,2.15,(S.minX+S.maxX)/2-.6,2.05,S.maxZ+.04,{name:'Blue Coral mural'});
  kit.sign(enamel({jp:"Ryukyu Cider",en:'Ryukyu cider'}),.7,1.05,S.maxX-2,1.7,S.minZ-.04,{ry:Math.PI,depth:.02,name:'enamel sign'});
  kit.sign(enamel({jp:"Mosquito coil",en:'mosquito coils',bg:'#2a6a4a',ink:'#f4e6b0'}),.7,1.05,S.maxX-3,1.7,S.minZ-.04,{ry:Math.PI,depth:.02,name:'enamel sign'});
  inspect(S.maxX-2.2,1.2,S.maxZ+1.2,'Look at the ice-cream mural','Blue Coral mural',
   'Painted straight onto the wall in 1981 and touched up every summer since by whoever has the paint. The pink scoop is guava. Thuan says the man who painted it still comes in for his cigarettes and complains that nobody has got the blue right. Blue Coral ice cream is served at Nakamura’s dessert counter beside Harbour Park.');
+}
+
+/**
+ * Sakura's back, over the service apron towards Nishi-machi (the creator, 2026-10-19: "Remove the outdoor stairs to
+ * Sakura's office, add windows on the back and a fire escape"). What stands here and why, in the town's coordinates;
+ * the back wall faces -x. The office windows and the fire door itself are in thuan-flat.js, the shop's back door, its
+ * downpipe, meter cupboard, extractor and the pallet of empties in storefront.js.
+ */
+export const SAKURA_BACK=Object.freeze({
+ /** The shop storey's back wall face (storefront.js stands its wall .18 behind the plan line) and the office storey's (thuan-flat.js). */
+ wall:SAKURA_BOX.minX-.18,upperWall:SAKURA_BOX.minX-.12,
+ /** The shop's back (stockroom) door: storefront.js, .9 m along the frontage from the shop's middle (z -27.3). */
+ backDoor:Object.freeze({z:-28.2,width:1.32,
+  awning:Object.freeze({minZ:-29.05,maxZ:-27.35,out:.75,y:2.58,why:'A corrugated sheet over the back door, so deliveries and the empties go in and out dry in the rainy season.'})}),
+ /**
+  * The fire escape (避難はしご): a steel fire door at the head of the inside stair, a landing on two struts and a
+  * caged ladder down the wall, in the dark green of site steel. A way out only: no walking level and no route use it,
+  * and the landing and the ladder are solid to anyone below. It stands north of the back door, so whoever comes down
+  * it lands clear of the door and of the pallet of empties.
+  */
+ fireEscape:Object.freeze({
+  door:Object.freeze({z:-27.3,width:.9,height:2}),
+  platform:Object.freeze({minX:SAKURA_BOX.minX-.97,maxX:SAKURA_BOX.minX-.12,minZ:-27.9,maxZ:-24.95-.4,top:SAKURA_BOX.roof+.03}),
+  ladder:Object.freeze({z:-24.95,width:.5,rungX:SAKURA_BOX.minX-.4,cageX:SAKURA_BOX.minX-1.05,cageFrom:2.2,rung:.3,hoops:.7}),
+  colour:0x3f6a55,
+  why:'The office’s second way out, for the day smoke fills the inside stair: a two-storey shop with an office over it has to have one. The fire service climbs it at the spring inspection; nobody comes in this way.'}),
+ /** The shop's refrigeration, outside: two condensing units on a plinth, in a mesh cage with a padlocked gate. */
+ condensers:Object.freeze({minZ:-34,maxZ:-31.95,depth:.73,height:1.1,units:Object.freeze([-32.45,-33.45]),
+  why:'The cold cases and the walk-in cooler throw their heat out here, at the quay end of the back, away from Thuan’s bench. Caged: copper pipe gets stolen, and children climb on anything warm.'}),
+ /** The outside tap and its hose, between the cage and the empties. */
+ tap:Object.freeze({z:-31.2,y:.55,why:'For hosing the apron, rinsing the empties and washing the dust off the condensers’ fins.'}),
+ /**
+  * The service apron: poured concrete from the circuit's paving to the wall, in bays, its top the lane layer so it
+  * meets the paving round it flush (lane-surfaces.js: the circuit's edge at x -21.6 and z -34.93 / -34.65, the staff
+  * path's at x -20 and z -24.3 and -20). It replaces the strip of lawn behind the shop: nothing grows where the vans
+  * stand, bar the weeds along the wall foot and the joints.
+  */
+ strip:Object.freeze({top:GROUND_LAYER.lane,
+  rects:Object.freeze([[-21.6,-19.7,-34.93,-24.3],[-19.7,-18.5,-34.65,-24.3],[-20,-18.5,-24.3,-20]]),
+  joints:Object.freeze([-32.5,-30,-27.5,-24.3,-22.2]),
+  weeds:Object.freeze([[-18.72,-34.25],[-18.71,-31.75],[-18.72,-26.25],[-21.5,-30.05],[-21.52,-27.45],[-19.9,-20.1],[-21.5,-33.6],[-18.72,-21.4]]),
+  why:'Where the delivery van backs up and the empties stand: concrete, as behind every konbini, not lawn.'}),
+});
+
+/** A painted plate: a band of colour with the Japanese large and the English under it. */
+function plateTexture(w,h,{jp,en,bg,ink='#ffffff'}){
+ return paint(w,h,(ctx,W,H)=>{
+  ctx.fillStyle='#f4f2ea';ctx.fillRect(0,0,W,H);ctx.fillStyle=bg;ctx.fillRect(W*.04,H*.06,W*.92,H*.88);
+  ctx.fillStyle=ink;ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.font='bold '+Math.round(H*(en?.36:.5))+'px "Hiragino Sans","Noto Sans CJK JP",sans-serif';ctx.fillText(jp,W/2,H*(en?.38:.5));
+  if(en){ctx.font='bold '+Math.round(H*.16)+'px sans-serif';ctx.fillText(en,W/2,H*.74);}
+ });
+}
+
+/** The fire escape off the office's fire door: SAKURA_BACK.fireEscape. */
+function sakuraFireEscape(kit,solid,{inspect}){
+ const E=SAKURA_BACK.fireEscape,P=E.platform,L=E.ladder,W=SAKURA_BACK.wall,U=SAKURA_BACK.upperWall,F=SAKURA_BOX.roof;
+ const green=E.colour,plate=0x7d8781,top=F+1.1,bar=(x0,x1,y0,y1,z0,z1)=>kit.block(Math.min(x0,x1),Math.max(x0,x1),y0,y1,Math.min(z0,z1),Math.max(z0,z1),green);
+ // The landing: chequer plate on an edge channel, carried by two struts back to the shop wall.
+ kit.block(P.minX,P.maxX,P.top-.05,P.top,P.minZ,P.maxZ,plate,'metal');
+ bar(P.minX,P.minX+.06,P.top-.17,P.top-.05,P.minZ,P.maxZ);
+ for(const z of [P.minZ+.25,P.maxZ-.25])kit.rod([W-.03,F-.75,z],[P.minX+.05,P.top-.06,z],.035,green);
+ // Its guard: the open side and the south end, a top rail, a knee rail and a toe board. The north end is the ladder's.
+ for(const z of [P.minZ+.03,(P.minZ+P.maxZ)/2,P.maxZ-.03])bar(P.minX,P.minX+.05,P.top,top,z-.025,z+.025);
+ bar(U-.05,U,P.top,top,P.minZ,P.minZ+.05);
+ for(const [y0,y1] of [[top-.04,top],[F+.53,F+.57],[P.top,P.top+.1]]){bar(P.minX,P.minX+.05,y0,y1,P.minZ,P.maxZ);bar(P.minX,U,y0,y1,P.minZ,P.minZ+.05);}
+ // The ladder: two stiles to grab-rail height over the landing, rungs every .3 m, stays back to the wall.
+ const z0=L.z-L.width/2,z1=L.z+L.width/2;
+ for(const z of [z0,z1])bar(L.rungX-.03,L.rungX+.03,0,top,z-.03,z+.03);
+ for(let y=L.rung;y<=P.top+1e-6;y+=L.rung)kit.box(.03,.03,L.width,L.rungX,y,L.z,green);
+ for(const y of [.9,2.4,F-.6,F+.7])for(const z of [z0,z1])bar(L.rungX+.03,y<F?W:U,y-.03,y+.03,z-.02,z+.02);
+ // The cage, from above head height: hoops of flat bar, the south side left open over the landing, five straps.
+ const c0=L.z-.4,c1=L.z+.4;
+ for(let y=L.cageFrom;y<=top+1e-6;y+=L.hoops){const wall=y<F?W:U;
+  bar(L.cageX,L.cageX+.03,y-.02,y+.02,c0,c1);bar(L.cageX,wall,y-.02,y+.02,c1-.03,c1);
+  if(y<F)bar(L.cageX,wall,y-.02,y+.02,c0,c0+.03);}
+ for(const z of [c0+.02,L.z,c1-.02])bar(L.cageX,L.cageX+.03,L.cageFrom,top,z-.015,z+.015);
+ bar((L.cageX+W)/2-.015,(L.cageX+W)/2+.015,L.cageFrom,top,c1-.03,c1);bar((L.cageX+W)/2-.015,(L.cageX+W)/2+.015,L.cageFrom,F,c0,c0+.03);
+ solid(kit.rect(L.cageX,W,c0,c1,top,'sakura-fire-escape-ladder'));
+ solid({...kit.rect(P.minX,P.maxX,P.minZ,P.maxZ,1.25,'sakura-fire-escape-landing'),minY:F-.15});
+ // Its plates: 非常口 over the fire door, 避難はしご and "keep clear" at the ladder's foot.
+ if(typeof document!=='undefined'&&document.createElement){
+  kit.sign(plateTexture(256,96,{jp:'非常口',en:'FIRE EXIT',bg:'#2f8a4e'}),.5,.19,U-.012,F+2.45,E.door.z,{ry:-Math.PI/2,depth:.02,name:'Fire door plate'});
+  kit.sign(plateTexture(192,256,{jp:'避難はしご',en:'ESCAPE LADDER · KEEP CLEAR',bg:'#2f8a4e'}),.3,.4,W-.012,1.55,c1+.3,{ry:-Math.PI/2,depth:.02,name:'Escape ladder plate'});
+ }
+ inspect(L.cageX-.7,1.2,L.z,'Look at the fire escape','Sakura fire escape',
+  'The office upstairs has a second way out: a steel fire door at the head of the inside stair, a little landing and a caged ladder down the back wall. It is for a fire, not for coming and going. The door opens only from inside and rings a bell in the shop when it does. The fire service climbs it at the spring inspection, and Thuan holds the clipboard.');
+}
+
+/** What the back wall carries at ground level: the caged condensers, the tap and its hose, the awning over the back door. */
+function sakuraBackServices(kit,solid){
+ const B=SAKURA_BACK,W=B.wall,K=B.condensers,steel=0x9aa0a4;
+ // The condensers: a plinth, two ivory units with their fan guards to the yard, the refrigerant lines in a duct cover.
+ const out=W-K.depth,duct=K.maxZ-.16;
+ kit.block(out+.05,W,0,.1,K.minZ+.05,K.maxZ-.05,0xc9c5b8);
+ for(const z of K.units){const x=W-.27;
+  kit.box(.3,.6,.8,x,.4,z,0xe4e1d6);kit.box(.32,.04,.82,x,.72,z,0xd3cfc2);
+  kit.cyl(.22,.22,.02,x-.16,.42,z-.08,0x3b3f42,{rz:Math.PI/2,segments:16});
+  kit.box(.012,.44,.025,x-.175,.42,z-.08,0x8e9396);kit.box(.012,.025,.44,x-.175,.42,z-.08,0x8e9396);
+  kit.box(.02,.42,.16,x-.16,.4,z+.3,0xcfcbbf);}
+ kit.block(W-.08,W,.3,2.9,duct-.05,duct+.05,0xd3cec0);kit.block(W-.12,W-.08,.36,.48,duct-.05,duct+.05,0xd3cec0);kit.block(W-.1,W,2.9,2.98,duct-.07,duct+.07,0xbdb8aa);
+ // The cage: corner posts, three rails, welded bars a hand apart, a top of bars and a padlocked gate.
+ const h=K.height,cage=(x0,x1,y0,y1,z0,z1)=>kit.block(x0,x1,y0,y1,z0,z1,steel,'metal');
+ for(const [x,z] of [[out,K.minZ],[out,K.maxZ],[W-.02,K.minZ],[W-.02,K.maxZ]])cage(x-.02,x+.02,0,h,z-.02,z+.02);
+ for(const y of [.04,h/2,h-.02]){cage(out-.015,out+.015,y-.015,y+.015,K.minZ,K.maxZ);for(const z of [K.minZ,K.maxZ])cage(out,W,y-.015,y+.015,z-.015,z+.015);}
+ for(let z=K.minZ+.1;z<K.maxZ-.05;z+=.1)cage(out-.008,out+.008,0,h,z-.008,z+.008);
+ for(const z of [K.minZ,K.maxZ])for(let x=out+.1;x<W-.05;x+=.1)cage(x-.008,x+.008,0,h,z-.008,z+.008);
+ for(let z=K.minZ+.2;z<K.maxZ-.05;z+=.2)if(Math.abs(z-duct)>.1)cage(out,W,h-.016,h,z-.008,z+.008);
+ const gate=(K.minZ+K.maxZ)/2;for(const z of [gate-.4,gate+.4])cage(out-.025,out+.025,.02,h-.04,z-.02,z+.02);
+ kit.box(.04,.07,.05,out-.04,.62,gate+.36,0xc9a640,{finish:'metal'});
+ solid(kit.rect(out-.03,W,K.minZ-.03,K.maxZ+.03,h+.02,'sakura-condenser-cage'));
+ // The tap on its riser, the hose coiled on a hook beside it.
+ const T=B.tap;
+ kit.rod([W-.04,.04,T.z],[W-.04,T.y,T.z],.016,0x8e979a);
+ kit.box(.07,.06,.06,W-.05,T.y,T.z,0xb9bcb8,{finish:'metal'});kit.rod([W-.08,T.y,T.z],[W-.13,T.y-.09,T.z],.012,0xb9bcb8);
+ kit.box(.02,.02,.1,W-.05,T.y+.05,T.z,0xb9bcb8);kit.box(.02,.1,.02,W-.05,T.y+.05,T.z,0xb9bcb8);
+ // The coil hangs from its hook; the end in use droops from the tap and rises into the coil's foot.
+ for(const [dx,r] of [[.03,.17],[.065,.15],[.1,.17]]){const coil=new THREE.TorusGeometry(r,.02,6,18);kit.add(coil,trs(W-dx,1.13-r,T.z-.42,0,Math.PI/2,0),0x4f8a5c);coil.dispose();}
+ kit.box(.14,.03,.03,W-.07,1.14,T.z-.42,0x5d6468);
+ kit.rod([W-.13,T.y-.09,T.z],[W-.16,.12,T.z-.12],.02,0x4f8a5c);kit.rod([W-.16,.12,T.z-.12],[W-.1,.79,T.z-.4],.02,0x4f8a5c);
+ solid(kit.rect(W-.14,W,T.z-.62,T.z+.05,1.15,'sakura-tap'));
+ // The awning over the back door: corrugated sheet on two brackets, falling away from the wall.
+ const A=B.backDoor.awning,fall=.12,slope=Math.atan2(fall,A.out);
+ kit.box(A.out,.02,A.maxZ-A.minZ,W-A.out/2,A.y-fall/2,(A.minZ+A.maxZ)/2,0xa9c9b2,{rz:slope});
+ for(let z=A.minZ+.04;z<A.maxZ;z+=.09)kit.rod([W,A.y+.012,z],[W-A.out,A.y-fall+.012,z],.012,0x9cbea6);
+ kit.box(.04,.05,A.maxZ-A.minZ,W-A.out,A.y-fall-.02,(A.minZ+A.maxZ)/2,0x7b8285);
+ for(const z of [A.minZ+.08,A.maxZ-.08]){kit.rod([W,A.y-.45,z],[W-A.out+.04,A.y-fall-.03,z],.018,0x7b8285);kit.box(.03,.5,.05,W-.015,A.y-.22,z,0x7b8285);}
+ // A bulkhead lamp over the door under the awning, for the night deliveries: the shop never closes.
+ const lampZ=(A.minZ+A.maxZ)/2;
+ kit.box(.06,.16,.26,W-.03,A.y-.17,lampZ,0x5d6468);kit.box(.07,.12,.2,W-.09,A.y-.17,lampZ,0xf2e6c8,{finish:'lamp'});
+}
+
+/** SAKURA_BACK.strip: the concrete apron behind the shop, in bays, the gully under the downpipe and a few weeds. */
+function sakuraServiceStrip(kit){
+ const R=SAKURA_BACK.strip;
+ for(const [x0,x1,z0,z1] of R.rects){
+  const cuts=[z0,...R.joints.filter(z=>z>z0&&z<z1),z1];
+  for(let i=1;i<cuts.length;i++){const bay=R.joints.filter(z=>z<=cuts[i-1]).length;kit.block(x0,x1,R.top-.03,R.top,cuts[i-1],cuts[i],bay%2?0xb3b0a5:0xbbb8ad);}
+ }
+ // The gully the shop's downpipe (storefront.js) runs into.
+ kit.block(SAKURA_BACK.wall-.36,SAKURA_BACK.wall-.06,R.top,R.top+.016,-26.85,-26.55,0x55595a,'metal');
+ R.weeds.forEach(([x,z],i)=>{for(let k=0;k<3;k++){const a=k*2.1+i;kit.cyl(0,.028,.15+.04*((i+k)%2),x+Math.cos(a)*.04,R.top+.07,z+Math.sin(a)*.04,k%2?0x6f8c4f:0x7f9a5a,{segments:4,rx:Math.sin(a)*.3,rz:Math.cos(a)*.3});}});
 }
 
 function dressWarehouse(kit,solid,{inspect}){

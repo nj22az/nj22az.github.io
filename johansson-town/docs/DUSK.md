@@ -15,15 +15,30 @@ add extra ramp bands and turn anime cel into muddy low-poly.
 
 ## Clock
 
-| Minutes | Period | Daylight | Dusk amount |
-| --- | --- | --- | --- |
-| 07:00–17:00 | AFTERNOON | 1 | 0 |
-| 17:00–18:30 | DUSK | 1 → 0.5 | 0 → 1 |
-| 18:30–20:00 | EVENING | 0.5 → 0 | 1 |
-| 20:00–20:30 | NIGHT | 0 | 1 → 0 |
-| 20:30–05:00 | NIGHT | 0 | 0 |
-| 05:00–07:00 | EARLY MORNING | 0 → 1 | 0 |
+| Minutes | Period | Daylight | Dusk amount | Morning | Sun (azimuth, elevation) |
+| --- | --- | --- | --- | --- | --- |
+| 05:00–06:00 | MORNING | 0 → 0.5 | 0 | 0 → 0.6 | the moon's place swinging over to the east |
+| 06:00–08:30 | MORNING | 0.5 → 1 | 0 | 1 → 0 | east, 10°–20° |
+| 08:30–10:30 | MORNING | 1 | 0 | 0 | south-east, climbing |
+| 10:30–14:00 | MIDDAY | 1 | 0 | 0 | south, up to 55° |
+| 14:00–17:00 | AFTERNOON | 1 | 0 | 0 | south-west, sinking |
+| 17:00–18:30 | EVENING | 1 → 0.5 | 0 → 1 | 0 | west, held at 10° (the golden hour) |
+| 18:30–20:00 | EVENING | 0.5 → 0 | 1 | 0 | easing to the moon's place (WNW, 20°) |
+| 20:00–20:30 | EVENING | 0 | 1 → 0 | 0 | the moon |
+| 20:30–05:00 | NIGHT | 0 | 0 | 0 | the moon: where the key light always stood |
 
+- **The sun's path** is `sunPath(minutes)` (`SUN_PATH`): Minato at 26°N in October, stylised.
+  `game.js` places the sun `SUN_REACH` (46 m) from the shadow camera's target along it, and
+  keeps the cool bounce opposite it. The moon is the direction the sun used to have all
+  day, so the night look is unchanged; the two blend over 05:00–06:00 and 18:30–20:00.
+  Long shadows are a desktop/tablet treat (phones draw no shadow map); the direction and
+  the grade are for everyone.
+- **Morning** (`morningAmount`, 06:00–08:30) is cool gold: `PALETTE.sunMorning`,
+  `skyMorning`, `fillMorning`, a little grade warmth, and in `game.js` a gold light tint
+  with a cool blue shadow tint. The evening stays apricot through and through, so the two
+  never read the same.
+- **Road paint** is unlit, so it is dimmed with the town's fill after dark
+  (`decalLight`, `road-standards.js setRoadPaintLight`), instead of glowing white.
 - **Windows** ease on from 17:00, full from 18:00, fade 05:00–07:00. They no longer
   snap at minute 1080.
 - **Paper lanterns** (Minato, harbour globes) lead the windows: on from 17:00, full
@@ -34,6 +49,21 @@ add extra ramp bands and turn anime cel into muddy low-poly.
   flatten stay on their cel defaults.
 - Sky, sun and hemisphere colours fade from dusk to night during 20:00–20:30,
   including the exact 20:30 boundary.
+
+## Light on the ground
+
+A lamp without a PointLight still has to light something, or a night street is a row of
+glowing heads over a dark tunnel. `src/world/light-pools.js` gives every outdoor lamp two
+things, both faded in with the dark (`poolGlow`: the lamp's glow as the daylight goes, so a
+pool is not painted on a sunlit pavement at half past five) and hidden by day: a **pool**, one additive
+disc on the ground under the head (about 3 m across for a street lamp), and a **halo**,
+one additive sprite on the head. Neither is a light: nothing else is shaded by them, and
+they cost a draw call each only after dark. They stand under the street-lamp poles, the
+quay lanterns, the two deck lights at the top of the quay (which were point lights, and
+cut a hard-edged disc at the kerb), the shop-front lanterns, the utility poles' lamps on
+Kitahama's lanes, Minato's three akachochin (whose paper has its own lit map: orange,
+not the day's red made brighter), Umi-no-yu's door while the bath is open, and the deck
+bulb on Mr Fujita's houseboat. One pool and one halo per lamp, nothing more.
 
 ## Cel hard rules
 
