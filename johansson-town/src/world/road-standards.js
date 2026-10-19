@@ -30,8 +30,28 @@ export const ROAD_STANDARD=Object.freeze({
 });
 
 const decal={depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2};
-let paintMaterial=null;
-const paint=()=>paintMaterial??=new THREE.MeshBasicMaterial({color:ROAD_STANDARD.paint,...decal});
+/**
+ * Road paint is unlit (a decal takes no light, so it never fights the asphalt's ramp), which
+ * left it glowing white on a night street. Every paint material registers here and is dimmed
+ * together with the town's fill (setRoadPaintLight, from game.js setTime).
+ */
+const paints=new Set(),paintByColour=new Map();
+let paintLight=1;
+export function registerRoadPaint(material){
+ material.userData.paintColour=material.color.getHex();paints.add(material);
+ material.color.setHex(material.userData.paintColour).multiplyScalar(paintLight);return material;
+}
+/** One unlit paint material per colour, shared by every street. */
+export function roadPaintMaterial(colour=ROAD_STANDARD.paint){
+ if(!paintByColour.has(colour))paintByColour.set(colour,registerRoadPaint(new THREE.MeshBasicMaterial({color:colour,...decal})));
+ return paintByColour.get(colour);
+}
+/** @param {number} level 1 in full day, the town's fill at night (dusk.js decalLight) */
+export function setRoadPaintLight(level){
+ paintLight=Math.max(0,Math.min(1,Number.isFinite(level)?level:1));
+ for(const m of paints)m.color.setHex(m.userData.paintColour).multiplyScalar(paintLight);
+}
+const paint=()=>roadPaintMaterial(ROAD_STANDARD.paint);
 
 /** A flat painted rectangle on the road, centred at x,z, rotated about y. */
 export function paintPatch(parent,w,d,x,y,z,ry=0,name='Road paint'){
@@ -112,7 +132,7 @@ export function stopMarking(parent,{x,z,y=0,width,ry=0}){
  const g=new THREE.Group();g.name='Stop line (停止線)';g.position.set(x,y,z);g.rotation.y=ry;parent.add(g);
  paintPatch(g,width-.3,ROAD_STANDARD.stopLine.width,0,0,0,0,'Stop line');
  const text=canvasTexture(256,128,(ctx,w,h)=>{ctx.fillStyle='#ffffff';ctx.font='bold 92px "Hiragino Sans","Noto Sans CJK JP",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('止まれ',w/2,h/2);});
- if(text){const m=new THREE.Mesh(new THREE.PlaneGeometry(Math.min(2.4,width-.6),1.6),new THREE.MeshBasicMaterial({map:text,transparent:true,...decal}));m.rotation.set(-Math.PI/2,0,Math.PI);m.position.set(0,.008,-1.5);m.renderOrder=1;m.raycast=()=>{};m.name='止まれ road marking';g.add(m);}
+ if(text){const m=new THREE.Mesh(new THREE.PlaneGeometry(Math.min(2.4,width-.6),1.6),registerRoadPaint(new THREE.MeshBasicMaterial({map:text,transparent:true,...decal})));m.rotation.set(-Math.PI/2,0,Math.PI);m.position.set(0,.008,-1.5);m.renderOrder=1;m.raycast=()=>{};m.name='止まれ road marking';g.add(m);}
  return g;
 }
 /** Yellow warning blocks laid in the footway at the head of a crossing. */

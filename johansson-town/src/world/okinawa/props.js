@@ -24,7 +24,7 @@ const measuring=kit=>({...kit,box(){},cyl(){},rod(){}});
 export function utilityPole(kit,x,z,{h=9.8,face=0,transformer=true,lamp=false,guy=false,tel=true,seed=1}={}){
  const planning=!!plan,real=kit;kit=planning?measuring(kit):kit;
  h=Math.max(9.8,h);
- const r=rng(seed),anchors=[];let origin,east;
+ const r=rng(seed),anchors=[];let origin,east,lampAt=null;
  const concrete=0xc9c5bc,steel=0x8e979a,porcelain=0xf2f0ea,black=0x2b2a30;
  kit.at(x,z,face,()=>{
   origin=kit.point(0,0,0);east=kit.point(1,0,0);
@@ -85,9 +85,12 @@ export function utilityPole(kit,x,z,{h=9.8,face=0,transformer=true,lamp=false,gu
    kit.rod([0,h-5.3,0],[0,h-5.6,1.3],.04,steel);
    kit.box(.36,.12,.5,0,h-5.65,1.35,steel);
    kit.box(.3,.03,.42,0,h-5.72,1.35,0xfff0c8,{finish:'lamp'});
+   lampAt=kit.point(0,h-5.72,1.35);
   }
  });
- const foot=kit.point(x,0,z),pole={id:`pole:${foot.x.toFixed(2)}:${foot.z.toFixed(2)}`,x:foot.x,z:foot.z,y:foot.y,anchors,top:h,collider:kit.rect(x-.2,x+.2,z-.2,z+.2,h,'utility-pole'),seed:r.next()};
+ const foot=kit.point(x,0,z),pole={id:`pole:${foot.x.toFixed(2)}:${foot.z.toFixed(2)}`,x:foot.x,z:foot.z,y:foot.y,anchors,top:h,collider:kit.rect(x-.2,x+.2,z-.2,z+.2,h,'utility-pole'),seed:r.next(),
+  // The lamp's head in the world, for the pool of light under it (town.js lampPools); null on a pole without one.
+  lamp:lampAt?{x:lampAt.x,y:lampAt.y,z:lampAt.z}:null};
  if(planning){pole.place={x:origin.x,y:origin.y,z:origin.z,face:Math.atan2(-(east.z-origin.z),east.x-origin.x),h,transformer,lamp,guy,tel,seed};plan.poles.push(pole);}
  else real.powerNode(pole);
  return pole;
