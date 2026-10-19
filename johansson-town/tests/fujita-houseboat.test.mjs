@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {buildPortShed,PORT_SHED} from '../src/world/port-shed.js';
+import {buildPortShed,PORT_SHED,SHED_PIER} from '../src/world/port-shed.js';
 import {HOUSEBOAT,houseboatSurface,houseboatCabinAt,createHouseboatModel} from '../src/world/fujita-houseboat.js';
 import {fujitaAsleep,fujitaBoatRoute} from '../src/world/fujita-routine.js';
 import {buildCargoShipping} from '../src/world/cargo-shipping.js';
@@ -23,7 +23,7 @@ test('pier, gangway and every walking segment are clear',()=>{
  const {shed,colliders}=make(),G=HOUSEBOAT.gangway,path=fujitaBoatRoute(PORT_SHED.chair);
  for(let x=G.minX+.25;x<G.maxX-.2;x+=.15){assert.ok(routeAt(x,-54.2,.2));assert.equal(groundHeight(x,-54.2),HOUSEBOAT.deckY);}
  for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i],n=Math.ceil(Math.hypot(b[0]-a[0],b[2]-a[2])/.05);for(let k=1;k<=n;k++){const x=a[0]+(b[0]-a[0])*k/n,z=a[2]+(b[2]-a[2])*k/n;if(i===1&&z<-56.65)continue;assert.ok(routeAt(x,z,.2),`surface ${x},${z}`);assert.ok(!colliders.some(c=>standingHitsRect(x,z,.2,groundHeight(x,z),c)),`clear ${x},${z}`);}}
- for(let z=-64;z<-50;z+=.1){const x=PORT_SHED.x+PORT_SHED.depth/2+.65;assert.ok(!colliders.some(c=>standingHitsRect(x,z,.3,groundHeight(x,z),c)));}shed.dispose();
+ for(let z=SHED_PIER.minZ+.45;z<SHED_PIER.maxZ-.45;z+=.1){const x=PORT_SHED.x+PORT_SHED.depth/2+.65;assert.ok(!colliders.some(c=>standingHitsRect(x,z,.3,groundHeight(x,z),c)));}shed.dispose();
 });
 test('clock reversal reverses the current walk continuously',()=>{
  assert.equal(fujitaAsleep(1409),false);assert.equal(fujitaAsleep(1410),true);assert.equal(fujitaAsleep(359),true);assert.equal(fujitaAsleep(360),false);

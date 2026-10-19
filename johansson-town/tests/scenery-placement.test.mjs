@@ -7,7 +7,7 @@ import {onIslandLand} from '../src/world/coastal-ground.js';
 import {circleHitsRect} from '../physics.js';
 import {OUTER_PIER} from '../src/world/layout.js';
 import {HOUSEBOAT} from '../src/world/fujita-houseboat.js';
-import {SHED_PIER} from '../src/world/fujita-layout.js';
+import {SHED_PIER,FUJITA_PIER} from '../src/world/fujita-layout.js';
 import {OIL_JETTY} from '../src/world/oil-jetty-layout.js';
 import {FLOWER_SHOP} from '../src/world/flower-shop.js';
 
@@ -30,6 +30,8 @@ const within=(b,x,z)=>x>=b.minX-1e-4&&x<=b.maxX+1e-4&&z>=b.minZ-1e-4&&z<=b.maxZ+
 // Documented structures supported by decks, not by the land polygon. These are
 // bounded allowances: moving one further into the sea must still fail.
 function harbourSupport(c){
+ // The timber pier's rails and bollard stand on its own decks, the walkway as well as the platform (timber-pier.js).
+ if(c.timberPier===FUJITA_PIER.id)return (x,z)=>FUJITA_PIER.decks.some(d=>within(d,x,z));
  if(c.portShed)return (x,z)=>within(SHED_PIER,x,z);
  if(c.houseboat)return (x,z)=>within({minX:HOUSEBOAT.x-HOUSEBOAT.width/2,maxX:HOUSEBOAT.x+HOUSEBOAT.width/2,minZ:HOUSEBOAT.z-HOUSEBOAT.length/2-HOUSEBOAT.sternExtension/2,maxZ:HOUSEBOAT.z+HOUSEBOAT.length/2-HOUSEBOAT.sternExtension/2},x,z);
  if(/^jetty-(manifold|crane)$/.test(c.id))return (x,z)=>within(OIL_JETTY.head,x,z);

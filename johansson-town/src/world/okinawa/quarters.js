@@ -1,3 +1,4 @@
+import {SHED_WALKWAY,FUJITA_PIER} from '../fujita-layout.js';
 import {COURT_TERRACE} from '../park-layout.js';
 import {GROUND} from '../../render/ground-palette.js';
 /** The east lawn's south edge (east-lawn.js EAST_LAWN.minZ), where the seawall's return begins. */
@@ -99,9 +100,12 @@ function buildNishiGround(kit,solid){
  kit.block(S.x-S.thickness/2,S.x+S.thickness/2,-.7,S.height,NISHI.minZ,NISHI.maxZ+.4,0xb9b4a6);
  kit.block(S.x-S.thickness/2-.04,S.x+S.thickness/2+.04,S.height,S.height+.08,NISHI.minZ,NISHI.maxZ+.4,0xa9a497);
  solid({id:'seawall',x:S.x,z:(NISHI.minZ+NISHI.maxZ)/2,w:S.thickness+.1,d:NISHI.maxZ-NISHI.minZ+.4,height:S.height});
- // The quay edge, its yellow kerb and its solid edge, with a gap where the timber pier
- // (port-shed.js SHED_PIER) runs out from it, so you can walk onto the pier.
- const PIER_GAP=[-38.4,-33.6];
+ // The quay edge, its yellow kerb and its solid edge, with a gap the width of the timber pier's walkway
+ // (fujita-layout.js SHED_WALKWAY) where it lands, so you can walk onto the pier. The wall runs on under the
+ // walkway as the shelf its stringers rest on (timber-pier.js); the gap was 4.8 m wide for the old L-shaped slab,
+ // and left 2.6 m of the shore's grass for a quay wall beside the pier (2026-10-19).
+ const PIER_GAP=[SHED_WALKWAY.minX,SHED_WALKWAY.maxX];
+ kit.block(PIER_GAP[0],PIER_GAP[1],-.7,FUJITA_PIER.top-.045-.15,Q.minZ-.45,Q.minZ,0xa9a497);
  for(const [x0,x1] of [[Q.minX-.6,PIER_GAP[0]],[PIER_GAP[1],Q.maxX]]){
   kit.block(x0,x1,-.7,GROUND_LAYER.apron,Q.minZ-.45,Q.minZ,0xa9a497);
   kit.block(x0,x1,GROUND_LAYER.apron,GROUND_LAYER.apron+.12,Q.minZ-.4,Q.minZ-.1,0xe0b93a);

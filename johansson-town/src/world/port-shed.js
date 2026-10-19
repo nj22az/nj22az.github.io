@@ -1,11 +1,11 @@
 import * as THREE from '../../vendor/three.module.js';
-import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {createAvatarActor,updateAvatarActor} from '../avatars/actors.js';
 import {reach} from '../avatars/consume.js';
 import {buildBeerBottle} from '../people/izakaya-serving-visuals.js';
 import {fujitaBeer,laughingAt,seeded,tvProgramme} from './fujita-day.js';
 import {buildFujitaHouseboat,HOUSEBOAT} from './fujita-houseboat.js';
 import {createFujitaRoutine} from './fujita-routine.js';
+import {buildTimberPier,timberPierPlan} from './timber-pier.js';
 import {createSleepCover} from '../people/sleep-cover.js';
 import {poolGlow} from '../render/dusk.js';
 export {tvProgramme} from './fujita-day.js';
@@ -28,7 +28,7 @@ export {tvProgramme} from './fujita-day.js';
  * Pier frame: the shed stands on the west edge of the L-pier, open to the east.
  */
 export {PORT_SHED,SHED_PIER} from './fujita-layout.js';
-import {PORT_SHED,SHED_PIER} from './fujita-layout.js';
+import {PORT_SHED,FUJITA_PIER} from './fujita-layout.js';
 const S=PORT_SHED;
 
 function corrugated(){
@@ -39,6 +39,23 @@ function corrugated(){
  for(let k=0;k<26;k++){const px=(k*37)%128,py=(k*53)%128;const g=x.createLinearGradient(px,py,px,py+40);g.addColorStop(0,'rgba(150,72,30,.75)');g.addColorStop(1,'rgba(150,72,30,0)');x.fillStyle=g;x.fillRect(px,py,3+(k%3),40);}
  x.fillStyle='rgba(140,66,28,.55)';x.fillRect(0,118,128,10);
  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;
+}
+
+/**
+ * A corrugated iron sheet `fall` long down the slope (x) and `across` wide (z): ridges at 0.15 m (the town's chunky
+ * version of 76 mm sheet), galvanised grey, rust streaking down from every fifth nail line and a rusted low eave.
+ */
+export function corrugatedSheet(fall,across,{pitch=.15,depth=.035}={}){
+ const waves=Math.round(across/pitch),g=new THREE.PlaneGeometry(fall,across,4,waves*4);g.rotateX(-Math.PI/2);
+ const pos=g.attributes.position,colours=new Float32Array(pos.count*3),grey=new THREE.Color(0x9ea6a3),rust=new THREE.Color(0x9a5631),c=new THREE.Color();
+ for(let i=0;i<pos.count;i++){
+  const x=pos.getX(i),z=pos.getZ(i),phase=(z+across/2)/across*waves;pos.setY(i,Math.sin(phase*Math.PI*2)*depth/2);
+  const ridge=Math.round(phase),down=(x+fall/2)/fall;
+  // Streaks under the nail lines every fifth ridge, longer towards the eave; the eave itself rusted through its paint.
+  const streak=ridge%5===2?.25+.55*down:0,eave=down>.82?.75:0;
+  c.copy(grey).lerp(rust,Math.min(1,Math.max(streak,eave)));colours.set([c.r,c.g,c.b],i*3);
+ }
+ g.setAttribute('color',new THREE.BufferAttribute(colours,3));g.computeVertexNormals();g.deleteAttribute('uv');return g;
 }
 
 function drawTV(ctx,w,h,programme,t){
@@ -98,7 +115,6 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
  const box=(s,p,m,name)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(...s),m);b.position.set(...p);b.castShadow=shadows;b.receiveShadow=true;b.name=name;g.add(b);return b;};
  const W=S.width,D=S.depth,hx=D/2,hz=W/2;
  const iron=corrugated(),ironMat=iron?new THREE.MeshStandardMaterial({map:iron,roughness:.7,metalness:.25}):std(0x8a908c,.7);
- const roofTex=iron?iron.clone():null;if(roofTex){roofTex.needsUpdate=true;roofTex.repeat.set(3,1);}
  const timber=std(0x6b5440,.9),plank=std(0x8c7356,.9);
  // Floor of old pallets' boards, a little proud of the pier.
  box([D,.06,W],[0,.03,0],plank,'Shed floor');
@@ -109,9 +125,11 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
  // Posts and a lintel along the open front.
  for(const z of [-hz,0,hz])box([.09,2.25,.09],[hx,1.12,z],timber,'Shed post');
  box([.1,.12,W+.1],[hx,2.2,0],timber,'Shed lintel');
- // A lean-to roof, falling towards the pier and overhanging it to shed the rain there.
- const roof=new THREE.Mesh(new THREE.BoxGeometry(D+.6,.04,W+.3),roofTex?new THREE.MeshStandardMaterial({map:roofTex,roughness:.65,metalness:.3}):ironMat);
- roof.position.set(.2,2.18,0);roof.rotation.z=-.12;roof.castShadow=shadows;roof.name='Shed roof';g.add(roof);
+ // A lean-to roof, falling towards the pier and overhanging it to shed the rain there: real corrugated sheet, its
+ // ridges running down the fall as roofing is laid, rusting where the water runs off and along the low eave. (It was a
+ // flat slab with the corrugations painted on across the fall, which smeared into streaks seen from the pier.)
+ const roof=new THREE.Mesh(corrugatedSheet(D+.6,W+.3),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.62,metalness:.3,side:THREE.DoubleSide}));
+ roof.position.set(.2,2.18,0);roof.rotation.z=-.12;roof.castShadow=shadows;roof.receiveShadow=true;roof.name='Shed roof';g.add(roof);
  // A half-raised shutter roll under the lintel.
  const roll=new THREE.Mesh(new THREE.CylinderGeometry(.09,.09,W-.1,12),std(0x7f8a86,.6,{metalness:.4}));roll.rotation.x=Math.PI/2;roll.position.set(hx-.05,2.05,0);g.add(roll);
 
@@ -199,9 +217,11 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
  // Outside: buoys, a stack of crates round the corner and a plastic chair for visitors.
  for(const [ox,oz,c] of [[hx+.35,-hz+.3,0xe2542e],[hx+.5,-hz+.65,0xf2c230]]){const b=new THREE.Mesh(new THREE.SphereGeometry(.17,12,8),std(c,.5));b.position.set(ox,.17,oz);g.add(b);}
  for(let i=0;i<3;i++)box([.5,.28,.36],[hx-.35,.14+i*.28,-hz-.3],std(i%2?0x2f6fa8:0x3d8a5a,.6),'Fish crate');
- const stool=new THREE.Group();stool.position.set(-hx+.45,0,hz+.55);stool.rotation.y=-Math.PI/2;g.add(stool);
+ // The plastic chair for a visitor (the television's "Sit, sit"): inside, against the folded cot on the west side,
+ // turned to the set. It stood out on the pier in his own path to the gangway, where he walked through it every night.
+ const stool=new THREE.Group();stool.name='Visitor’s plastic chair';stool.position.set(-hx+.5,.06,-.85);stool.rotation.y=-Math.PI/2-.55;g.add(stool);
  const plastic=std(0xd8d2c4,.6);{const seat=new THREE.Mesh(new THREE.BoxGeometry(.42,.04,.42),plastic);seat.position.y=.44;stool.add(seat);const back=new THREE.Mesh(new THREE.BoxGeometry(.04,.4,.42),plastic);back.position.set(.2,.66,0);stool.add(back);for(const [lx,lz] of [[-.18,-.18],[-.18,.18],[.18,-.18],[.18,.18]]){const l=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.44,6),plastic);l.position.set(lx,.22,lz);stool.add(l);}}
-
+ colliders.push({id:'fujita-visitor-chair',x:S.x-hx+.5,z:S.z-.85,w:.5,d:.5,height:.9,portShed:true});
  // Walls and furniture are solid; the open front lets you step up and look in.
  const wx=S.x,wz=S.z;
  colliders.push({x:wx-hx,z:wz,w:.12,d:W,height:2.1,portShed:true});
@@ -212,24 +232,16 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
  colliders.push({id:'fujita-shed-roof',x:wx+.2,z:wz,w:D+.6,d:W+.3,minY:2.05,height:.38,portShed:true});
  // The retired exterior cool box has no collider on the timber walking circuit.
 
- // Timber access only: the old broad L-shaped slab and its unused seaward spur are retired.
- {const P=SHED_PIER,pier=new THREE.Group();pier.name='Fujita timber boardwalk';parent.add(pier);
-  const plank=std(0x896b4c,.94),beam=std(0x59432f,.95),pileMat=std(0x49392c,.96);
-  const boxes=[];
-  const timber=(name,w,h,d,x,y,z,material)=>{const g=new THREE.BoxGeometry(w,h,d);g.translate(x,y,z);boxes.push({name,g,material});};
-  const deck=(x0,x1,z0,z1)=>{
-   const count=Math.ceil((z1-z0)/.18),pitch=(z1-z0)/count;
-   for(let i=0;i<count;i++){
-    const z=z0+(i+.5)*pitch,underShed=z>=S.z-S.width/2&&z<=S.z+S.width/2;
-    const spans=underShed?[[x0,Math.min(x1,S.x-S.depth/2)],[Math.max(x0,S.x+S.depth/2),x1]]:[[x0,x1]];
-    for(const [a,b] of spans)if(b>a)timber('Weathered board',b-a,.08,pitch-.008,(a+b)/2,.02,z,plank);
-   }
-   for(const x of [x0+.18,x1-.18])timber('Timber bearer',.14,.2,z1-z0,x,-.12,(z0+z1)/2,beam);
-   for(let z=z0+.35;z<z1;z+=2.1)for(const x of [x0+.18,x1-.18]){const post=new THREE.Mesh(new THREE.CylinderGeometry(.11,.13,1.6,8),pileMat);post.position.set(x,-.78,z);post.name='Timber support pile';post.castShadow=shadows;pier.add(post);}
-  };
-  deck(-38.45,-36.25,P.maxZ,-49.3);deck(P.minX,P.maxX,P.minZ,P.maxZ);
-  for(const material of [plank,beam]){const parts=boxes.filter(b=>b.material===material),mesh=new THREE.Mesh(mergeGeometries(parts.map(b=>b.g)),material);mesh.name=material===plank?'Boardwalk planks':'Boardwalk bearers';mesh.receiveShadow=true;mesh.castShadow=shadows;pier.add(mesh);parts.forEach(b=>b.g.dispose());}
- }
+ // The pier, as a dock builder builds it (timber-pier.js, fujita-layout.js FUJITA_PIER): piles in bents, caps, stringers,
+ // boards over a dark underlay, kerbs, rails, the berth's fender piles, a ladder, and what the Shiosai is tied to.
+ {const P=FUJITA_PIER,hb=HOUSEBOAT;
+  const pier=buildTimberPier(parent,timberPierPlan(P),{shadows,colliderTag:{portShed:true},ropes:[
+   // Her head line, from the bow cleat (fujita-houseboat.js) forward to the walkway's bollard, over the bollard's head.
+   {from:[hb.x+1.05,.17,hb.z+2.95],to:[P.bollards[0].x,.42,P.bollards[0].z],sag:.22},
+   // Her stern line, from the stern cleat to the cleat on the berth's kerb.
+   {from:[hb.x+1.2,.15,hb.z-3.55],to:[P.cleats[0].x,.27,P.cleats[0].z],sag:.12},
+  ]});
+  pier.group.name='Fujita timber pier';colliders.push(...pier.colliders);}
  // ---- Mr Fujita, in his chair.
  const fujita=new THREE.Group();fujita.name='Mr Fujita';fujita.userData.name='Mr Fujita';fujita.userData.walkSurface=false;
  fujita.position.set(cx,.02,cz-.08);g.add(fujita);
