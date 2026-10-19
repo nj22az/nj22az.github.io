@@ -11,7 +11,7 @@ import {createSeatSupport} from './seat-support.js';
 import {gaitOf} from './gait.js';
 import {DUTY_BELT} from './police-data.js';
 import {bodyVolume} from './build.js';
-import {storyProps,pocketSpot,PAPER} from './story-props.js';
+import {storyProps,pocketSpot,PAPER,posedPoints} from './story-props.js';
 import {MUSIC_MOVES,musicPose} from './music-moves.js';
 import {EXPRESSIVE_POSES} from './expressive-poses.js';
 
@@ -113,6 +113,10 @@ const REACH=Object.freeze({
  GrenadeCoin:{head:[.08,0,0],R:{head:[-1,-.35,.25,.08],seed:[-1.63,.19,-1.01,-1.64]},L:{at:m=>[0,m.shoulderY-.1*m.k,m.depth/2+.13*m.k],seed:[-.89,.96,.19,-1.48]}},
  BannerUp:{head:[-.08,0,0],R:{at:m=>[-(m.Rh*m.headSX+.09*m.k),m.headCentre+.03*m.k,.06*m.k],seed:[-2.98,.1,-.21,-.01]}},
  HoldUp:{R:{at:m=>[-.04*m.k,m.headCentre-m.Rh*m.headSY*1.2,m.Rh*1.35],seed:[-1.29,.59,.18,-1.26]}},
+ // Aim: the right arm straight out ahead (AIM_RIGHT, as armTo turns it); the left mitten under the middle of that
+ // forearm, a forearm's thickness below it, wherever this body's arm puts it.
+ Aim:{only:'L',L:{at:m=>{const e=new THREE.Euler(AIM_RIGHT[0],AIM_RIGHT[1],AIM_RIGHT[2]),d=new THREE.Vector3(0,-1,0).applyEuler(e);
+   return [-m.shoulderX+d.x*(m.upper+m.fore*.5),m.shoulderY+d.y*(m.upper+m.fore*.5)-m.armR*1.1,d.z*(m.upper+m.fore*.5)];},seed:[-1.12,.84,.5,-.72],hand:[-.7,0,0]}},
  HoldUpStraws:{R:{at:m=>[-(m.Rh*m.headSX+.06*m.k),m.headCentre-m.Rh*m.headSY*1.13,m.Rh*1.25],seed:[-.95,.08,-.35,-1.56]}},
  // ---- Fujita's Back (story v7). A place carried by a bone (`on`: the bone, and the place in the body's frame at rest) is
  // found with the body in the move's own pose (`pose`), so a mitten lands on the small of a bent back or on a knee.
@@ -130,8 +134,8 @@ const REACH=Object.freeze({
  // Carrying furniture (or a man stiff as a plank): the forearms forward under the load at the waist, the mittens a
  // little under a shoulder's width apart, palms up, their tops at the load's underside (CARRY.under above the floor, in the
  // move's own stance: the knees bent, the back straight and leaning in a little). CarryLegs: the same under his legs.
- CarryFurniture:{pose:()=>carryJoints(),R:{under:m=>[-CARRY.spread*m.k,CARRY.under+CARRY.flank,m.depth/2+CARRY.reach*m.k],level:true,seed:[-.35,.1,.05,-1.4,0],hand:[-.7,0,0]}},
- CarryLegs:{pose:()=>carryJoints(),seedFrom:'CarryFurniture',R:{under:m=>[-CARRY.legSpread*m.k,CARRY.legs,m.depth/2+CARRY.reach*m.k],level:true,seed:[-.35,.1,.05,-1.4,0],hand:[-.7,0,0]}},
+ CarryFurniture:{pose:m=>carryJoints(m),R:{under:m=>[-CARRY.spread*m.k,CARRY.under+CARRY.flank,m.depth/2+CARRY.reach*m.k],level:true,seed:[-.35,.1,.05,-1.4,0],hand:[-.7,0,0]}},
+ CarryLegs:{pose:m=>carryJoints(m),seedFrom:'CarryFurniture',R:{under:m=>[-CARRY.legSpread*m.k,CARRY.legs,m.depth/2+CARRY.reach*m.k],level:true,seed:[-.35,.1,.05,-1.4,0],hand:[-.7,0,0]}},
  // Carried stiff as a plank, both mittens laid on his belly, side by side (CarriedPlank).
  PlankHands:{pose:()=>({}),R:{touch:true,rest:true,on:['spine',(m,v)=>onFront(m,v,-1,PLANK.hands,.5)],elbow:m=>[-(m.width/2+m.armR*.4),m.hipY+m.torso*.42,m.depth*.25],seed:[-.35,.3,.1,-1.6,0],hand:[.2,-1.07,0]}},
  // Reading the paper held open low over the lap, the mittens at its outer edges (SitRead: SIT_READ).
@@ -180,8 +184,15 @@ export const CARRY=Object.freeze({under:.755,flank:.017,legs:.818,spread:.12,leg
   Object.freeze({at:'waist',move:'CarryFurniture',side:-1,along:.16,out:.42}),
   Object.freeze({at:'knees',move:'CarryLegs',side:1,along:-.2,out:.36}),
  ])});
-function carryJoints(){const C=CARRY;
- return {hips:[C.lean,0,0],chest:[-.04,0,0],thighL:[-.32-C.lean,0,.07],kneeL:[.64,0,0],footL:[-.32,0,-.07],thighR:[-.32-C.lean,0,-.07],kneeR:[.64,0,0],footR:[-.32,0,.07]};}
+function carryJoints(m){const C=CARRY;
+ // The stance of three short women. A taller carrier (Thuan since her 18 October design) cannot hold her forearms level
+ // at his underside from that stance: her elbows hang too high. She bends her knees as much further as brings her
+ // shoulders down to where her upper arm reaches the load: the crouch of someone carrying low.
+ let knee=.64;
+ if(m){const drop=(m.shoulderY-m.upper)-(C.under+C.flank+m.armR*1.1),leg=m.thigh+m.shin,half=a=>leg*(1-Math.cos(a/2));
+  if(drop>half(knee))knee=Math.min(1.9,2*Math.acos(Math.max(-1,1-drop/leg)));}
+ const thigh=-knee/2-C.lean,foot=-knee/2;
+ return {hips:[C.lean,0,0],chest:[-.04,0,0],thighL:[thigh,0,.07],kneeL:[knee,0,0],footL:[foot,0,-.07],thighR:[thigh,0,-.07],kneeR:[knee,0,0],footR:[foot,0,.07]};}
 /**
  * Miss Higa's reach back for the supply breaker without looking (ReachBack, "Fujita's Back" 6c and 7a): seated on her stool
  * at the bandai, she reaches back over her left shoulder and puts the lever up with the end of her mitten, her head and eyes
@@ -196,6 +207,8 @@ function carryJoints(){const C=CARRY;
  * seconds; it pushes the lever up `push` (over the next 0.2 s) and holds it there; back to the book the same way
  * over the last `out` seconds. `s.reachTo` (a world point) sends the mitten's end somewhere else.
  */
+/** Aim (6b): the right arm straight out ahead, as armTo turns the shoulder (x, y, z) and the elbow. */
+const AIM_RIGHT=Object.freeze([-1.2,0,.14,0]);
 export const REACH_BACK=Object.freeze({lever:Object.freeze([.07,.768,-.358]),
  box:Object.freeze({min:Object.freeze([.015,.715,-.44]),max:Object.freeze([.125,.905,-.365])}),
  board:Object.freeze({min:Object.freeze([.19,.45,-.44]),max:Object.freeze([.71,1.07,-.265])}),
@@ -372,7 +385,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   const hairAt=p=>{if(!shell)return 1;const q=_p[4].copy(p).sub(headAt).applyQuaternion(qInv);return shell(q.x/S[0],(q.y-hc)/S[1],q.z/S[2]);};
   const out={};
   // A place carried by a bone, with the body in the move's pose: where it is in the chest's frame then.
-  const posed=spec.pose?posedPlaces(spec.pose()):null,hipsM=spec.pose?chestToHips(spec.pose()):null,_h=new THREE.Vector3();
+  const posed=spec.pose?posedPlaces(spec.pose(m)):null,hipsM=spec.pose?chestToHips(spec.pose(m)):null,_h=new THREE.Vector3();
   // how far a point (in the chest's frame) is from the torso: bent, from the hips' part or the chest's, whichever is nearer
   // (and, posed, from the legs too: each a round limb of the leg's thickness and its clothes)
   const _s=new THREE.Line3(),_n=new THREE.Vector3();
@@ -977,12 +990,20 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    const A=reachFor('FloorSit:'+a.toFixed(3)+':'+knee.toFixed(3)+':'+along.toFixed(2),{pose:()=>joints,
     R:{touch:true,on:['thighR',()=>place(along)],seed:[-.55,.1,-.1,-.5,0],hand:[-.3,0,0]}});
    const was=JOINTS.map(j=>bones[j].rotation.toArray().slice(0,3));put(joints);
-   bones.shoulderR.rotation.set(A.R[0],A.R[1],A.R[2]);bones.elbowR.rotation.set(A.R[3],A.R[4]||0,0);bones.handR.rotation.set(...(A.handR||[0,0,0]));root.updateMatrixWorld(true);
-   // how near the mitten's surface (TOUCH) comes to the thigh's
-   const q=new THREE.Vector3(),p=new THREE.Vector3(),thigh=new THREE.Line3(inBody(bones.thighR.getWorldPosition(new THREE.Vector3())),inBody(bones.kneeR.getWorldPosition(new THREE.Vector3())));
-   let off=Infinity;for(const t of TOUCH){inBody(bones.handR.localToWorld(p.set(t[0]*m.hand,t[1]*m.hand,t[2]*m.hand)));off=Math.min(off,thigh.closestPointToPoint(p,true,q).distanceTo(p)-m.legR*1.15);}
+   // (the arms as armTo sets them: the left's turns mirrored)
+   for(const s of ['R','L']){const sg=s==='R'?1:-1,a=A[s],h=A['hand'+s]||[0,0,0];bones['shoulder'+s].rotation.set(a[0],a[1]*sg,a[2]*sg);bones['elbow'+s].rotation.set(a[3],(a[4]||0)*sg,0);bones['hand'+s].rotation.set(h[0],h[1]*sg,h[2]*sg);}
+   root.updateMatrixWorld(true);
+   // how near each mitten, as it is drawn, comes to its thigh: both of them, since each arm is solved on its own (an arm
+   // just long enough can bring one mitten to the thigh and leave the other in the air), and the mitten's skin rather
+   // than its envelope (TOUCH), which stands off the drawn mitten by a centimetre
+   const q=new THREE.Vector3();let off=-Infinity;
+   for(const s of ['R','L']){
+    const thigh=new THREE.Line3(inBody(bones['thigh'+s].getWorldPosition(new THREE.Vector3())),inBody(bones['knee'+s].getWorldPosition(new THREE.Vector3())));
+    let near=Infinity;for(const p of posedPoints(avatar,root,()=>true,1,new Set(['hand'+s])))near=Math.min(near,thigh.closestPointToPoint(p,true,q).distanceTo(p)-m.legR*1.15);
+    off=Math.max(off,near);
+   }
    JOINTS.forEach((j,i)=>bones[j].rotation.set(...was[i]));root.updateMatrixWorld(true);
-   if(off<.012*m.k)return hands=A;
+   if(off<.022*m.k)return hands=A;
    return hands=reachFor('FloorSitSide:'+a.toFixed(3)+':'+knee.toFixed(3),{pose:()=>joints,
     R:{root:[-(m.hipX+m.legR*1.15+m.hand*.9+FLOOR_SIT.side*m.k),rest+m.hand*1.1,-FLOOR_SIT.behind*m.k],seed:[.1,0,-.2,-.15,0],hand:[0,0,0]}});}};
   floorShapes.set(key,shape);return shape;
@@ -1358,7 +1379,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    // from the right cheek, the left mitten a fist before the chest, hunched forward, tense; the face clear for the lens.
    case 'GrenadeCoin':{const A=reachFor('GrenadeCoin');add('chest',.12*w);add('head',.08*w);armTo('R',A.R,w);armTo('L',A.L,w);break;}
    // A hair dryer aimed like a pistol (6b): the right arm straight out ahead, the left mitten under the forearm steadying it.
-   case 'Aim':add('head',.04*w);armTo('R',[-1.2,0,.14,0],w);armTo('L',[-1.12,.84,.5,-.72],w);break;
+   case 'Aim':add('head',.04*w);armTo('R',AIM_RIGHT,w);armTo('L',reachFor('Aim').L,w);break;
    // Holding one thing up to show it (8a: the tiny screwdriver, upright before his face like a sacred object).
    case 'HoldUp':armTo('R',reachFor('HoldUp').R,w);break;
    // Showing a fan of straws (9b–d): held up in the right mitten beside the right of the face (both read), chest to eye height.

@@ -769,8 +769,10 @@ export function necklaceShape(input,m=measure(input)){
  const vol=bodyVolume(recipe,m),W=m.width,D=m.depth,k=m.k,under=N.under[top],low=under?under[2]:N.front;
  // A point on the front of the body, x across from the middle, at the height t up the torso.
  const front=(x,t)=>vol.surf(Math.asin(THREE.MathUtils.clamp(x/(W/2*latheRadius(vol.prof,t)),-1,1)),t);
- // Laid on the body, then lifted so the chain rests on it.
- const lay=points=>laidFrames(vol,points).map(f=>f.c.clone().addScaledVector(f.n,(N.gap+N.radius)*k));
+ // Laid on the body, then lifted so the chain rests on it: settled by the body's own distance, since a lift along one
+ // normal lands further off a chest that curves away (a fuller build) than along a flat one.
+ const rest=(N.gap+N.radius)*k;
+ const lay=points=>laidFrames(vol,points).map(f=>{let s=rest;const q=new THREE.Vector3();for(let i=0;i<6;i++){q.copy(f.c).addScaledVector(f.n,s);s=THREE.MathUtils.clamp(s+rest-vol.sdf(q),rest*.5,rest*3);}return q.copy(f.c).addScaledVector(f.n,s);});
  const strands=[];
  if(under)for(const s of [-1,1])strands.push({closed:false,points:lay([0,.25,.5,.75,1].map(f=>front(s*under[0]*k*(1-f),under[1]+(low-under[1])*f)))});
  else{
