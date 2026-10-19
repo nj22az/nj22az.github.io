@@ -3,8 +3,17 @@
 18 October 2026. The office and konbini now share one continuous two-storey
 interior. Walk through the stockroom and up two flights, turning at the western
 landing; walk back down the same route. The upper floor is 4.01m above the shop.
-The existing outside stair still enters the office and its upper door returns to
-the outside landing. There is no separate office instance when entering that way.
+There is no separate office instance: the directory's office entry opens the same
+interior on the upper floor.
+
+19 October 2026: the outside stair, its landing and the outside office door are
+gone (the creator: "Remove the outdoor stairs to Sakura's office, add windows on
+the back and a fire escape"). The office is reached only through the shop and up
+this stair. Its rear door is a fire door onto a steel landing and a caged escape
+ladder down the back wall, solid and on no route; the back wall has two office
+sashes, a frosted stair window and the kitchenette's vent, and the lawn behind the
+shop is a concrete service apron (`okinawa/old-town.js` `SAKURA_BACK`,
+`thuan-flat.js` `SAKURA_OFFICE_BACK`, `tests/sakura-back.test.mjs`).
 
 The western stockroom has a real ceiling opening, stepped treads, handrails,
 guarded upper-floor opening and a lit turning landing. The office floor is split
