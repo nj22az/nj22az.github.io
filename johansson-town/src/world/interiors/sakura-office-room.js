@@ -1,4 +1,5 @@
 import * as THREE from '../../../vendor/three.module.js';
+import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 
 /**
@@ -97,8 +98,10 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},internal=
  // A sign plate in Japanese, its face turned by yaw (0 faces +z).
  const sign=(text,at,yaw,{w=.36,h=.12,ground='#efe6d0',ink='#2c2620',name='Door sign'}={})=>{
   const tex=paint(256,Math.round(256*h/w),(ctx,cw,ch)=>{ctx.fillStyle=ground;ctx.fillRect(0,0,cw,ch);ctx.fillStyle=ink;ctx.font=`bold ${Math.round(ch*.62)}px ${JP}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,cw/2,ch/2+2);});
-  const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,.015),tex?[mat(DARK),mat(DARK),mat(DARK),mat(DARK),new THREE.MeshStandardMaterial({map:tex,roughness:.7}),mat(DARK)]:mat(0xefe6d0));
-  m.position.set(...at);m.rotation.y=yaw;m.name=name+' '+text;m.userData.text=text;room.add(m);return m;
+  // A dark wooden backing (merged with the room) and the lettered face in front of it.
+  const back=box([w+.02,h+.02,.012],at,DARK,'Door sign backing');back.rotation.y=yaw;
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),tex?new THREE.MeshStandardMaterial({map:tex,roughness:.7}):mat(0xefe6d0));
+  m.position.set(...at).add(new THREE.Vector3(Math.sin(yaw),0,Math.cos(yaw)).multiplyScalar(.0075));m.rotation.y=yaw;m.name=name+' '+text;m.userData.text=text;room.add(m);return m;
  };
 
  // ---- floor, ceiling and the shell's inner faces
@@ -274,5 +277,33 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},internal=
   cyl(.004,.45,[(R.minX+R.maxX)/2+.3,R.ceiling-.06-.225,(R.minZ+R.maxZ)/2+.2],0x2c2620,'Pull cord',4);
  }
  if(!internal){const fill=new THREE.HemisphereLight(0xffefd7,0x7e8071,1.2);fill.name='Sakura office steady indoor fill';room.add(fill);}
+ mergeStatic(room);
  return {bounds:{minX:-hw+.1,maxX:hw-.1,minZ:back+.1,maxZ:front-.1},spawn:[-.2,0,back+1],office:true};
+}
+
+/**
+ * The floor's fixed pieces (walls, furniture, mats) are merged: every plain painted piece into one vertex-coloured
+ * mesh, each other material into one mesh of its own. Each original is left behind as a named, placed marker so the
+ * plan can still be read and tested by name. Lit fittings (basic materials) and lettered faces keep their meshes.
+ * Sakura's interior has a draw budget (sakura-budget.test).
+ */
+function mergeStatic(room){
+ const plain=m=>m.isMeshStandardMaterial&&!m.map&&!m.transparent&&m.emissive.getHex()===0&&m.roughness===.83;
+ const groups=new Map(),PAINT='paint';
+ for(const m of [...room.children]){
+  if(!m.isMesh||m.isInstancedMesh||Array.isArray(m.material)||m.material.isMeshBasicMaterial||m.material.map&&/^Door sign /.test(m.name))continue;
+  const key=plain(m.material)?PAINT:m.material;
+  if(!groups.has(key))groups.set(key,[]);groups.get(key).push(m);
+ }
+ for(const [key,meshes] of groups){
+  if(meshes.length<2)continue;
+  const parts=meshes.map(m=>{m.updateMatrix();const g=m.geometry.clone().applyMatrix4(m.matrix);
+   if(key===PAINT){const c=m.material.color,n=g.attributes.position.count,col=new Float32Array(n*3);for(let i=0;i<n;i++){col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;}g.setAttribute('color',new THREE.BufferAttribute(col,3));}
+   return g;});
+  const merged=mergeGeometries(parts,false);for(const g of parts)g.dispose();
+  if(!merged)continue;
+  const material=key===PAINT?new THREE.MeshStandardMaterial({vertexColors:true,roughness:.83}):key;
+  const mesh=new THREE.Mesh(merged,material);mesh.name='Sakura upstairs fittings';room.add(mesh);
+  for(const m of meshes){const marker=new THREE.Object3D();marker.name=m.name;marker.position.copy(m.position);marker.rotation.copy(m.rotation);marker.userData={...m.userData,merged:true};room.add(marker);room.remove(m);m.geometry.dispose();}
+ }
 }
