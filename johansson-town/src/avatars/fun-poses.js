@@ -25,7 +25,12 @@ const clamp01=x=>Math.min(1,Math.max(0,x));
 /** The legs a little bent and the knees turned in (weak at the knees; shy), written for both sides. */
 const kneesIn=(P,w,bend=.22,inward=.07)=>{for(const [s,k] of [['L',1],['R',-1]]){P.toward('thigh'+s,-bend*.6,0,-k*inward,w);P.toward('knee'+s,bend,0,0,w);P.toward('foot'+s,-bend*.4,0,k*inward,w);}};
 /** The left mitten on the hip, the elbow out (HandsOnHips' left arm). */
-const handOnHip=(P,w)=>{P.toward('shoulderL',.15,0,.75,w);P.toward('elbowL',-.3,0,-1.5,w);};
+/** A mitten laid on the hip's side (`side` +1 the left, -1 the right), as onBack lays one on the back: the body's own surface
+ *  at the hip, the mitten's thickness out from it. A fixed fold of the arm put the mitten in a short-armed, wide-hipped body's
+ *  thigh; solved, it rests on the hip of every body. */
+const onHip=(m,vol,side)=>{const p=vol.surf(side*Math.PI*.5,.2);return p.addScaledVector(vol.normal(p),m.hand*.95).toArray();};
+/** The elbow of an arm akimbo: out to the side and a little below the shoulder, so the mitten on the hip reads as hands-on-hips. */
+const akimbo=(m,side)=>[side*(m.shoulderX+m.upper*.72),m.shoulderY-m.upper*.62,.02];
 /** Both hands where `reach` put them. */
 const both=(P,A,w)=>{if(A.R)P.armTo('R',A.R,w,A.handR);if(A.L)P.armTo('L',A.L,w,A.handL);};
 
@@ -117,8 +122,11 @@ export const FUN_POSES=Object.freeze({
   play(P){const {w,t}=P;both(P,P.reach(),w);P.toward('chest',-.12,0,0,w);P.add('head',-.12*w+Math.sin(t*31)*.004*w);kneesIn(P,w,.24,.06);}}),
  Facepalm:Object.freeze({label:'Facepalm',face:'dry',d:2.6,ramp:.8,
   use:'Someone has done something silly (or you have): one mitten over the eyes, the head bowed into it, the other on the hip.',
-  reach:{hair:true,head:[.26,0,-.1],only:'R',R:{cover:true,head:[-.12,.18,1,.035],seed:[-1.55,.72,-.72,-1.9,0],hand:[0,0,0]}},
-  play(P){const {w}=P;both(P,P.reach(),w);handOnHip(P,w);P.toward('chest',.1,0,0,w);P.add('head',.26*w,0,-.1*w);}}),
+  // (pose: the body as play() stands it, which a mitten laid `on` the body is solved against)
+  reach:{pose:()=>({chest:[.1,0,0],thighL:[0,0,.12]}),hair:true,head:[.26,0,-.1],R:{cover:true,head:[-.12,.18,1,.035],seed:[-1.55,.72,-.72,-1.9,0],hand:[0,0,0]},
+   L:{touch:true,on:['hips',(m,v)=>onHip(m,v,1)],elbow:m=>akimbo(m,1),seed:[.15,0,-.75,-.3,0],hand:[0,0,0]}},
+  // (the leg under the hip mitten set a little out, as HandsOnHips stands)
+  play(P){const {w}=P;both(P,P.reach(),w);P.toward('thighL',0,0,.12,w);P.toward('chest',.1,0,0,w);P.add('head',.26*w,0,-.1*w);}}),
  OhNo:Object.freeze({label:'Oh no!',face:'shock',d:2.6,ramp:.8,
   use:'Disaster: both mittens clapped to the head, the elbows out, crouching a little: it has all gone wrong.',
   reach:{hair:true,head:[.1,0,0],R:{cover:.015,head:[-.7,.62,.12,.03],seed:[-2.4,.3,-.9,-1.4,0],hand:[0,0,0]}},
@@ -136,7 +144,8 @@ export const FUN_POSES=Object.freeze({
   reach:{hair:true,head:[-.05,0,0],only:'R',R:{cover:true,head:[-.6,.42,.62,.03],elbow:m=>[-(m.shoulderX+m.upper*.85),m.shoulderY,m.depth*.25],seed:[-1.1,.3,-1.3,-2.2,0],hand:[0,-1.3,0]}},
   play(P){const {w}=P;both(P,P.reach(),w);P.toward('chest',-.05,0,0,w);P.add('head',-.05*w);
    for(const s of ['L','R']){P.toward('thigh'+s,0,0,0,w);P.toward('knee'+s,0,0,0,w);P.toward('foot'+s,0,0,0,w);}}}),
- Swoon:Object.freeze({label:'Swoon',face:'daze',d:3,ramp:.8,
+ // (ramp .9: the mitten's way to the brow is the longest of these moves; at .8 a slim teen's shoulder turned faster than a frame allows)
+ Swoon:Object.freeze({label:'Swoon',face:'daze',d:3,ramp:.9,
   use:'The dramatic swoon (oh my!): the back of a mitten to the brow, leaning back, the other arm flung out behind.',
   reach:{hair:true,head:[-.26,0,.14],only:'R',R:{cover:true,head:[-.25,.48,.85,.045],seed:[-2,.6,-.9,-1.9,0],hand:[0,1.6,0]}},
   play(P){const {w}=P;both(P,P.reach(),w);P.toward('shoulderL',.5,0,1.1,w);P.toward('elbowL',-.25,0,0,w);P.toward('chest',-.22,0,.06,w);P.add('head',-.26*w,0,.14*w);
