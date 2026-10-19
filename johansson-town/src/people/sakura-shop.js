@@ -15,7 +15,7 @@ import {createStandIn} from '../render/static-props.js';
 import {townAudio} from '../audio/town-audio.js?snappy=1';
 
 // A single persistent shop owns stock, staff and customer jobs everywhere in town.
-export function createSakuraShop({world,scene,state,ledger,register,action,exit,officeExit=exit,getMinutes,getPlayerPosition,isInside,onBorrow=()=>{},getRain=()=>false,save=()=>{}}){
+export function createSakuraShop({world,scene,state,ledger,register,action,exit,getMinutes,getPlayerPosition,isInside,onBorrow=()=>{},getRain=()=>false,save=()=>{}}){
  // Re-checked twice a second too: the interior's lights arrive when its model loads.
  let lightsInside=null,lightCheck=0;
  const group=new THREE.Group();group.name='Sakura Shōten continuous shop';group.userData.sharedAsset=true;group.visible=false;scene.add(group);
@@ -39,7 +39,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   return world.people.some(p=>p!==excluded&&p.g.userData.inMarket&&p.g.visible&&Math.hypot(p.g.position.x-x,p.g.position.z-z)<r+(p===person?layout.clearance:.35));
  };
  let backRoomsFetched=false;
- const display=buildSakuraInterior({room:group,reg,action,exit,officeExit});display.updateStock(state.sakura.stock);
+ const display=buildSakuraInterior({room:group,reg,action,exit});display.updateStock(state.sakura.stock);
  const checkout=createCheckoutFeedback({drawer:display.cashDrawer,
   getSale:()=>state.sakura.journal?.findLast(entry=>entry.kind==='Sale'),
   onSale:()=>townAudio.bells([[1568,0],[2093,.09]],.16)});

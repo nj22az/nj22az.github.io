@@ -1,32 +1,60 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
-import {buildThuanFlat} from '../src/world/thuan-flat.js';
+import {buildThuanFlat,SAKURA_OFFICE_BACK} from '../src/world/thuan-flat.js';
+import {SAKURA_BACK} from '../src/world/okinawa/old-town.js';
 
+const SHOP_DOOR=[-5.5,0,-27.3];
 function office(){
- const town=new THREE.Group(),store=new THREE.Group(),sites=[],colliders=[];
+ const town=new THREE.Group(),store=new THREE.Group(),sites=[];
  store.position.set(-7.45,0,-27.3);store.rotation.y=Math.PI/2;town.add(store);
- const {site}=buildThuanFlat(store,{sites,colliders});town.updateMatrixWorld(true);
- return {town,store,site,colliders};
+ const {site}=buildThuanFlat(store,{sites,shopDoor:SHOP_DOOR});town.updateMatrixWorld(true);
+ return {town,store,site};
 }
+const solids=town=>{const list=[];town.traverse(o=>{if(o.isMesh&&!/glazing/.test(o.name))list.push(o);});return list;};
+const firstHit=(town,from,to)=>{const a=new THREE.Vector3(...from),b=new THREE.Vector3(...to);
+ return new THREE.Raycaster(a,b.clone().sub(a).normalize(),0,a.distanceTo(b)).intersectObjects(town.children,true)[0];};
 
 test('exterior trim leaves seated town and harbour sightlines open',()=>{
- const {town,store,site,colliders}=office();
- const solid=[];town.traverse(o=>{if(o.isMesh&&!/glazing/.test(o.name))solid.push(o);});
+ const {town,store,site}=office();
  for(const [from,to] of [[[.8,5.51,-3],[.8,5.51,0]],[[4.1,5.13,-2.3],[7,5.13,-2.3]]]){
   const a=store.localToWorld(new THREE.Vector3(...from)),b=store.localToWorld(new THREE.Vector3(...to));
   const ray=new THREE.Raycaster(a,b.clone().sub(a).normalize(),0,a.distanceTo(b));
-  assert.equal(ray.intersectObjects(solid).length,0,'window must remain clear at seated eye height');
+  assert.equal(ray.intersectObjects(solids(town)).length,0,'window must remain clear at seated eye height');
  }
- assert.deepEqual(site.door,[-18.8,4.01,-26.66]);assert.equal(site.officePortals.length,2);
- assert.equal(colliders.length,0,'facade adds no obstacles to the working stairs');
+ assert.equal(site.officePortals.length,2);
+});
+
+test('the office is entered through the shop: its site is the shop door, with no door of its own outside',()=>{
+ const {site}=office();
+ assert.deepEqual(site.door,SHOP_DOOR);assert.deepEqual(site.approachPosition,SHOP_DOOR);assert.deepEqual(site.exitPosition,SHOP_DOOR);
+ assert.equal(site.entryFacing,Math.PI/2,'facing into the shop, as its front door does');
 });
 
 test('upper facade uses batched geometry and the existing dusk circuit',()=>{
  const {town}=office();let meshes=0,vertices=0,lights=0;const panes=[];
  town.traverse(o=>{if(o.isLight)lights++;if(o.isMesh){meshes++;vertices+=o.geometry.attributes.position.count;if(/glazing/.test(o.name))panes.push(o);}});
  assert.ok(meshes<=8,`${meshes} exterior draw meshes`);assert.ok(vertices<16000,`${vertices} vertices`);assert.equal(lights,0);
- assert.equal(panes.length,2);assert.equal(panes[0].material,panes[1].material);
- assert.equal(panes[0].material.userData.kitFinish,'glow','both outlooks join the existing window dusk updates');
+ assert.deepEqual(panes.map(p=>p.name).sort(),['Sakura harbour office glazing','Sakura main office glazing','Sakura rear office glazing']);
+ assert.ok(panes.every(p=>p.material===panes[0].material),'all three outlooks share one glass');
+ assert.equal(panes[0].material.userData.kitFinish,'glow','all outlooks join the existing window dusk updates');
  assert.ok(panes[0].material.emissive.getHex()>0);
+ let frosted=false;town.traverse(o=>{if(o.isMesh&&o.material.userData.kitFinish==='glow'&&!/glazing/.test(o.name))frosted=true;});
+ assert.ok(frosted,'the frosted stair window lights at dusk too');
+});
+
+test('the back wall has the office windows and the fire door, open to the escape and nowhere else',()=>{
+ const {town,store}=office(),F=4.01,face=SAKURA_BACK.upperWall;
+ // Each sash: glass seen from the yard, set into the wall.
+ for(const w of SAKURA_OFFICE_BACK.windows){
+  const z=store.localToWorld(new THREE.Vector3((w.x0+w.x1)/2,0,0)).z,y=F+(w.sill+w.head)/2;
+  const hit=firstHit(town,[-22,y,z],[-17,y,z]);
+  assert.equal(hit?.object.name,'Sakura rear office glazing','a window at z '+z.toFixed(2));
+  assert.ok(hit.point.x>face&&hit.point.x<SAKURA_BACK.upperWall+.12,'the glass is in the wall, not on it');
+ }
+ // The fire door: a steel leaf recessed in its opening, where the escape's landing is.
+ const E=SAKURA_BACK.fireEscape,door=firstHit(town,[-22,F+1,E.door.z],[-17,F+1,E.door.z]);
+ assert.ok(door&&door.point.x>face+.01,'the fire door stands in its opening at the escape');
+ for(const dz of [-E.door.width/2-.1,E.door.width/2+.1]){const wall=firstHit(town,[-22,F+1,E.door.z+dz],[-17,F+1,E.door.z+dz]);assert.ok(Math.abs(wall.point.x-face)<1e-6,'solid wall either side of the door');}
+ assert.ok(E.platform.minZ<E.door.z-E.door.width/2&&E.platform.maxZ>E.door.z+E.door.width/2,'the landing spans the door');
 });

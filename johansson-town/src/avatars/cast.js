@@ -1,3 +1,4 @@
+import {THUAN_STUDIO_DESIGN} from './thuan-studio-design.js';
 import {HARBOUR_POLO_OUTFIT} from './outfits.js';
 import {residentRecipe} from './wardrobe.js';
 import {BIRTHDAYS} from '../people/birthdays-data.js';
@@ -59,18 +60,10 @@ export const CAST_RECIPES=castSet({
   facial:{style:'stubble',colour:'#b8b4aa'},wrinkles:.7,blush:.35,
   outfit:{top:'kariyushi',topColour:'#7fb0d8',pattern:'flowers',bottom:'shorts',bottomColour:'#c8b48a',footwear:'sandals',shoes:'#6d4a32',accent:'#f4f1ea'},
   swim:{colour:'#2f5f9e'}}),
- // The creator, 2026-10-10: "Bring the Thuan with glasses back and yellow top she was cute" and "I want Thuan's
- // classical hair style back": her round rose glasses, the yellow flowered blouse with navy trousers, and her classic
- // braids with yellow ties.
- Thuan:R({name:'Thuan',accessories:{earrings:'studs',neckwear:'pendant',colour:'#e0b93a'},
-  body:{height:.36,build:.35,silhouette:'feminine',skin:'#e8bd9e'},head:{size:.48,shape:.53,form:'oval',jaw:.48,cheeks:.72,roundness:.72},
-  hair:{style:'braids',colour:'#1c1714',flip:false,tieColour:'#f4d23c'},
-  eyes:{style:'bright',colour:'#2a1d16',size:.8,width:.64,spacing:.5,height:.48,tilt:.53},
-  brows:{style:'arched',colour:'#2a1d16',size:.51,height:.55,tilt:.5},
-  nose:{style:'button',size:.27,height:.5},mouth:{style:'soft',colour:'#a94f4b',size:.5,width:.57,height:.5},
-  glasses:{style:'round',colour:'#e06a7a'},blush:.38,
-  outfit:{top:'blouse',topColour:'#f4d23c',pattern:'flowers',bottom:'trousers',bottomColour:'#27304d',shoes:'#f4f1ea',accent:'#f4d23c'},
-  swim:{colour:'#e98aa6'}}),
+ // The creator's own design for her, approved in Johansson Studio on 18 October 2026 (thuan-studio-design.js). Its
+ // body silhouette is Studio's unset 'neutral', which the town resolves by who she is, as for everyone (castSet above):
+ // the bath side, the swimwear and the after-bath clothes all follow it.
+ Thuan:R(THUAN_STUDIO_DESIGN),
  // Thuan's middle sister: slim, a high ponytail, a plain white tee and blue shorts.
  // Stubborn but friendly: the flat set mouth and straight brows, and the grin under them.
  Thao:R({name:'Thao',body:{height:.44,build:.3,silhouette:'feminine',skin:'#ecc6a0'},head:{size:.46,shape:.4,form:'oval',jaw:.3,cheeks:.4},
@@ -123,7 +116,7 @@ export const CAST_RECIPES=castSet({
   brows:{style:'worried',colour:'#3a3835',size:.55},nose:{style:'button',size:.45},mouth:{style:'smile',size:.45},
   blush:.2,wrinkles:.2,
   outfit:{top:'police',topColour:'#2c416d',bottom:'trousers',bottomColour:'#2c416d',footwear:'shoes',shoes:'#1c1c24',hat:'police',hatColour:'#2c416d',accent:'#a8893f',belt:'duty'}}),
-});
+},['Thuan']);
 
 /** The people of the new streets, drawn to their lines in neighbours.js. */
 export const NEIGHBOUR_RECIPES=castSet({
