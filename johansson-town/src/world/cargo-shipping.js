@@ -1,5 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
-import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
+import {buildCargoBoat,createMooringLines} from './harbour-boats.js';
 import {profiledTrack} from './ferry-paths.js';
 import {CARGO_BERTH} from './minato-berth.js';
 import {SEA_LEVEL} from './ocean.js';
@@ -72,28 +72,19 @@ export function cargoPose(minutes){
 }
 
 export function buildCargoShipping(world,{register,onAction}={}){
- const ship=new THREE.Group();ship.name='Scheduled island cargo ship';ship.userData.dynamicProp=true;world.group.add(ship);const batches=new Map();
- const piece=(g,c)=>{if(!batches.has(c))batches.set(c,[]);batches.get(c).push(g);};
- const box=(s,p,c)=>{const g=new THREE.BoxGeometry(...s);g.translate(...p);piece(g,c);};
- // Drawn as she was designed at 26 × 5.6 m and built at 20 × 5 (the scale below): the hull, the deck
- // and her rails, the wheelhouse and funnel aft, three cargo boxes on deck. Local +x is her bow.
- const hullShape=new THREE.Shape();hullShape.moveTo(-13,-2.8);hullShape.lineTo(10,-2.8);hullShape.lineTo(13,-1.3);hullShape.lineTo(13,1.3);hullShape.lineTo(10,2.8);hullShape.lineTo(-13,2.8);hullShape.closePath();
- const hull=new THREE.ExtrudeGeometry(hullShape,{depth:1.6,bevelEnabled:false});hull.rotateX(-Math.PI/2);hull.translate(0,-.7,0);piece(hull,0x344b53);
- box([23,.12,5.4],[-1,1.0,0],0x89816a);box([5,1.7,4.8],[-8,1.91,0],0xdfd8bc);box([4.1,1.3,3.8],[-8.35,3.35,0],0xe3dcc5);box([3.3,.14,4.1],[-8.35,4.05,0],0x606f6d);
- for(const x of [-9.5,-8.8,-8.1,-7.4])for(const z of [-1.95,1.95])box([.42,.47,.045],[x,3.4,z],0x405d63);
- box([.7,2.4,.8],[-10.4,4.3,0],0x75473b);box([.03,4.5,.03],[-7.0,4.8,0],0x5b6460);
- for(let i=0;i<3;i++)for(const z of [-1.25,1.25]){const x=-2+i*3.3;box([3.1,1.65,2.15],[x,1.9,z],[0x59706e,0x6e7e87,0x937653][i]);for(let k=0;k<12;k++)box([.04,1.52,.035],[x-1.45+k*.25,1.92,z+Math.sign(z)*1.095],0x697a76);}
- for(const z of [-2.6,2.6]){box([23,.04,.04],[-1,1.8,z],0xb2b1a0);for(let x=-12;x<10;x+=1)box([.025,.75,.025],[x,1.43,z],0xa4a79a);}
- const scale=new THREE.Matrix4().makeScale(CARGO_BOAT.length/26,1,CARGO_BOAT.beam/5.6);
- for(const [c,list] of batches){const g=mergeGeometries(list,false);g.applyMatrix4(scale);const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:c,roughness:.82,metalness:.18}));m.castShadow=true;m.receiveShadow=true;ship.add(m);list.forEach(g=>g.dispose());}
+ const ship=new THREE.Group();ship.name='Scheduled island cargo ship';ship.userData.dynamicProp=true;world.group.add(ship);
+ // Drawn by harbour-boats.js to the Minato Maru's finish: her lines, her house and crane, today's load, her name. Its
+ // frame has her bow at +z; this one at +x, so it turns a quarter.
+ const model=buildCargoBoat({length:CARGO_BOAT.length,beam:CARGO_BOAT.beam,shadows:true});model.rotation.y=Math.PI/2;ship.add(model);
  // She floats laden: the hull's foot 0.7 m below the water, her deck 0.95 m above it.
  const REST_Y=SEA_LEVEL-.04;
- // Her lines, alongside: from her fairleads (bow and stern, on her starboard side) to the bitts on the pier's east edge.
- const fairleads=[[8.6,1],[8.2,1],[-8.2,1],[-8.6,1]].map(([x,y])=>new THREE.Vector3(x,y,CARGO_BOAT.beam/2-.15));
- const ropeMat=new THREE.MeshStandardMaterial({color:0x9b825e,roughness:.92});
- const lines=B.bitts.map(b=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,1,6),ropeMat);m.name='Cargo mooring line';m.userData.dynamicProp=true;m.userData.bitt=new THREE.Vector3(b.x,.6,b.z);m.visible=false;world.group.add(m);return m;});
- const up=new THREE.Vector3(0,1,0),from=new THREE.Vector3(),dir=new THREE.Vector3();
- const placeLines=on=>{for(const [i,m] of lines.entries()){m.visible=on;if(!on)continue;from.copy(fairleads[i]);ship.localToWorld(from);const to=m.userData.bitt;dir.subVectors(to,from);const len=dir.length();m.position.copy(from).addScaledVector(dir,.5);m.quaternion.setFromUnitVectors(up,dir.normalize());m.scale.set(1,len,1);}};
+ // Her lines, alongside: from her fairleads (bow and stern, on her starboard side) to the bitts on the pier's east edge,
+ // each hanging a little and re-laid every frame as she rises and rolls.
+ const toShip=([x,y,z])=>new THREE.Vector3(z,y,-x);
+ const lines=B.bitts.map(b=>{const lead=model.userData.leads.find(l=>l.line===b.line),rope=createMooringLines(world.group,1,{name:'Cargo mooring line',radius:.026});
+  const m=rope.mesh;Object.assign(m.userData,{bitt:new THREE.Vector3(b.x,.6,b.z),fairlead:toShip(lead.at),rope});m.visible=false;return m;});
+ const from=new THREE.Vector3();
+ const placeLines=on=>{for(const m of lines){m.visible=on;if(!on)continue;from.copy(m.userData.fairlead);ship.localToWorld(from);m.userData.rope.set(0,from,m.userData.bitt,.12);}};
  let visit=cargoVisit(0);
  const times=CARGO_CALLS.map(c=>'in '+clock(c.arrival)+' · alongside '+clock(c.alongside)+'–'+clock(c.departure)+' · clear '+clock(c.gone));
  const a=new THREE.Object3D();a.position.set(-20,1,-49.3);world.group.add(a);register?.(a,'Read the cargo arrival board',()=>onAction?.('read','Island cargo calls','ISLAND SUPPLY SERVICE · outer pier, east side\nMorning: '+times[0]+'.\nAfternoon: '+times[1]+'.\n'+visit.name+' is '+visit.phase+'. Rice, shop goods, post and repair parts come in; chilled catch and outgoing mail leave. Her own two hands work her hatches, and the depot at the Quay Warehouse takes the goods in from the quay. Keep the pier’s east side clear while she berths.'));
@@ -101,6 +92,6 @@ export function buildCargoShipping(world,{register,onAction}={}){
   visit=cargoVisit(minutes);ship.visible=visit.visible;
   const p=cargoPose(minutes);
   ship.position.set(p.x,REST_Y+Math.sin(time*.8)*.025,p.z);ship.rotation.set(0,p.yaw-Math.PI/2,Math.sin(time*.45)*.003);
-  ship.updateMatrixWorld();placeLines(visit.phase==='alongside');
+  model.userData.showName(visit.name);ship.updateMatrixWorld();placeLines(visit.phase==='alongside');
  },snapshot:()=>({...visit,position:ship.position.toArray()})};
 }
