@@ -122,6 +122,11 @@ float shoreDistance(vec2 xz) {
   if (uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0) return uShoreRange;
   return texture2D(uShore, uv).r * uShoreRange;
 }
+float quayside(vec2 xz) {
+  vec2 uv = (xz - uShoreRect.xy) / uShoreRect.zw;
+  if (uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0) return 0.0;
+  return texture2D(uShore, uv).g;
+}
 // Sunlight focused by the ripples into a moving net on the sandy bottom.
 float caustic(vec2 p, float t) {
   vec2 q = mod(p * 6.28318, 6.28318) - 250.0;
@@ -190,7 +195,7 @@ void main() {
   float foam = step(shore + (lace - 0.5) * 0.9, edge);
   float lineAt = edge + 1.1 + surge * 0.6;
   float line = step(abs(shore - lineAt), 0.18) * step(0.45, lace);
-  foam = max(foam, line);
+  foam = max(foam, line) * (1.0 - step(0.5, quayside(vWorldPos.xz)));
   // Whitecaps on the steepest crests, sparing, and only near enough to resolve.
   float cap = step(0.82, vCrest + lace * 0.25) * (1.0 - smoothstep(30.0, 70.0, dist));
   foam = max(foam, cap * 0.85);
@@ -251,13 +256,21 @@ export function shoreDistance(x,z){
   return Math.min(best,airportShoreDistance(x,z));
 }
 let shoreTexture=null;
+/**
+ * The port's quay: the coastline's straight south edge from the harbour office's corner (20, -50) to the west seawall
+ * (-40, -50). The water there is a dredged basin against a concrete wall, so the shore's lace of foam (meant for a
+ * sloping beach) is left out; it drew a straight white stripe through the water under Fujita's boardwalk.
+ */
+export const QUAYSIDE=Object.freeze({minX:-40,maxX:20,z:-50,reach:6});
+export function quaysideAt(x,z){const Q=QUAYSIDE;return z<Q.z&&z>Q.z-Q.reach&&x>Q.minX-.5&&x<Q.maxX+.5;}
 export function shoreDistanceTexture(){
   if(shoreTexture)return shoreTexture;
   const F=SHORE_FIELD,n=F.size,data=new Uint8Array(n*n*4);
   for(let j=0;j<n;j++)for(let i=0;i<n;i++){
     const x=F.minX+(i+.5)/n*(F.maxX-F.minX),z=F.minZ+(j+.5)/n*(F.maxZ-F.minZ);
     const v=Math.round(shoreDistance(x,z)/F.range*255),k=(j*n+i)*4;
-    data[k]=data[k+1]=data[k+2]=v;data[k+3]=255;
+    // Green marks water against the port's quay wall (the coast's straight south edge): deep at the wall, no surf.
+    data[k]=data[k+2]=v;data[k+1]=quaysideAt(x,z)?255:0;data[k+3]=255;
   }
   shoreTexture=new THREE.DataTexture(data,n,n,THREE.RGBAFormat);
   shoreTexture.magFilter=shoreTexture.minFilter=THREE.LinearFilter;shoreTexture.wrapS=shoreTexture.wrapT=THREE.ClampToEdgeWrapping;

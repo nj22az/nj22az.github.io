@@ -25,12 +25,13 @@ test('two west-corner poles clear of Sakura south storefront',()=>{
  assert.ok(!STREET_LAMP_PLACEMENTS.some(p=>Math.abs(p.z+35)<1.2&&Math.abs(p.x+7.3)<0.4));
  for(const p of STREET_LAMP_PLACEMENTS){
   assert.ok(Math.abs(p.z-SHOP_CROSSING_Z)>=1.2);
+  // On the west footway, kerb side: clear of the facades (-7.8) and of their signs.
   assert.ok(p.x>-7.45);
-  assert.ok(p.x<-6.8);
+  assert.ok(p.x<-5.3);
  }
  assert.deepEqual(
   STREET_LAMP_PLACEMENTS.map(p=>({x:p.x,z:p.z})),
-  [{x:-7.25,z:-15.0},{x:-7.25,z:-3.05}]
+  [{x:-5.45,z:-15.0},{x:-5.45,z:-3.05}]
  );
 });
 
