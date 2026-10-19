@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import * as T from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {buildOnsenInterior,ONSEN_ROOM} from '../src/world/interiors/onsen.js';
-import {buildKobanInterior} from '../src/world/interiors/koban.js';
+import {buildPoliceStationInterior} from '../src/world/interiors/police-station.js';
 import {surveyInterior,khaakaPlan} from '../scripts/building-survey.mjs';
 import {SATO_ROOM} from '../src/world/sato-ramen-layout.js';
 const build=fn=>{installDOM();const room=new T.Group(),cols=[];const layout=fn({room,reg(){},action(){},exit(){},collider:(x,z,w,d)=>cols.push({x,z,w,d})});return {room,layout:{...layout,colliders:[...cols,...(layout.colliders||[])]}};};
@@ -24,9 +24,11 @@ test('reproduces first-floor entrance-strip failure, then covers the complete on
  const p=khaakaPlan('Umi-no-yu',s);assert.ok(p.objects.every(o=>o.type!=='polygon'||o.closed&&o.points.length>=3));
  assert.deepEqual(s.bounds,ONSEN_ROOM.bounds);
 });
-test('koban includes office and tatami floors, not just the entry slab',()=>{
- const {room,layout}=build(buildKobanInterior),s=surveyInterior(room,layout);
- assert.equal(s.w,6.6);assert.equal(s.h,6);assert.ok(s.floorMeshes.includes('Police box office floor'));assert.ok(s.floorMeshes.includes('Tatami room floor')); assert.ok(s.features.includes('Toilet'));assert.equal(s.floorArea,39.6);
+test('the police station (koban) includes its lobby, office and counter-window floors, not just the entry slab',()=>{
+ const {room,layout}=build(buildPoliceStationInterior),s=surveyInterior(room,layout);
+ assert.equal(s.w,7.6);assert.equal(s.h,6.5);
+ for(const name of ['Police station lobby floor','Police station office floor','Police station window bay floor'])assert.ok(s.floorMeshes.includes(name),name);
+ assert.ok(s.features.includes('Toilet'));assert.ok(Math.abs(s.floorArea-49.4)<.5,'the whole ground floor: '+s.floorArea);
 });
 test('shared dining polygon excludes the missing corner and treats both doors alike',()=>{
  const s=surveyInterior(new T.Group(),SATO_ROOM);assert.equal(s.domainArea,202.26);assert.equal(s.w,17.4);assert.equal(s.h,12.4);assert.equal(s.floorArea,null);

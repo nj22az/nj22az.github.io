@@ -31,7 +31,7 @@ export const ISLAND_HOMES=Object.freeze([
  home('ferry-officer-cabin','Chief officer’s cabin, Minato Maru','Harbour','ferry-officer-cabin',{aboard:true,quarters:true}),
  home('ferry-crew-cabin','Crew accommodation, Minato Maru','Harbour','ferry-crew-cabin',{aboard:true,quarters:true}),
  home('ferry','Former chief engineer home identity','Harbour','ferry-terminal',{retired:true}),
- home('koban','Officer Mori’s residence, Minato Police Box','Main Street','koban'),
+ home('koban','Officer Mori’s quarters, Minato Police Station','Main Street','koban'),
  home('izakaya','Minato Izakaya · Barfly’s home','Main Street','home-izakaya'),
  home('fujita-houseboat','Shiosai houseboat, west pier','Harbour','fujita-houseboat'),
  home('resident-home-aya','1 Front-Row Yard','Front-Row Yard','resident-home-aya'),

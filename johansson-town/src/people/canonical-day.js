@@ -19,7 +19,7 @@ const activeTarget=name=>{if(!HOME_TARGETS.has(name))HOME_TARGETS.set(name,activ
 const minute=t=>{const [h,m]=t.split(':').map(Number);return h*60+m;};
 const points={izakaya:IZAKAYA_DOOR,sakura:MARKET_THRESHOLD,market:MARKET_THRESHOLD,warehouse:[-9.7,-41.4],
  school:[SCHOOL.genkan.x,SCHOOL.building.minZ-1.4],park:HARBOUR_PARK_STUDY[0],onsen:ONSEN_DOOR,
- port:[8,-38],ferry:[8,-38],office:[8,-38],koban:[0,28],
+ port:[8,-38],ferry:[8,-38],office:[8,-38],koban:[5.05,20.3],
  'sato-ramen':RAMEN_DOOR,books:TOWN_DESTINATIONS.books,workshop:TOWN_DESTINATIONS.workshop,
  florist:FLOWER_SHOP.staffAt,zenzai:NAKAMURA_DESSERTS.staffAt,'blue-coral':NAKAMURA_DESSERTS.staffAt,
  'fish-auction':[25,-39.6],'ice-plant':[31,-41],boatyard:[-31.8,-45],sea:[-31.8,-45],

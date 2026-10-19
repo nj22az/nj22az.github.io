@@ -42,12 +42,12 @@ for(const {site,names} of homes){
  });
 }
 
-test('the kōban has its WC, and Officer Mori still walks to his table and his futon',async()=>{
+test('the police station (home id koban) has its WC, and Officer Mori still walks to his table and his futon upstairs',async()=>{
  installDOM();
- const {buildKobanInterior,KOBAN_HOME_LAYOUT:L}=await import('../src/world/interiors/koban.js');
+ const {buildPoliceStationInterior,STATION_HOME_LAYOUT:L}=await import('../src/world/interiors/police-station.js');
  const room=new THREE.Group(),cols=[];
- const r=buildKobanInterior({room,reg(){},action(){},exit(){},collider:(x,z,w,d)=>cols.push({x,z,w,d})});
- const names=new Set();room.traverse(o=>{if(o.name)names.add(o.name);});
+ const r=buildPoliceStationInterior({room,reg(){},action(){},exit(){},collider:(x,z,w,d)=>cols.push({x,z,w,d})});
+ const names=new Set();room.traverse(o=>{if(o.name)names.add(o.name);});assert.ok(names.has('Toilet'),'the station has no WC');
  const B=r.bounds,blocked=(x,z,rr)=>x<B.minX+rr||x>B.maxX-rr||z<B.minZ+rr||z>B.maxZ-rr||cols.some(c=>Math.abs(c.x-x)<c.w/2+rr&&Math.abs(c.z-z)<c.d/2+rr);
  const person={g:new THREE.Object3D(),profile:{name:'Officer Mori',age:40}};person.g.position.set(...L.door);
  const walk=createRoomWalk(blocked);

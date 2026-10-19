@@ -95,7 +95,7 @@ function sheet(){
   write(c,"飲んだら乗るな",w/2,38,34,'#ffffff',GOTHIC);
   c.strokeStyle='#c8102e';c.lineWidth=12;c.beginPath();c.arc(w/2,190,80,0,Math.PI*2);c.stroke();c.beginPath();c.moveTo(w/2-56,134);c.lineTo(w/2+56,246);c.stroke();
   c.fillStyle='#2a2a2a';c.fillRect(w/2-44,182,88,30);c.beginPath();c.arc(w/2-26,216,12,0,Math.PI*2);c.arc(w/2+26,216,12,0,Math.PI*2);c.fill();
-  write(c,"IF YOU DRINK, DON'T DRIVE",w/2,312,19,'#c8102e',GOTHIC,900);write(c,'Minato Police Box',w/2,350,16,'#2a2a2a',GOTHIC,700);write(c,'Ask Thao to call a taxi',w/2,380,15,'#2a2a2a',GOTHIC,700);
+  write(c,"IF YOU DRINK, DON'T DRIVE",w/2,312,19,'#c8102e',GOTHIC,900);write(c,'Minato Police Station',w/2,350,16,'#2a2a2a',GOTHIC,700);write(c,'Ask Thao to call a taxi',w/2,380,15,'#2a2a2a',GOTHIC,700);
  });
  at('karaoke',(c,w,h)=>{
   c.fillStyle='#ffe14d';c.fillRect(0,0,w,h);

@@ -196,7 +196,10 @@ test('nine surplus dwellings leave no active doors, private obstructions or plot
  for(const [id,x,z] of removed){
   assert.equal(ISLAND_HOUSEHOLDS.find(h=>h.id===id).status,'retired');
   assert.ok(!sites.some(s=>s.homeId===id));assert.ok(!TOWN_WALK_PLOTS.some(p=>p.id===id));
-  assert.equal(world.colliders.find(c=>standingHitsRect(x,z,.35,groundHeight(x,z),c)),undefined,id+' plot is physically clear');
+  const standing=world.colliders.find(c=>standingHitsRect(x,z,.35,groundHeight(x,z),c));
+  // (the Arakaki lot is the one the police station grew into, the owner's 19 October ask: its collider is the station's)
+  if(id==='arakaki')assert.equal(standing?.id,'police-station',id+' lot carries the police station');
+  else assert.equal(standing,undefined,id+' plot is physically clear');
   assert.equal(canonicalHomeId('home-'+id),'mayor-office');
  }
 });
