@@ -53,8 +53,8 @@ export function createBoatKit(name){
   cyl(rt,rb,h,x,y,z,hex,kind='paint',{segments=12,rx=0,rz=0,open=false}={}){const g=new THREE.CylinderGeometry(rt,rb,h,segments,1,open);if(rx)g.rotateX(rx);if(rz)g.rotateZ(rz);g.translate(x,y,z);return add(g,hex,kind);},
   rod(a,b,r,hex,kind='metal',segments=6){const A=new THREE.Vector3(...a),B=new THREE.Vector3(...b),d=B.clone().sub(A),g=new THREE.CylinderGeometry(r,r,d.length(),segments,1,true);
    g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize()));g.translate((A.x+B.x)/2,(A.y+B.y)/2,(A.z+B.z)/2);return add(g,hex,kind);},
-  sphere(r,x,y,z,hex,kind='paint',{sx=1,sy=1,sz=1,segments=10}={}){const g=new THREE.SphereGeometry(r,segments,Math.max(6,segments*.6|0));g.scale(sx,sy,sz);g.translate(x,y,z);return add(g,hex,kind);},
-  torus(r,t,x,y,z,hex,kind='rubber',{rx=0,ry=0}={}){const g=new THREE.TorusGeometry(r,t,6,14);if(rx)g.rotateX(rx);if(ry)g.rotateY(ry);g.translate(x,y,z);return add(g,hex,kind);},
+  sphere(r,x,y,z,hex,kind='paint',{sx=1,sy=1,sz=1,segments=8}={}){const g=new THREE.SphereGeometry(r,segments,Math.max(6,segments*.6|0));g.scale(sx,sy,sz);g.translate(x,y,z);return add(g,hex,kind);},
+  torus(r,t,x,y,z,hex,kind='rubber',{rx=0,ry=0,radial=4,tubular=10}={}){const g=new THREE.TorusGeometry(r,t,radial,tubular);if(rx)g.rotateX(rx);if(ry)g.rotateY(ry);g.translate(x,y,z);return add(g,hex,kind);},
   /** A flat streak of wear or paint on a surface whose outward normal is `normal` (±x, ±z, or 'y' for a floor: w along x, h along z). */
   streak(x,y,z,w,h,hex,normal='x'){const g=new THREE.PlaneGeometry(w,h);const s=normal[0]==='-'?-1:1,ax=normal.at(-1);if(ax==='y')g.rotateX(-Math.PI/2);else if(ax==='x')g.rotateY(s*Math.PI/2);else if(s<0)g.rotateY(Math.PI);g.translate(x,y,z);return add(g,hex,'wear');},
   finish(shadows=false){
@@ -245,7 +245,7 @@ export function buildFishingBoat({length=6.3,beam=2.9,look=QUAY_FISHING_BOAT_LOO
  // each runs from its bitt to the fairlead, and its tail lies coiled beside the bitt.
  const lead=side=>[-half+.45,half*.62].map(z=>{const x=side*(wide(z,top(z))-.32),fx=side*(wide(z,top(z))-.02);
   kit.rod([x,deckY(z)+.24,z],[fx,top(z)+.03,z],.022,0x9b825e,'paint');
-  for(let k=0;k<3;k++)kit.torus(.16-k*.035,.022,x-side*.3,deckY(z)+.025+k*.03,z+(z>0?-.35:.35),0x9b825e,'paint',{rx:Math.PI/2});
+  for(let k=0;k<2;k++)kit.torus(.16-k*.05,.022,x-side*.3,deckY(z)+.025+k*.03,z+(z>0?-.35:.35),0x9b825e,'paint',{rx:Math.PI/2});
   kit.box(.1,.06,.16,fx,top(z)+.05,z,0x2f3437,'metal');
   return [fx+side*.03,top(z)+.04,z];});
  // Her lines go from the side she lies to the quay: starboard at the main quay, either at the east quay.
@@ -387,7 +387,7 @@ export function buildCargoBoat({length=20,beam=5,look=CARGO_BOAT_LOOK,shadows=fa
   const y=top(z),x=-(wide(z,y)-.02),bx=-(wide(z,y)-.55),d=deckY(z);
   kit.cyl(.09,.09,.42,bx,d+.21,z,0x2b2f30,'metal');kit.box(.32,.06,.07,bx,d+.36,z,0x2b2f30,'metal');
   kit.box(.12,.12,.3,x+.04,y+.06,z,0x2b2f30,'metal');kit.rod([bx,d+.3,z],[x,y+.06,z],.026,0x9b825e,'paint');
-  for(let k=0;k<3;k++)kit.torus(.22-k*.05,.026,bx+.45,d+.03+k*.035,z+(z>0?-.5:.5),0x9b825e,'paint',{rx:Math.PI/2});
+  for(let k=0;k<2;k++)kit.torus(.22-k*.07,.026,bx+.45,d+.03+k*.035,z+(z>0?-.5:.5),0x9b825e,'paint',{rx:Math.PI/2});
   return {line,at:[x-.04,y+.06,z]};});
  // Wear: rust weeping from the hawse pipes and the scuppers along the cargo deck, the paint scuffed where she lies to
  // the pier's fenders, draught marks at stem and stern.
@@ -398,7 +398,7 @@ export function buildCargoBoat({length=20,beam=5,look=CARGO_BOAT_LOOK,shadows=fa
  }
  // Where the pier's V-fenders take her starboard side (minato-berth.js CARGO_BERTH: z −53 to −69, her 9 to −7) the
  // paint is rubbed paler.
- for(const z of [9,5,1,-3,-7])kit.add(hullQuad(wide,-1,z-.3,z+.3,.15,1.25,{off:.006,shift:sh}),0x3f5c74,'wear');
+ for(const z of [9,5,1,-3,-7])kit.add(hullQuad(wide,-1,z-.3,z+.3,.15,1.25,{off:.006,shift:sh}),0x35536b,'wear');
  kit.finish(shadows);
  // Lettering: one board set for each boat on the service, shown by update(name).
  const boards=new Map();

@@ -66,7 +66,7 @@ export function buildQuayDressing({parent,label,shadows=false}){
  const iron=0x2b2f30,rust=0x9a5a36,rubber=0x1f2324,galv=0x8d9493,yellow=0xe0b93a;
  // Tyres: a lorry tyre on two chains from ringbolts in the coping, its tread against the face, top below the coping.
  for(const t of D.tyres){
-  const z=t.face-.1,y=-.27;kit.torus(.31,.1,t.x,y,z,rubber,'rubber');
+  const z=t.face-.1,y=-.27;kit.torus(.31,.1,t.x,y,z,rubber,'rubber',{radial:5,tubular:12});
   for(const dx of [-.22,.22]){kit.rod([t.x+dx,.16,t.face-.02],[t.x+dx*.8,y+.24,z],.013,galv,'metal');kit.box(.06,.06,.05,t.x+dx,.13,t.face-.02,iron,'metal');}
   // Rust weeping from the ringbolts down the concrete.
   kit.streak(t.x+.22,.02,t.face-.004,.04,.22,rust,'-z');
@@ -91,7 +91,7 @@ export function buildQuayDressing({parent,label,shadows=false}){
  // The fuel point: the pump cabinet on its plinth, the hose on its hook, the nozzle over the drip tray.
  {const F=D.fuel;kit.box(.75,.12,.55,F.x,TOP+.06,F.z,0x9fa29b);kit.box(.6,1.2,.42,F.x,TOP+.72,F.z,0xf0eee6);kit.box(.62,.18,.44,F.x,TOP+1.25,F.z,0xc23a2c);
   kit.box(.36,.24,.02,F.x,TOP+.95,F.z-.215,0x22313a,'glass');kit.box(.1,.12,.12,F.x+.36,TOP+.8,F.z,iron,'metal');
-  for(let k=0;k<3;k++)kit.torus(.16-k*.02,.02,F.x+.42,TOP+.62-k*.06,F.z,iron,'rubber',{ry:Math.PI/2});
+  for(let k=0;k<2;k++)kit.torus(.16-k*.03,.02,F.x+.42,TOP+.62-k*.06,F.z,iron,'rubber',{ry:Math.PI/2});
   kit.box(.4,.03,.3,F.x+.1,TOP+.015,F.z-.45,0x8d9493,'metal');kit.streak(F.x+.1,TOP+.032,F.z-.45,.34,.24,0x3b3a33,'y');}
  // Empty fish crates, two stacks of five, and the net with its floats.
  {const C=D.gear.crates;for(const dx of [-.36,.36])for(let r=0;r<5;r++)kit.box(.66,.24,.46,C.x+dx,TOP+.12+r*.245,C.z,0x2f6fb8);}
