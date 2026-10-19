@@ -17,7 +17,8 @@ const firstHit=(town,from,to)=>{const a=new THREE.Vector3(...from),b=new THREE.V
 
 test('exterior trim leaves seated town and harbour sightlines open',()=>{
  const {town,store,site}=office();
- for(const [from,to] of [[[.8,5.51,-3],[.8,5.51,0]],[[4.1,5.13,-2.3],[7,5.13,-2.3]]]){
+ // Through the office's two windows (sakura-office-room.js SAKURA_UPSTAIRS.windows): the town window, standing; the harbour window from the desk chair.
+ for(const [from,to] of [[[2.4,5.61,-3],[2.4,5.61,0]],[[5.15,5.13,-3.3],[7,5.13,-3.3]]]){
   const a=store.localToWorld(new THREE.Vector3(...from)),b=store.localToWorld(new THREE.Vector3(...to));
   const ray=new THREE.Raycaster(a,b.clone().sub(a).normalize(),0,a.distanceTo(b));
   assert.equal(ray.intersectObjects(solids(town)).length,0,'window must remain clear at seated eye height');
