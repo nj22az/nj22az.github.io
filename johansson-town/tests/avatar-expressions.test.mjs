@@ -59,7 +59,7 @@ test('surprise raises both hands once and leaves walking and seated actions in c
 test('the funny faces: each has its purpose, keeps its marks with every eye style, and is in every expression list',async()=>{
  const {EXPRESSION_INFO,EXPRESSION_GLYPHS}=await import('../src/avatars/face.js');
  const {EXPRESSIONS:PHOTO}=await import('../src/photo/layout.js');
- const funny=['gobsmacked','smug','bawling','starstruck','sweatdrop','blank','pouting','bleh','drowsy','lovestruck','fuming','drooling','wink'];
+ const funny=['gobsmacked','smug','bawling','starstruck','sweatdrop','blank','pouting','bleh','drowsy','lovestruck','fuming','drooling','wink','raging','seething','eyeroll','scared','kiss'];
  for(const name of funny){assert.ok(EXPRESSION_NAMES.includes(name),name);assert.ok(EXPRESSION_INFO[name]?.length>20,name+' says what it is for');}
  for(const name of EXPRESSION_NAMES)assert.ok(EXPRESSION_GLYPHS[name],name+' has a face for the chips');
  assert.deepEqual([...PHOTO],[...EXPRESSION_NAMES],'the photo studio offers World’s one list');
