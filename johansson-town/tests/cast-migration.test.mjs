@@ -6,7 +6,7 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {migrateCast,migrateThuan,migrateHousing,castKey,CAST_REVISION,readSave,writeSave,SAVE_KEY} from '../src/save.js';
 import {RETIRED_HOMES,RETIRED,CORE,identityOf} from '../src/people/roster.js';
-import {CAST_NAMES} from '../src/people/cast.js';
+import {CAST_NAMES,liveNameFor} from '../src/people/cast.js';
 
 installDOM();globalThis.self=globalThis;
 function store(){
@@ -27,13 +27,15 @@ test('the migration is versioned and idempotent: a second pass changes nothing, 
 
 test('old names move to the live identity; a record already under the live name wins; strangers are left alone',()=>{
  assert.equal(castKey('Yonamine-sensei'),'Miss Higa');assert.equal(castKey('Mrs Higa'),'Miss Higa');assert.equal(castKey('Nakamura Mai'),'Mai');assert.equal(castKey('Kenji'),'Chin');
- assert.equal(castKey('mac'),'Mr Nakandakari');assert.equal(castKey('jack'),'Harbour master');assert.equal(castKey('fuji'),'Mr Fujita');
- // In phase 1 the live names are the current ones, so nothing that walks today moves.
+ assert.equal(castKey('mac'),'Mac');assert.equal(castKey('Mr Nakandakari'),'Mac');assert.equal(castKey('jack'),'Harbour master');assert.equal(castKey('fuji'),'Mr Fujita');
+ // The live names are the current ones, so nothing that walks today moves.
  for(const name of CAST_NAMES)assert.equal(castKey(name),name,name);
  for(const p of RETIRED)assert.equal(castKey(p.name),p.name,p.name+' still has a body');
- for(const p of CORE)assert.equal(castKey(p.id),identityOf(p.id).avatar,p.id+' resolves to the body drawn today');
+ for(const p of CORE)assert.equal(castKey(p.id),liveNameFor(p.id),p.id+' resolves to the body walking today');
+ // Phase 2 gave the supporting crew bodies, so their old job-role names move to them.
+ assert.equal(castKey('Chief officer'),'Ryo');assert.equal(castKey('Kitano line hand'),'Kai');
  // A display name that is not live yet may be somebody else's record (the old townsfolk Emi): untouched.
- for(const name of ['Fuji','Jack','Mac','Emi','Ryo','Kai','Harbour visitor','Hana','Kinjo Yui'])assert.equal(castKey(name),name,name);
+ for(const name of ['Fuji','Jack','Emi','Ryo','Kai','Harbour visitor','Hana','Kinjo Yui'])assert.equal(castKey(name),name,name);
  const saved={friendship:{'Yonamine-sensei':{points:1},'Miss Higa':{points:8}},treats:{'Nakamura Mai':2},greeted:{'Mrs Higa':3},impressions:{Kenji:'kind'},
   relationships:{'Nakamura Mai|Vy':{totals:{chat:1}},'Mrs Higa|Yonamine-sensei':{totals:{}},'Thao|Yonamine-sensei':{totals:{}}},
   bookshop:{completed:{'3:Nakamura Mai':true}},errand:{from:'Nakamura Mai',kind:'fetch'},residentLife:{'Nakamura Mai':{day:1,yen:100,activities:['Nakamura Mai is at Blue Coral.']}},
@@ -58,8 +60,10 @@ test('a save pointing into a home that goes loads at a retained public place, in
  const sites=createBusinesses(),world=createTown({scene:new THREE.Scene(),sites,mobile:true,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  const places=new Map([...sites,...(world.landmarks||[])].map(s=>[s.id,s]));
  for(const target of new Set(Object.values(RETIRED_HOMES))){const site=places.get(target);assert.ok(site&&!site.isResidence,target+' is a retained public place in the built town');}
- // The homes themselves still stand today (phase 4 removes them): the migration maps them regardless.
- for(const id of ['home-kitahama-4','home-kitahama-5','home-kitahama-6','home-kinjo','home-oshiro','resident-home-aya','home-kitahama-flat-1','home-kitahama-flat-2','home-shimabukuro']){const site=places.get(id);assert.ok(site&&(site.isResidence||site.homeOwner||site.homeId),id+' is a home today');}
+ // The houses themselves still stand today (phase 4 removes them): the migration maps them regardless. The Heights'
+ // Flats 1 and 2 went with its upper storey in phase 3, so they are no home at all any more.
+ for(const id of ['home-kitahama-4','home-kitahama-5','home-kitahama-6','home-kinjo','home-oshiro','resident-home-aya','home-shimabukuro']){const site=places.get(id);assert.ok(site&&(site.isResidence||site.homeOwner||site.homeId),id+' is a home today');}
+ for(const id of ['home-kitahama-flat-1','home-kitahama-flat-2'])assert.equal(places.get(id),undefined,id+' is gone with the upper storey');
  const cases={'home-kitahama-4':'mayor-office','kitahama-5':'mayor-office','home-kitahama-6':'mayor-office','kinjo':'mayor-office','home-oshiro':'mayor-office','resident-home-aya':'mayor-office',
   'home-kitano-3':'mayor-office','kitano-3':'mayor-office','home-kitahama-flat-1':'mayor-office','kitahama-flat-2':'mayor-office','home-shimabukuro':'ferry-terminal','post-office':'ferry-terminal',
   'rainflower-florist':'market','florist':'market','home-izakaya':'izakaya','home-kitahama-7':'mayor-office','home-market':'mayor-office'};

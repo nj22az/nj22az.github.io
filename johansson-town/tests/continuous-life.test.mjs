@@ -41,7 +41,8 @@ test('two complete days give every resident work, meals and uninterrupted sleep 
    if(homeRoutine(profile,minutes).id==='sleep')assert.equal(plan.place,'home',profile.name+' must not be called out during sleep at '+minutes);
   }
   assert.ok(places.has('home'),profile.name+' returns to their home each day');
-  const work=profile.name==='Thao'||profile.name==='Barfly'?'izakaya':profile.name==='Grandmother Sakurai'?'market':profile.name==='Thuan'?'market':profile.name==='Officer Mori'?'patrol':profile.name==='Mrs Sato'?'ramen':profile.name==='Bus driver'?'station':'work';
+  // Chin's job is the ferry's motorman post (social.js, ferry-crew.js): his street body waits at the terminal while the ship has him.
+  const work=profile.name==='Thao'||profile.name==='Barfly'?'izakaya':profile.name==='Grandmother Sakurai'?'market':profile.name==='Thuan'?'market':profile.name==='Officer Mori'?'patrol':profile.name==='Mrs Sato'?'ramen':profile.name==='Bus driver'?'station':profile.name==='Chin'?'ferry':'work';
   assert.ok(places.has(work),profile.name+' retains their job');
  }
  const nao=RESIDENTS.find(p=>p.name==='Thao'),freeTime=[850,880,910].map(m=>homeRoutine(nao,m).activity);
@@ -97,9 +98,9 @@ test('every resident sleeps, wakes, eats breakfast and leaves their actual furni
 
 test('residents travelling home cannot be teleported into a visited apartment',()=>{
  const street=new THREE.Group(),parent=new THREE.Group(),p=person('Chin',street);p.g.position.set(0,0,40);
- const homes=createHomeResidents({world:{people:[p]},parent});homes.enter({homeOwner:'Chin'},365); // 06:05, home from the night shift
+ const homes=createHomeResidents({world:{people:[p]},parent});homes.enter({homeOwner:'Chin'},1430); // 23:50, home from the ship and the izakaya
  assert.equal(p.g.parent,street);assert.equal(p.g.visible,true);
- p.g.position.set(p.profile.home[0],0,p.profile.home[1]);homes.update(1/30,366);assert.equal(p.g.parent,parent);assert.equal(p.g.userData.roomTransition,true);
+ p.g.position.set(p.profile.home[0],0,p.profile.home[1]);homes.update(1/30,1431);assert.equal(p.g.parent,parent);assert.equal(p.g.userData.roomTransition,true);
 });
 test('camera rank cannot remove a visible street resident',()=>{
  const street=new THREE.Group(),player=new THREE.Group(),world={people:RESIDENTS.map(p=>person(p.name,street))},saved={inventory:[]};

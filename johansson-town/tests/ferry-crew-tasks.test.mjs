@@ -21,9 +21,10 @@ test('eight roles match the manning plan, with separate deck and bosun identitie
  assert.deepEqual(FERRY_CREW.map(c=>c.post),FERRY_MANNING.map(c=>c.post));
  for(const m of [600,7*1440+600])assert.equal(new Set(crewOnDuty(m).map(c=>c.name)).size,8);
  assert.equal(crewFor('bosun',600),'Ms Uezu');assert.equal(crewFor('bosun',7*1440+600),'Kōji');
- assert.equal(crewFor('deck'),'Deck hand');
- for(const c of FERRY_CREW.filter(c=>c.jobRole))assert.ok(!FERRY_PEOPLE.includes(c.name));
- assert.match(FERRY_CREW.find(c=>c.name==='Mr Higa Jr').lives,/flat 1/);
+ assert.equal(crewFor('deck'),'Ren');
+ // The supporting crew are people of the cast with quarters aboard, not invented shore households.
+ for(const c of FERRY_CREW.filter(c=>c.supporting))assert.ok(FERRY_PEOPLE.includes(c.name)&&/aboard/.test(c.lives),c.name);
+ assert.match(FERRY_CREW.find(c=>c.name==='Chin').lives,/1 Kitahama/);
  assert.ok(FERRY_CREW.every(c=>!c.licence.includes('enough for')));
 });
 
@@ -57,7 +58,7 @@ test('task arrival and completed work are separate gates, and phase changes cann
  }
  assert.ok(sawClimb);assert.ok(sawWorking);
  for(const t of jobs)assert.equal(crew.taskReady(t.id),true,JSON.stringify(crew.snapshot()));
- const deck=crew.bodies.get('Deck hand'),before=deck.g.position.clone();
+ const deck=crew.bodies.get('Ren'),before=deck.g.position.clone();
  run.operation={id:'test-voyage',stage:'opening-access',tasks:[task('gangway','deck','gangway')]};crew.update(.1,600);
  assert.ok(deck.g.position.distanceTo(before)<=.119);assert.equal(crew.taskReady('gangway'),false);
  let climbingDown=false;
@@ -68,36 +69,80 @@ test('task arrival and completed work are separate gates, and phase changes cann
  assert.ok(climbingDown);assert.equal(crew.taskReady('gangway'),true);
 });
 
-test('the first line hand waits at station without working until the real counterpart arrives',()=>{
+test('the shore hand is called to the bitts while the ramp comes up, so letting go finds both ends of the line manned',()=>{
  const s=ferryServiceFixture(),q=QUICK_CROSSING.town;
  s.player.position.set(q.stand[0],q.ground,q.stand[1]);
  assert.equal(s.run.beginCrossing('airport'),true);
+ s.until(()=>s.run.operation.stage==='raising-ramp');s.tick(.1);
+ const standby=s.run.operation.tasks.find(t=>t.post==='shore');
+ assert.ok(standby?.optional,'the standby is an order the ramp does not wait for');
+ assert.equal(s.agent.userData.ferryShoreTask,true,'the harbour agent is taken from the office door');
+ s.until(()=>s.crew.taskAtStation(standby.id));
+ const bitt=s.run.operation.lines[0].shoreTarget;
+ assert.ok(Math.hypot(s.agent.position.x-bitt.x,s.agent.position.z-bitt.z)<.2,'he walked to the first bitt');
  s.until(()=>s.run.operation.stage==='letting-go');
+ const jobs=s.run.operation.tasks,ship=jobs.find(t=>t.post==='deck'),shore=jobs.find(t=>t.post==='shore');
+ s.tick(.1);
+ assert.equal(s.crew.taskAtStation(ship.id),true);assert.equal(s.crew.taskAtStation(shore.id),true,'already at the bitt when the first eye is lifted');
+ s.until(()=>s.run.operation.stage==='departing');
+ assert.ok(s.run.operation.lines.every(l=>l.status==='coiled'));
+ s.until(()=>!s.agent.userData.ferryShoreTask,{seconds:120});
+ assert.ok(Math.hypot(s.agent.position.x-13.3,s.agent.position.z+36.85)<.2,'and walks back to the office door, where the street had him');
+});
+
+test('the first line hand waits at station without working until the real counterpart arrives',()=>{
+ const s=ferryServiceFixture(),q=QUICK_CROSSING.town;
+ s.player.position.set(q.stand[0],q.ground,q.stand[1]);
+ // The harbour agent is at lunch when the ship prepares (a room has him): the quay cannot take him until he comes out.
+ s.agent.userData.inRamen=true;
+ assert.equal(s.run.beginCrossing('airport'),true);
+ s.until(()=>s.run.operation.stage==='letting-go');
+ assert.equal(s.agent.userData.ferryShoreTask,true,'called to the quay');assert.ok(Math.hypot(s.agent.position.x-13.3,s.agent.position.z+36.85)<.01,'but not moved while a room has him');
+ delete s.agent.userData.inRamen;
  const line=s.run.operation.lines[0],jobs=s.run.operation.tasks;
  const ship=jobs.find(t=>t.post==='deck'),shore=jobs.find(t=>t.post==='shore');
  assert.ok(ship&&shore);
- // The AB has been prepositioned on the forecastle; Fujita still has to walk
- // from his actual shed. Waiting longer than the work duration must not count.
+ // The AB has been prepositioned on the forecastle; the agent still has to walk from the office door. Waiting longer
+ // than the work duration must not count.
  s.tick(ship.seconds+.5);
  assert.equal(s.crew.taskAtStation(ship.id),true,'arrival can be acknowledged without a work permit');
  assert.equal(s.crew.taskAtStation(shore.id),false,'the actual shore hand is still approaching');
  assert.equal(s.run.operation.tasks.find(t=>t.id===ship.id).acknowledged,true);
  assert.equal(s.crew.taskReady(ship.id),false,'the AB cannot finish a handoff alone');
  assert.equal(s.crew.snapshot().find(c=>c.task===ship.id).progress,0);
- assert.equal(s.crew.bodies.get('Deck hand').g.userData.socialPose,'Idle','no handling gesture before the counterpart arrives');
+ assert.equal(s.crew.bodies.get('Ren').g.userData.socialPose,'Idle','no handling gesture before the counterpart arrives');
  assert.equal(s.run.operation.lines[0].status,'fast');
  s.until(()=>s.run.operation.tasks.every(t=>t.acknowledged));
  assert.equal(s.crew.taskAtStation(ship.id),true);assert.equal(s.crew.taskAtStation(shore.id),true);
  assert.equal(s.crew.taskReady(ship.id),false);assert.equal(s.crew.taskReady(shore.id),false);
  s.tick(.1);
- assert.equal(s.crew.bodies.get('Deck hand').g.userData.socialPose,'Interact');
- assert.equal(s.shed.fujita.userData.socialPose,'Interact');
+ assert.equal(s.crew.bodies.get('Ren').g.userData.socialPose,'Interact');
+ assert.equal(s.agent.userData.socialPose,'Interact');
  assert.ok(s.crew.snapshot().filter(c=>c.task===ship.id||c.task===shore.id).every(c=>c.progress>0&&c.progress<1));
  s.tick(ship.seconds-.5);
  assert.equal(s.crew.taskReady(ship.id),false,'the work duration begins at the joint acknowledgement');
  assert.equal(s.crew.taskReady(shore.id),false);
  s.until(()=>s.crew.taskReady(ship.id)&&s.crew.taskReady(shore.id));
  assert.equal(s.run.operation.lines.find(l=>l.id===line.id).status,'coiled');
+});
+
+test('the master is the shed’s own body: on the bridge by day, in his chair after he signs off, never both',()=>{
+ const s=ferryServiceFixture({minute:22*60+14});
+ assert.equal(s.crew.commute.state,'aboard');assert.equal(s.shed.fujita.visible,false);assert.equal(s.shed.fujita.userData.onWatch,true);
+ assert.equal(s.crew.snapshot().find(c=>c.post==='master').name,'Mr Fujita');
+ const minutesTo=target=>{const n=Math.ceil((target-s.minutes)*60/.5);for(let i=0;i<n;i++)s.tick(.5);};
+ // 22:15: the shore power goes on, the bridge lets him go, and he walks from the gangway back to his chair.
+ minutesTo(22*60+15.2);
+ assert.ok(!s.crew.snapshot().some(c=>c.post==='master'),'nobody is on the bridge after the shore power');
+ assert.equal(s.shed.fujita.visible,true);assert.ok(['to-shed','settling','ashore'].includes(s.crew.commute.state),s.crew.commute.state);
+ s.until(()=>s.crew.commute.state==='ashore',{seconds:120,step:.1});
+ const at=s.shed.fujita.getWorldPosition(new THREE.Vector3());
+ assert.ok(Math.hypot(at.x-s.crew.commute.chair[0],at.z-s.crew.commute.chair[2])<.01,'back in his chair');
+ assert.equal(s.shed.fujita.userData.onWatch,false);
+ // 22:20, signed off: the first bottle. Not before.
+ assert.equal(s.minutes<22*60+20,true);s.shed.tick(.1,s.minutes);assert.ok(!['SitHold','SitPour'].includes(s.shed.fujita.userData.socialPose),'nothing open before he signs off');
+ minutesTo(22*60+21);s.shed.tick(.1,s.minutes);
+ assert.ok(['SitHold','SitPour'].includes(s.shed.fujita.userData.socialPose),'the beer is for after he signs off');
 });
 
 test('a solid or occupied work station cannot be acknowledged or reported complete',()=>{

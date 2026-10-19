@@ -15,7 +15,7 @@ export const FERRY_PROCEDURE=Object.freeze({
  alongside:Object.freeze({label:'Alongside · access open',description:'Passengers and vehicles may leave through their designated access. Running machinery remains available for a warm turnaround.',seconds:0}),
  held:Object.freeze({label:'Ferry operation held',description:'A crew report or machinery interlock has refused progression. The reason remains visible and no vessel movement is fabricated.',seconds:null,sequential:false}),
 });
-const TITLES=Object.freeze({master:'Master',mate:'Mate',chief:'Chief engineer',oiler:'Oiler',bosun:'Bosun',deck:'Able seaman',purser:'Purser',cook:'Cook',shore:'Shore hand'});
+const TITLES=Object.freeze({master:'Master',mate:'Mate',chief:'Chief engineer',oiler:'Motorman',bosun:'Bosun',deck:'Able seaman',purser:'Purser',cook:'Cook',shore:'Shore hand'});
 const ISSUER=Object.freeze({master:'master',mate:'master',chief:'master',oiler:'chief',bosun:'mate',deck:'bosun',purser:'mate',cook:'purser',shore:'bosun'});
 const clamp=x=>Math.max(0,Math.min(1,x));
 const success=()=>({ok:true});
@@ -31,7 +31,9 @@ export function createFerryOperations({plant,sailings,getBerth,getMinutes=()=>0,
   lineIndex=0,lineElapsed=0,mechanicalElapsed=0,retry=null,retryElapsed=0;
  const history=[];
  const note=(post,text,kind='report')=>{const e={sequence:++eventSequence,speaker:TITLES[post]||post,post,text,kind,stage:op?.stage||'alongside',elapsed:op?.elapsed||0};history.push(e);if(history.length>80)history.shift();};
- const task=(key,post,station,action,seconds=4,target)=>({id:`${op.id}:${op.stage}:${key}`,post,issuer:ISSUER[post]||'master',station,action,seconds,...(target?{target}:{}),complete:false,acknowledged:false});
+ // An `optional` task is an order the stage does not wait for (the shore hand's early call to the bitts): he is expected
+ // there, and if he is late the line hands wait for him at the line itself, as they always did.
+ const task=(key,post,station,action,seconds=4,target,optional=false)=>({id:`${op.id}:${op.stage}:${key}`,post,issuer:ISSUER[post]||'master',station,action,seconds,...(target?{target}:{}),...(optional?{optional:true}:{}),complete:false,acknowledged:false});
  function tasks(next){
   const old=new Map((op.tasks||[]).map(t=>[t.id,t]));
   op.tasks=next.map(t=>old.get(t.id)||t);
@@ -41,11 +43,11 @@ export function createFerryOperations({plant,sailings,getBerth,getMinutes=()=>0,
   if(!t.acknowledged&&getCrew()?.taskAtStation?.(t.id)===true){t.acknowledged=true;note(t.post,`${t.action}: at station.`,'acknowledgement');}
   if(!t.complete&&t.acknowledged&&getCrew()?.taskReady?.(t.id)===true){t.complete=true;note(t.post,`${t.action}: complete.`);}
  }}
- const allReady=()=>op.tasks.every(t=>t.complete);
+ const allReady=()=>op.tasks.every(t=>t.complete||t.optional);
  const atStation=post=>op.tasks.filter(t=>t.post===post).every(t=>t.acknowledged);
  const vehicleSummary=()=>getVehicles()?.securingSummary?.()||{aboard:0,secured:0,driversClear:0};
  const vehiclesReady=()=>{const s=vehicleSummary();return s.secured===s.aboard&&s.driversClear===s.aboard;};
- const pending=()=>op.tasks.filter(t=>!t.complete).map(t=>`${TITLES[t.post]||t.post}: ${t.action}`).join('; ');
+ const pending=()=>op.tasks.filter(t=>!t.complete&&!t.optional).map(t=>`${TITLES[t.post]||t.post}: ${t.action}`).join('; ');
  const checkAccess=()=>{const r=accessClear();return r===true?null:typeof r==='string'?r:'Keep the ramp and gangway clear.';};
  const startMachine=id=>plant.machine(id)?.state==='running'?success():plant.start(id,{automatic:true});
  const stopMachine=id=>plant.machine(id)?.state==='running'?plant.stop(id,{automatic:true}):success();
@@ -63,7 +65,9 @@ export function createFerryOperations({plant,sailings,getBerth,getMinutes=()=>0,
   }else if(stage==='closing-access'){
    tasks([task('ramp-clear','mate','ramp','Clear the ramp and close the vehicle access',8),task('gangway','deck','gangway','Count the last passengers and stow the gangway',8)]);
   }else if(stage==='raising-ramp'){
-   tasks([task('ramp-up','mate','ramp','Raise the bow ramp and check both locking pins',FERRY_MACHINERY.ramp.up+4),task('bow-ready','deck','bow','Stand by the forward mooring station',4),task('aft-ready','bosun','stern','Stand by the after mooring station',4)]);
+   // The shore hand walks out to the first bitt while the ramp comes up, so letting go starts with both ends of the line manned.
+   tasks([task('ramp-up','mate','ramp','Raise the bow ramp and check both locking pins',FERRY_MACHINERY.ramp.up+4),task('bow-ready','deck','bow','Stand by the forward mooring station',4),task('aft-ready','bosun','stern','Stand by the after mooring station',4),
+    task('shore-standby','shore',`shore-${op.origin}`,'Stand by on the quay for her lines',4,op.lines[0]?.shoreTarget,true)]);
   }else if(stage==='letting-go'||stage==='making-fast'){
    lineIndex=0;lineElapsed=0;lineTasks(stage==='making-fast');
   }else if(stage==='departing'){
@@ -74,7 +78,9 @@ export function createFerryOperations({plant,sailings,getBerth,getMinutes=()=>0,
   }else if(stage==='passage'){
    tasks([task('bridge-watch','master','wheelhouse','Keep the navigation watch',4),task('lookout','mate','port-wing','Keep a lookout',4),task('engineering-watch','chief','engine-room','Monitor engines and the switchboard',4),task('oiler-watch','oiler','engine-room','Check machinery temperatures and pressures',4),task('deck-round','bosun','car-deck','Check the secured vehicle deck',4),task('deck-watch','deck','saloon','Keep passenger exits clear',4),task('passenger-watch','purser','purser','Attend the passengers',4),task('galley-watch','cook','galley','Keep the galley secure',4)]);
   }else if(stage==='arriving'){
-   tasks([task('bridge-arrival','master','wheelhouse','Con the ship alongside',4),task('lookout-arrival','mate','port-wing','Report the distance off the berth',4),task('bow-arrival','deck','bow','Stand by forward for mooring',4),task('aft-arrival','bosun','stern','Stand by aft for mooring',4)]);
+   // The shore hand is called to the berth on the approach, so he is at the first bitt when her lines come over.
+   tasks([task('bridge-arrival','master','wheelhouse','Con the ship alongside',4),task('lookout-arrival','mate','port-wing','Report the distance off the berth',4),task('bow-arrival','deck','bow','Stand by forward for mooring',4),task('aft-arrival','bosun','stern','Stand by aft for mooring',4),
+    task('shore-standby','shore',`shore-${op.destination}`,'Stand by at the berth for her lines',4,getLines(op.destination)[0]?.shoreTarget,true)]);
   }else if(stage==='alongside'){
    note('master','All fast. Ramp landed and access checked; passengers may disembark.');
    const event={sequence:++completionSequence,id:op.id,destination:op.destination,origin:op.origin,automatic:op.automatic,startedMinute:op.startedMinute,elapsed:op.elapsed};

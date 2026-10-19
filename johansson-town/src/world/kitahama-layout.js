@@ -1,4 +1,4 @@
-import {householdAtHome,activeHomeForResident,homeNameplate} from '../people/island-households.js';
+import {householdAtHome,activeHomeForResident,homeNameplate,HEIGHTS_HOUSES} from '../people/island-households.js';
 
 /**
  * Kitahama (北浜), the new district on the north-east land the island gained in
@@ -39,7 +39,7 @@ export const KITAHAMA=Object.freeze({
  middleLane:Object.freeze({minX:16,maxX:19,minZ:45.1,maxZ:75}),
  mainCrossLane:Object.freeze({minX:-7.55,maxX:6,minZ:30.5,maxZ:33.5}),
  fieldLane:Object.freeze({minX:29,maxX:32,minZ:45.1,maxZ:75}),
- /** The apartment block on Fukugi Lane: two flats up, two down, an outside stair. */
+ /** Kitahama Heights on Fukugi Lane: two attached ground-floor houses (KITAHAMA_HEIGHTS), the lot kept at the block's size. */
  apartment:Object.freeze({id:'kitahama-flats',minX:-32,maxX:-24,minZ:33.5,maxZ:44.5,name:'Kitahama Heights'}),
  /** The pocket park at the corner of the spine and Well Lane. */
  park:Object.freeze({minX:-19,maxX:-11,minZ:34.5,maxZ:43.5}),
@@ -62,10 +62,15 @@ export function plotGate(p,out=.7){
  return {door:[p.minX-out,cz],inward:-Math.PI/2};
 }
 
-/** Canonical occupants of the two homes with the shared walking-resident interior. */
+/**
+ * Canonical occupants of the homes whose walking residents are put to bed in them (home-residents.js): Thao, Chin and
+ * Vy at 1 Kitahama, Mrs Sato at 2, and Nhung at 3 Kitahama with Kōji and Riku since phase 3 of the consolidation
+ * (docs/CAST-CONSOLIDATION.md §7: her family reunited as one household).
+ */
 export const KITAHAMA_RESIDENT_HOMES=Object.freeze({
  'kitahama-1':householdAtHome('kitahama-1').residents,
  'kitahama-2':householdAtHome('kitahama-2').residents,
+ 'kitahama-3':householdAtHome('kitahama-3').residents,
 });
 export const ISLAND_RESIDENT_NAMES=Object.freeze(Object.values(KITAHAMA_RESIDENT_HOMES).flat());
 /** The home record a walking resident's profile reads (residents.js). */
@@ -75,20 +80,23 @@ export function kitahamaHomeFor(name){
  return {door:[...plotGate(p).door],address:h.address,plot:p.id};
 }
 
-/** Exact numbered doors of the existing block. Ground-floor units are 1 and 2. */
-export const KITAHAMA_FLATS=Object.freeze(Array.from({length:4},(_,i)=>{
- const A=KITAHAMA.apartment,x=A.maxX-1.9,z=i%2?A.maxZ-3.2:A.minZ+3.2,level=i<2?0:2.8;
- return Object.freeze({id:'kitahama-flat-'+(i+1),unitNumber:String(i+1),level,
-  door:Object.freeze([x+.65,KITAHAMA.y+(level?level+.08:.02),z]),
-  // The outdoor height field takes the upper corridor at the same x/z. Route ground-floor
-  // visitors to their separate street openings, keeping the real numbered door recorded.
-  approachPosition:Object.freeze([level?x+.65:KITAHAMA.fukugiLane.minX+.2,KITAHAMA.y+(level?level+.08:.04),z]),
-  faceX:x+.03,inward:-Math.PI/2,approachFacing:level?0:-Math.PI/2});
-}));
-
-/** Measured street-to-upper-door connector. The general street raster stops at the stair foot. */
-export function flatAccessRoute(id){
- const unit=KITAHAMA_FLATS.find(u=>u.id===id&&u.level);if(!unit)return null;
- const A=KITAHAMA.apartment,z=A.minZ+.1,x0=A.maxX-1.9-4.9,x1=A.maxX-1.9;
- return [[x0-.4,z],...Array.from({length:56},(_,i)=>[x0+(x1-x0)*i/55,z]),[unit.door[0],z],[unit.door[0],unit.door[2]]];
-}
+/**
+ * Kitahama Heights (docs/CAST-CONSOLIDATION.md addendum 6): two attached ground-floor houses side by side along Fukugi
+ * Lane, A to the north and B to the south of the party wall at the lot's middle, each with its own front door on the
+ * lane side, its gate in the low block wall and a strip of garden between (okinawa/kitahama-quarter.js draws them). No
+ * corridor, no stair, no upper storey: every door is at ground level, so a visitor walks from the lane to the gate to
+ * the door. `door` is the front door; `approachPosition` the point on the lane a visitor is routed to, as every
+ * Kitahama gate is (plotGate); `gate` the opening in the front wall, in world z.
+ */
+const HEIGHTS_BODY=(()=>{const A=KITAHAMA.apartment;return Object.freeze({x0:A.minX+.5,x1:A.maxX-2.6,z0:A.minZ+.6,z1:A.maxZ-.6,party:(A.minZ+A.maxZ)/2,height:3.0});})();
+export const KITAHAMA_HEIGHTS=Object.freeze({
+ ...HEIGHTS_BODY,lot:KITAHAMA.apartment,
+ houses:Object.freeze(HEIGHTS_HOUSES.map(h=>{
+  const B=HEIGHTS_BODY,z=h.side==='north'?(B.party+B.z1)/2:(B.z0+B.party)/2,minZ=h.side==='north'?B.party:B.z0,maxZ=h.side==='north'?B.z1:B.party;
+  return Object.freeze({id:h.id,house:h.house,name:h.name,side:h.side,minZ,maxZ,z,
+   door:Object.freeze([B.x1+.65,KITAHAMA.y+.02,z]),approachPosition:Object.freeze([KITAHAMA.fukugiLane.minX+.2,KITAHAMA.y+.04,z]),
+   faceX:B.x1+.03,inward:-Math.PI/2,approachFacing:-Math.PI/2,gate:Object.freeze([z-.95,z+.95])});
+ })),
+});
+/** Every door in the pair (the unit list the registry, the directory and the lights read). */
+export const KITAHAMA_FLATS=KITAHAMA_HEIGHTS.houses;

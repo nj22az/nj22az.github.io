@@ -3,9 +3,10 @@
  * winning where they differ). One identity record per person: 21 core and 5 supporting identities, the ten retired
  * ones and where their purpose went, the 14 core households, the supporting quarters, the eight ship posts and the
  * shore roles. This is what the later phases switch the game over to (the brief, "How it is run": 2 the ship, 3 the
- * households, 4 the removals, 5 the stories and directories). In phase 1 the game reads it only for name resolution
- * (cast.js castMember, renamed.js formerNames, avatars/cast.js recipeFor) and the save migration (save.js
- * migrateCast), so nothing visible changes: who walks, works and sleeps where is still cast.js.
+ * households, 4 the removals, 5 the stories and directories). The game reads it for name resolution (cast.js
+ * castMember, renamed.js formerNames, avatars/cast.js recipeFor) and the save migration (save.js migrateCast); from
+ * phase 2 the ferry's manning (people/ferry-crew.js) reads the ship posts and shore roles from it, so who holds each
+ * post is decided here and only here. Who walks, works and sleeps where is still cast.js.
  *
  * `id` is a stable machine key, never shown and never the same string as a name. `name` is the short display name
  * the brief gives; `fullName` the profile's full name only where the source or the brief has one (nothing invented);
@@ -14,7 +15,7 @@
  * accommodation aboard, `room` a secondary shore room (none now: Thuan's weekday room is dropped, addendum 4), and
  * `oldHomes` the home ids the person no longer has, for the save migration. `avatar` names the authored look World
  * draws them as until a later phase decides otherwise (Jack and Mac keep the looks of the people they replace; the
- * supporting crew keep their job-role drawings until phase 2 gives each a recipe).
+ * supporting crew have recipes of their own since phase 2, avatars/cast.js CREW_LOOKS).
  *
  * Reconciled against the source, 19 October 2026 (the brief asks for one plan, not two):
  *  - Yui, Aya and Nao, three of the brief's display names, are the sisters' names in the oldest saves (renamed.js:
@@ -27,12 +28,22 @@
  *    compatibility layer, so no machinery task or safe-departure check changes with the label.
  *  - Jack takes both of the Harbour master's shore keys (`port`: the berth and the office radio) and Mr Fujita's
  *    `linesman` at Minato, since Fuji goes to the bridge. Kai keeps `airport-linesman`.
- *  - Kai's home: the brief (§10) recommends kitano-2, the vacant Shiroma house, if its access and interior suit; it is
- *    recorded here as supporting accommodation for phase 2 to verify, outside the 14 core households.
+ *  - Kai's home: the brief (§10) recommends kitano-2, the vacant Shiroma house, if its access and interior suit. Phase 2
+ *    inspected it (world/kitano-hamlet.js): a walled plot with its gate on the hamlet lane, a concrete house with the
+ *    family-home interior every Kitahama house has (world/interiors/family-home.js: a bed, a table, a door), its
+ *    nameplate and visit prompt, 25 m from the pier he works. He rents it from the Shiromas in Naha. It is recorded
+ *    as supporting accommodation (QUARTERS, the registry's `quarters` flag), outside the 14 core households.
  *  - Ages and sexes come from cast.js. Jack and Mac carry the ages of the identities they replace (58 and 61); the
- *    brief gives none. Dr Ken's full name joins the brief's display name to the source's surname Kakazu.
+ *    brief gives none. Dr Ken's full name joins the brief's display name to the source's surname Kakazu. The
+ *    supporting crew's ages are phase 2's (cast.js gives everybody one).
  *  - The aboard quarters of the supporting crew (QUARTERS) are the brief's "existing officer/crew accommodation
- *    aboard"; the registry does not list them yet, phase 2 binds them to the ship's actual cabins.
+ *    aboard", bound in phase 2 to the ship's cabins (world/ferry-ship.js FERRY_GA, people/island-households.js). As
+ *    drawn she has berths for the mate (his cabin), the deck hand (the deckhand's cabin) and two in the crew cabin,
+ *    the bosun's on her week on and the relief engineer's duty berth; the purser's and the cook's berths are two more
+ *    bunks in the crew cabin that the docks-and-boats job draws (recorded in QUARTERS, not invented here).
+ *  - Display names: the live cast still calls Fuji, Jack, Nao and Koji by their former names (castMember resolves
+ *    both); phase 5's directory and story sweep renames them with the rest of the cast. Mac is renamed in phase 2,
+ *    since a Japanese surname on an American relief engineer's prompt would contradict his biography.
  */
 const who=(id,o)=>Object.freeze({id,name:o.name,fullName:o.fullName||o.name,category:o.category||'core',sex:o.sex,
  age:o.age??null,nationality:o.nationality||null,was:Object.freeze(o.was||[]),avatar:o.avatar||null,role:o.role,
@@ -84,11 +95,11 @@ export const CORE=Object.freeze([
 
 /** The five existing crew and pier workers, now named (brief §5). Their quarters are not households. */
 export const SUPPORTING=Object.freeze([
- who('ryo',{name:'Ryo',category:'supporting',sex:'m',was:['Chief officer'],avatar:'Chief officer',post:'mate',berth:'ferry-officer-cabin',household:null,role:'chief officer of the Minato Maru: the lookout, access and the ramp'}),
- who('ren',{name:'Ren',category:'supporting',sex:'m',was:['Deck hand'],avatar:'Deck hand',post:'deck',berth:'ferry-crew-cabin',household:null,role:'deck hand: the forward mooring station, the gangway and passenger-deck rounds'}),
- who('aya',{name:'Aya',category:'supporting',sex:'f',was:['Purser'],avatar:'Purser',post:'purser',berth:'ferry-crew-cabin',household:null,role:'the sailing purser: the passenger count, the vehicle deck and the lobby'}),
- who('jun',{name:'Jun',category:'supporting',sex:'m',was:['Cook-steward'],avatar:'Cook-steward',post:'cook',berth:'ferry-crew-cabin',household:null,role:'cook-steward: the crew’s meals, the galley and the kiosk'}),
- who('kai',{name:'Kai',category:'supporting',sex:'m',was:['Kitano line hand'],avatar:'Kitano line hand',shore:['airport-linesman'],home:'kitano-2',household:null,role:'the Kitano shore line hand; the brief recommends the Shiroma house for him if it suits'}),
+ who('ryo',{name:'Ryo',category:'supporting',sex:'m',age:41,nationality:'Japanese',was:['Chief officer'],avatar:'Ryo',post:'mate',berth:'ferry-officer-cabin',household:null,role:'chief officer of the Minato Maru: the lookout, access and the ramp; from Itoman, six years on the Kerama ferries before her'}),
+ who('ren',{name:'Ren',category:'supporting',sex:'m',age:23,nationality:'Japanese',was:['Deck hand'],avatar:'Ren',post:'deck',berth:'ferry-crew-cabin',household:null,role:'deck hand: the forward mooring station, the gangway and passenger-deck rounds; from Nago, his first ship'}),
+ who('aya',{name:'Aya',category:'supporting',sex:'f',age:31,nationality:'Japanese',was:['Purser'],avatar:'Aya',post:'purser',berth:'ferry-crew-cabin',household:null,role:'the sailing purser: the passenger count, the vehicle deck and the lobby; came from the Kume line for the short crossings'}),
+ who('jun',{name:'Jun',category:'supporting',sex:'m',age:52,nationality:'Japanese',was:['Cook-steward'],avatar:'Jun',post:'cook',berth:'ferry-crew-cabin',household:null,role:'cook-steward: the crew’s meals, the galley and the kiosk; twenty years in the galleys of the cargo boats out of Naha'}),
+ who('kai',{name:'Kai',category:'supporting',sex:'m',age:47,nationality:'Japanese',was:['Kitano line hand'],avatar:'Kai',shore:['airport-linesman'],home:'kitano-2',household:null,role:'the Kitano shore line hand: the shore eyes at the Kitano berth every call; rents the Shiroma house across the lane from the pier'}),
 ]);
 
 export const ROSTER=Object.freeze([...CORE,...SUPPORTING]);
@@ -136,9 +147,9 @@ export const HOUSEHOLDS=Object.freeze([
 export const QUARTERS=Object.freeze([
  Object.freeze({id:'ferry-chief-cabin',who:['nils'],aboard:true,registered:true,what:'the chief engineer’s duty cabin'}),
  Object.freeze({id:'ferry-engineer-duty-berth',who:['mac'],aboard:true,registered:true,what:'the relief engineer’s separate duty berth'}),
- Object.freeze({id:'ferry-officer-cabin',who:['ryo'],aboard:true,registered:false,what:'the existing officer accommodation aboard'}),
- Object.freeze({id:'ferry-crew-cabin',who:['ren','aya','jun'],aboard:true,registered:false,what:'the existing crew accommodation aboard'}),
- Object.freeze({id:'kitano-2',who:['kai'],aboard:false,registered:true,what:'the Shiroma house on Kitano-jima, if phase 2 finds its access and interior suit the pier worker'}),
+ Object.freeze({id:'ferry-officer-cabin',who:['ryo'],aboard:true,registered:true,what:'the chief officer’s cabin aboard (FERRY_GA mate-cabin)'}),
+ Object.freeze({id:'ferry-crew-cabin',who:['ren','aya','jun'],aboard:true,registered:true,what:'the crew accommodation aboard: the deckhand’s cabin (Ren) and the crew cabin; the crew cabin is drawn with one two-tier bunk, the bosun’s week-on berth and the relief engineer’s duty berth, so the purser’s and the cook’s berths are two more bunks for the docks-and-boats job'}),
+ Object.freeze({id:'kitano-2',who:['kai'],aboard:false,registered:true,what:'the Shiroma house on Kitano-jima, rented from the Shiromas in Naha: its gate on the hamlet lane, a bed, a table and a door, 25 m from the pier (phase 2 inspected it)'}),
 ]);
 
 /**
@@ -205,7 +216,7 @@ export const namesOf=key=>{const p=identityOf(key);return p?[p.name,...(p.fullNa
 
 /** The roster as a document: docs/cast-roster.json mirrors it (tools/write-cast-roster.mjs; tests/roster.test.mjs keeps them equal). */
 export const rosterDocument=()=>({
- status:'phase 1 of docs/CAST-CONSOLIDATION.md: the plan of record as data; the game switches over to it in phases 2 to 5',
+ status:'phase 3 of docs/CAST-CONSOLIDATION.md: the ship posts, shore roles and households are live (Nhung at 3 Kitahama, Thuan on Kitano-jima only, Kitahama Heights two ground-floor houses, Thuan owning Sakura, flowers at Sakura, post at the port counter); the removals, stories and directories follow in phases 4 and 5',
  canonDate:'2026-10-19',source:'docs/CAST-CONSOLIDATION.md',counts:{core:CORE.length,supporting:SUPPORTING.length,retired:RETIRED.length,households:HOUSEHOLDS.length},
  core:CORE,supporting:SUPPORTING,retired:RETIRED,households:HOUSEHOLDS,quarters:QUARTERS,shipPosts:SHIP_POSTS,shipPostAliases:SHIP_POST_ALIASES,shoreRoles:SHORE_ROLES,retiredHomes:RETIRED_HOMES,
 });

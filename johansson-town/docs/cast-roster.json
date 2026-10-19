@@ -1,5 +1,5 @@
 {
- "status": "phase 1 of docs/CAST-CONSOLIDATION.md: the plan of record as data; the game switches over to it in phases 2 to 5",
+ "status": "phase 3 of docs/CAST-CONSOLIDATION.md: the ship posts, shore roles and households are live (Nhung at 3 Kitahama, Thuan on Kitano-jima only, Kitahama Heights two ground-floor houses, Thuan owning Sakura, flowers at Sakura, post at the port counter); the removals, stories and directories follow in phases 4 and 5",
  "canonDate": "2026-10-19",
  "source": "docs/CAST-CONSOLIDATION.md",
  "counts": {
@@ -490,13 +490,13 @@
    "fullName": "Ryo",
    "category": "supporting",
    "sex": "m",
-   "age": null,
-   "nationality": null,
+   "age": 41,
+   "nationality": "Japanese",
    "was": [
     "Chief officer"
    ],
-   "avatar": "Chief officer",
-   "role": "chief officer of the Minato Maru: the lookout, access and the ramp",
+   "avatar": "Ryo",
+   "role": "chief officer of the Minato Maru: the lookout, access and the ramp; from Itoman, six years on the Kerama ferries before her",
    "post": "mate",
    "relief": null,
    "shore": [],
@@ -512,13 +512,13 @@
    "fullName": "Ren",
    "category": "supporting",
    "sex": "m",
-   "age": null,
-   "nationality": null,
+   "age": 23,
+   "nationality": "Japanese",
    "was": [
     "Deck hand"
    ],
-   "avatar": "Deck hand",
-   "role": "deck hand: the forward mooring station, the gangway and passenger-deck rounds",
+   "avatar": "Ren",
+   "role": "deck hand: the forward mooring station, the gangway and passenger-deck rounds; from Nago, his first ship",
    "post": "deck",
    "relief": null,
    "shore": [],
@@ -534,13 +534,13 @@
    "fullName": "Aya",
    "category": "supporting",
    "sex": "f",
-   "age": null,
-   "nationality": null,
+   "age": 31,
+   "nationality": "Japanese",
    "was": [
     "Purser"
    ],
-   "avatar": "Purser",
-   "role": "the sailing purser: the passenger count, the vehicle deck and the lobby",
+   "avatar": "Aya",
+   "role": "the sailing purser: the passenger count, the vehicle deck and the lobby; came from the Kume line for the short crossings",
    "post": "purser",
    "relief": null,
    "shore": [],
@@ -556,13 +556,13 @@
    "fullName": "Jun",
    "category": "supporting",
    "sex": "m",
-   "age": null,
-   "nationality": null,
+   "age": 52,
+   "nationality": "Japanese",
    "was": [
     "Cook-steward"
    ],
-   "avatar": "Cook-steward",
-   "role": "cook-steward: the crew’s meals, the galley and the kiosk",
+   "avatar": "Jun",
+   "role": "cook-steward: the crew’s meals, the galley and the kiosk; twenty years in the galleys of the cargo boats out of Naha",
    "post": "cook",
    "relief": null,
    "shore": [],
@@ -578,13 +578,13 @@
    "fullName": "Kai",
    "category": "supporting",
    "sex": "m",
-   "age": null,
-   "nationality": null,
+   "age": 47,
+   "nationality": "Japanese",
    "was": [
     "Kitano line hand"
    ],
-   "avatar": "Kitano line hand",
-   "role": "the Kitano shore line hand; the brief recommends the Shiroma house for him if it suits",
+   "avatar": "Kai",
+   "role": "the Kitano shore line hand: the shore eyes at the Kitano berth every call; rents the Shiroma house across the lane from the pier",
    "post": null,
    "relief": null,
    "shore": [
@@ -864,8 +864,8 @@
     "ryo"
    ],
    "aboard": true,
-   "registered": false,
-   "what": "the existing officer accommodation aboard"
+   "registered": true,
+   "what": "the chief officer’s cabin aboard (FERRY_GA mate-cabin)"
   },
   {
    "id": "ferry-crew-cabin",
@@ -875,8 +875,8 @@
     "jun"
    ],
    "aboard": true,
-   "registered": false,
-   "what": "the existing crew accommodation aboard"
+   "registered": true,
+   "what": "the crew accommodation aboard: the deckhand’s cabin (Ren) and the crew cabin; the crew cabin is drawn with one two-tier bunk, the bosun’s week-on berth and the relief engineer’s duty berth, so the purser’s and the cook’s berths are two more bunks for the docks-and-boats job"
   },
   {
    "id": "kitano-2",
@@ -885,7 +885,7 @@
    ],
    "aboard": false,
    "registered": true,
-   "what": "the Shiroma house on Kitano-jima, if phase 2 finds its access and interior suit the pier worker"
+   "what": "the Shiroma house on Kitano-jima, rented from the Shiromas in Naha: its gate on the hamlet lane, a bed, a table and a door, 25 m from the pier (phase 2 inspected it)"
   }
  ],
  "shipPosts": [

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {buildPortShed,PORT_SHED,SHED_PIER,tvProgramme} from '../src/world/port-shed.js';
+import {fujitaBeer} from '../src/world/fujita-day.js';
 import {shoeHeight,seatContactHeight} from './seating-contact.mjs';
 import {updateAvatarActor} from '../src/avatars/actors.js';
 import {circleHitsRect,standingHitsRect} from '../physics.js';
@@ -22,21 +23,25 @@ test('the television picture is clear through its open bezel',()=>{
  }finally{shed.dispose();}
 });
 
-test('Mr Fujita’s shed: channels flipping, a glass in his hand, the empties round him, the pier left open',()=>{
+test('Mr Fujita’s shed: an evening of channels flipping and a glass in his hand after he signs off, nothing while he is the master on watch, the pier left open',()=>{
  const parent=new THREE.Group(),colliders=[],hits=[];
  const shed=buildPortShed({parent,colliders,register:(o,label,fn)=>hits.push({o,label,fn}),onAction(){}});
  assert.ok(hits.some(h=>h.label==='Talk to Mr Fujita'));assert.ok(hits.some(h=>h.label==='Watch the shed television'));
- assert.ok(['baseball','sumo','variety','drama','cooking'].includes(tvProgramme(15*60)));assert.equal(tvProgramme(2*60),'off');
- shed.tick(.1,15*60);assert.ok(['SitHold','SitPour'].includes(shed.fujita.userData.socialPose));assert.equal(shed.fujita.userData.heldItem,'bottle');
+ assert.ok(['baseball','variety','drama','cooking','news'].includes(tvProgramme(22*60+40)));assert.equal(tvProgramme(2*60),'off');
+ // On watch (06:10–22:15, ferry-crew.js FERRY_WORKING_DAY): the set is off and nothing is open. Signed off: the first bottle.
+ assert.equal(tvProgramme(15*60),'off');assert.equal(fujitaBeer(15*60).phase,'waiting');assert.equal(fujitaBeer(15*60).tipsy,0);
+ shed.tick(.1,15*60);assert.ok(!['SitHold','SitPour'].includes(shed.fujita.userData.socialPose));assert.equal(shed.fujita.userData.heldItem,undefined);
+ shed.tick(.1,22*60+40);assert.ok(['SitHold','SitPour'].includes(shed.fujita.userData.socialPose));assert.equal(shed.fujita.userData.heldItem,'bottle');
  assert.ok(shed.fujita.userData.heldPortion>=0&&shed.fujita.userData.heldPortion<=1,'his glass has a level');
  // At night he has put the glass down and gone aboard Shiosai.
  shed.tick(.1,3*60);assert.equal(shed.fujita.userData.heldItem,undefined);assert.notEqual(shed.fujita.userData.socialPose,'SitHold');
- assert.equal(tvProgramme(22*60+55),'snow');shed.tick(.1,22*60+55);
- // The empties: none when the van has been, a pile by night.
+ assert.equal(tvProgramme(23*60+25),'snow');shed.tick(.1,23*60+25);
+ // The empties: none when the van has been, the evening's by the time the set goes off.
  const empties=()=>shed.group.children.find(o=>o.name==='Empty Umineko bottles').count;
- shed.tick(.1,6*60+10);assert.equal(empties(),0);shed.tick(.1,22*60);assert.ok(empties()>=20,'a day’s bottles round him');
+ shed.tick(.1,6*60+10);assert.equal(empties(),0);shed.tick(.1,22*60);assert.equal(empties(),0,'nothing before he signs off');shed.tick(.1,23*60+29);assert.ok(empties()>=3,'the evening’s bottles round him');
  // The walk along the pier past the open front stays clear.
- for(let z=-66;z<=-50;z+=.5){const x=PORT_SHED.x+PORT_SHED.depth/2+.65;assert.ok(!colliders.some(c=>standingHitsRect(x,z,.3,0,c)),'pier walk is open at z='+z);}// (overhead: the roof is the lens's collider, not a walker's)
+ // (along the platform, between its south and north rails: off its ends is the sea)
+ for(let z=SHED_PIER.minZ+.45;z<=SHED_PIER.maxZ-.45;z+=.5){const x=PORT_SHED.x+PORT_SHED.depth/2+.65;assert.ok(!colliders.some(c=>standingHitsRect(x,z,.3,0,c)),'pier walk is open at z='+z);}// (overhead: the roof is the lens's collider, not a walker's)
  // He sits facing his set.
  assert.ok(PORT_SHED.tv[1]<PORT_SHED.chair[1],'the TV is in front of him (to the south, where he faces)');
  // It stands wholly on the pier's deck, not over the water.

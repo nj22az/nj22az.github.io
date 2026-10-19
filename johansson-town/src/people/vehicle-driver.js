@@ -18,7 +18,9 @@ export function createVehicleDrivers({people}){
   // avatar. A scheduled delivery may borrow that exact resident; active interiors,
   // conversations and visible indoor work still keep ownership of their avatar.
   const scheduledOffscreen=!!(g&&!g.visible&&g.parent===v.g.parent?.parent&&v.purpose);
-  if(!g||u.playerControlled||u.inVehicle||u.indoors&&!scheduledOffscreen||u.inHome||u.inMarket||u.inIzakaya||u.inRamen||u.inBookshop||u.inWorkplace||u.inOnsen||u.sleeping||u.roomTransition||u.playerConversation)return false;
+  // A body the ferry has signed on (ferry-crew-aboard.js hides it while the ship draws them) or the quay has called
+  // (ferry-shore-crew.js) is not a driver: the one person would be in two places.
+  if(!g||u.playerControlled||u.inVehicle||u.aboardFerry||u.ferryShoreTask||u.indoors&&!scheduledOffscreen||u.inHome||u.inMarket||u.inIzakaya||u.inRamen||u.inBookshop||u.inWorkplace||u.inOnsen||u.sleeping||u.roomTransition||u.playerConversation)return false;
   const saved={g,parent:g.parent,position:g.position.clone(),rotation:g.rotation.clone(),visible:g.visible,flags:Object.fromEntries(keys.map(k=>[k,u[k]]))};borrowed.set(v,saved);
   atWheel(v,saved);
   return true;

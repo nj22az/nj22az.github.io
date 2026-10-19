@@ -1,3 +1,7 @@
+import {buildFishingBoat,EAST_QUAY_BOAT_LOOKS} from '../harbour-boats.js';
+import {hangingRope} from '../timber-pier.js';
+import {SEA_LEVEL} from '../ocean.js';
+import {SHED_WALKWAY,FUJITA_PIER} from '../fujita-layout.js';
 import {COURT_TERRACE} from '../park-layout.js';
 import {GROUND} from '../../render/ground-palette.js';
 /** The east lawn's south edge (east-lawn.js EAST_LAWN.minZ), where the seawall's return begins. */
@@ -9,7 +13,7 @@ import {createMaterials} from '../../render/materials.js';
 import {NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK,GATEBALL,GATEBALL_ACTIVE,GOYA,KITAHAMA} from './layout.js';
 import {fascia,vertical,nameplate,iceFlag,poster,coralStone,roofTile,flowerBlock,coralSand} from './signs.js';
 import {redTileHouse,concreteHouse,shopHouse,coralWall,blockWall,hinpun,shisa,fukugi,gajumaru,hibiscus,banana,potPlant,OKINAWA_COLOURS as C} from './houses.js';
-import {utilityPole,wiresBetween,serviceDrop,bicycle,laundry,gasBottles,fishCrates,buoys,netPile,sabani,planterBoxes,fishingBoat} from './props.js';
+import {utilityPole,wiresBetween,serviceDrop,bicycle,laundry,gasBottles,fishCrates,buoys,netPile,sabani,planterBoxes} from './props.js';
 import {GROUND_LAYER} from '../ground-layers.js';
 import {KITAHAMA_LANES} from '../kitahama-layout.js';
 import {buildKitahamaQuarter} from './kitahama-quarter.js';
@@ -47,7 +51,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  const solid=list=>{for(const c of [].concat(list))if(c)colliders.push(c);};
  const anchor=(x,y,z,label,fn)=>{const a=new THREE.Object3D();a.position.set(x,y,z);group.add(a);register?.(a,label,fn);return a;};
  const inspect=(x,y,z,label,title,text)=>anchor(x,y,z,label,()=>onAction?.('inspect',title,text));
- const vendings=[];
+ const vendings=[],ropeMaterial=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.92});
  const vending=(x,z,ry,y=0)=>{
   const machine=createVendingMachine({shadows});machine.position.set(x,y,z);machine.rotation.y=ry;group.add(machine);vendings.push(machine);
   // its collider is its footprint: the cabinet and the pad's lip in front of it (so nobody stands on the pad's edge)
@@ -64,7 +68,12 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes:()=>world.minutes??720});
  buildEastBack(kit,solid,{anchor,inspect,onAction});
  if(GATEBALL_ACTIVE)buildGateball(kit,solid,{anchor,inspect,onAction});
- buildEastQuay(kit,solid,{anchor,inspect,onAction,vending});
+ buildEastQuay(kit,solid,{anchor,inspect,onAction,vending,eastQuayBoat:(x,z,ry,opts)=>{
+  // Her bow along the plan's +x turned by ry (as props.js drew her); she lies quay side to, her lines to the kerb.
+  const face=EAST_QUAY.minZ-.45,side=Math.cos(ry)>0?-1:1,gap=face-(z+opts.beam/2);
+  const boat=buildFishingBoat({...opts,shadows,name:opts.look.name,quayFenders:{side,radius:Math.min(.22,gap/2)}});boat.position.set(x,SEA_LEVEL,z);boat.rotation.y=ry+Math.PI/2;group.add(boat);boat.updateMatrixWorld(true);
+  for(const f of boat.userData.fairleads){const p=boat.localToWorld(new THREE.Vector3(...f)),ring=[p.x+(p.x>x?1.2:-1.2),.22,EAST_QUAY.minZ-.25];kit.box(.12,.05,.12,ring[0],.205,ring[2],0x2b2f30);group.add(new THREE.Mesh(hangingRope(p.toArray(),ring,{sag:.08}),ropeMaterial));}
+ }});
  buildWires(kit,solid);
  // Kitahama stands on the island's ground, below the old town's datum.
  kit.at(0,0,0,()=>buildKitahama(kit,solid,{anchor,inspect,onAction,vending:(x,z,ry)=>vending(x,z,ry,KITAHAMA.y)}),KITAHAMA.y);
@@ -104,9 +113,12 @@ function buildNishiGround(kit,solid){
  kit.block(S.x-S.thickness/2,S.x+S.thickness/2,-.7,S.height,NISHI.minZ,NISHI.maxZ+.4,0xb9b4a6);
  kit.block(S.x-S.thickness/2-.04,S.x+S.thickness/2+.04,S.height,S.height+.08,NISHI.minZ,NISHI.maxZ+.4,0xa9a497);
  solid({id:'seawall',x:S.x,z:(NISHI.minZ+NISHI.maxZ)/2,w:S.thickness+.1,d:NISHI.maxZ-NISHI.minZ+.4,height:S.height});
- // The quay edge, its yellow kerb and its solid edge, with a gap where the timber pier
- // (port-shed.js SHED_PIER) runs out from it, so you can walk onto the pier.
- const PIER_GAP=[-38.4,-33.6];
+ // The quay edge, its yellow kerb and its solid edge, with a gap the width of the timber pier's walkway
+ // (fujita-layout.js SHED_WALKWAY) where it lands, so you can walk onto the pier. The wall runs on under the
+ // walkway as the shelf its stringers rest on (timber-pier.js); the gap was 4.8 m wide for the old L-shaped slab,
+ // and left 2.6 m of the shore's grass for a quay wall beside the pier (2026-10-19).
+ const PIER_GAP=[SHED_WALKWAY.minX,SHED_WALKWAY.maxX];
+ kit.block(PIER_GAP[0],PIER_GAP[1],-.7,FUJITA_PIER.top-.045-.15,Q.minZ-.45,Q.minZ,0xa9a497);
  for(const [x0,x1] of [[Q.minX-.6,PIER_GAP[0]],[PIER_GAP[1],Q.maxX]]){
   kit.block(x0,x1,-.7,GROUND_LAYER.apron,Q.minZ-.45,Q.minZ,0xa9a497);
   kit.block(x0,x1,GROUND_LAYER.apron,GROUND_LAYER.apron+.12,Q.minZ-.4,Q.minZ-.1,0xe0b93a);
@@ -276,11 +288,12 @@ const SHOPS=Object.freeze({
   buy:{label:'Buy a zenzai',title:"Nakamura Zenzai · Nakamura Zenzai",cost:250,item:'Zenzai',text:'Okinawan zenzai: a mountain of shaved ice over sweet kintoki beans and little white mochi, in a glass bowl that sweats on the counter. Mrs Nakamura has been making it on this corner since the Americans left.'},
   // The island's one sweet counter: when Aragaki Confectionery shut, Mrs Nakamura took on the sata andagi.
   more:[{label:'Buy sata andagi',title:"Nakamura Zenzai · sata andagi",cost:120,item:'Sata andagi',text:'Okinawan doughnuts, fried in the back in the morning until they crack open and smile, to the recipe from the old sweet shop over the road. Three to a paper bag, still warm, sugar on your fingers.',dz:1.3}]},
- // The post office, in the shop-house that was the barber's and then, briefly, the
- // power station before that moved to the town hall grounds. Postman Tōma's round starts
- // and ends here; Mr Shimabukuro still rents the flat upstairs.
- shimabukuro:{interior:'post',jp:"Minato Town Post Office",en:'Minato post office',bg:'#f4f1ea',accent:'#c8102e',mark:'〒',upright:"Postal",uprightBg:'#c8102e',
-  inspect:{label:'Look into the post office',title:"Minato Post Office · Minato Town Post Office",text:'A counter with a brass scale, a rack of forms, the savings-book window and a wall of pigeonholes, one for every household on the island. Collections at 10:30 and 16:30. The mail goes over on the morning ferry and comes back on the afternoon one; a parcel from Naha takes two days, from Tokyo four.'}},
+ // The former post office, in the shop-house that was the barber's and then, briefly, the power station before that
+ // moved to the town hall grounds. Its counter is shut (phase 3 of docs/CAST-CONSOLIDATION.md): post and parcels are
+ // Ms Ganaha's window at the Port Terminal now, and Tōma's round starts from the terminal's mailbag. Mr Shimabukuro
+ // still rents the flat upstairs; phase 4 takes the shop-house down.
+ shimabukuro:{interior:'post',jp:"Minato Town Post Office",en:'Minato post office · counter closed',bg:'#f4f1ea',accent:'#c8102e',mark:'〒',upright:"Postal",uprightBg:'#c8102e',
+  inspect:{label:'Look into the old post office',title:"Minato Post Office · counter closed",text:'The counter with its brass scale is shut, a notice taped to the glass: post and parcels are at Ms Ganaha’s window at the Port Terminal now, noon to 22:15. The wall of pigeonholes is empty. The red post box outside still takes letters, collections at 10:30 and 16:30. The mail goes over on the evening boat to Naha; a parcel from Naha takes two days, from Tokyo four.'}},
  'higa-saketen':{interior:'liquor',jp:"Higa Liquor Store",en:'Higa liquor · awamori',bg:'#f7ead6',accent:'#8a3b2e',upright:"Awamori",uprightBg:'#8a3b2e',
   buy:{label:'Buy a bottle of awamori',title:"Higa Liquor · Higa Liquor Store",cost:600,item:'Awamori miniature',text:'Awamori in every size, from the little 180 ml bottles by the till to the old clay pots at the back that Grandmother Higa will not sell you however you ask. The shop is hers, and she keeps the counter in the mornings. She wraps a miniature in newspaper and tells you to keep it for a guest.'}},
  // Aragaki Confectionery, closed (cast.js PLACES): nobody keeps it, and nobody lives behind it. The faded
@@ -381,7 +394,7 @@ function buildEastBack(kit,solid,ctx){
  EAST_BACK.plots.forEach((p,i)=>walledHouse(kit,solid,p,{...ctx,seed:10+i,windbreak:'east'}));
 }
 
-function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
+function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending,eastQuayBoat}){
  const Q=EAST_QUAY,S=Q.shed,I=Q.ice,lane=GROUND_LAYER.apron;
  kit.block(Q.minX+.05,Q.maxX+.4,lane-.06,lane,Q.minZ,Q.maxZ+.55,GROUND.concrete);
  // The gate's paving, from the quay's concrete to the lawn's edge.
@@ -440,8 +453,10 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  inspect(I.minX-1,1.2,I.minZ+2.7,'Inspect the ice plant',"Minato ice plant · Ice factory",
   'Block ice, crushed ice, flake ice. The chute swings out over the boats and fills a hold in four minutes with a roar you can hear out on the ferry. Inside it is winter all year; the men who work it wear jumpers in August and sit out on the quay at lunch to thaw.');
  // Boats lying to the quay, a forklift, crates, the fuel pump.
- fishingBoat(kit,24.6,Q.minZ-2.1,{ry:0,colour:0x2f6fb8,name:"Daisan Minatomaru"});
- fishingBoat(kit,33.6,Q.minZ-2.2,{ry:Math.PI,colour:0x8a3b2e,length:7.2});
+ // Two inshore boats lie here, drawn like the main quay's (harbour-boats.js), each on fat fenders against the face (it
+ // has one tyre, at x 41.1) and tied to ringbolts in the kerb fore and aft.
+ eastQuayBoat(24.6,Q.minZ-2.1,0,{length:8,beam:2.3,look:EAST_QUAY_BOAT_LOOKS[0]});
+ eastQuayBoat(33.6,Q.minZ-2.2,Math.PI,{length:7.2,beam:2.3,look:EAST_QUAY_BOAT_LOOKS[1]});
  // The forklift runs ice from the plant's door to the boats. Between runs it waits on the
  // quay side of the plant, along its wall under the chute, forks to the west: parked in the
  // lane between the shed and the plant it stood in front of the ice door (and 0.3 m into
@@ -570,9 +585,9 @@ const NAMEPLATES=Object.freeze({
  nakasone:'An empty red-tile house facing the lawn in front of Umi-no-yu. The shutters are down and the shisa still sit on the gateposts.',
  miyagi:'An empty red-tile house, the oldest on this side. A typhoon took the roof off everything else here, but not this one. The shisa on the ridge is older than the house.',
  kamiya:'An empty red-tile house, swept, with the water off at the main.',
- 'kitahama-1':'Thao, Chin and Vy\'s house, with Thuan\'s weekday room: a red-tile roof, a hinpun, and a row of herb pots that Thuan names after customers. The gate latch is oiled so the late shift does not wake anybody.',
+ 'kitahama-1':'Thao, Chin and Vy\'s house: a red-tile roof, a hinpun, and a row of herb pots that Thuan named after customers when she stayed here. The gate latch is oiled so the late shift does not wake anybody.',
  'kitahama-2':'Mrs Sato\'s house, concrete and very tidy, with a stock pot always on the back step to cool. She walks down to the morning auction at half past five and has the ramen stock on by seven.',
- 'kitahama-3':'Kōji\'s house, and Riku\'s. A wetsuit on the line, fish boxes stacked by the gate, a football in the yard and a radio that plays the weather on the hour.',
+ 'kitahama-3':'Nhung, Kōji and Riku\'s house. A wetsuit on the line, fish boxes stacked by the gate, a football in the yard, a crate of reading copies from the bookshop in the genkan, and a radio that plays the weather on the hour.',
  'kitahama-4':'Tōma. The postman lives here: his red Super Cub stands in the yard at night with its box padlocked, and he grows goya over the gate.',
  'kitahama-5':'Grandmother Chinen’s ground-access home. Tetsuo visits from his workshop; the entrance stays clear for her.',
  'kitahama-6':'The oldest house on the lane: red tile, and a hinpun with a crack the 1959 typhoon put there. The ferry\'s master lives here now; he is gone to the bridge by half past six and home at eight.',
