@@ -227,7 +227,7 @@ export function buildFishingBoat({length=6.3,beam=2.9,look=QUAY_FISHING_BOAT_LOO
  for(const z of [-1.2,.3])kit.add(hullQuad(wide,-1,z-.45,z+.45,.32,.38,{off:.006}),0xb4b0a4,'wear');
  // Lettering: her name on both bows, her registration under it, as the Fisheries Act wants it.
  const atlas=letteringAtlas([{text:look.name,bg:null,ink:'#1d2a36',w:1.5,h:.3},{text:look.registration,bg:null,ink:'#1d2a36',w:1.1,h:.22,font:'sans'}],{name:name+' lettering'});
- for(const side of [1,-1]){const z=half*.5,yN=top(z)-.42,yR=top(z)-.68;
+ for(const side of [1,-1]){const z=half*.36,yN=top(z)-.42,yR=top(z)-.68;
   atlas.onHull(0,wide,side,z-.75,z+.75,yN-.15,yN+.15,sh);atlas.onHull(1,wide,side,z-.55,z+.55,yR-.11,yR+.11,sh);}
  // Her lines leave from the starboard bitts through fairleads in the cap (stern line, then the forward spring); on deck,
  // each runs from its bitt to the fairlead, and its tail lies coiled beside the bitt.
