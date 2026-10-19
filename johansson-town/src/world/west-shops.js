@@ -5,6 +5,8 @@ import {buildShopDoor} from './shop-door.js';
 import {BOOKSHOP_WORKSHOP_PLOT} from './bookshop-workshop-layout.js';
 import {businessId} from './businesses.js';
 import {GROUND_LAYER} from './ground-layers.js';
+import {wallAd,WALL_ADS} from './okinawa/signs.js';
+import {rng} from './okinawa/kit.js';
 
 /** West-facing business row: the bookshop, press and workshop share one shell.
  * The interior dimensions fit this building and the lane beside Minato stays open.
@@ -92,6 +94,7 @@ export function buildWestShop({parent,site,register,enter,label,colliders,shadow
  // Rust from the parapet fixings and mould under the coping: the island's two tells.
  for(const wz of [z-half+.7,z+half-1.4])kit.box(.02,1.1,.05,WEST_FRONT+.005,H-.4,wz,0x9d8f78);
  kit.box(.02,.25,width-.6,WEST_FRONT+.004,H-.12,z,0xbdb4a2);
+ northGable(kit,{x0:back-.22,x1:WEST_FRONT,zf:z+half+.22,H,wall,colliders});
  kit.finish(group,'west-shop shell:'+site.id);
  // The shopfront: two display windows either side of one door, in aluminium.
  for(const side of [-1,1]){
@@ -136,4 +139,33 @@ export function buildWestShop({parent,site,register,enter,label,colliders,shadow
  entrance.position.set(doorPoint[0],1.25,z);parent.add(entrance);
  register?.(entrance,'Enter '+site.title,()=>enter(site));
  return {id:site.id,group,entrance,update:door.update};
+}
+
+/**
+ * The north gable, the wall you see coming down Main Street from the bus (it was a blank cream slab): what a 1990s
+ * concrete shop-house carries on its side wall, each thing for a reason.
+ *   - a painted advert, sign-writer's work on the one wall the whole street sees (an invented brand, WALL_ADS);
+ *   - the upstairs air conditioner's outdoor unit on its block, its pipes boxed up the wall to the press room;
+ *   - the electricity meter at reading height by the street end, where the meter reader can get at it;
+ *   - the downpipe from the roof, which drains the water tank's overflow too;
+ *   - creeping fig at the back corner, which every shaded concrete wall on the island grows.
+ */
+function northGable(kit,{x0,x1,zf,H,wall,colliders}){
+ const ivory=0xe8e4d8,grey=0x9aa0a4;
+ if(typeof document!=='undefined'&&document.createElement)try{
+  kit.sign(wallAd(WALL_ADS[2],7),2.4,3.2,(x0+x1)/2+.6,3.85,zf+.03,{depth:.02,edge:wall,name:'painted wall advert sign'});
+ }catch{}
+ // The air conditioner on two blocks, its pipes in a cover up to the upstairs room.
+ const ax=x0+1.3;kit.box(.8,.12,.3,ax,.06,zf+.17,0xb3ad9f);kit.box(.76,.56,.26,ax,.4,zf+.17,0xe2e0d8);
+ kit.cyl(.17,.17,.02,ax-.12,.42,zf+.31,0x6d7477,{segments:14,rx:Math.PI/2});
+ kit.box(.12,3.7,.08,ax+.5,2.3,zf+.05,ivory);kit.box(.5,.12,.08,ax+.3,.55,zf+.05,ivory);kit.box(.12,.12,.12,ax+.5,4.15,zf+.07,ivory);
+ colliders?.push({id:'frontrow-aircon',x:ax,z:zf+.17,w:.82,d:.32,height:.7});
+ // The meter and its conduit, by the street corner.
+ const mx=x1-1.1;kit.box(.32,.42,.12,mx,1.7,zf+.06,grey,{finish:'metal'});kit.box(.2,.14,.02,mx,1.75,zf+.125,0xd9e2e0,{finish:'window'});
+ kit.rod([mx,1.92,zf+.05],[mx,H-.2,zf+.05],.02,0x3c4448);
+ // The downpipe at the front corner, with its shoe.
+ const dx=x1-.25;kit.rod([dx,H+.05,zf+.08],[dx,.2,zf+.08],.045,0x8e9699);kit.box(.12,.1,.22,dx,.13,zf+.16,0x8e9699);
+ // Creeping fig, flat to the wall, thickest at the foot of the back corner.
+ const r=rng(91);
+ for(let i=0;i<34;i++){const t=r.next(),x=x0+.25+r.next()*1.1*(1.2-t),y=.2+t*3.1;kit.sphere(.16+r.next()*.1,x,y,zf+.03,r.pick([0x3f6b3a,0x4f7d3e,0x5c8a45]),{sz:.22,detail:0});}
 }
