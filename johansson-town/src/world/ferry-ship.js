@@ -193,7 +193,7 @@ export const FERRY_MACHINERY=Object.freeze({
   hydrants:Object.freeze({car:4,passenger:2,bridge:1,engine:1}),hose:15,nozzle:12}),
  co2:Object.freeze({bottles:4,kg:45,grossVolume:190,why:'Provisional inventory screen only: 180 kg carried against an assumed 190 m3 protected volume. Actual fire boundaries, ducts, protected volumes, nozzle distribution and release interlocks require engineered verification'}),
  fireDetection:Object.freeze({heads:30,zones:6,volts:24,panel:'wheelhouse'}),
- freshWater:Object.freeze({hydrophoreKW:.75,pressureTank:300,cutIn:.25,cutOut:.35,perDay:1.5,why:'Filled every fifth morning from the town water lorry, which Mr Shimabukuro drives from the power station'}),
+ freshWater:Object.freeze({hydrophoreKW:.75,pressureTank:300,cutIn:.25,cutOut:.35,perDay:1.5,why:'Filled every fifth morning from the town water lorry, which comes down from the power station yard (Tetsuo keeps the yard since the power house lost its keeper)'}),
  ramp:Object.freeze({pumps:2,pumpKW:5.5,pressure:14,up:60,down:45,cylinders:2,cylinderBore:.1,why:'One pump runs and one stands by; a hand pump if both fail'}),
  anchors:Object.freeze({count:2,kg:480,kind:'stockless',chain:Object.freeze({length:137.5,diameter:19,grade:2}),windlassKW:7.5,capstanKW:5.5,lines:Object.freeze({count:6,length:40,kind:'vinylon'})}),
 });
@@ -367,7 +367,7 @@ export const FERRY_SCENARIOS=Object.freeze([
    ['chief','control-booth','Feels the starboard shaft shudder, sees the exhaust go black and stops the starboard engine.'],
    ['master','wheelhouse','Brings her in on the port engine and the bow thruster, both generators on the board.'],
    ['bosun','aft-mooring','Doubles the lines at the berth: on one screw she cannot hold herself alongside.'],
-   ['master','quay','Telephones the harbour master for a diver; Mr Ōshiro knows the net by its floats.'],
+   ['master','quay','Telephones the harbour master for a diver; Kōji knows the net by its floats.'],
   ])}),
  Object.freeze({id:'ramp',title:'The ramp will not come down',cause:'A hose on the ramp power pack bursts at Kitano-jima with two trucks waiting',
   steps:Object.freeze([

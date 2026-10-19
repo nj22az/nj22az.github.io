@@ -23,7 +23,7 @@ export const ISLAND_OUTFITS=Object.freeze([
  {id:'sunday-jacket',name:'Harbour Sunday jacket',label:'Sunday jacket',category:'Everyday',tags:['Sunday','ferry','main island','radio parts'],
   who:'Tetsuo on the Sunday ferry to the main island, for radio parts',why:'A light jacket for the ferry saloon’s air-conditioning and a day in town.',outfit:{top:'jacket',topColour:'#486874',bottom:'trousers',bottomColour:'#3f4951',footwear:'shoes',shoes:'#4e3931',accent:'#f1e7cf',pattern:'none'}},
  {id:'knitted-layers',name:'Rainflower knitted layers',label:'Knitted layers',category:'Everyday',tags:['Rainflower Lane','florist','January','winter','cardigan'],
-  who:'Mrs Kinjō opening Rainflower Florist on January mornings',why:'January’s north wind is cold on the lane: a cardigan over a long skirt, and boots for the florist’s wet floor.',outfit:{top:'cardigan',topColour:'#718b68',bottom:'longskirt',bottomColour:'#956c59',footwear:'boots',shoes:'#554237',accent:'#f1dfbb',pattern:'none'}},
+  who:'Thuan at Sakura’s flower buckets on January mornings (the set the Rainflower florist wore before she retired)',why:'January’s north wind is cold on the lane: a cardigan over a long skirt, and boots for the wet floor by the buckets.',outfit:{top:'cardigan',topColour:'#718b68',bottom:'longskirt',bottomColour:'#956c59',footwear:'boots',shoes:'#554237',accent:'#f1dfbb',pattern:'none'}},
  {id:'harbour-day-shift',name:'Harbour day shift',label:'Harbour day shift',category:'Work',tags:['cargo yard','quay','overalls','crates','catch'],
   who:'Kōji sorting the catch at the auction; Chin on a quay repair',why:'Overalls and boots for the quay, where the crates are heavy and the concrete is always wet.',outfit:{top:'overalls',topColour:'#f4f1ea',bottom:'widepants',bottomColour:'#476a79',footwear:'boots',shoes:'#473b2f',accent:'#dabb55',pattern:'none'}},
  {id:'sea-school-sailor',name:'Sea-school sailor',label:'Sea-school sailor',category:'School & sport',tags:['school','high school','uniform','ferry'],
@@ -41,15 +41,15 @@ export const ISLAND_OUTFITS=Object.freeze([
  // Batch 1 of the Minato Machi wardrobe plan (2026-10-11): eight sets made only from parts that already exist, every
  // colour from the island palette (character-style.md §6).
  {id:'shop-counter-smock',name:'Shop counter smock',label:'Shop counter smock',category:'Work',tags:['Sakura Shōten','shop','konbini','shaved ice','kakigōri','zenzai','counter'],
-  who:'Grandmother Sakurai minding Sakura Shōten; Mrs Nakamura at her shaved-ice stall',why:'The sleeved smock keeps syrup and dust off everyday clothes.',
+  who:'Thuan at Sakura Shōten’s till; Mrs Nakamura at her shaved-ice stall',why:'The sleeved smock keeps syrup and dust off everyday clothes.',
   outfit:{top:'smock',topColour:'#f4f1ea',bottom:'widepants',bottomColour:'#6e4a33',footwear:'sandals',shoes:'#6e4a33',hat:'kerchief',hatColour:'#2f4f7f',accent:'#2f4f7f',pattern:'none'}},
  // Boots for now: the set moves to the market gumboots when they are made (the plan's batch 5).
  {id:'morning-boats',name:'Morning boats',label:'Morning boats',category:'Work',tags:['fish auction','auction','quay','dawn','boats','fishing','sabani'],
-  who:'Kōji at the auction, Mr Ōshiro and Masaru',why:'Boots and a cap for the hosed-down quay at dawn.',
+  who:'Kōji at the auction and on his sabani, and Masaru',why:'Boots and a cap for the hosed-down quay at dawn.',
   outfit:{top:'tee',topColour:'#8cc4b4',bottom:'trousers',bottomColour:'#2f4f7f',footwear:'boots',shoes:'#f4f1ea',hat:'cap',hatColour:'#2f4f7f',accent:'#e8b83e',pattern:'none'}},
  // Our own plain uniform: no postal mark.
  {id:'post-round',name:'Post round',label:'Post round',category:'Work',tags:['post office','post','mail','letters','round','uniform'],
-  who:'Postman Tōma (collections at 10:30 and 16:30) and Naoko',why:'A light summer uniform for a round on foot.',
+  who:'the terminal’s mailbag round (Ms Ganaha’s counter has the post now; the set the postman wore before he retired) and Naoko',why:'A light summer uniform for a round on foot.',
   outfit:{top:'polo',topColour:'#8fbfe0',bottom:'trousers',bottomColour:'#27304d',footwear:'shoes',shoes:'#2b2b2b',hat:'cap',hatColour:'#27304d',accent:'#f4f1ea',pattern:'none'}},
  // The kitchen smock, not the apron: the apron tears in every move until it is rebuilt (character-style.md section 8,
  // batch 5). The kerchief is the red of the shop's noren (minato-facade.js); the accent only ties back long hair.

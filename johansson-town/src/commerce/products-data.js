@@ -2,7 +2,7 @@
 // Studio or with the johansson-studio tools (avatar-creator/docs/STUDIO-MCP.md). CI refuses a copy that does not match the data.
 const freeze=value=>{if(value&&typeof value==='object'){for(const v of Object.values(value))freeze(v);Object.freeze(value);}return value;};
 /** The sha256 of the products, prints and retired lines (their canonical JSON). */
-export const FINGERPRINT='f0a8034741547433b67cf4f8f0b92d34180ad52d546380e2f7971b6ad5a60567';
+export const FINGERPRINT='b146a268e43c91b29b36d0ba24cc6a9680f8dd8c1b9a861b942c6c0cb53f7807';
 /** Sakura Shōten's products, in the order Thuan walks the floor (data/studio/products.json says what every field is). */
 export const PRODUCTS=freeze([
  {
@@ -147,8 +147,8 @@ export const PRODUCTS=freeze([
    "zone": "drinks",
    "for": [
     "Harbour master",
-    "Bus driver",
-    "Postman Tōma"
+    "Ms Ganaha",
+    "Mac"
    ],
    "why": "A sweet canned coffee before a dawn shift or between rounds.",
    "placed": "Under the tea, where a working hand reaches without looking."
@@ -607,7 +607,7 @@ export const PRODUCTS=freeze([
   "purpose": {
    "zone": "drinks",
    "for": [
-    "Barfly",
+    "Mac",
     "Tetsuo",
     "Johansson"
    ],
@@ -699,7 +699,7 @@ export const PRODUCTS=freeze([
    "for": [
     "Thuan",
     "Chin",
-    "Postman Tōma",
+    "Ms Ganaha",
     "Officer Mori"
    ],
    "why": "The lunch eaten standing up: plum onigiri, made this afternoon.",
@@ -766,7 +766,7 @@ export const PRODUCTS=freeze([
   "purpose": {
    "zone": "fresh",
    "for": [
-    "Mr Shimabukuro",
+    "Harbour master",
     "Tetsuo"
    ],
    "why": "A proper lunch for people who cannot leave their work: the power house, the workshop, the office.",
@@ -842,7 +842,7 @@ export const PRODUCTS=freeze([
    "zone": "fresh",
    "for": [
     "Johansson",
-    "Reiko"
+    "Nhung"
    ],
    "why": "Egg sandwiches eaten at a desk or on the ferry.",
    "placed": "Middle bay, eye level, over the bread it is made from."
@@ -916,7 +916,7 @@ export const PRODUCTS=freeze([
    "zone": "fresh",
    "for": [
     "Mrs Nakamura",
-    "Mrs Kinjō"
+    "Ms Ganaha"
    ],
    "why": "Milk bread for tomorrow’s breakfast.",
    "placed": "Under the sandwiches: the household buy below the snack."
@@ -1144,7 +1144,7 @@ export const PRODUCTS=freeze([
    "zone": "pantry",
    "for": [
     "Kōji",
-    "Barfly",
+    "Mac",
     "Riku"
    ],
    "why": "Cup noodles for a late night or a typhoon day indoors.",
@@ -1218,8 +1218,8 @@ export const PRODUCTS=freeze([
   "purpose": {
    "zone": "pantry",
    "for": [
-    "Mrs Kinjō",
-    "Mr Ōshiro",
+    "Mac",
+    "Ms Uezu",
     "Thao"
    ],
    "why": "Miso sachets for one bowl when cooking a pot is too much.",
@@ -1420,8 +1420,8 @@ export const PRODUCTS=freeze([
   "purpose": {
    "zone": "pantry",
    "for": [
-    "Mr Ōshiro",
-    "Barfly"
+    "Nhung",
+    "Mac"
    ],
    "why": "Tinned tuna for onigiri at home and for the cat that is not officially fed.",
    "placed": "Back face, with the other tins."
@@ -1562,7 +1562,7 @@ export const PRODUCTS=freeze([
   "purpose": {
    "zone": "sweets",
    "for": [
-    "Barfly",
+    "Mr Fujita",
     "Kōji"
    ],
    "why": "Salted crisps with a beer or a baseball game on the radio.",
@@ -1637,8 +1637,8 @@ export const PRODUCTS=freeze([
    "zone": "sweets",
    "for": [
     "Grandmother Higa",
-    "Mr Ōshiro",
-    "Mrs Kinjō"
+    "Mrs Sato",
+    "Dr Kakazu"
    ],
    "why": "Soy rice crackers with tea, for visitors.",
    "placed": "Front face, the low boards: a big bag for visitors, easy to lift down, under the crisps."
@@ -1713,7 +1713,7 @@ export const PRODUCTS=freeze([
    "zone": "sweets",
    "for": [
     "Nhung",
-    "Reiko",
+    "Miss Higa",
     "Thuan"
    ],
    "why": "Butter biscuits for a reading afternoon or a night at the press.",
@@ -2083,8 +2083,8 @@ export const PRODUCTS=freeze([
   "purpose": {
    "zone": "daily",
    "for": [
-    "Mrs Kinjō",
-    "Reiko",
+    "Miss Higa",
+    "Dr Kakazu",
     "Officer Mori"
    ],
    "why": "Tissues for hay fever, a cold, or a sad film.",
@@ -2303,7 +2303,7 @@ export const PRODUCTS=freeze([
    "zone": "daily",
    "for": [
     "Johansson",
-    "Reiko",
+    "Nhung",
     "Vy"
    ],
    "why": "Pocket notebooks for tide times, articles and homework.",
@@ -2442,7 +2442,7 @@ export const PRODUCTS=freeze([
    "zone": "counter",
    "for": [
     "Officer Mori",
-    "Bus driver",
+    "Ms Uezu",
     "Kōji",
     "Vy"
    ],
