@@ -350,7 +350,15 @@ function buildYardRow(kit,solid,{anchor,inspect,onAction}){
  laundrySideWall(kit,solid,YARD_ROW.plots.find(p=>p.id==='coin-laundry'));
  gasBottles(kit,-15.4,17.8,{ry:Math.PI/2});
  hibiscus(kit,-23.6,18.6,{seed:23});banana(kit,-23.4,-16.6,{seed:24});
+ for(const [i,z] of YARD_WINDBREAK.z.entries())solid(fukugi(kit,YARD_WINDBREAK.x,z,{h:5.4+(i%3)*.5,seed:500+i}));
 }
+
+/**
+ * Fukugi along the yard's west edge, where the old yard wall stood: the shops' yard takes the west wind off the sea
+ * through the Nishi lanes, and the row shades Thuan's break bench (staff-bench.js) and the goya bed in the afternoon.
+ * Planted between the lane openings (WEST_YARD.lanes), clear of the tyres and the goya trellis.
+ */
+export const YARD_WINDBREAK=Object.freeze({x:-24.1,z:Object.freeze([-25.2,-23.1,-21,-18.9,-6.3,-4.4])});
 
 /**
  * The coin laundry's long south wall, which faces Main Street's crossing and was blank: its own painted name and

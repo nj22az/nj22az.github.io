@@ -28,7 +28,7 @@ export function cherrySeason(minutes){
 
 const PALETTE=Object.freeze({
  bark:0x5e4636,barkLight:0x76594a,
- leaf:[0x3f7f3a,0x5a9a43,0x7cbf52],
+ leaf:[0x3d7a39,0x52903f,0x6aa84a],
  bloom:[0xb8306a,0xd94f86,0xf28ab2],
  turning:[0x9a7a2e,0xc9953a,0xc8592f],
 });
@@ -54,7 +54,7 @@ function clump(cx,cy,cz,r,tones,r0,{lobes=5,fill=1,flower=false}){
   if(r0.next()>fill)continue;
   const a=i/lobes*Math.PI*2+r0.next(),rad=r*(.35+r0.next()*.35),lr=r*(.45+r0.next()*.25);
   const x=cx+Math.cos(a)*rad,y=cy+(r0.next()-.35)*r*.5,z=cz+Math.sin(a)*rad;
-  const g=new THREE.IcosahedronGeometry(1,1).applyMatrix4(trs(x,y,z,0,r0.next()*3,0,lr,lr*(flower?.8:.7),lr));
+  const g=new THREE.IcosahedronGeometry(1,1).applyMatrix4(trs(x,y,z,0,r0.next()*3,0,lr,lr*(flower?.85:.82),lr));
   const p=g.attributes.position,nrm=new Float32Array(p.count*3),col=new Float32Array(p.count*3),c=new THREE.Color();
   for(let k=0;k<p.count;k++){
    out.set(p.getX(k)-cx,(p.getY(k)-cy)*1.4,p.getZ(k)-cz).normalize().multiplyScalar(.8).addScaledVector(up,.25).normalize();nrm.set([out.x,out.y,out.z],k*3);
@@ -64,7 +64,7 @@ function clump(cx,cy,cz,r,tones,r0,{lobes=5,fill=1,flower=false}){
   parts.push(g.index?g.toNonIndexed():g);
  }
  // The centre lobe closes the clump.
- const g=new THREE.IcosahedronGeometry(1,1).applyMatrix4(trs(cx,cy,cz,0,0,0,r*.62,r*.5,r*.62));parts.push(paint(g,tones[1]));
+ const g=new THREE.IcosahedronGeometry(1,1).applyMatrix4(trs(cx,cy+r*.08,cz,0,0,0,r*.62,r*.6,r*.62));parts.push(paint(g,tones[1]));
  return parts;
 }
 

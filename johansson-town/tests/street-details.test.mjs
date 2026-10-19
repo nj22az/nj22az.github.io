@@ -50,3 +50,20 @@ test('the harbour cherry is a kanhizakura: green in October, in flower late Janu
 test('the police box says 交番',()=>{
  assert.equal(KOBAN.jp,'交番');
 });
+
+test('the coastal walk over the east beach is the beach’s wet sand, and the park keeps one paving family',async()=>{
+ const {lanePatches,beachWalkAt}=await import('../src/world/lane-surfaces.js?snappy=1');
+ const {BEACH}=await import('../src/world/beach-layout.js');
+ const beach=lanePatches().filter(beachWalkAt);
+ assert.ok(beach.length>=3,'the waterline stretch and the crossing from the access');
+ for(const p of beach){assert.equal(p.route,'island-coast-walk');const z=p.polygon.reduce((a,v)=>a+v[1],0)/p.polygon.length;assert.ok(z>=BEACH.minZ&&z<=BEACH.maxZ);}
+ const {HARBOUR_PARK_PATHS}=await import('../src/world/harbour-park-plan.js');
+ assert.deepEqual([...new Set(HARBOUR_PARK_PATHS.map(r=>r.surface))].sort(),['gravel','stone'],'stone walks and the gravel circuit');
+});
+
+test('the yard windbreak stands off the paving and clear of the lane openings through the old yard wall',async()=>{
+ const {YARD_WINDBREAK}=await import('../src/world/okinawa/quarters.js');
+ const {WEST_YARD}=await import('../src/world/west-yard.js');
+ for(const z of YARD_WINDBREAK.z)assert.ok(WEST_YARD.lanes.every(l=>Math.abs(z-l)>WEST_YARD.laneHalf+.5),'fukugi at z '+z+' is clear of the lane gaps');
+ assert.ok(YARD_WINDBREAK.x>WEST_YARD.minX&&YARD_WINDBREAK.x<WEST_YARD.minX+1,'along the old wall line');
+});
