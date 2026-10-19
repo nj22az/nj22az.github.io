@@ -1,38 +1,45 @@
+import {FERRY_WORKING_DAY} from '../people/ferry-crew.js';
+
 /**
- * Mr Fujita's day in his shed, as a pure function of the town clock: what is on the
+ * Mr Fujita's evening in his shed, as a pure function of the town clock: what is on the
  * set, whether he is laughing at it, and where he is with the beer.
  *
+ * He is the Minato Maru's master (docs/CAST-CONSOLIDATION.md §3; people/ferry-crew.js), on the bridge from
+ * the generators at ten past six to the shore power at a quarter past ten, sober the whole watch:
+ * the set is off and the crate is full until he signs off at twenty past ten
+ * (FERRY_WORKING_DAY.signOff, which is FUJITA_DAY.start). The evening is his.
+ *
  * The television. He has the remote and no patience: every few minutes he flips to
- * another channel, from what is on at that hour (the ballgame only in the afternoon,
- * which he keeps coming back to; the news at noon and at seven; the cartoons in the
- * morning; the variety shows, the period drama, the cooking and the sumo the rest of
- * the day). Where he lands is seeded by the day and the minute, so it is the same for
+ * another channel, from what is on at that hour (the night game's last innings and the
+ * baseball news, which he keeps coming back to; the late news; the variety shows, the
+ * period drama and the cooking; snow after the last station signs off at twenty past
+ * eleven). Where he lands is seeded by the day and the minute, so it is the same for
  * everybody who walks past, and testable.
  *
- * The laughing. A variety show or a cartoon gets a laugh out of him every half a minute
- * or so; the ballgame now and then (a home run, a bad call); the news and the drama
- * hardly ever. The more he has had, the easier he laughs.
+ * The laughing. A variety show gets a laugh out of him every half a minute or so; the
+ * ballgame now and then (a home run, a bad call); the news and the drama hardly ever.
+ * The more he has had, the easier he laughs.
  *
  * The beer. Umineko lager in the large returnable bottles, from Higa Liquor (see
  * commerce/merchandising.js ACCOUNTS['higa-saketen']['fujita-shed']): the Higas' van stops at the
- * pier root at six every morning, leaves the day's crates and takes yesterday's empties
- * back, so the pile round his chair is gone when he sits down at half past six and grows
- * all day: he never puts an empty back in the crate, he stands it on the floor, or lays
- * it down when the floor gets full. He drinks between 24 and 49 bottles a day (the day
- * decides), from a small glass he fills three times a bottle, pouring with his left hand
- * without getting out of the chair. A glass goes down sip by sip; when it is empty he
- * pours the next. After the set goes off at half past eleven he dozes among the empties
- * until the van comes.
+ * pier root at six every morning, leaves a crate and takes last night's empties back, so
+ * the floor round his chair is clear when he comes in from the boat. He drinks between
+ * three and six bottles an evening (the day decides), from a small glass he fills three
+ * times a bottle, pouring with his left hand without getting out of the chair. A glass
+ * goes down sip by sip; when it is empty he pours the next; he never puts an empty back
+ * in the crate, he stands it on the floor. After the set goes off at half past eleven he
+ * walks aboard Shiosai and sleeps it off, and signs on sober at five past six.
  */
 
 export const FUJITA_DAY=Object.freeze({
- start:6*60+30,           // he sits down with the first bottle
- end:23*60+30,            // the set goes off; he dozes
- collect:6*60,            // the Higas' van: yesterday's empties go, the day's crates come
- min:24,max:49,           // bottles a day
+ start:FERRY_WORKING_DAY.signOff, // signed off from the last boat: he sits down with the first bottle (22:20)
+ end:23*60+30,            // the set goes off; he goes aboard Shiosai
+ collect:6*60,            // the Higas' van: last night's empties go, a crate comes
+ min:3,max:6,             // bottles an evening
  glassesPerBottle:3,      // a large bottle fills his small glass three times
  pour:.1,                 // minutes a pour takes (six seconds)
  crate:20,                // large bottles to a crate
+ signOff:23*60+20,        // the last station signs off; snow after
 });
 
 /** A repeatable number in [0, 1) for any whole numbers. */
@@ -44,28 +51,26 @@ export function seeded(...keys){
 
 const local=m=>((m%1440)+1440)%1440,dayOf=m=>Math.floor(m/1440);
 
-/** How many bottles he gets through on a given day (24 to 49). */
+/** How many bottles he gets through on a given evening (three to six). */
 export function bottlesFor(day){const D=FUJITA_DAY;return D.min+Math.floor(seeded(day,7)*(D.max-D.min+1));}
 
-/** What is on at this hour, and how much he likes coming back to it. */
+/** What is on at this hour of the evening, and how much he likes coming back to it (1997's late schedules). */
 function channelsAt(m){
  const h=m/60,list=[['variety',3],['drama',2],['cooking',1]];
- if(h<10)list.push(['cartoon',3],['weather',1]);
- if(h>=12&&h<12.4)list.push(['news',3]);
- if(h>=13&&h<18)list.push(['baseball',6]);
- if(h>=15&&h<18)list.push(['sumo',2]);
- if(h>=19&&h<19.75)list.push(['news',4]);
+ if(h<23)list.push(['baseball',6]);   // the night game's last innings, then the baseball news
+ if(h>=22.5&&h<23.25)list.push(['news',3]);   // the late news
+ if(h>=23)list.push(['weather',1]);   // tomorrow's weather, the last thing on
  return list;
 }
 
 /**
- * The channel on the set at `minutes` ('off' at night, 'snow' late, when the last station
- * has signed off and he has not noticed). Each stay lasts 3 to 12 minutes.
+ * The channel on the set at `minutes` ('off' while he is on the bridge and at night, 'snow' late, when the last
+ * station has signed off and he has not noticed). Each stay lasts 3 to 12 minutes.
  */
 export function tvProgramme(minutes){
  const m=local(minutes),day=dayOf(minutes);
  if(m<FUJITA_DAY.start||m>=FUJITA_DAY.end)return 'off';
- if(m>=22*60+50)return 'snow';
+ if(m>=FUJITA_DAY.signOff)return 'snow';
  // Walk the day's stays from the first: each is 3 to 12 minutes long.
  let at=FUJITA_DAY.start,k=0,last='';
  for(;;){
@@ -93,7 +98,7 @@ export function laughingAt(minutes,tipsy=0){
 
 /**
  * Where he is with the beer at `minutes`.
- *   phase   'doze' (night), 'waiting' (the van has been; he has not sat down), 'pour', 'drink'
+ *   phase   'doze' (night), 'waiting' (the van has been; he is sober, on the bridge or about to be), 'pour', 'drink'
  *   glass   how full his glass is, 0..1
  *   bottle  how much is left in the bottle he is on, 0..1 (null when he has none open)
  *   pouring how far through a pour, 0..1 (null otherwise)
@@ -116,5 +121,5 @@ export function fujitaBeer(minutes){
  // A bottle goes to the floor the moment its third glass is poured.
  const empties=Math.floor(poured/D.glassesPerBottle+1e-9),open=Math.floor(k/D.glassesPerBottle);
  const bottle=empties>open?null:1-(poured-open*D.glassesPerBottle)/D.glassesPerBottle;
- return {phase:pouring!==null?'pour':'drink',glass,bottle,pouring,empties,full:n-empties-(bottle===null?0:1),bottles:n,tipsy:Math.min(3,empties/14)};
+ return {phase:pouring!==null?'pour':'drink',glass,bottle,pouring,empties,full:n-empties-(bottle===null?0:1),bottles:n,tipsy:Math.min(3,empties/2)};
 }

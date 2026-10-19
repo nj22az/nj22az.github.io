@@ -4,7 +4,7 @@ import {NAKAMURA_DESSERTS,HARBOUR_PARK_STUDY} from '../world/harbour-park-plan.j
 import {ONSEN_DOOR} from '../world/onsen-layout.js';
 import {RAMEN_DOOR} from '../world/dining-layout.js';
 import {townCalendarAt} from '../town-clock.js';
-import {rotaWeek} from './ferry-crew.js';
+import {rotaWeek,FERRY_WORKING_DAY} from './ferry-crew.js';
 import {flatAccessRoute} from '../world/kitahama-layout.js';
 import {activeHomeForResident} from './island-households.js';
 import {CAST,castMember} from './cast.js';
@@ -13,6 +13,8 @@ import {SCHOOL} from '../world/school-layout.js';
 import {TOWN_DESTINATIONS} from '../world/town-grid.js';
 import {IZAKAYA_DOOR} from '../world/dining-layout.js';
 import {MARKET_THRESHOLD} from '../world/town-grid.js';
+import {KITANO_PIER_STAND} from '../world/kitano-hamlet-layout.js';
+import {airportWorld} from '../world/airport-ground.js';
 
 const HOME_TARGETS=new Map();
 const activeTarget=name=>{if(!HOME_TARGETS.has(name))HOME_TARGETS.set(name,activeResidentHome(name)?.target);return HOME_TARGETS.get(name);};
@@ -25,7 +27,7 @@ const points={izakaya:IZAKAYA_DOOR,sakura:MARKET_THRESHOLD,market:MARKET_THRESHO
  'fish-auction':[25,-39.6],'ice-plant':[31,-41],boatyard:[-31.8,-45],sea:[-31.8,-45],
  'higa-liquor':[4.8,8.4],clinic:[34.1,35.1],'cargo-yard':[17,-40],'post-office':[4.8,-4.1],
  'power-station':[SCHOOL.powerHouse.door[0]+.6,SCHOOL.powerHouse.door[1]-.9],quay:[20,-40],
- 'main-street':[1,0],seawall:[-36.7,-20]};
+ 'main-street':[1,0],seawall:[-36.7,-20],'kitano-pier':airportWorld(...KITANO_PIER_STAND)};
 export function canonicalDestination(name,place){
  const p=castMember(name),home=activeTarget(name);
  if(place===p?.home||p?.alsoAt.includes(place))return home?[home.x,home.z]:null;
@@ -40,11 +42,18 @@ export function canonicalDay(name,minutes,rain=false){
  const m=((minutes%1440)+1440)%1440,phases=DAYS.get(p.name);
  const phase=phases.filter(s=>s.from<=m).at(-1)||phases.at(-1),isHome=(phase.place===p.home||p.alsoAt.includes(phase.place))&&!/sweeping|the garden|at her gate/.test(phase.activity)&&(p.home!==p.work||/home|breakfast|asleep|sleep/.test(phase.activity));
  const homePlan=activity=>{const h=activeTarget(name);return {place:'home',target:[h.x,h.z],activity,rain:!!rain};};
+ // The bosun's rota (ferry-crew.js bosunFor): Ms Uezu's week on and week off, Kōji her relief. On his week the ship has
+ // him for her whole working day (FERRY_WORKING_DAY, the crew controller draws him aboard and hides this body), so he
+ // is never at the auction, the ice plant or Mr Ōshiro's boat while he is signed on, and his fisherman's early night
+ // waits for the shore power; on her week off she is at home.
+ if(name==='Kōji'&&rotaWeek(minutes)===1){
+  if(m>=FERRY_WORKING_DAY.signOn-15&&m<FERRY_WORKING_DAY.signOff)return {place:'ferry',target:[...points.ferry],activity:'relief bosun’s working week'};
+  if(m<FERRY_WORKING_DAY.signOn-15)return homePlan('a late start on his relief week; the auction is Mr Ōshiro’s');
+ }
  const rest=canonicalRest(name,minutes);
  if(rest)return {...homePlan(rest.activity),rest:rest.id};
  const weekday=townCalendarAt(minutes).weekday,weekend=weekday===0||weekday===6;
  if(name==='Ms Uezu'&&rotaWeek(minutes)===1&&phase.place==='ferry')return homePlan('off watch at her shore home');
- if(name==='Kōji'&&rotaWeek(minutes)===1&&m>=360&&m<1140)return {place:'ferry',target:[...points.ferry],activity:'relief bosun’s working week'};
  if(weekend&&phase.place==='school'){
   if(name==='Miss Higa')return {place:'onsen',target:[...points.onsen],activity:'weekend bandai duty'};
   return rain?homePlan('a rainy school-free day at home'):{place:'park',target:[...points.park],activity:'weekend in Harbour Park'};

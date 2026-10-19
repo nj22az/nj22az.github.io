@@ -109,17 +109,23 @@ test('retiring homes resolve to a retained public place; a home that stays resol
  for(const h of HOUSEHOLDS)assert.ok(!Object.hasOwn(RETIRED_HOMES,h.home),h.home+' is a household and does not retire');
 });
 
-test('phase 1 changes nothing live: every core person resolves to one body in cast.js, and old-name lookups draw the same person',()=>{
- for(const p of CORE){const live=liveNameFor(p.id);assert.ok(CAST_NAMES.includes(live),p.id+' → '+live);assert.equal(liveNameFor(p.name),live);for(const w of p.was)assert.equal(liveNameFor(w),live,w);}
- assert.equal(castMember('Fuji').name,'Mr Fujita');assert.equal(castMember('Jack').name,'Harbour master');assert.equal(castMember('Nao').name,'Ms Uezu');
- for(const p of SUPPORTING)assert.equal(castMember(p.name),null,p.name+' has no body before phase 2');
- for(const p of RETIRED)assert.equal(castMember(p.name)?.name,p.name,p.name+' still walks in phase 1');
+test('phase 2: every person resolves to one body in cast.js; the supporting crew have bodies; old-name lookups draw the same person',()=>{
+ for(const p of ROSTER){const live=liveNameFor(p.id);assert.ok(CAST_NAMES.includes(live),p.id+' → '+live);assert.equal(liveNameFor(p.name),live);for(const w of p.was)assert.equal(liveNameFor(w),live,w);}
+ // The short display names of Fuji, Jack, Nao and Koji wait for phase 5's sweep; Mac is renamed with his biography.
+ assert.equal(castMember('Fuji').name,'Mr Fujita');assert.equal(castMember('Jack').name,'Harbour master');assert.equal(castMember('Nao').name,'Ms Uezu');assert.equal(castMember('Koji').name,'Kōji');
+ assert.equal(castMember('Mac').name,'Mac');assert.equal(castMember('Mr Nakandakari').name,'Mac');
+ for(const p of SUPPORTING){const live=castMember(p.name);assert.equal(live?.name,p.name,p.name+' has a body of their own');assert.ok(live.supporting,p.name+' is marked supporting in the cast');for(const w of p.was)assert.equal(castMember(w)?.name,p.name,w+' resolves to '+p.name);}
+ for(const p of RETIRED)assert.equal(castMember(p.name)?.name,p.name,p.name+' still walks until phase 4');
  for(const name of CAST_NAMES)assert.equal(castMember(name).name,name,'cast.js lookups are untouched');
- assert.equal(CAST.length,31,'the live cast is still the 31 until phase 2');
+ assert.equal(CAST.length,36,'the 31 of phase 1 and the five supporting crew');
+ assert.equal(CAST.filter(p=>p.supporting).length,5);
  const bare=r=>JSON.stringify({...r,name:null});
  // Emi is the one display name that already has a drawing of its own (the old townsfolk profile, Mrs Kinjō's look): it keeps it until phase 5.
  for(const p of ROSTER)if(p.avatar&&p.name!=='Emi')assert.equal(bare(recipeFor(p.name)),bare(recipeFor(p.avatar)),p.name+' is drawn as '+p.avatar);
- assert.notEqual(bare(recipeFor('Emi')),bare(recipeFor('Mrs Nakamura')),'the townsfolk Emi keeps her own face in phase 1');
+ assert.notEqual(bare(recipeFor('Emi')),bare(recipeFor('Mrs Nakamura')),'the townsfolk Emi keeps her own face until phase 5');
+ // The supporting crew are drawn once each, under their own names and under the job-role names they had.
+ const looks=new Set();
+ for(const p of SUPPORTING){const own=bare(recipeFor(p.name));assert.ok(!looks.has(own),p.name+' has a look of their own');looks.add(own);for(const w of p.was)assert.equal(bare(recipeFor(w)),own,w+' draws '+p.name);}
  assert.deepEqual(namesOf('fuji'),['Fuji','Fujita','Mr Fujita']);
 });
 

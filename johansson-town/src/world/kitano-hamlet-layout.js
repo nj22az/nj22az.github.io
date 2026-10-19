@@ -25,6 +25,11 @@ export const KITANO_HAMLET=Object.freeze({
   {id:'kitano-3',family:'知念',romaji:'Chinen',minX:-33,maxX:-23,minZ:38,maxZ:48,gate:'north',kind:'red-tile',wall:'coral'},
  ].map(Object.freeze)),
 });
+/**
+ * Where the Kitano line hand stands by between calls (people/ferry-shore-crew.js), island frame: on the pier beside its
+ * bitts (ferry.js KITANO_FERRY_BITTS), clear of the landing and the cars' lane, 25 m down the lane from the Shiroma house.
+ */
+export const KITANO_PIER_STAND=Object.freeze([-50.1,32.5]);
 /** The gate in the plot's wall, 0.7 m out on the lane, and the way in (0 faces −v, π faces +v), island frame. */
 export function hamletGate(p,out=.7){
  const cx=(p.minX+p.maxX)/2;

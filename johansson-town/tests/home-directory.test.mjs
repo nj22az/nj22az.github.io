@@ -15,10 +15,13 @@ import {planHeight} from '../src/world/layout.js';
 import {standingHitsRect,townBoundsBlocked,canStepBetween} from '../physics.js';
 import {installDOM} from './fixtures.mjs';
 
-test('all 31 cast members have one canonical primary home; shared and weekday households map once',()=>{
+test('all 36 cast members have one canonical primary home; shared and weekday households map once; the crew’s cabins are aboard',()=>{
  const cards=residentCards(),targets=canonicalHomeSites(cards);
- assert.equal(cards.length,31);assert.deepEqual(cards.map(c=>c.name),CAST.map(c=>c.name));
- assert.equal(targets.filter(t=>!t.aboard).length,24);assert.equal(new Set(targets.map(t=>t.homeId)).size,targets.length);
+ assert.equal(cards.length,36);assert.deepEqual(cards.map(c=>c.name),CAST.map(c=>c.name));
+ // 24 shore homes of the 31, and Kai's rented Shiroma house; the four who live aboard point at the terminal.
+ assert.equal(targets.filter(t=>!t.aboard).length,25);assert.equal(new Set(targets.map(t=>t.homeId)).size,targets.length);
+ for(const name of ['Ryo','Ren','Aya','Jun'])assert.equal(cards.find(c=>c.name===name).home.aboard,true,name+' sleeps aboard');
+ assert.equal(cards.find(c=>c.name==='Kai').home.id,'kitano-2');assert.equal(cards.find(c=>c.name==='Kai').home.target.id,'home-kitano-2');
  for(const card of cards){
   assert.ok(card.home.residents.includes(card.name),card.name+' belongs to the listed home');
   assert.equal(card.home.id,homeForResident(card.name).home);
@@ -32,7 +35,7 @@ test('all 31 cast members have one canonical primary home; shared and weekday ho
  assert.deepEqual(kitahamaHomeFor('Vy').door,plotGate(KITAHAMA.plots[0]).door);
  assert.equal(residentHome('Mr Fujita').id,'fujita-houseboat');assert.equal(residentHome('Barfly').id,'izakaya');
  assert.equal(homeNameplate('kitahama-3').owners,'Kōji · Riku');assert.equal(homeNameplate('kitahama-11'),null);
- assert.deepEqual(homeUnits('kitahama-flats').map(h=>h.residents),[['Mr Higa Jr'],['Grandmother Sakurai'],['Mr Nakandakari'],['Ms Ganaha']]);
+ assert.deepEqual(homeUnits('kitahama-flats').map(h=>h.residents),[['Mr Higa Jr'],['Grandmother Sakurai'],['Mac'],['Ms Ganaha']]);
  assert.ok(HOUSEHOLDS.every(h=>!h.address.includes('Main Street')),'legacy street-entry numbers do not become displayed addresses');
  for(const id of ['resident-home-nao','resident-home-thao','resident-home-chin','yuri-home'])assert.equal(canonicalHomeId(id),'resident-home-thuan');
  for(const id of ['tamaki','kamiya']){const h=householdAtHome(id);assert.equal(h.status,'retired');assert.equal(h.toLet,false);assert.ok(!targets.some(t=>t.homeId===id));}

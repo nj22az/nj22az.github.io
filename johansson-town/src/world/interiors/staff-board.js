@@ -14,7 +14,8 @@ export function paintStaffBoard(c,w=768,h=512){
  c.save();c.translate(40,36);c.rotate(-.015);c.fillStyle='#fffdf6';c.fillRect(0,0,330,430);
  text('9月 · SHIFT',165,28,27,'#293b41',298,'center','bold');text('曜日',34,60,15,'#74786e',48,'center');text('担当',78,60,15,'#74786e',134);text('時間',308,60,15,'#74786e',86,'right');
  const days=['M 月','T 火','W 水','T 木','F 金','S 土','S 日'];
- const rows=[[['Thuan','9–20:30'],['Chin','20:30–6']],[['Thuan','9–20:30'],['Chin','20:30–6']],[['Thuan','9–20:30'],['Chin','20:30–6']],[['Thuan','9–20:30'],['Chin','20:30–6']],[['Thuan','9–20:30'],['Chin','20:30–6']],[['Nhung','9–20:30'],['Chin','20–6']],[['Nhung','9–20:30'],['Chin','20–6']]];
+ // The rota as commerce/sakura-rota.js has it: the day clerk, and the owner's night counter (Chin is the ferry's motorman now).
+ const rows=[[['Thuan','9–20:30'],['Sakurai','20:30–9']],[['Thuan','9–20:30'],['Sakurai','20:30–9']],[['Thuan','9–20:30'],['Sakurai','20:30–9']],[['Thuan','9–20:30'],['Sakurai','20:30–9']],[['Thuan','9–20:30'],['Sakurai','20:30–9']],[['Nhung','9–20:30'],['Sakurai','20:30–9']],[['Nhung','9–20:30'],['Sakurai','20:30–9']]];
  days.forEach((d,i)=>{const y=92+i*42;c.fillStyle=i>4?'#eef0e6':'#f3eee1';c.fillRect(12,y-17,44,34);text(d,34,y,17,i===6?'#a33b35':'#3b6064',42,'center','bold');
   rows[i].forEach(([name,time],j)=>{const lineY=y+(rows[i].length===2?(j?9:-9):0);text(name,78,lineY,18,'#2d383b',138);text(time,308,lineY,18,'#2d383b',82,'right');});
   c.strokeStyle='#d9d3c4';c.lineWidth=1;c.beginPath();c.moveTo(70,y+21);c.lineTo(316,y+21);c.stroke();});

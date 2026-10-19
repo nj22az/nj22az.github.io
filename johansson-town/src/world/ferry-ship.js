@@ -323,7 +323,9 @@ export const FERRY_MANNING=Object.freeze([
  Object.freeze({post:'master',title:'Master',jp:'senchō',licence:'Fourth-grade deck officer (yon-kyū kaigishi, navigation)'}),
  Object.freeze({post:'mate',title:'Chief officer',jp:'ittō kōkaishi',licence:'Fifth-grade deck officer'}),
  Object.freeze({post:'chief',title:'Chief engineer',jp:'kikanchō',licence:'Fourth-grade engineer officer (yon-kyū kaigishi, engine)'}),
- Object.freeze({post:'oiler',title:'Oiler',jp:'kikan’in',licence:'Seafarer’s pocket ledger; studying for the fifth grade'}),
+ // The post key stays `oiler` (tasks, scenarios and the safe-departure checks key on it); its title is Motorman, the
+ // engine-room rating's (people/roster.js SHIP_POST_ALIASES maps `motorman` to it).
+ Object.freeze({post:'oiler',title:'Motorman',jp:'kikan’in',licence:'Seafarer’s pocket ledger; the engine-room rating'}),
  Object.freeze({post:'bosun',title:'Bosun',jp:'kōhanchō',licence:'Seafarer’s pocket ledger'}),
  Object.freeze({post:'deck',title:'Deck hand',jp:'kōhan’in',licence:'Seafarer’s pocket ledger'}),
  Object.freeze({post:'purser',title:'Purser',jp:'jimuchō',licence:'Seafarer’s pocket ledger'}),

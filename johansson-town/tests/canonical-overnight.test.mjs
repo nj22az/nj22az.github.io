@@ -8,10 +8,13 @@ import {canonicalDay} from '../src/people/canonical-day.js';
 import {activeResidentHome} from '../src/people/home-directory.js';
 import {sleepHours} from '../src/people/home-life.js';
 import {WORLD_CAST} from '../src/people/residents.js';
+import {FERRY_PEOPLE} from '../src/people/ferry-crew.js';
 
 const minute=m=>((m%1440)+1440)%1440;
 test('every named resident has an actual daily controller, with explicit rest for every secondary neighbour',()=>{
- const controlled=new Set(['Johansson','Mr Fujita',...WORLD_CAST.map(p=>p.name),...NEIGHBOURS.map(p=>p.name)]);
+ // The street cast, the neighbours, the master in his shed (port-shed.js), and the crew whose only body is the ship's or
+ // the Kitano pier's (ferry-crew-aboard.js, ferry-shore-crew.js).
+ const controlled=new Set(['Johansson','Mr Fujita',...WORLD_CAST.map(p=>p.name),...NEIGHBOURS.map(p=>p.name),...FERRY_PEOPLE]);
  for(const p of CAST)assert.ok(controlled.has(p.name),p.name+' has a runtime controller');
  for(const p of NEIGHBOURS){assert.ok(CANONICAL_REST[p.name],p.name+' has overnight hours');assert.deepEqual(sleepHours(p.profile),CANONICAL_REST[p.name]);}
 });

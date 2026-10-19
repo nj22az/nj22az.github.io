@@ -14,16 +14,18 @@ export {tvProgramme} from './fujita-day.js';
  * Mr Fujita's shed on the working pier.
  *
  * A fisherman's banya: timber framed, clad in corrugated iron gone to rust at the seams,
- * open along the pier side so the breeze comes through. Mr Fujita, retired, more or less
- * lives in it. He sits in a sagging armchair, his feet on a timber footstool, with a small glass of
- * beer, and flips channels on an old CRT on a fish crate (fujita-day.js: what is on, when he laughs,
- * how the beer goes): the ballgame in the afternoon, the news, the variety shows, snow when the
- * signal goes. His Umineko comes in large bottles from Higa Liquor's morning van: the crates stand
- * at his right hand, the bottle he is on at his left foot, and the empties pile up in front of him
- * all day, standing at first and lying down when the floor fills. Around him: nets and glass floats
- * hung from the rafters, a camp stove and kettle, rubber boots, a calendar from the co-op and a
- * folded cot kept for visitors. At 23.30 he switches off the set and walks aboard his houseboat
- * Shiosai alongside the pier, leaving the day's empties for the van; at six he returns to the shed.
+ * open along the pier side so the breeze comes through. Mr Fujita, the Minato Maru's master
+ * (docs/CAST-CONSOLIDATION.md §3; people/ferry-crew.js), keeps it for his evenings. Up at six aboard Shiosai, he
+ * comes to the shed for the kettle and at five past walks to the gangway to sign on (people/master-commute.js); the
+ * bridge has him until the shore power goes on at a quarter past ten, sober the whole day, the shed empty and the set
+ * off. Signed off at twenty past, he sits in the sagging armchair, his feet on a timber footstool, with a small glass
+ * of beer, and flips channels on an old CRT on a fish crate (fujita-day.js: what is on, when he laughs, how the beer
+ * goes): the night game's last innings, the late news, the variety shows, snow when the last station signs off. His
+ * Umineko comes in large bottles from Higa Liquor's morning van: the crate stands at his right hand, the bottle he is
+ * on at his left foot, and the evening's empties stand in front of him. Around him: nets and glass floats hung from
+ * the rafters, a camp stove and kettle, rubber boots, a calendar from the co-op and a folded cot kept for visitors.
+ * At 23.30 he switches off the set and walks aboard his houseboat Shiosai alongside the pier, leaving the empties for
+ * the van; at six he returns to the shed.
  *
  * Pier frame: the shed stands on the west edge of the L-pier, open to the east.
  */
@@ -238,7 +240,8 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
  register(fujita,'Talk to Mr Fujita',()=>fujita.userData.sleeping?onAction('read','Mr Fujita is asleep','He is asleep on his sofa aboard Shiosai. He returns to the shed at six in the morning.'):onAction('resident','Mr Fujita'));
  const tvAnchor=new THREE.Object3D();tvAnchor.position.set(tx,1,tz+.4);g.add(tvAnchor);
  register(tvAnchor,'Watch the shed television',()=>onAction('read','Mr Fujita’s television',
-  'A portable set older than the boat, on a fish crate, the aerial bent to find the signal from across the water. Mr Fujita does not look away from it. "Sit, sit. The eighth innings is the only one worth watching. Have a can; they are cold, the box is new."'));
+  fujita.userData.onWatch?'A portable set older than the boat, on a fish crate, the aerial bent to find the signal from across the water. It is off: the master is on the bridge until the last boat, and the shed waits for him with the kettle cold and the crate full.':
+  'A portable set older than the boat, on a fish crate, the aerial bent to find the signal from across the water. Mr Fujita does not look away from it. "Sit, sit. The last innings are the only ones worth watching. Have a bottle; they are cold, the van came this morning."'));
 
  const boat=buildFujitaHouseboat({parent,colliders,register,onAction,shadows});
  const cover=createSleepCover(boat.group,{cover:HOUSEBOAT.cover},0x557b72);
@@ -285,10 +288,11 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
    stream.position.copy(from).add(to).multiplyScalar(.5);stream.scale.set(1,Math.max(.01,from.y-to.y),1);stream.visible=true;
   }
  }
- // The journey and sleeping state continue when the shed cannot be seen.
+ // The journey and sleeping state continue when the shed cannot be seen. While he is signed on (people/master-commute.js
+ // sets `onWatch`: on his way to the gangway, on the bridge, on his way back) the shed's routine waits for him.
  const advance=(dt,minutes=720)=>{
   clock+=dt;
-  if(!fujita.userData.ferryShoreTask)routine.update(dt,minutes,tvProgramme(minutes));
+  if(!fujita.userData.ferryShoreTask&&!fujita.userData.onWatch)routine.update(dt,minutes,tvProgramme(minutes));
  };
  return {
   group:g,actor,fujita,boat,routine,advance,
@@ -303,12 +307,13 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
    // The same resident walks the ferry's shore lines. That controller releases
    // him at his chair before the television/houseboat routine resumes.
    boat.tick({sleeping:fujita.userData.sleepBlend>.01,player:getPlayerPosition(),night:poolGlow(minutes)});
-   // The beer: the crates, the floor, the bottle he is on, the glass. The pile stays in the shed overnight, when he
-   // has gone aboard Shiosai, until the Higas' van takes it at six.
-   const b=fujitaBeer(minutes),u=fujita.userData,seated=!u.ferryShoreTask&&routine.state==='watching',pouring=seated&&b.phase==='pour';
+   // The beer: the crate, the floor, the bottle he is on, the glass; none of it before he signs off (fujita-day.js
+   // FUJITA_DAY.start is the master's sign-off). The pile stays in the shed overnight, when he has gone aboard Shiosai,
+   // until the Higas' van takes it at six.
+   const b=fujitaBeer(minutes),u=fujita.userData,seated=!u.ferryShoreTask&&!u.onWatch&&routine.state==='watching',pouring=seated&&b.phase==='pour';
    for(const mesh of full)mesh.count=b.full;
-   // The third crate, on top, only on a day of more than forty: he drinks from the top crate down.
-   crates[2].visible=b.bottles>40;
+   // One crate of twenty is more than an evening's drinking now; the second and the one on top are gone with the day shift.
+   crates[1].visible=crates[2].visible=false;
    for(const mesh of empties)mesh.count=Math.min(b.empties,emptySlots.length);
    openBottle.visible=b.bottle!==null&&b.phase==='drink'&&seated;
    pourBottle.visible=stream.visible=false;
@@ -326,8 +331,8 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
     u.activity=b.phase==='pour'?'pouring himself another':now==='baseball'?'watching the ballgame with a beer':now==='news'?'watching the news with a beer':'flipping channels with a beer';
     pourBottle.visible=stream.visible=false;
    }else if(seated){
-    // Back from the boat before half past six: in his chair, nothing open yet, waiting for the first bottle.
-    u.socialPose='Sit';delete u.heldItem;delete u.heldPortion;delete u.thuanExpression;u.activity='waiting for the Higas’ van';
+    // Back from the boat at six: in his chair, nothing open, the kettle on, until he walks to the gangway at five past.
+    u.socialPose='Sit';delete u.heldItem;delete u.heldPortion;delete u.thuanExpression;u.tipsy=0;u.activity=b.phase==='waiting'?'the kettle on before he signs on':'in his chair, the set off';
    }else delete u.thuanExpression;
    if(actor)updateAvatarActor(actor,dt);
    if(actor&&pouring)pour(b);
