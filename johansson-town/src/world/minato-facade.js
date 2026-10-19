@@ -4,6 +4,7 @@ import {createKit} from './okinawa/kit.js';
 import {shisa,potPlant} from './okinawa/houses.js';
 import {fascia,japaneseSign,signText} from './okinawa/signs.js';
 import {glazeWithRoom} from '../render/window-interior.js';
+import {createLampGlow} from './light-pools.js';
 
 /**
  * Minato Izakaya, built rather than fetched.
@@ -60,13 +61,17 @@ function norenTexture(){
 }
 
 /** The corner board: 居酒屋 みなと read from up the pavement, painted on dark timber. */
-/** Red paper with its bamboo ribs showing, and the word brushed on front and back. */
-function chochinTexture(word){
+/**
+ * Red paper with its bamboo ribs showing, and the word brushed on front and back. `lit` is the
+ * same paper with the bulb behind it, for the emissive map: paper lit from inside is orange,
+ * not the red it is by day, and the ribs and the word stay dark against it.
+ */
+function chochinTexture(word,lit=false){
  const c=document.createElement('canvas');c.width=256;c.height=256;const ctx=c.getContext('2d');
- ctx.fillStyle='#b8392a';ctx.fillRect(0,0,256,256);
- ctx.strokeStyle='rgba(60,20,14,.35)';ctx.lineWidth=2;
+ ctx.fillStyle=lit?'#ffac5c':'#b8392a';ctx.fillRect(0,0,256,256);
+ ctx.strokeStyle=lit?'rgba(120,40,10,.4)':'rgba(60,20,14,.35)';ctx.lineWidth=2;
  for(let y=10;y<256;y+=14){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(256,y);ctx.stroke();}
- ctx.fillStyle='#1c1410';ctx.textAlign='center';ctx.textBaseline='middle';
+ ctx.fillStyle=lit?'#3a1c0c':'#1c1410';ctx.textAlign='center';ctx.textBaseline='middle';
  const chars=[...japaneseSign(word)],size=Math.min(62,200/chars.length);
  ctx.font=`bold ${size}px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif`;
  // u=0 faces the street, so the front word straddles the seam; the back one is at u=.5.
@@ -291,24 +296,29 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
  // Paper over bamboo, so they belly out between round black caps, and each says what
  // is inside: yakitori, sake, oden. They used to be straight tubes between square
  // plates, which from the pavement read as three orange boxes.
- const lanterns=[];
+ const lanterns=[],lanternSpots=[];
  const belly=Array.from({length:13},(_,k)=>{const t=k/12;return new THREE.Vector2(.12+.085*Math.sin(Math.PI*t),-.25+.5*t);});
  const lanternShape=new THREE.LatheGeometry(belly,20);
  for(const [i,x] of [centreX-1.9,centreX,centreX+1.9].entries()){
   const hang=new THREE.Group();hang.position.set(x,eaveY-.2,front+.46);group.add(hang);
   painted([.03,.2,.03],[0,-.1,0],0x2b231a,undefined,hang);
-  const map=chochinTexture(["Yakitori","Alcohol","Oden"][i]);
+  const word=["Yakitori","Alcohol","Oden"][i],map=chochinTexture(word);
+  // Lit, the paper goes orange with the bulb behind it (its own map), not the daytime red made brighter.
   const body=new THREE.Mesh(lanternShape,
-   new THREE.MeshStandardMaterial({map,emissiveMap:map,color:0xffffff,emissive:0xffb27a,emissiveIntensity:0,roughness:.9,side:THREE.DoubleSide}));
+   new THREE.MeshStandardMaterial({map,emissiveMap:chochinTexture(word,true),color:0xffffff,emissive:0xffb27a,emissiveIntensity:0,roughness:.9,side:THREE.DoubleSide}));
   // The clock changes this material; a static batch would freeze a cloned copy.
   body.position.y=-.45;body.userData.dynamicProp=true;hang.add(body);
   lanterns.push(body);
+  lanternSpots.push({head:{x,y:eaveY-.65,z:front+.46},ground:{x,y:0,z:front+.9},radius:1.9,size:1.1});
   for(const y of [-.2,-.7]){
    const cap=new THREE.Mesh(new THREE.CylinderGeometry(.115,.115,.05,16),paint(0x201813));
    cap.position.y=y;cap.castShadow=!!shadows;hang.add(cap);
   }
   hang.rotation.z=(i-1)*.015;
  }
+ // The glow round each lantern and the pool it throws on the pavement (light-pools.js): sprites and
+ // decals, no light, lit with the paper.
+ const lanternGlowFx=createLampGlow(group,lanternSpots,{halo:{color:0xffa860}});
 
  // ---- kanban, menu and the clutter of a working bar ---------------------------------
  {
@@ -426,6 +436,8 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
    const mat=Array.isArray(item.material)?item.material[4]:item.material;
    if(mat)mat.emissiveIntensity=lanternI;
   }
+  // The halos and the pool show as the daylight goes (dusk.js poolGlow), not the moment the paper is switched on.
+  lanternGlowFx.update(open?paper*Math.pow(dusk,1.5):0);
   noren.visible=open;
  };
  lit(false,1);
@@ -440,5 +452,5 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
  // come and go with opening hours and the lanterns and signs glow, so those stay live.
  {const live=new Set();for(const o of [noren,ramenNoren,...lanterns])o?.traverse?.(c=>live.add(c));
   group.traverse(o=>{if(o.isMesh&&!live.has(o)&&!o.userData.minatoGlow&&!o.userData.ramenGlow)o.userData.staticProp=true;});}
- return {group,noren,lanterns,lit,ramen:{group:ramen,noren:ramenNoren,lit:ramenLit}};
+ return {group,noren,lanterns,lanternGlow:lanternGlowFx,lit,ramen:{group:ramen,noren:ramenNoren,lit:ramenLit}};
 }

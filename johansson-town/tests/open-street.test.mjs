@@ -23,13 +23,14 @@ test('street has no transparent canopy sheets and phones retain bounded night li
   if(o.isMesh&&o.geometry.type==='CylinderGeometry'&&o.material.transparent){const b=new THREE.Box3().setFromObject(o);if(b.min.y<2&&b.max.x-b.min.x>5)barriers.push(o);}
  });
  assert.equal(barriers.length,0,'No street-wide vertical transparent surfaces');
- // Compacting the town ended Main Street at z=20.5, so the northern lamp pair at
- // z=28 no longer stands on any street. Pin the survivors rather than the count
- // alone, so losing one of these is not mistaken for the same deliberate change.
- assert.equal(lights.length,2);assert.ok(lights.every(l=>!l.castShadow));
- assert.deepEqual(lights.map(l=>l.position.z),[-32,-32]);
- world.update(0,0,0,1271);assert.ok(lights.every(l=>l.intensity===18));
- world.update(0,0,1,1002);assert.ok(lights.every(l=>l.intensity===0));
+ // The two deck lights at the top of the quay (z −32) are pools of light on the ground now, not point lights: a
+ // point light cut a hard-edged disc at the footway's kerb. Pin them, so losing one is not mistaken for a tidy-up.
+ assert.equal(lights.length,0,'no deck point lights');
+ const deck=world.lampGlow.pools.group.children.filter(p=>p.position.z===-32);
+ assert.deepEqual(deck.map(p=>p.position.x).sort((a,b)=>a-b),[-7.2,2.05]);
+ assert.ok(deck.every(p=>p.userData.lightPool&&p.geometry.parameters.radius>2));
+ world.update(0,0,0,1271);assert.ok(world.lampGlow.pools.group.visible&&world.lampGlow.pools.material.opacity>.4);
+ world.update(0,0,1,1002);assert.equal(world.lampGlow.pools.group.visible,false);
 });
 test('sky is one opaque backdrop, follows the camera and is hidden indoors',()=>{
  const scene=new THREE.Scene(),sky=createTownSky(scene),camera=new THREE.PerspectiveCamera();camera.position.set(4,2,-20);

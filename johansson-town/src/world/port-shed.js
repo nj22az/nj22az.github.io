@@ -7,6 +7,7 @@ import {fujitaBeer,laughingAt,seeded,tvProgramme} from './fujita-day.js';
 import {buildFujitaHouseboat,HOUSEBOAT} from './fujita-houseboat.js';
 import {createFujitaRoutine} from './fujita-routine.js';
 import {createSleepCover} from '../people/sleep-cover.js';
+import {poolGlow} from '../render/dusk.js';
 export {tvProgramme} from './fujita-day.js';
 
 /**
@@ -298,7 +299,7 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
    bulbMat.emissiveIntensity=night?1.4:0;bulbLight.intensity=night?1.6:0;
    // The same resident walks the ferry's shore lines. That controller releases
    // him at his chair before the television/houseboat routine resumes.
-   boat.tick({sleeping:fujita.userData.sleepBlend>.01,player:getPlayerPosition()});
+   boat.tick({sleeping:fujita.userData.sleepBlend>.01,player:getPlayerPosition(),night:poolGlow(minutes)});
    // The beer: the crates, the floor, the bottle he is on, the glass. The pile stays in the shed overnight, when he
    // has gone aboard Shiosai, until the Higas' van takes it at six.
    const b=fujitaBeer(minutes),u=fujita.userData,seated=!u.ferryShoreTask&&routine.state==='watching',pouring=seated&&b.phase==='pour';

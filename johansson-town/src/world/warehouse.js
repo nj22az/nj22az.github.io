@@ -1,6 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {createKit,GRID,trs} from './okinawa/kit.js';
 import {buildShopDoor} from './shop-door.js';
+import {createLampGlow} from './light-pools.js';
 
 // Replaces the western fishing-gear shed. Source frontage is -Z; rotate it
 // towards the main street (+X), with its roof clear of the west service lane.
@@ -59,6 +60,8 @@ export function buildWarehouseShell({shadows=false}={}){
  kit.box(.3,.18,.3,front+.2,3.95,sz+2.3,steel,{finish:'metal'});
  kit.box(.22,.12,.22,front+.24,3.82,sz+2.3,0xffe2a8,{finish:'lamp'});
  kit.finish(holder,'Harbour Warehouse shell');
+ // Where the wall lamp is, for its pool on the quay (buildWarehouse).
+ holder.userData.lamp={x:front+.24,y:3.82,z:sz+2.3};
  return holder;
 }
 
@@ -74,12 +77,14 @@ export function buildWarehouse(world,options={}){
  // A centimetre and a half over the quay was not enough to keep the two apart on a
  // phone; three makes the plinth read as a plinth and settles the depth test with it.
  footing.name='Warehouse concrete footing';footing.position.set(WAREHOUSE.x,-.175,WAREHOUSE.z);footing.receiveShadow=true;group.add(footing);
- group.add(buildWarehouseShell({shadows:options.shadows}));
+ const shell=buildWarehouseShell({shadows:options.shadows});group.add(shell);
+ // The wall lamp's pool on the quay in front of the shutter and its halo (light-pools.js); harbour.js fades them.
+ const lamp=shell.userData.lamp,glow=createLampGlow(group,[{head:lamp,ground:{x:lamp.x+1.1,y:0,z:lamp.z},radius:2.6,size:1.3}]);
  addStreetDoor(group);
  options.label?.('入口','ENTRANCE',[-10.12,2.85,WAREHOUSE_PLACE.door[2]],1.05,.38,Math.PI/2);
  const marker=new THREE.Object3D();marker.name='warehouse-entrance';marker.position.set(-9.45,1.25,WAREHOUSE_PLACE.door[2]);group.add(marker);
  options.register?.(marker,'Enter Harbour Warehouse',()=>options.enter?.(WAREHOUSE_PLACE));
  // Built in code, so it is ready from the first frame; load() stays for the detail stream.
- const state={group,place:WAREHOUSE_PLACE,loaded:true,status:'ready',load(){return Promise.resolve(true);}};
+ const state={group,place:WAREHOUSE_PLACE,glow,loaded:true,status:'ready',load(){return Promise.resolve(true);}};
  world.warehouse=state;return state;
 }

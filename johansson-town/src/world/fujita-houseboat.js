@@ -3,6 +3,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
+import {createLampGlow} from './light-pools.js';
 // West of the working pier: the cargo ship uses the eastern side.
 export const HOUSEBOAT=Object.freeze({x:-40.5,z:-56.5,deckY:.06,width:3.1,length:7.4,sternExtension:.6,
  gangway:{minX:-39.45,maxX:-38.25,minZ:-54.65,maxZ:-53.75},
@@ -37,6 +38,10 @@ export function createHouseboatModel(hull=null,{shadows=false}={}){
  }
  box('Cabin stern wall',[2.55,2.12,.09],[0,1.12,-3.2],wood);box('Cabin front left',[1.3,2.12,.09],[-.61,1.12,.7],wood);
  box('Door lintel',[1.2,.24,.13],[.65,2.06,.7],trim).userData.houseboatRoof=true;box('Door jamb',[.09,1.86,.13],[1.23,1.04,.7],trim);
+ // A deck bulb under the lintel, outside the door: the one warm light on the water at the end of the pier after dark
+ // (tick's night), with its halo and its pool on the deck boards (light-pools.js).
+ const bulb=box('Deck bulb',[.1,.13,.1],[.65,1.88,.86],mat(0xffe0a5,{emissive:0xffc77f,emissiveIntensity:0}));bulb.castShadow=false;bulb.userData.houseboatBulb=true;
+ g.userData.deckGlow=createLampGlow(g,[{head:{x:.65,y:1.88,z:.86},ground:{x:.65,y:.06,z:1.35},radius:1.7,size:1}]);
  box('Open sliding door',[.95,1.82,.08],[-.52,1.01,.78],blue);box('Door frosted panel',[.78,.68,.015],[-.52,1.34,.828],glass);
  box('Houseboat cutaway roof',[2.85,.14,4.32],[0,2.24,-1.22],metal).userData.houseboatRoof=true;
  for(let x=-1.3;x<=1.3;x+=.15)box('Roof corrugation',[.025,.025,4.27],[x,2.32,-1.22],metal).userData.houseboatRoof=true;
@@ -101,7 +106,7 @@ export function createHouseboatModel(hull=null,{shadows=false}={}){
  }
  const batches=new Map();
  for(const mesh of [...g.children]){
-  if(!mesh.isMesh||mesh.material.transparent||mesh.material.map||mesh.userData.temporaryHull||mesh.userData.houseboatLamp)continue;
+  if(!mesh.isMesh||mesh.material.transparent||mesh.material.map||mesh.userData.temporaryHull||mesh.userData.houseboatLamp||mesh.userData.houseboatBulb)continue;
   const key=mesh.material.uuid+(mesh.userData.houseboatRoof?'roof':'fixed');let batch=batches.get(key);
   if(!batch)batches.set(key,batch={material:mesh.material,roof:!!mesh.userData.houseboatRoof,parts:[],geometry:[]});
   mesh.updateMatrix();batch.geometry.push(mesh.geometry.clone().applyMatrix4(mesh.matrix));batch.parts.push(mesh.name);mesh.removeFromParent();mesh.geometry.dispose();
@@ -127,6 +132,8 @@ export function buildFujitaHouseboat({parent,colliders,register,onAction,shadows
   if(disposed){scene.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose();}});return false;}
   const fallback=group.getObjectByName('Temporary hull');fallback?.removeFromParent();fallback?.geometry.dispose();fallback?.material.dispose();scene.traverse(o=>{if(o.isMesh){o.castShadow=shadows;o.receiveShadow=true;}});scene.scale.z*=7.4/6.8;scene.position.z-=.3;group.add(scene);return true;
  }).catch(e=>{console.warn('Houseboat hull unavailable; using local hull.',e.message);return false;});
- const roofs=[],lamps=[];group.traverse(o=>{if(o.userData.houseboatRoof)roofs.push(o);if(o.userData.houseboatLamp)lamps.push(o);});
- return {group,gangway,ready,tick({sleeping=false,player=null}={}){const inside=player&&Math.abs(player.x-B.x)<1.5&&player.z>B.z-3.6&&player.z<B.z+1.3;for(const o of roofs)o.visible=!(sleeping||inside);for(const o of lamps)o.material.emissiveIntensity=sleeping?0:.7;},dispose(){disposed=true;}};
+ const roofs=[],lamps=[],bulbs=[],deckGlow=group.userData.deckGlow;group.traverse(o=>{if(o.userData.houseboatRoof)roofs.push(o);if(o.userData.houseboatLamp)lamps.push(o);if(o.userData.houseboatBulb)bulbs.push(o);});
+ /** @param {{sleeping?:boolean,player?:object,night?:number}} state night is 0–1 (dusk.js poolGlow): the deck bulb burns by it */
+ return {group,gangway,ready,deckGlow,tick({sleeping=false,player=null,night=0}={}){const inside=player&&Math.abs(player.x-B.x)<1.5&&player.z>B.z-3.6&&player.z<B.z+1.3;for(const o of roofs)o.visible=!(sleeping||inside);for(const o of lamps)o.material.emissiveIntensity=sleeping?0:.7;
+  const lit=Math.max(0,Math.min(1,night||0));for(const o of bulbs)o.material.emissiveIntensity=lit*1.4;deckGlow?.update(lit);},dispose(){disposed=true;}};
 }
