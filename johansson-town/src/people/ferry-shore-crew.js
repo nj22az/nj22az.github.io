@@ -4,6 +4,7 @@ import {KITANO_HAMLET,KITANO_PIER_STAND,hamletGate} from '../world/kitano-hamlet
 import {FERRY_SHORE,FERRY_WORKING_DAY} from './ferry-crew.js';
 import {createShoreWalker,worldPoint,setWorldPoint,SHORE_RADIUS as R} from './shore-walker.js';
 import {callToQuay} from './shore-duty.js';
+import {quayClaim} from './quay-breaks.js';
 
 /**
  * One real shore body at each berth, the roster's line hands (people/roster.js SHORE_ROLES; ferry-crew.js FERRY_SHORE):
@@ -105,6 +106,23 @@ export function createFerryShoreCrew({shoreParent,shoreColliders=[],characters,r
   */
  function rest(b,minutes,dt){
   const u=b.g.userData,out=kitanoHandOut(minutes);
+  // Lunch between calls on one of the pier's shared spots (quay-breaks.js, world/quay-spots.js): out to it, facing the
+  // bitt, and back to his post when the break is over. A call for lines takes him from it like from anywhere.
+  const lunch=out?quayClaim(b.name,minutes):null;
+  if(lunch&&b.rest===null){const s=lunch.spot;b.rest='to lunch';b.lunchYaw=lunch.yaw;walker.plan(b,[s.x,airportSurface(s.x,s.z,R)?.y??b.home[1],s.z],{margin:MARGIN.airport});}
+  if(b.rest==='at lunch'&&!lunch){b.rest='back from lunch';u.socialPose='Idle';walker.plan(b,b.home,{margin:MARGIN.airport});}
+  if(b.rest==='to lunch'||b.rest==='back from lunch'){
+   const arrived=walker.step(b,dt);u.walking=!arrived;u.socialPose='Idle';
+   if(b.blocked){b.blocked=null;b.rest=null;u.walking=false;u.activity='Standing by at the ferry pier';return;}
+   if(arrived)b.rest=b.rest==='to lunch'?'at lunch':null;
+   if(b.rest)u.activity=b.rest==='to lunch'?'Walking out along the pier with his lunch':'Back to his post on the pier';
+   if(b.rest)return;
+  }
+  if(b.rest==='at lunch'){
+   const diff=Math.atan2(Math.sin(b.lunchYaw-b.g.rotation.y),Math.cos(b.lunchYaw-b.g.rotation.y));
+   b.g.rotation.y+=Math.max(-dt*2.6,Math.min(dt*2.6,diff));u.walking=false;u.socialPose='Idle';
+   u.activity=lunch.activity+', on '+lunch.spot.name;return;
+  }
   if(!out&&b.rest===null){b.rest='going home';const [x,z]=KITANO_HOME;walker.plan(b,[x,airportSurface(x,z,R)?.y??b.home[1],z],{margin:MARGIN.airport});}
   else if(out&&b.rest==='home'){b.rest='to the pier';b.g.visible=true;delete u.indoors;walker.plan(b,b.home,{margin:MARGIN.airport});}
   if(b.rest==='going home'||b.rest==='to the pier'){
