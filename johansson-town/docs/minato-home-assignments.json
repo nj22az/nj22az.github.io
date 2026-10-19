@@ -1,5 +1,6 @@
 {
-  "status": "runtime implementation; CPU verification performed; rendered views and physical iPhone checks remain outstanding",
+  "superseded": "19 October 2026: docs/CAST-CONSOLIDATION.md is the plan of record (21 core and 5 supporting identities, 14 households, ten retirements); the roster is src/people/roster.js, mirrored in docs/cast-roster.json. This file records the 18 October assignments the consolidation starts from; it is not the target.",
+  "status": "runtime implementation; CPU verification performed; rendered views and physical iPhone checks remain outstanding; superseded on 19 October 2026 by docs/CAST-CONSOLIDATION.md",
   "auditedMain": "e1b606d50a58d5c5fab0781e590fe773bb3472fd",
   "canonDate": "2026-10-18",
   "residentCount": 31,

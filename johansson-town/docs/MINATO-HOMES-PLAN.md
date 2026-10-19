@@ -1,14 +1,16 @@
 # Minato homes: occupied households, no surplus empty houses
 
+> **Superseded on 19 October 2026 by [CAST-CONSOLIDATION.md](CAST-CONSOLIDATION.md)** (the owner's cast, household and crew consolidation; its addendum wins). This document is kept as dependency evidence of the earlier design; where it names Johansson mayor, gives Grandmother Sakurai Sakura or a home, keeps Thuan a weekday room, or counts 31 residents and 23/24 households, the consolidation's 21 core and 5 supporting identities, 14 households and ten retirements are the plan of record (`src/people/roster.js`, `docs/cast-roster.json`). Corrections below are marked *(superseded …)*.
+
 Status: runtime implementation, 18 October 2026. See [MINATO-HOMES-IMPLEMENTATION.md](MINATO-HOMES-IMPLEMENTATION.md) for performed checks and outstanding visual/device verification. The ordered plan below records the approved scope; it is not evidence that unperformed device tests passed.
 
 ## Owner decisions
 
 Minato remains the compact urban port island. Every ordinary villager needs a real home there; surplus empty houses are unnecessary. Reuse suitable existing homes before considering construction. Keep streets, coastal walking circuits, working businesses, Harbour Park, Umi-no-yu and port/ferry operations intact.
 
-Johansson is the ship's chief engineer, with a cabin aboard. Johansson and Thuan's main home remains together on the separate tropical island. Thuan also keeps her room with Thao and Chin at 1 Kitahama. These are explicit exceptions to a rule that every primary home must be on Minato.
+Johansson is the ship's chief engineer, with a cabin aboard. Johansson and Thuan's main home remains together on the separate tropical island. ~~Thuan also keeps her room with Thao and Chin at 1 Kitahama.~~ *(superseded 19 Oct 2026: the weekday room is dropped; kitahama-1 is purely Thao, Chin and Vy.)* These are explicit exceptions to a rule that every primary home must be on Minato.
 
-Sakura's upper floor becomes the **main office with a kitchenette and views over the port and town**, not residential accommodation. The tiny existing ground-floor office remains a complementary room for till work, quick administration and immediate shop supervision. Grandmother Sakurai must receive another actual home; changing the room label alone would leave her homeless. Do not rebuild or expand the tropical island to implement this plan.
+Sakura's upper floor becomes the **main office with a kitchenette and views over the port and town**, not residential accommodation. The tiny existing ground-floor office remains a complementary room for till work, quick administration and immediate shop supervision. ~~Grandmother Sakurai must receive another actual home; changing the room label alone would leave her homeless.~~ *(superseded 19 Oct 2026: Grandmother Sakurai retires and Thuan owns Sakura outright.)* Do not rebuild or expand the tropical island to implement this plan.
 
 ## What the current repository establishes
 
@@ -25,6 +27,8 @@ The audited base is main `e1b606d50a58d5c5fab0781e590fe773bb3472fd`. PR #206 add
 Sources of geometry and behaviour also include `kitahama-layout.js`, `okinawa/layout.js`, `architecture-plan.js`, `people/home-directory.js`, `people/home-residents.js`, `people/neighbours.js` and the ferry crew modules. The canonical 31-person cast is the initial scope; reconcile actual spawned residents against it so visitors, alias characters and procedural background actors cannot silently become homeless villagers.
 
 ## Proposed final household assignments
+
+*(superseded 19 Oct 2026: the plan of record is the 14 households of CAST-CONSOLIDATION.md §7; this table records the 18 October state the consolidation starts from.)*
 
 Keep established family relationships and primary homes wherever possible. All rows except the tropical household are Minato addresses, including Fujita's established harbour home.
 
