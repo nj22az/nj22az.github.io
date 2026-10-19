@@ -3,7 +3,7 @@
   "titel": "Sinusspänning",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -18,7 +18,45 @@
     ]
   },
   "uppgift": {
-    "fraga": "Vägguttaget hemma ger 230 V, 50 Hz. Beräkna toppvärde och period. Vilket momentanvärde har spänningen 2,5 ms efter en stigande nollpassage?"
+    "fraga": "Vägguttaget hemma ger 230 V, 50 Hz. Beräkna toppvärde och period. Vilket momentanvärde har spänningen 2,5 ms efter en stigande nollpassage?",
+    "delfragor": [
+      {
+        "id": "a",
+        "typ": "flerval",
+        "text": "Vilket toppvärde har sinusspänningen?",
+        "alternativ": [
+          "Cirka 325 V",
+          "230 V",
+          "Cirka 163 V",
+          "460 V"
+        ],
+        "ratt": 0
+      },
+      {
+        "id": "b",
+        "typ": "flerval",
+        "text": "Vilken period har sinusspänningen?",
+        "alternativ": [
+          "50 ms",
+          "10 ms",
+          "0,02 ms",
+          "20 ms"
+        ],
+        "ratt": 3
+      },
+      {
+        "id": "c",
+        "typ": "flerval",
+        "text": "Vilket momentanvärde får du vid den angivna tidpunkten?",
+        "alternativ": [
+          "Cirka +325 V",
+          "Cirka -230 V",
+          "Cirka +230 V",
+          "0 V"
+        ],
+        "ratt": 2
+      }
+    ]
   },
   "referenser": {
     "ursprung": [
@@ -53,6 +91,10 @@
     }
   },
   "bedomning": {
-    "kursniva": "Veckor: v40"
+    "kursniva": "Veckor: v40",
+    "kriterier": [
+      "Kopplar effektivvärde, toppvärde och period till angivna värden.",
+      "Visar tidens fasläge och använder rätt vinkelenhet i sinusberäkningen."
+    ]
   }
 }

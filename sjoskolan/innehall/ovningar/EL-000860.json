@@ -3,7 +3,7 @@
   "titel": "Hållkrets som inte startar",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -19,7 +19,45 @@
     ]
   },
   "uppgift": {
-    "fraga": "12 V DC: +U → S0 STOPP (NC) → punkt a → S1 START (NO) parallellt med K1 NO → punkt b → K1-spole → punkt c → retur → 0 V. K1 drar inte när START hålls in. Mätt mot 0 V med START intryckt: a = 12 V, b = 0 V, c = 0 V. Var sitter felet och hur bekräftar du det?"
+    "fraga": "12 V DC: +U → S0 STOPP (NC) → punkt a → S1 START (NO) parallellt med K1 NO → punkt b → K1-spole → punkt c → retur → 0 V. K1 drar inte när START hålls in. Mätt mot 0 V med START intryckt: a = 12 V, b = 0 V, c = 0 V. Var sitter felet och hur bekräftar du det?",
+    "delfragor": [
+      {
+        "id": "a",
+        "typ": "flerval",
+        "text": "Vilket sökområde stöds av mätvärdena?",
+        "alternativ": [
+          "Endast matningskällan före STOPP.",
+          "Motorns kraftkrets, utan att undersöka styrkretsen.",
+          "Sträckan mellan a och b, inklusive START-kontakten och dess anslutningar.",
+          "Sträckan mellan c och 0 V är säkert avbruten."
+        ],
+        "ratt": 2
+      },
+      {
+        "id": "b",
+        "typ": "flerval",
+        "text": "Vilken mätning prövar hypotesen om ett avbrott mellan a och b?",
+        "alternativ": [
+          "Byt spolen direkt utan en ny mätning.",
+          "Mät spänningen mellan a och b med START intryckt.",
+          "Mät resistans i den spänningssatta kretsen.",
+          "Mät endast mellan c och 0 V igen."
+        ],
+        "ratt": 1
+      },
+      {
+        "id": "c",
+        "typ": "flerval",
+        "text": "Vilket resultat stöder avbrottshypotesen vid denna kontroll?",
+        "alternativ": [
+          "Cirka 12 V över sträckan a–b medan START hålls intryckt.",
+          "0 V över en fungerande sluten sträcka bevisar avbrott.",
+          "En strömmätning parallellt över källan.",
+          "Samma värde mellan c och 0 V oavsett felställe."
+        ],
+        "ratt": 0
+      }
+    ]
   },
   "referenser": {
     "ursprung": [
@@ -38,6 +76,10 @@
     "kalla": "Övningstentans lösning"
   },
   "bedomning": {
-    "kursniva": "Veckor: v43, v45"
+    "kursniva": "Veckor: v43, v45",
+    "kriterier": [
+      "Skiljer observationerna från hypotesen och avgränsar sökområdet.",
+      "Anger mätpunkter, driftläge och vilket resultat som bekräftar eller motsäger hypotesen."
+    ]
   }
 }
