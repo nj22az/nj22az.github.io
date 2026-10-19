@@ -8,6 +8,7 @@ import {GROUND} from '../../render/ground-palette.js';
 const EAST_LAWN_SOUTH=-38;
 import * as THREE from '../../../vendor/three.module.js';
 import {createKit,rng} from './kit.js';
+import {buildWestShore} from '../west-shore.js';
 import {fishAt} from './fish.js';
 import {createMaterials} from '../../render/materials.js';
 import {NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK,GATEBALL,GATEBALL_ACTIVE,GOYA,KITAHAMA} from './layout.js';
@@ -65,6 +66,8 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildNishiPlots(kit,solid,{inspect,anchor,onAction});
  buildWestQuay(kit,solid,{inspect,anchor,onAction,vending});
  buildPromenade(kit,solid,{anchor,onAction});
+ // North of the seawall the shore is the west-shore bank, in the same coral stone. See west-shore.js.
+ buildWestShore(kit,solid,{anchor,onAction});
  buildYardRow(kit,solid,{anchor,inspect,onAction});
  buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes:()=>world.minutes??720});
  buildEastBack(kit,solid,{anchor,inspect,onAction});
