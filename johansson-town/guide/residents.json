@@ -125,20 +125,7 @@
    "island": "kitano",
    "entranceSiteId": "mayor-home"
   },
-  "secondaryHomes": [
-   {
-    "id": "kitahama-1",
-    "address": "1 Kitahama",
-    "residents": [
-     "Thuan",
-     "Thao",
-     "Chin",
-     "Vy"
-    ],
-    "island": "minato",
-    "entranceSiteId": "resident-home-thuan"
-   }
-  ]
+  "secondaryHomes": []
  },
  {
   "name": "Thao",
@@ -194,7 +181,6 @@
    "id": "kitahama-1",
    "address": "1 Kitahama",
    "residents": [
-    "Thuan",
     "Thao",
     "Chin",
     "Vy"
@@ -375,14 +361,15 @@
    ]
   },
   "home": {
-   "id": "resident-home-aya",
-   "address": "1 Front-Row Yard",
+   "id": "kitahama-3",
+   "address": "3 Kitahama",
    "residents": [
     "Nhung",
-    "Reiko"
+    "Kōji",
+    "Riku"
    ],
    "island": "minato",
-   "entranceSiteId": "resident-home-aya"
+   "entranceSiteId": "home-kitahama-3"
   },
   "secondaryHomes": []
  },
@@ -440,7 +427,6 @@
    "id": "kitahama-1",
    "address": "1 Kitahama",
    "residents": [
-    "Thuan",
     "Thao",
     "Chin",
     "Vy"
@@ -565,7 +551,6 @@
    "id": "resident-home-aya",
    "address": "1 Front-Row Yard",
    "residents": [
-    "Nhung",
     "Reiko"
    ],
    "island": "minato",
@@ -1218,6 +1203,7 @@
    "id": "kitahama-3",
    "address": "3 Kitahama",
    "residents": [
+    "Nhung",
     "Kōji",
     "Riku"
    ],
@@ -1336,6 +1322,7 @@
    "id": "kitahama-3",
    "address": "3 Kitahama",
    "residents": [
+    "Nhung",
     "Kōji",
     "Riku"
    ],
@@ -1394,7 +1381,6 @@
    "id": "kitahama-1",
    "address": "1 Kitahama",
    "residents": [
-    "Thuan",
     "Thao",
     "Chin",
     "Vy"

@@ -42,7 +42,7 @@ async function people(ctx){
  let guide=[];try{guide=JSON.parse(await codeFile('johansson-town/guide/residents.json'));}catch{}
  const {PROFILES}=await import('../../src/people/profiles.js');
  const {homeForResident,secondaryHomesFor}=await import('../../src/people/island-households.js');
- const residence=h=>h?{id:h.home,address:h.address,residents:[...h.residents],unitNumber:h.unitNumber,island:h.island,entranceSiteId:h.entranceSiteId}:null;
+ const residence=h=>h?{id:h.home,address:h.address,residents:[...h.residents],unit:h.unit,island:h.island,entranceSiteId:h.entranceSiteId}:null;
  const roles=new Map([...PROFILES.map(p=>[p.name,p.role]),...guide.map(g=>[g.name,g.role])]);
  const groupOf=name=>Object.entries(c.cast.RESIDENT_GROUPS).find(([,names])=>names.includes(name))?.[0];
  const sha=v=>c.sha.recordSha256(v??null);

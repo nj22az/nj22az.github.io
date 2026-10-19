@@ -16,7 +16,7 @@ const manifest=JSON.parse(await read('guide/portraits.json'));
 const sources=new Map(await Promise.all(manifest.sourceFiles.map(async path=>[path,await read(path)])));
 const fingerprint=guideText=>{const hash=createHash('sha256');for(const path of manifest.sourceFiles)hash.update(path+'\0').update(path==='guide/residents.json'?guideText:sources.get(path)).update('\0');return hash.digest('hex');};
 if(fingerprint(JSON.stringify(previous,null,1)+'\n')!==manifest.sha256)throw Error('Avatar rendering sources changed. Regenerate portraits before syncing guide metadata.');
-const home=h=>h?{id:h.home,address:h.address,residents:[...h.residents],...(h.unitNumber?{unitNumber:h.unitNumber}:{}),island:h.island,entranceSiteId:h.entranceSiteId}:null;
+const home=h=>h?{id:h.home,address:h.address,residents:[...h.residents],...(h.unit?{unit:h.unit}:{}),island:h.island,entranceSiteId:h.entranceSiteId}:null;
 for(const resident of guide){resident.home=home(homeForResident(resident.name));resident.secondaryHomes=secondaryHomesFor(resident.name).map(home);}
 const json=JSON.stringify(guide,null,1)+'\n';
 const generated='// Generated from guide/residents.json; sync copy and canonical homes with scripts/sync-resident-guide.mjs.\n'+marker+JSON.stringify(guide)+';\n';

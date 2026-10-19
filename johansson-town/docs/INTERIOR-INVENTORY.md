@@ -9,8 +9,9 @@ This inventory follows active building registrations and the runtime room builde
 | Home | Residents | Builder / arrangement |
 | --- | --- | --- |
 | Kitano family house | Johansson and Thuan | `johansson-house-interior.js`; primary home |
-| 1 Kitahama | Thao, Chin, Vy; ~~Thuan's weekday room~~ *(dropped 19 Oct 2026)* | `vy-room.js`; family rooms and separate sleeping places |
-| 1 Front-Row Yard | Nhung and Reiko | `yard-home.js`; shared yard home |
+| 1 Kitahama | Thao, Chin, Vy; ~~Thuan's weekday room~~ *(dropped 19 Oct 2026; her guest bedding removed in phase 3)* | `vy-room.js`; family rooms and separate sleeping places |
+| 3 Kitahama | Nhung, Kōji and Riku *(Nhung moved home in phase 3)* | `family-home.js` with the residents' own futons; Nhung is put to bed here (`home-residents.js`) |
+| 1 Front-Row Yard | Reiko *(Nhung until phase 3; the house goes in phase 4)* | `yard-home.js`; yard home |
 | 2 Front-Row Yard | Tetsuo | `tetsuo-flat.js`; individual flat |
 | 2 Kitahama | Mrs Sato | `tatami-home.js`; individual tatami home |
 | Police box residence | Officer Mori | `koban.js`; residence behind the workplace |
@@ -23,15 +24,14 @@ These are enterable and furnished, with sleeping and dining positions. They are 
 
 | Home | Residents | Interior |
 | --- | --- | --- |
-| 3 Kitahama | Kōji and Riku | Family-home layout |
 | 4 Kitahama | Postman Tōma | Family-home layout |
 | 5 Kitahama | Grandmother Chinen | Family-home layout |
 | 6 Kitahama | Ferry master, still named Bus driver | Family-home layout |
 | 8 Kitahama | Ms Uezu | Family-home layout |
-| Kitahama Heights, Flat 1 | Mr Higa Jr | Family-home layout |
-| Kitahama Heights, Flat 2 | Grandmother Sakurai | Family-home layout |
-| Kitahama Heights, Flat 3 | Mr Nakandakari | Family-home layout; upper approach |
-| Kitahama Heights, Flat 4 | Ms Ganaha | Family-home layout; upper approach |
+| Kitahama Heights A (id `kitahama-flat-3`) | Mac (Mr Nakandakari) | Family-home layout; its own gate and front door on Fukugi Lane, ground level *(phase 3: the block became two attached ground-floor houses)* |
+| Kitahama Heights B (id `kitahama-flat-4`) | Ms Ganaha | Family-home layout; its own gate and front door on Fukugi Lane, ground level |
+| ~~Kitahama Heights, Flat 1~~ | ~~Mr Higa Jr~~ | Retired in phase 3 with the upper storey; he keeps his body until phase 4 and resolves to the roster's fallback |
+| ~~Kitahama Heights, Flat 2~~ | ~~Grandmother Sakurai~~ | Retired in phase 3 with the upper storey; she keeps her body until phase 4 and resolves to the roster's fallback |
 | Higa house | Miss Higa and Grandmother Higa | Family-home layout |
 | Kinjō house | Mrs Kinjō | Family-home layout |
 | Ōshiro house | Mr Ōshiro | Family-home layout |
