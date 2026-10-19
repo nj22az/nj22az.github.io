@@ -31,7 +31,7 @@ test('she never promises what is not built', () => {
  assert.match(placeSays(islandPlace('turtle-cove')),/they say/);
  // No village bus, no guesthouse, no keeper, no summer flight, no fare.
  for(const id of ['hoshizaki','fumoto','aoba','aoba-radio','west-cape','oshiro-stand'])assert.equal(islandPlace(id),null);
- assert.match(placeSays(islandPlace('kitano-hamlet')),/Mayor/);
+ assert.match(placeSays(islandPlace('kitano-hamlet')),/Chief/);assert.doesNotMatch(placeSays(islandPlace('kitano-hamlet')),/Mayor/,'Nils is the chief engineer, not the mayor (docs/CAST-CONSOLIDATION.md §3)');
  assert.doesNotMatch(all,/summer flight|Gate 2|parasol|¥400 (ferry|return)/i);
 });
 

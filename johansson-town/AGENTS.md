@@ -66,6 +66,27 @@ side, the way to 2 Front-Row Yard, the utaki's approach), and every cleared lot 
 it is clear in `okinawa/lots.js CLEARED_LOTS` for the deferred dressing pass. Two walkers who meet face to face now step
 round one at a time (`schedules.js`): the changed timing had Thuan and Tetsuo mirroring each other's detour on the kerb.
 
+Phase 5 (the stories, directories, maps and docs; the last) is in, and the consolidation is complete: the report is
+[docs/CAST-CONSOLIDATION-REPORT.md](docs/CAST-CONSOLIDATION-REPORT.md) (the 26, the old-name map, the 14 households and
+the quarters, the removals, the watches and the hours, the save notes, the test results and what is unresolved). The
+resident guide (`guide/residents.json`, from `guide/articles.mjs`) is exactly the 26 live residents, each with a feature,
+a photo shoot and a portrait rendered from the live avatars (the eleven who had none: Dr Kakazu, Mai, Mac, Ms Uezu,
+Ms Ganaha, Mr Fujita, Ryo, Ren, Aya, Jun, Kai), the retired eight's features kept as history (`RETIRED_ARTICLES`); the
+storyteller's catalogue is that guide, so every story role fits the roster's posts (Fuji on the bridge, Chin in the
+engine room, Nhung at the paper's bench, Ms Ganaha's window, Mac the relief, Thuan owning Sakura), and every one of the
+26 is a regular somewhere (`feed/places.js`). The police station (`koban`) and the terminal counter are storyteller
+places, wired with `captured:false` until their backdrops are photographed (`node tools/render-feed-backdrops.mjs
+police-station port-hall`; the first frame does not finish under swiftshader in a cloud session), and the storyteller
+sets no story in a place without its pictures. The ten retired keep their drawings, walks and costumes for Studio and
+history only (`avatars/cast.js RETIRED_RECIPES`, `gait.js RETIRED_GAITS`, `dungeon/costumes.js RETIRED_COSTUMES`,
+`tests/retired-recipes.test.mjs`); Studio's lists name the 26 by the names World uses, the crew as a group (Mac,
+Ms Ganaha). The brief's short display names (Fuji, Jack, Nao, Koji, Mika, Yui, Tetsu, Aki, Dr Ken, Emi, Nils) are the
+roster's and resolve everywhere through `castMember`; the names the world, its saves, drawings and prompts use stay
+`cast.js`'s (Mr Fujita, Harbour master, Ms Uezu, Kōji, Ms Ganaha, Miss Higa, Tetsuo, Mrs Sato, Dr Kakazu, Mrs Nakamura,
+Johansson), a rename being a sweep of its own (the portraits, the wardrobe keys and some three hundred tests key on
+them). Sakura's products are for the living (`data/studio/products.json`), the wardrobe's and outfits' "who wears it"
+lines too, and the docs that describe the cast of before the consolidation carry a history banner.
+
 ## Verification
 
 Use focused geometry, collision, navigation and schedule checks. For runtime changes run `npm run build:runtime` and `node --test tests/runtime-package.test.mjs`. Check real pedestrian and overhead views, including mobile, wherever a GPU browser is available; state when physical-device or visual checks are unavailable. Do not claim screenshots or tests that were not performed.

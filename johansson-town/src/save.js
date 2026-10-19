@@ -31,7 +31,14 @@ export function migrateThuan(saved){
   if(Array.isArray(saved.documentArchive))for(const doc of saved.documentArchive)if(doc&&typeof doc==='object')doc.author=renameResidents(doc.author);
   return saved;
 }
-/** One-time, idempotent housing migration. Never treats a shop visit as an old home visit. */
+/**
+ * The housing project of 18 October 2026 (docs/MINATO-HOMES-IMPLEMENTATION.md), as a one-time, idempotent migration
+ * (housingRevision 1): the four people it rehoused then lose their saved home fields so the registry's homes of that
+ * day apply, and a saved home target goes through the registry's aliases. The names are the names of that day: two of
+ * them (Grandmother Chinen, Grandmother Sakurai) retired a day later in the consolidation and Mr Nakandakari became
+ * Mac, which migrateCast (castRevision 2, below) handles after this has run; a save from before 18 October still needs
+ * this step first, so the list is kept as it was. Never treats a shop visit as an old home visit.
+ */
 export function migrateHousing(saved){
  if(saved.housingRevision>=1)return saved;
  const moved=['Grandmother Chinen','Grandmother Sakurai','Mr Nakandakari','Ms Ganaha'];

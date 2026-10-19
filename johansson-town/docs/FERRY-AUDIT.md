@@ -1,5 +1,7 @@
 # The Minato–Kitano-jima ferry: audit and plan
 
+> **The manning table is history (19 October 2026).** The ship, her general arrangement and the audit stand; the people at the posts changed with the consolidation ([CAST-CONSOLIDATION.md](CAST-CONSOLIDATION.md) §9; `src/people/roster.js` SHIP_POSTS): Mr Fujita is the master (the Bus driver retired), Nils the chief engineer with Mac Turner (Mr Nakandakari renamed) as relief, Chin the motorman (Mr Higa Jr retired), Ms Uezu the bosun with Kōji her relief, and Ryo, Ren, Aya and Jun the chief officer, deck hand, purser and cook-steward; Jack Reed takes the Minato lines and Kai the Kitano ones.
+
 The creator, 2026-10-10: *"audit it as marine ship construction engineer in Japan in the 1990's — now it looks like a
 floating toy, it needs to be a realistic functional ship with loading decks, passenger waiting spaces, a realistic
 functional engine room … and have a crew (some of our NPCs can be the crew …)"*; *"there are only two maybe 3 cars that

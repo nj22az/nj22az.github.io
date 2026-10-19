@@ -197,11 +197,12 @@ function addStreetLife(world,options,factory){
   const glow=createLampGlow(group,lanternSpots);
   const inspect=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('inspect',title,text),options.register);interactions++;};
   const read=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('read',title,text),options.register);interactions++;};
-  const seat=(pos,label,title,text)=>{const marker=anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);marker.userData.seat={position:[.6,0,18.02],stand:[1.6,0,18.1],surfaceY:.62,eyeY:1.26,yaw:0,pitch:0};interactions++;};
+  const seat=(pos,label,title,text)=>{const marker=anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);marker.userData.seat={position:[.6,0,18.02],stand:[.6,0,17.2],surfaceY:.62,eyeY:1.26,yaw:0,pitch:0};interactions++;};
   const machine=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('machine',title,text),options.register);interactions++;};
 
-  // Keep the x=1.9 pavement route open from Higa to the police box. The bench sits
-  // beyond it, clear of the service cars' turning sweep across the kerb.
+  // Keep the x=1.9 pavement route open from Higa to the police station. The bench sits
+  // beyond it, clear of the service cars' turning sweep across the kerb; a sitter stands up in front of it (yaw 0
+  // faces −z, as the other benches), not on its end, which its own collider covers.
   addWithCollider(group,colliders,factory.bench(.6,18.1,0));
   seat([3.5,.85,16.1],'Sit on neighbourhood bench','Neighbourhood bench','From here the shop signs, bicycles and overhead cables make the street feel almost domestic.');
 

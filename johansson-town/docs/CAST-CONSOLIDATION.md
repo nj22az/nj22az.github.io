@@ -288,3 +288,17 @@ Five PRs, each from the main of the day, in this order; each phase leaves the ga
 4. Retire the ten, remove the six Minato houses, the florist pavilion, the post-office shop-house and kitano-3; compact the streets.
 5. Stories, directories, maps, docs, the CLAUDE.md trade line, runtime rebuild, the population and accommodation report.
 Then the police station on the freed lot, then the docks and boats, then the lot dressing on the final layout.
+
+## CLOSED — 19 OCTOBER 2026
+
+All five phases are in (`johansson-town/AGENTS.md` records each), the police station stands on the freed lot (PR #252)
+and the docks are in. The deliverable report is [CAST-CONSOLIDATION-REPORT.md](CAST-CONSOLIDATION-REPORT.md): the final
+26-person roster and the old-name map; the 14 households member for member, the berths aboard and the quarters; the
+removals of this job, distinguished from the housing project's; the watches, the reliefs and the opening hours; the
+save-migration notes; the build and test results; and what is unresolved. The data of record is `src/people/roster.js`
+(mirrored in `docs/cast-roster.json`); the brief above is kept as written, the addendum winning where they differ, and
+`AGENTS.md` names what was reconciled against the source. What this job did not do, deliberately: the brief's short
+display names are the roster's and resolve everywhere, but the world's own names (Mr Fujita, Harbour master, Ms Uezu,
+Kōji, Ms Ganaha) stay on its prompts, drawings, saves and tests until a rename sweep of their own; the lot dressing
+(ruling 2) follows on the final layout; the police station's and the terminal's story backdrops wait for a Chromium
+with a GPU (the report says the command).

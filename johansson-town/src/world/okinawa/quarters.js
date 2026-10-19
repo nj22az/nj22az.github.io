@@ -246,7 +246,7 @@ function utaki(kit,solid,p,{anchor,onAction,inspect}){
 function buildWestQuay(kit,solid,{inspect,anchor,onAction,vending}){
  const Q=NISHI.quay;
  // Two sabani hauled out side by side in the yard, square to it, up on blocks: the blue
- // one against the staging container, Mr Ōshiro's red one in front of it, with a lane
+ // one against the staging container, the red one that was Mr Ōshiro's (Chin mends it now) in front of it, with a lane
  // between them. Their sterns stop 2.1 m short of the seawall, so the way along it to
  // Mr Fujita's pier stays open, and their bows 1.5 m short of the Dock Electrical wall,
  // the lane to the hoist and the quay edge. (The red one used to lie inside the Dock

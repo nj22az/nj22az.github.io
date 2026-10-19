@@ -250,7 +250,7 @@ export const TOWN_PAPERS=[
     "title": "Petitions to the mayor",
     "type": "Notice",
     "organisation": "Community Hall",
-    "text": "From Mr Shimabukuro, the power house next door: The second diesel set needs new injectors before typhoon season. The parts come on the Thursday ferry if the town pays this week.\n\nFrom Mrs Nakamura, Nakamura Zenzai: The street lamp outside the east row has flickered since the rain. Customers say it makes the zenzai look grey.\n\nFrom the Higa household, Nishi-machi: May the children use the town hall field on Sunday for eisa practice? Grandmother Higa will supervise. Loudly.\n\nFrom the ferry company: The new cargo trucks are heavier. We ask the town to strengthen the quay apron where the ramp lands.\n\nFrom Thuan, Sakura Shōten: A request for a bench at the bus stop by the ferry. People wait there with their shopping.",
+    "text": "From Tetsuo, for the power house next door: The second diesel set needs new injectors before typhoon season. The parts come on the Thursday ferry if the town pays this week.\n\nFrom Mrs Nakamura, Nakamura Zenzai: The street lamp outside the east row has flickered since the rain. Customers say it makes the zenzai look grey.\n\nFrom the Higa household, Nishi-machi: May the children use the town hall field on Sunday for eisa practice? Grandmother Higa will supervise. Loudly.\n\nFrom the ferry company: The new cargo trucks are heavier. We ask the town to strengthen the quay apron where the ramp lands.\n\nFrom Thuan, Sakura Shōten: A request for a bench at the bus stop by the ferry. People wait there with their shopping.",
     "source": "notice:Petitions to the mayor"
   },
   {

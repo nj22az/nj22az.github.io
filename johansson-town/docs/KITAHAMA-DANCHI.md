@@ -1,5 +1,7 @@
 # Kitahama Danchi: the port's apartment block (batch 8, planned 2026-10-12)
 
+> **Not built; history (19 October 2026).** The danchi was planned on 12 October and overtaken: the housing project of 18 October and the consolidation of 19 October ([CAST-CONSOLIDATION.md](CAST-CONSOLIDATION.md)) reduced Kitahama to 1, 2, 3 and 8 Kitahama and two attached ground-floor houses at Kitahama Heights (Mac and Ms Ganaha), with ten residents retired; the counts and names below are of that day.
+
 The creator, 2026-10-12: *"I want to consolidate some of the homes in the port, I think an apartment complex would be
 more fitting for most of the people there."*
 
