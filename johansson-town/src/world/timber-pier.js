@@ -36,7 +36,7 @@ export const PIER_TIMBER=Object.freeze({
 /** The water's marks on a pile: the salt line at high water, the black wet band, the weed below low water. */
 export const PILE_BANDS=Object.freeze({salt:SEA_LEVEL+.18,wet:SEA_LEVEL+.14,weed:SEA_LEVEL-.32});
 /** Colours: weathered timber, its darker frame, the wet band, iron and rubber. */
-export const PIER_COLOURS=Object.freeze({board:0x8b6c4f,boardAlt:0x93745a,frame:0x5d4836,cap:0x54412f,kerb:0x7a5d43,rail:0x8f7256,
+export const PIER_COLOURS=Object.freeze({board:0x95714f,boardAlt:0x9d7b5b,frame:0x5d4836,cap:0x54412f,kerb:0x7a5d43,rail:0x8f7256,
  underlay:0x2c241d,pileDry:0x6b5844,salt:0xb3ad98,wet:0x3a3128,weed:0x2d3a2f,iron:0x30373a,galv:0x8d9493,rubber:0x1e2223,rope:0x9b825e,
  safety:0xe0b93a});
 
@@ -154,7 +154,7 @@ export function buildTimberPier(parent,plan,{shadows=false,ropes=[],colliderTag=
  const T=PIER_TIMBER,C=PIER_COLOURS,L=plan.levels,group=new THREE.Group();group.name='Timber pier: '+plan.id;parent.add(group);
  const timber=[],iron=[];
  // 4. Boards, each a shade apart (as boards are: one plank never weathers like the next), and the dark sheet under them.
- for(const b of plan.boards){const tone=b.index%3===1?C.boardAlt:b.index%5===3?0x86684c:C.board;timber.push(boxAt(b.maxX-b.minX,T.board.thickness,b.maxZ-b.minZ,(b.minX+b.maxX)/2,plan.top-T.board.thickness/2,(b.minZ+b.maxZ)/2,tone));}
+ for(const b of plan.boards){const tone=b.index%3===1?C.boardAlt:b.index%5===3?0x8e6b4c:C.board;timber.push(boxAt(b.maxX-b.minX,T.board.thickness,b.maxZ-b.minZ,(b.minX+b.maxX)/2,plan.top-T.board.thickness/2,(b.minZ+b.maxZ)/2,tone));}
  for(const d of plan.decks)timber.push(boxAt(d.maxX-d.minX-.02,.008,d.maxZ-d.minZ-.02,(d.minX+d.maxX)/2,L.boardBottom-.006,(d.minZ+d.maxZ)/2,C.underlay));
  // 3. Stringers, 2. caps.
  for(const d of plan.decks){

@@ -24,7 +24,8 @@ export function createHouseboatModel(hull=null,{shadows=false}={}){
  const box=(name,size,at,m)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(...size),m);o.name=name;o.position.set(...at);o.castShadow=shadows;o.receiveShadow=true;g.add(o);return o;};
  if(hull){hull.scale.z*=7.4/6.8;hull.position.z-=.3;g.add(hull);}else box('Temporary hull',[3.05,.6,7.3],[0,-.39,-.3],blue.clone()).userData.temporaryHull=true;
  box('Deck',[3.12,.1,7.4],[0,.01,-.3],wood);
- for(let x=-1.4;x<1.5;x+=.22)box('Deck caulking',[.013,.005,7.25],[x,.063,-.3],mat(0x433a30));
+ // The caulked seams lie 3 mm over the deck: pulled forward by a polygon offset too, so they never flicker into it at range.
+ for(let x=-1.4;x<1.5;x+=.22)box('Deck caulking',[.013,.005,7.25],[x,.063,-.3],mat(0x433a30,{polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}));
  for(const side of [-1,1]){
   box('Cream rubbing strake',[.08,.12,6.8],[side*1.62,-.19,-.3],trim);
   // Tyres on her outboard (port) side only: to starboard she lies on the pier's fender piles (fujita-layout.js), and
