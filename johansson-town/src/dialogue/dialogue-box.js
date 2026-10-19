@@ -19,7 +19,10 @@ import {voiceOf} from '../avatars/personality.js';
  * A controller's A and D-pad reach the same place (see game.js).
  */
 
-/** Each speaker's subtitle colour; Johansson is white. Anyone else gets a stable one. */
+/**
+ * Each speaker's subtitle colour; Johansson is white. Anyone else gets a stable one. Reiko's is kept for a history
+ * story (she retired, people/roster.js RETIRED); Emi is the old townsfolk profile, not Mrs Nakamura's display name.
+ */
 export const SPEAKER_COLOURS=Object.freeze({
  Johansson:'#ffffff',Thuan:'#ffd56b',Thao:'#ffa585',Nhung:'#cdb0ff','Mrs Sato':'#ff9ec0',Yoshiko:'#b9e59a',
  Chin:'#8fd3ff',Reiko:'#ffb3c7',Emi:'#ffc9a8','Harbour master':'#9fd8ff',Masaru:'#ffbf80'

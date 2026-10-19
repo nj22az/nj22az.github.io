@@ -51,8 +51,6 @@ const BY_AGE=Object.freeze({
 /** Residents whose walk is part of who they are. */
 export const PERSONAL_GAITS=Object.freeze({
  'Grandmother Higa':{stride:.72,bounce:.45,lift:.55,lean:.16,carry:'behind',tics:['nod','sky'],ticEvery:[10,20]},
- 'Mr Ōshiro':{stride:.82,bounce:.55,lean:.09,carry:'behind',tics:['sky','nod']},
- Barfly:{stride:.75,bounce:.4,lift:.45,arms:.4,lean:.1,sway:.05,carry:'pockets',tics:['hum','glance'],ticEvery:[8,14]},
  'Officer Mori':{stride:1.15,bounce:.6,arms:1.2,elbow:.2,swagger:.5,lean:-.02,carry:'stiff',tics:['glance','glance','watch'],ticEvery:[6,12]},
  Vy:{bounce:1.5,lift:1.3,arms:1.1,headBob:.04,tics:['skip','hum','hair'],ticEvery:[5,10]},
  Thuan:{stride:1.05,bounce:1.1,arms:1,lean:.03,tics:['glance','hum','hair'],ticEvery:[8,15]},
@@ -60,14 +58,22 @@ export const PERSONAL_GAITS=Object.freeze({
  Nhung:{stride:.9,bounce:.9,arms:.7,headBob:.02,tics:['sky','hair'],ticEvery:[9,18]},
  Johansson:{stride:1.12,bounce:.85,arms:.9,lean:.03,tics:['sky','watch','glance'],ticEvery:[10,20]},
  'Harbour master':{stride:1.05,bounce:.7,arms:.8,toe:.12,carry:'behind',tics:['sky','watch']},
- Reiko:{stride:1,bounce:.8,arms:.8,lean:.05,tics:['nod','glance']},
  Tetsuo:{stride:.95,bounce:.7,arms:.7,swagger:.8,carry:'pockets',tics:['glance','nod']},
+});
+/**
+ * The walks of the retired (people/roster.js RETIRED): kept so a history story or Studio still walks them as themselves,
+ * out of PERSONAL_GAITS so no live list names them (tests/avatar-gait.test.mjs holds that list to the town).
+ */
+export const RETIRED_GAITS=Object.freeze({
+ 'Mr Ōshiro':{stride:.82,bounce:.55,lean:.09,carry:'behind',tics:['sky','nod']},
+ Barfly:{stride:.75,bounce:.4,lift:.45,arms:.4,lean:.1,sway:.05,carry:'pockets',tics:['hum','glance'],ticEvery:[8,14]},
+ Reiko:{stride:1,bounce:.8,arms:.8,lean:.05,tics:['nod','glance']},
 });
 
 /** The gait for a recipe, with a little of the person's own (rand, 0..1) in every number. */
 export function gaitOf(recipe={},rand=Math.random){
  const type=personalityOf(recipe.profile||{}).name;
- const g={...BASE,...(BY_TYPE[type]||{}),...(BY_AGE[recipe.age]||{}),...(PERSONAL_GAITS[recipe.name]||{})};
+ const g={...BASE,...(BY_TYPE[type]||{}),...(BY_AGE[recipe.age]||{}),...(PERSONAL_GAITS[recipe.name]||RETIRED_GAITS[recipe.name]||{})};
  const jitter=(v,k)=>v*(1+(rand()-.5)*k);
  return {...g,stride:jitter(g.stride,.08),bounce:jitter(g.bounce,.2),arms:jitter(g.arms,.15),lift:jitter(g.lift,.1),tics:[...g.tics],ticEvery:[...g.ticEvery],type};
 }
