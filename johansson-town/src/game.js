@@ -1,6 +1,7 @@
 import {createLaunchReport} from './render/launch-report.js';
 import {createStartupRecovery,graphicsProfile,drawingDpr} from './render/startup-recovery.js';
 import {createResolutionGovernor} from './render/resolution-governor.js';
+import {redrawReleasedCanvases,paintBack} from './render/canvas-release.js';
 import {CAST_RECIPES,recipeFor} from './avatars/cast.js';
 import {createLensOcclusion} from './render/lens-occlusion.js';
 import {houseboatCabinAt} from './world/fujita-houseboat.js';
@@ -177,11 +178,12 @@ window.__JOHANSSON_RUNTIME_VERSION__='ios-colour-2';
 const $=s=>document.querySelector(s);
 const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const touch=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;
-const mobile=isIOS||touch,tabletLike=touch&&Math.min(innerWidth,innerHeight)>=700;
-const graphics=graphicsProfile({mobile,tablet:tabletLike,safe:startupRecovery.safe,reduced:startupRecovery.reduced,ios:isIOS});
+const mobile=isIOS||touch;
+// Drawing detail follows the screen, not the input: a touchscreen laptop whose main pointer is a mouse or
+// trackpad draws like a desktop.
+const handheld=isIOS||matchMedia('(pointer:coarse)').matches;
+const graphics=graphicsProfile({mobile:handheld,tablet:handheld&&Math.min(innerWidth,innerHeight)>=700,safe:startupRecovery.safe,reduced:startupRecovery.reduced});
 const highTier=graphics.shadows,shadows=graphics.shadows,canvas=$('#game');
-// Mobile buffers have a fixed cap before the first frame; the frame-rate governor
-// cannot prevent a memory-pressure restart while the first buffers are allocated.
 const dprGovernor=createResolutionGovernor();
 const renderDpr=()=>drawingDpr({width:innerWidth,height:innerHeight,deviceDpr:window.devicePixelRatio||1,profile:graphics,scale:dprGovernor.scale});
 /**
@@ -283,8 +285,8 @@ const celPass=createCelPass();
  * plain path after the retries, which is where it used to start.
  */
 const INK_OPTIONS={
- // Phone: one bounded HDR scene target with two samples, then one byte colour
- // target. No native canvas MSAA, third colour target or increased pixel ceiling.
+ // One multisampled HDR scene target within the device's pixel budget, then one byte
+ // colour target; the canvas itself only receives the FXAA pass and stays single-sample.
  superScale:graphics.superScale,samples:graphics.samples,preferHalfFloat:graphics.preferHalfFloat,
  pixelBudget:graphics.pixelBudget,
  // FXAA is a single pass and it is the one that resolves the line work, so it is
@@ -359,12 +361,40 @@ sweepCel(0);
  * dropped once, tone mapping comes back, and the town keeps running. Being playable
  * beats being drawn.
  */
+/** The island has been drawn once: the title may offer START (or play has begun without a title). */
+function islandDrawn(){
+ loadingProgress?.complete('preview');
+ const title=$('#title'),status=$('#bootStatus');
+ if(title)title.dataset.scene='ready';
+ if(status)status.textContent=startupRecovery.safe?'Island ready · reduced graphics':'Island ready';
+}
 function firstFrameReady(){
  if(!started||firstPlayFrame||roomLoading||catchingUp)return;
- firstPlayFrame=true;loadingProgress?.complete('frame');
+ firstPlayFrame=true;islandDrawn();loadingProgress?.complete('frame');
+}
+/**
+ * The ferry's engine-room plates (ferry-model.js belowDeck) are drawn only with the lens inside her hull, no higher
+ * than the car deck's headroom. From the pier their pictures go up a few a frame, so boarding never waits on them.
+ */
+const lensInShip=new THREE.Vector3();
+function updateBelowDeck(view){
+ const ferry=world.ferry?.ferry,below=ferry?.userData.belowDeck;if(!below)return;
+ let inside=false,near=false;
+ if(ferry.visible&&!current){
+  lensInShip.copy(view.position);ferry.worldToLocal(lensInShip);
+  const dx=Math.abs(lensInShip.x)-below.halfBeam,dz=Math.abs(lensInShip.z)-below.halfLength;
+  inside=dx<.3&&dz<.3&&lensInShip.y<below.carDeck+3;near=dx<12&&dz<12;
+ }
+ below.plates.visible=inside;
+ if((near||inside)&&!below.uploaded){
+  let sent=0;below.uploaded=true;
+  // Inside already (a start below deck, a film's lens): all at once, before the first frame that shows them.
+  for(const plate of below.plates.children){const map=plate.material.map;if(!map||map.userData.uploaded)continue;if(!inside&&sent++>=6){below.uploaded=false;break;}paintBack(map);renderer.initTexture?.(map);map.userData.uploaded=true;}
+ }
 }
 function present(draw,view=camera){
  if(graphicsLifecycle?.lost)return;
+ updateBelowDeck(view);
  if(!pipeline){
   if(graphics.postprocess&&inkRecovery.ready())buildInk();
   if(!pipeline){draw(renderer);firstFrameReady();return;}
@@ -1540,7 +1570,7 @@ function setTime({updateHours=true}={}){
  ambient.color.set(c.skyFill);
  ambient.groundColor.set(c.groundFill);
  scene.environmentIntensity=(.12+day*.22)*(current?.4:weather?.65:overcast?.85:1);
- const cell=52/(tabletLike?1024:2048),sx=Math.round(player.position.x/cell)*cell,sz=Math.round(player.position.z/cell)*cell;
+ const cell=graphics.shadowRadius*2/Math.max(1,graphics.shadowSize),sx=Math.round(player.position.x/cell)*cell,sz=Math.round(player.position.z/cell)*cell;
  sun.position.set(sx-30,12+day*25,sz+12);sun.target.position.set(sx,0,sz);sun.target.updateMatrixWorld();
  townSky.update(camera,day,weather,!!current,c.sky,overcast);
  setOceanLight({day,dusk:c.dusk});
@@ -1732,7 +1762,9 @@ function startArrivalScene(opening){
 }
 // Queue shared shaders once. This renderer's async poll can outlive materials replaced
 // by the detail stream; compile queues GPU work without retaining disposed materials.
+loadingProgress?.start('shaders');await paintLoading();
 lightBudget.update();if(graphics.precompile)compileTown(scene);
+loadingProgress?.complete('shaders');
 function enterWorld(){
  if(started)return;
  startupRecovery.entering();launchReport.stage('Entering town');
@@ -1747,8 +1779,14 @@ window.__JOHANSSON_ENTER_WORLD__=enterWorld;
 if(!window.__JOHANSSON_TITLE_PREVIEW__)enterWorld();
 else {
  startWeather();
- $('#title').dataset.scene='ready';
- $('#bootStatus').textContent=graphics.postprocess?'Island ready':'Island ready · reduced graphics';
+}
+// After two interrupted launches in a row this one runs reduced (render/startup-recovery.js). Say so, and give
+// the full look back with one press: the player's own request wins for the next launch.
+if(startupRecovery.recovering){
+ const restore=document.createElement('button');restore.id='fullGraphics';restore.textContent='Reduced graphics after a restart · Restore full graphics';
+ restore.style.cssText='position:fixed;top:max(12px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:10000;padding:12px 16px;background:#fff2d3;color:#294b60;border:2px solid #294b60;border-radius:14px;font:700 15px sans-serif';
+ restore.onclick=()=>activities.saveBeforeLeaving(()=>{const url=new URL(location.href);url.searchParams.set('graphics','full');location.href=url.href;});
+ document.body.append(restore);
 }
 addEventListener('johansson-title-weather',()=>{if(!started)startWeather();});
 let mouseLooking=false,mouseLast=null;
@@ -1853,9 +1891,9 @@ graphicsLifecycle=createGraphicsLifecycle({canvas,getRunning:()=>started,
  setRunning:value=>{started=value;window.__JOHANSSON_RUNNING__=value;},
  save:()=>activities.save(),resetInput,suspendInput:()=>gamepadInput.suspend(),
  dropPipeline:()=>{const old=pipeline;pipeline=null;try{old?.dispose();}finally{renderPlain();}},
- restoreGraphics:()=>{renderer.setRenderTarget?.(null);resizeRenderer();inkRecovery.restored();if(!buildInk())inkRecovery.failed();setTime();},
+ restoreGraphics:()=>{redrawReleasedCanvases();{const below=world.ferry?.ferry?.userData.belowDeck;if(below){below.uploaded=false;for(const p of below.plates.children)if(p.material.map)p.material.map.userData.uploaded=false;}}renderer.setRenderTarget?.(null);resizeRenderer();inkRecovery.restored();if(!buildInk())inkRecovery.failed();setTime();},
  resetClock:()=>clock.getDelta(),followClock,
- onLost:()=>{startupRecovery.entering();const d=$('#fatal');if(d){d.classList.remove('hidden');d.querySelector('p').textContent='Graphics paused safely. Your town will resume when the display recovers.';d.querySelector('button').hidden=true;}},
+ onLost:()=>{const d=$('#fatal');if(d){d.classList.remove('hidden');d.querySelector('p').textContent='Graphics paused safely. Your town will resume when the display recovers.';d.querySelector('button').hidden=true;}},
  onRestored:()=>{const d=$('#fatal');if(d){d.classList.add('hidden');d.querySelector('button').hidden=false;}},
  onError:(error,phase)=>{console.warn('Graphics '+phase+':',error.message);if(phase==='restore'){const d=$('#fatal');if(d){d.querySelector('p').textContent='Graphics are still paused. Retry when the display is available.';d.querySelector('button').hidden=false;}}}
 });
@@ -2125,7 +2163,7 @@ await paintLoading();
 launchReport.stage('Preparing walking surface');
 const walkSurface=createWalkSurface({minX:COAST_BOUNDS.minX-2,maxX:COAST_BOUNDS.maxX+2,minZ:COAST_BOUNDS.minZ-2,maxZ:COAST_BOUNDS.maxZ+2,base:planHeight});
 {const t0=performance.now();walkSurface.add(town);setWalkSurface(walkSurface);window.__JOHANSSON_WALK__={ms:Math.round(performance.now()-t0),get triangles(){return walkSurface.triangles;}};}
-loadingProgress?.complete('walking');
+loadingProgress?.complete('walking');loadingProgress?.start('preview');
 const detailStream=createDetailStream({enabled:graphics.streamDetails,onStart:id=>launchReport.stage('Loading detail: '+id),onChange:()=>{invalidateDetails();walkSurface.add(town);}});window.__JOHANSSON_STREAMING__=detailStream.stats;
 // With ?audit in the address, a harness can put the player anywhere and look down on
 // the town from a fixed camera. Nothing reads it otherwise.
@@ -2401,7 +2439,8 @@ function renderTitle(dt){
  setTime();
  if(!titleReported)launchReport.stage('Rendering title preview');
  present(()=>townSections.render({renderer,scene,camera,town,position:{x:x+3,z:z-7}}));
- if(!titleReported){titleReported=true;launchReport.stage('Ready to enter town');}
+ // Ready means ready: built, walkable, compiled and drawn once, so START opens play at once.
+ if(!titleReported){titleReported=true;launchReport.stage('Ready to enter town');islandDrawn();}
 }
 
 function renderOutdoor(){

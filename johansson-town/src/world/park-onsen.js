@@ -199,7 +199,7 @@ export function buildParkOnsen(world,{register,onAction,enter,sites,shadows=fals
  bench.userData.seat={position:[bx,0,bz],stand:[bsx,0,bsz],surfaceY:.485,eyeY:1.1,yaw:ONSEN.yaw+Math.PI,pitch:0};
 
  let model=null;
- registerDetail(world,{id:'park-onsen',requiredNearby:true,x:ONSEN.x,z:ONSEN.z,radius:22,load:async()=>{
+ registerDetail(world,{id:'park-onsen',requiredNearby:true,x:ONSEN.x,z:ONSEN.z,radius:72,load:async()=>{
   const response=await fetch(assetURL('models/onsen/umi-no-yu.glb'));if(!response.ok)return false;
   const scene=(await new GLTFLoader().parseAsync(await response.arrayBuffer(),'')).scene;
   scene.name='Umi-no-yu bathhouse';scene.userData.sharedAsset=true;

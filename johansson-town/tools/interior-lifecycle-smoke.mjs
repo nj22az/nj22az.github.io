@@ -11,7 +11,7 @@ try{
  page.setDefaultTimeout(120000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
  console.log('Loading town');
  await page.goto('http://127.0.0.1:8765/johansson-town/?audit',{waitUntil:'domcontentloaded'});await page.locator('#enter').click();
- await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_LOADING__.snapshot().completed===8);
+ await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_LOADING__.snapshot().completed===window.__JOHANSSON_LOADING__.snapshot().total);
  await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.frozen=true;a.renderFrozen=true;a.teleport(-2,-25);a.setTime(720);});
  console.log('Town loaded');
  const capture=async(label,pos,at)=>{console.log('Capture',label);

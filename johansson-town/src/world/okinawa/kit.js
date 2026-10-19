@@ -1,6 +1,7 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import {markPane,sharedWindowMaterial} from '../../render/window-interior.js';
+import {releaseAfterUpload} from '../../render/canvas-release.js';
 
 /**
  * The building kit the Okinawan quarters are made with.
@@ -248,13 +249,13 @@ export function createKit({shadows=false}={}){
  return {at,point,rect,level,powerNode,powerSpan,sign,surface,add,box,block,cyl,rod,sphere,hipRoof,gableRoof,extrude,wire,finish,get parts(){return parts;}};
 }
 
-/** A canvas painted by `draw`, as a texture. */
+/** A canvas painted by `draw`, as a texture. Painted once: the canvas is released after upload (render/canvas-release.js). */
 export function paint(width,height,draw){
  const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
  draw(canvas.getContext('2d'),width,height);
  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=4;
  texture.wrapS=texture.wrapT=THREE.RepeatWrapping;
- return texture;
+ return releaseAfterUpload(texture,draw);
 }
 
 /** A flat painted board: a sign, a poster, a name plate. Faces +z before `ry`. */

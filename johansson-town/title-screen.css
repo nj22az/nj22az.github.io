@@ -31,11 +31,6 @@
 #start .title-foot{position:static;display:flex;flex-direction:column;gap:0;align-items:center;justify-content:center;padding:8px 16px calc(env(safe-area-inset-bottom) + 12px);background:transparent;border:0;color:var(--title-text);font:400 10px/1.5 var(--line-font);text-shadow:none}
 #start #openStudio.title-studio{border:0;background:transparent;padding:0;display:flex;align-items:center;gap:8px;justify-content:center;min-height:44px;font:700 12px/1.4 var(--line-font);color:var(--title-text);text-decoration:none}
 #start .title-loading{width:min(352px,100%);margin:0;padding:16px;box-sizing:border-box;border-radius:18px;background:var(--title-surface)}
-#start:not(.booting) .title-loading{display:block;position:absolute;top:220px;left:50%;transform:translateX(-50%);padding:0;background:none;text-align:center}
-#start:not(.booting) .title-loading :is(.island-fact,.title-bar){display:none}
-#start:not(.booting) .title-loading #bootStatus{margin:4px 0 0;padding:0;font-size:11px;background:none;color:var(--title-text)}
-#start:not(.booting) .title-screen[data-scene=ready] .title-loading{display:none}
-#start .title-bar span{background:var(--title-green)}
 #start .title-screen :is(button,a,summary):focus-visible{outline:3px solid var(--title-green);outline-offset:3px}
 #start.guide-open{background:var(--title-surface)}
 @media(min-width:768px){#start .title-center{padding-top:calc(env(safe-area-inset-top) + 48px)}#start .title-world-space{min-height:270px}#start .title-foot{flex-direction:row;gap:24px;padding-bottom:calc(env(safe-area-inset-bottom) + 8px)}}
@@ -48,8 +43,7 @@
 #start .title-new button{background:var(--title-green);border-color:var(--title-green);color:white}
 
 /* While the town is built there is no live view yet: the title's own view as a still (by day or by night, index.html
-   sets data-title-light by the hour), which fades into the live view when the town is ready. The status is a readable
-   pill over a running bar; the bar's motion is a transform, so it keeps moving while the town is being built. */
+   sets data-title-light by the hour), which fades into the live view when the town is ready. */
 #start .title-backdrop{position:absolute;inset:0;z-index:-2;background:#cfd9d2 url(assets/images/title/title-day-landscape.webp) center/cover no-repeat;transition:opacity 1.2s ease;pointer-events:none}
 :root[data-title-light=night] #start .title-backdrop{background-color:#1d2a36;background-image:url(assets/images/title/title-night-landscape.webp)}
 @media (orientation:portrait){
@@ -57,15 +51,28 @@
  :root[data-title-light=night] #start .title-backdrop{background-image:url(assets/images/title/title-night-portrait.webp)}
 }
 #start .title-screen[data-scene=ready] .title-backdrop{opacity:0}
-#start:not(.booting) .title-screen:not([data-scene=ready]) .title-loading{display:flex;flex-direction:column;align-items:center;gap:8px}
-#start:not(.booting) .title-screen:not([data-scene=ready]) .title-loading #bootStatus{order:-1;margin:6px 0 0;padding:6px 16px;border-radius:999px;background:#f5f5ecf2;box-shadow:0 2px 12px #263d3926;font:700 13px/1.4 var(--line-font);letter-spacing:.02em;color:var(--title-text)}
-#start:not(.booting) .title-screen:not([data-scene=ready]) .title-loading .title-bar{display:block;width:140px;height:8px;padding:2px;border:0;border-radius:999px;background:#f5f5ecd9;box-shadow:0 2px 8px #263d391f}
-#start:not(.booting) .title-screen:not([data-scene=ready]) .title-loading .title-bar span{border-radius:999px;background:var(--title-green)}
 /* The footer and the work-in-progress stamp sit on the scenery at every hour: a light backing keeps them readable at night. */
 #start .title-foot>:is(span,a){padding:2px 10px;border-radius:999px;background:#f5f5ecd9}
 #start .title-wip{background:#f5f5ecd9}
 
-/* A measured task count; this bar never advances on a timer. */
-#bootProgress span{animation:none;transform:none;transition:none}
-#bootCount,#bootFiles{margin:6px 0 0;font:600 12px/1.4 var(--line-font);color:var(--title-text)}
-#bootFiles:empty{display:none}
+/* Loading (index.html, loading-progress.js): until the island is ready the START button is the bar, with its number
+   and one readable line; it becomes START when the island has been drawn. After START, until the first playable
+   frame, the loading card shows the same bar large. The fill is a transform animation (index.html), so it keeps
+   moving on the compositor while the town is built, and it never passes the end of the step that is running. */
+#start:not(.booting) .title-loading{display:none}
+#start .title-menu #enter{position:relative;overflow:hidden;isolation:isolate;transition:none}
+#start .title-menu #enter .enter-fill{display:none;position:absolute;inset:0;z-index:-1;background:#7fcaa5;transform-origin:left;transform:scaleX(0)}
+#start .title-menu #enter .enter-loading{display:none}
+#start .title-menu #enter.loading,#start .title-menu #enter.loading:disabled{background:#eef1ea;box-shadow:inset 0 0 0 1px #263d3926;color:var(--title-text);cursor:progress;opacity:1}
+#start .title-menu #enter.loading .enter-fill{display:block}
+#start .title-menu #enter.loading :is(b,#titleActionHint){display:none}
+#start .title-menu #enter.loading .enter-loading{display:flex;flex-direction:column;gap:2px}
+#start .title-menu #enter .enter-loading strong{font:700 20px/1.3 var(--line-font)}
+#start .title-menu #enter .enter-loading>span{font:700 15px/1.3 var(--line-font)}
+#start .title-menu #enter .enter-loading i{font-style:normal}
+#start .load-meter{margin-top:12px}
+#start .load-meter-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:0 0 8px;font:700 17px/1.35 var(--line-font);color:var(--title-text)}
+#start .load-meter-head b{font:800 22px/1 var(--line-font);color:var(--title-green)}
+#start .title-loading #bootStatus{margin:0;padding:0;border:0;border-radius:0;background:none;font:inherit;letter-spacing:normal;color:inherit;text-shadow:none}
+#start .title-loading .title-bar{height:16px;padding:0;border:0;border-radius:999px;background:#dfe5dc;box-shadow:inset 0 0 0 1px #263d3920;overflow:hidden}
+#start .title-loading .title-bar span{display:block;width:100%;height:100%;border-radius:999px;background:var(--title-green);opacity:1;animation:none;transform-origin:left;transform:scaleX(0);transition:none}

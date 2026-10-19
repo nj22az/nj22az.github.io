@@ -17,7 +17,8 @@ test('a few poles, one row to a street, and four wires a span',()=>{
 });
 
 test('no wire runs through a building, a roof or a tree',()=>{
- const meshes=[];world.group.traverse(o=>{if(o.isMesh&&!/Island distribution/.test(o.name))meshes.push(o);});
+ // Moving things are not obstacles: the ferry waits out of service, hidden, at the origin under Main Street.
+ const meshes=[],collect=o=>{if(o.userData.dynamicProp)return;if(o.isMesh&&!/Island distribution/.test(o.name))meshes.push(o);o.children.forEach(collect);};collect(world.group);
  const ray=new THREE.Raycaster(),u=new THREE.Vector3(),v=new THREE.Vector3();
  for(const [from,to,sag] of power.wires){
   const a=new THREE.Vector3(...from),b=new THREE.Vector3(...to),curve=sagCurve(a,b,sag*Math.min(1.6,a.distanceTo(b)/14));
