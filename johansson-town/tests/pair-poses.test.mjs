@@ -26,8 +26,10 @@ const NAMES=Object.keys(PAIR_POSES);
 /** A few millimetres: how far one body's drawn surface may go into the other's core. A mitten laid on a shirt that the core
  *  does not have (the core is the bare body) may press as far as the shirt's thickness. */
 const INTO=.006,PRESS=.016;
-/** Touching: a mitten's surface within this of the partner's bare core (the shirt between them). */
-const TOUCH=.032;
+/** Touching: a mitten's drawn surface within this of the partner's bare core (the shirt or a sleeve between them: the
+ *  drawn clothes stand up to a centimetre and a half off the core where hands land). The core, not the drawn surface:
+ *  the drawn chest is a coarse lathe whose nearest vertex can be two centimetres from a mitten that touches its face. */
+const TOUCH=.03;
 function seeded(seed=7){let s=seed;return ()=>{s=(s*16807)%2147483647;return s/2147483647;};}
 function body(who,rand){
  const avatar=buildAvatar(recipeFor(who),{shadows:false});avatar.wear('clothes');const holder=new THREE.Group();holder.add(avatar.root);
@@ -72,10 +74,11 @@ test('on every pair at the still: in nothing of the other body, the hands where 
   // the contact the pose promises
   const touch=(sf,side,c,what)=>{const d=clearance(hands(sf,side),c);if(d>TOUCH)wrong.push(`${tag}: ${what} is ${(d*1000).toFixed(0)} mm off`);};
   if(name==='Hug'){
-   touch(sA,'L',cB,`${a}’s left mitten on ${b}’s shoulder`);touch(sB,'R',cA,`${b}’s right mitten on ${a}’s back`);
-   // A's mitten on top of B's near shoulder (over the joint, not before it); B's on A's back, behind A's middle
+   touch(sA,'L',cB,`${a}’s left mitten over ${b}’s shoulder`);touch(sB,'R',cA,`${b}’s right mitten on ${a}’s back`);
+   // A's mitten hanging over B's near shoulder down its front (before the joint, about its height, on B's near side);
+   // B's on A's back, behind A's middle
    const mA=inFrame(B,mitten(A,'L')),mB=inFrame(A,mitten(B,'R'));
-   if(mA.z>.06||mA.y<B.m.shoulderY||mA.x>-B.m.shoulderX*.5)wrong.push(`${tag}: ${a}’s mitten is not on ${b}’s near shoulder (${mA.toArray().map(v=>v.toFixed(2))})`);
+   if(mA.z<0||mA.z>.2||Math.abs(mA.y-B.m.shoulderY)>.14*B.m.k||mA.x>-B.m.shoulderX*.5)wrong.push(`${tag}: ${a}’s mitten is not over ${b}’s near shoulder (${mA.toArray().map(v=>v.toFixed(2))})`);
    if(mB.z>-.02)wrong.push(`${tag}: ${b}’s mitten is not behind ${a} (z ${mB.z.toFixed(2)})`);
   }
   if(name==='Fight'||name==='Shove')for(const side of ['L','R'])touch(sA,side,cB,`${a}’s ${side} mitten on ${b}’s chest`);

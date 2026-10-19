@@ -25,7 +25,10 @@ const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
 /** A gap the two bodies keep from each other (metres): between the heads (with their hair), between the bodies, and the
  *  lips from a cheek; and how far clothes stand off the body's own volume (build.js bodyVolume is the bare torso), kept
  *  from the partner too. */
-export const PAIR_GAP=Object.freeze({heads:.012,bodies:.01,lips:.004,cloth:.012});
+export const PAIR_GAP=Object.freeze({heads:.012,bodies:.01,lips:.004,cloth:.012,
+ /** How far a mitten laid on the partner presses into the clothes: the reach solver's mitten envelope (animate.js TOUCH)
+  *  stands about a centimetre off the drawn mitten, so this much of it may go into the shirt for the drawn mitten to rest on it. */
+ press:.008});
 /** How far a straight arm puts the middle of its mitten from the shoulder, and the share of it a pose may use. */
 const reachOf=m=>m.upper+m.fore+m.hand*.55,USABLE=.95;
 const segment=(p,a,b,r)=>{const ab=_ab.subVectors(b,a),t=clamp(_ap.subVectors(p,a).dot(ab)/(ab.lengthSq()||1),0,1);return _ap.copy(a).addScaledVector(ab,t).distanceTo(p)-r;};
@@ -62,14 +65,14 @@ function bodyOf(avatar){
  const shell=new Float32Array(A*E);
  for(let e=0;e<E;e++)for(let a=0;a<A;a++){let r=0;for(let de=-1;de<=1;de++){const f=e+de;if(f<0||f>=E)continue;for(let da=-1;da<=1;da++)r=Math.max(r,R[f*A+(a+da+A)%A]);}shell[e*A+a]=r;}
  const least=Math.min(...S),vol=bodyVolume(avatar.recipe,m);
- // how far this body's clothes stand off its bare torso (the thickest of them over the torso below the shoulders, at
- // rest: a collar stands off the neck and a hem hangs free, neither is a thickness): kept from the partner as the body
- // itself is, within what a shirt can be
- let cloth=PAIR_GAP.cloth*m.k;const worn=new Set(['hips','spine','chest']),q=new THREE.Vector3();
+ // how far this body's clothes stand off its bare torso where hands land (the chest, the upper back, the flanks between
+ // the waist and the shoulders), at rest: nearly all of the drawn shirt's points, so a collar standing off the neck or a
+ // hem hanging free at the hips is not a thickness; kept from the partner as the body itself is, within what a shirt can be
+ const worn=new Set(['spine','chest']),q=new THREE.Vector3(),off=[];
  for(const mesh of meshes){const P=mesh.geometry.attributes.position,I=mesh.geometry.attributes.skinIndex;if(!I)continue;
-  for(let i=0;i<P.count;i+=3){const bone=mesh.skeleton.bones[I.getX(i)]?.name;if(!worn.has(bone))continue;q.fromBufferAttribute(P,i);
-   if(q.y<m.hipY-.02*m.k||q.y>m.shoulderY-.03*m.k||Math.abs(q.x)>m.width*.42)continue;
-   const d=vol.sdf(q);if(d>cloth&&d<.022*m.k)cloth=d;}}
+  for(let i=0;i<P.count;i+=2){const bone=mesh.skeleton.bones[I.getX(i)]?.name;if(!worn.has(bone))continue;q.fromBufferAttribute(P,i);
+   if(q.y<m.chestY-.08*m.k||q.y>m.shoulderY-.03*m.k||Math.abs(q.x)>m.width*.42)continue;off.push(vol.sdf(q));}}
+ off.sort((a,b)=>a-b);const cloth=clamp(off.length?off[Math.floor(off.length*.9)]:0,.006*m.k,.018*m.k);
  /** How far a point (in the head bone's frame) is outside the head and what it carries (metres, negative inside): by the
   *  shell's reach in its direction. */
  const gap=q=>{const x=q.x/S[0],y=(q.y-hc)/S[1],z=q.z/S[2];return (Math.hypot(x,y,z)-shell[bin(x,y,z)])*least;};
@@ -139,10 +142,13 @@ function field(body,pose,M,arms=null,heads=true,sleeves=true){
  // (a bent torso is its lower half carried by the hips and its upper half by the chest, not the whole of it by both: the
  // whole torso carried by the hips would stand where a chest that leans back has gone from)
  const half=.03*m.k;
+ // (the shirt's thickness over the torso; a sleeve or a trouser leg over a limb is thinner, and a shoe is its own skin)
+ const sleeve=.006*m.k;
  return p=>{let d=Infinity;for(const [Mi,y,lower] of frames){q.copy(p).applyMatrix4(Mi);q.y+=y;if(lower?q.y>m.chestY+half:q.y<m.chestY-half)continue;d=Math.min(d,vol.sdf(q));}
-  for(const [a,b,r] of limbs)d=Math.min(d,segment(p,a,b,r));
+  d-=cloth;for(const [a,b,r] of limbs)d=Math.min(d,segment(p,a,b,r)-sleeve);
   for(const Mi of feet){q.copy(p).applyMatrix4(Mi);d=Math.min(d,(Math.hypot((q.x-footAt[0])/foot[0],(q.y-footAt[1])/foot[1],(q.z-footAt[2])/foot[2])-1)*foot[1]);}
-  d-=cloth;if(!heads)return d;q.copy(p).applyMatrix4(head);return Math.min(d,body.gap(q));};
+  // (the head and its hair stand that much further off: a mitten may press into a shirt (PAIR_GAP.press), never into hair)
+  if(!heads)return d;q.copy(p).applyMatrix4(head);return Math.min(d,body.gap(q)+PAIR_GAP.press*m.k);};
 }
 /** The nearest the two heads (and what they carry) come to each other, A in its pose and B in its, B placed by M. */
 function headGap(A,poseA,B,poseB,M){
@@ -169,7 +175,7 @@ function bodyGap(A,poseA,B,poseB,M,armsA=null,armsB=null,heads=true){
 /** A point on the partner's torso surface (angle `a` round it: 0 its front, π its back, +π/2 its left; `t` up it), the
  *  partner's clothes and a mitten's thickness off it (a mitten laid on the shirt), in the partner's frame at rest, with the
  *  bone that carries it. */
-const onPartner=(body,a,t,hand,off=.95)=>{const p=body.vol.surf(a,t);return {bone:torsoBone(body.m,p.y),p:p.addScaledVector(body.vol.normal(p),hand*off+body.cloth).toArray()};};
+const onPartner=(body,a,t,hand,off=.95)=>{const p=body.vol.surf(a,t);return {bone:torsoBone(body.m,p.y),p:p.addScaledVector(body.vol.normal(p),hand*off+body.cloth-PAIR_GAP.press*body.m.k).toArray()};};
 /** The height t up the partner's torso at which a point stands `y` above the floor (0.08 to 0.96 of it). */
 const tAt=(body,y)=>clamp((y-body.m.hipY)/body.m.torso,.08,.96);
 
@@ -182,7 +188,7 @@ const tAt=(body,y)=>clamp((y-body.m.hipY)/body.m.torso,.08,.96);
  *  wound round backward or windmilled over the head (the right arm's terms: x forward negative, z out to the right negative). */
 const ARM_BOUNDS=Object.freeze([[-2.4,.6],[-1.2,1.2],[-1.6,1],[-2.3,0],[-1.2,1.2]]);
 const armSpec=(side,joints,head,target,keepOut,seed,{elbow=null,hand=[0,0,0],twist=.4,upper=true,touch=false}={})=>({pose:()=>joints,hair:true,head,only:side,
- [side]:{root:target,keepOut,seed,hand,upper,twist,touch,bounds:ARM_BOUNDS,...(elbow?{elbow:()=>elbow}:{})}});
+ [side]:{root:target,keepOut,seed,hand,upper,twist,touch,press:true,bounds:ARM_BOUNDS,...(elbow?{elbow:()=>elbow}:{})}});
 
 /** The stance of a fight: the left foot forward with the knee bent, the right braced back, both soles flat. */
 const stance=(front,knee,back,spread=.14)=>({thighL:[front,0,spread],kneeL:[knee,0,0],footL:[-(front+knee),0,-spread],thighR:[back,0,-spread],kneeR:[matchKnee(front,knee,back),0,0],footR:[-(back+matchKnee(front,knee,back)),0,spread]});
@@ -201,8 +207,10 @@ function fitHug(ctx){
  const {A,B}=ctx,yawB=-.55;
  // B turned toward A, A's chest turned toward B (so A's near shoulder is behind B's and the arm goes over it to B's back),
  // each head turned and leant a little toward the other (B's right side is toward A)
- const pA={hips:[0,0,0],spine:[.02,.1,0],chest:[.04,.18,0],neck:[.02,0,0],head:[.06,.1,-.14],thighL:[0,0,.06],thighR:[0,0,-.06],kneeL:[.03,0,0],kneeR:[.03,0,0]};
- const pB={hips:[0,0,0],spine:[.02,0,0],chest:[.04,0,0],neck:[.02,0,0],head:[.06,-.22,.14],thighL:[0,0,.06],thighR:[0,0,-.06],kneeL:[.03,0,0],kneeR:[.03,0,0]};
+ // (a much taller A leans down toward B from the chest: a grandmother to a child)
+ const down=clamp((A.m.shoulderY-B.m.shoulderY)/.3,0,1)*.25;
+ const pA={hips:[0,0,0],spine:[.02,.1,0],chest:[.04,.18,-down],neck:[.02,0,0],head:[.06,.1,-.12],thighL:[0,0,.06],thighR:[0,0,-.06],kneeL:[.03,0,0],kneeR:[.03,0,0]};
+ const pB={hips:[0,0,0],spine:[.02,0,0],chest:[.04,0,0],neck:[.02,0,0],head:[.06,-.22,.08],thighL:[0,0,.06],thighR:[0,0,-.06],kneeL:[.03,0,0],kneeR:[.03,0,0]};
  const dz=0;
  const dx=bisect(.2,1.2,v=>{const M=pairMatrix({dx:v,dz,yawB});return headGap(A,pA,B,pB,M)>=PAIR_GAP.heads&&bodyGap(A,pA,B,pB,M)>=PAIR_GAP.bodies;});
  const PM=pairMatrix({dx,dz,yawB}),PMi=PM.clone().invert(),FA=posed(A,pA),FB=posed(B,pB);
@@ -215,19 +223,23 @@ function fitHug(ctx){
    if(d<=reach)return {place,p};if(!best||d<best.d)best={place,p,d};}
   return best;};
  const inA=(F,place)=>F.at(place.bone,place.p).applyMatrix4(PM),inB=(F,place)=>F.at(place.bone,place.p);
- // A's left arm over B's near shoulder, the mitten resting on top of that shoulder (on the sleeve, a little behind the
- // joint): what an arm this long reaches over a shoulder this wide; a hand sent on down the back fell short of it
- const over={p:shBinA.clone().add(new THREE.Vector3(0,B.m.armR*1.25+.006*B.m.k+A.m.hand*.9,-.03*B.m.k))};
- const elbow=shA.clone().lerp(over.p,.5).add(new THREE.Vector3(0,.06*A.m.k,0));
+ // A's left arm over B's near shoulder, the forearm lying over it and the mitten hanging down its front, on the chest just
+ // below the collarbone: where a hand rests when an arm lies over someone's shoulders (seen in the renders: the solver
+ // found it when sent behind the shoulder, where a big head leaning this way overhangs everything on top). Within a short
+ // reach of A, and B's arm, solved first, is kept out of; the hand itself does not depend on it.
+ const frontB=new THREE.Vector3(Math.sin(yawB),0,Math.cos(yawB));   // B's front, in A's frame
+ const overOf=()=>shBinA.clone().addScaledVector(frontB,B.m.armR*1.1+B.cloth+A.m.hand*.85-PAIR_GAP.press*B.m.k).add(new THREE.Vector3(0,-.05*B.m.k,0));
  // B's right arm round A's waist: the mitten on A's back, from B's shoulder
  const under=backOf(B,A,FA,inB,shBinA,B.reach*.9,tAt(A,clamp(shB.y-.3*B.m.k,A.m.hipY+.08*A.m.k,A.m.chestY)),1);
  const keepA=field(B,pB,PM),keepB=field(A,pA,PMi);
- const A_near=armSpec('L',pA,pA.head,over.p.toArray(),keepA,[-1.3,.3,-.6,-1.1,0],{elbow:elbow.toArray()});
+ const A_near=armsB=>{const p=overOf(armsB),elbow=shA.clone().lerp(p,.5).add(new THREE.Vector3(0,.06*A.m.k,0));
+  return armSpec('L',pA,pA.head,p.toArray(),field(B,pB,PM,armsB),[-1.3,.3,-.6,-1.1,0],{elbow:elbow.toArray()});};
  const B_near=armSpec('R',pB,pB.head,under.p.applyMatrix4(PMi).toArray(),keepB,[-.6,.3,.5,-1.3,.3]);
  // the free hand up beside the cheek, fingers up (the peace sign of every photo), clear of the head and the hair
  // (a side's own place is not mirrored by the solver: the left hand's is written for the left cheek)
  const peace=(joints,side)=>({pose:()=>joints,hair:true,head:joints.head,only:side,[side]:{cover:true,head:[side==='L'?.9:-.9,-.3,.5,.04],seed:[-1.5,.7,-.7,-1.95,0],hand:[0,0,0]}});
- return {dx,dz,yawB,
+ // (B's arm first: A's hand rests on it)
+ return {dx,dz,yawB,order:'BA',
   A:{joints:pA,near:A_near,far:()=>peace(pA,'R'),keep:arms=>field(B,pB,PM,arms)},
   B:{joints:pB,near:B_near,far:()=>peace(pB,'L'),keep:arms=>field(A,pA,PMi,arms)}};
 }
@@ -295,7 +307,7 @@ function fitFacing(ctx,{grabT,wide,leanA,armsB,reel,handA,off=.95}){
    const targets=['L','R'].map(s=>{const k=s==='L'?1:-1,o=onPartner(B,-k*wide,t,A.m.hand,off);return {side:s,p:FB.at(o.bone,o.p).applyMatrix4(PM),shoulder:FA.pos('shoulder'+s)};});
    const fit=()=>{const keepA=field(B,pB,PM,armsB,true,false),specs=targets.map(o=>armSpec(o.side,pA,pA.head,o.p.toArray(),keepA,[-1.25,.15,-.05,-.45,0],{hand:handA,upper:true}));
     return {dx:0,dz,yawB,A:{joints:pA,near:specs[0],far:()=>specs[1],keep:()=>keepA},B:{joints:pB}};};
-   if(targets.every(o=>o.p.distanceTo(o.shoulder)<=A.reach*.88))return fit();
+   if(targets.every(o=>o.p.distanceTo(o.shoulder)<=A.reach*.82))return fit();
    last=fit;
   }
  }
@@ -315,7 +327,7 @@ export const PAIR_POSES=Object.freeze({
   life:(P,role)=>{P.add('chest',Math.sin(P.t*16)*(role==='A'?.012:.02)*P.w);}}),
  Shove:Object.freeze({label:'Shove',d:2.6,ramp:.5,faces:Object.freeze({A:'angry',B:'shock'}),
   use:'The push: both of A’s mittens flat on B’s chest; B reels back, a foot back to catch the fall, the arms up and the eyes wide.',
-  fit:ctx=>fitFacing(ctx,{grabT:.72,wide:.5,leanA:.22,handA:[-1.5,0,0],off:.78,reel:true,armsB:{L:[-.5,.2,-1.35,-.5,0],R:[-.5,.2,-1.35,-.5,0],handL:[0,0,.3],handR:[0,0,-.3]}}),life:()=>{}}),
+  fit:ctx=>fitFacing(ctx,{grabT:.66,wide:.32,leanA:.22,handA:[-1.5,0,0],off:.78,reel:true,armsB:{L:[-.5,.2,-1.35,-.5,0],R:[-.5,.2,-1.35,-.5,0],handL:[0,0,.3],handR:[0,0,-.3]}}),life:()=>{}}),
 });
 /** The two roles of every pair as moves of one body (animate.js GESTURES): `<pair>:A` and `<pair>:B`. */
 export const PAIR_ROLES=Object.freeze(Object.fromEntries(Object.entries(PAIR_POSES).flatMap(([name,p])=>['A','B'].map(role=>[name+':'+role,Object.freeze({pair:name,role,label:p.label+' ('+role+')',face:p.faces[role],d:p.d,ramp:p.ramp,
@@ -339,7 +351,11 @@ export function fitPair(name,avatarA,avatarB=avatarA,solve=null){
  const key=role=>`${name}:${role}:${(role==='A'?avatarB:avatarA).recipe?.name||'?'}|${(role==='A'?avatarB:avatarA).outfit||''}|${fit.dx.toFixed(3)}|${fit.dz.toFixed(3)}`;
  for(const role of ['A','B'])fit[role]={...fit[role],role,name,key:key(role),face:spec.faces[role],arms:null};
  if(solve){
-  const nearA=fit.A.near?solve.A(fit.A.key+':near',fit.A.near):{},nearB=fit.B.near?solve.B(fit.B.key+':near',{...fit.B.near,[fit.B.near.only]:{...fit.B.near[fit.B.near.only],keepOut:fit.B.keep?.(nearA)||fit.B.near[fit.B.near.only].keepOut}}):{};
+  // (the near arms in the pair's order: the second kept out of the first; a near spec may be a function of the first's arms)
+  const nearSpec=(F,arms)=>typeof F.near==='function'?F.near(arms):F.near&&arms&&F.keep?{...F.near,[F.near.only]:{...F.near[F.near.only],keepOut:F.keep(arms)}}:F.near;
+  let nearA={},nearB={};
+  if(fit.order==='BA'){if(fit.B.near)nearB=solve.B(fit.B.key+':near',nearSpec(fit.B,null));const sp=nearSpec(fit.A,nearB);if(sp)nearA=solve.A(fit.A.key+':near',sp);}
+  else{const sa=nearSpec(fit.A,null);if(sa)nearA=solve.A(fit.A.key+':near',sa);const sb=nearSpec(fit.B,nearA);if(sb)nearB=solve.B(fit.B.key+':near',sb);}
   const farA=fit.A.far?solve.A(fit.A.key+':far',fit.A.far(nearB,fit.A.keep?.(nearB))):{},farB=fit.B.far?solve.B(fit.B.key+':far',fit.B.far({...nearA,...farA},fit.B.keep?.({...nearA,...farA}))):{};
   fit.A.arms=fit.A.near||fit.A.far?{...nearA,...farA}:null;fit.B.arms=fit.B.near||fit.B.far?{...nearB,...farB}:null;
  }
@@ -348,7 +364,7 @@ export function fitPair(name,avatarA,avatarB=avatarA,solve=null){
 /** A role's arms solved on its own (no partner's arms known): what the animator does when a role is played by itself. */
 export function solveRole(F,solve){
  if(!F.near&&!F.far)return null;
- const near=F.near?solve(F.key+':near',F.near):{},far=F.far?solve(F.key+':far',F.far(null)):{};
+ const near=F.near?solve(F.key+':near',typeof F.near==='function'?F.near(null):F.near):{},far=F.far?solve(F.key+':far',F.far(null)):{};
  return {...near,...far};
 }
 /** The fit's placing of B as a matrix from B's holder to A's holder: the fit is in the bodies' own frames (the bones', facing

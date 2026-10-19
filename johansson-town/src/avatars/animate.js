@@ -450,7 +450,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
      if(armBoxes.length){const b=inBox(p,armBoxes);if(b>0)c+=((b+.004*k)/k)**2*2000;}
      if(keep)c+=outside(p,i<3?keepArm:m.armR*.9+.003*k);}
     if(boxes.length)for(const q of TOUCH){const b=inBox(_t.set(q[0]*m.hand,q[1]*m.hand,q[2]*m.hand).applyQuaternion(_q[3]).add(W),boxes);if(b>0)c+=((b+.004*k)/k)**2*2000;}
-    if(keep)for(const q of TOUCH)c+=outside(_t.set(q[0]*m.hand,q[1]*m.hand,q[2]*m.hand).applyQuaternion(_q[3]).add(W),.002*k);
+    // (press: a mitten laid on the other body's clothes may press this envelope, which stands a centimetre off the drawn
+    // mitten, that far into them, so the drawn mitten rests on the shirt and not a centimetre over it)
+    if(keep)for(const q of TOUCH)c+=outside(_t.set(q[0]*m.hand,q[1]*m.hand,q[2]*m.hand).applyQuaternion(_q[3]).add(W),(want.press?-.008:.002)*k);
     const rm=headR(M),nearM=hairAt(M)+m.hand*.85/m.Rh;if(rm<nearM)c+=(nearM-rm)**2*300;
     // (cover: the whole mitten outside the head and its hair, not only its middle, by `cover` metres (6 mm unless said): a
     // mitten laid on the face or the crown)
