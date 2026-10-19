@@ -1,5 +1,7 @@
 # Kitano-jima: the hamlet, the villagers, and the ferry's crew
 
+> **History (19 October 2026).** The cast, households and crew described below are those of 12–18 October 2026. The consolidation ([CAST-CONSOLIDATION.md](CAST-CONSOLIDATION.md); the report [CAST-CONSOLIDATION-REPORT.md](CAST-CONSOLIDATION-REPORT.md)) retired Grandmother Chinen and removed the Chinen house (kitano-3), retired Reiko (Nhung prints the paper), made Nils the chief engineer rather than the mayor (`mayor-home` stays as a site id only), and gave the Kitano pier its named line hand, Kai, in the Shiroma house (kitano-2). The island's terrain, airport, pier and facilities are as described.
+
 The creator, 2026-10-12: *"How about the staff and passengers I mean the crew, can you build in that some villagers maybe
 live at the tropical island, move their home there, I think Johansson should live on the tropical island."*
 
