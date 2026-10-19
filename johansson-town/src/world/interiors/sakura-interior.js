@@ -75,7 +75,7 @@ function dressBackbar(room,anchor,action,materials){
  const look=SAKURA_BACKBAR.find(p=>p.id==='osusume');
  if(look)anchor([look.x-.15,1.2,look.z],'Buy from the till counter',()=>action('sakura-counter-goods'));
 }
-export function buildSakuraInterior({room,reg,action,exit,officeExit=exit}){
+export function buildSakuraInterior({room,reg,action,exit}){
  const layout=sakuraStoreys(SAKURA_LAYOUT),unitPositions=new Map(),unitApproaches=new Map(),batches=[],materials=shopProductMaterials(),dummy=new THREE.Object3D(),zero=new THREE.Matrix4().makeScale(0,0,0);
  const refrigerator=createShopRefrigerator(room,reg);
  const advertising=createStoreAdvertising({room,reg,action,posterSpecs:[]});
@@ -163,7 +163,7 @@ export function buildSakuraInterior({room,reg,action,exit,officeExit=exit}){
  buildSpecialsBoard(room,{anchor,action});
  buildSakuraBand(room);
  const life=buildSakuraLife(room,{anchor,action});
- const upstairs=buildSakuraStoreys({room,reg,action,exit:officeExit});layout.colliders=[...layout.colliders,...upstairs.colliders];
+ const upstairs=buildSakuraStoreys({room,reg,action});layout.colliders=[...layout.colliders,...upstairs.colliders];
  anchor([4.50,1.2,.6],'Ring service bell',()=>action('resident','Thuan'));
  dressBackbar(room,anchor,action,materials);
  anchor([4.5,1.2,2.35],'Browse mail-order catalogue',()=>action('store-catalogue'));

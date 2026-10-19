@@ -3,7 +3,7 @@ import * as THREE from '../../../vendor/three.module.js';
 export const SAKURA_OFFICE=Object.freeze({width:12.8,depth:11,floor:4.01,front:4.55,harbourX:6.4,
  desk:[4.8,0,3.2],deskStand:[3.85,0,3.2],townWindow:[0,0,3.6],harbourWindow:[5.9,0,4.05]});
 /** Clear glazing uses the existing street renderer: both outlooks show the live town, with no backdrop texture. */
-export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},exit,internal=false}){
+export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},internal=false}){
  const O=SAKURA_OFFICE,hw=O.width/2,back=-O.depth/2,front=O.front,H=2.8,mats=new Map();
  const mat=c=>{if(!mats.has(c))mats.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.83}));return mats.get(c);};
  const box=(size,pos,c,name,solid=false)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.position.set(...pos);m.name=name||'';room.add(m);if(solid)collider(pos[0],pos[2],size[0],size[2],pos[1]+size[1]/2);return m;};
@@ -49,7 +49,8 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},exit,inte
  anchor([-2,1,kitchenBack+1.05],'Make office tea',()=>action('read','Sakura kitchenette','Fill the kettle at the sink. Cups, tea and the staff lunch boxes stay in the cupboards and small fridge.'));
  anchor([0,1.2,3.55],'Look over the town',()=>action('inspect','Town outlook','Main Street and the town are visible through the east glazing.'));
  anchor([5.9,1.2,4.05],'Look over the harbour',()=>action('inspect','Harbour outlook','The south window looks towards the port, with no tall storage across the view.'));
- anchor([0,1.1,back+.35],internal?'Exit via Sakura’s outside stair':'Return to Sakura’s outside stair',exit);
+ // The rear door is the fire door onto the escape down the back (okinawa/old-town.js SAKURA_BACK.fireEscape), not a way in or out.
+ anchor([0,1.1,back+.35],'Look at the fire door',()=>action('inspect','Fire door','The fire door onto the escape ladder down the back of the shop. It is for a fire, not for coming and going: it opens only from inside and rings a bell in the shop when it does. The way out is down the stair and through the shop.'));
  // Steady fluorescent fittings; the shared shop fill lights the internal office too.
  const tube=new THREE.MeshBasicMaterial({color:0xfff1ce,toneMapped:false});
  tube.userData.keepPhysical=true;tube.userData.keepPhysicalStrict=true;
@@ -58,5 +59,5 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},exit,inte
   const light=new THREE.Mesh(new THREE.BoxGeometry(1.2,.035,.12),tube);light.position.set(x,2.59,z);light.name='Office fluorescent diffuser';room.add(light);
  }
  if(!internal){const fill=new THREE.HemisphereLight(0xffefd7,0x7e8071,1.2);fill.name='Sakura office steady indoor fill';room.add(fill);}
- return {bounds:{minX:-hw+.1,maxX:hw-.1,minZ:back+.1,maxZ:front-.1},spawn:[0,0,back+.8],exit:[0,1.1,back+.35],office:true};
+ return {bounds:{minX:-hw+.1,maxX:hw-.1,minZ:back+.1,maxZ:front-.1},spawn:[0,0,back+.8],office:true};
 }
