@@ -14,7 +14,8 @@ import {standingHitsRect,townBoundsBlocked} from '../physics.js';
 
 installDOM();globalThis.self=globalThis;
 const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),mobile:true,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
-const surface=createWalkSurface({minX:-45,maxX:50,minZ:-72,maxZ:95,base:planHeight});surface.add(world.group);setWalkSurface(surface);
+// The surface reaches the terminal quay (z −73.4), where the commuters land off the boat (social.js transitStop).
+const surface=createWalkSurface({minX:-45,maxX:50,minZ:-78,maxZ:95,base:planHeight});surface.add(world.group);setWalkSurface(surface);
 const grid=createColliderGrid(world.colliders),blocked=(x,z,r=.3)=>townBoundsBlocked(x,z,r)||grid.some(x,z,r,c=>standingHitsRect(x,z,r,groundHeight(x,z),c));
 for(const spec of NEIGHBOURS)test(spec.name+' completes authored street journeys, sleeps and leaves next morning with town hidden',()=>{
  const parent=new THREE.Group();parent.visible=false;

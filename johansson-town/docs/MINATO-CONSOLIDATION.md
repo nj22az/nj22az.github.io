@@ -1,5 +1,7 @@
 # Minato consolidation and home directions
 
+> **History (19 October 2026).** The homes table below is the 17 October walkthrough's. The consolidation ([CAST-CONSOLIDATION.md](CAST-CONSOLIDATION.md); the report [CAST-CONSOLIDATION-REPORT.md](CAST-CONSOLIDATION-REPORT.md)) has since retired ten of the residents named here and removed their houses; the 14 households of today are in `src/people/roster.js` HOUSEHOLDS. The directions and the public-space changes stand.
+
 Implemented following the requested MCP walkthrough of Johansson World on 17 October 2026. The changes address blocked-looking open space, too many overlapping garden and shop destinations, the approach to Umi-no-yu, and uncertainty about villagers' homes.
 
 ## Changes in order

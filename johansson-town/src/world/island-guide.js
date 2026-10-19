@@ -41,7 +41,7 @@ export const ISLAND_PLACES=Object.freeze([
   says:'Three kiosks on the plaza: Departure Coffee for a ¥100 coffee, the Noodle Kitchen for a ¥280 lunch, and Island Crafts, with woven souvenirs at ¥400.',
   checks:[['src/world/airport-district-plan.js',"Departure Coffee',item:'Departure coffee',price:100"],['src/world/airport-district-plan.js',"Noodle Kitchen',item:'Airport noodle lunch',price:280"],['src/world/airport-district-plan.js',"Island Crafts',item:'Woven island souvenir',price:400"]]},
  {id:'kitano-hamlet',name:'Kitano hamlet',island:'kitano',kind:'village',
-  says:'Your own lane, Mayor, up from the landing: you know your house better than I do. Across from it the Shiroma house is Kai’s, the line hand’s; he rents it from the Shiromas in Naha and is on the pier for every call.',
+  says:'Your own lane, Chief, up from the landing: you know your house better than I do. Across from it the Shiroma house is Kai’s, the line hand’s; he rents it from the Shiromas in Naha and is on the pier for every call.',
   checks:[['src/world/kitano-hamlet.js','Go home'],['src/world/kitano-hamlet.js','let it to Kai, the line hand'],['src/people/cast.js','rents the Shiroma house across the lane from the pier']]},
 
  // Johansson Island, beyond Main Street.

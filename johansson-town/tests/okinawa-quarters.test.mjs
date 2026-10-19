@@ -113,8 +113,13 @@ test('the neighbours can be walked up to, and the walkers keep to the ground',as
   }
  }
  assert.equal(new Set(NEIGHBOURS.map(n=>n.name)).size,NEIGHBOURS.length,'Two neighbours share a name');
- const higa=NEIGHBOURS.find(n=>n.name==='Grandmother Higa');
- assert.ok(neighbourAwake(higa,9*60)&&!neighbourAwake(higa,23*60),'Grandmother Higa keeps the wrong hours');
+ // Every neighbour keeps the cast's canonical day (neighbours.js builds NEIGHBOURS from cast.js): Grandmother Higa is at
+ // the liquor counter at nine and asleep at home at eleven at night; `hours` no longer hides a canonical neighbour.
+ const {canonicalDay}=await import('../src/people/canonical-day.js');
+ const higa=NEIGHBOURS.find(n=>n.name==='Grandmother Higa');assert.ok(higa.canonical);
+ assert.ok(neighbourAwake(higa,9*60),'Grandmother Higa is about at nine');
+ assert.equal(canonicalDay('Grandmother Higa',9*60).place,'higa-liquor','Grandmother Higa keeps the liquor counter at nine');
+ const night=canonicalDay('Grandmother Higa',23*60);assert.equal(night.place,'home');assert.equal(night.rest,'sleep','Grandmother Higa is asleep at home at eleven');
 });
 
 test('Sakura’s shutter follows the rota: up through the day, down once the shop is shut (sakura-rota.js)',async()=>{

@@ -51,7 +51,7 @@ export function buildIzakayaInteractive(room,{anchor,action,collider}){
    const n=new THREE.Vector3(Math.sin(yaw),0,Math.cos(yaw)),[title,text]=POSTER_LINES[cell];
    anchor([x+n.x*.45,Math.min(1.75,y),z+n.z*.45],'Read the '+title.split(' · ')[0]+' poster',()=>action('inspect',title,text));
   }
-  anchor([2.25,.8,5.3],'Pat the tanuki',()=>action('inspect','The tanuki','A potbellied tanuki in a straw hat, a sake flask in one paw and an unpaid bill in the other. Thao pats his belly on the way in every evening, for trade. So does the Barfly, for luck.'));
+  anchor([2.25,.8,5.3],'Pat the tanuki',()=>action('inspect','The tanuki','A potbellied tanuki in a straw hat, a sake flask in one paw and an unpaid bill in the other. Thao pats his belly on the way in every evening, for trade. So does Mr Fujita, once he has signed off, for luck.'));
  }
  return {
   /** Shows the player's own bottle, tagged, once they keep one at the counter. */

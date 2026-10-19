@@ -3,7 +3,7 @@
  * winning where they differ). One identity record per person: 21 core and 5 supporting identities, the ten retired
  * ones and where their purpose went, the 14 core households, the supporting quarters, the eight ship posts and the
  * shore roles. This is what the phases switch the game over to (the brief, "How it is run": 2 the ship, 3 the
- * households, 4 the removals, done, 5 the stories and directories). The game reads it for name resolution (cast.js
+ * households, 4 the removals, 5 the stories and directories, all done). The game reads it for name resolution (cast.js
  * castMember, renamed.js formerNames, avatars/cast.js recipeFor) and the save migration (save.js migrateCast); from
  * phase 2 the ferry's manning (people/ferry-crew.js) reads the ship posts and shore roles from it, so who holds each
  * post is decided here and only here. Who walks, works and sleeps where is still cast.js.
@@ -216,7 +216,7 @@ export const namesOf=key=>{const p=identityOf(key);return p?[p.name,...(p.fullNa
 
 /** The roster as a document: docs/cast-roster.json mirrors it (tools/write-cast-roster.mjs; tests/roster.test.mjs keeps them equal). */
 export const rosterDocument=()=>({
- status:'phase 4 of docs/CAST-CONSOLIDATION.md: the ten retired identities have no body, household, shift or nameplate; 4, 5 and 6 Kitahama, the Kinjō and Ōshiro houses, 1 Front-Row Yard, the post-office shop-house, the Rainflower pavilion and the Chinen house on Kitano-jima are removed and their streets compacted; the stories, directories, maps and docs follow in phase 5',
+ status:'phase 5 of docs/CAST-CONSOLIDATION.md, the last: the stories, the guide, the directories, the Studio lists and the docs name exactly these 26 (the ten retired keep only drawings for history, avatars/cast.js RETIRED_RECIPES); the report is docs/CAST-CONSOLIDATION-REPORT.md',
  canonDate:'2026-10-19',source:'docs/CAST-CONSOLIDATION.md',counts:{core:CORE.length,supporting:SUPPORTING.length,retired:RETIRED.length,households:HOUSEHOLDS.length},
  core:CORE,supporting:SUPPORTING,retired:RETIRED,households:HOUSEHOLDS,quarters:QUARTERS,shipPosts:SHIP_POSTS,shipPostAliases:SHIP_POST_ALIASES,shoreRoles:SHORE_ROLES,retiredHomes:RETIRED_HOMES,
 });

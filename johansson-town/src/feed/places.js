@@ -6,64 +6,79 @@ import {HARBOUR_POND,HARBOUR_PARK_SEATS} from '../world/harbour-park-plan.js';
  * audit hook enters, or a street camera), and the nouns a story can pick up there.
  *
  * kind: shop, food, bar, work, bath, civic, outdoor. `regulars` are the residents who belong
- * there; anyone else is a visitor (nobody the roster retired is a regular anywhere: the storyteller leaves them out of
- * the catalogue too, storyteller.js). `things` are objects actually in the place, `doing` are
+ * there, by the live cast's own days (people/cast.js CAST, phase 5 of docs/CAST-CONSOLIDATION.md: every one of the 26
+ * is a regular somewhere, the ship's people aboard her, the port clerk at her window, the officer at his station);
+ * anyone else is a visitor (nobody the roster retired is a regular anywhere: the storyteller leaves them out of
+ * the catalogue too, storyteller.js). tests/feed-storyteller.test.mjs holds the names to the cast. `things` are objects actually in the place, `doing` are
  * verbs phrases that make sense there ("{who} was {doing}"). `activity` is what people do
  * there in a comic: the drinks they may hold (izakaya-serving-visuals.js kinds), how likely
- * they are to (chance) and how likely to be sitting (sit).
+ * they are to (chance) and how likely to be sitting (sit). `captured:false` marks a place whose backdrops have not been
+ * photographed yet: it is wired (its regulars, things and shot), but the storyteller does not set a story there until
+ * `node tools/render-feed-backdrops.mjs <id>` has run (Chromium with a GPU, or swiftshader given the minutes the first
+ * frame takes), and the flag is removed with the pictures committed.
  */
 export const FEED_PLACES=Object.freeze([
- {id:'sakura',name:'Sakura Shōten',short:'Sakura',kind:'shop',regulars:['Thuan'],
+ {id:'sakura',name:'Sakura Shōten',short:'Sakura',kind:'shop',regulars:['Thuan','Nhung'],
   things:['the drinks fridge','the sale poster by the door','the onigiri shelf','the potted palm','the till','the price gun','the ATM','the biscuit aisle','the staff roster'],
   doing:['restocking the biscuit aisle','taping up the sale poster','arguing with the price gun','counting onigiri','dusting the potted palm','reading the staff roster'],
   activity:{hold:['can','coffee'],chance:.4,sit:0},
   shot:{room:'market'}},
- {id:'sakura-street',name:'outside Sakura Shōten',short:'Sakura',kind:'outdoor',regulars:['Thuan','Vy'],
+ {id:'sakura-street',name:'outside Sakura Shōten',short:'Sakura',kind:'outdoor',regulars:['Thuan','Vy','Mrs Nakamura'],
   things:['the parcel sign','the vending machine','the bus stop sign','the shop awning','the bicycle rack'],
   doing:['waiting for the bus','carrying out a delivery crate','reading the shop window','sheltering under the awning'],
   activity:{hold:['can','coffee'],chance:.7,sit:0},
   shot:{at:[-1,-24],camera:{pos:[3.5,1.7,-21.5],at:[-5.5,2,-27.3]}}},
- {id:'minato',name:'Minato Izakaya',short:'Minato',kind:'bar',regulars:['Thao','Chin','Mr Fujita'],
+ {id:'minato',name:'Minato Izakaya',short:'Minato',kind:'bar',regulars:['Thao','Chin','Mr Fujita','Mac','Dr Kakazu','Ren'],
   things:['the bottle keep','the karaoke machine','the pink telephone','the yakitori grill','the red stools','the oden pot','the lantern'],
   doing:['queueing for karaoke','tidying the bottle keep','fanning the yakitori grill','sharing a plate of edamame','writing a name on a bottle tag'],
   activity:{hold:['draft','draft','bottle','sake','awamori'],chance:.95,sit:.65},
   shot:{room:'izakaya',time:1200}},
- {id:'sato-ramen',name:'Sato Ramen',short:'Sato Ramen',kind:'food',regulars:['Mrs Sato'],
+ {id:'sato-ramen',name:'Sato Ramen',short:'Sato Ramen',kind:'food',regulars:['Mrs Sato','Harbour master','Officer Mori','Dr Kakazu','Ms Uezu','Ms Ganaha'],
   things:['the ticket machine','the stock pot','the red stools','the noodle basket','the chopstick box','the window table for two'],
   doing:['feeding the ticket machine','waiting for a bowl of shoyu ramen','watching the stock pot','slurping noodles','mending something at the window table'],
   activity:{hold:['coffee','can'],chance:.5,sit:.8},
   shot:{room:'ramen'}},
- {id:'books',name:'Front-Row Books',short:'Front-Row Books',kind:'shop',regulars:['Nhung'],
+ {id:'books',name:'Front-Row Books',short:'Front-Row Books',kind:'shop',regulars:['Nhung','Officer Mori'],
   things:['the window seat','the town paper','the poetry shelf','a paper bookmark slip','the printing bench','Tama the cat'],
   doing:['reading on the window seat','proofreading the town paper','tucking slips into books','negotiating with Tama the cat'],
   activity:{hold:['coffee'],chance:.35,sit:0},
   shot:{room:'frontrow'}},
- {id:'onsen',name:'Umi-no-yu bathhouse',short:'Umi-no-yu',kind:'bath',regulars:['Miss Higa','Grandmother Higa'],
+ {id:'onsen',name:'Umi-no-yu bathhouse',short:'Umi-no-yu',kind:'bath',regulars:['Miss Higa','Grandmother Higa','Tetsuo','Mr Fujita'],
   things:['the bandai counter','the coin tray','the milk fridge','the noren curtain','the women’s crimson noren','the men’s indigo noren','the price board','the breaker board behind the bandai','the breaker board','the men’s mirror','the comb sterilizer','the swimwear-zone sign over the rock-bath door','a stack of rental towels','the towel rail by the bath door','the three hair dryers','the massage chair','the straw jar on the milk fridge','the uchiwa rack','the giant Hārī fan','Miss Higa’s rubber plant','Miss Higa’s account book','Miss Higa’s noren pole','the box of extension cords under the bandai','the massage chair’s coin timer','the andon on the bandai','Miss Higa’s electric pot on the bandai','the supply breaker beside the board','the women’s fluorescent tube','the porch lamp','the stone lantern by the rock bath','the harbour lights across the water','the steam over the rock bath'],
   doing:['paying at the bandai','choosing a bottle of milk','reading the price board','waiting for the bath to cool','resetting a tripped breaker','putting the supply breaker back up in the dark','making tea at the bandai','folding rental towels','drying their hair at the mirror','combing their hair at the men’s mirror','hanging a towel on the rail','fanning themselves with an uchiwa'],
   activity:{hold:['bottle','can'],chance:.6,sit:0},
   shot:{room:'onsen'}},
- {id:'town-hall',name:'the town office',short:'the town hall',kind:'civic',regulars:['Dr Kakazu','Officer Mori'],
+ {id:'town-hall',name:'the town office',short:'the town hall',kind:'civic',regulars:['Dr Kakazu'],
   things:['the island map','the Merry Moose statue','the flag','the filing cabinet','the visitors’ sofa'],
   doing:['studying the island map','filing a complaint','waiting on the visitors’ sofa','saluting the Merry Moose'],
   activity:{hold:['coffee'],chance:.5,sit:.35},
   shot:{room:'mayor-office'}},
- {id:'harbour',name:'the harbour',short:'the harbour',kind:'outdoor',regulars:['Harbour master','Johansson','Riku'],
+ {id:'police-station',name:'Minato Police Station',short:'the police station',kind:'civic',regulars:['Officer Mori'],captured:false,
+  things:['the counter bell','the incident log','the lost-property shelf','the lobby notice board','the long waiting bench','the town map on the wall','the holding-room door','the duty roster','the desk telephone','the thermos of barley tea','the typhoon cupboard'],
+  doing:['ringing the bell at the counter','reading the lobby notice board','looking through the lost property','waiting on the long bench','studying the town map','asking the way to the harbour','handing in a blue umbrella','reading the duty roster'],
+  activity:{hold:['coffee'],chance:.35,sit:.4},
+  shot:{room:'koban',time:1020}},
+ {id:'port-hall',name:'the Port Terminal',short:'the terminal',kind:'civic',regulars:['Ms Ganaha','Harbour master','Thuan','Aya'],captured:false,
+  things:['the ticket window','the departures board','the parcel shelf','the map of the strait','the punch-card shelf','the hall bench','the vending machine','the date stamp','the brass parcel scale','the glass doors'],
+  doing:['buying a ticket for the half past two','reading the departures board','collecting a parcel from the shelf','studying the map of the strait','waiting on the hall bench for the last boat','asking when the next boat is','posting a letter before half past four'],
+  activity:{hold:['can','coffee'],chance:.5,sit:.45},
+  shot:{room:'ferry-terminal',time:840}},
+ {id:'harbour',name:'the harbour',short:'the harbour',kind:'outdoor',regulars:['Harbour master','Johansson','Riku','Kōji','Ms Uezu'],
   things:['the ferry gangway','a bollard','the quay lamp','a coil of rope','the tide board','a crate of gurukun'],
   doing:['watching the ferry come in','checking the tide board','coiling rope','counting crates','waiting for the gangway'],
   activity:{hold:['can','coffee'],chance:.5,sit:0},
   shot:{at:[3,-48],camera:{pos:[6,1.8,-47],at:[-4,1,-58]},time:960}},
- {id:'pier',name:'the outer pier',short:'the pier',kind:'outdoor',regulars:['Harbour master','Officer Mori'],
+ {id:'pier',name:'the outer pier',short:'the pier',kind:'outdoor',regulars:['Harbour master','Officer Mori','Kōji','Mr Fujita'],
   things:['the end of the pier','a fishing rod','the warning light','a bucket of bait','the sea'],
   doing:['fishing off the pier','watching the sunset','reading the night warning sign','feeding a gull'],
   activity:{hold:['can','draft'],chance:.6,sit:0},
   shot:{at:[-.6,-83.2],camera:{pos:[-1.2,1.8,-80.2],at:[-1.6,1,-94.2]},time:1080}},
- {id:'ferry',name:'the Minato Maru',short:'the ferry',kind:'work',regulars:['Mr Fujita','Harbour master'],
+ {id:'ferry',name:'the Minato Maru',short:'the ferry',kind:'work',regulars:['Mr Fujita','Johansson','Chin','Mac','Ryo','Ren','Aya','Jun','Ms Uezu'],
   things:['the gangway','the bow ramp','the bow line on its bollard','the wheelhouse wing','the orange life floats','the funnel','the name on her bow','the draft marks','the stern capstan','the car lashings'],
   doing:['waiting for the gangway','watching the ramp come down','backing a kei truck aboard','reading the name on her bow','reading the draft marks','coiling the bow line','waving from the wheelhouse wing','counting the cars aboard'],
   activity:{hold:['can','coffee'],chance:.5,sit:0},
   shot:{at:[-2.6,-60.5],camera:{pos:[-1,1.7,-55.2],at:[-7.6,2.2,-64.5]},time:900}},
- {id:'park',name:'Harbour Park',short:'the park',kind:'outdoor',regulars:['Vy','Grandmother Higa'],
+ {id:'park',name:'Harbour Park',short:'the park',kind:'outdoor',regulars:['Vy','Grandmother Higa','Mai','Riku','Thao'],
   things:['the park bench','the raised walk','the banyan tree','a lost umbrella','the drinking fountain'],
   doing:['playing jan-ken-pon','doing homework on the bench','walking the raised path','resting under the banyan tree'],
   activity:{hold:['can','coffee'],chance:.6,sit:.55},
@@ -73,7 +88,7 @@ export const FEED_PLACES=Object.freeze([
   doing:['watching the pond','walking the gravel circuit','resting on the pond bench','looking toward the bathhouse'],
   activity:{hold:['coffee'],chance:.3,sit:0},
   shot:{at:HARBOUR_PARK_SEATS[1].stand,camera:{pos:[20.3,2.4,-38],at:[HARBOUR_POND.x,1,HARBOUR_POND.z]}}},
- {id:'coral-bay',name:'Coral Bay on Kitano-jima',short:'Coral Bay',kind:'outdoor',regulars:['Thuan'],
+ {id:'coral-bay',name:'Coral Bay on Kitano-jima',short:'Coral Bay',kind:'outdoor',regulars:['Thuan','Johansson','Kai'],
   things:['the beach bar','a rented parasol','the leaning coconut palms','the turquoise shallows','a bottle of Umineko on ice','the Coral Bay notice'],
   doing:['dozing under a rented parasol','paddling in the shallows','queueing at the beach bar','reading on the bench','watching the commuter plane climb away','burying someone’s feet in the sand'],
   activity:{hold:['can','bottle'],chance:.7,sit:.35},
@@ -81,3 +96,5 @@ export const FEED_PLACES=Object.freeze([
 
 ]);
 export const feedPlace=id=>FEED_PLACES.find(p=>p.id===id);
+/** The places a story can be set in: those with their backdrops photographed. */
+export const STORY_PLACES=Object.freeze(FEED_PLACES.filter(p=>p.captured!==false));
