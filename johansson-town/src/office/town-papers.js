@@ -58,20 +58,6 @@ export const TOWN_PAPERS=[
     "source": "notice:Minato–Kitano-jima ferry"
   },
   {
-    "type": "Notice",
-    "title": "Rainflower Florist has closed",
-    "organisation": "Town Services",
-    "text": "Mrs Kinjō has retired. The town’s flowers and decorations come from Sakura Shōten now: the bouquets are in the buckets by Thuan’s door, ¥250, in the shop’s hours. The pavilion stays until the council takes it down.",
-    "source": "notice:Rainflower Florist has closed"
-  },
-  {
-    "type": "Notice",
-    "title": "Rainflower Florist",
-    "organisation": "Town Services",
-    "text": "The buckets are empty and rinsed, the wreath hooks bare. Mrs Kinjō’s counter faced the neighbourhood plaza, east of Main Street, until she retired; Sakura supplies the izakaya, the town office, the school and Umi-no-yu with their flowers and decorations now.",
-    "source": "notice:Rainflower Florist"
-  },
-  {
     "type": "Flyer",
     "title": "Forest road notice",
     "organisation": "Town Services",
@@ -229,7 +215,7 @@ export const TOWN_PAPERS=[
     "type": "Flyer",
     "title": "Kitahama notice board",
     "organisation": "Town Services",
-    "text": "Rubbish: burnable on Tuesdays and Fridays, cans and bottles on Wednesdays, out by eight and under the nets, because of the crows.\n\nThe cane cut is on Monday the 12th of January from seven. Everybody on the lane, lunch at Sato Ramen.\n\nTo let: numbers 7, 9, 10, 11 and 12. Ask at the town hall.\n\nTyphoon season: tie down your water tanks, fill the bath, shutters up by Friday. Mr Shimabukuro will check the lane lights.\n\nFound: a child's blue sandal, left foot. Ask at number 3.",
+    "text": "Rubbish: burnable on Tuesdays and Fridays, cans and bottles on Wednesdays, out by eight and under the nets, because of the crows.\n\nThe cane cut is on Monday the 12th of January from seven. Everybody on the lane, lunch at Sato Ramen.\n\nTyphoon season: tie down your water tanks, fill the bath, shutters up by Friday. Tetsuo will check the lane lights.\n\nFound: a child's blue sandal, left foot. Ask at number 3.",
     "source": "notice:Kitahama notice board"
   },
   {
