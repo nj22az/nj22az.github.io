@@ -4,12 +4,11 @@ import {airportWorld} from '../world/airport-ground.js';
  * The walking residents who live in Kitano hamlet on Kitano-jima (batch 7b; docs/KITANO-JIMA.md §3), by plot, and the
  * home record their profiles read (residents.js), the way Kitahama's residents have theirs (kitahama-layout.js). They
  * cannot walk there from Minato: in town they are ferry commuters, away "at home on Kitano-jima" between the boats.
- * Thuan is Johansson's wife and lives with him at kitano-1 at the weekend; on weekdays she stays at 1 Kitahama, so
- * her weekday record stays Kitahama's (batch 7b-3 makes the weekend).
+ * Thuan is Johansson's wife and lives with him at kitano-1 and nowhere else (docs/CAST-CONSOLIDATION.md addendum 4,
+ * phase 3): the 08:30 boat in, the 22:00 boat home, and the weekend on the island while Nhung keeps the shop.
  */
-// Nobody from the town's walking cast lives here now (the creator, 2026-10-12: "Only Johansson and Thuan live on the hamlet, the
-// others live in the port"); Tetsuo's mother, a neighbour (people/neighbours.js), keeps the old Chinen house, kitano-3.
-export const KITANO_RESIDENT_HOMES=Object.freeze({});
+// Only Johansson and Thuan live on the hamlet (the creator, 2026-10-12), and only Thuan is a walking resident of the town.
+export const KITANO_RESIDENT_HOMES=Object.freeze({'kitano-1':Object.freeze(['Thuan'])});
 export const KITANO_RESIDENT_NAMES=Object.freeze(Object.values(KITANO_RESIDENT_HOMES).flat());
 export const KITANO_ADDRESS='Kitano hamlet, Kitano-jima';
 export function kitanoHomeFor(name){

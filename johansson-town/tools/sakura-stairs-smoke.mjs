@@ -10,7 +10,7 @@ try{
  const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:3,isMobile:true,hasTouch:true,serviceWorkers:'block',userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1'});
  page.setDefaultTimeout(120000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('http://127.0.0.1:8765/johansson-town/?audit',{waitUntil:'domcontentloaded'});await page.locator('#enter').click();
- await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_LOADING__.snapshot().completed===8);
+ await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_LOADING__.snapshot().completed===window.__JOHANSSON_LOADING__.snapshot().total);
  await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__;a.frozen=true;a.renderFrozen=true;await a.enter('market');a.setTime(720);});
  const H=4.01,route=[[3.8,0,-3.3],[3.8,0,-4.7],[2.95,0,-4.7],[2.95,0,-5.3],[-1.2,0,-5.3],[-1.2,0,-4.6],[-1.8,0,-4.6],[-4.5,H/2,-4.6],[-5.05,H/2,-4.6],[-5.05,H/2,-6.15],[-4.5,H/2,-6.15],[-1.8,H,-6.15],[-1.2,H,-6.15],[-1.2,H,-3.95],[-.8,H,-2.5]];
  const walk=async(points,minutes)=>{

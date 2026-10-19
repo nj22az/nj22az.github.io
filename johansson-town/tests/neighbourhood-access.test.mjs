@@ -9,7 +9,8 @@ import {createNavigation} from '../src/people/navmesh.js';
 import {KITAHAMA,plotGate} from '../src/world/kitahama-layout.js';
 import {gardenPoint,PARK_ACCESS,GARDEN_BENCHES_AUTHOR} from '../src/world/garden-layout.js';
 import {SHOPPING_LANE} from '../src/world/shopping-lane-plan.js';
-import {HARBOUR_FLORIST,NAKAMURA_DESSERTS,HARBOUR_PARK_SEATS,inHarbourPark} from '../src/world/harbour-park-plan.js';
+import {FORMER_FLORIST,NAKAMURA_DESSERTS,HARBOUR_PARK_SEATS} from '../src/world/harbour-park-plan.js';
+import {SAKURA_FLOWER_STAND} from '../src/world/okinawa/old-town.js';
 import {PARK_BENCH} from '../src/world/park-layout.js';
 import {feedPlace} from '../src/feed/places.js';
 installDOM();globalThis.self=globalThis;
@@ -69,58 +70,68 @@ test('rendered paths remain connected after the game installs its walking surfac
   // The walking raster can carry a neighbouring slab edge by a few centimetres;
   // require a real supporting facet within 6 cm, well below the 24 cm step limit.
   const support=(x,z)=>{const y=groundHeight(x,z);ray.set(new THREE.Vector3(x,y+.24,z),new THREE.Vector3(0,-1,0));return ray.intersectObjects(floorBins.get(Math.floor(x/4)+','+Math.floor(z/4))||[],false).some(hit=>hit.point.y>=y-.06&&hit.point.y<=y+.06);};
-  walkPath([[1.9,14],[1.9,27],[-5.4,27],[-8,34.6],[-5.4,36.9],[1.9,36.9],[1.9,66]],'town to Kitahama footpath',support);
-  walkPath([[1.9,14],[1.9,27],[3.3,27],SHOPPING_LANE.entry,SHOPPING_LANE.exit,[1.9,SHOPPING_LANE.exit[1]],[1.9,66]],'Main Street through the cleared connector to Kitahama',support);
+  // Main Street's east footway to z 46, then Kitahama's footpath (KITAHAMA.footpath, x 3–6) past 8 and 9 Kitahama.
+  const footpath=(KITAHAMA.footpath.minX+KITAHAMA.footpath.maxX)/2;
+  walkPath([[1.9,14],[1.9,27],[-5.4,27],[-8,34.6],[-5.4,36.9],[1.9,36.9],[1.9,46],[footpath,46],[footpath,66]],'town to Kitahama footpath',support);
+  walkPath([[1.9,14],[1.9,27],[3.3,27],SHOPPING_LANE.entry,SHOPPING_LANE.exit,[1.9,SHOPPING_LANE.exit[1]],[1.9,46],[footpath,46],[footpath,66]],'Main Street through the cleared connector to Kitahama',support);
   for(const z of SHOPPING_LANE.crosswalks)walkPath([[-5.4,z],[10.8,z]],'Retained neighbourhood cross street '+z,support);
-  walkPath([[3.3,36.9],[-5.4,36.9],[-5.4,40],[-23.4,40.6]],'Cleared lane to western neighbourhood',support);
+  walkPath([[3.3,36.9],[-5.4,36.9],[-5.4,46],[-21.5,46],[-21.5,40.6],[-23.4,40.6]],'Cleared lane to western neighbourhood, round the pocket park',support);
   const shops=createNavigation(playerBlocked);
-  walkPath(arrival(shops,...HARBOUR_FLORIST.approach),'Harbour Park florist counter',support);
+  walkPath(arrival(shops,...SAKURA_FLOWER_STAND),'Sakura flower stand',support);
   walkPath(arrival(shops,...NAKAMURA_DESSERTS.approach),'Nakamura shared dessert counter',support);
   const nav=createNavigation(playerBlocked);const garden=arrival(nav,-23.4,34.6);assert.ok(garden.length<65);walkPath(garden,'town to garden');
   for(const plot of KITAHAMA.plots){walkPath(arrival(nav,...plotGate(plot).door),'town to '+plot.id);const [x,z]=plotGate(plot).door,route=nav.path({x:3.3,z:36.9},{x,z});assert.ok(route.length);assert.ok(Math.hypot(route.at(-1)[0]-x,route.at(-1)[1]-z)<.05);walkPath(route,'Rainflower to '+plot.id,support);}
   walkPath(arrival(nav,...gardenPoint(...GARDEN_BENCHES_AUTHOR[1].stand)),'town to garden bench');
  }finally{setWalkSurface(null);}
 });
-test('the retired lane stays open and the florist, dessert counter and owners share their new destinations',async()=>{
+test('the retired lane stays open; the florist pavilion is gone, its lawn is open ground, and the flowers are sold at Sakura’s door',async()=>{
  assert.equal(world.group.getObjectByName('Rainflower shopping lane'),undefined);assert.ok(world.group.getObjectByName('Kitahama connector'));assert.equal(world.colliders.some(c=>c.rainflower),false);
- assert.equal(world.landmarks.some(s=>s.id==='rainflower-lane'),false);assert.equal(world.landmarks.filter(s=>s.id==='rainflower-florist').length,1);assert.equal(world.landmarks.filter(s=>s.id==='nakamura').length,1);
- const {NEIGHBOURS}=await import('../src/people/neighbours.js'),{FLOWER_SHOP}=await import('../src/world/flower-shop.js');
- assert.deepEqual(NEIGHBOURS.find(n=>n.name===FLOWER_SHOP.staff).at,FLOWER_SHOP.staffAt);assert.deepEqual(NEIGHBOURS.find(n=>n.name==='Mrs Nakamura').at,NAKAMURA_DESSERTS.staffAt);
- assert.ok(inHarbourPark(FLOWER_SHOP.x,FLOWER_SHOP.z));
- const buy=new THREE.Vector3();prompts.find(p=>p.label==='Buy a Rainflower bouquet · ¥250').object.getWorldPosition(buy);assert.deepEqual([buy.x,buy.z],FLOWER_SHOP.approach);
- assert.ok(Math.hypot(buy.x-FLOWER_SHOP.staffAt[0],buy.z-FLOWER_SHOP.staffAt[1])>.7);assert.equal(playerBlocked(buy.x,buy.z,.32),false);
+ assert.equal(world.landmarks.some(s=>s.id==='rainflower-lane'),false);assert.equal(world.landmarks.some(s=>s.id==='rainflower-florist'),false,'no pavilion landmark (phase 4, addendum 3)');assert.equal(world.landmarks.filter(s=>s.id==='nakamura').length,1);
+ assert.equal(world.group.getObjectByName('Rainflower Florist'),undefined,'no pavilion meshes');assert.equal(world.colliders.some(c=>c.business==='rainflower-florist'),false,'no pavilion collider');
+ const {NEIGHBOURS}=await import('../src/people/neighbours.js');
+ assert.equal(NEIGHBOURS.find(n=>n.name==='Mrs Kinjō'),undefined,'no florist body');assert.deepEqual(NEIGHBOURS.find(n=>n.name==='Mrs Nakamura').at,NAKAMURA_DESSERTS.staffAt);
+ assert.equal(prompts.some(p=>/flowers|flower counter|Mrs Kinjō/.test(p.label)&&!/bouquet/.test(p.label)),false,'the pavilion’s prompts are gone');
+ const B=FORMER_FLORIST.bounds;for(let x=B.minX;x<=B.maxX+.01;x+=.5)for(let z=B.minZ;z<=B.maxZ+.01;z+=.5)assert.equal(playerBlocked(x,z,.32),false,'the lawn where the pavilion stood is open at '+[x,z]);
+ const buy=new THREE.Vector3();prompts.find(p=>p.label==='Buy a bouquet · ¥250').object.getWorldPosition(buy);assert.ok(Math.hypot(buy.x-SAKURA_FLOWER_STAND[0],buy.z-SAKURA_FLOWER_STAND[1])<.01,'the bouquets are at Sakura’s door');
+ assert.equal(playerBlocked(buy.x,buy.z,.32),false);
  assert.equal(world.colliders.some(c=>circleHitsRect(90,113,.32,c)),false,'The remote old lane remains clear land');
- const terrain=world.group.getObjectByName('Continuous neighbourhood garden ground'),ray=new THREE.Raycaster();
- for(const [x,z] of [[10.1,52.25],[11.5,52.75],[12.75,53.25]]){ray.set(new THREE.Vector3(x,1,z),new THREE.Vector3(0,-1,0));const hit=ray.intersectObject(terrain)[0];assert.ok(hit);assert.ok(Math.abs(hit.point.y-(KITAHAMA.y+.006))<.005,'Well Lane keeps its supporting floor at '+[x,z]);}
 });
 test('dry-weather garden visits use the existing residents and respect rain routines',async()=>{
  const {residentPlan}=await import('../src/people/social.js');const {RESIDENTS}=await import('../src/people/residents.js');
- const {sleepHours,homeRoutine}=await import('../src/people/home-life.js'),reiko=RESIDENTS.find(p=>p.name==='Reiko'),{wake}=sleepHours(reiko);
- assert.equal(homeRoutine(reiko,wake+16).id,'breakfast');assert.equal(residentPlan(reiko,wake+16,false,{}).place,'home','breakfast finishes before the garden trip');
- assert.equal(residentPlan(reiko,690,false,{}).place,'home','the former garden fixture is now inside the authored wake/preparation hour');
- for(const [name,minute] of [['Reiko',wake+65],['Tetsuo',780]]){const profile=RESIDENTS.find(p=>p.name===name),plan=residentPlan(profile,minute,false,{});assert.equal(plan.place,'park');assert.ok(plan.activity.includes('Harbour Park'));assert.deepEqual(plan.target,HARBOUR_PARK_SEATS[name==='Reiko'?0:1].stand);assert.notEqual(residentPlan(profile,minute,true,{}).place,'park');}
+ const {sleepHours,homeRoutine}=await import('../src/people/home-life.js'),tetsuo=RESIDENTS.find(p=>p.name==='Tetsuo'),{wake}=sleepHours(tetsuo);
+ assert.equal(homeRoutine(tetsuo,wake+16).id,'breakfast');assert.equal(residentPlan(tetsuo,wake+16,false,{}).place,'home','breakfast finishes before the garden trip');
+ assert.equal(RESIDENTS.find(p=>p.name==='Reiko'),undefined,'Reiko is retired (phase 4): the morning bench is Tetsuo’s');
+ for(const [name,minute] of [['Tetsuo',780]]){const profile=RESIDENTS.find(p=>p.name===name),plan=residentPlan(profile,minute,false,{});assert.equal(plan.place,'park');assert.ok(plan.activity.includes('Harbour Park'));assert.deepEqual(plan.target,HARBOUR_PARK_SEATS[1].stand);assert.notEqual(residentPlan(profile,minute,true,{}).place,'park');}
 });
 
-test('photo and feed destinations use the reachable park and florist, and Sakura directs ice cream customers to Nakamura',async()=>{
+test('photo and feed destinations use the reachable park and Sakura’s flower stand, and Sakura directs ice cream customers to Nakamura',async()=>{
  const game=await readFile(new URL('../src/game.js',import.meta.url),'utf8');
  const source=game.match(/function photoSpots\(\)\{[\s\S]*?\n\}/)?.[0];assert.ok(source,'The public photo destinations remain available');
- const photos=Function('HARBOUR_PARK_SEATS','HARBOUR_FLORIST',source+';return photoSpots();')(HARBOUR_PARK_SEATS,HARBOUR_FLORIST);
+ const photos=Function('HARBOUR_PARK_SEATS','SAKURA_FLOWER_STAND',source+';return photoSpots();')(HARBOUR_PARK_SEATS,SAKURA_FLOWER_STAND);
  const nav=createNavigation(playerBlocked);
- for(const [photoId,feedId,point] of [['photo-garden','garden',HARBOUR_PARK_SEATS[1].stand],['photo-rainflower','rainflower',HARBOUR_FLORIST.approach]]){
+ for(const [photoId,feedId,point] of [['photo-garden','garden',HARBOUR_PARK_SEATS[1].stand]]){
   const photo=photos.find(p=>p.id===photoId),feed=feedPlace(feedId);assert.ok(photo&&feed,'Existing saved IDs remain valid');
   assert.deepEqual([photo.x,photo.z],point);assert.deepEqual(feed.shot.at,point);assert.equal(feed.shot.lane,undefined,'Capture cameras no longer transform the retired lane');
   assert.doesNotMatch(photo.title+' '+photo.at+' '+feed.name,/Aoba|Rainflower Lane/);
   walkPath(arrival(nav,...point),photoId+' public photo approach');
  }
- assert.equal(feedPlace('rainflower').name,HARBOUR_FLORIST.name);assert.doesNotMatch(feedPlace('rainflower').things.join(' ')+feedPlace('rainflower').doing.join(' '),/ice cream/);
+ // The saved photo id keeps working: it is the flowers' new place, Sakura's door, and the feed has no pavilion to shoot.
+ const flowers=photos.find(p=>p.id==='photo-rainflower');assert.deepEqual([flowers.x,flowers.z],[...SAKURA_FLOWER_STAND]);assert.match(flowers.at,/Sakura/);
+ walkPath(arrival(nav,...SAKURA_FLOWER_STAND),'photo-rainflower public photo approach');
+ assert.equal(feedPlace('rainflower'),undefined,'no story is set at the removed pavilion');
  const mural=prompts.find(p=>p.label==='Look at the ice-cream mural');assert.ok(mural);mural.run();
  assert.match(actions.at(-1)[2],/Blue Coral.*Nakamura.*Harbour Park/);assert.doesNotMatch(actions.at(-1)[2],/Rainflower Lane/);
 });
 
-test('visible garden approaches match walking heights across the whole entrance, not only the path',()=>{
- // Nishi's slabs and the former terminus lawn cover the garden bank at the south
- // approach. Compare physics to those finished floors, including where they overlap.
- world.group.updateMatrixWorld(true);const surfaces=[];world.group.traverse(o=>{if(['Continuous neighbourhood garden ground','Aoba lowland shared terrain','Island land','Main Street end lawn'].includes(o.name)||/^Okinawan quarter:(matte|sand)\|/.test(o.name))surfaces.push(o);});
- const ray=new THREE.Raycaster();for(const x of [-34,-29,-24,-19,-14,-9])for(const z of [29,30.5,32,33.5,35]){ray.set(new THREE.Vector3(x,1,z),new THREE.Vector3(0,-1,0));const hit=ray.intersectObjects(surfaces,false)[0];assert.ok(hit,'drawn ground at '+[x,z]);assert.ok(Math.abs(hit.point.y-groundHeight(x,z))<.025,'visible height disagrees at '+[x,z]+': '+hit.point.y+' / '+groundHeight(x,z));}
+test('visible garden approaches match walking heights across the whole entrance, not only the path',async()=>{
+ // Nishi's slabs, the former terminus lawn, Kitahama's compact ground and its lanes' paving cover the garden bank at
+ // the south approach. Compare physics to those finished floors, including where they overlap.
+ world.group.updateMatrixWorld(true);const surfaces=[];world.group.traverse(o=>{if(['Continuous neighbourhood garden ground','Compact neighbourhood ground','Aoba lowland shared terrain','Island land','Main Street end lawn'].includes(o.name)||/^Okinawan quarter:(matte|sand)\||^grid-lanes:/.test(o.name))surfaces.push(o);});
+ const {gutterRings,openEdgeRuns}=await import('../src/world/okinawa/lane-edges.js');const rings=gutterRings(),gutters=[...rings,...openEdgeRuns(rings)].map(r=>r.band);
+ const ray=new THREE.Raycaster();for(const x of [-34,-29,-24,-19,-14,-9])for(const z of [29,30.5,32,33.5,35]){if(playerBlocked(x,z,.05))continue;   // inside the Heights, a wall or the park's railing: nobody stands there
+  // A lane's U-gutter is drawn 28 mm proud of the paving, a lid's lip (okinawa/lane-edges.js GUTTER), and the walking
+  // surface the game installs carries the step onto it (the paths test above walks them with it installed).
+  if(gutters.some(b=>x>=b.minX-.01&&x<=b.maxX+.01&&z>=b.minZ-.01&&z<=b.maxZ+.01))continue;
+  ray.set(new THREE.Vector3(x,1,z),new THREE.Vector3(0,-1,0));const hit=ray.intersectObjects(surfaces,false)[0];assert.ok(hit,'drawn ground at '+[x,z]);assert.ok(Math.abs(hit.point.y-groundHeight(x,z))<.025,'visible height disagrees at '+[x,z]+': '+hit.point.y+' / '+groundHeight(x,z));}
  const {position,normal}=world.group.getObjectByName('Continuous neighbourhood garden ground').geometry.attributes;for(let i=0;i<position.count;i++)assert.ok(normal.getY(i)>0,'upward terrain normal');
 });

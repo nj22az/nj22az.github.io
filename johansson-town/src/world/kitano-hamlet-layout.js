@@ -1,8 +1,10 @@
 /**
  * Kitano hamlet (北野集落), the handful of houses by the pier on Kitano-jima (batch 7a; docs/KITANO-JIMA.md): three walled
  * plots on a sandy lane just south of the cargo court, in the island's own frame (airport-ground.js airportWorld: u along
- * the runway, v towards Minato; y above the sea). The row (the Shiroma house, to let, and the Chinen house) stands north of the lane
- * with its gates on the lane; Johansson's house stands south of it, its gate on the lane and the sea behind.
+ * the runway, v towards Minato; y above the sea). The Shiroma house (Kai's, rented) stands north of the lane with its gate
+ * on the lane; Johansson's house stands south of it, its gate on the lane and the sea behind. The Chinen house that stood
+ * east of the Shiroma house (u −33..−23, v 38..48) was removed in phase 4 of docs/CAST-CONSOLIDATION.md (addendum 5): the
+ * island's own ground and plantings are back on its plot (`clear` no longer keeps them off it).
  * It imports only the house's data (johansson-house.js, no three.js), so the island's ground and plantings can read it
  * as freely as the builder does.
  */
@@ -13,7 +15,7 @@ export const KITANO_HAMLET=Object.freeze({
  yardTop:1.3,laneTop:1.22,
  lane:Object.freeze({minX:-47,maxX:-20,minZ:47.5,maxZ:51.5}),
  /** Plantings keep out of these rectangles (tropical-island.js): the lane and the plots, and kitano-1's back yard. */
- clear:Object.freeze([Object.freeze({minX:-51,maxX:-19,minZ:37,maxZ:71}),Object.freeze({minX:-51,maxX:-31,minZ:71,maxZ:75})]),
+ clear:Object.freeze([Object.freeze({minX:-51,maxX:-19,minZ:47,maxZ:71}),Object.freeze({minX:-51,maxX:-34,minZ:37,maxZ:47}),Object.freeze({minX:-51,maxX:-31,minZ:71,maxZ:75})]),
  plots:Object.freeze([
   // Johansson's house, built from the creator's Final Rev F (johansson-house.js, finding RF8): 12 × 10 m on a plot of
   // 17 × 22, its front 7.5 m in from the gate (`front`, the plot's own z, the gate at +11) for the garden stair down to
@@ -22,9 +24,13 @@ export const KITANO_HAMLET=Object.freeze({
   // (0.26 m at its far corner), so its slab goes down to `base`.
   {id:'kitano-1',family:'ヨハンソン',romaji:'Johansson & Thuan',minX:-49.5,maxX:-32.5,minZ:51.5,maxZ:73.5,gate:'south',kind:'johansson-house',wall:'coral',front:3.5,base:.2},
   {id:'kitano-2',family:'城間',romaji:'Shiroma',minX:-45,maxX:-35,minZ:38,maxZ:48,gate:'north',kind:'concrete',wall:'block'},
-  {id:'kitano-3',family:'知念',romaji:'Chinen',minX:-33,maxX:-23,minZ:38,maxZ:48,gate:'north',kind:'red-tile',wall:'coral'},
  ].map(Object.freeze)),
 });
+/**
+ * Where the Kitano line hand stands by between calls (people/ferry-shore-crew.js), island frame: on the pier beside its
+ * bitts (ferry.js KITANO_FERRY_BITTS), clear of the landing and the cars' lane, 25 m down the lane from the Shiroma house.
+ */
+export const KITANO_PIER_STAND=Object.freeze([-50.1,32.5]);
 /** The gate in the plot's wall, 0.7 m out on the lane, and the way in (0 faces −v, π faces +v), island frame. */
 export function hamletGate(p,out=.7){
  const cx=(p.minX+p.maxX)/2;

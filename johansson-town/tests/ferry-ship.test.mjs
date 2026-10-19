@@ -137,9 +137,12 @@ test('the crew: eight posts by her safe manning, named islanders and Johansson a
  assert.deepEqual(FERRY_CREW.map(c=>c.post),FERRY_MANNING.map(c=>c.post));
  assert.equal(FERRY_CREW.filter(c=>c.new).length,0,'existing villagers keep the crew posts');assert.equal(crewFor('chief'),'Johansson');
  for(const c of FERRY_CREW){assert.ok(c.why.length>60,c.name+' has a reason');assert.ok(c.lives,c.name+' lives somewhere');}
- for(const name of ['Mr Nakandakari','Mr Higa Jr','Ms Uezu','Kōji','Ms Ganaha','Mr Fujita'])assert.ok(living.has(name),name+' is on the island');
- assert.equal(living.get('Mr Nakandakari').members.find(m=>m.name==='Mr Nakandakari').primaryHome,'kitahama-flat-3');
- for(const name of ['Ms Uezu','Mr Higa Jr','Kōji','Mr Fujita'])assert.match(living.get(name).members.find(m=>m.name===name).purpose,/ferry|Minato Maru/);
+ for(const name of ['Mac','Chin','Ms Uezu','Kōji','Ms Ganaha','Mr Fujita','Ryo','Ren','Aya','Jun','Kai'])assert.ok(living.has(name),name+' is on the island');
+ assert.equal(living.get('Mac').members.find(m=>m.name==='Mac').primaryHome,'kitahama-flat-3');
+ for(const name of ['Ms Uezu','Chin','Kōji','Mr Fujita','Ryo','Ren','Aya','Jun'])assert.match(living.get(name).members.find(m=>m.name===name).purpose,/ferry|Minato Maru/);
+ // The four who live aboard sleep in her cabins (island-households.js), quarters that are not shore households.
+ for(const [name,cabin] of [['Ryo','ferry-officer-cabin'],['Ren','ferry-crew-cabin'],['Aya','ferry-crew-cabin'],['Jun','ferry-crew-cabin']]){const h=living.get(name);assert.equal(h.home,cabin,name);assert.ok(h.aboard&&h.quarters,name+' sleeps aboard');}
+ assert.equal(living.get('Kai').home,'kitano-2');assert.ok(living.get('Kai').quarters,'the Shiroma house is supporting accommodation');
  for(const minutes of [0,7*1440]){const names=crewOnDuty(minutes).map(c=>c.name);assert.equal(new Set(names).size,names.length);}
  assert.ok(FERRY_PEOPLE.length>=8);
 });
@@ -147,7 +150,9 @@ test('the crew: eight posts by her safe manning, named islanders and Johansson a
 test('the bosun works a week on and a week off, and the legacy rota lookup still resolves her relief',()=>{
  assert.equal(deckHandFor(0),'Ms Uezu');assert.equal(deckHandFor(6*1440+1439),'Ms Uezu');
  assert.equal(deckHandFor(7*1440),'Kōji');assert.equal(deckHandFor(14*1440),'Ms Uezu');
- assert.equal(crewFor('master'),'Bus driver');assert.equal(crewFor('linesman'),'Mr Fujita');
+ // The roster's holders (people/roster.js SHIP_POSTS, SHORE_ROLES), under the names the live cast uses today.
+ assert.equal(crewFor('master'),'Mr Fujita');assert.equal(crewFor('linesman'),'Harbour master');assert.equal(crewFor('oiler'),'Chin');assert.equal(crewFor('motorman'),'Chin');
+ assert.equal(crewFor('airport-linesman'),'Kai');assert.equal(crewFor('relief-engineer'),'Mac');assert.equal(crewFor('deck'),'Ren');assert.equal(crewFor('purser'),'Aya');assert.equal(crewFor('cook'),'Jun');assert.equal(crewFor('mate'),'Ryo');
 });
 
 test('every phase of a call has the right people at their stations',()=>{

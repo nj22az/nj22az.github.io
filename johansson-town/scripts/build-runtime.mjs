@@ -44,6 +44,9 @@ const preloadFiles=[...new Set(preloadEntries.flatMap(name=>{
 const preloadLinks=preloadFiles.map(file=>`<link rel="modulepreload" data-town-runtime href="./runtime/${file}">`).join('\n');
 html=html.replace('</head>',`${preloadLinks}\n</head>`);
 for(const file of ['resident-guide.js','landing.js']){const hash=createHash('sha256').update(readFileSync(resolve(root,file))).digest('hex').slice(0,8);html=html.replace(new RegExp('src="\\./'+file.replace('.','\\.')+'(?:\\?[^" ]*)?"','g'),`src="./${file}?h=${hash}"`);}
+// The loader's own modules, imported by index.html itself: stamped too, so new markup never meets a cached old
+// loader (a START button that would never unlock).
+for(const file of ['loading-progress.js','loading-facts.js']){const hash=createHash('sha256').update(readFileSync(resolve(root,file))).digest('hex').slice(0,8);html=html.replace(new RegExp("from '\\./"+file.replace('.','\\.')+"(?:\\?[^']*)?'",'g'),`from './${file}?h=${hash}'`);}
 // Stamp every local stylesheet with a hash of its contents. These links carried
 // hand-written query strings, so editing a stylesheet without remembering to bump its
 // version served the old file from cache: new markup with stale CSS. The hash means

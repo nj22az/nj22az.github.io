@@ -2,48 +2,62 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createStartupRecovery,graphicsProfile} from '../src/render/startup-recovery.js';
 const fixture=()=>{const data=new Map(),listeners=new Map(),callbacks=new Map();let id=0;return {storage:{getItem:k=>data.get(k),setItem:(k,v)=>data.set(k,v),removeItem:k=>data.delete(k)},events:{addEventListener:(k,f)=>listeners.set(k,f),removeEventListener:k=>listeners.delete(k)},schedule:f=>{callbacks.set(++id,f);return id;},cancel:i=>callbacks.delete(i),hide:()=>listeners.get('pagehide')?.(),settle:()=>[...callbacks.values()].forEach(f=>f())};};
-test('a process killed while entering the town selects recovery on the next launch',()=>{
+test('two processes killed in a row select recovery on the next launch, and it says so',()=>{
  const f=fixture(),first=createStartupRecovery({...f,now:()=>1000});assert.equal(first.safe,false);first.entering();first.running();
- const next=createStartupRecovery({...f,now:()=>1100});assert.equal(next.interrupted,true);assert.equal(next.safe,true);
+ const second=createStartupRecovery({...f,now:()=>1100});assert.equal(second.interrupted,true);assert.equal(second.safe,false,'one interruption is often a moment');
+ second.entering();
+ const third=createStartupRecovery({...f,now:()=>1200});assert.equal(third.safe,true);assert.equal(third.recovering,true);assert.equal(third.reduced,false);
+ third.running();f.settle();assert.equal(createStartupRecovery({...f,now:()=>1300}).safe,false,'a settled recovery launch clears the count');
 });
 test('normal reloads and settled starts do not trigger recovery',()=>{
- for(const finish of ['hide','settle']){const f=fixture(),a=createStartupRecovery({...f,now:()=>1000});a.entering();a.running();f[finish]();assert.equal(createStartupRecovery({...f,now:()=>1100}).safe,false);}
+ for(const finish of ['hide','settle']){const f=fixture();for(let i=0;i<3;i++){const a=createStartupRecovery({...f,now:()=>1000+i});a.entering();a.running();f[finish]();}assert.equal(createStartupRecovery({...f,now:()=>1100}).safe,false);}
 });
 test('old attempts and unavailable storage do not block launch; explicit recovery persists',()=>{
- const f=fixture();createStartupRecovery({...f,now:()=>1000});assert.equal(createStartupRecovery({...f,now:()=>200000}).safe,false);
+ const f=fixture();createStartupRecovery({...f,now:()=>1000});createStartupRecovery({...f,now:()=>1001});assert.equal(createStartupRecovery({...f,now:()=>200000}).safe,false);
  const broken={getItem(){throw Error('denied');},setItem(){throw Error('denied');},removeItem(){throw Error('denied');}};assert.equal(createStartupRecovery({storage:broken}).safe,false);
  createStartupRecovery({...f,search:'?graphics=safe',now:()=>300000});f.hide();assert.equal(createStartupRecovery({...f,now:()=>300100}).safe,true);
 });
-test('lean graphics profiles avoid MSAA, half-float and whole-scene compilation',()=>{
- for(const input of [{mobile:true},{mobile:true,tablet:true},{safe:true}]){const p=graphicsProfile(input);assert.equal(p.samples,0);assert.equal(p.antialias,false);assert.equal(p.preferHalfFloat,false);assert.equal(p.precompile,false);assert.ok(p.pixelBudget<=1.2e6);assert.equal(p.shadows,false);}
- const desktop=graphicsProfile();assert.equal(desktop.samples,4);assert.equal(desktop.precompile,true);assert.equal(desktop.shadows,true);
+test('every device class draws the full look; only recovery is lean',()=>{
+ const desktop=graphicsProfile(),tablet=graphicsProfile({mobile:true,tablet:true}),phone=graphicsProfile({mobile:true});
+ for(const p of [desktop,tablet,phone]){assert.equal(p.samples,4);assert.equal(p.preferHalfFloat,true);assert.equal(p.postprocess,true);assert.equal(p.precompile,true);
+  assert.equal(p.streamDetails,true);assert.equal(p.cinematic,true);assert.equal(p.quietOpening,false);assert.equal(p.canvasPixels,null);
+  assert.equal(p.antialias,false,'the canvas only receives the FXAA pass');}
+ assert.deepEqual([desktop.dpr,tablet.dpr,phone.dpr],[2,1.85,1.5]);
+ assert.deepEqual([desktop.shadowSize,tablet.shadowSize,phone.shadowSize],[2048,1024,0]);
+ assert.deepEqual([desktop.shadows,tablet.shadows,phone.shadows],[true,true,false]);
+ assert.deepEqual([desktop.pixelBudget,tablet.pixelBudget,phone.pixelBudget],[4.6e6,2.4e6,2.4e6]);
+ for(const input of [{mobile:true,safe:true},{safe:true}]){const p=graphicsProfile(input);assert.equal(p.samples,0);assert.equal(p.precompile,false);assert.ok(p.pixelBudget<=650000);assert.equal(p.shadows,false);assert.equal(p.streamDetails,false);}
 });
-
-test('iPhone retains all postprocess effects and bounded shadows without enabling asset streaming',async()=>{
+test('recovery keeps a CSS-pixel floor within its hard canvas budget',async()=>{
  const {drawingDpr}=await import('../src/render/startup-recovery.js');
- const p=graphicsProfile({mobile:true,ios:true});
- assert.equal(p.postprocess,true);assert.equal(p.shadows,true);assert.equal(p.shadowSize,512);
- assert.equal(p.streamDetails,false);assert.equal(p.cinematic,false);assert.equal(p.quietOpening,true);
- assert.equal(p.pixelBudget,650000);assert.equal(p.canvasPixels,650000);
- assert.equal(p.dpr,1.5);assert.equal(p.shadowRadius,14);
- assert.equal(p.samples,0);assert.equal(p.preferHalfFloat,false);assert.equal(p.antialias,false);
+ const p=graphicsProfile({mobile:true,safe:true,reduced:false});
+ assert.equal(p.postprocess,true);assert.equal(p.canvasPixels,650000);
  for(const [width,height] of [[430,932],[932,430],[4096,2732]]){
   const dpr=drawingDpr({width,height,deviceDpr:3,profile:p});assert.ok(width*height*dpr*dpr<=650001);
  }
- const normal=drawingDpr({width:430,height:932,deviceDpr:3,profile:p});
- const slower=drawingDpr({width:430,height:932,deviceDpr:3,profile:p,scale:.6});
- assert.ok(slower<normal,'the phone governor must actually lower a 1x buffer');
- const safe=graphicsProfile({mobile:true,ios:true,safe:true});
- assert.equal(safe.postprocess,false);assert.equal(safe.shadows,false);assert.equal(safe.streamDetails,false);
- for(const input of [{mobile:true},{mobile:true,ios:true,tablet:true},{}]){
-  const other=graphicsProfile(input);assert.equal(other.postprocess,true);assert.equal(other.streamDetails,true);assert.equal(other.cinematic,true);
- }
+ const full=graphicsProfile({mobile:true});
+ const normal=drawingDpr({width:430,height:932,deviceDpr:3,profile:full});
+ const slower=drawingDpr({width:430,height:932,deviceDpr:3,profile:full,scale:.6});
+ assert.equal(normal,1.5);assert.ok(slower<normal);assert.ok(slower>=1,'normal phone sizes retain a CSS-pixel resolution floor');
 });
 
-test('a deliberate full-effects retry clears reduced mode but cannot override an interrupted launch',()=>{
+test('obsolete automatic recovery markers cannot permanently remove cartoon effects',()=>{
+ const f=fixture();f.storage.setItem('johansson-safe-graphics-v1','1');
+ const a=createStartupRecovery({...f,now:()=>1000});
+ assert.equal(a.safe,false);assert.equal(a.reduced,false);assert.equal(f.storage.getItem('johansson-safe-graphics-v1'),undefined);
+ a.entering();createStartupRecovery({...f,now:()=>1100}).entering();const recovery=createStartupRecovery({...f,now:()=>1200});
+ assert.equal(recovery.safe,true);assert.equal(recovery.reduced,false);
+ const p=graphicsProfile({mobile:true,safe:recovery.safe,reduced:recovery.reduced});
+ assert.equal(p.postprocess,true);assert.equal(p.preferHalfFloat,true);assert.equal(p.samples,0);assert.equal(p.shadows,false);assert.equal(p.canvasPixels,650000);
+ recovery.running();f.settle();assert.equal(createStartupRecovery({...f,now:()=>1300}).safe,false);
+});
+
+test('a deliberate full-effects request clears reduced mode and overrides recovery for that launch',()=>{
  const f=fixture();createStartupRecovery({...f,search:'?graphics=safe',now:()=>1000});f.hide();
  const retry=createStartupRecovery({...f,search:'?graphics=full',now:()=>1100});assert.equal(retry.safe,false);
  f.hide();assert.equal(createStartupRecovery({...f,now:()=>1200}).safe,false);
- const interrupted=createStartupRecovery({...f,search:'?graphics=full',now:()=>1300});
- assert.equal(interrupted.interrupted,true);assert.equal(interrupted.safe,true);
+ createStartupRecovery({...f,now:()=>1300}).entering();createStartupRecovery({...f,now:()=>1400}).entering();
+ const full=createStartupRecovery({...f,search:'?graphics=full',now:()=>1500});
+ assert.equal(full.interrupted,true);assert.equal(full.safe,false);
+ assert.equal(createStartupRecovery({...f,now:()=>1600}).safe,true,'a further crash still counts');
 });

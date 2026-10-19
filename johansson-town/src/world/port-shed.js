@@ -1,33 +1,36 @@
 import * as THREE from '../../vendor/three.module.js';
-import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {createAvatarActor,updateAvatarActor} from '../avatars/actors.js';
 import {reach} from '../avatars/consume.js';
 import {buildBeerBottle} from '../people/izakaya-serving-visuals.js';
 import {fujitaBeer,laughingAt,seeded,tvProgramme} from './fujita-day.js';
 import {buildFujitaHouseboat,HOUSEBOAT} from './fujita-houseboat.js';
 import {createFujitaRoutine} from './fujita-routine.js';
+import {buildTimberPier,timberPierPlan} from './timber-pier.js';
 import {createSleepCover} from '../people/sleep-cover.js';
+import {poolGlow} from '../render/dusk.js';
 export {tvProgramme} from './fujita-day.js';
 
 /**
  * Mr Fujita's shed on the working pier.
  *
  * A fisherman's banya: timber framed, clad in corrugated iron gone to rust at the seams,
- * open along the pier side so the breeze comes through. Mr Fujita, retired, more or less
- * lives in it. He sits in a sagging armchair, his feet on a timber footstool, with a small glass of
- * beer, and flips channels on an old CRT on a fish crate (fujita-day.js: what is on, when he laughs,
- * how the beer goes): the ballgame in the afternoon, the news, the variety shows, snow when the
- * signal goes. His Umineko comes in large bottles from Higa Liquor's morning van: the crates stand
- * at his right hand, the bottle he is on at his left foot, and the empties pile up in front of him
- * all day, standing at first and lying down when the floor fills. Around him: nets and glass floats
- * hung from the rafters, a camp stove and kettle, rubber boots, a calendar from the co-op and a
- * folded cot kept for visitors. At 23.30 he switches off the set and walks aboard his houseboat
- * Shiosai alongside the pier, leaving the day's empties for the van; at six he returns to the shed.
+ * open along the pier side so the breeze comes through. Mr Fujita, the Minato Maru's master
+ * (docs/CAST-CONSOLIDATION.md §3; people/ferry-crew.js), keeps it for his evenings. Up at six aboard Shiosai, he
+ * comes to the shed for the kettle and at five past walks to the gangway to sign on (people/master-commute.js); the
+ * bridge has him until the shore power goes on at a quarter past ten, sober the whole day, the shed empty and the set
+ * off. Signed off at twenty past, he sits in the sagging armchair, his feet on a timber footstool, with a small glass
+ * of beer, and flips channels on an old CRT on a fish crate (fujita-day.js: what is on, when he laughs, how the beer
+ * goes): the night game's last innings, the late news, the variety shows, snow when the last station signs off. His
+ * Umineko comes in large bottles from Higa Liquor's morning van: the crate stands at his right hand, the bottle he is
+ * on at his left foot, and the evening's empties stand in front of him. Around him: nets and glass floats hung from
+ * the rafters, a camp stove and kettle, rubber boots, a calendar from the co-op and a folded cot kept for visitors.
+ * At 23.30 he switches off the set and walks aboard his houseboat Shiosai alongside the pier, leaving the empties for
+ * the van; at six he returns to the shed.
  *
  * Pier frame: the shed stands on the west edge of the L-pier, open to the east.
  */
 export {PORT_SHED,SHED_PIER} from './fujita-layout.js';
-import {PORT_SHED,SHED_PIER} from './fujita-layout.js';
+import {PORT_SHED,FUJITA_PIER} from './fujita-layout.js';
 const S=PORT_SHED;
 
 function corrugated(){
@@ -38,6 +41,23 @@ function corrugated(){
  for(let k=0;k<26;k++){const px=(k*37)%128,py=(k*53)%128;const g=x.createLinearGradient(px,py,px,py+40);g.addColorStop(0,'rgba(150,72,30,.75)');g.addColorStop(1,'rgba(150,72,30,0)');x.fillStyle=g;x.fillRect(px,py,3+(k%3),40);}
  x.fillStyle='rgba(140,66,28,.55)';x.fillRect(0,118,128,10);
  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;
+}
+
+/**
+ * A corrugated iron sheet `fall` long down the slope (x) and `across` wide (z): ridges at 0.15 m (the town's chunky
+ * version of 76 mm sheet), galvanised grey, rust streaking down from every fifth nail line and a rusted low eave.
+ */
+export function corrugatedSheet(fall,across,{pitch=.15,depth=.035}={}){
+ const waves=Math.round(across/pitch),g=new THREE.PlaneGeometry(fall,across,4,waves*4);g.rotateX(-Math.PI/2);
+ const pos=g.attributes.position,colours=new Float32Array(pos.count*3),grey=new THREE.Color(0x9ea6a3),rust=new THREE.Color(0x9a5631),c=new THREE.Color();
+ for(let i=0;i<pos.count;i++){
+  const x=pos.getX(i),z=pos.getZ(i),phase=(z+across/2)/across*waves;pos.setY(i,Math.sin(phase*Math.PI*2)*depth/2);
+  const ridge=Math.round(phase),down=(x+fall/2)/fall;
+  // Streaks under the nail lines every fifth ridge, longer towards the eave; the eave itself rusted through its paint.
+  const streak=ridge%5===2?.25+.55*down:0,eave=down>.82?.75:0;
+  c.copy(grey).lerp(rust,Math.min(1,Math.max(streak,eave)));colours.set([c.r,c.g,c.b],i*3);
+ }
+ g.setAttribute('color',new THREE.BufferAttribute(colours,3));g.computeVertexNormals();g.deleteAttribute('uv');return g;
 }
 
 function drawTV(ctx,w,h,programme,t){
@@ -97,7 +117,6 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
  const box=(s,p,m,name)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(...s),m);b.position.set(...p);b.castShadow=shadows;b.receiveShadow=true;b.name=name;g.add(b);return b;};
  const W=S.width,D=S.depth,hx=D/2,hz=W/2;
  const iron=corrugated(),ironMat=iron?new THREE.MeshStandardMaterial({map:iron,roughness:.7,metalness:.25}):std(0x8a908c,.7);
- const roofTex=iron?iron.clone():null;if(roofTex){roofTex.needsUpdate=true;roofTex.repeat.set(3,1);}
  const timber=std(0x6b5440,.9),plank=std(0x8c7356,.9);
  // Floor of old pallets' boards, a little proud of the pier.
  box([D,.06,W],[0,.03,0],plank,'Shed floor');
@@ -108,9 +127,11 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
  // Posts and a lintel along the open front.
  for(const z of [-hz,0,hz])box([.09,2.25,.09],[hx,1.12,z],timber,'Shed post');
  box([.1,.12,W+.1],[hx,2.2,0],timber,'Shed lintel');
- // A lean-to roof, falling towards the pier and overhanging it to shed the rain there.
- const roof=new THREE.Mesh(new THREE.BoxGeometry(D+.6,.04,W+.3),roofTex?new THREE.MeshStandardMaterial({map:roofTex,roughness:.65,metalness:.3}):ironMat);
- roof.position.set(.2,2.18,0);roof.rotation.z=-.12;roof.castShadow=shadows;roof.name='Shed roof';g.add(roof);
+ // A lean-to roof, falling towards the pier and overhanging it to shed the rain there: real corrugated sheet, its
+ // ridges running down the fall as roofing is laid, rusting where the water runs off and along the low eave. (It was a
+ // flat slab with the corrugations painted on across the fall, which smeared into streaks seen from the pier.)
+ const roof=new THREE.Mesh(corrugatedSheet(D+.6,W+.3),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.62,metalness:.3,side:THREE.DoubleSide}));
+ roof.position.set(.2,2.18,0);roof.rotation.z=-.12;roof.castShadow=shadows;roof.receiveShadow=true;roof.name='Shed roof';g.add(roof);
  // A half-raised shutter roll under the lintel.
  const roll=new THREE.Mesh(new THREE.CylinderGeometry(.09,.09,W-.1,12),std(0x7f8a86,.6,{metalness:.4}));roll.rotation.x=Math.PI/2;roll.position.set(hx-.05,2.05,0);g.add(roll);
 
@@ -198,34 +219,31 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
  // Outside: buoys, a stack of crates round the corner and a plastic chair for visitors.
  for(const [ox,oz,c] of [[hx+.35,-hz+.3,0xe2542e],[hx+.5,-hz+.65,0xf2c230]]){const b=new THREE.Mesh(new THREE.SphereGeometry(.17,12,8),std(c,.5));b.position.set(ox,.17,oz);g.add(b);}
  for(let i=0;i<3;i++)box([.5,.28,.36],[hx-.35,.14+i*.28,-hz-.3],std(i%2?0x2f6fa8:0x3d8a5a,.6),'Fish crate');
- const stool=new THREE.Group();stool.position.set(-hx+.45,0,hz+.55);stool.rotation.y=-Math.PI/2;g.add(stool);
+ // The plastic chair for a visitor (the television's "Sit, sit"): inside, against the folded cot on the west side,
+ // turned to the set. It stood out on the pier in his own path to the gangway, where he walked through it every night.
+ const stool=new THREE.Group();stool.name='Visitor’s plastic chair';stool.position.set(-hx+.5,.06,-.85);stool.rotation.y=-Math.PI/2-.55;g.add(stool);
  const plastic=std(0xd8d2c4,.6);{const seat=new THREE.Mesh(new THREE.BoxGeometry(.42,.04,.42),plastic);seat.position.y=.44;stool.add(seat);const back=new THREE.Mesh(new THREE.BoxGeometry(.04,.4,.42),plastic);back.position.set(.2,.66,0);stool.add(back);for(const [lx,lz] of [[-.18,-.18],[-.18,.18],[.18,-.18],[.18,.18]]){const l=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.44,6),plastic);l.position.set(lx,.22,lz);stool.add(l);}}
-
+ colliders.push({id:'fujita-visitor-chair',x:S.x-hx+.5,z:S.z-.85,w:.5,d:.5,height:.9,portShed:true});
  // Walls and furniture are solid; the open front lets you step up and look in.
  const wx=S.x,wz=S.z;
  colliders.push({x:wx-hx,z:wz,w:.12,d:W,height:2.1,portShed:true});
  colliders.push({x:wx,z:wz-hz,w:D,d:.12,height:2.1,portShed:true});
  colliders.push({x:S.tv[0],z:S.tv[1],w:.62,d:.48,height:.95,portShed:true},{x:S.chair[0],z:S.chair[1],w:.7,d:.7,height:.9,portShed:true});
+ // The roof is solid to the lens (an overhead collider, above a standing head): the houseboat opening's shot of him was
+ // taken from 8 cm over this roof, a screenful of corrugated iron with his hat at its edge (2026-10-19).
+ colliders.push({id:'fujita-shed-roof',x:wx+.2,z:wz,w:D+.6,d:W+.3,minY:2.05,height:.38,portShed:true});
  // The retired exterior cool box has no collider on the timber walking circuit.
 
- // Timber access only: the old broad L-shaped slab and its unused seaward spur are retired.
- {const P=SHED_PIER,pier=new THREE.Group();pier.name='Fujita timber boardwalk';parent.add(pier);
-  const plank=std(0x896b4c,.94),beam=std(0x59432f,.95),pileMat=std(0x49392c,.96);
-  const boxes=[];
-  const timber=(name,w,h,d,x,y,z,material)=>{const g=new THREE.BoxGeometry(w,h,d);g.translate(x,y,z);boxes.push({name,g,material});};
-  const deck=(x0,x1,z0,z1)=>{
-   const count=Math.ceil((z1-z0)/.18),pitch=(z1-z0)/count;
-   for(let i=0;i<count;i++){
-    const z=z0+(i+.5)*pitch,underShed=z>=S.z-S.width/2&&z<=S.z+S.width/2;
-    const spans=underShed?[[x0,Math.min(x1,S.x-S.depth/2)],[Math.max(x0,S.x+S.depth/2),x1]]:[[x0,x1]];
-    for(const [a,b] of spans)if(b>a)timber('Weathered board',b-a,.08,pitch-.008,(a+b)/2,.02,z,plank);
-   }
-   for(const x of [x0+.18,x1-.18])timber('Timber bearer',.14,.2,z1-z0,x,-.12,(z0+z1)/2,beam);
-   for(let z=z0+.35;z<z1;z+=2.1)for(const x of [x0+.18,x1-.18]){const post=new THREE.Mesh(new THREE.CylinderGeometry(.11,.13,1.6,8),pileMat);post.position.set(x,-.78,z);post.name='Timber support pile';post.castShadow=shadows;pier.add(post);}
-  };
-  deck(-38.45,-36.25,P.maxZ,-49.3);deck(P.minX,P.maxX,P.minZ,P.maxZ);
-  for(const material of [plank,beam]){const parts=boxes.filter(b=>b.material===material),mesh=new THREE.Mesh(mergeGeometries(parts.map(b=>b.g)),material);mesh.name=material===plank?'Boardwalk planks':'Boardwalk bearers';mesh.receiveShadow=true;mesh.castShadow=shadows;pier.add(mesh);parts.forEach(b=>b.g.dispose());}
- }
+ // The pier, as a dock builder builds it (timber-pier.js, fujita-layout.js FUJITA_PIER): piles in bents, caps, stringers,
+ // boards over a dark underlay, kerbs, rails, the berth's fender piles, a ladder, and what the Shiosai is tied to.
+ {const P=FUJITA_PIER,hb=HOUSEBOAT;
+  const pier=buildTimberPier(parent,timberPierPlan(P),{shadows,colliderTag:{portShed:true},ropes:[
+   // Her head line, from the bow cleat (fujita-houseboat.js) forward to the walkway's bollard, over the bollard's head.
+   {from:[hb.x+1.05,.17,hb.z+2.95],to:[P.bollards[0].x,.42,P.bollards[0].z],sag:.22},
+   // Her stern line, from the stern cleat to the cleat on the berth's kerb.
+   {from:[hb.x+1.2,.15,hb.z-3.55],to:[P.cleats[0].x,.27,P.cleats[0].z],sag:.12},
+  ]});
+  pier.group.name='Fujita timber pier';colliders.push(...pier.colliders);}
  // ---- Mr Fujita, in his chair.
  const fujita=new THREE.Group();fujita.name='Mr Fujita';fujita.userData.name='Mr Fujita';fujita.userData.walkSurface=false;
  fujita.position.set(cx,.02,cz-.08);g.add(fujita);
@@ -234,10 +252,13 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
  register(fujita,'Talk to Mr Fujita',()=>fujita.userData.sleeping?onAction('read','Mr Fujita is asleep','He is asleep on his sofa aboard Shiosai. He returns to the shed at six in the morning.'):onAction('resident','Mr Fujita'));
  const tvAnchor=new THREE.Object3D();tvAnchor.position.set(tx,1,tz+.4);g.add(tvAnchor);
  register(tvAnchor,'Watch the shed television',()=>onAction('read','Mr Fujita’s television',
-  'A portable set older than the boat, on a fish crate, the aerial bent to find the signal from across the water. Mr Fujita does not look away from it. "Sit, sit. The eighth innings is the only one worth watching. Have a can; they are cold, the box is new."'));
+  fujita.userData.onWatch?'A portable set older than the boat, on a fish crate, the aerial bent to find the signal from across the water. It is off: the master is on the bridge until the last boat, and the shed waits for him with the kettle cold and the crate full.':
+  'A portable set older than the boat, on a fish crate, the aerial bent to find the signal from across the water. Mr Fujita does not look away from it. "Sit, sit. The last innings are the only ones worth watching. Have a bottle; they are cold, the van came this morning."'));
 
  const boat=buildFujitaHouseboat({parent,colliders,register,onAction,shadows});
  const cover=createSleepCover(boat.group,{cover:HOUSEBOAT.cover},0x557b72);
+ // Moonlit bedding remains legible while Fujita's cabin lamp is off; no extra light.
+ cover.mesh.material.emissive.copy(cover.mesh.material.color);cover.mesh.material.emissiveIntensity=.025;
  const routine=createFujitaRoutine(fujita,{origin:[S.x,S.z],chair:S.chair,cover,boat});
  let clock=0,redraw=0,programme='',laughing=false,sips=-1;
  /**
@@ -279,10 +300,11 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
    stream.position.copy(from).add(to).multiplyScalar(.5);stream.scale.set(1,Math.max(.01,from.y-to.y),1);stream.visible=true;
   }
  }
- // The journey and sleeping state continue when the shed cannot be seen.
+ // The journey and sleeping state continue when the shed cannot be seen. While he is signed on (people/master-commute.js
+ // sets `onWatch`: on his way to the gangway, on the bridge, on his way back) the shed's routine waits for him.
  const advance=(dt,minutes=720)=>{
   clock+=dt;
-  if(!fujita.userData.ferryShoreTask)routine.update(dt,minutes,tvProgramme(minutes));
+  if(!fujita.userData.ferryShoreTask&&!fujita.userData.onWatch)routine.update(dt,minutes,tvProgramme(minutes));
  };
  return {
   group:g,actor,fujita,boat,routine,advance,
@@ -296,13 +318,14 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
    bulbMat.emissiveIntensity=night?1.4:0;bulbLight.intensity=night?1.6:0;
    // The same resident walks the ferry's shore lines. That controller releases
    // him at his chair before the television/houseboat routine resumes.
-   boat.tick({sleeping:fujita.userData.sleepBlend>.01,player:getPlayerPosition()});
-   // The beer: the crates, the floor, the bottle he is on, the glass. The pile stays in the shed overnight, when he
-   // has gone aboard Shiosai, until the Higas' van takes it at six.
-   const b=fujitaBeer(minutes),u=fujita.userData,seated=!u.ferryShoreTask&&routine.state==='watching',pouring=seated&&b.phase==='pour';
+   boat.tick({sleeping:fujita.userData.sleepBlend>.01,player:getPlayerPosition(),night:poolGlow(minutes)});
+   // The beer: the crate, the floor, the bottle he is on, the glass; none of it before he signs off (fujita-day.js
+   // FUJITA_DAY.start is the master's sign-off). The pile stays in the shed overnight, when he has gone aboard Shiosai,
+   // until the Higas' van takes it at six.
+   const b=fujitaBeer(minutes),u=fujita.userData,seated=!u.ferryShoreTask&&!u.onWatch&&routine.state==='watching',pouring=seated&&b.phase==='pour';
    for(const mesh of full)mesh.count=b.full;
-   // The third crate, on top, only on a day of more than forty: he drinks from the top crate down.
-   crates[2].visible=b.bottles>40;
+   // One crate of twenty is more than an evening's drinking now; the second and the one on top are gone with the day shift.
+   crates[1].visible=crates[2].visible=false;
    for(const mesh of empties)mesh.count=Math.min(b.empties,emptySlots.length);
    openBottle.visible=b.bottle!==null&&b.phase==='drink'&&seated;
    pourBottle.visible=stream.visible=false;
@@ -320,8 +343,8 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
     u.activity=b.phase==='pour'?'pouring himself another':now==='baseball'?'watching the ballgame with a beer':now==='news'?'watching the news with a beer':'flipping channels with a beer';
     pourBottle.visible=stream.visible=false;
    }else if(seated){
-    // Back from the boat before half past six: in his chair, nothing open yet, waiting for the first bottle.
-    u.socialPose='Sit';delete u.heldItem;delete u.heldPortion;delete u.thuanExpression;u.activity='waiting for the Higas’ van';
+    // Back from the boat at six: in his chair, nothing open, the kettle on, until he walks to the gangway at five past.
+    u.socialPose='Sit';delete u.heldItem;delete u.heldPortion;delete u.thuanExpression;u.tipsy=0;u.activity=b.phase==='waiting'?'the kettle on before he signs on':'in his chair, the set off';
    }else delete u.thuanExpression;
    if(actor)updateAvatarActor(actor,dt);
    if(actor&&pouring)pour(b);

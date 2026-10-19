@@ -91,3 +91,18 @@ test('the first window view does not partition hidden or offscreen town geometry
  assert.ok(counts.get('visible')>0,'Visible geometry is considered for spatial partitioning');
  assert.equal(view.stats.visible,1);assert.equal(hidden.visible,false);assert.equal(layer.layers.mask,2**31);
 });
+
+test('portal caches release private indices on exit without disposing borrowed street vertex buffers',()=>{
+ const scene=new THREE.Scene(),town=new THREE.Group(),room=new THREE.Group();scene.add(town,room);town.visible=false;
+ const geometry=new THREE.PlaneGeometry(40,4,60,30),mesh=new THREE.Mesh(geometry,new THREE.MeshBasicMaterial());mesh.position.set(0,1,2);town.add(mesh);
+ const position=geometry.attributes.position,camera=new THREE.PerspectiveCamera(100,1.6,.07,220);camera.position.set(0,1.7,0);camera.rotation.y=Math.PI;
+ let released=0,removedAttributes;
+ const renderer={autoClear:true,clippingPlanes:[],clearDepth(){},render(){if(mesh.geometry!==geometry&&!mesh.geometry.userData.observed){const g=mesh.geometry;g.userData.observed=true;g.addEventListener('dispose',()=>{released++;removedAttributes=Object.keys(g.attributes);});}}};
+ const view=createShopStreetView(),args={renderer,scene,camera,town,room,frontage:{position:[0,0,0],yaw:0}};
+ for(let i=0;i<10;i++){
+  view.render(args);assert.ok(view.stats.cacheBytes>0);assert.equal(mesh.geometry,geometry);
+  view.dispose();assert.equal(view.stats.cacheBytes,0);assert.deepEqual(removedAttributes,[],'Disposal cannot delete shared GPU vertex buffers');
+ }
+ assert.equal(released,10);view.dispose();assert.equal(released,10,'Disposal is idempotent');
+ assert.equal(geometry.attributes.position,position);
+});

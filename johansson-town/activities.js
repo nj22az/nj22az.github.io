@@ -61,7 +61,7 @@ import {townAudio} from './src/audio/town-audio.js?snappy=1';
 import {DIALOGUE} from './src/people/schedules.js?snappy=1';
 import {JOURNAL} from './content-data.js';
 import {CITY_RESTAURANT,DINNER_MENU} from './src/world/interiors/city-dinner.js';
-import {readSave,readPlayers,activePlayer,addPlayer,switchPlayer,renamePlayer,touchPlayer,slotKey,writeSave,rescueSave,activeSlot,PREV_SUFFIX} from './src/save.js';
+import {readSave,readPlayers,activePlayer,addPlayer,switchPlayer,renamePlayer,touchPlayer,writeSave,rescueSave,activeSlot,PREV_SUFFIX} from './src/save.js';
 import {createTownDialogue,restoreStory,countTalk,dialogueVariables} from './src/dialogue/town-dialogue.js';
 import {createDialogueBox} from './src/dialogue/dialogue-box.js';
 import {giftableItems,takeGift,giftReaction} from './src/people/thuan-gifts.js';
@@ -154,13 +154,21 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
   function save(){
     if(globalThis.__JOHANSSON_TITLE_PREVIEW__)return false;
     let saved=false;
-    state.avatarRecipe=encodeRecipe(playerRecipe());
-    retainArchive(state.documentArchive,getMinutes());
     if(travelProgress(state).unlocked&&!state.quickTravelNotified){state.quickTravelNotified=true;state.notes.push('Earned the town shortcuts: Tama is home and Chin’s workshop route is complete.');say('Town shortcuts unlocked! Quick travel is now in your Town Book.',7);}
-    try {const locations=getResidentLocations();if(locations)state.residentLocations=locations;state.minutes=getMinutes();state.savedAt=Date.now();saved=writeSave(localStorage,activeSlot(localStorage),JSON.stringify(state));if(!saved)throw Error('storage full');touchPlayer(localStorage,state.savedAt);$('#saveState').textContent='PROGRESS SAVED';}
+    try {state.avatarRecipe=encodeRecipe(playerRecipe());retainArchive(state.documentArchive,getMinutes());const locations=getResidentLocations();if(locations)state.residentLocations=locations;state.minutes=getMinutes();const savedAt=Date.now();saved=writeSave(localStorage,activeSlot(localStorage),JSON.stringify({...state,savedAt}));if(!saved)throw Error('storage full');state.savedAt=savedAt;touchPlayer(localStorage,savedAt);$('#saveState').textContent='PROGRESS SAVED';}
     catch {$('#saveState').textContent='SAVING UNAVAILABLE';}
     $('#wallet').textContent=`¥${state.yen.toLocaleString()}`;
     return saved;
+  }
+  // Navigation must not discard the live session after a rejected storage write.
+  // Export remains available even when this device cannot save locally.
+  function saveBeforeLeaving(proceed){
+    if(!save()){
+      show('Progress not saved','Your progress is still open, but this device could not save it. Try again or export a save file before leaving.',[
+        ['Try again',()=>saveBeforeLeaving(proceed)],['Export save file',exportSave],['Keep playing',close]]);
+      return false;
+    }
+    proceed();return true;
   }
   function close(){dialogueBox.close();modal.classList.remove('bag-view','flyer-view','letter-view','pocket-album-view','resident-record');ledgerView=null;magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
   // options.mood: how Thuan's face looks for this line (her lines only; others release it).
@@ -991,10 +999,10 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
     const when=t=>t?new Date(t).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'never';
     const others=roster.players.filter(p=>p.id!==roster.active);
     show('Player · '+(me?.name||'Visitor'),'Progress saves on this device, automatically every few seconds and whenever you leave. Last saved: '+when(state.savedAt)+'.',[
-      ['Save now',()=>{save();receipt('Saved','Saved for '+(me?.name||'Visitor')+' at '+when(Date.now())+'.');}],
+      ['Save now',()=>saveBeforeLeaving(()=>receipt('Saved','Saved for '+(me?.name||'Visitor')+' at '+when(state.savedAt)+'.'))],
       ['Rename player',()=>{const name=globalThis.prompt?.('Name for this player',me?.name||'');if(name&&renamePlayer(localStorage,name)){players();}}],
-      ...others.map(p=>['Switch to '+p.name+' · '+when(p.lastPlayed),()=>{save();switchPlayer(localStorage,p.id);globalThis.location?.reload?.();}]),
-      ['New player',()=>{const name=globalThis.prompt?.('Name for the new player','');if(!name)return;save();addPlayer(localStorage,name);globalThis.location?.reload?.();}],
+      ...others.map(p=>['Switch to '+p.name+' · '+when(p.lastPlayed),()=>saveBeforeLeaving(()=>{if(!switchPlayer(localStorage,p.id)){receipt('Player not changed','Your progress was saved, but this device could not switch players.');return;}globalThis.location?.reload?.();})]),
+      ['New player',()=>{const name=globalThis.prompt?.('Name for the new player','');if(!name)return;saveBeforeLeaving(()=>{if(!addPlayer(localStorage,name)){receipt('Player not created','Your progress was saved, but this device could not create another player.');return;}globalThis.location?.reload?.();});}],
       ['Export save file',exportSave],
       ['Import save file',importSave],
       ['Close',close]]);
@@ -1009,8 +1017,8 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
     const input=document.createElement('input');input.type='file';input.accept='application/json,.json';
     input.onchange=async()=>{
       const file=input.files?.[0];if(!file)return;
-      try{const data=JSON.parse(await file.text());if(data?.game!=='johansson-town'||!data.state||typeof data.state!=='object')throw Error('not a save');
-        const id=addPlayer(localStorage,data.player||file.name.replace(/\.json$/,''));localStorage.setItem(slotKey(id),JSON.stringify(data.state));globalThis.location?.reload?.();}
+      try{const data=JSON.parse(await file.text());if(!['johansson-town','johansson-world'].includes(data?.game)||!data.state||typeof data.state!=='object'||Array.isArray(data.state))throw Error('not a save');
+        saveBeforeLeaving(()=>{if(!addPlayer(localStorage,data.player||file.name.replace(/\.json$/,''),Date.now(),data.state)){receipt('Import not saved','This device could not save the imported player. Your current player is unchanged.');return;}globalThis.location?.reload?.();});}
       catch{receipt('Import','That file is not a Johansson World save.');}
     };
     input.click();
@@ -1394,5 +1402,5 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
 
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);
   $('#soundButton').textContent=state.sound?'On':'Off';radioStation=state.radioStation||0;save();{const label=onWeather?.('start');if(typeof label==='string')$('#weatherButton').textContent=label;}
-  return {action,documentArchive,inventory,bag,residentRecord,residentRecords,canResidentRecord,close,save,keepPhoto,letGoPhoto,pocketAlbum,get album(){return state.pocketAlbum||[];},post,deliverPost,favourCard,get unreadPost(){return unreadCount(ensurePost(state).box);},spend,players,menu:show,dialogue:dialogueBox,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
+  return {action,documentArchive,inventory,bag,residentRecord,residentRecords,canResidentRecord,close,save,saveBeforeLeaving,keepPhoto,letGoPhoto,pocketAlbum,get album(){return state.pocketAlbum||[];},post,deliverPost,favourCard,get unreadPost(){return unreadCount(ensurePost(state).box);},spend,players,menu:show,dialogue:dialogueBox,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
 }

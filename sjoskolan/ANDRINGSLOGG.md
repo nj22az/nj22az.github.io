@@ -241,7 +241,24 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     skriptet; jämför nya tal med alla svar i databasen och med övningstentan. *Kontroll:
     `innehall/tests/test_formelsamling_exempel.py` (formelsamlingen); formelbladet och övningstentan manuellt.*
 
+60. **Klassens räkneexempel ska kunna visas i sin helhet.** Jämför både mellansteg och slutsvar med veckans övriga
+    övningar och inlämning. Byt klassens tal när de sammanfaller, i stället för att förbjuda läraren att visa metoden.
+    Kontrollera också det nya exemplet i ledtrådstrappan. En kursvariant får en egen post när originalet även används
+    i boken; befintligt övningsnummer, ankare och sparad elevprogress behålls.
+
 ## Ändringar
+
+- **2026-10-19** Vecka 43, övning 2.5: separat kursvariant EL-000891 ersätter EL-000165 på kursens yta. En tiopolig
+  60 Hz-motor vid 684 r/min ger synkront varvtal 720 r/min och eftersläpning 5,0 %. Ledtråd 3 använder genomgångens
+  åttapoliga exempel med andra svar. Sex poler vid 60 Hz valdes bort eftersom det ger samma varvtal som övning 2.6.
+  Delsida, Formelstöd, bild 12 i den 21 bilder långa presentationen, PDF och webbildspel följer kursvarianten.
+  Tisdagens lärarinstruktion i Google Docs visar alla mellansteg och tillåter facit efter eget försök. Numrering,
+  länkar, läxor och elevprogress behålls. Inlämningens uppgifter, rättningsnyckel, sista dag och Classroom-flöde
+  ändras inte. Bokens originaluppgift och skyddade material behålls separat.
+
+- **2026-10-18** Beslut av Nils Johansson: kompletta egna protokoll för station 2 (vecka 43) och station 3 (vecka 44) får återanvändas; luckor kompletteras mot stationskraven och riskbedömningen. Ursprung och kompletteringar anges, originalets förutsägelser, försök och mätningar bevaras. Tre protokoll och riskbedömningen lämnas fortfarande in, och individuellt muntligt prov med ett nytt okänt fel kvarstår. Skriftliga tentamen är ännu inte schemalagd. Bokning och möteslänk är fortsatt obekräftade. Elevsidor, veckosidans generator och båda aktuella lärarmanusen i Google Docs följer beslutet.
+
+- **2026-10-18** Examination vecka 45: elevsidorna skiljer frivillig övningstenta, veckoinlämningar och bedömt praktiskt prov. Samma tre PDF-protokoll och riskbedömning, mejladress, ämnesrad och onsdag 4 november 20.00 anges; muntligt 5–6 november, 15 minuter. Bokning, möteslänk och skriftligt provs exakta tider/åtkomst/inlämning markeras som ännu inte publicerade. Veckosidans generator använder ingen påhittad starttid för skriftliga tentamen. Inlämningssidan vecka 45 skiljer också frivillig övningstenta från det bedömda praktiska provet, med länk till provets inlämningsinstruktion. Tidigare protokoll bevaras; återanvändning är fortfarande ett lärarbeslut. Aktuella lärarmanus i Google Docs har samma administrativa avstämning och beslutsunderlag. Inga dolda fel, lärarfacit, simulatorvärden eller bedömningsgränser ändrade.
 
 - **2026-10-18** Vecka 43 fredag: 15 minuter eget arbete i del 3 (3.6, 3.7, 3.9), 12 minuter med 1.2–1.3 och 13 minuter med lampkretsens mätplan och 1.10 i del 4. Alla teoriavsnitt, exempel, nummer och länkar bevaras. Upprepade övningar är tydligt frivilliga och räknas inte som ogjorda läxor. Samma inlämning, facit, skyddade lärarfiler och sista dag. Lärarinstruktionen i Google Docs följer tiderna och samlar avslutningen, utan genomgång av bedömda labbfel.
 

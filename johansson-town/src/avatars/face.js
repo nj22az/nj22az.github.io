@@ -86,6 +86,20 @@ const MOOD=Object.freeze({
  fuming:{eyes:'angry',brow:1.6,browLift:-6,mouth:'gritted',blush:0,fx:['flush','vein']},
  drooling:{eyes:'dreamy',brow:-.4,browLift:7,mouth:'drool',blush:.35,fx:['drool'],look:[.3,-.9]},
  wink:{eyes:'wink',brow:0,browLift:4,mouth:'grin',blush:.25},
+ // Tempers (the creator, 2026-10-19: "pissed off and raging angry is funny, make some more of those; whatever fits Crayon
+ // Shin-chan's world in expressions"): the all-out yell, the smile that is holding it in, the eyes gone to the ceiling.
+ raging:{eyes:'angry',brow:1.9,browLift:-8,mouth:'wail',blush:.35,fx:['flush','vein'],mouthDY:4},
+ seething:{eyes:'closed',brow:1.3,browLift:-4,mouth:'grin',blush:.25,fx:['vein','sweat']},
+ eyeroll:{eyes:'open',brow:.45,browLift:3,mouth:'flat',blush:0,look:[.15,-.95]},
+ // The moves and the pair poses (the creator, 2026-10-19: "And running and walking, and kissing and hugging and fighting"):
+ // the panic run's fright (the brows up and worried over wide eyes with tiny pupils, the mouth open in a yell, a bead of
+ // sweat: no face of the town was afraid; shock stares and dismay goes flat) and the kiss (the eyes closed, the lips
+ // puckered out, a deep blush: pouting puckers too, but with an angry brow and the cheeks puffed).
+ scared:{eyes:'shock',brow:-1.5,browLift:14,mouth:'wail',blush:0,fx:['sweat'],mouthDY:4},
+ kiss:{eyes:'closed',brow:-.3,browLift:5,mouth:'pucker',blush:.9},
+ // ...and the one kissed: eyes wide, red to the ears, a bead of sweat (embarrassed hides its eyes; shock and surprised do
+ // not blush)
+ flustered:{eyes:'wide',brow:-.5,browLift:12,mouth:'wobble',blush:1,fx:['sweat']},
 });
 export const EXPRESSION_NAMES=Object.freeze(Object.keys(MOOD));
 /** What each funny face is for, in a line: for the Studio's lists, the photo studio and whoever writes a panel. */
@@ -103,12 +117,18 @@ export const EXPRESSION_INFO=Object.freeze({
  fuming:'Gritted teeth, a red face and the anger mark: the last straw.',
  drooling:'Dreamy eyes and a drip at the corner of the mouth: the smell from the kitchen.',
  wink:'One eye shut and a grin: a secret shared with the reader.',
+ raging:'The all-out yell: brows down, mouth wide, red to the ears and the anger mark.',
+ seething:'Holding it in: eyes squeezed into a smile, the anger mark and a bead of sweat.',
+ eyeroll:'Give me a break: the eyes rolled to the ceiling over a flat mouth.',
+ scared:'Fright: brows up, tiny pupils in wide eyes, the mouth open in a yell and a bead of sweat; the panic run.',
+ kiss:'The peck: eyes closed, lips puckered out and a deep blush.',
+ flustered:'Kissed: eyes wide, mouth wobbling, red to the ears and a bead of sweat.',
 });
 /** A small face for each expression (the photo studio's chips), so every list shows the same faces. */
 export const EXPRESSION_GLYPHS=Object.freeze({neutral:'•ᴗ•',happy:'◠ᴗ◠',laugh:'≧▽≦',smile:'•◡•',sad:'•︵•',angry:'>︿<',shy:'˶ᴗ˶',surprised:'⊙o⊙',worried:'•﹏•',
  thinking:'•_•',grumpy:'¬_¬',content:'˘ᴗ˘',sleep:'－ᴗ－',excited:'☆ᴗ☆',dizzy:'@_@',scheme:'¬ᴗ¬',embarrassed:'>﹏<;',pain:'>_<',bliss:'˘▽˘',shock:'°□°',
  dismay:'•_•;',calm:'•‿•',daze:'◔_◔',dry:'－_－',hope:'•̀ᴗ•́',focus:'•̀_•́',relieved:'˘◡˘',gobsmacked:'⊙Д⊙',smug:'¬‿¬',bawling:'ToT',starstruck:'★ᴗ★',
- sweatdrop:'^^;',blank:'○_○',pouting:'(•3•)',bleh:'^ڡ^',drowsy:'＝o＝',lovestruck:'♥ᴗ♥',fuming:'>д<',drooling:'¯﹃¯',wink:'•ᴗ<'});
+ sweatdrop:'^^;',blank:'○_○',pouting:'(•3•)',bleh:'^ڡ^',drowsy:'＝o＝',lovestruck:'♥ᴗ♥',fuming:'>д<',drooling:'¯﹃¯',wink:'•ᴗ<',raging:'>口<',seething:'^_^#',eyeroll:'◑_◑',scared:'°Д°;',kiss:'˘3˘',flustered:'⊙﹏⊙;'});
 
 /**
  * @param {CanvasRenderingContext2D} ctx

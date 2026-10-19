@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {residentPlan,thuanWeekendAway} from '../src/people/social.js';
-import {RESIDENTS} from '../src/people/residents.js';
-import {sakuraClerkAt,isWeekend} from '../src/commerce/sakura-rota.js';
+import {RESIDENTS,residentHomeDescription} from '../src/people/residents.js';
+import {sakuraClerkAt,isWeekend,sakuraOpenAt,SAKURA_STAFF} from '../src/commerce/sakura-rota.js';
+import {SUPPLIERS} from '../src/commerce/merchandising.js';
 import {NEIGHBOURS} from '../src/people/neighbours.js';
 import {KITANO_HAMLET,hamletGate} from '../src/world/kitano-hamlet-layout.js';
 import {airportWorld} from '../src/world/airport-ground.js';
@@ -24,31 +25,43 @@ test('Thuan spends the weekend at home on Kitano-jima: the Friday 22:00 boat out
  assert.match(residentPlan(thuan,at(5,520)).activity,/arriving on the ferry from Kitano-jima/);
  assert.equal(residentPlan(thuan,at(5,600)).place,'market','Monday she is back at Sakura');
  assert.ok(!thuanWeekendAway(at(1,1400))&&!thuanWeekendAway(at(2,1319)),'Weekdays and Friday before the boat are in town');
- assert.equal(residentPlan(thuan,at(1,1400)).place,'home','On a weekday night she sleeps at 1 Kitahama');
+ // Her weekday room at 1 Kitahama is gone (addendum 4): on a weekday night she is away, home on Kitano-jima, and back on the morning boat.
+ assert.equal(residentPlan(thuan,at(1,1400)).place,'away','On a weekday night she is home on Kitano-jima');assert.match(residentPlan(thuan,at(1,1400)).activity,/Kitano-jima/);
+ assert.equal(residentPlan(thuan,at(1,1300)).place,'bus','after the evening she waits for the last boat, never walks to a Kitahama room');
+ assert.equal(residentPlan(thuan,at(1,520)).place,'bus');assert.match(residentPlan(thuan,at(1,520)).activity,/arriving/);
+ assert.equal(thuan.homeAddress,'Kitano hamlet, Kitano-jima');
 });
 
-test('Sakura’s rota: Thuan on weekdays, Nhung at the weekend, Chin every night, Grandmother Sakurai at dawn',()=>{
+test('Sakura is Thuan’s outright and keeps shop hours: Thuan on weekdays, Nhung at the weekend, nobody at night; Chin, the motorman, never',()=>{
+ assert.equal(SUPPLIERS.sakura.owner,'Thuan');assert.deepEqual([...SAKURA_STAFF],['Thuan','Nhung']);assert.deepEqual([...PLACES.sakura.keepers],['Thuan','Nhung']);
  assert.equal(sakuraClerkAt(at(1,600)),'Thuan');assert.equal(sakuraClerkAt(at(3,600)),'Nhung');assert.equal(sakuraClerkAt(at(4,1229)),'Nhung');
- for(const day of [1,3,5]){assert.equal(sakuraClerkAt(at(day,1230)),'Chin');assert.equal(sakuraClerkAt(at(day,180)),'Chin');assert.equal(sakuraClerkAt(at(day,420)),'Grandmother Sakurai');}
+ for(const day of [1,3,5]){for(const m of [1230,180,420,539]){assert.equal(sakuraClerkAt(at(day,m)),null,'nobody at the counter at '+m);assert.equal(sakuraOpenAt(at(day,m)),false,'shut at '+m);}assert.equal(sakuraOpenAt(at(day,540)),true);assert.equal(sakuraOpenAt(at(day,1229)),true);}
+ for(let m=0;m<1440;m+=5)for(const day of [1,3])assert.notEqual(sakuraClerkAt(at(day,m)),'Grandmother Sakurai','the retired owner keeps no counter at '+m);
+ for(let m=0;m<1440;m+=5)for(const day of [1,3])assert.notEqual(sakuraClerkAt(at(day,m)),'Chin','Chin has no Sakura shift at '+m);
  assert.ok(isWeekend(at(3,0))&&isWeekend(at(4,1439))&&!isWeekend(at(5,0)));
  for(let m=0;m<1440;m+=5)assert.equal(residentPlan(profile('Nhung'),at(3,m)).place==='bookshop',false,'Front Row is closed on Saturday: '+m);
  assert.equal(residentPlan(profile('Nhung'),at(3,700)).place,'market','Nhung minds Sakura on Saturday');
- assert.equal(residentPlan(profile('Chin'),at(1,1300)).place,'market');assert.equal(residentPlan(profile('Chin'),at(1,600)).place,'home','Chin sleeps after the night shift');
+ assert.equal(residentPlan(profile('Chin'),at(1,600)).place,'ferry','Chin is aboard as the motorman by day');assert.equal(residentPlan(profile('Chin'),at(1,1300)).place,'ferry');
+ assert.notEqual(residentPlan(profile('Chin'),at(1,1400)).place,'ferry','and ashore after he signs off');
 });
 
-test('Tetsuo lives in the Front-Row yard and never takes the boat; his mother keeps the old Chinen house',()=>{
+test('Tetsuo lives in the Front-Row yard and never takes the boat; the Chinen house on Kitano-jima is gone with his mother, the history kept',()=>{
  const tetsuo=profile('Tetsuo');
  assert.equal(tetsuo.homeAddress,'2 Front-Row Yard');
  assert.equal(residentPlan(tetsuo,at(1,720)).place,'ramen');assert.equal(residentPlan(tetsuo,at(1,1100)).place,'work');
  for(let m=0;m<1440;m+=15)assert.notEqual(residentPlan(tetsuo,at(1,m)).place,'away',''+m);
- const mother=NEIGHBOURS.find(n=>n.name==='Grandmother Chinen'),plot=KITANO_HAMLET.plots.find(p=>p.id==='kitano-3'),gate=airportWorld(...hamletGate(plot).door);
- assert.deepEqual(mother.home,gate);assert.ok(mother.routine.some(p=>/sweeping the lane/.test(p.role))&&mother.routine.some(p=>p.home));
- assert.ok(mother.lines.some(l=>/Tetsuo/.test(l)));
+ // Phase 4 (docs/CAST-CONSOLIDATION.md §6, addendum 5): Grandmother Chinen retired and the Chinen house came down; the
+ // hamlet is Johansson's house and the Shiroma house (Kai's), and only the family history stays in Tetsuo's own words.
+ assert.equal(NEIGHBOURS.find(n=>n.name==='Grandmother Chinen'),undefined,'no body');assert.equal(castMember('Grandmother Chinen'),null);
+ assert.deepEqual(KITANO_HAMLET.plots.map(p=>p.id),['kitano-1','kitano-2']);
+ for(const p of KITANO_HAMLET.plots){const [x,z]=airportWorld(...hamletGate(p).door);assert.ok(Number.isFinite(x)&&Number.isFinite(z));}
+ assert.match(residentHomeDescription('Tetsuo'),/Chinen/);assert.doesNotMatch(residentHomeDescription('Tetsuo'),/5 Kitahama/);
 });
 
-test('Jun has left the island: the Minato Maru’s tickets are sold at the Port Terminal window',()=>{
- assert.equal(NEIGHBOURS.find(n=>n.name==='Jun'),undefined,'Jun has left the island');
- assert.equal(castMember('Jun'),null);
+test('the airport’s ticket clerk Jun has left the island: the Minato Maru’s tickets are sold at the Port Terminal window',()=>{
+ assert.equal(NEIGHBOURS.find(n=>n.name==='Jun'),undefined,'the old clerk is no neighbour');
+ // The name belongs to the ferry's cook-steward now (people/roster.js SUPPORTING), who lives aboard, not at the airport.
+ assert.equal(castMember('Jun').work,'ferry');assert.equal(castMember('Jun').supporting,true);
  assert.equal(PLACES['airport-tickets'],undefined,'no desk of Jun’s left in the cast’s places');
  assert.ok(PLACES.port.keepers.includes('Ms Ganaha')&&castMember('Ms Ganaha').work==='port','Ms Ganaha sells the tickets at the terminal window');
 });

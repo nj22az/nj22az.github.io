@@ -9,7 +9,7 @@ import {SEA_LEVEL} from './ocean.js';
  * A concrete-decked jetty on piles runs out east into deeper water, with a hose crane
  * and the manifold at its head and a pipeline back along it to the fuel depot on the
  * shore: one squat white tank in a bund. The power house at the town hall draws from
- * the depot by truck (Mr Shimabukuro's six trips). Every third day the tanker 第八港油丸
+ * the depot by truck (six trips, the power house keeper's job until he retired; the lorry is Tetsuo's errand now). Every third day the tanker 第八港油丸
  * comes in from the east, lies alongside from eight until three with its hose connected,
  * and leaves again.
  */

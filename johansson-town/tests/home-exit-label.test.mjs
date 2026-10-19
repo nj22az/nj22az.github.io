@@ -23,7 +23,7 @@ test('Mrs Sato’s actual registered home exit names the Kitahama landing outsid
 
 test('home exit labels follow relocated site metadata before legacy addresses',()=>{
  for(const plot of ['kitahama-1','kitahama-5','kitahama-12'])assert.equal(homeExitLabel({plot},{homeAddress:'3 Main Street'}),'Exit to Kitahama');
- for(const id of ['resident-home-aya','resident-home-kenji'])assert.equal(homeExitLabel({id},{homeAddress:'1 Main Street'}),'Exit to Front-Row yard');
+ for(const id of ['resident-home-kenji'])assert.equal(homeExitLabel({id},{homeAddress:'1 Main Street'}),'Exit to Front-Row yard');
  assert.equal(homeExitLabel(null,RESIDENTS.find(p=>p.name==='Mrs Sato')),'Exit to Kitahama');
  assert.equal(homeExitLabel(null,{homeAddress:'4 Main Street'}),'Exit to Main Street');
  assert.equal(homeExitLabel(null,{homeAddress:'Workplace room'}),'Exit to the street');

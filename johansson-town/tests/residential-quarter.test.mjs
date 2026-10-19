@@ -25,8 +25,9 @@ test('the residential quarter: lanes you can walk, every gate on a lane, a park,
  try{
  const blocked=(x,z,r=.3)=>world.colliders.some(c=>circleHitsRect(x,z,r,c));
  world.group.updateMatrixWorld(true);const floorMeshes=[];world.group.traverse(o=>{if(o.isMesh&&!o.material?.transparent)floorMeshes.push(o);});const floorRay=new THREE.Raycaster();
- // Ten to twelve homes and more: the five old plots, seven new ones and the flats.
- assert.ok(KITAHAMA.plots.length>=12);
+ // The four walled houses that stand (phase 4 of docs/CAST-CONSOLIDATION.md took 4, 5 and 6; the housing project 7 and 9–12); the
+ // Heights are two more homes. The cleared lots wait for their dressing (okinawa/lots.js CLEARED_LOTS).
+ assert.deepEqual(KITAHAMA.plots.map(p=>p.id),['kitahama-1','kitahama-2','kitahama-3','kitahama-8']);
  // Down the middle of every lane, nothing in the way, and the ground is the lane's.
  for(const L of KITAHAMA_LANES){
   const alongZ=L.maxZ-L.minZ>L.maxX-L.minX,mid=alongZ?(L.minX+L.maxX)/2:(L.minZ+L.maxZ)/2;
@@ -57,7 +58,7 @@ test('the residential quarter: lanes you can walk, every gate on a lane, a park,
  const areas=[...KITAHAMA.plots,KITAHAMA.apartment,KITAHAMA.park];
  for(let i=0;i<areas.length;i++){for(let j=i+1;j<areas.length;j++)assert.ok(!over(areas[i],areas[j]),'overlap '+i+' '+j);for(const L of KITAHAMA_LANES)assert.ok(!over(areas[i],L),'on a lane: '+(areas[i].id||i));}
  // The shared places are there to use.
- for(const label of ['Read the Kitahama Heights mailboxes','Sit on the park bench','Push the swing','Read the Kitahama notice board','9 Kitahama · To let'])
+ for(const label of ['Read the Kitahama Heights mailboxes','Sit on the park bench','Push the swing','Read the Kitahama notice board','8 Kitahama · Ms Uezu'])
   assert.ok(labels.some(l=>l.label===label),label);
  const bench=labels.find(l=>l.label==='Sit on the park bench').o.userData.seat;
  assert.ok(bench&&!blocked(bench.stand[0],bench.stand[2],.25),'the bench can be reached');

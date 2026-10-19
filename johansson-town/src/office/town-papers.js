@@ -6,7 +6,7 @@ export const TOWN_PAPERS=[
     "organisation": "Sakura Shop",
     "author": "Thuan",
     "source": "flyer:sakura-shop-1997",
-    "text": "SAKURA SHOP — Your little island convenience store\n1997 neighbourhood edition · Prepared by Thuan\nOpen 24 hours, every day. Cash only. All prices include tax.\nPlum rice ball · ¥110\nGreen tea · ¥120\nSalted potato crisps · ¥100\nOne stamp per ¥300 spent in a visit. Collect 10 stamps for a free green tea.\nFind us on Main Street, beside the harbour approach. The map is a neighbourhood sketch; the bus stop is north and the harbour is south.\nMeet Jaga-bo, our KOGANE potato-crisp mascot. Drop in and say hello to Thuan!\nFree copies at Sakura’s counter and the harbour notice board. Community Hall keeps a filed copy for one year."
+    "text": "SAKURA SHOP — Your little island convenience store\n1997 neighbourhood edition · Prepared by Thuan\nOpen 9:00–20:30, every day. Cash only. All prices include tax.\nPlum rice ball · ¥110\nGreen tea · ¥120\nSalted potato crisps · ¥100\nOne stamp per ¥300 spent in a visit. Collect 10 stamps for a free green tea.\nFind us on Main Street, beside the harbour approach. The map is a neighbourhood sketch; the bus stop is north and the harbour is south.\nMeet Jaga-bo, our KOGANE potato-crisp mascot. Drop in and say hello to Thuan!\nFree copies at Sakura’s counter and the harbour notice board. Community Hall keeps a filed copy for one year."
   },
   {
     "type": "Notice",
@@ -56,20 +56,6 @@ export const TOWN_PAPERS=[
     "organisation": "Town Services",
     "text": "The combined passenger and vehicle ferry connects Minato and Kitano-jima. Buy passenger tickets inside the waiting hall, then board at the outer pier. Cars join crossings when their drivers have an island errand.",
     "source": "notice:Minato–Kitano-jima ferry"
-  },
-  {
-    "type": "Notice",
-    "title": "Rainflower is closed",
-    "organisation": "Town Services",
-    "text": "Mrs Kinjō serves flowers from 09:00 to 18:00. The flowers stay on display at the park entrance.",
-    "source": "notice:Rainflower is closed"
-  },
-  {
-    "type": "Notice",
-    "title": "Rainflower Florist",
-    "organisation": "Town Services",
-    "text": "Fresh stems, potted greenery and hand-made wreaths from Mrs Kinjō. Her counter faces the neighbourhood plaza, east of Main Street. She supplies flowers to Sakura, the izakaya, town office, school and Umi-no-yu. Open 09:00–18:00.",
-    "source": "notice:Rainflower Florist"
   },
   {
     "type": "Flyer",
@@ -124,7 +110,7 @@ export const TOWN_PAPERS=[
     "type": "Notice",
     "title": "Ferry departures",
     "organisation": "Town Services",
-    "text": "The shared car and passenger ferry crosses to Kitano-jima on request. Buy a return passenger ticket at the airport-ferry window (Ms Ganaha, noon to 22:15; in the morning from the oiler at the gangway) and board from the outer pier. The evening boat to Naha opens at 17:00.",
+    "text": "The shared car and passenger ferry crosses to Kitano-jima on request. Buy a return passenger ticket at the airport-ferry window (Ms Ganaha, noon to 22:15; in the morning from the oiler at the gangway) and board from the outer pier. The evening boat to Naha opens at 17:00. Post and parcels are handled at the same window.",
     "source": "notice:Ferry departures"
   },
   {
@@ -229,7 +215,7 @@ export const TOWN_PAPERS=[
     "type": "Flyer",
     "title": "Kitahama notice board",
     "organisation": "Town Services",
-    "text": "Rubbish: burnable on Tuesdays and Fridays, cans and bottles on Wednesdays, out by eight and under the nets, because of the crows.\n\nThe cane cut is on Monday the 12th of January from seven. Everybody on the lane, lunch at Sato Ramen.\n\nTo let: numbers 7, 9, 10, 11 and 12. Ask at the town hall.\n\nTyphoon season: tie down your water tanks, fill the bath, shutters up by Friday. Mr Shimabukuro will check the lane lights.\n\nFound: a child's blue sandal, left foot. Ask at number 3.",
+    "text": "Rubbish: burnable on Tuesdays and Fridays, cans and bottles on Wednesdays, out by eight and under the nets, because of the crows.\n\nThe cane cut is on Monday the 12th of January from seven. Everybody on the lane, lunch at Sato Ramen.\n\nTyphoon season: tie down your water tanks, fill the bath, shutters up by Friday. Tetsuo will check the lane lights.\n\nFound: a child's blue sandal, left foot. Ask at number 3.",
     "source": "notice:Kitahama notice board"
   },
   {
@@ -245,13 +231,6 @@ export const TOWN_PAPERS=[
     "organisation": "Town Services",
     "text": "He is asleep on his sofa aboard Shiosai. He returns to the shed at six in the morning.",
     "source": "notice:Mr Fujita is asleep"
-  },
-  {
-    "type": "Notice",
-    "title": "Mr Fujita’s television",
-    "organisation": "Town Services",
-    "text": "A portable set older than the boat, on a fish crate, the aerial bent to find the signal from across the water. Mr Fujita does not look away from it. \"Sit, sit. The eighth innings is the only one worth watching. Have a can; they are cold, the box is new.\"",
-    "source": "notice:Mr Fujita’s television"
   },
   {
     "type": "Flyer",
@@ -271,7 +250,7 @@ export const TOWN_PAPERS=[
     "title": "Petitions to the mayor",
     "type": "Notice",
     "organisation": "Community Hall",
-    "text": "From Mr Shimabukuro, the power house next door: The second diesel set needs new injectors before typhoon season. The parts come on the Thursday ferry if the town pays this week.\n\nFrom Mrs Nakamura, Nakamura Zenzai: The street lamp outside the east row has flickered since the rain. Customers say it makes the zenzai look grey.\n\nFrom the Higa household, Nishi-machi: May the children use the town hall field on Sunday for eisa practice? Grandmother Higa will supervise. Loudly.\n\nFrom the ferry company: The new cargo trucks are heavier. We ask the town to strengthen the quay apron where the ramp lands.\n\nFrom Thuan, Sakura Shōten: A request for a bench at the bus stop by the ferry. People wait there with their shopping.",
+    "text": "From Tetsuo, for the power house next door: The second diesel set needs new injectors before typhoon season. The parts come on the Thursday ferry if the town pays this week.\n\nFrom Mrs Nakamura, Nakamura Zenzai: The street lamp outside the east row has flickered since the rain. Customers say it makes the zenzai look grey.\n\nFrom the Higa household, Nishi-machi: May the children use the town hall field on Sunday for eisa practice? Grandmother Higa will supervise. Loudly.\n\nFrom the ferry company: The new cargo trucks are heavier. We ask the town to strengthen the quay apron where the ramp lands.\n\nFrom Thuan, Sakura Shōten: A request for a bench at the bus stop by the ferry. People wait there with their shopping.",
     "source": "notice:Petitions to the mayor"
   },
   {

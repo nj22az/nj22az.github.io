@@ -255,7 +255,7 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
  const fxaaPass=makeQuad(FXAA_FRAGMENT,{tDiffuse:{value:null},uTexel:{value:new THREE.Vector2(1,1)}});
 
  const size=new THREE.Vector2(0,0);
- const state={ink:true,grade:true,fxaa,scale:superScale,samples:msaa};
+ const state={ink:true,grade:true,fxaa,scale:superScale,samples:msaa,hdr:halfFloat};
  let width=0,height=0;
 
  /** Sizes the targets to whatever the renderer is currently drawing into. */

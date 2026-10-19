@@ -39,8 +39,8 @@ export function buildYardHomeInterior({site,room,reg,action,collider=()=>{}}){
  const at=(size,[x,y,z],c,name)=>box(size,[X(x),y,z],c,name);
  const block=(x,z,w,d,h)=>collider(X(x),z,w,d,h);
  const anchor=(pos,label,fn)=>{const o=new THREE.Object3D();o.position.set(X(pos[0]),pos[1],pos[2]);o.userData.npcInteraction=false;group.add(o);reg(o,label,fn,true);};
- const aya=site.id==='resident-home-aya';
- const wall=aya?0xe6efe6:0xf1e6cf,trim=aya?0x5f8f6a:0x2a6f9c;
+ // One yard home is left (resident-home-kenji, Tetsuo); 1 Front-Row Yard went in phase 4 (okinawa/lots.js CLEARED_LOTS).
+ const wall=0xf1e6cf,trim=0x2a6f9c;
  const kit=createPlanKit({box,collider,height:H,wall});
  const partition=(x1,z1,x2,z2,gaps=[],opts)=>kit.partition(X(x1),z1,X(x2),z2,Math.abs(z2-z1)<1e-6?gaps.map(([a,b])=>[Math.min(X(a),X(b)),Math.max(X(a),X(b))]):gaps,opts);
 
@@ -77,10 +77,8 @@ export function buildYardHomeInterior({site,room,reg,action,collider=()=>{}}){
  // A little table for two with its stools.
  at([.6,.04,.5],[1.25,.7,-.2],0x8a6a46,'Kitchen table');for(const [dx,dz] of [[-.25,-.2],[.25,-.2],[-.25,.2],[.25,.2]])at([.04,.7,.04],[1.25+dx,.35,-.2+dz],0x6b4a32);block(1.25,-.2,.6,.5,.75);
  for(const [x,z] of [[.6,-.2],[1.25,.5]])at([.32,.45,.32],[x,.22,z],0x6b4a32,'Stool');
- // Against the east wall: Nhung and Reiko's books, or Chin and Tetsuo's radio bench.
- if(aya){at([.35,1.6,.8],[hw-.18,.8,-.25],0x8a6a46,'Bookshelf');for(let r=0;r<4;r++)for(let b=0;b<5;b++)at([.24,.28,.12],[hw-.2,.32+r*.36,-.55+b*.15],[0xb2453b,0x3f6a8a,0xe8c06a,0x3f6a4a,0xf4ecd6][(r+b)%5]);block(hw-.18,-.25,.35,.8,1.6);
-  anchor([hw-.6,1.1,-.25],'Look at the bookshelf',()=>action('inspect','Nhung and Reiko’s shelf','Shop copies with cracked spines, two library books three weeks overdue, a stack of Ribon and a photo of the two of them on the Ferry Kitano.'));}
- else{at([.45,.75,.8],[hw-.24,.375,-.25],0x6b4a32,'Workbench');at([.3,.18,.22],[hw-.26,.84,-.4],0x485c58,'Radio in pieces');at([.06,.06,.3],[hw-.3,.78,-.05],0xc4a35a,'Soldering iron');block(hw-.24,-.25,.45,.8,.8);
+ // Against the east wall: the radio bench.
+ {at([.45,.75,.8],[hw-.24,.375,-.25],0x6b4a32,'Workbench');at([.3,.18,.22],[hw-.26,.84,-.4],0x485c58,'Radio in pieces');at([.06,.06,.3],[hw-.3,.78,-.05],0xc4a35a,'Soldering iron');block(hw-.24,-.25,.45,.8,.8);
   anchor([hw-.7,1.0,-.25],'Look at the radio bench',()=>action('inspect','Chin’s radio bench','A short-wave set with its back off, a soldering iron on a tin lid, and a tide table for Kitahama with the good surf days ringed in red.'));}
 
  // The two futons, laid out for the night; each person's place and hat peg.
@@ -89,7 +87,7 @@ export function buildYardHomeInterior({site,room,reg,action,collider=()=>{}}){
  // use existing tops, without adding an obstacle to this compact floor plan.
  const members=names.map(name=>RESIDENTS.find(p=>p.name===name)||{name});
  const details=householdDetails(members),detailBox=(size,[x,y,z],colour,name)=>at(size,[x,y,z],colour,name);
- for(const [i,detail] of details.slice(0,aya?2:1).entries())addPersonalObject(detailBox,{x:hw-.2,y:aya?1.602:.752,z:aya?-.52+i*.34:-.575,detail,scale:.45});
+ for(const detail of details.slice(0,1))addPersonalObject(detailBox,{x:hw-.2,y:.752,z:-.575,detail,scale:.45});
  addTeaSetting(detailBox,{x:1.06,y:.728,z:-.18,people:names.length});
  addFamilyPhoto(box,{x:X(-1.35),z:-hd+.065,members});
  at([.20,.14,.20],[1.55,1.074,-hd+.3],0xb57655,'Cooking pot');

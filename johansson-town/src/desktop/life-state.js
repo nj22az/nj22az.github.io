@@ -15,7 +15,6 @@ export function playableRoster(names=[]){
  });
 }
 export function shouldSleep(name,minutes){
- if(name==='Barfly')return minute(minutes)>=240&&minute(minutes)<600;
  const profile=RESIDENTS.find(p=>p.name===name);
  if(profile)return homeRoutine(profile,minutes).id==='sleep';
  const person=castMember(name),m=minute(minutes);
@@ -23,14 +22,21 @@ export function shouldSleep(name,minutes){
  const first=person?.day?.[0]?.[0]?.split(':').map(Number),wake=first?Math.max(0,Math.min(390,first[0]*60+first[1]-30)):390;
  return m>=1380||m<wake;
 }
+/** A save's names are read as the consolidated cast reads them (people/cast.js `was`): a 0.2.9 save playing as
+ * Mr Nakandakari goes on as Mac at his own checkpoint; a retired resident's record has nobody to go to and is dropped. */
 export function restoreLife(raw,roster){
- const names=new Set(roster.map(p=>p.name)),people={};
- for(const p of roster){const saved=raw?.people?.[p.name],point=saved?.checkpoint;
+ const names=new Set(roster.map(p=>p.name)),people={},saved=raw?.people&&typeof raw.people==='object'?raw.people:{};
+ const savedFor=name=>saved[name]??saved[Object.keys(saved).find(key=>canonicalResidentName(key)===name)];
+ for(const p of roster){const record=savedFor(p.name),point=record?.checkpoint;
   people[p.name]={home:p.home.id,...(point&&[point.x,point.z,point.yaw].every(Number.isFinite)&&Math.abs(point.x)<2000&&Math.abs(point.z)<2000?{checkpoint:{x:point.x,z:point.z,yaw:point.yaw,atHome:!!point.atHome}}:{})};
  }
  const tempers={};
- for(const [key,value] of Object.entries(raw?.tempers||{}).slice(-400))if(value&&Number.isFinite(value.at)&&Number.isInteger(value.count))tempers[key]={at:value.at,count:Math.max(0,Math.min(4,value.count)),cooldown:Number.isFinite(value.cooldown)?value.cooldown:0};
- return {version:1,active:names.has(raw?.active)?raw.active:'Johansson',people,tempers};
+ for(const [key,value] of Object.entries(raw?.tempers||{}).slice(-400)){
+  const pair=key.split('\u0000').map(canonicalResidentName);
+  if(pair.length===2&&pair.every(name=>names.has(name))&&value&&Number.isFinite(value.at)&&Number.isInteger(value.count))tempers[pair.join('\u0000')]={at:value.at,count:Math.max(0,Math.min(4,value.count)),cooldown:Number.isFinite(value.cooldown)?value.cooldown:0};
+ }
+ const active=canonicalResidentName(typeof raw?.active==='string'?raw.active:'');
+ return {version:1,active:names.has(active)?active:'Johansson',people,tempers};
 }
 export function canQuarrel(a,b){
  if(a===b)return false;

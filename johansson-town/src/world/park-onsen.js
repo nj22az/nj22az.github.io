@@ -4,6 +4,8 @@ import {assetURL} from '../assets.js';
 import {registerDetail} from './detail-stream.js';
 import {ONSEN_SIGNS} from './interiors/onsen-signs.js';
 import {frostedGlassTexture} from './interiors/onsen-front.js';
+import {windowGlow,poolGlow} from '../render/dusk.js';
+import {createLampGlow} from './light-pools.js';
 
 /**
  * Umi-no-yu, the town's public sea-water bath, in the level Harbour Park opposite Sakura.
@@ -137,11 +139,13 @@ function signs(group){
  */
 function doorGlass(){
  const map=frostedGlassTexture(),group=new THREE.Group();group.name='Umi-no-yu door glass';
- const material=new THREE.MeshStandardMaterial(map?{map,transparent:true,side:THREE.DoubleSide,roughness:.55}:{color:0xe8eeec,transparent:true,opacity:.92,side:THREE.DoubleSide,roughness:.55});
+ // Lit from the genkan after dark (the hourly glow below): warm through the frosting, the ゆ left clear.
+ const material=new THREE.MeshStandardMaterial(map?{map,emissiveMap:map,emissive:0xffc27e,emissiveIntensity:0,transparent:true,side:THREE.DoubleSide,roughness:.55}
+  :{color:0xe8eeec,emissive:0xffc27e,emissiveIntensity:0,transparent:true,opacity:.92,side:THREE.DoubleSide,roughness:.55});
  for(const [x,z] of [[-1.85,4.04],[-1.15,3.99]]){
-  const pane=new THREE.Mesh(new THREE.PlaneGeometry(.81,.62),material);pane.position.set(x,.715,z+.006);pane.name='Umi-no-yu frosted door glass';pane.renderOrder=3;group.add(pane);
+  const pane=new THREE.Mesh(new THREE.PlaneGeometry(.81,.62),material);pane.position.set(x,.715,z+.006);pane.name='Umi-no-yu frosted door glass';pane.renderOrder=3;pane.userData.dynamicProp=true;group.add(pane);
  }
- return group;
+ return {group,material};
 }
 
 /** Soft rising steam: one draw per source, drifting up and thinning as it goes. */
@@ -174,11 +178,15 @@ export function buildParkOnsen(world,{register,onAction,enter,sites,shadows=fals
  const group=new THREE.Group();group.name='Umi-no-yu';group.position.set(ONSEN.x,0,ONSEN.z);group.rotation.y=ONSEN.yaw;world.group.add(group);
  world.colliders.push(...ONSEN_COLLIDERS.map(c=>({...c})));
  // Readable frontage exists immediately, with the fallback or the detailed model.
- const {notice,kanban}=signs(group),curtain=noren(),frosting=doorGlass(),plumes=steam(group);
+ const {notice,kanban}=signs(group),curtain=noren(),door=doorGlass(),frosting=door.group,plumes=steam(group);
  const fallback=buildOnsenFallback();group.add(fallback,kanban,curtain,frosting);
  // The continuous porch apron covers the old model's loose stepping stones and joins the park paving.
  const apron=new THREE.Mesh(new THREE.BoxGeometry(2.4,.08,5.6),new THREE.MeshStandardMaterial({color:0xc8bea5,roughness:.95}));
  apron.name='Umi-no-yu continuous porch approach';apron.position.set(-1.4,.04,6.5);apron.receiveShadow=true;group.add(apron);
+ // After dark, while the bath is open (10:00–22:00): the door panes glow from the genkan, a halo under the porch
+ // over the noren and a pool on the approach (light-pools.js). Shut, the frontage goes dark like any other shop.
+ const entranceGlow=createLampGlow(group,[{head:{x:-1.4,y:2.42,z:4.6},ground:{x:-1.4,y:.08,z:5.5},radius:2.4,size:1.4}]);
+ (world.hourly??=[]).push(minutes=>{const h=((minutes%1440)+1440)%1440,open=h>=600&&h<1320?1:0;door.material.emissiveIntensity=windowGlow(minutes)*open*.9;entranceGlow.update(poolGlow(minutes)*open);});
  const anchor=(x,y,z,label,fn)=>{const o=new THREE.Object3D();o.position.set(x,y,z);group.add(o);register?.(o,label,fn);return o;};
  // Through the noren: the bathhouse is a room you walk into (interiors/onsen.js).
  const [doorX,doorZ]=ONSEN_DOOR,[outX,outZ]=ONSEN_APPROACH;
@@ -199,7 +207,7 @@ export function buildParkOnsen(world,{register,onAction,enter,sites,shadows=fals
  bench.userData.seat={position:[bx,0,bz],stand:[bsx,0,bsz],surfaceY:.485,eyeY:1.1,yaw:ONSEN.yaw+Math.PI,pitch:0};
 
  let model=null;
- registerDetail(world,{id:'park-onsen',x:ONSEN.x,z:ONSEN.z,radius:72,load:async()=>{
+ registerDetail(world,{id:'park-onsen',requiredNearby:true,x:ONSEN.x,z:ONSEN.z,radius:72,load:async()=>{
   const response=await fetch(assetURL('models/onsen/umi-no-yu.glb'));if(!response.ok)return false;
   const scene=(await new GLTFLoader().parseAsync(await response.arrayBuffer(),'')).scene;
   scene.name='Umi-no-yu bathhouse';scene.userData.sharedAsset=true;
@@ -221,5 +229,5 @@ export function buildParkOnsen(world,{register,onAction,enter,sites,shadows=fals
   }
  }
  tick(0);
- return {group,tick,fallback,get model(){return model;}};
+ return {group,tick,fallback,entranceGlow,doorGlass:door.material,get model(){return model;}};
 }

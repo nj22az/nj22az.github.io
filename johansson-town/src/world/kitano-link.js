@@ -3,7 +3,7 @@ import {paintedAsphalt,paintedPaving} from '../render/toy-surfaces.js';
 import * as THREE from '../../vendor/three.module.js';
 import {KITANO_ROAD,KITANO_ROAD_LENGTH,KITANO_SURFACE_LIFT,roadPoint,roadHeight,leftOf} from './kitano-link-plan.js';
 
-import {paintPatch,roadSign,stopMarking,ROAD_STANDARD} from './road-standards.js';
+import {paintPatch,roadSign,stopMarking,roadPaintMaterial,ROAD_STANDARD} from './road-standards.js';
 import {KITANO_STOP_S} from './town-traffic.js';
 
 /** Mainland lane and footway. The former airport bridge and all its supports are removed. */
@@ -63,8 +63,8 @@ export function buildKitanoLink({parent,colliders=null,shadows=false}){
  }
  // ---- Markings. ----
  const marks=new THREE.Group();marks.name='Kitano Road markings';group.add(marks);
- const paint=new THREE.MeshBasicMaterial({color:ROAD_STANDARD.paint,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
- const yellow=new THREE.MeshBasicMaterial({color:C.yellow,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
+ // Shared with every other street's paint, so all of it dims together after dark (road-standards.js).
+ const paint=roadPaintMaterial(ROAD_STANDARD.paint),yellow=roadPaintMaterial(C.yellow);
  const dashes=[],solidY=[],edge=[];
  for(let s=KITANO_STOP_S+1;s<end-.5;s+=.5){
   const onBridge=false;

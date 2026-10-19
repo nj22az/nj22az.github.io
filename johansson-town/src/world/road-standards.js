@@ -30,8 +30,28 @@ export const ROAD_STANDARD=Object.freeze({
 });
 
 const decal={depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2};
-let paintMaterial=null;
-const paint=()=>paintMaterial??=new THREE.MeshBasicMaterial({color:ROAD_STANDARD.paint,...decal});
+/**
+ * Road paint is unlit (a decal takes no light, so it never fights the asphalt's ramp), which
+ * left it glowing white on a night street. Every paint material registers here and is dimmed
+ * together with the town's fill (setRoadPaintLight, from game.js setTime).
+ */
+const paints=new Set(),paintByColour=new Map();
+let paintLight=1;
+export function registerRoadPaint(material){
+ material.userData.paintColour=material.color.getHex();paints.add(material);
+ material.color.setHex(material.userData.paintColour).multiplyScalar(paintLight);return material;
+}
+/** One unlit paint material per colour, shared by every street. */
+export function roadPaintMaterial(colour=ROAD_STANDARD.paint){
+ if(!paintByColour.has(colour))paintByColour.set(colour,registerRoadPaint(new THREE.MeshBasicMaterial({color:colour,...decal})));
+ return paintByColour.get(colour);
+}
+/** @param {number} level 1 in full day, the town's fill at night (dusk.js decalLight) */
+export function setRoadPaintLight(level){
+ paintLight=Math.max(0,Math.min(1,Number.isFinite(level)?level:1));
+ for(const m of paints)m.color.setHex(m.userData.paintColour).multiplyScalar(paintLight);
+}
+const paint=()=>roadPaintMaterial(ROAD_STANDARD.paint);
 
 /** A flat painted rectangle on the road, centred at x,z, rotated about y. */
 export function paintPatch(parent,w,d,x,y,z,ry=0,name='Road paint'){
@@ -94,16 +114,24 @@ function tactileTexture(){return tactileFace??=canvasTexture(64,64,(ctx,w)=>{
  ctx.strokeStyle='#c99a18';ctx.lineWidth=2;ctx.strokeRect(1,1,w-2,w-2);
 });}
 
+/** The 330 sign's plate outline (the face's white border, stopFace), seen from the back: an inverted triangle. */
+export function stopPlateShape(size){
+ const p=(px,py)=>[(px/128-.5)*size,(.5-py/128)*size],shape=new THREE.Shape();
+ const [a,b,c]=[p(2,6),p(126,6),p(64,124)];shape.moveTo(...a);shape.lineTo(...c);shape.lineTo(...b);shape.closePath();
+ return new THREE.ShapeGeometry(shape);
+}
 const steel=()=>new THREE.MeshStandardMaterial({color:0x9aa3a6,roughness:.5,metalness:.3});
 /** A sign plate on a galvanised post, facing ry. 407-A crossing or 330 stop. */
 export function roadSign(parent,kind,{x,z,y=0,ry=0,colliders=null}={}){
  const g=new THREE.Group();g.name=kind==='stop'?'Stop sign (一時停止)':'Crossing sign (横断歩道)';g.position.set(x,y,z);g.rotation.y=ry;parent.add(g);
  const post=new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,2.5,8),steel());post.position.y=1.25;g.add(post);
  const face=kind==='stop'?stopFace():crossingFace(),size=kind==='stop'?.7:.6;
- const plate=new THREE.Mesh(new THREE.PlaneGeometry(size,size),new THREE.MeshStandardMaterial({map:face,color:face?0xffffff:(kind==='stop'?0xc8202a:0x1f5aa8),roughness:.6,transparent:kind==='stop',alphaTest:.5,side:THREE.DoubleSide}));
- plate.position.set(0,2.45,.035);g.add(plate);
- const back=new THREE.Mesh(new THREE.PlaneGeometry(size*.98,size*.98),new THREE.MeshStandardMaterial({color:0x8d9497,roughness:.6}));back.position.set(0,2.45,.03);back.rotation.y=Math.PI;
- if(kind!=='stop')g.add(back);
+ // The face is printed on the front only; from behind, a sign is its grey aluminium plate. (The stop face was drawn
+ // double-sided, so 止まれ read mirrored to everyone walking away from the junction.)
+ const plate=new THREE.Mesh(new THREE.PlaneGeometry(size,size),new THREE.MeshStandardMaterial({map:face,color:face?0xffffff:(kind==='stop'?0xc8202a:0x1f5aa8),roughness:.6,transparent:kind==='stop',alphaTest:.5}));
+ plate.position.set(0,2.45,.035);plate.name=g.name+' face';g.add(plate);
+ const back=new THREE.Mesh(kind==='stop'?stopPlateShape(size):new THREE.PlaneGeometry(size*.98,size*.98),new THREE.MeshStandardMaterial({color:0x8d9497,roughness:.6}));back.position.set(0,2.45,.03);back.rotation.y=Math.PI;
+ back.name=g.name+' back plate';g.add(back);
  colliders?.push({id:'road-sign',x,z,w:.12,d:.12,height:y+2.8});
  return g;
 }
@@ -112,7 +140,7 @@ export function stopMarking(parent,{x,z,y=0,width,ry=0}){
  const g=new THREE.Group();g.name='Stop line (停止線)';g.position.set(x,y,z);g.rotation.y=ry;parent.add(g);
  paintPatch(g,width-.3,ROAD_STANDARD.stopLine.width,0,0,0,0,'Stop line');
  const text=canvasTexture(256,128,(ctx,w,h)=>{ctx.fillStyle='#ffffff';ctx.font='bold 92px "Hiragino Sans","Noto Sans CJK JP",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('止まれ',w/2,h/2);});
- if(text){const m=new THREE.Mesh(new THREE.PlaneGeometry(Math.min(2.4,width-.6),1.6),new THREE.MeshBasicMaterial({map:text,transparent:true,...decal}));m.rotation.set(-Math.PI/2,0,Math.PI);m.position.set(0,.008,-1.5);m.renderOrder=1;m.raycast=()=>{};m.name='止まれ road marking';g.add(m);}
+ if(text){const m=new THREE.Mesh(new THREE.PlaneGeometry(Math.min(2.4,width-.6),1.6),registerRoadPaint(new THREE.MeshBasicMaterial({map:text,transparent:true,...decal})));m.rotation.set(-Math.PI/2,0,Math.PI);m.position.set(0,.008,-1.5);m.renderOrder=1;m.raycast=()=>{};m.name='止まれ road marking';g.add(m);}
  return g;
 }
 /** Yellow warning blocks laid in the footway at the head of a crossing. */

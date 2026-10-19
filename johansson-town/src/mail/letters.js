@@ -88,7 +88,7 @@ const PS_FALLBACK=L(['P.S. I left something on my doorstep for you to guess abou
  * paper matches its sender (the colours are drawn by stationerySvg).
  */
 export const STATIONERY=Object.freeze({
- hibiscus:Object.freeze({name:'Hibiscus',by:'sunny',why:'Bright flowers from Rainflower Florist, for people who sign with exclamation marks.',paper:'#fff6ef',ink:'#7a2f3a',accent:'#e0546a',motif:'hibiscus'}),
+ hibiscus:Object.freeze({name:'Hibiscus',by:'sunny',why:'Bright flowers from the buckets by Sakura’s door, for people who sign with exclamation marks.',paper:'#fff6ef',ink:'#7a2f3a',accent:'#e0546a',motif:'hibiscus'}),
  'storm-sky':Object.freeze({name:'Storm sky',by:'dramatic',why:'Dark clouds over the sea, for letters that are an event.',paper:'#eef1f6',ink:'#24314a',accent:'#5a6f96',motif:'clouds'}),
  kraft:Object.freeze({name:'Kraft',by:'easy',why:'Brown paper bags from Sakura, cut to size. Free, and fine.',paper:'#e8d6b5',ink:'#4a3a28',accent:'#a5865a',motif:'none'}),
  ledger:Object.freeze({name:'Ledger',by:'dry',why:'Ruled sheets from Front-Row Books & Stationery, for people who number their points.',paper:'#fbfaf3',ink:'#22303a',accent:'#9fb6c4',motif:'rules'}),

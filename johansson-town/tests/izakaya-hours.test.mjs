@@ -6,15 +6,12 @@ import {PROFILES} from '../src/people/profiles.js';
 import {SHARED_DINING_COLLIDERS} from '../src/world/interiors/shared-dining-layout.js';
 
 const profile=name=>PROFILES.find(p=>p.name===name);
-test('Minato always has somebody in it, and while it is closed they are cleaning or asleep',()=>{
+test('Thao cleans after last orders; nobody lives in the bar and nobody is there while it is shut and dark (phase 4)',()=>{
  for(let m=0;m<1440;m+=10){
-  const inside=['Barfly','Thao'].filter(n=>residentPlan(profile(n),m).place==='izakaya');
-  assert.ok(inside.length>0,'Somebody is in Minato at '+m);
-  if(izakayaOpen(m))continue;
-  const barfly=residentPlan(profile('Barfly'),m);
-  const job=izakayaJob('Barfly',m);
-  assert.ok(job||barfly.barflySleeping,'The Barfly is cleaning or asleep while closed, at '+m);
-  if(job)assert.ok(CLEANING_POSES.includes(job.pose),job.pose+' is a cleaning pose');
+  assert.equal(izakayaJob('Barfly',m),null,'the retired regular has no job at '+m);
+  const job=izakayaJob('Thao',m);
+  if(job){assert.ok(!izakayaOpen(m),'cleaning is closed-hours work');assert.ok(CLEANING_POSES.includes(job.pose),job.pose+' is a cleaning pose');assert.equal(residentPlan(profile('Thao'),m).place,'izakaya','Thao is there for her job at '+m);}
+  if(m>=240&&m<900)assert.notEqual(residentPlan(profile('Thao'),m).place,'izakaya','the bar is empty while it is shut, at '+m);
  }
 });
 test('Thao stays an hour after last orders to wipe the counter, then goes home to sleep',()=>{
@@ -24,8 +21,8 @@ test('Thao stays an hour after last orders to wipe the counter, then goes home t
 });
 test('every cleaning station is on open floor, clear of the furniture',()=>{
  const hit=([x,,z])=>SHARED_DINING_COLLIDERS.some(c=>Math.abs(x-c.x)<c.w/2+.3&&Math.abs(z-c.z)<c.d/2+.3);
- for(let m=0;m<1440;m++)for(const n of ['Barfly','Thao']){const job=izakayaJob(n,m);if(job)assert.equal(hit(job.at),false,n+' at '+job.at+' ('+job.activity+')');}
+ for(let m=0;m<1440;m++)for(const n of ['Thao']){const job=izakayaJob(n,m);if(job)assert.equal(hit(job.at),false,n+' at '+job.at+' ('+job.activity+')');}
 });
 test('the line at the door says who is there',()=>{
- assert.match(closedGreeting(200),/Thao and the Barfly/);assert.match(closedGreeting(400),/asleep/);assert.match(closedGreeting(700),/cleaning/);
+ assert.match(closedGreeting(200),/Thao is wiping/);assert.match(closedGreeting(400),/closed until four/);assert.match(closedGreeting(930),/getting ready/);assert.doesNotMatch(closedGreeting(700),/Barfly/);
 });

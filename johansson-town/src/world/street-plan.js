@@ -22,6 +22,8 @@ export function streetClass(route){
  if(route.id==='island-coast-walk')return 'coast';
  if(route.id==='fujita-shed-circuit'||route.id==='second-pier')return 'boardwalk';
  if(route.id.startsWith('building-circuit-'))return 'circuit';
+ // A building's own forecourt (the police station's yard) is concrete like its circuit, and gives way like it.
+ if(route.forecourt)return 'circuit';
  if(route.id.includes('footway')||route.id==='island-shopping-lane')return 'footway';
  if(/neighbourhood-lane|nishi-|residential-cross-lane|kitahama-west/.test(route.id))return 'residential';
  return 'footway';

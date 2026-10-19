@@ -6,17 +6,15 @@ import {householdFor,householdNames} from './households.js';
 const minute=m=>((m%1440)+1440)%1440;
 export function sleepHours(profile){
  if(profile.canonicalDay&&CANONICAL_REST[profile.name])return CANONICAL_REST[profile.name];
- if(profile.name==='Barfly')return {sleep:240,wake:600};
  if(profile.name==='Officer Mori')return {sleep:420,wake:900};
- // On the island he lives in the office and keeps early hours (social.js HARBOUR_MASTER_DAY).
- if((profile.name==='Harbour master'))return {sleep:1260,wake:330};
+ // On the island he lives in the office and keeps the ship's day, the last boat fast by half past ten (social.js HARBOUR_MASTER_DAY).
+ if((profile.name==='Harbour master'))return {sleep:1380,wake:330};
  if(profile.name==='Thao')return {sleep:240,wake:720};
- // The press and radio shifts run past midnight. Keep the two hours of
+ // The radio shift runs past midnight. Keep the two hours of
  // after-work errands, then eight hours at home instead of the old day shift bedtimes.
- if(profile.name==='Reiko')return {sleep:170,wake:650};
  if(profile.name==='Tetsuo')return {sleep:140,wake:620};
- // Chin works Sakura's night shift (20:30–06:00) and sleeps through the morning (batch 7b).
- if(profile.name==='Chin')return {sleep:390,wake:810};
+ // Chin is the ferry's motorman (ferry-crew.js FERRY_WORKING_DAY: signed on 06:05, off 22:20, then the bench or the izakaya).
+ if(profile.name==='Chin')return {sleep:1425,wake:300};
  return {sleep:minute(profile.retire+20),wake:minute(profile.start-90)};
 }
 export function homeRoutine(profile,minutes){

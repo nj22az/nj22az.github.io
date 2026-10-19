@@ -13,7 +13,7 @@ const EXCHANGES=[
  ['Mrs Sato','Fumiko',['You said you were only coming for tea.','I am. The rice ball is keeping it company.','I shall fetch a second cup.']],
  ['Harbour master','Mr Fujita',['How large was the fish today?','Larger than yesterday.','Your hands say that every day.']],
  ['Hana','Daichi',['Hold still. I am drawing you.','Is this my heroic side?','It is your only still side.']],
- ['Officer Mori','Reiko',['Nothing suspicious on my rounds.','What about the cat in the fish crate?','An ongoing investigation.']],
+ ['Officer Mori','Nhung',['Nothing suspicious on my rounds.','What about the cat in the fish crate?','An ongoing investigation. Not for the paper.']],
  ['Kenta','Cold-storage kid',['I practised saying hello to Emi.','The freezer heard every word.','Was it convincing?']],
  ['Thao','Masaru',['Is this the catch of the day?','Small, but exceptionally brave.','I will need smaller plates.']],
  ['Thuan','Thao',['I promised my plants an early night.','Did they answer?','The fern looked disappointed.']],
@@ -26,7 +26,6 @@ const EXCHANGES=[
  ['Thuan','Nhung',['A customer asked if we are twins.','I hope you said I am the pretty one.','I said you are the loud one.']],
  ['Thao','Nhung',['You are on my good stool.','It has my name on it.','You wrote that there yourself.']],
  ['Nhung','Thao',['One more beer for Thuan?','No.','She walks home now, Thao.','Then she walks. Bed.']],
- ['Bus driver','Naoko',['Any letters for the harbour bus?','Only complaints about the timetable.','At least somebody is reading it.']],
  ['Mr Tanabe','Fumiko',['A quiet evening is good for the soul.','So is a little gossip.','We shall call it local history.']]
 ];
 

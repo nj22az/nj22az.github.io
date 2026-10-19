@@ -305,14 +305,16 @@ function drapedHood(avatar,group,material){
 
 /** Every point of the drawn body (each skinned mesh as it stands this frame, the face's head), in `frame`'s space, through
  *  `keep(point in the root's space)`: what a prop round the body must clear. The outlines and hidden ranges are left out. */
-function posedPoints(avatar,frame,keep=()=>true,stride=1){
+export function posedPoints(avatar,frame,keep=()=>true,stride=1,bones=null){
  avatar.root.updateMatrixWorld(true);const inv=new THREE.Matrix4().copy(frame.matrixWorld).invert(),rootInv=new THREE.Matrix4().copy(avatar.root.matrixWorld).invert(),out=[];
  const take=p=>{_w.copy(p).applyMatrix4(rootInv);if(keep(_w))out.push(p.clone().applyMatrix4(inv));};
  for(const mesh of avatar.root.children){
   if(!mesh.isSkinnedMesh||!mesh.visible||mesh.userData.outline||mesh.name.includes('outline'))continue;
   const g=mesh.geometry,n=g.attributes.position.count,r=g.drawRange,end=Math.min(r.start+r.count,g.index?g.index.count:n);
+  // (`bones`: only the skin those bones carry, for a prop that rests on one part of the body: a basket on the head, not on a raised mitten)
+  const carried=bones&&new Set(mesh.skeleton.bones.map((b,i)=>bones.has(b.name)?i:-1).filter(i=>i>=0)),I=g.attributes.skinIndex;
   const ids=new Set();if(g.index){for(let i=r.start;i<end;i++)ids.add(g.index.getX(i));}else for(let i=r.start;i<end;i++)ids.add(i);
-  let k=0;for(const i of ids){if(k++%stride)continue;mesh.getVertexPosition(i,_v);mesh.localToWorld(_v);take(_v);}
+  let k=0;for(const i of ids){if(k++%stride)continue;if(carried&&!carried.has(I.getX(i)))continue;mesh.getVertexPosition(i,_v);mesh.localToWorld(_v);take(_v);}
  }
  const h=avatar.face?.head;if(h){const P=h.geometry.attributes.position;for(let i=0;i<P.count;i+=2){_v.fromBufferAttribute(P,i);h.localToWorld(_v);take(_v);}}
  return out;
@@ -326,11 +328,14 @@ function posedPoints(avatar,frame,keep=()=>true,stride=1){
 export function fitBasket(avatar){
  const head=avatar.bones.head,B=BASKET,m=avatar.measure;
  // the head and what is on it, at rest (the head carries them rigidly), in the head bone's frame
- const pts=posedPoints(avatar,head,p=>p.y>m.headY+m.Rh*.15,1);
+ // (the head and what is on it only: her arms out feeling the dark must not hold the basket up)
+ const pts=posedPoints(avatar,head,p=>p.y>m.headY+m.Rh*.15,1,new Set(['head']));
  const q=new THREE.Quaternion().setFromEuler(new THREE.Euler(...B.tilt)),qi=q.clone().invert(),hc=m.headCentre-m.headY;
  const inside=y=>{for(const p of pts){_v.copy(p);_v.y-=y;_v.applyQuaternion(qi);
-   const ax=Math.abs(_v.x),az=Math.abs(_v.z);if(_v.y<-.002||_v.y>B.h+.002||ax>B.w/2+.004||az>B.d/2+.004)continue;   // outside the basket's box
-   if(ax<B.w/2-B.wall-.003&&az<B.d/2-B.wall-.003&&_v.y<B.h-B.wall-.003)continue;                               // in its hollow
+   const ax=Math.abs(_v.x),az=Math.abs(_v.z);if(_v.y<-.002||_v.y>B.h+.002||ax>B.w/2+.001||az>B.d/2+.001)continue;   // outside the basket's box
+   // (in its hollow: a head wider than the hollow is met by the walls' own faces, within a millimetre, not a wider band
+   // that would hold the basket off a big head)
+   if(ax<B.w/2-B.wall-.001&&az<B.d/2-B.wall-.001&&_v.y<B.h-B.wall-.003)continue;
    return true;}return false;};
  let y=hc+m.Rh*m.headSY*1.6;const top=y;while(y>hc&&!inside(y-.0005))y-=.0005;y+=.0025;   // resting, a hair clear (the towel and hair move a little with the head)
  return {position:new THREE.Vector3(0,y,0),quaternion:q,rested:y<top-.002};

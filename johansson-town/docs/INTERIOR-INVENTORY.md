@@ -1,14 +1,17 @@
 # Current interior inventory — 18 October 2026
 
-This inventory follows active building registrations and the runtime room builders, not screenshots or a claim of visual completion. All 24 occupied primary households have interior geometry: 23 in Minato and Johansson/Thuan's primary home on Kitano-jima. An individual interior and a shared residential layout are distinguished below. Resident routines must not depend on a bespoke bedroom being finished.
+> **Superseded on 19 October 2026 by [CAST-CONSOLIDATION.md](CAST-CONSOLIDATION.md)** (the owner's cast, household and crew consolidation; its addendum wins). This document is kept as dependency evidence of the earlier design; where it names Johansson mayor, gives Grandmother Sakurai Sakura or a home, keeps Thuan a weekday room, or counts 31 residents and 23/24 households, the consolidation's 21 core and 5 supporting identities, 14 households and ten retirements are the plan of record (`src/people/roster.js`, `docs/cast-roster.json`). Corrections below are marked *(superseded …)*.
+
+This inventory follows active building registrations and the runtime room builders, not screenshots or a claim of visual completion. All 24 occupied primary households have interior geometry: 23 in Minato and Johansson/Thuan's primary home on Kitano-jima *(superseded 19 Oct 2026: the target is 14 core households; see CAST-CONSOLIDATION.md §7–§8 for which of these go)*. An individual interior and a shared residential layout are distinguished below. Resident routines must not depend on a bespoke bedroom being finished.
 
 ## Individual home interiors
 
 | Home | Residents | Builder / arrangement |
 | --- | --- | --- |
 | Kitano family house | Johansson and Thuan | `johansson-house-interior.js`; primary home |
-| 1 Kitahama | Thao, Chin, Vy; Thuan's weekday room | `vy-room.js`; family rooms and separate sleeping places |
-| 1 Front-Row Yard | Nhung and Reiko | `yard-home.js`; shared yard home |
+| 1 Kitahama | Thao, Chin, Vy; ~~Thuan's weekday room~~ *(dropped 19 Oct 2026; her guest bedding removed in phase 3)* | `vy-room.js`; family rooms and separate sleeping places |
+| 3 Kitahama | Nhung, Kōji and Riku *(Nhung moved home in phase 3)* | `family-home.js` with the residents' own futons; Nhung is put to bed here (`home-residents.js`) |
+| ~~1 Front-Row Yard~~ | ~~Reiko~~ *(Nhung until phase 3; removed in phase 4)* | Gone: the yard's lawn (`okinawa/lots.js` CLEARED_LOTS) |
 | 2 Front-Row Yard | Tetsuo | `tetsuo-flat.js`; individual flat |
 | 2 Kitahama | Mrs Sato | `tatami-home.js`; individual tatami home |
 | Police box residence | Officer Mori | `koban.js`; residence behind the workplace |
@@ -21,22 +24,21 @@ These are enterable and furnished, with sleeping and dining positions. They are 
 
 | Home | Residents | Interior |
 | --- | --- | --- |
-| 3 Kitahama | Kōji and Riku | Family-home layout |
-| 4 Kitahama | Postman Tōma | Family-home layout |
-| 5 Kitahama | Grandmother Chinen | Family-home layout |
-| 6 Kitahama | Ferry master, still named Bus driver | Family-home layout |
+| ~~4 Kitahama~~ | ~~Postman Tōma~~ | Removed in phase 4 with its resident; a cleared lot |
+| ~~5 Kitahama~~ | ~~Grandmother Chinen~~ | Removed in phase 4 with its resident; a cleared lot |
+| ~~6 Kitahama~~ | ~~Bus driver, the former master~~ | Removed in phase 4 with its resident; a cleared lot |
 | 8 Kitahama | Ms Uezu | Family-home layout |
-| Kitahama Heights, Flat 1 | Mr Higa Jr | Family-home layout |
-| Kitahama Heights, Flat 2 | Grandmother Sakurai | Family-home layout |
-| Kitahama Heights, Flat 3 | Mr Nakandakari | Family-home layout; upper approach |
-| Kitahama Heights, Flat 4 | Ms Ganaha | Family-home layout; upper approach |
+| Kitahama Heights A (id `kitahama-flat-3`) | Mac (Mr Nakandakari) | Family-home layout; its own gate and front door on Fukugi Lane, ground level *(phase 3: the block became two attached ground-floor houses)* |
+| Kitahama Heights B (id `kitahama-flat-4`) | Ms Ganaha | Family-home layout; its own gate and front door on Fukugi Lane, ground level |
+| ~~Kitahama Heights, Flat 1~~ | ~~Mr Higa Jr~~ | Retired in phase 3 with the upper storey; he retired in phase 4 |
+| ~~Kitahama Heights, Flat 2~~ | ~~Grandmother Sakurai~~ | Retired in phase 3 with the upper storey; she retired in phase 4 |
 | Higa house | Miss Higa and Grandmother Higa | Family-home layout |
-| Kinjō house | Mrs Kinjō | Family-home layout |
-| Ōshiro house | Mr Ōshiro | Family-home layout |
+| ~~Kinjō house~~ | ~~Mrs Kinjō~~ | Removed in phase 4 with its resident; cleared coral sand on the seawall walk |
+| ~~Ōshiro house~~ | ~~Mr Ōshiro~~ | Removed in phase 4 with its resident; cleared coral sand on the seawall walk |
 | Above Nakamura Zenzai | Mrs Nakamura and Mai | Upper-home layout with private stair |
-| Above the post office | Mr Shimabukuro | Upper-home layout with private stair |
+| ~~Above the post office~~ | ~~Mr Shimabukuro~~ | Removed in phase 4 with the shop-house; the park's lawn meets Main Street there |
 | Doctor's flat | Dr Kakazu | Family-home layout, separate from the clinic |
-| Private Izakaya residence | Barfly | Family-home layout, separate from the public bar |
+| ~~Private Izakaya residence~~ | ~~Barfly~~ | Registration retired in phase 4; the izakaya is a business only |
 
 The vacant `home-kitano-2` on the separate tropical island also has a standard interior. It is not an occupied Minato household. Retired Minato dwellings are not counted as live homes.
 

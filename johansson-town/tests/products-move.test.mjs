@@ -17,16 +17,32 @@ const now=await productSnapshot();
 const {PLACES}=await import('../src/people/cast.js');
 const closed=new Set(Object.entries(PLACES).filter(([,p])=>p.closed).map(([id])=>id));
 for(const accounts of Object.values(legacy.ACCOUNTS))for(const site of Object.keys(accounts))if(closed.has(site))delete accounts[site];
-// And the people who left the island no longer buy anything: they leave every 'for' list and linesFor. The tuna's three
-// buyers all left; Mr Ōshiro and Barfly buy it now (products-data.js), so their lines gain the tuna.
+// And the people who left the island no longer buy anything: they leave every 'for' list and linesFor. Phase 5 of the
+// consolidation (docs/CAST-CONSOLIDATION.md; data/studio/products.json) then gave the retired buyers' lines to live
+// residents whose days fit them, so a 'for' list is the data's own where it names live cast only and keeps everyone of
+// the snapshot's who stayed; linesFor follows for every live buyer.
 const {castMember}=await import('../src/people/cast.js');
-const TUNA_BUYERS=['Mr Ōshiro','Barfly'];
+const live=n=>castMember(n)&&!castMember(n).supporting;
 const leave=(o,key)=>{if(Array.isArray(o)){o.forEach(x=>leave(x));return;}if(!o||typeof o!=='object')return;
- if(Array.isArray(o.for)){o.for=o.for.filter(n=>castMember(n));if(!o.for.length&&(key==='tuna'||o.id==='tuna'))o.for=[...TUNA_BUYERS];}
+ // (A supporting crew name, Jun, was the airport clerk's who left; the cook-steward of that name is a different person the snapshot never had.)
+ if(Array.isArray(o.for)){o.for=o.for.filter(live);const id=o.id||key,want=now.MERCHANDISING[id]?.for;
+  if(want&&want.join()!==o.for.join()){assert.ok(want.every(n=>castMember(n)),id+' is for live residents');for(const n of o.for)assert.ok(want.includes(n),id+' keeps '+n);o.for=[...want];}}
  for(const [k,v] of Object.entries(o))if(k!=='for')leave(v,k);};
 leave(legacy.MERCHANDISING);leave(legacy.GROCERY_ITEMS);leave(legacy.SHOP_STOCK);
-for(const name of Object.keys(legacy.linesFor))if(!castMember(name))delete legacy.linesFor[name];
-for(const name of TUNA_BUYERS){const want=now.linesFor[name];assert.deepEqual(want.filter(l=>l!=='tuna'),legacy.linesFor[name]);legacy.linesFor[name]=want;}
+// Phase 3 of the consolidation moved the florist's trade to Sakura (docs/CAST-CONSOLIDATION.md addendum 3): the Rainflower
+// supplier and its accounts are gone, Sakura's supplier record carries the decorations, and the four businesses that took
+// their decorations from Mrs Kinjō now take them on their Sakura account (decor, with the why and delivery extended). The
+// shelf lines of those accounts, and everything else, are unchanged.
+delete legacy.SUPPLIERS['rainflower-florist'];delete legacy.ACCOUNTS['rainflower-florist'];
+legacy.SUPPLIERS.sakura={...legacy.SUPPLIERS.sakura,goods:now.SUPPLIERS.sakura.goods,decor:now.SUPPLIERS.sakura.decor};
+for(const site of ['izakaya','onsen','mayor-office','school']){const was=legacy.ACCOUNTS.sakura[site],is=now.ACCOUNTS.sakura[site];assert.deepEqual(is.lines,was.lines,site+' keeps its shelf lines');legacy.ACCOUNTS.sakura[site]={...was,why:is.why,delivery:is.delivery,decor:is.decor};}
+// Phase 4 retired the people some accounts' deliveries named (Reiko's evening press): the data's delivery line is the
+// one that reads, and it names a live resident; the lines and everything else about the account are unchanged.
+const {isRetired}=await import('../src/people/roster.js');
+const retiredName=text=>typeof text==='string'&&/Reiko|Tōma|Kinjō|Ōshiro|Shimabukuro|Sakurai|Barfly|Bus driver|Higa Jr|Grandmother Chinen/.test(text);
+for(const [supplier,accounts] of Object.entries(legacy.ACCOUNTS))for(const [site,was] of Object.entries(accounts)){const is=now.ACCOUNTS[supplier]?.[site];if(is&&retiredName(was.delivery)&&is.delivery!==was.delivery){assert.ok(!retiredName(is.delivery),supplier+'/'+site+' names a live deliverer');assert.deepEqual(is.lines,was.lines);accounts[site]={...was,delivery:is.delivery};}}
+for(const name of Object.keys(legacy.linesFor))if(!live(name))delete legacy.linesFor[name];
+for(const [name,want] of Object.entries(now.linesFor)){assert.ok(castMember(name),name+' buys at Sakura but is not in the cast');for(const line of legacy.linesFor[name]||[])assert.ok(want.includes(line),name+' keeps the '+line);legacy.linesFor[name]=want;}
 
 test('every legacy export, shelf, atlas cell and flavour shift comes back from the data unchanged',()=>{
  assert.deepEqual(Object.keys(now).sort(),Object.keys(legacy).sort());

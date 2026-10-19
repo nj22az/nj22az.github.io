@@ -5,6 +5,7 @@ import {GROUND_LAYER} from './ground-layers.js';
 import {buildDockWorkshop} from './dock-workshop.js';
 import {buildHarbourOffice} from './harbour-office.js';
 import {GROUND} from '../render/ground-palette.js';
+import {releaseAfterUpload} from '../render/canvas-release.js';
 import {WEST_SHOPS,buildWestShop} from './west-shops.js';
 import {buildIslandCoast} from './island-coast.js';
 import {buildBoardwalk} from './boardwalk.js?snappy=1';
@@ -12,18 +13,21 @@ import {buildWarehouse} from './warehouse.js';
 import {BOARDWALK,BREAKWATER} from './layout.js?snappy=1';
 import {MINATO_BERTH,QUAY_FISHING_BOAT} from './minato-berth.js';
 import {MAIN_ROAD,MAIN_SERVICE_COURT,MAIN_LOADING_APRON,MAIN_PARKING_LAYBY,SHOP_CROSSING_Z} from './main-road.js';
-import {edgeLines,zebraCrossing,tactileStrip,roadSign,roadEndPosts} from './road-standards.js';
+import {edgeLines,zebraCrossing,tactileStrip,roadSign,roadEndPosts,roadPaintMaterial} from './road-standards.js';
+import {createLampGlow} from './light-pools.js';
 import {buildStreetLamps,STREET_LAMP_PLACEMENTS} from './street-lamps.js';
 import {createHarbourInstances} from '../render/harbour-instances.js';
 import {addHorizon} from './horizon.js';
-import {createHarbourBasin,tickOcean,setOceanWeather} from './ocean.js';
+import {createHarbourBasin,tickOcean,setOceanWeather,SEA_LEVEL} from './ocean.js';
+import {buildFishingBoat,createMooringLines} from './harbour-boats.js';
+import {buildQuayDressing} from './quay-dressing.js';
 import {buildStorefront} from './storefront.js?snappy=1';
 import {buildThuanFlat} from './thuan-flat.js';
 import {SAKURA_FRONT} from './interiors/sakura-layout.js';
 
 import {buildFerryTerminal} from './ferry.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
-import {lanternGlow, windowGlow} from '../render/dusk.js';
+import {lanternGlow, windowGlow, poolGlow} from '../render/dusk.js';
 import * as THREE from '../../vendor/three.module.js';
 
 // Johansson Town original harbour geometry, using the shared PBR surface maps.
@@ -31,7 +35,7 @@ import * as THREE from '../../vendor/three.module.js';
 export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,register,enter,onAction,getPlayerPosition,harbourCellSize=48,harbourBatching=true}) {
   const group=new THREE.Group();scene.add(group);
   const harbourShops=[],plantSites=[],details=[],shopDoors=[];
-  const materials=new Map(),geometries=new Map(),batches=new Map(),colliders=[],lamps=[],lampLights=[],people=[],water=[],wetMeshes=[];
+  const materials=new Map(),geometries=new Map(),batches=new Map(),colliders=[],lamps=[],lampLights=[],lampSpots=[],people=[],water=[],wetMeshes=[];
 
   const bands=new Uint8Array([
     38,38,38,255,
@@ -90,8 +94,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   function label(text,sub,p,width,height,angle=0,bg='#e9dcc1',fg='#283d3e',glow=false,twoFaced=false){
     // The canvas takes the board's own proportions, so lettering is never stretched.
     const W=Math.max(256,Math.min(2048,Math.round(256*width/height)));
-    const canvas=document.createElement('canvas');canvas.width=W;canvas.height=256;const ctx=canvas.getContext('2d');ctx.fillStyle=bg;ctx.fillRect(0,0,W,256);ctx.strokeStyle=fg;ctx.lineWidth=8;ctx.strokeRect(12,12,W-24,232);ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=fg;ctx.font='800 136px "Yu Gothic",system-ui';signText(ctx,japaneseSign(text),W/2,104,W-68,136);ctx.font='700 32px system-ui';signText(ctx,sub,W/2,206,W-68,32);
-    const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=Math.min(maxAnisotropy,8);
+    const draw=ctx=>{ctx.fillStyle=bg;ctx.fillRect(0,0,W,256);ctx.strokeStyle=fg;ctx.lineWidth=8;ctx.strokeRect(12,12,W-24,232);ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=fg;ctx.font='800 136px "Yu Gothic",system-ui';signText(ctx,japaneseSign(text),W/2,104,W-68,136);ctx.font='700 32px system-ui';signText(ctx,sub,W/2,206,W-68,32);};
+    const canvas=document.createElement('canvas');canvas.width=W;canvas.height=256;draw(canvas.getContext('2d'));
+    const tex=releaseAfterUpload(new THREE.CanvasTexture(canvas),draw);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=Math.min(maxAnisotropy,8);
     const mat=new THREE.MeshStandardMaterial({map:tex,emissive:0xffffff,emissiveMap:tex,emissiveIntensity:glow?.55:.05});
     const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,height),mat);mesh.position.set(...p);mesh.rotation.y=angle;mesh.castShadow=false;mesh.receiveShadow=false;group.add(mesh);
     // A plain panel behind it. These used to be double-sided, so walking round one —
@@ -109,6 +114,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   function lantern(x,z){
     const lm=material(0xf0a65c,null,.12),m=new THREE.Mesh(new THREE.SphereGeometry(.25,12,10),lm);m.scale.set(.8,1.4,.8);m.position.set(x,2.55,z);m.castShadow=false;group.add(m);lamps.push(m);box([.26,.05,.26],[x,2.91,z],0x3c3430);
     if(shadows){const light=new THREE.PointLight(0xffb96e,0,8,2);light.position.set(x,2.55,z);group.add(light);lampLights.push(light);}
+    // The pool on the quay under it and the halo round it (light-pools.js): what says "lit" from along the quay.
+    lampSpots.push({head:{x,y:2.55,z},ground:{x,y:0,z},radius:3,size:1.6});
   }
   function glassPanel(x,y,z,w,h,angle){
     const mat=new THREE.MeshPhysicalMaterial({color:0x355662,roughness:.40,metalness:.02,clearcoat:.12,clearcoatRoughness:.18,emissive:0xdba978,emissiveIntensity:.16});
@@ -119,10 +126,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     const mat=new THREE.MeshPhysicalMaterial({color:0x263c43,roughness:.14,metalness:.08,transparent:true,opacity:.34,depthWrite:false});
     const m=new THREE.Mesh(new THREE.CircleGeometry(1,28),mat);m.rotation.x=-Math.PI/2;m.rotation.z=rot;m.position.set(x,-.031,z);m.scale.set(sx,sz,1);m.visible=false;m.renderOrder=2;group.add(m);wetMeshes.push(m);
   }
-  const markingMaterials=new Map();
+  // Unlit paint, shared with every street and dimmed with the night (road-standards.js roadPaintMaterial).
   function roadMark(w,d,x,z,c=0xb7aa80){
-    if(!markingMaterials.has(c))markingMaterials.set(c,new THREE.MeshBasicMaterial({color:c,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));
-    const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),markingMaterials.get(c));m.rotation.x=-Math.PI/2;m.position.set(x,.004,z);m.renderOrder=1;group.add(m);return m;
+    const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),roadPaintMaterial(c));m.rotation.x=-Math.PI/2;m.position.set(x,.004,z);m.renderOrder=1;group.add(m);return m;
   }
 
   addHorizon(group);
@@ -134,7 +140,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   const boardwalk=buildBoardwalk(group,{mobile,shadows,maxAnisotropy});
   // Partition the footways around asphalt courts; each finished surface owns its patch.
   const K=KITANO_ROAD;
-  const commercialMouth={minX:K.corners[0][0],maxX:K.corners.at(-1)[0],minZ:K.corners[0][1]-K.section.footway,maxZ:K.corners[0][1]-K.section.north};
+  // Kitano Road's mouth takes only its carriageway out of the footway: its own footway on the harbour side starts at the
+  // footway's kerb (kitano-link.js), so cutting the footway's width too left the corner by the drinks corner unpaved.
+  const commercialMouth={minX:K.corners[0][0],maxX:K.corners.at(-1)[0],minZ:K.corners[0][1]+K.section.north,maxZ:K.corners[0][1]-K.section.north};
   const cargoCourt={minX:MAIN_ROAD.east,maxX:3.2,minZ:-47.6,maxZ:-32.8};
   const footCuts=[MAIN_SERVICE_COURT,MAIN_LOADING_APRON,MAIN_PARKING_LAYBY,commercialMouth,cargoCourt];
   for(const [left,right] of [[-8.1,MAIN_ROAD.west],[MAIN_ROAD.east,5.75]]){
@@ -219,9 +227,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
        const centre=s.z+1.2,span={width:SAKURA_FRONT.width,depth:SAKURA_FRONT.depth,doorX:0};
        const storefront=buildStorefront({parent:group,site:s,register,enter,label,span,placement:{x:front,z:centre,yaw:Math.PI/2,scale:1}});
        shopDoors.push(storefront.shopDoor);
-       // Upstairs is the Sakurai family's flat (thuan-flat.js).
-       buildThuanFlat(storefront,{colliders,sites,register,enter});
        s.x=front;s.door=[front+1.95,0,centre];
+       // Upstairs is Sakura's main office (thuan-flat.js), entered through the shop.
+       buildThuanFlat(storefront,{sites,shopDoor:s.door});
        // Turned a quarter: the frontage runs along z and the shop runs back along -x.
        obstacle(front-span.depth/2,centre,span.depth,span.width);return;
       }
@@ -238,8 +246,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   for(const [px,pz] of [[-7.2,-32],[2.05,-32]]){
    cyl(.10,.85,[px,.425,pz],0x3b4848);box([.22,.10,.22],[px,.9,pz],0xe7c080);obstacle(px,pz,.25,.25);
    // A 0.9 m deck light throws a pool round its foot, not a 14 m wash: at that reach the west one lit the whole of
-   // Sakura's shutter beige at night.
-   const light=new THREE.PointLight(0xffd7a0,0,5.5,2);light.userData.nightIntensity=18;light.position.set(px,1,pz);group.add(light);lampLights.push(light);
+   // Sakura's shutter beige at night. It is a pool decal, not a point light: the light cut a hard-edged disc at the
+   // footway's kerb (the kerb's top face took it, the road beside it did not), and the pool lies over both.
+   lampSpots.push({head:{x:px,y:.9,z:pz},ground:{x:px,y:0,z:pz},radius:2.2,size:.9});
   }
   // The shopping street is fed from the Main Street line (okinawa/quarters.js): a second
   // and third row of poles a few metres from it was clutter.
@@ -275,7 +284,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
    slab(Q.minX,L.minX,Q.minZ,Q.maxZ);slab(L.maxX,Q.maxX,Q.minZ,Q.maxZ);slab(L.minX,L.maxX,L.maxZ,Q.maxZ);
    slab(L.minX,L.flapMinX,L.flapFromZ,L.maxZ);slab(L.minX,L.maxX,Q.minZ,L.maxZ,L.top-L.thickness);
    // The raised coping and kerb along the edge, cut away where the ramp lands.
-   for(const [a,b] of [[Q.minX,L.minX],[L.maxX,Q.maxX]]){box([b-a,.6,.65],[(a+b)/2,-.12,-49.65],0x596568);box([b-a,.18,.55],[(a+b)/2,.19,-49.28],0x343f41);}
+   // The kerb is concrete with its top painted safety yellow, as on the Nishi and east quays (a dark slab before).
+   for(const [a,b] of [[Q.minX,L.minX],[L.maxX,Q.maxX]]){box([b-a,.6,.65],[(a+b)/2,-.12,-49.65],0x596568);box([b-a,.14,.55],[(a+b)/2,.17,-49.28],0x8f938c);box([b-a,.04,.55],[(a+b)/2,.26,-49.28],0xe0b93a);}
    // The plate, its top flush with the concrete: full width where the leaf touches down, narrower
    // under the flap, and a steel angle armouring the quay's edge in front of it.
    const plate=(x0,x1,z0,z1,c=0x5e6566)=>box([x1-x0,L.thickness,z1-z0],[(x0+x1)/2,L.top-L.thickness/2,(z0+z1)/2],c);
@@ -288,8 +298,11 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   const harbourWarehouse=buildWarehouse(warehouseWorld,{mobile,shadows,maxAnisotropy,register,onAction,enter,label});
   // The warehouse already has a fascia; a roadside panel hid its entrance from the quay.
 
+  // A cast bollard bolted through a steel base plate on the kerb, the paint worn bright round its neck where the lines run.
   function bollard(x,z){
     directCyl(.22,.48,[x,.35,z],0x2f3c3f,group,[0,0,0],true,12);directCyl(.31,.12,[x,.61,z],0x2f3c3f);obstacle(x,z,.48,.48);
+    box([.62,.04,.5],[x,.3,z],0x4c5355);box([.03,.03,.03],[x-.25,.335,z-.19],0x23292b);box([.03,.03,.03],[x+.25,.335,z+.19],0x23292b);
+    const worn=directMesh(new THREE.TorusGeometry(.222,.018,6,18),material(0x8b8f8a),group,[x,.5,z],[Math.PI/2,0,0]);worn.castShadow=false;
   }
   // On the coping, as on any quay, not 1.2 m back from it where they closed the lane in front of the sheds.
   // (The one at x -10 moved 2.3 m west in 2026-10: the ferry's ramp landing is there now.)
@@ -321,9 +334,10 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   for(const [x,z] of [[-17.1,-48],[17.6,-47.6]]){cyl(.11,4,[x,2.1,z],0x4b5655);box([1.1,.1,.18],[x,3.8,z],0x4b5655);lantern(x,z);}
 
-  // Tyre fenders on the quay wall — broad black shapes, not thin white lines. None at x −7 since 2026-10:
-  // the ferry's ramp lands there (minato-berth.js), and her stem lies 2.2 m off the quay.
-  for(const x of [-14,0,7,14]){const tire=directMesh(new THREE.TorusGeometry(.42,.1,8,20),material(0x262d2e),group,[x,-.05,-49.76],[0,0,0]);tire.scale.set(1,.78,1);}
+  // The quay's working dressing (quay-dressing.js): tyres hung on chains down the face (none at x −7 since 2026-10: the
+  // ferry's ramp lands there), the scuppers through the kerb, the cargo staging bay, the fuel point, the fishing boat's
+  // crates and net. The tyres used to sit inside the coping, their tops showing above it as black humps.
+  const dressing=buildQuayDressing({parent:group,label,shadows});colliders.push(...dressing.colliders);dressing.puddles.forEach(v=>puddle(...v));
 
   // Rail only on far sides so the fishing position remains open and readable.
   // The west one stops short of the bollard by the ramp's landing.
@@ -336,16 +350,15 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   for(const x of [27]){box([1.8,.14,.6],[x,.62,18],0x8d7652,[0,0,0],'wood');for(const dx of [-.65,.65])box([.12,.6,.4],[x+dx,.31,18],0x465355);obstacle(x,18,1.9,.7);const seat=anchor([x,1,17.1],'Sit on the quay bench',()=>onAction('seat','Quay bench','A place to rest while the boats come and go.'));seat.userData.seat={id:'quay-bench',position:[x,0,18],stand:[x,0,17.1],surfaceY:.69,eyeY:1.39,yaw:0,pitch:0};}
 
 
-  // Fishing boat with a tapered toon hull, cabin, life-ring, mast and working lights. She lay off the
-  // outer pier's east face; since the cargo boat berths there (batch 4b) she lies alongside the quay
-  // east of the pier, beside the east quay's boats, her lines to the quay bollards (minato-berth.js).
-  const QB=QUAY_FISHING_BOAT,boat=new THREE.Group();boat.position.set(QB.x,-.18,QB.z);boat.rotation.y=QB.yaw;group.add(boat);
-  {const ends=[QB.x-QB.length/2+.4,QB.x+QB.length/2-.4];for(const [i,[bx,bz]] of QB.bollards.entries())directBeam(group,[ends[i],.78,QB.z+QB.beam/2-.45],[bx,.6,bz],.022,0x6f6049);}
-  directMesh(new THREE.CylinderGeometry(1.45,1.02,6.3,6,1,false),material(0x2f5360),boat,[0,0,0],[Math.PI/2,0,0],[1,1,.45],true);
-  directBox([2.25,1.55,2.25],[0,1.05,.2],0xd4cfb8,boat,[0,0,0],true);directBox([2.3,.58,2.3],[0,1.48,.2],0x365b66,boat);directBox([2.45,.12,2.55],[0,1.86,.2],0x394b50,boat);
-  directCyl(.06,3.0,[0,3.25,.55],0x454b49,boat);directBox([1.2,.06,.06],[0,4.05,.55],0x454b49,boat);directBeam(boat,[0,3.72,.56],[.72,4.45,.98],.018,0x30383a);
-  const life=directMesh(new THREE.TorusGeometry(.32,.07,8,18),material(0xc55e44),boat,[1.17,1.05,.5],[0,Math.PI/2,0]);life.castShadow=false;
-  directBox([.5,.14,.16],[-.65,2.05,-.88],0xd7b75f,boat);directBox([.5,.14,.16],[.65,2.05,-.88],0xd7b75f,boat);
+  // The inshore fishing boat alongside the main quay east of the pier (minato-berth.js QUAY_FISHING_BOAT), starboard
+  // side to, bow east: harbour-boats.js draws her to the ferry's finish. Her stern line leads aft to the bollard at x 10,
+  // her forward spring from the bow aft to the one at x 15; both are re-laid each frame as she rises and rolls.
+  const QB=QUAY_FISHING_BOAT,boat=buildFishingBoat({length:QB.length,beam:QB.beam,shadows,name:'Daigo Seiei Maru'});
+  boat.position.set(QB.x,SEA_LEVEL,QB.z);boat.rotation.y=QB.yaw;boat.userData.dynamicProp=true;group.add(boat);
+  const fishingLines=createMooringLines(group,2,{name:'Fishing boat mooring lines'}),fairleads=boat.userData.fairleads;
+  const bollardHeads=QB.bollards.map(([x,z])=>new THREE.Vector3(x,.6,z)),lineFrom=new THREE.Vector3();
+  const layFishingLines=()=>{boat.updateMatrixWorld();fairleads.forEach((f,i)=>{lineFrom.set(...f);boat.localToWorld(lineFrom);fishingLines.set(i,lineFrom,bollardHeads[i],.06);});};
+  layFishingLines();
 
   // The breakwater and its beacons, 23 m further out since 2026-10 (it stood at z -83), so the basin
   // inside is 54 m deep: room for the bigger Minato Maru to swing (docs/FERRY-AUDIT.md §6, batch 3).
@@ -382,12 +395,15 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   for(const mesh of createHarbourInstances(batches.values(),{shadows,cellSize:harbourCellSize,consolidate:harbourBatching}))group.add(mesh);
 
+  // Every quay lamp's pool and halo, faded with the heads (lanternGlow).
+  const lampGlow=createLampGlow(group,lampSpots,{pool:{strength:.6}});
+
   let wet=false;const rainCount=mobile?260:600,positions=new Float32Array(rainCount*6);
   for(let i=0;i<rainCount;i++){const x=(Math.random()-.5)*32,y=Math.random()*16,z=(Math.random()-.5)*70;positions.set([x,y,z,x+.025,y+.65,z-.01],i*6);}
   const rainGeo=new THREE.BufferGeometry();rainGeo.setAttribute('position',new THREE.BufferAttribute(positions,3));const rain=new THREE.LineSegments(rainGeo,new THREE.LineBasicMaterial({color:0xadc8ca,transparent:true,opacity:.36,depthWrite:false}));rain.visible=false;rain.name='Local rain streaks';rain.userData.dynamicProp=true;group.add(rain);
 
   return {
-    group,colliders,people,cat,details,warehouse:harbourWarehouse,busStation,streetLamps,
+    group,colliders,people,cat,details,warehouse:harbourWarehouse,busStation,streetLamps,lampGlow,
     landmarks:[harbourWarehouse?.place,busStation.place].filter(Boolean),
     harbourShops,boardwalk,plantSites,shopDoors:shopDoors.filter(Boolean),
     setRain(value){
@@ -395,11 +411,11 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       wet=value;rain.visible=value;wetMeshes.forEach(m=>m.visible=value);const road=material(GROUND.asphalt,'road');road.roughness=value?.28:.84;setOceanWeather(value);
     },
     update(dt,time,day,minutes=1002){
-      boat.rotation.z=Math.sin(time*.7)*.022;boat.position.y=-.18+Math.sin(time*.9)*.06;
+      boat.rotation.z=Math.sin(time*.7)*.01;boat.position.y=SEA_LEVEL+Math.sin(time*.9)*.04;layFishingLines();
       tickOcean(time);
-      const lantern=lanternGlow(minutes),glass=windowGlow(minutes);
+      const lantern=lanternGlow(minutes),glass=windowGlow(minutes),pool=poolGlow(minutes);
       for(const m of lamps){m.material.emissive.set(0xf0a65c);m.material.emissiveIntensity=.12+lantern*.82;}
-      streetLamps.update(lantern);
+      streetLamps.update(lantern,pool);lampGlow.update(pool);harbourWarehouse?.glow?.update(pool);
       lampLights.forEach((l,i)=>l.intensity=lantern*(l.userData.nightIntensity||6));
       shopGlass.forEach(m=>{m.material.emissiveIntensity=.035+glass*.31;m.material.roughness=wet?.18:.24;});
       wetMeshes.forEach((m,i)=>{if(wet)m.material.opacity=.28+Math.sin(time*.7+i)*.045;});

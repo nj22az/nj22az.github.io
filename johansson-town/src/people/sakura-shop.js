@@ -15,7 +15,7 @@ import {createStandIn} from '../render/static-props.js';
 import {townAudio} from '../audio/town-audio.js?snappy=1';
 
 // A single persistent shop owns stock, staff and customer jobs everywhere in town.
-export function createSakuraShop({world,scene,state,ledger,register,action,exit,officeExit=exit,getMinutes,getPlayerPosition,isInside,onBorrow=()=>{},getRain=()=>false,save=()=>{}}){
+export function createSakuraShop({world,scene,state,ledger,register,action,exit,getMinutes,getPlayerPosition,isInside,onBorrow=()=>{},getRain=()=>false,save=()=>{}}){
  // Re-checked twice a second too: the interior's lights arrive when its model loads.
  let lightsInside=null,lightCheck=0;
  const group=new THREE.Group();group.name='Sakura Shōten continuous shop';group.userData.sharedAsset=true;group.visible=false;scene.add(group);
@@ -28,8 +28,9 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   const meal=account.meals?.market;if(meal?.stockClaim&&!meal.delivered){returnShopStock(state,meal.stockClaim);meal.stockClaim=null;}if(meal)meal.finished=true;
   if(account.day!==Math.floor(getMinutes()/1440)){const visit=account.shopping;if(visit?.picked&&!visit.paid){returnShopStock(state,{item:visit.item});visit.picked=false;}}
  }
- // The clerk follows the rota (commerce/sakura-rota.js): Thuan, Nhung at the weekend, Chin at night. When the shift
- // changes, the counter's services are bound to the new body; Grandmother Sakurai's early hours keep the last clerk's binding.
+ // The clerk follows the rota (commerce/sakura-rota.js): Thuan, the owner, on weekdays and Nhung at the weekend; nobody
+ // at night, when the shop is shut. When the shift changes, the counter's services are bound to the new body; the shut
+ // hours keep the last clerk's binding.
  const layout=SAKURA_LAYOUT,colliders=layout.colliders,clerkFor=m=>world.people.find(p=>p.profile.name===sakuraClerkAt(m))||null;
  let person=clerkFor(getMinutes())||world.people.find(p=>p.profile.name==='Thuan');
  const reg=(object,label,fn,inside=true)=>{object.userData.persistentShop=true;register(object,label,fn,inside);};
@@ -39,7 +40,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   return world.people.some(p=>p!==excluded&&p.g.userData.inMarket&&p.g.visible&&Math.hypot(p.g.position.x-x,p.g.position.z-z)<r+(p===person?layout.clearance:.35));
  };
  let backRoomsFetched=false;
- const display=buildSakuraInterior({room:group,reg,action,exit,officeExit});display.updateStock(state.sakura.stock);
+ const display=buildSakuraInterior({room:group,reg,action,exit});display.updateStock(state.sakura.stock);
  const checkout=createCheckoutFeedback({drawer:display.cashDrawer,
   getSale:()=>state.sakura.journal?.findLast(entry=>entry.kind==='Sale'),
   onSale:()=>townAudio.bells([[1568,0],[2093,.09]],.16)});
@@ -116,14 +117,16 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
  const backRooms=on=>group.traverse(o=>{if(BEHIND.has(o.name))o.visible=on;});
  /**
   * From the street the shop floor is a stand-in: the same shelves merged into a few
-  * dozen meshes instead of about five hundred. It is rebuilt when the stock changes or
+  * dozen meshes instead of about five hundred. Shelf products keep their existing
+  * instanced buffers: expanding them would duplicate hundreds of thousands of
+  * triangles just for a window. It is rebuilt when the stock changes or
   * a new day restocks the racks, and the real room comes back the moment you go in.
   */
  let standIn=null,standKey='';
  const windowView=on=>{
   if(on){
    const key=JSON.stringify(state.sakura.stock)+'/'+Math.floor(getMinutes()/1440);
-   if(key!==standKey||!standIn){standIn?.dispose();standIn=createStandIn(group,{name:'Sakura window stand-in',keepLive:o=>!!(o.userData?.name||o.userData?.character)});group.add(standIn.group);standKey=key;}
+   if(key!==standKey||!standIn){standIn?.dispose();standIn=createStandIn(group,{name:'Sakura window stand-in',keepInstances:true,keepLive:o=>!!(o.userData?.name||o.userData?.character)});group.add(standIn.group);standKey=key;}
    standIn.show(true);
   }else standIn?.show(false);
  };

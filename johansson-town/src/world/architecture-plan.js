@@ -1,7 +1,7 @@
 import {SHED_CIRCUIT} from './fujita-layout.js';
 
 import {SCHOOL} from './school-layout.js';
-import {KOBAN} from './koban-layout.js';
+import {POLICE_STATION} from './police-station-layout.js';
 import {KITAHAMA,KITAHAMA_LANES} from './kitahama-layout.js';
 import {NISHI,EAST_ROW,YARD_ROW,EAST_BACK} from './okinawa/layout.js';
 import {YARD_HOMES} from './yard-homes-layout.js';
@@ -22,12 +22,14 @@ export const TOWN_WALK_PLOTS=Object.freeze([
  plot('town-hall-bike-shed',34,37.1,25.3,28),
  {...plot('sakura',-20.2,-7.45,-34.43,-20.17),walkBounds:[-22.6,-4.35,-35.93,-18.67]},
  {...plot('minato-and-ramen',-17.1,-7.8,-16.54,-6.1),walkBounds:[-18.6,-4.35,-18.04,-4.6]},
- plot('koban',KOBAN.x-KOBAN.w/2-.06,KOBAN.x+KOBAN.w/2+.06,KOBAN.z-KOBAN.d/2-.06,KOBAN.z+KOBAN.d/2+.06),
+ // Minato Police Station (police-station-layout.js). Its circuit runs a metre out on every side, so the paving meets the
+ // walls with no verge between: the Main Street footway on the street face, Higa Liquor's circuit to the north, the
+ // east service walk behind, and the plaza side clear of the bench under the south wall.
+ {...plot('police-station',POLICE_STATION.minX,POLICE_STATION.maxX,POLICE_STATION.minZ,POLICE_STATION.maxZ),walkBounds:[POLICE_STATION.minX-1,POLICE_STATION.maxX+1,POLICE_STATION.minZ-1,POLICE_STATION.maxZ+1.5]},
  plot('power-house',SCHOOL.powerHouse.minX,SCHOOL.powerHouse.maxX,SCHOOL.powerHouse.minZ,SCHOOL.powerHouse.maxZ),
  plot('town-hall',12.1,41.2,24.6,45),
  plot('onsen',15.2,30.5,-24.4,-16.8),
- plot('rainflower',19,23,15.4,18.6),
- ...KITAHAMA.plots,{...KITAHAMA.apartment,minZ:KITAHAMA.apartment.minZ-.9},
+ ...KITAHAMA.plots,KITAHAMA.apartment,
  ...NISHI.plots.filter(p=>p.kind!=='grove'&&p.kind!=='shed'),...EAST_BACK.plots,
  ...EAST_ROW.plots.map(p=>({...p,minX:EAST_ROW.minX,maxX:EAST_ROW.maxX})),
  ...YARD_ROW.plots.map(p=>({...p,minX:YARD_ROW.minX,maxX:YARD_ROW.maxX,walkBounds:[YARD_ROW.minX-1.5,-3.9,p.minZ-1.5,p.maxZ+1.5]})),
@@ -50,4 +52,8 @@ export const ARCHITECTURE_ROUTES=[
  ...TOWN_WALK_PLOTS.map(p=>({id:'building-circuit-'+p.id,width:2,surface:'stone',points:plotCircuit(p)})),
  // The common service lanes connect every shop's rear circuit to the quay and town.
  {id:'east-service-walk',width:2.4,surface:'stone',points:[[14.9,-13],[14.9,7],[14.9,24],[1.25,24]]},
+ // The police station's yard, where the police box stood: concrete from the station's south wall to the old box's
+ // paving edge, the patrol-car bay, the bicycle rack and the flagpole on it (police-station.js). A forecourt is paved
+ // as a circuit is, in concrete, and gives way to every footway and lane it meets (street-plan.js).
+ (({minX,maxX,minZ,maxZ})=>({id:'police-station-yard',forecourt:true,width:maxX-minX,surface:'concrete',points:[[(minX+maxX)/2,minZ+(maxX-minX)/2],[(minX+maxX)/2,maxZ-(maxX-minX)/2]]}))(POLICE_STATION.yard),
 ];

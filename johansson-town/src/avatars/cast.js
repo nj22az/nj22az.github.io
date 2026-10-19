@@ -8,6 +8,8 @@ import {residentPersonality} from '../people/resident-personalities.js';
 import {withTownDials} from './personality.js';
 import {applyLook} from './looks.js';
 import {LOOKS} from './looks-data.js';
+import {identityOf,isRetired,RETIRED} from '../people/roster.js';
+import {liveNameFor} from '../people/cast.js';
 
 /**
  * Who everybody is, as recipes. Johansson and Thuan are drawn from the photographs the
@@ -33,9 +35,9 @@ function withBirthday(recipe,name){
  const date=BIRTHDAYS[name];if(!recipe||!date)return recipe;
  return {...recipe,profile:{...(recipe.profile||{}),month:Number(date.slice(0,2)),day:Number(date.slice(3,5))}};
 }
-const castSet=(entries,preserveSilhouette=[])=>Object.freeze(Object.fromEntries(Object.entries(entries).map(([name,r])=>{
+const castSet=entries=>Object.freeze(Object.fromEntries(Object.entries(entries).map(([name,r])=>{
  const female=PROFILES.find(p=>p.name===name)?.female??FEMALE_NEIGHBOURS.has(name);
- return [name,normalizeRecipe(withBirthday({...r,body:{...r.body,silhouette:r.body.silhouette==='neutral'&&!preserveSilhouette.includes(name)?(female?'feminine':'masculine'):r.body.silhouette}},name))];
+ return [name,normalizeRecipe(withBirthday({...r,body:{...r.body,silhouette:r.body.silhouette==='neutral'?(female?'feminine':'masculine'):r.body.silhouette}},name))];
 })));
 
 export const CAST_RECIPES=castSet({
@@ -60,7 +62,9 @@ export const CAST_RECIPES=castSet({
   facial:{style:'stubble',colour:'#b8b4aa'},wrinkles:.7,blush:.35,
   outfit:{top:'kariyushi',topColour:'#7fb0d8',pattern:'flowers',bottom:'shorts',bottomColour:'#c8b48a',footwear:'sandals',shoes:'#6d4a32',accent:'#f4f1ea'},
   swim:{colour:'#2f5f9e'}}),
- // The creator selected this editable Studio design on 18 October 2026.
+ // The creator's own design for her, approved in Johansson Studio on 18 October 2026 (thuan-studio-design.js). Its
+ // body silhouette is Studio's unset 'neutral', which the town resolves by who she is, as for everyone (castSet above):
+ // the bath side, the swimwear and the after-bath clothes all follow it.
  Thuan:R(THUAN_STUDIO_DESIGN),
  // Thuan's middle sister: slim, a high ponytail, a plain white tee and blue shorts.
  // Stubborn but friendly: the flat set mouth and straight brows, and the grin under them.
@@ -127,7 +131,9 @@ export const NEIGHBOUR_RECIPES=castSet({
   outfit:{top:'sailor',topColour:'#f4f1ea',bottom:'pleatedskirt',bottomColour:'#27304d',footwear:'shoes',shoes:'#2b2b2b',accent:'#d8342c'}}),
  Riku:R({body:{silhouette:'masculine',height:.56,build:.55,skin:'#c89a74'},hair:{style:'crop',colour:'#33271f'},eyes:{style:'round'},brows:{style:'thick'},mouth:{style:'smile'},outfit:{top:'polo',topColour:'#587d83',bottom:'trousers',bottomColour:'#505f65',hat:'helmet',hatColour:'#dabb55'}}),
 
- // Tetsuo's mother, who keeps the old Chinen house in Kitano hamlet (people/neighbours.js): small, a grey bun, a blouse and wide pants.
+ // Retired in phase 4 (roster.js RETIRED; RETIRED_RECIPES keeps the drawings for Studio and history): Grandmother Sakurai,
+// Grandmother Chinen (Tetsuo's mother, who kept the old Chinen house in Kitano hamlet), Mr Ōshiro, Mr Shimabukuro,
+// Mrs Kinjō and Postman Tōma. Nothing live spawns them.
  'Grandmother Sakurai':R({name:'Grandmother Sakurai',age:'elder',body:{height:.2,build:.55,silhouette:'feminine',skin:'#d6a67c'},hair:{style:'bob',colour:'#c6c3ba'},eyes:{style:'gentle'},brows:{style:'thin',colour:'#8d8984'},mouth:{style:'small'},glasses:{style:'round',colour:'#6a4b3c'},wrinkles:.8,outfit:{top:'cardigan',topColour:'#ad7b83',bottom:'widepants',bottomColour:'#4a4b50',shoes:'#3d3833'}}),
  'Dr Kakazu':R({name:'Dr Kakazu',age:'adult',body:{height:.5,build:.4,silhouette:'masculine',skin:'#dfb58f'},hair:{style:'sidepart',colour:'#24201c'},eyes:{style:'gentle'},brows:{style:'straight'},mouth:{style:'small'},outfit:{top:'smock',topColour:'#efeee6',bottom:'trousers',bottomColour:'#3b4c52',shoes:'#2d3030'}}),
  Mai:R({name:'Mai',age:'child',body:{height:.45,build:.35,silhouette:'feminine',skin:'#e8bf98'},hair:{style:'bob',colour:'#2c211b'},eyes:{style:'round'},brows:{style:'thin'},mouth:{style:'smile'},outfit:{top:'tee',topColour:'#e59c72',bottom:'skirt',bottomColour:'#2d3a52',shoes:'#3f6fb0'}}),
@@ -165,20 +171,13 @@ export function recipeFor(name='',{looks=LOOKS}={}){
  return look?.set?normalizeRecipe(applyLook(baseRecipe(name),look.set)):baseRecipe(name);
 }
 
-/**
- * Who may have a published Studio look: the residents World draws, by how they are drawn. Harbour visitor is in
- * CAST_RECIPES only as a starting template for the maker (creator.js), not as a resident, so it is not among them.
- */
-const TEMPLATES=new Set(['Harbour visitor']);
-export const RESIDENT_GROUPS=Object.freeze({cast:Object.freeze(Object.keys(CAST_RECIPES).filter(n=>!TEMPLATES.has(n))),neighbour:Object.freeze(Object.keys(NEIGHBOUR_RECIPES)),
- townsfolk:Object.freeze(PROFILES.map(p=>p.name).filter(n=>!CAST_RECIPES[n]&&!NEIGHBOUR_RECIPES[n]))});
-export const RESIDENT_NAMES=Object.freeze(Object.values(RESIDENT_GROUPS).flat());
 
 /** The recipe World draws somebody with, before any saved or published look. */
 /**
  * The Minato Maru's crew (people/ferry-crew.js), drawn, not generated: the generator gave the oiler and the deck hand the
  * same spiky hair and polo (the creator, 2026-10-12: "the oiler is cloned, why"). Kōji is among the neighbours.
- * Ms Ganaha, the ticket clerk ashore (FERRY_SHORE) and the island's guide (people/ganaha.js), is drawn with them.
+ * Ms Ganaha, the ticket clerk ashore (FERRY_SHORE) and the island's guide (people/ganaha.js), is drawn with them, and
+ * since phase 2 of the consolidation the five supporting crew, who were job-role drawings before.
  */
 export const CREW_LOOKS=Object.freeze({
  // The chief, 61: grey side-parted hair, a square jaw, reading glasses, the ship's navy boiler suit.
@@ -190,12 +189,62 @@ export const CREW_LOOKS=Object.freeze({
  // The ticket clerk, Ms Ganaha, 52: a neat greying bob, reading glasses on a chain, the terminal's terracotta vest over
  // a white shirt (outfits.js 'ticket-window'), so the waiting hall knows whom to ask.
  'Ms Ganaha':R({name:'Ms Ganaha',age:'adult',head:{size:.48,shape:.5,form:'oval',jaw:0.4,cheeks:0.6},body:{height:.4,build:.5,silhouette:'feminine',skin:'#cf9d76'},hair:{style:'bob',colour:'#4a423c'},eyes:{style:'gentle'},brows:{style:'arched'},nose:{style:'button'},mouth:{style:'smile'},glasses:{style:'half',colour:'#7a5a3a'},wrinkles:.35,outfit:{top:'vest',topColour:'#b4583c',accent:'#f4f1ea',bottom:'skirt',bottomColour:'#27304d',footwear:'shoes',shoes:'#2b2b2b',pattern:'none'}}),
+ // The supporting crew (people/roster.js SUPPORTING; docs/CAST-CONSOLIDATION.md §5), each drawn once, for the job and the
+ // island of 1997: the ship's navy for the deck department, white for the officer, the galley's apron, the pier's straw hat.
+ // The chief officer, Ryo, 41: a side parting kept short, a square jaw, the officer's white shirt with navy trousers
+ // and the ship's white cap, which he takes off on the wing.
+ Ryo:R({name:'Ryo',age:'adult',head:{size:.49,shape:.48,form:'square',jaw:0.7,cheeks:0.4},body:{height:.6,build:.5,silhouette:'masculine',skin:'#c8956f'},hair:{style:'sidepart',colour:'#1c1714'},eyes:{style:'almond'},brows:{style:'straight',colour:'#1c1714',size:.5},nose:{style:'ridge',size:.45},mouth:{style:'flat',size:.45},wrinkles:.2,outfit:{top:'shirt',topColour:'#f4f1ea',bottom:'trousers',bottomColour:'#27304d',footwear:'shoes',shoes:'#1c1c24',hat:'captain',hatColour:'#f4f1ea',accent:'#27304d'}}),
+ // The deck hand, Ren, 23: spiky hair under a navy cap, sun-browned from the forecastle, the deck department's navy work
+ // jacket with the orange of the life vest's trim, work trousers and boots for the wet deck.
+ Ren:R({name:'Ren',age:'adult',head:{size:.47,shape:.44,form:'oval',jaw:0.5,cheeks:0.45},body:{height:.62,build:.42,silhouette:'masculine',skin:'#b8784f'},hair:{style:'spiky',colour:'#1c1714'},eyes:{style:'bright'},brows:{style:'thick',colour:'#1c1714'},nose:{style:'button'},mouth:{style:'grin'},outfit:{top:'jacket',topColour:'#2a3f6b',bottom:'trousers',bottomColour:'#2a3f6b',footwear:'boots',shoes:'#2b2b2b',hat:'cap',hatColour:'#27304d',accent:'#e8742a'}}),
+ // The purser, Aya, 31: a chin-length bob, a calm face, the purser's navy vest over a white blouse (the counterpart of
+ // Ms Ganaha's terracotta one ashore, so the two counts are told apart at a glance), a navy skirt and shoes.
+ Aya:R({name:'Aya',age:'adult',head:{size:.47,shape:.5,form:'oval',jaw:0.38,cheeks:0.5},body:{height:.42,build:.4,silhouette:'feminine',skin:'#e4b893'},hair:{style:'bob',colour:'#2e211b'},eyes:{style:'gentle'},brows:{style:'arched',colour:'#2e211b',size:.42},nose:{style:'dot'},mouth:{style:'small',colour:'#b8544a'},blush:.2,outfit:{top:'vest',topColour:'#27304d',accent:'#f4f1ea',bottom:'skirt',bottomColour:'#27304d',footwear:'shoes',shoes:'#2b2b2b',pattern:'none'}}),
+ // The cook-steward, Jun, 52: a stocky build, close-cropped greying hair under a white kerchief, a moustache, the galley's
+ // white apron over navy trousers, sandals on the galley's deck.
+ Jun:R({name:'Jun',age:'adult',head:{size:.5,shape:.55,form:'round',jaw:0.55,cheeks:0.65},body:{height:.42,build:.68,silhouette:'masculine',skin:'#d1a078'},hair:{style:'crop',colour:'#6f6a64'},eyes:{style:'sleepy'},brows:{style:'bushy',colour:'#6f6a64'},nose:{style:'bulb',size:.5},mouth:{style:'smile'},facial:{style:'moustache',colour:'#6f6a64'},wrinkles:.45,outfit:{top:'apron',topColour:'#f4f1ea',bottom:'trousers',bottomColour:'#27304d',footwear:'sandals',shoes:'#3a2a1e',hat:'kerchief',hatColour:'#f4f1ea',accent:'#f4f1ea'}}),
+ // The Kitano line hand, Kai, 47: a lean islander in a straw hat, stubble, a faded tee, shorts and sandals, the way the
+ // men of the hamlet dress for a pier in the sun.
+ Kai:R({name:'Kai',age:'adult',head:{size:.48,shape:.46,form:'narrow',jaw:0.5,cheeks:0.3},body:{height:.55,build:.38,silhouette:'masculine',skin:'#a86a43'},hair:{style:'crop',colour:'#2a1f18'},eyes:{style:'narrow'},brows:{style:'straight',colour:'#2a1f18'},nose:{style:'line',size:.45},mouth:{style:'soft'},facial:{style:'stubble',colour:'#2a1f18'},wrinkles:.4,outfit:{top:'tee',topColour:'#8fa7b8',bottom:'shorts',bottomColour:'#6d7478',footwear:'sandals',shoes:'#6d4a32',hat:'straw',hatColour:'#e0c078',accent:'#f4f1ea'}}),
 });
+/**
+ * Who may have a published Studio look: the residents World draws, by how they are drawn. Harbour visitor is in
+ * CAST_RECIPES only as a starting template for the maker (creator.js), not as a resident, so it is not among them.
+ * Nobody the roster retired is among them either (RETIRED_RECIPES, below): their drawings stay, their names do not
+ * stand in any live list. The crew group is the people drawn in CREW_LOOKS, by the name the live cast uses (Mac, not
+ * Mr Nakandakari), so Studio finds the relief engineer and the port clerk by the names World calls them.
+ */
+const TEMPLATES=new Set(['Harbour visitor']);
+const live=name=>!TEMPLATES.has(name)&&!isRetired(name);
+export const RESIDENT_GROUPS=Object.freeze({cast:Object.freeze(Object.keys(CAST_RECIPES).filter(live)),neighbour:Object.freeze(Object.keys(NEIGHBOUR_RECIPES).filter(live)),
+ crew:Object.freeze([...new Set(Object.keys(CREW_LOOKS).filter(live).map(n=>liveNameFor(n)||n))]),
+ // A townsfolk profile whose name the roster now gives to somebody else (Emi is Mrs Nakamura's display name) is not a
+ // resident of its own: its face is kept only as the drawing authoredNameFor falls back to.
+ townsfolk:Object.freeze(PROFILES.map(p=>p.name).filter(n=>!CAST_RECIPES[n]&&!NEIGHBOUR_RECIPES[n]&&!CREW_LOOKS[n]&&!isRetired(n)&&(!identityOf(n)||liveNameFor(n)===n)))});
+export const RESIDENT_NAMES=Object.freeze(Object.values(RESIDENT_GROUPS).flat());
+/**
+ * The retired identities' drawings (people/roster.js RETIRED; phase 5 of docs/CAST-CONSOLIDATION.md): kept so that
+ * Studio and a history story can still build them (recipeFor works for every one of the ten, the two without a drawing
+ * generated from their personality as before), never spawned: no live list (RESIDENT_GROUPS, people/cast.js CAST,
+ * neighbours.js, the dungeon's costumes) names them. tests/retired-recipes.test.mjs holds both halves.
+ */
+export const RETIRED_RECIPES=Object.freeze(Object.fromEntries(RETIRED.map(p=>p.name).filter(n=>CAST_RECIPES[n]||NEIGHBOUR_RECIPES[n]||CREW_LOOKS[n]).map(n=>[n,CAST_RECIPES[n]||NEIGHBOUR_RECIPES[n]||CREW_LOOKS[n]])));
+export const RETIRED_RECIPE_NAMES=Object.freeze(RETIRED.map(p=>p.name));
 export function baseRecipe(name=''){return withBirthday(drawnRecipe(name),name);}
+// Only for a name with no drawing of its own. The old townsfolk profile Emi keeps the face it had (its PROFILES entry
+// stays as the seed of that drawing) although Emi is Mrs Nakamura's display name in the roster; it is no longer listed
+// as a resident of its own (RESIDENT_GROUPS.townsfolk).
+const authoredNameFor=name=>{if(PROFILES.some(p=>p.name===name))return null;const avatar=identityOf(name)?.avatar;return avatar&&avatar!==name?avatar:null;};
+/** A job-role name that was a crew drawing before phase 2 ('Chief officer') draws the person who holds it now (Ryo). */
+const bearerOf=name=>{const who=identityOf(name);return who&&who.name!==name&&who.was.includes(name)&&CREW_LOOKS[who.name]?who.name:null;};
 function drawnRecipe(name){
  if(CAST_RECIPES[name])return aged(CAST_RECIPES[name],name);
  if(NEIGHBOUR_RECIPES[name])return aged(normalizeRecipe(withTownDials(NEIGHBOUR_RECIPES[name],name)),name);
  if(CREW_LOOKS[name])return aged(CREW_LOOKS[name],name);
+ // A person the consolidated roster knows (people/roster.js `avatar`) is drawn as the name World draws them under today:
+ // recipeFor('Fuji') is Mr Fujita's drawing, and Jack's is the Harbour master's, until phase 5 renames them; a former
+ // job-role name ('Deck hand') is its holder's own drawing.
+ const authored=authoredNameFor(name)||bearerOf(name);if(authored)return drawnRecipe(authored);
  const style=residentPersonality(name),r=seeded(name),any=list=>list[Math.floor(r()*list.length)];
  const feminine=PROFILES.find(p=>p.name===name)?.female??(/female/.test(style.source||'')||/^(Mrs |Ms |Nhung|Reiko|Hana|Yoshiko|Naoko|Fumiko|Yui)/.test(name));
  const grey=/^#[a-f0-9]{6}$/i.test(style.hair||'')&&parseInt(style.hair.slice(1,3),16)>150;

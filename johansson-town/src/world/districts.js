@@ -2,7 +2,7 @@ import {buildIslandHomes} from './island-homes.js';
 import {buildKitanoHamlet} from './kitano-hamlet.js';
 import {buildLaneSurfaces} from './lane-surfaces.js?snappy=1';
 import {buildYardHomes} from './yard-homes.js';
-import {buildKoban} from './koban.js';
+import {buildPoliceStation} from './police-station.js';
 import * as THREE from '../../vendor/three.module.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
 
@@ -24,8 +24,9 @@ export function buildDistricts(world,options){
   
   // Sparse bilingual junction signs, above eye level and outside the walking lane.
   // Each faces the people it is directing: the port sign is read walking up from the
-  // shops, the bus-stop sign walking down to the terminus.
-  const signs=[[3.2,-34,"港へ →",'HARBOUR'],[4.8,18.9,"港湾ターミナル ↓",'PORT TERMINAL · FERRIES',Math.PI]];
+  // shops, the bus-stop sign walking down to the terminus. That one stands on the footway's kerb side, clear of the
+  // police station's doors and notice board behind it.
+  const signs=[[3.2,-34,"港へ →",'HARBOUR'],[3.6,18.9,"港湾ターミナル ↓",'PORT TERMINAL · FERRIES',Math.PI]];
   
   for(const [x,z,jp,en,angle=0] of signs){
     const marker=sign(jp,en,[x,2.1,z],1.55,.42,angle);marker.name='District direction';
@@ -34,8 +35,8 @@ export function buildDistricts(world,options){
   
   // The bookshop and workshop staff live in the yard behind Front-Row (yard-homes.js).
   buildYardHomes(world,options);
-  // Officer Mori's police box, on the lawn corner at the bus plaza. See koban.js.
-  buildKoban(world,options);
+  // Minato Police Station, on the lawn corner at the bus plaza, where Officer Mori works and lives. See police-station.js.
+  world.policeStation=buildPoliceStation(world,options);
   // Kitahama's houses on the north-east land (island-homes.js).
   buildIslandHomes(world,options);
   // Kitano hamlet by the pier on Kitano-jima: Johansson's house, the Chinen house, and the Shiroma house, to let (kitano-hamlet.js).

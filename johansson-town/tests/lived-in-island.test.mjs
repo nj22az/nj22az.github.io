@@ -3,7 +3,6 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {cargoVisit,buildCargoShipping,CARGO_CALLS} from '../src/world/cargo-shipping.js';
 import {CARGO_BERTH} from '../src/world/minato-berth.js';
-import {buildFlowerShop,FLOWER_SHOP} from '../src/world/flower-shop.js';
 import {NEIGHBOURS} from '../src/people/neighbours.js';
 import {recipeFor} from '../src/avatars/cast.js';
 import {SHARED_DINING_BOUNDS as bounds,SHARED_DINING_FLOOR as floorPolygon,SHARED_DINING_COLLIDERS as colliders} from '../src/world/interiors/shared-dining-layout.js';
@@ -26,10 +25,9 @@ test('cargo ships arrive twice, stay alongside, depart continuously and reopen c
  assert.equal(cargoVisit(720).visible,false);assert.notEqual(cargoVisit(480).name,cargoVisit(480+1440).name);
  const world={group:new THREE.Group()},service=buildCargoShipping(world);service.update(0,480);assert.equal(service.ship.visible,true);assert.equal(service.ship.position.z,CARGO_BERTH.z);service.update(0,CARGO_CALLS[0].arrival+.01);assert.ok(service.ship.position.z< -300,'She comes in from beyond sight');service.update(0,720);assert.equal(service.ship.visible,false);
 });
-test('flower shop uses the existing Mrs Kinjō actor and preserves a walkable shop entrance',()=>{
- const world={colliders:[]},group=new THREE.Group(),prompts=[],actions=[];buildFlowerShop({world,group,register:(o,label,fn)=>prompts.push({label,fn}),onAction:(...args)=>actions.push(args)});
- const staff=NEIGHBOURS.filter(n=>n.name===FLOWER_SHOP.staff);assert.equal(staff.length,1);assert.deepEqual(staff[0].at,FLOWER_SHOP.staffAt);assert.match(staff[0].role,/flowers/);
- for(let x=4.8;x<=6.45;x+=.15)assert.ok(!world.colliders.some(c=>circleHitsRect(x,-16.7,.32,c)),'Walkable public approach to the new flower counter at '+x);
- prompts.find(p=>p.label==='Buy a Rainflower bouquet · ¥250').fn();assert.equal(actions.at(-1)[2].cost,250);
+test('the flower pavilion and its florist are gone (phase 4): no body, no builder; the bouquets are Sakura’s',async()=>{
+ assert.equal(NEIGHBOURS.find(n=>n.name==='Mrs Kinjō'),undefined,'no florist body');
+ await assert.rejects(import('../src/world/flower-shop.js'),'the pavilion has no builder any more');
+ const {SAKURA_FLOWER_STAND}=await import('../src/world/okinawa/old-town.js');assert.ok(SAKURA_FLOWER_STAND.every(Number.isFinite));
  assert.equal(recipeFor('Hana').outfit.top,'sailor');assert.equal(recipeFor('Hana').outfit.bottom,'pleatedskirt');
 });

@@ -76,7 +76,7 @@ export const MINATO_BERTH=Object.freeze({
  * boat (cargo-shipping.js, a 19-ton class island cargo boat, 20 × 5 m) lies starboard side to,
  * bow to the quay 2 m off it, on five V-type fenders; four bitts on the east edge take her lines. She
  * comes in from the open water east of the harbour, round the breakwater's east end, so she never
- * crosses the ferry's water west of the pier. Her board, the staging bay and Riku's forklift stay on the
+ * crosses the ferry's water west of the pier. Her board, the staging bay and the depot's forklift stay on the
  * west quay by the depot she supplies.
  */
 const EAST=OUTER_PIER.x+OUTER_PIER.width/2,EAST_FACE=EAST+.09;

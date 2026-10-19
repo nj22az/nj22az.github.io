@@ -12,12 +12,12 @@ test('a resident counts only what the mayor really did with them, and only what 
  favour(state,100,'nhung-cookbook','declined',['Nhung','Thao']);
  assert.deepEqual(deedsWith(state,'Nhung',at(100)),{kept:0,late:0,declined:1,gifts:0,drinks:0});
  assert.equal(deedsWith(state,'Thao',at(100)).declined,0,'Thao never heard she was meant to get a book');
- favour(state,101,'harbour-timetable','done',['Harbour master','Bus driver']);
- assert.equal(deedsWith(state,'Bus driver',at(101)).kept,1,'a kept favour is known to both');
- recordMoment(state,at(102),{text:'Gave Reiko a melon bun.',kind:'gift',who:['Reiko']});
- recordMoment(state,at(102),{text:'Bought Reiko a drink at Minato.',kind:'friend',who:['Reiko']});
- assert.deepEqual(deedsWith(state,'Reiko',at(102)),{kept:0,late:0,declined:0,gifts:1,drinks:1});
- assert.equal(deedsWith(state,'Reiko',at(102+IMPRESSION_DAYS)).gifts,0,'a fortnight later it has faded');
+ favour(state,101,'harbour-timetable','done',['Harbour master','Mrs Sato']);
+ assert.equal(deedsWith(state,'Mrs Sato',at(101)).kept,1,'a kept favour is known to both');
+ recordMoment(state,at(102),{text:'Gave Tetsuo a melon bun.',kind:'gift',who:['Tetsuo']});
+ recordMoment(state,at(102),{text:'Bought Tetsuo a drink at Minato.',kind:'friend',who:['Tetsuo']});
+ assert.deepEqual(deedsWith(state,'Tetsuo',at(102)),{kept:0,late:0,declined:0,gifts:1,drinks:1});
+ assert.equal(deedsWith(state,'Tetsuo',at(102+IMPRESSION_DAYS)).gifts,0,'a fortnight later it has faded');
 });
 
 test('the most telling impression wins, and it is said once until it changes',()=>{

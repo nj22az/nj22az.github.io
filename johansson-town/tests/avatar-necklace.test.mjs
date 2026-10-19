@@ -9,8 +9,9 @@ installDOM();
 const wearing=(top,extra={})=>normalizeRecipe({...CAST_RECIPES.Thuan,outfit:{...CAST_RECIPES.Thuan.outfit,top,pattern:'none'},...extra});
 const points=shape=>shape.strands.flatMap(s=>s.points);
 
-test('Thuan’s pendant comes out from under her blouse collar: no band round the neck, nothing over the collar',()=>{
- const r=CAST_RECIPES.Thuan,m=measure(r),shape=necklaceShape(r,m);
+test('a pendant comes out from under a blouse collar: no band round the neck, nothing over the collar',()=>{
+ // (Her 10 October look, a blouse with a pendant; her own design since 18 October wears a polo without one.)
+ const r=wearing('blouse',{accessories:{...CAST_RECIPES.Thuan.accessories,neckwear:'pendant'}}),m=measure(r),shape=necklaceShape(r,m);
  assert.equal(r.outfit.top,'blouse');assert.equal(r.accessories.neckwear,'pendant');
  assert.equal(shape.strands.length,2,'two short drops, the rest of the chain under the collar');
  // The rounded collar's two halves meet at the front down to t = 1 - (1 - 0.88) * 1.2 (garment.js collar, drop .88).

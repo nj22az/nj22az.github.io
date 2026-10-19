@@ -1,4 +1,6 @@
 import {canonicalDay} from './canonical-day.js';
+import {calledToQuay} from './shore-duty.js';
+import {onWatch} from './ferry-crew.js';
 import {onSakuraShift,isWeekend} from '../commerce/sakura-rota.js';
 import {townCalendarAt} from '../town-clock.js';
 import {izakayaJob} from './izakaya-hours.js';
@@ -26,6 +28,7 @@ import {SATO_LUNCH,SATO_RAMEN,satoRamenOpen} from '../world/sato-ramen-layout.js
 export {IZAKAYA_DOOR};
 export {RAMEN_DOOR} from '../world/dining-layout.js';
 import {RAMEN_DOOR} from '../world/dining-layout.js';
+/** Thuan's home door: the Kitano house's gate (kitano-residents.js), which she reaches by the ferry, never on foot. */
 export const THUAN_HOME_DOOR=[...RESIDENTS.find(p=>p.name==='Thuan').home];
 export const minuteOfDay=m=>((m%1440)+1440)%1440;
 export const inTimeRange=(m,start,end)=>start!=null&&end!=null&&minuteOfDay(m-start)<end-start;
@@ -185,11 +188,6 @@ const AFTER_WORK=Object.freeze({
   {until:75,place:'izakaya',target:IZAKAYA_DOOR,activity:'having tea with Thao after the lunch shift'},
   {until:135,place:'stroll',target:[11,-40],activity:'choosing fish at the harbour'},
  ]),
- Reiko:Object.freeze([
-  {until:120,place:'izakaya',target:IZAKAYA_DOOR,activity:'eating supper after the press shift'},
-  {until:250,place:'park',target:[PARK_STAND[0]-.7,PARK_STAND[1]-.9],activity:'sketching the park for tomorrow’s paper'},
-  {until:400,place:'stroll',target:[18,-45],activity:'watching the harbour lights'},
- ]),
  Tetsuo:Object.freeze([
   {until:105,place:'izakaya',target:IZAKAYA_DOOR,activity:'playing the counter radio for Thao'},
   {until:235,place:'stroll',target:[6,-48],activity:'checking the harbour radio signal'},
@@ -244,12 +242,12 @@ export function visitsRamen(profile,minutes){
  return profile?.name!=='Thuan'&&!!satoLunch(profile,minutes);
 }
 /**
- * The Front-Row staff at home in the yard: to work for their shift, a Sakura errand or
- * an evening stop when one is due, and otherwise home — where they eat, read and, at
- * night, sleep in their own beds for anybody who opens the door to see.
+ * The Front-Row staff at home in the yard, and Nhung at 3 Kitahama since phase 3 (her bookshop day is the same; the
+ * walk home is to Kitahama's cross lane): to work for their shift, a Sakura errand or an evening stop when one is due,
+ * and otherwise home — where they eat, read and, at night, sleep in their own beds for anybody who opens the door to see.
  */
-/** Reiko and Tetsuo start in the afternoon; on a dry morning they take an hour on the park bench. */
-const MORNING_PARK=Object.freeze({Reiko:Object.freeze([660,720]),Tetsuo:Object.freeze([750,810])});
+/** Tetsuo starts in the afternoon; on a dry morning he takes an hour on the park bench. */
+const MORNING_PARK=Object.freeze({Tetsuo:Object.freeze([750,810])});
 /** Lunch at Sato Ramen, next door to the shop, for those who have a slot (sato-ramen-layout.js). */
 function satoLunch(profile,minutes){
  const slot=SATO_LUNCH[profile.name];
@@ -257,9 +255,11 @@ function satoLunch(profile,minutes){
 }
 /** Yard residents whose evening runs longer than the usual two hours. */
 const YARD_EVENING=Object.freeze({Nhung:180});
+/** Where Chin's street body waits while the ship has him: the terminal, where he steps ashore when he signs off. */
+const ABOARD_AS_MOTORMAN=Object.freeze({place:'ferry',target:[8,-38],activity:'motorman aboard the Minato Maru'});
 function yardResidentPlan(profile,minutes,rain=false,state=null){
- // Sakura's 24 hours (commerce/sakura-rota.js): Chin's night shift, Nhung's weekend day shift covering for Thuan.
- if(onSakuraShift(profile.name,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:profile.name==='Chin'?'the night shift at Sakura':'minding Sakura’s counter for Thuan'};
+ // Sakura's weekend (commerce/sakura-rota.js): Nhung keeps the day counter while Thuan is home on Kitano-jima.
+ if(onSakuraShift(profile.name,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'minding Sakura’s counter for Thuan'};
  const lunch=satoLunch(profile,minutes);if(lunch)return lunch;
  const play=sistersAtPlay(profile,minutes,rain);if(play)return play;
  if(shiftActive(profile,minutes)&&!(profile.name==='Nhung'&&isWeekend(minutes)))return {place:'work',target:profile.work,activity:profile.role};
@@ -271,33 +271,37 @@ function yardResidentPlan(profile,minutes,rain=false,state=null){
  // at most a couple of hours after work before heading home to bed.
  const shift=shiftFor(profile),evening=shift&&minuteOfDay(minutes-shift.finish)<(YARD_EVENING[profile.name]||120)?afterWorkPlan(profile,minutes,rain):null;
  if(evening)return evening;
- return {place:'home',target:profile.home,activity:rain?'sheltering at home':'at home in the yard'};
+ return {place:'home',target:profile.home,activity:rain?'sheltering at home':livesInYard(profile)?'at home in the yard':'at home at 3 Kitahama'};
 }
 /**
- * The two who live at their work. The harbour master keeps the office from half past
- * six until five, walks the quay in the early evening and turns in behind the screen
- * in the office by half past nine. Officer Mori sleeps through the morning in the
- * tatami room behind the police box, keeps the front desk from four, takes supper at
- * Sakura and walks the night patrol from ten until six.
+ * The two who live at their work. The harbour master (Jack, the harbour agent: docs/CAST-CONSOLIDATION.md §4, §9)
+ * keeps the office through the ship's day, six until the last boat is fast at half past ten: the berth radio and the
+ * freight book between calls, and the shore end of every line at each call (ferry-shore-crew.js takes him to the
+ * bitts; shore-duty.js lets the day's plan and any room he is in release him). After the last boat he walks the quay to
+ * check the moorings and turns in behind the screen in the office by eleven. Officer Mori sleeps through the morning in
+ * the tatami room behind the police box, keeps the front desk from four, takes supper at Sakura and walks the night
+ * patrol from ten until six.
  */
-export const HARBOUR_MASTER_DAY=Object.freeze({start:390,finish:1020,turnIn:1230});
+export const HARBOUR_MASTER_DAY=Object.freeze({start:360,finish:1350,turnIn:1380});
+/** Where a shore line hand called by the ferry is going (ferry-shore-crew.js walks the body; this only lets him out). */
+const QUAY_LINES=Object.freeze({place:'quay-lines',target:[0,-48],activity:'taking the ferry’s lines at the outer pier'});
 export const MORI_DAY=Object.freeze({desk:960,patrol:1320,patrolEnd:360});
 function workplaceResidentPlan(profile,minutes,rain=false,state=null){
  const m=minuteOfDay(minutes),home={place:'home',target:profile.home};
  if(profile.name==='Harbour master'){
   const day=HARBOUR_MASTER_DAY;
+  if(calledToQuay(profile.name))return {...QUAY_LINES};
   const lunch=satoLunch(profile,minutes);if(lunch)return lunch;
   if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'buying lunch at Sakura'};
-  if(inTimeRange(m,day.start,day.finish))return {place:'work',target:profile.work,activity:'on duty at the harbour office'};
-  if(!rain&&inTimeRange(m,day.finish,day.finish+75))return {place:'stroll',target:[0,-44],activity:'walking the quay to check the moorings'};
-  if(!rain&&inTimeRange(m,day.finish+75,day.turnIn-60))return {place:'park',target:[PARK_STAND[0]+.8,PARK_STAND[1]-.9],activity:'watching the evening from the park'};
-  return {...home,activity:inTimeRange(m,day.turnIn-60,day.start+1440)?'in his bed nook at the office':'at home in the office'};
+  if(inTimeRange(m,day.start,day.finish))return {place:'work',target:profile.work,activity:'on duty at the harbour office: the berth radio and the freight book'};
+  if(!rain&&inTimeRange(m,day.finish,day.turnIn))return {place:'stroll',target:[0,-44],activity:'walking the quay to check the moorings after the last boat'};
+  return {...home,activity:inTimeRange(m,day.turnIn-30,day.start+1440)?'in his bed nook at the office':'at home in the office'};
  }
  const day=MORI_DAY;
  if(inTimeRange(m,day.patrol,day.patrolEnd+1440))return {place:'patrol',target:NIGHT_PATROL[0],activity:'night patrol'};
  if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'supper from Sakura before the night patrol'};
- if(inTimeRange(m,day.desk,day.patrol))return {place:'work',target:profile.work,activity:'at the front desk of the police box'};
- return {...home,activity:'resting in the room behind the police box'};
+ if(inTimeRange(m,day.desk,day.patrol))return {place:'work',target:profile.work,activity:'at the front desk of the police station'};
+ return {...home,activity:'resting in his quarters above the police station'};
 }
 /**
  * On the island the commute is by ferry, and what people are doing says so. One place
@@ -308,8 +312,10 @@ export const ferryWords=text=>typeof text!=='string'?text:text
  .replace(/(on|for|to) the Harbour Line/g,'$1 the ferry').replace(/next Harbour Line departure/g,'next ferry')
  .replace(/running the Harbour Line/g,'working the ferry').replace(/left by bus/g,'left on the ferry');
 /**
- * Thuan is Johansson's wife (the creator, 2026-10-12; docs/KITANO-JIMA.md §3): on weekdays she stays at 1 Kitahama, on
- * Friday evening she takes the 22:00 boat home to Kitano-jima and is there with her husband until the Monday 08:30 boat.
+ * Thuan is Johansson's wife (the creator, 2026-10-12; docs/KITANO-JIMA.md §3) and lives with him on Kitano-jima only
+ * (docs/CAST-CONSOLIDATION.md addendum 4): every evening the 22:00 boat home and every morning the 08:30 boat in
+ * (commuter-schedule.js COMMUTER_SHIFTS.Thuan), and from the Friday boat to the Monday one she stays on the island
+ * while Nhung keeps the shop.
  */
 export function thuanWeekendAway(minutes){
  const w=townCalendarAt(minutes).weekday,m=minuteOfDay(minutes);
@@ -347,8 +353,9 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
  // After last orders Thao stays an hour to wipe down and lock up (izakaya-hours.js).
  if(profile.name==='Thao'){const job=izakayaJob('Thao',minutes);if(job)return {place:'izakaya',target:IZAKAYA_DOOR,activity:job.activity};}
  if(livesAtWork(profile))return workplaceResidentPlan(profile,minutes,rain,state);
- // Chin keeps the yard's day (lunch at Sato, the workshop, the evening) from 1 Kitahama, where he lives with Thao (batch 7b).
- if(livesInYard(profile)||profile.name==='Chin')return yardResidentPlan(profile,minutes,rain,state);
+ // Chin keeps the yard's day (lunch at Sato, the workshop, the evening) from 1 Kitahama, where he lives with Thao (batch 7b),
+ // and Nhung the bookshop's from 3 Kitahama, where she lives with Kōji and Riku (phase 3).
+ if(livesInYard(profile)||profile.name==='Chin'||profile.name==='Nhung')return yardResidentPlan(profile,minutes,rain,state);
  const phase=commuterPhase(profile,minutes,rain),bus=(activity='waiting for the Harbour Line')=>({place:'bus',target:transitStop().queue,activity});
  // exit is the platform (clear of the tunnel mouth) — never roadEndZ/arch.
  if(phase==='away')return {place:'away',target:transitStop().exit,activity:awayPlace(profile.name)};
@@ -364,7 +371,8 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
   const finish=shiftFor(profile)?.finish??profile.close??1200;
   if(!rain&&inTimeRange(minuteOfDay(minutes),finish,finish+15))return {place:'stroll',target:SAKURA_FREEZER[0],activity:'an ice cream with her big sister Nhung outside Sakura'};
   if(thuanAtMinato(profile,minutes,rain))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'a beer with her sisters Thao and Nhung after closing Sakura'};
-  return {place:'home',target:profile.home,activity:'walking home after closing Sakura'};
+  // Home is across the water (addendum 4): the last boat, not a walk.
+  return bus('waiting at the terminal for the last boat home to Kitano-jima');
  }
  if(phase==='departing'){
   const afterWork=afterWorkPlan(profile,minutes,rain);
@@ -376,8 +384,7 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
   if(shiftActive(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:minuteOfDay(minutes)>=SATO_RAMEN.close?'washing up after the lunch shift':'cooking the lunch ramen at Sato Ramen'};
   if(minuteOfDay(minutes-SATO_SHIFT.arrival)<SATO_SHIFT.start-SATO_SHIFT.arrival)return {place:'stroll',target:[3.2,-44],activity:'buying fish for the stock at the harbour'};
  }
- if(profile.name==='Bus driver')return {place:'station',target:transitStop().driver,activity:'running the Harbour Line'};
- if(profile.name==='Harbour master')return {place:'work',target:profile.work,activity:'on duty at the harbour office'};
+ if(profile.name==='Harbour master')return calledToQuay(profile.name)?{...QUAY_LINES}:{place:'work',target:profile.work,activity:'on duty at the harbour office'};
  if(profile.name==='Officer Mori')return shiftActive(profile,minutes)?{place:'patrol',target:(NIGHT_PATROL)[0],activity:'night patrol'}:bus('waiting for the night shift bus');
  if(profile.name==='Thao'){
   const morning=naoBeforeShift(profile,minutes,rain);
@@ -409,15 +416,11 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
 /** Every caller shares one daily plan, including sleep in the residents' actual homes. */
 export function residentPlan(profile,minutes,rain=false,state=null){
  if(profile?.canonicalDay){const plan=canonicalDay(profile.name,minutes,rain);if(plan)return plan;}
- // Minato's regular never joins the Harbour Line or leaves the room. He sleeps on
- // his usual stool from 03:00 until 10:00 and drinks at the counter the rest of day.
- if(profile?.name==='Barfly'){
-  // Closed hours he cleans to pay off his tab (izakaya-hours.js), and sleeps 04:00-10:00.
-  const minute=minuteOfDay(minutes),sleeping=minute>=240&&minute<600,job=izakayaJob('Barfly',minutes);
-  if(sleeping||minute>=600&&minute<660)return {place:'home',target:profile.home,activity:homeRoutine(profile,minutes).activity+' in his private room'};
-  return {place:'izakaya',target:IZAKAYA_DOOR,activity:job?job.activity:sleeping?'asleep on his Minato stool':'having another beer at Minato',barflySleeping:sleeping};
- }
- // Thuan's weekend is on Kitano-jima, before her Kitahama room's sleep and breakfast are read.
+ // Chin is the ferry's motorman (ferry-crew.js): signed on through the ship's day, his body the crew controller's
+ // (ferry-crew-aboard.js hides this one), before any errand, happening or Saturday night; the bench and the izakaya
+ // are for after he signs off.
+ if(profile?.name==='Chin'&&onWatch(minutes))return {...ABOARD_AS_MOTORMAN};
+ // Thuan's weekend is on Kitano-jima, before anything else is read.
  if(profile?.name==='Thuan'){const weekend=thuanWeekendPlan(minutes);if(weekend)return weekend;}
  // These homes remain playable after the island expansion. A night worker must
  // finish sleeping and breakfast before a generic shopping or ferry rule sends
@@ -443,16 +446,16 @@ export function residentPlan(profile,minutes,rain=false,state=null){
  // Thuan is not among them: her afternoon break is its own walk (THUAN_WALK), Minato
  // Park's bench and the sea wall, ten minutes from the counter. Aoba Garden is 170 m
  // away, and redirecting her there left the plan and the walk in two places at once.
- if((!rain)&&['Reiko','Tetsuo'].includes(profile.name)&&['park','stroll'].includes(plan.place)&&Math.hypot(plan.target[0]-PARK_STAND[0],plan.target[1]-PARK_STAND[1])<3){
-  return {...plan,place:'park',target:HARBOUR_PARK_SEATS[profile.name==='Reiko'?0:1].stand,activity:plan.activity+' at Harbour Park'};
+ if((!rain)&&profile.name==='Tetsuo'&&['park','stroll'].includes(plan.place)&&Math.hypot(plan.target[0]-PARK_STAND[0],plan.target[1]-PARK_STAND[1])<3){
+  return {...plan,place:'park',target:HARBOUR_PARK_SEATS[1].stand,activity:plan.activity+' at Harbour Park'};
  }
  return plan;
 }
 export const GOSSIP=[
  {id:'yuri-evening',a:'Thuan',b:'Thao',line:'Thuan: I told the assistant manager I would be on the last ferry.\nThao: The plant?\nThuan: He looked very disappointed. I watered him twice.',clue:'Thuan leaves Sakura for the Harbour Line after closing. Check the terminal timetable for her evening service.'},
- {id:'apron',a:'Nhung',b:'Reiko',line:'Nhung: Tama needs his own column.\nReiko: What would he write?\nNhung: Strong opinions about the window chair.',clue:'Nhung and Reiko share Books & Press and commute in for their shifts.'},
+ {id:'apron',a:'Nhung',b:'Chin',line:'Nhung: Tama needs his own column.\nChin: What would he write, bro?\nNhung: Strong opinions about the window chair.',clue:'Nhung prints a page of town news at the bookshop counter.'},
  {id:'radio',a:'Chin',b:'Tetsuo',line:'Chin: Hey, bro, I fixed the crackling.\nTetsuo: That was the music.\nChin: Totally improved it, then, dude.',clue:'Find the street radio and try the other stations.'},
- {id:'fish',a:'Harbour master',b:'Bus driver',line:'Bus driver: I arrived exactly on time.\nHarbour master: Which timetable?\nBus driver: The one I am writing now.',clue:'The harbour master keeps the office records; the bus driver works at the northern terminal.'},
+ {id:'fish',a:'Harbour master',b:'Tetsuo',line:'Tetsuo: The harbour radio crackled at nine.\nHarbour master: That was the weather.\nTetsuo: The weather has never crackled before.',clue:'The harbour master keeps the office radio; Tetsuo keeps every radio on the island.'},
  {id:'special',a:'Thao',b:'Mrs Sato',line:'Mrs Sato: Is that a proper supper?\nThao: You taught me the portions.\nMrs Sato: Good. Then there will be seconds.',clue:'Try Thao’s supper special at the counter.'}
 ];
 export function gossipAt(minutes,names){return GOSSIP.filter(g=>names.includes(g.a)&&names.includes(g.b))[Math.floor(minutes/7)%Math.max(1,GOSSIP.filter(g=>names.includes(g.a)&&names.includes(g.b)).length)]||{id:'welcome',line:'Thao: Pull up a chair. Nobody leaves this table a stranger.\nA gull outside offers a surprisingly firm objection.',clue:'Neighbours arrive after their shifts. Visit again later for different conversations.'};}

@@ -50,12 +50,12 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
   // entrance and central aisle open between the counter, the desks and the reading table.
   bench('Bookselling counter',-2.55,2.12,1.65,.55,FURNITURE_HEIGHTS.serviceCounter);
   box('Brass till',[.25,.19,.22],[-3.05,FURNITURE_HEIGHTS.serviceCounter+.095,2.12],0x53685d);
-  anchor([-2.55,1,2.12],'Browse the bookshop ledger','read','Books & evening papers','Nhung keeps the reading copies and Reiko’s evening paper at the front counter.','Nhung');
-  const newspaper=anchor([-1.85,1,2.12],'Buy newspaper · ¥80','buy','Evening newspaper',{cost:80,item:'Evening newspaper',text:'Reiko’s evening edition, collected at Nhung’s counter.'});newspaper.userData.npcInteraction=false;
+  anchor([-2.55,1,2.12],'Browse the bookshop ledger','read','Books & the town paper','Nhung keeps the reading copies and the town’s paper, which she prints at the back bench, at the front counter.','Nhung');
+  const newspaper=anchor([-1.85,1,2.12],'Buy newspaper · ¥80','buy','Evening newspaper',{cost:80,item:'Evening newspaper',text:'Nhung’s small town paper, a page of harbour news and corrections, printed at the back bench and sold at her counter.'});newspaper.userData.npcInteraction=false;
   bench('Newspaper and book wrapping desk',-2.55,-2.84,2.45,.5,FURNITURE_HEIGHTS.table);
   box('Wrapping paper roll',[.65,.11,.22],[-2.7,FURNITURE_HEIGHTS.table+.055,-2.84],0xc8b493);
   box('Evening newspaper proofs',[.48,.025,.36],[-2.0,FURNITURE_HEIGHTS.table+.0125,-2.84],0xf1ead8);
-  anchor([-1.65,1,-2.55],'Read the editor’s proofs','read','Editor’s desk','Corrections and harbour reports for the next edition.','Reiko');
+  anchor([-1.65,1,-2.55],'Read the editor’s proofs','read','Editor’s desk','Corrections and harbour reports for the next edition, in Nhung’s hand.','Nhung');
   bench('New arrivals display',1.62,-2.84,4.0,.5,FURNITURE_HEIGHTS.table);
   for(let i=0;i<12;i++)box('New and second-hand books',[.22,.11,.32],[.1+(i%6)*.53,FURNITURE_HEIGHTS.table+.055+Math.floor(i/6)*.13,-2.84],[0x814c3e,0x4d6668,0xa49267][i%3]);
   const usedBook=anchor([-1.4,1,2.12],'Buy a second-hand paperback · ¥300','buy','Second-hand paperback',{cost:300,item:'Second-hand paperback',text:'Nhung wraps a well-loved paperback in brown paper.'});usedBook.userData.npcInteraction=false;

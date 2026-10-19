@@ -42,22 +42,23 @@ test('streamed obstructions, another travel view and interaction stop an arrival
  arrival.start({id:'ramen',inside:true});arrival.update(.1,{paused:true});
  assert.equal(arrival.snapshot().reason,'interaction');
 });
-test('a docks opening holds on the harbour while the town loads, ignores input until then, then comes down to him',()=>{
+test('a docks opening shows the harbour for its establishing shot only, ignores input then, then comes down to him',()=>{
+ // The creator, 2026-10-19: loading felt clunky and seemed to start again after START. The shot no longer waits on
+ // streaming: at most its establishing seconds over the harbour, then down to him while the rest streams in.
  const {camera,actor,arrival}=fixture();actor.root.position.set(-2.6,.1,-70.4);camera.fov=65;let loading=true;
  arrival.start({id:'landing-sign',yaw:-.89,establish:true,hold:()=>loading});
- // Fifteen seconds of loading: the harbour from high up, turning slowly, and nothing cancels it but a placement.
- const heights=[];for(let i=0;i<150;i++){arrival.update(.1);heights.push(camera.position.y);}
+ const heights=[];for(let i=0;i<15;i++){arrival.update(.1);heights.push(camera.position.y);}
  assert.equal(arrival.holding,true);assert.equal(arrival.snapshot().establishing,true);
  assert.ok(Math.min(...heights)>actor.root.position.y+8,'the harbour is seen from high up');
- arrival.cancel('input');arrival.update(.1,{paused:true});assert.equal(arrival.active,true,'input ended the opening during loading');
- // Loaded: down to him, his shot, and back to the game's lens.
- loading=false;let came=false;for(let i=0;i<150&&arrival.active;i++){arrival.update(.1);if(camera.position.distanceTo(actor.root.position)<6)came=true;}
- assert.equal(arrival.active,false);assert.equal(arrival.snapshot().reason,'complete');assert.ok(came,'the lens never came down to him');assert.equal(camera.fov,65);
- // With nothing to load it is short: the harbour for its two seconds, then him.
+ arrival.cancel('input');arrival.update(.1,{paused:true});assert.equal(arrival.active,true,'input ended the establishing shot');
+ // Still loading, and yet down to him, his shot, and back to the game's lens.
+ let came=false;for(let i=0;i<150&&arrival.active;i++){arrival.update(.1);if(camera.position.distanceTo(actor.root.position)<6)came=true;}
+ assert.equal(loading,true);assert.equal(arrival.active,false);assert.equal(arrival.snapshot().reason,'complete');assert.ok(came,'the lens never came down to him');assert.equal(camera.fov,65);
+ // With nothing to load it is just as short.
  arrival.start({id:'pier',yaw:-.94,establish:true,hold:()=>false});let t=0;while(arrival.active&&t<20){arrival.update(.1);t+=.1;}
  assert.ok(t<11,'an opening with nothing to wait for took '+t.toFixed(1)+' s');
- // On a slow line he is not kept standing past twenty seconds: the shot goes on while the rest streams in.
- arrival.start({id:'pier',yaw:-.94,establish:true,hold:()=>true});for(let i=0;i<205;i++)arrival.update(.1);assert.equal(arrival.holding,false);
+ // On a slow line he is not kept standing past the establishing shot.
+ arrival.start({id:'pier',yaw:-.94,establish:true,hold:()=>true});for(let i=0;i<25;i++)arrival.update(.1);assert.equal(arrival.holding,false);
  // A placement still ends it at once, loading or not.
  loading=true;arrival.start({id:'pier',establish:true,hold:()=>loading});arrival.update(.1);arrival.cancel('placement');assert.equal(arrival.active,false);
 });

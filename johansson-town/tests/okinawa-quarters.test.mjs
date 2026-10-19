@@ -113,14 +113,20 @@ test('the neighbours can be walked up to, and the walkers keep to the ground',as
   }
  }
  assert.equal(new Set(NEIGHBOURS.map(n=>n.name)).size,NEIGHBOURS.length,'Two neighbours share a name');
- const higa=NEIGHBOURS.find(n=>n.name==='Grandmother Higa');
- assert.ok(neighbourAwake(higa,9*60)&&!neighbourAwake(higa,23*60),'Grandmother Higa keeps the wrong hours');
+ // Every neighbour keeps the cast's canonical day (neighbours.js builds NEIGHBOURS from cast.js): Grandmother Higa is at
+ // the liquor counter at nine and asleep at home at eleven at night; `hours` no longer hides a canonical neighbour.
+ const {canonicalDay}=await import('../src/people/canonical-day.js');
+ const higa=NEIGHBOURS.find(n=>n.name==='Grandmother Higa');assert.ok(higa.canonical);
+ assert.ok(neighbourAwake(higa,9*60),'Grandmother Higa is about at nine');
+ assert.equal(canonicalDay('Grandmother Higa',9*60).place,'higa-liquor','Grandmother Higa keeps the liquor counter at nine');
+ const night=canonicalDay('Grandmother Higa',23*60);assert.equal(night.place,'home');assert.equal(night.rest,'sleep','Grandmother Higa is asleep at home at eleven');
 });
 
-test('Sakura’s shutter stays up round the clock: she is open 24 hours',async()=>{
+test('Sakura’s shutter follows the rota: up through the day, down once the shop is shut (sakura-rota.js)',async()=>{
  const {world}=await town();
  const shutter=world.quarters.shutter;
- for(const h of[3,10,21,23.5]){for(let i=0;i<400;i++)shutter.update(h*60,1/30);assert.equal(shutter.open,1,'The shutter is down at '+h+':00');}
+ for(const h of[10,20.25]){for(let i=0;i<400;i++)shutter.update(h*60,1/30);assert.equal(shutter.open,1,'The shutter is down at '+h+':00');}
+ for(const h of[3,21,23.5]){for(let i=0;i<400;i++)shutter.update(h*60,1/30);assert.equal(shutter.open,0,'The shutter is up at '+h+':00');}
 });
 
 test('visual fixtures can snap the shutter without changing normal interpolation',async()=>{
@@ -129,6 +135,6 @@ test('visual fixtures can snap the shutter without changing normal interpolation
  shutter.update(12*60,0,{snap:true});assert.equal(shutter.open,1);assert.equal(curtain.visible,false);
  // A fixture can still force the curtain down (a photograph of the slats); ordinary updates then roll it back up at the usual rate.
  shutter.set(0);
- shutter.update(21*60,.5);assert.ok(Math.abs(shutter.open-.2)<1e-9,'Ordinary animation retains its elapsed-time rate');
- shutter.update(21*60,.5);assert.ok(shutter.open>0&&shutter.open<1,'Ordinary updates animate rather than jump');
+ shutter.update(12*60,.5);assert.ok(Math.abs(shutter.open-.2)<1e-9,'Ordinary animation retains its elapsed-time rate');
+ shutter.update(12*60,.5);assert.ok(shutter.open>0&&shutter.open<1,'Ordinary updates animate rather than jump');
 });

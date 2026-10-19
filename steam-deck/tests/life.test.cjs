@@ -1,17 +1,29 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
-const policy=()=>import('../../johansson-town/src/desktop/life-state.js');
+const policy=()=>import('../../johansson-town/src/desktop/life-state.js'),people=()=>import('../../johansson-town/src/people/cast.js');
 test('every playable character has a canonical home without reviving removed vacancies',async()=>{
- const {playableRoster}=await policy(),roster=playableRoster(['Cold-storage kid','Fujita','Johansson']);
- assert.equal(new Set(roster.map(p=>p.name)).size,roster.length);assert.ok(roster.length>=30);
+ const {playableRoster}=await policy(),{CAST}=await people(),roster=playableRoster(['Cold-storage kid','Fujita','Johansson']);
+ // The consolidated cast (people/cast.js, 26 since 19 October 2026): everyone in it has a home that stands, nobody else is playable.
+ assert.equal(new Set(roster.map(p=>p.name)).size,roster.length);assert.equal(roster.length,CAST.length);assert.deepEqual(roster.map(p=>p.name).sort(),CAST.map(p=>p.name).sort());
  for(const p of roster){assert.ok(p.home.id);assert.ok(p.home.siteId);assert.ok(p.home.address);}
  assert.equal(roster.find(p=>p.name==='Johansson').home.id,'kitano-1');assert.equal(roster.find(p=>p.name==='Thuan').home.id,'kitano-1');
  assert.equal(roster.some(p=>p.name==='Cold-storage kid'),false,'Unassigned background figures must not displace established households');
 });
 test('bedtime spawning honours individual night shifts and children’s schedules',async()=>{
  const {shouldSleep}=await policy();assert.equal(shouldSleep('Johansson',60),true);assert.equal(shouldSleep('Mai',60),true);
- assert.equal(shouldSleep('Officer Mori',60),false);assert.equal(shouldSleep('Chin',60),false);assert.equal(shouldSleep('Thao',60),false);assert.equal(shouldSleep('Barfly',60),false);
- assert.equal(shouldSleep('Officer Mori',600),true);assert.equal(shouldSleep('Chin',600),true);assert.equal(shouldSleep('Barfly',360),true);
+ // Chin is the ferry's motorman since the consolidation (signed on 06:05, off 22:20): a day shift, no longer a night worker.
+ assert.equal(shouldSleep('Chin',60),true);assert.equal(shouldSleep('Chin',600),false);
+ assert.equal(shouldSleep('Officer Mori',60),false);assert.equal(shouldSleep('Thao',60),false);
+ assert.equal(shouldSleep('Officer Mori',600),true,'The night patrol sleeps in the morning');
  assert.equal(shouldSleep('Kōji',270),false,'The fish auction starts before dawn');assert.equal(shouldSleep('Mr Nakandakari',330),false,'The chief is up for the first sailing');
+});
+test('a 0.2.9 save follows the consolidated cast: old names go on as the live person, the retired fall back',async()=>{
+ const {playableRoster,restoreLife}=await policy(),roster=playableRoster();
+ const old={active:'Mr Nakandakari',people:{'Mr Nakandakari':{checkpoint:{x:12,z:-7,yaw:1.5,atHome:false}},Thuan:{checkpoint:{x:3,z:4,yaw:0,atHome:true}},Barfly:{checkpoint:{x:1,z:1,yaw:0}}},tempers:{'Mr Nakandakari\u0000Tetsuo':{at:700,count:2,cooldown:0},'Barfly\u0000Tetsuo':{at:700,count:3,cooldown:0}}};
+ const life=restoreLife(JSON.parse(JSON.stringify(old)),roster);
+ assert.equal(life.active,'Mac');assert.deepEqual(life.people.Mac.checkpoint,{x:12,z:-7,yaw:1.5,atHome:false});assert.equal(life.people.Thuan.checkpoint.atHome,true);
+ assert.equal('Barfly' in life.people,false);assert.deepEqual(Object.keys(life.tempers),['Mac\u0000Tetsuo']);
+ assert.equal(restoreLife({active:'Barfly'},roster).active,'Johansson','a retired resident cannot be the player');
+ assert.deepEqual(restoreLife(JSON.parse(JSON.stringify(life)),roster),life,'a second pass changes nothing');
 });
 test('fights require four deliberate insults to the same person, with warnings, decay and cooldown',async()=>{
  const {playableRoster,restoreLife,insultResident,apologiseTo}=await policy(),life=restoreLife(null,playableRoster());
