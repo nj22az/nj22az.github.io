@@ -213,6 +213,16 @@ test('the surplus dwellings, the housing project’s nine and phase 4’s eight,
   assert.ok(lot.why.length>20&&lot.dressing,lot.id+' carries its reason');
   const cx=(lot.rect.minX+lot.rect.maxX)/2,cz=(lot.rect.minZ+lot.rect.maxZ)/2;
   assert.equal(world.colliders.find(c=>standingHitsRect(cx,cz,.35,groundHeight(cx,cz),c)),undefined,lot.id+' is clear at its centre');
+  // And nothing without a collider is left standing on the grass either (an ishiganto set in a wall that is gone, a
+  // nameplate, a step): every mesh of its own inside the lot, under 2 m, is listed by name. The quarter's batched
+  // chunks (named `…|cell|cell`, spanning several lots) are the lanes' own surfaces and are read by the collider check.
+  const left=[],box=new THREE.Box3();
+  world.group.traverse(o=>{
+   if(!o.isMesh||/\|-?\d+\|-?\d+$/.test(o.name))return;box.setFromObject(o);if(box.isEmpty()||box.max.x-box.min.x>20||box.max.z-box.min.z>20)return;
+   const x=(box.min.x+box.max.x)/2,z=(box.min.z+box.max.z)/2;
+   if(x>lot.rect.minX+.05&&x<lot.rect.maxX-.05&&z>lot.rect.minZ+.05&&z<lot.rect.maxZ-.05&&box.min.y<2)left.push(o.name||'(unnamed)');
+  });
+  assert.deepEqual(left,[],lot.id+' has nothing of its own left standing on it');
  }
  // The Rainflower pavilion is gone with its landmark, prompts and colliders (addendum 3).
  assert.ok(!(world.landmarks||[]).some(s=>s.id==='rainflower-florist'));assert.ok(!world.colliders.some(c=>c.business==='rainflower-florist'));assert.ok(!prompts.some(l=>/flower counter|Mrs Kinjō/.test(l)));

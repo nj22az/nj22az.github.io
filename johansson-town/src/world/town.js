@@ -315,7 +315,9 @@ export function createTown(options){
    // gets its white edge lines.
    {
     const g=new THREE.Group();g.name='Road standards';world.group.add(g);const ky=KITAHAMA.y;
-    for(const [x,z,ry] of [[43.3,67.88,Math.PI],[23.5,64.12,0],[11.5,67.88,Math.PI]])ishiganto(g,{x,z,y:ky,ry});
+    // (the stone in the south wall of 4 Kitahama, where the walk from 1 Kitahama's gate ran at it, went with the
+    // house in phase 4: the lot is open grass to the spine now, so nothing runs into anything there)
+    for(const [x,z,ry] of [[43.3,67.88,Math.PI],[11.5,67.88,Math.PI]])ishiganto(g,{x,z,y:ky,ry});
     stopMarking(g,{x:43.3,z:63.7,y:ky,width:KITAHAMA.approach.maxX-KITAHAMA.approach.minX});
     roadSign(g,'stop',{x:KITAHAMA.approach.maxX-.1,z:63.2,y:ky,ry:Math.PI,colliders:world.colliders});
 
