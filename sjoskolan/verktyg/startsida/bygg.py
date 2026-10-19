@@ -18,6 +18,7 @@ import kursplan as K  # noqa: E402
 
 # Varje modul: titel, vad eleven kan efteråt, när den undervisas, delar (länk, titel), labb, inlämning och övningar för framsteg.
 # 'ovningar': (mapp, prefix) – tio övningar var, avbockade på delsidan eller i Formelstöd och övningar.
+# 'ankare' och 'alias' bevarar gamla modul-länkar när de synliga modulnumren ändras.
 MODULER = [
     dict(nr=1, titel='Elens grunder och elsäkerhet', mal='Följ strömvägen, räkna med Ohms lag och skriv en riskrad som hänger ihop.',
          vecka='Vecka 38', start='2026-09-14', sista='2026-09-20', sida='vecka-37/aktuell/',
@@ -53,28 +54,25 @@ MODULER = [
                 ('vecka-42/aktuell/Del_3.html', 'Riskbedömning och skydd')],
          labb=('multimetersimulator/?ovning=category', 'Multimeterlabbet: Välj CAT-klass'), inl='vecka-42/aktuell/Inlamning.html',
          ovningar=[('vecka-42', 'v42_01-q'), ('vecka-42', 'v42_02-q'), ('vecka-42', 'v42_03-q')]),
-    dict(nr=7, titel='Komponenter, motorer och scheman', mal='Skyddsdata, transformator och motor, och hållkretsen i schemat.',
+    dict(nr=7, alias=8, titel='Komponenter, motorer, scheman och felsökning',
+         mal='Skyddsdata, transformator och motor, hållkretsen i schemat och systematisk felsökning.',
          vecka='Vecka 43', start='2026-10-19', sista='2026-10-23', sida='vecka-43/aktuell/',
          delar=[('vecka-43/aktuell/Del_1.html', 'Komponenter och skydd'), ('vecka-43/aktuell/Del_2.html', 'Transformatorer och motorer'),
-                ('vecka-43/aktuell/Del_3.html', 'Elscheman och dokumentation')],
-         labb=('hallkretslabbet/', 'Hållkretslabbet'), inl='vecka-43/aktuell/Inlamning.html',
-         ovningar=[('vecka-43', 'v43_01-q'), ('vecka-43', 'v43_02-q'), ('vecka-43', 'v43_03-q')]),
-    dict(nr=8, titel='Systematisk felsökning', mal='Observation, prövbar hypotes och en kontroll som skiljer mellan orsakerna.',
-         vecka='Vecka 43', start='2026-10-19', sista='2026-10-23', sida='vecka-43/aktuell/',
-         delar=[('vecka-45/aktuell/Del_1.html', 'Systematisk felsökning')],
-         labb=('hallkretslabbet/', 'Hållkretslabbet: dolt fel'), inl='vecka-43/aktuell/Inlamning.html#uppgift-4',
-         ovningar=[('vecka-45', 'v45_01-q')]),
-    dict(nr=9, titel='Elsystem ombord', mal='IT- och TN-system, första och andra jordfelet, och högspänning ombord.',
+                ('vecka-43/aktuell/Del_3.html', 'Elscheman och dokumentation'),
+                ('vecka-45/aktuell/Del_1.html', 'Systematisk felsökning')],
+         labb=('hallkretslabbet/', 'Hållkretslabbet: hållkrets och dolt fel'), inl='vecka-43/aktuell/Inlamning.html',
+         inl_del=('vecka-43/aktuell/Inlamning.html#uppgift-4', 'Uppgift 4: Felsökningsrapport'),
+         ovningar=[('vecka-43', 'v43_01-q'), ('vecka-43', 'v43_02-q'), ('vecka-43', 'v43_03-q'), ('vecka-45', 'v45_01-q')]),
+    dict(nr=8, ankare=9, alias=10, titel='Elsystem, mätteknik och analys',
+         mal='IT- och TN-system, jordfel och högspänning ombord, mätkedjan och analys av mätresultat.',
          vecka='Vecka 44', start='2026-10-26', sista='2026-10-30', sida='vecka-44/aktuell/',
-         delar=[('vecka-44/aktuell/Del_1.html', 'Lågspänningssystem'), ('vecka-44/aktuell/Del_2.html', 'Högspänningssystem')],
+         delar=[('vecka-44/aktuell/Del_1.html', 'Lågspänningssystem'), ('vecka-44/aktuell/Del_2.html', 'Högspänningssystem'),
+                ('vecka-44/aktuell/Del_3.html', 'Fördjupad mätteknik'), ('vecka-45/aktuell/Del_2.html', 'Analys av mätresultat')],
          labb=('isolationslabbet/', 'Isolationslabbet'), inl='vecka-44/aktuell/Inlamning.html',
-         ovningar=[('vecka-44', 'v44_01-q'), ('vecka-44', 'v44_02-q')]),
-    dict(nr=10, titel='Mätteknik och analys', mal='Mätkedjan, isolationsmätning och en slutsats mot ett krav med hänsyn till osäkerhet.',
-         vecka='Vecka 44', start='2026-10-26', sista='2026-10-30', sida='vecka-44/aktuell/',
-         delar=[('vecka-44/aktuell/Del_3.html', 'Fördjupad mätteknik'), ('vecka-45/aktuell/Del_2.html', 'Analys av mätresultat')],
-         labb=('isolationslabbet/?del=matning', 'Isolationsmätning och Mätaren påverkar'), inl='vecka-44/aktuell/Inlamning.html#uppgift-4',
-         ovningar=[('vecka-44', 'v44_03-q'), ('vecka-45', 'v45_02-q')]),
-    dict(nr=11, titel='Repetition och tentamen', mal='Välj formel efter storhet och metod efter frågan. Övningstentan med lösningar.',
+         labb_del=('isolationslabbet/?del=matning', 'Isolationsmätning och Mätaren påverkar'),
+         inl_del=('vecka-44/aktuell/Inlamning.html#uppgift-4', 'Uppgift 4: Analys av mätdata'),
+         ovningar=[('vecka-44', 'v44_01-q'), ('vecka-44', 'v44_02-q'), ('vecka-44', 'v44_03-q'), ('vecka-45', 'v45_02-q')]),
+    dict(nr=9, ankare=11, titel='Repetition och tentamen', mal='Välj formel efter storhet och metod efter frågan. Övningstentan med lösningar.',
          vecka='Vecka 44–45', start='2026-10-26', sista='2026-11-06', sida='vecka-45/aktuell/',
          delar=[('vecka-45/aktuell/Del_3.html', 'Repetition inför tentamen'), ('tentamen.html', 'Tentamen och övningstenta'),
                 ('praktiskt-prov.html', 'Praktiskt prov')],
@@ -113,11 +111,17 @@ def veckodag(iso):
     return ['måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag', 'söndag'][_dt.date.fromisoformat(iso).weekday()]
 
 
+def lankrad(etikett, lank):
+    return (f'<p class="mod-rad"><span class="mod-etikett">{etikett}</span><a href="{lank[0]}">{escape(lank[1])}</a></p>'
+            if lank else '')
+
+
 def modulkort(m):
     delar = ''.join(f'<li><a href="{h}">{escape(t)}</a></li>' for h, t in m['delar'])
-    labb = f'<p class="mod-rad"><span class="mod-etikett">Labb</span><a href="{m["labb"][0]}">{escape(m["labb"][1])}</a></p>' if m['labb'] else ''
-    inl = (f'<p class="mod-rad"><span class="mod-etikett">Inlämning</span><a href="{m["inl"]}">Senast {veckodag(m["sista"])} {kort_datum(m["sista"])}</a></p>'
-           if m['inl'] else '')
+    labb = lankrad('Labb', m['labb']) + lankrad('Labb', m.get('labb_del'))
+    inl = (lankrad('Inlämning', (m['inl'], f'Senast {veckodag(m["sista"])} {kort_datum(m["sista"])}'))
+           if m['inl'] else '') + lankrad('Inlämning', m.get('inl_del'))
+    alias = f' id="modul-{m["alias"]}"' if m.get('alias') else ''
     revision = ('<p class="mod-rad module-revision-update"><span class="mod-etikett">Extra stöd</span><a href="vecka-37/revision/">Frivilligt: utökad genomgång och 3D-multimeter</a></p>'
                 if m['nr'] == 1 else '')
     ovn = json.dumps(m['ovningar'])
@@ -125,8 +129,8 @@ def modulkort(m):
                 f'{10 * len(m["ovningar"])} övningar</p></div>') if m['ovningar'] else ''
     ford = K.fordelning(*modulens_uppgifter(m))
     huvud = max(ford, key=lambda x: x[1])[0]
-    return (f'<article class="mod" id="modul-{m["nr"]}" data-start="{m["start"]}" data-sista="{m["sista"]}" style="border-left:6px solid {huvud[2]}">'
-            f'<header class="mod-huvud"><span class="mod-nr" aria-hidden="true">{m["nr"]}</span>'
+    return (f'<article class="mod" id="modul-{m.get("ankare", m["nr"])}" data-nr="{m["nr"]}" data-start="{m["start"]}" data-sista="{m["sista"]}" style="border-left:6px solid {huvud[2]}">'
+            f'<header class="mod-huvud"{alias}><span class="mod-nr" aria-hidden="true">{m["nr"]}</span>'
             f'<div><p class="mod-vecka">Modul {m["nr"]} · {m["vecka"]}<span class="mod-status"></span></p>'
             f'<h3><a href="{m["sida"]}">{escape(m["titel"])}</a></h3></div></header>'
             f'<p class="mod-mal">{escape(m["mal"])}</p>{K.omrade_band(ford, kompakt=True)}<ol class="mod-delar">{delar}</ol>{labb}{inl}{revision}{framsteg}</article>')
@@ -203,7 +207,7 @@ SCRIPT = '''
   const g = document.getElementById('dina-ovningar'); if (g) g.textContent = `${gjorda} av ${alla}`;
   // Nu-rutan och nästa inlämning.
   const titel = nu.querySelector('h3 a');
-  document.getElementById('nu-titel').textContent = 'Modul ' + nu.id.split('-')[1] + ': ' + titel.textContent;
+  document.getElementById('nu-titel').textContent = 'Modul ' + nu.dataset.nr + ': ' + titel.textContent;
   document.getElementById('nu-mal').textContent = nu.querySelector('.mod-mal').textContent;
   const knapp = document.getElementById('nu-knapp'); knapp.href = titel.getAttribute('href');
   const nasta = kort.map(k => k.dataset.sista).filter(s => s >= t && kort.find(k => k.dataset.sista === s && k.querySelector('.mod-rad a[href*="Inlamning"]'))).sort()[0];
@@ -211,7 +215,7 @@ SCRIPT = '''
     const [y, m, d] = nasta.split('-').map(Number); const dag = new Date(y, m - 1, d);
     const namn = dag.toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' });
     document.getElementById('nasta-inl').textContent = namn.charAt(0).toUpperCase() + namn.slice(1);
-    const mods = kort.filter(k => k.dataset.sista === nasta && k.querySelector('.mod-rad a[href*="Inlamning"]')).map(k => 'modul ' + k.id.split('-')[1]);
+    const mods = kort.filter(k => k.dataset.sista === nasta && k.querySelector('.mod-rad a[href*="Inlamning"]')).map(k => 'modul ' + k.dataset.nr);
     document.getElementById('nasta-text').textContent = 'Inlämning för ' + mods.join(' och ') + '.';
   }
   // Filter.
