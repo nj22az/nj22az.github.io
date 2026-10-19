@@ -77,8 +77,8 @@ test('one actor, one station: every watch of every phase gives each post a place
  assert.equal(FUJITA_DAY.start,FERRY_WORKING_DAY.signOff,'the first bottle is poured when he signs off');
  for(let m=FUJITA_DAY.collect;m<FUJITA_DAY.start;m+=3){assert.equal(fujitaBeer(m).tipsy,0,'sober at '+m);assert.equal(tvProgramme(m),'off');}
  assert.equal(KITANO_HAND_DAY.home,FERRY_WORKING_DAY.signOff,'Kai goes home when the crew sign off');
- // Nobody holds a shift the roster retired: the former master and the former oiler have no post and no ferry day.
- for(const name of ['Bus driver','Mr Higa Jr']){assert.ok(!FERRY_PEOPLE.includes(name),name);assert.notEqual(castMember(name).work,'ferry');assert.ok(!castMember(name).day.some(([,place])=>place==='ferry'),name+' has no ferry shift');}
+ // Nobody holds a shift the roster retired: the former master and the former oiler have no post, no ferry day and no body (phase 4).
+ for(const name of ['Bus driver','Mr Higa Jr']){assert.ok(!FERRY_PEOPLE.includes(name),name);assert.equal(castMember(name),null,name+' has no body');}
  // Riku is nine: no freight work in anybody's day or place.
  const riku=CAST.find(p=>p.name==='Riku');assert.ok(!riku.day.some(([,,doing])=>/freight|cargo|depot|crate/i.test(doing)));
 });

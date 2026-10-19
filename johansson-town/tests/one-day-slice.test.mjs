@@ -295,8 +295,8 @@ test('a finished favour never stops the next one, and a favour is only asked whi
  assert.equal(state.favours['harbour-timetable'].status,'asked');
  send(402);assert.equal(state.favours['harbour-timetable'].tries,2,'and is asked again the next day');
  const f2=askFavour(state,timetable,{minutes:m(402,11),temper:'easy'});replyFavour(state,true);
- assert.match(favourLine(timetable,f2,'checkIn',{speaker:'Harbour master',minutes:m(402,19)}).text,/last run has gone/,'after six he does not send you to the terminal');
- assert.match(favourLine(timetable,f2,'checkIn',{speaker:'Harbour master',minutes:m(402,12)}).text,/terminal/);
+ assert.match(favourLine(timetable,f2,'checkIn',{speaker:'Harbour master',minutes:m(402,19)}).text,/gone by now/,'after six he does not send you to Sato Ramen');
+ assert.match(favourLine(timetable,f2,'checkIn',{speaker:'Harbour master',minutes:m(402,12)}).text,/Sato Ramen/);
  const book=FAVOURS.find(f=>f.kind==='return');
  assert.match(clueFor('Nhung','A rain-stained book is drying at the harbour office.',state),/drying/);
  state.favours[book.id]={day:1,status:'done',tries:1};

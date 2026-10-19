@@ -77,7 +77,8 @@ test('quay parking and turn paths have a drawn driving surface under the full ca
 
 test('the built town contains only owned runtime car models and no legacy truck colliders or scenery cars',()=>{
  const models=[];world.group.traverse(o=>{if(o.userData.vehicleStyle)models.push(o);assert.ok(!/Coastal Harbour Line bus|parked kei truck|parked car/.test(o.name),'No stationary scenery vehicle '+o.name);});
- assert.equal(models.length,6);for(const g of models){assert.ok(g.userData.vehicleId&&g.userData.owner&&g.userData.driver&&g.userData.purpose);assert.ok(g.userData.dynamicProp);}
+ // Five owned cars: Thao's, Mrs Sato's and Nhung's runs and the two islanders' (the newspaper car went with Reiko, phase 4).
+ assert.equal(models.length,5);for(const g of models){assert.ok(g.userData.vehicleId&&g.userData.owner&&g.userData.driver&&g.userData.purpose);assert.ok(g.userData.dynamicProp);}
  assert.ok(!world.colliders.some(c=>c.id==='kei-truck'||c.id==='town-hall-parked-vehicle'));
  const parked=[...traffic.fleet,...traffic.islanders];
  for(const v of parked){assert.ok(v.owner&&v.purpose);assert.ok(routeAt(v.g.position.x,v.g.position.z));}

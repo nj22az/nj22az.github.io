@@ -2,21 +2,17 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {buildFlowerShop,FLOWER_SHOP,flowerShopOpen} from '../src/world/flower-shop.js';
 import {buildBlueCoralShop,dessertShopOpen} from '../src/world/blue-coral-shop.js';
 import {NEIGHBOURS,createNeighbours} from '../src/people/neighbours.js';
 import {kitahamaHomeFor} from '../src/world/kitahama-layout.js';
 import {HARBOUR_PARK_STUDY,NAKAMURA_DESSERTS} from '../src/world/harbour-park-plan.js';
 import {circleHitsRect} from '../physics.js';
 
-test('the Rainflower pavilion sells nothing any more and says where the flowers went; its public counter stays clear',()=>{
- installDOM();const world={group:new THREE.Group(),colliders:[]},prompts=[],actions=[];
- const shop=buildFlowerShop({world,register:(object,label,run)=>prompts.push({object,label,run}),onAction:(...args)=>actions.push(args)});
- assert.equal(prompts.filter(p=>/Buy|Order/.test(p.label)).length,0,'no sale at the pavilion (docs/CAST-CONSOLIDATION.md addendum 3)');
- for(const minute of [539,540,1079,1980]){shop.update(minute);for(const p of prompts){p.run();assert.equal(actions.at(-1)[0],'read',p.label+' at '+minute);assert.match(actions.at(-1)[2],/Sakura/);}}
- assert.equal(flowerShopOpen(720),false);assert.equal(world.landmarks[0].id,'rainflower-florist');assert.equal(world.landmarks[0].owner,'Mrs Kinjō');assert.match(world.landmarks[0].line,/closed; flowers at Sakura/);
- for(const p of prompts)assert.equal(world.colliders.some(c=>circleHitsRect(p.object.position.x,p.object.position.z,.32,c)),false,'Accessible prompt '+p.label);
- assert.equal(world.colliders.some(c=>circleHitsRect(...FLOWER_SHOP.staffAt,.32,c)),false,'Owner stands behind a visible clear counter');
+test('the Rainflower pavilion is gone (phase 4, addendum 3): no builder, no florist body, and a saved destination at it lands at Sakura',async()=>{
+ await assert.rejects(import('../src/world/flower-shop.js'));
+ const {HARBOUR_PARK_ALIASES,FORMER_FLORIST}=await import('../src/world/harbour-park-plan.js');
+ assert.equal(HARBOUR_PARK_ALIASES['rainflower-florist'],'market');assert.equal(HARBOUR_PARK_ALIASES['rainflower-lane'],'market');assert.ok(FORMER_FLORIST.removed);
+ assert.equal(NEIGHBOURS.find(n=>n.name==='Mrs Kinjō'),undefined);
 });
 
 test('Nakamura serves the preserved Blue Coral items and soda through one hours-aware menu',()=>{

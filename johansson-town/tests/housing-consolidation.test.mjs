@@ -24,24 +24,22 @@ import {migrateHousing} from '../src/save.js';
 installDOM();globalThis.self=globalThis;
 const sites=createBusinesses(),world=createTown({scene:new THREE.Scene(),sites,mobile:true,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
 
-test('31 villagers have 21 occupied Minato primary homes and one shared tropical home; the five supporting crew have quarters, not households',()=>{
- assert.equal(CAST.length,36);assert.equal(CAST.filter(p=>!p.supporting).length,31);
- // 24 primary home ids: 21 standing on Minato, the Kitano house, and the two retired flats of the Heights that Mr Higa Jr and
- // Grandmother Sakurai still name until phase 4 (resolved to the roster's fallback, no household).
- const core=CAST.filter(p=>!p.supporting),primaries=new Set(core.map(p=>p.home));assert.equal(primaries.size,24);
- assert.equal([...primaries].filter(id=>{const h=ISLAND_HOUSEHOLDS.find(h=>h.id===id);return h.island==='minato'&&!h.retired;}).length,21);
+test('21 core residents have 13 occupied Minato primary homes and one shared tropical home; the five supporting crew have quarters, not households',()=>{
+ assert.equal(CAST.length,26);assert.equal(CAST.filter(p=>!p.supporting).length,21);
+ // 14 primary home ids (roster.js HOUSEHOLDS): 13 standing on Minato and the Kitano house; nobody names a retired home (phase 4).
+ const core=CAST.filter(p=>!p.supporting),primaries=new Set(core.map(p=>p.home));assert.equal(primaries.size,14);
+ assert.equal([...primaries].filter(id=>{const h=ISLAND_HOUSEHOLDS.find(h=>h.id===id);return h.island==='minato'&&!h.retired;}).length,13);
+ assert.ok([...primaries].every(id=>!ISLAND_HOUSEHOLDS.find(h=>h.id===id).retired),'no retired home is anybody’s');
  assert.deepEqual(CAST.filter(p=>p.home==='kitano-1').map(p=>p.name),['Johansson','Thuan']);
  assert.deepEqual(CAST.filter(p=>p.home==='kitahama-3').map(p=>p.name),['Nhung','Kōji','Riku'],'Nhung’s family is one household');
  assert.deepEqual(CAST.filter(p=>p.home==='kitahama-1').map(p=>p.name),['Thao','Chin','Vy']);assert.deepEqual(CAST.find(p=>p.name==='Thuan').alsoAt,[],'no weekday room');
  assert.equal(ISLAND_HOUSEHOLDS.filter(h=>h.island==='minato'&&h.toLet).length,0);
- for(const [name,id] of [['Grandmother Sakurai','kitahama-flat-2'],['Mr Higa Jr','kitahama-flat-1']]){const h=homeForResident(name);assert.equal(h.home,id);assert.equal(h.retired,true,name+'’s flat went with the upper storey');assert.equal(h.fallback,'mayor-office');assert.deepEqual(h.residents,[]);}
- // The roster's 14 households are in the registry member for member (brief §13); the other occupied homes are the retired
- // identities' houses, which stand until phase 4 removes them.
+ for(const name of ['Grandmother Sakurai','Mr Higa Jr','Reiko','Barfly'])assert.equal(homeForResident(name),null,name+' is retired and has no home record');
+ // The roster's 14 households are in the registry member for member (brief §13), and nothing else is occupied.
  const live=new Map(CORE_HOUSEHOLDS.map(h=>[h.home,h.residents.map(n=>identityOf(n).id).sort()]));
  assert.equal(ROSTER_HOUSEHOLDS.length,14);
  for(const h of ROSTER_HOUSEHOLDS)assert.deepEqual(live.get(h.home),[...h.members].sort(),h.home);
- const extra=CORE_HOUSEHOLDS.filter(h=>!ROSTER_HOUSEHOLDS.some(r=>r.home===h.home));
- for(const h of extra)assert.ok(h.residents.every(n=>identityOf(n)?.category==='retired'),h.home+' is a retired identity’s house until phase 4: '+h.residents.join(', '));
+ assert.deepEqual(CORE_HOUSEHOLDS.filter(h=>!ROSTER_HOUSEHOLDS.some(r=>r.home===h.home)).map(h=>h.home),[],'no household outside the roster’s 14');
  // Quarters (island-households.js SUPPORTING_QUARTERS; roster.js QUARTERS): the two cabins aboard and the Shiroma house.
  assert.deepEqual(SUPPORTING_QUARTERS.map(h=>h.home).sort(),['ferry-crew-cabin','ferry-officer-cabin','kitano-2']);
  assert.deepEqual(SUPPORTING_QUARTERS.flatMap(h=>h.residents).sort(),['Aya','Jun','Kai','Ren','Ryo']);
@@ -189,19 +187,35 @@ test('private residential stairs carry a visitor from the street landing to the 
  }
 });
 
-test('nine surplus dwellings leave no active doors, private obstructions or plot circuits',async()=>{
+test('the surplus dwellings, the housing project’s nine and phase 4’s eight, leave no active doors, private obstructions, lights, prompts or plot circuits',async()=>{
  const {TOWN_WALK_PLOTS}=await import('../src/world/architecture-plan.js');
  const {canonicalHomeId}=await import('../src/people/households.js');
- const removed=[['kitahama-7',-15,52.5],['kitahama-9',11,52.5],['kitahama-10',-28,66.5],['kitahama-11',-15,66.5],['kitahama-12',-2,66.5],['nakasone',-15,82.5],['miyagi',-2,82.5],['arakaki',9.55,16],['yonamine',-11.95,12.7]];
+ const {HOME_ROUTINES}=await import('../src/world/home-lights.js');
+ const {CLEARED_LOTS}=await import('../src/world/okinawa/lots.js');
+ // The housing project's nine (18 October 2026), then phase 4's: 4, 5 and 6 Kitahama, the Kinjō and Ōshiro houses, 1 Front-Row
+ // Yard, the flat over the post-office shop-house and Barfly's registration at the izakaya (the bar itself stands).
+ const removed=[['kitahama-7',-15,52.5],['kitahama-9',11,52.5],['kitahama-10',-28,66.5],['kitahama-11',-15,66.5],['kitahama-12',-2,66.5],['nakasone',-15,82.5],['miyagi',-2,82.5],['arakaki',9.55,16],['yonamine',-11.95,12.7],
+  ['kitahama-4',24,66.5],['kitahama-5',37,66.5],['kitahama-6',-28,52.5],['kinjo',-30.85,-5.7],['oshiro',-30.85,8.75],['resident-home-aya',-21.3,-1.2],['shimabukuro',9.55,-4.1],['izakaya',null,null]];
+ const prompts=[];world.group.traverse(o=>{if(o.userData.hit?.label)prompts.push(o.userData.hit.label);});
  for(const [id,x,z] of removed){
   assert.equal(ISLAND_HOUSEHOLDS.find(h=>h.id===id).status,'retired');
-  assert.ok(!sites.some(s=>s.homeId===id));assert.ok(!TOWN_WALK_PLOTS.some(p=>p.id===id));
+  assert.ok(!sites.some(s=>s.homeId===id),id+' has no site');assert.ok(!(world.landmarks||[]).some(s=>s.homeId===id),id+' has no landmark');assert.ok(!TOWN_WALK_PLOTS.some(p=>p.id===id),id+' has no plot circuit');
+  assert.equal(HOME_ROUTINES[id],undefined,id+' has no window light');assert.ok(!prompts.some(l=>l.includes(ISLAND_HOUSEHOLDS.find(h=>h.id===id).address)),id+' has no entrance prompt');
+  if(x===null)continue;
   const standing=world.colliders.find(c=>standingHitsRect(x,z,.35,groundHeight(x,z),c));
   // (the Arakaki lot is the one the police station grew into, the owner's 19 October ask: its collider is the station's)
   if(id==='arakaki')assert.equal(standing?.id,'police-station',id+' lot carries the police station');
   else assert.equal(standing,undefined,id+' plot is physically clear');
-  assert.equal(canonicalHomeId('home-'+id),'mayor-office');
+  assert.equal(canonicalHomeId(id.startsWith('resident-home-')?id:'home-'+id),id==='shimabukuro'?'ferry-terminal':id==='izakaya'?'izakaya':'mayor-office');
  }
+ // Every lot phase 4 cleared on Minato is recorded with its reason and is clear ground, nothing solid standing in it.
+ for(const lot of CLEARED_LOTS.filter(l=>l.district!=='Kitano hamlet'&&!/-block$/.test(l.id))){
+  assert.ok(lot.why.length>20&&lot.dressing,lot.id+' carries its reason');
+  const cx=(lot.rect.minX+lot.rect.maxX)/2,cz=(lot.rect.minZ+lot.rect.maxZ)/2;
+  assert.equal(world.colliders.find(c=>standingHitsRect(cx,cz,.35,groundHeight(cx,cz),c)),undefined,lot.id+' is clear at its centre');
+ }
+ // The Rainflower pavilion is gone with its landmark, prompts and colliders (addendum 3).
+ assert.ok(!(world.landmarks||[]).some(s=>s.id==='rainflower-florist'));assert.ok(!world.colliders.some(c=>c.business==='rainflower-florist'));assert.ok(!prompts.some(l=>/flower counter|Mrs Kinjō/.test(l)));
 });
 
 test('both office outlooks map the seated desk to the same physical upper floor, facing harbour and town',async()=>{
@@ -214,11 +228,11 @@ test('both office outlooks map the seated desk to the same physical upper floor,
  assert.deepEqual(mapped.map(v=>v.plane.normal.toArray().map(n=>Math.round(n))),[[1,0,0],[0,0,-1]],'east faces town; south faces harbour');
 });
 
-test('the postman retains his moving postal round between home and work transitions',async()=>{
- const {createNeighbours}=await import('../src/people/neighbours.js');
+test('the retired neighbours have no body: nobody walks the postman’s round, tidies the pavilion, minds the generators or scrapes a sabani',async()=>{
+ const {createNeighbours,NEIGHBOURS}=await import('../src/people/neighbours.js');
+ const {RETIRED,isRetired}=await import('../src/people/roster.js');
  const neighbours=createNeighbours({parent:new THREE.Group()});neighbours.update(0,540);
- const postman=neighbours.people.find(p=>p.spec.name==='Postman Tōma'),from=postman.g.position.clone();
- for(let i=0;i<60*12;i++)neighbours.update(1/60,540);
- assert.ok(postman.g.position.distanceTo(from)>5,'the round progresses, rather than holding at a generic street target');
- assert.match(postman.g.userData.activity,/round/);
+ for(const r of RETIRED)assert.ok(!neighbours.people.some(p=>p.spec.name===r.name),r.name+' has no street body');
+ assert.ok(NEIGHBOURS.every(n=>!isRetired(n.name)&&!n.walk),'no neighbour walks a round the roster retired');
+ assert.deepEqual(NEIGHBOURS.map(n=>n.name),['Vy','Kōji','Riku','Miss Higa','Grandmother Higa','Dr Kakazu','Mrs Nakamura','Mai','Mac','Ms Uezu','Ms Ganaha']);
 });
