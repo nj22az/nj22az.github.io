@@ -216,7 +216,7 @@ export const namesOf=key=>{const p=identityOf(key);return p?[p.name,...(p.fullNa
 
 /** The roster as a document: docs/cast-roster.json mirrors it (tools/write-cast-roster.mjs; tests/roster.test.mjs keeps them equal). */
 export const rosterDocument=()=>({
- status:'phase 2 of docs/CAST-CONSOLIDATION.md: the ship posts and shore roles are read from here; the households, removals, stories and directories follow in phases 3 to 5',
+ status:'phase 3 of docs/CAST-CONSOLIDATION.md: the ship posts, shore roles and households are live (Nhung at 3 Kitahama, Thuan on Kitano-jima only, Kitahama Heights two ground-floor houses, Thuan owning Sakura, flowers at Sakura, post at the port counter); the removals, stories and directories follow in phases 4 and 5',
  canonDate:'2026-10-19',source:'docs/CAST-CONSOLIDATION.md',counts:{core:CORE.length,supporting:SUPPORTING.length,retired:RETIRED.length,households:HOUSEHOLDS.length},
  core:CORE,supporting:SUPPORTING,retired:RETIRED,households:HOUSEHOLDS,quarters:QUARTERS,shipPosts:SHIP_POSTS,shipPostAliases:SHIP_POST_ALIASES,shoreRoles:SHORE_ROLES,retiredHomes:RETIRED_HOMES,
 });

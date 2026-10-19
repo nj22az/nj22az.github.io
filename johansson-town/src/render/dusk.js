@@ -92,11 +92,14 @@ export function poolGlow(minutes){
 }
 
 /**
- * Sakura fluorescent: cold and full all night, every night, since the shop went to 24 hours (commerce/sakura-rota.js):
- * the night shift works under the same tubes as the day. Never warms toward lantern orange.
+ * Sakura fluorescent: cold and full from the clerk's boat at half past eight until nine at night -- through opening,
+ * and on while she cashes up and restocks after the shutter comes down at half past eight (commerce/sakura-rota.js)
+ * -- then the night light over the till. Never warms toward lantern orange.
  */
 export function fluorescent(minutes){
- return Number.isFinite(wrapMinutes(minutes))?1:1;
+ const m=wrapMinutes(minutes);
+ if(m>=510&&m<1260)return 1;
+ return 0.6;
 }
 
 /**

@@ -36,5 +36,7 @@ test('office fixtures stay visible at midnight without extra point lights',()=>{
  const room=new THREE.Group();buildSakuraStoreys({room,reg(){},action(){},exit(){}});
  const fixtures=[],points=[];room.traverse(o=>{if(o.name==='Office fluorescent diffuser')fixtures.push(o);if(o.isPointLight)points.push(o);});
  assert.equal(fixtures.length,2);assert.equal(points.length,0);
- for(const minutes of [0,120,720,1380]){assert.equal(fluorescent(minutes),1);for(const o of fixtures){assert.ok(o.visible);assert.equal(o.material.toneMapped,false);}}
+ // (full in shop hours; the night light over the till after the shutter, never off: the office stays readable at midnight)
+ assert.equal(fluorescent(720),1);assert.equal(fluorescent(0),.6);
+ for(const minutes of [0,120,720,1380]){assert.ok(fluorescent(minutes)>=.6);for(const o of fixtures){assert.ok(o.visible);assert.equal(o.material.toneMapped,false);}}
 });

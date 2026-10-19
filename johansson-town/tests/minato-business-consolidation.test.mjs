@@ -9,12 +9,12 @@ import {kitahamaHomeFor} from '../src/world/kitahama-layout.js';
 import {HARBOUR_PARK_STUDY,NAKAMURA_DESSERTS} from '../src/world/harbour-park-plan.js';
 import {circleHitsRect} from '../physics.js';
 
-test('every florist purchase uses the same opening hours and the public counter stays clear',()=>{
+test('the Rainflower pavilion sells nothing any more and says where the flowers went; its public counter stays clear',()=>{
  installDOM();const world={group:new THREE.Group(),colliders:[]},prompts=[],actions=[];
  const shop=buildFlowerShop({world,register:(object,label,run)=>prompts.push({object,label,run}),onAction:(...args)=>actions.push(args)});
- const orders=prompts.filter(p=>/Buy|Order/.test(p.label));assert.equal(orders.length,2);
- for(const [minute,kind] of [[539,'read'],[540,'buy'],[1079,'buy'],[1080,'read'],[1980,'buy']]){shop.update(minute);for(const p of orders){p.run();assert.equal(actions.at(-1)[0],kind,p.label+' at '+minute);if(kind==='buy')assert.equal(actions.at(-1)[2].cost,250);}}
- assert.equal(flowerShopOpen(-1),false);assert.equal(world.landmarks[0].id,'rainflower-florist');assert.equal(world.landmarks[0].owner,'Mrs Kinjō');
+ assert.equal(prompts.filter(p=>/Buy|Order/.test(p.label)).length,0,'no sale at the pavilion (docs/CAST-CONSOLIDATION.md addendum 3)');
+ for(const minute of [539,540,1079,1980]){shop.update(minute);for(const p of prompts){p.run();assert.equal(actions.at(-1)[0],'read',p.label+' at '+minute);assert.match(actions.at(-1)[2],/Sakura/);}}
+ assert.equal(flowerShopOpen(720),false);assert.equal(world.landmarks[0].id,'rainflower-florist');assert.equal(world.landmarks[0].owner,'Mrs Kinjō');assert.match(world.landmarks[0].line,/closed; flowers at Sakura/);
  for(const p of prompts)assert.equal(world.colliders.some(c=>circleHitsRect(p.object.position.x,p.object.position.z,.32,c)),false,'Accessible prompt '+p.label);
  assert.equal(world.colliders.some(c=>circleHitsRect(...FLOWER_SHOP.staffAt,.32,c)),false,'Owner stands behind a visible clear counter');
 });

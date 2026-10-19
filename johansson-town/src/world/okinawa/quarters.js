@@ -288,11 +288,12 @@ const SHOPS=Object.freeze({
   buy:{label:'Buy a zenzai',title:"Nakamura Zenzai · Nakamura Zenzai",cost:250,item:'Zenzai',text:'Okinawan zenzai: a mountain of shaved ice over sweet kintoki beans and little white mochi, in a glass bowl that sweats on the counter. Mrs Nakamura has been making it on this corner since the Americans left.'},
   // The island's one sweet counter: when Aragaki Confectionery shut, Mrs Nakamura took on the sata andagi.
   more:[{label:'Buy sata andagi',title:"Nakamura Zenzai · sata andagi",cost:120,item:'Sata andagi',text:'Okinawan doughnuts, fried in the back in the morning until they crack open and smile, to the recipe from the old sweet shop over the road. Three to a paper bag, still warm, sugar on your fingers.',dz:1.3}]},
- // The post office, in the shop-house that was the barber's and then, briefly, the
- // power station before that moved to the town hall grounds. Postman Tōma's round starts
- // and ends here; Mr Shimabukuro still rents the flat upstairs.
- shimabukuro:{interior:'post',jp:"Minato Town Post Office",en:'Minato post office',bg:'#f4f1ea',accent:'#c8102e',mark:'〒',upright:"Postal",uprightBg:'#c8102e',
-  inspect:{label:'Look into the post office',title:"Minato Post Office · Minato Town Post Office",text:'A counter with a brass scale, a rack of forms, the savings-book window and a wall of pigeonholes, one for every household on the island. Collections at 10:30 and 16:30. The mail goes over on the morning ferry and comes back on the afternoon one; a parcel from Naha takes two days, from Tokyo four.'}},
+ // The former post office, in the shop-house that was the barber's and then, briefly, the power station before that
+ // moved to the town hall grounds. Its counter is shut (phase 3 of docs/CAST-CONSOLIDATION.md): post and parcels are
+ // Ms Ganaha's window at the Port Terminal now, and Tōma's round starts from the terminal's mailbag. Mr Shimabukuro
+ // still rents the flat upstairs; phase 4 takes the shop-house down.
+ shimabukuro:{interior:'post',jp:"Minato Town Post Office",en:'Minato post office · counter closed',bg:'#f4f1ea',accent:'#c8102e',mark:'〒',upright:"Postal",uprightBg:'#c8102e',
+  inspect:{label:'Look into the old post office',title:"Minato Post Office · counter closed",text:'The counter with its brass scale is shut, a notice taped to the glass: post and parcels are at Ms Ganaha’s window at the Port Terminal now, noon to 22:15. The wall of pigeonholes is empty. The red post box outside still takes letters, collections at 10:30 and 16:30. The mail goes over on the evening boat to Naha; a parcel from Naha takes two days, from Tokyo four.'}},
  'higa-saketen':{interior:'liquor',jp:"Higa Liquor Store",en:'Higa liquor · awamori',bg:'#f7ead6',accent:'#8a3b2e',upright:"Awamori",uprightBg:'#8a3b2e',
   buy:{label:'Buy a bottle of awamori',title:"Higa Liquor · Higa Liquor Store",cost:600,item:'Awamori miniature',text:'Awamori in every size, from the little 180 ml bottles by the till to the old clay pots at the back that Grandmother Higa will not sell you however you ask. The shop is hers, and she keeps the counter in the mornings. She wraps a miniature in newspaper and tells you to keep it for a guest.'}},
  // Aragaki Confectionery, closed (cast.js PLACES): nobody keeps it, and nobody lives behind it. The faded
@@ -584,9 +585,9 @@ const NAMEPLATES=Object.freeze({
  nakasone:'An empty red-tile house facing the lawn in front of Umi-no-yu. The shutters are down and the shisa still sit on the gateposts.',
  miyagi:'An empty red-tile house, the oldest on this side. A typhoon took the roof off everything else here, but not this one. The shisa on the ridge is older than the house.',
  kamiya:'An empty red-tile house, swept, with the water off at the main.',
- 'kitahama-1':'Thao, Chin and Vy\'s house, with Thuan\'s weekday room: a red-tile roof, a hinpun, and a row of herb pots that Thuan names after customers. The gate latch is oiled so the late shift does not wake anybody.',
+ 'kitahama-1':'Thao, Chin and Vy\'s house: a red-tile roof, a hinpun, and a row of herb pots that Thuan named after customers when she stayed here. The gate latch is oiled so the late shift does not wake anybody.',
  'kitahama-2':'Mrs Sato\'s house, concrete and very tidy, with a stock pot always on the back step to cool. She walks down to the morning auction at half past five and has the ramen stock on by seven.',
- 'kitahama-3':'Kōji\'s house, and Riku\'s. A wetsuit on the line, fish boxes stacked by the gate, a football in the yard and a radio that plays the weather on the hour.',
+ 'kitahama-3':'Nhung, Kōji and Riku\'s house. A wetsuit on the line, fish boxes stacked by the gate, a football in the yard, a crate of reading copies from the bookshop in the genkan, and a radio that plays the weather on the hour.',
  'kitahama-4':'Tōma. The postman lives here: his red Super Cub stands in the yard at night with its box padlocked, and he grows goya over the gate.',
  'kitahama-5':'Grandmother Chinen’s ground-access home. Tetsuo visits from his workshop; the entrance stays clear for her.',
  'kitahama-6':'The oldest house on the lane: red tile, and a hinpun with a crack the 1959 typhoon put there. The ferry\'s master lives here now; he is gone to the bridge by half past six and home at eight.',

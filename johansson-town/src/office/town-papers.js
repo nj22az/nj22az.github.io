@@ -6,7 +6,7 @@ export const TOWN_PAPERS=[
     "organisation": "Sakura Shop",
     "author": "Thuan",
     "source": "flyer:sakura-shop-1997",
-    "text": "SAKURA SHOP — Your little island convenience store\n1997 neighbourhood edition · Prepared by Thuan\nOpen 24 hours, every day. Cash only. All prices include tax.\nPlum rice ball · ¥110\nGreen tea · ¥120\nSalted potato crisps · ¥100\nOne stamp per ¥300 spent in a visit. Collect 10 stamps for a free green tea.\nFind us on Main Street, beside the harbour approach. The map is a neighbourhood sketch; the bus stop is north and the harbour is south.\nMeet Jaga-bo, our KOGANE potato-crisp mascot. Drop in and say hello to Thuan!\nFree copies at Sakura’s counter and the harbour notice board. Community Hall keeps a filed copy for one year."
+    "text": "SAKURA SHOP — Your little island convenience store\n1997 neighbourhood edition · Prepared by Thuan\nOpen 9:00–20:30, every day. Cash only. All prices include tax.\nPlum rice ball · ¥110\nGreen tea · ¥120\nSalted potato crisps · ¥100\nOne stamp per ¥300 spent in a visit. Collect 10 stamps for a free green tea.\nFind us on Main Street, beside the harbour approach. The map is a neighbourhood sketch; the bus stop is north and the harbour is south.\nMeet Jaga-bo, our KOGANE potato-crisp mascot. Drop in and say hello to Thuan!\nFree copies at Sakura’s counter and the harbour notice board. Community Hall keeps a filed copy for one year."
   },
   {
     "type": "Notice",
@@ -59,16 +59,16 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
-    "title": "Rainflower is closed",
+    "title": "Rainflower Florist has closed",
     "organisation": "Town Services",
-    "text": "Mrs Kinjō serves flowers from 09:00 to 18:00. The flowers stay on display at the park entrance.",
-    "source": "notice:Rainflower is closed"
+    "text": "Mrs Kinjō has retired. The town’s flowers and decorations come from Sakura Shōten now: the bouquets are in the buckets by Thuan’s door, ¥250, in the shop’s hours. The pavilion stays until the council takes it down.",
+    "source": "notice:Rainflower Florist has closed"
   },
   {
     "type": "Notice",
     "title": "Rainflower Florist",
     "organisation": "Town Services",
-    "text": "Fresh stems, potted greenery and hand-made wreaths from Mrs Kinjō. Her counter faces the neighbourhood plaza, east of Main Street. She supplies flowers to Sakura, the izakaya, town office, school and Umi-no-yu. Open 09:00–18:00.",
+    "text": "The buckets are empty and rinsed, the wreath hooks bare. Mrs Kinjō’s counter faced the neighbourhood plaza, east of Main Street, until she retired; Sakura supplies the izakaya, the town office, the school and Umi-no-yu with their flowers and decorations now.",
     "source": "notice:Rainflower Florist"
   },
   {
@@ -124,7 +124,7 @@ export const TOWN_PAPERS=[
     "type": "Notice",
     "title": "Ferry departures",
     "organisation": "Town Services",
-    "text": "The shared car and passenger ferry crosses to Kitano-jima on request. Buy a return passenger ticket at the airport-ferry window (Ms Ganaha, noon to 22:15; in the morning from the oiler at the gangway) and board from the outer pier. The evening boat to Naha opens at 17:00.",
+    "text": "The shared car and passenger ferry crosses to Kitano-jima on request. Buy a return passenger ticket at the airport-ferry window (Ms Ganaha, noon to 22:15; in the morning from the oiler at the gangway) and board from the outer pier. The evening boat to Naha opens at 17:00. Post and parcels are handled at the same window.",
     "source": "notice:Ferry departures"
   },
   {

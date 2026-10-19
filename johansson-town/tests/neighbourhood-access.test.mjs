@@ -87,7 +87,7 @@ test('the retired lane stays open and the florist, dessert counter and owners sh
  const {NEIGHBOURS}=await import('../src/people/neighbours.js'),{FLOWER_SHOP}=await import('../src/world/flower-shop.js');
  assert.deepEqual(NEIGHBOURS.find(n=>n.name===FLOWER_SHOP.staff).at,FLOWER_SHOP.staffAt);assert.deepEqual(NEIGHBOURS.find(n=>n.name==='Mrs Nakamura').at,NAKAMURA_DESSERTS.staffAt);
  assert.ok(inHarbourPark(FLOWER_SHOP.x,FLOWER_SHOP.z));
- const buy=new THREE.Vector3();prompts.find(p=>p.label==='Buy a Rainflower bouquet · ¥250').object.getWorldPosition(buy);assert.deepEqual([buy.x,buy.z],FLOWER_SHOP.approach);
+ const buy=new THREE.Vector3();prompts.find(p=>p.label==='Ask about flowers').object.getWorldPosition(buy);assert.deepEqual([buy.x,buy.z],FLOWER_SHOP.approach);
  assert.ok(Math.hypot(buy.x-FLOWER_SHOP.staffAt[0],buy.z-FLOWER_SHOP.staffAt[1])>.7);assert.equal(playerBlocked(buy.x,buy.z,.32),false);
  assert.equal(world.colliders.some(c=>circleHitsRect(90,113,.32,c)),false,'The remote old lane remains clear land');
  const terrain=world.group.getObjectByName('Continuous neighbourhood garden ground'),ray=new THREE.Raycaster();

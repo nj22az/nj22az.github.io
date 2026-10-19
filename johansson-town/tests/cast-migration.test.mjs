@@ -60,8 +60,10 @@ test('a save pointing into a home that goes loads at a retained public place, in
  const sites=createBusinesses(),world=createTown({scene:new THREE.Scene(),sites,mobile:true,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  const places=new Map([...sites,...(world.landmarks||[])].map(s=>[s.id,s]));
  for(const target of new Set(Object.values(RETIRED_HOMES))){const site=places.get(target);assert.ok(site&&!site.isResidence,target+' is a retained public place in the built town');}
- // The homes themselves still stand today (phase 4 removes them): the migration maps them regardless.
- for(const id of ['home-kitahama-4','home-kitahama-5','home-kitahama-6','home-kinjo','home-oshiro','resident-home-aya','home-kitahama-flat-1','home-kitahama-flat-2','home-shimabukuro']){const site=places.get(id);assert.ok(site&&(site.isResidence||site.homeOwner||site.homeId),id+' is a home today');}
+ // The houses themselves still stand today (phase 4 removes them): the migration maps them regardless. The Heights'
+ // Flats 1 and 2 went with its upper storey in phase 3, so they are no home at all any more.
+ for(const id of ['home-kitahama-4','home-kitahama-5','home-kitahama-6','home-kinjo','home-oshiro','resident-home-aya','home-shimabukuro']){const site=places.get(id);assert.ok(site&&(site.isResidence||site.homeOwner||site.homeId),id+' is a home today');}
+ for(const id of ['home-kitahama-flat-1','home-kitahama-flat-2'])assert.equal(places.get(id),undefined,id+' is gone with the upper storey');
  const cases={'home-kitahama-4':'mayor-office','kitahama-5':'mayor-office','home-kitahama-6':'mayor-office','kinjo':'mayor-office','home-oshiro':'mayor-office','resident-home-aya':'mayor-office',
   'home-kitano-3':'mayor-office','kitano-3':'mayor-office','home-kitahama-flat-1':'mayor-office','kitahama-flat-2':'mayor-office','home-shimabukuro':'ferry-terminal','post-office':'ferry-terminal',
   'rainflower-florist':'market','florist':'market','home-izakaya':'izakaya','home-kitahama-7':'mayor-office','home-market':'mayor-office'};

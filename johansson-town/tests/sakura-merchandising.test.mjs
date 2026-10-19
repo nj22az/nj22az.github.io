@@ -50,7 +50,12 @@ test('Sakura supplies every business in town, with lines it really stocks',async
  assert.ok(ACCOUNTS['higa-saketen'].market,'Higa Liquor supplies Sakura');
  assert.ok(ACCOUNTS.frontrow.office&&ACCOUNTS.frontrow['mayor-office'],'Front-Row supplies the offices');
  for(const [id,s] of Object.entries(SUPPLIERS)){assert.ok(residents.has(s.owner),s.owner+' runs '+s.name);for(const [site,a] of Object.entries(ACCOUNTS[id])){assert.ok(new RegExp(`id:'${site}'|'${site}'`).test(sources),site+' is a real place');assert.ok(a.owner?residents.has(a.owner):a.contact,site);}}
- assert.ok(ACCOUNTS['rainflower-florist'].market,'Rainflower Florist decorates Sakura');
+ // The florist's trade is Sakura's since Mrs Kinjō retired (docs/CAST-CONSOLIDATION.md addendum 3): decorations ride on the accounts.
+ const {decorBuyers}=await import('../src/commerce/merchandising.js');
+ assert.equal(SUPPLIERS['rainflower-florist'],undefined,'Rainflower Florist supplies nothing');assert.equal(ACCOUNTS['rainflower-florist'],undefined);
+ assert.ok(SUPPLIERS.sakura.decor.length>=5&&/flowers and decorations/.test(SUPPLIERS.sakura.goods),'Sakura supplies the flowers and decorations');
+ assert.deepEqual(decorBuyers().sort(),['izakaya','mayor-office','onsen','school'],'the florist’s old round, on Sakura’s accounts');
+ for(const site of decorBuyers())assert.ok(/flower|lantern|wreath|bunting|vase/i.test(TRADE_ACCOUNTS[site].why)&&TRADE_ACCOUNTS[site].decor.every(l=>typeof l==='string'&&l.length>3),site+' says what decorations and why');
  // Only open places trade, and every named owner is somebody in the cast (src/people/cast.js).
  const {CAST_NAMES,PLACES}=await import('../src/people/cast.js');
  const cast=new Set(CAST_NAMES),closed=Object.keys(PLACES).filter(id=>PLACES[id].closed);

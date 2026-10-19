@@ -67,12 +67,12 @@ export const FERRY_RELIEF=Object.freeze({
 
 /** The shore roles (roster.js SHORE_ROLES): where each holder is and what they do for the ship. */
 const shore={
- tickets:{where:'The Port Building’s waiting hall',does:'Sells tickets and gives the passenger count to the purser'},
+ tickets:{where:'The Port Building’s waiting hall',does:'Sells tickets, keeps the post and parcel counter and gives the passenger count to the purser'},
  linesman:{where:'The Harbour Office and the ferry bitts on the outer pier',does:'Walks from the office to the bitts before every call to handle the shore end of each line, and keeps the berth radio between calls',
   why:'Jack Reed, the harbour agent: an American who came to Okinawa as a merchant seaman in the sixties, paid off in Naha and never went home; thirty years on this quay, the berth and the office radio, the freight book, and the shore end of every line since Fujita went to the bridge.'},
  port:{where:'The Harbour Office',does:'Gives the berth and keeps the port radio'},
- 'relief-engineer':{where:'Minato Maru and Kitahama Heights, Flat 3',does:'Relieves Johansson on machinery watches; keeps a separate duty berth aboard',
-  why:'Mac Turner, 61, relief engineer: an American who came to the island with the diesels, Caterpillars for the Naha fishing boats in the seventies, and stayed for the quiet; a flat in Kitahama Heights and a duty berth aboard.'},
+ 'relief-engineer':{where:'Minato Maru and Kitahama Heights A',does:'Relieves Johansson on machinery watches; keeps a separate duty berth aboard',
+  why:'Mac Turner, 61, relief engineer: an American who came to the island with the diesels, Caterpillars for the Naha fishing boats in the seventies, and stayed for the quiet; a house in Kitahama Heights and a duty berth aboard.'},
  electrician:{where:'The electrical workshop aboard, alongside at Minato',does:'Maintains the ferry’s electrical equipment while she is in port'},
  'airport-linesman':{where:'Kitano-jima ferry pier',does:'Handles the shore eyes at the Kitano berth',
   why:'Kai, 47, the Kitano line hand: born in the hamlet, a deckhand on the Naha boats until his knees, and back on the pier he grew up beside; the shore end of every line at Kitano, and the Shiroma house across the lane, rented from the family in Naha.'},

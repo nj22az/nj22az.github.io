@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {CAST,CAST_NAMES,RELATIONSHIPS,PLACES,relationshipsOf,castMember} from '../src/people/cast.js';
 import {ISLAND_HOUSEHOLDS,ISLAND_HOMES} from '../src/people/island-households.js';
+import {isRetired} from '../src/people/roster.js';
 import {NEIGHBOURS} from '../src/people/neighbours.js';
 import {WORLD_CAST,ACTIVE_RESIDENT_NAMES} from '../src/people/residents.js';
 import {FERRY_PEOPLE} from '../src/people/ferry-crew.js';
@@ -12,12 +13,15 @@ import {PUPIL_NAMES} from '../src/world/interiors/classroom.js';
 // Who the world still shows that the plan's batch 2 replaces: the classroom's eight pupils become Vy, Riku and Mai.
 const BATCH_2=new Set(PUPIL_NAMES.filter(n=>!castMember(n)));
 const hhmm=t=>{const [h,m]=t.split(':').map(Number);return h*60+m;};
+// A retired identity whose home the roster has retired (Mr Higa Jr and Grandmother Sakurai, whose flats went with the Heights'
+// upper storey in phase 3) keeps the body until phase 4 and the retired home id, resolved to the roster's fallback.
+const homeGone=p=>isRetired(p.name)&&!!ISLAND_HOUSEHOLDS.find(h=>h.home===p.home)?.retired;
 
 test('everyone has a home that stands, a purpose and a place they work',()=>{
  assert.equal(new Set(CAST_NAMES).size,CAST.length,'one entry each');
  const homes=new Set(ISLAND_HOMES.filter(h=>!h.retired).map(h=>h.home));
  for(const p of CAST){
-  assert.ok(homes.has(p.home),p.name+' lives at '+p.home+', a home on the island');
+  assert.ok(homes.has(p.home)||homeGone(p),p.name+' lives at '+p.home+', a home on the island');
   for(const h of p.alsoAt)assert.ok(homes.has(h),p.name+'’s second home '+h);
   assert.ok(p.purpose?.length>20,p.name+' has a purpose');
   assert.ok(p.work,p.name+' has a place to be');
@@ -81,7 +85,8 @@ test('the registry is built from the cast: one home each, empty standing homes t
   if(h.retired){assert.equal(h.members.length,0);assert.equal(h.status,'retired');}
   for(const m of h.members){const p=castMember(m.name);assert.ok(p.home===h.home||p.alsoAt.includes(h.home));}
  }
- for(const p of CAST)assert.ok(ISLAND_HOUSEHOLDS.find(h=>h.home===p.home).members.some(m=>m.name===p.name),p.name+' is on the nameplate');
+ for(const p of CAST)assert.ok(homeGone(p)?ISLAND_HOUSEHOLDS.find(h=>h.home===p.home).retired:ISLAND_HOUSEHOLDS.find(h=>h.home===p.home).members.some(m=>m.name===p.name),p.name+' is on the nameplate');
+ assert.deepEqual(CAST.filter(homeGone).map(p=>p.name),['Grandmother Sakurai','Mr Higa Jr'],'only the two whose flats retired with the Heights’ upper storey have no home standing');
 });
 
 test('the guide shows only the cast',async()=>{

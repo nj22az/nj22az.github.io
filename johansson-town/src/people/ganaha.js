@@ -11,9 +11,14 @@ import {FERRY_FARE} from '../island/services.js';
  * Her hours, 12:00 to 22:15: the 14:30 and 22:00 commuter boats and every crossing on request in between, and the
  * evening telephone (izakaya-play.js: she picks up on the fourth ring). Before noon the oiler sells the tickets
  * at the gangway (FERRY_WATCH: the oiler, at the gangway while she waits), so the morning boat needs no clerk.
+ *
+ * Since phase 3 of the consolidation (docs/CAST-CONSOLIDATION.md §4, §8) her window is the post and parcel counter
+ * too: letters and parcels handed in by 16:30 go with the evening boat to Naha, and a parcel in from Naha waits on
+ * the shelf behind her from noon. The old post office counter on Main Street is shut. She lives in Kitahama Heights B.
  */
 export const GANAHA=Object.freeze({name:'Ms Ganaha',from:12*60,until:22*60+15,
- window:'Airport ferry',lives:'Kitahama Heights, flat 1'});
+ window:'Airport ferry',lives:'Kitahama Heights B, Fukugi Lane',
+ post:Object.freeze({handIn:16*60+30,text:'Letters and parcels handed in by 16:30 go with the evening boat to Naha; parcels from Naha are on the shelf behind the window from noon, two days after posting. The old post office counter on Main Street is shut.'})});
 
 const minuteOfDay=m=>((m%1440)+1440)%1440;
 export const ganahaAtWindow=minutes=>{const m=minuteOfDay(minutes);return m>=GANAHA.from&&m<GANAHA.until;};
