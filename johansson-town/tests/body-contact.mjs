@@ -29,8 +29,13 @@ export function core(avatar){
  const frames=[['hips',m.hipY],['chest',m.chestY]].map(([n,y])=>[inv(n),y]),head=inv('head'),hands=['handL','handR'].map(inv),feet=['footL','footR'].map(inv);
  const limbs=[];for(const s of ['L','R'])limbs.push([at('shoulder'+s),at('elbow'+s),m.armR],[at('elbow'+s),at('hand'+s),m.armR*.9],[at('thigh'+s),at('knee'+s),m.legR],[at('knee'+s),at('foot'+s),m.legR*.9]);
  const S=[m.Rh*m.headSX,m.Rh*m.headSY,m.Rh*.98],hc=m.headCentre-m.headY,q=new THREE.Vector3();
+ // (a bent torso is its lower half carried by the hips and its upper half by the chest, never the whole of it by both:
+ // the whole torso carried by the hips would stand where a chest that leans back has gone from, and a fist at the collar
+ // of the real chest would read as inside it)
+ const half=.03*m.k;
  return p=>{let d=Infinity;
-  for(const [M,y] of frames){q.copy(p).applyMatrix4(M);q.y+=y;d=Math.min(d,vol.sdf(q));}
+  for(const [M,y] of frames){q.copy(p).applyMatrix4(M);q.y+=y;if(y===m.hipY?q.y>m.chestY+half:q.y<m.chestY-half)continue;d=Math.min(d,vol.sdf(q));}
+  if(d===Infinity)for(const [M,y] of frames){q.copy(p).applyMatrix4(M);q.y+=y;d=Math.min(d,vol.sdf(q));}
   d=Math.min(d,ellipsoid(q.copy(p).applyMatrix4(head),[0,hc,0],S));
   for(const [a,c,r] of limbs)d=Math.min(d,segment(p,a,c,r));
   for(const M of hands)d=Math.min(d,ellipsoid(q.copy(p).applyMatrix4(M),[0,-m.hand*.55,0],[m.hand*.9,m.hand*1.15,m.hand*.78]));

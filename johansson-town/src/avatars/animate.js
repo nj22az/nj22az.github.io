@@ -408,6 +408,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    const upC=posed?posed.up:new THREE.Vector3(0,1,0),_d=new THREE.Vector3(),_top=new THREE.Vector3(),targetUp=target.dot(upC);
    const elbowAt=want.elbow?new THREE.Vector3(...flipX(want.elbow(m))).sub(chestAt):null;
    const hand=want.hand?mirror(want.hand):[0,0,0],seed=mirror(spec.seedFrom?reachFor(spec.seedFrom)[side]:[...want.seed,0].slice(0,5));
+   // (bounds: how far each angle may go, [low, high] per angle in the right arm's terms (pair-poses.js): an arm reaching
+   // for a partner's collar stays an arm reaching forward, never one windmilled up over the head to come down on it)
+   const bounds=want.bounds?want.bounds.map((b,i)=>b&&sg<0&&(i===1||i===2||i===4)?[-b[1],-b[0]]:b):null;
    // (tip: the end of the mitten goes to the place, not its middle: a lever pushed with the fingers' end)
    const sh=bones['shoulder'+side].position,el=bones['elbow'+side].position,wr=bones['hand'+side].position,mit=new THREE.Vector3(0,-m.hand*(want.tip?1.45:.55),0);
    // things fixed round the body to keep clear of (a wall, a cabinet, the pole a body hugs): boxes in the body's frame (or a
@@ -456,6 +459,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     // laid on the body, the whole mitten stays on it, not in it: its tip and the backs of its sides
     if(want.touch)for(const q of TOUCH){const d=torso(_t.set(q[0]*m.hand,q[1]*m.hand,q[2]*m.hand).applyQuaternion(_q[3]).add(W));if(d<.009*k)c+=((.009*k-d)/k)**2*2000;}
     for(let i=0;i<5;i++)c+=.01*(x[i]-seed[i])**2;if(x[3]>0)c+=x[3]**2;if(x[3]<-2.6)c+=(x[3]+2.6)**2;
+    if(bounds)for(let i=0;i<5;i++){const b=bounds[i];if(!b)continue;if(x[i]<b[0])c+=(b[0]-x[i])**2*5;else if(x[i]>b[1])c+=(x[i]-b[1])**2*5;}
     // (a move may keep the upper arm's and the forearm's twist near its seed, so the arm is not wound round to get there)
     if(want.twist)c+=want.twist*((x[1]-seed[1])**2+(x[4]-seed[4])**2);
     return c;};
