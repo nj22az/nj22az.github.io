@@ -238,6 +238,8 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
 
  const boat=buildFujitaHouseboat({parent,colliders,register,onAction,shadows});
  const cover=createSleepCover(boat.group,{cover:HOUSEBOAT.cover},0x557b72);
+ // Moonlit bedding remains legible while Fujita's cabin lamp is off; no extra light.
+ cover.mesh.material.emissive.copy(cover.mesh.material.color);cover.mesh.material.emissiveIntensity=.025;
  const routine=createFujitaRoutine(fujita,{origin:[S.x,S.z],chair:S.chair,cover,boat});
  let clock=0,redraw=0,programme='',laughing=false,sips=-1;
  /**

@@ -43,3 +43,11 @@ Fresh desktop and phone-sized Chromium captures of game commit `a42fad65dc19c577
 The visual review found three unresolved defects: the pillow does not support Fujita’s sleeping head, the folded futon is enclosed by the cupboard’s opaque body, and third-person cabin framing is obstructed by the player and a ceiling fitting. Night-time legibility is an additional polish concern. Walking into the cabin and back, the overnight routine and roof cutaway passed the exercised checks. **Visual acceptance remains open.** Physical iPhone Safari and frame-rate acceptance are not established by these Chromium captures.
 
 The evidence includes 20 accepted game screenshots, six isolated production-geometry images, raw reports and the written audit. Four invalid staging/camera captures were excluded. See [the full audit](visual-audit/Shiosai-Audit.txt) and [overview](visual-audit/Shiosai-visual-audit.png).
+
+## Visual corrections — 19 October 2026
+
+The three documented defects are corrected in source commit `ab31811c3e4376b90f03a52cb53a9fb1dcad4b0f`: the pillow supports the sleeping head and remains visible above the blanket; the cabinet has an actual aisle-facing opening; and a houseboat-specific raised camera with roof/fixture cutaway replaces the obstructed cabin framing. Small material adjustments improve night bedding silhouettes without additional lights or render targets.
+
+[The correction report and comparison](visual-fixes/README.md) contain 16 inspected full-game captures at desktop and phone sizes, seven diagnostic views, raw reports and evidence hashes. All 38 focused automated checks pass. Both viewport runs complete the pier/gangway/cabin/return circuit, first-person movement and view switching; all 24 camera probes are clear. Exterior camera pitch and roof fittings are restored after exit. Routine hours, bed anchor, collision clearances, save schema and mobile renderer safeguards are preserved.
+
+The three implementation findings pass the exercised desktop and phone-sized Chromium inspection. **Physical iPhone Safari, on-device touch, frame rate and long-duration stability acceptance remain outstanding.** The dated reports above describe earlier builds and do not supersede this correction record.
