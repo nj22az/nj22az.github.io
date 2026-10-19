@@ -40,9 +40,10 @@ test('the Sunday fish auction puts Mrs Sato and the harbour master on the quay, 
 
 test('the last night of Obon brings the street out for the eisa, unless it rains',()=>{
  const m=on(8,17,19,50);
- for(const name of ['Thao','Nhung','Chin'])assert.equal(residentPlan(who(name),m,false,{}).happening,'eisa');
- assert.notEqual(residentPlan(who('Chin'),m,true,{}).happening,'eisa');
- assert.equal(happeningPlan(who('Chin'),on(8,17,23)),null,'only while the drums are out');
+ for(const name of ['Thao','Nhung','Tetsuo'])assert.equal(residentPlan(who(name),m,false,{}).happening,'eisa');
+ assert.notEqual(residentPlan(who('Tetsuo'),m,true,{}).happening,'eisa');
+ assert.equal(residentPlan(who('Chin'),m,false,{}).place,'ferry','the motorman is aboard until the shore power');
+ assert.equal(happeningPlan(who('Tetsuo'),on(8,17,23)),null,'only while the drums are out');
 });
 
 test('people mention the day all day, once per day each',()=>{

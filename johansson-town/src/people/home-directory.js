@@ -17,13 +17,14 @@ import {AIRPORT_ISLAND} from '../world/airport-island.js';
 import {airportWorld,airportSurface} from '../world/airport-ground.js';
 
 /** Read-only directory data. No DOM, renderer, save writes, clock changes or character movement. */
-const ROLES=Object.freeze({Johansson:'Chief engineer',Thuan:'Sakura shopkeeper','Grandmother Chinen':'Neighbour',Thao:'Izakaya owner',Chin:'Repairman',
+const ROLES=Object.freeze({Johansson:'Chief engineer',Thuan:'Sakura shopkeeper','Grandmother Chinen':'Neighbour',Thao:'Izakaya owner',Chin:'Ferry motorman and repairman',
  Vy:'School pupil',Nhung:'Bookseller','Kōji':'Catch sorter',Riku:'School pupil','Miss Higa':'Teacher and bathhouse attendant',
  'Grandmother Higa':'Bathhouse and liquor-shop owner',Tetsuo:'Radio repairer',Reiko:'Newspaper editor','Mrs Sato':'Ramen cook',
  'Officer Mori':'Police officer','Harbour master':'Harbour master',Barfly:'Minato regular','Grandmother Sakurai':'Sakura owner',
  'Postman Tōma':'Postman','Dr Kakazu':'Doctor','Mr Ōshiro':'Fisherman and boatbuilder','Mrs Kinjō':'Florist',
- 'Mrs Nakamura':'Zenzai and ice-cream shopkeeper',Mai:'School pupil','Bus driver':'Ferry master','Mr Nakandakari':'Relief engineer',
- 'Mr Higa Jr':'Ferry oiler','Ms Uezu':'Ferry bosun','Ms Ganaha':'Port ticket clerk','Mr Fujita':'Linesman','Mr Shimabukuro':'Power-house keeper'});
+ 'Mrs Nakamura':'Zenzai and ice-cream shopkeeper',Mai:'School pupil','Bus driver':'Retired ferry master',Mac:'Relief engineer',
+ 'Mr Higa Jr':'Boatyard hand','Ms Uezu':'Ferry bosun','Ms Ganaha':'Port ticket clerk','Mr Fujita':'Ferry master','Mr Shimabukuro':'Power-house keeper',
+ Ryo:'Ferry chief officer',Ren:'Ferry deck hand',Aya:'Ferry purser',Jun:'Ferry cook-steward',Kai:'Kitano line hand'});
 const PLACE_IDS=Object.freeze({sakura:'market',books:'frontrow',workshop:'form3d','sato-ramen':'ramen','town-hall':'mayor-office',
  port:'ferry-terminal',ferry:'ferry-terminal','post-office':'home-shimabukuro','higa-liquor':'higa-saketen',
  florist:'rainflower-florist',zenzai:'nakamura','blue-coral':'nakamura','power-station':'power-station'});

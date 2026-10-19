@@ -15,12 +15,12 @@ import {createTownSections} from '../src/render/town-sections.js';
 import {renderedVehicleFootprint,vehicleHitsRect} from './vehicle-footprint.mjs';
 import {ferryServiceFixture} from './ferry-service-fixture.mjs';
 import {QUICK_CROSSING} from '../src/world/ferry-quick-crossing.js';
-function fixture(){installDOM();const parent=new T.Group(),people=['Tetsuo','Harbour master','Chin','Reiko','Mrs Sato','Nhung'].map(name=>{const g=new T.Group();g.userData.name=name;parent.add(g);return {g,profile:{name}};});const ferry=createFerryRun({parent});ferry.parkAt('town');const cars=createTownTraffic({parent,ferry,people:()=>people});return {parent,people,cars,ferry};}
+function fixture(){installDOM();const parent=new T.Group(),people=['Tetsuo','Harbour master','Thao','Reiko','Mrs Sato','Nhung'].map(name=>{const g=new T.Group();g.userData.name=name;parent.add(g);return {g,profile:{name}};});const ferry=createFerryRun({parent});ferry.parkAt('town');const cars=createTownTraffic({parent,ferry,people:()=>people});return {parent,people,cars,ferry};}
 /** The ferry, crew, borrowed shore hand and cars all advance on the same ordinary clock. */
 function cargoFixture(){
  const s=ferryServiceFixture({minute:690}),q=QUICK_CROSSING.town;
  s.player.position.set(q.stand[0],q.ground,q.stand[1]);
- const people=['Tetsuo','Harbour master','Chin','Reiko','Mrs Sato','Nhung'].map(name=>{const g=new T.Group();g.userData.name=name;g.position.set(-30,0,30);s.group.add(g);return {g,profile:{name}};});
+ const people=['Tetsuo','Harbour master','Thao','Reiko','Mrs Sato','Nhung'].map(name=>{const g=new T.Group();g.userData.name=name;g.position.set(-30,0,30);s.group.add(g);return {g,profile:{name}};});
  s.world.people.push(...people);
  const cars=createTownTraffic({parent:s.group,colliders:s.world.colliders,ferry:s.run,people:()=>s.world.people,getPlayerPosition:()=>s.player.position});
  s.world.traffic=cars;return Object.assign(s,{cars,people});
@@ -90,7 +90,7 @@ test('the complete combined-ferry cargo round trip finishes by ordinary timestep
  assert.equal(driver.parent,s.group);assert.equal(driver.userData.inVehicle,undefined);assert.equal(driver.userData.ferryPassenger,undefined);
 });
 test('airport couriers stage through a clear aisle with the complete parked fleet present',()=>{
- for(const owner of ['Chin','Reiko','Mrs Sato','Nhung']){
+ for(const owner of ['Thao','Reiko','Mrs Sato','Nhung']){
   const {cars,people}=fixture(),v=cars.fleet.find(v=>v.owner===owner);for(const p of people)p.g.position.set(-30,0,30);
   for(let i=0;i<9000&&v.where!=='waiting-ferry';i++)cars.update(1/60,v.appointment.leave);
   assert.equal(v.where,'waiting-ferry',`${owner} cannot leave its bay: ${v.blocker?.owner||v.blocker}`);
@@ -144,7 +144,7 @@ test('borrowing and releasing preserves the existing resident and restores occup
  drivers.release(v,{restore:true});assert.deepEqual(g.position.toArray(),[4,0,5]);assert.equal(g.userData.socialPose,'Idle');assert.equal(g.parent,parent);
 });
 test('a scheduled offscreen worker can drive the errand while active interiors retain their resident',()=>{
- const {cars,people}=fixture(),v=cars.fleet[0],person=people.find(p=>p.profile.name==='Chin');person.g.visible=false;person.g.userData.indoors='work';
+ const {cars,people}=fixture(),v=cars.fleet[0],person=people.find(p=>p.profile.name==='Thao');person.g.visible=false;person.g.userData.indoors='work';
  cars.update(.1,630);assert.ok(v.trip);assert.equal(person.g.parent,v.g);assert.equal(person.g.visible,true);assert.equal(person.g.userData.inVehicle,v.id);
  cars.drivers.release(v,{restore:true});assert.equal(person.g.visible,false);assert.equal(person.g.userData.indoors,'work');
  person.g.userData.inWorkplace=true;assert.equal(cars.drivers.board(v),false,'An active room keeps its avatar');delete person.g.userData.inWorkplace;person.g.visible=true;assert.equal(cars.drivers.board(v),false,'Visible indoor activity is not interrupted');

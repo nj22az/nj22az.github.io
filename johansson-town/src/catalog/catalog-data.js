@@ -9,7 +9,7 @@ export const CATALOG=freeze({
   "kind": "prop",
   "version": 1,
   "purpose": {
-   "for": "Islanders who work bare-headed under the Okinawan sun on the quay and the boats and want a good cap, not a giveaway: Kōji at the catch tables first, Riku on the cargo quay, Mr Fujita at the bow bollards.",
+   "for": "Islanders who work bare-headed under the Okinawan sun on the quay and the boats and want a good cap, not a giveaway: Kōji at the catch tables first, Riku watching the boats come in from the quay wall, Mr Fujita on the bridge wing.",
    "why": "A peak against the glare off the water, a mesh back that lets the sea wind through, a strap that fits anyone; made as well as an imported cap, by the town's own maker, with Johansson's J raised on the front.",
    "where": "On the cap tree at Sakura Shōten by the east window, beside the till and in the window, a stack on each cap form; and on the heads of whoever bought one (src/avatars/hat-assets.js fits it to any head)."
   },

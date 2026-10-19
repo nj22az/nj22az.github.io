@@ -42,10 +42,12 @@ test('residents walk to objects, reserve them, use them, yield to the player and
  const root=new THREE.Group(),kenji=person('Chin',root,[-4,-5.5]),tetsuo=person('Tetsuo',root,[-4,-5.5]),paper=marker(root,'Read workshop notice',-5.9,-5.5),state={inventory:[],yen:1000};
  tetsuo.g.position.copy(kenji.g.position);const player=new THREE.Group();player.position.set(20,0,20);
  const activity=createTownActivities({getTargets:()=>[paper],collides:()=>false,getPlayerPosition:()=>player.position,getState:()=>state,ledger:createResidentLedger(()=>state)});
- const world={people:[kenji],homes:new Map()},ai=createCastAI({world,player,state:()=>state,paused:()=>false,collides:()=>false,activities:activity});
+ // Tetsuo keeps the bench by day (Chin is the ferry's motorman until he signs off, social.js), so he is the one at work at five.
+ const world={people:[tetsuo],homes:new Map()},ai=createCastAI({world,player,state:()=>state,paused:()=>false,collides:()=>false,activities:activity});
  let sawWalking=false,sawReading=false;
- for(let i=0;i<22*60;i++){ai.update(1/60,1025+i/60,false);sawWalking||=activity.stateFor(kenji)?.phase==='walking';sawReading||=kenji.g.userData.socialPose==='Read';}
- assert.ok(sawWalking&&sawReading);assert.equal(state.yen,1000);assert.ok(state.residentLife.Chin.activities.length);
+ for(let i=0;i<22*60;i++){ai.update(1/60,1025+i/60,false);sawWalking||=activity.stateFor(tetsuo)?.phase==='walking';sawReading||=tetsuo.g.userData.socialPose==='Read';}
+ assert.ok(sawWalking&&sawReading);assert.equal(state.yen,1000);assert.ok(state.residentLife.Tetsuo.activities.length);
+ activity.release(tetsuo,1047);tetsuo.g.position.copy(kenji.g.position);
  const base={place:'work',target:[-4,-5.5],activity:'working'};kenji.g.position.set(-4.4,0,-5.5);
  activity.plan(kenji,base,1040,false,.1);activity.plan(kenji,base,1060,false,.1);
  activity.plan(tetsuo,base,1040,false,.1);activity.plan(tetsuo,base,1060,false,.1);
@@ -67,7 +69,8 @@ test('izakaya arrivals keep existing chairs and workplace staff return to the sa
  const guests=createIzakayaGuests({world,parent});guests.sync(1098);const before=new Map(world.people.filter(p=>p.g.userData.inIzakaya).map(p=>[p,p.g.position.clone()]));guests.sync(1112);
  for(const [p,position] of before)if(p.g.userData.inIzakaya)assert.ok(position.equals(p.g.position),'Existing guests are not shuffled by new arrivals');guests.restore();
  const desk=marker(parent,'Read repair ledger',-2,0,true),player=new THREE.Vector3(0,0,4),state={};
- const kenji=world.people.find(p=>p.profile.name==='Chin');kenji.profile={...kenji.profile,workSite:'form3d'};kenji.g.userData.indoors='work';
+ // The workshop's daytime worker is Tetsuo (Chin is aboard the ferry by day, social.js).
+ const kenji=world.people.find(p=>p.profile.name==='Tetsuo');kenji.profile={...kenji.profile,workSite:'form3d'};kenji.g.userData.indoors='work';
  const workers=createWorkplaceResidents({world,parent,getEntrance:()=>[0,0,4.5],getTargets:()=>[desk],collides:(x,z,r)=>Math.abs(x)+r>5||Math.abs(z)+r>5,getPlayerPosition:()=>player,getState:()=>state,ledger:createResidentLedger(()=>state)});
  workers.enter({id:'form3d',title:'Chin’s Workshop'},1025);assert.equal(kenji.g.parent,parent);let used=false;
  for(let i=0;i<30*60;i++){workers.update(1/60,1025+i/60,false);used||=kenji.g.userData.socialPose==='Read';assert.ok(Math.abs(kenji.g.position.x)<5&&Math.abs(kenji.g.position.z)<5);}

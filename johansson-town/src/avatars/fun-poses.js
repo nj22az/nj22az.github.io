@@ -25,7 +25,15 @@ const clamp01=x=>Math.min(1,Math.max(0,x));
 /** The legs a little bent and the knees turned in (weak at the knees; shy), written for both sides. */
 const kneesIn=(P,w,bend=.22,inward=.07)=>{for(const [s,k] of [['L',1],['R',-1]]){P.toward('thigh'+s,-bend*.6,0,-k*inward,w);P.toward('knee'+s,bend,0,0,w);P.toward('foot'+s,-bend*.4,0,k*inward,w);}};
 /** The left mitten on the hip, the elbow out (HandsOnHips' left arm). */
-const handOnHip=(P,w)=>{P.toward('shoulderL',.15,0,.75,w);P.toward('elbowL',-.3,0,-1.5,w);};
+/** A mitten laid on the hip's side (`side` +1 the left, -1 the right), as onBack lays one on the back: the body's own surface
+ *  at the hip, the mitten's thickness out from it. A fixed fold of the arm put the mitten in a short-armed, wide-hipped body's
+ *  thigh; solved, it rests on the hip of every body. */
+const onHip=(m,vol,side)=>{const p=vol.surf(side*Math.PI*.5,.2);return p.addScaledVector(vol.normal(p),m.hand*.95).toArray();};
+/** The elbow of an arm akimbo: out to the side and a little below the shoulder, so the mitten on the hip reads as hands-on-hips. */
+const akimbo=(m,side)=>[side*(m.shoulderX+m.upper*.72),m.shoulderY-m.upper*.62,.02];
+/** A mitten laid on the front of the torso, on `side` of the middle (+1 the body's left) at height t up it, as animate.js's
+ *  onFront lays one: the body's own surface, the mitten's thickness out from it. For arms folded across the chest. */
+const onTorso=(m,vol,side,t,off=.9)=>{const p=vol.surf(side*.3,t);return p.addScaledVector(vol.normal(p),m.hand*off).toArray();};
 /** Both hands where `reach` put them. */
 const both=(P,A,w)=>{if(A.R)P.armTo('R',A.R,w,A.handR);if(A.L)P.armTo('L',A.L,w,A.handL);};
 
@@ -117,8 +125,11 @@ export const FUN_POSES=Object.freeze({
   play(P){const {w,t}=P;both(P,P.reach(),w);P.toward('chest',-.12,0,0,w);P.add('head',-.12*w+Math.sin(t*31)*.004*w);kneesIn(P,w,.24,.06);}}),
  Facepalm:Object.freeze({label:'Facepalm',face:'dry',d:2.6,ramp:.8,
   use:'Someone has done something silly (or you have): one mitten over the eyes, the head bowed into it, the other on the hip.',
-  reach:{hair:true,head:[.26,0,-.1],only:'R',R:{cover:true,head:[-.12,.18,1,.035],seed:[-1.55,.72,-.72,-1.9,0],hand:[0,0,0]}},
-  play(P){const {w}=P;both(P,P.reach(),w);handOnHip(P,w);P.toward('chest',.1,0,0,w);P.add('head',.26*w,0,-.1*w);}}),
+  // (pose: the body as play() stands it, which a mitten laid `on` the body is solved against)
+  reach:{pose:()=>({chest:[.1,0,0],thighL:[0,0,.12]}),hair:true,head:[.26,0,-.1],R:{cover:true,head:[-.12,.18,1,.035],seed:[-1.55,.72,-.72,-1.9,0],hand:[0,0,0]},
+   L:{touch:true,on:['hips',(m,v)=>onHip(m,v,1)],elbow:m=>akimbo(m,1),seed:[.15,0,-.75,-.3,0],hand:[0,0,0]}},
+  // (the leg under the hip mitten set a little out, as HandsOnHips stands)
+  play(P){const {w}=P;both(P,P.reach(),w);P.toward('thighL',0,0,.12,w);P.toward('chest',.1,0,0,w);P.add('head',.26*w,0,-.1*w);}}),
  OhNo:Object.freeze({label:'Oh no!',face:'shock',d:2.6,ramp:.8,
   use:'Disaster: both mittens clapped to the head, the elbows out, crouching a little: it has all gone wrong.',
   reach:{hair:true,head:[.1,0,0],R:{cover:.015,head:[-.7,.62,.12,.03],seed:[-2.4,.3,-.9,-1.4,0],hand:[0,0,0]}},
@@ -136,7 +147,8 @@ export const FUN_POSES=Object.freeze({
   reach:{hair:true,head:[-.05,0,0],only:'R',R:{cover:true,head:[-.6,.42,.62,.03],elbow:m=>[-(m.shoulderX+m.upper*.85),m.shoulderY,m.depth*.25],seed:[-1.1,.3,-1.3,-2.2,0],hand:[0,-1.3,0]}},
   play(P){const {w}=P;both(P,P.reach(),w);P.toward('chest',-.05,0,0,w);P.add('head',-.05*w);
    for(const s of ['L','R']){P.toward('thigh'+s,0,0,0,w);P.toward('knee'+s,0,0,0,w);P.toward('foot'+s,0,0,0,w);}}}),
- Swoon:Object.freeze({label:'Swoon',face:'daze',d:3,ramp:.8,
+ // (ramp .9: the mitten's way to the brow is the longest of these moves; at .8 a slim teen's shoulder turned faster than a frame allows)
+ Swoon:Object.freeze({label:'Swoon',face:'daze',d:3,ramp:.9,
   use:'The dramatic swoon (oh my!): the back of a mitten to the brow, leaning back, the other arm flung out behind.',
   reach:{hair:true,head:[-.26,0,.14],only:'R',R:{cover:true,head:[-.25,.48,.85,.045],seed:[-2,.6,-.9,-1.9,0],hand:[0,1.6,0]}},
   play(P){const {w}=P;both(P,P.reach(),w);P.toward('shoulderL',.5,0,1.1,w);P.toward('elbowL',-.25,0,0,w);P.toward('chest',-.22,0,.06,w);P.add('head',-.26*w,0,.14*w);
@@ -187,4 +199,41 @@ export const FUN_POSES=Object.freeze({
    P.toward('chest',.36,0,0,w);P.add('neck',-.14*w);P.add('head',-.1*w,.42*w,0);
    P.toward('thighL',-.8-bob,0,.04,w);P.toward('kneeL',1.1,0,0,w);P.toward('footL',.5,0,-.04,w);
    P.toward('thighR',-.2+bob,0,-.04,w);P.toward('kneeR',.95,0,0,w);P.toward('footR',.55,0,.04,w);}}),
+ // Tempers (the creator, 2026-10-19: "pissed off and raging angry is funny, make some more of those; whatever fits Crayon
+ // Shin-chan's world in expressions"): comedy anger of the Nohara-household kind, the mother before the bonk and the boy
+ // in a sulk, never a threat to anyone. Faces: face.js raging, seething, eyeroll (new), fuming, angry, pouting.
+ Fume:Object.freeze({label:'Fume',face:'raging',d:2.8,ramp:.6,
+  use:'The all-out yell: leaning in, the fists clenched down and back, the feet planted; the last straw has gone.',
+  play(P){const {w,t}=P,shake=Math.sin(t*22)*.025*w;
+   P.armTo('R',[.42,0,-.32,-.35],w,[-.35,0,0]);P.armTo('L',[.42,0,-.32,-.35],w,[-.35,0,0]);
+   P.toward('chest',.22+shake,0,0,w);P.add('neck',.08*w);P.add('head',.1*w);
+   P.toward('thighL',0,0,.14,w);P.toward('thighR',0,0,-.14,w);}}),
+ ShakeFists:Object.freeze({label:'Shake fists',face:'fuming',d:2.8,ramp:.6,
+  use:'Beside oneself: both fists shaking by the ears, the teeth gritted, the head down; what a mother does before the bonk.',
+  play(P){const {w,t}=P,shake=Math.sin(t*20)*.08*w;
+   P.armTo('R',[-.45,0,-1.25,0],w);P.armTo('L',[-.45,0,-1.25,0],w);P.toward('elbowR',0,0,-2.15+shake,w);P.toward('elbowL',0,0,2.15-shake,w);
+   P.toward('chest',.14,0,0,w);P.add('head',.18*w);P.toward('thighL',0,0,.1,w);P.toward('thighR',0,0,-.1,w);}}),
+ Scold:Object.freeze({label:'Scold',face:'angry',d:2.8,ramp:.6,
+  use:'Telling someone off: a finger pointed in their face, the other mitten on the hip, leaning at them.',
+  reach:{pose:()=>({chest:[.14,0,0],thighL:[0,0,.12]}),hair:true,head:[.1,0,0],only:'L',
+   L:{touch:true,on:['hips',(m,v)=>onHip(m,v,1)],elbow:m=>akimbo(m,1),seed:[.15,0,-.75,-.3,0],hand:[0,0,0]}},
+  play(P){const {w,t}=P,jab=Math.max(0,Math.sin(t*6))*.12*w;
+   both(P,P.reach(),w);P.armTo('R',[-1.6+jab,.2,-.1,-.05],w);P.toward('chest',.14,0,0,w);P.add('head',.1*w);P.toward('thighL',0,0,.12,w);}}),
+ // (ramp .8: folding both arms across the chest is a long way for a round body's shoulder; at .6 it turned faster than a frame allows)
+ Huff:Object.freeze({label:'Huff',face:'pouting',d:Infinity,ramp:.8,
+  use:'Not talking to you: the arms folded, the cheeks puffed, the head turned away; a sulk that wants to be noticed.',
+  reach:{pose:()=>({chest:[-.04,0,0]}),R:{touch:true,on:['spine',(m,v)=>onTorso(m,v,1,.72)],seed:[-.6,.3,.35,-2.1,0],hand:[0,0,0]},
+   L:{touch:true,on:['spine',(m,v)=>onTorso(m,v,-1,.62)],seed:[-.6,.3,.35,-2.1,0],hand:[0,0,0]}},
+  play(P){const {w}=P;both(P,P.reach(),w);P.toward('chest',-.04,0,0,w);P.add('head',-.06*w,.45*w,.05*w);P.toward('thighL',0,0,.08,w);}}),
+ Eyeroll:Object.freeze({label:'Eye-roll',face:'eyeroll',d:2.8,ramp:.6,
+  use:'Give me a break: a shrug with the palms up, the head tipped, the eyes gone to the ceiling.',
+  play(P){const {w}=P;P.armTo('R',[-.3,0,-.6,-1.35],w,[0,0,.4]);P.armTo('L',[-.3,0,-.6,-1.35],w,[0,0,.4]);
+   P.toward('chest',-.08,0,0,w);P.add('head',-.14*w,0,.16*w);P.toward('thighR',0,0,-.1,w);}}),
+ Seethe:Object.freeze({label:'Seethe',face:'seething',d:Infinity,ramp:.6,
+  use:'Holding it in: standing stiff and straight, the fists tight at the sides, the shoulders up, a smile that fools nobody.',
+  play(P){const {w,t}=P,tremble=Math.sin(t*30)*.012*w;
+   // (the arms a hand's width out from the sides: straight down they press into a round body)
+   P.armTo('R',[.08,0,-.26,-.08],w,[-.5,0,0]);P.armTo('L',[.08,0,-.26,-.08],w,[-.5,0,0]);
+   P.toward('chest',-.06+tremble,0,0,w);P.add('head',.06*w,0,tremble);
+   for(const s of ['L','R']){P.toward('thigh'+s,0,0,0,w);P.toward('knee'+s,0,0,0,w);}}}),
 });

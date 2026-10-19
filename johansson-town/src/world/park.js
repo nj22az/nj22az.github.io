@@ -10,15 +10,12 @@ import {lanternGlow} from '../render/dusk.js';
 import {paintedTurf,paintedPaving} from '../render/toy-surfaces.js';
 import {createKit} from './okinawa/kit.js';
 import {hibiscus} from './okinawa/houses.js';
-import {broadleafGeometry} from './okinawa/trees.js';
+import {coralSand,poster} from './okinawa/signs.js';
+import {buildCherryTree} from './cherry-tree.js';
 import {GROUND_LAYER} from './ground-layers.js';
-import {townCalendarAt} from '../town-clock.js';
-import {poster} from './okinawa/signs.js';
 export const PARK_TREE=Object.freeze([(HARBOUR_CHERRY[0]-PARK.x)/PARK.scale,(HARBOUR_CHERRY[1]-PARK.z)/PARK.scale]);
 const LAMP_POSITIONS=Object.freeze([[7.8,-26.8],[17.7,-34.9],[29.8,-13.4]]);
 export const PARK_LAMPS=Object.freeze(LAMP_POSITIONS.map(([x,z])=>[(x-PARK.x)/PARK.scale,(z-PARK.z)/PARK.scale]));
-const BLOSSOM={light:0xf7b8cf,mid:0xe98fb2,core:0xb4587f,bark:0x5a4030};
-const LEAF={light:0x6cb544,mid:0x48a23a,core:0x1f5226,bark:0x5a4030};
 let benchSource=null,benchPending=null;
 /** Small original Blender prop; the lawn/tree remain the town's procedural geometry. */
 export function preloadPark(){
@@ -76,7 +73,12 @@ function parkWalks(group){
  for(const [surface,pieces] of bySurface){
   const geometry=mergeGeometries(pieces,false),p=geometry.attributes.position,uv=geometry.attributes.uv;
   for(let i=0;i<p.count;i++)uv.setXY(i,p.getX(i)/3,p.getZ(i)/3);
-  const mesh=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({color:surface==='gravel'?0xb7a98a:PARK_PATH_TINT,map:paintedPaving(),roughness:.95,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}));
+  // One family of paving in the park: the warm stone walks, and the pond circuit in the same warm tone as raked
+  // coral gravel rather than a second brick. The stone is drawn over the gravel where they meet (the junction at the
+  // pond's south-west corner flickered: two coplanar layers with the same offset).
+  const gravel=surface==='gravel';let map=paintedPaving();
+  if(gravel&&typeof document!=='undefined'&&document.createElement)try{map=coralSand();}catch{}
+  const mesh=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({color:gravel?0xd2c39d:PARK_PATH_TINT,map,roughness:.95,polygonOffset:true,polygonOffsetFactor:gravel?-1:-2,polygonOffsetUnits:gravel?-1:-2}));
   mesh.name='Harbour Park '+surface+' walks';mesh.receiveShadow=true;group.add(mesh);pieces.forEach(g=>g.dispose());
  }
 }
@@ -104,11 +106,11 @@ export function buildPark(world,options={}){
  world.colliders.push({id:second.id,x:second.x,z:second.z,w:2.08,d:.52,height:.99,park:true});
  const pondBench=anchor(...second.stand,'Sit beside the garden pond','seat','Garden pond bench','The pond reflects the cherry and the bathhouse roof. The shore walk remains open beside you.');
  pondBench.userData.seat={position:[second.x,0,second.z+.08],stand:[second.stand[0],0,second.stand[1]],surfaceY:seatY,eyeY:1.21,yaw:second.yaw,pitch:0};
- const [tx,tz]=HARBOUR_CHERRY,treeMaterial=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.85});
- const trees={blossom:new THREE.Mesh(broadleafGeometry({greens:BLOSSOM,variant:2}),treeMaterial),leaf:new THREE.Mesh(broadleafGeometry({greens:LEAF,variant:2}),treeMaterial)};
- for(const [key,tree] of Object.entries(trees)){tree.name='Harbour Park cherry '+key;tree.position.set(tx,0,tz);tree.scale.set(6.4,6.2,6.4);tree.rotation.y=.6;tree.castShadow=shadows;tree.receiveShadow=true;group.add(tree);}
+ // The harbour cherry is a kanhizakura: green in October, in flower late January to February (cherry-tree.js).
+ const [tx,tz]=HARBOUR_CHERRY,cherry=buildCherryTree({scale:6.2,shadows});cherry.group.position.set(tx,0,tz);cherry.group.rotation.y=.6;group.add(cherry.group);
+ const trees={blossom:cherry.meshes.blossom,leaf:cherry.meshes.leaf,cherry};
  world.colliders.push({id:'harbour-cherry',x:tx,z:tz,w:.48,d:.48,height:6.2,park:true});
- const dress=minutes=>{const bloom=townCalendarAt(minutes).date.getMonth()<=1;trees.blossom.visible=bloom;trees.leaf.visible=!bloom;};dress(0);
+ const dress=minutes=>cherry.dress(minutes);dress(0);
  for(const [x,z] of LAMP_POSITIONS){kit.cyl(.07,.1,.16,x,.08,z,0x8a8979,{segments:8});kit.cyl(.04,.05,2.55,x,1.4,z,0x35584c,{segments:8});kit.sphere(.16,x,2.77,z,0xfff4dc,{finish:'lamp'});world.colliders.push({id:'park-lamp',x,z,w:.2,d:.2,height:2.93,park:true});}
  // Low planting stays outside the view from Sakura and every walking strip.
  for(const [x,z,seed] of [[6.3,-33.8,3],[14.4,-31.2,5],[28.5,-12.9,8]])kit.at(x,z,0,()=>hibiscus(kit,0,0,{seed,size:.5}));
@@ -119,14 +121,37 @@ export function buildPark(world,options={}){
  kit.box(.08,1.3,.08,6.1,.65,-23.4,0x68563e);kit.sign(poster({title:'Minato Harbour Park',lines:['MINATO HARBOUR PARK','Umi-no-yu · pond · beach'],band:'#355d46',bg:'#eee5cc'}),1.6,.65,6.1,1.24,-23.4,{ry:-Math.PI/2,name:'Minato Harbour Park board',both:true});
  world.colliders.push({id:'park-board-post',x:6.1,z:-23.4,w:.1,d:.1,height:1.6,park:true});
  anchor(5.3,-23.4,'Read the Harbour Park guide','read','Minato Harbour Park','Umi-no-yu faces Sakura across this open park. Follow the broad paving to the bathhouse, the gravel circuit around the pond, or the shore walk to the beach ramp. Rainflower Florist is at the street entrance; Nakamura serves zenzai and Blue Coral ice cream next door.');
+ pondEdge(kit,HARBOUR_POND);
  const {materials}=kit.finish(group,'Harbour Park furnishings');
  const p=HARBOUR_POND,water=new THREE.Mesh(new THREE.CircleGeometry(1,64),new THREE.MeshStandardMaterial({color:0x587f76,roughness:.25,transparent:true,opacity:.88,depthWrite:false}));water.rotation.x=-Math.PI/2;water.scale.set(p.rx,p.rz,1);water.position.set(p.x,p.waterY,p.z);water.name='Harbour Park koi pond';group.add(water);
  const basin=new THREE.Mesh(new THREE.CircleGeometry(1,64),new THREE.MeshStandardMaterial({color:0x586455,roughness:1}));basin.rotation.x=-Math.PI/2;basin.scale.set(p.rx,p.rz,1);basin.position.set(p.x,p.bedY+.012,p.z);basin.name='Harbour pond bed';group.add(basin);
  const pondView=anchor(21.7,-31,'Look into the garden pond','inspect','Garden pond','Koi turn beneath the water. The one garden pond sits inside Harbour Park, with a clear gravel circuit, a quiet bench and Umi-no-yu beyond.');pondView.name='harbour-pond-view';
- for(const [x,z,r] of [[23.5,-31.5,.45],[27.8,-29.7,.35],[27.8,-32.5,.28]]){const rock=new THREE.Mesh(new THREE.DodecahedronGeometry(r,0),new THREE.MeshStandardMaterial({color:0x8a8b7b,roughness:1}));rock.scale.set(1.1,.7,.85);rock.position.set(x,-.04,z);rock.name='Harbour pond stone';group.add(rock);}
  const fish=[];for(let i=0;i<5;i++){const koi=new THREE.Mesh(new THREE.SphereGeometry(.1,8,6),new THREE.MeshStandardMaterial({color:i%2?0xdc9861:0xe4debc,roughness:.5}));koi.name='Harbour pond koi';koi.scale.set(.6,.45,2.2);koi.userData.dynamicProp=true;group.add(koi);fish.push(koi);}
  const pools=createLightPools(world.group,LAMP_POSITIONS.map(([x,z])=>({x,z,y:0,radius:2.5})));
  (world.hourly||(world.hourly=[])).push(minutes=>{const glow=lanternGlow(minutes);pools.update(glow);if(materials.lamp)materials.lamp.emissiveIntensity=.1+glow*1.6;dress(minutes);});
  world.park={group,bench,seat:PARK_BENCH,pondBench,loaded:true,pools,trees,fish,benchObject,benchSource:benchSource?'blender':'procedural',benchDimensions:benchGeometry.dimensions,update(time=0){fish.forEach((k,i)=>{const a=time*.08+i;k.position.set(p.x+Math.cos(a)*(1.2+i*.2),p.waterY-.07,p.z+Math.sin(a)*(.65+i*.12));k.rotation.y=-a;});}};
  world.park.update();return world.park;
+}
+
+/**
+ * The pond's edge: a ring of flat stones set into the turf, as a garden pond is laid, so the water no longer meets
+ * the grass in a drawn line; and two clumps of reeds where the water is shallowest, at the ends of the oval. Laid
+ * into the park's kit, so they share its draws. The stones are low enough to step on; the reeds are walked through
+ * (their blades are too steep to stand on, walk-surface.js).
+ */
+export function pondEdge(kit,p){
+ const tints=[0x9a9784,0xa8a491,0x8c8a79,0xb3ad98],count=30,I=new THREE.Matrix4();
+ for(let i=0;i<count;i++){
+  const a=i/count*Math.PI*2,w=.42+((i*7)%5)*.05,x=p.x+Math.cos(a)*(p.rx+.1),z=p.z+Math.sin(a)*(p.rz+.1);
+  const g=new THREE.DodecahedronGeometry(1,0);g.scale(w,.12,w*.62);g.rotateY(-a+((i*13)%7)*.05);g.translate(x,GROUND_LAYER.grass+.03,z);kit.add(g,I,tints[i%tints.length]);g.dispose();
+ }
+ const blade=new THREE.ConeGeometry(.025,1,3,1,true).translate(0,.5,0);
+ for(const [cx,cz,n] of [[p.x+p.rx-.55,p.z-.35,16],[p.x-p.rx+.6,p.z+.5,12]])for(let k=0;k<n;k++){
+  const a=k*2.4,r=.08+(k%4)*.06,h=.55+((k*5)%7)*.07,lean=((k*3)%5-2)*.06;
+  const g=blade.clone().scale(1,h,1).rotateZ(lean).rotateX(lean*.6).translate(cx+Math.cos(a)*r,p.waterY,cz+Math.sin(a)*r);kit.add(g,I,k%3?0x6f8f45:0x8a9a52);g.dispose();
+  if(k%5===0)kit.cyl(.03,.03,.14,cx+Math.cos(a)*r+lean*h,p.waterY+h*.92,cz+Math.sin(a)*r,0x6a4a2c,{segments:5});
+ }
+ blade.dispose();
+ // The three big stones in the water, where the koi shelter.
+ for(const [x,z,r] of [[23.5,-31.5,.45],[27.8,-29.7,.35],[27.8,-32.5,.28]]){const g=new THREE.DodecahedronGeometry(r,0);g.scale(1.1,.7,.85);g.translate(x,-.04,z);kit.add(g,I,0x8a8b7b);g.dispose();}
 }

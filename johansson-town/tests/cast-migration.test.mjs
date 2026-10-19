@@ -6,7 +6,7 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {migrateCast,migrateThuan,migrateHousing,castKey,CAST_REVISION,readSave,writeSave,SAVE_KEY} from '../src/save.js';
 import {RETIRED_HOMES,RETIRED,CORE,identityOf} from '../src/people/roster.js';
-import {CAST_NAMES} from '../src/people/cast.js';
+import {CAST_NAMES,liveNameFor} from '../src/people/cast.js';
 
 installDOM();globalThis.self=globalThis;
 function store(){
@@ -27,13 +27,15 @@ test('the migration is versioned and idempotent: a second pass changes nothing, 
 
 test('old names move to the live identity; a record already under the live name wins; strangers are left alone',()=>{
  assert.equal(castKey('Yonamine-sensei'),'Miss Higa');assert.equal(castKey('Mrs Higa'),'Miss Higa');assert.equal(castKey('Nakamura Mai'),'Mai');assert.equal(castKey('Kenji'),'Chin');
- assert.equal(castKey('mac'),'Mr Nakandakari');assert.equal(castKey('jack'),'Harbour master');assert.equal(castKey('fuji'),'Mr Fujita');
- // In phase 1 the live names are the current ones, so nothing that walks today moves.
+ assert.equal(castKey('mac'),'Mac');assert.equal(castKey('Mr Nakandakari'),'Mac');assert.equal(castKey('jack'),'Harbour master');assert.equal(castKey('fuji'),'Mr Fujita');
+ // The live names are the current ones, so nothing that walks today moves.
  for(const name of CAST_NAMES)assert.equal(castKey(name),name,name);
  for(const p of RETIRED)assert.equal(castKey(p.name),p.name,p.name+' still has a body');
- for(const p of CORE)assert.equal(castKey(p.id),identityOf(p.id).avatar,p.id+' resolves to the body drawn today');
+ for(const p of CORE)assert.equal(castKey(p.id),liveNameFor(p.id),p.id+' resolves to the body walking today');
+ // Phase 2 gave the supporting crew bodies, so their old job-role names move to them.
+ assert.equal(castKey('Chief officer'),'Ryo');assert.equal(castKey('Kitano line hand'),'Kai');
  // A display name that is not live yet may be somebody else's record (the old townsfolk Emi): untouched.
- for(const name of ['Fuji','Jack','Mac','Emi','Ryo','Kai','Harbour visitor','Hana','Kinjo Yui'])assert.equal(castKey(name),name,name);
+ for(const name of ['Fuji','Jack','Emi','Ryo','Kai','Harbour visitor','Hana','Kinjo Yui'])assert.equal(castKey(name),name,name);
  const saved={friendship:{'Yonamine-sensei':{points:1},'Miss Higa':{points:8}},treats:{'Nakamura Mai':2},greeted:{'Mrs Higa':3},impressions:{Kenji:'kind'},
   relationships:{'Nakamura Mai|Vy':{totals:{chat:1}},'Mrs Higa|Yonamine-sensei':{totals:{}},'Thao|Yonamine-sensei':{totals:{}}},
   bookshop:{completed:{'3:Nakamura Mai':true}},errand:{from:'Nakamura Mai',kind:'fetch'},residentLife:{'Nakamura Mai':{day:1,yen:100,activities:['Nakamura Mai is at Blue Coral.']}},

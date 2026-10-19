@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {CAST} from '../src/people/cast.js';
-import {ISLAND_HOUSEHOLDS,homeForResident} from '../src/people/island-households.js';
+import {ISLAND_HOUSEHOLDS,homeForResident,CORE_HOUSEHOLDS,SUPPORTING_QUARTERS} from '../src/people/island-households.js';
 import {residentHome} from '../src/people/home-directory.js';
 import {createBusinesses} from '../src/world/businesses.js';
 import {createTown} from '../src/world/town.js';
@@ -19,18 +19,24 @@ import {migrateHousing} from '../src/save.js';
 installDOM();globalThis.self=globalThis;
 const sites=createBusinesses(),world=createTown({scene:new THREE.Scene(),sites,mobile:true,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
 
-test('31 villagers have 23 occupied Minato primary households and one shared tropical home',()=>{
- assert.equal(CAST.length,31);
- const primaries=new Set(CAST.map(p=>p.home));assert.equal(primaries.size,24);
+test('31 villagers have 23 occupied Minato primary households and one shared tropical home; the five supporting crew have quarters, not households',()=>{
+ assert.equal(CAST.length,36);assert.equal(CAST.filter(p=>!p.supporting).length,31);
+ const core=CAST.filter(p=>!p.supporting),primaries=new Set(core.map(p=>p.home));assert.equal(primaries.size,24);
  assert.equal([...primaries].filter(id=>ISLAND_HOUSEHOLDS.find(h=>h.id===id).island==='minato').length,23);
  assert.deepEqual(CAST.filter(p=>p.home==='kitano-1').map(p=>p.name),['Johansson','Thuan']);
  assert.equal(ISLAND_HOUSEHOLDS.filter(h=>h.island==='minato'&&h.toLet).length,0);
  assert.equal(homeForResident('Grandmother Sakurai').home,'kitahama-flat-2');
+ // Quarters (island-households.js SUPPORTING_QUARTERS; roster.js QUARTERS): the two cabins aboard and the Shiroma house.
+ assert.deepEqual(SUPPORTING_QUARTERS.map(h=>h.home).sort(),['ferry-crew-cabin','ferry-officer-cabin','kitano-2']);
+ assert.deepEqual(SUPPORTING_QUARTERS.flatMap(h=>h.residents).sort(),['Aya','Jun','Kai','Ren','Ryo']);
+ assert.ok(CORE_HOUSEHOLDS.every(h=>!h.quarters&&!h.aboard),'no cabin is counted as a household');
+ for(const p of CAST.filter(p=>p.supporting))assert.ok(!CORE_HOUSEHOLDS.some(h=>h.residents.includes(p.name)),p.name+' is in no household');
 });
 
 test('all retained household targets are registered doors on land, clear at their real foot height',()=>{
  for(const id of new Set(CAST.map(p=>p.home))){
-  if(id==='kitano-1')continue;
+  // Johansson's house is the island's own; the crew's cabins are aboard the ship (their directions point at the terminal).
+  if(id==='kitano-1'||ISLAND_HOUSEHOLDS.find(h=>h.id===id).aboard)continue;
   const resident=CAST.find(p=>p.home===id),home=residentHome(resident.name,{sites,landmarks:world.landmarks}),d=home.target;
   assert.ok(sites.some(s=>s.id===d.id)||id==='fujita-houseboat'&&world.landmarks.some(s=>s.id===d.id),id+' has a registered entrance or open walkable dwelling');
   assert.equal(townBoundsBlocked(d.x,d.z,.28),false,id+' approach is on land');
@@ -93,7 +99,7 @@ test('upper-flat residents walk continuously down the real stair, reach the term
  const grid=createColliderGrid(world.colliders),blocked=(x,z,r=.3)=>townBoundsBlocked(x,z,r)||grid.some(x,z,r,c=>standingHitsRect(x,z,r,groundHeight(x,z),c));
  const neighbours=createNeighbours({parent:world.group,blocked,register(o){o.userData.hit={inside:false};}});
  try{
-  neighbours.update(0,0);const names=['Mr Nakandakari','Ms Ganaha'];
+  neighbours.update(0,0);const names=['Mac','Ms Ganaha'];
   for(const clock of [600,23*60]){
    const targets=new Map(names.map(name=>[name,canonicalDay(name,clock).target]));
    let arrived=false;
