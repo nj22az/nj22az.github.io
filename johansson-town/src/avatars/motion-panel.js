@@ -7,7 +7,7 @@ export function createMotionPanel({onLoad,onPlay,onStop,onExport,onImport}){
  const summary=document.createElement('summary');summary.textContent='Body animation';summary.style.cssText='cursor:pointer;min-height:44px;display:flex;align-items:center;padding:0 12px;background:#fffffff2;border:1px solid var(--line-border,#d5c6ac);border-radius:10px;box-sizing:border-box';root.append(summary);
  const body=document.createElement('div');body.style.cssText='display:none;position:absolute;right:0;bottom:calc(100% + 6px);width:min(270px,calc(100vw - 48px));max-height:min(340px,45dvh);overflow:auto;gap:8px;padding:12px;background:#fff;border:1px solid var(--line-border,#d5c6ac);border-radius:12px;box-shadow:0 6px 24px #20344422;box-sizing:border-box';root.append(body);
  root.ontoggle=()=>{body.style.display=root.open?'grid':'none';if(root.open)body.style.maxHeight=Math.max(100,Math.min(340,root.parentElement.clientHeight-64))+'px';};
- root.addEventListener('keydown',e=>{if(e.key==='Escape'){root.open=false;summary.focus();}});
+ root.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();root.open=false;summary.focus();}});
  const closeOutside=e=>{if(!root.contains(e.target))root.open=false;};document.addEventListener('pointerdown',closeOutside);
  const status=document.createElement('p');status.className='shm-note';status.setAttribute('role','status');
  const hint=document.createElement('p');hint.className='shm-note';hint.textContent='Try a wave or open a Johansson motion or animated GLB. Motion plays in place and keeps your character’s proportions.';
