@@ -43,7 +43,9 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
   const standing=getStandingVisit(p,clock);if(standing)return {position:standing,stand:standing,yaw:0,managed:true};
   // The clerk walks to the approach behind the counter and steps forward to the till (sakura-queue.js: 0.75 m behind
   // the counter's front, nearer than a clerk-sized clearance circle is routed).
-  if(place==='market'&&name===sakuraClerkAt(clock))return {position:layout?.staff||STORE_CLERK_POSITION,stand:layout?.staffApproach||layout?.staff||STORE_CLERK_POSITION,yaw:layout?.staffYaw??Math.PI,staff:true};
+  // `body`: a clerk already at work (a save made in her shift) is found at the till, which only her body, not the
+  // routed clearance circle, has to be clear for; she does not walk in from the door again.
+  if(place==='market'&&name===sakuraClerkAt(clock))return {position:layout?.staff||STORE_CLERK_POSITION,stand:layout?.staffApproach||layout?.staff||STORE_CLERK_POSITION,yaw:layout?.staffYaw??Math.PI,staff:true,body:layout?.staffBody};
   if(place==='market'&&layout?.guestStands){
    // A finished errand can still be followed by an evening browse. These are
    // standing places in the actual shop, never the older store's removed chairs.
@@ -101,8 +103,9 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
     const seat=seatFor(p);if(!seat)continue;
     const settled=g.userData.indoors===place&&!g.userData.justArrived,radius=radiusFor(p);
     let at=settled||seat.managed?seat.position:entrance;
-    if(validateSpawn&&(collides(at[0],at[2],radius)||isOccupied(at[0],at[2],radius,p)))at=entrance;
-    if(validateSpawn&&(collides(at[0],at[2],radius)||isOccupied(at[0],at[2],radius,p)))continue;
+    const fits=point=>{const r=point===seat.position&&seat.body?seat.body:radius;return !collides(point[0],point[2],r)&&!isOccupied(point[0],point[2],r,p);};
+    if(validateSpawn&&!fits(at))at=entrance;
+    if(validateSpawn&&!fits(at))continue;
     const atSeat=at===seat.position;
     walkers.get(p)?.walker.clear();walkers.delete(p);onBorrow(p,minutes);saved={parent:g.parent,rotation:g.quaternion.clone(),inside:g.userData.hit.inside,seat,index:seat.index,phase:seat.managed||settled&&atSeat?'seated':'arriving',blend:settled&&atSeat?1:0};borrowed.set(p,saved);parent.add(g);
     // Face the path we will walk. Using seat.yaw at the door made visitors moonwalk

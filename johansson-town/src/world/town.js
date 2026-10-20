@@ -360,9 +360,10 @@ export function createTown(options){
   }});
   // The quay's upper surface receives the same detailed concrete as its walls.
   const surfaces=createMaterials({mobile:options.mobile,anisotropy:options.maxAnisotropy});
-  // The deck runs from the pier head to the quay's own edge and no further: its last
-  // third of a metre lies under the quay slab, which is the surface you walk on there.
-  const deckFrom=OUTER_PIER.z-OUTER_PIER.length/2,deckTo=QUAY_SOUTH;
+  // The deck runs from the pier head to the end of the pier's block, a third of a metre past the quay's edge
+  // (QUAY_SOUTH): the quay's kerb is cut away across the pier's root (harbour.js), so that last strip is walked on and
+  // seen, and the deck covers it rather than leaving the block's top a step below it.
+  const deckFrom=OUTER_PIER.z-OUTER_PIER.length/2,deckTo=Math.max(QUAY_SOUTH,OUTER_PIER.z+OUTER_PIER.length/2);
   const pierSurface=new THREE.Mesh(new THREE.PlaneGeometry(OUTER_PIER.width-.5,deckTo-deckFrom),surfaces.worldMaterial('concrete',GROUND.concrete,2));
   pierSurface.name='pier-concrete-surface';pierSurface.rotation.x=-Math.PI/2; pierSurface.position.set(OUTER_PIER.x,OUTER_PIER.height,(deckFrom+deckTo)/2);pierSurface.receiveShadow=true;world.group.add(pierSurface);
   // Every kit building's window glass and lamps follow the clock, not only the quarters':

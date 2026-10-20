@@ -10,7 +10,7 @@ import {WEST_SHOPS,buildWestShop} from './west-shops.js';
 import {buildIslandCoast} from './island-coast.js';
 import {buildBoardwalk} from './boardwalk.js?snappy=1';
 import {buildWarehouse} from './warehouse.js';
-import {BOARDWALK,BREAKWATER} from './layout.js?snappy=1';
+import {BOARDWALK,BREAKWATER,OUTER_PIER} from './layout.js?snappy=1';
 import {MINATO_BERTH,QUAY_FISHING_BOAT} from './minato-berth.js';
 import {MAIN_ROAD,MAIN_SERVICE_COURT,MAIN_LOADING_APRON,MAIN_PARKING_LAYBY,SHOP_CROSSING_Z} from './main-road.js';
 import {edgeLines,zebraCrossing,tactileStrip,roadSign,roadEndPosts,roadPaintMaterial} from './road-standards.js';
@@ -283,9 +283,13 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
    const slab=(x0,x1,z0,z1,t=top)=>box([x1-x0,t-foot,z1-z0],[(x0+x1)/2,(t+foot)/2,(z0+z1)/2],GROUND.concrete,[0,0,0],'wall');
    slab(Q.minX,L.minX,Q.minZ,Q.maxZ);slab(L.maxX,Q.maxX,Q.minZ,Q.maxZ);slab(L.minX,L.maxX,L.maxZ,Q.maxZ);
    slab(L.minX,L.flapMinX,L.flapFromZ,L.maxZ);slab(L.minX,L.maxX,Q.minZ,L.maxZ,L.top-L.thickness);
-   // The raised coping and kerb along the edge, cut away where the ramp lands.
+   // The raised coping and kerb along the edge, cut away where the ramp lands and where the outer pier joins the quay
+   // (out to the pier's flank copings, town.js): its deck runs on to the quay there, the way the passengers off the boat,
+   // the pallet truck and everybody walking to the gangway go. Across the pier's root the kerb stood 24 cm above the
+   // quay, a step no walker takes (navmesh.js), and Thuan off the 08:30 boat had no way into town.
    // The kerb is concrete with its top painted safety yellow, as on the Nishi and east quays (a dark slab before).
-   for(const [a,b] of [[Q.minX,L.minX],[L.maxX,Q.maxX]]){box([b-a,.6,.65],[(a+b)/2,-.12,-49.65],0x596568);box([b-a,.14,.55],[(a+b)/2,.17,-49.28],0x8f938c);box([b-a,.04,.55],[(a+b)/2,.26,-49.28],0xe0b93a);}
+   const pierWest=OUTER_PIER.x-OUTER_PIER.width/2-.17,pierEast=OUTER_PIER.x+OUTER_PIER.width/2+.17;
+   for(const [a,b] of [[Q.minX,L.minX],[L.maxX,pierWest],[pierEast,Q.maxX]]){box([b-a,.6,.65],[(a+b)/2,-.12,-49.65],0x596568);box([b-a,.14,.55],[(a+b)/2,.17,-49.28],0x8f938c);box([b-a,.04,.55],[(a+b)/2,.26,-49.28],0xe0b93a);}
    // The plate, its top flush with the concrete: full width where the leaf touches down, narrower
    // under the flap, and a steel angle armouring the quay's edge in front of it.
    const plate=(x0,x1,z0,z1,c=0x5e6566)=>box([x1-x0,L.thickness,z1-z0],[(x0+x1)/2,L.top-L.thickness/2,(z0+z1)/2],c);
