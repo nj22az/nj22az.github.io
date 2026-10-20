@@ -1,3 +1,4 @@
+import {filmStaging} from './film-staging.mjs';
 import {KNOWN_EXPRESSIONS,KNOWN_POSES} from './scene-catalogue.mjs';
 import {createActingPanel} from './acting/panel.js?v=20261016-1';
 import {sampleTake,normalizeTake} from './acting/takes.mjs';
@@ -18,7 +19,7 @@ import {pickMoment,applyMoment,aim} from './scene-moments.mjs?v=20261011-2';
 import {POSE_GROUPS,EXPRESSION_GROUPS,seatedPose} from './scene-catalogue.mjs';
 import {turnToward,touchAngle,twistTurn,nudgeStep,placeToolbar,pickBox,nearestSeat} from './scene-controls.mjs?v=20261011-2';
 import {SNAP,resolveSnap,snapTurn,stepTurn,edgeLine,lineDistance} from './scene-snap.mjs?v=20261011-2';
-import {touchFirst,dataURLToBlob,canvasToBlob,createReadyFile,bindSaveLink,createPreview} from './studio-share.mjs';
+import {touchFirst,dataURLToBlob,canvasToBlob,createReadyFile,bindSaveLink,createPreview,deliverFile} from './studio-share.mjs';
 
 const nameOf=n=>n==='Thuan'?'Thuận':n;
 const loadImage=url=>new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(Error('The image could not be loaded.'));img.src=url;});
@@ -37,13 +38,14 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  let selected=state.actors[0]?.id??null,step='location',mode='scene',generation=0,pending=Promise.resolve(),valid=false,renderer;
  let liveActor=null,liveFrame=null,scenePlaying=false,sceneTime=0,playStart=0,playFrame=0,lastActDraw=0;
  const panels=[],avatars=new Map(),portraits=new Map();
+ let preparedFilm=null,exportingStaging=false;
  let lastMoment='',world=null,worldId='',views=null,townData=null,capturing=false,queue=Promise.resolve(),boxes=[],layoutStyle='grid',overlayStep='';
  const touch=touchFirst();
  // Snap into place (scene-snap.mjs): on unless this viewer turned it off. Placement history for Undo, kept in memory.
  let snapOn=true;try{snapOn=localStorage.getItem(SNAP_KEY)!=='0';}catch{}
  const history=[],standingPose=new Map();let draws=0,sliding=null,burst={id:null,at:0};
  const root=document.createElement('main');root.className='scene-workspace';root.hidden=true;
- root.innerHTML=`<div class="scene-heading"><div><h1>Build a scene</h1><p>Choose a place, add characters, then pose them and write your dialogue.</p></div><a class="scene-button" data-save="project">Download project</a><button type="button" data-action="open-project">Open project</button><input type="file" data-project-input accept=".json,application/json" hidden></div>
+ root.innerHTML=`<div class="scene-heading"><div><h1>Build a scene</h1><p>Choose a place, add characters, then pose them and write your dialogue.</p></div><a class="scene-button" data-save="project">Download project</a><button type="button" data-action="open-project">Open project</button><button type="button" data-action="prepare-film">Prepare film staging</button><button type="button" data-action="save-film" hidden>Download film staging</button><input type="file" data-project-input accept=".json,application/json" hidden></div>
  <nav class="scene-steps" aria-label="Scene building steps">
  <button type="button" data-step="location">1. Choose location</button><button type="button" data-step="characters">2. Add characters</button><button type="button" data-step="pose">3. Pose & position</button><button type="button" data-step="text">4. Add text</button><button type="button" data-step="export">5. Export</button></nav>
  <div class="scene-layout"><section class="scene-picture" aria-label="Scene preview"><div class="scene-frame"><canvas width="1200" height="900" tabindex="0" aria-label="Scene. Tap a character to select them and drag to move them."></canvas><div class="scene-selection" hidden></div>
@@ -129,7 +131,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  bindSaveLink($('[data-save="project"]'),projectFile,{say:text=>announce(text),words:{download:'Editable project'+(touch?' saved to Downloads in the Files app, including comic panels.':' downloaded, including comic panels.'),shared:'Done. If you chose Save to Files, the project is in the Files app.'}});
 
  function save(){try{localStorage.setItem(SCENE_KEY,JSON.stringify(state));}catch{announce('Browser storage is unavailable. Download a project to keep your scene.');}}
- function changed(){save();sceneFile.invalidate();pending=draw();syncSelection();}
+ function changed(){preparedFilm=null;$('[data-action="save-film"]').hidden=true;save();sceneFile.invalidate();pending=draw();syncSelection();}
  function setStep(value){if(value!=='pose'&&scenePlaying)stopCast();step=value;for(const pane of root.querySelectorAll('[data-pane]'))pane.hidden=pane.dataset.pane!==step;for(const b of root.querySelectorAll('[data-step]')){b.setAttribute('aria-current',b.dataset.step===step?'step':'false');b.onclick=()=>setStep(b.dataset.step);}const i=keys.indexOf(step);$('[data-action="previous"]').disabled=i===0;$('[data-action="next"]').hidden=i===keys.length-1;$('[data-action="next"]').textContent='Next: '+({characters:'Add characters',pose:'Pose & position',text:'Add text',export:'Export'}[keys[i+1]]||'');sync();}
 
  // ---- Pose and expression pickers: World's lists, grouped, as labelled buttons. ----
@@ -300,7 +302,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
      const behind=corners.some(c=>c.z>1||c.z<-1),xs=corners.map(c=>(c.x+1)/2),ys=corners.map(c=>(1-c.y)/2),f=p.face.clone().project(camera),edge=p.face.clone().addScaledVector(right,p.radius).project(camera),feet=p.feet.project(camera);
      return {id:p.id,visible:p.visible&&!behind,left:Math.max(0,Math.min(...xs)),right:Math.min(1,Math.max(...xs)),top:Math.max(0,Math.min(...ys)),bottom:Math.min(1,Math.max(...ys)),face:{x:(f.x+1)/2,y:(1-f.y)/2,r:Math.abs(edge.x-f.x)/2},feet:{x:(feet.x+1)/2,y:(1-feet.y)/2}};}).filter(b=>b.right>b.left&&b.bottom>b.top);
     drawPortraits(h);renderer.setViewport(0,0,w,h);
-    valid=true;canvas.setAttribute('aria-busy','false');sync();if(!scenePlaying&&!capturedFrame)save();if(token===generation&&!scenePlaying)sceneFile.schedule();
+    valid=true;canvas.setAttribute('aria-busy','false');sync();if(!scenePlaying&&!capturedFrame&&!exportingStaging)save();if(token===generation&&!scenePlaying&&!exportingStaging)sceneFile.schedule();
    }catch(e){canvas.setAttribute('aria-busy','false');announce('The 3D location could not load. Select the location again to retry.');console.error('Johansson Studio 3D scene',e);}
   });return queue;
  }
@@ -496,6 +498,14 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
   const dataURL=canvas.toDataURL('image/png'),blob=dataURLToBlob(dataURL),url=URL.createObjectURL(blob);
   panels.push({dataURL,url,file:new File([blob],'johansson-studio-panel.png',{type:'image/png'}),image:await loadImage(url)});renderPanels();announce('Panel '+panels.length+' added. Open Comic to review it, or compose the next scene.');}
   catch(e){console.warn('Johansson Studio: capture',e);announce('The panel could not be captured. Please try again.');}finally{capturing=false;}}
+ async function captureStaging(){
+  stopCast();acting.session.hold();liveFrame=null;liveActor=null;if(!await ready())throw Error('Scene is not ready.');
+  const original=state,scene=structuredClone(state),camera=world.camera,direction=camera.getWorldDirection(new THREE.Vector3()),cam={pos:camera.position.toArray(),at:camera.position.clone().add(direction).toArray(),fov:camera.fov,size:[canvas.width,canvas.height]},origin=world.origin.slice(0,3);
+  const cast=state.actors.map(a=>{const p=world.place(a);return {id:a.id,name:a.name,recipe:structuredClone(a.recipe),position:[p.x,p.y,p.z],turn:a.turn,size:a.size,pose:a.pose,expression:a.expression,seat:p.seat?{surfaceY:p.seat.surfaceY,yaw:p.seat.yaw}:null,take:a.take?structuredClone(a.take):null};});
+  const wasInert=root.inert;root.inert=true;exportingStaging=true;
+  try{state={...scene,actors:[],style:'photo',top:'',bottom:''};pending=draw();if(!await ready())throw Error('Clean plate could not render.');return filmStaging({scene,camera:cam,origin,cast,image:canvas.toDataURL('image/png')});}
+  finally{state=original;pending=draw();try{if(!await ready())throw Error('The original scene could not redraw. Its saved cast and captions are preserved.');}finally{exportingStaging=false;save();root.inert=wasInert;sceneFile.schedule();}}
+ }
  function renderPanels(){const list=$('.scene-panels');list.replaceChildren();$('[data-panel-count]').textContent=panels.length;
   panels.forEach((p,i)=>{const figure=document.createElement('figure'),img=document.createElement('img');img.src=p.url;img.alt='Comic panel '+(i+1);figure.append(img);const row=document.createElement('div');
    for(const [label,action] of [['Move earlier',()=>{panelOrder(panels,i,-1);renderPanels();}],['Move later',()=>{panelOrder(panels,i,1);renderPanels();}],['Remove',()=>removePanel(i)]]){const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=action;b.disabled=(label==='Move earlier'&&i===0)||(label==='Move later'&&i===panels.length-1);row.append(b);}
@@ -520,12 +530,14 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
   'preview':()=>preview.open({title:'Your picture',ready:sceneFile,url:sceneFile.ready||!valid?'':canvas.toDataURL('image/png'),alt:'The scene as it will be saved'}),
   'preview-comic':()=>{if(panels.length)preview.open({title:'Your comic',ready:comicFile,url:comicFile.ready?'':composeComic().toDataURL('image/png'),alt:'The comic page as it will be saved'});},
   'capture':capture,'comic':()=>onMode('comic'),'compose':()=>{onMode('scene');setStep('location');},
+  'prepare-film':async()=>{if(capturing)return;capturing=true;try{announce('Preparing a clean plate and camera/actor marks for the existing film pipeline…');preparedFilm=await captureStaging();$('[data-action="save-film"]').hidden=false;announce('Film staging ready. Download it for jojo/remotion; its collision and review gates still apply.');}finally{capturing=false;}},
+  'save-film':()=>{if(preparedFilm)return deliverFile(new File([JSON.stringify(preparedFilm)],'johansson-'+state.location+'.staging.json',{type:'application/json'}));},
   'open-project':()=>projectInput.click()
  };
  for(const b of root.querySelectorAll('[data-action]'))b.onclick=()=>{Promise.resolve(actions[b.dataset.action]()).catch(e=>{console.warn('Johansson Studio',e);announce('The action could not be completed. Your scene is still available.');});};
  if(matchMedia('(max-width: 800px)').matches)$('.scene-camera-box').open=false;
  new ResizeObserver(()=>syncSelection()).observe(frame);
  setStep('location');renderPanels();
- return {root,show(value){mode=value;root.dataset.mode=value;root.hidden=false;$('.scene-comic').hidden=value!=='comic';$('.scene-steps').hidden=value==='comic';$('.scene-controls').hidden=value==='comic';$('.scene-heading h1').textContent=value==='comic'?'Make a comic':'Build a scene';$('.scene-heading p').textContent=value==='comic'?'Add the scene you built as a panel, arrange up to four panels, then save your comic.':'Choose a place, add characters, then pose them and write your dialogue.';pending=draw();sync();},hide(){stopCast();acting.session.hold();root.hidden=true;hideToast();preview.close();},useCharacter(recipe,id){const a=state.actors.find(a=>a.id===id);if(a){a.recipe=normalizeRecipe(recipe);a.name=text(recipe.name)||a.name;selected=a.id;changed();sync();}else add(recipe);setStep('pose');},
+ return {root,captureStaging,loadScene(scene){state=normalizeScene(scene,normalizeRecipe);selected=state.actors[0]?.id??null;forget();changed();sync();},setLocation(id){if(!LOCATIONS.some(([key])=>key===id))throw Error('Unknown Studio location.');state.location=id;changed();sync();},show(value){mode=value;root.dataset.mode=value;root.hidden=false;$('.scene-comic').hidden=value!=='comic';$('.scene-steps').hidden=value==='comic';$('.scene-controls').hidden=value==='comic';$('.scene-heading h1').textContent=value==='comic'?'Make a comic':'Build a scene';$('.scene-heading p').textContent=value==='comic'?'Add the scene you built as a panel, arrange up to four panels, then save your comic.':'Choose a place, add characters, then pose them and write your dialogue.';pending=draw();sync();},hide(){stopCast();acting.session.hold();root.hidden=true;hideToast();preview.close();},useCharacter(recipe,id){const a=state.actors.find(a=>a.id===id);if(a){a.recipe=normalizeRecipe(recipe);a.name=text(recipe.name)||a.name;selected=a.id;changed();sync();}else add(recipe);setStep('pose');},
   dispose(){stopCast();acting.dispose();generation++;document.removeEventListener('keydown',onKey);hideToast();sceneFile.dispose();comicFile.dispose();for(const p of panels)URL.revokeObjectURL(p.url);preview.element.remove();for(const entry of avatars.values())clearAvatar(entry);world?.dispose();renderer?.dispose();renderer?.forceContextLoss();root.remove();}};
 }

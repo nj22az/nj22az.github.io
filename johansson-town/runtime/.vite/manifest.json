@@ -214,7 +214,7 @@
     ]
   },
   "src/boot.js": {
-    "file": "boot-Cg596qMr.js",
+    "file": "boot-9lUjy-Vi.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
@@ -230,7 +230,7 @@
     ]
   },
   "src/feed/mount.js": {
-    "file": "feed-B8L9A4Kp.js",
+    "file": "feed-Db_myeVH.js",
     "name": "feed",
     "src": "src/feed/mount.js",
     "isEntry": true,
@@ -248,7 +248,7 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-CLx5G-GO.js",
+    "file": "game-jHLJYYnG.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
@@ -295,7 +295,7 @@
     ]
   },
   "src/scene/scene-world.js": {
-    "file": "scene-world-i51qvVQz.js",
+    "file": "scene-world-BmDz5AF1.js",
     "name": "scene-world",
     "src": "src/scene/scene-world.js",
     "isDynamicEntry": true,
@@ -325,7 +325,7 @@
     ]
   },
   "src/world/interiors/sato-ramen.js": {
-    "file": "sato-ramen-BcBqsbat.js",
+    "file": "sato-ramen-BG_pz2KS.js",
     "name": "sato-ramen",
     "src": "src/world/interiors/sato-ramen.js",
     "isDynamicEntry": true,

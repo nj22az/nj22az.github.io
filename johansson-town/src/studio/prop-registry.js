@@ -14,6 +14,9 @@
  * (`turn`) is turned upright first.
  */
 const ENTRIES=[
+ {id:'ramen-drinks-stand',name:'Sato Ramen drinks stand',kind:'furniture',size:[.94,.88,.56],
+  source:'world/interiors/sato-ramen.js buildRamenDrinksStand',load:()=>import('../world/interiors/sato-ramen.js'),build:m=>m.buildRamenDrinksStand(),
+  purpose:{for:'Mrs Sato, serving coffee and cold barley tea.',why:'Supports the coffee urn, jug and cups at working height instead of leaving them in mid-air.',where:'At the east end of the ramen kitchen beside the serving pass.'},tags:['Sato Ramen','kitchen','support','drinks']},
  {id:'vending-machine',name:'Drinks machine (Johansson Vending JV-16C)',kind:'fixture',size:[1.042,1.83,.826],
   source:'world/vending.js createVendingMachine',load:()=>import('../world/vending.js'),build:m=>m.createVendingMachine({pad:false}),
   purpose:{for:'The quay crew before and after a shift, the children on the Halloween walk, and anyone on Sakura Street who wants a cold sanpin tea or a hot J-Coffee.',

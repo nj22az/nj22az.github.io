@@ -4,6 +4,10 @@
 **Make model → Import GLB** workshop. See [MODEL-WORKSHOP.md](MODEL-WORKSHOP.md) for setup, examples, surface checks,
 supported inputs and the next World-editor batches. A prepared GLB is a copy, not a published town update.
 
+**New: editable room drafts.** `room_create/open/get/edit/import_model/export/check/render` share the **Edit room**
+document and commands. See [ROOM-PROJECTS.md](ROOM-PROJECTS.md) for portable file exchange, revisions and remaining
+World integration. The animation integration reuses the existing `jojo/remotion` engine: [REMOTION-PLAN.md](REMOTION-PLAN.md). `scene_export_film` exports a clean World plate and staging; `film_pipeline_info` describes that engine. World assets/purpose and static support tools are documented in [WORLD-LIBRARY.md](WORLD-LIBRARY.md).
+
 Claude can look at the town's characters, change how they look, and add Studio characters of its own. It can also open
 Sakura Shōten's products, change their labels, words, prices, purpose and shelf, add flavours and new lines, and retire a
 line. It does this through the `johansson-studio` tools, which use the same data and drawing code as Johansson Studio on

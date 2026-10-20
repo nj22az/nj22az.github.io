@@ -37,7 +37,8 @@ export const PATHS=Object.freeze({
  brands:'johansson-town/data/studio/brand-rules.json',
  output:'output/studio-mcp',
 });
-const WRITABLE=['johansson-town/src/catalog/catalog-data.js',PATHS.looks,PATHS.products,PATHS.log,PATHS.draft,PATHS.looksModule,PATHS.charactersModule,PATHS.productsModule];
+const ROOM_PROJECT=/^johansson-town\/data\/studio\/projects\/[a-z][a-z0-9-]{0,47}\.room\.json$/;
+const WRITABLE=['johansson-town/data/studio/world-library-review.json','johansson-town/src/catalog/catalog-data.js',PATHS.looks,PATHS.products,PATHS.log,PATHS.draft,PATHS.looksModule,PATHS.charactersModule,PATHS.productsModule];
 const LABEL=/^johansson-town\/assets\/graphics\/labels\/[a-z][a-z0-9-]{1,39}\.r[1-9][0-9]{0,3}\.webp$/;
 const OUTPUT=/^output\/studio-mcp\/(?:[a-z0-9][a-z0-9._-]{0,80}\/){0,3}[a-z0-9][a-z0-9._-]{0,120}\.(png|webp|json|txt|glb|stl)$/;
 // Assets made in Studio (tools/studio/assets.mjs): held in the draft until "update World", then World's catalogue.
@@ -50,7 +51,7 @@ export function writable(path){
  if(typeof path!=='string'||path.includes('\\')||path.includes('\0'))return false;
  const clean=posix.normalize(path);
  if(clean!==path||clean.startsWith('/')||clean.split('/').some(part=>part==='..'||part==='.'||part===''))return false;
- return WRITABLE.includes(clean)||LABEL.test(clean)||DRAFT_ASSET.test(clean)||CATALOG_ASSET.test(clean)||(OUTPUT.test(clean)&&!clean.split('/').some(p=>p.startsWith('.')));
+ return WRITABLE.includes(clean)||ROOM_PROJECT.test(clean)||LABEL.test(clean)||DRAFT_ASSET.test(clean)||CATALOG_ASSET.test(clean)||(OUTPUT.test(clean)&&!clean.split('/').some(p=>p.startsWith('.')));
 }
 
 let queue=Promise.resolve();
