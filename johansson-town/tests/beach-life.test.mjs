@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {buildBeachLife,createCrab,crabGround,CRAB_ZONE,CRAB_WARY,CRAB_HIDE,FISH_WATERS} from '../src/world/beach-life.js';
-import {BEACH,BEACH_DRY_EDGE_X,beachHeight} from '../src/world/beach-layout.js';
+import {BEACH,BEACH_DRY_EDGE_X,beachHeight,gradedHeight} from '../src/world/beach-layout.js';
 import {waveHeight,SEA_LEVEL,WAVE_REACH} from '../src/world/ocean.js';
 
 const seeded=(s=7)=>()=>(s=s*1103515245+12345&0x7fffffff)/0x7fffffff;
@@ -17,7 +17,8 @@ test('crabs live on the sand the player can walk on, clear of the ramps, and sta
  for(let i=0;i<1200;i++){player.z=-30+i*.04;life.tick(1/30,player,i/30);}
  for(const c of life.crabs){
   assert.ok(c.x>=CRAB_ZONE.minX&&c.x<=CRAB_ZONE.maxX&&c.z>=CRAB_ZONE.minZ&&c.z<=CRAB_ZONE.maxZ,'A crab left the beach at '+[c.x,c.z]);
-  assert.ok(beachHeight(c.x,c.z)!=null&&Math.abs(crabGround(c.x,c.z)-beachHeight(c.x,c.z))<1e-9);
+  // On the sand as the player walks it, which is graded up where paths cross onto it (BEACH_GRADES).
+  assert.ok(beachHeight(c.x,c.z)!=null&&Math.abs(crabGround(c.x,c.z)-gradedHeight(c.x,c.z,beachHeight(c.x,c.z)))<1e-9);
  }
  assert.equal(life.crabMesh.count,life.crabs.length,'The crabs are one instanced draw');
  // The section renderer batches anything static where it first stood, and culls a
