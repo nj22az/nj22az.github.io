@@ -104,7 +104,7 @@ function paintBoards(c){
  const x=c.getContext('2d');
  // Tool board, 0..600 × 0..475 (1.2 × 0.95 m at 500 px/m): dark green, white outlines.
  x.fillStyle='#2f4a3a';x.fillRect(0,0,600,475);x.strokeStyle='#e9ecdf';x.fillStyle='#e9ecdf';x.lineWidth=3;
- SPANNERS.forEach((s,i)=>{const px=40+i*58,len=110+s*4;x.strokeRect(px-6,60,12,len);x.beginPath();x.arc(px,56,10+s*.5,0,Math.PI*2);x.stroke();x.beginPath();x.arc(px,64+len,10+s*.5,0,Math.PI*2);x.stroke();
+ SPANNERS.forEach((s,i)=>{const px=40+i*58,len=110+s*4;x.strokeRect(px-6,60,12,len);x.beginPath();x.arc(px,56,10+s*.5,0,Math.PI*2);x.stroke();x.strokeRect(px-10-s/2,54+len,20+s,20);
   x.font='bold 18px sans-serif';x.textAlign='center';x.fillText(String(s),px,34);});
  x.strokeRect(30,330,420,22);SOCKETS.forEach((s,i)=>{x.beginPath();x.arc(60+i*56,341,10+s*.6,0,Math.PI*2);x.stroke();});
  x.strokeRect(470,240,24,170);x.beginPath();x.arc(482,232,22,0,Math.PI*2);x.stroke();
@@ -192,7 +192,7 @@ export function buildChinWall({room,collider,reg,action}){
  SPANNERS.forEach((s,i)=>{if(s===MISSING)return;const px=40+i*58,len=110+s*4,[x,y,z]=at(px,60+len/2,.045),[,yt]=at(px,56),[,yb]=at(px,64+len);
   steel('Combination spanner '+s+' mm',[.008,len/500,.016+s*.0006],[x,y,z],0xc8ccc9,board);
   cyl('Spanner ring end',(10+s*.5)/500,(10+s*.5)/500,.008,[x,yt,z],0xc8ccc9,board,[0,0,Math.PI/2],12,.5);
-  box('Spanner open end',[.008,.02,(20+s)/500],[x,yb,z],0xc8ccc9,board,null,.5);});
+  box('Spanner open end',[.008,.034,(16+s)/500],[x,yb,z],0xc8ccc9,board,null,.5);});
  {const [x,y,z]=at(240,341,.045);steel('Socket rail',[.012,.04,.84],[x,y,z],0xb03a2e,board);}
  SOCKETS.forEach((s,i)=>{const [x,y,z]=at(60+i*56,341,.06);cyl('Socket '+s+' mm',(8+s*.5)/500,(8+s*.5)/500,.04,[x,y,z],0xd2d6d3,board,[0,0,Math.PI/2],12,.5);});
  {const [x,y,z]=at(482,320,.05);steel('Ratchet handle',[.012,.34,.045],[x,y,z],0x8f9592,board);const [,yh]=at(482,232);cyl('Ratchet head',.044,.044,.02,[x,yh,z],0xc8ccc9,board,[0,0,Math.PI/2],14,.5);}
@@ -224,9 +224,10 @@ export function buildChinWall({room,collider,reg,action}){
  steel('Stand cross bar',[.05,.05,.77],[transomX-.06,.2,z0],0x4f6f8a,motor);
  box('Transom board (plywood)',[.05,.38,.55],[transomX,.84,z0],0x9c7a52,motor);
  // The test tank: a blue drum of fresh water, its rolled rim, the leg standing in it.
- cyl('Test tank (blue drum)',tank.r,tank.r-.015,tank.height,[tank.x,tank.height/2,tank.z],0x2c62a8,motor,null,22);
- cyl('Tank rim',tank.r+.008,tank.r+.008,.03,[tank.x,tank.height-.015,tank.z],0x22508c,motor,null,22);
- cyl('Tank water',tank.r-.02,tank.r-.02,.01,[tank.x,tank.height-.07,tank.z],0x3a5d6a,motor,null,22);
+ // Open at the top: the water stands just under the rolled rim.
+ mesh('Test tank (blue drum)',new THREE.CylinderGeometry(tank.r,tank.r-.015,tank.height,22,1,true),flat(0x2c62a8),[tank.x,tank.height/2,tank.z],motor);
+ mesh('Tank rim',new THREE.TorusGeometry(tank.r,.012,6,22),flat(0x22508c),[tank.x,tank.height,tank.z],motor,[Math.PI/2,0,0]);
+ cyl('Tank water',tank.r-.003,tank.r-.003,.01,[tank.x,tank.height-.02,tank.z],0x3a5d6a,motor,null,22);
  // The motor: clamp bracket over the transom, swivel bracket to the midsection, the leg down into the water, the power
  // head under its rounded cowl above.
  box('Clamp bracket',[.1,.2,.17],[transomX+.05,.96,z0],0x2a2d30,motor);
@@ -249,9 +250,10 @@ export function buildChinWall({room,collider,reg,action}){
  box('Spark plugs, out',[.03,.02,.06],[transomX,1.04,z0-.2],0xc8ccc9,motor);
  // The fuel tank beside the stand, its line drooping to the motor's connector.
  box('Portable fuel tank (12 L)',[.3,.24,.22],[-3.45,.12,2.12],0xc0392b,motor);cyl('Fuel tank cap',.03,.03,.02,[-3.5,.25,2.06],0x1c1d1f,motor,null,10);
- {const pts=[new THREE.Vector3(-3.4,.24,2.17),new THREE.Vector3(-3.42,.5,2.3),new THREE.Vector3(legX-.06,1.0,z0-.1)];
+ {// Off the tank's connector, down to the floor, up beside the drum to the motor's connector.
+  const pts=[new THREE.Vector3(-3.42,.2,2.235),new THREE.Vector3(-3.48,.03,2.27),new THREE.Vector3(-3.62,.05,2.27),new THREE.Vector3(-3.64,.9,2.27),new THREE.Vector3(legX-.04,1.03,z0-.12)];
   for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],len=a.distanceTo(b),line=cyl('Fuel line',.007,.007,len,[0,0,0],0x1c1d1f,motor,null,6);line.position.copy(a).add(b).multiplyScalar(.5);line.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),b.clone().sub(a).normalize());}
-  cyl('Primer bulb',.022,.022,.07,[0,0,0],0x1c1d1f,motor,null,8).position.copy(pts[1]);}
+  cyl('Primer bulb',.022,.022,.07,[0,0,0],0x1c1d1f,motor,null,8).position.copy(pts[2]).lerp(pts[3],.4);}
  collider(...['x','z','w','d','height'].map(k=>CHIN_COLLIDERS[1][k]));
 
  // ---- The extinguisher by the door -----------------------------------------------------------------------------------
