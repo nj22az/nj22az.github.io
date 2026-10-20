@@ -1159,7 +1159,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   onExport:async motion=>{const {exportAvatarGLB}=await import('./export.js?v=20261020-motion');return exportAvatarGLB(recipe,{motion});},
   onImport:async buffer=>{const {importMotionGLB}=await import('./motion-import.js');return importMotionGLB(buffer,()=>buildAvatar(recipe,{shadows:false,faceSize:256}));}
  });
- root.querySelector('.shm-side').append(motionPanel.root);
+ side.style.position='relative';side.append(motionPanel.root);
  /** The preview's outfit list, for whoever is in the maker now (the towel is for grown-ups). */
  function fillDress(){if(!dress)return;dress.replaceChildren(...previewOutfits(recipe).map(o=>el('option',{value:o.value,textContent:o.label,disabled:o.disabled})));dress.value=wearing;}
  /** Show them in their clothes, their swimwear or the bath towel, without changing the recipe. */

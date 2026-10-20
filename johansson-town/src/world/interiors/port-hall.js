@@ -58,8 +58,9 @@ export function buildPortHall({room,reg,collider=()=>{},action,naha=()=>{},upsta
  box('Door head',[1.9,h-2.3,.08],[0,2.3+(h-2.3)/2,hd+.04],wall);
  box('Glass doors',[1.86,2.26,.04],[0,1.13,hd+.05],new THREE.MeshStandardMaterial({color:0xa9cfd8,roughness:.12,transparent:true,opacity:.5}));
  for(const x of [-.95,0,.95])box('Door frame',[.06,2.3,.1],[x,1.15,hd+.02],0xb8bec0);
- group.add(new THREE.HemisphereLight(0xf6f2e6,0x8a8478,1.05));
- const lamp=new THREE.PointLight(0xfff2dc,.9,13,2);lamp.position.set(0,h-.4,0);group.add(lamp);
+ group.add(new THREE.HemisphereLight(0xf6f2e6,0x8a8478,1.65));
+ const windowLight=new THREE.DirectionalLight(0xfff4df,1.25);windowLight.name='Soft light from the pier windows';windowLight.position.set(-4,2.6,1.5);group.add(windowLight);
+ const lamp=new THREE.PointLight(0xfff2dc,.35,13,2);lamp.position.set(0,h-.4,0);group.add(lamp);
  const tube=new THREE.MeshBasicMaterial({color:0xf6fbf4});
  for(const x of [-2.5,0,2.5])for(const z of [-1.6,1.6]){box('Light batten',[1.3,.05,.18],[x,h-.03,z],0xdedfd6);const t=new THREE.Mesh(new THREE.CylinderGeometry(.018,.018,1.2,6),tube);t.rotation.z=Math.PI/2;t.position.set(x,h-.07,z);group.add(t);}
  const finish=finishPortHall({group,w,d,h,box,panel});

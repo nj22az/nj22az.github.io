@@ -4,7 +4,7 @@ on:
     branches: [codex/studio-motion-terminal]
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 concurrency:
   group: studio-motion-terminal-${{ github.ref }}
   cancel-in-progress: true
@@ -36,6 +36,15 @@ jobs:
         run: |
           python3 -m http.server 8765 --directory .. > /tmp/studio-motion-server.log 2>&1 &
           node ../avatar-creator/tests/motion-terminal.browser.mjs
+      - name: Commit verified generated runtime on this branch
+        if: github.ref == 'refs/heads/codex/studio-motion-terminal'
+        run: |
+          if ! git diff --cached --quiet; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m 'Rebuild verified Studio and terminal runtime [skip ci]'
+            git push origin HEAD:codex/studio-motion-terminal
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:

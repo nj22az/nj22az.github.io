@@ -18,11 +18,14 @@ try{
  await page.locator('.shm-motion input[type=file]').setInputFiles({name:'wave.glb',mimeType:'model/gltf-binary',buffer:bytes});
  await page.locator('.shm-motion [role=status]').filter({hasText:'Playing'}).waitFor();
  await page.screenshot({path:new URL('studio-desktop.png',out).pathname});
- await page.setViewportSize({width:390,height:844});await page.screenshot({path:new URL('studio-phone.png',out).pathname});
+ await page.locator('.shm-motion > summary').click();
+ await page.setViewportSize({width:390,height:844});
+ const preview=await page.locator('.shm-stage > canvas').boundingBox();assert.ok(preview.height>100,'Phone controls must leave a visible character preview.');
+ await page.screenshot({path:new URL('studio-phone.png',out).pathname});
  assert.deepEqual(errors,[]);
  // Isolated native room preview. This verifies the real builder, not full-game navigation.
  const roomPage=await browser.newPage({viewport:{width:1280,height:800}}),roomErrors=[];roomPage.on('pageerror',e=>roomErrors.push(e.message));
- await roomPage.goto(base+'/');await roomPage.setContent('<style>html,body{margin:0;background:#d9d3c3;overflow:hidden}</style>');
+ await roomPage.goto(base+'/',{waitUntil:'domcontentloaded'});await roomPage.setContent('<style>html,body{margin:0;background:#d9d3c3;overflow:hidden}</style>');
  await roomPage.evaluate(async()=>{
   const THREE=await import('/johansson-town/vendor/three.module.js'),{buildPortHall}=await import('/johansson-town/src/world/interiors/port-hall.js');
   const scene=new THREE.Scene(),room=new THREE.Group();scene.add(room);const hall=buildPortHall({room,reg:(o,label,fn)=>{o.userData.hit={label,fn};},action(){}});hall.tick(1,780);
