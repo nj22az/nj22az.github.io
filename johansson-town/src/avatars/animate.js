@@ -333,7 +333,7 @@ export const EMOTION_GESTURE=Object.freeze({happy:'Hop',laugh:'Laugh',sad:'Slump
  *   talk (body-language.js). Off for the player's body, the photo studio and the maker,
  *   where somebody else says what the body does.
  */
-export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bowDepth=1}={}){
+export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bowDepth=1,initialTime}={}){
  const {bones,measure:m}=avatar;
  const groundFeet=createFootGrounder(avatar),groundLying=createLieGrounder(avatar);
  const supportSeat=createSeatSupport(avatar),findUnderside=createUndersideFinder(avatar),findSoles=createSoleFinder(avatar);
@@ -361,7 +361,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
  if(clear){current.shoulderL.z=.13+clear;current.shoulderR.z=-.13-clear;}
  const target=Object.fromEntries(JOINTS.map(j=>[j,new THREE.Vector3()]));
  const gazeLocal=new THREE.Vector3();
- let phase=0,time=Math.random()*10,rootY=0,hipsY=0,lean=0;
+ let phase=0,time=Number.isFinite(initialTime)?initialTime:Math.random()*10,rootY=0,hipsY=0,lean=0;
  let lie=0,lyingTilt=false,prone=false,floorSit=0,floorEase=0,floorSeat=null,firstUpdate=true;
  /** How much a seat (a state's seatHeight over its floorHeight) is sat on as the floor (FLOOR_SIT): 0 a chair, 1 the floor. */
  const floorWeight=st=>{if(st.seat==='Soak'||st.pose==='Soak')return 0;

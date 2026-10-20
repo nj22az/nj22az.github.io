@@ -1,6 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {kitanoRoadAt} from './kitano-link-plan.js';
 import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
+import {westShoreRail} from './west-shore.js';
 
 /**
  * The town's standard street furniture, one design each, used wherever it is needed:
@@ -16,12 +17,14 @@ import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
  * ground the town reports, and everything solid gets a collider.
  */
 
-/** Sea-wall runs as [x0,z0,x1,z1], on the lawn just inside the wall; gaps are the beach steps. */
+/** Sea-wall runs as [x0,z0,x1,z1,...] (a polyline), on the lawn just inside the wall; gaps are the beach steps. */
 export const CHAIN_RUNS=Object.freeze([
  [33.3,-37.4,33.3,-12.2],
  [33.3,-7.8,33.3,20.2],
  // Along the parapet's south return; it starts at the return's west end, by the gate into the auction apron.
 
+ // The west-shore bank north of the Nishi seawall, round its corner to the end block (west-shore.js).
+ westShoreRail(),
 ]);
 /** Planters at the corners of the crossings, on the east footway. */
 export const PLANTERS=Object.freeze([
@@ -60,16 +63,22 @@ export function buildStreetFurniture({parent,colliders=[],heightAt=()=>0,shadows
  const postGeo=new THREE.CylinderGeometry(.13,.14,.86,14),capGeo=new THREE.SphereGeometry(.13,14,8,0,Math.PI*2,0,Math.PI/2),eyeGeo=new THREE.TorusGeometry(.055,.02,6,12);
  const linkGeo=new THREE.TorusGeometry(.055,.017,5,10);linkGeo.scale(1.45,1,1);
  const posts=[],links=[];
- const existing=colliders.slice(),occupied=(x,z,r=.35)=>existing.some(c=>Math.abs(c.x-x)<(c.w||0)/2+r&&Math.abs(c.z-z)<(c.d||0)/2+r&&!/seawall/.test(c.id||''))||!!kitanoRoadAt(x,z,-r);
- for(const [x0,z0,x1,z1] of CHAIN_RUNS){
-  const len=Math.hypot(x1-x0,z1-z0),n=Math.max(1,Math.round(len/POST_SPACING)),dir=new THREE.Vector3(x1-x0,0,z1-z0).normalize();
+  // (the sea walls and the west-shore coping are what the posts stand beside, not what they would land on)
+ const existing=colliders.slice(),occupied=(x,z,r=.35)=>existing.some(c=>Math.abs(c.x-x)<(c.w||0)/2+r&&Math.abs(c.z-z)<(c.d||0)/2+r&&!/seawall|west-shore-coping/.test(c.id||''))||!!kitanoRoadAt(x,z,-r);
+ for(const run of CHAIN_RUNS){
   // A post that would land on something already there (a garden wall, a tree) is left
-  // out, and the chain stops either side of it rather than running through.
-  const pts=[];for(let i=0;i<=n;i++){const t=i/n,x=x0+(x1-x0)*t,z=z0+(z1-z0)*t;pts.push(occupied(x,z)?null:new THREE.Vector3(x,heightAt(x,z),z));}
+  // out, and the chain stops either side of it rather than running through. A run with
+  // a corner shares the corner post between its legs.
+  const pts=[];
+  for(let leg=0;leg+3<run.length;leg+=2){
+   const [x0,z0,x1,z1]=run.slice(leg,leg+4),len=Math.hypot(x1-x0,z1-z0),n=Math.max(1,Math.round(len/POST_SPACING));
+   for(let i=leg?1:0;i<=n;i++){const t=i/n,x=x0+(x1-x0)*t,z=z0+(z1-z0)*t;pts.push(occupied(x,z)?null:new THREE.Vector3(x,heightAt(x,z),z));}
+  }
   for(const p of pts)if(p){posts.push(p);colliders.push({id:'chain-bollard',x:p.x,z:p.z,w:.3,d:.3,height:p.y+.95});}
   // A steel chain between each pair of posts, hanging in a shallow curve.
   for(let i=0;i<pts.length-1;i++){
    if(!pts[i]||!pts[i+1])continue;
+   const dir=pts[i+1].clone().sub(pts[i]).setY(0).normalize();
    const a=pts[i].clone().setY(pts[i].y+.66),b=pts[i+1].clone().setY(pts[i+1].y+.66),span=a.distanceTo(b),count=Math.round(span/.15);
    for(let k=1;k<count;k++){
     const t=k/count,p=a.clone().lerp(b,t);p.y-=Math.sin(Math.PI*t)*.32;

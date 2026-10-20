@@ -23,3 +23,6 @@ sjoskolan/vaxelstromslabbet-utkast/node_modules
 
 # a symlink named node_modules is not a directory, so node_modules/ alone would not catch it
 node_modules
+
+# Portable room drafts are not World publication data.
+/johansson-town/data/studio/projects/

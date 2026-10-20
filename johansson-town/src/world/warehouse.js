@@ -1,6 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {createKit,GRID,trs} from './okinawa/kit.js';
 import {buildShopDoor} from './shop-door.js';
+import {buildJCoffeeBanner} from './j-coffee-advertising.js';
 import {createLampGlow} from './light-pools.js';
 
 // Replaces the western fishing-gear shed. Source frontage is -Z; rotate it
@@ -78,6 +79,8 @@ export function buildWarehouse(world,options={}){
  // phone; three makes the plinth read as a plinth and settles the depth test with it.
  footing.name='Warehouse concrete footing';footing.position.set(WAREHOUSE.x,-.175,WAREHOUSE.z);footing.receiveShadow=true;group.add(footing);
  const shell=buildWarehouseShell({shadows:options.shadows});group.add(shell);
+ // The clear quay-facing end wall: no shutter, door or working lane covered.
+ buildJCoffeeBanner(group);
  // The wall lamp's pool on the quay in front of the shutter and its halo (light-pools.js); harbour.js fades them.
  const lamp=shell.userData.lamp,glow=createLampGlow(group,[{head:lamp,ground:{x:lamp.x+1.1,y:0,z:lamp.z},radius:2.6,size:1.3}]);
  addStreetDoor(group);

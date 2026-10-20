@@ -349,7 +349,7 @@ VECKOR = {
             {'titel': 'Repetition inför tentamen', 'mal': 'Välj formel efter storhet och metod efter frågan.', 'delsida': V45 + 'Del_3.html', 'poster': [
                 ppt(V45 + 'v45_03_Repetition_infor_tentamen_elev.pptx', 'Repetition inför tentamen', 22),
                 lank(V45 + 'Formelstod_och_ovningar.html#v45_03', 'Övningar: repetition', 'övning', '10 övningar med facit'),
-                lank('../../tentamen.html', 'Tentamen: innehåll och övningstenta', 'läs', 'med lösningar'),
+                lank('../../tentamen.html', 'Tentamen: innehåll och övningstenta', 'läs', 'frågor och separat facit som PDF'),
             ]},
         ],
         'lektioner': {1: (0, 'Måndag', 'online 09.00–10.00'), 2: (0, 'Måndag', 'online 10.00–11.00'), 3: (1, 'Tisdag', 'online 15.00–16.00'),
@@ -373,7 +373,7 @@ VECKOR = {
              'hur': 'Labbet är underlaget till inlämning 3. Läxorna efter måndagens och tisdagens lektioner säger vad du gör när.'},
             {'id': 'tenta', 'titel': 'Övningstentan', 'href': '../../tentamen.html#ovningstenta', 'knapp': 'Öppna övningstentan',
              'text': 'Gör övningstentan hemma före fredagens lektion, utan att titta i lösningarna. Den är frivillig och betygsätts inte.',
-             'hur': 'På fredagen går vi igenom de uppgifter som flest behöver. Rätta den sedan själv med lösningarna.'},
+             'hur': 'På fredagen går vi igenom de uppgifter som flest behöver. Rätta den sedan själv med PDF:en ”Facit med lösningsgång” i avsnittet Övningstenta på sidan Tentamen.'},
             {'id': 'ovningar', 'titel': 'Övningarna', 'href': 'Formelstod_och_ovningar.html', 'knapp': 'Alla övningar',
              'text': 'Tio övningar till varje del, med ledtrådar och facit. En del gör vi tillsammans på lektionen, resten gör du hemma.',
              'hur': 'Läxorna efter varje lektion säger vilka övningar du gör hemma. Bocka av en övning när du är klar. Övningarna lämnas inte in.'},
@@ -386,7 +386,7 @@ VECKOR = {
         'distans': True, 'tenta': True, 'sista_text': 'Protokollen senast onsdag 4 november kl. 20',
         'delar': [
             {'titel': 'Förbered dig', 'mal': 'Övningstentan, formelsamlingen och veckorna där du hade fel.', 'delsida': None, 'poster': [
-                lank('../../tentamen.html', 'Tentamen: innehåll och övningstenta', 'läs', 'med lösningar'),
+                lank('../../tentamen.html', 'Tentamen: innehåll och övningstenta', 'läs', 'frågor och separat facit som PDF'),
                 lank('../../gemensamt/Formelsamling.pdf', 'Formelsamling (PDF)', 'läs', 'samma som på tentamen'),
             ]},
             {'titel': 'Skriftlig tentamen online', 'mal': 'Teori och beräkningar från alla veckor. Tid och länk meddelas av läraren.', 'delsida': None, 'poster': [

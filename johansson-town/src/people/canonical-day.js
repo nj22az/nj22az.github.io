@@ -12,6 +12,8 @@ import {IZAKAYA_DOOR} from '../world/dining-layout.js';
 import {MARKET_THRESHOLD} from '../world/town-grid.js';
 import {KITANO_PIER_STAND} from '../world/kitano-hamlet-layout.js';
 import {airportWorld} from '../world/airport-ground.js';
+import {standNow} from './stand-points.js';
+import {quayBreakPlan} from './quay-breaks.js';
 
 const HOME_TARGETS=new Map();
 const activeTarget=name=>{if(!HOME_TARGETS.has(name))HOME_TARGETS.set(name,activeResidentHome(name)?.target);return HOME_TARGETS.get(name);};
@@ -24,7 +26,7 @@ const points={izakaya:IZAKAYA_DOOR,sakura:MARKET_THRESHOLD,market:MARKET_THRESHO
  'fish-auction':[25,-39.6],'ice-plant':[31,-41],boatyard:[-31.8,-45],sea:[-31.8,-45],
  'higa-liquor':[4.8,8.4],clinic:[34.1,35.1],'cargo-yard':[17,-40],
  'power-station':[SCHOOL.powerHouse.door[0]+.6,SCHOOL.powerHouse.door[1]-.9],quay:[20,-40],
- 'main-street':[1,0],seawall:[-36.7,-20],'kitano-pier':airportWorld(...KITANO_PIER_STAND)};
+ 'main-street':[1,0],seawall:[-36.7,-20],'net-ground':[-28.4,7.6],'kitano-pier':airportWorld(...KITANO_PIER_STAND)};
 export function canonicalDestination(name,place){
  const p=castMember(name),home=activeTarget(name);
  if(place===p?.home||p?.alsoAt.includes(place))return home?[home.x,home.z]:null;
@@ -56,6 +58,18 @@ export function canonicalDay(name,minutes,rain=false){
   return rain?homePlan('a rainy school-free day at home'):{place:'park',target:[...points.park],activity:'weekend in Harbour Park'};
  }
  if(rain&&['park','quay'].includes(phase.place))return homePlan('sheltering at home until the rain clears');
+ // A break on the quay's shared spots (quay-breaks.js): the claim holds the spot, so it is read before the phase.
+ const quayBreak=!rain&&quayBreakPlan(name,minutes);
+ if(quayBreak)return {...quayBreak,rain:false};
+ // A phase that names a stand sequence (stand-points.js): the point the seeded clock has them at, its facing and pose.
+ // Garden and net work is outdoor work: in the rain they wait it out at home.
+ const stand=standNow(name,minutes,'world');
+ if(stand){
+  if(rain)return homePlan('sheltering at home until the rain clears');
+  const {point}=stand;
+  return {place:phase.place,target:[point.x,point.z],activity:point.activity,rain:false,
+   stand:Object.freeze({yaw:stand.yaw,pose:point.pose,tool:point.tool,index:stand.index,why:point.why,sequence:stand.sequence.id})};
+ }
  // Younger pupils walk to the real school gate. Their classroom owns them after arrival.
  const target=isHome?canonicalDestination(name,p.home):points[phase.place]?[...points[phase.place]]:canonicalDestination(name,phase.place);
  return {place:isHome?'home':phase.place==='sakura'?'market':phase.place,target,activity:phase.activity,school:phase.place==='school',rain:!!rain};

@@ -20,6 +20,7 @@ Read the repository's [AGENTS.md](../AGENTS.md) and [CLAUDE.md](../CLAUDE.md). T
 - Reduced graphics is a recovery mode only after two interrupted launches in a row, and the game says so and offers the full look back.
 - Where empty houses were removed, the street plan closes up around them: no vacant lawn or paving lots left where buildings stood.
 - New Yokosuka (<https://github.com/brynnb/new-yokosuka>) is a permanent inspiration for the World: "here you can see home interiors and convenience stores and everything we need"; its 1986 setting does not matter, "small town Japan still has much old parts in the 90s and even today". Plan homes, shops, streets and the harbour from its real rooms, measured and recorded as data; never copy its assets ([docs/research/new-yokosuka.md](docs/research/new-yokosuka.md)).
+- Sakura's upstairs is replanned (the owner: "The Sakura office is way too big and empty. I want maybe two windows you can look out from; now the whole island looks broken from the Sakura office. It should have like a bedroom or rest room upstairs too. Can you use anything from New Yokosuka?"). Read with the ruling above that the upper floor is the main office, not a home: the office shrinks to a small shop's office with its kitchenette and exactly two outlooks (Main Street from the front, the ferry berth from the desk's side window), and the rest room is a staff 休憩室/仮眠室, a 4½-mat tatami room with a futon in its cupboard for a rest between the shop and the late boat, or a night if the ferry ever cannot run; nobody lives there, and no canonical day sleeps there while the town does not stop for weather (`world/typhoons.js`). The plan, sizes and the New Yokosuka numbers it uses are data in `src/world/interiors/sakura-office-room.js` (`SAKURA_UPSTAIRS`); the island seen through the windows is drawn by every portal in view at once (`render/shop-street-view.js`).
 
 ~~The implementation plan is [docs/MINATO-HOMES-PLAN.md](docs/MINATO-HOMES-PLAN.md).~~ Superseded on 19 October 2026 by the cast, household and crew consolidation below; the homes plan remains as dependency evidence only. Preserve save compatibility when implementing it.
 
@@ -86,6 +87,41 @@ roster's and resolve everywhere through `castMember`; the names the world, its s
 Johansson), a rename being a sweep of its own (the portraits, the wardrobe keys and some three hundred tests key on
 them). Sakura's products are for the living (`data/studio/products.json`), the wardrobe's and outfits' "who wears it"
 lines too, and the docs that describe the cast of before the consolidation carry a history banner.
+
+## Owner's decision — 19 October 2026: the web is a gorgeous demo for the Linux game
+
+The owner: "It looks really pretty but slow to load and stalling while I play. Can some parts be offloaded on web while
+still looking pretty as now? I'm thinking expensive NPC behaviour maybe belongs in the Linux version; the web should be a
+gorgeous demo for the Linux game." The rule lives in one place, `src/edition.js`: the Linux edition (`steam-deck/`, the
+Electron shell, `window.johanssonDesktop` set) runs everything; the web edition draws exactly what Linux draws (the
+graphics ruling above stands: shadows, multisampling, HDR, detail streaming, the Ink grade on every device) and simulates
+less, by the named budgets there. Nothing else asks which edition it is. Later rulings the same day, all part of it:
+
+- **Residents** (the owner: "I think you can program some simple behaviour for the NPCs on web while still, and not too
+  much dialogue"). On the web a resident near the player (within `residentRadius`) or in view walks and behaves as on
+  Linux; out of sight and out of reach they keep their timetable without walking it (`people/attention.js`,
+  `schedules.js` settle, `neighbours.js`): no route searched, no step taken, so nobody is ever seen to jump. No chats
+  between residents, no happenings chains, no multi-line conversations. Stand points (`full-life.js setStandFilter`) are
+  kept for residents in view, near or in the player's room; a seen resident whose detour finds no way round waits half a
+  town minute before searching again (`detourRetryMinutes`): talking to a resident is one short line for the
+  moment (`greetings.js shortGreeting`, at most 35 characters) and whatever they sell or serve. The full conversations,
+  favours, chats and happenings are Linux's.
+- **Trade and machinery** (the owner: "the convoluted business backend doesn't need to work on the web either … even if
+  we model the houses and engine room and workshop realistically, they will be like a display piece on the web"). Rooms
+  and machines are built and drawn as on Linux; on the web their operation prompts read what the thing is instead of
+  working it (the ferry's plant stations, the town's machines, the workshop printer), and no orders, deliveries,
+  closing restocks or stock counts run.
+- **Unlimited money on the web**: the wallet never runs out (`WEB_PURSE`, shown as "plenty of yen"); prices stay on the
+  labels and are paid at the till.
+- **The shop's magical supply** (the owner: "it can be back next day: if you buy all the coffee in one day, they will
+  have more tomorrow"): what the player takes stays gone for the rest of that trading day, in the save, and every shelf
+  is full again at the next opening, 9:00 (`shop-stock.js webShelves`). Other customers do not empty facings.
+- **Realistic paperwork** (the owner: "I'd like the documents and spreadsheets to be realistic"): on the web Sakura's
+  office folder is a deterministic snapshot made from the data, as a 1997 Okinawan shop wrote it: the Z report, the stock
+  book, the rota, the depot's delivery note, Higa Liquor's and Front-Row's invoices, every total the sum of its lines
+  (`commerce/paperwork.js`, `tests/paperwork.test.mjs`). On Linux the ledger is the live shop's.
+- Outside a page (node's suites) the edition is Linux unless `JOHANSSON_EDITION=web`; `tests/edition.test.mjs` holds
+  the web budgets and the Linux path.
 
 ## Verification
 

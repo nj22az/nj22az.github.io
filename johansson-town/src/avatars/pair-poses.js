@@ -76,7 +76,14 @@ function bodyOf(avatar){
  /** How far a point (in the head bone's frame) is outside the head and what it carries (metres, negative inside): by the
   *  shell's reach in its direction. */
  const gap=q=>{const x=q.x/S[0],y=(q.y-hc)/S[1],z=q.z/S[2];return (Math.hypot(x,y,z)-shell[bin(x,y,z)])*least;};
- b={key,avatar,m,vol,S,hc,pts,gap,cloth,soles:createSoleFinder(avatar),reach:reachOf(m)};
+ // a skirt or a dress (the drawn points the thighs carry that stand well off the legs: a long skirt hangs 10 to 15 cm out
+ // from them), kept from the partner as it is drawn: the legs' round limbs are the trousers' (BackToBack, 2026-10-20: a
+ // grandmother's long skirt against a child's back)
+ const skirt=[];
+ for(const mesh of meshes){const P=mesh.geometry.attributes.position,I=mesh.geometry.attributes.skinIndex;if(!I)continue;
+  for(let i=0;i<P.count;i+=3){const bone=mesh.skeleton.bones[I.getX(i)]?.name;if(!/^(thigh|knee)[LR]$/.test(bone))continue;q.fromBufferAttribute(P,i);
+   if(q.y<m.foot+.04||q.y>m.hipY-.02)continue;const sx=bone.endsWith('L')?1:-1;if(Math.hypot(q.x-sx*m.hipX,q.z)-m.legR>.04*m.k)skirt.push({bone,p:q.toArray()});}}
+ b={key,avatar,m,vol,S,hc,pts,gap,cloth,skirt,soles:createSoleFinder(avatar),reach:reachOf(m)};
  bodies.set(avatar,b);return b;
 }
 /**
@@ -99,8 +106,9 @@ function posed(body,pose){
 const torsoBone=(m,y)=>y<m.hipY+m.torso*.25?'hips':y<m.chestY?'spine':'chest';
 /** Points over the body's surface, each with the bone that carries it: the torso (bodyVolume's lathe) and the shoulder
  *  caps, rings round the thighs and the shins, and the shoes (the ellipsoids tests/body-contact.mjs measures with); and,
- *  when the arms are posed by the pose itself (`arms`), rings round the upper arms and the forearms and the mittens. */
-function bodyPoints(body,arms=false){
+ *  when the arms are posed by the pose itself (`arms`), rings round the upper arms and the forearms and the mittens; and,
+ *  with `skirt`, a skirt's or a dress's own drawn points. */
+function bodyPoints(body,arms=false,skirt=false){
  const {m}=body,out=[],push=(bone,p)=>out.push({bone,p:p.toArray()});
  if(arms)for(const s of ['L','R']){const sx=s==='L'?1:-1,x=sx*m.shoulderX;
   for(const [bone,y0,y1,r] of [['shoulder'+s,m.shoulderY-.01,m.shoulderY-m.upper+.01,m.armR],['elbow'+s,m.shoulderY-m.upper-.01,m.shoulderY-m.upper-m.fore+.01,m.armR*.9]])
@@ -114,6 +122,7 @@ function bodyPoints(body,arms=false){
    for(let j=0;j<=4;j++)for(let i=0;i<8;i++){const t=i/8*Math.PI*2,y=y0+(y1-y0)*j/4;push(bone,new THREE.Vector3(sx*m.hipX+r*Math.sin(t),y,r*Math.cos(t)));}
   for(let i=0;i<12;i++)for(let j=1;j<4;j++){const t=i/12*Math.PI*2,f=j/4*Math.PI;
    push('foot'+s,new THREE.Vector3(sx*m.hipX+m.legR*1.25*Math.sin(f)*Math.cos(t),m.foot*.62+m.legR*.75*Math.cos(f),m.legR*.55+m.legR*2.3*Math.sin(f)*Math.sin(t)));}}
+ if(skirt)for(const o of body.skirt)out.push(o);
  return out;
 }
 /**
@@ -161,11 +170,11 @@ function headGap(A,poseA,B,poseB,M){
 }
 /** The nearest the two bodies (torsos, heads, legs, and the arms a pose itself places: `armsA`, `armsB`, as armTo takes
  *  them; not the arms the reach solver places after) come to each other. */
-function bodyGap(A,poseA,B,poseB,M,armsA=null,armsB=null,heads=true){
+function bodyGap(A,poseA,B,poseB,M,armsA=null,armsB=null,heads=true,skirts=false){
  const I=new THREE.Matrix4(),fB=field(B,poseB,M,armsB,heads),fA=field(A,poseA,I,armsA,heads),FA=posed(A,withArms(poseA,armsA)),FB=posed(B,withArms(poseB,armsB));
  let g=Infinity;
- for(const {bone,p} of bodyPoints(A,!!armsA))g=Math.min(g,fB(FA.at(bone,p)));
- for(const {bone,p} of bodyPoints(B,!!armsB))g=Math.min(g,fA(FB.at(bone,p).applyMatrix4(M)));
+ for(const {bone,p} of bodyPoints(A,!!armsA,skirts))g=Math.min(g,fB(FA.at(bone,p)));
+ for(const {bone,p} of bodyPoints(B,!!armsB,skirts))g=Math.min(g,fA(FB.at(bone,p).applyMatrix4(M)));
  // (and the heads against the other's body: a chin on a shoulder, a child's head at a chest)
  const hA=posed(A,poseA).bone('head'),hB=new THREE.Matrix4().multiplyMatrices(M,posed(B,poseB).bone('head'));
  for(let i=0;i<A.pts.length;i+=4)g=Math.min(g,fB(_v.copy(A.pts[i]).applyMatrix4(hA)));
@@ -319,6 +328,62 @@ function fitFacing(ctx,{grabT,wide,leanA,armsB,reel,handA,off=.95}){
  return last();
 }
 
+/**
+ * Back to back: the buddy-film poster (the owner, 2026-10-20: "a die cut sticker with Johansson and Thuan standing back to
+ * back like a buddy cop trailer graphic", "and make so studio can use it too"). The two stand with their backs together,
+ * each turned BACK_TURN (34°) out of the straight back-to-back toward a lens on A's left (BACK_TO_BACK_VIEW: the line
+ * between the two bodies runs across that lens, A on one side of the picture and B on the other), the chest and the head
+ * turned on toward it, so both faces read three-quarter, the chins up, the feet planted a little apart, both with the
+ * arms folded: A smug, B determined. Why so:
+ * - Both arms folded, on both. The posters' finger pistol cannot be made: World's hands are always mittens (animate.js:
+ *   never fingers, in any move), and a mitten fist raised by the shoulder, seen from this lens, sat under B's chin like
+ *   someone thinking (tried, in the renders). Two pairs of folded arms back to back is the poster everybody knows, and the
+ *   faces carry the difference.
+ * - 34° and not 20–30°: toy heads are wider than the shoulders and stand behind the back, so at 24° the heads met 25 cm
+ *   before the backs did. Turned further, the line between the two is more across the picture, and each head is tipped
+ *   out away from the other (`out`: the chest and the neck leaning a little forward and to the outer side, the head held
+ *   back so the chin stays up) only as far as it takes for the backs to come within a centimetre of where the bodies
+ *   alone would let them stand: the two touch at the shoulder blades and the backs, never kept apart by their heads.
+ */
+const BACK_TURN=.6;
+/** The more a back keeps from a back than the pair gap when either wears a dress or a skirt: it stands off the hips more
+ *  than a shirt does off the chest (measured: a dress's hips went 7 mm into the partner at the pair gap alone). */
+const BACK_CLOTH=.006;
+/** Where a lens sees BackToBack best: radians round from A's front, as Johansson Studio's sticker and panel lenses count
+ *  them (positive toward A's right), so negative: the lens on A's left, across the line between the two. */
+export const BACK_TO_BACK_VIEW=-(Math.PI/2-BACK_TURN);
+function fitBackToBack(ctx){
+ const {A,B}=ctx,yawB=Math.PI-2*BACK_TURN;
+ // B's place: behind A and to A's left, along the line between the two fronts (A's front +z, B's at yawB), so B's back
+ // faces A's; s metres along it
+ const ux=Math.sin(yawB),uz=Math.cos(yawB)-1,ul=Math.hypot(ux,uz),at=s=>({dx:ux/ul*s,dz:uz/ul*s,yawB});
+ // away from the partner, in each body's own frame: forward `fw` and to the outer side `sd` (B is A's mirror)
+ const fw=-uz/ul,sd=ux/ul;
+ // the chest and the head turned on toward the lens (A's left; B's right: k), the chin up, leant out by `out`; the feet
+ // planted a little apart, the knees straight
+ const legsA=stance(-.25,.25,.04,.08),swap=j=>j.replace(/[LR]$/,c=>c==='L'?'R':'L');
+ const legs=k=>k>0?legsA:Object.fromEntries(Object.entries(legsA).map(([j,[x,y,z]])=>[swap(j),[x,-y,-z]]));
+ const body=(k,out)=>({hips:[0,0,0],spine:[-.02,k*.08,0],chest:[-.04+fw*out*.4,k*.14,k*sd*out*.5],neck:[-.04+fw*out*.6,0,k*sd*out*.5],head:[-.14-fw*out,k*.38,k*sd*out*.3],...legs(k)});
+ let best=null;
+ for(let out=0;out<=.8;out+=.04){
+  const pA=body(1,out),pB=body(-1,out);
+  const ok=heads=>s=>{const M=pairMatrix(at(s));return (!heads||headGap(A,pA,B,pB,M)>=PAIR_GAP.heads)&&bodyGap(A,pA,B,pB,M,null,null,heads,true)>=PAIR_GAP.bodies+(A.skirt.length||B.skirt.length?BACK_CLOTH*Math.max(A.m.k,B.m.k):0);};
+  const s=bisect(.05,1.4,ok(true)),bodies=bisect(.05,s,ok(false));
+  best={s,pA,pB,out};
+  // (the backs within a centimetre of where the bodies alone would put them: the heads are not what holds them apart)
+  if(s-bodies<=.01)break;
+ }
+ const {s,pA,pB}=best,place=at(s),PM=pairMatrix(place),PMi=PM.clone().invert();
+ // arms folded across the chest (fun-poses Huff's: each mitten on the front of the torso, on the other side), on the body
+ // as this pose turns it, kept out of the partner and never wound round to get there
+ const onFront=(side,t)=>(m,v)=>{const p=v.surf(side*.3,t);return p.addScaledVector(v.normal(p),m.hand*.9).toArray();};
+ const arm=(keep,side,t)=>({touch:true,on:['spine',onFront(side,t)],keepOut:keep,seed:[-.6,.3,.35,-2.1,0],hand:[0,0,0],bounds:ARM_BOUNDS,twist:.4});
+ const folded=(joints,keep)=>({pose:()=>joints,hair:true,head:joints.head,R:arm(keep,1,.72),L:arm(keep,-1,.62)});
+ return {dx:place.dx,dz:place.dz,yawB,out:best.out,
+  A:{joints:pA,near:folded(pA,field(B,pB,PM))},
+  B:{joints:pB,near:folded(pB,field(A,pA,PMi))}};
+}
+
 export const PAIR_POSES=Object.freeze({
  Hug:Object.freeze({label:'Hug',d:3.2,ramp:.8,faces:Object.freeze({A:'happy',B:'shy'}),
   use:'Someone to hold, after a scare, a parting or good news: side by side for the camera, heads leaning together, A\u2019s arm over B\u2019s shoulders and B\u2019s round A\u2019s waist, the free hands up in a peace sign.',
@@ -333,6 +398,9 @@ export const PAIR_POSES=Object.freeze({
  Shove:Object.freeze({label:'Shove',d:2.6,ramp:.5,faces:Object.freeze({A:'angry',B:'shock'}),
   use:'The push: both of A’s mittens flat on B’s chest; B reels back, a foot back to catch the fall, the arms up and the eyes wide.',
   fit:ctx=>fitFacing(ctx,{grabT:.66,wide:.32,leanA:.22,handA:[-1.5,0,0],off:.78,reel:true,armsB:{L:[-.5,.2,-1.35,-.5,0],R:[-.5,.2,-1.35,-.5,0],handL:[0,0,.3],handR:[0,0,-.3]}}),life:()=>{}}),
+ BackToBack:Object.freeze({label:'Back to back',d:3.2,ramp:.8,faces:Object.freeze({A:'smug',B:'focus'}),view:BACK_TO_BACK_VIEW,
+  use:'Partners facing trouble together, a standoff or a team-up: back to back like a buddy-film poster, both turned to the lens with the chins up and the arms folded; A smug, B determined.',
+  fit:fitBackToBack,life:(P,role)=>{P.add('chest',Math.sin(P.t*1.6)*.006*P.w);}}),
 });
 /** The two roles of every pair as moves of one body (animate.js GESTURES): `<pair>:A` and `<pair>:B`. */
 export const PAIR_ROLES=Object.freeze(Object.fromEntries(Object.entries(PAIR_POSES).flatMap(([name,p])=>['A','B'].map(role=>[name+':'+role,Object.freeze({pair:name,role,label:p.label+' ('+role+')',face:p.faces[role],d:p.d,ramp:p.ramp,

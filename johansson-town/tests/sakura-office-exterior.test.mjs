@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
+import * as FACADE from '../src/world/thuan-flat.js';
 import {buildThuanFlat,SAKURA_OFFICE_BACK} from '../src/world/thuan-flat.js';
 import {SAKURA_BACK} from '../src/world/okinawa/old-town.js';
 
@@ -17,7 +18,8 @@ const firstHit=(town,from,to)=>{const a=new THREE.Vector3(...from),b=new THREE.V
 
 test('exterior trim leaves seated town and harbour sightlines open',()=>{
  const {town,store,site}=office();
- for(const [from,to] of [[[.8,5.51,-3],[.8,5.51,0]],[[4.1,5.13,-2.3],[7,5.13,-2.3]]]){
+ // Through the office's two windows (sakura-office-room.js SAKURA_UPSTAIRS.windows): the town window, standing; the harbour window from the desk chair.
+ for(const [from,to] of [[[2.4,5.61,-3],[2.4,5.61,0]],[[5.15,5.13,-3.3],[7,5.13,-3.3]]]){
   const a=store.localToWorld(new THREE.Vector3(...from)),b=store.localToWorld(new THREE.Vector3(...to));
   const ray=new THREE.Raycaster(a,b.clone().sub(a).normalize(),0,a.distanceTo(b));
   assert.equal(ray.intersectObjects(solids(town)).length,0,'window must remain clear at seated eye height');
@@ -57,4 +59,20 @@ test('the back wall has the office windows and the fire door, open to the escape
  assert.ok(door&&door.point.x>face+.01,'the fire door stands in its opening at the escape');
  for(const dz of [-E.door.width/2-.1,E.door.width/2+.1]){const wall=firstHit(town,[-22,F+1,E.door.z+dz],[-17,F+1,E.door.z+dz]);assert.ok(Math.abs(wall.point.x-face)<1e-6,'solid wall either side of the door');}
  assert.ok(E.platform.minZ<E.door.z-E.door.width/2&&E.platform.maxZ>E.door.z+E.door.width/2,'the landing spans the door');
+});
+
+test('the street face and the harbour side show the plan behind them: office glass, the rest room’s shoji, wall for the stores',()=>{
+ // The owner, 20 October 2026: "I want the exterior of the office to look different to reflect its inside".
+ const {town,store}=office(),F=4.01,y=F+1.6;
+ const look=(from,to)=>{const a=store.localToWorld(new THREE.Vector3(...from)),b=store.localToWorld(new THREE.Vector3(...to));return firstHit(town,a.toArray(),b.toArray());};
+ const what=hit=>hit?/glazing/.test(hit.object.name)?hit.object.name:hit.object.material?.userData?.kitFinish==='glow'?'shoji':'wall':'nothing';
+ const front=x=>what(look([x,y,3],[x,y,-3]));
+ for(const x of [-5.5,-3.2,1.1,5.6])assert.equal(front(x),'wall',`the street face at ${x} is wall (the store, the office's wall)`);
+ for(const x of [-1.7,-.6,.4])assert.equal(front(x),'shoji',`the rest room's shoji at ${x}`);
+ for(const x of [2.2,4.3])assert.equal(front(x),'Sakura main office glazing',`the office's town window at ${x}`);
+ const side=z=>what(look([9,y,z],[0,y,z]));
+ for(const z of [-6.3,-5,-4.3])assert.equal(side(z),'wall',`the harbour side at ${z} is the archive's wall`);
+ for(const z of [-3.6,-1.6])assert.equal(side(z),'Sakura harbour office glazing',`the office's harbour window at ${z}`);
+ const {SAKURA_FACADE:A}=FACADE;
+ assert.equal(A.front.length,2);assert.ok(A.front.every(o=>o.why&&o.room));
 });

@@ -129,17 +129,45 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
-    "title": "Sakura main office",
+    "title": "Sakura decorations store",
     "organisation": "Town Services",
-    "text": "Orders, deliveries and the monthly accounts. The downstairs office keeps the till float and daily shop paperwork.",
-    "source": "notice:Sakura main office"
+    "text": "The festival lanterns, the New Year pine frames, vases, ribbon and wrapping for the bouquets sold at the door, and the shop’s spare shelf parts. Sakura has supplied the town’s flowers and decorations since Mrs Kinjō retired.",
+    "source": "notice:Sakura decorations store"
+  },
+  {
+    "type": "Notice",
+    "title": "Sakura archive",
+    "organisation": "Town Services",
+    "text": "Seven years of account books and supplier slips, which the shop must keep, and paper supplies by the case: till rolls, carrier bags, price labels.",
+    "source": "notice:Sakura archive"
+  },
+  {
+    "type": "Notice",
+    "title": "Shoe cabinet",
+    "organisation": "Town Services",
+    "text": "Shoes come off at the top of the stair: the floor up here is in slippers and the rest room is tatami. Thuan’s and Nhung’s shoes in the cabinet, the slippers on the step.",
+    "source": "notice:Shoe cabinet"
+  },
+  {
+    "type": "Notice",
+    "title": "Sakura till ledger",
+    "organisation": "Town Services",
+    "text": "The day’s takings carried up from the till each night, the supplier orders, the depot’s deliveries and the monthly accounts. The downstairs office keeps the till float and the daily shop paperwork.",
+    "source": "notice:Sakura till ledger"
   },
   {
     "type": "Notice",
     "title": "Sakura kitchenette",
     "organisation": "Town Services",
-    "text": "Fill the kettle at the sink. Cups, tea and the staff lunch boxes stay in the cupboards and small fridge.",
+    "text": "Fill the kettle at the sink. Cups and tea are in the wall cupboard; the staff’s lunch boxes are in the little fridge.",
     "source": "notice:Sakura kitchenette"
+  },
+  {
+    "type": "Notice",
+    "title": "Sakura rest room",
+    "organisation": "Town Services",
+    "text": "You take the futon down from the cupboard, lie on the tatami with the fan turning, and listen to the shop below. Ten minutes; then the futon goes back on its shelf. It is here for whoever keeps the shop: a rest between the shop and the late boat, or the night if the ferry ever cannot run.",
+    "source": "notice:Sakura rest room"
   },
   {
     "type": "Notice",
@@ -245,6 +273,13 @@ export const TOWN_PAPERS=[
     "organisation": "Town Services",
     "text": "The two diesel generators feed the island at 6,600 volts through a buried cable to the outgoing pole. The northern feeder serves the terminal and homes; the eastern feeder serves Kitahama and the eastern neighbourhood, and a buried cable runs up the hill to Aoba Radio. Pole transformers reduce the voltage for shops and houses. The station keeps a standby generator for storms.",
     "source": "notice:Minato power station"
+  },
+  {
+    "type": "Notice",
+    "title": "The west-shore bank",
+    "organisation": "Town Services",
+    "text": "North of the seawall the shore is pitched in coral stone, down to a strip of sand the waves wash over, with a chain along the top. Over the reef the water goes green, then blue; on a winter day the spray comes over the stones.",
+    "source": "notice:The west-shore bank"
   },
   {
     "title": "Petitions to the mayor",

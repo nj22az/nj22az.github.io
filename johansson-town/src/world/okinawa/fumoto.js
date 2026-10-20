@@ -134,10 +134,10 @@ function coOpStore(kit,solid,{inspect,anchor,onAction,vending}){
   // Empty bottle crates for the Higa van, and the gas bottles round the side.
   for(const [x,h] of [[W-.55,0],[W-.55,.3],[W-1.05,0]])kit.box(.45,.28,.36,x,.18+h,porch+.35,0xd9a03a);
   solid(gasBottles(kit,-W-.3,-D+1.2,{ry:Math.PI/2}));
-  bicycle(kit,-W-.6,porch+.2,{ry:-.3,colour:0x2f6f8a});
+  solid(bicycle(kit,-W-.6,porch+.2,{ry:-.3,colour:0x2f6f8a,id:'fumoto-co-op-bicycle',owner:'the Fumoto co-op store',why:'The co-op’s delivery bicycle, by the porch, for the cane farmers’ orders up the lane.'}));
  });
  solid([kit.rect(S.minX+1.5,S.maxX,S.minZ,S.maxZ,3.7,'co-op store')]);
- solid([{id:'co-op bench',x:S.minX+1.05,z:cz-(W+.45)/2,w:.5,d:2.3,height:.5},{id:'post box',x:S.minX+.35,z:S.maxZ+.55,w:.5,d:.5,height:1.2},{id:'bicycle',x:S.minX+1.3,z:S.minZ-.6,w:1.4,d:.6,height:1.1}]);
+ solid([{id:'co-op bench',x:S.minX+1.05,z:cz-(W+.45)/2,w:.5,d:2.3,height:.5},{id:'post box',x:S.minX+.35,z:S.maxZ+.55,w:.5,d:.5,height:1.2}]);
  for(const z of [S.minZ+.05,S.maxZ-.05])solid([{id:'porch column',x:S.minX+.12,z,w:.3,d:.3,height:3}]);
  vending(S.minX+2.4,S.maxZ+.65,0);
  inspect(S.minX+.1,1.2,(S.minZ+S.maxZ)/2+1.3,'Read the co-op store’s doors','Fumoto Co-op Store','The shop is shut. The hamlet built it in 1968, one share per family, and it closed when the families left. A notice on the glass says to buy your groceries at Sakura Shōten in Minato. The telephone by the door and the round red post box are still there.');

@@ -8,3 +8,9 @@ Read the existing `CLAUDE.md` and any instructions in the directory being change
 4. Turn the goal into observable acceptance criteria. For substantial work, outline the steps and their checks, then iterate until those checks pass. Report remaining verification limits honestly.
 
 These supplement the owner's instructions and existing project rules. They do not authorise unrelated work or override the owner's stated decisions.
+
+## Repository split: on hold
+
+The owner, 20 October 2026: "We won't split anything until the Sjöskolan course is over." The plan to move World, Studio
+and Sjöskolan into their own repositories (`split/RUNBOOK.md` on the `codex/studio-*` branches) stays unexecuted until
+then: no new repositories, no moved folders, no forwarding addresses. Work continues in this repository.

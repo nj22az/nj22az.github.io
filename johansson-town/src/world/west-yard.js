@@ -49,7 +49,8 @@ export function buildWestYard({parent,colliders=[],shadows=false}={}){
  // town reads as one place when both sides of Main Street stand on the same clean green.
  let turf=null;if(typeof document!=='undefined'&&document.createElement){try{turf=paintedTurf();}catch{}}
  if(turf){turf=turf.clone();turf.needsUpdate=true;turf.wrapS=turf.wrapT=THREE.RepeatWrapping;turf.repeat.set(width/2.4,depth/2.4);}
- const ground=new THREE.Mesh(new THREE.BoxGeometry(width,.06,depth),
+ // A centimetre short at each end, so its ends never lie in the footway's (Main Street's paving ends on the same lines).
+ const ground=new THREE.Mesh(new THREE.BoxGeometry(width,.06,depth-.02),
   new THREE.MeshStandardMaterial({color:GROUND.grass,roughness:1,map:turf}));
  ground.name='west-yard-lawn';
  // Two centimetres under the paved routes, the same clearance the east lawn keeps.

@@ -246,7 +246,48 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     Kontrollera också det nya exemplet i ledtrådstrappan. En kursvariant får en egen post när originalet även används
     i boken; befintligt övningsnummer, ankare och sparad elevprogress behålls.
 
+61. **En veckosida ska inte visas som flera likadana ingångar i kursöversikten.** Vecka 43 och 44 hade två modulkort
+    var med samma veckolänk och sista dag. Samla veckans delar i ett kort. Behåll gamla modulankare, länkar till
+    delar som ligger i en annan veckomapp, labbens frågeparametrar och nycklarna för sparade övningar.
+
+62. **Övningstentans facit visas i ett separat nedladdningsbart dokument.** Webbsidan innehåller frågor och länkar,
+    inga lösningar i hopfälld HTML. Frågor, facit, PDF och Google-quiz byggs ur samma poster. PDF:ernas källhash
+    kontrolleras så att dokument inte blir inaktuella. Google-quiz med skrivna motiveringar skapas som opublicerat
+    utkast; läraren granskar och väljer när resultat släpps innan publicering.
+
+63. **När övningstentans gränssnitt ändras ska lektionsvägledningen följa med.** Kontrollera lärarmanus,
+    presentationskällan och bildspelet samt veckosidornas beskrivningar. Övningsfacit är offentlig repetition;
+    skyddade provfel och lärarbedömning hålls åtskilda. Dela frågefönstret under självständigt arbete och ha
+    facit-PDF:en i ett odelat fönster. Historiska migreringsskript läser sin låsta källrevision och ändras inte.
+
 ## Ändringar
+
+- **2026-10-20** Fredag 30 oktober: lärarinstruktionen i Google Docs hänvisar nu till de separata fråge- och
+  facit-PDF:erna i stället för borttagna lösningsknappar. Förberedelsen anger privat facitfönster och delat
+  frågefönster. Presentationskälla, bild 18 i PowerPoint/PDF/webbildspel, veckokällans beskrivningar och
+  veckosidor 44–45 rättade. Tentamenssidan förtydligar självständigt försök före egen rättning och gränsen
+  mot skyddat provmaterial. De tolv frågorna, deras ankare, PDF-länkar och examinationsarrangemang behålls.
+  Kontroll: båda nedladdningarna slutförda på den publicerade sidan; PDF:erna har tre läsbara sidor vardera.
+  Bild 18 renderad och visuellt granskad. Övriga 21 presentationssidor bevarade, inga skyddade filer ändrade.
+  Livekontrollen visade gammal bildspelstext efter uppdatering: visaren kontrollerar nu aktuell JSON vid öppning
+  och versionsmärker bildadresser med presentationens stämpel, så att gamla bilder inte blandas med ny text.
+
+- **2026-10-19** Övningstentan: lösningarna borttagna ur webbsidans HTML. Samma tolv frågor och ankare finns kvar;
+  separata nedladdningsbara PDF:er för frågor respektive facit med lösningsgång. Frågorna och lösningarna är oförändrade.
+  Google Apps Script skapar en frivillig övningsquiz med sex ämnesavsnitt, 36 automatiska delfrågor och tolv skriftliga
+  motiveringar (60 träningspoäng). Delfrågor, facit och två bedömningskriterier per uppgift ligger i de tolv källposterna.
+  Formuläret skapas stängt och opublicerat; omkörning bevarar formulär och elevsvar. Inga skyddade lärarfiler används.
+  Lokal kontroll: innehållsbygge, PDF:ernas alla sex sidor visuellt granskade samt tester för facitkoppling, poäng,
+  omkörning och avbrutet bygge. Skriptet har inte körts i lärarens Google-konto. Modul 1:s bevarandekontroll skyddar nu det första modulkortet
+  och originalveckans filer, så att den inte fryser kursöversikten för senare veckor.
+
+- **2026-10-19** Kursöversikten: vecka 43:s komponenter/scheman och felsökning samlade i ett kort, vecka 44:s
+  elsystem och mätteknik/analys i ett kort. Modulerna visas i följd 1–9. Gamla ankare modul-1–11 behålls och leder
+  till samma innehåll; alla tidigare lektions-, labb- och inlämningslänkar finns kvar. Varje samlad vecka räknar
+  sina 40 övningar med samma sparade nycklar som tidigare. Veckosidor, filer, uppgifter och sista dagar är oförändrade.
+  Kontroll: samtliga 71 utgående länkar, 23 ankare och 200 övningar bevarade; 19 berörda publicerade länkar svarar
+  HTTP 200. Innehållskontrollen godkänd. Webbläsare vid 1440 och 390 px: gamla bokmärken, sparade framsteg, filter
+  och rätt modulnummer i Nu-rutan och nästa inlämning även vecka 44–45.
 
 - **2026-10-19** Vecka 43, övning 2.5: separat kursvariant EL-000891 ersätter EL-000165 på kursens yta. En tiopolig
   60 Hz-motor vid 684 r/min ger synkront varvtal 720 r/min och eftersläpning 5,0 %. Ledtråd 3 använder genomgångens

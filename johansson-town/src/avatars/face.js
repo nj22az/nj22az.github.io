@@ -133,7 +133,9 @@ export const EXPRESSION_GLYPHS=Object.freeze({neutral:'•ᴗ•',happy:'◠ᴗ�
 /**
  * @param {CanvasRenderingContext2D} ctx
  * @param {object} recipe normalized
- * @param {{expression?:string,blink?:number,talk?:number,look?:[number,number],size?:number}} state
+ * @param {{expression?:string,blink?:number,talk?:number,look?:[number,number],gaze?:[number,number],size?:number}} state
+ *   `gaze` points the eyes even when the expression has a look of its own (a smirk at the camera for a sticker, a resident
+ *   meeting the player's eye); `look` only applies where the expression has none.
  */
 export function drawFace(ctx,recipe,state={}){
  const size=state.size||256,k=size/256;
@@ -175,8 +177,8 @@ export function drawFace(ctx,recipe,state={}){
  // Eyes. Symbol eyes (stars, hearts, a wink...) are a drawing, not a lid: a blink leaves them be.
  const blink=Math.max(0,Math.min(1,state.blink||0));
  const eyesState=blink>.5&&!['happy','spiral',...SYMBOL_EYES].includes(mood.eyes)?'closed':mood.eyes;
- // A face that looks somewhere of its own (a sideways smirk, a drowsy look down) looks there.
- const look=mood.look||state.look||[0,0];
+ // A face that looks somewhere of its own (a sideways smirk, a drowsy look down) looks there, unless told where to gaze.
+ const look=state.gaze||mood.look||state.look||[0,0];
  for(const s of [-1,1]){const captured=s<0?state.blinkLeft:state.blinkRight;const eye=Number.isFinite(captured)?(captured>.5?'closed':mood.eyes):eyesState;drawEye(ctx,128+s*L.spread,L.eyeY,L.eyeS,s,recipe.eyes,eye,look,L.eyeTilt,L.eyeW);}
  // Brows (oneBrow: the viewer's right one goes up on its own, the smug brow).
  if(recipe.brows.style!=='none')for(const s of [-1,1])drawBrow(ctx,128+s*L.browSpread,L.browY-mood.browLift-(s>0?(mood.oneBrow||0)+(recipe.marks?.cocked?7:0):0),L.browS,s,recipe.brows,L.browTilt,mood.brow);

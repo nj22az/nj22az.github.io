@@ -253,7 +253,11 @@ export function celFrom(material,{tint=DEFAULT_TINT,bands=null}={}){
  toon.polygonOffsetFactor=material.polygonOffsetFactor;
  toon.polygonOffsetUnits=material.polygonOffsetUnits;
  toon.name=material.name;
- toon.userData={...material.userData,celFrom:material};
+ toon.userData={...material.userData};
+ // The source material is kept for the lamps' and windows' glow (world/town.js), but not as JSON: Material.copy
+ // deep-copies userData through JSON.stringify, which serialised the source and PNG-encoded every texture it holds
+ // (canvas.toDataURL) on every clone of a cel material. Sakura's window stand-in spent about 15 s there.
+ Object.defineProperty(toon.userData,'celFrom',{value:material,enumerable:false,writable:true,configurable:true});
  // The town's architectural surfaces take their UVs from a box projection in the
  // vertex shader, not from the geometry, and that lives in an onBeforeCompile hook.
  // Re-apply it from the scale the material records rather than inheriting the hook:

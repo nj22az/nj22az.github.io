@@ -85,3 +85,25 @@ test('Sakura’s drinks machine stands on the footway, not sunk into it',async()
  assert.ok(Math.abs(V.y-footway.point.y)<1e-3,`its foot at ${V.y}, the footway at ${footway.point.y.toFixed(3)}`);
  assert.ok(new THREE.Box3().setFromObject(machine).min.y>footway.point.y-1e-3,'nothing of it below the paving');
 });
+
+test('the fire escape’s plates lie flat on the wall, in full view from the yard and clear of the ladder',async()=>{
+ const {scene}=await island();
+ const meshes=[];scene.traverse(o=>{if(o.isMesh)meshes.push(o);});
+ const cast=(from,dir,skip)=>new THREE.Raycaster(new THREE.Vector3(...from),new THREE.Vector3(...dir),0,3).intersectObjects(meshes.filter(m=>m!==skip),false)[0];
+ for(const name of ['Fire door plate','Escape ladder plate']){
+  const plate=meshes.find(m=>m.name===name);assert.ok(plate,name);
+  const b=new THREE.Box3().setFromObject(plate),x=(b.min.x+b.max.x)/2;
+  // Every 2 cm over its face: a bar is 3 cm wide.
+  for(let y=b.min.y+.01;y<b.max.y-.005;y+=.02)for(let z=b.min.z+.01;z<b.max.z-.005;z+=.02){
+   // Straight on from the yard, the plate is the first thing met: no stile, stay, hoop, pipe or box in front of it.
+   assert.equal(cast([b.min.x-1.2,y,z],[1,0,0])?.object,plate,`${name} hidden at ${y.toFixed(2)}, ${z.toFixed(2)}`);
+   // Behind it the wall's face, at most 5 mm away and never in front of the plate's back (sunk into it).
+   const wall=cast([b.min.x,y,z],[1,0,0],plate);
+   assert.ok(wall&&wall.point.x>=b.max.x-1e-4&&wall.point.x-b.max.x<=.005,`${name} ${wall?(wall.point.x-b.max.x).toFixed(4)+' m off':'not on'} the wall`);
+  }
+  // Along the wall either side, at its own depth, nothing within 5 cm of its edges: the ladder's bars stand clear.
+  for(let i=0;i<=4;i++){const y=b.min.y+(b.max.y-b.min.y)*i/4;
+   for(const [z,dz] of [[b.min.z,-1],[b.max.z,1]]){const hit=cast([x,y,z],[0,0,dz],plate);
+    assert.ok(!hit||hit.distance>.05,`${name}: ${hit?.object.name} ${hit?.distance.toFixed(3)} m from its edge at height ${y.toFixed(2)}`);}}
+ }
+});

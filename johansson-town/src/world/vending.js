@@ -360,8 +360,8 @@ function machineGeometry({pad=true}={}){
  const P=M.pocket;
  {const shape=roundRect(new THREE.Shape(),-.465,Y+.095,.465,Y+M.faceTop,.02);shape.holes.push(roundRect(new THREE.Path(),P.x0,Y+P.y0,P.x1,Y+P.y1,.0015));
   const g=new THREE.ExtrudeGeometry(shape,{depth:.008,bevelEnabled:false,curveSegments:4});g.translate(0,0,F);body.add(g,{c:CREAM,name:'Vending face panel'});}   // (seated on the door: no slit behind it)
- print.add(planeGeo(.62,.42),{cellRect:PRINT.poster,at:[-.13,Y+.71,face+.002],name:'Vending poster'});
- body.add(boxGeo(.632,.432,.002),{c:DARK,at:[-.13,Y+.71,face]});
+ print.add(planeGeo(.62,.42),{cellRect:PRINT.poster,at:[-.13,Y+.71,face+.006],name:'Vending poster'});
+ body.add(boxGeo(.632,.432,.006),{c:DARK,at:[-.13,Y+.71,face+.002]});
  print.add(planeGeo(.62,.034),{cellRect:PRINT.takeOut,at:[(P.x0+P.x1)/2,Y+.392,face+.001],name:'Take-out label'});
  print.add(planeGeo(.17,.074),{cellRect:PRINT.badge,at:[.34,Y+.2,face+.004],name:'Maker’s plate'});
  body.add(boxGeo(.176,.08,.004),{c:0x8a9094,at:[.34,Y+.2,face+.001]});
@@ -421,7 +421,9 @@ let shared=null;
 function sharedMaterials(){
  if(shared)return shared;const A=paintAtlases();
  shared={body:new THREE.MeshStandardMaterial({vertexColors:true,roughness:.5,metalness:.12}),
-  print:new THREE.MeshStandardMaterial({vertexColors:true,map:A.print,roughness:.55}),
+  // The printed and lit panels are decals a millimetre or two over the body: drawn with polygon offset, as the town's
+  // decal layers are, so a phone's depth buffer never lets the body flash through them at a distance.
+  print:new THREE.MeshStandardMaterial({vertexColors:true,map:A.print,roughness:.55,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2}),
   lever:new THREE.MeshStandardMaterial({color:0xd8342c,roughness:.4}),lit:A.lit};
  return shared;
 }
@@ -441,7 +443,7 @@ export function createVendingMachine({shadows=false,pad=true}={}){
  add(G.body,mats.body,'Vending machine body',true);
  add(G.print,mats.print,'Vending printed panels');
  // its own unlit materials (a story dims one machine, not every machine in town)
- add(G.lit,new THREE.MeshBasicMaterial({map:mats.lit,vertexColors:true,toneMapped:false}),'Vending lit panels');
+ add(G.lit,new THREE.MeshBasicMaterial({map:mats.lit,vertexColors:true,toneMapped:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2}),'Vending lit panels');
  const clearMat=new THREE.MeshBasicMaterial({vertexColors:true,transparent:true,depthWrite:false});
  add(G.clear,clearMat,'Vending glass');
  const flap=add(G.flap,clearMat,'Take-out flap');flap.position.set(...G.hingeAt);

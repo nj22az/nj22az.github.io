@@ -75,11 +75,13 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
  // A family shop's signboard, not a chain's band: a long board of dark wood with the
  // name on a cream panel, under a short hood of red Okinawan tile.
  box([width+.3,.8,.45],[0,3.25,.12],0x5b3f2a);
- for(const y of [2.88,3.61])box([width+.32,.06,.49],[0,y,.13],0x3f2b1c);
+ // The two rails stand proud of the board on every side (2 cm under it, 1 cm over), never flush with its faces: a rail's
+ // face in the board's own plane flashed on a phone's depth buffer.
+ for(const y of [2.86,3.61])box([width+.32,.06,.49],[0,y,.13],0x3f2b1c);
  {const hood=new THREE.Group();hood.position.set(0,3.98,.32);hood.rotation.x=.42;group.add(hood);
   const tile=new THREE.MeshStandardMaterial({color:0xb5523a,roughness:.8}),ridge=new THREE.MeshStandardMaterial({color:0x8f3c2a,roughness:.8});
   const slab=new THREE.Mesh(new THREE.BoxGeometry(width+.5,.06,.7),tile);slab.position.set(0,0,.2);slab.castShadow=true;slab.receiveShadow=true;hood.add(slab);
-  for(let x=-width/2-.2;x<=width/2+.2;x+=.26){const rib=new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,.7,6),ridge);rib.rotation.x=Math.PI/2;rib.position.set(x,.045,.2);hood.add(rib);}
+  for(let x=-width/2-.2;x<=width/2+.2;x+=.26){const rib=new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,.68,6),ridge);rib.rotation.x=Math.PI/2;rib.position.set(x,.045,.2);hood.add(rib);}
   const cap=new THREE.Mesh(new THREE.BoxGeometry(width+.56,.1,.12),ridge);cap.position.set(0,.04,-.12);hood.add(cap);}
  const logo=new THREE.Object3D();logo.position.set(0,3.24,.38);group.add(logo);group.updateMatrixWorld(true);site.streetFrontage={position:group.localToWorld(new THREE.Vector3(0,.18,.02)).toArray(),yaw};buildSignboard(group,{width});
  // A light haze softens the view without a refraction framebuffer on phones.
@@ -91,16 +93,19 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
   const outer=side*(half-JAMB),inner=doorX+side*DOOR/2,run=Math.abs(outer-inner);
   if(run>.7)panes.push([(outer+inner)/2,run]);
  }
- for(const [lx,paneWidth] of panes){const pane=new THREE.Mesh(new THREE.PlaneGeometry(paneWidth,2.55),glazing);pane.position.set(lx,1.5,.02);pane.name='Sakura clear window pane';pane.userData.clearWindow=true;group.add(pane);for(const edge of [-1,1])box([.065,2.75,.09],[lx+edge*paneWidth/2,1.47,.055],0x4a3a2c);box([paneWidth,.08,.09],[lx,.15,.055],0x4a3a2c);
+ // The doorway has only a fanlight over the door's rail: a full pane there lay in the leaves' own plane, glass on glass.
+ for(const [lx,paneWidth] of panes){const fan=lx===doorX,pane=new THREE.Mesh(new THREE.PlaneGeometry(paneWidth,fan?2.775-(DOOR_HEIGHT+.11):2.55),glazing);pane.position.set(lx,fan?(2.775+DOOR_HEIGHT+.11)/2:1.5,.02);pane.name='Sakura clear window pane';pane.userData.clearWindow=true;group.add(pane);for(const edge of [-1,1])box([.065,2.75,.09],[lx+edge*paneWidth/2,1.47,.055],0x4a3a2c);box([paneWidth,.08,.09],[lx,.15,.055],0x4a3a2c);
   if(lx===doorX)continue;
   // The shop window as sashes: wooden mullions about a pace apart, a transom bar with the
   // fanlights over it, and a kick panel along the bottom.
   const bays=Math.max(1,Math.round(paneWidth/1.45));
-  for(let i=1;i<bays;i++)box([.07,2.6,.08],[lx-paneWidth/2+paneWidth*i/bays,1.45,.06],0x4a3a2c);
-  box([paneWidth,.07,.08],[lx,2.15,.06],0x4a3a2c);box([paneWidth,.34,.05],[lx,.19,.045],0x6b4c32);}
+  // In front of the glass (z .02) by a centimetre, not touching it: their backs in the pane's plane flashed through it.
+  for(let i=1;i<bays;i++)box([.07,2.6,.08],[lx-paneWidth/2+paneWidth*i/bays,1.45,.07],0x4a3a2c);
+  box([paneWidth,.07,.08],[lx,2.15,.07],0x4a3a2c);box([paneWidth-.01,.34,.05],[lx,.19,.065],0x6b4c32);}
  box([width,.1,.1],[0,2.82,.05],0x4a3a2c);for(const lx of [doorX-.4,doorX+.4])box([.035,.5,.12],[lx,1.4,.12],0x465854);
  // The persistent shop provides all furnishings and stock; no street-only replicas.
- const mat=box([1.7,.035,.8],[doorX,.21,.55],0x777064);mat.userData.storeEntrance=true;
+ // The mat lies 8 mm over the threshold stone (exterior-details.js, top 0.2275), not in its plane.
+ const mat=box([1.7,.035,.8],[doorX,.218,.55],0x777064);mat.userData.storeEntrance=true;
  const flag=box([.06,2.4,.42],[half+.05,2.15,.22],0xb84e45);flag.userData.banner=true;
  // Clear of the doorway. It used to hang from 1.08 to 2.63, straight across the
  // opening, so anybody standing in the door was cut off at the waist by a curtain —
@@ -118,10 +123,10 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
   box([1.05,2.1,.12],[door,1.05,wall-.03],0x42514a);             // the stockroom door
   box([.1,.05,.06],[door+.38,1.0,wall-.11],0xb9b2a0);            // its handle
   box([.1,3.8,.14],[door-1.5,1.9,wall-.06],0x5b5548);            // downpipe, from the roof's edge to its gully (okinawa/old-town.js)
-  box([.66,.8,.32],[door-2.5,1.42,wall-.17],0x7a7164);           // meter cupboard
-  box([.58,.1,.34],[door-2.5,1.84,wall-.18],0x5d564a);           // its lid
-  box([1.2,.86,.5],[-half+2.8,2.3,wall-.26],0x6d736d);           // extractor
-  for(const y of [2.12,2.3,2.48])box([1.0,.06,.54],[-half+2.8,y,wall-.3],0x4a4f4a);
+  box([.66,.8,.32],[door-2.5,1.42,wall-.145],0x7a7164);           // meter cupboard
+  box([.58,.1,.34],[door-2.5,1.84,wall-.155],0x5d564a);           // its lid
+  box([1.2,.86,.5],[-half+2.8,2.3,wall-.235],0x6d736d);           // extractor
+  for(const y of [2.12,2.3,2.48])box([1.0,.06,.54],[-half+2.8,y,wall-.275],0x4a4f4a);
   // The empties, back in their cases on a pallet by the door for Higa Liquor's van to take away (Higa supplies
   // Sakura's beer: commerce/merchandising.js). The row against the wall stands two high.
   const pallet=[half-4.4,wall-.52];
@@ -158,9 +163,11 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
  */
 function buildSlidingDoor({group,doorX,width,glazing,box}){
  const HEIGHT=DOOR_HEIGHT;
- const rail=box([width+.26,.1,.16],[doorX,HEIGHT+.06,.02],SLIDING_DOOR.frame);rail.userData.staticProp=true;
+ const rail=box([width+.26,.1,.15],[doorX,HEIGHT+.06,.02],SLIDING_DOOR.frame);rail.userData.staticProp=true;
  // The town's standard sliding door (sliding-door.js): the same leaves and the same motion as from inside.
- const {place}=buildSlidingLeaves({parent:group,x:doorX,z:.02,width,height:HEIGHT,glazing,name:'Sakura door leaf'});
+ // The leaves run 4.5 cm inside the fixed glass (z 0.02): open, they park behind the side panes, and in the panes' own
+ // plane they flashed through them every time somebody came in.
+ const {place}=buildSlidingLeaves({parent:group,x:doorX,z:-.025,width,height:HEIGHT,glazing,name:'Sakura door leaf'});
  // Where the mat is, in the town's own coordinates, so a person's position can be
  // compared with it without anybody having to know how the shop is placed.
  group.updateMatrixWorld(true);
@@ -200,5 +207,5 @@ function hangNoren(group,x,y,z){
  ctx.font='600 22px sans-serif';ctx.fillText('SAKURA SHŌTEN',256,116);
  const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;
  const mesh=new THREE.Mesh(new THREE.PlaneGeometry(2.0,.56),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide,transparent:true}));
- mesh.position.set(x,y,z);mesh.userData.banner=true;group.add(mesh);
+ mesh.position.set(x,y,z);mesh.userData.banner=true;mesh.name='Sakura noren';group.add(mesh);
 }

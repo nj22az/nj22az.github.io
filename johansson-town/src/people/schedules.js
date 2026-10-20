@@ -21,6 +21,22 @@ import {commuterPhase,townPhase} from './commuter-schedule.js';
 import * as THREE from '../../vendor/three.module.js';
 import {alignedStep,forwardOnly,travelError,travelYaw} from './facing.js';
 const HOME_RESIDENT_NAMES=new Set(HOME_OWNERS.map(p=>p.name));
+/** How close a walker comes to a stand point or a quay spot before standing on it (stand-points.js). */
+const STAND_STOP=.12;
+/**
+ * On a stand point (stand-points.js) or a claimed quay spot (quay-breaks.js): turn to its facing at a walker's turning
+ * pace, then take its pose and tool; off it, put down only what this set (another controller's pose is left alone).
+ */
+function standOnPoint(g,stand,dt){
+ const u=g.userData;
+ if(stand){
+  const diff=Math.atan2(Math.sin(stand.yaw-g.rotation.y),Math.cos(stand.yaw-g.rotation.y));
+  g.rotation.y+=Math.max(-dt*2.6,Math.min(dt*2.6,diff));
+  if(Math.abs(diff)<.05){u.socialPose=stand.pose||'Idle';if(stand.tool)u.tool=stand.tool;else delete u.tool;u.standPose=true;}
+  return;
+ }
+ if(u.standPose){delete u.socialPose;delete u.tool;delete u.standPose;}
+}
 export const DIALOGUE={
  Thuan:[['hello',"Welcome.\nWelcome to Sakura Shōten. Take your time; the kettle has only just boiled."],['pink',"This shirt is my favorite.\nThis yellow flower set is my favourite. My aunt says the shop is easier to find when I stand outside."],['work',"Afternoon stocking has finished.\nThe afternoon shelves are ready. Cold tea is in the cooler; postcards are beside the biscuits."],['harbour',"Would you like to take a walk to the port?\nWalking to the harbour? The light turns the water pink just before supper."],['catalogue',"Click here for the order form.\nThe mail-order book is on the counter. I keep those orders separate from the daily till."]],
  Nhung:[['books','The Swedish engineer keeps leaving historical novels here as if they were spare parts.'],['shelf','Six books. The shelf has requested a structural assessment.'],['century','Which century did you like? The seventeenth leaks through the shutters.','book'],['job','So he does have a real job. I assumed he only wrote about captains.','cv'],['cat','Tama has not read them. He reviews the binding by sleeping on it.'],['rain','Please leave the rain outside. The histories have enough disasters.'],['chair','The window chair is free. Twenty seconds of peace is an excellent bargain.'],['water','The harbour office tray is towards the water. Documents, not treasure.']],
@@ -54,7 +70,7 @@ DIALOGUE.Thuan.push(['home',residentHomeDescription('Thuan')+' The plants by the
 // Apply the recorded clips last: a later rewrite of a resident's lines must not
 // leave a published subtitle disagreeing with the audio it plays.
 for(const clip of VOICE_LINES){const row=DIALOGUE[clip.resident]?.find(row=>row[0]===clip.topic);if(row){row[1]=clip.en;row[3]=null;}} // Retire Japanese-only recordings in the English game.
-export function createCastAI({world,player,state,paused,collides,getObserverPosition=()=>player.position,activities=null}){
+export function createCastAI({world,player,state,paused,collides,getObserverPosition=()=>player.position,activities=null,attends=()=>true,detourRetryMinutes=0}){
  // Keep scheduled targets off the forest bus road and painted coyote-tunnel mouth.
  // WalkFix owns how they walk there; we only refuse the arch as a stand/queue point.
  //
@@ -103,7 +119,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   g.rotation.y+=THREE.MathUtils.clamp(delta,-turnRate*dt,turnRate*dt);
   return forwardOnly(g.rotation.y,dx,dz);
  }
- function move(person,target,dt,tag,pace=0){const g=person.g,arrival=tag==='onsen'?ONSEN_ENTRY_RADIUS:person===thuan&&tag==='nap'?STAFF_BENCH.approachRadius:.7;if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<arrival)return;
+ function move(person,target,dt,tag,pace=0,stopAt=0){const g=person.g,arrival=stopAt||(tag==='onsen'?ONSEN_ENTRY_RADIUS:person===thuan&&tag==='nap'?STAFF_BENCH.approachRadius:.7);if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<arrival)return;
   // Somebody standing inside a collider can never leave it. Every step out of one is
   // still in one, so the walker refuses all of them -- and the route it would have
   // followed comes back empty anyway, because the path starts in an obstacle. Getting
@@ -148,7 +164,10 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   // on the kerb for the rest of the evening (Thuan and Tetsuo at Main Street, on the way to the izakaya).
   const facing=route.stalled>1?world.people.find(p=>p.g!==g&&p.g.visible&&!p.g.userData.indoors&&Math.hypot(p.g.position.x-g.position.x,p.g.position.z-g.position.z)<.9):null;
   const faceToFace=!!facing&&(route.stalled>2.5||String(person.profile?.name||'')<String(facing.profile?.name||''));
-  if(route.stalled>3||faceToFace){
+  // The web edition (edition.js detourRetryMinutes): a walker whose detour search found no way round keeps still for a
+  // while instead of searching again every three seconds (a 200 ms search each time, for nothing).
+  if((route.stalled>3||faceToFace)&&route.noDetourUntil>clockMinutes){route.stalled=0;route.checkpoint.copy(g.position);}
+  else if(route.stalled>3||faceToFace){
    const obstacles=world.people.filter(p=>p.g!==g&&!p.g.userData.indoors&&!p.g.userData.inIzakaya&&!p.g.userData.inOnsen&&!p.g.userData.inMarket&&!p.g.userData.inRamen&&!p.g.userData.inHome).map(p=>p.g.position.clone());
    // Somebody already standing within the margin must not wall off the start of the
    // detour: a point is only refused for being nearer them than the walker is now, so
@@ -157,7 +176,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    const hx=g.position.x,hz=g.position.z;
    const detour=createNavigation((x,z,r)=>collides(x,z,r)||obstacles.some(o=>{const d=Math.hypot(x-o.x,z-o.z);return d<r+.34&&d<Math.hypot(hx-o.x,hz-o.z)-.01;}));
    const points=detour.path(g.position,{x:target[0],z:target[1]});
-   if(points.length){route.points=points;route.at=0;}route.stalled=0;route.checkpoint.copy(g.position);
+   if(points.length){route.points=points;route.at=0;}else if(detourRetryMinutes)route.noDetourUntil=clockMinutes+detourRetryMinutes;route.stalled=0;route.checkpoint.copy(g.position);
   }
   const goal=route.points[route.at];if(!goal)return;const dx=goal[0]-g.position.x,dz=goal[1]-g.position.z,d=Math.hypot(dx,dz);if(d<Math.min(.16,arrival)){route.at++;return;}
   // A leg may ask for its own pace: an afternoon by the sea is not an errand.
@@ -219,6 +238,17 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   if(Math.hypot(movedX,movedZ)<.0001)route.speed=0;
  }
 
+ /**
+  * The web edition's walk for somebody nobody can see (attention.js): they are where their day has them, on the
+  * clear point their walk would have ended on, with no route searched and no step taken. False when the point is not
+  * clear to stand on, and they walk there as on Linux. Never called on Linux.
+  */
+ function settle(g,target,tag){
+  if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<(tag==='onsen'?ONSEN_ENTRY_RADIUS*.5:.3)){routes.delete(g);return true;}
+  // A target inside something (a threshold in a door's collider) is walked to as on Linux.
+  if(collides(target[0],target[1],.3))return false;
+  routes.delete(g);g.position.set(target[0],groundHeight(target[0],target[1]),target[1]);return true;
+ }
  /** True while the Harbour Line is standing at the terminus with its doors to you. */
  const atTheStop=()=>{const run=world.ferry||world.bus;return !run||['waiting','turning'].includes(run.phase);};
  /**
@@ -315,7 +345,10 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<1)state().kenjiEscort='done';
    }
    // Venue thresholds must not be displaced by generic crowd spacing.
-   if(!(tag==='work'&&v.workSite)&&!['home','bookshop','izakaya','ramen','market','onsen','bus','station','nap'].includes(tag)&&!tag.startsWith('patrol')&&!tag.startsWith('town-activity'))target=destination(p,target,tag);
+   // A stand point or a claimed quay spot (plan.stand) is its own mark, measured and held: never spread for the crowd.
+   if(!plan.stand&&!(tag==='work'&&v.workSite)&&!['home','bookshop','izakaya','ramen','market','onsen','bus','station','nap'].includes(tag)&&!tag.startsWith('patrol')&&!tag.startsWith('town-activity'))target=destination(p,target,tag);
+   // Each stand point is its own leg, so the walk is planned again from one to the next.
+   if(plan.stand&&Number.isFinite(plan.stand.index))tag+='-'+plan.stand.index;
    if(!initialised.has(g)){
     initialised.add(g);
     const remembered=state().residentLocations?.[v.name],valid=remembered&&Array.isArray(remembered.position)&&remembered.position.length===2&&remembered.position.every(Number.isFinite)&&Math.abs(remembered.position[0])<300&&Math.abs(remembered.position[1])<300;
@@ -344,7 +377,11 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     delete g.userData.chatHold;delete g.userData.chat;
     g.userData.activity='making way for Thuan';
     move(p,yieldTarget,dt,'yield-thuan');
-   }else if(!g.userData.indoors&&!g.userData.usingTownObject&&!g.userData.chatHold&&!(g.userData.facePlayerUntil>performance.now())&&!(tag==='escort'&&g.position.distanceTo(player.position)>6))move(p,target,dt,tag,plan.pace);
+   }else if(!g.userData.indoors&&!g.userData.usingTownObject&&!g.userData.chatHold&&!(g.userData.facePlayerUntil>performance.now())&&!(tag==='escort'&&g.position.distanceTo(player.position)>6)){
+    // Unseen and out of reach on the web (people/attention.js), they keep the timetable without walking it.
+    if(attends(g)||!settle(g,target,tag))move(p,target,dt,tag,plan.pace,plan.stand?STAND_STOP:0);
+   }
+   standOnPoint(g,plan.stand&&!yieldTarget&&!g.userData.usingTownObject&&!g.userData.chatHold&&Math.hypot(g.position.x-target[0],g.position.z-target[1])<STAND_STOP+.02?plan.stand:null,dt);
    // Playing (social.js sistersAtPlay): once both are there, they turn to each other,
    // keep their eyes on each other and play; until then, whoever is first waits.
    const partner=plan.play?world.people.find(q=>q.profile?.name===plan.play):null;

@@ -3,6 +3,9 @@ import {createLinuxLife} from './desktop/life.js';
 import {buildLinuxBedroom} from './desktop/bedroom.js';
 import {createHarbourFestival} from './progression/harbour-festival-view.js';
 import {createLaunchReport} from './render/launch-report.js';
+import {BUDGET} from './edition.js';
+import {createAttention} from './people/attention.js';
+import {setStandFilter} from './people/full-life.js';
 import {createStartupRecovery,graphicsProfile,drawingDpr} from './render/startup-recovery.js';
 import {createResolutionGovernor} from './render/resolution-governor.js';
 import {redrawReleasedCanvases,paintBack} from './render/canvas-release.js';
@@ -15,7 +18,7 @@ import {BELOW_DECK_FLOORS} from './world/ferry-interior.js';
 import {WEATHERS,WEATHER_CHANGE_MINUTES,weatherLine,nextWeather,readWeather,writeWeather} from './world/weather.js';
 import {izakayaOpen} from './people/social.js';
 import {closedGreeting} from './people/izakaya-hours.js';
-import {createPointWalk} from './input/point-walk.js';
+import {createPointWalk,ROOM_STEP} from './input/point-walk.js';
 import {createColliderGrid} from './world/collider-grid.js';
 import {createLightBudget} from './render/light-budget.js';
 import {japaneseSign,signText} from './world/okinawa/signs.js';
@@ -102,7 +105,7 @@ import {HOUSE_SAVE} from './world/johansson-house.js';
 import {createHomeCustomization} from './world/interiors/home-customization.js';
 import {buildCityRestaurant,CITY_RESTAURANT} from './world/interiors/city-restaurant.js';
 import {buildUpperHome} from './world/interiors/upper-home.js';
-import {SAKURA_STAIR,sakuraBoundsAt} from './world/interiors/sakura-stairs.js';
+import {SAKURA_STAIR,sakuraBoundsAt,STAIR_LENS_EASE} from './world/interiors/sakura-stairs.js';
 import {buildFamilyHome} from './world/interiors/family-home.js';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js?ui=compact-3';
@@ -268,7 +271,7 @@ function signTex(a,b,accent='#9b4035'){const c=document.createElement('canvas');
 const townSections=createTownSections({mobile});window.__JOHANSSON_SECTIONS__=townSections.stats;
 const shopStreetView=createShopStreetView();window.__JOHANSSON_SHOP_VIEW__=shopStreetView.stats;
 /** Rooms that look out on the real street through their front: Sakura's glass, Minato's door and window. */
-function streetFrontageOf(site){if(site?.id==='market'&&player.position.y>SAKURA_STAIR.height-.3){const office=SITES.find(s=>s.id==='sakura-office');if(office)return streetFrontageOf({...office,officePortals:office.officePortals.map(p=>({...p,interiorOrigin:[p.interiorOrigin[0],SAKURA_STAIR.height,p.interiorOrigin[2]+SAKURA_STAIR.officeZ]}))});}if(site?.officePortals){const dir=camera.getWorldDirection(new THREE.Vector3());return site.officePortals.reduce((a,b)=>{const score=p=>dir.x*Math.sin(p.interiorYaw||0)+dir.z*Math.cos(p.interiorYaw||0);return score(b)>score(a)?b:a;});}if(!site?.streetFrontage)return null;if(site.id==='market')return {...site.streetFrontage,interiorZ:sakuraShop.layout.frontZ};return site.id==='izakaya'?site.streetFrontage:null;}
+function streetFrontageOf(site){if(site?.id==='market'&&player.position.y>SAKURA_STAIR.height-.3){const office=SITES.find(s=>s.id==='sakura-office');if(office)return streetFrontageOf({...office,officePortals:office.officePortals.map(p=>({...p,interiorOrigin:[p.interiorOrigin[0],SAKURA_STAIR.height,p.interiorOrigin[2]+SAKURA_STAIR.officeZ]}))});}if(site?.officePortals)return {portals:site.officePortals};if(!site?.streetFrontage)return null;if(site.id==='market')return {...site.streetFrontage,interiorZ:sakuraShop.layout.frontZ};return site.id==='izakaya'?site.streetFrontage:null;}
 const town=new THREE.Group(),room=new THREE.Group();scene.add(town,room);room.visible=false;
 
 // The drawn look, after Sakura Crossing (Kenton-GMI, MIT): quantised light with
@@ -884,6 +887,40 @@ function placeThirdPerson(dt){
   const flat=Math.max(.25,Math.hypot(camera.position.x-player.position.x,camera.position.z-player.position.z)),down=Math.max(-.6,Math.atan2(player.position.y+eye-.1-camera.position.y,flat)+.35);
   camera.rotation.x=THREE.MathUtils.lerp(camera.rotation.x,Math.min(camera.rotation.x,down),crampedEase);
  }
+ placeLandingLens(dt);
+}
+/**
+ * A room's landing lens (Sakura's turning landing, sakura-stairs.js SAKURA_LANDING): where the lens behind him would
+ * stand against a wall a step away, the room names places that frame him and the next flight. The first with a clear
+ * sight of his chest is taken; the lens eases over to it, follows it smoothly if it changes, and eases back to the
+ * boom as he steps off the landing.
+ */
+let landingEase=0,landingReady=false;
+const landingPos=new THREE.Vector3(),landingAt=new THREE.Vector3(),landingWant=new THREE.Vector3(),landingLook=new THREE.Vector3(),landingQ=new THREE.Quaternion(),landingM=new THREE.Matrix4(),landingFrom=new THREE.Quaternion(),boomLook=new THREE.Vector3();
+// The room's solids at a height (its walls, guards, furniture), not the ceiling over him: the lens may stand above a flight.
+const landingSolid=(x,z,y,r)=>roomColliders.some(c=>!c.only&&(c.minY||0)<y+.06&&(!Number.isFinite(c.height)||(c.minY||0)+c.height>y-.06)&&circleHitsRect(x,z,r,c));
+function landingSightClear(pos,chest){
+ const [x,y,z]=pos,dx=chest[0]-x,dy=chest[1]-y,dz=chest[2]-z,len=Math.hypot(dx,dy,dz);
+ if(landingSolid(x,z,y,.16))return false;
+ for(let t=.2;t<len-.35;t+=.12){const k=t/len;if(landingSolid(x+dx*k,z+dz*k,y+dy*k,.06))return false;}
+ return true;
+}
+function placeLandingLens(dt){
+ const shots=current&&!seated?activeRoomLayout?.stairLens?.(player.position):null;
+ landingEase=THREE.MathUtils.damp(landingEase,shots?.length?1:0,STAIR_LENS_EASE.blend,dt);
+ if(shots?.length){
+  const shot=shots.find(s=>landingSightClear(s.pos,s.chest))||shots[0];
+  landingWant.set(...shot.pos);landingLook.set(...shot.at);
+  if(!landingReady){landingPos.copy(landingWant);landingAt.copy(landingLook);landingReady=true;}
+  else{const k=1-Math.exp(-STAIR_LENS_EASE.pos*dt);landingPos.lerp(landingWant,k);landingAt.lerp(landingLook,1-Math.exp(-STAIR_LENS_EASE.look*dt));}
+ }
+ if(landingEase<.002){landingEase=0;if(!shots)landingReady=false;return;}
+ // Between the boom and the stair's lens, both the place and what it looks at are blended: the boom looks past him at a
+ // point ahead of its lens, the stair's lens at him, and a lens on the way between looks between the two, so he stays in
+ // the frame while it comes round (blending the turns alone let the half-way lens look past him).
+ landingFrom.copy(camera.quaternion);boomLook.set(0,0,-1).applyQuaternion(landingFrom).multiplyScalar(Math.max(1.5,thirdDistance)).add(camera.position);
+ camera.position.lerp(landingPos,landingEase);boomLook.lerp(landingAt,landingEase);
+ landingQ.setFromRotationMatrix(landingM.lookAt(camera.position,boomLook,lensUp));camera.quaternion.copy(landingQ);
 }
 /** R, the drink button, or Drink at the table: a can from the bag, or a sip of what Thao brought. */
 function drinkNow(){if(parkSeat?.izakaya&&beerService?.drink)return sipDrink();return hands.drink();}
@@ -945,7 +982,7 @@ function updateJohansson(dt){
  const partner=conversationName?(conversationName==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===conversationName)?.g):null;
  if(partner){partner.getWorldPosition(lookPoint);lookPoint.y+=1.5;johansson.lookAt(lookPoint);}else johansson.lookAt(spawnScene?.gaze||null);
  setSwingFocus(camera.position);
- johansson.update(dt,{sleeping:!!linuxLife?.inBed,speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:!!linuxLife?.inBed||islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5:shipRoom()||houseboatCabin()?thirdDistance>=HEAD_CAM:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active});
+ johansson.update(dt,{sleeping:!!linuxLife?.inBed,speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:!!linuxLife?.inBed||islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5||landingEase>.5:shipRoom()||houseboatCabin()?thirdDistance>=HEAD_CAM:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active});
  // Sakura: one thing in his hand, more in a basket, until he pays (shop-carry.js).
  shopCarry.sync(activities?.state?.konbini?.basket,current?.id==='market'&&johansson.ready);
 }
@@ -955,7 +992,9 @@ await paintLoading();
 characters=createCharacters({mobile,shadows,onJump:()=>johansson?.jump(),canJump:()=>!seated&&!pocket?.raised&&controlsAllowed(),isBlocked:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>circleHitsRect(x,z,r,c)),onError:(name,error)=>console.warn('Character construction failed:',name,error)});characters.attach(player,'player',1.82);world.people.forEach(p=>characters.attach(p.g,p.g.userData.name,p.profile?.height));
 // The people of the new streets: shopkeepers at their counters, the old men at gateball,
 // Grandmother Higa on her verandah, a postman on his round. See people/neighbours.js.
-neighbours=createNeighbours({parent:town,register:reg,characters,getRain:()=>weather,getState:()=>activities.state,blocked:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>standingHitsRect(x,z,r,groundHeight(x,z),c)),onAction:(kind,name)=>{
+// Who is simulated in full this frame: everybody on Linux; on the web, whoever is near or in view (edition.js).
+const observerAt={x:0,z:0,inside:false},attention=createAttention({camera,getObserver:()=>{const at=current?doors.get(current.id):player.position;if(!at)return null;observerAt.x=at.x;observerAt.z=at.z;observerAt.inside=!!current;return observerAt;}});
+neighbours=createNeighbours({parent:town,register:reg,characters,attends:g=>attention.attends(g),getRain:()=>weather,getState:()=>activities.state,blocked:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>standingHitsRect(x,z,r,groundHeight(x,z),c)),onAction:(kind,name)=>{
  const who=neighbours.talkTo(name,player.position);if(who)characters.gesture(who);activities.action(kind,name);
 }});
 world.neighbours=neighbours.entities;world.homeNeighbours=neighbours.people;
@@ -976,7 +1015,13 @@ content={items:BUSINESS_CONTENT_CATALOGUE,objects:new Map()};
 const residentLedger=createResidentLedger(()=>activities.state);
 const townCleanup=createTownCleanup({parent:town,register:reg,action:activities.action,getState:()=>activities.state,blocked:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>circleHitsRect(x,z,r,c))});
 const npcActivities=createTownActivities({getTargets:()=>interactables,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>circleHitsRect(x,z,r,c)),getPlayerPosition:()=>current?null:player.position,ledger:residentLedger,getState:()=>activities.state});
-castAI=createCastAI({activities:npcActivities,world,player,getObserverPosition:()=>current?doors.get(current.id):player.position,state:()=>activities.state,paused:()=>false,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>standingHitsRect(x,z,r,groundHeight(x,z),c))});
+castAI=createCastAI({activities:npcActivities,world,player,attends:g=>attention.attends(g),detourRetryMinutes:BUDGET.detourRetryMinutes||0,getObserverPosition:()=>current?doors.get(current.id):player.position,state:()=>activities.state,paused:()=>false,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>standingHitsRect(x,z,r,groundHeight(x,z),c))});
+// Stand points (people/stand-points.js): on Linux for everybody; on the web for the residents in view, near, or in the
+// room the player is in, and the rest keep one target a phase (edition.js, full-life.js).
+if(!BUDGET.residentsEverywhere){
+ const bodies=new Map();const bodyOf=name=>{if(!bodies.has(name))bodies.set(name,world.people.find(p=>p.profile?.name===name)?.g||world.neighbours?.find(g=>g.userData.name===name)||null);return bodies.get(name);};
+ setStandFilter(name=>{const g=bodyOf(name);if(!g)return true;for(let p=g.parent;p;p=p.parent)if(p===room)return true;return attention.attends(g);});
+}
 const workplaceResidents=createWorkplaceResidents({world,parent:scene,getEntrance:()=>activeRoomLayout?.spawn||[0,0,5.2],getLayout:()=>activeRoomLayout,getTargets:()=>interactables,collides:environmentBlocked,getPlayerPosition:()=>player.position,getState:()=>activities.state,ledger:residentLedger,onBorrow:npcActivities.release});
 const bookshopCustomers=createBookshopCustomers({world,parent:scene,getLayout:()=>activeRoomLayout,getPlayerPosition:()=>player.position,collides:environmentBlocked,getState:()=>activities.state,ledger:residentLedger,onBorrow:npcActivities.release,save:()=>activities.save()});
 const chatBlocked=(a,b)=>!clearChatLine(a,b,current?roomColliders:world.colliders);
@@ -1118,7 +1163,7 @@ const ramenBlocked=(x,z,r=.3)=>(suppliedRoomBoundsBlocked(SATO_ROOM,x,z,r)||SATO
 function hideRamen(){scene.add(ramenLife);ramenLife.visible=false;}
 const ramenGuests=createIndoorResidents({world,parent:ramenLife,collides:ramenBlocked,getRain:()=>weather,place:'ramen',onBorrow:npcActivities.release,getState:()=>activities.state}),homeGuests=createHomeResidents({world,parent:scene,getPlayerSeat:()=>seated?parkSeat?.position:null,getState:()=>activities.state,collides:(x,z,r,y)=>environmentBlocked(x,z,r,'player',y),onBorrow:npcActivities.release,getRain:()=>weather});
 // Mrs Sato's kitchen: she cooks and carries every bowl, the regulars' and yours (people/ramen-kitchen.js).
-const satoKitchen=createRamenKitchen({isAfterLunch:()=>{const m=((minutes%1440)+1440)%1440;return m>=SATO_RAMEN.close&&m<SATO_RAMEN.close+60;},getCook:()=>{const g=world.people.find(p=>p.profile.name==='Mrs Sato')?.g;return g&&g.visible&&g.userData.inRamen&&!g.userData.roomTransition?g:null;}});
+const satoKitchen=createRamenKitchen({getMinutes:()=>minutes,isAfterLunch:()=>{const m=((minutes%1440)+1440)%1440;return m>=SATO_RAMEN.close&&m<SATO_RAMEN.close+60;},getCook:()=>{const g=world.people.find(p=>p.profile.name==='Mrs Sato')?.g;return g&&g.visible&&g.userData.inRamen&&!g.userData.roomTransition?g:null;}});
 const ramenMeals=createVenueService({room:ramenLife,place:'ramen',getMinutes:()=>minutes,ledger:residentLedger,getCustomers:()=>world.people.filter(p=>p.g.userData.inRamen),
  ...(({staffName:'Mrs Sato',venueName:'Sato Ramen',getStaff:()=>world.people.find(p=>p.profile.name==='Mrs Sato')?.g||null,
   kitchen:satoKitchen,meal:MEALS.lunch,drinkFor:name=>SATO_LUNCH_DRINK[name]||'mugicha',tableFor:p=>SATO_GUEST_SEATS[p.g.userData.ramenSeat]?.table}))});
@@ -1268,7 +1313,9 @@ async function enterRoom(s){replayInterrupted();lowerPocket();spawnScene?.cancel
  }
  parkSeat=null;seated=false;activities.close();if(!photoStudio?.active&&!photoReturning)activities.visit(s.id);
  const streetYaw=yaw,streetPitch=pitch;
- current=s;roomShell(s);addRoomProps(s);content=buildBusinessContent({site:s,room,register:reg,onAction:activities.action,onInspect:item=>inspector.open(item)});if(!activeRoomLayout?.storeys)room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});activeRoomLayout?.follow?.({x:0,y:activeRoomLayout.spawn?.[1]??0,z:0});indoorCeilings=createIndoorCeilings(room,{from:activeRoomLayout?.ceilingsFrom});const spawn=officeEntry?[0,SAKURA_STAIR.height,-5.15]:activeRoomLayout?.spawn||[0,0,4.3];
+ current=s;roomShell(s);addRoomProps(s);content=buildBusinessContent({site:s,room,register:reg,onAction:activities.action,onInspect:item=>inspector.open(item)});if(!activeRoomLayout?.storeys)room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});indoorCeilings=createIndoorCeilings(room,{from:activeRoomLayout?.ceilingsFrom});const spawn=officeEntry?[0,SAKURA_STAIR.height,-5.15]:activeRoomLayout?.spawn||[0,0,4.3];
+ // The storeys drawn for where he arrives (a room of more than one storey shows the floor he stands on), before the first frame.
+ activeRoomLayout?.follow?.({x:spawn[0],y:spawn[1]??0,z:spawn[2]});
  player.position.set(...spawn);
  // With the camera behind him, start a step inside so it is not up against the door.
  if(thirdPerson&&!officeEntry){const inward=activeRoomLayout?.yaw??0,dx=-Math.sin(inward),dz=-Math.cos(inward);for(let d=.1;d<=1.2;d+=.1){const x=spawn[0]+dx*d,z=(spawn[2]??0)+dz*d;if(cameraBlocked(x,z,player.position.y+.9,.35))break;player.position.x=x;player.position.z=z;}}
@@ -1355,6 +1402,8 @@ function ferryLadder(way){
 function plantStation(id,line=null){
  const run=world.ferry,st=PLANT_STATIONS.find(s=>s.id===id);if(!run||!st)return;
  const menu=stationMenu(run.plant,st);
+ // On the web the engine room is a display piece (edition.js `machinery`): the station reads as it stands, nothing to work.
+ if(!BUDGET.machinery){activities.menu(menu.title,menu.line,[['Close',activities.close]]);return;}
  activities.menu(menu.title,(line?line+'\n\n':'')+menu.line,[...menu.items.map(it=>[it.label,()=>{const r=it.act();run.refreshPlant();plantStation(id,r.ok?r.what:r.why);}]),['Close',activities.close]]);
 }
 /** Below the car deck (BELOW_DECK_FLOORS: the ladder, the floor plates, the booth) everybody wears ear defenders. */
@@ -1492,7 +1541,9 @@ function reachTheTunnelMouth(x,z){
  tunnelSignAt=elapsed;
  say("Old Cave · The old sea cave. It goes down into the dark — tap to go in.",3.5);
 }
-const pointWalk=createPointWalk({blocked:(x,z,r)=>environmentBlocked(x,z,r),heightAt:(x,z)=>current?0:groundHeight(x,z),radius:PLAYER_RADIUS});
+// Indoors the route is planned on a finer grid (a doorway is narrower than the town's 0.35 m), and in a room of more than
+// one storey only over the floor he stands on: a tap is a walk on this floor, never across the stairwell.
+const pointWalk=createPointWalk({blocked:(x,z,r)=>environmentBlocked(x,z,r)||!!roomWalk()&&!roomWalk().floorAt(x,z,player.position.y),heightAt:(x,z)=>current?0:groundHeight(x,z),radius:PLAYER_RADIUS,step:space=>space?ROOM_STEP:.35});
 const walkMarker=new THREE.Mesh(new THREE.RingGeometry(.19,.25,24),new THREE.MeshBasicMaterial({color:0xfff4c9,transparent:true,opacity:.8,depthWrite:false,side:THREE.DoubleSide}));
 walkMarker.rotation.x=-Math.PI/2;walkMarker.visible=false;scene.add(walkMarker);
 // A walk recorded step by step, or played back (src/input/replay.js; the audit's replay controls).
@@ -2087,7 +2138,7 @@ function advanceTown(dt,playerPaused,fastForward=false){
     // The ramen counter: an order is cooked for five seconds, then set down in front of you.
     venueService?.update(dt);beerService?.update(dt);ramenPlayerService?.update(dt);
     workplaceResidents.update(dt,minutes,weather);bookshopCustomers.update(dt,minutes);
-    castAI?.update(dt,minutes,weather);sakuraShop.update(dt);ramenGuests.sync(minutes,dt);ramenMeals.update(dt);satoKitchen?.update(dt);neighbourChats.update(dt,minutes,weather);
+    castAI?.update(dt,minutes,weather);sakuraShop.update(dt);ramenGuests.sync(minutes,dt);ramenMeals.update(dt);satoKitchen?.update(dt);if(BUDGET.neighbourChats)neighbourChats.update(dt,minutes,weather);
     if(current&&!catchingUp)world.updateLife(dt,elapsed,daylight(minutes),minutes);
     if(!catchingUp){ferryCrew?.update(dt,minutes);neighbours?.update(dt,minutes,current?null:player.position);}
     if(!current&&!catchingUp){const swell=hold();world.update(dt,elapsed,daylight(minutes),minutes);carry(swell);if(!activities.state.quickTravelNotified&&travelProgress(activities.state).unlocked)activities.save();world.beats?.update(dt,elapsed,minutes);}
@@ -2101,7 +2152,7 @@ function followClock(){
  if(gap>5)advanceAbsentTown(gap);
  else if(gap>.05||gap<-.05)minutes=real;
 }
-function simulate(frameDt,playerPaused=false){advanceWeather();updatePost(frameDt);
+function simulate(frameDt,playerPaused=false){advanceWeather();updatePost(frameDt);attention.update();
  followClock();
  accumulator+=Math.min(frameDt,MAX_FRAME_DT);
  while(accumulator>=SIM_STEP){advanceTown(SIM_STEP,playerPaused);accumulator-=SIM_STEP;}

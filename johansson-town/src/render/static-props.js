@@ -26,7 +26,9 @@ export function batchStaticProps(root,cellSize=24){
   }
   const geometry=mergeGeometries(pieces,false);if(!geometry){pieces.forEach(g=>g.dispose());continue;}
   const material=objects[0].material.clone();material.color.set(0xffffff);material.vertexColors=true;
-  const mesh=new THREE.Mesh(geometry,material);mesh.name='static-props:'+key;mesh.castShadow=objects[0].castShadow;mesh.receiveShadow=objects[0].receiveShadow;mesh.renderOrder=objects[0].renderOrder;parent.add(mesh);mesh.updateMatrixWorld(true);
+  const mesh=new THREE.Mesh(geometry,material);mesh.name='static-props:'+key;
+  // For the z-fighting scan (tools/z-fighting.mjs): which source mesh each run of vertices came from.
+  if(globalThis.__KIT_TRACE__){let at=0;mesh.userData.kitSources=objects.map((o,i)=>{const n=pieces[i].attributes.position.count,names=[];for(let p=o;p&&p!==root;p=p.parent)if(p.name)names.unshift(p.name);const r={start:at,count:n,where:'batched '+(names.join(' › ')||o.type)+' @'+o.position.toArray().map(v=>+v.toFixed(3)).join(',')+(o.geometry.parameters?.width!==undefined?' box '+[o.geometry.parameters.width,o.geometry.parameters.height,o.geometry.parameters.depth].map(v=>+(+v).toFixed(3)).join('×'):'')};at+=n;return r;});}mesh.castShadow=objects[0].castShadow;mesh.receiveShadow=objects[0].receiveShadow;mesh.renderOrder=objects[0].renderOrder;parent.add(mesh);mesh.updateMatrixWorld(true);
   geometry.computeBoundingSphere();geometry.computeBoundingBox();
   for(const o of objects){o.layers.set(31);o.userData.renderBatch=mesh.uuid;sources.push(o);}
   pieces.forEach(g=>g.dispose());batches++;drawsSaved+=objects.length-1;triangles+=geometry.attributes.position.count/3;

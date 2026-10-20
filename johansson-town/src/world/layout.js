@@ -18,7 +18,7 @@ import {BUS_STATION,BUS_STATION_ROUTES} from './bus-station.js';
 import {FOREST_EDGE} from './forest-edge.js';
 import {CAVE_MOUTH,CAVE_ACTIVE} from './coyote-tunnel.js';
 import {coastalSurface} from './coastal-ground.js';
-import {beachAccessHeight} from './beach-layout.js';
+import {beachAccessHeight,gradedHeight} from './beach-layout.js';
 import {EAST_LAWN,eastLawnAt} from './east-lawn.js';
 import {WEST_YARD,westYardAt} from './west-yard.js';
 import {STAFF_YARD_ROUTE} from './staff-bench.js';
@@ -173,7 +173,7 @@ export function planHeight(x,z){
   if(kitahamaLaneAt(x,z))return KITAHAMA.y+GROUND_LAYER.lane;
   const garden=coastalSurface(x,z);if(garden?.id==='harbour-park')return garden.y;
   const airport=airportSurface(x,z);if(airport)return airport.y;
-  const ramp=beachAccessHeight(x,z);if(ramp!==null)return ramp;
+  const ramp=beachAccessHeight(x,z);if(ramp!==null)return gradedHeight(x,z,ramp);
   const coast=coastalSurface(x,z);if(coast&&coast.id!=='island-ground')return coast.y;
  }
  if(inDiningLane(x,z))return NIGHT_LANE.y;

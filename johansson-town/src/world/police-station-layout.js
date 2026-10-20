@@ -41,10 +41,19 @@ export const STATION_YARD=Object.freeze({
  /** Reverse-parked, nose to the plaza, so the car leaves forwards in a hurry (it never has, but it could). */
  car:Object.freeze({x:7.85,z:26.6,length:3.39,width:1.47,heading:'west',
   why:'The station’s one car, a white-and-black kei patrol car: narrow enough for Kitahama’s lanes and the lane up to the sea cave.'}),
- /** Five slots along the yard's south edge, out of the car's way: the white police bicycle and visitors' bicycles. */
- rack:Object.freeze({x0:6.4,x1:9.2,z:29.6,slots:5,why:'Mori’s white bicycle lives in the first slot. The others are for visitors, so nobody leans a bicycle on the notice board.'}),
- /** The flagpole on the yard's south edge, behind the rack, where the flag is seen across the bus plaza and up Main Street. */
- flagpole:Object.freeze({x:6.6,z:31.05,height:6.2,raise:510,lower:1035,
+ /**
+  * A front-wheel rack (前輪式) of four slots along the yard's south side, out of the car's way, 0.7 m apart (a bicycle's
+  * bars are 0.58 m): each bicycle stands with its front wheel between a slot's two guides, which are on the line `slot`,
+  * and its body behind, to the south. Mori's white bicycle is in the first slot, the lost child's in the third, and the
+  * others are for visitors, so nobody leans a bicycle on the notice board.
+  */
+ rack:Object.freeze({x0:7.1,x1:9.2,slot:29.08,slots:4,z:29.6,why:'Mori’s white bicycle lives in the first slot. The others are for visitors, so nobody leans a bicycle on the notice board.'}),
+ /**
+  * The flagpole at the yard's south-west corner, by the plaza, where the flag is seen across the bus plaza and up Main
+  * Street; 2.5 m clear of the rack, so no bicycle stands in front of it seen from the plaza (the owner's phone, 20 October
+  * 2026: a bicycle seemed to stand in the pole when it was behind the rack).
+  */
+ flagpole:Object.freeze({x:4.0,z:31.0,height:6.2,raise:510,lower:1035,
   why:'The national flag, raised at half past eight when the desk opens for the day and lowered at a quarter past five.'}),
  /** Against the station's south wall, under the eave, facing the bus plaza. */
  bench:Object.freeze({x:7.4,z:22.26,length:1.6,why:'For whoever is waiting: to see the officer, for the bus, or for a child to be collected.'}),

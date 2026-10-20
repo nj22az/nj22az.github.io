@@ -44,7 +44,7 @@ export const CAST=Object.freeze([
  // (addendum 4): the 08:30 boat in, the shop from nine, the 22:00 boat home (commuter-schedule.js HARBOUR_LINE); Nhung
  // keeps the counter at the weekend while she stays on the island (commerce/sakura-rota.js).
  person('Thuan',{sex:'f',age:25,home:'kitano-1',work:'sakura',family:'Johansson',purpose:'owns and runs Sakura Shōten: purchasing, accounts, stock, the shop and the supply trade; Johansson’s wife, home on Kitano-jima by the last boat',
-  day:[['06:30','kitano-1','breakfast with Johansson'],['08:30','ferry','the morning boat to Minato'],['09:00','sakura','opening Sakura Shōten'],['13:00','park','lunch in the park with her sisters'],['14:00','sakura','the afternoon till'],['20:00','izakaya','supper at her sister’s'],['22:00','ferry','the last boat home'],['22:30','kitano-1','home to Kitano-jima']]}),
+  day:[['06:30','kitano-1','breakfast with Johansson'],['08:30','ferry','the morning boat to Minato'],['09:00','sakura','sweeping the pavement at opening',{stand:'sakura-doorstep'}],['09:12','sakura','opening Sakura Shōten: the till, the cooler and the window',{stand:'sakura-floor'}],['13:00','park','lunch in the park with her sisters'],['14:00','sakura','the afternoon till',{stand:'sakura-floor'}],['20:00','izakaya','supper at her sister’s'],['22:00','ferry','the last boat home'],['22:30','kitano-1','home to Kitano-jima']]}),
  // Thao's family, at 1 Kitahama.
  person('Thao',{sex:'f',age:34,home:'kitahama-1',work:'izakaya',family:'Nguyen',purpose:'runs Minato Izakaya; the middle sister',
   day:[['07:00','kitahama-1','breakfast and Vy off to school'],['10:00','market','buying for the izakaya'],['13:00','park','lunch with her sisters'],['16:00','izakaya','opening the izakaya'],['23:30','kitahama-1','home']]}),
@@ -58,28 +58,28 @@ export const CAST=Object.freeze([
  // Nhung lives at 3 Kitahama with Kōji and Riku (docs/CAST-CONSOLIDATION.md §7, phase 3): her room with Reiko at
  // 1 Front-Row Yard is history, their friendship is not.
  person('Nhung',{sex:'f',age:37,home:'kitahama-3',work:'books',family:'Nguyen',purpose:'runs Front-Row Books and prints the town’s small paper at its back bench; the eldest sister; Sakura’s weekend clerk; Kōji’s wife and Riku’s mother',
-  day:[['07:00','kitahama-3','breakfast with Kōji and Riku'],['09:30','books','opening Front-Row Books'],['13:00','park','lunch with her sisters'],['14:00','books','the bookshop, and the paper’s page at the back bench'],['18:30','kitahama-3','supper with Kōji and Riku'],['21:30','kitahama-3','home']]}),
+  day:[['07:00','kitahama-3','breakfast with Kōji and Riku'],['09:30','books','opening Front-Row Books',{stand:'frontrow-morning'}],['13:00','park','lunch with her sisters'],['14:00','books','the bookshop, and the paper’s page at the back bench',{stand:'frontrow-paper'}],['18:30','kitahama-3','supper with Kōji and Riku'],['21:30','kitahama-3','home']]}),
  person('Kōji',{sex:'m',age:38,home:'kitahama-3',work:'fish-auction',family:'Nguyen',purpose:'fishes on his own sabani and sorts the catch at the fish auction and the ice plant; the ferry’s relief bosun on Ms Uezu’s week off',
-  day:[['04:30','fish-auction','the morning auction'],['09:00','ice-plant','ice for the boats'],['12:00','kitahama-3','home to sleep'],['16:00','boatyard','his own sabani on the west quay'],['18:30','kitahama-3','supper with Nhung and Riku']]}),
+  day:[['04:30','fish-auction','the morning auction'],['09:00','ice-plant','ice for the boats'],['12:00','kitahama-3','home to sleep'],['15:00','net-ground','the nets at his net ground: mending, and taking them down before dark',{stand:'koji-nets'}],['17:30','boatyard','his own sabani on the west quay'],['18:30','kitahama-3','supper with Nhung and Riku']]}),
  person('Riku',{sex:'m',age:9,home:'kitahama-3',work:'school',family:'Nguyen',purpose:'Nhung and Kōji’s son; a pupil at the island school; Vy’s cousin',
   day:[['07:00','kitahama-3','breakfast'],['08:15','school','school'],['15:30','quay','watching the boats come in'],['17:00','park','football in the park'],['18:30','kitahama-3','home']]}),
  // The Higas, in Nishi-machi.
  person('Miss Higa',{sex:'f',age:29,home:'higa',work:'school',family:'Higa',was:['Mrs Higa','Yonamine-sensei'],purpose:'teaches the island school; keeps the bandai at Umi-no-yu in the evenings and at weekends',
   day:[['07:00','higa','breakfast with her grandmother'],['08:00','school','teaching'],['15:30','school','marking'],['17:00','onsen','the bandai at Umi-no-yu'],['22:00','higa','home']]}),
  person('Grandmother Higa',{sex:'f',age:78,home:'higa',work:'higa-liquor',family:'Higa',purpose:'owns Umi-no-yu and Higa Liquor; keeps the liquor counter in the morning and the bandai in the afternoon',
-  day:[['07:00','higa','the verandah'],['09:00','higa-liquor','the liquor counter'],['12:00','higa','lunch'],['13:00','onsen','the bandai at Umi-no-yu'],['17:00','higa','home to the verandah']]}),
+  day:[['07:00','higa','the garden across the lane: the vines, the beds and the altar flowers',{stand:'higa-garden'}],['08:30','higa','the verandah'],['09:00','higa-liquor','the liquor counter'],['12:00','higa','lunch'],['13:00','onsen','the bandai at Umi-no-yu'],['17:00','higa','home to the verandah']]}),
  // The Front-Row yard. Tetsuo keeps the island's electrics since the power house lost its keeper (roster.js RETIRED).
  person('Tetsuo',{sex:'m',age:40,home:'resident-home-kenji',work:'workshop',family:'Chinen',purpose:'radio repairer at the Chin & Tetsuo workshop; the ferry’s electrician under contract; tends the onsen’s boiler and pumps and the power house’s switchboard',
   day:[['07:30','resident-home-kenji','breakfast'],['09:00','workshop','the radio bench'],['13:00','ferry','the ferry’s workshop while she lies alongside'],['18:00','onsen','the boiler and the pumps, and closing up'],['22:30','resident-home-kenji','home']]}),
  // The town's people.
  person('Mrs Sato',{sex:'f',age:68,home:'kitahama-2',work:'sato-ramen',family:'Sato',purpose:'cooks at Sato Ramen; buys fish at the morning auction; the izakaya’s rival for the evening crowd',
-  day:[['05:30','fish-auction','the morning auction'],['07:00','sato-ramen','the stock pot'],['11:00','sato-ramen','lunch service'],['21:00','kitahama-2','home']]}),
+  day:[['05:30','fish-auction','the morning auction'],['07:00','sato-ramen','the stock pot',{stand:'ramen-stock'}],['11:00','sato-ramen','lunch service',{stand:'ramen-lunch'}],['21:00','kitahama-2','home']]}),
  person('Officer Mori',{sex:'m',age:45,home:'koban',work:'koban',family:'Mori',purpose:'the island’s police officer: the desk at Minato Police Station from four, the night patrol',
-  day:[['09:00','koban','asleep after the night patrol'],['13:00','sato-ramen','lunch'],['16:00','koban','the desk'],['21:00','main-street','the night patrol'],['02:00','koban','home upstairs at the station']]}),
+  day:[['09:00','koban','asleep after the night patrol'],['13:00','sato-ramen','lunch'],['16:00','koban','the desk',{stand:'station-desk'}],['21:00','main-street','the night patrol'],['02:00','koban','home upstairs at the station']]}),
   // Jack Reed (roster.js: the Harbour master's keys and Mr Fujita's Minato linesman duty since phase 2): the harbour
  // agent, an American former merchant seaman long settled here; the town still calls him the harbour master.
  person('Harbour master',{sex:'m',age:58,home:'office',work:'office',family:'Reed',purpose:'harbour agent: runs the harbour office, the berth radio, the moorings, the cargo yard and the freight book, and takes the Minato Maru’s lines at every call; an American former merchant seaman, long settled here',
-  day:[['06:00','office','the morning boats'],['12:00','sato-ramen','ramen, every day'],['13:00','cargo-yard','the cargo yard'],['18:00','office','the evening boat'],['21:00','office','home behind the screen']]}),
+  day:[['06:00','office','the morning boats'],['12:00','sato-ramen','ramen, every day'],['13:00','quay','the quay round with the freight book',{stand:'harbour-round'}],['15:00','office','the freight book and the berth radio'],['18:00','office','the evening boat'],['21:00','office','home behind the screen']]}),
  person('Dr Kakazu',{sex:'m',age:34,home:'clinic',work:'clinic',family:'Kakazu',purpose:'the island doctor, posted from Naha for two years: surgery at the town hall clinic, on call at night',
   day:[['07:30','clinic','breakfast'],['09:00','clinic','morning surgery'],['12:30','sato-ramen','lunch, which Mrs Sato won’t let him pay for'],['14:00','clinic','house calls'],['19:00','izakaya','supper'],['21:00','clinic','home, on call']]}),
  person('Mrs Nakamura',{sex:'f',age:40,home:'nakamura',work:'zenzai',family:'Nakamura',purpose:'keeps Nakamura Zenzai and the Blue Coral ice-cream counter; runs the community kitchen; Mai’s mother',
@@ -117,7 +117,7 @@ export const CAST=Object.freeze([
  person('Jun',{sex:'m',age:52,home:'ferry-crew-cabin',work:'ferry',family:'Jun',was:['Cook-steward'],supporting:true,purpose:'cook-steward of the Minato Maru: the crew’s meals from the three-plate range, the kiosk and the galley secured for every crossing; twenty years in the galleys of the cargo boats out of Naha',
   day:[['05:00','ferry-crew-cabin','up before the generators'],['05:20','ferry','the galley: the crew’s breakfast'],['11:00','ferry','lunch for eight, two sittings'],['15:00','ferry','a smoke on the open deck between sailings'],['21:30','ferry','the galley wiped down and the kiosk counted'],['22:40','ferry-crew-cabin','his bunk']]}),
  person('Kai',{sex:'m',age:47,home:'kitano-2',work:'kitano-pier',family:'Kai',was:['Kitano line hand'],supporting:true,purpose:'the Kitano shore line hand: the shore end of every line at the Kitano berth; rents the Shiroma house across the lane from the pier',
-  day:[['06:00','kitano-2','breakfast'],['06:20','kitano-pier','standing by for her lines'],['12:00','kitano-2','lunch at home between calls'],['12:40','kitano-pier','the afternoon calls'],['22:30','kitano-2','home']]}),
+  day:[['06:00','kitano-2','breakfast'],['06:20','kitano-pier','standing by for her lines'],['12:00','kitano-pier','lunch on the pier between calls, on the inner bitt'],['12:40','kitano-pier','the afternoon calls'],['22:30','kitano-2','home']]}),
 ]);
 
 export const CAST_NAMES=Object.freeze(CAST.map(p=>p.name));

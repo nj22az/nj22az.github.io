@@ -111,7 +111,7 @@ export function buildPortBuilding({parent,label=()=>{},shadows=false,register,on
   kit.box(.06,.58,.02,tx-.08,y+.27,z+face*.065,0x2b3436,{rz:.3});
  }
  kit.block(T.minX-.15,T.maxX+.15,shaft+.2,shaft+.32,T.minZ-.15,T.maxZ+.15,SLAB);
- for(const [x,z] of [[T.minX,T.minZ],[T.maxX,T.minZ],[T.maxX,T.maxZ],[T.minX,T.maxZ]])kit.box(.16,1.25,.16,x+(x<tx?.08:-.08),shaft+.95,z+(z<tz?.08:-.08),CREAM);
+ for(const [x,z] of [[T.minX,T.minZ],[T.maxX,T.minZ],[T.maxX,T.maxZ],[T.minX,T.maxZ]])kit.box(.16,1.25,.16,x+(x<tx?.07:-.07),shaft+.95,z+(z<tz?.07:-.07),CREAM);
  for(const [x0,x1,z0,z1] of [[T.minX,T.maxX,T.minZ,T.minZ+.06],[T.minX,T.maxX,T.maxZ-.06,T.maxZ],[T.minX,T.minX+.06,T.minZ,T.maxZ],[T.maxX-.06,T.maxX,T.minZ,T.maxZ]])kit.block(x0,x1,shaft+.75,shaft+.82,z0,z1,STEEL,'metal');
  kit.hipRoof(tw,tw,.95,tx,shaft+1.57,tz,TILE,{overhang:.35,finish:'tile'});
  kit.rod([tx,shaft+2.4,tz],[tx,T.height+2.6,tz],.04,STEEL);
