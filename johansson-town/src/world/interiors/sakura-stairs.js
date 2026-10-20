@@ -10,6 +10,56 @@ export const SAKURA_STAIR=Object.freeze({height:4.01,officeZ:-.64,
 
 /** The stairwell's north wall, on the stair's side of the restroom partition (z -4.03), in the shop's frame. */
 export const STAIR_NORTH=Object.freeze({z0:-4.07,z1:-4.03});
+/**
+ * Which storey the player is shown (the owner, 20 October 2026: "I don't think the whole shop needs to load after we go
+ * up the stairs to the top floor office"). Three, by where his feet are:
+ * - 'office': above `up` on the upper flight, on the top landing and upstairs. The sales floor is put away, not drawn and
+ *   not run (people/sakura-shop.js); the stockroom and the stairwell stay, because the stair's hole looks down into them.
+ *   `up` is where the window views already change to the office's (game.js streetFrontageOf), and he goes back to the
+ *   stair only below `down`, a step lower, so standing on the line never flickers. At both, from the player's eye or the
+ *   lens behind him, the sales floor is out of sight: the only way to it is the passage (x 3.25..4.39 on the partition),
+ *   and from over 3.5 m on the upper flight that line runs into the stairwell's east wall or the stockroom's ceiling.
+ * - 'shop': on the sales floor (north of the partition's face, `salesFloorZ`). The upstairs rooms are put away: from
+ *   there the stairwell is seen, if at all, through the passage, and the hole over it is behind the stairwell's east
+ *   wall and the stockroom's ceiling (tests/sakura-storeys.test.mjs walks the lines).
+ * - 'stair': in the stockroom and on the flights below `up`, where both can be seen: both are drawn.
+ */
+export const SAKURA_STOREY=Object.freeze({up:SAKURA_STAIR.height-.3,down:SAKURA_STAIR.height-.5,salesFloorZ:-3.95});
+export function sakuraStoreyAt(p,previous='shop'){
+ const S=SAKURA_STOREY;
+ if(p.y>S.up||previous==='office'&&p.y>S.down)return 'office';
+ return p.y<.5&&p.z>S.salesFloorZ?'shop':'stair';
+}
+
+/**
+ * The turning landing (x -5.6..-4.5, z -6.7..-4.05, at half height) is 1.1 m wide between the stairwell's west wall and
+ * the guard between the flights: the lens standing behind him there met a plain wall a step away and the screen was
+ * plaster. On the landing the lens leaves him and stands where it frames him and the next flight: going up, at the head
+ * of the upper flight looking back down it at him; going down, at the foot of the lower flight looking up it, or, while
+ * he is still behind the guard between the flights at the landing's south end, from the head of the flight he came down,
+ * over him to the landing's north end where the lower flight begins. Each is in line with him and its flight, so the
+ * frame holds both on an upright phone too.
+ * game.js takes the first whose sight of him is clear, and eases in and out of it.
+ */
+export const SAKURA_LANDING=Object.freeze({x:Object.freeze([-5.6,-4.5]),z:Object.freeze([-6.7,-4.05]),y:SAKURA_STAIR.height/2,
+ flights:Object.freeze({lower:Object.freeze({x:[-4.5,-1.8],z:[-5.15,-4.05]}),upper:Object.freeze({x:[-4.5,-1.8],z:[-6.7,-5.6]})}),
+ lens:Object.freeze({
+  up:Object.freeze([Object.freeze({pos:Object.freeze([-2.3,5.0,-6.3]),flight:Object.freeze([-3.4,3.1,-6.15])})]),
+  down:Object.freeze([Object.freeze({pos:Object.freeze([-1.45,2.05,-4.55]),flight:Object.freeze([-3.2,1.3,-4.6])}),Object.freeze({pos:Object.freeze([-2.3,5.0,-6.3]),flight:Object.freeze([-5.05,2.1,-4.6])})]),
+ })});
+const within=(v,[a,b],m=0)=>v>=a-m&&v<=b+m;
+export const onSakuraLanding=p=>within(p.x,SAKURA_LANDING.x,.02)&&within(p.z,SAKURA_LANDING.z,.02)&&Math.abs(p.y-SAKURA_LANDING.y)<.3;
+/** Which flight he is on, if any. */
+export function sakuraFlightAt(p){
+ for(const [id,f] of Object.entries(SAKURA_LANDING.flights))if(within(p.x,f.x)&&within(p.z,f.z)&&p.y>.05&&p.y<SAKURA_STAIR.height-.05)return id;
+ return null;
+}
+/** The landing's lenses for him at p, best first: going 'up' (he came off the lower flight) or 'down'. */
+export function sakuraLandingLens(p,going='up'){
+ const chest=[p.x,p.y+1.2,p.z];
+ return SAKURA_LANDING.lens[going==='down'?'down':'up'].map(c=>({pos:c.pos,at:chest.map((v,i)=>v+(c.flight[i]-v)*.35),chest}));
+}
+
 // Upper bounds include the stair landing behind the office's rear wall.
 export const sakuraBoundsAt=(base,y)=>y>SAKURA_STAIR.height-.24?
  {bounds:{minX:-6.4,maxX:6.4,minZ:-6.78,maxZ:3.91}}:base;
@@ -66,7 +116,9 @@ export function buildSakuraStoreys({room,reg,action}){
  const lamp=new THREE.Mesh(new THREE.BoxGeometry(.06,.32,.2),diffuser);lamp.position.set(-5.59,H/2+1.5,-5.35);lamp.name='Sakura stair bulkhead';room.add(lamp);
  // Enclose the under-stair space and guard the open edges at their actual height.
  for(const [x,z,w,d,top,bottom] of [[-3.15,-4.02,2.9,.06,3.05,0],[-5.64,-5.375,.06,2.75,H+1,0],[-3.15,-5.375,2.7,.06,H/2+1,H/2],[-3.85,-4,3.6,.06,H+1,H],[-2.05,-4.8,.06,1.5,H+1,H]]){
-  box(w,top-bottom,d,x,(top+bottom)/2,z,'Sakura stair guard');solid(x,z,w,d,top,bottom);
+  // Solid as drawn, from its foot to its top: given the top as a height, the guard between the flights stood to 5 m for
+  // the lens, a wall in the air over the turning landing that the camera met wherever it turned.
+  box(w,top-bottom,d,x,(top+bottom)/2,z,'Sakura stair guard');solid(x,z,w,d,top-bottom,bottom);
  }
  for(const [x,y,z,turn] of [[-3.15,H/4+1,-4.07,1],[-3.15,H*.75+1,-6.67,-1]]){
   const rail=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,Math.hypot(2.7,H/2),8),material);
