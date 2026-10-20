@@ -59,3 +59,46 @@ test('the scan finds what it is for: a pane laid in a wall, and nothing where a 
  assert.equal(coplanarOverlaps(hidden).length,0,'faces buried in another solid are not reported');
  cover.removeFromParent();assert.equal(coplanarOverlaps(hidden).length,1,'uncovered, they are');
 });
+
+/**
+ * Indoors, at the size a phone shows. The scan above is the town as createTown builds it, and a room is not in it: each
+ * is built when he walks in. So the flicker the owner photographed in Sakura's office hall (20 October 2026: "Lots of Z
+ * fighting in the upper office on Sakura") was never looked at: the stair's top landing was a second floor laid in the
+ * hall's (2.57 m² in one plane, by the slippers and the fire door), and the door plates stood 1.5 mm off their
+ * backings. And 0.05 m² and 0.01 m² are sizes for a street seen from 5 to 70 m. In a room everything is a metre or two
+ * from the lens: on a phone held upright (844 points high, a 70° lens) a 2.2 cm square two metres away is about 7 points,
+ * 20 pixels, a flashing patch anyone sees. So rooms are scanned unmerged (every piece by its name) down to 0.0005 m².
+ * The same scan of origin/main 01918368's office storey (sakura-stairs.js buildSakuraStoreys) finds 19 such pairs.
+ */
+const ROOM_AREA=.0005;
+const {buildSakuraOfficeRoom}=await import('../src/world/interiors/sakura-office-room.js');
+const {buildSakuraInterior}=await import('../src/world/interiors/sakura-interior.js');
+function officeStorey(){const room=new THREE.Group();buildSakuraOfficeRoom({room,reg(){},action(){},downstairs(){},evacuate(){},merge:false});room.updateMatrixWorld(true);return room;}
+const inRoom=(room,regions)=>coplanarOverlaps(room,{regions,tolerance:TOLERANCE,minArea:ROOM_AREA});
+
+test('Sakura’s office storey (office, rest room, kitchenette, hall and stair head): nothing over 0.0005 m² flashes',()=>{
+ assert.deepEqual(inRoom(officeStorey(),null).map(where),[]);
+});
+
+test('Sakura’s stockroom stair: the treads, the walls and the darkness they go into share no plane',async()=>{
+ const room=new THREE.Group(),d=buildSakuraInterior({room,reg(){},action(){},exit(){}});await d.ready();room.updateMatrixWorld(true);
+ // The stairwell (the lower flight and the dark west of it) and the opening over the stockroom's ceiling.
+ const found=inRoom(room,[{minX:-5.75,maxX:-1.75,minZ:-6.9,maxZ:-4.0},{minX:-2.95,maxX:-.6,minZ:-6.9,maxZ:-4.0,minY:2.5}]);
+ assert.deepEqual(found.map(where),[]);
+});
+
+test('the indoor scan catches the owner’s flicker: the old top landing laid in the hall’s floor, a plate 1.5 mm off its backing',()=>{
+ const room=officeStorey();
+ // The old landing (origin/main sakura-stairs.js: 1.2 × 0.12 × 2.7 m at the office floor), in the office's frame.
+ const landing=new THREE.Mesh(new THREE.BoxGeometry(1.2,.12,2.7),new THREE.MeshStandardMaterial({color:0x8d7458}));landing.position.set(-1.2,-.06,-4.71);landing.name='Old top landing';room.add(landing);
+ const found=inRoom(room,null);
+ assert.ok(found.some(f=>/Old top landing/.test(f.a+f.b)&&f.normal[1]===1&&f.area>1),'the landing on the hall floor is found');
+ landing.removeFromParent();
+ // A door plate as it was: its face 1.5 mm in front of a 12 mm backing.
+ const backing=new THREE.Mesh(new THREE.BoxGeometry(.38,.14,.012),new THREE.MeshStandardMaterial({color:0x5e4630})),plate=new THREE.Mesh(new THREE.PlaneGeometry(.36,.12),new THREE.MeshStandardMaterial({color:0xefe6d0}));
+ const g=new THREE.Group();backing.position.set(0,2.25,0);plate.position.set(0,2.25,.0075);g.add(backing,plate);
+ assert.equal(inRoom(g,null).length,1,'a plate 1.5 mm off its backing flashes');
+ plate.position.z=.012;assert.equal(inRoom(g,null).length,0,'6 mm off, as the plates are now, it does not');
+ // And at the street's size it would have passed: why the indoor scan has its own.
+ plate.position.z=.0075;assert.equal(coplanarOverlaps(g,{tolerance:TOLERANCE,minArea:MIN_AREA}).length,0);
+});
