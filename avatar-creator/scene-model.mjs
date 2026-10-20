@@ -6,7 +6,7 @@ export const MAX_ACTORS=6;
 export const MAX_PANELS=4;
 export const LOCATIONS=Object.freeze([
  ['sakura','Sakura Shōten'],['sakura-street','Outside Sakura'],['minato','Minato Izakaya'],
- ['sato-ramen','Sato Ramen'],['books','Front-Row Books'],['onsen','Umi-no-yu lobby'],
+ ['dock-workshop','Chin & Tetsuo Repairs'],['sato-ramen','Sato Ramen'],['books','Front-Row Books'],['onsen','Umi-no-yu lobby'],
  ['classroom','Island classroom'],['town-hall','Mayor’s office'],['harbour','Harbour'],['pier','Outer pier'],
  ['park','Harbour Park'],['garden','Japanese garden'],['rainflower','Rainflower Lane']
 ]);

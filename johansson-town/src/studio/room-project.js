@@ -1,3 +1,4 @@
+import {isWorkshop,WORKSHOP_OBJECTS,validateWorkshopProject} from './workshop-contract.js';
 /** Portable static-room documents and commands. One implementation for the editor and MCP; no game saves. */
 import {snapGrid,snapConnector,glbDocument} from './model-workbench.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -19,7 +20,8 @@ export function validateRoom(p,{models=false}={}){
  if(!p.assets||typeof p.assets!=='object'||Array.isArray(p.assets)||Object.keys(p.assets).length>64)fail('A room can hold at most 64 assets.');
  if(!Array.isArray(p.objects)||p.objects.length>OBJECT_LIMIT)fail('A room can hold at most 64 objects.');
  let bytes=0;for(const [key,a] of Object.entries(p.assets)){
-  checkId(key,'Asset id');if(!a||typeof a.name!=='string'||a.name.length>120||typeof a.glb!=='string'||a.glb.length>32*1024*1024)fail(`Invalid asset ${key}.`);
+  checkId(key,'Asset id');if(!a||typeof a.name!=='string'||a.name.length>120||(a.world===undefined&&(typeof a.glb!=='string'||a.glb.length>32*1024*1024)))fail(`Invalid asset ${key}.`);
+  if(a.world!==undefined){if(!isWorkshop(p)||!WORKSHOP_OBJECTS[key]||a.world!==key||typeof a.name!=='string')fail('Unknown native World asset.');continue;}
   if(!Number.isSafeInteger(a.version)||a.version<1)fail(`Invalid version for ${key}.`);bytes+=a.glb.length;
   if(models)glbDocument(decodeGLB(a.glb));
  }
@@ -31,10 +33,11 @@ export function validateRoom(p,{models=false}={}){
   if(o.support!==undefined&&!['resting','attached','suspended'].includes(o.support))fail('Invalid support mode.');
   if(typeof o.visible!=='boolean')fail(`Invalid visibility for ${o.id}.`);
  }
+ if(p.world!==undefined)validateWorkshopProject(p);
  return p;
 }
 export function readRoom(text){if(typeof text!=='string'||text.length>ROOM_LIMIT+1024*1024)fail('Room project is too large.');return validateRoom(JSON.parse(text),{models:true});}
-export function roomSummary(p){validateRoom(p);return {id:p.id,title:p.title,revision:p.revision,assets:Object.entries(p.assets).map(([id,a])=>({id,name:a.name,version:a.version,usedBy:p.objects.filter(o=>o.asset===id).map(o=>o.id)})),objects:p.objects.map(o=>({...o}))};}
+export function roomSummary(p){validateRoom(p);return {id:p.id,title:p.title,revision:p.revision,...p.world?{world:p.world}:{},assets:Object.entries(p.assets).map(([id,a])=>({id,name:a.name,version:a.version,usedBy:p.objects.filter(o=>o.asset===id).map(o=>o.id)})),objects:p.objects.map(o=>({...o}))};}
 export function freeId(p,prefix='object'){let i=1;while(p.objects.some(o=>o.id===prefix+'-'+i)||own(p.assets,prefix+'-'+i))i++;return prefix+'-'+i;}
 export function editRoom(project,commands,{expectedRevision=project.revision}={}){
  validateRoom(project);if(expectedRevision!==project.revision)fail(`Revision conflict: expected ${expectedRevision}, found ${project.revision}. Reopen the current project.`);

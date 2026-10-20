@@ -1,3 +1,4 @@
+import {workshopPropsReady,preloadWorkshopProps} from './world/interiors/workshop-props.js';
 import {createLaunchReport} from './render/launch-report.js';
 import {BUDGET} from './edition.js';
 import {createAttention} from './people/attention.js';
@@ -1281,8 +1282,8 @@ const massageChair=()=>seated&&current?.id==='onsen'&&parkSeat?.seatId==='massag
  * never opens with a seat over nothing.
  */
 const ROOM_ASSETS={onsen:ONSEN_ASSETS};
-const roomAssetsReady=s=>(ROOM_ASSETS[s.id]||[]).every(assetLoaded);
-const loadRoomAssets=s=>Promise.all((ROOM_ASSETS[s.id]||[]).map(id=>loadAsset(id))).then(all=>all.every(Boolean));
+const roomAssetsReady=s=>(!s.industrialWorkshop||workshopPropsReady())&&(ROOM_ASSETS[s.id]||[]).every(assetLoaded);
+const loadRoomAssets=s=>Promise.all([...(ROOM_ASSETS[s.id]||[]).map(id=>loadAsset(id)),...(s.industrialWorkshop?[preloadWorkshopProps()]:[])]).then(all=>all.every(Boolean));
 let roomAssetsTry=0;
 async function enterRoom(s){replayInterrupted();lowerPocket();spawnScene?.cancel('room');
  if(roomLoading)return;

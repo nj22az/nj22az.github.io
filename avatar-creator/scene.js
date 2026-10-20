@@ -5,6 +5,7 @@ import {CLASSROOM_VIEW} from './classroom-stage.js';
 import {classroomComic} from './classroom-comic.mjs?v=20261020-acting';
 import {createSoleFinder} from '../johansson-town/src/avatars/foot-ground.js';
 import {applySceneContacts} from './scene-contact.js?v=20261020-acting';
+import {WORKSHOP_VIEW} from '../johansson-town/src/scene/workshop-view.js';
 import {filmStaging} from './film-staging.mjs';
 import {KNOWN_EXPRESSIONS,KNOWN_POSES} from './scene-catalogue.mjs?v=20261020-acting';
 import {createActingPanel} from './acting/panel.js?v=20261016-1';
@@ -18,9 +19,9 @@ import {ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/
 import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js';
 import {normalizeRecipe} from '../johansson-town/src/avatars/recipe.js';
 import {drawCaptions,comicLayout,FORMATS} from '../johansson-town/src/photo/layout.js';
-import {buildSceneWorld} from './scene-world.js?v=20261011-2';
-import {poseSceneAvatar,placeSceneAvatar,movingPose} from './scene-avatar.js?v=20261020-acting';
-import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,emptyScene,normalizeScene,addCharacter,removeCharacter,restoreCharacter,panelOrder,text,placementOf,applyPlacement,samePlacement} from './scene-model.mjs?v=20261020-acting';
+import {buildSceneWorld} from './scene-world.js?v=20261020-integrated-2';
+import {poseSceneAvatar,placeSceneAvatar,movingPose} from './scene-avatar.js?v=20261020-integrated-2';
+import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,emptyScene,normalizeScene,addCharacter,removeCharacter,restoreCharacter,panelOrder,text,placementOf,applyPlacement,samePlacement} from './scene-model.mjs?v=20261020-integrated-2';
 import {pickMoment,applyMoment,aim} from './scene-moments.mjs?v=20261011-2';
 import {POSE_GROUPS,EXPRESSION_GROUPS,seatedPose} from './scene-catalogue.mjs?v=20261020-acting';
 import {turnToward,touchAngle,twistTurn,nudgeStep,placeToolbar,pickBox,nearestSeat} from './scene-controls.mjs?v=20261011-2';
@@ -293,7 +294,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
      const bg=environment.scene.background;environment.scene.background=new THREE.Color('#faf7ee');restore.push(()=>environment.scene.background=bg);
     }
     const camera=environment.camera,preset=views[snapshot.location].wide.camera;
-    camera.position.fromArray(preset.position);camera.quaternion.fromArray(preset.quaternion);camera.fov=snapshot.camera.fov||55;if(snapshot.camera.position){camera.position.fromArray(snapshot.camera.position);camera.lookAt(...snapshot.camera.target);}camera.aspect=w/h;camera.updateProjectionMatrix();
+    camera.position.fromArray(preset.position);camera.quaternion.fromArray(preset.quaternion);camera.fov=snapshot.camera.fov||(snapshot.location==='dock-workshop'?65:55);if(snapshot.camera.position){camera.position.fromArray(snapshot.camera.position);camera.lookAt(...snapshot.camera.target);}camera.aspect=w/h;camera.updateProjectionMatrix();
     const target=new THREE.Vector3(environment.origin[0],environment.origin[1]+.9,environment.origin[2]);if(snapshot.camera.target)target.fromArray(snapshot.camera.target);
     if(snapshot.camera.orbit||snapshot.camera.elevation||snapshot.camera.zoom!==1){const spherical=new THREE.Spherical().setFromVector3(camera.position.clone().sub(target));spherical.theta+=snapshot.camera.orbit*Math.PI/180;spherical.phi=THREE.MathUtils.clamp(spherical.phi-snapshot.camera.elevation*Math.PI/180,.25,Math.PI*.48);spherical.radius*=snapshot.camera.zoom;camera.position.copy(target).add(new THREE.Vector3().setFromSpherical(spherical));camera.lookAt(target);
      const direction=camera.position.clone().sub(target),length=direction.length(),ray=new THREE.Raycaster(target,direction.normalize(),.15,length),hit=ray.intersectObjects(environment.meshes,false).find(h=>h.object.visible&&h.object.material?.depthWrite!==false);if(hit)camera.position.copy(target).addScaledVector(direction,Math.max(.3,hit.distance-.15));

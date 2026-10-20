@@ -1,3 +1,6 @@
+import {WORKSHOP_OBJECTS,nativeObject} from '../../studio/workshop-contract.js';
+import {WORKSHOP_PUBLICATION} from './workshop-publication.js';
+import {addPublishedWorkshopProps} from './workshop-props.js';
 import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import {addBookshopDetail} from './bookshop-detail.js';
 import {DOCK_WORKSHOP_ROOM} from '../dock-workshop-layout.js';
@@ -14,8 +17,20 @@ import {BOOKSHOP_WORKSHOP_ROOM} from '../bookshop-workshop-layout.js';
 
 // Each business owns its room layout and furniture.
 // Furniture and approaches are authored together; there is no generic room shell.
-export function buildCompactShop({site,room,reg,collider,action,exit}){
- let workshop=null,tetsuo=null,chin=null;const owned=[];
+export function buildCompactShop({site,room,reg:register,collider:addCollider,action,exit,studioLayout=undefined}){
+ let workshop=null,tetsuo=null,chin=null,motor=null;const owned=[],workshopObjects=new Map();
+ const nativeLayout=site.industrialWorkshop?(studioLayout===undefined?WORKSHOP_PUBLICATION.layout:studioLayout):null;
+ let active=null;
+ const collider=(...args)=>{if(active)active.solids.push(args);else addCollider(...args);};
+ const reg=(...args)=>{if(active)active.prompts.push(args);else register(...args);};
+ function begin(id){if(!site.industrialWorkshop)return;active={id,before:new Set(room.children),solids:[],prompts:[]};}
+ function finish(){if(!active)return;const a=active;active=null;const def=WORKSHOP_OBJECTS[a.id],placement=nativeLayout?nativeLayout.objects.find(o=>o.id===a.id):nativeObject(a.id),g=new THREE.Group();g.name='world-room:'+a.id;g.userData.roomObject=a.id;g.userData.worldRoomObject=a.id;
+  // Components retain the original builders and live controls. Only their parent placement changes.
+  for(const child of [...room.children])if(!a.before.has(child)){g.add(child);child.position.sub(new THREE.Vector3(...def.position));}room.add(g);g.position.fromArray(placement?.position||def.position);g.rotation.y=THREE.MathUtils.degToRad(placement?.rotation[1]||0);g.visible=!!placement?.visible;
+  const cs=[],c=Math.cos(g.rotation.y),s=Math.sin(g.rotation.y);for(const [x,z,w,d,height,minY] of a.solids){const dx=x-def.position[0],dz=z-def.position[2],solid={x:g.position.x+dx*c+dz*s,z:g.position.z-dx*s+dz*c,w:Math.abs(c)*w+Math.abs(s)*d,d:Math.abs(s)*w+Math.abs(c)*d,height:height+g.position.y,minY:(minY??0)+g.position.y,owner:a.id};cs.push(solid);if(g.visible)addCollider(solid.x,solid.z,solid.w,solid.d,solid.height,solid.minY);}
+  if(g.visible)for(const args of a.prompts)register(...args);workshopObjects.set(a.id,{group:g,colliders:g.visible?cs:[]});
+ }
+ begin('workshop-shell');
  const layout=site.bookshop?BOOKSHOP_WORKSHOP_ROOM:site.industrialWorkshop?DOCK_WORKSHOP_ROOM:null;if(!layout)return null;
  const {width:w,depth:d,doorX}=layout,hw=w/2,hd=d/2;
  room.name=site.title+' interior';
@@ -49,6 +64,7 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
  if(!site.industrialWorkshop)for(const x of [-w*.25,w*.25])box('Ceiling strip',[.14,.055,Math.min(1.1,d*.5)],[x,2.7,0],lamp);
  room.add(new THREE.HemisphereLight(0xffead0,0x777465,1.35));const light=new THREE.PointLight(0xffdba4,1.35,8,2);light.position.set(0,2.35,0);room.add(light);
 
+ finish();
  if(site.bookshop){
   addBookshopDetail({room,collider,reg,action});
   // The walls are books to the ceiling (bookshop-detail.js); the floor keeps the
@@ -72,29 +88,35 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
   board('FRONT-ROW BOOKS','BOOKS · NEWSPAPERS · LOCAL STORIES',[0,2.42,-1.4],2.6);
  }else if(site.industrialWorkshop){
   // Chin's half of the back wall (fabrication and the Form 3D printer); Tetsuo's electrical bench is the other half.
+  begin('fabrication-bench');
   bench('Chin’s fabrication bench',-2.05,-hd+.32,3.95,.54);
+  workshop=buildWorkshopMachine({room,x:-1.24,z:-hd+.32});
+  anchor([-1.24,1.25,-hd+.58],'Use Form 3D printer','workshop','Form 3D printer',null,'Chin');
+  finish();begin('electrical-bench');
   tetsuo=buildTetsuoBench({room,collider,reg,action});
-  // The airport radio is mended at the benches (island/services.js), not on the doorstep: between Chin's and Tetsuo's.
   anchor([-.1,1.0,-hd+.6],'Complete the airport radio service','island-repair');
-  bench('Pattern and calculation table',3.2,.3,.7,2.6);
-  // The checklist is pinned beside the distribution board on the east wall (tetsuo-bench.js).
+  anchor([2.92,1.15,-3.05],'Tune workshop radio','radio','Workshop radio','Tetsuo has restored the tuner. Harbour weather and late-night music come through clearly.','Tetsuo');
   anchor([3.95,1.2,-2.66],'Read the electrical safety checklist','read','Workshop safety checklist','Isolate the bench at its switch, lock it and hang the tag, prove it dead with the tester (live, dead, live), and record the test before anything goes back into service.');
+  finish();begin('pattern-table');
+  bench('Pattern and calculation table',3.2,.3,.7,2.6);
+  finish();begin('chin-wall');
   box('Tool board',[1.8,.38,.06],[-1.02,2.05,-hd+.08],dark);
   for(let i=0;i<5;i++){box('Hanging hand tool',[.04,.31,.07],[-1.65+i*.29,2.02,-hd+.13],0x8b9994);box('Tool grip',[.07,.11,.07],[-1.65+i*.29,2.14,-hd+.13],0x7b4e38);}
-  workshop=buildWorkshopMachine({room,x:-1.24,z:-hd+.32});
   // Chin's west wall (chin-wall.js): his tool board, parts, the outboard on its stand, the job board and the poster of
   // Jonsson, the chief's kneeling-mechanic sculpture that stood on this floor until 20 October 2026 (the owner: "Maybe the
   // Johnson mechanical statue should go; maybe he can be used for a poster in the workshop"). The floor is clear again.
   chin=buildChinWall({room,collider,reg,action});
-  anchor([-1.24,1.25,-hd+.58],'Use Form 3D printer','workshop','Form 3D printer',null,'Chin');
-  // Tetsuo's own radio, on the top of the cable rack (tetsuo-bench.js).
-  anchor([2.92,1.15,-3.05],'Tune workshop radio','radio','Workshop radio','Tetsuo has restored the tuner. Harbour weather and late-night music come through clearly.','Tetsuo');
+  finish();begin('motor-bench');
   // The site's IEC 90L pump motor (/motor-90l/) on Tetsuo's test bench, rating plate to the door.
-  buildMotorBench({room,collider});
+  motor=buildMotorBench({room,collider});
   anchor([MOTOR_BENCH.x,1.05,MOTOR_BENCH.z+.18],'Look at the pump motor','motor-bench','Pump motor on the test bench',MOTOR_NOTE,'Tetsuo');
+  finish();begin('star-port');
   box('Star Port cabinet',[.60,1.48,.47],[-1.65,.74,hd-.29],0x4b414d,true);box('Star Port screen',[.46,.43,.028],[-1.65,1.09,hd-.545],0x344f57);
   const arcade=anchor([-1.65,1,hd-.57],'Play Star Port','arcade','Star Port');arcade.userData.npcInteraction=false;
+  finish();begin('workshop-sign');
   board('CHIN & TETSUO REPAIRS','ELECTRICAL · INSTRUMENTS · FORM 3D',[0,2.52,-hd+.08],3.65);
  }
- return {...layout,compact:true,workshop,tetsuo,chin,owned,ownedUpdate:dt=>{owned.forEach(actor=>actor.update(dt));tetsuo?.update(dt);},dispose:()=>{owned.forEach(actor=>actor.dispose());tetsuo?.dispose();chin?.dispose();}};
+ finish();
+ if(site.industrialWorkshop&&studioLayout===undefined)addPublishedWorkshopProps({room,collider:addCollider});
+ return {...layout,workshopObjects,ready:motor?.ready||Promise.resolve(true),compact:true,workshop,tetsuo,chin,owned,ownedUpdate:dt=>{owned.forEach(actor=>actor.update(dt));tetsuo?.update(dt);},dispose:()=>{owned.forEach(actor=>actor.dispose());tetsuo?.dispose();chin?.dispose();}};
 }
