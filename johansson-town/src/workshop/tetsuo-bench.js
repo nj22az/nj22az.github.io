@@ -216,11 +216,10 @@ function tigerTexture(){
  const t=new THREE.DataTexture(data,n,n);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.colorSpace=THREE.SRGBColorSpace;t.magFilter=THREE.LinearFilter;t.needsUpdate=true;return t;
 }
 
-/** A soft round puff for the flux smoke, deterministic. */
+/** A round puff for the flux smoke, drawn as a flat disc. */
 function puffTexture(){
- const n=32,data=new Uint8Array(n*n*4);
- for(let y=0;y<n;y++)for(let x=0;x<n;x++){const d=Math.min(1,Math.hypot(x-n/2+.5,y-n/2+.5)/(n/2)),a=Math.pow(1-d,2),i=(y*n+x)*4;data[i]=data[i+1]=data[i+2]=236;data[i+3]=Math.round(255*a);}
- const t=new THREE.DataTexture(data,n,n);t.colorSpace=THREE.SRGBColorSpace;t.magFilter=t.minFilter=THREE.LinearFilter;t.needsUpdate=true;return t;
+ const c=document.createElement('canvas');c.width=c.height=64;const x=c.getContext('2d');
+ x.fillStyle='#ffffff';x.beginPath();x.arc(32,32,29,0,Math.PI*2);x.fill();const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;
 }
 
 function drawScope(ctx,w,h,out){
@@ -361,8 +360,10 @@ export function buildTetsuoBench({room,collider,reg,action,budget=BUDGET,sound=(
  const tipMat=glow(0x8a7a6a,0xff6a1a,0);const tip=cyl('Soldering iron tip',.0045,.0008,.03,[0,-.065,0],tipMat,iron,null,10);
  wire('Soldering iron cord',[.36+.13,top+.15,-2.98-.02],[.36+.05,top+.03,-2.98-.07],.004,0x2a2a28);
  const puff=puffTexture();disposables.push(puff);const smoke=[];
- for(let i=0;i<3;i++){const m=new THREE.SpriteMaterial({map:puff,transparent:true,depthWrite:false,opacity:0,color:0xb9c0c6});disposables.push(m);const s=new THREE.Sprite(m);s.name='Flux smoke';s.scale.setScalar(.03);s.raycast=()=>{};group.add(s);smoke.push(s);}
+ for(let i=0;i<3;i++){// Cartoon puffs: alpha-tested discs that swell and shrink as they rise (a soft fade reads as nothing through the grade).
+  const m=new THREE.SpriteMaterial({map:puff,alphaTest:.5,color:0xd9dde0});disposables.push(m);const s=new THREE.Sprite(m);s.name='Flux smoke';s.scale.setScalar(.03);s.raycast=()=>{};group.add(s);smoke.push(s);}
  const tipWorld=new THREE.Vector3();
+ /** The wisp: three puffs a third of a cycle apart, rising 20 cm from the holder's mouth every three seconds. */
 
  // ---- The clamp-on arm lamp: clamped to the front-right corner, its shade over the mat ------------------------------
  const lamp=new THREE.Group();lamp.name=KIT.lamp.mesh;group.add(lamp);
@@ -538,7 +539,7 @@ export function buildTetsuoBench({room,collider,reg,action,budget=BUDGET,sound=(
   tip.getWorldPosition(tipWorld);room.worldToLocal(tipWorld);
   const wisp=Math.max(0,(state.heat-.6)/.4);
   smoke.forEach((s,i)=>{const p=(time*.33+i/3)%1;s.visible=wisp>0;// The tip rests down in the holder's coil, so the wisp shows from the coil's mouth up.
-   s.position.set(tipWorld.x+Math.sin((time+i)*1.7)*.012*p+p*.02,tipWorld.y+.09+p*.2,tipWorld.z+.03);s.scale.setScalar(.025+p*.06);s.material.opacity=wisp*.55*Math.sin(p*Math.PI);});
+   s.position.set(tipWorld.x+Math.sin((time+i)*1.7)*.012*p+p*.02,tipWorld.y+.09+p*.2,tipWorld.z-.09+p*.02);s.scale.setScalar(wisp*(.006+.026*Math.sin(p*Math.PI)));});
   // Moving parts (Linux only: on the web nothing is operated and nothing moves but the wisp).
   if(machinery){
    fanSpeed+=((state.fan?1:0)-fanSpeed)*Math.min(1,dt*.8);blades.rotation.z-=fanSpeed*dt*22;
