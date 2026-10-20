@@ -21,6 +21,18 @@ for(const [width,height] of [[820,1180],[390,844]]){
   await page.locator('[data-mode="comic"]').click();assert.equal(await page.getByRole('button',{name:'Edit scene',exact:true}).count(),4);
   const download=page.waitForEvent('download');await page.locator('[data-save="project"]').click();const file=await download;
   const saved=JSON.parse(await fs.readFile(await file.path(),'utf8'));assert.equal(saved.panels.length,4);assert.equal(saved.panelScenes.length,4);assert.ok(Math.abs(saved.panelScenes[2].furniture.desk.rotation[2]+2*Math.PI/3)<1e-9);assert.equal(saved.panelScenes[3].actors[0].liftedBy,saved.panelScenes[3].actors[1].id);
+  await page.getByRole('button',{name:'Edit scene',exact:true}).nth(2).click();
+  await page.locator('button[data-value="Run"]').click();
+  await page.waitForFunction(()=>document.querySelector('.scene-picture canvas')?.getAttribute('aria-busy')==='false');
+  const still=await canvas.evaluate(c=>c.toDataURL());
+  const clock=page.locator('[data-scene-time]');await clock.evaluate(e=>{e.value='.2';e.dispatchEvent(new Event('input',{bubbles:true}));});
+  await page.waitForFunction(previous=>{const c=document.querySelector('.scene-picture canvas');return c?.getAttribute('aria-busy')==='false'&&c.toDataURL()!==previous;},still);
+  await clock.evaluate(e=>{e.value='0';e.dispatchEvent(new Event('input',{bubbles:true}));});
+  await page.waitForFunction(previous=>{const c=document.querySelector('.scene-picture canvas');return c?.getAttribute('aria-busy')==='false'&&c.toDataURL()===previous;},still);
+  await page.locator('[data-play-cast]').click();
+  await page.waitForFunction(previous=>document.querySelector('.scene-picture canvas')?.toDataURL()!==previous,still);
+  await page.locator('[data-play-cast]').click();
+  await page.locator('[data-mode="comic"]').click();
   const legacy={...source};delete legacy.panelScenes;
   await page.locator('[data-project-input]').setInputFiles({name:'legacy.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(legacy))});await page.getByText('Project opened.',{exact:true}).waitFor();assert.equal(await page.getByRole('button',{name:'Edit scene',exact:true}).count(),0);assert.equal(await page.locator('.scene-panels figure').count(),4);
   assert.deepEqual(studio.errors,[]);console.log(`${width}×${height}: imported, edited furniture, replaced panel, exported snapshots, retained carry links; legacy PNG-only project opened.`);
