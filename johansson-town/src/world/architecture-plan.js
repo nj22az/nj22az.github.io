@@ -46,7 +46,10 @@ export const ARCHITECTURE_ROUTES=[
  ...NISHI.lanes.map((l,i)=>({id:'nishi-cross-lane-'+i,width:3,surface:'stone',points:[[-36.7,l.z],[-24.6,l.z]]})),
  {id:'main-street-extension',width:4.5,surface:'asphalt',points:[[-2.75,20.5],[-2.75,46]]},
  {id:'main-west-footway-extension',width:2.55,surface:'stone',points:[[-6.275,20.5],[-6.275,46]]},
- {id:'main-east-footway-extension',width:3.6,surface:'stone',points:[[1.3,20.5],[1.3,46]]},
+ // Its square end reaches half its width past the last point: from 45.7 that is the cross lane's north edge (z 47.5),
+ // not 0.3 m beyond it into the gutter in front of 8 Kitahama (okinawa/lane-edges.js), where the stone lay 5 mm under
+ // the gutter's floor.
+ {id:'main-east-footway-extension',width:3.6,surface:'stone',points:[[1.3,20.5],[1.3,45.7]]},
  ...KITAHAMA_LANES.map((p,i)=>{const horizontal=p.maxX-p.minX>p.maxZ-p.minZ,w=horizontal?p.maxZ-p.minZ:p.maxX-p.minX;return {id:'planned-neighbourhood-lane-'+i,width:w,surface:'stone',points:horizontal?[[p.minX+w/2,(p.minZ+p.maxZ)/2],[p.maxX-w/2,(p.minZ+p.maxZ)/2]]:[[(p.minX+p.maxX)/2,p.minZ+w/2],[(p.minX+p.maxX)/2,p.maxZ-w/2]]};}),
  {id:'north-residential-cross-lane',width:3,surface:'stone',points:[[-21.5,89.5],[4.5,89.5]]},
  ...TOWN_WALK_PLOTS.map(p=>({id:'building-circuit-'+p.id,width:2,surface:'stone',points:plotCircuit(p)})),
