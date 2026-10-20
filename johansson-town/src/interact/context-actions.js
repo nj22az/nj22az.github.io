@@ -58,8 +58,12 @@ export function createContextRail({doc=globalThis.document,onAction=()=>{}}={}){
   update(state){
    model=contextActions({...state,previousActions:model.actions});
    const shown=new Map(model.actions.map(a=>[a.id,a]));
+   // When the last action goes, the rail fades out with its words still on it (quiet-hud.css): the buttons that were
+   // showing keep their face but can no longer be pressed, reached or read, and the rail itself is hidden.
+   const leaving=!model.actions.length&&!model.status;
    for(const [id,button] of buttons){
     const descriptor=shown.get(id),visible=!!descriptor;
+    if(leaving&&!button.hidden){button.disabled=true;button.tabIndex=-1;button.setAttribute('aria-hidden','true');continue;}
     button.hidden=!visible;button.disabled=!visible;button.tabIndex=visible?0:-1;
     button.classList.toggle('hidden',!visible);button.classList.toggle('control-off',!visible);button.classList.toggle('context-primary',!!descriptor?.primary);
     button.setAttribute('aria-hidden',String(!visible));

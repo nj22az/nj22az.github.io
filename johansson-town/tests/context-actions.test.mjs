@@ -101,3 +101,18 @@ test('pending delivery is announced once instead of repeatedly on each frame',()
  rail.update({...waiting,orderPending:false,canEat:true});
  assert.equal(status.hidden,true);assert.equal(value,'');
 });
+
+test('the last action fades out with its words on it, but can no longer be pressed or read',()=>{
+ const {doc,get}=fixture(),calls=[],rail=createContextRail({doc,onAction:id=>calls.push(id)});
+ rail.update({...idle,targetLabel:'Look at the fire escape'});
+ rail.update({...idle});
+ const act=get('act');
+ assert.equal(get('contextActions').hidden,true,'the rail is hidden (quiet-hud.css fades it)');
+ assert.equal(act.hidden,false,'the button keeps its face while the rail fades');
+ assert.equal(act.getAttribute('aria-label'),'Look at the fire escape');
+ assert.equal(act.disabled,true);assert.equal(act.tabIndex,-1);assert.equal(act.getAttribute('aria-hidden'),'true');
+ act.onclick({detail:0});act.onpointerdown({button:0,preventDefault(){},stopPropagation(){}});
+ assert.equal(calls.length,0,'a fading button does nothing');assert.equal(rail.activatePrimary(),false);
+ rail.update({...idle,inside:true,canExit:true});
+ assert.equal(act.hidden,true,'a new action takes the rail, and the old one is gone');assert.equal(get('exitRoomButton').hidden,false);
+});

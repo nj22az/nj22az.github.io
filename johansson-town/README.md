@@ -46,12 +46,16 @@ than expecting a clean run.
 ## Playing
 
 - **Touch:** left thumb walks, and steers too: hold the stick off to one side and the
-  view turns that way. Push it to the rim for a moment to run. Drag anywhere else to
-  look (the same swipe turns the same on any screen). The round button does whatever
-  is nearby (stand, take, talk, read); the tiles on the right open the town book,
-  camera, view and moves. Tuning lives in `src/input/touch-feel.js`.
+  view turns that way. Push it past about 85% of its reach to run (there is no Run
+  button). Drag anywhere else to look (the same swipe turns the same on any screen).
+  The pill at the bottom does whatever is nearby (stand, take, talk, read); the book
+  top right opens the town book. Tuning lives in `src/input/touch-feel.js`.
+- **The HUD** keeps out of the picture (`quiet-hud.css`, `src/ui/quiet-hud.js`): one chip
+  for the place and time, the book, the action pill. A few seconds without input and it
+  fades; any input brings it back. **Clean view** in the town book (or H) hides every
+  control for a photo; a tap, H, Esc or a controller button brings them back.
 - **Keyboard:** WASD / arrows, mouse look, Shift to run, Space to jump, E to interact,
-  V to switch view, Q for the town book, N to cycle the time of day.
+  V to switch view, Q for the town book, N to cycle the time of day, H for the clean view.
 - **Controller:** left stick moves, right stick looks, A interacts, Start on the title.
 
 At Sakura, pick things off the shelves (one goes in your hand, more in a basket), pay
