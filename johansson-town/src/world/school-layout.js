@@ -73,7 +73,8 @@ export function schoolColliders(){
  add('school-block',B.minX,B.maxX,B.minZ,B.maxZ,B.parapet);
  for(const x of SCHOOL_COLUMNS)add('school-column',x-.2,x+.2,SCHOOL.corridor.minZ,SCHOOL.corridor.minZ+.4,B.roof);
  const w=SCHOOL.wash;add('school-wash-station',w.x-w.w/2,w.x+w.w/2,w.z-w.d/2,w.z+w.d/2,1.1);
- const s=SCHOOL.bikeShed;add('school-bike-shed',s.minX,s.maxX,s.minZ+.9,s.maxZ,2.3);
+ // The shed's solid holds the bicycles parked under it; each bicycle has its own collider too (school.js).
+ const s=SCHOOL.bikeShed;add('school-bike-shed',s.minX,s.maxX,s.minZ+.9,s.maxZ,2.3);list.at(-1).holds='bicycles';
  const g=SCHOOL.gate;for(const side of [-1,1])add('school-gatepost',g.x+side*g.half-.35,g.x+side*g.half+.35,g.z-.35,g.z+.35,2.3);
  add('school-flagpole',SCHOOL.flagpole.x-.15,SCHOOL.flagpole.x+.15,SCHOOL.flagpole.z-.15,SCHOOL.flagpole.z+.15,9);
  // The iron bars went with the school; the power house, its fuel tank, the canopy's two columns stand there now.

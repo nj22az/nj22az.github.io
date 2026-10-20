@@ -1,6 +1,7 @@
 import {GROUND} from '../render/ground-palette.js';
 import {paintedAsphalt,paintedPaving} from '../render/toy-surfaces.js';
 import * as THREE from '../../vendor/three.module.js';
+import {signPlate} from './sign-plate.js';
 import {KITANO_ROAD,KITANO_ROAD_LENGTH,KITANO_SURFACE_LIFT,roadPoint,roadHeight,leftOf} from './kitano-link-plan.js';
 
 import {paintPatch,roadSign,stopMarking,roadPaintMaterial,ROAD_STANDARD} from './road-standards.js';
@@ -98,7 +99,8 @@ export function buildKitanoLink({parent,colliders=null,shadows=false}){
   ctx.fillStyle='#ffffff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 64px sans-serif';ctx.fillText(text,256,sub?78:80,480);
   if(sub){ctx.font='bold 40px sans-serif';ctx.fillText(sub,256,160,480);}
   const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;
-  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,w*c.height/512),new THREE.MeshStandardMaterial({map:t,roughness:.6,side:THREE.DoubleSide}));m.position.set(x,y,z);m.rotation.y=ry;m.name='Sign: '+text;group.add(m);
+  // A steel plate with its grey back (sign-plate.js): from behind it is the plate, never its words reversed.
+  const m=signPlate(new THREE.MeshStandardMaterial({map:t,roughness:.6}),w,w*c.height/512,{name:'Sign: '+text});m.position.set(x,y,z);m.rotation.y=ry;group.add(m);
  };
  // A guide sign at the junction, facing Main Street, and the bridge's name plates.
  {const x=.2,z=6.45;
