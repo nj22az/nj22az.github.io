@@ -62,10 +62,10 @@ LEKTION = {
         ]),
         ('teori', {
             'avsnitt': 1, 'rubrik': 'Transformator och roterande maskin',
-            'nyckel': 'Håll isär beteckningarna: N, n, n_{s}, p, s och η.',
+            'nyckel': 'Två olika N/n: N = lindningsvarv, n = motorvarvtal.',
             'punkter': [
-                'Transformatorns N betyder antal lindningsvarv.',
-                'Motorns n betyder varvtal i r/min. n_{s} gäller magnetfältet.',
+                'STORT N = antal varv koppartråd i transformatorns lindning (ett antal).',
+                'litet n = motorns rotationshastighet i r/min; n_{s} = fältets varvtal.',
                 'p är antalet poler i formeln n_{s} = 120f/p.',
                 's beskriver eftersläpning. η beskriver förhållandet mellan uteffekt och inmatning.',
             ],
