@@ -21,6 +21,7 @@ export function normalizeScene(raw,normalizeRecipe=r=>structuredClone(r)){
  out.format=['landscape','square','portrait'].includes(raw.format)?raw.format:out.format;
  out.style=['photo','meme','comic'].includes(raw.style)?raw.style:out.style;
  out.camera={orbit:clamp(raw.camera?.orbit,-180,180,0),elevation:clamp(raw.camera?.elevation,-25,40,0),zoom:clamp(raw.camera?.zoom,.55,1.8,1)};
+ if(raw.exitLabel!==undefined)out.exitLabel=text(raw.exitLabel).slice(0,24);
  out.time=clamp(raw.time,0,60,0);if(raw.backdrop==='paper')out.backdrop='paper';
  out.top=text(raw.top);out.bottom=text(raw.bottom);
  if([raw.camera?.position,raw.camera?.target].every(v=>Array.isArray(v)&&v.length===3&&v.every(n=>Number.isFinite(n)&&Math.abs(n)<=30))){out.camera.position=[...raw.camera.position];out.camera.target=[...raw.camera.target];out.camera.fov=clamp(raw.camera.fov,25,75,43);}
