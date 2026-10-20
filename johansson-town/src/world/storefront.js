@@ -123,10 +123,10 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
   box([1.05,2.1,.12],[door,1.05,wall-.03],0x42514a);             // the stockroom door
   box([.1,.05,.06],[door+.38,1.0,wall-.11],0xb9b2a0);            // its handle
   box([.1,3.8,.14],[door-1.5,1.9,wall-.06],0x5b5548);            // downpipe, from the roof's edge to its gully (okinawa/old-town.js)
-  box([.66,.8,.32],[door-2.5,1.42,wall-.17],0x7a7164);           // meter cupboard
-  box([.58,.1,.34],[door-2.5,1.84,wall-.185],0x5d564a);           // its lid
-  box([1.2,.86,.5],[-half+2.8,2.3,wall-.26],0x6d736d);           // extractor
-  for(const y of [2.12,2.3,2.48])box([1.0,.06,.54],[-half+2.8,y,wall-.3],0x4a4f4a);
+  box([.66,.8,.32],[door-2.5,1.42,wall-.145],0x7a7164);           // meter cupboard
+  box([.58,.1,.34],[door-2.5,1.84,wall-.155],0x5d564a);           // its lid
+  box([1.2,.86,.5],[-half+2.8,2.3,wall-.235],0x6d736d);           // extractor
+  for(const y of [2.12,2.3,2.48])box([1.0,.06,.54],[-half+2.8,y,wall-.275],0x4a4f4a);
   // The empties, back in their cases on a pallet by the door for Higa Liquor's van to take away (Higa supplies
   // Sakura's beer: commerce/merchandising.js). The row against the wall stands two high.
   const pallet=[half-4.4,wall-.52];
