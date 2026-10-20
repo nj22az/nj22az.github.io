@@ -30,10 +30,22 @@ Vy uses `recipeFor('Vy')`. At the owner's request the teacher is Mrs Kubo, a sep
 - UI round trips passed at 820 × 1180 and 390 × 844: open the project, edit the overturned desk, replace its panel, export, verify all four snapshots and the carrier link, then import a legacy PNG-only project.
 - Existing scene suites: 58 passed, one existing TODO and one Sakura counter-edge assertion failed. The same Sakura assertion failed against the unchanged HEAD version of `scene-world.js`; it is not caused by classroom staging.
 - New/focused schema, catalogue and MCP checks pass. See `tests/classroom-comic.test.mjs` and `tests/classroom-comic.browser.mjs`.
-- This is static comic choreography, not animated cloth or physics. Classroom staging deliberately permits actor contact without the ordinary automatic separation. Furniture transforms do not change World's playable classroom, routes or collisions. Physical iPad/iPhone Safari has not been tested.
+- The held comic poses are choreographed; running and walking also play as continuous rig animation. Cloth and furniture are not physics simulations. Classroom staging deliberately permits actor contact without the ordinary automatic separation. Furniture transforms do not change World's playable classroom, routes or collisions. Physical iPad/iPhone Safari has not been tested.
 
 The before comparison is labelled **Initial staging prototype**: that render required manual scripting because the old scene picker could not create this classroom shot. The after image is rebuilt through Studio's own renderer and capture path. The comparison is not presented as an old UI feature that did not exist.
 
 ## Shared classroom model correction
 
 The final side view exposed the classroom’s existing noticeboard defect: long English words were rendered at 84 px on 96 px papers, with no width fitting, and several notices contained incoherent text. `classroom-notices.js` now owns a bounded layout with eight single-character calligraphy sheets, complete notices, consistent margins and text measured in the actual font. All 33 labels fit their paper areas in Chromium; the flat artwork and the rebuilt final panel were visually checked. This changes the shared World classroom builder, so Studio and World use the same correction, with no added 3D draw calls. The World runtime was rebuilt; classroom checks (8) and runtime checks (3) passed. Physical-device Safari remains untested.
+
+## Dramatic acting and movement
+
+Studio now offers Walk, Run, School run and Comic leap. Play cast advances the same World locomotion rig used in town, including alternating strides, bent elbows and body bounce; the scene timeline can seek backwards deterministically. Saved scene times preserve the frame chosen for a panel. The shared animator accepts an optional initial clock for repeatable Studio sampling; World retains its existing random starting clock.
+
+The example uses tear-free rage and panic, wider mouths, a grounded running escape, large unboxed shout lettering and optional plain comic paper. Both lettering and backdrop have controls under Add text. The full classroom remains selectable. The teacher and pupil retain their side-view lift and ashamed expression.
+
+Verification: 10 schema/motion tests passed; pose/catalogue checks passed with one existing floor-skirt TODO. Chromium renders a 24-frame run cycle through the actual Studio workspace. The browser acceptance check also exercises timeline seeking, rewind and Play cast, alongside project round trips at tablet and phone sizes.
+
+The revised camera pass shows the first desk pose from the side, the escape from behind, and the final lift from an angle that separates Vy from the teacher. A reusable large speech-bubble option keeps the teacher’s complete line readable across the top of the panel.
+
+The escape now samples School run at 0.30 s, with a stronger forward lean and bent, opposing arms. The actual shoe supports are grounded after posing; the paper treatment projects a short floor stroke and dust marks from the planted sole. The jump pose remains available separately. Eleven scene/motion tests pass, including planted-sole height and repeat-frame stability.

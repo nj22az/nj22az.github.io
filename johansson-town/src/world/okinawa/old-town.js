@@ -263,13 +263,19 @@ export const SAKURA_BACK=Object.freeze({
   why:'Where the delivery van backs up and the empties stand: concrete, as behind every konbini, not lawn.'}),
 });
 
-/** A painted plate: a band of colour with the Japanese large and the English under it. */
+/**
+ * A painted plate: a band of colour with the Japanese large and the English under it, one line per '\n'. Each line's type
+ * shrinks to fit inside the band: 避難はしご at full size was wider than its plate and was painted cut off at both ends.
+ */
 function plateTexture(w,h,{jp,en,bg,ink='#ffffff'}){
  return paint(w,h,(ctx,W,H)=>{
   ctx.fillStyle='#f4f2ea';ctx.fillRect(0,0,W,H);ctx.fillStyle=bg;ctx.fillRect(W*.04,H*.06,W*.92,H*.88);
   ctx.fillStyle=ink;ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.font='bold '+Math.round(H*(en?.36:.5))+'px "Hiragino Sans","Noto Sans CJK JP",sans-serif';ctx.fillText(jp,W/2,H*(en?.38:.5));
-  if(en){ctx.font='bold '+Math.round(H*.16)+'px sans-serif';ctx.fillText(en,W/2,H*.74);}
+  const line=(text,size,family,y)=>{ctx.font='bold '+size+'px '+family;const over=ctx.measureText(text).width/(W*.84);
+   if(over>1)ctx.font='bold '+Math.floor(size/over)+'px '+family;ctx.fillText(text,W/2,y);};
+  const lines=en?en.split('\n'):[];
+  line(jp,Math.round(H*(en?.36:.5)),'"Hiragino Sans","Noto Sans CJK JP",sans-serif',H*(lines.length>1?.32:en?.38:.5));
+  lines.forEach((text,i)=>line(text,Math.round(H*.16),'sans-serif',H*(.74+(i-(lines.length-1)/2)*.17)));
  });
 }
 
@@ -302,7 +308,7 @@ function sakuraFireEscape(kit,solid,{inspect}){
  // Its plates: 非常口 over the fire door, 避難はしご and "keep clear" at the ladder's foot.
  if(typeof document!=='undefined'&&document.createElement){
   kit.sign(plateTexture(256,96,{jp:'非常口',en:'FIRE EXIT',bg:'#2f8a4e'}),.5,.19,U-.012,F+2.45,E.door.z,{ry:-Math.PI/2,depth:.02,name:'Fire door plate'});
-  kit.sign(plateTexture(192,256,{jp:'避難はしご',en:'ESCAPE LADDER · KEEP CLEAR',bg:'#2f8a4e'}),.3,.4,W-.012,1.55,c1+.3,{ry:-Math.PI/2,depth:.02,name:'Escape ladder plate'});
+  kit.sign(plateTexture(288,192,{jp:'避難はしご',en:'ESCAPE LADDER\nKEEP CLEAR',bg:'#2f8a4e'}),.45,.3,W-.012,1.55,c1+.3,{ry:-Math.PI/2,depth:.02,name:'Escape ladder plate'});
  }
  inspect(L.cageX-.7,1.2,L.z,'Look at the fire escape','Sakura fire escape',
   'The office upstairs has a second way out: a steel fire door at the head of the inside stair, a little landing and a caged ladder down the back wall. It is for a fire, not for coming and going. The door opens only from inside and rings a bell in the shop when it does. The fire service climbs it at the spring inspection, and Thuan holds the clipboard.');
