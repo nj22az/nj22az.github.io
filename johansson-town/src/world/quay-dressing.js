@@ -40,8 +40,9 @@ export const QUAY_DRESSING=Object.freeze({
   * kerb, its hose on a reel beside it, so a boat alongside fills straight from the quay edge.
   */
  fuel:Object.freeze({x:18.2,z:-49.3,sign:Object.freeze({jp:'給油所',sub:'火気厳禁'}),why:'the boats fill with diesel here'}),
- /** Drainage slots through the kerb every few metres, and the stain each leaves down the face. */
- scuppers:Object.freeze([-17.5,-13,-3.5,1.5,6,10.5,16].map(x=>Object.freeze({x}))),
+ /** Drainage slots through the kerb every few metres, and the stain each leaves down the face; none across the pier's
+  *  root, where the kerb is cut away (harbour.js), the one by it on the short length between the ramp and the pier. */
+ scuppers:Object.freeze([-17.5,-13,-4.9,6,10.5,16].map(x=>Object.freeze({x}))),
 });
 
 const PIER_TOP=OUTER_PIER.height,KERB_TOP=.28;
