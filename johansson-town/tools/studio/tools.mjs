@@ -1,3 +1,4 @@
+import {WORLD_ROOM_TOOLS} from './world-rooms.mjs';
 /**
  * Johansson Studio's tools: one table used by the MCP server (server.mjs) and the command line (cli.mjs), so the
  * same work gets done when the MCP connection is not there. Each tool has a JSON Schema input (zod's fromJSONSchema
@@ -12,6 +13,7 @@ import {ASSET_TOOLS} from './assets.mjs';
 import {MODEL_TOOLS} from './models.mjs';
 import {FILM_PIPELINE_TOOLS} from './film-pipeline.mjs';
 import {WORLD_LIBRARY_TOOLS} from './world-library.mjs';
+import {SCENE_TOOLS} from './scenes.mjs';
 import {ROOM_TOOLS} from './rooms.mjs';
 
 const NAME={type:'string',minLength:1,maxLength:40,description:'A resident\'s name as World writes it (e.g. "Mr Fujita", "Kōji"; accents and capitals may be left out), or a Studio character\'s id or name.'};
@@ -282,6 +284,20 @@ const PRODUCT_TOOLS=[
 ];
 
 export const TOOLS=[
+ {name:'studio_workflow_info',readOnly:true,description:'Start here: discover the shared Johansson Studio editing, GLB, room, comic and existing-film workflows, server responsibilities, portable files and creator approval boundary. Does not read private files or write anything.',input:object({}),
+  async run(){return {
+   editor:'avatar-creator/ (the same page can be served by the desktop Town Studio local server)',
+   server:'johansson-studio: node johansson-town/tools/studio/server.mjs, working directory = website repository root',
+   models:['model_inspect','model_prepare','model_snap'],
+   rooms:['room_create','room_open','room_get','room_import_model','room_edit','room_check','room_render','room_export'],
+   worldRooms:{supported:['dock-workshop'],tools:['world_room_open','world_room_check','world_room_publish','world_room_rollback']},
+   assets:['asset_list','asset_export','asset_draft','asset_publish','world_asset_list','world_asset_get'],
+   comics:['scene_classroom_example','scene_render','comic_render'],
+   film:{tools:['film_pipeline_info','scene_export_film'],engine:'nj22az/jojo/remotion',desktopServer:'town-studio owns desktop status, get_latest, film scripts and explicitly confirmed deployment; do not duplicate its renderer.'},
+   exchange:'Browser IndexedDB and MCP drafts are separate. Exchange .room.json explicitly. GLB exports contain static geometry; editable room files retain IDs, reusable assets and native bindings.',
+   approval:'Preview and validate first. Only after creator approval call the relevant publish tool with dryRun:false. This writes local data only. Build runtime, validate, review the exact diff and deploy separately. Never infer approval from a successful check.',
+   guide:'avatar-creator/docs/STUDIO-WORKFLOW.md',limits:['Static self-contained GLB only; rigs, animation and unsupported compression are refused.','World publication is implemented only for the Dock Workshop adapter.','Physical Safari and native desktop Qt acceptance remain required.']
+  };}},
  {name:'character_list',readOnly:true,description:'List the people Studio can draw: World\'s cast, its neighbours, the ferry\'s crew and the port clerk (by the names World calls them: Mac, Ms Ganaha), the townsfolk (drawn from their name and personality), and Studio-only characters. Says whose look Studio has changed, and which changes are still only in Studio\'s draft (unpublished).',
   input:object({group:{enum:['cast','neighbour','crew','townsfolk','studio']},query:{type:'string',maxLength:40,description:'Part of a name or role (accents and capitals may be left out).'}}),
   async run({group,query},ctx){
@@ -413,7 +429,7 @@ export const TOOLS=[
  ...PRODUCT_TOOLS,
  ...ASSET_TOOLS,
  ...MODEL_TOOLS,
- ...ROOM_TOOLS,...WORLD_LIBRARY_TOOLS,...FILM_PIPELINE_TOOLS,
+ ...SCENE_TOOLS,...ROOM_TOOLS,...WORLD_ROOM_TOOLS,...WORLD_LIBRARY_TOOLS,...FILM_PIPELINE_TOOLS,
 ];
 export const TOOL_BY_NAME=Object.freeze(Object.fromEntries(TOOLS.map(t=>[t.name,t])));
 
@@ -447,7 +463,7 @@ async function brandReport(ctx){
 }
 
 /** Files an "update World" commits: Studio's data and modules, and what is rebuilt from them (guide portraits, runtime). */
-const PUBLISHED=/^johansson-town\/(data\/studio\/|src\/avatars\/looks-data\.js|src\/studio\/characters-data\.js|src\/commerce\/products-data\.js|assets\/graphics\/labels\/|guide\/|resident-guide\.js|runtime\/|index\.html|creator\/index\.html|sw\.js)/;
+const PUBLISHED=/^johansson-town\/(data\/studio\/|src\/avatars\/looks-data\.js|src\/studio\/characters-data\.js|src\/commerce\/products-data\.js|src\/world\/interiors\/workshop-publication\.js|assets\/graphics\/labels\/|guide\/|resident-guide\.js|runtime\/|index\.html|creator\/index\.html|sw\.js)/;
 
 /** The publish_check report: every item {check, ok, detail}, and whether all of them pass. */
 async function publishCheck(ctx,{tests,signal}){

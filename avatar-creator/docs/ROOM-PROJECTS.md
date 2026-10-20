@@ -85,3 +85,10 @@ node avatar-creator/tests/room-editor.browser.mjs
 The browser check exercises desktop/phone layouts, replacement, Undo/Redo, local reload recovery, cross-tab stale-save
 rejection, MCP GLB/PNG/project export, inter-object overlap detection and reopening an agent-edited project in the UI.
 Physical Safari/iPad interactions and share-sheet delivery still need device testing.
+
+## Native World room: the workshop
+
+The workshop now has its first checked World publication adapter. Open it with **Open World workshop**; its fixed
+services keep their World builders, while selected floor assemblies and imported GLB props are editable. Use the
+**Allow floating** switch for an intentional hover. Read [WORKSHOP-ROUNDTRIP.md](WORKSHOP-ROUNDTRIP.md) for the protected
+boundaries, explicit publication/rollback tools and verification limits. Generic room drafts still cannot publish World.

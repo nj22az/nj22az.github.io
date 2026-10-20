@@ -1,5 +1,8 @@
 # Johansson Studio and Claude (the `johansson-studio` tools)
 
+Start with `studio_workflow_info` for tool routing, file exchange and the creator approval boundary.
+The consolidated workflow, audit and roadmap are in [STUDIO-WORKFLOW.md](STUDIO-WORKFLOW.md).
+
 **New: static GLB preparation and snapping.** `model_inspect`, `model_prepare` and `model_snap` share the UI's
 **Make model → Import GLB** workshop. See [MODEL-WORKSHOP.md](MODEL-WORKSHOP.md) for setup, examples, surface checks,
 supported inputs and the next World-editor batches. A prepared GLB is a copy, not a published town update.
@@ -292,3 +295,11 @@ Whether to raise the host's MCP timeout is the creator's decision, and no reposi
 - The old `PACKS` listed a few shapes and sizes the shelf never built (`pack.declared`: orange as a carton, the sandwich
   as a box, the pudding as a plain cup, the chocolate, notebook and postcard as flat packs, and the soap smaller).
 - Renaming a product waits for World to find the bag's things by product id instead of by name.
+
+## Editable classroom comics (20 October 2026)
+
+`scene_classroom_example` returns Vy's four-panel acceptance scene. `scene_render({scene,name})` draws a snapshot with the actual Build scene workspace and reports its normalized data, head framing and hand-contact target errors. `comic_render({scenes,name,layout})` captures one to four scenes and exports the PNG plus a portable `.studio.json` project containing per-panel snapshots. Rendering writes previews only and never publishes World. See [CLASSROOM-COMIC.md](CLASSROOM-COMIC.md) for controls, schema additions, validation and limits.
+
+Native workshop authoring: `world_room_open`, `world_room_check`, `world_room_publish`, `world_room_rollback`.
+See [WORKSHOP-ROUNDTRIP.md](WORKSHOP-ROUNDTRIP.md) for the revision-checked World round trip, imported props and intentional
+floating. Publishing updates local World data; runtime build, review and git deployment remain explicit steps.

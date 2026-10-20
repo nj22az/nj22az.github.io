@@ -1,0 +1,19 @@
+{
+  "pos": [
+    -1.65,
+    1.25,
+    2.93
+  ],
+  "table": [
+    3.35,
+    0,
+    0.3
+  ],
+  "collides": true,
+  "sceneTable": [
+    3.35,
+    0,
+    0.3
+  ],
+  "blocked": true
+}

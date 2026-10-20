@@ -1,3 +1,4 @@
+import {workshopPropsReady,preloadWorkshopProps} from './world/interiors/workshop-props.js';
 import {createLaunchReport} from './render/launch-report.js';
 import {BUDGET} from './edition.js';
 import {createAttention} from './people/attention.js';
@@ -101,7 +102,7 @@ import {HOUSE_SAVE} from './world/johansson-house.js';
 import {createHomeCustomization} from './world/interiors/home-customization.js';
 import {buildCityRestaurant,CITY_RESTAURANT} from './world/interiors/city-restaurant.js';
 import {buildUpperHome} from './world/interiors/upper-home.js';
-import {SAKURA_STAIR,sakuraBoundsAt} from './world/interiors/sakura-stairs.js';
+import {SAKURA_STAIR,sakuraBoundsAt,STAIR_LENS_EASE} from './world/interiors/sakura-stairs.js';
 import {buildFamilyHome} from './world/interiors/family-home.js';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js?ui=compact-3';
@@ -881,6 +882,40 @@ function placeThirdPerson(dt){
   const flat=Math.max(.25,Math.hypot(camera.position.x-player.position.x,camera.position.z-player.position.z)),down=Math.max(-.6,Math.atan2(player.position.y+eye-.1-camera.position.y,flat)+.35);
   camera.rotation.x=THREE.MathUtils.lerp(camera.rotation.x,Math.min(camera.rotation.x,down),crampedEase);
  }
+ placeLandingLens(dt);
+}
+/**
+ * A room's landing lens (Sakura's turning landing, sakura-stairs.js SAKURA_LANDING): where the lens behind him would
+ * stand against a wall a step away, the room names places that frame him and the next flight. The first with a clear
+ * sight of his chest is taken; the lens eases over to it, follows it smoothly if it changes, and eases back to the
+ * boom as he steps off the landing.
+ */
+let landingEase=0,landingReady=false;
+const landingPos=new THREE.Vector3(),landingAt=new THREE.Vector3(),landingWant=new THREE.Vector3(),landingLook=new THREE.Vector3(),landingQ=new THREE.Quaternion(),landingM=new THREE.Matrix4(),landingFrom=new THREE.Quaternion(),boomLook=new THREE.Vector3();
+// The room's solids at a height (its walls, guards, furniture), not the ceiling over him: the lens may stand above a flight.
+const landingSolid=(x,z,y,r)=>roomColliders.some(c=>!c.only&&(c.minY||0)<y+.06&&(!Number.isFinite(c.height)||(c.minY||0)+c.height>y-.06)&&circleHitsRect(x,z,r,c));
+function landingSightClear(pos,chest){
+ const [x,y,z]=pos,dx=chest[0]-x,dy=chest[1]-y,dz=chest[2]-z,len=Math.hypot(dx,dy,dz);
+ if(landingSolid(x,z,y,.16))return false;
+ for(let t=.2;t<len-.35;t+=.12){const k=t/len;if(landingSolid(x+dx*k,z+dz*k,y+dy*k,.06))return false;}
+ return true;
+}
+function placeLandingLens(dt){
+ const shots=current&&!seated?activeRoomLayout?.stairLens?.(player.position):null;
+ landingEase=THREE.MathUtils.damp(landingEase,shots?.length?1:0,STAIR_LENS_EASE.blend,dt);
+ if(shots?.length){
+  const shot=shots.find(s=>landingSightClear(s.pos,s.chest))||shots[0];
+  landingWant.set(...shot.pos);landingLook.set(...shot.at);
+  if(!landingReady){landingPos.copy(landingWant);landingAt.copy(landingLook);landingReady=true;}
+  else{const k=1-Math.exp(-STAIR_LENS_EASE.pos*dt);landingPos.lerp(landingWant,k);landingAt.lerp(landingLook,1-Math.exp(-STAIR_LENS_EASE.look*dt));}
+ }
+ if(landingEase<.002){landingEase=0;if(!shots)landingReady=false;return;}
+ // Between the boom and the stair's lens, both the place and what it looks at are blended: the boom looks past him at a
+ // point ahead of its lens, the stair's lens at him, and a lens on the way between looks between the two, so he stays in
+ // the frame while it comes round (blending the turns alone let the half-way lens look past him).
+ landingFrom.copy(camera.quaternion);boomLook.set(0,0,-1).applyQuaternion(landingFrom).multiplyScalar(Math.max(1.5,thirdDistance)).add(camera.position);
+ camera.position.lerp(landingPos,landingEase);boomLook.lerp(landingAt,landingEase);
+ landingQ.setFromRotationMatrix(landingM.lookAt(camera.position,boomLook,lensUp));camera.quaternion.copy(landingQ);
 }
 /** R, the drink button, or Drink at the table: a can from the bag, or a sip of what Thao brought. */
 function drinkNow(){if(parkSeat?.izakaya&&beerService?.drink)return sipDrink();return hands.drink();}
@@ -940,7 +975,7 @@ function updateJohansson(dt){
  const partner=conversationName?(conversationName==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===conversationName)?.g):null;
  if(partner){partner.getWorldPosition(lookPoint);lookPoint.y+=1.5;johansson.lookAt(lookPoint);}else johansson.lookAt(spawnScene?.gaze||null);
  setSwingFocus(camera.position);
- johansson.update(dt,{speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5:shipRoom()||houseboatCabin()?thirdDistance>=HEAD_CAM:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active});
+ johansson.update(dt,{speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5||landingEase>.5:shipRoom()||houseboatCabin()?thirdDistance>=HEAD_CAM:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active});
  // Sakura: one thing in his hand, more in a basket, until he pays (shop-carry.js).
  shopCarry.sync(activities?.state?.konbini?.basket,current?.id==='market'&&johansson.ready);
 }
@@ -1248,8 +1283,8 @@ const massageChair=()=>seated&&current?.id==='onsen'&&parkSeat?.seatId==='massag
  * never opens with a seat over nothing.
  */
 const ROOM_ASSETS={onsen:ONSEN_ASSETS};
-const roomAssetsReady=s=>(ROOM_ASSETS[s.id]||[]).every(assetLoaded);
-const loadRoomAssets=s=>Promise.all((ROOM_ASSETS[s.id]||[]).map(id=>loadAsset(id))).then(all=>all.every(Boolean));
+const roomAssetsReady=s=>(!s.industrialWorkshop||workshopPropsReady())&&(ROOM_ASSETS[s.id]||[]).every(assetLoaded);
+const loadRoomAssets=s=>Promise.all([...(ROOM_ASSETS[s.id]||[]).map(id=>loadAsset(id)),...(s.industrialWorkshop?[preloadWorkshopProps()]:[])]).then(all=>all.every(Boolean));
 let roomAssetsTry=0;
 async function enterRoom(s){replayInterrupted();lowerPocket();spawnScene?.cancel('room');
  if(roomLoading)return;
@@ -1269,7 +1304,9 @@ async function enterRoom(s){replayInterrupted();lowerPocket();spawnScene?.cancel
  }
  parkSeat=null;seated=false;activities.close();if(!photoStudio?.active&&!photoReturning)activities.visit(s.id);
  const streetYaw=yaw,streetPitch=pitch;
- current=s;roomShell(s);addRoomProps(s);content=buildBusinessContent({site:s,room,register:reg,onAction:activities.action,onInspect:item=>inspector.open(item)});if(!activeRoomLayout?.storeys)room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});activeRoomLayout?.follow?.({x:0,y:activeRoomLayout.spawn?.[1]??0,z:0});indoorCeilings=createIndoorCeilings(room,{from:activeRoomLayout?.ceilingsFrom});const spawn=officeEntry?[0,SAKURA_STAIR.height,-5.15]:activeRoomLayout?.spawn||[0,0,4.3];
+ current=s;roomShell(s);addRoomProps(s);content=buildBusinessContent({site:s,room,register:reg,onAction:activities.action,onInspect:item=>inspector.open(item)});if(!activeRoomLayout?.storeys)room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});indoorCeilings=createIndoorCeilings(room,{from:activeRoomLayout?.ceilingsFrom});const spawn=officeEntry?[0,SAKURA_STAIR.height,-5.15]:activeRoomLayout?.spawn||[0,0,4.3];
+ // The storeys drawn for where he arrives (a room of more than one storey shows the floor he stands on), before the first frame.
+ activeRoomLayout?.follow?.({x:spawn[0],y:spawn[1]??0,z:spawn[2]});
  player.position.set(...spawn);
  // With the camera behind him, start a step inside so it is not up against the door.
  if(thirdPerson&&!officeEntry){const inward=activeRoomLayout?.yaw??0,dx=-Math.sin(inward),dz=-Math.cos(inward);for(let d=.1;d<=1.2;d+=.1){const x=spawn[0]+dx*d,z=(spawn[2]??0)+dz*d;if(cameraBlocked(x,z,player.position.y+.9,.35))break;player.position.x=x;player.position.z=z;}}

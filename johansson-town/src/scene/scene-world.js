@@ -1,3 +1,4 @@
+import {WORKSHOP_VIEW} from './workshop-view.js';
 import * as THREE from '../../vendor/three.module.js';
 import {createTown} from '../world/town.js';
 import {createIslandBusinesses} from '../world/businesses.js';
@@ -9,8 +10,9 @@ import {createWalkSurface} from '../world/walk-surface.js';
 import {clock as duskClock} from '../render/dusk.js';
 import {hitsSolid,slideTo} from './scene-physics.mjs';
 import {SNAP,seatKey,matchSeat,numberLabels,seatTurn,counterEdges,edgeLine,personMarks} from './scene-snap.mjs';
+import {buildClassroomStage} from '../../../avatar-creator/classroom-stage.js';
 const BLOCKERS=7;
-const interiors=new Set(['sakura','minato','sato-ramen','books','onsen','town-hall']);
+const interiors=new Set(['sakura','minato','sato-ramen','books','onsen','town-hall','classroom','dock-workshop']);
 const noop=()=>{};
 /**
  * The hour on a street: the game's own clock (src/render/dusk.js) for the sun's colour and
@@ -32,18 +34,24 @@ function setClock({minutes,camera,inside,scene,world,sun,fill,sky}){
  for(const l of world?.streetLights||[])l.intensity=(1-c.day)*1.55;
 }
 export async function buildSceneWorld(id,views,townData=null){
+ if(id==='dock-workshop')views={...views,'dock-workshop':WORKSHOP_VIEW};
  const inside=interiors.has(id);
  const scene=!inside&&townData?townData.scene:new THREE.Scene(),room=new THREE.Group();scene.background=new THREE.Color(inside?0xe8e4d8:0xb4dce8);if(inside)scene.add(room);
  const solids=[],reg=(o,label)=>{o.userData.studioLabel=label;};
  const collider=(x,z,w,d,height,minY)=>solids.push({x,z,w,d,height,minY});
  const options={room,reg,collider,action:noop,exit:noop};let api,layout,world;
  if(!inside){world=townData?.world||createTown({scene,sites:createIslandBusinesses(),mobile:true,shadows:true,maxAnisotropy:2,register:reg,enter:noop,onAction:noop,getPlayerPosition:()=>new THREE.Vector3()});solids.push(...world.colliders);for(const p of world.people||[])if(p.g)p.g.visible=false;}
+ else if(id==='classroom'){api=buildClassroomStage(options);layout=api;solids.push(...api.colliders);}
  else if(id==='sakura'){const m=await import('../world/interiors/sakura-interior.js');api=m.buildSakuraInterior(options);await api.ready();layout=api.layout;solids.push(...(layout.colliders||[]));}
  else if(id==='minato'||id==='sato-ramen'){
   const m=await import('../world/izakaya.js?snappy=1');await m.preloadIzakaya(['interior']);if(!m.izakayaReady('interior'))throw Error('Dining room model unavailable');
   const box=(size,pos,color,parent=room)=>{const mesh=new THREE.Mesh(new THREE.BoxGeometry(...size),new THREE.MeshStandardMaterial({color}));mesh.position.set(...pos);parent.add(mesh);return mesh;};
   const signTexture=(a,b)=>{const c=document.createElement('canvas');c.width=512;c.height=128;const ctx=c.getContext('2d');ctx.fillStyle='#eee4cb';ctx.fillRect(0,0,512,128);ctx.fillStyle='#243442';ctx.font='28px sans-serif';ctx.fillText(a,20,45);ctx.fillText(b||'',20,95);return new THREE.CanvasTexture(c);};
   api=id==='minato'?m.buildIzakayaRoom({...options,box,signTexture}):(await import('../world/interiors/sato-ramen.js')).buildSatoRamenRoom(options);layout=api.layout||api;if(id==='sato-ramen'){const shared=await import('../world/interiors/shared-dining-layout.js');solids.push(...shared.SHARED_DINING_COLLIDERS);layout={...layout,bounds:shared.SHARED_DINING_BOUNDS,floorPolygon:shared.SHARED_DINING_FLOOR};}
+ }else if(id==='dock-workshop'){
+  const P=await import('../world/interiors/workshop-props.js');if(!await P.preloadWorkshopProps())throw Error('Workshop props unavailable.');
+  api=(await import('../world/interiors/compact-shops.js')).buildCompactShop({...options,site:createIslandBusinesses().find(s=>s.id==='form3d')});layout=api;if(!await api.ready)throw Error('Workshop motor unavailable.');
+  (await import('../world/interiors/business-content.js')).buildBusinessContent({site:createIslandBusinesses().find(s=>s.id==='form3d'),room,register:reg,onInspect:noop,onAction:noop});
  }else if(id==='books'){api=(await import('../world/interiors/compact-shops.js')).buildCompactShop({...options,site:createIslandBusinesses().find(s=>s.id==='frontrow')});layout=api;}
  // Umi-no-yu's massage chair is World's catalogue's (src/catalog): its model comes after the room is built, and the room
  // says when it is in place and lit like the room (ready), before the cel pass below shades it.
@@ -68,7 +76,7 @@ export async function buildSceneWorld(id,views,townData=null){
  const fill=inside||!townData?new THREE.HemisphereLight(0xfff5e5,0x80949c,2):townData.fill;if(inside||!townData)scene.add(fill);
  const sun=townData&&!inside?townData.sun:new THREE.DirectionalLight(0xfff3de,2.4);sun.position.set(origin[0]+5,10,origin[2]+6);sun.target.position.set(origin[0],0,origin[2]);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);Object.assign(sun.shadow.camera,{left:-10,right:10,top:10,bottom:-10,near:.1,far:40});sun.shadow.bias=-.0005;if(inside||!townData)scene.add(sun,sun.target);
  // Keep the photograph's location while letting the author move its camera.
- const camera=new THREE.PerspectiveCamera(55,4/3,.05,250);camera.position.fromArray(preset.camera.position);camera.quaternion.fromArray(preset.camera.quaternion);camera.updateMatrixWorld(true);
+ const camera=new THREE.PerspectiveCamera(55,4/3,.05,250);camera.fov=id==='dock-workshop'?65:55;camera.updateProjectionMatrix();camera.position.fromArray(preset.camera.position);camera.quaternion.fromArray(preset.camera.quaternion);camera.updateMatrixWorld(true);
  // Repeated labels in the furniture menu are numbered left to right as the preset wide camera sees them.
  const menuSeats=seats.filter(s=>Math.hypot(s.position[0]-origin[0],s.position[2]-origin[2])<SNAP.reach),screen=new THREE.Vector3();
  numberLabels(menuSeats,s=>screen.fromArray(s.position).project(camera).x).forEach((label,i)=>{menuSeats[i].label=label;});
@@ -83,7 +91,7 @@ export async function buildSceneWorld(id,views,townData=null){
  const depthFor=side=>{if(!depthMaterials.has(side))depthMaterials.set(side,new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,side}));return depthMaterials.get(side);};
  const ray=new THREE.Raycaster(),from=new THREE.Vector3(),to=new THREE.Vector3();
  const within=(x,z)=>Math.abs(x-origin[0])<=SNAP.bounds&&Math.abs(z-origin[2])<=SNAP.bounds;
- return {scene,camera,origin,seats,edges,floor,blocked,meshes,sky,sun,townData:inside?null:{scene,world,sun,sky,fill},
+ return {scene,camera,origin,seats,edges,floor,blocked,meshes,sky,sun,stage:api?.stage,furniture:api?.furniture,townData:inside?null:{scene,world,sun,sky,fill},
   setClock(minutes,camera=this.camera){setClock({minutes,camera,inside,scene,world,sun,fill,sky});},
   /**
    * Can `actor` stand at (x,z)? Clear of walls and furniture, of everyone else (each placed once, by the rule settle() uses),
@@ -160,8 +168,8 @@ export async function buildSceneWorld(id,views,townData=null){
   },
   /** Put a character down at (x,z) in town metres, on a seat (its key) or standing. No walking. */
   put(actor,{x,z,seat}){actor.x=x-origin[0];actor.z=z-origin[2];actor.seat=typeof seat==='string'?seat:'';},
-  settle(actors){const occupied=[];for(const a of actors){let p=this.place(a);if(!a.seat&&(blocked(p.x,p.z,.23*a.size)||occupied.some(q=>Math.hypot(q.x-p.x,q.z-p.z)<.23*(q.size+a.size)))){const choices=[...candidates];for(let dx=-2;dx<=2;dx+=.6)for(let dz=-2;dz<=2;dz+=.6)choices.push([origin[0]+dx,0,origin[2]+dz]);const free=choices.find(q=>!blocked(q[0],q[2],.23*a.size)&&!occupied.some(o=>Math.hypot(o.x-q[0],o.z-q[2])<.23*(o.size+a.size)));if(free){a.x=free[0]-origin[0];a.z=free[2]-origin[2];p=this.place(a);}}occupied.push({...p,size:a.size});}},
-  place(actor){if(actor.seat){const s=matchSeat(actor.seat,seats);if(s){actor.seat=s.id;return {x:s.position[0],y:s.position[1],z:s.position[2],seat:s};}actor.seat='';}
+  settle(actors){if(id==='classroom')return;const occupied=[];for(const a of actors){let p=this.place(a);if(!a.seat&&(blocked(p.x,p.z,.23*a.size)||occupied.some(q=>Math.hypot(q.x-p.x,q.z-p.z)<.23*(q.size+a.size)))){const choices=[...candidates];for(let dx=-2;dx<=2;dx+=.6)for(let dz=-2;dz<=2;dz+=.6)choices.push([origin[0]+dx,0,origin[2]+dz]);const free=choices.find(q=>!blocked(q[0],q[2],.23*a.size)&&!occupied.some(o=>Math.hypot(o.x-q[0],o.z-q[2])<.23*(o.size+a.size)));if(free){a.x=free[0]-origin[0];a.z=free[2]-origin[2];p=this.place(a);}}occupied.push({...p,size:a.size});}},
+  place(actor){if(id==='classroom'&&!actor.seat)return {x:origin[0]+actor.x,y:actor.y||0,z:origin[2]+actor.z};if(actor.seat){const s=matchSeat(actor.seat,seats);if(s){actor.seat=s.id;return {x:s.position[0],y:s.position[1],z:s.position[2],seat:s};}actor.seat='';}
    let x=origin[0]+actor.x,z=origin[2]+actor.z;
    if(blocked(x,z,.23*actor.size)){const p=candidates.find(p=>!blocked(p[0],p[2],.23*actor.size));if(p){x=p[0];z=p[2];actor.x=x-origin[0];actor.z=z-origin[2];}}
    return {x,y:floor(x,z),z};},
@@ -170,6 +178,6 @@ export async function buildSceneWorld(id,views,townData=null){
    const p=this.place(actor),r=SNAP.body*actor.size,others=actors.filter(a=>a.id!==actor.id).map(a=>({...this.place(a),size:a.size}));
    const result=slideTo({x:p.x,z:p.z},{x,z},(x,z)=>!within(x,z)||Math.abs(floor(x,z)-p.y)>.4||blocked(x,z,r)||others.some(o=>Math.hypot(x-o.x,z-o.z)<r+SNAP.body*o.size));
    actor.seat='';actor.x=result.x-origin[0];actor.z=result.z-origin[2];return Math.hypot(result.x-x,result.z-z)<.1;},
-  dispose(){depthTarget?.dispose();for(const m of depthMaterials.values())m.dispose();api?.dispose?.();api?.television?.dispose?.();api?.tv?.dispose?.();}
+  dispose(){depthTarget?.dispose();for(const m of depthMaterials.values())m.dispose();api?.workshop?.dispose?.();api?.dispose?.();api?.television?.dispose?.();api?.tv?.dispose?.();}
  };
 }

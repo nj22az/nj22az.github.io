@@ -40,6 +40,14 @@ after(async()=>{await client?.close();await rm(root,{recursive:true,force:true})
 const call=async(name,args={})=>{const r=await client.callTool({name,arguments:args},{timeout:120000});return {error:!!r.isError,data:JSON.parse(r.content[0].text)};};
 const looks=()=>readFile(resolve(root,PATHS.looks),'utf8');
 
+test('workflow discovery routes agents to registered tools and preserves creator approval',async()=>{
+ const before=await looks(),r=await call('studio_workflow_info');assert.equal(r.error,false);
+ const registered=new Set((await client.listTools()).tools.map(t=>t.name));
+ for(const name of [...r.data.models,...r.data.rooms,...r.data.assets,...r.data.comics,...r.data.worldRooms.tools,...r.data.film.tools])assert.ok(registered.has(name),name);
+ assert.match(r.data.approval,/Only after creator approval/);assert.equal(await looks(),before);
+ assert.equal((await client.callTool({name:'studio_workflow_info',arguments:{publish:true}})).isError,true);
+});
+
 test('model snapping is available through the real MCP protocol with strict schemas and no writes',async()=>{
  const before=await looks();
  const grid=await call('model_snap',{mode:'grid',position:[.123,0,.27],step:.05});assert.equal(grid.error,false);assert.deepEqual(grid.data.position,[.1,0,.25]);
@@ -71,6 +79,13 @@ test('World purpose and existing-film tools are available through MCP without a 
  const applied=await call('world_asset_review',{id:'registry:j-coffee-can',expectedRevision:0,set:{decision:'keep',note:'Coffee for the quay crew'},dryRun:false});assert.equal(applied.error,false);assert.equal(applied.data.revision,1);
  assert.equal((await call('world_asset_review',{id:'registry:j-coffee-can',expectedRevision:0,set:{decision:'remove'},dryRun:false})).error,true);
  assert.equal((await call('scene_export_film',{file:'../outside.json'})).error,true);assert.equal(await looks(),before);
+});
+
+test('native World room tools expose strict revision and floating-compatible draft boundaries',async()=>{
+ const list=(await client.listTools()).tools;for(const name of ['world_room_open','world_room_check','world_room_publish','world_room_rollback'])assert.ok(list.some(t=>t.name===name));
+ for(const args of [{id:'x',expectedWorldRevision:0,note:'Missing project revision'},{id:'x',expectedWorldRevision:0,expectedProjectRevision:0,note:'Do not bypass the checks',skipChecks:true}])assert.equal((await client.callTool({name:'world_room_publish',arguments:args})).isError,true);
+ assert.equal((await client.callTool({name:'world_room_open',arguments:{room:'sakura',id:'wrong-room'}})).isError,true);
+ const p=await call('world_room_publish',{id:'missing-room',expectedWorldRevision:0,expectedProjectRevision:0,note:'Refuse a missing room project',dryRun:false});assert.equal(p.error,true);
 });
 
 test('the server answers initialize quickly, reads the throwaway copy, and lists every tool with honest hints',async()=>{
