@@ -1,7 +1,7 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {paint,trs} from './kit.js';
 import {GROUND_LAYER} from '../ground-layers.js';
-import {fascia,iceMural,enamel,catchFlag,poster,vertical} from './signs.js';
+import {fascia,iceMural,enamel,catchFlag,poster,vertical,clothBanner} from './signs.js';
 import {potPlant,OKINAWA_COLOURS as C} from './houses.js';
 import {buoys,bicycle} from './props.js';
 import {VENDING_MACHINE} from '../vending.js';
@@ -162,6 +162,33 @@ export const SAKURA_BIKES=Object.freeze([
 
 /** Sakura's footprint and the height of its roof slab, as the storefront builds them. */
 export const SAKURA_BOX=Object.freeze({minX:-18.45,maxX:-7.45,minZ:-34.43,maxZ:-20.17,roof:4.01});
+/** How far the storefront's side walls stand outside SAKURA_BOX (storefront.js: an 18 cm wall outside the plan line). */
+export const SAKURA_SIDE_WALL=.18;
+/**
+ * What is on Sakura's two blank side walls, by who put it there and why: the owner, 20 October 2026, "the walls should
+ * have ad banners". As on a 1990s Okinawan shop's side wall: enamel tins (ホーロー看板) the makers' salesmen nailed up
+ * for the shops that stocked them, a sign-writer's painted mural, and the shop's own cotton banner, three generations
+ * on one wall. Every brand is the town's own (Sakura's products, data/studio/products.json; signs.js WALL_ADS), none
+ * real. `x` along the wall (the frontage is at x -7.45), `y` the middle's height, the south wall facing up Main Street
+ * and the crossing, the north wall facing the quay.
+ */
+export const SAKURA_WALL_ADS=Object.freeze([
+ {name:'Blue Coral mural',kind:'mural',wall:'south',x:-13.55,y:2.05,w:7.4,h:2.15,depth:.01,edge:0xe9e2cf,
+  who:'Blue Coral Ice Cream (Rainflower Lane)',why:'Painted in 1981 when Blue Coral was new and Sakura sold its cones from the chest freezer; the town’s only ice-cream shop still pays Thuan a little for the wall, and its ice cream is served at Nakamura’s now.'},
+ {name:'Enamel sign: Hinode Curry',kind:'enamel',wall:'south',x:-8.0,y:1.55,w:.45,h:.9,depth:.012,paint:{jp:'Hinode Curry',en:'Hinode curry',bg:'#f2c23a',ink:'#b8302a'},
+  who:'Hinode, the curry roux maker',why:'Sakura has sold Hinode’s curry roux since the sixties; the maker’s salesman nailed the tin up the year the shop first stocked it, at eye height by the corner where the crossing sees it.'},
+ {name:'Enamel sign: Kamejirushi Soy Sauce',kind:'enamel',wall:'south',x:-8.6,y:1.68,w:.45,h:.9,depth:.012,paint:{jp:'Kamejirushi Soy Sauce',en:'Kamejirushi soy sauce',bg:'#f1e6c8',ink:'#7a2a22'},
+  who:'Kamejirushi, the soy sauce brewer',why:'The turtle brand’s soy sauce is on Sakura’s shelf by the litre bottle; its tin went up beside the curry’s, a little higher, because the salesman said so.'},
+ {name:'Enamel sign: Hoshimaru Batteries',kind:'enamel',wall:'south',x:-9.3,y:1.5,w:.45,h:.9,depth:.012,paint:{jp:'Hoshimaru Batteries',en:'Hoshimaru batteries',bg:'#1f4e8a',ink:'#f4e6b0'},
+  who:'Hoshimaru, the dry-battery maker',why:'Every torch on the island runs on Hoshimaru’s AA from Sakura’s counter, and typhoon season sells them by the box; the newest of the three tins, from 1979.'},
+ {name:'Sakura delivery banner',kind:'banner',wall:'south',x:-8.65,y:3.0,w:2.0,h:.5,depth:.006,edge:0xe8e1cf,paint:{jp:'We deliver',sub:'Sakura Shop · Telephone 2-1103',bg:'#f6f1e3',ink:'#b8302a',band:'#2f6f5a'},
+  who:'Sakura (Thuan)',why:'Sakura’s own notice: the shop delivers to the old customers who cannot carry their shopping home (the shop’s bicycle behind it, SAKURA_BIKES), and the banner says so to everybody waiting at the crossing.'},
+ {name:'Enamel sign: Ryukyu Cider',kind:'enamel',wall:'north',x:-9.45,y:1.7,w:.6,h:.9,depth:.012,paint:{jp:'Ryukyu Cider',en:'Ryukyu cider',bg:'#f1e6c8',ink:'#b8302a'},
+  who:'Ryukyu Cider’s bottler',why:'Sakura’s cooler sold the cider by the bottle before canned drinks; the tin faces the quay, where the boats’ crews come up thirsty.'},
+ {name:'Enamel sign: Mosquito coil',kind:'enamel',wall:'north',x:-10.35,y:1.6,w:.5,h:.75,depth:.012,paint:{jp:'Mosquito coil',en:'mosquito coils',bg:'#2a6a4a',ink:'#f4e6b0'},
+  who:'the mosquito-coil maker',why:'Sakura sells the coils by the tin every summer; the quay side is where the mosquitoes are.'},
+].map(a=>Object.freeze(a)));
+
 /**
  * Sakura's drinks machine, at the south end of the frontage, facing the street (+x). It stands in front of the roller
  * shutter, as a machine does, so the shutter comes down behind it at night: its back is 3 cm clear of the shutter's
@@ -181,10 +208,15 @@ function dressSakura(kit,solid,{inspect}){
  // The meters on the back wall, between the extractor and the bicycles.
  const W=SAKURA_BACK.wall;
  kit.box(.2,.45,.35,W-.1,1.6,-22.8,0x8a8578);kit.box(.18,.35,.3,W-.09,1.6,-21.9,0x9a958a);
- // Side walls: the ice-cream mural facing up the street, enamel tins facing the quay.
- kit.sign(iceMural(),7.4,2.15,(S.minX+S.maxX)/2-.6,2.05,S.maxZ+.04,{name:'Blue Coral mural'});
- kit.sign(enamel({jp:"Ryukyu Cider",en:'Ryukyu cider'}),.7,1.05,S.maxX-2,1.7,S.minZ-.04,{ry:Math.PI,depth:.02,name:'enamel sign'});
- kit.sign(enamel({jp:"Mosquito coil",en:'mosquito coils',bg:'#2a6a4a',ink:'#f4e6b0'}),.7,1.05,S.maxX-3,1.7,S.minZ-.04,{ry:Math.PI,depth:.02,name:'enamel sign'});
+ // Side walls: the ice-cream mural, the enamel tins and the delivery banner facing up the street, two tins facing the
+ // quay (SAKURA_WALL_ADS). Each is on the wall's face: the storefront's side walls stand .18 outside the plan line.
+ for(const a of SAKURA_WALL_ADS){
+  const face=a.wall==='south'?S.maxZ+SAKURA_SIDE_WALL+a.depth/2+.004:S.minZ-SAKURA_SIDE_WALL-a.depth/2-.004,ry=a.wall==='south'?0:Math.PI;
+  const tex=a.kind==='mural'?iceMural():a.kind==='banner'?clothBanner(a.paint):enamel(a.paint);
+  kit.sign(tex,a.w,a.h,a.x,a.y,face,{ry,depth:a.depth,edge:a.edge??0x6d6a62,name:a.name});
+  // A banner is tied at its corners to hooks in the wall; a tin is nailed at its corners (painted on the tin).
+  if(a.kind==='banner')for(const dx of [-1,1])for(const dy of [-1,1])kit.box(.03,.03,.03,a.x+dx*(a.w/2-.02),a.y+dy*(a.h/2-.02),face+(ry?-1:1)*.008,0x8a8f92,{finish:'metal'});
+ }
  inspect(S.maxX-2.2,1.2,S.maxZ+1.2,'Look at the ice-cream mural','Blue Coral mural',
   'Painted straight onto the wall in 1981 and touched up every summer since by whoever has the paint. The pink scoop is guava. Thuan says the man who painted it still comes in for his cigarettes and complains that nobody has got the blue right. Blue Coral ice cream is served at Nakamura’s dessert counter beside Harbour Park.');
 }
