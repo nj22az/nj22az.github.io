@@ -30,7 +30,7 @@ export function buildSakuraDetails(parent,{width,depth,doorX,shadows=true}){
  for(const side of [-1,1]){
   add([.10,3.65,.10],[side*(half+.15),1.84,-.18],0x586660);
   add([.18,.07,.16],[side*(half+.15),.17,-.13],0x586660);
-  add([.22,.20,depth],[side*(half+.04),.12,-depth/2],0x8d897c);
+  add([.22,.20,depth+.02],[side*(half+.04),.12,-depth/2],0x8d897c);
  }
  // Window sill runs stop at the doorway so the shop's sliding leaves remain clear.
  const lo=-half+.12,hi=half-.12;
