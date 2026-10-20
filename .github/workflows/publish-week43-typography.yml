@@ -28,7 +28,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y libreoffice fonts-crosextra-carlito fonts-crosextra-caladea
-          python -m pip install python-pptx Pillow lxml
+          python -m pip install python-pptx Pillow lxml pymupdf
       - name: Regenerate Week 43 Tuesday presentation
         run: python3 sjoskolan/verktyg/lektionsbilder/bygg.py v43_02
       - name: Verify the regenerated deck
@@ -39,7 +39,7 @@ jobs:
           prs=Presentation(p)
           assert len(prs.slides)==21, len(prs.slides)
           s=prs.slides[4]
-          assert any('STORT N' in shape.text for shape in s.shapes if shape.has_text_frame)
+          assert any('lindningsvarv' in shape.text.lower() for shape in s.shapes if shape.has_text_frame)
           assert any(r.font.name=='Cambria' for sl in prs.slides for sh in sl.shapes if sh.has_text_frame for para in sh.text_frame.paragraphs for r in para.runs)
           print('21 slides; symbol explanations and Cambria runs verified')
           PY
