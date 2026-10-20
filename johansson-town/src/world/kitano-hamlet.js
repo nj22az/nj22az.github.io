@@ -90,8 +90,11 @@ function buildHamletHouses(world,options){
     const d=6.2,w=6.8,houseZ=-hd+.35+d/2,houseX=-hw+.35+w/2;
     kit.at(houseX,houseZ,0,()=>solid(concreteHouse(kit,{w,d,seed})));
     solid(laundry(kit,1.7,hd-1.7,{length:2.2}));
-    potPlant(kit,1.5,hd-1,{seed:seed+5});hibiscus(kit,hw-1,hd-1,{seed:seed+9,flower:0xe8b12c});
-    bicycle(kit,2.2,hd-1.2,{ry:.2,colour:0xb03a3a});
+    // As in Minato's concrete yards (okinawa/quarters.js): the bicycle inside the front wall right of the gate, the pot
+    // by the gate pier, the hibiscus in the left-hand corner, none of them in another or in the washing.
+    potPlant(kit,1.3,hd-.45,{seed:seed+5});hibiscus(kit,-hw+.85,hd-.8,{seed:seed+9,flower:0xe8b12c,size:.5});
+    solid(bicycle(kit,2.55,hd-.62,{ry:0,colour:0xb03a3a,frame:'step',id:'house-bicycle',owner:label.owners,
+     why:'The household’s shopping bicycle, inside the front wall where it is off the lane and clear of the washing.'}));
    }
   },H.yardTop);
  }
@@ -156,7 +159,8 @@ function johanssonYard(kit,solid,p,hw,hd,seed){
  for(const [x,z] of [[0,hd-.6],[-.5,hd-1.3],[-1.9,hd-2.2],[-1.6,hd-3.1],[-1.1,hd-3.9],[-.5,hd-4.7],[dx,dz+1.6],[dx,dz+.8],[dx,dz+.05]])kit.box(.62,.03,.5,x,.015,z,0xe3dccb);
  // The gajumaru by the front wall, his bicycle by the door, pots either side of it.
  gajumaru(kit,-(hw-2.2),hd-2.4,{seed:seed+7,size:.85});
- bicycle(kit,dx-1.9,dz+.4,{ry:.25,colour:0x2f6f74});
+ solid(bicycle(kit,dx-1.9,dz+.4,{ry:.25,colour:0x2f6f74,id:'johansson-bicycle',owner:'Johansson',
+  why:'His bicycle by the front door, for the lane down to the ferry slip when the ship is in at Minato, and back up it at night.'}));
  potPlant(kit,dx-1.0,dz-.05,{seed});potPlant(kit,dx+1.05,dz-.05,{seed:seed+3});
  solid(planterBoxes(kit,-(hw-1.6),hd-.65,{count:3,seed}));
  // The windbreak: fukugi along the seaward wall (the plot's +x) and along the back.

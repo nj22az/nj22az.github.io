@@ -6798,7 +6798,7 @@
   },
   {
    "id": "EL-000851",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Länspumpens energi",
@@ -6814,7 +6814,7 @@
   },
   {
    "id": "EL-000852",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Belastad spänningsdelare",
@@ -6830,7 +6830,7 @@
   },
   {
    "id": "EL-000853",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Kabelns spänningsfall",
@@ -6846,7 +6846,7 @@
   },
   {
    "id": "EL-000854",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Sinusspänning",
@@ -6862,7 +6862,7 @@
   },
   {
    "id": "EL-000855",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "RL-last",
@@ -6878,7 +6878,7 @@
   },
   {
    "id": "EL-000856",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Samma värmare i Y och Δ",
@@ -6894,7 +6894,7 @@
   },
   {
    "id": "EL-000857",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Bruten neutralledare",
@@ -6910,7 +6910,7 @@
   },
   {
    "id": "EL-000858",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Riskbedömning före arbete",
@@ -6926,7 +6926,7 @@
   },
   {
    "id": "EL-000859",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Motorn",
@@ -6942,7 +6942,7 @@
   },
   {
    "id": "EL-000860",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Hållkrets som inte startar",
@@ -6958,7 +6958,7 @@
   },
   {
    "id": "EL-000861",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "IT-nätet ombord",
@@ -6974,7 +6974,7 @@
   },
   {
    "id": "EL-000862",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Uppfyller spänningen kravet?",

@@ -297,7 +297,12 @@ test('the shop stands in a yard you can walk round, with a back to look at',asyn
  ])assert.ok(routeAt(x,z,.32),'You cannot stand '+side+' of the shop');
  // and the yard is closed by a wall rather than simply stopping: beyond it is the next
  // quarter, reached by the lanes through the wall, not more of the yard.
- assert.equal(routeAt(front-SAKURA_FRONT.depth-9,centre,.32)?.id,'nishi-machi','Behind the yard wall is not Nishi-machi');
+ // Since the island's compaction (17 October) the coastal walking circuit (island-plan.js COAST_WALK) runs through
+ // Nishi-machi there, on its own paving, so the ground is Nishi-machi's whichever surface the route reports.
+ const {nishiAt}=await import('../src/world/okinawa/layout.js');const {westYardAt}=await import('../src/world/west-yard.js');
+ const behind=[front-SAKURA_FRONT.depth-9,centre];
+ assert.ok(['nishi-machi','island-coast-walk'].includes(routeAt(...behind,.32)?.id),'Behind the yard wall is not walkable Nishi-machi');
+ assert.ok(nishiAt(...behind,.32)&&!westYardAt(...behind,.32),'Behind the yard wall is not Nishi-machi');
  
 });
 
@@ -366,7 +371,7 @@ test('the till backbar places impulse props behind Thuan without new SKUs',async
   const ledger=spots.get('Read Sakura sales ledger');
   assert.ok(ledger.z<-1.17&&ledger.x>4.6,'The ledger is in the back office, not on the counter: '+ledger.toArray());
   assert.ok(hits.includes('Buy hot snacks from the case'),'The counter has a hot case');
-  let desk=0,hot=0;room.traverse(o=>{if(o.name==='Sakura office desk')desk++;if(o.name==='Sakura hot case header')hot++;});
+  let desk=0,hot=0;room.traverse(o=>{if(o.name==='Sakura small office')desk++;if(o.name==='Sakura hot case header')hot++;});
   assert.ok(desk&&hot,'Desk and hot-case header are built');
   assert.ok(hits.includes('Buy from the till counter'),'The till goods can be bought, not only looked at');
   assert.ok(hits.includes('Read Sakura sales ledger'),'Ledger kept');

@@ -3,7 +3,7 @@
   "titel": "Länspumpens energi",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -18,7 +18,45 @@
     ]
   },
   "uppgift": {
-    "fraga": "En länspump på 24 V DC tar 4,5 A och går sammanlagt 6 h per dygn. Beräkna effekt, energi i kWh och laddning i Ah per dygn."
+    "fraga": "En länspump på 24 V DC tar 4,5 A och går sammanlagt 6 h per dygn. Beräkna effekt, energi i kWh och laddning i Ah per dygn.",
+    "delfragor": [
+      {
+        "id": "a",
+        "typ": "flerval",
+        "text": "Vilken elektrisk effekt tar länspumpen?",
+        "alternativ": [
+          "5,33 W",
+          "0,108 W",
+          "144 W",
+          "108 W"
+        ],
+        "ratt": 3
+      },
+      {
+        "id": "b",
+        "typ": "flerval",
+        "text": "Hur mycket energi använder pumpen per dygn?",
+        "alternativ": [
+          "0,108 kWh",
+          "27 kWh",
+          "0,648 kWh (cirka 0,65 kWh)",
+          "648 kWh"
+        ],
+        "ratt": 2
+      },
+      {
+        "id": "c",
+        "typ": "flerval",
+        "text": "Vilken laddning tar pumpen per dygn?",
+        "alternativ": [
+          "648 Ah",
+          "27 Ah",
+          "0,75 Ah",
+          "108 Ah"
+        ],
+        "ratt": 1
+      }
+    ]
   },
   "referenser": {
     "ursprung": [
@@ -56,6 +94,10 @@
     }
   },
   "bedomning": {
-    "kursniva": "Veckor: v37, v39"
+    "kursniva": "Veckor: v37, v39",
+    "kriterier": [
+      "Visar samband, insättning och enhetsomvandling för effekt, energi och laddning.",
+      "Förklarar skillnaden mellan energi och laddning och kontrollerar storleksordningen."
+    ]
   }
 }

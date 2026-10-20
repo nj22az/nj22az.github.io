@@ -40,6 +40,39 @@ after(async()=>{await client?.close();await rm(root,{recursive:true,force:true})
 const call=async(name,args={})=>{const r=await client.callTool({name,arguments:args},{timeout:120000});return {error:!!r.isError,data:JSON.parse(r.content[0].text)};};
 const looks=()=>readFile(resolve(root,PATHS.looks),'utf8');
 
+test('model snapping is available through the real MCP protocol with strict schemas and no writes',async()=>{
+ const before=await looks();
+ const grid=await call('model_snap',{mode:'grid',position:[.123,0,.27],step:.05});assert.equal(grid.error,false);assert.deepEqual(grid.data.position,[.1,0,.25]);
+ const joined=await call('model_snap',{mode:'connector',source:{point:[0,0,0],normal:[0,-1,0],up:[0,0,1]},target:{point:[1,0,2],normal:[0,1,0],up:[0,0,1]}});
+ assert.equal(joined.error,false);assert.deepEqual(joined.data.position,[1,0,2]);assert.equal(joined.data.ground,false);
+ assert.equal((await client.callTool({name:'model_snap',arguments:{mode:'grid',position:[0,0]}})).isError,true);
+ assert.equal(await looks(),before);
+});
+
+test('portable rooms cross the real MCP boundary with dry runs, stale-edit rejection and explicit file exchange',async()=>{
+ const original=await looks();
+ assert.equal((await call('room_create',{id:'protocol-room',title:'Protocol'})).data.dryRun,true);
+ assert.equal((await call('room_get',{id:'protocol-room'})).error,true);
+ assert.equal((await call('room_create',{id:'protocol-room',title:'Protocol',dryRun:false})).error,false);
+ const edited=await call('room_edit',{id:'protocol-room',expectedRevision:0,commands:[{op:'title',title:'Changed'}],dryRun:false});assert.equal(edited.data.project.revision,1);
+ assert.equal((await call('room_edit',{id:'protocol-room',expectedRevision:0,commands:[{op:'title',title:'Stale'}],dryRun:false})).error,true);
+ const file=await call('room_export',{id:'protocol-room'});assert.equal(file.error,false);
+ const opened=await call('room_open',{id:'copied-room',file:file.data.path,dryRun:false});assert.equal(opened.error,false);assert.equal(opened.data.project.title,'Changed');assert.equal(opened.data.project.revision,0);
+ assert.equal((await call('room_open',{id:'copied-room',file:file.data.path,dryRun:false})).error,true);
+ assert.equal((await call('room_open',{id:'escape',file:'../outside.room.json',dryRun:false})).error,true);
+ assert.equal(await looks(),original);
+});
+
+test('World purpose and existing-film tools are available through MCP without a second renderer',async()=>{
+ const before=await looks(),info=await call('film_pipeline_info');assert.equal(info.error,false);assert.equal(info.data.pipeline,'nj22az/jojo/remotion');
+ const found=await call('world_asset_list',{query:'registry:j-coffee-can'});assert.equal(found.data.total,1);
+ const got=await call('world_asset_get',{id:'registry:j-coffee-can'});assert.ok(got.data.asset.purpose.why);
+ const dry=await call('world_asset_review',{id:'registry:j-coffee-can',expectedRevision:0,set:{decision:'keep'}});assert.equal(dry.data.dryRun,true);
+ const applied=await call('world_asset_review',{id:'registry:j-coffee-can',expectedRevision:0,set:{decision:'keep',note:'Coffee for the quay crew'},dryRun:false});assert.equal(applied.error,false);assert.equal(applied.data.revision,1);
+ assert.equal((await call('world_asset_review',{id:'registry:j-coffee-can',expectedRevision:0,set:{decision:'remove'},dryRun:false})).error,true);
+ assert.equal((await call('scene_export_film',{file:'../outside.json'})).error,true);assert.equal(await looks(),before);
+});
+
 test('the server answers initialize quickly, reads the throwaway copy, and lists every tool with honest hints',async()=>{
  assert.ok(startup<5000,`initialize took ${Math.round(startup)} ms`);
  const studio=await call('character_list',{group:'studio'});

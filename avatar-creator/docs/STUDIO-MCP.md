@@ -1,5 +1,13 @@
 # Johansson Studio and Claude (the `johansson-studio` tools)
 
+**New: static GLB preparation and snapping.** `model_inspect`, `model_prepare` and `model_snap` share the UI's
+**Make model → Import GLB** workshop. See [MODEL-WORKSHOP.md](MODEL-WORKSHOP.md) for setup, examples, surface checks,
+supported inputs and the next World-editor batches. A prepared GLB is a copy, not a published town update.
+
+**New: editable room drafts.** `room_create/open/get/edit/import_model/export/check/render` share the **Edit room**
+document and commands. See [ROOM-PROJECTS.md](ROOM-PROJECTS.md) for portable file exchange, revisions and remaining
+World integration. The animation integration reuses the existing `jojo/remotion` engine: [REMOTION-PLAN.md](REMOTION-PLAN.md). `scene_export_film` exports a clean World plate and staging; `film_pipeline_info` describes that engine. World assets/purpose and static support tools are documented in [WORLD-LIBRARY.md](WORLD-LIBRARY.md).
+
 Claude can look at the town's characters, change how they look, and add Studio characters of its own. It can also open
 Sakura Shōten's products, change their labels, words, prices, purpose and shelf, add flavours and new lines, and retire a
 line. It does this through the `johansson-studio` tools, which use the same data and drawing code as Johansson Studio on
@@ -284,3 +292,7 @@ Whether to raise the host's MCP timeout is the creator's decision, and no reposi
 - The old `PACKS` listed a few shapes and sizes the shelf never built (`pack.declared`: orange as a carton, the sandwich
   as a box, the pudding as a plain cup, the chocolate, notebook and postcard as flat packs, and the soap smaller).
 - Renaming a product waits for World to find the bag's things by product id instead of by name.
+
+## Editable classroom comics (20 October 2026)
+
+`scene_classroom_example` returns Vy's four-panel acceptance scene. `scene_render({scene,name})` draws a snapshot with the actual Build scene workspace and reports its normalized data, head framing and hand-contact target errors. `comic_render({scenes,name,layout})` captures one to four scenes and exports the PNG plus a portable `.studio.json` project containing per-panel snapshots. Rendering writes previews only and never publishes World. See [CLASSROOM-COMIC.md](CLASSROOM-COMIC.md) for controls, schema additions, validation and limits.

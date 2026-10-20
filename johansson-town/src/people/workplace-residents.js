@@ -1,7 +1,16 @@
 import {createRoomWalk,atDestination} from './room-walk.js';
 import {residentPlan} from './social.js';
 import {createTownActivities} from './town-activities.js';
+import {standNow} from './stand-points.js';
 
+/** On a stand point: turn to its facing at a walker's pace, then its pose and tool (stand-points.js). */
+function faceStand(g,stand,dt){
+ const diff=Math.atan2(Math.sin(stand.yaw-g.rotation.y),Math.cos(stand.yaw-g.rotation.y));
+ g.rotation.y+=Math.max(-dt*2.6,Math.min(dt*2.6,diff));
+ if(Math.abs(diff)<.05){const u=g.userData;u.socialPose=stand.point.pose||'Idle';if(stand.point.tool)u.tool=stand.point.tool;else delete u.tool;u.standPose=true;}
+}
+/** Off a stand point: put down only what faceStand took up. */
+function dropStand(g){const u=g.userData;if(u.standPose){delete u.socialPose;delete u.tool;delete u.standPose;}}
 // Workplaces are assigned to people, so two residents can share one real room.
 export function createWorkplaceResidents({world,parent,getTargets,collides,getPlayerPosition,getState,ledger,onBorrow=()=>{},getEntrance=()=>[0,0,5.2],getLayout=()=>null}){
  const borrowed=new Map();let site=null,interactions=null,walker=null,clock=0,departing=null;
@@ -12,7 +21,7 @@ export function createWorkplaceResidents({world,parent,getTargets,collides,getPl
  function restore(person){
   const saved=borrowed.get(person);if(!saved)return;interactions?.release(person,clock);
   const g=person.g;saved.parent.add(g);g.position.copy(saved.position);g.quaternion.copy(saved.rotation);g.visible=true;g.userData.hit.inside=saved.inside;
-  for(const key of ['inWorkplace','indoors','usingTownObject','socialPose','seatHeight','heldItem','roomTransition'])delete g.userData[key];
+  for(const key of ['inWorkplace','indoors','usingTownObject','socialPose','seatHeight','heldItem','roomTransition','tool','standPose'])delete g.userData[key];
   if(residentPlan(person.profile,clock,false,getState()).place==='work'&&person.profile.workSite){g.userData.indoors='work';g.visible=false;}
   borrowed.delete(person);
   if(departing===person)departing=null;
@@ -51,7 +60,17 @@ export function createWorkplaceResidents({world,parent,getTargets,collides,getPl
    if(!working(person))continue;
    const g=person.g;
    if(saved.arriving){g.userData.roomTransition=true;g.userData.activity='walking to work';if(!walk(person,saved.stand,dt))continue;saved.arriving=false;delete g.userData.roomTransition;}
-   if(site.bookshop&&g.userData.bookshopServing){interactions.release(person,minutes);walk(person,saved.stand,dt);continue;}
+   if(site.bookshop&&g.userData.bookshopServing){interactions.release(person,minutes);dropStand(g);walk(person,saved.stand,dt);continue;}
+   // A phase of their day with stand points in this room (stand-points.js): the counter, the back bench, the window
+   // desk, the notice board, in the order and for the time the seeded clock gives; the room's odd jobs wait.
+   const stand=standNow(person.profile.name,minutes,site.id);
+   if(stand){
+    interactions.release(person,minutes);g.userData.place=site.id;g.userData.activity=stand.point.activity;
+    if(g.userData.chatHold||g.userData.facePlayerUntil>performance.now())continue;
+    if(walk(person,[stand.point.x,0,stand.point.z],dt))faceStand(g,stand,dt);else dropStand(g);
+    continue;
+   }
+   dropStand(g);
    const base={place:'work',target:[saved.stand[0],saved.stand[2]],activity:'working at '+site.title},plan=interactions.plan(person,base,minutes,rain,dt);
    g.userData.place=site.id;g.userData.activity=plan.activity;
    if(g.userData.usingTownObject||g.userData.chatHold||g.userData.facePlayerUntil>performance.now())continue;

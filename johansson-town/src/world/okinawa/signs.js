@@ -10,7 +10,7 @@ const SERIF='"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';
 const SANS='"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';
 
 
-export const SIGN_JAPANESE=Object.freeze({"Police box":"交番","Higa empty-bottle yard":"比嘉酒店 空き瓶置場","Coin laundry wall":"コインランドリー","Minato Harbour Park":"港公園","Fumoto": "麓", "Fumoto Co-op Store": "麓共同売店", "Ishigantō": "石敢當", "Telephone": "公衆電話", "Minato Port Terminal": "港湾ターミナル", "Departures": "出航案内", "Mainland ferry": "本土行きフェリー", "Airport ferry": "空港フェリー", "Evening boat to Naha": "那覇行き夕方便", "Tickets": "きっぷ", "Timetable": "時刻表", "Port warehouse": "港倉庫", "Sakura Shop": "さくら商店", "Sakura": "桜", "Fisheries cooperative": "漁業協同組合", "Ryukyu Cider": "琉球サイダー", "Mosquito coil": "蚊取り線香", "Security camera": "防犯カメラ", "Ferry Terminal": "フェリー乗り場", "Warehouse ←": "港倉庫 ←", "Telephone": "公衆電話", "Ice": "氷", "Ice cream": "アイスクリーム", "Cold drinks": "冷たい飲み物", "Blue Coral": "ブルーコーラル", "Big catch": "大漁", "Tide table": "潮見表", "Johansson Shopping Street": "ヨハンソン商店街", "Island sandals": "島ぞうり", "Awamori South wind": "泡盛 南風", "Deigo Life Insurance": "でいご生命", "Minato Bank": "港銀行", "Harbour Travel": "みなと旅行", "Rainflower Florist": "雨花生花店", "Pocket Grocer": "まちの食品店", "Town Tailor": "町の仕立屋", "Secondhand Records": "中古レコード", "Blue Coral Ice Cream": "ブルーコーラル", "RAINFLOWER LANE": "雨花通り", "Welcome back": "おかえりなさい", "Izakaya Minato": "居酒屋みなと", "Ramen Sato": "らーめん佐藤", "Minato": "みなと", "Bookstore": "本屋", "Books": "本", "Repair": "修理", "Dock Electrical Workshop": "港の電気工房", "Maegeru Shobo/Printing": "前原書房・印刷", "Port Affairs and Technology Office": "港務技術事務所", "Ryukyu cuisine/Awamori": "琉球料理・泡盛", "Izakaya": "居酒屋", "Yakitori": "焼鳥", "Alcohol": "酒", "Oden": "おでん", "Assorted Yakitori": "焼鳥盛合せ", "Edamame": "枝豆", "Cold tofu": "冷奴", "Dashi-rolled egg": "だし巻き卵", "Grilled Atka mackerel": "ほっけ焼き", "Assorted sashimi": "刺身盛合せ", "Fried tofu": "揚げ出し豆腐", "Fried chicken": "唐揚げ", "Ochazuke": "お茶漬け", "Draft beer": "生ビール", "Bottled beer": "瓶ビール", "Awamori": "泡盛", "Sake": "日本酒", "Oolong tea": "烏龍茶", "Canned beer": "缶ビール", "Front-Row Books": "前原書房", "Police station": "警察署", "Minato Police Station": "港警察署", "Okinawa Prefectural Police": "沖縄県警察", "Okinawa Prefectural Police Minato Station": "沖縄県港警察署", "Reception": "受付", "Holding room": "保護室", "Toilet": "お手洗い", "Staff only": "関係者以外立入禁止", "Lost property": "落とし物", "Police vehicles only": "警察車両専用", "Police": "警察", "Emergency": "緊急", "Monthly parking": "月極駐車場", "Kitahama youth association": "北浜自治会", "Beware of habu": "ハブに注意"});
+export const SIGN_JAPANESE=Object.freeze({"Police box":"交番","Higa empty-bottle yard":"比嘉酒店 空き瓶置場","Coin laundry wall":"コインランドリー","Minato Harbour Park":"港公園","Fumoto": "麓", "Fumoto Co-op Store": "麓共同売店", "Ishigantō": "石敢當", "Telephone": "公衆電話", "Minato Port Terminal": "港湾ターミナル", "Departures": "出航案内", "Mainland ferry": "本土行きフェリー", "Airport ferry": "空港フェリー", "Evening boat to Naha": "那覇行き夕方便", "Tickets": "きっぷ", "Timetable": "時刻表", "Port warehouse": "港倉庫", "Sakura Shop": "さくら商店", "Sakura": "桜", "Fisheries cooperative": "漁業協同組合", "Ryukyu Cider": "琉球サイダー", "Mosquito coil": "蚊取り線香", "Security camera": "防犯カメラ", "Ferry Terminal": "フェリー乗り場", "Warehouse ←": "港倉庫 ←", "Telephone": "公衆電話", "Ice": "氷", "Ice cream": "アイスクリーム", "Cold drinks": "冷たい飲み物", "Blue Coral": "ブルーコーラル", "Big catch": "大漁", "Tide table": "潮見表", "Johansson Shopping Street": "ヨハンソン商店街", "Island sandals": "島ぞうり", "Awamori South wind": "泡盛 南風", "Deigo Life Insurance": "でいご生命", "Minato Bank": "港銀行", "Harbour Travel": "みなと旅行", "Rainflower Florist": "雨花生花店", "Pocket Grocer": "まちの食品店", "Town Tailor": "町の仕立屋", "Secondhand Records": "中古レコード", "Blue Coral Ice Cream": "ブルーコーラル", "RAINFLOWER LANE": "雨花通り", "Welcome back": "おかえりなさい", "Izakaya Minato": "居酒屋みなと", "Ramen Sato": "らーめん佐藤", "Minato": "みなと", "Bookstore": "本屋", "Books": "本", "Repair": "修理", "Dock Electrical Workshop": "港の電気工房", "Maegeru Shobo/Printing": "前原書房・印刷", "Port Affairs and Technology Office": "港務技術事務所", "Ryukyu cuisine/Awamori": "琉球料理・泡盛", "Izakaya": "居酒屋", "Yakitori": "焼鳥", "Alcohol": "酒", "Oden": "おでん", "Assorted Yakitori": "焼鳥盛合せ", "Edamame": "枝豆", "Cold tofu": "冷奴", "Dashi-rolled egg": "だし巻き卵", "Grilled Atka mackerel": "ほっけ焼き", "Assorted sashimi": "刺身盛合せ", "Fried tofu": "揚げ出し豆腐", "Fried chicken": "唐揚げ", "Ochazuke": "お茶漬け", "Draft beer": "生ビール", "Bottled beer": "瓶ビール", "Awamori": "泡盛", "Sake": "日本酒", "Oolong tea": "烏龍茶", "Canned beer": "缶ビール", "Front-Row Books": "前原書房", "Police station": "警察署", "Minato Police Station": "港警察署", "Okinawa Prefectural Police": "沖縄県警察", "Okinawa Prefectural Police Minato Station": "沖縄県港警察署", "Reception": "受付", "Holding room": "保護室", "Toilet": "お手洗い", "Staff only": "関係者以外立入禁止", "Lost property": "落とし物", "Police vehicles only": "警察車両専用", "Police": "警察", "Emergency": "緊急", "Monthly parking": "月極駐車場", "Kitahama youth association": "北浜自治会", "Beware of habu": "ハブに注意", "Hinode Curry": "日の出カレー", "Kamejirushi Soy Sauce": "亀印醤油", "Hoshimaru Batteries": "星丸乾電池", "We deliver": "配達いたします", "Sakura Shop · Telephone 2-1103": "さくら商店　電話 2-1103"});
 export const japaneseSign=text=>SIGN_JAPANESE[text]||text;
 /** Fit lettering by measured width rather than squeezing long words. */
 export function signText(ctx,text,x,y,maxWidth,size,font=SANS){
@@ -187,6 +187,25 @@ export function enamel({jp,en,bg='#f1e6c8',ink='#b8302a'}={}){
   chars.forEach((c,i)=>ctx.fillText(c,w/2,40+(i+.5)*(h-110)/chars.length));
   ctx.font='bold 20px sans-serif';signText(ctx,en.toUpperCase(),w/2,h-44,w-40,20);
   ctx.fillStyle='rgba(120,60,30,.55)';for(const [x,y] of [[16,16],[w-26,20],[20,h-28],[w-30,h-24]]){ctx.beginPath();ctx.arc(x,y,10,0,Math.PI*2);ctx.fill();}
+ });
+}
+
+/**
+ * A cotton banner (横断幕) for a shop's own notice, tied to the wall at its four corners: the notice in big brush
+ * letters, a line of small print under it, a coloured band along the top and the bottom, the eyelets in the corners.
+ */
+export function clothBanner({jp,sub='',en='',bg='#f6f1e3',ink='#b8302a',band='#23417a'}={}){
+ jp=japaneseSign(jp);sub=japaneseSign(sub);
+ return paint(1024,256,(ctx,w,h)=>{
+  ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+  ctx.fillStyle=band;ctx.fillRect(0,0,w,18);ctx.fillRect(0,h-18,w,18);
+  ctx.fillStyle=ink;ctx.textAlign='center';ctx.textBaseline='middle';
+  signText(ctx,jp,w/2,h*.42,w-140,118,SERIF);
+  ctx.fillStyle=band;if(sub)signText(ctx,sub,w/2,h*.76,w-200,34);
+  if(en){ctx.font=`bold 20px ${SANS}`;ctx.fillText(en.toUpperCase(),w/2,h*.9);}
+  // Folds from being tied up tight, and the eyelets.
+  ctx.fillStyle='rgba(90,70,40,.08)';for(const x of [w*.27,w*.52,w*.78])ctx.fillRect(x,18,6,h-36);
+  ctx.fillStyle='#8a8f92';for(const [x,y] of [[22,32],[w-22,32],[22,h-32],[w-22,h-32]]){ctx.beginPath();ctx.arc(x,y,9,0,Math.PI*2);ctx.fill();}
  });
 }
 

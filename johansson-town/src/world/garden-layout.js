@@ -45,6 +45,6 @@ export function gardenAccessHeight(x,z){
  const surrounding=-.4*smooth((z-12)/6);return level+(surrounding-level)*smooth((distance-1.25)/1.8);
 }
 export function gardenGroundHeight(x,z){const heights=[gardenApronHeight(x,z),gardenAccessHeight(x,z)].filter(h=>h!==null);return heights.length?Math.max(...heights):null;}
-/** This mesh is now only the low, open ground under the retained neighbourhood connectors. */
-export const GARDEN_GROUND_BOUNDS=Object.freeze({minX:-44,maxX:15.25,minZ:6,maxZ:70});
-export function inGardenGround(x,z,pad=0){const b=GARDEN_GROUND_BOUNDS;return x>=b.minX-pad&&x<=b.maxX+pad&&z>=b.minZ-pad&&z<=b.maxZ+pad;}
+// The ground these heights describe is drawn by the neighbourhood's ground and the streets' paving; the separate
+// 'Continuous neighbourhood garden ground' mesh that once covered x −44..15, z 6..70 lay under them and was removed with
+// the west-shore bank (west-shore.js).

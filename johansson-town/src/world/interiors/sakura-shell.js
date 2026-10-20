@@ -93,7 +93,7 @@ function buildShell(){
  // The delivery door in the back wall, steel, painted green.
  span(3.0,4.3,0,2.3,B+.005,B+.05,0x4f7a64);span(3.85,4.15,1.0,1.08,B+.05,B+.09,C.steel);
  // The office (x 4.6..6.8, z -3.95..-1.17): its west wall and the front with its doorway.
- span(4.56,4.64,0,top,P,-1.25,C.plaster);span(4.58,5.14,0,top,-1.21,-1.13,C.plaster);span(6.28,E,0,top,-1.21,-1.13,C.plaster);span(5.14,6.28,2.2,top,-1.21,-1.13,C.plaster);
+ span(4.56,4.64,0,top,P,-1.25,C.plaster);span(4.57,5.14,0,top,-1.21,-1.13,C.plaster);span(6.28,E,0,top,-1.21,-1.13,C.plaster);span(5.14,6.28,2.2,top,-1.21,-1.13,C.plaster);
  span(4.64,4.66,.08,.9,P,-1.25,C.wainscot);
  // The restroom (x -6.82..-4.09, z -3.95..-2.58): its east wall with the doorway at z -3.66..-2.78, and its front.
  span(-4.08,-3.96,0,top,P,-3.66,C.plaster);span(-4.08,-3.96,0,top,-2.78,-2.42,C.plaster);span(-4.08,-3.96,2.2,top,-3.66,-2.78,C.plaster);
@@ -274,10 +274,17 @@ function buildCounter(){
  return mesh(material());
 }
 
+/**
+ * The tube runs, [x, z0, z1]: three down the shop, one over the counter, two in the stockroom, one in the small office.
+ * The stockroom's pair stand east of the stairwell (x > -0.6, where its ceiling is): the western one used to hang at
+ * x -2.2, over both flights where the ceiling was opened for the stair, a tube and batten in mid-air that the stair's
+ * lens met as a ceiling 2.6 m up.
+ */
+export const TUBE_RUNS=Object.freeze([[-4.4,-3.2,3.2],[-1.2,-3.2,3.2],[2.4,-3.2,3.2],[5.6,.4,3.4],[.9,-6.4,-4.4],[3.7,-6.4,-4.4],[5.7,-3.6,-1.6]].map(Object.freeze));
 /** The tubes, on wooden battens: two runs down the shop, one in the back room and the office. */
 function buildTubes(){
  const {span,mesh}=parts('sakura-light'),y=SAKURA_SHELL.ceiling-.2;
- const runs=[[-4.4,-3.2,3.2],[-1.2,-3.2,3.2],[2.4,-3.2,3.2],[5.6,.4,3.4],[-2.2,-6.4,-4.4],[2.2,-6.4,-4.4],[5.7,-3.6,-1.6]];
+ const runs=TUBE_RUNS;
  for(const [x,z0,z1] of runs)for(let z=z0;z<z1-.4;z+=1.32)span(x-.03,x+.03,y-.03,y+.03,z,z+1.2,0xfffbee);
  // Two bare tubes under the till canopy, lighting the counter top.
  for(const x of [4.55,4.95])for(const z of [.3,1.8])span(x-.025,x+.025,2.12,2.17,z,z+1.6,0xfffbee);
@@ -285,7 +292,7 @@ function buildTubes(){
 }
 function buildBattens(){
  const {span,mesh}=parts('sakura-battens'),y=SAKURA_SHELL.ceiling-.13;
- for(const [x,z0,z1] of [[-4.4,-3.2,3.2],[-1.2,-3.2,3.2],[2.4,-3.2,3.2],[5.6,.4,3.4],[-2.2,-6.4,-4.4],[2.2,-6.4,-4.4],[5.7,-3.6,-1.6]])span(x-.07,x+.07,y-.04,y+.04,z0,z1-.4,C.wood);
+ for(const [x,z0,z1] of TUBE_RUNS)span(x-.07,x+.07,y-.04,y+.04,z0,z1-.4,C.wood);
  // Over the counter hangs the till canopy (sakura-cheer.js buildTillCanopy); its rods.
  for(const z of [.25,1.95,3.3])for(const x of [4.45,5.15])span(x-.012,x+.012,2.5,SAKURA_SHELL.ceiling,z-.012,z+.012,0x2b2b2b);
  return mesh(material());
@@ -305,8 +312,10 @@ function buildDoors(){
  const {span,mesh}=parts('sakura-door');
  // The passage to the back room: a frame and a swing door left open against the wall.
  const P=SAKURA_SHELL.partitionZ;
- for(const x of [3.25,4.39])span(x-.05,x+.05,0,2.22,P-.06,P+.06,C.woodDark);span(3.2,4.44,2.18,2.26,P-.06,P+.06,C.woodDark);
- span(4.4,4.44,0,2.12,P+.06,P+1.0,0xe9e1cf);
+ // The frame stands 2 cm proud of the wall's wainscot (its face 1.8 cm off the plaster): at 6 cm it lay 2 mm from the
+ // wainscot's face, and a thin line flashed beside the passage.
+ for(const x of [3.25,4.39])span(x-.05,x+.05,0,2.22,P-.06,P+.08,C.woodDark);span(3.2,4.44,2.18,2.26,P-.06,P+.08,C.woodDark);
+ span(4.4,4.44,0,2.12,P+.08,P+1.02,0xe9e1cf);
  // The office doorway: jambs, head and a casing on the shop side. Its door swings
  // (sakura-life.js buildOfficeDoor). The restroom door stands open into the restroom.
  for(const x of [5.12,6.30])span(x-.04,x+.04,0,2.2,-1.25,-1.09,C.woodDark);

@@ -1,7 +1,7 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {paint,trs} from './kit.js';
 import {GROUND_LAYER} from '../ground-layers.js';
-import {fascia,iceMural,enamel,catchFlag,poster,vertical} from './signs.js';
+import {fascia,iceMural,enamel,catchFlag,poster,vertical,clothBanner} from './signs.js';
 import {potPlant,OKINAWA_COLOURS as C} from './houses.js';
 import {buoys,bicycle} from './props.js';
 import {VENDING_MACHINE} from '../vending.js';
@@ -63,11 +63,11 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  const zA=S.minZ+2.8,zB=S.maxZ-.25,out=1.15,top=2.8,drop=.38,stripes=18,sw=(zB-zA)/stripes,slope=Math.atan2(drop,out);
  for(let i=0;i<stripes;i++)kit.box(out,.06,sw,front+out/2+.28,top-drop/2,zA+sw*(i+.5),i%2?0xf4f0e6:0xc8392e,{rz:-slope});
  kit.box(.06,.26,zB-zA,front+out+.28,top-drop-.1,(zA+zB)/2,0xc8392e);
- for(let i=0;i<stripes;i+=2)kit.box(.05,.22,sw*.9,front+out+.3,top-drop-.12,zA+sw*(i+.5),0xf4f0e6);
+ for(let i=0;i<stripes;i+=2)kit.box(.05,.2,sw*.9,front+out+.3,top-drop-.11,zA+sw*(i+.5),0xf4f0e6);
  for(const z of [zA+.2,(zA+zB)/2,zB-.2])kit.rod([front+.3,top-.2,z],[front+out+.2,top-drop,z],.02,0x6d7478);
  // The shutter drum under the sign band, and its guides down each end of the glass.
- kit.box(.24,.24,S.maxZ-S.minZ-.5,front+.12,2.72,(S.minZ+S.maxZ)/2,0x8e9699,{finish:'metal'});
- for(const z of [S.minZ+.3,S.maxZ-.3])kit.box(.08,2.6,.1,front+.05,1.3,z,0x7b8285,{finish:'metal'});
+ kit.box(.24,.24,S.maxZ-S.minZ-.5,front+.135,2.72,(S.minZ+S.maxZ)/2,0x8e9699,{finish:'metal'});
+ for(const z of [S.minZ+.3,S.maxZ-.3])kit.box(.08,2.6,.1,front+.055,1.3,z,0x7b8285,{finish:'metal'});
  const SH=2.55,width=S.maxZ-S.minZ-.6,tex=shutterTexture();
  const shutterMat=new THREE.MeshStandardMaterial({map:tex,roughness:.55,metalness:.3});
  const curtain=new THREE.Mesh(new THREE.PlaneGeometry(width,SH),shutterMat);
@@ -113,9 +113,9 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  // (docs/CAST-CONSOLIDATION.md addendum 3; commerce/merchandising.js), so the bouquets are sold at Thuan's door now, in
  // the shop's own hours. The buckets are the florist's own, and the stems are cut the way she taught Thuan.
  let clock=720;
- for(const [z,tone] of [[tz+1.15,0xe9c969],[tz+1.55,0xcb748f]]){
+ for(const [j,[z,tone]] of [[tz+1.15,0xe9c969],[tz+1.55,0xcb748f]].entries()){
   kit.cyl(.2,.16,.42,front+.34,.21,z,0x667a6d,{segments:9});solid({id:'sakura-flowers',x:front+.34,z,w:.42,d:.42,height:.9});
-  for(let i=0;i<5;i++){const a=i*Math.PI*2/5,sx=front+.34+Math.cos(a)*.1,sz=z+Math.sin(a)*.1;kit.cyl(.012,.012,.5,sx,.6,sz,0x547545,{segments:5});kit.sphere(.08,sx,.88+(i%2)*.06,sz,tone,{detail:0});}
+  for(let i=0;i<5;i++){const a=i*Math.PI*2/5,sx=front+.34+Math.cos(a)*.1,sz=z+Math.sin(a)*.1;kit.cyl(.012,.012,.5,sx,.6,sz,0x547545,{segments:5});kit.sphere(.08-(i%2)*.012,sx,.88+(i%2)*.06+j*.03,sz,tone,{detail:0,sy:j?.88:1});}
  }
  kit.sign(enamel({jp:"Flowers",en:'BOUQUETS ¥250',bg:'#efe7ce',ink:'#376a51'}),.34,.26,front+.02,1.15,tz+1.35,{ry:Math.PI/2,depth:.01,name:'flower bucket sign'});
  anchor(front+.95,1,tz+1.35,'Buy a bouquet · ¥250',()=>sakuraOpenAt(clock)
@@ -133,13 +133,11 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  kit.box(.14,.5,.36,front+.07,1.75,S.maxZ-.2,0xd8d4ca);kit.box(.02,.2,.2,front+.15,1.8,S.maxZ-.2,0x2c3a33);
  // the downpipes at the corners (the south one tucked into its corner, leaving the pier for the drinks machine's socket)
  for(const z of [S.minZ+.07,S.maxZ-.12]){kit.cyl(.045,.045,2.7,front+.06,1.35,z,0x9aa0a4,{segments:8});for(let y=.6;y<2.6;y+=1.1)kit.box(.1,.06,.1,front+.08,y,z,0x6d7478);}
- kit.box(.18,.14,.26,front+.12,2.52,S.maxZ-.5,0xe8e6e0);kit.box(.1,.08,.08,front+.24,2.5,S.maxZ-.5,0x2b2b2b);
+ kit.box(.18,.14,.26,front+.12,2.53,S.maxZ-.5,0xe8e6e0);kit.box(.1,.08,.08,front+.24,2.5,S.maxZ-.5,0x2b2b2b);
  kit.sign(enamel({jp:"Security camera",en:'CCTV in operation',bg:'#f4d23c',ink:'#1f1f1f'}),.28,.42,front+.02,2.05,S.maxZ-.55,{ry:Math.PI/2,depth:.01,name:'camera plate'});
- // Bicycles park in the side service court, leaving the vending face and pavement clear.
- for(const z of [S.maxZ-3.8,S.maxZ-1.8]){
-  bicycle(kit,S.minX-.8,z,{ry:0,colour:0x3a7a5a});
-  solid({id:'sakura-bikes',x:S.minX-.8,z,w:1.6,d:.65,height:1.1});
- }
+ // Bicycles park behind the shop on the service strip's south end, side-on to the back wall and nose to the lane,
+ // leaving the vending face, the pavement, the back door and the van's bay clear (SAKURA_BIKES).
+ for(const b of SAKURA_BIKES)solid(bicycle(kit,b.x,b.z,{ry:-Math.PI/2,...b}));
  kit.box(.95,.62,.32,-12.4,1.4,S.minZ-.2,0xe2e0d8);kit.cyl(.2,.2,.04,-12.2,1.4,S.minZ-.37,0x3a3f42,{rx:Math.PI/2,segments:12});
  for(let y=1.2;y<1.6;y+=.1)kit.box(.5,.02,.02,-12.6,y,S.minZ-.37,0x7b8285);
  kit.box(.3,.004,.4,front+2.2,.012,-24.6,0xf4f1ea,{ry:.7});kit.box(.3,.004,.4,front+3.1,.012,-23.9,0xe8e2d0,{ry:-1.1});
@@ -151,8 +149,46 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  };
 }
 
+/**
+ * The two bicycles behind Sakura, on the paved strip at the south end of the back wall (SAKURA_BACK.strip), clear of the
+ * wall by a hand and of the meters over them: the shop's own, and Nhung's.
+ */
+export const SAKURA_BIKES=Object.freeze([
+ Object.freeze({id:'sakura-shop-bicycle',x:-19.13,z:-23.15,colour:0x3a7a5a,frame:'step',basket:true,owner:'Sakura (Thuan)',
+  why:'The shop’s own bicycle, with the big basket: the run to the Quay Warehouse depot for a forgotten case, and the bags for the old customers on Nishi-machi who cannot carry them home.'}),
+ Object.freeze({id:'nhung-bicycle',x:-19.13,z:-21.15,colour:0xd9d2c0,frame:'step',basket:true,owner:'Nhung',
+  why:'Nhung rides in from 3 Kitahama to keep the shop at the weekend and leaves it at the back, out of the customers’ way.'}),
+]);
+
 /** Sakura's footprint and the height of its roof slab, as the storefront builds them. */
 export const SAKURA_BOX=Object.freeze({minX:-18.45,maxX:-7.45,minZ:-34.43,maxZ:-20.17,roof:4.01});
+/** How far the storefront's side walls stand outside SAKURA_BOX (storefront.js: an 18 cm wall outside the plan line). */
+export const SAKURA_SIDE_WALL=.18;
+/**
+ * What is on Sakura's two blank side walls, by who put it there and why: the owner, 20 October 2026, "the walls should
+ * have ad banners". As on a 1990s Okinawan shop's side wall: enamel tins (ホーロー看板) the makers' salesmen nailed up
+ * for the shops that stocked them, a sign-writer's painted mural, and the shop's own cotton banner, three generations
+ * on one wall. Every brand is the town's own (Sakura's products, data/studio/products.json; signs.js WALL_ADS), none
+ * real. `x` along the wall (the frontage is at x -7.45), `y` the middle's height, the south wall facing up Main Street
+ * and the crossing, the north wall facing the quay.
+ */
+export const SAKURA_WALL_ADS=Object.freeze([
+ {name:'Blue Coral mural',kind:'mural',wall:'south',x:-13.55,y:2.05,w:7.4,h:2.15,depth:.01,edge:0xe9e2cf,
+  who:'Blue Coral Ice Cream (Rainflower Lane)',why:'Painted in 1981 when Blue Coral was new and Sakura sold its cones from the chest freezer; the town’s only ice-cream shop still pays Thuan a little for the wall, and its ice cream is served at Nakamura’s now.'},
+ {name:'Enamel sign: Hinode Curry',kind:'enamel',wall:'south',x:-8.0,y:1.55,w:.45,h:.9,depth:.012,paint:{jp:'Hinode Curry',en:'Hinode curry',bg:'#f2c23a',ink:'#b8302a'},
+  who:'Hinode, the curry roux maker',why:'Sakura has sold Hinode’s curry roux since the sixties; the maker’s salesman nailed the tin up the year the shop first stocked it, at eye height by the corner where the crossing sees it.'},
+ {name:'Enamel sign: Kamejirushi Soy Sauce',kind:'enamel',wall:'south',x:-8.6,y:1.68,w:.45,h:.9,depth:.012,paint:{jp:'Kamejirushi Soy Sauce',en:'Kamejirushi soy sauce',bg:'#f1e6c8',ink:'#7a2a22'},
+  who:'Kamejirushi, the soy sauce brewer',why:'The turtle brand’s soy sauce is on Sakura’s shelf by the litre bottle; its tin went up beside the curry’s, a little higher, because the salesman said so.'},
+ {name:'Enamel sign: Hoshimaru Batteries',kind:'enamel',wall:'south',x:-9.3,y:1.5,w:.45,h:.9,depth:.012,paint:{jp:'Hoshimaru Batteries',en:'Hoshimaru batteries',bg:'#1f4e8a',ink:'#f4e6b0'},
+  who:'Hoshimaru, the dry-battery maker',why:'Every torch on the island runs on Hoshimaru’s AA from Sakura’s counter, and typhoon season sells them by the box; the newest of the three tins, from 1979.'},
+ {name:'Sakura delivery banner',kind:'banner',wall:'south',x:-8.65,y:3.0,w:2.0,h:.5,depth:.006,edge:0xe8e1cf,paint:{jp:'We deliver',sub:'Sakura Shop · Telephone 2-1103',bg:'#f6f1e3',ink:'#b8302a',band:'#2f6f5a'},
+  who:'Sakura (Thuan)',why:'Sakura’s own notice: the shop delivers to the old customers who cannot carry their shopping home (the shop’s bicycle behind it, SAKURA_BIKES), and the banner says so to everybody waiting at the crossing.'},
+ {name:'Enamel sign: Ryukyu Cider',kind:'enamel',wall:'north',x:-9.45,y:1.7,w:.6,h:.9,depth:.012,paint:{jp:'Ryukyu Cider',en:'Ryukyu cider',bg:'#f1e6c8',ink:'#b8302a'},
+  who:'Ryukyu Cider’s bottler',why:'Sakura’s cooler sold the cider by the bottle before canned drinks; the tin faces the quay, where the boats’ crews come up thirsty.'},
+ {name:'Enamel sign: Mosquito coil',kind:'enamel',wall:'north',x:-10.35,y:1.6,w:.5,h:.75,depth:.012,paint:{jp:'Mosquito coil',en:'mosquito coils',bg:'#2a6a4a',ink:'#f4e6b0'},
+  who:'the mosquito-coil maker',why:'Sakura sells the coils by the tin every summer; the quay side is where the mosquitoes are.'},
+].map(a=>Object.freeze(a)));
+
 /**
  * Sakura's drinks machine, at the south end of the frontage, facing the street (+x). It stands in front of the roller
  * shutter, as a machine does, so the shutter comes down behind it at night: its back is 3 cm clear of the shutter's
@@ -172,10 +208,15 @@ function dressSakura(kit,solid,{inspect}){
  // The meters on the back wall, between the extractor and the bicycles.
  const W=SAKURA_BACK.wall;
  kit.box(.2,.45,.35,W-.1,1.6,-22.8,0x8a8578);kit.box(.18,.35,.3,W-.09,1.6,-21.9,0x9a958a);
- // Side walls: the ice-cream mural facing up the street, enamel tins facing the quay.
- kit.sign(iceMural(),7.4,2.15,(S.minX+S.maxX)/2-.6,2.05,S.maxZ+.04,{name:'Blue Coral mural'});
- kit.sign(enamel({jp:"Ryukyu Cider",en:'Ryukyu cider'}),.7,1.05,S.maxX-2,1.7,S.minZ-.04,{ry:Math.PI,depth:.02,name:'enamel sign'});
- kit.sign(enamel({jp:"Mosquito coil",en:'mosquito coils',bg:'#2a6a4a',ink:'#f4e6b0'}),.7,1.05,S.maxX-3,1.7,S.minZ-.04,{ry:Math.PI,depth:.02,name:'enamel sign'});
+ // Side walls: the ice-cream mural, the enamel tins and the delivery banner facing up the street, two tins facing the
+ // quay (SAKURA_WALL_ADS). Each is on the wall's face: the storefront's side walls stand .18 outside the plan line.
+ for(const a of SAKURA_WALL_ADS){
+  const face=a.wall==='south'?S.maxZ+SAKURA_SIDE_WALL+a.depth/2+.004:S.minZ-SAKURA_SIDE_WALL-a.depth/2-.004,ry=a.wall==='south'?0:Math.PI;
+  const tex=a.kind==='mural'?iceMural():a.kind==='banner'?clothBanner(a.paint):enamel(a.paint);
+  kit.sign(tex,a.w,a.h,a.x,a.y,face,{ry,depth:a.depth,edge:a.edge??0x6d6a62,name:a.name});
+  // A banner is tied at its corners to hooks in the wall; a tin is nailed at its corners (painted on the tin).
+  if(a.kind==='banner')for(const dx of [-1,1])for(const dy of [-1,1])kit.box(.03,.03,.03,a.x+dx*(a.w/2-.02),a.y+dy*(a.h/2-.02),face+(ry?-1:1)*.008,0x8a8f92,{finish:'metal'});
+ }
  inspect(S.maxX-2.2,1.2,S.maxZ+1.2,'Look at the ice-cream mural','Blue Coral mural',
   'Painted straight onto the wall in 1981 and touched up every summer since by whoever has the paint. The pink scoop is guava. Thuan says the man who painted it still comes in for his cigarettes and complains that nobody has got the blue right. Blue Coral ice cream is served at Nakamura’s dessert counter beside Harbour Park.');
 }
@@ -222,13 +263,19 @@ export const SAKURA_BACK=Object.freeze({
   why:'Where the delivery van backs up and the empties stand: concrete, as behind every konbini, not lawn.'}),
 });
 
-/** A painted plate: a band of colour with the Japanese large and the English under it. */
+/**
+ * A painted plate: a band of colour with the Japanese large and the English under it, one line per '\n'. Each line's type
+ * shrinks to fit inside the band: 避難はしご at full size was wider than its plate and was painted cut off at both ends.
+ */
 function plateTexture(w,h,{jp,en,bg,ink='#ffffff'}){
  return paint(w,h,(ctx,W,H)=>{
   ctx.fillStyle='#f4f2ea';ctx.fillRect(0,0,W,H);ctx.fillStyle=bg;ctx.fillRect(W*.04,H*.06,W*.92,H*.88);
   ctx.fillStyle=ink;ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.font='bold '+Math.round(H*(en?.36:.5))+'px "Hiragino Sans","Noto Sans CJK JP",sans-serif';ctx.fillText(jp,W/2,H*(en?.38:.5));
-  if(en){ctx.font='bold '+Math.round(H*.16)+'px sans-serif';ctx.fillText(en,W/2,H*.74);}
+  const line=(text,size,family,y)=>{ctx.font='bold '+size+'px '+family;const over=ctx.measureText(text).width/(W*.84);
+   if(over>1)ctx.font='bold '+Math.floor(size/over)+'px '+family;ctx.fillText(text,W/2,y);};
+  const lines=en?en.split('\n'):[];
+  line(jp,Math.round(H*(en?.36:.5)),'"Hiragino Sans","Noto Sans CJK JP",sans-serif',H*(lines.length>1?.32:en?.38:.5));
+  lines.forEach((text,i)=>line(text,Math.round(H*.16),'sans-serif',H*(.74+(i-(lines.length-1)/2)*.17)));
  });
 }
 
@@ -261,7 +308,7 @@ function sakuraFireEscape(kit,solid,{inspect}){
  // Its plates: 非常口 over the fire door, 避難はしご and "keep clear" at the ladder's foot.
  if(typeof document!=='undefined'&&document.createElement){
   kit.sign(plateTexture(256,96,{jp:'非常口',en:'FIRE EXIT',bg:'#2f8a4e'}),.5,.19,U-.012,F+2.45,E.door.z,{ry:-Math.PI/2,depth:.02,name:'Fire door plate'});
-  kit.sign(plateTexture(192,256,{jp:'避難はしご',en:'ESCAPE LADDER · KEEP CLEAR',bg:'#2f8a4e'}),.3,.4,W-.012,1.55,c1+.3,{ry:-Math.PI/2,depth:.02,name:'Escape ladder plate'});
+  kit.sign(plateTexture(288,192,{jp:'避難はしご',en:'ESCAPE LADDER\nKEEP CLEAR',bg:'#2f8a4e'}),.45,.3,W-.012,1.55,c1+.3,{ry:-Math.PI/2,depth:.02,name:'Escape ladder plate'});
  }
  inspect(L.cageX-.7,1.2,L.z,'Look at the fire escape','Sakura fire escape',
   'The office upstairs has a second way out: a steel fire door at the head of the inside stair, a little landing and a caged ladder down the back wall. It is for a fire, not for coming and going. The door opens only from inside and rings a bell in the shop when it does. The fire service climbs it at the spring inspection, and Thuan holds the clipboard.');

@@ -8,7 +8,6 @@ import {createKitano} from './kitano-on-demand.js';
 import {buildQuietLife} from './quiet-life.js';
 import {buildTownPower} from './town-power.js';
 import {beginPowerPlan} from './okinawa/props.js';
-import {buildParkAccess} from './park-access.js';
 import {buildDocklandsLife} from './docklands-life.js';
 import {addSakuraFlyer} from './sakura-flyers.js';
 import {buildIslandLandscape} from './island-landscape.js';
@@ -119,7 +118,7 @@ function addWalkablePier(world,options,factory){
    const west=profile(-1),east=profile(1),rubber=factory.material(null,0x1d2324,.95,0);
    for(const [face,side,list] of [[B.face,1,F.z],[CARGO_BERTH.face,-1,CARGO_BERTH.fenders.z]])for(const z of list){
     const fender=new THREE.Mesh(side>0?west:east,rubber);fender.position.set(face,F.top,z);fender.name='V-type fender';fender.castShadow=options.shadows;fender.receiveShadow=options.shadows;fender.userData.staticProp=true;group.add(fender);
-    factory.box(group,[.03,F.length+.06,F.base+.1],[face-side*.015,F.top-F.length/2,z],steel,null,false);
+    factory.box(group,[.03,F.length+.06,F.base+.1],[face-side*.02,F.top-F.length/2,z],steel,null,false);
    }}
   // The bitts for the lines, on both edges: a cast post with a flared head and two horns along the face
   // that keep a line from riding up, painted black.
@@ -337,7 +336,7 @@ export function createTown(options){
   world.staffBench=buildStaffBench({parent:world.group,factory,colliders:world.colliders,
    shadows:options.shadows,register:options.register,onAction:options.onAction});
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
-  world.islandLandscape=buildIslandLandscape({world,register:options.register,onAction:options.onAction,mobile:options.mobile});addCoastalRoadPaint(world);world.parkAccess=buildParkAccess(world,{register:options.register,onAction:options.onAction});world.powerNetwork=buildTownPower(world,{fast:options.desktop,register:options.register,onAction:options.onAction,shadows:options.shadows});world.quietLife=buildQuietLife(world);
+  world.islandLandscape=buildIslandLandscape({world,register:options.register,onAction:options.onAction,mobile:options.mobile});addCoastalRoadPaint(world);world.powerNetwork=buildTownPower(world,{fast:options.desktop,register:options.register,onAction:options.onAction,shadows:options.shadows});world.quietLife=buildQuietLife(world);
   const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station','ferry-terminal'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);if(site.industrialWorkshop)return h>=540&&h<1140;if(site.id==='market')return true;if(site.id==='frontrow'&&isWeekend(minutes))return false;const close=site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
   for(const profile of WORLD_CAST){
    const spawn=profile.work;
@@ -363,9 +362,10 @@ export function createTown(options){
   }});
   // The quay's upper surface receives the same detailed concrete as its walls.
   const surfaces=createMaterials({mobile:options.mobile,anisotropy:options.maxAnisotropy});
-  // The deck runs from the pier head to the quay's own edge and no further: its last
-  // third of a metre lies under the quay slab, which is the surface you walk on there.
-  const deckFrom=OUTER_PIER.z-OUTER_PIER.length/2,deckTo=QUAY_SOUTH;
+  // The deck runs from the pier head to the end of the pier's block, a third of a metre past the quay's edge
+  // (QUAY_SOUTH): the quay's kerb is cut away across the pier's root (harbour.js), so that last strip is walked on and
+  // seen, and the deck covers it rather than leaving the block's top a step below it.
+  const deckFrom=OUTER_PIER.z-OUTER_PIER.length/2,deckTo=Math.max(QUAY_SOUTH,OUTER_PIER.z+OUTER_PIER.length/2);
   const pierSurface=new THREE.Mesh(new THREE.PlaneGeometry(OUTER_PIER.width-.5,deckTo-deckFrom),surfaces.worldMaterial('concrete',GROUND.concrete,2));
   pierSurface.name='pier-concrete-surface';pierSurface.rotation.x=-Math.PI/2; pierSurface.position.set(OUTER_PIER.x,OUTER_PIER.height,(deckFrom+deckTo)/2);pierSurface.receiveShadow=true;world.group.add(pierSurface);
   // Every kit building's window glass and lamps follow the clock, not only the quarters':

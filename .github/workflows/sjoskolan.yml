@@ -64,3 +64,5 @@ jobs:
         run: node sjoskolan/filmer/check.mjs
       - name: Modul 1 – kompletterande revision, bevarade original och elevflöde
         run: node --test sjoskolan/vecka-37/revision/*.test.mjs
+      - name: Övningstentamen – Google-quiz, poäng, facit och bevarade utkast
+        run: node --test sjoskolan/verktyg/tentamen/quiz.test.mjs

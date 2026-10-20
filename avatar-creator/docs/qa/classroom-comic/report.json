@@ -1,0 +1,23 @@
+{
+  "renderer": "Johansson Studio Build scene, Chromium software WebGL",
+  "panels": 4,
+  "contactErrorMetres": {
+    "grippingHand": 4.229863952031397e-13
+  },
+  "browserViewports": [
+    [
+      820,
+      1180
+    ],
+    [
+      390,
+      844
+    ]
+  ],
+  "physicalSafariTested": false,
+  "baseline": "Initial hand-staged prototype, not an old UI capability",
+  "existingFailure": "Sakura counter edge x=5.06, reproduced with unchanged scene-world.js",
+  "teacher": "Mrs Kubo, Studio-only, taller and broader than Vy",
+  "framing": "First two panels: close face and desk; third: wide running action; fourth: larger teacher",
+  "finalPanel": "Side view; Vy embarrassed with bowed head and lowered gaze"
+}

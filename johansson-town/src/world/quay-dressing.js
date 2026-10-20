@@ -40,8 +40,9 @@ export const QUAY_DRESSING=Object.freeze({
   * kerb, its hose on a reel beside it, so a boat alongside fills straight from the quay edge.
   */
  fuel:Object.freeze({x:18.2,z:-49.3,sign:Object.freeze({jp:'給油所',sub:'火気厳禁'}),why:'the boats fill with diesel here'}),
- /** Drainage slots through the kerb every few metres, and the stain each leaves down the face. */
- scuppers:Object.freeze([-17.5,-13,-3.5,1.5,6,10.5,16].map(x=>Object.freeze({x}))),
+ /** Drainage slots through the kerb every few metres, and the stain each leaves down the face; none across the pier's
+  *  root, where the kerb is cut away (harbour.js), the one by it on the short length between the ramp and the pier. */
+ scuppers:Object.freeze([-17.5,-13,-4.9,6,10.5,16].map(x=>Object.freeze({x}))),
 });
 
 const PIER_TOP=OUTER_PIER.height,KERB_TOP=.28;
@@ -87,7 +88,7 @@ export function buildQuayDressing({parent,label,shadows=false}){
   for(const dx of [-.12,.12])kit.cyl(.08,.08,.06,t.x+dx,T+.08,t.z+.4,iron,'rubber',{rz:Math.PI/2});}
  kit.cyl(.04,.04,2,S.sign.x,T+1,S.sign.z,galv,'metal',{segments:8});
  // The fuel box on the kerb: grey steel, a red lid band, its hose on a reel on the east side, the nozzle in its holster.
- {const F=D.fuel,y=KERB_TOP;kit.box(.45,.62,.32,F.x,y+.31,F.z,0x9fa29b,'metal');kit.box(.47,.08,.34,F.x,y+.58,F.z,0xc23a2c);
+ {const F=D.fuel,y=KERB_TOP;kit.box(.45,.62,.32,F.x,y+.31,F.z,0x9fa29b,'metal');kit.box(.47,.08,.34,F.x,y+.59,F.z,0xc23a2c);
   kit.cyl(.2,.2,.12,F.x+.31,y+.34,F.z,0x3d4548,'metal',{rz:Math.PI/2,segments:12});
   for(let k=0;k<2;k++)kit.torus(.17-k*.04,.025,F.x+.31,y+.34,F.z,0x1f2324,'rubber',{ry:Math.PI/2});
   kit.box(.06,.2,.08,F.x-.26,y+.4,F.z,iron,'metal');}

@@ -4,12 +4,14 @@ import * as THREE from '../../vendor/three.module.js';
 import {circleHitsRect} from '../../physics.js?snappy=1';
 import {buildSakuraInterior} from '../world/interiors/sakura-interior.js';
 import {SAKURA_LAYOUT} from '../world/interiors/sakura-layout.js';
+import {SAKURA_STOREY,sakuraStoreyAt,sakuraStairGoing,sakuraStairLens} from '../world/interiors/sakura-stairs.js';
 import {suppliedRoomBoundsBlocked} from '../world/supplied-rooms.js?snappy=1';
 import {createIndoorResidents} from './indoor-residents.js';
-import {createRetailClerk} from './retail-clerk.js';
+import {createRetailClerk,inTillPocket,tillStep} from './retail-clerk.js';
 import {createShopAttention} from './shop-attention.js';
 import {createShopRetail} from './shop-retail.js';
-import {returnShopStock} from '../commerce/shop-stock.js';
+import {returnShopStock,webShelves} from '../commerce/shop-stock.js';
+import {BUDGET} from '../edition.js';
 import {PALETTE,fluorescent} from '../render/dusk.js';
 import {createStandIn} from '../render/static-props.js';
 import {townAudio} from '../audio/town-audio.js?snappy=1';
@@ -39,7 +41,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   const player=isInside()&&getPlayerPosition();if(player&&(player.y??0)<1&&Math.hypot(player.x-x,player.z-z)<r+.28)return true;
   return world.people.some(p=>p!==excluded&&p.g.userData.inMarket&&p.g.visible&&Math.hypot(p.g.position.x-x,p.g.position.z-z)<r+(p===person?layout.clearance:.35));
  };
- let backRoomsFetched=false;
+ let backRoomsFetched=false,lastDt=1/60;
  const display=buildSakuraInterior({room:group,reg,action,exit});display.updateStock(state.sakura.stock);
  const checkout=createCheckoutFeedback({drawer:display.cashDrawer,
   getSale:()=>state.sakura.journal?.findLast(entry=>entry.kind==='Sale'),
@@ -50,8 +52,9 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
  const residents=createIndoorResidents({world,parent:group,layout,collides:blocked,place:'market',getState:()=>state,getRain,
   onBorrow:(p,time)=>{onBorrow(p,time);retail.arriving(p,time);},getStandingVisit:retail.standing,
   isOccupied,radiusFor:p=>p===person?layout.clearance:.35,validateSpawn:true,
-  canLeave:p=>p!==person||service?.prepareToLeave()!==false});
- const bindClerk=()=>createRetailClerk({person,room:group,layout,collides:blocked,getWork:retail.work,completeWork:job=>{retail.complete(job);save();},cancelWork:retail.cancelWork,accessShelf:display.accessShelf,
+  // A clerk the rota has just relieved may still be at the till: out of the pocket first, facing the way she steps.
+  canLeave:p=>{if(p!==person&&inTillPocket(p.g,layout)){tillStep(p.g,layout.staffApproach,lastDt);return false;}return p!==person||service?.prepareToLeave()!==false;}});
+ const bindClerk=()=>createRetailClerk({person,room:group,layout,collides:blocked,getMinutes,getWork:retail.work,completeWork:job=>{retail.complete(job);save();},cancelWork:retail.cancelWork,accessShelf:display.accessShelf,
   isOccupied});
  service=bindClerk();
  const followRota=()=>{const next=clerkFor(getMinutes());if(!next||next===person)return;service?.prepareToLeave();person=next;attention=createShopAttention({clerk:person.g,world,retail,colliders,isInside,getPlayerPosition});service=bindClerk();};
@@ -91,7 +94,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   */
  let strip=null;
  const updateLighting=minutes=>{
-  display.updateLighting(minutes);
+  display.updateLighting(minutes);display.smallOffice?.setWeather(getRain());
   for(const lamp of strip?.children||[])lamp.intensity=lamp.userData.openIntensity*fluorescent(minutes);
  };
  (world.hourly||(world.hourly=[])).push(updateLighting);
@@ -113,7 +116,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
 
  // Rooms behind the shop floor: nobody sees them through the front windows, so from the
  // street they are not drawn (about 200 draw calls on a phone). Inside, they are.
- const BEHIND=new Set(['Sakura back room stock','Sakura restroom','Sakura office life','Sakura internal stairwell']);
+ const BEHIND=new Set(['Sakura back room stock','Sakura restroom','Sakura small office','Sakura internal stairwell']);
  const backRooms=on=>group.traverse(o=>{if(BEHIND.has(o.name))o.visible=on;});
  /**
   * From the street the shop floor is a stand-in: the same shelves merged into a few
@@ -130,8 +133,35 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    standIn.show(true);
   }else standIn?.show(false);
  };
- return {group,colliders:display.layout.colliders,service,retail,display,blocked,layout:display.layout,ready:display.ready,
+ /**
+  * The storey he is on (world/interiors/sakura-stairs.js SAKURA_STOREY): upstairs the sales floor is put away
+  * (sakura-storey-view.js) and its life is not run, on the sales floor the upstairs rooms are put away. game.js asks
+  * every frame he is inside (layout.follow). `going` is which way he is moving on the stair ('up' or 'down', kept while
+  * he stands still and across the landing, so there it names the next flight), for the stair's lens.
+  */
+ let storey='stair',going='up';const last=new THREE.Vector3(NaN,NaN,NaN);
+ const local=new THREE.Vector3();
+ const salesSide=o=>{o.getWorldPosition(local);group.worldToLocal(local);return local.z>SAKURA_STOREY.salesFloorZ;};
+ const eachPerson=fn=>{const visit=o=>{if(o!==group&&(o.userData?.name||o.userData?.character)){fn(o);return;}if(o.userData?.sharedAsset&&o!==group)return;for(const c of o.children)visit(c);};visit(group);};
+ const follow=p=>{
+  if(!p)return storey;
+  going=sakuraStairGoing(Number.isFinite(last.x)?last:null,p,going);last.set(p.x,p.y,p.z);
+  const next=sakuraStoreyAt(p,storey);
+  if(next!==storey){const was=storey;storey=next;display.storeys.show(next);if(was==='office')showPeople(true);}
+  return storey;
+ };
+ const storeyReset=()=>{const was=storey;storey='stair';display.storeys.reset();if(was==='office')showPeople(true);};
+ /** Upstairs: whether the shop's people still have to be run (someone is in the stockroom, which the stair's hole shows). */
+ const backroomLife=()=>{let any=false;eachPerson(o=>{if(!salesSide(o))any=true;});return any;};
+ // The audit and the film ask the same questions of the group: which storey is drawn, and show one.
+ group.userData.storeys={get storey(){return storey;},view:display.storeys};
+ const layoutView={...display.layout,follow,
+  /** On the stair: where the lens stands to frame him and where he is going (game.js placeThirdPerson). */
+  stairLens:p=>sakuraStairLens(p,going)};
+ return {group,colliders:display.layout.colliders,service,retail,display,blocked,layout:layoutView,ready:display.ready,
+  get storey(){return storey;},follow,
   enter(parent){
+   storeyReset();
    if(!backRoomsFetched){backRoomsFetched=true;display.loadBackRooms?.();}
    parent.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);
    const frame=frontFrame();if(frame)frame.visible=true;
@@ -154,7 +184,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    * @param {{position:number[],yaw:number}} frontage
    */
   street(parent,frontage){
-   checkout.update(0,false);
+   checkout.update(0,false);storeyReset();
    if(!parent||!frontage?.position)return false;
    parent.add(group);
    const fit=WINDOW_FIT;
@@ -172,14 +202,22 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    syncLightVisibility(false);
    return true;
   },
-  hide(){checkout.update(0,false);windowView(false);scene.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);group.visible=false;lit(false);backRooms(true);const frame=frontFrame();if(frame)frame.visible=true;showPeople(true);syncLightVisibility(false);},
+  hide(){checkout.update(0,false);storeyReset();windowView(false);scene.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);group.visible=false;lit(false);backRooms(true);const frame=frontFrame();if(frame)frame.visible=true;showPeople(true);syncLightVisibility(false);},
   update(dt){
+   if(!BUDGET.trade)webShelves(state,getMinutes());
    // The shop's lights are for the inside of the shop. The interior stays in the street
    // scene so you can see it through the glass, but a light has no walls: left on, its
    // hemisphere fill brightened the whole town and its tubes threw a 17 m halo over the
    // roof and the road. Outside, the shop shows through the window by its own glow.
    {const inside=!!isInside();lightCheck-=dt;if(inside!==lightsInside||lightCheck<=0)syncLightVisibility(inside);}
-   display.tick?.(performance.now()/1000);followRota();if(!person.g.userData.playerControlled){residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);}checkout.update(dt,!!isInside());display.refrigerator.update(dt);display.updateStock(state.sakura.stock);
+   lastDt=dt;display.tick?.(performance.now()/1000,getMinutes(),dt);followRota();
+   // Upstairs the sales floor is put away and its life is not run: the customers, the clerk at the till, the coolers'
+   // doors, the stock on the shelves, the doors. Only while somebody is in the stockroom, which the stair's hole looks
+   // down into, are the shop's people run, and those on the sales floor stay hidden.
+   const upstairs=storey==='office'&&!!isInside(),live=!upstairs||backroomLife();
+   if(live&&!person.g.userData.playerControlled){residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);}
+   if(upstairs){eachPerson(o=>{o.visible=!salesSide(o);});return;}
+   checkout.update(dt,!!isInside());display.refrigerator.update(dt);display.updateStock(state.sakura.stock);
    // The office door opens for whoever is in the shop and near it: the player, Thuan, anyone borrowed in.
    // The front door, from inside, opens the same way (the street side has its own).
    if(display.officeDoor){const points=[];if(isInside()){const p=getPlayerPosition();points.push([p.x,p.z]);}for(const other of world.people)if(other.g.parent===group)points.push([other.g.position.x,other.g.position.z]);display.officeDoor.update(dt,points);display.frontDoor?.update(dt,points);}},

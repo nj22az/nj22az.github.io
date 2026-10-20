@@ -18,7 +18,10 @@ export function createNavigation(blocked,{step=1,bounds=MAP_BOUNDS,heightAt=grou
       if(blocked(x,z,radius)||Math.abs(height-lastHeight)>.180001){safe=false;break;}lastHeight=height;
     }edges.set(k,safe);
   }return edges.get(k);};
-  function nearest(x,z){const gx=Math.round(x/step),gz=Math.round(z/step);for(let r=0;r<=5;r++)for(let dx=-r;dx<=r;dx++)for(let dz=-r;dz<=r;dz++)if(clear(gx+dx,gz+dz)&&edgeClear([x/step,z/step],[gx+dx,gz+dz]))return [gx+dx,gz+dz];return null;}
+  // The nearest clear point looks as far in metres on a fine grid as on the town's (5 cells of 0.35 m): a tapped desk or
+  // shelf stands in its own collider, and the walk ends beside it.
+  const reach=Math.max(5,Math.ceil(1.75/step));
+  function nearest(x,z){const gx=Math.round(x/step),gz=Math.round(z/step);for(let r=0;r<=reach;r++)for(let dx=-r;dx<=r;dx++)for(let dz=-r;dz<=r;dz++)if(clear(gx+dx,gz+dz)&&edgeClear([x/step,z/step],[gx+dx,gz+dz]))return [gx+dx,gz+dz];return null;}
   function path(from,to){const a=nearest(from.x,from.z),b=nearest(to.x,to.z);if(!a||!b)return [];const start=key(...a),end=key(...b),open=[{x:a[0],z:a[1],g:0,f:0}],scores=new Map([[start,0]]),parents=new Map();let count=0;
     while(open.length&&count++<30000){let low=0;for(let i=1;i<open.length;i++)if(open[i].f<open[low].f)low=i;const n=open.splice(low,1)[0],k=key(n.x,n.z);if(k===end){const points=[[b[0]*step,b[1]*step]];let at=k;while(parents.has(at)){at=parents.get(at);const [x,z]=at.split(',').map(Number);points.push([x*step,z*step]);}points.reverse();
         // Finish at the actual reachable threshold, not merely its nearby grid cell.

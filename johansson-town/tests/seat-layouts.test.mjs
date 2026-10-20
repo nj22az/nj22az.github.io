@@ -54,6 +54,8 @@ test('every outdoor public seat has physical support and a clear standing point'
   'airport-gate-a0','airport-gate-a1','airport-gate-a2','airport-gate-a3',
   'kitano-lookout','kitano-coral-bay-0','kitano-coral-bay-1','kitano-turtle-cove',
   'Sit under the harbour cherry','Sit beside the garden pond',
+  // The drinks corner on the old post-office lot (okinawa/lots.js POST_OFFICE): its bench beside the machines.
+  'drinks-corner-bench',
  ];
  assert.deepEqual(seats.map(t=>t.object.userData.seat.id||t.label).sort(),expected.sort(),'Every retained public bench, bath seat and airport gate offers its seat');
  validateSeats(world.group,seats,world.colliders,{streamed:new Set(['Soak your feet in the footbath','Cool off on the bench'])});

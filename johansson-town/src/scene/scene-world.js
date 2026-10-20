@@ -9,8 +9,9 @@ import {createWalkSurface} from '../world/walk-surface.js';
 import {clock as duskClock} from '../render/dusk.js';
 import {hitsSolid,slideTo} from './scene-physics.mjs';
 import {SNAP,seatKey,matchSeat,numberLabels,seatTurn,counterEdges,edgeLine,personMarks} from './scene-snap.mjs';
+import {buildClassroomStage} from '../../../avatar-creator/classroom-stage.js';
 const BLOCKERS=7;
-const interiors=new Set(['sakura','minato','sato-ramen','books','onsen','town-hall']);
+const interiors=new Set(['sakura','minato','sato-ramen','books','onsen','town-hall','classroom']);
 const noop=()=>{};
 /**
  * The hour on a street: the game's own clock (src/render/dusk.js) for the sun's colour and
@@ -38,6 +39,7 @@ export async function buildSceneWorld(id,views,townData=null){
  const collider=(x,z,w,d,height,minY)=>solids.push({x,z,w,d,height,minY});
  const options={room,reg,collider,action:noop,exit:noop};let api,layout,world;
  if(!inside){world=townData?.world||createTown({scene,sites:createIslandBusinesses(),mobile:true,shadows:true,maxAnisotropy:2,register:reg,enter:noop,onAction:noop,getPlayerPosition:()=>new THREE.Vector3()});solids.push(...world.colliders);for(const p of world.people||[])if(p.g)p.g.visible=false;}
+ else if(id==='classroom'){api=buildClassroomStage(options);layout=api;solids.push(...api.colliders);}
  else if(id==='sakura'){const m=await import('../world/interiors/sakura-interior.js');api=m.buildSakuraInterior(options);await api.ready();layout=api.layout;solids.push(...(layout.colliders||[]));}
  else if(id==='minato'||id==='sato-ramen'){
   const m=await import('../world/izakaya.js?snappy=1');await m.preloadIzakaya(['interior']);if(!m.izakayaReady('interior'))throw Error('Dining room model unavailable');
@@ -49,7 +51,7 @@ export async function buildSceneWorld(id,views,townData=null){
  // says when it is in place and lit like the room (ready), before the cel pass below shades it.
  else if(id==='onsen'){api=(await import('../world/interiors/onsen.js')).buildOnsenInterior(options);layout=api;solids.push(...(api.colliders||[]));await api.ready;}
  else{api=(await import('../world/interiors/town-hall.js')).buildMayorOffice(options);layout=api;}
- for(const actor of api?.owned||[])if(['barfly','Jonsson'].includes(actor.holder?.name))actor.holder.visible=false;
+ for(const actor of api?.owned||[])if(actor.holder?.name==='barfly')actor.holder.visible=false;
  const preset=views[id].wide,spots=[...preset.spots.stand];
  if(!spots.length){const p=new THREE.Vector3().fromArray(preset.camera.position),f=new THREE.Vector3(0,0,-1).applyQuaternion(new THREE.Quaternion().fromArray(preset.camera.quaternion));for(let d=3;d<10;d+=.6)for(let side=-2;side<=2;side+=.5){const x=p.x+f.x*d+f.z*side,z=p.z+f.z*d-f.x*side;spots.push([x,groundHeight(x,z),z,.5,.78]);}}
  const candidates=[...spots].sort((a,b)=>(a[3]-.5)**2+(a[4]-.78)**2-((b[3]-.5)**2+(b[4]-.78)**2));
@@ -83,7 +85,7 @@ export async function buildSceneWorld(id,views,townData=null){
  const depthFor=side=>{if(!depthMaterials.has(side))depthMaterials.set(side,new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,side}));return depthMaterials.get(side);};
  const ray=new THREE.Raycaster(),from=new THREE.Vector3(),to=new THREE.Vector3();
  const within=(x,z)=>Math.abs(x-origin[0])<=SNAP.bounds&&Math.abs(z-origin[2])<=SNAP.bounds;
- return {scene,camera,origin,seats,edges,floor,blocked,meshes,sky,sun,townData:inside?null:{scene,world,sun,sky,fill},
+ return {scene,camera,origin,seats,edges,floor,blocked,meshes,sky,sun,stage:api?.stage,furniture:api?.furniture,townData:inside?null:{scene,world,sun,sky,fill},
   setClock(minutes,camera=this.camera){setClock({minutes,camera,inside,scene,world,sun,fill,sky});},
   /**
    * Can `actor` stand at (x,z)? Clear of walls and furniture, of everyone else (each placed once, by the rule settle() uses),
@@ -160,8 +162,8 @@ export async function buildSceneWorld(id,views,townData=null){
   },
   /** Put a character down at (x,z) in town metres, on a seat (its key) or standing. No walking. */
   put(actor,{x,z,seat}){actor.x=x-origin[0];actor.z=z-origin[2];actor.seat=typeof seat==='string'?seat:'';},
-  settle(actors){const occupied=[];for(const a of actors){let p=this.place(a);if(!a.seat&&(blocked(p.x,p.z,.23*a.size)||occupied.some(q=>Math.hypot(q.x-p.x,q.z-p.z)<.23*(q.size+a.size)))){const choices=[...candidates];for(let dx=-2;dx<=2;dx+=.6)for(let dz=-2;dz<=2;dz+=.6)choices.push([origin[0]+dx,0,origin[2]+dz]);const free=choices.find(q=>!blocked(q[0],q[2],.23*a.size)&&!occupied.some(o=>Math.hypot(o.x-q[0],o.z-q[2])<.23*(o.size+a.size)));if(free){a.x=free[0]-origin[0];a.z=free[2]-origin[2];p=this.place(a);}}occupied.push({...p,size:a.size});}},
-  place(actor){if(actor.seat){const s=matchSeat(actor.seat,seats);if(s){actor.seat=s.id;return {x:s.position[0],y:s.position[1],z:s.position[2],seat:s};}actor.seat='';}
+  settle(actors){if(id==='classroom')return;const occupied=[];for(const a of actors){let p=this.place(a);if(!a.seat&&(blocked(p.x,p.z,.23*a.size)||occupied.some(q=>Math.hypot(q.x-p.x,q.z-p.z)<.23*(q.size+a.size)))){const choices=[...candidates];for(let dx=-2;dx<=2;dx+=.6)for(let dz=-2;dz<=2;dz+=.6)choices.push([origin[0]+dx,0,origin[2]+dz]);const free=choices.find(q=>!blocked(q[0],q[2],.23*a.size)&&!occupied.some(o=>Math.hypot(o.x-q[0],o.z-q[2])<.23*(o.size+a.size)));if(free){a.x=free[0]-origin[0];a.z=free[2]-origin[2];p=this.place(a);}}occupied.push({...p,size:a.size});}},
+  place(actor){if(id==='classroom'&&!actor.seat)return {x:origin[0]+actor.x,y:actor.y||0,z:origin[2]+actor.z};if(actor.seat){const s=matchSeat(actor.seat,seats);if(s){actor.seat=s.id;return {x:s.position[0],y:s.position[1],z:s.position[2],seat:s};}actor.seat='';}
    let x=origin[0]+actor.x,z=origin[2]+actor.z;
    if(blocked(x,z,.23*actor.size)){const p=candidates.find(p=>!blocked(p[0],p[2],.23*actor.size));if(p){x=p[0];z=p[2];actor.x=x-origin[0];actor.z=z-origin[2];}}
    return {x,y:floor(x,z),z};},

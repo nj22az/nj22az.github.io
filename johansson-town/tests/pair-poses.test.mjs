@@ -18,7 +18,8 @@ installDOM();
  * and short, round and slim, a grandmother and a child) at the still Johansson Studio shoots: nothing of either body goes
  * into the other beyond a few millimetres (the drawn surface of one against the core of the other: torso, head, limbs,
  * mittens, shoes), the hands touch where the pose says they do (a hug's mitten on the partner's back, the fists on the
- * collar, the palms on the chest, the faces together for the kiss), both stand on the floor, and each role plays alone as
+ * collar, the palms on the chest, the faces together for the kiss, the backs together and the arms folded for the
+ * buddy-film poster BackToBack of 2026-10-20), both stand on the floor, and each role plays alone as
  * any move does, smoothly and the same every time.
  */
 const PAIRS=[['Thuan','Nils Johansson'],['Thao','Vy'],['Mr Fujita','Kōji'],['Riku','Vy'],['Grandmother Higa','Mai']];
@@ -30,6 +31,8 @@ const INTO=.006,PRESS=.016;
  *  drawn clothes stand up to a centimetre and a half off the core where hands land). The core, not the drawn surface:
  *  the drawn chest is a coarse lathe whose nearest vertex can be two centimetres from a mitten that touches its face. */
 const TOUCH=.03;
+/** Back to back: how far apart the two backs may stand (the drawn shirt of one from the other's bare core). */
+const BACK=.03;
 function seeded(seed=7){let s=seed;return ()=>{s=(s*16807)%2147483647;return s/2147483647;};}
 function body(who,rand){
  const avatar=buildAvatar(recipeFor(who),{shadows:false});avatar.wear('clothes');const holder=new THREE.Group();holder.add(avatar.root);
@@ -82,6 +85,18 @@ test('on every pair at the still: in nothing of the other body, the hands where 
    if(mB.z>-.02)wrong.push(`${tag}: ${b}’s mitten is not behind ${a} (z ${mB.z.toFixed(2)})`);
   }
   if(name==='Fight'||name==='Shove')for(const side of ['L','R'])touch(sA,side,cB,`${a}’s ${side} mitten on ${b}’s chest`);
+  if(name==='BackToBack'){
+   // the backs together: the two drawn backs (the shirts, or a skirt: a grandmother's long skirt is what meets a child's
+   // back) within BACK of each other, or touching; each facing away from the other (B behind A, A behind B), the arms
+   // folded in front, clear of the partner (above)
+   // (the drawn surface of one against the other's bare core: the drawn lathe is too coarse to measure from vertex to vertex)
+   const torso=p=>/^(hips|spine|chest|thigh[LR])$/.test(p.bone),back=Math.min(clearance(sA.filter(torso),cB),clearance(sB.filter(torso),cA));
+   if(back>BACK)wrong.push(`${tag}: the backs are ${(back*1000).toFixed(0)} mm apart`);
+   const hipsB=inFrame(A,B.avatar.bones.hips.getWorldPosition(new THREE.Vector3())),hipsA=inFrame(B,A.avatar.bones.hips.getWorldPosition(new THREE.Vector3()));
+   if(hipsB.z>-.1||hipsA.z>-.1)wrong.push(`${tag}: not back to back (B at z ${hipsB.z.toFixed(2)} of A, A at z ${hipsA.z.toFixed(2)} of B)`);
+   for(const [who,o] of [[a,A],[b,B]])for(const side of ['L','R']){const mt=inFrame(o,mitten(o,side));
+    if(mt.z<o.m.depth*.3||Math.abs(mt.x)>o.m.width*.6)wrong.push(`${tag}: ${who}’s ${side} mitten is not folded in front (${mt.toArray().map(v=>v.toFixed(2))})`);}
+  }
   // the two heads, with their hair and hats: never in each other; for the kiss, together (the nose on the cheek, or on the
   // hair that covers it)
   const heads=headsApart(A.avatar,B.avatar);

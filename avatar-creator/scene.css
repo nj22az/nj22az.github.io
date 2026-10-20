@@ -120,3 +120,6 @@ body.standalone-studio .studio-file-menu button{width:100%}
 .scene-camera-box>summary::after{content:'';width:8px;height:8px;border:solid var(--line-secondary);border-width:0 2px 2px 0;transform:rotate(45deg) translateY(-3px);margin-left:2px}
 .scene-camera-box[open]>summary::after{transform:rotate(225deg) translate(-2px,-1px)}
 .scene-camera-box .scene-camera{margin-top:4px}
+
+/* Keep every workspace reachable when the mode bar exceeds a phone width. */
+@media(max-width:800px){.studio-modes{justify-content:flex-start;overflow-x:auto}.studio-modes button{flex:0 0 auto;min-width:84px}}

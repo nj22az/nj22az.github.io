@@ -219,6 +219,21 @@ Shopkeepers' own timetables give the other half: the sweets shop 08:30–19:00, 
 
 The owner approves which of C1–C12 go ahead; none is started by this document.
 
+**In the World (19 October 2026, the owner's "Yes proceed" to C6, C1 and C10):**
+
+- **C6** `src/people/stand-points.js` and `stand-sequences.js`: a day row may name a stand sequence (`{stand:'id'}`, the
+  row's fourth element). Thuan sweeps her pavement at opening and keeps the till, the cooler and the west window; Nhung
+  the counter, the new arrivals, the reading table and the paper's back bench; Mrs Sato the stock pots and the lunch
+  stations; Officer Mori the desk, the counter window and the notice board; Gran Higa her garden; Kōji his nets; Jack
+  his round of the quay. Waits are drawn from each point's range by the town clock (median near 300 s), walks are timed at
+  1.25 m/s. Tests: `tests/stand-points.test.mjs`.
+- **C1** `src/world/interiors/sakura-queue.js`: the clerk's point 0.75 m behind the counter's front (a straight step in
+  from a routed approach, `retail-clerk.js tillStep`), two queue spots 1.0 m apart on the lane from the door facing the
+  till, one browsing spot per aisle for whoever finds both taken. Tests: `tests/sakura-queue.test.mjs`.
+- **C10** `src/world/quay-spots.js` and `src/people/quay-breaks.js`: five spots on Minato's quay and two on Kitano's
+  pier, claimed first-free by Kōji, Jack, Chin and Kai on their breaks (60–1,800 s); Fuji and Ren are signed on through
+  the ship's day and have no break ashore yet (`NOT_ASHORE`). Tests: `tests/quay-spots.test.mjs`.
+
 ---
 
 ## 8. What we must not take, and why

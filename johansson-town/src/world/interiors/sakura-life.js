@@ -15,8 +15,7 @@ import {buildSakuraRestroom} from './sakura-restroom.js';
  *   He bobs, his pupils rattle, and you can pat him.
  * - On the shop floor: the "assistant manager" (Thuan's plant by the door, with its name
  *   tag), an umbrella stand, a beckoning cat and a charity box on the counter.
- * - In the office: a cork board of photos and notes, a mini fridge with a little CRT and
- *   games console on top, fairy lights, a cat clock, a rug, a plush Jaga-bō and manga.
+ * - The office's own things (the desk, the fridge and TV, the cork board) are sakura-small-office.js's.
  * - In the storage room: cardboard stand-ups from old campaigns leaning on the back wall
  *   either side of the delivery door (x 2.86..4.4, kept clear),
  *   a hand truck, a mop and bucket, stacked crates and a step ladder. The stocked rack,
@@ -31,7 +30,6 @@ const ensureRoundRect=ctx=>{if(ctx&&!ctx.roundRect)ctx.roundRect=(x,y,w,h)=>ctx.
 const canvasTex=(w,h,draw)=>{const c=document.createElement('canvas');c.width=w;c.height=h;draw(ensureRoundRect(c.getContext('2d')),w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t;};
 const text=(ctx,s,x,y,size,colour,align='center')=>{ctx.fillStyle=colour;ctx.font=`bold ${size}px ${MARU}`;ctx.textAlign=align;ctx.textBaseline='middle';ctx.fillText(s,x,y);};
 const std=(color,extra={})=>new THREE.MeshStandardMaterial({color,roughness:.7,...extra});
-const hash=(i,s=0)=>{const n=Math.sin(i*127.1+s*311.7)*43758.5453;return n-Math.floor(n);};
 
 function kit(parent,name){
  const group=new THREE.Group();group.name=name;parent.add(group);
@@ -241,52 +239,7 @@ function buildFrontDoor(parent){
   }};
 }
 
-// ================================================================== the office
-function buildOfficeFun(parent){
- const {group,mesh,box,print}=kit(parent,'Sakura office life');
- // Cork board on the west wall (x 4.66), facing the desk.
- const board=canvasTex(768,512,(ctx,w,h)=>{
-  ctx.fillStyle='#b98a55';ctx.fillRect(0,0,w,h);for(let i=0;i<2400;i++){ctx.fillStyle=`rgba(${hash(i)>.5?90:230},${hash(i)>.5?60:200},40,.18)`;ctx.fillRect(hash(i,1)*w,hash(i,2)*h,2,2);}
-  ctx.strokeStyle='#7a5530';ctx.lineWidth=18;ctx.strokeRect(0,0,w,h);
-  const photo=(x,y,r,draw,caption)=>{ctx.save();ctx.translate(x,y);ctx.rotate(r);ctx.fillStyle='#ffffff';ctx.fillRect(-70,-80,140,170);draw(-60,-70,120,120);text(ctx,caption,0,72,18,'#3b3f55');ctx.fillStyle='#d7263d';ctx.beginPath();ctx.arc(0,-76,7,0,Math.PI*2);ctx.fill();ctx.restore();};
-  photo(110,130,-.12,(x,y,w,h)=>{ctx.fillStyle='#86cff2';ctx.fillRect(x,y,w,h);ctx.fillStyle='#ffe28a';ctx.beginPath();ctx.arc(x+95,y+25,16,0,Math.PI*2);ctx.fill();ctx.fillStyle='#2a8fcc';ctx.fillRect(x,y+80,w,40);ctx.fillStyle='#1c1714';ctx.beginPath();ctx.arc(x+45,y+62,14,0,Math.PI*2);ctx.arc(x+78,y+62,14,0,Math.PI*2);ctx.fill();},"Thao & me · Minato");
-  photo(290,120,.08,(x,y,w,h)=>{ctx.fillStyle='#fff7df';ctx.fillRect(x,y,w,h);drawJagabo(ctx,x+60,y+64,.45);},"Jagabo!!");
-  photo(470,150,-.05,(x,y,w,h)=>{ctx.fillStyle='#7ccc4a';ctx.fillRect(x,y,w,h);ctx.fillStyle='#3f8f46';for(let i=0;i<6;i++){ctx.beginPath();ctx.ellipse(x+60+Math.cos(i)*25,y+50+Math.sin(i)*20,18,8,i,0,Math.PI*2);ctx.fill();}},"Assistant Manager 1st day");
-  for(const [x,y,r,c,t] of [[640,110,.1,'#ffe28a',"Milk Order!"],[620,260,-.08,'#ff9dc6',"Battery ×12"],[150,360,.06,'#a6e57c','Thao B-day 9/13'],[340,380,-.1,'#9fd6f0',"Taking out the garbage Tuesday/Friday"],[540,390,.12,'#ffe28a',"Good luck!"]]){
-   ctx.save();ctx.translate(x,y);ctx.rotate(r);ctx.fillStyle=c;ctx.fillRect(-70,-50,140,100);text(ctx,t,0,0,t.length>6?20:26,'#3b3f55');ctx.restore();}
- });
- print(board,.9,.6,4.68,1.5,-2.55,Math.PI/2,'Office cork board');
- // Mini fridge in the corner, with magnets, and a tiny CRT and games console on top.
- const F={x:4.98,z:-3.62};
- box(.46,.82,.48,F.x,.41,F.z,0xf2f5f7,'Office mini fridge');
- box(.02,.2,.03,F.x+.12,.55,F.z+.25,0x8a969a,'Office fridge handle');
- for(const [dx,dy,c] of [[-.1,.65,0xf06b9a],[.02,.42,0xffc93c],[-.06,.3,0x5ec8f2]])mesh(new THREE.CylinderGeometry(.025,.025,.012,10),std(c),F.x+dx,dy,F.z+.245,'Fridge magnet').rotation.x=Math.PI/2;
- box(.34,.28,.3,F.x,.96,F.z,0x3b3f55,'Office CRT');
- const screen=canvasTex(128,96,(ctx,w,h)=>{ctx.fillStyle='#1f5a8c';ctx.fillRect(0,0,w,h);ctx.fillStyle='#7ccc4a';ctx.fillRect(0,h*.7,w,h*.3);ctx.fillStyle='#ffe28a';ctx.fillRect(40,40,14,14);ctx.fillStyle='#ffffff';ctx.font='bold 12px monospace';ctx.fillText('PRESS START',20,20);});
- const tv=mesh(new THREE.PlaneGeometry(.26,.2),new THREE.MeshBasicMaterial({map:screen,toneMapped:false}),F.x,.97,F.z+.152,'Office CRT screen');void tv;
- box(.22,.05,.16,F.x,1.125,F.z-.02,0xc9ced2,'Office games console');
- box(.08,.02,.05,F.x+.2,.83,F.z+.18,0x6b6f7a,'Office controller');
- // Fairy lights along the back wall (z -3.93) above the desk.
- const bulbs=[];const lights=[0xff6b6b,0xffc93c,0x5ec8f2,0x7ccc4a,0xf06ba8];
- for(let i=0;i<14;i++){const t=i/13,x=4.75+t*1.95,y=2.2-Math.sin(t*Math.PI)*.18;
-  const m=new THREE.MeshStandardMaterial({color:lights[i%5],emissive:lights[i%5],emissiveIntensity:.9});bulbs.push(m);
-  mesh(new THREE.SphereGeometry(.025,8,6),m,x,y,-3.9,'Office fairy light');}
- const wire=new THREE.CatmullRomCurve3(Array.from({length:14},(_,i)=>{const t=i/13;return new THREE.Vector3(4.75+t*1.95,2.2-Math.sin(t*Math.PI)*.18+.02,-3.91);}));
- mesh(new THREE.TubeGeometry(wire,40,.004,4),std(0x3a5a3a),0,0,0,'Office fairy wire');
- // A cat clock over the door frame, on the back wall.
- const clock=canvasTex(256,256,(ctx,w,h)=>{ctx.fillStyle='#3b3f55';ctx.beginPath();ctx.moveTo(40,70);ctx.lineTo(70,10);ctx.lineTo(100,60);ctx.lineTo(156,60);ctx.lineTo(186,10);ctx.lineTo(216,70);ctx.arc(128,140,100,-.2,Math.PI+.2);ctx.fill();ctx.fillStyle='#fff7df';ctx.beginPath();ctx.arc(128,140,78,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#3b3f55';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(128,140);ctx.lineTo(128,84);ctx.moveTo(128,140);ctx.lineTo(170,150);ctx.stroke();ctx.fillStyle='#f06b9a';ctx.beginPath();ctx.arc(128,140,8,0,Math.PI*2);ctx.fill();});
- print(clock,.32,.32,5.9,2.25,-3.91,0,'Office cat clock');
- // A round rug under the chair, a plush Jaga-bō, manga and a cactus on the desk.
- const rug=canvasTex(256,256,(ctx,w,h)=>{for(let r=5;r>0;r--){ctx.fillStyle=['#ff9dc6','#ffe28a','#9fd6f0','#a6e57c','#fff7df'][r-1];ctx.beginPath();ctx.arc(w/2,h/2,r*25,0,Math.PI*2);ctx.fill();}});
- const rugMesh=mesh(new THREE.CircleGeometry(.62,32),new THREE.MeshStandardMaterial({map:rug,roughness:1,polygonOffset:true,polygonOffsetFactor:-2}),5.7,.006,-2.7,'Office rug');rugMesh.rotation.x=-Math.PI/2;
- const plush=new THREE.Group();plush.position.set(6.55,.74,-3.15);plush.rotation.y=-Math.PI/2;plush.scale.setScalar(.22);plush.name='Plush Jaga-bo';group.add(plush);
- const pb=new THREE.Mesh(new THREE.SphereGeometry(.3,16,12),std(0xe8b95c,{roughness:1}));pb.position.y=.34;pb.scale.set(1,1.2,.9);plush.add(pb);
- for(const [x,y,r] of [[-.1,.42,.08],[.1,.46,.05]]){const e=new THREE.Mesh(new THREE.SphereGeometry(r,10,8),std(0xffffff));e.position.set(x,y,.24);plush.add(e);const p=new THREE.Mesh(new THREE.SphereGeometry(r*.5,8,6),std(0x111111));p.position.set(x+.01,y-.01,.24+r*.6);plush.add(p);}
- const manga=[0xd7263d,0x2a8fcc,0xffc93c,0x7ccc4a];manga.forEach((c,i)=>box(.13,.02,.18,6.55,.75+i*.021,-2.25,c,'Office manga'));
- mesh(new THREE.CylinderGeometry(.04,.035,.06,10),std(0xf06b9a),6.62,.77,-2.02,'Office cactus pot');
- const cactus=mesh(new THREE.CapsuleGeometry(.025,.06,4,8),std(0x57a52f),6.62,.84,-2.02,'Office cactus');void cactus;
- return {tick(time){bulbs.forEach((m,i)=>m.emissiveIntensity=.55+.45*Math.max(0,Math.sin(time*2+i*1.3)));}};
-}
+// The office's furnishings are sakura-small-office.js's (built by sakura-small-office-build.js).
 
 // =============================================================== the storage room
 /** Cardboard stand-ups, drawn on canvas and cut out by transparency. */
@@ -333,12 +286,12 @@ export function buildSakuraLife(room,{anchor,action}){
  anchor([4.4,FURNITURE_HEIGHTS.serviceCounter+.2,2.875],'Pick up Thuan’s shop flyer',()=>action('sakura-flyer','Sakura counter'));
  const mascot=buildMascot(room,anchor,action);
  const floor=buildShopFloor(room,anchor,action);
- const office=buildOfficeFun(room);
  buildStorage(room);
  const backroom=buildSakuraBackroom(room,{anchor,action});
  const restroom=buildSakuraRestroom(room,{anchor,action});
  const officeDoor=buildOfficeDoor(room);
  const frontDoor=buildFrontDoor(room);
  let last=0;
- return {officeDoor,frontDoor,ready:floor.ready,loadBackRooms:backroom.load,tick(time){const dt=Math.min(.1,Math.max(0,time-last));last=time;mascot.tick(time,dt);floor.tick(time);office.tick(time);backroom.tick(time);restroom.tick(time);},mascot,dispose(){floor.dispose();backroom.dispose();}};
+ return {officeDoor,frontDoor,ready:floor.ready,loadBackRooms:backroom.load,/** salesFloor false: the player is upstairs and the sales floor is put away (sakura-storey-view.js); the stockroom still runs. */
+  tick(time,{salesFloor=true}={}){const dt=Math.min(.1,Math.max(0,time-last));last=time;if(salesFloor){mascot.tick(time,dt);floor.tick(time);restroom.tick(time);}backroom.tick(time);},mascot,dispose(){floor.dispose();backroom.dispose();}};
 }

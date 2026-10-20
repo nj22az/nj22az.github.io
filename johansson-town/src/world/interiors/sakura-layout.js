@@ -3,6 +3,8 @@ import {MAGAZINE_RACK} from './sakura-magazine-rack.js';
 import {shelfCapacity} from '../../commerce/shop-stock.js';
 import {PRODUCTS} from '../../commerce/products-data.js';
 import {JOHANSSON_TRUCKER} from '../../commerce/sakura-caps.js';
+import {SMALL_OFFICE_COLLIDERS} from './sakura-small-office.js';
+import {SAKURA_CLERK_POINT,SAKURA_CLERK_APPROACH,SAKURA_QUEUE,SAKURA_BROWSE,TILL_BODY} from './sakura-queue.js';
 // Measured from the supplied convenience-store model, in metres at floor Y=0.
 const rect=(x,z,w,d,height=2.9)=>({x,z,w,d,height});
 
@@ -108,7 +110,12 @@ export const SAKURA_LAYOUT={
  // it: the street seen from inside, and the real interior seen from the street.
  frontZ:3.91,
  clearance:CLERK_CLEARANCE,
- staff:[5.5,0,.85],staffYaw:Math.PI/2,checkout:[3.9,0,.85],stockroom:[.7,0,-5.5],register:[4.88,FURNITURE_HEIGHTS.serviceCounter+.12,1.17],
+ // The clerk's stand point is 0.75 m behind the counter's front (sakura-queue.js, New Yokosuka's konbini); a clerk-sized
+ // walker is routed to `staffApproach` and steps the last 0.21 m forward (retail-clerk.js). The paying customer stands
+ // at `checkout`, the first of the two queue spots; the queue and the browsing spots are sakura-queue.js's. `staffBody`
+ // is her body's depth from its middle at the till: what has to be clear for a clerk already at work to be found there.
+ staff:[...SAKURA_CLERK_POINT],staffApproach:[...SAKURA_CLERK_APPROACH],staffBody:TILL_BODY,staffYaw:Math.PI/2,checkout:[SAKURA_QUEUE[0].x,0,SAKURA_QUEUE[0].z],
+ queue:SAKURA_QUEUE,browse:SAKURA_BROWSE,stockroom:[.7,0,-5.5],register:[4.88,FURNITURE_HEIGHTS.serviceCounter+.12,1.17],
  colliders:[
   ...GONDOLA.map(([id,r])=>turned(id,r)),
   rect(CASH_CORNER.atm.x,CASH_CORNER.atm.z,CASH_CORNER.atm.w,CASH_CORNER.atm.d,1.6),rect(CASH_CORNER.film.x,CASH_CORNER.film.z,CASH_CORNER.film.w,CASH_CORNER.film.d,1.2),
@@ -120,16 +127,16 @@ export const SAKURA_LAYOUT={
   rect(-4.02,-3.81,.12,.31),rect(-4.02,-2.6,.12,.33),rect(-5.4,-2.48,2.82,.12),
   rect(4.60,-2.6,.12,2.7),rect(4.86,-1.17,.56,.12),rect(6.56,-1.17,.56,.12),
   rect(.36,-4.49,1.88,.86,2.3),rect(-6.26,-3.26,1.0,1.2,1.2),
-  // Thuan's desk in the back office (sakura-cheer.js BACK_OFFICE).
-  rect(6.4,-2.7,.7,1.2,.8),
+  // The small office behind the till: Thuan's desk, the fridge with the TV on it, her chair (sakura-small-office.js).
+  ...SMALL_OFFICE_COLLIDERS.map(({x,z,w,d,height})=>rect(x,z,w,d,height)),
   // Lived-in pieces (sakura-life.js): Jaga-bō on his plinth, the assistant manager, the
-  // umbrella stand, the office fridge, the hand truck, crates and ladder in the back room.
+  // umbrella stand, the hand truck, crates and ladder in the back room.
   ...FRONT_ENDCAPS.map(E=>rect(E.x,E.z,E.w+.04,E.d+.04,1.5)),
   rect(COPY_MACHINE.x,COPY_MACHINE.z,COPY_MACHINE.w+.08,COPY_MACHINE.d+.08,1.1),rect(COPY_MACHINE.x+.56,COPY_MACHINE.z+.02,.44,.5,.9),
   // The cap tree by the east window, its base and the caps on it (sakura-cap-stand.js).
   (({x,z,w,d,height})=>rect(x,z,w,d,height))(JOHANSSON_TRUCKER.stand.collider),
   rect(-2.45,3.42,.72,.72,1.3),rect(-1.35,3.45,.42,.42,1.2),rect(1.2,3.55,.3,.3,1.0),
-  rect(4.98,-3.62,.48,.5,1.2),rect(5.35,-5.0,.4,.6,1.1),rect(1.65,-6.35,.5,.4,.9),rect(3.6,-5.7,.45,.6,1.2),
+  rect(5.35,-5.0,.4,.6,1.1),rect(1.65,-6.35,.5,.4,.9),rect(3.6,-5.7,.45,.6,1.2),
   // The stocked back room (sakura-backroom.js BACKROOM): bottle crates and the daisha at the
   // west end, the cardboard bundle on the east wall, the extinguisher by the delivery door.
   // In the restroom (sakura-restroom.js): the pedestal basin on the south wall.

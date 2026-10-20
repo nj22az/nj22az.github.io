@@ -8,6 +8,9 @@ import {preloadPark,parkFoliage} from '../src/world/park.js?snappy=1';
 import {EAST_LAWN,buildEastLawn} from '../src/world/east-lawn.js';
 import {PARK,COURT_TERRACE,courtTerraceHeight} from '../src/world/park-layout.js';
 import {harbourPondAt} from '../src/world/harbour-park-plan.js';
+import {BEACH} from '../src/world/beach-layout.js';
+import {kitahamaLaneAt} from '../src/world/kitahama-layout.js';
+import {GROUND_LAYER} from '../src/world/ground-layers.js';
 const nearTerraceWall=(x,z)=>z<COURT_TERRACE.minZ+.1&&x>COURT_TERRACE.minX-.6&&x<COURT_TERRACE.maxX;
 import {paintedTurf} from '../src/render/toy-surfaces.js';
 import {MAIN_ROAD} from '../src/world/main-road.js';
@@ -58,8 +61,25 @@ test('the seawall stops you, and the sand below it stays above the ground it lie
  const parent=new THREE.Group(),colliders=[];
  const {shore}=buildEastLawn({parent,colliders});
  const wall=colliders.filter(c=>c.id==='east-seawall');
- assert.equal(wall.length,5,'The wall retains its south return, two beach openings and the opening for Kitano Road');
- for(const z of [-30,-15,10,19])assert.ok(wall.some(c=>circleHitsRect(EAST_LAWN.wall.x,z,.36,c)),'You can walk through the seawall at z='+z);
+ // The wall used to be counted (five pieces: a south return, two beach openings and an
+ // opening for Kitano Road). The 17 October island replan closed the Kitano Road opening
+ // on purpose (kitano-link-plan.js KITANO_SEAWALL_GAP has half 0) and dropped the south
+ // return, so the count changed while the wall did its job. What matters is the job:
+ // solid along its whole length except exactly at the two beach openings.
+ const R=.36,openings=BEACH.accesses;
+ const blocked=z=>wall.some(c=>circleHitsRect(EAST_LAWN.wall.x,z,R,c));
+ const start=Math.min(...wall.map(c=>c.z-c.d/2));
+ assert.ok(start<=-36,'The seawall no longer reaches the south end of the lawn: it starts at z='+start.toFixed(2));
+ const gaps=[],shut=[];
+ for(let z=Math.ceil(start*2)/2;z<=EAST_LAWN.maxZ;z+=.5){
+  const opening=openings.find(a=>Math.abs(z-a.z)<a.half);
+  if(!opening){if(!blocked(z))gaps.push(z);}
+  // Clear of the parapet ends by a body and the coping's lip: you can walk through.
+  else if(Math.abs(z-opening.z)<opening.half-R-.07&&blocked(z))shut.push(z);
+ }
+ assert.deepEqual(gaps,[],'You can walk through the seawall away from the beach openings');
+ assert.deepEqual(shut,[],'A beach opening in the seawall is closed');
+ for(const a of openings)assert.equal(blocked(a.z),false,'The beach opening at z='+a.z+' is walled up');
  // Retained trees keep their own solid trunks. Their gaps, including the police
  // box's visible clearing, must not acquire a continuous hidden collision strip.
  const trees=colliders.filter(c=>c.id==='east-lawn-tree'),drawn=[];
@@ -147,10 +167,35 @@ test('every open patch of the east side can be walked to from the road',async()=
    seen.add(key(nx,nz));queue.push([nx,nz]);
   }
  }
+ // Staff aisles behind counters (Mrs Nakamura's, behind the zenzai counter) are reached
+ // through passages narrower than the flood grid can step through: the passage beside
+ // her stairwell leaves the walker a band under 0.2 m wide. So a cell the 0.4 m flood
+ // missed gets a second look: a fine search, 0.1 m steps with the same body, colliders
+ // and walk surface, from the nearest cell the flood did reach. A truly enclosed pocket
+ // still has no way in and still fails.
+ const reached=[...seen].map(k=>k.split(',').map(Number));
+ const fineReach=(tx,tz)=>{
+  let from=reached[0],best=Infinity;
+  for(const p of reached){const d=Math.hypot(p[0]-tx,p[1]-tz);if(d<best){best=d;from=p;}}
+  const F=.1,fk=(x,z)=>Math.round(x/F)+','+Math.round(z/F),box=2.5;
+  const minX=Math.min(from[0],tx)-box,maxX=Math.max(from[0],tx)+box,minZ=Math.min(from[1],tz)-box,maxZ=Math.max(from[1],tz)+box;
+  const near=new Set([fk(...from)]),todo=[from];
+  while(todo.length){
+   const [x,z]=todo.shift();
+   if(Math.abs(x-tx)<F/2&&Math.abs(z-tz)<F/2)return true;
+   for(const [dx,dz] of [[F,0],[-F,0],[0,F],[0,-F]]){
+    const nx=+(x+dx).toFixed(2),nz=+(z+dz).toFixed(2);
+    if(nx<minX||nx>maxX||nz<minZ||nz>maxZ||near.has(fk(nx,nz))||!open(nx,nz))continue;
+    if(Math.abs(groundHeight(nx,nz)-groundHeight(x,z))>.45*F/STEP)continue;
+    near.add(fk(nx,nz));todo.push([nx,nz]);
+   }
+  }
+  return false;
+ };
  const stranded=[];
  for(let x=EAST_LAWN.minX;x<=EAST_LAWN.maxX;x+=STEP)for(let z=EAST_LAWN.minZ;z<=EAST_LAWN.maxZ;z+=STEP){
   const gx=+x.toFixed(1),gz=+z.toFixed(1);
-  if(open(gx,gz)&&!seen.has(key(gx,gz)))stranded.push(gx+','+gz);
+  if(open(gx,gz)&&!seen.has(key(gx,gz))&&!fineReach(gx,gz))stranded.push(gx+','+gz);
  }
  assert.deepEqual(stranded.slice(0,8),[],'East-side ground you can stand on but cannot reach');
  assert.ok(seen.size>15000,'The flood stopped early: '+seen.size+' cells');
@@ -178,7 +223,7 @@ test('the paths across the green lie on the ground rather than through it',async
  // which runs straight between those corners while the lawn beside it follows the
  // ground, so over the graded foot of the park mound the grass came up through the
  // middle of the path by as much as 8cm and lay on it in green wedges.
- const sunk=[];let checked=0;
+ const sunk=[];let checked=0,onGrass=0;
  for(const mesh of parent.children){
   if(!mesh.isMesh||!mesh.name.startsWith('grid-lanes'))continue;
   const position=mesh.geometry.attributes.position,index=mesh.geometry.index;
@@ -188,13 +233,19 @@ test('the paths across the green lie on the ground rather than through it',async
    const y=corners.reduce((s,i)=>s+position.getY(i),0)/3;
    const z=corners.reduce((s,i)=>s+position.getZ(i),0)/3;
    checked++;
-   // 2cm is where the lawn draws; anything at or below that shows through it.
-   const clearance=y-(groundHeight(x,z)+.02);
+   // Compare each path with the surface it actually lies on. Off the lanes that is the
+   // lawn, drawn 2cm over the ground: anything at or below it shows through the grass.
+   // On Kitahama's lanes groundHeight already is the lane paving's own height (layout.js
+   // gives KITAHAMA.y plus the lane layer there), so the path lies on that, not 2cm above it.
+   const surface=kitahamaLaneAt(x,z)?groundHeight(x,z):groundHeight(x,z)+GROUND_LAYER.grass;
+   const clearance=y-surface;
    if(clearance<-.005)sunk.push(x.toFixed(1)+','+z.toFixed(1)+' by '+(-clearance*100).toFixed(1)+'cm');
+   if(!kitahamaLaneAt(x,z))onGrass++;
   }
  }
  // Level park terrain no longer needs the removed mound’s dense subdivisions.
  assert.ok(checked>0,'Every generated grid-lane triangle is sampled');
+ assert.ok(onGrass>checked/2,'Most paths are checked against the grass, not the lanes');
  assert.deepEqual(sunk.slice(0,6),[],'Paving sunk under the grass it is laid on');
 });
 

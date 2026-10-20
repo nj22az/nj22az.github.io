@@ -1,5 +1,7 @@
 import {canonicalDay} from './canonical-day.js';
 import {calledToQuay} from './shore-duty.js';
+import {standNow} from './stand-points.js';
+import {quayBreakPlan} from './quay-breaks.js';
 import {onWatch} from './ferry-crew.js';
 import {onSakuraShift,isWeekend} from '../commerce/sakura-rota.js';
 import {townCalendarAt} from '../town-clock.js';
@@ -292,7 +294,12 @@ function workplaceResidentPlan(profile,minutes,rain=false,state=null){
   const day=HARBOUR_MASTER_DAY;
   if(calledToQuay(profile.name))return {...QUAY_LINES};
   const lunch=satoLunch(profile,minutes);if(lunch)return lunch;
+  // A coffee on one of the quay's shared spots after lunch (quay-breaks.js), then the round with the freight book
+  // (stand-sequences.js harbour-round): both are read off the town clock, and the ferry's call outranks them.
+  // His errand at Sakura keeps its slot (market-visits.js); the break and the round give way to it.
   if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'buying lunch at Sakura'};
+  if(!rain){const quayBreak=quayBreakPlan(profile.name,minutes);if(quayBreak)return quayBreak;}
+  const round=!rain&&standPlan(profile.name,minutes,'quay-round');if(round)return round;
   if(inTimeRange(m,day.start,day.finish))return {place:'work',target:profile.work,activity:'on duty at the harbour office: the berth radio and the freight book'};
   if(!rain&&inTimeRange(m,day.finish,day.turnIn))return {place:'stroll',target:[0,-44],activity:'walking the quay to check the moorings after the last boat'};
   return {...home,activity:inTimeRange(m,day.turnIn-30,day.start+1440)?'in his bed nook at the office':'at home in the office'};
@@ -413,6 +420,16 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
  if(shiftActive(profile,minutes))return {place:'work',target:profile.work,activity:profile.role};
  return bus('waiting for the next Harbour Line departure');
 }
+/**
+ * The street plan for a stand point of the resident's day in the world's frame (stand-points.js): where the seeded clock
+ * has them, with its facing, pose and tool for schedules.js to stand them on it. Null outside such a phase.
+ */
+export function standPlan(name,minutes,place){
+ const stand=standNow(name,minutes,'world');if(!stand)return null;
+ const {point}=stand;
+ return {place,target:[point.x,point.z],activity:point.activity,
+  stand:Object.freeze({yaw:stand.yaw,pose:point.pose,tool:point.tool,index:stand.index,why:point.why,sequence:stand.sequence.id})};
+}
 /** Every caller shares one daily plan, including sleep in the residents' actual homes. */
 export function residentPlan(profile,minutes,rain=false,state=null){
  if(profile?.canonicalDay){const plan=canonicalDay(profile.name,minutes,rain);if(plan)return plan;}
@@ -422,6 +439,11 @@ export function residentPlan(profile,minutes,rain=false,state=null){
  if(profile?.name==='Chin'&&onWatch(minutes))return {...ABOARD_AS_MOTORMAN};
  // Thuan's weekend is on Kitano-jima, before anything else is read.
  if(profile?.name==='Thuan'){const weekend=thuanWeekendPlan(minutes);if(weekend)return weekend;}
+ // A worker straight off the ship takes a break on the quay's shared spots (quay-breaks.js: Chin, after he signs off);
+ // the harbour agent's is read inside his own day, below the ferry's call for her lines.
+ if(!rain&&profile?.name!=='Harbour master'){const quayBreak=quayBreakPlan(profile?.name,minutes);if(quayBreak)return quayBreak;}
+ // Thuan sweeps her pavement when the shutter goes up (stand-sequences.js sakura-doorstep), on her own weekday shift.
+ if(profile?.name==='Thuan'&&!rain&&onSakuraShift('Thuan',minutes)){const sweep=standPlan('Thuan',minutes,'doorstep');if(sweep)return sweep;}
  // These homes remain playable after the island expansion. A night worker must
  // finish sleeping and breakfast before a generic shopping or ferry rule sends
  // them outside. The Minato closing shift finishes exactly at Thao's 04:00 bedtime.

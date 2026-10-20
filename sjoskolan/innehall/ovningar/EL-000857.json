@@ -3,7 +3,7 @@
   "titel": "Bruten neutralledare",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -17,7 +17,45 @@
     ]
   },
   "uppgift": {
-    "fraga": "En 60 W-lampa sitter mellan L1 och N och en 15 W-lampa mellan L2 och N (båda märkta 230 V) i ett 400/230 V-nät i land. Neutralledaren bryts. Räkna med konstanta resistanser och beräkna spänningen över varje lampa. Vad händer i verkligheten?"
+    "fraga": "En 60 W-lampa sitter mellan L1 och N och en 15 W-lampa mellan L2 och N (båda märkta 230 V) i ett 400/230 V-nät i land. Neutralledaren bryts. Räkna med konstanta resistanser och beräkna spänningen över varje lampa. Vad händer i verkligheten?",
+    "delfragor": [
+      {
+        "id": "a",
+        "typ": "flerval",
+        "text": "Vilken spänning får 60 W-lampan med uppgiftens resistansmodell?",
+        "alternativ": [
+          "200 V",
+          "Cirka 80 V",
+          "Cirka 320 V",
+          "230 V"
+        ],
+        "ratt": 1
+      },
+      {
+        "id": "b",
+        "typ": "flerval",
+        "text": "Vilken spänning får 15 W-lampan med uppgiftens resistansmodell?",
+        "alternativ": [
+          "Cirka 320 V",
+          "Cirka 80 V",
+          "230 V",
+          "200 V"
+        ],
+        "ratt": 0
+      },
+      {
+        "id": "c",
+        "typ": "flerval",
+        "text": "Vilken slutsats följer av beräkningen?",
+        "alternativ": [
+          "Båda lamporna får alltid sin märkspänning.",
+          "60 W-lampan får högst spänning eftersom dess märkeffekt är störst.",
+          "Neutralbrottet gör automatiskt båda lamporna spänningslösa.",
+          "15 W-lampan får överspänning; de konstanta resistanserna är en förenklad modell."
+        ],
+        "ratt": 3
+      }
+    ]
   },
   "referenser": {
     "ursprung": [
@@ -36,6 +74,10 @@
     "kalla": "Övningstentans lösning"
   },
   "bedomning": {
-    "kursniva": "Veckor: v41"
+    "kursniva": "Veckor: v41",
+    "kriterier": [
+      "Härleder resistansmodellen och spänningsfördelningen vid neutralbrott.",
+      "Förklarar risken och att konstant resistans är en förenkling."
+    ]
   }
 }

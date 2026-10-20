@@ -2,6 +2,10 @@ import * as THREE from '../../../vendor/three.module.js';
 import {assetURL} from '../../assets.js';
 
 export const IZAKAYA_POSTERS=Object.freeze([
+ {id:'sakura',file:'sakura-konbini.webp',title:'SAKURA KONBINI · Your little island stop',jp:'Sakura',
+  position:[-6.28,1.96,-4],yaw:Math.PI/2,approach:[-5.15,1.55,-4],size:[.96,1.28],
+  paper:'#f6edda',ink:'#174f40',accent:'#b73741',
+  line:'Sakura’s island-stop campaign, posted by Thao for the neighbours who stop at the shop before supper.'},
  {id:'yakitori',file:'minato-tori.webp',title:"MINATO TORI · Harbour Birds",jp:"Harbour Birds",
   position:[-6.28,1.96,2.7],yaw:Math.PI/2,approach:[-5.15,1.55,2.7],
   paper:'#f3efe4',ink:'#141414',accent:'#c41230',
@@ -16,7 +20,7 @@ export const IZAKAYA_POSTERS=Object.freeze([
   line:"The house poster. Red lanterns, the noren, and Welcome back — welcome back."},
 ]);
 
-const posterGeometry=new THREE.PlaneGeometry(1.08,1.62);
+const posterGeometries=new Map(IZAKAYA_POSTERS.map(spec=>[spec.id,new THREE.PlaneGeometry(...(spec.size||[1.08,1.62]))]));
 const posterMaterials=new Map();
 
 function fallbackPoster(spec){
@@ -45,7 +49,7 @@ function getPosterMaterial(spec){
 export function hangIzakayaPosters({room,reg,action}){
  const group=new THREE.Group();group.name='Minato Showa posters';group.userData.sharedAsset=true;
  for(const spec of IZAKAYA_POSTERS){
-  const poster=new THREE.Mesh(posterGeometry,getPosterMaterial(spec));
+  const poster=new THREE.Mesh(posterGeometries.get(spec.id),getPosterMaterial(spec));
   poster.name=spec.title;poster.position.set(...spec.position);poster.rotation.y=spec.yaw;group.add(poster);
   const target=new THREE.Object3D();target.position.set(...spec.approach);target.name='Read '+spec.title;room.add(target);
   reg(target,target.name,()=>action('inspect',spec.title,spec.line+'\nPosted on the wall at Minato. Original harbour print, not a historical reproduction.'),true);
