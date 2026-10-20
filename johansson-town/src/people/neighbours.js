@@ -10,6 +10,13 @@ import {NAKAMURA_GO_HOME,NAKAMURA_HOME_DOOR} from '../world/nakamura-plan.js';
 import {NAKAMURA_DESSERTS,HARBOUR_PARK_STUDY} from '../world/harbour-park-plan.js';
 import {kitahamaHomeFor} from '../world/kitahama-layout.js';
 const VY_HOME=Object.freeze(kitahamaHomeFor('Vy').door),RIKU_HOME=Object.freeze(kitahamaHomeFor('Riku').door);
+/**
+ * Homes reached by an indoor route rather than a street door, by household (cast.js `home`). The canonical day's home
+ * target is the route's family doorway; from there, or from behind the counter, the resident follows the measured route
+ * up the stair and rests upstairs, and comes back down it to the counter or the doorway. `door` is the doorway's index
+ * in `route`. Only the Nakamura house has one: Mrs Nakamura and Mai live above the dessert shop (nakamura-plan.js).
+ */
+export const STAIR_HOMES=Object.freeze({nakamura:Object.freeze({route:NAKAMURA_GO_HOME,door:NAKAMURA_GO_HOME.indexOf(NAKAMURA_HOME_DOOR)})});
 
 /**
  * The people who live and work in the new streets.
@@ -69,7 +76,7 @@ export const NEIGHBOURS=Object.freeze(CAST.filter(p=>!walking.has(p.name)).map(p
  const old=ALL_NEIGHBOURS.find(n=>n.name===p.name),home=activeResidentHome(p.name)?.target;
  const at=home?[home.x,home.z]:old?.at;
  return {...old,name:p.name,look:old?.look||p.name,height:old?.height||(p.age<16?1.4:p.sex==='f'?1.58:1.7),
-  at:old?.at||at,home:at,face:old?.face||[0,1],role:p.purpose,hours:[[0,1440]],canonical:true,
+  at:old?.at||at,home:at,face:old?.face||[0,1],role:p.purpose,hours:[[0,1440]],canonical:true,stair:STAIR_HOMES[p.home]||null,
   lines:old?.lines||[p.purpose,'My home is '+home?.address+'.'],
   profile:{name:p.name,age:p.age,home:at,start:420,retire:1260,canonicalDay:true}};
 }));
@@ -106,6 +113,14 @@ function standAtPoint(g,spec,stand,onIt,dt){
  }
  if(u.standPose){u.socialPose=spec.pose||null;delete u.tool;delete u.standPose;}
 }
+/** The route point nearest a body, by straight 3D distance. */
+function nearestOnRoute(route,at){
+ let i=0,d=Infinity;
+ route.forEach((r,k)=>{const e=Math.hypot(r[0]-at.x,r[1]-at.y,r[2]-at.z);if(e<d){d=e;i=k;}});
+ return {i,d};
+}
+/** Within reach of the stair route's ground end: behind the counter, at the doorway or on the stair. */
+const ON_ROUTE=1;
 /** The ground under a neighbour: the gateball court stands on its terrace, everywhere else is level. */
 const groundAt=(x,z)=>inGateball(x,z)?COURT_TERRACE.height+GROUND_LAYER.apron:groundHeight(x,z);
 const faceAlong=(g,dx,dz)=>{if(dx||dz)g.rotation.y=Math.atan2(dx,dz)+Math.PI;};
@@ -129,6 +144,59 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
   return {g,spec,profile:spec.profile,travelled:i*7};
  });
  const navigation=createNavigation(blocked,{step:.5});let talking=null,talkUntil=0;
+ /**
+  * The canonical day of a resident whose home is up an indoor stair (STAIR_HOMES). The day says where and when; this
+  * says how: home is reached through the family doorway and up the measured route, and rested in upstairs (hidden, as
+  * a home is), never at the doorway at the foot of the stair; the counter is reached back down the same route; anywhere
+  * else is down to the doorway and then the street. Unseen and out of reach on the web, the phase starts where it ends.
+  */
+ function stairDay(p,phase,key,dt){
+  const {g,spec}=p,{route,door}=spec.stair,top=route.at(-1),u=g.userData,home=phase.place==='home';
+  const [tx,tz]=phase.target,counter=!home&&Math.hypot(tx-route[0][0],tz-route[0][2])<ON_ROUTE;
+  const goal=home?top:counter?[tx,route[0][1],tz]:null;
+  if(!p.initialised){
+   const saved=getState().residentLocations?.[spec.name]?.position;
+   const valid=Array.isArray(saved)&&saved.length===2&&saved.every(Number.isFinite)&&Math.abs(saved[0])<300&&Math.abs(saved[1])<300;
+   if(goal)g.position.set(...goal);
+   else {const at=valid?saved:phase.target;g.position.set(at[0],groundAt(...at),at[1]);}
+   p.initialised=true;p.phaseKey=key;p.steps=[];p.path=[];p.thenClimb=p.thenStreet=false;
+  }
+  if(p.phaseKey!==key){
+   p.phaseKey=key;p.steps=[];p.path=[];p.thenClimb=p.thenStreet=false;
+   const near=nearestOnRoute(route,g.position),indoors=near.d<ON_ROUTE,onStair=indoors&&near.i>0;
+   if(!attends(g)&&(goal||!blocked(tx,tz,.3))){if(goal)g.position.set(...goal);else g.position.set(tx,groundAt(tx,tz),tz);}
+   else if(home){
+    // From the counter, the doorway or partway up: on along the route. From the street: to the doorway, then up.
+    if(indoors)p.steps=route.slice(near.d<.025?near.i+1:near.i).map(a=>[...a]);
+    else {p.path=canonicalStreetRoute(navigation,spec.name,g.position,[route[door][0],route[door][2]]);p.thenClimb=true;}
+   }else if(onStair){
+    // Down the route to the counter, or to the doorway and out.
+    p.steps=route.slice(counter?0:door,near.i+1).reverse().map(a=>[...a]);
+    if(counter)p.steps.push([...goal]);else p.thenStreet=true;
+   }else if(counter&&indoors)p.steps=[[...goal]];
+   else p.path=canonicalStreetRoute(navigation,spec.name,g.position,phase.target);
+  }
+  u.activity=phase.activity;u.place=phase.place;
+  const free=!u.playerConversation&&!u.aboardFerry;
+  if(free&&p.steps.length){
+   const to=p.steps[0],dx=to[0]-g.position.x,dy=to[1]-g.position.y,dz=to[2]-g.position.z,len=Math.hypot(dx,dy,dz),step=Math.min(len,dt*.75);
+   if(len<.025){p.steps.shift();if(!p.steps.length&&p.thenStreet){p.thenStreet=false;p.path=canonicalStreetRoute(navigation,spec.name,g.position,phase.target);}}
+   else {g.position.x+=dx/len*step;g.position.y+=dy/len*step;g.position.z+=dz/len*step;faceAlong(g,dx,dz);}
+  }else if(free&&p.path.length){
+   const to=p.path[0],dx=to[0]-g.position.x,dz=to[1]-g.position.z,len=Math.hypot(dx,dz),step=Math.min(len,dt*(spec.profile.age>65?.7:1));
+   if(len<.06){p.path.shift();if(!p.path.length&&p.thenClimb){p.thenClimb=false;if(Math.hypot(g.position.x-route[door][0],g.position.z-route[door][2])<.35)p.steps=route.slice(door).map(a=>[...a]);}}
+   // Over the shop's raised floor (nakamura-plan.js `floor`) the feet stay on it, not 8 cm into it.
+   else {const x=g.position.x+dx/len*step,z=g.position.z+dz/len*step,shop=Math.hypot(x-route[0][0],z-route[0][2])<ON_ROUTE;if(!blocked(x,z,.3)){g.position.set(x,shop?route[0][1]:groundAt(x,z),z);faceAlong(g,dx,dz);}}
+  }
+  const moving=!!(p.steps.length||p.path.length),upstairs=home&&!moving&&Math.hypot(g.position.x-top[0],g.position.y-top[1],g.position.z-top[2])<.05;
+  const arrived=!moving&&(goal?Math.hypot(g.position.x-goal[0],g.position.z-goal[2])<.35:Math.hypot(g.position.x-tx,g.position.z-tz)<.35);
+  if(upstairs)u.indoors='home';else delete u.indoors;
+  u.sleeping=upstairs&&phase.rest==='sleep';
+  u.walking=moving&&!u.aboardFerry;
+  standAtPoint(g,spec,phase.stand,arrived&&!u.playerConversation,dt);
+  if(arrived&&counter&&!u.playerConversation)faceAlong(g,...spec.face);
+  g.visible=!u.aboardFerry&&!upstairs&&!(arrived&&phase.school);
+ }
  return {
   people,
   snapshot(){return Object.fromEntries(people.map(({g,spec})=>{
@@ -164,6 +232,7 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
       p.roundIndex=stop;phase.target=[...spec.route[stop]];
      }else p.roundIndex=0;
      const key=phase.place+':'+phase.target.join(',');
+     if(spec.stair){stairDay(p,phase,key,dt);continue;}
      if(!p.initialised){
       const saved=getState().residentLocations?.[spec.name],at=saved?.position;
       const valid=Array.isArray(at)&&at.length===2&&at.every(Number.isFinite)&&Math.abs(at[0])<300&&Math.abs(at[1])<300;

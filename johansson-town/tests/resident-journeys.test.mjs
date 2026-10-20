@@ -31,7 +31,9 @@ for(const spec of NEIGHBOURS)test(spec.name+' completes authored street journeys
   for(let i=0;i<9000;i++){
    const before=person.g.position.clone();system.update(.1,m);
    assert.ok(person.g.position.distanceTo(before)<.24,spec.name+' moves continuously');
-   if(Math.hypot(person.g.position.x-plan.target[0],person.g.position.z-plan.target[1])<.35){arrived=true;break;}
+   // A home up an indoor stair (neighbours.js STAIR_HOMES) is reached upstairs, not at the doorway at its foot.
+   const reached=spec.stair&&plan.place==='home'?person.g.userData.indoors==='home':Math.hypot(person.g.position.x-plan.target[0],person.g.position.z-plan.target[1])<.35;
+   if(reached){arrived=true;break;}
    if(spec.walk&&plan.place==='main-street'){arrived=true;break;}
   }
   assert.ok(arrived,spec.name+' cannot reach '+plan.place+' at '+m+'; position '+person.g.position.toArray()+' target '+plan.target);
