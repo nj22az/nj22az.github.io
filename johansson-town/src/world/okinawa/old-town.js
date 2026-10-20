@@ -63,11 +63,11 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  const zA=S.minZ+2.8,zB=S.maxZ-.25,out=1.15,top=2.8,drop=.38,stripes=18,sw=(zB-zA)/stripes,slope=Math.atan2(drop,out);
  for(let i=0;i<stripes;i++)kit.box(out,.06,sw,front+out/2+.28,top-drop/2,zA+sw*(i+.5),i%2?0xf4f0e6:0xc8392e,{rz:-slope});
  kit.box(.06,.26,zB-zA,front+out+.28,top-drop-.1,(zA+zB)/2,0xc8392e);
- for(let i=0;i<stripes;i+=2)kit.box(.05,.22,sw*.9,front+out+.3,top-drop-.12,zA+sw*(i+.5),0xf4f0e6);
+ for(let i=0;i<stripes;i+=2)kit.box(.05,.2,sw*.9,front+out+.3,top-drop-.11,zA+sw*(i+.5),0xf4f0e6);
  for(const z of [zA+.2,(zA+zB)/2,zB-.2])kit.rod([front+.3,top-.2,z],[front+out+.2,top-drop,z],.02,0x6d7478);
  // The shutter drum under the sign band, and its guides down each end of the glass.
- kit.box(.24,.24,S.maxZ-S.minZ-.5,front+.12,2.72,(S.minZ+S.maxZ)/2,0x8e9699,{finish:'metal'});
- for(const z of [S.minZ+.3,S.maxZ-.3])kit.box(.08,2.6,.1,front+.05,1.3,z,0x7b8285,{finish:'metal'});
+ kit.box(.24,.24,S.maxZ-S.minZ-.5,front+.135,2.72,(S.minZ+S.maxZ)/2,0x8e9699,{finish:'metal'});
+ for(const z of [S.minZ+.3,S.maxZ-.3])kit.box(.08,2.6,.1,front+.055,1.3,z,0x7b8285,{finish:'metal'});
  const SH=2.55,width=S.maxZ-S.minZ-.6,tex=shutterTexture();
  const shutterMat=new THREE.MeshStandardMaterial({map:tex,roughness:.55,metalness:.3});
  const curtain=new THREE.Mesh(new THREE.PlaneGeometry(width,SH),shutterMat);
@@ -113,9 +113,9 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  // (docs/CAST-CONSOLIDATION.md addendum 3; commerce/merchandising.js), so the bouquets are sold at Thuan's door now, in
  // the shop's own hours. The buckets are the florist's own, and the stems are cut the way she taught Thuan.
  let clock=720;
- for(const [z,tone] of [[tz+1.15,0xe9c969],[tz+1.55,0xcb748f]]){
+ for(const [j,[z,tone]] of [[tz+1.15,0xe9c969],[tz+1.55,0xcb748f]].entries()){
   kit.cyl(.2,.16,.42,front+.34,.21,z,0x667a6d,{segments:9});solid({id:'sakura-flowers',x:front+.34,z,w:.42,d:.42,height:.9});
-  for(let i=0;i<5;i++){const a=i*Math.PI*2/5,sx=front+.34+Math.cos(a)*.1,sz=z+Math.sin(a)*.1;kit.cyl(.012,.012,.5,sx,.6,sz,0x547545,{segments:5});kit.sphere(.08,sx,.88+(i%2)*.06,sz,tone,{detail:0});}
+  for(let i=0;i<5;i++){const a=i*Math.PI*2/5,sx=front+.34+Math.cos(a)*.1,sz=z+Math.sin(a)*.1;kit.cyl(.012,.012,.5,sx,.6,sz,0x547545,{segments:5});kit.sphere(.08-(i%2)*.012,sx,.88+(i%2)*.06+j*.03,sz,tone,{detail:0,sy:j?.88:1});}
  }
  kit.sign(enamel({jp:"Flowers",en:'BOUQUETS ¥250',bg:'#efe7ce',ink:'#376a51'}),.34,.26,front+.02,1.15,tz+1.35,{ry:Math.PI/2,depth:.01,name:'flower bucket sign'});
  anchor(front+.95,1,tz+1.35,'Buy a bouquet · ¥250',()=>sakuraOpenAt(clock)
@@ -133,7 +133,7 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  kit.box(.14,.5,.36,front+.07,1.75,S.maxZ-.2,0xd8d4ca);kit.box(.02,.2,.2,front+.15,1.8,S.maxZ-.2,0x2c3a33);
  // the downpipes at the corners (the south one tucked into its corner, leaving the pier for the drinks machine's socket)
  for(const z of [S.minZ+.07,S.maxZ-.12]){kit.cyl(.045,.045,2.7,front+.06,1.35,z,0x9aa0a4,{segments:8});for(let y=.6;y<2.6;y+=1.1)kit.box(.1,.06,.1,front+.08,y,z,0x6d7478);}
- kit.box(.18,.14,.26,front+.12,2.52,S.maxZ-.5,0xe8e6e0);kit.box(.1,.08,.08,front+.24,2.5,S.maxZ-.5,0x2b2b2b);
+ kit.box(.18,.14,.26,front+.12,2.53,S.maxZ-.5,0xe8e6e0);kit.box(.1,.08,.08,front+.24,2.5,S.maxZ-.5,0x2b2b2b);
  kit.sign(enamel({jp:"Security camera",en:'CCTV in operation',bg:'#f4d23c',ink:'#1f1f1f'}),.28,.42,front+.02,2.05,S.maxZ-.55,{ry:Math.PI/2,depth:.01,name:'camera plate'});
  // Bicycles park behind the shop on the service strip's south end, side-on to the back wall and nose to the lane,
  // leaving the vending face, the pavement, the back door and the van's bay clear (SAKURA_BIKES).

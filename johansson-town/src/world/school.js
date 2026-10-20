@@ -207,9 +207,9 @@ function buildTownHallDressing(group,options){
  for(const z of [ph.minZ-.03,ph.maxZ+.03])for(let x=ph.minX+.6;x<ph.maxX-.4;x+=1.3){kit.box(.9,.9,.04,x+.45,2.2,z,0x6f7579);for(let k=0;k<6;k++)kit.box(.86,.04,.06,x+.45,1.82+k*.15,z,0x4f5559);}
  kit.box(.06,2.4,1.9,ph.maxX+.03,1.2,ph.door[1],0x6f8a8e);kit.box(.07,2.4,.04,ph.maxX+.05,1.2,ph.door[1],0x3a3d3f);
  kit.box(.6,.4,.02,ph.maxX+.04,2.75,ph.door[1],0xe0b93a);
- kit.box(.4,.16,.02,ph.maxX+.045,2.75,ph.door[1],0x2b2b2b);
+ kit.box(.4,.16,.04,ph.maxX+.045,2.75,ph.door[1],0x2b2b2b);
  // Two exhaust stacks with rain caps, sooty at the top, through the roof.
- for(const z of [cz-1.2,cz+1.2]){kit.cyl(.17,.19,3.2,ph.minX+1.2,H+1.5,z,0x7a7d78,{segments:8});kit.cyl(.26,.26,.08,ph.minX+1.2,H+3.15,z,0x3a3d3f,{segments:8});kit.cyl(.18,.18,.5,ph.minX+1.2,H+2.85,z,0x4a4a46,{segments:8});}
+ for(const z of [cz-1.2,cz+1.2]){kit.cyl(.17,.19,3.2,ph.minX+1.2,H+1.5,z,0x7a7d78,{segments:8});kit.cyl(.26,.26,.08,ph.minX+1.2,H+3.15,z,0x3a3d3f,{segments:8});kit.cyl(.18,.18,.48,ph.minX+1.2,H+2.84,z,0x4a4a46,{segments:8});}
  // The day tank: a horizontal steel tank on saddles inside a low bund wall.
  const [tx,tz]=ph.tank;
  kit.block(tx-1.6,tx+1.6,0,.45,tz-.7,tz-.55,0xc8c2b5);kit.block(tx-1.6,tx+1.6,0,.45,tz+.55,tz+.7,0xc8c2b5);

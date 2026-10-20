@@ -62,7 +62,7 @@ export function buildThuanFlat(parent,{sites=[],shopDoor}={}){
    // A thin frame in the reveal, a cast sill under a window, a little concrete hood over it.
    for(const e of [o.x0+.03,o.x1-.03])kit.box(.06,h,.1,e,y,back+.07,frame);
    kit.box(w,.06,.1,x,F+o.head-.03,back+.07,frame);
-   if(o.sill>0){kit.box(w,.06,.1,x,F+o.sill+.03,back+.07,frame);kit.box(w+.16,.07,.2,x,F+o.sill-.035,back-.06,concrete);}
+   if(o.sill>0){kit.box(w,.06,.1,x,F+o.sill+.03,back+.07,frame);kit.box(w+.16,.07,.2,x,F+o.sill-.025,back-.06,concrete);}
    kit.box(w+.3,.07,.34,x,F+o.head+.12,back-.17,concrete);
   }
   // The sashes slide past each other at the middle of each window.
@@ -72,7 +72,7 @@ export function buildThuanFlat(parent,{sites=[],shopDoor}={}){
   kit.box(.3,.24,.12,B.vent.x,F+B.vent.y,back-.06,0xd9d6cc);kit.box(.34,.05,.18,B.vent.x,F+B.vent.y+.13,back-.08,0xc8c4b8,{rx:-.3});
   kit.box(.24,.03,.02,B.vent.x,F+B.vent.y-.06,back-.125,0x6f6f68);
   // The fire door: a steel leaf in its frame, a lever, and the sill it steps out over onto the landing.
-  kit.box(E.door.width-.12,E.door.height-.06,.05,fireX,F+(E.door.height-.06)/2,back+.05,0x7e8a84);
+  kit.box(E.door.width-.12,E.door.height-.09,.05,fireX,F+.03+(E.door.height-.09)/2,back+.05,0x7e8a84);
   kit.box(.12,.025,.04,fireX+E.door.width/2-.2,F+1.02,back+.01,0xc9c9c0,{finish:'metal'});
   kit.box(E.door.width,.03,.12,fireX,F+.015,back+.06,concrete);
   kit.block(-hw-.12,-hw,F,F+2.8,-D,-.95,plaster);
@@ -96,7 +96,7 @@ export function buildThuanFlat(parent,{sites=[],shopDoor}={}){
   }
   {const o=A.side,l=o.z1-o.z0,z=(o.z0+o.z1)/2;
    kit.box(.22,.075,l+.2,hw+.06,F+.9,z,frame);kit.box(.32,.1,l+.36,hw+.1,F+.84,z,concrete);
-   for(const e of [o.z0,z,o.z1])kit.box(.12,1.45,e===z?.045:.06,hw+.06,F+1.625,e,frame);}
+   for(const e of [o.z0,z,o.z1])kit.box(.14,1.45,e===z?.045:.06,hw+.06,F+1.625,e,frame);}
   // The rest room's shoji, seen through its glass from the street: four paper panels in their light timber frames, the
   // lattice a shade darker through the paper, lit from inside after dark like any window (the kit's `glow`).
   {const o=A.front.find(f=>f.kind==='shoji'),n=4,pw=(o.x1-o.x0)/n,y0=F+.9,y1=F+2.35,z=-.985;
@@ -113,7 +113,7 @@ export function buildThuanFlat(parent,{sites=[],shopDoor}={}){
   for(let x=-hw-.12;x<=hw+.12;x+=.26)kit.cyl(.035,.035,.72,x,hoodY+.045,-.72,ridge,{segments:6,rx:Math.PI/2+.18});
   kit.box(O.width+.46,.1,.1,0,hoodY+.11,-1.06,ridge);
   kit.box(.65,.11,6.04,hw+.2,hoodY,-3.91,tile);
-  for(let z=-6.8;z<-.95;z+=.26)kit.cyl(.035,.035,.65,hw+.2,hoodY+.07,z,ridge,{segments:6,rz:Math.PI/2});
+  for(let z=-6.8;z<-.95;z+=.26)kit.cyl(.035,.035,.63,hw+.2,hoodY+.07,z,ridge,{segments:6,rz:Math.PI/2});
   // The roof slab and low parapet belong to the same concrete structure below.
   kit.block(-hw-.22,hw+.22,F+2.8,F+2.98,-D-.2,-.78,concrete);
   for(const z of [-D-.12,-.88]){
@@ -124,7 +124,7 @@ export function buildThuanFlat(parent,{sites=[],shopDoor}={}){
    kit.box(.14,.3,D-.88,x,F+3.13,(-D-.12-.88)/2,plaster);
    kit.box(.24,.055,D-.78,x,F+3.305,(-D-.12-.88)/2,concrete);
   }
-  for(const x of [-hw-.06,hw+.06])kit.box(.16,2.8,.2,x,F+1.4,-1,concrete);
+  for(const x of [-hw-.06,hw+.06])kit.box(.16,2.78,.2,x,F+1.4,-1,concrete);
   // Drainage is at the service corner, clear of both outlooks and the back's windows and fire door.
   kit.cyl(.045,.045,2.95,-hw-.17,F+1.48,-D+.16,0x7b8285,{segments:8});
   const glazing=new THREE.MeshStandardMaterial({color:0x92a9a5,roughness:.4,emissive:0xffd9a0,emissiveIntensity:0});

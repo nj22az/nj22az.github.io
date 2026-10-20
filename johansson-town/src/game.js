@@ -14,7 +14,7 @@ import {BELOW_DECK_FLOORS} from './world/ferry-interior.js';
 import {WEATHERS,WEATHER_CHANGE_MINUTES,weatherLine,nextWeather,readWeather,writeWeather} from './world/weather.js';
 import {izakayaOpen} from './people/social.js';
 import {closedGreeting} from './people/izakaya-hours.js';
-import {createPointWalk} from './input/point-walk.js';
+import {createPointWalk,ROOM_STEP} from './input/point-walk.js';
 import {createColliderGrid} from './world/collider-grid.js';
 import {createLightBudget} from './render/light-budget.js';
 import {japaneseSign,signText} from './world/okinawa/signs.js';
@@ -1494,7 +1494,9 @@ function reachTheTunnelMouth(x,z){
  tunnelSignAt=elapsed;
  say("Old Cave · The old sea cave. It goes down into the dark — tap to go in.",3.5);
 }
-const pointWalk=createPointWalk({blocked:(x,z,r)=>environmentBlocked(x,z,r),heightAt:(x,z)=>current?0:groundHeight(x,z),radius:PLAYER_RADIUS});
+// Indoors the route is planned on a finer grid (a doorway is narrower than the town's 0.35 m), and in a room of more than
+// one storey only over the floor he stands on: a tap is a walk on this floor, never across the stairwell.
+const pointWalk=createPointWalk({blocked:(x,z,r)=>environmentBlocked(x,z,r)||!!roomWalk()&&!roomWalk().floorAt(x,z,player.position.y),heightAt:(x,z)=>current?0:groundHeight(x,z),radius:PLAYER_RADIUS,step:space=>space?ROOM_STEP:.35});
 const walkMarker=new THREE.Mesh(new THREE.RingGeometry(.19,.25,24),new THREE.MeshBasicMaterial({color:0xfff4c9,transparent:true,opacity:.8,depthWrite:false,side:THREE.DoubleSide}));
 walkMarker.rotation.x=-Math.PI/2;walkMarker.visible=false;scene.add(walkMarker);
 // A walk recorded step by step, or played back (src/input/replay.js; the audit's replay controls).

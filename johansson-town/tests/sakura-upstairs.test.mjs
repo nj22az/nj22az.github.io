@@ -8,6 +8,7 @@ import {SAKURA_UPSTAIRS,sakuraOfficePortals} from '../src/world/interiors/sakura
 import {suppliedRoomBoundsBlocked} from '../src/world/supplied-rooms.js';
 import {buildThuanFlat} from '../src/world/thuan-flat.js';
 import {createShopStreetView} from '../src/render/shop-street-view.js';
+import {createPointWalk,ROOM_STEP} from '../src/input/point-walk.js';
 
 // Sakura's upper floor after the owner's 19 October replan: a small office with two outlooks, a 4½-mat rest room
 // behind a sliding door, the hall at the stair head and two closed stores (interiors/sakura-office-room.js).
@@ -102,4 +103,61 @@ test('exactly two windows look out, and both draw the town in the same frame',()
  // Looking only at the town window, one pass.
  passes.length=0;camera.position.set(3.2,H+1.6,2+OZ);camera.lookAt(3.2,H+1.4,10);camera.updateMatrixWorld(true);view.render({renderer,scene,camera,town,room,frontage});
  assert.equal(passes.length,1);
+});
+
+/**
+ * The player's own step (game.js stepFeet and collides): each frame's move is tried along x and along z on its own, each
+ * through the storeys' walk (house-walk.js move: a floor within a step, room for the body over it) and the room's solids
+ * at the floor he would stand on, the room's bounds read at the height of his feet (sakuraBoundsAt, as game.js passes
+ * player.position.y). Returns where he ends up.
+ */
+function walkAs(player,{layout,colliders},route,{speed=3,dt=1/60}={}){
+ const bounded=(x,z,r,y)=>suppliedRoomBoundsBlocked(sakuraBoundsAt(SAKURA_LAYOUT,player.y),x,z,r)||colliders.some(c=>standingHitsRect(x,z,r,y,c));
+ const collides=(x,z)=>{const step=layout.walk.move(player.x,player.y,player.z,x,z,R,(bx,by,bz)=>bounded(bx,bz,.05,by));return !step.ok||bounded(x,z,R,step.y);};
+ for(const [tx,tz] of route){
+  for(let n=0;n<4000&&Math.hypot(tx-player.x,tz-player.z)>.02;n++){
+   const d=Math.hypot(tx-player.x,tz-player.z),k=Math.min(1,speed*dt/d),nx=player.x+(tx-player.x)*k,nz=player.z+(tz-player.z)*k;
+   const sx=collides(nx,player.z),sz=collides(player.x,nz);
+   if(sx&&sz)break;
+   if(!sx)player.x=nx;if(!sz)player.z=nz;
+   player.y=layout.walk.floorBelow(player.x,player.z,player.y)?.y??player.y;
+  }
+ }
+ return player;
+}
+
+test('walk in as the player does: the shop floor, the stockroom, up both flights, the hall, the office door, the desk, the rest room',()=>{
+ // The owner, 20 October 2026, on his iPhone: "I can't seem to get into the office in the Sakura".
+ const floor=upstairs(),stairs={layout:floor.layout,colliders:[...SAKURA_LAYOUT.colliders,...buildSakuraStoreys({room:new THREE.Group(),reg(){},action(){},exit(){}}).colliders]};
+ const player={x:SAKURA_LAYOUT.spawn[0],y:0,z:SAKURA_LAYOUT.spawn[2]};
+ const legs=[
+  ['to the stockroom passage',[[0,2.4],[4.2,2.4],[4.2,-3.3],[3.8,-3.3],[3.8,-4.7],[2.95,-4.7],[2.95,-5.3],[-1.2,-5.3],[-1.2,-4.6],[-1.8,-4.6]],0],
+  ['up both flights to the stair head',[[-4.5,-4.6],[-5.05,-4.6],[-5.05,-6.15],[-4.5,-6.15],[-1.8,-6.15],[-1.2,-6.15],[-1.2,-3.95]],H],
+  ['along the hall to the office door',[up(-.5,-2),up(-.5,1.1),up(.4,1.1)],H],
+  ['through it to the desk',[up(1.4,1.1),up(2.5,1.6),up(U.items.find(i=>i.id==='chair').at[0]-.7,2.2)],H],
+  ['through the sliding door to the rest room',[up(1.6,3.3),up(.2,3.3),up(-.35,3.6)],H],
+ ];
+ for(const [label,route,y] of legs){
+  walkAs(player,stairs,route);const [ex,ez]=route.at(-1);
+  assert.ok(Math.hypot(player.x-ex,player.z-ez)<.03&&Math.abs(player.y-y)<.03,`${label}: stopped at ${[player.x,player.y,player.z].map(v=>v.toFixed(2))}`);
+ }
+});
+
+test('tap to walk upstairs plans its way through the office door and the rest room door, on this floor only',()=>{
+ // A tap is planned on the room's grid (input/point-walk.js), as game.js plans it indoors: ROOM_STEP, the player's radius,
+ // what stands at his height, and only floor within a step of his feet. On the town's 0.35 m grid there was no point in
+ // the 0.25 m the office door leaves him beside its open leaf, and the tap said "There is no clear path from here".
+ const floor=upstairs(),stair={layout:floor.layout,colliders:[...SAKURA_LAYOUT.colliders,...buildSakuraStoreys({room:new THREE.Group(),reg(){},action(){},exit(){}}).colliders]};
+ const blockedAt=(x,z,r)=>suppliedRoomBoundsBlocked(sakuraBoundsAt(SAKURA_LAYOUT,H),x,z,r)||stair.colliders.some(c=>standingHitsRect(x,z,r,H,c))||!floor.layout.walk.floorAt(x,z,H);
+ const coarse=createPointWalk({blocked:blockedAt,heightAt:()=>0,radius:R});
+ const fine=createPointWalk({blocked:blockedAt,heightAt:()=>0,radius:R,step:space=>space?ROOM_STEP:.35});
+ const head={x:-1.2,z:-3.95},desk={x:4.45,z:2.2+OZ},futon={x:-.35,z:3.6+OZ},room='market';
+ assert.equal(coarse.walk(head,desk),false,'the town grid finds no way through the office door (the bug)');
+ for(const [label,to] of [['the desk',desk],['the rest room',futon]]){
+  assert.ok(fine.walk(head,to,{space:room}),'a planned way from the stair head to '+label);
+  // Follow it as the game does (pointWalk.direction each frame) with the player's own step.
+  const player={x:head.x,y:H,z:head.z};
+  for(let i=0;i<3000&&fine.active;i++){const d=fine.direction(player,1/60,room);if(!d)break;walkAs(player,stair,[[player.x+d.x*.05,player.z+d.z*.05]]);}
+  assert.ok(Math.hypot(player.x-to.x,player.z-to.z)<.35&&Math.abs(player.y-H)<.03,`arrived by ${label}: ${[player.x,player.z].map(v=>v.toFixed(2))}`);
+ }
 });

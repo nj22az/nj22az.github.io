@@ -49,7 +49,8 @@ export function buildLotDressing(kit,solid,{anchor,onAction,vending}={}){
 
 /** A raised bed of red earth, 25 cm, with its edging boards. */
 function bed(kit,r,{top=.25,seed=1}={}){
- kit.block(r.minX,r.maxX,0,top,r.minZ,r.maxZ,P.earth);
+ // The earth stops inside the edging boards: its sides in the boards' outer faces flashed through them on a phone.
+ kit.block(r.minX+.02,r.maxX-.02,0,top,r.minZ+.02,r.maxZ-.02,P.earth);
  kit.block(r.minX+.04,r.maxX-.04,top,top+.01,r.minZ+.04,r.maxZ-.04,P.earthDry);
  for(const [x0,x1,z0,z1] of [[r.minX,r.maxX,r.minZ,r.minZ+.04],[r.minX,r.maxX,r.maxZ-.04,r.maxZ],[r.minX,r.minX+.04,r.minZ,r.maxZ],[r.maxX-.04,r.maxX,r.minZ,r.maxZ]])kit.block(x0,x1,0,top+.03,z0,z1,P.timberDark);
  return top+.01;
@@ -131,7 +132,7 @@ function vehicle(kit,{kind,colour,length:Lg,width:W,bonnetUp=false,bed=null}){
  kit.block(-Wh+.1,Wh-.1,.92,1.38,nose-.02,nose+.02,P.glass);
  kit.block(-Wh+.1,Wh-.1,.94,1.36,-Lh+.1,-Lh+.14,P.glass);
  for(const k of [-1,1])kit.block(k*(Wh-.06)-.012,k*(Wh-.06)+.012,.95,1.36,-Lh+.25,nose-.1,P.glass);
- for(const k of [-1,1])kit.block(k*(Wh-.06)-.014,k*(Wh-.06)+.014,.92,1.4,-.12+(kind==='kei car'?.1:0),-.04+(kind==='kei car'?.1:0),colour);
+ for(const k of [-1,1])kit.block(k*(Wh-.06)-.02,k*(Wh-.06)+.02,.92,1.4,-.12+(kind==='kei car'?.1:0),-.04+(kind==='kei car'?.1:0),colour);
  lamp(Lh,1);lamp(-Lh,-1);
  if(bonnetUp){
   // Open on its stay, hinged at the windscreen: the engine bay's dark below it, the battery and the air cleaner.
@@ -147,7 +148,7 @@ function papaya(kit,x,z,{seed=1,h=3}={}){
  const r=rng(seed);
  kit.cyl(.07,.11,h,x,h/2,z,0x8a8a6a,{segments:7});
  for(let i=0;i<7;i++){const a=i/7*Math.PI*2+r.next()*.4;kit.rod([x,h-.05,z],[x+Math.cos(a)*.9,h+.25,z+Math.sin(a)*.9],.012,0x7d9a4a);
-  kit.box(.7,.02,.6,x+Math.cos(a)*.95,h+.28,z+Math.sin(a)*.95,i%2?P.leaf:P.leafLight,{ry:-a,finish:'thin'});}
+  kit.box(.7,.02,.6,x+Math.cos(a)*.95,h+.28+(i%2)*.012,z+Math.sin(a)*.95,i%2?P.leaf:P.leafLight,{ry:-a,finish:'thin'});}
  for(let i=0;i<5;i++){const a=i/5*Math.PI*2;kit.sphere(.09,x+Math.cos(a)*.13,h-.35-(i%2)*.12,z+Math.sin(a)*.13,i%3?0x6f9a3a:0xd8a03a,{sy:1.4,detail:0});}
 }
 function goyaVines(kit,r,y0,y1,{seed=1,alongX=true}={}){
@@ -239,7 +240,7 @@ function lot9({kit,solid,read},lot,put){
  for(const x of [minX+.08,maxX-.08])for(const z of [minZ+.08,(minZ+maxZ)/2,maxZ-.08])kit.box(.08,x<minX+1?2.2:2.0,.08,x,(x<minX+1?2.2:2.0)/2,z,P.galv,{finish:'metal'});
  kit.box(maxX-minX+.3,.04,maxZ-minZ+.3,(minX+maxX)/2,2.12,(minZ+maxZ)/2,P.shedRoof,{rz:-.09,finish:'metal'});
  for(let z=minZ+.15;z<maxZ;z+=.3)kit.box(.03,1.2,.06,maxX-.06,1.2,z,0x7b8c91,{finish:'metal'});
- kit.block(maxX-.07,maxX-.04,.6,1.8,minZ+.05,maxZ-.05,P.shedRoof,'metal');
+ kit.block(maxX-.066,maxX-.03,.59,1.81,minZ+.05,maxZ-.05,P.shedRoof,'metal');
  // Nose to the back panel, side by side a hand apart: two in the bay south of the middle posts, three (the children's
  // two among them) in the bay north of them, so no post stands in front of a bicycle seen from the footpath.
  SHED_BICYCLES.forEach(b=>solid(bicycle(kit,(minX+maxX)/2-.05,minZ+b.dz,{ry:0,...b})));
@@ -250,7 +251,7 @@ function lot9({kit,solid,read},lot,put){
  line(px-.92,px+.92,board-.05,board+.05);line(px-.92,px-.86,board,board+3.6);line(px+.86,px+.92,board,board+3.6);line(px-.92,px+.92,board+3.55,board+3.6);
  kit.cyl(.06,.07,3.3,px,1.65,pz,0x2d4f7a,{segments:8,finish:'metal'});
  kit.rod([px,3.0,pz],[px,3.15,board-.02],.04,0x2d4f7a);
- kit.box(1.2,.9,.04,px,3.25,board,0xf4f1ea);kit.box(.46,.34,.045,px,3.1,board,0xc8432f);kit.box(.4,.28,.05,px,3.1,board,0xf4f1ea);
+ kit.box(1.2,.9,.04,px,3.25,board,0xf4f1ea);kit.box(.46,.34,.06,px,3.1,board,0xc8432f);kit.box(.4,.28,.08,px,3.1,board,0xf4f1ea);
  const ring=new THREE.TorusGeometry(.23,.012,5,18);kit.add(ring,new THREE.Matrix4().compose(new THREE.Vector3(px,3.05,rim),new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI/2,0,0)),new THREE.Vector3(1,1,1)),0xd8742a,'metal');ring.dispose();
  kit.cyl(.22,.14,.36,px,2.86,rim,0xf4f1ea,{segments:10,finish:'thin'});
  kit.sphere(.12,px+.2,.12,pz,P.orange,{detail:1});
@@ -304,8 +305,8 @@ function cane({kit,read},lot,put){
    const h=2.2+g.next()*.45,lean=(g.next()-.5)*.2;
    for(let k=0;k<3;k++)kit.rod([x+(k-1)*.07,PAD_TOP,z+(k===1?.06:-.04)],[x+lean+(k-1)*.07,h-(k===2?.3:0),z+lean*.5],.022,k===1?P.cane:P.caneDark,{segments:3});
    // The leaves: long blades from the top down most of the stalk, the upper ones up, the lower arching over.
-   for(let k=0;k<6;k++){const a=k*2.4+g.next(),y=h-.1-k*.28,out=.3+k*.05;
-    kit.box(.08,.012,1.0,x+lean*(y/h)+Math.sin(a)*out,y,z+lean*.5*(y/h)+Math.cos(a)*out,g.pick([P.caneLeaf,0x7aa652,0x5f8a3e,0x8bb35e]),{ry:a,rx:-.7+k*.24,finish:'thin'});}
+   for(let k=0;k<6;k++){const a=k*2.4+g.next(),y=h-.1-k*.28+((x*13.7+z*3.1)%1)*.05,out=.3+k*.05;
+    kit.box(.08,.012,1.0,x+lean*(y/h)+Math.sin(a)*out,y,z+lean*.5*(y/h)+Math.cos(a)*out,g.pick([P.caneLeaf,0x7aa652,0x5f8a3e,0x8bb35e]),{ry:a,rx:-.6+k*.24+((x*7.3)%1)*.1,finish:'thin'});}
   }
  }
  if(lot.id==='kitahama-11-lot')read((r.minX+r.maxX)/2,61.85,'Look at the cane','The association’s cane',

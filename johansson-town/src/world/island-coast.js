@@ -27,10 +27,14 @@ export function buildIslandCoast(parent){
  if(typeof document!=='undefined'&&document.createElement){try{const turf=paintedTurf().clone();turf.needsUpdate=true;turf.repeat.set(1/6,1/6);groundMaterial.map=turf;}catch{}}
  const ground=new THREE.Mesh(new THREE.ShapeGeometry(shape),groundMaterial);ground.rotation.x=-Math.PI/2;ground.position.y=-.4;ground.name='Island land';parent.add(ground);
  const positions=[],indices=[];
+ // The faces stand 12 mm out to sea of the coastline: the harbour's quay walls stand on the same line, and a face in
+ // their plane flashed through them at the waterline (the owner's iPhone, 20 October 2026: "Lots of flashing meshes").
+ const ccw=COASTLINE.reduce((s,p,i)=>{const q=COASTLINE[(i+1)%COASTLINE.length];return s+p[0]*q[1]-q[0]*p[1];},0)>0;
  // Each edge of the coast as a stone face, except the spans the bank stands on (sampled every quarter metre).
  for(let i=0;i<COASTLINE.length;i++){
   const a=COASTLINE[i],b=COASTLINE[(i+1)%COASTLINE.length],steps=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.25));
-  let from=null;const face=(p,q)=>{const n=positions.length/3;positions.push(p[0],-.38,p[1],p[0],-1.5,p[1],q[0],-.38,q[1],q[0],-1.5,q[1]);indices.push(n,n+1,n+2,n+2,n+1,n+3);};
+  const len=Math.hypot(b[0]-a[0],b[1]-a[1])||1,ox=(ccw?1:-1)*(b[1]-a[1])/len*.012,oz=(ccw?-1:1)*(b[0]-a[0])/len*.012;
+  let from=null;const face=(p,q)=>{const n=positions.length/3;positions.push(p[0]+ox,-.38,p[1]+oz,p[0]+ox,-1.5,p[1]+oz,q[0]+ox,-.38,q[1]+oz,q[0]+ox,-1.5,q[1]+oz);indices.push(n,n+1,n+2,n+2,n+1,n+3);};
   for(let s=0;s<=steps;s++){const t=s/steps,p=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t],mid=[a[0]+(b[0]-a[0])*(s+.5)/steps,a[1]+(b[1]-a[1])*(s+.5)/steps];
    const open=s<steps&&!westShoreCovers(mid[0],mid[1]);if(open&&from===null)from=p;if(!open&&from!==null){face(from,p);from=null;}}
  }

@@ -8,6 +8,8 @@ export const SAKURA_STAIR=Object.freeze({height:4.01,officeZ:-.64,
  hole:{minX:-5.65,maxX:-2.05,minZ:-6.14,maxZ:-4},
  bottom:[-1.25,0,-4.6],top:[-1.25,4.01,-3.5]});
 
+/** The stairwell's north wall, on the stair's side of the restroom partition (z -4.03), in the shop's frame. */
+export const STAIR_NORTH=Object.freeze({z0:-4.07,z1:-4.03});
 // Upper bounds include the stair landing behind the office's rear wall.
 export const sakuraBoundsAt=(base,y)=>y>SAKURA_STAIR.height-.24?
  {bounds:{minX:-6.4,maxX:6.4,minZ:-6.78,maxZ:3.91}}:base;
@@ -41,6 +43,18 @@ export function buildSakuraStoreys({room,reg,action}){
   const wall=box(w,h,d,x,y,z,'Sakura enclosed stairwell');wall.material=plaster;
   if(h>1)solid(x,z,w,d,h);
  }
+ // The stairwell's north side, against the restroom partition (sakura-shell.js, z -4.03..-3.95). The partition stops at the
+ // shop's ceiling (2.98) and carried no collider west of x -4.57, so from the stair the lens went through it into the
+ // toilet, or over the ceiling into the void above the shop and its sky (the owner, 20 October 2026, on his iPhone:
+ // "when I'm in the stairs in the storage room it clips to the toilet"). Plaster from the floor beside the turning
+ // landing, and over the partition to the office floor along both flights: a wall for the lens as for the eye.
+ for(const [x0,x1,y0] of [[-5.7,-4.6,0],[-4.6,-.6,2.9]]){
+  const wall=box(x1-x0,H-y0,STAIR_NORTH.z1-STAIR_NORTH.z0,(x0+x1)/2,(H+y0)/2,(STAIR_NORTH.z0+STAIR_NORTH.z1)/2,'Sakura stairwell north wall');
+  wall.material=plaster;solid((x0+x1)/2,(STAIR_NORTH.z0+STAIR_NORTH.z1)/2,x1-x0,STAIR_NORTH.z1-STAIR_NORTH.z0,H-y0,y0);
+ }
+ // Its east side under the hall floor, between the stockroom's ceiling and the office floor: from the lower flight the
+ // lens looked over the stockroom ceiling into the open void there, and out of the building.
+ {const z0=-6.14,z1=STAIR_NORTH.z1,wall=box(.08,H-2.9,z1-z0,-.6,(H+2.9)/2,(z0+z1)/2,'Sakura stairwell east wall');wall.material=plaster;solid(-.6,(z0+z1)/2,.08,z1-z0,H-2.9,2.9);}
  for(let i=0;i<12;i++){
   const t=(i+.5)/12,y=(i+1)*H/24;
   box(2.7/12,.1,1.1,-1.8-t*2.7,y-.05,-4.6,'Sakura lower stair tread');

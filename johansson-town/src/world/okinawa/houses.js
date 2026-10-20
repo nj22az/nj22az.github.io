@@ -97,7 +97,7 @@ export function concreteHouse(kit,{w=7.6,d=7,colour=C.concrete,seed=2}={}){
  const r=rng(seed),W=w/2,D=d/2,storey=2.8,H=storey*2;
  kit.block(-W,W,0,H,-D,D,colour,'plaster');
  kit.block(-W-.02,W+.02,0,.35,-D-.02,D+.02,0xb9b3a6);                // a darker plinth
- kit.block(-W-.12,W+.12,H,H+.1,-D-.12,D+.12,0xc8c2b5);               // roof slab lip
+ kit.block(-W-.12,W+.12,H-.01,H+.1,-D-.12,D+.12,0xc8c2b5);               // roof slab lip
  for(const [x0,x1,z0,z1] of [[-W,W,-D,-D+.14],[-W,W,D-.14,D],[-W,-W+.14,-D,D],[W-.14,W,-D,D-1.0]])kit.block(x0,x1,H+.1,H+.55,z0,z1,colour,'plaster');
  // Ground floor: aluminium sliding windows either side of a door under a thin concrete
  // canopy. The openings are laid out from the house's own width, left to right with a
@@ -131,10 +131,10 @@ export function concreteHouse(kit,{w=7.6,d=7,colour=C.concrete,seed=2}={}){
  stairFlight(kit,solid,{id:'house-stair-lower',x:W+2.15,z:bottom,width:1.3,length,height:mid,direction:-1});
  stairLanding(kit,{id:'house-turn',x0:W+.2,x1:W+2.8,z0:turn-1.0,z1:turn,y:mid},solid);
  stairFlight(kit,solid,{id:'house-stair-upper',x:W+.85,z:turn,width:1.3,length,height:mid,base:mid});
- stairLanding(kit,{id:'house-roof-landing',x0:W-.3,x1:W+1.5,z0:bottom,z1:bottom+1.0,y:H+.12},solid);
+ stairLanding(kit,{id:'house-roof-landing',x0:W-.3,x1:W+1.5,z0:bottom,z1:bottom+.99,y:H+.12},solid);
  kit.level(-W+.15,W-.15,-D+.15,D-.15,H+.1,'house-roof');
  // Guard the outer edge of both landings, leaving the flight ends open.
- for(const [x0,x1,z0,z1,y] of [[W+.2,W+2.8,turn-1.0,turn-.95,mid],[W+2.75,W+2.8,turn-1.0,turn,mid],[W+1.45,W+1.5,bottom,bottom+1.0,H+.1]]){
+ for(const [x0,x1,z0,z1,y] of [[W+.2,W+2.8,turn-1.0,turn-.95,mid],[W+2.75,W+2.8,turn-1.0,turn,mid],[W+1.44,W+1.49,bottom,bottom+1.0,H+.1]]){
   kit.block(x0,x1,y,y+1,z0,z1,0x788386);solid({...kit.rect(x0,x1,z0,z1,1,'house-landing-rail'),minY:kit.point(0,y,0).y});
  }
  // On the roof: the tank on its frame, a TV aerial, washing.
@@ -168,7 +168,7 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
   kit.block(-W,1.03,0,H,-D,back,colour,'plaster');
   kit.block(1.03,W,0,H,-D,-2.85,colour,'plaster');
   kit.block(W-.2,W,0,H,-2.85,back,colour,'plaster');
-  kit.block(1.03,1.13,0,ground,-2.85,D,colour,'plaster');
+  kit.block(1.03,1.12,0,ground-.01,-2.85,D,colour,'plaster');
  }else kit.block(-W,W,0,H,-D,back,colour,'plaster');
  kit.block(-W,-open,0,ground,back,D,colour,'plaster');kit.block(open,W,0,ground,back,D,colour,'plaster');
  kit.block(-W,W,ground,H,back,D,colour,'plaster');
@@ -177,8 +177,9 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
   // The foundation belongs under the walls, not across the open shop floor. The
   // old 30 cm plinth buried the 8 cm tiles and was too tall for the walking surface.
   kit.block(-W-.02,W+.02,0,.3,-D-.02,back,0xb3ad9f);
-  kit.block(-W-.02,-open,0,.3,back,D+.02,0xb3ad9f);
-  kit.block(open,W+.02,0,.3,back,D+.02,0xb3ad9f);
+  // Its inner ends stop inside the piers: flush with the piers' faces they flashed in the shop's opening.
+  kit.block(-W-.02,-open-.02,0,.3,back,D+.02,0xb3ad9f);
+  kit.block(open+.02,W+.02,0,.3,back,D+.02,0xb3ad9f);
  }else kit.block(-W-.02,W+.02,0,.3,-D-.02,D+.02,0xb3ad9f);
  // Inside: floor, back wall, shelves of goods, a counter; lit, so it glows at night.
  kit.block(-open,open,fitted?0:.02,floor,back,fitted?D+.02:D-.05,0x9d9486);
@@ -196,9 +197,9 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
   // Open ground-floor residential door, framed and separate from the food counter.
   for(const x of [1.12,2.18])kit.box(.07,2.15,.12,x,1.155,D+.02,trim);
   kit.box(1.13,.08,.12,1.65,2.25,D+.02,trim);
-  kit.box(.06,2.04,.94,2.14,1.1,D-.45,0x416d72);
+  kit.box(.06,2.04,.93,2.14,1.1,D-.455,0x416d72);
   kit.box(1.05,2,.08,1.65,ground+1,-2.8,0x416d72);
-  furniture.push(kit.rect(1.13,W+.05,-D-.05,-2.85,H+.6,'nakamura-stair-rear'),kit.rect(W-.2,W+.05,-2.85,back,H+.6,'nakamura-stair-side'),kit.rect(1.03,1.13,-2.85,D,ground,'nakamura-stair-partition'),...rails);
+  furniture.push(kit.rect(1.13,W+.05,-D-.05,-2.85,H+.6,'nakamura-stair-rear'),kit.rect(W-.2,W+.05,-2.85,back,H+.6,'nakamura-stair-side'),kit.rect(1.03,1.12,-2.85,D,ground,'nakamura-stair-partition'),...rails);
  }
  // The rolled-up shutter's box over the opening, and the fascia board above it.
  kit.block(-open,open,ground-.42,ground-.08,D-.35,D-.05,0x8e9699,'metal');
@@ -267,7 +268,8 @@ export function coralWall(kit,x0,z0,x1,z1,{height=1.35,thickness=.45,gaps=[],see
   const len=s1-s0,n=Math.max(1,Math.round(len/.62));
   for(let i=0;i<n;i++){
    const u0=s0+i*len/n,u1=s0+(i+1)*len/n,h=height+(r.next()-.5)*.14,mid=(u0+u1)/2;
-   const [x,z]=alongX?[mid,fixed]:[fixed,mid],[w,d]=alongX?[u1-u0+.02,thickness]:[thickness,u1-u0+.02];
+   // Neighbouring stones alternate 2 cm in thickness, so their overlapping faces are never in one plane.
+   const t=thickness+(i%2)*.02,[x,z]=alongX?[mid,fixed]:[fixed,mid],[w,d]=alongX?[u1-u0+.02,t]:[t,u1-u0+.02];
    kit.box(w,h,d,x,h/2,z,r.pick(tints),{finish:'coral'});
    // The rounded capping stones.
    kit.box(alongX?w*.9:thickness*.8,.12,alongX?thickness*.8:d*.9,x,h+.03,z,r.pick(tints),{finish:'coral',ry:(r.next()-.5)*.1});
@@ -357,7 +359,7 @@ export function banana(kit,x,z,{seed=8}={}){
  kit.cyl(.09,.13,2.1,x,1.05,z,0x6f7d3e,{segments:7});
  for(let i=0;i<6;i++){
   const a=i/6*Math.PI*2+r.next()*.4;
-  kit.box(.42,.02,1.7,x+Math.cos(a)*.75,2.15+r.next()*.25,z+Math.sin(a)*.75,i%2?0x4c7d34:0x588c3c,{ry:-a+Math.PI/2,rx:.45,finish:"thin"});
+  kit.box(.42,.02,1.7,x+Math.cos(a)*.75,2.15+r.next()*.25,z+Math.sin(a)*.75,i%2?0x4c7d34:0x588c3c,{ry:-a+Math.PI/2,rx:.4+i*.02,finish:"thin"});
  }
 }
 

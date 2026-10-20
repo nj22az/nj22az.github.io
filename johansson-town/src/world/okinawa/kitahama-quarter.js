@@ -222,7 +222,7 @@ function buildCorner(kit,solid,{anchor,onAction}){
  // The notice board on two posts, by the lane.
  const nx=-14,nz=36.5;
  for(const dz of [-.7,.7])kit.box(.08,1.9,.08,nx,.95,nz+dz,0x6b4a33);
- kit.box(.08,.95,1.6,nx,1.45,nz,0x8a6a45);kit.box(.12,.06,1.7,nx,1.97,nz,0x5d4431);
+ kit.box(.06,.95,1.6,nx,1.45,nz,0x8a6a45);kit.box(.12,.06,1.7,nx,1.97,nz,0x5d4431);
  const notices=[
   poster({title:'CANE CUT',lines:['Mon 12 January, 7:00','Everybody on the lane','Lunch at Sato Ramen'],bg:'#f4e7c4',band:'#8a6a2f'}),
   poster({title:'FOUND',lines:['A child’s blue sandal','left foot','Ask at number 3'],bg:'#eef1e4',band:'#c8432f'}),

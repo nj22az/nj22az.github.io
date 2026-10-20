@@ -203,10 +203,10 @@ export function buildFishingBoat({length=6.3,beam=2.9,look=QUAY_FISHING_BOAT_LOO
  for(const side of [1,-1]){kit.box(.04,.38,.9,side*(wh.w/2+.005),wh.y0+1.12,(wh.z0+wh.z1)/2+.15,0x22313a,'glass');
   // Sidelights on the wheelhouse sides, red to port, green to starboard, in their screens (off: she is alongside).
   kit.box(.05,.16,.22,side*(wh.w/2+.04),wh.y0+wh.h-.18,wh.z1-.18,0x1f2427,'metal');kit.box(.03,.09,.1,side*(wh.w/2+.07),wh.y0+wh.h-.18,wh.z1-.12,side>0?0xc23a2c:0x2f9a54,'glass');}
- kit.box(.04,1.25,.55,-(wh.w/2+.004),wh.y0+.63,wh.z0+.4,0xd8d4c8);
+ kit.box(.04,1.25,.55,-(wh.w/2+.012),wh.y0+.63,wh.z0+.4,0xd8d4c8);
  // Mast on the wheelhouse roof: the masthead light, a radar scanner (1990s open array), whip aerial, the spar of lamps.
  const mastTop=wh.y0+wh.h+2.4;
- kit.cyl(.045,.06,2.4,0,wh.y0+wh.h+1.2,wh.z0+.35,0xe8e6de,'metal');
+ kit.cyl(.045,.06,2.38,0,wh.y0+wh.h+1.21,wh.z0+.35,0xe8e6de,'metal');
  kit.box(.12,.12,.12,0,mastTop+.02,wh.z0+.35,0xf5f2e2,'glass');
  kit.box(.9,.07,.12,0,wh.y0+wh.h+.85,wh.z0+.35,0x3b4245,'metal');kit.cyl(.08,.08,.1,0,wh.y0+wh.h+.78,wh.z0+.35,0x3b4245,'metal');
  kit.rod([.3,wh.y0+wh.h,wh.z0+.2],[.3,wh.y0+wh.h+1.6,wh.z0+.2],.01,0x2a2f31);

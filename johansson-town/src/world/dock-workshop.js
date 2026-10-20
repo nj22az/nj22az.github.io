@@ -5,7 +5,8 @@ export function buildDockWorkshop({parent,site,colliders,register,enter,label}){
  const group=new THREE.Group();group.name='Dock electrical workshop';parent.add(group);
  const materials=new Map(),mat=c=>{if(!materials.has(c))materials.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.85}));return materials.get(c);};
  const box=(name,size,position,colour)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(colour));m.name=name;m.position.set(...position);m.receiveShadow=true;group.add(m);return m;};
- box('Industrial concrete plinth',[P.width,.14,P.depth],[P.x,.02,P.z],0x8b9192);
+ // The plinth stands 3 cm proud of the shed all round: flush, its faces flashed through the shed's walls on a phone.
+ box('Industrial concrete plinth',[P.width+.06,.14,P.depth+.06],[P.x,.02,P.z],0x8b9192);
  box('Corrugated workshop shed',[P.width,3.3,P.depth],[P.x,1.65,P.z],0x8d9a9b);
  const front=P.z+P.depth/2;
  box('Low industrial roof',[P.width+.35,.18,P.depth+.4],[P.x,3.38,P.z],0x456570);

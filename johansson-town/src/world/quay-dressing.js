@@ -88,7 +88,7 @@ export function buildQuayDressing({parent,label,shadows=false}){
   for(const dx of [-.12,.12])kit.cyl(.08,.08,.06,t.x+dx,T+.08,t.z+.4,iron,'rubber',{rz:Math.PI/2});}
  kit.cyl(.04,.04,2,S.sign.x,T+1,S.sign.z,galv,'metal',{segments:8});
  // The fuel box on the kerb: grey steel, a red lid band, its hose on a reel on the east side, the nozzle in its holster.
- {const F=D.fuel,y=KERB_TOP;kit.box(.45,.62,.32,F.x,y+.31,F.z,0x9fa29b,'metal');kit.box(.47,.08,.34,F.x,y+.58,F.z,0xc23a2c);
+ {const F=D.fuel,y=KERB_TOP;kit.box(.45,.62,.32,F.x,y+.31,F.z,0x9fa29b,'metal');kit.box(.47,.08,.34,F.x,y+.59,F.z,0xc23a2c);
   kit.cyl(.2,.2,.12,F.x+.31,y+.34,F.z,0x3d4548,'metal',{rz:Math.PI/2,segments:12});
   for(let k=0;k<2;k++)kit.torus(.17-k*.04,.025,F.x+.31,y+.34,F.z,0x1f2324,'rubber',{ry:Math.PI/2});
   kit.box(.06,.2,.08,F.x-.26,y+.4,F.z,iron,'metal');}

@@ -66,7 +66,9 @@ export function buildLaneSurfaces(parent,library) {
   for(const patch of lanePatches()){const surface=beachWalkAt(patch)?'wet-sand':patch.surface;for(let i=1;i<patch.polygon.length-1;i++)emit(surface,patch.polygon[0],patch.polygon[i],patch.polygon[i+1]);}
   for(const [surface,b] of batches){
     const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(b.positions,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(b.uv,2));geometry.setIndex(b.indices);geometry.computeVertexNormals();
-    const material=surface==='wet-sand'?new THREE.MeshStandardMaterial({color:0xcdb88c,roughness:1}):surface==='concrete'?new THREE.MeshStandardMaterial({color:GROUND.concrete,roughness:.94}):library.worldMaterial(surface==='wood'?'timber':surface==='asphalt'?'asphalt':'paving',surface==='wood'?0xc8c1af:surface==='asphalt'?GROUND.asphalt:GROUND.pavers).clone();material.side=THREE.DoubleSide;
+    // The wet sand and the concrete lanes lie over graded ground, within millimetres of it where it rises: drawn with polygon
+    // offset, as the town's other ground decals are, so the ground never flashes through them on a phone.
+    const material=surface==='wet-sand'?new THREE.MeshStandardMaterial({color:0xcdb88c,roughness:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}):surface==='concrete'?new THREE.MeshStandardMaterial({color:GROUND.concrete,roughness:.94,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}):library.worldMaterial(surface==='wood'?'timber':surface==='asphalt'?'asphalt':'paving',surface==='wood'?0xc8c1af:surface==='asphalt'?GROUND.asphalt:GROUND.pavers).clone();material.side=THREE.DoubleSide;
     const mesh=new THREE.Mesh(geometry,material);mesh.name='grid-lanes:'+surface;mesh.receiveShadow=true;parent.add(mesh);
   }
 }
