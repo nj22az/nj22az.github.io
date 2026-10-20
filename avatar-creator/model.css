@@ -57,3 +57,27 @@
 .model-budget,.model-id{font-size:13px!important}
 .model-workspace [data-maker] .scene-choice button{min-width:72px}
 @media(max-width:800px){.model-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.model-exports{grid-template-columns:1fr}}
+
+.room-world-panel{padding:16px;margin:12px 0;border:1px solid var(--line-border);border-radius:12px;background:#fff}.room-workspace :disabled{opacity:.5;cursor:default}.room-world-panel button{margin:4px 8px 4px 0}
+
+.room-workspace input[data-floating]{width:auto;min-height:20px;justify-self:start}
+
+/* Room authoring: a quiet project toolbar, persistent object list and shared asset shelf. */
+.room-workspace>.scene-heading{align-items:flex-start;gap:16px}
+.room-project-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;max-width:740px}
+.room-workspace .scene-heading h1{margin-bottom:4px}
+.room-workspace :is(button,a,input,select):focus-visible{outline:3px solid #267b65;outline-offset:3px}
+.room-library [data-objects]{max-height:310px;overflow:auto;padding:3px}
+.room-library [data-objects] button{text-align:left;overflow-wrap:anywhere}
+.room-library h2 span,.room-assets summary span{font-size:12px;font-weight:500;color:var(--line-secondary);margin-left:5px}
+.room-library input[type=search]{width:100%;min-width:0}
+.room-assets{border-top:1px solid var(--line-border);margin-top:18px;padding-top:10px}
+.room-assets summary{min-height:44px;cursor:pointer;font-weight:600}
+.room-asset{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid var(--line-border)}
+.room-asset>span{min-width:0;overflow-wrap:anywhere;font-size:13px;font-weight:600}
+.room-asset small{display:block;font-size:11px;font-weight:400;color:var(--line-secondary);margin-top:3px}
+.room-workspace .room-hint{font-size:12px;line-height:1.5;color:var(--line-secondary)}
+.room-asset button{flex-shrink:0}
+.room-layout{grid-template-columns:210px minmax(0,1fr) 260px}
+@media(min-width:801px) and (max-width:1150px){.room-layout{grid-template-columns:180px minmax(0,1fr) 225px;gap:10px}.room-layout>aside:last-child{grid-column:auto}.room-workspace .scene-controls{padding:10px}}
+@media(max-width:800px){.room-library [data-objects]{max-height:210px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.room-library [data-objects] button{max-width:none}.room-project-actions{width:100%}.room-project-actions>*{flex:1 1 135px}.room-assets [data-assets]{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px}}

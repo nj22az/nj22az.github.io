@@ -38,7 +38,7 @@ export const PATHS=Object.freeze({
  output:'output/studio-mcp',
 });
 const ROOM_PROJECT=/^johansson-town\/data\/studio\/projects\/[a-z][a-z0-9-]{0,47}\.room\.json$/;
-const WRITABLE=['johansson-town/data/studio/world-library-review.json','johansson-town/src/catalog/catalog-data.js',PATHS.looks,PATHS.products,PATHS.log,PATHS.draft,PATHS.looksModule,PATHS.charactersModule,PATHS.productsModule];
+const WRITABLE=['johansson-town/data/studio/rooms/dock-workshop.json','johansson-town/src/world/interiors/workshop-publication.js','johansson-town/data/studio/world-library-review.json','johansson-town/src/catalog/catalog-data.js',PATHS.looks,PATHS.products,PATHS.log,PATHS.draft,PATHS.looksModule,PATHS.charactersModule,PATHS.productsModule];
 const LABEL=/^johansson-town\/assets\/graphics\/labels\/[a-z][a-z0-9-]{1,39}\.r[1-9][0-9]{0,3}\.webp$/;
 const OUTPUT=/^output\/studio-mcp\/(?:[a-z0-9][a-z0-9._-]{0,80}\/){0,3}[a-z0-9][a-z0-9._-]{0,120}\.(png|webp|json|txt|glb|stl)$/;
 // Assets made in Studio (tools/studio/assets.mjs): held in the draft until "update World", then World's catalogue.

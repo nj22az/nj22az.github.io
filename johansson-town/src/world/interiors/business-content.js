@@ -23,9 +23,10 @@ export const BUSINESS_CONTENT_CATALOGUE=ITEMS.map(item=>{
 export function buildBusinessContent({site,room,register,onInspect,onAction}){
  const entries=site.bookshop?Object.fromEntries(Object.entries(COMBINED_CONTENT).filter(([id])=>Object.hasOwn(positions.frontrow,id))):site.industrialWorkshop?dockContent:positions[site.id]||{},objects=new Map();
  for(const [id,placement] of Object.entries(entries)){
+  const table=site.industrialWorkshop?room.getObjectByName('world-room:pattern-table'):null;if(table&&!table.visible)continue;
   const original=ITEMS.find(item=>item.id===id);if(!original)continue;
   const item={...original,place:site.title,pos:placement.pos},object=makeContentObject(item,{pageScale:.5});
-  object.position.set(...placement.pos);object.rotation.x=placement.upright?0:-Math.PI/2+.12;object.scale.setScalar(placement.scale??.24);room.add(object);
+  object.position.set(...placement.pos);object.rotation.x=placement.upright?0:-Math.PI/2+.12;object.scale.setScalar(placement.scale??.24);if(table){object.position.x-=3.2;object.position.z-=.3;table.add(object);}else room.add(object);
   object.userData.npcInteraction=false;register(object,id==='stepwise'&&onAction?'Use StepWise calculator':'Lift '+item.title,()=>id==='stepwise'&&onAction?onAction('stepwise'):onInspect(item),true);objects.set(id,object);
  }
  return {items:BUSINESS_CONTENT_CATALOGUE,objects};

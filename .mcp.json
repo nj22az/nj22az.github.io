@@ -2,7 +2,15 @@
   "mcpServers": {
     "johansson-town-audit": {
       "command": "node",
-      "args": ["johansson-town/tools/mcp/server.mjs"]
+      "args": [
+        "johansson-town/tools/mcp/server.mjs"
+      ]
+    },
+    "johansson-studio": {
+      "command": "node",
+      "args": [
+        "johansson-town/tools/studio/server.mjs"
+      ]
     }
   }
 }

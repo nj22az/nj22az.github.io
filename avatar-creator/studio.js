@@ -4,12 +4,12 @@ import {openCreator} from '../johansson-town/src/avatars/creator.js';
 import {ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/src/avatars/cast.js';
 import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js';
 import {normalizeRecipe,decodeRecipe} from '../johansson-town/src/avatars/recipe.js';
-import {createSceneWorkspace} from './scene.js?v=20261020-grounded';
+import {createSceneWorkspace} from './scene.js?v=20261020-integrated';
 import {createWorldPanel} from './world-panel.js?v=20261011-1';
 import {createHomeWorkspace} from './home.js?v=20261011-1';
 import {createModelWorkspace} from './model.js?v=20261020-workshop';
 import {createWorldLibrary} from './world-library.js?v=20261020-2';
-import {createRoomWorkspace} from './room-editor.js?v=20261020-rooms';
+import {createRoomWorkspace} from './room-editor.js?v=20261020-integrated';
 import {loadHatModels} from '../johansson-town/src/catalog/hat-models.js';
 
 // The hats that are models in World's asset catalogue (Johansson's trucker cap, sold at Sakura Shōten) are in hand before anyone
@@ -49,7 +49,7 @@ function switchMode(mode,{focus=true}={}){
  // Make model: every asset in a library, checked and saved for World, a printer or a picture; the Lathe maker (model.js)
  else if(mode==='model'){workspace?.hide();home?.hide();model??=createModelWorkspace();model.show();}
  else if(mode==='library'){workspace?.hide();home?.hide();model?.hide();rooms?.hide();worldLibrary??=createWorldLibrary({onOpen:async e=>{if(e.access==='model'){if(e.id.startsWith('home:')){switchMode('rooms');await rooms.show();await rooms.addWorldAsset(e);}else{switchMode('model');await model.open(e.id);}}else{switchMode('scene');if(e.access==='character')workspace.useCharacter(recipeFor(e.name),null);else workspace.setLocation(e.id.slice(9));}},onRoomModel:async e=>{switchMode('rooms');await rooms.show();await rooms.addWorldAsset(e);}});worldLibrary.show();}
- else if(mode==='rooms'){workspace?.hide();home?.hide();model?.hide();rooms??=createRoomWorkspace();rooms.show();}
+ else if(mode==='rooms'){workspace?.hide();home?.hide();model?.hide();rooms??=createRoomWorkspace({onScene:async id=>{switchMode('scene');workspace.setLocation(id);}});rooms.show();}
  else{home?.hide();model?.hide();workspace??=createSceneWorkspace({getCharacter:()=>currentRecipe,onMode:switchMode,onEdit:(recipe,id)=>{currentRecipe=recipe;editingId=id;switchMode('character');}});if(editingId){workspace.useCharacter(currentRecipe,editingId);editingId=null;}workspace.show(mode);}
  for(const b of modes.children)b.setAttribute('aria-pressed',String(b.dataset.mode===mode));
  if(focus)modes.querySelector(`[data-mode="${mode}"]`)?.focus({preventScroll:true});

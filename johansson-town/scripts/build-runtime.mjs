@@ -14,7 +14,11 @@ const previousManifest=existsSync(manifestPath)?JSON.parse(readFileSync(manifest
 // configFile:false means vite.config.js is not read, so base has to be set here too.
 // Without it the build defaults to '/', and the preload helper asks for every chunk
 // at the site root: each dynamic import 404s its hint and loads unprefetched.
-await build({configFile:false,root,publicDir:false,base:'./',build:{target:'es2022',outDir:'runtime',emptyOutDir:false,minify:'esbuild',manifest:true,rollupOptions:{input:{portraits:resolve(root,'src/avatars/guide-portraits.js'),feed:resolve(root,'src/feed/mount.js'),boot:resolve(root,'src/boot.js'),audio:resolve(root,'src/audio/town-audio.js')+'?snappy=1','title-menu':resolve(root,'title-menu.js')},preserveEntrySignatures:'strict',output:{entryFileNames:'[name]-[hash].js',chunkFileNames:'[name]-[hash].js',assetFileNames:'[name]-[hash][extname]'}}}});
+await build({configFile:false,root,publicDir:false,base:'./',build:{target:'es2022',outDir:'runtime',emptyOutDir:false,minify:'esbuild',manifest:true,rollupOptions:{input:{portraits:resolve(root,'src/avatars/guide-portraits.js'),feed:resolve(root,'src/feed/mount.js'),boot:resolve(root,'src/boot.js'),audio:resolve(root,'src/audio/town-audio.js')+'?snappy=1','title-menu':resolve(root,'title-menu.js')},preserveEntrySignatures:'strict',output:{manualChunks(id){
+ // World and the native workshop scene use these same builders. Keep them together rather than adding
+ // one request each for the prop loader, content objects, printed products and the printer model helper.
+ const file=id.split('?')[0];if(['content-items.js','src/world/interiors/compact-shops.js','src/world/interiors/workshop-props.js','src/world/interiors/business-content.js','src/workshop/models.js','src/commerce/shop-product.js'].some(path=>file===resolve(root,path)))return 'compact-shops';
+ },entryFileNames:'[name]-[hash].js',chunkFileNames:'[name]-[hash].js',assetFileNames:'[name]-[hash][extname]'}}}});
 const manifest=JSON.parse(await readFile(resolve(root,'runtime/.vite/manifest.json'),'utf8'));
 const boot=manifest['src/boot.js'].file,audio=Object.values(manifest).find(entry=>entry.isEntry&&entry.name==='audio').file;
 // The title menu (saves, friendship hearts) imported the source tree straight from index.html: save.js pulls the
