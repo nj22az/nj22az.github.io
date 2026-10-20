@@ -49,3 +49,13 @@ Verification: 10 schema/motion tests passed; pose/catalogue checks passed with o
 The revised camera pass shows the first desk pose from the side, the escape from behind, and the final lift from an angle that separates Vy from the teacher. A reusable large speech-bubble option keeps the teacher’s complete line readable across the top of the panel.
 
 The escape now samples School run at 0.30 s, with a stronger forward lean and bent, opposing arms. The actual shoe supports are grounded after posing; the paper treatment projects a short floor stroke and dust marks from the planted sole. The jump pose remains available separately. Eleven scene/motion tests pass, including planted-sole height and repeat-frame stability.
+
+## Emotional acting and composition
+
+The four beats now use a low, folded desk slump; an arched, asymmetric protest with an enlarged painted mouth; a rear-view frantic sprint with opposing bent arms and a wide leg split; and a limp collar-lift with the pupil held clear of the teacher. SchoolEscape is a separate held sprint pose: the normal walking/running cycles remain available.
+
+Studio applies the extreme face painting to the relevant comic poses and expressions without altering resident recipes. Switching poses in a take restores normal facial painting and head proportions. Furniture size is editable and bounded to 0.5–1.5; the Add text action-marks selector offers a chaos effect with scattered sheets, stronger motion arcs and panic droplets without a crash caption. Shouts have deterministic letter variation and a separate ONE LIFE line. The final speech bubble has a softer contour.
+
+Paper comics add furniture silhouette ink and two-band shading on clothes/hair/props while retaining the face ramp for readable acting; the normal location materials and light levels are restored afterwards. No World character recipes or playable room assets are changed.
+
+Validation: 13 scene/motion checks; browser project round trips at 820×1180 and 390×844 including furniture sizing, replacement, export, timeline seek/rewind and playback. The current stretched collar lift has a measured target error of about 4.1 mm. This is an endpoint check rather than a guarantee of cloth simulation. Physical-device Safari remains untested.
