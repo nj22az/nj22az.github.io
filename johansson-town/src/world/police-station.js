@@ -120,17 +120,17 @@ export function buildPoliceStation(world,options){
  // ── The street face (west) ──
  // The glazed sliding doors, aluminium-framed, lit from the lobby after dark (kit `glow`).
  const e0=doorZ-S.entrance.half,e1=doorZ+S.entrance.half;
- kit.block(west-.02,west+.01,P,P+2.1,e0,e1,C.glass,'glow');
+ kit.block(west-.02,west-.005,P,P+2.1,e0,e1,C.glass,'glow');
  for(const z of [e0,doorZ,e1])kit.block(west-.05,west+.01,P,P+2.16,z-.04,z+.04,C.alu,'metal');
  kit.block(west-.05,west+.01,P+2.1,P+2.18,e0-.04,e1+.04,C.alu,'metal');
  kit.block(west-.06,west+.01,P+.95,P+1.0,e0+.08,e1-.08,C.alu,'metal');
- kit.block(face-.55,face,0,P,doorZ-.8,doorZ+.8,C.slab);
+ kit.block(face-.55,face,0,P-.01,doorZ-.8,doorZ+.8,C.slab);
  // The canopy over the doors, so a visitor shuts an umbrella in the dry; its navy fascia matches the skirting.
  kit.block(face-1.0,face,2.6,2.72,doorZ-1.0,doorZ+1.0,C.slab);kit.block(face-1.03,face-.97,2.5,2.74,doorZ-1.03,doorZ+1.03,C.navy);
  // The counter window: a sliding pane with a ledge outside, where you ask the way or hand in a wallet without
  // coming in. It is the police box's job, and the 交番 sign over it is the police box's sign.
  const w0=winZ-S.window.half,w1=winZ+S.window.half;
- kit.block(west-.02,west+.01,P+.95,P+2.05,w0,w1,C.glass,'glow');
+ kit.block(west-.02,west-.005,P+.95,P+2.05,w0,w1,C.glass,'glow');
  for(const z of [w0,winZ,w1])kit.block(west-.05,west+.01,P+.92,P+2.08,z-.035,z+.035,C.alu,'metal');
  for(const y of [P+.92,P+2.05])kit.block(west-.05,west+.01,y,y+.05,w0-.04,w1+.04,C.alu,'metal');
  kit.block(face-.3,face,P+.86,P+.92,w0-.05,w1+.05,C.slab);
@@ -142,7 +142,7 @@ export function buildPoliceStation(world,options){
  // The station's plate, brush lettering on white wood, beside the doors on the corner side.
  kit.sign(doorPlate(),.3,1.8,face-.03,P+1.75,doorZ+1.08,{ry:-Math.PI/2,name:'Station door plate',edge:0x6b5a40});
  // Upstairs, Officer Mori's two windows over the street (window-interior.js paints a room behind them).
- for(const z of [16.5,19.7]){kit.block(west-.02,west,4.0,5.2,z-.9,z+.9,C.glass,'window');kit.block(face-.18,face,3.92,3.98,z-.98,z+.98,C.slab);for(const zz of [z-.92,z,z+.92])kit.block(west-.05,west,3.98,5.22,zz-.03,zz+.03,C.alu,'metal');}
+ for(const z of [16.5,19.7]){kit.block(west-.02,west-.012,4.0,5.2,z-.9,z+.9,C.glass,'window');kit.block(face-.18,face,3.92,3.98,z-.98,z+.98,C.slab);for(const zz of [z-.92,z,z+.92])kit.block(west-.05,west,3.98,5.22,zz-.03,zz+.03,C.alu,'metal');}
  // The name board, high on the street face where it reads from the bus stop and from halfway up Main Street.
  const board=nameBoard();
  kit.sign(board,6,.6,face-.04,5.62,cz,{ry:-Math.PI/2,name:'Station name board',edge:C.navy});
@@ -155,7 +155,7 @@ export function buildPoliceStation(world,options){
  const b0=S.backDoor.x-S.backDoor.half,b1=S.backDoor.x+S.backDoor.half;
  kit.block(b0,b1,P,P+2.05,south-.01,south+.02,C.door);kit.block(b0-.05,b1+.05,P+2.05,P+2.1,maxZ,maxZ+.03,C.alu,'metal');
  kit.box(.18,.12,.12,S.backDoor.x,P+2.3,maxZ+.08,0xfff3d0,{finish:'lamp'});
- kit.block(b0-.1,b1+.1,0,P,maxZ,maxZ+.3,C.slab);
+ kit.block(b0-.1,b1+.1,0,P-.01,maxZ,maxZ+.3,C.slab);
  // The outdoor unit of the duty office's air-conditioner (Okinawa's summers), on its bracket off the wall.
  kit.box(.8,.55,.28,Y.aircon.x,.42,Y.aircon.z,C.white);kit.cyl(.19,.19,.02,Y.aircon.x-.12,.42,Y.aircon.z+.15,C.steel,{rx:Math.PI/2,segments:14});
  // Upstairs south: his room's side window and the kitchenette's.

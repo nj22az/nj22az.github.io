@@ -51,7 +51,7 @@ export function buildOnsenFallback(){
   const x=c.z-ONSEN.z,z=ONSEN.x-c.x,w=c.d,d=c.w;
   if(i===3){
    // A visible enclosed bathing yard explains why this exterior footprint stays solid.
-   box('Fallback bath yard',w,.04,d,x,.02,z,0xaca58c);
+   box('Fallback bath yard',w-.02,.04,d-.02,x,.02,z,0xaca58c);
    for(const side of [-1,1])box('Fallback bath side fence',.12,c.height,d,x+side*(w/2-.06),c.height/2,z,0x8e9c6e);
    box('Fallback sea bath fence',w,.95,.12,x,.475,z-d/2+.06,0x8e9c6e);
    const water=new THREE.Mesh(new THREE.CircleGeometry(1,32),new THREE.MeshStandardMaterial({color:0x668e89,roughness:.22,transparent:true,opacity:.85,depthWrite:false}));water.rotation.x=-Math.PI/2;water.scale.set(2.35,1.75,1);water.position.set(.2,.2,-3.9);water.name='Fallback sea bath water';group.add(water);return;

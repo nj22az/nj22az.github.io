@@ -78,7 +78,8 @@ export function buildPatrolCar(kit,{door=null,plate=null}={}){
  for(const s of [-1,1]){kit.cyl(.078,.078,.4,s*.28,roof+.16,-.25,C.red,{rz:Math.PI/2,segments:10,finish:'gloss'});kit.sphere(.078,s*.48,roof+.16,-.25,C.red,{sx:.5,finish:'gloss'});}
  kit.box(.14,.12,.18,0,roof+.15,-.25,C.white,{finish:'gloss'});
  // ── Bumpers, grille, lamps. ──
- for(const s of [-1,1]){kit.box(P.width-.08,.15,.1,0,.31,s*(L-.05),C.trim,{finish:'gloss'});kit.box(P.width-.14,.05,.03,0,.31,s*(L-.002),0x55595e);}
+ // The bumpers stand a centimetre proud of the body's ends, their rubber strip proud of them: flush, they flashed.
+ for(const s of [-1,1]){kit.box(P.width-.08,.15,.1,0,.31,s*(L-.04),C.trim,{finish:'gloss'});kit.box(P.width-.14,.05,.03,0,.31,s*(L+.004),0x55595e);}
  kit.box(.5,.1,.02,0,.58,L-.002,C.liner);
  for(const s of [-1,1]){
   kit.box(.27,.12,.03,s*.47,.6,L-.01,C.lamp,{finish:'gloss'});kit.box(.11,.05,.025,s*.62,.46,L-.01,C.amber,{finish:'gloss'});
@@ -102,5 +103,5 @@ export function buildPatrolCar(kit,{door=null,plate=null}={}){
  }
  // ── The doors' lettering and the plates. ──
  if(door)for(const s of [-1,1])kit.sign(door,.58,.15,s*(W+.004),(waist+belt)/2,.2,{ry:s*Math.PI/2,depth:.004,name:'Patrol car door panel',edge:C.white});
- if(plate){kit.sign(plate,.33,.165,0,.33,L+.006,{depth:.006,name:'Patrol car number plate',edge:0xd8b52c});kit.sign(plate,.33,.165,0,.5,-L-.006,{ry:Math.PI,depth:.006,name:'Patrol car number plate',edge:0xd8b52c});}
+ if(plate){kit.sign(plate,.33,.165,0,.33,L+.022,{depth:.006,name:'Patrol car number plate',edge:0xd8b52c});kit.sign(plate,.33,.165,0,.5,-L-.022,{ry:Math.PI,depth:.006,name:'Patrol car number plate',edge:0xd8b52c});}
 }

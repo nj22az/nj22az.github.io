@@ -117,7 +117,7 @@ function addWalkablePier(world,options,factory){
    const west=profile(-1),east=profile(1),rubber=factory.material(null,0x1d2324,.95,0);
    for(const [face,side,list] of [[B.face,1,F.z],[CARGO_BERTH.face,-1,CARGO_BERTH.fenders.z]])for(const z of list){
     const fender=new THREE.Mesh(side>0?west:east,rubber);fender.position.set(face,F.top,z);fender.name='V-type fender';fender.castShadow=options.shadows;fender.receiveShadow=options.shadows;fender.userData.staticProp=true;group.add(fender);
-    factory.box(group,[.03,F.length+.06,F.base+.1],[face-side*.015,F.top-F.length/2,z],steel,null,false);
+    factory.box(group,[.03,F.length+.06,F.base+.1],[face-side*.02,F.top-F.length/2,z],steel,null,false);
    }}
   // The bitts for the lines, on both edges: a cast post with a flared head and two horns along the face
   // that keep a line from riding up, painted black.

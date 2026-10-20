@@ -180,7 +180,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       const gaps=[...([SHOP_CROSSING_Z,-18].map(z=>[z-1.6,z+1.6])),...(x>MAIN_ROAD.x?[[commercialMouth.minZ,commercialMouth.maxZ],[cargoCourt.minZ,cargoCourt.maxZ]]:[]),[court.minZ,court.maxZ],...(x<MAIN_ROAD.x?[[loading.minZ,loading.maxZ]]:[[MAIN_PARKING_LAYBY.minZ,MAIN_PARKING_LAYBY.kerbTo]])].sort((a,b)=>a[0]-b[0]);
       let z0=MAIN_ROAD.minZ;
       for(const [a,b] of [...gaps,[MAIN_ROAD.maxZ,MAIN_ROAD.maxZ]]){
-        if(b>z0&&a>z0){const len=a-z0;const k=new THREE.Mesh(new THREE.BoxGeometry(.18,.11,len),kerb);k.position.set(x,.025,z0+len/2);k.name='Main Street kerb';k.receiveShadow=true;k.castShadow=false;group.add(k);}
+        if(b>z0&&a>z0){const len=a-z0;const k=new THREE.Mesh(new THREE.BoxGeometry(.18,.11,len-.02),kerb);k.position.set(x+(x<MAIN_ROAD.x?.01:-.01),.025,z0+len/2);k.name='Main Street kerb';k.receiveShadow=true;k.castShadow=false;group.add(k);}
         z0=Math.max(z0,b);
       }
     }
@@ -289,7 +289,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
    // quay, a step no walker takes (navmesh.js), and Thuan off the 08:30 boat had no way into town.
    // The kerb is concrete with its top painted safety yellow, as on the Nishi and east quays (a dark slab before).
    const pierWest=OUTER_PIER.x-OUTER_PIER.width/2-.17,pierEast=OUTER_PIER.x+OUTER_PIER.width/2+.17;
-   for(const [a,b] of [[Q.minX,L.minX],[L.maxX,pierWest],[pierEast,Q.maxX]]){box([b-a,.6,.65],[(a+b)/2,-.12,-49.65],0x596568);box([b-a,.14,.55],[(a+b)/2,.17,-49.28],0x8f938c);box([b-a,.04,.55],[(a+b)/2,.26,-49.28],0xe0b93a);}
+   for(const [a,b] of [[Q.minX,L.minX],[L.maxX,pierWest],[pierEast,Q.maxX]]){box([b-a+.02,.6,.65],[(a+b)/2,-.12,-49.65],0x596568);box([b-a-.02,.14,.55],[(a+b)/2,.17,-49.28],0x8f938c);box([b-a-.04,.04,.55],[(a+b)/2,.26,-49.28],0xe0b93a);}
+   // (The coping runs a centimetre past each end, the kerb and its paint stop short of it: ends in one plane flashed.)
    // The plate, its top flush with the concrete: full width where the leaf touches down, narrower
    // under the flap, and a steel angle armouring the quay's edge in front of it.
    const plate=(x0,x1,z0,z1,c=0x5e6566)=>box([x1-x0,L.thickness,z1-z0],[(x0+x1)/2,L.top-L.thickness/2,(z0+z1)/2],c);

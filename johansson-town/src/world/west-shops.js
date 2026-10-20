@@ -83,7 +83,7 @@ export function buildWestShop({parent,site,register,enter,label,colliders,shadow
  for(const [x0,x1,z0,z1] of [[back-.22,WEST_FRONT,z-half-.22,z-half-.08],[back-.22,WEST_FRONT,z+half+.08,z+half+.22],[back-.22,back-.08,z-half-.22,z+half+.22],[WEST_FRONT-.14,WEST_FRONT,z-half-.22,z+half+.22]])
   kit.block(x0,x1,H,H+GRID.parapet,z0,z1,wall);
  kit.block(WEST_FRONT-.18,WEST_FRONT+.04,H+GRID.parapet,H+GRID.parapet+.08,z-half-.22,z+half+.22,trim);
- kit.block(back,WEST_FRONT,H-.05,H+.02,z-half,z+half,slab);
+ kit.block(back,WEST_FRONT-.01,H-.05,H+.02,z-half,z+half,slab);
  const tx=back+depth*.32,tz=z-half*.45;
  for(const [dx,dz] of [[-.45,-.45],[.45,-.45],[.45,.45],[-.45,.45]])kit.box(.07,.9,.07,tx+dx,H+.45,tz+dz,steel,{finish:'metal'});
  kit.box(1.1,.08,1.1,tx,H+.94,tz,steel,{finish:'metal'});
@@ -92,14 +92,15 @@ export function buildWestShop({parent,site,register,enter,label,colliders,shadow
  for(const y of [H+1.9,H+2.25])kit.rod([back+depth*.7,y,z+half*.5-.55],[back+depth*.7,y,z+half*.5+.55],.015,steel);
  for(const [dx,dz] of [[.3,.3],[.3,1.2],[1.2,.3],[1.2,1.2]])kit.rod([back+dx,H,z+half-dz],[back+dx,H+.55,z+half-dz],.018,0x7a4a32);
  // Rust from the parapet fixings and mould under the coping: the island's two tells.
- for(const wz of [z-half+.7,z+half-1.4])kit.box(.02,1.1,.05,WEST_FRONT+.005,H-.4,wz,0x9d8f78);
+ for(const wz of [z-half+.7,z+half-1.4])kit.box(.02,1.1,.05,WEST_FRONT+.012,H-.4,wz,0x9d8f78);
  kit.box(.02,.25,width-.6,WEST_FRONT+.004,H-.12,z,0xbdb4a2);
  northGable(kit,{x0:back-.22,x1:WEST_FRONT,zf:z+half+.22,H,wall,colliders});
  kit.finish(group,'west-shop shell:'+site.id);
  // The shopfront: two display windows either side of one door, in aluminium.
  for(const side of [-1,1]){
   const outer=z+side*(half-.3),inner=z+side*(DOOR/2+.14),run=Math.abs(outer-inner),bay=(outer+inner)/2;
-  solid([.22,SHOPFRONT,.30],[WEST_FRONT-.11,SHOPFRONT/2,z+side*(half-.15)],wall).name='Corner pier infill';
+  // Inside the corner pier (the shell's, above) by a centimetre: the two in one plane flashed on a phone.
+  solid([.2,SHOPFRONT,.28],[WEST_FRONT-.11,SHOPFRONT/2,z+side*(half-.15)],wall).name='Corner pier infill';
   solid([.16,.66,run],[WEST_FRONT-.08,.35,bay],wall).name='Display window apron';
   const recess=solid([.08,1.94,run],[WEST_FRONT-.12,1.65,bay],0x302c24);recess.name='Display window recess';
   for(const y of [.68,SHOPFRONT])solid([.24,.10,run+.12],[WEST_FRONT+.01,y,bay],alu).name='Display window rail';
