@@ -6,7 +6,7 @@ så att de fungerar både från veckosidan i vecka-44/ och från delsidan i veck
 
 Teoribilderna har delsidans avsnitt i samma ordning och med samma rubriker: övningarnas teorikort pekar på avsnitt 2–6.
 Avsnitt 8 är nytt: så går tentamensveckan till, med uppgifterna ur tentamen.html, praktiskt-prov.html och
-verktyg/veckosidor/bygg.py VECKOR[45]. Övningstentans lösningar står inte på bilderna; de finns på tentamen.html.
+verktyg/veckosidor/bygg.py VECKOR[45]. Övningstentans lösningar finns i den separata PDF:en ”Facit med lösningsgång”, länkad från tentamen.html#ovningstenta.
 """
 
 DELSIDA = '../../vecka-45/aktuell/Del_3.html'
@@ -178,7 +178,7 @@ LEKTION = {
             'punkter': [
                 'Öppna sidan Tentamen och gå till Övningstenta. Där finns tolv uppgifter från hela kursen.',
                 'Skriv i chatten numren på de uppgifter du vill gå igenom.',
-                'Vi går igenom de uppgifter som flest behöver. Lösningarna finns på sidan under Visa lösning.',
+                'Vi går igenom metoden. Räkna först själv. Rätta sedan med ”Facit med lösningsgång” (PDF) i samma avsnitt.',
             ],
             'not': 'nj22az.github.io/sjoskolan/tentamen.html#ovningstenta',
         }),
