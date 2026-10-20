@@ -1,3 +1,5 @@
+import * as THREE from '../../johansson-town/vendor/three.module.js';
+import {stageComicExit} from '../scene-exit.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {installDOM} from '../../johansson-town/tests/fixtures.mjs';
@@ -37,4 +39,11 @@ test('comic face acting preserves the recipe and repaints when a take leaves the
 
 test('a take leaving the slump restores ordinary head proportions',()=>{
  const a=buildAvatar(recipeFor('Vy'),{faceSize:64});try{poseSceneAvatar(a,{pose:'SchoolRest'});assert.ok(a.bones.head.scale.y<1);poseSceneAvatar(a,{pose:'Run'});assert.deepEqual(a.bones.head.scale.toArray(),[1,1,1]);}finally{a.body.skeleton.dispose();a.dispose();}
+});
+
+test('the comic exit is reused, hidden for ordinary shots and disposed with its scene',()=>{
+ let disposed=false;const environment={scene:new THREE.Scene(),origin:[0,0,0],dispose(){disposed=true;}};
+ stageComicExit(environment,true);assert.equal(environment.scene.children.length,1);const root=environment.scene.children[0];
+ stageComicExit(environment,false);assert.equal(root.visible,false);stageComicExit(environment,true);assert.equal(environment.scene.children.length,1);assert.equal(root.visible,true);
+ environment.dispose();assert.equal(disposed,true);assert.equal(environment.scene.children.length,0);
 });
