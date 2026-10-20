@@ -66,7 +66,8 @@ def omrade(lm):
 
 
 # --- text -----------------------------------------------------------------------------------------------------
-INDEX = re.compile(r'(_\{[^}]*\}|\^\{[^}]*\})')
+INDEX = re.compile(r'(_\\{[^}]*\\}|\\^\\{[^}]*\\})')
+AKTIV_LEKTION = None
 
 
 def skriv(p, text, size, bold=False, color=INK, italic=False):
@@ -77,21 +78,32 @@ def skriv(p, text, size, bold=False, color=INK, italic=False):
         if del_ == '**':
             fet = not fet
             continue
-        for bit in INDEX.split(del_):
-            if not bit:
-                continue
-            r = p.add_run()
-            baslinje = None
-            if bit.startswith('_{'):
-                bit, baslinje = bit[2:-1], '-25000'
-            elif bit.startswith('^{'):
-                bit, baslinje = bit[2:-1], '30000'
-            r.text = bit
-            f = r.font
-            f.size, f.bold, f.italic, f.name = Pt(size), fet, italic, 'Calibri'
-            f.color.rgb = color
-            if baslinje:
-                r._r.get_or_add_rPr().set('baseline', baslinje)
+        # Dela även ut fristående N/n som egna teckenruns vid dagens föreläsning.
+        delar = re.split(r'(?<![A-Za-zÅÄÖåäö])([Nn])(?![A-Za-zÅÄÖåäö])', del_) if AKTIV_LEKTION == 'v43_02' else [del_]
+        for d in delar:
+          for bit in INDEX.split(d):
+              if not bit:
+                  continue
+              r = p.add_run()
+              baslinje = None
+              if bit.startswith('_{'):
+                  bit, baslinje = bit[2:-1], '-25000'
+              elif bit.startswith('^{'):
+                  bit, baslinje = bit[2:-1], '30000'
+              r.text = bit
+              f = r.font
+              f.size, f.bold, f.italic, f.name = Pt(size), fet, italic, 'Calibri'
+              # Endast i v43_02: matematisk serif skiljer versalt N
+              # (lindningsvarv) från gement n (rotationshastighet).
+              # Behåll löptextens Calibri och formatets övriga utseende.
+              if AKTIV_LEKTION == 'v43_02' and bit in ('N', 'n'):
+                  f.name = 'Cambria'
+                  f.size = Pt(size + 2)
+                  f.bold = bit == 'N'
+                  f.italic = bit == 'n'
+              f.color.rgb = color
+              if baslinje:
+                  r._r.get_or_add_rPr().set('baseline', baslinje)
 
 
 def ruta(s, x, y, w, h, stycken, size=20, bold=False, color=INK, align=PP_ALIGN.LEFT, anchor=MSO_ANCHOR.TOP,
@@ -413,6 +425,8 @@ def b_kallor(prs, lek, nr, accent, b):
 
 # --- bygg -------------------------------------------------------------------------------------------------------
 def bygg_deck(lek):
+    global AKTIV_LEKTION
+    AKTIV_LEKTION = lek['id']
     prs = Presentation(str(MALL / 'mall.pptx'))
     accent = farg(dict((k, h) for k, _n, h, _m in K.OMRADEN)[lek['omrade']])
     frageplacering = {}
