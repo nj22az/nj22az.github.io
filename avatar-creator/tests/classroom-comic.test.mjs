@@ -6,7 +6,7 @@ import {recipeFor} from '../../johansson-town/src/avatars/cast.js';
 test('all four story beats round-trip as editable scenes, including flipped props and partner identity',()=>{
  const scenes=classroomComic(recipeFor).map(s=>normalizeScene(s));assert.equal(scenes.length,4);
  for(const scene of scenes){assert.deepEqual(normalizeScene(JSON.parse(JSON.stringify(scene))),scene);assert.equal(scene.location,'classroom');assert.ok(scene.camera.position);}
- assert.equal(scenes[0].actors[0].seat,'classroom-desk');assert.ok(scenes[0].camera.position[0]>1);assert.ok(scenes[2].actors[0].turn>90);assert.ok(scenes[2].actors[0].y>0);assert.ok(scenes[2].furniture.desk.size<1);assert.equal(scenes[3].actors[1].speechStyle,'large');assert.equal(scenes[2].effect,'chaos');assert.ok(Math.abs(scenes[2].furniture.desk.rotation[2])>Math.PI/2);assert.equal(scenes[2].actors[0].pose,'SchoolEscape');
+ assert.equal(scenes[0].actors[0].seat,'classroom-desk');assert.ok(scenes[0].camera.position[0]>1);assert.ok(scenes[2].actors[0].turn>90);assert.ok(scenes[2].actors[0].y>0);assert.ok(scenes[2].furniture.desk.size<1);assert.equal(scenes[3].actors[1].speechStyle,'large');assert.equal(scenes[2].effect,'escape');assert.ok(Math.abs(scenes[2].furniture.desk.rotation[2])>Math.PI/2);assert.equal(scenes[2].actors[0].pose,'SchoolEscape');
  assert.equal(scenes[3].actors[0].liftedBy,scenes[3].actors[1].id);assert.equal(scenes[3].actors[0].expression,'embarrassed');assert.equal(scenes[3].actors[1].name,'Mrs Kubo');assert.ok(scenes[3].actors[1].size>scenes[3].actors[0].size);assert.ok(scenes[3].actors[1].recipe.body.build>scenes[3].actors[0].recipe.body.build);
 });
 test('missing, duplicate and cyclic carrying links cannot survive an import',()=>{
