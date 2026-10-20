@@ -8,6 +8,7 @@ import {buildTetsuoBench} from '../../workshop/tetsuo-bench.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {createMaterials} from '../../render/materials.js';
 import {buildShopDoor} from '../shop-door.js';
+import {signPlate} from '../sign-plate.js';
 import {BOOKSHOP_WORKSHOP_ROOM} from '../bookshop-workshop-layout.js';
 
 
@@ -22,7 +23,9 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
  const palette=new Map();const colour=c=>{if(!palette.has(c))palette.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.82}));return palette.get(c);};
  function box(name,size,pos,mat,solid=false){const m=new THREE.Mesh(new THREE.BoxGeometry(...size),typeof mat==='number'?colour(mat):mat);m.name=name;m.position.set(...pos);m.receiveShadow=true;room.add(m);if(solid)collider(pos[0],pos[2],size[0]+.03,size[2]+.03,pos[1]+size[1]/2);return m;}
  function anchor(pos,label,kind,title,text,worker){const o=new THREE.Object3D();o.name=label;o.position.set(...pos);room.add(o);if(worker)o.userData.workers=[worker];reg(o,label,kind==='exit'?exit:()=>action(kind,title,text),true);return o;}
- function board(title,sub,pos,width=1.5){const c=document.createElement('canvas');c.width=512;c.height=160;const ctx=c.getContext('2d');ctx.fillStyle='#e6d7b7';ctx.fillRect(0,0,512,160);ctx.fillStyle='#3d4942';ctx.textAlign='center';ctx.font='bold 36px serif';ctx.fillText(title,256,65,480);ctx.font='21px sans-serif';ctx.fillText(sub,256,120,480);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;const m=new THREE.Mesh(new THREE.PlaneGeometry(width,.44),new THREE.MeshBasicMaterial({map:t}));m.position.set(...pos);room.add(m);}
+ function board(title,sub,pos,width=1.5){const c=document.createElement('canvas');c.width=512;c.height=160;const ctx=c.getContext('2d');ctx.fillStyle='#e6d7b7';ctx.fillRect(0,0,512,160);ctx.fillStyle='#3d4942';ctx.textAlign='center';ctx.font='bold 36px serif';ctx.fillText(title,256,65,480);ctx.font='21px sans-serif';ctx.fillText(sub,256,120,480);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;
+  // A painted plate with a back (sign-plate.js): the bookshop's hangs over the aisle and is seen from behind.
+  const m=signPlate(new THREE.MeshBasicMaterial({map:t}),width,.44,{name:'Sign: '+title});m.position.set(...pos);room.add(m);}
  function bench(name,x,z,width,depth=.48,top=.9){box(name,[width,.10,depth],[x,top-.05,z],wood,true);for(const dx of [-width/2+.08,width/2-.08])box(name+' leg',[.07,top-.10,depth-.10],[x+dx,(top-.10)/2,z],dark);}
  function chair(x,z,yaw=0){const g=new THREE.Group();g.position.set(x,0,z);g.rotation.y=yaw;room.add(g);const part=(size,pos)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),wood);m.position.set(...pos);g.add(m);};part([.43,.08,.43],[0,FURNITURE_HEIGHTS.seat-.04,0]);part([.43,.45,.06],[0,FURNITURE_HEIGHTS.seat+.22,.19]);for(const dx of [-.16,.16])for(const dz of [-.16,.16])part([.045,FURNITURE_HEIGHTS.seat-.08,.045],[dx,(FURNITURE_HEIGHTS.seat-.08)/2,dz]);collider(x,z,.48,.48,.96);return g;}
  box(site.industrialWorkshop?'Workshop concrete floor':'Fitted timber floor',[w+.16,.12,d+.16],[0,-.06,0],floor);
