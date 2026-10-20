@@ -1,5 +1,9 @@
 # Johansson Studio and Claude (the `johansson-studio` tools)
 
+**New: static GLB preparation and snapping.** `model_inspect`, `model_prepare` and `model_snap` share the UI's
+**Make model → Import GLB** workshop. See [MODEL-WORKSHOP.md](MODEL-WORKSHOP.md) for setup, examples, surface checks,
+supported inputs and the next World-editor batches. A prepared GLB is a copy, not a published town update.
+
 Claude can look at the town's characters, change how they look, and add Studio characters of its own. It can also open
 Sakura Shōten's products, change their labels, words, prices, purpose and shelf, add flavours and new lines, and retire a
 line. It does this through the `johansson-studio` tools, which use the same data and drawing code as Johansson Studio on

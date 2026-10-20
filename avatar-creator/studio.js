@@ -7,7 +7,7 @@ import {normalizeRecipe,decodeRecipe} from '../johansson-town/src/avatars/recipe
 import {createSceneWorkspace} from './scene.js?v=20261016-1';
 import {createWorldPanel} from './world-panel.js?v=20261011-1';
 import {createHomeWorkspace} from './home.js?v=20261011-1';
-import {createModelWorkspace} from './model.js?v=20261014-1';
+import {createModelWorkspace} from './model.js?v=20261020-workshop';
 import {loadHatModels} from '../johansson-town/src/catalog/hat-models.js';
 
 // The hats that are models in World's asset catalogue (Johansson's trucker cap, sold at Sakura Shōten) are in hand before anyone
