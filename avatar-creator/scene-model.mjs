@@ -21,6 +21,7 @@ export function normalizeScene(raw,normalizeRecipe=r=>structuredClone(r)){
  out.format=['landscape','square','portrait'].includes(raw.format)?raw.format:out.format;
  out.style=['photo','meme','comic'].includes(raw.style)?raw.style:out.style;
  out.camera={orbit:clamp(raw.camera?.orbit,-180,180,0),elevation:clamp(raw.camera?.elevation,-25,40,0),zoom:clamp(raw.camera?.zoom,.55,1.8,1)};
+ out.time=clamp(raw.time,0,60,0);if(raw.backdrop==='paper')out.backdrop='paper';
  out.top=text(raw.top);out.bottom=text(raw.bottom);
  if([raw.camera?.position,raw.camera?.target].every(v=>Array.isArray(v)&&v.length===3&&v.every(n=>Number.isFinite(n)&&Math.abs(n)<=30))){out.camera.position=[...raw.camera.position];out.camera.target=[...raw.camera.target];out.camera.fov=clamp(raw.camera.fov,25,75,43);}
  if(raw.effect==='dash')out.effect='dash';
@@ -31,7 +32,7 @@ export function normalizeScene(raw,normalizeRecipe=r=>structuredClone(r)){
   y:clamp(a.y,0,1.5,0),liftedBy:typeof a.liftedBy==='string'?a.liftedBy:'',
   x:raw.version===2?clamp(a.x,-SNAP.bounds,SNAP.bounds,0):i*.65,z:raw.version===2?clamp(a.z,-SNAP.bounds,SNAP.bounds,0):0,size:raw.version===2?clamp(a.size,.6,1.4,1):1,seat:raw.version===2?text(a.seat):'',
   turn:clamp(a.turn,-180,180,0),pose:KNOWN_POSES.has(a.pose)?a.pose:'Idle',
-  expression:KNOWN_EXPRESSIONS.has(a.expression)?a.expression:'smile',speech:text(a.speech),...a.take?{take:safeTake(a.take),takeLoop:a.takeLoop===true}:{}
+  expression:KNOWN_EXPRESSIONS.has(a.expression)?a.expression:'smile',speech:text(a.speech),speechStyle:a.speechStyle==='shout'?'shout':'bubble',...a.take?{take:safeTake(a.take),takeLoop:a.takeLoop===true}:{}
  }));
  const source=(Array.isArray(raw.actors)?raw.actors:[]).filter(a=>a&&a.recipe&&typeof a.recipe==='object'&&!Array.isArray(a.recipe)).slice(0,MAX_ACTORS);
  const ids=new Map(source.map((a,i)=>[a.id,'actor-'+i])),used=new Set();

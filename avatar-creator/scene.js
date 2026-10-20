@@ -1,3 +1,4 @@
+import {drawShout} from './scene-lettering.js';
 import {CLASSROOM_VIEW} from './classroom-stage.js';
 import {classroomComic} from './classroom-comic.mjs';
 import {applySceneContacts} from './scene-contact.js';
@@ -16,8 +17,8 @@ import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js
 import {normalizeRecipe} from '../johansson-town/src/avatars/recipe.js';
 import {drawCaptions,comicLayout,FORMATS} from '../johansson-town/src/photo/layout.js';
 import {buildSceneWorld} from './scene-world.js?v=20261011-2';
-import {poseSceneAvatar,placeSceneAvatar} from './scene-avatar.js?v=20261011-1';
-import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,emptyScene,normalizeScene,addCharacter,removeCharacter,restoreCharacter,panelOrder,text,placementOf,applyPlacement,samePlacement} from './scene-model.mjs?v=20261011-2';
+import {poseSceneAvatar,placeSceneAvatar,movingPose} from './scene-avatar.js?v=20261020-motion';
+import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,emptyScene,normalizeScene,addCharacter,removeCharacter,restoreCharacter,panelOrder,text,placementOf,applyPlacement,samePlacement} from './scene-model.mjs?v=20261020-motion';
 import {pickMoment,applyMoment,aim} from './scene-moments.mjs?v=20261011-2';
 import {POSE_GROUPS,EXPRESSION_GROUPS,seatedPose} from './scene-catalogue.mjs';
 import {turnToward,touchAngle,twistTurn,nudgeStep,placeToolbar,pickBox,nearestSeat} from './scene-controls.mjs?v=20261011-2';
@@ -40,7 +41,7 @@ function drawDash(ctx,w,h){ctx.save();ctx.strokeStyle='#332b2a';ctx.lineWidth=2;
 export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  let state=emptyScene();try{state=normalizeScene(JSON.parse(localStorage.getItem(SCENE_KEY)),normalizeRecipe);}catch{}
  let selected=state.actors[0]?.id??null,step='location',mode='scene',generation=0,pending=Promise.resolve(),valid=false,renderer;
- let liveActor=null,liveFrame=null,scenePlaying=false,sceneTime=0,playStart=0,playFrame=0,lastActDraw=0;
+ let liveActor=null,liveFrame=null,scenePlaying=false,sceneTime=state.time||0,playStart=0,playFrame=0,lastActDraw=0;
  const panels=[],avatars=new Map(),portraits=new Map();
  let preparedFilm=null,exportingStaging=false;
  let lastMoment='',world=null,worldId='',views=null,townData=null,capturing=false,queue=Promise.resolve(),boxes=[],layoutStyle='grid',overlayStep='',editingPanel=null;
@@ -69,7 +70,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  <label>Left / right<input data-field="x" type="range" min="-12" max="12" step=".01"></label><label>Near / far<input data-field="z" type="range" min="-12" max="12" step=".01"></label>
  <label>Height above floor<input data-field="y" type="range" min="0" max="1.5" step=".01"></label><label>Lifted by<select data-field="liftedBy" aria-label="Lifted by"><option value="">Nobody</option></select></label><label>Use furniture<select data-field="seat" aria-label="Use furniture"><option value="">Stand on ground</option></select></label><button data-action="edit-character">Edit appearance</button><button data-action="duplicate">Duplicate character</button><button data-action="remove">Remove character</button></div></section>
  <section data-pane="text" hidden><h2>Add text</h2><label>Picture style<select data-field="style" aria-label="Picture style"><option value="photo">Photograph with speech bubbles</option><option value="meme">Meme with top and bottom text</option><option value="comic">Comic panel with caption</option></select></label>
- <label>Selected character’s speech<input data-field="speech" maxlength="120" placeholder="What are they saying?" aria-label="Selected character’s speech"></label>
+ <label>Speech lettering<select data-field="speechStyle"><option value="bubble">Speech bubble</option><option value="shout">Large dramatic shout</option></select></label><label>Backdrop<select data-field="backdrop"><option value="">Full location</option><option value="paper">Plain comic paper</option></select></label><label>Selected character’s speech<input data-field="speech" maxlength="120" placeholder="What are they saying?" aria-label="Selected character’s speech"></label>
  <label>Top text (meme)<input data-field="top" maxlength="120" placeholder="WHEN THE FERRY IS LATE" aria-label="Top text (meme)"></label><label>Bottom text / caption<input data-field="bottom" maxlength="120" placeholder="Write your punchline…" aria-label="Bottom text / caption"></label></section>
  <section data-pane="export" hidden><h2>Export your picture</h2><p class="scene-label">Picture format</p>${choice('format','Picture format',[['landscape','Landscape'],['square','Square'],['portrait','Portrait']])}
  <div class="scene-save-row"><a class="scene-save scene-primary" data-save="scene">Save picture</a><button data-action="preview">Preview</button></div><p class="scene-save-note"></p><p class="scene-export-status" role="status" aria-live="polite" data-status="scene"></p>
@@ -98,9 +99,9 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  function syncClock(){transport.querySelector('[data-scene-clock]').textContent=sceneTime.toFixed(1)+' s';transport.querySelector('[data-scene-time]').value=String(sceneTime);transport.querySelector('[data-play-cast]').textContent=scenePlaying?'Pause cast':'Play cast';}
  function stopCast(){scenePlaying=false;cancelAnimationFrame(playFrame);syncClock();sceneFile.schedule();}
  function playCast(now){if(!scenePlaying||root.hidden)return;sceneTime=Math.min(60,(now-playStart)/1000);syncClock();if(now-lastActDraw>=1000/15){lastActDraw=now;pending=draw();}if(sceneTime>=60){stopCast();return;}playFrame=requestAnimationFrame(playCast);}
- transport.querySelector('[data-play-cast]').onclick=()=>{if(scenePlaying){stopCast();pending=draw();return;}acting.session.hold();liveFrame=null;liveActor=null;scenePlaying=true;if(sceneTime>=60)sceneTime=0;playStart=performance.now()-sceneTime*1000;playFrame=requestAnimationFrame(playCast);};
- transport.querySelector('[data-rewind-cast]').onclick=()=>{stopCast();sceneTime=0;syncClock();pending=draw();};
- transport.querySelector('[data-scene-time]').oninput=e=>{const value=Number(e.target.value);stopCast();sceneTime=value;syncClock();pending=draw();};
+ transport.querySelector('[data-play-cast]').onclick=()=>{if(scenePlaying){stopCast();state.time=sceneTime;pending=draw();return;}acting.session.hold();liveFrame=null;liveActor=null;scenePlaying=true;if(sceneTime>=60)sceneTime=0;playStart=performance.now()-sceneTime*1000;playFrame=requestAnimationFrame(playCast);};
+ transport.querySelector('[data-rewind-cast]').onclick=()=>{stopCast();sceneTime=0;state.time=0;syncClock();pending=draw();};
+ transport.querySelector('[data-scene-time]').oninput=e=>{const value=Number(e.target.value);stopCast();sceneTime=value;state.time=value;syncClock();pending=draw();};
  transport.querySelector('[data-clear-take]').onclick=()=>{const actor=current();if(actor){delete actor.take;delete actor.takeLoop;changed();announce('Take removed from '+actor.name+'.');}};
 
  // Every resident of World as World draws them (with any look published from Studio; World's Thuan among them), the
@@ -183,11 +184,11 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  function syncProps(){const box=$('[data-classroom-props]');box.hidden=state.location!=='classroom';if(box.hidden||!world?.furniture)return;const id=$('[data-prop-id]').value,o=world.furniture[id];if(!o)return;$('[data-prop-visible]').checked=o.visible;box.querySelectorAll('[data-prop-axis]').forEach(input=>{const i=Number(input.dataset.propAxis),v=i<3?o.position.toArray()[i]:o.rotation.toArray()[i-3]*180/Math.PI;if(document.activeElement!==input)input.value=Math.round(v*100)/100;});}
  $('[data-prop-id]').onchange=syncProps;
  for(const input of root.querySelectorAll('[data-prop-axis],[data-prop-visible]'))input.onchange=()=>{if(!world?.furniture)return;const id=$('[data-prop-id]').value,o=world.furniture[id],before=structuredClone(state.furniture||{});state.furniture??={};const s=state.furniture[id]??={position:o.position.toArray(),rotation:o.rotation.toArray().slice(0,3),visible:o.visible};if(input.dataset.propAxis!==undefined){const i=Number(input.dataset.propAxis),v=Number(input.value);if(!Number.isFinite(v))return;(i<3?s.position:s.rotation)[i%3]=i<3?Math.max(-4,Math.min(4,v)):Math.max(-180,Math.min(180,v))*Math.PI/180;}else s.visible=input.checked;changed();offerUndo('Furniture moved.',()=>{state.furniture=before;changed();sync();});};
- function sync(){syncProps();
+ function sync(){syncProps();syncClock();
   for(const c of root.querySelectorAll('[data-camera]'))c.value=state.camera[c.dataset.camera];
   const a=current();const lift=field('liftedBy');lift.replaceChildren(new Option('Nobody',''),...state.actors.filter(b=>b.id!==a?.id&&!b.liftedBy).map(b=>new Option(b.name,b.id)));
-  for(const n of ['turn','size','x','z','y','speech','seat','liftedBy']){field(n).disabled=!a;field(n).value=a?.[n]??'';}
-  for(const n of ['style','top','bottom'])field(n).value=state[n];
+  for(const n of ['turn','size','x','z','y','speech','speechStyle','seat','liftedBy']){field(n).disabled=!a;field(n).value=a?.[n]??'';}
+  for(const n of ['style','top','bottom','backdrop'])field(n).value=state[n]||'';
   for(const o of field('seat').options){if(!o.value)continue;const user=state.actors.find(x=>x.id!==a?.id&&x.seat===o.value);o.disabled=!!user;o.textContent=o.dataset.label+(user?' ('+user.name+')':'');}
   snapSwitch.checked=snapOn;
   for(const [name,value] of [['format',state.format],['layout',layoutStyle]])for(const b of root.querySelectorAll(`[data-choice="${name}"] button`))b.setAttribute('aria-pressed',String(b.dataset.value===value));
@@ -227,7 +228,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
   toolbar.style.left=spot.x+'px';toolbar.style.top=spot.y+'px';toolbar.dataset.where=spot.where;
  }
  for(const control of root.querySelectorAll('[data-camera]'))control.addEventListener('input',()=>{state.camera[control.dataset.camera]=Number(control.value);changed();});
- for(const n of ['turn','size','x','z','y','speech','seat','liftedBy'])field(n).addEventListener('input',()=>{const a=current();if(!a)return;
+ for(const n of ['turn','size','x','z','y','speech','speechStyle','seat','liftedBy'])field(n).addEventListener('input',()=>{const a=current();if(!a)return;
   if(['turn','size','x','z','y'].includes(n)&&sliding?.id!==a.id)sliding={id:a.id,before:placementOf(a)};
   if(n==='x'||n==='z'){if(world&&worldId===state.location){const x=world.origin[0]+(n==='x'?Number(field(n).value):a.x),z=world.origin[2]+(n==='z'?Number(field(n).value):a.z);if(!world.move(a,x,z,state.actors))announce('Movement stopped by furniture, another character or the ground boundary.');}}
   else if(n==='seat'){const id=field(n).value;if(state.actors.some(other=>other.id!==a.id&&other.seat===id&&id)){announce('That seat is occupied.');sync();return;}const before=placementOf(a);
@@ -266,15 +267,21 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
    finally{avatar.root.removeFromParent();avatar.body?.skeleton?.dispose();avatar.dispose();}}
   renderer.setScissorTest(false);return true;
  }
- function draw(){const time=sceneTime,capturedActor=liveActor,capturedFrame=liveFrame;const token=++generation;draws++;valid=false;canvas.setAttribute('aria-busy','true');const snapshot=structuredClone(state);
+ function draw(){const time=sceneTime,capturedActor=liveActor,capturedFrame=liveFrame;const token=++generation;draws++;valid=false;canvas.setAttribute('aria-busy','true');state.time=time;const snapshot=structuredClone(state);
   queue=queue.catch(()=>{}).then(async()=>{
    if(token!==generation)return;
+   const restore=[];
    try{
     const w=1200,h=Math.round(w/FORMATS[snapshot.format]),environment=await loadWorld(snapshot.location);if(token!==generation)return;
     renderer??=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setPixelRatio(1);renderer.setSize(w,h,false);renderer.setViewport(0,0,w,h);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
     for(const [id,entry] of avatars)if(!snapshot.actors.some(a=>a.id===id)){clearAvatar(entry);avatars.delete(id);}
     for(const entry of avatars.values())entry.avatar.root.removeFromParent();
     environment.stage?.(snapshot.furniture);
+    if(snapshot.backdrop==='paper'){
+     const keep=new Set();for(const o of Object.values(environment.furniture||{}))o.traverse(m=>keep.add(m));
+     for(const m of environment.meshes)if(m.visible&&!keep.has(m)){m.visible=false;restore.push(()=>m.visible=true);}
+     const bg=environment.scene.background;environment.scene.background=new THREE.Color('#faf7ee');restore.push(()=>environment.scene.background=bg);
+    }
     const camera=environment.camera,preset=views[snapshot.location].wide.camera;
     camera.position.fromArray(preset.position);camera.quaternion.fromArray(preset.quaternion);camera.fov=snapshot.camera.fov||55;if(snapshot.camera.position){camera.position.fromArray(snapshot.camera.position);camera.lookAt(...snapshot.camera.target);}camera.aspect=w/h;camera.updateProjectionMatrix();
     const target=new THREE.Vector3(environment.origin[0],environment.origin[1]+.9,environment.origin[2]);if(snapshot.camera.target)target.fromArray(snapshot.camera.target);
@@ -294,7 +301,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
      const performance=capturedActor===actor.id&&capturedFrame?capturedFrame:actor.take?sampleTake(actor.take,time,{loop:actor.takeLoop}):null;
      const actedPose=performance?.pose==='idle'?'Idle':performance?.pose;
      const poseName=actedPose&&KNOWN_POSES.has(actedPose)?actedPose:actor.pose;
-     if(entry.poseName!==poseName){poseSceneAvatar(avatar,{...actor,pose:poseName,seatHeight:position.seat?(position.seat.surfaceY-position.y)/actor.size:0});entry.poseName=poseName;entry.basePose=Object.values(avatar.bones).map(b=>[b,b.quaternion.clone()]);entry.rootY=avatar.root.position.y;entry.rootTurn=avatar.root.rotation.y;}
+     if(entry.poseName!==poseName||movingPose(poseName)){poseSceneAvatar(avatar,{...actor,pose:poseName,time,seatHeight:position.seat?(position.seat.surfaceY-position.y)/actor.size:0});entry.poseName=poseName;entry.basePose=Object.values(avatar.bones).map(b=>[b,b.quaternion.clone()]);entry.rootY=avatar.root.position.y;entry.rootTurn=avatar.root.rotation.y;}
      else{for(const [bone,q] of entry.basePose)bone.quaternion.copy(q);avatar.root.position.y=entry.rootY;avatar.root.rotation.y=entry.rootTurn;}
      avatar.paintFace({expression:actor.expression,blink:0,talk:0,look:actor.pose==='LiftedBack'&&actor.expression==='embarrassed'?[0,.8]:[0,0],blinkLeft:undefined,blinkRight:undefined,actingBrow:0,actingSmile:0});
      if(performance)applyActorFrame(avatar,{...performance,expression:KNOWN_EXPRESSIONS.has(performance.expression)?performance.expression:actor.expression});
@@ -305,12 +312,12 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
     for(const {actor,avatar,position} of records){
      const box=new THREE.Box3().setFromObject(avatar.root),head=headCentre(avatar),projected=head.clone().project(camera);
      const visible=projected.z<1&&projected.z>-1&&!solid(camera.position,head);
-     const top=new THREE.Vector3(head.x,box.max.y,head.z).project(camera);bubbles.push({text:actor.speech,x:(projected.x+1)/2,y:(1-top.y)/2-(w/h)*.10-.025,visible});
+     const top=new THREE.Vector3(head.x,box.max.y,head.z).project(camera);bubbles.push({shout:actor.speechStyle==='shout',text:actor.speech,x:(projected.x+1)/2,y:(1-top.y)/2-(w/h)*.10-.025,visible});
      placed.push({id:actor.id,box,face:headCentre(avatar),radius:avatar.measure.Rh*Math.max(avatar.measure.headSX,avatar.measure.headSY)*actor.size,visible,feet:new THREE.Vector3(position.x,position.y,position.z)});
      const live=state.actors.find(a=>a.id===actor.id);if(live){live.x=actor.x;live.z=actor.z;live.seat=actor.seat;}
     }
     environment.sky?.update(camera,1,false,false);renderer.render(environment.scene,camera);
-    canvas.width=w;canvas.height=h;ctx.drawImage(renderer.domElement,0,0);if(snapshot.effect==='dash')drawDash(ctx,w,h);const overlay=document.createElement('canvas');overlay.width=w;overlay.height=h;drawCaptions(overlay.getContext('2d'),w,h,{style:snapshot.style,top:snapshot.top,bottom:snapshot.bottom,bubbles});ctx.drawImage(overlay,0,0);
+    canvas.width=w;canvas.height=h;ctx.drawImage(renderer.domElement,0,0);if(snapshot.effect==='dash')drawDash(ctx,w,h);const overlay=document.createElement('canvas');overlay.width=w;overlay.height=h;drawCaptions(overlay.getContext('2d'),w,h,{style:snapshot.style,top:snapshot.top,bottom:snapshot.bottom,bubbles:bubbles.filter(b=>!b.shout)});ctx.drawImage(overlay,0,0);for(const b of bubbles.filter(b=>b.shout))drawShout(ctx,w,h,b.text);
     // Where each character is on the picture (fractions of it), for picking, the outline and the toolbar.
     const right=new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld,0);
     boxes=placed.map(p=>{const corners=[];for(const x of [p.box.min.x,p.box.max.x])for(const y of [p.box.min.y,p.box.max.y])for(const z of [p.box.min.z,p.box.max.z])corners.push(new THREE.Vector3(x,y,z).project(camera));
@@ -318,10 +325,11 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
      return {id:p.id,visible:p.visible&&!behind,left:Math.max(0,Math.min(...xs)),right:Math.min(1,Math.max(...xs)),top:Math.max(0,Math.min(...ys)),bottom:Math.min(1,Math.max(...ys)),face:{x:(f.x+1)/2,y:(1-f.y)/2,r:Math.abs(edge.x-f.x)/2},feet:{x:(feet.x+1)/2,y:(1-feet.y)/2}};}).filter(b=>b.right>b.left&&b.bottom>b.top);
     drawPortraits(h);renderer.setViewport(0,0,w,h);
     canvas.dataset.framing=JSON.stringify(placed.map(p=>{const f=p.face.clone().project(camera);return {id:p.id,head:[f.x,f.y,f.z],visible:p.visible};}));canvas.dataset.contacts=JSON.stringify(contacts);valid=true;canvas.setAttribute('aria-busy','false');sync();if(!scenePlaying&&!capturedFrame&&!exportingStaging)save();if(token===generation&&!scenePlaying&&!exportingStaging)sceneFile.schedule();
-   }catch(e){canvas.setAttribute('aria-busy','false');announce('The 3D location could not load. Select the location again to retry.');console.error('Johansson Studio 3D scene',e);}
+   }catch(e){canvas.setAttribute('aria-busy','false');announce('The 3D location could not load. Select the location again to retry.');console.error('Johansson Studio 3D scene',e);}finally{for(const reset of restore)reset();}
   });return queue;
  }
 
+ field('backdrop').onchange=()=>{state.backdrop=field('backdrop').value;changed();};
  // ---- Direct control in the picture: tap selects, drag lifts a character and drops them where they snap into place
  // (scene-snap.mjs: a free seat, beside someone, at a counter; else exactly there), two fingers turn. ----
  const pointers=new Map();
@@ -523,7 +531,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  }
  function renderPanels(){const list=$('.scene-panels');list.replaceChildren();$('[data-panel-count]').textContent=panels.length;
   panels.forEach((p,i)=>{const figure=document.createElement('figure'),img=document.createElement('img');img.src=p.url;img.alt='Comic panel '+(i+1);figure.append(img);const row=document.createElement('div');
-   for(const [label,action] of [...(p.scene?[['Edit scene',()=>{state=normalizeScene(p.scene,normalizeRecipe);editingPanel=i;selected=state.actors[0]?.id??null;forget();onMode('scene');setStep('pose');changed();sync();announce('Editing panel '+(i+1)+'. Add panel updates this panel.');}]]:[]),['Move earlier',()=>{panelOrder(panels,i,-1);renderPanels();}],['Move later',()=>{panelOrder(panels,i,1);renderPanels();}],['Remove',()=>removePanel(i)]]){const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=action;b.disabled=(label==='Move earlier'&&i===0)||(label==='Move later'&&i===panels.length-1);row.append(b);}
+   for(const [label,action] of [...(p.scene?[['Edit scene',()=>{state=normalizeScene(p.scene,normalizeRecipe);sceneTime=state.time||0;editingPanel=i;selected=state.actors[0]?.id??null;forget();onMode('scene');setStep('pose');changed();sync();announce('Editing panel '+(i+1)+'. Add panel updates this panel.');}]]:[]),['Move earlier',()=>{panelOrder(panels,i,-1);renderPanels();}],['Move later',()=>{panelOrder(panels,i,1);renderPanels();}],['Remove',()=>removePanel(i)]]){const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=action;b.disabled=(label==='Move earlier'&&i===0)||(label==='Move later'&&i===panels.length-1);row.append(b);}
    const link=document.createElement('a');link.className='scene-save';link.textContent='Save PNG';link.setAttribute('aria-label','Save panel '+(i+1)+' as PNG');
    const file=new File([p.file],'johansson-studio-panel-'+(i+1)+'.png',{type:'image/png'});bindSaveLink(link,{ready:true,file,url:p.url,now:()=>({file,url:p.url})},{say:say('comic'),words:saved('Panel')});
    row.append(link);figure.append(row);list.append(figure);});
@@ -531,9 +539,9 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  function removePanel(i){const [panel]=panels.splice(i,1);renderPanels();offerUndo('Panel '+(i+1)+' removed.',()=>{if(panels.length>=MAX_PANELS)return;panels.splice(Math.min(i,panels.length),0,panel);renderPanels();});}
  const projectInput=$('[data-project-input]');projectInput.onchange=async()=>{try{const file=projectInput.files[0];if(!file)return;if(file.size>34000000)throw Error('Project too large');const project=JSON.parse(await file.text());if(project.format!=='johansson-studio-project'||project.version!==1||![1,2].includes(project.scene?.version))throw Error('Invalid project');const scene=normalizeScene(project.scene,normalizeRecipe),urls=(Array.isArray(project.panels)?project.panels:[]).slice(0,MAX_PANELS);if(urls.some(url=>typeof url!=='string'||!/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(url)||url.length>8000000))throw Error('Invalid panel');
   const loaded=await Promise.all(urls.map(async (dataURL,i)=>{const blob=dataURLToBlob(dataURL),url=URL.createObjectURL(blob);return {scene:project.panelScenes?.[i]?normalizeScene(project.panelScenes[i],normalizeRecipe):null,dataURL,url,file:new File([blob],'johansson-studio-panel.png',{type:'image/png'}),image:await loadImage(url)};}));
-  layoutStyle=project.layout==='strip'?'strip':'grid';editingPanel=null;state=scene;selected=state.actors[0]?.id??null;forget();for(const p of panels)URL.revokeObjectURL(p.url);panels.splice(0,panels.length,...loaded);changed();renderPanels();sync();announce('Project opened.');}catch(e){console.warn('Johansson Studio: open project',e);announce('Unable to open this project. Choose a Johansson Studio project JSON file.');}finally{projectInput.value='';}};
+  layoutStyle=project.layout==='strip'?'strip':'grid';editingPanel=null;state=scene;sceneTime=state.time||0;selected=state.actors[0]?.id??null;forget();for(const p of panels)URL.revokeObjectURL(p.url);panels.splice(0,panels.length,...loaded);changed();renderPanels();sync();announce('Project opened.');}catch(e){console.warn('Johansson Studio: open project',e);announce('Unable to open this project. Choose a Johansson Studio project JSON file.');}finally{projectInput.value='';}};
  const actions={
-  'classroom-example':async()=>{if(panels.length){announce('Open a new project or remove the current panels before building the example.');return;}for(const scene of classroomComic(recipeFor)){state=normalizeScene(scene,normalizeRecipe);selected=state.actors[0]?.id??null;pending=draw();await capture();}onMode('comic');renderPanels();},
+  'classroom-example':async()=>{if(panels.length){announce('Open a new project or remove the current panels before building the example.');return;}for(const scene of classroomComic(recipeFor)){state=normalizeScene(scene,normalizeRecipe);sceneTime=state.time||0;selected=state.actors[0]?.id??null;pending=draw();await capture();}onMode('comic');renderPanels();},
   'shuffle-moment':shuffleMoment,
   'reset-camera':()=>{state.camera={orbit:0,elevation:0,zoom:1};for(const c of root.querySelectorAll('[data-camera]'))c.value=state.camera[c.dataset.camera];changed();},
   'add-current':()=>add(getCharacter()),'add-resident':()=>{const n=resident.value,id=n.startsWith('studio:')?n.slice(7):null;
@@ -554,6 +562,6 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  if(matchMedia('(max-width: 800px)').matches)$('.scene-camera-box').open=false;
  new ResizeObserver(()=>syncSelection()).observe(frame);
  setStep('location');renderPanels();
- return {root,captureStaging,async renderComic(scenes,{layout='strip'}={}){if(!Array.isArray(scenes)||!scenes.length||scenes.length>MAX_PANELS)throw Error('Give one to four scenes.');for(const p of panels)URL.revokeObjectURL(p.url);panels.length=0;editingPanel=null;layoutStyle=layout==='grid'?'grid':'strip';for(const scene of scenes){state=normalizeScene(scene,normalizeRecipe);pending=draw();if(!await ready())throw Error('Scene failed to render.');await capture();}return {image:composeComic().toDataURL('image/png'),project:{format:'johansson-studio-project',version:1,layout:layoutStyle,scene:structuredClone(state),panels:panels.map(p=>p.dataURL),panelScenes:panels.map(p=>p.scene)},contacts:JSON.parse(canvas.dataset.contacts||'[]')};},async renderScene(scene){state=normalizeScene(scene,normalizeRecipe);selected=state.actors[0]?.id??null;pending=draw();if(!await ready())throw Error('Scene failed to render.');return {image:canvas.toDataURL('image/png'),scene:structuredClone(state),contacts:JSON.parse(canvas.dataset.contacts||'[]'),framing:JSON.parse(canvas.dataset.framing||'[]')};},loadScene(scene){state=normalizeScene(scene,normalizeRecipe);selected=state.actors[0]?.id??null;forget();changed();sync();},setLocation(id){if(!LOCATIONS.some(([key])=>key===id))throw Error('Unknown Studio location.');state.location=id;changed();sync();},show(value){mode=value;root.dataset.mode=value;root.hidden=false;$('.scene-comic').hidden=value!=='comic';$('.scene-steps').hidden=value==='comic';$('.scene-controls').hidden=value==='comic';$('.scene-heading h1').textContent=value==='comic'?'Make a comic':'Build a scene';$('.scene-heading p').textContent=value==='comic'?'Add the scene you built as a panel, arrange up to four panels, then save your comic.':'Choose a place, add characters, then pose them and write your dialogue.';pending=draw();sync();},hide(){stopCast();acting.session.hold();root.hidden=true;hideToast();preview.close();},useCharacter(recipe,id){const a=state.actors.find(a=>a.id===id);if(a){a.recipe=normalizeRecipe(recipe);a.name=text(recipe.name)||a.name;selected=a.id;changed();sync();}else add(recipe);setStep('pose');},
+ return {root,captureStaging,async renderComic(scenes,{layout='strip'}={}){if(!Array.isArray(scenes)||!scenes.length||scenes.length>MAX_PANELS)throw Error('Give one to four scenes.');for(const p of panels)URL.revokeObjectURL(p.url);panels.length=0;editingPanel=null;layoutStyle=layout==='grid'?'grid':'strip';for(const scene of scenes){state=normalizeScene(scene,normalizeRecipe);sceneTime=state.time||0;pending=draw();if(!await ready())throw Error('Scene failed to render.');await capture();}return {image:composeComic().toDataURL('image/png'),project:{format:'johansson-studio-project',version:1,layout:layoutStyle,scene:structuredClone(state),panels:panels.map(p=>p.dataURL),panelScenes:panels.map(p=>p.scene)},contacts:JSON.parse(canvas.dataset.contacts||'[]')};},async renderScene(scene){state=normalizeScene(scene,normalizeRecipe);sceneTime=state.time||0;selected=state.actors[0]?.id??null;pending=draw();if(!await ready())throw Error('Scene failed to render.');return {image:canvas.toDataURL('image/png'),scene:structuredClone(state),contacts:JSON.parse(canvas.dataset.contacts||'[]'),framing:JSON.parse(canvas.dataset.framing||'[]')};},loadScene(scene){state=normalizeScene(scene,normalizeRecipe);sceneTime=state.time||0;selected=state.actors[0]?.id??null;forget();changed();sync();},setLocation(id){if(!LOCATIONS.some(([key])=>key===id))throw Error('Unknown Studio location.');state.location=id;changed();sync();},show(value){mode=value;root.dataset.mode=value;root.hidden=false;$('.scene-comic').hidden=value!=='comic';$('.scene-steps').hidden=value==='comic';$('.scene-controls').hidden=value==='comic';$('.scene-heading h1').textContent=value==='comic'?'Make a comic':'Build a scene';$('.scene-heading p').textContent=value==='comic'?'Add the scene you built as a panel, arrange up to four panels, then save your comic.':'Choose a place, add characters, then pose them and write your dialogue.';pending=draw();sync();},hide(){stopCast();acting.session.hold();root.hidden=true;hideToast();preview.close();},useCharacter(recipe,id){const a=state.actors.find(a=>a.id===id);if(a){a.recipe=normalizeRecipe(recipe);a.name=text(recipe.name)||a.name;selected=a.id;changed();sync();}else add(recipe);setStep('pose');},
   dispose(){stopCast();acting.dispose();generation++;document.removeEventListener('keydown',onKey);hideToast();sceneFile.dispose();comicFile.dispose();for(const p of panels)URL.revokeObjectURL(p.url);preview.element.remove();for(const entry of avatars.values())clearAvatar(entry);world?.dispose();renderer?.dispose();renderer?.forceContextLoss();root.remove();}};
 }
