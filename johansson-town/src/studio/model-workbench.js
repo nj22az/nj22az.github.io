@@ -40,8 +40,10 @@ export async function loadModel(bytes,{name='Imported model',scale=1,rotation=[0
  return root;
 }
 export function disposeModel(root){
+ const native=!!root?.studioDispose;
  const geometries=new Set(),materials=new Set(),textures=new Set();
- root?.traverse(o=>{if(o.geometry)geometries.add(o.geometry);for(const m of [].concat(o.material||[])){materials.add(m);for(const x of Object.values(m))if(x?.isTexture)textures.add(x);}});
+ root?.traverse(o=>{if(native){for(let a=o;a;a=a.parent)if(a.userData.sharedAsset)return;}if(o.geometry)geometries.add(o.geometry);for(const m of [].concat(o.material||[])){materials.add(m);for(const x of Object.values(m))if(x?.isTexture)textures.add(x);}});
+ root?.studioDispose?.();
  for(const x of [...textures,...materials,...geometries])x.dispose();
  root?.removeFromParent();
 }

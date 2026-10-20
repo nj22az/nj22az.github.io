@@ -1,3 +1,4 @@
+import {WORKSHOP_VIEW} from '../johansson-town/src/scene/workshop-view.js';
 import {filmStaging} from './film-staging.mjs';
 import {KNOWN_EXPRESSIONS,KNOWN_POSES} from './scene-catalogue.mjs';
 import {createActingPanel} from './acting/panel.js?v=20261016-1';
@@ -12,9 +13,9 @@ import {ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/
 import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js';
 import {normalizeRecipe} from '../johansson-town/src/avatars/recipe.js';
 import {drawCaptions,comicLayout,FORMATS} from '../johansson-town/src/photo/layout.js';
-import {buildSceneWorld} from './scene-world.js?v=20261011-2';
+import {buildSceneWorld} from './scene-world.js?v=20261020-workshop';
 import {poseSceneAvatar,placeSceneAvatar} from './scene-avatar.js?v=20261011-1';
-import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,emptyScene,normalizeScene,addCharacter,removeCharacter,restoreCharacter,panelOrder,text,placementOf,applyPlacement,samePlacement} from './scene-model.mjs?v=20261011-2';
+import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,emptyScene,normalizeScene,addCharacter,removeCharacter,restoreCharacter,panelOrder,text,placementOf,applyPlacement,samePlacement} from './scene-model.mjs?v=20261020-workshop';
 import {pickMoment,applyMoment,aim} from './scene-moments.mjs?v=20261011-2';
 import {POSE_GROUPS,EXPRESSION_GROUPS,seatedPose} from './scene-catalogue.mjs';
 import {turnToward,touchAngle,twistTurn,nudgeStep,placeToolbar,pickBox,nearestSeat} from './scene-controls.mjs?v=20261011-2';
@@ -234,7 +235,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  async function loadWorld(id){
   if(world&&worldId===id)return world;
   views??=await fetch(new URL('../johansson-town/assets/images/feed/views.json',import.meta.url)).then(r=>{if(!r.ok)throw Error('Locations unavailable');return r.json();});
-  const next=await buildSceneWorld(id,views,townData);townData=next.townData||townData;world?.dispose();world=next;worldId=id;renderer?.renderLists.dispose();
+  views['dock-workshop']=WORKSHOP_VIEW;const next=await buildSceneWorld(id,views,townData);townData=next.townData||townData;world?.dispose();world=next;worldId=id;renderer?.renderLists.dispose();
   field('seat').replaceChildren(new Option('Stand on ground',''),...world.seats.filter(s=>Math.hypot(s.position[0]-world.origin[0],s.position[2]-world.origin[2])<SNAP.reach).map(s=>{const o=new Option(s.label,s.id);o.dataset.label=s.label;return o;}));
   return world;
  }
@@ -264,7 +265,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
     for(const [id,entry] of avatars)if(!snapshot.actors.some(a=>a.id===id)){clearAvatar(entry);avatars.delete(id);}
     for(const entry of avatars.values())entry.avatar.root.removeFromParent();
     const camera=environment.camera,preset=views[snapshot.location].wide.camera;
-    camera.position.fromArray(preset.position);camera.quaternion.fromArray(preset.quaternion);camera.aspect=w/h;camera.updateProjectionMatrix();
+    camera.fov=snapshot.location==='dock-workshop'?65:55;camera.position.fromArray(preset.position);camera.quaternion.fromArray(preset.quaternion);camera.aspect=w/h;camera.updateProjectionMatrix();
     const target=new THREE.Vector3(environment.origin[0],environment.origin[1]+.9,environment.origin[2]);
     if(snapshot.camera.orbit||snapshot.camera.elevation||snapshot.camera.zoom!==1){const spherical=new THREE.Spherical().setFromVector3(camera.position.clone().sub(target));spherical.theta+=snapshot.camera.orbit*Math.PI/180;spherical.phi=THREE.MathUtils.clamp(spherical.phi-snapshot.camera.elevation*Math.PI/180,.25,Math.PI*.48);spherical.radius*=snapshot.camera.zoom;camera.position.copy(target).add(new THREE.Vector3().setFromSpherical(spherical));camera.lookAt(target);
      const direction=camera.position.clone().sub(target),length=direction.length(),ray=new THREE.Raycaster(target,direction.normalize(),.15,length),hit=ray.intersectObjects(environment.meshes,false).find(h=>h.object.visible&&h.object.material?.depthWrite!==false);if(hit)camera.position.copy(target).addScaledVector(direction,Math.max(.3,hit.distance-.15));

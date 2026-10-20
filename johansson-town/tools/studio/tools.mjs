@@ -1,3 +1,4 @@
+import {WORLD_ROOM_TOOLS} from './world-rooms.mjs';
 /**
  * Johansson Studio's tools: one table used by the MCP server (server.mjs) and the command line (cli.mjs), so the
  * same work gets done when the MCP connection is not there. Each tool has a JSON Schema input (zod's fromJSONSchema
@@ -413,7 +414,7 @@ export const TOOLS=[
  ...PRODUCT_TOOLS,
  ...ASSET_TOOLS,
  ...MODEL_TOOLS,
- ...ROOM_TOOLS,...WORLD_LIBRARY_TOOLS,...FILM_PIPELINE_TOOLS,
+ ...ROOM_TOOLS,...WORLD_ROOM_TOOLS,...WORLD_LIBRARY_TOOLS,...FILM_PIPELINE_TOOLS,
 ];
 export const TOOL_BY_NAME=Object.freeze(Object.fromEntries(TOOLS.map(t=>[t.name,t])));
 
@@ -447,7 +448,7 @@ async function brandReport(ctx){
 }
 
 /** Files an "update World" commits: Studio's data and modules, and what is rebuilt from them (guide portraits, runtime). */
-const PUBLISHED=/^johansson-town\/(data\/studio\/|src\/avatars\/looks-data\.js|src\/studio\/characters-data\.js|src\/commerce\/products-data\.js|assets\/graphics\/labels\/|guide\/|resident-guide\.js|runtime\/|index\.html|creator\/index\.html|sw\.js)/;
+const PUBLISHED=/^johansson-town\/(data\/studio\/|src\/avatars\/looks-data\.js|src\/studio\/characters-data\.js|src\/commerce\/products-data\.js|src\/world\/interiors\/workshop-publication\.js|assets\/graphics\/labels\/|guide\/|resident-guide\.js|runtime\/|index\.html|creator\/index\.html|sw\.js)/;
 
 /** The publish_check report: every item {check, ok, detail}, and whether all of them pass. */
 async function publishCheck(ctx,{tests,signal}){

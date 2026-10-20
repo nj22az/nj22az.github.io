@@ -3,7 +3,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {loadModel,exportModel,disposeModel,auditSurfaces} from './model-workbench.js';
 import {decodeGLB,validateRoom,editRoom,newRoom,encodeGLB} from './room-project.js';
 export async function buildRoom(project){
- validateRoom(project);const root=new THREE.Group(),templates=new Map();root.name=project.title;
+ validateRoom(project);if(project.world)return (await import('./workshop-room.js')).buildWorkshopDraft(project);const root=new THREE.Group(),templates=new Map();root.name=project.title;
  try{for(const o of project.objects){if(!o.visible)continue;
   if(!templates.has(o.asset))templates.set(o.asset,await loadModel(decodeGLB(project.assets[o.asset].glb),{name:project.assets[o.asset].name,ground:true}));
   // Duplicate instances share one parsed geometry/material set; a 24 MiB asset is not decoded 64 times.
@@ -13,7 +13,7 @@ export async function buildRoom(project){
  }root.updateMatrixWorld(true);return root;}catch(e){disposeModel(root);throw e;}
 }
 export async function exportRoom(project){const root=await buildRoom(project);try{return await exportModel(root);}finally{disposeModel(root);}}
-export async function checkRoom(project){const root=await buildRoom(project);try{const surfaces=auditSurfaces(root),support=auditSupport(root,{exempt:new Set(project.objects.filter(o=>o.support&&o.support!=='resting').map(o=>o.id))});return {...surfaces,complete:surfaces.complete&&support.complete,ok:surfaces.ok&&support.ok,support,objects:project.objects.length,scope:'Visible static objects in this room draft. This does not validate World doors, routes or runtime interactions.'};}finally{disposeModel(root);}}
+export async function checkRoom(project){if(project.world)return (await import('./workshop-room.js')).checkWorkshop(project);const root=await buildRoom(project);try{const surfaces=auditSurfaces(root),support=auditSupport(root,{exempt:new Set(project.objects.filter(o=>o.support&&o.support!=='resting').map(o=>o.id))});return {...surfaces,complete:surfaces.complete&&support.complete,ok:surfaces.ok&&support.ok,support,objects:project.objects.length,scope:'Visible static objects in this room draft. This does not validate World doors, routes or runtime interactions.'};}finally{disposeModel(root);}}
 
 /** A real World furniture starter. These are the game's own builders, not visual stand-ins. */
 export async function starterRoom(){

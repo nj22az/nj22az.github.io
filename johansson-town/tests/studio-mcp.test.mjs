@@ -73,6 +73,13 @@ test('World purpose and existing-film tools are available through MCP without a 
  assert.equal((await call('scene_export_film',{file:'../outside.json'})).error,true);assert.equal(await looks(),before);
 });
 
+test('native World room tools expose strict revision and floating-compatible draft boundaries',async()=>{
+ const list=(await client.listTools()).tools;for(const name of ['world_room_open','world_room_check','world_room_publish','world_room_rollback'])assert.ok(list.some(t=>t.name===name));
+ for(const args of [{id:'x',expectedWorldRevision:0,note:'Missing project revision'},{id:'x',expectedWorldRevision:0,expectedProjectRevision:0,note:'Do not bypass the checks',skipChecks:true}])assert.equal((await client.callTool({name:'world_room_publish',arguments:args})).isError,true);
+ assert.equal((await client.callTool({name:'world_room_open',arguments:{room:'sakura',id:'wrong-room'}})).isError,true);
+ const p=await call('world_room_publish',{id:'missing-room',expectedWorldRevision:0,expectedProjectRevision:0,note:'Refuse a missing room project',dryRun:false});assert.equal(p.error,true);
+});
+
 test('the server answers initialize quickly, reads the throwaway copy, and lists every tool with honest hints',async()=>{
  assert.ok(startup<5000,`initialize took ${Math.round(startup)} ms`);
  const studio=await call('character_list',{group:'studio'});
