@@ -129,6 +129,13 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
+    "title": "Rest room television",
+    "organisation": "Town Services",
+    "text": "The midday news from Naha and the weather for the islands: the typhoon map, the wave heights for the ferries.",
+    "source": "notice:Rest room television"
+  },
+  {
+    "type": "Notice",
     "title": "Sakura decorations store",
     "organisation": "Town Services",
     "text": "The festival lanterns, the New Year pine frames, vases, ribbon and wrapping for the bouquets sold at the door, and the shop’s spare shelf parts. Sakura has supplied the town’s flowers and decorations since Mrs Kinjō retired.",

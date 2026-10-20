@@ -4,7 +4,6 @@ import * as THREE from '../../vendor/three.module.js';
 import {circleHitsRect} from '../../physics.js?snappy=1';
 import {buildSakuraInterior} from '../world/interiors/sakura-interior.js';
 import {SAKURA_LAYOUT} from '../world/interiors/sakura-layout.js';
-import {SAKURA_STOREY,sakuraStoreyAt,sakuraStairGoing,sakuraStairLens} from '../world/interiors/sakura-stairs.js';
 import {suppliedRoomBoundsBlocked} from '../world/supplied-rooms.js?snappy=1';
 import {createIndoorResidents} from './indoor-residents.js';
 import {createRetailClerk,inTillPocket,tillStep} from './retail-clerk.js';
@@ -17,7 +16,7 @@ import {createStandIn} from '../render/static-props.js';
 import {townAudio} from '../audio/town-audio.js?snappy=1';
 
 // A single persistent shop owns stock, staff and customer jobs everywhere in town.
-export function createSakuraShop({world,scene,state,ledger,register,action,exit,getMinutes,getPlayerPosition,isInside,onBorrow=()=>{},getRain=()=>false,save=()=>{}}){
+export function createSakuraShop({world,scene,state,ledger,register,action,exit,getMinutes,getPlayerPosition,isInside,onBorrow=()=>{},getRain=()=>false,save=()=>{},stair=()=>{}}){
  // Re-checked twice a second too: the interior's lights arrive when its model loads.
  let lightsInside=null,lightCheck=0;
  const group=new THREE.Group();group.name='Sakura Shōten continuous shop';group.userData.sharedAsset=true;group.visible=false;scene.add(group);
@@ -42,7 +41,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   return world.people.some(p=>p!==excluded&&p.g.userData.inMarket&&p.g.visible&&Math.hypot(p.g.position.x-x,p.g.position.z-z)<r+(p===person?layout.clearance:.35));
  };
  let backRoomsFetched=false,lastDt=1/60;
- const display=buildSakuraInterior({room:group,reg,action,exit});display.updateStock(state.sakura.stock);
+ const display=buildSakuraInterior({room:group,reg,action,exit,stair:dir=>stair(dir)});display.updateStock(state.sakura.stock);
  const checkout=createCheckoutFeedback({drawer:display.cashDrawer,
   getSale:()=>state.sakura.journal?.findLast(entry=>entry.kind==='Sale'),
   onSale:()=>townAudio.bells([[1568,0],[2093,.09]],.16)});
@@ -133,35 +132,9 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    standIn.show(true);
   }else standIn?.show(false);
  };
- /**
-  * The storey he is on (world/interiors/sakura-stairs.js SAKURA_STOREY): upstairs the sales floor is put away
-  * (sakura-storey-view.js) and its life is not run, on the sales floor the upstairs rooms are put away. game.js asks
-  * every frame he is inside (layout.follow). `going` is which way he is moving on the stair ('up' or 'down', kept while
-  * he stands still and across the landing, so there it names the next flight), for the stair's lens.
-  */
- let storey='stair',going='up';const last=new THREE.Vector3(NaN,NaN,NaN);
- const local=new THREE.Vector3();
- const salesSide=o=>{o.getWorldPosition(local);group.worldToLocal(local);return local.z>SAKURA_STOREY.salesFloorZ;};
- const eachPerson=fn=>{const visit=o=>{if(o!==group&&(o.userData?.name||o.userData?.character)){fn(o);return;}if(o.userData?.sharedAsset&&o!==group)return;for(const c of o.children)visit(c);};visit(group);};
- const follow=p=>{
-  if(!p)return storey;
-  going=sakuraStairGoing(Number.isFinite(last.x)?last:null,p,going);last.set(p.x,p.y,p.z);
-  const next=sakuraStoreyAt(p,storey);
-  if(next!==storey){const was=storey;storey=next;display.storeys.show(next);if(was==='office')showPeople(true);}
-  return storey;
- };
- const storeyReset=()=>{const was=storey;storey='stair';display.storeys.reset();if(was==='office')showPeople(true);};
- /** Upstairs: whether the shop's people still have to be run (someone is in the stockroom, which the stair's hole shows). */
- const backroomLife=()=>{let any=false;eachPerson(o=>{if(!salesSide(o))any=true;});return any;};
- // The audit and the film ask the same questions of the group: which storey is drawn, and show one.
- group.userData.storeys={get storey(){return storey;},view:display.storeys};
- const layoutView={...display.layout,follow,
-  /** On the stair: where the lens stands to frame him and where he is going (game.js placeThirdPerson). */
-  stairLens:p=>sakuraStairLens(p,going)};
- return {group,colliders:display.layout.colliders,service,retail,display,blocked,layout:layoutView,ready:display.ready,
-  get storey(){return storey;},follow,
-  enter(parent){
-   storeyReset();
+ return {group,colliders:display.layout.colliders,service,retail,display,blocked,layout:display.layout,ready:display.ready,
+  /** quiet: coming down the stair from the office, not in at the front door (no door chime). */
+  enter(parent,{quiet=false}={}){
    if(!backRoomsFetched){backRoomsFetched=true;display.loadBackRooms?.();}
    parent.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);
    const frame=frontFrame();if(frame)frame.visible=true;
@@ -171,7 +144,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    group.visible=true;showPeople(true);display.updateStock(state.sakura.stock);
    syncLightVisibility(true);
    // The door chime: a bright little arpeggio of our own as the automatic door opens.
-   townAudio.bells([[1319,0],[1568,.13],[2093,.26],[1760,.44],[2093,.57],[2637,.72]],.32);
+   if(!quiet)townAudio.bells([[1319,0],[1568,.13],[2093,.26],[1760,.44],[2093,.57],[2637,.72]],.32);
   },
   /**
    * Parks the real interior behind the shop's own glazing, so the street looks in at
@@ -184,7 +157,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    * @param {{position:number[],yaw:number}} frontage
    */
   street(parent,frontage){
-   checkout.update(0,false);storeyReset();
+   checkout.update(0,false);
    if(!parent||!frontage?.position)return false;
    parent.add(group);
    const fit=WINDOW_FIT;
@@ -202,7 +175,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    syncLightVisibility(false);
    return true;
   },
-  hide(){checkout.update(0,false);storeyReset();windowView(false);scene.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);group.visible=false;lit(false);backRooms(true);const frame=frontFrame();if(frame)frame.visible=true;showPeople(true);syncLightVisibility(false);},
+  hide(){checkout.update(0,false);windowView(false);scene.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);group.visible=false;lit(false);backRooms(true);const frame=frontFrame();if(frame)frame.visible=true;showPeople(true);syncLightVisibility(false);},
   update(dt){
    if(!BUDGET.trade)webShelves(state,getMinutes());
    // The shop's lights are for the inside of the shop. The interior stays in the street
@@ -210,13 +183,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    // hemisphere fill brightened the whole town and its tubes threw a 17 m halo over the
    // roof and the road. Outside, the shop shows through the window by its own glow.
    {const inside=!!isInside();lightCheck-=dt;if(inside!==lightsInside||lightCheck<=0)syncLightVisibility(inside);}
-   lastDt=dt;display.tick?.(performance.now()/1000,getMinutes(),dt);followRota();
-   // Upstairs the sales floor is put away and its life is not run: the customers, the clerk at the till, the coolers'
-   // doors, the stock on the shelves, the doors. Only while somebody is in the stockroom, which the stair's hole looks
-   // down into, are the shop's people run, and those on the sales floor stay hidden.
-   const upstairs=storey==='office'&&!!isInside(),live=!upstairs||backroomLife();
-   if(live&&!person.g.userData.playerControlled){residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);}
-   if(upstairs){eachPerson(o=>{o.visible=!salesSide(o);});return;}
+   lastDt=dt;display.tick?.(performance.now()/1000,getMinutes(),dt);followRota();if(!person.g.userData.playerControlled){residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);}
    checkout.update(dt,!!isInside());display.refrigerator.update(dt);display.updateStock(state.sakura.stock);
    // The office door opens for whoever is in the shop and near it: the player, Thuan, anyone borrowed in.
    // The front door, from inside, opens the same way (the street side has its own).
