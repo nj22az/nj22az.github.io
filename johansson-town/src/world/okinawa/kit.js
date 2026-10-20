@@ -115,6 +115,8 @@ export function createKit({shadows=false}={}){
   const cx=matrix.elements[12],cz=matrix.elements[14];
   const bucketCell=finish==='plaster'?CELL*2:CELL;
   const key=finish+'|'+Math.floor(cx/bucketCell)+'|'+Math.floor(cz/bucketCell);
+  // For the z-fighting scan (tools/z-fighting.mjs): where in the source each merged piece was made.
+  if(globalThis.__KIT_TRACE__)g.userData.where=new Error().stack.split('\n').slice(2).filter(l=>!/okinawa\/kit\.js/.test(l)).slice(0,2).map(l=>l.trim().replace(/^at .*?\(?(?:file:\/\/)?.*?johansson-town\//,'').replace(/\)$/,'')).join(' < ');
   if(!buckets.has(key))buckets.set(key,{finish,list:[]});
   buckets.get(key).list.push(g);parts++;
   return g;
@@ -219,6 +221,7 @@ export function createKit({shadows=false}={}){
   parent.userData.powerNetwork={nodes:powerNodes,spans:powerSpans};
   const meshes=[],materials={};
   for(const [key,{finish:kind,list}] of buckets){
+   const sources=globalThis.__KIT_TRACE__?(()=>{let at=0;return list.map(g=>{const n=g.attributes.position.count;const r={start:at,count:n,where:g.userData.where};at+=n;return r;});})():null;
    const geometry=mergeGeometries(list,false);list.forEach(g=>g.dispose());
    if(!geometry)continue;
    geometry.computeBoundingSphere();
@@ -229,7 +232,7 @@ export function createKit({shadows=false}={}){
    // Window glass and lamps light up at dusk wherever they are built (town.js lightWindows).
    if(kind==='glow'||kind==='lamp')material.userData.kitFinish=kind;
    const mesh=new THREE.Mesh(geometry,material);
-   mesh.name=`${name}:${key}`;
+   mesh.name=`${name}:${key}`;if(sources)mesh.userData.kitSources=sources;
    mesh.castShadow=shadows&&kind!=='thin'&&kind!=='glow'&&kind!=='window';mesh.receiveShadow=kind!=='window';
    parent.add(mesh);meshes.push(mesh);
   }
