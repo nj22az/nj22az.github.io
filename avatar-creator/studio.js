@@ -4,7 +4,7 @@ import {openCreator} from '../johansson-town/src/avatars/creator.js';
 import {ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/src/avatars/cast.js';
 import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js';
 import {normalizeRecipe,decodeRecipe} from '../johansson-town/src/avatars/recipe.js';
-import {createSceneWorkspace} from './scene.js?v=20261020-staging';
+import {createSceneWorkspace} from './scene.js?v=20261020-classroom';
 import {createWorldPanel} from './world-panel.js?v=20261011-1';
 import {createHomeWorkspace} from './home.js?v=20261011-1';
 import {createModelWorkspace} from './model.js?v=20261020-workshop';

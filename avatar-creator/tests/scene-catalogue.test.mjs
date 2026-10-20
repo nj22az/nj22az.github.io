@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {GESTURES,STORY_POSES} from '../../johansson-town/src/avatars/animate.js';
 import {EXPRESSION_NAMES} from '../../johansson-town/src/avatars/face.js';
-import {POSE_GROUPS,EXPRESSION_GROUPS,POSES,EXPRESSIONS,poseGroups,expressionGroups,seatedPose,readable} from '../scene-catalogue.mjs';
+import {STUDIO_POSES,POSE_GROUPS,EXPRESSION_GROUPS,POSES,EXPRESSIONS,poseGroups,expressionGroups,seatedPose,readable} from '../scene-catalogue.mjs';
 import {normalizeScene} from '../scene-model.mjs';
 
 // The poses and expressions the Studio offered before it read World's lists: saved scenes use them.
@@ -11,7 +11,7 @@ const EARLIER_FACES=['neutral','happy','laugh','smile','sad','angry','shy','surp
 
 test('the pickers offer World\'s own poses and faces, each once, in labelled groups',()=>{
  assert.equal(new Set(POSES).size,POSES.length,'no pose twice');assert.equal(new Set(EXPRESSIONS).size,EXPRESSIONS.length,'no face twice');
- for(const name of POSES)assert.ok(name==='Idle'||name==='Sit'||name in GESTURES,name+' is a World move');
+ for(const name of POSES)assert.ok(name==='Idle'||name==='Sit'||STUDIO_POSES.includes(name)||name in GESTURES,name+' is a World move');
  assert.deepEqual([...EXPRESSIONS].sort(),[...EXPRESSION_NAMES].sort(),'every face World paints is offered');
  for(const g of [...POSE_GROUPS,...EXPRESSION_GROUPS]){assert.ok(g.title&&g.items.length);for(const i of g.items)assert.ok(i.label.trim(),i.name+' has a label');}
  assert.deepEqual(POSE_GROUPS.map(g=>g.id).slice(0,3),['everyday','funny','sitting']);

@@ -7,7 +7,7 @@ export const MAX_PANELS=4;
 export const LOCATIONS=Object.freeze([
  ['sakura','Sakura Shōten'],['sakura-street','Outside Sakura'],['minato','Minato Izakaya'],
  ['sato-ramen','Sato Ramen'],['books','Front-Row Books'],['onsen','Umi-no-yu lobby'],
- ['town-hall','Mayor’s office'],['harbour','Harbour'],['pier','Outer pier'],
+ ['classroom','Island classroom'],['town-hall','Mayor’s office'],['harbour','Harbour'],['pier','Outer pier'],
  ['park','Harbour Park'],['garden','Japanese garden'],['rainflower','Rainflower Lane']
 ]);
 // Poses and faces are World's own lists (scene-catalogue.mjs); a saved scene keeps any pose or face World knows.
@@ -22,16 +22,25 @@ export function normalizeScene(raw,normalizeRecipe=r=>structuredClone(r)){
  out.style=['photo','meme','comic'].includes(raw.style)?raw.style:out.style;
  out.camera={orbit:clamp(raw.camera?.orbit,-180,180,0),elevation:clamp(raw.camera?.elevation,-25,40,0),zoom:clamp(raw.camera?.zoom,.55,1.8,1)};
  out.top=text(raw.top);out.bottom=text(raw.bottom);
+ if([raw.camera?.position,raw.camera?.target].every(v=>Array.isArray(v)&&v.length===3&&v.every(n=>Number.isFinite(n)&&Math.abs(n)<=30))){out.camera.position=[...raw.camera.position];out.camera.target=[...raw.camera.target];out.camera.fov=clamp(raw.camera.fov,25,75,43);}
+ if(raw.effect==='dash')out.effect='dash';
+ if(raw.furniture&&typeof raw.furniture==='object'){out.furniture={};for(const id of ['desk','chair']){const r=raw.furniture[id];if(!r||typeof r!=='object')continue;const o={visible:r.visible!==false};for(const k of ['position','rotation'])if(Array.isArray(r[k])&&r[k].length===3&&r[k].every(Number.isFinite))o[k]=r[k].map(n=>clamp(n,k==='position'?-4:-Math.PI,k==='position'?4:Math.PI,0));out.furniture[id]=o;}}
+
  out.actors=(Array.isArray(raw.actors)?raw.actors:[]).slice(0,MAX_ACTORS).filter(a=>a&&a.recipe&&typeof a.recipe==='object'&&!Array.isArray(a.recipe)).map((a,i)=>({
   id:'actor-'+i,name:text(a.name)||'Character',recipe:normalizeRecipe(a.recipe),
+  y:clamp(a.y,0,1.5,0),liftedBy:typeof a.liftedBy==='string'?a.liftedBy:'',
   x:raw.version===2?clamp(a.x,-SNAP.bounds,SNAP.bounds,0):i*.65,z:raw.version===2?clamp(a.z,-SNAP.bounds,SNAP.bounds,0):0,size:raw.version===2?clamp(a.size,.6,1.4,1):1,seat:raw.version===2?text(a.seat):'',
   turn:clamp(a.turn,-180,180,0),pose:KNOWN_POSES.has(a.pose)?a.pose:'Idle',
   expression:KNOWN_EXPRESSIONS.has(a.expression)?a.expression:'smile',speech:text(a.speech),...a.take?{take:safeTake(a.take),takeLoop:a.takeLoop===true}:{}
- }));return out;
+ }));
+ const source=(Array.isArray(raw.actors)?raw.actors:[]).filter(a=>a&&a.recipe&&typeof a.recipe==='object'&&!Array.isArray(a.recipe)).slice(0,MAX_ACTORS);
+ const ids=new Map(source.map((a,i)=>[a.id,'actor-'+i])),used=new Set();
+ for(const a of out.actors){a.liftedBy=ids.get(a.liftedBy)||'';if(a.liftedBy===a.id||used.has(a.liftedBy)||out.actors.find(b=>b.id===a.liftedBy)?.liftedBy){a.liftedBy='';}if(a.liftedBy)used.add(a.liftedBy);}
+ return out;
 }
 export function addCharacter(state,recipe,name=recipe.name||'Character'){
  if(state.actors.length>=MAX_ACTORS)return null;
- const n=state.actors.length,actor={id:'actor-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),name:text(name),recipe:structuredClone(recipe),x:(n%3)*.7,z:Math.floor(n/3)*.8,size:1,seat:'',turn:0,pose:'Idle',expression:'smile',speech:''};
+ const n=state.actors.length,actor={id:'actor-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),name:text(name),recipe:structuredClone(recipe),x:(n%3)*.7,z:Math.floor(n/3)*.8,size:1,y:0,liftedBy:'',seat:'',turn:0,pose:'Idle',expression:'smile',speech:''};
  state.actors.push(actor);return actor;
 }
 /** Take a character out of the scene; returns what Undo needs ({actor,index}), or null. */
@@ -47,12 +56,12 @@ export function restoreCharacter(state,removed){
 }
 export function moveCharacter(actor,x,z){actor.x=clamp(x,-SNAP.bounds,SNAP.bounds,actor.x);actor.z=clamp(z,-SNAP.bounds,SNAP.bounds,actor.z);}
 /** Where a character is and how they stand: what Undo puts back. */
-export function placementOf(actor){return {x:actor.x,z:actor.z,seat:actor.seat||'',turn:actor.turn,pose:actor.pose,size:actor.size};}
-export function samePlacement(a,b){return !!a&&!!b&&['x','z','seat','turn','pose','size'].every(k=>a[k]===b[k]);}
+export function placementOf(actor){return {x:actor.x,z:actor.z,seat:actor.seat||'',turn:actor.turn,pose:actor.pose,size:actor.size,...actor.y?{y:actor.y}:{},...actor.liftedBy?{liftedBy:actor.liftedBy}:{}};}
+export function samePlacement(a,b){return !!a&&!!b&&['x','z','seat','turn','pose','size','y','liftedBy'].every(k=>a[k]===b[k]);}
 /** Put a character back where `placement` says; their seat only if nobody has taken it since (then a Sit becomes Idle). */
 export function applyPlacement(state,id,placement){
  const actor=state.actors.find(a=>a.id===id);if(!actor||!placement)return null;
- Object.assign(actor,{x:placement.x,z:placement.z,turn:placement.turn,pose:placement.pose,size:placement.size,seat:placement.seat||''});
+ Object.assign(actor,{x:placement.x,z:placement.z,turn:placement.turn,pose:placement.pose,size:placement.size,y:placement.y||0,liftedBy:placement.liftedBy||'',seat:placement.seat||''});
  if(actor.seat&&state.actors.some(a=>a!==actor&&a.seat===actor.seat)){actor.seat='';if(actor.pose==='Sit')actor.pose='Idle';}
  return actor;
 }

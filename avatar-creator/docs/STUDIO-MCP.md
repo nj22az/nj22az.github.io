@@ -292,3 +292,7 @@ Whether to raise the host's MCP timeout is the creator's decision, and no reposi
 - The old `PACKS` listed a few shapes and sizes the shelf never built (`pack.declared`: orange as a carton, the sandwich
   as a box, the pudding as a plain cup, the chocolate, notebook and postcard as flat packs, and the soap smaller).
 - Renaming a product waits for World to find the bag's things by product id instead of by name.
+
+## Editable classroom comics (20 October 2026)
+
+`scene_classroom_example` returns Vy's four-panel acceptance scene. `scene_render({scene,name})` draws a snapshot with the actual Build scene workspace and reports its normalized data, head framing and hand-contact target errors. `comic_render({scenes,name,layout})` captures one to four scenes and exports the PNG plus a portable `.studio.json` project containing per-panel snapshots. Rendering writes previews only and never publishes World. See [CLASSROOM-COMIC.md](CLASSROOM-COMIC.md) for controls, schema additions, validation and limits.
