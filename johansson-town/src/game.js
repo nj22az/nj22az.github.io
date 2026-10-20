@@ -102,7 +102,7 @@ import {HOUSE_SAVE} from './world/johansson-house.js';
 import {createHomeCustomization} from './world/interiors/home-customization.js';
 import {buildCityRestaurant,CITY_RESTAURANT} from './world/interiors/city-restaurant.js';
 import {buildUpperHome} from './world/interiors/upper-home.js';
-import {SAKURA_STAIR,sakuraBoundsAt} from './world/interiors/sakura-stairs.js';
+import {SAKURA_STAIR,sakuraBoundsAt,STAIR_LENS_EASE} from './world/interiors/sakura-stairs.js';
 import {buildFamilyHome} from './world/interiors/family-home.js';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js?ui=compact-3';
@@ -890,7 +890,7 @@ function placeThirdPerson(dt){
  * boom as he steps off the landing.
  */
 let landingEase=0,landingReady=false;
-const landingPos=new THREE.Vector3(),landingAt=new THREE.Vector3(),landingWant=new THREE.Vector3(),landingLook=new THREE.Vector3(),landingQ=new THREE.Quaternion(),landingM=new THREE.Matrix4(),landingFrom=new THREE.Quaternion();
+const landingPos=new THREE.Vector3(),landingAt=new THREE.Vector3(),landingWant=new THREE.Vector3(),landingLook=new THREE.Vector3(),landingQ=new THREE.Quaternion(),landingM=new THREE.Matrix4(),landingFrom=new THREE.Quaternion(),boomLook=new THREE.Vector3();
 // The room's solids at a height (its walls, guards, furniture), not the ceiling over him: the lens may stand above a flight.
 const landingSolid=(x,z,y,r)=>roomColliders.some(c=>!c.only&&(c.minY||0)<y+.06&&(!Number.isFinite(c.height)||(c.minY||0)+c.height>y-.06)&&circleHitsRect(x,z,r,c));
 function landingSightClear(pos,chest){
@@ -900,18 +900,21 @@ function landingSightClear(pos,chest){
  return true;
 }
 function placeLandingLens(dt){
- const shots=current&&!seated?activeRoomLayout?.landingLens?.(player.position):null;
- landingEase=THREE.MathUtils.damp(landingEase,shots?.length?1:0,4,dt);
+ const shots=current&&!seated?activeRoomLayout?.stairLens?.(player.position):null;
+ landingEase=THREE.MathUtils.damp(landingEase,shots?.length?1:0,STAIR_LENS_EASE.blend,dt);
  if(shots?.length){
   const shot=shots.find(s=>landingSightClear(s.pos,s.chest))||shots[0];
   landingWant.set(...shot.pos);landingLook.set(...shot.at);
   if(!landingReady){landingPos.copy(landingWant);landingAt.copy(landingLook);landingReady=true;}
-  else{const k=1-Math.exp(-3*dt);landingPos.lerp(landingWant,k);landingAt.lerp(landingLook,1-Math.exp(-6*dt));}
+  else{const k=1-Math.exp(-STAIR_LENS_EASE.pos*dt);landingPos.lerp(landingWant,k);landingAt.lerp(landingLook,1-Math.exp(-STAIR_LENS_EASE.look*dt));}
  }
  if(landingEase<.002){landingEase=0;if(!shots)landingReady=false;return;}
- landingFrom.copy(camera.quaternion);
- landingQ.setFromRotationMatrix(landingM.lookAt(landingPos,landingAt,lensUp));
- camera.position.lerp(landingPos,landingEase);camera.quaternion.slerpQuaternions(landingFrom,landingQ,landingEase);
+ // Between the boom and the stair's lens, both the place and what it looks at are blended: the boom looks past him at a
+ // point ahead of its lens, the stair's lens at him, and a lens on the way between looks between the two, so he stays in
+ // the frame while it comes round (blending the turns alone let the half-way lens look past him).
+ landingFrom.copy(camera.quaternion);boomLook.set(0,0,-1).applyQuaternion(landingFrom).multiplyScalar(Math.max(1.5,thirdDistance)).add(camera.position);
+ camera.position.lerp(landingPos,landingEase);boomLook.lerp(landingAt,landingEase);
+ landingQ.setFromRotationMatrix(landingM.lookAt(camera.position,boomLook,lensUp));camera.quaternion.copy(landingQ);
 }
 /** R, the drink button, or Drink at the table: a can from the bag, or a sip of what Thao brought. */
 function drinkNow(){if(parkSeat?.izakaya&&beerService?.drink)return sipDrink();return hands.drink();}

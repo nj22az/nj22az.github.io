@@ -24,5 +24,12 @@
     "failed": 1,
     "failure": "scene-world Sakura till face at x 5.06",
     "baseline": "Identical failure reproduced on unchanged main 42f4ef85 in a separate worktree"
+  },
+  "approval": "Creator approved PR #289 merge and publication, including 15 cm table adjustment, 20 October 2026",
+  "approvedIntegration": {
+    "main": "59736931b5541a3eeed7b6b7071899226ecdf426",
+    "focusedTests": 42,
+    "runtimeTests": 3,
+    "publication": "pending deployment verification"
   }
 }

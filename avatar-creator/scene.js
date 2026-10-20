@@ -1,15 +1,16 @@
-import {drawShout,drawStatement} from './scene-lettering.js?v=20261020-grounded';
+import {gradientMap} from '../johansson-town/src/render/cel.js';
+import {createSceneFacePainter} from './scene-face.js';
+import {drawShout,drawStatement,drawComicChaos} from './scene-lettering.js?v=20261020-acting';
 import {CLASSROOM_VIEW} from './classroom-stage.js';
-import {classroomComic} from './classroom-comic.mjs?v=20261020-grounded';
+import {classroomComic} from './classroom-comic.mjs?v=20261020-acting';
 import {createSoleFinder} from '../johansson-town/src/avatars/foot-ground.js';
-import {applySceneContacts} from './scene-contact.js';
+import {applySceneContacts} from './scene-contact.js?v=20261020-acting';
 import {WORKSHOP_VIEW} from '../johansson-town/src/scene/workshop-view.js';
 import {filmStaging} from './film-staging.mjs';
-import {KNOWN_EXPRESSIONS,KNOWN_POSES} from './scene-catalogue.mjs';
+import {KNOWN_EXPRESSIONS,KNOWN_POSES} from './scene-catalogue.mjs?v=20261020-acting';
 import {createActingPanel} from './acting/panel.js?v=20261016-1';
 import {sampleTake,normalizeTake} from './acting/takes.mjs';
 import {applyActorFrame} from '../johansson-town/src/avatars/acting.js';
-import {createPerformancePainter} from '../johansson-town/src/avatars/performance-face.js';
 import * as THREE from '../johansson-town/vendor/three.module.js';
 import {buildAvatar} from '../johansson-town/src/avatars/build.js';
 import {drawFace} from '../johansson-town/src/avatars/face.js';
@@ -18,11 +19,11 @@ import {ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/
 import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js';
 import {normalizeRecipe} from '../johansson-town/src/avatars/recipe.js';
 import {drawCaptions,comicLayout,FORMATS} from '../johansson-town/src/photo/layout.js';
-import {buildSceneWorld} from './scene-world.js?v=20261020-integrated';
-import {poseSceneAvatar,placeSceneAvatar,movingPose} from './scene-avatar.js?v=20261020-integrated';
-import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,emptyScene,normalizeScene,addCharacter,removeCharacter,restoreCharacter,panelOrder,text,placementOf,applyPlacement,samePlacement} from './scene-model.mjs?v=20261020-integrated';
+import {buildSceneWorld} from './scene-world.js?v=20261020-integrated-2';
+import {poseSceneAvatar,placeSceneAvatar,movingPose} from './scene-avatar.js?v=20261020-integrated-2';
+import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,emptyScene,normalizeScene,addCharacter,removeCharacter,restoreCharacter,panelOrder,text,placementOf,applyPlacement,samePlacement} from './scene-model.mjs?v=20261020-integrated-2';
 import {pickMoment,applyMoment,aim} from './scene-moments.mjs?v=20261011-2';
-import {POSE_GROUPS,EXPRESSION_GROUPS,seatedPose} from './scene-catalogue.mjs';
+import {POSE_GROUPS,EXPRESSION_GROUPS,seatedPose} from './scene-catalogue.mjs?v=20261020-acting';
 import {turnToward,touchAngle,twistTurn,nudgeStep,placeToolbar,pickBox,nearestSeat} from './scene-controls.mjs?v=20261011-2';
 import {SNAP,resolveSnap,snapTurn,stepTurn,edgeLine,lineDistance} from './scene-snap.mjs?v=20261011-2';
 import {touchFirst,dataURLToBlob,canvasToBlob,createReadyFile,bindSaveLink,createPreview,deliverFile} from './studio-share.mjs';
@@ -38,6 +39,14 @@ const figure=body=>`<svg class="ui-icon" aria-hidden="true" width="24" height="2
 const sitIcon=figure('<circle cx="9" cy="4.5" r="2.5"/><path d="M9 8v6h6v6M9 10.5l4.5 2M4 21h16"/>'),standIcon=figure('<circle cx="12" cy="4.5" r="2.5"/><path d="M12 8v7M8.5 11.5h7M9.5 21l2.5-6 2.5 6"/>');
 const choice=(name,label,options)=>`<div class="scene-choice" role="group" aria-label="${label}" data-choice="${name}">${options.map(([value,text])=>`<button type="button" data-value="${value}" aria-pressed="false">${text}</button>`).join('')}</div>`;
 
+const furnitureInk=new WeakMap();
+function inkProps(furniture,enabled){
+ for(const prop of Object.values(furniture||{})){
+  let lines=furnitureInk.get(prop);
+  if(!lines&&enabled){const meshes=[];prop.traverse(m=>{if(m.isMesh&&!m.isSkinnedMesh)meshes.push(m);});lines=meshes.map(m=>{const ink=new THREE.Mesh(m.geometry,new THREE.MeshBasicMaterial({color:'#241e18',side:THREE.BackSide}));ink.scale.setScalar(1.025);ink.userData.studioInk=true;m.add(ink);return ink;});furnitureInk.set(prop,lines);}
+  for(const ink of lines||[])ink.visible=enabled;
+ }
+}
 function drawDash(ctx,w,h,contacts=[]){ctx.save();for(const p of contacts){const x=(p.x+1)*w/2,y=(1-p.y)*h/2+3;ctx.strokeStyle='#756b5c';ctx.lineWidth=w*.003;ctx.beginPath();ctx.moveTo(x-w*.08,y+1);ctx.lineTo(x+w*.07,y-1);ctx.moveTo(x-w*.15,y-3);ctx.lineTo(x-w*.11,y-3);ctx.moveTo(x-w*.12,y-h*.025);ctx.quadraticCurveTo(x-w*.15,y-h*.045,x-w*.16,y-h*.01);ctx.stroke();}ctx.strokeStyle='#332b2a';ctx.lineWidth=2;for(let i=0;i<14;i++){const y=h*(.47+i*.029),x=w*(.03+(i%3)*.024);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+w*(.12+(i%4)*.025),y-h*.015);ctx.stroke();}ctx.translate(w*.14,h*.57);ctx.rotate(-.22);ctx.font=`900 ${Math.round(w*.075)}px sans-serif`;ctx.lineWidth=8;ctx.strokeStyle='#fff9ed';ctx.strokeText('KRAASH!',0,0);ctx.fillStyle='#30282b';ctx.fillText('KRAASH!',0,0);ctx.restore();}
 /** 3D scene editor: shared town geometry, ground, furniture and avatar models. */
 export function createSceneWorkspace({getCharacter,onEdit,onMode}){
@@ -65,14 +74,14 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  <section data-pane="characters" hidden><h2>Add characters</h2><p>Use your own character or choose a town resident. Up to six characters can share a scene.</p><button class="scene-primary" data-action="add-current">Add my character</button><label>Town resident<select data-field="resident" aria-label="Town resident"></select></label><button data-action="add-resident">Add resident</button></section>
  <section data-pane="pose" hidden><h2>Pose & position</h2><p class="scene-pane-note" data-note="pose"></p>
  <div class="scene-moment"><button type="button" data-action="classroom-example">Build Vy’s classroom comic</button><button type="button" data-action="shuffle-moment">Shuffle a moment</button><p class="scene-moment-note">Turns everyone on stage into a little scene: poses, faces, lines and a caption.</p></div>
- <details data-classroom-props hidden><summary>Classroom furniture</summary><label>Object<select data-prop-id><option value="desk">Desk</option><option value="chair">Chair</option></select></label><label><input type="checkbox" data-prop-visible> Visible</label><div class="scene-actor-controls">${['x','y','z','pitch','yaw','roll'].map((label,i)=>`<label>${label}<input type="number" data-prop-axis="${i}" step="${i<3?'.05':'5'}" min="${i<3?'-4':'-180'}" max="${i<3?'4':'180'}"></label>`).join('')}</div></details>
+ <details data-classroom-props hidden><summary>Classroom furniture</summary><label>Object<select data-prop-id><option value="desk">Desk</option><option value="chair">Chair</option></select></label><label><input type="checkbox" data-prop-visible> Visible</label><label>Size<input data-prop-size type="number" min=".5" max="1.5" step=".05" value="1"></label><div class="scene-actor-controls">${['x','y','z','pitch','yaw','roll'].map((label,i)=>`<label>${label}<input type="number" data-prop-axis="${i}" step="${i<3?'.05':'5'}" min="${i<3?'-4':'-180'}" max="${i<3?'4':'180'}"></label>`).join('')}</div></details>
  <h3 class="scene-picker-title" id="scene-pose-title">Pose</h3><div class="scene-picker" data-picker="pose" role="group" aria-labelledby="scene-pose-title"></div>
  <h3 class="scene-picker-title" id="scene-face-title">Expression</h3><div class="scene-picker" data-picker="expression" role="group" aria-labelledby="scene-face-title"></div>
  <div class="scene-actor-controls"><label class="scene-snap"><input type="checkbox" role="switch" data-setting="snap"> Snap into place</label><label>Turn<input data-field="turn" type="range" min="-180" max="180" step="5"></label><label>Size<input data-field="size" type="range" min=".6" max="1.4" step=".01"></label>
  <label>Left / right<input data-field="x" type="range" min="-12" max="12" step=".01"></label><label>Near / far<input data-field="z" type="range" min="-12" max="12" step=".01"></label>
  <label>Height above floor<input data-field="y" type="range" min="0" max="1.5" step=".01"></label><label>Lifted by<select data-field="liftedBy" aria-label="Lifted by"><option value="">Nobody</option></select></label><label>Use furniture<select data-field="seat" aria-label="Use furniture"><option value="">Stand on ground</option></select></label><button data-action="edit-character">Edit appearance</button><button data-action="duplicate">Duplicate character</button><button data-action="remove">Remove character</button></div></section>
  <section data-pane="text" hidden><h2>Add text</h2><label>Picture style<select data-field="style" aria-label="Picture style"><option value="photo">Photograph with speech bubbles</option><option value="meme">Meme with top and bottom text</option><option value="comic">Comic panel with caption</option></select></label>
- <label>Speech lettering<select data-field="speechStyle"><option value="bubble">Speech bubble</option><option value="shout">Large dramatic shout</option><option value="large">Large readable bubble</option></select></label><label>Backdrop<select data-field="backdrop"><option value="">Full location</option><option value="paper">Plain comic paper</option></select></label><label>Selected character’s speech<input data-field="speech" maxlength="120" placeholder="What are they saying?" aria-label="Selected character’s speech"></label>
+ <label>Speech lettering<select data-field="speechStyle"><option value="bubble">Speech bubble</option><option value="shout">Large dramatic shout</option><option value="large">Large readable bubble</option></select></label><label>Action marks<select data-field="effect"><option value="">None</option><option value="dash">Speed lines and crash</option><option value="chaos">Comic chaos and flying papers</option></select></label><label>Backdrop<select data-field="backdrop"><option value="">Full location</option><option value="paper">Plain comic paper</option></select></label><label>Selected character’s speech<input data-field="speech" maxlength="120" placeholder="What are they saying?" aria-label="Selected character’s speech"></label>
  <label>Top text (meme)<input data-field="top" maxlength="120" placeholder="WHEN THE FERRY IS LATE" aria-label="Top text (meme)"></label><label>Bottom text / caption<input data-field="bottom" maxlength="120" placeholder="Write your punchline…" aria-label="Bottom text / caption"></label></section>
  <section data-pane="export" hidden><h2>Export your picture</h2><p class="scene-label">Picture format</p>${choice('format','Picture format',[['landscape','Landscape'],['square','Square'],['portrait','Portrait']])}
  <div class="scene-save-row"><a class="scene-save scene-primary" data-save="scene">Save picture</a><button data-action="preview">Preview</button></div><p class="scene-save-note"></p><p class="scene-export-status" role="status" aria-live="polite" data-status="scene"></p>
@@ -183,14 +192,14 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  }
  function select(id,{reveal=false}={}){if(id!==selected){acting.session.hold();liveFrame=null;liveActor=null;}selected=id;if(reveal)overlayStep=step;sync();}
 
- function syncProps(){const box=$('[data-classroom-props]');box.hidden=state.location!=='classroom';if(box.hidden||!world?.furniture)return;const id=$('[data-prop-id]').value,o=world.furniture[id];if(!o)return;$('[data-prop-visible]').checked=o.visible;box.querySelectorAll('[data-prop-axis]').forEach(input=>{const i=Number(input.dataset.propAxis),v=i<3?o.position.toArray()[i]:o.rotation.toArray()[i-3]*180/Math.PI;if(document.activeElement!==input)input.value=Math.round(v*100)/100;});}
+ function syncProps(){const box=$('[data-classroom-props]');box.hidden=state.location!=='classroom';if(box.hidden||!world?.furniture)return;const id=$('[data-prop-id]').value,o=world.furniture[id];if(!o)return;$('[data-prop-visible]').checked=o.visible;$('[data-prop-size]').value=state.furniture?.[id]?.size||1;box.querySelectorAll('[data-prop-axis]').forEach(input=>{const i=Number(input.dataset.propAxis),v=i<3?o.position.toArray()[i]:o.rotation.toArray()[i-3]*180/Math.PI;if(document.activeElement!==input)input.value=Math.round(v*100)/100;});}
  $('[data-prop-id]').onchange=syncProps;
- for(const input of root.querySelectorAll('[data-prop-axis],[data-prop-visible]'))input.onchange=()=>{if(!world?.furniture)return;const id=$('[data-prop-id]').value,o=world.furniture[id],before=structuredClone(state.furniture||{});state.furniture??={};const s=state.furniture[id]??={position:o.position.toArray(),rotation:o.rotation.toArray().slice(0,3),visible:o.visible};if(input.dataset.propAxis!==undefined){const i=Number(input.dataset.propAxis),v=Number(input.value);if(!Number.isFinite(v))return;(i<3?s.position:s.rotation)[i%3]=i<3?Math.max(-4,Math.min(4,v)):Math.max(-180,Math.min(180,v))*Math.PI/180;}else s.visible=input.checked;changed();offerUndo('Furniture moved.',()=>{state.furniture=before;changed();sync();});};
+ for(const input of root.querySelectorAll('[data-prop-axis],[data-prop-visible],[data-prop-size]'))input.onchange=()=>{if(!world?.furniture)return;const id=$('[data-prop-id]').value,o=world.furniture[id],before=structuredClone(state.furniture||{});state.furniture??={};const s=state.furniture[id]??={position:o.position.toArray(),rotation:o.rotation.toArray().slice(0,3),visible:o.visible};if(input.dataset.propAxis!==undefined){const i=Number(input.dataset.propAxis),v=Number(input.value);if(!Number.isFinite(v))return;(i<3?s.position:s.rotation)[i%3]=i<3?Math.max(-4,Math.min(4,v)):Math.max(-180,Math.min(180,v))*Math.PI/180;}else if(input.hasAttribute('data-prop-size'))s.size=Math.max(.5,Math.min(1.5,Number(input.value)||1));else s.visible=input.checked;changed();offerUndo('Furniture moved.',()=>{state.furniture=before;changed();sync();});};
  function sync(){syncProps();syncClock();
   for(const c of root.querySelectorAll('[data-camera]'))c.value=state.camera[c.dataset.camera];
   const a=current();const lift=field('liftedBy');lift.replaceChildren(new Option('Nobody',''),...state.actors.filter(b=>b.id!==a?.id&&!b.liftedBy).map(b=>new Option(b.name,b.id)));
   for(const n of ['turn','size','x','z','y','speech','speechStyle','seat','liftedBy']){field(n).disabled=!a;field(n).value=a?.[n]??'';}
-  for(const n of ['style','top','bottom','backdrop'])field(n).value=state[n]||'';
+  for(const n of ['style','top','bottom','backdrop','effect'])field(n).value=state[n]||'';
   for(const o of field('seat').options){if(!o.value)continue;const user=state.actors.find(x=>x.id!==a?.id&&x.seat===o.value);o.disabled=!!user;o.textContent=o.dataset.label+(user?' ('+user.name+')':'');}
   snapSwitch.checked=snapOn;
   for(const [name,value] of [['format',state.format],['layout',layoutStyle]])for(const b of root.querySelectorAll(`[data-choice="${name}"] button`))b.setAttribute('aria-pressed',String(b.dataset.value===value));
@@ -278,7 +287,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
     renderer??=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setPixelRatio(1);renderer.setSize(w,h,false);renderer.setViewport(0,0,w,h);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
     for(const [id,entry] of avatars)if(!snapshot.actors.some(a=>a.id===id)){clearAvatar(entry);avatars.delete(id);}
     for(const entry of avatars.values())entry.avatar.root.removeFromParent();
-    environment.stage?.(snapshot.furniture);
+    environment.stage?.(snapshot.furniture);inkProps(environment.furniture,snapshot.backdrop==='paper'&&snapshot.style==='comic');if(snapshot.location==='classroom')for(const [id,o] of Object.entries(environment.furniture||{}))o.scale.setScalar(1.35*(snapshot.furniture?.[id]?.size||1));
     if(snapshot.backdrop==='paper'){
      const keep=new Set();for(const o of Object.values(environment.furniture||{}))o.traverse(m=>keep.add(m));
      for(const m of environment.meshes)if(m.visible&&!keep.has(m)){m.visible=false;restore.push(()=>m.visible=true);}
@@ -296,7 +305,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
      // A posed avatar is kept while only its place changes: moving between stools of one height and facing reuses it.
      const position=environment.place(actor),seatShape=position.seat?[Math.round((position.seat.surfaceY-position.y)*100)/100,position.seat.yaw||0]:0;
      const key=JSON.stringify([actor.recipe,actor.pose,actor.expression,actor.turn,actor.size,seatShape]);let entry=avatars.get(actor.id);
-     if(!entry||entry.key!==key){if(entry)clearAvatar(entry);entry={key,avatar:buildAvatar(actor.recipe,{shadows:true,faceSize:256})};entry.avatar.paintFace=createPerformancePainter(entry.avatar,actor.recipe);entry.avatar.root.userData.studioActor=true;avatars.set(actor.id,entry);}
+     if(!entry||entry.key!==key){if(entry)clearAvatar(entry);entry={key,avatar:buildAvatar(actor.recipe,{shadows:true,faceSize:256})};entry.avatar.paintFace=createSceneFacePainter(entry.avatar,actor.recipe,()=>entry.poseName||actor.pose);entry.avatar.root.userData.studioActor=true;avatars.set(actor.id,entry);}
      const avatar=entry.avatar;
      // Each avatar is a mesh in the same scene graph as the counter and walls.
      environment.scene.add(avatar.root);avatar.root.position.set(0,0,0);avatar.root.scale.setScalar(actor.size);
@@ -318,8 +327,13 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
      placed.push({id:actor.id,box,face:headCentre(avatar),radius:avatar.measure.Rh*Math.max(avatar.measure.headSX,avatar.measure.headSY)*actor.size,visible,feet:new THREE.Vector3(position.x,position.y,position.z)});
      const live=state.actors.find(a=>a.id===actor.id);if(live){live.x=actor.x;live.z=actor.z;live.seat=actor.seat;}
     }
+    if(snapshot.backdrop==='paper'&&snapshot.style==='comic'){
+     const faces=new Set(records.map(r=>r.avatar.face.texture)),materials=new Set();for(const object of [...records.map(r=>r.avatar.root),...Object.values(environment.furniture||{})])object.traverse(m=>{for(const material of Array.isArray(m.material)?m.material:[m.material])if(material?.isMeshToonMaterial&&!faces.has(material.map))materials.add(material);});
+     for(const material of materials){const before=material.gradientMap;material.gradientMap=gradientMap(2);restore.push(()=>material.gradientMap=before);}
+     environment.scene.traverse(o=>{if(o.isHemisphereLight){const before=o.intensity;o.intensity=1.35;restore.push(()=>o.intensity=before);}});
+    }
     environment.sky?.update(camera,1,false,false);renderer.render(environment.scene,camera);
-    canvas.width=w;canvas.height=h;ctx.drawImage(renderer.domElement,0,0);if(snapshot.effect==='dash'){const contacts=snapshot.backdrop==='paper'?records.filter(r=>movingPose(r.actor.pose)&&!r.actor.y&&!r.actor.seat).map(r=>{const soles=createSoleFinder(r.avatar)(),side=soles.L.y<soles.R.y?'L':'R',point=r.avatar.root.worldToLocal(r.avatar.bones['foot'+side].getWorldPosition(new THREE.Vector3()));point.y=soles[side].y;point.z=soles[side].z;return r.avatar.root.localToWorld(point).project(camera);}):[];drawDash(ctx,w,h,contacts);}const overlay=document.createElement('canvas');overlay.width=w;overlay.height=h;drawCaptions(overlay.getContext('2d'),w,h,{style:snapshot.style,top:snapshot.top,bottom:snapshot.bottom,bubbles:bubbles.filter(b=>!b.shout&&!b.large)});ctx.drawImage(overlay,0,0);for(const b of bubbles.filter(b=>b.shout))drawShout(ctx,w,h,b.text);for(const b of bubbles.filter(b=>b.large))drawStatement(ctx,w,h,b.text,b.x);
+    canvas.width=w;canvas.height=h;ctx.drawImage(renderer.domElement,0,0);if(snapshot.effect==='dash'){const contacts=snapshot.backdrop==='paper'?records.filter(r=>movingPose(r.actor.pose)&&!r.actor.y&&!r.actor.seat).map(r=>{const soles=createSoleFinder(r.avatar)(),side=soles.L.y<soles.R.y?'L':'R',point=r.avatar.root.worldToLocal(r.avatar.bones['foot'+side].getWorldPosition(new THREE.Vector3()));point.y=soles[side].y;point.z=soles[side].z;return r.avatar.root.localToWorld(point).project(camera);}):[];drawDash(ctx,w,h,contacts);}if(snapshot.effect==='chaos')drawComicChaos(ctx,w,h,records.map(r=>headCentre(r.avatar).project(camera)));const overlay=document.createElement('canvas');overlay.width=w;overlay.height=h;drawCaptions(overlay.getContext('2d'),w,h,{style:snapshot.style,top:snapshot.top,bottom:snapshot.bottom,bubbles:bubbles.filter(b=>!b.shout&&!b.large)});ctx.drawImage(overlay,0,0);for(const b of bubbles.filter(b=>b.shout))drawShout(ctx,w,h,b.text);for(const b of bubbles.filter(b=>b.large))drawStatement(ctx,w,h,b.text,b.x);
     // Where each character is on the picture (fractions of it), for picking, the outline and the toolbar.
     const right=new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld,0);
     boxes=placed.map(p=>{const corners=[];for(const x of [p.box.min.x,p.box.max.x])for(const y of [p.box.min.y,p.box.max.y])for(const z of [p.box.min.z,p.box.max.z])corners.push(new THREE.Vector3(x,y,z).project(camera));
@@ -331,6 +345,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
   });return queue;
  }
 
+ field('effect').onchange=()=>{state.effect=field('effect').value;changed();};
  field('backdrop').onchange=()=>{state.backdrop=field('backdrop').value;changed();};
  // ---- Direct control in the picture: tap selects, drag lifts a character and drops them where they snap into place
  // (scene-snap.mjs: a free seat, beside someone, at a counter; else exactly there), two fingers turn. ----

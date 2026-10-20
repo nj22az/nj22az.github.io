@@ -6,7 +6,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {SAKURA_STAIR,SAKURA_STOREY,SAKURA_LANDING,sakuraStoreyAt,sakuraFlightAt,onSakuraLanding,sakuraLandingLens,sakuraStoreys} from '../src/world/interiors/sakura-stairs.js';
+import {SAKURA_STAIR,SAKURA_STOREY,SAKURA_LANDING,sakuraStoreyAt,sakuraFlightAt,onSakuraLanding,sakuraLandingLens,sakuraStoreys,sakuraStairLens,sakuraStairFloor,STAIR_LENS_EASE} from '../src/world/interiors/sakura-stairs.js';
 import {SAKURA_LAYOUT} from '../src/world/interiors/sakura-layout.js';
 import {circleHitsRect} from '../physics.js';
 
@@ -163,5 +163,63 @@ test('the turning landing: the lens frames him and the next flight, in sight of 
   }
  }
  assert.equal(onSakuraLanding({x:-3,y:1,z:-4.6}),false,'on a flight the boom is his own again');
+ display.dispose();
+});
+
+/**
+ * The whole stair, both ways, as the game's lens takes it (game.js placeLandingLens): walked at 1.4 m/s, sixty frames a
+ * second, the lens easing after the stair's own lenses (the first with a clear sight of him, as the game picks). Every
+ * frame: the lens at least 1.4 m from him, in no wall, guard or slab and under the stairwell's roof; all of him in sight
+ * (head, chest, knees) and inside an upright phone's frame (65° high, 390 × 844); and on a flight the steps two metres
+ * ahead of him in the frame too.
+ */
+test('on the stair, both ways, the lens keeps all of him and where he is going in the frame, never in a wall',async()=>{
+ const {display}=await shopRoom(),colliders=display.layout.colliders,walk=display.layout.walk;
+ const solid=(x,z,y,r)=>colliders.some(c=>!c.only&&(c.minY||0)<y+.06&&(!Number.isFinite(c.height)||(c.minY||0)+c.height>y-.06)&&circleHitsRect(x,z,r,c));
+ const slab=(x,z,y)=>walk.floors.some(f=>{if(x<f.x[0]||x>f.x[1]||z<f.z[0]||z>f.z[1])return false;const h=walk.heightOn(f,x,z);return y<h+.02&&y>h-(f.thick||.12)-.02;});
+ const clear=(a,b)=>{const d=b.map((v,i)=>v-a[i]),len=Math.hypot(...d);for(let t=.2;t<len-.3;t+=.06){const p=a.map((v,i)=>v+d[i]*t/len);if(solid(p[0],p[2],p[1],.06)||slab(p[0],p[2],p[1]))return false;}return true;};
+ const pick=shots=>shots.find(s=>{const [x,y,z]=s.pos,dx=s.chest[0]-x,dy=s.chest[1]-y,dz=s.chest[2]-z,len=Math.hypot(dx,dy,dz);if(solid(x,z,y,.16))return false;for(let t=.2;t<len-.35;t+=.12){const k=t/len;if(solid(x+dx*k,z+dz*k,y+dy*k,.06))return false;}return true;})||shots[0];
+ const fov=65*Math.PI/180,aspect=390/844,halfV=fov/2,halfH=Math.atan(Math.tan(halfV)*aspect);
+ const inFrame=(pos,look,p,margin=.03,wide=aspect)=>{const halfH=Math.atan(Math.tan(halfV)*wide);const f=new THREE.Vector3(...look).sub(new THREE.Vector3(...pos)).normalize(),right=new THREE.Vector3().crossVectors(f,new THREE.Vector3(0,1,0)).normalize(),up=new THREE.Vector3().crossVectors(right,f);
+  const d=new THREE.Vector3(...p).sub(new THREE.Vector3(...pos)),z=d.dot(f);return z>0&&Math.abs(Math.atan2(d.dot(right),z))<halfH-margin&&Math.abs(Math.atan2(d.dot(up),z))<halfV-margin;};
+ // The feet along the stair's line: the lower flight, round the landing, the upper flight.
+ const line=[];const step=.05;
+ for(let x=-1.9;x>=-4.5;x-=step)line.push([x,sakuraStairFloor('lower',x),-4.6]);
+ for(let z=-4.6;z>=-6.15;z-=step)line.push([-5.05,H/2,z]);
+ for(let x=-4.5;x<=-1.9;x+=step)line.push([x,sakuraStairFloor('upper',x),-6.15]);
+ for(const going of ['up','down']){
+  const feet=going==='up'?line:[...line].reverse(),dt=1/60,speed=1.4;
+  let pos=null,at=null,frames=0,nearest=Infinity,kneesHidden=0,aheadFrames=0,aheadOut=0,aheadOffWide=0;
+  for(let i=0;i<feet.length;i++){
+   const p={x:feet[i][0],y:feet[i][1],z:feet[i][2]};
+   const shots=sakuraStairLens(p,going);assert.ok(shots?.length,going+': a lens at '+feet[i]);
+   const shot=pick(shots);
+   // Between two points of the line, the frames he takes to walk it.
+   const n=Math.max(1,Math.round(step/(speed*dt)));
+   for(let k=0;k<n;k++){
+    if(!pos){pos=[...shot.pos];at=[...shot.at];}
+    else{const a=1-Math.exp(-STAIR_LENS_EASE.pos*dt),b=1-Math.exp(-STAIR_LENS_EASE.look*dt);pos=pos.map((v,j)=>v+(shot.pos[j]-v)*a);at=at.map((v,j)=>v+(shot.at[j]-v)*b);}
+    frames++;
+    const head=[p.x,p.y+1.6,p.z],chest=[p.x,p.y+1.2,p.z],knees=[p.x,p.y+.45,p.z],d=Math.hypot(...chest.map((v,j)=>v-pos[j]));nearest=Math.min(nearest,d);
+    const where=going+' at '+feet[i].map(v=>v.toFixed(2))+' lens '+pos.map(v=>v.toFixed(2));
+    assert.ok(d>=1.4,where+': the lens is '+d.toFixed(2)+' m from him');
+    assert.equal(solid(pos[0],pos[2],pos[1],.12),false,where+': the lens is in a wall or a guard');
+    assert.equal(slab(pos[0],pos[2],pos[1]),false,where+': the lens is in a floor');
+    assert.ok(pos[1]<H+2.8-.2,where+': under the stairwell’s roof');
+    for(const q of [head,chest,knees])assert.ok(inFrame(pos,at,q),where+': he is out of the phone’s frame at '+q.map(v=>v.toFixed(2)));
+    for(const q of [head,chest])assert.ok(clear(pos,q),where+': he is hidden at '+q.map(v=>v.toFixed(2)));
+    // His knees may pass behind the guard between the flights (a rail's height) for a moment on the landing, not more.
+    if(!clear(pos,knees))kneesHidden++;
+    // Where he is going: always in a landscape frame; on an upright phone too, but for the moments the lens is still
+    // coming round from the landing behind him.
+    if(shot.ahead){aheadFrames++;if(!inFrame(pos,at,shot.ahead,0,16/10)){aheadOffWide++;if(process.env.DEBUG_LENS)console.log('wide off',where);}if(!inFrame(pos,at,shot.ahead,0))aheadOut++;}
+   }
+  }
+  assert.ok(frames>200&&nearest>=1.4,going+': '+frames+' frames, nearest '+nearest.toFixed(2)+' m');
+  if(process.env.DEBUG_LENS)console.log(going,{frames,aheadFrames,aheadOut,aheadOffWide,kneesHidden,nearest});
+  assert.ok(aheadOffWide<=aheadFrames*.02,going+': where he is going is off a landscape frame in '+aheadOffWide+' of '+aheadFrames+' frames');
+  assert.ok(aheadOut<=aheadFrames*.15,going+': where he is going is off an upright phone in '+aheadOut+' of '+aheadFrames+' frames');
+  assert.ok(kneesHidden<=frames*.05,going+': his knees hidden in '+kneesHidden+' of '+frames+' frames');
+ }
  display.dispose();
 });

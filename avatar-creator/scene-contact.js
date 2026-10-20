@@ -13,7 +13,7 @@ export function reachHand(avatar,side,target){
 export function applySceneContacts(records){
  const byId=new Map(records.map(r=>[r.actor.id,r])),reports=[];
  for(const r of records){if(!r.actor.liftedBy)continue;const carrier=byId.get(r.actor.liftedBy);if(!carrier)continue;const a=r.avatar,b=carrier.avatar;
-  const height=b.height*b.root.scale.y,relative=new THREE.Vector3(-.24*height,.20,.12*height).applyAxisAngle(new THREE.Vector3(0,1,0),b.root.rotation.y);
+  const height=b.height*b.root.scale.y,relative=new THREE.Vector3(-.29*height,.32,.16*height).applyAxisAngle(new THREE.Vector3(0,1,0),b.root.rotation.y);
   a.root.position.copy(b.root.position).add(relative);a.root.rotation.y=b.root.rotation.y;a.root.updateMatrixWorld(true);
   const neck=a.bones.neck.getWorldPosition(new THREE.Vector3()),back=new THREE.Vector3(0,0,-.075*a.root.scale.x).applyAxisAngle(new THREE.Vector3(0,1,0),a.root.rotation.y);
   const targetR=neck.clone().add(back).add(new THREE.Vector3(.035,-.10*a.root.scale.x,0));
