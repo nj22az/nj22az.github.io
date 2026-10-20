@@ -25,7 +25,7 @@ try{
  await capture('street-midnight',30,[9,2.1,-16],[-12,3.8,-27.3]);
  await page.setViewportSize({width:390,height:844});await page.waitForFunction(()=>{const c=document.querySelector('#game');return c.height>c.width;});
  await capture('phone-day',720,[9,2.1,-16],[-12,3.8,-27.3]);
- await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__;a.camera=null;await a.enter('sakura-office');});
+ await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__;a.camera=null;await a.enterInside('sakura-office');});
  await capture('office-outlook-midnight',30,[.2,5.66,-2.7],[4.5,5.21,2.5]);
  assert.deepEqual(errors,[]);await page.close();
 }catch(error){failure=error;report.failure=error.stack;}

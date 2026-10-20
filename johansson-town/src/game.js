@@ -102,7 +102,9 @@ import {HOUSE_SAVE} from './world/johansson-house.js';
 import {createHomeCustomization} from './world/interiors/home-customization.js';
 import {buildCityRestaurant,CITY_RESTAURANT} from './world/interiors/city-restaurant.js';
 import {buildUpperHome} from './world/interiors/upper-home.js';
-import {SAKURA_STAIR,sakuraBoundsAt,STAIR_LENS_EASE} from './world/interiors/sakura-stairs.js';
+import {SAKURA_STAIR_PASSAGE,onSakuraStairFoot,onSakuraStairHead} from './world/interiors/sakura-stairs.js';
+import {buildSakuraOfficeRoom} from './world/interiors/sakura-office-room.js';
+import {SAKURA_BACK} from './world/okinawa/old-town.js';
 import {buildFamilyHome} from './world/interiors/family-home.js';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js?ui=compact-3';
@@ -268,7 +270,7 @@ function signTex(a,b,accent='#9b4035'){const c=document.createElement('canvas');
 const townSections=createTownSections({mobile});window.__JOHANSSON_SECTIONS__=townSections.stats;
 const shopStreetView=createShopStreetView();window.__JOHANSSON_SHOP_VIEW__=shopStreetView.stats;
 /** Rooms that look out on the real street through their front: Sakura's glass, Minato's door and window. */
-function streetFrontageOf(site){if(site?.id==='market'&&player.position.y>SAKURA_STAIR.height-.3){const office=SITES.find(s=>s.id==='sakura-office');if(office)return streetFrontageOf({...office,officePortals:office.officePortals.map(p=>({...p,interiorOrigin:[p.interiorOrigin[0],SAKURA_STAIR.height,p.interiorOrigin[2]+SAKURA_STAIR.officeZ]}))});}if(site?.officePortals)return {portals:site.officePortals};if(!site?.streetFrontage)return null;if(site.id==='market')return {...site.streetFrontage,interiorZ:sakuraShop.layout.frontZ};return site.id==='izakaya'?site.streetFrontage:null;}
+function streetFrontageOf(site){if(site?.officePortals)return {portals:site.officePortals};if(!site?.streetFrontage)return null;if(site.id==='market')return {...site.streetFrontage,interiorZ:sakuraShop.layout.frontZ};return site.id==='izakaya'?site.streetFrontage:null;}
 const town=new THREE.Group(),room=new THREE.Group();scene.add(town,room);room.visible=false;
 
 // The drawn look, after Sakura Crossing (Kenton-GMI, MIT): quantised light with
@@ -676,6 +678,11 @@ function advanceWeather(){
  if(decoratorEnabled()&&new URLSearchParams(location.search).has('build'))window.__JOHANSSON_BUILDER__={catalogue:BUILD_CATALOGUE,...placements,loaded:()=>({...placementsLoad}),
   ...createBuildMode({canvas:renderer.domElement,camera,group:world.group,placements,factory:world.propFactory,heightAt:groundHeight,
    getAudit:()=>window.__JOHANSSON_AUDIT__,getStart:()=>player&&{x:player.position.x,z:player.position.z}})};
+// A site entered only from inside another (Sakura's office storey, up the shop's stair: the owner, 20 October 2026, "the
+// entry to the upper office is only from inside") leaves the SITES, so no door, pin, directory entry or route outside
+// leads to it.
+const INSIDE_SITES=new Map();for(let i=SITES.length-1;i>=0;i--)if(SITES[i].insideOnly)INSIDE_SITES.set(SITES[i].id,SITES.splice(i,1)[0]);
+const SAKURA_OFFICE_SITE=INSIDE_SITES.get('sakura-office')||null;
 assignWorkplaces(world,SITES);
 // The evening boat to Naha leaves from the ferry terminal: dinner with Thuan in the city
 // (interiors/city-restaurant.js). It is an outing, not a door in town, so it is not one of
@@ -882,40 +889,6 @@ function placeThirdPerson(dt){
   const flat=Math.max(.25,Math.hypot(camera.position.x-player.position.x,camera.position.z-player.position.z)),down=Math.max(-.6,Math.atan2(player.position.y+eye-.1-camera.position.y,flat)+.35);
   camera.rotation.x=THREE.MathUtils.lerp(camera.rotation.x,Math.min(camera.rotation.x,down),crampedEase);
  }
- placeLandingLens(dt);
-}
-/**
- * A room's landing lens (Sakura's turning landing, sakura-stairs.js SAKURA_LANDING): where the lens behind him would
- * stand against a wall a step away, the room names places that frame him and the next flight. The first with a clear
- * sight of his chest is taken; the lens eases over to it, follows it smoothly if it changes, and eases back to the
- * boom as he steps off the landing.
- */
-let landingEase=0,landingReady=false;
-const landingPos=new THREE.Vector3(),landingAt=new THREE.Vector3(),landingWant=new THREE.Vector3(),landingLook=new THREE.Vector3(),landingQ=new THREE.Quaternion(),landingM=new THREE.Matrix4(),landingFrom=new THREE.Quaternion(),boomLook=new THREE.Vector3();
-// The room's solids at a height (its walls, guards, furniture), not the ceiling over him: the lens may stand above a flight.
-const landingSolid=(x,z,y,r)=>roomColliders.some(c=>!c.only&&(c.minY||0)<y+.06&&(!Number.isFinite(c.height)||(c.minY||0)+c.height>y-.06)&&circleHitsRect(x,z,r,c));
-function landingSightClear(pos,chest){
- const [x,y,z]=pos,dx=chest[0]-x,dy=chest[1]-y,dz=chest[2]-z,len=Math.hypot(dx,dy,dz);
- if(landingSolid(x,z,y,.16))return false;
- for(let t=.2;t<len-.35;t+=.12){const k=t/len;if(landingSolid(x+dx*k,z+dz*k,y+dy*k,.06))return false;}
- return true;
-}
-function placeLandingLens(dt){
- const shots=current&&!seated?activeRoomLayout?.stairLens?.(player.position):null;
- landingEase=THREE.MathUtils.damp(landingEase,shots?.length?1:0,STAIR_LENS_EASE.blend,dt);
- if(shots?.length){
-  const shot=shots.find(s=>landingSightClear(s.pos,s.chest))||shots[0];
-  landingWant.set(...shot.pos);landingLook.set(...shot.at);
-  if(!landingReady){landingPos.copy(landingWant);landingAt.copy(landingLook);landingReady=true;}
-  else{const k=1-Math.exp(-STAIR_LENS_EASE.pos*dt);landingPos.lerp(landingWant,k);landingAt.lerp(landingLook,1-Math.exp(-STAIR_LENS_EASE.look*dt));}
- }
- if(landingEase<.002){landingEase=0;if(!shots)landingReady=false;return;}
- // Between the boom and the stair's lens, both the place and what it looks at are blended: the boom looks past him at a
- // point ahead of its lens, the stair's lens at him, and a lens on the way between looks between the two, so he stays in
- // the frame while it comes round (blending the turns alone let the half-way lens look past him).
- landingFrom.copy(camera.quaternion);boomLook.set(0,0,-1).applyQuaternion(landingFrom).multiplyScalar(Math.max(1.5,thirdDistance)).add(camera.position);
- camera.position.lerp(landingPos,landingEase);boomLook.lerp(landingAt,landingEase);
- landingQ.setFromRotationMatrix(landingM.lookAt(camera.position,boomLook,lensUp));camera.quaternion.copy(landingQ);
 }
 /** R, the drink button, or Drink at the table: a can from the bag, or a sip of what Thao brought. */
 function drinkNow(){if(parkSeat?.izakaya&&beerService?.drink)return sipDrink();return hands.drink();}
@@ -975,7 +948,7 @@ function updateJohansson(dt){
  const partner=conversationName?(conversationName==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===conversationName)?.g):null;
  if(partner){partner.getWorldPosition(lookPoint);lookPoint.y+=1.5;johansson.lookAt(lookPoint);}else johansson.lookAt(spawnScene?.gaze||null);
  setSwingFocus(camera.position);
- johansson.update(dt,{speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5||landingEase>.5:shipRoom()||houseboatCabin()?thirdDistance>=HEAD_CAM:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active});
+ johansson.update(dt,{speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5:shipRoom()||houseboatCabin()?thirdDistance>=HEAD_CAM:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active});
  // Sakura: one thing in his hand, more in a basket, until he pays (shop-carry.js).
  shopCarry.sync(activities?.state?.konbini?.basket,current?.id==='market'&&johansson.ready);
 }
@@ -1161,7 +1134,7 @@ const ramenMeals=createVenueService({room:ramenLife,place:'ramen',getMinutes:()=
  ...(({staffName:'Mrs Sato',venueName:'Sato Ramen',getStaff:()=>world.people.find(p=>p.profile.name==='Mrs Sato')?.g||null,
   kitchen:satoKitchen,meal:MEALS.lunch,drinkFor:name=>SATO_LUNCH_DRINK[name]||'mugicha',tableFor:p=>SATO_GUEST_SEATS[p.g.userData.ramenSeat]?.table}))});
 let storeClerk=world.people.find(p=>p.profile.name==='Thuan').g,storeWelcomed=false;
-const sakuraShop=createSakuraShop({world,scene,state:activities.state,ledger:residentLedger,register:reg,action:activities.action,exit:leaveRoom,getMinutes:()=>minutes,getPlayerSeat:()=>parkSeat?.storeSeatId,getPlayerPosition:()=>player.position,isInside:()=>current?.id==='market',pay:activities.spend,say,onBorrow:npcActivities.release,getRain:()=>weather,save:()=>{if(!catchingUp)activities.save();}});
+const sakuraShop=createSakuraShop({stair:dir=>takeSakuraStair(dir),world,scene,state:activities.state,ledger:residentLedger,register:reg,action:activities.action,exit:leaveRoom,getMinutes:()=>minutes,getPlayerSeat:()=>parkSeat?.storeSeatId,getPlayerPosition:()=>player.position,isInside:()=>current?.id==='market',pay:activities.spend,say,onBorrow:npcActivities.release,getRain:()=>weather,save:()=>{if(!catchingUp)activities.save();}});
 storeService=sakuraShop.service;
 /**
  * Puts the real shop behind the real glazing, and retires the stand-in shelves that
@@ -1178,7 +1151,7 @@ function showShopThroughWindow(){
 function ensureThuan(){return storeClerk;}
 function startVenueService(place){venueService=createVenueService({room,place,drinkFor:name=>place==='izakaya'&&name==='Thuan'?'beer':null,getMinutes:()=>minutes,ledger:residentLedger,getCustomers:()=>world.people.filter(p=>place==='izakaya'?p.g.userData.inIzakaya:p.g.userData.inRamen),getStaff:()=>place==='izakaya'?world.people.find(p=>p.profile.name==='Thao')?.g:null});}
 function addRoomProps(s){
-  if(s.id==='market'){shopStreetView.invalidate();storeWelcomed=false;sakuraShop.enter(room);roomColliders.push(...sakuraShop.colliders);sakuraShop.update(0);return;}
+  if(s.id==='market'){shopStreetView.invalidate();storeWelcomed=false;sakuraShop.enter(room,{quiet:sakuraStairArrival});roomColliders.push(...sakuraShop.colliders);sakuraShop.update(0);return;}
   if(s.id==='warehouse')return;
   if(s.id==='school'){roomColliders.push(...activeRoomLayout.colliders);activeRoomLayout.tick(0,minutes,elapsed);return;}
   if(s.id==='onsen'){roomColliders.push(...activeRoomLayout.colliders);activeRoomLayout.tick(0,minutes);onsenGuests.sync(minutes);return;}
@@ -1201,7 +1174,10 @@ function roomShell(s){
  clearRoom({enteringMarket:s.id==='market'});town.visible=false;room.visible=true;
  const shared={site:s,room,reg,collider:roomCollider,action:(...args)=>{if(!islandPlay?.action(...args))activities.action(...args);},exit:leaveRoom};
  if(s.id==='dungeon'){activeRoomLayout=dungeonLayout(shared);return;}
- if(s.id==='market'){activeRoomLayout={...sakuraShop.layout,blocked:(x,z,r)=>suppliedRoomBoundsBlocked(sakuraBoundsAt(SAKURA_LAYOUT,player.position.y),x,z,r)};return;}
+ if(s.id==='market'){activeRoomLayout={...sakuraShop.layout,blocked:(x,z,r)=>suppliedRoomBoundsBlocked(SAKURA_LAYOUT,x,z,r)};return;}
+ // Sakura's office storey: a room of its own, reached only up the shop's stair (sakura-stairs.js); its fire door the only
+ // other way out, from inside.
+ if(s.id==='sakura-office'){const g=new THREE.Group();g.name='Sakura office storey';room.add(g);activeRoomLayout=buildSakuraOfficeRoom({...shared,room:g,downstairs:()=>takeSakuraStair('down'),evacuate:evacuateSakuraOffice});return;}
  if(s.id==='school'){activeRoomLayout=buildClassroom(shared);return;}
  if(s.id==='mayor-office'){activeRoomLayout=buildMayorOffice(shared);return;}
  if(s.id==='community-kitchen'){activeRoomLayout=buildCommunityKitchen(shared);return;}
@@ -1275,6 +1251,74 @@ async function crossThreshold(run,{chime=true}={}){
 }
 
 let roomLoading=false;
+/**
+ * Sakura's stair is a passage (the owner, 20 October 2026: "I want the stairs to lead up to a black hole and we disappear
+ * into there and when it loads we come up on the upper floor"; sakura-stairs.js). Stepping onto it, or "Go upstairs" /
+ * "Go downstairs", walks him a few treads into the dark while the picture goes black; the other room opens with him at
+ * the stair's other end, and the picture comes back. Nobody walks the flights.
+ */
+let stairPassage=null,stairArmed=true,sakuraStairArrival=false;
+function takeSakuraStair(direction){
+ const up=direction==='up';
+ if(stairPassage||roomLoading||(up?current?.id!=='market':current?.id!=='sakura-office'))return false;
+ const P=SAKURA_STAIR_PASSAGE[up?'foot':'head'];
+ replayInterrupted();resetInput();pointWalk.cancel();seated=false;parkSeat=null;
+ const path=[player.position.clone(),...P.walk.map(v=>new THREE.Vector3(...v))],lengths=path.slice(1).map((v,i)=>v.distanceTo(path[i]));
+ stairPassage={up,path,lengths,total:lengths.reduce((a,b)=>a+b,0),t:0,switching:false};
+ const veil=$('#threshold');veil.style.transition=`opacity ${SAKURA_STAIR_PASSAGE.fade}s ease-in`;veil.classList.add('on');
+ return true;
+}
+/** One step of the walk into the dark: along the path at a walking pace, facing the way he goes. */
+function stepStairPassage(dt){
+ // Once the walk is done the other room is opening and he stands where it put him: the walk must not move him again.
+ if(stairPassage.switching){playerSpeed=0;return;}
+ const S=stairPassage,seconds=SAKURA_STAIR_PASSAGE.seconds;S.t=Math.min(seconds,S.t+dt);
+ let d=S.total*S.t/seconds,i=0;while(i<S.lengths.length-1&&d>S.lengths[i]){d-=S.lengths[i];i++;}
+ const a=S.path[i],b=S.path[i+1],k=S.lengths[i]?Math.min(1,d/S.lengths[i]):1;
+ player.position.lerpVectors(a,b,k);
+ const dx=b.x-a.x,dz=b.z-a.z;if(Math.hypot(dx,dz)>.01){yaw=Math.atan2(-dx,-dz);player.quaternion.setFromAxisAngle(yAxis,yaw);}
+ playerSpeed=S.total/seconds;
+ if(S.t>=seconds&&!S.switching){S.switching=true;finishStairPassage();}
+}
+async function finishStairPassage(){
+ const up=stairPassage.up,veil=$('#threshold'),end=SAKURA_STAIR_PASSAGE[up?'head':'foot'].arrive;
+ try{
+  sakuraStairArrival=!up;leaveRoom();
+  await enterRoom(up?SAKURA_OFFICE_SITE:SITES.find(s=>s.id==='market'),{at:[...end.at],yaw:end.yaw});
+  say(up?'Sakura · the office upstairs.':'Sakura · the stockroom.',2);
+ }finally{
+  sakuraStairArrival=false;stairPassage=null;stairArmed=false;playerSpeed=0;
+  await new Promise(r=>setTimeout(r,120));veil.style.transition='opacity .45s ease-out';veil.classList.remove('on');
+  setTimeout(()=>{veil.style.transition='';},500);
+ }
+}
+/** Stepping onto the stair at either end starts the passage, once he has stepped off it since he arrived. */
+function checkSakuraStair(){
+ if(stairPassage||!current)return;
+ const p=player.position,end=current.id==='market'?onSakuraStairFoot(p):current.id==='sakura-office'?onSakuraStairHead(p):false;
+ if(!end){stairArmed=true;return;}
+ if(stairArmed)takeSakuraStair(current.id==='market'?'up':'down');
+}
+/**
+ * The office's fire door opens from inside only (the owner: "it should be possible to evacuate through the fire ladder but
+ * that door only open from the inside"): out onto the escape's landing, down the caged ladder (okinawa/old-town.js
+ * SAKURA_BACK.fireEscape), and he is in the yard by its foot, looking back up it. From the yard it is look-only.
+ */
+async function evacuateSakuraOffice(){
+ if(current?.id!=='sakura-office'||stairPassage||roomLoading)return;
+ const veil=$('#threshold');veil.style.transition='opacity .6s ease-in';veil.classList.add('on');
+ townAudio.bells([[1760,0],[1760,.18],[1760,.36]],.12);
+ await new Promise(r=>setTimeout(r,650));
+ try{
+  leaveRoom();
+  // A few steps out from the ladder's foot, turned to look back up it, so the lens behind him has the yard, not the wall.
+  const L=SAKURA_BACK.fireEscape.ladder,x=L.cageX-1.6,z=L.z;
+  player.position.set(x,groundHeight(x,z),z);yaw=-Math.PI/2;pitch=0;player.quaternion.setFromAxisAngle(yAxis,yaw);unstuckPlayer();
+  say('Out through the fire door, the bell ringing in the shop below, along the landing and down the caged ladder to the yard.',5);
+ }finally{
+  await new Promise(r=>setTimeout(r,150));veil.style.transition='opacity .5s ease-out';veil.classList.remove('on');setTimeout(()=>{veil.style.transition='';},600);
+ }
+}
 /** Seated in Umi-no-yu's coin massage chair: the room's coin and timer (onsen.js ONSEN_MASSAGE), or null anywhere else. */
 const massageChair=()=>seated&&current?.id==='onsen'&&parkSeat?.seatId==='massage'?activeRoomLayout?.massage||null:null;
 /**
@@ -1286,10 +1330,10 @@ const ROOM_ASSETS={onsen:ONSEN_ASSETS};
 const roomAssetsReady=s=>(!s.industrialWorkshop||workshopPropsReady())&&(ROOM_ASSETS[s.id]||[]).every(assetLoaded);
 const loadRoomAssets=s=>Promise.all([...(ROOM_ASSETS[s.id]||[]).map(id=>loadAsset(id)),...(s.industrialWorkshop?[preloadWorkshopProps()]:[])]).then(all=>all.every(Boolean));
 let roomAssetsTry=0;
-async function enterRoom(s){replayInterrupted();lowerPocket();spawnScene?.cancel('room');
+/** `arrival`: where he comes in and which way he faces, when it is not the room's door (Sakura's stair, sakura-stairs.js). */
+async function enterRoom(s,arrival=null){replayInterrupted();lowerPocket();spawnScene?.cancel('room');
  if(roomLoading)return;
- const officeEntry=s.id==='sakura-office';
- s=SITES.find(site=>site.id===(officeEntry?'market':businessId(s.id)))||s;
+ s=SITES.find(site=>site.id===businessId(s.id))||s;
  if(s.id==='market'){roomLoading=true;resetInput();let ready=false;try{ready=await sakuraShop.ready();}finally{roomLoading=false;}if(!ready){say('Could not open Sakura. Please try the door again.',5);return;}}
  // Buildings remain accessible; business hours govern staff and service only.
  if((s.id==='izakaya'||(s.id==='ramen'))&&!izakayaReady('interior')){
@@ -1304,19 +1348,19 @@ async function enterRoom(s){replayInterrupted();lowerPocket();spawnScene?.cancel
  }
  parkSeat=null;seated=false;activities.close();if(!photoStudio?.active&&!photoReturning)activities.visit(s.id);
  const streetYaw=yaw,streetPitch=pitch;
- current=s;roomShell(s);addRoomProps(s);content=buildBusinessContent({site:s,room,register:reg,onAction:activities.action,onInspect:item=>inspector.open(item)});if(!activeRoomLayout?.storeys)room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});indoorCeilings=createIndoorCeilings(room,{from:activeRoomLayout?.ceilingsFrom});const spawn=officeEntry?[0,SAKURA_STAIR.height,-5.15]:activeRoomLayout?.spawn||[0,0,4.3];
+ current=s;roomShell(s);addRoomProps(s);content=buildBusinessContent({site:s,room,register:reg,onAction:activities.action,onInspect:item=>inspector.open(item)});if(!activeRoomLayout?.storeys)room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});indoorCeilings=createIndoorCeilings(room,{from:activeRoomLayout?.ceilingsFrom});const spawn=arrival?.at||activeRoomLayout?.spawn||[0,0,4.3];
  // The storeys drawn for where he arrives (a room of more than one storey shows the floor he stands on), before the first frame.
  activeRoomLayout?.follow?.({x:spawn[0],y:spawn[1]??0,z:spawn[2]});
  player.position.set(...spawn);
  // With the camera behind him, start a step inside so it is not up against the door.
- if(thirdPerson&&!officeEntry){const inward=activeRoomLayout?.yaw??0,dx=-Math.sin(inward),dz=-Math.cos(inward);for(let d=.1;d<=1.2;d+=.1){const x=spawn[0]+dx*d,z=(spawn[2]??0)+dz*d;if(cameraBlocked(x,z,player.position.y+.9,.35))break;player.position.x=x;player.position.z=z;}}
+ if(thirdPerson&&!arrival){const inward=activeRoomLayout?.yaw??0,dx=-Math.sin(inward),dz=-Math.cos(inward);for(let d=.1;d<=1.2;d+=.1){const x=spawn[0]+dx*d,z=(spawn[2]??0)+dz*d;if(cameraBlocked(x,z,player.position.y+.9,.35))break;player.position.x=x;player.position.z=z;}}
  unstuckPlayer();workplaceResidents.enter(s,minutes);bookshopCustomers.enter(s,minutes);
  // The dungeon is left by its rope, not by walking back through where you came in.
 
  // The heading goes through the door with you. Snapping to the room's own yaw and a
  // level pitch is the single thing that most makes an interior read as a different
  // place: you walk in looking where you were looking, not where the room says.
- yaw=roomyHeading(streetToRoom(streetYaw,s,activeRoomLayout));player.quaternion.setFromAxisAngle(yAxis,yaw);
+ yaw=Number.isFinite(arrival?.yaw)?arrival.yaw:roomyHeading(streetToRoom(streetYaw,s,activeRoomLayout));player.quaternion.setFromAxisAngle(yAxis,yaw);
  pitch=THREE.MathUtils.clamp(streetPitch,-.55,.55);$('#exitRoomButton').classList.remove('hidden');syncView();active=null;$('#place').textContent=s.title;$('#placeSub').textContent=`${s.jp} · ${s.sub}`;$('#timeText').textContent=s.line;if(!s.arrival)say(s.id==='crystal-room'&&activeRoomLayout?'The timber door closes. Something here does not belong to the street.':`${s.title} · Explore the room. Tap objects nearby to examine them.`,s.id==='crystal-room'?5:3);camera.position.copy(player.position);camera.position.y+=1.7;}
 function leaveRoom(){if(!current)return;replayInterrupted();lowerPocket();spawnScene?.cancel('room');if(!photoStudio?.active&&!photoReturning&&current.id===NAHA_ARRIVALS.id&&activities.state.island?.journey.location==='naha'){islandPlay.returnFlight();return;}const leavingDungeon=current.id==='dungeon';wearSwim(false);inspector?.close();activities.close();resetInput();$('#directory').classList.add('hidden');document.body.classList.remove('town-menu-open');$('#exitRoomButton').classList.add('hidden');seated=false;parkSeat=null;active=null;const s=current;
  const roomYaw=yaw,roomPitch=pitch,roomLayout=activeRoomLayout;
@@ -1670,7 +1714,7 @@ function setTime({updateHours=true}={}){
  $('.timecard small').textContent=c.period;
  return day;
 }
-$('#exitRoomButton').onclick=()=>crossThreshold(async()=>leaveRoom());
+$('#exitRoomButton').onclick=()=>{if(current?.id==='sakura-office'){takeSakuraStair('down');return;}crossThreshold(async()=>leaveRoom());};
 $('#enterBuildingButton').onclick=()=>{const s=doorSite;if(s&&!current&&!roomLoading)void crossThreshold(()=>enterRoom(s));};
 function syncView(){
  document.body.classList.remove('diorama');camera.fov=cameraControls.settings.fov;camera.updateProjectionMatrix();
@@ -2057,7 +2101,7 @@ function advanceTown(dt,playerPaused,fastForward=false){
     const carry=held=>{if(!held)return;const f=world.ferry.ferry;f.updateMatrixWorld(true);player.position.copy(f.localToWorld(held.at));const turn=f.rotation.y-held.yaw;if(turn){yaw+=turn;player.rotation.y+=turn;}};
     const crossing=hold();
     minutes+=fastForward?dt:dt*townClock.speed/60;elapsed+=dt;if(!fastForward)islandPlay?.tick(dt);carry(crossing);activities.tick(dt);
-    if(!catchingUp&&(saveTick+=dt)>=15){activities.save();saveTick=0;}if(!playerPaused&&!islandPlay?.cinematic){shipWalk()?.update();characters?.physics?.(dt,playerGround());updatePlayer(dt);}
+    if(!catchingUp&&(saveTick+=dt)>=15){activities.save();saveTick=0;}if(!playerPaused&&!islandPlay?.cinematic){shipWalk()?.update();characters?.physics?.(dt,playerGround());if(stairPassage)stepStairPassage(dt);else{updatePlayer(dt);checkSakuraStair();}}
     evictIfClosed();
     if(current?.id==='izakaya')izakayaGuests.sync(minutes,dt);
     if(current?.id==='onsen')onsenGuests.sync(minutes,dt);
@@ -2206,7 +2250,8 @@ function updateContextControls(){
  const table=Number.isInteger(parkSeat?.ramenSeatId)||!!parkSeat?.izakaya;
  const pending=ramenOrder?!ramenOrder.delivered:!!beerService?.pending;
  const exitPoint=activeRoomLayout?.exit;
- const exitNearby=!!current&&(!!active&&/^(?:exit|leave|step outside|go out)\b/i.test(active.label)||exitPoint&&Math.hypot(player.position.x-exitPoint[0],player.position.z-exitPoint[2])<1.45&&(!roomWalk()||Math.abs(player.position.y-(activeRoomLayout.exitFloor??0))<1));
+ // A boolean: a room without an exit point (Sakura's office: its way out is the stair) offered "Exit to street" anywhere.
+ const exitNearby=!!current&&!!(!!active&&/^(?:exit|leave|step outside|go out)\b/i.test(active.label)||exitPoint&&Math.hypot(player.position.x-exitPoint[0],player.position.z-exitPoint[2])<1.45&&(!roomWalk()||Math.abs(player.position.y-(activeRoomLayout.exitFloor??0))<1));
  contextTarget=!seated&&!blocked?active:null;
  const serviceOpen=Number.isInteger(parkSeat?.ramenSeatId)?satoRamenOpen(minutes):!!parkSeat?.izakaya&&izakayaOpen(minutes);
  contextRail.update({playing:started,paused:blocked,seated,table,canOrder:table&&serviceOpen&&!pending&&!ramenOrder,
@@ -2357,6 +2402,10 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
   return {x,z,y,radius,room:current?.id||null,bounds,staticBlocked:bounds||solids.length>0,residentBlocked:residents.length>0&&!(!current&&inEntrance(x,z)),solids,residents,route:this.route(x,z)};
  },
  enter(id){const s=id===CITY_RESTAURANT.id?NAHA_TRIP:id===NAHA_ARRIVALS.id?NAHA_ARRIVALS:SITES.find(site=>site.id===id)||world.landmarks?.find(site=>site.id===id);return s?enterRoom(s):null;},
+ /** Sakura's stair and fire escape, as the prompts take them (the audit photographs them); `passage` while one runs. */
+ stair(direction){return takeSakuraStair(direction);},evacuate(){return evacuateSakuraOffice();},get passage(){return !!stairPassage;},
+ /** A room entered only from inside another (Sakura's office), for the audit's photographs. */
+ enterInside(id,arrival){const s=INSIDE_SITES.get(id);return s?enterRoom(s,arrival):null;},
  leave(){leaveRoom();},
  /**
   * Recording a walk and playing it back (src/input/replay.js). record(note) starts from here and now; stop() gives the

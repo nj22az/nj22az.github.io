@@ -139,12 +139,14 @@ export function buildThuanFlat(parent,{sites=[],shopDoor}={}){
   backGlass.name='Sakura rear office glazing';parent.add(backGlass);
  },0);
  const target=parent.parent;kit.finish(target,'Sakura office upper shell');
- // The office is entered through the shop and up its inside stair: its directory entry is the shop's own door.
+ // The office is entered only from inside, up the shop's stair (the owner, 20 October 2026: "the entry to the upper office
+ // is only from inside not from outside"): its site is `insideOnly`, kept out of the town's doors, pins, directory and
+ // routes (game.js), and its door is the shop's, where leaving it from the street's side would put him.
  const door=new THREE.Vector3(...shopDoor);
  // The office room's origin is the middle of the upper floor; portals identify the actual east/south openings.
  const origin=parent.localToWorld(new THREE.Vector3(0,F,-D/2));
  const portal=(local,interiorYaw,span)=>({position:parent.localToWorld(new THREE.Vector3(local[0],F,local[2]-D/2)).toArray(),yaw:yaw+interiorYaw,interiorOrigin:local,interiorYaw,span,hideGlazing:true});
- const site={id:'sakura-office',title:'Sakura main office & kitchenette',sub:'SAKURA · MAIN OFFICE',line:'Accounts and supplier orders upstairs; daily till administration remains downstairs.',
+ const site={id:'sakura-office',insideOnly:true,title:'Sakura main office & kitchenette',sub:'SAKURA · MAIN OFFICE',line:'Accounts and supplier orders upstairs; daily till administration remains downstairs.',
   x:door.x,z:door.z,door:door.toArray(),exitPosition:door.toArray(),approachPosition:door.toArray(),entryFacing:yaw,opens:'00:00',
   officeOrigin:origin.toArray(),officePortals:sakuraOfficePortals().map(p=>({id:p.id,...portal(p.local,p.interiorYaw,p.span)}))};
  sites.push(site);

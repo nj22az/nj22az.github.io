@@ -93,7 +93,7 @@ test('Sakura office has reachable business fittings; the only bedding is the res
  const futons=[];room.traverse(o=>{if(/futon/i.test(o.name))futons.push(o);});assert.ok(futons.length>0);
  const K=SAKURA_UPSTAIRS.oshiire;for(const f of futons)assert.ok(f.position.x>K.minX&&f.position.x<K.maxX&&f.position.z>K.minZ&&f.position.z<K.maxZ,f.name+' is in the futon cupboard');
  assert.ok(!ISLAND_HOUSEHOLDS.some(h=>!h.retired&&h.id==='market')&&!CAST.some(p=>p.home==='market'),'nobody lives at Sakura');
- for(const n of ['Kitchenette sink','Electric kettle','Office fridge','Desk telephone','Till ledger','Office desk top'])assert.ok(names.includes(n),n);
+ for(const n of ['Kitchenette sink','Electric thermo pot','Office fridge','Desk telephone','Till ledger','Office desk top'])assert.ok(names.includes(n),n);
  const b=layout.bounds,blocked=(x,z,r=.3)=>x<b.minX+r||x>b.maxX-r||z<b.minZ+r||z>b.maxZ-r||colliders.some(c=>standingHitsRect(x,z,r,0,c));
  for(const label of ['Read the till ledger','Make office tea','Look over Main Street','Look over the harbour','Lie down for a minute']){
   // A prompt sits on the thing (the ledger on the desk, the futon in its cupboard): walk to the nearest clear floor.
