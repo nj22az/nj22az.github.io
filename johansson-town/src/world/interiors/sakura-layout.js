@@ -3,7 +3,7 @@ import {MAGAZINE_RACK} from './sakura-magazine-rack.js';
 import {shelfCapacity} from '../../commerce/shop-stock.js';
 import {PRODUCTS} from '../../commerce/products-data.js';
 import {JOHANSSON_TRUCKER} from '../../commerce/sakura-caps.js';
-import {SAKURA_CLERK_POINT,SAKURA_CLERK_APPROACH,SAKURA_QUEUE,SAKURA_BROWSE} from './sakura-queue.js';
+import {SAKURA_CLERK_POINT,SAKURA_CLERK_APPROACH,SAKURA_QUEUE,SAKURA_BROWSE,TILL_BODY} from './sakura-queue.js';
 // Measured from the supplied convenience-store model, in metres at floor Y=0.
 const rect=(x,z,w,d,height=2.9)=>({x,z,w,d,height});
 
@@ -111,8 +111,9 @@ export const SAKURA_LAYOUT={
  clearance:CLERK_CLEARANCE,
  // The clerk's stand point is 0.75 m behind the counter's front (sakura-queue.js, New Yokosuka's konbini); a clerk-sized
  // walker is routed to `staffApproach` and steps the last 0.21 m forward (retail-clerk.js). The paying customer stands
- // at `checkout`, the first of the two queue spots; the queue and the browsing spots are sakura-queue.js's.
- staff:[...SAKURA_CLERK_POINT],staffApproach:[...SAKURA_CLERK_APPROACH],staffYaw:Math.PI/2,checkout:[SAKURA_QUEUE[0].x,0,SAKURA_QUEUE[0].z],
+ // at `checkout`, the first of the two queue spots; the queue and the browsing spots are sakura-queue.js's. `staffBody`
+ // is her body's depth from its middle at the till: what has to be clear for a clerk already at work to be found there.
+ staff:[...SAKURA_CLERK_POINT],staffApproach:[...SAKURA_CLERK_APPROACH],staffBody:TILL_BODY,staffYaw:Math.PI/2,checkout:[SAKURA_QUEUE[0].x,0,SAKURA_QUEUE[0].z],
  queue:SAKURA_QUEUE,browse:SAKURA_BROWSE,stockroom:[.7,0,-5.5],register:[4.88,FURNITURE_HEIGHTS.serviceCounter+.12,1.17],
  colliders:[
   ...GONDOLA.map(([id,r])=>turned(id,r)),
