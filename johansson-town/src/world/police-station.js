@@ -1,6 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {createKit,paint} from './okinawa/kit.js';
 import {bicycle} from './okinawa/parked-bicycle.js';
+import {buildPatrolCar,PATROL_CAR} from './patrol-car.js';
 import {japaneseSign} from './okinawa/signs.js';
 import {createLampGlow,createLightPools} from './light-pools.js';
 import {windowGlow,poolGlow} from '../render/dusk.js';
@@ -76,6 +77,13 @@ const noticeBoard=()=>paint(1024,576,(ctx,w,h)=>{
 });
 /** The car's door panels: 沖縄県警察 in black on the white. */
 const carDoor=()=>paint(256,64,(ctx,w,h)=>{ctx.fillStyle='#f4f3ee';ctx.fillRect(0,0,w,h);ctx.fillStyle='#16181c';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`bold 40px ${SANS}`;ctx.fillText(japaneseSign('Okinawa Prefectural Police'),w/2,h/2+2);});
+/**
+ * The car's number plates: a kei car's yellow plate, black lettering, the Okinawa office, its class number and a
+ * kana. A made-up number, nobody's: ・110, which the station's clerk asked for as a joke and got.
+ */
+const kPlate=()=>paint(256,128,(ctx,w,h)=>{ctx.fillStyle='#f2cf3a';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#2a2a2a';ctx.lineWidth=5;ctx.strokeRect(6,6,w-12,h-12);
+ ctx.fillStyle='#1d1d1d';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`bold 30px ${SANS}`;ctx.fillText('沖縄 50',w/2+20,30);
+ ctx.font=`bold 26px ${SANS}`;ctx.fillText('あ',34,88);ctx.font=`bold 62px ${SANS}`;ctx.fillText('・110',w/2+22,86);});
 /** The bay's ground marking, white paint: 警察車両専用. */
 const bayMark=()=>paint(512,96,(ctx,w,h)=>{ctx.clearRect(0,0,w,h);ctx.fillStyle='rgba(244,243,236,.92)';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`bold 64px ${SANS}`;ctx.fillText(japaneseSign('Police vehicles only'),w/2,h/2+4);});
 /** The flag. */
@@ -174,19 +182,8 @@ export function buildPoliceStation(world,options){
  kit.block(bay.x1-.1,bay.x1,paintY,paintY+.01,bay.z0,bay.z1,C.paint);
  const mark=new THREE.Mesh(new THREE.PlaneGeometry(1.7,.32),new THREE.MeshStandardMaterial({map:bayMark(),transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,roughness:.9}));
  mark.rotation.set(-Math.PI/2,0,Math.PI/2);mark.position.set(bay.x0+.45,paintY+.012,car.z);mark.name='Police bay marking';group.add(mark);
- // The patrol car: a white-and-black kei car, reverse-parked, its light bar dark until it is needed.
- kit.at(car.x,car.z,-Math.PI/2,()=>{
-  const L=car.length/2,Wd=car.width/2;
-  for(const [x,z] of [[-Wd+.12,1.12],[Wd-.12,1.12],[-Wd+.12,-1.12],[Wd-.12,-1.12]])kit.cyl(.27,.27,.18,x,.27,z,C.tyre,{rz:Math.PI/2,segments:14});
-  kit.block(-Wd,Wd,.25,.82,-L,L,C.black);kit.block(-Wd-.01,Wd+.01,.2,.34,-L-.03,L+.03,0x55585e);
-  kit.block(-Wd+.03,Wd-.03,.82,.92,.75,L-.05,C.white);
-  kit.block(-Wd+.05,Wd-.05,.82,1.52,-L+.15,.85,C.white);
-  kit.block(-Wd+.04,Wd-.04,1.02,1.45,.7,.9,C.glass);kit.block(-Wd+.04,Wd-.04,1.02,1.45,-L+.1,-L+.2,C.glass);
-  for(const s of [-1,1]){kit.block(s*(Wd-.04)-.01,s*(Wd-.04)+.01,1.0,1.42,-L+.35,.65,C.glass);kit.block(s*(Wd-.06)-.01,s*(Wd-.06)+.01,.86,1.42,-.05,.08,C.white);}
-  kit.block(-.5,.5,1.52,1.66,-.12,.12,C.red);kit.block(-.12,.12,1.52,1.67,-.13,.13,C.white);
-  for(const s of [-1,1]){kit.box(.22,.1,.04,s*(Wd-.25),.7,L+.01,0xf0ecd6);kit.box(.18,.08,.04,s*(Wd-.22),.66,-L-.01,C.red);}
-  for(const s of [-1,1])kit.sign(carDoor(),.62,.16,s*(Wd+.002),.66,.25,{ry:s*Math.PI/2,depth:.004,name:'Patrol car door panel',edge:C.black});
- });
+ // The patrol car: a white-and-black kei car, reverse-parked, its light bar dark until it is needed (patrol-car.js).
+ kit.at(car.x,car.z,-Math.PI/2,()=>buildPatrolCar(kit,{door:carDoor(),plate:kPlate()}));
  // The rack: a front-wheel rack of galvanised steel, two base rails and a pair of wheel guides per slot. Mori's white
  // bicycle is in the first slot; a child's green bicycle, found by the seawall and handed in, waits in the third with its
  // lost-property tag. Each stands with its front axle on the slot line (okinawa/parked-bicycle.js).
@@ -218,7 +215,7 @@ export function buildPoliceStation(world,options){
 
  // The colliders: the building, the car, the rack with its bicycles, the flagpole, the bench, the air-conditioner.
  world.colliders.push({id:'police-station',x:cx,z:cz,w:W,d:D,height:T+.06},
-  {id:'police-station-patrol-car',x:car.x,z:car.z,w:car.length,d:car.width,height:1.67},
+  {id:'police-station-patrol-car',x:car.x,z:car.z,w:car.length+.03,d:car.width+2*PATROL_CAR.mirrors,height:PATROL_CAR.height},
   {id:'police-station-bicycle-rack',x:(rack.x0+rack.x1)/2,z:slot,w:rack.x1-rack.x0+.6,d:.46,height:.4,holds:'bicycles'},...bikes,
   {id:'police-station-flagpole',x:fp.x,z:fp.z,w:.5,d:.5,height:fp.height},
   {id:'police-station-bench',x:bn.x,z:bn.z,w:bn.length,d:.4,height:.46},
