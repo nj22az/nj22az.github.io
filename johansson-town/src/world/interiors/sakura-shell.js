@@ -274,10 +274,17 @@ function buildCounter(){
  return mesh(material());
 }
 
+/**
+ * The tube runs, [x, z0, z1]: three down the shop, one over the counter, two in the stockroom, one in the small office.
+ * The stockroom's pair stand east of the stairwell (x > -0.6, where its ceiling is): the western one used to hang at
+ * x -2.2, over both flights where the ceiling was opened for the stair, a tube and batten in mid-air that the stair's
+ * lens met as a ceiling 2.6 m up.
+ */
+export const TUBE_RUNS=Object.freeze([[-4.4,-3.2,3.2],[-1.2,-3.2,3.2],[2.4,-3.2,3.2],[5.6,.4,3.4],[.9,-6.4,-4.4],[3.7,-6.4,-4.4],[5.7,-3.6,-1.6]].map(Object.freeze));
 /** The tubes, on wooden battens: two runs down the shop, one in the back room and the office. */
 function buildTubes(){
  const {span,mesh}=parts('sakura-light'),y=SAKURA_SHELL.ceiling-.2;
- const runs=[[-4.4,-3.2,3.2],[-1.2,-3.2,3.2],[2.4,-3.2,3.2],[5.6,.4,3.4],[-2.2,-6.4,-4.4],[2.2,-6.4,-4.4],[5.7,-3.6,-1.6]];
+ const runs=TUBE_RUNS;
  for(const [x,z0,z1] of runs)for(let z=z0;z<z1-.4;z+=1.32)span(x-.03,x+.03,y-.03,y+.03,z,z+1.2,0xfffbee);
  // Two bare tubes under the till canopy, lighting the counter top.
  for(const x of [4.55,4.95])for(const z of [.3,1.8])span(x-.025,x+.025,2.12,2.17,z,z+1.6,0xfffbee);
@@ -285,7 +292,7 @@ function buildTubes(){
 }
 function buildBattens(){
  const {span,mesh}=parts('sakura-battens'),y=SAKURA_SHELL.ceiling-.13;
- for(const [x,z0,z1] of [[-4.4,-3.2,3.2],[-1.2,-3.2,3.2],[2.4,-3.2,3.2],[5.6,.4,3.4],[-2.2,-6.4,-4.4],[2.2,-6.4,-4.4],[5.7,-3.6,-1.6]])span(x-.07,x+.07,y-.04,y+.04,z0,z1-.4,C.wood);
+ for(const [x,z0,z1] of TUBE_RUNS)span(x-.07,x+.07,y-.04,y+.04,z0,z1-.4,C.wood);
  // Over the counter hangs the till canopy (sakura-cheer.js buildTillCanopy); its rods.
  for(const z of [.25,1.95,3.3])for(const x of [4.45,5.15])span(x-.012,x+.012,2.5,SAKURA_SHELL.ceiling,z-.012,z+.012,0x2b2b2b);
  return mesh(material());
