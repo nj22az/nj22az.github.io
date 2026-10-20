@@ -107,8 +107,8 @@ function paintBoards(c){
  SPANNERS.forEach((s,i)=>{const px=40+i*58,len=110+s*4;x.strokeRect(px-6,60,12,len);x.beginPath();x.arc(px,56,10+s*.5,0,Math.PI*2);x.stroke();x.strokeRect(px-10-s/2,54+len,20+s,20);
   x.font='bold 18px sans-serif';x.textAlign='center';x.fillText(String(s),px,34);});
  x.strokeRect(30,330,420,22);SOCKETS.forEach((s,i)=>{x.beginPath();x.arc(60+i*56,341,10+s*.6,0,Math.PI*2);x.stroke();});
- x.strokeRect(470,240,24,170);x.beginPath();x.arc(482,232,22,0,Math.PI*2);x.stroke();
- x.strokeRect(520,240,16,150);x.strokeRect(548,250,14,140);
+ x.strokeRect(498,240,24,170);x.beginPath();x.arc(510,232,22,0,Math.PI*2);x.stroke();
+ x.strokeRect(540,240,16,150);x.strokeRect(566,250,14,140);
  x.font='bold 26px sans-serif';x.textAlign='left';x.fillText('使ったら戻す',30,440);
  // Job board, 0..600 × 500..920 (1.0 × 0.7 m at 600 px/m): white, marker writing.
  x.fillStyle='#f6f7f3';x.fillRect(0,500,600,420);
@@ -195,8 +195,8 @@ export function buildChinWall({room,collider,reg,action}){
   box('Spanner open end',[.008,.034,(16+s)/500],[x,yb,z],0xc8ccc9,board,null,.5);});
  {const [x,y,z]=at(240,341,.045);steel('Socket rail',[.012,.04,.84],[x,y,z],0xb03a2e,board);}
  SOCKETS.forEach((s,i)=>{const [x,y,z]=at(60+i*56,341,.06);cyl('Socket '+s+' mm',(8+s*.5)/500,(8+s*.5)/500,.04,[x,y,z],0xd2d6d3,board,[0,0,Math.PI/2],12,.5);});
- {const [x,y,z]=at(482,320,.05);steel('Ratchet handle',[.012,.34,.045],[x,y,z],0x8f9592,board);const [,yh]=at(482,232);cyl('Ratchet head',.044,.044,.02,[x,yh,z],0xc8ccc9,board,[0,0,Math.PI/2],14,.5);}
- {const [x,y,z]=at(528,315,.05);steel('Plug spanner',[.012,.3,.03],[x,y,z],0xc8ccc9,board);const [x2,y2,z2]=at(555,320,.05);box('Screwdriver handle',[.03,.12,.028],[x2,y2+.08,z2],0xd8b13a,board);steel('Screwdriver blade',[.006,.16,.006],[x2,y2-.06,z2],0x9aa3a0,board);}
+ {const [x,y,z]=at(510,320,.05);steel('Ratchet handle',[.012,.34,.045],[x,y,z],0x8f9592,board);const [,yh]=at(510,232);cyl('Ratchet head',.044,.044,.02,[x,yh,z],0xc8ccc9,board,[0,0,Math.PI/2],14,.5);}
+ {const [x,y,z]=at(548,315,.05);steel('Plug spanner',[.012,.3,.03],[x,y,z],0xc8ccc9,board);const [x2,y2,z2]=at(573,320,.05);box('Screwdriver handle',[.03,.12,.028],[x2,y2+.08,z2],0xd8b13a,board);steel('Screwdriver blade',[.006,.16,.006],[x2,y2-.06,z2],0x9aa3a0,board);}
 
  // ---- The calendar and the job board ---------------------------------------------------------------------------------
  const C=W.calendar,calendar=new THREE.Group();calendar.name=CHIN_KIT_BY_ID.calendar.mesh;group.add(calendar);
