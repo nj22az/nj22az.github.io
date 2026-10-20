@@ -1,5 +1,20 @@
 # Sakura internal stair and night lighting
 
+**20 October 2026: the stair is a passage, not walked.** The owner, on his iPhone: "I don't want the stairs to be
+traversable it's too much errors when running up the stairs, I want the stairs to lead up to a black hole and we
+disappear into there and when it loads we come up on the upper floor." The shop and the office are two rooms again.
+In the stockroom five treads rise into an unlit black (`sakura-stairs.js` `SAKURA_STAIR_PASSAGE.foot`); stepping onto
+them, or "Go upstairs", walks him into the dark for 1.1 s while the picture fades, and the office storey opens as its
+own room (`sakura-office-room.js` `buildSakuraOfficeRoom`) with him at the stair head facing up the hall. From the
+stair head four treads go down into the dark; the same passage brings him to the stair's foot in the stockroom. The
+office is entered only from inside (its site is `insideOnly`), and its fire door only from inside ("Evacuate by the fire
+escape", down the caged ladder to the yard). The walked flights, the turning landing, the landing lens, the storey
+switching (`sakura-storey-view.js`) and `tools/sakura-stairs-smoke.mjs` are gone; what follows is the record of the
+walked stair of 18 and 19 October. Tests: `tests/sakura-stairs.test.mjs`, `tests/sakura-upstairs.test.mjs`,
+`tests/sakura-back.test.mjs`, `tests/no-z-fighting.test.mjs` (rooms at a phone's size).
+
+## The walked stair (18 and 19 October 2026, superseded)
+
 18 October 2026. The office and konbini now share one continuous two-storey
 interior. Walk through the stockroom and up two flights, turning at the western
 landing; walk back down the same route. The upper floor is 4.01m above the shop.
