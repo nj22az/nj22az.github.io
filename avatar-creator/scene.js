@@ -1,6 +1,7 @@
-import {drawShout,drawStatement} from './scene-lettering.js?v=20261020-framing';
+import {drawShout,drawStatement} from './scene-lettering.js?v=20261020-grounded';
 import {CLASSROOM_VIEW} from './classroom-stage.js';
-import {classroomComic} from './classroom-comic.mjs?v=20261020-framing';
+import {classroomComic} from './classroom-comic.mjs?v=20261020-grounded';
+import {createSoleFinder} from '../johansson-town/src/avatars/foot-ground.js';
 import {applySceneContacts} from './scene-contact.js';
 import {filmStaging} from './film-staging.mjs';
 import {KNOWN_EXPRESSIONS,KNOWN_POSES} from './scene-catalogue.mjs';
@@ -17,8 +18,8 @@ import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js
 import {normalizeRecipe} from '../johansson-town/src/avatars/recipe.js';
 import {drawCaptions,comicLayout,FORMATS} from '../johansson-town/src/photo/layout.js';
 import {buildSceneWorld} from './scene-world.js?v=20261011-2';
-import {poseSceneAvatar,placeSceneAvatar,movingPose} from './scene-avatar.js?v=20261020-framing';
-import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,emptyScene,normalizeScene,addCharacter,removeCharacter,restoreCharacter,panelOrder,text,placementOf,applyPlacement,samePlacement} from './scene-model.mjs?v=20261020-framing';
+import {poseSceneAvatar,placeSceneAvatar,movingPose} from './scene-avatar.js?v=20261020-grounded';
+import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,emptyScene,normalizeScene,addCharacter,removeCharacter,restoreCharacter,panelOrder,text,placementOf,applyPlacement,samePlacement} from './scene-model.mjs?v=20261020-grounded';
 import {pickMoment,applyMoment,aim} from './scene-moments.mjs?v=20261011-2';
 import {POSE_GROUPS,EXPRESSION_GROUPS,seatedPose} from './scene-catalogue.mjs';
 import {turnToward,touchAngle,twistTurn,nudgeStep,placeToolbar,pickBox,nearestSeat} from './scene-controls.mjs?v=20261011-2';
@@ -36,7 +37,7 @@ const figure=body=>`<svg class="ui-icon" aria-hidden="true" width="24" height="2
 const sitIcon=figure('<circle cx="9" cy="4.5" r="2.5"/><path d="M9 8v6h6v6M9 10.5l4.5 2M4 21h16"/>'),standIcon=figure('<circle cx="12" cy="4.5" r="2.5"/><path d="M12 8v7M8.5 11.5h7M9.5 21l2.5-6 2.5 6"/>');
 const choice=(name,label,options)=>`<div class="scene-choice" role="group" aria-label="${label}" data-choice="${name}">${options.map(([value,text])=>`<button type="button" data-value="${value}" aria-pressed="false">${text}</button>`).join('')}</div>`;
 
-function drawDash(ctx,w,h){ctx.save();ctx.strokeStyle='#332b2a';ctx.lineWidth=2;for(let i=0;i<14;i++){const y=h*(.47+i*.029),x=w*(.03+(i%3)*.024);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+w*(.12+(i%4)*.025),y-h*.015);ctx.stroke();}ctx.translate(w*.14,h*.57);ctx.rotate(-.22);ctx.font=`900 ${Math.round(w*.075)}px sans-serif`;ctx.lineWidth=8;ctx.strokeStyle='#fff9ed';ctx.strokeText('KRAASH!',0,0);ctx.fillStyle='#30282b';ctx.fillText('KRAASH!',0,0);ctx.restore();}
+function drawDash(ctx,w,h,contacts=[]){ctx.save();for(const p of contacts){const x=(p.x+1)*w/2,y=(1-p.y)*h/2+3;ctx.strokeStyle='#756b5c';ctx.lineWidth=w*.003;ctx.beginPath();ctx.moveTo(x-w*.08,y+1);ctx.lineTo(x+w*.07,y-1);ctx.moveTo(x-w*.15,y-3);ctx.lineTo(x-w*.11,y-3);ctx.moveTo(x-w*.12,y-h*.025);ctx.quadraticCurveTo(x-w*.15,y-h*.045,x-w*.16,y-h*.01);ctx.stroke();}ctx.strokeStyle='#332b2a';ctx.lineWidth=2;for(let i=0;i<14;i++){const y=h*(.47+i*.029),x=w*(.03+(i%3)*.024);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+w*(.12+(i%4)*.025),y-h*.015);ctx.stroke();}ctx.translate(w*.14,h*.57);ctx.rotate(-.22);ctx.font=`900 ${Math.round(w*.075)}px sans-serif`;ctx.lineWidth=8;ctx.strokeStyle='#fff9ed';ctx.strokeText('KRAASH!',0,0);ctx.fillStyle='#30282b';ctx.fillText('KRAASH!',0,0);ctx.restore();}
 /** 3D scene editor: shared town geometry, ground, furniture and avatar models. */
 export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  let state=emptyScene();try{state=normalizeScene(JSON.parse(localStorage.getItem(SCENE_KEY)),normalizeRecipe);}catch{}
@@ -317,7 +318,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
      const live=state.actors.find(a=>a.id===actor.id);if(live){live.x=actor.x;live.z=actor.z;live.seat=actor.seat;}
     }
     environment.sky?.update(camera,1,false,false);renderer.render(environment.scene,camera);
-    canvas.width=w;canvas.height=h;ctx.drawImage(renderer.domElement,0,0);if(snapshot.effect==='dash')drawDash(ctx,w,h);const overlay=document.createElement('canvas');overlay.width=w;overlay.height=h;drawCaptions(overlay.getContext('2d'),w,h,{style:snapshot.style,top:snapshot.top,bottom:snapshot.bottom,bubbles:bubbles.filter(b=>!b.shout&&!b.large)});ctx.drawImage(overlay,0,0);for(const b of bubbles.filter(b=>b.shout))drawShout(ctx,w,h,b.text);for(const b of bubbles.filter(b=>b.large))drawStatement(ctx,w,h,b.text,b.x);
+    canvas.width=w;canvas.height=h;ctx.drawImage(renderer.domElement,0,0);if(snapshot.effect==='dash'){const contacts=snapshot.backdrop==='paper'?records.filter(r=>movingPose(r.actor.pose)&&!r.actor.y&&!r.actor.seat).map(r=>{const soles=createSoleFinder(r.avatar)(),side=soles.L.y<soles.R.y?'L':'R',point=r.avatar.root.worldToLocal(r.avatar.bones['foot'+side].getWorldPosition(new THREE.Vector3()));point.y=soles[side].y;point.z=soles[side].z;return r.avatar.root.localToWorld(point).project(camera);}):[];drawDash(ctx,w,h,contacts);}const overlay=document.createElement('canvas');overlay.width=w;overlay.height=h;drawCaptions(overlay.getContext('2d'),w,h,{style:snapshot.style,top:snapshot.top,bottom:snapshot.bottom,bubbles:bubbles.filter(b=>!b.shout&&!b.large)});ctx.drawImage(overlay,0,0);for(const b of bubbles.filter(b=>b.shout))drawShout(ctx,w,h,b.text);for(const b of bubbles.filter(b=>b.large))drawStatement(ctx,w,h,b.text,b.x);
     // Where each character is on the picture (fractions of it), for picking, the outline and the toolbar.
     const right=new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld,0);
     boxes=placed.map(p=>{const corners=[];for(const x of [p.box.min.x,p.box.max.x])for(const y of [p.box.min.y,p.box.max.y])for(const z of [p.box.min.z,p.box.max.z])corners.push(new THREE.Vector3(x,y,z).project(camera));

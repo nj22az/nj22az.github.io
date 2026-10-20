@@ -1,10 +1,11 @@
 import * as THREE from '../johansson-town/vendor/three.module.js';
 import {createAvatarAnimator,GESTURES} from '../johansson-town/src/avatars/animate.js';
+import {createFootGrounder} from '../johansson-town/src/avatars/foot-ground.js';
 import {reachHand} from './scene-contact.js';
 import {seatedPose} from './scene-catalogue.mjs';
 
 export const movingPose=name=>['Walk','Run','SchoolRun'].includes(name);
-const motion=new WeakMap();
+const motion=new WeakMap(),supports=new WeakMap();
 export function poseSceneAvatar(avatar,{pose='Idle',expression='smile',turn=0,seatHeight=.48,time:sample=0}){
  const custom=pose;pose=({SchoolRest:'Sit',SchoolProtest:'Tada',SchoolRun:'Idle',ComicLeap:'Idle',LiftedBack:'Idle',HoldBack:'Idle'})[pose]||pose;
  const duration=GESTURES[pose],time=Number.isFinite(duration)?duration*.43:.7;
@@ -16,7 +17,9 @@ export function poseSceneAvatar(avatar,{pose='Idle',expression='smile',turn=0,se
    track={pose:custom,time:0,animator:createAvatarAnimator(avatar,{random:()=>.5,initialTime:0})};motion.set(avatar,track);
   }
   avatar.root.position.y=track.rootY||0;
+  const advanced=track.time<elapsed-1e-8;
   while(track.time<elapsed-1e-8){const dt=Math.min(.025,elapsed-track.time);track.animator.update(dt,{expression,speed:custom==='Walk'?1.1:3.8,running:custom!=='Walk'});track.time+=dt;}track.rootY=avatar.root.position.y;
+  if(advanced)track.poseBones=Object.values(avatar.bones).map(b=>[b,b.quaternion.clone()]);else for(const [b,q] of track.poseBones)b.quaternion.copy(q);
  }else{
   const animator=createAvatarAnimator(avatar,{random:()=>.5,initialTime:0});if(duration)animator.play(pose);
   const steps=Math.ceil(time/.025);
@@ -25,6 +28,7 @@ export function poseSceneAvatar(avatar,{pose='Idle',expression='smile',turn=0,se
  const b=avatar.bones;
  if(custom==='SchoolRest'){b.head.rotation.x=.15;b.shoulderL.rotation.set(-1.2,0,.25);b.elbowL.rotation.x=-1.7;b.shoulderR.rotation.set(-1.2,0,-.25);b.elbowR.rotation.x=-1.7;}
  if(custom==='SchoolProtest'){b.chest.rotation.x=-.17;b.head.rotation.x=-.15;b.shoulderL.rotation.set(-.35,0,2.15);b.shoulderR.rotation.set(-.35,0,-2.15);b.elbowL.rotation.x=-.12;b.elbowR.rotation.x=-.12;b.thighL.rotation.set(0,0,0);b.kneeL.rotation.set(0,0,0);}
+ if(custom==='SchoolRun'){b.hips.rotation.x=.16;b.chest.rotation.x+=.22;b.head.rotation.x-=.08;b.shoulderL.rotation.x*=1.35;b.shoulderR.rotation.x*=1.35;b.elbowL.rotation.x=-1.45;b.elbowR.rotation.x=-1.45;let ground=supports.get(avatar);if(!ground){ground=createFootGrounder(avatar);supports.set(avatar,ground);}ground(0);}
  if(custom==='ComicLeap'){b.hips.rotation.x=.25;b.chest.rotation.x=.28;b.head.rotation.x=-.24;b.thighL.rotation.set(-1.15,0,.12);b.thighR.rotation.set(.8,0,-.1);b.kneeL.rotation.x=.9;b.kneeR.rotation.x=1.9;b.shoulderL.rotation.set(-.6,0,1.9);b.shoulderR.rotation.set(.5,0,-1.4);b.elbowL.rotation.x=-.2;b.elbowR.rotation.x=-.3;}
  if(custom==='LiftedBack'&&expression==='embarrassed'){b.head.rotation.x=.32;b.head.rotation.z=-.05;b.chest.rotation.x=.06;}
  if(custom==='LiftedBack'){b.thighL.rotation.x=-.15;b.thighR.rotation.x=.12;b.kneeL.rotation.x=.2;b.kneeR.rotation.x=.3;}
