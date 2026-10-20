@@ -41,6 +41,6 @@ test('Minato poster files are present as webp',async()=>{
 test('Sakura portrait keeps its full aspect and clears the west-wall fixtures',()=>{
  const spec=IZAKAYA_POSTERS.find(p=>p.id==='sakura');
  assert.ok(Math.abs(spec.size[0]/spec.size[1]-.75)<1e-12);
- assert.ok(spec.position[2]-spec.size[0]/2>-6.12,'Clears the corner post');
+ assert.ok(spec.position[2]-spec.size[0]/2>-4.55,'Clears the west speaker');
  assert.ok(spec.position[2]+spec.size[0]/2<-3.48,'Clears the next post and bottle shelf');
 });

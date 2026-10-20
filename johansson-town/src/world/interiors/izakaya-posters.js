@@ -3,7 +3,7 @@ import {assetURL} from '../../assets.js';
 
 export const IZAKAYA_POSTERS=Object.freeze([
  {id:'sakura',file:'sakura-konbini.webp',title:'SAKURA KONBINI · Your little island stop',jp:'Sakura',
-  position:[-6.28,1.96,-4.7],yaw:Math.PI/2,approach:[-5.15,1.55,-4.7],size:[1.08,1.44],
+  position:[-6.28,1.96,-4],yaw:Math.PI/2,approach:[-5.15,1.55,-4],size:[.96,1.28],
   paper:'#f6edda',ink:'#174f40',accent:'#b73741',
   line:'Sakura’s island-stop campaign, posted by Thao for the neighbours who stop at the shop before supper.'},
  {id:'yakitori',file:'minato-tori.webp',title:"MINATO TORI · Harbour Birds",jp:"Harbour Birds",
