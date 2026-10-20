@@ -43,7 +43,7 @@ test('the upper floor is a small office and a rest room, with the door between t
  assert.ok(area(U.office)<25,'the office is a small shop’s office, not the whole 128 m² floor');
  assert.equal(U.restRoom.mats,4.5);assert.ok(Math.abs(area({...U.restRoom,minX:U.restRoom.minX+.05,maxX:U.restRoom.maxX-.05,minZ:U.restRoom.minZ+.05,maxZ:U.restRoom.maxZ-.06})-2.7*2.74)<.05,'4½ mats, 2.7 × 2.7 m');
  assert.equal(names.filter(n=>n==='Tatami mat').length,5,'four full mats round a half mat');
- for(const n of ['Office desk top','Office safe','Filing cabinet','Wall calendar','Till ledger','Desk telephone','Kitchenette sink','Electric kettle','Office fridge','Ledger shelf'])assert.ok(names.includes(n),'office: '+n);
+ for(const n of ['Office desk top','Office safe','Filing cabinet','Wall calendar','Till ledger','Desk telephone','Kitchenette sink','Electric thermo pot','Office fridge','Ledger shelf'])assert.ok(names.includes(n),'office: '+n);
  for(const n of ['Folded futon','Oshiire middle shelf','Low table top','Six-drawer chest','Cassette radio','Wall clock','Fan guard','Shoji screen','Rest room ceiling boards'])assert.ok(names.includes(n),'rest room: '+n);
  assert.equal(names.filter(n=>n==='Oshiire sliding front').length,2,'the futon cupboard has its two fronts');
  assert.equal(names.filter(n=>n==='Rest room sliding door').length,2,'the sliding pair between office and rest room');
@@ -150,4 +150,24 @@ test('tap to walk upstairs plans its way through the office door and the rest ro
   for(let i=0;i<3000&&fine.active;i++){const d=fine.direction(player,1/60,room);if(!d)break;walkAs(player,floor,[[player.x+d.x*.05,player.z+d.z*.05]]);}
   assert.ok(Math.hypot(player.x-to.x,player.z-to.z)<.35,`arrived by ${label}: ${[player.x,player.z].map(v=>v.toFixed(2))}`);
  }
+});
+
+test('the dressing: every piece has its owner and its reason; the departures board is the town’s own timetable',async()=>{
+ // The owner, 20 October 2026, with a 1997 harbour-office diorama: "Here are some suggestions on how to enhance the
+ // office, maybe something can be useful" (sakura-office-dressing.js).
+ const {SAKURA_OFFICE_DRESSING:D,sakuraDeparturesBoard,clock}=await import('../src/world/interiors/sakura-office-dressing.js');
+ const {HARBOUR_LINE,BUS_DWELL}=await import('../src/people/commuter-schedule.js');const {CARGO_CALLS}=await import('../src/world/cargo-shipping.js');
+ assert.equal(new Set(D.map(d=>d.id)).size,D.length);
+ for(const d of D){assert.ok(d.who&&d.why&&d.why.length>30,'who and why: '+d.id);assert.ok(['office','restRoom','hall','storey'].includes(d.room),d.id);}
+ assert.ok(!D.some(d=>/ashtray|beer|radio|hard hat|life vest/i.test(d.name)),'what was left out stays out');
+ const B=sakuraDeparturesBoard();
+ assert.deepEqual(B.ferry.calls,HARBOUR_LINE.map(m=>({in:clock(m),out:clock(m+BUS_DWELL)})));
+ assert.deepEqual(B.cargo.calls,CARGO_CALLS.map(c=>({in:clock(c.alongside),out:clock(c.departure)})));
+ assert.equal(B.notes[1].at,'22:15','Thuan’s boat home');assert.match(B.english,/^[\x20-\x7e’]+$/,'the board read in English');
+ // Built: the board, the pieces, and the one printed sheet merged into one mesh with the room.
+ const {room,prompts}=upstairs(),names=new Set();room.traverse(o=>names.add(o.name));
+ for(const n of ['Departures whiteboard','Route map poster','Desk mat','Hanko tray','Pen can','Binoculars barrel','Shisa','Archive box','Mosquito-coil pig','Binder spine label','Typhoon safety poster','Electric thermo pot','Thermo pot gauge','Sanpin-cha tin','Dish drainer','Cup noodles','Tenugui','Garbage schedule','Bamboo mat','Yunomi','Open manga','Chinsuko tin','Television','Rabbit-ear aerial','Sakura Trading carton','Skirting','Office light switch','Door mat'])assert.ok(names.has(n),'built: '+n);
+ assert.ok(prompts.some(p=>p.label==='Read the departures board')&&prompts.some(p=>p.label==='Watch the television'));
+ const printed=[];room.traverse(o=>{if(o.isMesh&&o.material.map&&o.name==='Sakura upstairs fittings')printed.push(o);});
+ assert.ok(printed.length<=2,'the printed sheet and the room’s other texture merge, not a mesh per print');
 });

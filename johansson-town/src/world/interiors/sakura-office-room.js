@@ -2,6 +2,7 @@ import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import {SAKURA_STAIR_PASSAGE,buildSakuraStairHead} from './sakura-stairs.js';
+import {buildSakuraOfficeDressing} from './sakura-office-dressing.js';
 
 /**
  * Sakura's upper floor, in the office's own frame: x along the frontage (+x the harbour side, south), z from the back
@@ -46,13 +47,13 @@ export const SAKURA_UPSTAIRS=Object.freeze({
   {id:'desk',name:'Office desk',at:[5.97,0,2.2],size:[.7,.74,1.2],room:'office',who:'Thuan',why:'A steel office desk with a drawer pedestal under the harbour window: the ledger, the phone and the calculator, the berth in view.'},
   {id:'chair',name:'Desk chair',at:[5.15,0,2.2],size:[.48,.9,.48],room:'office',who:'Thuan',why:'Faces the harbour window (yaw −90°), set so the seated eye looks at the berthed ferry through the middle of the near sash, not into the mullion.'},
   {id:'ledger',name:'Till ledger',at:[5.95,.74,2.05],size:[.42,.03,.3],room:'office',who:'Thuan',why:'The shop’s daily takings carried up from the till each night, and the supplier orders.'},
-  {id:'phone',name:'Desk telephone',at:[6.05,.74,2.6],size:[.24,.09,.16],room:'office',who:'Thuan',why:'New Yokosuka’s telephone, 0.24 × 0.16 m: the suppliers, Higa Liquor and the Quay Warehouse depot.'},
+  {id:'phone',name:'Desk telephone',at:[6.05,.74,2.6],size:[.32,.09,.24],room:'office',who:'Thuan',why:'A fax telephone: the orders go to the Quay Warehouse depot and to Higa Liquor by fax, the confirmations come back on the roll; the handset for the suppliers.',period:'A yellowed beige 1990s plain-paper fax with its handset on the side (New Yokosuka’s telephone is 0.24 × 0.16 m; the fax is the bigger body).'},
   {id:'filing',name:'Filing cabinet',at:[5.13,0,4.18],size:[.47,1.32,.62],room:'office',who:'Thuan',why:'Four drawers: this year’s invoices, the staff papers, the depot’s delivery notes, the bouquet orders.'},
   {id:'safe',name:'Office safe',at:[6.05,0,4.2],size:[.5,.62,.5],room:'office',who:'Thuan',why:'The change float and the day’s takings until the bank opens, in the corner away from the window.'},
   {id:'calendar',name:'Wall calendar',at:[6.05,1.55,4.49],size:[.32,.46,.01],room:'office',who:'Thuan',why:'Delivery days and the boat times, on the wall above the safe where the desk can see it.'},
   {id:'shelf',name:'Ledger shelf',at:[1.18,0,4.32],size:[.75,1.8,.34],room:'office',who:'Thuan',why:'This year’s binders; the older years are in the archive across the hall.'},
   {id:'kitchenette',name:'Kitchenette cupboards',at:[2.9,0,.85],size:[1.8,.85,.6],room:'office',who:'staff',why:'Sink, worktop and the wall cupboard with cups and tea, on the office’s back wall clear of both doors.'},
-  {id:'kettle',name:'Electric kettle',at:[3.45,.85,.85],size:[.2,.26,.2],room:'office',who:'staff',why:'Tea for Thuan and whoever comes up from the shop.'},
+  {id:'pot',name:'Electric thermo pot',at:[3.45,.85,.85],size:[.2,.3,.2],room:'office',who:'staff',why:'Hot water all day for tea and cup noodles, for Thuan and whoever comes up from the shop; its gauge shows when to fill it at the sink.',period:'An electric thermo pot (電気ポット) with a push-top dispenser and a water gauge.'},
   {id:'fridge',name:'Office fridge',at:[4.18,0,.85],size:[.55,1.2,.6],room:'office',who:'staff',why:'The staff’s lunch boxes and milk, never shop stock.'},
   {id:'getabako',name:'Shoe cabinet',at:[.52,0,-3.95],size:[.35,.9,.9],room:'hall',who:'staff',why:'Shoes off at the stair head; outdoor shoes in, slippers out.'},
   {id:'lockers',name:'Staff lockers',at:[.445,0,-.5],size:[.5,1.8,.9],room:'hall',who:'Thuan and Nhung',why:'Two lockers: a bag, a coat and the Sakura apron each.'},
@@ -191,7 +192,10 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},downstair
  const chair=anchor([item('chair').at[0],1,item('chair').at[2]],'Sit at the harbour desk',()=>action('seat','Sakura office','The ferry berth lies beyond the harbour window: the deliveries come off there, and the 22:00 boat home leaves from it.'));
  chair.userData.seat={position:[...item('chair').at],stand:[...SAKURA_OFFICE.deskStand],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.12,yaw:-Math.PI/2,pitch:0};
  {const l=item('ledger');box(l.size,[l.at[0],l.at[1]+.015,l.at[2]],0xd7ceb4,'Till ledger');box([.01,.032,.3],[l.at[0],l.at[1]+.016,l.at[2]],0x7a5c3e,'Till ledger spine');
-  const p=item('phone');box(p.size,[p.at[0],p.at[1]+.045,p.at[2]],0x2d3834,'Desk telephone');box([.2,.04,.05],[p.at[0],p.at[1]+.11,p.at[2]],0x2d3834,'Desk telephone handset');
+  // The fax telephone: its body, the handset on its cradle along the left, the paper roll's slanted tray at the back.
+  const p=item('phone'),[px,py,pz]=p.at,[pw,ph,pd]=p.size,FAX=0xd8cdb0;box(p.size,[px,py+ph/2,pz],FAX,'Desk telephone');
+  box([.05,.04,.2],[px-pw/2+.035,py+ph+.02,pz],FAX,'Desk telephone handset');box([.03,.012,.12],[px+.03,py+ph+.006,pz-.03],0x8f877a,'Fax keypad');
+  {const tray=box([.2,.012,.1],[px+.05,py+ph+.03,pz+pd/2-.04],0xc9bfa4,'Fax paper tray');tray.rotation.x=-.5;}
   box([.12,.02,.17],[5.85,.75,1.75],0x40444a,'Desk calculator');}
  anchor([5.85,1,2.05],'Read the till ledger',()=>action('read','Sakura till ledger','The day’s takings carried up from the till each night, the supplier orders, the depot’s deliveries and the monthly accounts. The downstairs office keeps the till float and the daily shop paperwork.'));
  {const f=item('filing'),[x,,z]=f.at,[w,h,d]=f.size;box([w,h,d],[x,h/2,z],0x8e9a95,'Filing cabinet',true);
@@ -204,12 +208,14 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},downstair
  {const s=item('shelf'),[x,,z]=s.at,[w,h,d]=s.size;box([w,.03,d],[x,h,z],TIMBER,'Ledger shelf');box([w,.03,d],[x,.05,z],TIMBER,'Ledger shelf');
   for(const dx of [-w/2+.015,w/2-.015])box([.03,h,d],[x+dx,h/2,z],TIMBER,'Ledger shelf side');for(const y of [.62,1.2])box([w-.03,.025,d],[x,y,z],TIMBER,'Ledger shelf board');
   collider(x,z,w,d,h);
-  for(let row=0;row<3;row++)for(let i=0;i<6;i++)box([.075,.3,.28],[x-w/2+.1+i*.105,.2+row*.58,z+.01],[0x5d7164,0xb29a73,0x88564b][(i+row)%3],'Binder');}
+  // The binders are the dressing's (sakura-office-dressing.js): blue, labelled, one leaning, a flat pile.
+ }
  {const k=item('kitchenette'),[x,,z]=k.at,[w,h,d]=k.size;
   box([w,h-.04,d],[x,(h-.04)/2,z],0xd3c8ae,'Kitchenette cupboards',true);box([w+.04,.04,d+.03],[x,h-.02,z+.01],0xb2bab5,'Kitchenette worktop');
   box([.5,.02,.38],[x-.45,h+.005,z+.02],0x737f7c,'Kitchenette sink');box([.04,.25,.04],[x-.45,h+.12,z-.22],0xb4beb8,'Kitchenette tap');
   box([w,.6,.34],[x,1.85,OF.minZ+T/2+.17],0xd3c8ae,'Kitchenette wall cupboard');
-  const t=item('kettle');cyl(.1,t.size[1],[t.at[0],t.at[1]+t.size[1]/2,t.at[2]],0xd5d6cb,'Electric kettle',12);
+  const t=item('pot');cyl(.1,t.size[1]-.05,[t.at[0],t.at[1]+(t.size[1]-.05)/2,t.at[2]],0xe8e6dc,'Electric thermo pot',16);cyl(.085,.05,[t.at[0],t.at[1]+t.size[1]-.025,t.at[2]],0xb9c4c8,'Thermo pot lid',16);
+  box([.05,.03,.06],[t.at[0],t.at[1]+t.size[1]-.035,t.at[2]+.1],0xb9c4c8,'Thermo pot spout');box([.025,.13,.012],[t.at[0],t.at[1]+.12,t.at[2]+.1+.004],0x8fc6e0,'Thermo pot gauge');
   for(const [dx,c] of [[.25,0x8c6a5d],[.36,0xe8e4d8]])cyl(.04,.09,[t.at[0]+dx,t.at[1]+.045,t.at[2]+.05],c,'Tea cup',10);
   const f=item('fridge');box(f.size,[f.at[0],f.size[1]/2,f.at[2]],0xe1dfd0,'Office fridge',true);box([.02,.25,.03],[f.at[0]+.2,.95,f.at[2]+.31],0xb4beb8,'Office fridge handle');}
  anchor([3.45,1,1.3],'Make office tea',()=>action('read','Sakura kitchenette','Fill the kettle at the sink. Cups and tea are in the wall cupboard; the staff’s lunch boxes are in the little fridge.'));
@@ -280,7 +286,8 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},downstair
   {const t=item('table'),[x,,z]=t.at,r=t.size[0]/2,h=t.size[1];cyl(r,.03,[x,h-.015,z],0x7a5638,'Low table top',24);
    for(const a of [0,1,2,3]){const ax=x+Math.cos(a*Math.PI/2+Math.PI/4)*.236,az=z+Math.sin(a*Math.PI/2+Math.PI/4)*.236;box([.04,h-.03,.04],[ax,(h-.03)/2+.02,az],0x6a4a30,'Low table leg');}
    collider(x,z,t.size[0]*.9,t.size[2]*.9,h);
-   for(const [cx,cz] of [[x+.62,z],[x,z-.5]])box([.48,.06,.48],[cx,.05,cz],0x8a4b52,'Floor cushion');}
+   // Two zabuton: one squared to the table, one skewed where somebody just got up.
+   box([.48,.06,.48],[x+.62,.05,z],0x8a4b52,'Floor cushion');box([.48,.06,.48],[x+.07,.05,z-.56],0x8a4b52,'Floor cushion').rotation.y=.35;}
   {const c=item('chest'),[x,,z]=c.at,[w,h,d]=c.size;box([w,h,d],[x,h/2+.02,z],0x7a5638,'Six-drawer chest',true);
    for(const [dx,y,ww] of [[-.27,.95,.52],[.27,.95,.52],[-.27,.77,.52],[.27,.77,.52],[0,.53,1.04],[0,.25,1.04]]){box([ww,.16,.01],[x+dx,y,z+d/2+.005],0x8c6643,'Chest drawer');box([.06,.015,.02],[x+dx,y,z+d/2+.015],0xc9b27a,'Chest drawer pull');}
    const r=item('radio');box(r.size,[r.at[0],r.at[1]+.02+r.size[1]/2,r.at[2]],0x3a3d40,'Cassette radio');for(const dx of [-.22,.22])cyl(.07,.012,[r.at[0]+dx,r.at[1]+.02+r.size[1]/2,r.at[2]+r.size[2]/2+.004],0x23262a,'Radio speaker',14).rotation.x=Math.PI/2;
@@ -291,6 +298,8 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},downstair
   fitting((R.minX+R.maxX)/2,R.ceiling,(R.minZ+R.maxZ)/2+.2,'Rest room ceiling');
   cyl(.004,.45,[(R.minX+R.maxX)/2+.3,R.ceiling-.06-.225,(R.minZ+R.maxZ)/2+.2],0x2c2620,'Pull cord',4);
  }
+ // What the storey holds besides its furniture: each piece with its owner and its reason (sakura-office-dressing.js).
+ buildSakuraOfficeDressing({room,box,cyl,anchor,action,paint});
  const fill=new THREE.HemisphereLight(0xffefd7,0x7e8071,1.2);fill.name='Sakura office steady indoor fill';room.add(fill);
  // The tubes' warm white as the shop's (sakura-interior.js): while the office shared the shop's room it was lit by both;
  // as a room of its own it keeps that light, not the town's evening blue.
