@@ -9,7 +9,7 @@ From the website repository root, with `npm ci` already run in `johansson-town` 
 1. Place the original Vietnamese project at `production/vy-classroom/source.studio.json` and the retained voice takes at `production/vy-classroom/audio/{vy,teacher,scream}.mp3`.
 2. `python3 avatar-creator/films/vy-classroom/audio.py` makes the 48 kHz stereo master and amplitude-based facial envelopes (requires NumPy and ffmpeg).
 3. `node avatar-creator/films/vy-classroom/render.mjs` makes the frames, measured contacts, motion data and an animated GLB. Set `STUDIO_BROWSER` for an existing Chromium executable. `FILM_CHECKPOINTS=300,304,308` renders selected frames for contact review.
-4. `ffmpeg -y -framerate 30 -i production/vy-classroom/frames/%05d.png -i production/vy-classroom/mix.wav -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -c:a aac -b:a 192k -af loudnorm=I=-14:TP=-2:LRA=9 -t 20 -movflags +faststart production/vy-classroom/Vy-Classroom-Review.mp4`.
+4. `ffmpeg -y -framerate 30 -i production/vy-classroom/frames/%05d.png -i production/vy-classroom/mix.wav -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -c:a aac -b:a 192k -af loudnorm=I=-14:TP=-2:LRA=9,volume=-1.1dB -t 20 -movflags +faststart production/vy-classroom/Vy-Classroom-Review.mp4`.
 
 Review resolution is 540 × 800: the original 3:4 composition occupies 540 × 720 and a separate 80-pixel subtitle area keeps the faces clear. There are exactly 600 frames, 30 fps, 20 seconds, with a final reaction hold. This is a review copy, not an approved final or a published episode.
 
@@ -47,3 +47,9 @@ Runway's official usage-rights page (checked 21 October 2026) permits commercial
 - The existing blouse grip is a hand-target constraint, not simulated cloth. The cut to the final panel preserves the comic's payoff; the teacher does not perform a continuous simulated catch.
 - This preview uses software WebGL. No physical iPad/iPhone or GPU-quality final render is claimed.
 - Preserve the creator's storyboard/casting/animatic/video approvals. No approval is recorded on their behalf, and no film is published.
+
+## Completed review checks
+
+The encoded MP4 was played from start to end in Chromium: 600 video-frame callbacks, zero dropped frames, final media timestamp 19.966667 s. Decoding the complete H.264/AAC stream reported no errors. Actual Studio seeks 330 → 10 → 599 → 330 produced identical pixels at repeated frame 330. All 600 rendered frames retained visible heads. Contact maxima over the sequence: desk 1.221 mm (9 contact frames), blouse 4.056 mm (204 frames), and checked sole support error below 1e-6 m (300 frames). These measurements check the named targets, not every clothing or body triangle.
+
+The assistant inspected chronological contact sequences and principal shots from the rendered images and exercised the moving encoded file through browser playback. A perceptual listening assessment of the synthetic voices and a human judgement of continuous motion were not available in this environment; those remain part of the creator’s review. No claim of a full human watch/listen pass is made.
