@@ -93,7 +93,7 @@ function buildShell(){
  // The delivery door in the back wall, steel, painted green.
  span(3.0,4.3,0,2.3,B+.005,B+.05,0x4f7a64);span(3.85,4.15,1.0,1.08,B+.05,B+.09,C.steel);
  // The office (x 4.6..6.8, z -3.95..-1.17): its west wall and the front with its doorway.
- span(4.56,4.64,0,top,P,-1.25,C.plaster);span(4.58,5.14,0,top,-1.21,-1.13,C.plaster);span(6.28,E,0,top,-1.21,-1.13,C.plaster);span(5.14,6.28,2.2,top,-1.21,-1.13,C.plaster);
+ span(4.56,4.64,0,top,P,-1.25,C.plaster);span(4.57,5.14,0,top,-1.21,-1.13,C.plaster);span(6.28,E,0,top,-1.21,-1.13,C.plaster);span(5.14,6.28,2.2,top,-1.21,-1.13,C.plaster);
  span(4.64,4.66,.08,.9,P,-1.25,C.wainscot);
  // The restroom (x -6.82..-4.09, z -3.95..-2.58): its east wall with the doorway at z -3.66..-2.78, and its front.
  span(-4.08,-3.96,0,top,P,-3.66,C.plaster);span(-4.08,-3.96,0,top,-2.78,-2.42,C.plaster);span(-4.08,-3.96,2.2,top,-3.66,-2.78,C.plaster);
@@ -305,8 +305,10 @@ function buildDoors(){
  const {span,mesh}=parts('sakura-door');
  // The passage to the back room: a frame and a swing door left open against the wall.
  const P=SAKURA_SHELL.partitionZ;
- for(const x of [3.25,4.39])span(x-.05,x+.05,0,2.22,P-.06,P+.06,C.woodDark);span(3.2,4.44,2.18,2.26,P-.06,P+.06,C.woodDark);
- span(4.4,4.44,0,2.12,P+.06,P+1.0,0xe9e1cf);
+ // The frame stands 2 cm proud of the wall's wainscot (its face 1.8 cm off the plaster): at 6 cm it lay 2 mm from the
+ // wainscot's face, and a thin line flashed beside the passage.
+ for(const x of [3.25,4.39])span(x-.05,x+.05,0,2.22,P-.06,P+.08,C.woodDark);span(3.2,4.44,2.18,2.26,P-.06,P+.08,C.woodDark);
+ span(4.4,4.44,0,2.12,P+.08,P+1.02,0xe9e1cf);
  // The office doorway: jambs, head and a casing on the shop side. Its door swings
  // (sakura-life.js buildOfficeDoor). The restroom door stands open into the restroom.
  for(const x of [5.12,6.30])span(x-.04,x+.04,0,2.2,-1.25,-1.09,C.woodDark);
