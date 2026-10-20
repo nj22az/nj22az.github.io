@@ -2,7 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {createKit} from './okinawa/kit.js';
 import {SAKURA_BACK} from './okinawa/old-town.js';
-import {SAKURA_OFFICE,sakuraOfficePortals} from './interiors/sakura-office-room.js';
+import {SAKURA_OFFICE,SAKURA_UPSTAIRS,sakuraOfficePortals} from './interiors/sakura-office-room.js';
 
 /**
  * The office storey's back wall over Nishi-machi, in the storefront's frame (x along the frontage, the back wall at
@@ -17,6 +17,26 @@ export const SAKURA_OFFICE_BACK=Object.freeze({
  vent:Object.freeze({x:-3.5,y:2.5}),
  why:'Windows on the back, as the creator asked (2026-10-19): the office looks over Nishi-machi as well as the street and the harbour, its back half gets daylight and a through draught in summer, and the stair head and kitchenette their own light.',
  inside:'Replanned the same day (the owner: "maybe two windows you can look out from"): the shell keeps these sashes, but the floor behind them is now the archive, so they give it daylight and the through draught a paper store needs in the damp; you look out only from the office’s two windows, Main Street and the harbour.',
+});
+
+/**
+ * The office storey's street face and harbour side, in the storefront's frame (x along the frontage, z back from the
+ * front at -0.95; the office frame's z is this plus 5.5). The owner, 20 October 2026: "I want the exterior of the office
+ * to look different to reflect its inside". The long band of glass right across the front and down the harbour side was
+ * the open-plan floor's; since the replan (interiors/sakura-office-room.js SAKURA_UPSTAIRS) the street side holds the
+ * office, the rest room and the decorations store, so the outside shows exactly that: the office's two sashes over
+ * Main Street where the office is, the rest room's street glass with its shoji behind, and wall where the store is; on
+ * the harbour side, the office's two sashes over the berth and wall where the archive is.
+ */
+export const SAKURA_FACADE=Object.freeze({
+ front:Object.freeze([
+  Object.freeze({kind:'shoji',x0:SAKURA_UPSTAIRS.restRoom.minX+.05,x1:SAKURA_UPSTAIRS.restRoom.maxX-.05,room:'restRoom',
+   why:'The rest room’s street glass, shoji drawn across it inside: daylight and privacy, no outlook (the shoji in sakura-office-room.js span the same stretch).'}),
+  Object.freeze({kind:'glass',x0:SAKURA_UPSTAIRS.windows.town.x0,x1:SAKURA_UPSTAIRS.windows.town.x1,room:'office',
+   why:'The office’s town window, two sashes over Main Street (SAKURA_UPSTAIRS.windows.town).'}),
+ ]),
+ side:Object.freeze({kind:'glass',z0:SAKURA_UPSTAIRS.windows.harbour.z0-5.5,z1:SAKURA_UPSTAIRS.windows.harbour.z1-5.5,room:'office',
+  why:'The office’s harbour window, two sashes over the ferry berth with the desk under them (SAKURA_UPSTAIRS.windows.harbour).'}),
 });
 
 /** Historical module name retained; Sakura's upper floor now belongs to the business. */
@@ -61,15 +81,31 @@ export function buildThuanFlat(parent,{sites=[],shopDoor}={}){
    kit.block(-hw,hw,a,b,-1.07,-.95,plaster);
    kit.block(hw,hw+.12,a,b,-6.85,-.95,plaster);
   }
-  // Projecting sills and thin sliding-sash divisions give the long windows scale.
-  for(const y of [.9,2.35]){
-   kit.box(O.width+.2,.075,.22,0,F+y,-.9,frame);
-   kit.box(.22,.075,5.95,hw+.06,F+y,-3.9,frame);
+  // Between sill and head the street face and the harbour side are wall, but for what the plan behind them looks
+  // through (SAKURA_FACADE): the office's two sashes over Main Street, the rest room's shoji behind its street glass, and
+  // the office's two sashes over the berth. The stores and the hall are solid wall from outside, as they are inside.
+  const A=SAKURA_FACADE,band=(open,lo,hi,fill)=>{let at=lo;for(const o of [...open].sort((p,q)=>p.a-q.a)){if(o.a>at)fill(at,o.a);at=o.b;}if(hi>at)fill(at,hi);};
+  band(A.front.map(o=>({a:o.x0,b:o.x1})),-hw,hw,(a,b)=>kit.block(a,b,F+.9,F+2.35,-1.07,-.95,plaster));
+  band([{a:A.side.z0,b:A.side.z1}],-6.85,-.95,(a,b)=>kit.block(hw,hw+.12,F+.9,F+2.35,a,b,plaster));
+  // Each window's projecting sill and concrete cill, and its sashes' frames; one head band runs right across under the
+  // hood, as it did over the old long band.
+  kit.box(O.width+.2,.075,.22,0,F+2.35,-.9,frame);kit.box(.22,.075,5.95,hw+.06,F+2.35,-3.9,frame);
+  for(const o of A.front){const w=o.x1-o.x0,x=(o.x0+o.x1)/2;
+   kit.box(w+.2,.075,.22,x,F+.9,-.9,frame);kit.box(w+.36,.1,.32,x,F+.84,-.88,concrete);
+   for(const e of [o.x0,x,o.x1])kit.box(e===x?.045:.075,1.45,.12,e,F+1.625,-.9,frame);
   }
-  for(let i=0;i<=8;i++)kit.box(i%2?.045:.075,1.45,.12,-hw+i*O.width/8,F+1.625,-.9,frame);
-  for(const z of [-6.85,-5.425,-4,-2.575,-1.05])kit.box(.12,1.45,.06,hw+.06,F+1.625,z,frame);
-  kit.box(O.width+.36,.1,.32,0,F+.84,-.88,concrete);
-  kit.box(.32,.1,6.08,hw+.1,F+.84,-3.9,concrete);
+  {const o=A.side,l=o.z1-o.z0,z=(o.z0+o.z1)/2;
+   kit.box(.22,.075,l+.2,hw+.06,F+.9,z,frame);kit.box(.32,.1,l+.36,hw+.1,F+.84,z,concrete);
+   for(const e of [o.z0,z,o.z1])kit.box(.12,1.45,e===z?.045:.06,hw+.06,F+1.625,e,frame);}
+  // The rest room's shoji, seen through its glass from the street: four paper panels in their light timber frames, the
+  // lattice a shade darker through the paper, lit from inside after dark like any window (the kit's `glow`).
+  {const o=A.front.find(f=>f.kind==='shoji'),n=4,pw=(o.x1-o.x0)/n,y0=F+.9,y1=F+2.35,z=-.985;
+   kit.box(o.x1-o.x0,y1-y0,.01,(o.x0+o.x1)/2,(y0+y1)/2,z,0xf3eedf,{finish:'glow'});
+   for(let i=0;i<n;i++){const x=o.x0+pw*(i+.5);
+    for(const dx of [-pw/2+.02,pw/2-.02])kit.box(.035,y1-y0,.012,x+dx,(y0+y1)/2,z+.01,0xc9b088);
+    for(const dx of [-pw/6,pw/6])kit.box(.012,y1-y0-.06,.006,x+dx,(y0+y1)/2,z+.007,0xd8ccb0);
+    for(let k=1;k<6;k++)kit.box(pw-.06,.012,.006,x,y0+k*(y1-y0)/6,z+.007,0xd8ccb0);
+   }}
   // A shallow red tile sun/rain hood repeats the shop's existing tile profile.
   // Geometry ribs remain crisp in the cel pass without another image texture.
   const hoodY=F+2.46;
@@ -93,10 +129,10 @@ export function buildThuanFlat(parent,{sites=[],shopDoor}={}){
   kit.cyl(.045,.045,2.95,-hw-.17,F+1.48,-D+.16,0x7b8285,{segments:8});
   const glazing=new THREE.MeshStandardMaterial({color:0x92a9a5,roughness:.4,emissive:0xffd9a0,emissiveIntensity:0});
   glazing.userData.kitFinish='glow';
-  const glass=new THREE.Mesh(new THREE.PlaneGeometry(O.width,1.45),glazing);
-  glass.name='Sakura main office glazing';glass.position.set(0,F+1.625,-.94);parent.add(glass);
-  const sideGlass=new THREE.Mesh(new THREE.PlaneGeometry(5.9,1.45),glass.material);
-  sideGlass.name='Sakura harbour office glazing';sideGlass.rotation.y=Math.PI/2;sideGlass.position.set(hw+.01,F+1.625,-3.9);parent.add(sideGlass);
+  const town=A.front.find(f=>f.kind==='glass'),glass=new THREE.Mesh(new THREE.PlaneGeometry(town.x1-town.x0,1.45),glazing);
+  glass.name='Sakura main office glazing';glass.position.set((town.x0+town.x1)/2,F+1.625,-.94);parent.add(glass);
+  const sideGlass=new THREE.Mesh(new THREE.PlaneGeometry(A.side.z1-A.side.z0,1.45),glass.material);
+  sideGlass.name='Sakura harbour office glazing';sideGlass.rotation.y=Math.PI/2;sideGlass.position.set(hw+.01,F+1.625,(A.side.z0+A.side.z1)/2);parent.add(sideGlass);
   // The back sashes share the outlooks' glass, so they light with them at dusk.
   const panes=B.windows.map(o=>new THREE.PlaneGeometry(o.x1-o.x0-.1,o.head-o.sill-.1).rotateY(Math.PI).translate((o.x0+o.x1)/2,F+(o.sill+o.head)/2,-D-.07));
   const backGlass=new THREE.Mesh(mergeGeometries(panes),glass.material);panes.forEach(g=>g.dispose());

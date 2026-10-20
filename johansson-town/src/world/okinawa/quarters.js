@@ -194,8 +194,11 @@ function walledHouse(kit,solid,p,{anchor,onAction,seed=0,sideGate=null,windbreak
    const d=6.2,w=Math.min(6.8,W-3.4),houseZ=-hd+.35+d/2,houseX=-hw+.35+w/2;
    kit.at(houseX,houseZ,0,()=>solid(concreteHouse(kit,{w,d,seed})));
    solid(laundry(kit,1.7,hd-1.7,{length:2.2}));
-   potPlant(kit,1.5,hd-1,{seed:seed+5});hibiscus(kit,hw-1,hd-1,{seed:seed+9,flower:0xe8b12c});
-   bicycle(kit,2.2,hd-1.2,{ry:.2,colour:0xb03a3a});
+   // The bicycle stands inside the front wall right of the gate, the pot by the gate pier and the hibiscus in the
+   // left-hand corner, so none of them stands in another or in the washing.
+   potPlant(kit,1.3,hd-.45,{seed:seed+5});hibiscus(kit,-hw+.85,hd-.8,{seed:seed+9,flower:0xe8b12c,size:.5});
+   solid(bicycle(kit,2.55,hd-.62,{ry:0,colour:0xb03a3a,frame:'step',id:'house-bicycle',owner:plate?.owners||p.romaji,
+    why:'The household’s shopping bicycle, inside the front wall where it is off the lane and clear of the washing; it goes to Sakura and back with the basket full.'}));
   }
  });
 }
@@ -343,9 +346,11 @@ function buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes}){
  if(seat)seat.userData.seat={id:'nakamura-dessert-bench',position:[bx,0,bz],stand:[bx-.8,0,bz],surfaceY:.49,eyeY:1.12,yaw:-Math.PI/2,pitch:-.03};
  // The old lane up to the sea bath between the shop-houses is Kitano Road now (kitano-link.js):
  // its stepping stones, lanterns, pot plants and the vending machine made way for the carriageway.
+ // Higa Liquor's delivery bicycle, against its own shopfront at the south end, side-on, nose up the street. It stood
+ // on the kerb in the crossing's planter until the owner's phone found it there (20 October 2026).
  const liquor=EAST_ROW.plots.find(p=>p.id==='higa-saketen');
- bicycle(kit,1,liquor.minZ+1.6,{ry:Math.PI/2,colour:0xd9d2c0});
- solid({id:'bicycle',x:1,z:liquor.minZ+1.6,w:.4,d:1.4,height:1.1});
+ solid(bicycle(kit,EAST_ROW.minX-.4,liquor.maxZ-1.05,{ry:-Math.PI/2,colour:0x2b2d30,basket:false,id:'higa-liquor-bicycle',owner:'Higa Liquor (Grandmother Higa)',
+  why:'The shop’s old black delivery bicycle with the big carrier, from the days her husband did the rounds. Grandmother Higa still wheels it up Kitano Road with a bottle tied on for a regular who cannot come down, an order too small for the van. It lives against its own shopfront, clear of the door and the footway.'}));
 }
 
 function buildYardRow(kit,solid,{anchor,inspect,onAction}){
@@ -470,6 +475,14 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending,eastQuayBoat})
  anchor(29.5,1,Q.minZ+.9,'Fish from the east quay',()=>onAction?.('fishing'));
 }
 
+/** The four bicycles in the west yard's shed, of the people who live and work round the yard. */
+const WEST_YARD_BICYCLES=Object.freeze([
+ Object.freeze({id:'west-yard-bicycle-tetsuo',colour:0x3d6f8f,basket:false,owner:'Tetsuo',why:'Tetsuo’s, from 2 Front-Row Yard across the yard: he rides it to the power house’s switchboard and round the lane lights, his toolbag on the carrier.'}),
+ Object.freeze({id:'west-yard-bicycle-laundry',colour:0xb03a3a,frame:'step',owner:'the coin laundry’s customers',why:'Whoever has a wash going round leaves a bicycle here; this one has been here since Tuesday, and nobody minds.'}),
+ Object.freeze({id:'west-yard-bicycle-bookshop',colour:0xd9d2c0,owner:'Front-Row Books & Stationery',why:'The bookshop’s errand bicycle: Front-Row supplies the town’s office paper, so ledgers go round to Sakura’s office and chalk to the school in its basket.'}),
+ Object.freeze({id:'west-yard-bicycle-workshop',colour:0x3a7a5a,owner:'Chin & Tetsuo’s workshop',why:'The workshop’s spare, lent to whoever is fetching a part from the depot.'}),
+]);
+
 /** The back of the west yard: the goya trellis, the bicycle shed, drums and tyres. */
 function buildYardLife(kit,solid,{inspect}){
  const G=GOYA,y=GROUND_LAYER.lane;
@@ -492,8 +505,7 @@ function buildYardLife(kit,solid,{inspect}){
  const bx0=-24,bx1=-19.4,bz0=15.8,bz1=19.6;
  kit.block(bx0,bx1,2.15,2.25,bz0,bz1,0x8c9ea3);
  for(const [x,z] of [[bx0+.1,bz0+.1],[bx1-.1,bz0+.1],[bx0+.1,bz1-.1],[bx1-.1,bz1-.1]]){kit.box(.08,2.15,.08,x,1.08,z,0x9aa0a4);solid({id:'shed-post',x,z,w:.14,d:.14,height:2.2});}
- for(let i=0;i<4;i++)bicycle(kit,bx0+.8+i*1.05,(bz0+bz1)/2,{ry:Math.PI/2,colour:[0x3d6f8f,0xb03a3a,0xd9d2c0,0x3a7a5a][i]});
- solid({id:'bicycles',x:(bx0+bx1)/2,z:(bz0+bz1)/2,w:bx1-bx0-.6,d:1.3,height:1.1});
+ WEST_YARD_BICYCLES.forEach((b,i)=>solid(bicycle(kit,bx0+.8+i*1.05,(bz0+bz1)/2,{ry:Math.PI/2,...b})));
  for(const [x,z] of [[-17,-16.2],[-16.4,-15.8]]){kit.cyl(.29,.29,.88,x,.44,z,0x2f5a8a,{segments:12});kit.cyl(.3,.3,.04,x,.89,z,0x24486e,{segments:12});}
  solid({id:'oil-drums',x:-16.7,z:-16,w:1.3,d:1,height:.9});
  for(let k=0;k<4;k++)kit.cyl(.33,.33,.2,-23.6,.12+k*.21,-15.6,0x1f2124,{segments:12});

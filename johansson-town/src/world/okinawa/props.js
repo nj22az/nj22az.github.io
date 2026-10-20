@@ -117,24 +117,8 @@ export const spanWire=(a,b,i,sag)=>[a.anchors[i].toArray(),b.anchors[i].toArray(
 /** A cable from a pole down to the eave of a house: the service drop. */
 export function serviceDrop(kit,pole,to){if(plan){plan.drops.push({pole,to});return;}kit.wire(pole.anchors[pole.anchors.length-1].toArray(),to,.25,.014,0x2b2a30);}
 
-/** A parked bicycle, leant on its stand. Front along local +x. */
-export function bicycle(kit,x,z,{ry=0,colour=0x3d6f8f}={}){
- kit.at(x,z,ry,()=>{
-  for(const wx of [-.52,.52]){
-   const g=new THREE.TorusGeometry(.33,.025,5,16);
-   kit.add(g,new THREE.Matrix4().makeTranslation(wx,.35,0),0x222326,'matte');g.dispose();
-  }
-  kit.rod([-.52,.35,0],[-.05,.35,0],.022,colour);
-  kit.rod([-.05,.35,0],[-.18,.85,0],.022,colour);
-  kit.rod([-.52,.35,0],[-.2,.82,0],.02,colour);
-  kit.rod([-.2,.82,0],[.4,.85,0],.022,colour);
-  kit.rod([.52,.35,0],[.38,1,0],.022,colour);
-  kit.rod([.38,1,-.28],[.38,1,.28],.018,0x9aa0a4);
-  kit.box(.24,.06,.12,-.2,.9,0,0x2a2a2a);
-  kit.box(.32,.2,.26,.62,.92,0,0x9aa0a4,{finish:'metal'});
-  kit.rod([-.3,.35,.02],[-.42,0,.18],.015,0x9aa0a4);
- });
-}
+/** A parked bicycle on its centre stand, front along local +x: the town's one model (parked-bicycle.js). */
+export {bicycle,PARKED_BICYCLE} from './parked-bicycle.js';
 
 /** A laundry pole on two stands, with the day's washing on it. */
 export function laundry(kit,x,z,{ry=0,seed=10,length=2.6}={}){

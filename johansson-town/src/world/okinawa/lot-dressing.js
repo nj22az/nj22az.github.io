@@ -221,15 +221,28 @@ function northBlock({kit,solid,read},lot,put){
 
 /* ------------------------- Kitahama: 9, 7 and 6 ------------------------- */
 
-function lot9({kit,read},lot,put){
- const shed=put(lot,'bicycle-shed').rect,{minX,maxX,minZ,maxZ}=shed;
+/** The five bicycles in the footpath shed (lots.js LOT_9): whose each is, as the shed's sign says. */
+const SHED_BICYCLES=Object.freeze([
+ Object.freeze({id:'shed-bicycle-thao',dz:0.8,colour:0xd9d2c0,frame:'step',owner:'Thao',why:'Thao rides to the izakaya in the afternoon and home after last orders; 1 Kitahama’s yard has no room for three bicycles.'}),
+ Object.freeze({id:'shed-bicycle-chin',dz:2.1,colour:0x2b2d30,basket:false,owner:'Chin',why:'Chin’s black commuter, down to the gangway for the 06:05 muster and to the workshop on his days ashore.'}),
+ Object.freeze({id:'shed-bicycle-vy',dz:3.5,colour:0xc8432f,size:.85,owner:'Vy',why:'Vy’s red 24-inch, to school and back, and to the hoop across the lane.'}),
+ Object.freeze({id:'shed-bicycle-riku',dz:4.35,colour:0x3d6f8f,size:.78,basket:false,owner:'Riku',why:'Riku’s blue one: it stays here because his mother’s fills their own yard.'}),
+ Object.freeze({id:'shed-bicycle-sato',dz:5.3,colour:0x7fb0a8,frame:'step',owner:'Mrs Sato',why:'Mrs Sato’s, with the big basket for the morning auction’s fish; she cannot lift it over her gate step.'}),
+]);
+
+
+function lot9({kit,solid,read},lot,put){
+ // The shed's own solid holds the bicycles under it (`holds`); each bicycle is solid too, in its own place.
+ const shedProp=propOf(lot,'bicycle-shed');solid({...colliderOf(shedProp),holds:'bicycles'});
+ const shed=shedProp.rect,{minX,maxX,minZ,maxZ}=shed;
  // A tin roof falling to the back, on six posts, a corrugated back panel; open to the footpath.
  for(const x of [minX+.08,maxX-.08])for(const z of [minZ+.08,(minZ+maxZ)/2,maxZ-.08])kit.box(.08,x<minX+1?2.2:2.0,.08,x,(x<minX+1?2.2:2.0)/2,z,P.galv,{finish:'metal'});
  kit.box(maxX-minX+.3,.04,maxZ-minZ+.3,(minX+maxX)/2,2.12,(minZ+maxZ)/2,P.shedRoof,{rz:-.09,finish:'metal'});
  for(let z=minZ+.15;z<maxZ;z+=.3)kit.box(.03,1.2,.06,maxX-.06,1.2,z,0x7b8c91,{finish:'metal'});
  kit.block(maxX-.07,maxX-.04,.6,1.8,minZ+.05,maxZ-.05,P.shedRoof,'metal');
- const bikes=[0xd9d2c0,0x2b2d30,0xc8432f,0x3d6f8f,0x7fb0a8];
- bikes.forEach((colour,i)=>bicycle(kit,(minX+maxX)/2,minZ+.8+i*1.05,{ry:0,colour}));
+ // Nose to the back panel, side by side a hand apart: two in the bay south of the middle posts, three (the children's
+ // two among them) in the bay north of them, so no post stands in front of a bicycle seen from the footpath.
+ SHED_BICYCLES.forEach(b=>solid(bicycle(kit,(minX+maxX)/2-.05,minZ+b.dz,{ry:0,...b})));
  // The hoop: its pad, the key painted on it, the post, the backboard, the rim and the net; the ball at the foot.
  const pad=lot.dressing.flat[0].rect;lotGround(kit,pad,P.concrete);
  const hp=put(lot,'hoop').rect,[px,pz]=mid(hp),board=pz+.6,rim=board+.3;
