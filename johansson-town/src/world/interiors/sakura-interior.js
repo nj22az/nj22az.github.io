@@ -15,6 +15,7 @@ import {buildSakuraShell} from './sakura-shell.js';
 import {PALETTE,fluorescent} from '../../render/dusk.js';
 import {buildSakuraCheer,buildSakuraBand} from './sakura-cheer.js';
 import {buildSakuraLife} from './sakura-life.js';
+import {buildSakuraSmallOffice} from './sakura-small-office-build.js';
 import {buildMagazineRack,MAGAZINE_RACK} from './sakura-magazine-rack.js';
 import {buildShelfEdges} from './sakura-shelf-edge.js';
 import {buildSakuraCorners} from './sakura-corners.js';
@@ -154,8 +155,8 @@ export function buildSakuraInterior({room,reg,action,exit}){
  buildMedicineShelf(room);
  anchor([5.55,1.35,2.3],'Ask Thuan for something from the medicine shelf',()=>action('sakura-medicine'));
  const decorations=createWindowDecorations(room);
- // The ledger lives on Thuan's desk in the back office now; the counter carries the hot
- // case, the oden and the bell (sakura-cheer.js).
+ // The ledger lives on Thuan's desk in the small office behind the till (sakura-small-office.js); the counter carries
+ // the hot case, the oden and the bell (sakura-cheer.js).
  buildSakuraCheer(room,{anchor,action});
  const equipment=buildSakuraCounterDetail(room);
  buildSakuraBaskets(room);
@@ -163,6 +164,8 @@ export function buildSakuraInterior({room,reg,action,exit}){
  buildSpecialsBoard(room,{anchor,action});
  buildSakuraBand(room);
  const life=buildSakuraLife(room,{anchor,action});
+ // The small office behind the till: Thuan's desk and sales book, the fridge and TV, the cork board (sakura-small-office.js).
+ const smallOffice=buildSakuraSmallOffice(room,{anchor,action});
  const upstairs=buildSakuraStoreys({room,reg,action});layout.colliders=[...layout.colliders,...upstairs.colliders];
  anchor([4.50,1.2,.6],'Ring service bell',()=>action('resident','Thuan'));
  dressBackbar(room,anchor,action,materials);
@@ -178,13 +181,13 @@ export function buildSakuraInterior({room,reg,action,exit}){
  const updateLighting=minutes=>{
   // The decorations and the magazine rack follow the town calendar, looked at once an hour.
   decorations.refresh(townCalendarAt(minutes).date);magazineRack?.refresh(townCalendarAt(minutes).date);
-  lightLevel=fluorescent(minutes);fill.intensity=1.7*lightLevel;
+  lightLevel=fluorescent(minutes);fill.intensity=1.7*lightLevel;smallOffice.setHours(minutes);
   for(const tube of tubes)for(const mat of Array.isArray(tube.material)?tube.material:[tube.material]){
    mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;
   }
  };
  let mounted=false,disposed=false,last='';
- return {dispose:()=>{disposed=true;life.dispose();},cashDrawer:equipment.getObjectByName('Sakura cash drawer'),officeDoor:life.officeDoor,frontDoor:life.frontDoor,loadBackRooms:life.loadBackRooms,layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:time=>{decorations.tick(time);life.tick(time);},accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const [ok]=await Promise.all([preloadSakuraInterior(),life.ready,capStand.ready]);if(disposed)return false;if(ok&&!mounted){
+ return {smallOffice,dispose:()=>{disposed=true;life.dispose();smallOffice.dispose();},cashDrawer:equipment.getObjectByName('Sakura cash drawer'),officeDoor:life.officeDoor,frontDoor:life.frontDoor,loadBackRooms:life.loadBackRooms,layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:(time,minutes,dt)=>{decorations.tick(time);life.tick(time);smallOffice.tick(time,minutes,dt);},accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const [ok]=await Promise.all([preloadSakuraInterior(),life.ready,capStand.ready]);if(disposed)return false;if(ok&&!mounted){
    const interior=model.clone(true);
    interior.traverse(o=>{if(o.isMesh&&o.name==='sakura-light'){
     const prepare=m=>{const mat=m.clone();mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;return mat;};
