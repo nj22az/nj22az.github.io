@@ -80,7 +80,13 @@ test('bookshop and dock workshop keep distinct content, accessible rooms and the
    for(const target of [...Object.values(r.layout.staff),...r.room.children.filter(o=>o.userData.seat).map(o=>o.userData.seat.stand)]){
     const [x,,z]=target;assert.equal(r.blocked(x,z),false,'Clear station '+target);assert.deepEqual(nav.path({x:r.layout.spawn[0],z:r.layout.spawn[2]},{x,z}).at(-1),[x,z]);
    }
-   const staff=c.world.people.filter(p=>p.profile.workSite===id),ledger=createResidentLedger(()=>c.state);
+   // Chin's workSite is still the workshop, but since the consolidation (docs/CAST-CONSOLIDATION.md, phase 2) he is the
+   // ferry's motorman, aboard 06:05–22:20 (social.js onWatch), and Tetsuo keeps the bench alone while she sails
+   // (ferry-crew.js). So the workers expected in the room are the ones whose day puts them there at 17:30.
+   const assigned=c.world.people.filter(p=>p.profile.workSite===id),ledger=createResidentLedger(()=>c.state);
+   const staff=assigned.filter(p=>residentPlan(p.profile,1050,false,c.state).place==='work');
+   assert.ok(staff.length,id+' has a worker in at 17:30');
+   for(const p of assigned.filter(p=>!staff.includes(p)))assert.equal(residentPlan(p.profile,1050,false,c.state).place,'ferry',p.profile.name+' is aboard, not missing');
    for(const p of staff)ledger.account(p.profile.name,1050).shopping={finished:true};startClock(c,1050);
    const service=staffService(c,r);service.enter(site,1050);
    for(const p of staff)assert.equal(p.g.userData.inWorkplace,id);

@@ -10,6 +10,9 @@ const scenery=new Set(['src/world/interiors/sakura-office-room.js','src/world/we
  'src/world/harbour-boats.js','src/world/interiors/sakura-shelf-edge.js','src/avatars/face.js','src/world/quay-dressing.js',
  // The labels on Tetsuo's bench kit (分電盤, 感電注意, the parts drawers), each item's `jp` beside its English `en`.
  'src/workshop/tetsuo-bench.js',
+ // Chin's wall: the bins' katakana labels, the outboard's decal, the 消火器 sign, Sakura Trading's calendar and the poster's
+ // fair line, each item's `jp` beside its English `en`.
+ 'src/workshop/chin-wall.js',
  // The printed headings of Sakura's papers (納品書, 請求書 …), each shown beside its English title.
  'src/commerce/paperwork.js']);
 const values=[];for(const path of files){if(path==='src/people/voice-lines.js'||scenery.has(path))continue;const src=await readFile(new URL(path,root),'utf8');const ast=parseAst(src);function walk(n){if(!n||typeof n!=='object')return;if(n.type==='CallExpression'&&(n.callee?.name==='plate'||n.callee?.name==='plateTexture'))return;if(n.type==='CallExpression'&&n.callee?.property?.name==='fillText')return;if(n.type==='Literal'&&typeof n.value==='string'&&/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/u.test(n.value))values.push({path,start:n.start,end:n.end,value:n.value});if(n.type==='TemplateElement'&&/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/u.test(n.value.raw))values.push({path,start:n.start,end:n.end,value:n.value.raw,template:true});for(const [k,v] of Object.entries(n)){if(k==='raw')continue;if(Array.isArray(v))v.forEach(walk);else if(v&&typeof v==='object')walk(v);}}walk(ast);}

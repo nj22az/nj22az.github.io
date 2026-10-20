@@ -32,11 +32,14 @@ test('residents enter only at their own door and later leave from it without a p
  const parent=new THREE.Group(),system=createNeighbours({parent});
  // No rendered interiors are constructed: overnight occupancy uses the actual street actor and home entrance.
  for(const p of system.people){const h=activeResidentHome(p.spec.name).target;p.g.position.set(h.x,0,h.z);p.initialised=true;}
- system.update(0,0);
+ // A home up an indoor stair (neighbours.js STAIR_HOMES: the Nakamuras above the dessert shop) is entered at its family
+ // doorway and slept in upstairs, so those residents climb before they are indoors; everyone else is in at once.
+ for(let i=0;i<400;i++)system.update(.1,0);
  for(const p of system.people){
-  const h=activeResidentHome(p.spec.name).target;
+  const h=activeResidentHome(p.spec.name).target,top=p.spec.stair?.route.at(-1);
   assert.equal(p.g.userData.indoors,'home',p.spec.name);assert.equal(p.g.visible,false,p.spec.name);
-  assert.ok(Math.hypot(p.g.position.x-h.x,p.g.position.z-h.z)<.01,p.spec.name+' is at the real door');
+  if(top)assert.ok(p.g.position.distanceTo(new THREE.Vector3(...top))<.05,p.spec.name+' rests upstairs');
+  else assert.ok(Math.hypot(p.g.position.x-h.x,p.g.position.z-h.z)<.01,p.spec.name+' is at the real door');
  }
  for(let i=0;i<300;i++)system.update(1/30,i/1800);
  for(const p of system.people){assert.equal(p.g.userData.indoors,'home',p.spec.name+' remains indoors throughout the night');assert.equal(p.g.visible,false);}

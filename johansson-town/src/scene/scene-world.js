@@ -49,7 +49,7 @@ export async function buildSceneWorld(id,views,townData=null){
  // says when it is in place and lit like the room (ready), before the cel pass below shades it.
  else if(id==='onsen'){api=(await import('../world/interiors/onsen.js')).buildOnsenInterior(options);layout=api;solids.push(...(api.colliders||[]));await api.ready;}
  else{api=(await import('../world/interiors/town-hall.js')).buildMayorOffice(options);layout=api;}
- for(const actor of api?.owned||[])if(['barfly','Jonsson'].includes(actor.holder?.name))actor.holder.visible=false;
+ for(const actor of api?.owned||[])if(actor.holder?.name==='barfly')actor.holder.visible=false;
  const preset=views[id].wide,spots=[...preset.spots.stand];
  if(!spots.length){const p=new THREE.Vector3().fromArray(preset.camera.position),f=new THREE.Vector3(0,0,-1).applyQuaternion(new THREE.Quaternion().fromArray(preset.camera.quaternion));for(let d=3;d<10;d+=.6)for(let side=-2;side<=2;side+=.5){const x=p.x+f.x*d+f.z*side,z=p.z+f.z*d-f.x*side;spots.push([x,groundHeight(x,z),z,.5,.78]);}}
  const candidates=[...spots].sort((a,b)=>(a[3]-.5)**2+(a[4]-.78)**2-((b[3]-.5)**2+(b[4]-.78)**2));

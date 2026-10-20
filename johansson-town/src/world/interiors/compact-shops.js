@@ -1,10 +1,10 @@
 import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
-import {addOwnedCharacter} from '../../people/owned-characters.js';
 import {addBookshopDetail} from './bookshop-detail.js';
 import {DOCK_WORKSHOP_ROOM} from '../dock-workshop-layout.js';
 import {buildWorkshopMachine} from '../../workshop/machine.js';
 import {buildMotorBench,MOTOR_BENCH,MOTOR_NOTE} from '../../workshop/motor-bench.js';
 import {buildTetsuoBench} from '../../workshop/tetsuo-bench.js';
+import {buildChinWall} from '../../workshop/chin-wall.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {createMaterials} from '../../render/materials.js';
 import {buildShopDoor} from '../shop-door.js';
@@ -15,7 +15,7 @@ import {BOOKSHOP_WORKSHOP_ROOM} from '../bookshop-workshop-layout.js';
 // Each business owns its room layout and furniture.
 // Furniture and approaches are authored together; there is no generic room shell.
 export function buildCompactShop({site,room,reg,collider,action,exit}){
- let workshop=null,tetsuo=null;const owned=[];
+ let workshop=null,tetsuo=null,chin=null;const owned=[];
  const layout=site.bookshop?BOOKSHOP_WORKSHOP_ROOM:site.industrialWorkshop?DOCK_WORKSHOP_ROOM:null;if(!layout)return null;
  const {width:w,depth:d,doorX}=layout,hw=w/2,hd=d/2;
  room.name=site.title+' interior';
@@ -82,11 +82,10 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
   box('Tool board',[1.8,.38,.06],[-1.02,2.05,-hd+.08],dark);
   for(let i=0;i<5;i++){box('Hanging hand tool',[.04,.31,.07],[-1.65+i*.29,2.02,-hd+.13],0x8b9994);box('Tool grip',[.07,.11,.07],[-1.65+i*.29,2.14,-hd+.13],0x7b4e38);}
   workshop=buildWorkshopMachine({room,x:-1.24,z:-hd+.32});
-  if(site.industrialWorkshop){
-   const jonsson=addOwnedCharacter({parent:room,kind:'Jonsson',position:[-2.7,0,.25],yaw:.35});owned.push(jonsson);
-   collider(-2.7,.25,1.45,1.35,1.35);
-   anchor([-2.7,1,.95],'Talk to Jonsson','read','Jonsson · engine repairs','Jonsson can recognise a harbour engine by its idle. He rebuilds small boat motors here, keeps every useful washer, and tests a repair twice before calling the owner. “A patient hand and a clean bench. That is most of the job.”');
-  }
+  // Chin's west wall (chin-wall.js): his tool board, parts, the outboard on its stand, the job board and the poster of
+  // Jonsson, the chief's kneeling-mechanic sculpture that stood on this floor until 20 October 2026 (the owner: "Maybe the
+  // Johnson mechanical statue should go; maybe he can be used for a poster in the workshop"). The floor is clear again.
+  chin=buildChinWall({room,collider,reg,action});
   anchor([-1.24,1.25,-hd+.58],'Use Form 3D printer','workshop','Form 3D printer',null,'Chin');
   // Tetsuo's own radio, on the top of the cable rack (tetsuo-bench.js).
   anchor([2.92,1.15,-3.05],'Tune workshop radio','radio','Workshop radio','Tetsuo has restored the tuner. Harbour weather and late-night music come through clearly.','Tetsuo');
@@ -97,5 +96,5 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
   const arcade=anchor([-1.65,1,hd-.57],'Play Star Port','arcade','Star Port');arcade.userData.npcInteraction=false;
   board('CHIN & TETSUO REPAIRS','ELECTRICAL · INSTRUMENTS · FORM 3D',[0,2.52,-hd+.08],3.65);
  }
- return {...layout,compact:true,workshop,tetsuo,owned,ownedUpdate:dt=>{owned.forEach(actor=>actor.update(dt));tetsuo?.update(dt);},dispose:()=>{owned.forEach(actor=>actor.dispose());tetsuo?.dispose();}};
+ return {...layout,compact:true,workshop,tetsuo,chin,owned,ownedUpdate:dt=>{owned.forEach(actor=>actor.update(dt));tetsuo?.update(dt);},dispose:()=>{owned.forEach(actor=>actor.dispose());tetsuo?.dispose();chin?.dispose();}};
 }
