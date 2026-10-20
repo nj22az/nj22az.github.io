@@ -1,6 +1,6 @@
-import {drawShout} from './scene-lettering.js';
+import {drawShout,drawStatement} from './scene-lettering.js?v=20261020-framing';
 import {CLASSROOM_VIEW} from './classroom-stage.js';
-import {classroomComic} from './classroom-comic.mjs';
+import {classroomComic} from './classroom-comic.mjs?v=20261020-framing';
 import {applySceneContacts} from './scene-contact.js';
 import {filmStaging} from './film-staging.mjs';
 import {KNOWN_EXPRESSIONS,KNOWN_POSES} from './scene-catalogue.mjs';
@@ -17,8 +17,8 @@ import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js
 import {normalizeRecipe} from '../johansson-town/src/avatars/recipe.js';
 import {drawCaptions,comicLayout,FORMATS} from '../johansson-town/src/photo/layout.js';
 import {buildSceneWorld} from './scene-world.js?v=20261011-2';
-import {poseSceneAvatar,placeSceneAvatar,movingPose} from './scene-avatar.js?v=20261020-motion';
-import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,emptyScene,normalizeScene,addCharacter,removeCharacter,restoreCharacter,panelOrder,text,placementOf,applyPlacement,samePlacement} from './scene-model.mjs?v=20261020-motion';
+import {poseSceneAvatar,placeSceneAvatar,movingPose} from './scene-avatar.js?v=20261020-framing';
+import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,emptyScene,normalizeScene,addCharacter,removeCharacter,restoreCharacter,panelOrder,text,placementOf,applyPlacement,samePlacement} from './scene-model.mjs?v=20261020-framing';
 import {pickMoment,applyMoment,aim} from './scene-moments.mjs?v=20261011-2';
 import {POSE_GROUPS,EXPRESSION_GROUPS,seatedPose} from './scene-catalogue.mjs';
 import {turnToward,touchAngle,twistTurn,nudgeStep,placeToolbar,pickBox,nearestSeat} from './scene-controls.mjs?v=20261011-2';
@@ -70,7 +70,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  <label>Left / right<input data-field="x" type="range" min="-12" max="12" step=".01"></label><label>Near / far<input data-field="z" type="range" min="-12" max="12" step=".01"></label>
  <label>Height above floor<input data-field="y" type="range" min="0" max="1.5" step=".01"></label><label>Lifted by<select data-field="liftedBy" aria-label="Lifted by"><option value="">Nobody</option></select></label><label>Use furniture<select data-field="seat" aria-label="Use furniture"><option value="">Stand on ground</option></select></label><button data-action="edit-character">Edit appearance</button><button data-action="duplicate">Duplicate character</button><button data-action="remove">Remove character</button></div></section>
  <section data-pane="text" hidden><h2>Add text</h2><label>Picture style<select data-field="style" aria-label="Picture style"><option value="photo">Photograph with speech bubbles</option><option value="meme">Meme with top and bottom text</option><option value="comic">Comic panel with caption</option></select></label>
- <label>Speech lettering<select data-field="speechStyle"><option value="bubble">Speech bubble</option><option value="shout">Large dramatic shout</option></select></label><label>Backdrop<select data-field="backdrop"><option value="">Full location</option><option value="paper">Plain comic paper</option></select></label><label>Selected character’s speech<input data-field="speech" maxlength="120" placeholder="What are they saying?" aria-label="Selected character’s speech"></label>
+ <label>Speech lettering<select data-field="speechStyle"><option value="bubble">Speech bubble</option><option value="shout">Large dramatic shout</option><option value="large">Large readable bubble</option></select></label><label>Backdrop<select data-field="backdrop"><option value="">Full location</option><option value="paper">Plain comic paper</option></select></label><label>Selected character’s speech<input data-field="speech" maxlength="120" placeholder="What are they saying?" aria-label="Selected character’s speech"></label>
  <label>Top text (meme)<input data-field="top" maxlength="120" placeholder="WHEN THE FERRY IS LATE" aria-label="Top text (meme)"></label><label>Bottom text / caption<input data-field="bottom" maxlength="120" placeholder="Write your punchline…" aria-label="Bottom text / caption"></label></section>
  <section data-pane="export" hidden><h2>Export your picture</h2><p class="scene-label">Picture format</p>${choice('format','Picture format',[['landscape','Landscape'],['square','Square'],['portrait','Portrait']])}
  <div class="scene-save-row"><a class="scene-save scene-primary" data-save="scene">Save picture</a><button data-action="preview">Preview</button></div><p class="scene-save-note"></p><p class="scene-export-status" role="status" aria-live="polite" data-status="scene"></p>
@@ -312,12 +312,12 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
     for(const {actor,avatar,position} of records){
      const box=new THREE.Box3().setFromObject(avatar.root),head=headCentre(avatar),projected=head.clone().project(camera);
      const visible=projected.z<1&&projected.z>-1&&!solid(camera.position,head);
-     const top=new THREE.Vector3(head.x,box.max.y,head.z).project(camera);bubbles.push({shout:actor.speechStyle==='shout',text:actor.speech,x:(projected.x+1)/2,y:(1-top.y)/2-(w/h)*.10-.025,visible});
+     const top=new THREE.Vector3(head.x,box.max.y,head.z).project(camera);bubbles.push({shout:actor.speechStyle==='shout',large:actor.speechStyle==='large',text:actor.speech,x:(projected.x+1)/2,y:(1-top.y)/2-(w/h)*.10-.025,visible});
      placed.push({id:actor.id,box,face:headCentre(avatar),radius:avatar.measure.Rh*Math.max(avatar.measure.headSX,avatar.measure.headSY)*actor.size,visible,feet:new THREE.Vector3(position.x,position.y,position.z)});
      const live=state.actors.find(a=>a.id===actor.id);if(live){live.x=actor.x;live.z=actor.z;live.seat=actor.seat;}
     }
     environment.sky?.update(camera,1,false,false);renderer.render(environment.scene,camera);
-    canvas.width=w;canvas.height=h;ctx.drawImage(renderer.domElement,0,0);if(snapshot.effect==='dash')drawDash(ctx,w,h);const overlay=document.createElement('canvas');overlay.width=w;overlay.height=h;drawCaptions(overlay.getContext('2d'),w,h,{style:snapshot.style,top:snapshot.top,bottom:snapshot.bottom,bubbles:bubbles.filter(b=>!b.shout)});ctx.drawImage(overlay,0,0);for(const b of bubbles.filter(b=>b.shout))drawShout(ctx,w,h,b.text);
+    canvas.width=w;canvas.height=h;ctx.drawImage(renderer.domElement,0,0);if(snapshot.effect==='dash')drawDash(ctx,w,h);const overlay=document.createElement('canvas');overlay.width=w;overlay.height=h;drawCaptions(overlay.getContext('2d'),w,h,{style:snapshot.style,top:snapshot.top,bottom:snapshot.bottom,bubbles:bubbles.filter(b=>!b.shout&&!b.large)});ctx.drawImage(overlay,0,0);for(const b of bubbles.filter(b=>b.shout))drawShout(ctx,w,h,b.text);for(const b of bubbles.filter(b=>b.large))drawStatement(ctx,w,h,b.text,b.x);
     // Where each character is on the picture (fractions of it), for picking, the outline and the toolbar.
     const right=new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld,0);
     boxes=placed.map(p=>{const corners=[];for(const x of [p.box.min.x,p.box.max.x])for(const y of [p.box.min.y,p.box.max.y])for(const z of [p.box.min.z,p.box.max.z])corners.push(new THREE.Vector3(x,y,z).project(camera));
