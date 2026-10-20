@@ -167,10 +167,35 @@ test('every open patch of the east side can be walked to from the road',async()=
    seen.add(key(nx,nz));queue.push([nx,nz]);
   }
  }
+ // Staff aisles behind counters (Mrs Nakamura's, behind the zenzai counter) are reached
+ // through passages narrower than the flood grid can step through: the passage beside
+ // her stairwell leaves the walker a band under 0.2 m wide. So a cell the 0.4 m flood
+ // missed gets a second look: a fine search, 0.1 m steps with the same body, colliders
+ // and walk surface, from the nearest cell the flood did reach. A truly enclosed pocket
+ // still has no way in and still fails.
+ const reached=[...seen].map(k=>k.split(',').map(Number));
+ const fineReach=(tx,tz)=>{
+  let from=reached[0],best=Infinity;
+  for(const p of reached){const d=Math.hypot(p[0]-tx,p[1]-tz);if(d<best){best=d;from=p;}}
+  const F=.1,fk=(x,z)=>Math.round(x/F)+','+Math.round(z/F),box=2.5;
+  const minX=Math.min(from[0],tx)-box,maxX=Math.max(from[0],tx)+box,minZ=Math.min(from[1],tz)-box,maxZ=Math.max(from[1],tz)+box;
+  const near=new Set([fk(...from)]),todo=[from];
+  while(todo.length){
+   const [x,z]=todo.shift();
+   if(Math.abs(x-tx)<F/2&&Math.abs(z-tz)<F/2)return true;
+   for(const [dx,dz] of [[F,0],[-F,0],[0,F],[0,-F]]){
+    const nx=+(x+dx).toFixed(2),nz=+(z+dz).toFixed(2);
+    if(nx<minX||nx>maxX||nz<minZ||nz>maxZ||near.has(fk(nx,nz))||!open(nx,nz))continue;
+    if(Math.abs(groundHeight(nx,nz)-groundHeight(x,z))>.45*F/STEP)continue;
+    near.add(fk(nx,nz));todo.push([nx,nz]);
+   }
+  }
+  return false;
+ };
  const stranded=[];
  for(let x=EAST_LAWN.minX;x<=EAST_LAWN.maxX;x+=STEP)for(let z=EAST_LAWN.minZ;z<=EAST_LAWN.maxZ;z+=STEP){
   const gx=+x.toFixed(1),gz=+z.toFixed(1);
-  if(open(gx,gz)&&!seen.has(key(gx,gz)))stranded.push(gx+','+gz);
+  if(open(gx,gz)&&!seen.has(key(gx,gz))&&!fineReach(gx,gz))stranded.push(gx+','+gz);
  }
  assert.deepEqual(stranded.slice(0,8),[],'East-side ground you can stand on but cannot reach');
  assert.ok(seen.size>15000,'The flood stopped early: '+seen.size+' cells');
