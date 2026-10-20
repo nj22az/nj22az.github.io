@@ -6,7 +6,7 @@ import {MAIN_ROAD} from './main-road.js';
 import {PARK,TURF_TINT,PARK_TERRAIN_SEGMENTS} from './park-layout.js';
 import {GROUND_LAYER} from './ground-layers.js';
 import {HARBOUR_PARK_EXTENSION,inHarbourPark} from './harbour-park-plan.js';
-import {BEACH,beachHeight} from './beach-layout.js';
+import {BEACH,BEACH_GRADES,beachHeight,gradedHeight} from './beach-layout.js';
 import {GATEBALL,GATEBALL_ACTIVE} from './okinawa/layout.js';
 import {paintedTurf} from '../render/toy-surfaces.js';
 
@@ -168,6 +168,27 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
  const grit=groundTexture('#e3d2a4',[['#e9d9b0',320,6],['#d8c595',260,7],['#efe4c4',160,4]],'#d4c191');
  const shore=new THREE.Mesh(sand,new THREE.MeshStandardMaterial({color:grit?0xffffff:GROUND.sand,map:grit,roughness:1,side:THREE.DoubleSide}));
  shore.name='east-beach-sand';shore.receiveShadow=!!shadows;group.add(shore);
+ // Where a path crosses from the town's datum onto the sand, the sand is graded up to meet
+ // it (beach-layout.js BEACH_GRADES). Drawn as its own patch over the ribbon, only where it
+ // is raised, 1.5 cm proud so the two never share a plane.
+ const graded=[],gradedUv=[],gradedIndex=[],STEP=.2,LIFT=.015;
+ for(const g of BEACH_GRADES.filter(g=>g.drawn==='sand')){
+  const {minX,maxX,minZ,maxZ}=g.apply,nx=Math.ceil((maxX-minX)/STEP),nz=Math.ceil((maxZ-minZ)/STEP);
+  const raised=(x,z)=>{const b=beachHeight(x,z);return b!==null&&gradedHeight(x,z,b)>b+.002;};
+  const vertex=(x,z)=>{graded.push(x,gradedHeight(x,z,beachHeight(x,z))+LIFT,z);gradedUv.push(x/3,z/3);return graded.length/3-1;};
+  for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){
+   const x0=minX+(maxX-minX)*i/nx,x1=minX+(maxX-minX)*(i+1)/nx,z0=minZ+(maxZ-minZ)*j/nz,z1=minZ+(maxZ-minZ)*(j+1)/nz;
+   if(![[x0,z0],[x1,z0],[x0,z1],[x1,z1]].some(p=>raised(...p))||[x0,x1].some(x=>beachHeight(x,z0)===null))continue;
+   const a=vertex(x0,z0),b=vertex(x1,z0),c=vertex(x0,z1),d=vertex(x1,z1);
+   gradedIndex.push(a,c,b,b,c,d);
+  }
+ }
+ if(gradedIndex.length){
+  const geometry=new THREE.BufferGeometry();
+  geometry.setAttribute('position',new THREE.Float32BufferAttribute(graded,3));
+  geometry.setAttribute('uv',new THREE.Float32BufferAttribute(gradedUv,2));geometry.setIndex(gradedIndex);geometry.computeVertexNormals();
+  const patch=new THREE.Mesh(geometry,shore.material);patch.name='east-beach-graded-sand';patch.receiveShadow=!!shadows;group.add(patch);
+ }
  for(const access of BEACH.accesses){
   const {fromX,toX,z,half}=access,y=beachHeight(toX,z);
   const geometry=new THREE.BufferGeometry();

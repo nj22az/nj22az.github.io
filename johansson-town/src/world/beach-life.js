@@ -1,6 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
-import {BEACH,beachHeight} from './beach-layout.js';
+import {BEACH,beachHeight,gradedHeight} from './beach-layout.js';
 import {waveHeight,SEA_LEVEL,WAVE_REACH} from './ocean.js';
 
 /**
@@ -38,7 +38,8 @@ const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 
 /** The sand under a crab, or the edge of the zone if it has strayed off it. */
 export function crabGround(x,z){
- return beachHeight(clamp(x,CRAB_ZONE.minX,CRAB_ZONE.maxX),clamp(z,CRAB_ZONE.minZ,CRAB_ZONE.maxZ))??-.3;
+ const cx=clamp(x,CRAB_ZONE.minX,CRAB_ZONE.maxX),cz=clamp(z,CRAB_ZONE.minZ,CRAB_ZONE.maxZ);
+ return gradedHeight(cx,cz,beachHeight(cx,cz))??-.3;
 }
 
 /**
@@ -138,7 +139,7 @@ export function beachTreasures(random=Math.random,count=40){
  while(out.length<count){
   const x=CRAB_ZONE.minX+random()*(CRAB_ZONE.maxX-CRAB_ZONE.minX),z=CRAB_ZONE.minZ+random()*(CRAB_ZONE.maxZ-CRAB_ZONE.minZ);
   if(BEACH.accesses.some(a=>Math.abs(z-a.z)<a.half+.6&&x<a.toX+1))continue;
-  out.push({x,z,y:beachHeight(x,z),turn:random()*Math.PI*2,size:.75+random()*.5,star:out.length%3===0});
+  out.push({x,z,y:gradedHeight(x,z,beachHeight(x,z)),turn:random()*Math.PI*2,size:.75+random()*.5,star:out.length%3===0});
  }
  return out;
 }
