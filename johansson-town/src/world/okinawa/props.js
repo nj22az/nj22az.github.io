@@ -72,9 +72,9 @@ export function utilityPole(kit,x,z,{h=9.8,face=0,transformer=true,lamp=false,gu
   kit.cyl(.035,.035,h-1.8,-.16,(h-1.8)/2,.05,black,{segments:5});
   for(let y=2.4,i=0;y<h-.8;y+=.9,i++)kit.box(.22,.025,.025,i%2?.18:-.18,y,0,0x9aa2a6,{ry:i%2?0:Math.PI});
   kit.box(.2,.34,.03,0,2.1,.16,0xe8e3d4);
-  kit.box(.16,.06,.031,0,2.2,.162,0x2b4a7a);
+  kit.box(.16,.06,.04,0,2.2,.17,0x2b4a7a);
   kit.cyl(.19,.19,1.6,0,.8,0,0xe0b93a,{segments:7});
-  for(let y=.2;y<1.6;y+=.4)kit.cyl(.195,.195,.18,0,y,0,0x2b2b2b,{segments:7});
+  for(let y=.2;y<1.6;y+=.4)kit.cyl(.205,.205,.18,0,y,0,0x2b2b2b,{segments:7});
   if(guy){
    const foot=[0,0,-3.2];
    kit.rod([0,h-1.2,0],foot,.012,0x6f7579);

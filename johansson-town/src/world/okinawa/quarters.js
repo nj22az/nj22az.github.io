@@ -80,7 +80,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  }});
  buildWires(kit,solid);
  // Kitahama stands on the island's ground, below the old town's datum.
- kit.at(0,0,0,()=>buildKitahama(kit,solid,{anchor,inspect,onAction,vending:(x,z,ry)=>vending(x,z,ry,KITAHAMA.y)}),KITAHAMA.y);
+ kit.at(0,0,0,()=>buildKitahama(kit,solid,{anchor,inspect,onAction,vending:(x,z,ry)=>vending(x,z,ry,(KITAHAMA.y||0)+GROUND_LAYER.lane)}),KITAHAMA.y);
  // What stands where the surplus houses stood (lots.js), and the gutter-and-weed edge every Kitahama lane has (lane-edges.js).
  buildStreetLots(kit,solid,{anchor,onAction});
  // What the cleared lots are now (lots.js CLEARED_LOTS dressing): gardens, parking, the bicycle shed, the cane, the drinks corner.
@@ -108,7 +108,8 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
 function buildNishiGround(kit,solid){
  const y=GROUND_LAYER.gravel,lane=GROUND_LAYER.lane;
  // The quarter's ground: crushed coral and sand, and concrete for the walk and lanes.
- kit.block(NISHI.minX,NISHI.maxX,y-.06,y,NISHI.minZ,NISHI.maxZ,GROUND.coral,'sand');
+ // 12 mm inside the quay's apron at its west and seaward edges, so the two slabs' edges never share a plane.
+ kit.block(NISHI.minX+.012,NISHI.maxX,y-.06,y,NISHI.minZ+.012,NISHI.maxZ,GROUND.coral,'sand');
  const P=NISHI.promenade;
  // The shared lane union supplies the promenade and cross streets.
  const Q=NISHI.quay;
@@ -216,7 +217,7 @@ function netShed(kit,solid,p,{inspect}){
  for(let z=z0;z<=z1;z+=(z1-z0)/4)kit.box(.18,h,.18,x0+.1,h/2,z,0x5d4431);
  kit.gableRoof(z1-z0,x1-x0,.9,(x0+x1)/2,h,(z0+z1)/2,0x8a9496,{ry:Math.PI/2,overhang:.5});
  // Corrugations, as ribs over the roof.
- for(let x=x0-.3;x<x1+.3;x+=.5)kit.box(.04,.03,z1-z0+1,x,h+.47-Math.abs(x-(x0+x1)/2)/((x1-x0)/2)*.45,(z0+z1)/2,0x7c8587);
+ for(let x=x0-.3;x<x1+.3;x+=.5)kit.box(.04,.03,z1-z0+1.02,x,h+.47-Math.abs(x-(x0+x1)/2)/((x1-x0)/2)*.45,(z0+z1)/2,0x7c8587);
  netPile(kit,x0+4,z0+2.2,{size:1.1});netPile(kit,x0+5.5,z1-2,{size:.9});
  buoys(kit,x1-.6,1.6,(z0+z1)/2,{count:10});
  for(const z of [z0+1.5,z1-1.5])kit.box(.08,.08,.08,x1-.3,2.4,z,0x5d4431);
@@ -273,7 +274,7 @@ function buildPromenade(kit,solid,{anchor,onAction}){
  // the landward side; each one is a seat.
  for(const z of [-20,4,22]){
   kit.box(.45,.08,1.6,x,.46,z,0x9a7a55);kit.box(.06,.4,1.6,x+.22,.72,z,0x9a7a55);
-  for(const dz of [-.65,.65])kit.box(.45,.44,.08,x,.22,z+dz,0x5d6468);
+  for(const dz of [-.65,.65])kit.box(.43,.44,.08,x,.22,z+dz,0x5d6468);
   solid({id:'promenade-bench',x,z,w:.6,d:1.7,height:.8});
   const seat=anchor(x+.6,1,z,'Sit on the seawall bench',()=>onAction?.('seat','Seawall bench','You sit with your back to the town. Over the parapet the reef goes green, then blue; the tetrapods at the foot of the wall break each wave into spray and a long hiss.'));
   if(seat)seat.userData.seat={id:'seawall-bench-'+z,position:[x,0,z],stand:[x+.85,0,z],surfaceY:.5,eyeY:1.12,yaw:Math.PI/2,pitch:-.03};
