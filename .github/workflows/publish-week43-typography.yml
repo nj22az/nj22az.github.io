@@ -1,0 +1,59 @@
+name: Publish Week 43 typography
+
+on:
+  push:
+    paths:
+      - '.github/workflows/publish-week43-typography.yml'
+      - 'sjoskolan/verktyg/lektionsbilder/lektion_v43_02.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-week43-typography
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install presentation dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libreoffice fonts-crosextra-carlito fonts-crosextra-caladea
+          python -m pip install python-pptx Pillow lxml
+      - name: Regenerate Week 43 Tuesday presentation
+        run: python3 sjoskolan/verktyg/lektionsbilder/bygg.py v43_02
+      - name: Verify the regenerated deck
+        run: |
+          python3 - <<'PY'
+          from pptx import Presentation
+          p='sjoskolan/vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx'
+          prs=Presentation(p)
+          assert len(prs.slides)==21, len(prs.slides)
+          s=prs.slides[4]
+          assert any('STORT N' in shape.text for shape in s.shapes if shape.has_text_frame)
+          assert any(r.font.name=='Cambria' for sl in prs.slides for sh in sl.shapes if sh.has_text_frame for para in sh.text_frame.paragraphs for r in para.runs)
+          print('21 slides; symbol explanations and Cambria runs verified')
+          PY
+          test -s sjoskolan/vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pdf
+          test -s sjoskolan/bildspel/v43_02_Transformatorer_och_motorer/05.webp
+      - name: Publish generated student files
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add sjoskolan/vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx
+          git add sjoskolan/vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pdf
+          git add sjoskolan/bildspel/v43_02_Transformatorer_och_motorer/
+          git add sjoskolan/innehall/placeringar/
+          if ! git diff --cached --quiet; then
+            git commit -m 'Publish clearer N/n typography in Week 43 presentation'
+            git push
+          fi

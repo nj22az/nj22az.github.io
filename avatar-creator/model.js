@@ -1,4 +1,5 @@
 import * as THREE from '../johansson-town/vendor/three.module.js';
+import {createModelWorkshop} from './model-workshop.js';
 import {addLights,createCelPass,createInkPipeline,INK_OPTIONS,HERO,frameBox,viewDirection,renderHero,createHeroStage} from '../johansson-town/src/studio/modeller/look.js';
 import {prepareForExport,exportGlb,assetFileName,resolveCard} from '../johansson-town/src/studio/modeller/export.js';
 import {disposeMade} from '../johansson-town/src/studio/modeller/made.js';
@@ -34,6 +35,7 @@ export function createModelWorkspace(){
  <button type="button" class="scene-primary" data-action="lathe">New from a shape: Lathe</button></div>
  <section class="model-library" data-view="library" aria-label="Asset library">
   <div class="model-search"><label>Search the library<input type="search" data-search placeholder="Name, kind or tag" autocomplete="off"></label>
+  <button type="button" data-action="import-glb">Import GLB</button><input type="file" accept=".glb,model/gltf-binary" data-glb hidden>
   <button type="button" data-action="open-file">Open a design file</button><input type="file" accept=".json,application/json" data-file hidden></div>
   <p class="scene-export-status" role="status" data-library-status></p>
   <div data-groups></div>
@@ -47,7 +49,7 @@ export function createModelWorkspace(){
   </section>
   <aside class="scene-controls" aria-label="Model controls">
    <div data-maker hidden></div>
-   <div data-about></div>
+   <div data-about></div><button data-action="adjust-copy">Adjust / export a copy</button>
    <h2>Save</h2>
    <p class="scene-save-note" data-save-note></p>
    <div class="model-exports">
@@ -62,6 +64,11 @@ export function createModelWorkspace(){
   </aside>
  </div>`;
  document.body.append(root);
+ const workshop=createModelWorkshop({onClose:()=>{delete root.dataset.workshop;root.querySelector('[data-view="library"]').hidden=false;root.querySelector('[data-view="open"]').hidden=true;}});root.append(workshop.root);
+ function openWorkshop(bytes,name){workshop.open(bytes,name);root.dataset.workshop='';root.querySelector('[data-view="library"]').hidden=true;root.querySelector('[data-view="open"]').hidden=true;}
+ root.querySelector('[data-action="import-glb"]').onclick=()=>root.querySelector('[data-glb]').click();
+ root.querySelector('[data-glb]').onchange=async event=>{try{const file=event.target.files[0];if(!file)return;if(file.size>24*1024*1024)throw Error('Choose a GLB smaller than 24 MiB.');openWorkshop(new Uint8Array(await file.arrayBuffer()),file.name);}catch(e){root.querySelector('[data-library-status]').textContent=e.message;}finally{event.target.value='';}};
+ root.querySelector('[data-action="adjust-copy"]').onclick=async()=>{try{openWorkshop(await glbOf(currentItem(),card),fileName('glb'));}catch(e){say(e.message);}};
  const $=s=>root.querySelector(s),canvas=$('.model-canvas'),status=$('[data-status]'),touch=touchFirst();
  $('[data-save-note]').textContent=touch?'Each file opens the share sheet: Save to Files keeps it in the Files app. Files are named by the asset’s id and version.':'Each file downloads at once, named by the asset’s id and version.';
  const say=text=>{status.textContent=text;};
@@ -403,7 +410,7 @@ export function createModelWorkspace(){
  return {root,
   show(){root.hidden=false;shown=true;if(!items.length)refreshItems();request();document.getElementById('loading')?.remove();},
   hide(){root.hidden=true;shown=false;cancelAnimationFrame(frame);frame=0;},
-  dispose(){this.hide();resizer.disconnect();ink?.dispose();renderer.dispose();stage?.dispose();for(const u of pictures.values())URL.revokeObjectURL(u);for(const f of Object.values(files))f.dispose();root.remove();},
+  dispose(){this.hide();workshop.dispose();resizer.disconnect();ink?.dispose();renderer.dispose();stage?.dispose();for(const u of pictures.values())URL.revokeObjectURL(u);for(const f of Object.values(files))f.dispose();root.remove();},
   /** For tests and the agent: what is open, its checks and which files are ready. */
   get state(){return {open:current?.key||null,id:card?.id||null,version:card?.version||null,checks:lastChecks.map(c=>({id:c.id,ok:c.ok,detail:c.detail})),
    params:params?structuredClone(params):null,ready:Object.fromEntries(Object.entries(files).map(([k,f])=>[k,f.ready])),print:printWords,items:items.length};},

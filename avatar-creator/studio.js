@@ -4,10 +4,12 @@ import {openCreator} from '../johansson-town/src/avatars/creator.js';
 import {ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/src/avatars/cast.js';
 import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js';
 import {normalizeRecipe,decodeRecipe} from '../johansson-town/src/avatars/recipe.js';
-import {createSceneWorkspace} from './scene.js?v=20261016-1';
+import {createSceneWorkspace} from './scene.js?v=20261020-classroom';
 import {createWorldPanel} from './world-panel.js?v=20261011-1';
 import {createHomeWorkspace} from './home.js?v=20261011-1';
-import {createModelWorkspace} from './model.js?v=20261014-1';
+import {createModelWorkspace} from './model.js?v=20261020-workshop';
+import {createWorldLibrary} from './world-library.js?v=20261020-2';
+import {createRoomWorkspace} from './room-editor.js?v=20261020-rooms';
 import {loadHatModels} from '../johansson-town/src/catalog/hat-models.js';
 
 // The hats that are models in World's asset catalogue (Johansson's trucker cap, sold at Sakura Shōten) are in hand before anyone
@@ -33,17 +35,21 @@ function save(recipe){
  catch{status.textContent='Browser storage is unavailable. Use Download design to save your character.';}
 }
 
-let currentRecipe=shared||restored||recipeFor('Johansson'),editor=null,workspace=null,home=null,model=null,switching=false,editingId=null;
+let currentRecipe=shared||restored||recipeFor('Johansson'),editor=null,workspace=null,home=null,model=null,rooms=null,worldLibrary=null,switching=false,editingId=null;
 const modes=document.createElement('nav');modes.className='studio-modes';modes.setAttribute('aria-label','Johansson Studio modes');
-for(const [id,label] of [['character','Edit character'],['home','Decorate home'],['scene','Build scene'],['comic','Make comic'],['model','Make model']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.mode=id;b.onclick=()=>switchMode(id);modes.append(b);}
+for(const [id,label] of [['character','Edit character'],['home','Decorate home'],['scene','Build scene'],['comic','Make comic'],['model','Make model'],['rooms','Edit room'],['library','World library']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.mode=id;b.onclick=()=>switchMode(id);modes.append(b);}
 document.body.prepend(modes);
 function switchMode(mode,{focus=true}={}){
+ if(mode!=='rooms')rooms?.hide();
+ if(mode!=='library')worldLibrary?.hide();
  if(editor&&mode==='character'){editor.creator.goTo('look');return;}
  if(editor){currentRecipe=editor.creator.recipe;switching=true;editor.cleanup();editor.creator.close();editor=null;switching=false;}
  if(mode==='character'){workspace?.hide();home?.hide();model?.hide();editor=createCharacterEditor();}
  else if(mode==='home'){workspace?.hide();model?.hide();home??=createHomeWorkspace();home.show();}
  // Make model: every asset in a library, checked and saved for World, a printer or a picture; the Lathe maker (model.js)
  else if(mode==='model'){workspace?.hide();home?.hide();model??=createModelWorkspace();model.show();}
+ else if(mode==='library'){workspace?.hide();home?.hide();model?.hide();rooms?.hide();worldLibrary??=createWorldLibrary({onOpen:async e=>{if(e.access==='model'){if(e.id.startsWith('home:')){switchMode('rooms');await rooms.show();await rooms.addWorldAsset(e);}else{switchMode('model');await model.open(e.id);}}else{switchMode('scene');if(e.access==='character')workspace.useCharacter(recipeFor(e.name),null);else workspace.setLocation(e.id.slice(9));}},onRoomModel:async e=>{switchMode('rooms');await rooms.show();await rooms.addWorldAsset(e);}});worldLibrary.show();}
+ else if(mode==='rooms'){workspace?.hide();home?.hide();model?.hide();rooms??=createRoomWorkspace();rooms.show();}
  else{home?.hide();model?.hide();workspace??=createSceneWorkspace({getCharacter:()=>currentRecipe,onMode:switchMode,onEdit:(recipe,id)=>{currentRecipe=recipe;editingId=id;switchMode('character');}});if(editingId){workspace.useCharacter(currentRecipe,editingId);editingId=null;}workspace.show(mode);}
  for(const b of modes.children)b.setAttribute('aria-pressed',String(b.dataset.mode===mode));
  if(focus)modes.querySelector(`[data-mode="${mode}"]`)?.focus({preventScroll:true});
@@ -146,6 +152,6 @@ switchMode('character',{focus:false});
 if(new URLSearchParams(location.search).has('agent'))import('./studio-api.js?v=20261014-1').catch(e=>console.warn('Johansson Studio: agent API',e));
 // The maker focuses its close button on open; on first load nothing should wear a focus ring until the user acts.
 requestAnimationFrame(()=>requestAnimationFrame(()=>{const a=document.activeElement;if(a&&a!==document.body&&a.closest('.shm'))a.blur();}));
-window.addEventListener('pagehide',()=>{editor?.cleanup();workspace?.dispose();home?.dispose();model?.dispose();},{once:true});
+window.addEventListener('pagehide',()=>{editor?.cleanup();workspace?.dispose();home?.dispose();model?.dispose();rooms?.dispose();worldLibrary?.dispose();},{once:true});
 // For tests: the Make model workspace once opened.
 Object.defineProperty(window,'__studioModel',{get:()=>model,configurable:true});

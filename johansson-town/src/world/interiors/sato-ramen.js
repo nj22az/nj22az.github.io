@@ -26,6 +26,18 @@ function plaqueTexture(item){
  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;
 }
 
+/** The drinks corner needs a real support, clear of the cook's approach at z=-3.72. */
+export const SATO_DRINKS_STAND=Object.freeze({x:10.72,z:-3.2,width:.94,depth:.56,floor:.04,top:.92});
+export function buildRamenDrinksStand(){
+ const s=SATO_DRINKS_STAND,g=new THREE.Group();g.name='Sato Ramen drinks stand';
+ g.userData.purpose={for:'Mrs Sato, serving coffee and cold barley tea.',why:'Supports the coffee urn, jug and cups at working height instead of leaving them in mid-air.',where:'The east end of the ramen kitchen, beside the serving pass.'};
+ const steel=new THREE.MeshStandardMaterial({color:0x9ca9a5,metalness:.55,roughness:.4});
+ const top=new THREE.Mesh(new THREE.BoxGeometry(s.width,.04,s.depth),steel);top.position.y=s.top-.02;top.name='Drinks stand top';g.add(top);
+ const height=s.top-.04-s.floor;
+ for(const x of [-s.width/2+.045,s.width/2-.045])for(const z of [-s.depth/2+.045,s.depth/2-.045]){const leg=new THREE.Mesh(new THREE.BoxGeometry(.04,height,.04),steel);leg.position.set(x,s.floor+height/2,z);leg.name='Drinks stand leg';g.add(leg);}
+ return g;
+}
+
 export function buildSatoRamenRoom({room,reg,collider,action,exit,getMinutes=()=>720}){
  const group=new THREE.Group();group.name='Sato Ramen';room.add(group);
  if(!addMinatoInterior(room)){
@@ -49,7 +61,9 @@ export function buildSatoRamenRoom({room,reg,collider,action,exit,getMinutes=()=
  // The drinks corner on the back counter, where Mrs Sato pours (people/ramen-kitchen.js):
  // a steel coffee urn, a jug of cold barley tea and a stack of cups.
  {
-  const drinks=new THREE.Group();drinks.name='Sato Ramen drinks corner';drinks.position.set(10.72,.92,-3.2);group.add(drinks);
+  const stand=buildRamenDrinksStand();stand.position.set(SATO_DRINKS_STAND.x,0,SATO_DRINKS_STAND.z);group.add(stand);
+  collider(SATO_DRINKS_STAND.x,SATO_DRINKS_STAND.z,SATO_DRINKS_STAND.width,SATO_DRINKS_STAND.depth,SATO_DRINKS_STAND.top);
+  const drinks=new THREE.Group();drinks.name='Sato Ramen drinks corner';drinks.position.set(SATO_DRINKS_STAND.x,SATO_DRINKS_STAND.top,SATO_DRINKS_STAND.z);drinks.userData.support='Sato Ramen drinks stand';group.add(drinks);
   const steel=new THREE.MeshStandardMaterial({color:0xb9bcb8,roughness:.25,metalness:.75}),black=new THREE.MeshStandardMaterial({color:0x1d1d1d,roughness:.5});
   const urn=new THREE.Mesh(new THREE.CylinderGeometry(.11,.12,.38,20),steel);urn.position.set(-.12,.19,0);drinks.add(urn);
   const lid=new THREE.Mesh(new THREE.SphereGeometry(.11,16,8,0,Math.PI*2,0,Math.PI/2),steel);lid.position.set(-.12,.38,0);drinks.add(lid);
