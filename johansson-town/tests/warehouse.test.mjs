@@ -39,11 +39,31 @@ test('warehouse and consolidated office share a reachable quay',async()=>{
  assert.ok(world.group.getObjectByName('Harbour Warehouse kit exterior'),'Built in code from the first frame');
  assert.ok(world.group.getObjectByName('warehouse-street-door'));
 });
-test('the warehouse is solid with nothing to download; visitor map names the landmark',async()=>{
+test('the warehouse shell is immediately ready; visitor map names the landmark',async()=>{
  installDOM();const world={group:new THREE.Group(),colliders:[]};const state=buildWarehouse(world);
  assert.equal(state.status,'ready');assert.ok(world.group.getObjectByName('Harbour Warehouse kit exterior'));
  assert.ok(world.colliders.some(c=>circleHitsRect(WAREHOUSE.x,WAREHOUSE.z,.32,c)));
  const labels=[],ctx=document.createElement('canvas').getContext('2d');ctx.fillText=t=>labels.push(t);
  drawTownMap(ctx,680,640,{landmarks:[WAREHOUSE_PLACE]});
  assert.ok(labels.some(t=>t.includes('Harbour Warehouse')));
+});
+
+test('J-Coffee banner fits the blank quay end without covering the working doors',async()=>{
+ installDOM();
+ const {J_COFFEE_BANNER:S}=await import('../src/world/j-coffee-advertising.js');
+ const world={group:new THREE.Group(),colliders:[]};buildWarehouse(world);
+ const group=world.group.getObjectByName('J-Coffee warehouse wall banner');
+ const print=group.getObjectByName('J-Coffee · A little island time');
+ assert.equal(print.geometry.parameters.width/print.geometry.parameters.height,3);
+ assert.equal(print.material.toneMapped,false);
+ assert.equal(print.material.map.colorSpace,THREE.SRGBColorSpace);
+ const bounds=new THREE.Box3().setFromObject(group);
+ assert.ok(bounds.min.x>WAREHOUSE.x-3.07&&bounds.max.x<WAREHOUSE.x+3.07,'Fits the end wall');
+ assert.ok(bounds.min.y>1&&bounds.max.y<4.2,'Clears the plinth and eave');
+ assert.ok(bounds.max.z<WAREHOUSE.z-WAREHOUSE.halfDepth-.03,'Clear of the corrugations');
+ assert.ok(bounds.min.z>WAREHOUSE.z-WAREHOUSE.halfDepth-.15,'Wall-mounted, not in the ferry lane');
+ assert.equal(S.position[0],WAREHOUSE.x);
+ const {readFile}=await import('node:fs/promises');
+ const bytes=await readFile(new URL('../assets/'+S.file,import.meta.url));
+ assert.equal(bytes.toString('ascii',0,4),'RIFF');assert.ok(bytes.length<200000);
 });

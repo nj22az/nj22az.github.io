@@ -58,9 +58,9 @@ async function list() {
 
 async function viewer() {
   let d;
-  try { d = await (await fetch(`${encodeURIComponent(id)}/data.json`)).json(); }
+  try { d = await (await fetch(`${encodeURIComponent(id)}/data.json`, {cache: 'no-cache'})).json(); }
   catch { app.innerHTML = '<p>Bildspelet hittades inte. <a href="./">Visa alla bildspel</a>.</p>'; return; }
-  const n = d.slides.length, src = (i) => `${d.id}/${String(i).padStart(2, '0')}.webp`;
+  const n = d.slides.length, src = (i) => `${d.id}/${String(i).padStart(2, '0')}.webp?v=${encodeURIComponent(d.stamp)}`;
   const vecka = d.vecka ?? d.week;
   document.title = `${d.title} · vecka ${vecka} · Sjöskolan`;
   document.documentElement.style.setProperty('--ar', `${d.w}/${d.h}`);

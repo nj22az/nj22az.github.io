@@ -178,24 +178,28 @@ export function operateKit(state,id,{machinery=BUDGET.machinery}={}){
 
 // ---- Drawing --------------------------------------------------------------------------------------------------------
 
-/** One canvas for every printed label in the room (maker's plates, tape, the warning plate): one texture, one material. */
-function createLabelAtlas(size=1024){
- const canvas=document.createElement('canvas');canvas.width=canvas.height=size;const ctx=canvas.getContext('2d');
+/**
+ * One canvas for every printed label in the room (maker's plates, tape, the warning plate): one texture, one material.
+ * `area` keeps the labels to one rectangle of a canvas shared with other painting (chin-wall.js), in canvas pixels.
+ */
+export function createLabelAtlas(size=1024,{canvas=null,area=null}={}){
+ if(!canvas){canvas=document.createElement('canvas');canvas.width=canvas.height=size;}
+ const ctx=canvas.getContext('2d'),CW=canvas.width,CH=canvas.height,[ax,ay,aw,ah]=area||[0,0,CW,CH];
  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=4;
  const material=new THREE.MeshBasicMaterial({map:texture,toneMapped:false});
  let x=0,y=0,row=0;
  function label(lines,[w,h],{bg='#e9e4d4',fg='#2a2a28',bold=true,scale=900,border=null}={}){
-  const pw=Math.min(size,Math.ceil(w*scale)),ph=Math.min(size/4,Math.ceil(h*scale));
-  if(x+pw>size){x=0;y+=row+2;row=0;}
-  if(y+ph>size)return null;
-  const px=x,py=y;x+=pw+2;row=Math.max(row,ph);
+  const pw=Math.min(aw,Math.ceil(w*scale)),ph=Math.min(ah/4,Math.ceil(h*scale));
+  if(x+pw>aw){x=0;y+=row+2;row=0;}
+  if(y+ph>ah)return null;
+  const px=ax+x,py=ay+y;x+=pw+2;row=Math.max(row,ph);
   ctx.fillStyle=bg;ctx.fillRect(px,py,pw,ph);
   if(border){ctx.strokeStyle=border;ctx.lineWidth=Math.max(2,ph*.06);ctx.strokeRect(px+ph*.05,py+ph*.05,pw-ph*.1,ph-ph*.1);}
   ctx.fillStyle=fg;ctx.textAlign='center';ctx.textBaseline='middle';
   const n=lines.length,fs=Math.floor(ph/(n+.35));ctx.font=(bold?'bold ':'')+fs+'px sans-serif';
   lines.forEach((t,i)=>ctx.fillText(t,px+pw/2,py+ph*(i+.5+.15)/(n+.3),pw*.94));
   const geometry=new THREE.PlaneGeometry(w,h),uv=geometry.attributes.uv;
-  for(let i=0;i<uv.count;i++)uv.setXY(i,(px+uv.getX(i)*pw)/size,1-(py+(1-uv.getY(i))*ph)/size);
+  for(let i=0;i<uv.count;i++)uv.setXY(i,(px+uv.getX(i)*pw)/CW,1-(py+(1-uv.getY(i))*ph)/CH);
   texture.needsUpdate=true;
   return geometry;
  }
