@@ -1,5 +1,5 @@
 import {normalizeTake} from './acting/takes.mjs';
-import {KNOWN_POSES,KNOWN_EXPRESSIONS} from './scene-catalogue.mjs';
+import {KNOWN_POSES,KNOWN_EXPRESSIONS} from './scene-catalogue.mjs?v=20261020-acting';
 import {SNAP} from './scene-snap.mjs?v=20261011-2';
 export const SCENE_KEY='nj-studio-scene-v1';
 export const MAX_ACTORS=6;
@@ -11,7 +11,7 @@ export const LOCATIONS=Object.freeze([
  ['park','Harbour Park'],['garden','Japanese garden'],['rainflower','Rainflower Lane']
 ]);
 // Poses and faces are World's own lists (scene-catalogue.mjs); a saved scene keeps any pose or face World knows.
-export {POSES,EXPRESSIONS} from './scene-catalogue.mjs';
+export {POSES,EXPRESSIONS} from './scene-catalogue.mjs?v=20261020-acting';
 const clamp=(v,lo,hi,fallback)=>Number.isFinite(Number(v))?Math.min(hi,Math.max(lo,Number(v))):fallback;
 export const text=v=>Array.from(String(v??'').replace(/[\u0000-\u001f]/g,' ')).slice(0,120).join('');
 export function emptyScene(){return {version:2,location:'harbour',format:'landscape',style:'photo',top:'',bottom:'',camera:{orbit:0,elevation:0,zoom:1},actors:[]};}
@@ -24,8 +24,8 @@ export function normalizeScene(raw,normalizeRecipe=r=>structuredClone(r)){
  out.time=clamp(raw.time,0,60,0);if(raw.backdrop==='paper')out.backdrop='paper';
  out.top=text(raw.top);out.bottom=text(raw.bottom);
  if([raw.camera?.position,raw.camera?.target].every(v=>Array.isArray(v)&&v.length===3&&v.every(n=>Number.isFinite(n)&&Math.abs(n)<=30))){out.camera.position=[...raw.camera.position];out.camera.target=[...raw.camera.target];out.camera.fov=clamp(raw.camera.fov,25,75,43);}
- if(raw.effect==='dash')out.effect='dash';
- if(raw.furniture&&typeof raw.furniture==='object'){out.furniture={};for(const id of ['desk','chair']){const r=raw.furniture[id];if(!r||typeof r!=='object')continue;const o={visible:r.visible!==false};for(const k of ['position','rotation'])if(Array.isArray(r[k])&&r[k].length===3&&r[k].every(Number.isFinite))o[k]=r[k].map(n=>clamp(n,k==='position'?-4:-Math.PI,k==='position'?4:Math.PI,0));out.furniture[id]=o;}}
+ if(['dash','chaos'].includes(raw.effect))out.effect=raw.effect;
+ if(raw.furniture&&typeof raw.furniture==='object'){out.furniture={};for(const id of ['desk','chair']){const r=raw.furniture[id];if(!r||typeof r!=='object')continue;const o={visible:r.visible!==false,size:clamp(r.size,.5,1.5,1)};for(const k of ['position','rotation'])if(Array.isArray(r[k])&&r[k].length===3&&r[k].every(Number.isFinite))o[k]=r[k].map(n=>clamp(n,k==='position'?-4:-Math.PI,k==='position'?4:Math.PI,0));out.furniture[id]=o;}}
 
  out.actors=(Array.isArray(raw.actors)?raw.actors:[]).slice(0,MAX_ACTORS).filter(a=>a&&a.recipe&&typeof a.recipe==='object'&&!Array.isArray(a.recipe)).map((a,i)=>({
   id:'actor-'+i,name:text(a.name)||'Character',recipe:normalizeRecipe(a.recipe),

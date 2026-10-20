@@ -5,6 +5,7 @@ import {buildAvatar} from '../../johansson-town/src/avatars/build.js';
 import {recipeFor} from '../../johansson-town/src/avatars/cast.js';
 import {poseSceneAvatar} from '../scene-avatar.js';
 import {createSoleFinder} from '../../johansson-town/src/avatars/foot-ground.js';
+import {createSceneFacePainter} from '../scene-face.js';
 import {normalizeScene} from '../scene-model.mjs';
 installDOM();
 const sample=(a,time)=>{a.root.position.set(0,0,0);poseSceneAvatar(a,{pose:'Run',time});return [...a.bones.thighL.quaternion.toArray(),...a.bones.thighR.quaternion.toArray(),a.root.position.y];};
@@ -27,4 +28,13 @@ test('school run plants one sole and holds the same frame without accumulating l
   const first=pose(),soles=createSoleFinder(a)(),heights=[soles.L.y,soles.R.y].map(y=>y+a.root.position.y);
   assert.ok(Math.abs(Math.min(...heights))<1e-8);assert.ok(Math.max(...heights)>.04);for(let i=0;i<5;i++)pose().forEach((n,j)=>assert.ok(Math.abs(n-first[j])<1e-10));
  }finally{a.body.skeleton.dispose();a.dispose();}
+});
+
+test('comic face acting preserves the recipe and repaints when a take leaves the comic pose',()=>{
+ const recipe=recipeFor('Vy'),before=JSON.stringify(recipe),a=buildAvatar(recipe,{faceSize:64});let pose='SchoolProtest';
+ try{const paint=createSceneFacePainter(a,recipe,()=>pose);assert.equal(paint({expression:'raging'}),true);pose='Idle';assert.equal(paint({expression:'raging'}),true);assert.equal(JSON.stringify(recipe),before);}finally{a.body.skeleton.dispose();a.dispose();}
+});
+
+test('a take leaving the slump restores ordinary head proportions',()=>{
+ const a=buildAvatar(recipeFor('Vy'),{faceSize:64});try{poseSceneAvatar(a,{pose:'SchoolRest'});assert.ok(a.bones.head.scale.y<1);poseSceneAvatar(a,{pose:'Run'});assert.deepEqual(a.bones.head.scale.toArray(),[1,1,1]);}finally{a.body.skeleton.dispose();a.dispose();}
 });

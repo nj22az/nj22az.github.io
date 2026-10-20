@@ -2,12 +2,13 @@ import * as THREE from '../johansson-town/vendor/three.module.js';
 import {createAvatarAnimator,GESTURES} from '../johansson-town/src/avatars/animate.js';
 import {createFootGrounder} from '../johansson-town/src/avatars/foot-ground.js';
 import {reachHand} from './scene-contact.js';
-import {seatedPose} from './scene-catalogue.mjs';
+import {seatedPose} from './scene-catalogue.mjs?v=20261020-acting';
 
 export const movingPose=name=>['Walk','Run','SchoolRun'].includes(name);
 const motion=new WeakMap(),supports=new WeakMap();
 export function poseSceneAvatar(avatar,{pose='Idle',expression='smile',turn=0,seatHeight=.48,time:sample=0}){
- const custom=pose;pose=({SchoolRest:'Sit',SchoolProtest:'Tada',SchoolRun:'Idle',ComicLeap:'Idle',LiftedBack:'Idle',HoldBack:'Idle'})[pose]||pose;
+ avatar.bones.head.scale.set(1,1,1);
+ const custom=pose;pose=({SchoolRest:'Sit',SchoolProtest:'Idle',SchoolRun:'Idle',ComicLeap:'Idle',SchoolEscape:'Idle',LiftedBack:'Idle',HoldBack:'Idle'})[pose]||pose;
  const duration=GESTURES[pose],time=Number.isFinite(duration)?duration*.43:.7;
  if(movingPose(custom)){
   const elapsed=Math.floor(Math.max(0,Math.min(60,sample))/.025+1e-8)*.025+.5;let track=motion.get(avatar);
@@ -26,12 +27,13 @@ export function poseSceneAvatar(avatar,{pose='Idle',expression='smile',turn=0,se
   for(let i=0;i<steps;i++)animator.update(time/steps,{expression,seated:seatedPose(pose),seatHeight});
  }
  const b=avatar.bones;
- if(custom==='SchoolRest'){b.head.rotation.x=.15;b.shoulderL.rotation.set(-1.2,0,.25);b.elbowL.rotation.x=-1.7;b.shoulderR.rotation.set(-1.2,0,-.25);b.elbowR.rotation.x=-1.7;}
- if(custom==='SchoolProtest'){b.chest.rotation.x=-.17;b.head.rotation.x=-.15;b.shoulderL.rotation.set(-.35,0,2.15);b.shoulderR.rotation.set(-.35,0,-2.15);b.elbowL.rotation.x=-.12;b.elbowR.rotation.x=-.12;b.thighL.rotation.set(0,0,0);b.kneeL.rotation.set(0,0,0);}
+ if(custom==='SchoolRest'){b.spine.rotation.x=.14;b.chest.rotation.x=.62;b.head.rotation.x=-.26;b.head.scale.set(1.06,.93,1);b.shoulderL.rotation.set(-1.2,0,.25);b.elbowL.rotation.x=-1.7;b.shoulderR.rotation.set(-1.2,0,-.25);b.elbowR.rotation.x=-1.7;}
+ if(custom==='SchoolProtest'){b.hips.rotation.x=-.08;b.chest.rotation.set(-.32,0,.08);b.head.rotation.set(-.28,0,-.10);b.shoulderL.rotation.set(-.15,.1,2.6);b.shoulderR.rotation.set(-.5,-.12,-2.15);b.elbowL.rotation.x=-.65;b.elbowR.rotation.x=-.18;b.handL.rotation.z=.4;b.handR.rotation.z=-.35;}
  if(custom==='SchoolRun'){b.hips.rotation.x=.16;b.chest.rotation.x+=.22;b.head.rotation.x-=.08;b.shoulderL.rotation.x*=1.35;b.shoulderR.rotation.x*=1.35;b.elbowL.rotation.x=-1.45;b.elbowR.rotation.x=-1.45;let ground=supports.get(avatar);if(!ground){ground=createFootGrounder(avatar);supports.set(avatar,ground);}ground(0);}
+ if(custom==='SchoolEscape'){b.hips.rotation.set(.25,0,.07);b.chest.rotation.set(.40,-.12,0);b.head.rotation.x=-.18;b.thighL.rotation.set(-1.25,0,.12);b.thighR.rotation.set(.85,0,-.12);b.kneeL.rotation.x=.5;b.kneeR.rotation.x=1.8;b.shoulderL.rotation.set(.9,0,.35);b.shoulderR.rotation.set(-1.6,0,-.3);b.elbowL.rotation.x=-1.1;b.elbowR.rotation.x=-.8;}
  if(custom==='ComicLeap'){b.hips.rotation.x=.25;b.chest.rotation.x=.28;b.head.rotation.x=-.24;b.thighL.rotation.set(-1.15,0,.12);b.thighR.rotation.set(.8,0,-.1);b.kneeL.rotation.x=.9;b.kneeR.rotation.x=1.9;b.shoulderL.rotation.set(-.6,0,1.9);b.shoulderR.rotation.set(.5,0,-1.4);b.elbowL.rotation.x=-.2;b.elbowR.rotation.x=-.3;}
- if(custom==='LiftedBack'&&expression==='embarrassed'){b.head.rotation.x=.32;b.head.rotation.z=-.05;b.chest.rotation.x=.06;}
- if(custom==='LiftedBack'){b.thighL.rotation.x=-.15;b.thighR.rotation.x=.12;b.kneeL.rotation.x=.2;b.kneeR.rotation.x=.3;}
+ if(custom==='LiftedBack'&&expression==='embarrassed'){b.hips.rotation.x=.13;b.spine.rotation.x=.1;b.chest.rotation.x=.22;b.head.rotation.x=.48;b.head.rotation.z=-.08;}
+ if(custom==='LiftedBack'){b.shoulderL.rotation.set(-.36,0,.08);b.shoulderR.rotation.set(-.38,0,-.08);b.elbowL.rotation.x=-.03;b.elbowR.rotation.x=-.06;b.thighL.rotation.x=-.12;b.thighR.rotation.x=.15;b.kneeL.rotation.x=.20;b.kneeR.rotation.x=.30;}
  avatar.paintFace({expression,blink:0,talk:0,look:custom==='LiftedBack'&&expression==='embarrassed'?[0,.8]:[0,0]});
  // Town roots face -z. Scene portraits look into a camera on +z.
  avatar.root.rotation.y=turn*Math.PI/180;avatar.root.updateMatrixWorld(true);
