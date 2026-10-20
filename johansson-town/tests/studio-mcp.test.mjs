@@ -40,6 +40,15 @@ after(async()=>{await client?.close();await rm(root,{recursive:true,force:true})
 const call=async(name,args={})=>{const r=await client.callTool({name,arguments:args},{timeout:120000});return {error:!!r.isError,data:JSON.parse(r.content[0].text)};};
 const looks=()=>readFile(resolve(root,PATHS.looks),'utf8');
 
+test('model snapping is available through the real MCP protocol with strict schemas and no writes',async()=>{
+ const before=await looks();
+ const grid=await call('model_snap',{mode:'grid',position:[.123,0,.27],step:.05});assert.equal(grid.error,false);assert.deepEqual(grid.data.position,[.1,0,.25]);
+ const joined=await call('model_snap',{mode:'connector',source:{point:[0,0,0],normal:[0,-1,0],up:[0,0,1]},target:{point:[1,0,2],normal:[0,1,0],up:[0,0,1]}});
+ assert.equal(joined.error,false);assert.deepEqual(joined.data.position,[1,0,2]);assert.equal(joined.data.ground,false);
+ assert.equal((await client.callTool({name:'model_snap',arguments:{mode:'grid',position:[0,0]}})).isError,true);
+ assert.equal(await looks(),before);
+});
+
 test('the server answers initialize quickly, reads the throwaway copy, and lists every tool with honest hints',async()=>{
  assert.ok(startup<5000,`initialize took ${Math.round(startup)} ms`);
  const studio=await call('character_list',{group:'studio'});
