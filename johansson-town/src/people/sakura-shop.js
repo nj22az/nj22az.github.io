@@ -93,7 +93,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   */
  let strip=null;
  const updateLighting=minutes=>{
-  display.updateLighting(minutes);
+  display.updateLighting(minutes);display.smallOffice?.setWeather(getRain());
   for(const lamp of strip?.children||[])lamp.intensity=lamp.userData.openIntensity*fluorescent(minutes);
  };
  (world.hourly||(world.hourly=[])).push(updateLighting);
@@ -115,7 +115,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
 
  // Rooms behind the shop floor: nobody sees them through the front windows, so from the
  // street they are not drawn (about 200 draw calls on a phone). Inside, they are.
- const BEHIND=new Set(['Sakura back room stock','Sakura restroom','Sakura office life','Sakura internal stairwell']);
+ const BEHIND=new Set(['Sakura back room stock','Sakura restroom','Sakura small office','Sakura internal stairwell']);
  const backRooms=on=>group.traverse(o=>{if(BEHIND.has(o.name))o.visible=on;});
  /**
   * From the street the shop floor is a stand-in: the same shelves merged into a few
@@ -182,7 +182,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    // hemisphere fill brightened the whole town and its tubes threw a 17 m halo over the
    // roof and the road. Outside, the shop shows through the window by its own glow.
    {const inside=!!isInside();lightCheck-=dt;if(inside!==lightsInside||lightCheck<=0)syncLightVisibility(inside);}
-   lastDt=dt;display.tick?.(performance.now()/1000);followRota();if(!person.g.userData.playerControlled){residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);}checkout.update(dt,!!isInside());display.refrigerator.update(dt);display.updateStock(state.sakura.stock);
+   lastDt=dt;display.tick?.(performance.now()/1000,getMinutes(),dt);followRota();if(!person.g.userData.playerControlled){residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);}checkout.update(dt,!!isInside());display.refrigerator.update(dt);display.updateStock(state.sakura.stock);
    // The office door opens for whoever is in the shop and near it: the player, Thuan, anyone borrowed in.
    // The front door, from inside, opens the same way (the street side has its own).
    if(display.officeDoor){const points=[];if(isInside()){const p=getPlayerPosition();points.push([p.x,p.z]);}for(const other of world.people)if(other.g.parent===group)points.push([other.g.position.x,other.g.position.z]);display.officeDoor.update(dt,points);display.frontDoor?.update(dt,points);}},

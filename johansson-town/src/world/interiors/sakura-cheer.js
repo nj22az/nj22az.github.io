@@ -9,8 +9,7 @@ import {buildSakuraHotFood} from './sakura-counter-detail.js';
  *   karaage, steamed buns and American dogs, and an oden pot at the end of the counter.
  * - Bunting and hanging POP cards over the aisles, a welcome mat at the door and floor
  *   stickers that walk you to the till.
- * - The ledger moves to a desk in the small room behind the shop floor: a lamp, a chair,
- *   a wall calendar and a "staff only" plate on the door.
+ * - The ledger is on Thuan's desk in the small office behind the till (sakura-small-office.js).
  *
  * Every piece is plain geometry and small canvas signs, built once when the shop is.
  */
@@ -97,43 +96,11 @@ function buildCheer(room){
  const till=add(room,new THREE.PlaneGeometry(.5,.19),new THREE.MeshStandardMaterial({map:tillTex,roughness:1,polygonOffset:true,polygonOffsetFactor:-2}),3.95,.007,.85,'Sakura till sticker');till.rotation.set(-Math.PI/2,0,-Math.PI/2);
 }
 
-/** The room behind the shop floor, east side: x 4.66..6.8, z -3.93..-1.23, door at x 5.14..6.28. */
-export const BACK_OFFICE=Object.freeze({desk:{x:6.4,z:-2.7,w:.7,d:1.2,h:.74},chair:{x:5.78,z:-2.7},door:{x:5.71,z:-1.17}});
-function buildBackOffice(room,anchor,action){
- const {desk,chair,door}=BACK_OFFICE,wood=mat(0x9b7650),dark=mat(0x5b4633),top=desk.h;
- add(room,new THREE.BoxGeometry(desk.w,.04,desk.d),wood,desk.x,top-.02,desk.z,'Sakura office desk');
- for(const [dx,dz] of [[-1,-1],[1,-1],[-1,1],[1,1]])add(room,new THREE.BoxGeometry(.04,top-.04,.04),dark,desk.x+dx*(desk.w/2-.04),(top-.04)/2,desk.z+dz*(desk.d/2-.04),'Sakura office desk leg');
- add(room,new THREE.BoxGeometry(desk.w-.1,.26,.4),dark,desk.x,top-.2,desk.z-desk.d/2+.24,'Sakura office drawers');
- // The ledger, open, with a pencil; a green cash-book shut beside it; a lamp and a mug.
- const page=mat(0xfbf6e6,{roughness:.95}),cover=mat(0x436454,{roughness:.8});
- add(room,new THREE.BoxGeometry(.3,.025,.21),cover,desk.x-.05,top+.012,desk.z+.05,'Sakura sales ledger');
- for(const s of [-1,1]){const p=add(room,new THREE.BoxGeometry(.14,.006,.2),page,desk.x-.05,top+.028,desk.z+.05+s*.075,'Sakura ledger page');p.rotation.x=s*.05;}
- const pencil=add(room,new THREE.CylinderGeometry(.004,.004,.16,6),mat(0xffc93c),desk.x-.14,top+.035,desk.z+.08,'Sakura pencil');pencil.rotation.z=Math.PI/2;pencil.rotation.y=.4;
- add(room,new THREE.BoxGeometry(.24,.035,.17),mat(0x2f6f9a),desk.x+.15,top+.018,desk.z-.3,'Sakura stock book');
- add(room,new THREE.CylinderGeometry(.08,.09,.02,14),dark,desk.x+.2,top+.01,desk.z+.35,'Sakura desk lamp');
- const arm=add(room,new THREE.CylinderGeometry(.008,.008,.34,6),dark,desk.x+.2,top+.17,desk.z+.35,'Sakura desk lamp');arm.rotation.x=.25;
- const shade=add(room,new THREE.ConeGeometry(.09,.1,16,1,true),mat(0x7ccc4a,{side:THREE.DoubleSide,emissive:0xffe0a0,emissiveIntensity:.25}),desk.x+.2,top+.34,desk.z+.3,'Sakura desk lamp shade');shade.rotation.x=.4;
- add(room,new THREE.CylinderGeometry(.035,.03,.09,12),mat(0xf06ba8),desk.x+.18,top+.045,desk.z-.05,'Sakura mug');
- // A stool of a chair: seat, back, four legs.
- add(room,new THREE.BoxGeometry(.42,.05,.42),mat(0x5ec8f2),chair.x,.46,chair.z,'Sakura office chair');
- add(room,new THREE.BoxGeometry(.05,.42,.4),mat(0x5ec8f2),chair.x-.2,.7,chair.z,'Sakura office chair');
- for(const [dx,dz] of [[-1,-1],[1,-1],[-1,1],[1,1]])add(room,new THREE.CylinderGeometry(.015,.015,.44,6),dark,chair.x+dx*.17,.22,chair.z+dz*.17,'Sakura office chair leg');
- // The wall calendar and a shift rota pinned above the desk.
- const cal=sign(256,320,(ctx,w,h)=>{ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,h);ctx.fillStyle='#ff6b6b';ctx.fillRect(0,0,w,70);signText(ctx,"Heisei9Year",w/2,36,40,'#ffffff');ctx.fillStyle='#3b3f55';ctx.font=`bold 20px ${MARU}`;ctx.textAlign='center';for(let d=0;d<30;d++)ctx.fillText(String(d+1),26+(d%7)*34,110+Math.floor(d/7)*44);ctx.strokeStyle='#d7263d';ctx.lineWidth=4;ctx.beginPath();ctx.arc(26+4*34,110+44*1,17,0,Math.PI*2);ctx.stroke();});
- card(room,cal,.36,.45,6.78,1.55,desk.z-.25,-Math.PI/2,'Sakura office calendar');
- const rota=sign(256,256,(ctx,w,h)=>{ctx.fillStyle='#fff7df';ctx.fillRect(0,0,w,h);signText(ctx,"Staff Schedule",w/2,34,34,'#2a8fcc');ctx.fillStyle='#3b3f55';ctx.font=`bold 22px ${MARU}`;ctx.textAlign='left';["Month Thuan 9-20","Fire Thuan 9-20","Water Thuan 9-20","Tree Thuan 9-20","Gold Thuan 9-20"].forEach((l,i)=>ctx.fillText(l,22,84+i*36));});
- card(room,rota,.3,.3,6.78,1.5,desk.z+.3,-Math.PI/2,'Sakura shift rota');
- // "Staff only", on the corridor side of the door.
- const plate=sign(256,96,(ctx,w,h)=>{ctx.fillStyle='#3b3f55';ctx.fillRect(0,0,w,h);signText(ctx,"Office",w/2,h*.4,40,'#ffffff');signText(ctx,'STAFF ONLY',w/2,h*.78,20,'#ffc93c');});
- // Over the door casing, where the head trim cannot cover it.
- card(room,plate,.36,.135,door.x,2.44,door.z+.07,0,'Sakura office plate',THREE.FrontSide);
- anchor([desk.x-.4,top+.35,desk.z+.05],'Read Sakura sales ledger',()=>action('shop-ledger'));
-}
+// The small office behind the till is its own module now (sakura-small-office.js, sakura-small-office-build.js).
 
 export function buildSakuraCheer(room,{anchor,action}){
  buildHotCase(room,anchor,action);
  buildCheer(room);
- buildBackOffice(room,anchor,action);
 }
 
 /**
@@ -142,9 +109,10 @@ export function buildSakuraCheer(room,{anchor,action}){
  * interior shows on the street side of the glass.
  */
 export const SAKURA_BAND=Object.freeze({y0:2.56,y1:2.86,runs:Object.freeze([
- // Both runs stop at the restroom (x < -4.02, z < -2.42), which has its own tiles.
+ // Both runs stop at the restroom (x < -4.02, z < -2.42), which has its own tiles; the back wall's stops at the small
+ // office's west wall (x 4.56), so the shop's lettering does not run on inside the office.
  {x:-6.8,z0:-2.42,z1:3.2,yaw:Math.PI/2},
- {z:-3.93,x0:-4.02,x1:6.8,yaw:0},
+ {z:-3.93,x0:-4.02,x1:4.56,yaw:0},
  {x:6.8,z0:-1.1,z1:3.52,yaw:-Math.PI/2},
 ]),counter:{x:4.52,z0:.1,z1:3.52,y0:.08,y1:FURNITURE_HEIGHTS.serviceCounter-.08}});
 export function buildSakuraBand(room){
