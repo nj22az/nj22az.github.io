@@ -1,6 +1,6 @@
 import {createActingPanel} from './acting/panel.js?v=20261016-1';
 import {createPerformancePanel} from './performance-panel.js?v=20261017-1';
-import {openCreator} from '../johansson-town/src/avatars/creator.js';
+import {openCreator} from '../johansson-town/src/avatars/creator.js?v=20261020-motion';
 import {ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/src/avatars/cast.js';
 import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js';
 import {normalizeRecipe,decodeRecipe} from '../johansson-town/src/avatars/recipe.js';
@@ -155,3 +155,4 @@ requestAnimationFrame(()=>requestAnimationFrame(()=>{const a=document.activeElem
 window.addEventListener('pagehide',()=>{editor?.cleanup();workspace?.dispose();home?.dispose();model?.dispose();rooms?.dispose();worldLibrary?.dispose();},{once:true});
 // For tests: the Make model workspace once opened.
 Object.defineProperty(window,'__studioModel',{get:()=>model,configurable:true});
+
