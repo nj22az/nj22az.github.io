@@ -7,6 +7,15 @@
 .model-workshop .scene-picture{max-width:700px}
 .model-vector{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .model-vector input{width:100%}
+.room-layout{display:grid;grid-template-columns:180px minmax(0,1fr) 260px;gap:16px;align-items:start}
+.room-canvas{width:100%;min-height:220px;touch-action:none}
+.room-title{max-width:500px}.room-title input{width:100%}
+.room-library [data-objects]{display:grid;gap:6px}
+.room-library [aria-pressed=true]{border:2px solid var(--line-green);background:#e6f9ee}
+.room-workspace .scene-controls{padding:14px}
+.room-workspace [data-identity],.room-scope{font-size:12px!important;overflow-wrap:anywhere}
+@media(max-width:1050px){.room-layout{grid-template-columns:160px minmax(0,1fr)}.room-layout>aside:last-child{grid-column:2}}
+@media(max-width:800px){.room-layout{display:flex;flex-direction:column}.room-layout>*{width:100%}.room-layout>.scene-picture{order:-1}.room-library [data-objects]{display:flex;overflow-x:auto}.room-library [data-objects] button{flex:0 0 auto;max-width:180px}}
 .model-workshop details{margin:14px 0}
 .model-workshop summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:600}
 .model-search input{width:100%}

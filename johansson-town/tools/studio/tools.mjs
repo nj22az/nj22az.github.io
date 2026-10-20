@@ -10,6 +10,9 @@
  */
 import {ASSET_TOOLS} from './assets.mjs';
 import {MODEL_TOOLS} from './models.mjs';
+import {FILM_PIPELINE_TOOLS} from './film-pipeline.mjs';
+import {WORLD_LIBRARY_TOOLS} from './world-library.mjs';
+import {ROOM_TOOLS} from './rooms.mjs';
 
 const NAME={type:'string',minLength:1,maxLength:40,description:'A resident\'s name as World writes it (e.g. "Mr Fujita", "Kōji"; accents and capitals may be left out), or a Studio character\'s id or name.'};
 const SET={type:'object',minProperties:1,maxProperties:80,propertyNames:{pattern:'^[a-z][a-zA-Z]*(\\.[a-z][a-zA-Z]*)?$'},additionalProperties:{type:['string','number','boolean']},
@@ -410,6 +413,7 @@ export const TOOLS=[
  ...PRODUCT_TOOLS,
  ...ASSET_TOOLS,
  ...MODEL_TOOLS,
+ ...ROOM_TOOLS,...WORLD_LIBRARY_TOOLS,...FILM_PIPELINE_TOOLS,
 ];
 export const TOOL_BY_NAME=Object.freeze(Object.fromEntries(TOOLS.map(t=>[t.name,t])));
 

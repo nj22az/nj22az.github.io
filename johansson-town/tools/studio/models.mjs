@@ -6,7 +6,7 @@ const point={type:'array',items:{type:'number'},minItems:3,maxItems:3};
 const connector=object({point,normal:point,up:point},['point','normal']);
 const file={type:'string',minLength:1,maxLength:300,description:'Repository-relative .glb file; copy an external file into this checkout first. No symlinks or paths outside the checkout.'};
 const transform=object({name:{type:'string',maxLength:80},scale:{type:'number',exclusiveMinimum:0,maximum:1000},rotation:point,position:point,ground:{type:'boolean',default:true}});
-async function bytes(repo,file){
+export async function modelBytes(repo,file){
  if(typeof file!=='string'||file.includes('\\')||file.split('/').some(p=>p==='..'||p==='.'||!p)||!file.endsWith('.glb'))throw Error('Give a repository-relative .glb path without traversal.');
  const root=await realpath(repo.root),path=resolve(root,file),actual=await realpath(path);
  if(actual!==path||relative(root,actual).startsWith('..'+sep)||relative(root,actual)==='..')throw Error('The model must be inside this checkout without symlinks.');
@@ -14,7 +14,7 @@ async function bytes(repo,file){
  return (await readFile(path)).toString('base64');
 }
 async function runModel(ctx,file,options,write){
- const data=await bytes(ctx.repo,file),page=await ctx.page();
+ const data=await modelBytes(ctx.repo,file),page=await ctx.page();
  return page.evaluate(async([data,options,write])=>{
   const M=await import('/johansson-town/src/studio/model-workbench.js');
   const raw=Uint8Array.from(atob(data),c=>c.charCodeAt(0)),root=await M.loadModel(raw,options);
