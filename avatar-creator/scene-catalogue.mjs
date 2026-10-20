@@ -7,11 +7,11 @@ import * as face from '../johansson-town/src/avatars/face.js';
 import {MOVES} from '../johansson-town/src/avatars/moves.js';
 
 /** Sitting poses: 'Sit' and World's seated moves, which World names Sit… (SitToast, SitEat…). */
-export const seatedPose=name=>name==='Sit'||/^Sit[A-Z]/.test(String(name));
+export const seatedPose=name=>name==='SchoolRest'||name==='Sit'||/^Sit[A-Z]/.test(String(name));
 
 const POSE_GROUP={
  everyday:['Idle','Wave','Point','Bow','BowDeep','Nod','HeadShake','Shrug','Clap','Think','LookAround','Talk','Phone','Stretch','HandsOnHips','CheekRest','ScratchHead','HairTuck','ChinTap','CollarTug','HeelRock','Crouch','PickUp','Offer','Call'],
- funny:['Laugh','Cheer','Tada','Heart','Peace','Coy','DoubleCheek','HeelKick','Kachashi','Fist','Hop','Gasp','Stomp','Slump','Fidget','EvilLaugh','WindUp','Sing','FanWild','FingerStop','BentStuck','CrabWalk','FrozenAbsurd','BasketHead','CordWrapped'],
+ funny:['SchoolProtest','SchoolRun','LiftedBack','HoldBack','Laugh','Cheer','Tada','Heart','Peace','Coy','DoubleCheek','HeelKick','Kachashi','Fist','Hop','Gasp','Stomp','Slump','Fidget','EvilLaugh','WindUp','Sing','FanWild','FingerStop','BentStuck','CrabWalk','FrozenAbsurd','BasketHead','CordWrapped'],
 };
 /** World moves that do not stand on their own in a still: a fight's split second, work with a thing that is not in the
  *  picture (a shelf, a breaker, a rod, a dryer, a torch, a coin), or a body carried by others. */
@@ -58,7 +58,8 @@ export function expressionGroups(names){
  return Object.entries(groups).filter(([,list])=>list.length).map(([id,list])=>({id,title:GROUP_TITLES[id],items:list}));
 }
 
-const worldPoses=Object.keys(animate.GESTURES||{}),worldStory=animate.STORY_POSES||new Set();
+export const STUDIO_POSES=Object.freeze(['SchoolRest','SchoolProtest','SchoolRun','LiftedBack','HoldBack']);
+const worldPoses=[...STUDIO_POSES,...Object.keys(animate.GESTURES||{})],worldStory=animate.STORY_POSES||new Set();
 const worldFaces=[...(face.EXPRESSION_NAMES||['neutral','smile'])];
 export const POSE_GROUPS=Object.freeze(poseGroups(worldPoses,{story:worldStory,menu:MOVES}));
 export const EXPRESSION_GROUPS=Object.freeze(expressionGroups(worldFaces));

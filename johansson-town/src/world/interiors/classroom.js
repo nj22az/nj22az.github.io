@@ -1,4 +1,5 @@
 import * as THREE from '../../../vendor/three.module.js';
+import {drawClassNoticeboard} from './classroom-notices.js';
 import {batchStaticProps} from '../../render/static-props.js';
 import {daylight} from '../../render/dusk.js';
 import {buildFigure,setPose,animateFigure} from '../../people/school-avatars.js';
@@ -232,7 +233,7 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
  for(let i=0;i<5;i++)box([.012,.012,.08],[W.maxX-.1,.885,-1.8+i*.12],mat([0xf6f4ec,0xf6f4ec,0xf0d65a,0xe79aa5,0xf6f4ec][i],.9));
  box([.06,.05,.14],[W.maxX-.1,.9,1.2],mat(0x3c5a86,.8),room,'Board eraser');
  // The motto, the clock, and the class goal over the board.
- const motto=canvasTexture(900,160,(ctx,w,h)=>{ctx.fillStyle='#f4efe0';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#6d5335';ctx.lineWidth=10;ctx.strokeRect(5,5,w-10,h-10);ctx.fillStyle='#1b1b1b';ctx.font=`bold 76px ${SERIF}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText("Bright　Correctly　Strongly",w/2,h/2+4,w-60);});
+ const motto=canvasTexture(900,160,(ctx,w,h)=>{ctx.fillStyle='#f4efe0';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#6d5335';ctx.lineWidth=10;ctx.strokeRect(5,5,w-10,h-10);ctx.fillStyle='#1b1b1b';ctx.font=`bold 76px ${SERIF}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText("Learn well · Be kind · Grow strong",w/2,h/2+4,w-60);});
  const mottoMesh=new THREE.Mesh(new THREE.PlaneGeometry(1.9,.34),new THREE.MeshStandardMaterial({map:motto}));mottoMesh.position.set(W.maxX-.02,2.62,-1.25);mottoMesh.rotation.y=-Math.PI/2;room.add(mottoMesh);
  const clockTex=canvasTexture(256,256,(ctx,w,h)=>{ctx.fillStyle='#f7f5ee';ctx.beginPath();ctx.arc(128,128,122,0,Math.PI*2);ctx.fill();ctx.fillStyle='#222';ctx.font=`bold 30px ${GOTHIC}`;ctx.textAlign='center';ctx.textBaseline='middle';for(let i=1;i<=12;i++){const a=i/12*Math.PI*2;ctx.fillText(String(i),128+Math.sin(a)*96,128-Math.cos(a)*96);}});
  const clockFace=new THREE.Mesh(new THREE.CircleGeometry(.2,32),new THREE.MeshStandardMaterial({map:clockTex}));clockFace.position.set(W.maxX-.03,2.62,1.05);clockFace.rotation.y=-Math.PI/2;room.add(clockFace);
@@ -287,19 +288,7 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
   if((r*7+c)%9!==4){box([.26,.3,.3],[cubbyX+.1,y-.02,z],mat(bagColours[(r*7+c)%bagColours.length],.45));box([.27,.12,.31],[cubbyX+.1,y+.1,z],mat(bagColours[(r*7+c)%bagColours.length],.4));}
  }
  rect(cubbyX,1.45,.45,3.95,1.1);
- const classBoard=canvasTexture(1400,520,(ctx,w,h)=>{
-  ctx.fillStyle='#b99b72';ctx.fillRect(0,0,w,h);ctx.fillStyle='#caa97c';ctx.fillRect(10,10,w-20,h-20);
-  ctx.fillStyle='#fff7e6';ctx.fillRect(40,24,w-80,70);ctx.fillStyle='#b3382c';ctx.font=`bold 50px ${HAND}`;ctx.textAlign='center';ctx.fillText("Everyone Good friends　Stay healthy Greetings",w/2,76);
-  const shuji=["Sea","Dream","Friend","Sky","Wind","Heart","Light","Wave"];
-  shuji.forEach((k,i)=>{const x=40+i*108,y=120;ctx.fillStyle='#f6f3ea';ctx.fillRect(x,y,96,170);ctx.fillStyle='#111';ctx.font=`bold 84px ${SERIF}`;ctx.fillText(k,x+48,y+100);ctx.font=`16px ${GOTHIC}`;ctx.fillText(PUPILS[i][0].split(' ')[1],x+48,y+158);ctx.strokeStyle='#d33';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x+72,y+26,14,0,Math.PI*2);ctx.stroke();});
-  ctx.fillStyle='#f4efdf';ctx.fillRect(920,120,420,170);ctx.fillStyle='#2a2520';ctx.font=`bold 28px ${HAND}`;ctx.fillText("Harley's memories",1130,160);ctx.font=`18px ${HAND}`;["I am　Grandfather　Funeni　Got on.","Sea　Twinkle　Hikate","Everyone　Row　It was.　Kenta Higa"].forEach((l,i)=>ctx.fillText(l,1130,200+i*28));
-  // The cleaning rota: a paper wheel with the groups round it.
-  ctx.save();ctx.translate(200,410);ctx.fillStyle='#fdfbf4';ctx.beginPath();ctx.arc(0,0,92,0,Math.PI*2);ctx.fill();
-  ["Modern day","Deaf?","Window","Toilet","Kokuban","Kutsubako"].forEach((t,i)=>{ctx.save();ctx.rotate(i/6*Math.PI*2);ctx.strokeStyle='#999';ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-92);ctx.stroke();ctx.rotate(Math.PI/6);ctx.fillStyle='#223';ctx.font=`14px ${GOTHIC}`;ctx.fillText(t,0,-62);ctx.restore();});
-  ctx.restore();ctx.fillStyle='#2a2520';ctx.font=`bold 22px ${HAND}`;ctx.fillText("Cleaning duty",200,300);
-  ctx.fillStyle='#e8f3ff';ctx.fillRect(360,320,520,170);ctx.fillStyle='#223';ctx.font=`bold 26px ${HAND}`;ctx.fillText("Summer vacation　Independent research",620,356);ctx.font=`18px ${HAND}`;["・Leaf's　Creatures Shirabe（Miyagi）","・Sata Andagi's How to make（Oshiro）","・Typhoon　Record（Nakasone）"].forEach((l,i)=>ctx.fillText(l,620,392+i*30));
-  ctx.fillStyle='#fff3c8';ctx.fillRect(920,320,420,170);ctx.fillStyle='#223';ctx.font=`bold 26px ${HAND}`;ctx.fillText("On duty",1130,356);ctx.font=`18px ${HAND}`;ctx.fillText("Kinjo, Aragaki, Taira",1130,398);ctx.fillText("White coat/hat/mask　Don't forget",1130,432);
- });
+ const classBoard=canvasTexture(1400,520,(ctx,w,h)=>drawClassNoticeboard(ctx,w,h,PUPILS.map(p=>p[0])));
  const classBoardMesh=new THREE.Mesh(new THREE.PlaneGeometry(4.2,1.56),new THREE.MeshStandardMaterial({map:classBoard,roughness:.9}));
  classBoardMesh.position.set(W.minX+.06,1.95,.6);classBoardMesh.rotation.y=Math.PI/2;classBoardMesh.name='Class board';room.add(classBoardMesh);
  box([.04,1.64,4.28],[W.minX+.02,1.95,.6],darkWood);
