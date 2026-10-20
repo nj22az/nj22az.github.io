@@ -113,7 +113,7 @@ export const TETSUO_KIT=Object.freeze([
   why:'Tetsuo works sitting down. It is pushed in at the bench’s left end, in front of the scope, so the mat and the aisle stay clear when he stands.',
   period:'A round steel stool on a screw column with a green vinyl seat.'}),
  plain({id:'tubes',mesh:'Twin-tube fluorescent fitting',en:'Fluorescent fittings',jp:'蛍光灯',owner:'workshop',operates:null,where:null,
-  why:'Three twin 40 W fittings on drop rods: one over each half of the room and one over Tetsuo’s bench. They are on the lighting branch, not the bench, so isolating the bench never puts him in the dark.',
+  why:'Two twin 40 W fittings on drop rods, one over each half of the room, with the arm lamp for the fine work on the mat. They are on the lighting branch, not the bench, so isolating the bench never puts him in the dark.',
   period:'Bare twin FL40 tubes under a white steel trough, the workshop light of the period.'}),
 ]);
 export const KIT=Object.freeze(Object.fromEntries(TETSUO_KIT.map(k=>[k.id,k])));
@@ -361,19 +361,19 @@ export function buildTetsuoBench({room,collider,reg,action,budget=BUDGET,sound=(
  const tipMat=glow(0x8a7a6a,0xff6a1a,0);const tip=cyl('Soldering iron tip',.0045,.0008,.03,[0,-.065,0],tipMat,iron,null,10);
  wire('Soldering iron cord',[.36+.13,top+.15,-2.98-.02],[.36+.05,top+.03,-2.98-.07],.004,0x2a2a28);
  const puff=puffTexture();disposables.push(puff);const smoke=[];
- for(let i=0;i<3;i++){const m=new THREE.SpriteMaterial({map:puff,transparent:true,depthWrite:false,opacity:0,color:0xe8e6e0});disposables.push(m);const s=new THREE.Sprite(m);s.name='Flux smoke';s.scale.setScalar(.03);s.raycast=()=>{};group.add(s);smoke.push(s);}
+ for(let i=0;i<3;i++){const m=new THREE.SpriteMaterial({map:puff,transparent:true,depthWrite:false,opacity:0,color:0xb9c0c6});disposables.push(m);const s=new THREE.Sprite(m);s.name='Flux smoke';s.scale.setScalar(.03);s.raycast=()=>{};group.add(s);smoke.push(s);}
  const tipWorld=new THREE.Vector3();
 
  // ---- The clamp-on arm lamp: clamped to the front-right corner, its shade over the mat ------------------------------
  const lamp=new THREE.Group();lamp.name=KIT.lamp.mesh;group.add(lamp);
- const CREAM=0xe8e2cf,base=[x1-.06,top,zf-.06],elbow=[2.18,top+.62,zf-.14],head=[1.52,top+.47,-2.98];
+ const CREAM=0xe8e2cf,base=[x1-.06,top,zf-.06],elbow=[2.18,top+.62,zf-.14],head=[1.5,top+.42,-2.93];
  box('Lamp clamp',[.05,.07,.06],[base[0],top-.02,base[2]],0x6a6e6c,lamp);cyl('Lamp post',.012,.012,.16,[base[0],top+.08,base[2]],CREAM,lamp,null,10);
  for(const o of [-.012,.012]){wire('Lamp arm',[base[0],top+.16,base[2]+o],[elbow[0],elbow[1],elbow[2]+o],.006,CREAM,lamp);wire('Lamp forearm',[elbow[0],elbow[1],elbow[2]+o],[head[0]+.05,head[1]+.05,head[2]+o],.006,CREAM,lamp);}
  cyl('Lamp elbow spring',.012,.012,.05,elbow,0x9ea3a1,lamp,[Math.PI/2,0,0],10);
  const shadeMat=new THREE.MeshStandardMaterial({color:CREAM,roughness:.55,side:THREE.DoubleSide});
- const shade=mesh('Lamp shade',new THREE.CylinderGeometry(.03,.075,.1,18,1,true),shadeMat,head,lamp,[0,0,.35]);
+ const shade=mesh('Lamp shade',new THREE.CylinderGeometry(.03,.075,.1,18,1,true),shadeMat,head,lamp,[.15,0,-.18]);
  const bulbMat=glow(0xfff4d6,0xffe2a8,0);mesh('Lamp bulb',new THREE.SphereGeometry(.028,12,8),bulbMat,[head[0]+.01,head[1]-.02,head[2]],lamp);
- const pools=createLightPools(group,[{x:head[0]-.03,y:top+.007-.06,z:head[2],radius:.32}],{color:0xfff0cc,strength:.42});pools.group.name='Arm lamp pool on the mat';pools.group.userData.live=true;
+ const pools=createLightPools(group,[{x:head[0]-.03,y:top+.007-.06,z:head[2]-.05,radius:.32}],{color:0xfff0cc,strength:.42});pools.group.name='Arm lamp pool on the mat';pools.group.userData.live=true;
 
  // ---- The tool drawer under the right of the bench ------------------------------------------------------------------
  const DX=2.15,DW=.5;box('Drawer housing side',[.01,.1,.5],[DX-DW/2-.005,top-.1,zf-.27],STEEL,bench);box('Drawer housing side',[.01,.1,.5],[DX+DW/2+.005,top-.1,zf-.27],STEEL,bench);
@@ -387,32 +387,34 @@ export function buildTetsuoBench({room,collider,reg,action,budget=BUDGET,sound=(
  // ---- Pegboard, parts drawers and wire reels on the back wall ------------------------------------------------------
  const peg=pegboardTexture();disposables.push(peg);peg.repeat.set(B.width/.025,.76/.025);
  const pegMat=new THREE.MeshStandardMaterial({map:peg,roughness:.9});
- const pegboard=new THREE.Group();pegboard.name=KIT.pegboard.mesh;group.add(pegboard);
+ const pegboard=new THREE.Group();pegboard.name=KIT.pegboard.mesh;pegboard.userData.wall=true;group.add(pegboard);
  mesh('Pegboard (perforated hardboard)',new THREE.BoxGeometry(B.width-.04,.76,.012),pegMat,[B.x,1.86,-3.488],pegboard);
  const tools=[['Long-nose pliers',.03,.17,0xc8302c],['Side cutters',.03,.13,0x2b5aa0],['Wire strippers',.035,.18,0xe6c84a],['Crimping tool',.04,.22,0x2a2c2b],['Adjustable spanner',.035,.2,0xb7bcb9]];
  tools.forEach(([n,w,h,c],i)=>{const x=.25+i*.13;box(n+' outline',[w+.02,h+.02,.002],[x,1.93,-3.481],0x8f7653,pegboard);box(n,[w,h,.015],[x,1.93,-3.473],c,pegboard);});
  for(let i=0;i<6;i++){const x=1.38+i*.05;box('Screwdriver handle',[.022,.08,.022],[x,2.0,-3.47],[0xc8302c,0xe6c84a,0x2b5aa0,0xc8302c,0xe6c84a,0x2b5aa0][i],pegboard);box('Screwdriver shaft',[.006,.1,.006],[x,1.91,-3.47],0xc9ccc8,pegboard);}
- for(const [x,c,n] of [[1.85,0xc8302c,'Hook-up wire reel'],[2.08,0x9ea3a1,'Solder reel']]){cyl('Reel peg',.004,.004,.08,[x,2.08,-3.44],0x9ea3a1,pegboard,[Math.PI/2,0,0],6);cyl(n,.05,.05,.045,[x,2.05,-3.435],c,pegboard,[Math.PI/2,0,0],16);cyl(n+' flange',.058,.058,.006,[x,2.05,-3.41],0x2a2a28,pegboard,[Math.PI/2,0,0],16);}
+ // The reels turn on one rod across two pegboard brackets, so wire and solder pay off straight down to the bench.
+ for(const x of [1.78,2.32])box('Reel rod bracket',[.012,.012,.09],[x,2.06,-3.437],0x9ea3a1,pegboard);cyl('Reel rod',.005,.005,.56,[2.05,2.06,-3.4],0xc9ccc8,pegboard,[0,0,Math.PI/2],6);
+ for(const [x,c,n] of [[1.92,0xc8302c,'Hook-up wire reel'],[2.07,0x2b5aa0,'Hook-up wire reel'],[2.2,0xc9ccc8,'Solder reel']]){cyl(n,.042,.042,.07,[x,2.06,-3.4],c,pegboard,[0,0,Math.PI/2],16);for(const s of [-1,1])cyl(n+' flange',.05,.05,.006,[x+s*.038,2.06,-3.4],0x4a4f4c,pegboard,[0,0,Math.PI/2],16);}
  const parts=new THREE.Group();parts.name='Parts drawers';pegboard.add(parts);
  box('Parts cabinet',[.4,.5,.15],[1.05,1.8,-3.405],0xd8d4c6,parts);
  const partLabels=['抵抗','コンデンサ','電解コン','トランジスタ','ダイオード','IC','ヒューズ','端子','ネジ','ワッシャ','結束バンド','ランプ','ボリューム','スイッチ','ベルト'];
  partLabels.forEach((t,i)=>{const cx=1.05+(i%3-1)*.125,cy=1.99-Math.floor(i/3)*.095;box('Parts drawer',[.115,.085,.012],[cx,cy,-3.326],0xe8f0ee,parts);plate('Parts drawer label',[t],[.07,.018],[cx,cy+.018,-3.3195],{bg:'#fbf6e6',fg:'#2a2a28',bold:false,scale:1400},0,parts);});
 
  // ---- The bench isolating switch and the distribution board on the east wall ----------------------------------------
- const WX=4.2,board=new THREE.Group();board.name=KIT.board.mesh;group.add(board);
+ const WX=4.2,board=new THREE.Group();board.name=KIT.board.mesh;board.userData.wall=true;group.add(board);
  box('Distribution board cabinet',[.11,.48,.38],[WX-.055,1.75,-2.25],0xe2ddca,board);
  box('Distribution board cover',[.006,.44,.34],[WX-.113,1.75,-2.25],0xd6d0bb,board);
  box('Main breaker',[.02,.13,.09],[WX-.12,1.88,-2.25],0x3d4441,board);plate('Main breaker label',['主幹 60A'],[.08,.02],[WX-.117,1.97,-2.25],{bg:'#f6f2e4',scale:1400},-Math.PI/2,board);
  ['照明','作業台','コンセント','換気扇','3Dプリンタ','予備'].forEach((t,i)=>{const z=-2.39+i*.055;box('Branch breaker',[.02,.07,.045],[WX-.12,1.7,z],0x3d4441,board);box('Branch breaker toggle',[.012,.02,.014],[WX-.132,1.71,z],0xf0ede4,board);plate('Branch label (masking tape)',[t],[.05,.016],[WX-.117,1.62,z],{bg:'#efe2b6',fg:'#2a2a28',bold:false,scale:1600},-Math.PI/2,board);});
  plate('Board notice',['分電盤前に','物を置かないこと'],[.18,.07],[WX-.003,1.42,-2.25],{bg:'#fbf8ee',fg:'#24324a',scale:1000},-Math.PI/2,board);
  plate('Electrical safety checklist',['WORK SAFE','1 ISOLATE  2 LOCK & TAG','3 PROVE DEAD  4 TEST'],[.2,.12],[WX-.003,1.42,-2.66],{bg:'#fbf8ee',fg:'#24324a',scale:900},-Math.PI/2,board);
- const sw=new THREE.Group();sw.name=KIT.supply.mesh;group.add(sw);
+ const sw=new THREE.Group();sw.name=KIT.supply.mesh;sw.userData.wall=true;group.add(sw);
  box('Isolating switch box',[.16,.32,.22],[WX-.08,1.45,-1.62],0x8c9696,sw);
- plate('Shock hazard plate',['感電注意'],[.12,.045],[WX-.162,1.52,-1.62],{bg:'#f2c230',fg:'#1e1e1e',scale:900,border:'#1e1e1e'},-Math.PI/2,sw);
+ plate('Shock hazard plate',['感電注意'],[.12,.045],[WX-.162,1.47,-1.62],{bg:'#f2c230',fg:'#1e1e1e',scale:900,border:'#1e1e1e'},-Math.PI/2,sw);
  plate('Switch label',['作業台 電源 3φ200V / 1φ100V'],[.18,.022],[WX-.162,1.36,-1.62],{bg:'#f6f2e4',scale:1300},-Math.PI/2,sw);
  const pilotOn=glow(0x5a1a14,0xff3b2a,0),pilotOff=glow(0x1d4a26,0x46ff6a,0);
- cyl('Pilot lamp (red, on)',.016,.016,.02,[WX-.17,1.635,-1.67],pilotOn,sw,[0,0,Math.PI/2],12);cyl('Pilot lamp (green, off)',.016,.016,.02,[WX-.17,1.635,-1.57],pilotOff,sw,[0,0,Math.PI/2],12);
- plate('Pilot lamp label',['入      切'],[.12,.02],[WX-.162,1.595,-1.62],{bg:'#8c9696',fg:'#f6f2e4',scale:1300},-Math.PI/2,sw);
+ cyl('Pilot lamp (red, on)',.016,.016,.02,[WX-.17,1.585,-1.67],pilotOn,sw,[0,0,Math.PI/2],12);cyl('Pilot lamp (green, off)',.016,.016,.02,[WX-.17,1.585,-1.57],pilotOff,sw,[0,0,Math.PI/2],12);
+ plate('Pilot lamp label',['入      切'],[.12,.02],[WX-.162,1.545,-1.62],{bg:'#8c9696',fg:'#f6f2e4',scale:1300},-Math.PI/2,sw);
  const lever=new THREE.Group();lever.name='Isolating switch lever';lever.userData.live=true;lever.position.set(WX-.09,1.45,-1.505);sw.add(lever);
  box('Lever boss',[.05,.05,.02],[0,0,0],0x5b6264,lever);box('Lever arm',[.022,.17,.016],[0,.085,.006],0x5b6264,lever);box('Lever grip',[.03,.06,.03],[0,.17,.006],0x1e1e1e,lever);
  // Hung from the lock hole at the lever's foot while the lever is down: it hangs straight, whatever the lever does.
@@ -427,7 +429,7 @@ export function buildTetsuoBench({room,collider,reg,action,budget=BUDGET,sound=(
  collider(4.09,-1.9,.24,1.12,2.05);
 
  // ---- The exhaust fan above the rack ------------------------------------------------------------------------------
- const fan=new THREE.Group();fan.name=KIT.fan.mesh;fan.position.set(3.37,2.1,-3.47);group.add(fan);
+ const fan=new THREE.Group();fan.name=KIT.fan.mesh;fan.userData.wall=true;fan.position.set(3.37,2.1,-3.47);group.add(fan);
  box('Exhaust fan frame',[.38,.38,.05],[0,0,.0],0xece6d4,fan);cyl('Exhaust fan opening',.15,.15,.012,[0,0,.022],0x2c302e,fan,[Math.PI/2,0,0],20);
  const blades=new THREE.Group();blades.name='Exhaust fan blades';blades.userData.live=true;blades.position.set(0,0,.035);fan.add(blades);
  for(let i=0;i<3;i++){const arm=new THREE.Group();arm.rotation.z=i*Math.PI*2/3;blades.add(arm);box('Exhaust fan blade',[.05,.13,.006],[0,.07,0],0xd9d4c4,arm,[0,.35,0]);}
@@ -459,10 +461,10 @@ export function buildTetsuoBench({room,collider,reg,action,budget=BUDGET,sound=(
  cyl('Stool seat (green vinyl)',.17,.17,.06,[0,0,0],0x3d6a54,seat,null,20);box('Stool seat seam',[.33,.004,.01],[0,.031,0],0x2f523f,seat);
  collider(.8,-2.45,.42,.42,.62);
 
- // ---- Twin-tube fluorescent fittings: two over the room, one over the bench ----------------------------------------
+ // ---- Twin-tube fluorescent fittings over the room (the arm lamp lights the mat) ----------------------------------------
  const tube=glow(0xf6f8f2,0xf2f7ff,1.15);
- for(const [x,z] of [[-2.1,0],[2.1,0],[B.x,-2.82]]){
-  const f=new THREE.Group();f.name=KIT.tubes.mesh;f.position.set(x,2.48,z);group.add(f);
+ for(const [x,z] of [[-2.1,0],[2.1,0]]){
+  const f=new THREE.Group();f.name=KIT.tubes.mesh;f.userData.wall=true;f.position.set(x,2.48,z);group.add(f);
   box('Fitting trough',[1.28,.045,.17],[0,.02,0],0xeeeeea,f);for(const s of [-1,1]){cyl('FL40 tube',.016,.016,1.2,[0,-.02,s*.045],tube,f,[0,0,Math.PI/2],10);box('Tube end cap',[.03,.03,.03],[s*.615,-.02,0],0xd9d6cc,f);box('Drop rod',[.012,.26,.012],[s*.5,.17,0],0xc9ccc8,f);}
  }
 
@@ -488,21 +490,25 @@ export function buildTetsuoBench({room,collider,reg,action,budget=BUDGET,sound=(
  function bake(){
   group.updateMatrixWorld(true);
   const inverse=new THREE.Matrix4().copy(group.matrixWorld).invert(),flats=new Set(palette.values()),batches=new Map(),drop=[];
+  group.traverse(o=>{if(o.isMesh)for(let p=o;p&&p!==group;p=p.parent)if(p.userData.wall)o.castShadow=false;});
   const meshes=[];group.traverse(o=>{if(!o.isMesh)return;for(let p=o;p&&p!==group;p=p.parent)if(p.userData.live)return;meshes.push(o);});
   // A material drawn once (a screen, the shade) keeps its own named mesh; merging it would save nothing.
   const uses=new Map();for(const o of meshes)uses.set(o.material,(uses.get(o.material)||0)+1);
   for(const o of meshes){
-   const m=o.material,kind=flats.has(m)?(m.metalness>0?'metal':'matte'):null,key=kind||m.uuid;
+   // Things on the walls and the ceiling cast no shadow: at this shadow map's size they only smear the plaster.
+   let wall=false;for(let p=o;p&&p!==group;p=p.parent)if(p.userData.wall)wall=true;
+   const m=o.material,kind=flats.has(m)?(m.metalness>0?'metal':'matte'):null,key=(kind||m.uuid)+(wall?'/wall':'');
+   if(wall)o.castShadow=false;
    if(!kind&&uses.get(m)<2)continue;
    const g=o.geometry.clone().applyMatrix4(new THREE.Matrix4().multiplyMatrices(inverse,o.matrixWorld));
    if(kind){g.deleteAttribute('uv');const n=g.attributes.position.count,rgb=new Float32Array(n*3);for(let i=0;i<n;i++)m.color.toArray(rgb,i*3);g.setAttribute('color',new THREE.BufferAttribute(rgb,3));}
-   if(!batches.has(key))batches.set(key,{kind,material:m,parts:[]});batches.get(key).parts.push(g);drop.push(o);
+   if(!batches.has(key))batches.set(key,{kind,wall,material:m,parts:[]});batches.get(key).parts.push(g);drop.push(o);
   }
   for(const o of drop){o.parent.remove(o);o.geometry.dispose();}
   for(const [key,b] of batches){
    const material=b.kind?new THREE.MeshStandardMaterial({vertexColors:true,roughness:b.kind==='metal'?.4:.72,metalness:b.kind==='metal'?.4:0}):b.material;
    const merged=new THREE.Mesh(mergeGeometries(b.parts,false),material);b.parts.forEach(g=>g.dispose());
-   merged.name='Tetsuo’s corner, merged '+(b.kind||material.name||key.slice(0,8));merged.castShadow=!material.isMeshBasicMaterial&&!material.transparent;merged.receiveShadow=true;group.add(merged);
+   merged.name='Tetsuo’s corner, merged '+(b.kind||material.name||key.slice(0,8));merged.castShadow=!b.wall&&!material.isMeshBasicMaterial&&!material.transparent;merged.receiveShadow=true;group.add(merged);
   }
   const still=new Set();group.traverse(o=>{if(o.isMesh)still.add(o.material);});for(const m of flats)if(!still.has(m))m.dispose();
  }
@@ -531,7 +537,8 @@ export function buildTetsuoBench({room,collider,reg,action,budget=BUDGET,sound=(
   tipMat.emissiveIntensity=Math.max(0,state.heat-.25)*2.6;heater.emissiveIntensity=target?(state.heat<.98||Math.sin(time*2.4)>-.2?1.8:0):0;
   tip.getWorldPosition(tipWorld);room.worldToLocal(tipWorld);
   const wisp=Math.max(0,(state.heat-.6)/.4);
-  smoke.forEach((s,i)=>{const p=(time*.33+i/3)%1;s.visible=wisp>0;s.position.set(tipWorld.x+Math.sin((time+i)*1.7)*.012*p+p*.02,tipWorld.y+.01+p*.2,tipWorld.z);s.scale.setScalar(.02+p*.05);s.material.opacity=wisp*.38*Math.sin(p*Math.PI);});
+  smoke.forEach((s,i)=>{const p=(time*.33+i/3)%1;s.visible=wisp>0;// The tip rests down in the holder's coil, so the wisp shows from the coil's mouth up.
+   s.position.set(tipWorld.x+Math.sin((time+i)*1.7)*.012*p+p*.02,tipWorld.y+.09+p*.2,tipWorld.z+.03);s.scale.setScalar(.025+p*.06);s.material.opacity=wisp*.55*Math.sin(p*Math.PI);});
   // Moving parts (Linux only: on the web nothing is operated and nothing moves but the wisp).
   if(machinery){
    fanSpeed+=((state.fan?1:0)-fanSpeed)*Math.min(1,dt*.8);blades.rotation.z-=fanSpeed*dt*22;
