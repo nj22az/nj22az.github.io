@@ -42,8 +42,10 @@ The final side view exposed the classroom’s existing noticeboard defect: long 
 
 Studio now offers Walk, Run, School run and Comic leap. Play cast advances the same World locomotion rig used in town, including alternating strides, bent elbows and body bounce; the scene timeline can seek backwards deterministically. Saved scene times preserve the frame chosen for a panel. The shared animator accepts an optional initial clock for repeatable Studio sampling; World retains its existing random starting clock.
 
-The example uses tear-free rage and panic, wider mouths, an airborne escape, large unboxed shout lettering and optional plain comic paper. Both lettering and backdrop have controls under Add text. The full classroom remains selectable. The teacher and pupil retain their side-view lift and ashamed expression.
+The example uses tear-free rage and panic, wider mouths, a grounded running escape, large unboxed shout lettering and optional plain comic paper. Both lettering and backdrop have controls under Add text. The full classroom remains selectable. The teacher and pupil retain their side-view lift and ashamed expression.
 
 Verification: 10 schema/motion tests passed; pose/catalogue checks passed with one existing floor-skirt TODO. Chromium renders a 24-frame run cycle through the actual Studio workspace. The browser acceptance check also exercises timeline seeking, rewind and Play cast, alongside project round trips at tablet and phone sizes.
 
 The revised camera pass shows the first desk pose from the side, the escape from behind, and the final lift from an angle that separates Vy from the teacher. A reusable large speech-bubble option keeps the teacher’s complete line readable across the top of the panel.
+
+The escape now samples School run at 0.30 s, with a stronger forward lean and bent, opposing arms. The actual shoe supports are grounded after posing; the paper treatment projects a short floor stroke and dust marks from the planted sole. The jump pose remains available separately. Eleven scene/motion tests pass, including planted-sole height and repeat-frame stability.
