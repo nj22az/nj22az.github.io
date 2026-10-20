@@ -2,6 +2,8 @@
 
 Guidance for Claude Code when working in this repository.
 
+For animation, character performances, films and their rendering tools, also read [ANIMATION_DIRECTION.md](ANIMATION_DIRECTION.md), adapted from the owner's *Opus 5.5 promt.pdf*. The same guidance applies to Codex through [AGENTS.md](AGENTS.md). Preserve the current engine, cast and interactive performance budgets; apply the reference's expensive render settings to suitable offline deliveries.
+
 ## Commands
 
 ### Local Development
@@ -170,3 +172,4 @@ inte ändrar dem. Safaris inbyggda översättning stöder inte svenska. Nya sido
 ## Shared coding discipline
 
 Read [AGENTS.md](AGENTS.md) for the owner-adopted working rules based on multica-ai/andrej-karpathy-skills. For Johansson World also read [johansson-town/AGENTS.md](johansson-town/AGENTS.md), including the latest household and ship-role decisions. Preserve the existing project guidance above; the owner's more recent explicit decisions take precedence over older character descriptions.
+
