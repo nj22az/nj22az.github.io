@@ -30,6 +30,8 @@ Linux/Steam Deck is the first development and test platform; macOS, iPad and iPh
 
 0.2.10 carries the web world of 19 October: the consolidated cast of 26 in 14 households (the roster the People page lists), the docks, Minato Police Station, the tempers, moves and pair poses, Sakura under Thuan and the dressed lots. Old saves migrate; a renamed resident goes on as the live person and the retired fall back to Johansson.
 
+0.2.11 carries the web world of 20 October: Sakura's small upstairs office and rest room, its rebuilt office by the till, tap-to-walk into the office, the stair camera, one storey loaded at a time, no flashing surfaces across Minato, the patrol car, proper bicycles and the dock workshop's benches. The browser edition became a lighter demo; the Linux edition still runs every resident's full day, the trade and the machinery.
+
 The cycling and Thuan storage-room minigames are retired in both editions. Linux no longer bundles the separate storage game. Normal shopping, stocking routines and decorative bikes remain.
 
 Development comparisons and release status are recorded at [Linux Port](https://nj22az.github.io/linux-port/).
