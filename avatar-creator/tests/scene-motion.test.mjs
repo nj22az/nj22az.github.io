@@ -43,7 +43,11 @@ test('a take leaving the slump restores ordinary head proportions',()=>{
 
 test('the comic exit is reused, hidden for ordinary shots and disposed with its scene',()=>{
  let disposed=false;const environment={scene:new THREE.Scene(),origin:[0,0,0],dispose(){disposed=true;}};
- stageComicExit(environment,true);assert.equal(environment.scene.children.length,1);const root=environment.scene.children[0];
+ stageComicExit(environment,true);assert.equal(environment.scene.children.length,1);const root=environment.scene.children[0];stageComicExit(environment,true,'LỐI RA');assert.equal(root.userData.exitLabel,'LỐI RA');
  stageComicExit(environment,false);assert.equal(root.visible,false);stageComicExit(environment,true);assert.equal(environment.scene.children.length,1);assert.equal(root.visible,true);
  environment.dispose();assert.equal(disposed,true);assert.equal(environment.scene.children.length,0);
+});
+
+test('translated exit signs survive scene imports and remain bounded',()=>{
+ const s=normalizeScene({version:2,exitLabel:'LỐI RA'});assert.equal(s.exitLabel,'LỐI RA');assert.deepEqual(normalizeScene(s),s);assert.equal(normalizeScene({...s,exitLabel:'X'.repeat(100)}).exitLabel.length,24);
 });
