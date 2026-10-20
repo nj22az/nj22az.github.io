@@ -25,10 +25,11 @@ export function createMotion({accelerate=9,decelerate=13}={}){
 }
 
 /**
- * Run by pushing the stick all the way out and holding it there for a moment; ease off
- * and you walk again. The gap between the two thresholds stops it flickering.
+ * Run by pushing the stick past about 85% of its reach and holding it there for a moment; ease
+ * off and you walk again. The gap between the two thresholds stops it flickering. This is the
+ * only way to run on a touch screen: there is no Run button over the picture (quiet-hud.css).
  */
-export function createAutoRun({on=.94,off=.72,hold=.28}={}){
+export function createAutoRun({on=.85,off=.7,hold=.2}={}){
  let held=0,running=false;
  return {
   get running(){return running;},

@@ -157,6 +157,7 @@ import {showHomeFurniture} from './build/home-decorate.js';
 import {cleanStudioChoices,applyStudioChoices,studioKey} from './studio-handoff.js';
 import {createGraphicsInspector} from './render/graphics-inspector.js';
 import {dressHud,runButtonFace} from './ui/hud-icons.js';
+import {createQuietHud} from './ui/quiet-hud.js';
 import {decoratorEnabled} from './features.js';
 import {loadHatModels} from './catalog/hat-models.js';
 // The hats people wear from World's catalogue (Johansson's trucker cap) are in hand before the town's people are built, so
@@ -1279,7 +1280,7 @@ async function enterRoom(s){replayInterrupted();lowerPocket();spawnScene?.cancel
  // level pitch is the single thing that most makes an interior read as a different
  // place: you walk in looking where you were looking, not where the room says.
  yaw=roomyHeading(streetToRoom(streetYaw,s,activeRoomLayout));player.quaternion.setFromAxisAngle(yAxis,yaw);
- pitch=THREE.MathUtils.clamp(streetPitch,-.55,.55);$('#exitRoomButton').classList.remove('hidden');syncView();active=null;$('#place').textContent=s.title.toUpperCase();$('#placeSub').textContent=`${s.jp} · ${s.sub}`;$('#timeText').textContent=s.line;if(!s.arrival)say(s.id==='crystal-room'&&activeRoomLayout?'The timber door closes. Something here does not belong to the street.':`${s.title} · Explore the room. Tap objects nearby to examine them.`,s.id==='crystal-room'?5:3);camera.position.copy(player.position);camera.position.y+=1.7;}
+ pitch=THREE.MathUtils.clamp(streetPitch,-.55,.55);$('#exitRoomButton').classList.remove('hidden');syncView();active=null;$('#place').textContent=s.title;$('#placeSub').textContent=`${s.jp} · ${s.sub}`;$('#timeText').textContent=s.line;if(!s.arrival)say(s.id==='crystal-room'&&activeRoomLayout?'The timber door closes. Something here does not belong to the street.':`${s.title} · Explore the room. Tap objects nearby to examine them.`,s.id==='crystal-room'?5:3);camera.position.copy(player.position);camera.position.y+=1.7;}
 function leaveRoom(){if(!current)return;replayInterrupted();lowerPocket();spawnScene?.cancel('room');if(!photoStudio?.active&&!photoReturning&&current.id===NAHA_ARRIVALS.id&&activities.state.island?.journey.location==='naha'){islandPlay.returnFlight();return;}const leavingDungeon=current.id==='dungeon';wearSwim(false);inspector?.close();activities.close();resetInput();$('#directory').classList.add('hidden');document.body.classList.remove('town-menu-open');$('#exitRoomButton').classList.add('hidden');seated=false;parkSeat=null;active=null;const s=current;
  const roomYaw=yaw,roomPitch=pitch,roomLayout=activeRoomLayout;
  // A closed room has no renderer or interaction lifetime. Restore its borrowed
@@ -1295,7 +1296,7 @@ function syncExteriorPlace(){
  const phase=islandPlay?.phase,airport=islandPlay?.snapshot().location==='airport',aboard=!current&&!!deckUnder(),run=world.ferry;
  // Aboard she is the place: her name, and where she is (alongside at which pier, or at sea and bound where).
  const where=aboard?(run.phase==='crossing'?'AT SEA · BOUND FOR '+(run.destination==='airport'?'KITANO-JIMA':'MINATO'):run.berth==='airport'?'ALONGSIDE · KITANO-JIMA PIER':'ALONGSIDE · MINATO OUTER PIER'):null;
- const title=aboard?'MINATO MARU':phase==='ferry'?'MINATO–KITANO-JIMA FERRY':phase==='flight'?'ISLAND COMMUTER FLIGHT':airport?'KITANO-JIMA AIRPORT':'MINATO MACHI';
+ const title=aboard?'Minato Maru':phase==='ferry'?'Minato–Kitano-jima Ferry':phase==='flight'?'Island Commuter Flight':airport?'Kitano-jima Airport':'Minato Machi';
  const detail=aboard?'The Minato Maru · '+where:phase==='ferry'?'Minato–Kitano-jima · PASSENGER DECK':phase==='flight'?'Island commuter service · IN FLIGHT':airport?'Kitano-jima · PASSENGER TERMINAL':'Minato Machi · HARBOUR DISTRICT';
  const line=airport?'The passenger counter and promenade are open.':'Shops are open.';
  if($('#place').textContent!==title)$('#place').textContent=title;
@@ -1884,11 +1885,15 @@ document.addEventListener('keydown',e=>{
  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','Home'].includes(e.code))e.preventDefault();keys[e.code]=true;
  if(!started)return;
  if(e.code==='Home'&&!e.repeat)centreCamera();
- if(e.code==='KeyE'&&!e.repeat){interaction();updateContextControls();if(!contextRail.activatePrimary())doInteract();}if(e.code==='Enter'&&!e.repeat&&!e.target.closest?.('button')){if(contextRail.activatePrimary())e.preventDefault();}if(e.code==='KeyR'&&!e.repeat){const drink=$('#drink');if(!drink.hidden)drink.click();}if(e.code==='KeyQ'&&!e.repeat)toggleDir(true);if(e.code==='KeyB'&&!e.repeat)activities.bag();if(e.code==='KeyN'&&!e.repeat)$('#timeButton').click();if(e.code==='KeyV'&&!e.repeat)setThirdPerson(!thirdPerson);if(e.code==='KeyG'&&!e.repeat)movesMenu();
+ if(e.code==='KeyE'&&!e.repeat){interaction();updateContextControls();if(!contextRail.activatePrimary())doInteract();}if(e.code==='Enter'&&!e.repeat&&!e.target.closest?.('button')){if(contextRail.activatePrimary())e.preventDefault();}if(e.code==='KeyR'&&!e.repeat){const drink=$('#drink');if(!drink.hidden)drink.click();}if(e.code==='KeyQ'&&!e.repeat)toggleDir(true);if(e.code==='KeyB'&&!e.repeat)activities.bag();if(e.code==='KeyN'&&!e.repeat)$('#timeButton').click();if(e.code==='KeyV'&&!e.repeat)setThirdPerson(!thirdPerson);if(e.code==='KeyG'&&!e.repeat)movesMenu();if(e.code==='KeyH'&&!e.repeat){if(quietHud.photoMode)quietHud.photo(false);else cleanView();}
 });document.addEventListener('keyup',e=>keys[e.code]=false);
 function setRunning(value){touchRunning=value;$('#run').setAttribute('aria-pressed',String(value));$('#run').innerHTML=runButtonFace(value);}
 // Icons on the buttons, and the bag, which only appears when there is something in it.
 const hudIcons=dressHud({onBag:()=>{if(started&&!activities.paused){toggleDir(false);activities.bag();}}});$('#run').innerHTML=runButtonFace(false);
+// The HUD fades when nothing is touched and hides for a clean picture (src/ui/quiet-hud.js, quiet-hud.css).
+const quietHud=createQuietHud();
+function cleanView(){if(!started)return;toggleDir(false);quietHud.photo(true);}
+$('#cleanViewButton').onclick=cleanView;
 function toggleRunning(){if(!started||activities.paused||inspector?.active||seated)return;setRunning(!touchRunning);}
 // Touch-down works while another finger holds the movement stick; a synthetic click may be suppressed.
 $('#run').onpointerdown=e=>{if(e.button!==undefined&&e.button!==0)return;e.preventDefault();e.stopPropagation();pressedControls.add('run');toggleRunning();};
@@ -2093,6 +2098,8 @@ function updateController(dt){
  controllerFrame=gamepadInput.sample(pads,cameraControls.settings.deadzone);const f=controllerFrame;
  if(controllerConnected!==f.connected){controllerConnected=f.connected;cameraControls.status(f.connected);if(f.connected)say('Controller connected · Left stick move · Right stick look · Menu opens town book',5);}
  if(!started||document.hidden||catchingUp)return;
+ if(quietHud.photoMode&&f.pressed.some(Boolean)){quietHud.button();return;}
+ if(f.held.some(Boolean)||Math.hypot(f.move.x,f.move.y)>.2||Math.hypot(f.look.x,f.look.y)>.2)quietHud.wake();
  if(!$('#qte').classList.contains('hidden')){if(f.pressed[1]||f.pressed[9])activities.close();else window.__JOHANSSON_TOUCH_UI__?.controller?.(f);return;}
  const direction=menuRepeat(f,dt);
  if(inspector?.active){
@@ -2255,6 +2262,8 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  concert:()=>openKaraoke(),
  get concertState(){return concert?.snapshot()||{active:false};},
  photo:()=>openPhotoStudio(),
+ /** The quiet HUD: wake() it, fade it now (idle()), or hide every control for a clean picture (photo(true)). */
+ hud:{wake:()=>quietHud.wake(),hold:on=>quietHud.hold(on),idle:()=>quietHud.rest(),photo:on=>quietHud.photo(on),get state(){return {idle:quietHud.idle,photo:quietHud.photoMode};}},
  get photoActive(){return !!photoStudio?.active;},
  /**
   * The distance along the view to the first opaque surface, for every pixel of the audit camera's view (w × h), as
