@@ -28,7 +28,8 @@ import {homeNameplate,residentsLine} from '../../people/island-households.js';
 export function buildKitahamaQuarter(kit,solid,{anchor,onAction,vending},{across=[]}={}){
  const K=KITAHAMA;
  buildHeights(kit,solid,{anchor,onAction});
- buildPark(kit,solid,{anchor,onAction,vending});
+ buildPark(kit,solid,{anchor,onAction});
+ buildHeightsDrinks(kit,solid,{anchor,onAction,vending});
  buildCorner(kit,solid,{anchor,onAction});
  // ---- The pole line: along the spine from the cross lane, then up Fukugi Lane.
  const poles=[];
@@ -112,11 +113,36 @@ function buildHeights(kit,solid,{anchor,onAction}){
   'Two houses under one roof, A to the north and B to the south, each with its own gate, front door and strip of garden on Fukugi Lane.\n\n'+residentsLine(A.id)));
 }
 
+/** The pocket park's fence and sandpit, measured (the sandpit in from the park's west and south edges). */
+export const KITAHAMA_PARK=Object.freeze({
+ fence:Object.freeze({top:.6,knee:.25,spacing:1.4,why:'A pipe fence round the two lane sides, so a ball or a small child does not run straight into the lane; posts every 1.4 m at most, each from the ground, so no rail hangs in the air.'}),
+ sign:Object.freeze({out:.3,along:6.6,w:.5,h:.7,y:1.1,why:'The park’s rules, read from the lane: take your rubbish home, ball games before six. On two steel posts set in the verge.'}),
+ sandpit:Object.freeze({x0:.6,x1:2.6,z0:1.4,z1:3.2,kerb:.12,top:.16,sand:.08,
+  why:'For the small children, next to the swing and in sight of the bench. A concrete kerb 16 cm high, the sand 8 cm below it, a bucket, a spade and a heap left from the afternoon.'}),
+});
+/**
+ * The drinks machines on Fukugi Lane: two, with their backs to Kitahama Heights' front block wall north of house A's
+ * gate (the wall from z 42.35 to 44.55, its face at x -23.85), facing the lane and the park across it, 3 cm off the
+ * wall for their cords; the bin at their north end on the corner of the lanes.
+ */
+export const KITAHAMA_DRINKS=Object.freeze({
+ host:'Kitahama Heights A (Mac)',operator:'Minato Drinks',
+ machines:Object.freeze([Object.freeze({x:-23.45,z:42.95,ry:Math.PI/2}),Object.freeze({x:-23.45,z:44.0,ry:Math.PI/2})]),
+ bin:Object.freeze({x:-23.42,z:44.82}),
+ feed:Object.freeze({socket:Object.freeze([-26.6,.45,43.72]),wallIn:-24.15,wallOut:-23.85,wallTop:1.4,
+  why:'The machines run off house A’s supply: an outdoor socket on its front wall, a grey conduit along the garden’s foot, over the block wall and down behind the machines.'}),
+ why:'Machines stand against a wall in Japan, on somebody’s supply: here the Heights’ front wall, on the corner of Fukugi Lane and the cross lane, across from the park whose children are their best customers. They stood loose on the park’s lawn until the owner’s phone found them there (20 October 2026); the third went back to the bottler.',
+});
+
 /** The pocket park at the corner of the spine and Well Lane. */
 function buildPark(kit,solid,{anchor,onAction,vending}){
  const P=KITAHAMA.park,green=0x5f8f5a,steel=0x6c7476;
  // A low railing round it, open to the spine and to Well Lane.
- const rail=(ax,az,bx,bz)=>{kit.rod([ax,.6,az],[bx,.6,bz],.03,green);for(let t=0;t<=1.001;t+=.25)kit.box(.05,.6,.05,ax+(bx-ax)*t,.3,az+(bz-az)*t,green);};
+ // A galvanised pipe fence painted green: round posts at most 1.4 m apart from the ground (set 5 cm into it) to the top
+ // rail, a knee rail between them, and a cap on each post; a run ends on a post (KITAHAMA_PARK.fence).
+ const rail=(ax,az,bx,bz)=>{const len=Math.hypot(bx-ax,bz-az),n=Math.max(1,Math.ceil(len/KITAHAMA_PARK.fence.spacing)),F=KITAHAMA_PARK.fence;
+  for(const y of [F.top,F.knee])kit.rod([ax,y,az],[bx,y,bz],.024,green);
+  for(let i=0;i<=n;i++){const x=ax+(bx-ax)*i/n,z=az+(bz-az)*i/n;kit.cyl(.032,.032,F.top+.05,x,(F.top-.05)/2,z,green,{segments:8});kit.cyl(.04,.04,.03,x,F.top+.015,z,green,{segments:8});}};
  rail(P.minX,P.minZ,P.maxX,P.minZ);rail(P.minX,P.minZ,P.minX,P.maxZ);rail(P.maxX,P.minZ,P.maxX,P.minZ+5.5);
  solid([kit.rect(P.minX,P.maxX,P.minZ-.05,P.minZ+.05,.7,'park-rail'),kit.rect(P.minX-.05,P.minX+.05,P.minZ,P.maxZ,.7,'park-rail'),kit.rect(P.maxX-.05,P.maxX+.05,P.minZ,P.minZ+5.5,.7,'park-rail')]);
  // The swing: an A-frame with two seats on chains.
@@ -128,23 +154,56 @@ function buildPark(kit,solid,{anchor,onAction,vending}){
  const swing=kit.point(sx+1,1,sz);
  anchor(swing.x,swing.y,swing.z,'Push the swing',()=>onAction?.('read','The swing',
   'The chains squeak on the forward stroke and not on the back one. Somebody oils them every spring and the squeak comes back by the summer. Somebody has written a name in felt pen on the left seat and somebody else has crossed it out.'));
- // The sandpit with a red bucket, and the gajumaru for shade over the bench.
+ // The sandpit (KITAHAMA_PARK.sandpit): a concrete kerb set into the lawn, the sand inside it a hand below the kerb, and
+ // what was left in it after school: a red bucket, a yellow spade stuck in a heap, the heap itself. The gajumaru for
+ // shade over the bench.
  const bx=P.maxX-2.2,bz=P.maxZ-2.5;
- kit.block(P.minX+.6,P.minX+2.6,0,.18,P.maxZ-3.2,P.maxZ-1.4,0xd8c9a2);kit.block(P.minX+.75,P.minX+2.45,.02,.16,P.maxZ-3.05,P.maxZ-1.55,0xe8dcb8);
- kit.cyl(.08,.06,.12,P.minX+1.4,.22,P.maxZ-2.1,0xc8432f,{segments:8});
+ {const S=KITAHAMA_PARK.sandpit,k=S.kerb,x0=P.minX+S.x0,x1=P.minX+S.x1,z0=P.maxZ-S.z1,z1=P.maxZ-S.z0;
+  for(const [a,b,c,d] of [[x0,x1,z0,z0+k],[x0,x1,z1-k,z1],[x0,x0+k,z0+k,z1-k],[x1-k,x1,z0+k,z1-k]])kit.block(a,b,-.05,S.top,c,d,0x9e9b93);
+  kit.block(x0+k,x1-k,-.05,S.sand,z0+k,z1-k,0xd2b479,'sand');
+  const [mx,mz]=[x0+.75,z0+.55];kit.sphere(.32,mx,S.sand,mz,0xc9aa6c,{sy:.45});
+  kit.cyl(.1,.075,.15,x1-.55,S.sand+.075,z1-.6,0xc8432f,{segments:10,finish:'gloss'});kit.cyl(.105,.105,.012,x1-.55,S.sand+.15,z1-.6,0xa8322a,{segments:10});
+  kit.rod([mx+.08,S.sand+.12,mz],[mx+.2,S.sand+.42,mz+.06],.012,0xe8b830);kit.box(.11,.15,.02,mx+.05,S.sand+.06,mz-.01,0xe8b830,{rz:-.35,finish:'gloss'});}
  gajumaru(kit,P.maxX-1.3,P.minZ+1.6,{seed:270,size:.8});solid(kit.rect(P.maxX-2,P.maxX-.6,P.minZ+.9,P.minZ+2.3,3,'park-tree'));
  // The bench, facing the swing.
  kit.box(1.5,.08,.42,bx,.45,bz,0x8a6a45,{ry:Math.PI/2});kit.box(1.5,.36,.06,bx+.22,.68,bz,0x8a6a45,{ry:Math.PI/2});
  for(const dz of [-.6,.6])kit.box(.38,.42,.06,bx,.21,bz+dz,steel,{ry:Math.PI/2});
  solid(kit.rect(bx-.25,bx+.3,bz-.8,bz+.8,.9,'park-bench'));
  const seatAt=kit.point(bx,0,bz),standAt=kit.point(bx-.9,0,bz),marker=anchor(seatAt.x,seatAt.y+1,seatAt.z,'Sit on the park bench',()=>onAction?.('seat','Kitahama pocket park',
-  'You sit under the gajumaru. A swing creaks somewhere behind the vending machines. Across the lane a radio is giving the weather for the outer islands, and somebody is frying onions.'));
+  'You sit under the gajumaru. A swing creaks behind you, and across Fukugi Lane the drinks machines hum against the Heights’ wall. Somewhere a radio is giving the weather for the outer islands, and somebody is frying onions.'));
  if(marker)marker.userData.seat={id:'kitahama-park-bench',position:[seatAt.x,seatAt.y,seatAt.z],stand:[standAt.x,standAt.y,standAt.z],surfaceY:seatAt.y+.49,eyeY:seatAt.y+1.12,yaw:Math.PI/2,pitch:0};
- // the pot in the corner behind the drinks machines, by the rail (it stood where the first machine stands)
+ // the hibiscus in the corner by the lane, and a pot inside the west rail
  hibiscus(kit,P.maxX-.6,P.maxZ-.6,{seed:271});potPlant(kit,P.minX+.32,P.maxZ-1.3,{seed:272,size:.25});
- kit.sign(poster({title:'KITAHAMA POCKET PARK',lines:['Please take your rubbish home','Ball games: before 18:00'],bg:'#eef1e4',band:'#5f8f5a'}),.5,.7,P.maxX+.3,1.1,P.minZ+6.6,{ry:Math.PI/2,name:'park sign'});
- // The vending machines on the lane, lit at night: tea, coffee, juice.
- if(vending)for(const x of [P.minX+.8,P.minX+2.1,P.minX+3.4])vending(x,P.maxZ-.65,0);
+ // The park's sign on its own two posts by the lane (it hung in the air at chest height until 20 October 2026).
+ {const G=KITAHAMA_PARK.sign,x=P.maxX+G.out,z=P.minZ+G.along;
+  kit.sign(poster({title:'KITAHAMA POCKET PARK',lines:['Please take your rubbish home','Ball games: before 18:00'],bg:'#eef1e4',band:'#5f8f5a'}),G.w,G.h,x,G.y,z,{ry:Math.PI/2,name:'park sign'});
+  for(const dz of [-G.w/2+.04,G.w/2-.04])kit.cyl(.025,.025,G.y+G.h/2+.05,x-.04,(G.y+G.h/2-.05)/2,z+dz,steel,{segments:6});
+  solid(kit.rect(x-.08,x+.04,z-G.w/2,z+G.w/2,G.y+G.h/2,'park-sign'));}
+}
+
+/**
+ * The drinks machines across Fukugi Lane from the park, against the Heights' front wall (KITAHAMA_DRINKS): the owner,
+ * 20 October 2026, of the three that stood loose on the park's lawn, "Maybe move some of the vending machines to the
+ * wall". Two machines with their backs to the block wall north of house A's gate, a cord's width off it, their power
+ * from the house in a grey conduit over the wall; the can bin at their end, as the law asks.
+ */
+function buildHeightsDrinks(kit,solid,{anchor,onAction,vending}){
+ const D=KITAHAMA_DRINKS,steel=0x6c7476,grey=0x9da3a2;
+ if(vending)for(const m of D.machines)vending(m.x,m.z,m.ry);
+ else for(const m of D.machines)solid({id:'vending',x:m.x+.08,z:m.z,w:.9,d:1.09,height:2.2});
+ // The feed: an outdoor socket on house A's front wall, the conduit along the garden's foot to the block wall, up its
+ // inside, over its coping and down behind the machines into their junction box.
+ const F=D.feed,top=F.wallTop+.04;
+ kit.box(.06,.16,.12,F.socket[0]+.03,F.socket[1],F.socket[2],0xd9d6cc);kit.box(.02,.07,.07,F.socket[0]+.065,F.socket[1],F.socket[2],0x8a8f92);
+ const path=[[F.socket[0]+.05,F.socket[1]-.08,F.socket[2]],[F.socket[0]+.05,.04,F.socket[2]],[F.wallIn-.03,.04,F.socket[2]],[F.wallIn-.03,top,F.socket[2]],[F.wallOut+.015,top,F.socket[2]],[F.wallOut+.015,.35,F.socket[2]]];
+ for(let i=1;i<path.length;i++)kit.rod(path[i-1],path[i],.018,grey);
+ kit.box(.04,.18,.14,F.wallOut+.02,.3,F.socket[2],grey);
+ // The can bin (空き缶入れ) at the machines' north end, blue with a white lid, on the corner of the lanes.
+ const B=D.bin;kit.box(.46,.84,.46,B.x,.42,B.z,0x2f6fb8);kit.box(.48,.06,.48,B.x,.86,B.z,0xf2f0ea);
+ for(const k of [-1,1])kit.cyl(.07,.07,.02,B.x+.24,.62,B.z+k*.11,0x15181a,{rz:Math.PI/2,segments:10});
+ solid(kit.rect(B.x-.25,B.x+.25,B.z-.25,B.z+.25,.9,'kitahama-can-bin'));
+ anchor(B.x+.7,1,B.z,'Look at the drinks machines',()=>onAction?.('inspect','Drinks machines on Fukugi Lane',
+  'Two Minato Drinks machines with their backs to the Heights’ front wall, humming. Mac lets the bottler have the wall and the power from his kitchen socket, and the commission pays his electricity. The children from the park come over the lane with their coins; the empties go in the blue bin at the end.'));
 }
 
 /** The rubbish point and notice board at the end of Well Lane. */
