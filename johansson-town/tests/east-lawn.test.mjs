@@ -9,6 +9,8 @@ import {EAST_LAWN,buildEastLawn} from '../src/world/east-lawn.js';
 import {PARK,COURT_TERRACE,courtTerraceHeight} from '../src/world/park-layout.js';
 import {harbourPondAt} from '../src/world/harbour-park-plan.js';
 import {BEACH} from '../src/world/beach-layout.js';
+import {kitahamaLaneAt} from '../src/world/kitahama-layout.js';
+import {GROUND_LAYER} from '../src/world/ground-layers.js';
 const nearTerraceWall=(x,z)=>z<COURT_TERRACE.minZ+.1&&x>COURT_TERRACE.minX-.6&&x<COURT_TERRACE.maxX;
 import {paintedTurf} from '../src/render/toy-surfaces.js';
 import {MAIN_ROAD} from '../src/world/main-road.js';
@@ -196,7 +198,7 @@ test('the paths across the green lie on the ground rather than through it',async
  // which runs straight between those corners while the lawn beside it follows the
  // ground, so over the graded foot of the park mound the grass came up through the
  // middle of the path by as much as 8cm and lay on it in green wedges.
- const sunk=[];let checked=0;
+ const sunk=[];let checked=0,onGrass=0;
  for(const mesh of parent.children){
   if(!mesh.isMesh||!mesh.name.startsWith('grid-lanes'))continue;
   const position=mesh.geometry.attributes.position,index=mesh.geometry.index;
@@ -206,13 +208,19 @@ test('the paths across the green lie on the ground rather than through it',async
    const y=corners.reduce((s,i)=>s+position.getY(i),0)/3;
    const z=corners.reduce((s,i)=>s+position.getZ(i),0)/3;
    checked++;
-   // 2cm is where the lawn draws; anything at or below that shows through it.
-   const clearance=y-(groundHeight(x,z)+.02);
+   // Compare each path with the surface it actually lies on. Off the lanes that is the
+   // lawn, drawn 2cm over the ground: anything at or below it shows through the grass.
+   // On Kitahama's lanes groundHeight already is the lane paving's own height (layout.js
+   // gives KITAHAMA.y plus the lane layer there), so the path lies on that, not 2cm above it.
+   const surface=kitahamaLaneAt(x,z)?groundHeight(x,z):groundHeight(x,z)+GROUND_LAYER.grass;
+   const clearance=y-surface;
    if(clearance<-.005)sunk.push(x.toFixed(1)+','+z.toFixed(1)+' by '+(-clearance*100).toFixed(1)+'cm');
+   if(!kitahamaLaneAt(x,z))onGrass++;
   }
  }
  // Level park terrain no longer needs the removed mound’s dense subdivisions.
  assert.ok(checked>0,'Every generated grid-lane triangle is sampled');
+ assert.ok(onGrass>checked/2,'Most paths are checked against the grass, not the lanes');
  assert.deepEqual(sunk.slice(0,6),[],'Paving sunk under the grass it is laid on');
 });
 
