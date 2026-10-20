@@ -10,8 +10,7 @@ import {createShopRefrigerator} from './shop-refrigerator.js';
 import {townCalendarAt} from '../../town-clock.js';
 import {buildMedicineShelf,hangWallPosters,createWindowDecorations} from './sakura-dressing.js';
 import {SAKURA_LAYOUT,SAKURA_SHELVES,SAKURA_DRESSING,SAKURA_BACKBAR,SAKURA_TILL_CABINET,BUN_STEAMER,COPY_MACHINE} from './sakura-layout.js';
-import {buildSakuraStoreys,sakuraStoreys} from './sakura-stairs.js';
-import {createSakuraStoreyView} from './sakura-storey-view.js';
+import {buildSakuraStairFoot} from './sakura-stairs.js';
 import {buildSakuraShell} from './sakura-shell.js';
 import {PALETTE,fluorescent} from '../../render/dusk.js';
 import {buildSakuraCheer,buildSakuraBand} from './sakura-cheer.js';
@@ -77,8 +76,8 @@ function dressBackbar(room,anchor,action,materials){
  const look=SAKURA_BACKBAR.find(p=>p.id==='osusume');
  if(look)anchor([look.x-.15,1.2,look.z],'Buy from the till counter',()=>action('sakura-counter-goods'));
 }
-export function buildSakuraInterior({room,reg,action,exit}){
- const layout=sakuraStoreys(SAKURA_LAYOUT),unitPositions=new Map(),unitApproaches=new Map(),batches=[],materials=shopProductMaterials(),dummy=new THREE.Object3D(),zero=new THREE.Matrix4().makeScale(0,0,0);
+export function buildSakuraInterior({room,reg,action,exit,stair=()=>{}}){
+ const layout={...SAKURA_LAYOUT,colliders:[...SAKURA_LAYOUT.colliders]},unitPositions=new Map(),unitApproaches=new Map(),batches=[],materials=shopProductMaterials(),dummy=new THREE.Object3D(),zero=new THREE.Matrix4().makeScale(0,0,0);
  const refrigerator=createShopRefrigerator(room,reg);
  const advertising=createStoreAdvertising({room,reg,action,posterSpecs:[]});
  const anchor=(pos,label,fn)=>{const o=new THREE.Object3D();o.position.set(...pos);room.add(o);reg(o,label,fn,true);return o;};
@@ -167,9 +166,8 @@ export function buildSakuraInterior({room,reg,action,exit}){
  const life=buildSakuraLife(room,{anchor,action});
  // The small office behind the till: Thuan's desk and sales book, the fridge and TV, the cork board (sakura-small-office.js).
  const smallOffice=buildSakuraSmallOffice(room,{anchor,action});
- const upstairs=buildSakuraStoreys({room,reg,action});layout.colliders=[...layout.colliders,...upstairs.colliders];
- // Which storey is drawn: the sales floor put away upstairs, the upstairs rooms on the sales floor (sakura-storey-view.js).
- const storeys=createSakuraStoreyView(room,{upstairs:upstairs.office});
+ // The stair from the stockroom: five treads up into the dark; the office upstairs is a room of its own (sakura-stairs.js).
+ const stairFoot=buildSakuraStairFoot({room,reg,go:dir=>stair(dir)});layout.colliders.push(...stairFoot.colliders);
  anchor([4.50,1.2,.6],'Ring service bell',()=>action('resident','Thuan'));
  dressBackbar(room,anchor,action,materials);
  anchor([4.5,1.2,2.35],'Browse mail-order catalogue',()=>action('store-catalogue'));
@@ -190,7 +188,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
   }
  };
  let mounted=false,disposed=false,last='';
- return {smallOffice,storeys,dispose:()=>{disposed=true;life.dispose();smallOffice.dispose();},cashDrawer:equipment.getObjectByName('Sakura cash drawer'),officeDoor:life.officeDoor,frontDoor:life.frontDoor,loadBackRooms:life.loadBackRooms,layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:(time,minutes,dt)=>{const salesFloor=storeys.storey!=='office';if(salesFloor){decorations.tick(time);smallOffice.tick(time,minutes,dt);}life.tick(time,{salesFloor});},accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const [ok]=await Promise.all([preloadSakuraInterior(),life.ready,capStand.ready]);if(disposed)return false;if(ok&&!mounted){
+ return {smallOffice,dispose:()=>{disposed=true;life.dispose();smallOffice.dispose();},cashDrawer:equipment.getObjectByName('Sakura cash drawer'),officeDoor:life.officeDoor,frontDoor:life.frontDoor,loadBackRooms:life.loadBackRooms,layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:(time,minutes,dt)=>{decorations.tick(time);life.tick(time);smallOffice.tick(time,minutes,dt);},accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const [ok]=await Promise.all([preloadSakuraInterior(),life.ready,capStand.ready]);if(disposed)return false;if(ok&&!mounted){
    const interior=model.clone(true);
    interior.traverse(o=>{if(o.isMesh&&o.name==='sakura-light'){
     const prepare=m=>{const mat=m.clone();mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;return mat;};

@@ -42,7 +42,7 @@ try{
   await page.setViewportSize({width:390,height:844});await page.waitForFunction(()=>{const c=document.querySelector('#game');return c.height>c.width;});
   await capture('shop-night',1260,[2,1.8,4],[0,1.1,-4]);
   if(version==='restored'){
-   await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__;a.leave();await a.enter('sakura-office');});
+   await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__;a.leave();await a.enterInside('sakura-office');});
    await capture('office-midnight',30,[.2,5.66,-2.7],[4.5,5.21,2.5]);
    // Simulate a second process interrupted during entry in a row. Automatic recovery must keep
    // ink, grading and HDR while avoiding multisampling and the shadow atlas.

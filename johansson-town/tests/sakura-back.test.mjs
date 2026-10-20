@@ -107,3 +107,28 @@ test('the fire escape’s plates lie flat on the wall, in full view from the yar
     assert.ok(!hit||hit.distance>.05,`${name}: ${hit?.object.name} ${hit?.distance.toFixed(3)} m from its edge at height ${y.toFixed(2)}`);}}
  }
 });
+
+test('the office is entered only from inside: no door, pin, directory card or button outside; the fire door opens from inside only',async()=>{
+ // The owner, 20 October 2026: "the entry to the upper office is only from inside not from outside now I have a button to
+ // enter the office when I'm outside Sakura, that's wrong. I guess it should be possible to evacuate through the fire
+ // ladder but that door only open from the inside".
+ const {sites,prompts}=await island(),{readFileSync}=await import('node:fs');
+ const office=sites.find(s=>s.id==='sakura-office');
+ assert.equal(office.insideOnly,true,'the office site is marked as entered from inside');
+ assert.ok(!prompts.some(p=>p.includes(office.title)||/sakura/i.test(p)&&/office|upstairs/i.test(p)),'no prompt for the office in town');
+ // game.js takes inside sites out of SITES before the doors, the workplaces, the pins and the directory are made from
+ // them, and opens the office only by the stair's passage.
+ const game=readFileSync(new URL('../src/game.js',import.meta.url),'utf8'),at=s=>{const i=game.indexOf(s);assert.ok(i>=0,s);return i;};
+ const split=at('if(SITES[i].insideOnly)INSIDE_SITES.set(SITES[i].id,SITES.splice(i,1)[0])');
+ for(const later of ['assignWorkplaces(world,SITES);','SITES.forEach(s=>doors.set(','function directoryCards()','function entrancePoints()'])assert.ok(at(later)>split,later+' after the split');
+ assert.equal((game.match(/SAKURA_OFFICE_SITE/g)||[]).length,2,'declared once, entered once: by the stair');
+ // From the yard the fire escape is to look at; out through it is from the office.
+ assert.ok(prompts.includes('Look at the fire escape'));
+ assert.ok(!prompts.some(p=>/climb|go up|enter/i.test(p)&&/fire|escape|ladder/i.test(p)),'no way up the ladder from the yard');
+ const {buildSakuraOfficeRoom}=await import('../src/world/interiors/sakura-office-room.js');
+ const inside=[];let out=0;buildSakuraOfficeRoom({room:new THREE.Group(),reg:(o,label,fn)=>inside.push({label,fn}),action(){},evacuate:()=>{out++;}});
+ inside.find(p=>p.label==='Evacuate by the fire escape').fn();assert.equal(out,1,'the fire door is the way out from inside');
+ // game.js: out of the office, down the ladder, and in the yard at its foot.
+ assert.match(game,/async function evacuateSakuraOffice\(\)\{\n if\(current\?\.id!=='sakura-office'/);
+ assert.ok(game.includes('const L=SAKURA_BACK.fireEscape.ladder,x=L.cageX-1.6,z=L.z;'));
+});

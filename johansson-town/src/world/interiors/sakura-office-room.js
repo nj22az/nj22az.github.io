@@ -1,6 +1,7 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
+import {SAKURA_STAIR_PASSAGE,buildSakuraStairHead} from './sakura-stairs.js';
 
 /**
  * Sakura's upper floor, in the office's own frame: x along the frontage (+x the harbour side, south), z from the back
@@ -88,7 +89,13 @@ function paint(w,h,draw){
 const JP='"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';
 
 /** Clear glazing uses the existing street renderer: both outlooks show the live town, with no backdrop texture. */
-export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},internal=false}){
+/**
+ * The office storey as its own room (sakura-stairs.js: the stair between it and the shop is a passage into darkness). The
+ * hall's stair head opens on the stairwell, dark below its rail; `downstairs` is the way down it, `evacuate` the fire
+ * door's (the only door out of the office besides the stair: it opens from inside only). `merge` false keeps every piece
+ * a mesh of its own, for the flashing-surface scan.
+ */
+export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},downstairs=()=>{},evacuate=null,merge=true}){
  const U=SAKURA_UPSTAIRS,O=SAKURA_OFFICE,hw=O.width/2,back=U.shell.minZ,front=U.shell.maxZ,H=U.shell.ceiling,T=.1,mats=new Map();
  const mat=(c,extra)=>{const key=c+JSON.stringify(extra||{});if(!mats.has(key))mats.set(key,new THREE.MeshStandardMaterial({color:c,roughness:.83,...extra}));return mats.get(key);};
  const box=(size,pos,c,name,solid=false)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),typeof c==='number'?mat(c):c);m.position.set(...pos);m.name=name||'';room.add(m);if(solid)collider(pos[0],pos[2],size[0],size[2],pos[1]+size[1]/2);return m;};
@@ -101,19 +108,23 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},internal=
   // A dark wooden backing (merged with the room) and the lettered face in front of it.
   const back=box([w+.02,h+.02,.012],at,DARK,'Door sign backing');back.rotation.y=yaw;
   const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),tex?new THREE.MeshStandardMaterial({map:tex,roughness:.7}):mat(0xefe6d0));
-  m.position.set(...at).add(new THREE.Vector3(Math.sin(yaw),0,Math.cos(yaw)).multiplyScalar(.0075));m.rotation.y=yaw;m.name=name+' '+text;m.userData.text=text;room.add(m);return m;
+  m.position.set(...at).add(new THREE.Vector3(Math.sin(yaw),0,Math.cos(yaw)).multiplyScalar(.012));m.rotation.y=yaw;m.name=name+' '+text;m.userData.text=text;room.add(m);return m;
  };
 
  // ---- floor, ceiling and the shell's inner faces
- if(internal){
-  for(const [x0,x1,z0,z1] of [[-hw,hw,-3.36,front],[-hw,-5.65,back,-3.36],[-2.05,hw,back,-3.36]])box([x1-x0,.12,z1-z0],[(x0+x1)/2,-.06,(z0+z1)/2],0x947354,'Office timber floor');
- }else box([O.width,.12,front-back],[0,-.06,(front+back)/2],0x947354,'Office timber floor');
+ // The floor round the stairwell's hole (x -5.65..-2.05 behind the decorations store) and the top of its flight (from x
+ // -1.8 at the hall's back): four boards that meet edge to edge, none over another (the top landing used to be a second
+ // floor laid in the hall's, and flashed on the phone).
+ for(const [x0,x1,z0,z1] of [[-hw,hw,-3.36,front],[-hw,-5.65,back,-3.36],[-2.05,hw,-4.96,-3.36],[-1.8,hw,back,-4.96]])box([x1-x0,.12,z1-z0],[(x0+x1)/2,-.06,(z0+z1)/2],0x947354,'Office timber floor');
  box([.12,H,front-back],[-hw,H/2,(front+back)/2],PLASTER,'Office north wall');
  box([O.width,.12,front-back],[0,H+.06,(front+back)/2],0xf1eadb,'Office ceiling');
- // The back wall: in the house above the stair, the stairwell opens behind it (sakura-stairs.js); the fire door is a door.
+ // The back wall: the stairwell opens behind it (sakura-stairs.js buildSakuraStairHead) under a lintel; the fire door is a door.
  const F=U.doors.fire;
- for(const [x0,x1] of internal?[[-hw,-5.65],[-.6,F.x0],[F.x1,hw]]:[[-hw,F.x0],[F.x1,hw]])box([x1-x0,H,.12],[(x0+x1)/2,H/2,back],PLASTER,'Office rear wall',true);
- box([(internal?.6:F.x1)-(internal?-.6:F.x0),H-F.head,.12],[0,(H+F.head)/2,back],PLASTER,'Fire door lintel');
+ for(const [x0,x1] of [[-hw,-5.65],[-.6,F.x0],[F.x1,hw]])box([x1-x0,H,.12],[(x0+x1)/2,H/2,back],PLASTER,'Office rear wall',true);
+ box([F.x1-F.x0,H-F.head,.12],[0,(H+F.head)/2,back],PLASTER,'Fire door lintel');
+ // The opening's head at 2.4 m, a beam's depth under the ceiling: the lens behind him at the stair head passes under it.
+ box([5.05,H-2.4,.12],[(-5.65-.6)/2,(H+2.4)/2,back],PLASTER,'Stairwell lintel');
+ buildSakuraStairHead({room,box,collider,reg,go:downstairs});
  box([F.x1-F.x0-.02,F.head-.02,.05],[0,F.head/2,back+.085],STEEL,'Fire door leaf',true);
  box([.6,.04,.06],[0,1.02,back+.14],0xc9c9c0,'Fire door push bar');
  box([.36,.13,.06],[0,F.head+.18,back+.1],new THREE.MeshBasicMaterial({color:0x2f9e5a,toneMapped:false}),'非常口 exit sign').userData.text='非常口';
@@ -163,7 +174,9 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},internal=
   else for(const dz of [-.225,.225])box([.012,.84,.43],[x-w/2-.006,.45,z+dz],0xa98a63,'Shoe cabinet door');
  }
  anchor([.25,1,-3.95],'Look at the shoe cabinet',()=>action('read','Shoe cabinet','Shoes come off at the top of the stair: the floor up here is in slippers and the rest room is tatami. Thuan’s and Nhung’s shoes in the cabinet, the slippers on the step.'));
- anchor([0,1.1,back+.35],'Look at the fire door',()=>action('inspect','Fire door','The fire door onto the escape ladder down the back of the shop. It is for a fire, not for coming and going: it opens only from inside and rings a bell in the shop when it does. The way out is down the stair and through the shop.'));
+ // The fire door opens from inside only: out onto the escape's landing and down its caged ladder to the yard.
+ if(evacuate)anchor([0,1.1,back+.35],'Evacuate by the fire escape',evacuate);
+ else anchor([0,1.1,back+.35],'Look at the fire door',()=>action('inspect','Fire door','The fire door onto the escape ladder down the back of the shop. It is for a fire, not for coming and going: it opens only from inside and rings a bell in the shop when it does. The way out is down the stair and through the shop.'));
 
  // ---- the office
  const item=id=>U.items.find(i=>i.id===id);
@@ -228,7 +241,8 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},internal=
   // The pinwheel: four full mats (1.8 × 0.9 m) round a half mat, as a 4½-mat room is laid.
   for(const [a,b,c,d] of [[0,1.8,0,.9],[1.8,2.7,0,1.8],[.9,2.7,1.8,2.7],[0,.9,.9,2.7],[.9,1.8,.9,1.8]]){
    const w=b-a-.008,l=d-c-.008,x=x0+(a+b)/2,z=z0+(c+d)/2;box([w,matTop,l],[x,matTop/2,z],tatami,'Tatami mat');
-   if(b-a!==d-c){const long=b-a>d-c;for(const s of [-1,1])box(long?[w,matTop+.002,.035]:[.035,matTop+.002,l],long?[x,matTop/2,z+s*(l/2-.0175)]:[x+s*(w/2-.0175),matTop/2,z],edge,'Tatami edge');}
+   // The edge cloth stands 4 mm proud of the mat and 3 mm inside its sides and ends: never in the mat's planes.
+   if(b-a!==d-c){const long=b-a>d-c;for(const s of [-1,1])box(long?[w-.006,matTop+.008,.035]:[.035,matTop+.008,l-.006],long?[x,(matTop+.008)/2,z+s*(l/2-.0205)]:[x+s*(w/2-.0205),(matTop+.008)/2,z],edge,'Tatami edge');}
   }
   box([R.maxX-R.minX,.03,R.maxZ-R.minZ],[(R.minX+R.maxX)/2,R.ceiling+.015,(R.minZ+R.maxZ)/2],0xc8ae84,'Rest room ceiling boards');
   for(let x=R.minX+.45;x<R.maxX-.1;x+=.45)box([.025,.025,R.maxZ-R.minZ],[x,R.ceiling-.0125,(R.minZ+R.maxZ)/2],DARK,'Ceiling batten');
@@ -236,7 +250,7 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},internal=
   box([R.maxX-R.minX-T,R.ceiling,.01],[(R.minX+R.maxX)/2,R.ceiling/2,R.minZ+T/2+.005],SAND,'Rest room wall lining');
   for(const [z0b,z1b,y0,y1] of [[R.minZ,K.minZ,0,R.ceiling],[K.maxZ,R.maxZ-.06,0,R.ceiling],[K.minZ,K.maxZ,K.head,R.ceiling]])box([.01,y1-y0,z1b-z0b],[R.minX+T/2+.005,(y0+y1)/2,(z0b+z1b)/2],SAND,'Rest room wall lining');
   const S=D.restRoom;for(const [z0b,z1b,y0,y1] of [[R.minZ,S.from,0,R.ceiling],[S.to,R.maxZ-.06,0,R.ceiling],[S.from,S.to,S.head,R.ceiling]])box([.01,y1-y0,z1b-z0b],[R.maxX-T/2-.005,(y0+y1)/2,(z0b+z1b)/2],SAND,'Rest room wall lining');
-  box([.03,.08,R.maxZ-R.minZ-T],[R.minX+T/2+.02,S.head+.04,(R.minZ+R.maxZ)/2],TIMBER,'Nageshi rail');
+  box([.03,.08,R.maxZ-R.minZ-T-.006],[R.minX+T/2+.02,S.head+.044,(R.minZ+R.maxZ)/2],TIMBER,'Nageshi rail');
   // Shoji over the street glass: daylight and privacy over Main Street, no outlook.
   const paper=paint(128,256,(ctx,w,h)=>{ctx.fillStyle='#f3eedf';ctx.fillRect(0,0,w,h);ctx.fillStyle='#b8a074';for(let i=1;i<3;i++)ctx.fillRect(i*w/3-1.5,0,3,h);for(let j=1;j<6;j++)ctx.fillRect(0,j*h/6-1.5,w,3);});
   const shoji=new THREE.MeshStandardMaterial({color:paper?0xffffff:0xf3eedf,map:paper,roughness:.95,emissive:0x2a251a});
@@ -246,24 +260,25 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},internal=
    box([pw-.01,1.43,.012],[x,1.625,z],shoji,'Shoji screen');
    for(const dx of [-pw/2+.015,pw/2-.015])box([.03,1.45,.03],[x+dx,1.625,z],0xb8a074,'Shoji frame');
    for(const y of [.915,2.335])box([pw,.03,.03],[x,y,z],0xb8a074,'Shoji frame');}
-  box([R.maxX-R.minX-T,.03,.08],[(R.minX+R.maxX)/2,.915,front-.1],TIMBER,'Shoji sill');
+  box([R.maxX-R.minX-T-.006,.03,.08],[(R.minX+R.maxX)/2,.881,front-.1],TIMBER,'Shoji sill');
   collider((R.minX+R.maxX)/2,front-.1,R.maxX-R.minX-T,.2,R.ceiling);
   // The futon cupboard: its lining, middle shelf, two fronts (the near one slid over the far), the folded futon.
   const kw=K.maxX-K.minX,kl=K.maxZ-K.minZ,kz=(K.minZ+K.maxZ)/2;
   box([.02,K.head,kl],[K.minX+.01,K.head/2,kz],SAND,'Oshiire back');
   for(const z of [K.minZ+.01,K.maxZ-.01])box([kw,K.head,.02],[(K.minX+K.maxX)/2,K.head/2,z],SAND,'Oshiire side');
-  box([kw,.03,kl],[(K.minX+K.maxX)/2,K.head-.015,kz],SAND,'Oshiire top');box([kw,.03,kl],[(K.minX+K.maxX)/2,.05,kz],TIMBER,'Oshiire floor');
-  box([kw,.03,kl],[(K.minX+K.maxX)/2,K.shelf-.015,kz],TIMBER,'Oshiire middle shelf');box([.05,.06,kl],[K.maxX-.03,K.shelf-.03,kz],DARK,'Oshiire shelf edge');
+  box([kw,.03,kl],[(K.minX+K.maxX)/2,K.head-.015,kz],SAND,'Oshiire top');box([kw-.03,.03,kl-.046],[(K.minX+K.maxX)/2+.01,.05,kz],TIMBER,'Oshiire floor');
+  // Floor, shelf and its edge stand clear of the back and the sides (a board flush in a wall's plane flashes).
+  box([kw-.03,.03,kl-.046],[(K.minX+K.maxX)/2+.01,K.shelf-.015,kz],TIMBER,'Oshiire middle shelf');box([.05,.06,kl-.056],[K.maxX-.026,K.shelf-.027,kz],DARK,'Oshiire shelf edge');
   collider((K.minX+K.maxX)/2+.2,kz,kw-.4,kl,K.head);
   const fronts=new THREE.MeshStandardMaterial({color:0xe9e2cf,roughness:.9});
-  for(const [dx,z] of [[.035,K.minZ+kl/4],[.005,K.minZ+kl/4+.02]]){box([.02,K.head-.02,kl/2],[K.maxX+dx,(K.head-.02)/2,z],fronts,'Oshiire sliding front');box([.025,K.head-.02,.02],[K.maxX+dx,(K.head-.02)/2,z+kl/4],DARK,'Oshiire front edge');}
+  for(const [dx,z] of [[.035,K.minZ+kl/4],[.005,K.minZ+kl/4+.02]]){box([.02,K.head-.02,kl/2],[K.maxX+dx,(K.head-.02)/2,z],fronts,'Oshiire sliding front');box([.025,K.head-.03,.02],[K.maxX+dx,(K.head-.03)/2,z+kl/4],DARK,'Oshiire front edge');}
   const f=item('futon'),[fx,fy,fz]=f.at;
   box([.68,.17,.98],[fx,fy+.085,fz],0xf2efe6,'Folded futon');box([.66,.18,.94],[fx,fy+.26,fz],0x8fb1c9,'Folded futon quilt');box([.3,.08,.45],[fx,fy+.39,fz+.2],0xe8dcc0,'Futon pillow');
   box([.7,.32,.5],[fx,.225,fz],0xcfd6d9,'Storage case');
   anchor([K.maxX+.35,.9,(K.minZ+K.maxZ)/2+.45],'Lie down for a minute',()=>action('read','Sakura rest room','You take the futon down from the cupboard, lie on the tatami with the fan turning, and listen to the shop below. Ten minutes; then the futon goes back on its shelf. It is here for whoever keeps the shop: a rest between the shop and the late boat, or the night if the ferry ever cannot run.'));
   // The low table, the chest with its radio, the clock, the fan, two cushions, the ceiling fitting.
   {const t=item('table'),[x,,z]=t.at,r=t.size[0]/2,h=t.size[1];cyl(r,.03,[x,h-.015,z],0x7a5638,'Low table top',24);
-   for(const a of [0,1,2,3]){const ax=x+Math.cos(a*Math.PI/2+Math.PI/4)*.25,az=z+Math.sin(a*Math.PI/2+Math.PI/4)*.25;box([.04,h-.03,.04],[ax,(h-.03)/2+.02,az],0x6a4a30,'Low table leg');}
+   for(const a of [0,1,2,3]){const ax=x+Math.cos(a*Math.PI/2+Math.PI/4)*.236,az=z+Math.sin(a*Math.PI/2+Math.PI/4)*.236;box([.04,h-.03,.04],[ax,(h-.03)/2+.02,az],0x6a4a30,'Low table leg');}
    collider(x,z,t.size[0]*.9,t.size[2]*.9,h);
    for(const [cx,cz] of [[x+.62,z],[x,z-.5]])box([.48,.06,.48],[cx,.05,cz],0x8a4b52,'Floor cushion');}
   {const c=item('chest'),[x,,z]=c.at,[w,h,d]=c.size;box([w,h,d],[x,h/2+.02,z],0x7a5638,'Six-drawer chest',true);
@@ -276,9 +291,14 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},internal=
   fitting((R.minX+R.maxX)/2,R.ceiling,(R.minZ+R.maxZ)/2+.2,'Rest room ceiling');
   cyl(.004,.45,[(R.minX+R.maxX)/2+.3,R.ceiling-.06-.225,(R.minZ+R.maxZ)/2+.2],0x2c2620,'Pull cord',4);
  }
- if(!internal){const fill=new THREE.HemisphereLight(0xffefd7,0x7e8071,1.2);fill.name='Sakura office steady indoor fill';room.add(fill);}
- mergeStatic(room);
- return {bounds:{minX:-hw+.1,maxX:hw-.1,minZ:back+.1,maxZ:front-.1},spawn:[-.2,0,back+1],office:true};
+ const fill=new THREE.HemisphereLight(0xffefd7,0x7e8071,1.2);fill.name='Sakura office steady indoor fill';room.add(fill);
+ // The tubes' warm white as the shop's (sakura-interior.js): while the office shared the shop's room it was lit by both;
+ // as a room of its own it keeps that light, not the town's evening blue.
+ const tubes=new THREE.HemisphereLight(0xfff1ce,0xd8d2c4,1.7);tubes.name='Sakura office tube light';room.add(tubes);
+ if(merge)mergeStatic(room);
+ // Bounds reach the top landing's south end behind the hall (to z -6.02); the stairwell's walls and pit keep him on it.
+ const arrive=SAKURA_STAIR_PASSAGE.head.arrive;
+ return {bounds:{minX:-hw+.1,maxX:hw-.1,minZ:-6.02,maxZ:front-.1},spawn:[...arrive.at],yaw:arrive.yaw,office:true};
 }
 
 /**
