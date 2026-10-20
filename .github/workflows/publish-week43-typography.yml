@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/publish-week43-typography.yml'
+      - 'sjoskolan/verktyg/lektionsbilder/lektion_v43_02.py'
   workflow_dispatch:
 
 permissions:
