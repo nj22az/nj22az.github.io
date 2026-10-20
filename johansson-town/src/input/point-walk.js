@@ -1,12 +1,19 @@
 import {createNavigation} from '../people/navmesh.js';
-/** Route planning uses the same clearance and floor heights as ordinary walking. */
-export function createPointWalk({blocked,heightAt,radius=.28}){
+/**
+ * Route planning uses the same clearance and floor heights as ordinary walking.
+ * `step` is the planning grid: 0.35 m in the town; a room passes a finer one (game.js), because a doorway leaves the
+ * player's centre a corridor narrower than 0.35 m and a coarse grid has no point in it. Sakura's office door, with its
+ * leaf standing open beside the opening, leaves 0.25 m: tapping the office from the hall said "There is no clear path
+ * from here" (the owner, on his iPhone, 20 October 2026: "I can't seem to get into the office in the Sakura").
+ */
+export const ROOM_STEP=.15;
+export function createPointWalk({blocked,heightAt,radius=.28,step=()=>.35}){
  let points=[],destination=null,arrival=null,context=null,stalled=0,last=null;
  function cancel(){points=[];destination=null;arrival=null;last=null;stalled=0;}
  function walk(from,to,{space=null,onArrival=null}={}){
   cancel();if(Math.hypot(to.x-from.x,to.z-from.z)>60)return false;
   const bounds={minX:Math.min(from.x,to.x)-12,maxX:Math.max(from.x,to.x)+12,minZ:Math.min(from.z,to.z)-12,maxZ:Math.max(from.z,to.z)+12};
-  const nav=createNavigation(blocked,{step:.35,bounds,heightAt,radius});points=nav.path(from,to);
+  const nav=createNavigation(blocked,{step:typeof step==='function'?step(space):step,bounds,heightAt,radius});points=nav.path(from,to);
   if(!points.length)return false;destination={...to};arrival=onArrival;context=space;return true;
  }
  function direction(position,dt,space){
