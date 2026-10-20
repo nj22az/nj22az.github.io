@@ -145,7 +145,9 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
  for(const side of [-1,1])
   painted([.24,upperH,depth],[centreX+side*(half+.12),upperH/2,(front+back)/2],0xbfae8e,{roughness:.95});
  // Timber corner posts, the frame the frontage hangs off.
- for(const x of [northX,southX])box([.26,upperH,.26],[x,upperH/2,front-.13],'timber',0x3c3025);
+ // A centimetre proud of the walls and the band at every face they share, and stopping just under their tops: flush, the
+ // post's faces and the plaster's flashed into each other on a phone (the owner, 20 October 2026).
+ for(const x of [northX,southX])box([.28,upperH-.02,.28],[x,(upperH-.02)/2,front-.13],'timber',0x3c3025);
 
  // ---- ground-floor frontage ----------------------------------------------------
  // The doorway is recessed, so the frontage comes forward each side of it and returns
@@ -180,15 +182,15 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
 
  // The recess: two returns and the wall above the doorway.
  for(const side of [-1,1])
-  box([.24,groundH,recess],[side*cheekHalf,groundH/2,front-recess/2],'plaster',0x6f6656);
- box([doorWidth+.5,groundH-doorHeight,recess+.02],[0,doorHeight+(groundH-doorHeight)/2,front-recess/2],'plaster',0x6f6656);
+  box([.24,groundH+.01,recess+.01],[side*cheekHalf,(groundH+.01)/2,front-recess/2+.005],'plaster',0x6f6656);
+ box([doorWidth+.5,groundH-doorHeight+.01,recess+.02],[0,doorHeight+(groundH-doorHeight+.01)/2,front-recess/2],'plaster',0x6f6656);
  // A threshold stone and the step up off the pavement.
  box([doorWidth+.7,.16,.75],[0,.08,front-.1],'concrete',0x8f887a);
 
  // The door itself: a timber-framed sliding pair with frosted glazing, standing shut.
  // It is scenery — the entrance prompt is what opens it — so it is built as one leaf
  // pair rather than something that slides.
- painted([doorWidth+.16,.14,.1],[0,doorHeight+.07,doorPlane],0x3c3025);
+ painted([doorWidth+.16,.14,.1],[0,doorHeight+.06,doorPlane],0x3c3025);
  for(const side of [-1,1]){
   const leaf=new THREE.Group();leaf.position.set(side*doorWidth/4,0,doorPlane);group.add(leaf);
   const frame=(size,position)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),paint(0x413324));
@@ -230,9 +232,9 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
  {
   const shape=new THREE.Shape();
   shape.moveTo(0,0);shape.lineTo(eave+.34,-.46);shape.lineTo(eave+.34,-.58);shape.lineTo(0,-.12);shape.closePath();
-  const tiles=new THREE.Mesh(new THREE.ExtrudeGeometry(shape,{depth:width+.5,bevelEnabled:false}),
+  const tiles=new THREE.Mesh(new THREE.ExtrudeGeometry(shape,{depth:width+.52,bevelEnabled:false}),
    shade('roof',0xa24c35));
-  tiles.rotation.y=Math.PI/2;tiles.position.set(northX-.25,eaveY+.2,front-.15);
+  tiles.rotation.y=Math.PI/2;tiles.position.set(northX-.26,eaveY+.2,front-.15);
   tiles.castShadow=!!shadows;tiles.receiveShadow=true;tiles.userData.staticProp=true;group.add(tiles);
  }
  // Rafter ends under it, which is the detail that stops the eave looking like a shelf.
@@ -256,7 +258,7 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
   for(let i=0;i<7;i++)painted([.04,1.06,.03],[x-.66+i*.22,upperH-.99,front+.035],0x362b20);
   painted([1.5,.05,.035],[x,upperH-.99,front+.04],0x362b20);
   // A sudare, the bamboo blind, let half-way down against the afternoon sun.
-  painted([1.52,.52,.02],[x,upperH-.72,front+.06],0xcaa86a,{roughness:.95});
+  painted([1.52,.52,.02],[x,upperH-.72,front+.07],0xcaa86a,{roughness:.95});
   for(let k=0;k<5;k++)painted([1.52,.018,.02],[x,upperH-.52-k*.1,front+.075],0x8d7448);
   // A sill with a pot of something on it, which says somebody lives up there.
   painted([1.7,.07,.24],[x,upperH-1.72,front+.05],0x4a3a2a);
@@ -327,7 +329,7 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
    [paint(0x2b1d17),paint(0x2b1d17),paint(0x2b1d17),paint(0x2b1d17),
     new THREE.MeshStandardMaterial({map,emissiveMap:map,emissive:0xffffff,emissiveIntensity:0,roughness:.85}),
     paint(0x2b1d17)]);
-  board.position.set(southX+.2,2.05,front+.34);board.castShadow=!!shadows;board.userData.staticProp=true;group.add(board);
+  board.position.set(southX+.19,2.05,front+.34);board.castShadow=!!shadows;board.userData.staticProp=true;group.add(board);
   board.userData.minatoSign=true;lanterns.push(board);
   painted([.09,2.2,.09],[southX+.2,1.1,front+.62],0x33281d);
  }
@@ -355,7 +357,8 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
  const rbox=(size,pos,colour,extra)=>painted(size,pos,colour,extra,ramen);
  box([AX1-AX0+.2,.18,AZ1-AZ0+.1],[AMX,.09,(AZ0+AZ1)/2],'concrete',0x8c8578);
  rbox([AX1-AX0,AH,.2],[AMX,AH/2,AZ0+.1],0xb3a890,{roughness:.95});
- rbox([.2,AH,AZ1-AZ0],[AX1-.1,AH/2,(AZ0+AZ1)/2],0xb5aa92,{roughness:.95});
+ // The flank stops inside the back and street walls, so no face of it lies in theirs.
+ rbox([.2,AH,AZ1-AZ0-.4],[AX1-.1,AH/2,(AZ0+AZ1)/2],0xb5aa92,{roughness:.95});
  // The street face: wall either side of the door and the window, and the lintel over both.
  const dl=AD-.6,dr=AD+.6,wl=dr+.35,wr=AX1-.3;
  rbox([dl-AX0,AH,.2],[(AX0+dl)/2,AH/2,AZ1-.1],0xb8ad95,{roughness:.95});
