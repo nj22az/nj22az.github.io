@@ -4,7 +4,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {circleHitsRect} from '../../physics.js?snappy=1';
 import {buildSakuraInterior} from '../world/interiors/sakura-interior.js';
 import {SAKURA_LAYOUT} from '../world/interiors/sakura-layout.js';
-import {SAKURA_STOREY,sakuraStoreyAt,sakuraFlightAt,onSakuraLanding,sakuraLandingLens} from '../world/interiors/sakura-stairs.js';
+import {SAKURA_STOREY,sakuraStoreyAt,sakuraStairGoing,sakuraStairLens} from '../world/interiors/sakura-stairs.js';
 import {suppliedRoomBoundsBlocked} from '../world/supplied-rooms.js?snappy=1';
 import {createIndoorResidents} from './indoor-residents.js';
 import {createRetailClerk,inTillPocket,tillStep} from './retail-clerk.js';
@@ -136,15 +136,16 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
  /**
   * The storey he is on (world/interiors/sakura-stairs.js SAKURA_STOREY): upstairs the sales floor is put away
   * (sakura-storey-view.js) and its life is not run, on the sales floor the upstairs rooms are put away. game.js asks
-  * every frame he is inside (layout.follow). `going` is which flight comes next at the turning landing, for its lens.
+  * every frame he is inside (layout.follow). `going` is which way he is moving on the stair ('up' or 'down', kept while
+  * he stands still and across the landing, so there it names the next flight), for the stair's lens.
   */
- let storey='stair',going='up';
+ let storey='stair',going='up';const last=new THREE.Vector3(NaN,NaN,NaN);
  const local=new THREE.Vector3();
  const salesSide=o=>{o.getWorldPosition(local);group.worldToLocal(local);return local.z>SAKURA_STOREY.salesFloorZ;};
  const eachPerson=fn=>{const visit=o=>{if(o!==group&&(o.userData?.name||o.userData?.character)){fn(o);return;}if(o.userData?.sharedAsset&&o!==group)return;for(const c of o.children)visit(c);};visit(group);};
  const follow=p=>{
   if(!p)return storey;
-  const flight=sakuraFlightAt(p);if(flight)going=flight==='lower'?'up':'down';
+  going=sakuraStairGoing(Number.isFinite(last.x)?last:null,p,going);last.set(p.x,p.y,p.z);
   const next=sakuraStoreyAt(p,storey);
   if(next!==storey){const was=storey;storey=next;display.storeys.show(next);if(was==='office')showPeople(true);}
   return storey;
@@ -155,8 +156,8 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
  // The audit and the film ask the same questions of the group: which storey is drawn, and show one.
  group.userData.storeys={get storey(){return storey;},view:display.storeys};
  const layoutView={...display.layout,follow,
-  /** On the turning landing: where the lens stands to frame him and the next flight (game.js placeThirdPerson). */
-  landingLens:p=>onSakuraLanding(p)?sakuraLandingLens(p,going):null};
+  /** On the stair: where the lens stands to frame him and where he is going (game.js placeThirdPerson). */
+  stairLens:p=>sakuraStairLens(p,going)};
  return {group,colliders:display.layout.colliders,service,retail,display,blocked,layout:layoutView,ready:display.ready,
   get storey(){return storey;},follow,
   enter(parent){
