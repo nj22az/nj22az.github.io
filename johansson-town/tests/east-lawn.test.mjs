@@ -8,6 +8,7 @@ import {preloadPark,parkFoliage} from '../src/world/park.js?snappy=1';
 import {EAST_LAWN,buildEastLawn} from '../src/world/east-lawn.js';
 import {PARK,COURT_TERRACE,courtTerraceHeight} from '../src/world/park-layout.js';
 import {harbourPondAt} from '../src/world/harbour-park-plan.js';
+import {BEACH} from '../src/world/beach-layout.js';
 const nearTerraceWall=(x,z)=>z<COURT_TERRACE.minZ+.1&&x>COURT_TERRACE.minX-.6&&x<COURT_TERRACE.maxX;
 import {paintedTurf} from '../src/render/toy-surfaces.js';
 import {MAIN_ROAD} from '../src/world/main-road.js';
@@ -58,8 +59,25 @@ test('the seawall stops you, and the sand below it stays above the ground it lie
  const parent=new THREE.Group(),colliders=[];
  const {shore}=buildEastLawn({parent,colliders});
  const wall=colliders.filter(c=>c.id==='east-seawall');
- assert.equal(wall.length,5,'The wall retains its south return, two beach openings and the opening for Kitano Road');
- for(const z of [-30,-15,10,19])assert.ok(wall.some(c=>circleHitsRect(EAST_LAWN.wall.x,z,.36,c)),'You can walk through the seawall at z='+z);
+ // The wall used to be counted (five pieces: a south return, two beach openings and an
+ // opening for Kitano Road). The 17 October island replan closed the Kitano Road opening
+ // on purpose (kitano-link-plan.js KITANO_SEAWALL_GAP has half 0) and dropped the south
+ // return, so the count changed while the wall did its job. What matters is the job:
+ // solid along its whole length except exactly at the two beach openings.
+ const R=.36,openings=BEACH.accesses;
+ const blocked=z=>wall.some(c=>circleHitsRect(EAST_LAWN.wall.x,z,R,c));
+ const start=Math.min(...wall.map(c=>c.z-c.d/2));
+ assert.ok(start<=-36,'The seawall no longer reaches the south end of the lawn: it starts at z='+start.toFixed(2));
+ const gaps=[],shut=[];
+ for(let z=Math.ceil(start*2)/2;z<=EAST_LAWN.maxZ;z+=.5){
+  const opening=openings.find(a=>Math.abs(z-a.z)<a.half);
+  if(!opening){if(!blocked(z))gaps.push(z);}
+  // Clear of the parapet ends by a body and the coping's lip: you can walk through.
+  else if(Math.abs(z-opening.z)<opening.half-R-.07&&blocked(z))shut.push(z);
+ }
+ assert.deepEqual(gaps,[],'You can walk through the seawall away from the beach openings');
+ assert.deepEqual(shut,[],'A beach opening in the seawall is closed');
+ for(const a of openings)assert.equal(blocked(a.z),false,'The beach opening at z='+a.z+' is walled up');
  // Retained trees keep their own solid trunks. Their gaps, including the police
  // box's visible clearing, must not acquire a continuous hidden collision strip.
  const trees=colliders.filter(c=>c.id==='east-lawn-tree'),drawn=[];
