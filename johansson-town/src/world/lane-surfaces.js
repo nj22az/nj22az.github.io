@@ -1,5 +1,5 @@
 import {coordinatedStreetPatches} from './street-plan.js';
-import {kitahamaLaneAt} from './kitahama-layout.js';
+import {KITAHAMA,kitahamaLaneAt} from './kitahama-layout.js';
 import {NIGHT_LANE,inDiningLane} from './dining-layout.js';
 import {GROUND} from '../render/ground-palette.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -40,8 +40,11 @@ export function buildLaneSurfaces(parent,library) {
   boundary.name='Low garden lane boundaries';boundary.receiveShadow=true;parent.add(boundary);
   const batches=new Map();
   const vertexHeight=(surface,x,z)=>{
-    const base=groundHeight(x,z)-(kitahamaLaneAt(x,z)?GROUND_LAYER.lane:0);
-    return base+GROUND_LAYER.lane;
+    // Kitahama's lanes already carry the lane layer in groundHeight, but only where the
+    // ground there is the lane: where the school's yard overlies a lane (lane 6) it is the
+    // yard's datum, and taking the layer off again laid the path flush with the earth.
+    const ground=groundHeight(x,z),lane=kitahamaLaneAt(x,z)&&Math.abs(ground-(KITAHAMA.y+GROUND_LAYER.lane))<1e-6;
+    return ground+(lane?0:GROUND_LAYER.lane);
   };
   const triangle=(surface,a,b,c)=>{
     if(!batches.has(surface))batches.set(surface,{positions:[],uv:[],indices:[]});
