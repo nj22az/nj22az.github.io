@@ -269,6 +269,8 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   mot skyddat provmaterial. De tolv frågorna, deras ankare, PDF-länkar och examinationsarrangemang behålls.
   Kontroll: båda nedladdningarna slutförda på den publicerade sidan; PDF:erna har tre läsbara sidor vardera.
   Bild 18 renderad och visuellt granskad. Övriga 21 presentationssidor bevarade, inga skyddade filer ändrade.
+  Livekontrollen visade gammal bildspelstext efter uppdatering: visaren kontrollerar nu aktuell JSON vid öppning
+  och versionsmärker bildadresser med presentationens stämpel, så att gamla bilder inte blandas med ny text.
 
 - **2026-10-19** Övningstentan: lösningarna borttagna ur webbsidans HTML. Samma tolv frågor och ankare finns kvar;
   separata nedladdningsbara PDF:er för frågor respektive facit med lösningsgång. Frågorna och lösningarna är oförändrade.
