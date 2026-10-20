@@ -200,5 +200,5 @@ function hangNoren(group,x,y,z){
  ctx.font='600 22px sans-serif';ctx.fillText('SAKURA SHŌTEN',256,116);
  const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;
  const mesh=new THREE.Mesh(new THREE.PlaneGeometry(2.0,.56),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide,transparent:true}));
- mesh.position.set(x,y,z);mesh.userData.banner=true;group.add(mesh);
+ mesh.position.set(x,y,z);mesh.userData.banner=true;mesh.name='Sakura noren';group.add(mesh);
 }
