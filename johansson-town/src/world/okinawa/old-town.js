@@ -135,11 +135,9 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  for(const z of [S.minZ+.07,S.maxZ-.12]){kit.cyl(.045,.045,2.7,front+.06,1.35,z,0x9aa0a4,{segments:8});for(let y=.6;y<2.6;y+=1.1)kit.box(.1,.06,.1,front+.08,y,z,0x6d7478);}
  kit.box(.18,.14,.26,front+.12,2.52,S.maxZ-.5,0xe8e6e0);kit.box(.1,.08,.08,front+.24,2.5,S.maxZ-.5,0x2b2b2b);
  kit.sign(enamel({jp:"Security camera",en:'CCTV in operation',bg:'#f4d23c',ink:'#1f1f1f'}),.28,.42,front+.02,2.05,S.maxZ-.55,{ry:Math.PI/2,depth:.01,name:'camera plate'});
- // Bicycles park in the side service court, leaving the vending face and pavement clear.
- for(const z of [S.maxZ-3.8,S.maxZ-1.8]){
-  bicycle(kit,S.minX-.8,z,{ry:0,colour:0x3a7a5a});
-  solid({id:'sakura-bikes',x:S.minX-.8,z,w:1.6,d:.65,height:1.1});
- }
+ // Bicycles park behind the shop on the service strip's south end, side-on to the back wall and nose to the lane,
+ // leaving the vending face, the pavement, the back door and the van's bay clear (SAKURA_BIKES).
+ for(const b of SAKURA_BIKES)solid(bicycle(kit,b.x,b.z,{ry:-Math.PI/2,...b}));
  kit.box(.95,.62,.32,-12.4,1.4,S.minZ-.2,0xe2e0d8);kit.cyl(.2,.2,.04,-12.2,1.4,S.minZ-.37,0x3a3f42,{rx:Math.PI/2,segments:12});
  for(let y=1.2;y<1.6;y+=.1)kit.box(.5,.02,.02,-12.6,y,S.minZ-.37,0x7b8285);
  kit.box(.3,.004,.4,front+2.2,.012,-24.6,0xf4f1ea,{ry:.7});kit.box(.3,.004,.4,front+3.1,.012,-23.9,0xe8e2d0,{ry:-1.1});
@@ -150,6 +148,17 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
   update(minutes,dt=1/60,{snap=false}={}){clock=minutes;const want=sakuraOpenAt(minutes)?1:0;if(snap){setShutter(want);return;}const step=dt/2.5;if(open!==want)setShutter(Math.abs(want-open)<=step?want:open+Math.sign(want-open)*step);},
  };
 }
+
+/**
+ * The two bicycles behind Sakura, on the paved strip at the south end of the back wall (SAKURA_BACK.strip), clear of the
+ * wall by a hand and of the meters over them: the shop's own, and Nhung's.
+ */
+export const SAKURA_BIKES=Object.freeze([
+ Object.freeze({id:'sakura-shop-bicycle',x:-19.13,z:-23.15,colour:0x3a7a5a,frame:'step',basket:true,owner:'Sakura (Thuan)',
+  why:'The shop’s own bicycle, with the big basket: the run to the Quay Warehouse depot for a forgotten case, and the bags for the old customers on Nishi-machi who cannot carry them home.'}),
+ Object.freeze({id:'nhung-bicycle',x:-19.13,z:-21.15,colour:0xd9d2c0,frame:'step',basket:true,owner:'Nhung',
+  why:'Nhung rides in from 3 Kitahama to keep the shop at the weekend and leaves it at the back, out of the customers’ way.'}),
+]);
 
 /** Sakura's footprint and the height of its roof slab, as the storefront builds them. */
 export const SAKURA_BOX=Object.freeze({minX:-18.45,maxX:-7.45,minZ:-34.43,maxZ:-20.17,roof:4.01});

@@ -49,6 +49,14 @@ export function buildKitahamaQuarter(kit,solid,{anchor,onAction,vending},{across
  return {poles};
 }
 
+/** Each Heights house's bicycle: who rides it and where to (CLAUDE.md: nothing is random). */
+const HEIGHTS_BICYCLES=Object.freeze({
+ 'kitahama-flat-3':Object.freeze({id:'heights-a-bicycle',colour:0x3d6f8f,basket:false,
+  why:'Mac’s, a plain blue commuter for the ride to the gangway when the ship calls the relief engineer, and for the hardware shelf at Sakura. No basket: he carries his tools in a shoulder bag.'}),
+ 'kitahama-flat-4':Object.freeze({id:'heights-b-bicycle',colour:0xd8b13c,frame:'step',
+  why:'Ms Ganaha’s mamachari, which takes her to the post and parcel counter at the Port Terminal by half past eight and brings the evening’s shopping home in its basket.'}),
+});
+
 /**
  * Kitahama Heights: two attached ground-floor houses, A to the north and B to the south (kitahama-layout.js
  * KITAHAMA_HEIGHTS; docs/CAST-CONSOLIDATION.md addendum 6). One single-storey concrete body in the quarter's own style
@@ -88,7 +96,8 @@ function buildHeights(kit,solid,{anchor,onAction}){
   hibiscus(kit,x1+1.9,z+out*1.9,{seed:h.side==='north'?281:282,flower:h.side==='north'?0xe8b12c:0xd95a5a});
   potPlant(kit,x1+.5,z+.9,{seed:h.side==='north'?283:284,size:.3});potPlant(kit,x1+.5,z-.9,{seed:h.side==='north'?285:286,size:.25});
   kit.at(x1+1.4,z-out*1.5,Math.PI/2,()=>laundry(kit,0,0,{length:1.5,seed:h.side==='north'?287:288}));
-  bicycle(kit,A.maxX-.7,z-out*2.0,{ry:0,colour:h.side==='north'?0x3d6f8f:0xd8b13c});
+  // The bicycle inside the front wall, side-on, between the washing and the gate (HEIGHTS_BICYCLES).
+  {const b=HEIGHTS_BICYCLES[h.id];solid(bicycle(kit,A.maxX-.48,z-out*1.55,{ry:out*-Math.PI/2,owner:plate.owners,...b}));}
   solid(gasBottles(kit,x0+.9,end+out*.35,{ry:0}));
   // The gate's nameplate and mailbox, and what they say.
   kit.sign(nameplate(plate.address,plate.owners),.55,.25,A.maxX+.11,.85,z+.95+.5,{ry:Math.PI/2,name:'nameplate'});

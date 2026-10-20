@@ -2,6 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {GROUND_LAYER} from './ground-layers.js';
 import {SCHOOL,SCHOOL_COLUMNS,FUKUGI,schoolColliders} from './school-layout.js';
 import {createKit} from './okinawa/kit.js';
+import {bicycle} from './okinawa/parked-bicycle.js';
 import {shisa} from './okinawa/houses.js';
 import {broadleafGeometry} from './okinawa/trees.js';
 import {playSchoolChime,CHIME_TIMES} from '../audio/school-chime.js';
@@ -247,8 +248,19 @@ function buildTownHallDressing(group,options){
  * model carried: the gateposts and their shisa, the bike shed, the wash taps and the
  * flagpole with its horn speakers.
  */
+/**
+ * The town hall's bicycle shed holds four: the town office's, the teacher's and two pupils'. Side by side between the
+ * corner posts, a hand apart, each in its own collider.
+ */
+const SCHOOL_BICYCLES=Object.freeze([
+ Object.freeze({id:'town-office-bicycle',x:34.57,colour:0xe8e2d0,owner:'Minato Town Office',why:'The office’s errand bicycle: forms to Ms Ganaha’s counter at the terminal and the harbour office, the minutes to whoever missed the meeting.'}),
+ Object.freeze({id:'teacher-bicycle',x:35.28,colour:0x3f7fc0,frame:'step',owner:'Miss Higa',why:'Miss Higa rides up from the Higa house for the eight o’clock bell, and on to the bandai at Umi-no-yu after school.'}),
+ Object.freeze({id:'pupil-bicycle-1',x:35.92,colour:0x6ea05a,size:.8,basket:false,owner:'a pupil from Shiroma',why:'One of the eight pupils’, with the name written on the mudguard in marker; it comes the long way round from Shiroma.'}),
+ Object.freeze({id:'pupil-bicycle-2',x:36.5,colour:0xc8432f,size:.8,basket:false,owner:'a pupil from the Kitano Road houses',why:'Another pupil’s, a hand-me-down, its name crossed out and written again.'}),
+]);
+
 function buildTownHall(group,options){
- const kit=createKit({shadows:options.shadows});
+ const kit=createKit({shadows:options.shadows}),bikes=[];
  const x0=B.minX,x1=B.maxX,z0=SCHOOL.corridor.minZ,zf=B.minZ,zb=B.maxZ,H=B.storey,top=B.roof;
  const wall=0xece5d2,trim=0x2f5f6a,slab=0xd8d2c2,alu=0xb8bec0,glass=0x5d7a84,plinth=0xa9aa9c,steel=0x8e979a;
  kit.block(x0-.1,x1+.1,0,.3,zf-.05,zb+.1,plinth);
@@ -290,7 +302,9 @@ function buildTownHall(group,options){
  const bs=SCHOOL.bikeShed;
  for(const x of [bs.minX+.2,bs.maxX-.2])for(const z of [bs.minZ+1.1,bs.maxZ-.2])kit.box(.08,2.2,.08,x,1.1,z,steel);
  kit.box(bs.maxX-bs.minX+.3,.06,bs.maxZ-bs.minZ-.4,(bs.minX+bs.maxX)/2,2.25,(bs.minZ+bs.maxZ)/2+.5,0x8a9aa0,{rx:.08});
- for(let i=0;i<5;i++){const x=bs.minX+.6+i*.85;kit.box(.06,.6,1.5,x,.45,(bs.minZ+bs.maxZ)/2+.5,[0x3f7fc0,0xc8432f,0x2b2b2b,0x6ea05a,0xe8e2d0][i]);}
+ // Four bicycles under it, nose to the back wall, between the posts (SCHOOL_BICYCLES); their colliders join the
+ // campus's in buildSchool.
+ for(const b of SCHOOL_BICYCLES)bikes.push(bicycle(kit,b.x,(bs.minZ+bs.maxZ)/2+.5,{ry:-Math.PI/2,...b}));
  // The wash taps: a concrete trough with a row of brass taps.
  const w=SCHOOL.wash;kit.box(w.w,.75,w.d,w.x,.375,w.z,0xc9c3b4);kit.box(w.w-.1,.06,w.d-.1,w.x,.76,w.z,0x8a9a9a);
  for(let i=0;i<5;i++)kit.cyl(.03,.03,.25,w.x-w.w/2+.35+i*.53,.95,w.z+.25,0xc9a64a,{segments:6});
@@ -298,6 +312,7 @@ function buildTownHall(group,options){
  const fp=SCHOOL.flagpole;kit.cyl(.3,.25,.25,fp.x,.125,fp.z,0xc9c3b4,{segments:12});kit.cyl(.055,.055,8.6,fp.x,4.5,fp.z,steel,{segments:8});
  for(const a of [-1,1]){kit.rod([fp.x,6.8,fp.z],[fp.x+a*.35,6.6,fp.z-.35],.03,steel);kit.cyl(.08,.26,.5,fp.x+a*.45,6.55,fp.z-.45,0x9aa3a6,{rx:-1.1,segments:10});}
  kit.finish(group,'Town hall building');
+ return bikes;
 }
 
 export function buildSchool(world,options){
@@ -308,7 +323,7 @@ export function buildSchool(world,options){
  // Everything fixed to the block or the gateposts goes up with them when the model
  // arrives: before that it would be hanging in the air where the building will be.
  const onBuilding=new THREE.Group();onBuilding.name='Minato school fittings';
- buildTownHall(group,options);
+ world.colliders.push(...buildTownHall(group,options));
  // The boundary wall against the headland, and the wall of the bike shed's end.
  hanaScreen(group,hana,SCHOOL.westWall,0,.3,1.7,[SCHOOL.minZ,SCHOOL.seawall.south],false,'School boundary wall');
  {const base=new THREE.Mesh(new THREE.BoxGeometry(.2,.3,SCHOOL.seawall.south-SCHOOL.minZ),new THREE.MeshStandardMaterial({color:0xbdb8a9,roughness:.95}));
@@ -343,7 +358,7 @@ export function buildSchool(world,options){
   'One storey, all of it on the forecourt: the town office, the community kitchen, the mayor\'s office, the clinic, the island school\'s one classroom (eight pupils, the 5th and 6th years together) and, at the east end, the mayor\'s house. Built on the old school\'s footprint after the two-storey block from 1971 was taken down.'));
  anchor([SCHOOL.wash.x,1,SCHOOL.wash.z-.8],'Rinse your feet at the taps',()=>options.onAction?.('school-taps'));
  anchor([(SCHOOL.bikeShed.minX+SCHOOL.bikeShed.maxX)/2,1,SCHOOL.bikeShed.minZ+.4],'Look at the bicycles',say('Bike shed',
-  'Bicycles under a zinc roof rusted through at the ribs: the town office staff\'s, two children\'s with names in marker on the mudguards, and the postman\'s spare.'));
+  'Bicycles under a zinc roof rusted through at the ribs: the town office\'s errand bicycle, Miss Higa\'s, and two pupils\' with their names in marker on the mudguards.'));
  anchor([SCHOOL.powerHouse.door[0]+.4,1.2,SCHOOL.powerHouse.door[1]],'Look in at the generators',say("Minato power station · Minatocho Power Plant",
   'Through the open steel doors: two diesel generator sets, green and yellow, each as long as a kei truck, one thudding, one resting. A switchboard of black dials and red lamps runs along the back wall; the needles sit on 6,600 volts and 60 cycles. Every light on the island comes out of this room. The day tank outside is filled from the oil jetty when the tanker is in. Tetsuo, who keeps the switchboard now, keeps the logbook on a clipboard by the door.'));
  anchor([SCHOOL.gate.x+3.4,1,SCHOOL.gate.z+1.2],'Read the monument',say("Community Hall · Community Hall",
