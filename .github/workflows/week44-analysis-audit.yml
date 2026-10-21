@@ -1,0 +1,19 @@
+name: Audit Tuesday analysis teacher presentation
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/week44-analysis-audit.yml']
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tuesday-analysis-encrypted-inputs
+          retention-days: 1
+          path: |
+            sjoskolan/larare/filer/v45_02_Analys_av_matresultat_larare.pptx.enc
+            sjoskolan/vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx
