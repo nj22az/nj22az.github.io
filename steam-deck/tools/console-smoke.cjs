@@ -1,10 +1,11 @@
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict');
 process.env.PW_TEST_SCREENSHOT_NO_FONTS_READY='1';
 const {chromium}=require('playwright');
+const {rectanglesSeparated}=require('./layout-acceptance.cjs');
 (async()=>{
  const root=path.resolve(__dirname,'../site'),out=path.resolve(__dirname,'../dist/console-qa');fs.mkdirSync(out,{recursive:true});
  assert.equal(fs.existsSync(path.join(root,'thuans-storage')),false,'Retired storage game is not bundled');
- const errors=[],missing=[],remote=[],audioRequests=[];
+ const errors=[],missing=[],remote=[],audioRequests=[],layouts=[];
  const version=require('../package.json').version;
  const expectedNames=(await import('../../johansson-town/src/people/cast.js')).CAST.map(person=>person.name).sort();
  const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.glb':'model/gltf-binary','.gltf':'model/gltf+json','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.wav':'audio/wav','.mp4':'video/mp4'};
@@ -94,14 +95,19 @@ const {chromium}=require('playwright');
   const layout=await page.evaluate(()=>{
    const label=document.querySelector('#act .context-label'),box=label.getBoundingClientRect(),range=document.createRange();range.selectNodeContents(label);
    const text=range.getBoundingClientRect(),caption=document.getElementById('subtitle').getBoundingClientRect(),rail=document.getElementById('contextActions').getBoundingClientRect();
-   return {clamp:getComputedStyle(label).webkitLineClamp,height:box.height,textHeight:text.height,scroll:label.scrollHeight,client:label.clientHeight,captionRight:caption.right,railLeft:rail.left,railRight:rail.right,railBottom:rail.bottom,width:innerWidth,heightLimit:innerHeight};
+   return {clamp:getComputedStyle(label).webkitLineClamp,height:box.height,textHeight:text.height,scroll:label.scrollHeight,client:label.clientHeight,caption:caption.toJSON(),rail:rail.toJSON(),width:innerWidth,heightLimit:innerHeight};
   });
+  layouts.push(layout);console.log('CAPTION_ACTION_LAYOUT',JSON.stringify(layout));
+  // Keep the failing size's evidence too, rather than photographing only after assertions pass.
+  fs.writeFileSync(path.join(out,'layouts.json'),JSON.stringify(layouts,null,2));
+  await page.screenshot({path:path.join(out,`night-actions-${width}x${height}.png`)});
   assert.equal(await page.locator('#act .console-action-key').textContent() === 'A',true,'Action prompt displays the mapped A button');
   assert.equal(layout.clamp,'none','Full action labels have no line clamp');
   assert.ok(layout.scroll<=layout.client+1&&layout.textHeight<=layout.height+1,'Complete action text is visible');
-  assert.ok(layout.captionRight<layout.railLeft,'Caption and action descriptions do not overlap');
-  assert.ok(layout.railRight<=layout.width&&layout.railBottom<=layout.heightLimit,'Action rail stays on screen');
-  await page.screenshot({path:path.join(out,`night-actions-${width}x${height}.png`)});
+  assert.ok(rectanglesSeparated(layout.caption,layout.rail),'Caption and action descriptions do not overlap on both axes');
+  for(const [name,rect] of [['Caption',layout.caption],['Action rail',layout.rail]]){
+   assert.ok(rect.width>0&&rect.height>0&&rect.left>=0&&rect.top>=0&&rect.right<=layout.width&&rect.bottom<=layout.heightLimit,`${name} stays on screen at ${width}x${height}`);
+  }
  }
  await page.setViewportSize({width:1280,height:800});await page.evaluate(()=>{const before=window.__contextBefore;document.getElementById('act').innerHTML=before.html;for(const saved of before.buttons){const button=document.getElementById(saved.id);button.hidden=saved.hidden;button.disabled=saved.disabled;button.className=saved.className;}delete window.__contextBefore;window.__JOHANSSON_AUDIT__.frozen=false;window.__JOHANSSON_AUDIT__.setTime(720);window.__JOHANSSON_AUDIT__.teleport(-7,-15,0,0);});await sampled();
  await tap(9);assert.equal((await state()).menu,true);before=await page.evaluate(()=>({...window.__JOHANSSON_POSE__}));await axes([0,-1,1,1]);await page.waitForTimeout(250);await axes([0,0,0,0]);after=await page.evaluate(()=>({...window.__JOHANSSON_POSE__}));assert.equal(after.x,before.x);assert.equal(after.yaw,before.yaw,'Pause blocks movement and camera');
