@@ -46,3 +46,10 @@ looks-data.test.mjs
 wardrobe-batch2.test.mjs
 studio-apply.test.mjs
 quest-customization-audit.test.mjs
+ambient-resident-blocking.test.mjs
+bookkeeper-return-route.test.mjs
+ramen-kitchen.test.mjs
+resident-after-work.test.mjs
+visual-audit-freeze.test.mjs
+systems.test.mjs
+live-features.test.mjs

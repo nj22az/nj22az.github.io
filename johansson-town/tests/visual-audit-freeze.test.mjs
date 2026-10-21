@@ -6,6 +6,8 @@ import * as THREE from '../vendor/three.module.js';
 import {clock as duskClock} from '../src/render/dusk.js';
 import {buildSakuraLife} from '../src/world/interiors/sakura-life.js';
 import {installDOM} from './fixtures.mjs';
+import {graphicsProfile} from '../src/render/startup-recovery.js';
+import {setRoadPaintLight} from '../src/world/road-standards.js';
 
 test('repeated frozen draws refresh lighting and late materials without advancing hourly animation',async()=>{
  const source=await readFile(new URL('../src/game.js',import.meta.url),'utf8');
@@ -21,8 +23,12 @@ test('repeated frozen draws refresh lighting and late materials without advancin
   sun:new THREE.DirectionalLight(),ambient:new THREE.HemisphereLight(),bounce:new THREE.PointLight(),uplight:new THREE.DirectionalLight(),UPLIGHT:.35,
   scene:new THREE.Scene(),camera:new THREE.PerspectiveCamera(),town:{},room:{},renderer:{render(){interior++;}},
   townSky:{update(){skyUpdates++;}},setOceanLight(){},atmosphere:()=>({sky:0x111122,fog:null,ambient:1,exposure:1}),
+  // setTime() snaps the sun to the shadow map's texel grid (graphics) at its fixed reach (SUN_REACH), both game.js globals.
+  graphics:graphicsProfile(),SUN_REACH:Number(source.match(/const SUN_REACH=([\d.]+);/)[1]),setRoadPaintLight,
   pipeline:{setExposure(){},tune(){}},CEL_FILL:1,CEL_EXPOSURE:1,NIGHT_TINT:{light:0xffffff,shadow:0xffffff},
   INK_OPTIONS:{gradeOptions:{lift:.04}},GRADE_DEFAULTS:{lift:.04},DUNGEON_FOG:null,$:()=>({}),
+  // No conversation is open and the speech balloons are DOM overlays: the draw only asks them to follow the camera.
+  conversationLine:null,placeWorldBalloons(){},
   celPass:{apply(){celSweeps++;}},renderOutdoor(){outdoor++;},present:draw=>draw(),
   shopStreetView:{render(){market++;}},sakuraShop:{layout:{frontZ:0}},streetFrontageOf:site=>site?.id==='market'||site?.id==='izakaya'?{}:null};
  context.scene.background=new THREE.Color();
