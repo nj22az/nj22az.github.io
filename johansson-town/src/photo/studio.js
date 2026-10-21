@@ -1,3 +1,4 @@
+import {normalizeHands,applyHands} from '../avatars/hands.js';
 import {capturePose,applyPose,createPoseHistory} from '../avatars/pose.js';
 import {createPosePanel} from '../avatars/pose-panel.js';
 import {svg} from '../ui/icons.js';
@@ -20,10 +21,14 @@ const POSE_LABELS={Kachashi:'Dance',Tada:'Ta-da!',HandsOnHips:'Hands on hips',He
  ...Object.fromEntries(Object.entries(FUN_POSES).map(([name,p])=>[name,p.label]))};
 
 export function poseStudioActor(actor){
+ const wanted=actor.poseHistory?.current?.hands||actor.hands||normalizeHands();
+ if(actor.avatar.articulatedHands!==wanted.enabled){const old=actor.avatar,parent=old.root.parent;actor.avatar=buildAvatar(old.recipe,{shadows:false,faceSize:256,articulatedHands:wanted.enabled});parent?.add(actor.avatar.root);old.root.removeFromParent();old.body.skeleton.dispose();old.dispose();}
+ actor.hands=wanted;
  const animator=createAvatarAnimator(actor.avatar),duration=GESTURES[actor.pose],time=Number.isFinite(duration)?duration*.43:.7;
  if(duration)animator.play(actor.pose);
  const steps=Math.max(1,Math.ceil(time/.025));
  for(let i=0;i<steps;i++)animator.update(time/steps,{expression:actor.expression,seated:actor.pose==='Sit',seatHeight:.48});
+ if(actor.hands.enabled)applyHands(actor.avatar,actor.hands);
  if(actor.poseHistory?.current)applyPose(actor.avatar,actor.poseHistory.current);
  actor.avatar.paintFace({expression:actor.expression,blink:0,talk:0,look:[0,0]});
 }
@@ -75,14 +80,15 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
  const announce=text=>status.textContent=text;
  const selectedActor=()=>actors[selected];
  const posePanel=createPosePanel({inline:true,
-  getState:()=>{const a=selectedActor();return {pose:a?.poseHistory.value,canUndo:a?.poseHistory.canUndo,canRedo:a?.poseHistory.canRedo,enabled:!!a&&!busy};},
+  getState:()=>{const a=selectedActor();return {pose:a?.poseHistory.value,canUndo:a?.poseHistory.canUndo,canRedo:a?.poseHistory.canRedo,hands:a?.hands,enabled:!!a&&!busy};},
   onAdjust:(id,value,record)=>{const a=selectedActor();if(!a)return;const next=a.poseHistory.value||capturePose(a.avatar,a.pose);next.adjustments[id]=value;a.poseHistory.set(next,{record});applyPose(a.avatar,a.poseHistory.current);dirty=true;},
+  onHands:(value,record)=>{const a=selectedActor();if(!a)return;const next=a.poseHistory.value||capturePose(a.avatar,a.pose);next.hands=normalizeHands(value);a.poseHistory.set(next,{record});poseStudioActor(a);dirty=true;},
   onHold:()=>{const a=selectedActor();if(a&&!a.poseHistory.current)a.poseHistory.set(capturePose(a.avatar,a.pose));},
   onResume:()=>{const a=selectedActor();if(a){a.poseHistory.set(null);poseStudioActor(a);dirty=true;}},
-  onReset:()=>{const a=selectedActor(),p=a?.poseHistory.value;if(p){for(const id in p.adjustments)p.adjustments[id]=0;a.poseHistory.set(p);applyPose(a.avatar,a.poseHistory.current);dirty=true;}},
-  onUndo:()=>{const a=selectedActor();if(a){a.poseHistory.undo();poseStudioActor(a);dirty=true;}},
+  onReset:()=>{const a=selectedActor(),p=a?.poseHistory.value;if(p){for(const id in p.adjustments)p.adjustments[id]=0;a.poseHistory.set(p);poseStudioActor(a);dirty=true;}},
+  onUndo:()=>{const a=selectedActor();if(a){a.poseHistory.undo();a.hands=normalizeHands(a.poseHistory.current?.hands);poseStudioActor(a);dirty=true;}},
   onRedo:()=>{const a=selectedActor();if(a){a.poseHistory.redo();poseStudioActor(a);dirty=true;}},
-  onOpen:p=>{const a=selectedActor();if(a){a.poseHistory.set(p);applyPose(a.avatar,a.poseHistory.current);dirty=true;}},
+  onOpen:p=>{const a=selectedActor();if(a){a.hands=normalizeHands(p.hands);a.poseHistory.set(p);poseStudioActor(a);dirty=true;}},
   onSave:()=>{const a=selectedActor();return a.poseHistory.value||capturePose(a.avatar,a.pose);}
  });
  field('pose').closest('.photo-row').after(posePanel.root);

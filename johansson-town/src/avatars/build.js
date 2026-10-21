@@ -1,3 +1,4 @@
+import {HAND_BONES,HAND_PARENTS,handRest,addBareHand,applyHands} from './hands.js';
 import {SWEPT_PONYTAIL} from './swept-ponytail-mesh.js';
 import {POLO_COLLAR} from './contrast-polo-mesh.js';
 import {THUAN_SAILOR_OUTFIT,AFTERBATH,houseDressColour} from './outfit-constants.js';
@@ -36,7 +37,7 @@ import {ASSET_HATS,isAssetHat,assetHatPieces,hatTuck,weaveTexture} from './hat-a
 // The swing bones (springs.js) come last: hair, skirt and hem chains every body carries,
 // used or not, so every skeleton has the same bones in the same order.
 export const BONES=Object.freeze(['root','hips','spine','chest','neck','head','shoulderL','elbowL','handL','shoulderR','elbowR','handR','thighL','kneeL','footL','thighR','kneeR','footR',...SPRING_BONES]);
-const BI=Object.fromEntries(BONES.map((n,i)=>[n,i]));
+const BI=Object.fromEntries([...BONES,...HAND_BONES].map((n,i)=>[n,i]));
 
 /** Every measurement of a body, from its recipe. Pure, for tests and the seat maths. */
 /**
@@ -82,7 +83,7 @@ function restPositions(m){
   thighR:[-m.hipX,m.hipY,0],kneeR:[-m.hipX,m.hipY-m.thigh,0],footR:[-m.hipX,m.foot,0],
  };
 }
-const PARENT={...SPRING_PARENT,hips:'root',spine:'hips',chest:'spine',neck:'chest',head:'neck',shoulderL:'chest',elbowL:'shoulderL',handL:'elbowL',shoulderR:'chest',elbowR:'shoulderR',handR:'elbowR',thighL:'hips',kneeL:'thighL',footL:'kneeL',thighR:'hips',kneeR:'thighR',footR:'kneeR'};
+const PARENT={...SPRING_PARENT,...HAND_PARENTS,hips:'root',spine:'hips',chest:'spine',neck:'chest',head:'neck',shoulderL:'chest',elbowL:'shoulderL',handL:'elbowL',shoulderR:'chest',elbowR:'shoulderR',handR:'elbowR',thighL:'hips',kneeL:'thighL',footL:'kneeL',thighR:'hips',kneeR:'thighR',footR:'kneeR'};
 
 const tmpColour=new THREE.Color();
 /** The torso lathe's radius at a fraction of its height. */
@@ -857,7 +858,7 @@ const FRINGE_ROLL=Object.freeze({bob:ROLL,long:ROLL});
 /** Hats worn with the hair out, not over it: nothing tucks the hair under them. */
 const HAIR_OUT_HATS=Object.freeze(['none','headband','ribbon','hairclip']);
 /** swim: false for clothes, true for swimwear, 'towel' for the bare body under a bath wrap (addTowel). */
-function addBody(list,recipe,m,swim=false){
+function addBody(list,recipe,m,swim=false,articulatedHands=false){
  const o=recipe.outfit,skin=recipe.body.skin,top=swim?skin:o.topColour,bottom=swim?recipe.swim.colour:o.bottomColour;
  // Under a bath wrap nothing else is worn: the wrap is the garment, so nothing can show through it.
  const bare=swim==='towel',onePiece=swim===true&&wearsSwimTop(recipe);
@@ -990,7 +991,7 @@ function addBody(list,recipe,m,swim=false){
   const sleeve=coveredSleeve&&(SHIRT_SLEEVES.includes(o.top)||ACCENT_SLEEVES.includes(o.top))?o.accent:top,below=coveredSleeve&&UNDERSHIRT_ARMS.includes(o.top)?o.accent:skin;
   const ends=longSleeve&&SLEEVE_END[o.top]?sh[1]-(m.upper+m.fore)*SLEEVE_END[o.top]:null;
   const armColour=coveredSleeve?(longSleeve?(ends===null?sleeve:p=>p.y>=ends?sleeve:skin):p=>p.y>=sh[1]-m.upper*.58?sleeve:below):skin;
-  limb(list,sh,hd,m.armR*1.04,m.armR*.86,armColour,longSleeve?{...arm,uvAt:p=>sleeveUV(p,sh,hd,sx)}:arm);
+  limb(list,sh,hd,m.armR*1.04,m.armR*(articulatedHands?.45:.86),armColour,longSleeve?{...arm,uvAt:p=>sleeveUV(p,sh,hd,sx)}:arm);
   // The shoulder: a rounded cap over the joint, in the shirt, that joins the arm to the
   // torso. Its inner side stays with the chest and its outer side goes with the arm, so
   // it stretches over a raised arm rather than coming apart from the body.
@@ -1011,6 +1012,7 @@ function addBody(list,recipe,m,swim=false){
    const a=[sx*(m.shoulderX-m.armR*.72),sh[1]-m.armR*.78,0],b=[sh[0],sh[1]-m.upper*.30,0];
    limb(list,a,b,m.armR*1.05,m.armR*1.12,sleeve,{...arm,joints:[],root:['chest',.9,.15],uvAt:p=>sleeveUV(p,a,b,sx)});
   }
+  if(articulatedHands){addBareHand(list,recipe,m,s,{part,ball});continue;}
   // A mitten hand: the palm, a little flattened, and a thumb on its front inner side,
   // so a wave or a point reads as a hand rather than a ball on a stick.
   ball(list,m.hand,[hd[0],hd[1]-m.hand*.55,0],'hand'+s,skin,[.9,1.15,.78],12,10);
@@ -1735,18 +1737,18 @@ function fitFlags(parts){const flags=new Float32Array(vertexCount(parts));let at
  * @param {object} input recipe (anything; it is normalized)
  * @param {{shadows?:boolean,faceSize?:number}} [options]
  */
-export function buildAvatar(input,{shadows=true,faceSize=256}={}){
+export function buildAvatar(input,{shadows=true,faceSize=256,articulatedHands=false}={}){
  const recipe=normalizeRecipe(input),m=measure(recipe);
- const swing=springRest(recipe,m),rest={...restPositions(m),...swing.rest},bones={},list=BONES.map(name=>{const b=new THREE.Bone();b.name=name;bones[name]=b;return b;});
- for(const name of BONES){
+ const swing=springRest(recipe,m),rest={...restPositions(m),...swing.rest,...(articulatedHands?handRest(m):{})},bones={},boneNames=articulatedHands?[...BONES,...HAND_BONES]:BONES,list=boneNames.map(name=>{const b=new THREE.Bone();b.name=name;bones[name]=b;return b;});
+ for(const name of boneNames){
   const b=bones[name],p=rest[name],parent=PARENT[name];
   if(parent){const q=rest[parent];b.position.set(p[0]-q[0],p[1]-q[1],p[2]-q[2]);bones[parent].add(b);}else b.position.set(...p);
  }
  const parts=[];
- addBody(parts,recipe,m,false);
+ addBody(parts,recipe,m,false,articulatedHands);
  // Fingers share the body's skinning and draw call, and fold inside the mitten at rest.
  const fingerStart=parts.reduce((n,g)=>n+g.attributes.position.count,0);
- for(const side of ['L','R']){const sx=side==='L'?1:-1,x=sx*(m.shoulderX+.015),y=m.shoulderY-m.upper-m.fore;
+ if(!articulatedHands)for(const side of ['L','R']){const sx=side==='L'?1:-1,x=sx*(m.shoulderX+.015),y=m.shoulderY-m.upper-m.fore;
   for(let i=0;i<4;i++)part(parts,new THREE.CapsuleGeometry(m.hand*.105,m.hand*(i===0||i===3?.40:.60),3,6),'hand'+side,recipe.body.skin,M(x+(i-1.5)*m.hand*.37,y-m.hand*(i===0||i===3?1.65:1.85),m.hand*.04,0,0,(i-1.5)*.16));
  }
  const fingerEnd=parts.reduce((n,g)=>n+g.attributes.position.count,0);
@@ -1891,8 +1893,8 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  }
 
  const avatar={
-  recipe,measure:m,root,body,bones,face,height:m.H,outfit:'clothes',hasHat,garment:material.userData.garment,springSetup:swing,springs:null,
-  setOpenHands(on){on=!!on;if(handsOpen===on)return;handsOpen=on;geometry.attributes.position.array.set(on?openFingerPositions:closedFingerPositions,fingerStart*3);geometry.attributes.position.needsUpdate=true;},
+  recipe,measure:m,root,body,bones,face,articulatedHands,height:m.H,outfit:'clothes',hasHat,garment:material.userData.garment,springSetup:swing,springs:null,
+  setOpenHands(on){if(articulatedHands)return;on=!!on;if(handsOpen===on)return;handsOpen=on;geometry.attributes.position.array.set(on?openFingerPositions:closedFingerPositions,fingerStart*3);geometry.attributes.position.needsUpdate=true;},
   /** Hat on or off. Off, it is somebody else's job to show where it went (buildHatProp). */
   setHat(on){if(seeThrough)seeThrough.visible=!!on;geometry.setDrawRange(0,on||!hasHat?Infinity:hatStart);if(hairCovered!==!!on){hairCovered=!!on;if(hatHairRanges.length)applyHair(mainHair);}},
   get hatOn(){return hasHat&&geometry.drawRange.count===Infinity;},
@@ -1964,7 +1966,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
    if(outfit==='afterbath'&&!wearsBathTowel(recipe))outfit='clothes';
    avatar.outfit=outfit;
    if(outfit==='towel'&&!towelBody){
-    const parts=[];addBody(parts,recipe,m,'towel');addNose(parts,recipe,m);ears(parts);
+    const parts=[];addBody(parts,recipe,m,'towel',articulatedHands);addNose(parts,recipe,m);ears(parts);
     const hairStart=parts.length;addHair(parts,{...recipe,outfit:{...recipe.outfit,hat:'none'}},m);
     const hair=parts.slice(hairStart),span=hairSpan(parts,hairStart,parts.length),wrapStart=vertexCount(parts);
     const head=face.head.geometry.clone();head.translate(0,m.headCentre,0);
@@ -1980,13 +1982,13 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
    }
    if(['nozomi','sailor'].includes(outfit)&&alternativeKey!==outfit){
     if(alternativeBody){hairRecords.splice(hairRecords.indexOf(altHair),1);alternativeBody.removeFromParent();alternativeOutline.removeFromParent();alternativeBody.geometry.dispose();alternativeBody.material.map?.dispose();alternativeBody.material.dispose();}
-    alternativeKey=outfit;const r=normalizeRecipe({...recipe,outfit:{...recipe.outfit,...(outfit==='sailor'?THUAN_SAILOR_OUTFIT:SHOPPING_LANE_OUTFIT)}}),parts=[];addBody(parts,r,m);addNose(parts,r,m);ears(parts);
+    alternativeKey=outfit;const r=normalizeRecipe({...recipe,outfit:{...recipe.outfit,...(outfit==='sailor'?THUAN_SAILOR_OUTFIT:SHOPPING_LANE_OUTFIT)}}),parts=[];addBody(parts,r,m,false,articulatedHands);addNose(parts,r,m);ears(parts);
     const hairStart=parts.length;addHair(parts,r,m);const span=hairSpan(parts,hairStart,parts.length);
     const g=mergeGeometries(parts,false);parts.forEach(p=>p.dispose());alternativeBody=new THREE.SkinnedMesh(g,bodyMaterial(r,m));alternativeBody.name=outfit==='sailor'?'Thuan · harbour academy sailor':'Thuan · shopping lane outfit';alternativeBody.bind(body.skeleton,body.bindMatrix);alternativeBody.castShadow=shadows;alternativeBody.frustumCulled=false;root.add(alternativeBody);alternativeOutline=addOutline(root,alternativeBody,true);
     altHair=hairRecord(g,span);
    }
    if(outfit==='swim'&&!swimBody){
-    const parts=[];addBody(parts,recipe,m,true);addNose(parts,recipe,m);ears(parts);
+    const parts=[];addBody(parts,recipe,m,true,articulatedHands);addNose(parts,recipe,m);ears(parts);
     const hairStart=parts.length;addHair(parts,{...recipe,outfit:{...recipe.outfit,hat:'none'}},m);
     const hair=parts.slice(hairStart),span=hairSpan(parts,hairStart,parts.length),headStart=vertexCount(parts);
     // The folded towel for the head (headTowel), last, so leaving it off is drawing one range shorter.
@@ -2003,7 +2005,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
    if(outfit==='afterbath'&&!afterbathBody){
     const women=recipe.body.silhouette==='feminine',dress=women?houseDressColour(recipe):null;
     const r={...recipe,outfit:{...recipe.outfit,...(women?{...AFTERBATH.women,topColour:dress,bottomColour:dress,accent:dress}:AFTERBATH.men)}};
-    const parts=[];addBody(parts,r,m,false);addNose(parts,r,m);ears(parts);
+    const parts=[];addBody(parts,r,m,false,articulatedHands);addNose(parts,r,m);ears(parts);
     let span=null,tenuguiAt=null;
     if(women)addTurban(parts,r,m);
     else{const hairStart=parts.length;addHair(parts,{...r,outfit:{...r.outfit,hat:'none'}},m);span=hairSpan(parts,hairStart,parts.length);tenuguiAt={start:vertexCount(parts),...addTenugui(parts,r,m)};}
@@ -2042,6 +2044,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  };
  if(bodyFit.some(f=>f>0)){outline.removeFromParent();outline=fitCloth(body);}
  avatar.springs=createSprings(avatar);
+ if(articulatedHands)applyHands(avatar,{enabled:true});
  avatar.paintFace({});
  return avatar;
 }
