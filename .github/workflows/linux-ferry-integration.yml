@@ -1,0 +1,70 @@
+name: Linux ferry integration verification
+on:
+  push:
+    branches: [codex/linux-015-ferry-timetable]
+    paths: ['steam-deck/**', 'johansson-town/**', '.github/workflows/linux-ferry-integration.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: linux-ferry-integration
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install build and desktop tools
+        run: |
+          npm install --prefix .world-build --ignore-scripts --no-audit --no-fund vite@7.3.6 spectorjs@0.9.33
+          ln -s ../.world-build/node_modules johansson-town/node_modules
+          npm ci --prefix steam-deck --no-audit --no-fund
+          node steam-deck/node_modules/electron/install.js
+      - name: Rebuild the combined runtime
+        run: npm run build:runtime --prefix johansson-town
+      - name: Desktop and complete ferry checks
+        run: |
+          npm test --prefix steam-deck
+          node --test --test-concurrency=2 johansson-town/tests/ferry-timetable.test.mjs johansson-town/tests/ferry.test.mjs johansson-town/tests/ferry-walk.test.mjs johansson-town/tests/airport-ferry.test.mjs johansson-town/tests/ferry-crew-aboard.test.mjs johansson-town/tests/ferry-operations.test.mjs johansson-town/tests/openings.test.mjs johansson-town/tests/context-actions.test.mjs johansson-town/tests/controller-game.test.mjs
+      - name: World guard
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: cd johansson-town && node tools/ci-guard.mjs --test-concurrency=2
+      - name: Package and verify the complete offline island
+        run: |
+          npm run package --prefix steam-deck
+          node -e "const f=require('./steam-deck/release-files.cjs'),fs=require('node:fs');const m=JSON.parse(fs.readFileSync('steam-deck/dist/bundle-manifest.json'));f.verify('steam-deck/dist/johansson-world',m);console.log('Verified',Object.keys(m.files).length,'packaged files');"
+      - name: Start the actual native application
+        env:
+          WORLD_SCREENSHOT: steam-deck/dist/linux-world.png
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libasound2t64 libnss3 libgbm1
+          timeout 300 xvfb-run -a steam-deck/dist/johansson-world/JohanssonWorld --no-sandbox --windowed --smoke --use-angle=swiftshader --enable-unsafe-swiftshader --disable-dev-shm-usage
+      - name: Commit the verified runtime last
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add johansson-town/runtime johansson-town/index.html johansson-town/sw.js
+          if ! git diff --cached --quiet; then
+            git commit -m "Rebuild the verified Linux ferry runtime"
+            git push origin HEAD:codex/linux-015-ferry-timetable
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: linux-015-ferry-verification
+          path: |
+            steam-deck/dist/linux-world*.png
+            steam-deck/dist/latest-linux.json
+            steam-deck/dist/bundle-manifest.json
+            steam-deck/dist/SHA256SUMS
+            steam-deck/dist/johansson-world-linux-x64.tar.gz
+          if-no-files-found: ignore
+          compression-level: 0
