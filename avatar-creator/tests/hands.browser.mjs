@@ -47,11 +47,11 @@ try{
   const THREE=await import('/johansson-town/vendor/three.module.js'),{buildAvatar,BONES}=await import('/johansson-town/src/avatars/build.js'),{recipeFor}=await import('/johansson-town/src/avatars/cast.js'),{applyHands,HAND_BONES}=await import('/johansson-town/src/avatars/hands.js');
   const a=buildAvatar(recipeFor('Thuan'),{articulatedHands:true,faceSize:64}),scene=new THREE.Scene();a.root.rotation.y=0;
   // Diagnostic crop: remove the leg from this hand close-up, without changing production geometry.
-  const ids=new Set(['handL',...HAND_BONES.filter(n=>n.includes('L'))].map(n=>a.body.skeleton.bones.findIndex(b=>b.name===n))),I=a.body.geometry.attributes.skinIndex,keep=[];
+  const ids=new Set(['elbowL','handL',...HAND_BONES.filter(n=>n.includes('L'))].map(n=>a.body.skeleton.bones.findIndex(b=>b.name===n))),I=a.body.geometry.attributes.skinIndex,keep=[];
   for(let i=0;i<I.count;i+=3)if(ids.has(I.getX(i)))keep.push(i,i+1,i+2);a.body.geometry.setIndex(keep);
   scene.add(a.root,new THREE.HemisphereLight(0xffffff,0x8899aa,2.2));const sun=new THREE.DirectionalLight(0xffffff,2);sun.position.set(1,3,4);scene.add(sun);
   const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(640,640);renderer.setClearColor('#e8e5dc');document.body.append(renderer.domElement);
-  const camera=new THREE.PerspectiveCamera(28,1,.01,20),m=a.measure;camera.position.set(m.shoulderX+.015,m.shoulderY-m.upper-m.fore-m.hand,.6);camera.lookAt(m.shoulderX+.015,m.shoulderY-m.upper-m.fore-m.hand,0);
+  const camera=new THREE.PerspectiveCamera(28,1,.01,20),m=a.measure;camera.position.set(m.shoulderX+.015,m.shoulderY-m.upper-m.fore-m.hand,.6);camera.up.set(0,-1,0);camera.lookAt(m.shoulderX+.015,m.shoulderY-m.upper-m.fore-m.hand,0);
   window.drawHand=async preset=>{applyHands(a,{enabled:true,L:{preset}});renderer.render(scene,camera);await new Promise(requestAnimationFrame);renderer.render(scene,camera);};
  });
  for(const preset of ['open','peace','point','fist','relaxed','thumbsUp']){await detail.evaluate(p=>drawHand(p),preset);await detail.screenshot({path:out+'/hand-'+preset+'.png'});}

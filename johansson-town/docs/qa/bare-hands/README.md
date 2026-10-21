@@ -17,3 +17,9 @@ The screenshots use headless Chromium with SwiftShader. Physical iPhone/iPad Saf
 ![Studio with a real peace hand](studio-1365.png)
 ![Studio phone controls](studio-390.png)
 ![World Photo Studio phone controls](world-390.png)
+
+## Shape revision following visual review
+
+The first screenshots were rejected by the owner for their appearance. This revision replaces the circular palm with a flattened, tapered palm, rounds and tapers the finger tips, blends finger roots and changes thumb opposition. The optional forearm now narrows at the wrist; its former rounded end obscured the palm. Legacy geometry remains unchanged. Close-ups now include the attached forearm and face upright.
+
+The revised source passed the 37 geometry, pose, avatar, motion, scene and performance tests, the three runtime-package tests, the full runtime build and the hand browser suite (controls, persistence, GLB round trip and both layouts). These are revised previews, not a claim of final visual approval.

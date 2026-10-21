@@ -991,7 +991,7 @@ function addBody(list,recipe,m,swim=false,articulatedHands=false){
   const sleeve=coveredSleeve&&(SHIRT_SLEEVES.includes(o.top)||ACCENT_SLEEVES.includes(o.top))?o.accent:top,below=coveredSleeve&&UNDERSHIRT_ARMS.includes(o.top)?o.accent:skin;
   const ends=longSleeve&&SLEEVE_END[o.top]?sh[1]-(m.upper+m.fore)*SLEEVE_END[o.top]:null;
   const armColour=coveredSleeve?(longSleeve?(ends===null?sleeve:p=>p.y>=ends?sleeve:skin):p=>p.y>=sh[1]-m.upper*.58?sleeve:below):skin;
-  limb(list,sh,hd,m.armR*1.04,m.armR*.86,armColour,longSleeve?{...arm,uvAt:p=>sleeveUV(p,sh,hd,sx)}:arm);
+  limb(list,sh,hd,m.armR*1.04,m.armR*(articulatedHands?.45:.86),armColour,longSleeve?{...arm,uvAt:p=>sleeveUV(p,sh,hd,sx)}:arm);
   // The shoulder: a rounded cap over the joint, in the shirt, that joins the arm to the
   // torso. Its inner side stays with the chest and its outer side goes with the arm, so
   // it stretches over a raised arm rather than coming apart from the body.
