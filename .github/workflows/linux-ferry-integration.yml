@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  statuses: write
 concurrency:
   group: linux-ferry-integration
   cancel-in-progress: true
@@ -48,6 +49,8 @@ jobs:
           sudo apt-get install -y xvfb libasound2t64 libnss3 libgbm1
           timeout 300 xvfb-run -a steam-deck/dist/johansson-world/JohanssonWorld --no-sandbox --windowed --smoke --use-angle=swiftshader --enable-unsafe-swiftshader --disable-dev-shm-usage
       - name: Commit the verified runtime last
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -56,6 +59,9 @@ jobs:
             git commit -m "Rebuild the verified Linux ferry runtime"
             git push origin HEAD:codex/linux-015-ferry-timetable
           fi
+          # All preceding checks exercised these exact generated files. Report that
+          # result on the runtime commit as well as on the source workflow run.
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$(git rev-parse HEAD)" -f state=success -f context='Linux ferry integration' -f description='World guard, desktop, ferry, package and native startup passed' -f target_url="https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
