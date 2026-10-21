@@ -20,8 +20,11 @@ export const HOME_ALIASES=Object.freeze({
  // Removed homes land at the retained public place their records go to (roster.js RETIRED_HOMES): the housing project's
  // nine (18 October 2026) and phase 4's (the three Kitahama houses, the two Nishi houses, 1 Front-Row Yard, the Chinen
  // house on Kitano-jima; the flat over the former post office at the terminal, where its post went; Barfly's room at the bar).
- ...Object.fromEntries(['kitahama-4','kitahama-5','kitahama-6','kitahama-7','kitahama-9','kitahama-10','kitahama-11','kitahama-12','nakasone','miyagi','arakaki','yonamine','kinjo','oshiro','kitano-3'].flatMap(id=>[[id,'mayor-office'],['home-'+id,'mayor-office']])),
- 'resident-home-aya':'mayor-office','resident-home-reiko':'mayor-office','resident-home-bus-driver':'mayor-office',
+ ...Object.fromEntries(['kitahama-4','kitahama-5','kitahama-6','kitahama-7','kitahama-9','kitahama-10','kitahama-11','kitahama-12','nakasone','miyagi','arakaki','yonamine','kinjo','oshiro','kitano-3'].flatMap(id=>[[id,'community-kitchen'],['home-'+id,'community-kitchen']])),
+ 'resident-home-aya':'community-kitchen','resident-home-reiko':'community-kitchen','resident-home-bus-driver':'community-kitchen',
+ // The mayor's office went on 21 October 2026 (briefs/town-hall-zone.md, phase M): a save inside it, a visit to it or a
+ // target at its door lands at the Community Hall's, the community kitchen, where the town's register is.
+ 'mayor-office':'community-kitchen',
  shimabukuro:'ferry-terminal','home-shimabukuro':'ferry-terminal','home-izakaya':'izakaya',
  'yuri-home':'resident-home-thuan','resident-home-nao':'resident-home-thuan',
  'resident-home-thao':'resident-home-thuan','resident-home-chin':'resident-home-thuan',

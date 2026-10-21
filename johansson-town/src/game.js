@@ -97,7 +97,7 @@ import {setRoadPaintLight} from './world/road-standards.js';
 import {setOceanLight} from './world/ocean.js';
 import {eveningNews,newsOn} from './feed/evening-news.js';
 import {typhoonAt,typhoonBulletin} from './world/typhoons.js';
-import {buildMayorOffice,buildMayorHome,buildCommunityKitchen,buildClinic,MAYOR_HOME_FLOOR} from './world/interiors/town-hall.js';
+import {buildMayorHome,buildCommunityKitchen,buildClinic,MAYOR_HOME_FLOOR} from './world/interiors/town-hall.js';
 import {HOUSE_SAVE} from './world/johansson-house.js';
 import {createHomeCustomization} from './world/interiors/home-customization.js';
 import {buildCityRestaurant,CITY_RESTAURANT} from './world/interiors/city-restaurant.js';
@@ -1182,7 +1182,6 @@ function roomShell(s){
  // other way out, from inside.
  if(s.id==='sakura-office'){const g=new THREE.Group();g.name='Sakura office storey';room.add(g);activeRoomLayout=buildSakuraOfficeRoom({...shared,room:g,downstairs:()=>takeSakuraStair('down'),evacuate:evacuateSakuraOffice});return;}
  if(s.id==='school'){activeRoomLayout=buildClassroom(shared);return;}
- if(s.id==='mayor-office'){activeRoomLayout=buildMayorOffice(shared);return;}
  if(s.id==='community-kitchen'){activeRoomLayout=buildCommunityKitchen(shared);return;}
  if(s.id==='clinic'){activeRoomLayout=buildClinic(shared);return;}
  if(s.id==='ferry-terminal'){activeRoomLayout=buildPortHall({...shared,naha:takeNahaBoat,upstairs:()=>crossThreshold(async()=>{leaveRoom();const office=SITES.find(site=>site.id==='office');if(office)await enterRoom(office);})});return;}

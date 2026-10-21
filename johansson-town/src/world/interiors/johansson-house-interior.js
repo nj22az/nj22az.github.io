@@ -1,5 +1,6 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {createKit} from '../okinawa/kit.js';
+import {addOwnedCharacter} from '../../people/owned-characters.js';
 import {HOUSE_FLOORS,HOUSE_LEVELS,HOUSE_ROOMS,HOUSE_WALLS,HOUSE_SLABS,HOUSE_OPENINGS,HOUSE_DOORS,HOUSE_LEAF,HOUSE_STAIR,HOUSE_GUARDS,HOUSE_RAILS,HOUSE_FIXTURES,HOUSE_EQUIPMENT,houseRoom} from '../johansson-house.js';
 import {createHouseWalk} from '../house-walk.js';
 
@@ -49,7 +50,7 @@ export function buildJohanssonHouse({room:parent,reg,action,collider=()=>{},slee
  stair(storeys);
  views(storeys);
  const leaves=slidingDoors(storeys,{reg,collider,doors,player,action});
- const life={reg,action,sleep,television,post};
+ const owned=[],life={reg,action,sleep,television,post,owned};
  furnishBasement(storeys.B1,life);furnishGround(storeys.G0,life);furnishUpper(storeys.L1,life);
  equipment(storeys,life);
  for(const s of Object.values(storeys)){s.kit.finish(s.group,'Johansson house '+s.level);delete s.group.userData.walkLevels;delete s.group.userData.powerNetwork;}
@@ -69,7 +70,7 @@ export function buildJohanssonHouse({room:parent,reg,action,collider=()=>{},slee
  show(0);
  return {
   bounds:{minX:-5.8,maxX:5.8,minZ:-4.8,maxZ:4.8},spawn:[sx,0,sz],exit:[ex,1.1,ez],exitFloor:0,yaw:0,
-  home:true,storeys:true,walk,refreshPost,doors:leaves.api,
+  home:true,storeys:true,walk,refreshPost,doors:leaves.api,owned,dispose:()=>owned.forEach(prop=>prop.dispose()),
   /** Overhead surfaces start from the basement's ceiling, not the town's 1.9 m (render/indoor-camera.js). */
   ceilingsFrom:HOUSE_STOREY_FLOOR.B1+1.9,
   /** Which storeys to show for feet at (x, y, z) (game.js calls it as he moves). */
@@ -668,7 +669,7 @@ function furnishGround(s,{action,television,post}){
 
 // ---------------------------------------------------------------- the upper floor
 
-function furnishUpper(s,{action,sleep}){
+function furnishUpper(s,{action,sleep,owned}){
  const say=(title,text)=>()=>action('inspect',title,text);
  // Their bedroom: his futon laid out, Thuan's folded in the corner by day, the wardrobe and its mirror, her dresser.
  {const [x0,y0,x1,y1]=room('l1-bedroom'),fx=2.6,fy=2.6;
@@ -706,16 +707,27 @@ function furnishUpper(s,{action,sleep}){
   s.blk(x1-.8,y0,0,x1,y0+1.75,.55,0x7fb8c8);s.mesh(.6,1.55,.04,x1-.4,y0+.88,.5,0xbfe0e8,'Bath (ofuro)');s.solid(x1-.82,y0,x1,y0+1.77,0,.6);
   s.box(.32,.32,.25,10.2,1.2,.13,0xe9e2d0);s.box(.05,.4,.6,x0+.03,1.3,1.2,0xcfe0e6,{finish:'gloss'});s.rod([x0+.05,1.6,.9],[x0+.05,1.6,1.9],.015,0xc9cdd0);
   s.anchor(x1-1.1,1.0,1,'Run a bath',say('Ofuro','You run the bath deep and hot, wash first at the stool, then sit in it to the chin with the window open on the sea.'));}
- // The study: his desk at the east window, the bookshelf on the south wall, the ship's clock.
+ // The study: his desk at the east window, the bookshelf on the south wall, the ship's clock. Since 21 October 2026 it is
+ // also where the mayor's office went (the owner: "remove the mayors office and put it on the tropical island … or even
+ // rework it into one of the rooms in Johansson's house"): its computer, with the Community Hall's register on it, and
+ // the Merry Moose on its plinth by the door. He is the ship's chief engineer, not a mayor; the papers are the ship's.
  {const [x0,y0,x1,y1]=room('l1-study');
   s.blk(x1-.7,4.4,0,x1,6.1,.73,C.timberDark);s.solid(x1-.72,4.4,x1,6.1,0,.76);
-  s.box(.3,.4,.02,x1-.4,4.9,.75,0xf2efe6);s.box(.25,.15,.14,x1-.4,5.55,.8,0x638574);s.cyl(.02,.06,.4,x1-.25,4.55,.93,0x2b2b2b);
+  s.box(.3,.4,.02,x1-.4,4.75,.75,0xf2efe6);s.box(.25,.15,.14,x1-.4,5.55,.8,0x638574);s.cyl(.02,.06,.4,x1-.15,4.5,.93,0x2b2b2b);
+  // The office's 1990s computer: the beige CRT against the window, the keyboard in front of it, facing his chair.
+  s.mesh(.29,.34,.24,x1-.3,5.25,.85,0xd9d4b8,'CRT monitor casing');s.mesh(.015,.28,.18,x1-.452,5.25,.86,0x263c38,'CRT screen');
+  s.mesh(.13,.38,.025,x1-.6,5.25,.745,0xd8d4bb,'Keyboard');
   s.box(.45,.45,.04,x1-1.05,5.25,.45,C.timber);s.solid(x1-1.28,5.02,x1-.82,5.48,0,.48);
   shelves(s,8.7,10.4,y0,y0+.32,[.02,.57,1.12,1.68],0x8a6a4a,'y0');s.solid(8.7,y0,10.4,y0+.34,0,1.7);
   for(let i=0;i<27;i++)s.box(.06,.22,.26-(i%3)*.03,8.82+(i%9)*.17,y0+.15,.17+Math.floor(i/9)*.55-(i%3)*.015,C.book[(i*5)%6]);
-  s.anchor(9.55,y0+.7,1.2,'Look at the bookshelf',()=>action('read','Bookshelf','Sea charts of the Ryūkyū arc. A Swedish–Japanese dictionary with a cracked spine. Three Wallander paperbacks. The town budget for 1997, with coffee rings.'));
+  s.anchor(9.55,y0+.7,1.2,'Look at the bookshelf',()=>action('read','Bookshelf','Sea charts of the Ryūkyū arc. A Swedish–Japanese dictionary with a cracked spine. Three Wallander paperbacks. The Minato Maru\u2019s engine manuals, with coffee rings.'));
   s.cyl(.14,.14,.05,10.2,y1-.03,1.9,0xb8913f,{rx:Math.PI/2,segments:16});
-  s.anchor(x1-1.05,5.25,1.2,'Sit at the desk',say('Desk','The town’s papers in two piles, the radio on low, the ship’s clock striking the watch. He answers every letter the day it comes.'));}
+  s.anchor(x1-1.05,5.25,1.2,'Sit at the desk',say('Desk','The ship\u2019s papers in two piles: the engine log to sign and the parts to order for the Thursday ferry. The radio on low, the ship\u2019s clock striking the watch.'));
+  s.anchor(x1-.75,5.25,1.0,'Use the computer',()=>action('document-archive','Community Hall Document Register'));
+  // The Merry Moose, the island's good-luck moose, on its plinth in the corner by the door, where you see it coming in.
+  s.blk(8.54,y1-.6,0,8.96,y1-.18,.5,C.timberDark);s.solid(8.54,y1-.6,8.96,y1-.18,0,1.1);
+  owned.push(addOwnedCharacter({parent:s.group,kind:'merry_Moose',height:.6,position:s.at(8.75,y1-.39,.5),yaw:Math.PI/4}));
+  s.anchor(9.1,y1-.8,1.0,'Look at the Merry Moose',say('The Merry Moose','The island\u2019s good-luck moose. It stood by the mayor\u2019s desk at the town hall until the office went; the town gave it to Nils to keep. Thuan pats its nose on the way past; the paint there is wearing thin.'));}
  // The linen room and landing: shelves of sheets and towels in the far room, the airing rail under the landing window.
  {const z=houseRoom('l1-linen').zones,[ax0,ay0,ax1,ay1]=z[0],[bx0,by0,bx1,by1]=z[1];
   shelvesY(s,by0+.1,8.4,bx1-.5,bx1,[.02,.6,1.2,1.78],C.timberLight,'x1');s.solid(bx1-.52,by0,bx1,8.4,0,1.85);
