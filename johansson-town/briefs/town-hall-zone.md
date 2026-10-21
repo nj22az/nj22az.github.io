@@ -1,6 +1,6 @@
 # The town hall zone: remediation first, then four buildings
 
-Status: **phases R (#319) and M (#320) merged; phase S part 1 (buildings and ground) done 21 October 2026, waiting for the owner's look; part 2 (people, doors, stories) next.**
+Status: **phases R (#319), M (#320) and S part 1 (#321) merged; S part 2 (people, doors, stories) done 21 October 2026, waiting for the owner's OK.**
 
 The owner, 21 October 2026, with four phone photos (the beach at the end of the Kitahama lane, the yard under the
 fukugi by the car park, the hall's forecourt from the gate, the monument): "Could this zone be subdivided into individual
@@ -285,6 +285,24 @@ nobody staffs, the school named 港小学校 with the old 港小中学校 showin
 - **Checks:** the CI guard is green. `ground-quarters.test.mjs` checks the passages and the compound, and
   `sign-backs.test.mjs` knows the fence is a block screen, not a sign. Photos are in
   `docs/qa/town-hall-zone/compare/split-*`.
+
+### Phase S part 2, as done (21 October 2026)
+
+- **Doors and names:**
+  - the classroom's site is *Minato Elementary School*;
+  - the kitchen's door is the Community Hall's: *Community Hall · Kitchen*, "Go into the Community Hall", with the
+    register self-service and nobody at a counter;
+  - the clinic's is unchanged;
+  - photo captions read "in the school classroom" and "in the Community Hall", and the archive's opening records file
+    under *Minato School*.
+- **People:** no routine moved, because every door stands where it stood. Dr Kakazu, Miss Higa and the three pupils
+  walk to the same doors, and the passages give the Kitahama children the short way in from the north lane. Mrs
+  Nakamura is the hall's face in stories, with no new routine.
+- **Stories:** `feed/places.js` now has the school (Miss Higa, Vy, Riku, Mai) and the clinic (Dr Kakazu) as places of
+  their own, beside the Community Hall (`town-hall`). Each lists only things that are in its room. All three are
+  `captured:false` until their backdrops are taken on a computer that can run the game:
+  `node tools/render-feed-backdrops.mjs town-hall school clinic`. The storyteller sets no story in them until then.
+- **Checks:** the CI guard is green. `boot.test.mjs` still fails on its stale list of homes, as it does on main.
 
 ## 6. Order and gates
 
