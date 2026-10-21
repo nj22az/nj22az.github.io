@@ -41,8 +41,8 @@ def decks():
 
 def check():
     text = guide()
-    for stale in ('239 mA', '254 V fas mot skrov', 'friska faser 440 V mot skrov',
-                  '500 V och 0,4 mA', 'Nej, alla faser parallellt.'):
+    for stale in ('Kapacitans 1', 'Friskt nät:', 'Jordfel L1:',
+                  'Visar övervakningen den sämsta fasen?'):
         assert stale not in text, 'Old assessment explanation remains in protected guide'
     for required in ('2,5 MΩ', 'TN-system', 'TT-system', 'IT-nätet ombord',
                      'verifiera', 'Bedömningsgräns', 'Bekräftade villkor'):
@@ -62,8 +62,8 @@ def check():
                     assert a.read(name) == b.read(name), 'Visible slide changed'
         notes = '\n'.join(s.notes_slide.notes_text_frame.text for s in prs.slides)
         assert notes.count('Bedömningsgräns:') == len(prs.slides)
-        for stale in ('239 mA', '254 V fas mot skrov', 'friska faser 440 V mot skrov',
-                      '500 V och 0,4 mA', 'Nej, alla faser parallellt.'):
+        for stale in ('Kapacitans 1', 'Friskt nät:', 'Jordfel L1:',
+                      'Visar övervakningen den sämsta fasen?'):
             assert stale not in notes, 'Old assessment explanation remains in slide notes'
         if student.name.startswith('v44_01'):
             assert 'Ur guiden, IT-nätet ombord:' in prs.slides[8].notes_slide.notes_text_frame.text
@@ -82,7 +82,7 @@ if __name__ == '__main__':
             notes = '\n'.join(s.notes_slide.notes_text_frame.text for s in prs.slides)
             print(f'{student.stem}: published teacher slides={len(prs.slides)}, '
                   f'current student slides={len(Presentation(student).slides)}, '
-                  f'old guide example in notes={any(t in notes for t in ("239 mA", "500 V och 0,4 mA", "alla faser parallellt"))}')
+                  f'old guide example in notes={any(t in notes for t in ("Kapacitans 1", "Friskt nät:", "Visar övervakningen den sämsta fasen?"))}')
     else:
         before = public_snapshot()
         subprocess.run([sys.executable, str(SJO / 'verktyg/larare/lararmanus.py'), '44'], check=True)
