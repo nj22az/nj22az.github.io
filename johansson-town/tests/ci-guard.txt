@@ -37,5 +37,9 @@ sakura-rack-paths.test.mjs
 sakura-small-office.test.mjs
 sakura-stairs.test.mjs
 sakura-upstairs.test.mjs
+minato-compact.test.mjs
+izakaya-backbar.test.mjs
+izakaya-service-layout.test.mjs
+shared-dining-entry.test.mjs
 beach-shore.test.mjs
 johansson-study.test.mjs

@@ -1,4 +1,5 @@
 import {FURNITURE_HEIGHTS} from '../src/world/furniture-standards.js';
+import {MINATO_COMPACT} from '../src/world/interiors/minato-compact-plan.js';
 import {createIndoorResidents} from '../src/people/indoor-residents.js';
 import {RESIDENTS} from '../src/people/residents.js';
 import test from 'node:test';
@@ -65,15 +66,20 @@ test('Thuan visits after closing on alternate days and has off-duty conversation
 });
 
 
-test('izakaya exports load locally with bounded geometry and at most ten static draws',async()=>{
- for(const kind of ['exterior','interior']){const bytes=await readFile(new URL('../assets/models/izakaya/minato-'+kind+'.glb',import.meta.url));const gltf=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');let draws=0;gltf.scene.traverse(o=>{if(o.isMesh){draws++;assert.ok(o.geometry.attributes.position.array.every(Number.isFinite));}});assert.ok(draws<=10);const box=new THREE.Box3().setFromObject(gltf.scene),size=box.getSize(new THREE.Vector3());
-  // The interior carries Sato Ramen beside Minato, sharing its kitchen: 13 m of bar and 5 m of ramen shop.
-  assert.ok(size.x<=(kind==='interior'?18.2:13.1));assert.ok(size.z<=13.1);
+test('the active compact izakaya export stays within its fitted envelope and geometry budget',async()=>{
+ const previous={self:globalThis.self,bitmap:globalThis.createImageBitmap};globalThis.self=globalThis;
+ // Geometry retains its actual textured materials; pixels are inspected in the runtime.
+ globalThis.createImageBitmap=async()=>({width:2048,height:2048,close(){}});
+ try{for(const kind of ['exterior','interior']){const file=kind==='interior'?'minato-interior-compact.glb':'minato-exterior.glb',bytes=await readFile(new URL('../assets/models/izakaya/'+file,import.meta.url));const gltf=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');let draws=0,triangles=0;gltf.scene.traverse(o=>{if(o.isMesh){draws+=o.geometry.groups.length||1;triangles+=(o.geometry.index?.count??o.geometry.attributes.position.count)/3;assert.ok(o.geometry.attributes.position.array.every(Number.isFinite));}});assert.ok(draws<=(kind==='interior'?50:10),'bounded static material draws');const box=new THREE.Box3().setFromObject(gltf.scene),size=box.getSize(new THREE.Vector3());
+  const p=MINATO_COMPACT;
+  assert.ok(size.x<=(kind==='interior'?p.bounds.maxX-p.bounds.minX+2*p.wallThickness+.02:13.1));
+  assert.ok(size.z<=(kind==='interior'?p.bounds.maxZ-p.bounds.minZ+2*p.wallThickness+.02:13.1));
+  if(kind==='interior')assert.ok(triangles<=184126,'the compact room stays within the preceding fitted room’s triangle budget');
   if(kind==='interior'){gltf.scene.updateMatrixWorld(true);IZAKAYA_SEATS.forEach(([x,z],i)=>{
    const hits=new THREE.Raycaster(new THREE.Vector3(x,1.5,z),new THREE.Vector3(0,-1,0)).intersectObject(gltf.scene,true);
    assert.ok(hits.length);assert.ok(Math.abs(hits[0].point.y-FURNITURE_HEIGHTS.seat)<.015,'Runtime seat height matches the actual furniture');
   });}
-}
+ }}finally{globalThis.self=previous.self;globalThis.createImageBitmap=previous.bitmap;}
 });
 
 

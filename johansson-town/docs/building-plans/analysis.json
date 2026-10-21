@@ -807,59 +807,95 @@
   "id": "izakaya",
   "title": "Minato Izakaya",
   "kind": "shop",
-  "w": 17.4,
-  "h": 12.4,
-  "m2": 202.26,
-  "jo": 124.9,
-  "tsubo": 61.3,
-  "ceiling": 3.8,
+  "w": 9.94,
+  "h": 7.2,
+  "m2": 64.488,
+  "jo": 39.8,
+  "tsubo": 19.5,
+  "ceiling": 2.9,
   "moduleOff": null,
   "rooms": null,
   "roomSizes": [],
   "doors": null,
-  "missing": [
-   "counter",
-   "toilet"
-  ],
+  "missing": [],
   "measurement": {
-   "method": "runtime-layout-full-domain",
-   "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
+   "method": "compact-gltf-full-domain",
+   "source": "working-prototype:minato-compact-r8:sha256:9e240c025dd0bd2ac5b1a73e57497765332ccbabb33fed27ad71548de437100b",
+   "provenance": {
+    "status": "working prototype",
+    "plan": "art/izakaya/compact/plan.json",
+    "planRevision": 8,
+    "planSha256": "9e240c025dd0bd2ac5b1a73e57497765332ccbabb33fed27ad71548de437100b",
+    "asset": "assets/models/izakaya/minato-interior-compact.glb",
+    "assetSha256": "6a9aa12a6eabc20258304211d592f04ed137c04fad1b0df63f609b851f4f4fee",
+    "colliders": "src/world/interiors/shared-dining-layout.js",
+    "collidersSha256": "9c1e746757dd7a844cabf0b07c744eebed2f5528f251bbc32576a01ab617292b",
+    "blenderBuilder": "tools/blender/build-minato-compact.py",
+    "blenderBuilderSha256": "75c5de33a92a1e7d337e1fff877f252001a82b3326a4157d62fc1a9ec215ba9d",
+    "exportReport": "art/izakaya/compact/compact-report.json",
+    "exportReportSha256": "6ebad16105613b3e7a0b39cf4d79ae0a23801a8495240165d25e9f52762a31da"
+   },
    "bounds": {
-    "minX": -6.2,
-    "maxX": 11.2,
-    "minZ": -6.2,
-    "maxZ": 6.2
+    "minX": -4.08,
+    "maxX": 5.86,
+    "minZ": -3.75,
+    "maxZ": 3.45
    },
    "floorPolygon": [
     [
-     -6.2,
-     -6.2
+     -4.08,
+     -3.75
     ],
     [
-     11.2,
-     -6.2
+     2.32,
+     -3.75
     ],
     [
-     11.2,
-     3.5
+     2.32,
+     -1.75
     ],
     [
-     6.2,
-     3.5
+     5.86,
+     -1.75
     ],
     [
-     6.2,
-     6.2
+     5.86,
+     3.45
     ],
     [
-     -6.2,
-     6.2
+     -4.08,
+     3.45
     ]
    ],
-   "floorArea": null,
+   "floorArea": 64.411,
    "floorSampleStep": 0.2,
-   "floorMeshes": [],
-   "scope": "Shared Minato / Sato interior; same domain, not two independent areas"
+   "floorMeshes": [
+    "Datum floor · Minato_compact__room__Dark_grout",
+    "Datum floor · Minato_compact__room__Cedar_floor",
+    "Datum floor · Minato_compact__room__Quarry_tile"
+   ],
+   "floorGeometry": {
+    "method": "Upward datum triangles from actual GLB floor batches; mixed floor/furniture materials separated by world-space height and face direction",
+    "band": {
+     "minY": -0.15,
+     "maxY": 0.08
+    },
+    "batches": [
+     {
+      "sourceMesh": "Minato_compact__room__Dark_grout",
+      "upwardTriangles": 4
+     },
+     {
+      "sourceMesh": "Minato_compact__room__Cedar_floor",
+      "upwardTriangles": 288
+     },
+     {
+      "sourceMesh": "Minato_compact__room__Quarry_tile",
+      "upwardTriangles": 566
+     }
+    ]
+   },
+   "scope": "Shared Minato / Sato interior; the same domain appears at both entrances and is counted once. Sampled floor support is not net walkable area."
   }
  },
  {
@@ -884,60 +920,95 @@
   "id": "ramen",
   "title": "Sato Ramen",
   "kind": "shop",
-  "w": 17.4,
-  "h": 12.4,
-  "m2": 202.26,
-  "jo": 124.9,
-  "tsubo": 61.3,
-  "ceiling": 3.8,
+  "w": 9.94,
+  "h": 7.2,
+  "m2": 64.488,
+  "jo": 39.8,
+  "tsubo": 19.5,
+  "ceiling": 2.9,
   "moduleOff": null,
   "rooms": null,
   "roomSizes": [],
   "doors": null,
-  "missing": [
-   "counter",
-   "toilet",
-   "storage"
-  ],
+  "missing": [],
   "measurement": {
-   "method": "runtime-layout-full-domain",
-   "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
+   "method": "compact-gltf-full-domain",
+   "source": "working-prototype:minato-compact-r8:sha256:9e240c025dd0bd2ac5b1a73e57497765332ccbabb33fed27ad71548de437100b",
+   "provenance": {
+    "status": "working prototype",
+    "plan": "art/izakaya/compact/plan.json",
+    "planRevision": 8,
+    "planSha256": "9e240c025dd0bd2ac5b1a73e57497765332ccbabb33fed27ad71548de437100b",
+    "asset": "assets/models/izakaya/minato-interior-compact.glb",
+    "assetSha256": "6a9aa12a6eabc20258304211d592f04ed137c04fad1b0df63f609b851f4f4fee",
+    "colliders": "src/world/interiors/shared-dining-layout.js",
+    "collidersSha256": "9c1e746757dd7a844cabf0b07c744eebed2f5528f251bbc32576a01ab617292b",
+    "blenderBuilder": "tools/blender/build-minato-compact.py",
+    "blenderBuilderSha256": "75c5de33a92a1e7d337e1fff877f252001a82b3326a4157d62fc1a9ec215ba9d",
+    "exportReport": "art/izakaya/compact/compact-report.json",
+    "exportReportSha256": "6ebad16105613b3e7a0b39cf4d79ae0a23801a8495240165d25e9f52762a31da"
+   },
    "bounds": {
-    "minX": -6.2,
-    "maxX": 11.2,
-    "minZ": -6.2,
-    "maxZ": 6.2
+    "minX": -4.08,
+    "maxX": 5.86,
+    "minZ": -3.75,
+    "maxZ": 3.45
    },
    "floorPolygon": [
     [
-     -6.2,
-     -6.2
+     -4.08,
+     -3.75
     ],
     [
-     11.2,
-     -6.2
+     2.32,
+     -3.75
     ],
     [
-     11.2,
-     3.5
+     2.32,
+     -1.75
     ],
     [
-     6.2,
-     3.5
+     5.86,
+     -1.75
     ],
     [
-     6.2,
-     6.2
+     5.86,
+     3.45
     ],
     [
-     -6.2,
-     6.2
+     -4.08,
+     3.45
     ]
    ],
-   "floorArea": null,
+   "floorArea": 64.411,
    "floorSampleStep": 0.2,
-   "floorMeshes": [],
-   "scope": "Shared Minato / Sato interior; same domain, not two independent areas"
+   "floorMeshes": [
+    "Datum floor · Minato_compact__room__Dark_grout",
+    "Datum floor · Minato_compact__room__Cedar_floor",
+    "Datum floor · Minato_compact__room__Quarry_tile"
+   ],
+   "floorGeometry": {
+    "method": "Upward datum triangles from actual GLB floor batches; mixed floor/furniture materials separated by world-space height and face direction",
+    "band": {
+     "minY": -0.15,
+     "maxY": 0.08
+    },
+    "batches": [
+     {
+      "sourceMesh": "Minato_compact__room__Dark_grout",
+      "upwardTriangles": 4
+     },
+     {
+      "sourceMesh": "Minato_compact__room__Cedar_floor",
+      "upwardTriangles": 288
+     },
+     {
+      "sourceMesh": "Minato_compact__room__Quarry_tile",
+      "upwardTriangles": 566
+     }
+    ]
+   },
+   "scope": "Shared Minato / Sato interior; the same domain appears at both entrances and is counted once. Sampled floor support is not net walkable area."
   }
  }
 ]

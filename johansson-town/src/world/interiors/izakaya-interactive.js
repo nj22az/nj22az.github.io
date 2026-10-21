@@ -32,14 +32,14 @@ function screenTexture(){
  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;
 }
 
-export function buildIzakayaInteractive(room,{anchor,action,collider}){
- const P=PINK_PHONE,K=KARAOKE;
+export function buildIzakayaInteractive(room,{anchor,action,collider,layout={}}){
+ const P=layout.phone||PINK_PHONE,K=layout.karaoke||KARAOKE;
  buildIzakayaDevices(room,P,K);
  // The CRT and player controls both face the clear approach from the entry.
  const screen=new THREE.Mesh(new THREE.PlaneGeometry(.38,.25),new THREE.MeshBasicMaterial({map:screenTexture(),toneMapped:false}));
- screen.position.set(K.x-.009,K.h+.208,K.z-.208);screen.rotation.y=Math.PI;screen.name='Minato karaoke screen';room.add(screen);
+ screen.position.set(K.x-.009,(K.y||0)+K.h+.208,K.z-.208);screen.rotation.y=Math.PI;screen.name='Minato karaoke screen';room.add(screen);
  // The player's own bottle: hidden until they keep one (see setPlayerBottle).
- const S=KEEP_SHELF,mine=buildKeptBottleVisual();
+ const S=layout.keepShelf||KEEP_SHELF,mine=buildKeptBottleVisual();
  // At the end of the top board, past the regulars'.
  mine.position.set(S.x+.11,S.levels.at(-1),S.z+S.width/2-.05);room.add(mine);
  if(collider){collider(K.x,K.z,K.w,K.d,1.1);collider(P.x,P.z,.4,.26,1.3);}
@@ -47,11 +47,13 @@ export function buildIzakayaInteractive(room,{anchor,action,collider}){
   anchor([P.x,1.25,P.z-.6],'Use the pink telephone',()=>action('izakaya-phone'));
   anchor([S.x+.7,1.6,S.z],'Read the bottle-keep tags',()=>action('bottle-keep'));
   anchor([K.x-.55,1.0,K.z-.45],'Sing at the karaoke',()=>action('karaoke'));
-  for(const [cell,x,y,z,yaw] of MINATO_1997_POSTERS){
+  for(const [cell,x,y,z,yaw] of layout.posters||MINATO_1997_POSTERS){
    const n=new THREE.Vector3(Math.sin(yaw),0,Math.cos(yaw)),[title,text]=POSTER_LINES[cell];
    anchor([x+n.x*.45,Math.min(1.75,y),z+n.z*.45],'Read the '+title.split(' · ')[0]+' poster',()=>action('inspect',title,text));
   }
-  anchor([2.25,.8,5.3],'Pat the tanuki',()=>action('inspect','The tanuki','A potbellied tanuki in a straw hat, a sake flask in one paw and an unpaid bill in the other. Thao pats his belly on the way in every evening, for trade. So does Mr Fujita, once he has signed off, for luck.'));
+  const T=layout.tanuki||{x:2.25,y:0,z:5.78};
+  const scale=T.scale||1;
+  anchor([T.x,(T.y||0)+.8*scale,T.z-.48*scale],'Pat the tanuki',()=>action('inspect','The tanuki','A potbellied tanuki in a straw hat, a sake flask in one paw and an unpaid bill in the other. Thao pats his belly on the way in every evening, for trade. So does Mr Fujita, once he has signed off, for luck.'));
  }
  return {
   /** Shows the player's own bottle, tagged, once they keep one at the counter. */
