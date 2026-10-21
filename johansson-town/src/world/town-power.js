@@ -53,13 +53,15 @@ export function buildTownPower(world,{register,onAction,shadows=false}={}){
  for(const {a,b,sag} of strung)for(const i of SPAN_WIRES){if(!a.anchors[i]||!b.anchors[i])continue;const w=spanWire(a,b,i,sag);if(clear(w[0],w[1],w[2])){kit.wire(...w);wires.push(w);}else clipped.push(a.id+'>'+b.id+'#'+i);}
  for(const {pole:p,to} of planned?.drops||[])if(p.anchors.at(-1).distanceTo(new THREE.Vector3(...to))<14&&clear(p.anchors.at(-1).toArray(),to,.25))kit.wire(p.anchors.at(-1).toArray(),to,.25,.014,0x2b2a30);
  // Protected outgoing cable and switching gear at the plant, rather than wires with loose ends.
- const ph=SCHOOL.powerHouse;
- kit.box(.13,.85,.65,ph.maxX+.09,2.15,33.9,0x71807d);
- kit.rod([ph.maxX+.15,1.75,33.9],[ph.maxX+.15,.1,33.9],.05,0x586965);
+ // Both on the power house's east wall, either side of its steel doors (school.js, 1.9 m wide at ph.door): they stood at
+ // z 33.9 and 31, past the building's end (z 29.8), hung in the air over the yard.
+ const ph=SCHOOL.powerHouse,SW=ph.minZ+.8,BOARD=ph.maxZ-.9;
+ kit.box(.13,.85,.65,ph.maxX+.09,2.15,SW,0x71807d);
+ kit.rod([ph.maxX+.15,1.75,SW],[ph.maxX+.15,.1,SW],.05,0x586965);
  kit.rod([23.34,.1,32.1],[23.34,8.9,32.1],.045,0x2b2a30);
- kit.rod([ph.maxX+.15,-.45,33.9],[23.34,-.45,32.1],.065,0x2b2a30);
+ kit.rod([ph.maxX+.15,-.45,SW],[23.34,-.45,32.1],.065,0x2b2a30);
  kit.wire(new THREE.Vector3(23.34,8.9,32.1).toArray(),root.anchors[0].toArray(),.02,.025,0x2b2a30);
- kit.sign(poster({title:'港町発電所',lines:['MINATO POWER STATION','6.6 kV · 島内配電','Island distribution · 1997'],band:'#315c60',bg:'#e9e7d5'}),1.4,.85,ph.maxX+.08,2.35,31,{ry:Math.PI/2,name:'Power distribution board'});
+ kit.sign(poster({title:'港町発電所',lines:['MINATO POWER STATION','6.6 kV · 島内配電','Island distribution · 1997'],band:'#315c60',bg:'#e9e7d5'}),1.4,.85,ph.maxX+.08,2.35,BOARD,{ry:Math.PI/2,name:'Power distribution board'});
  kit.finish(group,'Island distribution equipment');
  const a=new THREE.Object3D();a.position.set(21,1.3,31);group.add(a);register?.(a,'Read the island power network',()=>onAction?.('read','Minato power station','The two diesel generators feed the island at 6,600 volts through a buried cable to the outgoing pole. The northern feeder serves the terminal and homes; the eastern feeder serves Kitahama and the eastern neighbourhood, and a buried cable runs up the hill to Aoba Radio. Pole transformers reduce the voltage for shops and houses. The station keeps a standby generator for storms.'));
  return {group,source:root.id,nodes,spans,wires,clipped,connected:connected().size};

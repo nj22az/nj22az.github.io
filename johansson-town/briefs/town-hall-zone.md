@@ -1,6 +1,6 @@
 # The town hall zone: remediation first, then four buildings
 
-Status: **plan, for the owner's approval. Nothing is built yet.**
+Status: **phase R done (21 October 2026), waiting for the owner's look; phases M and S not started.**
 
 The owner, 21 October 2026, with four phone photos (the beach at the end of the Kitahama lane, the yard under the
 fukugi by the car park, the hall's forecourt from the gate, the monument): "Could this zone be subdivided into individual
@@ -107,6 +107,40 @@ face.
 - the R tests are added and green, `node tools/ci-guard.mjs` is green, and `npm run build:runtime` is rebuilt;
 - the owner has seen photos from his four spots (the lane's end, the yard by the car park, the gate and the monument)
   before and after.
+
+### Phase R, as done (21 October 2026)
+
+The owner: "Do 1 first then sign when you are done". Before-and-after photos from the four spots and two high looks are
+in `docs/qa/town-hall-zone/` (`compare/` puts each pair side by side). They were taken by
+`tools/town-hall-zone-photos.mjs`: the real `createTown` scene with the cel and ink passes and the sea, at 390×844 under
+swiftshader. They are not from the full game or a phone, because the full game does not get past 0% loading in a cloud
+session.
+
+- **R1.** `beach-layout.js`: the Kitahama lawn's grade stops at the coastline (`BEACH_SHORE`), and every grade gives
+  way to the beach's own profile between the coastline and the water's edge. At the lane's corner the sand now meets
+  the water in a short bank of about 1:1, beside the coast's stone face. That bank is drawn at 10 cm there
+  (`east-lawn.js`), because coarse it showed as ink scratches. Guarded by `tests/beach-shore.test.mjs` (added to the CI
+  guard).
+- **R2.** `ocean.js`: the shore distance is stored as a square root, so the metre where the foam is drawn has steps
+  of about 7 cm instead of 31. The lace and the shore line are drawn with a narrow `smoothstep` instead of `step`.
+- **R3.** `ground-standard.js` `wetBlend`: the wet band blends over 6 cm of height (about 2 m of beach), and the
+  ground audit reads the same value.
+- **R4.** `ground-plan-quarters.js` `TOWN_HALL_GROUND.stone`: the yard is lawn, and rolled stone lies only on the
+  school playground, the front walk and the bicycle-shed walk. The ground audit stays empty, and
+  `ground-quarters.test.mjs` checks that every fukugi stands in turf.
+- **R5.** Every plate on the hall is Japanese through `SIGN_JAPANESE`: 港町役場・公民館 on the parapet and the
+  monument, 港町役場 on the gate, 玄関, the bay plates, and 港町発電所. The east bay is 医師住宅, the doctor's flat. The
+  flag reads みなと. The car-park lettering reads from the aisle. Read-prompt titles are plain English.
+- **R6.** The switch box and the distribution board are on the power house's east wall. A defect found in the
+  photos, **D11**: the day tank's fuel pipe ran 12 m through the air at hip height across the forecourt. It now runs
+  buried. **D10** (the verge at the seawall) does not show in any view and is left as it is: it is the turf under the
+  wall's thickness.
+
+Left for later:
+- A few ink specks remain at the very corner of the bank.
+- The broken foam line further out still reads as separate white dashes. That is the look's design, now without the
+  texel blocks.
+- The tan ground beside the monument is the school playground, kept on purpose until phase S.
 
 ## 4. Move the mayor's office to Kitano-jima (phase M)
 
