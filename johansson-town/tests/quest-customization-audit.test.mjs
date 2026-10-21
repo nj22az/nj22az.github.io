@@ -17,7 +17,9 @@ test('restoring a retired layout cannot change dialogue about the live peninsula
   acts.action('resident','Nhung');
   assert.ok(dom.has('Where do you live?'));
   dom.button('Where do you live?');
-  assert.match(document.querySelector('#activityBody').firstChild.textContent,/Front-Row Yard/);
+  // Nhung lives at 3 Kitahama with Kōji and Riku since the cast consolidation (johansson-town/AGENTS.md, phase 3; 1 Front-Row
+  // Yard was removed in phase 4; docs/CAST-CONSOLIDATION.md).
+  assert.match(document.querySelector('#activityBody').firstChild.textContent,/3 Kitahama/);
   assert.doesNotMatch(document.querySelector('#activityBody').firstChild.textContent,/commute|leave by bus/i);
  }
 });
