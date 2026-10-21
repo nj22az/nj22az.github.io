@@ -166,7 +166,13 @@ const {rectanglesSeparated}=require('./layout-acceptance.cjs');
  // Linux residents: all named characters can be selected, with their own beds and schedules.
  console.log('Controls and layout passed; testing residents');
  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.setTime(60));await page.locator('#desktopTabs [data-tab=people]').click();
- assert.deepEqual(await page.locator('[data-person]').evaluateAll(nodes=>nodes.map(node=>decodeURIComponent(node.dataset.person)).sort()),expectedNames,'People lists exactly the consolidated live cast');await page.evaluate(()=>Promise.all([...document.querySelectorAll('.console-roster img')].filter(img=>img.getBoundingClientRect().top<innerHeight).map(img=>img.decode())));await page.screenshot({path:path.join(out,'08-character-roster.png')});
+ assert.deepEqual(await page.locator('[data-person]').evaluateAll(nodes=>nodes.map(node=>decodeURIComponent(node.dataset.person)).sort()),expectedNames,'People lists exactly the consolidated live cast');await page.waitForFunction(()=>{
+  // Re-query after layout/lazy loading settles; decode() on a one-shot list can
+  // reject an image whose lazy request is not the currently visible portrait.
+  const content=document.getElementById('desktopContent').getBoundingClientRect();
+  const images=[...document.querySelectorAll('.console-roster img')].filter(img=>{const box=img.closest('.console-portrait').getBoundingClientRect();return box.bottom>Math.max(0,content.top)&&box.top<Math.min(innerHeight,content.bottom);});
+  return images.length>0&&images.every(img=>img.complete&&img.naturalWidth>0);
+ });await sampled();await page.screenshot({path:path.join(out,'08-character-roster.png')});
  await page.locator('[data-person="Thuan"]').click();await page.waitForFunction(()=>window.johanssonLinuxWorld?.inBed&&!window.johanssonLinuxWorld.busy);
  assert.equal(await page.evaluate(()=>window.__JOHANSSON_MODEL__.avatar.recipe.name),'Thuan');
  await sampled();await page.screenshot({path:path.join(out,'09-thuan-own-bed.png')});await tap(0);assert.equal(await page.evaluate(()=>window.johanssonLinuxWorld.inBed),false,'A gets out of bed');// Exits are offered near the door; B is not a teleport from the bedside.
@@ -212,5 +218,5 @@ const {rectanglesSeparated}=require('./layout-acceptance.cjs');
  fs.writeFileSync(path.join(out,'results.json'),JSON.stringify({passed:true,errors,missing:[...new Set(missing)],blockedRemote:remote.length},null,2));
  assert.deepEqual(errors,[],'No page errors');assert.deepEqual([...new Set(missing)].filter(p=>p!=='/favicon.ico'),[],'No missing packaged files');
  console.log(JSON.stringify({passed:true,errors,missing:[...new Set(missing)],blockedRemote:remote.length,out}));
- } catch(error) {if(page){await page.screenshot({path:path.join(out,'failure.png')}).catch(()=>{});console.log('FAILURE_STATE',await page.evaluate(()=>({desktop:window.johanssonDesktopUI?.snapshot(),boot:document.getElementById('bootStatus')?.textContent,fatal:document.getElementById('fatal')?.textContent})).catch(()=>({})));}throw error;} finally {await browser.close();await new Promise(resolve=>server.close(resolve));}
+ } catch(error) {if(page){await page.screenshot({path:path.join(out,'failure.png')}).catch(()=>{});console.log('FAILURE_STATE',await page.evaluate(()=>({desktop:window.johanssonDesktopUI?.snapshot(),boot:document.getElementById('bootStatus')?.textContent,fatal:document.getElementById('fatal')?.textContent,portraits:[...document.querySelectorAll('.console-roster img')].map(img=>({src:img.currentSrc,complete:img.complete,width:img.naturalWidth}))})).catch(()=>({})));}throw error;} finally {await browser.close();await new Promise(resolve=>server.close(resolve));}
 })().catch(error=>{console.error(error);process.exitCode=1;});
