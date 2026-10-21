@@ -3,6 +3,8 @@ import {SHARED_DINING_BOUNDS} from '../world/interiors/shared-dining-layout.js';
 import {createRoomWalk} from './room-walk.js';
 import {buildServingDish,buildServingDrink,buildServingBite} from './izakaya-serving-visuals.js';
 import * as THREE from '../../vendor/three.module.js';
+import {createBarRound} from './izakaya-bar.js';
+import {BUDGET} from '../edition.js';
 
 /**
  * Beer at Minato: order it at your table, Thao pours it and brings it over, you drink it
@@ -47,25 +49,43 @@ export const NAO_STATION=Object.freeze([...MINATO_COMPACT.staff.position]);
  * Where the player can sit, and where Thao stands to serve that seat. `table` is the spot
  * on the table in front of the player; `serve` is Thao's floor spot beside it.
  */
-const plan=MINATO_COMPACT,booth=plan.booth;
+const plan=MINATO_COMPACT,booth=plan.booth,S=plan.staff;
+/**
+ * Where Thao stands to set a drink down, and where it goes. Her arm is short (her shoulder is 0.93 m up and her
+ * reach 0.4 m) and the counter and the worktop together are 1.2 m deep, so nothing is handed across them: she comes
+ * round the end of the counter (`route`), steps in beside you (`close`) and sets it down within her reach. At the
+ * counter that is beside the stool, between it and the next one (0.41 m apart); at the booth, at the table's nearer end.
+ */
+const COUNTER_EDGE=plan.counter.position[2]+plan.counter.depth/2;
+const way=to=>[[S.endX,S.aisleZ],[S.endX,plan.counterStandZ],to];
+const counterService=x=>({close:[x+.4,COUNTER_EDGE+.18],route:way([x+.4,plan.counterStandZ])});
+function boothService(x,z){
+ const right=x>=booth.position[0],end=booth.position[0]+(right?1:-1)*booth.tableWidth/2;
+ return {spotX:end-(right?1:-1)*.25,close:[end+(right?1:-1)*.15,z],route:way([booth.standX[right?1:0],z])};
+}
 const boothSeat=(id,row,label)=>{
  const x=booth.seatX[1],z=booth.benchZ[row],topZ=booth.position[2]+(row===0?-1:1)*booth.tableDepth*.2,serveX=booth.standX[1];
- const drinkZ=booth.position[2]+(row===0?-1:1)*(booth.tableDepth/2-.07);
+ const drinkZ=booth.position[2]+(row===0?-1:1)*(booth.tableDepth/2-.07),service=boothService(x,drinkZ);
  return Object.freeze({id,label,position:[x,0,z],stand:[serveX,0,z],surfaceY:plan.seatHeight,eyeY:row===0?1.14:1.2,yaw:row===0?Math.PI:0,
-  table:[x+(row===0?-.15:.15),booth.tableTop,drinkZ],dish:[x+(row===0?.15:-.15),booth.tableTop,topZ],serve:[serveX,0,topZ],
-  route:[[plan.staff.endX,plan.staff.aisleZ],[plan.staff.endX,plan.counterStandZ],[serveX,topZ]],
+  table:[service.spotX,booth.tableTop,drinkZ],dish:[x+(row===0?.15:-.15),booth.tableTop,topZ],serve:[serveX,0,topZ],
+  route:service.route,close:service.close,
  });
 };
 export const IZAKAYA_PLAYER_SEATS=Object.freeze({
  table:boothSeat('table',0,'Sit at the table'),
  window:boothSeat('window',1,'Sit and enjoy the evening'),
- // The five counter stools, among the regulars. Thao serves these across the counter
- // from the kitchen side, so their route never leaves the working aisle.
+ // The five counter stools, among the regulars.
  ...Object.fromEntries(plan.counterStools.map((x,i)=>['counter'+i,Object.freeze({id:'counter'+i,label:'Sit at the counter',counter:true,
   position:[x,0,plan.counterSeatZ],stand:[x,0,plan.counterStandZ],surfaceY:plan.seatHeight,eyeY:1.32,yaw:0,
-  table:[x+.15,plan.counter.top,plan.counter.position[2]+plan.counter.depth/2-.06],dish:[x-.12,plan.counter.top,plan.counter.position[2]+plan.counter.depth*.25],
-  serve:[x,0,plan.staff.counterPassZ],route:[[x,plan.staff.counterPassZ]]})])),
+  table:[x+.15,plan.counter.top,COUNTER_EDGE-.06],dish:[x-.12,plan.counter.top,plan.counter.position[2]+plan.counter.depth*.25],
+  serve:[x+.4,0,COUNTER_EDGE+.18],...counterService(x)})])),
 });
+
+/** Thao's way to a resident's place, and the spot she can set their glass down on (IZAKAYA_PLAYER_SEATS). */
+export function serviceFor(table){
+ if(table[2]<booth.position[2]-booth.tableDepth){const x=plan.counterStools.reduce((a,b)=>Math.abs(b-table[0])<Math.abs(a-table[0])?b:a);return {table:[x+.15,plan.counter.top,COUNTER_EDGE-.06],...counterService(x)};}
+ const service=boothService(table[0],table[2]);return {table:[service.spotX,booth.tableTop,table[2]],route:service.route,close:service.close};
+}
 
 /** A drink as a small prop: a mug with a head, a brown bottle and glass, a can, a tumbler. */
 /**
@@ -79,6 +99,8 @@ function pour(g,liquid,head,height,radius){
  for(let i=0;i<points;i++){const a=i*2.4,r=radius*(.25+.7*((i*37)%10)/10);positions[i*3]=liquid.position.x+Math.cos(a)*r;positions[i*3+1]=bottom+((i*0.31)%1)*height;positions[i*3+2]=Math.sin(a)*r;rise.push(.012+((i*13)%7)*.004);}
  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.BufferAttribute(positions,3));
  const bubbles=new THREE.Points(geometry,new THREE.PointsMaterial({color:0xfff2c4,size:.0035,transparent:true,opacity:.8,depthWrite:false}));bubbles.name='Beer bubbles';
+ // Decoration only: points catch any ray within a metre by default (three.js), so a glass's bubbles never stop one.
+ bubbles.raycast=()=>{};
  g.add(bubbles);
  g.userData.pour={liquid,head,bottom,height,headHeight:head.geometry.parameters.height,bubbles,rise};
 }
@@ -143,8 +165,9 @@ export function disposeServing(prop){
  * @param {(x:number,z:number,r:number)=>boolean} options.blocked
  * @param {(text:string,seconds?:number)=>void} [options.say]
  */
-export function createBeerService({room,getNao,blocked=()=>false,bounds=SHARED_DINING_BOUNDS,say=()=>{}}){
- let order=null,drink=null,dish=null,served=0,sipLease=null;
+export function createBeerService({room,getNao,blocked=()=>false,bounds=SHARED_DINING_BOUNDS,say=()=>{},bar=null,full=BUDGET.pouring}){
+ // `order` is what Thao is doing now: your order, or a resident's drink (`request`) from the queue behind it.
+ let order=null,waiting=null,drink=null,dish=null,served=0,sipLease=null;const queue=[];
  const radius=.3,walker=createRoomWalk((x,z,r)=>blocked(x,z,r),{bounds,smoothTurn:true,radius});
  let walkingPerson=null,stalled=0;
  function resetWalk(){walker.clear();walkingPerson=null;stalled=0;}
@@ -185,10 +208,12 @@ export function createBeerService({room,getNao,blocked=()=>false,bounds=SHARED_D
  const clearProp=slot=>{if(slot){slot.prop.removeFromParent();slot.prop.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose?.();}});}};
  function clearDrink(){if(sipLease)sipLease.cancel();clearProp(drink);drink=null;}
  function clearDish(){clearProp(dish);dish=null;}
+ const stepTo=(g,[x,z],dt)=>{const dx=x-g.position.x,dz=z-g.position.z,d=Math.hypot(dx,dz);if(d<.005){g.position.x=x;g.position.z=z;return true;}g.rotation.y=Math.atan2(-dx,-dz);const k=Math.min(1,dt*.5/d);g.position.x+=dx*k;g.position.z+=dz*k;return false;};
  const face=(g,x,z)=>{g.rotation.y=Math.atan2(-(x-g.position.x),-(z-g.position.z));};
  const station=()=>[NAO_STATION[0],NAO_STATION[2]];
- function serve(kind,seat){
-  if(DRINKS[kind]){clearDrink();const prop=createDrinkProp(kind);prop.position.set(...seat.table);prop.rotation.y=seat.yaw||0;room.add(prop);drink={kind,left:DRINKS[kind].sips,prop};}
+ function serve(kind,seat,carried=null){
+  // The glass she carried is the one on the table; only the opening scene's drink is already there (serveNow).
+  if(DRINKS[kind]){clearDrink();const prop=carried||createDrinkProp(kind);if(!carried){prop.position.set(...seat.table);prop.rotation.y=seat.yaw||0;room.add(prop);}else setPropPortion(prop,1,{immediate:true});drink={kind,left:DRINKS[kind].sips,prop};}
   else{clearDish();const prop=createDishProp(kind);prop.position.set(...(seat.dish||seat.table));room.add(prop);dish={kind,left:DISHES[kind].bites,prop};}
   served++;
  }
@@ -209,29 +234,48 @@ export function createBeerService({room,getNao,blocked=()=>false,bounds=SHARED_D
   };
   sipLease=lease;return lease;
  }
+ /** The next job: your order first, then the residents' drinks in the order they asked. */
+ function start(nao){
+  if(order||!nao)return;const job=waiting||queue.shift();if(!job)return;if(job===waiting)waiting=null;
+  resetWalk();const spec=menuItem(job.kind),dishOrder=!!DISHES[job.kind];
+  order={...job,staff:nao,phase:dishOrder?'cooking':'making',timer:dishOrder?spec.cook:0,path:dishOrder?[[KITCHEN_STATIONS[spec.station][0],KITCHEN_STATIONS[spec.station][2]]]:null};
+  if(!dishOrder)order.round=createBarRound({kind:job.kind,bar,room,staff:nao,walk,full,cancelled:()=>!!order?.cancelled});
+  nao.userData.playerService=true;nao.userData.socialPose=dishOrder?'Use':undefined;if(!dishOrder)delete nao.userData.socialPose;
+  nao.userData.activity=dishOrder?'cooking '+spec.en+' for you':'making '+spec.en.toLowerCase()+(job.player?' for you':'');
+ }
+ function finishRound(){order?.round?.finish();}
+ /** She has gone (closing, the room rebuilt): what is in her hands goes back, and nobody waits. */
+ function drop(staff){order?.round?.dispose();release(staff);resetWalk();if(order&&!order.player)order.onServed?.(null);order=null;waiting=null;for(const job of queue.splice(0))job.onServed?.(null);}
  return {
-  /** The drink or dish on its way, if any. */
-  get pending(){return order?{kind:order.kind,phase:order.phase}:null;},
+  /** Your drink or dish on its way, if any (waiting while she finishes someone else's). */
+  get pending(){const mine=order?.player?order:waiting;return mine?{kind:mine.kind,phase:mine===order?order.phase:'waiting'}:null;},
   get drink(){return drink?{kind:drink.kind,left:Math.max(0,Math.ceil(drink.left-1e-8)),sips:DRINKS[drink.kind].sips}:null;},
   get sipping(){return !!sipLease;},
   beginSip,
   get dish(){return dish?{kind:dish.kind,left:dish.left,bites:DISHES[dish.kind].bites}:null;},
   get served(){return served;},
+  /** What she is doing now, for tests and the audit: the job's kind, phase and the bar round's step. */
+  get working(){return order?{kind:order.kind,phase:order.phase,step:order.round?.step||null,player:!!order.player,
+   close:order.phase==='making'?!!order.round?.close:['stepping','placing','bowing','leaving'].includes(order.phase)}:null;},
   /**
-   * Ask for a drink or a dish at this seat. False if Thao is not here or something is
-   * already on its way. A drink she pours where she stands; a dish she cooks at its
-   * station in the kitchen first.
+   * Ask for a drink or a dish at this seat. False if Thao is not here or yours is already on its way. A drink she
+   * makes from where it is kept (izakaya-bar.js); a dish she cooks at its station in the kitchen first.
    */
   order(kind,seat){
    const spec=menuItem(kind),nao=getNao();
-   if(!spec||!seat||order||sipLease||!nao)return false;
-   resetWalk();
-   const dishOrder=!!DISHES[kind];
-   order={kind,seat,staff:nao,phase:dishOrder?'cooking':'pouring',timer:dishOrder?spec.cook:spec.pour,path:dishOrder?[[KITCHEN_STATIONS[spec.station][0],KITCHEN_STATIONS[spec.station][2]]]:null};
-   nao.userData.playerService=true;nao.userData.socialPose='Use';
-   nao.userData.activity=dishOrder?'cooking '+spec.en+' for you':'pouring '+spec.en.toLowerCase()+' for you';
+   if(!spec||!seat||order?.player||waiting||sipLease||!nao||DRINKS[kind]&&!bar)return false;
+   waiting={kind,seat,player:true};if(!order)start(nao);
    return true;
   },
+  /**
+   * A resident's drink: `kind` a drink of the menu, `table` where it goes, `onServed(prop)` with the glass she sets
+   * down. False when she is not working the room. `tag` cancels it (they have gone).
+   */
+  request({kind,table,tag=null,onServed}){
+   const nao=getNao();if(!DRINKS[kind]||!bar||!nao)return false;
+   queue.push({kind,seat:serviceFor(table),tag,onServed});if(!order)start(nao);return true;
+  },
+  cancel(tag){for(let i=queue.length-1;i>=0;i--)if(queue[i].tag===tag)queue.splice(i,1);if(order&&order.tag===tag)order.cancelled=true;},
   /** One sip. Returns what is left, or null with nothing on the table. */
   sip(){
    const sip=beginSip();if(!sip)return null;sip.consume(1);return sip.finish();
@@ -249,35 +293,49 @@ export function createBeerService({room,getNao,blocked=()=>false,bounds=SHARED_D
    if(drink)updatePropPortion(drink.prop,dt);if(dish)updatePropPortion(dish.prop,dt);
    if(!order)return;
    const nao=getNao();
-   if(!nao){release(order.staff);resetWalk();order=null;return;}
-   const spec=menuItem(order.kind),{seat}=order;
+   if(!nao){drop(order.staff);return;}
+   const spec=menuItem(order.kind),{seat}=order,u=nao.userData,glass=!!order.round;
    if(order.phase==='cooking'){
     // To the station, then the dish itself: the fire, the pot, the knife.
-    if(order.path.length){delete nao.userData.socialPose;walk(nao,order.path,dt);return;}
-    nao.userData.socialPose='Use';
-    if((order.timer-=dt)<=0){order.path=[...(seat.counter?[]:[station()]),...seat.route].map(p=>[...p]);order.phase='carrying';nao.userData.heldItem='tray';delete nao.userData.socialPose;nao.userData.carrying=true;nao.userData.activity='bringing your '+spec.en.replace(/^(a|an|the) /,'');}
-   }else if(order.phase==='pouring'){
-    nao.userData.socialPose='Use';
-    if((order.timer-=dt)<=0){order.path=seat.route.map(p=>[...p]);order.phase='carrying';nao.userData.heldItem=order.kind==='oolong'?'tea':'beer';delete nao.userData.socialPose;nao.userData.carrying=true;nao.userData.activity='bringing your drink';}
+    if(order.path.length){delete u.socialPose;walk(nao,order.path,dt);return;}
+    u.socialPose='Use';
+    if((order.timer-=dt)<=0){order.path=seat.route.map(p=>[...p]);order.phase='carrying';u.heldItem='tray';delete u.socialPose;u.carrying=true;u.activity='bringing your '+spec.en.replace(/^(a|an|the) /,'');}
+   }else if(order.phase==='making'){
+    // From the rack, the tap, the back bar or the cold store to the glass in her hand (izakaya-bar.js).
+    if(order.round.update(dt)){
+     if(order.cancelled||!order.round.drink){finishRound();order.path=[station()];order.phase='returning';u.activity='back to the counter';return;}
+     order.round.carry();order.path=seat.route.map(p=>[...p]);order.phase='carrying';u.activity=order.player?'bringing your drink':'bringing a drink over';
+    }
    }else if(order.phase==='carrying'){
-    delete nao.userData.socialPose;
+    delete u.socialPose;
     const to=DRINKS[order.kind]?seat.table:(seat.dish||seat.table);
-    if(walk(nao,order.path,dt)){face(nao,to[0],to[2]);order.phase='placing';order.timer=1.1;nao.userData.socialPose='CarryIdle';}
+    if(walk(nao,order.path,dt)){if(seat.close)order.phase='stepping';else{face(nao,to[0],to[2]);order.phase='placing';order.timer=1.1;if(glass)order.round.placeAt(to);else u.socialPose='CarryIdle';}}
+   }else if(order.phase==='stepping'){
+    // In beside the place, a short straight step clear of the stools and the bench (the places are tested).
+    const to=DRINKS[order.kind]?seat.table:(seat.dish||seat.table);
+    if(stepTo(nao,seat.close,dt)){face(nao,to[0],to[2]);order.phase='placing';order.timer=1.1;if(glass)order.round.placeAt(to);else u.socialPose='CarryIdle';}
+   }else if(order.phase==='leaving'){
+    if(stepTo(nao,seat.route.at(-1),dt)){order.path=[...seat.route.slice(0,-1).reverse(),station()].map(p=>[...p]);order.phase='returning';u.activity='back to the counter';}
    }else if(order.phase==='placing'){
     if((order.timer-=dt)<=0){
-     serve(order.kind,seat);
-     delete nao.userData.heldItem;delete nao.userData.carrying;nao.userData.socialPose='Greet';
-     say('Thao: '+spec.line,4);order.phase='bowing';order.timer=.9;
+     const to=DRINKS[order.kind]?seat.table:(seat.dish||seat.table),prop=glass?order.round.letGo(to):null;
+     if(glass)finishRound();
+     if(order.player)serve(order.kind,seat,prop);else if(prop&&order.cancelled)disposeServing(prop);else order.onServed?.(prop);
+     delete u.heldItem;delete u.carrying;u.socialPose='Greet';
+     if(order.player)say('Thao: '+spec.line,4);order.phase='bowing';order.timer=.9;
     }
    }else if(order.phase==='bowing'){
-    if((order.timer-=dt)<=0){delete nao.userData.socialPose;order.path=[...seat.route.slice(0,-1).reverse(),station()].map(p=>[...p]);order.phase='returning';nao.userData.activity='back to the counter';}
+    if((order.timer-=dt)<=0){delete u.socialPose;if(seat.close){order.phase='leaving';return;}order.path=[...seat.route.slice(0,-1).reverse(),station()].map(p=>[...p]);order.phase='returning';u.activity='back to the counter';}
    }else if(order.phase==='returning'){
-    delete nao.userData.socialPose;
-    if(walk(nao,order.path,dt)){nao.rotation.set(0,Math.PI,0);release(nao);resetWalk();order=null;}
+    delete u.socialPose;
+    if(walk(nao,order.path,dt)){
+     // Back at her station she tops up the rack from the glass washer, and takes the next order.
+     nao.rotation.set(0,Math.PI,0);bar?.restock();release(nao);resetWalk();order=null;start(nao);
+    }
    }
   },
   /** Leaving the room: drop the order and anything on the table. */
-  clear(){const nao=getNao()||order?.staff;if(order&&nao){nao.position.set(...NAO_STATION);nao.rotation.set(0,Math.PI,0);release(nao);}resetWalk();order=null;clearDrink();clearDish();},
+  clear(){const nao=getNao()||order?.staff;if(order){order.round?.dispose();if(nao){nao.position.set(...NAO_STATION);nao.rotation.set(0,Math.PI,0);release(nao);}}resetWalk();order=null;waiting=null;queue.length=0;clearDrink();clearDish();},
   /** Only for tests and a room rebuild: put a served drink straight on the table. */
   place(kind,seat){serve(kind,seat);}
  };

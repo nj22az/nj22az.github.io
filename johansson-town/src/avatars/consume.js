@@ -53,13 +53,14 @@ function aim(bone,child,target){
  const q=new THREE.Quaternion().setFromUnitVectors(from,target.clone().sub(start).normalize()).multiply(bone.getWorldQuaternion(new THREE.Quaternion()));
  bone.quaternion.copy(bone.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(q));bone.updateWorldMatrix(false,true);
 }
-/** Two-bone reach: the hand of `side` ('R' or 'L') to a world point, the elbow out and down. */
-export function reach(avatar,target,side='R'){
+/** Two-bone reach: the hand of `side` ('R' or 'L') to a world point, the elbow out and down (`lift` raises it, or is
+ * the elbow's whole direction in the body's frame). */
+export function reach(avatar,target,side='R',lift=-.25){
  const b=avatar.bones,shoulder=b['shoulder'+side],elbow=b['elbow'+side],hand=b['hand'+side];
  const start=shoulder.getWorldPosition(new THREE.Vector3());
  const a=start.distanceTo(elbow.getWorldPosition(new THREE.Vector3())),length=elbow.getWorldPosition(new THREE.Vector3()).distanceTo(hand.getWorldPosition(new THREE.Vector3()));
  const dir=target.clone().sub(start),d=THREE.MathUtils.clamp(dir.length(),Math.abs(a-length)+.0001,a+length-.0001);dir.normalize();
- const pole=new THREE.Vector3(side==='R'?-1:1,-.25,0).transformDirection(avatar.root.matrixWorld);
+ const pole=(Array.isArray(lift)?new THREE.Vector3(...lift):new THREE.Vector3(side==='R'?-1:1,lift,0)).transformDirection(avatar.root.matrixWorld);
  pole.addScaledVector(dir,-pole.dot(dir)).normalize();
  const along=(a*a-length*length+d*d)/(2*d),height=Math.sqrt(Math.max(0,a*a-along*along));
  aim(shoulder,elbow,start.clone().addScaledVector(dir,along).addScaledVector(pole,height));
