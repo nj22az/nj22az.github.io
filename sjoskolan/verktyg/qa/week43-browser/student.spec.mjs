@@ -90,7 +90,7 @@ test('holding-circuit lab and PDF handoff need no invented Classroom link', asyn
   await page.getByRole('button', {name: /Ny felmodul/}).click();
   await expect(page.locator('#labbprotokoll')).toBeVisible();
   await page.locator('.school-nav a[href="/sjoskolan/vecka-43/aktuell/"]').click();
-  await page.getByRole('link', {name: 'Öppna inlämningen', exact: true}).click();
+  await page.getByLabel('Hela veckan', {exact: true}).getByRole('link', {name: 'Öppna inlämningen', exact: true}).click();
   // Synthetic answers only: exercise marking and download without solving or uploading assessed work.
   await page.locator('#ri-820b-ns').fill('123');
   await page.locator('#ri-820a-text').fill('TEST ONLY: synthetic submission evidence.');
