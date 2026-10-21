@@ -1,10 +1,10 @@
 import {createActingPanel} from './acting/panel.js?v=20261016-1';
 import {createPerformancePanel} from './performance-panel.js?v=20261017-1';
-import {openCreator} from '../johansson-town/src/avatars/creator.js?v=20261020-motion';
+import {openCreator} from '../johansson-town/src/avatars/creator.js?v=20261021-pose';
 import {ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/src/avatars/cast.js';
 import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js';
 import {normalizeRecipe,decodeRecipe} from '../johansson-town/src/avatars/recipe.js';
-import {createSceneWorkspace} from './scene.js?v=20261020-vi';
+import {createSceneWorkspace} from './scene.js?v=20261021-pose';
 import {createWorldPanel} from './world-panel.js?v=20261011-1';
 import {createHomeWorkspace} from './home.js?v=20261011-1';
 import {createModelWorkspace} from './model.js?v=20261020-workshop';
@@ -35,6 +35,7 @@ function save(recipe){
  catch{status.textContent='Browser storage is unavailable. Use Download design to save your character.';}
 }
 
+let currentPose=null;
 let currentRecipe=shared||restored||recipeFor('Johansson'),editor=null,workspace=null,home=null,model=null,rooms=null,worldLibrary=null,switching=false,editingId=null;
 const modes=document.createElement('nav');modes.className='studio-modes';modes.setAttribute('aria-label','Johansson Studio modes');
 for(const [id,label] of [['character','Edit character'],['home','Decorate home'],['scene','Build scene'],['comic','Make comic'],['model','Make model'],['rooms','Edit room'],['library','World library']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.mode=id;b.onclick=()=>switchMode(id);modes.append(b);}
@@ -43,19 +44,20 @@ function switchMode(mode,{focus=true}={}){
  if(mode!=='rooms')rooms?.hide();
  if(mode!=='library')worldLibrary?.hide();
  if(editor&&mode==='character'){editor.creator.goTo('look');return;}
- if(editor){currentRecipe=editor.creator.recipe;switching=true;editor.cleanup();editor.creator.close();editor=null;switching=false;}
+ if(editor){currentRecipe=editor.creator.recipe;currentPose=editor.creator.pose;switching=true;editor.cleanup();editor.creator.close();editor=null;switching=false;}
  if(mode==='character'){workspace?.hide();home?.hide();model?.hide();editor=createCharacterEditor();}
  else if(mode==='home'){workspace?.hide();model?.hide();home??=createHomeWorkspace();home.show();}
  // Make model: every asset in a library, checked and saved for World, a printer or a picture; the Lathe maker (model.js)
  else if(mode==='model'){workspace?.hide();home?.hide();model??=createModelWorkspace();model.show();}
  else if(mode==='library'){workspace?.hide();home?.hide();model?.hide();rooms?.hide();worldLibrary??=createWorldLibrary({onOpen:async e=>{if(e.access==='model'){if(e.id.startsWith('home:')){switchMode('rooms');await rooms.show();await rooms.addWorldAsset(e);}else{switchMode('model');await model.open(e.id);}}else{switchMode('scene');if(e.access==='character')workspace.useCharacter(recipeFor(e.name),null);else workspace.setLocation(e.id.slice(9));}},onRoomModel:async e=>{switchMode('rooms');await rooms.show();await rooms.addWorldAsset(e);}});worldLibrary.show();}
  else if(mode==='rooms'){workspace?.hide();home?.hide();model?.hide();rooms??=createRoomWorkspace({onScene:async id=>{switchMode('scene');workspace.setLocation(id);}});rooms.show();}
- else{home?.hide();model?.hide();workspace??=createSceneWorkspace({getCharacter:()=>currentRecipe,onMode:switchMode,onEdit:(recipe,id)=>{currentRecipe=recipe;editingId=id;switchMode('character');}});if(editingId){workspace.useCharacter(currentRecipe,editingId);editingId=null;}workspace.show(mode);}
+ else{home?.hide();model?.hide();workspace??=createSceneWorkspace({getCharacter:()=>currentRecipe,onMode:switchMode,onEdit:(recipe,id,customPose)=>{currentRecipe=recipe;currentPose=customPose;editingId=id;switchMode('character');}});if(editingId){workspace.useCharacter(currentRecipe,editingId,currentPose);editingId=null;}workspace.show(mode);}
  for(const b of modes.children)b.setAttribute('aria-pressed',String(b.dataset.mode===mode));
  if(focus)modes.querySelector(`[data-mode="${mode}"]`)?.focus({preventScroll:true});
 }
 function createCharacterEditor(){
 const creator=openCreator({recipe:currentRecipe,templates,startAt:'look',keepOpenOnSave:true,saveLabel:'Save character',shareLink:code=>new URL('./?r='+code,location.href).href,onSave:save,onClose:recipe=>{currentRecipe=recipe;if(!switching)location.href='/#projects';}});
+if(currentPose)creator.setPose(currentPose);
 document.getElementById('loading')?.remove();
 creator.root.setAttribute('aria-label','Johansson Studio');
 creator.root.querySelector('canvas').setAttribute('aria-label','Your character. Drag to turn.');
@@ -131,7 +133,7 @@ creator.root.addEventListener('pointerdown',event=>{if(!preview.contains(event.t
 // Model export is an advanced file action; composition stays prominent.
 const modelExport=creator.root.querySelector('.shm-poses button');
 if(modelExport){modelExport.textContent='Download 3D model (.glb)';fileMenu.append(modelExport);}
-const addToScene=button(editingId?'Apply to scene':'Use in scene',()=>{const recipe=creator.recipe;const id=editingId;switchMode('scene');workspace.useCharacter(recipe,id);editingId=null;},true);
+const addToScene=button(editingId?'Apply to scene':'Use in scene',()=>{const recipe=creator.recipe;const customPose=creator.pose;const id=editingId;switchMode('scene');workspace.useCharacter(recipe,id,customPose);editingId=null;},true);
 // Studio hides the maker's four-step footer; personality needs an explicit, visible route here.
 const profileButton=button('Personality & voice',()=>creator.goTo(creator.root.dataset.step==='profile'?'look':'profile'));
 const syncProfile=()=>{const active=creator.root.dataset.step==='profile';profileButton.textContent=active?'Appearance':'Personality & voice';profileButton.setAttribute('aria-pressed',String(active));featureReset.hidden=active;if(active)creator.root.querySelector('.shm-part-title').textContent='Personality & voice';};
