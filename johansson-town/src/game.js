@@ -1545,7 +1545,7 @@ function placeAtEntrance(s,leave=false){
  */
 let dungeonRun=null,dungeonHud='';
 const DUNGEON_FOG=new THREE.Fog(0x070605,5,17);
-const DUNGEON_SITE={id:'dungeon',title:'The Old Sea Cave',jp:"Old Cave",get sub(){return 'FLOOR B'+(dungeonRun?.floor||1);},get line(){return dungeonHud;},
+const DUNGEON_SITE={id:'dungeon',title:'The Old Sea Cave',jp:japaneseSign("Old Cave"),get sub(){return 'FLOOR B'+(dungeonRun?.floor||1);},get line(){return dungeonHud;},
  exitPosition:[CAVE_MOUTH.x,0,CAVE_MOUTH.z-1.1],entryFacing:Math.PI,arrival:()=>null};
 function enterDungeon(){
  if(current||roomLoading)return;
