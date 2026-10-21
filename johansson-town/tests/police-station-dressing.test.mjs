@@ -47,3 +47,11 @@ test('station dressing at dry morning, rain and patrol time has no flashing face
   assert.deepEqual(found.map(f=>`${f.a} | ${f.b}: ${f.area.toFixed(3)} at ${f.at} normal ${f.normal}`),[],String([m,rain]));
  }
 });
+
+test('entrance nameplate is compact below the canopy, and the complete canopy sign clears its concrete cap',()=>{
+ const plate=ps.group.getObjectByName('Station door plate'),fascia=ps.group.getObjectByName('Station entrance canopy sign');
+ assert.ok(plate&&fascia);assert.ok(plate.geometry.parameters.height<1.3,'no long blank tail under four characters');
+ assert.ok(plate.position.y+plate.geometry.parameters.height/2<2.4,'space below canopy and red lamp');
+ assert.ok(5.7-.72-(fascia.position.x+fascia.geometry.parameters.depth/2)>=.006,'the sign backing clears the cap by at least 6 mm');
+ assert.ok(fascia.material[4].map&&!fascia.material[5].map,'the emblem and name share one lettered face, with a plain back');
+});

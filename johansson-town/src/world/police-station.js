@@ -43,12 +43,18 @@ const nameBoard=()=>paint(1280,128,(ctx,w,h)=>{
  ctx.font=`bold 84px ${SERIF}`;ctx.fillText(japaneseSign('Minato Police Station'),150,h/2+4);
  ctx.font=`bold 30px ${SANS}`;ctx.textAlign='right';ctx.fillText('MINATO',w-40,h*.3);ctx.fillText('POLICE STATION',w-40,h*.72);
 });
-/** The vertical plate beside the doors, brush black on white wood: 沖縄県港警察署. */
-const doorPlate=()=>paint(128,768,(ctx,w,h)=>{
+/** Four evenly spaced characters on a four-character plate: no obsolete seven-character blank tail. */
+const doorPlate=()=>paint(128,512,(ctx,w,h)=>{
  ctx.fillStyle='#f3efe4';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#6b5a40';ctx.lineWidth=10;ctx.strokeRect(5,5,w-10,h-10);
- const chars=[...japaneseSign('Minato Police Station')],size=Math.min(92,Math.floor((h-60)/chars.length));
+ const chars=[...japaneseSign('Minato Police Station')],pitch=(h-48)/chars.length,size=Math.min(96,pitch*.84);
  ctx.fillStyle='#16181c';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`bold ${size}px ${SERIF}`;
- chars.forEach((c,i)=>ctx.fillText(c,w/2,34+size*.5+i*size));
+ chars.forEach((c,i)=>ctx.fillText(c,w/2,24+(i+.5)*pitch));
+});
+/** The canopy fascia is a complete enamel sign, with its emblem and lettering on the same face. */
+const entranceSign=()=>paint(1024,128,(ctx,w,h)=>{
+ ctx.fillStyle='#27304d';ctx.fillRect(0,0,w,h);emblem(ctx,92,h/2,39);
+ ctx.fillStyle='#f4f3ee';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`bold 84px ${SERIF}`;
+ ctx.fillText(japaneseSign('Minato Police Station'),620,h/2+3,650);
 });
 /** Over the counter window: the police box's own sign, 交番 and KOBAN, kept when the box came down. */
 const kobanSign=()=>paint(512,176,(ctx,w,h)=>{
@@ -104,11 +110,16 @@ export function buildPoliceStation(world,options){
  kit.block(west-.02,west-.005,P,P+2.1,e0,e1,C.glass,'glow');
  for(const z of [e0,doorZ,e1])kit.block(west-.05,west+.01,P,P+2.16,z-.04,z+.04,C.alu,'metal');
  kit.block(west-.05,west+.01,P+2.1,P+2.18,e0-.04,e1+.04,C.alu,'metal');
- kit.block(west-.06,west+.01,P+.95,P+1.0,e0+.08,e1-.08,C.alu,'metal');
+ // Two actual pull handles, clear of the glazing, rather than a rail across both panes.
+ for(const z of [doorZ-.13,doorZ+.13]){
+  kit.rod([face-.105,1.03,z],[face-.105,1.29,z],.016,C.alu,{finish:'metal'});
+  for(const y of [1.04,1.28])kit.rod([face-.04,y,z],[face-.105,y,z],.012,C.alu,{finish:'metal'});
+ }
  kit.block(face-.55,face,0,P-.01,doorZ-.8,doorZ+.8,C.slab);
- // The canopy over the doors, so a visitor shuts an umbrella in the dry; its navy fascia matches the skirting.
- kit.block(face-1.0,face,2.6,2.72,doorZ-1.0,doorZ+1.0,C.slab);kit.block(face-1.03,face-.97,2.5,2.74,doorZ-1.03,doorZ+1.03,C.navy);
- kit.sign(paint(128,128,(c)=>{c.fillStyle='#27304d';c.fillRect(0,0,128,128);emblem(c,64,64,38);}),.18,.18,face-1.06,2.62,doorZ,{ry:-Math.PI/2,depth:.012,name:'Canopy Asahikage',edge:C.navy});
+ // A concrete rain hood with a visible cream cap above the enamel fascia. The old tall navy lip hid the slab
+ // and read as a flat bar; this cap projects 72 cm and the complete sign stands 15 mm clear of its front edge.
+ kit.block(face-.72,face,2.62,2.78,doorZ-.91,doorZ+.91,C.slab);
+ kit.sign(entranceSign(),1.76,.18,face-.75,2.65,doorZ,{ry:-Math.PI/2,depth:.03,name:'Station entrance canopy sign',edge:C.navy});
  // The counter window: a sliding pane with a ledge outside, where you ask the way or hand in a wallet without
  // coming in. It is the police box's job, and the 交番 sign over it is the police box's sign.
  const w0=winZ-S.window.half,w1=winZ+S.window.half;
@@ -122,7 +133,7 @@ export function buildPoliceStation(world,options){
  kit.sign(stationNoticeTexture(),N.z1-N.z0,N.y1-N.y0,face-.09,(N.y0+N.y1)/2,(N.z0+N.z1)/2,{ry:-Math.PI/2,name:'Station notice board',depth:.01,edge:C.timber});
  kit.block(face-.2,face,N.y1+.04,N.y1+.08,N.z0-.08,N.z1+.08,C.navy);
  // The station's plate, brush lettering on white wood, beside the doors on the corner side.
- kit.sign(doorPlate(),.3,1.8,face-.03,P+1.75,doorZ+1.08,{ry:-Math.PI/2,name:'Station door plate',edge:0x6b5a40});
+ kit.sign(doorPlate(),.3,1.18,face-.045,1.68,doorZ+1.08,{ry:-Math.PI/2,name:'Station door plate',edge:0x6b5a40});
  // Upstairs, Officer Mori's two windows over the street (window-interior.js paints a room behind them).
  for(const z of [16.5,19.7]){kit.block(west-.02,west-.012,4.0,5.2,z-.9,z+.9,C.glass,'window');kit.block(face-.18,face,3.92,3.98,z-.98,z+.98,C.slab);for(const zz of [z-.92,z,z+.92])kit.block(west-.05,west,3.98,5.22,zz-.03,zz+.03,C.alu,'metal');}
  // The name board, high on the street face where it reads from the bus stop and from halfway up Main Street.
