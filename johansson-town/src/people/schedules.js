@@ -1,4 +1,5 @@
 import {pierFishOfItem} from '../world/okinawa/fish.js';
+import {sitOnStand,standUpFromStand,seatedOn} from './stand-seat.js';
 import {TOWN_DESTINATIONS} from '../world/town-grid.js';
 import {soberUp} from './drunk.js';
 import {ONSEN_DOOR,ONSEN_ENTRY_RADIUS} from '../world/onsen-layout.js';
@@ -32,11 +33,13 @@ function standOnPoint(g,stand,dt){
  if(stand){
   const diff=Math.atan2(Math.sin(stand.yaw-g.rotation.y),Math.cos(stand.yaw-g.rotation.y));
   g.rotation.y+=Math.max(-dt*2.6,Math.min(dt*2.6,diff));
-  if(Math.abs(diff)<.05){u.socialPose=stand.pose||'Idle';if(stand.tool)u.tool=stand.tool;else delete u.tool;u.standPose=true;}
+  if(Math.abs(diff)<.05){u.socialPose=stand.pose||'Idle';if(stand.tool)u.tool=stand.tool;else delete u.tool;u.standPose=true;sitOnStand(g,stand);}
   return;
  }
+ standUpFromStand(g);
  if(u.standPose){delete u.socialPose;delete u.tool;delete u.standPose;}
 }
+
 export const DIALOGUE={
  Thuan:[['hello',"Welcome.\nWelcome to Sakura Shōten. Take your time; the kettle has only just boiled."],['pink',"This shirt is my favorite.\nThis yellow flower set is my favourite. My aunt says the shop is easier to find when I stand outside."],['work',"Afternoon stocking has finished.\nThe afternoon shelves are ready. Cold tea is in the cooler; postcards are beside the biscuits."],['harbour',"Would you like to take a walk to the port?\nWalking to the harbour? The light turns the water pink just before supper."],['catalogue',"Click here for the order form.\nThe mail-order book is on the counter. I keep those orders separate from the daily till."]],
  Nhung:[['books','The Swedish engineer keeps leaving historical novels here as if they were spare parts.'],['shelf','Six books. The shelf has requested a structural assessment.'],['century','Which century did you like? The seventeenth leaks through the shutters.','book'],['job','So he does have a real job. I assumed he only wrote about captains.','cv'],['cat','Tama has not read them. He reviews the binding by sleeping on it.'],['rain','Please leave the rain outside. The histories have enough disasters.'],['chair','The window chair is free. Twenty seconds of peace is an excellent bargain.'],['water','The harbour office tray is towards the water. Documents, not treasure.']],
@@ -379,9 +382,9 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     move(p,yieldTarget,dt,'yield-thuan');
    }else if(!g.userData.indoors&&!g.userData.usingTownObject&&!g.userData.chatHold&&!(g.userData.facePlayerUntil>performance.now())&&!(tag==='escort'&&g.position.distanceTo(player.position)>6)){
     // Unseen and out of reach on the web (people/attention.js), they keep the timetable without walking it.
-    if(attends(g)||!settle(g,target,tag))move(p,target,dt,tag,plan.pace,plan.stand?STAND_STOP:0);
+    if(!seatedOn(g,plan.stand)&&(attends(g)||!settle(g,target,tag)))move(p,target,dt,tag,plan.pace,plan.stand?STAND_STOP:0);
    }
-   standOnPoint(g,plan.stand&&!yieldTarget&&!g.userData.usingTownObject&&!g.userData.chatHold&&Math.hypot(g.position.x-target[0],g.position.z-target[1])<STAND_STOP+.02?plan.stand:null,dt);
+   standOnPoint(g,plan.stand&&!yieldTarget&&!g.userData.usingTownObject&&!g.userData.chatHold&&(seatedOn(g,plan.stand)||Math.hypot(g.position.x-target[0],g.position.z-target[1])<STAND_STOP+.02)?plan.stand:null,dt);
    // Playing (social.js sistersAtPlay): once both are there, they turn to each other,
    // keep their eyes on each other and play; until then, whoever is first waits.
    const partner=plan.play?world.people.find(q=>q.profile?.name===plan.play):null;

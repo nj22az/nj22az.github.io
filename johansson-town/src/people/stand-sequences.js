@@ -78,6 +78,14 @@ export const STAND_SEQUENCES=Object.freeze(Object.fromEntries([
   pt(-29.0,9.5,W,[300,900],'taking the dry net down off the east rail','the east rail, the long net',{pose:'Interact'}),
   pt(-28.5,10.6,S,[120,300],'stacking the fish boxes for the morning','the fish boxes, out of the rails’ way',{pose:'Interact'}),
  ]),
+ // ── The coin laundry's morning round (world frame; commerce/coin-laundry.js LAUNDRY_KEEPER) ──
+ // The room's own points (coin-laundry-dressing.js LAUNDRY_ROUND_POINTS) as numbers, so this list loads no building.
+ seq('laundry-round','world','Ms Ganaha','The keeper’s hour before the mailbag: the room swept, the dryers’ lint filters cleared, the coin boxes emptied for the bank, the powder box filled and the board’s notices put up, as a coin laundry that runs itself is kept.',[
+  pt(-10.1,20.6,W,[180,420],'sweeping the coin laundry’s floor','the middle of the room, from the door back: the night’s sand comes in on everybody’s sandals',{pose:'Sweep',tool:'broom'}),
+  pt(-11.6,21.7,S,[300,600],'emptying the washers’ coin boxes into a cloth bag','in front of the washers, whose coin boxes open with her key under each lid',{pose:'Interact'}),
+  pt(-11.85,19.75,N,[300,600],'clearing the dryers’ lint filters','in front of the two gas dryers, whose filters choke by morning',{pose:'Interact'}),
+  pt(-12.45,20.95,W,[120,300],'pinning up the new notices','the noticeboard over the bench, where the street reads while its washing goes round',{pose:'Interact'}),
+ ]),
  // ── The harbour agent's round of the quay (world frame) ──
  seq('harbour-round','world','Harbour master','Between the lunch and the evening boat Jack walks the quay with the freight book: the sailing list, the boats’ lines, the fuel and the east quay’s boats.',[
   pt(5.0,-45.0,E,[120,300],'checking the sailing list under the canopy','the timetable poster on the hall’s pier between the tower and the glass (port-building.js), which he keeps up to date, clear of the hall’s doors',{pose:'Think'}),

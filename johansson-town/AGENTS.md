@@ -172,6 +172,35 @@ to a unified system? Pavement? Walk paths, grass and sandy beach?" (the plan app
   ran in steps, each merged after the owner saw photos: (2) Main Street and the harbour; (3) Kitahama, Nishi, the
   neighbourhood and the school; (4) the beach, the coast, the park and the lawns, which emptied the baseline.
 
+## Owner's decision — 21 October 2026: Higa Liquor and the coin laundry, kept by the cast
+
+The owner, on his phone: "I see the liquor store looks abhorrent too, and the laundromat how can we bring them more life
+and interactivity and who should work in the liquor store do we have enough people" (the plan approved: "Yes go on").
+No new people; everything below is data first (`src/commerce/higa-liquor.js`, `src/commerce/coin-laundry.js`,
+`src/people/shop-days.js`), the buildings dressed from it (`src/world/okinawa/higa-liquor-dressing.js`,
+`coin-laundry-dressing.js`).
+
+- **Higa Liquor's staff.** Grandmother Higa keeps the counter 09:00–12:00 and 17:00–20:00, round the Umi-no-yu bandai
+  (13:00–17:00); between the openings the doors are shut and a hand-written 留守 · 5時に戻ります card hangs on the door
+  ("Out. Back at five."); the shutter is down from 20:00 to 09:00. Yui (Miss Higa) minds the counter on Saturdays; that
+  day her grandmother keeps the morning for the garden and stays on at the bandai until 20:00, and Yui takes the bandai
+  from 20:00.
+- **Higa Liquor's deliveries.** Kōji drives the shop's round in his white kei truck on his weeks ashore, paid by the round
+  (¥1,500): Tuesdays and Fridays Minato, Sato Ramen and the Coral Bay Bar's ice boxes up the ferry's ramp; Saturdays
+  Sakura; from 10:30, between the ice plant and his sleep. His weeks aboard as the bosun's relief are unchanged: then
+  the customers collect (Thao in Minato's truck, Thuan with Sakura's trolley). Mr Fujita's six o'clock crate at the pier
+  root stays a standing order of its own.
+- **The yuntaku bench.** A bench and two beer-crate stools in front of the shop, sat on in the evening opening by the
+  men whose days allow it: Tetsuo (18:30–20:00, between the bath boiler's checks) and Mac (19:30–20:00, before his one
+  beer at Minato). Mr Fujita's crate stays empty: he is sober on the bridge until 22:20 (the consolidation's ruling).
+- **The coin laundry's keeper** is Ms Ganaha, who lives nearest with a free morning (Kitahama Heights B): her round
+  08:00–09:30, before the mailbag, sweeping, clearing the filters, emptying the coin boxes and pinning the notices.
+  Officer Mori, as near, may not keep a business and sleeps after the night patrol; Tetsuo, as near, has no free hour,
+  and mends the machines when asked. The laundry is open 24 hours; Thao washes the family's futon covers on Sundays
+  14:15–15:45, Ms Uezu brings the crew cabin's linen ashore on the first day of her week off, Dr Kakazu washes on
+  Wednesday nights; its noticeboard carries the street's story hooks (the missing cat, the found sandal, the lessons)
+  and the town calendar's week.
+
 ## Verification
 
 Use focused geometry, collision, navigation and schedule checks. For runtime changes run `npm run build:runtime` and `node --test tests/runtime-package.test.mjs`. Check real pedestrian and overhead views, including mobile, wherever a GPU browser is available; state when physical-device or visual checks are unavailable. Do not claim screenshots or tests that were not performed.

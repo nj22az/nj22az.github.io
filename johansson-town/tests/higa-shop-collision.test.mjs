@@ -4,16 +4,20 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {createKit,trs} from '../src/world/okinawa/kit.js';
 import {shopHouse} from '../src/world/okinawa/houses.js';
+import {HIGA_FRAME} from '../src/world/okinawa/higa-liquor-dressing.js';
 import {createWalkSurface} from '../src/world/walk-surface.js';
 import {canStepBetween,standingHitsRect,sweepFraction} from '../physics.js';
 
+// Higa Liquor is a room you walk into since 21 October 2026 (higa-liquor-dressing.js): the counter across the back, the
+// 一升瓶 shelves up the police-station wall, the cold case and the jars on the Kitano Road wall, the family kusu behind
+// the counter. Its fittings are drawn and collide in the same frame, standing on the 8 cm floor.
 installDOM();
-const w=5.6,d=7.7,D=d/2,back=D-2.2,floor=.08;
-const higaFrame={x:9.55,z:8.75,y:0,yaw:-Math.PI/2};
+const w=HIGA_FRAME.W*2,d=HIGA_FRAME.D*2,D=HIGA_FRAME.D,floor=HIGA_FRAME.floor;
+const higaFrame={x:HIGA_FRAME.origin[0],z:HIGA_FRAME.origin[1],y:0,yaw:-Math.PI/2};
 function build(frame=higaFrame,interior='liquor'){
  const kit=createKit(),group=new THREE.Group(),matrix=trs(frame.x,frame.y,frame.z,0,frame.yaw);
  let colliders;
- kit.at(frame.x,frame.z,frame.yaw,()=>{colliders=shopHouse(kit,{w,d,interior,seed:41});},frame.y);
+ kit.at(frame.x,frame.z,frame.yaw,()=>{colliders=shopHouse(kit,{w,d,interior,seed:41,awning:false});},frame.y);
  kit.finish(group);group.updateMatrixWorld(true);
  return {group,colliders,
   point:(x,y,z)=>new THREE.Vector3(x,y,z).applyMatrix4(matrix),
@@ -22,26 +26,25 @@ function build(frame=higaFrame,interior='liquor'){
 const higa=build();
 const near=(actual,expected,label)=>assert.ok(Math.abs(actual-expected)<1e-5,`${label}: ${actual} versus ${expected}`);
 
-test('the shelf entered during the MCP walk is now solid in Higa’s actual rotated frame',()=>{
- const shelf=higa.colliders.find(c=>c.id==='liquor-shelves');
- assert.ok(shelf);
- assert.equal(standingHitsRect(7.46037,8.75,.28,floor,shelf),true);
+test('the counter, the shelves, the cold case, the jars and the kusu are solid in Higa’s rotated frame',()=>{
+ for(const id of ['liquor-counter','liquor-shelves','liquor-fridge','liquor-kame','liquor-kusu','liquor-back-shelf'])assert.ok(higa.colliders.some(c=>c.id===id),id);
  const counter=higa.colliders.find(c=>c.id==='liquor-counter');
- assert.equal(standingHitsRect(6.7,8.75,.28,floor,counter),true);
- assert.equal(higa.colliders.filter(c=>c.id==='liquor-pot').length,2);
+ const at=higa.point(-1,0,-.45);assert.equal(standingHitsRect(at.x,at.z,.28,floor,counter),true);
+ const shelf=higa.colliders.find(c=>c.id==='liquor-shelves'),s=higa.point(1.87,0,2.2);
+ assert.equal(standingHitsRect(s.x,s.z,.28,floor,shelf),true);
 });
 
-test('drawn shelf and counter faces match their colliders after rotation and elevation',()=>{
+test('drawn counter and shelf faces match their colliders after rotation and elevation',()=>{
  for(const frame of [higaFrame,{x:-12,z:3,y:.7,yaw:.37},{x:2,z:-4,y:0,yaw:0}]){
   const shop=frame===higaFrame?higa:build(frame);
-  for(const [id,y] of [['liquor-shelves',floor+2.26],['liquor-counter',floor+.98]]){
+  // [collider, where the ray starts (local), which way it looks (local)]
+  for(const [id,from,dir] of [['liquor-counter',[-1.0,floor+.5,D-.5],[0,0,-1]],['liquor-shelves',[0,floor+1.01,2.2],[1,0,0]]]){
    const collider=shop.colliders.find(c=>c.id===id);
-   const ray=new THREE.Raycaster(shop.point(0,y,D+.5),shop.direction(0,0,-1));
+   const ray=new THREE.Raycaster(shop.point(...from),shop.direction(...dir));
    const hit=ray.intersectObject(shop.group,true)[0];
    assert.ok(hit,`${id}: a real drawn face is present`);
-   const front=shop.direction(0,0,1);
-   const clear=hit.point.clone().addScaledVector(front,.30);
-   const overlap=hit.point.clone().addScaledVector(front,.26);
+   const back=shop.direction(...dir).negate();
+   const clear=hit.point.clone().addScaledVector(back,.30),overlap=hit.point.clone().addScaledVector(back,.26);
    assert.equal(standingHitsRect(clear.x,clear.z,.28,frame.y+floor,collider),false,`${id}: clearance in front of the visible face`);
    assert.equal(standingHitsRect(overlap.x,overlap.z,.28,frame.y+floor,collider),true,`${id}: touching the visible face is blocked`);
    near(collider.minY,frame.y+floor,`${id} starts at the finished floor`);
@@ -49,30 +52,36 @@ test('drawn shelf and counter faces match their colliders after rotation and ele
  }
 });
 
-test('the open recess has one visible 8 cm floor and a stepable approach from the street',()=>{
+test('the shop floor is one visible 8 cm floor, stepped onto from the street',()=>{
  const customer=higa.point(0,0,D-.1);
  const ray=new THREE.Raycaster(new THREE.Vector3(customer.x,.7,customer.z),new THREE.Vector3(0,-1,0));
  const floorHit=ray.intersectObject(higa.group,true)[0];
  assert.ok(floorHit);
- near(floorHit.point.y,floor,'the former 30 cm plinth no longer hides the tiles');
+ near(floorHit.point.y,floor,'the floor is drawn at 8 cm');
  const walk=createWalkSurface({minX:4,maxX:14,minZ:5,maxZ:13,base:()=>0,cell:.05});
  walk.add(higa.group);
  near(walk.lift(customer.x,customer.z),floor,'feet use the drawn floor height');
  let previous=0;
- for(let x=4.8;x<=6.001;x+=.05){
-  const y=walk.lift(x,8.75);
+ for(let x=4.8;x<=9.2;x+=.05){
+  const y=walk.lift(x,8.4);
   assert.ok(canStepBetween(previous,y),`walkable threshold at x=${x}`);
-  assert.ok(y<=floor+1e-5,'furniture is not sampled as a walkable floor');
+  assert.ok(y<=floor+.02+1e-5,'nothing but the floor and the door’s 2 cm sill is underfoot');
   previous=y;
  }
 });
 
-test('the customer reaches the counter from the pavement and stops before walking through it',()=>{
+test('the customer walks in through the doorway to the counter and stops before walking through it',()=>{
  const blocked=(x,z)=>higa.colliders.some(c=>standingHitsRect(x,z,.28,floor,c));
- assert.equal(sweepFraction({x:4.8,z:8.75},{x:6,z:8.75},blocked,.04),1);
- assert.ok(sweepFraction({x:6,z:8.75},{x:7.46037,z:8.75},blocked,.04)<.1,
-  'the actual counter stops the old walk through the fittings');
- assert.equal(sweepFraction({x:6,z:8.75},{x:4.8,z:8.75},blocked,.04),1);
+ assert.equal(sweepFraction({x:4.8,z:8.4},{x:9.2,z:8.4},blocked,.04),1,'in through the doors to the counter');
+ assert.ok(sweepFraction({x:9.2,z:8.4},{x:11,z:8.4},blocked,.04)<.2,'the counter stops the walk through the fittings');
+ assert.ok(sweepFraction({x:4.8,z:6.7},{x:7,z:6.7},blocked,.04)<1,'the fixed pane beside the door is glass, not air');
+ assert.equal(sweepFraction({x:9.2,z:8.4},{x:4.8,z:8.4},blocked,.04),1);
+});
+
+test('the keeper reaches her place behind the counter round its open end',()=>{
+ const blocked=(x,z)=>higa.colliders.some(c=>standingHitsRect(x,z,.3,floor,c));
+ const legs=[[9.2,9.9],[10.9,9.9],[10.85,8.5]];let from={x:9.2,z:8.4};
+ for(const [x,z] of legs){assert.equal(sweepFraction(from,{x,z},blocked,.04),1,`clear to ${x}, ${z}`);from={x,z};}
 });
 
 test('the other shop-house types keep their three shell colliders and open customer fronts',()=>{

@@ -63,6 +63,19 @@ export const FEED_PLACES=Object.freeze([
   doing:['buying a ticket for the half past two','reading the departures board','collecting a parcel from the shelf','studying the map of the strait','waiting on the hall bench for the last boat','asking when the next boat is','posting a letter before half past four'],
   activity:{hold:['can','coffee'],chance:.5,sit:.45},
   shot:{room:'ferry-terminal',time:840}},
+ // Higa Liquor and the coin laundry (the owner, 21 October 2026; commerce/higa-liquor.js, commerce/coin-laundry.js): their
+ // regulars are the people the data puts there, their things are in the rooms, and the laundry's noticeboard is where the
+ // street's story hooks are pinned (LAUNDRY_NOTICES). Street shots, waiting for `render-feed-backdrops.mjs higa-liquor coin-laundry`.
+ {id:'higa-liquor',name:'Higa Liquor',short:'Higa Liquor',kind:'shop',regulars:['Grandmother Higa','Miss Higa','Kōji','Tetsuo','Mac'],captured:false,
+  things:['the counter and its abacus','the delivery book','the family kusu that is not for sale','the “back at five” card on the door','the cold case','the awamori jars','the crates of empties','the bench out front','the crate stools','the sugidama'],
+  doing:['buying a bottle for a visit','reading the delivery book upside down','asking the price of the old jar','loading the round into the kei truck','sitting on the bench with a bottle','waiting for the shop to open at five','counting the empties back'],
+  activity:{hold:['bottle','can'],chance:.6,sit:.4},
+  shot:{at:[3.3,8.4],camera:{pos:[-1.5,1.7,4.5],at:[7.5,1.8,8.8]},time:1110}},
+ {id:'coin-laundry',name:'the coin laundry',short:'the laundry',kind:'shop',regulars:['Ms Ganaha','Thao','Ms Uezu','Dr Kakazu'],captured:false,
+  things:['the noticeboard','the missing-cat notice','the found blue sandal','the manga shelf','the vinyl bench','the change machine','dryer 2, which eats coins','the folding counter','the powder box','a basket of somebody’s washing'],
+  doing:['waiting for the spin','reading a manga on the bench','pinning up a notice','folding warm towels at the window','feeding coins into the dryer','reading the noticeboard','emptying the coin boxes'],
+  activity:{hold:['can','coffee'],chance:.35,sit:.5},
+  shot:{at:[-6.2,20.6],camera:{pos:[-3.6,1.7,24.2],at:[-11.5,1.6,20.4]},time:1320}},
  {id:'harbour',name:'the harbour',short:'the harbour',kind:'outdoor',regulars:['Harbour master','Johansson','Riku','Kōji','Ms Uezu'],
   things:['the ferry gangway','a bollard','the quay lamp','a coil of rope','the tide board','a crate of gurukun'],
   doing:['watching the ferry come in','checking the tide board','coiling rope','counting crates','waiting for the gangway'],
