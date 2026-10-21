@@ -7,6 +7,7 @@ import {createAvatarAnimator,GESTURES} from './animate.js';
 import {recipeFor} from './cast.js';
 import {normalizeRecipe,decodeRecipe,encodeRecipe} from './recipe.js';
 import {fitAvatarHeldProp,gripWheel} from './consume.js';
+import {createAvatarTableDrink,createFirstPersonDrinkingArm,TABLE_DRINK_KINDS} from './table-drink.js';
 import {DEFAULT_PLAYER,readPlayers,readSave} from '../save.js';
 import {swingsAt} from './springs.js';
 const swingAt=new THREE.Vector3();
@@ -143,14 +144,26 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
  const root=new THREE.Group();root.name='Johansson (third person)';root.visible=false;scene.add(root);
  let avatar=buildAvatar(recipe,{shadows:true,faceSize:512}),animator=createAvatarAnimator(avatar,{bowDepth:.18});
  root.add(avatar.root);
- let expression='neutral',expressionUntil=0,speakUntil=0,time=0,seatMove='Sit',outfit='clothes',requested='clothes',held=null,lookPoint=null,move=null,earDefendersOn=false;
+ let expression='neutral',expressionUntil=0,speakUntil=0,time=0,seatMove='Sit',outfit='clothes',requested='clothes',held=null,lookPoint=null,move=null,earDefendersOn=false,tableDrink=null,drinkingArm=null,posedSeconds=0,lastState={};
  const hand=()=>avatar.bones.handR;
  const api={
   root,loading:Promise.resolve(true),
   get ready(){return true;},get move(){return move;},get expression(){return expression;},get weights(){return {};},
   get actions(){return [...Object.keys(GESTURES),'Idle','Walk','Run','Sit','SitEat','Soak','Fall'];},
   get avatar(){return avatar;},
+  get drinking(){return !!tableDrink?.active;},
+  get drinkingState(){return tableDrink?.diagnostics||null;},
+  drinkFromTable(lease,callbacks={}){
+   if(tableDrink?.active||held||!lease?.active||!TABLE_DRINK_KINDS.includes(lease.kind))return false;
+   animator.stop();move=null;expression='neutral';
+   // First-person players may instantiate their body only when taking this sip.
+   // Fit that unseen initial body to its seat before taking the resting-hand sample.
+   if(posedSeconds<.3)animator.update(.7,{...lastState,seated:true,seat:seatMove,tipsy:0});
+   tableDrink=createAvatarTableDrink(avatar,lease,callbacks);return true;
+  },
+  cancelTableDrink(){const result=tableDrink?.cancel();tableDrink=null;drinkingArm?.dispose();drinkingArm=null;return result;},
   play(name,{face}={}){
+   if(tableDrink?.active)api.cancelTableDrink();
    move=name;if(face)api.express(face,3);
    const map={Bow:'Bow',Wave:'Wave'};if(!animator.play(map[name]||name))animator.play('Nod');
    const faces={Wave:'happy',Clap:'happy',Kachashi:'laugh',Laugh:'laugh',Think:'thinking',Shrug:'worried',HeadShake:'grumpy',Bow:'content',Nod:'content',Stretch:'content',LookAround:'surprised',SitToast:'happy',Heart:'happy',Peace:'laugh',Coy:'smile',Tada:'laugh',HandsOnHips:'content',HeelKick:'happy'};
@@ -159,10 +172,10 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
   express(name,seconds=3){expression=name;expressionUntil=seconds>0?time+seconds:0;},
   speak(seconds=2){speakUntil=Math.max(speakUntil,time+seconds);},
   lookAt(point){lookPoint=point?point.clone?.()||point:null;},
-  seat(name='Sit'){seatMove=name;},
+  seat(name='Sit'){if(tableDrink?.active)api.cancelTableDrink();seatMove=name;},
   /** 'clothes', 'swim', 'towel', 'bath' (what they wear behind Umi-no-yu's noren: bathOutfit) or 'afterbath' (the
    *  lobby's after-bath clothes). Returns what is on. */
-  wear(name){requested=BATH_OUTFITS.includes(name)?name:'clothes';outfit=avatar.wear(requested)||requested;return outfit;},
+  wear(name){if(tableDrink?.active)api.cancelTableDrink();requested=BATH_OUTFITS.includes(name)?name:'clothes';outfit=avatar.wear(requested)||requested;return outfit;},
   get outfit(){return outfit;},
   get measure(){return avatar.measure;},
   /** Ear defenders on or off (avatars/ear-defenders.js); they survive a recipe swap. */
@@ -172,23 +185,34 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
   get lens(){const m=avatar.measure;return {eye:m.H+.14,side:m.Rh*m.headSX+.26,head:m.headCentre};},
   /** Hip height above the feet when seated, for game.js's seat fit. */
   get sitHip(){const m=avatar.measure;return m.hipY+.09-m.seatDrop;},
-  hold(prop){if(held){if(held.userData.consumable)disposeServing(held);else held.removeFromParent();}held=prop||null;if(held){held.position.set(0,-avatar.measure.hand*.4,avatar.measure.hand*.6);hand().add(held);if(held.userData.consumable)fitAvatarHeldProp(avatar,held);}},
-  jump(){animator.play('Jump');},
-  stop(){animator.stop();move=null;},
+  hold(prop){if(tableDrink?.active)api.cancelTableDrink();if(held){if(held.userData.consumable)disposeServing(held);else held.removeFromParent();}held=prop||null;if(held){held.position.set(0,-avatar.measure.hand*.4,avatar.measure.hand*.6);hand().add(held);if(held.userData.consumable)fitAvatarHeldProp(avatar,held);}},
+  jump(){api.cancelTableDrink();animator.play('Jump');},
+  stop(){api.cancelTableDrink();animator.stop();move=null;},
   /** Swap to a new recipe (the creator's save), keeping everything else. */
   setRecipe(next){
+   api.cancelTableDrink();
    const r=normalizeRecipe(next);avatar.root.removeFromParent();avatar.dispose();
    avatar=buildAvatar(r,{shadows:true,faceSize:512});animator=createAvatarAnimator(avatar,{bowDepth:.18});root.add(avatar.root);
    outfit=avatar.wear(requested)||requested;if(held)hand().add(held);if(earDefendersOn)wearEarDefenders(avatar,true);
   },
   update(dt,state={}){
-   time+=dt;root.visible=!!state.visible;
+   time+=dt;posedSeconds+=Math.max(0,dt);lastState=state;root.visible=!!state.visible;
+   if(tableDrink?.active&&!state.seated)api.cancelTableDrink();
    if(expressionUntil&&time>expressionUntil){expression='neutral';expressionUntil=0;}
    if(!animator.gesture)move=null;
+   // Seat support samples the original rendered skin. Restore it while solving the
+   // pose, then show the arm-only view after the contact solve for this frame.
+   drinkingArm?.setVisible(false);
    // Player and residents use the same measured seat support.
    animator.update(dt,{speed:state.speed||0,running:!!state.running,seated:!!state.seated,
     seatHeight:state.seatHeight,seat:seatMove,airborne:!!state.airborne,
-    talking:time<speakUntil,expression,gaze:lookPoint,heldProp:held,tipsy:state.tipsy||0});
+    talking:tableDrink?.active?false:time<speakUntil,expression,gaze:tableDrink?.active?null:lookPoint,heldProp:held,tipsy:tableDrink?.active?0:state.tipsy||0});
+   if(tableDrink?.active){
+    tableDrink.update(dt);
+    if(tableDrink.active&&state.firstPersonDrinking){drinkingArm??=createFirstPersonDrinkingArm(avatar);drinkingArm.setVisible(true);root.visible=true;}
+    else drinkingArm?.setVisible(false);
+   }
+   if(tableDrink&&!tableDrink.active){tableDrink=null;drinkingArm?.dispose();drinkingArm=null;}
    // Johansson's shirt hem swings wherever he is.
    if(root.visible)avatar.springs?.update(dt);
    if(held?.userData.consumable){

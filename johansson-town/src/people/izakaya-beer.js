@@ -50,8 +50,9 @@ export const NAO_STATION=Object.freeze([...MINATO_COMPACT.staff.position]);
 const plan=MINATO_COMPACT,booth=plan.booth;
 const boothSeat=(id,row,label)=>{
  const x=booth.seatX[1],z=booth.benchZ[row],topZ=booth.position[2]+(row===0?-1:1)*booth.tableDepth*.2,serveX=booth.standX[1];
+ const drinkZ=booth.position[2]+(row===0?-1:1)*(booth.tableDepth/2-.07);
  return Object.freeze({id,label,position:[x,0,z],stand:[serveX,0,z],surfaceY:plan.seatHeight,eyeY:row===0?1.14:1.2,yaw:row===0?Math.PI:0,
-  table:[x+.12,booth.tableTop,topZ],dish:[x-.15,booth.tableTop,topZ],serve:[serveX,0,topZ],
+  table:[x+(row===0?-.15:.15),booth.tableTop,drinkZ],dish:[x+(row===0?.15:-.15),booth.tableTop,topZ],serve:[serveX,0,topZ],
   route:[[plan.staff.endX,plan.staff.aisleZ],[plan.staff.endX,plan.counterStandZ],[serveX,topZ]],
  });
 };
@@ -62,7 +63,7 @@ export const IZAKAYA_PLAYER_SEATS=Object.freeze({
  // from the kitchen side, so their route never leaves the working aisle.
  ...Object.fromEntries(plan.counterStools.map((x,i)=>['counter'+i,Object.freeze({id:'counter'+i,label:'Sit at the counter',counter:true,
   position:[x,0,plan.counterSeatZ],stand:[x,0,plan.counterStandZ],surfaceY:plan.seatHeight,eyeY:1.32,yaw:0,
-  table:[x+.15,plan.counter.top,plan.counter.position[2]+plan.counter.depth*.25],dish:[x-.12,plan.counter.top,plan.counter.position[2]+plan.counter.depth*.25],
+  table:[x+.15,plan.counter.top,plan.counter.position[2]+plan.counter.depth/2-.06],dish:[x-.12,plan.counter.top,plan.counter.position[2]+plan.counter.depth*.25],
   serve:[x,0,plan.staff.counterPassZ],route:[[x,plan.staff.counterPassZ]]})])),
 });
 
@@ -91,6 +92,8 @@ function settlePour(u,dt){
 }
 export function createDrinkProp(kind,options={}){
  const {group,liquid,head,height,radius}=buildServingDrink(kind,options);
+ group.userData.drinkKind=kind;
+ group.userData.drinkSurface={liquid,head};
  if(head)pour(group,liquid,head,height,radius);
  group.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=true;}});
  return group;
@@ -114,6 +117,9 @@ export function updatePropPortion(prop,dt){
  const target=u.targetPortion??1,current=u.portion??1;
  u.portion=Math.abs(current-target)<.001?target:THREE.MathUtils.damp(current,target,7,Math.max(0,dt));
  level.visible=u.portion>0;
+ // A table drinking performance owns the tilted free surface. The ordinary upright
+ // portion animation must not squash its newly clipped geometry in the same frame.
+ if(u.tableDrinkFluid){level.visible=false;u.tableDrinkFluid.update(u.portion);return;}
  if(u.consumable==='food'){
   const amount=level.children.length*u.portion;
   level.children.forEach((piece,i)=>{piece.visible=i<Math.ceil(amount);piece.scale.setScalar(Math.min(1,Math.max(0,amount-i)));});
@@ -138,7 +144,7 @@ export function disposeServing(prop){
  * @param {(text:string,seconds?:number)=>void} [options.say]
  */
 export function createBeerService({room,getNao,blocked=()=>false,bounds=SHARED_DINING_BOUNDS,say=()=>{}}){
- let order=null,drink=null,dish=null,served=0;
+ let order=null,drink=null,dish=null,served=0,sipLease=null;
  const radius=.3,walker=createRoomWalk((x,z,r)=>blocked(x,z,r),{bounds,smoothTurn:true,radius});
  let walkingPerson=null,stalled=0;
  function resetWalk(){walker.clear();walkingPerson=null;stalled=0;}
@@ -177,22 +183,38 @@ export function createBeerService({room,getNao,blocked=()=>false,bounds=SHARED_D
   return true;
  }
  const clearProp=slot=>{if(slot){slot.prop.removeFromParent();slot.prop.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose?.();}});}};
- function clearDrink(){clearProp(drink);drink=null;}
+ function clearDrink(){if(sipLease)sipLease.cancel();clearProp(drink);drink=null;}
  function clearDish(){clearProp(dish);dish=null;}
  const face=(g,x,z)=>{g.rotation.y=Math.atan2(-(x-g.position.x),-(z-g.position.z));};
  const station=()=>[NAO_STATION[0],NAO_STATION[2]];
  function serve(kind,seat){
-  if(DRINKS[kind]){clearDrink();const prop=createDrinkProp(kind);prop.position.set(...seat.table);room.add(prop);drink={kind,left:DRINKS[kind].sips,prop};}
+  if(DRINKS[kind]){clearDrink();const prop=createDrinkProp(kind);prop.position.set(...seat.table);prop.rotation.y=seat.yaw||0;room.add(prop);drink={kind,left:DRINKS[kind].sips,prop};}
   else{clearDish();const prop=createDishProp(kind);prop.position.set(...(seat.dish||seat.table));room.add(prop);dish={kind,left:DISHES[kind].bites,prop};}
   served++;
  }
  function eatFrom(slot,total){
   slot.left=Math.max(0,slot.left-1);setPropPortion(slot.prop,slot.left/total);
  }
+ function beginSip(){
+  if(sipLease||!drink||drink.left<=1e-8)return null;
+  const slot=drink,spec=DRINKS[slot.kind],start=slot.left,amount=Math.min(1,start);let consumed=0,active=true;
+  const result=()=>({kind:slot.kind,left:Math.max(0,Math.ceil(slot.left-1e-8)),alcohol:spec.alcohol/spec.sips*consumed,consumedPortion:consumed});
+  const finish=()=>{if(!active)return result();active=false;if(sipLease===lease)sipLease=null;return result();};
+  const lease={
+   kind:slot.kind,prop:slot.prop,startFraction:start/spec.sips,endFraction:(start-amount)/spec.sips,
+   get active(){return active&&drink===slot;},get consumedPortion(){return consumed;},
+   /** Absolute fraction of this sip, only advanced by valid mouth/flow contact. */
+   consume(progress){if(!lease.active)return false;const next=Math.max(consumed,amount*THREE.MathUtils.clamp(Number(progress)||0,0,1));consumed=next;slot.left=Math.max(0,start-consumed);setPropPortion(slot.prop,slot.left/spec.sips,{immediate:true});return true;},
+   finish,cancel:finish,
+  };
+  sipLease=lease;return lease;
+ }
  return {
   /** The drink or dish on its way, if any. */
   get pending(){return order?{kind:order.kind,phase:order.phase}:null;},
-  get drink(){return drink?{kind:drink.kind,left:drink.left,sips:DRINKS[drink.kind].sips}:null;},
+  get drink(){return drink?{kind:drink.kind,left:Math.max(0,Math.ceil(drink.left-1e-8)),sips:DRINKS[drink.kind].sips}:null;},
+  get sipping(){return !!sipLease;},
+  beginSip,
   get dish(){return dish?{kind:dish.kind,left:dish.left,bites:DISHES[dish.kind].bites}:null;},
   get served(){return served;},
   /**
@@ -202,7 +224,7 @@ export function createBeerService({room,getNao,blocked=()=>false,bounds=SHARED_D
    */
   order(kind,seat){
    const spec=menuItem(kind),nao=getNao();
-   if(!spec||!seat||order||!nao)return false;
+   if(!spec||!seat||order||sipLease||!nao)return false;
    resetWalk();
    const dishOrder=!!DISHES[kind];
    order={kind,seat,staff:nao,phase:dishOrder?'cooking':'pouring',timer:dishOrder?spec.cook:spec.pour,path:dishOrder?[[KITCHEN_STATIONS[spec.station][0],KITCHEN_STATIONS[spec.station][2]]]:null};
@@ -212,12 +234,7 @@ export function createBeerService({room,getNao,blocked=()=>false,bounds=SHARED_D
   },
   /** One sip. Returns what is left, or null with nothing on the table. */
   sip(){
-   if(!drink||drink.left<=0)return null;
-   drink.left=Math.max(0,drink.left-1);const spec=DRINKS[drink.kind],level=drink.prop.userData.level;
-   setPropPortion(drink.prop,drink.left/spec.sips);
-   const result={kind:drink.kind,left:drink.left,alcohol:spec.alcohol/spec.sips};
-   if(drink.left===0){const finished=drink;setTimeout(()=>{if(drink===finished)clearDrink();},1500);}
-   return result;
+   const sip=beginSip();if(!sip)return null;sip.consume(1);return sip.finish();
   },
   /** One mouthful of the dish. Returns what is left, or null with nothing on the plate. */
   bite(){
