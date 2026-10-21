@@ -1,7 +1,6 @@
 import {MAIN_ROAD,MAIN_SERVICE_COURT,MAIN_LOADING_APRON,MAIN_PARKING_LAYBY} from './main-road.js';
 import {KITANO_ROAD} from './kitano-link-plan.js';
 import {HARBOUR_PARK_PATHS} from './harbour-park-plan.js';
-import {districtAt,DISTRICTS} from './ground-standard.js';
 /** The bus plaza's north edge, where Main Street's ground ends (bus-station.js BUS_STATION.maxZ). */
 const MAIN_STREET_MAX_Z=29.3;
 
@@ -84,37 +83,27 @@ export function specialistStreetMasks(){
  * Their paving is retired; the Main Street footway and plot circuits provide the connection. */
 export const retiredStreetOverlay=r=>r.id.startsWith('neighbourhood-')||r.id==='island-shopping-lane';
 /**
- * The districts laid by the ground generator from their plans since step 3 of the ground plan (ground-plan-quarters.js):
- * Kitahama, Nishi-machi, the west yard and the town hall's grounds. The lane builder still owns the junctions there (a
- * route's footprint still clips the routes under it), but lays no paving: the plans lay the lanes, the aprons and the
- * paths by the rulebook, and a building's walking circuit in a lane district is its gate and the lane's gutter.
- * The coastal walk is the coast's (step 4) and keeps its paving.
+ * Every route's paving as the junction owner cuts it (a higher-priority route owns where two cross; the specialist masks
+ * are left out), before anything is given to a ground plan: the pieces the plans lay from (ground-walks.js).
  */
-export const QUARTER_DISTRICTS=Object.freeze(['kitahama','nishi-machi','west-yard','school']);
-const QUARTER_RECTS=DISTRICTS.filter(d=>QUARTER_DISTRICTS.includes(d.id)).map(d=>rectangle(d.minX,d.maxX,d.minZ,d.maxZ));
-export function laidByQuarterPlan(route,polygon){
- if(route.id==='police-station-yard')return true;
- const n=polygon.length,cx=polygon.reduce((a,p)=>a+p[0],0)/n,cz=polygon.reduce((a,p)=>a+p[1],0)/n,d=districtAt(cx,cz);
- // The coastal walk round Kitahama's shore is the coast's (step 4); its stretch down the west yard is the yard's.
- if(route.id==='island-coast-walk')return d==='west-yard'||d==='nishi-machi';
- // A building's walking circuit is laid by the plan where its band runs through these districts; elsewhere (the town
- // hall's band on the east lawn, the dock workshop's on the quay) it is the lane builder's until its step.
- return QUARTER_DISTRICTS.includes(d);
-}
-export function coordinatedStreetPatches(routes){
- const masks=specialistStreetMasks().map(p=>({polygon:p,bounds:bounds(p)})),patches=[];
+export function streetPieces(routes){
+ const masks=specialistStreetMasks().map(p=>({polygon:p,bounds:bounds(p)})),pieces=[];
  const ordered=routes.filter(r=>!r.park&&r.id!=='second-pier'&&r.id!=='fujita-shed-circuit'&&!retiredStreetOverlay(r))
   .map(route=>({route,kind:streetClass(route)})).sort((a,b)=>STREET_STANDARD[b.kind].priority-STREET_STANDARD[a.kind].priority);
  for(const {route,kind} of ordered)for(const polygon of routePolygons(route)){
-  const box=bounds(polygon);let pieces=[polygon];
-  for(const mask of masks){if(!overlap(box,mask.bounds))continue;pieces=pieces.flatMap(p=>subtractPolygon(p,mask.polygon));if(!pieces.length)break;}
-  for(const p of pieces){
-   if(laidByQuarterPlan(route,p))continue;
-   // What is left of a route outside them stops at their line (the coastal walk round Kitahama's shore excepted).
-   const kept=route.id==='island-coast-walk'?[p]:QUARTER_RECTS.reduce((list,q)=>list.flatMap(piece=>subtractPolygon(piece,q)),[p]);
-   for(const k of kept)if(area(k)>1e-6)patches.push({polygon:k,route:route.id,kind,surface:STREET_STANDARD[kind].surface});
-  }
+  const box=bounds(polygon);let list=[polygon];
+  for(const mask of masks){if(!overlap(box,mask.bounds))continue;list=list.flatMap(p=>subtractPolygon(p,mask.polygon));if(!list.length)break;}
+  for(const p of list)if(area(p)>1e-6)pieces.push({polygon:p,route:route.id,kind,surface:STREET_STANDARD[kind].surface});
   masks.push({polygon,bounds:box});
  }
- return patches;
+ return pieces;
+}
+/**
+ * What the lane builder (lane-surfaces.js) still paves itself: nothing. Since step 4 of the ground plan every district of
+ * Minato is laid by its plan (ground-plan.js, ground-plan-harbour.js, ground-plan-quarters.js, ground-plan-coast.js);
+ * the walks that cross the lawns are laid from streetPieces() by ground-walks.js, and a building's walking circuit is
+ * its apron, its gate or the lawn, never a ring of paving.
+ */
+export function coordinatedStreetPatches(routes){
+ return [];
 }

@@ -212,41 +212,23 @@ test('every open patch of the east side can be walked to from the road',async()=
 
 test('the paths across the green lie on the ground rather than through it',async()=>{
  installDOM();globalThis.self=globalThis;
- 
  const {groundHeight}=await import('../src/world/layout.js?lane-clearance');
- const {buildLaneSurfaces}=await import('../src/world/lane-surfaces.js?lane-clearance');
- const {createMaterials}=await import('../src/render/materials.js?lane-clearance');
- const parent=new THREE.Group();
- buildLaneSurfaces(parent,createMaterials());
-
- // The paved routes draw 4cm above the ground and the lawn 2cm, so the path is on top
- // of the grass everywhere -- at its corners. Each patch used to be laid as one quad,
- // which runs straight between those corners while the lawn beside it follows the
- // ground, so over the graded foot of the park mound the grass came up through the
- // middle of the path by as much as 8cm and lay on it in green wedges.
- const sunk=[];let checked=0,onGrass=0;
- for(const mesh of parent.children){
-  if(!mesh.isMesh||!mesh.name.startsWith('grid-lanes'))continue;
-  const position=mesh.geometry.attributes.position,index=mesh.geometry.index;
-  for(let t=0;t<index.count;t+=3){
-   const corners=[index.getX(t),index.getX(t+1),index.getX(t+2)];
-   const x=corners.reduce((s,i)=>s+position.getX(i),0)/3;
-   const y=corners.reduce((s,i)=>s+position.getY(i),0)/3;
-   const z=corners.reduce((s,i)=>s+position.getZ(i),0)/3;
-   checked++;
-   // Compare each path with the surface it actually lies on. Off the lanes that is the
-   // lawn, drawn 2cm over the ground: anything at or below it shows through the grass.
-   // On Kitahama's lanes groundHeight already is the lane paving's own height (layout.js
-   // gives KITAHAMA.y plus the lane layer there), so the path lies on that, not 2cm above it.
-   const surface=kitahamaLaneAt(x,z)?groundHeight(x,z):groundHeight(x,z)+GROUND_LAYER.grass;
-   const clearance=y-surface;
-   if(clearance<-.005)sunk.push(x.toFixed(1)+','+z.toFixed(1)+' by '+(-clearance*100).toFixed(1)+'cm');
-   if(!kitahamaLaneAt(x,z))onGrass++;
-  }
+ const {coastWalkGround,topOf}=await import('../src/world/ground-plan-coast.js');
+ const {GROUND_CLEARANCE}=await import('../src/world/ground-standard.js');
+ const {onBeach}=await import('../src/world/beach-layout.js');
+ // The walks across the lawns (ground-plan-coast.js, step 4 of the ground plan) lie flush at their class's top, the lawn
+ // 2 cm under them: at every corner and the middle of every piece the walk is over the grass by the rulebook's clearance,
+ // never under it in green wedges (as the old lane patches were over the park mound's graded foot).
+ const {pieces,edging}=coastWalkGround();
+ const sunk=[];let checked=0;
+ for(const p of pieces){
+  const pts=[...p.poly,[p.poly.reduce((s,v)=>s+v[0],0)/p.poly.length,p.poly.reduce((s,v)=>s+v[1],0)/p.poly.length]];
+  // On Kitahama's lanes groundHeight is the lane's own top (layout.js), and on the sand the sand's: where a walk meets a
+  // lane or comes down onto the beach it is flush with it.
+  for(const [x,z] of pts){checked++;const lane=kitahamaLaneAt(x,z)||onBeach(x,z),clearance=topOf(p.cls)-groundHeight(x,z)-(lane?0:GROUND_LAYER.grass);
+   if(clearance<(lane?-1e-6:GROUND_CLEARANCE-1e-6))sunk.push(p.walk+' '+x.toFixed(1)+','+z.toFixed(1)+' by '+(clearance*100).toFixed(1)+'cm');}
  }
- // Level park terrain no longer needs the removed mound’s dense subdivisions.
- assert.ok(checked>0,'Every generated grid-lane triangle is sampled');
- assert.ok(onGrass>checked/2,'Most paths are checked against the grass, not the lanes');
+ assert.ok(checked>500,'Every walk is sampled');assert.ok(edging.length>100,'the walks are edged');
  assert.deepEqual(sunk.slice(0,6),[],'Paving sunk under the grass it is laid on');
 });
 

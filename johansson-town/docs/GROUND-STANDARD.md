@@ -10,9 +10,9 @@ the order of the work.
   `world/road-standards.js` `ROAD_STANDARD.kerb` now just re-export it.
 - **The audit** is `tools/ground-audit.mjs`. It builds the town and samples a 25 cm grid over it. At each point it takes
   the ground a person stands on and checks it against the rulebook.
-- **The ratchet** is `tests/ground-standard.test.mjs`. Today's findings are listed in
-  `tests/fixtures/ground-baseline.json`. The test fails on a new finding or one that grew. It also fails when a finding
-  is fixed but still listed, so the list can only shrink.
+- **The ratchet** is `tests/ground-standard.test.mjs`. Since step 4 its list (`tests/fixtures/ground-baseline.json`) is
+  empty, and the test fails on any finding. Until then it failed on a new finding, one that grew, and one fixed but still
+  listed, so the list could only shrink.
 
 ## Why the ground was chaos (the survey, 21 October)
 
@@ -331,6 +331,79 @@ Two of step 4's findings grew a little, and nothing is new:
 - The east lawn's footway at the town hall's gate grew from 1.5 to 3.25 m of seam with the lawn. The town hall's
   circuit band no longer covers the lawn beside the footway's end.
 
+## Step 4: the beach, the coast, the park and the lawns (21 October 2026)
+
+The last of the town is on the rulebook, and the ratchet's baseline is empty: `tests/ground-standard.test.mjs` now fails
+on any finding at all.
+
+- **The walks across the lawns** are laid from `src/world/ground-plan-coast.js` by a second generator,
+  `src/world/ground-paths.js`. A park's walks bend at any angle and meet in round joins, which the rectangle generator
+  cannot lay, so this one takes convex polygons:
+  - it cuts the walks into disjoint pieces, the first walk listed owning a junction;
+  - it finds the outline of their union and lays a 10 cm row of setts outside it wherever the rulebook asks for stone
+    edging (a lawn), with the corners filled round;
+  - it lays one mesh per class in the generator's shared materials (`ground-build.js groundMaterial`), and one for the
+    setts, 3 mm proud of the walk.
+- **Harbour Park.** Every walk, the stone walks and the pond's circuit alike, is the rulebook's park path (rolled
+  crushed stone, 4 cm, flush with the turf at 2 cm), edged in setts where it meets the turf.
+  - Umi-no-yu stands on the lawn: the concrete ring round it is gone. A forecourt of the same crushed stone runs from the walks to its
+    porch, with the footbath on it and the bathhouse's stepping stones set 2 cm proud in it (`ONSEN_GROUND`). The
+    raised 8 cm porch apron that hid the stones is gone. The bath behind its fence is the bathhouse's own. The fallback
+    shell's floor there is an enclosure's floor, and the audit leaves it out as it does a plinth.
+  - The pond's edge stones and reeds are a kit of their own (`Harbour Park pond edge`): the pond's, not ground.
+  - The south shop crossing ended in the park's lawn past the footway. It now ends on the east footway, where the
+    park's approach begins (`layout.js`).
+- **The east lawn.**
+  - The service walk to the town hall's gate and the walk along the park's south edge to the harbour office are
+    concrete, flush and edged (`ground-walks.js LAID_WALKS` says which routes are walks and why).
+  - Kitano Road's carriageway is the rulebook's asphalt. Its 10 cm gutter strip on the lawn side is a 15 cm kerb now,
+    dropped where the service walk crosses, and the lawn's zebra is moved onto that crossing. A kerb closes the road's
+    end. Its footway is concrete at the road's level, edged on the lawn.
+  - The drinks corner's pad (`lots.js POST_OFFICE`) is flush concrete, edged. The machines and the bench stand on it.
+  - Main Street's frontage strip runs on to the police station's yard, under the station's street face and doors.
+    The station's circuit used to fill that gap.
+  - Every building circuit on the lawns is gone: the police station, Higa Liquor, the power house, the town hall, the
+    fish auction, the port building and the shrine stand in their lawn.
+- **The beach** (`beach-layout.js`, drawn by `east-lawn.js buildBeachSand`):
+  - It is coral-white dry sand. Below the tide line (`beach-sand.wetBelow`, y −0.32) a band of wet sand runs to the
+    water, blending over a couple of centimetres of height, and the sand goes on down under the sea.
+  - It is graded up, never stepped, to everything firm on its edges (`BEACH_GRADES`): the quay's edge north of the oil
+    jetty, the fuel depot's court, the town hall's yard and verge, the lawn past the parapet's north end, Kitahama's
+    lawn, and the coastal walk where it comes down onto the sand.
+  - **The east quay's corner** (approved by the owner): step 2 had laid quay concrete over the strip of beach and grass
+    north of the oil jetty. The quay now ends there at x 42.3, in line with the fuel depot's court and the forklift's
+    bay, and the beach runs from its edge to the water. South of the jetty's root the quay keeps its coping at the
+    water. The sand runs on under the jetty's deck.
+  - The fuel depot's service court is the harbour plan's: flush concrete, from the parapet to x 42.3, opening off the
+    quay. The depot's paving ring and the court's 2 cm box are gone.
+  - The coastal walk's strip of wet sand along the beach is gone: on the beach the walk is the sand. The
+    neighbourhood's lawn no longer lies over the sand at the beach's north end. The beach runs on to the town hall's
+    grounds and the coastal walk, with the beach corner's chairs on sand, not grass.
+- **Kitahama's coastal walk** is concrete, flush and edged on the lawn, cut at the lanes it runs beside. The quarter
+  plans leave it its ground and paint the lanes' edge line beside it. The neighbourhood's level ground runs out to its
+  setts on the north shore (`NEIGHBOURHOOD.maxZ` 93.4), where the walk used to ride down the bank.
+- **The west shore.** The bank's coping, its foreshore of wet sand and the armour stones on it are meshes named for what
+  they are: a coping, the beach's wet band, and the rock armour at the water.
+- **The lane builder lays nothing** (`street-plan.js coordinatedStreetPatches`). `streetPieces` is the junction owner's
+  cut of the routes, and the plans lay from it.
+- **The audit**, refined, each change with its reason in `tools/ground-audit.mjs`:
+  - Beach sand may be its wet tone, or a blend towards it, at the tide line's height.
+  - An edge narrower than the lattice (setts laid at an angle) is found by looking along the seam at 2.5 cm.
+  - A lane's edge line is looked for within 0.8 m (it lies 30 cm in and is 15 cm wide), at a lane's corner along its
+    other side too.
+  - A deck on piles over the sand (the oil jetty's root) is no seam with it.
+  - On the line where two surfaces of one height meet, the lattice gives each point to the same one all along it.
+    Before, the last bit of rounding decided.
+  - `--where=TEXT` prints every point of a finding.
+
+| District | Findings | Off colour m² | Wrong height m² | Out of place m² | Seams with no edge, m | Dead ends |
+|---|---|---|---|---|---|---|
+| Kitahama | 14 → 0 | 418 → 0 | 49 → 0 | 0 | 200 → 0 | 0 |
+| East lawn | 19 → 0 | 228 → 0 | 7 → 0 | 0 | 148 → 0 | 0 |
+| Beach | 17 → 0 | 710 → 0 | 91 → 0 | 0.8 → 0 | 122 → 0 | 0 |
+| Harbour Park | 29 → 0 | 385 → 0 | 20 → 0 | 0.7 → 0 | 275 → 0 | 1 → 0 |
+| **All Minato** | **79 → 0** | **1742 → 0** | **167 → 0** | **1.5 → 0** | **745 → 0** | **1 → 0** |
+
 ## The order of the work
 
 Each step is merged only after the owner has seen photos of it.
@@ -346,7 +419,7 @@ Each step is merged only after the owner has seen photos of it.
    - the back lanes become asphalt, with an edge line and U-gutter at every plot;
    - the coral yards get coral edging;
    - the building circuits are replaced by aprons that meet their ground by rule.
-4. **The beach, the coast, the park and the lawns**:
+4. **The beach, the coast, the park and the lawns** (done, above):
    - park paths get their stone edging;
    - the beach is graded wherever a path comes onto it;
    - the whole island gets a photo walk;

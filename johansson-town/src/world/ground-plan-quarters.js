@@ -21,7 +21,7 @@
  *    tank, a concrete car park, and a lawn with its flower bed, edged.
  *
  * The plans read the layout modules (kitahama-layout.js, okinawa/layout.js, west-yard.js, school-layout.js, lots.js), so a
- * plot or a lane moved there moves its ground. street-plan.js leaves these districts to these plans (laidByQuarterPlan).
+ * plot or a lane moved there moves its ground. street-plan.js leaves every district to the plans (coordinatedStreetPatches lays nothing since step 4).
  */
 import {KITAHAMA,KITAHAMA_LANES} from './kitahama-layout.js';
 import {NISHI,utakiStones} from './okinawa/layout.js';
@@ -37,7 +37,7 @@ import {CLEARED_LOTS,STREET_LOTS} from './okinawa/lots.js';
 import {SAKURA_BACK} from './okinawa/old-town.js';
 import {lotPaint} from './okinawa/lot-dressing.js';
 import {activeRoutes} from './layout.js';
-import {coordinatedStreetPatches} from './street-plan.js';
+import {laidWalkPieces} from './ground-walks.js';
 
 const C=GROUND_CLASSES,LANE=C.lane.top,FLUSH=C.concrete.flushTop,CORAL=C['coral-sand'].top,GRAVEL=C.gravel.top,PATH=C['park-path'].top,GRASS=C.grass.top,EARTH=C.earth.top;
 /** A rolled pad on a sub-base (the monthly parking, the eisa ground, the hoop's pad), 25 mm proud of the lawn (lots.js). */
@@ -266,7 +266,7 @@ export const TOWN_HALL_GROUND=Object.freeze((()=>{
   bikeShed:rect(b.minX,b.maxX,b.minZ+.8,b.maxZ),
   lawn:rect(23.9,30.6,ph.maxZ+.6,S.field.maxZ),
   bed:rect(24.6,29.9,31.0,31.9),
-  verges:Object.freeze([rect(S.minX-.9,S.minX,S.minZ,B.maxZ),rect(S.maxX,S.seawall.east,27.25,30.5),rect(S.maxX,S.maxX+.9,30.5,B.maxZ)]),
+  verges:Object.freeze([rect(S.minX-.9,S.minX,S.minZ,B.maxZ),rect(S.maxX,S.seawall.east,S.minZ,30.5),rect(S.maxX,S.maxX+.9,30.5,B.maxZ)]),
   bays:Object.freeze([0,1,2,3].map(i=>pk.minX+.4+i*2.6)),
  };
 })());
@@ -320,15 +320,17 @@ let built=null;
 function buildPlans(){
  if(built)return built;
  const K=kitahamaBase(),Nb=nishiBase(),W=westYardBase(),S=schoolBase();
- const foreign=coordinatedStreetPatches(activeRoutes().slice(3)).map(p=>{const xs=p.polygon.map(v=>v[0]),zs=p.polygon.map(v=>v[1]);return {poly:p.polygon,minX:Math.min(...xs),maxX:Math.max(...xs),minZ:Math.min(...zs),maxZ:Math.max(...zs)};});
+ // The walks laid across these plans' ground by ground-plan-coast.js (ground-walks.js): Kitahama's coastal walk and the
+ // service walk past the town hall's gate.
+ const foreign=laidWalkPieces().map(p=>{const xs=p.polygon.map(v=>v[0]),zs=p.polygon.map(v=>v[1]);return {poly:p.polygon,minX:Math.min(...xs),maxX:Math.max(...xs),minZ:Math.min(...zs),maxZ:Math.max(...zs)};});
  const inPoly=(poly,x,z)=>{let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const [xi,zi]=poly[i],[xj,zj]=poly[j];if((zi>z)!==(zj>z)&&x<(xj-xi)*(z-zi)/(zj-zi)+xi)inside=!inside;}return inside;};
- // Where the lane builder still lays a route across these plans' ground (the service walk past the police station and
- // the town hall's gate), the plan leaves it that ground: a hole the route's rectangle wide.
+ // Where a walk is laid across these plans' ground (the service walk past the town hall's gate), the plan leaves it that
+ // ground: a hole the walk's rectangle wide.
  for(const L of [K,Nb,W,S]){
   const firm=L.filter(l=>!l.hole&&!l.edge);
   for(const f of foreign){
    const box=rect(f.minX,f.maxX,f.minZ,f.maxZ),isRect=f.poly.length===4&&f.poly.every(([x,z])=>(Math.abs(x-f.minX)<1e-6||Math.abs(x-f.maxX)<1e-6)&&(Math.abs(z-f.minZ)<1e-6||Math.abs(z-f.maxZ)<1e-6));
-   if(isRect&&firm.some(l=>l.x0<box.x1-1e-6&&l.x1>box.x0+1e-6&&l.z0<box.z1-1e-6&&l.z1>box.z0+1e-6))L.push({hole:true,name:'Lane builder\'s route',...box});
+   if(isRect&&firm.some(l=>l.x0<box.x1-1e-6&&l.x1>box.x0+1e-6&&l.z0<box.z1-1e-6&&l.z1>box.z0+1e-6))L.push({hole:true,name:'Laid walk',...box});
   }
  }
  const bases=[K,Nb,W,S].map(layers=>({layers}));

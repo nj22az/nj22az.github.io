@@ -10,7 +10,7 @@ import {activeRoutes,MAP_BOUNDS,BOARDWALK} from './layout.js?snappy=1';
 import {FOREST_EDGE} from './forest-edge.js';
 import {MAIN_ROAD} from './main-road.js';
 import {TUNNEL,HEADLAND,headlandHeight,CAVE_ACTIVE} from './coyote-tunnel.js';
-import {BEACH,BEACH_DRY_EDGE_X} from './beach-layout.js';
+import {BEACH,BEACH_EDGES,BEACH_DRY_EDGE_X} from './beach-layout.js';
 // Small cached patches show the walkable headland beyond the original coastal slab.
 const headlandPatches=[];
 for(let z=HEADLAND.minZ;z<HEADLAND.maxZ;z+=4)for(let x=HEADLAND.minX;x<HEADLAND.maxX;x+=4)
@@ -30,7 +30,7 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],homes=[],people=[],pl
  ctx.fillStyle='#b5caa0';for(const [x,z]of headlandPatches)ctx.fillRect(px(x),pz(z+4),4*scale,4*scale);
 
  const [hx,hz]=airportWorld(...TROPIC_PLACES.lookout);ctx.beginPath();ctx.ellipse(px(hx),pz(hz),20*scale,20*scale,0,0,Math.PI*2);ctx.fill();
- ctx.fillStyle='#eddfb8';rect({minX:BEACH.profile[0][0],maxX:BEACH_DRY_EDGE_X,minZ:BEACH.minZ,maxZ:BEACH.maxZ});
+ ctx.fillStyle='#eddfb8';rect({minX:BEACH.profile[0][0],maxX:BEACH_DRY_EDGE_X,minZ:BEACH.open.minZ,maxZ:BEACH.open.maxZ});rect({minX:BEACH_EDGES.quayEdge,maxX:BEACH_DRY_EDGE_X,minZ:BEACH_EDGES.jettyNorth,maxZ:BEACH.open.minZ});
  ctx.fillStyle='#b1c997';rect(HARBOUR_PARK_MAIN);rect(HARBOUR_PARK_EXTENSION);
  const pond=HARBOUR_POND;ctx.fillStyle='#74aeb7';ctx.beginPath();ctx.ellipse(px(pond.x),pz(pond.z),pond.rx*scale,pond.rz*scale,0,0,Math.PI*2);ctx.fill();
  ctx.lineJoin='round';ctx.lineCap='round';

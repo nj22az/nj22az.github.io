@@ -180,9 +180,7 @@ export function buildParkOnsen(world,{register,onAction,enter,sites,shadows=fals
  // Readable frontage exists immediately, with the fallback or the detailed model.
  const {notice,kanban}=signs(group),curtain=noren(),door=doorGlass(),frosting=door.group,plumes=steam(group);
  const fallback=buildOnsenFallback();group.add(fallback,kanban,curtain,frosting);
- // The continuous porch apron covers the old model's loose stepping stones and joins the park paving.
- const apron=new THREE.Mesh(new THREE.BoxGeometry(2.4,.08,5.6),new THREE.MeshStandardMaterial({color:0xc8bea5,roughness:.95}));
- apron.name='Umi-no-yu continuous porch approach';apron.position.set(-1.4,.04,6.5);apron.receiveShadow=true;group.add(apron);
+ // The porch's approach is the forecourt the town lays in front of the bathhouse (ground-plan-coast.js ONSEN_GROUND).
  // After dark, while the bath is open (10:00–22:00): the door panes glow from the genkan, a halo under the porch
  // over the noren and a pool on the approach (light-pools.js). Shut, the frontage goes dark like any other shop.
  const entranceGlow=createLampGlow(group,[{head:{x:-1.4,y:2.42,z:4.6},ground:{x:-1.4,y:.08,z:5.5},radius:2.4,size:1.4}]);

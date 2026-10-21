@@ -19,7 +19,6 @@ const {KITAHAMA,KITAHAMA_LANES,plotGate}=await import('../src/world/kitahama-lay
 const {NISHI,utakiStones}=await import('../src/world/okinawa/layout.js');
 const {PARKING}=await import('../src/world/okinawa/lot-dressing.js');
 const {lanePatches}=await import('../src/world/lane-surfaces.js');
-const {QUARTER_DISTRICTS}=await import('../src/world/street-plan.js');
 const plans=Q.quarterPlans();
 const EDGES=new Set(['kerb','drop','edging','coral-edging','coping','gutter']);
 
@@ -44,12 +43,8 @@ test('the plans lay only the rulebook\'s classes and edges, say why, and no two 
  }
 });
 
-test('the lane builder lays nothing in these districts but the coastal walk round Kitahama\'s shore',()=>{
- for(const p of lanePatches()){
-  const n=p.polygon.length,cx=p.polygon.reduce((s,v)=>s+v[0],0)/n,cz=p.polygon.reduce((s,v)=>s+v[1],0)/n;
-  if(!QUARTER_DISTRICTS.includes(districtAt(cx,cz)))continue;
-  assert.ok(p.route==='island-coast-walk'&&districtAt(cx,cz)==='kitahama',`${p.route} still paved by the lane builder at ${cx.toFixed(1)},${cz.toFixed(1)}`);
- }
+test('the lane builder lays nothing anywhere: since step 4 every district is laid by its plan',()=>{
+ assert.deepEqual(lanePatches().map(p=>p.route),[]);
 });
 
 test('Kitahama: every lane is back-lane asphalt, and every house meets it by its gate and the gutter, with no ring of paving',()=>{

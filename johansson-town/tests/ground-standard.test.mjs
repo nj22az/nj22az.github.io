@@ -41,8 +41,9 @@ test('the old exports are thin re-exports, so step 1 changes nothing that is dra
  const {GROUND_LAYER:layer}=await import('../src/world/ground-layers.js');
  const {ROAD_STANDARD}=await import('../src/world/road-standards.js');
  assert.equal(palette,GROUND);assert.equal(layer,GROUND_LAYER);
- // Today's tones and layers, as they were before the rulebook (steps 2 to 4 change these on purpose).
- assert.deepEqual({...GROUND},{asphalt:0xa9aeb4,pavers:0xc6c3ba,concrete:0xb7b5ab,coral:0xe2dac8,sand:0xe3d2a4,gravel:0xa29e93,grass:0x5c9848});
+ // Today's tones and layers, as they were before the rulebook (steps 2 to 4 change these on purpose; step 4 moved the
+ // beach's sand to its standard coral-white).
+ assert.deepEqual({...GROUND},{asphalt:0xa9aeb4,pavers:0xc6c3ba,concrete:0xb7b5ab,coral:0xe2dac8,sand:GROUND_CLASSES['beach-sand'].colour,gravel:0xa29e93,grass:0x5c9848});
  assert.deepEqual({...GROUND_LAYER},{grass:.02,gravel:.02,lane:.04,apron:.06});
  assert.deepEqual({...ROAD_STANDARD.kerb},{height:GROUND_EDGE.kerb.height,width:GROUND_EDGE.kerb.width});
 });
@@ -70,7 +71,10 @@ const baseline=JSON.parse(fs.readFileSync(audit.BASELINE_PATH,'utf8')).violation
 const result=audit.auditGround(scene,{routes,patches,colliders:world.colliders});
 const show=v=>`  ${v.key}: ${v.amount}${v.was!==undefined?' (was '+v.was+')':''} at ${v.at[0]}, ${v.at[2]} — ${v.detail}`;
 
-test('the ratchet: no new ground violation, none grown, and every fixed one taken off the list',()=>{
+test('Minato\'s ground has no violation of its rulebook: nothing new, nothing grown, nothing left on the list',()=>{
+ // Step 4 of the ground plan emptied the baseline (tests/fixtures/ground-baseline.json): every finding is new now.
+ assert.deepEqual(Object.keys(baseline),[],'The baseline is empty since step 4: fix the ground, never list it');
+ assert.deepEqual(result.violations.map(show),[],'Ground violations (draw it from src/world/ground-standard.js instead):');
  const {added,grown,fixed}=audit.compareToBaseline(result.violations,baseline);
  assert.deepEqual(added.map(show),[],'New ground violations (draw it from src/world/ground-standard.js instead):');
  assert.deepEqual(grown.map(show),[],'Ground violations that grew:');
@@ -97,9 +101,9 @@ test('the audit catches what it is for: a slab of its own colour and height, a p
   assert.deepEqual(fixed.filter(k=>!k.includes('east-lawn')),[],'the plant changes nothing elsewhere');
  }finally{scene.remove(slab,apron);}
  // And the list only shrinks: a fixed entry still listed, and an entry that grew, both fail.
- const one=result.violations.find(v=>v.amount>=10);
+ const one={key:'colour|east-lawn|grass|a grown surface',amount:20};
  const stale=audit.compareToBaseline(result.violations,{...baseline,'colour|main-street|road|a fixed surface|#a9aeb4':12});
  assert.deepEqual(stale.fixed,['colour|main-street|road|a fixed surface|#a9aeb4']);
- const grew=audit.compareToBaseline(result.violations,{...baseline,[one.key]:one.amount/2});
+ const grew=audit.compareToBaseline([...result.violations,one],{...baseline,[one.key]:one.amount/2});
  assert.deepEqual(grew.grown.map(v=>v.key),[one.key]);
 });

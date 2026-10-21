@@ -5,7 +5,7 @@ import {coralWall,hibiscus,OKINAWA_COLOURS as C} from './houses.js';
 import {bicycle,netPile,buoys} from './props.js';
 import {CLEARED_LOTS,PLOT_PLANTING,LOT_COLOURS as L} from './lots.js';
 import {KITAHAMA} from '../kitahama-layout.js';
-import {GROUND_LAYER} from '../ground-layers.js';
+import {GROUND_CLASSES} from '../ground-standard.js';
 import {buildParkedVehicle,parkedVehicleFit,KEI_TRUCK_BED} from '../road-vehicles.js';
 
 /**
@@ -401,8 +401,8 @@ function yard1({kit,read},lot,put){
 /* ------------------------------ Main Street ------------------------------ */
 
 function postOffice({kit,solid,anchor,onAction,vending},lot,put){
- const pad=lot.dressing.flat[0].rect,A=GROUND_LAYER.apron;
- kit.block(pad.minX,pad.maxX,A-.05,A,pad.minZ,pad.maxZ,P.concrete);
+ // The pad is the ground's (ground-plan-coast.js): flush concrete at the footway's level, edged on the lawn.
+ const A=GROUND_CLASSES.concrete.flushTop;
  for(const id of ['machine-1','machine-2']){const p=propOf(lot,id);if(vending)vending(p.at[0],p.at[1],-Math.PI/2,A);else solid({id:'vending',x:p.at[0]-.08,z:p.at[1],w:.9,d:1.09,height:2.2});}
  const bin=put(lot,'can-bin').rect,[bx,bz]=mid(bin);
  kit.box(.46,.84,.46,bx,A+.42,bz,0x2f6fb8);kit.box(.48,.06,.48,bx,A+.86,bz,0xf2f0ea);
