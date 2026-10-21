@@ -31,6 +31,8 @@ Mac deliberately retains the drawing authored as “Mr Nakandakari”, as the ap
 
 The hosted continuation then exposed a third fixture issue: recipe-only selections (`started:false`) were sampled while still in Mai’s bedroom. Each subsequent selection recorded the active room into the preceding identity’s test checkpoint. The fixture now leaves the room and asserts outdoor context before that loop, so conversation setup does not inherit artificial home checkpoints.
 
+A later run exposed a screenshot-readiness race: the old image filter used the whole viewport, including lazy portraits behind the fixed footer and outside the scrolling content. Its one-shot `decode()` call rejected a source while every actually visible portrait rendered intact in the failure capture. Acceptance now waits, with a timeout, for current visible portrait containers within the content rectangle to have complete images and positive natural widths. Missing or corrupt visible images still fail. The revised wait also passed a local cold-cache People-page check.
+
 ## Screenshots
 
 These are local software-rendered captures of the downloaded 0.2.13 candidate with the exact corrected 0.2.14 console stylesheet. Hosted acceptance rebuilds the 0.2.14 package from source. The images are lossless WebP conversions of the PNG originals.
@@ -42,7 +44,7 @@ These are local software-rendered captures of the downloaded 0.2.13 candidate wi
 
 ## Validation
 
-35 desktop regression tests and the three existing retired-recipe/canonical-mapping tests pass locally. All four corrected full-world caption/action layouts and the menu layouts passed locally; their screenshots were inspected. The targeted continuation also passed conversation warnings, quarrel pause/no rewards, saved controller remapping, reload into Thuan’s saved nighttime bed and separate web-only isolation, with zero page errors or missing files. The captured 26-model selection list was independently checked against the canonical avatar mapping. The [complete hosted run](https://github.com/nj22az/nj22az.github.io/actions/runs/39670985264) and native acceptance remain in progress.
+35 desktop regression tests and the three existing retired-recipe/canonical-mapping tests pass locally. All four corrected full-world caption/action layouts and the menu layouts passed locally; their screenshots were inspected. The targeted continuation also passed conversation warnings, quarrel pause/no rewards, saved controller remapping, reload into Thuan’s saved nighttime bed and separate web-only isolation, with zero page errors or missing files. The captured 26-model selection list was independently checked against the canonical avatar mapping. The [complete hosted run](https://github.com/nj22az/nj22az.github.io/actions/runs/39672894193) and native acceptance remain in progress.
 
 ## Hardware limit
 
