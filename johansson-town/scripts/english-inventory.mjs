@@ -18,6 +18,8 @@ const scenery=new Set(['src/world/interiors/sakura-office-room.js','src/world/in
  // Sakura's small office: each thing's `jp` beside its English name, and the calendar, rota, plate and TV's printed headings.
  'src/world/interiors/sakura-small-office.js','src/world/interiors/sakura-small-office-build.js',
  // Nakamura Zenzai's menu tags (prices in kanji numerals, 二五〇円), its hours tag and the noren, each item's English beside it.
+ // Physical station posters and their paired English inspect text are tested in police-station-dressing.
+ 'src/feed/police-notices.js','src/world/police-station-dressing.js',
  'src/world/okinawa/nakamura-dressing.js',
  // Harbour Park's guide board (港公園, its map labels and notices) and the plants' Japanese names, each beside its English.
  'src/world/harbour-park-garden.js']);
