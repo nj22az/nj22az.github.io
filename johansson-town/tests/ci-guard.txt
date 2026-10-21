@@ -41,6 +41,10 @@ minato-compact.test.mjs
 izakaya-backbar.test.mjs
 izakaya-service-layout.test.mjs
 shared-dining-entry.test.mjs
+drinking-liquid.test.mjs
+drinking-rig.test.mjs
+drinking-simulator.test.mjs
+drinking-game.test.mjs
 beach-shore.test.mjs
 johansson-study.test.mjs
 audit-boot.test.mjs
