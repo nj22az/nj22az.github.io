@@ -213,3 +213,14 @@ the same way. Until 21 October 2026 they waited at 97% for ever, because the fro
 World changes must keep the CI guard green (`.github/workflows/johansson-world.yml`, on every pull request and push to
 main that touches `johansson-town/`; locally `node tools/ci-guard.mjs`). The guard runs the tests listed in
 `tests/ci-guard.txt`, all of which pass on main. When a known-failing test is fixed, add it to the guard (one line).
+
+## Owner's decision — 21 October 2026: the ferry keeps her timetable and never waits for Nils
+
+The owner: "How to simplify so that the ferry doesn't have to wait for Nils", and, on the recommendation below, "Yes
+proceed". The Minato Maru sails to a fixed timetable, the one on the departures board in Sakura's office
+(`HARBOUR_LINE`), whether the player is aboard, ashore or on the gangway. Two minutes before she sails, the horn sounds
+and the gangway sign reads 出港 · Departing; on deck a prompt offers "Go ashore" or "Stay aboard". If he is aboard when
+she sails, he crosses with her and can walk her decks or go below. If he misses her, the next sailing is on the board, or
+he takes the small quick crossing to Kitano-jima, which stays on request. The chief's watch is Nils's only while he is
+aboard in his working hours; otherwise Mac has it. Nothing in the ship's day depends on the player. The brief is
+`briefs/ferry-timetable.md`.
