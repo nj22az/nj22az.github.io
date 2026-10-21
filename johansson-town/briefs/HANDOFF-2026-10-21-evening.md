@@ -133,4 +133,29 @@ The owner asked for these three to go into the handoff. Do them in a fresh sessi
    - Check the knife lies on the board, not in it.
    - Add the izakaya counter to the no-z-fighting / overlap checks.
 
+4. **Sitting: two people on one bench, and no clipping when seated.** In the owner's photo
+   (`owner-shots/bench-sitting-2026-10-21.jpg`, a resident in a skirt on a park bench at night, on Linux), the hands pass
+   through the skirt and the legs pass through the bench. The owner: "two people should be able to sit together on a
+   bench, and the avatars need better animation her hands shouldn't clip through the skirt and the legs shouldn't clip
+   through the bench".
+   - **Two seats per bench.** Give every bench two (or, by length, more) seat slots in the seat data (see
+     `tests/seat-layouts.test.mjs` and the bench builders). Each slot has its own position and facing.
+     - Two residents, or a resident and the player, sit side by side without overlapping.
+     - Sitting beside someone is also a storyteller moment and a chance for a pair pose. Reuse the pair-pose work
+       (`pair-poses.js`).
+   - **Seated pose fits the body and the seat.**
+     - The thighs rest on the seat top, the knees bend over its front edge and the shins hang in front of it, never
+       through it. The pose comes from the seat's height and depth, not a fixed angle.
+     - The hands rest on the lap or the seat edge outside the skirt's volume. Skirts, dresses and long shirts get a
+       seated shape, or the hands are placed on top of the cloth.
+     - Check every outfit category: skirt, shorts, trousers, dress.
+   - **Tests.**
+     - A seated-pose collision test: for every outfit and every seat type (bench, chair, zabuton, stool), no hand or arm
+       vertex inside the garment volume, and no leg inside the seat solid. Contact is allowed to a few millimetres,
+       like the film collision rule in jojo/CLAUDE.md.
+     - A two-on-a-bench test.
+     - Add both to `tests/ci-guard.txt`.
+   - **Photos.** Before and after of the owner's spot at night, two people on one bench, and a skirt, trousers and a
+     dress seated.
+
 The ferry timetable (`briefs/ferry-timetable.md`) is also ready to build. The owner approved it.
