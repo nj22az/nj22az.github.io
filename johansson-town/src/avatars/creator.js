@@ -17,6 +17,8 @@ import {svg} from '../ui/icons.js';
 import {townAudio,unlockTownAudio} from '../audio/town-audio.js';
 import {PERSONALITY_QUESTIONS,answeredPersonality,personalityReference} from './personality-questions.js';
 import {headProfile,shapeHeadPoint} from './head-profile.js';
+import {createMotionPlayer} from './motion.js';
+import {createMotionPanel} from './motion-panel.js';
 
 /** Front silhouettes drawn from the same profile deformation as the game head. */
 export function drawFaceFormThumb(canvas,form,skin='#f5d0ae'){
@@ -439,6 +441,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  let wardrobeOwner=owner||start.name;let recipe=normalizeRecipe({...start,outfit:appropriateOutfit(wardrobeOwner,start.outfit)});const history=[];const viewPositions=new Map();let featureBaseline=structuredClone(recipe);
  let step=STEPS.some(s=>s[0]===startAt)?startAt:'look',tab='body',page='style',pose='idle',expression='auto',previewFacing=0,hairThumbView='front',wearing='clothes',dress=null,previewFraming='auto';
  const performanceState=createPerformance();let performanceEnabled=false,activePerformanceFace={},walkTurn=0,actingFrame=null;
+ let bodyMotion=null,motionTime=0,motionPlaying=false,motionLoop=true;
  const el=(tag,props={},...children)=>{const e=Object.assign(document.createElement(tag),props);for(const c of children)if(c!=null)e.append(c);return e;};
 
  // ----- Layout -----
@@ -564,6 +567,10 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   activePerformanceFace=performanceEnabled?performanceState.update(dt,mood):{};
   if(talking&&!performanceState.state.speaking)delete activePerformanceFace.talk;
   animator.update(dt,{speed:pose==='walk'?1.2:0,seated:pose==='sit',seatHeight:.42,lying:pose==='lie',talking:talking||performanceEnabled&&performanceState.state.speaking,expression:mood});
+  if(bodyMotion&&motionPlaying){
+   motionTime+=dt;
+   bodyMotion.apply(avatar,motionLoop?motionTime%bodyMotion.duration:Math.min(motionTime,bodyMotion.duration));
+  }
   if(actingFrame)applyActorFrame(avatar,actingFrame);
  }
  function setActingFrame(value){
@@ -1128,14 +1135,14 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   const angle=el('select',{className:'shm-select shm-angle',ariaLabel:'Preview angle'},el('option',{value:'front',textContent:'Front'}),el('option',{value:'back',textContent:'Back'}));
   angle.onchange=()=>{endDrag();previewFacing=angle.value==='back'?Math.PI:0;spin=previewFacing;spinVelocity=0;};
   const select=el('select',{className:'shm-select',ariaLabel:'Preview pose'},...POSES.map(([id,label])=>el('option',{value:id,textContent:label})));select.value=pose;
-  select.onchange=()=>{endDrag();pose=select.value;if(!['idle','walk','sit','lie'].includes(pose))animator.play(pose);else animator.stop();};
+  select.onchange=()=>{endDrag();motionPlaying=false;pose=select.value;if(!['idle','walk','sit','lie'].includes(pose))animator.play(pose);else animator.stop();};
   dress=el('select',{className:'shm-select',ariaLabel:'Preview outfit'});fillDress();
   dress.onchange=()=>{endDrag();showIn(dress.value);};
   const exportButton=el('button',{type:'button',className:'shm-pill',textContent:'Export T-pose (.glb)'});
   exportButton.onclick=async()=>{
    exportButton.disabled=true;exportButton.textContent='Exporting…';
    try{
-    const {exportAvatarGLB}=await import('./export.js'),data=await exportAvatarGLB(recipe);
+    const {exportAvatarGLB}=await import('./export.js?v=20261020-motion'),data=await exportAvatarGLB(recipe);
     const url=URL.createObjectURL(new Blob([data],{type:'model/gltf-binary'})),link=el('a',{href:url,download:(recipe.name||'islander').replace(/[^a-z0-9_-]/gi,'-')+'-tpose.glb'});
     link.click();setTimeout(()=>URL.revokeObjectURL(url),10000);exportButton.textContent='Export T-pose (.glb)';
    }catch(error){console.error(error);exportButton.textContent='Export failed — retry';}
@@ -1145,6 +1152,14 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   mood.onchange=()=>{expression=mood.value;};
   poses.append(angle,select,dress,mood,exportButton);
  }
+ const motionPanel=createMotionPanel({
+  onLoad:value=>{bodyMotion=createMotionPlayer(value);motionTime=0;},
+  onPlay:loop=>{motionLoop=loop;motionTime=0;motionPlaying=true;pose='idle';animator?.stop();const input=poses.querySelector('[aria-label="Preview pose"]');if(input)input.value=pose;setPerformance({frozen:false});setPreview({framing:'full'});},
+  onStop:()=>{motionPlaying=false;motionTime=0;},
+  onExport:async motion=>{const {exportAvatarGLB}=await import('./export.js?v=20261020-motion');return exportAvatarGLB(recipe,{motion});},
+  onImport:async buffer=>{const {importMotionGLB}=await import('./motion-import.js');return importMotionGLB(buffer,()=>buildAvatar(recipe,{shadows:false,faceSize:256}));}
+ });
+ side.style.position='relative';side.append(motionPanel.root);
  /** The preview's outfit list, for whoever is in the maker now (the towel is for grown-ups). */
  function fillDress(){if(!dress)return;dress.replaceChildren(...previewOutfits(recipe).map(o=>el('option',{value:o.value,textContent:o.label,disabled:o.disabled})));dress.value=wearing;}
  /** Show them in their clothes, their swimwear or the bath towel, without changing the recipe. */
@@ -1177,7 +1192,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   stopSpeech();cancelAnimationFrame(frame);stopPictures();inView?.disconnect();clearTimeout(searchDue);observer?.disconnect();viewport?.removeEventListener('resize',fitViewport);viewport?.removeEventListener('scroll',fitViewport);
   root.removeEventListener('keydown',swallow);root.removeEventListener('keyup',swallow);
   const out=normalizeRecipe({...recipe,name:name.value});
-  avatar?.dispose();thumbTarget.dispose();renderer.dispose();renderer.forceContextLoss?.();floor.geometry.dispose();floor.material.dispose();root.remove();previousFocus?.focus?.();
+  motionPanel.dispose();avatar?.dispose();thumbTarget.dispose();renderer.dispose();renderer.forceContextLoss?.();floor.geometry.dispose();floor.material.dispose();root.remove();previousFocus?.focus?.();
   if(saving)onSave(out);onClose(out,saving);
  }
  close.onclick=()=>finish(false);
@@ -1224,3 +1239,4 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  rebuild();dirty=false;renderPoses();goTo(step);loop();close.focus();
  return {close:()=>finish(false),get recipe(){return normalizeRecipe({...recipe,name:name.value});},get root(){return root;},goTo,showIn,setRecipe,setPreview,setPerformance,setActingFrame,get performance(){return performanceState.state;},resetFeature,exportPNG,save:()=>finish(true),get wearing(){return wearing;}};
 }
+

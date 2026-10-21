@@ -12,7 +12,7 @@ import {DINING,NIGHT_LANE,inDiningLane,IZAKAYA_LANE} from './dining-layout.js';
 import {oilJettyAt} from './oil-jetty-layout.js';
 const OIL_JETTY_ROUTE=Object.freeze({id:'oil-jetty',surface:'stone'});
 import {PARK,parkHeight,parkApproachHeight,parkSkirtHeight} from './park-layout.js';
-import {inHarbourPark,harbourPondAt,parkPathAt} from './harbour-park-plan.js';
+import {inHarbourPark,harbourPondAt,parkPathAt,HARBOUR_PARK_PATHS} from './harbour-park-plan.js';
 import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
 import {BUS_STATION,BUS_STATION_ROUTES} from './bus-station.js';
 import {FOREST_EDGE} from './forest-edge.js';
@@ -26,6 +26,7 @@ import {SCHOOL,schoolAt} from './school-layout.js';
 import {NISHI,nishiAt,EAST_QUAY,eastQuayAt} from './okinawa/layout.js';
 import {KITAHAMA,kitahamaLaneAt} from './kitahama-layout.js';
 import {GROUND_LAYER} from './ground-layers.js';
+import {mainStreetTop} from './ground-plan.js';
 const KITAHAMA_ROUTE=Object.freeze({id:'kitahama-lane',surface:'stone'});
 // Rendering, grounding and navigation use the same compact street network.
 export const BOARDWALK=Object.freeze({x:MAIN_ROAD.x,minZ:-38,maxZ:8,width:MAIN_ROAD.width});
@@ -51,7 +52,9 @@ export const ROUTES = [
  {id:'outer-pier',width:8.2,surface:'wood',points:[[0,-44],[0,OUTER_PIER.open+.45]]},
  ...BUS_STATION_ROUTES,
  {id:'shop-crossing',width:3,surface:'stone',points:[[MAIN_ROAD.pavementWest,SHOP_CROSSING_Z],[MAIN_ROAD.pavementEast,SHOP_CROSSING_Z]]},
- {id:'south-shop-crossing',width:3,surface:'stone',points:[[MAIN_ROAD.pavementWest,-18],[MAIN_ROAD.pavementEast,-18]]},
+ // Across the zebra to the east footway, where the park's approach begins (harbour-park-plan.js park-approach): it ended in
+ // the park's lawn past the footway, a way that went nowhere (the ground audit's dead end).
+ {id:'south-shop-crossing',width:3,surface:'stone',points:[[MAIN_ROAD.pavementWest,-18],[HARBOUR_PARK_PATHS[0].points[0][0],-18]]},
  // Ends at the footway's edge: the police station stands on the lawn it used to run into (police-station-layout.js).
  {id:'east-alley',width:3,surface:'stone',points:[[0,18.4],[5.65,18.4]]},
  {id:'second-pier',width:2.2,surface:'wood',points:[[-37.35,-46.2],[-37.35,-55.5]]},
@@ -169,7 +172,11 @@ export function planHeight(x,z){
   // pavement; the drawn-surface sampler cannot lift a person through so large a step.
   const street=x>=MAIN_ROAD.pavementWest&&x<=MAIN_ROAD.pavementEast&&z>=MAIN_ROAD.minZ&&z<=MAIN_ROAD.maxZ;
   const station=x>=BUS_STATION.minX&&x<=BUS_STATION.maxX&&z>=BUS_STATION.minZ&&z<=BUS_STATION.maxZ;
-  if(street||station||eastLawnAt(x,z)||westYardAt(x,z)||nishiAt(x,z)||schoolAt(x,z))return 0;
+  // Main Street's ground is laid from its plan (ground-plan.js), the carriageway and its bays a kerb under the
+  // footways: feet go down onto the road, up the kerb, along the ramp, at the heights they are drawn at.
+  if(street||station)return mainStreetTop(x,z)??0;
+  // The east quay is at the datum too (its apron 6 cm over it, walk-surface.js): the beach beside it is graded up to it.
+  if(eastLawnAt(x,z)||westYardAt(x,z)||nishiAt(x,z)||schoolAt(x,z)||eastQuayAt(x,z))return 0;
   if(kitahamaLaneAt(x,z))return KITAHAMA.y+GROUND_LAYER.lane;
   const garden=coastalSurface(x,z);if(garden?.id==='harbour-park')return garden.y;
   const airport=airportSurface(x,z);if(airport)return airport.y;

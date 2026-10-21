@@ -41,6 +41,9 @@ for(const site of ['izakaya','onsen','mayor-office','school']){const was=legacy.
 const {isRetired}=await import('../src/people/roster.js');
 const retiredName=text=>typeof text==='string'&&/Reiko|Tōma|Kinjō|Ōshiro|Shimabukuro|Sakurai|Barfly|Bus driver|Higa Jr|Grandmother Chinen/.test(text);
 for(const [supplier,accounts] of Object.entries(legacy.ACCOUNTS))for(const [site,was] of Object.entries(accounts)){const is=now.ACCOUNTS[supplier]?.[site];if(is&&retiredName(was.delivery)&&is.delivery!==was.delivery){assert.ok(!retiredName(is.delivery),supplier+'/'+site+' names a live deliverer');assert.deepEqual(is.lines,was.lines);accounts[site]={...was,delivery:is.delivery};}}
+// 21 October 2026 (the owner's decision; commerce/higa-liquor.js HIGA_ROUND): Higa Liquor's orders are Kōji's round on his
+// weeks ashore, so its accounts' delivery lines say when and who carries them; what each account orders is unchanged.
+for(const [site,was] of Object.entries(legacy.ACCOUNTS['higa-saketen'])){const is=now.ACCOUNTS['higa-saketen'][site];assert.deepEqual(is.lines,was.lines,site+' keeps its order');legacy.ACCOUNTS['higa-saketen'][site]={...was,delivery:is.delivery};}
 for(const name of Object.keys(legacy.linesFor))if(!live(name))delete legacy.linesFor[name];
 for(const [name,want] of Object.entries(now.linesFor)){assert.ok(castMember(name),name+' buys at Sakura but is not in the cast');for(const line of legacy.linesFor[name]||[])assert.ok(want.includes(line),name+' keeps the '+line);legacy.linesFor[name]=want;}
 

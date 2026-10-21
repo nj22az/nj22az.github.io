@@ -14,7 +14,7 @@ for(const [width,height] of [[820,1180],[390,844]]){
   await page.getByText('Project opened.',{exact:true}).waitFor();
   await page.locator('[data-mode="comic"]').click();await page.getByRole('button',{name:'Edit scene',exact:true}).nth(2).click();
   const canvas=page.locator('.scene-picture canvas');await page.waitForFunction(()=>document.querySelector('.scene-picture canvas')?.getAttribute('aria-busy')==='false');
-  await page.locator('[data-step="text"]').click();await page.locator('[data-field="effect"]').selectOption('');await page.locator('[data-field="effect"]').selectOption('chaos');await page.locator('[data-step="pose"]').click();
+  await page.locator('[data-step="text"]').click();await page.locator('[data-field="effect"]').selectOption('');await page.locator('[data-field="effect"]').selectOption('escape');await page.locator('[data-field="exitLabel"]').fill('LỐI RA');await page.locator('[data-step="pose"]').click();
   await page.locator('[data-classroom-props] summary').click();await page.locator('[data-prop-id]').selectOption('desk');
   await page.locator('[data-prop-size]').fill('.8');await page.locator('[data-prop-size]').dispatchEvent('change');
   const roll=page.locator('[data-prop-axis="5"]');await roll.fill('-120');await roll.dispatchEvent('change');
@@ -22,7 +22,7 @@ for(const [width,height] of [[820,1180],[390,844]]){
   await page.waitForFunction(()=>document.querySelectorAll('.scene-panels figure').length===4);
   await page.locator('[data-mode="comic"]').click();assert.equal(await page.getByRole('button',{name:'Edit scene',exact:true}).count(),4);
   const download=page.waitForEvent('download');await page.locator('[data-save="project"]').click();const file=await download;
-  const saved=JSON.parse(await fs.readFile(await file.path(),'utf8'));assert.equal(saved.panels.length,4);assert.equal(saved.panelScenes.length,4);assert.equal(saved.panelScenes[2].furniture.desk.size,.8);assert.equal(saved.panelScenes[2].effect,'chaos');assert.ok(Math.abs(saved.panelScenes[2].furniture.desk.rotation[2]+2*Math.PI/3)<1e-9);assert.equal(saved.panelScenes[3].actors[0].liftedBy,saved.panelScenes[3].actors[1].id);
+  const saved=JSON.parse(await fs.readFile(await file.path(),'utf8'));assert.equal(saved.panels.length,4);assert.equal(saved.panelScenes.length,4);assert.equal(saved.panelScenes[2].furniture.desk.size,.8);assert.equal(saved.panelScenes[2].effect,'escape');assert.equal(saved.panelScenes[2].exitLabel,'LỐI RA');assert.ok(Math.abs(saved.panelScenes[2].furniture.desk.rotation[2]+2*Math.PI/3)<1e-9);assert.equal(saved.panelScenes[3].actors[0].liftedBy,saved.panelScenes[3].actors[1].id);
   await page.getByRole('button',{name:'Edit scene',exact:true}).nth(2).click();
   await page.locator('button[data-value="Run"]').click();
   await page.waitForFunction(()=>document.querySelector('.scene-picture canvas')?.getAttribute('aria-busy')==='false');

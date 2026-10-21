@@ -39,8 +39,9 @@ function buildTanker(){
 export function buildOilJetty(world,{register,onAction,shadows=false}={}){
  const group=new THREE.Group();group.name='Oil jetty';world.group.add(group);
  const kit=createKit({shadows}),J=OIL_JETTY,D=J.deck,H=J.head,concrete=0xb7b5ab,steel=0x8e979a;
- // Piles, the deck and its kerb, the head platform with its fenders.
- for(let x=D.minX+2;x<=H.maxX-.5;x+=3)for(const z of [D.minZ+.2,D.maxZ-.2])kit.cyl(.22,.22,2.4,x,D.y-1.2,z,0x8e8a80,{segments:8});
+ // Piles, the deck and its kerb, the head platform with its fenders. The piles stop 2 cm inside the deck: their heads
+ // came up flush with its top and showed through it.
+ for(let x=D.minX+2;x<=H.maxX-.5;x+=3)for(const z of [D.minZ+.2,D.maxZ-.2])kit.cyl(.22,.22,2.4,x,D.y-1.22,z,0x8e8a80,{segments:8});
  kit.block(D.minX,D.maxX,D.y-.35,D.y,D.minZ,D.maxZ,concrete);
  kit.block(H.minX,H.maxX,D.y-.35,D.y,H.minZ,H.maxZ,concrete);
  for(const z of [D.minZ,D.maxZ-.15])kit.block(D.minX+1,D.maxX,D.y,D.y+.15,z,z+.15,0xe0b93a);

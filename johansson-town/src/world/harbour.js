@@ -1,14 +1,15 @@
-import {KITANO_ROAD} from './kitano-link-plan.js';
 import {japaneseSign,signText} from './okinawa/signs.js';
 import {QUAY_BAYS} from './town-traffic.js';
-import {GROUND_LAYER} from './ground-layers.js';
 import {buildDockWorkshop} from './dock-workshop.js';
 import {buildHarbourOffice} from './harbour-office.js';
-import {GROUND} from '../render/ground-palette.js';
 import {releaseAfterUpload} from '../render/canvas-release.js';
 import {WEST_SHOPS,buildWestShop} from './west-shops.js';
 import {buildIslandCoast} from './island-coast.js';
 import {buildBoardwalk} from './boardwalk.js?snappy=1';
+import {buildGround} from './ground-build.js';
+import {GROUND_CLASSES} from './ground-standard.js';
+import {mainStreetPlan,streetDrop,MAIN_STREET_GROUND,TACTILE} from './ground-plan.js';
+import {harbourPlan,MAIN_QUAY_TOP} from './ground-plan-harbour.js';
 import {buildWarehouse} from './warehouse.js';
 import {BOARDWALK,BREAKWATER,OUTER_PIER} from './layout.js?snappy=1';
 import {MINATO_BERTH,QUAY_FISHING_BOAT} from './minato-berth.js';
@@ -122,9 +123,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),mat);m.position.set(x,y,z);m.rotation.y=angle;m.receiveShadow=false;m.castShadow=false;group.add(m);return m;
   }
   const shopGlass=[];
-  function puddle(x,z,sx,sz,rot=0){
+  function puddle(x,z,sx,sz,rot=0,y=-.031){
     const mat=new THREE.MeshPhysicalMaterial({color:0x263c43,roughness:.14,metalness:.08,transparent:true,opacity:.34,depthWrite:false});
-    const m=new THREE.Mesh(new THREE.CircleGeometry(1,28),mat);m.rotation.x=-Math.PI/2;m.rotation.z=rot;m.position.set(x,-.031,z);m.scale.set(sx,sz,1);m.visible=false;m.renderOrder=2;group.add(m);wetMeshes.push(m);
+    const m=new THREE.Mesh(new THREE.CircleGeometry(1,28),mat);m.rotation.x=-Math.PI/2;m.rotation.z=rot;m.position.set(x,y,z);m.scale.set(sx,sz,1);m.visible=false;m.renderOrder=2;group.add(m);wetMeshes.push(m);
   }
   // Unlit paint, shared with every street and dimmed with the night (road-standards.js roadPaintMaterial).
   function roadMark(w,d,x,z,c=0xb7aa80){
@@ -132,64 +133,25 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   }
 
   addHorizon(group);
-  // Base town and road. Markings are non-coplanar decal planes to eliminate white-line z fighting.
+  // The ground of Main Street and the harbour, laid from the rulebook (ground-standard.js) by one generator
+  // (ground-build.js) from their plans (ground-plan.js, ground-plan-harbour.js): the carriageway a kerb under the
+  // footways, kerbs dropped at the zebras, the bus stop and the lay-by's way out, the quays at their own level with their
+  // copings. It replaced a slab, a kerb and a colour of their own in each of six modules (the owner, 21 October 2026).
   buildIslandCoast(group);
-  const upperRoadLength=MAIN_ROAD.maxZ-BOARDWALK.maxZ;
-  box([MAIN_ROAD.width,.2,upperRoadLength],[MAIN_ROAD.x,GROUND_LAYER.lane-.10,(MAIN_ROAD.maxZ+BOARDWALK.maxZ)/2],GROUND.asphalt,[0,0,0],'road');
-  box([MAIN_ROAD.width,.2,4],[MAIN_ROAD.x,GROUND_LAYER.lane-.10,-40],GROUND.asphalt,[0,0,0],'road');
-  const boardwalk=buildBoardwalk(group,{mobile,shadows,maxAnisotropy});
-  // Partition the footways around asphalt courts; each finished surface owns its patch.
-  const K=KITANO_ROAD;
-  // Kitano Road's mouth takes only its carriageway out of the footway: its own footway on the harbour side starts at the
-  // footway's kerb (kitano-link.js), so cutting the footway's width too left the corner by the drinks corner unpaved.
-  const commercialMouth={minX:K.corners[0][0],maxX:K.corners.at(-1)[0],minZ:K.corners[0][1]+K.section.north,maxZ:K.corners[0][1]-K.section.north};
-  const cargoCourt={minX:MAIN_ROAD.east,maxX:3.2,minZ:-47.6,maxZ:-32.8};
-  const footCuts=[MAIN_SERVICE_COURT,MAIN_LOADING_APRON,MAIN_PARKING_LAYBY,commercialMouth,cargoCourt];
-  for(const [left,right] of [[-8.1,MAIN_ROAD.west],[MAIN_ROAD.east,5.75]]){
-   const xs=[...new Set([left,right,...footCuts.flatMap(p=>[p.minX,p.maxX]).filter(x=>x>left&&x<right)])].sort((a,b)=>a-b);
-   const zs=[...new Set([MAIN_ROAD.minZ,MAIN_ROAD.maxZ,...footCuts.flatMap(p=>[p.minZ,p.maxZ]).filter(z=>z>MAIN_ROAD.minZ&&z<MAIN_ROAD.maxZ)])].sort((a,b)=>a-b);
-   for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++){
-    const x=(xs[i-1]+xs[i])/2,z=(zs[j-1]+zs[j])/2;
-    if(footCuts.some(p=>x>p.minX&&x<p.maxX&&z>p.minZ&&z<p.maxZ))continue;
-    const pavement=directBox([xs[i]-xs[i-1],.10,zs[j]-zs[j-1]],[x,-.01,z],GROUND.pavers,group,[0,0,0],false,'paving');pavement.name='Main Street footway';
-   }
-  }
-  // The delivery turn stays on asphalt, with a flush entrance through the old kerb.
-  const court=MAIN_SERVICE_COURT;
-  for(const [a,b] of [[court.minX,MAIN_ROAD.west],[MAIN_ROAD.east,court.maxX]]){
-   const apron=directBox([b-a,.04,court.maxZ-court.minZ],[(a+b)/2,GROUND_LAYER.lane-.02,(court.minZ+court.maxZ)/2],GROUND.asphalt,group,[0,0,0],false,'road');apron.name='Main Street service turnout';
-  }
-  const loading=MAIN_LOADING_APRON,loadingPaving=directBox([MAIN_ROAD.west-loading.minX,.04,loading.maxZ-loading.minZ],[(loading.minX+MAIN_ROAD.west)/2,GROUND_LAYER.lane-.02,(loading.minZ+loading.maxZ)/2],GROUND.asphalt,group,[0,0,0],false,'road');loadingPaving.name='Main Street freight pullout';
-  const layby=MAIN_PARKING_LAYBY,laybyPaving=directBox([layby.maxX-layby.minX,.04,layby.maxZ-layby.minZ],[(layby.minX+layby.maxX)/2,GROUND_LAYER.lane-.02,(layby.minZ+layby.maxZ)/2],GROUND.asphalt,group,[0,0,0],false,'road');laybyPaving.name='Main Street parking lay-by';
-  for(const z of [layby.minZ+.25,layby.maxZ-.25]){const line=directBox([layby.maxX-layby.minX-.2,.012,.09],[(layby.minX+layby.maxX)/2+.1,GROUND_LAYER.lane+.006,z],0xd6c8a7,group);line.name='Lay-by bay marking';line.material=line.material.clone();Object.assign(line.material,{depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});line.raycast=()=>{};}
-  // The working quay bays connect to Main Street through a marked, flush driveway.
-  // Drivers straighten clear of the Port Building canopy before crossing the footway.
-  for(const [x0,x1,z0,z1] of [[cargoCourt.minX,cargoCourt.maxX,cargoCourt.minZ,layby.minZ],[layby.maxX,cargoCourt.maxX,layby.minZ,cargoCourt.maxZ]]){
-   const cargoDrive=directBox([x1-x0,.04,z1-z0],[(x0+x1)/2,GROUND_LAYER.lane-.02,(z0+z1)/2],GROUND.asphalt,group,[0,0,0],false,'road');cargoDrive.name='Quay cargo driveway';
-  }
+  const ground=buildGround(group,[mainStreetPlan(),harbourPlan({pier:OUTER_PIER,landing:MINATO_BERTH.landing})],{shadows});
+  const roadTop=(x,z)=>GROUND_CLASSES.road.top+streetDrop(x,z);
+  const boardwalk=buildBoardwalk(group,{heightAt:roadTop});
+  const court=MAIN_SERVICE_COURT,loading=MAIN_LOADING_APRON,layby=MAIN_PARKING_LAYBY;
+  for(const z of [layby.minZ+.25,layby.maxZ-.25]){const line=directBox([layby.maxX-layby.minX-.2,.012,.09],[(layby.minX+layby.maxX)/2+.1,roadTop(layby.minX+.5,z)+.006,z],0xd6c8a7,group);line.name='Lay-by bay marking';line.material=line.material.clone();Object.assign(line.material,{depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});line.raycast=()=>{};}
 
   // The lay-by (QUAY_BAYS[1]) carries its own end marks, drawn with its paving above.
-  for(const [x,z] of QUAY_BAYS.slice(0,1))for(const dx of [-1.02,1.02]){const line=directBox([.09,.012,4.5],[x+dx,GROUND_LAYER.grass+.006,z],0xd6c8a7,group);line.name='Working quay bay marking';line.material=line.material.clone();Object.assign(line.material,{depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});line.raycast=()=>{};}
+  for(const [x,z] of QUAY_BAYS.slice(0,1))for(const dx of [-1.02,1.02]){const line=directBox([.09,.012,4.5],[x+dx,MAIN_QUAY_TOP+.006,z],0xd6c8a7,group);line.name='Working quay bay marking';line.material=line.material.clone();Object.assign(line.material,{depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});line.raycast=()=>{};}
 
-  // Kerbstones: a light concrete edge between footway and carriageway on both sides,
-  // dropped flush where the two crossings meet the road so a pram (or a player) rolls
-  // straight across. Low enough to step over without a hitch.
-  {
-    const kerb=new THREE.MeshStandardMaterial({color:0xd9d6cc,roughness:.9});
-    for(const x of [MAIN_ROAD.west-.09,MAIN_ROAD.east+.09]){
-      const gaps=[...([SHOP_CROSSING_Z,-18].map(z=>[z-1.6,z+1.6])),...(x>MAIN_ROAD.x?[[commercialMouth.minZ,commercialMouth.maxZ],[cargoCourt.minZ,cargoCourt.maxZ]]:[]),[court.minZ,court.maxZ],...(x<MAIN_ROAD.x?[[loading.minZ,loading.maxZ]]:[[MAIN_PARKING_LAYBY.minZ,MAIN_PARKING_LAYBY.kerbTo]])].sort((a,b)=>a[0]-b[0]);
-      let z0=MAIN_ROAD.minZ;
-      for(const [a,b] of [...gaps,[MAIN_ROAD.maxZ,MAIN_ROAD.maxZ]]){
-        if(b>z0&&a>z0){const len=a-z0;const k=new THREE.Mesh(new THREE.BoxGeometry(.18,.11,len-.02),kerb);k.position.set(x+(x<MAIN_ROAD.x?.01:-.01),.025,z0+len/2);k.name='Main Street kerb';k.receiveShadow=true;k.castShadow=false;group.add(k);}
-        z0=Math.max(z0,b);
-      }
-    }
-  }
   // Road paint to the 1997 standard (road-standards.js): solid white edge lines the
   // length of the street (the deck section draws its own to the same spec), and where the
   // road meets the lawn at its north end, 車止め posts rather than a crossing to nowhere.
-  edgeLines(group,[[MAIN_ROAD.x,BOARDWALK.maxZ],[MAIN_ROAD.x,MAIN_ROAD.maxZ-.2]],{width:MAIN_ROAD.width,heightAt:()=>GROUND_LAYER.lane});
-  [[-4.1,18.2,1.15,.45,.2],[-1.7,10,.8,.35,-.3]].forEach(v=>puddle(...v));
+  edgeLines(group,[[MAIN_ROAD.x,BOARDWALK.maxZ],[MAIN_ROAD.x,MAIN_ROAD.maxZ-.2]],{width:MAIN_ROAD.width,heightAt:(x,z)=>roadTop(x,z)-.03});
+  [[-4.1,18.2,1.15,.45,.2],[-1.7,10,.8,.35,-.3]].forEach(v=>puddle(...v,roadTop(v[0],v[1])+.004));
 
   // Two perpendicular crossings define the short rectangular shopping blocks. Where
   // they fall on the timber boardwalk there is no traffic to stop and nothing to paint:
@@ -197,10 +159,15 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // Both crossings: white zebra bars, kerbs dropped (see the kerbstones above), yellow
   // warning blocks at each end, and the blue crossing sign on the footway.
   for(const z of [SHOP_CROSSING_Z,-18]){
-    zebraCrossing(group,{x0:MAIN_ROAD.west+.15,x1:MAIN_ROAD.east-.15,z,y:GROUND_LAYER.lane});
-    tactileStrip(group,{x:MAIN_ROAD.west-.38,z,w:.3,d:3});tactileStrip(group,{x:MAIN_ROAD.east+.38,z,w:.3,d:3});
-    roadSign(group,'crossing',{x:MAIN_ROAD.pavementWest+.2,z:z+1.75,ry:0,colliders});roadSign(group,'crossing',{x:MAIN_ROAD.east+.12,z:z-1.75,ry:Math.PI,colliders});
+    zebraCrossing(group,{x0:MAIN_ROAD.west+.15,x1:MAIN_ROAD.east-.15,z,y:roadTop(MAIN_ROAD.x,z)});
+    // The east sign stands on the footway behind the dropped kerb's ramp and its flare; at the shop crossing, whose east end lands
+    // in Kitano Road's mouth, on the mouth's north corner (it stood in the side road's carriageway).
+    const eastZ=z>MAIN_STREET_GROUND.mouth.z0&&z<MAIN_STREET_GROUND.mouth.z1?MAIN_STREET_GROUND.mouth.z1+.6:z-1.75;
+    roadSign(group,'crossing',{x:MAIN_ROAD.pavementWest+.2,z:z+1.75,y:MAIN_STREET_GROUND.footway,ry:0,colliders});roadSign(group,'crossing',{x:MAIN_ROAD.east+1.2,z:eastZ,y:MAIN_STREET_GROUND.footway,ry:Math.PI,colliders});
   }
+  // The yellow warning blocks at the top of each crossing's ramps, on the footway (ground-plan.js TACTILE).
+  // Set into the footway (ground-plan.js leaves their bed open), their studs 6 mm proud of it.
+  for(const t of TACTILE)tactileStrip(group,{...t,y:MAIN_STREET_GROUND.footway-.006});
 
   // Shopfronts — masonry and timber with glass where useful.
   sites.forEach((s,i)=>{
@@ -279,21 +246,11 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // so everybody on the quay walked ankle-deep in the concrete.
   // The ferry's ramp lands on a steel plate let into it (minato-berth.js): the slab is cast round the
   // plate and recessed under it, so plate and concrete meet edge to edge, never one lying over the other.
-  {const L=MINATO_BERTH.landing,Q={minX:-19,maxX:19,minZ:-50,maxZ:-38},top=-.016,foot=top-.4;
-   const slab=(x0,x1,z0,z1,t=top)=>box([x1-x0,t-foot,z1-z0],[(x0+x1)/2,(t+foot)/2,(z0+z1)/2],GROUND.concrete,[0,0,0],'wall');
-   slab(Q.minX,L.minX,Q.minZ,Q.maxZ);slab(L.maxX,Q.maxX,Q.minZ,Q.maxZ);slab(L.minX,L.maxX,L.maxZ,Q.maxZ);
-   slab(L.minX,L.flapMinX,L.flapFromZ,L.maxZ);slab(L.minX,L.maxX,Q.minZ,L.maxZ,L.top-L.thickness);
-   // The raised coping and kerb along the edge, cut away where the ramp lands and where the outer pier joins the quay
-   // (out to the pier's flank copings, town.js): its deck runs on to the quay there, the way the passengers off the boat,
-   // the pallet truck and everybody walking to the gangway go. Across the pier's root the kerb stood 24 cm above the
-   // quay, a step no walker takes (navmesh.js), and Thuan off the 08:30 boat had no way into town.
-   // The kerb is concrete with its top painted safety yellow, as on the Nishi and east quays (a dark slab before).
-   const pierWest=OUTER_PIER.x-OUTER_PIER.width/2-.17,pierEast=OUTER_PIER.x+OUTER_PIER.width/2+.17;
-   for(const [a,b] of [[Q.minX,L.minX],[L.maxX,pierWest],[pierEast,Q.maxX]]){box([b-a+.02,.6,.65],[(a+b)/2,-.12,-49.65],0x596568);box([b-a-.02,.14,.55],[(a+b)/2,.17,-49.28],0x8f938c);box([b-a-.04,.04,.55],[(a+b)/2,.26,-49.28],0xe0b93a);}
-   // (The coping runs a centimetre past each end, the kerb and its paint stop short of it: ends in one plane flashed.)
-   // The plate, its top flush with the concrete: full width where the leaf touches down, narrower
-   // under the flap, and a steel angle armouring the quay's edge in front of it.
-   const plate=(x0,x1,z0,z1,c=0x5e6566)=>box([x1-x0,L.thickness,z1-z0],[(x0+x1)/2,L.top-L.thickness/2,(z0+z1)/2],c);
+  // The ferry's ramp lands on a steel plate let into the main quay (minato-berth.js), its top flush with the concrete
+  // (ground-plan-harbour.js MAIN_QUAY_TOP): full width where the leaf touches down, narrower under the flap, and a steel
+  // angle armouring the quay's edge in front of it. The quay's paving and its coping are the ground's (above).
+  {const L=MINATO_BERTH.landing;
+   const plate=(x0,x1,z0,z1,c=0x5e6566)=>{const m=directBox([x1-x0,L.thickness,z1-z0],[(x0+x1)/2,L.top-L.thickness/2,(z0+z1)/2],c,group);m.name='Ferry landing plate';m.castShadow=false;return m;};
    plate(L.minX,L.maxX,L.minZ,L.minZ+L.angle,0x7d8584);plate(L.minX,L.maxX,L.minZ+L.angle,L.flapFromZ);plate(L.flapMinX,L.maxX,L.flapFromZ,L.maxZ);}
 
   const sea=createHarbourBasin();sea.receiveShadow=false;group.add(sea);water.push(sea);
@@ -372,7 +329,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // The harbour used to stand four placeholder residents here. The town replaces its
   // people with the street cast, so they are no longer built at all: removed from the
   // scene they still answered 'Talk to' from where they had stood.
-  const cat=new THREE.Group();cat.position.set(-5,0,-25);group.add(cat);
+  const cat=new THREE.Group();cat.position.set(-5.6,MAIN_STREET_GROUND.footway,-25);group.add(cat);
   const catLast=cat.position.clone();let catFacing=0,catResting=true;
   // Tama, a ginger shop cat: rounded body, pale chest and muzzle, four legs that walk
   // and a tail held up in a curl. It used to be a box with a ball on the end.
@@ -410,10 +367,10 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   return {
     group,colliders,people,cat,details,warehouse:harbourWarehouse,busStation,streetLamps,lampGlow,
     landmarks:[harbourWarehouse?.place,busStation.place].filter(Boolean),
-    harbourShops,boardwalk,plantSites,shopDoors:shopDoors.filter(Boolean),
+    harbourShops,boardwalk,ground,plantSites,shopDoors:shopDoors.filter(Boolean),
     setRain(value){
-      boardwalk.setRain(value);
-      wet=value;rain.visible=value;wetMeshes.forEach(m=>m.visible=value);const road=material(GROUND.asphalt,'road');road.roughness=value?.28:.84;setOceanWeather(value);
+      boardwalk.setRain(value);ground.setRain(value);
+      wet=value;rain.visible=value;wetMeshes.forEach(m=>m.visible=value);setOceanWeather(value);
     },
     update(dt,time,day,minutes=1002){
       boat.rotation.z=Math.sin(time*.7)*.01;boat.position.y=SEA_LEVEL+Math.sin(time*.9)*.04;layFishingLines();

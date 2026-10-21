@@ -75,13 +75,15 @@ export function buildQuayDressing({parent,label,shadows=false}){
  // The staging bay on the pier: yellow lines, the two pallets with their loads, the pallet truck, the sign on its post.
  const T=PIER_TOP,line=(x0,x1,z0,z1)=>kit.streak((x0+x1)/2,T+.004,(z0+z1)/2,x1-x0,z1-z0,yellow,'y');
  line(S.minX,S.maxX,S.minZ,S.minZ+.08);line(S.minX,S.maxX,S.maxZ-.08,S.maxZ);line(S.minX,S.minX+.08,S.minZ+.08,S.maxZ-.08);line(S.maxX-.08,S.maxX,S.minZ+.08,S.maxZ-.08);
- const pallet=(x,z)=>{for(const dz of [-.45,0,.45])kit.box(1.1,.1,.1,x,T+.05,z+dz,0x6e5a44);kit.box(1.1,.04,1.1,x,T+.12,z,0x8a6c4a);return T+.14;};
+ // The pallets and their loads are cargo, not the pier: a group of their own (the ground audit leaves loose things out).
+ const cargo=createBoatKit('Cargo on pallets');
+ const pallet=(x,z)=>{for(const dz of [-.45,0,.45])cargo.box(1.1,.1,.1,x,T+.05,z+dz,0x6e5a44);cargo.box(1.1,.04,1.1,x,T+.12,z,0x8a6c4a);return T+.14;};
  {const p=S.pallets[0],y=pallet(p.x,p.z);
   // Cartons, kraft brown with the red band of Sakura Trading's packing tape, two tiers of four.
-  for(let r=0;r<2;r++)for(const [dx,dz] of [[-.27,-.26],[.27,-.26],[-.27,.26],[.27,.26]]){const cy=y+.21+r*.43;kit.box(.52,.42,.5,p.x+dx,cy,p.z+dz,0xb48b5a);kit.box(.53,.06,.51,p.x+dx,cy+.12,p.z+dz,0xb8463a);}}
+  for(let r=0;r<2;r++)for(const [dx,dz] of [[-.27,-.26],[.27,-.26],[-.27,.26],[.27,.26]]){const cy=y+.21+r*.43;cargo.box(.52,.42,.5,p.x+dx,cy,p.z+dz,0xb48b5a);cargo.box(.53,.06,.51,p.x+dx,cy+.12,p.z+dz,0xb8463a);}}
  {const p=S.pallets[1],y=pallet(p.x,p.z);
   // Yellow bottle crates, three high, the brown caps of the bottles showing at the top.
-  for(let r=0;r<3;r++)for(const [dx,dz] of [[-.25,-.33],[.25,-.33],[-.25,0],[.25,0],[-.25,.33],[.25,.33]]){kit.box(.48,.28,.32,p.x+dx,y+.15+r*.29,p.z+dz,0xe7b52c);if(r===2)kit.box(.4,.02,.26,p.x+dx,y+.15+r*.29+.15,p.z+dz,0x5a3a22);}}
+  for(let r=0;r<3;r++)for(const [dx,dz] of [[-.25,-.33],[.25,-.33],[-.25,0],[.25,0],[-.25,.33],[.25,.33]]){cargo.box(.48,.28,.32,p.x+dx,y+.15+r*.29,p.z+dz,0xe7b52c);if(r===2)cargo.box(.4,.02,.26,p.x+dx,y+.15+r*.29+.15,p.z+dz,0x5a3a22);}}
  {const t=S.truck;// the pallet truck: forks, the pump and its tiller, yellow
   for(const dx of [-.17,.17])kit.box(.16,.08,.9,t.x+dx,T+.05,t.z-.1,yellow,'metal');kit.box(.5,.25,.18,t.x,T+.15,t.z+.4,yellow,'metal');
   kit.rod([t.x,T+.25,t.z+.42],[t.x,T+1.05,t.z+.62],.025,iron);kit.rod([t.x-.14,T+1.08,t.z+.63],[t.x+.14,T+1.08,t.z+.63],.025,iron);
@@ -92,8 +94,8 @@ export function buildQuayDressing({parent,label,shadows=false}){
   kit.cyl(.2,.2,.12,F.x+.31,y+.34,F.z,0x3d4548,'metal',{rz:Math.PI/2,segments:12});
   for(let k=0;k<2;k++)kit.torus(.17-k*.04,.025,F.x+.31,y+.34,F.z,0x1f2324,'rubber',{ry:Math.PI/2});
   kit.box(.06,.2,.08,F.x-.26,y+.4,F.z,iron,'metal');}
- kit.finish(shadows);
- const group=kit.group;parent.add(group);
+ kit.finish(shadows);cargo.finish(shadows);
+ const group=kit.group;group.add(cargo.group);parent.add(group);
  // Signs, in Japanese: what a bay or a pump is for (English is spoken, not painted).
  label?.(S.sign.jp,S.sign.sub,[S.sign.x,PIER_TOP+1.75,S.sign.z+.05],.9,.5,0,'#f2efe4','#b8463a');
  label?.(D.fuel.sign.jp,D.fuel.sign.sub,[D.fuel.x,KERB_TOP+.34,D.fuel.z+.18],.4,.24,0,'#f2efe4','#b8463a');

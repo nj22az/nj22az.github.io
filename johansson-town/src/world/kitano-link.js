@@ -1,16 +1,22 @@
 import {GROUND} from '../render/ground-palette.js';
-import {paintedAsphalt,paintedPaving} from '../render/toy-surfaces.js';
 import * as THREE from '../../vendor/three.module.js';
 import {signPlate} from './sign-plate.js';
 import {KITANO_ROAD,KITANO_ROAD_LENGTH,KITANO_SURFACE_LIFT,roadPoint,roadHeight,leftOf} from './kitano-link-plan.js';
 
 import {paintPatch,roadSign,stopMarking,roadPaintMaterial,ROAD_STANDARD} from './road-standards.js';
 import {KITANO_STOP_S} from './town-traffic.js';
+import {MAIN_STREET_GROUND} from './ground-plan.js';
+import {GROUND_EDGE} from './ground-standard.js';
+import {groundMaterial} from './ground-build.js';
 
 /** Mainland lane and footway. The former airport bridge and all its supports are removed. */
 const STEP=.5;
 /** The road is laid as an apron over whatever it crosses, so the lawn's grass never shows through. */
 const LIFT=KITANO_SURFACE_LIFT;
+/** The lawn-side kerb's width (ground-standard.js GROUND_EDGE.kerb), taken off the carriageway's north edge. */
+const NORTH_KERB=GROUND_EDGE.kerb.width;
+/** Where the east service walk crosses the road (architecture-plan.js, x 14.9, 2.4 m wide): the kerb is dropped there. */
+export const KITANO_WALK_CROSSING=Object.freeze({minX:13.7,maxX:16.1});
 const C={asphalt:GROUND.asphalt,footway:GROUND.pavers,kerb:0xd3cec2,coral:0xd9cfb3,concrete:0xcfcbc0,girder:0xbcb8ad,pier:0xc4c0b5,rock:0x8f8a80,lampPost:0x9aa3a6,lamp:0xfff3d0,yellow:0xe8b923,carPark:0x666a6c};
 
 function frameAt(s){const [x,z,hx,hz]=roadPoint(s),[lx,lz]=leftOf(hx,hz);return {x,z,hx,hz,lx,lz,y:roadHeight(s)};}
@@ -31,15 +37,17 @@ export function buildKitanoLink({parent,colliders=null,shadows=false}){
    list.push(...A,...D,...Cc,...A,...Cc,...B);
   }
  }
- const footFrom=5.7;// the footway starts at the dining lane's edge; across it the pavement is dropped flush
- ribbon(S.north,-S.carriageway,0,end,LIFT,C.kerb);
- ribbon(-S.carriageway,S.carriageway,0,end,LIFT,C.asphalt);
- ribbon(S.carriageway,S.footway,footFrom,end,LIFT+S.kerb,C.footway);
+ // West of Main Street's district line the road's mouth is Main Street's ground (ground-plan.js): a raised table the
+ // footway crosses on the level. From the line east the lane lays its own.
+ const roadFrom=MAIN_STREET_GROUND.backEast-KITANO_ROAD.corners[0][0];
+ // The carriageway in the rulebook's asphalt (ground-build.js groundMaterial): the footway is laid with the walks
+ // (ground-plan-coast.js), and the lawn side is held by a 15 cm kerb (below), where the 10 cm gutter strip used to be.
+ ribbon(S.north+NORTH_KERB,S.carriageway,roadFrom,end,LIFT,C.asphalt);
  for(const [colour,list] of ribbons){
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(list,3));g.computeVertexNormals();
-  const finish=material(colour,{side:THREE.DoubleSide}).clone();
-  if(colour===C.asphalt||colour===C.footway){finish.map=colour===C.asphalt?paintedAsphalt():paintedPaving();const pos=g.attributes.position,uv=[];for(let i=0;i<pos.count;i++)uv.push(pos.getX(i)/4,pos.getZ(i)/4);g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));}
-  const m=new THREE.Mesh(g,finish);m.receiveShadow=true;m.name=colour===C.asphalt?'Kitano Road carriageway':colour===C.footway?'Kitano Road footway':'Kitano Road gutter';group.add(m);
+  // Faces up, whichever way the ribbon was wound.
+  if(g.attributes.normal.getY(0)<0){const p=g.attributes.position;for(let i=0;i<p.count;i+=3)for(const k of [0,1,2]){const t=p.getComponent(i+1,k);p.setComponent(i+1,k,p.getComponent(i+2,k));p.setComponent(i+2,k,t);}g.computeVertexNormals();}
+  const m=new THREE.Mesh(g,groundMaterial('road'));m.receiveShadow=true;m.name='Kitano Road carriageway';m.userData.groundClass='road';group.add(m);
  }
 
  // ---- Boxes along the road: one instanced mesh per material. ----
@@ -52,7 +60,14 @@ export function buildKitanoLink({parent,colliders=null,shadows=false}){
   (boxes.get(colour)??boxes.set(colour,[]).get(colour)).push({x:mid.x+mid.lx*o,z:mid.z+mid.lz*o,y:(y0+y1)/2,len:l*1.03,t,h:y1-y0,yaw:Math.atan2(dx,dz),pitch:Math.atan2(b.y-a.y,l)});
  }
  // Kerb face along the footway.
- for(let s=footFrom;s<end;s+=STEP){const f=frameAt(s+STEP/2);seg(C.kerb,s,STEP,S.carriageway+.06,.12,f.y,f.y+LIFT+S.kerb+.01);}
+ for(let s=roadFrom;s<end;s+=STEP){const f=frameAt(s+STEP/2);seg(C.kerb,s,STEP,S.carriageway+.06,.12,f.y,f.y+LIFT+S.kerb+.01);}
+ // The kerb on the lawn side, 15 cm (ground-standard.js: a verge is kept off the road by a kerb), dropped where the
+ // service walk crosses to the zebra, and across the road's end.
+ const KERB_TOP=GROUND_EDGE.kerb.height+LIFT,DROP=LIFT+.02,TAPER=.6,cross=KITANO_WALK_CROSSING;
+ const kerbTop=s=>{const x=frameAt(s).x,d=Math.max(cross.minX-x,0,x-cross.maxX);return DROP+(KERB_TOP-DROP)*Math.min(1,d/TAPER);};
+ // In half-metre blocks, and in 10 cm ones where it tapers down to the drop.
+ for(let s=roadFrom;s<end-1e-6;){const x=frameAt(s).x,near=x>cross.minX-TAPER-.6&&x<cross.maxX+TAPER+.1,len=Math.min(near?.1:.5,end-s),f=frameAt(s+len/2);seg(C.kerb,s,len,S.north+NORTH_KERB/2,NORTH_KERB,f.y-.1,kerbTop(s+len/2));s+=len;}
+ {const f=frameAt(end);(boxes.get(C.kerb)??boxes.set(C.kerb,[]).get(C.kerb)).push({x:f.x+.09,z:f.z+f.lz*(S.north+S.carriageway+.12)/2,y:(f.y-.1+KERB_TOP)/2,len:S.carriageway-S.north+.12,t:.18,h:KERB_TOP-f.y+.1,yaw:Math.atan2(f.lx,f.lz),pitch:0});}
  const d=new THREE.Object3D();
  for(const [colour,list] of boxes){
   const mesh=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),material(colour),list.length);
@@ -83,7 +98,8 @@ export function buildKitanoLink({parent,colliders=null,shadows=false}){
  // Westbound: the stop line and 止まれ before the zebra across the mouth.
  {const f=frameAt(KITANO_STOP_S),o=-KITANO_ROAD.lane/2;stopMarking(marks,{x:f.x+f.lx*o,z:f.z+f.lz*o,y:f.y+LIFT,width:KITANO_ROAD.lane,ry:Math.atan2(f.hx,f.hz)+Math.PI});}
  // Zebras: across the mouth on the dining lane, and on the lawn where the paths cross.
- for(const s of [3,17.5]){
+ // The lawn's zebra is where the service walk crosses (KITANO_WALK_CROSSING), the kerb dropped either side.
+ for(const s of [3,(KITANO_WALK_CROSSING.minX+KITANO_WALK_CROSSING.maxX)/2-KITANO_ROAD.corners[0][0]]){
   const f=frameAt(s),{bar,gap,length}=ROAD_STANDARD.zebra,n=Math.floor((2*S.carriageway-gap)/(bar+gap));
   for(let i=0;i<n;i++){const o=-S.carriageway+gap+bar/2+i*(bar+gap)+((2*S.carriageway-gap)-(n*(bar+gap)))/2;paintPatch(marks,bar,length,f.x+f.lx*o,f.y+LIFT+.004,f.z+f.lz*o,Math.atan2(f.hx,f.hz)+Math.PI,'Zebra bar');}
   if(s>10)for(const o of [S.north-.35,S.footway+.2]){const x=f.x+f.lx*o+f.hx*1.9,z=f.z+f.lz*o+f.hz*1.9;roadSign(group,'crossing',{x,z,y:f.y,ry:Math.atan2(f.hx,f.hz)+Math.PI,colliders});}

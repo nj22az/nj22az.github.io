@@ -6,9 +6,11 @@ import {MAIN_ROAD} from './main-road.js';
 import {PARK,TURF_TINT,PARK_TERRAIN_SEGMENTS} from './park-layout.js';
 import {GROUND_LAYER} from './ground-layers.js';
 import {HARBOUR_PARK_EXTENSION,inHarbourPark} from './harbour-park-plan.js';
-import {BEACH,BEACH_GRADES,beachHeight,gradedHeight} from './beach-layout.js';
+import {BEACH,BEACH_EDGES,BEACH_GRADES,beachHeight,beachProfile,gradedHeight,onBeach} from './beach-layout.js';
+import {GROUND_CLASSES} from './ground-standard.js';
+import {applyWorldUV} from '../render/world-uv.js';
 import {GATEBALL,GATEBALL_ACTIVE} from './okinawa/layout.js';
-import {paintedTurf} from '../render/toy-surfaces.js';
+import {paintedTurf,paintedGrit} from '../render/toy-surfaces.js';
 
 /**
  * The east side of the town: one green from the boardwalk out to the water.
@@ -77,6 +79,41 @@ export function groundTexture(base,marks,strokes){
  return texture;
 }
 
+/** The beach's surface at x, z: its profile with the grades laid over it. */
+export const sandHeight=(x,z)=>gradedHeight(x,z,beachProfile(x));
+/**
+ * The east beach's sand, as one mesh: the rulebook's coral-white dry sand above the tide line and its wet band below
+ * (ground-standard.js beach-sand), raked grit for the finish, laid over the outline of beach-layout.js (onBeach).
+ */
+export function buildBeachSand({shadows=false}={}){
+ const S=GROUND_CLASSES['beach-sand'],E=BEACH_EDGES,P=BEACH.profile;
+ // The tide line: where the profile crosses the wet band's top, and a line just above it to blend over.
+ const at=y=>{for(let i=1;i<P.length;i++){const [ax,ay]=P[i-1],[bx,by]=P[i];if(by<=y&&ay>y)return ax+(y-ay)*(bx-ax)/(by-ay);}return null;};
+ const lines=(from,to,keep,step=.5,fine=[])=>{const set=new Set(keep.filter(v=>v>=from-1e-9&&v<=to+1e-9).map(v=>+v.toFixed(4)));for(let v=from;v<to;v+=step)set.add(+v.toFixed(4));for(const [a,b] of fine)for(let v=Math.max(from,a);v<=Math.min(to,b);v+=.5)set.add(+v.toFixed(4));set.add(to);return [...set].sort((a,b)=>a-b);};
+ const xs=lines(P[0][0],P.at(-1)[0],[...P.map(p=>p[0]),E.quayEdge,E.quayEnd,E.court.maxX,E.school.maxX,E.walk.minX-.1,E.walk.maxX+.1,at(S.wetBelow),at(S.wetBelow+.02)].filter(v=>v!==null));
+ // Along the beach a row every metre; every half metre where the sand is graded along z (BEACH_GRADES' cores across it).
+ const zs=lines(BEACH.minZ,BEACH.maxZ,[E.jettyNorth,E.quayNorth,E.court.maxZ,E.school.minZ,...BEACH.accesses.flatMap(a=>[a.z-a.half,a.z+a.half])],1,
+  BEACH_GRADES.filter(g=>g.core.minZ===g.core.maxZ).map(g=>[g.core.minZ-3,g.core.maxZ+3]));
+ const dry=new THREE.Color(S.colour),wet=new THREE.Color(S.wet),c=new THREE.Color();
+ const positions=[],colours=[],index=[];
+ for(const z of zs)for(const x of xs){
+  const y=sandHeight(x,z);positions.push(x,y,z);
+  const t=Math.max(0,Math.min(1,(S.wetBelow+.02-y)/.02));c.copy(dry).lerp(wet,t*t*(3-2*t));colours.push(c.r,c.g,c.b);
+ }
+ const n=xs.length;
+ for(let j=0;j<zs.length-1;j++)for(let i=0;i<n-1;i++){
+  if(!onBeach((xs[i]+xs[i+1])/2,(zs[j]+zs[j+1])/2))continue;
+  const a=j*n+i,b=a+1,d=a+n,e=d+1;index.push(a,d,b,b,d,e);
+ }
+ const geometry=new THREE.BufferGeometry();
+ geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.setAttribute('color',new THREE.Float32BufferAttribute(colours,3));
+ geometry.setIndex(index);geometry.computeVertexNormals();geometry.computeBoundingSphere();
+ const material=new THREE.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:1,dithering:true});
+ if(typeof document!=='undefined'&&document.createElement){try{material.map=paintedGrit();applyWorldUV(material,2.4);}catch{}}
+ const mesh=new THREE.Mesh(geometry,material);mesh.name='east-beach-sand';mesh.userData.groundClass='beach-sand';mesh.receiveShadow=!!shadows;
+ return mesh;
+}
+
 /** Roughly how wide one cell of the lawn's grid is. */
 const CELL=.6;
 
@@ -113,7 +150,9 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
  const xs=lines(EAST_LAWN.minX,EAST_LAWN.maxX,...boundary('x'),HARBOUR_PARK_EXTENSION.minX,HARBOUR_PARK_EXTENSION.maxX,GATEBALL.minX,GATEBALL.maxX);
  const zs=lines(EAST_LAWN.minZ,EAST_LAWN.maxZ,...boundary('z'),HARBOUR_PARK_EXTENSION.minZ,HARBOUR_PARK_EXTENSION.maxZ,GATEBALL.minZ,GATEBALL.maxZ);
  const onCourt=(x,z)=>GATEBALL_ACTIVE&&x>GATEBALL.minX&&x<GATEBALL.maxX&&z>GATEBALL.minZ&&z<GATEBALL.maxZ;
- const height=(x,z)=>heightAt?heightAt(x,z):0;
+ // The lawn's own ground: at its west edge the shading is not bent towards Main Street's footway and road, laid on
+ // their own plan beside it (ground-plan.js).
+ const height=(x,z)=>heightAt?heightAt(Math.max(x,EAST_LAWN.minX),z):0;
  const onPark=(x,z)=>inHarbourPark(x,z);
  const vertices=[],turfUV=[],faces=[];
  // Under a path the turf is tucked a few centimetres down. Its 1.2m grid runs straight
@@ -155,40 +194,11 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
 
 
 
- // Sand from the foot of the wall out into the water, laid as one ribbon of sloped
- // strips so the tide line is a straight edge rather than a stack of steps.
- const sand=new THREE.BufferGeometry(),positions=[],uv=[],indices=[];
- const z0=BEACH.minZ,z1=BEACH.maxZ;
- for(const [i,[x,y]] of beach.profile.entries()){
-  positions.push(x,y,z0,x,y,z1);uv.push(x/3,z0/3,x/3,z1/3);
-  if(i)indices.push(i*2-2,i*2-1,i*2,i*2,i*2-1,i*2+1);
- }
- sand.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
- sand.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));sand.setIndex(indices);sand.computeVertexNormals();
- const grit=groundTexture('#e3d2a4',[['#e9d9b0',320,6],['#d8c595',260,7],['#efe4c4',160,4]],'#d4c191');
- const shore=new THREE.Mesh(sand,new THREE.MeshStandardMaterial({color:grit?0xffffff:GROUND.sand,map:grit,roughness:1,side:THREE.DoubleSide}));
- shore.name='east-beach-sand';shore.receiveShadow=!!shadows;group.add(shore);
- // Where a path crosses from the town's datum onto the sand, the sand is graded up to meet
- // it (beach-layout.js BEACH_GRADES). Drawn as its own patch over the ribbon, only where it
- // is raised, 1.5 cm proud so the two never share a plane.
- const graded=[],gradedUv=[],gradedIndex=[],STEP=.2,LIFT=.015;
- for(const g of BEACH_GRADES.filter(g=>g.drawn==='sand')){
-  const {minX,maxX,minZ,maxZ}=g.apply,nx=Math.ceil((maxX-minX)/STEP),nz=Math.ceil((maxZ-minZ)/STEP);
-  const raised=(x,z)=>{const b=beachHeight(x,z);return b!==null&&gradedHeight(x,z,b)>b+.002;};
-  const vertex=(x,z)=>{graded.push(x,gradedHeight(x,z,beachHeight(x,z))+LIFT,z);gradedUv.push(x/3,z/3);return graded.length/3-1;};
-  for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){
-   const x0=minX+(maxX-minX)*i/nx,x1=minX+(maxX-minX)*(i+1)/nx,z0=minZ+(maxZ-minZ)*j/nz,z1=minZ+(maxZ-minZ)*(j+1)/nz;
-   if(![[x0,z0],[x1,z0],[x0,z1],[x1,z1]].some(p=>raised(...p))||[x0,x1].some(x=>beachHeight(x,z0)===null))continue;
-   const a=vertex(x0,z0),b=vertex(x1,z0),c=vertex(x0,z1),d=vertex(x1,z1);
-   gradedIndex.push(a,c,b,b,c,d);
-  }
- }
- if(gradedIndex.length){
-  const geometry=new THREE.BufferGeometry();
-  geometry.setAttribute('position',new THREE.Float32BufferAttribute(graded,3));
-  geometry.setAttribute('uv',new THREE.Float32BufferAttribute(gradedUv,2));geometry.setIndex(gradedIndex);geometry.computeVertexNormals();
-  const patch=new THREE.Mesh(geometry,shore.material);patch.name='east-beach-graded-sand';patch.receiveShadow=!!shadows;group.add(patch);
- }
+ // The beach (step 4 of the ground plan): coral-white sand from under the parapet out under the water, its wet band at
+ // the water's edge, graded up to the quay, the fuel depot's court, the town hall's yard and the coastal walk where it
+ // meets them (beach-layout.js BEACH_GRADES), never a step. One grid, half a metre square, with a line on every edge
+ // the sand meets and on the tide line, so the grades and the wet band follow it exactly.
+ const shore=buildBeachSand({shadows});group.add(shore);
  for(const access of BEACH.accesses){
   const {fromX,toX,z,half}=access,y=beachHeight(toX,z);
   const geometry=new THREE.BufferGeometry();

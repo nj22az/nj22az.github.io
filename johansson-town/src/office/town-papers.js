@@ -129,6 +129,13 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
+    "title": "Rest room television",
+    "organisation": "Town Services",
+    "text": "The midday news from Naha and the weather for the islands: the typhoon map, the wave heights for the ferries.",
+    "source": "notice:Rest room television"
+  },
+  {
+    "type": "Notice",
     "title": "Sakura decorations store",
     "organisation": "Town Services",
     "text": "The festival lanterns, the New Year pine frames, vases, ribbon and wrapping for the bouquets sold at the door, and the shop’s spare shelf parts. Sakura has supplied the town’s flowers and decorations since Mrs Kinjō retired.",
@@ -250,7 +257,7 @@ export const TOWN_PAPERS=[
     "type": "Flyer",
     "title": "Umi-no-yu notice",
     "organisation": "Town Services",
-    "text": "Harbour bath, heated sea water (shio-yu). Bath 10:00–22:00, adults ¥300, children ¥150. The footbath is free and never closes. Sea water from the harbour, heated to 42°C at the spout — good for cold hands and long shifts on the quay. Please wash before you bathe.",
+    "text": "Harbour bath, heated sea water (shio-yu). Bath 10:00–22:00, adults ¥300, children ¥150. The footbath keeps the bath’s hours and is free for residents. Sea water from the harbour, heated to 42°C at the spout — good for cold hands and long shifts on the quay. Please wash before you bathe.",
     "source": "notice:Umi-no-yu notice"
   },
   {

@@ -39,11 +39,13 @@ test('actual harbour retains anchors, colliders and weather updates across batch
  function build(harbourBatching){const scene=new THREE.Scene(),anchors=[];const world=createTown({scene,sites:[{id:'market',side:1,z:20,color:0x945060,accent:'#345678',title:'Market',jp:'店'}],mobile:false,shadows:true,harbourBatching,register:(o,label)=>anchors.push([o.position.toArray(),label]),enter(){},onAction(){}});return {world,anchors};}
  const before=build(false),after=build(true);
  assert.deepEqual(after.world.colliders,before.world.colliders);assert.deepEqual(after.anchors,before.anchors);
- const findRoad=world=>world.group.children.find(m=>m.isInstancedMesh&&m.material.name==='town-asphalt');
- const road=findRoad(after.world);assert.ok(road);const colour=road.material.color.clone();
- after.world.setRain(true);assert.equal(road.material.roughness,.28);
+ // The road is the ground's now (ground-build.js): one mesh, its material the rulebook's, wet in the rain.
+ const road=after.world.ground.meshes.get('road');assert.ok(road);const colour=road.material.color.clone(),dry=road.material.roughness;
+ after.world.setRain(true);assert.ok(road.material.roughness<dry,'the road shines in the rain');
  after.world.update(1/60,1,0);assert.ok(road.material.color.equals(colour));
- after.world.setRain(false);assert.equal(road.material.roughness,.84);
+ after.world.setRain(false);assert.equal(road.material.roughness,dry);
  const count=world=>world.group.children.filter(o=>o.isInstancedMesh).length;
- assert.ok(count(after.world)<count(before.world));
+ // The quay's and the street's ground is laid as one mesh per class (ground-build.js), so little is left here to
+ // consolidate; batching may never add a draw.
+ assert.ok(count(after.world)<=count(before.world));
 });

@@ -3,11 +3,13 @@ import {GLTFExporter} from '../../tools/vendor/GLTFExporter.js';
 import {buildAvatar,BONES} from './build.js';
 import {addFaceMorphs} from './face-morphs.js';
 import {drawFace} from './face.js';
+import {motionClip} from './motion.js';
 
 /** Standard neutral T-pose GLB, with two independently skinned braid meshes,
  * four facial morph targets, recipe metadata and the game's painted expressions.
  * Cel outlines and cloth clearance shaders stay in the game renderer. */
-export async function exportAvatarGLB(recipe){
+export async function exportAvatarGLB(recipe,{motion=null}={}){
+ const clip=motion?motionClip(motion):null;
  const a=buildAvatar(recipe,{shadows:false,faceSize:256}),extra=[];
  try{
   a.root.rotation.set(0,0,0);a.setOpenHands(true);a.paintFace({expression:'neutral',blink:0,talk:0});
@@ -42,8 +44,10 @@ export async function exportAvatarGLB(recipe){
   drawFace(a.face.ctx,a.recipe,{expression:'neutral',blink:1,size:256,objects:true});expressions.blink=a.face.canvas.toDataURL('image/png');
   drawFace(a.face.ctx,a.recipe,{expression:'neutral',size:256,objects:true});a.face.texture.needsUpdate=true;
   a.root.userData={recipe:a.recipe,pose:'T-pose',faceExpressions:expressions,faceExpressionFormat:'PNG data URI; apply to head base-color texture',faceMorphs:['smile','shy','surprised','blink']};
-  a.bones.shoulderL.rotation.z=Math.PI/2;a.bones.shoulderR.rotation.z=-Math.PI/2;
+  if(clip){a.root.userData.pose='animated';a.root.userData.motion={name:clip.name,inPlace:true};}
+  else{a.bones.shoulderL.rotation.z=Math.PI/2;a.bones.shoulderR.rotation.z=-Math.PI/2;}
   a.root.updateMatrixWorld(true);a.body.skeleton.update();
-  return await new GLTFExporter().parseAsync(a.root,{binary:true,onlyVisible:true,trs:true});
+  return await new GLTFExporter().parseAsync(a.root,{binary:true,onlyVisible:true,trs:true,animations:clip?[clip]:[]});
  }finally{extra.forEach(g=>g.dispose());a.dispose();}
 }
+

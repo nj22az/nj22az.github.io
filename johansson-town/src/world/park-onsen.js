@@ -1,10 +1,11 @@
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
+import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {assetURL} from '../assets.js';
 import {registerDetail} from './detail-stream.js';
 import {ONSEN_SIGNS} from './interiors/onsen-signs.js';
 import {frostedGlassTexture} from './interiors/onsen-front.js';
-import {windowGlow,poolGlow} from '../render/dusk.js';
+import {windowGlow,poolGlow,lanternGlow} from '../render/dusk.js';
 import {createLampGlow} from './light-pools.js';
 
 /**
@@ -117,7 +118,7 @@ function signs(group){
   ctx.fillStyle='#efe6cf';ctx.fillRect(0,0,w,h);ctx.fillStyle='#2b2520';ctx.textAlign='center';
   ctx.font=`bold 34px ${SERIF}`;ctx.fillText(ONSEN_SIGNS.notice.jp,w/2,44);
   ctx.font='16px sans-serif';
-  ['Harbour bath','','Bath 10:00 – 22:00','Adults ¥300 · Children ¥150','Footbath: free, any hour','','Sea water, heated','42°C at the spout','Towel ¥100 at the desk'].forEach((line,i)=>ctx.fillText(line,w/2,82+i*24));
+  ['Harbour bath','','Bath 10:00 – 22:00','Adults ¥300 · Children ¥150','Footbath 10:00 – 22:00, free for residents','','Sea water, heated','42°C at the spout','Towel ¥100 at the desk'].forEach((line,i)=>ctx.fillText(line,w/2,82+i*24));
   ctx.fillStyle='#b3382c';ctx.font='bold 15px sans-serif';ctx.fillText('Please wash before you bathe',w/2,h-18);
  });
  const post=new THREE.Mesh(new THREE.BoxGeometry(.08,1.6,.08),new THREE.MeshStandardMaterial({color:0x43301f,roughness:.85}));
@@ -171,6 +172,26 @@ function steam(group){
 }
 
 /**
+ * The footbath's kakehi (筧): hot sea water from the bath's boiler comes up a bamboo riser at the trough's far end and
+ * pours from a bamboo spout into the water, so the heat shows and is heard, with a paper andon on the riser that glows
+ * after dark while the bath is open. In the model's frame, at the trough's +x end (the trough is x 0.4–3.4, z 6.4–7.8,
+ * its water at 0.51), between the gazebo's posts (x 3.65, z 6.15 and 8.05).
+ */
+export const KAKEHI=Object.freeze({x:3.58,z:7.1,top:.86,spoutTo:3.02,spoutY:.79,water:.51});
+function kakehi(group){
+ const K=KAKEHI,bamboo=new THREE.MeshStandardMaterial({color:0x9caa58,roughness:.6});
+ const riser=new THREE.CylinderGeometry(.045,.05,K.top,8).translate(K.x,K.top/2,K.z);
+ const spout=new THREE.CylinderGeometry(.03,.03,K.x-K.spoutTo,8).rotateZ(Math.PI/2).rotateZ(.06).translate((K.x+K.spoutTo)/2,K.spoutY,K.z);
+ const pipe=new THREE.Mesh(mergeGeometries([riser.toNonIndexed(),spout.toNonIndexed()],false),bamboo);pipe.name='Umi-no-yu footbath kakehi';pipe.castShadow=pipe.receiveShadow=true;group.add(pipe);
+ const lantern=new THREE.MeshStandardMaterial({color:0xf3ead2,roughness:.8,emissive:0xffc27e,emissiveIntensity:0});
+ const andon=new THREE.Mesh(new THREE.BoxGeometry(.16,.22,.16),lantern);
+ andon.position.set(K.x,K.top+.11,K.z);andon.name='Umi-no-yu footbath andon';group.add(andon);
+ const stream=new THREE.Mesh(new THREE.CylinderGeometry(.012,.016,K.spoutY-K.water,6,1,true),new THREE.MeshStandardMaterial({color:0xdcefee,roughness:.2,transparent:true,opacity:.55,depthWrite:false}));
+ stream.position.set(K.spoutTo-.01,(K.spoutY+K.water)/2,K.z);stream.name='Umi-no-yu footbath spout water';stream.userData.dynamicProp=true;stream.renderOrder=2;group.add(stream);
+ return {pipe,stream,lantern,andon};
+}
+
+/**
  * @param {object} world the town world (group, colliders, details)
  * @param {object} options register / onAction as the other buildings take them
  */
@@ -180,27 +201,29 @@ export function buildParkOnsen(world,{register,onAction,enter,sites,shadows=fals
  // Readable frontage exists immediately, with the fallback or the detailed model.
  const {notice,kanban}=signs(group),curtain=noren(),door=doorGlass(),frosting=door.group,plumes=steam(group);
  const fallback=buildOnsenFallback();group.add(fallback,kanban,curtain,frosting);
- // The continuous porch apron covers the old model's loose stepping stones and joins the park paving.
- const apron=new THREE.Mesh(new THREE.BoxGeometry(2.4,.08,5.6),new THREE.MeshStandardMaterial({color:0xc8bea5,roughness:.95}));
- apron.name='Umi-no-yu continuous porch approach';apron.position.set(-1.4,.04,6.5);apron.receiveShadow=true;group.add(apron);
+ // The porch's approach is the forecourt the town lays in front of the bathhouse (ground-plan-coast.js ONSEN_GROUND).
  // After dark, while the bath is open (10:00–22:00): the door panes glow from the genkan, a halo under the porch
  // over the noren and a pool on the approach (light-pools.js). Shut, the frontage goes dark like any other shop.
  const entranceGlow=createLampGlow(group,[{head:{x:-1.4,y:2.42,z:4.6},ground:{x:-1.4,y:.08,z:5.5},radius:2.4,size:1.4}]);
- (world.hourly??=[]).push(minutes=>{const h=((minutes%1440)+1440)%1440,open=h>=600&&h<1320?1:0;door.material.emissiveIntensity=windowGlow(minutes)*open*.9;entranceGlow.update(poolGlow(minutes)*open);});
+ const spout=kakehi(group);world.colliders.push(rect(KAKEHI.x,KAKEHI.z,.14,.14,1.15));
+ (world.hourly??=[]).push(minutes=>{const open=onsenOpen(minutes)?1:0;door.material.emissiveIntensity=windowGlow(minutes)*open*.9;entranceGlow.update(poolGlow(minutes)*open);
+  spout.stream.visible=plumes[1].points.visible=!!open;spout.lantern.emissiveIntensity=lanternGlow(minutes)*open*1.4;});
  const anchor=(x,y,z,label,fn)=>{const o=new THREE.Object3D();o.position.set(x,y,z);group.add(o);register?.(o,label,fn);return o;};
  // Through the noren: the bathhouse is a room you walk into (interiors/onsen.js).
  const [doorX,doorZ]=ONSEN_DOOR,[outX,outZ]=ONSEN_APPROACH;
  const site={id:'onsen',title:'Umi-no-yu',jp:"Sea Bath",sub:'PUBLIC BATH · SEA WATER',x:doorX,z:doorZ,color:0x3f5f7a,accent:'#253a5e',
   line:'Bath 10:00–22:00 · adults ¥300 · swimwear please',door:[doorX,0,doorZ],exitPosition:[outX,0,outZ],approachPosition:[outX,0,outZ],
-  entryFacing:ONSEN.yaw,opens:'10:00',directions:'From Sakura, use the marked crossing and follow the broad park path to Umi-no-yu. The free footbath is beside the entrance.'};
+  entryFacing:ONSEN.yaw,opens:'10:00',directions:'From Sakura, use the marked crossing and follow the park path straight on to Umi-no-yu. The footbath, free for residents in the bath’s hours, is beside the entrance.'};
  sites?.push(site);
  anchor(-1.4,1.2,4.75,'Go into Umi-no-yu',()=>enter?enter(site):onAction?.('onsen'));
  register?.(notice,'Read the onsen notice',()=>onAction?.('read','Umi-no-yu notice',
-  'Harbour bath, heated sea water (shio-yu). Bath 10:00–22:00, adults ¥300, children ¥150. The footbath is free and never closes. Sea water from the harbour, heated to 42°C at the spout — good for cold hands and long shifts on the quay. Please wash before you bathe.'));
+  'Harbour bath, heated sea water (shio-yu). Bath 10:00–22:00, adults ¥300, children ¥150. The footbath keeps the bath’s hours and is free for residents. Sea water from the harbour, heated to 42°C at the spout — good for cold hands and long shifts on the quay. Please wash before you bathe.'));
  // Sit on the footbath's rim with your feet in the water, looking across it.
  const [sx,sz]=onsenPoint(1.9,7.72),[tx,tz]=onsenPoint(1.9,8.5);
- const soak=anchor(1.9,.8,7.9,'Soak your feet in the footbath',()=>onAction?.('seat','Umi-no-yu footbath',
-  'You slip off your shoes and put your feet in. It is hotter than you expect, then exactly right. Somebody has left a folded towel on the rim.'));
+ // The footbath keeps the bath's hours (the owner, 21 October 2026): the kakehi runs while the bath is open.
+ const soak=anchor(1.9,.8,7.9,'Soak your feet in the footbath',()=>onsenOpen(world.minutes??0)
+  ?onAction?.('seat','Umi-no-yu footbath','You slip off your shoes and put your feet in. It is hotter than you expect, then exactly right. The bamboo spout runs at the end, and somebody has left a folded towel on the rim.')
+  :onAction?.('inspect','Umi-no-yu footbath','The bamboo spout is shut off: Grandmother Higa turns the footbath off when the bath closes at ten at night, and the water is going cold. It runs again from ten in the morning, free for residents.'));
  soak.userData.seat={position:[sx,0,sz],stand:[tx,0,tz],surfaceY:.48,eyeY:1.15,yaw:ONSEN.yaw,pitch:-.22};
  const [bx,bz]=onsenPoint(1.7,4.9),[bsx,bsz]=onsenPoint(1.7,5.5);
  const bench=anchor(1.7,.8,5.1,'Cool off on the bench',()=>onAction?.('seat','Umi-no-yu bench','The bench under the bathhouse windows, for sitting out the heat afterwards. The sea wind finds you here.'));
@@ -229,5 +252,5 @@ export function buildParkOnsen(world,{register,onAction,enter,sites,shadows=fals
   }
  }
  tick(0);
- return {group,tick,fallback,entranceGlow,doorGlass:door.material,get model(){return model;}};
+ return {group,tick,fallback,entranceGlow,kakehi:spout,doorGlass:door.material,get model(){return model;}};
 }

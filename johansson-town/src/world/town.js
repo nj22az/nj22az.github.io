@@ -1,6 +1,8 @@
-import {indexedPaving} from '../desktop/startup-queries.js';
-import {buildArchitectureGround} from './architecture-ground.js';
 import {buildNeighbourhoodGround} from './neighbourhood-ground.js';
+import {buildGround,groundMaterial} from './ground-build.js';
+import {buildPaths} from './ground-paths.js';
+import {coastWalkGround,topOf} from './ground-plan-coast.js';
+import {quarterPlans} from './ground-plan-quarters.js';
 import {onIslandLand} from './coastal-ground.js';
 import {isWeekend} from '../commerce/sakura-rota.js';
 import {createKitano} from './kitano-on-demand.js';
@@ -16,6 +18,7 @@ import {createTownTraffic} from './town-traffic.js';
 import {buildKitanoLink} from './kitano-link.js';
 import {buildOilJetty} from './oil-jetty.js';
 import {GROUND} from '../render/ground-palette.js';
+import {GROUND_CLASSES} from './ground-standard.js';
 import {registerDetail} from './detail-stream.js';
 import {buildPark,parkFoliage,preloadPark} from './park.js?snappy=1';
 import {buildIzakaya} from './izakaya.js?snappy=1';
@@ -29,7 +32,6 @@ import {buildStreetFurniture} from './street-furniture.js';
 import {ishiganto,stopMarking,roadSign,edgeLines} from './road-standards.js';
 import {KITAHAMA} from './kitahama-layout.js';
 import {COAST_ROAD} from './island-plan.js';
-import {lanePatches} from './lane-surfaces.js?snappy=1';
 import {buildParkOnsen} from './park-onsen.js';
 import {buildSchool} from './school.js';
 import {buildDistricts} from './districts.js?snappy=1';
@@ -93,7 +95,8 @@ function addWithCollider(group,colliders,entry){
 }
 
 function addWalkablePier(world,options,factory){
-  const group=world.group,colliders=world.colliders,dark=0x354144,steel=0x4a595c,concrete=0x8c918b,warning=0xb79a55;
+  // The pier's mass is the quay's concrete (ground-standard.js), where it shows beside the deck.
+  const group=world.group,colliders=world.colliders,dark=0x354144,steel=0x4a595c,concrete=GROUND_CLASSES.quay.colour,warning=0xb79a55;
   // The block is the pier's mass; the detailed deck is a separate plane laid on top,
   // and the two used to be three millimetres apart. Sink the block far enough that the
   // deck plainly wins, and let the deck and the two rails cover its top between them,
@@ -243,12 +246,6 @@ function addCoastalRoadPaint(world){
 
 function findSea(group){let sea=null;group.traverse(o=>{if(o.isMesh&&(o.name==='Island surrounding sea'||o.name==='Harbour basin')){if(!sea||o.name==='Harbour basin')sea=o;}});return sea;}
 
-/** Whether a point lies under the paving the lane builder lays. */
-function pavedAt(fast=false){
-  const patches=lanePatches();
-  if(fast)return indexedPaving(patches);
-  return (x,z)=>patches.some(p=>x>=p.x0-.01&&x<=p.x1+.01&&z>=p.z0-.01&&z<=p.z1+.01);
-}
 
 export function createTown(options){
   izakayaPlot();
@@ -256,7 +253,12 @@ export function createTown(options){
   applyShopAddresses(options.sites);
   const world=createBaseTown(options);
   buildNeighbourhoodGround(world.group,onIslandLand);
-  buildArchitectureGround(world.group);
+  // Kitahama, Nishi-machi, the west yard and the town hall's grounds, laid by the ground generator from their plans
+  // (ground-plan-quarters.js; step 3 of the owner's ground plan, docs/GROUND-STANDARD.md).
+  world.quarterGround=buildGround(world.group,quarterPlans(),{shadows:options.shadows,name:'Quarter ground'});
+  // Harbour Park's walks, Umi-no-yu's forecourt, the east lawn's walks, Kitano Road's footway and Kitahama's coastal walk,
+  // each edged where it meets the lawn (ground-plan-coast.js; step 4).
+  world.walkGround=buildPaths(world.group,{...coastWalkGround(),top:topOf,material:groundMaterial,name:'Walks'});
   // Kitano-jima whole now, or only as seen from across the strait until he heads there (kitano-on-demand.js).
   world.kitano=createKitano(world,{distant:options.kitano==='distant'});
   // Only the street cast lives in the playable town; nothing else may arrive as a person.
@@ -280,7 +282,7 @@ export function createTown(options){
    world.kitanoLink=buildKitanoLink({parent:world.group,colliders:world.colliders,shadows:options.shadows});
    world.traffic=createTownTraffic({parent:world.group,colliders:world.colliders,ferry:world.ferry,getPlayerPosition:options.getPlayerPosition,people:()=>world.people||[],register:options.register,onAction:options.onAction});
    world.eastLawn=buildEastLawn({parent:world.group,colliders:world.colliders,shadows:options.shadows,anisotropy:options.maxAnisotropy||4,
-    heightAt:groundHeight,paved:pavedAt(options.desktop),register:options.register,onAction:options.onAction});
+    heightAt:groundHeight,register:options.register,onAction:options.onAction});
    // Crabs on the wet sand below the wall and fish leaping offshore. See beach-life.js.
    world.beachLife=buildBeachLife({parent:world.group,shadows:options.shadows});
    // A quiet corner at the north end to sit and listen to the sea. See beach-corner.js.
@@ -355,7 +357,7 @@ export function createTown(options){
 
   buildIzakaya(world,options);
   buildPark(world,options);
-  world.blueCoral=buildBlueCoralShop({world,group:world.group,register:options.register,onAction:options.onAction,sites:options.sites});
+  world.blueCoral=buildBlueCoralShop({world,group:world.group,register:options.register,onAction:options.onAction,sites:options.sites,shadows:options.shadows});
   const plants=buildStreetPlants(world.group,world.plantSites,options);
   if(world.plantSites.length&&!plants.count)registerDetail(world,{id:'street-plants',x:0,z:20,radius:70,load:async()=>{
     if(!await preloadStreetPlants())return false;buildStreetPlants(world.group,world.plantSites,options);return true;
@@ -381,7 +383,7 @@ export function createTown(options){
    (world.hourly??=[]).push(minutes=>{const glow=windowGlow(minutes);setWindowLight(glow);for(const m of glass)m.emissiveIntensity=glow*.75;for(const m of lamps)m.emissiveIntensity=.1+glow*1.6;world.lampPools.update(poolGlow(minutes));});}
   world.isOpen=isOpen;world.updateHours=minutes=>{for(const fn of world.hourly||[])fn(minutes);for(const {mesh,id} of districts.shutters){const open=isOpen(options.sites.find(s=>s.id===id),minutes);mesh.position.y=1.3;mesh.visible=false;mesh.userData.closed=!open;}const glow=windowGlow(minutes);for(const m of districts.windows)m.material.emissiveIntensity=.02+glow*.78;};
   const setBridgeRain=world.setRain.bind(world);
-  world.setRain=value=>{setBridgeRain(value);if(world.ferry?.ferry)world.ferry.ferry.userData.bridgeRain=!!value;};
+  world.setRain=value=>{setBridgeRain(value);world.policeStation?.dressing?.setRain(value);if(world.ferry?.ferry)world.ferry.ferry.userData.bridgeRain=!!value;};
   let normalTick=-1;
   const staticProps=batchStaticProps(world.group);
   world.beats=createLivingProps(world,factory);

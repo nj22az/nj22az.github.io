@@ -8,10 +8,12 @@ test('walking eases in and out instead of jumping to speed and stopping dead',()
  for(let i=0;i<60;i++)v=m.update(0,1,1/60);assert.ok(v.y>.98,'at speed within a second');
  for(let i=0;i<60;i++)v=m.update(0,0,1/60);assert.equal(v.y,0,'and comes to rest');
 });
-test('pushing the stick to its rim runs after a moment, easing off walks again',()=>{
+test('pushing the stick past about 85% runs after a moment, easing off walks again',()=>{
  const r=createAutoRun();
- assert.equal(r.update(1,.1),false);assert.equal(r.update(1,.1),false);assert.equal(r.update(1,.1),true);
- assert.equal(r.update(.85,.1),true,'a little wobble keeps running');assert.equal(r.update(.6,.1),false);
+ assert.equal(r.update(.8,.1),false);assert.equal(r.update(.8,.5),false,'a firm walk is still a walk');
+ assert.equal(r.update(.86,.1),false,'not on the first frame past the mark');assert.equal(r.update(.9,.1),true);
+ assert.equal(r.update(.75,.1),true,'a little wobble keeps running');assert.equal(r.update(.6,.1),false);
+ assert.equal(r.update(1,.1),false);r.reset();assert.equal(r.running,false);
 });
 test('a swipe turns the same on a phone and a tablet, and sideways swipes barely tilt',()=>{
  const phone=swipeLook(390,0,390),tablet=swipeLook(820,0,820);

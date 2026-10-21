@@ -6,7 +6,7 @@ export const MAX_ACTORS=6;
 export const MAX_PANELS=4;
 export const LOCATIONS=Object.freeze([
  ['sakura','Sakura Shōten'],['sakura-street','Outside Sakura'],['minato','Minato Izakaya'],
- ['sato-ramen','Sato Ramen'],['books','Front-Row Books'],['onsen','Umi-no-yu lobby'],
+ ['dock-workshop','Chin & Tetsuo Repairs'],['sato-ramen','Sato Ramen'],['books','Front-Row Books'],['onsen','Umi-no-yu lobby'],
  ['classroom','Island classroom'],['town-hall','Mayor’s office'],['harbour','Harbour'],['pier','Outer pier'],
  ['park','Harbour Park'],['garden','Japanese garden'],['rainflower','Rainflower Lane']
 ]);
@@ -21,10 +21,11 @@ export function normalizeScene(raw,normalizeRecipe=r=>structuredClone(r)){
  out.format=['landscape','square','portrait'].includes(raw.format)?raw.format:out.format;
  out.style=['photo','meme','comic'].includes(raw.style)?raw.style:out.style;
  out.camera={orbit:clamp(raw.camera?.orbit,-180,180,0),elevation:clamp(raw.camera?.elevation,-25,40,0),zoom:clamp(raw.camera?.zoom,.55,1.8,1)};
+ if(raw.exitLabel!==undefined)out.exitLabel=text(raw.exitLabel).slice(0,24);
  out.time=clamp(raw.time,0,60,0);if(raw.backdrop==='paper')out.backdrop='paper';
  out.top=text(raw.top);out.bottom=text(raw.bottom);
  if([raw.camera?.position,raw.camera?.target].every(v=>Array.isArray(v)&&v.length===3&&v.every(n=>Number.isFinite(n)&&Math.abs(n)<=30))){out.camera.position=[...raw.camera.position];out.camera.target=[...raw.camera.target];out.camera.fov=clamp(raw.camera.fov,25,75,43);}
- if(['dash','chaos'].includes(raw.effect))out.effect=raw.effect;
+ if(['dash','chaos','escape'].includes(raw.effect))out.effect=raw.effect;
  if(raw.furniture&&typeof raw.furniture==='object'){out.furniture={};for(const id of ['desk','chair']){const r=raw.furniture[id];if(!r||typeof r!=='object')continue;const o={visible:r.visible!==false,size:clamp(r.size,.5,1.5,1)};for(const k of ['position','rotation'])if(Array.isArray(r[k])&&r[k].length===3&&r[k].every(Number.isFinite))o[k]=r[k].map(n=>clamp(n,k==='position'?-4:-Math.PI,k==='position'?4:Math.PI,0));out.furniture[id]=o;}}
 
  out.actors=(Array.isArray(raw.actors)?raw.actors:[]).slice(0,MAX_ACTORS).filter(a=>a&&a.recipe&&typeof a.recipe==='object'&&!Array.isArray(a.recipe)).map((a,i)=>({

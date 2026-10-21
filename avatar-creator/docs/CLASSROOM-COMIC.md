@@ -59,3 +59,7 @@ Studio applies the extreme face painting to the relevant comic poses and express
 Paper comics add furniture silhouette ink and two-band shading on clothes/hair/props while retaining the face ramp for readable acting; the normal location materials and light levels are restored afterwards. No World character recipes or playable room assets are changed.
 
 Validation: 13 scene/motion checks; browser project round trips at 820×1180 and 390×844 including furniture sizing, replacement, export, timeline seek/rewind and playback. The current stretched collar lift has a measured target error of about 4.1 mm. This is an endpoint check rather than a guarantee of cloth simulation. Physical-device Safari remains untested.
+
+The flight clarification adds an open Studio-only exit ahead of Vy, lowers the sprint to a 4 cm flight phase above its grounded shoe support, lengthens the trailing leg and leaves the tumbling furniture behind. The escape action-mark preset includes the doorway; its geometry and sign texture are disposed with the scene and it does not change World collisions. Motion marks are kept behind the running silhouette.
+
+Exit-sign wording is editable under Add text and retained as the bounded `exitLabel` scene field. The Vietnamese edition localises dialogue, scream and exit sign, retaining the English edition separately.

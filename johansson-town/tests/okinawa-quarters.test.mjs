@@ -38,8 +38,9 @@ test('Main Street has buildings on both kerbs, and the shops do things',async()=
  const {world,labels,actions}=await town();
  const {EAST_ROW,YARD_ROW}=await import('../src/world/okinawa/layout.js');
  const {MAIN_ROAD}=await import('../src/world/main-road.js');
- // A shop-house stands on every plot of both rows.
- for(const plot of [...EAST_ROW.plots.map(p=>({...p,x:(EAST_ROW.minX+EAST_ROW.maxX)/2})),...YARD_ROW.plots.map(p=>({...p,x:(YARD_ROW.minX+YARD_ROW.maxX)/2}))])
+ // A shop-house stands on every plot of both rows: its back at the plot's middle line, three quarters of the way back
+ // (Higa Liquor and the coin laundry are rooms you walk into, so their bodies start further back than the others').
+ for(const plot of [...EAST_ROW.plots.map(p=>({...p,x:EAST_ROW.minX+(EAST_ROW.maxX-EAST_ROW.minX)*.8})),...YARD_ROW.plots.map(p=>({...p,x:YARD_ROW.maxX-(YARD_ROW.maxX-YARD_ROW.minX)*.8}))])
   assert.ok(world.colliders.some(c=>c.id==='shop-house'&&circleHitsRect(plot.x,(plot.minZ+plot.maxZ)/2,.2,c)),'No building on '+plot.id);
  // None of them stands on the pavements.
  for(const c of world.colliders.filter(c=>c.id==='shop-house'))
