@@ -1,7 +1,7 @@
 import {shopDayPlan} from './shop-days.js';
 import {canonicalDay} from './canonical-day.js';
 import {calledToQuay} from './shore-duty.js';
-import {standNow} from './stand-points.js';
+import {standNow,yawFacing} from './stand-points.js';
 import {quayBreakPlan} from './quay-breaks.js';
 import {onWatch} from './ferry-crew.js';
 import {onSakuraShift,isWeekend} from '../commerce/sakura-rota.js';
@@ -78,6 +78,12 @@ const PARK_STAND=[PARK_BENCH.stand[0],PARK_BENCH.stand[2]];
  */
 const STROLLING=.72;
 const BENCH_STAND=[STAFF_BENCH.stand[0],STAFF_BENCH.stand[1]];
+/**
+ * The Main Street border is hers (world/harbour-park-garden.js main-street-border): on the way up to the park bench she
+ * stops on the park side of it, two steps from the bench, and dead-heads what she planted out from Sakura's pots.
+ */
+export const THUAN_BORDER=Object.freeze({at:Object.freeze([8.0,-29.8]),yaw:yawFacing([-1,0]),pose:'Interact',
+ why:'the park side of the Main Street border, two steps from the bench: the hibiscus and bougainvillea she planted out from Sakura’s pots'});
 const THUAN_WALK=Object.freeze([
  // Round the back first. The yard behind the shop is out of sight of the pavement,
  // which is the whole point of it: she has run the counter alone since nine.
@@ -89,7 +95,9 @@ const THUAN_WALK=Object.freeze([
  // nap had finished. She dawdles once she is somewhere, not on the way to it.
  {until:866,place:'nap',target:BENCH_STAND,activity:'going round the back for her break'},
  {until:896,place:'nap',target:BENCH_STAND,activity:'asleep on the bench behind the shop'},
- {until:906,place:'park',target:PARK_STAND,activity:'walking up to the park',pace:STROLLING},
+ {until:903,place:'park',target:THUAN_BORDER.at,activity:'walking up to the park',pace:STROLLING},
+ {until:909,place:'park',target:THUAN_BORDER.at,activity:'dead-heading the hibiscus on the Main Street border',pace:STROLLING,
+  stand:Object.freeze({yaw:THUAN_BORDER.yaw,pose:THUAN_BORDER.pose,why:THUAN_BORDER.why})},
  {until:912,place:'stroll',target:PARK_STAND,activity:'sitting in the park',pace:STROLLING},
  {until:916,place:'stroll',target:[31.5,-10],activity:'walking the Harbour Park shore',pace:STROLLING},
  // Start home while the break is still active. Waiting until the schedule flipped
@@ -414,7 +422,7 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
   // Carry the leg's pace through. Dropping it here is what kept her break at the
   // town's errand speed of 1.25 m/s, which is above the handover between her walk and
   // her stroll -- so the unhurried cycle her model carries was never once played.
-  if(walk)return {place:walk.place,target:walk.target,activity:walk.activity,pace:walk.pace,...(walk.play?{play:walk.play}:{})};
+  if(walk)return {place:walk.place,target:walk.target,activity:walk.activity,pace:walk.pace,...(walk.play?{play:walk.play}:{}),...(walk.stand?{stand:walk.stand}:{})};
   if(shiftActive(profile,minutes)&&onSakuraShift('Thuan',minutes))return {place:'market',target:MARKET_THRESHOLD,activity:profile.role};
   return bus('leaving Sakura for the last bus');
  }

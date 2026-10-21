@@ -53,7 +53,9 @@ test('stand sequences belong to the residents the owner named, 3–12 rows each,
  const rows=new Map();
  for(const r of STANDING_RESIDENTS){const s=STAND_SEQUENCES[r.stand];assert.ok(s,r.stand+' exists');rows.set(r.name,new Set([...(rows.get(r.name)||[]),r.stand]));}
  // Ms Ganaha's coin-laundry round: the owner's decision of 21 October 2026 gave the laundry its keeper (commerce/coin-laundry.js).
- assert.deepEqual([...rows.keys()].sort(),['Grandmother Higa','Harbour master','Kōji','Mrs Sato','Ms Ganaha','Nhung','Officer Mori','Thuan'].sort());
+ // Mrs Nakamura's entrance bed in Harbour Park: the park rework the owner approved on 21 October 2026 gave every bed a
+ // keeper (world/harbour-park-garden.js); the keepers now walk to them (tests/park-keepers.test.mjs).
+ assert.deepEqual([...rows.keys()].sort(),['Grandmother Higa','Harbour master','Kōji','Mrs Nakamura','Mrs Sato','Ms Ganaha','Nhung','Officer Mori','Thuan'].sort());
  for(const [name,ids] of rows){const n=[...ids].reduce((t,id)=>t+STAND_SEQUENCES[id].points.length,0);assert.ok(n>=3&&n<=12,name+' has '+n+' stand rows');}
  for(const p of CAST)for(const row of p.day)assert.ok(row.length===3||row[3]?.stand,p.name+': a fourth element is only a stand sequence');
 });
@@ -149,7 +151,7 @@ test('the street’s stand points stand clear of every solid and doorway, and ea
   });
  }
 });
-for(const name of ['Grandmother Higa','Kōji'])test(name+' walks the stand points of the day in order, faces each and takes its pose, never through anything',()=>{
+for(const name of ['Grandmother Higa','Kōji','Mrs Nakamura'])test(name+' walks the stand points of the day in order, faces each and takes its pose, never through anything',()=>{
  const parent=new THREE.Group();parent.visible=false;
  const system=createNeighbours({parent,blocked,register(o){o.userData.hit={inside:false};}});
  const person=system.people.find(p=>p.spec.name===name);system.people.splice(0,system.people.length,person);

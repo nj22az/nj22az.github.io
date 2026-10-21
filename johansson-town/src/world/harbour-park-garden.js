@@ -31,26 +31,27 @@ export const PARK_PLANTS=Object.freeze({
 
 /**
  * The beds. `plants`: [kind, x, z] in town coordinates, each on its bed's earth. `keeper` is a roster id; `tends` is
- * when they see to it (no walk to it is scheduled yet: the people's days are cast.js's).
+ * when they see to it, and `visit` the row of their day that walks them there (cast.js, a stand sequence of
+ * people/stand-sequences.js; tests/park-keepers.test.mjs holds the two the same).
  */
 export const HARBOUR_PARK_BEDS=Object.freeze([
  Object.freeze({id:'entrance-bed',title:'Entrance bed',bounds:rect(8.6,11.8,-19.4,-18.7),
-  keeper:'emi',tends:'09:30, before Nakamura opens',
+  keeper:'emi',tends:'09:20, before Nakamura opens at ten',visit:Object.freeze({at:'09:20',stand:'nakamura-bed'}),
   why:'The bed between the gate and Nakamura’s bench: it is what her customers look at with their zenzai, so Mrs Nakamura waters it before she opens, with the shop’s hose.',
   plants:Object.freeze([['ixora',9.1,-19.05],['lily',9.9,-19.05],['ixora',10.7,-19.05],['lily',11.4,-19.05]].map(Object.freeze))}),
  Object.freeze({id:'main-street-border',title:'Main Street border',bounds:rect(6.15,7.45,-33,-27.3),
-  keeper:'thuan',tends:'08:40, before Sakura opens',
+  keeper:'thuan',tends:'15:03, on her afternoon break, on the days she is not playing jan-ken-pon with Nhung',visit:Object.freeze({at:'15:03',walk:'THUAN_BORDER'}),
   why:'The border along Main Street, opposite Sakura’s door: Sakura supplies the town’s flowers since Mrs Kinjō retired, and the border is where Thuan plants out what she sells in pots; it screens the cherry bench from the street.',
   plants:Object.freeze([['bougainvillea',6.8,-27.9],['hibiscus',6.8,-29.3],['bougainvillea',6.8,-30.7],['hibiscus',6.8,-32.2]].map(Object.freeze))}),
  Object.freeze({id:'bath-screen',title:'Gettō screen',bounds:rect(20.6,29.6,-25.7,-25),
-  keeper:'gran-higa',tends:'09:45, before the bath opens',
+  keeper:'gran-higa',tends:'08:35, before the liquor counter opens at nine',visit:Object.freeze({at:'08:35',stand:'higa-getto'}),
   why:'Gettō along the bath’s south fence, so the pond walk does not look into the bath yard; Grandmother Higa cuts its leaves for mūchī in December.',
   plants:Object.freeze([21.4,23.0,24.6,26.2,27.8,29.0].map(x=>Object.freeze(['getto',x,-25.35])))}),
 ]);
 
 /** The koi pond's keeper: the pond lies between Umi-no-yu and the quay. */
-export const HARBOUR_POND_KEEPER=Object.freeze({keeper:'gran-higa',feeds:'when the bath opens at 10:00',food:'fu (麩), wheat-gluten crumbs, from a tin she keeps at the bandai',
- why:'The pond is beside her bathhouse; she feeds the koi on her way to open at ten, and leaves the tin of fu out on the post by the pond for the children until she shuts at 22:00.'});
+export const HARBOUR_POND_KEEPER=Object.freeze({keeper:'gran-higa',feeds:'at 12:45, on her way to the bandai at one',visit:Object.freeze({at:'12:45',stand:'higa-koi'}),food:'fu (麩), wheat-gluten crumbs, from a tin she keeps at the bandai',
+ why:'The pond is beside her bathhouse; she feeds the koi on her way to the bandai at one, and leaves the tin of fu out on the post by the pond for the children until she shuts at 22:00.'});
 
 /** The lily pads on the pond, [x, z, radius]: in the shallows at the ends, clear of the koi's stones and the reeds. */
 export const HARBOUR_POND_PADS=Object.freeze([[24.0,-29.8,.26],[24.6,-29.5,.2],[24.3,-32.2,.18],[27.3,-32.3,.22],[28.6,-30.4,.2],[25.9,-32.6,.21],[26.4,-29.3,.19]].map(Object.freeze));

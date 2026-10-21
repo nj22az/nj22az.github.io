@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {izakayaPlot,IZAKAYA_DOOR} from '../src/world/dining-layout.js';
-import {residentPlan,thuanAtMinato,izakayaOpen,THUAN_BUS_MARGIN,thuanAfternoon,THUAN_WALK_START,THUAN_WALK_END,SAKURA_FREEZER} from '../src/people/social.js';
+import {residentPlan,thuanAtMinato,izakayaOpen,THUAN_BUS_MARGIN,thuanAfternoon,THUAN_WALK_START,THUAN_WALK_END,SAKURA_FREEZER,THUAN_BORDER} from '../src/people/social.js';
 import {departureFor} from '../src/people/commuter-schedule.js';
 import {installDOM} from './fixtures.mjs';
 import {STAFF_BENCH} from '../src/world/staff-bench.js';
@@ -56,8 +56,9 @@ test('Thuan has an afternoon: the park bench, the shore walk, and back to the sh
    if(legs.at(-1)?.activity!==leg.activity)legs.push(leg);
    assert.equal(plan(m).activity,leg.activity,'The plan disagrees with the walk at '+m);
   }
-  // Round the back for a sleep first, then the park and its shore walk.
-  assert.equal(legs.length,6,'The break is missing a deliberate return leg');
+  // Round the back for a sleep first, then the park and its shore walk. On the way up she stops at the Main Street
+  // border, which is hers (world/harbour-park-garden.js; tests/park-keepers.test.mjs): seven legs.
+  assert.equal(legs.length,7,'The break is missing a deliberate return leg');
   assert.match(legs[0].activity,/back/i);
   assert.match(legs[1].activity,/asleep/i);
   assert.match(legs[2].activity,/park/i);
@@ -79,12 +80,16 @@ test('Thuan has an afternoon: the park bench, the shore walk, and back to the sh
   assert.equal(nap.length,2,'The nap is not its own place');
   for(const leg of nap)assert.deepEqual([...leg.target],[...STAFF_BENCH.stand],'She naps somewhere other than the bench');
 
-  // She goes to the park bench itself, not to the middle of the lawn.
-  assert.deepEqual(legs[2].target,[PARK_BENCH.stand[0],PARK_BENCH.stand[2]]);
+  // On the way up she stops at her border, on the park side, facing it; then she goes to the park bench itself, not
+  // to the middle of the lawn.
+  assert.deepEqual([...legs[2].target],[...THUAN_BORDER.at]);assert.deepEqual([...legs[3].target],[...THUAN_BORDER.at]);
+  assert.equal(legs[3].stand?.pose,'Interact','she works at the border');
+  assert.deepEqual(legs[4].target,[PARK_BENCH.stand[0],PARK_BENCH.stand[2]]);
   // Only the legs where she has arrived somewhere let the activity system stop her,
   // or she sits down on the first bench she passes and never reaches the park. The
   // nap is its own place because it has its own bench and its own pose.
-  assert.deepEqual(legs.map(l=>l.place),['nap','nap','park','stroll','stroll','market']);
+  // The border leg is 'park' too: if it let her stop, she would sit on the bench two steps away instead of working.
+  assert.deepEqual(legs.map(l=>l.place),['nap','nap','park','park','stroll','stroll','market']);
   // The leisure legs stay in the consolidated park on the east green, inside it
   // rather than over the water. The final leg deliberately returns to Sakura.
   for(const leg of legs.slice(2,-1)){
@@ -112,8 +117,10 @@ test('the whole day runs commute, shop, noodles, break, beer and home without a 
   // Out to the shared ten o'clock service.
   for(let m=510;m<1350;m+=5){const p=plan(m);if(seen.at(-1)?.place!==p.place)seen.push({m,place:p.place});}
   const order=seen.map(s=>s.place);
-  // Arrives on the morning boat, opens up, takes her walk, comes back, has a beer, waits for the last boat and is gone on it.
-  assert.deepEqual(order,['bus','market','ramen','market','nap','park','stroll','market','stroll','izakaya','bus','away']);
+  // Arrives on the morning boat, sweeps her pavement as the shutter goes up (the sakura-doorstep stand points the owner
+  // approved on 19 October 2026, stand-sequences.js), opens up, takes her walk, comes back, has a beer, waits for the
+  // last boat and is gone on it.
+  assert.deepEqual(order,['bus','doorstep','market','ramen','market','nap','park','stroll','market','stroll','izakaya','bus','away']);
   // and every one of those is somewhere she can actually stand.
   for(const {m} of seen){const p=plan(m);assert.ok(Array.isArray(p.target)&&p.target.length===2,'No target at '+m);}
  }finally{izakayaPlot();}

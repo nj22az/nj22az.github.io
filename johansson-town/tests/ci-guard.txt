@@ -37,3 +37,5 @@ sakura-rack-paths.test.mjs
 sakura-small-office.test.mjs
 sakura-stairs.test.mjs
 sakura-upstairs.test.mjs
+park-keepers.test.mjs
+thuan-evening.test.mjs

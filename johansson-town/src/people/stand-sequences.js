@@ -78,6 +78,22 @@ export const STAND_SEQUENCES=Object.freeze(Object.fromEntries([
   pt(-29.0,9.5,W,[300,900],'taking the dry net down off the east rail','the east rail, the long net',{pose:'Interact'}),
   pt(-28.5,10.6,S,[120,300],'stacking the fish boxes for the morning','the fish boxes, out of the rails’ way',{pose:'Interact'}),
  ]),
+ // ── Harbour Park's beds and pond (world frame; world/harbour-park-garden.js HARBOUR_PARK_BEDS, HARBOUR_POND_KEEPER) ──
+ // Each bed's keeper sees to it at the time the bed records. The points stand on the walk beside the bed, facing it.
+ seq('higa-getto','world','Grandmother Higa','The gettō screen along the bath’s south fence is hers: watered and its dead leaves cut out before the liquor counter at nine.',[
+  pt(21.8,-26.2,S,[180,420],'cutting the dead leaves out of the gettō','the west end of the screen, by the bath’s corner, where the salt wind browns the leaves first',{pose:'Interact'}),
+  pt(25.0,-26.2,S,[180,420],'watering the gettō along the bath fence','the middle of the screen, where the fence keeps the rain off its roots',{pose:'Interact'}),
+  pt(28.4,-26.2,S,[120,300],'tying a gettō stem back to the fence','the east end, by the pond walk, where people brush past it',{pose:'Interact'}),
+ ]),
+ seq('higa-koi','world','Grandmother Higa','She feeds the koi on her way to the bandai at one, from the tin of fu she keeps at the bath.',[
+  pt(26.0,-28.6,N,[300,600],'feeding the koi a handful of fu','the pond’s north edge, between the gettō screen and the water, where the koi know to come',{pose:'Interact'}),
+  pt(23.6,-28.4,N,[60,120],'leaving the tin of fu on the post for the children','the post by the pond walk, where the tin stays out until she shuts at ten (HARBOUR_POND_KEEPER)',{pose:'Interact'}),
+ ]),
+ seq('nakamura-bed','world','Mrs Nakamura','The entrance bed is what her customers look at with their zenzai, so she waters it with the shop’s hose before she opens at ten.',[
+  pt(9.1,-18.1,N,[120,300],'watering the ixora at the gate end of the bed','the gate end of the entrance bed, nearest the shop’s hose',{pose:'Interact'}),
+  pt(10.3,-18.1,N,[180,420],'pulling the weeds out round the lilies','the middle of the bed, the lilies between the ixora',{pose:'Interact'}),
+  pt(11.3,-18.1,N,[120,300],'watering the far end of the entrance bed','the bench end of the bed, where her customers sit',{pose:'Interact'}),
+ ]),
  // ── The coin laundry's morning round (world frame; commerce/coin-laundry.js LAUNDRY_KEEPER) ──
  // The room's own points (coin-laundry-dressing.js LAUNDRY_ROUND_POINTS) as numbers, so this list loads no building.
  seq('laundry-round','world','Ms Ganaha','The keeper’s hour before the mailbag: the room swept, the dryers’ lint filters cleared, the coin boxes emptied for the bank, the powder box filled and the board’s notices put up, as a coin laundry that runs itself is kept.',[
