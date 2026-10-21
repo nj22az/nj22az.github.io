@@ -21,7 +21,6 @@ const scenery=new Set(['src/world/interiors/sakura-office-room.js','src/world/in
  'src/world/okinawa/nakamura-dressing.js',
  // Physical station posters and their paired English inspect text are tested in police-station-dressing.
  'src/feed/police-notices.js','src/world/police-station-dressing.js',
- 'src/world/okinawa/nakamura-dressing.js',
  // Harbour Park's guide board (港公園, its map labels and notices) and the plants' Japanese names, each beside its English.
  'src/world/harbour-park-garden.js',
  // Higa Liquor's and the coin laundry's painted lettering (the valance, the tin, the cards, the jar tags, the machine
