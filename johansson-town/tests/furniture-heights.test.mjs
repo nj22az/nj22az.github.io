@@ -73,7 +73,9 @@ test('the counter, its collider, mounted goods and low till share their physical
 });
 
 test('all exported Minato and ramen dining places meet their seat and tabletop surfaces',async()=>{
- const bytes=await readFile(new URL('../assets/models/izakaya/minato-interior.glb',import.meta.url)),root=(await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'')).scene;
+ // The fitted room used by this runtime; its new counter surface is tested with
+ // the full three-piece assembly in izakaya-backbar.test.mjs.
+ const bytes=await readFile(new URL('../assets/models/izakaya/minato-interior-walnut.glb',import.meta.url)),root=(await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'')).scene;
  root.updateMatrixWorld(true);
  const places=[...Object.values(IZAKAYA_PLAYER_SEATS),...SATO_COUNTER,...SATO_LEDGE,...SATO_CORNER];
  for(const seat of places){
