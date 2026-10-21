@@ -22,6 +22,10 @@ HAND_GESTURE=thumbsDown POSE_CHROME=/path/to/chromium node avatar-creator/experi
 
 `HAND_SIDE=L` selects the character's left hand. Playwright normally resolves from the town package; `PLAYWRIGHT_PACKAGE` can point to a package.json in another installed dependency root. The renderer uses a local, read-only server and imports the actual avatar modules. No image generation or paintover is used.
 
-![Peace](johansson-peace-R-connected.png)
-![Thumbs up](johansson-thumbsUp-R-connected.png)
-![Thumbs down](johansson-thumbsDown-R-connected.png)
+![Peace, standard outline](johansson-peace-R-outlined.png)
+![Thumbs up, standard outline](johansson-thumbsUp-R-outlined.png)
+![Thumbs down, standard outline](johansson-thumbsDown-R-outlined.png)
+
+## Outline revision
+
+The owner correctly identified that the hand looked separate from Johansson because its ink multiplier was reduced to 0.23, versus 1 for the body. The updated patch uses the existing body outline material at full width for every hand vertex. The 1600 × 1400 outlined renders above use that setting. This makes the thumb and curled-finger modelling defects more apparent; matching line width is not visual acceptance of those forms. Seven structural, anatomical and shared hand checks passed, including a regression check requiring finger surfaces to retain the full outline. The still renderer was rerun for all three gestures. Motion, physical-device performance and runtime integration remain outstanding.

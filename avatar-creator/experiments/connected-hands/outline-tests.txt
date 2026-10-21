@@ -1,0 +1,15 @@
+✔ L hand has one connected surface, with only its wrist boundary (10.285012ms)
+✔ R hand has one connected surface, with only its wrist boundary (5.186112ms)
+✔ palm normal, thumb side and finger order define opposite anatomical handedness (0.630831ms)
+✔ optional bare hands append 28 joints; existing bones and indices stay unchanged (196.768335ms)
+✔ presets animate all five digits independently without moving the wrist or accumulating rotations (86.928123ms)
+✔ body and hand poses round trip together; old pose files still use the original rig (110.821574ms)
+✔ all existing preview outfits keep the articulated hand skinning (1085.921598ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1651.278003
