@@ -102,6 +102,7 @@ import {HOUSE_SAVE} from './world/johansson-house.js';
 import {createHomeCustomization} from './world/interiors/home-customization.js';
 import {buildCityRestaurant,CITY_RESTAURANT} from './world/interiors/city-restaurant.js';
 import {buildUpperHome} from './world/interiors/upper-home.js';
+import {stepInside} from './world/room-arrival.js';
 import {SAKURA_STAIR_PASSAGE,onSakuraStairFoot,onSakuraStairHead} from './world/interiors/sakura-stairs.js';
 import {buildSakuraOfficeRoom} from './world/interiors/sakura-office-room.js';
 import {SAKURA_BACK} from './world/okinawa/old-town.js';
@@ -1353,7 +1354,8 @@ async function enterRoom(s,arrival=null){replayInterrupted();lowerPocket();spawn
  activeRoomLayout?.follow?.({x:spawn[0],y:spawn[1]??0,z:spawn[2]});
  player.position.set(...spawn);
  // With the camera behind him, start a step inside so it is not up against the door.
- if(thirdPerson&&!arrival){const inward=activeRoomLayout?.yaw??0,dx=-Math.sin(inward),dz=-Math.cos(inward);for(let d=.1;d<=1.2;d+=.1){const x=spawn[0]+dx*d,z=(spawn[2]??0)+dz*d;if(cameraBlocked(x,z,player.position.y+.9,.35))break;player.position.x=x;player.position.z=z;}}
+ // Each step of it is one his feet could take (world/room-arrival.js): up a stair he climbs it, never stands under it.
+ if(thirdPerson&&!arrival)player.position.set(...stepInside(player.position.toArray(),activeRoomLayout?.yaw??0,{step:roomStep,lens:(x,y,z)=>cameraBlocked(x,z,y+.9,.35)}));
  unstuckPlayer();workplaceResidents.enter(s,minutes);bookshopCustomers.enter(s,minutes);
  // The dungeon is left by its rope, not by walking back through where you came in.
 
@@ -1465,6 +1467,12 @@ function residentEntities(){return [...world.people.map(p=>p.g),...(world.neighb
 function residentsAt(x,z,radius=PLAYER_RADIUS){return residentEntities().filter(g=>{if(g.userData.playerControlled||!residentInView(g))return false;g.getWorldPosition(residentPoint);return (!roomWalk()||Math.abs(residentPoint.y-player.position.y)<1.5)&&circleHitsCircle(x,z,radius,residentPoint.x,residentPoint.z,NPC_RADIUS);});}
 function overlapsResident(x,z){return residentsAt(x,z).length>0;}
 function residentBlocked(x,z){if(!current&&inEntrance(x,z))return false;return overlapsResident(x,z);}
+/** A step indoors from (x, y, z) to (nx, nz) by the room's own rules, as his feet take it in collides(): {ok, y}. */
+function roomStep(x,y,z,nx,nz){
+ const w=roomWalk();if(!w)return {ok:!environmentBlocked(nx,nz),y};
+ const m=w.move(x,y,z,nx,nz,PLAYER_RADIUS,(bx,by,bz)=>environmentBlocked(bx,bz,.05,'player',by));
+ return {ok:m.ok&&!environmentBlocked(nx,nz,PLAYER_RADIUS,'player',m.y),y:m.y};
+}
 function collides(x,z){
  if(roomWalk()){
   // Up and down the stair, and never off the edge of a floor: the step is onto a floor within a step of his feet.
@@ -1501,7 +1509,7 @@ function unstuckPlayer(forceStreet=false){
   if(clear(x,z))return;
   for(let r=.25;r<=4;r+=.25)for(let i=0,n=Math.max(8,Math.round(r*14));i<n;i++){const a=i/n*Math.PI*2,px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r;if(clear(px,pz)){player.position.set(px,ferryWalk.floorAt(px,pz,deck.y).y,pz);return;}}
   return;}}
- if(!environmentBlocked(x,z)&&!occupiedByPerson(x,z))return;
+ if(!environmentBlocked(x,z)&&!occupiedByPerson(x,z)&&(!roomWalk()||roomWalk().floorAt(x,z,player.position.y)))return;
  const [nx,nz]=findClear(x,z);
  player.position.set(nx,current?(roomWalk()?roomFloorAt(nx,nz):0):groundHeight(nx,nz),nz);
 }

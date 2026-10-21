@@ -13,6 +13,8 @@ export function buildUpperHome(options){
  box(1.6,.12,1.5,0,-.06,9,'Private entrance landing');
  box(1.76,.12,7.5,0,6.15,6,'Stairwell ceiling');
  for(let i=0;i<19;i++)box(1.6,.12,5.4/19,0,(i+1)*H/19-.06,8.4-(i+.5)*5.4/19,'Private stair tread');
+ // Closed risers: with open ones the void under the flight showed the sky's colour between the treads.
+ for(let i=0;i<19;i++)box(1.6,H/19,.03,0,(i+.5)*H/19,8.4-i*5.4/19-.015,'Private stair riser');
  box(1.6,.12,.6,0,H-.06,2.9,'Upper landing');
  for(const x of [-.84,.84]){
   box(.08,6.1,7.5,x,3.05,6,'Private stairwell wall');collider(x,6,.08,7.5,6.1);
