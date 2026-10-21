@@ -57,6 +57,8 @@ import {VENDING_PRODUCTS,DRINKABLE,EMPTY_CAN,CAN_REFUND} from './src/commerce/ve
 import {SAKURA_SPECIALS,SPECIAL_BY_NAME,specialsOpen} from './src/commerce/sakura-specials.js';
 import {MEDICINES,STAMINA_DRINK} from './src/world/interiors/sakura-dressing.js';
 import {STORE_ITEMS} from './src/commerce/catalogue.js';
+import {higaLiquorState,higaLiquorKeeper,HIGA_COUNTER,HIGA_LIQUOR_HOURS_TEXT,higaDeliveryBook} from './src/commerce/higa-liquor.js';
+import {LAUNDRY_MACHINES,LAUNDRY_POWDER,playerWashStage,freeMachine} from './src/commerce/coin-laundry.js';
 import {SHOPIFY_CONFIG} from './src/commerce/shopify-config.js';
 import {createShopify} from './src/commerce/shopify.js';
 import {townAudio} from './src/audio/town-audio.js?snappy=1';
@@ -89,7 +91,7 @@ import {GROCERY_ITEMS} from './src/commerce/catalogue.js';
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
  checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen,HOT_SNACKS,buyHotSnack,thuanRecommends} from './src/commerce/konbini.js';
 
-export function createActivities({say,onKaraoke=null,getResidentLocations=()=>null,onOpen=()=>{},onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onEat=()=>false,onTreat=()=>{},onDrink=()=>false,onSnack=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,getTipsy=()=>0,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false,getMassageChair=()=>null}) {
+export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResidentLocations=()=>null,onOpen=()=>{},onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onEat=()=>false,onTreat=()=>{},onDrink=()=>false,onSnack=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,getTipsy=()=>0,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false,getMassageChair=()=>null}) {
   const $=s=>document.querySelector(s);
   const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1997. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'peninsula',homeDecor:restoreHomeDecor(),pocketAlbum:[]};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
@@ -1054,13 +1056,13 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
     };
     input.click();
   }
-  // Umi-no-yu. The bath keeps municipal hours; the footbath outside never closes.
+  // Umi-no-yu. The bath keeps municipal hours, and the footbath outside keeps the bath's.
   // Inside Umi-no-yu (src/world/interiors/onsen.js): pay at the bandai, change, bathe.
   const townDay=()=>Math.floor(getMinutes()/1440);
   const onsenPaid=()=>state.onsenPaidDay===townDay();
   function onsenPay(){
     const m=((getMinutes()%1440)+1440)%1440;
-    if(m<600||m>=1320){show("Sea Bath · Umi-no-yu",'Higa-san is counting the day’s coins. "The bath is closed -- ten o’clock tomorrow. The footbath outside never closes."',[['Back',close]]);return;}
+    if(m<600||m>=1320){show("Sea Bath · Umi-no-yu",'Higa-san is counting the day’s coins. "The bath is closed -- ten o’clock tomorrow. The footbath opens with it."',[['Back',close]]);return;}
     if(onsenPaid()){receipt("Sea Bath · Umi-no-yu",'You have paid for today. Higa-san waves you through without looking up.');return;}
     show("Sea Bath · Umi-no-yu",'Higa-san looks up from her account book. Adults ¥300. Gentlemen through the indigo noren, ladies the crimson; past the bath doors it is swimwear -- the washing room and the rock bath are for everybody.',[
       ['Pay ¥300',()=>{if(!spend(300))return;state.onsenPaidDay=townDay();save();note('Bathed at Umi-no-yu.');receipt("Sea Bath · Umi-no-yu",'Three coins in the tray. "The men’s baskets are through the indigo curtain. Wash before you get in."');}],
@@ -1361,6 +1363,46 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
     try{const catalogue=await loadOfficeWorkbooks();if(!modalOpen||revision!==modalRevision)return;body.replaceChildren(createOfficeWorkbookView(catalogue,id,officeRecords));}
     catch{if(!modalOpen||revision!==modalRevision)return;show('Harbour office records','The records could not be loaded. Please try again.',[['Try again',()=>officeRecords(id)],['Close records',close]]);}
   }
+  /**
+   * Higa Liquor's counter (commerce/higa-liquor.js): open 9–12 and 17–20, Grandmother Higa or, on Saturdays, Yui; the
+   * card on the door between, the shutter at night. Its own goods, priced as 1997 priced them.
+   */
+  function higaLiquor(){
+    const now=getMinutes(),open=higaLiquorState(now);
+    if(open!=='open'){show('Higa Liquor',open==='away'?'The glass doors are shut and a card hangs on the handle: “Out. Back at five.” Grandmother Higa is at the bandai at Umi-no-yu until then.':`The shutter is down. Higa Liquor is open ${HIGA_LIQUOR_HOURS_TEXT}.`,[['Leave',close]]);return;}
+    const yui=higaLiquorKeeper(now)==='Miss Higa';
+    show('Higa Liquor',(yui?'Yui is minding the counter for her grandmother; it is Saturday, and her marking is in a pile by the register.':'Grandmother Higa looks up from her abacus.')+' Awamori in every size, the 1.8-litre bottles up the wall, the cold case by the door, and the old jar behind the counter that is not for sale.',
+      [...HIGA_COUNTER.map(p=>[`${p.name} · ¥${p.cost}`,()=>{if(!spend(p.cost,'Higa Liquor · '+p.name))return;onTime(2);addItem(p.item);tone(620,.12);receipt('Higa Liquor',p.text);}]),
+       ['Read the delivery book',()=>read('Higa Liquor · delivery book',higaDeliveryBook(getMinutes()))],['Leave',close]]);
+  }
+  /**
+   * A wash at the coin laundry (commerce/coin-laundry.js): load a free washer, it runs on the town clock, then a dryer,
+   * then fold. The save keeps it (state.coinLaundry), and the machine turns in the world while it runs.
+   */
+  function coinLaundry(){
+    const now=getMinutes(),wash=state.coinLaundry||null,run=playerWashStage(wash,now),spec=id=>LAUNDRY_MACHINES.find(m=>m.id===id);
+    const label=id=>spec(id).kind==='washer'?'washer '+id.slice(1):'dryer '+id.slice(1),Label=id=>label(id)[0].toUpperCase()+label(id).slice(1);
+    const keep=next=>{if(next)state.coinLaundry=next;else delete state.coinLaundry;save();onLaundry(state.coinLaundry||null);};
+    const wait=left=>['Wait on the bench with a manga',()=>{onTime(Math.max(1,Math.ceil(left)));coinLaundry();}];
+    if(run.stage==='none'){
+      const id=freeMachine('washer',now);
+      if(!id){show('Coin laundry','Every washer is going round or has somebody’s basket on it. Try again in a while.',[['Leave',close]]);return;}
+      const m=spec(id),cost=m.cost+LAUNDRY_POWDER.cost;
+      show('Coin laundry',`${Label(id)} is free (${m.load}): ¥${m.cost} for ${m.minutes} minutes, and ${LAUNDRY_POWDER.what} for ¥${LAUNDRY_POWDER.cost}.`,
+        [[`Load ${label(id)} · ¥${cost}`,()=>{if(!spend(cost,'Coin laundry · wash'))return;keep({machine:id,start:getMinutes()});tone(480,.15);receipt('Coin laundry',`The coins drop, the door clunks shut and ${label(id)} starts to fill. ${m.minutes} minutes on the town clock.`);}],['Leave',close]]);
+      return;
+    }
+    if(run.stage==='washing'||run.stage==='drying'){const id=run.stage==='washing'?wash.machine:wash.dryer;show('Coin laundry',`Your washing is going round in ${label(id)}: ${Math.ceil(run.left)} minutes to go.`,[wait(run.left),['Leave it going',close]]);return;}
+    if(run.stage==='washed'){
+      const id=freeMachine('dryer',now,wash);
+      if(!id){show('Coin laundry','Your washing is done, wet in the drum. Both dryers are busy.',[['Leave',close]]);return;}
+      const m=spec(id);
+      show('Coin laundry',`Your washing is done, wet in ${label(wash.machine)}. ${Label(id)} is free: ${m.per}.`,
+        [[`Move it to ${label(id)} · ¥${m.cost*3} for 30 minutes`,()=>{if(!spend(m.cost*3,'Coin laundry · dryer'))return;keep({...wash,dryer:id,dryStart:getMinutes()});tone(520,.15);receipt('Coin laundry',`Three coins, and ${label(id)} starts to turn: warm air and the smell of gas.`);}],['Leave',close]]);
+      return;
+    }
+    show('Coin laundry',`Your washing is dry and warm in ${label(wash.dryer)}.`,[['Fold it at the window counter',()=>{onTime(5);keep(null);tone(700,.12);receipt('Coin laundry','You fold it on the counter by the window while it is still warm, shirts on top, and carry it out under your arm.');}],['Leave',close]]);
+  }
   function action(kind,name,detail){
     body.classList.remove('signal');
     switch(kind){
@@ -1376,6 +1418,8 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
       case 'store-catalogue':show('Thuan’s mail-order book',realShop.enabled?'Real-world products. Current prices and Shopify checkout are shown separately from town yen.':'A pink ribbon marks the next page. Thuan is still preparing the mail-order selection.',[...STORE_ITEMS.filter(i=>realShop.enabled&&SHOPIFY_CONFIG.products[i.id]).map(i=>[i.name,()=>realProduct(i)]),['Close',close]]);break;
       case 'travel-progress':show('Earn your town shortcuts',travelStatusText(state),[['Back to exploring',close]]);break;
       case 'vending':vending();break;
+      case 'higa-liquor':higaLiquor();break;
+      case 'coin-laundry':coinLaundry();break;
       case 'recycle-cans':recycleCans();break;
       case 'sakura-specials':specialsMenu();break;
       case 'resident':resident(name);break;

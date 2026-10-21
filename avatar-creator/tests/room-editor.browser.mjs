@@ -14,12 +14,25 @@ const server=await serveGame({root,mounts:['avatar-creator','johansson-town']}),
 const temp=await mkdtemp(join(tmpdir(),'room-mcp-')),ctx=await context();ctx.repo=openRepo(temp);await mkdir(join(temp,'johansson-town/data/studio'),{recursive:true});const fixture='hat.glb';await copyFile(root+'johansson-town/assets/catalog/johansson-trucker-display/model.glb',join(temp,fixture));
 const errors=[];let exported;
 try{
- for(const [width,height] of [[1280,900],[390,844]]){
+ for(const [width,height] of [[1280,900],[1024,1366],[390,844]]){
   const context=await browser.newContext({viewport:{width,height},acceptDownloads:true}),page=await context.newPage();page.setDefaultTimeout(120000);page.on('pageerror',e=>errors.push(e.message));
   const open=async p=>{await p.goto(server.url+'avatar-creator/');await p.getByRole('button',{name:'Edit room',exact:true}).click();await p.locator('.room-workspace').waitFor();};
   await open(page);const w=page.locator('.room-workspace');await w.getByRole('button',{name:'World furniture starter',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('.room-workspace [data-objects]').children.length===4);
   await page.waitForFunction(()=>document.querySelector('.room-workspace [data-status]').textContent.startsWith('Saved on this device'));
+  // Reuse the exact embedded asset, preserving its shared identity, then undo the instance.
+  await w.getByRole('button',{name:'Add instance of tansu',exact:true}).click();
+  assert.equal(await w.locator('[data-objects] button').count(),5);
+  const [reuseFile]=await Promise.all([page.waitForEvent('download'),w.getByRole('button',{name:'Download project',exact:true}).click()]);
+  const reused=JSON.parse(await readFile(await reuseFile.path(),'utf8'));
+  assert.equal(Object.keys(reused.assets).length,4);
+  assert.equal(reused.objects.filter(o=>o.asset===reused.objects.find(o=>o.id==='tansu').asset).length,2);
+  await w.getByRole('button',{name:'Frame selected',exact:true}).click();
+  await w.getByRole('button',{name:'Undo',exact:true}).click();
+  assert.equal(await w.locator('[data-objects] button').count(),4);
+  await w.getByLabel('Find object',{exact:true}).fill('andon');
+  assert.equal(await w.locator('[data-objects] button').count(),1);
+  await w.getByLabel('Find object',{exact:true}).fill('');
   await w.locator('[data-objects]').getByRole('button',{name:'tansu',exact:true}).click();await w.getByLabel('Object position X',{exact:true}).fill('-1.23');await w.getByLabel('Object position X',{exact:true}).press('Tab');
   await w.getByRole('button',{name:'Snap selected to grid'}).click();assert.equal(await w.getByLabel('Object position X',{exact:true}).inputValue(),'-1.25');
   await w.getByRole('button',{name:'Duplicate',exact:true}).click();assert.equal(await w.locator('[data-objects] button').count(),5);
@@ -48,5 +61,5 @@ try{
  const rendered=await callTool('room_render',{id:'agent-room',size:256},ctx);assert.equal(rendered.mimeType,'image/png');assert.ok((await callTool('room_check',{id:'agent-room'},ctx)).findings.length>0);
  const opened=await callTool('room_open',{id:'ui-copy',file:portable.path,dryRun:false},ctx);assert.ok(!opened.error,JSON.stringify(opened));assert.equal(opened.project.objects.length,2);
  const p=await browser.newPage();p.setDefaultTimeout(120000);await p.goto(server.url+'avatar-creator/');await p.getByRole('button',{name:'Edit room',exact:true}).click();await p.locator('[data-project-file]').setInputFiles(join(temp,portable.path));await p.waitForFunction(()=>document.querySelector('.room-workspace [data-objects]').children.length===2);assert.equal(await p.getByLabel('Project title').inputValue(),'Agent room');await p.close();
- assert.deepEqual(errors,[]);console.log('Room UI recovery, replacement/Undo/Redo and cross-tab conflict checks passed at 1280 and 390 px. MCP create/import/edit/export/render/check and UI reopening passed.');
+ assert.deepEqual(errors,[]);console.log('Room UI recovery, replacement/Undo/Redo and cross-tab conflict checks passed at 1280, 1024 and 390 px. MCP create/import/edit/export/render/check and UI reopening passed.');
 }finally{await ctx.close();await browser.close();await server.close();await rm(temp,{recursive:true,force:true});}

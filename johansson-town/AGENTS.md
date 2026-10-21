@@ -21,6 +21,7 @@ Read the repository's [AGENTS.md](../AGENTS.md) and [CLAUDE.md](../CLAUDE.md). T
 - Where empty houses were removed, the street plan closes up around them: no vacant lawn or paving lots left where buildings stood.
 - New Yokosuka (<https://github.com/brynnb/new-yokosuka>) is a permanent inspiration for the World: "here you can see home interiors and convenience stores and everything we need"; its 1986 setting does not matter, "small town Japan still has much old parts in the 90s and even today". Plan homes, shops, streets and the harbour from its real rooms, measured and recorded as data; never copy its assets ([docs/research/new-yokosuka.md](docs/research/new-yokosuka.md)).
 - Sakura's upstairs is replanned (the owner: "The Sakura office is way too big and empty. I want maybe two windows you can look out from; now the whole island looks broken from the Sakura office. It should have like a bedroom or rest room upstairs too. Can you use anything from New Yokosuka?"). Read with the ruling above that the upper floor is the main office, not a home: the office shrinks to a small shop's office with its kitchenette and exactly two outlooks (Main Street from the front, the ferry berth from the desk's side window), and the rest room is a staff 休憩室/仮眠室, a 4½-mat tatami room with a futon in its cupboard for a rest between the shop and the late boat, or a night if the ferry ever cannot run; nobody lives there, and no canonical day sleeps there while the town does not stop for weather (`world/typhoons.js`). The plan, sizes and the New Yokosuka numbers it uses are data in `src/world/interiors/sakura-office-room.js` (`SAKURA_UPSTAIRS`); the island seen through the windows is drawn by every portal in view at once (`render/shop-street-view.js`).
+- Sakura's stair and the office's doors, 20 October 2026 (the owner, on his iPhone: "I don't want the stairs to be traversable it's too much errors when running up the stairs, I want the stairs to lead up to a black hole and we disappear into there and when it loads we come up on the upper floor. And more the entry to the upper office is only from inside not from outside now I have a button to enter the office when I'm outside Sakura, that's wrong. I guess it should be possible to evacuate through the fire ladder but that door only open from the inside"). The inside stair is a passage into darkness, never walked: from the stockroom its first treads rise into black, stepping onto them (or "Go upstairs") walks him into the dark while the picture fades, and the office storey opens as a room of its own at the stair head; coming down is the same and he arrives at the stair's foot in the stockroom (`src/world/interiors/sakura-stairs.js` `SAKURA_STAIR_PASSAGE`, game.js `takeSakuraStair`). Two rooms, the shop and the office; no flight, landing, landing lens or storey switching. The office is entered only from inside, up that stair: its site is `insideOnly` (`thuan-flat.js`) and has no door, button, pin, directory card or route outside. The fire door opens from inside only: "Evacuate by the fire escape" takes him out onto the landing and down the caged ladder to the yard; from the yard the fire escape is to look at, nothing more (`okinawa/old-town.js` `SAKURA_BACK`). Rooms are scanned for flashing faces at a phone's size (`tests/no-z-fighting.test.mjs`).
 
 ~~The implementation plan is [docs/MINATO-HOMES-PLAN.md](docs/MINATO-HOMES-PLAN.md).~~ Superseded on 19 October 2026 by the cast, household and crew consolidation below; the homes plan remains as dependency evidence only. Preserve save compatibility when implementing it.
 
@@ -122,6 +123,83 @@ less, by the named budgets there. Nothing else asks which edition it is. Later r
   (`commerce/paperwork.js`, `tests/paperwork.test.mjs`). On Linux the ledger is the live shop's.
 - Outside a page (node's suites) the edition is Linux unless `JOHANSSON_EDITION=web`; `tests/edition.test.mjs` holds
   the web budgets and the Linux path.
+
+## Owner's decision — 21 October 2026: no way in without a working interior
+
+The owner, on his iPhone outside Nakamura Zenzai: "There is a bug when I go outside the ice cream shop it says enter their
+home and then I get stuck in the staircase, any place without a fully functional interior shouldn't have a button to
+enter"; and the same day: "Also the railing by the ships at the dock you can get stuck when spawning there".
+
+- An enter, visit or go-in prompt (and the Enter button at a door) exists only where it leads to a fully functional
+  interior: the room builds; he arrives on walkable floor clear of solids (in first person, and after the step inside
+  the third-person camera takes, `src/world/room-arrival.js`); he can move, over every storey of a room of more than one;
+  and the Exit button puts him on walkable street ground with room to move. A place without one gets no enter prompt;
+  its look and read prompts stay.
+- The same holds for every place the game starts him or puts him outdoors: the openings (`world/openings.js`), the ferry
+  landings (`world/airport-ferry.js`), the quick crossing and Kitano-jima's arrivals stand him on level, walkable ground,
+  clear of solids, the ferry's gangway and rails and her hull while she is alongside, with room to move a metre two ways
+  and a way on foot to the street.
+- `tests/enterable-sites.test.mjs` walks every prompt that enters somewhere, every door of the Enter button and every
+  room entered only from inside, and every arrival point, and lists each failure with its way in and its reason. A new
+  door or spawn must pass it.
+
+## Owner's decision — 21 October 2026: one ground system
+
+The owner, on his phone: "the roads seems to have reversed to chaos again… Can you make a plan to finally fix the roads
+to a unified system? Pavement? Walk paths, grass and sandy beach?" (the plan approved: "Go ahead").
+
+- Ground: every surface comes from `src/world/ground-standard.js`. No module draws its own ground slab, colour or
+  height. The rulebook gives each class its top, colour, finish, the districts it belongs in and the edge it needs
+  against every neighbour: a 15 cm kerb, an edge line and U-gutter, stone or coral edging, or a graded join.
+- The ground-standard test (`tests/ground-standard.test.mjs`, measured by `tools/ground-audit.mjs`) guards all of
+  Minato. Since step 4 its baseline (`tests/fixtures/ground-baseline.json`) is empty: any violation fails. Fix the ground;
+  never list a finding. If a finding is a false positive, change the audit's rule with its reason written beside it.
+- A district on the standard is laid by the generator (`src/world/ground-build.js`) from its plan (`ground-plan.js`,
+  `ground-plan-harbour.js`): add or move ground by changing the plan, never with a slab of a module's own. Step 2 put Main
+  Street and the harbour on it. Main Street's carriageway lies a kerb under the town's datum and is graded back at its
+  ends; what stands on the road or at its ends takes its height from the plan (`streetDrop`, `groundTopAt`). Step 3 put
+  Kitahama, Nishi-machi, the west yard and the town hall on it (`ground-plan-quarters.js`). In a lane district a house
+  meets the lane by its own gate and the U-gutter (`lane-edges.js` draws the plan's gutter runs), never by a paved
+  ring. In the west yard the buildings stand on concrete aprons edged against the lawn. Step 4 put the rest on it:
+  the walks across the lawns (Harbour Park's, the east lawn's, Kitahama's coastal walk, Kitano Road's footway) are laid
+  from `ground-plan-coast.js` by `ground-paths.js`, flush and edged in setts; the lane builder (`lane-surfaces.js`) lays
+  nothing. No building has a ring of paving: it stands in its lawn or sand, with an apron or forecourt only where it is
+  used (Umi-no-yu's forecourt, the fuel depot's court, the drinks corner's pad). The east beach (`beach-layout.js`,
+  drawn by `east-lawn.js`) is coral-white sand with a wet band at the water, graded up to every firm edge
+  (`BEACH_GRADES`) and down into the sea; north of the oil jetty the east quay ends at x 42.3 and the beach runs to the
+  water (owner-approved).
+- The plan, the rulebook tables and today's counts are in [docs/GROUND-STANDARD.md](docs/GROUND-STANDARD.md). The work
+  ran in steps, each merged after the owner saw photos: (2) Main Street and the harbour; (3) Kitahama, Nishi, the
+  neighbourhood and the school; (4) the beach, the coast, the park and the lawns, which emptied the baseline.
+
+## Owner's decision — 21 October 2026: Higa Liquor and the coin laundry, kept by the cast
+
+The owner, on his phone: "I see the liquor store looks abhorrent too, and the laundromat how can we bring them more life
+and interactivity and who should work in the liquor store do we have enough people" (the plan approved: "Yes go on").
+No new people; everything below is data first (`src/commerce/higa-liquor.js`, `src/commerce/coin-laundry.js`,
+`src/people/shop-days.js`), the buildings dressed from it (`src/world/okinawa/higa-liquor-dressing.js`,
+`coin-laundry-dressing.js`).
+
+- **Higa Liquor's staff.** Grandmother Higa keeps the counter 09:00–12:00 and 17:00–20:00, round the Umi-no-yu bandai
+  (13:00–17:00); between the openings the doors are shut and a hand-written 留守 · 5時に戻ります card hangs on the door
+  ("Out. Back at five."); the shutter is down from 20:00 to 09:00. Yui (Miss Higa) minds the counter on Saturdays; that
+  day her grandmother keeps the morning for the garden and stays on at the bandai until 20:00, and Yui takes the bandai
+  from 20:00.
+- **Higa Liquor's deliveries.** Kōji drives the shop's round in his white kei truck on his weeks ashore, paid by the round
+  (¥1,500): Tuesdays and Fridays Minato, Sato Ramen and the Coral Bay Bar's ice boxes up the ferry's ramp; Saturdays
+  Sakura; from 10:30, between the ice plant and his sleep. His weeks aboard as the bosun's relief are unchanged: then
+  the customers collect (Thao in Minato's truck, Thuan with Sakura's trolley). Mr Fujita's six o'clock crate at the pier
+  root stays a standing order of its own.
+- **The yuntaku bench.** A bench and two beer-crate stools in front of the shop, sat on in the evening opening by the
+  men whose days allow it: Tetsuo (18:30–20:00, between the bath boiler's checks) and Mac (19:30–20:00, before his one
+  beer at Minato). Mr Fujita's crate stays empty: he is sober on the bridge until 22:20 (the consolidation's ruling).
+- **The coin laundry's keeper** is Ms Ganaha, who lives nearest with a free morning (Kitahama Heights B): her round
+  08:00–09:30, before the mailbag, sweeping, clearing the filters, emptying the coin boxes and pinning the notices.
+  Officer Mori, as near, may not keep a business and sleeps after the night patrol; Tetsuo, as near, has no free hour,
+  and mends the machines when asked. The laundry is open 24 hours; Thao washes the family's futon covers on Sundays
+  14:15–15:45, Ms Uezu brings the crew cabin's linen ashore on the first day of her week off, Dr Kakazu washes on
+  Wednesday nights; its noticeboard carries the street's story hooks (the missing cat, the found sandal, the lessons)
+  and the town calendar's week.
 
 ## Verification
 

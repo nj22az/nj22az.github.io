@@ -59,18 +59,20 @@ export const CAST=Object.freeze([
  // 1 Front-Row Yard is history, their friendship is not.
  person('Nhung',{sex:'f',age:37,home:'kitahama-3',work:'books',family:'Nguyen',purpose:'runs Front-Row Books and prints the town’s small paper at its back bench; the eldest sister; Sakura’s weekend clerk; Kōji’s wife and Riku’s mother',
   day:[['07:00','kitahama-3','breakfast with Kōji and Riku'],['09:30','books','opening Front-Row Books',{stand:'frontrow-morning'}],['13:00','park','lunch with her sisters'],['14:00','books','the bookshop, and the paper’s page at the back bench',{stand:'frontrow-paper'}],['18:30','kitahama-3','supper with Kōji and Riku'],['21:30','kitahama-3','home']]}),
- person('Kōji',{sex:'m',age:38,home:'kitahama-3',work:'fish-auction',family:'Nguyen',purpose:'fishes on his own sabani and sorts the catch at the fish auction and the ice plant; the ferry’s relief bosun on Ms Uezu’s week off',
+ person('Kōji',{sex:'m',age:38,home:'kitahama-3',work:'fish-auction',family:'Nguyen',purpose:'fishes on his own sabani and sorts the catch at the fish auction and the ice plant; the ferry’s relief bosun on Ms Uezu’s week off; drives Higa Liquor’s round in his kei truck on his weeks ashore (Tuesdays, Fridays and Saturdays from 10:30, paid by the round; commerce/higa-liquor.js)',
   day:[['04:30','fish-auction','the morning auction'],['09:00','ice-plant','ice for the boats'],['12:00','kitahama-3','home to sleep'],['15:00','net-ground','the nets at his net ground: mending, and taking them down before dark',{stand:'koji-nets'}],['17:30','boatyard','his own sabani on the west quay'],['18:30','kitahama-3','supper with Nhung and Riku']]}),
  person('Riku',{sex:'m',age:9,home:'kitahama-3',work:'school',family:'Nguyen',purpose:'Nhung and Kōji’s son; a pupil at the island school; Vy’s cousin',
   day:[['07:00','kitahama-3','breakfast'],['08:15','school','school'],['15:30','quay','watching the boats come in'],['17:00','park','football in the park'],['18:30','kitahama-3','home']]}),
  // The Higas, in Nishi-machi.
- person('Miss Higa',{sex:'f',age:29,home:'higa',work:'school',family:'Higa',was:['Mrs Higa','Yonamine-sensei'],purpose:'teaches the island school; keeps the bandai at Umi-no-yu in the evenings and at weekends',
+ person('Miss Higa',{sex:'f',age:29,home:'higa',work:'school',family:'Higa',was:['Mrs Higa','Yonamine-sensei'],purpose:'teaches the island school; keeps the bandai at Umi-no-yu in the evenings and at weekends; minds her grandmother’s liquor counter on Saturdays',
   day:[['07:00','higa','breakfast with her grandmother'],['08:00','school','teaching'],['15:30','school','marking'],['17:00','onsen','the bandai at Umi-no-yu'],['22:00','higa','home']]}),
- person('Grandmother Higa',{sex:'f',age:78,home:'higa',work:'higa-liquor',family:'Higa',purpose:'owns Umi-no-yu and Higa Liquor; keeps the liquor counter in the morning and the bandai in the afternoon',
-  day:[['07:00','higa','the garden across the lane: the vines, the beds and the altar flowers',{stand:'higa-garden'}],['08:30','higa','the verandah'],['09:00','higa-liquor','the liquor counter'],['12:00','higa','lunch'],['13:00','onsen','the bandai at Umi-no-yu'],['17:00','higa','home to the verandah']]}),
+ // Higa Liquor's hours round the bandai (the owner, 21 October 2026; commerce/higa-liquor.js): 9–12 and 17–20, a 留守 card
+ // on the door between; Yui minds the counter on Saturdays (people/shop-days.js).
+ person('Grandmother Higa',{sex:'f',age:78,home:'higa',work:'higa-liquor',family:'Higa',purpose:'owns Umi-no-yu and Higa Liquor; keeps the liquor counter 9:00–12:00 and 17:00–20:00, round the bandai in the afternoon',
+  day:[['07:00','higa','the garden across the lane: the vines, the beds and the altar flowers',{stand:'higa-garden'}],['08:30','higa','the verandah'],['09:00','higa-liquor','the liquor counter'],['12:00','higa','lunch'],['13:00','onsen','the bandai at Umi-no-yu'],['17:00','higa-liquor','the liquor counter, the evening opening'],['20:00','higa','home to the verandah']]}),
  // The Front-Row yard. Tetsuo keeps the island's electrics since the power house lost its keeper (roster.js RETIRED).
  person('Tetsuo',{sex:'m',age:40,home:'resident-home-kenji',work:'workshop',family:'Chinen',purpose:'radio repairer at the Chin & Tetsuo workshop; the ferry’s electrician under contract; tends the onsen’s boiler and pumps and the power house’s switchboard',
-  day:[['07:30','resident-home-kenji','breakfast'],['09:00','workshop','the radio bench'],['13:00','ferry','the ferry’s workshop while she lies alongside'],['18:00','onsen','the boiler and the pumps, and closing up'],['22:30','resident-home-kenji','home']]}),
+  day:[['07:30','resident-home-kenji','breakfast'],['09:00','workshop','the radio bench'],['13:00','ferry','the ferry’s workshop while she lies alongside'],['18:00','onsen','the boiler lit for the evening and the pumps'],['18:30','higa-bench','a bottle on the bench outside Higa Liquor, in earshot of the burner'],['20:00','onsen','the boiler, and closing up at ten'],['22:30','resident-home-kenji','home']]}),
  // The town's people.
  person('Mrs Sato',{sex:'f',age:68,home:'kitahama-2',work:'sato-ramen',family:'Sato',purpose:'cooks at Sato Ramen; buys fish at the morning auction; the izakaya’s rival for the evening crowd',
   day:[['05:30','fish-auction','the morning auction'],['07:00','sato-ramen','the stock pot',{stand:'ramen-stock'}],['11:00','sato-ramen','lunch service',{stand:'ramen-lunch'}],['21:00','kitahama-2','home']]}),
@@ -91,13 +93,13 @@ export const CAST=Object.freeze([
  // biography; an American who came with the diesels in the seventies and stayed. Kitahama Heights A (the logical id
  // kitahama-flat-3 kept for his saves, addendum 6) and a duty berth aboard.
  person('Mac',{sex:'m',age:61,home:'kitahama-flat-3',alsoAt:['ferry-engineer-duty-berth'],work:'ferry',family:'Turner',was:['Mr Nakandakari'],purpose:'relief engineer of the Minato Maru, an American who came to the island with the Caterpillar diesels in the seventies and stayed; takes the chief’s watch whenever Johansson is ashore; lives in Kitahama Heights A and keeps a duty berth aboard',
-  day:[['05:30','ferry','the engine room'],['12:00','ferry','lunch in the mess'],['13:00','ferry','the engine room'],['19:30','izakaya','one beer at Minato'],['21:00','kitahama-flat-3','home']]}),
+  day:[['05:30','ferry','the engine room'],['12:00','ferry','lunch in the mess'],['13:00','ferry','the engine room'],['19:30','higa-bench','half an hour on a crate outside Higa Liquor'],['20:00','izakaya','one beer at Minato'],['21:00','kitahama-flat-3','home']]}),
  person('Ms Uezu',{sex:'f',age:44,home:'kitahama-8',work:'ferry',family:'Uezu',purpose:'bosun of the Minato Maru, a week on (living aboard) and a week off',
   day:[['06:00','ferry','the deck and the ramp'],['12:00','ferry','lunch in the mess'],['13:00','ferry','the deck and the ramp'],['19:00','sato-ramen','supper'],['20:30','kitahama-8','home (in her week off)']]}),
  // The port clerk (docs/CAST-CONSOLIDATION.md §4, §8): tickets, parcels and the postal counter at one window, from noon
  // to the last boat (people/ganaha.js GANAHA); the mailbag and the parcel shelf before it opens. Kitahama Heights B.
- person('Ms Ganaha',{sex:'f',age:27,home:'kitahama-flat-4',work:'port',family:'Ganaha',purpose:'port clerk at the Port Terminal: the Minato Maru’s tickets, parcels and the post, at one window',
-  day:[['07:00','kitahama-flat-4','breakfast'],['09:30','port','the mailbag off the morning boat: parcels on the shelf, letters in the pigeonholes'],['11:15','sato-ramen','an early lunch before the window opens'],['12:00','port','the window: tickets, parcels and post, and the ferry desk telephone'],['22:30','kitahama-flat-4','home']]}),
+ person('Ms Ganaha',{sex:'f',age:27,home:'kitahama-flat-4',work:'port',family:'Ganaha',purpose:'port clerk at the Port Terminal: the Minato Maru’s tickets, parcels and the post, at one window; keeps the coin laundry on the side, its morning round before the mailbag',
+  day:[['07:00','kitahama-flat-4','breakfast'],['08:00','coin-laundry','the coin laundry’s morning round: the floor, the filters, the coin boxes and the board',{stand:'laundry-round'}],['09:30','port','the mailbag off the morning boat: parcels on the shelf, letters in the pigeonholes'],['11:15','sato-ramen','an early lunch before the window opens'],['12:00','port','the window: tickets, parcels and post, and the ferry desk telephone'],['22:30','kitahama-flat-4','home']]}),
   // The master (roster.js SHIP_POSTS; phase 2): signed on 06:05–22:20 with the rest of the crew (ferry-crew.js
  // FERRY_WORKING_DAY, master-commute.js walks his one body between the shed and the gangway), sober the whole watch;
  // the shed, the set and the beer only after the shore power (world/fujita-day.js). He still takes the lines when she
@@ -222,7 +224,9 @@ export const PLACES=Object.freeze({
  'town-hall':{name:'Town hall',keepers:['Dr Kakazu']},
  school:{name:'The island school',keepers:['Miss Higa']},
  onsen:{name:'Umi-no-yu',keepers:['Grandmother Higa','Miss Higa','Tetsuo']},
- 'higa-liquor':{name:'Higa Liquor',keepers:['Grandmother Higa']},
+ 'higa-liquor':{name:'Higa Liquor',keepers:['Grandmother Higa','Miss Higa']},
+ // The owner, 21 October 2026: the coin laundry gets a keeper from the cast (commerce/coin-laundry.js LAUNDRY_KEEPER).
+ 'coin-laundry':{name:'Coin laundry',keepers:['Ms Ganaha']},
  zenzai:{name:'Nakamura Zenzai and the community kitchen',keepers:['Mrs Nakamura']},
  'blue-coral':{name:'Blue Coral',keepers:['Mrs Nakamura']},
  // Unmanned since phase 4: Tetsuo keeps its switchboard under contract, as he keeps the ship's and the bathhouse's.

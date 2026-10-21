@@ -27,7 +27,8 @@ const crabLine=(()=>{
 })();
 export const CRAB_ZONE=Object.freeze({
  // Clear of the access ramps at the wall and short of where the swell washes up.
- minX:35.8,maxX:crabLine,minZ:BEACH.minZ+1.2,maxZ:BEACH.maxZ-1.2,
+ // On the open sand, between the fuel depot's court and the town hall's grounds (beach-layout.js BEACH.open).
+ minX:35.8,maxX:crabLine,minZ:BEACH.open.minZ+1.2,maxZ:BEACH.open.maxZ-1.2,
 });
 /** Where the fish jump: offshore of the east beach, far enough to read as "out there". */
 export const FISH_WATERS=Object.freeze({minX:56,maxX:100,minZ:-60,maxZ:35});

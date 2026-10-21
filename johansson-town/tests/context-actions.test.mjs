@@ -106,3 +106,18 @@ test('console action cycling stays selected until the nearby context changes',()
  const {doc}=fixture(),calls=[],rail=createContextRail({doc,onAction:id=>calls.push(id)}),state={...idle,targetLabel:'Read the noticeboard',enterLabel:'Enter the waiting hall'};
  rail.update(state);assert.equal(rail.primary.id,'act');assert.equal(rail.cycle(1),true);assert.equal(rail.primary.id,'enterBuildingButton');rail.update(state);rail.activatePrimary();assert.equal(calls.at(-1),'enterBuildingButton');rail.cycle(-1);assert.equal(rail.primary.id,'act');rail.cycle(1);rail.update({...state,targetLabel:'Talk to the harbour master'});assert.equal(rail.primary.id,'act');rail.update({...idle});assert.equal(rail.cycle(1),false);
 });
+
+test('the last action fades out with its words on it, but can no longer be pressed or read',()=>{
+ const {doc,get}=fixture(),calls=[],rail=createContextRail({doc,onAction:id=>calls.push(id)});
+ rail.update({...idle,targetLabel:'Look at the fire escape'});
+ rail.update({...idle});
+ const act=get('act');
+ assert.equal(get('contextActions').hidden,true,'the rail is hidden (quiet-hud.css fades it)');
+ assert.equal(act.hidden,false,'the button keeps its face while the rail fades');
+ assert.equal(act.getAttribute('aria-label'),'Look at the fire escape');
+ assert.equal(act.disabled,true);assert.equal(act.tabIndex,-1);assert.equal(act.getAttribute('aria-hidden'),'true');
+ act.onclick({detail:0});act.onpointerdown({button:0,preventDefault(){},stopPropagation(){}});
+ assert.equal(calls.length,0,'a fading button does nothing');assert.equal(rail.activatePrimary(),false);
+ rail.update({...idle,inside:true,canExit:true});
+ assert.equal(act.hidden,true,'a new action takes the rail, and the old one is gone');assert.equal(get('exitRoomButton').hidden,false);
+});

@@ -1,12 +1,13 @@
+import {stageComicExit} from './scene-exit.js?v=20261020-vi';
 import {gradientMap} from '../johansson-town/src/render/cel.js';
 import {createSceneFacePainter} from './scene-face.js';
-import {drawShout,drawStatement,drawComicChaos} from './scene-lettering.js?v=20261020-acting';
+import {drawShout,drawStatement,drawComicChaos} from './scene-lettering.js?v=20261020-vi';
 import {CLASSROOM_VIEW} from './classroom-stage.js';
-import {classroomComic} from './classroom-comic.mjs?v=20261020-acting';
+import {classroomComic} from './classroom-comic.mjs?v=20261020-vi';
 import {createSoleFinder} from '../johansson-town/src/avatars/foot-ground.js';
-import {applySceneContacts} from './scene-contact.js?v=20261020-acting';
+import {applySceneContacts} from './scene-contact.js?v=20261020-vi';
 import {filmStaging} from './film-staging.mjs';
-import {KNOWN_EXPRESSIONS,KNOWN_POSES} from './scene-catalogue.mjs?v=20261020-acting';
+import {KNOWN_EXPRESSIONS,KNOWN_POSES} from './scene-catalogue.mjs?v=20261020-vi';
 import {createActingPanel} from './acting/panel.js?v=20261016-1';
 import {sampleTake,normalizeTake} from './acting/takes.mjs';
 import {applyActorFrame} from '../johansson-town/src/avatars/acting.js';
@@ -18,11 +19,11 @@ import {ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/
 import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js';
 import {normalizeRecipe} from '../johansson-town/src/avatars/recipe.js';
 import {drawCaptions,comicLayout,FORMATS} from '../johansson-town/src/photo/layout.js';
-import {buildSceneWorld} from './scene-world.js?v=20261011-2';
-import {poseSceneAvatar,placeSceneAvatar,movingPose} from './scene-avatar.js?v=20261020-acting';
-import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,emptyScene,normalizeScene,addCharacter,removeCharacter,restoreCharacter,panelOrder,text,placementOf,applyPlacement,samePlacement} from './scene-model.mjs?v=20261020-acting';
+import {buildSceneWorld} from './scene-world.js?v=20261020-vi';
+import {poseSceneAvatar,placeSceneAvatar,movingPose} from './scene-avatar.js?v=20261020-vi';
+import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,emptyScene,normalizeScene,addCharacter,removeCharacter,restoreCharacter,panelOrder,text,placementOf,applyPlacement,samePlacement} from './scene-model.mjs?v=20261020-vi';
 import {pickMoment,applyMoment,aim} from './scene-moments.mjs?v=20261011-2';
-import {POSE_GROUPS,EXPRESSION_GROUPS,seatedPose} from './scene-catalogue.mjs?v=20261020-acting';
+import {POSE_GROUPS,EXPRESSION_GROUPS,seatedPose} from './scene-catalogue.mjs?v=20261020-vi';
 import {turnToward,touchAngle,twistTurn,nudgeStep,placeToolbar,pickBox,nearestSeat} from './scene-controls.mjs?v=20261011-2';
 import {SNAP,resolveSnap,snapTurn,stepTurn,edgeLine,lineDistance} from './scene-snap.mjs?v=20261011-2';
 import {touchFirst,dataURLToBlob,canvasToBlob,createReadyFile,bindSaveLink,createPreview,deliverFile} from './studio-share.mjs';
@@ -80,7 +81,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  <label>Left / right<input data-field="x" type="range" min="-12" max="12" step=".01"></label><label>Near / far<input data-field="z" type="range" min="-12" max="12" step=".01"></label>
  <label>Height above floor<input data-field="y" type="range" min="0" max="1.5" step=".01"></label><label>Lifted by<select data-field="liftedBy" aria-label="Lifted by"><option value="">Nobody</option></select></label><label>Use furniture<select data-field="seat" aria-label="Use furniture"><option value="">Stand on ground</option></select></label><button data-action="edit-character">Edit appearance</button><button data-action="duplicate">Duplicate character</button><button data-action="remove">Remove character</button></div></section>
  <section data-pane="text" hidden><h2>Add text</h2><label>Picture style<select data-field="style" aria-label="Picture style"><option value="photo">Photograph with speech bubbles</option><option value="meme">Meme with top and bottom text</option><option value="comic">Comic panel with caption</option></select></label>
- <label>Speech lettering<select data-field="speechStyle"><option value="bubble">Speech bubble</option><option value="shout">Large dramatic shout</option><option value="large">Large readable bubble</option></select></label><label>Action marks<select data-field="effect"><option value="">None</option><option value="dash">Speed lines and crash</option><option value="chaos">Comic chaos and flying papers</option></select></label><label>Backdrop<select data-field="backdrop"><option value="">Full location</option><option value="paper">Plain comic paper</option></select></label><label>Selected character’s speech<input data-field="speech" maxlength="120" placeholder="What are they saying?" aria-label="Selected character’s speech"></label>
+ <label>Speech lettering<select data-field="speechStyle"><option value="bubble">Speech bubble</option><option value="shout">Large dramatic shout</option><option value="large">Large readable bubble</option></select></label><label>Action marks<select data-field="effect"><option value="">None</option><option value="dash">Speed lines and crash</option><option value="chaos">Comic chaos and flying papers</option><option value="escape">Flee towards an open exit</option></select></label><label>Exit sign<input data-field="exitLabel" maxlength="24" placeholder="EXIT"></label><label>Backdrop<select data-field="backdrop"><option value="">Full location</option><option value="paper">Plain comic paper</option></select></label><label>Selected character’s speech<input data-field="speech" maxlength="120" placeholder="What are they saying?" aria-label="Selected character’s speech"></label>
  <label>Top text (meme)<input data-field="top" maxlength="120" placeholder="WHEN THE FERRY IS LATE" aria-label="Top text (meme)"></label><label>Bottom text / caption<input data-field="bottom" maxlength="120" placeholder="Write your punchline…" aria-label="Bottom text / caption"></label></section>
  <section data-pane="export" hidden><h2>Export your picture</h2><p class="scene-label">Picture format</p>${choice('format','Picture format',[['landscape','Landscape'],['square','Square'],['portrait','Portrait']])}
  <div class="scene-save-row"><a class="scene-save scene-primary" data-save="scene">Save picture</a><button data-action="preview">Preview</button></div><p class="scene-save-note"></p><p class="scene-export-status" role="status" aria-live="polite" data-status="scene"></p>
@@ -198,7 +199,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
   for(const c of root.querySelectorAll('[data-camera]'))c.value=state.camera[c.dataset.camera];
   const a=current();const lift=field('liftedBy');lift.replaceChildren(new Option('Nobody',''),...state.actors.filter(b=>b.id!==a?.id&&!b.liftedBy).map(b=>new Option(b.name,b.id)));
   for(const n of ['turn','size','x','z','y','speech','speechStyle','seat','liftedBy']){field(n).disabled=!a;field(n).value=a?.[n]??'';}
-  for(const n of ['style','top','bottom','backdrop','effect'])field(n).value=state[n]||'';
+  for(const n of ['style','top','bottom','backdrop','effect'])field(n).value=state[n]||'';field('exitLabel').value=state.exitLabel||'EXIT';field('exitLabel').disabled=state.effect!=='escape';
   for(const o of field('seat').options){if(!o.value)continue;const user=state.actors.find(x=>x.id!==a?.id&&x.seat===o.value);o.disabled=!!user;o.textContent=o.dataset.label+(user?' ('+user.name+')':'');}
   snapSwitch.checked=snapOn;
   for(const [name,value] of [['format',state.format],['layout',layoutStyle]])for(const b of root.querySelectorAll(`[data-choice="${name}"] button`))b.setAttribute('aria-pressed',String(b.dataset.value===value));
@@ -249,7 +250,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
   changed();sync();});
  // One Undo step per slider gesture: the place before the first 'input', remembered on 'change'.
  for(const n of ['turn','size','x','z','y'])field(n).addEventListener('change',()=>{const a=current();if(a&&sliding?.id===a.id)remember({kind:'place',id:a.id,before:sliding.before},a);sliding=null;});
- for(const n of ['style','top','bottom'])field(n).addEventListener('input',()=>{state[n]=text(field(n).value);changed();});
+ for(const n of ['style','top','bottom','exitLabel'])field(n).addEventListener('input',()=>{state[n]=text(field(n).value);changed();});
  for(const b of root.querySelectorAll('[data-choice] button'))b.addEventListener('click',()=>{const name=b.parentElement.dataset.choice;if(name==='format'){state.format=b.dataset.value;changed();}else{layoutStyle=b.dataset.value;comicFile.schedule(0);}sync();});
 
  async function loadWorld(id){
@@ -286,14 +287,14 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
     renderer??=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setPixelRatio(1);renderer.setSize(w,h,false);renderer.setViewport(0,0,w,h);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
     for(const [id,entry] of avatars)if(!snapshot.actors.some(a=>a.id===id)){clearAvatar(entry);avatars.delete(id);}
     for(const entry of avatars.values())entry.avatar.root.removeFromParent();
-    environment.stage?.(snapshot.furniture);inkProps(environment.furniture,snapshot.backdrop==='paper'&&snapshot.style==='comic');if(snapshot.location==='classroom')for(const [id,o] of Object.entries(environment.furniture||{}))o.scale.setScalar(1.35*(snapshot.furniture?.[id]?.size||1));
+    environment.stage?.(snapshot.furniture);stageComicExit(environment,snapshot.effect==='escape'&&snapshot.backdrop==='paper',snapshot.exitLabel);inkProps(environment.furniture,snapshot.backdrop==='paper'&&snapshot.style==='comic');if(snapshot.location==='classroom')for(const [id,o] of Object.entries(environment.furniture||{}))o.scale.setScalar(1.35*(snapshot.furniture?.[id]?.size||1));
     if(snapshot.backdrop==='paper'){
      const keep=new Set();for(const o of Object.values(environment.furniture||{}))o.traverse(m=>keep.add(m));
      for(const m of environment.meshes)if(m.visible&&!keep.has(m)){m.visible=false;restore.push(()=>m.visible=true);}
      const bg=environment.scene.background;environment.scene.background=new THREE.Color('#faf7ee');restore.push(()=>environment.scene.background=bg);
     }
     const camera=environment.camera,preset=views[snapshot.location].wide.camera;
-    camera.position.fromArray(preset.position);camera.quaternion.fromArray(preset.quaternion);camera.fov=snapshot.camera.fov||55;if(snapshot.camera.position){camera.position.fromArray(snapshot.camera.position);camera.lookAt(...snapshot.camera.target);}camera.aspect=w/h;camera.updateProjectionMatrix();
+    camera.position.fromArray(preset.position);camera.quaternion.fromArray(preset.quaternion);camera.fov=snapshot.camera.fov||(snapshot.location==='dock-workshop'?65:55);if(snapshot.camera.position){camera.position.fromArray(snapshot.camera.position);camera.lookAt(...snapshot.camera.target);}camera.aspect=w/h;camera.updateProjectionMatrix();
     const target=new THREE.Vector3(environment.origin[0],environment.origin[1]+.9,environment.origin[2]);if(snapshot.camera.target)target.fromArray(snapshot.camera.target);
     if(snapshot.camera.orbit||snapshot.camera.elevation||snapshot.camera.zoom!==1){const spherical=new THREE.Spherical().setFromVector3(camera.position.clone().sub(target));spherical.theta+=snapshot.camera.orbit*Math.PI/180;spherical.phi=THREE.MathUtils.clamp(spherical.phi-snapshot.camera.elevation*Math.PI/180,.25,Math.PI*.48);spherical.radius*=snapshot.camera.zoom;camera.position.copy(target).add(new THREE.Vector3().setFromSpherical(spherical));camera.lookAt(target);
      const direction=camera.position.clone().sub(target),length=direction.length(),ray=new THREE.Raycaster(target,direction.normalize(),.15,length),hit=ray.intersectObjects(environment.meshes,false).find(h=>h.object.visible&&h.object.material?.depthWrite!==false);if(hit)camera.position.copy(target).addScaledVector(direction,Math.max(.3,hit.distance-.15));
@@ -332,7 +333,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
      environment.scene.traverse(o=>{if(o.isHemisphereLight){const before=o.intensity;o.intensity=1.35;restore.push(()=>o.intensity=before);}});
     }
     environment.sky?.update(camera,1,false,false);renderer.render(environment.scene,camera);
-    canvas.width=w;canvas.height=h;ctx.drawImage(renderer.domElement,0,0);if(snapshot.effect==='dash'){const contacts=snapshot.backdrop==='paper'?records.filter(r=>movingPose(r.actor.pose)&&!r.actor.y&&!r.actor.seat).map(r=>{const soles=createSoleFinder(r.avatar)(),side=soles.L.y<soles.R.y?'L':'R',point=r.avatar.root.worldToLocal(r.avatar.bones['foot'+side].getWorldPosition(new THREE.Vector3()));point.y=soles[side].y;point.z=soles[side].z;return r.avatar.root.localToWorld(point).project(camera);}):[];drawDash(ctx,w,h,contacts);}if(snapshot.effect==='chaos')drawComicChaos(ctx,w,h,records.map(r=>headCentre(r.avatar).project(camera)));const overlay=document.createElement('canvas');overlay.width=w;overlay.height=h;drawCaptions(overlay.getContext('2d'),w,h,{style:snapshot.style,top:snapshot.top,bottom:snapshot.bottom,bubbles:bubbles.filter(b=>!b.shout&&!b.large)});ctx.drawImage(overlay,0,0);for(const b of bubbles.filter(b=>b.shout))drawShout(ctx,w,h,b.text);for(const b of bubbles.filter(b=>b.large))drawStatement(ctx,w,h,b.text,b.x);
+    canvas.width=w;canvas.height=h;ctx.drawImage(renderer.domElement,0,0);if(snapshot.effect==='dash'){const contacts=snapshot.backdrop==='paper'?records.filter(r=>movingPose(r.actor.pose)&&!r.actor.y&&!r.actor.seat).map(r=>{const soles=createSoleFinder(r.avatar)(),side=soles.L.y<soles.R.y?'L':'R',point=r.avatar.root.worldToLocal(r.avatar.bones['foot'+side].getWorldPosition(new THREE.Vector3()));point.y=soles[side].y;point.z=soles[side].z;return r.avatar.root.localToWorld(point).project(camera);}):[];drawDash(ctx,w,h,contacts);}if(['chaos','escape'].includes(snapshot.effect))drawComicChaos(ctx,w,h,records.map(r=>headCentre(r.avatar).project(camera)),snapshot.effect==='escape');const overlay=document.createElement('canvas');overlay.width=w;overlay.height=h;drawCaptions(overlay.getContext('2d'),w,h,{style:snapshot.style,top:snapshot.top,bottom:snapshot.bottom,bubbles:bubbles.filter(b=>!b.shout&&!b.large)});ctx.drawImage(overlay,0,0);for(const b of bubbles.filter(b=>b.shout))drawShout(ctx,w,h,b.text);for(const b of bubbles.filter(b=>b.large))drawStatement(ctx,w,h,b.text,b.x);
     // Where each character is on the picture (fractions of it), for picking, the outline and the toolbar.
     const right=new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld,0);
     boxes=placed.map(p=>{const corners=[];for(const x of [p.box.min.x,p.box.max.x])for(const y of [p.box.min.y,p.box.max.y])for(const z of [p.box.min.z,p.box.max.z])corners.push(new THREE.Vector3(x,y,z).project(camera));

@@ -79,7 +79,7 @@ test('in the town: the ground meets the coping, the chain stands on the verge, t
  try{
   const blocked=(x,z,r=.32)=>!routeAt(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));
   // The drawn ground along the verge and the walk is the ground the game walks on.
-  const surfaces=[];world.group.traverse(o=>{if(o.isMesh&&/^Okinawan quarter:(matte|sand|coral)\||^grid-lanes:|Compact neighbourhood ground/.test(o.name))surfaces.push(o);});
+  const surfaces=[];world.group.traverse(o=>{if(o.isMesh&&(/^Okinawan quarter:(matte|sand|coral)\||^West-shore |Compact neighbourhood ground/.test(o.name)||o.parent?.name==='Walks'||o.parent?.name==='Quarter ground'&&!o.userData.groundMarking))surfaces.push(o);});
   const ray=new THREE.Raycaster(),down=new THREE.Vector3(0,-1,0);
   for(let z=S.fromZ+.5;z<=S.cornerZ-.6;z+=1.3)for(const x of [-39.5,-39.2,-38.9,-38.5,-38,-37.5,-37,-36.5]){
    ray.set(new THREE.Vector3(x,2,z),down);const hit=ray.intersectObjects(surfaces,false)[0];

@@ -22,8 +22,11 @@ export const OPENINGS=Object.freeze([
  {id:'pier',docks:true,weight:2,hours:[300,1320],stand:[-.4,-86.4],facing:-.94,caption:'The end of the pier · the lighthouse, and the open sea.'},
  {id:'park-bench',weight:2,hours:[360,1260],dry:true,seat:'Sit and watch the town and harbour',caption:'Harbour Park · the rooftops and the port below.'},
  {id:'seawall',weight:1,hours:[330,1170],dry:true,stand:[32.1,-4],facing:-Math.PI/2,caption:'The seawall · the tide on the sand below.'},
- // Just off the ferry, at the gangway's foot on the outer pier (her port door, z −72.7 since the bigger ship), facing the town.
- {id:'ferry',docks:true,weight:2,hours:[450,1350],stand:[-3,-73.9],facing:Math.PI,caption:'Off the ferry · the quay, and Main Street beyond it.'},
+ // Just off the ferry, at the gangway's foot on the outer pier (her port door, z −72.7 since the bigger ship), facing the town:
+ // on the gangway's line, a metre past its foot (x −2.54). Until 21 October 2026 he stood at −3, −73.9, beside the foot with
+ // the gangway's south rail half a metre in front of him whenever she was alongside: the first step towards the town met
+ // the rail (the owner: "the railing by the ships at the dock you can get stuck when spawning there").
+ {id:'ferry',docks:true,weight:2,hours:[450,1350],stand:[-1.5,-72.7],facing:Math.PI,caption:'Off the ferry · the quay, and Main Street beyond it.'},
  // On the outer pier abreast of her bridge, looking across at the Minato Maru alongside (ferry.js: she lies at x −8.64).
  {id:'minato-maru',docks:true,weight:2,hours:[0,1440],when:c=>c.ferryAlongside,stand:[1.2,-66],facing:Math.PI/2,caption:'The outer pier · the Minato Maru alongside, bound for Kitano-jima.'},
  // On the pier's east side while the island cargo boat is alongside (cargo-shipping.js CARGO_CALLS), watching her unload.
@@ -37,7 +40,9 @@ export const OPENINGS=Object.freeze([
  // On the shed pier, looking at Mr Fujita's houseboat, the Shiosai.
  {id:'houseboat',docks:true,weight:2,hours:[0,1440],stand:[-36.8,-53.2],facing:.86,caption:'The shed pier · Mr Fujita’s houseboat, the Shiosai.'},
  // At the quay's edge past the port building, looking down at the fishing boat alongside (minato-berth.js QUAY_FISHING_BOAT).
- {id:'fishing-boat',docks:true,weight:2,hours:[0,1440],stand:[16.8,-49.3],facing:0,caption:'The quay · a fishing boat alongside.'},
+ // Behind the quay's coping, not on it: the 24 cm coping (ground step 2, 2026-10-21) is a full step up, and standing on its
+ // 0.6 m top between a bollard and the fuel box he could step down only by its full height.
+ {id:'fishing-boat',docks:true,weight:2,hours:[0,1440],stand:[16.8,-48.6],facing:0,caption:'The quay · a fishing boat alongside.'},
  // Beside the ferry's landing sign (ferry-quick-crossing.js), looking out across the strait to Kitano-jima.
  {id:'landing-sign',docks:true,weight:2,hours:[0,1440],stand:[-2.6,-70.4],facing:-.89,caption:'The ferry landing · Kitano-jima across the strait.'},
 ]);

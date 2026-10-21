@@ -1,6 +1,10 @@
 import {createVehicleDrivers} from '../people/vehicle-driver.js';
 import * as THREE from '../../vendor/three.module.js';
 import {createRoadNetwork,createTraffic,makeLane} from './road-network.js';
+import {groundTopAt,MAIN_QUAY_TOP} from './ground-plan-harbour.js';
+import {GROUND_CLASSES} from './ground-standard.js';
+/** Where a wheel stands: on Main Street's and the quays' laid ground, else on the town's road level. */
+const wheelsAt=(x,z)=>groundTopAt(x,z)??GROUND_CLASSES.road.top;
 import {buildVehicle,VEHICLE_SIZE} from './road-vehicles.js';
 import {MAIN_ROAD,MAIN_SERVICE_COURT} from './main-road.js';
 import {FERRY,FERRY_BERTH} from './ferry.js';
@@ -38,7 +42,8 @@ const MINATO_TOE_Z=FERRY_BERTH.z+rampToe(MINATO_BERTH.landing.top)[2];
  * crossing to his office (main-road.js MAIN_PARKING_LAYBY). Both used to stand side by
  * side on the apron, the car 0.8 m from the waiting hall's canopy posts.
  */
-export const QUAY_BAYS=Object.freeze([[.3,-40.9],[.55,-29.75]].map(Object.freeze));
+// (The lay-by's bay is on its centre less 13 cm: the car, 2.3 m over its mirrors, stays clear of the lay-by's kerb.)
+export const QUAY_BAYS=Object.freeze([[.3,-40.9],[.45,-29.75]].map(Object.freeze));
 /** Which home bay is the lay-by: pulled into from the town-bound lane, left the same way. */
 const LAYBY_BAY=1;
 export const SERVICE_BAYS=Object.freeze([[-5.8,10],[-5.8,4.5]].map(Object.freeze));
@@ -50,28 +55,41 @@ export const SERVICE_BAYS=Object.freeze([[-5.8,10],[-5.8,4.5]].map(Object.freeze
  */
 // The backing arc from the stage ends on her ramp's flap, between its toe (MINATO_TOE_Z) and the leaf's foot.
 const STAGE_TURN_R=2.6,BACK_TURN_R=3,STAGE_Z=-44.2;
-export const TOWN_FERRY_STAGE=Object.freeze([MAIN_SOUTH_X+STAGE_TURN_R,0,STAGE_Z]);
+export const TOWN_FERRY_STAGE=Object.freeze([MAIN_SOUTH_X+STAGE_TURN_R,MAIN_QUAY_TOP,STAGE_Z]);
 /** The reversing path from the stage to the foot of the ramp. */
 function townBackingPath(){
- const x=FERRY_BERTH.x,c=x+BACK_TURN_R,pts=[[...TOWN_FERRY_STAGE],[c,0,STAGE_Z]];
- for(let i=1;i<=24;i++){const a=Math.PI/2+i*(Math.PI/2)/24;pts.push([c+Math.cos(a)*BACK_TURN_R,0,STAGE_Z-BACK_TURN_R+Math.sin(a)*BACK_TURN_R]);}
+ const x=FERRY_BERTH.x,c=x+BACK_TURN_R,pts=[[...TOWN_FERRY_STAGE],[c,MAIN_QUAY_TOP,STAGE_Z]];
+ for(let i=1;i<=24;i++){const a=Math.PI/2+i*(Math.PI/2)/24;pts.push([c+Math.cos(a)*BACK_TURN_R,MAIN_QUAY_TOP,STAGE_Z-BACK_TURN_R+Math.sin(a)*BACK_TURN_R]);}
  return pts;
 }
 function smooth(points,rounds=3){let p=points;for(let r=0;r<rounds;r++){const out=[p[0]];for(let i=0;i<p.length-1;i++){const a=p[i],b=p[i+1];if(i>0)out.push(a.map((v,k)=>v*.75+b[k]*.25));if(i<p.length-2)out.push(a.map((v,k)=>v*.25+b[k]*.75));}out.push(p.at(-1));p=out;}return p;}
-const flat=(pts,y=0)=>pts.map(([x,z])=>[x,y,z]);
+/**
+ * A lane's points on the ground, the wheels on its top: Main Street's carriageway lies a kerb under the town's datum and
+ * is graded back up at its ends and at Kitano Road's mouth, and the main quay lies 16 mm under it (ground-plan.js,
+ * ground-plan-harbour.js), so the points are laid a metre apart at the level there.
+ */
+/** The delivery turn's loop: from z, out this far up the street and back. */
+const TURN_LOOP=Object.freeze({z:14.5,reach:2.6});
+const flat=pts=>{const out=[];pts.forEach(([x,z],i)=>{
+ if(i){const [px,pz]=pts[i-1],n=Math.floor(Math.hypot(x-px,z-pz));for(let k=1;k<n;k++){const qx=px+(x-px)*k/n,qz=pz+(z-pz)*k/n;out.push([qx,wheelsAt(qx,qz),qz]);}}
+ out.push([x,wheelsAt(x,z),z]);});return out;};
 const airportPts=pts=>pts.map(([u,v])=>airportVehiclePoint(u,v));
 export function buildTownNetwork(){
  const net=createRoadNetwork();
  net.add(makeLane('main-north',flat([[MAIN_NORTH_X,-33.5],[MAIN_NORTH_X,13.3]]),{speed:3.8}));
  net.add(makeLane('main-south',flat([[MAIN_SOUTH_X,1.5],[MAIN_SOUTH_X,-38.6]]),{speed:3.8}));
- const turn=[];for(let i=0;i<=32;i++){const a=i*Math.PI/32;turn.push([MAIN_ROAD.x+Math.cos(a)*1.1,.04,16.5+Math.sin(a)*1.1]);}
- SERVICE_BAYS.forEach(([x,z],i)=>{const entry=smooth([[MAIN_SOUTH_X,16.5],[MAIN_SOUTH_X,z+(i?3.3:5.5)],[x,z+(i?2:4.7)],[x,z]]);net.add(makeLane('service-in-'+i,[[MAIN_NORTH_X,0,13.3],...turn,...flat(entry)],{speed:1.5}));net.add(makeLane('service-out-'+i,flat(smooth([[x,z],[x,z-1],[MAIN_SOUTH_X,z-2.3],[MAIN_SOUTH_X,1.5]])),{speed:2.2}));});
+ // The delivery turn is a long loop up the street, not a pivot on the spot, so the van's corners stay on the road's
+ // level: the turnout's east half is footway, with the bench, the post box and the cabinet on it (ground-plan.js).
+ const TURN_Z=TURN_LOOP.z,turn=[];for(let i=0;i<=32;i++){const a=i*Math.PI/32;{const x=MAIN_ROAD.x+Math.cos(a)*1.1,z=TURN_Z+Math.sin(a)*TURN_LOOP.reach;turn.push([x,wheelsAt(x,z),z]);}}
+ SERVICE_BAYS.forEach(([x,z],i)=>{const entry=smooth([[MAIN_SOUTH_X,TURN_Z],[MAIN_SOUTH_X,z+(i?3.3:5.5)],[x,z+(i?2:4.7)],[x,z]]);net.add(makeLane('service-in-'+i,[[MAIN_NORTH_X,wheelsAt(MAIN_NORTH_X,13.3),13.3],...turn,...flat(entry)],{speed:1.5}));net.add(makeLane('service-out-'+i,flat(smooth([[x,z],[x,z-1],[MAIN_SOUTH_X,z-2.3],[MAIN_SOUTH_X,1.5]])),{speed:2.2}));});
  QUAY_BAYS.forEach(([x,z],i)=>{
   if(i===LAYBY_BAY){
    // Off the ferry and straight up the town-bound lane into the lay-by on its left; out
-   // the same way, back into the lane across the dropped kerb at the market crossing.
-   net.add(makeLane('quay-in-'+i,flat(smooth([[MAIN_NORTH_X,-39],[MAIN_NORTH_X,-35.2],[-.75,-33.2],[.45,-31.6],[x,-30.6],[x,z]])),{speed:1.8}));
-   net.add(makeLane('quay-out-'+i,flat(smooth([[x,z],[x,-28.6],[-.4,-27],[MAIN_NORTH_X,-25.2],[MAIN_NORTH_X,-23.5]])),{speed:2}));
+   // the same way, along the lay-by's north end and back into the lane before its kerb.
+   // Straightened onto the bay's line on the cargo driveway, before the lay-by's kerb begins (ground-plan.js).
+   net.add(makeLane('quay-in-'+i,flat(smooth([[MAIN_NORTH_X,-39],[MAIN_NORTH_X,-37.4],[x,-35.4],[x,-32.6],[x,z]])),{speed:1.8}));
+   // Out forwards along the lay-by, which runs on past the bay to its kerb's end (ground-plan.js), and onto the road.
+   net.add(makeLane('quay-out-'+i,flat(smooth([[x,z],[x,-28.8],[-.4,-26.6],[MAIN_NORTH_X,-24.6],[MAIN_NORTH_X,-23.5]])),{speed:2}));
    net.add(makeLane('layby-north',flat([[MAIN_NORTH_X,-23.5],[MAIN_NORTH_X,13.3]]),{speed:3.8}));
    return;
   }
@@ -79,7 +97,7 @@ export function buildTownNetwork(){
   net.add(makeLane('quay-in-'+i,flat(smooth([[MAIN_SOUTH_X,-39.4],[-2.7,-42.6],[-2.2,-45.6],[-.9,-46.7],[x,-45.7],[x,z]])),{speed:1.8}));
  });
  const townStage=[...flat(smooth([[MAIN_SOUTH_X,-39.4],[MAIN_SOUTH_X,STAGE_Z+STAGE_TURN_R]]))];
- for(let i=1;i<=20;i++){const a=Math.PI+i*(Math.PI/2)/20;townStage.push([MAIN_SOUTH_X+STAGE_TURN_R+Math.cos(a)*STAGE_TURN_R,0,STAGE_Z+STAGE_TURN_R+Math.sin(a)*STAGE_TURN_R]);}
+ for(let i=1;i<=20;i++){const a=Math.PI+i*(Math.PI/2)/20;townStage.push([MAIN_SOUTH_X+STAGE_TURN_R+Math.cos(a)*STAGE_TURN_R,MAIN_QUAY_TOP,STAGE_Z+STAGE_TURN_R+Math.sin(a)*STAGE_TURN_R]);}
  net.add(makeLane('town-ferry-stage',townStage,{speed:1.3}));
  const enter=[[-47,31],[-44,28.5],[-18,28.5]],far=[[-16,28.5],[-14.5,30],[-16,31.5]];
  Y.bays.forEach(([u,v],i)=>{
@@ -121,8 +139,8 @@ export function createTownTraffic({parent,colliders=null,ferry=null,getPlayerPos
  const parkAt=(v,p)=>{v.solid.moving=true;v.where=p.where;v.bay=p.bay;v.shore=p.where==='airport'?'airport':'town';delete v.stageOrigin;traffic.park(v,p);Object.assign(v.solid,{x:p.x,z:p.z,yaw:p.yaw,height:p.y+1.9});};
  const unpark=v=>{v.solid.x=v.solid.z=1e6;if(v.where==='airport')airportTaken.delete(v.bay);if(v.where==='service')townTaken.delete(v.bay);v.where='driving';};
  const reserve=(shore)=>{const set=shore==='airport'?airportTaken:townTaken,order=shore==='airport'?[0,1,2,3,4,5]:[1,0];for(const i of order)if(!set.has(i)){set.add(i);return i;}return null;};
- const quayBay=i=>{const [x,z]=QUAY_BAYS[i];return {where:'quay',bay:i,x,y:0,z,yaw:0};};
- const serviceBay=i=>{const [x,z]=SERVICE_BAYS[i];return {where:'service',bay:i,x,y:0,z,yaw:Math.PI};};
+ const quayBay=i=>{const [x,z]=QUAY_BAYS[i];return {where:'quay',bay:i,x,y:wheelsAt(x,z),z,yaw:0};};
+ const serviceBay=i=>{const [x,z]=SERVICE_BAYS[i];return {where:'service',bay:i,x,y:wheelsAt(x,z),z,yaw:Math.PI};};
  const islanders=[make('kei truck',0x5f8f5a,'islander','Tetsuo','Collect airport cargo for the workshop'),make('car',0xe9e6dc,'islander','Harbour master','Inspect airport cargo manifests')];
  const appointments=[{leave:690,back:750},{leave:960,back:1020}];islanders.forEach((v,i)=>{v.home='town';v.homeBay=i;v.appointment=appointments[i];parkAt(v,quayBay(i));});
  // The morning kei truck is Minato Izakaya's (Thao's): the dry goods off the airport freight for the evening trade. It

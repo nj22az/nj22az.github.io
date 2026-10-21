@@ -47,7 +47,8 @@ export const linesFor=name=>Object.entries(MERCHANDISING).filter(([,m])=>m.for.i
  *                 window dressing, festival trimmings, lanterns and wreaths, for the shops, the bar, the bath, the
  *                 school and the town hall. Those are `decor` lines on an account, named goods rather than shelf
  *                 stock: they come in with the depot's deliveries, not off the gondolas.
- *   higa-saketen  Higa Liquor in Nishi-machi: all the alcohol. Sakura's beer comes from the Higas,
+ *   higa-saketen  Higa Liquor on Main Street: all the alcohol, carried by Kōji's round on his weeks ashore
+ *                 (commerce/higa-liquor.js HIGA_ROUND). Sakura's beer comes from the Higas,
  *                 and so do Minato's bottle keep and tap, Sato Ramen's bottles and the Coral Bay
  *                 Bar's ice boxes on Kitano-jima.
  *   frontrow      Front-Row Books & Stationery: paper, ledgers, pens and envelopes for the town's
@@ -112,16 +113,16 @@ export const ACCOUNTS=Object.freeze({
  'higa-saketen':{
   market:{name:'Sakura Shōten',owner:'Thuan',lines:['Umineko lager, cases of cans'],
    why:'The beer column in Sakura’s cold cabinet, nearest the till.',
-   delivery:'Saturday mornings: the Higas’ van, and Grandmother Higa counting the cases off herself.'},
+   delivery:'Saturday mornings at a quarter to eleven, Kōji’s kei truck on Higa Liquor’s round in his weeks ashore and Thuan’s trolley across Main Street in his weeks at sea (higa-liquor.js); Thuan counts the cases off.'},
   izakaya:{name:'Minato Izakaya',owner:'Thao',lines:['Umineko lager, kegs and bottles','awamori for the bottle keep','sake for warming','shōchū for the mixes'],
    why:'Everything behind Minato’s bar: the tap, the keep shelf, the tokkuri and the highballs.',
-   delivery:'Kegs on Tuesdays and Fridays at two, rolled down the side passage before the noren goes up.'},
+   delivery:'Kegs on Tuesdays and Fridays at a quarter to eleven, rolled down the side passage before the noren goes up: Kōji’s round, or Thao’s own truck in his weeks at sea.'},
   ramen:{name:'Sato Ramen',owner:'Mrs Sato',lines:['Umineko lager, large bottles'],
    why:'A bottle with the gyōza, for the lunch crowd who are not going back to work.',
    delivery:'With the Minato order, one crate left at the back door.'},
   'coral-bay-bar':{name:'the Coral Bay Bar on Kitano-jima',contact:'the beach bar keeper',lines:['Umineko lager, bottles on ice'],
    why:'Cold beer for the day-trippers on Coral Bay, the reason half the morning ferry carries towels.',
-   delivery:'Ice boxes on the morning car ferry; the empties come back on the evening sailing.'},
+   delivery:'Ice boxes up the ramp for the late-morning car ferry on Tuesdays and Fridays; the empties come back on the evening sailing.'},
   'fujita-shed':{name:'Mr Fujita’s shed on the pier',contact:'Mr Fujita',lines:['Umineko lager, large bottles'],
    why:'Twenty-four to forty-nine large bottles a day, three small glasses a bottle, poured from the armchair in front of the television.',
    delivery:'Six every morning at the pier root: the day’s crates down, yesterday’s empties up off his floor. Returnable bottles, counted by Grandmother Higa.'},

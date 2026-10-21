@@ -93,7 +93,7 @@ function buildHeights(kit,solid,{anchor,onAction}){
   kit.box(.8,.55,.3,x0+1.6,1.8,end+out*.18,0xe2e0d8);
   // The garden: stepping stones from the gate to the door, a hibiscus by the wall, pots by the step, the washing out
   // and a bicycle; the gas bottles round the end of the house.
-  for(const x of [A.maxX-.55,A.maxX-1.25,A.maxX-1.95])kit.box(.48,.03,.44,x,.015,z,0xcfc8b4);
+  for(const x of [A.maxX-.55,A.maxX-1.25,A.maxX-1.95])kit.box(.42,.03,.38,x,.015,z,0xcfc8b4);
   hibiscus(kit,x1+1.9,z+out*1.9,{seed:h.side==='north'?281:282,flower:h.side==='north'?0xe8b12c:0xd95a5a});
   potPlant(kit,x1+.5,z+.9,{seed:h.side==='north'?283:284,size:.3});potPlant(kit,x1+.5,z-.9,{seed:h.side==='north'?285:286,size:.25});
   kit.at(x1+1.4,z-out*1.5,Math.PI/2,()=>laundry(kit,0,0,{length:1.5,seed:h.side==='north'?287:288}));
@@ -117,8 +117,8 @@ function buildHeights(kit,solid,{anchor,onAction}){
 export const KITAHAMA_PARK=Object.freeze({
  fence:Object.freeze({top:.6,knee:.25,spacing:1.4,why:'A pipe fence round the two lane sides, so a ball or a small child does not run straight into the lane; posts every 1.4 m at most, each from the ground, so no rail hangs in the air.'}),
  sign:Object.freeze({out:.3,along:6.6,w:.5,h:.7,y:1.1,why:'The park’s rules, read from the lane: take your rubbish home, ball games before six. On two steel posts set in the verge.'}),
- sandpit:Object.freeze({x0:.6,x1:2.6,z0:1.4,z1:3.2,kerb:.12,top:.16,sand:.08,
-  why:'For the small children, next to the swing and in sight of the bench. A concrete kerb 16 cm high, the sand 8 cm below it, a bucket, a spade and a heap left from the afternoon.'}),
+ sandpit:Object.freeze({x0:.6,x1:2.6,z0:1.4,z1:3.2,kerb:.12,top:.13,sand:.05,
+  why:'For the small children, next to the swing and in sight of the bench. A concrete kerb 13 cm high, the sand 8 cm below it, a bucket, a spade and a heap left from the afternoon; the sand is the beach\'s, coral-white, 3 cm over the lawn (ground-standard.js).'}),
 });
 /**
  * The drinks machines on Fukugi Lane: two, with their backs to Kitahama Heights' front block wall north of house A's
@@ -160,7 +160,7 @@ function buildPark(kit,solid,{anchor,onAction,vending}){
  const bx=P.maxX-2.2,bz=P.maxZ-2.5;
  {const S=KITAHAMA_PARK.sandpit,k=S.kerb,x0=P.minX+S.x0,x1=P.minX+S.x1,z0=P.maxZ-S.z1,z1=P.maxZ-S.z0;
   for(const [a,b,c,d] of [[x0,x1,z0,z0+k],[x0,x1,z1-k,z1],[x0,x0+k,z0+k,z1-k],[x1-k,x1,z0+k,z1-k]])kit.block(a,b,-.05,S.top,c,d,0x9e9b93);
-  kit.block(x0+k,x1-k,-.05,S.sand,z0+k,z1-k,0xd2b479,'sand');
+  kit.block(x0+k,x1-k,-.05,S.sand,z0+k,z1-k,0xeee3c6);
   const [mx,mz]=[x0+.75,z0+.55];kit.sphere(.32,mx,S.sand,mz,0xc9aa6c,{sy:.45});
   kit.cyl(.1,.075,.15,x1-.55,S.sand+.075,z1-.6,0xc8432f,{segments:10,finish:'gloss'});kit.cyl(.105,.105,.012,x1-.55,S.sand+.15,z1-.6,0xa8322a,{segments:10});
   kit.rod([mx+.08,S.sand+.12,mz],[mx+.2,S.sand+.42,mz+.06],.012,0xe8b830);kit.box(.11,.15,.02,mx+.05,S.sand+.06,mz-.01,0xe8b830,{rz:-.35,finish:'gloss'});}
@@ -212,7 +212,9 @@ function buildCorner(kit,solid,{anchor,onAction}){
  // A wire cage with a lid, the bags inside under a green net.
  const w=2.3,d=1.1,h=1.1;
  for(const [x,z] of [[-w/2,-d/2],[w/2,-d/2],[-w/2,d/2],[w/2,d/2]])kit.box(.04,h,.04,cx+x,h/2,cz+z,steel);
- for(const y of [.05,h])kit.block(cx-w/2,cx+w/2,y-.02,y+.02,cz-d/2,cz+d/2,steel);
+ // The frame at the foot is four bars on the ground (the bags stand on the lane), the lid a sheet over the top.
+ for(const [a,b,c,e] of [[cx-w/2,cx+w/2,cz-d/2,cz-d/2+.04],[cx-w/2,cx+w/2,cz+d/2-.04,cz+d/2],[cx-w/2,cx-w/2+.04,cz-d/2,cz+d/2],[cx+w/2-.04,cx+w/2,cz-d/2,cz+d/2]])kit.block(a,b,.03,.07,c,e,steel);
+ kit.block(cx-w/2,cx+w/2,h-.02,h+.02,cz-d/2,cz+d/2,steel);
  for(let x=-w/2;x<=w/2;x+=.15)kit.box(.01,h,.01,cx+x,h/2,cz+d/2,steel);
  for(let i=0;i<7;i++)kit.sphere(.26+(i%3)*.04,cx-w/2+.35+i*.27,.28+(i%2)*.18,cz-.1+(i%2)*.15,i%3?0xf2f2ee:0x9fc4e0,{sy:.85,detail:1});
  kit.box(w-.1,.02,d-.1,cx,.62,cz,0x2f7a4a,{finish:'thin'});

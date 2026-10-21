@@ -30,11 +30,11 @@ export function drawStatement(ctx,w,h,text,speaker=.5){
 }
 
 /** Ink accents on the paper layer: tumbling sheets, impact arcs and panic droplets. */
-export function drawComicChaos(ctx,w,h,heads=[]){
+export function drawComicChaos(ctx,w,h,heads=[],escaping=false){
  ctx.save();ctx.strokeStyle='#211e19';ctx.fillStyle='#fffdf6';ctx.lineWidth=w*.006;ctx.lineCap='round';
- for(const [x,y,r] of [[.12,.39,-.5],[.38,.58,.8],[.25,.86,.35]]){ctx.save();ctx.translate(x*w,y*h);ctx.rotate(r);ctx.beginPath();ctx.moveTo(-w*.034,-h*.025);ctx.lineTo(w*.034,-h*.025);ctx.lineTo(w*.027,h*.025);ctx.lineTo(-w*.038,h*.02);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();}
+ for(const [x,y,r] of [[.12,.39,-.5],[escaping?.29:.38,escaping?.70:.58,.8],[.25,.86,.35]]){ctx.save();ctx.translate(x*w,y*h);ctx.rotate(r);ctx.beginPath();ctx.moveTo(-w*.034,-h*.025);ctx.lineTo(w*.034,-h*.025);ctx.lineTo(w*.027,h*.025);ctx.lineTo(-w*.038,h*.02);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();}
  for(const [x,y,r] of [[.13,.48,-.3],[.27,.76,.6],[.41,.43,.3]]){ctx.save();ctx.translate(x*w,y*h);ctx.rotate(r);ctx.beginPath();ctx.moveTo(-w*.055,0);ctx.quadraticCurveTo(-w*.12,-h*.08,w*.015,-h*.07);ctx.stroke();ctx.restore();}
- ctx.lineWidth=w*.004;for(let i=0;i<6;i++){const y=h*(.52+i*.043);ctx.beginPath();ctx.moveTo(w*(.39+i%2*.02),y);ctx.lineTo(w*(.50+i%3*.025),y-h*.012);ctx.stroke();}
+ ctx.lineWidth=w*.004;for(let i=0;i<6;i++){const y=h*(.52+i*.043);ctx.beginPath();ctx.moveTo(w*((escaping?.25:.39)+i%2*.02),y);ctx.lineTo(w*((escaping?.38:.50)+i%3*.025),y-h*.012);ctx.stroke();}
  for(const head of heads){const x=(head.x+1)*w*.5,y=(1-head.y)*h*.5;for(let i=0;i<3;i++){const dx=w*(-.12+i*.07),dy=h*(-.09-Math.abs(i-1)*.015);ctx.beginPath();ctx.moveTo(x+dx,y+dy);ctx.quadraticCurveTo(x+dx-w*.025,y+dy-h*.038,x+dx-w*.027,y+dy-h*.008);ctx.quadraticCurveTo(x+dx-w*.025,y+dy+h*.004,x+dx,y+dy);ctx.stroke();}}
  ctx.restore();
 }

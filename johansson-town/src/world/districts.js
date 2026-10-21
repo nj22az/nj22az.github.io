@@ -26,7 +26,8 @@ export function buildDistricts(world,options){
   // Each faces the people it is directing: the port sign is read walking up from the
   // shops, the bus-stop sign walking down to the terminus. That one stands on the footway's kerb side, clear of the
   // police station's doors and notice board behind it.
-  const signs=[[3.2,-34,"港へ →",'HARBOUR'],[3.6,18.9,"港湾ターミナル ↓",'PORT TERMINAL · FERRIES',Math.PI]];
+  // (The port sign's post stands on the footway behind the cargo driveway's kerb, 0.4 m east of the driveway's edge.)
+  const signs=[[3.6,-34,"港へ →",'HARBOUR'],[3.6,18.9,"港湾ターミナル ↓",'PORT TERMINAL · FERRIES',Math.PI]];
   
   for(const [x,z,jp,en,angle=0] of signs){
     const marker=sign(jp,en,[x,2.1,z],1.55,.42,angle);marker.name='District direction';

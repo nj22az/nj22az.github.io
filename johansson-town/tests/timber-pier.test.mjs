@@ -41,7 +41,7 @@ test('one deck across the pier: boards at one pitch over its whole length, a dar
   if(b.index%7)continue;
   const x=(b.minX+b.maxX)/2,z=b.maxZ+PIER_TIMBER.board.gap/2;
   ray.set(new THREE.Vector3(x,plan.top+1,z),new THREE.Vector3(0,-1,0));
-  const hit=ray.intersectObject(pier.frame,false)[0];
+  const hit=ray.intersectObjects([pier.frame,pier.under],false)[0];
   assert.ok(hit&&hit.point.y>SEA_LEVEL+.3,`the joint at z ${z.toFixed(2)} shows the frame, not the sea`);
  }
  // The boards stop round the shed's own floor, so the two never share a top face.

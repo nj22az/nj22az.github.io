@@ -42,8 +42,13 @@ function walkPath(points,label,support=null){
  }
  assert.ok(Math.hypot(x-points.at(-1)[0],z-points.at(-1)[1])<.001,label+' arrival');
 }
-test('built street, yard and town hall floors take priority over nearby garden and beach banks',()=>{
- for(const [x,z] of [[-.8,18],[1.5,18],[3,18],[4.9,18],[-8.5,26],[4.5,28],[-37.2,26],[-37.2,29],[-22,20],[35,25],[39.8,26.7]])
+test('built street, yard and town hall floors take priority over nearby garden and beach banks',async()=>{
+ // Main Street's ground is laid from its plan (ground-plan.js): its footway at its own top, a kerb over the carriageway.
+ const {mainStreetTop,MAIN_STREET_GROUND}=await import('../src/world/ground-plan.js');
+ for(const [x,z] of [[-.8,18],[1.5,18],[3,18],[4.9,18],[4.5,28]])
+  assert.equal(planHeight(x,z),mainStreetTop(x,z),'Main Street\'s laid floor at '+[x,z]);
+ assert.equal(planHeight(1.5,18),MAIN_STREET_GROUND.footway);
+ for(const [x,z] of [[-8.5,26],[-37.2,26],[-37.2,29],[-22,20],[35,25],[39.8,26.7]])
   assert.equal(planHeight(x,z),0,'finished flat floor at '+[x,z]);
 });
 test('town reaches both park benches and every residential gate with ordinary collision',()=>{
@@ -126,8 +131,9 @@ test('photo and feed destinations use the reachable park and Sakura’s flower s
 test('visible garden approaches match walking heights across the whole entrance, not only the path',async()=>{
  // Nishi's slabs, the former terminus lawn, Kitahama's compact ground and its lanes' paving cover the garden bank at
  // the south approach. Compare physics to those finished floors, including where they overlap.
- world.group.updateMatrixWorld(true);const surfaces=[];world.group.traverse(o=>{if(['Compact neighbourhood ground','Aoba lowland shared terrain','Island land','Main Street end lawn'].includes(o.name)||/^Okinawan quarter:(matte|sand)\||^grid-lanes:/.test(o.name))surfaces.push(o);});
- const {gutterRings,openEdgeRuns}=await import('../src/world/okinawa/lane-edges.js');const rings=gutterRings(),gutters=[...rings,...openEdgeRuns(rings)].map(r=>r.band);
+ world.group.updateMatrixWorld(true);const surfaces=[];world.group.traverse(o=>{if(['Compact neighbourhood ground','Aoba lowland shared terrain','Island land','Main Street end lawn'].includes(o.name)||/^Okinawan quarter:(matte|sand)\||^grid-lanes:/.test(o.name)||o.parent?.name==='Quarter ground'&&!o.userData.groundMarking)surfaces.push(o);});
+ // Every gutter the ground plans lay, Nishi-machi's along the north lane included (ground-plan-quarters.js).
+ const {quarterGutterRuns}=await import('../src/world/ground-plan-quarters.js');const gutters=quarterGutterRuns().map(r=>r.band);
  const ray=new THREE.Raycaster();for(const x of [-34,-29,-24,-19,-14,-9])for(const z of [29,30.5,32,33.5,35]){if(playerBlocked(x,z,.05))continue;   // inside the Heights, a wall or the park's railing: nobody stands there
   // A lane's U-gutter is drawn 28 mm proud of the paving, a lid's lip (okinawa/lane-edges.js GUTTER), and the walking
   // surface the game installs carries the step onto it (the paths test above walks them with it installed).

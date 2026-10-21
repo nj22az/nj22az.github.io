@@ -91,9 +91,10 @@ const NORTH_BLOCK=dress({
   prop('goya-curtain','the gōyā curtain over its bed',R(31.5,40.5,69.55,70.55),2.35,'shared by the lane; it screens the bays from the spine'),
   prop('parking-hedge','the parking’s hibiscus hedge',R(30.8,41.2,67.7,68.3),1.0,'between the cars and the garden'),
   prop('parking-sign','the monthly parking sign (月極駐車場) on its posts',R(35.35,36.65,67.22,67.38),1.9,'at the back of the bays, read from the lane'),
-  prop('bay-1-truck','Kōji’s white kei truck, reversed into bay 1',R(31.25,32.95,63.15,66.85),1.95,'for the outboard, the ice chests and the nets when the boat comes out of the water',{owner:'Kōji',bay:1}),
-  prop('bay-2-car','Dr Ken’s little kei car, in bay 2',R(33.85,35.55,63.25,66.85),1.6,'for house calls to Kitahama and the far end of the island; the clinic has no bay of its own',{owner:'Dr Ken',bay:2}),
-  prop('bay-3-hatchback','Mac’s old yellow hatchback, its bonnet up, in bay 3',R(36.45,38.55,62.55,66.85),1.75,'an engineer keeps an old engine running for the pleasure of it: the bonnet is up more often than the car is driven',{owner:'Mac',bay:3}),
+  prop('bay-1-truck','Kōji’s white kei truck, reversed into bay 1',R(31.3,32.9,63.6,67.05),1.99,'for the outboard, the ice chests and the nets when the boat comes out of the water',{owner:'Kōji',bay:1}),
+  prop('bay-2-car','Dr Ken’s little kei car, in bay 2',R(33.95,35.45,63.55,67.0),1.82,'for house calls to Kitahama and the far end of the island; the clinic has no bay of its own',{owner:'Dr Ken',bay:2}),
+  prop('bay-3-hatchback','Mac’s old yellow hatchback, its bonnet up, in bay 3',R(36.43,38.17,63.15,67.1),1.86,'an engineer keeps an old engine running for the pleasure of it: the bonnet is up more often than the car is driven',{owner:'Mac',bay:3}),
+  prop('mac-toolbox','Mac’s red toolbox, on the gravel by his front wheel',R(38.24,38.44,63.25,63.67),.3,'the spanners for the job in hand, in reach of the open bonnet and inside his own bay, off the lane',{owner:'Mac',bay:3}),
   prop('bay-4-stops','the empty bay’s wheel stops',R(39.05,40.75,66.65,66.85),.17,'bay 4 is to let',{bay:4}),
  ],
  flat:[
@@ -238,7 +239,7 @@ const YARD_1=dress({
 const POST_OFFICE=dress({
  status:'dressed',name:'The drinks corner',use:Object.freeze(['vending-corner']),
  for:'everybody on Main Street, and the bathers coming down Kitano Road from Umi-no-yu',
- why:'A cold drink after the bath is the oldest habit in Japan, and the old lane up to the sea bath had a drinks machine until Kitano Road took its place. Minato Drinks rents the corner from the town, as it rents Sakura’s wall: two machines on a concrete pad facing the footway, the can bin beside them and a bench, with the park’s lawn behind.',
+ why:'A cold drink after the bath is the oldest habit in Japan, and the old lane up to the sea bath had a drinks machine until Kitano Road took its place. Minato Drinks rents the corner from the town, as it rents Sakura’s wall: two machines on a concrete pad facing the footway, backed by a block screen wall the bottler built along the park edge, the can bin beside them and a bench against the same wall.',
  ground:'the park’s lawn, with a concrete pad at the footway',
  hours:'The machines are lit all night; Minato Drinks fills them from its van in the morning.',
  stories:Object.freeze(['the coin under the machine','coffee milk after the bath','the can bin on a windy night','a bench to wait for a friend']),
@@ -247,6 +248,8 @@ const POST_OFFICE=dress({
   prop('machine-2','a drinks machine, facing the footway',R(7.32,8.22,-4.995,-3.905),2.2,'Minato Drinks’',{builtBy:'vending',at:[7.85,-4.45]}),
   prop('can-bin','the can bin (空き缶入れ)',R(7.75,8.25,-3.6,-3.1),.9,'beside the machines, as the law asks'),
   prop('bench','a bench facing the street',R(7.65,8.15,-2.75,-1.85),.5,'out of the footway, beside the machines'),
+  prop('screen-wall','the block screen wall behind the corner, its coping painted white',R(8.25,8.45,-6.3,-1.75),1.4,
+   'machines stand with their backs to a wall (the owner, 20 October 2026): Minato Drinks built this one along the pad\'s park edge, so the machines, the bin and the bench back onto it, their cords run behind it out of the rain, and a ball from the park does not end up under a machine'),
  ],
  flat:[flat('pad','a concrete pad from the footway',R(5.15,8.7,-6.4,-1.75),'the machines need a level slab and the footway runs into it',{meets:'the Main Street footway: across the 0.5 m apron strip every standing shop on the East Row has paved (quarters.js buildEastRow)'})],
  prompts:['Buy a drink','Sit at the drinks corner'],
@@ -328,7 +331,8 @@ export function buildStreetLots(kit,solid,{anchor,onAction}){
 /* Higa Liquor's yard: crates of empties on pallets under a roof, the hand truck, the painted name on the wall. */
 function crateYard(kit,solid,lot,{anchor,onAction}){
  const R=lot.rect;
- lotGround(kit,{...R,maxX:-8.1},0xb6b2a5);lotWalls(kit,solid,lot);
+ // (Its concrete is the ground's: ground-plan-quarters.js lays it inside the walls.)
+ lotWalls(kit,solid,lot);
  const rx0=R.minX+.3,rx1=R.minX+5,rz0=R.maxZ-2.1,rz1=R.maxZ-.25;
  for(const x of [rx0+.1,(rx0+rx1)/2,rx1-.1]){kit.box(.08,2.2,.08,x,1.1,rz0+.05,LOT_COLOURS.steel);solid(kit.rect(x-.07,x+.07,rz0,rz0+.12,2.2,'crate-roof-post'));}
  kit.box(rx1-rx0+.3,.04,rz1-rz0+.4,(rx0+rx1)/2,2.28,(rz0+rz1)/2,LOT_COLOURS.roof,{rx:.1,finish:'metal'});

@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-20",
+  "base": "42f4ef85e65368fcc32079fcc15f39b1cbfd553a",
+  "integratedWorkshopCommit": "7cd7c9dd54dbb44ea3d778ac153c97e23ce682a9",
+  "focusedTests": {
+    "passed": 40,
+    "failed": 0
+  },
+  "runtimePackageTests": {
+    "passed": 3,
+    "failed": 0
+  },
+  "modelWorkshopBrowser": "passed at 1280 and 390; actual GLB import, transform, undo, export and reopen; MCP inspect/prepare/export/reopen",
+  "roomBrowser": "passed at 1280, 1024 and 390; reusable asset identity/count, search, focus selection, replacement, Undo/Redo, project download, reload, cross-tab stale refusal, MCP project/GLB/render/check and UI reopening",
+  "nativeWorkshopBrowser": "passed at 1280 and 390; protected services, explicit floating, validated proposal retained across selection, static GLB imported and exported, actual World and scene builders consume isolated published module, dry run, stale source/revision and doorway refusal, rollback",
+  "compiledWorkshopBrowser": "passed at 960 and 390; compiled actual World builder; table, prompts, colliders, doorway and staff checks",
+  "nativeDesktop": "source audit only; Qt app not launched",
+  "physicalSafari": "not tested",
+  "fullRepositorySuite": "not run",
+  "livePublication": "not performed; creator approval required for proposed deployment",
+  "wholeIsland": "not rerun; inherited branch report records first-frame timeout on SwiftShader against both candidate and unchanged main",
+  "additionalRegressionTests": {
+    "passed": 32,
+    "failed": 1,
+    "failure": "scene-world Sakura till face at x 5.06",
+    "baseline": "Identical failure reproduced on unchanged main 42f4ef85 in a separate worktree"
+  },
+  "approval": "Creator approved PR #289 merge and publication, including 15 cm table adjustment, 20 October 2026",
+  "approvedIntegration": {
+    "main": "59736931b5541a3eeed7b6b7071899226ecdf426",
+    "focusedTests": 42,
+    "runtimeTests": 3,
+    "publication": "pending deployment verification"
+  }
+}

@@ -54,14 +54,17 @@ test('the police station says 警察署, and its counter window keeps the police
  assert.equal(japaneseSign('Police box'),'交番');
 });
 
-test('the coastal walk over the east beach is the beach’s wet sand, and the park keeps one paving family',async()=>{
- const {lanePatches,beachWalkAt}=await import('../src/world/lane-surfaces.js?snappy=1');
- const {BEACH}=await import('../src/world/beach-layout.js');
- const beach=lanePatches().filter(beachWalkAt);
- assert.ok(beach.length>=3,'the waterline stretch and the crossing from the access');
- for(const p of beach){assert.equal(p.route,'island-coast-walk');const z=p.polygon.reduce((a,v)=>a+v[1],0)/p.polygon.length;assert.ok(z>=BEACH.minZ&&z<=BEACH.maxZ);}
- const {HARBOUR_PARK_PATHS}=await import('../src/world/harbour-park-plan.js');
- assert.deepEqual([...new Set(HARBOUR_PARK_PATHS.map(r=>r.surface))].sort(),['gravel','stone'],'stone walks and the gravel circuit');
+test('the coastal walk over the east beach is the beach itself, and the park keeps one paving family',async()=>{
+ // Step 4 of the ground plan: along the east beach the walk is the sand (no strip laid on it), round Kitahama it is
+ // laid in concrete, and the park's walks are one family of rolled crushed stone (ground-plan-coast.js).
+ const {laidWalkPieces}=await import('../src/world/ground-walks.js');
+ const {onBeach}=await import('../src/world/beach-layout.js');
+ const coast=laidWalkPieces().filter(p=>p.route==='island-coast-walk');
+ assert.ok(coast.length>=3,'the walk round Kitahama is laid');
+ for(const p of coast){const n=p.polygon.length,x=p.polygon.reduce((s,v)=>s+v[0],0)/n,z=p.polygon.reduce((s,v)=>s+v[1],0)/n;assert.ok(!onBeach(x,z),'no walk is laid on the sand at '+[x,z]);}
+ const {coastWalkGround}=await import('../src/world/ground-plan-coast.js');
+ const park=coastWalkGround().pieces.filter(p=>p.walk.startsWith('garden-')||p.walk==='park-approach');
+ assert.ok(park.length>50);assert.deepEqual([...new Set(park.map(p=>p.cls))],['park-path'],'one family: the rulebook\'s park path');
 });
 
 test('the yard windbreak stands off the paving and clear of the lane openings through the old yard wall',async()=>{

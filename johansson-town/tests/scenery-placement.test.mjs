@@ -75,7 +75,8 @@ test('retained planting roots do not intersect occupied building footprints',()=
 });
 
 test('lawn and service foundations remain within the compact land',()=>{
- const names=['east-lawn-grass','Compact neighbourhood ground','Fuel depot service court'];
+ // The fuel depot's court is the harbour's ground plan's now (ground-plan-harbour.js), merged with the other concrete.
+ const names=['east-lawn-grass','Compact neighbourhood ground'];
  const found=new Set(),point=new THREE.Vector3();
  world.group.traverse(o=>{
   if(!names.includes(o.name))return;found.add(o.name);
