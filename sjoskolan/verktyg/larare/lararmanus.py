@@ -35,7 +35,8 @@ AVSNITT = {
            'Bruten neutral': ('v41_01', 22)},
     '42': {'Hur el skadar': ('v42_01', 6), 'Arbetsmetoder och ansvar': ('v42_02', 21), 'Riskbedömning och CAT': ('v42_03', 7)},
     '43': {'Skyddsdata': ('v43_01', 7), 'Motor och transformator': ('v43_02', 6), 'Hållkretsen': ('v43_03', 8)},
-    '44': {'IT-nätet ombord': ('v44_01', 21), 'Isolationsmätning': ('v44_03', 7)},
+    '44': {'TN-system': ('v44_01', 7), 'TT-system': ('v44_01', 8),
+           'IT-nätet ombord': ('v44_01', 9), 'Isolationsmätning': ('v44_03', 7)},
     '45': {'Felsökning': ('v45_01', 6), 'Mätresultat mot krav': ('v45_02', 7)},
 }
 NOTATION = [('Uᴸ', 'U_{L}'), ('Uꜰ', 'U_{F}'), ('Ugren', 'U_{gren}'), ('Igren', 'I_{gren}'), ('Iᴸ', 'I_{L}'), ('IN ', 'I_{N} ')]
@@ -130,6 +131,11 @@ def manus(vecka, deck, n, bild, ovn, stod, avs, upplagg, fragor, antal):
     for rubrik, (d, b) in AVSNITT.get(vecka, {}).items():
         if deck.startswith(d) and b == n and rubrik in avs:
             rader += ['', f'Ur guiden, {rubrik}:'] + avs[rubrik]
+    if vecka == '44':
+        rader += ['', 'Bedömningsgräns: följ måndagens och tisdagens detaljerade manus. '
+                  'Undervisa principer och publicerade övningar. Lös inte den bedömda laborationen: '
+                  'inga första-fel-beräkningar, fas–skrov-resultat, IMD-sammanvägningar eller motorgränsvärden. '
+                  'Använd bara genomgångens oberoende räkneexempel.']
     rader += ['', f'Elevernas sida: {WEBB}/vecka-{vecka}/aktuell/ · Bild {n} av {antal}']
     return rader
 
@@ -169,3 +175,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
