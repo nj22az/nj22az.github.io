@@ -319,7 +319,8 @@ function sakuraBackServices(kit,solid){
  const B=SAKURA_BACK,W=B.wall,K=B.condensers,steel=0x9aa0a4;
  // The condensers: a plinth, two ivory units with their fan guards to the yard, the refrigerant lines in a duct cover.
  const out=W-K.depth,duct=K.maxZ-.16;
- kit.block(out+.05,W,0,.1,K.minZ+.05,K.maxZ-.05,0xc9c5b8);
+ // Each unit on its own concrete plinth block, standing on the service apron.
+ for(const z of K.units)kit.block(W-.47,W-.07,0,.1,z-.475,z+.475,0xc9c5b8);
  for(const z of K.units){const x=W-.27;
   kit.box(.3,.6,.8,x,.4,z,0xe4e1d6);kit.box(.32,.04,.82,x,.72,z,0xd3cfc2);
   kit.cyl(.22,.22,.02,x-.16,.42,z-.08,0x3b3f42,{rz:Math.PI/2,segments:16});
@@ -360,10 +361,7 @@ function sakuraBackServices(kit,solid){
 /** SAKURA_BACK.strip: the concrete apron behind the shop, in bays, the gully under the downpipe and a few weeds. */
 function sakuraServiceStrip(kit){
  const R=SAKURA_BACK.strip;
- for(const [x0,x1,z0,z1] of R.rects){
-  const cuts=[z0,...R.joints.filter(z=>z>z0&&z<z1),z1];
-  for(let i=1;i<cuts.length;i++){const bay=R.joints.filter(z=>z<=cuts[i-1]).length;kit.block(x0,x1,R.top-.03,R.top,cuts[i-1],cuts[i],bay%2?0xb3b0a5:0xbbb8ad);}
- }
+ // The apron itself is the ground's: the west yard's plan lays R.rects (ground-plan-quarters.js, step 3).
  // The gully the shop's downpipe (storefront.js) runs into.
  kit.block(SAKURA_BACK.wall-.36,SAKURA_BACK.wall-.06,R.top,R.top+.016,-26.85,-26.55,0x55595a,'metal');
  R.weeds.forEach(([x,z],i)=>{for(let k=0;k<3;k++){const a=k*2.1+i;kit.cyl(0,.028,.15+.04*((i+k)%2),x+Math.cos(a)*.04,R.top+.07,z+Math.sin(a)*.04,k%2?0x6f8c4f:0x7f9a5a,{segments:4,rx:Math.sin(a)*.3,rz:Math.cos(a)*.3});}});

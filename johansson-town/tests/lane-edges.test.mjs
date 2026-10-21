@@ -49,8 +49,12 @@ test('the cross lane and the spine have their gutter or a walled ring along both
  assert.deepEqual(LANE_WEAR.map(w=>w.lane),['cross lane','spine']);
 });
 
-test('the gutter is one family: every ring and open run is 0.3 m of lids on a channel, beside the paving and never over it',()=>{
- const runs=[...gutterRings(),...openEdgeRuns()],patches=lanePatches();
+test('the gutter is one family: every ring and open run is 0.3 m of lids on a channel, beside the paving and never over it',async()=>{
+ // Since step 3 of the ground plan the lanes are the ground generator's (ground-plan-quarters.js), which holds every
+ // gutter's ground: no lane, pad or path of a plan lies under a gutter, and no route of the lane builder either.
+ const {quarterGutterRuns,quarterPlans}=await import('../src/world/ground-plan-quarters.js');
+ const {laidAt}=await import('../src/world/ground-plan.js');
+ const runs=quarterGutterRuns(),patches=lanePatches(),plans=quarterPlans();
  const inPoly=(poly,x,z)=>{let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const [xi,zi]=poly[i],[xj,zj]=poly[j];if((zi>z)!==(zj>z)&&x<(xj-xi)*(z-zi)/(zj-zi)+xi)inside=!inside;}return inside;};
  assert.ok(runs.length>40,'rings and open edges are laid');
  for(const r of runs){
@@ -58,6 +62,7 @@ test('the gutter is one family: every ring and open run is 0.3 m of lids on a ch
   assert.ok(Math.abs(w-GUTTER.width)<1e-6,`${r.owner} ${r.side} gutter is ${w} m wide`);
   const cx=(r.band.minX+r.band.maxX)/2,cz=(r.band.minZ+r.band.maxZ)/2;
   assert.ok(!patches.some(p=>inPoly(p.polygon,cx,cz)),`${r.owner} ${r.side} gutter lies beside the paving, not on it`);
+  assert.ok(plans.every(p=>{const at=laidAt(p,cx,cz);return !at||at.cls==='gutter';}),`${r.owner} ${r.side} gutter's ground is the gutter's`);
  }
  // Two runs never lay lids on the same ground (the same lid drawn twice flickers).
  const overlap=(a,b)=>Math.min(a.maxX,b.maxX)-Math.max(a.minX,b.minX)>.01&&Math.min(a.maxZ,b.maxZ)-Math.max(a.minZ,b.minZ)>.01;

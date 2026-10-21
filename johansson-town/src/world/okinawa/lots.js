@@ -329,7 +329,8 @@ export function buildStreetLots(kit,solid,{anchor,onAction}){
 /* Higa Liquor's yard: crates of empties on pallets under a roof, the hand truck, the painted name on the wall. */
 function crateYard(kit,solid,lot,{anchor,onAction}){
  const R=lot.rect;
- lotGround(kit,{...R,maxX:-8.1},0xb6b2a5);lotWalls(kit,solid,lot);
+ // (Its concrete is the ground's: ground-plan-quarters.js lays it inside the walls.)
+ lotWalls(kit,solid,lot);
  const rx0=R.minX+.3,rx1=R.minX+5,rz0=R.maxZ-2.1,rz1=R.maxZ-.25;
  for(const x of [rx0+.1,(rx0+rx1)/2,rx1-.1]){kit.box(.08,2.2,.08,x,1.1,rz0+.05,LOT_COLOURS.steel);solid(kit.rect(x-.07,x+.07,rz0,rz0+.12,2.2,'crate-roof-post'));}
  kit.box(rx1-rx0+.3,.04,rz1-rz0+.4,(rx0+rx1)/2,2.28,(rz0+rz1)/2,LOT_COLOURS.roof,{rx:.1,finish:'metal'});

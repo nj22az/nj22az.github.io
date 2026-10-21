@@ -11,7 +11,7 @@ import {createKit,rng} from './kit.js';
 import {buildWestShore} from '../west-shore.js';
 import {fishAt} from './fish.js';
 import {createMaterials} from '../../render/materials.js';
-import {NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK,GATEBALL,GATEBALL_ACTIVE,GOYA,KITAHAMA} from './layout.js';
+import {utakiStones,NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK,GATEBALL,GATEBALL_ACTIVE,GOYA,KITAHAMA} from './layout.js';
 import {fascia,vertical,nameplate,iceFlag,poster,coralStone,roofTile,flowerBlock,coralSand} from './signs.js';
 import {redTileHouse,concreteHouse,shopHouse,coralWall,blockWall,hinpun,shisa,fukugi,gajumaru,hibiscus,banana,potPlant,OKINAWA_COLOURS as C} from './houses.js';
 import {utilityPole,wiresBetween,serviceDrop,bicycle,laundry,gasBottles,fishCrates,buoys,netPile,sabani,planterBoxes} from './props.js';
@@ -106,12 +106,8 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
 /* ------------------------------ Nishi-machi ------------------------------ */
 
 function buildNishiGround(kit,solid){
- const y=GROUND_LAYER.gravel,lane=GROUND_LAYER.lane;
- // The quarter's ground: crushed coral and sand, and concrete for the walk and lanes.
- // 12 mm inside the quay's apron at its west and seaward edges, so the two slabs' edges never share a plane.
- kit.block(NISHI.minX+.012,NISHI.maxX,y-.06,y,NISHI.minZ+.012,NISHI.maxZ,GROUND.coral,'sand');
- const P=NISHI.promenade;
- // The shared lane union supplies the promenade and cross streets.
+ // The quarter's ground (the coral yards, the lanes and the walk, their gutters) is laid by the ground generator from
+ // its plan (ground-plan-quarters.js, step 3 of the ground plan).
  const Q=NISHI.quay;
  // The quay's apron and its coping are the harbour's ground (ground-plan-harbour.js, laid by harbour.js).
  // The seawall along the shore, and its quay edge along the harbour.
@@ -225,14 +221,16 @@ function netShed(kit,solid,p,{inspect}){
 /** The utaki: the neighbourhood's sacred grove, where nobody builds and nobody shouts. */
 function utaki(kit,solid,p,{anchor,onAction,inspect}){
  const cx=-30.8,cz=(p.minZ+p.maxZ)/2;
- kit.block(p.minX,p.maxX,GROUND_LAYER.gravel,GROUND_LAYER.gravel+.02,p.minZ,p.maxZ,GROUND.gravel,'sand');
+ // The grove's gravel is the ground's (ground-plan-quarters.js).
  solid(coralWall(kit,p.minX,p.minZ,p.maxX,p.minZ,{height:.9,gaps:[[cx-1,cx+1]],seed:120}));
  solid(coralWall(kit,p.minX,p.minZ,p.minX,p.maxZ,{height:.9,seed:121}));
  solid(coralWall(kit,p.maxX,p.minZ,p.maxX,p.maxZ,{height:.9,seed:122}));
  solid(gajumaru(kit,cx,cz+2.2,{seed:7,size:1.05}));
  for(const [x,z] of [[p.minX+1,p.minZ+2],[p.minX+1,p.maxZ-1.5],[p.maxX-1,p.minZ+2.2],[p.maxX-1,p.maxZ-1.2],[p.minX+3.5,p.maxZ-1],[p.maxX-3.4,p.maxZ-1]])solid(fukugi(kit,x,z,{h:6,seed:x*3+z}));
  // The stone path in, and the incense stone at the end of it.
- for(let z=p.minZ+.6;z<cz-1;z+=.8)kit.box(.9,.05,.55,cx+(Math.sin(z)*.15),GROUND_LAYER.lane+.01,z,0xcfc8b4);
+ // Limestone stepping stones set in the gravel: the same stone, cut and laid.
+ // They are set into it: the gravel's plan leaves their beds (ground-plan-quarters.js), their tops 14 mm over it.
+ for(const s of utakiStones(p))kit.box(s.w,.05,s.d,s.x,GROUND_LAYER.gravel+.014-.025,s.z,0xa8a498);
  kit.box(1.4,.35,.9,cx,.18,cz-.6,0xcfc8b4,{finish:'coral'});
  kit.box(.5,.3,.36,cx,.5,cz-.6,0x9a958a);
  kit.cyl(.12,.1,.12,cx,.71,cz-.6,0x7b766c,{segments:8});

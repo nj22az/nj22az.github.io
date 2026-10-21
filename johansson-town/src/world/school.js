@@ -31,49 +31,20 @@ const SERIF='"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';
 const GOTHIC='"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';
 
 /**
- * The yard: packed coral sand, the red-clay field with its chalk track and lines, the
- * sandpit, the paths feet have worn to the entrance and the taps, and the dark patch the
- * taps keep wet.
+ * The yard's ground is laid by the ground generator from the town hall's plan (ground-plan-quarters.js TOWN_HALL_GROUND,
+ * step 3 of the ground plan): the rolled yard, the forecourt, the aprons, the car park and its bays, the lawn and its
+ * bed. What is left here is the lettering painted in the visitors' bay, 来客用 · For guests.
  */
 function buildYard(group){
- const W=SCHOOL.maxX-SCHOOL.minX+.8,D=SCHOOL.seawall.south-SCHOOL.minZ,PX=36;   // pixels per metre
- const map=canvasTexture(Math.round(W*PX),Math.round(D*PX),(ctx,w,h)=>{
-  const X=x=>(x-SCHOOL.minX+.4)*PX,Z=z=>(z-SCHOOL.minZ)*PX;
-  let seed=1997;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
-  ctx.fillStyle='#d6ccae';ctx.fillRect(0,0,w,h);
-  const speckle=(x0,y0,x1,y1,colours,count,size)=>{for(let i=0;i<count;i++){ctx.fillStyle=colours[i%colours.length];const x=x0+rnd()*(x1-x0),y=y0+rnd()*(y1-y0),r=size*(.4+rnd());ctx.beginPath();ctx.ellipse(x,y,r,r*(.5+rnd()*.5),rnd()*3,0,Math.PI*2);ctx.fill();}};
-  speckle(0,0,w,h,['#e2d9bd','#c9bf9f','#ece4cc','#bdb292'],9000,2.2);
-  // The old sports ground, as the town hall uses it: a paved forecourt to the entrance,
-  // the car park on the east end with its white bays, a lawn with flower beds in the
-  // middle, and the power house on the west end (built in buildPowerHouse).
-  const f=SCHOOL.field,pk=SCHOOL.parking,ph=SCHOOL.powerHouse;
-  ctx.fillStyle='#6f9f55';ctx.fillRect(X(23.6),Z(f.minZ+.6),(pk.minX-24.4)*PX,(f.maxZ-f.minZ-1.6)*PX);
-  speckle(X(23.6),Z(f.minZ+.6),X(pk.minX-.8),Z(f.maxZ-1),['#79aa5d','#649650','#86b468'],3000,2.4);
-  for(const [x0,x1,z0,z1] of [[24.4,29.2,29.6,30.6],[24.4,29.2,34.4,35.4]]){ctx.fillStyle='#8a5a3a';ctx.fillRect(X(x0),Z(z0),(x1-x0)*PX,(z1-z0)*PX);
-   for(let i=0;i<60;i++){ctx.fillStyle=['#d8342c','#f4d23c','#e98aa6','#f4f1ea'][i%4];ctx.beginPath();ctx.arc(X(x0+.2+((i*37)%100)/100*(x1-x0-.4)),Z(z0+.2+((i*53)%100)/100*(z1-z0-.4)),.09*PX,0,Math.PI*2);ctx.fill();}}
-  // Forecourt pavers from the gate to the canopy.
-  ctx.fillStyle='#c9c3b4';ctx.fillRect(X(18.2),Z(SCHOOL.gate.z),(23.6-18.2)*PX,(SCHOOL.corridor.minZ-SCHOOL.gate.z)*PX);
-  ctx.strokeStyle='rgba(150,142,126,.5)';ctx.lineWidth=1;for(let z=SCHOOL.gate.z;z<SCHOOL.corridor.minZ;z+=.3){ctx.beginPath();ctx.moveTo(X(18.2),Z(z));ctx.lineTo(X(23.6),Z(z));ctx.stroke();}
-  // The car park: asphalt, white bays, a 来客用 (visitors) bay by the path.
-  ctx.fillStyle='#9fa4aa';ctx.fillRect(X(pk.minX),Z(pk.minZ),(pk.maxX-pk.minX)*PX,(pk.maxZ-pk.minZ)*PX);
-  ctx.fillStyle='#f2efe6';for(let x=pk.minX+.4;x<=pk.maxX;x+=2.6)ctx.fillRect(X(x),Z(pk.minZ+.2),.1*PX,(pk.maxZ-pk.minZ-.6)*PX);
-  ctx.font=`bold ${.5*PX}px ${GOTHIC}`;ctx.fillText("For guests",X(pk.maxX-2.2),Z(pk.maxZ-.6));
-  // The power house's concrete apron and the fuel tank's bund.
-  ctx.fillStyle='#b3ae9f';ctx.fillRect(X(ph.minX-.3),Z(ph.minZ-.4),(ph.maxX-ph.minX+1.6)*PX,(ph.tank[1]-ph.minZ+1.5)*PX);
-  // Worn paths: gate to entrance, entrance to taps; the wet patch round the taps.
-  ctx.strokeStyle='rgba(176,164,134,.5)';ctx.lineCap='round';ctx.lineWidth=1.4*PX;
-  const tap=SCHOOL.wash;const wet=ctx.createRadialGradient(X(tap.x),Z(tap.z-.8),0,X(tap.x),Z(tap.z-.8),2.2*PX);
-  wet.addColorStop(0,'rgba(120,112,92,.55)');wet.addColorStop(1,'rgba(120,112,92,0)');ctx.fillStyle=wet;ctx.fillRect(X(tap.x-3),Z(tap.z-3.2),6*PX,4*PX);
-  // Under the bike shed, a concrete pad; behind the block, weeds in the sand.
-  const b=SCHOOL.bikeShed;ctx.fillStyle='#b3ae9f';ctx.fillRect(X(b.minX),Z(b.minZ+.8),(b.maxX-b.minX)*PX,(b.maxZ-b.minZ-.8)*PX);
-  speckle(X(SCHOOL.minX),Z(B.maxZ+.4),X(SCHOOL.maxX),Z(SCHOOL.seawall.south),['#8e9a62','#7d8a55','#a2a974'],1400,3.2);
-  // The corridor's concrete apron.
-  ctx.fillStyle='#aeab9f';ctx.fillRect(X(B.minX-.3),Z(SCHOOL.corridor.minZ-.2),(B.maxX-B.minX+.6)*PX,(B.minZ-SCHOOL.corridor.minZ+.2)*PX);
+ const pk=SCHOOL.parking,PX=64,w=2.4,d=.7;
+ const map=canvasTexture(Math.round(w*PX),Math.round(d*PX),(ctx,cw,ch)=>{
+  ctx.clearRect(0,0,cw,ch);ctx.fillStyle='#f2efe6';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.font=`bold ${Math.round(ch*.5)}px ${GOTHIC}`;ctx.fillText('来客用 · For guests',cw/2,ch/2);
  });
- const yard=new THREE.Mesh(new THREE.PlaneGeometry(W,D),new THREE.MeshStandardMaterial({map,roughness:.97}));
- yard.rotation.x=-Math.PI/2;yard.position.set((SCHOOL.minX-.4+SCHOOL.maxX+.4)/2,GROUND_LAYER.grass,(SCHOOL.minZ+SCHOOL.seawall.south)/2);
- yard.name='school-yard';yard.receiveShadow=true;group.add(yard);
- return yard;
+ const mark=new THREE.Mesh(new THREE.PlaneGeometry(w,d),new THREE.MeshStandardMaterial({map,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2,roughness:.85}));
+ mark.rotation.x=-Math.PI/2;mark.position.set(pk.maxX-2.2,GROUND_LAYER.lane+.004,pk.maxZ-.6);
+ mark.name='Town hall car park lettering';mark.renderOrder=1;mark.userData.walkSurface=false;group.add(mark);
+ return mark;
 }
 
 /**
@@ -227,7 +198,9 @@ function buildTownHallDressing(group,options){
  for(const x of [c.minX+.2,c.maxX-.2])kit.cyl(.14,.14,c.height,x,c.height/2,c.minZ+.2,0xe4e1d3,{segments:12});
  // The forecourt remains clear for people; working vehicles use Main Street and the quay.
  // A monument sign of polished stone at the gate, the way every town hall has one.
- const g=SCHOOL.gate;kit.box(2.4,1.3,.4,15,.65,30,0x4a4f52,{finish:'gloss'});kit.box(2.6,.15,.55,15,.07,30,0x9a958a);
+ kit.box(2.4,1.3,.4,15,.65,30,0x4a4f52,{finish:'gloss'});
+ // Its stone plinth stands on the yard: architecture, not ground (tools/ground-audit.mjs reads the name).
+ {const plinth=new THREE.Mesh(new THREE.BoxGeometry(2.6,.15,.55),new THREE.MeshStandardMaterial({color:0x9a958a,roughness:.9}));plinth.position.set(15,.075,30);plinth.name='Town hall monument plinth';plinth.receiveShadow=true;group.add(plinth);}
  kit.finish(group,'Town hall dressing');
  plate(group,"Community Hall · Community Hall",{w:2.1,h:.62,at:[15,.75,29.79],rotY:Math.PI,bg:'#4a4f52',fg:'#efe6cc',size:.36,sub:'MINATO TOWN HALL · COMMUNITY CENTRE',name:'Town hall monument'});
  plate(group,"Power plant",{w:1.4,h:.4,at:[ph.maxX+.06,3.2,ph.door[1]],rotY:Math.PI/2,bg:'#e6ecef',fg:'#2f4f5a',size:.6,name:'Power house sign'});
