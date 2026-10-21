@@ -1,5 +1,7 @@
 # Bare five-digit hands — verification, 21 October 2026
 
+**Visual status: rejected by the owner.** The isolated hands and Johansson portrait exposed style, attachment and handedness problems. Passing tests below verify plumbing, not visual acceptance. Replacement work is specified in [HAND-DESIGN-PROJECT.md](../../../../avatar-creator/HAND-DESIGN-PROJECT.md).
+
 This is the opt-in hand stage above body-pose PR #300. Implementation and limits: [HANDS.md](../../../../avatar-creator/HANDS.md).
 
 Passed:

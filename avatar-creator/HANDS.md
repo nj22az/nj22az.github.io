@@ -1,4 +1,6 @@
-# Optional bare five-digit hands
+# Optional bare five-digit hands — experimental
+
+**Visual review failed.** The current geometry and handedness have not been accepted. This document describes the existing prototype, not a finished asset. See [the dedicated hand project](HAND-DESIGN-PROJECT.md) for the research, replacement design and acceptance stages, including authored thumbs up and thumbs down.
 
 The shared pose panel now offers **Left hand** and **Right hand**. Choose a gesture or enable **Articulated bare hands** to use the new geometry. Both hands have four fingers (index, middle, ring and little) plus a thumb. Their colour comes from the character's skin; there are no gloves, cuffs or glove markings.
 
