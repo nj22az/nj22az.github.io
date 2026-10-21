@@ -37,8 +37,8 @@
     "name": "compact-shops",
     "isDynamicEntry": true
   },
-  "_fish-f--fKhOV.js": {
-    "file": "fish-f--fKhOV.js",
+  "_fish-BmiGfnI7.js": {
+    "file": "fish-BmiGfnI7.js",
     "name": "fish",
     "imports": [
       "_save-CR0CSa_R.js",
@@ -48,21 +48,21 @@
       "_cast-DycU4qAk.js"
     ]
   },
-  "_friendship-CPhaSsZe.js": {
-    "file": "friendship-CPhaSsZe.js",
+  "_friendship-OsdxT9Jg.js": {
+    "file": "friendship-OsdxT9Jg.js",
     "name": "friendship",
     "imports": [
-      "_fish-f--fKhOV.js",
+      "_fish-BmiGfnI7.js",
       "_cast-DycU4qAk.js"
     ]
   },
-  "_halloween-Dhl2YI_y.js": {
-    "file": "halloween-Dhl2YI_y.js",
+  "_halloween-PNvr7nFu.js": {
+    "file": "halloween-PNvr7nFu.js",
     "name": "halloween",
     "isDynamicEntry": true,
     "imports": [
       "_compact-shops-ZjW_eVBR.js",
-      "_fish-f--fKhOV.js",
+      "_fish-BmiGfnI7.js",
       "_animate-BQdqDzGy.js",
       "_hat-models-Cb8SEmjG.js",
       "_cast-DycU4qAk.js",
@@ -88,16 +88,16 @@
     "file": "icons-DfeBIm6m.js",
     "name": "icons"
   },
-  "_onsen-hdE3vbx3.js": {
-    "file": "onsen-hdE3vbx3.js",
+  "_onsen-4vFqs4D2.js": {
+    "file": "onsen-4vFqs4D2.js",
     "name": "onsen",
     "isDynamicEntry": true,
     "imports": [
       "_compact-shops-ZjW_eVBR.js",
       "_animate-BQdqDzGy.js",
       "_hat-models-Cb8SEmjG.js",
-      "_fish-f--fKhOV.js",
-      "_halloween-Dhl2YI_y.js",
+      "_fish-BmiGfnI7.js",
+      "_halloween-PNvr7nFu.js",
       "_catalog-RhRhnY0d.js"
     ]
   },
@@ -105,15 +105,15 @@
     "file": "preload-helper-PPVm8Dsz.js",
     "name": "preload-helper"
   },
-  "_sakura-interior-Ds61brzD.js": {
-    "file": "sakura-interior-Ds61brzD.js",
+  "_sakura-interior-CuvyjvhO.js": {
+    "file": "sakura-interior-CuvyjvhO.js",
     "name": "sakura-interior",
     "isDynamicEntry": true,
     "imports": [
       "_compact-shops-ZjW_eVBR.js",
-      "_halloween-Dhl2YI_y.js",
+      "_halloween-PNvr7nFu.js",
       "_cast-DycU4qAk.js",
-      "_fish-f--fKhOV.js",
+      "_fish-BmiGfnI7.js",
       "_catalog-RhRhnY0d.js",
       "_hat-models-Cb8SEmjG.js"
     ]
@@ -173,7 +173,7 @@
     ]
   },
   "src/boot.js": {
-    "file": "boot-BeZ1pR1y.js",
+    "file": "boot-Bnr73vqx.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
@@ -189,7 +189,7 @@
     ]
   },
   "src/feed/mount.js": {
-    "file": "feed-ijiM6b65.js",
+    "file": "feed-CIpNViaj.js",
     "name": "feed",
     "src": "src/feed/mount.js",
     "isEntry": true,
@@ -207,27 +207,27 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-BJ6CZfls.js",
+    "file": "game-CwdJl8pK.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
     "imports": [
       "_preload-helper-PPVm8Dsz.js",
       "_compact-shops-ZjW_eVBR.js",
-      "_halloween-Dhl2YI_y.js",
-      "_fish-f--fKhOV.js",
+      "_halloween-PNvr7nFu.js",
+      "_fish-BmiGfnI7.js",
       "_hat-models-Cb8SEmjG.js",
       "_icons-DfeBIm6m.js",
       "_animate-BQdqDzGy.js",
       "_actors-DBpDLXm6.js",
       "_shopping-lane-plan-D0DhEU8_.js",
-      "_onsen-hdE3vbx3.js",
+      "_onsen-4vFqs4D2.js",
       "_catalog-RhRhnY0d.js",
-      "_sakura-interior-Ds61brzD.js",
+      "_sakura-interior-CuvyjvhO.js",
       "_cast-DycU4qAk.js",
       "_save-CR0CSa_R.js",
       "src/world/interiors/sato-ramen.js",
-      "_friendship-CPhaSsZe.js",
+      "_friendship-OsdxT9Jg.js",
       "src/world/interiors/town-hall.js",
       "_studio-handoff-BFYKizCW.js",
       "_harbour-park-plan-ZBwnB2qj.js",
@@ -251,15 +251,15 @@
     ]
   },
   "src/scene/scene-world.js": {
-    "file": "scene-world-VlR_lWKA.js",
+    "file": "scene-world-C3JqTcrQ.js",
     "name": "scene-world",
     "src": "src/scene/scene-world.js",
     "isDynamicEntry": true,
     "imports": [
       "_preload-helper-PPVm8Dsz.js",
       "_compact-shops-ZjW_eVBR.js",
-      "_fish-f--fKhOV.js",
-      "_halloween-Dhl2YI_y.js",
+      "_fish-BmiGfnI7.js",
+      "_halloween-PNvr7nFu.js",
       "_save-CR0CSa_R.js",
       "_shopping-lane-plan-D0DhEU8_.js",
       "_harbour-park-plan-ZBwnB2qj.js",
@@ -269,27 +269,27 @@
       "_actors-DBpDLXm6.js"
     ],
     "dynamicImports": [
-      "_sakura-interior-Ds61brzD.js",
-      "_halloween-Dhl2YI_y.js",
+      "_sakura-interior-CuvyjvhO.js",
+      "_halloween-PNvr7nFu.js",
       "src/world/interiors/sato-ramen.js",
-      "_halloween-Dhl2YI_y.js",
+      "_halloween-PNvr7nFu.js",
       "_compact-shops-ZjW_eVBR.js",
       "_compact-shops-ZjW_eVBR.js",
       "_compact-shops-ZjW_eVBR.js",
       "_compact-shops-ZjW_eVBR.js",
-      "_onsen-hdE3vbx3.js",
+      "_onsen-4vFqs4D2.js",
       "src/world/interiors/town-hall.js"
     ]
   },
   "src/world/interiors/sato-ramen.js": {
-    "file": "sato-ramen-DIfxGjqx.js",
+    "file": "sato-ramen-zA06UJit.js",
     "name": "sato-ramen",
     "src": "src/world/interiors/sato-ramen.js",
     "isDynamicEntry": true,
     "imports": [
       "_compact-shops-ZjW_eVBR.js",
-      "_halloween-Dhl2YI_y.js",
-      "_fish-f--fKhOV.js",
+      "_halloween-PNvr7nFu.js",
+      "_fish-BmiGfnI7.js",
       "_save-CR0CSa_R.js",
       "_cast-DycU4qAk.js",
       "_shopping-lane-plan-D0DhEU8_.js",
@@ -300,15 +300,15 @@
     ]
   },
   "src/world/interiors/town-hall.js": {
-    "file": "town-hall-Cn54t5h5.js",
+    "file": "town-hall-C8gyqdbr.js",
     "name": "town-hall",
     "src": "src/world/interiors/town-hall.js",
     "isDynamicEntry": true,
     "imports": [
       "_compact-shops-ZjW_eVBR.js",
-      "_halloween-Dhl2YI_y.js",
+      "_halloween-PNvr7nFu.js",
       "_animate-BQdqDzGy.js",
-      "_fish-f--fKhOV.js",
+      "_fish-BmiGfnI7.js",
       "_hat-models-Cb8SEmjG.js",
       "_cast-DycU4qAk.js",
       "_harbour-park-plan-ZBwnB2qj.js",
@@ -318,16 +318,16 @@
     ]
   },
   "title-menu.js": {
-    "file": "title-menu-0NfKJHM7.js",
+    "file": "title-menu-q9LBdPwC.js",
     "name": "title-menu",
     "src": "title-menu.js",
     "isEntry": true,
     "imports": [
       "_save-CR0CSa_R.js",
-      "_friendship-CPhaSsZe.js",
+      "_friendship-OsdxT9Jg.js",
       "_cast-DycU4qAk.js",
       "_compact-shops-ZjW_eVBR.js",
-      "_fish-f--fKhOV.js",
+      "_fish-BmiGfnI7.js",
       "_shopping-lane-plan-D0DhEU8_.js",
       "_harbour-park-plan-ZBwnB2qj.js"
     ]
