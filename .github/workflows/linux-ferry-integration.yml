@@ -2,7 +2,7 @@ name: Linux ferry integration verification
 on:
   push:
     branches: [codex/linux-015-ferry-timetable]
-    paths: ['steam-deck/**', 'johansson-town/**', '.github/workflows/linux-ferry-integration.yml']
+    # Validate merge/receipt commits too; generated runtime must match this head.
   workflow_dispatch:
 permissions:
   contents: write
