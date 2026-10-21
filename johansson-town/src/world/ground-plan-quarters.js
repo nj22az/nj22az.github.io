@@ -26,7 +26,7 @@
 import {KITAHAMA,KITAHAMA_LANES} from './kitahama-layout.js';
 import {NISHI,utakiStones} from './okinawa/layout.js';
 import {WEST_YARD} from './west-yard.js';
-import {SCHOOL} from './school-layout.js';
+import {SCHOOL,TOWN_HALL_BUILDINGS,TOWN_HALL_PASSAGES} from './school-layout.js';
 import {POLICE_STATION} from './police-station-layout.js';
 import {TOWN_WALK_PLOTS} from './architecture-plan.js';
 import {BOOKSHOP_WORKSHOP_PLOT} from './bookshop-workshop-layout.js';
@@ -255,17 +255,20 @@ function routeRects(route){
 
 /** The town hall's grounds, as laid: what each part is and why (school-layout.js gives the places). */
 export const TOWN_HALL_GROUND=Object.freeze((()=>{
- const S=SCHOOL,B=S.building,ph=S.powerHouse,pk=S.parking,b=S.bikeShed;
+ const S=SCHOOL,B=S.building,ph=S.powerHouse,pk=S.parking,b=S.bikeShed,k=ph.compound;
  return {
   yard:rect(S.minX,S.maxX,S.minZ,B.maxZ),
   forecourt:rect(18.2,23.6,S.minZ,S.corridor.minZ),
-  breezeway:rect(B.minX-.3,B.maxX+.3,S.corridor.minZ-.2,B.minZ),
+  // Each building's own breezeway apron (school-layout.js TOWN_HALL_BUILDINGS), and the passages between them to the lane behind.
+  breezeways:Object.freeze(TOWN_HALL_BUILDINGS.map(t=>rect(t.minX-.3,t.maxX+.3,S.corridor.minZ-.2,B.minZ))),
+  passages:Object.freeze(TOWN_HALL_PASSAGES.map(p=>rect(p.minX,p.maxX,S.corridor.minZ-.2,B.maxZ))),
+  compound:rect(k.minX,k.maxX,k.minZ,k.maxZ),
   powerApron:rect(ph.minX-.6,ph.door[0]+.6,ph.minZ+.2,ph.maxZ+.6),
-  tankBund:rect(ph.tank[0]-1.9,ph.tank[0]+1.9,ph.tank[1]-1,ph.tank[1]+1),
+  tankBund:rect(ph.tank[0]-1.9,ph.tank[0]+1.9,ph.tank[1]-.75,ph.tank[1]+.75),
   parking:rect(pk.minX,pk.maxX,pk.minZ,pk.maxZ),
   bikeShed:rect(b.minX,b.maxX,b.minZ+.8,b.maxZ),
-  lawn:rect(23.9,30.6,ph.maxZ+.6,S.field.maxZ),
-  bed:rect(24.6,29.9,31.0,31.9),
+  lawn:rect(23.9,30.6,k.maxZ,S.field.maxZ),
+  bed:rect(24.6,29.9,32.25,32.95),
   verges:Object.freeze([rect(S.minX-.9,S.minX,S.minZ,B.maxZ),rect(S.maxX,S.seawall.east,S.minZ,30.5),rect(S.maxX,S.maxX+.9,30.5,B.maxZ)]),
   bays:Object.freeze([0,1,2,3].map(i=>pk.minX+.4+i*2.6)),
   /**
@@ -276,7 +279,6 @@ export const TOWN_HALL_GROUND=Object.freeze((()=>{
    {name:'School playground',...rect(S.field.minX+.4,18.2,S.minZ,S.corridor.minZ-.2),why:'The classroom\'s playground west of the forecourt, between the windbreak and the entrance: rolled stone, the old sports ground\'s last piece.'},
    {name:'Town hall front walk',...rect(23.6,30.6,S.field.maxZ,S.corridor.minZ-.2),why:'Along the front, from the forecourt past the lawn to the car park, under the breezeway\'s edge.'},
    {name:'Town hall front walk',...rect(30.6,pk.maxX,pk.maxZ,S.corridor.minZ-.2),why:'From the car park to the breezeway, where the clinic\'s and the kitchen\'s visitors walk.'},
-   {name:'Town hall front walk',...rect(30.6,pk.minX,ph.maxZ+.6,pk.maxZ),why:'From the power house\'s apron to the front walk, between the lawn and the car park.'},
    {name:'Bicycle shed walk',...rect(ph.door[0]+.6,b.minX,S.minZ,pk.minZ),why:'From the power house\'s door and the car park to the bicycle shed.'},
    {name:'Bicycle shed walk',...rect(b.minX,b.maxX,S.minZ,b.minZ+.8),why:'In front of the shed\'s open side, where the bicycles are wheeled in.'},
   ].map(Object.freeze)),
@@ -286,20 +288,22 @@ function schoolBase(){
  const T=TOWN_HALL_GROUND,L=[];
  L.push({cls:'grass',name:'Town hall yard',...T.yard,top:GRASS,why:'The yard between the paths, under the windbreak and along the walls: lawn, as the town hall keeps it.'});
  for(const st of T.stone)L.push({cls:'park-path',...st,top:PATH});
+ for(const p of T.passages)L.push({cls:'park-path',name:'Back passage',...p,top:PATH,why:'Between two of the buildings, from the breezeway through to Kitahama\'s north lane behind: rolled stone, the short way in from the Kitahama houses.'});
+ L.push({cls:'gravel',name:'Power compound yard',...T.compound,top:GRAVEL,why:'Inside the power house\'s fence, round its apron and the tank: a work yard of crushed limestone, not a lawn anyone walks on.'});
  L.push({cls:'grass',name:'Town hall lawn',...T.lawn,top:GRASS,why:'A lawn in the middle of the old sports ground, with its flower bed.'});
  // Outside the boundary wall and along the seawall's inner foot, the neighbourhood's lawn runs on to the yard's edge
  // (neighbourhood-ground.js stops 0.9 m short of it): turf, so no bare island ground shows under the wall.
  for(const r of T.verges)L.push({cls:'grass',name:'Town hall verge',...r,top:GRASS,why:'The lawn up to the yard, under the boundary wall.'});
  L.push({cls:'earth',name:'Town hall flower bed',...T.bed,top:EARTH,why:'The town hall\'s flower bed, dug every spring.'});
  for(const [k,name,why] of [['forecourt','Town hall forecourt','From the gate to the entrance under the canopy, poured concrete.'],
-  ['breezeway','Town hall breezeway apron','The concrete apron along the breezeway, under its roof.'],
   ['powerApron','Power house apron','The power house stands on a concrete apron, its door on the east side for the fuel truck.'],
   ['tankBund','Fuel tank bund','The fuel tank stands in its concrete bund.'],
   ['parking','Town hall car park','The car park where the sandpit and the iron bars were: concrete, with its bays painted.'],
   ['bikeShed','Bicycle shed pad','Under the bicycle shed, a concrete pad.']])L.push({cls:'concrete',name,...T[k],top:FLUSH,why});
- // The hall and the power house stand on their own floors.
+ for(const r of T.breezeways)L.push({cls:'concrete',name:'Breezeway apron',...r,top:FLUSH,why:'The concrete apron along a building\'s breezeway, under its roof.'});
+ // The buildings and the power house stand on their own floors.
  const B=SCHOOL.building,ph=SCHOOL.powerHouse;
- L.push({hole:true,name:'Town hall',...rect(B.minX,B.maxX,B.minZ,B.maxZ)});
+ for(const t of TOWN_HALL_BUILDINGS)L.push({hole:true,name:t.name,...rect(t.minX,t.maxX,B.minZ,B.maxZ)});
  L.push({hole:true,name:'Power house',...rect(ph.minX,ph.maxX,ph.minZ,ph.maxZ)});
  return L;
 }
