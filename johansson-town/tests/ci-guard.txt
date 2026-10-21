@@ -54,3 +54,4 @@ visual-audit-freeze.test.mjs
 systems.test.mjs
 live-features.test.mjs
 catalog.test.mjs
+ferry-car-queue.test.mjs

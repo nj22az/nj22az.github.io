@@ -144,15 +144,19 @@ test('borrowing and releasing preserves the existing resident and restores occup
  drivers.release(v,{restore:true});assert.deepEqual(g.position.toArray(),[4,0,5]);assert.equal(g.userData.socialPose,'Idle');assert.equal(g.parent,parent);
 });
 test('a scheduled offscreen worker can drive the errand while active interiors retain their resident',()=>{
- const {cars,people}=fixture(),v=cars.fleet[0],person=people.find(p=>p.profile.name==='Thao');person.g.visible=false;person.g.userData.indoors='work';
- cars.update(.1,630);assert.ok(v.trip);assert.equal(person.g.parent,v.g);assert.equal(person.g.visible,true);assert.equal(person.g.userData.inVehicle,v.id);
+ const {cars,people,ferry}=fixture(),v=cars.fleet[0],person=people.find(p=>p.profile.name==='Thao');person.g.visible=false;person.g.userData.indoors='work';
+ // Her truck lives at the airport: it sets off for the stage when the ferry lies there (town-traffic.js mayStage).
+ ferry.parkAt('airport');cars.update(.1,630);assert.ok(v.trip);assert.equal(person.g.parent,v.g);assert.equal(person.g.visible,true);assert.equal(person.g.userData.inVehicle,v.id);
  cars.drivers.release(v,{restore:true});assert.equal(person.g.visible,false);assert.equal(person.g.userData.indoors,'work');
  person.g.userData.inWorkplace=true;assert.equal(cars.drivers.board(v),false,'An active room keeps its avatar');delete person.g.userData.inWorkplace;person.g.visible=true;assert.equal(cars.drivers.board(v),false,'Visible indoor activity is not interrupted');
 });
 test('absence releases the same borrowed residents and settles cars in their connected home bays',()=>{
  const {cars,people}=fixture(),islander=cars.islanders[0],courier=cars.fleet[0];
  const originals=people.map(p=>({g:p.g,parent:p.g.parent,position:p.g.position.clone(),visible:p.g.visible}));
- cars.update(.1,630);cars.update(.1,690);cars.traffic.finish(islander);cars.prepareCrossing('airport');cars.traffic.finish(islander);assert.equal(islander.where,'aboard');assert.ok(cars.drivers.has(courier));
+ // The courier's 10:30 run waits in its airport bay while the ferry lies at Minato (one car in her hands at a time:
+ // tests/ferry-car-queue.test.mjs); Tetsuo's 11:30 run is the one aboard when the player leaves.
+ cars.update(.1,630);assert.equal(courier.where,'airport');assert.equal(cars.drivers.has(courier),false,'no stage while the ferry is at the other shore');
+ cars.update(.1,690);cars.traffic.finish(islander);cars.prepareCrossing('airport');cars.traffic.finish(islander);assert.equal(islander.where,'aboard');assert.ok(cars.drivers.has(islander));
  cars.reconcileAbsent(800);
  for(const v of [...cars.islanders,...cars.fleet]){assert.equal(v.trip,null);assert.equal(v.transfer,null);assert.equal(v.shipDestination,null);assert.equal(v.stageOrigin,undefined);assert.equal(cars.drivers.has(v),false);assert.equal(v.shore,v.home);assert.equal(v.solid.x,v.g.position.x);assert.equal(v.solid.z,v.g.position.z);}
  for(const before of originals){assert.equal(before.g.parent,before.parent);assert.deepEqual(before.g.position.toArray(),before.position.toArray());assert.equal(before.g.visible,before.visible);assert.equal(before.g.userData.inVehicle,undefined);}

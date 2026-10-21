@@ -23,7 +23,7 @@ export function createIslandPlay({world,player,camera,activities,holdFerry=()=>f
   if(ride||ferryRun.phase!=='waiting')return;
   // Nobody sails off with a visitor walking her decks: a vehicle's crossing waits until he is ashore (game.js deckUnder).
   if(holdFerry())return;
-  const job=world.traffic?.pendingVehicleJourney?.();if(!job)return;
+  const job=world.traffic?.pendingVehicleJourney?.(getMinutes());if(!job)return;
   if(!AIRPORT_FERRY_PORTS[job.origin]||!AIRPORT_FERRY_PORTS[job.destination])return;
   const destination=job.origin===ferryRun.berth?job.destination:job.origin;
   if(destination===ferryRun.berth)return;

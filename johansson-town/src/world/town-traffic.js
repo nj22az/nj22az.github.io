@@ -138,11 +138,15 @@ export function createTownTraffic({parent,colliders=null,ferry=null,getPlayerPos
  // Cars come and go, so the builder keeps their bays clear instead of asking whether one is parked now.
  const parkAt=(v,p)=>{v.solid.moving=true;v.where=p.where;v.bay=p.bay;v.shore=p.where==='airport'?'airport':'town';delete v.stageOrigin;traffic.park(v,p);Object.assign(v.solid,{x:p.x,z:p.z,yaw:p.yaw,height:p.y+1.9});};
  const unpark=v=>{v.solid.x=v.solid.z=1e6;if(v.where==='airport')airportTaken.delete(v.bay);if(v.where==='service')townTaken.delete(v.bay);v.where='driving';};
- const reserve=(shore)=>{const set=shore==='airport'?airportTaken:townTaken,order=shore==='airport'?[0,1,2,3,4,5]:[1,0];for(const i of order)if(!set.has(i)){set.add(i);return i;}return null;};
+ const reserve=(shore)=>{const set=shore==='airport'?airportTaken:townTaken,order=shore==='airport'?[0,1,2,3,4,5]:[0,1];for(const i of order)if(!set.has(i)){set.add(i);return i;}return null;};
  const quayBay=i=>{const [x,z]=QUAY_BAYS[i];return {where:'quay',bay:i,x,y:wheelsAt(x,z),z,yaw:0};};
  const serviceBay=i=>{const [x,z]=SERVICE_BAYS[i];return {where:'service',bay:i,x,y:wheelsAt(x,z),z,yaw:Math.PI};};
- const islanders=[make('kei truck',0x5f8f5a,'islander','Tetsuo','Collect airport cargo for the workshop'),make('car',0xe9e6dc,'islander','Harbour master','Inspect airport cargo manifests')];
- const appointments=[{leave:690,back:750},{leave:960,back:1020}];islanders.forEach((v,i)=>{v.home='town';v.homeBay=i;v.appointment=appointments[i];parkAt(v,quayBay(i));});
+ // Bay 1 is where the islanders turn round on their way to the stage and home (service-in-1, service-out-1), so a visiting
+ // courier takes bay 0 first: parked in bay 1, it shut Tetsuo's way to the ferry while it waited for her itself.
+ const islanders=[make('kei truck',0x5f8f5a,'islander','Tetsuo','Collect airport cargo for the workshop'),make('car',0xe9e6dc,'islander','Harbour master','Kept in its bay through the ship’s day: the manifests come over with the boat')];
+ // The harbour agent is Minato's only line hand (ferry-shore-crew.js): a 16:00 run of his own put him aboard as a
+ // passenger and the ship could not let go, so his car keeps its bay while the ship is in service (null: no errand).
+ const appointments=[{leave:690,back:750},null];islanders.forEach((v,i)=>{v.home='town';v.homeBay=i;v.appointment=appointments[i];parkAt(v,quayBay(i));});
  // The morning kei truck is Minato Izakaya's (Thao's): the dry goods off the airport freight for the evening trade. It
  // was Chin's, but Chin is the ferry's motorman through the ship's day (ferry-crew.js), his body the ship's then, and the
  // driver code refuses a body the ship has (vehicle-driver.js), so a truck of his would stand in its bay all day; the
@@ -150,7 +154,16 @@ export function createTownTraffic({parent,colliders=null,ferry=null,getPlayerPos
  const fleet=[make('kei truck',0xf2f0ea,'ferry','Thao','Deliver airport dry goods to Minato Izakaya'),make('kei truck',0x2f6f9f,'ferry','Mrs Sato','Deliver airport kitchen supplies to Main Street'),make('car',0xc8432f,'ferry','Nhung','Deliver airport book orders to Main Street')];
  fleet.forEach((v,i)=>{v.home='airport';v.appointment={leave:600+i*180,back:690+i*180};const bay=reserve('airport');v.homeBay=bay;parkAt(v,airportVehicleBay(bay));});
  const all=[...islanders,...fleet];
- const wantedShore=(v,minutes)=>{const m=((minutes%1440)+1440)%1440,a=v.appointment;return m>=a.leave&&m<a.back?(v.home==='town'?'airport':'town'):v.home;};
+ // A car away from home goes back before anyone sets off on a new errand: it is the one holding a bay on the far shore.
+ const homeFirst={*[Symbol.iterator](){for(const v of all)if(v.shore!==v.home)yield v;for(const v of all)if(v.shore===v.home)yield v;}};
+ const wantedShore=(v,minutes)=>{const m=((minutes%1440)+1440)%1440,a=v.appointment;if(!a)return v.home;return m>=a.leave&&m<a.back?(v.home==='town'?'airport':'town'):v.home;};
+ // One car in the ferry's hands at a time. The stage is on the off-ramp's way up the quay, so a car waiting there while
+ // another drives off the ramp blocks it, and the ferry, waiting for that one to clear, never comes for the first (the
+ // 21 October deadlock: Tetsuo's 11:30 cargo run against Thao's late dry goods, and his evening on Higa Liquor's
+ // bench lost to it). A car sets off for the stage only when the ferry is alongside at its shore and no other car is
+ // aboard, on a ramp or on its way to a stage; until then it waits in its bay, and asks for the ferry (below).
+ const inFerryHands=v=>v.where==='aboard'||!!v.transfer||v.where==='waiting-ferry'||v.where==='driving'&&!!v.stageOrigin;
+ const mayStage=(v,shore)=>!ferry||ferry.berth===shore&&ferry.canLoad&&!all.some(o=>o!==v&&inFerryHands(o));
  function stage(v,destination){
   if(!drivers.board(v))return false;const shore=v.shore,bay=v.bay;unpark(v);v.shipDestination=destination;v.stageOrigin=shore;
   const path=shore==='airport'?net.path(['airport-stage-'+bay]):net.path([...(v.role==='islander'?['quay-out-'+v.homeBay,v.homeBay===LAYBY_BAY?'layby-north':'main-north','service-in-1','service-out-1']:['service-out-'+bay]),'main-south','town-ferry-stage']);
@@ -180,7 +193,12 @@ export function createTownTraffic({parent,colliders=null,ferry=null,getPlayerPos
  const vehicleObstacles=()=>aboardVehicles().map(v=>({id:v.id,x:FERRY_VEHICLE_DECK_X,z:FERRY_VEHICLE_DECK_Z,w:v.width,d:v.length,y:FERRY_DECKS.car.y,height:2}));
  const api={group,network:net,traffic,fleet,islanders,appointments,drivers,serviceCourt:MAIN_SERVICE_COURT,
   prepareCrossing(destination){requestedCrossing=destination;updateFerry();if(all.some(v=>v.where==='aboard'&&v.shipDestination===destination)&&!loadingCount())return true;const active=all.some(v=>v.transfer||v.where==='driving'&&v.stageOrigin===ferry?.berth&&v.shipDestination===destination);const waiting=all.some(v=>v.where==='waiting-ferry'&&v.stageOrigin===ferry?.berth&&v.shipDestination===destination);return !active&&!waiting;},
-  pendingVehicleJourney(){const v=all.find(v=>v.where==='aboard'||v.transfer==='on')||all.find(v=>v.where==='waiting-ferry');return v?.shipDestination?{id:v.id,origin:v.stageOrigin||v.shore,destination:v.shipDestination}:null;},
+  pendingVehicleJourney(minutes){const v=all.find(v=>v.where==='aboard'||v.transfer==='on')||all.find(v=>v.where==='waiting-ferry');if(v?.shipDestination)return {id:v.id,origin:v.stageOrigin||v.shore,destination:v.shipDestination};
+   // A parked car whose errand wants the other shore, while the ferry lies at the far one: fetch it (mayStage lets it
+   // set off once she is alongside at its shore). Never one at her own shore, or she would sail without it.
+   if(!Number.isFinite(minutes)||!ferry||all.some(inFerryHands))return null;
+   const w=[...homeFirst].find(v=>['quay','service','airport'].includes(v.where)&&v.shore!==ferry.berth&&wantedShore(v,minutes)!==v.shore);
+   return w?{id:w.id,origin:w.shore,destination:wantedShore(w,minutes),fetch:true}:null;},
   vehicleObstacles,
   securingStation(){const v=aboardVehicles()[0];return v?{x:FERRY_VEHICLE_DECK_X+v.width/2+.32,y:FERRY_DECKS.car.y,z:FERRY_VEHICLE_DECK_Z+(v.g.userData.wheels?.find(w=>w.z>0)?.z||1)}:undefined;},
   beginSecuring(operation){for(const v of aboardVehicles()){
@@ -209,7 +227,7 @@ export function createTownTraffic({parent,colliders=null,ferry=null,getPlayerPos
   },
   get loadingVehicles(){return loadingCount();},
   snapshot:()=>all.map(v=>({id:v.id,owner:v.owner,driver:v.driver,purpose:v.purpose,location:v.where,shore:v.shore,destination:v.shipDestination??null,driving:!!v.trip,occupied:drivers.atWheel(v),driverState:drivers.snapshot(v),securing:v.securing?{...v.securing}:null,transfer:v.transfer??null,position:v.g.position.toArray()})),
-  update(dt,minutes){if(Number.isFinite(minutes))for(const v of all){if(!['quay','service','airport'].includes(v.where))continue;const want=wantedShore(v,minutes);if(want!==v.shore)stage(v,want);}updateFerry();drivers.update(dt);if(ferry)ferry.loadingVehicles=loadingCount();traffic.update(dt);for(const v of all)if(v.trip&&!drivers.atWheel(v)){v.hold=true;v.speed=0;}}
+  update(dt,minutes){if(Number.isFinite(minutes))for(const v of homeFirst){if(!['quay','service','airport'].includes(v.where))continue;const want=wantedShore(v,minutes);if(want!==v.shore&&mayStage(v,v.shore))stage(v,want);}updateFerry();drivers.update(dt);if(ferry)ferry.loadingVehicles=loadingCount();traffic.update(dt);for(const v of all)if(v.trip&&!drivers.atWheel(v)){v.hold=true;v.speed=0;}}
  };
  ferry?.bindVehicleController?.(api);if(ferry)ferry.vehicleObstacles=vehicleObstacles;return api;
 }
