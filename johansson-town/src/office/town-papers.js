@@ -108,13 +108,6 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
-    "title": "Ferry departures",
-    "organisation": "Town Services",
-    "text": "The shared car and passenger ferry crosses to Kitano-jima on request. Buy a return passenger ticket at the airport-ferry window (Ms Ganaha, noon to 22:15; in the morning from the oiler at the gangway) and board from the outer pier. The evening boat to Naha opens at 17:00. Post and parcels are handled at the same window.",
-    "source": "notice:Ferry departures"
-  },
-  {
-    "type": "Notice",
     "title": "Map of the strait",
     "organisation": "Town Services",
     "text": "The outer pier connects Minato with Kitano-jima on one shared passenger and car ferry. Walk aboard with a return passenger ticket; working vehicles use the lowered bow ramp with their drivers. In the evening a separate boat goes to Naha. There is no road bridge to the airport.",

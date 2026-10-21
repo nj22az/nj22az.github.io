@@ -78,29 +78,11 @@ export function serviceTime(minutes){
 }
 /** The stop notice reads the same clock and schedule as the bus. */
 export function harbourTimetable(minutes){
- return ferryTimetable(minutes);
- const m=minuteOfDay(minutes),current=HARBOUR_LINE.find(s=>m>=s&&m<s+BUS_DWELL);
- const due=nextService(minutes);
- const status=current===undefined
-  ?'Next arrival: '+serviceTime(due.service)+(due.wait===0?' · due now':' · in '+Math.ceil(due.wait)+' town minutes')
-  :'Scheduled stop: '+serviceTime(current)+'–'+serviceTime(current+BUS_DWELL);
- return 'Harbour Line · Three services daily (town time)\nArrival → Departure\n'
+ const m=minuteOfDay(minutes),departures=HARBOUR_LINE.map(s=>s+BUS_DWELL),next=departures.find(s=>s>=m)??departures[0]+1440;
+ return 'Minato Maru · Minato ⇄ Kitano-jima · '+CROSSING_MINUTES+'-minute crossing\nFixed Harbour Line timetable · Arrival → Departure at Minato\n'
   +HARBOUR_LINE.map(s=>serviceTime(s)+' → '+serviceTime(s+BUS_DWELL)).join('\n')
-  +'\n\nThe bus waits '+BUS_DWELL+' town minutes at each stop.\n'+status;
-}
-/**
- * The ferry's service as the Port Terminal states it (port-building.js poster, port-hall.js board,
- * the boarding menu in island/play.js): the Minato Maru crosses to Kitano-jima on request, and
- * brings the commuters in at the Harbour Line's three times, lying alongside for BUS_DWELL minutes.
- */
-function ferryTimetable(minutes){
- const m=minuteOfDay(minutes),current=HARBOUR_LINE.find(s=>m>=s&&m<s+BUS_DWELL);
- const due=nextService(minutes);
- const status=current===undefined
-  ?'Next commuter boat in: '+serviceTime(due.service)+(due.wait===0?' · due now':' · in '+Math.ceil(due.wait)+' town minutes')
-  :'The commuter boat is alongside: '+serviceTime(current)+'–'+serviceTime(current+BUS_DWELL);
- return 'Minato Maru · Minato ⇄ Kitano-jima · '+CROSSING_MINUTES+'-minute crossing\nCrossings on request: buy a return at the Port Terminal window and board by the gangway on the outer pier.\n'
-  +'Commuter boats in to Minato: '+HARBOUR_LINE.map(serviceTime).join(' · ')+'. Each lies alongside '+BUS_DWELL+' town minutes.\n'+status;
+  +'\nFrom Kitano-jima: '+HARBOUR_LINE.map(s=>serviceTime(s-CROSSING_MINUTES)).join(' · ')
+  +'\nNext departure from Minato: '+serviceTime(next)+' · in '+Math.ceil(next-m)+' town minutes.\nThe separate quick crossing remains on request.';
 }
 export function shiftActive(profile,minutes){
  const shift=shiftFor(profile),e=elapsed(profile,minutes);

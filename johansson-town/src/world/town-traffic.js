@@ -1,3 +1,4 @@
+import {HARBOUR_LINE,BUS_DWELL,CROSSING_MINUTES} from '../people/commuter-schedule.js';
 import {createVehicleDrivers} from '../people/vehicle-driver.js';
 import * as THREE from '../../vendor/three.module.js';
 import {createRoadNetwork,createTraffic,makeLane} from './road-network.js';
@@ -148,7 +149,7 @@ export function createTownTraffic({parent,colliders=null,ferry=null,getPlayerPos
  // driver code refuses a body the ship has (vehicle-driver.js), so a truck of his would stand in its bay all day; the
  // workshop's airport freight is Tetsuo's islander run above.
  const fleet=[make('kei truck',0xf2f0ea,'ferry','Thao','Deliver airport dry goods to Minato Izakaya'),make('kei truck',0x2f6f9f,'ferry','Mrs Sato','Deliver airport kitchen supplies to Main Street'),make('car',0xc8432f,'ferry','Nhung','Deliver airport book orders to Main Street')];
- fleet.forEach((v,i)=>{v.home='airport';v.appointment={leave:600+i*180,back:690+i*180};const bay=reserve('airport');v.homeBay=bay;parkAt(v,airportVehicleBay(bay));});
+ fleet.forEach((v,i)=>{v.home='airport';v.appointment={leave:HARBOUR_LINE[i]-CROSSING_MINUTES-20,back:HARBOUR_LINE[i]+Math.min(5,BUS_DWELL/2)};const bay=reserve('airport');v.homeBay=bay;parkAt(v,airportVehicleBay(bay));});
  const all=[...islanders,...fleet];
  const wantedShore=(v,minutes)=>{const m=((minutes%1440)+1440)%1440,a=v.appointment;return m>=a.leave&&m<a.back?(v.home==='town'?'airport':'town'):v.home;};
  function stage(v,destination){
@@ -179,7 +180,7 @@ export function createTownTraffic({parent,colliders=null,ferry=null,getPlayerPos
  const aboardVehicles=()=>all.filter(v=>v.where==='aboard');
  const vehicleObstacles=()=>aboardVehicles().map(v=>({id:v.id,x:FERRY_VEHICLE_DECK_X,z:FERRY_VEHICLE_DECK_Z,w:v.width,d:v.length,y:FERRY_DECKS.car.y,height:2}));
  const api={group,network:net,traffic,fleet,islanders,appointments,drivers,serviceCourt:MAIN_SERVICE_COURT,
-  prepareCrossing(destination){requestedCrossing=destination;updateFerry();if(all.some(v=>v.where==='aboard'&&v.shipDestination===destination)&&!loadingCount())return true;const active=all.some(v=>v.transfer||v.where==='driving'&&v.stageOrigin===ferry?.berth&&v.shipDestination===destination);const waiting=all.some(v=>v.where==='waiting-ferry'&&v.stageOrigin===ferry?.berth&&v.shipDestination===destination);return !active&&!waiting;},
+  prepareCrossing(destination){requestedCrossing=destination;updateFerry();if(ferry?.accessOpen===false)return loadingCount()===0;if(all.some(v=>v.where==='aboard'&&v.shipDestination===destination)&&!loadingCount())return true;const active=all.some(v=>v.transfer||v.where==='driving'&&v.stageOrigin===ferry?.berth&&v.shipDestination===destination);const waiting=all.some(v=>v.where==='waiting-ferry'&&v.stageOrigin===ferry?.berth&&v.shipDestination===destination);return !active&&!waiting;},
   pendingVehicleJourney(){const v=all.find(v=>v.where==='aboard'||v.transfer==='on')||all.find(v=>v.where==='waiting-ferry');return v?.shipDestination?{id:v.id,origin:v.stageOrigin||v.shore,destination:v.shipDestination}:null;},
   vehicleObstacles,
   securingStation(){const v=aboardVehicles()[0];return v?{x:FERRY_VEHICLE_DECK_X+v.width/2+.32,y:FERRY_DECKS.car.y,z:FERRY_VEHICLE_DECK_Z+(v.g.userData.wheels?.find(w=>w.z>0)?.z||1)}:undefined;},

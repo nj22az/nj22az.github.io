@@ -49,3 +49,6 @@ beach-shore.test.mjs
 johansson-study.test.mjs
 audit-boot.test.mjs
 boot.test.mjs
+
+ferry-timetable.test.mjs
+ferry-timetable-words.test.mjs

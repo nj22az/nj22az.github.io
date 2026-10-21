@@ -1,3 +1,4 @@
+import {signPlate} from './sign-plate.js';
 import * as THREE from '../../vendor/three.module.js';
 import {releaseAfterUpload} from '../render/canvas-release.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
@@ -790,6 +791,13 @@ export function buildFerryModel({shadows=false}={}){
  {const k4=createKit(shadows),G=GANGWAY_LENGTH;k4.box('paint',[G,.06,1.4],[G/2,0,0],0x9aa3a2);for(let i=0;i<8;i++)k4.box('metal',[.04,.03,1.36],[.15+i*.25,.045,0],STEEL);
   for(const dz of [-.68,.68]){k4.box('metal',[G,.04,.04],[G/2,.9,dz],WHITE);for(const x of [.1,G/2,G-.1])k4.box('metal',[.03,.9,.03],[x,.45,dz],WHITE);}k4.finish(gangway);}
  gangway.position.set(halfBreadth(GANGWAY_Z)-.05,CAR,GANGWAY_Z);gangway.rotation.z=-.2;
+ const departureSigns=['departing','boarding','closed'].map(state=>{
+  const lines=state==='departing'?['出港','Departing']:state==='boarding'?['乗船','Boarding']:['航海中','Access closed'];
+  const plate=plateMesh({name:'Gangway '+state+' sign',lines,bg:state==='departing'?'#973e27':'#224e52',fg:'#fff6db',w:.95,h:.48,pos:[halfBreadth(GANGWAY_Z)+.06,CAR+1.6,GANGWAY_Z],rotY:Math.PI/2});
+  if(!plate)return null;
+  const backed=signPlate(plate.material,.95,.48);backed.name=plate.name;backed.position.copy(plate.position);backed.rotation.copy(plate.rotation);backed.visible=state==='boarding';plate.geometry.dispose();ferry.add(backed);return backed;
+ });
+ ferry.userData.setDepartureSign=state=>departureSigns.forEach((p,i)=>{if(p)p.visible=['departing','boarding','closed'][i]===state;});
  ferry.userData.gangway=gangway;
  ferry.userData.setGangway=out=>{const n=Math.max(0,Math.min(1,Number(out)||0));ferry.userData.gangwayOut=n;gangway.rotation.z=-.2*n+(Math.PI/2)*(1-n);};
  /** Its foot rests on the pier (`pierY`, world) as she moves, the way the ramp rests on the quay. */

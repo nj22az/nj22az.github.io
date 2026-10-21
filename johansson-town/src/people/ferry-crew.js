@@ -10,7 +10,7 @@ import {liveNameFor} from './cast.js';
  * Kai), with cabins aboard and, for Kai, the Shiroma house.
  *
  * Her working day (FERRY_WORKING_DAY). The ship is in service from the generators at 06:10 to the shore power at 22:15
- * (FERRY_DAY), and she sails on request within it, so the crew keep one long day aboard, the way a small island ferry's
+ * (FERRY_DAY), and she keeps the Harbour Line timetable within it, so the crew keep one long day aboard, the way a small island ferry's
  * crew does: all eight signed on from 06:05, every station manned when she moves, rest and meals alongside between
  * sailings (the `waiting` watch below), everyone off at 22:20 once the log is written. The bosun's week on and week off
  * (Kōji's relief weeks) and the relief engineer's cover for the chief (ferry-crew-aboard.js) are the only reliefs the

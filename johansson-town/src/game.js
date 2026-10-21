@@ -721,7 +721,7 @@ activities=createActivities({say,onLaundry:wash=>{world.laundryWash=wash||null;}
   evictIfClosed();}});
 // The player's wash at the coin laundry turns its machine on the town clock (coin-laundry-dressing.js).
 world.laundryWash=activities.state.coinLaundry||null;
-islandPlay=createIslandPlay({world,player,camera,activities,register:reg,holdFerry:()=>!current&&!!deckUnder(),getMinutes:()=>minutes,getRain:()=>weather,passTime:value=>{minutes+=value;townClock.pass(value);activities.state.clockAhead=townClock.ahead;activities.save();},place:(x,z,_y,facing=0)=>{if(current)leaveRoom();standUpAt(x,z,facing);resetInput();},veil:run=>crossThreshold(run,{chime:false}),enterNaha:()=>crossThreshold(()=>enterRoom(NAHA_ARRIVALS)),leaveNaha:()=>leaveRoom()});
+islandPlay=createIslandPlay({world,player,camera,activities,register:reg,isAboard:()=>!current&&!!deckUnder(),face:(x,z)=>{yaw=Math.atan2(-x,-z);player.rotation.y=yaw;},getMinutes:()=>minutes,getRain:()=>weather,passTime:value=>{minutes+=value;townClock.pass(value);activities.state.clockAhead=townClock.ahead;activities.save();},place:(x,z,_y,facing=0)=>{if(current)leaveRoom();standUpAt(x,z,facing);resetInput();},veil:run=>crossThreshold(run,{chime:false}),enterNaha:()=>crossThreshold(()=>enterRoom(NAHA_ARRIVALS)),leaveNaha:()=>leaveRoom()});
 syncView();
 fists=createFists({camera,skin:playerRecipe()?.body?.skin||'#d9a57c',sleeve:playerRecipe()?.outfit?.topColour||'#3f6a8a'});
 hands=createHands({scene,camera,say,consume:name=>{const i=activities.state.inventory.indexOf(name);if(i<0)return false;const lager=name==='Umineko lager';if(lager&&!wantsAnother(tipsy,LAGER_ALCOHOL)){say('Enough for tonight. The can goes back in your bag for tomorrow.',3);return false;}if(lager)tipsy=drinkUp(tipsy,LAGER_ALCOHOL);activities.state.inventory.splice(i,1);const left=SPECIAL_BY_NAME[name]?.cup?null:emptyFor(name);if(left)activities.state.inventory.push(left);activities.save();return true;},canColour,onDrink:()=>johansson?.play(seated?'SitDrink':'Drink')});
@@ -968,7 +968,7 @@ function updateJohansson(dt){
  const partner=conversationName?(conversationName==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===conversationName)?.g):null;
  if(partner){partner.getWorldPosition(lookPoint);lookPoint.y+=1.5;johansson.lookAt(lookPoint);}else johansson.lookAt(spawnScene?.gaze||null);
  setSwingFocus(camera.position);
- johansson.update(dt,{speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,firstPersonDrinking:!thirdPerson&&started&&!inspector?.active&&!spawnScene?.active,visible:islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5:shipRoom()||houseboatCabin()?thirdDistance>=HEAD_CAM:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active});
+ johansson.update(dt,{speed:islandPlay?.walkingAshore?1.35:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,firstPersonDrinking:!thirdPerson&&started&&!inspector?.active&&!spawnScene?.active,visible:islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5:shipRoom()||houseboatCabin()?thirdDistance>=HEAD_CAM:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active});
  // Sakura: one thing in his hand, more in a basket, until he pays (shop-carry.js).
  shopCarry.sync(activities?.state?.konbini?.basket,current?.id==='market'&&johansson.ready);
 }
@@ -2141,14 +2141,14 @@ let elapsed=0,mapTick=0,stepTick=0,accumulator=0,saveTick=0;
 // menu, running at one, ten or sixty times real speed (see town-clock.js).
 const townClock=createClock(readClockSetting(globalThis.localStorage),minutes);
 function advanceTown(dt,playerPaused,fastForward=false){
-    // Aboard, her pose moves under him in this step (the crossing in islandPlay.tick, the swell in world.update): his
+    // Aboard, her pose moves under him in world.update: his
     // place in her frame is taken before each and put back after it, and his heading turns with her, so he stands
     // where he stood on her deck, not where she was.
-    // Twice a step, round the two moves and never round his own walk (which would undo it): see hold() and carry().
-    const hold=()=>!current&&!catchingUp&&deckUnder()?{at:world.ferry.ferry.worldToLocal(player.position.clone()),yaw:world.ferry.ferry.rotation.y}:null;
+    // Carry only around the hull update, after his own walking, and never undo a safety step onto the quay.
+    const hold=()=>!current&&!catchingUp&&deckUnder()?{world:player.position.clone(),at:world.ferry.ferry.worldToLocal(player.position.clone()),yaw:world.ferry.ferry.rotation.y}:null;
     const carry=held=>{if(!held)return;const f=world.ferry.ferry;f.updateMatrixWorld(true);player.position.copy(f.localToWorld(held.at));const turn=f.rotation.y-held.yaw;if(turn){yaw+=turn;player.rotation.y+=turn;}};
-    const crossing=hold();
-    minutes+=fastForward?dt:dt*townClock.speed/60;elapsed+=dt;if(!fastForward)islandPlay?.tick(dt);carry(crossing);activities.tick(dt);
+    // The timetable moves the hull in world.update; islandPlay only moves a passenger going ashore.
+    minutes+=fastForward?dt:dt*townClock.speed/60;elapsed+=dt;if(!fastForward)islandPlay?.tick(dt);activities.tick(dt);
     if(!catchingUp&&(saveTick+=dt)>=15){activities.save();saveTick=0;}if(!playerPaused&&!islandPlay?.cinematic){shipWalk()?.update();characters?.physics?.(dt,playerGround());if(stairPassage)stepStairPassage(dt);else{updatePlayer(dt);checkSakuraStair();}}
     evictIfClosed();
     if(sharedDining(current))izakayaGuests.sync(minutes,dt);
@@ -2162,7 +2162,7 @@ function advanceTown(dt,playerPaused,fastForward=false){
     castAI?.update(dt,minutes,weather);sakuraShop.update(dt);ramenGuests.sync(minutes,dt);ramenMeals.update(dt);satoKitchen?.update(dt);if(BUDGET.neighbourChats)neighbourChats.update(dt,minutes,weather);
     if(current&&!catchingUp)world.updateLife(dt,elapsed,daylight(minutes),minutes);
     if(!catchingUp){ferryCrew?.update(dt,minutes);neighbours?.update(dt,minutes,current?null:player.position);}
-    if(!current&&!catchingUp){const swell=hold();world.update(dt,elapsed,daylight(minutes),minutes);carry(swell);if(!activities.state.quickTravelNotified&&travelProgress(activities.state).unlocked)activities.save();world.beats?.update(dt,elapsed,minutes);}
+    if(!current&&!catchingUp){const swell=hold();world.update(dt,elapsed,daylight(minutes),minutes);if(!swell||player.position.distanceTo(swell.world)<.001)carry(swell);if(!activities.state.quickTravelNotified&&travelProgress(activities.state).unlocked)activities.save();world.beats?.update(dt,elapsed,minutes);}
 }
 /** Keeps the town on the device clock; a gap of more than a minute is caught up, not jumped. */
 function followClock(){
@@ -2519,7 +2519,7 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  get blocked(){return {catchingUp,roomLoading,camera:!!cameraControls.active,inspector:!!inspector?.active,viewer:!!itemViewer?.active,photo:!!(photoStudio?.active||photoLoading||photoReturning),directory:!$('#directory').classList.contains('hidden'),started,hidden:document.hidden};},
  get johansson(){return johansson;},get hands(){return hands;},
  get room(){return room;},get scene(){return scene;},get renderer(){return renderer;},get layout(){return activeRoomLayout;},
- get island(){return islandPlay;},
+ get island(){return islandPlay;},get ferry(){return world.ferry;},
  get ferryCrew(){return ferryCrew?.snapshot()||[];},
  get activities(){return activities;},get bookshopCustomers(){return bookshopCustomers.snapshot();},
  get shop(){return {customers:[...sakuraShop.retail.customers].map(([p,r])=>({name:p.profile.name,item:r.item,phase:r.phase,position:r.position,picked:r.picked,paid:r.paid,finished:r.finished,atCounter:r.atCounter})),stock:Object.fromEntries(Object.entries(activities.state.sakura.stock).map(([id,s])=>[id,{shelf:s.shelf,reserve:s.reserve}]))};},

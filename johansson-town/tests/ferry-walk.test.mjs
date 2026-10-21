@@ -83,7 +83,7 @@ test('under way her decks are still walked (he sails aboard), but the gangway an
  // This fixture begins with its rider aboard, clear of both boarding openings.
  service.player.position.copy(world(run,0,FERRY_DECKS.car.y,0));
  assert.equal(service.aboard(),true);
- assert.equal(run.beginCrossing('airport'),true);
+ service.tick(.1);service.until(()=>run.operation?.stage==='boarding');service.setMinutes(run.scheduledDeparture.departure);service.tick(.1);
  // Reach the open sea through the actual crew, plant and mooring procedure.
  // Moving the hull directly would skip the very access closure this test checks.
  service.until(()=>run.operation?.stage==='passage'&&run.crossingProgress>=.5);walk.update();

@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {HARBOUR_LINE,BUS_DWELL,CROSSING_MINUTES,serviceTime} from '../people/commuter-schedule.js';
 import {createKit} from './okinawa/kit.js';
 import {createMaterials} from '../render/materials.js';
 import {flowerBlock,roofTile,poster} from './okinawa/signs.js';
@@ -16,7 +17,7 @@ import {flowerBlock,roofTile,poster} from './okinawa/signs.js';
  * The timetable poster under the canopy: the service as the ferry runs it (the same words as the
  * hall's departures board, the harbour office on the telephone and the boarding menu).
  */
-export const PORT_TIMETABLE_POSTER=Object.freeze(['MINATO ⇄ KITANO-JIMA','Minato Maru · 18 min','Crossings on request','Commuter boats in:','8:30 · 14:30 · 22:00','Tickets inside']);
+export const PORT_TIMETABLE_POSTER=Object.freeze(['MINATO ⇄ KITANO-JIMA','Minato Maru · '+CROSSING_MINUTES+' min','Departures from Minato:',HARBOUR_LINE.map(t=>serviceTime(t+BUS_DWELL)).join(' · '),'Fixed Harbour Line timetable','Tickets inside']);
 export const PORT_BUILDING=Object.freeze({
  office:Object.freeze({minX:9.7,maxX:16.9,minZ:-46.9,maxZ:-38.4}),
  hall:Object.freeze({minX:5.6,maxX:9.7,minZ:-46.9,maxZ:-39.6}),

@@ -144,7 +144,8 @@ function updateScape(player,{minutes,rain,inside,paused,ferry}){
  }
  // Her whistle: every signal she sounds, in order, from where she was when she sounded it. The
  // first time the town hears her it only takes note of the count, so loading a game is quiet.
- if(ferry?.whistle&&!paused){
+ // Safety signals remain audible while the passenger choice is open; the ship keeps moving.
+ if(ferry?.whistle){
   const w=ferry.whistle;if(scape.whistleCount===undefined||w.count<scape.whistleCount)scape.whistleCount=w.count;
   while(scape.whistleCount<w.count){
    scape.whistleCount++;const signal=w.log?.find(e=>e.n===scape.whistleCount)||w;

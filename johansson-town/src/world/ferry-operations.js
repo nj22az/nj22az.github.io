@@ -1,8 +1,10 @@
+import {CROSSING_MINUTES} from '../people/commuter-schedule.js';
 import {FERRY_MACHINERY} from './ferry-ship.js';
 
 /** The game's visible operating sequence. These durations do not replace a crew report or a machine interlock. */
 export const FERRY_PROCEDURE=Object.freeze({
  preparing:Object.freeze({label:'Preparing machinery and passengers',description:'The master calls stations. The chief directs generator transfer, auxiliaries, priming, starting and the engine-control handover; the mate and purser prepare the deck and passengers.',seconds:null}),
+ boarding:Object.freeze({label:'Boarding · scheduled departure',description:'Machinery ready. Passengers may board until the published departure.',seconds:null}),
  securing:Object.freeze({label:'Securing vehicles and clearing their drivers',description:'The bosun checks engine off, parking brake, suitable transmission position, chocks and fitted wheel straps. Drivers walk to the passenger deck before their clearance is reported.',seconds:12}),
  'closing-access':Object.freeze({label:'Clearing the ramp and stowing the gangway',description:'The mate stops loading. The deck hand clears and stows the gangway after the last passenger is counted.',seconds:8}),
  'raising-ramp':Object.freeze({label:'Raising and locking the bow ramp',description:'The mate works the local hydraulic controls for the full 60-second lift, checks both locking pins, and reports closed and locked to the bridge.',seconds:FERRY_MACHINERY.ramp.up+4}),
@@ -26,7 +28,7 @@ const success=()=>({ok:true});
  * A public request can never set the vessel's progress or manufacture those acknowledgements.
  */
 export function createFerryOperations({plant,sailings,getBerth,getMinutes=()=>0,getLines,
- getCrew=()=>null,getVehicles=()=>null,accessClear=()=>true,onPose=()=>{},onBerth=()=>{},onStage=()=>{}}){
+ getCrew=()=>null,getVehicles=()=>null,accessClear=()=>true,clearPassengers=()=>{},onPose=()=>{},onBerth=()=>{},onStage=()=>{}}){
  let op=null,serial=0,eventSequence=0,completionSequence=0,completed=[],plantSteps=[],plantIndex=0,startedStep=null,
   lineIndex=0,lineElapsed=0,mechanicalElapsed=0,retry=null,retryElapsed=0;
  const history=[];
@@ -59,6 +61,7 @@ export function createFerryOperations({plant,sailings,getBerth,getMinutes=()=>0,
  function command(fn){const r=fn();if(r?.ok)return true;hold(r?.why||'The order was not accepted.',fn);return false;}
  function enter(stage){
   op.stage=stage;op.stageElapsed=0;op.blocking=null;op.tasks=[];mechanicalElapsed=0;startedStep=null;onStage(stage);
+  if(stage==='closing-access')clearPassengers(op);
   if(stage==='securing'){
    getVehicles()?.beginSecuring?.(op.id);
    tasks([task('car-check','bosun','car-deck','Check engines off, parking brakes, transmission and wheel securing',12,getVehicles()?.securingStation?.()),task('drivers','purser','saloon','Confirm drivers and passengers are clear of the vehicle deck',6)]);
@@ -76,6 +79,7 @@ export function createFerryOperations({plant,sailings,getBerth,getMinutes=()=>0,
    op.ramp.locked=false;
    tasks([task('ramp-down','mate','ramp','Lower the bow ramp onto its landing',FERRY_MACHINERY.ramp.down),task('gangway-out','deck','gangway','Rig the passenger gangway and check its landing',8),task('release-cars','bosun','car-deck','Remove wheel securing after all fast',12,getVehicles()?.securingStation?.()),task('passengers','purser','saloon','Prepare passengers and drivers to disembark',6)]);
   }else if(stage==='passage'){
+   op.sailingStartedMinute=getMinutes();op.lastSailingMinute=getMinutes();
    tasks([task('bridge-watch','master','wheelhouse','Keep the navigation watch',4),task('lookout','mate','port-wing','Keep a lookout',4),task('engineering-watch','chief','engine-room','Monitor engines and the switchboard',4),task('oiler-watch','oiler','engine-room','Check machinery temperatures and pressures',4),task('deck-round','bosun','car-deck','Check the secured vehicle deck',4),task('deck-watch','deck','saloon','Keep passenger exits clear',4),task('passenger-watch','purser','purser','Attend the passengers',4),task('galley-watch','cook','galley','Keep the galley secure',4)]);
   }else if(stage==='arriving'){
    // The shore hand is called to the berth on the approach, so he is at the first bitt when her lines come over.
@@ -127,7 +131,7 @@ export function createFerryOperations({plant,sailings,getBerth,getMinutes=()=>0,
   if(!ready.ready){op.blocking=ready.reasons.join('; ');return;}
   if(!loaded){op.blocking='Waiting for the vehicle on the loading route.';return;}
   if(!allReady()){op.blocking=pending();return;}
-  note('chief','Master, both main engines and steering are ready; two generators are on the board and bridge control is accepted.');enter('securing');
+  note('chief','Master, both main engines and steering are ready; two generators are on the board and bridge control is accepted.');enter(Number.isFinite(op.scheduledDeparture)?'boarding':'securing');
  }
  function lineTick(dt,arrival){
   const l=op.lines[lineIndex];if(!l)return;
@@ -155,6 +159,10 @@ export function createFerryOperations({plant,sailings,getBerth,getMinutes=()=>0,
   }
   observeTasks();
   if(op.stage==='preparing'){tickPreparation();return;}
+  if(op.stage==='boarding'){
+   if(getMinutes()<op.scheduledDeparture)return;
+   clearPassengers(op);enter('securing');return;
+  }
   if(op.stage==='securing'){
    if(atStation('bosun'))getVehicles()?.advanceSecuring?.(dt,op.id);
    if(allReady()&&vehiclesReady()){note('bosun','Mate, vehicle securing is complete.');note('purser','Mate, all drivers and passengers are clear of the vehicle deck.');enter('closing-access');}else op.blocking=vehiclesReady()?pending():'Wheel securing and driver clearance are still in progress.';
@@ -176,7 +184,11 @@ export function createFerryOperations({plant,sailings,getBerth,getMinutes=()=>0,
    if(allReady()){op.sailingElapsed=0;plant.setUnderway(true);note('master','All lines aboard. Dead slow astern.');enter('passage');}
   }else if(op.stage==='passage'||op.stage==='arriving'){
    const r=readyToMove();if(!r.ready){op.blocking=r.reasons.join('; ');for(const id of ['mainP','mainS'])plant.setTelegraph(id,'STOP');return;}
-   const sailing=sailings[op.destination];op.sailingElapsed=Math.min(sailing.duration,op.sailingElapsed+dt);
+   const sailing=sailings[op.destination];const scheduled=Number.isFinite(op.scheduledDeparture);
+   // The route never runs faster than its measured safe profile. Leave five town minutes for mooring and opening.
+   const duration=scheduled?Math.max(sailing.duration,(op.scheduledDeparture+CROSSING_MINUTES-5-op.sailingStartedMinute)*60):sailing.duration;
+   const elapsed=scheduled?Math.max(0,getMinutes()-op.lastSailingMinute)*60:dt;op.lastSailingMinute=getMinutes();
+   op.sailingElapsed=Math.min(sailing.duration,op.sailingElapsed+elapsed*sailing.duration/duration);
    const p=sailing.pose(op.sailingElapsed);op.sailingKind=p.kind;op.progress=op.sailingElapsed/sailing.duration;
    const order=p.kind==='astern'?'DEAD SLOW ASTERN':p.kind==='swing'?'STOP':p.kind==='sea'?'HALF AHEAD':p.kind==='manoeuvring'?'SLOW AHEAD':'DEAD SLOW AHEAD';
    if(p.kind==='swing'&&!command(()=>startMachine('thruster')))return;
@@ -195,13 +207,15 @@ export function createFerryOperations({plant,sailings,getBerth,getMinutes=()=>0,
    if(atStation('deck'))op.gangway.out=op.destination==='town'?clamp(mechanicalElapsed/8):0;
    if(atStation('bosun'))getVehicles()?.advanceUnsecuring?.(dt,op.id);
    const released=getVehicles()?.readyToDisembark?.()??true;
-   if(mechanicalElapsed>=FERRY_MACHINERY.ramp.down&&allReady()&&released){stopMachine('rp1');op.ramp.down=1;enter('alongside');}
+   if(mechanicalElapsed>=FERRY_MACHINERY.ramp.down&&allReady()&&released){stopMachine('rp1');op.ramp.down=1;
+    if(Number.isFinite(op.scheduledDeparture)&&getMinutes()<op.scheduledDeparture+CROSSING_MINUTES){op.blocking='Arrival access opens at the published arrival time.';return;}
+    enter('alongside');}
   }
   if(!op.blocking&&!allReady()&&!['passage','arriving'].includes(op.stage))op.blocking=pending();
  }
- function request(destination,{automatic=false}={}){
+ function request(destination,{automatic=false,scheduledDeparture=null}={}){
   if(op&&op.stage!=='alongside'||!sailings[destination]||destination===getBerth())return false;
-  const origin=getBerth();op={id:++serial,stage:'preparing',origin,destination,automatic:!!automatic,startedMinute:getMinutes(),elapsed:0,stageElapsed:0,sailingElapsed:0,progress:0,
+  const origin=getBerth();op={id:++serial,stage:'preparing',origin,destination,automatic:!!automatic,scheduledDeparture,startedMinute:getMinutes(),elapsed:0,stageElapsed:0,sailingElapsed:0,progress:0,
    tasks:[],lines:getLines(origin).map(l=>({...l,status:'fast',progress:0})),ramp:{down:1,locked:false},gangway:{out:origin==='town'?1:0},blocking:null};
   for(const id of ['mainP','mainS'])plant.setTelegraph(id,'STOP');plant.setUnderway(false);preparePlant();preparationTasks();onStage(op.stage);
   note('master',`Prepare for departure from ${origin==='town'?'Minato':'Kitano-jima'}; report through your department.`, 'order');return true;

@@ -1,3 +1,4 @@
+import {migrateFerryJourney} from '../people/ferry-timetable.js';
 import {fileDocument,restoreArchive} from '../office/archive.js';
 export const FLIGHT_TIMES=[555,760,975,1140];
 export const DEVELOPMENT_PROJECTS=[
@@ -5,7 +6,7 @@ export const DEVELOPMENT_PROJECTS=[
  {id:'bus',title:'Coastal village bus service',budget:24000,requires:'flight',text:'The Harbour Line gains a local coastal service to Hoshizaki and West Cape.'},
  {id:'guesthouse',title:'Hoshizaki guesthouse and morning flight',budget:32000,requires:'visits',text:'A small family guesthouse opens; an additional 11:00 commuter flight serves the island.'},
 ];
-export function restoreIsland(saved){const s=saved||{};return {v:1,projects:DEVELOPMENT_PROJECTS.filter(p=>Array.isArray(s.projects)&&s.projects.includes(p.id)).map(p=>p.id),treasury:Number.isFinite(s.treasury)?Math.max(0,s.treasury):90000,repair:s.repair===true,flights:Number.isSafeInteger(s.flights)?Math.max(0,s.flights):0,visits:Number.isSafeInteger(s.visits)?Math.max(0,s.visits):0,journey:s.journey&&['town','airport','naha'].includes(s.journey.location)?{location:s.journey.location,roundTrip:s.journey.roundTrip===true,ticket:Number.isFinite(s.journey.ticket)?s.journey.ticket:null,checked:s.journey.checked===true}: {location:'town',roundTrip:false,ticket:null,checked:false}};}
+export function restoreIsland(saved){const s=saved||{};return {v:1,projects:DEVELOPMENT_PROJECTS.filter(p=>Array.isArray(s.projects)&&s.projects.includes(p.id)).map(p=>p.id),treasury:Number.isFinite(s.treasury)?Math.max(0,s.treasury):90000,repair:s.repair===true,flights:Number.isSafeInteger(s.flights)?Math.max(0,s.flights):0,visits:Number.isSafeInteger(s.visits)?Math.max(0,s.visits):0,journey:migrateFerryJourney(s.journey)};}
 export function islandState(state){return state.island??=restoreIsland();}
 export function flightTimes(state){return islandState(state).projects.includes('guesthouse')?[...FLIGHT_TIMES,660].sort((a,b)=>a-b):FLIGHT_TIMES;}
 export function nextFlight(now,state){const day=Math.floor(now/1440)*1440,times=flightTimes(state);return times.map(t=>day+t).find(t=>t>=now)??day+1440+times[0];}

@@ -1,3 +1,4 @@
+import {HARBOUR_LINE,BUS_DWELL,serviceTime,harbourTimetable} from '../../people/commuter-schedule.js';
 import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {createVendingMachine,VENDING_MACHINE} from '../vending.js';
@@ -134,10 +135,10 @@ export function buildPortHall({room,reg,collider=()=>{},action,naha=()=>{},upsta
  panel('Departures board',3.6,.62,[-.4,2.8,cz+.01],0,(x,cw,ch)=>{
   x.fillStyle='#26362f';x.fillRect(0,0,cw,ch);x.strokeStyle='#c6bca7';x.lineWidth=ch*.045;x.strokeRect(0,0,cw,ch);x.fillStyle='#f0e9d8';x.textBaseline='middle';
   x.font=`700 ${ch*.15}px ${GOTHIC}`;x.textAlign='left';x.fillText(japaneseSign('Departures'),cw*.04,ch*.15);x.font=`600 ${ch*.1}px system-ui`;x.fillText('DEPARTURES',cw*.26,ch*.15);
-  const rows=[['—','KITANO-JIMA','On request'],['—','CARS & FOOT','Shared ferry'],['17:00','NAHA (evening)','Outer pier']];
+  const rows=HARBOUR_LINE.map(t=>[serviceTime(t+BUS_DWELL),'KITANO-JIMA','Outer pier']);
   x.font=`600 ${ch*.1}px ui-monospace,monospace`;rows.forEach(([t,dest,where],i)=>{const y=ch*(.36+i*.13);x.fillText(t,cw*.04,y);x.fillText(dest,cw*.22,y);x.fillText(where,cw*.68,y);});
  },1024,true);
- spot([-.4,1.4,cz+.9],'Read the departures board',()=>action('read','Ferry departures','The shared car and passenger ferry crosses to Kitano-jima on request. Buy a return passenger ticket at the airport-ferry window (Ms Ganaha, noon to 22:15; in the morning from the oiler at the gangway) and board from the outer pier. The evening boat to Naha opens at 17:00. Post and parcels are handled at the same window.'));
+ spot([-.4,1.4,cz+.9],'Read the departures board',()=>action('read','Ferry departures',harbourTimetable(0)+'\nBuy a return passenger ticket at the airport-ferry window (Ms Ganaha, noon to 22:15; in the morning from the oiler at the gangway) and board from the outer pier. The evening boat to Naha opens at 17:00. Post and parcels are handled at the same window.'));
 
  // Benches: two rows of moulded seats facing the pier windows.
  const seatColours=[PORT_HALL_FINISH.orange,PORT_HALL_FINISH.olive];

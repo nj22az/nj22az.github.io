@@ -7,17 +7,14 @@ import {NEIGHBOURS} from '../src/people/neighbours.js';
 
 const source=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 
-test('every timetable in town tells the same service: on request, with the commuter boats at the Harbour Line’s times',()=>{
- const office=harbourTimetable(8*60);
- assert.match(office,/on request/i);assert.match(office,/Minato Maru/);
- for(const s of HARBOUR_LINE)assert.ok(office.includes(serviceTime(s)),'the harbour office reads '+serviceTime(s));
- assert.doesNotMatch(office,/Three sailings daily/,'no fixed three-sailing timetable the ferry does not keep');
- assert.ok(PORT_TIMETABLE_POSTER.some(l=>/on request/i.test(l)),'the poster under the canopy says on request');
- const times=PORT_TIMETABLE_POSTER.join(' ');for(const s of HARBOUR_LINE){const [h,m]=serviceTime(s).split(':');assert.ok(times.includes(Number(h)+':'+m),'the poster lists '+serviceTime(s));}
- // The board in the hall, the boarding menu and the ticket clerk on the telephone.
- assert.match(source('src/world/interiors/port-hall.js'),/'KITANO-JIMA','On request'/);
- const menu=source('src/island/play.js');assert.match(menu,/on request/);assert.match(menu,/Passengers ride the upper deck/);assert.doesNotMatch(menu,/share the open deck/);
- assert.match(source('src/people/izakaya-play.js'),/goes on request/);
+test('every timetable describes fixed Harbour Line departures with a separate quick crossing',()=>{
+ const office=harbourTimetable(480);assert.match(office,/Fixed Harbour Line/);assert.match(office,/Minato Maru/);
+ for(const t of HARBOUR_LINE)assert.ok(office.includes(serviceTime(t)));
+ assert.ok(PORT_TIMETABLE_POSTER.some(l=>/Fixed Harbour Line/.test(l)));
+ assert.doesNotMatch(PORT_TIMETABLE_POSTER.join(' '),/on request/i);
+ const menu=source('src/island/play.js');assert.match(menu,/Passengers ride the upper deck/);
+ assert.doesNotMatch(source('src/world/interiors/port-hall.js'),/'KITANO-JIMA','On request'/);
+ assert.doesNotMatch(source('src/people/izakaya-play.js'),/goes on request/);
 });
 
 test('Vy lives on Minato and school absence is scheduled without a fictitious ferry commute',()=>{

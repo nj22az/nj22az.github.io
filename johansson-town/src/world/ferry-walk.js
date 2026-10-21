@@ -137,7 +137,7 @@ export function createFerryWalk(run){
  /** Out, for walking: the ship visible and lying alongside; the gangway run out; the ramp down on its landing. */
  function partOpen(part){
   if(!ferry.visible)return false;
-  const accessOpen=run.phase==='waiting'||['preparing','securing','alongside'].includes(run.operation?.stage);
+  const accessOpen=run.accessOpen!==false&&(run.phase==='waiting'||['preparing','boarding','securing','alongside'].includes(run.operation?.stage));
   if(part==='gangway')return accessOpen&&(run.gangwayOut??(parts.gangway?.visible?1:0))>=1;
   // The walls that stand while a moving part is the other way (FERRY_SOLIDS).
   if(part==='bow')return !partOpen('ramp');

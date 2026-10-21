@@ -133,11 +133,11 @@ test('her lights, engines and whistle: lit under way after dark, quiet on shore 
  r.update(.1,21*60,0);r.parkAt('town');r.update(.1,21*60,.1);assert.equal(nav(r),false,'no navigation lights alongside');
  assert.equal(r.audio.engines,'idle','in service at nine in the evening: a generator running');
  r.update(.1,23*60,.2);assert.equal(r.audio.engines,'off','after the last boat she lies on shore power');
- const s=ferryServiceFixture({minute:21*60}),q=QUICK_CROSSING.town;s.player.position.set(q.stand[0],q.ground,q.stand[1]);s.run.beginCrossing('airport');
- assert.equal(nav(s.run),false,'a request does not put the vessel under way');s.until(()=>s.run.audio.whistle.log.length===3);
+ const s=ferryServiceFixture({minute:22*60}),q=QUICK_CROSSING.town;s.player.position.set(q.stand[0],q.ground,q.stand[1]);s.tick(.1);s.until(()=>s.run.operation?.stage==='boarding');s.setMinutes(22*60+15);s.tick(.1);
+ assert.equal(nav(s.run),false,'a request does not put the vessel under way');s.until(()=>s.run.audio.whistle.log.length===4);
  assert.equal(nav(s.run),true,'navigation lights on under way at night');assert.equal(s.run.ferry.getObjectByName('Port sidelight').material.color.getHex(),0xff3a2a,'red to port');
- const w=s.run.audio.whistle;assert.deepEqual(w.log.map(s=>s.kind),['prolonged','astern','prolonged'],'a prolonged blast and three short leaving the berth, a prolonged blast at the breakwater');
- assert.ok(Math.hypot(w.log[2].x-BREAKWATER.minX,w.log[2].z-BREAKWATER.z)<16,'the breakwater signal is sounded at its end');
+ const w=s.run.audio.whistle;assert.deepEqual(w.log.map(s=>s.kind),['prolonged','prolonged','astern','prolonged'],'the T−2 warning, a prolonged blast and three short leaving the berth, a prolonged blast at the breakwater');
+ assert.ok(Math.hypot(w.log[3].x-BREAKWATER.minX,w.log[3].z-BREAKWATER.z)<16,'the breakwater signal is sounded at its end');
  assert.ok(['manoeuvring','sea'].includes(s.run.audio.engines));
  s.until(()=>s.run.operation.sailingKind==='sea'&&s.run.audio.engines==='sea');s.run.update(.1,12*60);assert.equal(nav(s.run),false,'no navigation lights by day');assert.equal(s.run.audio.engines,'sea');
  // Her day: generators on before the first boat, shore power after the last.
