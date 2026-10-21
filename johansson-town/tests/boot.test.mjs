@@ -67,8 +67,9 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     const createElement=document.createElement.bind(document);
     document.createElement=tag=>{const element=createElement(tag);element.tagName=tag.toUpperCase();element.ownerDocument=document;
       element.prepend=(...items)=>element.children.unshift(...items);return element;};
-    // Native panels mount styles in the real document head.
+    // Native panels mount styles in the head and add their tile by element ID.
     document.head=document.createElement('head');
+    document.getElementById=id=>document.querySelector('#'+id);
     Object.assign(document.querySelector('#minimap'),{width:720,height:620});
     // The game starts at one of several openings (world/openings.js); this test walks from the Sakura bench.
     globalThis.location.search='?spawn=sakura-bench&cinematic=off';
