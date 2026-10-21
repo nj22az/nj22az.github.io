@@ -1,0 +1,48 @@
+✔ expression transitions settle and strength stays bounded (2.849129ms)
+✔ freezing holds the speaking phase; resuming advances it (0.315096ms)
+✔ scene round trip preserves independent recipes, poses, text and placement (2.086933ms)
+✔ untrusted projects are bounded and unknown locations never become image URLs (0.604222ms)
+✔ actor cap, frame boundaries and panel ordering (1.125873ms)
+✔ a removed character comes back with Undo, in its place, with everything it had (0.60878ms)
+✔ Undo puts a character back where they were, but never on a seat someone took meanwhile (0.798519ms)
+✔ run changes stride, rewinds deterministically and restores the held root height (227.083985ms)
+✔ scene snapshots keep the chosen motion time and lettering with bounded imports (1.297887ms)
+✔ school run plants one sole and holds the same frame without accumulating lean (153.034594ms)
+✔ comic face acting preserves the recipe and repaints when a take leaves the comic pose (93.744701ms)
+✔ a take leaving the slump restores ordinary head proportions (101.821663ms)
+✔ the comic exit is reused, hidden for ordinary shots and disposed with its scene (2.38317ms)
+✔ translated exit signs survive scene imports and remain bounded (0.450886ms)
+✔ a recipe is always complete and safe, and survives a share code (6.760286ms)
+✔ everyone in town has their own recipe, and strangers get a steady face from their name (2146.195902ms)
+✔ a body is one skinned mesh standing on the ground, with soft joints (503.698215ms)
+✔ sitting rests on the seat and standing counter poses keep shoes on the floor (246.275309ms)
+✔ people turn their heads to whoever they are looking at (90.979381ms)
+✔ the character system hands out Shimanchu, and they dress for the bath (502.221503ms)
+✔ the player body offers everything the game asks of Johansson, and takes a new recipe (70.403423ms)
+✔ the front waistband stays anchored to the hips when the chest leans for a pose (33.825854ms)
+✔ L hand has one connected surface, with only its wrist boundary (19.689834ms)
+✔ R hand has one connected surface, with only its wrist boundary (8.986645ms)
+✔ palm normal, thumb side and finger order define opposite anatomical handedness (0.725492ms)
+✔ optional bare hands append 28 joints; existing bones and indices stay unchanged (282.507592ms)
+✔ presets animate all five digits independently without moving the wrist or accumulating rotations (129.045434ms)
+✔ body and hand poses round trip together; old pose files still use the original rig (156.736808ms)
+✔ all existing preview outfits keep the articulated hand skinning (1299.495642ms)
+✔ wave is a finite portable take; player reaches and returns from the wave (20.505058ms)
+✔ reject malformed timings, excessive duration, zero quaternions and unsupported-only joints (1.847389ms)
+✔ native transfer uses the actual bind, preserves length, and includes the final sample (15.996263ms)
+✔ Mixamo rest transfers to Johansson T-pose and source scale is never copied (5.850191ms)
+✔ parent rotations are not applied twice to children (5.525722ms)
+✔ unsupported rigs and overlong clips fail without changing the target (3.541602ms)
+✔ GLB import rejects external resources, oversized scenes and missing animation (0.946317ms)
+✔ zero offsets preserve the sampled animation and repeated adjustments never drift (203.938612ms)
+✔ portable pose retains target proportions, bone names, appearance and root location (198.338302ms)
+✔ pose files reject invalid transforms and clamp offsets without changing input (51.725338ms)
+✔ undo groups a slider gesture, redo clears after a new edit, and scene files retain custom poses (56.817205ms)
+ℹ tests 40
+ℹ suites 0
+ℹ pass 40
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4290.889221

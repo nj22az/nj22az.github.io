@@ -1,0 +1,285 @@
+--- a/johansson-town/src/avatars/hands.js
++++ b/johansson-town/src/avatars/hands.js
+@@ -1,3 +1,4 @@
++import {handLandmarks,createHandSurface} from './hand-surface.js';
+ import * as THREE from '../../vendor/three.module.js';
+ 
+ export const DIGITS=Object.freeze(['index','middle','ring','pinky','thumb']);
+@@ -9,7 +10,8 @@
+  fist:{curl:[1,1,1,1,.9],spread:0},
+  point:{curl:[0,.95,.95,.95,.7],spread:.12},
+  peace:{curl:[0,0,1,1,.8],spread:.65},
+- thumbsUp:{curl:[1,1,1,1,0],spread:.1}
++ thumbsUp:{curl:[1,1,1,1,0],spread:.05},
++ thumbsDown:{curl:[1,1,1,1,0],spread:.05}
+ });
+ export function normalizeHands(raw){
+  const out={enabled:raw?.enabled===true};
+@@ -23,69 +25,14 @@
+  return out;
+ }
+ /** Model-space rest points; the first 28 legacy bone indices stay untouched. */
+-export function handRest(m){
+- const rest={};
+- for(const side of ['L','R']){
+-  const sx=side==='L'?1:-1,x=sx*(m.shoulderX+.015),y=m.shoulderY-m.upper-m.fore,h=m.hand;
+-  for(const [i,d] of DIGITS.entries()){
+-   if(d==='thumb'){
+-    rest[d+side+'1']=[x-sx*h*.49,y-h*.47,h*.10];rest[d+side+'2']=[x-sx*h*.80,y-h*.83,h*.16];
+-   }else{
+-    const length=[.96,1.07,.99,.76][i],baseX=x+sx*(i-1.5)*h*.32,baseY=y-h*[.98,1.04,1.01,.91][i];
+-    for(let j=0;j<3;j++)rest[d+side+(j+1)]=[baseX,baseY-h*length*[0,.43,.76][j],0];
+-   }
+-  }
+- }
+- return rest;
+-}
+-/** Rounded skin-coloured digits merged into the existing skinned body draw call. */
+-export function addBareHand(list,recipe,m,side,{part,ball}){
+- const sx=side==='L'?1:-1,x=sx*(m.shoulderX+.015),y=m.shoulderY-m.upper-m.fore,h=m.hand,rest=handRest(m),skin=recipe.body.skin;
+- // A tapered, flattened palm: a narrow wrist opens into the knuckles.
+- // The former spherical palm read as a circular pad with separate sticks attached.
+- const rings=[[-.08,.38,.27],[.10,.42,.26],[.32,.49,.24],[.57,.60,.25],[.81,.63,.24],[1.00,.59,.20],[1.10,.49,.11]],vertices=[],indices=[],radial=12;
+- for(const [v,w,depth] of rings)for(let k=0;k<=radial;k++){
+-  const angle=k/radial*Math.PI*2,c=Math.cos(angle),z=Math.sin(angle);
+-  // Rounded rectangular cross section keeps the back broad and the edge soft.
+-  vertices.push(x+sx*h*w*Math.sign(c)*Math.abs(c)**.65,y-v*h,h*depth*Math.sign(z)*Math.abs(z)**.8);
+- }
+- for(let j=0;j<rings.length-1;j++)for(let k=0;k<radial;k++){
+-  const a=j*(radial+1)+k,b=a+radial+1;
+-  indices.push(a,b,a+1,b,b+1,a+1);
+- }
+- for(const [j,reverse] of [[0,false],[rings.length-1,true]]){
+-  const centre=vertices.length/3;vertices.push(x,y-rings[j][0]*h,0);
+-  for(let k=0;k<radial;k++){const a=j*(radial+1)+k;indices.push(centre,a+(reverse?1:0),a+(reverse?0:1));}
+- }
+- // Both sides use the same outward winding, despite their mirrored coordinates.
+- if(sx>0)for(let i=0;i<indices.length;i+=3)[indices[i+1],indices[i+2]]=[indices[i+2],indices[i+1]];
+- const palm=new THREE.BufferGeometry();palm.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));palm.setIndex(indices);palm.computeVertexNormals();
+- part(list,palm,'hand'+side,skin).attributes.ink.array.fill(.12);
+- // Flesh at the thumb's base overlaps the palm, rather than an exposed ball joint.
+- ball(list,h,[x-sx*h*.42,y-h*.51,h*.04],'hand'+side,skin,[.28,.40,.23],12,8).attributes.ink.array.fill(0);
+- for(const [i,d] of DIGITS.entries()){
+-  const count=d==='thumb'?2:3,names=Array.from({length:count},(_,j)=>d+side+(j+1)),points=names.map(n=>new THREE.Vector3(...rest[n]));
+-  const last=points.at(-1).clone().add(new THREE.Vector3(d==='thumb'?-sx*h*.10:0,-h*(d==='thumb'?.36:[.96,1.07,.99,.76][i]*.24),0));points.push(last);
+-  const start=points[0],direction=last.clone().sub(start),lengthSq=direction.lengthSq(),radius=h*(d==='thumb'?.19:[.158,.165,.153,.135][i]);
+-  const stops=points.slice(0,-1).map(p=>p.clone().sub(start).dot(direction)/lengthSq);
+-  const share=p=>{const t=p.clone().sub(start).dot(direction)/lengthSq;
+-   // Blend into the palm at each knuckle, so opening the hand cannot detach it.
+-   if(t<.14){const u=THREE.MathUtils.smoothstep(t,-.08,.14);return [['hand'+side,1-u],[names[0],u]];}
+-   for(let j=1;j<count;j++)if(t<stops[j]){const u=THREE.MathUtils.smoothstep(t,stops[j-1],stops[j]);return [[names[j-1],1-u],[names[j],u]];}
+-   return [[names.at(-1),1]];
+-  };
+-  const curve=new THREE.CatmullRomCurve3(points,false,'centripetal');
+-  const geo=new THREE.TubeGeometry(curve,12,radius,10,false),P=geo.attributes.position;
+-  // Taper the shaft and close it with one continuous rounded fingertip.
+-  for(let j=0;j<=12;j++){
+-   const t=[0,.10,.20,.30,.40,.50,.60,.70,.80,.87,.94,.98,1][j],centre=curve.getPointAt(t),taper=1-.23*t,cap=t>.80?Math.sqrt(Math.max(0,1-((t-.80)/.20)**2)):1;
+-   for(let k=0;k<=10;k++){
+-    const at=j*11+k,p=new THREE.Vector3().fromBufferAttribute(P,at).sub(curve.getPointAt(j/12)).multiplyScalar(taper*cap).add(centre);P.setXYZ(at,p.x,p.y,p.z);
+-   }
+-  }
+-  geo.computeVertexNormals();part(list,geo,share,skin).attributes.ink.array.fill(.08);
+- }
+-
++export function handRest(m){return {...handLandmarks(m,'L').rest,...handLandmarks(m,'R').rest};}
++/** One connected hand surface, sharing the body's material and draw call. */
++export function addBareHand(list,recipe,m,side,{part}){
++ const {geometry,weights}=createHandSurface(m,side),positions=geometry.attributes.position,lookup=new Map();
++ const key=p=>p.map(n=>n.toFixed(7)).join(',');
++ for(let i=0;i<positions.count;i++)lookup.set(key([positions.getX(i),positions.getY(i),positions.getZ(i)]),weights[i]);
++ const piece=part(list,geometry,p=>lookup.get(key([p.x,p.y,p.z]))||[['hand'+side,1]],recipe.body.skin),P=piece.attributes.position,I=piece.attributes.ink,{y,h}=handLandmarks(m,side);
++ for(let i=0;i<P.count;i++)I.setX(i,.23+.77*(1-THREE.MathUtils.smoothstep((y-P.getY(i))/h,0,.55)));
+ }
+ /** Pose only finger bones. Wrists remain owned by the body pose / imported motion. */
+ export function applyHands(avatar,raw){
+@@ -96,8 +43,12 @@
+   for(let j=1;j<=count;j++){
+    const bone=avatar.bones[d+side+j];if(!bone)continue;
+    const curl=state.curl[i];
+-   bone.rotation.set(-curl*(d==='thumb'?(j===1?.40:.75):1.45*[1,1,.85][j-1]),0,
+-    j===1?(d==='thumb'?sx*(curl*1.8-(1-curl)*state.spread*.35):sx*(i-1.5)*state.spread*.32):0);
++   const thumb=d==='thumb',extended=thumb&&['thumbsUp','thumbsDown'].includes(state.preset);
++   let splay=0;
++   if(j===1)splay=thumb?-sx*(curl*2.1-(1-curl)*state.spread*.3):sx*(1.5-i)*state.spread*.30;
++   if(state.preset==='peace'&&i<2&&j===1)splay=sx*(i===0?1:-1)*state.spread*.38;
++   if(extended){bone.rotation.set(0,0,sx*(j===1?.58:.50));continue;}
++   bone.rotation.set(-curl*(thumb?(j===1?.22:.35):[1.22,1.40,1.03][j-1]),thumb&&j===1?sx*curl*.55:0,splay);
+   }
+  }
+ }
+--- a/johansson-town/src/avatars/build.js
++++ b/johansson-town/src/avatars/build.js
+@@ -181,20 +181,22 @@
+  * from one bone to the next over a soft band -- and `root` lends the top of the limb to
+  * the body, so a shoulder or hip rounds off instead of hinging on a seam.
+  */
+-function limb(list,a,b,r0,r1,hex,{bone,joints=[],root=null,soft=.13,segments=14,uvAt=null}={}){
++function limb(list,a,b,r0,r1,hex,{bone,joints=[],root=null,soft=.13,segments=14,uvAt=null,endOpen=false}={}){
+  const A=new THREE.Vector3(...a),B=new THREE.Vector3(...b),d=B.clone().sub(A),len=d.length(),dir=d.clone().normalize();
+  // A capsule with rings all along it (three's own has none between its caps), so the
+  // skin has somewhere to bend.
+  const prof=[],cap=5,rows=12;
+- for(let i=0;i<=cap;i++){const a=-Math.PI/2+i/cap*Math.PI/2;prof.push(new THREE.Vector2(Math.cos(a)*r0,-len/2+Math.sin(a)*r0));}
++ if(endOpen)prof.push(new THREE.Vector2(r0,-len/2));
++ else for(let i=0;i<=cap;i++){const a=-Math.PI/2+i/cap*Math.PI/2;prof.push(new THREE.Vector2(Math.cos(a)*r0,-len/2+Math.sin(a)*r0));}
+  for(let i=1;i<rows;i++)prof.push(new THREE.Vector2(r0,-len/2+i/rows*len));
+  for(let i=0;i<=cap;i++){const a=i/cap*Math.PI/2;prof.push(new THREE.Vector2(Math.cos(a)*r0,len/2+Math.sin(a)*r0));}
+- prof[0].x=prof.at(-1).x=0;
++ if(!endOpen)prof[0].x=0;prof.at(-1).x=0;
+  const g=new THREE.LatheGeometry(prof,segments),pos=g.attributes.position;
+  for(let i=0;i<pos.count;i++){
+   const y=pos.getY(i),t=THREE.MathUtils.clamp(.5-y/len,0,1),k=THREE.MathUtils.lerp(r0,r1,t)/r0;
+   pos.setXYZ(i,pos.getX(i)*k,y+(y>len/2?0:y<-len/2?(y+len/2)*(k-1):0),pos.getZ(i)*k);
+  }
++ if(endOpen)g.computeVertexNormals();
+  // The lathe's own normals are kept: recomputing them would crease its seam.
+  // Capsules run along +y; this one runs from a down to b.
+  const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,-1,0),dir);
+@@ -982,6 +984,7 @@
+  for(const s of ['L','R']){
+   const sx=s==='L'?1:-1,sh=[sx*m.shoulderX,m.shoulderY,0],hd=[sx*(m.shoulderX+.015),m.shoulderY-m.upper-m.fore,0];
+   const arm={bone:'shoulder'+s,joints:[[armT,'shoulder'+s,'elbow'+s]]};
++  const armSkin=articulatedHands?{...arm,joints:[...arm.joints,[.90,'elbow'+s,'hand'+s]],segments:20,endOpen:true,soft:.1}:arm;
+   // A long sleeve is the arm itself, in the shirt, with the print and the cuff painted on.
+   // The shirt lining covers the upper arm underneath the sleeve, so a
+   // raised arm cannot reveal a bare patch between the cap and sleeve shell.
+@@ -991,7 +994,7 @@
+   const sleeve=coveredSleeve&&(SHIRT_SLEEVES.includes(o.top)||ACCENT_SLEEVES.includes(o.top))?o.accent:top,below=coveredSleeve&&UNDERSHIRT_ARMS.includes(o.top)?o.accent:skin;
+   const ends=longSleeve&&SLEEVE_END[o.top]?sh[1]-(m.upper+m.fore)*SLEEVE_END[o.top]:null;
+   const armColour=coveredSleeve?(longSleeve?(ends===null?sleeve:p=>p.y>=ends?sleeve:skin):p=>p.y>=sh[1]-m.upper*.58?sleeve:below):skin;
+-  limb(list,sh,hd,m.armR*1.04,m.armR*(articulatedHands?.45:.86),armColour,longSleeve?{...arm,uvAt:p=>sleeveUV(p,sh,hd,sx)}:arm);
++  limb(list,sh,hd,m.armR*1.04,m.armR*(articulatedHands?.45:.86),armColour,longSleeve?{...armSkin,uvAt:p=>sleeveUV(p,sh,hd,sx)}:armSkin);
+   // The shoulder: a rounded cap over the joint, in the shirt, that joins the arm to the
+   // torso. Its inner side stays with the chest and its outer side goes with the arm, so
+   // it stretches over a raised arm rather than coming apart from the body.
+--- a/johansson-town/tests/hands.test.mjs
++++ b/johansson-town/tests/hands.test.mjs
+@@ -32,7 +32,7 @@
+    assert.ok(a.bones.indexR2.quaternion.angleTo(q)<1e-7);assert.ok(a.bones.handR.quaternion.angleTo(wrist)<1e-7);
+   }
+   applyHands(a,{enabled:true,R:{preset:'peace'}});assert.ok(Math.abs(a.bones.indexR2.rotation.x)<1e-7);assert.ok(Math.abs(a.bones.middleR2.rotation.x)<1e-7);assert.ok(a.bones.ringR2.rotation.x<-1);
+-  const state=normalizeHands({enabled:true});state.R.curl[2]=.8;applyHands(a,state);assert.ok(a.bones.ringR1.rotation.x<-1);assert.ok(Math.abs(a.bones.pinkyR1.rotation.x)<.6);
++  const state=normalizeHands({enabled:true});state.R.curl[2]=.8;applyHands(a,state);assert.ok(a.bones.ringR1.rotation.x<-.9);assert.ok(Math.abs(a.bones.pinkyR1.rotation.x)<.6);
+  }finally{dispose(a);}
+ });
+ test('body and hand poses round trip together; old pose files still use the original rig',()=>{
+--- /dev/null
++++ b/johansson-town/src/avatars/hand-surface.js
+@@ -0,0 +1,84 @@
++import * as THREE from '../../vendor/three.module.js';
++
++// Canonical hand: fingers down, palm +Z, thumb on +U. U is mirrored into
++// character space, not camera space: L +X, R -X. The right raised palm
++// therefore has its thumb towards +X after its fingers are turned upwards.
++export const FINGER_LENGTHS=[.82,.94,.86,.66];
++export const KNUCKLES=[1.04,1.10,1.06,.94];
++export function handLandmarks(m,side){
++ const sx=side==='L'?1:-1,h=m.hand,x=sx*(m.shoulderX+.015),y=m.shoulderY-m.upper-m.fore;
++ const at=(u,v,z=0)=>[x+sx*u*h,y-v*h,z*h],rest={};
++ for(const [i,d] of ['index','middle','ring','pinky'].entries())for(let j=0;j<3;j++)rest[d+side+(j+1)]=at((1.5-i)*.4,KNUCKLES[i]+FINGER_LENGTHS[i]*[0,.43,.76][j]);
++ rest['thumb'+side+'1']=at(.66,.53,.02);rest['thumb'+side+'2']=at(1.01,.76,.04);
++ return {sx,h,x,y,at,rest};
++}
++
++/** One connected indexed surface: palm, thumb web and all four fingers.
++ * The only boundary is its wrist ring; it meets the arm's uncapped end.
++ * Vertex weights are retained separately until the shared body builder binds it.
++ */
++export function createHandSurface(m,side){
++ const {sx,h,at,rest}=handLandmarks(m,side),P=[],weights=[],F=[],rings=[];
++ const vertex=(u,v,z,w=[['hand'+side,1]])=>{const n=P.length/3;P.push(...at(u,v,z));weights.push(w);return n;};
++ const face=(a,b,c)=>F.push(a,b,c),quad=(a,b,c,d)=>{face(a,b,c);face(a,c,d);};
++ const width=[m.armR*.45/h,.58,.74,.78,.80],depth=[m.armR*.45/h,.29,.30,.28,.22],ys=[0,.25,.48,.72,1.03];
++ // 20 vertices per ring: nine front, one side, nine back, one side.
++ // Intermediate front vertices become the four finger sockets at the end.
++ for(let j=0;j<5;j++){
++  const row=[];
++  for(let k=0;k<20;k++){
++   const theta=(162-k*18)*Math.PI/180;
++   let u,z,v=ys[j];
++   if(j===0){u=Math.cos(theta)*width[j];z=Math.sin(theta)*depth[j];}
++   else if(k<9){u=(-1+k/4)*width[j];z=depth[j]*(.78+.22*Math.sqrt(Math.max(0,1-(u/width[j])**2)));}
++   else if(k===9){u=width[j];z=0;}
++   else if(k<19){u=(1-(k-10)/4)*width[j];z=-depth[j]*(.78+.22*Math.sqrt(Math.max(0,1-(u/width[j])**2)));}
++   else{u=-width[j];z=0;}
++   if(j===4){const f=(u/.4+1.5),i=Math.max(0,Math.min(3,Math.round(3-f)));v=KNUCKLES[i]-(k%2===0?.06:0);}
++   row.push(vertex(u,v,z));
++  }
++  rings.push(row);
++ }
++ for(let j=0;j<4;j++)for(let k=0;k<20;k++){
++  // Omit a two-row, two-column patch on the thumb side. Its eight
++  // boundary vertices become the thumb socket, without a separate pad.
++  if((j===1||j===2)&&(k===8||k===9))continue;
++  quad(rings[j][k],rings[j+1][k],rings[j+1][(k+1)%20],rings[j][(k+1)%20]);
++ }
++ const base=rings[4],mid=[];
++ for(let k=0;k<5;k++)mid.push(k===0?base[19]:k===4?base[9]:vertex((k-2)*.4,Math.max(KNUCKLES[4-k]||0,KNUCKLES[3-k]||0)-.06,0));
++ const socketFor=i=>{const k=(3-i)*2;return [base[k],base[k+1],base[k+2],mid[4-i],base[18-k-2],base[18-k-1],base[18-k],mid[3-i]];};
++ // A tube is topologically part of its socket. Its final ring closes with
++ // a single tip vertex, rather than eight collapsed/degenerate triangles.
++ const branch=(socket,centres,radii,boneNames,angles,startAngle)=>{
++  let previous=socket;
++  for(let j=0;j<centres.length;j++){
++   const [u,v,z]=centres[j],r=radii[j],row=[],theta0=startAngle*Math.PI/180;
++   const boneT=j/(centres.length-1),boneN=Math.min(boneNames.length-1,Math.floor(boneT*(boneNames.length-.3))),next=Math.min(boneNames.length-1,boneN+1),mix=THREE.MathUtils.smoothstep(boneT*(boneNames.length-.3)-boneN,0,1);
++   const share=j===0?[['hand'+side,.35],[boneNames[0],.65]]:[[boneNames[boneN],1-mix],[boneNames[next],mix]];
++   const a=angles[j];
++   for(let k=0;k<8;k++){
++    const t=theta0-k*Math.PI/4,c=Math.cos(t)*r,s=Math.sin(t)*r;
++    row.push(vertex(u+c*Math.cos(a),v+c*Math.sin(a),z+s*.86,share));
++   }
++   for(let k=0;k<8;k++)quad(previous[k],row[k],row[(k+1)%8],previous[(k+1)%8]);
++   previous=row;
++  }
++  const last=centres.at(-1),prior=centres.at(-2),delta=new THREE.Vector3(last[0]-prior[0],last[1]-prior[1],last[2]-prior[2]).normalize().multiplyScalar(radii.at(-1)*.55),tip=vertex(last[0]+delta.x,last[1]+delta.y,last[2]+delta.z,[[boneNames.at(-1),1]]);
++  for(let k=0;k<8;k++)face(previous[k],tip,previous[(k+1)%8]);
++ };
++ for(const [i,d] of ['index','middle','ring','pinky'].entries()){
++  const length=FINGER_LENGTHS[i],u=(1.5-i)*.4,v=KNUCKLES[i],samples=[.09,.22,.40,.55,.72,.86,.95,1.015],r=[.195,.19,.18,.174,.165,.15,.115,.055].map(n=>n*(i===3?.90:1));
++  branch(socketFor(i),samples.map(t=>[u,v+length*t,0]),r,[1,2,3].map(n=>d+side+n),samples.map(()=>0),135);
++ }
++ const thumbSocket=[rings[1][8],rings[1][9],rings[1][10],rings[2][10],rings[3][10],rings[3][9],rings[3][8],rings[2][8]];
++ // The thumb's fleshy base grows from the palm side; it is not a sphere
++ // laid over a narrow digit. Its centre line has a distinct opposed plane.
++ branch(thumbSocket,[[.86,.56,.015],[1.00,.68,.03],[1.10,.81,.04],[1.16,.94,.04],[1.18,1.02,.04]],[.24,.225,.205,.155,.075],['thumb'+side+'1','thumb'+side+'2'],[-.9,-.8,-.65,-.45,-.3],45);
++ // Canonical winding above is outward for the +X hand; mirror winding
++ // along with positions for the right hand, leaving object scale positive.
++ if(sx<0)for(let i=0;i<F.length;i+=3)[F[i+1],F[i+2]]=[F[i+2],F[i+1]];
++ const used=[...new Set(F)].sort((a,b)=>a-b),remap=new Map(used.map((n,i)=>[n,i])),packed=used.flatMap(i=>P.slice(i*3,i*3+3)),bound=used.map(i=>weights[i]);
++ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(packed,3));g.setIndex(F.map(i=>remap.get(i)));g.computeVertexNormals();g.userData.handWeights=bound;g.userData.wristRing=rings[0].map(i=>remap.get(i));
++ return {geometry:g,weights:bound,rest};
++}
+--- /dev/null
++++ b/johansson-town/tests/hand-surface.test.mjs
+@@ -0,0 +1,29 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import * as THREE from '../vendor/three.module.js';
++import {createHandSurface,handLandmarks} from '../src/avatars/hand-surface.js';
++const m={shoulderX:.2,shoulderY:1.2,upper:.2,fore:.2,hand:.056,armR:.05};
++for(const side of ['L','R'])test(side+' hand has one connected surface, with only its wrist boundary',()=>{
++ const {geometry:g,weights}=createHandSurface(m,side),P=g.attributes.position,N=g.attributes.normal,I=g.index.array,edges=new Map(),adj=new Map(),V=i=>new THREE.Vector3().fromBufferAttribute(P,i);
++ assert.equal(weights.length,P.count);assert.ok(P.array.every(Number.isFinite));assert.ok(N.array.every(Number.isFinite));
++ for(let i=0;i<I.length;i+=3){const a=V(I[i]),b=V(I[i+1]),c=V(I[i+2]);assert.ok(b.sub(a).cross(c.sub(a)).length()>1e-10,'no degenerate triangles');
++  for(let k=0;k<3;k++){const x=I[i+k],y=I[i+(k+1)%3],key=[Math.min(x,y),Math.max(x,y)].join(':');edges.set(key,(edges.get(key)||0)+1);if(!adj.has(x))adj.set(x,[]);if(!adj.has(y))adj.set(y,[]);adj.get(x).push(y);adj.get(y).push(x);}}
++ const boundary=[...edges].filter(([,n])=>n===1).flatMap(([key])=>key.split(':').map(Number));assert.equal(boundary.length,40);assert.deepEqual(new Set(boundary),new Set(g.userData.wristRing));assert.ok([...edges.values()].every(n=>n<=2),'no non-manifold edges');
++ const seen=new Set(),q=[0];while(q.length){const i=q.pop();if(seen.has(i))continue;seen.add(i);q.push(...adj.get(i));}assert.equal(seen.size,P.count,'all digits and palm belong to the same surface');
++ // Every shared edge must have opposite directed uses, not just two uses.
++ const directions=new Map();for(let i=0;i<I.length;i+=3)for(let k=0;k<3;k++){const a=I[i+k],b=I[i+(k+1)%3],key=[Math.min(a,b),Math.max(a,b)].join(':');directions.set(key,(directions.get(key)||0)+(a<b?1:-1));}
++ for(const [key,n] of edges)if(n===2)assert.equal(directions.get(key),0,'consistent triangle winding at '+key);
++ for(const w of weights)assert.ok(Math.abs(w.reduce((n,[,v])=>n+v,0)-1)<1e-6);
++ g.dispose();
++});
++test('palm normal, thumb side and finger order define opposite anatomical handedness',()=>{
++ const normal=new THREE.Vector3(0,0,1);
++ for(const side of ['L','R']){
++  const {rest,x,y}=handLandmarks(m,side),wrist=new THREE.Vector3(x,y,0),thumb=new THREE.Vector3(...rest['thumb'+side+'1']).sub(wrist),finger=new THREE.Vector3(...rest['middle'+side+'1']).sub(wrist),expected=side==='R'?1:-1;
++  assert.equal(Math.sign(thumb.clone().cross(finger).dot(normal)),expected);
++  const index=rest['index'+side+'1'][0],pinky=rest['pinky'+side+'1'][0];assert.equal(Math.sign(index-pinky),side==='R'?-1:1);
++  for(const axis of [new THREE.Vector3(1,0,0),new THREE.Vector3(0,1,0),new THREE.Vector3(0,0,1)])for(const angle of [-Math.PI,-Math.PI/2,Math.PI/2,Math.PI]){
++   const Q=new THREE.Quaternion().setFromAxisAngle(axis,angle);assert.equal(Math.sign(thumb.clone().applyQuaternion(Q).cross(finger.clone().applyQuaternion(Q)).dot(normal.clone().applyQuaternion(Q))),expected);
++  }
++ }
++});
