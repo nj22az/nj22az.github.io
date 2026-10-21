@@ -120,7 +120,9 @@ float quantize(float v, float bands) {
 float shoreDistance(vec2 xz) {
   vec2 uv = (xz - uShoreRect.xy) / uShoreRect.zw;
   if (uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0) return uShoreRange;
-  return texture2D(uShore, uv).r * uShoreRange;
+  // Stored as the square root of the share of the range (shoreDistanceTexture): centimetres near the shore, metres out.
+  float v = texture2D(uShore, uv).r;
+  return v * v * uShoreRange;
 }
 float quayside(vec2 xz) {
   vec2 uv = (xz - uShoreRect.xy) / uShoreRect.zw;
@@ -192,9 +194,12 @@ void main() {
   float surge = 0.5 + 0.5 * sin(uTime * 0.9 + along);
   float lace = noise2(vWorldPos.xz * 1.6 + vec2(uTime * 0.25, 0.0)) * 0.6 + noise2(vWorldPos.xz * 4.0) * 0.4;
   float edge = 0.55 + surge * 0.6;
-  float foam = step(shore + (lace - 0.5) * 0.9, edge);
+  // Crisp toon edges, but drawn over a few centimetres (or a pixel, far off) rather than stepped: stepped, the baked
+  // field's texels showed as white blocks and stripes along the straight east shore (the owner's phone, 21 October 2026).
+  float aa = max(fwidth(shore) * 0.75, 0.06);
+  float foam = 1.0 - smoothstep(edge - aa, edge + aa, shore + (lace - 0.5) * 0.9);
   float lineAt = edge + 1.1 + surge * 0.6;
-  float line = step(abs(shore - lineAt), 0.18) * step(0.45, lace);
+  float line = (1.0 - smoothstep(0.18 - aa, 0.18 + aa, abs(shore - lineAt))) * smoothstep(0.38, 0.52, lace);
   foam = max(foam, line) * (1.0 - step(0.5, quayside(vWorldPos.xz)));
   // Whitecaps on the steepest crests, sparing, and only near enough to resolve.
   float cap = step(0.82, vCrest + lace * 0.25) * (1.0 - smoothstep(30.0, 70.0, dist));
@@ -234,7 +239,7 @@ void main() {
 /**
  * How far each patch of sea is from land, baked once into a small texture: the coast
  * of the island (island-coast.js) and the tropical airport island offshore. Zero on land, rising
- * to `range` metres out, which counts as open water.
+ * to `range` metres out, which counts as open water (stored as the square root of the share of the range).
  */
 export const SHORE_FIELD=Object.freeze({minX:-150,maxX:430,minZ:-460,maxZ:410,size:448,range:80});
 
@@ -268,7 +273,9 @@ export function shoreDistanceTexture(){
   const F=SHORE_FIELD,n=F.size,data=new Uint8Array(n*n*4);
   for(let j=0;j<n;j++)for(let i=0;i<n;i++){
     const x=F.minX+(i+.5)/n*(F.maxX-F.minX),z=F.minZ+(j+.5)/n*(F.maxZ-F.minZ);
-    const v=Math.round(shoreDistance(x,z)/F.range*255),k=(j*n+i)*4;
+    // The square root of the share of the range, so the metre at the shore where the foam is drawn has about 7 cm a step
+    // rather than 31 (the shader squares it back).
+    const v=Math.round(Math.sqrt(shoreDistance(x,z)/F.range)*255),k=(j*n+i)*4;
     // Green marks water against the port's quay wall (the coast's straight south edge): deep at the wall, no surf.
     data[k]=data[k+2]=v;data[k+1]=quaysideAt(x,z)?255:0;data[k+3]=255;
   }

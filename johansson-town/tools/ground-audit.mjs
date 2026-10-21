@@ -356,7 +356,7 @@ export function auditGround(root,{bounds=AUDIT_BOUNDS,step=STEP,routes=null,patc
   if(!c){add('colour',[d,'unknown',label].join('|'),area,at,{worst:k.dE,tone:hexOf(hex),detail:`${hexOf(hex)} is no colour of the rulebook (nearest ${k.nearest}, ΔE ${k.dE.toFixed(0)})`});return;}
   if(!c.where.includes(d)&&d!=='outside')add('place',[d,k.id,label].join('|'),area,at,{worst:0,detail:`${c.name} does not belong in ${d} (it belongs in ${c.where.join(', ')})`});
   if(pictured)add('colour',[d,k.id,label].join('|'),area,at,{worst:0,tone:'pictured',detail:'a picture the rulebook cannot read'});
-  else if(deltaE(hex,c.colour)>COLOUR_MATCH&&!(c.wet!==undefined&&base.y<=c.wetBelow+.06&&onLine(hex,c.colour,c.wet)<=COLOUR_MATCH))add('colour',[d,k.id,label].join('|'),area,at,{worst:deltaE(hex,c.colour),tone:hexOf(hex),detail:`${hexOf(hex)} drawn, ${hexOf(c.colour)} standard (ΔE ${deltaE(hex,c.colour).toFixed(0)})`});
+  else if(deltaE(hex,c.colour)>COLOUR_MATCH&&!(c.wet!==undefined&&base.y<=c.wetBelow+(c.wetBlend??.06)&&onLine(hex,c.colour,c.wet)<=COLOUR_MATCH))add('colour',[d,k.id,label].join('|'),area,at,{worst:deltaE(hex,c.colour),tone:hexOf(hex),detail:`${hexOf(hex)} drawn, ${hexOf(c.colour)} standard (ΔE ${deltaE(hex,c.colour).toFixed(0)})`});
   if(!heightOk(k.id,base.y,d,flat,cell.x,cell.z)){const off=c.graded?0:Math.abs(base.y-expectedTop(k.id,d));add('height',[d,k.id,label].join('|'),area,at,{worst:off,detail:`top ${base.y.toFixed(3)} m, ${c.graded?'range '+c.range.join('..'):'standard '+expectedTop(k.id,d).toFixed(3)} m`});}
  });
  // A deck on piles over the beach (the oil jetty's root) is no seam with the sand: the sand runs on under it.

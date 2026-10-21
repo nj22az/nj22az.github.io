@@ -137,8 +137,11 @@ export const GROUND_CLASSES=Object.freeze(Object.fromEntries([
   why:'Nishi-machi\'s yards between the coral walls are crushed coral, as old Okinawan house yards were, and so are Kitahama\'s unpaved lots (the parking, the hoop pad); at the level of a lawn, edged in coral stone.'},
  {id:'beach-sand',name:'Beach sand',finish:'coral-white beach sand',
   colour:0xeee3c6,legacy:[0xe3d2a4,0xcdb88c,0xe8dfc6],top:-.1,graded:true,range:[-1.3,.06],
-  /** The band the tide wets (step 4): below `wetBelow` the sand is wet and darker, blending into the dry above it. */
-  wet:0xc8b48e,wetBelow:-.32,
+  /**
+   * The band the tide wets (step 4): below `wetBelow` the sand is wet and darker, blending into the dry over `wetBlend`
+   * of height above it (6 cm, about two metres of beach: 2 cm drew a hard line, the owner's phone, 21 October 2026).
+   */
+  wet:0xc8b48e,wetBelow:-.32,wetBlend:.06,
   where:['beach','kitahama','nishi-machi','harbour-park','harbour'],
   why:'The coast (and, in the harbour district, the beach\'s south end beside the east quay north of the oil jetty): coral-white sand that slopes to the sea, a band of wet sand at the water, and is graded, never stepped, where anything firm meets it.'},
  {id:'gravel',name:'Gravel yard',finish:'grey crushed limestone',

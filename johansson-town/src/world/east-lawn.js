@@ -6,7 +6,7 @@ import {MAIN_ROAD} from './main-road.js';
 import {PARK,TURF_TINT,PARK_TERRAIN_SEGMENTS} from './park-layout.js';
 import {GROUND_LAYER} from './ground-layers.js';
 import {HARBOUR_PARK_EXTENSION,inHarbourPark} from './harbour-park-plan.js';
-import {BEACH,BEACH_EDGES,BEACH_GRADES,beachHeight,beachProfile,gradedHeight,onBeach} from './beach-layout.js';
+import {BEACH,BEACH_EDGES,BEACH_GRADES,BEACH_SHORE,BEACH_DRY_EDGE_X,beachHeight,beachProfile,gradedHeight,onBeach} from './beach-layout.js';
 import {GROUND_CLASSES} from './ground-standard.js';
 import {applyWorldUV} from '../render/world-uv.js';
 import {GATEBALL,GATEBALL_ACTIVE} from './okinawa/layout.js';
@@ -89,16 +89,19 @@ export function buildBeachSand({shadows=false}={}){
  const S=GROUND_CLASSES['beach-sand'],E=BEACH_EDGES,P=BEACH.profile;
  // The tide line: where the profile crosses the wet band's top, and a line just above it to blend over.
  const at=y=>{for(let i=1;i<P.length;i++){const [ax,ay]=P[i-1],[bx,by]=P[i];if(by<=y&&ay>y)return ax+(y-ay)*(bx-ax)/(by-ay);}return null;};
- const lines=(from,to,keep,step=.5,fine=[])=>{const set=new Set(keep.filter(v=>v>=from-1e-9&&v<=to+1e-9).map(v=>+v.toFixed(4)));for(let v=from;v<to;v+=step)set.add(+v.toFixed(4));for(const [a,b] of fine)for(let v=Math.max(from,a);v<=Math.min(to,b);v+=.5)set.add(+v.toFixed(4));set.add(to);return [...set].sort((a,b)=>a-b);};
- const xs=lines(P[0][0],P.at(-1)[0],[...P.map(p=>p[0]),E.quayEdge,E.quayEnd,E.court.maxX,E.school.maxX,E.walk.minX-.1,E.walk.maxX+.1,at(S.wetBelow),at(S.wetBelow+.02)].filter(v=>v!==null));
+ const lines=(from,to,keep,step=.5,fine=[])=>{const set=new Set(keep.filter(v=>v>=from-1e-9&&v<=to+1e-9).map(v=>+v.toFixed(4)));for(let v=from;v<to;v+=step)set.add(+v.toFixed(4));for(const [a,b,f=.5] of fine)for(let v=Math.max(from,a);v<=Math.min(to,b);v+=f)set.add(+v.toFixed(4));set.add(to);return [...set].sort((a,b)=>a-b);};
+ const xs=lines(P[0][0],P.at(-1)[0],[...P.map(p=>p[0]),E.quayEdge,E.quayEnd,E.court.maxX,E.school.maxX,E.walk.minX-.1,E.walk.maxX+.1,at(S.wetBelow),at(S.wetBelow+S.wetBlend/2),at(S.wetBelow+S.wetBlend)].filter(v=>v!==null),.5,
+  // Every 10 cm across the short bank where the lane's corner meets the water (beach-layout.js BEACH_SHORE): drawn coarse,
+  // its facets showed as ink scratches.
+  [[BEACH_SHORE.coastX-.2,BEACH_DRY_EDGE_X+.4,.1]]);
  // Along the beach a row every metre; every half metre where the sand is graded along z (BEACH_GRADES' cores across it).
  const zs=lines(BEACH.minZ,BEACH.maxZ,[E.jettyNorth,E.quayNorth,E.court.maxZ,E.school.minZ,...BEACH.accesses.flatMap(a=>[a.z-a.half,a.z+a.half])],1,
-  BEACH_GRADES.filter(g=>g.core.minZ===g.core.maxZ).map(g=>[g.core.minZ-3,g.core.maxZ+3]));
+  [...BEACH_GRADES.filter(g=>g.core.minZ===g.core.maxZ).map(g=>[g.core.minZ-3,g.core.maxZ+3]),[BEACH.maxZ-3.2,BEACH.maxZ,.1]]);
  const dry=new THREE.Color(S.colour),wet=new THREE.Color(S.wet),c=new THREE.Color();
  const positions=[],colours=[],index=[];
  for(const z of zs)for(const x of xs){
   const y=sandHeight(x,z);positions.push(x,y,z);
-  const t=Math.max(0,Math.min(1,(S.wetBelow+.02-y)/.02));c.copy(dry).lerp(wet,t*t*(3-2*t));colours.push(c.r,c.g,c.b);
+  const t=Math.max(0,Math.min(1,(S.wetBelow+S.wetBlend-y)/S.wetBlend));c.copy(dry).lerp(wet,t*t*(3-2*t));colours.push(c.r,c.g,c.b);
  }
  const n=xs.length;
  for(let j=0;j<zs.length-1;j++)for(let i=0;i<n-1;i++){
