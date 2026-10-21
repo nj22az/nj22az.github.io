@@ -6,6 +6,7 @@ import {lanePatches} from '../lane-surfaces.js?snappy=1';
 import {TOWN_WALK_PLOTS} from '../architecture-plan.js';
 import {NEIGHBOURHOOD,neighbourhoodHeight} from '../neighbourhood-ground.js';
 import {SCHOOL} from '../school-layout.js';
+import {MAIN_STREET_GROUND as MS} from '../ground-plan.js';
 
 /**
  * The edge of every lane in Kitahama, one way everywhere (the owner, 19 October 2026: "we need a coherent look for
@@ -74,7 +75,9 @@ export function gutterRings(lots=[]){
 export function openEdgeRuns(rings=gutterRings()){
  const G=GUTTER,depth=G.width+G.soil,step=.1,patches=lanePatches().map(p=>{const xs=p.polygon.map(v=>v[0]),zs=p.polygon.map(v=>v[1]);return {poly:p.polygon,minX:Math.min(...xs),maxX:Math.max(...xs),minZ:Math.min(...zs),maxZ:Math.max(...zs)};});
  const inPoly=(poly,x,z)=>{let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const [xi,zi]=poly[i],[xj,zj]=poly[j];if((zi>z)!==(zj>z)&&x<(xj-xi)*(z-zi)/(zj-zi)+xi)inside=!inside;}return inside;};
- const paved=(x,z)=>patches.some(p=>x>=p.minX-1e-6&&x<=p.maxX+1e-6&&z>=p.minZ-1e-6&&z<=p.maxZ+1e-6&&inPoly(p.poly,x,z));
+ // Main Street and the bus plaza are paved by the ground generator (ground-plan.js), not by the lane patches.
+ const street=(x,z)=>x>=MS.pavementWest-1e-6&&x<=MS.pavementEast+1e-6&&z>=MS.minZ-1e-6&&z<=MS.maxZ+1e-6;
+ const paved=(x,z)=>street(x,z)||patches.some(p=>x>=p.minX-1e-6&&x<=p.maxX+1e-6&&z>=p.minZ-1e-6&&z<=p.maxZ+1e-6&&inPoly(p.poly,x,z));
  const N=NEIGHBOURHOOD,taken=[],inside=(r,x,z,pad=0)=>x>=r.minX-pad&&x<=r.maxX+pad&&z>=r.minZ-pad&&z<=r.maxZ+pad;
  // A ring's own ground: from its plot's edge out to the paving. The plots themselves are solid, except the Heights'
  // garden, which runs right up to the lanes on its north and south and takes the open gutter there.

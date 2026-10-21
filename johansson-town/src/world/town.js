@@ -15,6 +15,7 @@ import {createTownTraffic} from './town-traffic.js';
 import {buildKitanoLink} from './kitano-link.js';
 import {buildOilJetty} from './oil-jetty.js';
 import {GROUND} from '../render/ground-palette.js';
+import {GROUND_CLASSES} from './ground-standard.js';
 import {registerDetail} from './detail-stream.js';
 import {buildPark,parkFoliage,preloadPark} from './park.js?snappy=1';
 import {buildIzakaya} from './izakaya.js?snappy=1';
@@ -92,7 +93,8 @@ function addWithCollider(group,colliders,entry){
 }
 
 function addWalkablePier(world,options,factory){
-  const group=world.group,colliders=world.colliders,dark=0x354144,steel=0x4a595c,concrete=0x8c918b,warning=0xb79a55;
+  // The pier's mass is the quay's concrete (ground-standard.js), where it shows beside the deck.
+  const group=world.group,colliders=world.colliders,dark=0x354144,steel=0x4a595c,concrete=GROUND_CLASSES.quay.colour,warning=0xb79a55;
   // The block is the pier's mass; the detailed deck is a separate plane laid on top,
   // and the two used to be three millimetres apart. Sink the block far enough that the
   // deck plainly wins, and let the deck and the two rails cover its top between them,

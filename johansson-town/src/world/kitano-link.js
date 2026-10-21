@@ -6,6 +6,8 @@ import {KITANO_ROAD,KITANO_ROAD_LENGTH,KITANO_SURFACE_LIFT,roadPoint,roadHeight,
 
 import {paintPatch,roadSign,stopMarking,roadPaintMaterial,ROAD_STANDARD} from './road-standards.js';
 import {KITANO_STOP_S} from './town-traffic.js';
+import {MAIN_STREET_GROUND} from './ground-plan.js';
+import {GROUND_EDGE} from './ground-standard.js';
 
 /** Mainland lane and footway. The former airport bridge and all its supports are removed. */
 const STEP=.5;
@@ -31,10 +33,14 @@ export function buildKitanoLink({parent,colliders=null,shadows=false}){
    list.push(...A,...D,...Cc,...A,...Cc,...B);
   }
  }
- const footFrom=5.7;// the footway starts at the dining lane's edge; across it the pavement is dropped flush
- ribbon(S.north,-S.carriageway,0,end,LIFT,C.kerb);
- ribbon(-S.carriageway,S.carriageway,0,end,LIFT,C.asphalt);
- ribbon(S.carriageway,S.footway,footFrom,end,LIFT+S.kerb,C.footway);
+ // West of Main Street's district line the road's mouth is Main Street's ground (ground-plan.js): a raised table the
+ // footway crosses on the level. From the line east the lane lays its own.
+ const footFrom=MAIN_STREET_GROUND.pavementEast-KITANO_ROAD.corners[0][0],roadFrom=MAIN_STREET_GROUND.backEast-KITANO_ROAD.corners[0][0];
+ ribbon(S.north,-S.carriageway,roadFrom,end,LIFT,C.kerb);
+ ribbon(-S.carriageway,S.carriageway,roadFrom,end,LIFT,C.asphalt);
+ // Across Main Street's back strip the mouth's kerb is Main Street's (ground-plan.js); the footway starts behind it.
+ ribbon(S.carriageway+GROUND_EDGE.kerb.width,S.footway,footFrom,roadFrom,LIFT+S.kerb,C.footway);
+ ribbon(S.carriageway,S.footway,roadFrom,end,LIFT+S.kerb,C.footway);
  for(const [colour,list] of ribbons){
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(list,3));g.computeVertexNormals();
   const finish=material(colour,{side:THREE.DoubleSide}).clone();
@@ -52,7 +58,7 @@ export function buildKitanoLink({parent,colliders=null,shadows=false}){
   (boxes.get(colour)??boxes.set(colour,[]).get(colour)).push({x:mid.x+mid.lx*o,z:mid.z+mid.lz*o,y:(y0+y1)/2,len:l*1.03,t,h:y1-y0,yaw:Math.atan2(dx,dz),pitch:Math.atan2(b.y-a.y,l)});
  }
  // Kerb face along the footway.
- for(let s=footFrom;s<end;s+=STEP){const f=frameAt(s+STEP/2);seg(C.kerb,s,STEP,S.carriageway+.06,.12,f.y,f.y+LIFT+S.kerb+.01);}
+ for(let s=roadFrom;s<end;s+=STEP){const f=frameAt(s+STEP/2);seg(C.kerb,s,STEP,S.carriageway+.06,.12,f.y,f.y+LIFT+S.kerb+.01);}
  const d=new THREE.Object3D();
  for(const [colour,list] of boxes){
   const mesh=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),material(colour),list.length);

@@ -2,15 +2,16 @@ import {buildCargoShipping} from './cargo-shipping.js';
 import {addDocklandsDetail} from './docklands-detail.js';
 import * as THREE from '../../vendor/three.module.js';
 import {DOCKLANDS as D,cargoShift} from './docklands-layout.js';
+import {APRON_TOP} from './ground-plan-harbour.js';
 /** A compact working port, built in local geometry, with pedestrian access to every door. */
 export function buildDocklandsLife(world,{register,onAction}={}){
  const group=new THREE.Group();group.name='Working western docklands';world.group.add(group);
  const mats=new Map(),mat=c=>{if(!mats.has(c))mats.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.88}));return mats.get(c);};
  const box=(name,size,pos,c,parent=group,solid=false)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.name=name;m.position.set(...pos);parent.add(m);if(solid)world.colliders.push({id:name,x:pos[0],z:pos[2],w:size[0],d:size[2],height:pos[1]+size[1]/2});return m;};
- box('Western cargo quay paving',[D.maxX-D.minX,.16,D.maxZ-D.minZ],[(D.minX+D.maxX)/2,-.08,(D.minZ+D.maxZ)/2],0x909386);
+ // The yard's ground is the Nishi quay's apron (ground-plan-harbour.js); it laid a slab of its own under it before.
  // Freight containers and loose pallets are stored aboard; the shore circuits remain clear.
  // Kept in its own fenced test bay: forks cycle during the electrical inspection.
- const forklift=new THREE.Group();forklift.name='Workshop forklift test bay';forklift.position.set(40.5,0,-40.0);forklift.userData.dynamicProp=true;group.add(forklift);
+ const forklift=new THREE.Group();forklift.name='Workshop forklift test bay';forklift.position.set(40.5,APRON_TOP-.03,-40.0);forklift.userData.dynamicProp=true;group.add(forklift);
  box('Forklift counterweight',[1.2,.55,1.6],[0,.62,0],0xc58b35,forklift);box('Forklift seat',[.5,.16,.5],[0,1.0,.1],0x3c4545,forklift);
  for(const x of [-.6,.6])for(const z of [-.48,.48]){const w=new THREE.Mesh(new THREE.CylinderGeometry(.25,.25,.16,12),mat(0x303c3c));w.rotation.z=Math.PI/2;w.position.set(x,.28,z);forklift.add(w);}
  for(const x of [-.42,.42])box('Forklift mast',[.08,2,.12],[x,1.12,-.81],0x4b5857,forklift);

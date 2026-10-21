@@ -4,7 +4,9 @@ import {MAIN_ROAD} from './main-road.js';
 import {buildShopDoor} from './shop-door.js';
 import {BOOKSHOP_WORKSHOP_PLOT} from './bookshop-workshop-layout.js';
 import {businessId} from './businesses.js';
+
 import {GROUND_LAYER} from './ground-layers.js';
+import {MAIN_STREET_GROUND} from './ground-plan.js';
 import {wallAd,WALL_ADS} from './okinawa/signs.js';
 import {rng} from './okinawa/kit.js';
 
@@ -55,7 +57,10 @@ export function buildWestShop({parent,site,register,enter,label,colliders,shadow
  const wall=0xe6dcc4,plinth=0xb3ad9f,trim=0x3f7f86,alu=0xb8bec0,frame=0x8e9699,slab=0xc8c2b5,tank=0x2b2d2f,steel=0x8e979a;
  group.userData.buildingStyle='okinawa-shop-house';
  const kit=createKit({shadows});
- const passage=solid([depth+2,.06,2.4],[(WEST_FRONT+back)/2,GROUND_LAYER.apron-.03,-4.6],0x8e8a7c);
+ // The passage between the bookshop and Minato, over the two buildings' aprons (step 3 of the ground plan relays them
+ // together). It stops at Main Street's back strip (ground-plan.js), which runs on across its mouth.
+ const passageTo=MAIN_STREET_GROUND.backWest,passageFrom=back-1;
+ const passage=solid([passageTo-passageFrom,.06,2.4],[(passageFrom+passageTo)/2,GROUND_LAYER.apron-.03,-4.6],0x8e8a7c);
  passage.name='Bookshop–Minato passage';
  kit.block(back-.24,WEST_FRONT+.02,0,.3,z-half-.24,z+half+.24,plinth);
  kit.block(back-.22,back,0,H,z-half-.22,z+half+.22,wall);

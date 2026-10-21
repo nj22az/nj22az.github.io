@@ -29,7 +29,17 @@
  */
 
 /** The town datum: layout.js planHeight is 0 on the town's finished plan. */
+/** The kerb's height, which is also how far Main Street's carriageway lies under the town's datum. */
+const GROUND_EDGE_KERB_HEIGHT=.15;
 export const DATUM=0;
+/**
+ * Main Street's datum lies one kerb under the town's (step 2, 21 October 2026). The rulebook puts the footways a kerb
+ * above the carriageway; the street was brought to it by lowering the carriageway and its bays, not by raising the
+ * footways, so every shop door, step, drinks machine, bench and lamp on the footway stands where it always stood, and the
+ * footways stay flush with the yard, the park and the lawns behind them. The carriageway is graded back up to the town's
+ * datum where it leaves the street (ground-plan.js).
+ */
+export const MAIN_STREET_DATUM=DATUM-GROUND_EDGE_KERB_HEIGHT;
 /** The open island ground outside the town lies 40 cm under the datum (layout.js planHeight, "island-ground"). */
 export const ISLAND_DATUM=-.42;
 /** Two surfaces that overlap in plan keep at least this much between them (tests/ground-clearance.test.mjs). */
@@ -38,7 +48,7 @@ export const GROUND_CLEARANCE=.015;
 /** The edge elements: what is built where two classes meet. Sizes in metres. */
 export const GROUND_EDGE=Object.freeze({
  /** Precast concrete kerb (歩車道境界ブロック) between a carriageway and a raised footway, dropped flush at crossings. */
- kerb:Object.freeze({id:'kerb',name:'Concrete kerb',height:.15,width:.18,colour:0xcac6bb,legacy:Object.freeze([0xd9d6cc,0xd3cec2,0xcdc7ba,0xc9c3b4]),
+ kerb:Object.freeze({id:'kerb',name:'Concrete kerb',height:GROUND_EDGE_KERB_HEIGHT,width:.18,colour:0xcac6bb,legacy:Object.freeze([0xd9d6cc,0xd3cec2,0xcdc7ba,0xc9c3b4]),
   why:'The road structure ordinance divides footway from carriageway with a 15 cm kerb; it is the step a pram is lifted over.'}),
  /** A back lane has no footway: a white edge line (外側線) 30 cm in, then a U-gutter along the plot boundary. */
  line:Object.freeze({id:'line',name:'White edge line',width:.15,inset:.3,colour:0xf2efe6,
@@ -73,7 +83,7 @@ export const GROUND_EDGE=Object.freeze({
  */
 export const DISTRICTS=Object.freeze([
  {id:'harbour',name:'The harbour: quays, piers, docklands and the east quay',minX:-45,maxX:55,minZ:-110,maxZ:-38,datum:DATUM},
- {id:'main-street',name:'Main Street and the bus plaza',minX:-7.55,maxX:5.2,minZ:-38,maxZ:29.3,datum:DATUM},
+ {id:'main-street',name:'Main Street and the bus plaza',minX:-7.55,maxX:5.2,minZ:-38,maxZ:29.3,datum:MAIN_STREET_DATUM},
  {id:'harbour-park',name:'Harbour Park',minX:5.2,maxX:32.5,minZ:-36.2,maxZ:-3.6,datum:DATUM},
  {id:'school',name:'Minato school',minX:12.4,maxX:40.6,minZ:24.6,maxZ:45.1,datum:DATUM},
  {id:'east-lawn',name:'The east lawn and the East Row',minX:5.2,maxX:33.2,minZ:-38,maxZ:29.3,datum:DATUM},

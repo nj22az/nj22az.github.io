@@ -113,7 +113,9 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
  const xs=lines(EAST_LAWN.minX,EAST_LAWN.maxX,...boundary('x'),HARBOUR_PARK_EXTENSION.minX,HARBOUR_PARK_EXTENSION.maxX,GATEBALL.minX,GATEBALL.maxX);
  const zs=lines(EAST_LAWN.minZ,EAST_LAWN.maxZ,...boundary('z'),HARBOUR_PARK_EXTENSION.minZ,HARBOUR_PARK_EXTENSION.maxZ,GATEBALL.minZ,GATEBALL.maxZ);
  const onCourt=(x,z)=>GATEBALL_ACTIVE&&x>GATEBALL.minX&&x<GATEBALL.maxX&&z>GATEBALL.minZ&&z<GATEBALL.maxZ;
- const height=(x,z)=>heightAt?heightAt(x,z):0;
+ // The lawn's own ground: at its west edge the shading is not bent towards Main Street's footway and road, laid on
+ // their own plan beside it (ground-plan.js).
+ const height=(x,z)=>heightAt?heightAt(Math.max(x,EAST_LAWN.minX),z):0;
  const onPark=(x,z)=>inHarbourPark(x,z);
  const vertices=[],turfUV=[],faces=[];
  // Under a path the turf is tucked a few centimetres down. Its 1.2m grid runs straight

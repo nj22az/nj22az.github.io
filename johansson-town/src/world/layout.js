@@ -26,6 +26,7 @@ import {SCHOOL,schoolAt} from './school-layout.js';
 import {NISHI,nishiAt,EAST_QUAY,eastQuayAt} from './okinawa/layout.js';
 import {KITAHAMA,kitahamaLaneAt} from './kitahama-layout.js';
 import {GROUND_LAYER} from './ground-layers.js';
+import {mainStreetTop} from './ground-plan.js';
 const KITAHAMA_ROUTE=Object.freeze({id:'kitahama-lane',surface:'stone'});
 // Rendering, grounding and navigation use the same compact street network.
 export const BOARDWALK=Object.freeze({x:MAIN_ROAD.x,minZ:-38,maxZ:8,width:MAIN_ROAD.width});
@@ -169,7 +170,10 @@ export function planHeight(x,z){
   // pavement; the drawn-surface sampler cannot lift a person through so large a step.
   const street=x>=MAIN_ROAD.pavementWest&&x<=MAIN_ROAD.pavementEast&&z>=MAIN_ROAD.minZ&&z<=MAIN_ROAD.maxZ;
   const station=x>=BUS_STATION.minX&&x<=BUS_STATION.maxX&&z>=BUS_STATION.minZ&&z<=BUS_STATION.maxZ;
-  if(street||station||eastLawnAt(x,z)||westYardAt(x,z)||nishiAt(x,z)||schoolAt(x,z))return 0;
+  // Main Street's ground is laid from its plan (ground-plan.js), the carriageway and its bays a kerb under the
+  // footways: feet go down onto the road, up the kerb, along the ramp, at the heights they are drawn at.
+  if(street||station)return mainStreetTop(x,z)??0;
+  if(eastLawnAt(x,z)||westYardAt(x,z)||nishiAt(x,z)||schoolAt(x,z))return 0;
   if(kitahamaLaneAt(x,z))return KITAHAMA.y+GROUND_LAYER.lane;
   const garden=coastalSurface(x,z);if(garden?.id==='harbour-park')return garden.y;
   const airport=airportSurface(x,z);if(airport)return airport.y;
