@@ -137,7 +137,7 @@ export function laundryInterior(kit){
  // The manga bookcase, its spines, and the change machine over it.
  {const x0=.75,x1=1.4,z0=back+.06,z1=back+.36;
   kit.block(x0,x1,0,.95,z0,z0+.03,0x8a6641,'glow');for(const x of [x0+.015,x1-.015])kit.box(.03,.95,.3,x,.475,(z0+z1)/2,0x8a6641,{finish:'glow'});
-  for(const y of [.02,.47,.93])kit.block(x0,x1,y,y+.025,z0,z1,0x8a6641);
+  for(const y of [.02,.47,.93])kit.block(x0+.006,x1-.006,y,y+.025,z0,z1,0x8a6641);
   const spines=[0xd34a3a,0x3b6fb0,0xf2c14a,0x5a9a52,0xe8e2d0,0x8a4aa0,0xe07a2a];
   for(const [y,n] of [[.045,10],[.495,9]])for(let i=0;i<n;i++)kit.box(.05,.19+(i%3)*.01,.18,x0+.07+i*.058,y+.1,z0+.13,spines[(i*3+n)%spines.length]);
   for(let i=0;i<4;i++)kit.box(.19,.025,.13,1.07+(i%2)*.01,.97+i*.026,z0+.14,spines[i+2],{ry:(i%2?.12:-.08)});
@@ -145,7 +145,7 @@ export function laundryInterior(kit){
   kit.box(.34,.5,.2,1.07,1.5,back+.16,0xd8dcdc);kit.box(.24,.1,.01,1.07,1.69,back+.265,0x2f6f9f);kit.box(.08,.02,.02,1.07,1.42,back+.27,0x2b2b2b);kit.box(.16,.1,.02,1.07,1.3,back+.27,0x9aa0a4);}
  // The powder box by the door, on its stand.
  {const x=-2.11,z=2.52;kit.box(.32,.5,.44,x,1.0,z,0xf0e6d0);kit.box(.01,.09,.26,x+.165,1.0,z,0xd8822f);kit.box(.01,.05,.1,x+.165,.85,z,0x2b2b2b);
-  for(const dz of [-.16,.16])kit.box(.04,.75,.04,x,.375,z+dz,0x8e979a,{finish:'metal'});kit.box(.2,.12,.2,x+.06,.82,z,0xf4f0e6);
+  for(const dz of [-.16,.16])kit.box(.04,.75,.04,x,.375,z+dz,0x8e979a,{finish:'metal'});kit.box(.21,.12,.2,x+.065,.82,z,0xf4f0e6);
   solids.push(kit.rect(-open,x+.17,z-.24,z+.24,1.3,'laundry-powder'));}
  // The folding counter along the window.
  {const x0=.75,x1=open-.05,z0=2.55,z1=3.05;

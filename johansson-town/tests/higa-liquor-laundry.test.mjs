@@ -6,7 +6,7 @@ import {townCalendarAt} from '../src/town-clock.js';
 import {rotaWeek} from '../src/people/ferry-crew.js';
 import {ACCOUNTS} from '../src/commerce/merchandising.js';
 import {higaLiquorState,higaLiquorKeeper,higaShutterDown,higaDoorsShut,higaRusuCard,higaRoundAt,higaRoundToday,higaDropsOn,
- higaDeliveryBook,HIGA_ROUND,HIGA_KUSU,YUNTAKU,yuntakuSeatAt,kojiAshore} from '../src/commerce/higa-liquor.js';
+ higaDeliveryBook,HIGA_ROUND,HIGA_FRONT,HIGA_KUSU,YUNTAKU,yuntakuSeatAt,kojiAshore} from '../src/commerce/higa-liquor.js';
 import {LAUNDRY_KEEPER,LAUNDRY_VISITS,LAUNDRY_MACHINES,LAUNDRY_NOTICES,laundryVisitsOn,laundryMachinesAt,visitTimeline,
  playerWashStage,freeMachine,laundryNotices} from '../src/commerce/coin-laundry.js';
 import {canonicalDay} from '../src/people/canonical-day.js';
@@ -39,7 +39,7 @@ test('the hours: open 9–12 and 17–20, the 留守 card between, the shutter a
  assert.equal(higaRusuCard(at(tue,14)),true,'the card hangs on the door at two');
  for(const h of [10,18,22])assert.equal(higaRusuCard(at(tue,h)),false,'and only then ('+h+')');
  // The doors shut a little after noon, once she has walked out through them, and the shutter rolls in a few seconds.
- assert.equal(higaDoorsShut(at(tue,12,0)),0,'still open as she steps out');assert.ok(higaShutterDown(at(tue,20,0)+.5)>0&&higaShutterDown(at(tue,20,0)+.5)<1,'the shutter is rolling, not popping');
+ assert.equal(higaDoorsShut(at(tue,12,0)),0,'still open as she steps out');const rolling=at(tue,20,0)+HIGA_FRONT.after+HIGA_FRONT.roll/2;assert.ok(higaShutterDown(rolling)>0&&higaShutterDown(rolling)<1,'the shutter is rolling, not popping');
 });
 
 test('Grandmother Higa keeps the counter, Yui on Saturdays; the canonical day puts them behind it',()=>{

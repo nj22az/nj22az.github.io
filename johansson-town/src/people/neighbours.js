@@ -237,7 +237,9 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
      if(spec.stair){stairDay(p,phase,key,dt);continue;}
      if(!p.initialised){
       const saved=getState().residentLocations?.[spec.name],at=saved?.position;
-      const valid=Array.isArray(at)&&at.length===2&&at.every(Number.isFinite)&&Math.abs(at[0])<300&&Math.abs(at[1])<300;
+      // A remembered spot nobody can walk out of (the first save can hold a neighbour's old verandah point, inside the
+      // house's solid: Grandmother Higa stood there all day, 21 October 2026) is not a start: the day's own target is.
+      const valid=Array.isArray(at)&&at.length===2&&at.every(Number.isFinite)&&Math.abs(at[0])<300&&Math.abs(at[1])<300&&!blocked(at[0],at[1],.3);
       const start=valid?at:phase.target;g.position.set(start[0],groundAt(...start),start[1]);p.initialised=true;
      }
      if(p.phaseKey!==key){
