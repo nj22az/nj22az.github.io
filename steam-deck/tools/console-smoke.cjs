@@ -179,6 +179,10 @@ const {rectanglesSeparated}=require('./layout-acceptance.cjs');
  assert.equal(await page.evaluate(()=>window.johanssonLinuxWorld.inBed),false,'Night patrol does not spawn asleep');
  await tap(9);await page.locator('#desktopTabs [data-tab=people]').click();await page.locator('[data-person="Mai"]').click();await page.waitForFunction(()=>window.johanssonLinuxWorld?.inBed&&!window.johanssonLinuxWorld.busy);await page.screenshot({path:path.join(out,'10-mai-own-bed.png')});
  await axes([0,-1,0,0]);await axes([0,0,0,0]);assert.equal(await page.evaluate(()=>window.johanssonLinuxWorld.inBed),false,'Left stick gets up safely beside the bed');
+ // Recipe-only selection does not spawn each resident. Start it outdoors so
+ // checkpoint() cannot assign Mai's bedroom to the identities being sampled.
+ await page.evaluate(()=>window.__JOHANSSON_AUDIT__.leave());await sampled();
+ assert.equal(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room),null,'Recipe sampling starts outdoors');
  const selectable=await page.evaluate(async()=>{const api=window.johanssonLinuxWorld,result=[];for(const person of api.roster){await api.select(person.name,{started:false});result.push({name:api.active,model:window.__JOHANSSON_MODEL__.avatar.recipe.name});}return result;});
  console.log('Selected roster',JSON.stringify(selectable));
  assert.deepEqual(selectable.map(person=>person.name).sort(),expectedNames,'Every living resident is selectable, with no retired extras');for(const person of selectable)assert.equal(person.model,identityOf(person.name)?.avatar||person.name,person.name+' uses its canonical authored recipe');
