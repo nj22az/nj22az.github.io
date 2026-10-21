@@ -124,6 +124,25 @@ less, by the named budgets there. Nothing else asks which edition it is. Later r
 - Outside a page (node's suites) the edition is Linux unless `JOHANSSON_EDITION=web`; `tests/edition.test.mjs` holds
   the web budgets and the Linux path.
 
+## Owner's decision — 21 October 2026: no way in without a working interior
+
+The owner, on his iPhone outside Nakamura Zenzai: "There is a bug when I go outside the ice cream shop it says enter their
+home and then I get stuck in the staircase, any place without a fully functional interior shouldn't have a button to
+enter"; and the same day: "Also the railing by the ships at the dock you can get stuck when spawning there".
+
+- An enter, visit or go-in prompt (and the Enter button at a door) exists only where it leads to a fully functional
+  interior: the room builds; he arrives on walkable floor clear of solids (in first person, and after the step inside
+  the third-person camera takes, `src/world/room-arrival.js`); he can move, over every storey of a room of more than one;
+  and the Exit button puts him on walkable street ground with room to move. A place without one gets no enter prompt;
+  its look and read prompts stay.
+- The same holds for every place the game starts him or puts him outdoors: the openings (`world/openings.js`), the ferry
+  landings (`world/airport-ferry.js`), the quick crossing and Kitano-jima's arrivals stand him on level, walkable ground,
+  clear of solids, the ferry's gangway and rails and her hull while she is alongside, with room to move a metre two ways
+  and a way on foot to the street.
+- `tests/enterable-sites.test.mjs` walks every prompt that enters somewhere, every door of the Enter button and every
+  room entered only from inside, and every arrival point, and lists each failure with its way in and its reason. A new
+  door or spawn must pass it.
+
 ## Owner's decision — 21 October 2026: one ground system
 
 The owner, on his phone: "the roads seems to have reversed to chaos again… Can you make a plan to finally fix the roads

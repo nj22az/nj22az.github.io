@@ -75,7 +75,7 @@ function homeGeometry(h){
  if(id==='market')return {x:-5.5,y:0,z:-28.5,entryFacing:Math.PI/2};
  // The published island's established Minato entrance, used only before runtime site registration.
  if(id==='izakaya')return {x:-17.65,y:.04,z:-9,entryFacing:-Math.PI/2};
- if(id==='nakamura')return {...point(NAKAMURA_HOME_DOOR),entryFacing:Math.PI/2};
+ if(id==='nakamura')return {...point(NAKAMURA_HOME_DOOR),entryFacing:-Math.PI/2};
  for(const row of [EAST_ROW,YARD_ROW]){
   const p=row.plots.find(p=>p.id===id);if(p)return {x:row===EAST_ROW?row.minX-.9:row.maxX+.9,y:.02,z:(p.minZ+p.maxZ)/2,entryFacing:row===EAST_ROW?-Math.PI/2:Math.PI/2};
  }
