@@ -46,7 +46,7 @@ test('Harbour Park walks, footbath, benches and outer-island trails connect on r
   for(const route of HARBOUR_PARK_PATHS)walk(route.points,route.id);
   const loop=HARBOUR_PARK_PATHS.find(r=>r.id==='garden-pond-loop');walk([...loop.points].reverse(),'pond circuit reverse');
   walk([[22,-34.2],HARBOUR_PARK_SEATS[1].stand],'pond circuit to bench stand');
-  walk([[6,-20.8],[8.9,-24.8],[9,-29.8],HARBOUR_PARK_SEATS[0].stand],'crossing to cherry bench stand');
+  walk([[6,-20.8],[9.6,-21.8],[9.4,-24.8],[9,-29.8],HARBOUR_PARK_SEATS[0].stand],'crossing to cherry bench stand');
   walk([[12,-22.4],ONSEN_APPROACH],'park to bathhouse porch');
   walk([[12,-22.4],[13.4,-22.4],[13.4,-18.7],onsenPoint(1.9,8.5)],'park to footbath seat approach');
   walk([[23.5,90],...MOUNTAIN_TRAIL.slice(0,5)],'Fukugi Lane to Aoba Radio');

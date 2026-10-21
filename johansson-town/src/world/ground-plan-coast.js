@@ -6,6 +6,8 @@
  *  - Harbour Park's walks are the rulebook's park path (rolled crushed stone, 4 cm, flush with the turf at 2 cm), the
  *    stone walks and the pond's circuit alike, in their round joins as the park has always drawn them, and held by a row
  *    of setts wherever they meet the turf (harbour-park-plan.js HARBOUR_PARK_PATHS).
+ *  - Its flower beds are garden earth, 25 mm proud of the turf, each in the lawn clear of the walks (harbour-park-garden.js
+ *    HARBOUR_PARK_BEDS says what grows in them, who keeps them and why).
  *  - Umi-no-yu stands on the lawn: no ring of paving round it. A forecourt in front of the bathhouse, from the walks to
  *    its porch, with the footbath on it, is the park's rolled crushed stone, the bathhouse's stepping stones set in it;
  *    the bath behind its fence is the bathhouse's own.
@@ -17,6 +19,7 @@
  * A building's walking circuit is no ring of paving: the walls stand in the lawn, or the sand.
  */
 import {HARBOUR_PARK_PATHS,harbourPondAt} from './harbour-park-plan.js';
+import {HARBOUR_PARK_BEDS} from './harbour-park-garden.js';
 import {laidWalkPieces,clipToRect} from './ground-walks.js';
 import {walkPieces,edgingPieces,band,disc,onPieces} from './ground-paths.js';
 import {GROUND_CLASSES,districtAt} from './ground-standard.js';
@@ -70,6 +73,8 @@ function build(){
  const walks=[
   ...park,
   {id:'onsen-forecourt',cls:'park-path',polygons:[poly(ONSEN_GROUND.forecourt)]},
+  // The park's flower beds (harbour-park-garden.js): garden earth in the lawn, clear of the walks' setts.
+  ...HARBOUR_PARK_BEDS.map(b=>({id:'park-bed-'+b.id,cls:'earth',polygons:[poly(b.bounds)]})),
   {id:'drinks-corner',cls:'concrete',polygons:[poly(DRINKS_PAD)]},
   {id:'kitano-footway',cls:'concrete',polygons:KITANO_FOOTWAY.map(poly)},
   ...laidWalkPieces().map((p,i)=>({id:p.route+'#'+i,cls:p.cls,polygons:[p.polygon]})),

@@ -1051,13 +1051,13 @@ export function createActivities({say,onKaraoke=null,getResidentLocations=()=>nu
     };
     input.click();
   }
-  // Umi-no-yu. The bath keeps municipal hours; the footbath outside never closes.
+  // Umi-no-yu. The bath keeps municipal hours, and the footbath outside keeps the bath's.
   // Inside Umi-no-yu (src/world/interiors/onsen.js): pay at the bandai, change, bathe.
   const townDay=()=>Math.floor(getMinutes()/1440);
   const onsenPaid=()=>state.onsenPaidDay===townDay();
   function onsenPay(){
     const m=((getMinutes()%1440)+1440)%1440;
-    if(m<600||m>=1320){show("Sea Bath · Umi-no-yu",'Higa-san is counting the day’s coins. "The bath is closed -- ten o’clock tomorrow. The footbath outside never closes."',[['Back',close]]);return;}
+    if(m<600||m>=1320){show("Sea Bath · Umi-no-yu",'Higa-san is counting the day’s coins. "The bath is closed -- ten o’clock tomorrow. The footbath opens with it."',[['Back',close]]);return;}
     if(onsenPaid()){receipt("Sea Bath · Umi-no-yu",'You have paid for today. Higa-san waves you through without looking up.');return;}
     show("Sea Bath · Umi-no-yu",'Higa-san looks up from her account book. Adults ¥300. Gentlemen through the indigo noren, ladies the crimson; past the bath doors it is swimwear -- the washing room and the rock bath are for everybody.',[
       ['Pay ¥300',()=>{if(!spend(300))return;state.onsenPaidDay=townDay();save();note('Bathed at Umi-no-yu.');receipt("Sea Bath · Umi-no-yu",'Three coins in the tray. "The men’s baskets are through the indigo curtain. Wash before you get in."');}],

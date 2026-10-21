@@ -27,6 +27,8 @@ const OWNER={
  'Sakura Shōten, its office storey and side walls':{minX:-22,maxX:-4.5,minZ:-37,maxZ:-17},
  'the Minato izakaya and Sato Ramen':{minX:-17,maxX:-5.5,minZ:-17,maxZ:-4},
  'Nakamura Zenzai':{minX:2,maxX:15,minZ:-16,maxZ:-3},
+ // The park rework (21 October 2026): its beds, pond, footbath, guide board and the gajumaru's bench.
+ 'Harbour Park and Umi-no-yu\'s forecourt':{minX:5.2,maxX:33.2,minZ:-37,maxZ:-3.6},
 };
 /** All of Minato: Main Street, Kitahama, the police station, the docks and the port building, and everything between. */
 const MINATO={minX:-45,maxX:45,minZ:-52,maxZ:66};

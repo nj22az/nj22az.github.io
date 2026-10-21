@@ -351,6 +351,11 @@ on any finding at all.
     raised 8 cm porch apron that hid the stones is gone. The bath behind its fence is the bathhouse's own. The fallback
     shell's floor there is an enclosure's floor, and the audit leaves it out as it does a plinth.
   - The pond's edge stones and reeds are a kit of their own (`Harbour Park pond edge`): the pond's, not ground.
+  - The park rework (21 October 2026): the flower beds are the rulebook's garden earth (`harbour-park` added to its
+    districts), laid by the same generator from `harbour-park-garden.js HARBOUR_PARK_BEDS` with their sides down into the
+    turf, each clear of the walks' setts by a strip of lawn; what grows in them, who keeps them and why is that file's data.
+    The cherry walk leaves the approach a few metres in and the walk north starts on the bathhouse walk beside the
+    forecourt, so the lawns are whole beds rather than a triangle at the gate and a sliver by the forecourt.
   - The south shop crossing ended in the park's lawn past the footway. It now ends on the east footway, where the
     park's approach begins (`layout.js`).
 - **The east lawn.**

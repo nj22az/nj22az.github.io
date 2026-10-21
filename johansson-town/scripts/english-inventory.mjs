@@ -18,7 +18,9 @@ const scenery=new Set(['src/world/interiors/sakura-office-room.js','src/world/in
  // Sakura's small office: each thing's `jp` beside its English name, and the calendar, rota, plate and TV's printed headings.
  'src/world/interiors/sakura-small-office.js','src/world/interiors/sakura-small-office-build.js',
  // Nakamura Zenzai's menu tags (prices in kanji numerals, 二五〇円), its hours tag and the noren, each item's English beside it.
- 'src/world/okinawa/nakamura-dressing.js']);
+ 'src/world/okinawa/nakamura-dressing.js',
+ // Harbour Park's guide board (港公園, its map labels and notices) and the plants' Japanese names, each beside its English.
+ 'src/world/harbour-park-garden.js']);
 const values=[];for(const path of files){if(path==='src/people/voice-lines.js'||scenery.has(path))continue;const src=await readFile(new URL(path,root),'utf8');const ast=parseAst(src);function walk(n){if(!n||typeof n!=='object')return;if(n.type==='CallExpression'&&(n.callee?.name==='plate'||n.callee?.name==='plateTexture'))return;if(n.type==='CallExpression'&&n.callee?.property?.name==='fillText')return;if(n.type==='Literal'&&typeof n.value==='string'&&/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/u.test(n.value))values.push({path,start:n.start,end:n.end,value:n.value});if(n.type==='TemplateElement'&&/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/u.test(n.value.raw))values.push({path,start:n.start,end:n.end,value:n.value.raw,template:true});for(const [k,v] of Object.entries(n)){if(k==='raw')continue;if(Array.isArray(v))v.forEach(walk);else if(v&&typeof v==='object')walk(v);}}walk(ast);}
 if(process.argv.includes('--json'))await writeFile('/tmp/town-english-inventory.json',JSON.stringify(values,null,2));console.log(values.length,'strings');
 const parts=[...new Set(values.flatMap(x=>x.value.match(/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}][\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}、。・〜ー！？]*[！？]?/gu)||[]))];console.log(parts.length,'phrases');console.log(parts.join('\n'));
