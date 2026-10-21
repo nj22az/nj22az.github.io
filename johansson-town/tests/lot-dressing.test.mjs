@@ -118,3 +118,31 @@ test('the retained plots keep their gates, nameplates and gutters; their plantin
  }
  for(const p of KITAHAMA.plots){const [x,z]=plotGate(p,.7).door;assert.equal(blockedByDressing(x,z,.32),undefined,p.id+' gate approach is clear');assert.equal(playerBlocked(x,z,.32),false,p.id+' gate approach');}
 });
+
+test('the parked cars are the traffic’s family, on the ground, inside their painted bays and clear of every other solid',async()=>{
+ const {PARKED_CARS,PARKING,parkedCarPlace,parkedCar}=await import('../src/world/okinawa/lot-dressing.js');
+ const {buildVehicle,parkedVehicleFit,VEHICLE_SIZE}=await import('../src/world/road-vehicles.js');
+ const {createKit}=await import('../src/world/okinawa/kit.js');
+ const north=clearedLot('kitahama-north-block').dressing;
+ assert.deepEqual(PARKED_CARS.map(c=>c.owner),['Kōji','Dr Ken','Mac']);
+ for(const car of PARKED_CARS){
+  const p=north.props.find(q=>q.id===car.prop),fit=parkedVehicleFit(car.kind,{bonnet:car.bonnet}),at=parkedCarPlace(car,fit);
+  assert.equal(p.owner,car.owner,car.prop+' is its owner’s');assert.ok(VEHICLE_SIZE[car.kind],car.kind+' is a kind the traffic has');
+  // One family: the parked body is the traffic's, to the centimetre.
+  const traffic=new THREE.Box3().setFromObject(buildVehicle(car.kind,0xffffff,{bonnet:car.bonnet}));
+  assert.ok(Math.abs(traffic.min.z-fit.tail)<.01&&Math.abs(traffic.max.z-fit.nose)<.01,car.prop+' is as long as the traffic’s '+car.kind);
+  // Built alone into a kit at its bay: the tyres stand on the gravel, the whole car is inside its collider and its bay.
+  const kit=createKit(),g=new THREE.Group();parkedCar(kit,car,fit);kit.finish(g);const b=new THREE.Box3().setFromObject(g);
+  assert.ok(Math.abs(b.min.y-PARKING.pad)<.002,car.prop+' stands on the gravel ('+b.min.y.toFixed(4)+')');
+  assert.ok(b.max.y<=p.height+1e-6,car.prop+' is no taller than its collider');
+  assert.ok(b.min.x>=p.rect.minX&&b.max.x<=p.rect.maxX&&b.min.z>=p.rect.minZ&&b.max.z<=p.rect.maxZ,car.prop+' is inside its collider: '+[b.min.x,b.max.x,b.min.z,b.max.z].map(v=>v.toFixed(3)));
+  const left=PARKING.lines[car.bay-1]+.05,right=PARKING.lines[car.bay]-.05;
+  assert.ok(b.min.x>left&&b.max.x<right&&b.min.z>PARKING.lineZ[0]&&b.max.z<PARKING.lineZ[1],car.prop+' is inside its painted bay');
+  // Rear tyres short of the wheel stops; the body passes over them.
+  assert.ok(at.z+fit.wheel+fit.r<=PARKING.stopZ-.07,car.prop+' rear tyres stop before the wheel stops');
+  // No other solid in the town meets the car's collider.
+  const c=world.colliders.find(c=>c.id==='lot-'+car.prop),R=r=>({minX:r.x-r.w/2,maxX:r.x+r.w/2,minZ:r.z-r.d/2,maxZ:r.z+r.d/2});
+  const hits=world.colliders.filter(o=>o!==c&&(o.minY??0)<2&&(o.yaw?Math.hypot(o.x-c.x,o.z-c.z)<Math.hypot(o.w,o.d)/2+Math.hypot(c.w,c.d)/2&&overlap(R({...o,w:Math.hypot(o.w,o.d),d:Math.hypot(o.w,o.d)}),R(c)):overlap(R(o),R(c))));
+  assert.deepEqual(hits.map(o=>o.id),[],car.prop+' meets no other solid');
+ }
+});
