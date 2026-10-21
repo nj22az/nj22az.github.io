@@ -40,7 +40,7 @@ export const HARBOUR_PARK_BEDS=Object.freeze([
   why:'The bed between the gate and Nakamura’s bench: it is what her customers look at with their zenzai, so Mrs Nakamura waters it before she opens, with the shop’s hose.',
   plants:Object.freeze([['ixora',9.1,-19.05],['lily',9.9,-19.05],['ixora',10.7,-19.05],['lily',11.4,-19.05]].map(Object.freeze))}),
  Object.freeze({id:'main-street-border',title:'Main Street border',bounds:rect(6.15,7.45,-33,-27.3),
-  keeper:'thuan',tends:'15:03, on her afternoon break, on the days she is not playing jan-ken-pon with Nhung',visit:Object.freeze({at:'15:03',walk:'THUAN_BORDER'}),
+  keeper:'thuan',tends:'15:04, on her afternoon break, on the days she is not playing jan-ken-pon with Nhung',visit:Object.freeze({at:'15:04',walk:'THUAN_BORDER'}),
   why:'The border along Main Street, opposite Sakura’s door: Sakura supplies the town’s flowers since Mrs Kinjō retired, and the border is where Thuan plants out what she sells in pots; it screens the cherry bench from the street.',
   plants:Object.freeze([['bougainvillea',6.8,-27.9],['hibiscus',6.8,-29.3],['bougainvillea',6.8,-30.7],['hibiscus',6.8,-32.2]].map(Object.freeze))}),
  Object.freeze({id:'bath-screen',title:'Gettō screen',bounds:rect(20.6,29.6,-25.7,-25),

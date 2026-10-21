@@ -95,11 +95,11 @@ const THUAN_WALK=Object.freeze([
  // nap had finished. She dawdles once she is somewhere, not on the way to it.
  {until:866,place:'nap',target:BENCH_STAND,activity:'going round the back for her break'},
  {until:896,place:'nap',target:BENCH_STAND,activity:'asleep on the bench behind the shop'},
- {until:903,place:'park',target:THUAN_BORDER.at,activity:'walking up to the park',pace:STROLLING},
+ {until:904,place:'park',target:THUAN_BORDER.at,activity:'walking up to the park',pace:STROLLING},
  {until:909,place:'park',target:THUAN_BORDER.at,activity:'dead-heading the hibiscus on the Main Street border',pace:STROLLING,
   stand:Object.freeze({yaw:THUAN_BORDER.yaw,pose:THUAN_BORDER.pose,why:THUAN_BORDER.why})},
- {until:912,place:'stroll',target:PARK_STAND,activity:'sitting in the park',pace:STROLLING},
- {until:916,place:'stroll',target:[31.5,-10],activity:'walking the Harbour Park shore',pace:STROLLING},
+ {until:914,place:'stroll',target:PARK_STAND,activity:'sitting in the park',pace:STROLLING},
+ {until:918,place:'stroll',target:[31.5,-10],activity:'walking the Harbour Park shore',pace:STROLLING},
  // Start home while the break is still active. Waiting until the schedule flipped
  // back to "work" left only ten seconds to cross the town, which encouraged route
  // shortcuts and made the old loose facing gate look acceptable.
