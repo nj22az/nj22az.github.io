@@ -8,7 +8,6 @@ installDOM();globalThis.self=globalThis;
 const {KITAHAMA,KITAHAMA_LANES}=await import('../src/world/kitahama-layout.js');
 const {NEIGHBOURHOOD,neighbourhoodHeight}=await import('../src/world/neighbourhood-ground.js');
 const {GUTTER,gutterRings,openEdgeRuns,LANE_WEAR}=await import('../src/world/okinawa/lane-edges.js');
-const {lanePatches}=await import('../src/world/lane-surfaces.js?snappy=1');
 const {createTown}=await import('../src/world/town.js');
 const {createBusinesses}=await import('../src/world/businesses.js');
 const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),townMode:'peninsula',kitano:'distant',mobile:false,shadows:false,
@@ -39,13 +38,11 @@ test('no Kitahama lane edge is bare neighbourhood lawn: the paving meets a gutte
 
 test('the cross lane and the spine have their gutter or a walled ring along both edges, and the wear of what uses them',()=>{
  const runs=[...gutterRings(),...openEdgeRuns()],has=(x,z)=>runs.some(r=>[r.band,r.soil].filter(Boolean).some(b=>x>=b.minX-.02&&x<=b.maxX+.02&&z>=b.minZ-.02&&z<=b.maxZ+.02));
- const patches=lanePatches();
  const pavedOrBuilt=(x,z)=>cover(x,z)&&cover(x,z).name!==BARE;
  for(const L of [KITAHAMA.lane,KITAHAMA.spine])for(const z of [L.minZ-.2,L.maxZ+.2])for(let x=L.minX+.5;x<L.maxX-.5;x+=.5){
   if(!level(x,z))continue;
   assert.ok(has(x,z)||pavedOrBuilt(x,z),`edge at ${x},${z} has a gutter, paving or a building`);
  }
- assert.ok(patches.length>0);
  assert.deepEqual(LANE_WEAR.map(w=>w.lane),['cross lane','spine']);
 });
 
@@ -54,7 +51,9 @@ test('the gutter is one family: every ring and open run is 0.3 m of lids on a ch
  // gutter's ground: no lane, pad or path of a plan lies under a gutter, and no route of the lane builder either.
  const {quarterGutterRuns,quarterPlans}=await import('../src/world/ground-plan-quarters.js');
  const {laidAt}=await import('../src/world/ground-plan.js');
- const runs=quarterGutterRuns(),patches=lanePatches(),plans=quarterPlans();
+ // The walks laid across the plans (ground-walks.js): the lane builder lays nothing since step 4.
+ const {laidWalkPieces}=await import('../src/world/ground-walks.js');
+ const runs=quarterGutterRuns(),patches=laidWalkPieces(),plans=quarterPlans();
  const inPoly=(poly,x,z)=>{let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const [xi,zi]=poly[i],[xj,zj]=poly[j];if((zi>z)!==(zj>z)&&x<(xj-xi)*(z-zi)/(zj-zi)+xi)inside=!inside;}return inside;};
  assert.ok(runs.length>40,'rings and open edges are laid');
  for(const r of runs){

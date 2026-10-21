@@ -1,17 +1,15 @@
-import {MAIN_STREET_GROUND} from './ground-plan.js';
 import * as THREE from '../../vendor/three.module.js';
-import {PARK,PARK_BENCH,parkBenchGeometry,TURF_TINT,PARK_PATH_TINT} from './park-layout.js';
-import {HARBOUR_PARK_MAIN,HARBOUR_PARK_EXTENSION,HARBOUR_PARK_ENTRY,HARBOUR_POND,HARBOUR_CHERRY,HARBOUR_SHRINE,HARBOUR_PARK_SEATS,HARBOUR_PARK_PATHS} from './harbour-park-plan.js';
+import {PARK,PARK_BENCH,parkBenchGeometry,TURF_TINT} from './park-layout.js';
+import {HARBOUR_PARK_MAIN,HARBOUR_PARK_EXTENSION,HARBOUR_PARK_ENTRY,HARBOUR_POND,HARBOUR_CHERRY,HARBOUR_SHRINE,HARBOUR_PARK_SEATS} from './harbour-park-plan.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
-import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {assetURL} from '../assets.js';
 import {registerDetail} from './detail-stream.js';
 import {createLightPools} from './light-pools.js';
 import {lanternGlow} from '../render/dusk.js';
-import {paintedTurf,paintedPaving} from '../render/toy-surfaces.js';
+import {paintedTurf} from '../render/toy-surfaces.js';
 import {createKit} from './okinawa/kit.js';
 import {hibiscus} from './okinawa/houses.js';
-import {coralSand,poster} from './okinawa/signs.js';
+import {poster} from './okinawa/signs.js';
 import {buildCherryTree} from './cherry-tree.js';
 import {GROUND_LAYER} from './ground-layers.js';
 export const PARK_TREE=Object.freeze([(HARBOUR_CHERRY[0]-PARK.x)/PARK.scale,(HARBOUR_CHERRY[1]-PARK.z)/PARK.scale]);
@@ -60,51 +58,13 @@ function turfGeometry(bounds,{pond=false}={}){
  return g;
 }
 
-/** The part of a flat, non-indexed geometry where coordinate `axis` (0 x, 2 z) is at least `at`, its triangles cut there. */
-function clipTo(geometry,axis,x){
- const p=geometry.attributes.position,out=[];
- for(let i=0;i<p.count;i+=3){
-  const tri=[0,1,2].map(k=>[p.getX(i+k),p.getY(i+k),p.getZ(i+k)]),poly=[];
-  for(let k=0;k<3;k++){const a=tri[k],b=tri[(k+1)%3],ia=a[axis]>=x,ib=b[axis]>=x;if(ia)poly.push(a);if(ia!==ib){const t=(x-a[axis])/(b[axis]-a[axis]);poly.push(a.map((v,c)=>v+(b[c]-v)*t));}}
-  for(let k=1;k+1<poly.length;k++)out.push(...poly[0],...poly[k],...poly[k+1]);
- }
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(out,3));
- g.setAttribute('uv',new THREE.Float32BufferAttribute(new Array(out.length/3*2).fill(0),2));g.computeVertexNormals();geometry.dispose();return g;
-}
-
-/** Flush paving, with round joins; no kerbs or corridor collision boxes. */
-function parkWalks(group){
- const bySurface=new Map();
- for(const route of HARBOUR_PARK_PATHS){
-  const pieces=bySurface.get(route.surface)||[];bySurface.set(route.surface,pieces);
-  for(let i=1;i<route.points.length;i++){
-   const a=route.points[i-1],b=route.points[i],dx=b[0]-a[0],dz=b[1]-a[1],length=Math.hypot(dx,dz);
-   const geometry=new THREE.PlaneGeometry(route.width,length);geometry.rotateX(-Math.PI/2);geometry.rotateY(Math.atan2(dx,dz));geometry.translate((a[0]+b[0])/2,GROUND_LAYER.lane,(a[1]+b[1])/2);pieces.push(geometry);
-  }
-  for(const [x,z] of route.points){const g=new THREE.CircleGeometry(route.width/2,16);g.rotateX(-Math.PI/2);g.translate(x,GROUND_LAYER.lane,z);pieces.push(g);}
- }
- for(const [surface,pieces] of bySurface){
-  // The approach starts on Main Street's footway; the street's ground (ground-plan.js) is laid to its back strip's edge,
-  // and the park's walks begin there rather than lying over the footway.
-  const geometry=clipTo(clipTo(mergeGeometries(pieces,false).toNonIndexed(),0,MAIN_STREET_GROUND.backEast),2,MAIN_STREET_GROUND.minZ),p=geometry.attributes.position,uv=geometry.attributes.uv;
-  for(let i=0;i<p.count;i++)uv.setXY(i,p.getX(i)/3,p.getZ(i)/3);
-  // One family of paving in the park: the warm stone walks, and the pond circuit in the same warm tone as raked
-  // coral gravel rather than a second brick. The stone is drawn over the gravel where they meet (the junction at the
-  // pond's south-west corner flickered: two coplanar layers with the same offset).
-  const gravel=surface==='gravel';let map=paintedPaving();
-  if(gravel&&typeof document!=='undefined'&&document.createElement)try{map=coralSand();}catch{}
-  const mesh=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({color:gravel?0xd2c39d:PARK_PATH_TINT,map,roughness:.95,polygonOffset:true,polygonOffsetFactor:gravel?-1:-2,polygonOffsetUnits:gravel?-1:-2}));
-  mesh.name='Harbour Park '+surface+' walks';mesh.receiveShadow=true;group.add(mesh);pieces.forEach(g=>g.dispose());
- }
-}
-
 /** One level public park opposite Sakura, with the bathhouse visible across open ground. */
 export function buildPark(world,options={}){
  const group=new THREE.Group();group.name='Harbour Park';world.group.add(group);const shadows=!!options.shadows;
  const material=new THREE.MeshStandardMaterial({color:TURF_TINT,map:parkFoliage().grass,roughness:1});
  const ground=new THREE.Mesh(turfGeometry(HARBOUR_PARK_MAIN,{pond:true}),material);ground.name='Harbour Park ground';ground.receiveShadow=true;group.add(ground);
  const extension=new THREE.Mesh(turfGeometry(HARBOUR_PARK_EXTENSION),material);extension.name='Harbour Park beach lawn';extension.receiveShadow=true;group.add(extension);
- parkWalks(group);
+ // The walks are the town's ground now (ground-plan-coast.js): rolled crushed stone, edged where they meet the turf.
  const kit=createKit({shadows});
  const anchor=(x,z,label,kind,title,text)=>{const a=new THREE.Object3D();a.position.set(x,1,z);group.add(a);options.register?.(a,label,()=>options.onAction?.(kind,title,text));return a;};
  const benchGeometry=parkBenchGeometry();let benchObject=makeParkBench(benchGeometry,shadows);group.add(benchObject);
@@ -136,7 +96,8 @@ export function buildPark(world,options={}){
  kit.box(.08,1.3,.08,6.1,.65,-23.4,0x68563e);kit.sign(poster({title:'Minato Harbour Park',lines:['MINATO HARBOUR PARK','Umi-no-yu · pond · beach'],band:'#355d46',bg:'#eee5cc'}),1.6,.65,6.1,1.24,-23.4,{ry:-Math.PI/2,name:'Minato Harbour Park board',both:true});
  world.colliders.push({id:'park-board-post',x:6.1,z:-23.4,w:.1,d:.1,height:1.6,park:true});
  anchor(5.3,-23.4,'Read the Harbour Park guide','read','Minato Harbour Park','Umi-no-yu faces Sakura across this open park. Follow the broad paving to the bathhouse, the gravel circuit around the pond, or the shore walk to the beach ramp. Rainflower Florist is at the street entrance; Nakamura serves zenzai and Blue Coral ice cream next door.');
- pondEdge(kit,HARBOUR_POND);
+ // The pond's edge is the pond's (its stones and reeds, at the water): a kit of its own, so it is never read as ground.
+ const pondKit=createKit({shadows});pondEdge(pondKit,HARBOUR_POND);pondKit.finish(group,'Harbour Park pond edge');
  const {materials}=kit.finish(group,'Harbour Park furnishings');
  const p=HARBOUR_POND,water=new THREE.Mesh(new THREE.CircleGeometry(1,64),new THREE.MeshStandardMaterial({color:0x587f76,roughness:.25,transparent:true,opacity:.88,depthWrite:false}));water.rotation.x=-Math.PI/2;water.scale.set(p.rx,p.rz,1);water.position.set(p.x,p.waterY,p.z);water.name='Harbour Park koi pond';group.add(water);
  const basin=new THREE.Mesh(new THREE.CircleGeometry(1,64),new THREE.MeshStandardMaterial({color:0x586455,roughness:1}));basin.rotation.x=-Math.PI/2;basin.scale.set(p.rx,p.rz,1);basin.position.set(p.x,p.bedY+.012,p.z);basin.name='Harbour pond bed';group.add(basin);

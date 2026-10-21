@@ -151,19 +151,26 @@ to a unified system? Pavement? Walk paths, grass and sandy beach?" (the plan app
 - Ground: every surface comes from `src/world/ground-standard.js`. No module draws its own ground slab, colour or
   height. The rulebook gives each class its top, colour, finish, the districts it belongs in and the edge it needs
   against every neighbour: a 15 cm kerb, an edge line and U-gutter, stone or coral edging, or a graded join.
-- The ground-standard test (`tests/ground-standard.test.mjs`, measured by `tools/ground-audit.mjs`) is a ratchet. A new
-  violation fails. So does one that grew, and so does one that was fixed but is still listed in
-  `tests/fixtures/ground-baseline.json`. The list only shrinks.
+- The ground-standard test (`tests/ground-standard.test.mjs`, measured by `tools/ground-audit.mjs`) guards all of
+  Minato. Since step 4 its baseline (`tests/fixtures/ground-baseline.json`) is empty: any violation fails. Fix the ground;
+  never list a finding. If a finding is a false positive, change the audit's rule with its reason written beside it.
 - A district on the standard is laid by the generator (`src/world/ground-build.js`) from its plan (`ground-plan.js`,
   `ground-plan-harbour.js`): add or move ground by changing the plan, never with a slab of a module's own. Step 2 put Main
   Street and the harbour on it. Main Street's carriageway lies a kerb under the town's datum and is graded back at its
   ends; what stands on the road or at its ends takes its height from the plan (`streetDrop`, `groundTopAt`). Step 3 put
   Kitahama, Nishi-machi, the west yard and the town hall on it (`ground-plan-quarters.js`). In a lane district a house
   meets the lane by its own gate and the U-gutter (`lane-edges.js` draws the plan's gutter runs), never by a paved
-  ring. In the west yard the buildings stand on concrete aprons edged against the lawn.
+  ring. In the west yard the buildings stand on concrete aprons edged against the lawn. Step 4 put the rest on it:
+  the walks across the lawns (Harbour Park's, the east lawn's, Kitahama's coastal walk, Kitano Road's footway) are laid
+  from `ground-plan-coast.js` by `ground-paths.js`, flush and edged in setts; the lane builder (`lane-surfaces.js`) lays
+  nothing. No building has a ring of paving: it stands in its lawn or sand, with an apron or forecourt only where it is
+  used (Umi-no-yu's forecourt, the fuel depot's court, the drinks corner's pad). The east beach (`beach-layout.js`,
+  drawn by `east-lawn.js`) is coral-white sand with a wet band at the water, graded up to every firm edge
+  (`BEACH_GRADES`) and down into the sea; north of the oil jetty the east quay ends at x 42.3 and the beach runs to the
+  water (owner-approved).
 - The plan, the rulebook tables and today's counts are in [docs/GROUND-STANDARD.md](docs/GROUND-STANDARD.md). The work
-  runs in steps, each merged after the owner sees photos: (2) Main Street and the harbour; (3) Kitahama, Nishi, the
-  neighbourhood and the school; (4) the beach, the coast, the park and the lawns, until the baseline is empty.
+  ran in steps, each merged after the owner saw photos: (2) Main Street and the harbour; (3) Kitahama, Nishi, the
+  neighbourhood and the school; (4) the beach, the coast, the park and the lawns, which emptied the baseline.
 
 ## Verification
 

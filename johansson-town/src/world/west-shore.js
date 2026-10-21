@@ -2,6 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {NISHI} from './okinawa/layout.js';
 import {ISLAND_COAST} from './island-plan.js';
 import {rng} from './okinawa/kit.js';
+import {GROUND_CLASSES} from './ground-standard.js';
 
 /**
  * The west-shore bank (西海岸護岸): where the island's ground meets the sea north of the Nishi-machi seawall.
@@ -101,21 +102,37 @@ export function sweepProfile(path,profile,{caps=null}={}){
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(out,3));g.computeVertexNormals();return g;
 }
 
-/** Draws the bank into the quarter's kit (its coral and sand finishes) and registers its solids. */
-export function buildWestShore(kit,solid,{anchor,onAction}={}){
+/**
+ * Draws the bank and registers its solids. The coping and the pitching go into the quarter's kit, in its coral stone; the
+ * foreshore's wet sand and the armour stones on it are a kit of their own, named for what they are (the beach's wet band,
+ * ground-standard.js beach-sand; the rock armour at the water), so the ground audit reads them as such.
+ */
+export function buildWestShore(kit,solid,{anchor,onAction,group=null}={}){
  const S=WEST_SHORE,P=S.profile,path=westShorePath();
  const cx=(S.edge+S.returnToX)/2,cz=(S.fromZ+S.cornerZ)/2,here=new THREE.Matrix4().makeTranslation(cx,0,cz),local=g=>{g.translate(-cx,0,-cz);return g;};
  // The coping and the pitching are one run of coral stone; the sand strip lies against its toe.
  const stone=local(sweepProfile(path,[...P.coping.points,...P.pitching.points.slice(1)],{caps:[[0,-.9]]}));
- kit.add(stone,here,0xe6e0d0,'coral');stone.dispose();
  const sand=local(sweepProfile(path,P.sand.points,{caps:[[1.15,-.9]]}));
- kit.add(sand,here,0xe8dfc6,'sand');sand.dispose();
  // Armour stones along the toe of the west run, settled into the sand, a few of them half in the water.
- const r=rng(S.stones.seed),d0=P.sand.points[0][0],run=S.cornerZ-COPING-S.fromZ;
+ const r=rng(S.stones.seed),d0=P.sand.points[0][0],run=S.cornerZ-COPING-S.fromZ,stones=[];
  for(let z=S.fromZ+1.6;z<S.fromZ+run-1;z+=S.stones.every){
   const d=d0+.2+r.next()*.55,size=.32+r.next()*.22,zz=z+(r.next()-.5)*.8,y=-.5-.14*(d-d0)/.95;
-  kit.sphere(size,S.edge-d,y+size*.45,zz,r.pick([0x9a9f94,0x8f968c,0xa5a89c]),{sx:1.5,sy:.7,sz:1.1,detail:0});
+  stones.push({x:S.edge-d,y:y+size*.45,z:zz,size,colour:r.pick([0x9a9f94,0x8f968c,0xa5a89c])});
  }
+ if(!group){
+  kit.add(stone,here,0xe6e0d0,'coral');kit.add(sand,here,GROUND_CLASSES['beach-sand'].wet,'sand');
+  for(const s of stones)kit.sphere(s.size,s.x,s.y,s.z,s.colour,{sx:1.5,sy:.7,sz:1.1,detail:0});
+ }else{
+  // Named for what they are, so the ground audit reads them so: the bank's coping (an edge), the foreshore's wet sand
+  // (ground-standard.js beach-sand, its wet band) and the rock armour at the water.
+  const mesh=(g,material,name)=>{g.applyMatrix4(here);g.computeVertexNormals();const m=new THREE.Mesh(g,material);m.name=name;m.receiveShadow=true;group.add(m);return m;};
+  mesh(stone.clone(),new THREE.MeshStandardMaterial({color:0xe6e0d0,roughness:.92}),'West-shore bank coping');
+  mesh(sand.clone(),new THREE.MeshStandardMaterial({color:GROUND_CLASSES['beach-sand'].wet,roughness:1}),'West-shore foreshore wet-sand');
+  const rock=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,0),new THREE.MeshStandardMaterial({color:0xffffff,roughness:1}),stones.length),m=new THREE.Matrix4(),q=new THREE.Quaternion(),c=new THREE.Color();
+  stones.forEach((s,i)=>{rock.setMatrixAt(i,m.compose(new THREE.Vector3(s.x,s.y,s.z),q,new THREE.Vector3(s.size*1.5,s.size*.7,s.size*1.1)));rock.setColorAt(i,c.setHex(s.colour));});
+  rock.name='West-shore armour stones';rock.receiveShadow=true;rock.castShadow=false;rock.computeBoundingSphere();group.add(rock);
+ }
+ stone.dispose();sand.dispose();
  solid(westShoreSolids());
  anchor?.(S.edge+1.1,1,(S.fromZ+S.cornerZ)/2,'Look over the bank',()=>onAction?.('read','The west-shore bank',
   'North of the seawall the shore is pitched in coral stone, down to a strip of sand the waves wash over, with a chain along the top. Over the reef the water goes green, then blue; on a winter day the spray comes over the stones.'));

@@ -67,7 +67,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildWestQuay(kit,solid,{inspect,anchor,onAction,vending});
  buildPromenade(kit,solid,{anchor,onAction});
  // North of the seawall the shore is the west-shore bank, in the same coral stone. See west-shore.js.
- buildWestShore(kit,solid,{anchor,onAction});
+ buildWestShore(kit,solid,{anchor,onAction,group});
  buildYardRow(kit,solid,{anchor,inspect,onAction});
  buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes:()=>world.minutes??720});
  buildEastBack(kit,solid,{anchor,inspect,onAction});

@@ -2,9 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {ROUTES} from '../src/world/layout.js';
 import {ARCHITECTURE_ROUTES} from '../src/world/architecture-plan.js';
-import {coordinatedStreetPatches,STREET_STANDARD,area,rectangle,subtractPolygon,routePolygons} from '../src/world/street-plan.js';
+import {coordinatedStreetPatches,streetPieces,STREET_STANDARD,area,rectangle,subtractPolygon,routePolygons} from '../src/world/street-plan.js';
 
-const patches=coordinatedStreetPatches(ROUTES.slice(3));
+// The routes' paving as the junction owner cuts it; the plans lay from these (ground-walks.js), the lane builder nothing.
+const patches=streetPieces(ROUTES.slice(3));
 const inside=(p,x,z)=>p.every((a,i)=>{const b=p[(i+1)%p.length];return (b[0]-a[0])*(z-a[1])-(b[1]-a[1])*(x-a[0])>=-1e-7;});
 const at=(x,z)=>patches.filter(p=>inside(p.polygon,x,z));
 test('convex difference conserves area for partial, contained and diagonal intersections',()=>{
@@ -30,10 +31,13 @@ test('Main Street retains asphalt at residential junctions; retired overlays hav
  const kitahama=quarterPlans().find(p=>p.id==='kitahama');
  for(const z of [31,40,45]){
   assert.equal(laidAt(kitahama,-2.75,z)?.cls,'lane','street connected at '+z);
-  assert.equal(at(-2.75,z).length,0,'the lane builder lays nothing over it at '+z);
  }
+ // Since step 4 the lane builder lays nothing at all: every district is its plan's.
+ assert.deepEqual(coordinatedStreetPatches(ROUTES.slice(3)),[]);
  assert.equal(patches.some(p=>p.route.startsWith('neighbourhood-')||p.route==='island-shopping-lane'),false);
  assert.ok(patches.some(p=>p.kind==='coast'));
+ const {laidWalkPieces}=await import('../src/world/ground-walks.js');
+ assert.ok(laidWalkPieces().some(p=>p.route==='island-coast-walk'),'the coastal walk is laid round Kitahama (ground-plan-coast.js)');
  assert.equal(STREET_STANDARD.coast.access,'pedestrians');
  assert.equal(STREET_STANDARD.boardwalk.surface,'wood');
 });
