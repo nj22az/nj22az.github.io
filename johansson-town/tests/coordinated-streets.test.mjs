@@ -24,9 +24,13 @@ test('Main Street retains asphalt at residential junctions; retired overlays hav
  // Up to the bus plaza's north edge the carriageway is the ground generator's (ground-plan.js), beyond it the lanes'.
  const {laidAt,mainStreetPlan}=await import('../src/world/ground-plan.js');
  for(const z of [21,24])assert.equal(laidAt(mainStreetPlan(),-2.75,z)?.cls,'road','Main Street\'s carriageway at '+z);
+ // North of the plaza it runs on through Kitahama as one of its lanes: back-lane asphalt, laid by the quarter's plan
+ // (ground-plan-quarters.js, step 3 of the ground plan), never a footway's paving.
+ const {quarterPlans}=await import('../src/world/ground-plan-quarters.js');
+ const kitahama=quarterPlans().find(p=>p.id==='kitahama');
  for(const z of [31,40,45]){
-  const found=at(-2.75,z);assert.ok(found.length,'street connected at '+z);
-  assert.ok(found.every(p=>p.surface==='asphalt'),'pedestrian paving cannot replace carriageway at '+z);
+  assert.equal(laidAt(kitahama,-2.75,z)?.cls,'lane','street connected at '+z);
+  assert.equal(at(-2.75,z).length,0,'the lane builder lays nothing over it at '+z);
  }
  assert.equal(patches.some(p=>p.route.startsWith('neighbourhood-')||p.route==='island-shopping-lane'),false);
  assert.ok(patches.some(p=>p.kind==='coast'));
@@ -51,7 +55,7 @@ test('built carriageways clear the turf and join Main Street on the shared datum
  const {streetDrop}=await import('../src/world/ground-plan.js');
  const world=createTown({scene:new THREE.Scene(),sites:createIslandBusinesses(),mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  world.group.updateMatrixWorld(true);
- const streets=[];world.group.traverse(o=>{if(o.isMesh&&['grid-lanes:asphalt','Carriageways','Kitano Road carriageway'].includes(o.name))streets.push(o);});
+ const streets=[];world.group.traverse(o=>{if(o.isMesh&&['grid-lanes:asphalt','Carriageways','Kitano Road carriageway','Back lanes'].includes(o.name))streets.push(o);});
  const ray=new THREE.Raycaster(),down=new THREE.Vector3(0,-1,0);
  for(const [x,z] of [[-2.75,-20],[-2.75,21],[-2.75,28],[-2.75,32],[-2.75,44],[2,3.3],[10,3.3],[24,3.3]]){
   // Main Street's carriageway lies a kerb under the datum and is graded back to it where the lanes go on (ground-plan.js).

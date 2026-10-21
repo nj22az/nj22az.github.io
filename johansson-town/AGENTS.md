@@ -157,7 +157,10 @@ to a unified system? Pavement? Walk paths, grass and sandy beach?" (the plan app
 - A district on the standard is laid by the generator (`src/world/ground-build.js`) from its plan (`ground-plan.js`,
   `ground-plan-harbour.js`): add or move ground by changing the plan, never with a slab of a module's own. Step 2 put Main
   Street and the harbour on it. Main Street's carriageway lies a kerb under the town's datum and is graded back at its
-  ends; what stands on the road or at its ends takes its height from the plan (`streetDrop`, `groundTopAt`).
+  ends; what stands on the road or at its ends takes its height from the plan (`streetDrop`, `groundTopAt`). Step 3 put
+  Kitahama, Nishi-machi, the west yard and the town hall on it (`ground-plan-quarters.js`). In a lane district a house
+  meets the lane by its own gate and the U-gutter (`lane-edges.js` draws the plan's gutter runs), never by a paved
+  ring. In the west yard the buildings stand on concrete aprons edged against the lawn.
 - The plan, the rulebook tables and today's counts are in [docs/GROUND-STANDARD.md](docs/GROUND-STANDARD.md). The work
   runs in steps, each merged after the owner sees photos: (2) Main Street and the harbour; (3) Kitahama, Nishi, the
   neighbourhood and the school; (4) the beach, the coast, the park and the lawns, until the baseline is empty.

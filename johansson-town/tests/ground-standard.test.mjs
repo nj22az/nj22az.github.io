@@ -64,10 +64,10 @@ test('the districts agree with the layout modules',async()=>{
  assert.equal(districtAt(-2.75,0),'main-street');assert.equal(districtAt(0,-60),'harbour');assert.equal(districtAt(-30,60),'kitahama');
 });
 
-const {scene}=await audit.buildAuditTown();
+const {scene,world}=await audit.buildAuditTown();
 const routes=await audit.auditRoutes(),patches=await audit.auditPatches();
 const baseline=JSON.parse(fs.readFileSync(audit.BASELINE_PATH,'utf8')).violations;
-const result=audit.auditGround(scene,{routes,patches});
+const result=audit.auditGround(scene,{routes,patches,colliders:world.colliders});
 const show=v=>`  ${v.key}: ${v.amount}${v.was!==undefined?' (was '+v.was+')':''} at ${v.at[0]}, ${v.at[2]} — ${v.detail}`;
 
 test('the ratchet: no new ground violation, none grown, and every fixed one taken off the list',()=>{
@@ -86,7 +86,7 @@ test('the audit catches what it is for: a slab of its own colour and height, a p
  apron.name='Planted test apron';apron.position.set(28,.08,14);scene.add(apron);
  const planted=[...routes,{id:'planted-path-to-nowhere',width:1.5,points:[[24.5,8],[24.5,12]]}];
  try{
-  const again=audit.auditGround(scene,{routes:planted,patches});
+  const again=audit.auditGround(scene,{routes:planted,patches,colliders:world.colliders});
   const {added,fixed}=audit.compareToBaseline(again.violations,baseline);
   const keys=added.map(v=>v.key);
   assert.ok(keys.some(k=>k.startsWith('colour|east-lawn|')&&k.includes('Planted test slab')),'off-rulebook colour: '+keys.join(', '));
