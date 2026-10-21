@@ -48,3 +48,4 @@ drinking-game.test.mjs
 beach-shore.test.mjs
 johansson-study.test.mjs
 audit-boot.test.mjs
+boot.test.mjs
