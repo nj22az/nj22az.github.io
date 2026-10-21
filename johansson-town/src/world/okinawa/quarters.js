@@ -387,6 +387,15 @@ function buildEastBack(kit,solid,ctx){
  EAST_BACK.plots.forEach((p,i)=>walledHouse(kit,solid,p,{...ctx,seed:10+i,windbreak:'east'}));
 }
 
+/**
+ * The fish market's drinks machine: its back 3 cm off the ice plant's plinth, on the plant's west wall north of the ice
+ * door, facing the lane between the plant and the auction shed. The owner, 21 October 2026, on his phone: "a vending
+ * machine misplaced in the fish market" (it stood on the auction floor among the crates).
+ */
+export const AUCTION_VENDING=Object.freeze({x:EAST_QUAY.ice.minX-.05-.03-VENDING_MACHINE.size.depth/2,z:EAST_QUAY.ice.maxZ-.8,ry:-Math.PI/2,y:GROUND_LAYER.lane,
+ who:'the fishermen up from the boats, the ice plant’s men and the auction’s buyers',
+ why:'Machines stand against a wall, on somebody’s supply: here the ice plant’s, on its west wall where the lane from the boats meets the walk to the gate. The boats are in by five and the bell goes at six, so a hot J-Coffee before it and a cold one after the floor is hosed. North of the ice door, so the forklift’s run to the boats stays clear; off the auction floor, which is for the catch.'});
+
 function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending,eastQuayBoat}){
  const Q=EAST_QUAY,S=Q.shed,I=Q.ice,lane=GROUND_LAYER.apron;
  // The apron, the gate's paving and the quay's coping are the harbour's ground (ground-plan-harbour.js), run on east
@@ -455,7 +464,7 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending,eastQuayBoat})
  // of its columns. In front of the shed they stood through one column and left 1 m of the
  // walk between the shed and the parapet, from the lawn gate to the ice plant.
  solid(fishCrates(kit,Q.minX+2.62,Q.maxZ-2.53,{rows:2,cols:2,seed:31}));
- vending(S.minX+1.6,S.maxZ-1.2,-Math.PI/2,GROUND_LAYER.lane);   // on the quay's paving (the lane layer), not sunk in it
+ vending(AUCTION_VENDING.x,AUCTION_VENDING.z,AUCTION_VENDING.ry,AUCTION_VENDING.y);   // on the quay's paving (the lane layer), not sunk in it
  inspect(24.6,1,Q.minZ+.9,'Look at the boats',"Daisan Minatomaru · Minato Maru No. 3",
   'The Daisan Minatomaru, the third fishing boat of the name (the town ferry is the Minato Maru), is back from the reef with her hold iced and her deck hosed. Her skipper is asleep in the wheelhouse with the radio on. The red boat further along goes out for squid at night and has its lamps strung along a boom.');
  anchor(29.5,1,Q.minZ+.9,'Fish from the east quay',()=>onAction?.('fishing'));
