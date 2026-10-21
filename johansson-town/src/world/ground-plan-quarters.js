@@ -268,11 +268,24 @@ export const TOWN_HALL_GROUND=Object.freeze((()=>{
   bed:rect(24.6,29.9,31.0,31.9),
   verges:Object.freeze([rect(S.minX-.9,S.minX,S.minZ,B.maxZ),rect(S.maxX,S.seawall.east,S.minZ,30.5),rect(S.maxX,S.maxX+.9,30.5,B.maxZ)]),
   bays:Object.freeze([0,1,2,3].map(i=>pk.minX+.4+i*2.6)),
+  /**
+   * Rolled crushed stone only where it is walked or played on (the owner's phone, 21 October 2026: the whole yard was
+   * one sheet of it, under the trees and round the car park, and read as bare sand). The rest of the yard is lawn.
+   */
+  stone:Object.freeze([
+   {name:'School playground',...rect(S.field.minX+.4,18.2,S.minZ,S.corridor.minZ-.2),why:'The classroom\'s playground west of the forecourt, between the windbreak and the entrance: rolled stone, the old sports ground\'s last piece.'},
+   {name:'Town hall front walk',...rect(23.6,30.6,S.field.maxZ,S.corridor.minZ-.2),why:'Along the front, from the forecourt past the lawn to the car park, under the breezeway\'s edge.'},
+   {name:'Town hall front walk',...rect(30.6,pk.maxX,pk.maxZ,S.corridor.minZ-.2),why:'From the car park to the breezeway, where the clinic\'s and the kitchen\'s visitors walk.'},
+   {name:'Town hall front walk',...rect(30.6,pk.minX,ph.maxZ+.6,pk.maxZ),why:'From the power house\'s apron to the front walk, between the lawn and the car park.'},
+   {name:'Bicycle shed walk',...rect(ph.door[0]+.6,b.minX,S.minZ,pk.minZ),why:'From the power house\'s door and the car park to the bicycle shed.'},
+   {name:'Bicycle shed walk',...rect(b.minX,b.maxX,S.minZ,b.minZ+.8),why:'In front of the shed\'s open side, where the bicycles are wheeled in.'},
+  ].map(Object.freeze)),
  };
 })());
 function schoolBase(){
  const T=TOWN_HALL_GROUND,L=[];
- L.push({cls:'park-path',name:'Town hall yard',...T.yard,top:PATH,why:'The old school\'s yard, as the town hall keeps it: rolled crushed stone, swept, flush with its lawn.'});
+ L.push({cls:'grass',name:'Town hall yard',...T.yard,top:GRASS,why:'The yard between the paths, under the windbreak and along the walls: lawn, as the town hall keeps it.'});
+ for(const st of T.stone)L.push({cls:'park-path',...st,top:PATH});
  L.push({cls:'grass',name:'Town hall lawn',...T.lawn,top:GRASS,why:'A lawn in the middle of the old sports ground, with its flower bed.'});
  // Outside the boundary wall and along the seawall's inner foot, the neighbourhood's lawn runs on to the yard's edge
  // (neighbourhood-ground.js stops 0.9 m short of it): turf, so no bare island ground shows under the wall.

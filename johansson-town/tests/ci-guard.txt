@@ -41,3 +41,5 @@ minato-compact.test.mjs
 izakaya-backbar.test.mjs
 izakaya-service-layout.test.mjs
 shared-dining-entry.test.mjs
+beach-shore.test.mjs
+johansson-study.test.mjs

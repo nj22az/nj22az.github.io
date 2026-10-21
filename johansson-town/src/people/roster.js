@@ -181,14 +181,15 @@ export const SHORE_ROLES=Object.freeze([
 
 /**
  * Homes that go, and where a saved reference to one lands: a retained public place (brief §8, §10, §11, addendum 3 and
- * 5). Both the registry id and its entrance id are listed. The former post office's parcels go to Mika's counter at the
+ * 5). The town hall's is the Community Hall's door, the community kitchen, since the mayor's office went (21 October 2026,
+ * briefs/town-hall-zone.md phase M). Both the registry id and its entrance id are listed. The former post office's parcels go to Mika's counter at the
  * terminal and the florist's flowers to Sakura, so their saved locations follow the service. Nhung's own records go to
  * her new home, not to the public fallback. kitahama-flat-1/2 are logical units retired with their residents. The
  * table is applied whether or not the building still stands (phase 4 removed them), so a save is safe in both states.
  */
 export const RETIRED_HOMES=Object.freeze({
- 'kitahama-4':'mayor-office','kitahama-5':'mayor-office','kitahama-6':'mayor-office',kinjo:'mayor-office',oshiro:'mayor-office',
- 'resident-home-aya':'mayor-office','kitano-3':'mayor-office','kitahama-flat-1':'mayor-office','kitahama-flat-2':'mayor-office',
+ 'kitahama-4':'community-kitchen','kitahama-5':'community-kitchen','kitahama-6':'community-kitchen',kinjo:'community-kitchen',oshiro:'community-kitchen',
+ 'resident-home-aya':'community-kitchen','kitano-3':'community-kitchen','kitahama-flat-1':'community-kitchen','kitahama-flat-2':'community-kitchen',
  shimabukuro:'ferry-terminal','post-office':'ferry-terminal',florist:'market','rainflower-florist':'market',izakaya:'izakaya',
 });
 /** The home records that retire: the service ids above are counters, not homes; izakaya's building stays, Barfly's registration goes. */

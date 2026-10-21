@@ -79,7 +79,11 @@ The separate `art/izakaya/compact/entry.png`, `counter.png` and `overhead.png` a
 
 The compact acceptance, cabinet geometry, service layout and shared-entry suites are added to `tests/ci-guard.txt`. Adjacent lifecycle, survey, beer service, opening-hours, resident-life, living-town, ramen-player, dressing, devices and posters suites also passed.
 
-Final CI guard: **40 test files passed, 0 failed**, in 181 seconds, including the compiled-package/source-digest check and the full-town surface-overlap scan. See `ci-results.txt`.
+Original compact-release CI guard: **40 test files passed, 0 failed**, in 181 seconds, including the compiled-package/source-digest check and the full-town surface-overlap scan. See `ci-results.txt`.
+
+Before merging, the release was reconciled with main at `d6f599e8dc15f9ec123321c942f64a2f1d7e9ade`, preserving the beach/yard restoration and Johansson's study move from PRs #319 and #320. The source merge retains the compact interior and removes the retired mayor-office import/dispatch. Generated runtime files, entry references and the service-worker stamp were rebuilt from the combined source; the preceding main runtime remains available under the existing cache policy.
+
+The combined CI guard passed **42 test files, 0 failures**, in 194 seconds, including both incoming beach/study suites and all four compact-interior suites. See `merge-ci-results.txt`. Its runtime source digest is `862a479e6579e2737a3e5791825fa6277e379687da086fd3c78f0fc4f46b8081`. The browser captures above retain their original tested digest; no additional browser run is claimed for this reconciliation.
 
 The broader retired Barfly auto-drinking and Reiko kitchen fixtures have pre-existing failures reproduced against the original HEAD; they are outside this change and were not revived. No physical phone or Linux handheld performance result is claimed.
 

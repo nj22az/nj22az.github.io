@@ -35,7 +35,13 @@ leave(legacy.MERCHANDISING);leave(legacy.GROCERY_ITEMS);leave(legacy.SHOP_STOCK)
 // shelf lines of those accounts, and everything else, are unchanged.
 delete legacy.SUPPLIERS['rainflower-florist'];delete legacy.ACCOUNTS['rainflower-florist'];
 legacy.SUPPLIERS.sakura={...legacy.SUPPLIERS.sakura,goods:now.SUPPLIERS.sakura.goods,decor:now.SUPPLIERS.sakura.decor};
-for(const site of ['izakaya','onsen','mayor-office','school']){const was=legacy.ACCOUNTS.sakura[site],is=now.ACCOUNTS.sakura[site];assert.deepEqual(is.lines,was.lines,site+' keeps its shelf lines');legacy.ACCOUNTS.sakura[site]={...was,why:is.why,delivery:is.delivery,decor:is.decor};}
+// 21 October 2026 (briefs/town-hall-zone.md phase M): the mayor's office went, and its accounts with Sakura and Front-Row
+// are the Community Hall's (the community kitchen's): the hall orders what the office ordered, as well as its own.
+{const hall=now.ACCOUNTS.sakura['community-kitchen'],was=[legacy.ACCOUNTS.sakura['community-kitchen'],legacy.ACCOUNTS.sakura['mayor-office']];
+ assert.deepEqual(hall.lines,was.flatMap(a=>a.lines),'the hall orders the kitchen\u2019s lines and the office\u2019s');
+ assert.deepEqual(now.ACCOUNTS.frontrow['community-kitchen'].lines,legacy.ACCOUNTS.frontrow['mayor-office'].lines,'the hall\u2019s register takes the office\u2019s stationery');
+ for(const supplier of ['sakura','frontrow']){assert.equal(now.ACCOUNTS[supplier]['mayor-office'],undefined);delete legacy.ACCOUNTS[supplier]['mayor-office'];legacy.ACCOUNTS[supplier]['community-kitchen']=now.ACCOUNTS[supplier]['community-kitchen'];}}
+for(const site of ['izakaya','onsen','school']){const was=legacy.ACCOUNTS.sakura[site],is=now.ACCOUNTS.sakura[site];assert.deepEqual(is.lines,was.lines,site+' keeps its shelf lines');legacy.ACCOUNTS.sakura[site]={...was,why:is.why,delivery:is.delivery,decor:is.decor};}
 // Phase 4 retired the people some accounts' deliveries named (Reiko's evening press): the data's delivery line is the
 // one that reads, and it names a live resident; the lines and everything else about the account are unchanged.
 const {isRetired}=await import('../src/people/roster.js');
