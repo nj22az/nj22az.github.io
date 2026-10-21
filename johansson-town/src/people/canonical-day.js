@@ -14,6 +14,8 @@ import {KITANO_PIER_STAND} from '../world/kitano-hamlet-layout.js';
 import {airportWorld} from '../world/airport-ground.js';
 import {standNow} from './stand-points.js';
 import {quayBreakPlan} from './quay-breaks.js';
+import {shopDayPlan,HIGA_COUNTER_STAND,LAUNDRY_STANDS} from './shop-days.js';
+import {YUNTAKU} from '../commerce/higa-liquor.js';
 
 const HOME_TARGETS=new Map();
 const activeTarget=name=>{if(!HOME_TARGETS.has(name))HOME_TARGETS.set(name,activeResidentHome(name)?.target);return HOME_TARGETS.get(name);};
@@ -24,7 +26,7 @@ const points={izakaya:IZAKAYA_DOOR,sakura:MARKET_THRESHOLD,market:MARKET_THRESHO
  'sato-ramen':RAMEN_DOOR,books:TOWN_DESTINATIONS.books,workshop:TOWN_DESTINATIONS.workshop,
  zenzai:NAKAMURA_DESSERTS.staffAt,'blue-coral':NAKAMURA_DESSERTS.staffAt,
  'fish-auction':[25,-39.6],'ice-plant':[31,-41],boatyard:[-31.8,-45],sea:[-31.8,-45],
- 'higa-liquor':[4.8,8.4],clinic:[34.1,35.1],'cargo-yard':[17,-40],
+ 'higa-liquor':HIGA_COUNTER_STAND.at,'higa-bench':YUNTAKU.seats.mac.stand,'coin-laundry':LAUNDRY_STANDS.W2.at,clinic:[34.1,35.1],'cargo-yard':[17,-40],
  'power-station':[SCHOOL.powerHouse.door[0]+.6,SCHOOL.powerHouse.door[1]-.9],quay:[20,-40],
  'main-street':[1,0],seawall:[-36.7,-20],'net-ground':[-28.4,7.6],'kitano-pier':airportWorld(...KITANO_PIER_STAND)};
 export function canonicalDestination(name,place){
@@ -51,6 +53,9 @@ export function canonicalDay(name,minutes,rain=false){
  }
  const rest=canonicalRest(name,minutes);
  if(rest)return {...homePlan(rest.activity),rest:rest.id};
+ // Higa Liquor's counter, round and bench, and washing day at the coin laundry (shop-days.js; the owner, 21 October 2026).
+ const shop=shopDayPlan(name,minutes,{pointFor:place=>points[place]?[...points[place]]:null});
+ if(shop){if(shop.home)return homePlan(shop.activity);return {...shop,target:shop.target||[...points[shop.place]],rain:!!rain};}
  const weekday=townCalendarAt(minutes).weekday,weekend=weekday===0||weekday===6;
  if(name==='Ms Uezu'&&rotaWeek(minutes)===1&&phase.place==='ferry')return homePlan('off watch at her shore home');
  if(weekend&&phase.place==='school'){

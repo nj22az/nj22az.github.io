@@ -4,6 +4,8 @@ import {fishAt} from './fish.js';
 import {wallAd,WALL_ADS} from './signs.js';
 import {broadleaf} from './trees.js';
 import {nakamuraBuilding} from './nakamura-dressing.js';
+import {higaInterior,higaBuilding,HIGA_FRAME} from './higa-liquor-dressing.js';
+import {laundryInterior,laundryBuilding,LAUNDRY_FRAME} from './coin-laundry-dressing.js';
 
 /**
  * The buildings and gardens of an Okinawan harbour town, made with the kit.
@@ -162,7 +164,9 @@ export function concreteHouse(kit,{w=7.6,d=7,colour=C.concrete,seed=2}={}){
  * `stock` fills the shop with shelves of colour; `sign` and `upright` are textures.
  */
 export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,upright,awning=true,seed=3,interior='shelves',stock=[0xd9b04a,0x5f8fb8,0xc0543e,0x6ea05a,0xe8e2d0]}={}){
- const r=rng(seed),W=w/2,D=d/2,ground=3.3,H=6.1,open=W-.38,back=D-2.2;
+ // Higa Liquor and the coin laundry are rooms you walk into (higa-liquor-dressing.js, coin-laundry-dressing.js): their
+ // shop floor runs back to the storeroom; every other shop-house keeps the 2.2 m slot.
+ const r=rng(seed),W=w/2,D=d/2,ground=3.3,H=6.1,open=W-.38,back=interior==='liquor'?HIGA_FRAME.back:interior==='laundry'?LAUNDRY_FRAME.back:D-2.2;
  // The body, stopping short of the front so the shop floor is a real room.
  if(interior==='zenzai'){
   // An independent stairwell inside the retained footprint, beside the counter.
@@ -173,7 +177,7 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
  }else kit.block(-W,W,0,H,-D,back,colour,'plaster');
  kit.block(-W,-open,0,ground,back,D,colour,'plaster');kit.block(open,W,0,ground,back,D,colour,'plaster');
  kit.block(-W,W,ground,H,back,D,colour,'plaster');
- const fitted=interior==='liquor'||interior==='zenzai',floor=.08;
+ const fitted=interior==='liquor'||interior==='zenzai'||interior==='laundry',floor=.08;
  if(fitted){
   // The foundation belongs under the walls, not across the open shop floor. The
   // old 30 cm plinth buried the 8 cm tiles and was too tall for the walking surface.
@@ -205,6 +209,9 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
   // Nakamura's slab band, coping, hoods, side and back windows, services and plants (nakamura-dressing.js).
   furniture.push(...nakamuraBuilding(kit,{trim}));
  }
+ // Their bands, hoods, flank windows, sashes and (Higa's) awning, crates, bench and stools.
+ if(interior==='liquor')furniture.push(...higaBuilding(kit,{trim}));
+ if(interior==='laundry')furniture.push(...laundryBuilding(kit,{trim}));
  // The rolled-up shutter's box over the opening, and the fascia board above it.
  kit.block(-open,open,ground-.42,ground-.08,D-.35,D-.05,0x8e9699,'metal');
  kit.block(-W,W,ground,ground+.1,D,D+.08,trim);
@@ -221,7 +228,8 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
   kit.box(1.8,.07,.18,x,ground+.9,D+.08,0xc9c2b4);
  }
  // (Nakamura's hangs lower, between the windows under their hoods: nakamura-dressing.js.)
- if(interior!=='zenzai')kit.box(.72,.5,.26,0,ground+2.25,D+.14,0xe2e0d8);
+ // (Nakamura's hangs lower; Higa Liquor's and the laundry's upper floors are stores, with no cooler, and their windows have hoods.)
+ if(!['zenzai','liquor','laundry'].includes(interior))kit.box(.72,.5,.26,0,ground+2.25,D+.14,0xe2e0d8);
  // The tall board stands off the front corner, square to it, so it reads from up and
  // down the street.
  if(upright){
@@ -460,21 +468,11 @@ function shopInterior(kit,kind,{open,back,D,r,stock}){
   for(let i=0;i<9;i++)kit.sphere(.06,-open*.2-open*.55+i*open*.14,.98,back+1.3+(i%2?.1:-.1),0xb8762e,{detail:1});
   kit.box(.9,.9,.6,open*.6,.45,back+.4,0x9aa0a4,{finish:'metal'});
  }else if(kind==='laundry'){
-  // Washers along the back, dryers stacked above them, the bench and its manga.
-  for(let i=0;i<Math.floor(open*2/.72);i++){
-   const x=-open+.42+i*.72;
-   kit.box(.64,.9,.6,x,.45,back+.38,0xf1efe8);kit.cyl(.2,.2,.03,x,.55,back+.69,0x5d7a84,{rx:Math.PI/2,segments:14,finish:'glow'});
-   kit.box(.64,.7,.6,x,1.3,back+.38,0xe6e4de);kit.cyl(.18,.18,.03,x,1.3,back+.69,0x5d7a84,{rx:Math.PI/2,segments:14,finish:'glow'});
-  }
-  kit.box(open*1.2,.42,.4,0,.21,D-1.2,0x3a6a9a);kit.box(.3,.2,.22,open*.4,.52,D-1.2,0xe0c060);
+  // The coin laundry's machines, bench, board, manga, change machine, powder box and folding counter (coin-laundry-dressing.js).
+  furniture.push(...laundryInterior(kit));
  }else if(kind==='liquor'){
-  // Bottles, tall and in rows, and the clay pots at the back that are not for sale.
-  shelves(4,[0x3b4a2c,0x6a4a2a,0xd8d0b0,0x2c5a6a,0x8a3b2e],true);
-  for(const x of [-open*.6,open*.6]){
-   kit.sphere(.34,x,.34,back+1.3,0x6a4a36,{sy:1.1,finish:'gloss'});
-   furniture.push(kit.rect(x-.34,x+.34,back+.96,back+1.64,.714,'liquor-pot'));
-  }
-  counter(0,open*.8);
+  // Higa Liquor's counter, shelves, cold case, jars and the family kusu (higa-liquor-dressing.js).
+  furniture.push(...higaInterior(kit));
  }else{
   shelves();
   counter(-open*.3,open*1.1);
