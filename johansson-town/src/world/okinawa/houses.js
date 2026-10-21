@@ -3,6 +3,7 @@ import {rng} from './kit.js';
 import {fishAt} from './fish.js';
 import {wallAd,WALL_ADS} from './signs.js';
 import {broadleaf} from './trees.js';
+import {nakamuraBuilding} from './nakamura-dressing.js';
 
 /**
  * The buildings and gardens of an Okinawan harbour town, made with the kit.
@@ -200,6 +201,9 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
   kit.box(.06,2.04,.93,2.14,1.1,D-.455,0x416d72);
   kit.box(1.05,2,.08,1.65,ground+1,-2.8,0x416d72);
   furniture.push(kit.rect(1.13,W+.05,-D-.05,-2.85,H+.6,'nakamura-stair-rear'),kit.rect(W-.2,W+.05,-2.85,back,H+.6,'nakamura-stair-side'),kit.rect(1.03,1.12,-2.85,D,ground,'nakamura-stair-partition'),...rails);
+
+  // Nakamura's slab band, coping, hoods, side and back windows, services and plants (nakamura-dressing.js).
+  furniture.push(...nakamuraBuilding(kit,{trim}));
  }
  // The rolled-up shutter's box over the opening, and the fascia board above it.
  kit.block(-open,open,ground-.42,ground-.08,D-.35,D-.05,0x8e9699,'metal');
@@ -216,7 +220,8 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
   kit.box(.04,1.12,.06,x,ground+1.55,D+.07,0xb8bec0,{finish:'metal'});
   kit.box(1.8,.07,.18,x,ground+.9,D+.08,0xc9c2b4);
  }
- kit.box(.72,.5,.26,0,ground+2.25,D+.14,0xe2e0d8);
+ // (Nakamura's hangs lower, between the windows under their hoods: nakamura-dressing.js.)
+ if(interior!=='zenzai')kit.box(.72,.5,.26,0,ground+2.25,D+.14,0xe2e0d8);
  // The tall board stands off the front corner, square to it, so it reads from up and
  // down the street.
  if(upright){

@@ -355,7 +355,7 @@ export function createTown(options){
 
   buildIzakaya(world,options);
   buildPark(world,options);
-  world.blueCoral=buildBlueCoralShop({world,group:world.group,register:options.register,onAction:options.onAction,sites:options.sites});
+  world.blueCoral=buildBlueCoralShop({world,group:world.group,register:options.register,onAction:options.onAction,sites:options.sites,shadows:options.shadows});
   const plants=buildStreetPlants(world.group,world.plantSites,options);
   if(world.plantSites.length&&!plants.count)registerDetail(world,{id:'street-plants',x:0,z:20,radius:70,load:async()=>{
     if(!await preloadStreetPlants())return false;buildStreetPlants(world.group,world.plantSites,options);return true;

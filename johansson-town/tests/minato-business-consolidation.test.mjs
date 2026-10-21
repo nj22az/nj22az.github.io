@@ -18,7 +18,9 @@ test('the Rainflower pavilion is gone (phase 4, addendum 3): no builder, no flor
 test('Nakamura serves the preserved Blue Coral items and soda through one hours-aware menu',()=>{
  installDOM();const world={group:new THREE.Group(),colliders:[]},prompts=[],actions=[];
  const shop=buildBlueCoralShop({world,register:(object,label,run)=>prompts.push({object,label,run}),onAction:(...args)=>actions.push(args)});
- assert.equal(prompts.length,2);assert.equal(shop.merged,true);assert.equal(world.colliders.length,0);assert.ok(world.landmarks.some(p=>p.id==='nakamura'));assert.ok(world.landmarks.some(p=>p.id==='home-nakamura'));
+ assert.equal(prompts.length,2);assert.equal(shop.merged,true);
+ // Nothing solid of its own: the one collider is the bench parasol's canopy, above anyone's head, for the camera (nakamura-dressing.js).
+ assert.deepEqual(world.colliders.map(c=>c.id),['nakamura-parasol-canopy']);assert.ok(world.colliders[0].minY>1.9);assert.ok(world.landmarks.some(p=>p.id==='nakamura'));assert.ok(world.landmarks.some(p=>p.id==='home-nakamura'));
  shop.update(600);prompts[0].run();assert.equal(actions[0][0],'dessert-menu');assert.deepEqual(actions[0][2].map(p=>[p.item,p.cost]),[['Zenzai',250],['Sata andagi',120],['Blue Coral ice cream',150],['Green tea',120],['Cold island soda',100]]);
  shop.update(1140);for(const p of prompts){p.run();assert.equal(actions.at(-1)[0],'read');}assert.equal(dessertShopOpen(1139),true);assert.equal(dessertShopOpen(1140),false);
  assert.equal(NEIGHBOURS.filter(n=>n.name==='Mrs Nakamura').length,1);assert.deepEqual(NEIGHBOURS.find(n=>n.name==='Mrs Nakamura').at,NAKAMURA_DESSERTS.staffAt);
