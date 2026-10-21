@@ -110,7 +110,7 @@ export const TOWN_PAPERS=[
     "type": "Notice",
     "title": "Ferry departures",
     "organisation": "Town Services",
-    "text": "The shared car and passenger ferry crosses to Kitano-jima on request. Buy a return passenger ticket at the airport-ferry window (Ms Ganaha, noon to 22:15; in the morning from the oiler at the gangway) and board from the outer pier. The evening boat to Naha opens at 17:00. Post and parcels are handled at the same window.",
+    "text": "The Minato Maru, the shared car and passenger ferry, crosses to Kitano-jima to her timetable and does not wait: out of Minato at 07:30, 08:45, 14:45 and 22:15, back from Kitano-jima at 08:08, 14:08, 21:38 and 22:45; her horn goes two minutes before she sails. Buy a return passenger ticket at the airport-ferry window (Ms Ganaha, noon to 22:15; in the morning from the oiler at the gangway) and board from the outer pier. The evening boat to Naha opens at 17:00. Post and parcels are handled at the same window.",
     "source": "notice:Ferry departures"
   },
   {

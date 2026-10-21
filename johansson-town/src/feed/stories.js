@@ -57,6 +57,43 @@ export const GENRES=Object.freeze([
     {say:null,line:'It was tomorrow’s timetable.',shot:'wide',sfx:'…',a:['Shrug','surprised'],b:['Laugh','laugh']},
     {say:'A',line:'I meant to do that. I like running.',shot:'close',a:['HandsOnHips','shy'],b:['Laugh','laugh']}],
   ]},
+ // The Minato Maru keeps her timetable and does not wait (world/ferry-timetable.js; the owner, 21 October 2026): the last
+ // boat home at a quarter past ten, the boat missed by a minute, and seeing somebody off from the quay. `lead` is who the
+ // story is usually about: Thuan shuts Sakura and takes the 22:15 home to Kitano-jima.
+ {id:'last-boat',lead:'Thuan',places:['pier','harbour','ferry'],title:['The last boat home','A quarter past ten','{A} and the 22:15'],cast:2,
+  beats:[
+   [{say:null,line:'Thirteen minutes past ten. The last boat home goes at a quarter past.',shot:'wide',a:['Idle','neutral'],b:['Idle','neutral']},
+    {say:'A',line:'Two minutes. That is the horn.',shot:'medium',sfx:'BWOOOO',a:['Think','surprised'],b:['Idle','neutral']}],
+   [{say:'B',line:'Go! She does not wait!',shot:'close',a:['Idle','surprised'],b:['Point','surprised']},
+    {say:'A',line:'The till roll! The shutter! My other shoe!',shot:'dutch',sfx:'DASH DASH',a:['Shrug','worried'],b:['Point','surprised']}],
+   [{say:null,line:'{A} reached the gangway as the deck hand went to stow it.',shot:'low',sfx:'DASH DASH',a:['HeelKick','surprised'],b:['Cheer','happy']},
+    {say:null,line:'The gangway came in behind {A}, on the right side of it.',shot:'high',sfx:'CLANK',a:['HandsOnHips','happy'],b:['Clap','laugh']}],
+   [{say:'A',line:'Same time tomorrow.',shot:'medium',a:['Wave','smile'],b:['Wave','smile']},
+    {say:null,line:'From the rail, {A} waved at {B} on the quay until the breakwater.',shot:'wide',a:['Wave','happy'],b:['Wave','smile']},
+    {say:null,line:'The shoe stayed on the quay. It took the first boat over in the morning.',shot:'close-thing',sfx:'…',a:['Shrug','surprised'],b:['Laugh','laugh']}],
+  ]},
+ {id:'missed-boat',places:['pier','harbour'],title:['Missed it','{A} and the gangway','The boat that did not wait'],cast:2,
+  beats:[
+   [{say:null,line:'{A} reached the pier as her gangway went in.',shot:'wide',sfx:'BWOOOO',a:['HeelKick','surprised'],b:['Idle','neutral']},
+    {say:'A',line:'Wait! WAIT!',shot:'close',sfx:'BWOOOO',a:['Point','worried'],b:['Idle','neutral']}],
+   [{say:'B',line:'She does not wait. Not for the chief engineer, not for the fish.',shot:'medium',a:['Shrug','sad'],b:['Shrug','smile']},
+    {say:'B',line:'Next one is on the board.',shot:'medium',a:['Think','worried'],b:['Point','smile']}],
+   [{say:null,line:'The Minato Maru got smaller and smaller.',shot:'wide',a:['Idle','sad'],b:['Idle','neutral']},
+    {say:'A',line:'Five hours. What do people do for five hours?',shot:'close',a:['Think','worried'],b:['Idle','smile']}],
+   [{say:null,line:'{A} spent five hours on the bench and made three friends and one enemy, a gull.',shot:'high',a:['Laugh','laugh'],b:['Laugh','laugh']},
+    {say:'B',line:'At least you will be first on.',shot:'medium',a:['Shrug','content'],b:['Peace','happy']},
+    {say:null,line:'This time {A} was on the pier an hour early.',shot:'wide',a:['HandsOnHips','content'],b:['Clap','laugh']}],
+  ]},
+ {id:'seeing-off',places:['pier','harbour','ferry'],title:['Waving from the quay','Seeing {A} off','Until the breakwater'],cast:2,
+  beats:[
+   [{say:null,line:'The horn. Two minutes before she sails. {B} came down to see {A} off.',shot:'wide',sfx:'BWOOOO',a:['Idle','smile'],b:['Idle','smile']}],
+   [{say:'B',line:'Wave when you pass the breakwater!',shot:'medium',a:['Idle','happy'],b:['Wave','happy']},
+    {say:'A',line:'I am only going for the afternoon.',shot:'medium',a:['Shrug','smile'],b:['Wave','happy']}],
+   [{say:null,line:'{A} waved from the rail. {B} waved from the quay. A gull waved back, or nearly.',shot:'wide',a:['Wave','happy'],b:['Wave','happy']},
+    {say:null,line:'{A} waved. So did a man on the pier {A} had never met.',shot:'high',a:['Wave','surprised'],b:['Wave','laugh']}],
+   [{say:null,line:'{B} was still on the quay when she came back at half past two.',shot:'wide',sfx:'…',a:['Wave','surprised'],b:['Wave','happy']},
+    {say:'A',line:'You waited?',shot:'close',a:['Think','surprised'],b:['Peace','shy']}],
+  ]},
  {id:'showdown',title:['Showdown at {place.short}','The last {$prize}','High noon at {place.short}'],cast:2,
   bind:{prize:['{food}','{snack}','seat by the window','copy of the evening paper','umbrella']},
   beats:[

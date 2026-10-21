@@ -14,7 +14,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
-import {STREET_CAST_NAMES} from '../src/people/residents.js';
+import {CAST_NAMES} from '../src/people/cast.js';
 import {residentCards,canonicalHomeSites} from '../src/people/home-directory.js';
 
 // The town's clock follows the real one (town-clock.js), so without this the smoke test
@@ -28,6 +28,11 @@ import {residentCards,canonicalHomeSites} from '../src/people/home-directory.js'
   static now(){return base+RealDate.now()-started;}
  };
 }
+// Explicit post-consolidation addresses: removing a working door still fails this smoke.
+// Keep the visit expectation tied to this independent inventory, not the runtime's SITES.
+const EXPECTED_SITES=['clinic','community-kitchen','form3d','frontrow','home-clinic','home-higa','home-kitahama-3','home-kitahama-8','home-kitahama-flat-3','home-kitahama-flat-4','home-kitano-2','home-nakamura','izakaya','koban','market','mayor-home','office','onsen','ramen','resident-home-kenji','resident-home-mrs-sato','resident-home-thuan','school'];
+// Fourteen core households plus supporting accommodation and duty berths (CAST-CONSOLIDATION-REPORT.md).
+const EXPECTED_HOME_DESTINATIONS=['ferry-chief-cabin','ferry-crew-cabin','ferry-engineer-duty-berth','ferry-officer-cabin','fujita-houseboat','home-clinic','home-higa','home-kitahama-3','home-kitahama-8','home-kitahama-flat-3','home-kitahama-flat-4','home-kitano-2','home-nakamura','koban','mayor-home','office','resident-home-kenji','resident-home-mrs-sato','resident-home-thuan'];
 const root=resolve(new URL('..',import.meta.url).pathname);
 const fixtures=await import(pathToFileURL(resolve(root,'tests/fixtures.mjs')).href);
 import {provideCatalog} from './catalog-fixture.mjs';
@@ -62,6 +67,9 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     const createElement=document.createElement.bind(document);
     document.createElement=tag=>{const element=createElement(tag);element.tagName=tag.toUpperCase();element.ownerDocument=document;
       element.prepend=(...items)=>element.children.unshift(...items);return element;};
+    // Native panels mount styles in the head and add their tile by element ID.
+    document.head=document.createElement('head');
+    document.getElementById=id=>document.querySelector('#'+id);
     Object.assign(document.querySelector('#minimap'),{width:720,height:620});
     // The game starts at one of several openings (world/openings.js); this test walks from the Sakura bench.
     globalThis.location.search='?spawn=sakura-bench&cinematic=off';
@@ -122,8 +130,8 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     const {BOOKSHOP_WORKSHOP_ROOM}=await import('../src/world/bookshop-workshop-layout.js');
     const {SAKURA_SHOP}=await import('../src/world/sakura-bench.js');
     const {circleHitsRect}=await import('../physics.js?snappy=1');
-    assert.deepEqual(api.SITES.map(s=>s.id).sort(),['clinic','community-kitchen','form3d','frontrow','home-fumoto-1','home-fumoto-2','home-fumoto-3','home-fumoto-4','home-kitahama-10','home-kitahama-11','home-kitahama-12','home-kitahama-3','home-kitahama-4','home-kitahama-5','home-kitahama-6','home-kitahama-7','home-kitahama-8','home-kitahama-9','home-kitano-2','home-kitano-3','izakaya','koban','market','mayor-home','office','onsen','ramen','resident-home-aya','resident-home-kenji','resident-home-mrs-sato','resident-home-thuan','school']);
-    assert.deepEqual(api.world.landmarks.map(s=>s.id).sort(),['airport-island','aoba-utaki','aoba-viewpoint','ferry-terminal','fumoto','harbour-park','home-kitahama-flat-3','home-kitahama-flat-4','hoshizaki','nakamura','rainflower-florist','warehouse','west-lighthouse']);
+    assert.deepEqual(api.SITES.map(s=>s.id).sort(),EXPECTED_SITES);
+    assert.deepEqual(api.world.landmarks.map(s=>s.id).sort(),['airport-island','ferry-terminal','fujita-houseboat','harbour-park','home-clinic','home-higa','home-kitahama-flat-3','home-kitahama-flat-4','home-nakamura','nakamura','warehouse']);
     assert.deepEqual(api.world.harbourShops.map(s=>s.id).sort(),['form3d','frontrow','office']);
     assert.ok(api.world.group.getObjectByName('west-shop:frontrow'));
     assert.equal(api.world.group.getObjectByName('west-shop:form3d'),undefined,'Only one bookshop/workshop exterior');
@@ -181,13 +189,13 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     const section=id=>{const tab=directoryNodes().find(b=>b.tagName==='BUTTON'&&b.dataset?.townFilter===id);assert.ok(tab,'Town Book section: '+id);tab.onclick();};
     directory();section('places');{const dock=find('form3d');assert.ok(dock&&/Dock/.test(dock.children[0]?.textContent||''),'The dock workshop remains an explicit public destination');}
     const publicIds=directoryNodes().filter(b=>b.dataset?.id).map(b=>b.dataset.id);
-    for(const id of ['frontrow','form3d','market','clinic','office','koban','izakaya','onsen','harbour-park','rainflower-florist','nakamura'])assert.ok(publicIds.includes(id),'Public business or place remains in Places: '+id);
-    for(const id of ['aoba-garden','rainflower-lane','home-kitahama-flat-3','home-kitahama-flat-4','home-tamaki','home-kamiya'])assert.ok(!publicIds.includes(id),'Retired or vacant address is not a public destination: '+id);
+    for(const id of ['frontrow','form3d','market','clinic','office','koban','izakaya','onsen','harbour-park','school','community-kitchen','nakamura'])assert.ok(publicIds.includes(id),'Public business or place remains in Places: '+id);
+    for(const id of ['aoba-garden','rainflower-lane','rainflower-florist','home-kitahama-flat-3','home-kitahama-flat-4','home-tamaki','home-kamiya'])assert.ok(!publicIds.includes(id),'Retired or vacant address is not a public destination: '+id);
     assert.equal(new Set(publicIds).size,publicIds.length,'Public destinations appear once');
     api.world.group.updateMatrixWorld(true);
     const homeTargets=canonicalHomeSites(residentCards({sites:api.SITES,landmarks:api.world.landmarks,people:api.world.people,neighbours:api.world.neighbours,minutes:600}));
-    section('homes');assert.equal(homeTargets.length,24);assert.deepEqual(directoryNodes().filter(b=>b.dataset?.id).map(b=>b.dataset.id).sort(),homeTargets.map(h=>h.id).sort(),'Every occupied home has one address action');
-    section('people');assert.equal(directoryNodes().filter(b=>b.dataset?.personId).length,31,'The full cast is discoverable');
+    section('homes');assert.deepEqual(homeTargets.map(h=>h.id).sort(),EXPECTED_HOME_DESTINATIONS);assert.deepEqual(directoryNodes().filter(b=>b.dataset?.id).map(b=>b.dataset.id).sort(),homeTargets.map(h=>h.id).sort(),'Every occupied home has one address action');
+    section('people');assert.deepEqual(directoryNodes().filter(b=>b.dataset?.personId).map(b=>b.dataset.personId).sort(),[...CAST_NAMES].sort(),'The live cast is discoverable exactly once');
     const walkingStart=api.player.position.clone();
     for(const [filter,ids]of [['places',publicIds],['homes',homeTargets.map(h=>h.id)]])for(const id of ids){
       directory();section(filter);assert.equal(find(id).dataset.travel,'locked');assert.equal(shortcut(id),undefined,'No shortcut before favours: '+id);
@@ -261,13 +269,14 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
       assert.equal(api.reviewRoomState().townVisible,true);assert.equal(api.reviewRoom().getObjectByName('Minato CRT television'),undefined);
       assertFiniteTransforms(api,'outside '+site.id);visited.add(site.id);
     }
-    assert.deepEqual([...visited].sort(),['clinic','community-kitchen','form3d','frontrow','home-fumoto-1','home-fumoto-2','home-fumoto-3','home-fumoto-4','home-kitahama-10','home-kitahama-11','home-kitahama-12','home-kitahama-3','home-kitahama-4','home-kitahama-5','home-kitahama-6','home-kitahama-7','home-kitahama-8','home-kitahama-9','home-kitano-2','home-kitano-3','izakaya','koban','market','mayor-home','office','onsen','ramen','resident-home-aya','resident-home-kenji','resident-home-mrs-sato','resident-home-thuan','school','warehouse']);
+    assert.deepEqual([...visited].sort(),[...EXPECTED_SITES,'warehouse'].sort());
 
-    // After afternoon shopping staff resume work, or remain the actual driver of
-    // their scheduled delivery. Opening a workplace must not duplicate a driver.
+    // The afternoon bookshop/workshop shift has Nhung and Tetsuo ashore.
+    // Chin is signed on aboard, not afternoon workshop staff; Reiko is retired.
+    // Opening a workplace must not duplicate a driver or borrow the ferry's motorman.
     const {createResidentLedger}=await import('../src/people/resident-personalities.js');
-    const ledger=createResidentLedger(()=>api.activities.state),staffNames=['Nhung','Chin','Reiko','Tetsuo'].filter(name=>STREET_CAST_NAMES.includes(name));
-    const placeOf={Nhung:'frontrow',Reiko:'frontrow',Chin:'form3d',Tetsuo:'form3d'};
+    const ledger=createResidentLedger(()=>api.activities.state),staffNames=['Nhung','Tetsuo'];
+    const placeOf={Nhung:'frontrow',Tetsuo:'form3d'};
     for(const name of staffNames)ledger.account(name,1050).shopping={finished:true};
     api.reviewSetMinutes(1050);api.player.position.set(0,0,14);
     const staff=api.world.people.filter(p=>staffNames.includes(p.profile.name));
@@ -275,6 +284,9 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     const workshop=api.SITES.find(s=>s.id==='form3d');
     for(const site of [books,workshop]){
      await api.enterRoom(site);
+     const chin=api.world.people.find(p=>p.profile.name==='Chin');
+     assert.equal(chin.g.userData.aboardFerry,true,'Chin stays signed on aboard during the working day');
+     assert.equal(chin.g.userData.inWorkplace,undefined,'Opening a shore workplace does not borrow Chin');
      for(const name of staffNames.filter(n=>placeOf[n]===site.id)){
       const p=api.world.people.find(p=>p.profile.name===name);assert.equal(p.profile.workSite,site.id);
       if(p.g.userData.inVehicle){

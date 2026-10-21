@@ -13,6 +13,7 @@ import {airportShoreDistance} from '../src/world/airport-island.js';
 import {FERRY_RAMP,FERRY_DECKS} from '../src/world/ferry-model.js';
 import {FERRY_BERTH} from '../src/world/ferry.js';
 import {ferryServiceFixture} from './ferry-service-fixture.mjs';
+import {FERRY_WARNING_MINUTES} from '../src/world/ferry-timetable.js';
 import {createTownTraffic} from '../src/world/town-traffic.js';
 import {KITANO_ROAD_LENGTH,roadPoint,kitanoRoadAt} from '../src/world/kitano-link-plan.js';
 import {buildKitanoLink} from '../src/world/kitano-link.js';
@@ -115,39 +116,47 @@ test('she moves like a ship: no snaps, her speed continuous, her turns within wh
  for(const [plan,label] of [[out,'out'],[inn,'in']]){const s=plan.signals.find(s=>s.at>0);assert.ok(s&&s.kind==='prolonged',label);const p=plan.pose(s.at);assert.ok(end([p.x,p.z])<16,label+' blast is sounded at the breakwater’s end, not '+end([p.x,p.z]).toFixed(0)+' m away');}
 });
 
-function playerService(){
- const s=ferryServiceFixture(),q=QUICK_CROSSING.town;
+/** The Minato Maru's 08:45 out of Minato (world/ferry-timetable.js): she begins preparing it herself at 08:42. */
+const OUT=8*60+45;
+function playerService(minute=OUT-3.1){
+ const s=ferryServiceFixture({minute}),q=QUICK_CROSSING.town;
  // A waiting observer stands on the pier, clear of the working passenger gangway.
  s.player.position.set(q.stand[0],q.ground,q.stand[1]);return s;
 }
 function trafficStub(s,values){const traffic={update(){}};Object.defineProperties(traffic,Object.getOwnPropertyDescriptors(values));s.world.traffic=traffic;s.run.bindVehicleController(traffic);return traffic;}
 
-test('one hull carries the player both ways, preserves saves and returns at safe heights',()=>{
+test('one hull carries the player both ways on her timetable, preserves saves and returns at safe heights',()=>{
  const s=playerService();assert.equal(s.group.children.filter(o=>/ferry/i.test(o.name)&&o.isGroup).length,1);
- s.play.action('airport-ferry');s.chooseDeparture();s.tick(0);assert.equal(s.run.phase,'preparing');assert.equal(s.play.cinematic,false);s.complete();
- assert.equal(s.run.berth,'airport');assert.equal(s.state.island.journey.location,'airport');assert.equal(s.state.island.visits,1);
- assert.equal(s.aboard(),true,'He remains on the supported passenger deck to walk ashore');assert.equal(s.run.canUnload,true);assert.equal(s.state.yen,1000-FERRY_FARE);
+ s.play.action('airport-ferry');s.choose('Go aboard for the 08:45');s.tick(0);assert.equal(s.play.cinematic,false);assert.ok(s.aboard());
+ s.until(()=>s.state.island.journey.location==='airport',{seconds:2400,step:.25});
+ assert.equal(s.run.berth,'airport');assert.equal(s.state.island.visits,1);
+ s.until(()=>s.run.canUnload,{seconds:300,step:.25});assert.equal(s.aboard(),true,'He remains on the supported passenger deck to walk ashore');assert.equal(s.state.yen,1000-FERRY_FARE);
  s.state.yen=0;s.state.island.journey.roundTrip=false; // Old save with a missing fare flag must still get home.
- s.play.action('airport-return');s.chooseDeparture();s.complete();
- assert.equal(s.run.berth,'town');assert.equal(s.state.island.journey.location,'town');assert.equal(s.aboard(),true);assert.equal(s.run.canUnload,true);
+ // Ashore on Kitano-jima's pier; her next sailing home is the 14:08, and he waits for it at the window.
+ const k=AIRPORT_FERRY_PORTS.airport;s.player.position.set(k.landing[0],k.height,k.landing[1]);assert.equal(s.aboard(),false);
+ s.play.action('airport-return');s.choose('Wait for the 14:08 boat');s.tick(.1);assert.equal(s.run.berth,'airport');
+ s.play.action('airport-return');s.choose('Go aboard for the 14:08');assert.ok(s.aboard());
+ s.until(()=>s.state.island.journey.location==='town',{seconds:2400,step:.25});
+ assert.equal(s.run.berth,'town');assert.equal(s.aboard(),true);s.until(()=>s.run.canUnload,{seconds:300,step:.25});
  assert.equal(s.state.yen,0);assert.deepEqual(s.state.inventory,['Saved keepsake']);assert.equal(s.state.island.treasury,43210);
 });
 
-test('calling from the opposite shore brings the same empty hull before boarding',()=>{
- const s=playerService();s.run.parkAt('airport');s.player.position.set(...[AIRPORT_FERRY_PORTS.town.landing[0],.098,AIRPORT_FERRY_PORTS.town.landing[1]]);
- const before=s.run.ferry.position.clone(),playerBefore=s.player.position.clone();
- s.play.action('airport-ferry');s.chooseDeparture();s.tick(0);
- assert.equal(s.run.destination,'town');assert.ok(s.run.ferry.position.distanceTo(before)<.04,'Hull teleported to the passenger');
- s.tick(1);assert.deepEqual(s.player.position.toArray(),playerBefore.toArray(),'Passenger moved during empty pickup');
- s.complete();assert.equal(s.state.island.journey.location,'airport');assert.equal(s.state.island.visits,1);assert.equal(s.aboard(),true);assert.equal(s.run.canUnload,true);
+test('missed her: the window shows the next sailing, and waiting for it brings him to the pier with her alongside',()=>{
+ const s=playerService(OUT+5);assert.equal(s.run.berth,'airport','she has gone at 08:45');
+ s.play.action('airport-ferry');assert.match(s.menu.text,/Next sailing: 14:08 from Kitano-jima/);assert.match(s.menu.text,/quick crossing/i);
+ s.choose('Wait for the 14:45 boat');
+ assert.ok(s.minutes>=14*60+39&&s.minutes<14*60+45-FERRY_WARNING_MINUTES,'time passes to just before her ('+s.minutes+')');
+ s.tick(.1);assert.equal(s.run.berth,'town','she is alongside at Minato, in from Kitano-jima');assert.equal(s.run.operation,null);
+ const p=AIRPORT_FERRY_PORTS.town;assert.deepEqual(s.arrivals.at(-1),{x:p.landing[0],z:p.landing[1],y:p.height});
+ s.play.action('airport-ferry');s.choose('Go aboard for the 14:45');assert.ok(s.aboard());
 });
 
-test('loading keeps passengers off vehicle lanes and waits for actual boarding readiness',()=>{
+test('loading keeps passengers off vehicle lanes, waits for a car already on her ramp, and not for one still on the road',()=>{
  const s=playerService(),berth=s.run.ferry.position.clone();let loading=true;
  trafficStub(s,{prepareCrossing:()=>!loading,get loadingVehicles(){return loading;}});
- s.play.action('airport-ferry');s.chooseDeparture();s.tick(0);
+ s.play.action('airport-ferry');s.choose('Go aboard');s.tick(0);
  s.until(()=>s.run.operation?.plant.ready&&s.run.operation.blocking==='Waiting for the vehicle on the loading route.');
- assert.equal(s.run.phase,'preparing');assert.ok(s.run.ferry.position.distanceTo(berth)<.04,'Readiness cannot move the hull during loading');s.run.ferry.updateMatrixWorld(true);
+ assert.equal(s.run.phase,'preparing');assert.ok(Math.hypot(s.run.ferry.position.x-berth.x,s.run.ferry.position.z-berth.z)<.04,'Readiness cannot move the hull during loading (she heaves on the swell)');s.run.ferry.updateMatrixWorld(true);
  const local=s.player.position.clone().applyMatrix4(s.run.ferry.matrixWorld.clone().invert());
  // Passengers ride on the open upper deck, never on the car deck among the cars.
  const [px,py,pz]=FERRY_DECKS.passenger;assert.ok(local.distanceTo(new THREE.Vector3(px,py,pz))<1e-6);
@@ -160,53 +169,50 @@ test('loading keeps passengers off vehicle lanes and waits for actual boarding r
  assert.ok(Math.abs(local.x)+.32<1.5-.28,'Passenger stands in a ventilator');
  const [u,v]=airportLocal(...AIRPORT_LANDING);assert.ok(Math.abs(v-31)>1.5,'Airport waiting point blocks vehicle lane');
  assert.ok(airportSurface(...AIRPORT_LANDING,.32));
+ // A car on her ramp at her time: she waits for it to be aboard, then goes.
+ s.until(()=>s.minutes>=OUT+.5);assert.equal(s.run.operation.stage,'preparing','the car on the ramp is waited for');
  loading=false;s.until(()=>s.run.operation?.stage==='securing');assert.equal(s.run.phase,'preparing');
+ // A car still on the road at her time misses her.
+ const t=playerService();trafficStub(t,{prepareCrossing:()=>false,loadingVehicles:0});
+ t.until(()=>t.run.operation?.stage==='securing');assert.ok(t.minutes>=OUT&&t.minutes<OUT+.1,'she does not wait for it');
 });
 
-test('an owned car reaches the opposite shore with its existing driver without a player ferry ride',()=>{
- const s=playerService(),g=new THREE.Group();g.name='Thao';g.visible=false;g.userData.indoors='home';s.group.add(g);
+test('an owned car rides her next sailing to the opposite shore with its existing driver, without a player ferry ride',()=>{
+ // Her 14:08 from Kitano-jima, the commuter boat in at 14:30 (world/ferry-timetable.js).
+ const s=playerService(14*60+8-12),g=new THREE.Group();g.name='Thao';g.visible=false;g.userData.indoors='home';s.group.add(g);
+ assert.equal(s.run.berth,'airport');
  s.world.people.push({profile:{name:'Thao'},g});
  s.world.traffic=createTownTraffic({parent:s.group,colliders:s.world.colliders,ferry:s.run,people:()=>s.world.people});
  const car=s.world.traffic.fleet.find(v=>v.owner==='Thao'),playerBefore=s.player.position.clone(),cameraBefore=s.camera.matrixWorld.clone();
- let emptyPickup=false,loadedCrossing=false,boarding=false,unloading=false,parked=false;
+ // Her errand to Minato this afternoon: wanted in town from now until the 14:45 back.
+ car.appointment={leave:14*60+8-11,back:14*60+45-20};
+ let loadedCrossing=false,boarding=false,unloading=false,parked=false,sailing=null;
  for(let i=0;i<24000;i++){
   s.tick(.1);
   const at=s.world.traffic.snapshot().find(v=>v.id===car.id);
   boarding||=at.transfer==='on';unloading||=at.transfer==='off';
-  if(s.run.automaticCrossing){
-   emptyPickup||=s.run.destination==='airport'&&at.location!=='aboard';
-   if(s.run.destination==='town'&&at.location==='aboard'&&['passage','arriving'].includes(s.run.operation.stage)){
-    loadedCrossing=true;assert.equal(g.parent,s.run.ferry,'The same driver walks to the passenger deck');assert.equal(g.userData.ferryPassenger,car.id);assert.equal(at.occupied,false);assert.equal(at.securing.progress,1);assert.equal(at.driverState.mode,'passenger');
-   }
+  if(s.run.destination==='town'&&at.location==='aboard'&&['passage','arriving'].includes(s.run.operation.stage)){
+   loadedCrossing=true;sailing=s.run.operation.sailing;assert.equal(g.parent,s.run.ferry,'The same driver walks to the passenger deck');assert.equal(g.userData.ferryPassenger,car.id);assert.equal(at.occupied,false);assert.equal(at.securing.progress,1);assert.equal(at.driverState.mode,'passenger');
   }
-  assert.equal(s.play.active,false,'Automatic cargo took control of the player');
+  assert.equal(s.play.active,false,'Cargo took control of the player');
   assert.deepEqual(s.player.position.toArray(),playerBefore.toArray());assert.deepEqual(s.camera.matrixWorld.elements,cameraBefore.elements);
   if(loadedCrossing&&at.location==='service'&&at.shore==='town'){parked=true;break;}
  }
- assert.ok(emptyPickup,'Remote cargo was never collected');assert.ok(boarding&&loadedCrossing&&unloading&&parked,'The car did not complete driving, loading, crossing and parking');
+ assert.ok(boarding&&loadedCrossing&&unloading&&parked,'The car did not complete driving, loading, crossing and parking');
+ assert.equal(sailing,'in-1','on her timetabled 14:08');
  assert.equal(s.group.children.filter(o=>/ferry/i.test(o.name)&&o.isGroup).length,1);
  assert.equal(s.state.island.journey.location,'town');assert.equal(s.state.island.visits,0);assert.equal(s.state.yen,1000);
- assert.deepEqual(s.timePasses,[],'An automatic car voyage does not jump the town clock');
+ assert.deepEqual(s.timePasses,[],'A car voyage does not jump the town clock');
 });
 
-test('automatic crossings wait for vehicle transfer, and passenger requests preserve their progress',()=>{
- const s=playerService();let transfer=true;
- trafficStub(s,{pendingVehicleJourney:()=>({id:'car',origin:'town',destination:'airport'}),prepareCrossing:()=>!transfer,get loadingVehicles(){return transfer;}});
- s.tick(1);assert.equal(s.run.phase,'preparing','An unfinished transfer remains in departure preparation');
- s.until(()=>s.run.operation?.plant.ready&&s.run.operation.blocking==='Waiting for the vehicle on the loading route.');
- assert.equal(s.run.crossingProgress,0);transfer=false;assert.equal(s.run.automaticCrossing,true);
- s.until(()=>s.run.operation?.stage==='passage');s.tick(5);const progress=s.run.crossingProgress,position=s.run.ferry.position.clone(),cameraBefore=s.camera.position.clone();
- s.play.tick(4);assert.equal(s.run.crossingProgress,progress,'The island observer does not advance the world clock a second time');
- assert.equal(s.run.beginCrossing('town'),false,'Another request restarted the hull mid-crossing');
- s.play.action('airport-ferry');s.chooseDeparture();
- assert.equal(s.play.phase,'awaiting-boat');assert.equal(s.run.crossingProgress,progress);assert.equal(s.run.ferry.position.distanceTo(position),0);
- const waiting=s.player.position.clone();s.tick(1);
- assert.ok(s.run.crossingProgress>progress);assert.deepEqual(s.player.position.toArray(),waiting.toArray());assert.deepEqual(s.camera.position.toArray(),cameraBefore.toArray());
- // The cargo trip finishes at airport, so the same hull returns to collect this town passenger.
- s.world.traffic.pendingVehicleJourney=()=>null;s.until(()=>!s.play.active,{seconds:3600});
- assert.equal(s.state.island.journey.location,'airport');assert.equal(s.run.berth,'airport');assert.equal(s.state.island.visits,1);
+test('no request moves her: a car waiting, the window or the purser asked between sailings, she lies alongside until her time',()=>{
+ const s=playerService(10*60);let asked=0;
+ trafficStub(s,{pendingVehicleJourney:()=>{asked++;return {id:'car',origin:'airport',destination:'town'};},prepareCrossing:()=>true,loadingVehicles:0});
+ assert.equal(s.run.berth,'airport');
+ s.play.action('airport-return');assert.ok(!s.menu.buttons.some(([l])=>/Request|Board the local/.test(l)),'nothing to ask her for');s.activities.close();
+ s.tick(60);assert.equal(s.run.operation,null,'she lies alongside');assert.equal(asked,0,'nobody asks the cars for a crossing');
+ assert.equal(s.run.beginCrossing('town'),true,'the run itself still takes an order (the timetable gives them)');
 });
-
 test('a landing sign at each end stands clear of her gangway, her lines, the queue and the cars’ lane',()=>{
  const s=playerService(),signs=s.anchors.filter(a=>/^Quick crossing to/.test(a.label));
  assert.deepEqual(signs.map(a=>a.label).sort(),['Quick crossing to Kitano-jima','Quick crossing to Minato']);
@@ -256,17 +262,16 @@ test('the quick crossing is his alone: free, at once, sign to sign, and the ferr
  const [fu,fv]=airportLocal(K.stand[0]+ahead(K.facing)[0],K.stand[1]+ahead(K.facing)[1]);assert.ok(Math.abs(fu-(u+1))<1e-6&&Math.abs(fv-v)<1e-6);
 });
 
-test('her own crossings with cars go on untouched by his quick crossing, and a ride is never cut short by it',()=>{
- const s=playerService();let pending=true;
- trafficStub(s,{pendingVehicleJourney:()=>pending?{id:'car',origin:'town',destination:'airport'}:null,prepareCrossing:()=>true,loadingVehicles:0});
- s.tick(0);assert.equal(s.run.automaticCrossing,true);s.until(()=>s.run.operation?.stage==='passage');s.tick(5);pending=false;
+test('her own crossings go on untouched by his quick crossing, and from aboard the sign does nothing',()=>{
+ const s=playerService();
+ s.until(()=>s.run.operation?.stage==='passage');s.tick(5);
  const progress=s.run.crossingProgress,at=s.run.ferry.position.clone();
  s.anchors.find(a=>a.label==='Quick crossing to Kitano-jima').fn();
- assert.equal(s.state.island.journey.location,'airport');assert.equal(s.run.automaticCrossing,true);
+ assert.equal(s.state.island.journey.location,'airport');assert.equal(s.run.destination,'airport');
  assert.equal(s.run.crossingProgress,progress);assert.equal(s.run.ferry.position.distanceTo(at),0);
  s.tick(1);assert.ok(s.run.crossingProgress>progress,'her crossing stopped for him');
  // Riding her, the signs do nothing until he is ashore.
- const t=playerService();t.play.action('airport-ferry');t.chooseDeparture();t.tick(0);assert.equal(t.play.phase,'ferry');
+ const t=playerService();t.play.action('airport-ferry');t.choose('Go aboard');t.tick(0);assert.ok(t.aboard());
  const where=t.state.island.journey.location;t.anchors.find(a=>a.label==='Quick crossing to Kitano-jima').fn();
- assert.equal(t.play.phase,'ferry');assert.equal(t.state.island.journey.location,where);
+ assert.ok(t.aboard());assert.equal(t.state.island.journey.location,where);
 });

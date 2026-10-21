@@ -1,6 +1,7 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {HARBOUR_LINE,BUS_DWELL,CROSSING_MINUTES} from '../../people/commuter-schedule.js';
 import {CARGO_CALLS} from '../cargo-shipping.js';
+import {FERRY_TIMETABLE} from '../ferry-timetable.js';
 import {CARGO_BOAT_LOOK} from '../harbour-boats.js';
 
 /**
@@ -30,16 +31,19 @@ export const clock=m=>{const t=((Math.round(m)%1440)+1440)%1440;return two(Math.
 export function sakuraDeparturesBoard(){
  const names=CARGO_BOAT_LOOK.names,cargo=Object.values(names).map(n=>n.bow.replace(/\s+/g,''));
  const ferry=HARBOUR_LINE.map(m=>({in:clock(m),out:clock(m+BUS_DWELL)}));
+ // Her first boat out from her night berth and her last boat back to it (ferry-timetable.js), above and below the calls.
+ const first=FERRY_TIMETABLE[0],last=FERRY_TIMETABLE.at(-1);
  return Object.freeze({
   title:'予定表　出港・帰港',
-  ferry:Object.freeze({boat:'みなと丸',route:'港町 ⇄ 北野島',minutes:CROSSING_MINUTES,calls:Object.freeze(ferry)}),
+  ferry:Object.freeze({boat:'みなと丸',route:'港町 ⇄ 北野島',minutes:CROSSING_MINUTES,calls:Object.freeze(ferry),
+  first:Object.freeze({out:clock(first.departs)}),last:Object.freeze({out:clock(last.departs),in:clock(last.arrives)})}),
   cargo:Object.freeze({boat:cargo.join('・'),from:'那覇',alternate:true,calls:Object.freeze(CARGO_CALLS.map(c=>({in:clock(c.alongside),out:clock(c.departure)})))}),
   notes:Object.freeze([
    Object.freeze({at:ferry[0].out,jp:'コーラルベイ注文 → 北野島',why:'The Coral Bay Bar’s order goes out to Kitano-jima on the morning boat.'}),
    Object.freeze({at:ferry[2].out,jp:'タン帰宅',why:'Thuan’s boat home: the shop shuts at 20:30 and the last boat does not wait.'}),
   ]),
   english:'Departures board. Minato Maru to Kitano-jima, a '+CROSSING_MINUTES+'-minute crossing: in '+ferry.map(f=>f.in).join(', ')+', out '+ferry.map(f=>f.out).join(', ')
-   +'. The Naha cargo boat ('+Object.keys(names).join(' and ')+', on alternate days): alongside '+CARGO_CALLS.map(c=>clock(c.alongside)+' to '+clock(c.departure)).join(' and ')
+   +'; the first boat out at '+clock(first.departs)+', and the last back from Kitano-jima at '+clock(last.departs)+', in at '+clock(last.arrives)+'. She does not wait. The Naha cargo boat ('+Object.keys(names).join(' and ')+', on alternate days): alongside '+CARGO_CALLS.map(c=>clock(c.alongside)+' to '+clock(c.departure)).join(' and ')
    +'. In red: the Coral Bay Bar order on the '+ferry[0].out+', and Thuan home on the '+ferry[2].out+'.',
  });
 }
@@ -88,15 +92,17 @@ function drawSheet(ctx){
  const at=(r,draw)=>{const [x0,y0,x1,y1]=r;ctx.save();ctx.translate(x0,y0);ctx.beginPath();ctx.rect(0,0,x1-x0,y1-y0);ctx.clip();draw(x1-x0,y1-y0);ctx.restore();};
  const text=(s,x,y,px,c='#2c2620',align='left',weight='bold')=>{ctx.fillStyle=c;ctx.font=`${weight} ${px}px ${JP}`;ctx.textAlign=align;ctx.textBaseline='middle';ctx.fillText(s,x,y);};
  const B=sakuraDeparturesBoard();
- at(R.board,(w,h)=>{ctx.fillStyle='#f7f7f2';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#c9cfd2';ctx.lineWidth=2;for(let y=86;y<h;y+=46){ctx.beginPath();ctx.moveTo(14,y);ctx.lineTo(w-14,y);ctx.stroke();}
+ at(R.board,(w,h)=>{ctx.fillStyle='#f7f7f2';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#c9cfd2';ctx.lineWidth=2;for(let y=83;y<h;y+=34){ctx.beginPath();ctx.moveTo(14,y);ctx.lineTo(w-14,y);ctx.stroke();}
   text(B.title,w/2,30,30,'#1f2a44','center');
   text(B.ferry.boat+'  '+B.ferry.route+'  '+B.ferry.minutes+'分',18,66,22,'#1f2a44');
-  B.ferry.calls.forEach((c,i)=>text('着 '+c.in+'  →  発 '+c.out,40,108+i*46,26,'#1d1d1d','left','normal'));
+  // Five rows: the first boat out, the three calls, the last boat back from Kitano-jima.
+  const rows=['始発　　　　発 '+B.ferry.first.out,...B.ferry.calls.map(c=>'着 '+c.in+'  →  発 '+c.out),'最終 北野島発 '+B.ferry.last.out+' → 着 '+B.ferry.last.in];
+  rows.forEach((r,i)=>text(r,40,100+i*34,22,'#1d1d1d','left','normal'));
   text('貨物船 '+B.cargo.boat+'（'+B.cargo.from+'・隔日）',18,250,20,'#1f2a44');
   B.cargo.calls.forEach((c,i)=>text('着岸 '+c.in+' → 出港 '+c.out,40+i*236,292,19,'#1d1d1d','left','normal'));
   // The shop's own notes in red, in the right-hand column beside their boats.
-  B.notes.forEach((n,i)=>{const y=i?200:108,[a,b]=n.jp.split(' → ');text(a,352,y-10,16,'#c0322b');if(b)text('→ '+b,352,y+12,16,'#c0322b');});
-  ctx.strokeStyle='#c0322b';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(118,200,92,19,0,0,Math.PI*2);ctx.stroke();});
+  B.notes.forEach((n,i)=>{const y=i?202:134,[a,b]=n.jp.split(' → ');text(a,352,y-10,16,'#c0322b');if(b)text('→ '+b,352,y+12,16,'#c0322b');});
+  ctx.strokeStyle='#c0322b';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(118,202,92,16,0,0,Math.PI*2);ctx.stroke();});
  at(R.mat,(w,h)=>{ctx.fillStyle='#9fc4a8';ctx.fillRect(0,0,w,h);
   for(const [x,y,ww,hh,c,lines] of [[12,14,70,60,'#fff7b8',['本部','0980','-72']],[96,30,58,70,'#ffffff',['ヒガ','土曜','発注']],[170,20,74,52,'#ffd9d0',['銀行','9-15時']]]){ctx.fillStyle=c;ctx.fillRect(x,y,ww,hh);lines.forEach((s,i)=>text(s,x+6,y+14+i*17,13,'#3a3a3a','left','normal'));}
   ctx.fillStyle='rgba(255,255,255,.22)';ctx.fillRect(0,0,w,10);ctx.fillRect(0,0,8,h);});

@@ -62,6 +62,10 @@ app.whenReady().then(async()=>{
 
    if(process.env.WORLD_SCREENSHOT)fs.writeFileSync(process.env.WORLD_SCREENSHOT,(await window.webContents.capturePage()).toPNG());
    for(const id of ['park-towel','shopping-ladle','ferry-finale']){
+    // The scheduled ferry must really be alongside for her car-deck stage.
+    // Leave the exhibition, set a published layover, then step the real simulation.
+    // setTime refreshes with dt=0; ferry.update deliberately waits for a positive step.
+    if(id==='ferry-finale')await window.webContents.executeJavaScript(`window.__JOHANSSON_AUDIT__.festival.auditLeave();window.__JOHANSSON_AUDIT__.setTime(8*60+35);window.__JOHANSSON_AUDIT__.step(100);const ferry=window.__JOHANSSON_AUDIT__.world.ferry;if(ferry.berth!=='town'||ferry.phase!=='waiting')throw Error('The 08:35 timetable fixture must be alongside at Minato');`);
     const stage=await window.webContents.executeJavaScript(`(async()=>{const ok=window.__JOHANSSON_AUDIT__.festival.auditStage(${JSON.stringify(id)},{watch:true});await new Promise(r=>setTimeout(r,1200));return {ok,text:document.getElementById('activityBody')?.textContent};})()`);
     console.log('STAGE_SMOKE',id,JSON.stringify(stage));if(!stage.ok)throw Error('Stage failed: '+id+' '+stage.text);
     if(process.env.WORLD_SCREENSHOT)fs.writeFileSync(process.env.WORLD_SCREENSHOT.replace('.png','-'+id+'.png'),(await window.webContents.capturePage()).toPNG());

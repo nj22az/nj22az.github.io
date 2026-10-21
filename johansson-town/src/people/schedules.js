@@ -263,6 +263,9 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  // Queue places are handed out in the order people arrive at the stop and given back
  // when they board, so the queue does not grow a gap where somebody used to stand.
  const queued=new Map();
+ /** Whether someone stepping aboard is nearer her deck (the doorway) than the queue on the pier they came from. */
+ const nearerDeck=g=>{const run=world.ferry||world.bus;if(!run?.doorway)return false;const [dx,dz]=run.doorway,[qx,qz]=run.queueSpot(g.userData.busQueue??0);
+  return Math.hypot(g.position.x-dx,g.position.z-dz)<Math.hypot(g.position.x-qx,g.position.z-qz);};
  const queueNumber=g=>{
   const taken=new Set(queued.values());
   let place=0;while(taken.has(place))place++;
@@ -396,7 +399,10 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    }else if(g.userData.playing){delete g.userData.playing;if(g.userData.socialPose==='Janken')delete g.userData.socialPose;if(g.userData.lookSource==='play'){delete g.userData.lookTarget;delete g.userData.lookSource;}}
    // A passenger caught halfway through the step when the bus goes is put back on
    // their feet, rather than left holding a hand on a door that is not there.
-   if(g.userData.boarding&&!(transit&&tag==='bus'&&(world.ferry||world.bus)?.boarding)){
+   // On her gangway when it closes (the timetable does not wait, world/ferry-timetable.js): the nearer end. Nearer the
+   // deck, the last step aboard is taken; nearer the pier, they step back off it and wait for the next boat.
+   const stepping=g.userData.boarding&&transit&&tag==='bus'&&!(world.ferry||world.bus)?.boarding&&nearerDeck(g);
+   if(g.userData.boarding&&!stepping&&!(transit&&tag==='bus'&&(world.ferry||world.bus)?.boarding)){
     delete g.userData.boarding;delete g.userData.usingTownObject;
    }
    // Getting on, rather than ceasing to exist at the kerb. The last two metres are
@@ -407,7 +413,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    // the bus they are plainly waiting for. Asking only for 'departing' meant the one
    // person whose departure time had come and gone -- which is everybody, by the time
    // the bus they are catching is standing there -- never got on it.
-   if(transit&&tag==='bus'&&(phase==='departing'||holdForBus)&&(world.ferry||world.bus)?.boarding&&(g.userData.boarding||arrived())){
+   if(transit&&tag==='bus'&&(stepping||(phase==='departing'||holdForBus)&&(world.ferry||world.bus)?.boarding&&(g.userData.boarding||arrived()))){
     const [insideX,insideZ]=(world.ferry||world.bus).doorway;
     g.userData.boarding=true;g.userData.usingTownObject=true;
     g.userData.activity='going aboard the ferry';

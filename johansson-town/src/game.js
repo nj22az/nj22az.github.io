@@ -728,7 +728,7 @@ activities=createActivities({say,onLaundry:wash=>{world.laundryWash=wash||null;}
   evictIfClosed();}});
 // The player's wash at the coin laundry turns its machine on the town clock (coin-laundry-dressing.js).
 world.laundryWash=activities.state.coinLaundry||null;
-islandPlay=createIslandPlay({world,player,camera,activities,register:reg,holdFerry:()=>!current&&!!deckUnder(),getMinutes:()=>minutes,getRain:()=>weather,passTime:value=>{minutes+=value;townClock.pass(value);activities.state.clockAhead=townClock.ahead;activities.save();},place:(x,z,_y,facing=0)=>{if(current)leaveRoom();standUpAt(x,z,facing);resetInput();},veil:run=>crossThreshold(run,{chime:false}),enterNaha:()=>crossThreshold(()=>enterRoom(NAHA_ARRIVALS)),leaveNaha:()=>leaveRoom()});
+islandPlay=createIslandPlay({world,player,camera,activities,register:reg,aboard:()=>!current&&!!deckUnder(),getMinutes:()=>minutes,getRain:()=>weather,passTime:value=>{minutes+=value;townClock.pass(value);activities.state.clockAhead=townClock.ahead;activities.save();},place:(x,z,_y,facing=0)=>{if(current)leaveRoom();standUpAt(x,z,facing);resetInput();},veil:run=>crossThreshold(run,{chime:false}),enterNaha:()=>crossThreshold(()=>enterRoom(NAHA_ARRIVALS)),leaveNaha:()=>leaveRoom()});
 syncView();
 fists=createFists({camera,skin:playerRecipe()?.body?.skin||'#d9a57c',sleeve:playerRecipe()?.outfit?.topColour||'#3f6a8a'});
 hands=createHands({scene,camera,say,consume:name=>{const i=activities.state.inventory.indexOf(name);if(i<0)return false;const lager=name==='Umineko lager';if(lager&&!wantsAnother(tipsy,LAGER_ALCOHOL)){say('Enough for tonight. The can goes back in your bag for tomorrow.',3);return false;}if(lager)tipsy=drinkUp(tipsy,LAGER_ALCOHOL);activities.state.inventory.splice(i,1);const left=SPECIAL_BY_NAME[name]?.cup?null:emptyFor(name);if(left)activities.state.inventory.push(left);activities.save();return true;},canColour,onDrink:()=>johansson?.play(seated?'SitDrink':'Drink')});
@@ -996,7 +996,7 @@ world.neighbours=neighbours.entities;world.homeNeighbours=neighbours.people;
 loadingProgress?.complete('residents');
 // The Minato Maru's crew at their posts, riding with her (people/ferry-crew-aboard.js).
 if(world.ferry){
- ferryCrew=createFerryCrewAboard({run:world.ferry,characters,register:reg,playerIdentity:()=>playerRecipe().name||'Johansson',onAction:(kind,title,text)=>activities.action(kind,title,text),townBody:name=>world.people.find(p=>p.profile.name===name)?.g||world.neighbours?.find(g=>g.userData.name===name)||null,portShed:world.portShed,shoreParent:world.group,shoreColliders:world.colliders});
+ ferryCrew=createFerryCrewAboard({run:world.ferry,characters,register:reg,playerIdentity:()=>playerRecipe().name||'Johansson',playerAboard:()=>!current&&!!deckUnder(),onAction:(kind,title,text)=>activities.action(kind,title,text),townBody:name=>world.people.find(p=>p.profile.name===name)?.g||world.neighbours?.find(g=>g.userData.name===name)||null,portShed:world.portShed,shoreParent:world.group,shoreColliders:world.colliders});
  ferryOperations=createFerryOperationsView({parent:$('#hud'),run:world.ferry,getMinutes:()=>minutes,getCrew:crewOnDuty,getProcedure:()=>world.ferry.procedure||{}});
 }
 // Thuan is the heaviest single asset in the town and she is kept at full detail, so
@@ -1318,6 +1318,23 @@ function takeSakuraStair(direction){
  return true;
 }
 /** One step of the walk into the dark: along the path at a walking pace, facing the way he goes. */
+/**
+ * His walk off the Minato Maru (island/play.js: Go ashore, or off her gangway or ramp as it closes): along her own crew
+ * routes aboard, ladders at a climb, then over the gangway or the ramp to the landing, at walking pace, facing his way.
+ */
+function stepFerryWalk(dt){
+ const t=islandPlay.walkTarget();if(!t){playerSpeed=0;return;}
+ // Walking, he is on her floors (or the ground): the way is measured on the level and his feet take the floor's
+ // height, as the physics would put them; only on a ladder does he move up or down the rungs.
+ const p=player.position,dx=t.at.x-p.x,dz=t.at.z-p.z,dy=t.at.y-p.y,d=t.climb?Math.hypot(dx,dy,dz):Math.hypot(dx,dz),rate=t.climb?.55:1.18,step=Math.min(d,Math.max(0,dt)*rate);
+ if(d<1e-3){if(t.climb)p.y=t.at.y;islandPlay.walkReached();return;}
+ p.x+=dx/d*step;p.z+=dz/d*step;
+ if(t.climb)p.y+=dy/d*step;
+ else{const deck=shipWalk()?.floorBelow(p.x,p.z,Math.max(p.y,t.at.y)+.3);p.y=deck?deck.y:t.shore?groundHeight(p.x,p.z):p.y+(dy*step/Math.max(d,1e-6));}
+ if(!t.climb&&Math.hypot(dx,dz)>.01){yaw=Math.atan2(-dx,-dz);player.quaternion.setFromAxisAngle(yAxis,yaw);}
+ playerSpeed=rate;
+ if(step>=d-1e-6){islandPlay.walkReached();if(!islandPlay.walking)playerSpeed=0;}
+}
 function stepStairPassage(dt){
  // Once the walk is done the other room is opening and he stands where it put him: the walk must not move him again.
  if(stairPassage.switching){playerSpeed=0;return;}
@@ -2110,6 +2127,8 @@ const contextRail=createContextRail({onAction:(id,event)=>{
  if(event.type==='pointerdown')pressedControls.add(id);
  let completion;
  if(id==='standButton')standUp();
+ else if(id==='goAshoreButton')islandPlay?.goAshore();
+ else if(id==='stayAboardButton')islandPlay?.stayAboard();
  else if(id==='enterBuildingButton'){const site=doorSite;if(site&&!current)completion=crossThreshold(()=>enterRoom(site));}
  else if(id==='exitRoomButton'){if(current)completion=crossThreshold(async()=>leaveNearbyDoor());}
  else if(id==='orderButton')activities.action(Number.isInteger(parkSeat?.ramenSeatId)?'store-table':'izakaya-table');
@@ -2226,7 +2245,7 @@ function advanceTown(dt,playerPaused,fastForward=false){
     const carry=held=>{if(!held)return;const f=world.ferry.ferry;f.updateMatrixWorld(true);player.position.copy(f.localToWorld(held.at));const turn=f.rotation.y-held.yaw;if(turn){yaw+=turn;player.rotation.y+=turn;}};
     const crossing=hold();
     minutes+=fastForward?dt:dt*townClock.speed/60;elapsed+=dt;if(!fastForward)islandPlay?.tick(dt);carry(crossing);activities.tick(dt);
-    if(!catchingUp&&(saveTick+=dt)>=15){activities.save();saveTick=0;}if(!playerPaused&&!islandPlay?.cinematic){shipWalk()?.update();characters?.physics?.(dt,playerGround());if(stairPassage)stepStairPassage(dt);else{updatePlayer(dt);checkSakuraStair();}}
+    if(!catchingUp&&(saveTick+=dt)>=15){activities.save();saveTick=0;}if(!playerPaused&&!islandPlay?.cinematic){shipWalk()?.update();characters?.physics?.(dt,playerGround());if(islandPlay?.walking)stepFerryWalk(dt);else if(stairPassage)stepStairPassage(dt);else{updatePlayer(dt);checkSakuraStair();}}
     evictIfClosed();
     if(sharedDining(current))izakayaGuests.sync(minutes,dt);
     if(current?.id==='onsen')onsenGuests.sync(minutes,dt);
@@ -2390,7 +2409,7 @@ function updateContextControls(){
  contextRail.update({playing:started,paused:blocked,seated,table,canOrder:table&&serviceOpen&&!pending&&!ramenOrder,
   orderPending:table&&pending,canEat:johansson?.drinking?false:ramenOrder?.delivered?ramenOrder.left>0&&!ramenDrink:!!(parkSeat?.izakaya&&beerService?.dish?.left>0),
   canDrink:johansson?.drinking?false:ramenOrder?.delivered?ramenOrder.left>0&&!!ramenDrink:!!(parkSeat?.izakaya&&beerService?.drink?.left>0),
-  heldDrink:!!hands?.canDrink,inside:!!current,canExit:exitNearby&&!linuxLife?.inBed,targetLabel:contextTarget?.label||'',
+  heldDrink:!!hands?.canDrink,inside:!!current,canExit:exitNearby&&!linuxLife?.inBed,targetLabel:contextTarget?.label||'',departure:current?null:islandPlay?.departurePrompt??null,
   enterLabel:door?'Enter '+door.title:'',pressed:[...pressedControls]});
  if(stickHintUntil&&(now>stickHintUntil||touchSticks.moving)){touchSticks.hint(false);stickHintUntil=0;}
  // Soft quest: quay before evening press (~18:30), once per calendar dayKey if picked.

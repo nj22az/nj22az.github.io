@@ -1,23 +1,33 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {harbourTimetable,HARBOUR_LINE,serviceTime} from '../src/people/commuter-schedule.js';
+import {HARBOUR_LINE,serviceTime} from '../src/people/commuter-schedule.js';
+import {FERRY_TIMETABLE,ferryTimetableText} from '../src/world/ferry-timetable.js';
 import {PORT_TIMETABLE_POSTER} from '../src/world/port-building.js';
+import {sakuraDeparturesBoard} from '../src/world/interiors/sakura-office-dressing.js';
+import {nextBoatLine} from '../src/people/ganaha.js';
+import {TOWN_PAPERS} from '../src/office/town-papers.js';
 import {NEIGHBOURS} from '../src/people/neighbours.js';
 
 const source=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
+const short=t=>t.replace(/^0/,'');
 
-test('every timetable in town tells the same service: on request, with the commuter boats at the Harbour Line’s times',()=>{
- const office=harbourTimetable(8*60);
- assert.match(office,/on request/i);assert.match(office,/Minato Maru/);
- for(const s of HARBOUR_LINE)assert.ok(office.includes(serviceTime(s)),'the harbour office reads '+serviceTime(s));
- assert.doesNotMatch(office,/Three sailings daily/,'no fixed three-sailing timetable the ferry does not keep');
- assert.ok(PORT_TIMETABLE_POSTER.some(l=>/on request/i.test(l)),'the poster under the canopy says on request');
- const times=PORT_TIMETABLE_POSTER.join(' ');for(const s of HARBOUR_LINE){const [h,m]=serviceTime(s).split(':');assert.ok(times.includes(Number(h)+':'+m),'the poster lists '+serviceTime(s));}
- // The board in the hall, the boarding menu and the ticket clerk on the telephone.
- assert.match(source('src/world/interiors/port-hall.js'),/'KITANO-JIMA','On request'/);
- const menu=source('src/island/play.js');assert.match(menu,/on request/);assert.match(menu,/Passengers ride the upper deck/);assert.doesNotMatch(menu,/share the open deck/);
- assert.match(source('src/people/izakaya-play.js'),/goes on request/);
+test('every timetable in town tells the same service: her timetable, which does not wait, with the commuter boats at the Harbour Line’s times',()=>{
+ const out=FERRY_TIMETABLE.filter(s=>s.from==='town').map(s=>serviceTime(s.departs)),back=FERRY_TIMETABLE.filter(s=>s.from==='airport').map(s=>serviceTime(s.departs));
+ // The harbour office on the telephone and the Harbour Line receipt: every sailing.
+ const office=ferryTimetableText(8*60);
+ assert.match(office,/Minato Maru/);assert.match(office,/does not wait/);assert.doesNotMatch(office,/on request/i);
+ for(const t of [...out,...back])assert.ok(office.includes(t),'the harbour office reads '+t);
+ // The poster under the canopy, the hall's notice and the window clerk: no crossing on request anywhere.
+ const poster=PORT_TIMETABLE_POSTER.join(' ');for(const t of out)assert.ok(poster.includes(short(t)),'the poster lists '+t);
+ for(const s of HARBOUR_LINE){const [h,m]=serviceTime(s).split(':');assert.ok(poster.includes(Number(h)+':'+m),'the poster lists the commuter boat in at '+serviceTime(s));}
+ const notice=TOWN_PAPERS.find(p=>p.title==='Ferry departures').text;for(const t of [...out,...back])assert.ok(notice.includes(t),'the hall notice lists '+t);
+ for(const text of [poster,notice,nextBoatLine(10*60),nextBoatLine(16*60),source('src/people/izakaya-play.js'),source('src/island/play.js'),source('src/world/interiors/port-hall.js')])assert.doesNotMatch(text,/on request|Request departure/i);
+ assert.match(nextBoatLine(10*60),/does not wait/);assert.match(nextBoatLine(10*60),/14:45/);
+ // Sakura's whiteboard: the three calls, the first boat out and the last back.
+ const board=sakuraDeparturesBoard();assert.equal(board.ferry.first.out,out[0]);assert.equal(board.ferry.last.out,back.at(-1));
+ assert.ok(board.english.includes(out[0])&&board.english.includes(back.at(-1)));
+ assert.match(source('src/island/play.js'),/Passengers ride the upper deck/);assert.doesNotMatch(source('src/island/play.js'),/share the open deck/);
 });
 
 test('Vy lives on Minato and school absence is scheduled without a fictitious ferry commute',()=>{

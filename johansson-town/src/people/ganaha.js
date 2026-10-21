@@ -1,5 +1,6 @@
-import {HARBOUR_LINE,BUS_DWELL,CROSSING_MINUTES,nextService,serviceTime} from './commuter-schedule.js';
+import {HARBOUR_LINE,BUS_DWELL,CROSSING_MINUTES,serviceTime} from './commuter-schedule.js';
 import {FERRY_FARE} from '../island/services.js';
+import {nextSailing} from '../world/ferry-timetable.js';
 
 /**
  * Ms Ganaha, the ticket clerk at the Minato Port Terminal's middle window (people/ferry-crew.js FERRY_SHORE), and the
@@ -8,7 +9,7 @@ import {FERRY_FARE} from '../island/services.js';
  * one who knows: she sells the tickets, keeps the timetable, answers the ferry desk's telephone and hands out the
  * strait map. Whatever she says comes from the town's own data, so she cannot contradict the world.
  *
- * Her hours, 12:00 to 22:15: the 14:30 and 22:00 commuter boats and every crossing on request in between, and the
+ * Her hours, 12:00 to 22:15: the 14:30 and 22:00 commuter boats and the sailings out at 14:45 and 22:15, and the
  * evening telephone (izakaya-play.js: she picks up on the fourth ring). Before noon the oiler sells the tickets
  * at the gangway (FERRY_WATCH: the oiler, at the gangway while she waits), so the morning boat needs no clerk.
  *
@@ -28,10 +29,11 @@ export function nextBoatLine(minutes){
  const m=minuteOfDay(minutes),alongside=HARBOUR_LINE.find(s=>m>=s&&m<s+BUS_DWELL);
  // The fare the window actually charges (island/services.js): none for now, so she says so.
  const fare=FERRY_FARE?`a return is ¥${FERRY_FARE}`:'there is no fare this season';
- if(alongside!==undefined)return `The commuter boat is alongside now, until ${serviceTime(alongside+BUS_DWELL)}. If you are going across (${fare}), get your ticket and go straight down the outer pier.`;
- const due=nextService(minutes),wait=Math.ceil(due.wait);
- const when=wait<=60?`in ${wait} minute${wait===1?'':'s'}`:`at ${serviceTime(due.service)}`;
- return `The boat goes on request, love: ${fare}, and she sails when the cars are aboard. It is ${CROSSING_MINUTES} minutes across to Kitano-jima. The commuter boat is due ${when}.`;
+ if(alongside!==undefined)return `The commuter boat is alongside now, and she sails at ${serviceTime(alongside+BUS_DWELL)}. If you are going across (${fare}), get your ticket and go straight down the outer pier.`;
+ // The Minato Maru keeps her timetable (world/ferry-timetable.js) and does not wait.
+ const next=nextSailing(minutes,'town'),wait=Math.ceil(next.wait);
+ const when=wait<=60?`in ${wait} minute${wait===1?'':'s'}`:`at ${serviceTime(next.at)}`;
+ return `She keeps her timetable, love, and she does not wait: the next boat across goes ${when}, and ${fare}. Be down the outer pier before her horn, two minutes before. It is ${CROSSING_MINUTES} minutes across to Kitano-jima.`;
 }
 
 /** What she says first, by the hour. */

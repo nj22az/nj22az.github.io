@@ -7,6 +7,8 @@ import {createAvatarAnimator} from '../../avatars/animate.js';
 import {recipeFor} from '../../avatars/cast.js';
 import {GANAHA,ganahaAtWindow} from '../../people/ganaha.js';
 import {FERRY_FARE} from '../../island/services.js';
+import {FERRY_TIMETABLE} from '../ferry-timetable.js';
+import {serviceTime} from '../../people/commuter-schedule.js';
 import {PORT_HALL_FINISH,paintHallFloor,paintHallPlywood,finishPortHall} from './port-hall-finish.js';
 
 /**
@@ -134,10 +136,12 @@ export function buildPortHall({room,reg,collider=()=>{},action,naha=()=>{},upsta
  panel('Departures board',3.6,.62,[-.4,2.8,cz+.01],0,(x,cw,ch)=>{
   x.fillStyle='#26362f';x.fillRect(0,0,cw,ch);x.strokeStyle='#c6bca7';x.lineWidth=ch*.045;x.strokeRect(0,0,cw,ch);x.fillStyle='#f0e9d8';x.textBaseline='middle';
   x.font=`700 ${ch*.15}px ${GOTHIC}`;x.textAlign='left';x.fillText(japaneseSign('Departures'),cw*.04,ch*.15);x.font=`600 ${ch*.1}px system-ui`;x.fillText('DEPARTURES',cw*.26,ch*.15);
-  const rows=[['—','KITANO-JIMA','On request'],['—','CARS & FOOT','Shared ferry'],['17:00','NAHA (evening)','Outer pier']];
+  // The Minato Maru's sailings out of Minato (ferry-timetable.js), two to a row, then the Naha boat.
+  const out=FERRY_TIMETABLE.filter(s=>s.from==='town').map(s=>serviceTime(s.departs));
+  const rows=[[out.slice(0,2).join(' '),'KITANO-JIMA','Outer pier'],[out.slice(2).join(' '),'KITANO-JIMA','Cars & foot'],['17:00','NAHA (evening)','Outer pier']];
   x.font=`600 ${ch*.1}px ui-monospace,monospace`;rows.forEach(([t,dest,where],i)=>{const y=ch*(.36+i*.13);x.fillText(t,cw*.04,y);x.fillText(dest,cw*.22,y);x.fillText(where,cw*.68,y);});
  },1024,true);
- spot([-.4,1.4,cz+.9],'Read the departures board',()=>action('read','Ferry departures','The shared car and passenger ferry crosses to Kitano-jima on request. Buy a return passenger ticket at the airport-ferry window (Ms Ganaha, noon to 22:15; in the morning from the oiler at the gangway) and board from the outer pier. The evening boat to Naha opens at 17:00. Post and parcels are handled at the same window.'));
+ spot([-.4,1.4,cz+.9],'Read the departures board',()=>action('read','Ferry departures','The Minato Maru, the shared car and passenger ferry, crosses to Kitano-jima to her timetable and does not wait: out of Minato at 07:30, 08:45, 14:45 and 22:15, back from Kitano-jima at 08:08, 14:08, 21:38 and 22:45; her horn goes two minutes before she sails. Buy a return passenger ticket at the airport-ferry window (Ms Ganaha, noon to 22:15; in the morning from the oiler at the gangway) and board from the outer pier. The evening boat to Naha opens at 17:00. Post and parcels are handled at the same window.'));
 
  // Benches: two rows of moulded seats facing the pier windows.
  const seatColours=[PORT_HALL_FINISH.orange,PORT_HALL_FINISH.olive];

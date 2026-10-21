@@ -112,7 +112,7 @@ function paintBoards(c){
  x.font='bold 26px sans-serif';x.textAlign='left';x.fillText('使ったら戻す',30,440);
  // Job board, 0..600 × 500..920 (1.0 × 0.7 m at 600 px/m): white, marker writing.
  x.fillStyle='#f6f7f3';x.fillRect(0,500,600,420);
- x.fillStyle='#1d3f8f';x.font='bold 40px sans-serif';x.fillText('JOBS — CHIN',24,552);x.font='22px sans-serif';x.fillStyle='#b8302a';x.fillText('Chin aboard 06:05–22:20 · ask Tetsuo',300,552,290);
+ x.fillStyle='#1d3f8f';x.font='bold 40px sans-serif';x.fillText('JOBS — CHIN',24,552);x.font='22px sans-serif';x.fillStyle='#b8302a';x.fillText('Chin aboard 06:05–23:15 · ask Tetsuo',300,552,290);
  CHIN_JOBS.forEach((j,i)=>{const y=600+i*52;x.fillStyle=j.now?'#b8302a':'#1e2224';x.font=(j.now?'bold ':'')+'26px sans-serif';x.fillText(j.date,24,y);x.fillText(j.job,104,y,440);
   if(j.done){x.strokeStyle='#1e7a3a';x.lineWidth=5;x.beginPath();x.moveTo(556,y-12);x.lineTo(566,y);x.lineTo(588,y-26);x.stroke();}
   if(j.now){x.font='bold 18px sans-serif';x.fillText('ON THE STAND',470,y+22);}});

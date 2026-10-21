@@ -20,10 +20,10 @@ test('she keeps the window from noon to 22:15, and says the timetable the termin
  assert.deepEqual([11*60+59,12*60,22*60+14,22*60+15,3*60].map(ganahaAtWindow),[false,true,true,false,false]);
  assert.equal(CROSSING_MINUTES,AIRPORT_FERRY.duration,'the posted crossing is the ship\'s own');
  const noon=nextBoatLine(12*60);
- assert.match(noon,new RegExp(`${CROSSING_MINUTES} minutes across`));assert.match(noon,/due at 14:30/);
+ assert.match(noon,new RegExp(`${CROSSING_MINUTES} minutes across`));assert.match(noon,/goes at 14:45/);assert.match(noon,/does not wait/);
  assert.match(noon,FERRY_FARE?new RegExp('¥'+FERRY_FARE):/no fare this season/);
- assert.match(nextBoatLine(HARBOUR_LINE[1]+5),/alongside now, until 14:45/);
- assert.match(nextBoatLine(21*60+20),/due in 40 minutes/);
+ assert.match(nextBoatLine(HARBOUR_LINE[1]+5),/alongside now, and she sails at 14:45/);
+ assert.match(nextBoatLine(21*60+20),/goes in 55 minutes/);
  for(const t of [12*60,15*60,20*60])assert.match(ganahaGreeting(t),/Where are you off to\?/);
 });
 
@@ -61,7 +61,7 @@ test('talking to her: the next boat, and a ticket from her window', () => {
  acts.action('ganaha',GANAHA.name,{buy:()=>bought++});
  assert.deepEqual(dom.labels(),['When is the next boat?','What is there on Kitano-jima?','What is there on this island?','A return to Kitano-jima, please','Goodbye']);
  dom.button('When is the next boat?');
- assert.match(document.querySelector('#activityBody').children[0].textContent,/due at 14:30/);
+ assert.match(document.querySelector('#activityBody').children[0].textContent,/goes at 14:45/);
  dom.button('A return to Kitano-jima, please');assert.equal(bought,1);
 });
 
