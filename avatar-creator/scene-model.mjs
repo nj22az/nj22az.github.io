@@ -1,3 +1,4 @@
+import {normalizePose} from '../johansson-town/src/avatars/pose.js';
 import {normalizeTake} from './acting/takes.mjs';
 import {KNOWN_POSES,KNOWN_EXPRESSIONS} from './scene-catalogue.mjs?v=20261020-acting';
 import {SNAP} from './scene-snap.mjs?v=20261011-2';
@@ -33,6 +34,7 @@ export function normalizeScene(raw,normalizeRecipe=r=>structuredClone(r)){
   y:clamp(a.y,0,1.5,0),liftedBy:typeof a.liftedBy==='string'?a.liftedBy:'',
   x:raw.version===2?clamp(a.x,-SNAP.bounds,SNAP.bounds,0):i*.65,z:raw.version===2?clamp(a.z,-SNAP.bounds,SNAP.bounds,0):0,size:raw.version===2?clamp(a.size,.6,1.4,1):1,seat:raw.version===2?text(a.seat):'',
   turn:clamp(a.turn,-180,180,0),pose:KNOWN_POSES.has(a.pose)?a.pose:'Idle',
+  ...a.customPose?{customPose:normalizePose(a.customPose)}:{},
   expression:KNOWN_EXPRESSIONS.has(a.expression)?a.expression:'smile',speech:text(a.speech),speechStyle:['shout','large'].includes(a.speechStyle)?a.speechStyle:'bubble',...a.take?{take:safeTake(a.take),takeLoop:a.takeLoop===true}:{}
  }));
  const source=(Array.isArray(raw.actors)?raw.actors:[]).filter(a=>a&&a.recipe&&typeof a.recipe==='object'&&!Array.isArray(a.recipe)).slice(0,MAX_ACTORS);
@@ -58,12 +60,12 @@ export function restoreCharacter(state,removed){
 }
 export function moveCharacter(actor,x,z){actor.x=clamp(x,-SNAP.bounds,SNAP.bounds,actor.x);actor.z=clamp(z,-SNAP.bounds,SNAP.bounds,actor.z);}
 /** Where a character is and how they stand: what Undo puts back. */
-export function placementOf(actor){return {x:actor.x,z:actor.z,seat:actor.seat||'',turn:actor.turn,pose:actor.pose,size:actor.size,...actor.y?{y:actor.y}:{},...actor.liftedBy?{liftedBy:actor.liftedBy}:{}};}
-export function samePlacement(a,b){return !!a&&!!b&&['x','z','seat','turn','pose','size','y','liftedBy'].every(k=>a[k]===b[k]);}
+export function placementOf(actor){return {x:actor.x,z:actor.z,seat:actor.seat||'',turn:actor.turn,pose:actor.pose,size:actor.size,...actor.y?{y:actor.y}:{},...actor.liftedBy?{liftedBy:actor.liftedBy}:{},...actor.customPose?{customPose:structuredClone(actor.customPose)}:{}};}
+export function samePlacement(a,b){return !!a&&!!b&&['x','z','seat','turn','pose','size','y','liftedBy'].every(k=>a[k]===b[k])&&JSON.stringify(a.customPose)===JSON.stringify(b.customPose);}
 /** Put a character back where `placement` says; their seat only if nobody has taken it since (then a Sit becomes Idle). */
 export function applyPlacement(state,id,placement){
  const actor=state.actors.find(a=>a.id===id);if(!actor||!placement)return null;
- Object.assign(actor,{x:placement.x,z:placement.z,turn:placement.turn,pose:placement.pose,size:placement.size,y:placement.y||0,liftedBy:placement.liftedBy||'',seat:placement.seat||''});
+ Object.assign(actor,{x:placement.x,z:placement.z,turn:placement.turn,pose:placement.pose,size:placement.size,y:placement.y||0,liftedBy:placement.liftedBy||'',seat:placement.seat||'',customPose:placement.customPose?normalizePose(placement.customPose):null});
  if(actor.seat&&state.actors.some(a=>a!==actor&&a.seat===actor.seat)){actor.seat='';if(actor.pose==='Sit')actor.pose='Idle';}
  return actor;
 }

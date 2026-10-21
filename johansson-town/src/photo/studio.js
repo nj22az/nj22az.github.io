@@ -1,3 +1,5 @@
+import {capturePose,applyPose,createPoseHistory} from '../avatars/pose.js';
+import {createPosePanel} from '../avatars/pose-panel.js';
 import {svg} from '../ui/icons.js';
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar} from '../avatars/build.js';
@@ -22,6 +24,7 @@ export function poseStudioActor(actor){
  if(duration)animator.play(actor.pose);
  const steps=Math.max(1,Math.ceil(time/.025));
  for(let i=0;i<steps;i++)animator.update(time/steps,{expression:actor.expression,seated:actor.pose==='Sit',seatHeight:.48});
+ if(actor.poseHistory?.current)applyPose(actor.avatar,actor.poseHistory.current);
  actor.avatar.paintFace({expression:actor.expression,blink:0,talk:0,look:[0,0]});
 }
 
@@ -71,9 +74,21 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
 
  const announce=text=>status.textContent=text;
  const selectedActor=()=>actors[selected];
- function updateButtons(){field('actor').disabled=busy||!actors.length;for(const name of ['pose','expression','actorX','actorY','actorZ','actorTurn','actorScale','speech','bubbleLift'])field(name).disabled=busy||!actors.length;for(const b of ui.querySelectorAll('[data-face],[data-arrange]'))b.disabled=busy||!actors.length;$('[data-remove]').disabled=busy||!actors.length;$('[data-add]').disabled=actors.length>=CAST_LIMIT;$('[data-capture]').disabled=busy||panels.length>=PHOTO_LIMIT;$('[data-comic]').disabled=busy||!panels.length;}
+ const posePanel=createPosePanel({inline:true,
+  getState:()=>{const a=selectedActor();return {pose:a?.poseHistory.value,canUndo:a?.poseHistory.canUndo,canRedo:a?.poseHistory.canRedo,enabled:!!a&&!busy};},
+  onAdjust:(id,value,record)=>{const a=selectedActor();if(!a)return;const next=a.poseHistory.value||capturePose(a.avatar,a.pose);next.adjustments[id]=value;a.poseHistory.set(next,{record});applyPose(a.avatar,a.poseHistory.current);dirty=true;},
+  onHold:()=>{const a=selectedActor();if(a&&!a.poseHistory.current)a.poseHistory.set(capturePose(a.avatar,a.pose));},
+  onResume:()=>{const a=selectedActor();if(a){a.poseHistory.set(null);poseStudioActor(a);dirty=true;}},
+  onReset:()=>{const a=selectedActor(),p=a?.poseHistory.value;if(p){for(const id in p.adjustments)p.adjustments[id]=0;a.poseHistory.set(p);applyPose(a.avatar,a.poseHistory.current);dirty=true;}},
+  onUndo:()=>{const a=selectedActor();if(a){a.poseHistory.undo();poseStudioActor(a);dirty=true;}},
+  onRedo:()=>{const a=selectedActor();if(a){a.poseHistory.redo();poseStudioActor(a);dirty=true;}},
+  onOpen:p=>{const a=selectedActor();if(a){a.poseHistory.set(p);applyPose(a.avatar,a.poseHistory.current);dirty=true;}},
+  onSave:()=>{const a=selectedActor();return a.poseHistory.value||capturePose(a.avatar,a.pose);}
+ });
+ field('pose').closest('.photo-row').after(posePanel.root);
+ function updateButtons(){posePanel.sync();field('actor').disabled=busy||!actors.length;for(const name of ['pose','expression','actorX','actorY','actorZ','actorTurn','actorScale','speech','bubbleLift'])field(name).disabled=busy||!actors.length;for(const b of ui.querySelectorAll('[data-face],[data-arrange]'))b.disabled=busy||!actors.length;$('[data-remove]').disabled=busy||!actors.length;$('[data-add]').disabled=actors.length>=CAST_LIMIT;$('[data-capture]').disabled=busy||panels.length>=PHOTO_LIMIT;$('[data-comic]').disabled=busy||!panels.length;}
  function actorList(){syncSelection();field('actor').replaceChildren(...actors.map((a,i)=>new Option(`${i+1}. ${a.name}`,String(i))));field('actor').value=String(selected);syncActor();updateButtons();}
- function syncActor(){const a=selectedActor();if(!a)return;queueMicrotask?.(()=>typeof syncChips==='function'&&syncChips());for(const [name,value] of Object.entries({pose:a.pose,expression:a.expression,actorX:a.x,actorY:a.y,actorZ:a.z,actorTurn:a.turn,actorScale:a.scale,speech:a.speech,bubbleLift:a.lift}))field(name).value=String(value);
+ function syncActor(){posePanel.sync();const a=selectedActor();if(!a)return;queueMicrotask?.(()=>typeof syncChips==='function'&&syncChips());for(const [name,value] of Object.entries({pose:a.pose,expression:a.expression,actorX:a.x,actorY:a.y,actorZ:a.z,actorTurn:a.turn,actorScale:a.scale,speech:a.speech,bubbleLift:a.lift}))field(name).value=String(value);
 }
  function placeActor(a){a.holder.position.set(a.x,a.y,a.z);a.holder.rotation.y=Math.PI+a.turn*Math.PI/180;a.holder.scale.setScalar(a.scale);syncSelection();dirty=true;}
  // Everyone wears their own clothes, as Johansson Studio dressed them: dressing up is Studio's (src/studio-handoff.js).
@@ -84,7 +99,7 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
   const recipe=normalizeRecipe(clothes?{...base,outfit:{...base.outfit,...clothes}}:base);
   const avatar=buildAvatar(recipe,{shadows:false,faceSize:256}),holder=new THREE.Group();holder.add(avatar.root);stageGroup.add(holder);
   const [x,z]=[[-.45,0],[.45,0],[-1.35,0],[1.35,0],[-.45,-.9],[.45,-.9]].find(([x,z])=>actors.every(a=>Math.hypot(a.x-x,a.z-z)>.4))||[0,-1.8];
-  const a={name,avatar,holder,x,y:0,z,turn:0,scale:1,pose:'Idle',expression:'smile',speech:'',lift:.12,own:recipe};
+  const a={name,avatar,holder,poseHistory:createPoseHistory(),x,y:0,z,turn:0,scale:1,pose:'Idle',expression:'smile',speech:'',lift:.12,own:recipe};
   actors.push(a);selected=actors.length-1;placeActor(a);poseStudioActor(a);actorList();
  }
  function clearActors(){for(const a of actors){a.holder.removeFromParent();a.avatar.dispose();}actors.length=0;selected=0;}
@@ -164,7 +179,7 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
   }catch(e){close();throw e;}
  }
  field('actor').onchange=()=>{selected=Number(field('actor').value);syncSelection();syncActor();};
- for(const n of ['pose','expression'])field(n).onchange=()=>{const a=selectedActor();if(a){a[n]=field(n).value;poseStudioActor(a);}syncChips();};
+ for(const n of ['pose','expression'])field(n).onchange=()=>{const a=selectedActor();if(a){a[n]=field(n).value;if(n==='pose')a.poseHistory.set(null);poseStudioActor(a);posePanel.sync();}syncChips();};
  // Pose and expression as chips you tap, the way the rest of the town's menus work; the
  // selects stay underneath for keyboards and screen readers.
  const chipRows={};
@@ -202,5 +217,5 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
  frame.onwheel=e=>{e.preventDefault();distance=THREE.MathUtils.clamp(distance+e.deltaY*.005,1.5,12);field('distance').value=String(distance);dirty=true;};
  for(const event of ['input','change','click'])ui.addEventListener(event,()=>{dirty=true;});
  document.addEventListener('keydown',e=>{if(!opened)return;e.stopPropagation();if((e.key==='Delete'||e.key==='Backspace')&&!/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)){e.preventDefault();if(!busy)$('[data-remove]').click();}if(e.key==='Escape'){e.preventDefault();close();}if(e.key==='Tab'){const all=[...ui.querySelectorAll('button,input,select,a[href],summary')].filter(o=>!o.disabled&&o.getClientRects().length),i=all.indexOf(document.activeElement);e.preventDefault();all[i<0?(e.shiftKey?all.length-1:0):(i+(e.shiftKey?-1:1)+all.length)%all.length]?.focus();}},true);
- return {open,close,render,get active(){return opened;},get panelCount(){return panels.length;},snapshot(){return {selected,actors:actors.map(a=>{const p=a.holder.getWorldPosition(new THREE.Vector3());p.y+=.9;p.project(view);return {name:a.name,x:a.x,y:a.y,z:a.z,pose:a.pose,turn:a.turn,scale:a.scale,outfit:{...a.avatar.recipe.outfit},screen:[(p.x+1)/2,(1-p.y)/2]};}),camera:{azimuth,elevation,distance},busy};}};
+ return {open,close,render,get active(){return opened;},get panelCount(){return panels.length;},snapshot(){return {selected,actors:actors.map(a=>{const p=a.holder.getWorldPosition(new THREE.Vector3());p.y+=.9;p.project(view);return {name:a.name,x:a.x,y:a.y,z:a.z,pose:a.pose,customPose:a.poseHistory.value,turn:a.turn,scale:a.scale,outfit:{...a.avatar.recipe.outfit},screen:[(p.x+1)/2,(1-p.y)/2]};}),camera:{azimuth,elevation,distance},busy};}};
 }
