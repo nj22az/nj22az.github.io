@@ -1,6 +1,6 @@
 # The town hall zone: remediation first, then four buildings
 
-Status: **phase R merged (#319); phase M done (21 October 2026), waiting for the owner's look; phase S not started.**
+Status: **phases R (#319) and M (#320) merged; phase S part 1 (buildings and ground) done 21 October 2026, waiting for the owner's look; part 2 (people, doors, stories) next.**
 
 The owner, 21 October 2026, with four phone photos (the beach at the end of the Kitahama lane, the yard under the
 fukugi by the car park, the hall's forecourt from the gate, the monument): "Could this zone be subdivided into individual
@@ -260,6 +260,31 @@ shots. Photograph each (`tools/render-feed-backdrops.mjs`) before a story is set
 - `collide` passes for anyone filmed there;
 - the CI guard is green;
 - the owner has approved the photos from the gate, the car park and the beach end.
+
+### Phase S part 1, as done (21 October 2026)
+
+The owner took the recommendations ("Go with your recommendations"): three separate buildings with gaps, a register
+nobody staffs, the school named 港小学校 with the old 港小中学校 showing through the paint, and the study (phase M).
+
+- **Three buildings** (`school-layout.js` `TOWN_HALL_BUILDINGS`, drawn by `school.js buildTownHall`):
+  - the school, x 14.5–24, with the entrance, clock and classroom;
+  - the Community Hall, x 25.5–31.5, with the kitchen door and the meeting room's door;
+  - the clinic, x 33–39.5, with the clinic's door and the doctor's flat.
+
+  Each has its own veranda, roof, parapet, colour and name: 港小学校 over a faint 港小中学校, 港町公民館 and 港町診療所.
+  Every door stands where it stood, so no room, exit or routine moved. The gate carries two plates, 港小学校 and 港町公民館.
+- **Passages, 1.5 m wide,** run between the buildings (`TOWN_HALL_PASSAGES`, rolled stone). They lead through to
+  Kitahama's north lane behind, not to a seawall: the old notes' "sea on two sides" is stale, because the lane runs at
+  z 44.5. The seawall prompt is now "Look along the back lane".
+- **Power compound:**
+  - a hana-block fence surrounds the house, its apron and the day tank, with a gate at the steel doors;
+  - the tank moved inside, north of the house (`powerHouse.compound`, `tank`), and its yard is gravel;
+  - `gravel` is allowed in the school district (`ground-standard.js`, `docs/GROUND-STANDARD.md`);
+  - the lawn and its flower bed moved north of the fence.
+- **Fixed on the way:** the monument's read prompt stood 9 m from the monument. It is at the stone now.
+- **Checks:** the CI guard is green. `ground-quarters.test.mjs` checks the passages and the compound, and
+  `sign-backs.test.mjs` knows the fence is a block screen, not a sign. Photos are in
+  `docs/qa/town-hall-zone/compare/split-*`.
 
 ## 6. Order and gates
 

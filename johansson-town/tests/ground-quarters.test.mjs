@@ -86,7 +86,10 @@ test('the town hall: lawn under the trees, rolled stone where it is walked, a co
  assert.equal(laidAt(S,16,28)?.cls,'park-path','the school playground');
  assert.equal(laidAt(S,35,33.2)?.cls,'park-path','the walk from the car park to the breezeway');
  assert.equal(laidAt(S,35.5,25.2)?.cls,'park-path','the walk in front of the bicycle shed');
- assert.equal(laidAt(S,(T.lawn.x0+T.lawn.x1)/2,(T.lawn.z0+T.lawn.z1)/2+.6)?.cls,'grass','the lawn');
+ assert.equal(laidAt(S,(T.lawn.x0+T.lawn.x1)/2,(T.bed.z1+T.lawn.z1)/2)?.cls,'grass','the lawn');
+ // Phase S (briefs/town-hall-zone.md): the passages between the buildings are rolled stone, the power compound a gravel yard.
+ for(const p of T.passages)assert.equal(laidAt(S,(p.x0+p.x1)/2,40)?.cls,'park-path','a passage through to the lane behind');
+ assert.equal(laidAt(S,24.9,31.5)?.cls,'gravel','the power compound');
  assert.ok(S.layers.some(l=>l.cls==='edging'),'the lawn is edged');
 });
 
