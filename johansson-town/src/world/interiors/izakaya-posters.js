@@ -46,9 +46,10 @@ function getPosterMaterial(spec){
  return posterMaterials.get(spec.id);
 }
 
-export function hangIzakayaPosters({room,reg,action}){
+export function hangIzakayaPosters({room,reg,action,placements={}}){
  const group=new THREE.Group();group.name='Minato Showa posters';group.userData.sharedAsset=true;
- for(const spec of IZAKAYA_POSTERS){
+ for(const original of IZAKAYA_POSTERS){
+  const spec={...original,...placements[original.id]};
   const poster=new THREE.Mesh(posterGeometries.get(spec.id),getPosterMaterial(spec));
   poster.name=spec.title;poster.position.set(...spec.position);poster.rotation.y=spec.yaw;group.add(poster);
   const target=new THREE.Object3D();target.position.set(...spec.approach);target.name='Read '+spec.title;room.add(target);

@@ -89,7 +89,7 @@ export const TOWN_PAPERS=[
     "type": "Notice",
     "title": "Bookshelf",
     "organisation": "Town Services",
-    "text": "Sea charts of the Ryūkyū arc. A Swedish–Japanese dictionary with a cracked spine. Three Wallander paperbacks. The town budget for 1997, with coffee rings.",
+    "text": "Sea charts of the Ryūkyū arc. A Swedish–Japanese dictionary with a cracked spine. Three Wallander paperbacks. The Minato Maru’s engine manuals, with coffee rings.",
     "source": "notice:Bookshelf"
   },
   {
@@ -184,20 +184,6 @@ export const TOWN_PAPERS=[
     "source": "notice:The fishermen’s co-op calendar"
   },
   {
-    "type": "Notice",
-    "title": "Town office telephone",
-    "organisation": "Community Hall",
-    "text": "The harbour master confirms Thursday’s supply ferry. Mori reports the crossing outside the school is clear. Thuan asks whether the bus-stop bench has reached the carpenter yet.",
-    "source": "notice:Town office telephone"
-  },
-  {
-    "type": "Notice",
-    "title": "Town reference library",
-    "organisation": "Community Hall",
-    "text": "Ferry timetables, old island surveys, typhoon preparedness manuals and annotated town budgets. The most-thumbed volume is the harbour maintenance handbook.",
-    "source": "notice:Town reference library"
-  },
-  {
     "type": "Minutes",
     "title": "Town assembly minutes, 1997",
     "organisation": "Community Hall",
@@ -289,11 +275,11 @@ export const TOWN_PAPERS=[
     "source": "notice:The west-shore bank"
   },
   {
-    "title": "Petitions to the mayor",
+    "title": "Requests to the town assembly",
     "type": "Notice",
     "organisation": "Community Hall",
     "text": "From Tetsuo, for the power house next door: The second diesel set needs new injectors before typhoon season. The parts come on the Thursday ferry if the town pays this week.\n\nFrom Mrs Nakamura, Nakamura Zenzai: The street lamp outside the east row has flickered since the rain. Customers say it makes the zenzai look grey.\n\nFrom the Higa household, Nishi-machi: May the children use the town hall field on Sunday for eisa practice? Grandmother Higa will supervise. Loudly.\n\nFrom the ferry company: The new cargo trucks are heavier. We ask the town to strengthen the quay apron where the ramp lands.\n\nFrom Thuan, Sakura Shōten: A request for a bench at the bus stop by the ferry. People wait there with their shopping.",
-    "source": "notice:Petitions to the mayor"
+    "source": "notice:Requests to the town assembly"
   },
   {
     "title": "Community kitchen bookings",

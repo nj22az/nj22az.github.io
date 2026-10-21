@@ -1,10 +1,10 @@
-import {FURNITURE_HEIGHTS} from './furniture-standards.js';
 import {SHARED_DINING_BOUNDS,SHARED_DINING_FLOOR,SHARED_DINING_COLLIDERS} from './interiors/shared-dining-layout.js';
+import {MINATO_COMPACT as P} from './interiors/minato-compact-plan.js';
 /**
  * Sato Ramen: the corner shop on Minato's alley flank, open at lunch while Minato is shut.
  * Mrs Sato cooks it from the east end of Minato's own kitchen line. Coordinates are the
- * room frame of the shared interior (tools/blender/build-minato-interior.py): the shop
- * is x 6.5 to 11.4, its door at the front (+z), its kitchen behind the counter (-z).
+ * room frame of the measured compact plan: its door is at the front (+z), with the
+ * kitchen behind the counter (-z) and an open passage to Minato on the west.
  */
 export const SATO_RAMEN=Object.freeze({id:'ramen',title:'Sato Ramen',jp:"らーめん佐藤",open:660,close:840});
 /** 11:00 to 14:00: a lunch counter. */
@@ -12,27 +12,27 @@ export const satoRamenOpen=minutes=>{const m=((minutes%1440)+1440)%1440;return m
 
 export const SATO_ROOM=Object.freeze({
  bounds:SHARED_DINING_BOUNDS,floorPolygon:SHARED_DINING_FLOOR,
- spawn:Object.freeze([9.75,0,2.95]),exit:Object.freeze([9.75,1.1,3.45]),yaw:0,
+ spawn:Object.freeze([...P.ramenEntrance.spawn]),exit:Object.freeze([...P.ramenEntrance.exit]),yaw:0,
 });
-/** The five chrome stools at the counter, and the three at the wall ledge. */
-export const SATO_COUNTER=Object.freeze([7.1,7.8,8.5,9.2,9.9].map(x=>Object.freeze({position:[x,0,-1.42],height:FURNITURE_HEIGHTS.seat,surfaceY:FURNITURE_HEIGHTS.seat,yaw:0,stand:[x,0,-.72],table:[x,FURNITURE_HEIGHTS.serviceCounter,-2.2]})));
-export const SATO_LEDGE=Object.freeze([.3,1.2,2.1].map(z=>Object.freeze({position:[10.65,0,z],height:FURNITURE_HEIGHTS.seat,surfaceY:FURNITURE_HEIGHTS.seat,yaw:-Math.PI/2,stand:[10.0,0,z],table:[11.02,FURNITURE_HEIGHTS.serviceCounter,z]})));
-export const SATO_CORNER=Object.freeze([.35,1.95].map(z=>Object.freeze({position:[7.65,0,z],height:FURNITURE_HEIGHTS.seat,surfaceY:FURNITURE_HEIGHTS.seat,yaw:z<1?Math.PI:0,stand:[8.65,0,z],table:[7.65,FURNITURE_HEIGHTS.table,z<1?.85:1.45]})));
+/** Three chrome stools at the counter and two at the wall ledge. */
+export const SATO_COUNTER=Object.freeze(P.ramenStools.map(x=>Object.freeze({position:[x,0,P.ramenSeatZ],height:P.seatHeight,surfaceY:P.seatHeight,yaw:0,stand:[x,0,P.ramenStandZ],table:[x,P.ramenCounter.top,P.ramenCounter.position[2]+.15]})));
+export const SATO_LEDGE=Object.freeze(P.ramenLedge.seatZ.map(z=>Object.freeze({position:[P.ramenLedge.seatX,0,z],height:P.seatHeight,surfaceY:P.seatHeight,yaw:-Math.PI/2,stand:[P.ramenLedge.standX,0,z],table:[P.ramenLedge.position[0]-.05,P.ramenLedge.top,z]})));
+export const SATO_CORNER=Object.freeze([]);
 /**
  * Where the lunch regulars sit: every other stool first, so there is room for you, then
  * one more stool, and the ledge last -- Mrs Sato serves the counter across it.
  */
-export const SATO_GUEST_SEATS=Object.freeze([SATO_COUNTER[0],SATO_COUNTER[2],SATO_COUNTER[4],SATO_COUNTER[1],...SATO_LEDGE]);
-export const SATO_COOK=Object.freeze({position:Object.freeze([8.6,0,-4.35]),yaw:0});
+export const SATO_GUEST_SEATS=Object.freeze([SATO_COUNTER[0],SATO_COUNTER[2],SATO_COUNTER[1],...SATO_LEDGE]);
+export const SATO_COOK=Object.freeze({position:Object.freeze([...P.ramenStaff.position]),yaw:0});
 /**
- * Where she works, on the floor of the kitchen aisle (z -5.2 to -3.6): the prep board,
+ * Where she works, on the floor of the measured kitchen aisle: the prep board,
  * the noodle boiler, the stock pots and the topping tray along the back line (facing it,
  * yaw 0), the coffee urn and barley-tea jug on the back counter, and the pass, where a
  * bowl goes over the counter to a stool (facing the room, yaw π).
  */
 export const SATO_KITCHEN=Object.freeze({
- prep:Object.freeze([6.95,-4.95]),boiler:Object.freeze([7.7,-4.95]),pots:Object.freeze([8.6,-4.95]),toppings:Object.freeze([9.8,-4.95]),
- drinks:Object.freeze([10.7,-3.72]),aisleZ:-4.35,passZ:-3.72,minX:6.9,maxX:10.9,
+ prep:Object.freeze([...P.ramenStaff.prep]),boiler:Object.freeze([...P.ramenStaff.boiler]),pots:Object.freeze([...P.ramenStaff.pots]),toppings:Object.freeze([...P.ramenStaff.toppings]),
+ drinks:Object.freeze([...P.ramenStaff.drinks]),aisleZ:P.ramenStaff.aisleZ,passZ:P.ramenStaff.passZ,minX:P.ramenStaff.minX,maxX:P.ramenStaff.maxX,
 });
 export const SATO_COLLIDERS=Object.freeze(SHARED_DINING_COLLIDERS);
 /**

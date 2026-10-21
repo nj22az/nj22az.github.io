@@ -104,7 +104,7 @@ test('retiring homes resolve to a retained public place; a home that stays resol
  for(const id of ['kitahama-4','kitahama-5','kitahama-6','kinjo','oshiro','resident-home-aya','kitano-3','kitahama-flat-1','kitahama-flat-2','shimabukuro'])assert.ok(RETIRED_HOME_IDS.includes(id),id);
  for(const id of RETIRED_HOME_IDS){assert.ok(homes.get(id),id+' is a registry id today');assert.notEqual(retiredHomeFallback('home-'+id),'home-'+id,id);if(id!=='izakaya')assert.notEqual(retiredHomeFallback(id),id,id);}
  assert.equal(retiredHomeFallback('izakaya'),'izakaya','the izakaya stays as a business; only Barfly’s home registration retires');
- assert.equal(retiredHomeFallback('home-kitahama-4'),'mayor-office');assert.equal(retiredHomeFallback('post-office'),'ferry-terminal');assert.equal(retiredHomeFallback('rainflower-florist'),'market');assert.equal(retiredHomeFallback('home-izakaya'),'izakaya');
+ assert.equal(retiredHomeFallback('home-kitahama-4'),'community-kitchen');assert.equal(retiredHomeFallback('post-office'),'ferry-terminal');assert.equal(retiredHomeFallback('rainflower-florist'),'market');assert.equal(retiredHomeFallback('home-izakaya'),'izakaya');
  for(const id of ['home-higa','kitahama-1','home-kitahama-flat-3','mayor-home','market',undefined])assert.equal(retiredHomeFallback(id),id);
  for(const h of HOUSEHOLDS)assert.ok(!Object.hasOwn(RETIRED_HOMES,h.home),h.home+' is a household and does not retire');
 });

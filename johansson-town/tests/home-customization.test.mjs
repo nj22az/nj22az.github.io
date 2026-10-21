@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {buildMayorHome,buildMayorOffice} from '../src/world/interiors/town-hall.js';
+import {buildMayorHome,buildCommunityKitchen} from '../src/world/interiors/town-hall.js';
 import {createHomeCustomization,HOME_CUSTOMIZATION_PLACEMENT} from '../src/world/interiors/home-customization.js';
 import {createNavigation} from '../src/people/navmesh.js';
 import {circleHitsRect} from '../physics.js';
@@ -26,7 +26,7 @@ test('home choices survive saving and player switching; earned decorations canno
 
 test('physical decoration changes only the player room and keeps clear of the doorway',()=>{
  installDOM();const room=new THREE.Group(),office=new THREE.Group(),hits=[];
- buildMayorHome({room,reg(){},action(){}});buildMayorOffice({room:office,reg(){},action(){}});
+ buildMayorHome({room,reg(){},action(){}});buildCommunityKitchen({room:office,reg(){},action(){}});
  const officeColours=[];office.traverse(o=>{if(o.isMesh)officeColours.push(o.material.color.getHex());});
  const state={homeDecor:restoreHomeDecor(),quest:0,fish:0},menus=[];let saves=0;
  const decor=createHomeCustomization({room,state,reg:(o,label,fn)=>hits.push({o,label,fn}),menu:(...a)=>menus.push(a),close(){},save(){saves++;}});

@@ -41,7 +41,7 @@ Heights are the top of the finished surface above the district's datum. The datu
 | Grass (`grass`) | lawns and verges | 2 cm, just below the paths; follows the land where it slopes | `#5c9848` | same | mown lawn |
 | Coral sand (`coral-sand`) | Nishi-machi's yards; Kitahama's unpaved lots | 2 cm, like grass | `#ddd6c4` | `#e2dac8` | crushed coral, raked |
 | Beach sand (`beach-sand`) | the coast | graded down to the sea, −1.3 to +0.06 m | `#eee3c6` coral-white | `#e3d2a4` | beach sand |
-| Gravel yard (`gravel`) | work yards, the boat yard, the sacred grove | 2 cm | `#a29e93` | same | grey crushed limestone |
+| Gravel yard (`gravel`) | work yards, the boat yard, the sacred grove, the power house's compound | 2 cm | `#a29e93` | same | grey crushed limestone |
 | Garden earth (`earth`) | Kitahama's and Nishi's plots, beds and cane rows | 4.5 cm (25 mm proud of the lawn) | `#9a5f40` | same | red Okinawan earth |
 | Timber deck (`deck`) | boardwalks and timber piers | the quay's level | `#8a7559` | several browns | treated timber boards |
 

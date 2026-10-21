@@ -30,6 +30,12 @@ export const BEACH_EDGES=Object.freeze({quayEdge:42.3,quayEnd:44.3,jettyNorth:-4
  school:Object.freeze({maxX:41,minZ:24.6}),
  /** Kitahama's coastal walk comes down to the beach here (island-plan.js COAST_WALK, 2.4 m wide at x 43.6). */
  walk:Object.freeze({minX:42.4,maxX:44.8,z:29.3})});
+/**
+ * The shore at the beach's north end: the coastline the neighbourhood's lawn stops at (island-coast.js COASTLINE, x 45 from
+ * z -43 to 29), and where a grade starts to give way to the beach's profile: the coastline where it leaves x 45 for
+ * (47.5, 40), at the sand's north edge (z 29.3), so the lawn's last corner still meets level sand.
+ */
+export const BEACH_SHORE=Object.freeze({coastX:45,fadeFrom:45.07});
 /** Whether there is sand at x, z (rather than the quay, the court or the town hall's grounds laid there). */
 export function onBeach(x,z){
  const E=BEACH_EDGES;
@@ -78,7 +84,9 @@ export const BEACH_GRADES=Object.freeze([
  grade('lawn-north',{minX:33.2,maxX:33.2,minZ:BEACH.accesses[1].z+BEACH.accesses[1].half,maxZ:E.school.minZ},.02,'past the parapet\u2019s north end the neighbourhood\u2019s lawn comes to the sand'),
  grade('town-hall-yard',{minX:33.2,maxX:E.school.maxX,minZ:E.school.minZ,maxZ:E.school.minZ},.04,'the town hall\u2019s yard (ground-plan-quarters.js) at its south edge'),
  grade('town-hall-verge',{minX:E.school.maxX,maxX:E.school.maxX,minZ:E.school.minZ,maxZ:E.walk.z},.02,'the town hall\u2019s verge outside its seawall (ground-plan-quarters.js), turf'),
- grade('kitahama-lawn',{minX:E.school.maxX,maxX:BEACH.profile.at(-1)[0],minZ:E.walk.z,maxZ:E.walk.z},.02,'north of the beach the neighbourhood\u2019s lawn, out to the shore'),
+ // The lawn ends at the coastline (island-coast.js, x 45 here), not at the profile's end under the water: carried out to
+ // x 47.8 it held a straight-edged slab of sand above the sea (the owner's phone, 21 October 2026).
+ grade('kitahama-lawn',{minX:E.school.maxX,maxX:BEACH_SHORE.coastX,minZ:E.walk.z,maxZ:E.walk.z},.02,'north of the beach the neighbourhood\u2019s lawn, out to the shore'),
  grade('coast-walk',{minX:E.walk.minX-.1,maxX:E.walk.maxX+.1,minZ:E.walk.z,maxZ:E.walk.z},.04,'Kitahama\u2019s coastal walk comes down onto the sand (ground-plan-coast.js), flush'),
 ]);
 /** The graded height at (x, z), or null where no grade reaches. */
@@ -91,6 +99,13 @@ export function beachGrade(x,z){
   if(x<a.minX||x>a.maxX||z<a.minZ||z>a.maxZ)continue;
   const d=Math.hypot(Math.max(c.minX-x,0,x-c.maxX),Math.max(c.minZ-z,0,z-c.maxZ)),y=g.y-g.slope*d;
   if(best===null||y>best)best=y;
+ }
+ // Toward the sea a grade gives way to the beach's own profile, and is gone by the water's edge: a grade's 1:6.7 fall is
+ // gentler than the beach's last fall into the sea, so carried on past the shore it held sand above the water.
+ const p=beachProfile(x);
+ if(best!==null&&p!==null&&best>p&&x>BEACH_SHORE.fadeFrom){
+  const t=Math.min(1,(x-BEACH_SHORE.fadeFrom)/(BEACH_DRY_EDGE_X-BEACH_SHORE.fadeFrom)),k=1-t;
+  best=p+(best-p)*k;
  }
  return best;
 }

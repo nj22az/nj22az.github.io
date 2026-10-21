@@ -142,10 +142,10 @@ function coloured(g,hex){
 }
 const at=(g,x,y,z,yaw=0)=>{g.rotateY(yaw);g.translate(x,y,z);return g;};
 
-export function buildIzakayaDressing(room,{collider}={}){
+export function buildIzakayaDressing(room,{collider,layout={}}={}){
  const prints=[],solids=[],glaze=[],glow=[],placements=[];let bounds=null;
  const piece=(g,p,batch,hex,x=0,y=0,z=0)=>{
-  g.translate(x,y,z);at(g,p.x,p.y,p.z,p.yaw||0);if(hex!==undefined)coloured(g,hex);batch.push(g);
+  g.translate(x,y,z);if(p.scale)g.scale(p.scale,p.scale,p.scale);at(g,p.x,p.y,p.z,p.yaw||0);if(hex!==undefined)coloured(g,hex);batch.push(g);
   if(bounds){g.computeBoundingBox();bounds.union(g.boundingBox);}return g;
  };
  const localBox=(w,h,d,p,hex,x=0,y=0,z=0,batch=solids)=>piece(new THREE.BoxGeometry(w,h,d),p,batch,hex,x,y,z);
@@ -166,13 +166,13 @@ export function buildIzakayaDressing(room,{collider}={}){
   g.setIndex(Array.from({length:g.attributes.position.count},(_,i)=>i));g.translate(0,0,-d/2+r);piece(g,p,batch,hex,x,y,z);
  };
  // The posters, taped, a hair off the wall.
- for(const [cell,x,y,z,yaw,w,h] of MINATO_1997_POSTERS){
+ for(const [cell,x,y,z,yaw,w,h] of layout.posters||MINATO_1997_POSTERS){
   const out=new THREE.Vector3(Math.sin(yaw),0,Math.cos(yaw)).multiplyScalar(.012);
   prints.push(at(printed(cell,w,h),x+out.x,y,z+out.z,yaw));
   for(const [sx,sy] of [[-1,1],[1,1],[-1,-1],[1,-1]]){const t=new THREE.BoxGeometry(.07,.028,.002);t.rotateZ(sx*sy*.6);t.translate(sx*(w/2-.02),sy*(h/2-.01),0);solids.push(coloured(at(t,x+out.x*1.2,y,z+out.z*1.2,yaw),0xf2ecd2));}
  }
  // The bottle keep: two boards on brackets, the bottles in a row, tags on their necks.
- const K=KEEP_SHELF;
+ const K=layout.keepShelf||KEEP_SHELF;
  for(const y of K.levels){box(K.depth,.03,K.width,K.x+K.depth/2,y-.015,K.z,0x6e4c30);box(.04,.12,.03,K.x+.02,y-.08,K.z-K.width/2+.08,0x3a2a1c);box(.04,.12,.03,K.x+.02,y-.08,K.z+K.width/2-.08,0x3a2a1c);}
  const bottle=new THREE.LatheGeometry([[0,0],[.031,0],[.043,.005],[.045,.024],[.044,.23],[.039,.247],[.027,.267],[.019,.279],[.017,.331],[.019,.334],[.019,.349],[0,.349]].map(([r,y])=>new THREE.Vector2(r,y)),16);
  const bottles=new THREE.InstancedMesh(bottle,new THREE.MeshStandardMaterial({roughness:.22,metalness:.05}),BOTTLE_KEEP.length);bottles.name='Minato bottle keep';
@@ -218,11 +218,14 @@ export function buildIzakayaDressing(room,{collider}={}){
   for(const dx of [.047,.235]){localBox(.004,.02,.067,p,0x99693b,dx,.02);for(const dz of [-.026,.026])localBox(.004,.014,.015,p,0x99693b,dx,.037,dz);}
   for(let i=0;i<10;i++)piece(new THREE.CylinderGeometry(.0013,.0022,.176,6).rotateZ(Math.PI/2).rotateY((i%3-1)*.012),p,solids,i%2?0xcbb079:0xb88d51,.141,.013+Math.floor(i/5)*.005,-.022+(i%5)*.0105);
  });
- for(const x of [-3.05,-1.55,-.05,1.45])caddy(x,FURNITURE_HEIGHTS.serviceCounter,-2.24);
- for(const [x,z] of [[-4.55,2.2],[1.55,2.0]])caddy(x,FURNITURE_HEIGHTS.table,z,Math.PI/2);
- caddy(5.0,.77,.25,Math.PI/2);
+ const caddies=layout.caddies||[
+  ...[-3.05,-1.55,-.05,1.45].map(x=>[x,FURNITURE_HEIGHTS.serviceCounter,-2.24,0]),
+  ...[[-4.55,2.2],[1.55,2.0]].map(([x,z])=>[x,FURNITURE_HEIGHTS.table,z,Math.PI/2]),
+  [5.0,.77,.25,Math.PI/2],
+ ];
+ for(const p of caddies)caddy(...p);
  // The towel cabinet now rests on the steel counter and opens toward the staff.
- const W=OSHIBORI_WARMER;
+ const W=layout.warmer||OSHIBORI_WARMER;
  item('Oshibori towel warmer',{x:W.x,y:W.y,z:W.z,yaw:Math.PI},p=>{
   for(const dx of [-.115,.115])for(const dz of [-.079,.079])localCyl(.011,.012,p,0x312d24,dx,.006,dz);
   roundedBox(.3,.188,.22,.006,p,0xe1ded1,0,.106);roundedBox(.269,.155,.004,.0018,p,0x8b9290,0,.105,.1125);
@@ -234,19 +237,19 @@ export function buildIzakayaDressing(room,{collider}={}){
  });
  // Red lanterns along the counter, between the bell pendants.
  const paperRadius=y=>.102-.044*(Math.abs(y)/.13)**3;
- for(const x of [-3.05,-1.55,-.05,1.45])item('Paper counter lantern '+x,{x,y:2.62,z:-1.72},p=>{
+ for(const placement of layout.lanterns||[-3.05,-1.55,-.05,1.45].map(x=>({x,y:2.62,z:-1.72})))item('Paper counter lantern '+placement.x,placement,p=>{
   lathe(Array.from({length:27},(_,i)=>{const y=-.13+i*.01;return [paperRadius(y),y];}),p,0xb92e20,0,0,0,glow);
   for(let i=0;i<12;i++){const y=-.116+i*.021;ring(paperRadius(y)+.0006,.0011,p,0x80372b,0,y,0,solids);}
   for(const y of [-.137,.137]){localCyl(.060,.015,p,0x27281e,0,y);ring(.057,.0025,p,0x5a4a32,0,y+(y>0?.01:-.01),0,solids);}
-  localCyl(.0025,.55,p,0x3a3023,0,.424,0,.0025,solids,6);
+  const drop=p.drop??.55;localCyl(.0025,drop,p,0x3a3023,0,.149+drop/2,0,.0025,solids,6);
   for(const yaw of [0,Math.PI]){
    const label=curvedPrint('lantern',.1036,.17,.84,20),v=label.attributes.position;
    for(let i=0;i<v.count;i++){const y=v.getY(i),a=Math.atan2(v.getX(i),v.getZ(i)),r=paperRadius(y)+.0016;v.setXYZ(i,Math.sin(a)*r,y,Math.cos(a)*r);}label.computeVertexNormals();label.rotateY(yaw);piece(label,p,prints);
   }
  });
  // The tanuki by the door: straw hat, sake flask, a belly for luck.
- const T={x:2.25,z:5.78};
- item('Glazed lucky tanuki',{x:T.x,y:0,z:T.z},p=>{
+ const T=layout.tanuki||{x:2.25,y:0,z:5.78};
+ item('Glazed lucky tanuki',{x:T.x,y:T.y||0,z:T.z,scale:T.scale||1},p=>{
   localCyl(.173,.025,p,0x5f4a32,0,.0125);ball(.19,p,0x72543a,0,.26,0,1,1.13,.89);
   // The belly glaze follows the pot's surface. Intersecting two separate ellipsoids
   // left the cream patch disappearing into brown triangles at oblique angles.
@@ -274,7 +277,7 @@ export function buildIzakayaDressing(room,{collider}={}){
   for(let i=0;i<16;i++){const a=i*Math.PI/8;localBox(.018,.0015,.0018,p,0xd4b67e,Math.sin(a)*.171,.654,Math.cos(a)*.171);}
   ball(.04,p,0x705036,0,.197,.143,.9,1.4,.92);
   // A real sake flask in one hand and the stamped account book in the other.
-  const q={x:p.x+.168,y:.176,z:p.z-.069,yaw:Math.PI};
+  const q={x:p.x+.168*p.scale,y:p.y+.176*p.scale,z:p.z-.069*p.scale,yaw:Math.PI,scale:p.scale};
   lathe([[0,0],[.021,0],[.032,.012],[.034,.075],[.026,.091],[.014,.105],[.014,.134],[.017,.137],[.017,.143],[.010,.143],[.009,.109],[0,.012]],q,0xd5c59e);
   wrap('flask',.0345,.059,q,0,.051,0,1.65);ring(.015,.0012,q,0x8d7351,0,.138);
   roundedBox(.063,.098,.014,.004,p,0x987640,-.151,.337,-.139,solids);decal('bill',.055,.09,{...p,yaw:Math.PI},.151,.337,.148);
@@ -284,7 +287,7 @@ export function buildIzakayaDressing(room,{collider}={}){
  const posters=new THREE.Mesh(mergeGeometries(prints),new THREE.MeshStandardMaterial({map:sheet(),roughness:.9,alphaTest:.4}));posters.name='Minato posters and tags';group.add(posters);
  const props=new THREE.Mesh(mergeGeometries(solids),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.6}));props.name='Minato table and counter things';group.add(props);
  const ceramic=new THREE.Mesh(mergeGeometries(glaze),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.24,metalness:.12}));ceramic.name='Minato glaze and appliance fittings';group.add(ceramic);
- const lanterns=new THREE.Mesh(mergeGeometries(glow),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.7,emissive:0x5a1408,emissiveIntensity:.8}));lanterns.name='Minato red lanterns';group.add(lanterns);
+ if(glow.length){const lanterns=new THREE.Mesh(mergeGeometries(glow),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.7,emissive:0x5a1408,emissiveIntensity:.8}));lanterns.name='Minato red lanterns';group.add(lanterns);}
  group.add(bottles);
  [...prints,...solids,...glaze,...glow].forEach(g=>g.dispose());
  group.userData.realItems=placements;

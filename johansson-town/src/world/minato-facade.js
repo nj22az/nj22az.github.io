@@ -5,6 +5,7 @@ import {shisa,potPlant} from './okinawa/houses.js';
 import {fascia,japaneseSign,signText} from './okinawa/signs.js';
 import {glazeWithRoom} from '../render/window-interior.js';
 import {createLampGlow} from './light-pools.js';
+import {MINATO_COMPACT} from './interiors/minato-compact-plan.js';
 
 /**
  * Minato Izakaya, built rather than fetched.
@@ -12,8 +13,8 @@ import {createLampGlow} from './light-pools.js';
  * The supplied exterior was a generic bar frontage: a flat glazed box that read as an
  * office at a distance and had no eave, no lantern and nothing to tell you what was
  * behind it. This is the building the town actually wants on that plot — a two-storey
- * harbour machiya as it stood in 1997, the kind that has the bar downstairs and the family
- * upstairs, with the frontage doing all the talking:
+ * harbour machiya as it stood in 1997, with the bar downstairs and business storage
+ * upstairs. Thao's family lives elsewhere; the frontage does the talking:
  *
  *   a tiled pitch with its ridge along the street and a deep eave over the pavement,
  *   koshi lattice over a warm window, a recessed doorway under a noren,
@@ -32,12 +33,13 @@ import {createLampGlow} from './light-pools.js';
 
 /**
  * Sato Ramen against the alley flank, in the same local frame: from the flank wall out
- * 3.3 m into the alley, the door at local x 3.47 (SATO_RAMEN_DOOR in dining-layout.js).
+ * to local x 6.01, sharing Minato's party wall. The door stays at local x 3.47
+ * (SATO_RAMEN_DOOR in dining-layout.js); the compact interior fixes the actual width.
  */
-export const SATO_ANNEX=Object.freeze({x0:2.71,x1:6.01,door:3.47,height:3.1});
+export const SATO_ANNEX=Object.freeze({x0:6.01-MINATO_COMPACT.exterior.annexWidth,x1:6.01,door:3.47,height:3.1,depth:MINATO_COMPACT.exterior.annexDepth});
 /** The frontage line, shared with the bookshop next door, in the plot's local frame. */
 export const MINATO=Object.freeze({
- width:6.7,depth:5.6,front:4.7,centreX:-.88,
+ width:MINATO_COMPACT.exterior.mainWidth,depth:MINATO_COMPACT.exterior.mainDepth,front:4.7,centreX:-.88,
  /** Ground-floor head height, wall plate, and the ridge above it. */
  groundH:3.05,upperH:5.75,ridge:7.0,
  /** The doorway, recessed behind the frontage under the noren. */
@@ -141,9 +143,12 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
  box([width+.3,.2,depth+.2],[centreX,.1,(front+back)/2],'concrete',0x8c8578);
  // Warm lime plaster rather than the grey it was: on a street of pale Okinawan walls a
  // dark grey slab read as a hole in the row.
- painted([width,upperH,.24],[centreX,upperH/2,back-.12],0xbdac8c,{roughness:.95});
+ const wallT=MINATO_COMPACT.wallThickness,sideFront=front-.30,sideBack=back+wallT;
+ // The measured dimensions include the walls: their inside faces now agree with
+ // the Blender room, and Sato meets a real party wall instead of a 24 cm air gap.
+ painted([width,upperH,wallT],[centreX,upperH/2,back+wallT/2],0xbdac8c,{roughness:.95});
  for(const side of [-1,1])
-  painted([.24,upperH,depth],[centreX+side*(half+.12),upperH/2,(front+back)/2],0xbfae8e,{roughness:.95});
+  painted([wallT,upperH,sideFront-sideBack],[centreX+side*(half-wallT/2),upperH/2,(sideFront+sideBack)/2],0xbfae8e,{roughness:.95});
  // Timber corner posts, the frame the frontage hangs off.
  // A centimetre proud of the walls and the band at every face they share, and stopping just under their tops: flush, the
  // post's faces and the plaster's flashed into each other on a phone (the owner, 20 October 2026).
@@ -351,22 +356,23 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
  // ---- Sato Ramen ------------------------------------------------------------------
  // The single-storey corner shop against the alley flank, open at lunch while the bar is
  // shut. Its kitchen is Minato's own line carried on through the wall (see
- // tools/blender/build-minato-interior.py); out here it is a door, a noren and a sign.
- const {x0:AX0,x1:AX1,door:AD,height:AH}=SATO_ANNEX,AZ0=back,AZ1=front-.1,AMX=(AX0+AX1)/2;
+ // tools/blender/build-minato-compact.py); out here it is a door, a noren and a sign.
+ // Its depth is independent of Minato's rear extension: the lunch shop keeps its street footprint.
+ const {x0:AX0,x1:AX1,door:AD,height:AH,depth:annexDepth}=SATO_ANNEX,AZ1=front-.1,AZ0=AZ1-annexDepth,AMX=(AX0+AX1)/2;
  const ramen=new THREE.Group();ramen.name='Sato Ramen frontage';group.add(ramen);
  const rbox=(size,pos,colour,extra)=>painted(size,pos,colour,extra,ramen);
  box([AX1-AX0+.2,.18,AZ1-AZ0+.1],[AMX,.09,(AZ0+AZ1)/2],'concrete',0x8c8578);
- rbox([AX1-AX0,AH,.2],[AMX,AH/2,AZ0+.1],0xb3a890,{roughness:.95});
+ rbox([AX1-AX0,AH,wallT],[AMX,AH/2,AZ0+wallT/2],0xb3a890,{roughness:.95});
  // The flank stops inside the back and street walls, so no face of it lies in theirs.
- rbox([.2,AH,AZ1-AZ0-.4],[AX1-.1,AH/2,(AZ0+AZ1)/2],0xb5aa92,{roughness:.95});
+ rbox([wallT,AH,AZ1-AZ0-2*wallT],[AX1-wallT/2,AH/2,(AZ0+AZ1)/2],0xb5aa92,{roughness:.95});
  // The street face: wall either side of the door and the window, and the lintel over both.
  const dl=AD-.6,dr=AD+.6,wl=dr+.35,wr=AX1-.3;
- rbox([dl-AX0,AH,.2],[(AX0+dl)/2,AH/2,AZ1-.1],0xb8ad95,{roughness:.95});
- rbox([wl-dr,AH,.2],[(dr+wl)/2,AH/2,AZ1-.1],0xb8ad95,{roughness:.95});
- rbox([AX1-wr,AH,.2],[(wr+AX1)/2,AH/2,AZ1-.1],0xb8ad95,{roughness:.95});
- rbox([wr-wl,.9,.2],[(wl+wr)/2,.45,AZ1-.1],0xb8ad95,{roughness:.95});
- rbox([dr-dl,AH-2.15,.2],[AD,2.15+(AH-2.15)/2,AZ1-.1],0xb8ad95,{roughness:.95});
- rbox([wr-wl,AH-2.05,.2],[(wl+wr)/2,2.05+(AH-2.05)/2,AZ1-.1],0xb8ad95,{roughness:.95});
+ rbox([dl-AX0,AH,wallT],[(AX0+dl)/2,AH/2,AZ1-wallT/2],0xb8ad95,{roughness:.95});
+ rbox([wl-dr,AH,wallT],[(dr+wl)/2,AH/2,AZ1-wallT/2],0xb8ad95,{roughness:.95});
+ rbox([AX1-wr,AH,wallT],[(wr+AX1)/2,AH/2,AZ1-wallT/2],0xb8ad95,{roughness:.95});
+ rbox([wr-wl,.9,wallT],[(wl+wr)/2,.45,AZ1-wallT/2],0xb8ad95,{roughness:.95});
+ rbox([dr-dl,AH-2.15,wallT],[AD,2.15+(AH-2.15)/2,AZ1-wallT/2],0xb8ad95,{roughness:.95});
+ rbox([wr-wl,AH-2.05,wallT],[(wl+wr)/2,2.05+(AH-2.05)/2,AZ1-wallT/2],0xb8ad95,{roughness:.95});
  // A sliding glass door in an aluminium frame, and a steamed-up window beside it.
  const glass=new THREE.MeshStandardMaterial({color:0xcfdcd8,roughness:.2,metalness:.1,transparent:true,opacity:.55});
  for(const dx of [-.3,.3]){const pane=new THREE.Mesh(new THREE.BoxGeometry(.58,2.05,.03),glass);pane.position.set(AD+dx,1.1,AZ1-.02);ramen.add(pane);}

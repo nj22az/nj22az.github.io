@@ -55,7 +55,7 @@ test('the place: the room inside; outdoors the nearest named place ahead, or one
  assert.deepEqual(placeOfPhoto({room:null,places:[{id:'door',title:'Door',x:0,z:5}],camera}),{id:'door',title:'Door',at:'at Door'},'right beside him');
  // Places whose name is not a shop's own get their own words.
  assert.equal(placeOfPhoto({room:{id:'mayor-home',title:'Mayor’s House'},places,camera}).at,'at home');
- assert.equal(placeOfPhoto({room:{id:'school',title:'Town Hall Classroom'},places,camera}).at,'in the town hall classroom');
+ assert.equal(placeOfPhoto({room:{id:'school',title:'Minato Elementary School'},places,camera}).at,'in the school classroom');
  assert.equal(placeOfPhoto({room:{id:'home-k7',title:'House to let'},places,camera}).at,'in the house to let');
  assert.equal(placeOfPhoto({room:{id:'resident-home-thao',title:'Thao’s home'},places,camera}).at,'at Thao’s home');
  assert.equal(placeOfPhoto({room:null,places:[{id:'far',title:'Far',x:0,z:-40}],camera}),null);
