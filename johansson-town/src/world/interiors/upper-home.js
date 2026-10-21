@@ -11,8 +11,14 @@ export function buildUpperHome(options){
  const box=(w,h,d,x,y,z,name)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);o.position.set(x,y,z);o.name=name;room.add(o);};
  // A 5.4 m straight flight runs from the street foyer to the room's existing +z doorway.
  box(1.6,.12,1.5,0,-.06,9,'Private entrance landing');
+ // The street door at the foyer's end, closed behind him (the stairwell had no end: the sky's colour showed through it),
+ // in the trim's teal of the frame outside (okinawa/houses.js shopHouse).
+ box(1.76,6.1,.08,0,3.05,9.79,'Private entrance wall');
+ {const leaf=new THREE.Mesh(new THREE.BoxGeometry(.92,2.02,.05),new THREE.MeshStandardMaterial({color:0x416d72,roughness:.8}));leaf.position.set(0,1.01,9.73);leaf.name='Private entrance door';room.add(leaf);}
  box(1.76,.12,7.5,0,6.15,6,'Stairwell ceiling');
  for(let i=0;i<19;i++)box(1.6,.12,5.4/19,0,(i+1)*H/19-.06,8.4-(i+.5)*5.4/19,'Private stair tread');
+ // Closed risers: with open ones the void under the flight showed the sky's colour between the treads.
+ for(let i=0;i<19;i++)box(1.6,H/19,.03,0,(i+.5)*H/19,8.4-i*5.4/19-.015,'Private stair riser');
  box(1.6,.12,.6,0,H-.06,2.9,'Upper landing');
  for(const x of [-.84,.84]){
   box(.08,6.1,7.5,x,3.05,6,'Private stairwell wall');collider(x,6,.08,7.5,6.1);

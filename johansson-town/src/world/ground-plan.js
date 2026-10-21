@@ -19,6 +19,7 @@
 import {MAIN_ROAD,MAIN_SERVICE_COURT,MAIN_LOADING_APRON,MAIN_PARKING_LAYBY,SHOP_CROSSING_Z} from './main-road.js';
 import {KITANO_ROAD} from './kitano-link-plan.js';
 import {BUS_STATION} from './bus-station.js';
+import {POLICE_STATION} from './police-station-layout.js';
 import {DISTRICTS,GROUND_CLASSES,GROUND_EDGE} from './ground-standard.js';
 
 const EPS=1e-7;
@@ -157,6 +158,8 @@ function mainStreetLayers(){
  L.push({cls:'pavers',name:'Main Street footway',...rect(M.pavementWest,M.pavementEast,Z0,Z1),top:FOOT,why:'Main Street\'s footways and shop fronts are pavers.'});
  L.push({cls:'concrete',name:'Main Street back strip',...rect(M.backWest,M.pavementWest,Z0,M.backTo),top:TOWN_ROAD,why:'Behind the west shop line, where the yard begins: poured concrete flush with the yard, under the shops\' fronts and across the gaps between them.'});
  L.push({cls:'concrete',name:'Main Street back strip',...rect(M.pavementEast,M.backEast,Z0,M.backTo),top:TOWN_ROAD,why:'The East Row\'s and the park\'s frontage: poured concrete, flush with the lawn and the park\'s paths.'});
+ // North of it, between the footway and the police station's street face, to its yard: the station's doors open onto it.
+ L.push({cls:'concrete',name:'Main Street back strip',...rect(M.pavementEast,M.backEast,M.backTo,POLICE_STATION.yard.minZ),top:TOWN_ROAD,why:'The police station\'s street face and doors stand on the frontage strip, as the East Row\'s do; north of it is the station\'s yard.'});
  // Kitano Road lays its own ground east of the district line (kitano-link.js).
  L.push({hole:true,name:'Kitano Road footway',...rect(M.pavementEast,M.backEast,K.corners[0][1]-K.section.footway,mouth.z0-KERB)});
  // 2. Stone edging at the back of the footway and the strips, where the yard's and the park's lawns come up to them.

@@ -82,15 +82,28 @@ export function specialistStreetMasks(){
 /** Old garden diagonals and shopping connector are navigation aliases of the new grid.
  * Their paving is retired; the Main Street footway and plot circuits provide the connection. */
 export const retiredStreetOverlay=r=>r.id.startsWith('neighbourhood-')||r.id==='island-shopping-lane';
-export function coordinatedStreetPatches(routes){
- const masks=specialistStreetMasks().map(p=>({polygon:p,bounds:bounds(p)})),patches=[];
+/**
+ * Every route's paving as the junction owner cuts it (a higher-priority route owns where two cross; the specialist masks
+ * are left out), before anything is given to a ground plan: the pieces the plans lay from (ground-walks.js).
+ */
+export function streetPieces(routes){
+ const masks=specialistStreetMasks().map(p=>({polygon:p,bounds:bounds(p)})),pieces=[];
  const ordered=routes.filter(r=>!r.park&&r.id!=='second-pier'&&r.id!=='fujita-shed-circuit'&&!retiredStreetOverlay(r))
   .map(route=>({route,kind:streetClass(route)})).sort((a,b)=>STREET_STANDARD[b.kind].priority-STREET_STANDARD[a.kind].priority);
  for(const {route,kind} of ordered)for(const polygon of routePolygons(route)){
-  const box=bounds(polygon);let pieces=[polygon];
-  for(const mask of masks){if(!overlap(box,mask.bounds))continue;pieces=pieces.flatMap(p=>subtractPolygon(p,mask.polygon));if(!pieces.length)break;}
-  for(const p of pieces)patches.push({polygon:p,route:route.id,kind,surface:STREET_STANDARD[kind].surface});
+  const box=bounds(polygon);let list=[polygon];
+  for(const mask of masks){if(!overlap(box,mask.bounds))continue;list=list.flatMap(p=>subtractPolygon(p,mask.polygon));if(!list.length)break;}
+  for(const p of list)if(area(p)>1e-6)pieces.push({polygon:p,route:route.id,kind,surface:STREET_STANDARD[kind].surface});
   masks.push({polygon,bounds:box});
  }
- return patches;
+ return pieces;
+}
+/**
+ * What the lane builder (lane-surfaces.js) still paves itself: nothing. Since step 4 of the ground plan every district of
+ * Minato is laid by its plan (ground-plan.js, ground-plan-harbour.js, ground-plan-quarters.js, ground-plan-coast.js);
+ * the walks that cross the lawns are laid from streetPieces() by ground-walks.js, and a building's walking circuit is
+ * its apron, its gate or the lawn, never a ring of paving.
+ */
+export function coordinatedStreetPatches(routes){
+ return [];
 }

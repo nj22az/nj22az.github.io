@@ -124,6 +124,25 @@ less, by the named budgets there. Nothing else asks which edition it is. Later r
 - Outside a page (node's suites) the edition is Linux unless `JOHANSSON_EDITION=web`; `tests/edition.test.mjs` holds
   the web budgets and the Linux path.
 
+## Owner's decision — 21 October 2026: no way in without a working interior
+
+The owner, on his iPhone outside Nakamura Zenzai: "There is a bug when I go outside the ice cream shop it says enter their
+home and then I get stuck in the staircase, any place without a fully functional interior shouldn't have a button to
+enter"; and the same day: "Also the railing by the ships at the dock you can get stuck when spawning there".
+
+- An enter, visit or go-in prompt (and the Enter button at a door) exists only where it leads to a fully functional
+  interior: the room builds; he arrives on walkable floor clear of solids (in first person, and after the step inside
+  the third-person camera takes, `src/world/room-arrival.js`); he can move, over every storey of a room of more than one;
+  and the Exit button puts him on walkable street ground with room to move. A place without one gets no enter prompt;
+  its look and read prompts stay.
+- The same holds for every place the game starts him or puts him outdoors: the openings (`world/openings.js`), the ferry
+  landings (`world/airport-ferry.js`), the quick crossing and Kitano-jima's arrivals stand him on level, walkable ground,
+  clear of solids, the ferry's gangway and rails and her hull while she is alongside, with room to move a metre two ways
+  and a way on foot to the street.
+- `tests/enterable-sites.test.mjs` walks every prompt that enters somewhere, every door of the Enter button and every
+  room entered only from inside, and every arrival point, and lists each failure with its way in and its reason. A new
+  door or spawn must pass it.
+
 ## Owner's decision — 21 October 2026: one ground system
 
 The owner, on his phone: "the roads seems to have reversed to chaos again… Can you make a plan to finally fix the roads
@@ -132,16 +151,26 @@ to a unified system? Pavement? Walk paths, grass and sandy beach?" (the plan app
 - Ground: every surface comes from `src/world/ground-standard.js`. No module draws its own ground slab, colour or
   height. The rulebook gives each class its top, colour, finish, the districts it belongs in and the edge it needs
   against every neighbour: a 15 cm kerb, an edge line and U-gutter, stone or coral edging, or a graded join.
-- The ground-standard test (`tests/ground-standard.test.mjs`, measured by `tools/ground-audit.mjs`) is a ratchet. A new
-  violation fails. So does one that grew, and so does one that was fixed but is still listed in
-  `tests/fixtures/ground-baseline.json`. The list only shrinks.
+- The ground-standard test (`tests/ground-standard.test.mjs`, measured by `tools/ground-audit.mjs`) guards all of
+  Minato. Since step 4 its baseline (`tests/fixtures/ground-baseline.json`) is empty: any violation fails. Fix the ground;
+  never list a finding. If a finding is a false positive, change the audit's rule with its reason written beside it.
 - A district on the standard is laid by the generator (`src/world/ground-build.js`) from its plan (`ground-plan.js`,
   `ground-plan-harbour.js`): add or move ground by changing the plan, never with a slab of a module's own. Step 2 put Main
   Street and the harbour on it. Main Street's carriageway lies a kerb under the town's datum and is graded back at its
-  ends; what stands on the road or at its ends takes its height from the plan (`streetDrop`, `groundTopAt`).
+  ends; what stands on the road or at its ends takes its height from the plan (`streetDrop`, `groundTopAt`). Step 3 put
+  Kitahama, Nishi-machi, the west yard and the town hall on it (`ground-plan-quarters.js`). In a lane district a house
+  meets the lane by its own gate and the U-gutter (`lane-edges.js` draws the plan's gutter runs), never by a paved
+  ring. In the west yard the buildings stand on concrete aprons edged against the lawn. Step 4 put the rest on it:
+  the walks across the lawns (Harbour Park's, the east lawn's, Kitahama's coastal walk, Kitano Road's footway) are laid
+  from `ground-plan-coast.js` by `ground-paths.js`, flush and edged in setts; the lane builder (`lane-surfaces.js`) lays
+  nothing. No building has a ring of paving: it stands in its lawn or sand, with an apron or forecourt only where it is
+  used (Umi-no-yu's forecourt, the fuel depot's court, the drinks corner's pad). The east beach (`beach-layout.js`,
+  drawn by `east-lawn.js`) is coral-white sand with a wet band at the water, graded up to every firm edge
+  (`BEACH_GRADES`) and down into the sea; north of the oil jetty the east quay ends at x 42.3 and the beach runs to the
+  water (owner-approved).
 - The plan, the rulebook tables and today's counts are in [docs/GROUND-STANDARD.md](docs/GROUND-STANDARD.md). The work
-  runs in steps, each merged after the owner sees photos: (2) Main Street and the harbour; (3) Kitahama, Nishi, the
-  neighbourhood and the school; (4) the beach, the coast, the park and the lawns, until the baseline is empty.
+  ran in steps, each merged after the owner saw photos: (2) Main Street and the harbour; (3) Kitahama, Nishi, the
+  neighbourhood and the school; (4) the beach, the coast, the park and the lawns, which emptied the baseline.
 
 ## Owner's decision — 21 October 2026: Higa Liquor and the coin laundry, kept by the cast
 

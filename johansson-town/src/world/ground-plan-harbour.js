@@ -13,6 +13,9 @@ import {NISHI,EAST_QUAY,EAST_QUAY_CORNER} from './okinawa/layout.js';
 import {SHED_WALKWAY,FUJITA_PIER} from './fujita-layout.js';
 import {OIL_JETTY} from './oil-jetty-layout.js';
 import {MINATO_BERTH} from './minato-berth.js';
+import {BEACH_EDGES} from './beach-layout.js';
+/** Where the east lawn's parapet begins its run north (east-lawn.js); south of it the lawn meets the fuel depot's court. */
+const EAST_LAWN_WALL_FROM=-36;
 import {GROUND_CLASSES,GROUND_EDGE} from './ground-standard.js';
 import {EDGING_PROUD,laidAt,mainStreetPlan,MAIN_STREET_GROUND,MAIN_QUAY_TOP} from './ground-plan.js';
 export {MAIN_QUAY_TOP};
@@ -21,8 +24,11 @@ export {MAIN_QUAY_TOP};
 export const APRON_TOP=.06;
 /** East of the east quay its apron runs on to the oil jetty, over the bank that showed bare between them. */
 export const EAST_QUAY_END=EAST_QUAY_CORNER.jettyFrom;
-/** North of the oil jetty the east quay's corner runs out to the water's edge. */
-const SHORE_END=EAST_QUAY_CORNER.shore;
+/**
+ * North of the oil jetty the east quay ends at x 42.3, in line with the fuel depot's court, and the beach runs from there
+ * to the water (step 4; the owner approved bringing the beach back where step 2 had laid the quay over it).
+ */
+const BEACH_FROM=EAST_QUAY_CORNER.beachFrom;
 /** The quay's edge with the town behind it: a row of setts 3 mm proud of the quay, and never under the footway's level. */
 const EDGE_TOP=GROUND_CLASSES.road.top+EDGING_PROUD;
 /** Over how many metres an apron comes down to the main quay where they meet (5 %). */
@@ -53,18 +59,21 @@ function harbourLayers(){
   why:'The quay rises 6 cm over its last metre and a half to the west footway and the yard, so they run onto it without a step.'});
  L.push({cls:'quay',name:'Quay paving',...rect(seawallFoot,Q.minX-APRON_GRADE,N.minZ,Q.maxZ),top:APRON_TOP,why:'The Nishi quay\'s apron, from under the seawall to the main quay.'});
  L.push({cls:'quay',name:'Quay paving',...rect(Q.minX-APRON_GRADE,Q.minX,N.minZ,Q.maxZ),top:grade('x',Q.minX-APRON_GRADE,APRON_TOP,Q.minX,MAIN_QUAY_TOP),why:'The Nishi apron comes down to the main quay over a metre and a half.'});
- L.push({cls:'quay',name:'Quay paving',...rect(Q.maxX+APRON_GRADE,eastEnd,EQ.minZ,Q.maxZ),top:APRON_TOP,why:'The east quay\'s apron, under the auction shed and the ice plant, on to the oil jetty.'});
- L.push({cls:'quay',name:'Quay paving',...rect(Q.maxX,Q.maxX+APRON_GRADE,EQ.minZ,Q.maxZ),top:grade('x',Q.maxX,MAIN_QUAY_TOP,Q.maxX+APRON_GRADE,APRON_TOP),why:'The east apron comes up from the main quay over a metre and a half.'});
- // North of the oil jetty the apron runs on over the beach's tail to the water, so the quay meets the shore at a wall
- // and not in a strip of sand and bare bank (the hotspots at x 39, z -45 and x 44, z -39 of the step-1 audit).
  const jetty=OIL_JETTY.deck;
- L.push({cls:'quay',name:'Quay paving',...rect(eastEnd,SHORE_END,jetty.maxZ,Q.maxZ),top:APRON_TOP,why:'The east quay\'s corner by the oil jetty, out to the water.'});
- // Where the quay ends at the shore or the water, its edge is a coping.
+ L.push({cls:'quay',name:'Quay paving',...rect(Q.maxX+APRON_GRADE,BEACH_FROM,EQ.minZ,Q.maxZ-.001),top:APRON_TOP,why:'The east quay\'s apron, under the auction shed, the ice plant and the forklift\'s bay.'});
+ L.push({cls:'quay',name:'Quay paving',...rect(BEACH_FROM,eastEnd,EQ.minZ,jetty.maxZ),top:APRON_TOP,why:'On to the oil jetty\'s root; north of it the beach.'});
+ L.push({cls:'quay',name:'Quay paving',...rect(Q.maxX,Q.maxX+APRON_GRADE,EQ.minZ,Q.maxZ),top:grade('x',Q.maxX,MAIN_QUAY_TOP,Q.maxX+APRON_GRADE,APRON_TOP),why:'The east apron comes up from the main quay over a metre and a half.'});
+ // Where the quay ends at the water, its edge is a coping; where it ends at the beach, the sand is graded up to it
+ // (beach-layout.js BEACH_GRADES), never a step.
  L.push({cls:'coping',edge:true,name:'Quay coping',...rect(eastEnd-.15,eastEnd,EQ.minZ,jetty.maxZ),top:APRON_TOP+EDGING_PROUD,depth:1,why:'South of the jetty the quay ends at its wall with the coping, the water below it.'});
- L.push({cls:'coping',edge:true,name:'Quay coping',...rect(SHORE_END-.15,SHORE_END,jetty.maxZ,Q.maxZ),top:APRON_TOP+EDGING_PROUD,depth:1,why:'The corner\'s wall to the sea, with its coping.'});
+ // The fuel depot's service court, on the beach's south end beside the quay: flush concrete, the sand graded up to it.
+ const C=BEACH_EDGES.court;
+ L.push({cls:'concrete',name:'Fuel depot service court',...rect(C.minX,C.maxX,C.minZ,C.maxZ),top:GROUND_CLASSES.concrete.flushTop,
+  why:'The fuel depot\'s tank stands in its bund on a level court where the tanker lorry fills from it; it opens off the quay, flush, and the beach is graded up to its other sides.'});
+ L.push({cls:'edging',edge:true,name:'Stone edging',...rect(C.minX,C.minX+.1,C.minZ,EAST_LAWN_WALL_FROM),top:'flush',why:'Where the east lawn comes to the court, south of the parapet, a row of setts.'});
  // 2. The stone edging along the quays' landward side, where the yard, the park and the lawns meet them; none across the
  // street's road and the cargo driveway, which run onto the quay flush.
- for(const [x0,x1] of [[seawallFoot,MAIN_ROAD.west-GROUND_EDGE.kerb.width],[3.2,SHORE_END-.15]])
+ for(const [x0,x1] of [[seawallFoot,MAIN_ROAD.west-GROUND_EDGE.kerb.width],[3.2,BEACH_EDGES.court.minX]])
   L.push({cls:'edging',edge:true,name:'Stone edging',...rect(x0,x1,Q.maxZ-.1,Q.maxZ),top:'flush',atLeast:EDGE_TOP,why:'The quay ends at a row of setts where the town\'s ground begins.'});
  return layers={layers:L,Q,N,EQ,seawallFoot,eastEnd};
 }

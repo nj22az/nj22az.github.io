@@ -120,3 +120,24 @@ export function paintedConcrete(size=256){
  }
  return finish('concrete',data,size);
 }
+
+/**
+ * Crushed stone and coral, raked, painted: near-white grit with darker and paler grains and the soft streaks a rake
+ * leaves, for the ground generator's loose classes (world/ground-build.js: Nishi-machi's coral yards, Kitahama's coral
+ * pads, the school's rolled paths, the grove's gravel). Near-neutral, so the rulebook's colour sets the tone
+ * (world/ground-standard.js). Tiles seamlessly; at a 2 m repeat a grain is a centimetre or two.
+ */
+export function paintedGrit(size=256){
+ if(cache.has('grit'))return cache.get('grit');
+ const data=new Uint8Array(size*size*4);
+ for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+  const u=x/size,v=y/size;
+  const rake=Math.sin((v+Math.sin(u*Math.PI*2)*.015)*Math.PI*36)*2.2;
+  const g=hash(x,y,13),grain=g>.94?-26:g>.88?-12:g<.05?9:0;
+  const mottle=(Math.sin(u*Math.PI*4+Math.cos(v*Math.PI*2)*1.3)+Math.sin(v*Math.PI*6))*2.4;
+  const light=228+rake+grain+mottle+(hash(x>>1,y>>1,17)-.5)*8;
+  const i=(y*size+x)*4;
+  data[i]=Math.round(THREE.MathUtils.clamp(light,0,255));data[i+1]=Math.round(THREE.MathUtils.clamp(light-1,0,255));data[i+2]=Math.round(THREE.MathUtils.clamp(light-4,0,255));data[i+3]=255;
+ }
+ return finish('grit',data,size);
+}

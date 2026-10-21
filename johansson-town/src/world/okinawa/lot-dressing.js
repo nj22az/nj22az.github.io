@@ -3,9 +3,9 @@ import {rng} from './kit.js';
 import {poster} from './signs.js';
 import {coralWall,hibiscus,OKINAWA_COLOURS as C} from './houses.js';
 import {bicycle,netPile,buoys} from './props.js';
-import {CLEARED_LOTS,PLOT_PLANTING,LOT_COLOURS as L,lotGround} from './lots.js';
+import {CLEARED_LOTS,PLOT_PLANTING,LOT_COLOURS as L} from './lots.js';
 import {KITAHAMA} from '../kitahama-layout.js';
-import {GROUND_LAYER} from '../ground-layers.js';
+import {GROUND_CLASSES} from '../ground-standard.js';
 import {buildParkedVehicle,parkedVehicleFit,KEI_TRUCK_BED} from '../road-vehicles.js';
 
 /**
@@ -23,7 +23,7 @@ const P=Object.freeze({gravel:0xcfc5ab,concrete:0xb9b4a8,paint:0xf1efe6,stop:0xc
  leaf:0x4f7d3e,leafDark:0x3c6a35,leafLight:0x6e9a4c,steel:0x6c7476,galv:0xa9b1b3,tyre:0x1f2124,glass:0x5d7a84,black:0x26282b,
  shedWall:0xe6e0cc,shedDoor:0x6e8a6a,shedRoof:0x8c9ea3,timber:0x8a6a45,timberDark:0x5d4431,cane:0x9aa860,caneDark:0x7d8a4c,
  caneLeaf:0x6f9a4a,goya:0x6fa84a,hibiscus:0xd9303b,yellow:0xd8b13c,orange:0xd8742a});
-const PAD_TOP=.045,PAINT=PAD_TOP+.016;
+const PAD_TOP=.045;
 const mid=r=>[(r.minX+r.maxX)/2,(r.minZ+r.maxZ)/2];
 const lotOf=id=>CLEARED_LOTS.find(l=>l.id===id);
 const propOf=(lot,id)=>{const p=lot.dressing.props.find(q=>q.id===id);if(!p)throw new Error(lot.id+': no prop '+id);return p;};
@@ -68,7 +68,8 @@ function rows(r,{rows:n=2,step=.45,inset=.25},fn){
 /** A steel garden shed (物置): ivory panels, two sliding doors on the `face` side, a sloping lid. */
 function steelShed(kit,r,{face='south',h=1.95,door=P.shedDoor,units=1}={}){
  const {minX,maxX,minZ,maxZ}=r,alongX=face==='north'||face==='south';
- kit.block(minX,maxX,0,.08,minZ,maxZ,0x77736a);
+ // It stands on concrete footing blocks at its corners and middles (the floor 8 cm up), as a 物置 does, not on a slab.
+ for(const x of [minX+.1,(minX+maxX)/2,maxX-.1])for(const z of [minZ+.1,maxZ-.1])kit.block(x-.1,x+.1,0,.08,z-.1,z+.1,0x77736a);
  kit.block(minX+.02,maxX-.02,.08,h-.08,minZ+.02,maxZ-.02,P.shedWall,'metal');
  kit.block(minX-.05,maxX+.05,h-.08,h,minZ-.05,maxZ+.05,P.shedRoof,'metal');
  // Ribs down the side panels, the doors in their tracks and a handle on each.
@@ -111,6 +112,18 @@ function postSign(kit,texture,{x,z,ry=0,w=1.1,h=.75,y=1.45,name='sign',post=.05,
  * would put its tail past the bay's painted lines, and centred between them. The data rectangle of each is its collider
  * and holds the whole car (tests/parked-cars.test.mjs).
  */
+/**
+ * The paint on the lots' pads, as rectangles: the parking's bay lines and the hoop's key. The ground generator lays it
+ * with the pads (ground-plan-quarters.js, step 3 of the ground plan): paint lies on the ground it marks.
+ */
+export function lotPaint(){
+ const out=[],{lines,lineZ}=PARKING;
+ for(const x of lines)out.push({minX:x-.05,maxX:x+.05,minZ:lineZ[0],maxZ:lineZ[1],colour:P.paint,name:'Kitahama monthly parking bays'});
+ const hp=propOf(lotOf('kitahama-9-lot'),'hoop').rect,[px,pz]=mid(hp),board=pz+.6;
+ for(const [x0,x1,z0,z1] of [[px-.92,px+.92,board-.05,board+.05],[px-.92,px-.86,board,board+3.6],[px+.86,px+.92,board,board+3.6],[px-.92,px+.92,board+3.55,board+3.6]])
+  out.push({minX:x0,maxX:x1,minZ:z0,maxZ:z1,colour:P.paint,name:'The hoop\'s key'});
+ return out;
+}
 export const PARKING=Object.freeze({lines:Object.freeze([30.8,33.4,36.0,38.6,41.2]),bays:Object.freeze([32.1,34.7,37.3,39.9]),stopZ:66.75,lineZ:Object.freeze([62.5,67.1]),pad:PAD_TOP});
 export const PARKED_CARS=Object.freeze([
  Object.freeze({prop:'bay-1-truck',bay:1,kind:'kei truck',colour:0xf2f0ea,owner:'Kōji',load:'ice chest and rope'}),
@@ -189,9 +202,8 @@ function northBlock({kit,solid,read},lot,put){
  goyaVines(kit,{...gc,minX:gc.minX+.1,maxX:gc.maxX-.1},.5,1.95,{seed:6});
  hedge(kit,put(lot,'parking-hedge').rect,{h:1,seed:7});
  // The parking: crushed coral, the lines, the wheel stops, the cars and the sign.
- const pad=D.flat.find(f=>f.id==='parking-gravel').rect;lotGround(kit,pad,P.gravel);
- const {lines,bays,stopZ,lineZ}=PARKING;
- for(const x of lines)kit.block(x-.05,x+.05,PAD_TOP,PAINT,lineZ[0],lineZ[1],P.paint);
+ // (The crushed coral and the bay lines are the ground's: ground-plan-quarters.js lays them, lotPaint the lines.)
+ const {bays,stopZ}=PARKING;
  for(const x of bays)for(const k of [-1,1])kit.block(x+k*.55-.27,x+k*.55+.27,PAD_TOP,PAD_TOP+.12,stopZ-.07,stopZ+.07,P.stop);
  for(const car of PARKED_CARS){put(lot,car.prop);parkedCar(kit,car,parkedVehicleFit(car.kind,{bonnet:car.bonnet}));}
  // Mac's toolbox on the gravel by his front wheel, inside his bay.
@@ -233,10 +245,8 @@ function lot9({kit,solid,read},lot,put){
  // two among them) in the bay north of them, so no post stands in front of a bicycle seen from the footpath.
  SHED_BICYCLES.forEach(b=>solid(bicycle(kit,(minX+maxX)/2-.05,minZ+b.dz,{ry:0,...b})));
  // The hoop: its pad, the key painted on it, the post, the backboard, the rim and the net; the ball at the foot.
- const pad=lot.dressing.flat[0].rect;lotGround(kit,pad,P.concrete);
+ // (The pad and its key are the ground's: ground-plan-quarters.js, lotPaint.)
  const hp=put(lot,'hoop').rect,[px,pz]=mid(hp),board=pz+.6,rim=board+.3;
- const line=(x0,x1,z0,z1)=>kit.block(x0,x1,PAD_TOP,PAINT,z0,z1,P.paint);
- line(px-.92,px+.92,board-.05,board+.05);line(px-.92,px-.86,board,board+3.6);line(px+.86,px+.92,board,board+3.6);line(px-.92,px+.92,board+3.55,board+3.6);
  kit.cyl(.06,.07,3.3,px,1.65,pz,0x2d4f7a,{segments:8,finish:'metal'});
  kit.rod([px,3.0,pz],[px,3.15,board-.02],.04,0x2d4f7a);
  kit.box(1.2,.9,.04,px,3.25,board,0xf4f1ea);kit.box(.46,.34,.06,px,3.1,board,0xc8432f);kit.box(.4,.28,.08,px,3.1,board,0xf4f1ea);
@@ -250,7 +260,7 @@ function lot9({kit,solid,read},lot,put){
 }
 
 function lot7({kit,read},lot,put){
- const ground=lot.dressing.flat[0].rect;lotGround(kit,ground,P.gravel);
+ // (The swept coral is the ground's: ground-plan-quarters.js.)
  const store=put(lot,'association-store').rect;
  steelShed(kit,store,{face:'south',h:2.1,door:0x7a5a3a,units:2});
  // The sign screwed to the doors' head, facing the ground.
@@ -286,7 +296,7 @@ function cane({kit,read},lot,put){
  const p=lot.dressing.props.find(q=>q.id.startsWith('cane-'));put(lot,p.id);
  const r=p.rect,g=rng(700+Math.round(r.minX));
  // Red earth in ridges, a little wider than the cane; the stalks in clumps along each ridge, the leaves arching out.
- lotGround(kit,{minX:r.minX-.15,maxX:r.maxX+.15,minZ:r.minZ-.15,maxZ:r.maxZ+.15},P.earthDry);
+ // (The red earth under the rows is the ground's: ground-plan-quarters.js KITAHAMA_CANE.)
  for(let z=r.minZ+.4;z<r.maxZ-.2;z+=.95){
   kit.block(r.minX+.1,r.maxX-.1,PAD_TOP,PAD_TOP+.025,z-.3,z+.3,0x93593b);
   for(let x=r.minX+.25;x<r.maxX-.2;x+=.4+g.next()*.1){
@@ -391,12 +401,14 @@ function yard1({kit,read},lot,put){
 /* ------------------------------ Main Street ------------------------------ */
 
 function postOffice({kit,solid,anchor,onAction,vending},lot,put){
- const pad=lot.dressing.flat[0].rect,A=GROUND_LAYER.apron;
- kit.block(pad.minX,pad.maxX,A-.05,A,pad.minZ,pad.maxZ,P.concrete);
+ // The pad is the ground's (ground-plan-coast.js): flush concrete at the footway's level, edged on the lawn.
+ const A=GROUND_CLASSES.concrete.flushTop;
  for(const id of ['machine-1','machine-2']){const p=propOf(lot,id);if(vending)vending(p.at[0],p.at[1],-Math.PI/2,A);else solid({id:'vending',x:p.at[0]-.08,z:p.at[1],w:.9,d:1.09,height:2.2});}
  const bin=put(lot,'can-bin').rect,[bx,bz]=mid(bin);
  kit.box(.46,.84,.46,bx,A+.42,bz,0x2f6fb8);kit.box(.48,.06,.48,bx,A+.86,bz,0xf2f0ea);
  for(const k of [-1,1])kit.cyl(.07,.07,.02,bx-.24,A+.62,bz+k*.11,0x15181a,{rz:Math.PI/2,segments:10});
+ // The screen wall the corner backs onto: concrete block, rendered, a white-painted coping (lots.js POST_OFFICE).
+ {const w=put(lot,'screen-wall'),r=w.rect;kit.block(r.minX,r.maxX,0,w.height-.06,r.minZ,r.maxZ,0xcfcabb,'plaster');kit.block(r.minX-.02,r.maxX+.02,w.height-.06,w.height,r.minZ-.02,r.maxZ+.02,0xeeebe2);}
  const b=put(lot,'bench').rect,[x,z]=mid(b),len=b.maxZ-b.minZ;
  kit.box(.44,.08,len,x,A+.45,z,0x3a6e8f);for(const k of [-1,1])kit.box(.36,.42,.06,x,A+.21,z+k*(len/2-.12),P.steel);
  const seat=anchor?.(x-.65,1,z,'Sit at the drinks corner',()=>onAction?.('seat','The drinks corner','A bench beside the drinks machines, the park’s lawn behind you and Main Street in front. The machines hum. Somebody coming down from the bath stops for a coffee milk and drinks it standing, the way you are supposed to.'));

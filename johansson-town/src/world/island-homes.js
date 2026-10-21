@@ -47,7 +47,8 @@ export function buildIslandHomes(world,options){
   const {door,inward}=plotGate(p);addHome(householdAtHome(p.id),[door[0],.04,door[1]],{entryFacing:inward,houseKind:p.kind});
  }
  // Separate residential entrances: customers never cross a private sleeping room.
- addHome(householdAtHome('nakamura'),[...NAKAMURA_HOME_DOOR],{upperHome:true,entryFacing:Math.PI/2});
+ // Its door is on the shop-house's Main Street face, the building east of it: in is east (−π/2), as for every west gate.
+ addHome(householdAtHome('nakamura'),[...NAKAMURA_HOME_DOOR],{upperHome:true,entryFacing:-Math.PI/2});
  addHome(householdAtHome('clinic'),[37.7,.04,35.1],{entrancePosition:[37.7,.15,36.4],entryFacing:Math.PI});
  // (The flat over the former post office and Barfly's room at the izakaya were retired in phase 4: no door, no site.)
  function addHome(h,door,extra={}){

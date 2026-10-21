@@ -5,7 +5,6 @@ import {GROUND} from '../render/ground-palette.js';
 import * as THREE from '../../vendor/three.module.js';
 import {activeRoutes,routeAt,groundHeight} from './layout.js?snappy=1';
 import {GROUND_LAYER} from './ground-layers.js';
-import {BEACH} from './beach-layout.js';
 
 // Low garden boundaries make the authored walking network legible. Leave every
 // junction open, including routes supplied by the shopping and dining models.
@@ -23,16 +22,10 @@ export function laneEdges(){
  return edges;
 }
 
-// All urban paving, including the coastal circuit, has one junction owner.
+// What the lane builder still paves: nothing since step 4 of the ground plan (street-plan.js coordinatedStreetPatches);
+// every district is laid by its plan, the walks across the lawns by ground-plan-coast.js.
 export function lanePatches(routes=activeRoutes().slice(3)) {
  return coordinatedStreetPatches(routes);
-}
-
-/** Whether a paving patch is the coastal walk's stretch over the east beach's sand (beach-layout.js BEACH). */
-export function beachWalkAt(patch){
- if(patch.route!=='island-coast-walk')return false;
- const n=patch.polygon.length,x=patch.polygon.reduce((a,p)=>a+p[0],0)/n,z=patch.polygon.reduce((a,p)=>a+p[1],0)/n;
- return x>=BEACH.profile[0][0]&&z>=BEACH.minZ&&z<=BEACH.maxZ;
 }
 export function buildLaneSurfaces(parent,library) {
   const edges=laneEdges(),boundary=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshStandardMaterial({color:0x7d8776,roughness:1}),edges.length),dummy=new THREE.Object3D();
@@ -61,14 +54,12 @@ export function buildLaneSurfaces(parent,library) {
       emit(surface,a,ab,ca,depth+1);emit(surface,ab,b,bc,depth+1);emit(surface,ca,bc,c,depth+1);emit(surface,ab,bc,ca,depth+1);
     }else triangle(surface,a,b,c);
   };
-  // Along the east beach the coastal walk is the firm wet sand at the water's edge, not a concrete strip between
-  // the beach and the sea: the walk is the same, its surface is the beach's (beachWalkAt).
-  for(const patch of lanePatches()){const surface=beachWalkAt(patch)?'wet-sand':patch.surface;for(let i=1;i<patch.polygon.length-1;i++)emit(surface,patch.polygon[0],patch.polygon[i],patch.polygon[i+1]);}
+  for(const patch of lanePatches()){for(let i=1;i<patch.polygon.length-1;i++)emit(patch.surface,patch.polygon[0],patch.polygon[i],patch.polygon[i+1]);}
   for(const [surface,b] of batches){
     const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(b.positions,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(b.uv,2));geometry.setIndex(b.indices);geometry.computeVertexNormals();
-    // The wet sand and the concrete lanes lie over graded ground, within millimetres of it where it rises: drawn with polygon
-    // offset, as the town's other ground decals are, so the ground never flashes through them on a phone.
-    const material=surface==='wet-sand'?new THREE.MeshStandardMaterial({color:0xcdb88c,roughness:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}):surface==='concrete'?new THREE.MeshStandardMaterial({color:GROUND.concrete,roughness:.94,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}):library.worldMaterial(surface==='wood'?'timber':surface==='asphalt'?'asphalt':'paving',surface==='wood'?0xc8c1af:surface==='asphalt'?GROUND.asphalt:GROUND.pavers).clone();material.side=THREE.DoubleSide;
+    // Concrete lanes lie over graded ground, within millimetres of it where it rises: drawn with polygon offset, as the
+    // town's other ground decals are, so the ground never flashes through them on a phone.
+    const material=surface==='concrete'?new THREE.MeshStandardMaterial({color:GROUND.concrete,roughness:.94,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}):library.worldMaterial(surface==='wood'?'timber':surface==='asphalt'?'asphalt':'paving',surface==='wood'?0xc8c1af:surface==='asphalt'?GROUND.asphalt:GROUND.pavers).clone();material.side=THREE.DoubleSide;
     const mesh=new THREE.Mesh(geometry,material);mesh.name='grid-lanes:'+surface;mesh.receiveShadow=true;parent.add(mesh);
   }
 }
