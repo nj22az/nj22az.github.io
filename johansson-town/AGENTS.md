@@ -204,3 +204,7 @@ No new people; everything below is data first (`src/commerce/higa-liquor.js`, `s
 ## Verification
 
 Use focused geometry, collision, navigation and schedule checks. For runtime changes run `npm run build:runtime` and `node --test tests/runtime-package.test.mjs`. Check real pedestrian and overhead views, including mobile, wherever a GPU browser is available; state when physical-device or visual checks are unavailable. Do not claim screenshots or tests that were not performed.
+
+World changes must keep the CI guard green (`.github/workflows/johansson-world.yml`, on every pull request and push to
+main that touches `johansson-town/`; locally `node tools/ci-guard.mjs`). The guard runs the tests listed in
+`tests/ci-guard.txt`, all of which pass on main. When a known-failing test is fixed, add it to the guard (one line).
