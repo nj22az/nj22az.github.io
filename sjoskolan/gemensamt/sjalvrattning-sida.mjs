@@ -273,12 +273,17 @@ export function starta(nyckel, dok = document) {
   }
   function visaResultat(namn, tid) {
     const res = resultat(plan, lage);
+    const bilagor = VECKA === '43' ? ' Bifoga också ett foto av ritningen i inlämning 3. Fotot laddar du upp separat; det ingår inte i sidans PDF.' : '';
+    const reserv = VECKA === '43'
+      ? `Kan du inte använda Classroom? <a href="${esc(mailtoAmne(plan.epost, `Fråga om inlämning vecka ${VECKA}: ${namn}`))}">Kontakta läraren</a> före fredag 23 oktober för att komma överens om ett godkänt alternativ. Skicka inte in uppgiften via e-post utan överenskommelse med läraren.`
+      : `Kan du inte använda Classroom? <a href="${esc(mailtoAmne(plan.epost, `Inlämning vecka ${VECKA}: ${namn}`))}">Mejla PDF-filen till ${esc(plan.epost)}</a>`;
     delete ut.dataset.inaktuellt;
     ut.innerHTML = `<p class="ri-stort">${nyckel ? `${res.ratt} av ${res.antal} rätt` : 'Inlämnad'}</p>`
       + `<ul>${res.uppgifter.map((u) => `<li>Inlämning ${u.nr}: ${u.antal ? `${u.ratt} av ${u.antal} rätt` : SKRIVEN}${u.lasta ? `, ${u.lasta} låst` : ''}${u.lista ? (u.lista.last ? '' : ', texten är inte låst som första version') : ''}.</li>`).join('')}</ul>`
       + `<p class="ri-knappar"><button type="button" class="sj-btn primary" id="ri-pdf">Ladda ner PDF</button></p>`
-      + `<p><strong>Lämna in PDF-filen i Google Classroom under Vecka ${esc(VECKA)}.</strong></p>`
-      + `<p class="ri-reserv">Kan du inte använda Classroom? <a href="${esc(mailtoAmne(plan.epost, `Inlämning vecka ${VECKA}: ${namn}`))}">Mejla PDF-filen till ${esc(plan.epost)}</a></p>`;
+      + `<p><strong>Lämna in PDF-filen i Google Classroom under Vecka ${esc(VECKA)}.</strong>${esc(bilagor)}</p>`
+      + (VECKA === '43' ? '<p>Webbsidan har inte skickat något till Classroom. Kontrollera att båda filerna är bifogade och slutför inlämningen där.</p>' : '')
+      + `<p class="ri-reserv">${reserv}</p>`;
     ut.hidden = false;
     lamna.classList.remove('primary');
     lamna.textContent = 'Lämna in igen';
