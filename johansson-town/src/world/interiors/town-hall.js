@@ -1,5 +1,3 @@
-import {FURNITURE_HEIGHTS,setFurnitureSurface} from '../furniture-standards.js';
-import {addOwnedCharacter} from '../../people/owned-characters.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {buildAvatar} from '../../avatars/build.js';
 import {createAvatarAnimator} from '../../avatars/animate.js';
@@ -7,9 +5,9 @@ import {normalizeRecipe} from '../../avatars/recipe.js';
 import {createPlanKit} from './house-plan.js';
 
 /**
- * The town hall's rooms behind their own doors: the mayor's office (町長室), the
- * community kitchen (調理室), the clinic (診療所) and the mayor's home in the east wing
- * (町長宅), where Johansson lives.
+ * The town hall's rooms behind their own doors: the community kitchen (調理室), with the hall's
+ * register and request box, and the clinic (診療所). (The mayor's office went in October 2026, and Johansson's home is
+ * his house on Kitano-jima.)
  *
  * The building is the old school (港小中学校, 1971). When the junior high closed in 1989
  * the town office moved in. In 2026 the old two-storey block was replaced by a single-storey hall (school.js buildTownHall): the Years 5–6 classroom is one of its rooms
@@ -27,7 +25,6 @@ function canvasTexture(w,h,draw){
  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;
 }
 const GOTHIC='"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';
-const SERIF='"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';
 
 /** Walls, floor, ceiling, dado, a window on the east wall, two fluorescent battens. */
 function shell(group,{floor,wall,dado,ceiling=0xf3efe2,tatami=false}){
@@ -75,11 +72,12 @@ function plate(group,text,{w,h,at,ry=0,bg='#f3f0e4',fg='#23302a',font=GOTHIC,siz
 }
 
 /**
- * 町長室, the mayor's office. A steel desk under the national and town flags, the island
- * map, a glass-fronted cabinet of minutes, two sofas for visitors around a low table,
- * and the in-tray of petitions: what the island wants from its mayor this week.
+ * What is in the Community Hall's request box this week, for the town assembly: every request is from somebody who lives
+ * here. (The mayor's office that read them is gone: Johansson is the ship's chief engineer, not a mayor, and the office's
+ * desk, computer and the Merry Moose are in his study on Kitano-jima, johansson-house-interior.js. The owner,
+ * 21 October 2026: "remove the mayors office and put it on the tropical island … or even rework it into one of the
+ * rooms in Johansson's house".)
  */
-/** What is in the tray this week: every petition is from somebody who lives here. */
 export const PETITIONS=Object.freeze([
  'From Tetsuo, for the power house next door: The second diesel set needs new injectors before typhoon season. The parts come on the Thursday ferry if the town pays this week.',
  "From Mrs Nakamura, Nakamura Zenzai: The street lamp outside the east row has flickered since the rain. Customers say it makes the zenzai look grey.",
@@ -87,94 +85,6 @@ export const PETITIONS=Object.freeze([
  'From the ferry company: The new cargo trucks are heavier. We ask the town to strengthen the quay apron where the ramp lands.',
  'From Thuan, Sakura Shōten: A request for a bench at the bus stop by the ferry. People wait there with their shopping.',
 ]);
-export function buildMayorOffice({room,reg,action,collider=()=>{},exit,petitions=()=>PETITIONS}){
- const group=new THREE.Group();group.name='Mayor’s office';room.add(group);
- const box=shell(group,{floor:0x9a8a74,wall:0xefe8d6,dado:0x8a6a4a});
- const {w,d}=SHELL,hw=w/2,hd=d/2;
- const anchor=(pos,label,fn,npc=false)=>{const o=new THREE.Object3D();o.position.set(...pos);o.userData.npcInteraction=npc;group.add(o);reg(o,label,fn,true);return o;};
- const deskPartsStart=group.children.length;
- // Carpet, the desk and the chair behind it.
- box([3.2,.012,2.4],[0,.006,-1.2],0x7a2f2f,'Office carpet');
- box([2.3,.07,.95],[0,.76,-1.85],0x6b4a32,'Mayor’s desk top');
- for(const x of [-.75,.75])box([.32,.74,.8],[x,.37,-1.85],0x5a3f2a,'Mayor’s desk pedestal');
- collider(0,-1.45,2.35,1.0,FURNITURE_HEIGHTS.table);
- box([.55,.08,.5],[0,.48,-2.45],0x2a2a2a,'Mayor’s chair seat');box([.55,.7,.08],[0,.9,-2.72],0x2a2a2a,'Mayor’s chair back');
- const name=plate(group,"Mayor Johansson",{w:.56,h:.14,at:[0,.86,-1.43],ry:0,bg:'#2b2f2c',fg:'#e8dfc4',font:SERIF,size:.62});name.rotation.x=-.4;
- box([.36,.24,.02],[-.55,.9,-2.05],0x3a4a52,'Desk photo');box([.26,.02,.34],[.55,.79,-1.75],0xe8e2cf,'Petitions tray');
- // A used 1990s desk: chunky monitor, telephone, paper correspondence and tea.
- const green=0x355d50,brass=0xc1a35b;
- box([.68,.025,.38],[-.42,.81,-1.75],0x263c34,'Leather writing blotter');
- box([.34,.24,.29],[-.8,.95,-1.98],0xd9d4b8,'CRT monitor casing');
- box([.28,.18,.015],[-.8,.96,-1.825],0x263c38,'CRT screen');
- const workstationDisplay=plate(group,'港町役場',{w:.25,h:.14,at:[-.8,.96,-1.814],bg:'#263c38',fg:'#bcd8a6',sub:'TOWN OFFICE'});
- box([.38,.025,.13],[-.8,.82,-1.67],0xd8d4bb,'Keyboard');
- for(let i=0;i<9;i++)box([.025,.008,.055],[-.94+i*.035,.838,-1.67],0x777c70,'Keyboard key');
- box([.26,.055,.19],[.92,.82,-2.0],0x324b43,'Desk telephone');
- box([.29,.045,.075],[.92,.87,-2.0],0x172c28,'Telephone receiver');
- for(let i=0;i<3;i++)box([.24,.009,.3],[.22+i*.035,.813+i*.01,-1.8+i*.025],0xf4efdc,'Petition paper');
- box([.3,.045,.23],[.78,.82,-1.63],0x863f35,'Town seal box');
- box([.065,.14,.065],[.43,.85,-2.03],0x315644,'Pencil cup');
- for(let i=0;i<3;i++)box([.01,.18,.01],[.41+i*.018,.94,-2.03],0xcdb265,'Pencil');
- const mug=new THREE.Mesh(new THREE.CylinderGeometry(.055,.045,.09,12),mat(0xede5ca));mug.position.set(-.15,.86,-1.57);mug.name='Mayor’s tea cup';group.add(mug);
- // The computer faces the chair; the nameplate faces visitors across the desk.
- for(const furnishing of group.children.slice(deskPartsStart)){
-  if((['CRT monitor casing','CRT screen','Keyboard','Keyboard key'].includes(furnishing.name)||furnishing===workstationDisplay)){furnishing.position.z=-3.7-furnishing.position.z;furnishing.rotation.y+=Math.PI;}
-  furnishing.position.z+=.4;
-  if(!['Office carpet','Mayor’s desk top','Mayor’s desk pedestal','Mayor’s chair seat','Mayor’s chair back'].includes(furnishing.name))furnishing.position.y+=FURNITURE_HEIGHTS.table-.795;
- }
-
- setFurnitureSurface(group,{from:.795,to:FURNITURE_HEIGHTS.table,bodies:/^Mayor’s desk (top|pedestal)$/});
- setFurnitureSurface(group,{from:.52,to:FURNITURE_HEIGHTS.seat,bodies:/^Mayor’s chair /});
- // Built-in bookcase, cupboards and drawers, with a clear aisle around the desk.
- box([1.12,2.1,.4],[-2.48,1.05,-2.48],green,'Town reference bookcase');collider(-2.48,-2.48,1.12,.4,2.1);
- for(let row=0;row<4;row++){
-  box([1.04,.045,.42],[-2.48,.25+row*.47,-2.46],0xb99b63,'Bookcase shelf');
-  for(let i=0;i<12;i++)box([.06,.29+(i%3)*.025,.22],[-2.94+i*.081,.42+row*.47,-2.33],[0x435e72,0x964d43,0x577348,0xd3bc7c][(i+row)%4],'Town reference volume');
- }
- box([1.12,.8,.42],[2.45,.4,-2.45],green,'Green filing credenza');collider(2.45,-2.45,1.12,.42,.8);
- for(const x of [2.18,2.72])for(const y of [.24,.6]){box([.5,.3,.035],[x,y,-2.22],0x416f60,'Credenza drawer');box([.16,.025,.025],[x,y,-2.194],brass,'Brass drawer handle');}
- box([.36,.075,.28],[2.25,.85,-2.42],0xd3bb72,'Annual accounts ledger');
- plate(group,'町長室',{w:.78,h:.22,at:[.4,2.42,-hd+.05],bg:'#355d50',fg:'#f3ecd4',sub:'MAYOR’S OFFICE'});
- const clock=new THREE.Mesh(new THREE.CircleGeometry(.2,24),mat(0xf4eddb));clock.position.set(-.55,2.34,-hd+.055);clock.name='Office wall clock';group.add(clock);
- box([.015,.13,.02],[-.55,2.39,-hd+.075],0x313d35,'Clock hour hand');box([.14,.012,.02],[-.48,2.34,-hd+.075],0x313d35,'Clock minute hand');
- for(const x of [-hw+.02,hw-.02])for(const z of [-hd+.02,.1,hd-.02])box([.075,2.85,.075],[x,1.425,z],0x614934,'Office timber upright');
- for(let i=0;i<14;i++)box([w,.005,.009],[0,.003,-hd+.2+i*.39],0x716047,'Wood floor seam');
- anchor([-.7,1,-.8],'Use the mayor’s computer',()=>action('document-archive','Community Hall Document Register'));
- anchor([1.35,1,-1.2],'Use the office telephone',()=>action('read','Town office telephone','The harbour master confirms Thursday’s supply ferry. Mori reports the crossing outside the school is clear. Thuan asks whether the bus-stop bench has reached the carpenter yet.'));
- anchor([-2.4,1.1,-1.9],'Browse the town reference books',()=>action('read','Town reference library','Ferry timetables, old island surveys, typhoon preparedness manuals and annotated town budgets. The most-thumbed volume is the harbour maintenance handbook.'));
- for(const z of [.05,1.55]){const sofa=anchor([-1.6,1,z],'Sit with a visitor',()=>action('seat','Town office visitor sofa','A comfortable green sofa for neighbours bringing their requests. The mayor keeps this corner informal: tea first, paperwork afterwards.'));sofa.userData.seat={position:[-1.6,0,z],stand:[-.4,0,z],surfaceY:.42,eyeY:1.14,yaw:z<.8?Math.PI:0,pitch:0};}
- // Flags behind the desk: Japan and the town's own, on stands.
- const flag=(x,draw)=>{box([.03,2.1,.03],[x,1.05,-hd+.25],0xc9a64a);const f=new THREE.Mesh(new THREE.PlaneGeometry(.7,.48),new THREE.MeshStandardMaterial({map:canvasTexture(140,96,draw),side:THREE.DoubleSide,roughness:.9}));f.position.set(x+.36,1.78,-hd+.25);group.add(f);};
- flag(-1.6,(c,w0,h0)=>{c.fillStyle='#f4f1ea';c.fillRect(0,0,w0,h0);c.fillStyle='#c8102e';c.beginPath();c.arc(w0/2,h0/2,h0*.3,0,Math.PI*2);c.fill();});
- flag(1.2,(c,w0,h0)=>{c.fillStyle='#2f6f9f';c.fillRect(0,0,w0,h0);c.fillStyle='#f4f1ea';c.font=`bold 44px ${SERIF}`;c.textAlign='center';c.textBaseline='middle';c.fillText("港",w0/2,h0/2);});
- // The island map on the west wall.
- const map=new THREE.Mesh(new THREE.PlaneGeometry(2.2,1.4),new THREE.MeshStandardMaterial({roughness:.9,map:canvasTexture(440,280,(c,w0,h0)=>{
-  c.fillStyle='#7fb7cf';c.fillRect(0,0,w0,h0);c.fillStyle='#e8dcb8';c.beginPath();
-  c.moveTo(70,250);c.lineTo(70,70);c.bezierCurveTo(140,30,250,20,330,60);c.bezierCurveTo(400,90,420,160,380,210);c.lineTo(330,250);c.closePath();c.fill();
-  c.fillStyle='#5c9848';c.fillRect(250,60,90,70);c.fillStyle='#a9aeb4';c.fillRect(150,70,14,180);c.fillStyle='#2b2b2b';c.font=`bold 22px ${GOTHIC}`;c.fillText("Minato Town",120,160);
-  c.font=`bold 16px ${GOTHIC}`;c.fillText("Kitanojima →",350,262);c.strokeStyle='#3a3a3a';c.lineWidth=4;c.strokeRect(2,2,w0-4,h0-4);})}));
- map.position.set(-hw+.04,1.65,-.4);map.rotation.y=Math.PI/2;map.name='Island map';group.add(map);
- // Visitors' sofas round a low table, and the cabinet of minutes.
- box([.9,.05,.55],[-1.6,.42,.8],0x6b4a32,'Low table');collider(-1.6,.8,.9,.55,.45);
- for(const dz of [-.75,.75]){box([1.2,.42,.55],[-1.6,.21,.8+dz],0x5d6f5a);box([1.2,.45,.14],[-1.6,.55,.8+dz+Math.sign(dz)*.24],0x5d6f5a);collider(-1.6,.8+dz,1.2,.55,.6);}
- box([.45,1.8,1.4],[hw-.3,.9,1.3],0x8a6a4a,'Cabinet of minutes');collider(hw-.3,1.3,.45,1.4,1.8);
- for(let i=0;i<8;i++)box([.05,.3,.22],[hw-.45,1.1+(i>3?.45:0),.85+(i%4)*.3],[0x2f4f6f,0x6f2f2f,0x2f5f3f][i%3]);
- const deskSeat=anchor([1.4,1.0,-1.8],'Sit at the mayor’s desk',()=>action('seat','The mayor’s desk','Your desk. The chair still squeaks the way it did when it was the headmaster’s.'));deskSeat.userData.seat={position:[0,0,-2.05],stand:[1.5,0,-1.8],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.2,yaw:Math.PI,pitch:0};collider(0,-2.08,.55,.5,.75);
- anchor([.55,1.0,-1.5],'Read the petitions',()=>{const list=petitions();action('read','Petitions to the mayor',list.length?list.join('\n\n'):'The tray is empty. A quiet week on the island, or nobody has told you yet.');});
- anchor([-hw+.4,1.4,-.4],'Study the island map',()=>action('inspect','Map of Minato-chō','The island in hand-coloured ink, every lot numbered: the harbour, the shotengai, Nishi-machi inside its seawall, the new houses up at Kitahama, the oil jetty, the town hall and its field. Kitano-jima sits off the corner with its airport and the sewage works. Pins mark this year\'s roadworks.'));
- plate(group,'文書台帳',{w:1.4,h:.3,at:[hw-.55,1.9,1.3],ry:-Math.PI/2,sub:'COMMUNITY HALL · ONE YEAR'});
- anchor([hw-.8,1.0,1.3],'Open the document register',()=>action('document-archive','Community Hall Document Register'));
- for(let month=0;month<12;month++){const folder=box([.045,.28,.22],[hw-.45,.5+(month>5?.36:0),.72+(month%6)*.2],0xb5a16c,'Archive folder '+(month+1));}
- anchor([hw-.6,1.2,1.3],'Look through the minutes',()=>action('read','Town assembly minutes, 1997','Item 3: the power house\'s second diesel set to be overhauled before typhoon season; the old barber\'s shop to be let to the post office. Item 5: the ferry company asks for a longer ramp so the new cargo trucks can board. Item 7: Mrs Sato\'s complaint about the gulls, again. Item 9: the sewage works on Kitano-jima to be inspected by the prefecture in November.'));
- // The Merry Moose on its own plinth against the east wall, where you see it coming in.
- box([.42,.5,.42],[2.85,.25,-.9],0x8a6a4a,'Merry Moose plinth');collider(2.85,-.9,.42,.42,1.1);
- const moose=addOwnedCharacter({parent:group,kind:'merry_Moose',height:.6,position:[2.85,.5,-.9],yaw:-Math.PI/2});
- anchor([2.4,1.0,-.9],'Look at the Merry Moose',()=>action('inspect','The Merry Moose','The island’s good-luck moose, given to the town and kept by the mayor’s desk. Visitors pat its nose on the way out; the paint there is wearing thin.'));
- // The Thuan figurine has moved to her own back room at Sakura (sakura-backroom.js).
- const owned=[moose];
- return {...layoutFor(),office:true,owned,dispose:()=>owned.forEach(prop=>prop.dispose())};
-}
-
 
 /**
  * 調理室, the community centre's kitchen: where Mrs Nakamura and the women's association fry sata andagi
@@ -212,12 +122,17 @@ export function buildCommunityKitchen({room,reg,action,collider=()=>{}}){
  box([.6,.8,.02],[hw-.04,1.5,1],0xf6f1e6,'Booking sheet');
  for(let i=0;i<4;i++)box([.3,.55,.04],[1.2-i*.4,1.4,hd-.04],[0xe98aa6,0xf4f1ea,0x7fb0d8,0xf4d23c][i],'Apron');
  // The hall's public WC is here, off the kitchen: one room, wheelchair-wide door, used
- // by the mayor's office and the classroom's visitors too.
+ // by the register's and the classroom's visitors too.
  {const kit=createPlanKit({box,collider,height:SHELL.h,wall:0xf1ece0});
   kit.partition(2.1,1.45,hw,1.45);kit.partition(2.1,1.45,2.1,hd,[[1.6,2.5]]);
   kit.wetRoom(2.14,hw-.04,1.49,hd-.04,'Toilet',true,'x0');
   plate(group,'WC',{w:.3,h:.18,at:[2.06,2.15,2.05],ry:-Math.PI/2,bg:'#2d5a4c',fg:'#f4f1ea',size:.7});}
+ // The request box for the town assembly, under the booking sheet: what the island wants from the town this week.
+ box([.3,.36,.2],[hw-.14,.95,.3],0x7a5a3a,'Request box');
  anchor([hw-.5,1.0,.3],'Open the Community Hall archive',()=>action('document-archive','Community Hall Document Register'));
+ // The assembly's minutes are kept with the dish cupboards' top shelf since the mayor's office went.
+ anchor([-hw+.7,1.2,.4],'Look through the minutes',()=>action('read','Town assembly minutes, 1997','Item 3: the power house\'s second diesel set to be overhauled before typhoon season; the old barber\'s shop to be let to the post office. Item 5: the ferry company asks for a longer ramp so the new cargo trucks can board. Item 7: Mrs Sato\'s complaint about the gulls, again. Item 9: the sewage works on Kitano-jima to be inspected by the prefecture in November.'));
+ anchor([hw-.5,1.0,-.1],'Read the requests in the box',()=>action('read','Requests to the town assembly',PETITIONS.join('\n\n')));
  anchor([hw-.5,1.4,1],'Read the booking sheet',()=>action('read',"Community Kitchen · bookings this week",KITCHEN_BOOKINGS.join('\n')));
  anchor([1.2,1,.7],'Look at the work islands',()=>action('inspect','Community kitchen',"Stainless steel worn soft at the edges, a ring of oil round the back burner that no amount of scrubbing will lift, and the smell of yesterday's andagi. A notice in Mrs Nakamura's hand: Return used items to their original locations -- put things back where you found them."));
  anchor([1.85,1.2,-hd+.8],'Look at the rice cookers',()=>action('inspect','Rice cookers','Two five-litre gas rice cookers, enough for the whole island at a funeral or a wedding. The newer one is from 1984.'));

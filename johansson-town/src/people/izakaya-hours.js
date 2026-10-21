@@ -10,10 +10,11 @@
  * indoor-residents.js walks them there. Poses are drawn in avatars/animate.js; tools in
  * avatars/tools.js.
  */
+import {MINATO_COMPACT} from '../world/interiors/minato-compact-plan.js';
 const minuteOfDay=m=>((m%1440)+1440)%1440;
 const FACE_DOOR=Math.PI;
-// Behind the counter, facing over it (the staff aisle, z -3.6).
-const BEHIND=[[-2.6,0,-3.7],[-1.1,0,-3.7],[.4,0,-3.7]];
+// Behind the fitted counter, facing over it from the shared staff aisle.
+const BEHIND=MINATO_COMPACT.counterStools.slice(1,-1).map(x=>[x,0,MINATO_COMPACT.staff.counterPassZ]);
 
 const JOBS=Object.freeze({
  Thao:[

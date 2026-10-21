@@ -13,6 +13,7 @@ const {GROUND_CLASSES,districtAt}=await import('../src/world/ground-standard.js'
 const {partitionPlan,laidAt,mainStreetPlan}=await import('../src/world/ground-plan.js');
 const {harbourPlan}=await import('../src/world/ground-plan-harbour.js');
 const {OUTER_PIER}=await import('../src/world/layout.js');
+const {FUKUGI:SCHOOL_FUKUGI}=await import('../src/world/school-layout.js');
 const {MINATO_BERTH}=await import('../src/world/minato-berth.js');
 const Q=await import('../src/world/ground-plan-quarters.js');
 const {KITAHAMA,KITAHAMA_LANES,plotGate}=await import('../src/world/kitahama-layout.js');
@@ -75,12 +76,20 @@ test('Nishi-machi: coral yards to the walls, asphalt lanes with a gutter on ever
  assert.equal(laidAt(N,-29,25)?.cls,'gravel','the utaki is gravel');
 });
 
-test('the town hall: a rolled yard, a concrete forecourt and car park, and an edged lawn',()=>{
+test('the town hall: lawn under the trees, rolled stone where it is walked, a concrete forecourt and car park, edged',()=>{
  const S=plans[3],T=Q.TOWN_HALL_GROUND;
  assert.equal(laidAt(S,20.5,26)?.cls,'concrete','the forecourt');
  assert.equal(laidAt(S,35,30.5)?.cls,'concrete','the car park');
- assert.equal(laidAt(S,40.1,40)?.cls,'park-path','the yard');
- assert.equal(laidAt(S,(T.lawn.x0+T.lawn.x1)/2,(T.lawn.z0+T.lawn.z1)/2+.6)?.cls,'grass','the lawn');
+ // The owner's phone, 21 October 2026: the yard was one sheet of stone under the trees and round the car park.
+ assert.equal(laidAt(S,40.1,40)?.cls,'grass','the yard east of the hall');
+ for(const [x,z] of SCHOOL_FUKUGI.filter(([,z])=>z<T.yard.z1))assert.equal(laidAt(S,x,z)?.cls,'grass','a fukugi stands in turf at '+x+', '+z);
+ assert.equal(laidAt(S,16,28)?.cls,'park-path','the school playground');
+ assert.equal(laidAt(S,35,33.2)?.cls,'park-path','the walk from the car park to the breezeway');
+ assert.equal(laidAt(S,35.5,25.2)?.cls,'park-path','the walk in front of the bicycle shed');
+ assert.equal(laidAt(S,(T.lawn.x0+T.lawn.x1)/2,(T.bed.z1+T.lawn.z1)/2)?.cls,'grass','the lawn');
+ // Phase S (briefs/town-hall-zone.md): the passages between the buildings are rolled stone, the power compound a gravel yard.
+ for(const p of T.passages)assert.equal(laidAt(S,(p.x0+p.x1)/2,40)?.cls,'park-path','a passage through to the lane behind');
+ assert.equal(laidAt(S,24.9,31.5)?.cls,'gravel','the power compound');
  assert.ok(S.layers.some(l=>l.cls==='edging'),'the lawn is edged');
 });
 

@@ -786,7 +786,8 @@ def merge_export(name):
         bpy.ops.object.select_all(action='DESELECT')
         for o in chosen: o.select_set(True)
         bpy.context.view_layer.objects.active = chosen[0]
-        bpy.ops.object.join(); bpy.context.object.name = name + ' / ' + m.name
+        # Stable room batch names; the versioned filename identifies the refit.
+        bpy.ops.object.join(); bpy.context.object.name = 'minato-interior / ' + m.name
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
     bpy.ops.wm.save_as_mainfile(filepath=str(art / (name + '.blend')), compress=True)
@@ -801,6 +802,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from minato_real_props import create_prop_api, upgrade_real_props
 from minato_food_props import upgrade_food_props
 from minato_device_props import upgrade_device_props
+from minato_walnut_refit import retire_original_furniture, remove_counter_contact_faces
+walnut_replacement = retire_original_furniture(bpy)
 prop_api = create_prop_api(globals())
 before = {'objects': len([o for o in bpy.context.scene.objects if o.type == 'MESH']),
           'triangles': sum(sum(len(p.vertices)-2 for p in o.data.polygons) for o in bpy.context.scene.objects if o.type == 'MESH')}
@@ -811,6 +814,7 @@ for category, upgrade in [('vessels-kitchen-storage-furniture', upgrade_real_pro
     print('Completed', category, flush=True)
 from minato_furniture_heights import apply_furniture_heights
 furniture_report=apply_furniture_heights(bpy,root)
+walnut_replacement['counterContacts'] = remove_counter_contact_faces(bpy, furniture_report['heights']['serviceCounter'])
 (art/'furniture-height-report.json').write_text(json.dumps(furniture_report,indent=2))
 after = {'objects': len([o for o in bpy.context.scene.objects if o.type == 'MESH']),
          'triangles': sum(sum(len(p.vertices)-2 for p in o.data.polygons) for o in bpy.context.scene.objects if o.type == 'MESH')}
@@ -819,11 +823,11 @@ import re
 for obj in [o for o in bpy.context.scene.objects if o.type == 'MESH']:
     family=re.sub(r'\.\d+$','',obj.name)
     geometry_by_family[family]=geometry_by_family.get(family,0)+sum(len(p.vertices)-2 for p in obj.data.polygons)
-(art / 'minato-prop-inventory.json').write_text(json.dumps({'before': before, 'after': after, 'coverage': coverage,
+(art / 'minato-prop-inventory.json').write_text(json.dumps({'before': before, 'after': after, 'coverage': coverage, 'replacement': walnut_replacement,
     'geometryByFamily': dict(sorted(geometry_by_family.items(),key=lambda entry:-entry[1]))}, indent=2))
-report = merge_export('minato-interior')
+report = merge_export('minato-interior-walnut')
 path = art / 'export-report.json'
 data = json.loads(path.read_text()) if path.exists() else {}
-data['minato-interior'] = report
+data['minato-interior-walnut'] = report
 path.write_text(json.dumps(data, indent=2))
-print('minato-interior', report)
+print('minato-interior-walnut', report)
