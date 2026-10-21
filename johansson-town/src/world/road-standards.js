@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {GROUND_EDGE} from './ground-standard.js';
 
 /**
  * Public roads to one standard, the way a prefectural road office in 1997 would draw them.
@@ -25,7 +26,8 @@ export const ROAD_STANDARD=Object.freeze({
  edgeLine:Object.freeze({width:.15,inset:.3}),
  zebra:Object.freeze({bar:.45,gap:.45,length:3}),
  stopLine:Object.freeze({width:.45}),
- kerb:Object.freeze({height:.11,width:.18}),
+ /** The kerb is the ground rulebook's (ground-standard.js GROUND_EDGE.kerb): 15 cm by 18 cm. */
+ kerb:Object.freeze({height:GROUND_EDGE.kerb.height,width:GROUND_EDGE.kerb.width}),
  tactile:Object.freeze({depth:.3,colour:0xf2c230}),
 });
 
