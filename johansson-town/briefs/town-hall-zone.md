@@ -1,6 +1,6 @@
 # The town hall zone: remediation first, then four buildings
 
-Status: **phase R done (21 October 2026), waiting for the owner's look; phases M and S not started.**
+Status: **phase R merged (#319); phase M done (21 October 2026), waiting for the owner's look; phase S not started.**
 
 The owner, 21 October 2026, with four phone photos (the beach at the end of the Kitahama lane, the yard under the
 fukugi by the car park, the hall's forecourt from the gate, the monument): "Could this zone be subdivided into individual
@@ -179,6 +179,42 @@ register from the kitchen (`town-hall.js:166`). The town keeps its paperwork and
 5. Drop the `mayor-office` entries from `merchandising.js:97,134`. The hall takes the office supplies, from Front-Row as
    now. Also update `pocket-subjects.js`, `home-directory.js:30,46` and the studio handoff (`studio-handoff.js`).
 6. Run `enterable-sites.test.mjs` (the study is reached inside the house; no new door) and the CI guard.
+
+### Phase M, as done (21 October 2026)
+
+The owner: "Yea proceed". Photos of the study, before and after, are in `docs/qa/town-hall-zone/compare/study-*`. They
+were taken by `tools/johansson-study-photos.mjs`, which builds the house alone, so its light is flatter than in the
+game.
+
+- **The study** (`johansson-house-interior.js`, the L1 study):
+  - the office's beige CRT and keyboard are on his desk at the window, facing his chair, and "Use the computer" opens
+    the Community Hall's register;
+  - the Merry Moose stands on its plinth in the corner by the door, facing the room, with a prompt that tells how it
+    came there;
+  - the desk and bookshelf texts are the ship's papers now, not the town's;
+  - the house's layout disposes the moose when he leaves.
+
+  Guarded by `tests/johansson-study.test.mjs` (added to the CI guard).
+- **The town hall:**
+  - the `mayor-office` site, door prompt, plate and room are gone (`school.js`, `game.js`, `town-hall.js`);
+  - its bay is the Community Hall's 会議室 (meeting room), with the door drawn but no way in;
+  - the kitchen took the request box (the old petitions, now "Requests to the town assembly") and the 1997 assembly
+    minutes, beside the register it already had.
+- **Saves:** `HOME_ALIASES['mayor-office']` and every retired home now land at the community kitchen's door
+  (`households.js`, `roster.js RETIRED_HOMES`, `home-directory.js`, `docs/cast-roster.json`).
+  `cast-migration.test.mjs` covers a save at the office.
+- **Trade:** the office's Sakura account (tea, crackers, tissues, the wreaths and bunting) and its Front-Row stationery
+  are the Community Hall's (`merchandising.js`, `products-move.test.mjs`).
+- **Stories:**
+  - the `town-hall` place is the Community Hall's kitchen, with Mrs Nakamura joining Dr Kakazu;
+  - it is set `captured:false` until its backdrops are taken (`node tools/render-feed-backdrops.mjs town-hall`), which
+    could not run in a cloud session;
+  - the town papers are regenerated (`scripts/build-town-papers.mjs`): the office telephone and reference library are
+    gone, and the minutes are kept.
+- **Elsewhere:**
+  - the Thuan figurine is "a present from the town", not from the mayor's office;
+  - `pocket-subjects.js`, `scene-world.js`, `tools/mcp/tour-client.mjs` and `scripts/build-building-audit.mjs` drop the
+    office.
 
 ## 5. Split the campus into individual buildings (phase S, after R and M)
 

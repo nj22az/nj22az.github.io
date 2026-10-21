@@ -43,7 +43,7 @@ export class TourClient {
  }
  async enter(site){
   const d=site.door,angle=site.entryFacing||0;let out=['resident-home-aya','resident-home-kenji'].includes(site.id)?[-17.8,1.6]:[d[0]+Math.sin(angle)*.85,d[2]+Math.cos(angle)*.85];
-  if(['school','community-kitchen','mayor-office','clinic','mayor-home'].includes(site.id)&&!this.state.game.room){await this.navigate(20.5,23.2);await this.navigate(20.5,26.2);await this.navigate(d[0],36.8);}
+  if(['school','community-kitchen','clinic','mayor-home'].includes(site.id)&&!this.state.game.room){await this.navigate(20.5,23.2);await this.navigate(20.5,26.2);await this.navigate(d[0],36.8);}
   if(d[2]>=62&&!this.state.game.room){
    const p=this.state.game.player;
    if(p[2]<62){await this.navigate(1.9,63.2);await this.navigate(1.9,66);}

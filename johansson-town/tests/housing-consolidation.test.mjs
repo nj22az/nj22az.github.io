@@ -216,7 +216,7 @@ test('the surplus dwellings, the housing project’s nine and phase 4’s eight,
   // (its cane, its parking, a garden bed), never a house.
   else if(standing){const lot=clearedLot(id),own=lot&&[lot,...CLEARED_LOTS.filter(l=>l.dressing.partOf===lot.id||lot.dressing.partOf===l.id)].flatMap(l=>l.dressing.props.map(p=>'lot-'+p.id));
    assert.ok(own?.includes(standing.id),id+' plot carries only its own dressing, not '+standing.id);}
-  assert.equal(canonicalHomeId(id.startsWith('resident-home-')?id:'home-'+id),id==='shimabukuro'?'ferry-terminal':id==='izakaya'?'izakaya':'mayor-office');
+  assert.equal(canonicalHomeId(id.startsWith('resident-home-')?id:'home-'+id),id==='shimabukuro'?'ferry-terminal':id==='izakaya'?'izakaya':'community-kitchen');
  }
  // Every lot phase 4 cleared on Minato is recorded with its reason, and what stands on it now is its dressing and nothing
  // else: every solid at its centre is the dressing's (tests/lot-dressing.test.mjs checks each against its data).

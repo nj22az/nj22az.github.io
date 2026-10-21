@@ -38,3 +38,4 @@ sakura-small-office.test.mjs
 sakura-stairs.test.mjs
 sakura-upstairs.test.mjs
 beach-shore.test.mjs
+johansson-study.test.mjs

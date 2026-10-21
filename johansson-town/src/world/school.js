@@ -122,8 +122,9 @@ function plate(group,text,{w,h,at,rotY=0,bg='#f1ead6',fg='#1f2a26',font=SERIF,ve
 /** Room plates, hung out from the corridor ceiling over each door, as every school has them. */
 // The plates over each bay. Every plate is lettered in Japanese, as a Japanese town hall's are (plate(), through
 // okinawa/signs.js SIGN_JAPANESE: the English sweep had put English on them, and the owner's phone showed it,
-// 21 October 2026). The east bay is the doctor's flat now that Johansson lives on Kitano-jima.
-const ROOMS=[["Warehouse"],["Entrance"],["Classroom"],["Community Kitchen"],["Mayor’s Office"],["Clinic"],["Doctor’s residence"]];
+// 21 October 2026). The east bay is the doctor's flat now that Johansson lives on Kitano-jima, and the mayor's office is
+// the Community Hall's meeting room since it went to his study there (briefs/town-hall-zone.md, phase M).
+const ROOMS=[["Warehouse"],["Entrance"],["Classroom"],["Community Kitchen"],["Meeting room"],["Clinic"],["Doctor’s residence"]];
 
 /** The noticeboard in the entrance: harbour safety, the typhoon shelter map, the co-op. */
 function noticeboard(group){
@@ -226,7 +227,7 @@ function buildTownHallDressing(group,options){
  * along the forecourt, the way island village offices were built in the seventies and
  * eighties. A deep veranda runs the length of the front under the roof slab, on the old
  * column lines. Seven bays along it: store, the glass-doored entrance, the classroom,
- * the community kitchen, the mayor's office, the clinic and the doctor's flat at
+ * the community kitchen, the meeting room, the clinic and the doctor's flat at
  * the east end, each with its own door or windows. The parapet carries the name and a
  * clock; on the roof, two water tanks and an aerial. Also the yard furniture the old
  * model carried: the gateposts and their shisa, the bike shed, the wash taps and the
@@ -340,7 +341,7 @@ export function buildSchool(world,options){
  anchor([SCHOOL.gate.x-SCHOOL.gate.half,1.9,SCHOOL.gate.z-.9],'Greet the shisa',say('Shisa on the gateposts',
   'A pair of glazed shisa, one on each post: the one on the right with its mouth open to take in good fortune, the one on the left with its mouth shut to keep it. Somebody has put a hibiscus flower behind the left one\'s ear.'));
  anchor([SCHOOL.gate.x-SCHOOL.gate.half,1,SCHOOL.gate.z-.7],'Read the town hall gate plate',say("Community Hall · Minato Town Hall",
-  'One storey, all of it on the forecourt: the town office, the community kitchen, the mayor\'s office, the clinic, the island school\'s one classroom (eight pupils, the 5th and 6th years together) and, at the east end, the doctor\'s flat. Built on the old school\'s footprint after the two-storey block from 1971 was taken down.'));
+  'One storey, all of it on the forecourt: the town office, the community kitchen with the town\'s register, the meeting room, the clinic, the island school\'s one classroom (eight pupils, the 5th and 6th years together) and, at the east end, the doctor\'s flat. Built on the old school\'s footprint after the two-storey block from 1971 was taken down.'));
  anchor([SCHOOL.wash.x,1,SCHOOL.wash.z-.8],'Rinse your feet at the taps',()=>options.onAction?.('school-taps'));
  anchor([(SCHOOL.bikeShed.minX+SCHOOL.bikeShed.maxX)/2,1,SCHOOL.bikeShed.minZ+.4],'Look at the bicycles',say('Bike shed',
   'Bicycles under a zinc roof rusted through at the ribs: the town office\'s errand bicycle, Miss Higa\'s, and two pupils\' with their names in marker on the mudguards.'));
@@ -361,12 +362,11 @@ export function buildSchool(world,options){
   approachPosition:[SCHOOL.genkan.x,0,B.minZ-1.4],entryFacing:Math.PI,opens:'07:30'};
  options.sites.push(site);
  anchor([SCHOOL.genkan.x,1.2,B.minZ-.5],'Go in to the classroom',()=>options.enter(site));
- // The mayor's office and the clinic: more doors along the field face, each its own room (interiors/town-hall.js), the
- // way every door in town is its own site. (The mayor's home was the east wing until batch 7a: Johansson lives on
- // Kitano-jima now, kitano-hamlet.js.)
+ // The community kitchen and the clinic: more doors along the field face, each its own room (interiors/town-hall.js), the
+ // way every door in town is its own site. (The mayor's home was the east wing until batch 7a, and the mayor's office the
+ // bay between them until October 2026: Johansson lives on Kitano-jima, and the office is his study there.)
  for(const [id,title,jp,sub,x,label,line] of [
   ['community-kitchen','Community Kitchen',"Community Kitchen",'COMMUNITY CENTRE',27.0,'Go into the community kitchen','Open to every household · the women’s association on Saturdays'],
-  ['mayor-office','Mayor’s Office',"Mayor’s Office",'MINATO TOWN HALL',30.6,'Go into the mayor’s office','Office hours 8:30–17:15 · petitions in the tray'],
   ['clinic','Minato Clinic',"Clinic",'DR KAKAZU',34.1,'Go into the clinic','Mon–Fri 9–12, 14–17 · Sat 9–12 · ring the bell after hours'],
  ]){
   const at=[x,0,B.minZ-.7],s={id,title,jp,sub,x,z:B.minZ-.7,color:0x587a6a,accent:'#2d5a4c',line,door:at,exitPosition:[x,0,B.minZ-1.4],approachPosition:[x,0,B.minZ-1.4],entryFacing:Math.PI,opens:'00:00'};

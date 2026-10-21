@@ -279,7 +279,7 @@ export function buildSakuraBackroom(room,{anchor,action}={}){
  const plinth=new THREE.Mesh(new THREE.BoxGeometry(.34,F.plinth,.34),std(0x8a6a4a));plinth.position.set(F.x,F.plinth/2,F.z);plinth.name='Thuan figurine plinth';room.add(plinth);
  const figurine=addOwnedCharacter({parent:room,kind:'thuanFigurine',height:F.height,position:[F.x,F.plinth,F.z],yaw:F.yaw,lazy:true});
  if(anchor&&action){
-  anchor([F.x-.5,1.0,F.z+.3],'Look at the Thuan figurine',()=>action('inspect','A figurine of Thuan','A carefully painted figurine of Thuan, a present from the mayor’s office. She says it is too much and keeps it in the back room, where she dusts it every morning before the rice delivery.'));
+  anchor([F.x-.5,1.0,F.z+.3],'Look at the Thuan figurine',()=>action('inspect','A figurine of Thuan','A carefully painted figurine of Thuan, a present from the town, the year it opened. She says it is too much and keeps it in the back room, where she dusts it every morning before the rice delivery.'));
   const N=BACKROOM.noticeboard;
   anchor([N.x+.5,1.5,N.z],'Read the staff noticeboard',()=>action('inspect',"Backyard · Staff noticeboard",
    "Thuan’s September roster, with her name on nearly every line; the delivery times for rice, drinks and the papers; and the back-room 5S rules in red.\n\nAt the bottom of the roster, in her handwriting: Assistant Manager(Potted plants) — the assistant manager — \"every day, by the window\"."));

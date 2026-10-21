@@ -10,7 +10,7 @@ import {buildYardHomeInterior} from '../src/world/interiors/yard-home.js';
 import {buildPortHall} from '../src/world/interiors/port-hall.js';
 import {buildAirportArrivals} from '../src/world/interiors/airport-arrivals.js';
 import {buildOfficeShell,buildOfficeWorkplace} from '../src/world/interiors/office-workplace.js';
-import {buildMayorOffice,buildMayorHome} from '../src/world/interiors/town-hall.js';
+import {buildMayorHome} from '../src/world/interiors/town-hall.js';
 import {PARK_BENCH} from '../src/world/park-layout.js';
 import {HARBOUR_BENCH_DIMENSIONS} from '../src/world/harbour-bench-dimensions.js';
 
@@ -75,7 +75,7 @@ test('every ferry hall chair and arrivals bench is usable at its true surface',(
 });
 
 test('office chairs, visitor sofas and floor cushions have explicit physical seats',()=>{
- for(const build of [args=>{buildOfficeShell(args.room);buildOfficeWorkplace(args);},buildMayorOffice,buildMayorHome]){
+ for(const build of [args=>{buildOfficeShell(args.room);buildOfficeWorkplace(args);},buildMayorHome]){
   const f=fixture(build),seats=f.targets.filter(t=>t.object.userData.seat);
   assert.ok(seats.length>=3);
   validateSeats(f.room,seats,f.colliders);
