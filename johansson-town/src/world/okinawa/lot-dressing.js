@@ -6,6 +6,7 @@ import {bicycle,netPile,buoys} from './props.js';
 import {CLEARED_LOTS,PLOT_PLANTING,LOT_COLOURS as L,lotGround} from './lots.js';
 import {KITAHAMA} from '../kitahama-layout.js';
 import {GROUND_LAYER} from '../ground-layers.js';
+import {buildParkedVehicle,parkedVehicleFit,KEI_TRUCK_BED} from '../road-vehicles.js';
 
 /**
  * What stands on the cleared lots (okinawa/lots.js CLEARED_LOTS, each lot's `dressing`): the lane garden and the monthly
@@ -104,44 +105,36 @@ function postSign(kit,texture,{x,z,ry=0,w=1.1,h=.75,y=1.45,name='sign',post=.05,
  for(const k of [-1,1])kit.box(post,y+h/2,post,x+k*dx+Math.sin(ry)*back,(y+h/2)/2,z+k*dz+Math.cos(ry)*back,P.steel,{finish:'metal'});
  kit.sign(texture,w,h,x,y,z,{ry,name});
 }
-/** A parked vehicle, its nose along local +z, built from boxes like the patrol car. */
-function vehicle(kit,{kind,colour,length:Lg,width:W,bonnetUp=false,bed=null}){
- const Lh=Lg/2,Wh=W/2,wheelZ=Lh-.62;
- for(const [x,z] of [[-Wh+.12,wheelZ],[Wh-.12,wheelZ],[-Wh+.12,-wheelZ],[Wh-.12,-wheelZ]]){kit.cyl(.26,.26,.17,x,.26,z,P.tyre,{rz:Math.PI/2,segments:14});kit.cyl(.13,.13,.18,x,.26,z,0xb9bec0,{rz:Math.PI/2,segments:10,finish:'metal'});}
- kit.block(-Wh,Wh,.2,.32,-Lh-.03,Lh+.03,0x3a3c40);
- const lamp=(z,s)=>{for(const k of [-1,1])kit.box(.2,.1,.03,k*(Wh-.2),.62,z+s*.015,s>0?0xf0ecd6:0xc8432f);};
- if(kind==='kei truck'){
-  // Cab over the front wheels, the bed behind with its drop sides.
-  const cab0=Lh-1.3;
-  kit.block(-Wh,Wh,.32,1.0,cab0,Lh,colour);
-  kit.block(-Wh+.03,Wh-.03,1.0,1.82,cab0+.05,Lh-.25,colour);
-  kit.block(-Wh+.06,Wh-.06,1.08,1.66,Lh-.27,Lh-.2,P.glass);
-  for(const k of [-1,1])kit.block(k*Wh-.012,k*Wh+.012,1.08,1.6,cab0+.15,Lh-.35,P.glass);
-  kit.block(-Wh,Wh,.55,.6,-Lh,cab0,colour);
-  kit.block(-Wh,Wh,.32,.55,-Lh,cab0,0x8f9497);
-  for(const [x0,x1,z0,z1] of [[-Wh,-Wh+.05,-Lh,cab0],[Wh-.05,Wh,-Lh,cab0],[-Wh,Wh,-Lh,-Lh+.05]])kit.block(x0,x1,.6,.92,z0,z1,colour);
-  kit.block(-Wh+.08,Wh-.08,1.0,1.16,cab0-.06,cab0,0x3a3c40);
-  bed?.(kit,{floor:.6,z0:-Lh+.05,z1:cab0-.05,half:Wh-.05});
-  lamp(Lh,1);lamp(-Lh,-1);
-  return;
- }
- // A hatchback or a kei car: the body, the glasshouse set back from the nose, the bonnet.
- const nose=kind==='kei car'?Lh-.55:Lh-.95;
- kit.block(-Wh,Wh,.32,.88,-Lh,Lh,colour);
- kit.block(-Wh+.06,Wh-.06,.88,1.42,-Lh+.12,nose,colour);
- kit.block(-Wh+.1,Wh-.1,.92,1.38,nose-.02,nose+.02,P.glass);
- kit.block(-Wh+.1,Wh-.1,.94,1.36,-Lh+.1,-Lh+.14,P.glass);
- for(const k of [-1,1])kit.block(k*(Wh-.06)-.012,k*(Wh-.06)+.012,.95,1.36,-Lh+.25,nose-.1,P.glass);
- for(const k of [-1,1])kit.block(k*(Wh-.06)-.02,k*(Wh-.06)+.02,.92,1.4,-.12+(kind==='kei car'?.1:0),-.04+(kind==='kei car'?.1:0),colour);
- lamp(Lh,1);lamp(-Lh,-1);
- if(bonnetUp){
-  // Open on its stay, hinged at the windscreen: the engine bay's dark below it, the battery and the air cleaner.
-  kit.block(-Wh+.08,Wh-.08,.6,.86,nose+.05,Lh-.05,0x2c2e30);
-  kit.cyl(.17,.17,.08,-.15,.9,nose+.45,0x3a3c40,{segments:12});kit.box(.22,.18,.16,Wh-.35,.86,nose+.3,0x1f4f8a);
-  const hinge=new THREE.Vector3(0,.9,nose+.02),len=Lh-nose-.05;
-  kit.box(W-.08,.035,len,0,hinge.y+Math.sin(1.05)*len/2,hinge.z+Math.cos(1.05)*len/2,colour,{rx:-1.05});
-  kit.rod([Wh-.25,.86,Lh-.2],[Wh-.25,hinge.y+Math.sin(1.05)*len*.9,hinge.z+Math.cos(1.05)*len*.9],.008,0x9aa0a4);
- }
+/**
+ * The monthly parking's cars (lots.js NORTH_BLOCK, the bay props): the same family as the traffic (road-vehicles.js),
+ * each reversed into its bay, nose to the lane, its rear tyres two centimetres short of the wheel stops, unless that
+ * would put its tail past the bay's painted lines, and centred between them. The data rectangle of each is its collider
+ * and holds the whole car (tests/parked-cars.test.mjs).
+ */
+export const PARKING=Object.freeze({lines:Object.freeze([30.8,33.4,36.0,38.6,41.2]),bays:Object.freeze([32.1,34.7,37.3,39.9]),stopZ:66.75,lineZ:Object.freeze([62.5,67.1]),pad:PAD_TOP});
+export const PARKED_CARS=Object.freeze([
+ Object.freeze({prop:'bay-1-truck',bay:1,kind:'kei truck',colour:0xf2f0ea,owner:'Kōji',load:'ice chest and rope'}),
+ Object.freeze({prop:'bay-2-car',bay:2,kind:'kei car',colour:0xb8d0d8,owner:'Dr Ken'}),
+ Object.freeze({prop:'bay-3-hatchback',bay:3,kind:'car',colour:0xd8a83a,owner:'Mac',bonnet:'open'}),
+]);
+/** Where a parked car's centre stands (its nose along -z, to the lane), from its wheels and its length (tail, local z). */
+export function parkedCarPlace(car,{wheel,r,tail}){
+ const x=PARKING.bays[car.bay-1],z=Math.min(PARKING.stopZ-.07-.02-wheel-r,PARKING.lineZ[1]-.02+tail);
+ return {x,z,ry:Math.PI,y:PARKING.pad};
+}
+/** Builds one parked car into the kit at its bay, and what its owner keeps in it. */
+export function parkedCar(kit,car,{wheel,r,tail}){
+ const at=parkedCarPlace(car,{wheel,r,tail});
+ kit.at(at.x,at.z,at.ry,()=>{
+  buildParkedVehicle(kit,car.kind,car.colour,{bonnet:car.bonnet||'shut'});
+  if(car.load){
+   // Kōji's ice chest at the tailgate and a coil of rope by the cab, on the bed's floor.
+   const B=KEI_TRUCK_BED,f=B.floor;
+   kit.box(.75,.42,.5,-.22,f+.21,B.minZ+.3,0x2f6fb8);kit.box(.77,.05,.52,-.22,f+.445,B.minZ+.3,0xe9e6dc);
+   kit.cyl(.25,.25,.1,.36,f+.05,B.maxZ-.32,0xd8c48a,{segments:12});kit.cyl(.12,.12,.11,.36,f+.05,B.maxZ-.32,0x8a7a5a,{segments:10});
+  }
+ },at.y);
+ return at;
 }
 /** Bicycle and tricycle aside, a few garden things. */
 function papaya(kit,x,z,{seed=1,h=3}={}){
@@ -197,18 +190,13 @@ function northBlock({kit,solid,read},lot,put){
  hedge(kit,put(lot,'parking-hedge').rect,{h:1,seed:7});
  // The parking: crushed coral, the lines, the wheel stops, the cars and the sign.
  const pad=D.flat.find(f=>f.id==='parking-gravel').rect;lotGround(kit,pad,P.gravel);
- const lines=[30.8,33.4,36.0,38.6,41.2],bays=[32.1,34.7,37.3,39.9],stopZ=66.75;
- for(const x of lines)kit.block(x-.05,x+.05,PAD_TOP,PAINT,62.5,67.1,P.paint);
+ const {lines,bays,stopZ,lineZ}=PARKING;
+ for(const x of lines)kit.block(x-.05,x+.05,PAD_TOP,PAINT,lineZ[0],lineZ[1],P.paint);
  for(const x of bays)for(const k of [-1,1])kit.block(x+k*.55-.27,x+k*.55+.27,PAD_TOP,PAD_TOP+.12,stopZ-.07,stopZ+.07,P.stop);
- const car=(id,spec)=>{const r=put(lot,id).rect,[x]=mid(r);kit.at(x,66.65-spec.length/2,Math.PI,()=>vehicle(kit,spec),PAD_TOP);};
- car('bay-1-truck',{kind:'kei truck',colour:0xf2f0ea,length:3.4,width:1.48,bed:(k,{floor,z0,z1,half})=>{
-  // An ice chest and a coil of rope in the bed.
-  k.box(.75,.42,.5,-half+.5,floor+.21,z0+.45,0x2f6fb8);k.box(.77,.05,.52,-half+.5,floor+.44,z0+.45,0xe9e6dc);
-  k.cyl(.25,.25,.1,half-.4,floor+.05,z1-.4,0xd8c48a,{segments:12});k.cyl(.12,.12,.11,half-.4,floor+.05,z1-.4,0x8a7a5a,{segments:10});}});
- car('bay-2-car',{kind:'kei car',colour:0xb8d0d8,length:3.3,width:1.4});
- car('bay-3-hatchback',{kind:'hatchback',colour:0xd8a83a,length:3.7,width:1.55,bonnetUp:true});
- // Mac's toolbox on the gravel by his front wheel, inside the bay.
- kit.box(.42,.2,.2,38.3,PAD_TOP+.1,62.95,0xc8432f,{finish:'metal'});kit.box(.3,.03,.03,38.3,PAD_TOP+.23,62.95,P.black);
+ for(const car of PARKED_CARS){put(lot,car.prop);parkedCar(kit,car,parkedVehicleFit(car.kind,{bonnet:car.bonnet}));}
+ // Mac's toolbox on the gravel by his front wheel, inside his bay.
+ {const [x,z]=mid(put(lot,'mac-toolbox').rect);kit.box(.2,.2,.42,x,PAD_TOP+.1,z,0xc8432f,{finish:'metal'});kit.box(.21,.012,.43,x,PAD_TOP+.2,z,0x9e3326,{finish:'metal'});
+  kit.box(.03,.04,.26,x,PAD_TOP+.226,z,P.black);for(const k of [-1,1])kit.box(.03,.03,.03,x,PAD_TOP+.215,z+k*.13,P.black);}
  put(lot,'bay-4-stops');
  const sign=put(lot,'parking-sign').rect;
  postSign(kit,poster({title:'Monthly parking',lines:['空き 1台','契約車以外駐車禁止','北浜自治会'],bg:'#f4f1e6',band:'#2f5f9a'}),{x:(sign.minX+sign.maxX)/2,z:sign.minZ+.05,ry:Math.PI,w:1.2,h:.8,y:1.45,name:D.signs[0].name});
@@ -217,7 +205,7 @@ function northBlock({kit,solid,read},lot,put){
  read(36.0,63.2,'Read the monthly parking sign','Kitahama monthly parking',
   'Monthly parking. One bay free. Contract holders only. Kitahama residents’ association.\n\nBay 1 is Kōji’s white kei truck, for the outboard and the ice chests. Bay 2 is Dr Ken’s little car, for house calls at the far end of the island. Bay 3 is Mac’s old yellow hatchback. Bay 4 is free: ask the association.','read');
  read(37.3,62.2,'Look under Mac’s bonnet','Mac’s hatchback',
-  'An old yellow hatchback with its bonnet up on the stay and a red toolbox by the wheel. Mac keeps it running for the pleasure of it, and it is opened more often than it is driven. There is a new air cleaner in it, and the old one is on the wing.');
+  'An old yellow hatchback with its bonnet up on the stay and a red toolbox by the front wheel. Mac keeps it running for the pleasure of it, and it is opened more often than it is driven. The air cleaner on top of the engine is new; the battery is not.');
 }
 
 /* ------------------------- Kitahama: 9, 7 and 6 ------------------------- */

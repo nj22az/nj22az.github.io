@@ -91,9 +91,10 @@ const NORTH_BLOCK=dress({
   prop('goya-curtain','the gōyā curtain over its bed',R(31.5,40.5,69.55,70.55),2.35,'shared by the lane; it screens the bays from the spine'),
   prop('parking-hedge','the parking’s hibiscus hedge',R(30.8,41.2,67.7,68.3),1.0,'between the cars and the garden'),
   prop('parking-sign','the monthly parking sign (月極駐車場) on its posts',R(35.35,36.65,67.22,67.38),1.9,'at the back of the bays, read from the lane'),
-  prop('bay-1-truck','Kōji’s white kei truck, reversed into bay 1',R(31.25,32.95,63.15,66.85),1.95,'for the outboard, the ice chests and the nets when the boat comes out of the water',{owner:'Kōji',bay:1}),
-  prop('bay-2-car','Dr Ken’s little kei car, in bay 2',R(33.85,35.55,63.25,66.85),1.6,'for house calls to Kitahama and the far end of the island; the clinic has no bay of its own',{owner:'Dr Ken',bay:2}),
-  prop('bay-3-hatchback','Mac’s old yellow hatchback, its bonnet up, in bay 3',R(36.45,38.55,62.55,66.85),1.75,'an engineer keeps an old engine running for the pleasure of it: the bonnet is up more often than the car is driven',{owner:'Mac',bay:3}),
+  prop('bay-1-truck','Kōji’s white kei truck, reversed into bay 1',R(31.3,32.9,63.6,67.05),1.99,'for the outboard, the ice chests and the nets when the boat comes out of the water',{owner:'Kōji',bay:1}),
+  prop('bay-2-car','Dr Ken’s little kei car, in bay 2',R(33.95,35.45,63.55,67.0),1.82,'for house calls to Kitahama and the far end of the island; the clinic has no bay of its own',{owner:'Dr Ken',bay:2}),
+  prop('bay-3-hatchback','Mac’s old yellow hatchback, its bonnet up, in bay 3',R(36.43,38.17,63.15,67.1),1.86,'an engineer keeps an old engine running for the pleasure of it: the bonnet is up more often than the car is driven',{owner:'Mac',bay:3}),
+  prop('mac-toolbox','Mac’s red toolbox, on the gravel by his front wheel',R(38.24,38.44,63.25,63.67),.3,'the spanners for the job in hand, in reach of the open bonnet and inside his own bay, off the lane',{owner:'Mac',bay:3}),
   prop('bay-4-stops','the empty bay’s wheel stops',R(39.05,40.75,66.65,66.85),.17,'bay 4 is to let',{bay:4}),
  ],
  flat:[
