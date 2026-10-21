@@ -74,7 +74,7 @@ export const NAKAMURA_DRESSING=Object.freeze([
   why:'Two LP gas cylinders for the bean pot and the andagi fryer, chained to the back wall, piped in to the kitchen beside the door, in a slatted timber hutch that keeps the sun off them: the law says a cylinder stays under 40 °C. The dealer swaps the empty one for a full one.',period:'Minato has no town gas; every kitchen on the island runs on cylinders.'}),
  item({id:'bottle-crates',side:'right',at:[W+.22,.45,-2.95],build:'prop',who:'Sakura’s depot (Sakura Trading)',
   why:'Blue crates of empty soda and tea bottles at the back corner, waiting for Sakura’s depot to take them back with the next delivery of full ones; the cold drinks on her menu come by the returnable bottle.',period:'Returnable bottles and their deposit crates were still the rule for island soda in the nineties.'}),
- item({id:'enamel-cider',side:'right',at:[W+.02,1.7,.9],build:'prop',who:'Ryukyu Cider’s bottler',
+ item({id:'enamel-cider',side:'right',at:[W+.02,1.75,.9],build:'prop',who:'Ryukyu Cider’s bottler',
   why:'The bottler’s enamel tin (ホーロー看板), nailed up the year she first stocked the cider: the soda in her ice case is theirs. It faces the drinks machines and the lawn, where the thirsty are.',period:'Enamel tins went up on every shop that stocked a maker’s goods (okinawa/old-town.js SAKURA_WALL_ADS has Sakura’s).'}),
  // Plants and the customers' corner.
  item({id:'bougainvillea',side:'left',at:[-W-.22,.45,1.2],build:'prop',who:'Mrs Nakamura',
@@ -115,7 +115,7 @@ const MINCHO='"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif',GOTH
  * The shop's lettering on one picture, so the menu tags, the cider tin and the nameplate are one draw call, not three
  * boards of six faces each. Regions are in canvas pixels of a 1024×512 sheet.
  */
-const ATLAS=Object.freeze({w:1024,h:512,menu:[0,0,1024,256],tin:[0,272,170,240],plate:[200,272,256,128]});
+const ATLAS=Object.freeze({w:1024,h:512,menu:[0,0,1024,256],tin:[0,272,320,200],plate:[352,272,256,128]});
 
 function paintLettering(menu,{open,close}){
  return paint(ATLAS.w,ATLAS.h,(ctx)=>{
@@ -132,13 +132,12 @@ function paintLettering(menu,{open,close}){
     ctx.font=`bold ${size}px ${MINCHO}`;chars.forEach((c,k)=>ctx.fillText(c,x+tw/2,y+12+(k+.5)*(th*.64)/chars.length));
     ctx.fillStyle=t.hours?'#f4ead2':'#9a2a22';signText(ctx,t.price,x+tw/2,y+th-30,tw-10,26,GOTHIC);
    });}
-  // Ryukyu Cider's enamel tin: cream with a red border, the brand down it.
-  {const [x0,y0,w,h]=ATLAS.tin;ctx.fillStyle='#f1e6c8';ctx.fillRect(x0,y0,w,h);ctx.strokeStyle='#b8302a';ctx.lineWidth=8;ctx.strokeRect(x0+8,y0+8,w-16,h-16);
-   const chars=[...japaneseSign('Ryukyu Cider')],size=Math.floor((h-70)/chars.length*.9);
-   ctx.fillStyle='#b8302a';ctx.font=`bold ${size}px ${MINCHO}`;ctx.textAlign='center';ctx.textBaseline='middle';
-   chars.forEach((c,i)=>ctx.fillText(c,x0+w/2,y0+22+(i+.5)*(h-70)/chars.length));
-   ctx.font=`bold 15px ${GOTHIC}`;signText(ctx,'RYUKYU CIDER',x0+w/2,y0+h-26,w-30,15);
-   ctx.fillStyle='rgba(120,60,30,.5)';for(const [x,y] of [[14,14],[w-16,16],[16,h-18],[w-18,h-16]]){ctx.beginPath();ctx.arc(x0+x,y0+y,6,0,Math.PI*2);ctx.fill();}}
+  // Ryukyu Cider's enamel tin, a landscape one: cream with a red border and band, the brand across it.
+  {const [x0,y0,w,h]=ATLAS.tin;ctx.fillStyle='#f1e6c8';ctx.fillRect(x0,y0,w,h);ctx.fillStyle='#2f6f9f';ctx.fillRect(x0,y0+h-58,w,58);
+   ctx.strokeStyle='#b8302a';ctx.lineWidth=8;ctx.strokeRect(x0+8,y0+8,w-16,h-16);
+   ctx.fillStyle='#b8302a';ctx.textAlign='center';ctx.textBaseline='middle';signText(ctx,japaneseSign('Ryukyu Cider'),x0+w/2,y0+(h-58)/2+6,w-44,64,MINCHO);
+   ctx.fillStyle='#fff6e0';signText(ctx,'RYUKYU CIDER',x0+w/2,y0+h-30,w-50,22,GOTHIC);
+   ctx.fillStyle='rgba(120,60,30,.5)';for(const [x,y] of [[16,16],[w-16,16],[16,h-16],[w-16,h-16]]){ctx.beginPath();ctx.arc(x0+x,y0+y,6,0,Math.PI*2);ctx.fill();}}
   // The family's nameplate (表札): cypress, the name in brush letters, the romaji small under it.
   {const [x0,y0,w,h]=ATLAS.plate;ctx.fillStyle='#d8bb8a';ctx.fillRect(x0,y0,w,h);ctx.strokeStyle='rgba(90,60,30,.3)';ctx.lineWidth=2;
    for(let y=y0+14;y<y0+h;y+=17){ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(x0+w,y+3);ctx.stroke();}
@@ -159,7 +158,7 @@ function letteringQuad(r,w,h,at,ry){
 /** Where the lettering sits: each a board drawn by nakamuraBuilding, with its face 6 mm in front of the board's. */
 export const NAKAMURA_LETTERING=Object.freeze({
  menu:Object.freeze({w:2.44,h:.62,at:Object.freeze([-.5,2.62,back+.096]),ry:0,board:Object.freeze({w:2.5,h:.68,d:.03,at:Object.freeze([-.5,2.62,back+.075])})}),
- tin:Object.freeze({w:.56,h:.8,at:Object.freeze([W+.026,1.7,.9]),ry:Math.PI/2,board:Object.freeze({w:.02,h:.86,d:.62,at:Object.freeze([W+.01,1.7,.9])})}),
+ tin:Object.freeze({w:.8,h:.5,at:Object.freeze([W+.026,1.75,.9]),ry:Math.PI/2,board:Object.freeze({w:.02,h:.54,d:.84,at:Object.freeze([W+.01,1.75,.9])})}),
  plate:Object.freeze({w:.4,h:.2,at:Object.freeze([1.6,2.58,D-.004]),ry:0,board:Object.freeze({w:.44,h:.23,d:.02,at:Object.freeze([1.6,2.58,D-.02])})}),
 });
 
