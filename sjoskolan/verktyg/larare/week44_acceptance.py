@@ -30,7 +30,7 @@ def public_snapshot():
     # Entire student-facing course, assessment, database and simulator files.
     return {str(p.relative_to(SJO)): hashlib.sha256(p.read_bytes()).hexdigest()
             for p in SJO.rglob('*') if p.is_file()
-            and not any(x in p.parts for x in ('larare', 'verktyg', '__pycache__', 'ut', '.skyddat'))}
+            and not any(x in p.parts for x in ('larare', 'verktyg', '__pycache__', 'ut', 'build', '.skyddat'))}
 
 
 def decks():
