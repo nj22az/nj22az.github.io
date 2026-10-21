@@ -1,12 +1,14 @@
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict');
 process.env.PW_TEST_SCREENSHOT_NO_FONTS_READY='1';
 const {chromium}=require('playwright');
+const {rectanglesSeparated}=require('./layout-acceptance.cjs');
 (async()=>{
  const root=path.resolve(__dirname,'../site'),out=path.resolve(__dirname,'../dist/console-qa');fs.mkdirSync(out,{recursive:true});
  assert.equal(fs.existsSync(path.join(root,'thuans-storage')),false,'Retired storage game is not bundled');
- const errors=[],missing=[],remote=[],audioRequests=[];
+ const errors=[],missing=[],remote=[],audioRequests=[],layouts=[];
  const version=require('../package.json').version;
  const expectedNames=(await import('../../johansson-town/src/people/cast.js')).CAST.map(person=>person.name).sort();
+ const {identityOf}=await import('../../johansson-town/src/people/roster.js');
  const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.glb':'model/gltf-binary','.gltf':'model/gltf+json','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.wav':'audio/wav','.mp4':'video/mp4'};
  const server=http.createServer((req,res)=>{const url=new URL(req.url,'http://localhost');let file=path.resolve(root,'.'+decodeURIComponent(url.pathname));if(url.pathname.endsWith('/'))file=path.join(file,'index.html');if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){missing.push(url.pathname);res.writeHead(404);res.end();return;}res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream'});fs.createReadStream(file).pipe(res);});
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const url='http://127.0.0.1:'+server.address().port;
@@ -94,14 +96,19 @@ const {chromium}=require('playwright');
   const layout=await page.evaluate(()=>{
    const label=document.querySelector('#act .context-label'),box=label.getBoundingClientRect(),range=document.createRange();range.selectNodeContents(label);
    const text=range.getBoundingClientRect(),caption=document.getElementById('subtitle').getBoundingClientRect(),rail=document.getElementById('contextActions').getBoundingClientRect();
-   return {clamp:getComputedStyle(label).webkitLineClamp,height:box.height,textHeight:text.height,scroll:label.scrollHeight,client:label.clientHeight,captionRight:caption.right,railLeft:rail.left,railRight:rail.right,railBottom:rail.bottom,width:innerWidth,heightLimit:innerHeight};
+   return {clamp:getComputedStyle(label).webkitLineClamp,height:box.height,textHeight:text.height,scroll:label.scrollHeight,client:label.clientHeight,caption:caption.toJSON(),rail:rail.toJSON(),width:innerWidth,heightLimit:innerHeight};
   });
+  layouts.push(layout);console.log('CAPTION_ACTION_LAYOUT',JSON.stringify(layout));
+  // Keep the failing size's evidence too, rather than photographing only after assertions pass.
+  fs.writeFileSync(path.join(out,'layouts.json'),JSON.stringify(layouts,null,2));
+  await page.screenshot({path:path.join(out,`night-actions-${width}x${height}.png`)});
   assert.equal(await page.locator('#act .console-action-key').textContent() === 'A',true,'Action prompt displays the mapped A button');
   assert.equal(layout.clamp,'none','Full action labels have no line clamp');
   assert.ok(layout.scroll<=layout.client+1&&layout.textHeight<=layout.height+1,'Complete action text is visible');
-  assert.ok(layout.captionRight<layout.railLeft,'Caption and action descriptions do not overlap');
-  assert.ok(layout.railRight<=layout.width&&layout.railBottom<=layout.heightLimit,'Action rail stays on screen');
-  await page.screenshot({path:path.join(out,`night-actions-${width}x${height}.png`)});
+  assert.ok(rectanglesSeparated(layout.caption,layout.rail),'Caption and action descriptions do not overlap on both axes');
+  for(const [name,rect] of [['Caption',layout.caption],['Action rail',layout.rail]]){
+   assert.ok(rect.width>0&&rect.height>0&&rect.left>=0&&rect.top>=0&&rect.right<=layout.width&&rect.bottom<=layout.heightLimit,`${name} stays on screen at ${width}x${height}`);
+  }
  }
  await page.setViewportSize({width:1280,height:800});await page.evaluate(()=>{const before=window.__contextBefore;document.getElementById('act').innerHTML=before.html;for(const saved of before.buttons){const button=document.getElementById(saved.id);button.hidden=saved.hidden;button.disabled=saved.disabled;button.className=saved.className;}delete window.__contextBefore;window.__JOHANSSON_AUDIT__.frozen=false;window.__JOHANSSON_AUDIT__.setTime(720);window.__JOHANSSON_AUDIT__.teleport(-7,-15,0,0);});await sampled();
  await tap(9);assert.equal((await state()).menu,true);before=await page.evaluate(()=>({...window.__JOHANSSON_POSE__}));await axes([0,-1,1,1]);await page.waitForTimeout(250);await axes([0,0,0,0]);after=await page.evaluate(()=>({...window.__JOHANSSON_POSE__}));assert.equal(after.x,before.x);assert.equal(after.yaw,before.yaw,'Pause blocks movement and camera');
@@ -159,17 +166,32 @@ const {chromium}=require('playwright');
  // Linux residents: all named characters can be selected, with their own beds and schedules.
  console.log('Controls and layout passed; testing residents');
  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.setTime(60));await page.locator('#desktopTabs [data-tab=people]').click();
- assert.deepEqual(await page.locator('[data-person]').evaluateAll(nodes=>nodes.map(node=>decodeURIComponent(node.dataset.person)).sort()),expectedNames,'People lists exactly the consolidated live cast');await page.evaluate(()=>Promise.all([...document.querySelectorAll('.console-roster img')].filter(img=>img.getBoundingClientRect().top<innerHeight).map(img=>img.decode())));await page.screenshot({path:path.join(out,'08-character-roster.png')});
+ assert.deepEqual(await page.locator('[data-person]').evaluateAll(nodes=>nodes.map(node=>decodeURIComponent(node.dataset.person)).sort()),expectedNames,'People lists exactly the consolidated live cast');await page.waitForFunction(()=>{
+  // Re-query after layout/lazy loading settles; decode() on a one-shot list can
+  // reject an image whose lazy request is not the currently visible portrait.
+  const content=document.getElementById('desktopContent').getBoundingClientRect();
+  const images=[...document.querySelectorAll('.console-roster img')].filter(img=>{const box=img.closest('.console-portrait').getBoundingClientRect();return box.bottom>Math.max(0,content.top)&&box.top<Math.min(innerHeight,content.bottom);});
+  return images.length>0&&images.every(img=>img.complete&&img.naturalWidth>0);
+ });await sampled();await page.screenshot({path:path.join(out,'08-character-roster.png')});
  await page.locator('[data-person="Thuan"]').click();await page.waitForFunction(()=>window.johanssonLinuxWorld?.inBed&&!window.johanssonLinuxWorld.busy);
  assert.equal(await page.evaluate(()=>window.__JOHANSSON_MODEL__.avatar.recipe.name),'Thuan');
- await sampled();await page.screenshot({path:path.join(out,'09-thuan-own-bed.png')});await tap(0);assert.equal(await page.evaluate(()=>window.johanssonLinuxWorld.inBed),false,'A gets out of bed');await tap(1);await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).room===null);assert.equal(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room),null,'B leaves the home without a mouse');
+ await sampled();await page.screenshot({path:path.join(out,'09-thuan-own-bed.png')});await tap(0);assert.equal(await page.evaluate(()=>window.johanssonLinuxWorld.inBed),false,'A gets out of bed');// Exits are offered near the door; B is not a teleport from the bedside.
+ const homeDoor=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.targets.find(target=>/^Leave .*home$/.test(target.label)));
+ assert.ok(homeDoor,'The selected home has a real leave interaction');console.log('HOME_EXIT_FIXTURE',JSON.stringify(homeDoor));
+ await page.evaluate(position=>window.__JOHANSSON_AUDIT__.teleport(position[0],position[2]-1.2,Math.PI,0),homeDoor.position);
+ await page.waitForFunction(()=>{const exit=document.getElementById('exitRoomButton');return !exit.hidden&&!exit.disabled;});
+ await tap(1);await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).room===null);assert.equal(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room),null,'B leaves the home at its door without a mouse');
  await tap(9);await page.locator('#desktopTabs [data-tab=people]').click();await page.locator('[data-person="Officer%20Mori"]').click();await page.waitForFunction(()=>window.johanssonLinuxWorld?.active==='Officer Mori'&&!window.johanssonLinuxWorld.busy);
  assert.equal(await page.evaluate(()=>window.johanssonLinuxWorld.inBed),false,'Night patrol does not spawn asleep');
  await tap(9);await page.locator('#desktopTabs [data-tab=people]').click();await page.locator('[data-person="Mai"]').click();await page.waitForFunction(()=>window.johanssonLinuxWorld?.inBed&&!window.johanssonLinuxWorld.busy);await page.screenshot({path:path.join(out,'10-mai-own-bed.png')});
  await axes([0,-1,0,0]);await axes([0,0,0,0]);assert.equal(await page.evaluate(()=>window.johanssonLinuxWorld.inBed),false,'Left stick gets up safely beside the bed');
+ // Recipe-only selection does not spawn each resident. Start it outdoors so
+ // checkpoint() cannot assign Mai's bedroom to the identities being sampled.
+ await page.evaluate(()=>window.__JOHANSSON_AUDIT__.leave());await sampled();
+ assert.equal(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room),null,'Recipe sampling starts outdoors');
  const selectable=await page.evaluate(async()=>{const api=window.johanssonLinuxWorld,result=[];for(const person of api.roster){await api.select(person.name,{started:false});result.push({name:api.active,model:window.__JOHANSSON_MODEL__.avatar.recipe.name});}return result;});
  console.log('Selected roster',JSON.stringify(selectable));
- assert.deepEqual(selectable.map(person=>person.name).sort(),expectedNames,'Every living resident is selectable, with no retired extras');assert.ok(selectable.every(p=>p.name===p.model),'Every roster selection uses its own character recipe');
+ assert.deepEqual(selectable.map(person=>person.name).sort(),expectedNames,'Every living resident is selectable, with no retired extras');for(const person of selectable)assert.equal(person.model,identityOf(person.name)?.avatar||person.name,person.name+' uses its canonical authored recipe');
  await page.evaluate(async()=>{window.__JOHANSSON_AUDIT__.setTime(720);await window.johanssonLinuxWorld.select('Johansson');});
  console.log('Testing conversation escalation');
  if(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room!==null&&!window.johanssonLinuxWorld.inBed)){await tap(1);await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).room===null);}
@@ -196,5 +218,5 @@ const {chromium}=require('playwright');
  fs.writeFileSync(path.join(out,'results.json'),JSON.stringify({passed:true,errors,missing:[...new Set(missing)],blockedRemote:remote.length},null,2));
  assert.deepEqual(errors,[],'No page errors');assert.deepEqual([...new Set(missing)].filter(p=>p!=='/favicon.ico'),[],'No missing packaged files');
  console.log(JSON.stringify({passed:true,errors,missing:[...new Set(missing)],blockedRemote:remote.length,out}));
- } catch(error) {if(page){await page.screenshot({path:path.join(out,'failure.png')}).catch(()=>{});console.log('FAILURE_STATE',await page.evaluate(()=>({desktop:window.johanssonDesktopUI?.snapshot(),boot:document.getElementById('bootStatus')?.textContent,fatal:document.getElementById('fatal')?.textContent})).catch(()=>({})));}throw error;} finally {await browser.close();await new Promise(resolve=>server.close(resolve));}
+ } catch(error) {if(page){await page.screenshot({path:path.join(out,'failure.png')}).catch(()=>{});console.log('FAILURE_STATE',await page.evaluate(()=>({desktop:window.johanssonDesktopUI?.snapshot(),boot:document.getElementById('bootStatus')?.textContent,fatal:document.getElementById('fatal')?.textContent,portraits:[...document.querySelectorAll('.console-roster img')].map(img=>({src:img.currentSrc,complete:img.complete,width:img.naturalWidth}))})).catch(()=>({})));}throw error;} finally {await browser.close();await new Promise(resolve=>server.close(resolve));}
 })().catch(error=>{console.error(error);process.exitCode=1;});
