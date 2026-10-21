@@ -345,6 +345,8 @@ function buildPlans(){
  const others=plans=>(x,z)=>{for(const p of [...plans,mainStreetPlan()]){const at=laidAt(p,x,z);if(at)return at.edge?null:{cls:at.cls,y:at.y};}return null;};
  const lawnOr=(plans,lawn)=>(x,z)=>others(plans)(x,z)??(foreignAt(x,z)?{cls:'concrete',y:FLUSH}:lawn(x,z)?{cls:'grass',y:GRASS}:null);
  const inLawn=(x,z)=>['kitahama','west-yard','east-lawn','school'].includes(districtAt(x,z))||x>=-24.6;
+ // Sakura's service apron ends at the shop's back wall (old-town.js SAKURA_BACK.wall): no setts there.
+ const inBuilding=(x,z)=>TOWN_WALK_PLOTS.some(p=>p.id==='sakura'&&x>=SAKURA_BACK.wall-1e-3&&x<p.maxX&&z>p.minZ&&z<p.maxZ);
  const Kl=[...K,...gutterLayers(kitahamaRuns)];
  const Nl=[...Nb,...gutterLayers(nishiRuns)];
  const kitahama={id:'kitahama',district:'kitahama',layers:[...Kl,...edgeStrips(Kl,{classes:new Set(['coral-sand','concrete']),neighbour:lawnOr([{layers:Nl},{layers:W}],inLawn)})],
@@ -359,7 +361,7 @@ function buildPlans(){
    ...KITAHAMA_MAIN.lines.map(x=>({...rect(x-.075,x+.075,KITAHAMA_MAIN.linesFrom,KITAHAMA_MAIN.z1),colour:GROUND_EDGE.line.colour,name:'Kitahama edge line'})),
    ...lotPaint().map(p=>({...fromBounds(p),colour:p.colour,name:p.name}))]};
  const nishi={id:'nishi-machi',district:'nishi-machi',layers:[...Nl,...edgeStrips(Nl,{classes:new Set(['coral-sand','gravel']),neighbour:lawnOr([{layers:W},{layers:K}],(x,z)=>x>=NISHI_END-1e-6||z>=MS.maxZ-1e-6)})]};
- const west={id:'west-yard',district:'west-yard',layers:[...W,...edgeStrips(W,{classes:new Set(['concrete']),neighbour:(x,z)=>x<NISHI_END?null:lawnOr([{layers:K}],(x,z)=>districtAt(x,z)==='west-yard')(x,z)})]};
+ const west={id:'west-yard',district:'west-yard',layers:[...W,...edgeStrips(W,{classes:new Set(['concrete']),neighbour:(x,z)=>x<NISHI_END||inBuilding(x,z)?null:lawnOr([{layers:K}],(x,z)=>districtAt(x,z)==='west-yard')(x,z)})]};
  const school={id:'school',district:'school',layers:[...S,...edgeStrips(S,{classes:new Set(['grass','concrete','park-path']),neighbour:(x,z)=>foreign.some(p=>x>=p.minX-1e-6&&x<=p.maxX+1e-6&&z>=p.minZ-1e-6&&z<=p.maxZ+1e-6&&inPoly(p.poly,x,z))?{cls:'concrete',y:FLUSH}:z<SCHOOL.minZ||x<SCHOOL.minX||x>SCHOOL.maxX?{cls:'grass',y:GRASS}:null})],
   marks:TOWN_HALL_GROUND.bays.map(x=>({...rect(x-.05,x+.05,SCHOOL.parking.minZ+.2,SCHOOL.parking.maxZ-.4),name:'Town hall car park bays'}))};
  return built={plans:[kitahama,nishi,west,school],kitahamaRuns,nishiRuns,paved};

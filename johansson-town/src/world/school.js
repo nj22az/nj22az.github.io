@@ -277,7 +277,8 @@ function buildTownHall(group,options){
  kit.box(bs.maxX-bs.minX+.3,.06,bs.maxZ-bs.minZ-.4,(bs.minX+bs.maxX)/2,2.25,(bs.minZ+bs.maxZ)/2+.5,0x8a9aa0,{rx:.08});
  // Four bicycles under it, nose to the back wall, between the posts (SCHOOL_BICYCLES); their colliders join the
  // campus's in buildSchool.
- for(const b of SCHOOL_BICYCLES)bikes.push(bicycle(kit,b.x,(bs.minZ+bs.maxZ)/2+.5,{ry:-Math.PI/2,...b}));
+ // They stand on the shed's pad, flush with the yard (ground-plan-quarters.js TOWN_HALL_GROUND: 4 cm).
+ kit.at(0,0,0,()=>{for(const b of SCHOOL_BICYCLES)bikes.push(bicycle(kit,b.x,(bs.minZ+bs.maxZ)/2+.5,{ry:-Math.PI/2,...b}));},GROUND_LAYER.lane);
  // The wash taps: a concrete trough with a row of brass taps.
  const w=SCHOOL.wash;kit.box(w.w,.75,w.d,w.x,.375,w.z,0xc9c3b4);kit.box(w.w-.1,.06,w.d-.1,w.x,.76,w.z,0x8a9a9a);
  for(let i=0;i<5;i++)kit.cyl(.03,.03,.25,w.x-w.w/2+.35+i*.53,.95,w.z+.25,0xc9a64a,{segments:6});

@@ -489,7 +489,8 @@ function buildYardLife(kit,solid,{inspect}){
  const bx0=-24,bx1=-19.4,bz0=15.8,bz1=19.6;
  kit.block(bx0,bx1,2.15,2.25,bz0,bz1,0x8c9ea3);
  for(const [x,z] of [[bx0+.1,bz0+.1],[bx1-.1,bz0+.1],[bx0+.1,bz1-.1],[bx1-.1,bz1-.1]]){kit.box(.08,2.15,.08,x,1.08,z,0x9aa0a4);solid({id:'shed-post',x,z,w:.14,d:.14,height:2.2});}
- WEST_YARD_BICYCLES.forEach((b,i)=>solid(bicycle(kit,bx0+.8+i*1.05,(bz0+bz1)/2,{ry:Math.PI/2,...b})));
+ // On the shed's concrete slab (ground-plan-quarters.js), 4 cm up.
+ kit.at(0,0,0,()=>WEST_YARD_BICYCLES.forEach((b,i)=>solid(bicycle(kit,bx0+.8+i*1.05,(bz0+bz1)/2,{ry:Math.PI/2,...b}))),GROUND_LAYER.lane);
  for(const [x,z] of [[-17,-16.2],[-16.4,-15.8]]){kit.cyl(.29,.29,.88,x,.44,z,0x2f5a8a,{segments:12});kit.cyl(.3,.3,.04,x,.89,z,0x24486e,{segments:12});}
  solid({id:'oil-drums',x:-16.7,z:-16,w:1.3,d:1,height:.9});
  for(let k=0;k<4;k++)kit.cyl(.33,.33,.2,-23.6,.12+k*.21,-15.6,0x1f2124,{segments:12});

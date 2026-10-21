@@ -25,7 +25,7 @@ const world=createTown({scene:new THREE.Scene(),sites,townMode:'peninsula',kitan
 world.group.updateMatrixWorld(true);
 const fixed=world.colliders.filter(c=>!c.moving&&!c.only);
 
-test('the station stands on the lot, and where the police box stood is its yard',()=>{
+test('the station stands on the lot, and where the police box stood is its yard',async()=>{
  const building=fixed.find(c=>c.id==='police-station');
  assert.ok(building,'the station is solid');
  assert.ok(circleHitsRect(9.15,18,.1,building)&&circleHitsRect(6.2,14.5,.1,building)&&circleHitsRect(12.2,21.6,.1,building),'it covers the lot');
@@ -34,7 +34,9 @@ test('the station stands on the lot, and where the police box stood is its yard'
  // The old box stood at x 4.3–9.3, z 24.9–29.1: now open, paved yard with the car and the rack on it.
  assert.equal(fixed.some(c=>c.id==='police-station'&&circleHitsRect(6.8,25.5,.3,c)),false);
  for(const [x,z] of [[5.2,25.6],[9.3,28.3],[4.5,30],[6.8,28.1]])assert.ok(routeAt(x,z,.3),`yard paved and walkable at ${x},${z}`);
- assert.ok(lanePatches().some(p=>p.route==='police-station-yard'&&p.surface==='concrete'),'the yard is concrete');
+ // The yard is laid by the ground generator since step 3 of the ground plan (ground-plan-quarters.js): poured concrete.
+ const {quarterPlans}=await import('../src/world/ground-plan-quarters.js'),{laidAt}=await import('../src/world/ground-plan.js');
+ for(const [x,z] of [[7,26],[8.5,29.5],[8.5,26.5]])assert.equal(quarterPlans().map(p=>laidAt(p,x,z)).find(Boolean)?.cls,'concrete','the yard is concrete at '+[x,z]);
  for(const id of ['police-station-patrol-car','police-station-bicycle-rack','police-station-flagpole','police-station-bench'])
   assert.ok(fixed.some(c=>c.id===id),id+' is solid');
  const car=fixed.find(c=>c.id==='police-station-patrol-car');
