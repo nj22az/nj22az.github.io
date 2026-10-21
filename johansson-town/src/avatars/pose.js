@@ -1,3 +1,4 @@
+import {normalizeHands,applyHands} from './hands.js';
 import * as THREE from '../../vendor/three.module.js';
 
 // Local offsets for the existing rig. No bones, skin weights or recipes change.
@@ -31,19 +32,21 @@ export function normalizePose(raw){
  if(!bones.hips||!bones.head)throw Error('The pose must contain body joints.');
  const adjustments={};
  for(const [id,,,,,lo,hi] of POSE_CONTROLS){const v=raw.adjustments?.[id]??0;if(!Number.isFinite(v))throw Error('Invalid pose adjustment.');adjustments[id]=Math.max(lo,Math.min(hi,v));}
- return {format:'johansson-pose',version:1,basePose:String(raw.basePose||'idle').slice(0,40),rootHeight:raw.rootHeight,bones,adjustments};
+ return {format:'johansson-pose',version:1,basePose:String(raw.basePose||'idle').slice(0,40),rootHeight:raw.rootHeight,bones,adjustments,...raw.hands?{hands:normalizeHands(raw.hands)}:{}};
 }
 export function capturePose(avatar,basePose='idle'){
  const bones={};for(const name of names){const b=avatar.bones[name];if(b)bones[name]={rotation:b.quaternion.toArray(),scale:b.scale.toArray()};}
- return normalizePose({format:'johansson-pose',version:1,basePose,rootHeight:avatar.root.position.y/avatar.measure.H,bones});
+ return normalizePose({format:'johansson-pose',version:1,basePose,rootHeight:avatar.root.position.y/avatar.measure.H,bones,...avatar.handPose?{hands:avatar.handPose}:{}});
 }
 const delta=new THREE.Quaternion(),euler=new THREE.Euler();
 /** Restore the base before offsets: no accumulation, including on frozen frames. */
 export function applyPose(avatar,pose){
+ if(pose.hands?.enabled&&!avatar.articulatedHands)throw Error('Build this avatar with articulatedHands to apply its hand pose.');
  for(const [name,transform] of Object.entries(pose.bones)){
   const bone=avatar.bones[name];if(!bone)continue;
   bone.quaternion.fromArray(transform.rotation);bone.scale.fromArray(transform.scale);
  }
+ if(avatar.articulatedHands)applyHands(avatar,pose.hands||{enabled:true});
  avatar.root.position.y=pose.rootHeight*avatar.measure.H;
  const offsets={};
  for(const [id,,,bone,axis,,,sign] of POSE_CONTROLS){const value=pose.adjustments[id]||0;if(!value)continue;(offsets[bone]??={x:0,y:0,z:0})[axis]+=value*sign*Math.PI/180;}

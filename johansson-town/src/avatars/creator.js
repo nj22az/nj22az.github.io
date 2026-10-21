@@ -1,3 +1,4 @@
+import {normalizeHands,applyHands} from './hands.js';
 import {outfitAllowedFor,appropriateOutfit} from './outfits.js';
 import {SETS,SLOTS,SLOT_AT,ISLAND_PALETTE,ISLAND_HEX,entryFor,labelFor,wornSet,wornLine,searchWardrobe,putOnSet,accessibleName} from './wardrobe-catalogue.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -442,7 +443,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  if(!document.getElementById('shimanchu-css')){const style=document.createElement('style');style.id='shimanchu-css';style.textContent=CSS;document.head.append(style);}
  let wardrobeOwner=owner||start.name;let recipe=normalizeRecipe({...start,outfit:appropriateOutfit(wardrobeOwner,start.outfit)});const history=[];const viewPositions=new Map();let featureBaseline=structuredClone(recipe);
  let step=STEPS.some(s=>s[0]===startAt)?startAt:'look',tab='body',page='style',pose='idle',expression='auto',previewFacing=0,hairThumbView='front',wearing='clothes',dress=null,previewFraming='auto';
- const poseHistory=createPoseHistory();
+ const poseHistory=createPoseHistory();let handState=normalizeHands();
  const performanceState=createPerformance();let performanceEnabled=false,activePerformanceFace={},walkTurn=0,actingFrame=null;
  let bodyMotion=null,motionTime=0,motionPlaying=false,motionLoop=true;
  const el=(tag,props={},...children)=>{const e=Object.assign(document.createElement(tag),props);for(const c of children)if(c!=null)e.append(c);return e;};
@@ -512,6 +513,8 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  const frames={face:null,full:null};
  function syncPose(){
   const held=poseHistory.current;
+  if(held)handState=normalizeHands(held.hands);
+  if(avatar.articulatedHands!==handState.enabled){rebuild();dirty=false;}
   if(held){motionPlaying=false;actingFrame=null;performanceState.configure({frozen:true});applyPose(avatar,held);}
   else performanceState.configure({frozen:false});
   posePanel.sync();root.dispatchEvent(new Event('studio-performance-change'));
@@ -525,8 +528,9 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  function releasePose(){if(poseHistory.value){poseHistory.set(null);posePanel.sync();}}
 
  function rebuild(){
-  if(avatar){avatar.root.removeFromParent();avatar.dispose();}
-  avatar=buildAvatar(recipe,{shadows:false,faceSize:512});
+  if(avatar){avatar.root.removeFromParent();avatar.body.skeleton.dispose();avatar.dispose();}
+  avatar=buildAvatar(recipe,{shadows:false,faceSize:512,articulatedHands:handState.enabled});
+  if(handState.enabled)applyHands(avatar,handState);
   if(performanceEnabled)attachPerformance();
   animator=createAvatarAnimator(avatar);holder.add(avatar.root);
   // Dressed as the preview says; a child asked into the towel comes out in swimwear.
@@ -593,6 +597,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
    bodyMotion.apply(avatar,motionLoop?motionTime%bodyMotion.duration:Math.min(motionTime,bodyMotion.duration));
   }
   if(actingFrame)applyActorFrame(avatar,actingFrame);
+  if(handState.enabled)applyHands(avatar,handState);
  }
  function setActingFrame(value){
   if(performanceState.state.frozen&&value)return;
@@ -1178,12 +1183,14 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   poses.append(angle,select,dress,mood,exportButton);
  }
  const posePanel=createPosePanel({
-  getState:()=>({pose:poseHistory.value,canUndo:poseHistory.canUndo,canRedo:poseHistory.canRedo}),
+  getState:()=>({pose:poseHistory.value,canUndo:poseHistory.canUndo,canRedo:poseHistory.canRedo,hands:handState}),
   onAdjust:(id,value,record)=>{const next=poseHistory.value||capturePose(avatar,pose);next.adjustments[id]=value;setPose(next,{record});setPreview({framing:'full'});},
+  onHands:(value,record)=>{const next=poseHistory.value||capturePose(avatar,pose);next.hands=normalizeHands(value);setPose(next,{record});setPreview({framing:'full'});},
+  onExport:async()=>{const {exportAvatarGLB}=await import('./export.js?v=20261021-hands');return exportAvatarGLB(recipe,{pose:poseHistory.value||capturePose(avatar,pose)});},
   onHold:()=>setPose(poseHistory.value||capturePose(avatar,pose)),
   onResume:()=>{setPose(null);animator.stop();pose='idle';root.querySelector('[aria-label="Preview pose"]').value=pose;updatePerformance(0);},
   onReset:()=>{const next=poseHistory.value;if(next){for(const id in next.adjustments)next.adjustments[id]=0;setPose(next);}},
-  onUndo:()=>{poseHistory.undo();syncPose();},onRedo:()=>{poseHistory.redo();syncPose();},
+  onUndo:()=>{poseHistory.undo();handState=normalizeHands(poseHistory.current?.hands);syncPose();},onRedo:()=>{poseHistory.redo();syncPose();},
   onOpen:value=>{setPose(value);setPreview({framing:'full'});},onSave:()=>poseHistory.value||capturePose(avatar,pose)
  });
  side.append(posePanel.root);
@@ -1272,6 +1279,6 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
 
  rebuild();dirty=false;renderPoses();goTo(step);loop();close.focus();
- return {close:()=>finish(false),get recipe(){return normalizeRecipe({...recipe,name:name.value});},get root(){return root;},goTo,showIn,setRecipe,setPreview,setPerformance,setActingFrame,setPose,get pose(){return poseHistory.value;},get performance(){return performanceState.state;},resetFeature,exportPNG,save:()=>finish(true),get wearing(){return wearing;}};
+ return {close:()=>finish(false),get recipe(){return normalizeRecipe({...recipe,name:name.value});},get root(){return root;},goTo,showIn,setRecipe,setPreview,setPerformance,setActingFrame,setPose,get pose(){return poseHistory.value||(handState.enabled?capturePose(avatar,pose):null);},get performance(){return performanceState.state;},resetFeature,exportPNG,save:()=>finish(true),get wearing(){return wearing;}};
 }
 

@@ -1,3 +1,4 @@
+import {normalizePose,applyPose} from './pose.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFExporter} from '../../tools/vendor/GLTFExporter.js';
 import {buildAvatar,BONES} from './build.js';
@@ -8,9 +9,11 @@ import {motionClip} from './motion.js';
 /** Standard neutral T-pose GLB, with two independently skinned braid meshes,
  * four facial morph targets, recipe metadata and the game's painted expressions.
  * Cel outlines and cloth clearance shaders stay in the game renderer. */
-export async function exportAvatarGLB(recipe,{motion=null}={}){
+export async function exportAvatarGLB(recipe,{motion=null,pose=null}={}){
+ if(motion&&pose)throw Error('Export a posed character or an animation, separately.');
+ pose=pose?normalizePose(pose):null;
  const clip=motion?motionClip(motion):null;
- const a=buildAvatar(recipe,{shadows:false,faceSize:256}),extra=[];
+ const a=buildAvatar(recipe,{shadows:false,faceSize:256,articulatedHands:pose?.hands?.enabled===true}),extra=[];
  try{
   a.root.rotation.set(0,0,0);a.setOpenHands(true);a.paintFace({expression:'neutral',blink:0,talk:0});
   for(const side of ['L','R']){
@@ -45,6 +48,7 @@ export async function exportAvatarGLB(recipe,{motion=null}={}){
   drawFace(a.face.ctx,a.recipe,{expression:'neutral',size:256,objects:true});a.face.texture.needsUpdate=true;
   a.root.userData={recipe:a.recipe,pose:'T-pose',faceExpressions:expressions,faceExpressionFormat:'PNG data URI; apply to head base-color texture',faceMorphs:['smile','shy','surprised','blink']};
   if(clip){a.root.userData.pose='animated';a.root.userData.motion={name:clip.name,inPlace:true};}
+  else if(pose){applyPose(a,pose);a.root.userData.pose='posed';a.root.userData.johanssonPose=pose;}
   else{a.bones.shoulderL.rotation.z=Math.PI/2;a.bones.shoulderR.rotation.z=-Math.PI/2;}
   a.root.updateMatrixWorld(true);a.body.skeleton.update();
   return await new GLTFExporter().parseAsync(a.root,{binary:true,onlyVisible:true,trs:true,animations:clip?[clip]:[]});

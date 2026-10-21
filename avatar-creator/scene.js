@@ -306,7 +306,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
      // A posed avatar is kept while only its place changes: moving between stools of one height and facing reuses it.
      const position=environment.place(actor),seatShape=position.seat?[Math.round((position.seat.surfaceY-position.y)*100)/100,position.seat.yaw||0]:0;
      const key=JSON.stringify([actor.recipe,actor.pose,actor.expression,actor.turn,actor.size,seatShape,actor.customPose]);let entry=avatars.get(actor.id);
-     if(!entry||entry.key!==key){if(entry)clearAvatar(entry);entry={key,avatar:buildAvatar(actor.recipe,{shadows:true,faceSize:256})};entry.avatar.paintFace=createSceneFacePainter(entry.avatar,actor.recipe,()=>entry.poseName||actor.pose);entry.avatar.root.userData.studioActor=true;avatars.set(actor.id,entry);}
+     if(!entry||entry.key!==key){if(entry)clearAvatar(entry);entry={key,avatar:buildAvatar(actor.recipe,{shadows:true,faceSize:256,articulatedHands:actor.customPose?.hands?.enabled===true})};entry.avatar.paintFace=createSceneFacePainter(entry.avatar,actor.recipe,()=>entry.poseName||actor.pose);entry.avatar.root.userData.studioActor=true;avatars.set(actor.id,entry);}
      const avatar=entry.avatar;
      // Each avatar is a mesh in the same scene graph as the counter and walls.
      environment.scene.add(avatar.root);avatar.root.position.set(0,0,0);avatar.root.scale.setScalar(actor.size);
