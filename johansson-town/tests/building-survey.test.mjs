@@ -1,12 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
 import * as T from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {buildOnsenInterior,ONSEN_ROOM} from '../src/world/interiors/onsen.js';
 import {buildPoliceStationInterior} from '../src/world/interiors/police-station.js';
 import {surveyInterior,khaakaPlan} from '../scripts/building-survey.mjs';
 import {SATO_ROOM} from '../src/world/sato-ramen-layout.js';
+import {MINATO_COMPACT} from '../src/world/interiors/minato-compact-plan.js';
 const build=fn=>{installDOM();const room=new T.Group(),cols=[];const layout=fn({room,reg(){},action(){},exit(){},collider:(x,z,w,d)=>cols.push({x,z,w,d})});return {room,layout:{...layout,colliders:[...cols,...(layout.colliders||[])]}};};
 test('reproduces first-floor entrance-strip failure, then covers the complete onsen',()=>{
  const {room,layout}=build(buildOnsenInterior);room.updateMatrixWorld(true);
@@ -31,10 +33,13 @@ test('the police station (koban) includes its lobby, office and counter-window f
  assert.ok(s.features.includes('Toilet'));assert.ok(Math.abs(s.floorArea-49.4)<.5,'the whole ground floor: '+s.floorArea);
 });
 test('shared dining polygon excludes the missing corner and treats both doors alike',()=>{
- const s=surveyInterior(new T.Group(),SATO_ROOM);assert.equal(s.domainArea,202.26);assert.equal(s.w,17.4);assert.equal(s.h,12.4);assert.equal(s.floorArea,null);
+ const s=surveyInterior(new T.Group(),SATO_ROOM);assert.equal(s.domainArea,64.488);assert.equal(s.w,9.94);assert.equal(s.h,7.2);assert.equal(s.floorArea,null);
  assert.ok(s.domainArea<s.w*s.h,'polygon is not its bounding rectangle');
  const rows=JSON.parse(readFileSync(new URL('../docs/building-plans/analysis.json',import.meta.url)));
- for(const id of ['ramen','izakaya']){const row=rows.find(r=>r.id===id);assert.equal(row.m2,s.domainArea);assert.deepEqual(row.measurement.floorPolygon,SATO_ROOM.floorPolygon);}
+ const hash=createHash('sha256').update(readFileSync(new URL('../art/izakaya/compact/plan.json',import.meta.url))).digest('hex');
+ for(const id of ['ramen','izakaya']){const row=rows.find(r=>r.id===id);assert.equal(row.m2,s.domainArea);assert.deepEqual(row.measurement.floorPolygon,SATO_ROOM.floorPolygon);
+  assert.equal(row.measurement.provenance.planRevision,MINATO_COMPACT.revision);assert.equal(row.measurement.provenance.planSha256,hash);
+  assert.equal(row.measurement.provenance.status,'working prototype');assert.ok(row.measurement.floorArea>0,'the compact GLB provides actual floor evidence');}
 });
 test('survey ignores a distant sea backdrop and honours nested floor transforms',()=>{
  const room=new T.Group(),g=new T.Group();g.position.x=1;room.add(g);

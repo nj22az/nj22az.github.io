@@ -7,15 +7,16 @@ import {coplanarOverlaps} from '../tools/z-fighting.mjs';
 import {FURNITURE_HEIGHTS} from '../src/world/furniture-standards.js';
 import {SHARED_DINING_COLLIDERS} from '../src/world/interiors/shared-dining-layout.js';
 import {IZAKAYA_PLAYER_SEATS} from '../src/people/izakaya-beer.js';
+import {MINATO_COMPACT as P} from '../src/world/interiors/minato-compact-plan.js';
 
 // Scan the actual exported furniture, in the room which uses it. A photo cannot catch
 // every depth-buffer conflict: the owner's requirement is no flicker while moving,
 // including the small bottle labels and the joins seen close up at a phone's size.
 const NAMES=['Minato walnut back bar','Minato walnut counter'];
-const FILES=['minato-walnut-backbar.glb','minato-walnut-counter.glb'];
+const FILE='minato-interior-compact.glb';
 const REGIONS=[
- {minX:-4.65,maxX:-1.10,minZ:-6.32,maxZ:-5.40,minY:.04,maxY:2.95},
- {minX:-5.05,maxX:3.45,minZ:-2.80,maxZ:-1.85,minY:.04,maxY:1.05},
+ {minX:-3.82,maxX:-.38,minZ:-3.75,maxZ:-3.02,minY:.04,maxY:2.95},
+ {minX:-3.95,maxX:.45,minZ:-1.32,maxZ:-.58,minY:.04,maxY:1.05},
 ];
 const bytesByFile=new Map(),requests=[];
 let room,display,api,models;
@@ -53,9 +54,16 @@ before(async()=>{
 after(()=>{display?.dispose();display?.television?.dispose();});
 
 test('both shared dining entrances clone one complete replacement from the same cached asset',async()=>{
- const other=new THREE.Group();assert.equal(api.addMinatoInterior(other),true);
+ const other=new THREE.Group(),registered=[];
+ // Exercise the real Sato entry, including its existing queried import path.
+ const {buildSatoRamenRoom}=await import('../src/world/interiors/sato-ramen.js');
+ const sato=buildSatoRamenRoom({room:other,collider:(...c)=>registered.push(c)});
+ assert.ok(other.getObjectByName('Minato interior'),'Sato receives the same fitted model');
+ assert.equal(other.getObjectByName('Minato compact loading shell'),undefined);
+ assert.deepEqual(sato.spawn,P.ramenEntrance.spawn);
+ assert.deepEqual(registered,SHARED_DINING_COLLIDERS.map(c=>[c.x,c.z,c.w,c.d,c.height]));
  await api.preloadIzakaya(['interior']);
- assert.deepEqual(requests.sort(),['minato-interior-walnut.glb',...FILES].sort(),'All three pieces load once, before the interior is ready');
+ assert.deepEqual(requests,[FILE],'One complete compact room loads once, before the interior is ready');
  for(const name of NAMES){
   let count=0;other.traverse(o=>{if(o.name===name)count++;});assert.equal(count,1,name+' is not duplicated on another entry');
   const clone=other.getObjectByName(name),original=room.getObjectByName(name);
@@ -63,14 +71,15 @@ test('both shared dining entrances clone one complete replacement from the same 
   const firstMesh=o=>{let found;o.traverse(m=>{if(m.isMesh&&!found)found=m;});return found;};
   assert.equal(firstMesh(clone).geometry,firstMesh(original).geometry,'Repeated visits share immutable geometry');
  }
+ sato.dispose();
 });
 
 test('the runtime replacement keeps bounded geometry and opaque, front-sided finishes',()=>{
- let triangles=0,draws=0,totalBytes=0;
+ let triangles=0,draws=0;
+ const bytes=bytesByFile.get(FILE);assert.ok(bytes,FILE+' was loaded by the game');
+ const json=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)).toString());
+ assert.ok(!json.extensionsRequired?.length,'The standard GLTFLoader needs no optional decoder');
  for(let i=0;i<models.length;i++){
-  const bytes=bytesByFile.get(FILES[i]);assert.ok(bytes,FILES[i]+' was loaded by the game');totalBytes+=bytes.length;
-  const json=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)).toString());
-  assert.ok(!json.extensionsRequired?.length,'The standard GLTFLoader needs no optional decoder');
   let localDraws=0;
   models[i].traverse(o=>{if(!o.isMesh)return;
    const g=o.geometry;localDraws+=(g.groups.length||1);triangles+=(g.index?.count||g.attributes.position.count)/3;
@@ -81,14 +90,19 @@ test('the runtime replacement keeps bounded geometry and opaque, front-sided fin
     assert.equal(m.opacity,1);assert.equal(m.side,THREE.FrontSide,'Closed cabinet and bottle surfaces have one visible side');
     assert.ok(!m.transmission,'No nested refractive shells');
     assert.ok(!m.polygonOffset,'Physical geometry resolves joins; no blanket depth offset');
+    assert.equal(m.userData.keepPhysicalStrict,true,'Commissioned wood, brass and labels retain their authored physical finish');
     if(m.map)assert.equal(m.map.minFilter,THREE.LinearMipmapLinearFilter,'Fine labels and grain use mipmaps as the camera moves away');
    }
   });
-  assert.ok(localDraws<=(i===0?10:6),FILES[i]+' draw budget: '+localDraws);draws+=localDraws;
+  assert.ok(localDraws<=(i===0?10:6),NAMES[i]+' draw budget: '+localDraws);draws+=localDraws;
  }
  assert.ok(triangles<=34000,'The two furniture assets use '+triangles+' triangles');
  assert.ok(draws<=16,'Fixed material batches bound the draw calls');
- assert.ok(totalBytes<=5*1024*1024,'The two runtime files use '+totalBytes+' bytes');
+ assert.ok(bytes.length<=6*1024*1024,'The complete fitted room uses '+bytes.length+' bytes');
+ let roomTriangles=0,roomDraws=0;
+ room.getObjectByName('Minato interior').traverse(o=>{if(o.isMesh){roomTriangles+=(o.geometry.index?.count||o.geometry.attributes.position.count)/3;roomDraws+=o.geometry.groups.length||1;}});
+ assert.ok(roomTriangles<=184126,'The fitted room remains below its previous '+roomTriangles+' triangle budget');
+ assert.ok(roomDraws<=50,'The complete fitted room uses '+roomDraws+' material draws');
 });
 
 test('forty-two physical bottles carry the fourteen fictional brands recorded for Thao and Higa Liquor',()=>{
@@ -106,14 +120,19 @@ test('forty-two physical bottles carry the fourteen fictional brands recorded fo
  for(const [mesh,suffix] of [[bodies,'solid body and closure'],[labels,'integral paper faces']]){
   const p=mesh.geometry.attributes.position,parts=mesh.userData.mergedParts;
   assert.equal(parts.length,42,'One physical '+suffix+' for each bottle');
+  // Blender preserves the authored parts and transforms but reindexes vertices.
+  // Check the exported geometry at each actual bottle position, rather than using
+  // offsets into the original asset's pre-export vertex buffer.
+  const vertices=Array.from({length:p.count},(_,k)=>new THREE.Vector3().fromBufferAttribute(p,k).applyMatrix4(mesh.matrixWorld));
   for(let i=0;i<parts.length;i++){
-   const item=stock.bottles[i],start=parts[i].start,end=parts[i+1]?.start??p.count;
-   assert.equal(parts[i].where,item.source+' / '+suffix);assert.ok(end>start);
-   const b=new THREE.Box3();for(let k=start;k<end;k++)b.expandByPoint(new THREE.Vector3().fromBufferAttribute(p,k));
+   const item=stock.bottles[i],pos=new THREE.Vector3(...item.position).applyMatrix4(shelf.matrixWorld);
+   assert.equal(parts[i].where,item.source+' / '+suffix);
+   const near=vertices.filter(v=>Math.abs(v.x-pos.x)<.10&&Math.abs(v.z-pos.z)<.10&&v.y>=pos.y-.04&&v.y<=pos.y+.39);
+   assert.ok(near.length,item.source+' has real '+suffix+' geometry at its authored location');
+   const b=new THREE.Box3().setFromPoints(near);
    assert.ok(b.max.y>b.min.y+.05,'The named '+suffix+' is an actual three-dimensional bottle component');
    if(mesh===bodies){
-    assert.ok(Math.abs(b.min.y-item.base_height)<.001,item.source+' base agrees with its authored position');
-    const pos=new THREE.Vector3(...item.position).applyMatrix4(shelf.matrixWorld);
+    assert.ok(Math.abs(b.min.y-pos.y)<.001,item.source+' base agrees with its authored position');
     const support=down(shelf,pos.x,pos.z,pos.y+.002);
     assert.ok(Math.abs(support-pos.y)<.002,item.source+' stands on its actual shelf');
    }
@@ -121,14 +140,14 @@ test('forty-two physical bottles carry the fourteen fictional brands recorded fo
  }
 });
 
-test('the new furniture stands on the floor, clears the back wall and fits the existing solids',()=>{
- const [shelf,counter]=models.map(bounds),solid=SHARED_DINING_COLLIDERS.find(c=>c.id==='minato-counter');
+test('the furniture stands on the floor, clears the wall and fits the compact solids',()=>{
+ const [shelf,counter]=models.map(bounds),solid=SHARED_DINING_COLLIDERS.find(c=>c.id==='minato-counter'),cabinet=SHARED_DINING_COLLIDERS.find(c=>c.id==='minato-backbar');
  assert.ok(Math.abs(shelf.min.y-.04)<.001,'Shelf feet meet the actual floorboards');
  assert.ok(Math.abs(counter.min.y-.04)<.001,'Counter plinth meets the actual floorboards');
- assert.ok(shelf.min.z>=-6.264,'Cabinet back clears the wainscot face by at least 6 mm');
- assert.ok(shelf.max.z<=-5.575,'Cabinet stays within the existing back-kitchen solid');
- assert.ok(shelf.min.x>=-4.60&&shelf.max.x<=-1.15,'The replacement fits the original cupboard bay');
- assert.ok(shelf.max.y<2.76,'Shelf cornice stays below the back-wall menu strips');
+ assert.ok(shelf.min.z>=P.main.minZ+.006,'Cabinet back clears the real back wall');
+ assert.ok(shelf.min.z>=cabinet.z-cabinet.d/2-.001&&shelf.max.z<=cabinet.z+cabinet.d/2+.001,'Cabinet fits its measured collision footprint');
+ assert.ok(shelf.min.x>=cabinet.x-cabinet.w/2-.001&&shelf.max.x<=cabinet.x+cabinet.w/2+.001,'The retained cupboard fits its compact bay');
+ assert.ok(shelf.max.y<P.ceilingY-.2,'The full-height cabinet clears the lower ceiling');
  assert.ok(counter.min.x>=solid.x-solid.w/2-.001&&counter.max.x<=solid.x+solid.w/2+.001,'Counter ends match the collision footprint');
  assert.ok(counter.min.z>=solid.z-solid.d/2-.001&&counter.max.z<=solid.z+solid.d/2+.001,'Counter and footrail fit inside the existing collision footprint');
  assert.ok(Math.abs(counter.max.y-FURNITURE_HEIGHTS.serviceCounter)<.001,'Counter retains the low serving height');
@@ -142,23 +161,23 @@ test('every counter drink and dish rests on the new slate at the unchanged servi
   assert.ok(Math.abs(actual-y)<.001,seat.id+' '+kind+' must sit on the slate, at '+actual+' instead of '+y);
  }
  // The existing steel preparation surface remains separate and usable behind it.
- assert.ok(Math.abs(down(room,2.55,-3.06,.935)-.9175)<.001,'The kitchen worktop keeps its original height');
+ assert.ok(Math.abs(down(room,-2.25,P.worktop.position[2],.935)-P.worktop.top)<.001,'The kitchen worktop keeps its original height');
 });
 
 test('the old baked cupboard and counter bodies were removed rather than covered with new ones',()=>{
  const legacy=room.getObjectByName('Minato interior').clone(true);
  for(const name of NAMES)legacy.getObjectByName(name).removeFromParent();
  legacy.updateMatrixWorld(true);
- for(const [x,z] of [[-4.4,-2.2],[-3.25,-2.2],[-1.7,-2.2],[.1,-2.2],[1.5,-2.2],[2.8,-2.2],[-4,-5.85],[-3,-5.85],[-2,-5.85]]){
+ for(const [x,z] of [...[-3.5,-2.7,-1.9,-1.1,-.3].map(x=>[x,P.counter.position[2]]),...[-3.6,-2.5,-1.4].map(x=>[x,P.backbar.position[2]])]){
   const y=down(legacy,x,z,.77);
   assert.ok(Math.abs(y-.04)<.001,'Retired furniture still occupies '+[x,z]+' at '+y);
  }
  // The old five shelves and their bottles would intercept these rays before the
  // rear wall. The replacement is separate, so its absence reveals the bare bay.
- for(const x of [-4,-3,-2])for(const y of [.5,1.08,1.42,1.76,2.1,2.44]){
-  const ray=new THREE.Raycaster(new THREE.Vector3(x,y,-5.5),new THREE.Vector3(0,0,-1));
+ for(const x of [-3.5,-2.5,-1.5])for(const y of [.5,1.08,1.42,1.76,2.1,2.44]){
+  const ray=new THREE.Raycaster(new THREE.Vector3(x,y,-3.01),new THREE.Vector3(0,0,-1));
   const hit=ray.intersectObject(legacy,true)[0];
-  assert.ok(hit&&hit.point.z<=-6.25,'An old shelf or bottle remains at '+[x,y]+': '+hit?.point.z);
+  assert.ok(hit&&hit.point.z<=P.main.minZ+.002,'An old shelf or bottle remains at '+[x,y]+': '+hit?.point.z);
  }
 });
 
@@ -178,6 +197,6 @@ test('the replacement shares no visible plane with the room, fitted props or run
 test('the furniture scan detects an accidentally doubled counter finish',()=>{
  const group=new THREE.Group();group.add(models[1].clone(true));
  const sheet=new THREE.Mesh(new THREE.PlaneGeometry(1,.3).rotateX(-Math.PI/2),new THREE.MeshStandardMaterial({color:0xffffff}));
- sheet.name='Accidental extra counter finish';sheet.position.set(-.8,FURNITURE_HEIGHTS.serviceCounter+.0005,-2.2);group.add(sheet);
+ sheet.name='Accidental extra counter finish';sheet.position.set(P.counter.position[0],FURNITURE_HEIGHTS.serviceCounter+.0005,P.counter.position[2]);group.add(sheet);
  assert.ok(scan(group).some(f=>(f.a+f.b).includes(sheet.name)&&f.area>.2),'A second surface half a millimetre above the slate must fail');
 });

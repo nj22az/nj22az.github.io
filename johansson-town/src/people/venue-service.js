@@ -41,7 +41,7 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
  function remove(person){kitchen?.cancel(person);const setting=settings.get(person);if(!setting)return;for(const prop of [setting.food,setting.drink])disposeServing(prop);settings.delete(person);clear(person);if(serving===person){serving=null;timer=0;}}
  function table(person,prop,side){
   const g=person.g,forward=new THREE.Vector3(-Math.sin(g.rotation.y),0,-Math.cos(g.rotation.y)),right=new THREE.Vector3(Math.cos(g.rotation.y),0,-Math.sin(g.rotation.y));
-  // A counter with a known top (Sato Ramen's stools): on it, in front of the stool.
+  // Use the actual fitted table or counter top; seat height cannot tell them apart.
   const top=tableFor?.(person);if(top){prop.position.set(...top).addScaledVector(right,side*.15);return;}
   prop.position.copy(g.position).addScaledVector(forward,place==='ramen'?.40:g.userData.seatHeight>.65?.78:.60).addScaledVector(right,side*.15);
   prop.position.y=place==='ramen'?1.04:g.userData.seatHeight>.65?1.16:1.01;

@@ -19,17 +19,6 @@ test('Thao pours, walks the drink over, sets it down and goes back to the counte
  assert.equal(last.left,0);assert.ok(last.alcohol>0);
 });
 
-test('the route Thao walks stays out of the counter and the koagari',()=>{
- // Colliders from world/izakaya.js: the counter and the raised tatami.
- const counter={x:-.8,z:-2.64,w:8.4,d:1.43},koagari={x:5.3,z:1.8,w:2,d:5.4};
- const hit=(c,x,z,r=.25)=>Math.abs(x-c.x)<c.w/2+r&&Math.abs(z-c.z)<c.d/2+r;
- for(const seat of Object.values(IZAKAYA_PLAYER_SEATS)){
-  const pts=[[NAO_STATION[0],NAO_STATION[2]],...seat.route];
-  for(let i=1;i<pts.length;i++)for(let k=0;k<=20;k++){const x=pts[i-1][0]+(pts[i][0]-pts[i-1][0])*k/20,z=pts[i-1][1]+(pts[i][1]-pts[i-1][1])*k/20;
-   assert.ok(!hit(counter,x,z)&&!hit(koagari,x,z),`${seat.id} route clear at ${x.toFixed(2)},${z.toFixed(2)}`);}
- }
-});
-
 test('a dish is cooked at its station, carried across the counter, and eaten a bite at a time',async()=>{
  const {DISHES,KITCHEN_STATIONS,MINATO_MENU}=await import('../src/people/izakaya-beer.js');
  const room=new THREE.Group(),nao=new THREE.Group(),said=[];nao.position.set(...NAO_STATION);

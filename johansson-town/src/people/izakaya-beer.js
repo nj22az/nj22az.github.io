@@ -1,4 +1,6 @@
-import {FURNITURE_HEIGHTS} from '../world/furniture-standards.js';
+import {MINATO_COMPACT} from '../world/interiors/minato-compact-plan.js';
+import {SHARED_DINING_BOUNDS} from '../world/interiors/shared-dining-layout.js';
+import {createRoomWalk} from './room-walk.js';
 import {buildServingDish,buildServingDrink,buildServingBite} from './izakaya-serving-visuals.js';
 import * as THREE from '../../vendor/three.module.js';
 
@@ -37,21 +39,31 @@ export const DISHES=Object.freeze({
 });
 export const MINATO_MENU=Object.freeze([...Object.values(DISHES),...Object.values(DRINKS)]);
 export const menuItem=id=>DRINKS[id]||DISHES[id]||null;
-/** Where Thao stands to cook each kind of dish (see tools/blender/build-minato-interior.py). */
-export const KITCHEN_STATIONS=Object.freeze({grill:[1.7,0,-3.6],oden:[-4.2,0,-3.6],range:[1.4,0,-5.15],fryer:[2.75,0,-5.15],prep:[5.4,0,-5.15]});
-export const NAO_STATION=Object.freeze([3.5,0,-3.8]);
+/** Where Thao stands to cook, measured from the same plan that builds the Blender room. */
+export const KITCHEN_STATIONS=Object.freeze(MINATO_COMPACT.kitchenStations);
+export const NAO_STATION=Object.freeze([...MINATO_COMPACT.staff.position]);
 
 /**
  * Where the player can sit, and where Thao stands to serve that seat. `table` is the spot
  * on the table in front of the player; `serve` is Thao's floor spot beside it.
  */
+const plan=MINATO_COMPACT,booth=plan.booth;
+const boothSeat=(id,row,label)=>{
+ const x=booth.seatX[1],z=booth.benchZ[row],topZ=booth.position[2]+(row===0?-1:1)*booth.tableDepth*.2,serveX=booth.standX[1];
+ return Object.freeze({id,label,position:[x,0,z],stand:[serveX,0,z],surfaceY:plan.seatHeight,eyeY:row===0?1.14:1.2,yaw:row===0?Math.PI:0,
+  table:[x+.12,booth.tableTop,topZ],dish:[x-.15,booth.tableTop,topZ],serve:[serveX,0,topZ],
+  route:[[plan.staff.endX,plan.staff.aisleZ],[plan.staff.endX,plan.counterStandZ],[serveX,topZ]],
+ });
+};
 export const IZAKAYA_PLAYER_SEATS=Object.freeze({
- table:Object.freeze({id:'table',label:'Sit at the table',position:[3.3,0,.92],stand:[3.3,0,.25],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.14,yaw:Math.PI,table:[3.3,FURNITURE_HEIGHTS.table,1.52],dish:[3.02,FURNITURE_HEIGHTS.table,1.5],serve:[3.95,0,.3],route:[[3.95,-3.55],[3.95,.3]]}),
- window:Object.freeze({id:'window',label:'Sit and enjoy the evening',position:[3.4,0,3.08],stand:[4.35,0,3.08],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.2,yaw:0,table:[3.4,FURNITURE_HEIGHTS.table,2.55],dish:[3.15,FURNITURE_HEIGHTS.table,2.55],serve:[3.9,0,2.7],route:[[3.95,-3.55],[3.95,.3],[3.9,2.7]]}),
+ table:boothSeat('table',0,'Sit at the table'),
+ window:boothSeat('window',1,'Sit and enjoy the evening'),
  // The five counter stools, among the regulars. Thao serves these across the counter
  // from the kitchen side, so their route never leaves the working aisle.
- ...Object.fromEntries([-3.8,-2.3,-.8,.7,2.2].map((x,i)=>['counter'+i,Object.freeze({id:'counter'+i,label:'Sit at the counter',counter:true,
-  position:[x,0,-1.42],stand:[x,0,-.72],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.32,yaw:0,table:[x+.15,FURNITURE_HEIGHTS.serviceCounter,-2.2],dish:[x-.12,FURNITURE_HEIGHTS.serviceCounter,-2.24],serve:[x,0,-3.75],route:[[x,-3.75]]})])),
+ ...Object.fromEntries(plan.counterStools.map((x,i)=>['counter'+i,Object.freeze({id:'counter'+i,label:'Sit at the counter',counter:true,
+  position:[x,0,plan.counterSeatZ],stand:[x,0,plan.counterStandZ],surfaceY:plan.seatHeight,eyeY:1.32,yaw:0,
+  table:[x+.15,plan.counter.top,plan.counter.position[2]+plan.counter.depth*.25],dish:[x-.12,plan.counter.top,plan.counter.position[2]+plan.counter.depth*.25],
+  serve:[x,0,plan.staff.counterPassZ],route:[[x,plan.staff.counterPassZ]]})])),
 });
 
 /** A drink as a small prop: a mug with a head, a brown bottle and glass, a can, a tumbler. */
@@ -125,22 +137,41 @@ export function disposeServing(prop){
  * @param {(x:number,z:number,r:number)=>boolean} options.blocked
  * @param {(text:string,seconds?:number)=>void} [options.say]
  */
-export function createBeerService({room,getNao,blocked,say=()=>{}}){
+export function createBeerService({room,getNao,blocked=()=>false,bounds=SHARED_DINING_BOUNDS,say=()=>{}}){
  let order=null,drink=null,dish=null,served=0;
- void blocked;
+ const radius=.3,walker=createRoomWalk((x,z,r)=>blocked(x,z,r),{bounds,smoothTurn:true,radius});
+ let walkingPerson=null,stalled=0;
+ function resetWalk(){walker.clear();walkingPerson=null;stalled=0;}
  function release(g){if(!g)return;for(const key of ['playerService','heldItem','socialPose','carrying'])delete g.userData[key];}
  /**
-  * Walk Thao along the seat's route: round the end of the counter and down the aisle.
-  * The route is laid through the gap the colliders leave, so no path search is needed.
-  * True once she is at the last point.
+  * The authored points say which side of the counter to use. Furniture still decides
+  * how to reach each one: benches and a moved chair can block a straight approach.
+  * Check the short final step too; room walkers normally stop 12 cm from their goal.
   */
+ function clearSegment(fromX,fromZ,toX,toZ){
+  const steps=Math.max(1,Math.ceil(Math.hypot(toX-fromX,toZ-fromZ)/.05));
+  for(let i=1;i<=steps;i++)if(blocked(fromX+(toX-fromX)*i/steps,fromZ+(toZ-fromZ)*i/steps,radius))return false;
+  return true;
+ }
  function walk(g,points,dt){
+  if(walkingPerson?.g!==g){resetWalk();walkingPerson={g,profile:{name:'Thao'}};}
   while(points.length){
    const [x,z]=points[0],dx=x-g.position.x,dz=z-g.position.z,d=Math.hypot(dx,dz);
-   if(d<.03){points.shift();continue;}
-   const want=Math.atan2(-dx,-dz),turn=Math.atan2(Math.sin(want-g.rotation.y),Math.cos(want-g.rotation.y));
-   g.rotation.y+=Math.max(-dt*5,Math.min(dt*5,turn));
-   if(Math.abs(turn)<.9){const step=Math.min(d,dt*1.15*(1-Math.abs(turn)/1.2));g.position.x+=dx/d*step;g.position.z+=dz/d*step;}
+   const beforeX=g.position.x,beforeZ=g.position.z;
+   if(d<.12&&clearSegment(beforeX,beforeZ,x,z)){
+    if(d<.01){g.position.x=x;g.position.z=z;points.shift();walker.forget(walkingPerson);stalled=0;continue;}
+    const want=Math.atan2(-dx,-dz),turn=Math.atan2(Math.sin(want-g.rotation.y),Math.cos(want-g.rotation.y));
+    g.rotation.y+=Math.max(-dt*2.6,Math.min(dt*2.6,turn));
+    if(Math.abs(turn)<.05){const step=Math.min(d,dt*.6);g.position.x+=dx/d*step;g.position.z+=dz/d*step;}
+   }else{
+    walker.move(walkingPerson,[x,g.position.y,z],dt);
+    // A room can change after the route was planned. Never step through an obstacle
+    // between two clear endpoints, including on a long simulation frame.
+    if(!clearSegment(beforeX,beforeZ,g.position.x,g.position.z)){g.position.x=beforeX;g.position.z=beforeZ;walker.clear();}
+   }
+   if(Math.hypot(g.position.x-beforeX,g.position.z-beforeZ)<.0001){
+    stalled+=dt;if(stalled>=2){walker.clear();stalled=0;}
+   }else stalled=0;
    return false;
   }
   return true;
@@ -172,8 +203,9 @@ export function createBeerService({room,getNao,blocked,say=()=>{}}){
   order(kind,seat){
    const spec=menuItem(kind),nao=getNao();
    if(!spec||!seat||order||!nao)return false;
+   resetWalk();
    const dishOrder=!!DISHES[kind];
-   order={kind,seat,phase:dishOrder?'cooking':'pouring',timer:dishOrder?spec.cook:spec.pour,path:dishOrder?[[KITCHEN_STATIONS[spec.station][0],KITCHEN_STATIONS[spec.station][2]]]:null};
+   order={kind,seat,staff:nao,phase:dishOrder?'cooking':'pouring',timer:dishOrder?spec.cook:spec.pour,path:dishOrder?[[KITCHEN_STATIONS[spec.station][0],KITCHEN_STATIONS[spec.station][2]]]:null};
    nao.userData.playerService=true;nao.userData.socialPose='Use';
    nao.userData.activity=dishOrder?'cooking '+spec.en+' for you':'pouring '+spec.en.toLowerCase()+' for you';
    return true;
@@ -200,7 +232,7 @@ export function createBeerService({room,getNao,blocked,say=()=>{}}){
    if(drink)updatePropPortion(drink.prop,dt);if(dish)updatePropPortion(dish.prop,dt);
    if(!order)return;
    const nao=getNao();
-   if(!nao){order=null;return;}
+   if(!nao){release(order.staff);resetWalk();order=null;return;}
    const spec=menuItem(order.kind),{seat}=order;
    if(order.phase==='cooking'){
     // To the station, then the dish itself: the fire, the pot, the knife.
@@ -224,11 +256,11 @@ export function createBeerService({room,getNao,blocked,say=()=>{}}){
     if((order.timer-=dt)<=0){delete nao.userData.socialPose;order.path=[...seat.route.slice(0,-1).reverse(),station()].map(p=>[...p]);order.phase='returning';nao.userData.activity='back to the counter';}
    }else if(order.phase==='returning'){
     delete nao.userData.socialPose;
-    if(walk(nao,order.path,dt)){nao.rotation.set(0,Math.PI,0);release(nao);order=null;}
+    if(walk(nao,order.path,dt)){nao.rotation.set(0,Math.PI,0);release(nao);resetWalk();order=null;}
    }
   },
   /** Leaving the room: drop the order and anything on the table. */
-  clear(){const nao=getNao();if(order&&nao){nao.position.set(...NAO_STATION);nao.rotation.set(0,Math.PI,0);release(nao);}order=null;clearDrink();clearDish();},
+  clear(){const nao=getNao()||order?.staff;if(order&&nao){nao.position.set(...NAO_STATION);nao.rotation.set(0,Math.PI,0);release(nao);}resetWalk();order=null;clearDrink();clearDish();},
   /** Only for tests and a room rebuild: put a served drink straight on the table. */
   place(kind,seat){serve(kind,seat);}
  };
