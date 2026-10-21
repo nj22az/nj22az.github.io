@@ -124,6 +124,21 @@ less, by the named budgets there. Nothing else asks which edition it is. Later r
 - Outside a page (node's suites) the edition is Linux unless `JOHANSSON_EDITION=web`; `tests/edition.test.mjs` holds
   the web budgets and the Linux path.
 
+## Owner's decision — 21 October 2026: one ground system
+
+The owner, on his phone: "the roads seems to have reversed to chaos again… Can you make a plan to finally fix the roads
+to a unified system? Pavement? Walk paths, grass and sandy beach?" (the plan approved: "Go ahead").
+
+- Ground: every surface comes from `src/world/ground-standard.js`. No module draws its own ground slab, colour or
+  height. The rulebook gives each class its top, colour, finish, the districts it belongs in and the edge it needs
+  against every neighbour: a 15 cm kerb, an edge line and U-gutter, stone or coral edging, or a graded join.
+- The ground-standard test (`tests/ground-standard.test.mjs`, measured by `tools/ground-audit.mjs`) is a ratchet. A new
+  violation fails. So does one that grew, and so does one that was fixed but is still listed in
+  `tests/fixtures/ground-baseline.json`. The list only shrinks.
+- The plan, the rulebook tables and today's counts are in [docs/GROUND-STANDARD.md](docs/GROUND-STANDARD.md). The work
+  runs in steps, each merged after the owner sees photos: (2) Main Street and the harbour; (3) Kitahama, Nishi, the
+  neighbourhood and the school; (4) the beach, the coast, the park and the lawns, until the baseline is empty.
+
 ## Verification
 
 Use focused geometry, collision, navigation and schedule checks. For runtime changes run `npm run build:runtime` and `node --test tests/runtime-package.test.mjs`. Check real pedestrian and overhead views, including mobile, wherever a GPU browser is available; state when physical-device or visual checks are unavailable. Do not claim screenshots or tests that were not performed.
