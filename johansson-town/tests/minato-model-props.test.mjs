@@ -7,7 +7,7 @@ import {GLTFLoader} from '../vendor/GLTFLoader.js';
 
 let model;
 async function scene(){
- if(!model){const b=await readFile(new URL('../assets/models/izakaya/minato-interior.glb',import.meta.url));model=(await new GLTFLoader().parseAsync(b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength),'')).scene;model.updateMatrixWorld(true);}
+ if(!model){const b=await readFile(new URL('../assets/models/izakaya/minato-interior-walnut.glb',import.meta.url));model=(await new GLTFLoader().parseAsync(b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength),'')).scene;model.updateMatrixWorld(true);}
  return model;
 }
 function down(root,x,z,top){return new THREE.Raycaster(new THREE.Vector3(x,top,z),new THREE.Vector3(0,-1,0)).intersectObject(root,true);}
@@ -55,7 +55,13 @@ test('the replacement inventory covers every original food family and recognisab
  assert.equal(Object.keys(inventory.coverage.food).length,12);
  for(const [name,count] of Object.entries(inventory.coverage.food))assert.ok(count>0,name);
  const detail=inventory.coverage['vessels-kitchen-storage-furniture'];
- for(const name of ['Bottle','Beer crate','Rice cooker','Stock pot','Wok','Fryer basket','Tebo basket','Plate in rack','Sink basin','Sink bowl','Umbrella','Left shoes','Komodaru','Lounge back tailoring','Kamidana shrine','Noodle boiler'])assert.ok(detail[name]>0,name);
+ // The generic back-bar stock was retired with its cupboard. The forty-two
+ // individually labelled fictional bottles are the separate walnut asset, checked
+ // as loaded geometry in izakaya-backbar.test.mjs; the kitchen props stay here.
+ assert.equal(detail.Bottle,0,'No old stock is hidden inside the replacement');
+ assert.equal(inventory.replacement.replacementBottleCount,42);
+ assert.equal(inventory.replacement.replacementBrandCount,14);
+ for(const name of ['Beer crate','Rice cooker','Stock pot','Wok','Fryer basket','Tebo basket','Plate in rack','Sink basin','Sink bowl','Umbrella','Left shoes','Komodaru','Lounge back tailoring','Kamidana shrine','Noodle boiler'])assert.ok(detail[name]>0,name);
  for(const name of ['Till','Maneki-neko body','Radio cabinet','Speaker cabinet','Ticket machine','Old television','Daruma'])assert.ok(inventory.coverage.devices[name]>0,name);
  assert.equal(inventory.coverage.devices['duplicate-television-removed'],1);
 });

@@ -5,7 +5,8 @@ import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 // Thin finishes sit on the existing furniture, never in a walking or serving lane.
 // Keep the original bevels, floorboard gaps, shoji and timber posts visible.
 export const MINATO_WORN_SURFACES=Object.freeze([
- {name:'Guest ledge',kind:'wood',size:[8.34,.49],position:[-.8,FURNITURE_HEIGHTS.serviceCounter+.002,-2.2],floor:true,color:0x673d28},
+ // The commissioned walnut counter supplies its own finished slate top. An old
+ // timber patina plane here would cover it and compete for the same depth.
  ...[[-3.5,2.2],[2.6,2]].map(([x,z])=>({name:'Dining table',kind:'wood',size:[2.43,1.28],position:[x,FURNITURE_HEIGHTS.table+.002,z],floor:true,color:0x795236})),
  ...[4.15,5].map(z=>({name:'Lounge table',kind:'wood',size:[.60,.60],position:[-4.6,FURNITURE_HEIGHTS.table+.002,z],floor:true,color:0x946844})),
  ...[.5,3.1].map(z=>({name:'Koagari table',kind:'wood',size:[.70,1.15],position:[5.3,.772,z],floor:true,color:0x795236})),

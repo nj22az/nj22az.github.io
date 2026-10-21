@@ -21,12 +21,39 @@ import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
 import {IZAKAYA_PLAYER_SEATS,DISHES,DRINKS} from '../people/izakaya-beer.js';
 import {daylight, lanternGlow} from '../render/dusk.js';
+import {MINATO_WALNUT_LAYOUT,MINATO_WALNUT_STORY} from './interiors/izakaya-walnut.js';
+export {MINATO_WALNUT_LAYOUT,MINATO_FICTIONAL_SPIRITS,MINATO_WALNUT_STORY} from './interiors/izakaya-walnut.js';
 const assets=new Map();
+const loading=new Map();
 export async function preloadIzakaya(kinds=['exterior','interior']){
- const loader=new GLTFLoader();await Promise.allSettled(kinds.filter(kind=>!assets.has(kind)).map(async kind=>{
-  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
-  const file=kind==='exterior'?'minato-benmaher-exterior.glb':'minato-interior.glb';
-  try{const response=await fetch(assetURL('models/izakaya/'+file),{signal:controller.signal});if(!response.ok)throw Error(response.status);const source=(await loader.parseAsync(await response.arrayBuffer(),'')).scene;if(kind==='exterior')prepareIzakayaGlass(source);assets.set(kind,source);}catch(e){console.warn('Izakaya asset unavailable',kind,e);}finally{clearTimeout(timeout);}
+ const loader=new GLTFLoader();await Promise.allSettled(kinds.filter(kind=>!assets.has(kind)).map(kind=>{
+  if(loading.has(kind))return loading.get(kind);
+  const pending=(async()=>{
+   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
+   const read=async file=>{const response=await fetch(assetURL('models/izakaya/'+file),{signal:controller.signal});if(!response.ok)throw Error(file+': '+response.status);return (await loader.parseAsync(await response.arrayBuffer(),'')).scene;};
+   try{
+    if(kind==='exterior'){const source=await read('minato-benmaher-exterior.glb');prepareIzakayaGlass(source);assets.set(kind,source);}
+    else{
+     // One readiness boundary: the room with its old furniture removed cannot
+     // become visible before both replacement pieces are ready.
+     // A new filename prevents a cached old room from overlapping the new stock.
+     // The original model stays available to the preceding retained runtime.
+     const [source,backbar,counter]=await Promise.all([read('minato-interior-walnut.glb'),read(MINATO_WALNUT_LAYOUT.backbar.file),read(MINATO_WALNUT_LAYOUT.counter.file)]);
+     for(const [key,model] of [['backbar',backbar],['counter',counter]]){
+      const spec=MINATO_WALNUT_LAYOUT[key];model.name=spec.name;model.position.set(...spec.position);
+      model.userData.sharedAsset=true;model.userData.walnutFurniture=key;
+      if(key==='backbar')model.userData.storyStock=MINATO_WALNUT_STORY;
+      model.traverse(o=>{if(o.isMesh)for(const material of Array.isArray(o.material)?o.material:[o.material]){
+       // Preserve this commissioned walnut/brass/slate finish through the
+       // existing cel pass. No scene-wide renderer or material changes.
+       material.userData.keepPhysical=true;material.userData.keepPhysicalStrict=true;
+      }});
+      source.add(model);
+     }
+     assets.set(kind,source);
+    }
+   }catch(e){console.warn('Izakaya asset unavailable',kind,e);}finally{clearTimeout(timeout);loading.delete(kind);}
+  })();loading.set(kind,pending);return pending;
  }));return {ready:assets.size,total:2};
 }
 export const izakayaReady=kind=>assets.has(kind);
@@ -136,6 +163,8 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture,
  hangMenuStrips(room);const lamps=lightTheRoom(room);
  anchor([0,1,5.5],'Step outside',exit);
  anchor([3.55,1.15,-2.05],'Order something delicious',()=>action('izakaya-menu'));
+ anchor([-2.875,1.65,-5.42],'Look at Thao’s back bar',()=>action('inspect',MINATO_WALNUT_STORY.title,
+  MINATO_WALNUT_STORY.text+'\n\n'+MINATO_WALNUT_STORY.brands.map(b=>b.name+' — '+b.spirit).join('\n')));
  anchor([0,1,0],'Listen to the table',()=>action('izakaya-gossip'));
  // Your own places: the end of the second table, and the window seat. Sitting there, Thao
  // takes your order and brings it over (people/izakaya-beer.js).
@@ -196,7 +225,8 @@ function hangMenuStrips(room){
  slots.forEach((x,i)=>{
   const geometry=new THREE.PlaneGeometry(.2,.8),uv=geometry.attributes.uv;
   for(let k=0;k<uv.count;k++)uv.setX(k,(i+uv.getX(k))/MENU_STRIPS.length);
-  const strip=new THREE.Mesh(geometry,material);strip.position.set(x,3.03,-6.18);strip.rotation.z=(i%3-1)*.012;group.add(strip);
+  // The left row clears the new 2.681 m crown, including the prices at its foot.
+  const strip=new THREE.Mesh(geometry,material);strip.position.set(x,i<11?3.11:3.03,-6.18);strip.rotation.z=(i%3-1)*.012;group.add(strip);
  });
  room.add(group);
 }
