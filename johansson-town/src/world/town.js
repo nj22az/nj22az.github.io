@@ -1,5 +1,7 @@
 import {buildArchitectureGround} from './architecture-ground.js';
 import {buildNeighbourhoodGround} from './neighbourhood-ground.js';
+import {buildGround} from './ground-build.js';
+import {quarterPlans} from './ground-plan-quarters.js';
 import {onIslandLand} from './coastal-ground.js';
 import {isWeekend} from '../commerce/sakura-rota.js';
 import {createKitano} from './kitano-on-demand.js';
@@ -257,6 +259,9 @@ export function createTown(options){
   const world=createBaseTown(options);
   buildNeighbourhoodGround(world.group,onIslandLand);
   buildArchitectureGround(world.group);
+  // Kitahama, Nishi-machi, the west yard and the town hall's grounds, laid by the ground generator from their plans
+  // (ground-plan-quarters.js; step 3 of the owner's ground plan, docs/GROUND-STANDARD.md).
+  world.quarterGround=buildGround(world.group,quarterPlans(),{shadows:options.shadows,name:'Quarter ground'});
   // Kitano-jima whole now, or only as seen from across the strait until he heads there (kitano-on-demand.js).
   world.kitano=createKitano(world,{distant:options.kitano==='distant'});
   // Only the street cast lives in the playable town; nothing else may arrive as a person.

@@ -128,7 +128,7 @@ export function collectGround(root,{bounds=AUDIT_BOUNDS,step=STEP}={}){
   const label=labelOf(o,root),water=WATER.test(label),skip=NOT_GROUND.test(label),roofable=!NOT_ROOF.test(label);
   const pos=g.attributes.position,idx=g.index,total=idx?idx.count:pos.count,uv=g.attributes.uv,vc=g.attributes.color;
   const groups=g.groups.length?g.groups:[{start:0,count:total,materialIndex:0}];
-  const count=o.isInstancedMesh?o.count:1,mine=[];let area=0;
+  const count=o.isInstancedMesh?o.count:1,mine=[],areas=new Map();
   for(let k=0;k<count;k++){
    if(o.isInstancedMesh){o.getMatrixAt(k,im);if(Math.abs(im.determinant())<1e-12)continue;m.multiplyMatrices(o.matrixWorld,im);}else m.copy(o.matrixWorld);
    box.copy(g.boundingBox).applyMatrix4(m);if(!box.intersectsBox(region))continue;
@@ -151,14 +151,18 @@ export function collectGround(root,{bounds=AUDIT_BOUNDS,step=STEP}={}){
      }
      if(skip||maxY>MAX_Y+.02||minY<MIN_Y)continue;
      const up=n.y>.85?1:two&&n.y<-.85?-1:0;if(!up)continue;
-     area+=len/2;
      const where=pieceWhere(o,ia);
+     // A piece a source file named for what stands on the ground drew (a stair, a parked bicycle) is not ground.
+     if(where&&NOT_GROUND.test(where.split(':')[0]))continue;
+     const piece=where??'';areas.set(piece,(areas.get(piece)||0)+len/2);
      mine.push({p:[a.x,a.y,a.z,b.x,b.y,b.z,c.x,c.y,c.z],ny:Math.abs(n.y),mesh:o,mat,k,tint,v:[ia,ib,ic],uv,vc,label:where?label+' ⟨'+where.replace(/:\d+:\d+.*$/,'')+'⟩':label,where,water,
       decal:mat.depthWrite===false,offset:!!(mat.polygonOffset&&(mat.polygonOffsetFactor||mat.polygonOffsetUnits))});
     }
    }
   }
-  if(area>=MIN_MESH_AREA||mine.some(t=>t.decal))for(const t of mine)tris.push(t);
+  // A mesh, or a piece of a merged one (one call that drew it, okinawa/kit.js's trace), whose upward low faces add up to
+  // less than a square metre is furniture standing on the ground (a wheel stop, a shed's footing block), not ground.
+  for(const t of mine)if(t.decal||areas.get(t.where??'')>=MIN_MESH_AREA)tris.push(t);
  });
  const bins=new Map(),bin=2;
  tris.forEach((t,i)=>{const p=t.p;for(let gx=Math.floor(Math.min(p[0],p[3],p[6])/bin);gx<=Math.floor(Math.max(p[0],p[3],p[6])/bin);gx++)for(let gz=Math.floor(Math.min(p[2],p[5],p[8])/bin);gz<=Math.floor(Math.max(p[2],p[5],p[8])/bin);gz++){const key=gx+','+gz;(bins.get(key)??bins.set(key,[]).get(key)).push(i);}});
@@ -227,6 +231,7 @@ export function classify(hex,y,districtId,{narrow=false,x=0,z=0}={}){
  * it: a coordinated street patch knows its street class (street-plan.js), and some meshes are named for what they are.
  * Everything else is classified by colour.
  */
+/** The ground generator's meshes say their class (ground-build.js userData.groundClass). */
 const NAMED=[
  [/kerb/i,'kerb','edge'],[/gutter|lane-edges\.js/i,'gutter','edge'],[/edging/i,'edging','edge'],[/coping/i,'coping','edge'],
  [/Main Street footway/,'pavers'],[/Kitano Road footway/,'concrete'],
@@ -251,6 +256,7 @@ function namedClass(t,x,z,d,patchAt){
   const p=patchAt?.(x,z);if(p){const id=p.kind==='footway'?(d==='main-street'?'pavers':'concrete'):STREET_CLASS[p.kind];if(id)return {id,kind:'class',street:p.kind,route:p.route};}
   return null;
  }
+ const generated=t.mesh.userData?.groundClass;if(generated&&GROUND_CLASSES[generated])return {id:generated,kind:'class'};
  const leaf=t.label.split(' › ').at(-1);
  for(const [re,id,kind='class'] of NAMED)if(re.test(leaf))return {id,kind};
  return null;
@@ -289,7 +295,19 @@ export function rasterGround(G,{bounds=AUDIT_BOUNDS}={}){
 }
 
 /** The audit itself. Returns {violations, summary, cells}. */
-export function auditGround(root,{bounds=AUDIT_BOUNDS,step=STEP,routes=null,patches=null}={}){
+/**
+ * The walls: where a wall stands on the line two surfaces meet along (a yard's coral wall, the seawall, a block wall
+ * round a lot), the wall is what stands between them and no edge strip is wanted. A wall is a collider at least half a
+ * metre high, no more than 0.8 m thick and at least 1.2 m long (physics.js colliders, as the town lists them).
+ */
+export function wallIndex(colliders=[]){
+ const walls=colliders.filter(c=>c&&(c.height??0)>=.5&&Math.min(c.w,c.d)<=.8&&Math.max(c.w,c.d)>=1.2&&!c.moving);
+ const bins=new Map(),size=4;
+ for(const c of walls){const r=Math.hypot(c.w,c.d)/2;for(let gx=Math.floor((c.x-r)/size);gx<=Math.floor((c.x+r)/size);gx++)for(let gz=Math.floor((c.z-r)/size);gz<=Math.floor((c.z+r)/size);gz++){const k=gx+','+gz;(bins.get(k)??bins.set(k,[]).get(k)).push(c);}}
+ return (x,z)=>(bins.get(Math.floor(x/size)+','+Math.floor(z/size))||[]).some(c=>{const yaw=c.yaw||0,dx=x-c.x,dz=z-c.z,u=dx*Math.cos(yaw)-dz*Math.sin(yaw),v=dx*Math.sin(yaw)+dz*Math.cos(yaw);return Math.abs(u)<=c.w/2+.05&&Math.abs(v)<=c.d/2+.05;});
+}
+export function auditGround(root,{bounds=AUDIT_BOUNDS,step=STEP,routes=null,patches=null,colliders=null}={}){
+ const underWall=colliders?wallIndex(colliders):()=>false;
  const G=collectGround(root,{bounds,step}),R=rasterGround(G,{bounds}),patchAt=patches?streetPatchIndex(patches):null;
  // Each finding keeps its points, so it can be reported where it is: the point nearest its middle, and its extent.
  const found=new Map(),add=(kind,key,amount,at,detail)=>{const k=kind+'|'+key;let v=found.get(k);
@@ -329,6 +347,7 @@ export function auditGround(root,{bounds=AUDIT_BOUNDS,step=STEP,routes=null,patc
   for(const [di,dj] of [[1,0],[0,1]]){
    const B=at(i+di,j+dj);if(!B||B.kind!=='class'||B.cls===A.cls||A.cls==='water'||B.cls==='water')continue;
    const rule=edgeRule(A.cls,B.cls);if(rule.edge==='flush')continue;
+   const cellA=R.cells[i*R.nz+j];if(underWall(cellA.x+di*step/2,cellA.z+dj*step/2))continue;
    // Look along the line across the seam for the edge.
    const line=[];for(let s=-W;s<=W+1;s++){const C=at(i+di*s,j+dj*s);if(C)line.push(C);}
    const step_=Math.abs(A.y-B.y),edges=new Set(line.filter(C=>C.kind==='edge').map(C=>C.cls)),painted=line.some(C=>C.mark);
@@ -439,8 +458,8 @@ const fmt=v=>`${v.kind.padEnd(8)} ${String(v.amount).padStart(8)} ${v.kind==='se
 if(import.meta.url===`file://${process.argv[1]}`){
  const args=new Set(process.argv.slice(2));
  const fs=await import('node:fs');
- const {scene}=await buildAuditTown();
- const result=auditGround(scene,{routes:await auditRoutes(),patches:await auditPatches()});
+ const {scene,world}=await buildAuditTown();
+ const result=auditGround(scene,{routes:await auditRoutes(),patches:await auditPatches(),colliders:world.colliders});
  if(args.has('--json')){console.log(JSON.stringify({summary:result.summary,spots:result.spots.slice(0,20),violations:result.violations},null,1));process.exit(0);}
  if(args.has('--write-baseline')){
   fs.writeFileSync(BASELINE_PATH,JSON.stringify({

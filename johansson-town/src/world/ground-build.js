@@ -9,8 +9,8 @@
  */
 import * as THREE from '../../vendor/three.module.js';
 import {GROUND_CLASSES,GROUND_EDGE} from './ground-standard.js';
-import {partitionPlan,layerTop} from './ground-plan.js';
-import {paintedAsphalt,paintedConcrete,paintedPaving} from '../render/toy-surfaces.js';
+import {partitionPlan,layerTop,laidAt} from './ground-plan.js';
+import {paintedAsphalt,paintedConcrete,paintedPaving,paintedGrit,paintedTurf} from '../render/toy-surfaces.js';
 import {applyWorldUV} from '../render/world-uv.js';
 
 /** How a class is finished: its painted picture (near-neutral, so the rulebook's colour sets the tone) and its scale. */
@@ -20,12 +20,24 @@ const FINISH={
  pavers:{map:paintedPaving,metres:3,roughness:.95},
  concrete:{map:paintedConcrete,metres:2,roughness:.94},
  quay:{map:paintedConcrete,metres:2,roughness:.95},
+ // The loose classes (step 3: Nishi-machi's coral yards, Kitahama's pads, the school's rolled paths, the grove).
+ 'coral-sand':{map:paintedGrit,metres:2.4,roughness:1},
+ 'park-path':{map:paintedGrit,metres:2,roughness:1},
+ gravel:{map:paintedGrit,metres:1.6,roughness:1},
+ earth:{map:paintedGrit,metres:1.2,roughness:1},
+ // The same painted turf as the neighbourhood's and the yard's lawns, at their 6 m repeat.
+ grass:{map:paintedTurf,metres:6,roughness:1},
 };
 /** The edges are plain precast concrete and stone in the rulebook's colours. */
 const EDGE_COLOUR={kerb:GROUND_EDGE.kerb.colour,drop:GROUND_EDGE.kerb.colour,edging:GROUND_EDGE.edging.colour,'coral-edging':GROUND_EDGE.coralEdging.colour,coping:GROUND_EDGE.coping.colour};
 /** Which mesh an edge goes into: a dropped kerb's ramp is the kerb's own precast. */
 const EDGE_MESH={kerb:'kerb',drop:'kerb',edging:'edging','coral-edging':'coral-edging',coping:'coping'};
 const EDGE_NAME={kerb:'Kerbs and dropped kerbs',edging:'Stone edging','coral-edging':'Coral-stone edging',coping:'Quay coping'};
+/** What a merged class mesh is called when more than one layer went into it. */
+const CLASS_NAME={road:'Carriageways',pavers:'Main Street footway',concrete:'Concrete paving',quay:'Quay paving',lane:'Back lanes',
+ 'coral-sand':'Coral yards','park-path':'Rolled paths',gravel:'Gravel yards',earth:'Garden earth'};
+/** Road paint lies on the ground it marks, a few millimetres over it: a decal, never stood on and never fighting it. */
+const PAINT_LIFT=.003;
 /** How far a slab's sides go down: under any neighbour, so no gap shows at a step. */
 const DEPTH=.3;
 
@@ -73,7 +85,7 @@ function slab(list,x0,x1,z0,z1,top,foot,colour,sides=null){
  if(colour!==undefined){const col=new THREE.Color(colour);for(let i=start;i<list.positions.length/3;i++)list.colours.push(col.r,col.g,col.b);}
 }
 /** For each side of a rectangle of a plan's partition, the runs along it and the top of whatever of the plan is beside each. */
-function sidesOf(plan,rects,r){
+function sidesOf(rects,r){
  const E=1e-6,out={};
  for(const [side,line,along,lo,hi] of [['z0',r.z0,'x',r.x0,r.x1],['z1',r.z1,'x',r.x0,r.x1],['x0',r.x0,'z',r.z0,r.z1],['x1',r.x1,'z',r.z0,r.z1]]){
   const touching=rects.filter(n=>n!==r&&(along==='x'?(side==='z0'?Math.abs(n.z1-line)<E:Math.abs(n.z0-line)<E)&&n.x1>lo+E&&n.x0<hi-E
@@ -82,7 +94,7 @@ function sidesOf(plan,rects,r){
   const pts=[...new Set(cuts.map(v=>+v.toFixed(6)))].sort((a,b)=>a-b),runs=[];
   for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],m=(a+b)/2;
    const n=touching.find(n=>along==='x'?n.x0<=m&&n.x1>=m:n.z0<=m&&n.z1>=m);
-   runs.push({a,b,beside:n?(x,z)=>layerTop(plan,n.layer,x,z):null});}
+   runs.push({a,b,beside:n?(x,z)=>n.plan?layerTop(n.plan,n.layer,x,z):n.layer.top:null});}
   out[side]=runs;
  }
  return out;
@@ -96,17 +108,29 @@ function box(list,[x0,y0,z0],[x1,y1,z1],colour){slab(list,x0,x1,z0,z1,()=>y1,y0,
 export function buildGround(parent,plans,{shadows=false,name='Ground'}={}){
  const group=new THREE.Group();group.name=name;parent.add(group);
  const lists=new Map(),list=id=>lists.get(id)??lists.set(id,{positions:[],colours:[],names:new Set()}).get(id);
+ const paint={positions:[],colours:[]};
+ // Every plan's pieces, so a slab's side stops at a neighbour laid by another plan as it does at its own plan's.
+ const all=plans.flatMap(plan=>partitionPlan(plan).map(r=>({...r,plan})));
  for(const plan of plans){
   const rects=partitionPlan(plan);
   // A coping block beside a slab hides its side as a neighbouring slab does.
   const blockRects=(plan.blocks||[]).map(b=>({x0:b.min[0],x1:b.max[0],z0:b.min[2],z1:b.max[2],layer:{top:b.max[1]}}));
   for(const r of rects){
+   // A layer another module draws (a U-gutter, okinawa/lane-edges.js) owns its ground in the plan, so nothing is laid
+   // under or over it and its neighbours' sides stop at it, but it is not drawn here.
+   if(r.layer.drawnBy)continue;
    const l=r.layer,id=l.edge?EDGE_MESH[l.cls]:l.cls,top=(x,z)=>layerTop(plan,l,x,z);
    const lowest=Math.min(top(r.x0,r.z0),top(r.x1,r.z0),top(r.x0,r.z1),top(r.x1,r.z1));
    const L=list(id);L.names.add(l.name);
-   slab(L,r.x0,r.x1,r.z0,r.z1,top,lowest-(l.depth??DEPTH),id==='coping'?GROUND_EDGE.coping.legacy[0]:undefined,sidesOf(plan,[...rects,...blockRects],r));
+   slab(L,r.x0,r.x1,r.z0,r.z1,top,lowest-(l.depth??DEPTH),id==='coping'?GROUND_EDGE.coping.legacy[0]:undefined,sidesOf([...all,...blockRects],r));
   }
   for(const b of plan.blocks||[]){const L=list(EDGE_MESH[b.cls]??b.cls);L.names.add(b.name);box(L,b.min,b.max,b.colour);}
+  // The paint: flat quads on the laid top, in their own colours, as one decal.
+  for(const m of plan.marks||[]){
+   const top=(x,z)=>(laidAt(plan,x,z)?.y??0)+PAINT_LIFT,col=new THREE.Color(m.colour??GROUND_EDGE.paint.colours[0]);
+   const a=[m.x0,top(m.x0,m.z0),m.z0],b=[m.x0,top(m.x0,m.z1),m.z1],c=[m.x1,top(m.x1,m.z1),m.z1],d=[m.x1,top(m.x1,m.z0),m.z0];
+   pushQuad(paint,a,b,c,d,[0,1,0]);for(let i=0;i<6;i++)paint.colours.push(col.r,col.g,col.b);
+  }
  }
  const meshes=new Map();
  for(const [id,L] of lists){
@@ -116,9 +140,16 @@ export function buildGround(parent,plans,{shadows=false,name='Ground'}={}){
   // Named for what it is, so the audit (tools/ground-audit.mjs) and the tests can find it: the pavers are Main Street's
   // footway and only that, the quay's paving is the quay's.
   const mesh=new THREE.Mesh(g,groundMaterial(id));
-  mesh.name=EDGE_NAME[id]??(L.names.size===1?[...L.names][0]:{road:'Carriageways',pavers:'Main Street footway',concrete:'Concrete paving',quay:'Quay paving'}[id]??'Ground: '+id);
+  mesh.name=EDGE_NAME[id]??(L.names.size===1?[...L.names][0]:CLASS_NAME[id]??'Ground: '+id);
   mesh.userData.groundClass=id;mesh.receiveShadow=true;mesh.castShadow=shadows&&!GROUND_CLASSES[id];
   group.add(mesh);meshes.set(id,mesh);
  }
- return {group,meshes,setRain(wet){for(const id of ['road','quay','pavers','concrete']){const m=materials.get(id);if(m)m.roughness=wet?.32:FINISH[id].roughness;}}};
+ if(paint.positions.length){
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(paint.positions,3));g.setAttribute('color',new THREE.Float32BufferAttribute(paint.colours,3));
+  g.computeVertexNormals();g.computeBoundingSphere();
+  const mesh=new THREE.Mesh(g,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.85,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));
+  mesh.name=name+' paint';mesh.renderOrder=1;mesh.receiveShadow=true;mesh.userData.walkSurface=false;mesh.userData.groundMarking=true;
+  group.add(mesh);meshes.set('paint',mesh);
+ }
+ return {group,meshes,setRain(wet){for(const id of ['road','lane','quay','pavers','concrete']){const m=materials.get(id);if(m)m.roughness=wet?.32:FINISH[id].roughness;}}};
 }

@@ -19,6 +19,11 @@ import {OIL_JETTY} from '../oil-jetty-layout.js';
  *                 station, so the west side runs unbroken to the terminus.
  */
 
+/**
+ * The stone path into the utaki (the sacred grove, NISHI.plots' grove): limestone stepping stones 0.9 × 0.55 m from the
+ * opening in its south wall to the incense stone, swinging a hand's width either side of the line, as feet laid them.
+ */
+export function utakiStones(p){const cx=-30.8,cz=(p.minZ+p.maxZ)/2,out=[];for(let z=p.minZ+.6;z<cz-1;z+=.8)out.push({x:cx+Math.sin(z)*.15,z,w:.9,d:.55});return out;}
 export const NISHI=Object.freeze({
  id:'nishi-machi',surface:'stone',
  /** The quarter, from the seawall to the yard wall. */

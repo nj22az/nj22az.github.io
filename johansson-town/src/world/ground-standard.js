@@ -107,8 +107,8 @@ export const GROUND_CLASSES=Object.freeze(Object.fromEntries([
   why:'Main Street, Kitano Road, the quay driveway and the car parks carry vehicles; 1990s Okinawan asphalt is dark grey, never the blue-grey the town drew. The carriageway is the datum the rest is measured from.'},
  {id:'lane',name:'Back lane (asphalt)',finish:'thin asphalt over concrete, patched; no footway',
   colour:0x676a6c,top:.04,tolerance:.012,
-  where:['kitahama','nishi-machi','west-yard'],
-  why:'Kitahama, Nishi and the lanes between houses are shared by people, bicycles and the odd kei truck; too narrow for a footway, so a white edge line and a U-gutter mark the plot side.'},
+  where:['kitahama','nishi-machi','west-yard','school'],
+  why:'Kitahama, Nishi and the lanes between houses are shared by people, bicycles and the odd kei truck; too narrow for a footway, so a white edge line and a U-gutter mark the plot side. Kitahama\'s north lane runs along the town hall\'s back wall, over the old school\'s seawall line (the school district).'},
  {id:'pavers',name:'Brick pavers',finish:'interlocking concrete blocks, reddish and beige, running bond',
   colour:0xb0907a,drawn:0xc6c3ba,legacy:[0xcfc8b4],top:.19,tolerance:.015,
   where:['main-street'],
@@ -131,6 +131,8 @@ export const GROUND_CLASSES=Object.freeze(Object.fromEntries([
   why:'Lawns and verges sit just below the paths that cross them, so a path never has grass growing over its edge; on the open island the grass follows the land.'},
  {id:'coral-sand',name:'Coral sand',finish:'crushed coral, raked',
   colour:0xddd6c4,drawn:0xe2dac8,legacy:[0xd6cab3,0xd9cdb0,0xf1efe6],top:.02,tolerance:.015,
+  /** A pad rolled on a sub-base where wheels or feet work it (Kitahama's monthly parking, the eisa ground), 25 mm proud of the lawn as a dug bed is (step 3). */
+  raisedTop:.045,
   where:['nishi-machi','kitahama'],
   why:'Nishi-machi\'s yards between the coral walls are crushed coral, as old Okinawan house yards were, and so are Kitahama\'s unpaved lots (the parking, the hoop pad); at the level of a lawn, edged in coral stone.'},
  {id:'beach-sand',name:'Beach sand',finish:'coral-white beach sand',
@@ -143,8 +145,8 @@ export const GROUND_CLASSES=Object.freeze(Object.fromEntries([
   why:'Work yards, the boat yard and the sacred grove: ground that takes a trailer or is left as it was, edged like a lawn.'},
  {id:'earth',name:'Garden earth',finish:'red Okinawan earth (kunjan), dug or ridged',
   colour:0x9a5f40,legacy:[0xb07a52,0x93593b,0x6f6048],top:.045,tolerance:.03,
-  where:['kitahama','nishi-machi'],
-  why:'The vegetable plots, the cane rows and the beds of Kitahama and Nishi: the red earth of the island, 25 mm proud of the lawn where it is dug (okinawa/lots.js lotGround).'},
+  where:['kitahama','nishi-machi','school'],
+  why:'The vegetable plots, the cane rows and the beds of Kitahama and Nishi, and the town hall\'s flower bed: the red earth of the island, 25 mm proud of the lawn where it is dug (okinawa/lots.js lotGround).'},
  {id:'deck',name:'Timber deck',finish:'treated timber boards',
   colour:0x8a7559,legacy:[0xaaaaaa,0xc8c1af,0x846449,0x95714f,0x9d7b5b,0x8e6b4c],top:.04,tolerance:.08,
   where:['harbour'],
@@ -214,7 +216,7 @@ export function expectedTop(classId,districtId){
 /** Every top a class may have in a district: its top, its flush top where it has one, and its other datums. */
 export function allowedTops(classId,districtId){
  const c=GROUND_CLASSES[classId],d=DISTRICTS.find(x=>x.id===districtId),datum=d?d.datum:DATUM;
- return [datum+c.top,...(c.flushTop!==undefined?[datum+c.flushTop]:[]),...(c.alsoAt||[]).map(a=>a+c.top)];
+ return [datum+c.top,...(c.flushTop!==undefined?[datum+c.flushTop]:[]),...(c.raisedTop!==undefined?[datum+c.raisedTop]:[]),...(c.alsoAt||[]).map(a=>a+c.top)];
 }
 
 /** The town's ground palette as drawn today (render/ground-palette.js GROUND re-exports it): each family's `drawn` tone. */
