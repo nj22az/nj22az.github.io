@@ -43,7 +43,8 @@ test('the drawn park sits on its own ground, with its bench where the seat is an
  const triangles=drawnBench.reduce((n,o)=>n+(o.geometry.index?.count??o.geometry.attributes.position.count)/3,0);
  assert.ok(triangles<=1500,'the phone prop stays within its triangle budget: '+triangles);
  assert.ok(benchBytes.byteLength<=80_000,'the bench export stays within its local download budget');
- const park=world.park.group;let meshes=0;park.traverse(o=>{if(o.isMesh){meshes++;assert.ok(!o.isSkinnedMesh);}});
+ // Draws are the meshes shown: the cherry wears one dress, and a flowering season's kit and the petals draw only in season.
+ const park=world.park.group,shown=o=>{for(let p=o;p&&p!==park;p=p.parent)if(!p.visible)return false;return true;};let meshes=0;park.traverse(o=>{if(o.isMesh&&shown(o)){meshes++;assert.ok(!o.isSkinnedMesh);}});
  assert.ok(meshes<=24,'The park is a handful of draws, not '+meshes);
  const ground=park.getObjectByName('Harbour Park ground');assert.ok(ground,'the level park ground is built');
  for(const [x,z] of [[2.06,0],[.7,0],[-8,-13.9],[-6,-7],[10,10]].map(([x,z])=>[PARK.x+x*PARK.scale,PARK.z+z*PARK.scale])){

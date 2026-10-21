@@ -139,8 +139,9 @@ function solid(list,poly,top,depth){
 export function buildPaths(parent,{pieces,edging=[],top,name='Walks',material,shadows=false}){
  const group=new THREE.Group();group.name=name;parent.add(group);
  const lists=new Map();
- // A walk's outline lies behind its setts or flush with what it meets: no sides. The setts show theirs down into the lawn.
- for(const p of pieces){const l=lists.get(p.cls)??lists.set(p.cls,[]).get(p.cls);solid(l,p.poly,(x,z)=>top(p.cls,x,z),0);}
+ // A walk's outline lies behind its setts or flush with what it meets: no sides. The setts show theirs down into the lawn,
+ // and so does a bed of garden earth, which stands 25 mm proud of the turf it is dug in.
+ for(const p of pieces){const l=lists.get(p.cls)??lists.set(p.cls,[]).get(p.cls);solid(l,p.poly,(x,z)=>top(p.cls,x,z),p.cls==='earth'?.04:0);}
  const setts=[];for(const e of edging)solid(setts,e.poly,()=>e.top+EDGING_PROUD,.04);
  const meshes=new Map();
  const add=(id,positions,label)=>{
