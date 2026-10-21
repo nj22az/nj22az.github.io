@@ -1,3 +1,4 @@
+import {driverLayout, standardPad} from './pad-layout.mjs';
 const finite = (value, fallback = 0) => Number.isFinite(value) ? value : fallback;
 const clamp = (value, min, max) => Math.max(min, Math.min(max, finite(value)));
 export const DEFAULT_BINDINGS = Object.freeze([0,1,5,3,7,2,4,6,8,9,13,11,12,10,14,15,16]);
@@ -20,10 +21,28 @@ export function radialStick(x, y, deadzone = .16) {
 }
 export function createDesktopInput(getProfile) {
   let previous = null, identity = '', selected = '';
+  // Per connected pad: its axes when first seen (to tell resting triggers from
+  // sticks) and its buttons last read (to notice which pad is being used).
+  const seen = new Map();
   const empty = () => ({connected: false, move: {x: 0, y: 0}, look: {x: 0, y: 0}, held: [], pressed: [], zoom: 0});
   function read(pads = [], deadzone = .16) {
     const profile = profileSettings(getProfile());
-    const available = Array.from(pads || []).filter(p => p?.connected && p.buttons?.length >= 2);
+    const connected = Array.from(pads || []).filter(p => p?.connected && p.buttons?.length >= 2);
+    for (const key of seen.keys()) if (!connected.some(p => p.index + ':' + p.id === key)) seen.delete(key);
+    let used = null;
+    const available = connected.map(raw => {
+      const key = raw.index + ':' + raw.id;
+      if (!seen.has(key)) seen.set(key, {rest: Array.from(raw.axes || []), held: []});
+      const memory = seen.get(key), pad = standardPad(raw, driverLayout(raw, memory.rest));
+      const held = Array.from(pad.buttons, b => !!b?.pressed);
+      if (held.some((down, i) => down && !memory.held[i])) used ??= key;
+      memory.held = held;
+      return pad;
+    });
+    // A pad that connects late, or the real pad beside Steam's virtual one, takes
+    // over with its first press while the one being read is idle.
+    const current = available.find(p => p.index + ':' + p.id === selected);
+    if (used && used !== selected && !current?.buttons.some(b => b?.pressed)) selected = used;
     const pad = available.find(p => p.id === profile.controller) || available.find(p => p.index + ':' + p.id === selected) || available.find(p => p.mapping === 'standard') || available[0];
     if (!pad) return {...empty(), pad: null};
     selected = pad.index + ':' + pad.id;

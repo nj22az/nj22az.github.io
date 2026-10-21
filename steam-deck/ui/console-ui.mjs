@@ -220,7 +220,8 @@ function initialise() {
     const raw=Array.from(frame.pad?.buttons||[],b=>b.pressed||b.value>.55),rawEdge=i=>raw[i]&&!rawHeld[i];
     const key=frame.connected ? frame.pad.index+':'+frame.pad.id : '';
     if (key !== lastPadKey) {
-      if (lastPadKey) controllerLost();
+      // Changing to another pad that is in use is not a loss: only a pad that went away pauses.
+      if (lastPadKey && !Array.from(pads).some(p => p?.connected && p.index + ':' + p.id === lastPadKey)) controllerLost();
       lastPadKey=key; input.suspend();
       // A held confirm, back or Menu on the returning/replacement controller
       // must be released before it can act. Reconnection never resumes play.
@@ -239,7 +240,7 @@ function initialise() {
     wasPlaying = isPlaying;
     if (frame.connected) lastPad = frame.pad.id;
     const device = document.getElementById('desktopControllerStatus');
-    if (device) device.textContent = frame.connected ? frame.pad.id + (frame.pad.mapping === 'standard' ? ' · Connected' : ' · Custom mapping: check the live sticks below') : 'No controller detected. Press a button to wake it. Keyboard and mouse remain available.';
+    if (device) device.textContent = frame.connected ? frame.pad.id + (frame.pad.driverMapping !== undefined ? ' · Connected · Linux driver layout' : frame.pad.mapping === 'standard' ? ' · Connected' : ' · Custom mapping: check the live sticks below') : 'No controller detected. Press a button to wake it. Keyboard and mouse remain available.';
     const activity=document.getElementById('activity'),activityOpen=activity&&!activity.classList.contains('hidden'),bookOpen=!document.getElementById('directory').classList.contains('hidden');
     hints.hidden = !isPlaying || !panel.hidden || activityOpen || bookOpen;
     modalHints.hidden=!isPlaying||!panel.hidden||!activityOpen;
