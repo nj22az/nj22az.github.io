@@ -274,7 +274,7 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   Kontroll: 63 godkända enhetstester (tre skyddade facitkontroller hoppades över utan klartext), aktuella genererade
   filer samt DOM-flöde med syntetiska svar i alla fyra uppgifter, Rätta, första version, PDF-knapp och ändrat svar.
   Test-PDF: tre A4-sidor, innehåll kontrollerat med Poppler och alla sidor visuellt granskade. Live-nedladdning
-  fungerade i Chrome. Ingen verklig elevinlämning eller Classroom-uppladdning gjordes; fysisk mobil/Safari återstår.
+  fungerade i Chrome. Den automatiska webbläsarkontrollen gav 12 godkända tester i desktop Chromium, telefonläge\n  (Pixel 7/Chromium) och iPad Mini/WebKit, inklusive PDF-nedladdning, bilagekrav, kontaktalternativ och horisontell\n  överrinning. Testets äldre tvetydiga inlämningslänk avgränsas till Hela veckan. CI: körning 39600886306.\n  Ingen verklig elevinlämning eller Classroom-uppladdning gjordes; fysisk mobil/Safari återstår.
 
 - **2026-10-20** Fredag 30 oktober: lärarinstruktionen i Google Docs hänvisar nu till de separata fråge- och
   facit-PDF:erna i stället för borttagna lösningsknappar. Förberedelsen anger privat facitfönster och delat
