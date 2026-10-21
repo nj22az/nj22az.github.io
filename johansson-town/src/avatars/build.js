@@ -1080,7 +1080,7 @@ function addBody(list,recipe,m,swim=false){
    const angle=Math.atan2(p.x,p.z*W/D),phase=((angle/(Math.PI*2)*12)%1+1)%1;
    const crease=Math.min(phase,1-phase)<.13,down=(waist-p.y)/len;
    return crease&&down>.12?new THREE.Color(bottom).multiplyScalar(.87).getStyle():bottom;
-  }):bottom,M(0,waist-len/2,0,0,0,0,1,1,D/W));cloth.userData.fit=b==='longskirt'?1:2;
+  }):bottom,M(0,waist-len/2,0,0,0,0,1,1,D/W));cloth.userData.fit=2;
  }
 }
 

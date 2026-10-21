@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {benchSeat} from './seat-slots.js';
 import {createKit,paint} from './okinawa/kit.js';
 import {bicycle} from './okinawa/parked-bicycle.js';
 import {buildPatrolCar,PATROL_CAR} from './patrol-car.js';
@@ -225,7 +226,8 @@ export function buildPoliceStation(world,options){
  inspect([rack.x0+2*step,.8,slot-.7],'Read the tag on the small green bicycle','Lost property: a child’s bicycle','A small green bicycle with a tag on the handlebar: Found by the seawall, 2 September. Not yet claimed. The bell still works.','read');
  inspect([fp.x+.6,1.2,fp.z-.6],'Look up at the flag','Station flag','The flag goes up at half past eight, when the desk opens for the day, and comes down at a quarter past five. Whoever is on duty does it; most days that is Officer Mori, before he goes up to sleep or before supper.');
  const seat=inspect([bn.x,.75,bn.z+.5],'Sit on the bench by the station','Bench by the station','A bench under the eave, for whoever is waiting: to see the officer, for the bus, or for a child to be collected.','seat');
- seat.userData.seat={position:[bn.x,0,bn.z+.05],stand:[bn.x,0,bn.z+.75],surfaceY:.46,eyeY:1.2,yaw:Math.PI,pitch:0};
+ // (the three slats span 0.37 m about bn.z: the front edge is 0.185 ahead of it)
+ seat.userData.seat=benchSeat({position:[bn.x,0,bn.z+.05],stand:[bn.x,0,bn.z+.75],surfaceY:.46,eyeY:1.2,yaw:Math.PI,pitch:0},{length:bn.length,front:.135});
 
  // The site: the station is Officer Mori's home (id `koban`, as the roster and the save migration have it) and a
  // public building you walk into at any hour.

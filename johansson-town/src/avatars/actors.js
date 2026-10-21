@@ -99,7 +99,7 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
   if(actor.dishProp&&Number.isFinite(u.foodPortion))setPropPortion(actor.dishProp,u.foodPortion,{immediate:true});
  }
  actor.animator.update(dt,{
-  speed:actor.moving?actor.speed:0,running:actor.speed>3.2,seated,seatHeight:u.seatHeight,chairBlend:u.chairBlend,floorHeight:Number(u.floorHeight)||0,
+  speed:actor.moving?actor.speed:0,running:actor.speed>3.2,seated,seatHeight:u.seatHeight,seatFront:u.seatFront,chairBlend:u.chairBlend,floorHeight:Number(u.floorHeight)||0,
   pose:u.socialPose,seat:u.socialPose,climbing:!!u.climbing,driving:!!u.inVehicle,riding,ridePhase:u.bicyclePhase||0,bicycleFit:u.bicycleFit,carrying:!!u.carrying,heldProp:actor.heldProp,
   waving:!!(u.chat?.greeting||actor.gestureTime>0&&!actor.waved),
   talking:!!(u.chat?.speaking||u.speakingUntil>now),
@@ -205,7 +205,7 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
    drinkingArm?.setVisible(false);
    // Player and residents use the same measured seat support.
    animator.update(dt,{speed:state.speed||0,running:!!state.running,seated:!!state.seated,
-    seatHeight:state.seatHeight,seat:seatMove,airborne:!!state.airborne,
+    seatHeight:state.seatHeight,seatFront:state.seatFront,seat:seatMove,airborne:!!state.airborne,
     talking:tableDrink?.active?false:time<speakUntil,expression,gaze:tableDrink?.active?null:lookPoint,heldProp:held,tipsy:tableDrink?.active?0:state.tipsy||0});
    if(tableDrink?.active){
     tableDrink.update(dt);

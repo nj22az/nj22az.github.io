@@ -1,4 +1,5 @@
 import * as THREE from '../../../vendor/three.module.js';
+import {benchSeat} from '../seat-slots.js';
 import {rng} from './kit.js';
 import {poster} from './signs.js';
 import {coralWall,hibiscus,OKINAWA_COLOURS as C} from './houses.js';
@@ -412,5 +413,5 @@ function postOffice({kit,solid,anchor,onAction,vending},lot,put){
  const b=put(lot,'bench').rect,[x,z]=mid(b),len=b.maxZ-b.minZ;
  kit.box(.44,.08,len,x,A+.45,z,0x3a6e8f);for(const k of [-1,1])kit.box(.36,.42,.06,x,A+.21,z+k*(len/2-.12),P.steel);
  const seat=anchor?.(x-.65,1,z,'Sit at the drinks corner',()=>onAction?.('seat','The drinks corner','A bench beside the drinks machines, the park’s lawn behind you and Main Street in front. The machines hum. Somebody coming down from the bath stops for a coffee milk and drinks it standing, the way you are supposed to.'));
- if(seat)seat.userData.seat={id:'drinks-corner-bench',position:[x,A,z],stand:[x-.8,A,z],surfaceY:A+.49,eyeY:A+1.12,yaw:-Math.PI/2,pitch:-.03};
+ if(seat)seat.userData.seat=benchSeat({id:'drinks-corner-bench',position:[x,A,z],stand:[x-.8,A,z],surfaceY:A+.49,eyeY:A+1.12,yaw:-Math.PI/2,pitch:-.03},{length:len,front:.22});
 }

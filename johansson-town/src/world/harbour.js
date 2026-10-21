@@ -1,4 +1,5 @@
 import {japaneseSign,signText} from './okinawa/signs.js';
+import {benchSeat} from './seat-slots.js';
 import {QUAY_BAYS} from './town-traffic.js';
 import {buildDockWorkshop} from './dock-workshop.js';
 import {buildHarbourOffice} from './harbour-office.js';
@@ -309,7 +310,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   anchor([0,1,-47.1],'Cast a fishing line',()=>onAction('fishing'));
 
   // The waiting hall supplies the east-side seating; this west bench leaves the roll-on lane clear.
-  for(const x of [27]){box([1.8,.14,.6],[x,.62,18],0x8d7652,[0,0,0],'wood');for(const dx of [-.65,.65])box([.12,.6,.4],[x+dx,.31,18],0x465355);obstacle(x,18,1.9,.7);const seat=anchor([x,1,17.1],'Sit on the quay bench',()=>onAction('seat','Quay bench','A place to rest while the boats come and go.'));seat.userData.seat={id:'quay-bench',position:[x,0,18],stand:[x,0,17.1],surfaceY:.69,eyeY:1.39,yaw:0,pitch:0};}
+  for(const x of [27]){box([1.8,.14,.6],[x,.62,18],0x8d7652,[0,0,0],'wood');for(const dx of [-.65,.65])box([.12,.6,.4],[x+dx,.31,18],0x465355);obstacle(x,18,1.9,.7);const seat=anchor([x,1,17.1],'Sit on the quay bench',()=>onAction('seat','Quay bench','A place to rest while the boats come and go.'));seat.userData.seat=benchSeat({id:'quay-bench',position:[x,0,18],stand:[x,0,17.1],surfaceY:.69,eyeY:1.39,yaw:0,pitch:0},{length:1.8,front:.3});}
 
 
   // The inshore fishing boat alongside the main quay east of the pier (minato-berth.js QUAY_FISHING_BOAT), starboard

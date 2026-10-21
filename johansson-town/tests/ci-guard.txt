@@ -50,3 +50,11 @@ johansson-study.test.mjs
 audit-boot.test.mjs
 ferry-timetable.test.mjs
 boot.test.mjs
+seated-pose.test.mjs
+bench-two-seats.test.mjs
+seat-layouts.test.mjs
+player-seating.test.mjs
+npc-seating.test.mjs
+floor-sit.test.mjs
+skirt-follow.test.mjs
+pair-poses.test.mjs
