@@ -407,6 +407,8 @@ function postOffice({kit,solid,anchor,onAction,vending},lot,put){
  const bin=put(lot,'can-bin').rect,[bx,bz]=mid(bin);
  kit.box(.46,.84,.46,bx,A+.42,bz,0x2f6fb8);kit.box(.48,.06,.48,bx,A+.86,bz,0xf2f0ea);
  for(const k of [-1,1])kit.cyl(.07,.07,.02,bx-.24,A+.62,bz+k*.11,0x15181a,{rz:Math.PI/2,segments:10});
+ // The screen wall the corner backs onto: concrete block, rendered, a white-painted coping (lots.js POST_OFFICE).
+ {const w=put(lot,'screen-wall'),r=w.rect;kit.block(r.minX,r.maxX,0,w.height-.06,r.minZ,r.maxZ,0xcfcabb,'plaster');kit.block(r.minX-.02,r.maxX+.02,w.height-.06,w.height,r.minZ-.02,r.maxZ+.02,0xeeebe2);}
  const b=put(lot,'bench').rect,[x,z]=mid(b),len=b.maxZ-b.minZ;
  kit.box(.44,.08,len,x,A+.45,z,0x3a6e8f);for(const k of [-1,1])kit.box(.36,.42,.06,x,A+.21,z+k*(len/2-.12),P.steel);
  const seat=anchor?.(x-.65,1,z,'Sit at the drinks corner',()=>onAction?.('seat','The drinks corner','A bench beside the drinks machines, the park’s lawn behind you and Main Street in front. The machines hum. Somebody coming down from the bath stops for a coffee milk and drinks it standing, the way you are supposed to.'));

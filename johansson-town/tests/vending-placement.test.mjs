@@ -46,10 +46,9 @@ const PLACED=[
 ];
 /**
  * Machines known to stand free, each with its reason; an entry comes out when the machine is backed.
- * The drinks corner on the post-office lot (lots.js POST_OFFICE) stands on its pad with the park's lawn behind and no
- * wall within reach: the lot's dressing is the ground plan's step 3, whose job places it again.
+ * (None: the drinks corner on the post-office lot backs onto its screen wall since step 3 of the ground plan, lots.js.)
  */
-const PENDING=new Set(['post-office-lot']);
+const PENDING=new Set([]);
 
 const machines=[];world.group.traverse(o=>{if(o.name==='Harbour vending machine')machines.push(o);});
 const placed=m=>PLACED.find(p=>Math.abs(p.x-m.position.x)<.01&&Math.abs(p.z-m.position.z)<.01);

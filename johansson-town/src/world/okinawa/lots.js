@@ -239,7 +239,7 @@ const YARD_1=dress({
 const POST_OFFICE=dress({
  status:'dressed',name:'The drinks corner',use:Object.freeze(['vending-corner']),
  for:'everybody on Main Street, and the bathers coming down Kitano Road from Umi-no-yu',
- why:'A cold drink after the bath is the oldest habit in Japan, and the old lane up to the sea bath had a drinks machine until Kitano Road took its place. Minato Drinks rents the corner from the town, as it rents Sakura’s wall: two machines on a concrete pad facing the footway, the can bin beside them and a bench, with the park’s lawn behind.',
+ why:'A cold drink after the bath is the oldest habit in Japan, and the old lane up to the sea bath had a drinks machine until Kitano Road took its place. Minato Drinks rents the corner from the town, as it rents Sakura’s wall: two machines on a concrete pad facing the footway, backed by a block screen wall the bottler built along the park edge, the can bin beside them and a bench against the same wall.',
  ground:'the park’s lawn, with a concrete pad at the footway',
  hours:'The machines are lit all night; Minato Drinks fills them from its van in the morning.',
  stories:Object.freeze(['the coin under the machine','coffee milk after the bath','the can bin on a windy night','a bench to wait for a friend']),
@@ -248,6 +248,8 @@ const POST_OFFICE=dress({
   prop('machine-2','a drinks machine, facing the footway',R(7.32,8.22,-4.995,-3.905),2.2,'Minato Drinks’',{builtBy:'vending',at:[7.85,-4.45]}),
   prop('can-bin','the can bin (空き缶入れ)',R(7.75,8.25,-3.6,-3.1),.9,'beside the machines, as the law asks'),
   prop('bench','a bench facing the street',R(7.65,8.15,-2.75,-1.85),.5,'out of the footway, beside the machines'),
+  prop('screen-wall','the block screen wall behind the corner, its coping painted white',R(8.25,8.45,-6.3,-1.75),1.4,
+   'machines stand with their backs to a wall (the owner, 20 October 2026): Minato Drinks built this one along the pad\'s park edge, so the machines, the bin and the bench back onto it, their cords run behind it out of the rain, and a ball from the park does not end up under a machine'),
  ],
  flat:[flat('pad','a concrete pad from the footway',R(5.15,8.7,-6.4,-1.75),'the machines need a level slab and the footway runs into it',{meets:'the Main Street footway: across the 0.5 m apron strip every standing shop on the East Row has paved (quarters.js buildEastRow)'})],
  prompts:['Buy a drink','Sit at the drinks corner'],
