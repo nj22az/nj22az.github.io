@@ -26,6 +26,7 @@ scene.updateMatrixWorld(true);
 const OWNER={
  'Sakura Shōten, its office storey and side walls':{minX:-22,maxX:-4.5,minZ:-37,maxZ:-17},
  'the Minato izakaya and Sato Ramen':{minX:-17,maxX:-5.5,minZ:-17,maxZ:-4},
+ 'Minato Police Station':{minX:4,maxX:14,minZ:13,maxZ:32},
  'Nakamura Zenzai':{minX:2,maxX:15,minZ:-16,maxZ:-3},
 };
 /** All of Minato: Main Street, Kitahama, the police station, the docks and the port building, and everything between. */
@@ -121,4 +122,13 @@ test('the indoor scan catches the owner’s flicker: the old top landing laid in
  plate.position.z=.012;assert.equal(inRoom(g,null).length,0,'6 mm off, as the plates are now, it does not');
  // And at the street's size it would have passed: why the indoor scan has its own.
  plate.position.z=.0075;assert.equal(coplanarOverlaps(g,{tolerance:TOLERANCE,minArea:MIN_AREA}).length,0);
+});
+
+// Sensitivity proof at the owner's station threshold, in the real region (not a mock scan elsewhere).
+test('station owner region detects a planted 0.04 m² pane 0.5 mm off its street wall',()=>{
+ const pane=new THREE.Mesh(new THREE.PlaneGeometry(.2,.2),new THREE.MeshStandardMaterial({color:0xff00ff}));
+ pane.rotation.y=-Math.PI/2;pane.position.set(5.6995,2.3,18);pane.name='Planted station flashing pane';scene.add(pane);
+ const fault=coplanarOverlaps(scene,{regions:[OWNER['Minato Police Station']],tolerance:TOLERANCE,minArea:OWNER_AREA,skip:moving});
+ pane.removeFromParent();pane.geometry.dispose();pane.material.dispose();
+ assert.ok(fault.some(f=>/Planted station flashing pane/.test(f.a+f.b)&&f.area>=.01),'planted fault must fail the station gate');
 });

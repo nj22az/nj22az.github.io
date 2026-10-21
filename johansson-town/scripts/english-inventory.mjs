@@ -19,6 +19,8 @@ const scenery=new Set(['src/world/interiors/sakura-office-room.js','src/world/in
  'src/world/interiors/sakura-small-office.js','src/world/interiors/sakura-small-office-build.js',
  // Nakamura Zenzai's menu tags (prices in kanji numerals, 二五〇円), its hours tag and the noren, each item's English beside it.
  'src/world/okinawa/nakamura-dressing.js',
+ // Physical station posters and their paired English inspect text are tested in police-station-dressing.
+ 'src/feed/police-notices.js','src/world/police-station-dressing.js',
  // Higa Liquor's and the coin laundry's painted lettering (the valance, the tin, the cards, the jar tags, the machine
  // numbers, the price list) and their items' period notes; the 留守 card's and the noticeboard's headings, each with the
  // English the player reads beside it (`en`, `title`, `text`).

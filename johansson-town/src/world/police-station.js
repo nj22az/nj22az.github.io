@@ -6,6 +6,8 @@ import {japaneseSign} from './okinawa/signs.js';
 import {createLampGlow,createLightPools} from './light-pools.js';
 import {windowGlow,poolGlow} from '../render/dusk.js';
 import {POLICE_STATION as S,STATION_YARD as Y,STATION_NOTICE as N,KOBAN} from './police-station-layout.js';
+import {buildStationDressing,stationNoticeTexture} from './police-station-dressing.js';
+import {stationNoticeText} from '../feed/police-notices.js';
 import {STATION_HOME_LAYOUT} from './interiors/police-station.js';
 
 /**
@@ -39,41 +41,26 @@ const nameBoard=()=>paint(1280,128,(ctx,w,h)=>{
  ctx.fillStyle='#f4f2ea';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#27304d';ctx.lineWidth=8;ctx.strokeRect(4,4,w-8,h-8);
  emblem(ctx,80,h/2,40);ctx.fillStyle='#1f2c4a';ctx.textBaseline='middle';ctx.textAlign='left';
  ctx.font=`bold 84px ${SERIF}`;ctx.fillText(japaneseSign('Minato Police Station'),150,h/2+4);
- ctx.font=`bold 30px ${SANS}`;ctx.textAlign='right';ctx.fillText(japaneseSign('Okinawa Prefectural Police'),w-40,h*.3);ctx.fillText('MINATO POLICE STATION',w-40,h*.72);
+ ctx.font=`bold 30px ${SANS}`;ctx.textAlign='right';ctx.fillText('MINATO',w-40,h*.3);ctx.fillText('POLICE STATION',w-40,h*.72);
 });
-/** The vertical plate beside the doors, brush black on white wood: 沖縄県港警察署. */
-const doorPlate=()=>paint(128,768,(ctx,w,h)=>{
+/** Four evenly spaced characters on a four-character plate: no obsolete seven-character blank tail. */
+const doorPlate=()=>paint(128,512,(ctx,w,h)=>{
  ctx.fillStyle='#f3efe4';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#6b5a40';ctx.lineWidth=10;ctx.strokeRect(5,5,w-10,h-10);
- const chars=[...japaneseSign('Okinawa Prefectural Police Minato Station')],size=Math.min(92,Math.floor((h-60)/chars.length));
+ const chars=[...japaneseSign('Minato Police Station')],pitch=(h-48)/chars.length,size=Math.min(96,pitch*.84);
  ctx.fillStyle='#16181c';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`bold ${size}px ${SERIF}`;
- chars.forEach((c,i)=>ctx.fillText(c,w/2,34+size*.5+i*size));
+ chars.forEach((c,i)=>ctx.fillText(c,w/2,24+(i+.5)*pitch));
+});
+/** The canopy fascia is a complete enamel sign, with its emblem and lettering on the same face. */
+const entranceSign=()=>paint(1024,128,(ctx,w,h)=>{
+ ctx.fillStyle='#27304d';ctx.fillRect(0,0,w,h);emblem(ctx,92,h/2,39);
+ ctx.fillStyle='#f4f3ee';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`bold 84px ${SERIF}`;
+ ctx.fillText(japaneseSign('Minato Police Station'),620,h/2+3,650);
 });
 /** Over the counter window: the police box's own sign, 交番 and KOBAN, kept when the box came down. */
 const kobanSign=()=>paint(512,176,(ctx,w,h)=>{
  ctx.fillStyle='#f6f5ef';ctx.fillRect(0,0,w,h);ctx.fillStyle='#27304d';ctx.fillRect(0,h-26,w,26);
  ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`bold 96px ${SANS}`;ctx.fillText(japaneseSign('Police box'),w/2,h*.4);
  ctx.fillStyle='#c8302a';ctx.font=`bold 26px ${SANS}`;ctx.fillText('KOBAN',w/2,h-13);
-});
-/**
- * The notice board's four posters, each for somebody in town (the inspect text says them in English): Tama the cat
- * "wanted" for sleeping in the fish crates, a glove handed in, the autumn traffic-safety week, and typhoon season.
- */
-const noticeBoard=()=>paint(1024,576,(ctx,w,h)=>{
- ctx.fillStyle='#b98a55';ctx.fillRect(0,0,w,h);
- const sheet=(x,bg)=>{ctx.fillStyle=bg;ctx.fillRect(x,40,220,300);ctx.fillStyle='#b8b2a2';ctx.beginPath();ctx.arc(x+110,52,7,0,Math.PI*2);ctx.fill();};
- ctx.textAlign='center';ctx.textBaseline='middle';
- sheet(24,'#fff4dc');ctx.fillStyle='#c8302a';ctx.font=`bold 40px ${SANS}`;ctx.fillText('指名手配',134,96);
- ctx.fillStyle='#e8a050';ctx.beginPath();ctx.ellipse(134,190,64,52,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.moveTo(84,160);ctx.lineTo(96,118);ctx.lineTo(118,150);ctx.moveTo(184,160);ctx.lineTo(172,118);ctx.lineTo(150,150);ctx.fill();
- ctx.fillStyle='#2b2b2b';ctx.beginPath();ctx.arc(112,184,6,0,Math.PI*2);ctx.arc(156,184,6,0,Math.PI*2);ctx.fill();
- ctx.font=`bold 30px ${SANS}`;ctx.fillText('タマ（猫）',134,276);ctx.font=`20px ${SANS}`;ctx.fillText('魚箱で寝る常習犯',134,312);
- sheet(272,'#eef4f6');ctx.fillStyle='#27304d';ctx.font=`bold 40px ${SANS}`;ctx.fillText('落とし物',382,96);
- ctx.font=`bold 32px ${SANS}`;ctx.fillText('手袋（左）',382,200);ctx.font=`22px ${SANS}`;ctx.fillText('窓口までどうぞ',382,290);
- sheet(520,'#fff1c1');ctx.fillStyle='#1f6b3a';ctx.font=`bold 30px ${SANS}`;ctx.fillText('秋の交通安全',630,90);ctx.fillText('運動',630,128);
- ctx.font=`bold 28px ${SANS}`;ctx.fillText('9月21日〜30日',630,196);ctx.font=`22px ${SANS}`;ctx.fillText('夜は自転車の',630,262);ctx.fillText('ライトを点けよう',630,294);
- sheet(768,'#e6eef8');ctx.fillStyle='#1f4e6b';ctx.font=`bold 34px ${SANS}`;ctx.fillText('台風に備えて',878,96);
- ctx.font=`22px ${SANS}`;ctx.fillText('窓にテープ',878,180);ctx.fillText('お風呂に水',878,224);ctx.fillText('ご近所に声かけ',878,268);
- ctx.fillStyle='#c8302a';ctx.fillRect(24,380,976,150);ctx.fillStyle='#fff';ctx.font=`bold 84px ${SANS}`;ctx.fillText('110',190,456);
- ctx.font=`bold 40px ${SANS}`;ctx.fillText('事件・事故は110番',620,440);ctx.font=`26px ${SANS}`;ctx.fillText('道案内は窓口でどうぞ',620,494);
 });
 /** The car's door panels: 沖縄県警察 in black on the white. */
 const carDoor=()=>paint(256,64,(ctx,w,h)=>{ctx.fillStyle='#f4f3ee';ctx.fillRect(0,0,w,h);ctx.fillStyle='#16181c';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`bold 40px ${SANS}`;ctx.fillText(japaneseSign('Okinawa Prefectural Police'),w/2,h/2+2);});
@@ -111,8 +98,8 @@ export function buildPoliceStation(world,options){
  for(const [x,z] of [[minX+.12,minZ-.06],[maxX-.12,minZ-.06],[maxX+.06,maxZ-.25],[minX+.12,maxZ+.06]])kit.rod([x,R+.1,z],[x,.06,z],.045,C.alu);
  // On the roof: the water tank every Okinawan building keeps against the dry season's cuts, and the radio mast
  // that carries the duty desk's set to the prefectural network in Naha (the desk radio, interiors/police-station.js).
- kit.cyl(.5,.5,1.0,maxX-1.4,R+.75,minZ+1.4,C.tank,{segments:16});kit.block(maxX-2.0,maxX-.8,R+.17,R+.25,minZ+.8,minZ+2.0,C.steel);
- kit.rod([maxX-1.4,R+1.25,minZ+1.4],[maxX-1.4,R+1.35,minZ+1.4],.12,C.tank);
+ kit.cyl(.5,.5,1.0,maxX-1.4,R+1.08,minZ+1.4,C.tank,{segments:16});kit.block(maxX-2.0,maxX-.8,R+.57,R+.65,minZ+.8,minZ+2.0,C.steel);
+ kit.rod([maxX-1.4,R+1.58,minZ+1.4],[maxX-1.4,R+1.68,minZ+1.4],.12,C.tank);
  kit.rod([maxX-.9,R+.17,maxZ-1.0],[maxX-.9,R+4.2,maxZ-1.0],.05,C.alu);
  for(const [y,l] of [[R+2.6,.9],[R+3.4,.6]])kit.box(l,.03,.03,maxX-.9,y,maxZ-1.0,C.alu);
  for(const [dx,dz] of [[.9,.5],[-.9,.5],[0,-.9]])kit.rod([maxX-.9,R+3.0,maxZ-1.0],[maxX-.9+dx,R+.2,maxZ-1.0+dz],.008,C.black);
@@ -123,10 +110,16 @@ export function buildPoliceStation(world,options){
  kit.block(west-.02,west-.005,P,P+2.1,e0,e1,C.glass,'glow');
  for(const z of [e0,doorZ,e1])kit.block(west-.05,west+.01,P,P+2.16,z-.04,z+.04,C.alu,'metal');
  kit.block(west-.05,west+.01,P+2.1,P+2.18,e0-.04,e1+.04,C.alu,'metal');
- kit.block(west-.06,west+.01,P+.95,P+1.0,e0+.08,e1-.08,C.alu,'metal');
+ // Two actual pull handles, clear of the glazing, rather than a rail across both panes.
+ for(const z of [doorZ-.13,doorZ+.13]){
+  kit.rod([face-.105,1.03,z],[face-.105,1.29,z],.016,C.alu,{finish:'metal'});
+  for(const y of [1.04,1.28])kit.rod([face-.04,y,z],[face-.105,y,z],.012,C.alu,{finish:'metal'});
+ }
  kit.block(face-.55,face,0,P-.01,doorZ-.8,doorZ+.8,C.slab);
- // The canopy over the doors, so a visitor shuts an umbrella in the dry; its navy fascia matches the skirting.
- kit.block(face-1.0,face,2.6,2.72,doorZ-1.0,doorZ+1.0,C.slab);kit.block(face-1.03,face-.97,2.5,2.74,doorZ-1.03,doorZ+1.03,C.navy);
+ // A concrete rain hood with a visible cream cap above the enamel fascia. The old tall navy lip hid the slab
+ // and read as a flat bar; this cap projects 72 cm and the complete sign stands 15 mm clear of its front edge.
+ kit.block(face-.72,face,2.62,2.78,doorZ-.91,doorZ+.91,C.slab);
+ kit.sign(entranceSign(),1.76,.18,face-.75,2.65,doorZ,{ry:-Math.PI/2,depth:.03,name:'Station entrance canopy sign',edge:C.navy});
  // The counter window: a sliding pane with a ledge outside, where you ask the way or hand in a wallet without
  // coming in. It is the police box's job, and the 交番 sign over it is the police box's sign.
  const w0=winZ-S.window.half,w1=winZ+S.window.half;
@@ -137,10 +130,10 @@ export function buildPoliceStation(world,options){
  kit.sign(kobanSign(),1.4,.48,face-.04,P+2.4,winZ,{ry:-Math.PI/2,name:'Station counter window sign',edge:C.navy});
  // The notice board between them, glazed, under its own little hood: wanted, lost, and the season's notices.
  kit.block(face-.08,face,N.y0-.04,N.y1+.04,N.z0-.04,N.z1+.04,C.timber);
- kit.sign(noticeBoard(),N.z1-N.z0,N.y1-N.y0,face-.09,(N.y0+N.y1)/2,(N.z0+N.z1)/2,{ry:-Math.PI/2,name:'Station notice board',depth:.01,edge:C.timber});
+ kit.sign(stationNoticeTexture(),N.z1-N.z0,N.y1-N.y0,face-.09,(N.y0+N.y1)/2,(N.z0+N.z1)/2,{ry:-Math.PI/2,name:'Station notice board',depth:.01,edge:C.timber});
  kit.block(face-.2,face,N.y1+.04,N.y1+.08,N.z0-.08,N.z1+.08,C.navy);
  // The station's plate, brush lettering on white wood, beside the doors on the corner side.
- kit.sign(doorPlate(),.3,1.8,face-.03,P+1.75,doorZ+1.08,{ry:-Math.PI/2,name:'Station door plate',edge:0x6b5a40});
+ kit.sign(doorPlate(),.3,1.18,face-.045,1.68,doorZ+1.08,{ry:-Math.PI/2,name:'Station door plate',edge:0x6b5a40});
  // Upstairs, Officer Mori's two windows over the street (window-interior.js paints a room behind them).
  for(const z of [16.5,19.7]){kit.block(west-.02,west-.012,4.0,5.2,z-.9,z+.9,C.glass,'window');kit.block(face-.18,face,3.92,3.98,z-.98,z+.98,C.slab);for(const zz of [z-.92,z,z+.92])kit.block(west-.05,west,3.98,5.22,zz-.03,zz+.03,C.alu,'metal');}
  // The name board, high on the street face where it reads from the bus stop and from halfway up Main Street.
@@ -193,7 +186,7 @@ export function buildPoliceStation(world,options){
   for(const dx of [-.065,.065]){const g=[[x+dx,.035,slot-.2],[x+dx,.36,slot-.1],[x+dx,.36,slot+.1],[x+dx,.035,slot+.2]];for(let k=0;k<3;k++)kit.rod(g[k],g[k+1],.012,C.galv,{finish:'metal'});}
  }
  const bikes=[];
- for(const [i,b] of [[0,{id:'police-bicycle',colour:C.white,box:true,owner:'Officer Mori',why:'Officer Mori’s white police bicycle, with the lamp, the basket and the lockable box on the carrier for the forms. On a quiet night he rides the patrol to the quay and back.'}],
+ for(const [i,b] of [[0,{id:'police-bicycle',colour:C.white,box:true,owner:'Officer Mori',why:'Officer Mori’s white police bicycle, with the lamp, the basket and the lockable box on the carrier for the forms. He walks the current night patrol; the bicycle stays locked in its rack.'}],
   [2,{id:'lost-child-bicycle',colour:0x3f8f5a,size:.75,basket:false,tag:true,owner:'a child (lost property, unclaimed)',why:'A small green bicycle found by the seawall on 2 September and handed in. It waits in the rack with its tag on the bars until somebody claims it.'}]]){
   const size=b.size||1;bikes.push(bicycle(kit,rack.x0+i*step,slot+.52*size,{ry:Math.PI/2,...b}));
  }
@@ -204,6 +197,7 @@ export function buildPoliceStation(world,options){
  // The bench under the south wall's eave, facing the plaza.
  const bn=Y.bench;for(const dx of [-.65,.65])kit.block(bn.x+dx-.06,bn.x+dx+.06,0,.42,bn.z-.18,bn.z+.18,C.slab);
  for(const dz of [-.13,0,.13])kit.block(bn.x-bn.length/2,bn.x+bn.length/2,.42,.46,bn.z+dz-.055,bn.z+dz+.055,C.timber);
+ const dressing=buildStationDressing(kit,group,world,options);
  kit.finish(group,'Minato Police Station');
  // The 交番 sign is a light box, lit after dark like every police box's.
  const lightBox=group.getObjectByName('Station counter window sign')?.material?.[4];
@@ -222,11 +216,12 @@ export function buildPoliceStation(world,options){
   {id:'police-station-aircon',x:Y.aircon.x,z:Y.aircon.z,w:.8,d:.32,height:.72});
 
  // What you can look at from the street, in English (the signs stay Japanese).
- const inspect=(pos,label,title,text,kind='inspect')=>{const a=new THREE.Object3D();a.position.set(...pos);a.name=label;group.add(a);options.register?.(a,label,()=>options.onAction?.(kind,title,text));return a;};
- inspect([face-.35,1.45,(N.z0+N.z1)/2],'Read the station notice board','Station notice board','WANTED: Tama, a ginger cat, for repeatedly sleeping in the fish crates at the quay. Approach with a sardine.\nLOST: one glove, left hand. Ask at the window.\nAutumn Traffic Safety Week, 21 to 30 September: bicycle lamps on after dark.\nTyphoon season: tape your windows, fill the bath, and check on your neighbours.\n\nIn an emergency, dial 110. For directions, ask at the window.','read');
+ const inspect=(pos,label,title,text,kind='inspect')=>{const a=new THREE.Object3D();a.position.set(...pos);a.name=label;group.add(a);options.register?.(a,label,()=>options.onAction?.(kind,title,typeof text==='function'?text():text));return a;};
+ inspect([face-.35,1.45,(N.z0+N.z1)/2],'Read the station notice board','Station notice board',stationNoticeText(),'read');
  inspect([face-.45,1.5,winZ],'Look in at the counter window','The counter window','The police box’s old window, moved into the station’s wall under the police box’s own sign. The officer on the desk slides it open to give directions, take in a lost wallet or lend an umbrella, without anybody having to come in.');
+ inspect([5.48,1.1,16.65],'Ring the counter bell','The counter bell',()=>dressing.card.visible?'The bell rings clearly. Mori is on his night patrol; the card asks visitors to ring here. In an emergency, dial 110.':'The bell gives a clear ring at the service window.');
  inspect([car.x-car.length/2-.4,1.0,car.z],'Inspect the patrol car','Patrol car','The station’s kei patrol car, white over black, the light bar on the roof. It is small enough for Kitahama’s lanes and the lane up to the sea cave. Officer Mori washes it on Sunday mornings and has never once needed the siren.');
- inspect([rack.x0,1.0,slot-.7],'Inspect the police bicycle','Police bicycle','Officer Mori’s white bicycle, with a lamp, a basket and the lockable box on the carrier for the forms. On a quiet night he rides the patrol to the quay and back.');
+ inspect([rack.x0,1.0,slot-.7],'Inspect the police bicycle','Police bicycle','Officer Mori’s white bicycle, with a lamp, a basket and the lockable box on the carrier for the forms. He walks the current night patrol; the bicycle stays locked in its rack.');
  inspect([rack.x0+2*step,.8,slot-.7],'Read the tag on the small green bicycle','Lost property: a child’s bicycle','A small green bicycle with a tag on the handlebar: Found by the seawall, 2 September. Not yet claimed. The bell still works.','read');
  inspect([fp.x+.6,1.2,fp.z-.6],'Look up at the flag','Station flag','The flag goes up at half past eight, when the desk opens for the day, and comes down at a quarter past five. Whoever is on duty does it; most days that is Officer Mori, before he goes up to sleep or before supper.');
  const seat=inspect([bn.x,.75,bn.z+.5],'Sit on the bench by the station','Bench by the station','A bench under the eave, for whoever is waiting: to see the officer, for the bus, or for a child to be collected.','seat');
@@ -248,11 +243,12 @@ export function buildPoliceStation(world,options){
  // By the clock: the red lamp burns day and night, brighter after dark; the pools and halo come up with the street's;
  // the flag is up in the day.
  const update=minutes=>{
+  dressing.update(minutes);
   const m=((minutes%1440)+1440)%1440,glow=windowGlow(m),pool=poolGlow(m);
   red.material.emissiveIntensity=.4+glow*1.6;glowRed.update(pool);glowLobby.update(pool);
   flag.visible=m>=fp.raise&&m<fp.lower;
   if(lightBox)lightBox.emissiveIntensity=glow*.55;
  };
  (world.hourly??=[]).push(update);update(720);
- return {group,red,flag,update,site};
+ return {group,red,flag,update,site,dressing};
 }
