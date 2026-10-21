@@ -39,3 +39,10 @@ sakura-stairs.test.mjs
 sakura-upstairs.test.mjs
 park-keepers.test.mjs
 thuan-evening.test.mjs
+ferry-design-book.test.mjs
+resident-guide.test.mjs
+dungeon.test.mjs
+looks-data.test.mjs
+wardrobe-batch2.test.mjs
+studio-apply.test.mjs
+quest-customization-audit.test.mjs

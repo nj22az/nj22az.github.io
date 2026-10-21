@@ -121,7 +121,10 @@ test('a boss playing pretend is plainly the townsperson: their own avatar, hood 
  const {buildPretend}=await import('../src/dungeon/pretend.js');
  const {recipeFor}=await import('../src/avatars/cast.js');
  const {COSTUMES}=await import('../src/dungeon/costumes.js');
- for(const who of ['Bus driver','Officer Mori','Tetsuo','Mrs Sato']){
+ // The Bus driver retired in the cast consolidation (johansson-town/AGENTS.md, phase 4; docs/CAST-CONSOLIDATION.md): his
+ // gorilla suit is kept out of COSTUMES in RETIRED_COSTUMES, so nobody plays him pretend (tests/retired-recipes.test.mjs).
+ // Chin's shark takes his place among the four.
+ for(const who of ['Chin','Officer Mori','Tetsuo','Mrs Sato']){
   const p=buildPretend(who,{faceSize:64,shadows:false});
   assert.deepEqual(p.avatar.recipe.outfit,recipeFor(who).outfit,who+' wears their own clothes, not a suit');
   assert.equal(p.avatar.hatOn,false,'the hood stands in for the hat');

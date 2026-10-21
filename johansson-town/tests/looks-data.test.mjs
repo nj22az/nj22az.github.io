@@ -6,7 +6,8 @@ import {LOOK_PATHS,LOOK_FIELDS,applyLook,readPath} from '../src/avatars/looks.js
 import {normalizeRecipe,DEFAULT_RECIPE} from '../src/avatars/recipe.js';
 import {PROFILES} from '../src/people/profiles.js';
 import {WARDROBE_KEY} from '../src/avatars/wardrobe.js';
-import {CAST_NAMES} from '../src/people/cast.js';
+import {CAST_NAMES,liveNameFor} from '../src/people/cast.js';
+import {isRetired} from '../src/people/roster.js';
 
 // Everybody World asks recipeFor about: the island's cast (people/cast.js), the residents (PROFILES, and Thuan in the
 // cast; residents.js draws its list from these), the neighbours (NEIGHBOUR_RECIPES: everyone in neighbours.js), the
@@ -56,11 +57,15 @@ test('look fields are worked out from the recipe and stay in step with the maker
 
 test('the resident groups cover everybody once, and the Studio pickers can name them all',()=>{
  assert.equal(new Set(RESIDENT_NAMES).size,RESIDENT_NAMES.length);
- // Harbour visitor is the maker's starting template (creator.js), not a resident: it has no look to change.
- assert.deepEqual([...RESIDENT_GROUPS.cast],Object.keys(CAST_RECIPES).filter(n=>n!=='Harbour visitor'));
+ // Harbour visitor is the maker's starting template (creator.js), not a resident: it has no look to change. The retired
+ // (people/roster.js RETIRED) keep their drawings for Studio and history only and no live list names them: phase 5 of the
+ // cast consolidation (johansson-town/AGENTS.md, docs/CAST-CONSOLIDATION.md; tests/retired-recipes.test.mjs).
+ assert.deepEqual([...RESIDENT_GROUPS.cast],Object.keys(CAST_RECIPES).filter(n=>n!=='Harbour visitor'&&!isRetired(n)));
  assert.ok(!RESIDENT_NAMES.includes('Harbour visitor'));
- for(const p of PROFILES)assert.ok(RESIDENT_NAMES.includes(p.name),p.name);
- for(const n of Object.keys(NEIGHBOUR_RECIPES))assert.ok(RESIDENT_NAMES.includes(n),n);
+ // A profile whose name the roster gives to a live resident (Emi is Mrs Nakamura's display name, the consolidation's
+ // phase 5) is named by the name World uses; the retired are in no live list.
+ for(const p of PROFILES)if(!isRetired(p.name))assert.ok(RESIDENT_NAMES.includes(liveNameFor(p.name)||p.name),p.name);
+ for(const n of Object.keys(NEIGHBOUR_RECIPES))if(!isRetired(n))assert.ok(RESIDENT_NAMES.includes(n),n);
 });
 
 test('the player without a saved look is Johansson as World draws him, so a published look reaches the player too',async()=>{

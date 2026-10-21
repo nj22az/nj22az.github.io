@@ -69,7 +69,10 @@ test('each batch-2 top is in the catalogue with who, why and its own colours fro
  const found=q=>searchWardrobe(q).flatMap(g=>g.entries.map(e=>e.slot+':'+e.id));
  assert.ok(found('Ganaha').includes('top:vest')&&found('Ganaha').includes('set:ticket-window'));
  assert.ok(found('Fujita').includes('top:knitvest'));assert.ok(found('Seagulls').includes('top:baseball'));assert.ok(found('PE').includes('top:gymtee'));
- assert.ok(found('happi').includes('top:festival'));assert.ok(found('Shimabukuro').includes('top:shirt'));
+ assert.ok(found('happi').includes('top:festival'));
+ // Mr Shimabukuro retired in the cast consolidation (johansson-town/AGENTS.md, phase 4 and phase 5: the wardrobe's "who
+ // wears it" lines are for the living); Jack Reed at the harbour office wears the shirt now.
+ assert.ok(found('Jack Reed').includes('top:shirt'));
  for(const id of SETS){const s=set(id);assert.ok(s.who&&s.why,id);
   for(const [k,v] of Object.entries(s.outfit))if(/^#/.test(v))assert.ok(ISLAND_HEX.has(v),`${id} ${k} ${v}`);}
  assert.deepEqual([set('ticket-window').outfit.top,set('ticket-window').outfit.topColour,set('ticket-window').outfit.bottom],['vest','#b4583c','skirt']);
