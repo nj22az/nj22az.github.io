@@ -1,7 +1,7 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import {createKit,paint,rng} from './kit.js';
-import {japaneseSign,signText} from './signs.js';
+import {japaneseSign,signText,iceFlag} from './signs.js';
 import {windowGlow} from '../../render/dusk.js';
 
 /**
@@ -33,7 +33,25 @@ export const NAKAMURA_OPEN_SIGNS=Object.freeze({
  noren:'hung under the shutter box when the counter opens and taken in when it closes, as a shop does: the noren out means open',
  lanterns:'lit from dusk while the counter is open (17:00–19:00 as the light goes); dark by day and once she has closed',
  parasol:'put up in the table beside the bench when the counter opens and taken in at closing, so it never stands out in the night wind',
+ flag:'the 氷 flag on its pole is put out on the pavement with the noren and taken in with it',
+ shutter:'the roller shutter rolls up as she comes down at ten and comes down over the counter once she has stepped out at seven',
 });
+
+/**
+ * When the shutter moves, in town minutes: it rolls up over the first `roll` after opening (she is on her way down the
+ * stair), and comes down over `roll` once `after` has passed since closing, by which time she has walked out of the
+ * counter (nakamura-plan.js NAKAMURA_GO_HOME). A tenth of a town minute or so is a few seconds at the town clock's
+ * speeds (town-clock.js CLOCK_SPEEDS), the time a hand-pulled shutter takes.
+ */
+export const NAKAMURA_SHUTTER=Object.freeze({roll:.15,after:.25});
+/** How far down the shutter is at `minutes`: 0 up (hidden in its box), 1 down to the floor. */
+export function nakamuraShutterDown(minutes,{open,close},{roll,after}=NAKAMURA_SHUTTER){
+ const m=((minutes%1440)+1440)%1440;
+ if(m>=open&&m<open+roll)return 1-(m-open)/roll;
+ if(m>=open&&m<close+after)return 0;
+ if(m>=close+after&&m<close+after+roll)return (m-close-after)/roll;
+ return 1;
+}
 
 const item=o=>Object.freeze({...o,at:Object.freeze(o.at)});
 /**
@@ -90,6 +108,10 @@ export const NAKAMURA_DRESSING=Object.freeze([
   why:'Two red paper lanterns (赤提灯) under the awning either side of the counter, lit as the light goes while she is still serving; no lamp of their own, they glow.',period:'Red chōchin hang outside sweet shops and eating houses alike.'}),
  item({id:'parasol',side:'park',at:[-4.55,2.2,2.25],build:'open-hours',who:'Mrs Nakamura’s customers on the bench',
   why:'A red parasol (野点傘) in the bench table: the lawn has no tree by the bench, and the afternoon sun comes straight down Main Street.',period:'The red parasol and bench are the sweet shop’s sign in summer.'}),
+ item({id:'ice-flag',side:'front',at:[1.88,1.85,D+.35],build:'open-hours',who:'people coming down Main Street',
+  why:'The 氷 flag on its pole at the kerb, read from up the street: shaved ice is on. It goes out with the noren and comes in with it, so it never says “ice” over a shut counter.',period:'The kakigōri flag (氷旗) has stood outside every shaved-ice counter in Japan since the Meiji era.'}),
+ item({id:'shutter',side:'front',at:[-.52,1.5,D-.15],build:'open-hours',who:'Mrs Nakamura (the shop at night)',
+  why:'A roller shutter (シャッター) of ribbed steel, painted the trim’s teal, that rolls down out of the box over the counter opening at closing: the counter, its ice case and its light are shut away, and the street can see from across the road that she is closed. The family’s door and the flat’s windows are not behind it.',period:'Ribbed steel roller shutters, hand-pulled with a hook, closed every Okinawan shop-house front from the sixties on.'}),
 ]);
 
 /** What the diorama suggested that is not here, and why (nothing random, everything with a purpose). */
@@ -289,6 +311,21 @@ export const NAKAMURA_TABLE=Object.freeze([-4.55,0,2.25]);
 /** The parasol's canopy: the camera stays out of it, people walk under it. */
 export const NAKAMURA_PARASOL=Object.freeze({radius:1.0,rim:2.02,top:2.38});
 
+/** The shutter's steel: ribbed slats a few centimetres deep, in the trim's paint, the bottom rail and its lock darker. */
+function shutterSteel(trim){
+ const c=new THREE.Color(trim),hex=k=>'#'+c.clone().multiplyScalar(k).getHexString();
+ return paint(128,512,(ctx,w,h)=>{
+  ctx.fillStyle=hex(1);ctx.fillRect(0,0,w,h);
+  const rail=14,slats=46,pitch=(h-rail)/slats;
+  for(let i=0;i<slats;i++){const y=i*pitch;
+   ctx.fillStyle=hex(1.18);ctx.fillRect(0,y+1,w,2);ctx.fillStyle=hex(.72);ctx.fillRect(0,y+pitch-2,w,2);}
+  // Salt and hands: the paint is worn paler where the shutter is pulled, low in the middle.
+  const g=ctx.createLinearGradient(0,h*.7,0,h);g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(1,'rgba(235,230,215,.18)');ctx.fillStyle=g;ctx.fillRect(0,h*.7,w,h*.3);
+  ctx.fillStyle=hex(.55);ctx.fillRect(0,h-rail,w,rail);
+  ctx.fillStyle='#c9cdcc';ctx.fillRect(w/2-5,h-rail+3,10,7);
+ });
+}
+
 /** The noren: indigo cotton in four panels, ぜんざい one letter to a panel, the family's 中村 small on the last. */
 function norenCloth(){
  return paint(1024,160,(ctx,w,h)=>{
@@ -304,10 +341,10 @@ function norenCloth(){
 }
 
 /**
- * What follows the hours, in its own small group in the shop-house's frame: the noren, the lit lantern paper and the
- * parasol, and the lettering sheet (which does not move, but is one picture of its own). Four draw calls.
+ * What follows the hours, in its own small group in the shop-house's frame: the noren, the lit lantern paper, the
+ * parasol, the ice flag and the shutter, and the lettering sheet (which does not move, but is one picture of its own).
  */
-export function nakamuraFrontage({menu,hours,shadows=false,origin=[9.55,-11.7]}){
+export function nakamuraFrontage({menu,hours,shadows=false,origin=[9.55,-11.7],trim=0x3f7f86}){
  const group=new THREE.Group();group.name='Nakamura frontage';group.position.set(origin[0],0,origin[1]);group.rotation.y=-Math.PI/2;
  // The lettering: menu tags, cider tin, nameplate.
  const L=NAKAMURA_LETTERING,sheet=paintLettering(menu,hours);
@@ -332,14 +369,34 @@ export function nakamuraFrontage({menu,hours,shadows=false,origin=[9.55,-11.7]})
   shade.cyl(.04,.04,.06,tx,R.top+.02,tz,0x2b2622,{segments:6});
  });
  const parasol=new THREE.Group();parasol.name='Nakamura parasol';world.add(parasol);shade.finish(parasol,'Nakamura parasol');
+ // The ice flag on its pole at the kerb, by the family door: put out and taken in with the noren.
+ const pole=createKit({shadows});
+ pole.at(origin[0],origin[1],-Math.PI/2,()=>{
+  pole.cyl(.03,.03,2.6,2.1,1.3,D+.35,0x9aa0a4,{segments:6});
+  pole.sign(iceFlag(),.42,1.3,1.88,1.85,D+.35,{ry:Math.PI/2,depth:.015,name:'ice flag',both:true});
+  pole.rod([2.1,2.52,D+.35],[1.65,2.52,D+.35],.015,0x9aa0a4);
+ });
+ const flag=new THREE.Group();flag.name='Nakamura ice flag';world.add(flag);pole.finish(flag,'Nakamura ice flag');
+ // The roller shutter: ribbed steel in the trim's colour, running in the box over the opening (shopHouse's, z D-.35 to
+ // D-.05), 15 cm behind the piers' faces. Down, its foot is in the floor, its ends in the pier and the partition and its
+ // head in the wall over the box, so it also closes the slot between the box and the wall where the counter's lit ceiling
+ // showed; rolling up, it slides into the box and the wall (by the box's underside when it is all the way up), and it is hidden.
+ const opening={x0:-NAKAMURA_FRAME.open,x1:1.03,foot:.06,head:ground+.02,z:D-.15},tall=opening.head-opening.foot,travel=ground-.42-opening.foot;
+ const shutter=new THREE.Mesh(new THREE.BoxGeometry(opening.x1-opening.x0+.06,tall,.02),new THREE.MeshStandardMaterial({map:shutterSteel(trim),metalness:.3,roughness:.6}));
+ shutter.name='Nakamura shutter';shutter.receiveShadow=true;shutter.position.set((opening.x0+opening.x1)/2,opening.foot+tall/2,opening.z);group.add(shutter);
  group.updateMatrixWorld(true);
  const centre=new THREE.Vector3(tx,0,tz).applyMatrix4(group.matrixWorld);
  // Camera only: its rim is above anyone's head (physics.js standingHitsRect reads 1.82 m), so people pass under it.
  const canopy={id:'nakamura-parasol-canopy',x:centre.x,z:centre.z,w:R.radius*1.5,d:R.radius*1.5,minY:R.rim,height:R.top-R.rim};
- let shown=null;
+ // Nobody walks through it once it is down past their shoulders (the frame is a quarter turn: the opening runs along z).
+ const door=new THREE.Vector3((opening.x0+opening.x1)/2,0,opening.z).applyMatrix4(group.matrixWorld);
+ const shutterSolid={id:'nakamura-shutter',x:door.x,z:door.z,w:.1,d:opening.x1-opening.x0,height:ground-.42,minY:1e3};
+ let shown=null,lowered=null;
  const update=(minutes,open)=>{
   const glow=open?windowGlow(minutes):0;lit.emissiveIntensity=glow*.85;
-  if(shown===open)return;shown=open;noren.visible=open;parasol.visible=open;canopy.minY=open?R.rim:1e3;
+  const down=nakamuraShutterDown(minutes,hours);
+  if(down!==lowered){lowered=down;shutter.visible=down>0;shutter.position.y=opening.foot+tall/2+(1-down)*travel;shutterSolid.minY=down>.4?0:1e3;}
+  if(shown===open)return;shown=open;noren.visible=open;parasol.visible=open;flag.visible=open;canopy.minY=open?R.rim:1e3;
  };
- return {group,world,noren,parasol,lanterns:lit,canopy,update};
+ return {group,world,noren,parasol,flag,shutter,lanterns:lit,canopy,shutterSolid,update};
 }

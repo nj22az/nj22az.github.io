@@ -12,7 +12,7 @@ import {buildWestShore} from '../west-shore.js';
 import {fishAt} from './fish.js';
 import {createMaterials} from '../../render/materials.js';
 import {NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK,GATEBALL,GATEBALL_ACTIVE,GOYA,KITAHAMA} from './layout.js';
-import {fascia,vertical,nameplate,iceFlag,poster,coralStone,roofTile,flowerBlock,coralSand} from './signs.js';
+import {fascia,vertical,nameplate,poster,coralStone,roofTile,flowerBlock,coralSand} from './signs.js';
 import {redTileHouse,concreteHouse,shopHouse,coralWall,blockWall,hinpun,shisa,fukugi,gajumaru,hibiscus,banana,potPlant,OKINAWA_COLOURS as C} from './houses.js';
 import {utilityPole,wiresBetween,serviceDrop,bicycle,laundry,gasBottles,fishCrates,buoys,netPile,sabani,planterBoxes} from './props.js';
 import {GROUND_LAYER} from '../ground-layers.js';
@@ -325,11 +325,7 @@ function buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes}){
  // The strip of ground between the pavement and each shop front is Main Street's concrete back strip, laid with the
  // street by the ground generator (ground-plan.js); Kitano Road crosses the row where the old lane was.
  // (Their aprons are Main Street's back strip now, laid with the street: ground-plan.js.)
- // The shaved-ice flag outside Nakamura's, and a bench for eating it on.
- const n=EAST_ROW.plots[0];
- kit.cyl(.03,.03,2.6,EAST_ROW.minX-.35,1.3,n.maxZ-.4,0x9aa0a4,{segments:6});
- kit.sign(iceFlag(),.42,1.3,EAST_ROW.minX-.35,1.85,n.maxZ-.62,{ry:0,depth:.015,name:'ice flag',both:true});
- kit.rod([EAST_ROW.minX-.35,2.52,n.maxZ-.4],[EAST_ROW.minX-.35,2.52,n.maxZ-.85],.015,0x9aa0a4);
+ // A bench for eating at Nakamura's (its shaved-ice flag is put out and taken in with the hours: nakamura-dressing.js).
  // A usable park-side eating bench; the shop's threshold stays clear.
  const bx=7.3,bz=-17.6;
  kit.box(.44,.08,1.4,bx,.45,bz,0x3a6e8f);

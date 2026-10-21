@@ -18,7 +18,7 @@ globalThis.__KIT_TRACE__=true;
 const {createTown}=await import('../src/world/town.js');const {createBusinesses}=await import('../src/world/businesses.js');
 const {coplanarOverlaps}=await import('../tools/z-fighting.mjs');
 const scene=new THREE.Scene();
-createTown({scene,sites:createBusinesses(),townMode:'peninsula',mobile:true,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
+const town=createTown({scene,sites:createBusinesses(),townMode:'peninsula',mobile:true,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
 delete globalThis.__KIT_TRACE__;
 scene.updateMatrixWorld(true);
 
@@ -43,6 +43,14 @@ test('no two surfaces in Minato share a plane over more than 0.05 m² (the flash
 
 for(const [name,box] of Object.entries(OWNER))test(`${name}: nothing over 0.01 m² flashes`,()=>{
  assert.deepEqual(found.filter(f=>inside(f,box)).map(where),[]);
+});
+
+test('Nakamura Zenzai after hours: the shutter down over the counter shares no plane with the opening or the box',()=>{
+ town.blueCoral.update(20*60+30);scene.updateMatrixWorld(true);
+ const shut=coplanarOverlaps(scene,{regions:[OWNER['Nakamura Zenzai']],tolerance:TOLERANCE,minArea:OWNER_AREA,skip:moving});
+ town.blueCoral.update(12*60);
+ assert.ok(scene.getObjectByName('Nakamura shutter'),'the shutter is in the town');
+ assert.deepEqual(shut.map(where),[]);
 });
 
 test('the scan finds what it is for: a pane laid in a wall, and nothing where a decal is offset or a face is buried',()=>{

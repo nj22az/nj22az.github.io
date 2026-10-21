@@ -14,7 +14,7 @@ import {GROUND_LAYER} from '../src/world/ground-layers.js';
 const nearTerraceWall=(x,z)=>z<COURT_TERRACE.minZ+.1&&x>COURT_TERRACE.minX-.6&&x<COURT_TERRACE.maxX;
 import {paintedTurf} from '../src/render/toy-surfaces.js';
 import {MAIN_ROAD} from '../src/world/main-road.js';
-import {circleHitsRect} from '../physics.js';
+import {circleHitsRect,standingHitsRect} from '../physics.js';
 import {GATEBALL_ACTIVE} from '../src/world/okinawa/layout.js';
 
 /** The island land sits at this height, and the surrounding sea at this one. */
@@ -153,7 +153,8 @@ test('every open patch of the east side can be walked to from the road',async()=
  // of the player's width can walk there from the middle of the road, past every prop,
  // without climbing anything. Flood the town and then ask the east side.
  const STEP=.4,RADIUS=.32;
- const open=(x,z)=>!!routeAt(x,z,RADIUS)&&!colliders.some(c=>circleHitsRect(x,z,RADIUS,c));
+ // As the game's walkers test a solid (game.js): one lifted out of reach (a shutter rolled up into its box) is not in the way.
+ const open=(x,z)=>!!routeAt(x,z,RADIUS)&&!colliders.some(c=>standingHitsRect(x,z,RADIUS,groundHeight(x,z),c));
  const key=(x,z)=>x.toFixed(1)+','+z.toFixed(1);
  const start=[0,0];
  assert.ok(open(...start),'The middle of the road is blocked');

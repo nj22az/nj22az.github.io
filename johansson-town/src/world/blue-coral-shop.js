@@ -16,9 +16,10 @@ export const dessertShopOpen=minutes=>{const m=((minutes%1440)+1440)%1440;return
 export function buildBlueCoralShop({world,group=world.group,register,onAction,shadows=false}){
  const root=new THREE.Group();root.name='Blue Coral at Nakamura';group.add(root);
  // The menu tags on the counter's back wall, the cider tin and the family's nameplate (one lettering sheet), and what
- // follows the hours: the noren, the lanterns' glow and the bench's parasol (nakamura-dressing.js NAKAMURA_OPEN_SIGNS).
+ // follows the hours: the noren, the lanterns' glow, the bench's parasol, the ice flag and the shutter (nakamura-dressing.js
+ // NAKAMURA_OPEN_SIGNS).
  const frontage=nakamuraFrontage({menu:NAKAMURA_MENU,hours:BLUE_CORAL,shadows});root.add(frontage.group,frontage.world);
- (world.colliders??=[]).push(frontage.canopy);
+ (world.colliders??=[]).push(frontage.canopy,frontage.shutterSolid);
  let minutes=720;frontage.update(minutes,dessertShopOpen(minutes));
  const anchor=(x,z,label,fn,place='nakamura')=>{const a=new THREE.Object3D();a.position.set(x,1.1,z);a.userData.placeId=place;root.add(a);register?.(a,label,fn);};
  anchor(5.1,-12.4,'Order at Nakamura · zenzai & ice cream',()=>dessertShopOpen(minutes)?onAction?.('dessert-menu','Nakamura · zenzai & Blue Coral',NAKAMURA_MENU.map(p=>({...p}))):onAction?.('read','Nakamura is closed','Open 10:00–19:00. Mrs Nakamura and Mai live upstairs; the separate family door is beside the counter.'));
