@@ -1,0 +1,41 @@
+✔ a page without the desktop shell is the web edition; with it, Linux (1.126837ms)
+✔ Linux keeps every system; the web cuts only what is simulated, never what is drawn (0.634766ms)
+✔ attention: Linux attends everybody; the web attends the near and the seen (2.325172ms)
+✔ the web wallet is plenty; prices stay on the labels (21.129032ms)
+✔ the web shelves: the player’s gap stays for the day and is full at the next opening (1.003752ms)
+✔ the web greeting is one short line, for every temperament and moment (14.072925ms)
+✔ controls, dialogue and entry page stay English while scenery carries Japanese (3398.57002ms)
+✔ every way in leads to a fully functional interior: it builds, he arrives on a floor clear of solids, can move, and can get out (6073.35619ms)
+✔ the Nakamura family's door takes him up their own stair to the flat, not into the treads (22.592578ms)
+✔ every place the game starts him or puts him outdoors is walkable, clear of solids, with room to move and a way to the street (6890.674983ms)
+✔ the rulebook: every class says where it belongs and why, and every edge names real classes (229.950379ms)
+✔ the old exports are thin re-exports, so step 1 changes nothing that is drawn (261.966409ms)
+✔ the districts agree with the layout modules (4884.393354ms)
+✔ Minato's ground has no violation of its rulebook: nothing new, nothing grown, nothing left on the list (6.273031ms)
+✔ the audit catches what it is for: a slab of its own colour and height, a path into the grass (3760.573495ms)
+✔ every dressing prop has who/why and a measured position, with no duplicate id (1.846811ms)
+✔ dry mornings only: 08:00 inclusive, noon exclusive, rain takes it in immediately (0.712533ms)
+✔ patrol card follows Mori’s real 21:00–02:00 timetable across midnight (0.55124ms)
+✔ lost property uses the storyteller’s belongings and missing Tama uses its bookshop (1.461661ms)
+✔ street door and patrol car exit remain unobstructed (1.53327ms)
+✔ station dressing at dry morning, rain and patrol time has no flashing face over 0.01 m² (1191.898084ms)
+✔ the station stands on the lot, and where the police box stood is its yard (3.203846ms)
+✔ the police box is gone: no geometry, no colliders, no plot of its own (2.078451ms)
+✔ the station door opens onto the street footway, and the way to it is clear (3.628906ms)
+✔ the red lamp burns brighter after dark, its halo lights, and the flag comes down at night (0.375115ms)
+✔ inside: the ground floor and Officer Mori’s quarters are walked from the door, up the stairs, and every prompt is in reach (157.919968ms)
+✔ Officer Mori’s home is still `koban`, and his bed is upstairs in the station (1.323003ms)
+✔ upstairs, Officer Mori walks from the stair head to his desk, his futon and back, at his floor’s height and seen from above (43.214296ms)
+✔ lettered planes in the street have a back: no sign reads mirrored from behind (17.050551ms)
+✔ a sign plate is lettered on its front and plain on its back and edges (0.3457ms)
+✔ the town has its drinks machines, each placed by data that says why it stands there (1.119825ms)
+✔ every machine has its back to a wall a few centimetres behind it (339.61919ms)
+✔ every machine stands on ground people walk, off the work floors, with room to stand and buy and to pass (6.122554ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 61461.656426
