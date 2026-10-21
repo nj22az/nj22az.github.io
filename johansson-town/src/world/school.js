@@ -385,7 +385,7 @@ export function buildSchool(world,options){
  // The door. The school keeps a site like any building in town, so the map, the
  // directory and the doorway carry you in and out the way they do everywhere else.
  const door=[SCHOOL.genkan.x,0,B.minZ-.7];
- const site={id:'school',title:'Town Hall Classroom',jp:"Community Hall · Classroom",sub:"Years 5–6 · 8 PUPILS",x:SCHOOL.genkan.x,z:B.minZ-.7,color:0x587a6a,accent:'#2d5a4c',
+ const site={id:'school',title:'Minato Elementary School',jp:"School · Classroom",sub:"Years 5–6 · 8 PUPILS",x:SCHOOL.genkan.x,z:B.minZ-.7,color:0x587a6a,accent:'#2d5a4c',
   line:'Lessons 8:30–15:30 · kyūshoku 12:20 · visitors sign in at the staff room',door,exitPosition:[SCHOOL.genkan.x,0,B.minZ-1.4],
   approachPosition:[SCHOOL.genkan.x,0,B.minZ-1.4],entryFacing:Math.PI,opens:'07:30'};
  options.sites.push(site);
@@ -394,7 +394,9 @@ export function buildSchool(world,options){
  // way every door in town is its own site. (The mayor's home was the east wing until batch 7a, and the mayor's office the
  // bay between them until October 2026: Johansson lives on Kitano-jima, and the office is his study there.)
  for(const [id,title,jp,sub,x,label,line] of [
-  ['community-kitchen','Community Kitchen',"Community Kitchen",'COMMUNITY CENTRE',27.0,'Go into the community kitchen','Open to every household · the women’s association on Saturdays'],
+  // The Community Hall's door is the kitchen's: the register (sign it yourself; nobody keeps the counter) and the request
+  // box are inside it (interiors/town-hall.js), as is the way through to the meeting room.
+  ['community-kitchen','Community Hall',"Community Hall · Kitchen",'KITCHEN · REGISTER · MEETING ROOM',27.0,'Go into the Community Hall','Open to every household · the register is self-service · the women’s association on Saturdays'],
   ['clinic','Minato Clinic',"Clinic",'DR KAKAZU',34.1,'Go into the clinic','Mon–Fri 9–12, 14–17 · Sat 9–12 · ring the bell after hours'],
  ]){
   const at=[x,0,B.minZ-.7],s={id,title,jp,sub,x,z:B.minZ-.7,color:0x587a6a,accent:'#2d5a4c',line,door:at,exitPosition:[x,0,B.minZ-1.4],approachPosition:[x,0,B.minZ-1.4],entryFacing:Math.PI,opens:'00:00'};

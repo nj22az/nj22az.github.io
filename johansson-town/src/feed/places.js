@@ -55,6 +55,18 @@ export const FEED_PLACES=Object.freeze([
   doing:['filing a request at the register','putting a request in the box','booking the stoves for Saturday','reading the booking sheet','waiting for the rice to cook','tying on an apron'],
   activity:{hold:['coffee'],chance:.5,sit:0},
   shot:{room:'community-kitchen'}},
+ // Since the campus was split into its own buildings (briefs/town-hall-zone.md, phase S): the school and the clinic are
+ // places of their own, waiting for their backdrops (node tools/render-feed-backdrops.mjs school clinic).
+ {id:'school',name:'Minato Elementary School',short:'the school',kind:'civic',regulars:['Miss Higa','Vy','Riku','Mai'],captured:false,
+  things:['the blackboard','the class board','the attendance book','the serving table','the cubbies','the class TV and its VHS deck','the milk crate'],
+  doing:['copying the kanji off the blackboard','serving the kyūshoku','reading the class board','watching a video on the class TV','putting a bag in the cubbies','calling the register from the attendance book'],
+  activity:{hold:['book'],chance:.4,sit:.5},
+  shot:{room:'school'}},
+ {id:'clinic',name:'Minato Clinic',short:'the clinic',kind:'civic',regulars:['Dr Kakazu'],captured:false,
+  things:['the waiting bench','the eye chart','the examination couch','the X-ray lightbox','the scales and the height rod','the medicine cabinet','the clinic hours'],
+  doing:['waiting on the bench','reading the eye chart','being weighed','looking at an X-ray on the lightbox','reading the clinic hours','sitting down for a check-up'],
+  activity:{hold:[],chance:0,sit:.6},
+  shot:{room:'clinic'}},
  {id:'police-station',name:'Minato Police Station',short:'the police station',kind:'civic',regulars:['Officer Mori'],captured:false,
   things:['the counter bell','the incident log','the lost-property shelf','the lobby notice board','the long waiting bench','the town map on the wall','the holding-room door','the duty roster','the desk telephone','the thermos of barley tea','the typhoon cupboard'],
   doing:['ringing the bell at the counter','reading the lobby notice board','looking through the lost property','waiting on the long bench','studying the town map','asking the way to the harbour','handing in a blue umbrella','reading the duty roster'],
