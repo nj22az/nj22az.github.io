@@ -3,6 +3,7 @@ import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import {MINATO_COMPACT as P} from './minato-compact-plan.js';
 import {SHARED_DINING_BOUNDS,SHARED_DINING_FLOOR,SHARED_DINING_COLLIDERS} from './shared-dining-layout.js';
 import {buildIzakayaDressing} from './izakaya-dressing.js';
+import {buildMinatoBar} from './minato-bar.js';
 import {buildIzakayaInteractive} from './izakaya-interactive.js';
 import {hangIzakayaPosters} from './izakaya-posters.js';
 import {createMinatoMemories,MINATO_MEMORIES} from './izakaya-exploration.js';
@@ -189,6 +190,8 @@ export function buildCompactDiningRoom({room,reg=()=>{},collider=()=>{},action=(
  const dressing=buildIzakayaDressing(room,{layout:COMPACT_DRESSING});
  const ramenDressing=buildSatoRamenDressing(room,{anchor,action,layout:COMPACT_SATO_DRESSING});
  const keep=buildIzakayaInteractive(room,{anchor,action,layout:COMPACT_DRESSING});
+ // Where Thao gets every drink: the rack, the tap, the back bar's bottles, the cold store, the warm sake (minato-bar.js).
+ const bar=buildMinatoBar(room);
  hangIzakayaPosters({room,reg,action,placements:COMPACT_CAMPAIGN_POSTERS});
  const discovery=discoveries(room,anchor,action,exploration);
  const calendar=createFutureCalendar();calendar.group.position.set(...P.details.calendar);calendar.group.rotation.y=Math.PI;room.add(calendar.group);
@@ -235,8 +238,8 @@ export function buildCompactDiningRoom({room,reg=()=>{},collider=()=>{},action=(
   name:kind==='ramen'?'Sato Ramen':'Minato',bounds:SHARED_DINING_BOUNDS,floorPolygon:SHARED_DINING_FLOOR,
   spawn:[...entry.spawn],exit:[...entry.exit],yaw:0,cutaway:true,ceilingsFrom:1.9,
   exitSiteAt,exitAt:(x,z)=>[...(exitSiteAt(x,z)==='ramen'?P.ramenEntrance.exit:P.entrance.exit)],
-  keep,owned,television,dressing,calendar:()=>({...calendar.mesh.userData}),discoveries:()=>discovery.memories?.snapshot(),
+  keep,owned,television,dressing,bar,calendar:()=>({...calendar.mesh.userData}),discoveries:()=>discovery.memories?.snapshot(),
   realUpdate(){calendar.update();discovery.update();},ownedUpdate(dt){owned.forEach(actor=>actor.update(dt));closed.update(getMinutes());},tick(dt=0){const minutes=getMinutes();closed.update(minutes);ramenDressing.update(minutes);vapour.update(dt,minutes);},
-  dispose(){calendar.dispose();discovery.dispose();television.dispose();vapour.dispose();owned.forEach(actor=>actor.dispose());},
+  dispose(){bar.dispose();calendar.dispose();discovery.dispose();television.dispose();vapour.dispose();owned.forEach(actor=>actor.dispose());},
  };
 }

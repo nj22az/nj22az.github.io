@@ -34,11 +34,13 @@ export function mealState(plan,t){
 }
 // Persistent meal records stop guests ordering again when the player re-enters.
 // A venue can keep its props under a hidden group and continue its dining cycle.
-export function createVenueService({room,place,getCustomers,getMinutes,getStaff=()=>null,ledger=createResidentLedger(),staffName=place==='izakaya'?'Thao':null,venueName=place==='ramen'?'Inakaya':'Minato',drinkFor=null,tableFor=null,kitchen=null,meal=null}){
+export function createVenueService({room,place,getCustomers,getMinutes,getStaff=()=>null,ledger=createResidentLedger(),staffName=place==='izakaya'?'Thao':null,venueName=place==='ramen'?'Inakaya':'Minato',drinkFor=null,tableFor=null,kitchen=null,meal=null,bar=null}){
+ // At Minato Thao makes each drink from where it is kept and brings it (`bar`: the izakaya's service, izakaya-beer.js).
+ const barService=()=>place==='izakaya'?bar?.()||null:null;
  const inside=place==='ramen'?'inRamen':'inIzakaya';
  const settings=new Map();let serving=null,timer=0;
  function clear(person){for(const key of ['heldItem','mealState','residentSpeech','heldPortion','foodPortion','consumeElapsed'])delete person.g.userData[key];}
- function remove(person){kitchen?.cancel(person);const setting=settings.get(person);if(!setting)return;for(const prop of [setting.food,setting.drink])disposeServing(prop);settings.delete(person);clear(person);if(serving===person){serving=null;timer=0;}}
+ function remove(person){kitchen?.cancel(person);barService()?.cancel(person);const setting=settings.get(person);if(!setting)return;for(const prop of [setting.food,setting.drink])disposeServing(prop);settings.delete(person);clear(person);if(serving===person){serving=null;timer=0;}}
  function table(person,prop,side){
   const g=person.g,forward=new THREE.Vector3(-Math.sin(g.rotation.y),0,-Math.cos(g.rotation.y)),right=new THREE.Vector3(Math.cos(g.rotation.y),0,-Math.sin(g.rotation.y));
   // Use the actual fitted table or counter top; seat height cannot tell them apart.
@@ -64,7 +66,7 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
    setPropPortion(setting.drink,m.drinkLeft);updatePropPortion(setting.drink,dt);
    data.consumeElapsed=m.local;data.heldPortion=drink?m.drinkLeft:undefined;data.heldItem=drink?setting.record.drink:null;
    data.socialPose=drink?'Drink':'Sit';data.activity=(drink?'sipping ':'taking their time over ')+LABELS[setting.record.drink];
-   table(person,setting.drink,1);setting.drink.visible=!drink;
+   if(setting.drinkAt)setting.drink.position.copy(setting.drinkAt);else table(person,setting.drink,1);setting.drink.visible=!drink;
    if(m.done){L.phase='waiting';L.t=25;}
   }else{
    delete data.heldItem;delete data.heldPortion;delete data.consumeElapsed;data.socialPose='Sit';
@@ -94,7 +96,8 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
    // Another round? Only beer drinkers, only after a pause, and only while there is room under the limit.
    if(record.finished&&record.drink==='beer'&&place==='izakaya'&&(record.rounds||1)<MAX_ROUNDS&&minutes>=(record.nextRound??Infinity)&&wantsAnother(data.tipsy,BEER)){
     Object.assign(record,{finished:false,delivered:false,eaten:0,drunk:0,drinkOnly:true,rounds:(record.rounds||1)+1});delete record.nextRound;
-    setPropPortion(setting.drink,1,{immediate:true});data.residentSpeech={text:'Thao, another beer, please!',until:minutes+5};
+    // The empty glass stays until she brings the next; without her bar it is refilled at the counter as before.
+    if(barService())setting.requested=undefined;else setPropPortion(setting.drink,1,{immediate:true});data.residentSpeech={text:'Thao, another beer, please!',until:minutes+5};
    }
    if(record.finished&&kitchen&&seated){linger(person,setting,data,dt,minutes);continue;}
    if(record.finished){const merry=(data.tipsy||0)>=LIMIT-1;data.socialPose=seated?'Sit':'Idle_Neutral';delete data.heldItem;delete data.heldPortion;delete data.foodPortion;delete data.consumeElapsed;data.mealState='finished';data.activity=merry?'merry after a few beers':'relaxing after '+LABELS[record.item];setting.food.visible=setting.drink.visible=false;continue;}
@@ -103,6 +106,12 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
     // With a kitchen, the cook makes it and brings it (ramen-kitchen.js); otherwise it simply arrives.
     if(kitchen&&setting.requested!==false){
      setting.requested??=kitchen.request({items:[record.item,record.drink],x:(tableFor?.(person)||[person.g.position.x])[0],label:name+'’s',tag:person,onServed:()=>{if(settings.get(person)===setting&&!record.delivered)settle(person,record,getMinutes());}});
+    }else if(barService()){
+     // She makes it and sets the glass down here; that glass is the one they drink from.
+     if(!setting.requested){const at={position:new THREE.Vector3()};table(person,at,1);
+      setting.requested=barService().request({kind:DRINK_PROP[record.drink]||'oolong',table:at.position.toArray(),tag:person,onServed:prop=>{
+       if(!prop||settings.get(person)!==setting){if(prop)disposeServing(prop);if(settings.get(person)===setting)setting.requested=undefined;return;}
+       disposeServing(setting.drink);setting.drink=prop;setting.drinkAt=prop.position.clone();if(!record.delivered)settle(person,record,getMinutes());}})||undefined;}
     }else if(!serving){serving=person;timer=2.8;}
    }else{
     record.eaten+=dt;
@@ -113,7 +122,7 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
     setPropPortion(setting.food,foodLeft);setPropPortion(setting.drink,drinkLeft);updatePropPortion(setting.food,dt);updatePropPortion(setting.drink,dt);
     data.mealState='eating';data.socialPose=drink?(seated?'Drink':'DrinkStanding'):eat?(seated?'Eat':'EatStanding'):seated?'Sit':'Idle_Neutral';data.heldItem=drink?record.drink:eat?record.item:null;
     data.activity=drink?'drinking '+LABELS[record.drink]+' at '+venueName:eat?'eating '+LABELS[record.item]:record.drinkOnly?'between sips':place==='ramen'?'blowing on the noodles':'enjoying supper';
-    table(person,setting.food,-1);table(person,setting.drink,1);setting.food.visible=seated&&!eat&&!record.drinkOnly;setting.drink.visible=seated&&!drink;
+    table(person,setting.food,-1);if(setting.drinkAt)setting.drink.position.copy(setting.drinkAt);else table(person,setting.drink,1);setting.food.visible=seated&&!eat&&!record.drinkOnly;setting.drink.visible=seated&&!drink;
     if(m.done){record.finished=true;record.nextRound=minutes+ROUND_GAP;setPropPortion(setting.food,0);if(!kitchen)setPropPortion(setting.drink,0);ledger.record(name,minutes,record.drinkOnly?'had another beer at '+place:'enjoyed '+LABELS[record.item]+' and '+LABELS[record.drink]+' at '+place);}
    }
   }

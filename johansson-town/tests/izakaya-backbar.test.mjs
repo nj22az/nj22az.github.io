@@ -69,7 +69,8 @@ test('both shared dining entrances clone one complete replacement from the same 
   const clone=other.getObjectByName(name),original=room.getObjectByName(name);
   assert.notEqual(clone,original);assert.deepEqual(clone.position.toArray(),original.position.toArray());
   const firstMesh=o=>{let found;o.traverse(m=>{if(m.isMesh&&!found)found=m;});return found;};
-  assert.equal(firstMesh(clone).geometry,firstMesh(original).geometry,'Repeated visits share immutable geometry');
+  // The vertices are shared; a room may hold its own index where a piece is lifted out to move (minato-bar.js liftPiece).
+  assert.equal(firstMesh(clone).geometry.attributes.position,firstMesh(original).geometry.attributes.position,'Repeated visits share immutable geometry');
  }
  sato.dispose();
 });
@@ -240,4 +241,26 @@ test('the otoshi bowls on the prep board stand apart, and the knife lies on the 
 test('the prep board, its bowls and knife share no flickering plane',()=>{
  const found=coplanarOverlaps(room,{regions:[{...BOARD,minY:.9}],tolerance:.002,minArea:.0005,keepIdentical:true});
  assert.deepEqual(found.map(describe),[]);
+});
+
+// Thao's drinks station (minato-bar.js) stands on clear worktop: nothing of the fitted room or its dressing (the
+// oshibori warmer, the prep board, the grill) is under the rack, the pour or the tap, and nothing of it flickers.
+test('the drinks station stands on clear worktop, its glasses apart, sharing no plane with the room',async()=>{
+ const {MINATO_BAR}=await import('../src/world/interiors/minato-bar.js');
+ const station=room.getObjectByName('Minato drinks station');assert.ok(station,'built into the real room');
+ const B=MINATO_BAR,top=B.top,others=[];room.traverse(o=>{if(o.isMesh&&!o.name.startsWith('Rack ')){let p=o;while(p&&p!==station)p=p.parent;if(!p)others.push(o);}});
+ const [tx,tz,tw,td]=B.rack.tray,spots=[];
+ for(let x=tx-tw/2;x<=tx+tw/2+1e-6;x+=.04)for(let z=tz-td/2;z<=tz+td/2+1e-6;z+=.04)spots.push(['rack',x,z]);
+ for(const [name,[x,,z],r] of [['pour',B.pour.glass,.05],['tap',B.tap.at,.07],['tap glass',B.tap.glass,.05]])for(let a=0;a<8;a++)spots.push([name,x+Math.cos(a*Math.PI/4)*r,z+Math.sin(a*Math.PI/4)*r]);
+ const busy=spots.filter(([,x,z])=>{const hit=new THREE.Raycaster(new THREE.Vector3(x,1.8,z),new THREE.Vector3(0,-1,0)).intersectObjects(others,false)[0];return !hit||Math.abs(hit.point.y-top)>.002;}).map(([n,x,z])=>[n,+x.toFixed(2),+z.toFixed(2)]);
+ assert.deepEqual(busy,[],'clear worktop under the station');
+ const glasses=station.children.filter(o=>/^Rack /.test(o.name)).map(o=>new THREE.Box3().setFromObject(o).expandByScalar(-.001));
+ for(let i=0;i<glasses.length;i++)for(let j=i+1;j<glasses.length;j++)assert.ok(!glasses[i].intersectsBox(glasses[j]),'rack glasses '+i+' and '+j+' stand apart');
+ // With a glass set down where she pours and under the tap, as she does.
+ const {createDrinkProp}=await import('../src/people/izakaya-beer.js'),set=[['awamori',B.pour.glass],['draft',B.tap.glass]].map(([kind,at])=>{const g=createDrinkProp(kind);g.position.set(...at);room.add(g);return g;});
+ room.updateMatrixWorld(true);
+ const region={minX:tx-tw/2-.05,maxX:B.tap.at[0]+.1,minZ:-1.82,maxZ:-1.40,minY:top-.01,maxY:top+.4};
+ const found=coplanarOverlaps(room,{regions:[region],tolerance:.002,minArea:.0005,keepIdentical:true}).map(describe);
+ for(const g of set)g.removeFromParent();
+ assert.deepEqual(found,[]);
 });

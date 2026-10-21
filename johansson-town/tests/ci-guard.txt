@@ -50,3 +50,5 @@ johansson-study.test.mjs
 audit-boot.test.mjs
 ferry-timetable.test.mjs
 boot.test.mjs
+izakaya-bar.test.mjs
+izakaya-beer.test.mjs

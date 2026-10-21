@@ -37,6 +37,9 @@ export const BUDGETS=Object.freeze({
   countedMoney:true,
   /** Ledgers, order sheets and the till roll are the live shop's. */
   liveDocuments:true,
+  /** Thao's pour as it is done: the bottle tipped over the glass with its stream, the tap's lever pulled
+   *  (people/izakaya-bar.js). The web makes the same round, the glass filling as she holds the bottle over it. */
+  pouring:true,
  }),
  web:Object.freeze({
   edition:'web',
@@ -53,6 +56,7 @@ export const BUDGETS=Object.freeze({
   machinery:false,
   countedMoney:false,
   liveDocuments:false,
+  pouring:false,
  }),
 });
 

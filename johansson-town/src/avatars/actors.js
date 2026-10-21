@@ -7,6 +7,7 @@ import {createAvatarAnimator,GESTURES} from './animate.js';
 import {recipeFor} from './cast.js';
 import {normalizeRecipe,decodeRecipe,encodeRecipe} from './recipe.js';
 import {fitAvatarHeldProp,gripWheel} from './consume.js';
+import {workHands} from './work-hands.js';
 import {createAvatarTableDrink,createFirstPersonDrinkingArm,TABLE_DRINK_KINDS} from './table-drink.js';
 import {DEFAULT_PLAYER,readPlayers,readSave} from '../save.js';
 import {swingsAt} from './springs.js';
@@ -109,6 +110,8 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
  // A driver's hands are on the wheel, not hovering in front of it.
  const wheel=u.inVehicle&&entity.parent?.userData?.steeringWheel;
  if(wheel)gripWheel(avatar,entity.parent,wheel,now/1000);
+ // Behind a counter (people/izakaya-bar.js): the hands go to the glass, the bottle, the tap, and hold what they took.
+ workHands(avatar,u,dt);
  // Hair, skirts and hems swing (springs.js): always for Thuan, near the camera for everyone else.
  if(swingsAt(entity.getWorldPosition(swingAt),actor.isThuan)){avatar.springs?.update(dt);actor.swingResting=false;}
  else if(!actor.swingResting){avatar.springs?.reset();actor.swingResting=true;}
