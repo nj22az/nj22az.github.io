@@ -21,7 +21,7 @@ The fix clears only those two Linux anchors (`left:auto!important; transform:non
 | 960×540 | 0.5 px vertical overlap and intersecting x ranges | 24.0 px horizontal separation |
 | 800×600 | 18 px vertical overlap and intersecting x ranges | 24.0 px horizontal separation |
 
-All corrected captures show the complete ferry action description and mapped A prompt. The 800×600 action uses four lines. Neither caption nor action rail is clipped.
+All corrected captures show the complete ferry action description and mapped A prompt. The local 800×600 action uses four lines; hosted Ubuntu font wrapping uses three, with the same 24 px horizontal clearance. Neither caption nor action rail is clipped.
 
 ## Newly reached resident checks
 
@@ -44,7 +44,13 @@ These are local software-rendered captures of the downloaded 0.2.13 candidate wi
 
 ## Validation
 
-35 desktop regression tests and the three existing retired-recipe/canonical-mapping tests pass locally. All four corrected full-world caption/action layouts and the menu layouts passed locally; their screenshots were inspected. The targeted continuation also passed conversation warnings, quarrel pause/no rewards, saved controller remapping, reload into Thuan’s saved nighttime bed and separate web-only isolation, with zero page errors or missing files. The captured 26-model selection list was independently checked against the canonical avatar mapping. The [complete hosted run](https://github.com/nj22az/nj22az.github.io/actions/runs/39672894193) and native acceptance remain in progress.
+The [complete hosted acceptance run](https://github.com/nj22az/nj22az.github.io/actions/runs/39672894193) passed on 21 October 2026. It rebuilt the actual 0.2.14 package and completed all four caption/action and menu layouts, controller movement/camera/remapping and recovery, all 26 canonical selections, owned-bed/waking/doorway B checks, conversation/quarrel pause/no rewards, saved-character/controller reload and separate web isolation. The final browser result recorded zero page errors and zero missing files.
+
+The same run passed native Electron startup and disk-save checks under Ubuntu/Xvfb with SwiftShader. `WORLD_SMOKE` reported `running:true`, `stability.ok:true` and `desktopVersion:0.2.14`. This remains software-rendered verification.
+
+35 desktop regression tests passed locally and in hosted acceptance. Three existing canonical-recipe tests also passed locally. The original failed-run candidate used for the local reproduction matched its recorded SHA-256 (`51ec4dbefa83763470e4a1b958457c1a3509649b30611ef43146b19124d0888b`).
+
+The [0.2.14 release workflow](https://github.com/nj22az/nj22az.github.io/actions/runs/39676096219) also passed regression/runtime/package checks, controller recovery, native startup/disk saves and a fresh installation of the public archive with SHA-256 verification. The release tag points to the merged correction commit `2d468025285985961ba32f830882348882acde13`. The published compatible 0.2.13 → 0.2.14 patch is 157,372 bytes; the full archive is 444,763,340 bytes.
 
 ## Hardware limit
 
