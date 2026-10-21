@@ -13,7 +13,7 @@ export function sleepHours(profile){
  // The radio shift runs past midnight. Keep the two hours of
  // after-work errands, then eight hours at home instead of the old day shift bedtimes.
  if(profile.name==='Tetsuo')return {sleep:140,wake:620};
- // Chin is the ferry's motorman (ferry-crew.js FERRY_WORKING_DAY: signed on 06:05, off 22:20, then the bench or the izakaya).
+ // Chin is the ferry's motorman (ferry-crew.js FERRY_WORKING_DAY: signed on 06:05, off 23:15 after the last boat back, then the izakaya).
  if(profile.name==='Chin')return {sleep:1425,wake:300};
  return {sleep:minute(profile.retire+20),wake:minute(profile.start-90)};
 }

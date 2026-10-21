@@ -344,10 +344,10 @@ export function pitchPeriod(ship=FERRY_SHIP){return 2.4*Math.sqrt(ship.draft);}
 /**
  * Her day, town minutes past midnight (briefs/ferry-audit.md §5, §7): the chief engineer puts No.1
  * generator on the board at 06:10 and takes the shore power off; she is in service from 06:25, when
- * the engines are started, to the last boat; at 22:15 the generators stop and the shore power goes
+ * the engines are started, to the last boat back from Kitano-jima; at 23:10 the generators stop and the shore power goes
  * back on. Her engine sound and her lights follow it (ferry.js).
  */
-export const FERRY_DAY=Object.freeze({generators:6*60+10,inService:6*60+25,shorePower:22*60+15});
+export const FERRY_DAY=Object.freeze({generators:6*60+10,inService:6*60+25,shorePower:23*60+10});
 
 /**
  * What goes wrong, and what the crew does (stories use these; people/ferry-crew.js says who). Each
@@ -375,7 +375,7 @@ export const FERRY_SCENARIOS=Object.freeze([
    ['chief','bow-house-p','Fits the spare hose from the engine-room stores.'],
    ['bosun','bow-house-p','Lowers the ramp on the hand pump, two hundred strokes, while the drivers count.'],
   ])}),
- Object.freeze({id:'shore-power',title:'The shore power the wrong way round',cause:'At 22:15 the shore cable is plugged in at the quay kiosk with two phases crossed after a repair: the phase-sequence lamp in the shore box shows them reversed, and every pump on the board would run backwards',
+ Object.freeze({id:'shore-power',title:'The shore power the wrong way round',cause:'At 23:10 the shore cable is plugged in at the quay kiosk with two phases crossed after a repair: the phase-sequence lamp in the shore box shows them reversed, and every pump on the board would run backwards',
   steps:Object.freeze([
    ['oiler','casing-p','Sees the phase-sequence lamp lit the wrong way and does not close the shore breaker.'],
    ['chief','quay','Isolates and locks out the shore supply, verifies dead, and has two phases corrected at the kiosk plug by the authorised electrician; checks the phase sequence after re-energising.'],

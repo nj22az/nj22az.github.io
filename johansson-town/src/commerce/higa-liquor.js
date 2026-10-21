@@ -179,7 +179,7 @@ export function higaDeliveryBook(minutes){
  * police-station end of the front and two upturned beer crates for stools, where men sit with a bottle from the counter
  * while the shop's evening opening lasts. Who sits there comes from their own days (people/cast.js): Tetsuo between the
  * bath's boiler checks, Mac after the ship's engine room and before his one beer at Minato. Mr Fujita's crate is the
- * empty one: the owner's ruling of 19 October 2026 has him sober on the bridge until 22:20, and the shop shuts at eight,
+ * empty one: the owner's ruling of 19 October 2026 has him sober on the bridge until 23:15, and the shop shuts at eight,
  * so his stool waits for a day the ship does not sail (none is modelled).
  *
  * Seats are world positions: `at` is where the sitter sits, `stand` where they stand up to (clear of every solid), and
@@ -200,7 +200,7 @@ export const YUNTAKU=Object.freeze({
   Object.freeze({name:'Mac',seat:'mac',from:1170,to:1200,
    why:'Off the ship at half past seven, he walks up Main Street and stops for half an hour on a crate with whoever is there; his one beer is still Minato’s, at eight.'}),
  ]),
- absent:Object.freeze({name:'Mr Fujita',seat:'fuji',why:'Sober on the bridge until the shore power at 22:20 (AGENTS.md, the consolidation’s ruling), two hours after the shop shuts: his crate is kept for him and stands empty.'}),
+ absent:Object.freeze({name:'Mr Fujita',seat:'fuji',why:'Sober on the bridge until he signs off at 23:15 (AGENTS.md, the consolidation’s ruling and the timetable of 21 October 2026), three hours after the shop shuts: his crate is kept for him and stands empty.'}),
 });
 /** The yuntaku seat a resident is on at this minute, or null. */
 export function yuntakuSeatAt(name,minutes){

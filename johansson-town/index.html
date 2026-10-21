@@ -35,30 +35,30 @@
 <link rel="stylesheet" href="./title-screen.css?h=d00ff286">
 <link rel="stylesheet" href="./town-directory.css?h=92990b9c">
 <link rel="stylesheet" href="./ferry-operations.css?h=1625ed17">
-<link rel="modulepreload" data-town-runtime href="./runtime/title-menu-BRY1QOCp.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/staff-bench-BsoaLcD8.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/friendship-nM7-UE3n.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/compact-shops-Op2Qdsqg.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/harbour-park-plan-BbYmcdna.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/title-menu-DGopRVo_.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/staff-bench-CBgoEhn4.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/friendship-DAcIAOf6.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/compact-shops-CEcwixMi.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/harbour-park-plan-DTIl1CWc.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/shopping-lane-plan-D0DhEU8_.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/fish-DHMJOXG5.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-By4NK0Fc.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/fish-CBpNeYgw.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-CYxguAcG.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/preload-helper-PPVm8Dsz.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/icons-DfeBIm6m.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-D34cMzo7.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-COHNmCzy.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/halloween-B4uUALco.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/hat-models-CuU7kCAR.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/actors-Ddtlr_wj.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/animate-wuoDq9Jh.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/onsen-Bquz05Js.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/catalog-B1I88dQU.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/sakura-interior-BlsPB0b2.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/sato-ramen-D8_OfeQX.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/town-hall-1O7D1nF8.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/studio-handoff-tjK7WGku.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-DlUK5ngN.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/halloween-CxLo8WWu.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/hat-models-9o8fIFd3.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/actors-DMgqJ6pe.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/animate-BmI_58F8.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/onsen-Bo-I9SdN.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/catalog-C2mxAtPz.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/sakura-interior-D9xV2d-q.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/sato-ramen-DzCJiGKU.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/town-hall-DMlJyqKB.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/studio-handoff-BYlPEY0j.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/thuan-voice-Dz-XGNqd.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/storyteller-BUnDbmec.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/storyteller-DnB2eQRS.js">
 </head>
 <body>
 <canvas id="game" aria-label="Johansson World three-dimensional game"></canvas>
@@ -386,6 +386,8 @@
     <button id="drink" class="control-off" type="button" hidden aria-label="Drink">Drink</button>
     <button id="exitRoomButton" class="hidden control-off" type="button" hidden aria-label="Exit to street">Exit to street</button>
     <button id="enterBuildingButton" class="hidden control-off" type="button" hidden aria-label="Enter building">Enter</button>
+    <button id="goAshoreButton" class="control-off" type="button" hidden aria-label="Go ashore">Go ashore</button>
+    <button id="stayAboardButton" class="control-off" type="button" hidden aria-label="Stay aboard">Stay aboard</button>
     <button id="act" class="control-off" type="button" hidden aria-label="Nearby action">Action</button>
   </nav>
   <div id="subtitle" role="status" aria-live="polite"></div>
@@ -398,8 +400,8 @@
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON WORLD</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>INSTALL JOHANSSON WORLD</h2><p>On iPhone or iPad, open this page in Safari. Tap Share, then Add to Home Screen, and turn on Open as Web App if offered. Open the town from its new icon. Your save stays on this device; installed apps and Safari may have separate saves. Reopen while online to get the latest town updates. Previously visited content can load offline.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
 <script src="./resident-guide.js?h=9f10b3a9"></script>
-<script>window.JOHANSSON_FEED_MODULE="./runtime/feed-CFAV2oZi.js";</script>
-<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-Do_JyjP_.js";</script>
+<script>window.JOHANSSON_FEED_MODULE="./runtime/feed-C9sCAEnd.js";</script>
+<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-CwD1gtYR.js";</script>
 <script src="./landing.js?h=208a1c37"></script>
 <script>
 // Title screen: the Johansson Co. splash, the START menu, and the town guide page
@@ -525,8 +527,8 @@
 <script type="module">
 import {createLoadingFacts} from './loading-facts.js?h=2738098f';
 import {createLoadingProgress} from './loading-progress.js?h=282b5bd3';
-import {createTitleMenu} from './runtime/title-menu-BRY1QOCp.js';
-import {unlockTownAudio} from './runtime/audio-CbL4Qaz8.js';
+import {createTitleMenu} from './runtime/title-menu-DGopRVo_.js';
+import {unlockTownAudio} from './runtime/audio-sCKbQSkg.js';
 (() => {
   const enter=document.getElementById('enter');
   const status=document.getElementById('bootStatus');
@@ -626,7 +628,7 @@ import {unlockTownAudio} from './runtime/audio-CbL4Qaz8.js';
 
   window.__JOHANSSON_TITLE_PREVIEW__=true;
   async function loadPreview(){
-    try { await import('./runtime/boot-By4NK0Fc.js'); } catch (error) {
+    try { await import('./runtime/boot-CYxguAcG.js'); } catch (error) {
         if (!/fetch|module|import|404/i.test(error.message||'')) throw error;
         const response=await fetch('./index.html',{cache:'no-store'});
         if(!response.ok)throw error;

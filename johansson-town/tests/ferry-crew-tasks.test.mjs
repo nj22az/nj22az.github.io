@@ -70,9 +70,10 @@ test('task arrival and completed work are separate gates, and phase changes cann
 });
 
 test('the shore hand is called to the bitts while the ramp comes up, so letting go finds both ends of the line manned',()=>{
- const s=ferryServiceFixture(),q=QUICK_CROSSING.town;
+ // Her 08:45 sailing (world/ferry-timetable.js): she begins preparing it herself at 08:42.
+ const s=ferryServiceFixture({minute:8*60+41.9}),q=QUICK_CROSSING.town;
  s.player.position.set(q.stand[0],q.ground,q.stand[1]);
- assert.equal(s.run.beginCrossing('airport'),true);
+ s.until(()=>!!s.run.operation);assert.equal(s.run.operation.destination,'airport');
  s.until(()=>s.run.operation.stage==='raising-ramp');s.tick(.1);
  const standby=s.run.operation.tasks.find(t=>t.post==='shore');
  assert.ok(standby?.optional,'the standby is an order the ramp does not wait for');
@@ -91,11 +92,11 @@ test('the shore hand is called to the bitts while the ramp comes up, so letting 
 });
 
 test('the first line hand waits at station without working until the real counterpart arrives',()=>{
- const s=ferryServiceFixture(),q=QUICK_CROSSING.town;
+ const s=ferryServiceFixture({minute:8*60+41.9}),q=QUICK_CROSSING.town;
  s.player.position.set(q.stand[0],q.ground,q.stand[1]);
- // The harbour agent is at lunch when the ship prepares (a room has him): the quay cannot take him until he comes out.
+ // The harbour agent is at breakfast when the ship prepares (a room has him): the quay cannot take him until he comes out.
  s.agent.userData.inRamen=true;
- assert.equal(s.run.beginCrossing('airport'),true);
+ s.until(()=>!!s.run.operation);assert.equal(s.run.operation.destination,'airport');
  s.until(()=>s.run.operation.stage==='letting-go');
  assert.equal(s.agent.userData.ferryShoreTask,true,'called to the quay');assert.ok(Math.hypot(s.agent.position.x-13.3,s.agent.position.z+36.85)<.01,'but not moved while a room has him');
  delete s.agent.userData.inRamen;
@@ -127,21 +128,22 @@ test('the first line hand waits at station without working until the real counte
 });
 
 test('the master is the shed’s own body: on the bridge by day, in his chair after he signs off, never both',()=>{
- const s=ferryServiceFixture({minute:22*60+14});
+ // The last boat back from Kitano-jima is alongside at Minato before the shore power (world/ferry-timetable.js).
+ const s=ferryServiceFixture({minute:23*60+9});
  assert.equal(s.crew.commute.state,'aboard');assert.equal(s.shed.fujita.visible,false);assert.equal(s.shed.fujita.userData.onWatch,true);
  assert.equal(s.crew.snapshot().find(c=>c.post==='master').name,'Mr Fujita');
  const minutesTo=target=>{const n=Math.ceil((target-s.minutes)*60/.5);for(let i=0;i<n;i++)s.tick(.5);};
- // 22:15: the shore power goes on, the bridge lets him go, and he walks from the gangway back to his chair.
- minutesTo(22*60+15.2);
+ // 23:10: the shore power goes on, the bridge lets him go, and he walks from the gangway back to his chair.
+ minutesTo(23*60+10.2);
  assert.ok(!s.crew.snapshot().some(c=>c.post==='master'),'nobody is on the bridge after the shore power');
  assert.equal(s.shed.fujita.visible,true);assert.ok(['to-shed','settling','ashore'].includes(s.crew.commute.state),s.crew.commute.state);
  s.until(()=>s.crew.commute.state==='ashore',{seconds:120,step:.1});
  const at=s.shed.fujita.getWorldPosition(new THREE.Vector3());
  assert.ok(Math.hypot(at.x-s.crew.commute.chair[0],at.z-s.crew.commute.chair[2])<.01,'back in his chair');
  assert.equal(s.shed.fujita.userData.onWatch,false);
- // 22:20, signed off: the first bottle. Not before.
- assert.equal(s.minutes<22*60+20,true);s.shed.tick(.1,s.minutes);assert.ok(!['SitHold','SitPour'].includes(s.shed.fujita.userData.socialPose),'nothing open before he signs off');
- minutesTo(22*60+21);s.shed.tick(.1,s.minutes);
+ // 23:15, signed off: the first bottle. Not before.
+ assert.equal(s.minutes<23*60+15,true);s.shed.tick(.1,s.minutes);assert.ok(!['SitHold','SitPour'].includes(s.shed.fujita.userData.socialPose),'nothing open before he signs off');
+ minutesTo(23*60+16);s.shed.tick(.1,s.minutes);
  assert.ok(['SitHold','SitPour'].includes(s.shed.fujita.userData.socialPose),'the beer is for after he signs off');
 });
 

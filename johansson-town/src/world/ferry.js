@@ -3,6 +3,7 @@ import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {waveHeight,SEA_LEVEL,setOceanHole} from './ocean.js';
 import {HARBOUR_LINE,BUS_DWELL,nextService} from '../people/commuter-schedule.js';
 import {AIRPORT_FERRY_PORTS,FERRY_SAILINGS} from './airport-ferry.js';
+import {sailingDue,timetableBerth,FERRY_WARNING_MINUTES} from './ferry-timetable.js';
 import {airportWorld} from './airport-ground.js';
 import {PORT_BUILDING} from './port-building.js';
 import {FERRY_DAY,rollPeriod,pitchPeriod} from './ferry-ship.js';
@@ -20,9 +21,10 @@ import {lanternGlow,windowGlow} from '../render/dusk.js';
  * One Minato–Kitano-jima ferry, the town's Minato Maru (ferry-ship.js, ferry-model.js), carries a hundred
  * passengers and six cars. At Minato she lies port side to the outer pier on its fenders with her bow
  * ramp on the quay's landing plate and her gangway from the port casing's door to the pier; at
- * Kitano-jima she lands her ramp on the pier. The legacy
- * commuter timetable interface remains available for residents and old saved games.
- * A player-requested crossing holds a safe berth until vehicles finish boarding.
+ * Kitano-jima she lands her ramp on the pier. In play she keeps
+ * the timetable (ferry-timetable.js, `keepTimetable`): she prepares each sailing, sounds her horn two minutes before it,
+ * closes her gangway at its time and sails, whoever is aboard. The legacy commuter timetable interface remains for the
+ * tests that drive the run without play.
  */
 export const FERRY=Object.freeze({length:FERRY_HULL.length,beam:FERRY_HULL.beam,freeboard:FERRY_HULL.freeboard,draft:FERRY_HULL.draft,waterline:WL});
 /** The outer pier's west flank (layout.js OUTER_PIER: x 0, 8.2 m wide). */
@@ -174,6 +176,8 @@ export function createFerryRun({parent,shadows=false,colliders,register=null,onA
   register(a,'Ask the purser for the crossing',()=>onAction(run.berth==='airport'?'airport-return':'airport-ferry'));}
  let phase='away',t=0,service=null,serviceAt=null,lastMinutes=null,clock=0,yaw=0,x=FERRY_BERTH.x,z=FERRY_BERTH.z,exposure=0,shipSeconds=null,plan=null;
  let berth='town',localService=false,crossing=null,crewController=null,vehicleController=null,accessGuard=()=>true;
+ // The timetable (ferry-timetable.js): whether she keeps it, the last sailing begun and warned, and the clock last seen.
+ let timetable=false,ranSailing=null,warnedSailing=null,keptMinutes=null;
  const DOOR=[FERRY_TERMINAL.queue[0],FERRY_TERMINAL.queue[1]];
  // Her whistle: every signal she sounds, in order (the town's sound plays each one where she is).
  const whistle={count:0,kind:null,x,z,log:[]};
@@ -253,6 +257,31 @@ export function createFerryRun({parent,shadows=false,colliders,register=null,onA
   onPose:(p,op)=>{signalsBetween(FERRY_SAILINGS[op.destination],crossing?.seconds??-1,p.seconds+(p.progress>=1?1e-6:0));if(crossing)crossing.seconds=p.seconds;set(p.x,p.z,p.yaw);exposure=p.exposure;},
   onBerth:destination=>{berth=destination;exposure=0;const p=AIRPORT_FERRY_PORTS[destination];set(p.berth[0],p.berth[1],p.yaw);serviceAt=lastMinutes??0;},
  });
+ /**
+  * Keeping the timetable, each frame. When the town's clock jumps (time passed, a save loaded, the page back after a
+  * while) she is put where the timetable has her, as the whole town is; otherwise each sailing is begun three minutes
+  * before its time (FERRY_PREPARE_MINUTES), and her horn sounds two minutes before it.
+  */
+ function keep(minutes){
+  const jumped=keptMinutes===null||minutes<keptMinutes||minutes-keptMinutes>2;keptMinutes=minutes;
+  if(jumped)settle(minutes);
+  if(!operations.active){
+   const due=sailingDue(minutes,berth);
+   if(due&&due.key!==ranSailing&&run.beginCrossing(due.sailing.to,{automatic:true,departs:due.at,sailing:due.sailing.id}))ranSailing=due.key;
+  }
+  const op=operations.snapshot();
+  if(op&&Number.isFinite(op.departs)&&minutes>=op.departs-FERRY_WARNING_MINUTES&&warnedSailing!==op.id&&['preparing','securing'].includes(op.stage)){warnedSailing=op.id;sound('departure');}
+ }
+ function settle(minutes){
+  const target=timetableBerth(minutes),was=operations.active;
+  if(was)operations.abandon();
+  if(!was&&berth===target&&phase==='waiting'&&ferry.visible)return;
+  const p=AIRPORT_FERRY_PORTS[target];operations.reset();berth=target;crossing=null;phase='waiting';exposure=0;serviceAt=minutes;
+  set(p.berth[0],p.berth[1],p.yaw);ferry.visible=true;
+  // A sailing whose time came and went in the jump is not made late; one still to come is made.
+  const due=sailingDue(minutes,target);ranSailing=due&&minutes>due.at?due.key:null;warnedSailing=null;
+  place();trackSolid();
+ }
  park();ferry.visible=false;trackSolid();
  const run={
   ferry,
@@ -268,6 +297,19 @@ export function createFerryRun({parent,shadows=false,colliders,register=null,onA
   procedure:FERRY_PROCEDURE,
   get completedVoyages(){return operations.completed;},
   bindCrewController(controller){crewController=controller;},
+  /** From now on she sails to the timetable (island/play.js), not on anybody's request. */
+  keepTimetable(on=true){timetable=!!on;keptMinutes=null;if(timetable)localService=true;},
+  get keepsTimetable(){return timetable;},
+  /**
+   * The sailing she is about to make from where she lies, from two minutes before it until her gangway is in:
+   * {sailing, at, from, to}. The horn has sounded; the sign reads 出港; aboard he is asked to go ashore or stay.
+   */
+  get departing(){
+   const op=operations.snapshot();
+   if(!timetable||!op||!Number.isFinite(op.departs)||!['preparing','securing','closing-access'].includes(op.stage))return null;
+   if((lastMinutes??0)<op.departs-FERRY_WARNING_MINUTES)return null;
+   return {sailing:op.sailing,at:op.departs,from:op.origin,to:op.destination,stage:op.stage};
+  },
   bindVehicleController(controller){vehicleController=controller;},
   setAccessGuard(guard){accessGuard=typeof guard==='function'?guard:()=>true;},
   /** Both passengers and vehicles use this single ferry group and these ports. */
@@ -280,8 +322,8 @@ export function createFerryRun({parent,shadows=false,colliders,register=null,onA
    return true;
   },
   get moored(){const op=operations.snapshot();return ferry.visible&&(op?op.lines.every(l=>l.status==='fast'):phase==='waiting');},
-  beginCrossing(destination,{automatic=false}={}){
-   if(!AIRPORT_FERRY_PORTS[destination]||destination===berth||!operations.request(destination,{automatic}))return false;
+  beginCrossing(destination,{automatic=false,departs=null,sailing=null}={}){
+   if(!AIRPORT_FERRY_PORTS[destination]||destination===berth||!operations.request(destination,{automatic,departs,sailing}))return false;
    localService=true;crossing={destination,seconds:null};ferry.visible=true;place();trackSolid();return true;
   },
   /** Kept for old observers. Only update() owns elapsed physical time. */
@@ -314,7 +356,7 @@ export function createFerryRun({parent,shadows=false,colliders,register=null,onA
    if(!(dt>0))return;
    clock=Number.isFinite(time)?time:clock+dt;
    runPlant(minutes,dt);
-   if(localService){lastMinutes=minutes;operations.tick(dt);place();lights(minutes,['passage','arriving'].includes(operations.stage));trackSolid();return;}
+   if(localService){lastMinutes=minutes;if(timetable)keep(minutes);operations.tick(dt);place();lights(minutes,['passage','arriving'].includes(operations.stage));trackSolid();return;}
    try{
     if(lastMinutes===null||minutes<lastMinutes||minutes-lastMinutes>dt+1){
      phase='away';service=null;serviceAt=null;ferry.visible=false;plan=null;shipSeconds=null;

@@ -11,12 +11,12 @@ import {circleHitsRect,standingHitsRect} from '../physics.js';
 import {routeAt,groundHeight} from '../src/world/layout.js';
 installDOM();
 const make=()=>{const colliders=[];return {shed:buildPortShed({parent:new THREE.Group(),colliders,register(){},onAction(){}}),colliders};};
-test('Mr Fujita walks to his sofa at 23:30 and returns at six without beer or a tilted walking body',()=>{
- const {shed,colliders}=make();const chairSeatHeight=shed.fujita.userData.seatHeight;shed.tick(.1,1409);assert.equal(shed.routine.state,'watching');
- for(let i=0;i<600;i++){shed.tick(.1,1410);const p=shed.fujita.getWorldPosition(new THREE.Vector3());if(shed.routine.state==='to-boat'&&p.z>-56.65)assert.ok(!colliders.some(c=>standingHitsRect(p.x,p.z,.2,p.y,c)),`clear ${p.x},${p.z}`);}
+test('Mr Fujita walks to his sofa at a quarter to one and returns at six without beer or a tilted walking body',()=>{
+ const {shed,colliders}=make();const chairSeatHeight=shed.fujita.userData.seatHeight;shed.tick(.1,44);assert.equal(shed.routine.state,'watching');
+ for(let i=0;i<600;i++){shed.tick(.1,45);const p=shed.fujita.getWorldPosition(new THREE.Vector3());if(shed.routine.state==='to-boat'&&p.z>-56.65)assert.ok(!colliders.some(c=>standingHitsRect(p.x,p.z,.2,p.y,c)),`clear ${p.x},${p.z}`);}
  assert.equal(shed.routine.state,'sleeping');assert.equal(shed.fujita.userData.heldItem,undefined);assert.equal(shed.fujita.userData.seatHeight,undefined);assert.equal(shed.fujita.userData.sleeping,true);
  const p=shed.fujita.getWorldPosition(new THREE.Vector3());assert.ok(Math.abs(p.x-HOUSEBOAT.x-HOUSEBOAT.bed[0])<.001);assert.ok(Math.abs(p.z-HOUSEBOAT.z-HOUSEBOAT.bed[2])<.001);
- shed.tick(.1,0);assert.equal(shed.routine.state,'sleeping');for(let i=0;i<600;i++)shed.tick(.1,360);assert.equal(shed.routine.state,'watching');assert.equal(shed.fujita.userData.seatHeight,chairSeatHeight);assert.equal(shed.fujita.rotation.x,0);assert.equal(shed.fujita.userData.hatOff,undefined);shed.dispose();
+ shed.tick(.1,90);assert.equal(shed.routine.state,'sleeping');for(let i=0;i<600;i++)shed.tick(.1,360);assert.equal(shed.routine.state,'watching');assert.equal(shed.fujita.userData.seatHeight,chairSeatHeight);assert.equal(shed.fujita.rotation.x,0);assert.equal(shed.fujita.userData.hatOff,undefined);shed.dispose();
 });
 test('night boot is on the sofa with the same resident',()=>{const {shed}=make();shed.tick(0,90);assert.equal(shed.routine.state,'sleeping');for(let i=0;i<20;i++)shed.tick(.1,90);assert.equal(shed.fujita.parent,shed.group);assert.ok(!shed.boat.group.getObjectByName('Mr Fujita'));shed.dispose();});
 test('pier, gangway and every walking segment are clear',()=>{
@@ -26,7 +26,7 @@ test('pier, gangway and every walking segment are clear',()=>{
  for(let z=SHED_PIER.minZ+.45;z<SHED_PIER.maxZ-.45;z+=.1){const x=PORT_SHED.x+PORT_SHED.depth/2+.65;assert.ok(!colliders.some(c=>standingHitsRect(x,z,.3,groundHeight(x,z),c)));}shed.dispose();
 });
 test('clock reversal reverses the current walk continuously',()=>{
- assert.equal(fujitaAsleep(1409),false);assert.equal(fujitaAsleep(1410),true);assert.equal(fujitaAsleep(359),true);assert.equal(fujitaAsleep(360),false);
+ assert.equal(fujitaAsleep(44),false);assert.equal(fujitaAsleep(45),true);assert.equal(fujitaAsleep(359),true);assert.equal(fujitaAsleep(360),false);
  const {shed}=make();shed.tick(.1,1409);for(let i=0;i<40;i++)shed.tick(.1,1410);const p=shed.fujita.position.clone();shed.tick(.1,1409);assert.ok(p.distanceTo(shed.fujita.position)<.1);for(let i=0;i<200;i++)shed.tick(.1,1409);assert.equal(shed.routine.state,'watching');shed.dispose();
 });
 test('cargo calls never overlap the houseboat or gangway',()=>{
@@ -80,7 +80,7 @@ test('standing player clearance follows Fujita through the gangway and cabin in 
 });
 
 test('the actual sleeping head rests on the pillow, which rests on the sofa',()=>{
- const {shed}=make();shed.tick(0,1410);for(let i=0;i<100;i++)shed.tick(.1,1410);
+ const {shed}=make();shed.tick(0,45);for(let i=0;i<100;i++)shed.tick(.1,45);
  shed.boat.group.updateMatrixWorld(true);shed.group.updateMatrixWorld(true);
  const head=new THREE.Box3().setFromObject(shed.actor.avatar.face.head,true),centre=head.getCenter(new THREE.Vector3());
  const ray=new THREE.Raycaster(new THREE.Vector3(centre.x,head.min.y+.1,centre.z),new THREE.Vector3(0,-1,0));

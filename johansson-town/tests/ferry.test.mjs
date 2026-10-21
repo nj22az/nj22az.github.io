@@ -132,14 +132,15 @@ test('her lights, engines and whistle: lit under way after dark, quiet on shore 
  const r=createFerryRun({parent:new THREE.Group(),colliders:[]}),nav=run=>run.ferry.getObjectByName('Masthead light').material.color.getHex()!==0x333333;
  r.update(.1,21*60,0);r.parkAt('town');r.update(.1,21*60,.1);assert.equal(nav(r),false,'no navigation lights alongside');
  assert.equal(r.audio.engines,'idle','in service at nine in the evening: a generator running');
- r.update(.1,23*60,.2);assert.equal(r.audio.engines,'off','after the last boat she lies on shore power');
- const s=ferryServiceFixture({minute:21*60}),q=QUICK_CROSSING.town;s.player.position.set(q.stand[0],q.ground,q.stand[1]);s.run.beginCrossing('airport');
- assert.equal(nav(s.run),false,'a request does not put the vessel under way');s.until(()=>s.run.audio.whistle.log.length===3);
+ r.update(.1,23*60+30,.2);assert.equal(r.audio.engines,'off','after the last boat back she lies on shore power');
+ // Thuan's boat home, the 22:15 (world/ferry-timetable.js): she prepares it herself at 22:12.
+ const s=ferryServiceFixture({minute:22*60+11.9}),q=QUICK_CROSSING.town;s.player.position.set(q.stand[0],q.ground,q.stand[1]);s.until(()=>!!s.run.operation);
+ assert.equal(nav(s.run),false,'preparing does not put the vessel under way');s.until(()=>s.run.audio.whistle.log.length===4);
  assert.equal(nav(s.run),true,'navigation lights on under way at night');assert.equal(s.run.ferry.getObjectByName('Port sidelight').material.color.getHex(),0xff3a2a,'red to port');
- const w=s.run.audio.whistle;assert.deepEqual(w.log.map(s=>s.kind),['prolonged','astern','prolonged'],'a prolonged blast and three short leaving the berth, a prolonged blast at the breakwater');
- assert.ok(Math.hypot(w.log[2].x-BREAKWATER.minX,w.log[2].z-BREAKWATER.z)<16,'the breakwater signal is sounded at its end');
+ const w=s.run.audio.whistle;assert.deepEqual(w.log.map(s=>s.kind),['departure','prolonged','astern','prolonged'],'the horn two minutes before, a prolonged blast and three short leaving the berth, a prolonged blast at the breakwater');
+ assert.ok(Math.hypot(w.log[3].x-BREAKWATER.minX,w.log[3].z-BREAKWATER.z)<16,'the breakwater signal is sounded at its end');
  assert.ok(['manoeuvring','sea'].includes(s.run.audio.engines));
- s.until(()=>s.run.operation.sailingKind==='sea'&&s.run.audio.engines==='sea');s.run.update(.1,12*60);assert.equal(nav(s.run),false,'no navigation lights by day');assert.equal(s.run.audio.engines,'sea');
+ s.until(()=>s.run.operation.sailingKind==='sea'&&s.run.audio.engines==='sea');assert.equal(s.run.audio.engines,'sea');   // by day she sails unlit: ferry-timetable.test.mjs, the 08:45
  // Her day: generators on before the first boat, shore power after the last.
  assert.ok(FERRY_DAY.generators<FERRY_DAY.inService&&FERRY_DAY.inService<FERRY_DAY.shorePower);
 });
@@ -147,8 +148,8 @@ test('her lights, engines and whistle: lit under way after dark, quiet on shore 
 test('both berths have four working lines whose returned eyes continue through the fairlead to visible coils aboard',async()=>{
  const {FERRY_MOORING,FERRY_MOORINGS}=await import('../src/world/ferry.js');
  const {MINATO_BERTH}=await import('../src/world/minato-berth.js');
- const s=ferryServiceFixture(),q=QUICK_CROSSING.town,{run,group:parent}=s;s.player.position.set(q.stand[0],q.ground,q.stand[1]);
- assert.equal(run.moored,true);
+ const s=ferryServiceFixture({minute:8*60+41.9}),q=QUICK_CROSSING.town,{run,group:parent}=s;s.player.position.set(q.stand[0],q.ground,q.stand[1]);
+ assert.equal(run.moored,true);assert.equal(run.berth,'town');
  const lines=parent.getObjectByName('Minato Maru mooring lines');assert.ok(lines.visible);
  assert.equal(FERRY_MOORING.lines.length,MINATO_BERTH.bitts.length);
  const segs=lines.children;assert.equal(segs.length,FERRY_MOORING.lines.length*4,'three rope segments and one eye per working line');
@@ -161,7 +162,7 @@ test('both berths have four working lines whose returned eyes continue through t
   assert.ok(Math.abs(local.x)>3.5,l.name+' leaves from her side ('+local.x.toFixed(2)+')');
   assert.ok(start.y>end.y,l.name+' slopes down to the pier');
  }
- run.beginCrossing('airport');assert.equal(run.moored,true,'the departure request cannot discard the moorings');s.until(()=>run.operation.stage==='letting-go');
+ s.until(()=>!!run.operation);assert.equal(run.moored,true,'beginning a sailing cannot discard the moorings');s.until(()=>run.operation.stage==='letting-go');
  const previous=new Map(),observed=new Set();
  for(let i=0;i<6000&&run.operation.stage!=='passage';i++){
   s.tick(.1);

@@ -1,7 +1,7 @@
 import {ganahaAtWindow} from './ganaha.js';
 import {izakayaOpen} from './social.js';
 import {BOTTLE_KEEP} from '../world/interiors/izakaya-dressing.js';
-import {harbourTimetable} from './commuter-schedule.js';
+import {ferryTimetableText} from '../world/ferry-timetable.js';
 
 /**
  * What you can do with the things in Minato (world/interiors/izakaya-interactive.js):
@@ -15,10 +15,10 @@ const SONGS=Object.freeze([
  {title:'Summer’s Over',singer:'Yuki Arakaki, 1997',lines:['The beach umbrellas folded early,','the shaved-ice flags are taken down,','but you still smell of sun and salt','the first cold night back in the town.'],nao:'“That was on the radio all summer,” says Thao. “I am so tired of it. Sing it again.”'},
 ]);
 const CALLS=Object.freeze([
- // The harbour office reads you the real timetable (commuter-schedule.js).
- ['Harbour office',minutes=>'“Harbour office.” The duty clerk reads it off the board:\n\n'+harbourTimetable(minutes)],
+ // The harbour office reads you the real timetable (world/ferry-timetable.js).
+ ['Harbour office',minutes=>'“Harbour office.” The duty clerk reads it off the board:\n\n'+ferryTimetableText(minutes)],
  // Ms Ganaha keeps the ferry desk from noon to 22:15 (people/ganaha.js); after that it rings out.
- ['Ferry desk',minutes=>ganahaAtWindow(minutes)?'Ms Ganaha picks up on the fourth ring. “Port Terminal. The boat goes on request, love: come to the window, and she sails when the cars are aboard. The commuter boats are in at half past eight, half past two and ten. Are you at Minato? Say hello to Thao.”':'The ferry desk rings and rings. Ms Ganaha keeps the window from noon until a quarter past ten; tomorrow, then.'],
+ ['Ferry desk',minutes=>ganahaAtWindow(minutes)?'Ms Ganaha picks up on the fourth ring. “Port Terminal. She keeps her timetable, love, and she does not wait: out of Minato at half past seven, a quarter to nine, a quarter to three and a quarter past ten. The commuter boats are in at half past eight, half past two and ten. Are you at Minato? Say hello to Thao.”':'The ferry desk rings and rings. Ms Ganaha keeps the window from noon until a quarter past ten; tomorrow, then.'],
  ['Sakura','“Sakura Shōten!” Thuan sounds out of breath. “We close at eight — oh, it’s you. Are you at Thao’s? Order the sardines. Don’t tell her I said so.”'],
 ]);
 

@@ -2,7 +2,7 @@ import {actionFor,svg} from '../ui/icons.js';
 
 const clean=label=>String(label||'').replace(/^(?:E|Enter|ACTION)\s*·\s*/i,'').trim();
 const action=(id,label,icon,key='')=>({id,label,icon,key,primary:false});
-const IDs=['act','enterBuildingButton','exitRoomButton','standButton','orderButton','eatButton','drink'];
+const IDs=['act','enterBuildingButton','exitRoomButton','standButton','orderButton','eatButton','drink','goAshoreButton','stayAboardButton'];
 
 /** The rail offers one next action, plus the choices that make sense beside it. */
 export function contextActions(state={}){
@@ -10,6 +10,12 @@ export function contextActions(state={}){
  if(!playing||paused)return {actions:[],status:''};
  const actions=[];
  const add=(id,label,icon,key)=>{if(!actions.some(a=>a.id===id))actions.push(action(id,label,icon,key));};
+ // Two minutes before the Minato Maru sails, aboard (island/play.js departurePrompt): go ashore, or stay and cross.
+ if(state.departure&&!seated){
+  add('goAshoreButton','Go ashore','exit','E');add('stayAboardButton','Stay aboard','stand');
+  actions[0].primary=true;
+  return {actions,status:'Departing '+state.departure.time+' for '+state.departure.place};
+ }
  const target=clean(state.targetLabel),enter=clean(state.enterLabel);
  if(seated){
   if(table&&canEat)add('eatButton','Eat','bowl','E');

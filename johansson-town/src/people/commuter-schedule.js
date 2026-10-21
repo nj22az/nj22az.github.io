@@ -6,9 +6,9 @@ const shifts={
  // Thuan: the 08:30 boat from Kitano-jima, the shop 09:00–20:00 and its closing restock, the 22:00 boat home (docs/CAST-CONSOLIDATION.md addendum 4).
  Thuan:{arrival:510,start:540,finish:1200,departure:1320},
  Nhung:{arrival:510,start:540,finish:1110,departure:1320},
- // Chin: the ferry's motorman (ferry-crew.js FERRY_WORKING_DAY, 06:05–22:20, social.js keeps his street body at the
+ // Chin: the ferry's motorman (ferry-crew.js FERRY_WORKING_DAY, 06:05–23:15, social.js keeps his street body at the
  // terminal meanwhile); the evening after he signs off is his, the workshop bench and the izakaya.
- Chin:{arrival:360,start:365,finish:1340,departure:1320},
+ Chin:{arrival:360,start:365,finish:1395,departure:1320},
  'Mrs Sato':{arrival:510,start:540,finish:1260,departure:1320},
  // Tetsuo lives in the Front-Row yard (never takes the boat): lunch at Sato, the bench from five until midnight (the workshop's evening).
  Tetsuo:{arrival:870,start:1020,finish:1440,departure:1950},
@@ -75,32 +75,6 @@ export function nextService(minutes){
 export function serviceTime(minutes){
  const m=minuteOfDay(minutes);
  return String(Math.floor(m/60)).padStart(2,'0')+':'+String(Math.floor(m%60)).padStart(2,'0');
-}
-/** The stop notice reads the same clock and schedule as the bus. */
-export function harbourTimetable(minutes){
- return ferryTimetable(minutes);
- const m=minuteOfDay(minutes),current=HARBOUR_LINE.find(s=>m>=s&&m<s+BUS_DWELL);
- const due=nextService(minutes);
- const status=current===undefined
-  ?'Next arrival: '+serviceTime(due.service)+(due.wait===0?' · due now':' · in '+Math.ceil(due.wait)+' town minutes')
-  :'Scheduled stop: '+serviceTime(current)+'–'+serviceTime(current+BUS_DWELL);
- return 'Harbour Line · Three services daily (town time)\nArrival → Departure\n'
-  +HARBOUR_LINE.map(s=>serviceTime(s)+' → '+serviceTime(s+BUS_DWELL)).join('\n')
-  +'\n\nThe bus waits '+BUS_DWELL+' town minutes at each stop.\n'+status;
-}
-/**
- * The ferry's service as the Port Terminal states it (port-building.js poster, port-hall.js board,
- * the boarding menu in island/play.js): the Minato Maru crosses to Kitano-jima on request, and
- * brings the commuters in at the Harbour Line's three times, lying alongside for BUS_DWELL minutes.
- */
-function ferryTimetable(minutes){
- const m=minuteOfDay(minutes),current=HARBOUR_LINE.find(s=>m>=s&&m<s+BUS_DWELL);
- const due=nextService(minutes);
- const status=current===undefined
-  ?'Next commuter boat in: '+serviceTime(due.service)+(due.wait===0?' · due now':' · in '+Math.ceil(due.wait)+' town minutes')
-  :'The commuter boat is alongside: '+serviceTime(current)+'–'+serviceTime(current+BUS_DWELL);
- return 'Minato Maru · Minato ⇄ Kitano-jima · '+CROSSING_MINUTES+'-minute crossing\nCrossings on request: buy a return at the Port Terminal window and board by the gangway on the outer pier.\n'
-  +'Commuter boats in to Minato: '+HARBOUR_LINE.map(serviceTime).join(' · ')+'. Each lies alongside '+BUS_DWELL+' town minutes.\n'+status;
 }
 export function shiftActive(profile,minutes){
  const shift=shiftFor(profile),e=elapsed(profile,minutes);

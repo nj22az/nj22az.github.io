@@ -91,7 +91,7 @@ test('a shore hand can acknowledge arrival but waits without a gesture or work c
 
 test('Kai goes home to the Shiroma house after the last boat and is back on the pier before the crew sign on',()=>{
  shore.update(.2,[],true,NOON);const b=shore.bodies.get('airport'),post=position(b.g).clone();
- assert.equal(KITANO_HAND_DAY.home,FERRY_WORKING_DAY.signOff);assert.ok(KITANO_HAND_DAY.out<FERRY_WORKING_DAY.signOn);
+ assert.equal(KITANO_HAND_DAY.home,22*60+50,'after the last boat leaves his pier');assert.ok(KITANO_HAND_DAY.out<FERRY_WORKING_DAY.signOn);
  assert.equal(kitanoHandOut(NOON),true);assert.equal(kitanoHandOut(23*60),false);assert.equal(kitanoHandOut(3*60),false);
  let steps=0;
  for(;steps<6000&&b.rest!=='home';steps++){const p=position(b.g);shore.update(.2,[],true,23*60);const q=position(b.g);assert.ok(p.distanceTo(q)<.31,'walks home');assert.ok(!b.blocked,b.blocked);}

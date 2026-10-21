@@ -9,10 +9,10 @@ import {liveNameFor} from './cast.js';
  * invented for a post and no post has an anonymous body: the five who were job roles are people (Ryo, Ren, Aya, Jun,
  * Kai), with cabins aboard and, for Kai, the Shiroma house.
  *
- * Her working day (FERRY_WORKING_DAY). The ship is in service from the generators at 06:10 to the shore power at 22:15
- * (FERRY_DAY), and she sails on request within it, so the crew keep one long day aboard, the way a small island ferry's
- * crew does: all eight signed on from 06:05, every station manned when she moves, rest and meals alongside between
- * sailings (the `waiting` watch below), everyone off at 22:20 once the log is written. The bosun's week on and week off
+ * Her working day (FERRY_WORKING_DAY). The ship is in service from the generators at 06:10 to the shore power at 23:10
+ * (FERRY_DAY), and she sails her timetable within it (world/ferry-timetable.js), the last boat back from Kitano-jima
+ * at 22:45, so the crew keep one long day aboard, the way a small island ferry's crew does: all eight signed on from 06:05, every station manned when she moves, rest and meals alongside between
+ * sailings (the `waiting` watch below), everyone off at 23:15 once the log is written. The bosun's week on and week off
  * (Kōji's relief weeks) and the relief engineer's cover for the chief (ferry-crew-aboard.js) are the only reliefs the
  * roster has, so a day off for the rest is not modelled; nobody holds two stations at once. The master is sober for the
  * whole of it: Fujita's shed, the set and the beer begin after he signs off (world/fujita-day.js reads this constant).

@@ -76,7 +76,7 @@ test('one actor, one station: every watch of every phase gives each post a place
  }
  assert.equal(FUJITA_DAY.start,FERRY_WORKING_DAY.signOff,'the first bottle is poured when he signs off');
  for(let m=FUJITA_DAY.collect;m<FUJITA_DAY.start;m+=3){assert.equal(fujitaBeer(m).tipsy,0,'sober at '+m);assert.equal(tvProgramme(m),'off');}
- assert.equal(KITANO_HAND_DAY.home,FERRY_WORKING_DAY.signOff,'Kai goes home when the crew sign off');
+ assert.equal(KITANO_HAND_DAY.home,22*60+50,'Kai goes home once the last boat has left Kitano-jima (22:45)');
  // Nobody holds a shift the roster retired: the former master and the former oiler have no post, no ferry day and no body (phase 4).
  for(const name of ['Bus driver','Mr Higa Jr']){assert.ok(!FERRY_PEOPLE.includes(name),name);assert.equal(castMember(name),null,name+' has no body');}
  // Riku is nine: no freight work in anybody's day or place.
