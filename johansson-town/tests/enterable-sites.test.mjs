@@ -69,9 +69,9 @@ for(const s of SITES.filter(s=>s.insideOnly))WAYS_IN.push({how:`inside only (${s
 const R=.28,PLAYER_RADIUS=R;
 /** Builds a site's room through game.js roomShell, as the game does: its layout, its solids and its prompts. */
 function buildRoom(s){
- const room=new THREE.Group(),colliders=[],labels=[],noop=()=>{};
+ const room=new THREE.Group(),colliders=[],labels=[],prompts=[],noop=()=>{};
  const context={...scope,THREE,Math,Number,Object,Array,Error,room,town:{visible:true},SITES,world,current:s,activeRoomLayout:null,minutes:720,elapsed:0,
-  player:new THREE.Object3D(),clearRoom:noop,reg:(o,label)=>labels.push(label),roomColliders:colliders,
+  player:new THREE.Object3D(),clearRoom:noop,reg:(o,label)=>{labels.push(label);prompts.push({o,label});},roomColliders:colliders,
   roomCollider:(x,z,w,d,height=2.8,minY=0)=>{const c={x,z,w,d,height,minY};colliders.push(c);return c;},
   activities:{state:{},action:noop,save:noop,unreadPost:0,post:noop},islandPlay:null,leaveRoom:noop,crossThreshold:noop,enterRoom:noop,takeNahaBoat:noop,
   takeSakuraStair:noop,evacuateSakuraOffice:noop,sleepUntilMorning:noop,playerRecipe:()=>null,hands:{},say:noop,weatherMode:'fixed',newsOn:()=>false,
@@ -83,7 +83,8 @@ function buildRoom(s){
  // Minato is built as its room's props are added (game.js addRoomProps), from the same builder.
  if(!layout&&s.id==='izakaya')layout=buildIzakayaRoom({room,box:context.box,reg:context.reg,collider:context.roomCollider,action:noop,exit:noop,signTexture:()=>null});
  for(const c of layout?.colliders||[])if(!colliders.includes(c))colliders.push(c);
- return {layout,colliders,labels};
+ room.updateMatrixWorld(true);
+ return {layout,colliders,labels,prompts};
 }
 /** A step indoors by the game's rules (game.js roomStep): the walk's floors and stair, the room's bounds and solids. */
 function roomRules(layout,colliders){
@@ -102,18 +103,33 @@ function reach(step,[x0,y0,z0],dx,dz,far=1){
  return far;
 }
 const DIRECTIONS=[[0,-1],[1,0],[0,1],[-1,0]];
-/** The floors of a room of more than one storey he walks onto from a point (a flood over a 0.2 m grid). */
-function floorsReached(walk,step,[x0,y0,z0],bounds){
- const seen=new Set(),floors=new Set(),queue=[[x0,y0,z0]],key=(x,z,y)=>`${Math.round(x*5)},${Math.round(z*5)},${Math.round(y*4)}`;
- seen.add(key(x0,z0,y0));
- while(queue.length&&seen.size<40000){
-  const [x,y,z]=queue.shift();const on=walk.floorAt(x,z,y);if(on)floors.add(on.floor.id);
+/** Every place [x, y, z] he walks to from a point inside a room (a flood over a 0.2 m grid, storeys and stairs too). */
+function walked(step,[x0,y0,z0],bounds){
+ const key=(x,z,y)=>`${Math.round(x*5)},${Math.round(z*5)},${Math.round(y*4)}`,seen=new Set([key(x0,z0,y0)]),cells=[[x0,y0,z0]];
+ for(let i=0;i<cells.length&&cells.length<40000;i++){
+  const [x,y,z]=cells[i];
   for(const [dx,dz] of [...DIRECTIONS,[1,1],[1,-1],[-1,1],[-1,-1]]){
    const nx=x+dx*.2,nz=z+dz*.2;if(nx<bounds.minX||nx>bounds.maxX||nz<bounds.minZ||nz>bounds.maxZ)continue;
-   const s=step(x,y,z,nx,nz);if(!s.ok)continue;const k=key(nx,nz,s.y);if(seen.has(k))continue;seen.add(k);queue.push([nx,s.y,nz]);
+   const s=step(x,y,z,nx,nz);if(!s.ok)continue;const k=key(nx,nz,s.y);if(seen.has(k))continue;seen.add(k);cells.push([nx,s.y,nz]);
   }
  }
+ return cells;
+}
+/** The floors of a room of more than one storey he walks onto from a point. */
+function floorsReached(walk,step,from,bounds){
+ const floors=new Set();for(const [x,y,z] of walked(step,from,bounds)){const on=walk.floorAt(x,z,y);if(on)floors.add(on.floor.id);}
  return floors;
+}
+const EXIT_LABEL=/^(?:exit|leave|step outside|go out)\b/i,DOWN_LABEL=/downstairs|fire escape/i;
+/**
+ * Whether he walks from a point to a way out: to within 1.45 m of the room's exit point on its floor, where the Exit
+ * button shows (game.js updateContextControls), or within reach of a prompt that takes him out (game.js interaction).
+ */
+function walksOut(layout,step,from,bounds,prompts,label){
+ const exit=layout.exit,exitFloor=layout.exitFloor??0,v=new THREE.Vector3();
+ const targets=prompts.filter(p=>label.test(p.label)).map(p=>p.o.getWorldPosition(v).clone());
+ return walked(step,from,bounds).some(([x,y,z])=>exit&&!label.source.includes('downstairs')&&Math.hypot(x-exit[0],z-exit[2])<1.45&&(!layout.walk||Math.abs(y-exitFloor)<1)
+  ||targets.some(t=>Math.hypot(x-t.x,y+1-t.y,z-t.z)<2.6));
 }
 
 /** How much floor (m²) he walks over from a point, up to 8 m² (a flood over a 0.2 m grid). */
@@ -165,7 +181,7 @@ function streetExit(s){
 function interiorFaults(s){
  const faults=[];let built;
  try{built=buildRoom(s);}catch(e){return [`the room does not build (${e.message})`];}
- const {layout,colliders,labels}=built;
+ const {layout,colliders,labels,prompts}=built;
  if(!layout)return ['no room is built for it'];
  const {blocked,step}=roomRules(layout,colliders),spawn=layout.spawn||[0,0,4.3],bounds=layout.bounds||{minX:-5,maxX:5,minZ:-5,maxZ:5};
  const arrivals=[['first person',[spawn[0],spawn[1]??0,spawn[2]]],['behind him',stepInside([spawn[0],spawn[1]??0,spawn[2]],layout.yaw??0,{step})]];
@@ -184,9 +200,10 @@ function interiorFaults(s){
   const reached=new Set(layout.walk.floors.filter(f=>floors.has(f.id)).map(level)),missing=[...new Set(layout.walk.floors.map(level))].filter(l=>!reached.has(l));
   if(missing.length)faults.push(`storeys he cannot walk onto: ${missing.map(l=>l+' m').join(', ')} (${layout.walk.floors.filter(f=>missing.includes(level(f))).map(f=>f.id).join(', ')})`);
  }
- if(s.insideOnly){
-  if(!labels.some(l=>/downstairs|fire escape/i.test(l)))faults.push('no way back down or out from inside');
- }else{
+ // The way out, walked from where he arrives: the Exit button's spot, or a prompt that takes him out (from a room entered
+ // only from inside, the way back down).
+ if(!walksOut(layout,step,arrivals[1][1],bounds,prompts,s.insideOnly?DOWN_LABEL:EXIT_LABEL))faults.push(s.insideOnly?'he cannot walk to a way back down or out':'he cannot walk to the Exit button\'s spot or to a prompt that takes him out');
+ if(!s.insideOnly){
   const [x,z]=streetExit(s),y=groundHeight(x,z);
   if(!routeAt(x,z,R))faults.push(`the street exit ${x.toFixed(2)},${z.toFixed(2)} is not walkable ground`);
   else if(solidOutside(x,z,y))faults.push(`the street exit ${x.toFixed(2)},${z.toFixed(2)} is inside a solid`);
@@ -203,8 +220,12 @@ test('every way in leads to a fully functional interior: it builds, he arrives o
  assert.deepEqual(failures,[],'\n  '+failures.join('\n  '));
 });
 
-test('the Nakamura family\'s door takes him up their own stair to the flat, not into the treads',()=>{
+test('the Nakamura family\'s door takes him up their own stair to the flat, not into the treads',async()=>{
  const s=WAYS_IN.find(w=>w.site.id==='home-nakamura')?.site;assert.ok(s,'the family door is a way in');
+ // The door faces into the building (its frame's +x from Main Street): entryFacing is the heading of a man walking in,
+ // and with it reversed he arrived looking back out at the stairwell's open end and left 0.6 m into the shop.
+ const {NAKAMURA_PLAN,NAKAMURA_HOME_DOOR}=await import('../src/world/nakamura-plan.js');
+ assert.ok(-Math.sin(s.entryFacing)*(NAKAMURA_PLAN.x-NAKAMURA_HOME_DOOR[0])>0,'he walks in towards the building, not out of it');
  // The game takes the step inside by his feet's own rules (game.js enterRoom → room-arrival.js stepInside with roomStep).
  assert.match(slice('async function enterRoom(','\nfunction leaveRoom('),/stepInside\([^;]*\{step:roomStep/);
  const {layout,colliders}=buildRoom(s),{step}=roomRules(layout,colliders);
