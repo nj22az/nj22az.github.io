@@ -36,6 +36,8 @@ Linux/Steam Deck is the first development and test platform; macOS, iPad and iPh
 
 0.2.13 carries main b51ef619 of 21 October: separate school, Community Hall and clinic buildings, Nils's study on Kitano-jima, the compact shared Minato/Sato dining interior, the walnut back bar and seated drinking animation. Linux retains its full simulation, controller interface, playable residents, owned beds, save profile and updater. The proposed independent ferry timetable remains a brief. The evening liquor-shop bench is not reliably occupied; the claim in the 0.2.12 notes was too strong.
 
+0.2.14 clears inherited centre anchors from the Linux action rail, keeping it in the right-hand column already reserved by the captions. Extended acceptance checks rectangle intersections on both axes, approaches the actual home door before pressing B, and compares selected drawings with the roster's authored-avatar mapping (Mac deliberately retains the former drawing). Physical Steam Deck acceptance remains pending.
+
 The cycling and Thuan storage-room minigames are retired in both editions. Linux no longer bundles the separate storage game. Normal shopping, stocking routines and decorative bikes remain.
 
 Development comparisons and release status are recorded at [Linux Port](https://nj22az.github.io/linux-port/).
