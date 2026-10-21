@@ -37,3 +37,10 @@ sakura-rack-paths.test.mjs
 sakura-small-office.test.mjs
 sakura-stairs.test.mjs
 sakura-upstairs.test.mjs
+ambient-resident-blocking.test.mjs
+bookkeeper-return-route.test.mjs
+ramen-kitchen.test.mjs
+resident-after-work.test.mjs
+visual-audit-freeze.test.mjs
+systems.test.mjs
+live-features.test.mjs

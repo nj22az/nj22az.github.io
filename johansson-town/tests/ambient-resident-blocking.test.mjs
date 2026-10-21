@@ -15,13 +15,17 @@ test('actual ambient neighbours block the player and appear in the same MCP navi
  const navigation=source.slice(nav,source.indexOf('\n enter(id)',nav));
  const context={THREE,world:{people:[],neighbours:neighbours.entities,colliders:[]},current:null,
   PLAYER_RADIUS:.28,NPC_RADIUS:.35,circleHitsCircle,inEntrance:()=>false,groundHeight:()=>0,
-  townBoundsBlocked:()=>false,standingHitsRect:()=>false};
+  townBoundsBlocked:()=>false,standingHitsRect:()=>false,
+  // Outdoors (current is null) the game's roomWalk() is null: residentsAt() asks it for the storey check.
+  roomWalk:()=>null};
  vm.runInNewContext(source.slice(start,end)+'\nglobalThis.audit={'+navigation+'route(){return null;}};',context);
- const fisherman=neighbours.entities.find(g=>g.userData.name==='Mr Ōshiro');assert.ok(fisherman.visible);const p=fisherman.getWorldPosition(new THREE.Vector3());
- assert.equal(context.residentBlocked(p.x,p.z),true,'Player cannot walk through the live fisherman');
- assert.ok(context.audit.navigation(p.x,p.z).residents.includes('Mr Ōshiro'),'MCP reports that same real body');
+ // Mr Ōshiro retired in phase 4 of the cast consolidation (AGENTS.md, docs/CAST-CONSOLIDATION.md, roster.js RETIRED);
+ // the doctor on her afternoon house calls is the ambient neighbour out in the street at 14:00.
+ const walker=neighbours.entities.find(g=>g.userData.name==='Dr Kakazu');assert.ok(walker.visible);const p=walker.getWorldPosition(new THREE.Vector3());
+ assert.equal(context.residentBlocked(p.x,p.z),true,'Player cannot walk through the live neighbour');
+ assert.ok(context.audit.navigation(p.x,p.z).residents.includes('Dr Kakazu'),'MCP reports that same real body');
  assert.equal(context.residentBlocked(p.x+1,p.z),false,'Player can pass at a clear distance');
- parent.position.x=10;const moved=fisherman.getWorldPosition(new THREE.Vector3());assert.equal(context.residentBlocked(moved.x,moved.z),true,'Collision follows the actual world transform');
- fisherman.visible=false;assert.equal(context.residentBlocked(moved.x,moved.z),false,'An absent neighbour cannot block an empty street');
- fisherman.visible=true;fisherman.userData.inVehicle=true;assert.equal(context.residentBlocked(moved.x,moved.z),false,'Seated drivers use their vehicle body');
+ parent.position.x=10;const moved=walker.getWorldPosition(new THREE.Vector3());assert.equal(context.residentBlocked(moved.x,moved.z),true,'Collision follows the actual world transform');
+ walker.visible=false;assert.equal(context.residentBlocked(moved.x,moved.z),false,'An absent neighbour cannot block an empty street');
+ walker.visible=true;walker.userData.inVehicle=true;assert.equal(context.residentBlocked(moved.x,moved.z),false,'Seated drivers use their vehicle body');
 });

@@ -9,7 +9,8 @@ const profile=name=>RESIDENTS.find(person=>person.name===name);
 test('commuters live in town after work instead of immediately clumping at the bus',()=>{
  // Mrs Sato closes with only the scheduled walk-to-bus hour remaining; unlike the
  // others, she has no idle layover to replace.
- const names=['Nhung','Chin','Reiko','Tetsuo','Thao','Officer Mori'];
+ // Reiko retired in phase 4 of the cast consolidation (AGENTS.md, docs/CAST-CONSOLIDATION.md, roster.js RETIRED).
+ const names=['Nhung','Chin','Tetsuo','Thao','Officer Mori'];
  const activities=[];
  const firstStops=names.map(name=>{
   const minutes=COMMUTER_SHIFTS[name].finish+10;
