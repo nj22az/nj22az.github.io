@@ -157,13 +157,92 @@ For step 2, the worst places in Main Street and the harbour are:
   - x −39, z −45: the Nishi quay's apron;
   - x −21, z −39: the docklands against the west yard.
 
+## Step 2: Main Street and the harbour on the generator (21 October 2026)
+
+Main Street, the bus plaza and the harbour are no longer drawn by the modules that stand on them. They are laid by one
+generator from the rulebook:
+
+- **The plans** say what lies where. `src/world/ground-plan.js` holds Main Street and the bus plaza, and
+  `src/world/ground-plan-harbour.js` holds the quays. A plan is a list of layers in the order a paving gang lays them:
+  the footway everywhere, then the carriageway cut through it, then the kerbs. Each layer is a rectangle of one class
+  or edge, with its top and the reason it is there. A top is a number, a straight grade, or flush with the surface it
+  is set in. `partitionPlan()` cuts the layers into disjoint pieces, so no two surfaces lie one on the other.
+- **The generator** is `src/world/ground-build.js`. It lays any list of plans as one merged mesh per class, each with
+  one shared material in the rulebook's colour and painted finish. It adds one mesh for each kind of edge: the kerbs,
+  the stone edging and the quay copings. A slab draws its sides only where they show: a kerb's face down to the road, a
+  ramp's flank, a quay's edge over the water. Steps 3 and 4 add their districts' plans in the same form.
+- **Main Street's datum is a kerb under the town's** (`ground-standard.js` `MAIN_STREET_DATUM`, −0.15 m). The rulebook
+  puts the footway a kerb above the road. The street was brought to that by lowering the carriageway and its bays, not
+  by raising the footways. So every shop door, step, drinks machine, bench and lamp on the footway stands where it
+  stood, and the footways stay flush with the yard, the park and the lawns behind them.
+  - The carriageway is graded back to the town's level where it leaves the street: onto the quay over its last 2 m
+    (7.5 %), onto the lane beyond the bus plaza over 3 m (5 %), and up onto Kitano Road's mouth (7.5 %). The mouth is
+    a raised table at the footway's level, so the footway crosses the side road on the flat.
+  - The plans declare these grades (`MAIN_STREET_GRADES`), and the audit measures the tops over the graded datum there
+    (`datumShift`).
+  - `layout.js` `planHeight` follows the lowered road (`streetDrop`), so people step down onto it. The traffic's wheels
+    stand on the laid ground (`groundTopAt`, `town-traffic.js`); before, they stood 4 cm into the old road.
+- **The kerbs**: 15 cm along the carriageway and round every bay (the freight pullout, the lay-by, the cargo
+  driveway), set 5 mm proud of the footway. They are dropped at both ends of the two zebras and at the bus stop's
+  crossing, with a ramp behind each drop, the kerb tapering down to it, and the yellow warning blocks bedded at the top
+  of the ramp, its flanks flared into the footway.
+  - The lay-by runs on past its bay to where its kerb used to be dropped (`MAIN_PARKING_LAYBY.kerbTo`). The harbour
+    master's car pulls out forwards and stays on the road's level.
+  - The car stands 10 cm further from the lay-by's kerb, and the delivery van's turn swings round west of the crown into
+    the pullout's north end (`town-traffic.js`). Wheels and bodies stay on the road, and parked cars stand on its top.
+  - The shop crossing's west end lands in the freight pullout. Its kerb is dropped at the pullout's south end, by the
+    bookshop's door.
+  - Its east end lands in Kitano Road's mouth, which rises to the footway's level: nothing to drop there.
+  - The service turnout's east half (to x 0.35) is footway now, with the bench, the post box and the utility cabinet on
+    it.
+- **The footways** are the reddish and beige pavers, kerb to shop front. Behind the west shop line and in front of the
+  East Row and the park, a strip of concrete runs out to where the old footway reached, flush with what lies beyond,
+  with a row of setts (stone edging) at its back. The building circuits under Main Street are masked
+  (`street-plan.js`): a shop front's apron is the street's paving.
+- **The quays** are one plan.
+  - The main quay keeps its level (−16 mm, where the ferry's plate is let in). It rises over its last 1.5 m to meet
+    Main Street's footways and road on their level.
+  - The Nishi and east aprons (6 cm) come down to the main quay over 1.5 m each.
+  - The Nishi apron runs under its seawall, where the bare island ground showed between them.
+  - North of the oil jetty, the east apron runs out to the water. Bare bank and the beach's tail showed there before.
+    The quay ends at the shore in a wall with its coping.
+  - The copings (the main quay's raised kerb with its bollards, the aprons' low yellow one) are the generator's.
+  - The quays meet the yard, the park and the lawns at a row of setts.
+- **Deleted**: the slabs, kerbs and copings that `harbour.js`, `boardwalk.js` (now only the street's paint and
+  ironwork, laid on the road at its height), `okinawa/quarters.js` (the East Row's aprons, the Nishi and east quays'
+  aprons and copings), `docklands-life.js` (the cargo yard's slab), `kitano-link.js` (the mouth, west of the back
+  strip) and the lane patches drew there. The bookshop's passage stops at the back strip.
+- **Also fixed on the way**:
+  - The audit leaves out the loose and the fitted, as it already did for crates: a drinks machine, a pallet, the
+    ferry's landing plate and the frame under a pier's deck.
+  - Mr Fujita's pier's boards are the rulebook's timber deck, a shade either way. Its toe boards are a mesh of their
+    own: a pier's edge, as a coping is a quay's.
+  - The oil jetty's pile heads no longer come up through its deck, and the outer pier's mass is the quay's concrete.
+  - Kitano Road's footway lies flush with the Main Street footway it runs on from. It stood 4 cm proud of it.
+
+Main Street and the harbour have no findings left. Elsewhere nothing is new, and what lay under the old slabs is
+counted where it now shows: the lot pad under the East Row's drinks machines (`lot-dressing.js`), 1.7 m².
+
+| District | Findings | Off colour m² | Wrong height m² | Out of place m² | Seams with no edge, m | Dead ends |
+|---|---|---|---|---|---|---|
+| Main Street | 48 → 0 | 775 → 0 | 360 → 0 | 15 → 0 | 97 → 0 | 0 |
+| Harbour | 36 → 0 | 424 → 0 | 354 → 0 | 48 → 0 | 46 → 0 | 0 |
+| Kitahama | 75 → 71 | 2243 → 2243 | 174 → 174 | 0 | 682 → 682 | 0 |
+| Nishi-machi | 31 → 28 | 782 → 778 | 12 → 9 | 0 | 413 → 411 | 0 |
+| West yard | 41 → 31 | 326 → 313 | 38 → 25 | 10 → 1 | 219 → 212 | 0 |
+| Harbour Park | 38 → 29 | 396 → 385 | 30 → 20 | 11 → 1 | 299 → 284 | 1 |
+| East lawn | 45 → 32 | 264 → 259 | 60 → 9 | 6 → 1 | 190 → 172 | 0 |
+| School | 22 → 22 | 219 → 219 | 169 → 169 | 16 → 16 | 27 → 27 | 0 |
+| Beach | 26 → 25 | 717 → 714 | 92 → 90 | 4 → 4 | 132 → 131 | 0 |
+| **All Minato** | **362 → 238** | **6146 → 4911** | **1290 → 497** | **110 → 21** | **2106 → 1918** | **1** |
+
 ## The order of the work
 
 Each step is merged only after the owner has seen photos of it.
 
 1. **The rulebook, the audit and the ratchet tests** (this step), the rule in `AGENTS.md`, and the parked cars rebuilt on
    `road-vehicles.js` (a separate job).
-2. **Main Street and the harbour**, drawn by one generator from the rulebook:
+2. **Main Street and the harbour** (done, above), drawn by one generator from the rulebook:
    - the asphalt goes dark grey;
    - the footways become pavers at kerb height behind a 15 cm kerb, dropped at the crossings;
    - the quay is laid at its own level with its coping;

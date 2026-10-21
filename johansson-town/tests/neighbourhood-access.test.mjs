@@ -42,8 +42,13 @@ function walkPath(points,label,support=null){
  }
  assert.ok(Math.hypot(x-points.at(-1)[0],z-points.at(-1)[1])<.001,label+' arrival');
 }
-test('built street, yard and town hall floors take priority over nearby garden and beach banks',()=>{
- for(const [x,z] of [[-.8,18],[1.5,18],[3,18],[4.9,18],[-8.5,26],[4.5,28],[-37.2,26],[-37.2,29],[-22,20],[35,25],[39.8,26.7]])
+test('built street, yard and town hall floors take priority over nearby garden and beach banks',async()=>{
+ // Main Street's ground is laid from its plan (ground-plan.js): its footway at its own top, a kerb over the carriageway.
+ const {mainStreetTop,MAIN_STREET_GROUND}=await import('../src/world/ground-plan.js');
+ for(const [x,z] of [[-.8,18],[1.5,18],[3,18],[4.9,18],[4.5,28]])
+  assert.equal(planHeight(x,z),mainStreetTop(x,z),'Main Street\'s laid floor at '+[x,z]);
+ assert.equal(planHeight(1.5,18),MAIN_STREET_GROUND.footway);
+ for(const [x,z] of [[-8.5,26],[-37.2,26],[-37.2,29],[-22,20],[35,25],[39.8,26.7]])
   assert.equal(planHeight(x,z),0,'finished flat floor at '+[x,z]);
 });
 test('town reaches both park benches and every residential gate with ordinary collision',()=>{

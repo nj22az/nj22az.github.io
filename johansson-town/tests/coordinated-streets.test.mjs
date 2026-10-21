@@ -20,8 +20,11 @@ test('every street patch has one owner, including oblique coastal joins',()=>{
   assert.ok(area(a)-remainder<1e-6,`${patches[i].route} overlaps ${patches[j].route}`);
  }
 });
-test('Main Street retains asphalt at residential junctions; retired overlays have no mesh',()=>{
- for(const z of [21,24,31,40,45]){
+test('Main Street retains asphalt at residential junctions; retired overlays have no mesh',async()=>{
+ // Up to the bus plaza's north edge the carriageway is the ground generator's (ground-plan.js), beyond it the lanes'.
+ const {laidAt,mainStreetPlan}=await import('../src/world/ground-plan.js');
+ for(const z of [21,24])assert.equal(laidAt(mainStreetPlan(),-2.75,z)?.cls,'road','Main Street\'s carriageway at '+z);
+ for(const z of [31,40,45]){
   const found=at(-2.75,z);assert.ok(found.length,'street connected at '+z);
   assert.ok(found.every(p=>p.surface==='asphalt'),'pedestrian paving cannot replace carriageway at '+z);
  }
@@ -45,12 +48,14 @@ test('built carriageways clear the turf and join Main Street on the shared datum
  const {createTown}=await import('../src/world/town.js');
  const {createIslandBusinesses}=await import('../src/world/businesses.js');
  const {GROUND_LAYER}=await import('../src/world/ground-layers.js');
+ const {streetDrop}=await import('../src/world/ground-plan.js');
  const world=createTown({scene:new THREE.Scene(),sites:createIslandBusinesses(),mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  world.group.updateMatrixWorld(true);
- const streets=[];world.group.traverse(o=>{if(o.isMesh&&['grid-lanes:asphalt','harbour-boardwalk-deck','Kitano Road carriageway'].includes(o.name))streets.push(o);});
+ const streets=[];world.group.traverse(o=>{if(o.isMesh&&['grid-lanes:asphalt','Carriageways','Kitano Road carriageway'].includes(o.name))streets.push(o);});
  const ray=new THREE.Raycaster(),down=new THREE.Vector3(0,-1,0);
- for(const [x,z] of [[-2.75,-20],[-2.75,21],[-2.75,32],[-2.75,44],[10,3.3],[24,3.3]]){
+ for(const [x,z] of [[-2.75,-20],[-2.75,21],[-2.75,28],[-2.75,32],[-2.75,44],[2,3.3],[10,3.3],[24,3.3]]){
+  // Main Street's carriageway lies a kerb under the datum and is graded back to it where the lanes go on (ground-plan.js).
   ray.set(new THREE.Vector3(x,1,z),down);const hit=ray.intersectObjects(streets,false)[0];
-  assert.ok(hit,'drawn asphalt at '+[x,z]);assert.ok(Math.abs(hit.point.y-GROUND_LAYER.lane)<1e-6,'one finished datum at '+[x,z]);
+  assert.ok(hit,'drawn asphalt at '+[x,z]);assert.ok(Math.abs(hit.point.y-(GROUND_LAYER.lane+streetDrop(x,z)))<1e-6,'one finished datum at '+[x,z]+': '+hit.point.y);
  }
 });

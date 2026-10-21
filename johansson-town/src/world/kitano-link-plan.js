@@ -7,7 +7,9 @@ export const KITANO_ROAD=Object.freeze({
  corners:Object.freeze([[-.5,3.3,0],[29.5,3.3,0]].map(Object.freeze)),
  lane:2.25,
  /** Offsets across the road, positive to the left of eastbound travel (south). */
- section:Object.freeze({north:-2.35,carriageway:2.25,footway:4.0,parapet:.25,kerb:.04}),
+ // The footway lies flush with the lawn and with Main Street's footways it runs on from (ground-standard.js: a footway
+ // with no road beside it at its back is laid flush); the kerb face along the carriageway stays.
+ section:Object.freeze({north:-2.35,carriageway:2.25,footway:4.0,parapet:.25,kerb:0}),
  /** Where the rise begins and ends, and the crest. Gradients stay at or under 8 %. */
  profile:Object.freeze({riseFrom:Infinity,crest:0,crestFrom:Infinity,crestTo:Infinity,grade:0,blend:0}),
  /** Town 30 km/h, bridge 40 km/h: scaled to the game's compressed distances (m/s). */

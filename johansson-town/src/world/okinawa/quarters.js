@@ -1,7 +1,7 @@
 import {buildFishingBoat,EAST_QUAY_BOAT_LOOKS} from '../harbour-boats.js';
 import {hangingRope} from '../timber-pier.js';
 import {SEA_LEVEL} from '../ocean.js';
-import {SHED_WALKWAY,FUJITA_PIER} from '../fujita-layout.js';
+import {SHED_WALKWAY} from '../fujita-layout.js';
 import {COURT_TERRACE} from '../park-layout.js';
 import {GROUND} from '../../render/ground-palette.js';
 /** The east lawn's south edge (east-lawn.js EAST_LAWN.minZ), where the seawall's return begins. */
@@ -113,8 +113,7 @@ function buildNishiGround(kit,solid){
  const P=NISHI.promenade;
  // The shared lane union supplies the promenade and cross streets.
  const Q=NISHI.quay;
- // Laid at the apron height: the second pier's deck runs in under its seaward edge.
- kit.block(Q.minX,Q.maxX,GROUND_LAYER.apron-.06,GROUND_LAYER.apron,Q.minZ,Q.maxZ+.6,GROUND.concrete);
+ // The quay's apron and its coping are the harbour's ground (ground-plan-harbour.js, laid by harbour.js).
  // The seawall along the shore, and its quay edge along the harbour.
  const S=NISHI.seawall;
  kit.block(S.x-S.thickness/2,S.x+S.thickness/2,-.7,S.height,NISHI.minZ,NISHI.maxZ+.4,0xb9b4a6);
@@ -125,12 +124,7 @@ function buildNishiGround(kit,solid){
  // walkway as the shelf its stringers rest on (timber-pier.js); the gap was 4.8 m wide for the old L-shaped slab,
  // and left 2.6 m of the shore's grass for a quay wall beside the pier (2026-10-19).
  const PIER_GAP=[SHED_WALKWAY.minX,SHED_WALKWAY.maxX];
- kit.block(PIER_GAP[0],PIER_GAP[1],-.7,FUJITA_PIER.top-.045-.15,Q.minZ-.45,Q.minZ,0xa9a497);
- for(const [x0,x1] of [[Q.minX-.6,PIER_GAP[0]],[PIER_GAP[1],Q.maxX]]){
-  kit.block(x0,x1,-.7,GROUND_LAYER.apron,Q.minZ-.45,Q.minZ,0xa9a497);
-  kit.block(x0,x1,GROUND_LAYER.apron,GROUND_LAYER.apron+.12,Q.minZ-.4,Q.minZ-.1,0xe0b93a);
-  solid({id:'west-quay-edge',x:(x0+x1)/2,z:Q.minZ-.25,w:x1-x0,d:.3,height:.4});
- }
+ for(const [x0,x1] of [[Q.minX-.6,PIER_GAP[0]],[PIER_GAP[1],Q.maxX]])solid({id:'west-quay-edge',x:(x0+x1)/2,z:Q.minZ-.25,w:x1-x0,d:.3,height:.4});
  for(const x of [-33.8]){kit.cyl(.16,.2,.42,x,.24,Q.minZ+.35,0x3a3f42,{segments:10});kit.cyl(.24,.24,.08,x,.47,Q.minZ+.35,0x3a3f42,{segments:10});solid({id:'bollard',x,z:Q.minZ+.35,w:.45,d:.45,height:.5});}
  // The north end opens into the residential street; no bank across the walk.
 
@@ -328,11 +322,9 @@ function shopFront(kit,solid,plot,frame,{anchor,inspect,onAction,getMinutes=()=>
 function buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes}){
  const depth=EAST_ROW.maxX-EAST_ROW.minX,x=(EAST_ROW.minX+EAST_ROW.maxX)/2;
  for(const plot of EAST_ROW.plots)shopFront(kit,solid,plot,{x,ry:-Math.PI/2,depth,front:EAST_ROW.minX,out:-1},{anchor,inspect,onAction,getMinutes});
- // The strip of ground between the pavement and each shop front, paved to match. Kitano Road crosses the row where
- // the old lane was and lays its own surface there; where the post-office shop-house stood (phase 4, EAST_ROW_CLEARED
- // in lots.js) the lawn comes out to the footway instead, so each standing shop has its own apron.
- for(const plot of EAST_ROW.plots)
-  kit.block(MAIN_ROAD.pavementEast-.05,EAST_ROW.minX+.05,GROUND_LAYER.apron-.05,GROUND_LAYER.apron,plot.minZ,plot.maxZ,0xb9b0a0);
+ // The strip of ground between the pavement and each shop front is Main Street's concrete back strip, laid with the
+ // street by the ground generator (ground-plan.js); Kitano Road crosses the row where the old lane was.
+ // (Their aprons are Main Street's back strip now, laid with the street: ground-plan.js.)
  // The shaved-ice flag outside Nakamura's, and a bench for eating it on.
  const n=EAST_ROW.plots[0];
  kit.cyl(.03,.03,2.6,EAST_ROW.minX-.35,1.3,n.maxZ-.4,0x9aa0a4,{segments:6});
@@ -401,12 +393,9 @@ function buildEastBack(kit,solid,ctx){
 
 function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending,eastQuayBoat}){
  const Q=EAST_QUAY,S=Q.shed,I=Q.ice,lane=GROUND_LAYER.apron;
- kit.block(Q.minX+.05,Q.maxX+.4,lane-.06,lane,Q.minZ,Q.maxZ+.55,GROUND.concrete);
- // The gate's paving, from the quay's concrete to the lawn's edge.
- kit.block(Q.gate.minX+.05,Q.gate.maxX,lane-.06,lane,Q.maxZ+.55,Q.gate.maxZ,GROUND.concrete);
- // The quay edge, its yellow kerb, bollards and the tyres hung on its face.
- kit.block(Q.minX,Q.maxX+.4,-.7,lane,Q.minZ-.45,Q.minZ,0xa9a497);
- kit.block(Q.minX,Q.maxX+.4,lane,lane+.12,Q.minZ-.4,Q.minZ-.1,0xe0b93a);
+ // The apron, the gate's paving and the quay's coping are the harbour's ground (ground-plan-harbour.js), run on east
+ // to the oil jetty; here the edge's collider, its bollards and the tyres hung on its face. East of x 41.4 the walkable
+ // quay (layout.js eastQuayAt) stops at the coping on its own.
  solid({id:'east-quay-edge',x:(Q.minX+Q.maxX)/2,z:Q.minZ-.25,w:Q.maxX-Q.minX+.4,d:.3,height:.4});
  for(const x of [39.5]){
   kit.cyl(.16,.2,.42,x,.24,Q.minZ+.35,0x3a3f42,{segments:10});kit.cyl(.24,.24,.08,x,.47,Q.minZ+.35,0x3a3f42,{segments:10});

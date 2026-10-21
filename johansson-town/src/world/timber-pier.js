@@ -35,8 +35,11 @@ export const PIER_TIMBER=Object.freeze({
 });
 /** The water's marks on a pile: the salt line at high water, the black wet band, the weed below low water. */
 export const PILE_BANDS=Object.freeze({salt:SEA_LEVEL+.18,wet:SEA_LEVEL+.14,weed:SEA_LEVEL-.32});
-/** Colours: weathered timber, its darker frame, the wet band, iron and rubber. */
-export const PIER_COLOURS=Object.freeze({board:0x95714f,boardAlt:0x9d7b5b,frame:0x5d4836,cap:0x54412f,kerb:0x7a5d43,rail:0x8f7256,
+/**
+ * Colours: weathered timber, its darker frame, the wet band, iron and rubber. The boards are the rulebook's timber deck
+ * (ground-standard.js, #8a7559) a shade either way, as one plank never weathers like the next.
+ */
+export const PIER_COLOURS=Object.freeze({board:0x8a7559,boardAlt:0x917c5f,boardDark:0x85704f,frame:0x5d4836,cap:0x54412f,kerb:0x7a5d43,rail:0x8f7256,
  underlay:0x2c241d,pileDry:0x6b5844,salt:0xb3ad98,wet:0x3a3128,weed:0x2d3a2f,iron:0x30373a,galv:0x8d9493,rubber:0x1e2223,rope:0x9b825e,
  safety:0xe0b93a});
 
@@ -152,18 +155,18 @@ export function hangingRope(from,to,{sag=.25,radius=.022,segments=10,colour=PIER
  */
 export function buildTimberPier(parent,plan,{shadows=false,ropes=[],colliderTag={}}={}){
  const T=PIER_TIMBER,C=PIER_COLOURS,L=plan.levels,group=new THREE.Group();group.name='Timber pier: '+plan.id;parent.add(group);
- const timber=[],iron=[];
+ const timber=[],iron=[],kerbs=[],under=[];
  // 4. Boards, each a shade apart (as boards are: one plank never weathers like the next), and the dark sheet under them.
- for(const b of plan.boards){const tone=b.index%3===1?C.boardAlt:b.index%5===3?0x8e6b4c:C.board;timber.push(boxAt(b.maxX-b.minX,T.board.thickness,b.maxZ-b.minZ,(b.minX+b.maxX)/2,plan.top-T.board.thickness/2,(b.minZ+b.maxZ)/2,tone));}
- for(const d of plan.decks)timber.push(boxAt(d.maxX-d.minX-.02,.008,d.maxZ-d.minZ-.02,(d.minX+d.maxX)/2,L.boardBottom-.006,(d.minZ+d.maxZ)/2,C.underlay));
+ for(const b of plan.boards){const tone=b.index%3===1?C.boardAlt:b.index%5===3?C.boardDark:C.board;timber.push(boxAt(b.maxX-b.minX,T.board.thickness,b.maxZ-b.minZ,(b.minX+b.maxX)/2,plan.top-T.board.thickness/2,(b.minZ+b.maxZ)/2,tone));}
+ for(const d of plan.decks)under.push(boxAt(d.maxX-d.minX-.02,.008,d.maxZ-d.minZ-.02,(d.minX+d.maxX)/2,L.boardBottom-.006,(d.minZ+d.maxZ)/2,C.underlay));
  // 3. Stringers, 2. caps.
  for(const d of plan.decks){
-  for(const s of d.stringers)timber.push(boxAt(T.stringer.width,T.stringer.depth,s.maxZ-s.minZ,s.x,(L.stringerTop+L.stringerBottom)/2,(s.minZ+s.maxZ)/2,C.frame));
-  for(const c of d.caps)timber.push(boxAt(c.maxX-c.minX,T.cap.depth,T.cap.width,(c.minX+c.maxX)/2,(L.capTop+L.capBottom)/2,c.z,C.cap));
+  for(const s of d.stringers)under.push(boxAt(T.stringer.width,T.stringer.depth,s.maxZ-s.minZ,s.x,(L.stringerTop+L.stringerBottom)/2,(s.minZ+s.maxZ)/2,C.frame));
+  for(const c of d.caps)under.push(boxAt(c.maxX-c.minX,T.cap.depth,T.cap.width,(c.minX+c.maxX)/2,(L.capTop+L.capBottom)/2,c.z,C.cap));
  }
  // 5. Kerbs along the open edges, a little sunk into the boards so they never share a face with them.
  for(const k of plan.kerbs){const [ax,az]=k.from,[bx,bz]=k.to,len=Math.hypot(bx-ax,bz-az),alongX=Math.abs(bx-ax)>Math.abs(bz-az);
-  timber.push(boxAt(alongX?len:T.kerb.width,T.kerb.height+.01,alongX?T.kerb.width:len,(ax+bx)/2,plan.top+T.kerb.height/2-.005,(az+bz)/2,C.kerb));}
+  kerbs.push(boxAt(alongX?len:T.kerb.width,T.kerb.height+.01,alongX?T.kerb.width:len,(ax+bx)/2,plan.top+T.kerb.height/2-.005,(az+bz)/2,C.kerb));}
  // Rails: posts, a mid rail and a broad top rail to lean on; the kerb under them is the toe board.
  const colliders=[];
  for(const r of plan.rails)for(const run of r.runs){
@@ -196,10 +199,11 @@ export function buildTimberPier(parent,plan,{shadows=false,ropes=[],colliderTag=
  // Cleats: a cast horn on a timber pad. Bollards: a cast post with a cap, bolted through a timber base plate.
  for(const c of plan.cleats){const ry=c.along==='x'?0:Math.PI/2,y=plan.top+(c.onKerb?T.kerb.height-.005:0);
   // On a kerb the cleat is bolted straight to it; on the boards it has a pad of its own.
-  if(!c.onKerb)timber.push(boxAt(.36,.03,.16,c.x,y+.01,c.z,C.cap,ry));
+  if(!c.onKerb)timber.push(boxAt(.36,.03,.16,c.x,y+.01,c.z,C.boardDark,ry));
   iron.push(boxAt(.3,.035,.06,c.x,y+.085,c.z,C.iron,ry));iron.push(boxAt(.07,.065,.07,c.x,y+.04,c.z,C.iron,ry));}
  for(const b of plan.bollards){
-  timber.push(boxAt(.46,.04,.46,b.x,plan.top+.015,b.z,C.cap));
+  // The pads are offcuts of the deck's own boards (the rulebook's timber deck), the darker ones.
+  timber.push(boxAt(.46,.04,.46,b.x,plan.top+.015,b.z,C.boardDark));
   const post=new THREE.CylinderGeometry(.12,.14,.34,10);post.translate(b.x,plan.top+.2,b.z);iron.push(coloured(post,C.iron));
   const head=new THREE.CylinderGeometry(.17,.15,.06,10);head.translate(b.x,plan.top+.39,b.z);iron.push(coloured(head,C.iron));
   colliders.push({id:plan.id+'-bollard',x:b.x,z:b.z,w:.46,d:.46,height:plan.top+.42,timberPier:plan.id,...colliderTag});
@@ -209,16 +213,20 @@ export function buildTimberPier(parent,plan,{shadows=false,ropes=[],colliderTag=
  // pass (render/cel.js bandsFor) gives the timber the same three-band ramp as every other timber in town rather than
  // the high-key ramp it keeps for white plaster.
  const BASE=.4,lift=list=>{for(const g of list){const c=g.attributes.color;for(let i=0;i<c.array.length;i++)c.array[i]/=BASE;}};
- lift(timber);
+ lift(timber);lift(kerbs);lift(under);
  const timberMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.92,color:new THREE.Color(BASE,BASE,BASE)});timberMat.name='pier-timber';
  const ironMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.6,metalness:.3});ironMat.name='pier-iron';
  const nonIndexed=list=>list.map(g=>{const n=g.index?g.toNonIndexed():g;if(n!==g)g.dispose();if(n.attributes.uv)n.deleteAttribute('uv');return n;});
  const frame=new THREE.Mesh(mergeGeometries(nonIndexed(timber),false),timberMat);frame.name='Pier timber frame and deck';frame.castShadow=shadows;frame.receiveShadow=true;group.add(frame);
+ // The frame under the boards (caps, stringers, the sheet) is structure, seen only past the boards' ends: its own mesh.
+ const underMesh=new THREE.Mesh(mergeGeometries(nonIndexed(under),false),timberMat);underMesh.name='Pier frame under the deck';underMesh.castShadow=shadows;underMesh.receiveShadow=true;group.add(underMesh);
+ // The kerbs (toe boards) are the pier's edge, as a coping is a quay's: a mesh of their own, so they read as an edge.
+ let kerbMesh=null;if(kerbs.length){kerbMesh=new THREE.Mesh(mergeGeometries(nonIndexed(kerbs),false),timberMat);kerbMesh.name='Pier kerb (toe boards)';kerbMesh.castShadow=shadows;kerbMesh.receiveShadow=true;group.add(kerbMesh);}
  let ironMesh=null;if(iron.length){ironMesh=new THREE.Mesh(mergeGeometries(nonIndexed(iron),false),ironMat);ironMesh.name='Pier ironwork and rope';ironMesh.castShadow=shadows;ironMesh.receiveShadow=true;group.add(ironMesh);}
  // 1. Piles, instanced: the bearing piles under the caps, the fender piles to their own height.
  const pileMesh=(list,top,radius)=>{if(!list.length)return null;const geometry=pileGeometry(top,plan.seabed,radius);lift([geometry]);const m=new THREE.InstancedMesh(geometry,timberMat,list.length);
   const o=new THREE.Object3D();list.forEach((p,i)=>{o.position.set(p.x,0,p.z);o.updateMatrix();m.setMatrixAt(i,o.matrix);});m.instanceMatrix.needsUpdate=true;m.computeBoundingSphere();m.castShadow=shadows;m.receiveShadow=true;group.add(m);return m;};
  const piles=pileMesh(plan.piles,L.pileTop+.01,T.pile.radius);if(piles)piles.name='Pier bearing piles';
  const fenders=pileMesh(plan.fenders,fenderTop,T.fender.radius);if(fenders)fenders.name='Pier fender piles';
- return {group,colliders,frame,iron:ironMesh,piles,fenders};
+ return {group,colliders,frame,under:underMesh,kerbs:kerbMesh,iron:ironMesh,piles,fenders};
 }
