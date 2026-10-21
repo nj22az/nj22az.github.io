@@ -11,7 +11,9 @@ concurrency:
 jobs:
   linux:
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    # Full software-rendered console coverage includes 26 residents, a reload,
+    # a separate web boot and native saves after the four-size/controller checks.
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -32,10 +34,10 @@ jobs:
         run: |
           node johansson-town/scripts/build-runtime.mjs
           npm run package --prefix steam-deck
-      - name: Real world controller and handheld layout acceptance
-        run: |
-          node steam-deck/tools/control-repair-smoke.cjs
-          npm run test:console --prefix steam-deck
+      - name: Controller recovery acceptance
+        run: node steam-deck/tools/control-repair-smoke.cjs
+      - name: Full world controller, layout, resident and save acceptance
+        run: npm run test:console --prefix steam-deck
       - name: Verify native application and disk saves
         env:
           WORLD_SCREENSHOT: steam-deck/dist/linux-world.png
