@@ -31,6 +31,7 @@
 import * as THREE from '../vendor/three.module.js';
 import {GROUND_CLASSES,GROUND_EDGE,DISTRICTS,districtAt,edgeRule,expectedTop,allowedTops} from '../src/world/ground-standard.js';
 import {planHeight} from '../src/world/layout.js';
+import {datumShift} from '../src/world/ground-plan.js';
 
 /** Minato, from the breakwater to Kitahama's north shore. Kitano-jima keeps its own terrain and is not audited. */
 export const AUDIT_BOUNDS=Object.freeze({minX:-45,maxX:55,minZ:-110,maxZ:100});
@@ -48,7 +49,7 @@ const SEAM_WINDOW=.55;
 const WATER=/\bsea\b|basin|water|pond|wave|\bsurf\b|foam|tide|ripple|rocky|rock armour|armour stone/i;
 /** Water, boats and loose things are not ground; nor is a building's own plinth, porch, step or shop front, which is
  * architecture standing on the ground. */
-const NOT_GROUND=/hull|boat|sabani|丸|ferry|houseboat fittings|vehicle|car\b|truck|bicycle|crate|mat\b|doormat|futon|tarp|net\b|nets\b|rope|shadow|reflection|puddle|leaf|petal|blossom|plinth|footing|storefront|frontage|porch|threshold|stair|step\b|steps\b/i;
+const NOT_GROUND=/hull|boat|sabani|丸|ferry|houseboat fittings|vehicle|vending machine|car\b|truck|bicycle|crate|pallet|mat\b|doormat|futon|tarp|net\b|nets\b|rope|shadow|reflection|puddle|leaf|petal|blossom|plinth|footing|landing plate|under the deck|storefront|frontage|porch|threshold|stair|step\b|steps\b/i;
 const NOT_ROOF=/tree|leaf|leaves|foliage|canopy of|fukugi|palm|banyan|hibiscus|bougainvillea|frond|crown|wire|cable|line\b|pole|lamp|sign|banner|flag|lantern|bird|gull|cloud|sky|ridge|mountain|wooded|distant|awning|parasol|umbrella|arcade|pergola|trellis|wisteria|vine|rain|smoke|steam/i;
 const moving=o=>{for(let p=o;p;p=p.parent)if(p.userData?.dynamicProp||p.userData?.vehicle||/^(Scheduled island cargo ship|Road traffic|Harbour gulls and garden butterflies|Beach life)$/.test(p.name))return true;return false;};
 
@@ -259,7 +260,8 @@ function namedClass(t,x,z,d,patchAt){
  * itself is open island ground (layout.js planHeight), never inside the town where the plan is the datum.
  */
 function topsAt(cls,districtId,x,z){
- const c=GROUND_CLASSES[cls],tops=allowedTops(cls,districtId);
+ // Where a plan grades one datum into another (ground-plan.js MAIN_STREET_GRADES), the tops follow the datum there.
+ const c=GROUND_CLASSES[cls],shift=datumShift(x,z,districtId),tops=allowedTops(cls,districtId).map(t=>t+shift);
  if(!c.alsoAt?.length||planHeight(x,z)<-.2)return tops;
  return tops.slice(0,tops.length-c.alsoAt.length);
 }

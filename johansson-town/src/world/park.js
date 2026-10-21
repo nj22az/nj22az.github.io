@@ -1,3 +1,4 @@
+import {MAIN_STREET_GROUND} from './ground-plan.js';
 import * as THREE from '../../vendor/three.module.js';
 import {PARK,PARK_BENCH,parkBenchGeometry,TURF_TINT,PARK_PATH_TINT} from './park-layout.js';
 import {HARBOUR_PARK_MAIN,HARBOUR_PARK_EXTENSION,HARBOUR_PARK_ENTRY,HARBOUR_POND,HARBOUR_CHERRY,HARBOUR_SHRINE,HARBOUR_PARK_SEATS,HARBOUR_PARK_PATHS} from './harbour-park-plan.js';
@@ -59,6 +60,18 @@ function turfGeometry(bounds,{pond=false}={}){
  return g;
 }
 
+/** The part of a flat, non-indexed geometry where coordinate `axis` (0 x, 2 z) is at least `at`, its triangles cut there. */
+function clipTo(geometry,axis,x){
+ const p=geometry.attributes.position,out=[];
+ for(let i=0;i<p.count;i+=3){
+  const tri=[0,1,2].map(k=>[p.getX(i+k),p.getY(i+k),p.getZ(i+k)]),poly=[];
+  for(let k=0;k<3;k++){const a=tri[k],b=tri[(k+1)%3],ia=a[axis]>=x,ib=b[axis]>=x;if(ia)poly.push(a);if(ia!==ib){const t=(x-a[axis])/(b[axis]-a[axis]);poly.push(a.map((v,c)=>v+(b[c]-v)*t));}}
+  for(let k=1;k+1<poly.length;k++)out.push(...poly[0],...poly[k],...poly[k+1]);
+ }
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(out,3));
+ g.setAttribute('uv',new THREE.Float32BufferAttribute(new Array(out.length/3*2).fill(0),2));g.computeVertexNormals();geometry.dispose();return g;
+}
+
 /** Flush paving, with round joins; no kerbs or corridor collision boxes. */
 function parkWalks(group){
  const bySurface=new Map();
@@ -71,7 +84,9 @@ function parkWalks(group){
   for(const [x,z] of route.points){const g=new THREE.CircleGeometry(route.width/2,16);g.rotateX(-Math.PI/2);g.translate(x,GROUND_LAYER.lane,z);pieces.push(g);}
  }
  for(const [surface,pieces] of bySurface){
-  const geometry=mergeGeometries(pieces,false),p=geometry.attributes.position,uv=geometry.attributes.uv;
+  // The approach starts on Main Street's footway; the street's ground (ground-plan.js) is laid to its back strip's edge,
+  // and the park's walks begin there rather than lying over the footway.
+  const geometry=clipTo(clipTo(mergeGeometries(pieces,false).toNonIndexed(),0,MAIN_STREET_GROUND.backEast),2,MAIN_STREET_GROUND.minZ),p=geometry.attributes.position,uv=geometry.attributes.uv;
   for(let i=0;i<p.count;i++)uv.setXY(i,p.getX(i)/3,p.getZ(i)/3);
   // One family of paving in the park: the warm stone walks, and the pond circuit in the same warm tone as raked
   // coral gravel rather than a second brick. The stone is drawn over the gravel where they meet (the junction at the

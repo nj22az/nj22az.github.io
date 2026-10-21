@@ -1,5 +1,6 @@
 import {MAIN_ROAD} from '../main-road.js';
 import {WEST_YARD} from '../west-yard.js';
+import {OIL_JETTY} from '../oil-jetty-layout.js';
 
 /**
  * Where the new streets go, as plain numbers, so the walkable ground, the colliders, the
@@ -81,10 +82,17 @@ export const EAST_QUAY=Object.freeze({
   */
  gate:Object.freeze({minX:19,maxX:21.65,minZ:-38.9,maxZ:-38}),
 });
+/**
+ * The east quay's paving runs on east to the oil jetty and, north of it, out to the water (ground-plan-harbour.js): you
+ * walk on as far as it is laid, to its copings.
+ */
+export const EAST_QUAY_CORNER=Object.freeze({jettyFrom:OIL_JETTY.deck.minX+.1,shore:46,jettyNorth:OIL_JETTY.deck.maxZ});
 export const eastQuayAt=(x,z,r=0)=>{
- const g=EAST_QUAY.gate;
+ const g=EAST_QUAY.gate,C=EAST_QUAY_CORNER;
  return x>=EAST_QUAY.minX-1+r&&x<=EAST_QUAY.maxX-r&&z>=EAST_QUAY.minZ+r&&z<=EAST_QUAY.maxZ-r
-  ||x>=g.minX+r&&x<=g.maxX-r&&z>=g.minZ+r&&z<=g.maxZ-r;
+  ||x>=g.minX+r&&x<=g.maxX-r&&z>=g.minZ+r&&z<=g.maxZ-r
+  ||x>=EAST_QUAY.maxX-1&&x<=C.jettyFrom-.15-r&&z>=EAST_QUAY.minZ+r&&z<=EAST_QUAY.maxZ-r
+  ||x>=EAST_QUAY.maxX-1&&x<=C.shore-.15-r&&z>=C.jettyNorth+r&&z<=EAST_QUAY.maxZ-r;
 };
 
 /**

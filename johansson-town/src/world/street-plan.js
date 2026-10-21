@@ -1,6 +1,8 @@
 import {MAIN_ROAD,MAIN_SERVICE_COURT,MAIN_LOADING_APRON,MAIN_PARKING_LAYBY} from './main-road.js';
 import {KITANO_ROAD} from './kitano-link-plan.js';
 import {HARBOUR_PARK_PATHS} from './harbour-park-plan.js';
+/** The bus plaza's north edge, where Main Street's ground ends (bus-station.js BUS_STATION.maxZ). */
+const MAIN_STREET_MAX_Z=29.3;
 
 /** Compact Minato street hierarchy, in metres. Existing frontage setbacks are retained.
  * Local lanes are shared access, not a second arterial road. Coast/circuits are foot-only.
@@ -70,7 +72,9 @@ export function routePolygons(route){
 export function specialistStreetMasks(){
  const rect=b=>rectangle(b.minX,b.maxX,b.minZ,b.maxZ);
  const K=KITANO_ROAD;
- return [rectangle(-8.1,5.75,MAIN_ROAD.minZ,MAIN_ROAD.maxZ),rectangle(-19,19,-50,MAIN_ROAD.minZ),
+ // Main Street and the bus plaza, and the quays, are laid by the ground generator (ground-plan.js, ground-plan-harbour.js).
+ return [rectangle(-8.1,5.75,MAIN_ROAD.minZ,MAIN_ROAD.maxZ),rectangle(MAIN_ROAD.pavementWest,MAIN_ROAD.pavementEast,MAIN_ROAD.maxZ,MAIN_STREET_MAX_Z),
+  rectangle(-40.1,19,-50,MAIN_ROAD.minZ),rectangle(19,44.3,-49.6,MAIN_ROAD.minZ),
   rectangle(K.corners[0][0],K.corners.at(-1)[0],K.corners[0][1]-K.section.footway,K.corners[0][1]-K.section.north),
   ...[MAIN_SERVICE_COURT,MAIN_LOADING_APRON,MAIN_PARKING_LAYBY].map(rect),
   ...HARBOUR_PARK_PATHS.flatMap(routePolygons)];

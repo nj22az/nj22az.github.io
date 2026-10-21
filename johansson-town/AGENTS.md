@@ -135,6 +135,10 @@ to a unified system? Pavement? Walk paths, grass and sandy beach?" (the plan app
 - The ground-standard test (`tests/ground-standard.test.mjs`, measured by `tools/ground-audit.mjs`) is a ratchet. A new
   violation fails. So does one that grew, and so does one that was fixed but is still listed in
   `tests/fixtures/ground-baseline.json`. The list only shrinks.
+- A district on the standard is laid by the generator (`src/world/ground-build.js`) from its plan (`ground-plan.js`,
+  `ground-plan-harbour.js`): add or move ground by changing the plan, never with a slab of a module's own. Step 2 put Main
+  Street and the harbour on it. Main Street's carriageway lies a kerb under the town's datum and is graded back at its
+  ends; what stands on the road or at its ends takes its height from the plan (`streetDrop`, `groundTopAt`).
 - The plan, the rulebook tables and today's counts are in [docs/GROUND-STANDARD.md](docs/GROUND-STANDARD.md). The work
   runs in steps, each merged after the owner sees photos: (2) Main Street and the harbour; (3) Kitahama, Nishi, the
   neighbourhood and the school; (4) the beach, the coast, the park and the lawns, until the baseline is empty.

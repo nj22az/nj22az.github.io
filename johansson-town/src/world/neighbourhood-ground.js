@@ -6,6 +6,7 @@ import {paintedTurf} from '../render/toy-surfaces.js';
 import {SCHOOL} from './school-layout.js';
 import {applyTerrainNormals} from './terrain-surface.js';
 import {WEST_SHORE} from './west-shore.js';
+import {MAIN_STREET_GROUND as MS} from './ground-plan.js';
 /**
  * The relocated blocks share Main Street's datum. Outside, a four-metre bank meets the island, except along the
  * west shore north of the seawall, where the ground stays level out to the bank's coping (west-shore.js).
@@ -28,12 +29,13 @@ export function neighbourhoodHeight(x,z){
 export function buildNeighbourhoodGround(parent,onLand){
  const B=NEIGHBOURHOOD,p=[],indices=[],uv=[];
  const height=(x,z)=>neighbourhoodHeight(x,z)??-.4;
- const skip=(x,z)=>x<=-24.6&&z<=29.3||x>=5.2&&x<=33.2&&z<=21.2||x>=SCHOOL.minX-.9&&x<=SCHOOL.maxX+.9&&z>=SCHOOL.minZ&&z<=SCHOOL.seawall.south+.6;
+ // Main Street and the bus plaza are laid by the ground generator (ground-plan.js): no lawn under its carriageway.
+ const skip=(x,z)=>x>=MS.pavementWest&&x<=MS.pavementEast&&z<=MS.maxZ||x<=-24.6&&z<=29.3||x>=5.2&&x<=33.2&&z<=21.2||x>=SCHOOL.minX-.9&&x<=SCHOOL.maxX+.9&&z>=SCHOOL.minZ&&z<=SCHOOL.seawall.south+.6;
  // Coarse tiles on flat ground, half-metre tiles only on the graded banks.
  const axis=(min,max,extra)=>[...new Set([...Array.from({length:9},(_,i)=>min-4+i*.5),...Array.from({length:Math.ceil((max-min)/2)},(_,i)=>Math.min(max,min+i*2)),...Array.from({length:9},(_,i)=>max+i*.5),...extra])].filter(n=>n>=min-4&&n<=max+4).sort((a,b)=>a-b);
  // The sand graded up to the school's datum (beach-layout.js BEACH_GRADES) needs rows close enough to follow its slope.
  const graded=BEACH_GRADES.filter(g=>g.drawn==='neighbourhood'),lines=(min,max)=>Array.from({length:Math.round((max-min)/.4)+1},(_,i)=>min+i*(max-min)/Math.round((max-min)/.4));
- const xs=axis(B.minX,B.maxX,[-24.6,5.2,33.2,-10.6,5.4,SCHOOL.minX-.9,SCHOOL.maxX+.9,...graded.flatMap(g=>lines(g.apply.minX,g.apply.maxX))]),zs=axis(B.minZ,B.maxZ,[21.2,29.3,SCHOOL.minZ,SCHOOL.seawall.south+.6,...graded.flatMap(g=>lines(g.apply.minZ,g.apply.maxZ))]);
+ const xs=axis(B.minX,B.maxX,[-24.6,MS.pavementWest,5.2,33.2,-10.6,5.4,SCHOOL.minX-.9,SCHOOL.maxX+.9,...graded.flatMap(g=>lines(g.apply.minX,g.apply.maxX))]),zs=axis(B.minZ,B.maxZ,[21.2,29.3,SCHOOL.minZ,SCHOOL.seawall.south+.6,...graded.flatMap(g=>lines(g.apply.minZ,g.apply.maxZ))]);
  const coast=parent.getObjectByName('Island land')?.geometry,triangles=[];
  if(coast){const pos=coast.attributes.position,idx=coast.index;for(let i=0;i<idx.count;i+=3){const t=[0,1,2].map(k=>{const n=idx.getX(i+k);return [pos.getX(n),-pos.getY(n)];});if((t[1][0]-t[0][0])*(t[2][1]-t[0][1])-(t[1][1]-t[0][1])*(t[2][0]-t[0][0])<0)t.reverse();triangles.push(t);}}
  const clip=(poly,a,b)=>{const side=p=>(b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0]),out=[];for(let i=0;i<poly.length;i++){const p=poly[i],q=poly[(i+1)%poly.length],d=side(p),e=side(q);if(d>=-1e-8)out.push(p);if((d>=0)!==(e>=0)){const t=d/(d-e);out.push([p[0]+(q[0]-p[0])*t,p[1]+(q[1]-p[1])*t]);}}return out;};
