@@ -63,6 +63,11 @@ Main is at #325 or later. The branch `claude/dreamy-gates-zq8kvo` is restarted f
    - Check every still as the owner would before committing, then set `captured:true` (drop `captured:false`) in
      `src/feed/places.js`.
    - Then do the police station and the port terminal (`police-station port-hall`), which have waited since phase 5.
+   - **Done for the school and the clinic** (evening of 21 October): each has its own camera in `places.js` (the school
+     on an ordinary Thursday, 16 October 1997 at 10:30, so the board's date is a school day), both are built for the
+     comics by `scene/scene-world.js` (the classroom without its pupils, the clinic without its seated doctor), and
+     both are captured. The clinic doctor's chair back was turned 90° and is fixed. **The Community Hall is not
+     captured:** its kitchen is too bare to be a set from any corner; dress it first, then shoot it.
 2. **Look at the town hall zone on the owner's phone.** The photos came from swiftshader. The hall's pale green and
    the clinic's white read close to cream there.
 3. **The morning handoff's open items, still open:**

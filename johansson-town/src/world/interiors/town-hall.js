@@ -192,9 +192,10 @@ export function buildClinic({room,reg,action,collider=()=>{}}){
   c.fillStyle='#3a4246';c.fillRect(W/2+20,24,W/2-46,H-48);});
  box([1.0,.7,.06],[1.45,1.75,-hd+.04],0xdedcd4,'Lightbox');
  const glow=new THREE.Mesh(new THREE.PlaneGeometry(.9,.6),new THREE.MeshBasicMaterial({map:film}));glow.position.set(1.45,1.75,-hd+.08);glow.name='X-ray film';group.add(glow);
- // The doctor's swivel chair, and the patient's round green stool facing it.
+ // The doctor's swivel chair, its back on the east side (she faces west, to the stool), and the patient's round green
+ // stool facing it.
  const chair=[1.55,-1.55];
- box([.48,.08,.48],[chair[0],.47,chair[1]],0x2a2a2a,'Doctor’s chair');box([.08,.42,.08],[chair[0],.24,chair[1]],0x5a5a5a);box([.48,.55,.08],[chair[0]+.22,.82,chair[1]],0x2a2a2a);box([.6,.04,.6],[chair[0],.04,chair[1]],0x3a3a3a);
+ box([.48,.08,.48],[chair[0],.47,chair[1]],0x2a2a2a,'Doctor’s chair');box([.08,.42,.08],[chair[0],.24,chair[1]],0x5a5a5a);box([.08,.55,.48],[chair[0]+.22,.82,chair[1]],0x2a2a2a);box([.6,.04,.6],[chair[0],.04,chair[1]],0x3a3a3a);
  const stool=[.5,-1.45];
  box([.38,.07,.38],[stool[0],.46,stool[1]],0x3f9a4a,'Patient stool');box([.05,.42,.05],[stool[0],.22,stool[1]],steel);box([.36,.03,.36],[stool[0],.03,stool[1]],steel);
  // The eye chart: Landolt rings shrinking down the card.

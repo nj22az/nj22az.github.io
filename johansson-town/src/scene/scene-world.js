@@ -11,8 +11,9 @@ import {clock as duskClock} from '../render/dusk.js';
 import {hitsSolid,slideTo} from './scene-physics.mjs';
 import {SNAP,seatKey,matchSeat,numberLabels,seatTurn,counterEdges,edgeLine,personMarks} from './scene-snap.mjs';
 import {buildClassroomStage} from '../../../avatar-creator/classroom-stage.js';
+import {feedPlace} from '../feed/places.js';
 const BLOCKERS=7;
-const interiors=new Set(['sakura','minato','sato-ramen','books','onsen','town-hall','classroom','dock-workshop']);
+const interiors=new Set(['sakura','minato','sato-ramen','books','onsen','town-hall','school','clinic','classroom','dock-workshop']);
 const noop=()=>{};
 /**
  * The hour on a street: the game's own clock (src/render/dusk.js) for the sun's colour and
@@ -56,6 +57,11 @@ export async function buildSceneWorld(id,views,townData=null){
  // Umi-no-yu's massage chair is World's catalogue's (src/catalog): its model comes after the room is built, and the room
  // says when it is in place and lit like the room (ready), before the cel pass below shades it.
  else if(id==='onsen'){api=(await import('../world/interiors/onsen.js')).buildOnsenInterior(options);layout=api;solids.push(...(api.colliders||[]));await api.ready;}
+ // The school is World's whole classroom at the hour its backdrop was shot (desks in rows, the date on the board), without the
+ // pupils and the teacher the room seats itself: a story's residents are the comic's own.
+ else if(id==='school'){api=(await import('../world/interiors/classroom.js')).buildClassroom(options);api.tick(.01,feedPlace('school').shot.time,.01);room.traverse(o=>{if(o.userData.figure)o.visible=false;});layout=api;solids.push(...api.colliders);}
+ // The clinic without the doctor the room seats at her desk: in a story Dr Kakazu is a resident the comic draws.
+ else if(id==='clinic'){const m=await import('../world/interiors/town-hall.js');api=m.buildClinic(options);layout=api;const doctor=room.getObjectByName(m.DOCTOR);if(doctor)doctor.visible=false;}
  // The town hall's place is the Community Hall's kitchen, with its register and request box, since the mayor's office went.
  else{api=(await import('../world/interiors/town-hall.js')).buildCommunityKitchen(options);layout=api;}
  for(const actor of api?.owned||[])if(actor.holder?.name==='barfly')actor.holder.visible=false;

@@ -49,24 +49,28 @@ export const FEED_PLACES=Object.freeze([
   activity:{hold:['bottle','can'],chance:.6,sit:0},
   shot:{room:'onsen'}},
  // The town hall's place is the Community Hall's kitchen since the mayor's office went (21 October 2026,
- // briefs/town-hall-zone.md phase M); it waits for its backdrops (node tools/render-feed-backdrops.mjs town-hall).
+ // briefs/town-hall-zone.md phase M); it waits for its backdrops (node tools/render-feed-backdrops.mjs town-hall). Tried on
+ // 21 October 2026 from every corner: the kitchen is two bare steel blocks, a sink run and a grey window, too empty to be
+ // a comic's set, so it is dressed first. (The town-hall-*.webp pictures beside it are still the old mayor's office's.)
  {id:'town-hall',name:'the Community Hall',short:'the town hall',kind:'civic',regulars:['Dr Kakazu','Mrs Nakamura'],captured:false,
   things:['the document register','the request box','the booking sheet','the rice cookers','the work islands','the aprons on their pegs'],
   doing:['filing a request at the register','putting a request in the box','booking the stoves for Saturday','reading the booking sheet','waiting for the rice to cook','tying on an apron'],
   activity:{hold:['coffee'],chance:.5,sit:0},
   shot:{room:'community-kitchen'}},
  // Since the campus was split into its own buildings (briefs/town-hall-zone.md, phase S): the school and the clinic are
- // places of their own, waiting for their backdrops (node tools/render-feed-backdrops.mjs school clinic).
- {id:'school',name:'Minato Elementary School',short:'the school',kind:'civic',regulars:['Miss Higa','Vy','Riku','Mai'],captured:false,
+ // places of their own. The school is shot from the back corner by the door, over the desks to the blackboard, in the
+ // second lesson of an ordinary Thursday (16 October 1997, 10:30: the board carries the date); the clinic from the
+ // consulting room's corner by the partition, over the doctor's desk to the couch, the eye chart and the X-ray.
+ {id:'school',name:'Minato Elementary School',short:'the school',kind:'civic',regulars:['Miss Higa','Vy','Riku','Mai'],
   things:['the blackboard','the class board','the attendance book','the serving table','the cubbies','the class TV and its VHS deck','the milk crate'],
   doing:['copying the kanji off the blackboard','serving the kyūshoku','reading the class board','watching a video on the class TV','putting a bag in the cubbies','calling the register from the attendance book'],
   activity:{hold:['book'],chance:.4,sit:.5},
-  shot:{room:'school'}},
- {id:'clinic',name:'Minato Clinic',short:'the clinic',kind:'civic',regulars:['Dr Kakazu'],captured:false,
+  shot:{room:'school',time:288*1440+630,camera:{pos:[-3.6,1.65,2.7],at:[4.2,1,-.5]}}},
+ {id:'clinic',name:'Minato Clinic',short:'the clinic',kind:'civic',regulars:['Dr Kakazu'],
   things:['the waiting bench','the eye chart','the examination couch','the X-ray lightbox','the scales and the height rod','the medicine cabinet','the clinic hours'],
   doing:['waiting on the bench','reading the eye chart','being weighed','looking at an X-ray on the lightbox','reading the clinic hours','sitting down for a check-up'],
   activity:{hold:[],chance:0,sit:.6},
-  shot:{room:'clinic'}},
+  shot:{room:'clinic',camera:{pos:[2.9,1.9,.3],at:[-1.6,.8,-1.9]}}},
  {id:'police-station',name:'Minato Police Station',short:'the police station',kind:'civic',regulars:['Officer Mori'],captured:false,
   things:['the counter bell','the incident log','the lost-property shelf','the lobby notice board','the long waiting bench','the town map on the wall','the holding-room door','the duty roster','the desk telephone','the thermos of barley tea','the typhoon cupboard'],
   doing:['ringing the bell at the counter','reading the lobby notice board','looking through the lost property','waiting on the long bench','studying the town map','asking the way to the harbour','handing in a blue umbrella','reading the duty roster'],
