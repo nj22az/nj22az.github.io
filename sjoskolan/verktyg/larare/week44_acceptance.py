@@ -34,7 +34,11 @@ def public_snapshot():
 
 
 def decks():
-    for student in sorted((SJO / 'vecka-44/aktuell').glob('v44_*_elev.pptx')):
+    students = sorted((SJO / 'vecka-44/aktuell').glob('v44_*_elev.pptx'))
+    analysis = SJO / 'vecka-45/aktuell/v45_02_Analys_av_matresultat_elev.pptx'
+    if analysis.exists():
+        students.append(analysis)
+    for student in students:
         teacher = SJO / 'larare/filer' / student.name.replace('_elev.pptx', '_larare.pptx.enc')
         yield student, teacher
 
@@ -84,7 +88,9 @@ if __name__ == '__main__':
                   f'current student slides={len(Presentation(student).slides)}, '
                   f'old guide example in notes={any(t in notes for t in ("Kapacitans 1", "Friskt nät:", "Visar övervakningen den sämsta fasen?"))}')
     else:
-        before = public_snapshot()
-        subprocess.run([sys.executable, str(SJO / 'verktyg/larare/lararmanus.py'), '44'], check=True)
-        assert public_snapshot() == before, 'Student/assessment source changed'
+        if '--check-only' not in sys.argv:
+            before = public_snapshot()
+            # Only regenerate Week 44 here. Analysis may be checked separately after a targeted Week 45 build.
+            subprocess.run([sys.executable, str(SJO / 'verktyg/larare/lararmanus.py'), '44'], check=True)
+            assert public_snapshot() == before, 'Student/assessment source changed'
         check()

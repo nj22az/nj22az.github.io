@@ -136,6 +136,11 @@ def manus(vecka, deck, n, bild, ovn, stod, avs, upplagg, fragor, antal):
                   'Undervisa principer och publicerade övningar. Lös inte den bedömda laborationen: '
                   'inga första-fel-beräkningar, fas–skrov-resultat, IMD-sammanvägningar eller motorgränsvärden. '
                   'Använd bara genomgångens oberoende räkneexempel.']
+    if deck.startswith('v45_02'):
+        rader += ['', 'Bedömningsgräns: del 4 undervisas tisdag i vecka 44. Följ tisdagens detaljerade manus. '
+                  'Räkna bara de publicerade exemplen och övningarna enligt manuset. '
+                  'Räkna inga varianter med slingresistans före och efter åtgärd, '
+                  'tillämpa inte inlämningens felgränser på sådana varianter och jämför inte förändringen med två felgränser.']
     rader += ['', f'Elevernas sida: {WEBB}/vecka-{vecka}/aktuell/ · Bild {n} av {antal}']
     return rader
 
