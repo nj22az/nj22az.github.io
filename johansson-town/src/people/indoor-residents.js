@@ -1,5 +1,5 @@
 import {sakuraClerkAt} from '../commerce/sakura-rota.js';
-import {FURNITURE_HEIGHTS} from '../world/furniture-standards.js';
+import {MINATO_COMPACT} from '../world/interiors/minato-compact-plan.js';
 import {groundHeight} from '../world/layout.js?snappy=1';
 import {STORE_CLERK_POSITION,STORE_SEATS} from '../world/interiors/store-layout.js';
 import {residentPlan,RAMEN_DOOR,IZAKAYA_DOOR,IZAKAYA_SEATS} from './social.js';
@@ -12,30 +12,35 @@ import {ONSEN_DOORWAYS,onsenSide} from '../world/interiors/onsen-lobby.js';
 import {recipeFor} from '../avatars/cast.js';
 import {SATO_GUEST_SEATS,SATO_COOK,SATO_ROOM} from '../world/sato-ramen-layout.js';
 
-/** Minato's guest seats as seat records: the five counter stools, the table bench, the far end. */
-export const IZAKAYA_GUEST_SEATS=Object.freeze(IZAKAYA_SEATS.map(([x,z],i)=>Object.freeze({position:[x,0,z],surfaceY:FURNITURE_HEIGHTS.seat,height:FURNITURE_HEIGHTS.seat,yaw:i===5||i===6?Math.PI:0,stand:i<5?[x,0,z+.8]:i<7?[x,0,z-.8]:[4.4,0,z]})));
+/** Each guest seat names its real support top and a clear approach beside the furniture. */
+export const IZAKAYA_GUEST_SEATS=Object.freeze(IZAKAYA_SEATS.map(([x,z],i)=>{
+ const p=MINATO_COMPACT,counter=i<p.counterStools.length,north=z===p.booth.benchZ[0];
+ return Object.freeze({position:[x,0,z],surfaceY:p.seatHeight,height:p.seatHeight,yaw:counter||!north?0:Math.PI,
+  stand:counter?[x,0,p.counterStandZ]:[p.booth.standX[x===p.booth.seatX[0]?0:1],0,z],
+  table:counter?[x,p.counter.top,p.counter.position[2]+p.counter.depth*.25]:[x,p.booth.tableTop,p.booth.position[2]+(north?-1:1)*p.booth.tableDepth*.2],
+ });
+}));
 
 // One actor belongs to one location. New visitors cross the door and walk to a
 // reserved place; changing the clock sends seated guests back to the exit.
 export function createIndoorResidents({world,parent,place,getState=()=>({}),getPlayerSeat=()=>null,onBorrow=()=>{},canLeave=()=>true,getStandingVisit=()=>null,collides=()=>false,getRain=()=>false,layout=null,isOccupied=()=>false,radiusFor=()=>.3,validateSpawn=false}){
  const borrowed=new Map(),walkers=new Map();let clock=0;
  function walk(p,target,dt){
-  // The shared Minato/Sato building extends to x11.4; market rooms instead use
-  // their own bounds and a separate dynamic plan for each actual person.
-  let path=walkers.get(p);if(!path){path={walker:createRoomWalk((x,z,r)=>collides(x,z,r)||isOccupied(x,z,r,p),{bounds:layout?.bounds||{minX:-8,maxX:12,minZ:-8,maxZ:8},radius:radiusFor(p)}),stalled:0};walkers.set(p,path);}
+  // Use the fitted room's bounds and a separate dynamic plan for each actual person.
+  let path=walkers.get(p);if(!path){path={walker:createRoomWalk((x,z,r)=>collides(x,z,r)||isOccupied(x,z,r,p),{bounds:layout?.bounds||(place==='izakaya'?MINATO_COMPACT.bounds:{minX:-8,maxX:12,minZ:-8,maxZ:8}),radius:radiusFor(p)}),stalled:0};walkers.set(p,path);}
   const before=p.g.position.clone(),arrived=path.walker.move(p,target,dt);
   if(validateSpawn&&!arrived&&p.g.position.distanceTo(before)<.0001){path.stalled+=dt;if(path.stalled>=2){path.walker.clear();path.stalled=0;}}else path.stalled=0;
   return arrived;
  }
  // On the island the ramen counter is Sato Ramen, beside Minato (world/sato-ramen-layout.js).
  const sato=(place==='ramen');
- const entrance=layout?.entrance|| (sato?[SATO_ROOM.spawn[0],0,SATO_ROOM.spawn[2]]:[0,0,5.2]);
+ const entrance=layout?.entrance||(sato?[SATO_ROOM.spawn[0],0,SATO_ROOM.spawn[2]]:place==='izakaya'?MINATO_COMPACT.entrance.spawn:[0,0,5.2]);
  const door=p=>place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='onsen'?ONSEN_DOOR:world.people.find(p=>p.profile.name==='Thuan').profile.work;
  const wanted=p=>residentPlan(p.profile,clock,getRain(),getState()).place===place&&!(p.profile.name==='Chin'&&getState().kenjiEscort==='walking');
  function restore(p){
   const saved=borrowed.get(p);if(!saved)return;const g=p.g,point=door(p),remaining=wanted(p);
   saved.parent.add(g);g.position.set(point[0],groundHeight(...point),point[1]);g.quaternion.copy(saved.rotation);g.userData.hit.inside=saved.inside;
-  for(const key of ['inMarket','inRamen','inIzakaya','inOnsen','outfit','indoors','socialPose','seatHeight','chairBlend','floorHeight','ramenSeat','storeSeatId','serving','heldItem','mealState','residentSpeech','roomTransition','carrying','carriedTray','shopGoods','shopReach','shopping','tool'])delete g.userData[key];
+  for(const key of ['inMarket','inRamen','inIzakaya','inOnsen','outfit','indoors','socialPose','seatHeight','chairBlend','floorHeight','ramenSeat','izakayaSeat','storeSeatId','serving','heldItem','mealState','residentSpeech','roomTransition','carrying','carriedTray','shopGoods','shopReach','shopping','tool'])delete g.userData[key];
   if(remaining)g.userData.indoors=place;g.visible=!remaining;borrowed.delete(p);walkers.get(p)?.walker.clear();walkers.delete(p);
  }
  function seatFor(p){
@@ -56,7 +61,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
    return {position,stand:position,guestStand:position,standing:true,yaw:layout.guestYaw??Math.PI,activity:layout.guestActivity??'visiting Sakura'};
   }
   if(sato&&name==='Mrs Sato')return {position:[...SATO_COOK.position],stand:[...SATO_COOK.position],yaw:SATO_COOK.yaw,staff:true};
-  if(place==='izakaya'&&name==='Thao')return {position:[3.5,0,-3.8],stand:[3.5,0,-3.8],yaw:Math.PI,staff:true};
+  if(place==='izakaya'&&name==='Thao')return {position:[...MINATO_COMPACT.staff.position],stand:[...MINATO_COMPACT.staff.position],yaw:Math.PI,staff:true};
   // Umi-no-yu: into the rock bath by the sea wall, leaving the other side for the player. Everyone goes in through
   // their own side's noren and changes there (ONSEN_DOORWAYS: by the body's silhouette in its recipe), then out through
   // that side's bath door; they come back the same way. `via` is the walk's waypoints before the seat.
@@ -168,6 +173,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
    if(hasSeat(seat)){g.userData.seatHeight=seatHeight(seat,g);if(!g.userData.mealState)g.userData.socialPose=seat.soak?'Soak':'Sit';}
    if(place==='market'&&!seat.staff&&!seat.managed)g.userData.storeSeatId=seat.id;
    if(place==='ramen')g.userData.ramenSeat=seat.index;
+   if(place==='izakaya')g.userData.izakayaSeat=seat.index;
    if(seat.job){g.userData.socialPose=seat.job.pose;if(seat.job.tool)g.userData.tool=seat.job.tool;else delete g.userData.tool;g.userData.activity=seat.job.activity;continue;}
    // Mrs Sato's kitchen (people/ramen-kitchen.js) hands her a cloth or a glass itself.
    if(!g.userData.kitchen)delete g.userData.tool;
