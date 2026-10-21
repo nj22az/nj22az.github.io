@@ -91,10 +91,19 @@ test('holding-circuit lab and PDF handoff need no invented Classroom link', asyn
   await expect(page.locator('#labbprotokoll')).toBeVisible();
   await page.locator('.school-nav a[href="/sjoskolan/vecka-43/aktuell/"]').click();
   await page.getByRole('link', {name: 'Öppna inlämningen', exact: true}).click();
-  // Synthetic identity and blank work: test the download mechanism, without solving or uploading assessed work.
+  // Synthetic answers only: exercise marking and download without solving or uploading assessed work.
+  await page.locator('#ri-820b-ns').fill('123');
+  await page.locator('#ri-820a-text').fill('TEST ONLY: synthetic submission evidence.');
+  await page.getByRole('button', {name: 'Rätta inlämning 1', exact: true}).click();
   await page.locator('#ri-namn').fill('Navigation Test');
   await page.locator('#ri-lamna').click();
   await expect(page.locator('#ri-resultat')).toContainText('Google Classroom under Vecka 43');
+  await expect(page.locator('#ri-resultat')).toContainText('foto av ritningen i inlämning 3');
+  await expect(page.locator('#ri-resultat')).toContainText('det ingår inte i sidans PDF');
+  await expect(page.locator('#ri-resultat')).toContainText('Webbsidan har inte skickat något till Classroom');
+  await expect(page.locator('.ri-reserv')).toContainText('godkänt alternativ');
+  await expect(page.locator('.ri-reserv')).not.toContainText('Mejla PDF-filen');
+  await expect(page.locator('.ri-reserv a')).toHaveText('Kontakta läraren');
   const downloadEvent = page.waitForEvent('download');
   await page.locator('#ri-pdf').click();
   const download = await downloadEvent;
