@@ -64,12 +64,12 @@ export const CORE=Object.freeze([
  who('nhung',{name:'Nhung',sex:'f',age:37,nationality:'Vietnamese',avatar:'Nhung',home:'kitahama-3',oldHomes:['resident-home-aya'],
   role:'the eldest sister; runs Front-Row Books and produces a modest local paper; Koji’s wife and Riku’s mother'}),
  who('koji',{name:'Koji',fullName:'Kōji',sex:'m',age:38,was:['Kōji'],avatar:'Kōji',relief:'bosun',home:'kitahama-3',
-  role:'fisherman and the bosun’s relief; Nhung’s husband and Riku’s father'}),
+  role:'fisherman and the bosun’s relief; drives Higa Liquor’s deliveries in his kei truck on his weeks ashore, paid by the round (the owner, 21 October 2026); Nhung’s husband and Riku’s father'}),
  who('riku',{name:'Riku',sex:'m',age:9,avatar:'Riku',home:'kitahama-3',role:'Nhung and Koji’s son; a pupil at the island school; Vy’s cousin'}),
  who('yui',{name:'Yui',fullName:'Yui Higa',sex:'f',age:29,nationality:'Japanese',was:['Yonamine-sensei','Mrs Higa','Miss Higa'],avatar:'Miss Higa',home:'higa',
-  role:'the island’s schoolteacher; Gran Higa’s granddaughter; helps at the bathhouse after school and at weekends'}),
+  role:'the island’s schoolteacher; Gran Higa’s granddaughter; helps at the bathhouse after school and at weekends; minds Higa Liquor’s counter on Saturdays (the owner, 21 October 2026)'}),
  who('gran-higa',{name:'Gran Higa',fullName:'Grandmother Higa',sex:'f',age:78,nationality:'Japanese',was:['Grandmother Higa'],avatar:'Grandmother Higa',home:'higa',
-  role:'owns Umi-no-yu and keeps it by day; keeps Higa Liquor and the family’s ties in town'}),
+  role:'owns Umi-no-yu and keeps it by day; keeps Higa Liquor 9:00–12:00 and 17:00–20:00, round the bandai (the owner, 21 October 2026), and the family’s ties in town'}),
  who('tetsu',{name:'Tetsu',fullName:'Tetsuo Chinen',sex:'m',age:40,nationality:'Japanese',was:['Tetsuo'],avatar:'Tetsuo',shore:['electrician'],home:'resident-home-kenji',
   role:'electrician; workshop partner of Chin; maintains the ship’s electrical equipment, the bathhouse’s plant and the island’s electrical systems'}),
  who('aki',{name:'Aki',fullName:'Aki Sato',sex:'f',age:68,nationality:'Japanese',was:['Mrs Sato'],avatar:'Mrs Sato',home:'kitahama-2',
@@ -90,7 +90,7 @@ export const CORE=Object.freeze([
  who('nao',{name:'Nao',fullName:'Nao Uezu',sex:'f',age:44,nationality:'Japanese',was:['Ms Uezu'],avatar:'Ms Uezu',post:'bosun',home:'kitahama-8',
   role:'bosun of the Minato Maru; a shore home and a credible relief rota with Koji'}),
  who('mika',{name:'Mika',fullName:'Mika Ganaha',sex:'f',age:27,nationality:'Japanese',was:['Ms Ganaha'],avatar:'Ms Ganaha',shore:['tickets'],home:'kitahama-flat-4',
-  role:'port clerk: passenger tickets, parcels and the postal counter, all at the Port Terminal'}),
+  role:'port clerk: passenger tickets, parcels and the postal counter, all at the Port Terminal; keeps the coin laundry on the side, its morning round before the mailbag (the owner, 21 October 2026)'}),
 ]);
 
 /** The five existing crew and pier workers, now named (brief §5). Their quarters are not households. */

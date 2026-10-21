@@ -1,3 +1,4 @@
+import {shopDayPlan} from './shop-days.js';
 import {canonicalDay} from './canonical-day.js';
 import {calledToQuay} from './shore-duty.js';
 import {standNow} from './stand-points.js';
@@ -451,6 +452,8 @@ export function residentPlan(profile,minutes,rain=false,state=null){
   const routine=homeRoutine(profile,minutes);
   if(['sleep','wake','breakfast','prepare'].includes(routine.id))return {place:'home',target:profile.home,activity:routine.activity+' at home'};
  }
+ // Higa Liquor's bench and the coin laundry's washing day (shop-days.js), once they are up.
+ {const shop=shopDayPlan(profile?.name,minutes);if(shop&&!shop.home&&shop.target)return shop;}
  // Today's happening, if it names them (happenings.js): the fish auction, the eisa. Read
  // after sleep and breakfast, so nobody is got out of bed for one.
  const happening=happeningPlan(profile,minutes,rain);

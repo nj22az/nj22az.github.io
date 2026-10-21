@@ -31,6 +31,10 @@ import {WEST_YARD} from '../west-yard.js';
 import {createVendingMachine,vendingReady,hydrateVending,VENDING_MACHINE} from '../vending.js';
 import {windowGlow} from '../../render/dusk.js';
 import {dessertShopOpen} from '../blue-coral-shop.js';
+import {higaFrontage,higaPoint} from './higa-liquor-dressing.js';
+import {laundryFrontage,LAUNDRY_BENCH,laundryPoint} from './coin-laundry-dressing.js';
+import {higaLiquorState,higaDeliveryBook,HIGA_KUSU,YUNTAKU,yuntakuSeatAt} from '../../commerce/higa-liquor.js';
+import {laundryNotices,laundryMachinesAt,LAUNDRY_MANGA} from '../../commerce/coin-laundry.js';
 
 /**
  * Builds the streets that fill the island in: Nishi-machi to the west, the shop-houses
@@ -68,7 +72,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildPromenade(kit,solid,{anchor,onAction});
  // North of the seawall the shore is the west-shore bank, in the same coral stone. See west-shore.js.
  buildWestShore(kit,solid,{anchor,onAction});
- buildYardRow(kit,solid,{anchor,inspect,onAction});
+ buildYardRow(kit,solid,{anchor,inspect,onAction,getMinutes:()=>world.minutes??720});
  buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes:()=>world.minutes??720});
  buildEastBack(kit,solid,{anchor,inspect,onAction});
  if(GATEBALL_ACTIVE)buildGateball(kit,solid,{anchor,inspect,onAction});
@@ -90,6 +94,10 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  const old=dressOldTown(kit,solid,{inspect,anchor,onAction,vending,group});
 
  const {meshes,materials}=kit.finish(group,'Okinawan quarter');
+ // What follows the clock at Higa Liquor and the coin laundry: the doors, the 留守 card, the shutter and the lights; the
+ // machines turning, the baskets, the misted glass and the day's notices (higa-liquor-dressing.js, coin-laundry-dressing.js).
+ const higa=higaFrontage({shadows}),coinLaundry=laundryFrontage({shadows});group.add(higa.group,coinLaundry.group);
+ colliders.push(higa.shutterSolid,higa.doorSolid);
  world.colliders.push(...colliders);
  // Windows light up and the lamps come on at dusk, like the rest of the town.
  (world.hourly??=[]).push(minutes=>{
@@ -98,9 +106,10 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
   if(materials.lamp)materials.lamp.emissiveIntensity=.1+glow*1.6;
   for(const machine of vendings)machine.userData.night?.(glow);   // the drinks machines' light on the pavement
   old.shutter.update(minutes);
+  higa.update(minutes);coinLaundry.update(minutes,world.laundryWash||null);
  });
  if(!vendingReady())for(const machine of vendings)(world.details??=[]).push({id:'okinawa-vending-'+machine.id,x:machine.position.x,z:machine.position.z,radius:44,load:()=>hydrateVending(machine,{shadows})});
- return {group,meshes,colliders,materials,shutter:old.shutter,laneEdges};
+ return {group,meshes,colliders,materials,shutter:old.shutter,laneEdges,higa,coinLaundry};
 }
 
 /* ------------------------------ Nishi-machi ------------------------------ */
@@ -292,8 +301,10 @@ const SHOPS=Object.freeze({
   buy:{label:'Buy a zenzai',title:"Nakamura Zenzai · Nakamura Zenzai",cost:250,item:'Zenzai',text:'Okinawan zenzai: a mountain of shaved ice over sweet kintoki beans and little white mochi, in a glass bowl that sweats on the counter. Mrs Nakamura has been making it on this corner since the Americans left.'},
   // The island's one sweet counter: when Aragaki Confectionery shut, Mrs Nakamura took on the sata andagi.
   more:[{label:'Buy sata andagi',title:"Nakamura Zenzai · sata andagi",cost:120,item:'Sata andagi',text:'Okinawan doughnuts, fried in the back in the morning until they crack open and smile, to the recipe from the old sweet shop over the road. Three to a paper bag, still warm, sugar on your fingers.',dz:1.3}]},
- 'higa-saketen':{interior:'liquor',jp:"Higa Liquor Store",en:'Higa liquor · awamori',bg:'#f7ead6',accent:'#8a3b2e',upright:"Awamori",uprightBg:'#8a3b2e',
-  buy:{label:'Buy a bottle of awamori',title:"Higa Liquor · Higa Liquor Store",cost:600,item:'Awamori miniature',text:'Awamori in every size, from the little 180 ml bottles by the till to the old clay pots at the back that Grandmother Higa will not sell you however you ask. The shop is hers, and she keeps the counter in the mornings. She wraps a miniature in newspaper and tells you to keep it for a guest.'}},
+ // Higa Liquor walks in through its glass doors under a canvas awning of its own (higa-liquor-dressing.js); the counter
+ // is the activities' 'higa-liquor' menu, which knows the hours and who is behind it (commerce/higa-liquor.js).
+ 'higa-saketen':{interior:'liquor',awning:false,jp:"Higa Liquor Store",en:'Higa liquor · awamori',bg:'#f7ead6',accent:'#8a3b2e',upright:"Awamori",uprightBg:'#8a3b2e',
+  buy:{label:'Buy a bottle of awamori',action:'higa-liquor'}},
  // Aragaki Confectionery, closed (cast.js PLACES): nobody keeps it, and nobody lives behind it. The faded
  // sign stays up.
  arakaki:{interior:'sweets',awning:false,jp:"Aragaki Confectionery Store",en:'Arakaki sweets · closed',bg:'#efe6cf',accent:'#5f7d76',upright:"Sweets",uprightBg:'#8a9a94',
@@ -302,7 +313,7 @@ const SHOPS=Object.freeze({
  yonamine:{interior:'fish',anchorDz:2.3,jp:"Yonamine Fresh Fish Store",en:'Yonamine fish',bg:'#eef4f2',accent:'#9a4a2a',mark:"Fish",upright:"Fresh fish",uprightBg:'#9a4a2a',
   inspect:{label:'Look at the old fish shop',title:"Yonamine Fresh Fish · closed",text:'The shop is shut, and nobody keeps it now. The morning catch goes to the fish auction on the east quay instead: irabuchā, the blue parrotfish; gurukun, red on the ice though they are blue in the sea; and a taman from the night anglers.'}},
  'coin-laundry':{interior:'laundry',jp:"Coin laundry",en:'Coin laundry · open 24 hours',bg:'#e9f0f6',accent:'#3a6a9a',upright:"Laundry",uprightBg:'#3a6a9a',
-  inspect:{label:'Look into the coin laundry',title:'Coin laundry',text:'Four washers, two dryers and a bench, with a stack of old manga and a sign about not leaving washing overnight that everybody ignores. One dryer is going round with somebody’s towels in it. It smells of warm cotton.'}},
+  inspect:{label:'Look into the coin laundry',title:'Coin laundry',text:'Four washers, two dryers and a bench under the noticeboard, with a shelf of old manga and a sign about not leaving washing overnight that everybody ignores. It smells of warm cotton.'}},
 });
 
 function shopFront(kit,solid,plot,frame,{anchor,inspect,onAction,getMinutes=()=>720}){
@@ -313,10 +324,44 @@ function shopFront(kit,solid,plot,frame,{anchor,inspect,onAction,getMinutes=()=>
  const front=frame.front,out=frame.out,z=(plot.minZ+plot.maxZ)/2;
  const buy=item=>()=>plot.id==='nakamura'&&!dessertShopOpen(getMinutes())?onAction?.('read','Nakamura is closed','Mrs Nakamura serves zenzai, sata andagi and Blue Coral ice cream from 10:00 to 19:00.'):onAction?.('buy',item.title,{cost:item.cost,item:item.item,text:item.text});
  if(plot.id==='nakamura')return; // One shared dessert menu owns all orders.
- const act=spec.buy?buy(spec.buy):()=>onAction?.('inspect',spec.inspect.title,spec.inspect.text);
+ const act=spec.buy?.action?()=>onAction?.(spec.buy.action):spec.buy?buy(spec.buy):plot.id==='coin-laundry'?()=>onAction?.('inspect',spec.inspect.title,laundryLook(getMinutes())):()=>onAction?.('inspect',spec.inspect.title,spec.inspect.text);
  // Off to one side where somebody works the counter, so talking to them wins over the shop.
  anchor(front+out*.9,1.1,z+(spec.anchorDz||0),(spec.buy||spec.inspect).label,act);
  for(const m of spec.more||[])anchor(front+out*.9,1.1,z+m.dz,m.label,buy(m));
+ if(plot.id==='higa-saketen')higaPrompts({anchor,onAction,getMinutes});
+ if(plot.id==='coin-laundry')laundryPrompts({anchor,onAction,getMinutes});
+}
+
+/** A prompt only the player uses: residents never pick it as something to do in their free time (town-activities.js). */
+const private_=a=>{if(a)a.userData.npcInteraction=false;return a;};
+/**
+ * Higa Liquor's prompts inside and out (commerce/higa-liquor.js): the delivery book and the family kusu on the counter,
+ * read while the shop is open, and the yuntaku bench out front, a seat at any hour.
+ */
+function higaPrompts({anchor,onAction,getMinutes}){
+ const shut=()=>{const s=higaLiquorState(getMinutes());return s==='open'?null:s==='away'?'The doors are shut, and a card hangs on the handle: “Out. Back at five.” Grandmother Higa is at the bandai at Umi-no-yu.':'The shutter is down. Higa Liquor opens at nine, and again from five to eight.';};
+ const [bx,bz]=higaPoint(-1.0,-.05),[kx,kz]=higaPoint(-1.62,-.05);
+ private_(anchor(bx,1.2,bz,'Read Higa Liquor’s delivery book',()=>{const no=shut();onAction?.('read','Higa Liquor · delivery book',no||higaDeliveryBook(getMinutes()));}));
+ private_(anchor(kx,1.2,kz,'Look at the Higa family kusu',()=>{const no=shut();onAction?.('inspect',HIGA_KUSU.name,no||`${HIGA_KUSU.why}\n\n${HIGA_KUSU.neverSold}`);}));
+ const P=YUNTAKU.seats.player,seat=private_(anchor(P.at[0]-.55,1,P.at[1],'Sit on the bench outside Higa Liquor',()=>{
+  const m=getMinutes(),here=YUNTAKU.sitters.filter(s=>yuntakuSeatAt(s.name,m)).map(s=>s.name);
+  onAction?.('seat','Higa Liquor’s bench',here.length?`You sit down at the end of the bench. ${here.join(' and ')} ${here.length>1?'are':'is'} already here with a bottle each, talking about nothing in particular, which is the point.`:'A timber bench and two upturned beer crates in front of the shop. In the evening opening the men sit here with a bottle from the counter.');}));
+ if(seat)seat.userData.seat={id:'higa-yuntaku-bench',position:[P.at[0],0,P.at[1]],stand:[P.stand[0],0,P.stand[1]],surfaceY:P.height,eyeY:1.1,yaw:-Math.PI/2,pitch:-.03};
+}
+/** What the laundry looks like through the glass at this minute: which machines are turning, and whose. */
+function laundryLook(minutes){
+ const now=laundryMachinesAt(minutes).filter(m=>m.running),names=m=>m.kind==='washer'?'washer '+m.id.slice(1):'dryer '+m.id.slice(1);
+ return now.length?`Through the glass: ${now.map(names).join(' and ')} going round. Four washers, two gas dryers, a bench under the noticeboard and a shelf of old manga. It smells of warm cotton.`
+  :'Four washers and two gas dryers, all still. A bench under the noticeboard, a shelf of old manga, the change machine humming. It smells of warm cotton.';
+}
+/** The coin laundry's prompts inside: a wash of your own, the noticeboard, the manga, the bench. */
+function laundryPrompts({anchor,onAction,getMinutes}){
+ const at=(x,z,y,label,fn)=>{const [wx,wz]=laundryPoint(x,z);return private_(anchor(wx,y,wz,label,fn));};
+ at(-1.2,.65,1.1,'Do a wash at the coin laundry',()=>onAction?.('coin-laundry'));
+ at(-.3,-.75,1.6,'Read the coin laundry noticeboard',()=>onAction?.('read','Coin laundry noticeboard',laundryNotices(getMinutes()).map(n=>`${n.title}\n${n.text}`).join('\n\n')));
+ at(1.07,-.75,1.0,'Read the manga by the bench',()=>{const m=LAUNDRY_MANGA[Math.floor(getMinutes()/1440)%LAUNDRY_MANGA.length];onAction?.('read',m.title,m.text);});
+ const B=LAUNDRY_BENCH.seats[0],seat=at(-.8,-.4,1,'Sit on the coin laundry bench',()=>onAction?.('seat','Coin laundry bench','A blue vinyl bench under the noticeboard, facing the machines. Somebody has left a manga open on it, face down.'));
+ if(seat)seat.userData.seat={id:'coin-laundry-bench',position:[B.at[0],0,B.at[1]],stand:[B.stand[0],0,B.stand[1]],surfaceY:B.height+.08,eyeY:1.1,yaw:Math.PI/2,pitch:-.03};
 }
 
 function buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes}){
@@ -335,16 +380,18 @@ function buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes}){
  if(seat)seat.userData.seat={id:'nakamura-dessert-bench',position:[bx,0,bz],stand:[bx-.8,0,bz],surfaceY:.49,eyeY:1.12,yaw:-Math.PI/2,pitch:-.03};
  // The old lane up to the sea bath between the shop-houses is Kitano Road now (kitano-link.js):
  // its stepping stones, lanterns, pot plants and the vending machine made way for the carriageway.
- // Higa Liquor's delivery bicycle, against its own shopfront at the south end, side-on, nose up the street. It stood
- // on the kerb in the crossing's planter until the owner's phone found it there (20 October 2026).
+ // Higa Liquor's delivery bicycle, against its own shopfront. It stood on the kerb in the crossing's planter until the
+ // owner's phone found it there (20 October 2026).
  const liquor=EAST_ROW.plots.find(p=>p.id==='higa-saketen');
- solid(bicycle(kit,EAST_ROW.minX-.4,liquor.maxZ-1.05,{ry:-Math.PI/2,colour:0x2b2d30,basket:false,id:'higa-liquor-bicycle',owner:'Higa Liquor (Grandmother Higa)',
+ // Moved again on 21 October 2026 for the yuntaku bench (higa-liquor-dressing.js): nose-in to the pier at the Kitano Road
+ // corner, beside the empties, clear of the door.
+ solid(bicycle(kit,EAST_ROW.minX-.95,liquor.minZ+.42,{ry:0,colour:0x2b2d30,basket:false,id:'higa-liquor-bicycle',owner:'Higa Liquor (Grandmother Higa)',
   why:'The shop’s old black delivery bicycle with the big carrier, from the days her husband did the rounds. Grandmother Higa still wheels it up Kitano Road with a bottle tied on for a regular who cannot come down, an order too small for the van. It lives against its own shopfront, clear of the door and the footway.'}));
 }
 
-function buildYardRow(kit,solid,{anchor,inspect,onAction}){
+function buildYardRow(kit,solid,{anchor,inspect,onAction,getMinutes}){
  const depth=YARD_ROW.maxX-YARD_ROW.minX,x=(YARD_ROW.minX+YARD_ROW.maxX)/2;
- for(const plot of YARD_ROW.plots)shopFront(kit,solid,plot,{x,ry:Math.PI/2,depth,front:YARD_ROW.maxX,out:1},{anchor,inspect,onAction});
+ for(const plot of YARD_ROW.plots)shopFront(kit,solid,plot,{x,ry:Math.PI/2,depth,front:YARD_ROW.maxX,out:1},{anchor,inspect,onAction,getMinutes});
  // The yard behind them: fish crates and a garden of greens in fish boxes.
 
 

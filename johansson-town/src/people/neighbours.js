@@ -1,6 +1,7 @@
 import {CAST,castMember} from './cast.js';
 import {activeResidentHome} from './home-directory.js';
 import {canonicalDay,canonicalStreetRoute} from './canonical-day.js';
+import {sitOnStand,standUpFromStand,seatedOn} from './stand-seat.js';
 import {groundHeight} from '../world/layout.js';
 import {createNavigation} from './navmesh.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -105,12 +106,13 @@ export function routePoint(route,distance){
  */
 function standAtPoint(g,spec,stand,onIt,dt){
  const u=g.userData;
- if(stand&&onIt){
+ if(stand&&(onIt||seatedOn(g,stand))){
   const diff=Math.atan2(Math.sin(stand.yaw-g.rotation.y),Math.cos(stand.yaw-g.rotation.y));
   g.rotation.y+=Math.max(-dt*2.6,Math.min(dt*2.6,diff));
-  if(Math.abs(diff)<.05){u.socialPose=stand.pose||null;if(stand.tool)u.tool=stand.tool;else delete u.tool;u.standPose=true;}
+  if(Math.abs(diff)<.05){u.socialPose=stand.pose||null;if(stand.tool)u.tool=stand.tool;else delete u.tool;u.standPose=true;sitOnStand(g,stand);}
   return;
  }
+ standUpFromStand(g);
  if(u.standPose){u.socialPose=spec.pose||null;delete u.tool;delete u.standPose;}
 }
 /** The route point nearest a body, by straight 3D distance. */

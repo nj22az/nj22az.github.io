@@ -52,7 +52,8 @@ test('every stand point is data with its reason, a facing, a pose of the town’
 test('stand sequences belong to the residents the owner named, 3–12 rows each, and everyone else keeps one target a phase',()=>{
  const rows=new Map();
  for(const r of STANDING_RESIDENTS){const s=STAND_SEQUENCES[r.stand];assert.ok(s,r.stand+' exists');rows.set(r.name,new Set([...(rows.get(r.name)||[]),r.stand]));}
- assert.deepEqual([...rows.keys()].sort(),['Grandmother Higa','Harbour master','Kōji','Mrs Sato','Nhung','Officer Mori','Thuan'].sort());
+ // Ms Ganaha's coin-laundry round: the owner's decision of 21 October 2026 gave the laundry its keeper (commerce/coin-laundry.js).
+ assert.deepEqual([...rows.keys()].sort(),['Grandmother Higa','Harbour master','Kōji','Mrs Sato','Ms Ganaha','Nhung','Officer Mori','Thuan'].sort());
  for(const [name,ids] of rows){const n=[...ids].reduce((t,id)=>t+STAND_SEQUENCES[id].points.length,0);assert.ok(n>=3&&n<=12,name+' has '+n+' stand rows');}
  for(const p of CAST)for(const row of p.day)assert.ok(row.length===3||row[3]?.stand,p.name+': a fourth element is only a stand sequence');
 });
