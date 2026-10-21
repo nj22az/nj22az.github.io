@@ -1,12 +1,14 @@
 import * as THREE from '../../vendor/three.module.js';
 import {faceLayout} from './face.js';
 import {shapeHeadPoint} from './head-profile.js';
+import {sampleCycle,CYCLE_DURATION} from '../drinking/cycle.js';
 
 /** A single lift, pause at the lips, then return; shared by every avatar. */
 export function consumptionPhase(t,duration=2.4){
- const p=THREE.MathUtils.clamp(t/duration,0,1);
- const lift=THREE.MathUtils.smoothstep(p,0,.3)*(1-THREE.MathUtils.smoothstep(p,.7,1));
- return {lift,swallow:THREE.MathUtils.smoothstep(p,.4,.65),done:p>=1};
+ // Existing held-prop scenes retain their compact duration. Their lift and flow
+ // envelope now comes from the same performance as the complete table interaction.
+ const phase=sampleCycle(THREE.MathUtils.clamp(t/duration,0,1)*CYCLE_DURATION);
+ return {lift:phase.lift,swallow:phase.flowProgress,done:t>=duration};
 }
 /**
  * How far a drink tips at the lips: a full mug barely, the last mouthful a long way, the

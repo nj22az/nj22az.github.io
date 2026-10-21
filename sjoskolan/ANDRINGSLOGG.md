@@ -260,7 +260,21 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     skyddade provfel och lärarbedömning hålls åtskilda. Dela frågefönstret under självständigt arbete och ha
     facit-PDF:en i ett odelat fönster. Historiska migreringsskript läser sin låsta källrevision och ändras inte.
 
+64. **Nedladdning är inte inlämning.** Resultatrutan ska ange samma bilagor som elevinstruktionen och lärarmanuset.
+    En reservkanal får inte lovas utan lärarbeslut. Vecka 43: PDF och separat ritningsfoto i Classroom; vid hinder
+    kontaktas läraren för godkänt alternativ. Kontrollera också beskedet efter Lämna in.
+
 ## Ändringar
+
+- **2026-10-21** Vecka 43: elevinstruktionen, nedladdningsdelen och resultatrutan anger PDF plus separat foto av
+  ritningen i inlämning 3. Ingen generell e-postreserv är beslutad i kursens instruktioner; vid Classroom-hinder ska
+  eleven kontakta läraren före fredag 23 oktober för ett godkänt alternativ. Fredagens Google Docs-manus har samma
+  besked. Resultatrutan säger uttryckligen att webbsidan inte skickat något till Classroom. Bara sidmodulens
+  cacheversion byts; rättningsmodul, frågor, nycklar, kriterier, försök, lagringsnycklar och sista dag behålls.
+  Kontroll: 63 godkända enhetstester (tre skyddade facitkontroller hoppades över utan klartext), aktuella genererade
+  filer samt DOM-flöde med syntetiska svar i alla fyra uppgifter, Rätta, första version, PDF-knapp och ändrat svar.
+  Test-PDF: tre A4-sidor, innehåll kontrollerat med Poppler och alla sidor visuellt granskade. Live-nedladdning
+  fungerade i Chrome. Den automatiska webbläsarkontrollen gav 12 godkända tester i desktop Chromium, telefonläge\n  (Pixel 7/Chromium) och iPad Mini/WebKit, inklusive PDF-nedladdning, bilagekrav, kontaktalternativ och horisontell\n  överrinning. Testets äldre tvetydiga inlämningslänk avgränsas till Hela veckan. CI: körning 39600886306.\n  Ingen verklig elevinlämning eller Classroom-uppladdning gjordes; fysisk mobil/Safari återstår.
 
 - **2026-10-20** Fredag 30 oktober: lärarinstruktionen i Google Docs hänvisar nu till de separata fråge- och
   facit-PDF:erna i stället för borttagna lösningsknappar. Förberedelsen anger privat facitfönster och delat

@@ -35,6 +35,7 @@ SJALVRATTANDE = {42, 43, 44}
 # Cacheversion för gemensamt/sjalvrattning*.mjs, quiz-sida.mjs, pdf.mjs, lasbekraftelse.mjs och
 # sjalvrattning.css (regel 13). Byt den när en av filerna ändras efter publicering; importerna i .mjs-filerna följer med.
 VERSION = '20261014'
+SIDA_VERSION = '20261021'  # Sidbeteendet; rättning, PDF och läsbekräftelser är oförändrade.
 MAX_FORSOK = 3
 MULTIMETER_CAT = '../../multimetersimulator/?ovning=category'
 # Alternativen visas i en fast, blandad ordning (samma för alla elever), så att rätt svar inte står på samma plats.
@@ -720,9 +721,10 @@ def epost_ruta(epost, vn, pa_sidan):
     var = 'i rutorna under varje uppgift' if pa_sidan else 'i rutorna på <a href="Inlamning.html">inlämningssidan</a>'
     knapp = '<p><a class="sj-btn" href="#lamna-in">Till Lämna in</a></p>' if pa_sidan else ''
     classroom = (f'<p class="ri-classroom"><strong>Classroom för vecka 43:</strong> öppna kursens Classroom via länken '
-                 'du fått från skolan och välj uppgiften under <strong>Vecka 43</strong>. Bifoga PDF-filen och bilagorna '
-                 'nedan och slutför inlämningen där. Knappen Lämna in på den här webbsidan skickar inget till Classroom. '
-                 f'Saknar du länken, uppgiften eller åtkomst? <a href="mailto:{epost}">Kontakta läraren</a> före fredag 23 oktober.</p>'
+                 'du fått från skolan och välj uppgiften under <strong>Vecka 43</strong>. Bifoga PDF-filen och ett foto av '
+                 'ritningen i inlämning 3 och slutför inlämningen där. Knappen Lämna in på den här webbsidan skickar inget till Classroom. '
+                 f'Saknar du länken, uppgiften eller åtkomst? <a href="mailto:{epost}">Kontakta läraren</a> före fredag 23 oktober '
+                 'för att komma överens om ett godkänt alternativ. Skicka inte in uppgiften via e-post utan överenskommelse med läraren.</p>'
                  if vn == 43 else '')
     return ('<div class="sj-panel soft handin-mail"><h3>Så lämnar du in</h3>'
             '<p><strong>Skriv dina svar. Tryck Rätta. Du får se vad som är rätt och var du kan läsa om något skiljer sig. '
@@ -779,12 +781,13 @@ def lm_text(mal):
 
 def lamna_in(nr, vn, titel, epost):
     """Sista delen av sidan: namn, Lämna in och resultatet med PDF-nedladdningen (gemensamt/sjalvrattning-sida.mjs)."""
+    bilagor = ' Bifoga också ett foto av ritningen i inlämning 3. Fotot laddar du upp separat; det ingår inte i sidans PDF.' if nr == 43 else ''
     mal = sorted({m for o in FORMULAR[nr] for m in post(o)['larande'].get('mal', [])}, key=lambda m: int(m.split('-')[1]))
     lm = html.escape(json.dumps(lm_text(mal), ensure_ascii=False), quote=True)
     return (f'<section class="sj-panel ri-lamna" id="lamna-in" data-ri-vecka="{vn}" data-ri-lagring="sj-v{nr}-inlamning" '
             f'data-ri-epost="{epost}" data-ri-titel="{html.escape(titel, quote=True)}" data-ri-max="{MAX_FORSOK}" data-ri-lm="{lm}">'
             '<h2>Lämna in</h2><p>När du är klar: skriv ditt namn och tryck Lämna in. Sidan rättar alla svar och visar ditt resultat. '
-            f'Sedan laddar du ner PDF:en och lämnar in den i Google Classroom under Vecka {vn}.</p>'
+            f'Sedan laddar du ner PDF:en och lämnar in den i Google Classroom under Vecka {vn}.{bilagor}</p>'
             '<noscript><p><strong>Sidan behöver JavaScript för att rätta och lämna in.</strong> '
             f'Skriv dina svar i ett dokument och lämna in det i Google Classroom under Vecka {vn}.</p></noscript>'
             '<p class="ri-lagring" role="status" hidden></p>'
@@ -818,7 +821,7 @@ def skript(nr):
     inte att läsa startar sidan ändå (starta(null)): eleven kan lämna in och läraren rättar."""
     nyckel = SJO / f'vecka-{nr}' / 'aktuell' / 'inlamning-nyckel.mjs'
     v = hashlib.sha256(nyckel.read_bytes()).hexdigest()[:10] if nyckel.exists() else 'saknas'
-    return (f'<script type="module">import {{starta}} from \'/sjoskolan/gemensamt/sjalvrattning-sida.mjs?v={VERSION}\';'
+    return (f'<script type="module">import {{starta}} from \'/sjoskolan/gemensamt/sjalvrattning-sida.mjs?v={SIDA_VERSION}\';'
             f'import(\'./inlamning-nyckel.mjs?v={v}\').then((m) => starta(m.NYCKEL), () => starta(null));</script>\n')
 
 

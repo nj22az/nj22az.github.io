@@ -53,7 +53,7 @@ test('the regulars wait for Mrs Sato, eat a slow bowl with their own drink, and 
 
 test('your order is cooked and carried by Mrs Sato, then eaten a mouthful at a time',()=>{
  installDOM();
- const room=new THREE.Group(),sato=cook(),kitchen=createRamenKitchen({getCook:()=>sato}),seat={...SATO_COUNTER[3],ramenSeatId:3},bites=[];let yen=1000;
+ const room=new THREE.Group(),sato=cook(),kitchen=createRamenKitchen({getCook:()=>sato}),seatIndex=SATO_COUNTER.length-1,seat={...SATO_COUNTER[seatIndex],ramenSeatId:seatIndex},bites=[];let yen=1000;
  const service=createRamenPlayerService({room,getSeat:()=>seat,getMinutes:()=>720,getBalance:()=>yen,pay:n=>{yen-=n;return true;},say(){},menu:SATO_MENU,isOpen:()=>true,server:'Mrs Sato',kitchen,onMouthful:(item,m)=>bites.push(m)});
  assert.ok(service.request('coffee'));
  for(let i=0;i<60*6;i++){service.update(1/60);kitchen.update(1/60);}

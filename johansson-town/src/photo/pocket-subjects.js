@@ -21,7 +21,7 @@ const head=new THREE.Vector3(),feet=new THREE.Vector3();
  * in both voices ("Took a photo of Thuan at home"; "photographed by the mayor at home").
  */
 export const PLACE_PHRASES=Object.freeze({
- 'mayor-home':'at home','mayor-office':'in the mayor’s office',school:'in the town hall classroom','community-kitchen':'in the community kitchen',
+ 'mayor-home':'at home',school:'in the school classroom','community-kitchen':'in the Community Hall',
  dungeon:'in the Old Sea Cave','aoba-garden':'in the Aoba Traditional Garden',
  'harbour-park':'in Minato Harbour Park','rainflower-florist':'at the flower buckets by Sakura’s door','nakamura':'at Nakamura’s dessert counter',
  'rainflower-lane':'on Rainflower Shopping Lane',

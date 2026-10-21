@@ -62,9 +62,11 @@ test('a save pointing into a home that goes loads at a retained public place, in
  for(const target of new Set(Object.values(RETIRED_HOMES))){const site=places.get(target);assert.ok(site&&!site.isResidence,target+' is a retained public place in the built town');}
  // None of the homes that go stands any more (phase 4; the Heights' Flats 1 and 2 went with its upper storey in phase 3).
  for(const id of ['home-kitahama-4','home-kitahama-5','home-kitahama-6','home-kinjo','home-oshiro','resident-home-aya','home-shimabukuro','home-izakaya','home-kitano-3','home-kitahama-flat-1','home-kitahama-flat-2','rainflower-florist'])assert.equal(places.get(id),undefined,id+' is gone');
- const cases={'home-kitahama-4':'mayor-office','kitahama-5':'mayor-office','home-kitahama-6':'mayor-office','kinjo':'mayor-office','home-oshiro':'mayor-office','resident-home-aya':'mayor-office',
-  'home-kitano-3':'mayor-office','kitano-3':'mayor-office','home-kitahama-flat-1':'mayor-office','kitahama-flat-2':'mayor-office','home-shimabukuro':'ferry-terminal','post-office':'ferry-terminal',
-  'rainflower-florist':'market','florist':'market','home-izakaya':'izakaya','home-kitahama-7':'mayor-office','home-market':'mayor-office'};
+ const cases={'home-kitahama-4':'community-kitchen','kitahama-5':'community-kitchen','home-kitahama-6':'community-kitchen','kinjo':'community-kitchen','home-oshiro':'community-kitchen','resident-home-aya':'community-kitchen',
+  'home-kitano-3':'community-kitchen','kitano-3':'community-kitchen','home-kitahama-flat-1':'community-kitchen','kitahama-flat-2':'community-kitchen','home-shimabukuro':'ferry-terminal','post-office':'ferry-terminal',
+  'rainflower-florist':'market','florist':'market','home-izakaya':'izakaya','home-kitahama-7':'community-kitchen','home-market':'community-kitchen',
+  // The mayor's office went on 21 October 2026 (briefs/town-hall-zone.md phase M): a save at its door lands at the Community Hall's.
+  'mayor-office':'community-kitchen'};
  for(const [from,to] of Object.entries(cases)){
   const saved=migrateCast(migrateHousing({homeTarget:from,lastHome:from,navigationTarget:from,yen:3}));
   assert.equal(saved.homeTarget,to,from);assert.equal(saved.lastHome,to,from);assert.equal(saved.navigationTarget,to,from);
@@ -83,8 +85,8 @@ test('a save made inside a removed building, with a retired resident’s records
  s.setItem(SAVE_KEY,JSON.stringify(old));
  const read=readSave(s);
  assert.equal(read.castRevision,CAST_REVISION);
- assert.equal(read.homeTarget,'mayor-office','inside the Ōshiro house: the town hall');assert.equal(read.navigationTarget,'ferry-terminal','the flat over the post office: the terminal, where its post went');assert.equal(read.lastHome,'mayor-office');
- assert.deepEqual(read.visited,['mayor-office','market'],'visits to removed homes land at the retained place once');
+ assert.equal(read.homeTarget,'community-kitchen','inside the Ōshiro house: the town hall');assert.equal(read.navigationTarget,'ferry-terminal','the flat over the post office: the terminal, where its post went');assert.equal(read.lastHome,'community-kitchen');
+ assert.deepEqual(read.visited,['community-kitchen','market'],'visits to removed homes land at the retained place once');
  assert.deepEqual(read.residentLocations,{Thao:{position:[2,2]}},'the retired residents’ locations are dropped');
  assert.deepEqual(read.friendship,{Thao:{points:1}});assert.deepEqual(read.treats,{Thuan:2});assert.deepEqual(read.greeted,{});assert.deepEqual(read.impressions,{});
  assert.deepEqual(read.relationships,{'Thao|Thuan':{totals:{chat:1}}},'a pair with a retired person goes');
@@ -113,7 +115,7 @@ test('loading through readSave runs the whole chain once and reads the same afte
  assert.equal(read.castRevision,CAST_REVISION);assert.equal(read.housingRevision,1);
  assert.deepEqual(read.friendship,{Thuan:{points:5},Nhung:{points:2},'Miss Higa':{points:1},Mai:{points:3}},'the save-era names read as the sisters, once');
  assert.deepEqual(read.notes,['Met Thuan at Sakura.']);assert.deepEqual(read.residentLocations,{Thuan:{position:[0,0]}});
- assert.equal(read.homeTarget,'mayor-office');assert.deepEqual(read.visited,['market','mayor-office']);
+ assert.equal(read.homeTarget,'community-kitchen');assert.deepEqual(read.visited,['market','community-kitchen']);
  assert.equal(read.yen,800);assert.deepEqual(read.inventory,['Canned coffee']);assert.deepEqual(read['johansson-house'],{doors:{a:true}});
  writeSave(s,SAVE_KEY,JSON.stringify(read));const again=readSave(s);assert.deepEqual(again,read,'a migrated save reads back unchanged');
  // From castRevision 1 on, a record under Yui is the teacher's, not Thuan's.

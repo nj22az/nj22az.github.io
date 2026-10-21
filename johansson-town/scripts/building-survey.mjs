@@ -16,7 +16,7 @@ export function surveyInterior(room,layout,{step=.2}={}){
   const box=new T.Box3().setFromObject(o);
   // Floor surfaces at the movement datum. Exclude lowered pool bottoms, water,
   // bath rims, ceiling, signs, backdrop and elevated tatami/furniture tops.
-  if(/floor|paving|tiles/i.test(o.name)&&box.min.y>=-.15&&box.max.y<=.08)floors.push(o);
+  if(/floor|paving|tiles?/i.test(o.name)&&box.min.y>=-.15&&box.max.y<=.08)floors.push(o);
   if(/wall|partition/i.test(o.name)&&box.min.y<.1&&box.max.y>1.95)walls.push({name:o.name,minX:box.min.x,maxX:box.max.x,minZ:box.min.z,maxZ:box.max.z});
  });
  const polygon=layout.floorPolygon||[[b.minX,b.minZ],[b.maxX,b.minZ],[b.maxX,b.maxZ],[b.minX,b.maxZ]];

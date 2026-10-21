@@ -12,6 +12,7 @@ import {bookshopVisitPlan} from './bookshop-visits.js';
 import {marketVisitsForDay,RAMEN_VISITS,marketVisitPurpose} from './market-visits.js';
 export {marketVisitsForDay,RAMEN_VISITS} from './market-visits.js';
 import {IZAKAYA_DOOR} from '../world/dining-layout.js';
+import {MINATO_COMPACT} from '../world/interiors/minato-compact-plan.js';
 import {SHOP_CROSSING_Z} from '../world/main-road.js';
 import {MARKET_THRESHOLD} from '../world/town-grid.js';
 import {STAFF_BENCH} from '../world/staff-bench.js';
@@ -227,7 +228,11 @@ export function thuanEveningPlace(minutes){
  if(m<1260)return Math.floor(minutes/1440)%2===0?'stroll':'ramen';
  return m<1340?'evening':'stroll';
 }
-export const IZAKAYA_SEATS=[[-3.8,-1.42],[-2.3,-1.42],[-.8,-1.42],[.7,-1.42],[2.2,-1.42],[-4.1,1.12],[-2.9,1.12],[2,3.08]];
+export const IZAKAYA_SEATS=[
+ ...MINATO_COMPACT.counterStools.map(x=>[x,MINATO_COMPACT.counterSeatZ]),
+ ...MINATO_COMPACT.booth.seatX.map(x=>[x,MINATO_COMPACT.booth.benchZ[0]]),
+ [MINATO_COMPACT.booth.seatX[0],MINATO_COMPACT.booth.benchZ[1]],
+];
 export function supperGuests(minutes){
  const minute=((minutes%1440)+1440)%1440;
  if(!izakayaOpen(minutes))return [];

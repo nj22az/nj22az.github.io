@@ -11,7 +11,7 @@ export const MINATO_DETAIL_SURFACES=Object.freeze({
  lowSouth:Object.freeze({y:.77,minX:4.925,maxX:5.675,minZ:2.5,maxZ:3.7}),
  loungeNorth:Object.freeze({y:FURNITURE_HEIGHTS.table,minX:-4.93,maxX:-4.27,minZ:3.82,maxZ:4.48}),
  loungeSouth:Object.freeze({y:FURNITURE_HEIGHTS.table,minX:-4.93,maxX:-4.27,minZ:4.67,maxZ:5.33}),
- backBar:Object.freeze({y:.92,minX:-4.575,maxX:-1.175,minZ:-6.25,maxZ:-5.65}),
+ backBar:Object.freeze({y:1.03,minX:-4.55,maxX:-1.20,minZ:-6.22,maxZ:-5.58}),
  prep:Object.freeze({y:.8975,minX:4.84,maxX:6.26,minZ:-6.335,maxZ:-5.565}),
  loungeSeat:Object.freeze({y:FURNITURE_HEIGHTS.seat,minX:-5.98,maxX:-5.26,minZ:3.76,maxZ:4.54}),
  boothSeat:Object.freeze({y:FURNITURE_HEIGHTS.seat,minX:-4.75,maxX:-2.25,minZ:3.05,maxZ:3.51}),
@@ -182,8 +182,10 @@ export function buildIzakayaLivedIn(room){
  on('lounge north napkin','loungeNorth',-4.43,4.34,.06,p=>napkin(p,.11,.085));
  on('lounge south partial lager','loungeSouth',-4.73,5.14,.24,p=>beer(p,.042));
  on('lounge south small dish','loungeSouth',-4.42,5.07,0,p=>plate(p,.065));
- on('back bar teapot','backBar',-2.14,-5.79,.04,teapot);
- on('back bar clean saucers','backBar',-1.62,-5.79,0,p=>{
+ // The new cabinet is stocked with bottles. The tea service now stands on the
+ // clear rear strip of the kitchen prep bench, behind the chopping board.
+ on('prep teapot','prep',5.39,-6.22,.04,teapot);
+ on('prep clean saucers','prep',5.72,-6.22,0,p=>{
   for(let i=0;i<5;i++)plate({...p,y:p.y+i*.013},.084,i===1?C.blue:C.china);
  });
  on('prep service tray','prep',5.025,-5.655,0,tray);

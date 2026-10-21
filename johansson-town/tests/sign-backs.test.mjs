@@ -16,7 +16,7 @@ const world=createTown({scene:new THREE.Scene(),sites:createIslandBusinesses(),m
 
 // Dyed cloth reads reversed from behind, as it does in the street; the rest are no lettering at all (a block screen's
 // pattern, frosted glass) or a paper pinned flat to a board, whose back is the board.
-const CLOTH=/noren|flag|banner|curtain|nobori|laundry|washing/i,NOT_A_SIGN=/^(School boundary wall|Umi-no-yu frosted door glass)$|flyer/;
+const CLOTH=/noren|flag|banner|curtain|nobori|laundry|washing/i,NOT_A_SIGN=/^(School boundary wall|Power compound fence|Umi-no-yu frosted door glass)$|flyer/;
 test('lettered planes in the street have a back: no sign reads mirrored from behind',()=>{
  const mirrored=[];
  world.group.traverse(o=>{

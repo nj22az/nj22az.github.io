@@ -34,6 +34,8 @@ Linux/Steam Deck is the first development and test platform; macOS, iPad and iPh
 
 0.2.12 carries the web world of 21 October: one ground system across the island (kerbs, pavers, quays, lanes with gutters, beach and lawns), the quiet HUD, Sakura's stair as a passage to an office entered only from inside, the rebuilt parked cars, Nakamura Zenzai's makeover, Higa Liquor and the coin laundry with their staff, the upgraded police station and the reworked Harbour Park. The Linux edition still runs every resident's full day, the trade and the machinery.
 
+0.2.13 carries main b51ef619 of 21 October: separate school, Community Hall and clinic buildings, Nils's study on Kitano-jima, the compact shared Minato/Sato dining interior, the walnut back bar and seated drinking animation. Linux retains its full simulation, controller interface, playable residents, owned beds, save profile and updater. The proposed independent ferry timetable remains a brief. The evening liquor-shop bench is not reliably occupied; the claim in the 0.2.12 notes was too strong.
+
 The cycling and Thuan storage-room minigames are retired in both editions. Linux no longer bundles the separate storage game. Normal shopping, stocking routines and decorative bikes remain.
 
 Development comparisons and release status are recorded at [Linux Port](https://nj22az.github.io/linux-port/).

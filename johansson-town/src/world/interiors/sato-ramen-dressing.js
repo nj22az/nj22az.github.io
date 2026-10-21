@@ -70,30 +70,30 @@ function coloured(g,hex){
 }
 const at=(g,x,y,z,yaw=0)=>{g.rotateY(yaw);g.translate(x,y,z);return g;};
 
-export function buildSatoRamenDressing(room,{anchor,action,collider}={}){
+export function buildSatoRamenDressing(room,{anchor,action,collider,layout={}}={}){
  const prints=[],solids=[];
  const box=(w,h,d,x,y,z,hex)=>solids.push(coloured(new THREE.BoxGeometry(w,h,d).translate(x,y,z),hex));
  const cyl=(r,h,x,y,z,hex,rTop=r,seg=10)=>solids.push(coloured(new THREE.CylinderGeometry(rTop,r,h,seg).translate(x,y,z),hex));
- for(const [cell,x,y,z,yaw,w,h] of SATO_1997_PRINTS){
+ for(const [cell,x,y,z,yaw,w,h] of layout.prints||SATO_1997_PRINTS){
   const out=new THREE.Vector3(Math.sin(yaw),0,Math.cos(yaw)).multiplyScalar(.012);
   prints.push(at(printed(cell,w,h),x+out.x,y,z+out.z,yaw));
  }
  // The condiments, one set between each pair of stools, and a tissue box at each end.
- for(const x of [7.45,8.15,8.85,9.55]){
-  cyl(.018,.075,x-.09,FURNITURE_HEIGHTS.serviceCounter+.0375,-2.25,0xf4f1ea,.014);cyl(.02,.005,x-.09,FURNITURE_HEIGHTS.serviceCounter+.078,-2.25,0x9aa0a6);
-  cyl(.022,.06,x-.03,FURNITURE_HEIGHTS.serviceCounter+.03,-2.25,0xe9dcc0);
-  cyl(.018,.08,x+.03,FURNITURE_HEIGHTS.serviceCounter+.04,-2.25,0xb8321e,.012);
-  cyl(.026,.05,x+.09,FURNITURE_HEIGHTS.serviceCounter+.025,-2.25,0xf2a7b4);cyl(.027,.012,x+.09,FURNITURE_HEIGHTS.serviceCounter+.056,-2.25,0xc8102e);
+ for(const [x,z] of layout.condiments||[7.45,8.15,8.85,9.55].map(x=>[x,-2.25])){
+  cyl(.018,.075,x-.09,FURNITURE_HEIGHTS.serviceCounter+.0375,z,0xf4f1ea,.014);cyl(.02,.005,x-.09,FURNITURE_HEIGHTS.serviceCounter+.078,z,0x9aa0a6);
+  cyl(.022,.06,x-.03,FURNITURE_HEIGHTS.serviceCounter+.03,z,0xe9dcc0);
+  cyl(.018,.08,x+.03,FURNITURE_HEIGHTS.serviceCounter+.04,z,0xb8321e,.012);
+  cyl(.026,.05,x+.09,FURNITURE_HEIGHTS.serviceCounter+.025,z,0xf2a7b4);cyl(.027,.012,x+.09,FURNITURE_HEIGHTS.serviceCounter+.056,z,0xc8102e);
  }
- for(const x of [6.85,10.0])box(.18,.07,.1,x,FURNITURE_HEIGHTS.serviceCounter+.035,-2.22,0xf2f2ee);
+ for(const [x,z] of layout.tissues||[6.85,10.0].map(x=>[x,-2.22]))box(.18,.07,.1,x,FURNITURE_HEIGHTS.serviceCounter+.035,z,0xf2f2ee);
  // The day's bowl, on a little easel at the counter's end.
- {const g=printed('board',.42,.17);g.rotateX(-.25);prints.push(at(g,9.86,FURNITURE_HEIGHTS.serviceCounter+.11,-2.1,0));box(.02,.18,.02,9.86,FURNITURE_HEIGHTS.serviceCounter+.08,-2.16,0x5a3b22);}
+ {const [x,z]=layout.board||[9.86,-2.1],g=printed('board',.42,.17);g.rotateX(-.25);prints.push(at(g,x,FURNITURE_HEIGHTS.serviceCounter+.11,z,0));box(.02,.18,.02,x,FURNITURE_HEIGHTS.serviceCounter+.08,z-.06,0x5a3b22);}
  // Bowls stacked on the back line, ready for the pass.
- for(const [x,n] of [[9.9,5],[10.25,4]])for(let k=0;k<n;k++){cyl(.075,.05,x,.897+.025+k*.045,-5.6,0xf4efe6,.09,14);cyl(.091,.006,x,.897+.05+k*.045,-5.6,0xc8102e,.091,14);}
+ for(const [x,n] of layout.bowls||[[9.9,5],[10.25,4]])for(let k=0;k<n;k++){cyl(.075,.05,x,.897+.025+k*.045,-5.6,0xf4efe6,.09,14);cyl(.091,.006,x,.897+.05+k*.045,-5.6,0xc8102e,.091,14);}
  // The okamochi by the door: an aluminium box with a sliding front and a handle on top.
- const O=OKAMOCHI;
- box(O.w,O.h,O.d,O.x,O.h/2,O.z,0xc9ced2);box(O.w-.04,O.h-.08,.004,O.x,O.h/2,O.z-O.d/2-.002,0xb4babf);
- box(.04,.12,.04,O.x-.14,O.h+.06,O.z,0x9aa0a6);box(.04,.12,.04,O.x+.14,O.h+.06,O.z,0x9aa0a6);box(.32,.03,.04,O.x,O.h+.12,O.z,0x9aa0a6);
+ const O=layout.okamochi||OKAMOCHI,base=O.y||0;
+ box(O.w,O.h,O.d,O.x,base+O.h/2,O.z,0xc9ced2);box(O.w-.04,O.h-.08,.004,O.x,base+O.h/2,O.z-O.d/2-.002,0xb4babf);
+ box(.04,.12,.04,O.x-O.w*.30,base+O.h+.06,O.z,0x9aa0a6);box(.04,.12,.04,O.x+O.w*.30,base+O.h+.06,O.z,0x9aa0a6);box(O.w*.70,.03,.04,O.x,base+O.h+.12,O.z,0x9aa0a6);
  if(collider)collider(O.x,O.z,O.w,O.d,.6);
  const group=new THREE.Group();group.name='Sato Ramen 1997 dressing';room.add(group);
  const texture=sheet();
@@ -102,15 +102,16 @@ export function buildSatoRamenDressing(room,{anchor,action,collider}={}){
  [...prints,...solids].forEach(g=>g.dispose());
  // Closed: the card hangs in the doorway (the door is at x 9.75 in the front wall).
  const closed=new THREE.Group();closed.name='Sato Ramen closed';group.add(closed);
- for(const yaw of [0,Math.PI]){const card=new THREE.Mesh(printed('closed',.5,.25),new THREE.MeshStandardMaterial({map:texture,roughness:.9}));card.position.set(9.75,2.25,3.55+(yaw?.004:-.004));card.rotation.y=yaw;closed.add(card);}
+ if(layout.closed!==false)for(const yaw of [0,Math.PI]){const card=new THREE.Mesh(printed('closed',.5,.25),new THREE.MeshStandardMaterial({map:texture,roughness:.9}));card.position.set(9.75,2.25,3.55+(yaw?.004:-.004));card.rotation.y=yaw;closed.add(card);}
  if(anchor&&action){
-  anchor([7.2,1.8,1.15],'Read the autograph boards',()=>action('inspect','Autograph boards','Three shikishi signed to Mrs Sato: a TV presenter from Okinawa TV who came for the Hārī, the 1996 Seagulls squad, and Kayoko Shima, who sang at the harbour hall and had two bowls. Mrs Sato says the singer left a tip in the shape of a crane.'));
-  anchor([10.9,1.8,-.9],'Read the Hārī poster',()=>action('inspect','Harbour Hārī boat race','Sunday the 12th. Each street puts a boat in. Sato Ramen feeds the crews afterwards, which Mrs Sato says is how she always wins.'));
-  anchor([10.9,1.8,1.2],'Read the noodle maker’s calendar',()=>action('inspect','Shimabukuro Noodle Works calendar','October 1997. Every Wednesday is crossed through in pencil: she shuts on Wednesdays to make the week’s stock.'));
-  anchor([7.1,1.6,-.75],'Read the Umineko poster',()=>action('inspect','Umineko Beer · Kanpai!','A bottle of beer with lunch is ¥400. Mrs Sato serves one per customer before one o’clock and pretends not to count after.'));
-  anchor([9.4,1.3,-1.6],'Add pepper to taste',()=>action('inspect','White pepper','You shake in the white pepper. Mrs Sato watches, says nothing, and slides the garlic over too.'));
-  anchor([O.x-.5,.9,O.z-.5],'Ask about delivery',()=>action('inspect','Okamochi · delivery box','The aluminium box with the sliding front. At noon Mrs Sato carries two bowls in it across to the harbour office, walking very fast and very level. She delivers to the harbour only: “Anywhere else, they can walk.”'));
-  anchor([9.86,1.4,-1.6],'Read today’s recommendation',()=>action('inspect','Today’s bowl','Miso ramen with butter and corn, ¥500. Mrs Sato’s autumn bowl, on the board from October until the mornings warm up again.'));
+  const a=layout.approaches||{};
+  anchor(a.autographs||[7.2,1.8,1.15],'Read the autograph boards',()=>action('inspect','Autograph boards','Three shikishi signed to Mrs Sato: a TV presenter from Okinawa TV who came for the Hārī, the 1996 Seagulls squad, and Kayoko Shima, who sang at the harbour hall and had two bowls. Mrs Sato says the singer left a tip in the shape of a crane.'));
+  anchor(a.hari||[10.9,1.8,-.9],'Read the Hārī poster',()=>action('inspect','Harbour Hārī boat race','Sunday the 12th. Each street puts a boat in. Sato Ramen feeds the crews afterwards, which Mrs Sato says is how she always wins.'));
+  anchor(a.calendar||[10.9,1.8,1.2],'Read the noodle maker’s calendar',()=>action('inspect','Shimabukuro Noodle Works calendar','October 1997. Every Wednesday is crossed through in pencil: she shuts on Wednesdays to make the week’s stock.'));
+  anchor(a.beer||[7.1,1.6,-.75],'Read the Umineko poster',()=>action('inspect','Umineko Beer · Kanpai!','A bottle of beer with lunch is ¥400. Mrs Sato serves one per customer before one o’clock and pretends not to count after.'));
+  anchor(a.pepper||[9.4,1.3,-1.6],'Add pepper to taste',()=>action('inspect','White pepper','You shake in the white pepper. Mrs Sato watches, says nothing, and slides the garlic over too.'));
+  anchor(a.delivery||[O.x-.5,.9,O.z-.5],'Ask about delivery',()=>action('inspect','Okamochi · delivery box','The aluminium box with the sliding front. At noon Mrs Sato carries two bowls in it across to the harbour office, walking very fast and very level. She delivers to the harbour only: “Anywhere else, they can walk.”'));
+  anchor(a.today||[9.86,1.4,-1.6],'Read today’s recommendation',()=>action('inspect','Today’s bowl','Miso ramen with butter and corn, ¥500. Mrs Sato’s autumn bowl, on the board from October until the mornings warm up again.'));
  }
  let last=null;
  return {update(minutes){const open=satoRamenOpen(minutes);if(open===last)return;last=open;closed.visible=!open;}};

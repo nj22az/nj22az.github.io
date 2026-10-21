@@ -45,7 +45,7 @@ export function auditArchive(a){
 export function seedArchive(state,now){
  const a=state.documentArchive??=restoreArchive();retainArchive(a,now);if(a.seeded)return;a.seeded=true;
  for(const paper of TOWN_PAPERS)fileDocument(state,{...paper,opening:true},now);
- const organisations=['Sakura Shop','Harbour Office','Community Hall','Minato Clinic','Sato Ramen','Minato Izakaya','Town Maintenance','Town Hall Classroom'];
+ const organisations=['Sakura Shop','Harbour Office','Community Hall','Minato Clinic','Sato Ramen','Minato Izakaya','Town Maintenance','Minato School'];
  for(let month=0;month<12;month++){
   const date=new Date(now*60000);date.setUTCDate(1);date.setUTCMonth(date.getUTCMonth()-month);const issued=date.getTime()/60000;
   for(const organisation of organisations)fileDocument(state,{type:'Handover',organisation,title:'Monthly handover',issued,opening:true,source:`opening-${organisation}-${month}`,text:'Monthly handover\nOrganisation: '+organisation+'\nPrepared by: Town clerk\nActions: check supplies, confirm staffing and file completed paperwork.\nStatus: routine work completed; outstanding requests carried forward.'},now);

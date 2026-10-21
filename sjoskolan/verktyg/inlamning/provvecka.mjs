@@ -15,6 +15,7 @@ const SJO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const FACIT = join(SJO, 'verktyg', 'inlamning', 'facit.py');
 const PY = readFileSync(join(SJO, 'verktyg', 'inlamning', 'sjalvrattning.py'), 'utf8');
 const VERSION = PY.match(/^VERSION = '(\d{8})'/m)[1];
+const SIDA_VERSION = PY.match(/^SIDA_VERSION = '(\d{8})'/m)[1];
 const FRO = PY.match(/ORDNINGSFRO = '([^']+)'/)[1];
 const snabbhash = (salt, falt, kanon) => createHash('sha256').update(`${salt}|${falt}|${kanon}`).digest('hex').slice(0, 16);
 const post = (id) => JSON.parse(readFileSync(join(SJO, 'innehall', 'ovningar', `${id}.json`), 'utf8'));
@@ -164,7 +165,7 @@ export function provaVecka({ vecka, uppgifter, rattas, delar, sista }) {
 
   test(`vecka ${vecka}: sidan laddar översättningsskyddet, modulen och nyckeln med aktuell version`, () => {
     assert.ok(SIDA.includes('/sjoskolan/gemensamt/oversattning.js'));
-    assert.ok(SIDA.includes(`/sjoskolan/gemensamt/sjalvrattning-sida.mjs?v=${VERSION}`));
+    assert.ok(SIDA.includes(`/sjoskolan/gemensamt/sjalvrattning-sida.mjs?v=${SIDA_VERSION}`));
     assert.ok(SIDA.includes(`/sjoskolan/gemensamt/sjalvrattning.css?v=${VERSION}`));
     const v = createHash('sha256').update(readFileSync(nyckelFil)).digest('hex').slice(0, 10);
     assert.ok(SIDA.includes(`./inlamning-nyckel.mjs?v=${v}`), 'kör innehall.py bygg inlamning efter facit.py (regel 13)');
