@@ -12,8 +12,8 @@ import {createShoreWalker,worldPoint,setWorldPoint,distance,SHORE_SPEED} from '.
  *   06:00 up aboard Shiosai, to the shed, the kettle on (the shed's routine, fujita-routine.js);
  *   06:05 signs on (FERRY_WORKING_DAY.signOn): walks the pier and the quay to the gangway's foot;
  *   06:10 the generators go on and the bridge has him (the crew body); the shed body is hidden at the gangway;
- *   22:15 the shore power goes on and the bridge lets him go: this body steps off at the gangway and walks back to
- *         his chair; 22:20 he is signed off and the first bottle is poured (fujita-day.js FUJITA_DAY.start).
+ *   23:10 the shore power goes on after the last boat back from Kitano-jima and the bridge lets him go: this body
+ *         steps off at the gangway and walks back to his chair; 23:15 he is signed off and the first bottle is poured (fujita-day.js FUJITA_DAY.start).
  * If she is not at Minato when he signs on (left overnight at Kitano-jima), he stays ashore and the bridge still has
  * him: the crew's single body is the rule, and the ship's day is the clock's. If she is away when he signs off, he
  * is back in his chair: he came over on her last run.

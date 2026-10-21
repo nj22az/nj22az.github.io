@@ -148,7 +148,7 @@ The graph contains 210 lines and 151 machinery-space anchors. There are 55 accep
 
 ## 6. The plant as it runs in the game (6r-2)
 
-The crew's day: shore power until 06:10, No.1 generator on the board, the engines for the first boat at 06:25, shore power again after the last at 22:15; No.2 generator on the board for the thruster from the breakwater in and for the departure. At 14:00 alongside, replayed from midnight:
+The crew's day: shore power until 06:10, No.1 generator on the board, the engines for the first boat at 06:25, shore power again after the last at 23:10; No.2 generator on the board for the thruster from the breakwater in and for the departure. At 14:00 alongside, replayed from midnight:
 
 | State | Machines |
 |---|---|

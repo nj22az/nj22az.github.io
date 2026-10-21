@@ -79,7 +79,7 @@ export const HAPPENINGS=Object.freeze([
   lines:{Thao:'Obon. The ancestors come home for three days, and they expect to be fed. So do I.',Nhung:'Our grandmother’s photograph gets the best seat at Obon. She would have liked that.'}},
  {id:'eisa',title:'Ukui: the last night of Obon, and the eisa',on:{date:'08-17'},hours:[1170,1290],dry:true,
   name:'the eisa for Ukui, the last night of Obon',
-  // (Chin is the ferry's motorman, aboard until the shore power at 22:15, so the drummers go by without him.)
+  // (Chin is the ferry's motorman, aboard until the shore power at 23:10, so the drummers go by without him.)
   news:{held:'Thao, Nhung and Tetsuo were out on the street for the eisa on Ukui, the last night of Obon.',off:'The eisa for Ukui, the last night of Obon, was called off for the rain.'},
   cast:{Thao:at('stroll',street(1.8,1.6),'watching the eisa drummers from Minato’s doorway'),Nhung:at('stroll',street(1.8,-1.6),'clapping along to the eisa drummers'),Tetsuo:at('stroll',street(3,-1.2),'covering his ears at the eisa, smiling'),'Mrs Sato':at('stroll',street(1.2,0),'watching the eisa drummers from Sato Ramen’s step')},
   lines:{Thao:'Ukui, the last night of Obon. The drums walk the ancestors home. Stand back, they do not stop for anyone.',Chin:'Eisa, bro! The big drum is in my chest, not my ears.',Tetsuo:'Too loud. Every year, too loud. Every year I come anyway.'}},

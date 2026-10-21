@@ -5,6 +5,7 @@ import {FERRY_SHORE,FERRY_WORKING_DAY} from './ferry-crew.js';
 import {createShoreWalker,worldPoint,setWorldPoint,SHORE_RADIUS as R} from './shore-walker.js';
 import {callToQuay} from './shore-duty.js';
 import {quayClaim} from './quay-breaks.js';
+import {FERRY_TIMETABLE} from '../world/ferry-timetable.js';
 
 /**
  * One real shore body at each berth, the roster's line hands (people/roster.js SHORE_ROLES; ferry-crew.js FERRY_SHORE):
@@ -18,8 +19,8 @@ import {quayClaim} from './quay-breaks.js';
  */
 /** Where Kai sleeps: the Shiroma house's gate (kitano-hamlet-layout.js kitano-2), in the world. */
 export const KITANO_HOME=(()=>{const p=KITANO_HAMLET.plots.find(p=>p.id==='kitano-2'),{door}=hamletGate(p,1.1);const [x,z]=airportWorld(door[0],door[1]);return Object.freeze([x,z]);})();
-/** The Kitano hand's day: out of the house before the crew sign on, home once they sign off. */
-export const KITANO_HAND_DAY=Object.freeze({out:FERRY_WORKING_DAY.signOn-5,home:FERRY_WORKING_DAY.signOff});
+/** The Kitano hand's day: out of the house before the crew sign on, home once the last boat has left Kitano-jima's pier (ferry-timetable.js). */
+export const KITANO_HAND_DAY=Object.freeze({out:FERRY_WORKING_DAY.signOn-5,home:Math.max(...FERRY_TIMETABLE.filter(s=>s.from==='airport').map(s=>s.departs))+5});
 const minute=m=>((m%1440)+1440)%1440;
 export const kitanoHandOut=minutes=>{const m=minute(minutes);return m>=KITANO_HAND_DAY.out&&m<KITANO_HAND_DAY.home;};
 /** How far round the straight line a route may look: the quay's way round the port building, Kitano's round the hamlet's walls. */

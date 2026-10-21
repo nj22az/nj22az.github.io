@@ -83,7 +83,7 @@ export function createFerryOperations({plant,sailings,getBerth,getMinutes=()=>0,
     task('shore-standby','shore',`shore-${op.destination}`,'Stand by at the berth for her lines',4,getLines(op.destination)[0]?.shoreTarget,true)]);
   }else if(stage==='alongside'){
    note('master','All fast. Ramp landed and access checked; passengers may disembark.');
-   const event={sequence:++completionSequence,id:op.id,destination:op.destination,origin:op.origin,automatic:op.automatic,startedMinute:op.startedMinute,elapsed:op.elapsed};
+   const event={sequence:++completionSequence,id:op.id,destination:op.destination,origin:op.origin,automatic:op.automatic,sailing:op.sailing,departs:op.departs,startedMinute:op.startedMinute,elapsed:op.elapsed};
    completed.push(event);if(completed.length>12)completed.shift();
   }
  }
@@ -125,8 +125,12 @@ export function createFerryOperations({plant,sailings,getBerth,getMinutes=()=>0,
   if(plantIndex<plantSteps.length){op.blocking=pending();return;}
   const ready=plant.departureReadiness();
   if(!ready.ready){op.blocking=ready.reasons.join('; ');return;}
-  if(!loaded){op.blocking='Waiting for the vehicle on the loading route.';return;}
+  // A car already on her ramp is waited for; one still on the road misses a timetabled sailing and takes the next.
+  const late=Number.isFinite(op.departs)&&getMinutes()>=op.departs&&!getVehicles()?.loadingVehicles;
+  if(!loaded&&!late){op.blocking='Waiting for the vehicle on the loading route.';return;}
   if(!allReady()){op.blocking=pending();return;}
+  // The timetable's sailing: ready early, she keeps her gangway out until her time (world/ferry-timetable.js).
+  if(Number.isFinite(op.departs)&&getMinutes()<op.departs){op.blocking='Alongside until her sailing time.';return;}
   note('chief','Master, both main engines and steering are ready; two generators are on the board and bridge control is accepted.');enter('securing');
  }
  function lineTick(dt,arrival){
@@ -199,9 +203,9 @@ export function createFerryOperations({plant,sailings,getBerth,getMinutes=()=>0,
   }
   if(!op.blocking&&!allReady()&&!['passage','arriving'].includes(op.stage))op.blocking=pending();
  }
- function request(destination,{automatic=false}={}){
+ function request(destination,{automatic=false,departs=null,sailing=null}={}){
   if(op&&op.stage!=='alongside'||!sailings[destination]||destination===getBerth())return false;
-  const origin=getBerth();op={id:++serial,stage:'preparing',origin,destination,automatic:!!automatic,startedMinute:getMinutes(),elapsed:0,stageElapsed:0,sailingElapsed:0,progress:0,
+  const origin=getBerth();op={id:++serial,stage:'preparing',origin,destination,automatic:!!automatic,departs:Number.isFinite(departs)?departs:null,sailing,startedMinute:getMinutes(),elapsed:0,stageElapsed:0,sailingElapsed:0,progress:0,
    tasks:[],lines:getLines(origin).map(l=>({...l,status:'fast',progress:0})),ramp:{down:1,locked:false},gangway:{out:origin==='town'?1:0},blocking:null};
   for(const id of ['mainP','mainS'])plant.setTelegraph(id,'STOP');plant.setUnderway(false);preparePlant();preparationTasks();onStage(op.stage);
   note('master',`Prepare for departure from ${origin==='town'?'Minato':'Kitano-jima'}; report through your department.`, 'order');return true;
@@ -212,5 +216,7 @@ export function createFerryOperations({plant,sailings,getBerth,getMinutes=()=>0,
   else if(op.tasks.length)progress=op.tasks.filter(t=>t.complete).length/op.tasks.length;
   return {...op,label:def?.label||op.stage,stageDuration:def?.seconds??null,phaseProgress:clamp(progress),tasks:op.tasks.map(t=>({...t})),lines:op.lines.map(l=>({...l})),ramp:{...op.ramp},gangway:{...op.gangway},plant:{stage:op.plantStage,ready:r.ready,reasons:r.reasons},vehicleSummary:vehicleSummary(),history:history.map(e=>({...e}))};
  }
- return {request,tick,snapshot,readyToMove,get active(){return !!op&&op.stage!=='alongside';},get stage(){return op?.stage||'alongside';},get completed(){return completed.map(e=>({...e}));},reset(){if(op&&op.stage!=='alongside')return false;op=null;return true;}};
+ return {request,tick,snapshot,readyToMove,get active(){return !!op&&op.stage!=='alongside';},get stage(){return op?.stage||'alongside';},get completed(){return completed.map(e=>({...e}));},reset(){if(op&&op.stage!=='alongside')return false;op=null;return true;},
+  /** Only for the town's clock jumping (ferry.js settle): the voyage is taken as made, and she is put where the timetable has her. */
+  abandon(){if(op){note('master','The clock has moved on: the voyage is logged as made.');op=null;}plant.setUnderway(false);return true;}};
 }
