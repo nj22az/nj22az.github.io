@@ -43,3 +43,4 @@ izakaya-service-layout.test.mjs
 shared-dining-entry.test.mjs
 beach-shore.test.mjs
 johansson-study.test.mjs
+audit-boot.test.mjs
