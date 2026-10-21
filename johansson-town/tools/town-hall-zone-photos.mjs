@@ -56,6 +56,9 @@ try{
   ['04-monument',[19.2,1.7,25.6],[16.2,1.1,32.5]],
   ['05-beach-end-high',[53,11,20],[45,-.4,28.5]],
   ['06-yard-high',[27,40,20],[27,0,34.5]],
+  ['07-row-from-car-park',[38.5,1.7,30.2],[25,2,37.5]],
+  ['08-passage-to-seawall',[24.75,1.7,32.8],[24.75,1.2,44.5]],
+  ['09-row-high',[27,14,22],[27,1.5,38]],
  ];
  for(const [name,pos,at] of shots.filter(s=>!process.env.PHOTO_ONLY||process.env.PHOTO_ONLY.split(',').includes(s[0]))){
   await page.evaluate(v=>window.capture(v),{pos,at,m:NOON});await page.locator('canvas').screenshot({path:`${out}/${name}.png`});console.log('wrote',name);

@@ -85,6 +85,8 @@ Before merging, the release was reconciled with main at `d6f599e8dc15f9ec123321c
 
 The combined CI guard passed **42 test files, 0 failures**, in 194 seconds, including both incoming beach/study suites and all four compact-interior suites. See `merge-ci-results.txt`. Its runtime source digest is `862a479e6579e2737a3e5791825fa6277e379687da086fd3c78f0fc4f46b8081`. The browser captures above retain their original tested digest; no additional browser run is claimed for this reconciliation.
 
+Main advanced again to `1a337bf49b349513c51b1588375d61130710ee65` with PR #321's town-hall buildings and power compound. That update is also preserved. Only generated files conflicted; Minato's geometry, services and `src/game.js` were unchanged. After rebuilding, eight focused suites passed in 23 seconds: runtime packaging, compact geometry, cabinet support, service routes, shared entry, ground quarters, sign backs and every enterable site. See `final-merge-checks.txt`. The final runtime source digest is `3abbc200423b4e98beef5d4030957c64d07913d05306d4b8485d96248e064e28`; see PR #322 for the hosted 42-file guard result on this revision.
+
 The broader retired Barfly auto-drinking and Reiko kitchen fixtures have pre-existing failures reproduced against the original HEAD; they are outside this change and were not revived. No physical phone or Linux handheld performance result is claimed.
 
 ## Reproduce

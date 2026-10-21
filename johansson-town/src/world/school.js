@@ -1,6 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {GROUND_LAYER} from './ground-layers.js';
-import {SCHOOL,SCHOOL_COLUMNS,FUKUGI,schoolColliders} from './school-layout.js';
+import {SCHOOL,SCHOOL_COLUMNS,FUKUGI,TOWN_HALL_BUILDINGS,TOWN_HALL_PASSAGES,schoolColliders} from './school-layout.js';
 import {createKit} from './okinawa/kit.js';
 import {bicycle} from './okinawa/parked-bicycle.js';
 import {shisa} from './okinawa/houses.js';
@@ -246,40 +246,45 @@ const SCHOOL_BICYCLES=Object.freeze([
 
 function buildTownHall(group,options){
  const kit=createKit({shadows:options.shadows}),bikes=[];
- const x0=B.minX,x1=B.maxX,z0=SCHOOL.corridor.minZ,zf=B.minZ,zb=B.maxZ,H=B.storey,top=B.roof;
- const wall=0xece5d2,trim=0x2f5f6a,slab=0xd8d2c2,alu=0xb8bec0,glass=0x5d7a84,plinth=0xa9aa9c,steel=0x8e979a;
- kit.block(x0-.1,x1+.1,0,.3,zf-.05,zb+.1,plinth);
- kit.block(x0,x1,.3,H,zf,zb,wall);
- // Veranda floor, the roof slab over building and veranda, the parapet ring.
- kit.block(x0,x1,0,.15,z0,zf,0xc9c3b4);
- kit.block(x0-.3,x1+.3,H,top,z0-.3,zb+.2,slab);
- for(const [a0,a1,c0,c1] of [[x0-.3,x1+.3,z0-.3,z0-.15],[x0-.3,x1+.3,zb+.05,zb+.2],[x0-.3,x0-.15,z0-.3,zb+.2],[x1+.15,x1+.3,z0-.3,zb+.2]])kit.block(a0,a1,top,B.parapet,c0,c1,wall);
- kit.block(x0-.34,x1+.34,B.parapet,B.parapet+.07,z0-.34,z0-.12,trim);
- kit.block(x0-.31,x1+.31,top-.35,top-.12,z0-.32,z0-.29,trim);
- // Veranda columns on the old column lines.
- for(const x of SCHOOL_COLUMNS)kit.box(.34,H,.34,x,H/2,z0+.2,wall);
- // The front, bay by bay.
- const bays=SCHOOL_COLUMNS.slice(0,-1).map((x,i)=>[(x+SCHOOL_COLUMNS[i+1])/2,SCHOOL_COLUMNS[i+1]-x]);
+ const z0=SCHOOL.corridor.minZ,zf=B.minZ,zb=B.maxZ,H=B.storey,top=B.roof;
+ const trim=0x2f5f6a,slab=0xd8d2c2,alu=0xb8bec0,glass=0x5d7a84,plinth=0xa9aa9c,steel=0x8e979a;
  const door=(cx,w,c=trim)=>{kit.box(w+.16,2.25,.05,cx,1.27,zf-.03,alu,{finish:'metal'});kit.box(w,2.1,.05,cx,1.2,zf-.05,c);};
  const window=(cx,w,y=1.65,h=1.3)=>{kit.box(w+.12,h+.12,.05,cx,y,zf-.03,alu,{finish:'metal'});kit.box(w,h,.05,cx,y,zf-.05,glass,{finish:'window'});kit.box(.04,h,.06,cx,y,zf-.07,alu,{finish:'metal'});kit.box(w+.2,.07,.2,cx,y-h/2-.06,zf-.1,slab);};
- bays.forEach(([cx,w],i)=>{
-  if(i===1){// The entrance: glass double doors and fixed glass either side.
+ // What each front carries, west to east (the doors where they always were: the rooms and the routines are unchanged).
+ const FRONTS={
+  school:()=>{window(15.43,1.4);window(17.13,1.4);
+   // The entrance: glass double doors and fixed glass either side.
    for(const dx of [-.5,.5])kit.box(.95,2.3,.05,SCHOOL.genkan.x+dx,1.3,zf-.05,glass,{finish:'window'});
    kit.box(2.2,.08,.08,SCHOOL.genkan.x,2.47,zf-.06,alu,{finish:'metal'});kit.box(.06,2.3,.08,SCHOOL.genkan.x,1.3,zf-.07,alu,{finish:'metal'});
-   window(cx-1.25,.8,1.5,1.9);return;}
-  const doorX={3:27.0,4:30.6,5:34.1,6:37.7}[i];
-  if(doorX!==undefined){door(doorX,.95,i===6?0x8a5a36:i===5?0xf2f0ea:trim);window(doorX-1.1,.7);window(doorX+1.1,.7);return;}
-  window(cx-.85,1.4);window(cx+.85,1.4);
- });
- // The back and the ends: plain windows, with the mould band under the slab.
- for(let x=x0+1.6;x<x1-1;x+=2.4){kit.box(1.4,1.1,.05,x,1.7,zb+.03,glass,{finish:'window'});kit.box(1.5,1.2,.04,x,1.7,zb+.02,alu,{finish:'metal'});}
- kit.box(x1-x0,.3,.02,(x0+x1)/2,H-.2,zb+.04,0xbdb4a2);
- for(const x of [x0+3,x0+9.5,x1-6])kit.box(.05,1.2,.02,x,H-.7,zb+.035,0x9d8f78);
- // The clock face on the parapet (its hands are clockHands).
+   window(18.6,.8,1.5,1.9);window(22.35,.9);window(23.35,.6);},
+  'community-hall':()=>{door(27.0,.95);window(25.95,.6);window(28.1,.7);door(30.6,.95);window(29.5,.7);},
+  clinic:()=>{door(34.1,.95,0xf2f0ea);window(35.2,.7);door(37.7,.95,0x8a5a36);window(36.6,.7);window(38.8,.7);},
+ };
+ for(const b of TOWN_HALL_BUILDINGS){
+  const x0=b.minX,x1=b.maxX,wall=b.wall;
+  kit.block(x0-.1,x1+.1,0,.3,zf-.05,zb+.1,plinth);
+  kit.block(x0,x1,.3,H,zf,zb,wall);
+  // Veranda floor, the roof slab over building and veranda, the parapet ring.
+  kit.block(x0,x1,0,.15,z0,zf,0xc9c3b4);
+  kit.block(x0-.3,x1+.3,H,top,z0-.3,zb+.2,slab);
+  for(const [a0,a1,c0,c1] of [[x0-.3,x1+.3,z0-.3,z0-.15],[x0-.3,x1+.3,zb+.05,zb+.2],[x0-.3,x0-.15,z0-.3,zb+.2],[x1+.15,x1+.3,z0-.3,zb+.2]])kit.block(a0,a1,top,B.parapet,c0,c1,wall);
+  kit.block(x0-.34,x1+.34,B.parapet,B.parapet+.07,z0-.34,z0-.12,trim);
+  kit.block(x0-.31,x1+.31,top-.35,top-.12,z0-.32,z0-.29,trim);
+  // Veranda columns at its corners and bays.
+  // The end columns stand 3 cm in from the veranda floor's ends, so their faces never lie in its end faces.
+  for(const x of b.columns)kit.box(.34,H,.34,Math.min(x1-.2,Math.max(x0+.2,x)),H/2,z0+.2,wall);
+  FRONTS[b.id]();
+  // The back: plain windows, with the mould band under the slab; the ends onto the passages carry one window each.
+  for(let x=x0+1.2;x<x1-.9;x+=2.4){kit.box(1.4,1.1,.05,x,1.7,zb+.03,glass,{finish:'window'});kit.box(1.5,1.2,.04,x,1.7,zb+.02,alu,{finish:'metal'});}
+  kit.box(x1-x0,.3,.02,(x0+x1)/2,H-.2,zb+.04,0xbdb4a2);
+  for(const [x,s] of [[x0,-1],[x1,1]]){kit.box(.05,1.1,1.2,x+s*.03,1.7,(zf+zb)/2,glass,{finish:'window'});kit.box(.04,1.2,1.3,x+s*.02,1.7,(zf+zb)/2,alu,{finish:'metal'});}
+ }
+ // The clock face on the school's parapet (its hands are clockHands).
  kit.cyl(.42,.42,.06,SCHOOL.genkan.x-4.5,3.75,z0-.34,0xf6f3ea,{rx:Math.PI/2,segments:24});
- // Roof: two water tanks, an aerial, the horn speaker for the disaster radio.
- for(const x of [x0+4,x1-5]){for(const [dx,dz] of [[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5]])kit.box(.07,.8,.07,x+dx,top+.4,(zf+zb)/2+dz,steel);kit.box(1.2,.08,1.2,x,top+.84,(zf+zb)/2,steel);kit.cyl(.62,.62,1.3,x,top+1.53,(zf+zb)/2,0x2b2d2f,{segments:14,finish:'gloss'});}
- kit.rod([x1-2,top,zb-1],[x1-2,top+3,zb-1],.03,steel);
+ // Roofs: a water tank on the school and one on the clinic, the clinic's aerial.
+ const [school,,clinic]=TOWN_HALL_BUILDINGS;
+ for(const x of [school.minX+4,clinic.maxX-2.5]){for(const [dx,dz] of [[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5]])kit.box(.07,.8,.07,x+dx,top+.4,(zf+zb)/2+dz,steel);kit.box(1.2,.08,1.2,x,top+.84,(zf+zb)/2,steel);kit.cyl(.62,.62,1.3,x,top+1.53,(zf+zb)/2,0x2b2d2f,{segments:14,finish:'gloss'});}
+ kit.rod([clinic.maxX-1,top,zb-1],[clinic.maxX-1,top+3,zb-1],.03,steel);
  // The gateposts with their shisa.
  const g=SCHOOL.gate;
  for(const s of [-1,1]){kit.box(.6,1.6,.6,g.x+s*g.half,.8,g.z,0xdcd6c6);kit.box(.7,.1,.7,g.x+s*g.half,1.65,g.z,slab);shisa(kit,g.x+s*g.half,1.7,g.z,Math.PI,.8);}
@@ -315,12 +320,34 @@ export function buildSchool(world,options){
  {const base=new THREE.Mesh(new THREE.BoxGeometry(.2,.3,SCHOOL.seawall.south-SCHOOL.minZ),new THREE.MeshStandardMaterial({color:0xbdb8a9,roughness:.95}));
   base.position.set(SCHOOL.westWall,.15,(SCHOOL.minZ+SCHOOL.seawall.south)/2);base.receiveShadow=true;group.add(base);}
  world.colliders.push({id:'school-boundary-wall',x:SCHOOL.westWall,z:(SCHOOL.minZ+SCHOOL.seawall.south)/2,w:.3,d:SCHOOL.seawall.south-SCHOOL.minZ,height:1.8});
+ // The power house's compound: a hana-block fence round the house, its apron and the day tank, the gate at the doors
+ // (school-layout.js powerHouse.compound; its colliders are in schoolColliders()).
+ {const k=SCHOOL.powerHouse.compound,ph=SCHOOL.powerHouse,h=k.height;
+  // Drawn 4 cm inside the compound's line, so the screens never lie in the plane of the edging laid along it.
+  const I=.04;
+  hanaScreen(group,hana,k.minX+I,0,0,h,[k.minZ,k.maxZ-I],false,'Power compound fence');
+  hanaScreen(group,hana,k.minX+I,k.maxX-I,0,h,k.maxZ-I,true,'Power compound fence');
+  hanaScreen(group,hana,k.minX+I,ph.minX,0,h,k.minZ+I,true,'Power compound fence');hanaScreen(group,hana,ph.maxX,k.maxX-I,0,h,k.minZ+I,true,'Power compound fence');
+  hanaScreen(group,hana,k.maxX-I,0,0,h,[k.minZ+I,k.gate[0]],false,'Power compound fence');hanaScreen(group,hana,k.maxX-I,0,0,h,[k.gate[1],k.maxZ-I],false,'Power compound fence');}
  buildFukugi(group,options.shadows);
  buildTownHallDressing(group,options);
 
  // Lettering.
- plate(onBuilding,"Minato Town Hall",{w:.42,h:1.18,at:[SCHOOL.gate.x-SCHOOL.gate.half,.88,SCHOOL.gate.z-.31],rotY:Math.PI,vertical:true,bg:'#e9dfc5',fg:'#1b1b1b',size:.62,name:'School gate plate'});
- plate(onBuilding,"Minato Town Hall · Community Centre",{w:6.4,h:.5,at:[27,3.75,SCHOOL.corridor.minZ-.36],rotY:Math.PI,bg:'#e4e1d3',fg:'#2d5a4c',size:.78,name:'School name on parapet'});
+ // The gate is the campus's: the school's plate on one post, the Community Hall's on the other.
+ plate(onBuilding,"Minato Elementary School",{w:.42,h:1.18,at:[SCHOOL.gate.x-SCHOOL.gate.half,.88,SCHOOL.gate.z-.31],rotY:Math.PI,vertical:true,bg:'#e9dfc5',fg:'#1b1b1b',size:.62,name:'School gate plate'});
+ plate(onBuilding,"Minato Community Hall",{w:.42,h:1.18,at:[SCHOOL.gate.x+SCHOOL.gate.half,.88,SCHOOL.gate.z-.31],rotY:Math.PI,vertical:true,bg:'#e9dfc5',fg:'#1b1b1b',size:.62,name:'Community Hall gate plate'});
+ // Each building's name on its own parapet. On the school's, the old 港小中学校 shows through the paint under the new
+ // name: the junior high closed in 1989, and nobody repainted the parapet properly (a story the town tells).
+ for(const b of TOWN_HALL_BUILDINGS){
+  const cx=b.id==='school'?(SCHOOL.genkan.x+b.maxX)/2+.4:(b.minX+b.maxX)/2,w=Math.min(b.maxX-b.minX-.8,4.2);
+  if(b.id!=='school'){plate(onBuilding,b.sign,{w,h:.5,at:[cx,3.75,SCHOOL.corridor.minZ-.36],rotY:Math.PI,bg:'#e4e1d3',fg:'#2d5a4c',size:.78,name:b.name+' name on parapet'});continue;}
+  // One board: the old name in the paint's ghost, the new one lettered over it.
+  const ghost=japaneseSign("Minato Elementary and Junior High School"),now=japaneseSign(b.sign),px=256,cw=Math.round(w*px),ch=Math.round(.5*px);
+  const map=canvasTexture(cw,ch,ctx=>{ctx.fillStyle='#e4e1d3';ctx.fillRect(0,0,cw,ch);ctx.textAlign='center';ctx.textBaseline='middle';
+   ctx.font=`bold ${ch*.78}px ${SERIF}`;ctx.fillStyle='rgba(120,110,90,.16)';ctx.fillText(ghost,cw/2,ch*.54,cw*.94);
+   ctx.fillStyle='#2d5a4c';ctx.fillText(now,cw/2,ch*.54,cw*.8);});
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,.5),new THREE.MeshStandardMaterial({map,roughness:.8}));m.position.set(cx,3.75,SCHOOL.corridor.minZ-.36);m.rotation.y=Math.PI;m.name=b.name+' name on parapet';onBuilding.add(m);
+ }
  plate(onBuilding,"Entrance",{w:1.2,h:.3,at:[SCHOOL.genkan.x,2.62,B.minZ-.13],rotY:Math.PI,bg:'#e4e1d3',fg:'#2b2b2b',font:GOTHIC,size:.72,name:'Entrance plate'});
  ROOMS.forEach(([down,up],i)=>{
   const x=SCHOOL_COLUMNS[i]+.8;
@@ -340,17 +367,18 @@ export function buildSchool(world,options){
   "Pinned in the entrance of the town hall, one over another: Typhoon shelter -- in a typhoon, the school gym and the community hall are the shelters, check your emergency bag. Port Safety -- do not play on the quay or the tetrapods. From the fishing co-op, the youth section is taking crews for the harbour boat race (Harbour Boat Race) on the fourth day of the fifth month. A felt-pen map of the town with the shelters in red. This month's kyūshoku: goya champuru, sōki-jiru, fried aji. Lost: one blue sandal, left foot."));
  anchor([SCHOOL.gate.x-SCHOOL.gate.half,1.9,SCHOOL.gate.z-.9],'Greet the shisa',say('Shisa on the gateposts',
   'A pair of glazed shisa, one on each post: the one on the right with its mouth open to take in good fortune, the one on the left with its mouth shut to keep it. Somebody has put a hibiscus flower behind the left one\'s ear.'));
- anchor([SCHOOL.gate.x-SCHOOL.gate.half,1,SCHOOL.gate.z-.7],'Read the town hall gate plate',say("Community Hall · Minato Town Hall",
-  'One storey, all of it on the forecourt: the town office, the community kitchen with the town\'s register, the meeting room, the clinic, the island school\'s one classroom (eight pupils, the 5th and 6th years together) and, at the east end, the doctor\'s flat. Built on the old school\'s footprint after the two-storey block from 1971 was taken down.'));
+ anchor([SCHOOL.gate.x-SCHOOL.gate.half,1,SCHOOL.gate.z-.7],'Read the gate plates',say("Minato Elementary School · Minato Community Hall",
+  'One gate for three buildings in a row on the old school\'s footprint: the island school with its clock (eight pupils, the 5th and 6th years together), the Community Hall with its kitchen, the town\'s register and the meeting room, and the clinic with the doctor\'s flat at the east end. Narrow passages run between them to the lane behind.'));
  anchor([SCHOOL.wash.x,1,SCHOOL.wash.z-.8],'Rinse your feet at the taps',()=>options.onAction?.('school-taps'));
  anchor([(SCHOOL.bikeShed.minX+SCHOOL.bikeShed.maxX)/2,1,SCHOOL.bikeShed.minZ+.4],'Look at the bicycles',say('Bike shed',
   'Bicycles under a zinc roof rusted through at the ribs: the town office\'s errand bicycle, Miss Higa\'s, and two pupils\' with their names in marker on the mudguards.'));
  anchor([SCHOOL.powerHouse.door[0]+.4,1.2,SCHOOL.powerHouse.door[1]],'Look in at the generators',say("Minato power station",
   'Through the open steel doors: two diesel generator sets, green and yellow, each as long as a kei truck, one thudding, one resting. A switchboard of black dials and red lamps runs along the back wall; the needles sit on 6,600 volts and 60 cycles. Every light on the island comes out of this room. The day tank outside is filled from the oil jetty when the tanker is in. Tetsuo, who keeps the switchboard now, keeps the logbook on a clipboard by the door.'));
- anchor([SCHOOL.gate.x+3.4,1,SCHOOL.gate.z+1.2],'Read the monument',say("Minato Town Hall · Community Centre",
+ anchor([15,1,29.1],'Read the monument',say("Minato Town Hall · Community Centre",
   "Minato Town Hall and Community Centre. Polished granite, the characters cut and filled with gold that has mostly worn away. Underneath, smaller: 1971 Constructed as an elementary and junior high school · 1989 Opened as a town hall (built as the school, 1971; opened as the town hall, 1989)."));
- anchor([SCHOOL.genkan.x+6,1,SCHOOL.seawall.south-.8],'Look over the seawall',say('South seawall',
-  'Tetrapods stacked against the wall, and beyond them the reef flat going green and then blue. In a typhoon the spray comes over this wall and salts the classroom windows white.'));
+ // At the end of the passage between the school and the Community Hall, where it comes out on Kitahama's north lane.
+ anchor([(TOWN_HALL_PASSAGES[0].minX+TOWN_HALL_PASSAGES[0].maxX)/2,1,SCHOOL.building.maxZ-.6],'Look along the back lane',say('Kitahama north lane',
+  'The passage between the school and the Community Hall comes out on the lane behind them, the short way to Kitahama: the pupils from the Kitahama houses come in this way, and the women\'s association carries the big pots out this way on a Saturday.'));
  anchor([SCHOOL.flagpole.x,1.1,SCHOOL.flagpole.z-.6],'Listen to the speakers',say('Horn speakers',
   "Two grey horns on the flagpole and two on the tower: the town's Disaster prevention radio, the disaster radio. The chime comes out of them at 8:25, noon, 12:20, 15:30 and 17:00 -- the Westminster quarters, a little slow and a little flat, heard all over the harbour -- and typhoon warnings when there are any."));
 
