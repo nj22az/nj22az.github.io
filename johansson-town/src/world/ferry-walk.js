@@ -137,14 +137,16 @@ export function createFerryWalk(run){
  /** Out, for walking: the ship visible and lying alongside; the gangway run out; the ramp down on its landing. */
  function partOpen(part){
   if(!ferry.visible)return false;
-  const accessOpen=run.phase==='waiting'||['preparing','securing','alongside'].includes(run.operation?.stage);
-  if(part==='gangway')return accessOpen&&(run.gangwayOut??(parts.gangway?.visible?1:0))>=1;
+  const stage=run.operation?.stage,accessOpen=run.phase==='waiting'||['preparing','securing','alongside'].includes(stage);
+  // While the gangway and the ramp are still fully out as she closes up, they are still floors: whoever is on them when
+  // she sails is walked off to the nearer end (island/play.js clearAccess) before they move, never left on nothing.
+  if(part==='gangway')return (accessOpen||stage==='closing-access')&&(run.gangwayOut??(parts.gangway?.visible?1:0))>=1;
   // The walls that stand while a moving part is the other way (FERRY_SOLIDS).
   if(part==='bow')return !partOpen('ramp');
   if(part==='gate')return !partOpen('gangway');
   if(part==='shore')return partOpen('gangway');
   if(part==='quay')return partOpen('ramp');
-  if(part==='ramp'||part==='flap')return accessOpen&&(run.rampDown??0)>=1;
+  if(part==='ramp'||part==='flap')return (accessOpen||['closing-access','raising-ramp'].includes(stage))&&(run.rampDown??0)>=1;
   // Her own decks are walked whenever she is there: alongside, and under way with him aboard (batch 6e).
   return true;
  }

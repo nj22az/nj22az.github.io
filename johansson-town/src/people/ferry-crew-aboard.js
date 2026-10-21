@@ -1,7 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {FERRY_SHIP,FERRY_HEIGHTS,FERRY_DAY} from '../world/ferry-ship.js';
 import {FERRY_ENGINE_ROOM} from '../world/ferry-interior.js';
-import {FERRY_CREW,FERRY_WATCH,FERRY_RELIEF,FERRY_PEOPLE,crewFor} from './ferry-crew.js';
+import {FERRY_CREW,FERRY_WATCH,FERRY_RELIEF,FERRY_PEOPLE,crewFor,onWatch} from './ferry-crew.js';
 import {crewRoute,stepCrewRoute,crewBlocked,crewObstacleAt} from './ferry-crew-walk.js';
 import {createFerryShoreCrew} from './ferry-shore-crew.js';
 import {createMasterCommute} from './master-commute.js';
@@ -46,12 +46,18 @@ export function crewPlaces(phase,minutes=0){
 }
 
 /** One body per signed-on post, moving through the real ship before it can report a task complete. */
-export function createFerryCrewAboard({run,characters,register,onAction,townBody:townBodyOf=()=>null,portShed,shoreParent,shoreColliders=[],playerIdentity=()=>null}){
+/**
+ * Who keeps the chief engineer's watch (the owner, 21 October 2026, briefs/ferry-timetable.md): Johansson, the player,
+ * only while he is aboard in the crew's working hours; otherwise Mac, the relief engineer. The ship's day never waits
+ * for either: with Johansson on watch his tasks are done on the watch's own time, whatever the player is doing.
+ */
+export const chiefWatchHolder=({minutes,playerAboard,playerIsChief=true})=>playerIsChief&&playerAboard&&onWatch(minutes)?'player':'relief';
+export function createFerryCrewAboard({run,characters,register,onAction,townBody:townBodyOf=()=>null,portShed,shoreParent,shoreColliders=[],playerIdentity=()=>null,playerAboard=()=>false}){
  // The master's town body is the shed's (world/port-shed.js), which the street does not list.
  const townBody=name=>townBodyOf(name)||(portShed?.fujita?.userData.name===name?portShed.fujita:null);
  const ferry=run.ferry,bodies=new Map(),records=new Map(),shore=createFerryShoreCrew({shoreParent,shoreColliders,characters,register,onAction,townBody});
  const commute=portShed?.fujita&&FERRY_CREW.find(c=>c.post==='master').name===portShed.fujita.userData.name?createMasterCommute({shed:portShed,run,shoreColliders}):null;
- let phase=null,day=-1,operationId=null;
+ let phase=null,day=-1,operationId=null,chiefHolder=null;
  const profiles=Object.fromEntries(FERRY_CREW.map(c=>[c.post,c]));
  function body(c){
   if(bodies.has(c.name))return bodies.get(c.name);
@@ -76,11 +82,23 @@ export function createFerryCrewAboard({run,characters,register,onAction,townBody
   const p=watchPhase(run,minutes),d=Math.floor(minutes/1440);
   phase=p;day=d;const aboard=new Set(),op=run.operation,active=op?.tasks||[];
   if(op?.id!==operationId){operationId=op?.id??null;records.clear();}
+  const holder=chiefWatchHolder({minutes,playerAboard:!!playerAboard(),playerIsChief:crewFor('chief',minutes)===playerIdentity()});
+  // The watch changing hands drops the chief's open tasks, so the new holder takes them up from his own station.
+  if(holder!==chiefHolder){chiefHolder=holder;for(const [id,r] of records)if(r.task.post==='chief')records.delete(id);}
   for(const watch of crewPlaces(p,minutes)){
    // The player is the chief engineer. His relief takes the working watch rather than spawning a second Johansson.
    if(watch.post==='chief'&&watch.name===playerIdentity()&&p==='night')continue;
    // The bosun's relief has a family at 3 Kitahama and sleeps there; only the signed-on bosun lives aboard on her week on.
    if(watch.post==='bosun'&&p==='night'&&watch.name===FERRY_RELIEF.bosun.name)continue;
+   // Johansson on watch: his tasks are kept by the watch itself (no second body); Mac rests in his duty berth.
+   if(watch.post==='chief'&&holder==='player'){
+    for(const t of active.filter(t=>t.post==='chief'))if(!records.has(t.id))records.set(t.id,{task:t,b:null,elapsed:0,done:false,player:true});
+    const rest={...watch,name:FERRY_RELIEF.chief.name,title:'Relief engineer · off watch',where:'cabin',doing:'Off watch in his duty berth while the chief is aboard',...CREW_POSTS.cabin};
+    const b=body(rest);aboard.add(rest.name);b.g.visible=true;b.post='relief';b.title=rest.title;b.taskId=null;b.where='cabin';b.doing=rest.doing;
+    if(!b.initialised){b.g.position.set(...rest.pos);b.g.rotation.y=rest.yaw;b.initialised=true;b.actor?.last?.copy(b.g.position);}
+    destination(b,CREW_POSTS.cabin,'off-watch:'+d);b.text=rest.name+', relief engineer: '+rest.doing.toLowerCase()+'. '+FERRY_RELIEF.chief.why;b.g.userData.activity=rest.doing;
+    continue;
+   }
    const c=watch.post==='chief'&&watch.name===playerIdentity()?{...watch,name:FERRY_RELIEF.chief.name,title:'Relief engineer · chief’s working watch'}:watch;
    const b=body(c);aboard.add(c.name);b.g.visible=true;b.post=c.post;b.title=c.title;
    if(!b.initialised){
@@ -103,8 +121,8 @@ export function createFerryCrewAboard({run,characters,register,onAction,townBody
   }
  }
  const atStation=b=>b.g.visible&&!b.blocked&&b.goal&&b.g.position.distanceTo(new THREE.Vector3(...b.goal))<.075&&!crewBlocked(b.g.position.toArray())&&!crewObstacleAt(b.g.position.toArray(),obstacles())&&b.routeIndex>=b.route.length;
- function taskAtStation(id){const r=records.get(id);return r? r.b.taskId===id&&r.b.goalKey===id&&atStation(r.b):shore.taskAtStation(id);}
- function taskReady(id){const r=records.get(id);return r? r.done&&taskAtStation(id):shore.taskReady(id);}
+ function taskAtStation(id){const r=records.get(id);if(r?.player)return true;return r? r.b.taskId===id&&r.b.goalKey===id&&atStation(r.b):shore.taskAtStation(id);}
+ function taskReady(id){const r=records.get(id);if(r?.player)return r.done;return r? r.done&&taskAtStation(id):shore.taskReady(id);}
  const controller={
   place,bodies,taskAtStation,taskReady,shore,commute,
   update(dt,minutes){
@@ -135,11 +153,14 @@ export function createFerryCrewAboard({run,characters,register,onAction,townBody
     if(below!==b.earDefenders){b.earDefenders=below;if(b.actor?.avatar)wearEarDefenders(b.actor.avatar,below);}
     b.g.userData.activity=b.blocked?b.doing+' — waiting for a clear walking route':b.state==='waiting for shore hand'?'At the '+b.where+' station; waiting for the shore line hand':b.state==='walking'||b.state==='climbing'?'Going to '+b.where+' to '+b.doing.toLowerCase():b.doing;
    }
+   for(const r of records.values())if(r.player&&!r.done){r.elapsed=Math.min(r.task.seconds||0,r.elapsed+seconds);r.done=r.elapsed>=(r.task.seconds||0);}
    shore.update(seconds,(op?.tasks||[]).filter(t=>t.post==='shore'),lineWorkReady,minutes);
    commute?.update(seconds,minutes);
    for(const name of FERRY_PEOPLE){const town=townBody(name);if(town?.userData.aboardFerry)town.visible=false;}
   },
   get phase(){return phase;},
+  /** Who has the chief's watch now: 'player' (Johansson aboard in working hours) or 'relief' (Mac). */
+  get chiefWatch(){return chiefHolder;},
   snapshot(){
    const ship=[...bodies.values()].filter(b=>b.g.visible).map(b=>{
     const r=b.taskId&&records.get(b.taskId);

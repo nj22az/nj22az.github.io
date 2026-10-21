@@ -97,7 +97,8 @@ export function tellComic(rng,catalogue,opts={}){
  const fits=g=>!g.places||!opts.place||g.places.includes(opts.place.id);
  const genre=opts.genre?GENRES.find(g=>g.id===opts.genre):rng.pick(GENRES.filter(fits));
  const place=opts.place||(genre.places?feedPlace(rng.pick(genre.places.filter(id=>STORY_PLACES.some(p=>p.id===id)))):null);
- const ctx={...stage(rng,catalogue,{need:genre.cast,...opts,place}),vars:{}};
+ // A genre with a `lead` is about that resident unless the caller names another.
+ const ctx={...stage(rng,catalogue,{need:genre.cast,who:genre.lead??null,...opts,place}),vars:{}};
  // A story about one of A's own things (belongings.js) binds it, its tale and where it is kept.
  if(genre.belonging){const b=rng.pick(ctx.A.belongings);if(!b)throw Error(ctx.A.name+' owns nothing for a '+genre.id+' story');Object.assign(ctx.vars,{lost:b.what,tale:b.tale,keeps:b.keeps});}
  for(const [k,options] of Object.entries(genre.bind||{}))ctx.vars[k]=expand(rng.pick(options),ctx,rng);

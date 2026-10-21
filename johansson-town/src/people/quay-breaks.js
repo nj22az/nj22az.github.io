@@ -37,8 +37,8 @@ export const QUAY_BREAKERS=Object.freeze([
   why:'The midday gap between the morning and the afternoon calls: lunch out of his tin on the bitt, eye on the channel.'}),
 ]);
 export const NOT_ASHORE=Object.freeze([
- Object.freeze({name:'Mr Fujita',why:'Fuji is signed on 06:05–22:20 with his meals in the mess; ashore after that is his own shed and chair, and the beer.'}),
- Object.freeze({name:'Ren',why:'Ren is signed on 06:05–22:20 and lives aboard; ashore is a late bowl at Minato.'}),
+ Object.freeze({name:'Mr Fujita',why:'Fuji is signed on 06:05–23:15 with his meals in the mess; ashore after that is his own shed and chair, and the beer.'}),
+ Object.freeze({name:'Ren',why:'Ren is signed on 06:05–23:15 and lives aboard; ashore is a late bowl at Minato.'}),
 ]);
 
 /** One worker's break on one day: its start (absolute town minutes), its end, and how long the stop is (seconds). */

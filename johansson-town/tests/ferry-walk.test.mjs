@@ -79,11 +79,11 @@ test('down the bow ramp onto the quay\'s landing plate, and back up',()=>{
 });
 
 test('under way her decks are still walked (he sails aboard), but the gangway and the ramp are in: no way on or off',()=>{
- const service=ferryServiceFixture(),{run,walk,world:{colliders}}=service;
- // This fixture begins with its rider aboard, clear of both boarding openings.
+ // Her 08:45 sailing (world/ferry-timetable.js), with him aboard, clear of both boarding openings.
+ const service=ferryServiceFixture({minute:8*60+41.9}),{run,walk,world:{colliders}}=service;
  service.player.position.copy(world(run,0,FERRY_DECKS.car.y,0));
  assert.equal(service.aboard(),true);
- assert.equal(run.beginCrossing('airport'),true);
+ service.until(()=>!!run.operation);assert.equal(run.operation.destination,'airport');
  // Reach the open sea through the actual crew, plant and mooring procedure.
  // Moving the hull directly would skip the very access closure this test checks.
  service.until(()=>run.operation?.stage==='passage'&&run.crossingProgress>=.5);walk.update();
