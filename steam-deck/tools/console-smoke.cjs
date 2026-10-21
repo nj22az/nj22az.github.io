@@ -6,6 +6,7 @@ const {chromium}=require('playwright');
  assert.equal(fs.existsSync(path.join(root,'thuans-storage')),false,'Retired storage game is not bundled');
  const errors=[],missing=[],remote=[],audioRequests=[];
  const version=require('../package.json').version;
+ const expectedNames=(await import('../../johansson-town/src/people/cast.js')).CAST.map(person=>person.name).sort();
  const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.glb':'model/gltf-binary','.gltf':'model/gltf+json','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.wav':'audio/wav','.mp4':'video/mp4'};
  const server=http.createServer((req,res)=>{const url=new URL(req.url,'http://localhost');let file=path.resolve(root,'.'+decodeURIComponent(url.pathname));if(url.pathname.endsWith('/'))file=path.join(file,'index.html');if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){missing.push(url.pathname);res.writeHead(404);res.end();return;}res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream'});fs.createReadStream(file).pipe(res);});
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const url='http://127.0.0.1:'+server.address().port;
@@ -158,7 +159,7 @@ const {chromium}=require('playwright');
  // Linux residents: all named characters can be selected, with their own beds and schedules.
  console.log('Controls and layout passed; testing residents');
  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.setTime(60));await page.locator('#desktopTabs [data-tab=people]').click();
- assert.ok(await page.locator('[data-person]').count()>=30);await page.evaluate(()=>Promise.all([...document.querySelectorAll('.console-roster img')].filter(img=>img.getBoundingClientRect().top<innerHeight).map(img=>img.decode())));await page.screenshot({path:path.join(out,'08-character-roster.png')});
+ assert.deepEqual(await page.locator('[data-person]').evaluateAll(nodes=>nodes.map(node=>decodeURIComponent(node.dataset.person)).sort()),expectedNames,'People lists exactly the consolidated live cast');await page.evaluate(()=>Promise.all([...document.querySelectorAll('.console-roster img')].filter(img=>img.getBoundingClientRect().top<innerHeight).map(img=>img.decode())));await page.screenshot({path:path.join(out,'08-character-roster.png')});
  await page.locator('[data-person="Thuan"]').click();await page.waitForFunction(()=>window.johanssonLinuxWorld?.inBed&&!window.johanssonLinuxWorld.busy);
  assert.equal(await page.evaluate(()=>window.__JOHANSSON_MODEL__.avatar.recipe.name),'Thuan');
  await sampled();await page.screenshot({path:path.join(out,'09-thuan-own-bed.png')});await tap(0);assert.equal(await page.evaluate(()=>window.johanssonLinuxWorld.inBed),false,'A gets out of bed');await tap(1);await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).room===null);assert.equal(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room),null,'B leaves the home without a mouse');
@@ -168,7 +169,7 @@ const {chromium}=require('playwright');
  await axes([0,-1,0,0]);await axes([0,0,0,0]);assert.equal(await page.evaluate(()=>window.johanssonLinuxWorld.inBed),false,'Left stick gets up safely beside the bed');
  const selectable=await page.evaluate(async()=>{const api=window.johanssonLinuxWorld,result=[];for(const person of api.roster){await api.select(person.name,{started:false});result.push({name:api.active,model:window.__JOHANSSON_MODEL__.avatar.recipe.name});}return result;});
  console.log('Selected roster',JSON.stringify(selectable));
- assert.ok(selectable.length>=30);assert.ok(selectable.every(p=>p.name===p.model),'Every roster selection uses its own character recipe');
+ assert.deepEqual(selectable.map(person=>person.name).sort(),expectedNames,'Every living resident is selectable, with no retired extras');assert.ok(selectable.every(p=>p.name===p.model),'Every roster selection uses its own character recipe');
  await page.evaluate(async()=>{window.__JOHANSSON_AUDIT__.setTime(720);await window.johanssonLinuxWorld.select('Johansson');});
  console.log('Testing conversation escalation');
  if(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room!==null&&!window.johanssonLinuxWorld.inBed)){await tap(1);await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).room===null);}
