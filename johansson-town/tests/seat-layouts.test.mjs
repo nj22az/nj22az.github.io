@@ -13,11 +13,17 @@ import {buildOfficeShell,buildOfficeWorkplace} from '../src/world/interiors/offi
 import {buildMayorHome} from '../src/world/interiors/town-hall.js';
 import {PARK_BENCH} from '../src/world/park-layout.js';
 import {HARBOUR_BENCH_DIMENSIONS} from '../src/world/harbour-bench-dimensions.js';
+import {seatRooms,seatEdge} from './seat-edge.mjs';
+import {HOME_LAYOUT,SHARED_HOME_LAYOUT} from '../src/people/home-life.js';
+import {TATAMI_HOME_LAYOUT} from '../src/world/interiors/tatami-home-layout.js';
+import {OFFICE_HOME_LAYOUT} from '../src/world/interiors/office-workplace.js';
+import {STATION_HOME_LAYOUT} from '../src/world/interiors/police-station.js';
 
 function validateSeats(root,targets,colliders,{streamed=new Set()}={}){
  root.updateMatrixWorld(true);
  const ray=new THREE.Raycaster();
- for(const {object,label} of targets){
+ // (a bench's places, seat-slots.js, each as a seat of its own: on the bench, with somewhere clear to stand up to)
+ for(const {object,label} of targets.flatMap(t=>[t,...(t.object.userData.seat?.slots||[]).map(slot=>({object:{userData:{seat:{...t.object.userData.seat,...slot}}},label:t.label+' place '+slot.slot}))])){
   const seat=object.userData.seat;if(!seat)continue;
   assert.ok(Number.isFinite(seat.surfaceY),label+' has an authored support surface');
   assert.ok(seat.position.every(Number.isFinite)&&seat.stand.every(Number.isFinite),label+' has finite seat and stand positions');
@@ -25,7 +31,7 @@ function validateSeats(root,targets,colliders,{streamed=new Set()}={}){
   const [x,y,z]=seat.stand;
   const blockers=colliders.filter(c=>(c.minY??0)<y+1.6&&(c.minY??0)+(c.height??10)>y+.2&&circleHitsRect(x,z,.25,c));
   assert.equal(blockers.length,0,label+' can stand clear of solid furniture');
-  if(streamed.has(label))continue;
+  if(streamed.has(label.replace(/ place \d+$/,'')))continue;
   ray.set(new THREE.Vector3(seat.position[0],seat.surfaceY+.025,seat.position[2]),new THREE.Vector3(0,-1,0));ray.far=.08;
   const hit=ray.intersectObject(root,true).find(h=>h.face?.normal.clone().transformDirection(h.object.matrixWorld).y>.65);
   assert.ok(hit,label+' sits over a physical surface');
@@ -61,6 +67,12 @@ test('every outdoor public seat has physical support and a clear standing point'
  ];
  assert.deepEqual(seats.map(t=>t.object.userData.seat.id||t.label).sort(),expected.sort(),'Every retained public bench, bath seat and airport gate offers its seat');
  validateSeats(world.group,seats,world.colliders,{streamed:new Set(['Soak your feet in the footbath','Cool off on the bench'])});
+ // Every public bench seats two side by side (the owner, 21 October 2026), or more by its length; where its front edge is
+ // goes with it (seatFront). Higa Liquor's bench is two places already (YUNTAKU: Tetsuo's and this), the footbath's rim,
+ // the beach chairs and Umi-no-yu's bench are single seats.
+ const single=new Set(['beach-chair-0','beach-chair-1','Soak your feet in the footbath','Cool off on the bench','higa-yuntaku-bench','Sit on the staff bench']);
+ for(const t of seats){const s=t.object.userData.seat,key=s.id||t.label;if(single.has(key))continue;
+  assert.ok(s.slots?.length>=2,key+' seats two side by side');assert.ok(s.front>0&&s.front<.35,key+' says where its front edge is');}
  assert.equal(PARK_BENCH.yaw,Math.PI/2,'Harbour bench faces away from its east backrest');
  assert.equal(PARK_BENCH.surfaceY,.02+HARBOUR_BENCH_DIMENSIONS.seatHeight,'The measured bench stands on the level park ground');
  const kitahama=seats.find(t=>t.object.userData.seat.id==='kitahama-park-bench');assert.equal(kitahama.object.userData.seat.yaw,Math.PI/2);
@@ -94,4 +106,28 @@ test('every household chair and tea cushion supports visitors with a clear stand
   const f=fixture(args=>buildYardHomeInterior({...args,site:{id,homeOwner}}));
   validateSeats(f.room,f.targets,f.colliders);
  }
+});
+
+test('every chair, stool, cushion and bench says where its front edge is, where its own mesh has it',async()=>{
+ // (seat-slots.js `front`: the sitter's shins hang in front of that edge, never through the seat: animate.js seatFront.
+ // A seat whose furniture is a GLB loaded only in a browser (Minato's booth, the ramen stools, the massage chair) is drawn
+ // from the same plan; its number is checked against the model by the GLB's own tests, not here.)
+ installDOM();const wrong=[];let measured=0;
+ for(const {name,room,seats} of await seatRooms())for(const {label,seat} of seats){
+  if(seat.soak)continue;
+  if(!(seat.front>0&&seat.front<.4)){wrong.push(`${name}: ${label} does not say where its front edge is (${seat.front})`);continue;}
+  const edge=seatEdge(room,seat);if(!edge)continue;measured++;
+  if(Math.abs(edge.front-seat.front)>.01)wrong.push(`${name}: ${label} says ${seat.front}, its mesh ${edge.front.toFixed(3)}`);
+ }
+ assert.deepEqual(wrong,[]);assert.ok(measured>60,'measured '+measured);
+ // A home's own place at the table (home-residents.js) is the seat visitors sit on: it says the same.
+ for(const layout of [HOME_LAYOUT,SHARED_HOME_LAYOUT,TATAMI_HOME_LAYOUT,OFFICE_HOME_LAYOUT,STATION_HOME_LAYOUT])assert.ok(layout.tableSeatFront>0,'a home table seat says where its front edge is');
+});
+
+test('the indoor benches seat two, and the clinic’s faces its waiting room',async()=>{
+ installDOM();const rooms=await seatRooms(),bench=(room,label)=>rooms.find(r=>r.name===room).seats.filter(s=>s.label===label).map(s=>s.seat);
+ for(const [room,label,n] of [['domestic arrivals','Sit in domestic arrivals',6],['the clinic','Sit in the clinic waiting room',2],['the police station','Sit on the waiting bench',2],['Umi-no-yu','Sit on the changing-room bench',2]])
+  assert.equal(bench(room,label).length,n,room+': a place each');
+ // Its back is to the consulting room's partition (z 0.5): the sitter faces the waiting room and the street door (+z).
+ for(const s of bench('the clinic','Sit in the clinic waiting room')){assert.ok(Math.abs(-Math.cos(s.yaw)-1)<1e-9,'facing +z');assert.ok(s.stand[2]>s.position[2]);}
 });

@@ -1,6 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {residentPersonality,createResidentLedger} from './resident-personalities.js';
 import {groundHeight} from '../world/layout.js?snappy=1';
+import {freeSlot} from '../world/seat-slots.js';
 
 // Interpret affordances, never player callbacks: NPCs must not open the player's
 // menus, spend their money, remove quest items or trigger a journey on their behalf.
@@ -39,23 +40,26 @@ const VERB={read:'reading',inspect:'examining',machine:'using',radio:'listening 
 const eligible=place=>['work','evening','stroll','patrol','park'].includes(place);
 /** How much a free moment pulls somebody towards a seat: most in the park, a little on a walk. */
 const SEAT_PULL={park:12,evening:2.5,stroll:2.5};
+/** How near the player may be to a place on a bench before it is theirs (they sit in it, or stand up out of it). */
+const SLOT_CLEAR=.45;
 
 export function createTownActivities({getTargets,collides,getPlayerPosition=()=>null,ledger=createResidentLedger(),getState=()=>({}),inside=false}){
  const active=new Map(),nextScan=new Map(),recent=new Map(),reservations=new Map();let serial=0;
  const point=new THREE.Vector3();
  function release(person,minutes,delay=25){
   const use=active.get(person);if(!use)return;
-  reservations.delete(use.object);if(use.object.userData.reservedBy===person.profile.name)delete use.object.userData.reservedBy;
+  reservations.delete(use.slot||use.object);if(use.object.userData.reservedBy===person.profile.name)delete use.object.userData.reservedBy;
+  if(use.slot&&use.object.userData.slotsTaken?.[use.slot.slot]===person.profile.name)delete use.object.userData.slotsTaken[use.slot.slot];
   if(use.object.userData.seat&&use.phase==='using'){
-   const stand=use.object.userData.seat.stand;
+   const stand=(use.slot||use.object.userData.seat).stand;
    if(stand)person.g.position.set(...stand);
    else person.g.position.set(use.target[0],inside?0:groundHeight(...use.target),use.target[1]);
   }
-  for(const key of ['usingTownObject','heldItem','socialPose','seatHeight','chairBlend'])delete person.g.userData[key];
+  for(const key of ['usingTownObject','heldItem','socialPose','seatHeight','seatFront','chairBlend'])delete person.g.userData[key];
   recent.set(person,use.id);active.delete(person);nextScan.set(person,minutes+delay);
  }
- function approach(object,person){
-  const seat=object.userData.seat;
+ function approach(object,person,slot=null){
+  const seat=slot||object.userData.seat;
   if(seat?.stand){const [x,,z]=seat.stand;if(!collides(x,z,.32))return [x,z];}
   object.getWorldPosition(point);const origin=point.clone(),angle=Math.atan2(person.g.position.z-origin.z,person.g.position.x-origin.x);
   for(const radius of [.8,1.1,1.45])for(const offset of [0,.65,-.65,1.3,-1.3,Math.PI]){
@@ -67,23 +71,32 @@ export function createTownActivities({getTargets,collides,getPlayerPosition=()=>
   const taste=residentPersonality(person.profile.name),range=base.place==='work'?7:18,player=getPlayerPosition();
   const candidates=[];
   for(const object of getTargets()){
-   const affordance=townAffordance(object);if(!affordance||!!object.userData.hit.inside!==inside||!object.parent||!object.visible||reservations.has(object)||object.userData.reservedBy)continue;
+   // (a bench has a place for each sitter, seat-slots.js: one taken leaves the others free)
+   const slots=object.userData.seat?.slots;
+   const affordance=townAffordance(object);if(!affordance||!!object.userData.hit.inside!==inside||!object.parent||!object.visible||!slots&&(reservations.has(object)||object.userData.reservedBy))continue;
    if(inside&&object.userData.workers&&!object.userData.workers.includes(person.profile.name))continue;
-   object.getWorldPosition(point);const distance=person.g.position.distanceTo(point);if(distance>range||Math.abs(point.y-person.g.position.y)>2.8||player&&point.distanceTo(player)<1.6)continue;
-   if([...reservations.values()].some(use=>Math.hypot(use.location.x-point.x,use.location.z-point.z)<1.6))continue;
+   // On a bench: the free place nearest them, not one the player is in (or right beside, standing up from it).
+   const slot=slots?freeSlot(object.userData.seat,person.g.position.x,person.g.position.z,s=>reservations.has(s)||player&&Math.hypot(player.x-s.position[0],player.z-s.position[2])<SLOT_CLEAR):null;
+   if(slots&&!slot)continue;
+   object.getWorldPosition(point);if(slot)point.set(slot.position[0],point.y,slot.position[2]);
+   // Somebody else's place close by is somebody else's (the 1.6 m apart that keeps people from crowding one corner), unless
+   // it is on the same bench: sitting beside somebody is what a bench is for.
+   const distance=person.g.position.distanceTo(point);if(distance>range||Math.abs(point.y-person.g.position.y)>2.8||!slot&&player&&point.distanceTo(player)<1.6)continue;
+   if([...reservations.values()].some(use=>use.object!==object&&Math.hypot(use.location.x-point.x,use.location.z-point.z)<1.6))continue;
    const preference=taste.interests.indexOf(affordance.kind),id=affordance.kind+':'+Math.round(point.x*10)+':'+Math.round(point.z*10);
    if(base.place==='patrol'&&!['read','inspect','phone','post'].includes(affordance.kind))continue;
    if(affordance.cost>ledger.account(person.profile.name,minutes).yen)continue;
    const pull=affordance.kind==='seat'?SEAT_PULL[base.place]||0:0;
-   candidates.push({...affordance,id,location:point.clone(),score:distance+(preference<0?5:preference)-pull-((person.profile.name.length+Math.floor(minutes/30))%3)*.2+(recent.get(person)===id?20:0)});
+   candidates.push({...affordance,id,slot,location:point.clone(),score:distance+(preference<0?5:preference)-pull-((person.profile.name.length+Math.floor(minutes/30))%3)*.2+(recent.get(person)===id?20:0)});
   }
   candidates.sort((a,b)=>a.score-b.score);
   // Bound work per scan. Navigation handles the selected approach; a timeout
   // releases inaccessible objects without holding a chair or retrying each frame.
   for(const candidate of candidates.slice(0,5)){
-   const target=approach(candidate.object,person);if(!target)continue;
+   const target=approach(candidate.object,person,candidate.slot);if(!target)continue;
    const use={...candidate,target,base:base.place,phase:'walking',remaining:candidate.kind==='fish'?22:candidate.kind==='seat'?(base.place==='park'?40:18):10,deadline:minutes+36,paid:false,transaction:'errand-'+(++serial)+'-'+Math.floor(minutes)};
-   active.set(person,use);reservations.set(candidate.object,use);candidate.object.userData.reservedBy=person.profile.name;return use;
+   active.set(person,use);reservations.set(candidate.slot||candidate.object,use);
+   if(candidate.slot)(candidate.object.userData.slotsTaken??={})[candidate.slot.slot]=person.profile.name;else candidate.object.userData.reservedBy=person.profile.name;return use;
   }return null;
  }
  function plan(person,base,minutes,rain,dt){
@@ -94,7 +107,9 @@ export function createTownActivities({getTargets,collides,getPlayerPosition=()=>
   let use=active.get(person);
   if(use&&(use.base!==base.place||!use.object.parent||!use.object.visible||minutes>use.deadline)){release(person,minutes);use=null;}
   const player=getPlayerPosition();
-  if(use&&player&&player.distanceTo(use.location)<1.1){release(person,minutes,18);return base;}
+  // (the player walking up to their seat has it; on a bench, only the player in their own place: sitting down beside them is
+  // company, not a reason to get up)
+  if(use&&player&&(use.slot?Math.hypot(player.x-use.location.x,player.z-use.location.z)<SLOT_CLEAR:player.distanceTo(use.location)<1.1)){release(person,minutes,18);return base;}
   if(!use){
    if(!nextScan.has(person)){nextScan.set(person,minutes+3+(person.profile.name.length%5)*1.4);return base;}
    if(minutes<nextScan.get(person))return base;nextScan.set(person,minutes+15);
@@ -105,12 +120,14 @@ export function createTownActivities({getTargets,collides,getPlayerPosition=()=>
    if(!ledger.purchase(person.profile.name,minutes,use.transaction,use.label,use.cost)){release(person,minutes);return base;}
    use.paid=true;use.phase='using';use.deadline=minutes+use.remaining+2;g.userData.usingTownObject=true;
    if(use.kind==='seat'||use.kind==='office'&&use.object.userData.seat){
-    const seat=use.object.userData.seat;
+    const seat=use.slot||use.object.userData.seat;
     if(seat?.position)g.position.set(...seat.position);
     // Furniture exports its physical seat surface in the same frame as position.
     // Camera eye height is independent of the avatar's support and proportions.
     g.userData.seatHeight=Number.isFinite(seat?.surfaceY)?seat.surfaceY-g.position.y:Number.isFinite(seat?.height)?seat.height:.45;
     if(Number.isFinite(seat?.yaw))g.rotation.y=seat.yaw;
+    // (where the seat's front edge is, so the body sits forward enough for its shins to hang in front of it: animate.js)
+    if(Number.isFinite(seat?.front))g.userData.seatFront=seat.front;
    }
   }
   if(use.phase==='using'){

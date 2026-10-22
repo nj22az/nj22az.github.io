@@ -61,7 +61,7 @@ export function buildTatamiHome({site,profile,room,box,reg,collider,action,exit}
  anchor([2.35,1.1,1.4],'Inspect the standing fan',()=>action('inspect','Summer standing fan','A pale green three-blade fan keeps this little room comfortable through the island summer.'));
  const hours=sleepHours(profile),fmt=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
  anchor([-1.65,.55,1.1],'Read daily routine',()=>action('read',profile.name+' at home','Tea at the low table, a quiet fan, and bedding stored until evening. Usually sleeps at '+fmt(hours.sleep)+' and wakes at '+fmt(hours.wake)+'.'));
- const cushion=anchor([-1.0,.7,2.1],'Sit at the tea table',()=>action('seat','Tatami tea table','A cushion beside the low tea table.'));cushion.userData.npcInteraction=false;cushion.userData.seat={position:[-1.0,0,2.1],stand:[-.15,0,2.1],surfaceY:.125,eyeY:.85,yaw:Math.PI/4,pitch:0};
+ const cushion=anchor([-1.0,.7,2.1],'Sit at the tea table',()=>action('seat','Tatami tea table','A cushion beside the low tea table.'));cushion.userData.npcInteraction=false;cushion.userData.seat={position:[-1.0,0,2.1],stand:[-.15,0,2.1],front:TATAMI_HOME_LAYOUT.tableSeatFront,surfaceY:.125,eyeY:.85,yaw:Math.PI/4,pitch:0};
  anchor(TATAMI_HOME_LAYOUT.exit,homeExitLabel(site,profile),exit);
  shell.add(new THREE.HemisphereLight(0xfff0d4,0x887958,1.5));const lamp=new THREE.PointLight(0xffe7b7,1.5,9,2);lamp.position.set(0,2.4,-.65);shell.add(lamp);
  return {...TATAMI_HOME_LAYOUT,home:true,ready,tick(dt,minutes){elapsed+=dt;lastMinutes=minutes;const needed=['bedtime','sleep','wake'].includes(homeRoutine(profile,minutes).id);

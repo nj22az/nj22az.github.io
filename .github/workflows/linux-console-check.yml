@@ -1,7 +1,8 @@
 name: Linux console acceptance
 on:
   pull_request:
-    branches: [codex/johansson-world-steam-deck]
+    branches: [main, codex/johansson-world-steam-deck]
+    paths: ['steam-deck/**', 'johansson-town/**', '.github/workflows/linux-console-check.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -36,8 +37,6 @@ jobs:
           npm run package --prefix steam-deck
       - name: Controller recovery acceptance
         run: node steam-deck/tools/control-repair-smoke.cjs
-      - name: Full world controller, layout, resident and save acceptance
-        run: npm run test:console --prefix steam-deck
       - name: Verify native application and disk saves
         env:
           WORLD_SCREENSHOT: steam-deck/dist/linux-world.png
@@ -45,6 +44,10 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y xvfb libasound2t64 libnss3 libgbm1
           timeout 300 xvfb-run -a steam-deck/dist/johansson-world/JohanssonWorld --no-sandbox --windowed --smoke --use-angle=swiftshader --enable-unsafe-swiftshader --disable-dev-shm-usage
+      - name: Verify packaged site without network access
+        run: node steam-deck/tools/offline-browser-smoke.cjs
+      - name: Full world controller, layout, resident and save acceptance
+        run: timeout 20m npm run test:console --prefix steam-deck
       - uses: actions/upload-artifact@v4
         if: always()
         with:

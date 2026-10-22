@@ -568,7 +568,12 @@ def kitchen(room):
     room.box('Cedar cutting board',(.62,.025,.35),(px,top+.0125,z),m['Honey cedar'],.012,omit=('bottom',))
     room.box('Prep knife blade',(.15,.004,.036),(px+.10,top+.028,z+.05),m['Brushed kitchen steel'],.001,omit=('bottom',))
     room.box('Prep knife handle',(.10,.018,.028),(px-.025,top+.034,z+.05),m['Dark fittings'],.006)
-    for xx in (-.21,-.14):room.lathe('Prep scallion bowl',[(.045,0),(.07,.055),(.066,.06),(.04,.012),(0,.012)],(px+xx,top+.026,z-.065),m['Cream ceramic'],16)
+    # Tonight's otoshi, the small dish that goes out with a guest's first drink: two
+    # bowls of mozuku already dressed, side by side with a centimetre between their rims
+    # (0.07 m rims 0.15 m apart), clear of the knife.
+    for xx in (-.225,-.075):
+        room.lathe('Otoshi bowl',[(.045,0),(.07,.055),(.066,.06),(.04,.012),(0,.012)],(px+xx,top+.026,z-.065),m['Cream ceramic'],16)
+        room.lathe('Otoshi mozuku',[(.038,.0125),(.028,.026),(0,.03)],(px+xx,top+.026,z-.065),m['Food green'],16)
     # A compact charcoal grill uses a real grate above its body, not a flat decal.
     gx=p['kitchenStations']['grill'][0]
     room.box('Yakitori grill body',(.60,.16,.37),(gx,top+.08,z),m['Dark fittings'],.012)

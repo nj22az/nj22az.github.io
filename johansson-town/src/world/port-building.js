@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {benchSeat} from './seat-slots.js';
 import {createKit} from './okinawa/kit.js';
 import {createMaterials} from '../render/materials.js';
 import {flowerBlock,roofTile,poster} from './okinawa/signs.js';
@@ -126,7 +127,7 @@ export function buildPortBuilding({parent,label=()=>{},shadows=false,register,on
  kit.box(1.7,.08,.42,C.minX+.3,.46,-44.0,0x8d7652,{ry:Math.PI/2});
  for(const dz of [-.6,.6])kit.box(.38,.42,.08,C.minX+.3,.23,-44.0+dz,STEEL,{finish:'metal'});
 
- const waitingSeat=new THREE.Object3D();waitingSeat.position.set(C.minX+1.15,1,-44.0);waitingSeat.userData.seat={id:'port-canopy-bench',position:[C.minX+.3,0,-44.0],stand:[C.minX+1.15,0,-44.0],surfaceY:.5,eyeY:1.2,yaw:-Math.PI/2,pitch:0};group.add(waitingSeat);register?.(waitingSeat,'Sit under the ferry canopy',()=>onAction?.('seat','Ferry canopy bench','A dry bench beside the waiting hall, looking out across the quay.'));
+ const waitingSeat=new THREE.Object3D();waitingSeat.position.set(C.minX+1.15,1,-44.0);waitingSeat.userData.seat=benchSeat({id:'port-canopy-bench',position:[C.minX+.3,0,-44.0],stand:[C.minX+1.15,0,-44.0],surfaceY:.5,eyeY:1.2,yaw:-Math.PI/2,pitch:0},{length:1.7,front:.21});group.add(waitingSeat);register?.(waitingSeat,'Sit under the ferry canopy',()=>onAction?.('seat','Ferry canopy bench','A dry bench beside the waiting hall, looking out across the quay.'));
 
  // The timetable, on the pier between the tower and the glass.
  kit.sign(poster({title:'Timetable',lines:PORT_TIMETABLE_POSTER,band:'#2b5a78',bg:'#f3ecd8'}),.62,.86,wx-.04,1.55,-44.98,{ry:-Math.PI/2,name:'Ferry timetable'});

@@ -1,5 +1,6 @@
 import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
+import {benchSeat} from '../seat-slots.js';
 import {buildAvatar} from '../../avatars/build.js';
 import {createAvatarAnimator} from '../../avatars/animate.js';
 import {recipeFor} from '../../avatars/cast.js';
@@ -77,12 +78,13 @@ const fanYaw=t=>Math.sin(t*ONSEN_FAN.rate)*ONSEN_FAN.sweep;
 
 /** Seats: where you sit, and where your weight goes. `soak` seats put you in the water. */
 export const ONSEN_SEATS=Object.freeze({
- bench:{id:'bench',label:'Sit on the changing-room bench',position:[2.1,0,.25],stand:[2.1,0,.95],eyeY:1.16,yaw:0,surfaceY:.46},
- tatami:{id:'tatami',label:'Sit on the tatami',position:[LOBBY.koagari.x-.25,0,LOBBY.koagari.z+.5],stand:[LOBBY.koagari.x,0,3.55],eyeY:LOBBY.koagari.h+.8,yaw:Math.PI,surfaceY:LOBBY.koagari.h+.07},
+ // (`front`: how far ahead of the mark the seat's front edge is, seat-slots.js; the changing bench is 2.2 by .42, room for two)
+ bench:benchSeat({id:'bench',label:'Sit on the changing-room bench',position:[2.1,0,.25],stand:[2.1,0,.95],eyeY:1.16,yaw:0,surfaceY:.46},{length:2.2,front:.21}),
+ tatami:{id:'tatami',label:'Sit on the tatami',position:[LOBBY.koagari.x-.25,0,LOBBY.koagari.z+.5],stand:[LOBBY.koagari.x,0,3.55],eyeY:LOBBY.koagari.h+.8,yaw:Math.PI,surfaceY:LOBBY.koagari.h+.07,front:.29},
  // The coin massage chair's seat, from its card (onsen-chair.js): the mark 5 cm behind the seat's front edge, facing the lobby,
  // and the card's label: a ¥100 coin buys ten minutes from the seat (ONSEN_MASSAGE). World's id stays 'massage' (saved
  // scenes and the films know it by that).
- massage:(({position,stand,eyeY,yaw,surfaceY,label})=>({id:'massage',label,position,stand,eyeY,yaw,surfaceY}))(CHAIR.seat('seat')),
+ massage:(({position,stand,eyeY,yaw,surfaceY,label,front})=>({id:'massage',label,position,stand,eyeY,yaw,surfaceY,front}))(CHAIR.seat('seat')),
  ...WASH_SEATS,
  indoor:{id:'indoor',label:'Get into the indoor bath',position:[3.1,0,-3.35],stand:[3.1,0,-1.66],eyeY:R.tub.floor+.78,yaw:Math.PI,surfaceY:R.tub.floor+.04,soak:true},
  rock:{id:'rock',label:'Get into the rock bath',position:[.75,0,-6.45],stand:[.75,0,-4.75],eyeY:R.pool.floor+.82,yaw:0,surfaceY:R.pool.floor+.04,soak:true},

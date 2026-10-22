@@ -551,8 +551,8 @@
     8
   ],
   "editable": {
-    "meshes": 916,
-    "triangles": 50392,
+    "meshes": 918,
+    "triangles": 50520,
     "bounds": {
       "min": [
         -4.230000019073486,
@@ -569,7 +569,7 @@
   },
   "export": {
     "meshes": 35,
-    "triangles": 51547,
+    "triangles": 51675,
     "bounds": {
       "min": [
         -4.230000019073486,
@@ -585,15 +585,15 @@
     "materials": 33,
     "file": "minato-interior-compact.glb",
     "path": "assets/models/izakaya/minato-interior-compact.glb",
-    "bytes": 3840276,
+    "bytes": 3844416,
     "primitives": 35,
-    "sha256": "6a9aa12a6eabc20258304211d592f04ed137c04fad1b0df63f609b851f4f4fee"
+    "sha256": "e1871d277c1be9490044d274dc532b8d47990c8e242f1bcbd04e6d2c3862992d"
   },
   "blend": "minato-compact.blend",
-  "blendSha256": "38ddffa5d5c3105e5467d50f50fdee59152ca584f625333c28e7d7d7ba1f7744",
+  "blendSha256": "19827605f7a16709ab464eee8a9bddcd20b402bc9f5b6f09f91a041d1576cf6a",
   "inputs": {
     "art/izakaya/compact/plan.json": "9e240c025dd0bd2ac5b1a73e57497765332ccbabb33fed27ad71548de437100b",
-    "tools/blender/build-minato-compact.py": "75c5de33a92a1e7d337e1fff877f252001a82b3326a4157d62fc1a9ec215ba9d",
+    "tools/blender/build-minato-compact.py": "7ae4dce65cdba9e391f48af43ec094d45d78c2d9ec09a5a4d8667d13b7e81ec5",
     "tools/blender/build-minato-walnut.py": "3cc9231318ccc961e0158d15c7a9113365ae92c65ecea495676095c3e7610049",
     "assets/models/izakaya/minato-walnut-backbar.glb": "4fc640430634e0bf17da87d80bf3c6ccb39d2c7f52a4a6a67861438caba96e43",
     "art/izakaya/compact/minato-signs.otf": "76766701cd570ed46ca63bc5122c144fb269c9288d385817939af3fe941957b2"

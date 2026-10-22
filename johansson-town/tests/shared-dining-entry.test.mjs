@@ -16,6 +16,9 @@ import {MINATO_COMPACT as P} from '../src/world/interiors/minato-compact-plan.js
 import {SHARED_DINING_COLLIDERS,SHARED_DINING_BOUNDS,SHARED_DINING_FLOOR} from '../src/world/interiors/shared-dining-layout.js';
 import {suppliedRoomBoundsBlocked} from '../src/world/supplied-rooms.js';
 import {standingHitsRect} from '../physics.js';
+import {buildMinatoBar} from '../src/world/interiors/minato-bar.js';
+import {installDOM} from './fixtures.mjs';
+installDOM();
 
 // Execute the real game integration without starting its renderer. The service
 // controllers are real; only the shell construction and browser surface are stubbed.
@@ -36,7 +39,8 @@ function entryFixture(id){
  ramenLife.userData.sharedAsset=true;ramenLife.add(regular);scene.add(ramenLife);
  const thao=new THREE.Group(),sato=new THREE.Group();thao.position.set(...NAO_STATION);thao.userData.inIzakaya=true;sato.position.set(...SATO_COOK.position);sato.userData.inRamen=true;
  const calls={izakaya:0,ramen:0,pay:0,builders:[]},television={update:noop},state={yen:4000};
- const builder=options=>{calls.builders.push(options);return {television,exitSiteAt,yaw:0};};
+ // The drinks station is the room's own (minato-bar.js): Thao makes every drink from it.
+ const builder=options=>{calls.builders.push(options);return {television,exitSiteAt,yaw:0,bar:buildMinatoBar(options.room||new THREE.Group())};};
  const context={THREE,current:{id},room,ramenLife,regular,activeRoomLayout:null,roomColliders:[],town:{},minutes:720,elapsed:0,parkSeat:null,tipsy:0,
   world:{people:[{profile:{name:'Thao'},g:thao},{profile:{name:'Mrs Sato'},g:sato}]},player:new THREE.Object3D(),
   izakayaGuests:{sync:()=>{calls.izakaya++;return ['Thao'];}},ramenGuests:{sync:()=>{calls.ramen++;return ['Mrs Sato'];}},

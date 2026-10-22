@@ -1,9 +1,13 @@
 import * as THREE from '../../vendor/three.module.js';
+import {lookFragment} from './looks.js';
 
 /**
  * The 3D-to-2D pass: what turns a lit 3D town into a drawn one.
  *
  *   scene -> rtScene (colour + depth) -> ink + grade -> rtColour -> FXAA -> screen
+ *
+ * With a look chosen (looks.js) the FXAA result goes to rtLook instead, and the look
+ * pass draws it onto the screen. Natural adds nothing.
  *
  * Ported from Sakura Crossing by Kenton-GMI (MIT). The shading maths is theirs; the
  * plumbing is not, because this town does not render in one call. Outdoors goes
@@ -255,7 +259,21 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
  const fxaaPass=makeQuad(FXAA_FRAGMENT,{tDiffuse:{value:null},uTexel:{value:new THREE.Vector2(1,1)}});
 
  const size=new THREE.Vector2(0,0);
- const state={ink:true,grade:true,fxaa,scale:superScale,samples:msaa,hdr:halfFloat};
+ const state={ink:true,grade:true,fxaa,scale:superScale,samples:msaa,hdr:halfFloat,look:'none'};
+ // One pass per look, compiled the first time it is chosen; the target only once a look needs it.
+ const lookPasses=new Map();
+ let rtLook=null;
+ function lookPass(name){
+  if(lookPasses.has(name))return lookPasses.get(name);
+  const fragment=lookFragment(name);
+  const pass=fragment?makeQuad(fragment,{
+   tDiffuse:{value:null},tDepth:{value:rtScene.depthTexture},
+   uTexel:{value:new THREE.Vector2(1,1)},uResolution:{value:new THREE.Vector2(2,2)},
+   uNear:{value:0.1},uFar:{value:220},uSkyDepth:{value:settings.skyDepth}
+  }):null;
+  lookPasses.set(name,pass);
+  return pass;
+ }
  let width=0,height=0;
 
  /** Sizes the targets to whatever the renderer is currently drawing into. */
@@ -297,6 +315,8 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
    }
   },
   /** Time of day still lifts the picture; with tone mapping off the grade carries it. */
+  /** Chooses a look by name (looks.js); an unknown name is Natural. */
+  setLook(name){state.look=lookFragment(name)?name:'none';},
   setExposure(value){compositePass.material.uniforms.uExposure.value=value;},
   /** Camera clip planes feed the depth linearisation; re-read them each frame. */
   setCamera(camera){
@@ -322,13 +342,26 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
     compositePass.material.uniforms.uInkEnabled.value=state.ink?1:0;
     compositePass.material.uniforms.uAmount.value=state.grade?1:0;
     compositePass.material.uniforms.tDiffuse.value=rtScene.texture;
-    renderer.setRenderTarget(state.fxaa?rtColour:null);
+    const look=state.look==='none'?null:lookPass(state.look);
+    if(look&&state.fxaa){
+     if(!rtLook)rtLook=new THREE.WebGLRenderTarget(width,height,{...targetOptions,type:THREE.UnsignedByteType,depthBuffer:false});
+     else if(rtLook.width!==width||rtLook.height!==height)rtLook.setSize(width,height);
+    }
+    renderer.setRenderTarget(state.fxaa||look?rtColour:null);
     compositePass.render(renderer);
 
     if(state.fxaa){
      fxaaPass.material.uniforms.tDiffuse.value=rtColour.texture;
-     renderer.setRenderTarget(null);
+     renderer.setRenderTarget(look?rtLook:null);
      fxaaPass.render(renderer);
+    }
+    if(look){
+     const u=look.material.uniforms,source=compositePass.material.uniforms;
+     u.tDiffuse.value=(state.fxaa?rtLook:rtColour).texture;
+     u.uTexel.value.set(1/width,1/height);u.uResolution.value.set(width,height);
+     u.uNear.value=source.uNear.value;u.uFar.value=source.uFar.value;
+     renderer.setRenderTarget(null);
+     look.render(renderer);
     }
    }finally{
     // A post-process shader or target can fail after the town was drawn. Plain
@@ -339,8 +372,8 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
   /** The target the town is drawn into: shaders compiled ahead of time are compiled for it (game.js compileTown). */
   get sceneTarget(){return rtScene;},
   dispose(){
-   [rtScene,rtColour].forEach(rt=>rt.dispose());
-   [compositePass,fxaaPass].forEach(p=>p.dispose());
+   [rtScene,rtColour,rtLook].forEach(rt=>rt?.dispose());
+   [compositePass,fxaaPass,...lookPasses.values()].forEach(p=>p?.dispose());
   }
  };
 }

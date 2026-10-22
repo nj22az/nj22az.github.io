@@ -261,6 +261,14 @@ export const FLOOR_SIT=Object.freeze({from:.55,to:.85,spread:.16,roll:.1,knee:.1
 function floorJoints(a,knee=FLOOR_SIT.knee){const F=FLOOR_SIT,x=-Math.PI/2-a;
  return {chest:[F.lean,0,0],thighL:[x,F.roll,F.spread],thighR:[x,-F.roll,-F.spread],kneeL:[knee,0,0],kneeR:[knee,0,0],footL:[F.foot,0,0],footR:[F.foot,0,0]};}
 const LEG_JOINTS=['thighL','kneeL','footL','thighR','kneeR','footR'];
+/** On a chair or a bench: where the mittens rest (`hands`: how far along the thighs, from the hips to the knees), and how
+ *  far the backs of the shins stay in front of the seat's front edge (`edge`, metres for a body of 1.6 m), the body sliding
+ *  forward on the seat as far as that needs (a seat that says where its front edge is: `seatFront`). */
+export const CHAIR_SIT=Object.freeze({hands:.6,edge:.012});
+/** How far each angle of an arm laid on the lap may go ([low, high] per angle, as reachFor's `bounds`; pair-poses.js has the
+ *  same for a reach to a partner): kept off the thighs as wide as they are drawn (shorts, wide trousers), an arm must not be
+ *  wound round the shoulder to get there, which it would unwind through the air every time the body sits down or gets up. */
+const LAP_BOUNDS=Object.freeze([[-2.4,.9],[-1.2,1.2],[-1.6,1],[-2.3,0],[-1.2,1.2]]);
 /** In the massage chair (seat 0.5 m), curled forward over the knees (curl 1) and slowly uncurling: the rounded back is the
  *  spine and the chest (the hips stay on the seat), the head up to look ahead. UNCURL: how far he gets before the lights go
  *  (half), and how long it takes (2.4 s, the rollers' first pass). */
@@ -390,10 +398,11 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   // A place carried by a bone, with the body in the move's pose: where it is in the chest's frame then.
   const posed=spec.pose?posedPlaces(spec.pose(m)):null,hipsM=spec.pose?chestToHips(spec.pose(m)):null,_h=new THREE.Vector3();
   // how far a point (in the chest's frame) is from the torso: bent, from the hips' part or the chest's, whichever is nearer
-  // (and, posed, from the legs too: each a round limb of the leg's thickness and its clothes)
+  // (and, posed, from the legs too: each a round limb of the leg's thickness and its clothes, or as wide as `legs` says they
+  // are drawn: shorts)
   const _s=new THREE.Line3(),_n=new THREE.Vector3();
   const torso=p=>{const d=volume.sdf(_h.copy(p).add(chestAt));if(!hipsM)return d;let e=Math.min(d,volume.sdf(_h.copy(p).applyMatrix4(hipsM)));
-   for(const [a,b] of hipsM.legs){_s.set(a,b);e=Math.min(e,_s.closestPointToPoint(p,true,_n).distanceTo(p)-m.legR*1.15);}return e;};
+   for(const [a,b] of hipsM.legs){_s.set(a,b);e=Math.min(e,_s.closestPointToPoint(p,true,_n).distanceTo(p)-Math.max(m.legR*1.15,spec.legs||0));}return e;};
   for(const side of ['R','L']){
    if(spec.only&&side!==spec.only)continue;
    // a side without its own place is the mirror of the right
@@ -617,7 +626,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   }else{consumption=null;consumeTime=0;}
   lastConsume=action;
   for(const j of JOINTS)target[j].set(0,0,0);
-  let targetRoot=0,targetHips=0,targetLean=0;floorSit=0;
+  let targetRoot=0,targetHips=0,targetLean=0,seatSlide=0;floorSit=0;
   const chairBlend=Number.isFinite(s.chairBlend)?THREE.MathUtils.clamp(s.chairBlend,0,1):(s.seated?1:0);
   const onChair=chairBlend>0||s.seated;
   const speed=s.speed||0,moving=speed>.08&&!s.seated&&!s.riding;
@@ -636,17 +645,24 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    const soak=s.seat==='Soak'||s.pose==='Soak';
    const seatH=Number.isFinite(s.seatHeight)?s.seatHeight:.45;
    targetRoot=seatH-m.hipY+m.seatDrop;
-   set('thighL',-1.52,0,.06);set('thighR',-1.52,0,-.06);set('kneeL',1.45);set('kneeR',1.45);
    // On low stools and benches, extend the shins instead of driving the shoes through the floor (the feet flat, pointing
    // `flex` down); lower still, a cushion or the floor itself, sit the way a small child does (FLOOR_SIT). Higher stools
-   // let the short legs hang naturally.
-   const ankle=seatH+m.seatDrop-m.thigh*Math.cos(1.52)-(s.floorHeight||0)-m.foot-m.legR*.28;
-   const flex=!soak&&ankle<m.shin*Math.cos(.07)?Math.acos(THREE.MathUtils.clamp(ankle/m.shin,0,1)):0;
-   if(flex>0){set('kneeL',1.52-flex);set('kneeR',1.52-flex);set('footL',flex);set('footR',flex);}
+   // let the short legs hang naturally (chairShape).
+   const C=chairShape(seatH,soak?null:(s.floorHeight||0));for(const j of LEG_JOINTS)target[j].set(...C.joints[j]);
    floorSit=soak?0:floorWeight(s);
-   // Rest beside the thighs (on the floor, on them); task poses lift only the arms they need.
-   // (seated the kit is behind them, against the seat back: the hands rest as anybody's do, clear of a chair's arms)
-   set('shoulderL',-.10,0,.13);set('shoulderR',-.10,0,-.13);set('elbowL',-.15);set('elbowR',-.15);
+   // In a skirt or a dress the mittens rest on the lap, on top of the cloth (it lies on the lap, so a hand hung beside the
+   // hips would go through it), as far as the body is sat (on the way down onto a seat, or the floor, they come to the lap
+   // with it); in trousers or shorts they rest beside the thighs, as before. Task poses lift only the arms they need.
+   // (Seated the kit is behind them, against the seat back: the hands rest as anybody's do, clear of a chair's arms.)
+   const A=soak?null:C.hands();
+   if(A){armTo('R',A.R,chairBlend,A.handR);armTo('L',A.L,chairBlend,A.handL);}
+   else{set('shoulderL',-.10,0,.13);set('shoulderR',-.10,0,-.13);set('elbowL',-.15);set('elbowR',-.15);}
+   // A seat that says where its front edge is (seatFront: how far ahead of the body's mark) has the body slide forward on
+   // it as far as the backs of the shins need to hang in front of that edge: short legs on a deep bench sit at its front,
+   // the knees over the edge, instead of hanging straight down through the seat.
+   // (sat on a cushion, its front edge is behind the knees as they go out in front of it to the floor: FLOOR_SIT's legs)
+   if(!soak&&Number.isFinite(s.seatFront)){const shins=floorSit>0?THREE.MathUtils.lerp(C.shins,floorShape(seatH-(s.floorHeight||0)).shins,floorSit):C.shins;
+    seatSlide=Math.max(0,s.seatFront-(shins-CHAIR_SIT.edge*m.k)*avatar.root.scale.z);}
    if(floorSit>0){const F=floorShape(seatH-(s.floorHeight||0)),A=F.hands();
     for(const j of LEG_JOINTS)target[j].lerp(_pose.set(...F.joints[j]),floorSit);add('chest',FLOOR_SIT.lean*floorSit);
     if(A){armTo('R',A.R,floorSit,A.handR);armTo('L',A.L,floorSit,A.handL);}}
@@ -902,7 +918,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   rootY+=(targetRoot-rootY)*(s.seated||s.riding?1-Math.exp(-dt*9):k);hipsY+=(targetHips-hipsY)*k;lean+=(targetLean-lean)*k;
   if(s.riding)rootY=targetRoot;
   avatar.root.position.x=s.riding?0:driftX;
-  avatar.root.position.z=s.riding?.21*(s.bicycleFit||bicycleRiderFit(m)).scale:0;
+  avatar.root.position.z=s.riding?.21*(s.bicycleFit||bicycleRiderFit(m)).scale:-seatSlide*chairBlend;
   avatar.root.position.y=rootY+(s.seated||s.riding?0:(s.floorHeight||0));
   bones.hips.position.y=m.hipY+(s.riding?0:hipsY);
   bones.head.position.copy(headRestPosition);
@@ -971,9 +987,77 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
  }
 
  /**
+  * This body as it is dressed, sat in `joints` with its bottom on a seat `seat` high (found with the body put in the shape
+  * for a moment, then put back), as it is drawn (a skirt's or a dress's cloth fitted as towel-fit.js fits it, lying on the
+  * lap): how far ahead of the hip joints the backs of the shins and the shoes are below the seat's top (`shins`, in the
+  * body's frame: a seat's front edge must be behind that, or they hang through it); how far the drawn leg reaches round the
+  * thigh's line (`leg`: the thigh, or the trousers or shorts on it); whether cloth lies on the lap (`cloth`: a skirt, a dress,
+  * a wrap); and `lap(f)`, the top of the lap (the thigh and what lies
+  * on it) `f` of the way from the right hip to the knee, in the body's frame, with the thigh's line there (`axis`).
+  */
+ function seatedScan(joints,seat){
+  const root=avatar.root,saved=JOINTS.map(j=>bones[j].rotation.toArray().slice(0,3)),y0=root.position.y,level=avatar.seatLevel;
+  JOINTS.forEach(j=>bones[j].rotation.set(...(joints[j]||[0,0,0])));root.updateMatrixWorld(true);supportSeat(seat);root.updateMatrixWorld(true);
+  const top=(seat-root.position.y)/root.scale.y;avatar.seatLevel=top;
+  const inv=new THREE.Matrix4().copy(root.matrixWorld).invert(),p=new THREE.Vector3(),rest=new THREE.Vector3(),lapPoints=[];
+  const at=n=>bones[n].getWorldPosition(new THREE.Vector3()).applyMatrix4(inv),hip=at('thighR'),knee=at('kneeR'),thigh=new THREE.Line3(hip,knee),near=new THREE.Vector3();
+  let shins=Infinity,leg=m.legR,onLap=false;
+  for(const mesh of root.children){if(!mesh.isSkinnedMesh||!mesh.visible||mesh.name.includes('outline'))continue;
+   const g=mesh.geometry,I=g.attributes.skinIndex,F=g.attributes.towelFit,fit=F&&mesh.towelFit,names=mesh.skeleton.bones.map(b=>b.name);
+   if(fit)fit.refresh();
+   for(let i=0;i<g.attributes.position.count;i++){const bone=names[I.getX(i)],shin=/^(knee|foot)[LR]$/.test(bone),cloth=fit&&F.getX(i)>.5;
+    if(!shin&&!cloth&&bone!=='thighR'&&bone!=='thighL')continue;
+    mesh.getVertexPosition(i,p);if(cloth)fit.fitPoint(p,F.getX(i),rest.fromBufferAttribute(g.attributes.position,i));
+    p.applyMatrix4(mesh.matrixWorld).applyMatrix4(inv);if(shin&&p.y<top)shins=Math.min(shins,p.z);
+    if(!shin||cloth)lapPoints.push([p.x,p.y,p.z,cloth?F.getX(i):0]);
+    if(cloth&&!onLap){const t=thigh.closestPointToPointParameter(p,false);onLap=t>.2&&t<1&&p.y>thigh.at(t,near).y;}
+    if(bone==='thighR'&&!cloth){const t=thigh.closestPointToPointParameter(p,false);if(t>.1&&t<.9)leg=Math.max(leg,thigh.at(t,near).distanceTo(p));}}}
+  JOINTS.forEach((j,i)=>bones[j].rotation.set(...saved[i]));root.position.y=y0;root.updateMatrixWorld(true);avatar.seatLevel=level;
+  // (the top of whatever is drawn there, over [x, z]: the lap, or a skirt spread on the seat beside the hips)
+  // (`cloth`: only a skirt's or a dress's cloth lying on the lap (towel-fit.js kind 2), not the legs of shorts or trousers,
+  // nor a bath wrap, which rises round the body to the chest)
+  const topAt=(x,z,y,cloth=false)=>{for(const [px,py,pz,c] of lapPoints)if(py>y&&(c>1.5||!cloth)&&Math.hypot(px-x,pz-z)<m.hand*1.1)y=py;return y;};
+  const lap=(f,cloth=false)=>{const c=hip.clone().lerp(knee,f);return {top:topAt(c.x,c.z,c.y+leg,cloth),axis:c};};
+  return {shins,leg,lap,topAt,cloth:onLap};
+ }
+ /**
+  * The chair sit's shape for this body as it is dressed, on a seat `seat` high (`floor`: the floor's height under it; null in
+  * a bath, where the legs are the soak's): the legs' joints (the thighs level on the seat; the shins hanging, or on a low
+  * seat stretched forward so the shoes are not driven through the floor), where the backs of the shins are (seatedScan), and
+  * where the mittens lie on the lap (worked out once, then kept).
+  */
+ const chairShapes=new Map();
+ function chairShape(seat,floor){
+  const ankle=floor===null?Infinity:seat+m.seatDrop-m.thigh*Math.cos(1.52)-floor-m.foot-m.legR*.28;
+  const flex=ankle<m.shin*Math.cos(.07)?Math.acos(THREE.MathUtils.clamp(ankle/m.shin,0,1)):0;
+  const key=avatar.root.children.filter(o=>o.isSkinnedMesh&&o.visible).map(o=>o.uuid).join('/')+'|'+seat.toFixed(3)+'|'+flex.toFixed(3);
+  if(chairShapes.has(key))return chairShapes.get(key);
+  const knee=flex>0?1.52-flex:1.45;
+  const joints={thighL:[-1.52,0,.06],thighR:[-1.52,0,-.06],kneeL:[knee,0,0],kneeR:[knee,0,0],footL:[flex,0,0],footR:[flex,0,0]};
+  const S=seatedScan(joints,seat);
+  // where the right mitten lies: on top of the lap over the thigh, `hands` of the way to the knee (nearer the hips for arms
+  // too short for that), never in it (a hand hung beside the hips goes through a skirt that lies on the lap)
+  const root=avatar.root,saved=JOINTS.map(j=>bones[j].rotation.toArray().slice(0,3));
+  JOINTS.forEach(j=>bones[j].rotation.set(...(joints[j]||[0,0,0])));root.updateMatrixWorld(true);
+  const shoulder=root.worldToLocal(bones.shoulderR.getWorldPosition(new THREE.Vector3())),reachArm=(m.upper+m.fore+m.hand*.55)*.97;
+  JOINTS.forEach((j,i)=>bones[j].rotation.set(...saved[i]));root.updateMatrixWorld(true);
+  const lapAt=f=>{const L=S.lap(f);return [L.axis.x,L.top+m.hand*.85,L.axis.z];};
+  const place=[1,.8,.6,.4,.2,0].map(u=>lapAt(u*CHAIR_SIT.hands)).find(q=>shoulder.distanceTo(new THREE.Vector3(...q))<=reachArm)||lapAt(0);
+  let hands;
+  // (the arm kept out of the legs as wide as they are drawn: a mitten laid on shorts lies on them, not in them; the elbow
+  // by the side, as a sitter's is, not winged out over the next place on the bench or a chair's arm)
+  // (the left the mirror of the right: the sit is the same both sides, and an arm solved on its own can settle elsewhere)
+  const mirrored=A=>({...A,L:A.R,handL:A.handR});
+  const shape={joints,shins:S.shins,hands:()=>!S.cloth?null:hands??=mirrored(reachFor('ChairSit:'+key,{pose:()=>joints,legs:S.leg*1.04,only:'R',
+   R:{touch:true,root:place,elbow:m=>[-(m.width/2-m.armR*.4),m.hipY+m.torso*.3,m.depth*.3],seed:[-.55,.1,-.1,-.6,0],hand:[-.3,0,0],bounds:LAP_BOUNDS}}))};
+  chairShapes.set(key,shape);return shape;
+ }
+ /**
   * The floor sit's shape for this body as it is dressed, on a seat `h` above the floor (0: the floor itself): how far the
   * thighs rise (`a`) so the heels rest on the floor while the bottom rests on the seat (found with the body put in the shape
-  * for a moment, then put back), its joints, and where the mittens lie on the thighs (worked out once, then kept).
+  * for a moment, then put back), its joints, where the backs of the shins are (`shins`, seatedScan: a cushion's front edge
+  * goes behind them), and where the mittens lie on the thighs, on top of a skirt's cloth lying there (worked out once, then
+  * kept).
   */
  const floorShapes=new Map();
  function floorShape(h){
@@ -991,8 +1075,10 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   const joints=floorJoints(a,knee);
   // where the bottom rests (the seat, or the floor), in the body's frame with it sat there
   JOINTS.forEach(j=>bones[j].rotation.set(...(joints[j]||[0,0,0])));root.updateMatrixWorld(true);supportSeat(0);const rest=-root.position.y;
-  // where on the thighs the mittens rest: as far toward the knees as `hands`, nearer the hips for arms too short for that
-  const place=f=>[-m.hipX,m.hipY-m.thigh*f,m.legR*1.15+m.hand*.85],reachArm=(m.upper+m.fore+m.hand*.55)*.97;
+  // where on the thighs the mittens rest: as far toward the knees as `hands`, nearer the hips for arms too short for that;
+  // on top of whatever lies on the lap (a skirt's or a dress's cloth), not in it
+  const S=seatedScan(joints,0),onLap=f=>{const L=S.lap(f,true);return Math.max(0,L.top-L.axis.y-m.legR*1.15);};
+  const place=f=>[-m.hipX,m.hipY-m.thigh*f,m.legR*1.15+onLap(f)+m.hand*.85],reachArm=(m.upper+m.fore+m.hand*.55)*.97;
   const put=J=>{JOINTS.forEach(j=>bones[j].rotation.set(...(J[j]||[0,0,0])));root.updateMatrixWorld(true);};
   put({});const local=[1,.85,.7,.55,.4].map(u=>u*FLOOR_SIT.hands).map(f=>[f,bones.thighR.worldToLocal(root.localToWorld(new THREE.Vector3(...place(f))))]);
   // (measured in the body's own frame: a scene may have scaled it)
@@ -1002,26 +1088,32 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   // (a body whose mittens cannot lie on its thighs, short arms over a round body, puts them down beside its hips instead,
   // on what it sits on, the ends of the mittens on it)
   let hands;
-  const shape={a,knee,joints,hands:()=>{if(hands!==undefined)return hands;
+  const shape={a,knee,joints,shins:S.shins,hands:()=>{if(hands!==undefined)return hands;
    const A=reachFor('FloorSit:'+a.toFixed(3)+':'+knee.toFixed(3)+':'+along.toFixed(2),{pose:()=>joints,
-    R:{touch:true,on:['thighR',()=>place(along)],seed:[-.55,.1,-.1,-.5,0],hand:[-.3,0,0]}});
+    R:{touch:true,on:['thighR',()=>place(along)],seed:[-.55,.1,-.1,-.5,0],hand:[-.3,0,0],bounds:LAP_BOUNDS}});
    const was=JOINTS.map(j=>bones[j].rotation.toArray().slice(0,3));put(joints);
    // (the arms as armTo sets them: the left's turns mirrored)
    for(const s of ['R','L']){const sg=s==='R'?1:-1,a=A[s],h=A['hand'+s]||[0,0,0];bones['shoulder'+s].rotation.set(a[0],a[1]*sg,a[2]*sg);bones['elbow'+s].rotation.set(a[3],(a[4]||0)*sg,0);bones['hand'+s].rotation.set(h[0],h[1]*sg,h[2]*sg);}
    root.updateMatrixWorld(true);
    // how near each mitten, as it is drawn, comes to its thigh: both of them, since each arm is solved on its own (an arm
    // just long enough can bring one mitten to the thigh and leave the other in the air), and the mitten's skin rather
-   // than its envelope (TOUCH), which stands off the drawn mitten by a centimetre
+   // than its envelope (TOUCH), which stands off the drawn mitten by a centimetre; to the lap as it is drawn (shorts, or a
+   // skirt's cloth on it), which the mitten lies on
    const q=new THREE.Vector3();let off=-Infinity;
    for(const s of ['R','L']){
     const thigh=new THREE.Line3(inBody(bones['thigh'+s].getWorldPosition(new THREE.Vector3())),inBody(bones['knee'+s].getWorldPosition(new THREE.Vector3())));
-    let near=Infinity;for(const p of posedPoints(avatar,root,()=>true,1,new Set(['hand'+s])))near=Math.min(near,thigh.closestPointToPoint(p,true,q).distanceTo(p)-m.legR*1.15);
+    let near=Infinity;for(const p of posedPoints(avatar,root,()=>true,1,new Set(['hand'+s])))near=Math.min(near,thigh.closestPointToPoint(p,true,q).distanceTo(p)-m.legR*1.15-onLap(along));
     off=Math.max(off,near);
    }
    JOINTS.forEach((j,i)=>bones[j].rotation.set(...was[i]));root.updateMatrixWorld(true);
    if(off<.022*m.k)return hands=A;
+   // (beside the hips the mittens rest on what is sat on, or on a skirt spread over it there: as near the hips as the skirt
+   // lies flat, never where it rises to the waist, which a mitten laid on it would have to be held up over)
+   const flat=x=>S.topAt(x,-FLOOR_SIT.behind*m.k,-Infinity,true),x0=-(m.hipX+m.legR*1.15+m.hand*.9+FLOOR_SIT.side*m.k);
+   let x=x0;for(let i=1;i<=8&&flat(x)>rest+m.legR*1.2;i++)x=x0-i*.01*m.k;
+   const side=[x,Math.max(rest+m.hand*1.1,flat(x)+m.hand*.85),-FLOOR_SIT.behind*m.k];
    return hands=reachFor('FloorSitSide:'+a.toFixed(3)+':'+knee.toFixed(3),{pose:()=>joints,
-    R:{root:[-(m.hipX+m.legR*1.15+m.hand*.9+FLOOR_SIT.side*m.k),rest+m.hand*1.1,-FLOOR_SIT.behind*m.k],seed:[.1,0,-.2,-.15,0],hand:[0,0,0]}});}};
+    R:{root:side,seed:[.1,0,-.2,-.15,0],hand:[0,0,0]}});}};
   floorShapes.set(key,shape);return shape;
  }
  /**

@@ -1,4 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
+import {benchSeat} from './seat-slots.js';
+import {HARBOUR_BENCH_DIMENSIONS} from './harbour-bench-dimensions.js';
 import {PARK,PARK_BENCH,parkBenchGeometry,TURF_TINT} from './park-layout.js';
 import {HARBOUR_PARK_MAIN,HARBOUR_PARK_EXTENSION,HARBOUR_PARK_ENTRY,HARBOUR_POND,HARBOUR_CHERRY,HARBOUR_SHRINE,HARBOUR_PARK_SEATS,HARBOUR_PARK_PATHS} from './harbour-park-plan.js';
 import {HARBOUR_PARK_BEDS,PARK_PLANTS,HARBOUR_POND_PADS,HARBOUR_SHADE_TREE,PARK_GUIDE_BOARD,plantInFlower,bedNow} from './harbour-park-garden.js';
@@ -79,7 +81,7 @@ export function buildPark(world,options={}){
   if(!await preloadPark())return false;const object=makeParkBench(benchGeometry,shadows);group.add(object);benchObject.removeFromParent();benchObject=object;world.park.benchObject=object;world.park.benchSource='blender';return true;
  }});
  world.colliders.push({id:'harbour-park-bench',x:benchGeometry.x,z:benchGeometry.z,w:benchGeometry.width,d:benchGeometry.length,minY:benchGeometry.footY,height:benchGeometry.seatY+benchGeometry.top-benchGeometry.footY,park:true});
- const bench=anchor(PARK_BENCH.stand[0],PARK_BENCH.stand[2],'Sit under the harbour cherry','seat','Harbour Park bench','A quiet seat under the old cherry, with Sakura across the street and Umi-no-yu through the open park.');bench.userData.seat=PARK_BENCH;
+ const bench=anchor(PARK_BENCH.stand[0],PARK_BENCH.stand[2],'Sit under the harbour cherry','seat','Harbour Park bench','A quiet seat under the old cherry, with Sakura across the street and Umi-no-yu through the open park.');bench.userData.seat=benchSeat(PARK_BENCH,{length:HARBOUR_BENCH_DIMENSIONS.length,front:HARBOUR_BENCH_DIMENSIONS.seatDepth/2+HARBOUR_BENCH_DIMENSIONS.sitZ});
  // The second bench faces the pond; its stand is on the wide gravel circuit.
  const second=HARBOUR_PARK_SEATS[1],seatY=.46;
  kit.box(2.08,.08,.46,second.x,seatY-.04,second.z,0x946b43);
@@ -87,7 +89,7 @@ export function buildPark(world,options={}){
  for(const dx of [-.82,.82])kit.box(.07,.42,.5,second.x+dx,.21,second.z,0x35494a);
  world.colliders.push({id:second.id,x:second.x,z:second.z,w:2.08,d:.52,height:.99,park:true});
  const pondBench=anchor(...second.stand,'Sit beside the garden pond','seat','Garden pond bench','The pond reflects the cherry and the bathhouse roof. The shore walk remains open beside you.');
- pondBench.userData.seat={position:[second.x,0,second.z+.08],stand:[second.stand[0],0,second.stand[1]],surfaceY:seatY,eyeY:1.21,yaw:second.yaw,pitch:0};
+ pondBench.userData.seat=benchSeat({position:[second.x,0,second.z+.08],stand:[second.stand[0],0,second.stand[1]],surfaceY:seatY,eyeY:1.21,yaw:second.yaw,pitch:0},{length:2.08,front:.15});
  // The harbour cherry is a kanhizakura: green in October, in flower late January to February (cherry-tree.js).
  const [tx,tz]=HARBOUR_CHERRY,cherry=buildCherryTree({scale:6.2,shadows});cherry.group.position.set(tx,0,tz);cherry.group.rotation.y=.6;group.add(cherry.group);
  const trees={blossom:cherry.meshes.blossom,leaf:cherry.meshes.leaf,cherry};
@@ -118,7 +120,7 @@ export function buildPark(world,options={}){
  const third=HARBOUR_PARK_SEATS[2];slattedBench(kit,third);
  world.colliders.push({id:third.id,x:third.x,z:third.z,w:2.08,d:.52,height:.99,park:true});
  const shadeBench=anchor(...third.stand,'Sit under the gajumaru','seat','Gajumaru bench','The bench in the gajumaru’s shade, where the walk comes up off the beach. The bathhouse roof is across the lawn, and the sea wind comes through the hanging roots.');
- shadeBench.userData.seat={position:[third.x,0,third.z-.08],stand:[third.stand[0],0,third.stand[1]],surfaceY:.46,eyeY:1.21,yaw:third.yaw,pitch:0};
+ shadeBench.userData.seat=benchSeat({position:[third.x,0,third.z-.08],stand:[third.stand[0],0,third.stand[1]],surfaceY:.46,eyeY:1.21,yaw:third.yaw,pitch:0},{length:2.08,front:.15});
  anchor(shade.x,shade.z-2.1,'Look up into the gajumaru','inspect','Gajumaru',HARBOUR_SHADE_TREE.why);
  for(const [x,z] of LAMP_POSITIONS){kit.cyl(.07,.1,.16,x,.08,z,0x8a8979,{segments:8});kit.cyl(.04,.05,2.55,x,1.4,z,0x35584c,{segments:8});kit.sphere(.16,x,2.77,z,0xfff4dc,{finish:'lamp'});world.colliders.push({id:'park-lamp',x,z,w:.2,d:.2,height:2.93,park:true});}
  // The pond's edge is the pond's (its stones, reeds and lily pads, at the water): a kit of its own, never read as ground.

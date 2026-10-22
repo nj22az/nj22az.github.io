@@ -1,4 +1,5 @@
 import * as THREE from '../../../vendor/three.module.js';
+import {benchSeat} from '../seat-slots.js';
 import {createKit,paint} from '../okinawa/kit.js';
 import {japaneseSign} from '../okinawa/signs.js';
 import {createHouseWalk} from '../house-walk.js';
@@ -53,7 +54,7 @@ const ENTRANCE_ROUTE=Object.freeze([[2.3,0,2.65],[2.75,0,2.35],[3.4,0,2.15],[3.4
 export const STATION_HOME_LAYOUT=Object.freeze({...STATION_ROOM,
  door:[3.4,H,-2.9],entranceRoute:ENTRANCE_ROUTE,
  hatHook:{position:[1.0,H+1.6,.66],yaw:0},
- table:[2.85,H,2.4],tableStand:[2.4,H,2.1],tableSeatHeight:.44,tableSeatYaw:-Math.PI/2,
+ table:[2.85,H,2.4],tableStand:[2.4,H,2.1],tableSeatHeight:.44,tableSeatFront:.22,tableSeatYaw:-Math.PI/2,
  bedAxis:'x',bedside:[.87,H,1.57],bed:[1.8,H+.31,2.72],
  cover:{position:[1.3,H+.37,2.72],width:1.1,length:1.3,axis:'x'}});
 
@@ -111,7 +112,8 @@ export function buildPoliceStationInterior({site,room,reg,collider=()=>{},action
  /** A named mesh of its own: the floors (the building survey reads them by name) and the few things a test looks for. */
  const named=(parent,name,size,pos,color)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),new THREE.MeshStandardMaterial({color,roughness:.85}));m.name=name;m.position.set(...pos);m.receiveShadow=true;parent.add(m);return m;};
  const spot=(parent,pos,label,kind,title,text)=>{const o=new THREE.Object3D();o.name=label;o.position.set(...pos);parent.add(o);reg(o,label,()=>action(kind,title,text),true);return o;};
- const seat=(o,{position,stand,surfaceY,yaw})=>{o.userData.npcInteraction=false;o.userData.seat={position,stand,surfaceY,eyeY:surfaceY+.76,yaw,pitch:0};return o;};
+ // (`front`: how far ahead of the mark the seat's front edge is; `bench`: a bench's length, for a place per sitter: seat-slots.js)
+ const seat=(o,{position,stand,surfaceY,yaw,front,id,bench})=>{o.userData.npcInteraction=false;const s={id,position,stand,surfaceY,eyeY:surfaceY+.76,yaw,pitch:0,front};o.userData.seat=bench?benchSeat(s,{length:bench,front}):s;return o;};
 
  // ── The shell ──
  // Terrazzo in the lobby, office vinyl behind the counter (you can see where the public side ends), walls with a
@@ -167,7 +169,7 @@ export function buildPoliceStationInterior({site,room,reg,collider=()=>{},action
  // The waiting bench along the street wall beside the doors, under the town map: for whoever is waiting to be seen,
  // or waiting to be collected.
  G.block(0,1.5,.4,.46,2.82,3.24,C.timber);for(const x of [.1,1.4])G.block(x-.05,x+.05,0,.4,2.86,3.2,C.steel);solid(0,1.5,2.8,3.25,0,.46);
- seat(spot(ground,[.75,.8,2.55],'Sit on the waiting bench','seat','Waiting bench','A long wooden bench by the door. Children waiting to be collected kick their heels against it; the varnish is worn where they do.'),{position:[.75,0,3.0],stand:[.75,0,2.35],surfaceY:.46,yaw:0});
+ seat(spot(ground,[.75,.8,2.55],'Sit on the waiting bench','seat','Waiting bench','A long wooden bench by the door. Children waiting to be collected kick their heels against it; the varnish is worn where they do.'),{id:'police-waiting-bench',position:[.75,0,3.0],stand:[.75,0,2.35],surfaceY:.46,yaw:0,front:.18,bench:1.5});
  G.sign(townMap(),1.4,.94,.75,1.6,B.maxZ-.03,{ry:Math.PI,name:'Town map',edge:C.timberDark,depth:.02});
  spot(ground,[.75,1.5,2.4],'Read the town map','read','Town map','Minato on one sheet, for the visitors who come in to ask the way: the harbour and the ferry at the top, Sakura across Main Street, Harbour Park and Umi-no-yu to the east, the town hall behind the station, and Kitahama’s lanes to the south. The red dot by Main Street says You Are Here.');
 
@@ -278,7 +280,7 @@ export function buildPoliceStationInterior({site,room,reg,collider=()=>{},action
  U.box(.44,.05,.42,2.85,y2+.42,2.4,C.timber);for(const [dx,dz] of [[-.18,-.18],[.18,-.18],[-.18,.18],[.18,.18]])U.box(.04,.42,.04,2.85+dx,y2+.21,2.4+dz,C.timberDark);U.box(.05,.42,.42,2.62,y2+.68,2.4,C.timber);
  const work=sleepHours({name:'Officer Mori'});
  spot(upper,[3.45,y2+1.0,2.4],'Read Officer Mori’s notebook','read','Officer Mori’s notebook','Patrol from '+time(1320)+' to '+time(360)+'. Sleep '+time(work.sleep)+' to '+time(work.wake)+'. Desk from 16:00. Supper from Sakura (Thuan says the curry bun).\nUmi-no-yu after the patrol, before bed.\nWash the car on Sunday.\nThe child’s green bicycle: still nobody. Ask at the school.');
- seat(spot(upper,[2.3,y2+.9,1.9],'Sit at Officer Mori’s desk','seat','Officer Mori’s desk','His chair at the window over the bus plaza. From here he can see the bus come in and the yard where the car is.'),{position:[2.85,y2,2.4],stand:[2.4,y2,2.1],surfaceY:y2+.44,yaw:-Math.PI/2});
+ seat(spot(upper,[2.3,y2+.9,1.9],'Sit at Officer Mori’s desk','seat','Officer Mori’s desk','His chair at the window over the bus plaza. From here he can see the bus come in and the yard where the car is.'),{position:[2.85,y2,2.4],stand:[2.4,y2,2.1],surfaceY:y2+.44,yaw:-Math.PI/2,front:STATION_HOME_LAYOUT.tableSeatFront});
  // The clothes rail with the spare uniform, and the peg on the partition where his cap hangs when he is home.
  U.rod([-3.6,y2+1.75,.8],[-2.2,y2+1.75,.8],.02,C.grey);U.box(.5,.7,.08,-3.2,y2+1.35,.82,C.khaki);U.box(.35,.9,.06,-2.6,y2+1.25,.84,C.navy);
  for(const x of [-3.65,-2.15])U.rod([x,y2,.8],[x,y2+1.75,.8],.018,C.grey);solid(-3.7,-2.1,.7,.9,y2,y2+1.8);

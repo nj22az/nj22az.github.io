@@ -40,7 +40,7 @@ export function buildVyFamilyHome({room,reg,action,collider=()=>{},exit=()=>{}})
  // Thuan's weekday guest bedding went with her weekday room (docs/CAST-CONSOLIDATION.md addendum 4): the household is
  // Thao, Chin and Vy, each with their own futon, and the floor by the kitchen is clear.
  const homeLayouts={};
- for(const [name,x,c] of [['Thao',-2.5,0x63817e],['Chin',-1.3,0x526d8d]])homeLayouts[name]={...VY_HOME_LAYOUT,...kit.futon(x,-1.55,c,'Futon '+name),table:[-.9,0,name==='Thao'?1.98:.52],tableStand:[.2,0,.7],tableSeatHeight:.07,tableSeatYaw:name==='Thao'?0:Math.PI,door:[0,0,2.2]};
+ for(const [name,x,c] of [['Thao',-2.5,0x63817e],['Chin',-1.3,0x526d8d]])homeLayouts[name]={...VY_HOME_LAYOUT,...kit.futon(x,-1.55,c,'Futon '+name),table:[-.9,0,name==='Thao'?1.98:.52],tableStand:[.2,0,.7],tableSeatHeight:.07,tableSeatFront:.225,tableSeatYaw:name==='Thao'?0:Math.PI,door:[0,0,2.2]};
  const members=householdAtHome('kitahama-1').members,details=householdDetails(members);
  addFamilyPhoto(box,{x:-3.14,z:.2,westWall:true,members});
  details.slice(0,2).forEach((detail,i)=>addPersonalObject(box,{x:-1.1+i*.4,y:.552,z:1.2,detail,scale:.65}));
@@ -89,7 +89,7 @@ export function buildVyFamilyHome({room,reg,action,collider=()=>{},exit=()=>{}})
  box([.34,.08,.009],[1.9,1.33,-2.674],0x75a9b1,'Drawing sea');
  box([.12,.07,.01],[1.9,1.43,-2.667],0xd69762,'Drawing ferry');
  reg(paper,'Look at Vy’s drawing',()=>action('inspect','The ferry, by Vy','A drawing of the Minato Maru for the school wall. She has counted every window. Chin says the engine is missing; Vy says it is inside.'),true);
- homeLayouts.Vy={...VY_HOME_LAYOUT,...vyBed,table:[2.32,0,-.65],tableStand:[1.95,0,-.65],tableSeatHeight:.38,tableSeatYaw:-Math.PI/2,door:[.9,0,-.1]};
+ homeLayouts.Vy={...VY_HOME_LAYOUT,...vyBed,table:[2.32,0,-.65],tableStand:[1.95,0,-.65],tableSeatHeight:.38,tableSeatFront:.19,tableSeatYaw:-Math.PI/2,door:[.9,0,-.1]};
  registerHomeSeats({parent:group,reg,action,layouts:homeLayouts});
  group.add(new THREE.HemisphereLight(0xffefdc,0x887768,1.25));
  anchor(VY_HOME_LAYOUT.exit,'Leave the family home',exit);

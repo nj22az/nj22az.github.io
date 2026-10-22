@@ -66,7 +66,10 @@ vec3 skirtSurfacePoint(vec3 p,vec3 rest){
  // knees in front and the seat behind, rather than rotating a whole hoop.
  float radial=max(length(vec2(rest.x*uTorso.y/uTorso.x,rest.z)),1e-6);
  float face=clamp(rest.z/radial,-1.,1.);
- vec3 lap=vec3(rest.x,mix(uSkirt.x,(la.y+ra.y)*.5+uLegR[0].x*face-uSkirt.y*.14*max(face,0.),down),rest.z*(1.-.75*down*max(face,0.))+uSkirt.y*down*1.12*max(face,0.));
+ // (a long skirt reaches past the knees: what is left of it past them falls over the shins, rather than standing out
+ // in front like a tray)
+ float reach=uSkirt.y*down*1.12,knee=max((lb.z+rb.z)*.5,0.)+uLegR[0].x,over=max(reach-knee,0.);
+ vec3 lap=vec3(rest.x,mix(uSkirt.x,(la.y+ra.y)*.5+uLegR[0].x*face-uSkirt.y*.14*max(face,0.),down)-over*max(face,0.),rest.z*(1.-.75*down*max(face,0.))+min(reach,knee)*max(face,0.));
  h=mix(h,lap,smoothstep(.6,1.3,angle));
  h=(uHipsInv*vec4(h,1.)).xyz;
  return mix(h,p,.06*down);
@@ -132,7 +135,8 @@ export function createTowelFit(avatar,mesh){
    const side=THREE.MathUtils.clamp(rest.x/Math.max(u.uTorso.value.x,1e-6),-1,1),hip=(a.y+q.y)*.5;
    h.set(rest.x,u.uTorsoY.value.y+y*c+rest.z*sn*THREE.MathUtils.lerp(1,.4,THREE.MathUtils.smoothstep(angle,.3,1.3)),rest.z*c-y*sn+side*(ab.z-d.z)*.22*down*down);
    const radial=Math.max(Math.hypot(rest.x*u.uTorso.value.y/u.uTorso.value.x,rest.z),1e-6),face=THREE.MathUtils.clamp(rest.z/radial,-1,1);
-   q.set(rest.x,THREE.MathUtils.lerp(S.x,hip+u.uLegR.value[0].x*face-S.y*.14*Math.max(face,0),down),rest.z*(1-.75*down*Math.max(face,0))+S.y*down*1.12*Math.max(face,0));
+   const reach=S.y*down*1.12,knee=Math.max((b.z+d.z+q.z)*.5,0)+u.uLegR.value[0].x,over=Math.max(reach-knee,0);
+   q.set(rest.x,THREE.MathUtils.lerp(S.x,hip+u.uLegR.value[0].x*face-S.y*.14*Math.max(face,0),down)-over*Math.max(face,0),rest.z*(1-.75*down*Math.max(face,0))+Math.min(reach,knee)*Math.max(face,0));
    h.lerp(q,THREE.MathUtils.smoothstep(angle,.6,1.3)).applyMatrix4(u.uHipsInv.value);
    p.lerp(h,1-.06*down);
   }

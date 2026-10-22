@@ -93,3 +93,69 @@ Main is at #325 or later. The branch `claude/dreamy-gates-zq8kvo` is restarted f
   writing `things`.
 - **Killing browsers.** Never `pkill -f` a pattern that also matches your own shell command; that kills the shell.
   Use a bracketed pattern such as `pkill -f "[t]own-hall-zone"`.
+
+## Added by the owner, 21 October, late
+
+The owner asked for these three to go into the handoff. Do them in a fresh session, in this order.
+
+1. **A Bluetooth controller doesn't work when playing on Linux.**
+   - Reproduce from the code path first:
+     - the Electron shell in `steam-deck/` (branch `codex/johansson-world-steam-deck`);
+     - the controller mapping and repair code;
+     - the Gamepad API (`navigator.getGamepads`), and whether Electron needs a flag or permission for HID/Bluetooth
+       pads;
+     - the `controller-repair` smoke.
+   - Likely suspects:
+     - a pad that connects after the page has loaded and is never picked up (no `gamepadconnected` handling, or
+       polling of index 0 only);
+     - a non-standard mapping (`mapping !== 'standard'`) that is ignored;
+     - the Steam Input / SDL layer hiding the pad from Chromium.
+   - Ask the owner which controller and Linux distribution if it isn't clear (Steam Deck desktop mode or another PC).
+   - Fix it, add a test with a fake late-connecting non-standard pad, and ship it in the next Linux release.
+2. **The izakaya: Thao should fetch drinks from the bottles on the back bar.** Thao serves at Minato Izakaya. The
+   owner: "it's better if the bottles in the izakaya bar desk is where Thao gets the drink for the person who orders…
+   beer and drinking works nice, now she just brings by magic".
+   - When someone orders, she:
+     - walks to the back bar (Codex fitted the walnut back bar with 42 bottles in #318);
+     - takes the right bottle, or pulls the beer at the tap if there is one;
+     - pours at the counter;
+     - carries the glass to the customer.
+   - The bottle she uses is the brand on the shelf the order names. No drink appears out of nowhere.
+   - Keep the existing "beer and drinking" animations, which the owner likes.
+   - Collisions intact: her hands meet the bottle and the glass, nothing passes through the counter.
+   - Web: a simple version of the walk and pour. Linux: the full one.
+3. **A clipping prop on the izakaya counter.** In the owner's photo (`owner-shots/izakaya-counter-2026-10-21.jpg`),
+   on a wooden cutting board, are two small cream bowls drawn into each other, merged as one. The owner: "whatever
+   that is, maybe it needs to be split".
+   - Find it (the counter dressing from #318 or the izakaya dressing).
+   - Split them into two separate bowls side by side that don't intersect. Give them a purpose: e.g. otōshi
+     (the small dish served with the first drink) waiting to go out.
+   - Check the knife lies on the board, not in it.
+   - Add the izakaya counter to the no-z-fighting / overlap checks.
+
+4. **Sitting: two people on one bench, and no clipping when seated.** In the owner's photo
+   (`owner-shots/bench-sitting-2026-10-21.jpg`, a resident in a skirt on a park bench at night, on Linux), the hands pass
+   through the skirt and the legs pass through the bench. The owner: "two people should be able to sit together on a
+   bench, and the avatars need better animation her hands shouldn't clip through the skirt and the legs shouldn't clip
+   through the bench".
+   - **Two seats per bench.** Give every bench two (or, by length, more) seat slots in the seat data (see
+     `tests/seat-layouts.test.mjs` and the bench builders). Each slot has its own position and facing.
+     - Two residents, or a resident and the player, sit side by side without overlapping.
+     - Sitting beside someone is also a storyteller moment and a chance for a pair pose. Reuse the pair-pose work
+       (`pair-poses.js`).
+   - **Seated pose fits the body and the seat.**
+     - The thighs rest on the seat top, the knees bend over its front edge and the shins hang in front of it, never
+       through it. The pose comes from the seat's height and depth, not a fixed angle.
+     - The hands rest on the lap or the seat edge outside the skirt's volume. Skirts, dresses and long shirts get a
+       seated shape, or the hands are placed on top of the cloth.
+     - Check every outfit category: skirt, shorts, trousers, dress.
+   - **Tests.**
+     - A seated-pose collision test: for every outfit and every seat type (bench, chair, zabuton, stool), no hand or arm
+       vertex inside the garment volume, and no leg inside the seat solid. Contact is allowed to a few millimetres,
+       like the film collision rule in jojo/CLAUDE.md.
+     - A two-on-a-bench test.
+     - Add both to `tests/ci-guard.txt`.
+   - **Photos.** Before and after of the owner's spot at night, two people on one bench, and a skirt, trousers and a
+     dress seated.
+
+The ferry timetable (`briefs/ferry-timetable.md`) is also ready to build. The owner approved it.

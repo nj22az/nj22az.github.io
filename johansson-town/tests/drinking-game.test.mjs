@@ -12,7 +12,7 @@ function fixture(seat=IZAKAYA_PLAYER_SEATS.counter2,name='Johansson'){
  const scene=new THREE.Scene(),room=new THREE.Group();scene.add(room);
  const actor=createAvatarJohansson({scene,recipe:recipeFor(name)});
  actor.root.position.set(...seat.position);actor.root.rotation.y=seat.yaw;
- const state={seated:true,seatHeight:seat.surfaceY,visible:true};
+ const state={seated:true,seatHeight:seat.surfaceY,seatFront:seat.front,visible:true};
  for(let i=0;i<60;i++)actor.update(1/60,state);
  const service=createBeerService({room,getNao:()=>new THREE.Group()});service.place('draft',seat);
  return {scene,room,actor,state,service,dispose(){actor.cancelTableDrink();service.clear();actor.avatar.dispose();}};

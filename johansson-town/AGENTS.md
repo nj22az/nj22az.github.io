@@ -224,3 +224,19 @@ she sails, he crosses with her and can walk her decks or go below. If he misses 
 he takes the small quick crossing to Kitano-jima, which stays on request. The chief's watch is Nils's only while he is
 aboard in his working hours; otherwise Mac has it. Nothing in the ship's day depends on the player. The brief is
 `briefs/ferry-timetable.md`.
+
+## Owner's request — 21 October 2026: Thao gets every drink from where it is kept
+
+The owner: "it's better if the bottles in the izakaya bar desk is where Thao gets the drink for the person who orders…
+beer and drinking works nice, now she just brings by magic". Every drink at Minato, yours or a resident's, is made from
+where it is kept (`src/world/interiors/minato-bar.js`, its places and their reasons as data; the round in
+`src/people/izakaya-bar.js`): a clean glass off the rack on the worktop, the Orion tap beside it, the house awamori (the
+back bar's own Sango Quay, the bottle in use standing at the front of the back counter, its place on the middle shelf
+empty), the cold store's upper compartment (the big bottles with a chilled glass, the cans, the oolong jug; the door
+opens to 60° with her hand on its pull), the sake set by the range. The glass set down in front of you is the one she
+took. Thao's arm is short (her shoulder is 0.93 m up) and the counter and worktop together are 1.2 m deep, so nothing is
+handed across them: she comes round the end of the counter and sets the drink down beside your stool, or at the booth
+table's nearer end. Her hands meet what they take and nothing passes through the furniture (`src/avatars/work-hands.js`,
+`tests/izakaya-bar.test.mjs`); on Linux the bottle tips over the glass with its stream and the tap's lever is pulled
+(`BUDGET.pouring`), on the web the glass fills as she holds the bottle over it. Dishes are cooked as before; a resident's
+food still appears with their drink.

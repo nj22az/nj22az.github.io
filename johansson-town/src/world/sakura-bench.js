@@ -2,6 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
 import {registerDetail} from './detail-stream.js';
+import {benchSeat} from './seat-slots.js';
 
 // Cedar bench at Harbour Park's quiet western edge, looking across at Sakura Shōten.
 export const SAKURA_SHOP=Object.freeze({x:-7.45,z:-26.8});
@@ -13,7 +14,11 @@ export const SAKURA_BENCH_PLACE=Object.freeze({
   eyeY:1.16,
   surfaceY:.4675,
   sitLocal:[0,0,-.08],
-  standLocal:[0,0,-1.45]
+  standLocal:[0,0,-1.45],
+  // The cedar seat (models/street/sakura-bench.glb): its top runs 1.62 m long, from 0.265 m in front of the bench's middle
+  // to 0.154 m behind it, so its front edge is 0.185 m ahead of the sitter's mark.
+  length:1.62,
+  front:.185
 });
 
 let source=null,pending=null;
@@ -48,7 +53,8 @@ export function sakuraBenchSeat(){
     eyeY:SAKURA_BENCH_PLACE.eyeY,
     surfaceY:SAKURA_BENCH_PLACE.surfaceY,
     yaw:SAKURA_BENCH_PLACE.yaw,
-    pitch:SAKURA_BENCH_PLACE.pitch
+    pitch:SAKURA_BENCH_PLACE.pitch,
+    front:SAKURA_BENCH_PLACE.front
   };
 }
 
@@ -85,7 +91,7 @@ export function buildSakuraBench(world,{shadows=false,register,onAction,factory}
   world.colliders.push({id:'sakura-bench',x:x+Math.sin(yaw)*offset,z:z+Math.cos(yaw)*offset,w:1.78,d:.64,yaw,height:.91,minY:0});
   const seat=sakuraBenchSeat();
   const marker=new THREE.Object3D();marker.name='sakura-bench-seat';
-  marker.position.set(seat.position[0],1,seat.position[2]);marker.userData.seat=seat;
+  marker.position.set(seat.position[0],1,seat.position[2]);marker.userData.seat=benchSeat(seat,SAKURA_BENCH_PLACE);
   world.group.add(marker);
   register?.(marker,'Sit and look at Sakura',()=>onAction?.('seat','Sakura viewing bench','A cedar bench across the street from Sakura Shōten.'));
   world.sakuraBench={object,marker,seat,source:source?'blender':'procedural'};

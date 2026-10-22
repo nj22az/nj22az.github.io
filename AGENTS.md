@@ -9,6 +9,16 @@ Read the existing `CLAUDE.md` and any instructions in the directory being change
 
 These supplement the owner's instructions and existing project rules. They do not authorise unrelated work or override the owner's stated decisions.
 
+## Handover: required at the start and end of every task
+
+These instructions apply to every agent working in this repository.
+
+1. **Before starting work**, read [HANDOVER.md](HANDOVER.md), then the latest applicable handover it links to and any newer notes for the area being changed. Check dates and Git history when several notes exist; do not assume an older note is current because it was supplied in a previous conversation. Follow any additional handovers required by directory instructions.
+2. Verify the relevant branch, PR, check and release state against the repository before acting. Handovers preserve context; newer owner decisions and verified repository state take precedence.
+3. **Before finishing or handing work to another agent**, update the applicable handover with what changed, exact branches/commits/PRs, checks actually run and their results, remaining problems or verification limits, and the next concrete actions. Do this for completed, partial and blocked work. Clearly distinguish planned, open, merged and published work; never imply an unrun check or physical-device test passed.
+4. Keep [HANDOVER.md](HANDOVER.md) pointing to the latest notes. If a new dated handover supersedes an old one, update its pointer in the same change and preserve useful history. If no handover exists for the work area, create one and link it there. Re-read the current version before writing so concurrent agents' updates are preserved.
+5. Include the handover update in the work delivered for review and link it in the final response. If access prevents updating it, state that explicitly and provide the pending handover text instead of silently omitting it.
+
 ## Animation, character performances and films
 
 Read [ANIMATION_DIRECTION.md](ANIMATION_DIRECTION.md) when working on animated performances, scene/film direction or rendering. It adapts the owner's supplied *Opus 5.5 promt.pdf* for both Claude and Codex: timed briefs, a reproducible timeline, readable acting/cameras, contact checks, measured picture/sound review and honest reporting. Its offline film settings do not replace the interactive game's device budgets or existing character system.

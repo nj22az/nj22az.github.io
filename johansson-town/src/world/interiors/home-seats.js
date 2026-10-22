@@ -5,7 +5,7 @@ export function registerHomeSeats({parent,reg,action,layouts={},extra=[]}){
  const seen=new Set();
  const seats=[...Object.entries(layouts).map(([name,layout])=>({
   label:'Sit at '+name+'’s table',position:layout.table,stand:layout.tableStand||layout.table,
-  surfaceY:(layout.tableSeatHeight??.41)+(layout.table?.[1]||0),yaw:layout.tableSeatYaw??0,
+  surfaceY:(layout.tableSeatHeight??.41)+(layout.table?.[1]||0),yaw:layout.tableSeatYaw??0,front:layout.tableSeatFront,
  })),...extra];
  for(const seat of seats){
   if(!seat.position)continue;

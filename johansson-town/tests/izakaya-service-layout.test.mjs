@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {circleHitsRect,standingHitsRect} from '../physics.js';
 import {createBeerService,IZAKAYA_PLAYER_SEATS,KITCHEN_STATIONS,NAO_STATION} from '../src/people/izakaya-beer.js';
+import {buildMinatoBar} from '../src/world/interiors/minato-bar.js';
 import {createVenueService} from '../src/people/venue-service.js';
 import {IZAKAYA_GUEST_SEATS} from '../src/people/indoor-residents.js';
 import {createIzakayaGuests} from '../src/people/izakaya-guests.js';
@@ -15,21 +16,26 @@ import {suppliedRoomBoundsBlocked} from '../src/world/supplied-rooms.js';
 
 const layout={bounds:SHARED_DINING_BOUNDS,floorPolygon:SHARED_DINING_FLOOR};
 const roomBlocked=(x,z,r)=>suppliedRoomBoundsBlocked(layout,x,z,r)||SHARED_DINING_COLLIDERS.some(c=>standingHitsRect(x,z,r,0,c));
+// Stepped in beside a counter stool to set a drink down, she is checked against the stools as they are (the cushion's
+// 0.195 m radius, build-minato-compact.py), not the walkers' 0.6 m squares: 0.41 m between two stools for her body.
+roomBlocked.closeUp=(x,z,r)=>suppliedRoomBoundsBlocked(layout,x,z,r)||SHARED_DINING_COLLIDERS.some(c=>c.id==='minato-stool'?Math.hypot(x-c.x,z-c.z)<.195+r:standingHitsRect(x,z,r,0,c));
 
 function fixture(blocked){
  const room=new THREE.Group(),nao=new THREE.Group();nao.position.set(...NAO_STATION);
  const [x,,z]=NAO_STATION,bounds={minX:x-4,maxX:x+4,minZ:z-3,maxZ:z+3};
- const service=createBeerService({room,getNao:()=>nao,blocked,bounds});
+ const service=createBeerService({room,getNao:()=>nao,blocked,bounds,bar:buildMinatoBar(room)});
  return {room,nao,service};
 }
 
 function tick(f,seconds,blocked,onStep=()=>{}){
- for(let i=0;i<seconds*30&&f.service.pending;i++){
+ for(let i=0;i<seconds*30&&(f.service.pending||f.service.working);i++){
   const before=f.nao.position.clone();f.service.update(1/30);
-  // The whole step must be clear, not just its endpoints.
+  // The whole step must be clear, not just its endpoints: by her walker's 0.3 m, and stepped in to work at a place
+  // (minato-bar.js, izakaya-beer.js `close`) by her body's 0.13 m.
+  const close=!!f.service.working?.close,r=close?.13:.3;
   for(let k=1;k<=5;k++){
    const x=before.x+(f.nao.position.x-before.x)*k/5,z=before.z+(f.nao.position.z-before.z)*k/5;
-   assert.equal(blocked(x,z,.3),false,`Thao crossed a solid at ${x.toFixed(3)}, ${z.toFixed(3)}`);
+   assert.equal((close&&blocked.closeUp||blocked)(x,z,r),false,`Thao crossed a solid at ${x.toFixed(3)}, ${z.toFixed(3)}`);
   }
   onStep(f.nao);
  }
@@ -54,7 +60,8 @@ test('Thao routes around furniture between authored service points',()=>{
  const [x,,z]=NAO_STATION,obstacle={x:x-1,z,w:.5,d:1.2};let checks=0;
  const blocked=(px,pz,r)=>circleHitsRect(px,pz,r,obstacle);
  const f=fixture((...args)=>{checks++;return blocked(...args);}),seat={table:[x-2,.72,z+.5],serve:[x-2,0,z],route:[[x-2,z]]};
- assert.equal(f.service.order('draft',seat),true);
+ // A dish from the range: the same walk to an authored point (a drink's round is izakaya-bar.test.mjs's).
+ assert.equal(f.service.order('dashimaki',seat),true);
  let detour=0;tick(f,90,blocked,g=>{detour=Math.max(detour,Math.abs(g.position.z-z));});
  assert.ok(checks>0,'service consults the same collision predicate as the room');
  assert.ok(detour>=.9,'the staff clearance circle goes around the whole obstacle');
@@ -69,7 +76,7 @@ test('every compact seat is served and every kitchen station works against the c
   ...['yakitori','oden','dashimaki','karaage','edamame'].map(kind=>[kind,IZAKAYA_PLAYER_SEATS.window])];
  for(const [kind,seat] of cases){
   const room=new THREE.Group(),nao=new THREE.Group();nao.position.set(...NAO_STATION);
-  const service=createBeerService({room,getNao:()=>nao,blocked:roomBlocked});
+  const service=createBeerService({room,getNao:()=>nao,blocked:roomBlocked,bar:buildMinatoBar(room)});
   assert.equal(roomBlocked(nao.position.x,nao.position.z,.3),false,'Thao starts on clear floor');
   assert.equal(service.order(kind,seat),true);tick({service,nao},120,roomBlocked);
   assert.equal(service.pending,null,`${kind} reaches ${seat.id} and Thao returns`);
@@ -137,7 +144,7 @@ test('a blocked service point waits safely and replans when it opens',()=>{
  const [x,,z]=NAO_STATION,target=[x-2,z],obstacle={x:target[0],z:target[1],w:.5,d:.5};let closed=true;
  const blocked=(px,pz,r)=>closed&&circleHitsRect(px,pz,r,obstacle);
  const f=fixture(blocked),seat={table:[target[0],.72,target[1]+.5],serve:[target[0],0,target[1]],route:[target]};
- assert.equal(f.service.order('draft',seat),true);tick(f,12,blocked);
+ assert.equal(f.service.order('dashimaki',seat),true);tick(f,90,blocked);
  assert.equal(f.service.pending?.phase,'carrying');
  assert.equal(f.service.served,0,'an unreachable approach cannot deliver through furniture');
  closed=false;tick(f,60,blocked);
@@ -150,10 +157,10 @@ test('the final few centimetres of a service approach are collision checked',()=
  const [x,,z]=NAO_STATION;let closed=true;
  const blocked=px=>closed&&px>x+.04;
  const f=fixture(blocked),seat={table:[x+.08,.72,z+.5],serve:[x+.08,0,z],route:[[x+.08,z]]};
- assert.equal(f.service.order('draft',seat),true);tick(f,8,blocked);
+ assert.equal(f.service.order('dashimaki',seat),true);tick(f,8,blocked);
  assert.equal(f.service.served,0,'being within the room walker arrival tolerance is insufficient');
  assert.ok(f.nao.position.x<=x+.04);
- closed=false;tick(f,30,blocked);
+ closed=false;tick(f,90,blocked);
  assert.equal(f.service.pending,null);
  assert.equal(f.service.served,1);
  f.service.clear();

@@ -37,6 +37,18 @@ function sit(recipe,outfit,state,frames=60){
  const step=(st,n=1)=>{for(let i=0;i<n;i++){own(()=>animator.update(1/60,st));avatar.springs?.update(1/60);}holder.updateMatrixWorld(true);};
  step(state,frames);return {avatar,animator,holder,step,m:avatar.measure};
 }
+/** The lap as it is drawn (world): the thighs and what is worn on them, and the cloth of a skirt or a dress lying on it where
+ *  the fit puts it (towel-fit.js kind 2), not the rest of the body. */
+function lapSurface(avatar){
+ const out=[],p=new THREE.Vector3(),rest=new THREE.Vector3();avatar.root.updateMatrixWorld(true);
+ for(const mesh of avatar.root.children.filter(o=>o.isSkinnedMesh&&o.visible&&!o.name.includes('outline'))){
+  const g=mesh.geometry,P=g.attributes.position,I=g.attributes.skinIndex,F=g.attributes.towelFit,fit=F&&mesh.towelFit,names=mesh.skeleton.bones.map(b=>b.name);
+  if(fit)fit.refresh();
+  for(let i=0;i<P.count;i++){const cloth=!!fit&&F.getX(i)>1.5;if(fit&&!cloth&&F.getX(i)>.5)continue;if(!cloth&&!/^thigh[LR]$/.test(names[I.getX(i)]))continue;
+   mesh.getVertexPosition(i,p);if(cloth)fit.fitPoint(p,F.getX(i),rest.fromBufferAttribute(P,i));out.push(p.clone().applyMatrix4(mesh.matrixWorld));}
+ }
+ return out;
+}
 /** Each foot's lowest drawn point (the back of the heel when the toes are up). */
 const heels=b=>['L','R'].map(s=>Math.min(...surface(b.avatar,{only:n=>n==='foot'+s}).map(q=>q.p.y)));
 /** Which way a bone's own axis points in the world. */
@@ -85,10 +97,14 @@ test('the mittens rest on the thighs, or (arms too short for that over a round b
   const b=sit(recipe,outfit,{seated:true,seatHeight:0}),m=b.m,q=new THREE.Vector3(),vol=bodyVolume(b.avatar.recipe,m);
   const frames=[['hips',m.hipY],['chest',m.chestY]].map(([n,y])=>[b.avatar.bones[n].matrixWorld.clone().invert(),y]);
   const torso=p=>Math.min(...frames.map(([inv,y])=>{const v=p.clone().applyMatrix4(inv);v.y+=y;return vol.sdf(v);}));
-  const near=[];
+  const near=[],lap=lapSurface(b.avatar);
   for(const s of ['L','R']){
    const thigh=new THREE.Line3(b.avatar.bones['thigh'+s].getWorldPosition(new THREE.Vector3()),b.avatar.bones['knee'+s].getWorldPosition(new THREE.Vector3()));
-   const pts=surface(b.avatar,{only:n=>n==='hand'+s}).map(({p})=>p),d=Math.min(...pts.map(p=>thigh.closestPointToPoint(p,true,q).distanceTo(p)-m.legR*1.15));
+   const pts=surface(b.avatar,{only:n=>n==='hand'+s}).map(({p})=>p),mid=pts.reduce((a,p)=>a.add(p),new THREE.Vector3()).multiplyScalar(1/pts.length);
+   // (on the thigh, or on what is worn over it under the mitten: shorts, a skirt's or a dress's cloth on the lap; the mitten
+   // lies on them, not in them, seated-pose.test.mjs)
+   const worn=Math.max(m.legR*1.15,...lap.filter(p=>p.y<mid.y&&Math.hypot(p.x-mid.x,p.z-mid.z)<m.hand*.6).map(p=>{const t=thigh.closestPointToPointParameter(p,false);return t>.05&&t<.95?thigh.at(t,q).distanceTo(p):0;}));
+   const d=Math.min(...pts.map(p=>thigh.closestPointToPoint(p,true,q).distanceTo(p)-worn));
    assert.ok(Math.min(...pts.map(torso))>-.002,`${name}: the ${s} mitten in the body`);
    // on the thigh: over it, on it (on the cloth over it: a robe's or a skirt's) and not in it
    const hip=thigh.start,c=pts.reduce((a,p)=>a.add(p),new THREE.Vector3()).multiplyScalar(1/pts.length);
