@@ -17,7 +17,8 @@ import {HARBOUR_BENCH_DIMENSIONS} from '../src/world/harbour-bench-dimensions.js
 function validateSeats(root,targets,colliders,{streamed=new Set()}={}){
  root.updateMatrixWorld(true);
  const ray=new THREE.Raycaster();
- for(const {object,label} of targets){
+ // (a bench's places, seat-slots.js, each as a seat of its own: on the bench, with somewhere clear to stand up to)
+ for(const {object,label} of targets.flatMap(t=>[t,...(t.object.userData.seat?.slots||[]).map(slot=>({object:{userData:{seat:{...t.object.userData.seat,...slot}}},label:t.label+' place '+slot.slot}))])){
   const seat=object.userData.seat;if(!seat)continue;
   assert.ok(Number.isFinite(seat.surfaceY),label+' has an authored support surface');
   assert.ok(seat.position.every(Number.isFinite)&&seat.stand.every(Number.isFinite),label+' has finite seat and stand positions');
@@ -25,7 +26,7 @@ function validateSeats(root,targets,colliders,{streamed=new Set()}={}){
   const [x,y,z]=seat.stand;
   const blockers=colliders.filter(c=>(c.minY??0)<y+1.6&&(c.minY??0)+(c.height??10)>y+.2&&circleHitsRect(x,z,.25,c));
   assert.equal(blockers.length,0,label+' can stand clear of solid furniture');
-  if(streamed.has(label))continue;
+  if(streamed.has(label.replace(/ place \d+$/,'')))continue;
   ray.set(new THREE.Vector3(seat.position[0],seat.surfaceY+.025,seat.position[2]),new THREE.Vector3(0,-1,0));ray.far=.08;
   const hit=ray.intersectObject(root,true).find(h=>h.face?.normal.clone().transformDirection(h.object.matrixWorld).y>.65);
   assert.ok(hit,label+' sits over a physical surface');
@@ -61,6 +62,12 @@ test('every outdoor public seat has physical support and a clear standing point'
  ];
  assert.deepEqual(seats.map(t=>t.object.userData.seat.id||t.label).sort(),expected.sort(),'Every retained public bench, bath seat and airport gate offers its seat');
  validateSeats(world.group,seats,world.colliders,{streamed:new Set(['Soak your feet in the footbath','Cool off on the bench'])});
+ // Every public bench seats two side by side (the owner, 21 October 2026), or more by its length; where its front edge is
+ // goes with it (seatFront). Higa Liquor's bench is two places already (YUNTAKU: Tetsuo's and this), the footbath's rim,
+ // the beach chairs and Umi-no-yu's bench are single seats.
+ const single=new Set(['beach-chair-0','beach-chair-1','Soak your feet in the footbath','Cool off on the bench','higa-yuntaku-bench','Sit on the staff bench']);
+ for(const t of seats){const s=t.object.userData.seat,key=s.id||t.label;if(single.has(key))continue;
+  assert.ok(s.slots?.length>=2,key+' seats two side by side');assert.ok(s.front>0&&s.front<.35,key+' says where its front edge is');}
  assert.equal(PARK_BENCH.yaw,Math.PI/2,'Harbour bench faces away from its east backrest');
  assert.equal(PARK_BENCH.surfaceY,.02+HARBOUR_BENCH_DIMENSIONS.seatHeight,'The measured bench stands on the level park ground');
  const kitahama=seats.find(t=>t.object.userData.seat.id==='kitahama-park-bench');assert.equal(kitahama.object.userData.seat.yaw,Math.PI/2);

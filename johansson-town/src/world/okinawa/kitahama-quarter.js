@@ -1,4 +1,5 @@
 import {KITAHAMA,KITAHAMA_HEIGHTS} from '../kitahama-layout.js';
+import {benchSeat} from '../seat-slots.js';
 import {plotGate} from './layout.js';
 import {poster,nameplate} from './signs.js';
 import {gajumaru,potPlant,hibiscus,blockWall} from './houses.js';
@@ -171,7 +172,7 @@ function buildPark(kit,solid,{anchor,onAction,vending}){
  solid(kit.rect(bx-.25,bx+.3,bz-.8,bz+.8,.9,'park-bench'));
  const seatAt=kit.point(bx,0,bz),standAt=kit.point(bx-.9,0,bz),marker=anchor(seatAt.x,seatAt.y+1,seatAt.z,'Sit on the park bench',()=>onAction?.('seat','Kitahama pocket park',
   'You sit under the gajumaru. A swing creaks behind you, and across Fukugi Lane the drinks machines hum against the Heights’ wall. Somewhere a radio is giving the weather for the outer islands, and somebody is frying onions.'));
- if(marker)marker.userData.seat={id:'kitahama-park-bench',position:[seatAt.x,seatAt.y,seatAt.z],stand:[standAt.x,standAt.y,standAt.z],surfaceY:seatAt.y+.49,eyeY:seatAt.y+1.12,yaw:Math.PI/2,pitch:0};
+ if(marker)marker.userData.seat=benchSeat({id:'kitahama-park-bench',position:[seatAt.x,seatAt.y,seatAt.z],stand:[standAt.x,standAt.y,standAt.z],surfaceY:seatAt.y+.49,eyeY:seatAt.y+1.12,yaw:Math.PI/2,pitch:0},{length:1.5,front:.21});
  // the hibiscus in the corner by the lane, and a pot inside the west rail
  hibiscus(kit,P.maxX-.6,P.maxZ-.6,{seed:271});potPlant(kit,P.minX+.32,P.maxZ-1.3,{seed:272,size:.25});
  // The park's sign on its own two posts by the lane (it hung in the air at chest height until 20 October 2026).

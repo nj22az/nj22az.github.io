@@ -30,6 +30,9 @@ export const STAFF_BENCH=Object.freeze({
  approachRadius:.12,
  height:.47,
  eyeY:1.12,
+ /** The factory bench's seat runs from 0.34 m in front of its middle; the seat's mark is 0.15 m in front of the middle. Her
+  *  nap bench keeps one sitter: she sits in its middle and dozes there. */
+ front:.19,
 });
 
 /**
@@ -80,7 +83,7 @@ export function buildStaffBench({parent,factory,colliders=[],shadows=false,regis
  seat.userData.npcInteraction=false;
  seat.position.set(STAFF_BENCH.seat[0],1.05,STAFF_BENCH.seat[1]);parent.add(seat);
  seat.userData.seat={position:[STAFF_BENCH.seat[0],0,STAFF_BENCH.seat[1]],
-  stand:[STAFF_BENCH.stand[0],0,STAFF_BENCH.stand[1]],surfaceY:STAFF_BENCH.height,eyeY:STAFF_BENCH.eyeY,yaw,pitch:-.04};
+  stand:[STAFF_BENCH.stand[0],0,STAFF_BENCH.stand[1]],surfaceY:STAFF_BENCH.height,eyeY:STAFF_BENCH.eyeY,yaw,pitch:-.04,front:STAFF_BENCH.front};
  register?.(seat,'Sit on the staff bench',()=>onAction?.('seat','Staff bench',
   'Thuan’s bench, at the end of the path round the back. A wall, a strip of sky, and '+
   'twenty minutes of nobody wanting anything.'));

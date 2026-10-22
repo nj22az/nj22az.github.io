@@ -1,4 +1,5 @@
 import {buildFishingBoat,EAST_QUAY_BOAT_LOOKS} from '../harbour-boats.js';
+import {benchSeat} from '../seat-slots.js';
 import {hangingRope} from '../timber-pier.js';
 import {SEA_LEVEL} from '../ocean.js';
 import {SHED_WALKWAY} from '../fujita-layout.js';
@@ -278,7 +279,7 @@ function buildPromenade(kit,solid,{anchor,onAction}){
   for(const dz of [-.65,.65])kit.box(.43,.44,.08,x,.22,z+dz,0x5d6468);
   solid({id:'promenade-bench',x,z,w:.6,d:1.7,height:.8});
   const seat=anchor(x+.6,1,z,'Sit on the seawall bench',()=>onAction?.('seat','Seawall bench','You sit with your back to the town. Over the parapet the reef goes green, then blue; the tetrapods at the foot of the wall break each wave into spray and a long hiss.'));
-  if(seat)seat.userData.seat={id:'seawall-bench-'+z,position:[x,0,z],stand:[x+.85,0,z],surfaceY:.5,eyeY:1.12,yaw:Math.PI/2,pitch:-.03};
+  if(seat)seat.userData.seat=benchSeat({id:'seawall-bench-'+z,position:[x,0,z],stand:[x+.85,0,z],surfaceY:.5,eyeY:1.12,yaw:Math.PI/2,pitch:-.03},{length:1.6,front:.225});
  }
  // The narrow seawall strip is seating and circulation, not a second planting
  // system. The park and walled gardens supply the town's shared broadleaf trees.
@@ -344,7 +345,10 @@ function higaPrompts({anchor,onAction,getMinutes}){
  const P=YUNTAKU.seats.player,seat=private_(anchor(P.at[0]-.55,1,P.at[1],'Sit on the bench outside Higa Liquor',()=>{
   const m=getMinutes(),here=YUNTAKU.sitters.filter(s=>yuntakuSeatAt(s.name,m)).map(s=>s.name);
   onAction?.('seat','Higa Liquor’s bench',here.length?`You sit down at the end of the bench. ${here.join(' and ')} ${here.length>1?'are':'is'} already here with a bottle each, talking about nothing in particular, which is the point.`:'A timber bench and two upturned beer crates in front of the shop. In the evening opening the men sit here with a bottle from the counter.');}));
- if(seat)seat.userData.seat={id:'higa-yuntaku-bench',position:[P.at[0],0,P.at[1]],stand:[P.stand[0],0,P.stand[1]],surfaceY:P.height,eyeY:1.1,yaw:-Math.PI/2,pitch:-.03};
+ // The player's end of the bench; Tetsuo's is the other (YUNTAKU.seats.tetsuo): the bench is two places already. Facing the
+ // street as Tetsuo does (P.yaw), with the shop at the back: it faced the shop's wall, and a body slid forward to the seat's
+ // front edge (seatFront) would have gone into the backrest.
+ if(seat)seat.userData.seat={id:'higa-yuntaku-bench',position:[P.at[0],0,P.at[1]],stand:[P.stand[0],0,P.stand[1]],surfaceY:P.height,eyeY:1.1,yaw:P.yaw,pitch:-.03,front:P.at[0]-(YUNTAKU.bench.x-YUNTAKU.bench.depth/2)};
 }
 /** What the laundry looks like through the glass at this minute: which machines are turning, and whose. */
 function laundryLook(minutes){
@@ -359,7 +363,9 @@ function laundryPrompts({anchor,onAction,getMinutes}){
  at(-.3,-.75,1.6,'Read the coin laundry noticeboard',()=>onAction?.('read','Coin laundry noticeboard',laundryNotices(getMinutes()).map(n=>`${n.title}\n${n.text}`).join('\n\n')));
  at(1.07,-.75,1.0,'Read the manga by the bench',()=>{const m=LAUNDRY_MANGA[Math.floor(getMinutes()/1440)%LAUNDRY_MANGA.length];onAction?.('read',m.title,m.text);});
  const B=LAUNDRY_BENCH.seats[0],seat=at(-.8,-.4,1,'Sit on the coin laundry bench',()=>onAction?.('seat','Coin laundry bench','A blue vinyl bench under the noticeboard, facing the machines. Somebody has left a manga open on it, face down.'));
- if(seat)seat.userData.seat={id:'coin-laundry-bench',position:[B.at[0],0,B.at[1]],stand:[B.stand[0],0,B.stand[1]],surfaceY:B.height+.08,eyeY:1.1,yaw:Math.PI/2,pitch:-.03};
+ // Its two places are the bench's own (LAUNDRY_BENCH.seats), facing the machines (B.yaw): it faced the noticeboard's wall.
+ if(seat)seat.userData.seat=benchSeat({id:'coin-laundry-bench',position:[B.at[0],0,B.at[1]],stand:[B.stand[0],0,B.stand[1]],surfaceY:B.height+.08,eyeY:1.1,yaw:B.yaw,pitch:-.03},
+  {length:LAUNDRY_BENCH.x1-LAUNDRY_BENCH.x0,front:LAUNDRY_BENCH.z1-(LAUNDRY_BENCH.seats[0].at[0]-laundryPoint(0,0)[0]),places:LAUNDRY_BENCH.seats.map(s=>({position:[s.at[0],0,s.at[1]],stand:[s.stand[0],0,s.stand[1]]}))});
 }
 
 function buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes}){
@@ -375,7 +381,7 @@ function buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes}){
  for(const dz of [-.55,.55])kit.box(.36,.42,.06,bx,.21,bz+dz,0x5d6468);
  solid({id:'zenzai-bench',x:bx,z:bz,w:.44,d:1.4,height:.5});
  const seat=anchor(bx-.65,1,bz,'Sit beside Nakamura with your dessert',()=>onAction?.('seat','Nakamura dessert bench','A place in the park breeze for zenzai, warm andagi or an ice-cream cone.'));
- if(seat)seat.userData.seat={id:'nakamura-dessert-bench',position:[bx,0,bz],stand:[bx-.8,0,bz],surfaceY:.49,eyeY:1.12,yaw:-Math.PI/2,pitch:-.03};
+ if(seat)seat.userData.seat=benchSeat({id:'nakamura-dessert-bench',position:[bx,0,bz],stand:[bx-.8,0,bz],surfaceY:.49,eyeY:1.12,yaw:-Math.PI/2,pitch:-.03},{length:1.4,front:.22});
  // The old lane up to the sea bath between the shop-houses is Kitano Road now (kitano-link.js):
  // its stepping stones, lanterns, pot plants and the vending machine made way for the carriageway.
  // Higa Liquor's delivery bicycle, against its own shopfront. It stood on the kerb in the crossing's planter until the

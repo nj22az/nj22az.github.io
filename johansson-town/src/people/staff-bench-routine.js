@@ -25,11 +25,11 @@ export function createStaffBenchRoutine({entity,seat,isOccupied=()=>false}){
  }
  function chairPose(){
   const blend=amount*amount*(3-2*amount);
-  data.socialPose='Sit';data.seatHeight=STAFF_BENCH.height;data.chairBlend=blend;
+  data.socialPose='Sit';data.seatHeight=STAFF_BENCH.height;data.seatFront=STAFF_BENCH.front;data.chairBlend=blend;
   entity.position.x=front[0]-forward[0]*THUAN_CHAIR_STEP*blend;
   entity.position.z=front[1]-forward[1]*THUAN_CHAIR_STEP*blend;
  }
- function clearPose(){for(const key of ['seatHeight','chairBlend','socialPose','sleeping','napping'])delete data[key];}
+ function clearPose(){for(const key of ['seatHeight','seatFront','chairBlend','socialPose','sleeping','napping'])delete data[key];}
  return {get active(){return phase!=='idle';},get phase(){return phase;},update(dt,wantsBreak){
   if(phase==='idle'){
    if(!wantsBreak||!seat||seat.userData.reservedBy||isOccupied()||Math.hypot(entity.position.x-STAFF_BENCH.stand[0],entity.position.z-STAFF_BENCH.stand[1])>STAFF_BENCH.approachRadius)return false;
