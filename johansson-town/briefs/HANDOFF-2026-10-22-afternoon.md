@@ -9,11 +9,11 @@ Nothing to finish there.
 
 ## The owner's three jobs of 22 October
 
-| Job | PR | State when written |
+| Job | PR | State |
 |---|---|---|
-| 1. Seated poses for chairs, stools and cushions; two places on the indoor benches; the clinic bench's facing | **#351** `claude/seated-chairs` | Open. CI green (guard, linux). **Visual: merge only on the owner's word**, after the before/after photos (sent; also in `docs/qa/seated-interiors/`). |
-| 2. Comic backdrops for the town hall, the school and the clinic | **#352** `claude/civic-backdrops` | Open, **stacked on #351** (base `claude/seated-chairs`). Retarget it to `main` once #351 is merged, merge main in with the runtime recipe, rebuild. Visual: owner's word. Sample comics in `docs/qa/civic-backdrops/`. |
-| 3. One group of the already-failing tests, into the CI guard | **#353** `claude/tests-retired-cast` | Open. Tests only (no game change); the guard is 63 files. |
+| 1. Seated poses for chairs, stools and cushions; two places on the indoor benches; the clinic bench's facing | **#351** | **Merged** (squash `096ee3c9`) on the owner's word, after the before/after photos (`docs/qa/seated-interiors/`). Main (#350, Minato food) was merged into it first and the runtime rebuilt; guard and linux green. |
+| 2. Comic backdrops for the town hall, the school and the clinic | **#352** | **Merged** (squash `7cfec5b8`) on the owner's word. Retargeted to `main` after #351, main merged in, runtime rebuilt; guard and linux green. Sample comics in `docs/qa/civic-backdrops/`. |
+| 3. One group of the already-failing tests, into the CI guard | **#353** | **Merged** (squash `9f7ccd4c`). Tests only; the guard is 64 files with `izakaya-food`. |
 
 ### 1. What #351 does
 - Every seat a player or resident sits on says where its front edge is (`front`, seat-slots.js), measured on its own
