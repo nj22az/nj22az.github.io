@@ -57,3 +57,35 @@ cd johansson-town && node tools/ci-guard.mjs
 Install the pinned Vite/Spector dependencies as the workflows do. Package with `npm run package --prefix steam-deck`, then run `npm run test:console --prefix steam-deck`. Read `.github/workflows/linux-console-check.yml` and `johansson-world-linux.yml` for recovery/native/offline/installer gates. Software-rendered full acceptance can take many minutes; do not run other browsers alongside it or weaken assertions to finish sooner.
 
 Before another release, bump the next unpublished version, rebuild runtime last if World source changes, complete appropriate World/desktop/ferry/console/offline/native checks, verify actual publication and the public installer/checksum, then update guides separately. Preserve existing save locations and published release assets.
+
+## Update, 22 October 2026 (afternoon): the owner's devices
+
+The owner answered the question this note left open: **a Steam Deck (its built-in controls) and an 8BitDo controller
+in Switch Pro mode over Bluetooth**. No controller code has changed since 0.2.16. Read from the code on main only; none
+of this is confirmed on hardware.
+
+**Still to ask the owner before changing code** (asked on 22 October, not yet answered):
+1. Is 0.2.16 installed, and does it still fail? How is it launched: Game Mode through Steam (as a non-Steam game), or
+   Desktop Mode?
+2. Does the left stick work while the right does not? Does the right stick move a mouse pointer instead?
+3. On the Controls page: the device name shown at the top, and the two Look axes.
+
+**Likely causes, in order:**
+1. **Steam Input owns both pads.** With Steam running, it takes the Deck's controls and (by default) Switch Pro pads,
+   the 8BitDo included. Outside Game Mode, or not launched through Steam, its desktop layout drives the mouse instead of
+   presenting a gamepad, so the right stick never reaches the camera on either device. Fix: launch as a non-Steam game in
+   Game Mode, and have the game say so when it sees this.
+2. **A saved Look axis that no longer exists.** Since 0.2.16 (`steam-deck/ui/pad-layout.mjs`), an unmapped Bluetooth pad
+   is rebuilt to four standard axes. A profile saved with `lookAxes` ≥ 4 (the raw xpad right stick is axes 3 and 4)
+   reads `undefined`, so the camera is dead. Fix in `controller.mjs` `profileSettings`/`read`: fall back to the default
+   [2, 3] when a saved axis is beyond the pad's axes; add a test.
+3. **The game switches pads only on a button press.** `controller.mjs` changes the pad it reads only when one of a
+   pad's buttons is pressed. Beside Steam's virtual pad (28de:11ff), stick movement alone never moves it to the
+   physical one.
+
+The 8BitDo in Switch mode should already read correctly. Under hid-nintendo it reports 14 buttons and 6 axes (X Y RX RY
+plus the D-pad hat), which `DRIVER_BUTTONS[14]` and the stick/hat split already handle. Its stick calibration on clones
+is the one thing to watch.
+
+**Next:** get the three answers. Capture the real pads' `navigator.getGamepads()` (id, mapping, button count, axes at
+rest and with each stick moved) as a test fixture. Fix, then release 0.2.17 per the steps above.
