@@ -2,6 +2,8 @@
 
 ## State
 
+Draft review: [PR #356](https://github.com/nj22az/nj22az.github.io/pull/356). Combined implementation commit: `b446e39f662b4d004e6c76cb6067d77d22e84d45`. Hosted checks must be verified before merging; the test results below are the completed local runs.
+
 Branch: `codex/food-seating-integration`, based on main `96a0f83583bb8f10c379f2640cd0216fd4294faa`.
 PR #350 had already received the owner's visual approval and was merged as `16407e2822ce2379fb0661042d2c21ddd7334c8d`; its sign-off is on main. Do not repeat that work or treat it as still a draft. PR #351 remains open at `5364c8c4d1cfc33a4cd45c5ba69a4c2c13bc97cb`; its seating changes are incorporated into this integration branch. Both PR discussions were empty when inspected. Main was rechecked and had not moved.
 
