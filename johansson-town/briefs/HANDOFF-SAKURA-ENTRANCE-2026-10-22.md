@@ -43,3 +43,19 @@ Local Chromium is absent and its download returned invalid ZIP data. A narrowly 
 ### Current-main refresh
 
 Main advanced during verification to `0ee177da830a1419efe4f1b1d89a482139124410` (four additional Looks and Natural on each launch). Those source, tests and generated baseline changes were retained and the stair runtime rebuilt again. The first integration passed 31 focused checks and the full guard (371 tests, 70 files, 184 seconds). The refreshed candidate is undergoing the same full guard. The earlier screenshots remain historical; fresh CI capture is required before final acceptance.
+
+## Engineering handover — 22 October 2026 (Europe/Copenhagen)
+
+Repair delivered on PR #364, branch `codex/sakura-stair-entrance`; tested integration commit `977f11963da40b476642a6e022c0c261c574737a`, with main `0ee177da830a1419efe4f1b1d89a482139124410` retained. Runtime source SHA-256: `43aff388233a442a87816fc7c0c6890e80525a883c1790a1a28885d261fc84f6`. The newest Look styles and Natural-on-launch decision, peaceful gameplay and Free camera remain intact. No stair transition or trigger changes were introduced.
+
+Completed checks:
+- First integration: 31 focused checks passed (stairs, runtime package, enterable sites, ground standard and z-fighting).
+- Refreshed integration: full local guard **372 passed, 0 failed, 70 files**, 171 seconds.
+- GitHub guard on the refreshed integration: **372 passed, 0 failed, 70 files**, 178 seconds: [run 39862259521](https://github.com/nj22az/nj22az.github.io/actions/runs/39862259521).
+- First integrated actual-game capture completed both view modes and all eight prompt/walking up/down transitions, with zero page errors and clear arrival/player cameras. [Artifact 12462800596](https://github.com/nj22az/nj22az.github.io/actions/runs/39861574708/artifacts/12462800596). Its workflow was subsequently marked cancelled when the newer main integration was submitted; both complete JSON reports and screenshots were downloaded and inspected. Tested merge tree `6f2c49a17eeb655bf9684500c3e8bfd1390868e1`, revision `6e65bfdb451d64a6ca61ad178a0acb0afbe218a5`, predates the extra Look styles. It is not claimed as fresh validation of those later styles.
+- Latest dedicated visual check [39862259537](https://github.com/nj22az/nj22az.github.io/actions/runs/39862259537) and Linux candidate acceptance [39862259564](https://github.com/nj22az/nj22az.github.io/actions/runs/39862259564) were still installing browser/build dependencies at handover; no result claimed. A subsequent documentation-only commit may restart those PR checks; the runtime hash above identifies the tested game.
+- Diff whitespace check passed. Ground baseline stays empty.
+
+**Implementation and source checks complete; visual owner acceptance and merge remain outstanding.** The owner requested the fix but has not expressly accepted the before/after appearance. Preserve the repository's visual-review rule: “Visual changes merge only after the owner has seen before/after photos” (21 October morning handover), and merge on the owner's word with the GitHub guard green (evening handover). PR remains open and is not deployed. No new Linux release, physical iPhone Safari or physical Steam Deck acceptance is claimed.
+
+Next: review the linked comparison and current CI images; resolve any capture/check failure; merge after owner acceptance, preserving newer main work and rebuilding again if source changes. Linux 0.2.17 remains the published version; any future release must use a new version.
