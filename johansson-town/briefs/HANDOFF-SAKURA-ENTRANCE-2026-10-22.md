@@ -2,7 +2,7 @@
 
 ## Scope and review state
 
-Owner requested the P1 Sakura stockroom correction from documentation PR #349, preserving the 20 October inside-only non-traversable stair/fade decision. Work is on `codex/sakura-stair-entrance`, based on main `a0fb347ced9250b2e5a6210ba068bf595a7ca310`. Proposed only; do not merge before the owner reviews the before/after pictures. Nothing is deployed or released.
+Owner requested the P1 Sakura stockroom correction from documentation PR #349, preserving the 20 October inside-only non-traversable stair/fade decision. Work is on `codex/sakura-stair-entrance`, based on main `a0fb347ced9250b2e5a6210ba068bf595a7ca310`. Review: [draft PR #364](https://github.com/nj22az/nj22az.github.io/pull/364), implementation/review commit `602f66f539c13edc49c7b3609c98759a416a47c5`. Proposed only; do not merge before the owner reviews the before/after pictures. Nothing is deployed or released.
 
 Repository instructions, current root index, 22 October morning/afternoon handovers and their 21 October references were read. PR #349 remains an open documentation-only plan; its fighting, banner, dock and residential work is separate. No existing Sakura repair PR was found at the start. Main was rechecked and remained at the base above.
 
@@ -32,4 +32,4 @@ Source stair blob: `712fad96930f68ae125078807ace90feb3db9c93`. Rebuilt runtime s
 
 ## Next
 
-Open the focused review PR and link its commit here. Owner visual review follows; do not merge on the strength of automated checks alone. Physical iPhone Safari and installed Linux acceptance remain unverified. Unrelated quality recovery stays in its own work.
+Draft PR #364 is submitted with screenshots and passing local test evidence. Owner visual review follows; do not merge on the strength of automated checks alone. Physical iPhone Safari and installed Linux acceptance remain unverified. Unrelated quality recovery stays in its own work.
