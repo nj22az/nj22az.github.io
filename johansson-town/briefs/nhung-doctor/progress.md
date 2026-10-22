@@ -115,6 +115,8 @@ commit unless said):
   counted 26 people (updated). fun-poses timed out on the base only because a render ran beside it; it passes here.
 - After the review fixes: the 64 test files that read the residents' plans, the directory, the papers and the quarters:
   every failure there also fails on the base commit. `boot` and `runtime-package` pass after the rebuild.
+- The full `tests/*.test.mjs` on the finished branch (`0ef8e9c`): 2,102 tests, 52 failing, every one of them failing on
+  the base commit too; two that failed there pass (fun-poses, and the published photo articles' portraits).
 - `node tools/ci-guard.mjs`, alone, after `npm run build:runtime`: 333 of 334. The one, `no-z-fighting.test.mjs`, runs
   out of memory on this machine's Node 22 heap on the base commit too; with `--max-old-space-size=10240` all ten of its
   tests pass. CI runs Node 24.
