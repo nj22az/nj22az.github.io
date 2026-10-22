@@ -31,7 +31,7 @@ export const QUAY_DRESSING=Object.freeze({
   sign:Object.freeze({x:1.62,z:-50.2,jp:'荷さばき場',sub:'駐車禁止',why:'cargo handling area, no parking'}),
   pallets:Object.freeze([
    Object.freeze({id:'sakura-cartons',x:2.8,z:-50.75,why:'cartons of shop stock for Sakura Trading’s depot in the Quay Warehouse'}),
-   Object.freeze({id:'higa-crates',x:2.8,z:-51.95,why:'Umineko crates for Higa Liquor’s van, which takes them round the bars and shops'}),
+   Object.freeze({id:'higa-crates',x:2.8,z:-51.95,why:'Umineko crates off the boat for Sakura Trading’s depot, whose round takes them to the bars (Higa Liquor’s van did, until the shop closed)'}),
   ]),
   truck:Object.freeze({x:1.92,z:-51.45,why:'Riku’s hand pallet truck, that brought them off her deck'}),
  }),

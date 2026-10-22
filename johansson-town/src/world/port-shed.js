@@ -21,11 +21,12 @@ export {tvProgramme} from './fujita-day.js';
  * off. Signed off at twenty past, he sits in the sagging armchair, his feet on a timber footstool, with a small glass
  * of beer, and flips channels on an old CRT on a fish crate (fujita-day.js: what is on, when he laughs, how the beer
  * goes): the night game's last innings, the late news, the variety shows, snow when the last station signs off. His
- * Umineko comes in large bottles from Higa Liquor's morning van: the crate stands at his right hand, the bottle he is
+ * Umineko comes in large bottles, two crates at a time on Sakura Trading's round (Higa Liquor's van until the shop closed):
+ * the crate stands at his right hand, the bottle he is
  * on at his left foot, and the evening's empties stand in front of him. Around him: nets and glass floats hung from
  * the rafters, a camp stove and kettle, rubber boots, a calendar from the co-op and a folded cot kept for visitors.
- * At 23.30 he switches off the set and walks aboard his houseboat Shiosai alongside the pier, leaving the empties for
- * the van; at six he returns to the shed.
+ * At 23.30 he switches off the set and walks aboard his houseboat Shiosai alongside the pier, leaving the empties on
+ * the floor; at six he returns to the shed and stands them in the crate by the door for the round.
  *
  * Pier frame: the shed stands on the west edge of the L-pier, open to the east.
  */
@@ -168,11 +169,11 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
  const pile=(count,name)=>parts.map(o=>{const m=new THREE.InstancedMesh(o.geometry.clone().applyMatrix4(o.matrix),o.material,count);m.name=name;m.count=0;m.userData.dynamicProp=true;m.castShadow=shadows;m.receiveShadow=true;m.frustumCulled=false;g.add(m);return m;});
  const place=(meshes,i,x,y,z,rx,ry,rz)=>{const d=new THREE.Object3D();d.position.set(x,y,z);d.rotation.set(rx,ry,rz);d.updateMatrix();
   for(const m of meshes){m.setMatrixAt(i,d.matrix);m.instanceMatrix.needsUpdate=true;}};
- // Higa Liquor's crates at his right hand, where the cool box was: yellow plastic, twenty large bottles each, two
+ // The crates at his right hand, where the cool box was (Sakura Trading's round leaves them): yellow plastic, twenty large bottles each, two
  // side by side and the third on top on a big day.
  const crateMat=std(0xe7b52c,.6),CRATES=[[cx+.62,0,cz-.12],[cx+.62,0,cz+.3],[cx+.62,.3,cz-.12]];
  const crates=CRATES.map(([x,y,z])=>{
-  const c=new THREE.Group();c.position.set(x,y,z);c.name='Higa Liquor beer crate';c.userData.dynamicProp=true;g.add(c);
+  const c=new THREE.Group();c.position.set(x,y,z);c.name='Umineko beer crate';c.userData.dynamicProp=true;g.add(c);
   for(const [w,h,d,px,py,pz] of [[.42,.02,.32,0,.01,0],[.42,.18,.02,0,.1,.15],[.42,.18,.02,0,.1,-.15],[.02,.18,.32,.2,.1,0],[.02,.18,.32,-.2,.1,0]]){
    const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),crateMat);b.position.set(px,py,pz);b.castShadow=shadows;c.add(b);}
   c.userData.crate=true;return c;
@@ -321,7 +322,7 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
    boat.tick({sleeping:fujita.userData.sleepBlend>.01,player:getPlayerPosition(),night:poolGlow(minutes)});
    // The beer: the crate, the floor, the bottle he is on, the glass; none of it before he signs off (fujita-day.js
    // FUJITA_DAY.start is the master's sign-off). The pile stays in the shed overnight, when he has gone aboard Shiosai,
-   // until the Higas' van takes it at six.
+   // until he stands it in the crate by the door at six, for the round.
    const b=fujitaBeer(minutes),u=fujita.userData,seated=!u.ferryShoreTask&&!u.onWatch&&routine.state==='watching',pouring=seated&&b.phase==='pour';
    for(const mesh of full)mesh.count=b.full;
    // One crate of twenty is more than an evening's drinking now; the second and the one on top are gone with the day shift.

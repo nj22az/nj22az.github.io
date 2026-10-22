@@ -3,8 +3,7 @@ import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import {createKit,paint} from './kit.js';
 import {japaneseSign,signText} from './signs.js';
 import {createShopGlass} from '../shop-glass.js';
-import {windowGlow} from '../../render/dusk.js';
-import {HIGA_RUSU_CARD,HIGA_LIQUOR_HOURS_TEXT,higaLiquorState,higaShutterDown,higaDoorsShut,higaRusuCard,YUNTAKU} from '../../commerce/higa-liquor.js';
+import {HIGA_NOTICE,YUNTAKU} from '../../commerce/higa-liquor.js';
 
 /**
  * Higa Liquor (比嘉酒店), dressed as the 1990s island liquor shop it is (the owner, 21 October 2026: "I see the liquor
@@ -14,6 +13,10 @@ import {HIGA_RUSU_CARD,HIGA_LIQUOR_HOURS_TEXT,higaLiquorState,higaShutterDown,hi
  * the beer case by the door, the 1.8-litre bottles up the wall, the awamori jars on the floor, the owner behind a
  * wooden counter at the back with the register and the delivery book, the crates of empties stacked outside for the
  * brewery's boat, and in the evening a bench out front where the regulars sit with a bottle (ゆんたく).
+ *
+ * Shut for good since 22 October 2026 (the owner: "Sakura sells and supplies all alcohol … and the building stands shut
+ * with a notice on it"; commerce/higa-liquor.js): the shutter is down, the closing notice taped to it, the fittings
+ * still inside behind it; the bench out front is still sat on.
  *
  * The shop-house frame (houses.js shopHouse) is used throughout: x along the frontage (+x towards the police station,
  * world +z), z out to Main Street (+z, world -x), y up from the street. The shop floor is deepened to the back of the
@@ -30,8 +33,6 @@ export const HIGA_FRAME=Object.freeze({W:2.45,D:3.85,ground:3.3,H:6.1,open:2.07,
 const {W,D,ground,H,open,back}=HIGA_FRAME;
 /** A point of the shop-house's frame in the world (the frame turns a quarter: local +z is world -x). */
 export const higaPoint=(x,z)=>[HIGA_FRAME.origin[0]-z,HIGA_FRAME.origin[1]+x];
-/** Where the keeper stands behind the counter, facing the door (world metres): the canonical day's 'higa-liquor'. */
-export const HIGA_KEEPER_AT=Object.freeze(higaPoint(.1,-1.3));
 /** The doorway, between the fixed panes: local x ±DOOR, the leaves 0.92 m each. */
 const DOOR=.92,DOOR_H=2.18,PANE_Z=D-.4,LEAF_Z=D-.48;
 
@@ -39,18 +40,18 @@ const item=o=>Object.freeze({...o,at:Object.freeze(o.at)});
 /**
  * Every new thing in, on and around the shop, by who it is for and why it is where it is. `at` is its middle in the
  * shop-house's frame; `build` says whether it is part of the building, the shop's fittings, a prop outside, or a thing
- * that follows the hours (commerce/higa-liquor.js).
+ * that followed the hours until the shop shut and stands still now (commerce/higa-liquor.js).
  */
 export const HIGA_DRESSING=Object.freeze([
  // The building.
  item({id:'shop-floor',side:'inside',at:[0,0,.97],build:'building',who:'Grandmother Higa and her customers',
   why:'The shop floor is a room now, 4.1 by 5.75 m: the old slot was a counter a pace in from the pavement, where nobody could choose a bottle without blocking the footway. The back of the ground floor stays the storeroom.',period:'A town 酒屋 of the seventies is a single room off the street, a concrete floor (土間) and the stock round the walls.'}),
  item({id:'sliding-doors',side:'front',at:[0,1.36,PANE_Z],build:'open-hours',who:'Grandmother Higa',
-  why:'Aluminium-framed glass sliding doors across the front, two fixed panes and two leaves that slide behind them: open while she keeps the counter, shut while she is at the bath and at night.',period:'Aluminium shop sashes (アルミサッシ) replaced the timber front of every Japanese shop from the late sixties.'}),
- item({id:'rusu-card',side:'front',at:[.46,1.45,LEAF_Z+.03],build:'open-hours',who:'Grandmother Higa',
-  why:HIGA_RUSU_CARD.why+' The card says 留守 · 5時に戻ります on the back of a calendar page, hung on a string from the door’s handle.',period:HIGA_RUSU_CARD.period}),
- item({id:'shutter',side:'front',at:[0,1.5,D-.15],build:'open-hours',who:'Grandmother Higa (the shop at night)',
-  why:'The roller shutter comes down over the whole front once she has shut the doors at eight and goes up just before nine; it stays up through her afternoon at the bath, when the doors and the card do the work.',period:'Ribbed steel shutters closed every shop front on the island from the sixties.'}),
+  why:'Aluminium-framed glass sliding doors across the front, two fixed panes and two leaves that slide behind them; shut since the shop closed, behind the shutter.',period:'Aluminium shop sashes (アルミサッシ) replaced the timber front of every Japanese shop from the late sixties.'}),
+ item({id:'shutter',side:'front',at:[0,1.5,D-.15],build:'open-hours',who:'Grandmother Higa (the shut shop)',
+  why:'The roller shutter is down over the whole front for good: the shop closed when Sakura took its trade (the owner, 22 October 2026; commerce/higa-liquor.js).',period:'Ribbed steel shutters closed every shop front on the island from the sixties.'}),
+ item({id:'closing-notice',side:'front',at:[-.55,1.45,D-.134],build:'open-hours',who:HIGA_NOTICE.who,
+  why:HIGA_NOTICE.why+' A sheet of paper taped to the shutter at eye height: 閉店のお知らせ, a thank-you, and お酒は さくら商店へ.',period:HIGA_NOTICE.period}),
  item({id:'awning',side:'front',at:[0,2.95,D+.48],build:'building',who:'the customers and the bench',
   why:'A canvas awning (テント) on a steel frame in the shop’s maroon, its valance lettered with what the shop sells (酒 · 泡盛 · ビール): the shade over the door, the crates and the bench, and the sign read from the pavement opposite.',period:'Lettered canvas awnings were the shop sign of every Japanese corner shop of the period.'}),
  item({id:'sugidama',side:'front',at:[-1.15,2.3,D+.55],build:'building',who:'the shop',
@@ -63,32 +64,33 @@ export const HIGA_DRESSING=Object.freeze([
  // Services and signs outside.
  item({id:'meter-box',side:'Kitano Road',at:[-W-.08,1.8,3.1],build:'prop',who:'the power company’s meter reader',why:'One meter in a grey box near the front of the Kitano Road flank, read from the road, the conduit up to the eave where the line from the pole comes in.',period:'Okinawan meters are outside, at eye height.'}),
  item({id:'enamel-tin',side:'Kitano Road',at:[-W-.02,1.85,1.0],build:'prop',who:'the awamori distillery (南風)',why:'The distillery’s enamel tin (ホーロー看板) on the Kitano Road flank, where everybody walking up to the bath passes it; the shop is its island agent.',period:'Makers nailed enamel tins to the shops that stocked them.'}),
- item({id:'empties',side:'front',at:[-1.33,.45,4.11],build:'prop',who:'the brewery’s boat, and Kōji’s round',why:'Yellow crates of empty large bottles stacked by the door on the Kitano Road side, the day’s returns waiting for the round to take them to the crate yard across the street; full crates come in by the back door.',period:'Returnable large bottles in twenty-bottle crates, ¥5 back on each, were how beer was sold.'}),
+ item({id:'empties',side:'front',at:[-1.33,.45,4.11],build:'prop',who:'the brewery’s boat, and Kōji’s round',why:'Yellow crates of empty large bottles stacked by the door on the Kitano Road side: the bench’s returns, bought at Sakura and left here for the round to take to the crate yard across the street.',period:'Returnable large bottles in twenty-bottle crates, ¥5 back on each, were how beer was sold.'}),
  item({id:'bicycle',side:'front',at:[-2.08,.5,4.85],build:'prop',who:'Grandmother Higa',why:'The old black delivery bicycle, nose-in to the pier at the Kitano Road corner, clear of the door and the bench.',period:'The shopkeeper’s heavy carrier bicycle.'}),
- item({id:'yuntaku-bench',side:'front',at:[1.68,.22,4.23],build:'prop',who:'the evening regulars (YUNTAKU)',why:'A timber bench (縁台) against the police-station end of the front and two upturned beer crates for stools: where men sit with a bottle from the counter in the evening opening.',period:'Benches in front of island shops, and talking on them (ゆんたく), are Okinawan evenings.'}),
+ item({id:'yuntaku-bench',side:'front',at:[1.68,.22,4.23],build:'prop',who:'the evening regulars (YUNTAKU)',why:'A timber bench (縁台) against the police-station end of the front and two upturned beer crates for stools: where men still sit with a bottle of an evening, bought at Sakura since the shop shut.',period:'Benches in front of island shops, and talking on them (ゆんたく), are Okinawan evenings.'}),
  // The fittings inside.
- item({id:'counter',side:'inside',at:[-.84,.48,-.45],build:'fitting',who:'Grandmother Higa, or Yui on Saturdays',why:'A wooden counter across the back, facing the door, with the register, her abacus, the telephone and the delivery book; its end is open on the police-station side so she can come round.',period:'The owner’s counter at the back of the room, the till on it, the family behind it.'}),
- item({id:'delivery-book',side:'inside',at:[-1.0,.97,-.45],build:'fitting',who:'Grandmother Higa and Kōji',why:'The delivery book (配達帳): who orders what and when, who carried it, and Kōji’s pay for the round, in her hand (commerce/higa-liquor.js higaDeliveryBook).',period:'A ledger on the counter was the small shop’s order system.'}),
+ item({id:'counter',side:'inside',at:[-.84,.48,-.45],build:'fitting',who:'Grandmother Higa, until the shop shut',why:'A wooden counter across the back, facing the door, with the register, her abacus, the telephone and the delivery book; its end is open on the police-station side so she can come round.',period:'The owner’s counter at the back of the room, the till on it, the family behind it.'}),
+ item({id:'delivery-book',side:'inside',at:[-1.0,.97,-.45],build:'fitting',who:'Grandmother Higa and Kōji',why:'The delivery book (配達帳), left on the counter the day the shop shut: who ordered what and when, who carried it, and Kōji’s pay for the round, in her hand. The round’s book is kept at Sakura’s till now (commerce/trade-round.js roundDeliveryBook).',period:'A ledger on the counter was the small shop’s order system.'}),
  item({id:'isshobin-shelves',side:'inside',at:[1.87,1.1,2.15],build:'fitting',who:'customers buying a bottle for a visit',why:'Shelves up the police-station wall of 1.8-litre bottles (一升瓶) and 720 ml bottles: awamori, sake, shōchū.',period:'The 一升瓶 was the unit of the drink trade.'}),
  item({id:'cold-case',side:'inside',at:[-1.74,.98,2.75],build:'fitting',who:'everybody who wants it cold now',why:'The reach-in cold case nearest the door on the Kitano Road wall, beer and the one-cup sake: the bottle for supper is in and out in a minute. 冷えてます (“it’s cold”) on its header.',period:'Glass-door cold cases came into liquor shops in the seventies.'}),
  item({id:'kame',side:'inside',at:[-1.78,.35,1.15],build:'fitting',who:'customers buying for a celebration',why:'Three awamori jars (甕) on a low stage along the Kitano Road wall, with price tags: a gift for a wedding or a sixtieth birthday.',period:'Awamori in glazed jars, for keeping and ageing at home.'}),
  item({id:'family-kusu',side:'inside',at:[-1.62,.6,-1.42],build:'fitting',who:'the Higa family',why:'The family kusu behind the counter on its stand, with a 非売品 (not for sale) card: never sold (commerce/higa-liquor.js HIGA_KUSU).',period:'Okinawan families’ kusu, kept for a wedding.'}),
  item({id:'back-shelf',side:'inside',at:[-.75,1.3,-1.78],build:'fitting',who:'Grandmother Higa',why:'The dear bottles behind the counter, out of reach of the customers: the old awamori and the gift-boxed whisky.',period:'The good stock lives behind the owner.'}),
- item({id:'lights',side:'inside',at:[0,2.93,1.4],build:'open-hours',who:'the shop',why:'Two fluorescent fittings on the ceiling and the cold case’s light, on while the shop is open and off while it is shut: across the street you can see whether she is in.',period:'Bare fluorescent tubes lit every shop of the period.'}),
+ item({id:'lights',side:'inside',at:[0,2.93,1.4],build:'open-hours',who:'the shop',why:'Two fluorescent fittings on the ceiling and the cold case’s light, off since the shop shut: across the street, the dark front says it before the notice does.',period:'Bare fluorescent tubes lit every shop of the period.'}),
 ]);
 
 /** What a liquor shop of the period might have had that is not here, and why. */
 export const HIGA_LEFT_OUT=Object.freeze([
- {suggestion:'A cigarette counter and the red たばこ sign',why:'Higa Liquor has no tobacco licence in the town’s data (merchandising.js SUPPLIERS: beer, awamori, sake and shōchū); a sign for goods it does not sell would be random.'},
+ {suggestion:'A cigarette counter and the red たばこ sign',why:'Higa Liquor had no tobacco licence in the town’s data (it sold beer, awamori, sake and shōchū, Sakura’s now: merchandising.js SUPPLIERS); a sign for goods it never sold would be random.'},
  {suggestion:'A beer vending machine outside',why:'The island’s drinks machines are Sakura’s and the bottler’s (vending.js); a liquor shop’s beer machine was shut off at eleven by law and adds nothing the cold case does not.'},
- {suggestion:'Kōji’s kei truck parked at the door on the round',why:'The truck lives in its bay at the Kitahama monthly parking (lots.js); his round is on foot between its stops in the web edition, the truck’s drive is the Linux simulation’s to come.'},
+ {suggestion:'Kōji’s kei truck parked at the door on the round',why:'The round loads at Sakura Trading’s depot in the Quay Warehouse now (commerce/trade-round.js); the truck lives in its bay at the Kitahama monthly parking (lots.js), his round is on foot between its stops in the web edition, the truck’s drive is the Linux simulation’s to come.'},
+ {suggestion:'A to-let sign (貸店舗) or a new tenant',why:'The owner, 22 October 2026: the building stands shut with a notice on it, no new geometry. Grandmother Higa keeps the family kusu behind the counter, and nobody is looking for the shop.'},
  {suggestion:'A point light in the shop',why:'Phone budget: the fluorescent tubes glow by their own material on the clock.'},
 ].map(Object.freeze));
 
 const MINCHO='"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif',GOTHIC='"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';
 /** The shop's lettering on one 1024×512 sheet, so every card, poster and tin is one draw call. Regions in pixels. */
 const ATLAS=Object.freeze({w:1024,h:512,valance:[0,0,1024,96],tin:[0,112,320,200],hours:[336,112,160,220],beer:[512,112,200,280],awamori:[728,112,200,280],
- cold:[0,330,320,64],tag1:[0,404,96,108],tag2:[100,404,96,108],tag3:[200,404,96,108],kusu:[300,404,96,108],rusu:[420,330,110,160]});
+ cold:[0,330,320,64],tag1:[0,404,96,108],tag2:[100,404,96,108],tag3:[200,404,96,108],kusu:[300,404,96,108],notice:[420,330,128,176]});
 
 function paintLettering(){
  return paint(ATLAS.w,ATLAS.h,ctx=>{
@@ -124,10 +126,11 @@ function paintLettering(){
   // The kusu's card: 非売品, not for sale.
   {const [x,y,w,h]=ATLAS.kusu;ctx.fillStyle='#ffffff';ctx.fillRect(x,y,w,h);ctx.fillStyle='#b8302a';signText(ctx,'非売品',x+w/2,y+40,w-12,28,MINCHO);
    ctx.fillStyle='#2a2420';signText(ctx,'古酒',x+w/2,y+80,w-20,24,MINCHO);}
-  // The 留守 card: the back of a calendar page, written in marker.
-  {const [x,y,w,h]=ATLAS.rusu;ctx.fillStyle='#f8f4ea';ctx.fillRect(x,y,w,h);ctx.fillStyle='rgba(120,120,120,.25)';for(let k=0;k<6;k++)ctx.fillRect(x+6,y+92+k*10,w-12,1);
-   ctx.fillStyle='#1d1d1d';const big=[...HIGA_RUSU_CARD.jp];ctx.font=`bold 44px ${MINCHO}`;big.forEach((c,i)=>ctx.fillText(c,x+w/2,y+28+i*44));
-   ctx.fillStyle='#b8302a';signText(ctx,HIGA_RUSU_CARD.jpLine,x+w/2,y+h-22,w-10,17,GOTHIC);}
+  // The closing notice (閉店のお知らせ): a sheet of paper in her brush hand, the heading, the thanks, and where the drink is now.
+  {const [x,y,w,h]=ATLAS.notice;ctx.fillStyle='#f8f4ea';ctx.fillRect(x,y,w,h);ctx.strokeStyle='rgba(120,110,100,.35)';ctx.lineWidth=2;ctx.strokeRect(x+3,y+3,w-6,h-6);
+   ctx.fillStyle='#1d1d1d';signText(ctx,HIGA_NOTICE.jp,x+w/2,y+26,w-14,22,MINCHO);
+   HIGA_NOTICE.jpLines.forEach((line,i)=>{ctx.fillStyle=i===2?'#b8302a':'#2a2420';signText(ctx,line,x+w/2,y+70+i*36,w-14,i===2?18:16,MINCHO);});
+   ctx.fillStyle='#2a2420';signText(ctx,'比嘉',x+w-26,y+h-18,40,14,MINCHO);}
  });
 }
 /** A quad of the lettering sheet: region `r` drawn w×h at `at`, facing +z turned by ry, in the shop-house's frame. */
@@ -144,6 +147,8 @@ function letteringQuad(r,w,h,at,ry=0){
  * the street's (y 0 the pavement); what is on the fittings is 8 cm up with the shop's floor (HIGA_FRAME.floor).
  */
 export const HIGA_LETTERING=Object.freeze({
+ // The closing notice, taped to the shutter's face 6 mm in front of its steel (the shutter is down for good).
+ notice:Object.freeze({r:'notice',w:.3,h:.42,at:Object.freeze([-.55,1.45,D-.134]),ry:0}),
  valance:Object.freeze({r:'valance',w:4.56,h:.24,at:Object.freeze([0,2.735,D+.966]),ry:0}),
  tin:Object.freeze({r:'tin',w:.8,h:.5,at:Object.freeze([-W-.028,1.85,1.0]),ry:-Math.PI/2}),
  hours:Object.freeze({r:'hours',w:.22,h:.3,at:Object.freeze([-1.45,1.96,PANE_Z-.01]),ry:0}),
@@ -310,9 +315,10 @@ function norenCloth(){
 }
 
 /**
- * What follows the hours, in its own group in the shop-house's frame: the glass (the fixed panes and the cold case's
- * door, one mesh), the two door leaves with the 留守 card on the right one, the roller shutter, the lit tubes and the cold
- * case's light, the storeroom's noren and the lettering sheet. update(minutes) moves them to the clock.
+ * The front, in its own group in the shop-house's frame: the glass (the fixed panes and the cold case's door, one mesh),
+ * the two door leaves, the roller shutter with the closing notice on it, the tubes and the cold case's light (off), the
+ * storeroom's noren and the lettering sheet. The shop is shut for good (commerce/higa-liquor.js): the doors are shut,
+ * the shutter is down to the step and the lights are off, at every hour.
  */
 export function higaFrontage({origin=HIGA_FRAME.origin,trim=0x8a3b2e,shadows=false}={}){
  const group=new THREE.Group();group.name='Higa Liquor frontage';group.position.set(origin[0],0,origin[1]);group.rotation.y=-Math.PI/2;
@@ -324,7 +330,7 @@ export function higaFrontage({origin=HIGA_FRAME.origin,trim=0x8a3b2e,shadows=fal
  const glass=createShopGlass(),pane=(w,h,at,ry=0)=>{const g=new THREE.PlaneGeometry(w,h);g.applyMatrix4(new THREE.Matrix4().compose(new THREE.Vector3(...at),new THREE.Quaternion().setFromEuler(new THREE.Euler(0,ry,0)),new THREE.Vector3(1,1,1)));return g;};
  const fixed=new THREE.Mesh(mergeGeometries([pane(open-DOOR-.1,DOOR_H-.47,[-(open+DOOR)/2,(DOOR_H+.45)/2,PANE_Z]),pane(open-DOOR-.1,DOOR_H-.47,[(open+DOOR)/2,(DOOR_H+.45)/2,PANE_Z]),pane(1.1,1.64,[-1.415,1.1,2.75],Math.PI/2)]),glass);
  fixed.name='Higa Liquor glass';fixed.renderOrder=2;group.add(fixed);
- // The two leaves: frame, glass and pull; the right one carries the 留守 card on its string.
+ // The two leaves: frame, glass and pull, slid shut.
  const leaves=[];
  for(const s of [-1,1]){
   const leaf=new THREE.Group();leaf.name=`Higa Liquor door leaf (${s<0?'Kitano Road':'police station'} side)`;group.add(leaf);
@@ -336,12 +342,8 @@ export function higaFrontage({origin=HIGA_FRAME.origin,trim=0x8a3b2e,shadows=fal
   const g=new THREE.Mesh(new THREE.PlaneGeometry(DOOR-.1,DOOR_H-.33),glass);g.position.set(0,(DOOR_H+.2)/2,0);g.renderOrder=2;g.name='Higa Liquor door glass';leaf.add(g);
   leaves.push({leaf,s});
  }
- // The card: a thin board on the right leaf's outside, its face the lettering sheet's, hung from the pull by a string.
- const card=new THREE.Group();card.name='Higa Liquor rusu card';leaves[1].leaf.add(card);
- {const k=createKit({shadows:false});k.box(.21,.3,.004,0,1.42,.034,0xf8f4ea);k.rod([-.07,1.57,.03],[-.33,1.26,.03],.003,0x7a6a5a);k.finish(card,'Higa Liquor rusu card');
-  const face=new THREE.Mesh(letteringQuad(ATLAS.rusu,.2,.29,[0,1.42,.0395]),letters);face.name='Higa Liquor rusu card face';card.add(face);}
  // The roller shutter, as Nakamura's, over the whole opening 15 cm behind the piers' faces.
- const opening={x0:-open,x1:open,foot:.08,head:ground+.02,z:D-.15},tall=opening.head-opening.foot,travel=ground-.42-opening.foot;
+ const opening={x0:-open,x1:open,foot:.08,head:ground+.02,z:D-.15},tall=opening.head-opening.foot;
  const shutter=new THREE.Mesh(new THREE.BoxGeometry(opening.x1-opening.x0+.06,tall,.02),new THREE.MeshStandardMaterial({map:shutterSteel(trim),metalness:.3,roughness:.6}));
  shutter.name='Higa Liquor shutter';shutter.receiveShadow=true;shutter.position.set(0,opening.foot+tall/2,opening.z);group.add(shutter);
  // The lights: two fluorescent fittings (their white housings and the tubes) and the cold case's lit back.
@@ -354,20 +356,10 @@ export function higaFrontage({origin=HIGA_FRAME.origin,trim=0x8a3b2e,shadows=fal
  noren.name='Higa Liquor storeroom noren';noren.position.set(1.15,HIGA_FRAME.floor+1.45,back+.16);group.add(noren);
  group.updateMatrixWorld(true);
  const world=(x,z)=>new THREE.Vector3(x,0,z).applyMatrix4(group.matrixWorld);
- // Solids that follow the hours: the shutter and the shut doors (the frame is a quarter turn: the front runs along world z).
+ // The shut front's solids: the shutter down and the doors shut (the frame is a quarter turn: the front runs along world z).
  const front=world(0,opening.z),doorway=world(0,LEAF_Z);
- // The player's only (`only`, game.js environmentBlocked): the residents' routes are searched once and kept, and a keeper
- // only walks in while the shop is open; they leave through the doors before they slide shut (HIGA_FRONT.after).
- const shutterSolid={id:'higa-shutter',x:front.x,z:front.z,w:.1,d:opening.x1-opening.x0,height:ground-.42,minY:1e3,only:'player'};
- const doorSolid={id:'higa-doors',x:doorway.x,z:doorway.z,w:.12,d:DOOR*2,height:DOOR_H,minY:1e3,only:'player'};
- let state=null,last={};
- const update=minutes=>{
-  const now=higaLiquorState(minutes),down=higaShutterDown(minutes),shut=higaDoorsShut(minutes),rusu=higaRusuCard(minutes);
-  if(down!==last.down){last.down=down;shutter.visible=down>0;shutter.position.y=opening.foot+tall/2+(1-down)*travel;shutterSolid.minY=down>.4?0:1e3;}
-  if(shut!==last.shut){last.shut=shut;for(const {leaf,s} of leaves)leaf.position.set(s*(DOOR/2+(1-shut)*DOOR),0,LEAF_Z);doorSolid.minY=shut>.4?0:1e3;}
-  if(rusu!==last.rusu){last.rusu=rusu;card.visible=rusu;}
-  const glow=now==='open'?.55+windowGlow(minutes)*.6:0;if(glow!==last.glow){last.glow=glow;lit.emissiveIntensity=glow;}
-  state=now;
- };
- return {group,leaves:leaves.map(l=>l.leaf),card,shutter,lights:lit,noren,shutterSolid,doorSolid,update,get state(){return state;}};
+ const shutterSolid={id:'higa-shutter',x:front.x,z:front.z,w:.1,d:opening.x1-opening.x0,height:ground-.42,minY:0,only:'player'};
+ const doorSolid={id:'higa-doors',x:doorway.x,z:doorway.z,w:.12,d:DOOR*2,height:DOOR_H,minY:0,only:'player'};
+ for(const {leaf,s} of leaves)leaf.position.set(s*DOOR/2,0,LEAF_Z);
+ return {group,leaves:leaves.map(l=>l.leaf),shutter,lights:lit,noren,shutterSolid,doorSolid};
 }

@@ -39,7 +39,7 @@ export const buyersOf=id=>MERCHANDISING[id]?.for||[];
 export const linesFor=name=>Object.entries(MERCHANDISING).filter(([,m])=>m.for.includes(name)).map(([id])=>id);
 
 /**
- * Who supplies whom. Two wholesalers keep the town's businesses going, each in its own trade:
+ * Who supplies whom. One wholesaler keeps the town's businesses going:
  *
  *   sakura        Sakura Shōten, Thuan's outright (docs/CAST-CONSOLIDATION.md §3), from its depot in the Quay
  *                 Warehouse (Sakura Trading): the everyday goods — drinks, food, washing, paper goods, batteries —
@@ -49,36 +49,37 @@ export const linesFor=name=>Object.entries(MERCHANDISING).filter(([,m])=>m.for.i
  *                 stock: they come in with the depot's deliveries, not off the gondolas. Since 22 October 2026
  *                 (the owner) also the stationery and office supplies Front-Row sold, when Nhung became the island
  *                 doctor: paper, ledgers, pens and envelopes for the town's offices, the school and the police box,
- *                 `stationery` lines on an account, named goods like the decorations.
- *   higa-saketen  Higa Liquor on Main Street: all the alcohol, carried by Kōji's round on his weeks ashore
- *                 (commerce/higa-liquor.js HIGA_ROUND). Sakura's beer comes from the Higas,
- *                 and so do Minato's bottle keep and tap, Sato Ramen's bottles and the Coral Bay
- *                 Bar's ice boxes on Kitano-jima.
+ *                 `stationery` lines on an account, named goods like the decorations. And since Higa Liquor closed
+ *                 (the owner, 22 October 2026; commerce/higa-liquor.js), all the alcohol: Sakura sells it over its
+ *                 own counter (commerce/konbini.js SAKURA_BOTTLES) and the depot supplies Minato's bottle keep and
+ *                 tap, Sato Ramen's bottles, the Coral Bay Bar's ice boxes on Kitano-jima and Mr Fujita's crates,
+ *                 `alcohol` lines on those accounts, carried by Sakura Trading's round, Kōji's on his weeks ashore
+ *                 (commerce/trade-round.js TRADE_ROUND).
  *
- * Only places that are open trade (src/people/cast.js PLACES): the Fumoto co-op has closed, so Sakura and the Higas
- * no longer send it a Wednesday crate; the Rainflower pavilion sells nothing and supplies nobody.
+ * Only places that are open trade (src/people/cast.js PLACES): the Fumoto co-op has closed, so Sakura no longer sends
+ * it a Wednesday crate; the Rainflower pavilion sells nothing and supplies nobody, and Higa Liquor stands shut.
  *
  * An account is what one business orders from one supplier: owner (who places the order, or
  * contact when it is a post rather than anyone in the cast),
  * lines (what), why (what it is for) and delivery (when and how it arrives). Lines are
- * SHOP_STOCK ids for Sakura; the other suppliers' goods, and Sakura's decorations, are named in their own lists.
+ * SHOP_STOCK ids; Sakura's decorations, stationery and alcohol are named goods in their own lists.
  */
 export const SUPPLIERS=Object.freeze({
- sakura:{name:'Sakura Shōten (Sakura Trading)',owner:'Thuan',depot:'warehouse',goods:'Everyday goods: drinks, food, washing, paper goods, batteries; the town’s flowers and decorations; and its stationery and office supplies.',
+ sakura:{name:'Sakura Shōten (Sakura Trading)',owner:'Thuan',depot:'warehouse',goods:'Everyday goods: drinks, food, washing, paper goods, batteries; the town’s flowers and decorations; its stationery and office supplies; and all its beer, awamori, sake and shōchū.',
   decor:['seasonal window decorations','Tanabata bamboo and paper strips','New Year kadomatsu and shimenawa','paper lanterns and festival bunting','wreaths and table flowers','bouquets, from the buckets by the door'],
-  stationery:['A4 copy paper by the ream','account ledgers and receipt books','ballpoint pens by the box','envelopes, long and square','cellophane tape and glue','exercise books and pencils']},
- 'higa-saketen':{name:'Higa Liquor',owner:'Grandmother Higa',goods:'Beer, awamori, sake and shōchū.',
-  stock:['Umineko lager, crates and kegs','awamori, from the 180 ml bottles to the clay kame','sake for warming','shōchū for the mixes']},
+  stationery:['A4 copy paper by the ream','account ledgers and receipt books','ballpoint pens by the box','envelopes, long and square','cellophane tape and glue','exercise books and pencils'],
+  alcohol:['Umineko lager, crates and kegs','awamori, from the 180 ml bottles to the clay kame','sake for warming','shōchū for the mixes']},
 });
 
 export const ACCOUNTS=Object.freeze({
  sakura:{
   izakaya:{name:'Minato Izakaya',owner:'Thao',lines:['soy','water','orange','tissues','detergent','battery'],decor:['paper lanterns','a vase of flowers for the counter'],
-   why:'Soy for the grill, water for chasers, mandarin juice for the shōchū mixes, table tissues, cloth washing, and batteries for the karaoke microphone. Fresh lanterns when the old ones fade, and one stem on the counter that Thao pretends not to care about.',
-   delivery:'Two crates on the trolley at three, before the noren goes up; Thao signs for it. Flowers on Mondays; lanterns when the typhoon has had the last ones.'},
-  ramen:{name:'Sato Ramen',owner:'Mrs Sato',lines:['soy','tea','detergent'],
-   why:'Soy to top up the tare, tea for the counter, and powder for the towels.',
-   delivery:'At half past ten, while the stock comes up to the boil.'},
+   alcohol:['Umineko lager, kegs and bottles','awamori for the bottle keep','sake for warming','shōchū for the mixes'],
+   why:'Soy for the grill, water for chasers, mandarin juice for the shōchū mixes, table tissues, cloth washing, and batteries for the karaoke microphone. Fresh lanterns when the old ones fade, and one stem on the counter that Thao pretends not to care about. Everything behind the bar too, since the Higas closed: the tap, the keep shelf, the tokkuri and the highballs.',
+   delivery:'Two crates on the trolley at three, before the noren goes up; Thao signs for it. Flowers on Mondays; lanterns when the typhoon has had the last ones. The kegs on Tuesdays and Fridays at a quarter to eleven, rolled down the side passage: Sakura Trading’s round, Kōji’s, or Thao’s own truck from the depot in his weeks at sea.'},
+  ramen:{name:'Sato Ramen',owner:'Mrs Sato',lines:['soy','tea','detergent'],alcohol:['Umineko lager, large bottles'],
+   why:'Soy to top up the tare, tea for the counter, and powder for the towels; and a bottle with the gyōza, for the lunch crowd who are not going back to work.',
+   delivery:'At half past ten, while the stock comes up to the boil; the beer with the round on Tuesdays and Fridays, one crate left at the back door.'},
   onsen:{name:'Umi-no-yu',owner:'Miss Higa',lines:['milk','soda','soap','detergent'],decor:['seasonal flowers for the bandai'],
    why:'Bottled milk and ramune for the fridge by the bandai — the after-bath drink — soap for the washing stools, and powder for the towels. A small vase on the bandai, changed with the season, the first thing a bather sees.',
    delivery:'Mornings before the bath opens; the milk crate is the heaviest thing Thuan carries all week. The flowers every other Friday.'},
@@ -94,9 +95,14 @@ export const ACCOUNTS=Object.freeze({
   koban:{name:'Minato Police Station',owner:'Officer Mori',lines:['water','rice','battery'],stationery:['the incident book','ballpoint pens'],
    why:'Water and a rice ball for the night patrol, batteries for the torch; the incident book has to be the right kind, and pens disappear from a police station.',
    delivery:'Officer Mori collects it himself, at closing, and calls it a patrol.'},
-  'coral-bay-bar':{name:'the Coral Bay Bar on Kitano-jima',contact:'the beach bar keeper',lines:['orange','water'],
-   why:'Mandarin and shikuwasa juice for the children and the drivers, and water for anyone who fell asleep under a parasol.',
-   delivery:'On the morning car ferry, in the Sakura Trading crate that goes over with the Higa ice boxes.'},
+  'coral-bay-bar':{name:'the Coral Bay Bar on Kitano-jima',contact:'the beach bar keeper',lines:['orange','water'],alcohol:['Umineko lager, bottles on ice'],
+   why:'Mandarin and shikuwasa juice for the children and the drivers, water for anyone who fell asleep under a parasol, and cold beer for the day-trippers on Coral Bay, the reason half the morning ferry carries towels.',
+   delivery:'Ice boxes up the ramp for the late-morning car ferry on Tuesdays and Fridays, the juice in the same load; the empties come back on the evening sailing.'},
+  // Mr Fujita's standing order (world/fujita-day.js): the Higas' six o'clock van until their shop closed. The round
+  // leaves the half-week's crates in his shed, two crates by his chair, and takes the empties.
+  'fujita-shed':{name:'Mr Fujita’s shed on the pier',contact:'Mr Fujita',lines:[],alcohol:['Umineko lager, large bottles'],
+   why:'Three to six large bottles an evening, three small glasses a bottle, poured from the armchair in front of the television once he has signed off.',
+   delivery:'With the round on Tuesdays and Fridays: two crates carried out along the pier to his shed and the empties back; at six every morning, signing on, he stands last night’s empties in the crate by the door. Returnable bottles, counted by Thuan.'},
   // The Community Hall's account, the community kitchen's, took on the mayor's office's when the office went
   // (21 October 2026, briefs/town-hall-zone.md phase M): the tea and crackers for the register's visitors, and the
   // wreaths and bunting for the town's ceremonies, which the hall holds now.
@@ -110,23 +116,6 @@ export const ACCOUNTS=Object.freeze({
    why:'Tissues and soap for the waiting room, water for patients, and tinned peaches for anyone kept in overnight.',
    delivery:'Whenever the clinic telephones; it is never urgent and always is.'},
  },
- 'higa-saketen':{
-  market:{name:'Sakura Shōten',owner:'Thuan',lines:['Umineko lager, cases of cans'],
-   why:'The beer column in Sakura’s cold cabinet, nearest the till.',
-   delivery:'Friday mornings at five past eleven (Saturday, until the shop took it as its closing day), Kōji’s kei truck on Higa Liquor’s round in his weeks ashore and Thuan’s trolley across Main Street in his weeks at sea (higa-liquor.js); Thuan counts the cases off.'},
-  izakaya:{name:'Minato Izakaya',owner:'Thao',lines:['Umineko lager, kegs and bottles','awamori for the bottle keep','sake for warming','shōchū for the mixes'],
-   why:'Everything behind Minato’s bar: the tap, the keep shelf, the tokkuri and the highballs.',
-   delivery:'Kegs on Tuesdays and Fridays at a quarter to eleven, rolled down the side passage before the noren goes up: Kōji’s round, or Thao’s own truck in his weeks at sea.'},
-  ramen:{name:'Sato Ramen',owner:'Mrs Sato',lines:['Umineko lager, large bottles'],
-   why:'A bottle with the gyōza, for the lunch crowd who are not going back to work.',
-   delivery:'With the Minato order, one crate left at the back door.'},
-  'coral-bay-bar':{name:'the Coral Bay Bar on Kitano-jima',contact:'the beach bar keeper',lines:['Umineko lager, bottles on ice'],
-   why:'Cold beer for the day-trippers on Coral Bay, the reason half the morning ferry carries towels.',
-   delivery:'Ice boxes up the ramp for the late-morning car ferry on Tuesdays and Fridays; the empties come back on the evening sailing.'},
-  'fujita-shed':{name:'Mr Fujita’s shed on the pier',contact:'Mr Fujita',lines:['Umineko lager, large bottles'],
-   why:'Twenty-four to forty-nine large bottles a day, three small glasses a bottle, poured from the armchair in front of the television.',
-   delivery:'Six every morning at the pier root: the day’s crates down, yesterday’s empties up off his floor. Returnable bottles, counted by Grandmother Higa.'},
- },
 });
 /** Sakura's trade accounts (the business site id → its order). */
 export const TRADE_ACCOUNTS=ACCOUNTS.sakura;
@@ -138,5 +127,5 @@ export const tradeBuyersOf=id=>Object.entries(TRADE_ACCOUNTS).filter(([,a])=>a.l
 export const decorBuyers=()=>Object.entries(TRADE_ACCOUNTS).filter(([,a])=>a.decor?.length).map(([site])=>site);
 /** Who supplies a business with what: [{supplier, lines, why, delivery}]. */
 export const suppliersOf=site=>Object.entries(ACCOUNTS).filter(([,accounts])=>accounts[site]).map(([supplier,accounts])=>({supplier,...accounts[site]}));
-/** Where Sakura's own stock comes from when it is not Thuan's to buy in: beer from the Higas (each product's supplier). */
+/** Where Sakura's own stock comes from when it is not Thuan's to buy in (each product's supplier): nowhere since Higa Liquor closed and the beer became Sakura Trading's own buying (22 October 2026). */
 export const SOURCED_FROM=Object.freeze(Object.fromEntries(PRODUCTS.filter(p=>p.supplier!=='sakura').map(p=>[p.id,p.supplier])));

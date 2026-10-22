@@ -66,7 +66,7 @@ function paintCalendar(ctx,[x0,y0,w,h]){
  const cell=w/7,top=194;['日','月','火','水','木','金','土'].forEach((d,i)=>write(ctx,d,cell*(i+.5),top-20,18,i===0?'#c0392b':i===6?'#1d4f9a':'#2a2a28'));
  for(let d=1;d<=C.days;d++){const k=d+C.firstWeekday-1,col=k%7,row=Math.floor(k/7),cx=cell*(col+.5),cy=top+16+row*48;
   write(ctx,String(d),cx,cy,20,col===0?'#c0392b':col===6?'#1d4f9a':'#2a2a28',{weight:'normal'});
-  // A day can carry two marks (the last Friday's Higa delivery and the month's payments): both are written.
+  // A day can carry two marks (the last Friday's drink round and the month's payments): both are written.
   const marks=C.marks.filter(m=>m.day===d);
   if(marks.length){ctx.strokeStyle='#d7263d';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(cx,cy,15,0,Math.PI*2);ctx.stroke();write(ctx,marks.map(m=>m.text).join(' · '),cx,cy+22,12,'#d7263d',{family:HAND,max:cell-4});}}
  ctx.restore();

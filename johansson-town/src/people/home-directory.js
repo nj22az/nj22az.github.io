@@ -19,7 +19,7 @@ import {airportWorld,airportSurface} from '../world/airport-ground.js';
 /** Read-only directory data. No DOM, renderer, save writes, clock changes or character movement. */
 const ROLES=Object.freeze({Johansson:'Chief engineer',Thuan:'Sakura owner',Thao:'Izakaya owner',Chin:'Ferry motorman and repairman',
  Vy:'School pupil',Nhung:'Doctor, and the town’s paper','Kōji':'Fisherman and catch sorter',Riku:'School pupil','Miss Higa':'Teacher and bathhouse attendant',
- 'Grandmother Higa':'Bathhouse and liquor-shop owner',Tetsuo:'Radio repairer and electrician','Mrs Sato':'Ramen cook',
+ 'Grandmother Higa':'Bathhouse owner',Tetsuo:'Radio repairer and electrician','Mrs Sato':'Ramen cook',
  'Officer Mori':'Police officer','Harbour master':'Harbour master',
  'Mrs Nakamura':'Zenzai and ice-cream shopkeeper',Mai:'School pupil',Mac:'Relief engineer',
  'Ms Uezu':'Ferry bosun','Ms Ganaha':'Port clerk: tickets, parcels and post','Mr Fujita':'Ferry master',

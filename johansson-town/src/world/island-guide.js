@@ -26,7 +26,7 @@ export const ISLAND_PLACES=Object.freeze([
   says:'Five minutes down through the palms from the airport, love. White sand and two benches. Plenty of people take the morning boat just for that. Swimming only between the palms, the notice says, and mind the last ferry: it goes after the evening flight.',
   checks:[['src/world/airport-district.js','Swimming between the palms only'],['src/world/airport-district.js','Last ferry to Minato leaves after the evening flight'],['src/world/airport-district.js','Coral Bay, five minutes down through the palms'],['src/world/airport-district.js','Plenty of people come over on the morning ferry just for this']]},
  {id:'coral-bay-bar',name:'Coral Bay Bar',island:'kitano',kind:'shop',
-  says:'The little bar on the sand at Coral Bay: a cold bottle of Umineko lager for ¥300, or shikuwasa juice for ¥150. Higa Liquor sends the beer over on our boat.',
+  says:'The little bar on the sand at Coral Bay: a cold bottle of Umineko lager for ¥300, or shikuwasa juice for ¥150. Sakura Trading sends the beer over on our boat.',
   checks:[['src/world/airport-district.js','Umineko lager, cold bottle'],['src/world/airport-district.js','shikuwasa']]},
  {id:'turtle-cove',name:'Turtle Cove',island:'kitano',kind:'beach',
   says:'Over the hill past Hinata, round the east side. Green turtles come in on the rising tide to graze, they say. I have never had the patience to wait for one; you bring a book.',

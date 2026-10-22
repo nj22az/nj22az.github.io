@@ -5,24 +5,28 @@ import {installDOM} from './fixtures.mjs';
 import {townCalendarAt} from '../src/town-clock.js';
 import {rotaWeek} from '../src/people/ferry-crew.js';
 import {ACCOUNTS} from '../src/commerce/merchandising.js';
-import {higaLiquorState,higaLiquorKeeper,higaShutterDown,higaDoorsShut,higaRusuCard,higaRoundAt,higaRoundToday,higaDropsOn,
- higaDeliveryBook,HIGA_ROUND,HIGA_FRONT,HIGA_KUSU,YUNTAKU,yuntakuSeatAt,kojiAshore} from '../src/commerce/higa-liquor.js';
+import * as higaLiquor from '../src/commerce/higa-liquor.js';
+import {HIGA_NOTICE,HIGA_KUSU,YUNTAKU,yuntakuSeatAt} from '../src/commerce/higa-liquor.js';
+import {TRADE_ROUND,roundAt,roundToday,roundDropsOn,roundDeliveryBook,kojiAshore} from '../src/commerce/trade-round.js';
+import {SAKURA_BOTTLES} from '../src/commerce/konbini.js';
 import {LAUNDRY_KEEPER,LAUNDRY_VISITS,LAUNDRY_MACHINES,LAUNDRY_NOTICES,laundryVisitsOn,laundryMachinesAt,visitTimeline,
  playerWashStage,freeMachine,laundryNotices} from '../src/commerce/coin-laundry.js';
-import {canonicalDay} from '../src/people/canonical-day.js';
+import {canonicalDay,canonicalDestination} from '../src/people/canonical-day.js';
 import {RESIDENTS} from '../src/people/residents.js';
 import {residentPlan} from '../src/people/social.js';
 import {CAST,PLACES,castMember} from '../src/people/cast.js';
 import {STAND_SEQUENCES} from '../src/people/stand-sequences.js';
-import {HIGA_COUNTER_STAND,LAUNDRY_STANDS,LAUNDRY_SEATS} from '../src/people/shop-days.js';
+import {LAUNDRY_STANDS,LAUNDRY_SEATS} from '../src/people/shop-days.js';
 import {sitOnStand,standUpFromStand,seatedOn} from '../src/people/stand-seat.js';
 import {residentHome} from '../src/people/home-directory.js';
 import {seatEdge} from './seat-edge.mjs';
 
 /**
- * Higa Liquor and the coin laundry (the owner, 21 October 2026; AGENTS.md): who keeps them and when, the 留守 card, the
- * delivery round on Kōji's weeks ashore, the bench of an evening, the laundry's washing days, the machines turning on the
- * clock and the noticeboard's story hooks. Every number here is the data's, so the world and the stories read the same.
+ * Higa Liquor and the coin laundry (the owner, 21 October 2026; AGENTS.md): the laundry's keeper, its washing days, the
+ * machines turning on the clock and the noticeboard's story hooks, and the bench of an evening. Higa Liquor is shut for
+ * good since 22 October 2026 (the owner: Sakura sells and supplies all the alcohol, Kōji's round is Sakura Trading's, the
+ * building stands shut with a notice on it): its notice, the round and the shut front are checked here too. Every number
+ * here is the data's, so the world and the stories read the same.
  */
 installDOM();
 const DAY=1440;
@@ -33,51 +37,49 @@ function dayWith(weekday,ashore=null){
 }
 const at=(day,h,m=0)=>day+h*60+m;
 
-test('the hours: open 9–12 and 17–20, the 留守 card between, the shutter at night, every day',()=>{
- const tue=dayWith(2);
- for(const [h,m,state] of [[8,59,'shut'],[9,0,'open'],[11,59,'open'],[12,0,'away'],[14,0,'away'],[16,59,'away'],[17,0,'open'],[18,30,'open'],[20,0,'shut'],[22,0,'shut']])
-  assert.equal(higaLiquorState(at(tue,h,m)),state,`${h}:${m}`);
- assert.equal(higaShutterDown(at(tue,22)),1,'the shutter is down at night');assert.equal(higaShutterDown(at(tue,14)),0,'and up while she is at the bath');
- assert.equal(higaDoorsShut(at(tue,14)),1,'the doors are shut between the openings');assert.equal(higaDoorsShut(at(tue,10)),0);assert.equal(higaDoorsShut(at(tue,18,30)),0);
- assert.equal(higaRusuCard(at(tue,14)),true,'the card hangs on the door at two');
- for(const h of [10,18,22])assert.equal(higaRusuCard(at(tue,h)),false,'and only then ('+h+')');
- // The doors shut a little after noon, once she has walked out through them, and the shutter rolls in a few seconds.
- assert.equal(higaDoorsShut(at(tue,12,0)),0,'still open as she steps out');const rolling=at(tue,20,0)+HIGA_FRONT.after+HIGA_FRONT.roll/2;assert.ok(higaShutterDown(rolling)>0&&higaShutterDown(rolling)<1,'the shutter is rolling, not popping');
+test('Higa Liquor is shut for good: no hours and no card, a closing notice that sends the regulars to Sakura',()=>{
+ for(const gone of ['higaLiquorState','higaLiquorOpen','higaLiquorKeeper','higaShutterDown','higaDoorsShut','higaRusuCard','HIGA_LIQUOR_HOURS','HIGA_RUSU_CARD','HIGA_COUNTER','HIGA_ROUND'])
+  assert.equal(higaLiquor[gone],undefined,gone+' went with the shop');
+ assert.equal(HIGA_NOTICE.jp,'閉店のお知らせ');assert.ok(HIGA_NOTICE.jpLines.some(l=>/さくら商店/.test(l)),'the paper on the shutter points to Sakura');
+ assert.match(HIGA_NOTICE.en,/Sakura Shōten/);assert.ok(!/[぀-ヿ一-龯]/.test(HIGA_NOTICE.en),'the player reads English');
+ assert.equal(HIGA_NOTICE.who,'Grandmother Higa');
+ // What the counter sold, Sakura sells at its till, at the Higas' prices.
+ assert.deepEqual(SAKURA_BOTTLES.map(b=>[b.id,b.cost]),[['awamori-mini',600],['umineko-large',330],['sake-cup',220]]);
 });
 
-test('Grandmother Higa keeps the counter, Yui on Saturdays; the canonical day puts them behind it',()=>{
+test('nobody keeps the shop: Grandmother Higa keeps only the bath, and Yui no counter on Saturdays',()=>{
  const wed=dayWith(3),sat=dayWith(6);
- assert.equal(higaLiquorKeeper(at(wed,10)),'Grandmother Higa');assert.equal(higaLiquorKeeper(at(wed,18)),'Grandmother Higa');
- assert.equal(higaLiquorKeeper(at(sat,10)),'Miss Higa');assert.equal(higaLiquorKeeper(at(sat,18)),'Miss Higa');
- assert.equal(higaLiquorKeeper(at(wed,14)),null);
- for(const [name,day,h,place] of [['Grandmother Higa',wed,10,'higa-liquor'],['Grandmother Higa',wed,14,'onsen'],['Grandmother Higa',wed,18,'higa-liquor'],['Grandmother Higa',wed,21,'home'],
-  ['Miss Higa',sat,10,'higa-liquor'],['Miss Higa',sat,18,'higa-liquor'],['Miss Higa',sat,21,'onsen'],['Grandmother Higa',sat,10,'home'],['Grandmother Higa',sat,18,'onsen']]){
-  const plan=canonicalDay(name,at(day,h));assert.equal(plan.place,place,`${name} at ${h} on ${townCalendarAt(day).weekday}`);
-  if(place==='higa-liquor'){assert.deepEqual(plan.target,[...HIGA_COUNTER_STAND.at]);assert.equal(plan.stand.pose,'CounterIdle');}
- }
- assert.deepEqual(PLACES['higa-liquor'].keepers,['Grandmother Higa','Miss Higa']);
+ for(const [name,day,h,place] of [['Grandmother Higa',wed,10,'onsen'],['Grandmother Higa',wed,14,'onsen'],['Grandmother Higa',wed,18,'home'],['Grandmother Higa',wed,21,'home'],
+  ['Grandmother Higa',sat,10,'onsen'],['Grandmother Higa',sat,18,'home'],['Miss Higa',sat,10,'onsen'],['Miss Higa',sat,18,'onsen']])
+  assert.equal(canonicalDay(name,at(day,h)).place,place,`${name} at ${h} on ${townCalendarAt(day).weekday}`);
+ for(let d=10000;d<10007;d++)for(const p of CAST)for(let m=0;m<DAY;m+=30)assert.notEqual(canonicalDay(p.name,d*DAY+m)?.place,'higa-liquor',p.name+' is never behind the shut counter');
+ for(const p of CAST)assert.ok(!p.day.some(r=>r[1]==='higa-liquor'),p.name+'’s day has no counter');
+ assert.ok(PLACES['higa-liquor'].closed&&!PLACES['higa-liquor'].keepers,'the place is closed, and keeps nobody');
+ assert.equal(castMember('Grandmother Higa').work,'onsen');
 });
 
-test('the round is Kōji’s on his weeks ashore only, between the ice plant and his sleep, to the shop’s own accounts',()=>{
+test('the round is Sakura Trading’s, Kōji’s on his weeks ashore only, between the ice plant and his sleep',()=>{
  const tueAshore=dayWith(2,true),tueAboard=dayWith(2,false),friAshore=dayWith(5,true),satAshore=dayWith(6,true),wedAshore=dayWith(3,true);
- assert.equal(higaRoundToday(at(tueAshore,10)),true);assert.equal(higaRoundToday(at(tueAboard,10)),false,'never on his weeks aboard');
- assert.equal(higaRoundToday(at(wedAshore,10)),false,'and only on the days with a drop');
- // Sakura's cases come on Friday since the shop took Saturday as its closing day (the owner, 22 October 2026).
- assert.deepEqual(higaDropsOn(at(friAshore,10)).map(s=>s.account),['izakaya','ramen','coral-bay-bar','market']);assert.equal(higaRoundToday(at(satAshore,10)),false,'no round on Saturday');
- assert.deepEqual(higaDropsOn(at(tueAshore,10)).map(s=>s.account),['izakaya','ramen','coral-bay-bar']);
- for(const s of HIGA_ROUND.stops)assert.ok(ACCOUNTS['higa-saketen'][s.account],s.account+' is one of the shop’s accounts');
- assert.deepEqual([...new Set(HIGA_ROUND.stops.map(s=>s.account))].sort(),['coral-bay-bar','izakaya','market','ramen'],'the four customers the owner named');
- // His day around it: the auction and the ice plant before, home to sleep at noon after.
- assert.equal(canonicalDay('Kōji',at(tueAshore,10,45)).place,'higa-round');
+ assert.equal(roundToday(at(tueAshore,10)),true);assert.equal(roundToday(at(tueAboard,10)),false,'never on his weeks aboard');
+ assert.equal(roundToday(at(wedAshore,10)),false,'and only on the days with a drop');assert.equal(roundToday(at(satAshore,10)),false,'no round on Saturday');
+ // The bars and Mr Fujita's shed (the Higas' six o'clock van has gone); Sakura is not a drop: its beer is in the depot.
+ for(const day of [tueAshore,friAshore])assert.deepEqual(roundDropsOn(at(day,10)).map(s=>s.account),['izakaya','ramen','coral-bay-bar','fujita-shed']);
+ for(const s of TRADE_ROUND.stops)assert.ok(ACCOUNTS.sakura[s.account]?.alcohol?.length,s.account+' takes its drink on its Sakura account');
+ assert.ok(!TRADE_ROUND.stops.some(s=>s.account==='market'),'Sakura is not a drop');
+ assert.equal(TRADE_ROUND.driver,'Kōji');assert.equal(TRADE_ROUND.pay,1500);assert.equal(TRADE_ROUND.load.place,'warehouse');
+ // His day around it: the auction and the ice plant before, the depot, the drops, the empties, home to sleep at noon.
+ assert.equal(canonicalDay('Kōji',at(tueAshore,10,35)).place,'trade-round');assert.deepEqual(canonicalDay('Kōji',at(tueAshore,10,35)).target,[...TRADE_ROUND.load.at],'loading at the depot');
+ assert.equal(canonicalDay('Kōji',at(tueAshore,10,45)).place,'trade-round');
  assert.equal(canonicalDay('Kōji',at(tueAshore,9,30)).place,'ice-plant');
- assert.notEqual(canonicalDay('Kōji',at(tueAshore,12,30)).place,'higa-round');
- assert.ok(HIGA_ROUND.start>=9*60&&HIGA_ROUND.end<=12*60);
+ assert.notEqual(canonicalDay('Kōji',at(tueAshore,12,30)).place,'trade-round');
+ assert.ok(TRADE_ROUND.start>=9*60&&TRADE_ROUND.end<=12*60);
  // On his weeks aboard the ship has him, round or no round.
  assert.equal(canonicalDay('Kōji',at(tueAboard,10,45)).place,'ferry');
- for(let m=HIGA_ROUND.start;m<HIGA_ROUND.end;m+=5){const leg=higaRoundAt(at(tueAshore,0)+m);assert.ok(leg&&(leg.place||leg.point),'a leg at '+m);}
- const book=higaDeliveryBook(at(tueAshore,10));
- for(const a of Object.values(ACCOUNTS['higa-saketen']))assert.ok(book.includes(a.name),'the book names '+a.name);
- assert.match(book,/Kōji’s truck/);assert.match(higaDeliveryBook(at(tueAboard,10)),/customers collect/);
+ for(let m=TRADE_ROUND.start;m<TRADE_ROUND.end;m+=5){const leg=roundAt(at(tueAshore,0)+m);assert.ok(leg&&(leg.place||leg.point),'a leg at '+m);}
+ const book=roundDeliveryBook(at(tueAshore,10));
+ assert.match(book,/^Sakura Shōten \(Sakura Trading\) · drink round/);
+ for(const s of TRADE_ROUND.stops)assert.ok(book.includes(ACCOUNTS.sakura[s.account].name),'the book names '+ACCOUNTS.sakura[s.account].name);
+ assert.match(book,/Kōji’s truck/);assert.match(roundDeliveryBook(at(tueAboard,10)),/customers collect/);
  assert.ok(!/[぀-ヿ一-龯]/.test(book),'the book the player reads is English');
 });
 
@@ -89,7 +91,9 @@ test('the family kusu is never sold, and is a story hook',()=>{
 test('the bench: Tetsuo and Mac by their own days in the evening opening, Mr Fujita’s crate empty while he is on watch',()=>{
  const wed=dayWith(3);
  assert.ok(yuntakuSeatAt('Tetsuo',at(wed,18,45)));assert.ok(yuntakuSeatAt('Mac',at(wed,19,45)));
- assert.equal(yuntakuSeatAt('Mac',at(wed,19)),null,'Mac is still aboard at seven');assert.equal(yuntakuSeatAt('Tetsuo',at(wed,20,5)),null,'everyone goes when the shop shuts');
+ assert.equal(yuntakuSeatAt('Mac',at(wed,19)),null,'Mac is still aboard at seven');assert.equal(yuntakuSeatAt('Tetsuo',at(wed,20,5)),null,'everyone goes at eight');
+ // The bench no longer keeps the shop's hours: Saturday's sitters are there too.
+ assert.ok(yuntakuSeatAt('Tetsuo',at(dayWith(6),18,45)));
  assert.equal(yuntakuSeatAt('Mr Fujita',at(wed,19,45)),null);
  const fuji=canonicalDay('Mr Fujita',at(wed,19,45));assert.notEqual(fuji?.place,'higa-bench','sober on the bridge until 22:20');
  const mac=canonicalDay('Mac',at(wed,19,45));assert.equal(mac.place,'higa-bench');assert.equal(mac.stand.seat.height,YUNTAKU.seats.mac.height);assert.equal(mac.stand.held,'beer');
@@ -167,7 +171,7 @@ test('every new day row and stand point of the cast is reachable data',()=>{
 const {createTown}=await import('../src/world/town.js');
 const {createIslandBusinesses}=await import('../src/world/businesses.js');
 const {circleHitsRect,standingHitsRect}=await import('../physics.js');
-const {HIGA_KEEPER_AT}=await import('../src/world/okinawa/higa-liquor-dressing.js');
+const {HIGA_LETTERING,HIGA_FRAME}=await import('../src/world/okinawa/higa-liquor-dressing.js');
 const {laundryPoint,LAUNDRY_ROUND_POINTS}=await import('../src/world/okinawa/coin-laundry-dressing.js');
 globalThis.self=globalThis;
 const scene=new THREE.Scene();
@@ -176,14 +180,14 @@ const solidAt=(x,z,r=.3)=>world.colliders.filter(c=>c&&(c.minY??0)<1.5&&circleHi
 
 test('the people modules’ numbers are the buildings’ (shop-days.js, stand-sequences.js)',()=>{
  const near=(a,b)=>assert.ok(Math.hypot(a[0]-b[0],a[1]-b[1])<1e-9,a+' versus '+b);
- near(HIGA_COUNTER_STAND.at,HIGA_KEEPER_AT);
+ near(TRADE_ROUND.load.at,canonicalDestination('Kōji','warehouse'));
  near(LAUNDRY_STANDS.W1.at,laundryPoint(-1.0,1.4));near(LAUNDRY_SEATS[0].stand,laundryPoint(-.8,-.55));
  const round=STAND_SEQUENCES['laundry-round'].points.map(p=>[p.x,p.z]);
  for(const p of Object.values(LAUNDRY_ROUND_POINTS).slice(0,4))assert.ok(round.some(q=>Math.hypot(q[0]-p[0],q[1]-p[1])<1e-9),'the round stops at '+p);
 });
 
 test('every place somebody stands is clear of every solid, and every seat is on something',()=>{
- const stands=[['the counter',HIGA_COUNTER_STAND.at],['Kōji loading',HIGA_ROUND.load.at],['the crate yard',HIGA_ROUND.empties.point],
+ const stands=[['Kōji loading at the depot',TRADE_ROUND.load.at],['the crate yard',TRADE_ROUND.empties.point],
   ...Object.entries(YUNTAKU.seats).map(([k,s])=>['bench '+k,s.stand]),...Object.entries(LAUNDRY_STANDS).map(([k,s])=>['laundry '+k,s.at]),
   ...LAUNDRY_SEATS.map(s=>['laundry bench',s.stand])];
  for(const [what,[x,z]] of stands)assert.deepEqual(solidAt(x,z).map(c=>c.id),[],what+' is clear');
@@ -202,13 +206,18 @@ test('the bench’s front edge is where its slats end: the sitters’ shins hang
  }
 });
 
-test('the hours move the front: open doors by day, the card and shut doors at two, the shutter at night',()=>{
+test('the shut front at every hour: the shutter down, the doors shut, the lights off, the notice on the shutter',()=>{
  const {higa,coinLaundry}=world.quarters,wed=dayWith(3),doorway=[5.9,8.4];
  const blocked=()=>world.colliders.some(c=>(c.id==='higa-doors'||c.id==='higa-shutter')&&standingHitsRect(doorway[0]+.25,doorway[1],.28,0,c));
- higa.update(at(wed,10));assert.equal(higa.card.visible,false);assert.equal(blocked(),false,'in through the doors at ten');
- higa.update(at(wed,14));assert.equal(higa.card.visible,true,'the 留守 card at two');assert.equal(blocked(),true,'the doors are shut');assert.equal(higa.shutter.visible,false);
- higa.update(at(wed,18,30));assert.equal(blocked(),false);assert.ok(higa.lights.emissiveIntensity>0,'the tubes are on in the evening opening');
- higa.update(at(wed,22));assert.equal(higa.shutter.visible,true,'the shutter is down');assert.equal(higa.lights.emissiveIntensity,0,'and the lights are off');
+ assert.equal(higa.update,undefined,'nothing on the front follows the clock');assert.equal(higa.card,undefined,'no 留守 card');
+ for(const [h,m] of [[10,0],[14,0],[18,30],[22,0]]){
+  for(const hourly of world.hourly)hourly(at(wed,h,m));
+  assert.equal(blocked(),true,`nobody walks in at ${h}:${m}`);assert.equal(higa.shutter.visible,true,'the shutter is down');assert.equal(higa.lights.emissiveIntensity,0,'and the lights are off');
+ }
+ // The notice is taped to the shutter's face, in front of the steel and not through it.
+ const notice=HIGA_LETTERING.notice,face=HIGA_FRAME.D-.15+.01;
+ assert.ok(notice.at[2]>face&&notice.at[2]-face<.01,'the notice sits on the shutter');
+ assert.ok(Math.abs(notice.at[0])+notice.w/2<HIGA_FRAME.open&&notice.at[1]-notice.h/2>.08,'within the shutter');
  // The laundry: the doctor's washing goes round on Wednesday night, the drum turning and his basket on the machine.
  coinLaundry.update(at(wed,21,30));const w3=coinLaundry.machines.find(m=>m.id==='W3');assert.equal(w3.load.visible,true);assert.equal(w3.basket.visible,true);
  const a=w3.load.rotation.x;coinLaundry.update(at(wed,21,30)+.02);assert.notEqual(w3.load.rotation.x,a,'the drum turns');

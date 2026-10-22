@@ -56,16 +56,19 @@ test('Nakamura Zenzai after hours: the shutter down over the counter shares no p
  assert.deepEqual(shut.map(where),[]);
 });
 
-test('Higa Liquor and the coin laundry: the shut doors, the card and the shutter, and the turning machines share no plane',()=>{
- // The two buildings and their pavements only (Higa Liquor on the east row, the coin laundry on the yard row).
+test('Higa Liquor and the coin laundry: the shut front with its notice, and the turning machines share no plane',()=>{
+ // The two buildings and their pavements only (Higa Liquor on the east row, the coin laundry on the yard row). Higa
+ // Liquor is shut for good since 22 October 2026: the doors shut, the shutter down and the closing notice taped to it, at
+ // every hour; nothing on it follows the clock.
  const shops=[{minX:2,maxX:15,minZ:4,maxZ:12.5},{minX:-17,maxX:-6,minZ:16,maxZ:25}],{higa,coinLaundry}=town.quarters;
- // A Wednesday (town day 10002): two in the afternoon (doors shut, card up), ten at night (shutter down, the doctor's
- // washing in the dryer and his basket on the counter).
+ assert.equal(higa.update,undefined);assert.ok(higa.shutter.visible);
+ // A Wednesday (town day 10002): two in the afternoon, ten at night (the doctor's washing in the dryer and her basket on
+ // the counter).
  for(const minutes of [10002*1440+14*60,10002*1440+22*60]){
-  higa.update(minutes);coinLaundry.update(minutes,{machine:'W1',start:minutes-5});scene.updateMatrixWorld(true);
+  coinLaundry.update(minutes,{machine:'W1',start:minutes-5});scene.updateMatrixWorld(true);
   assert.deepEqual(coplanarOverlaps(scene,{regions:shops,tolerance:TOLERANCE,minArea:OWNER_AREA,skip:moving}).map(where),[],'at '+(minutes%1440)/60);
  }
- higa.update(12*60);coinLaundry.update(12*60);
+ coinLaundry.update(12*60);
 });
 
 test('the scan finds what it is for: a pane laid in a wall, and nothing where a decal is offset or a face is buried',()=>{

@@ -43,11 +43,12 @@ test('the depot’s delivery note bills the account’s own lines at the trade p
  assert.equal(d.totals.total,sum(d.rows,3));assert.equal(d.totals.subtotal,d.totals.total);assert.equal(d.totals.tax,includedTax(d.totals.total));
 });
 
-test('Higa Liquor bills the lager by the case at its unit cost, plus the crate deposit',()=>{
- const h=paper('higa-invoice'),beer=stockSpec('beer');
- for(const [,cases,perCase,amount] of h.rows){assert.equal(perCase,24*beer.unitCost);assert.equal(amount,cases*perCase);}
- assert.equal(h.totals.goods,sum(h.rows,3));assert.equal(h.totals.crates,sum(h.rows,1));
- assert.equal(h.totals.deposit,h.totals.crates*300);assert.equal(h.totals.total,h.totals.goods+h.totals.deposit);
+// Higa Liquor's invoice went with its trade (Sakura Trading's since 22 October 2026, when the shop closed): the lager is
+// Sakura's own buying, as everything in the stock book.
+test('no Higa Liquor invoice any more; the lager is Sakura Trading’s own buying',()=>{
+ assert.equal(papers.some(p=>p.id==='higa-invoice'),false);
+ assert.deepEqual(papers.map(p=>p.id),['till-roll','stock-book','rota','delivery-izakaya']);
+ assert.equal(stockSpec('beer').unitCost>0,true);assert.match(paper('stock-book').notes.join(' '),/Sakura Trading’s own buying, the lager too/);
 });
 
 // Front-Row's stationery invoice went with its trade (Sakura's since 22 October 2026): the shop's own stationery list stays.

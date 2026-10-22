@@ -621,7 +621,7 @@
         ]
       },
       "capacity": 24,
-      "supplier": "higa-saketen",
+      "supplier": "sakura",
       "drink": {
         "alcohol": true,
         "container": "can",

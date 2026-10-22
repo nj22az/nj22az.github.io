@@ -243,6 +243,16 @@ export const HOT_SNACKS=Object.freeze([
  {id:'oden',jp:"Oden",name:'Oden cup',cost:200,unitCost:80,line:'Daikon, egg and a fish cake from the pot, with a ladle of broth and a dab of karashi.'},
 ]);
 const HOT_BY_ID=new Map(HOT_SNACKS.map(s=>[s.id,s]));
+/**
+ * The bottles over the counter (the owner, 22 October 2026: Higa Liquor has closed, and Sakura sells all the alcohol): what
+ * Grandmother Higa's counter sold, kept in the stock room behind the till and handed over by whoever has it, at the
+ * Higas' prices. The cans of lager stay in the cold cabinet's column nearest the till (products-data.js beer).
+ */
+export const SAKURA_BOTTLES=Object.freeze([
+ Object.freeze({id:'awamori-mini',name:'Awamori miniature (180 ml)',cost:600,item:'Awamori miniature',text:'A little 180 ml bottle of island awamori, 30 per cent, wrapped in newspaper the way the Higas wrapped them. Keep it for a guest, Thuan says.'}),
+ Object.freeze({id:'umineko-large',name:'Umineko lager, large bottle',cost:330,item:'Umineko lager',text:'A large returnable bottle from the stock room, ¥5 back on the empty. Bring the bottle back, Thuan says; they go back to the depot.'}),
+ Object.freeze({id:'sake-cup',name:'One-cup sake',cost:220,item:'One-cup sake',text:'A glass cup of sake with a ring-pull lid, the kind a man takes to the bench outside the old liquor shop.'}),
+]);
 
 /** Buys one hot snack at the counter: cash, straight into the bag, rung into the till. */
 export function buyHotSnack(state,id,minutes=0,thuanAvailable=true){

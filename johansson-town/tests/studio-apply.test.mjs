@@ -383,7 +383,8 @@ test('products: refused in plain words, and nothing written: real brands, an emp
    [change([update({capacity:25})]),/beer's 25 do not share out evenly over its 3 shelves/],
    [change([update({capacity:48})]),/beer would stand 4 deep .*at most 2 deep fits the cold cabinet/],
    [change([update({price:9})]),/from ¥10 to ¥5000/],[change([update({price:220.5})]),/from ¥10 to ¥5000/],
-   [change([update({supplier:'sakura'})]),/All the alcohol in town comes from Higa Liquor/],
+   // Sakura Trading is the town's one supplier since Higa Liquor closed (22 October 2026): the beer cannot go back to the Higas.
+   [change([update({supplier:'higa-saketen'})]),/"higa-saketen" supplies nothing in town; the suppliers are sakura/],
    [change([update({name:'Umineko Gold'})]),/cannot be renamed yet/],
    [change([update({id:'lager'},{id:'beer'})]),/save key/],
    [change([update({inventoryName:'Lager'},{inventoryName:'Umineko lager'})]),/what old saves keep in the bag/],

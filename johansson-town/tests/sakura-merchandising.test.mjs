@@ -39,16 +39,21 @@ test('Sakura supplies every business in town, with lines it really stocks',async
  for(const [site,a] of Object.entries(TRADE_ACCOUNTS)){
   assert.ok(new RegExp(`id:'${site}'|'${site}'`).test(sources),site+' is a real place in town');
   assert.ok(a.owner?residents.has(a.owner):a.contact,(a.owner||a.contact)+' orders for '+a.name);
-  assert.ok(a.lines.length&&a.lines.every(l=>stock.has(l)),a.name+' orders lines Sakura stocks');
+  // An account orders shelf lines, or only drink (Mr Fujita's shed: the beer, since the Higas' van went).
+  assert.ok((a.lines.length||a.alcohol?.length)&&a.lines.every(l=>stock.has(l)),a.name+' orders lines Sakura stocks');
   assert.ok(a.why.length>30&&a.delivery.length>20,a.name+' says why and when');
  }
  for(const id of ['izakaya','ramen','onsen','frontrow','form3d','office'])assert.ok(TRADE_ACCOUNTS[id],id+' buys from Sakura');
- // Alcohol comes from the Higas; Sakura sells none on account. Office supplies are Sakura's since 22 October 2026 (Front-Row's,
- // when Nhung became the island doctor): named `stationery` goods on an account, never shelf lines.
+ // Alcohol is Sakura Trading's since Higa Liquor closed (22 October 2026): named `alcohol` goods on an account, never shelf
+ // lines. Office supplies are Sakura's since the same day (Front-Row's, when Nhung became the island doctor): named
+ // `stationery` goods on an account, never shelf lines.
  const {ACCOUNTS,SUPPLIERS,suppliersOf}=await import('../src/commerce/merchandising.js');
  for(const a of Object.values(TRADE_ACCOUNTS))assert.ok(!a.lines.includes('beer')&&!a.lines.includes('notebook'),a.name+' gets alcohol and stationery from their own suppliers');
- assert.ok(suppliersOf('izakaya').some(s=>s.supplier==='higa-saketen'),'Higa Liquor supplies Minato');
- assert.ok(ACCOUNTS['higa-saketen'].market,'Higa Liquor supplies Sakura');
+ assert.equal(SUPPLIERS['higa-saketen'],undefined,'Higa Liquor supplies nothing since it closed');assert.equal(ACCOUNTS['higa-saketen'],undefined);
+ assert.ok(SUPPLIERS.sakura.alcohol.length>=4&&/beer, awamori, sake and shōchū/.test(SUPPLIERS.sakura.goods),'Sakura supplies the drink');
+ assert.deepEqual(suppliersOf('izakaya').map(s=>s.supplier),['sakura'],'Minato has one supplier');
+ for(const site of ['izakaya','ramen','coral-bay-bar','fujita-shed'])assert.ok(TRADE_ACCOUNTS[site].alcohol?.length&&TRADE_ACCOUNTS[site].alcohol.every(l=>typeof l==='string'&&l.length>3),site+' takes its drink from Sakura');
+ assert.deepEqual(Object.keys(TRADE_ACCOUNTS).filter(site=>TRADE_ACCOUNTS[site].alcohol).sort(),['coral-bay-bar','fujita-shed','izakaya','ramen'],'the round’s four customers, and nobody else on account');
  assert.equal(SUPPLIERS.frontrow,undefined,'Front-Row supplies nothing since Nhung became the doctor');assert.equal(ACCOUNTS.frontrow,undefined);
  assert.ok(SUPPLIERS.sakura.stationery.length>=5&&/stationery/.test(SUPPLIERS.sakura.goods),'Sakura supplies the stationery');
  for(const site of ['office','community-kitchen','school','koban'])assert.ok(TRADE_ACCOUNTS[site].stationery?.length&&TRADE_ACCOUNTS[site].stationery.every(l=>typeof l==='string'&&l.length>3),site+' takes its stationery from Sakura');

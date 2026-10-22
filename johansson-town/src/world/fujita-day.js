@@ -20,10 +20,11 @@ import {FERRY_WORKING_DAY} from '../people/ferry-crew.js';
  * ballgame now and then (a home run, a bad call); the news and the drama hardly ever.
  * The more he has had, the easier he laughs.
  *
- * The beer. Umineko lager in the large returnable bottles, from Higa Liquor (see
- * commerce/merchandising.js ACCOUNTS['higa-saketen']['fujita-shed']): the Higas' van stops at the
- * pier root at six every morning, leaves a crate and takes last night's empties back, so
- * the floor round his chair is clear when he comes in from the boat. He drinks between
+ * The beer. Umineko lager in the large returnable bottles, from Sakura Trading (see
+ * commerce/merchandising.js ACCOUNTS.sakura['fujita-shed']; the Higas' six o'clock van until their shop
+ * closed): the round leaves two crates in the shed on Tuesdays and Fridays, and at six every morning he
+ * stands last night's empties in the crate by the door, so the floor round his chair is clear when he
+ * comes in from the boat. He drinks between
  * three and six bottles an evening (the day decides), from a small glass he fills three
  * times a bottle, pouring with his left hand without getting out of the chair. A glass
  * goes down sip by sip; when it is empty he pours the next; he never puts an empty back
@@ -34,7 +35,7 @@ import {FERRY_WORKING_DAY} from '../people/ferry-crew.js';
 export const FUJITA_DAY=Object.freeze({
  start:FERRY_WORKING_DAY.signOff, // signed off from the last boat back from Kitano-jima: the first bottle (23:15)
  end:24*60+45,            // the set goes off after midnight (00:45); he goes aboard Shiosai
- collect:6*60,            // the Higas' van: last night's empties go, a crate comes
+ collect:6*60,            // signing on at six: last night's empties into the crate by the door
  min:3,max:6,             // bottles an evening
  glassesPerBottle:3,      // a large bottle fills his small glass three times
  pour:.1,                 // minutes a pour takes (six seconds)

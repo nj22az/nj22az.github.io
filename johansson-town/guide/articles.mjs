@@ -122,11 +122,11 @@ export const ARTICLES={
  },
  'Grandmother Higa':{
   headline:'Grandmother Higa has a seat for you and an opinion about your onions',
-  standfirst:'She owns the bath and the liquor shop, and she knows the ferry by its whistle. From her verandah in Nishi-machi she keeps an eye on the rest.',
+  standfirst:'She owns the bath, and she knows the ferry by its whistle. Her liquor shop on Main Street is shut, a notice on the shutter; from her verandah in Nishi-machi she keeps an eye on the rest.',
   body:[
-   'Sit a moment, she says, and you will. Grandmother Higa offers a seat, an observation about Sakura, and practical advice on preparing a house for typhoon season, in that order. She keeps the counter at Higa Liquor in the morning and the bandai at Umi-no-yu in the afternoon. Every bottle on the island, at Sakura, Minato, Sato Ramen or the master’s crate on the pier, came through her door first.',
+   'Sit a moment, she says, and you will. Grandmother Higa offers a seat, an observation about Sakura, and practical advice on preparing a house for typhoon season, in that order. She keeps the bandai at Umi-no-yu by day. Her liquor shop on Main Street stands shut since the drink went to Sakura: the notice on the shutter is in her brush hand, and every bottle on the island, at Minato, Sato Ramen or the master’s crate on the pier, comes from Thuan’s depot now. She has an opinion about that too.',
    'Her granddaughter teaches the island school and keeps the bandai in the evenings. Grandmother Higa would like her married, and says so. She has noticed that Tetsuo, who keeps her boiler running for a bath and his supper, takes his time over the pumps. She sends him through the front way, past the bandai, on purpose.',
-   'Mr Fujita soaks his back whenever the sailings let him and tells her the water is never hot enough. She tells Nhung, the doctor, the same about her advice on her blood pressure. Her husband drove the island bus for thirty years; when the Minato Maru is late she hears it in the whistle, and the master hears about it at the liquor counter.',
+   'Mr Fujita soaks his back whenever the sailings let him and tells her the water is never hot enough. She tells Nhung, the doctor, the same about her advice on her blood pressure. Her husband drove the island bus for thirty years; when the Minato Maru is late she hears it in the whistle, and the master hears about it at the bandai.',
   ],
   quote:'You are the one who talks to the girl at Sakura every day. Good. Somebody should.',
   photos:[shot('Wave','smile','cream','sepia','Sit a moment. The verandah, Nishi-machi.'),shot('Point','thinking','mint','film','That is not a shallot.')],
