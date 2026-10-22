@@ -1,7 +1,8 @@
 # Minato food service — visual and runtime review
 
 Branch: `codex/izakaya-food-service`. Baseline: main `8e234f1bb407611d37101247eff0f56c1facb5f3`.
-Status: draft review, not merged or published; owner visual approval pending.
+Status: [draft PR #350](https://github.com/nj22az/nj22az.github.io/pull/350), not merged or published; owner visual approval pending.
+Implementation commit: `648fabc74902934d5c5cb2c42ca9a3e92aef87cf`. Hosted CI was still running at the last inspection.
 
 ![Before and after](comparison.jpg)
 

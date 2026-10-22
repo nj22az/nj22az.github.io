@@ -3,7 +3,11 @@
 ## State and integration
 
 Implemented on `codex/izakaya-food-service`, from main `8e234f1bb407611d37101247eff0f56c1facb5f3`.
+Implementation commit: `648fabc74902934d5c5cb2c42ca9a3e92aef87cf`.
+Draft review: [PR #350](https://github.com/nj22az/nj22az.github.io/pull/350).
 PR #341 was verified merged. The existing merged drink service was reused rather than replaced.
+GitHub World guard and Linux console acceptance started on the implementation commit and were still running at the
+last inspection; local passing tests are not a claim that these hosted checks have finished.
 This branch is for visual review; **not merged or published**. Do not merge without the owner's approval of the photos
 and a green GitHub World guard. The morning World handoff and its referenced handoffs still apply.
 
