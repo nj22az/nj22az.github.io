@@ -151,7 +151,7 @@ import { circleHitsRect,circleHitsCircle,standingHitsRect,canStepBetween,roomBou
 import {useTownColour} from './render/single-pass-colour.js';
 import { createCelPass } from './render/cel.js?snappy=1';
 import { createInkPipeline, GRADE_DEFAULTS } from './render/ink-pipeline.js?snappy=1';
-import {LOOKS,readLook,writeLook,lookCSS,lookNeedsPipeline,lookIsHeavy} from './render/looks.js';
+import {LOOKS,isLook,clearSavedLook,lookCSS,lookNeedsPipeline,lookIsHeavy} from './render/looks.js';
 import {createFreeCamera} from './input/free-camera.js';
 import {createLookPicker,lookSwatch} from './ui/look-picker.js';
 import {svg as uiIcon} from './ui/icons.js';
@@ -333,19 +333,20 @@ function compileTown(object,{async=false}={}){
  }catch{}finally{renderer.setRenderTarget(previous);}
 }
 /**
- * The chosen look (render/looks.js, Settings · Look in the Town book). With the ink pipeline it is the pipeline's last
+ * The chosen look (render/looks.js; Town tools › Look, or the free camera), for this visit only. With the ink pipeline it is the pipeline's last
  * pass; without it only the colour looks show, as a CSS filter on the canvas. A filter someone else put on the canvas
  * (the photo studio's film) is left alone.
  */
-let look=readLook(globalThis.localStorage),lookFilter='';
-if(handheld&&lookIsHeavy(look))look='none';
+// Every start is Natural, whichever look was used last time (the owner, 22 October 2026).
+let look='none',lookFilter='';
+clearSavedLook(globalThis.localStorage);
 function applyLook(){
  pipeline?.setLook(look);
  const css=pipeline?'none':lookCSS(look),want=css==='none'?'':css,el=renderer.domElement;
  if(el.style.filter===lookFilter)el.style.filter=want;
  lookFilter=want;
 }
-function setLook(name){look=writeLook(globalThis.localStorage,name);applyLook();}
+function setLook(name){look=isLook(name)?name:'none';applyLook();}
 /** The looks this device can draw, in menu order: the free camera's L and Look button step through them. Oil painting is
  * left off phones and tablets, whose GPUs would drop frames on its 64 samples a pixel. */
 const drawableLooks=()=>Object.keys(LOOKS).filter(id=>(graphics.postprocess||!lookNeedsPipeline(id))&&!(handheld&&lookIsHeavy(id)));
@@ -379,7 +380,7 @@ window.__JOHANSSON_LOOK__={get ink(){return !!pipeline;},get inkFailures(){retur
  },
  // Live knobs, so the look can be judged against the town instead of against numbers.
  tune:v=>pipeline?.tune(v),
- // The chosen look (Settings · Look), readable and settable for audits.
+ // The chosen look (Town tools › Look), readable and settable for audits.
  get style(){return look;},setStyle:name=>setLook(name),
  flatten:v=>celPass.setFlatten(v),
  get lights(){return {ambient,bounce,uplight,sun};},

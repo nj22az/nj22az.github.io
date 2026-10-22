@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createInkPipeline} from '../src/render/ink-pipeline.js';
-import {LOOKS,LOOK_KEY,readLook,writeLook,lookCSS,lookNeedsPipeline,lookIsHeavy,lookFragment} from '../src/render/looks.js';
+import {LOOKS,LOOK_KEY,isLook,clearSavedLook,lookCSS,lookNeedsPipeline,lookIsHeavy,lookFragment} from '../src/render/looks.js';
 
 function fakeRenderer(){
  const calls=[];
@@ -46,15 +46,13 @@ test('Natural adds no pass; a look adds exactly one, and the chain still ends on
  pipeline.dispose();
 });
 
-test('the choice is remembered, and junk or a blocked store reads as Natural',()=>{
- const store=new Map(),storage={getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v)};
- assert.equal(readLook(storage),'none');
- assert.equal(writeLook(storage,'manga'),'manga');
- assert.equal(store.get(LOOK_KEY),'manga');
- assert.equal(readLook(storage),'manga');
- store.set(LOOK_KEY,'__proto__');assert.equal(readLook(storage),'none');
- assert.equal(readLook({getItem(){throw new Error('blocked');}}),'none');
- assert.equal(readLook(null),'none');
+test('nothing is remembered: an old saved look is cleared, and only real looks are accepted',()=>{
+ const store=new Map([[LOOK_KEY,'manga']]),storage={removeItem:k=>store.delete(k)};
+ clearSavedLook(storage);assert.equal(store.has(LOOK_KEY),false);
+ assert.doesNotThrow(()=>clearSavedLook({removeItem(){throw new Error('blocked');}}));
+ assert.doesNotThrow(()=>clearSavedLook(null));
+ assert.ok(isLook('manga')&&isLook('none'));
+ assert.ok(!isLook('__proto__')&&!isLook('nonsense'));
 });
 
 test('reduced graphics keep the colour looks as a CSS filter and offer nothing they cannot draw',()=>{

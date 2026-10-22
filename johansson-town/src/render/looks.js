@@ -36,10 +36,11 @@ export const LOOKS=Object.freeze({
  oil:{label:'Oil painting',short:'Oil',hint:'Thick brushwork on canvas.',heavy:true},
 });
 
+/** Where an earlier build saved the look. The owner (22 October 2026): every start is Natural, whatever was used last, so
+ * the choice is not saved any more and an old saved one is removed (clearSavedLook). */
 export const LOOK_KEY='johansson-town-look';
 export const isLook=name=>Object.hasOwn(LOOKS,name);
-export function readLook(storage){try{const v=storage?.getItem(LOOK_KEY);return isLook(v)?v:'none';}catch{return 'none';}}
-export function writeLook(storage,name){const look=isLook(name)?name:'none';try{storage?.setItem(LOOK_KEY,look);}catch{}return look;}
+export function clearSavedLook(storage){try{storage?.removeItem(LOOK_KEY);}catch{}}
 /** The CSS filter for the canvas when there is no pipeline to run the look: only the colour looks have one. */
 export const lookCSS=name=>LOOKS[name]?.css||'none';
 /** Whether a look can show at all without the ink pipeline. */
