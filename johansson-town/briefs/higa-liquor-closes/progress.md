@@ -100,5 +100,5 @@ its base. Its findings, all fixed in the second commit unless said:
 - The economy model does not know Sakura's Saturday closing (see the review).
 
 ## Next action
-See checks.md for the evaluator's results. Then: the owner looks at the before/after photographs and merges the doctor PR
-(#362) first and this one after it, each on their word.
+Every check in checks.md passes. The owner looks at the before/after photographs and merges the doctor PR (#362) first
+and this one after it, each on their word (see HANDOVER.md for this PR's number).
