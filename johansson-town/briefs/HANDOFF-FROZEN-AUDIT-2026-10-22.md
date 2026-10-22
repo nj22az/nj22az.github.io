@@ -12,7 +12,7 @@ the selected file was still outside the guard and failed locally.
 - Branch: `codex/frozen-audit-guard`.
 - PR: [#368](https://github.com/nj22az/nj22az.github.io/pull/368).
 - Implementation commit: `fc00962b7c8f33802b8085517bf1523772af2cb1`.
-- Delivery: implemented on the PR branch; not merged, deployed or released.
+- Delivery: merged to main on the owner’s instruction, squash `67856af51864165014f12299966065411b3eb381`; no Linux package release performed by this task.
 
 ## Fix
 
@@ -48,3 +48,12 @@ groups were not rerun or recounted.
 Next: inspect GitHub checks and merge PR #368
 only on the owner's instruction, following the repository's merge rule. Keep
 the remaining afternoon-handoff issues open; this resolves one test file only.
+
+## Merge addendum — 2026-10-22T22:30:07+02:00
+
+The owner instructed “Merge to main then fix next”. PR #368 was squash-merged
+after the [GitHub guard](https://github.com/nj22az/nj22az.github.io/actions/runs/39848342531)
+passed on final head `78ddd90be39d9fc223ed48c02c49c6b9470a6190`. Linux CI was
+still running at the merge; no Linux acceptance result is claimed here. Main now
+contains the repair. The next selected failure is covered by
+[the save-consolidation handover](HANDOFF-SAVE-CONSOLIDATION-2026-10-22.md).
