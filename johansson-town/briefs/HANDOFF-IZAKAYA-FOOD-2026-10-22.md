@@ -4,12 +4,16 @@
 
 Implemented on `codex/izakaya-food-service`, from main `8e234f1bb407611d37101247eff0f56c1facb5f3`.
 Implementation commit: `648fabc74902934d5c5cb2c42ca9a3e92aef87cf`.
-Draft review: [PR #350](https://github.com/nj22az/nj22az.github.io/pull/350).
+Merged review: [PR #350](https://github.com/nj22az/nj22az.github.io/pull/350).
 PR #341 was verified merged. The existing merged drink service was reused rather than replaced.
-GitHub World guard and Linux console acceptance started on the implementation commit and were still running at the
-last inspection; local passing tests are not a claim that these hosted checks have finished.
-This branch is for visual review; **not merged or published**. Do not merge without the owner's approval of the photos
-and a green GitHub World guard. The morning World handoff and its referenced handoffs still apply.
+The owner reviewed the captured screenshots and authorised integration: "Merge to main and sign off in handover".
+PR #350 was squash-merged on 22 October 2026 as `16407e2822ce2379fb0661042d2c21ddd7334c8d`.
+The approved head was `2a93876f7e631650a9bc4cbaf0960767d16515c0`; GitHub World guard
+[run 39737568380](https://github.com/nj22az/nj22az.github.io/actions/runs/39737568380) and Linux console acceptance
+[run 39737568313](https://github.com/nj22az/nj22az.github.io/actions/runs/39737568313) both completed successfully.
+Main remained at the branch's base before integration, so no runtime conflict resolution or rebuild was needed.
+**Signed off for main following owner visual approval and passing hosted checks.** The morning World handoff and its
+referenced handoffs still apply. This sign-off does not claim a verified Pages deployment or a new Linux release.
 
 ## Behaviour
 
@@ -49,6 +53,6 @@ consistent with the morning handoff's known failures; that unrelated fixture was
 
 ## Next
 
-1. Read the final QA results and review the before/after and seven actual service beats with the owner.
-2. After visual approval and a green GitHub guard, squash-merge; rebuild against fresh main if runtime files conflict.
+1. Implementation and owner visual approval are complete; PR #350 is merged into main. No food-service integration work remains.
+2. Physical iPhone/Safari and Steam Deck checks remain outstanding. Hosted Linux console acceptance passed; it is not a physical-device test.
 3. Linux release integration is a separate action. No installer, release version or published download was changed here.
