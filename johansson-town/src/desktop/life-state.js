@@ -31,29 +31,20 @@ export function restoreLife(raw,roster){
   people[p.name]={home:p.home.id,...(point&&[point.x,point.z,point.yaw].every(Number.isFinite)&&Math.abs(point.x)<2000&&Math.abs(point.z)<2000?{checkpoint:{x:point.x,z:point.z,yaw:point.yaw,atHome:!!point.atHome}}:{})};
  }
  const tempers={};
- for(const [key,value] of Object.entries(raw?.tempers||{}).slice(-400)){
+ for(const [key,value] of Object.entries(raw?.version===2?raw.tempers||{}:{}).slice(-400)){
   const pair=key.split('\u0000').map(canonicalResidentName);
   if(pair.length===2&&pair.every(name=>names.has(name))&&value&&Number.isFinite(value.at)&&Number.isInteger(value.count))tempers[pair.join('\u0000')]={at:value.at,count:Math.max(0,Math.min(4,value.count)),cooldown:Number.isFinite(value.cooldown)?value.cooldown:0};
  }
  const active=canonicalResidentName(typeof raw?.active==='string'?raw.active:'');
- return {version:1,active:names.has(active)?active:'Johansson',people,tempers};
-}
-export function canQuarrel(a,b){
- if(a===b)return false;
- const members=[castMember(a),castMember(b)];
- if(members.some(p=>p&&p.age!==null&&p.age<18))return false;
- // Keep the established family alliance; hurtful words still end the conversation.
- const family=new Set(['Johansson','Thuan','Thao','Nhung']);
- return !(family.has(a)&&family.has(b));
+ return {version:2,active:names.has(active)?active:'Johansson',people,tempers};
 }
 export function insultResident(life,target,minutes){
  const key=life.active+'\u0000'+target,old=life.tempers[key];
  if(target===life.active)return {kind:'self',count:0};
  if(old?.cooldown>minutes)return {kind:'leave',count:old.count,text:target+' wants some space. Leave them alone for now.'};
  const count=old&&minutes>=old.at&&minutes-old.at<=20?Math.min(4,old.count+1):1;
- const fight=count>=4&&canQuarrel(life.active,target);
  life.tempers[key]={at:minutes,count,cooldown:count>=4?minutes+1440:0};
  const lines=['There is no need for that.','Enough. Stop insulting me.','Last warning. Back off.','You have pushed this too far.'];
- return {kind:fight?'fight':count>=4?'leave':'warning',count,text:target+': “'+(count>=4&&!fight?'I’m not listening to this. We’re done.':lines[count-1])+'”'};
+ return {kind:count>=4?'leave':'warning',count,text:target+': “'+(count>=4?'I’m not listening to this. We’re done.':lines[count-1])+'”'};
 }
 export function apologiseTo(life,target){delete life.tempers[life.active+'\u0000'+target];}

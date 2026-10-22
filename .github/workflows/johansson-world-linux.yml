@@ -42,6 +42,8 @@ jobs:
         run: |
           steam-deck/node_modules/.bin/playwright install --with-deps chromium
           node steam-deck/tools/control-repair-smoke.cjs
+      - name: Verify packaged site without network access
+        run: node steam-deck/tools/offline-browser-smoke.cjs
       - name: Start real offline Linux application
         env:
           WORLD_SCREENSHOT: steam-deck/dist/linux-world.png
