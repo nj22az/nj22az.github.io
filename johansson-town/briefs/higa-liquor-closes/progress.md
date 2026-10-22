@@ -18,11 +18,12 @@ becomes Sakura Trading's, and the building stands shut with a notice on it." Don
   left is the closing notice (`HIGA_NOTICE`), the family kusu and the yuntaku bench (no longer tied to the shop's hours).
 - `commerce/trade-round.js` (new): Sakura Trading's round, Kōji's on his weeks ashore, Tuesdays and Fridays from 10:30:
   loading at the depot in the Quay Warehouse (a world point, the canonical day's `warehouse`), Minato, Sato Ramen, the
-  ferry ramp for the Coral Bay Bar, Mr Fujita's shed, the empties to the crate yard; its delivery book is read in
+  Port Terminal's freight counter for the Coral Bay Bar's ice boxes (the 14:45 boat), Mr Fujita's shed, the empties to
+  the crate yard; its delivery book is read in
   Sakura's back office ("Read the drink round's book").
 - Merchandising: one supplier, Sakura, with `alcohol` on its record and `alcohol` lines on the accounts of Minato, Sato
-  Ramen, the Coral Bay Bar and Mr Fujita's shed (a new account: the Higas' six o'clock van is gone, the round leaves his
-  crates); `SOURCED_FROM` is empty; products.json's beer is `supplier: "sakura"`; `studio/rules.js` now asks that
+  Ramen, the Coral Bay Bar and Mr Fujita's shed (a new account: the Higas' six o'clock van is gone, the round swaps his
+  crate); `SOURCED_FROM` is empty; products.json's beer is `supplier: "sakura"`; `studio/rules.js` now asks that
   alcohol be Sakura's; `tools/studio/references.mjs` reads the accounts' `alcohol` lines too, so a retire of the beer
   still sees the bars that order it.
 - Sakura's till sells the bottles the Higas sold (`konbini.js` `SAKURA_BOTTLES`, at the Higas' prices); the cans stay in
@@ -47,9 +48,36 @@ becomes Sakura Trading's, and the building stands shut with a notice on it." Don
   `okinawa-quarters`, `studio-apply` (the beer cannot go back to the Higas), `studio-mcp` (the beer's references show
   Sato Ramen ordering it from Sakura), `no-z-fighting` (the shut front with its notice).
 
+## Separate review (22 October, late evening)
+A code-reviewer agent, given the diff, the owner's decision and the project rules, ran the tests on the change and on
+its base. Its findings, all fixed in the second commit unless said:
+- Two tests failing only with the change: `island-guide` (the bath's entry checked "owns Umi-no-yu and Higa Liquor" in
+  cast.js, and said she keeps the counter in the afternoon) and `resident-guide` (`resident-guide.js` not regenerated
+  from the guide: `scripts/sync-resident-guide.mjs`).
+- There is no late-morning ferry (the ferry is at Kitano-jima from 08:45 to the afternoon; the Higas' account had said
+  so too): the round leaves the Coral Bay Bar's ice boxes at the Port Terminal's freight counter for the 14:45 boat, and
+  its juice goes on the morning boat as the cork board and the departures board say. A test now pins the boat.
+- Mr Fujita's beer: the guide still had the Higas' van, and "two crates" and "the crate by the door" are not what the
+  shed shows. The round swaps the one crate by his chair, full for empties, and at six he stands the night's empties
+  back in it; the guide, the account, the day module, the shed and the test say so.
+- Saturdays: the bench's regulars sit with a bottle while Sakura is shut all day: they buy Saturday's on Friday.
+- The delivery bicycle's text sent her to the bath with lunch in it, while the bike never moves and she lunches at home:
+  it stands unridden against the shut front.
+- The notice's title was Japanese in the English UI; the notice sent people "across Main Street" to Sakura, which is
+  down the street towards the harbour; the feed's regulars named Grandmother Higa, whom nothing puts there; the crate
+  yard's story still clinked at half past seven; the empties by the door were "for the round", which does not stop there.
+- The shut shutter and doors stopped only the player: they stop everybody now that nobody walks in.
+- The till's bottles rang in at the default cost: they carry their landed cost from `economy/goods.js` by the millilitre.
+- Not changed, reported: `studio/rules.js`'s alcohol rule cannot fire while Sakura is the only supplier (any other
+  supplier is refused first); it is kept as the guard for a supplier added later. The economy model sells at Sakura on
+  Saturdays, groceries and drink alike: it does not know the Saturday closing (older than this change).
+
 ## Decisions
-- Mr Fujita's beer: the round leaves two crates in his shed on Tuesdays and Fridays and takes the empties; at six he
-  stands the night's empties in the crate by the door. His three to six bottles an evening are unchanged.
+- Mr Fujita's beer: the round swaps the crate by his chair on Tuesdays and Fridays, a full one for the empties (a crate
+  of twenty is about half a week's); at six he stands the night's empties back in it. His three to six bottles an
+  evening are unchanged.
+- The Coral Bay Bar's beer: in ice boxes at the Port Terminal's freight counter at 10:58 for the 14:45 boat; its juice
+  and water every morning on the morning boat, on Thuan's cart.
 - The crate yard across Main Street is rented by Sakura Trading from Grandmother Higa; its painted sign (HIGA LIQUOR ·
   EMPTIES) stays, as the shop's sign does: no new geometry.
 - The Minato back bar's measured plan (`art/izakaya/compact/plan.json`, `compact-report.json`,
@@ -59,7 +87,7 @@ becomes Sakura Trading's, and the building stands shut with a notice on it." Don
 - The dated planning documents in `johansson-town/docs/` (MASTER-PLAN, CAST-CONSOLIDATION and the like) are records of
   their day and are left; AGENTS.md's decision supersedes them.
 - On Saturdays, when Sakura is shut, there is no bottle to take away; the bars still pour. The bench is sat on as on
-  other days.
+  other days, with the bottle bought on Friday.
 
 ## Open issues
 - The walking Kōji goes to the depot at 10:30 and to the crate yard at 11:30; between them his body keeps to the ice
@@ -67,6 +95,9 @@ becomes Sakura Trading's, and the building stands shut with a notice on it." Don
   and the tests have every stop).
 - Feed backdrops for `higa-liquor` (the shut front) are still to be captured with `render-feed-backdrops.mjs`, as they
   were before this change.
+- The upstairs windows of the shut shop glow at dusk with every window of the quarter (one shared material), as they did
+  while it was open; nobody lives over the shop.
+- The economy model does not know Sakura's Saturday closing (see the review).
 
 ## Next action
 See checks.md for the evaluator's results. Then: the owner looks at the before/after photographs and merges the doctor PR

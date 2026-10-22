@@ -64,7 +64,7 @@ export const HIGA_DRESSING=Object.freeze([
  // Services and signs outside.
  item({id:'meter-box',side:'Kitano Road',at:[-W-.08,1.8,3.1],build:'prop',who:'the power company’s meter reader',why:'One meter in a grey box near the front of the Kitano Road flank, read from the road, the conduit up to the eave where the line from the pole comes in.',period:'Okinawan meters are outside, at eye height.'}),
  item({id:'enamel-tin',side:'Kitano Road',at:[-W-.02,1.85,1.0],build:'prop',who:'the awamori distillery (南風)',why:'The distillery’s enamel tin (ホーロー看板) on the Kitano Road flank, where everybody walking up to the bath passes it; the shop is its island agent.',period:'Makers nailed enamel tins to the shops that stocked them.'}),
- item({id:'empties',side:'front',at:[-1.33,.45,4.11],build:'prop',who:'the brewery’s boat, and Kōji’s round',why:'Yellow crates of empty large bottles stacked by the door on the Kitano Road side: the bench’s returns, bought at Sakura and left here for the round to take to the crate yard across the street.',period:'Returnable large bottles in twenty-bottle crates, ¥5 back on each, were how beer was sold.'}),
+ item({id:'empties',side:'front',at:[-1.33,.45,4.11],build:'prop',who:'the brewery’s boat, and Kōji’s round',why:'Yellow crates of empty large bottles stacked by the door on the Kitano Road side: the bench’s returns, bought at Sakura and left here for Kōji to carry across to the crate yard when the round brings its empties back at half past eleven.',period:'Returnable large bottles in twenty-bottle crates, ¥5 back on each, were how beer was sold.'}),
  item({id:'bicycle',side:'front',at:[-2.08,.5,4.85],build:'prop',who:'Grandmother Higa',why:'The old black delivery bicycle, nose-in to the pier at the Kitano Road corner, clear of the door and the bench.',period:'The shopkeeper’s heavy carrier bicycle.'}),
  item({id:'yuntaku-bench',side:'front',at:[1.68,.22,4.23],build:'prop',who:'the evening regulars (YUNTAKU)',why:'A timber bench (縁台) against the police-station end of the front and two upturned beer crates for stools: where men still sit with a bottle of an evening, bought at Sakura since the shop shut.',period:'Benches in front of island shops, and talking on them (ゆんたく), are Okinawan evenings.'}),
  // The fittings inside.
@@ -129,7 +129,7 @@ function paintLettering(){
   // The closing notice (閉店のお知らせ): a sheet of paper in her brush hand, the heading, the thanks, and where the drink is now.
   {const [x,y,w,h]=ATLAS.notice;ctx.fillStyle='#f8f4ea';ctx.fillRect(x,y,w,h);ctx.strokeStyle='rgba(120,110,100,.35)';ctx.lineWidth=2;ctx.strokeRect(x+3,y+3,w-6,h-6);
    ctx.fillStyle='#1d1d1d';signText(ctx,HIGA_NOTICE.jp,x+w/2,y+26,w-14,22,MINCHO);
-   HIGA_NOTICE.jpLines.forEach((line,i)=>{ctx.fillStyle=i===2?'#b8302a':'#2a2420';signText(ctx,line,x+w/2,y+70+i*36,w-14,i===2?18:16,MINCHO);});
+   HIGA_NOTICE.jpLines.forEach((line,i)=>{ctx.fillStyle=i===2?'#b8302a':'#2a2420';signText(ctx,line,x+w/2,y+62+i*32,w-14,i===2?18:16,MINCHO);});
    ctx.fillStyle='#2a2420';signText(ctx,'比嘉',x+w-26,y+h-18,40,14,MINCHO);}
  });
 }
@@ -356,10 +356,11 @@ export function higaFrontage({origin=HIGA_FRAME.origin,trim=0x8a3b2e,shadows=fal
  noren.name='Higa Liquor storeroom noren';noren.position.set(1.15,HIGA_FRAME.floor+1.45,back+.16);group.add(noren);
  group.updateMatrixWorld(true);
  const world=(x,z)=>new THREE.Vector3(x,0,z).applyMatrix4(group.matrixWorld);
- // The shut front's solids: the shutter down and the doors shut (the frame is a quarter turn: the front runs along world z).
+ // The shut front's solids, for everybody now that nobody walks in: the shutter down and the doors shut (the frame is a
+ // quarter turn: the front runs along world z).
  const front=world(0,opening.z),doorway=world(0,LEAF_Z);
- const shutterSolid={id:'higa-shutter',x:front.x,z:front.z,w:.1,d:opening.x1-opening.x0,height:ground-.42,minY:0,only:'player'};
- const doorSolid={id:'higa-doors',x:doorway.x,z:doorway.z,w:.12,d:DOOR*2,height:DOOR_H,minY:0,only:'player'};
+ const shutterSolid={id:'higa-shutter',x:front.x,z:front.z,w:.1,d:opening.x1-opening.x0,height:ground-.42,minY:0};
+ const doorSolid={id:'higa-doors',x:doorway.x,z:doorway.z,w:.12,d:DOOR*2,height:DOOR_H,minY:0};
  for(const {leaf,s} of leaves)leaf.position.set(s*DOOR/2,0,LEAF_Z);
  return {group,leaves:leaves.map(l=>l.leaf),shutter,lights:lit,noren,shutterSolid,doorSolid};
 }

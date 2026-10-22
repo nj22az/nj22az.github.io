@@ -96,7 +96,7 @@ export function buildAirportDistrict({world,register,onAction}){
   sign('UMINEKO ¥300 · SHIKUWASA ¥150',hx+2.42,hz,3.2,hy+1.95,0x23302b,Math.PI/2);
   sign('CORAL BAY BAR',hx,hz-2.15,3.8,hy+2.55,0x2f6f7a,Math.PI);
   for(const dx of [-1.4,0,1.4]){box('Beach bar stool seat',[.42,.08,.42],[hx+dx,hy+.72,hz-2.3],0x9a6b45);box('Beach bar stool leg',[.08,.68,.08],[hx+dx,hy+.34,hz-2.3],0x6a4a32);}
-  anchor(hx,hz-3.4,'Visit the Coral Bay Bar','airport-shop','Coral Bay Bar',{id:'coral-bay-bar',title:'Coral Bay Bar',line:'A thatched beach bar at the top of the sand. The Umineko and the juice come over from Sakura’s depot on the late-morning ferry, the beer packed in ice. The parasols below are rented from the counter.',items:[['Umineko lager, cold bottle',300],['Shikuwasa juice',150]]},hy+1);
+  anchor(hx,hz-3.4,'Visit the Coral Bay Bar','airport-shop','Coral Bay Bar',{id:'coral-bay-bar',title:'Coral Bay Bar',line:'A thatched beach bar at the top of the sand. The juice comes over from Sakura’s depot on the morning ferry, the Umineko twice a week on the afternoon boat, packed in ice. The parasols below are rented from the counter.',items:[['Umineko lager, cold bottle',300],['Shikuwasa juice',150]]},hy+1);
   for(const [px,pz] of TROPIC_PLACES.parasols){const py=ground(px,pz);box('Rental parasol pole',[.07,2.4,.07],[px,py+1.2,pz],0xe8e2d2);const top=new THREE.Mesh(new THREE.ConeGeometry(1.5,.55,8,1),material(px<-20?0xe0705a:0x3f9fb0));top.name='Rental parasol';top.position.set(px,py+2.45,pz);top.userData.staticProp=true;root.add(top);box('Beach towel',[.9,.02,1.9],[px+.9,py+.03,pz+.3],px<-20?0xf2c84b:0xf4ecd8);}
  }
  const [tx,tz]=TROPIC_PLACES.turtleCove;

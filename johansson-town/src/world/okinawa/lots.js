@@ -23,7 +23,7 @@ export const STREET_LOTS=Object.freeze([
   owner:'Grandmother Higa (her shop across Main Street is shut)',users:'Sakura Trading, which rents it since Higa Liquor closed (22 October 2026)',
   why:'The drink trade is Sakura Trading’s now, and its depot on the quay has no room for empties. The round’s empties come back in crates and wait here, stacked, for the brewery’s boat, as they did for the Higas.',
   hours:'The round’s empties stacked at half past eleven on Tuesdays and Fridays (commerce/trade-round.js).',
-  stories:['children counting bottles','the clink at half past seven','a crate tower after a festival'],
+  stories:['children counting bottles','the clink at half past eleven on a round day','a crate tower after a festival'],
  }),
 ]);
 export const streetLot=id=>STREET_LOTS.find(l=>l.id===id);

@@ -2,6 +2,7 @@ import {GROCERY_ITEMS} from './catalogue.js';
 import {takeShopStock,returnShopStock,SOLD_OUT} from './shop-stock.js';
 import {recordSakuraSale,shopEntry} from './sakura-economy.js';
 import {sakuraTillOpen,SAKURA_HOURS_TEXT,SAKURA_DAYS_TEXT} from './sakura-rota.js';
+import {ALCOHOL} from '../economy/goods.js';
 
 /**
  * The counter ritual at Sakura Shōten.
@@ -246,12 +247,14 @@ const HOT_BY_ID=new Map(HOT_SNACKS.map(s=>[s.id,s]));
 /**
  * The bottles over the counter (the owner, 22 October 2026: Higa Liquor has closed, and Sakura sells all the alcohol): what
  * Grandmother Higa's counter sold, kept in the stock room behind the till and handed over by whoever has it, at the
- * Higas' prices. The cans of lager stay in the cold cabinet's column nearest the till (products-data.js beer).
+ * Higas' prices, and rung in at what they cost Sakura to land (economy/goods.js, by the millilitre). The cans of lager
+ * stay in the cold cabinet's column nearest the till (products-data.js beer).
  */
+const landedPerMl=(id,ml)=>Math.round((ALCOHOL[id].wholesale+ALCOHOL[id].freight)*ml/ALCOHOL[id].ml);
 export const SAKURA_BOTTLES=Object.freeze([
- Object.freeze({id:'awamori-mini',name:'Awamori miniature (180 ml)',cost:600,item:'Awamori miniature',text:'A little 180 ml bottle of island awamori, 30 per cent, wrapped in newspaper the way the Higas wrapped them. Keep it for a guest, Thuan says.'}),
- Object.freeze({id:'umineko-large',name:'Umineko lager, large bottle',cost:330,item:'Umineko lager',text:'A large returnable bottle from the stock room, ¥5 back on the empty. Bring the bottle back, Thuan says; they go back to the depot.'}),
- Object.freeze({id:'sake-cup',name:'One-cup sake',cost:220,item:'One-cup sake',text:'A glass cup of sake with a ring-pull lid, the kind a man takes to the bench outside the old liquor shop.'}),
+ Object.freeze({id:'awamori-mini',name:'Awamori miniature (180 ml)',cost:600,unitCost:landedPerMl('awamori-720',180),item:'Awamori miniature',text:'A little 180 ml bottle of island awamori, 30 per cent, wrapped in newspaper the way the Higas wrapped them. Keep it for a guest, Thuan says.'}),
+ Object.freeze({id:'umineko-large',name:'Umineko lager, large bottle',cost:330,unitCost:landedPerMl('beer-bottle',633),item:'Umineko lager',text:'A large returnable bottle from the stock room, ¥5 back on the empty. Bring the bottle back, Thuan says; they go back to the depot.'}),
+ Object.freeze({id:'sake-cup',name:'One-cup sake',cost:220,unitCost:landedPerMl('sake-1800',180),item:'One-cup sake',text:'A glass cup of sake with a ring-pull lid, the kind a man takes to the bench outside the old liquor shop.'}),
 ]);
 
 /** Buys one hot snack at the counter: cash, straight into the bag, rung into the till. */

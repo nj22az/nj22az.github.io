@@ -97,12 +97,12 @@ export const ACCOUNTS=Object.freeze({
    delivery:'Officer Mori collects it himself, at closing, and calls it a patrol.'},
   'coral-bay-bar':{name:'the Coral Bay Bar on Kitano-jima',contact:'the beach bar keeper',lines:['orange','water'],alcohol:['Umineko lager, bottles on ice'],
    why:'Mandarin and shikuwasa juice for the children and the drivers, water for anyone who fell asleep under a parasol, and cold beer for the day-trippers on Coral Bay, the reason half the morning ferry carries towels.',
-   delivery:'Ice boxes up the ramp for the late-morning car ferry on Tuesdays and Fridays, the juice in the same load; the empties come back on the evening sailing.'},
+   delivery:'The juice and the water every day on the morning car ferry, in the Sakura Trading crate on Thuan’s cart. The beer in ice boxes on Tuesdays and Fridays, left by the round at the Port Terminal’s freight counter for the 14:45 boat; the empties come back on the evening sailing.'},
   // Mr Fujita's standing order (world/fujita-day.js): the Higas' six o'clock van until their shop closed. The round
-  // leaves the half-week's crates in his shed, two crates by his chair, and takes the empties.
+  // swaps the crate by his chair, a full one for the empties, twice a week: a crate of twenty is about half a week's.
   'fujita-shed':{name:'Mr Fujita’s shed on the pier',contact:'Mr Fujita',lines:[],alcohol:['Umineko lager, large bottles'],
-   why:'Three to six large bottles an evening, three small glasses a bottle, poured from the armchair in front of the television once he has signed off.',
-   delivery:'With the round on Tuesdays and Fridays: two crates carried out along the pier to his shed and the empties back; at six every morning, signing on, he stands last night’s empties in the crate by the door. Returnable bottles, counted by Thuan.'},
+   why:'Three to six large bottles an evening, three small glasses a bottle, poured from the armchair in front of the television once he has signed off; a crate of twenty is about half a week’s.',
+   delivery:'With the round on Tuesdays and Fridays: a full crate carried out along the pier to his chair and the crate of empties taken back; at six every morning, signing on, he stands last night’s empties back in the crate at his right hand. Returnable bottles, counted by Thuan.'},
   // The Community Hall's account, the community kitchen's, took on the mayor's office's when the office went
   // (21 October 2026, briefs/town-hall-zone.md phase M): the tea and crackers for the register's visitors, and the
   // wreaths and bunting for the town's ceremonies, which the hall holds now.

@@ -87,9 +87,9 @@ export const FEED_PLACES=Object.freeze([
  // street's story hooks are pinned (LAUNDRY_NOTICES). Higa Liquor is shut for good since 22 October 2026 (the owner): its
  // story place is the shutter with the notice and the bench out front, where the evening still sits with a bottle from
  // Sakura. Street shots, waiting for `render-feed-backdrops.mjs higa-liquor coin-laundry`.
- {id:'higa-liquor',name:'the shut Higa Liquor and its bench',short:'Higa Liquor',kind:'shop',regulars:['Grandmother Higa','Tetsuo','Mac'],captured:false,
+ {id:'higa-liquor',name:'the shut Higa Liquor and its bench',short:'Higa Liquor',kind:'shop',regulars:['Tetsuo','Mac'],captured:false,
   things:['the shutter, down for good','the closing notice taped to it','the family kusu behind the shutter, still not for sale','the crates of empties','the bench out front','the crate stools','the sugidama going brown'],
-  doing:['reading the notice on the shutter','pointing a visitor across the street to Sakura','sitting on the bench with a bottle from Sakura','counting the empties back','asking after the old jar'],
+  doing:['reading the notice on the shutter','pointing a visitor down the street to Sakura','sitting on the bench with a bottle from Sakura','counting the empties back','asking after the old jar'],
   activity:{hold:['bottle','can'],chance:.6,sit:.4},
   shot:{at:[3.3,8.4],camera:{pos:[-1.5,1.7,4.5],at:[7.5,1.8,8.8]},time:1110}},
  {id:'coin-laundry',name:'the coin laundry',short:'the laundry',kind:'shop',regulars:['Ms Ganaha','Thao','Ms Uezu','Nhung'],captured:false,

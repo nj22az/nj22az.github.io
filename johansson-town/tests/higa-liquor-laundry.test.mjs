@@ -9,6 +9,7 @@ import * as higaLiquor from '../src/commerce/higa-liquor.js';
 import {HIGA_NOTICE,HIGA_KUSU,YUNTAKU,yuntakuSeatAt} from '../src/commerce/higa-liquor.js';
 import {TRADE_ROUND,roundAt,roundToday,roundDropsOn,roundDeliveryBook,kojiAshore} from '../src/commerce/trade-round.js';
 import {SAKURA_BOTTLES} from '../src/commerce/konbini.js';
+import {FERRY_TIMETABLE,timetableBerth} from '../src/world/ferry-timetable.js';
 import {LAUNDRY_KEEPER,LAUNDRY_VISITS,LAUNDRY_MACHINES,LAUNDRY_NOTICES,laundryVisitsOn,laundryMachinesAt,visitTimeline,
  playerWashStage,freeMachine,laundryNotices} from '../src/commerce/coin-laundry.js';
 import {canonicalDay,canonicalDestination} from '../src/people/canonical-day.js';
@@ -66,6 +67,12 @@ test('the round is Sakura Trading’s, Kōji’s on his weeks ashore only, betwe
  for(const day of [tueAshore,friAshore])assert.deepEqual(roundDropsOn(at(day,10)).map(s=>s.account),['izakaya','ramen','coral-bay-bar','fujita-shed']);
  for(const s of TRADE_ROUND.stops)assert.ok(ACCOUNTS.sakura[s.account]?.alcohol?.length,s.account+' takes its drink on its Sakura account');
  assert.ok(!TRADE_ROUND.stops.some(s=>s.account==='market'),'Sakura is not a drop');
+ // The Coral Bay Bar's ice boxes wait at the Port Terminal for the next boat out of Minato, which the account names; the
+ // ferry is at Kitano-jima when the round passes.
+ const coral=TRADE_ROUND.stops.find(s=>s.account==='coral-bay-bar'),drop=Number(coral.at.slice(0,2))*60+Number(coral.at.slice(3));
+ const next=FERRY_TIMETABLE.filter(s=>s.from==='town'&&s.departs>drop).sort((a,b)=>a.departs-b.departs)[0];
+ assert.equal(coral.place,'port');assert.equal(timetableBerth(drop),'airport','the ferry is across the water at the drop');
+ assert.ok(ACCOUNTS.sakura['coral-bay-bar'].delivery.includes(`${String(next.departs/60|0).padStart(2,'0')}:${String(next.departs%60).padStart(2,'0')} boat`),'the account names the boat the ice boxes take');
  assert.equal(TRADE_ROUND.driver,'Kōji');assert.equal(TRADE_ROUND.pay,1500);assert.equal(TRADE_ROUND.load.place,'warehouse');
  // His day around it: the auction and the ice plant before, the depot, the drops, the empties, home to sleep at noon.
  assert.equal(canonicalDay('Kōji',at(tueAshore,10,35)).place,'trade-round');assert.deepEqual(canonicalDay('Kōji',at(tueAshore,10,35)).target,[...TRADE_ROUND.load.at],'loading at the depot');

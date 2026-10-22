@@ -11,9 +11,10 @@ import {ACCOUNTS,SUPPLIERS} from './merchandising.js';
  * those, the customers collect, as the `aboard` line of each drop says.
  *
  * Each drop is one of Sakura's trade accounts that takes drink (merchandising.js ACCOUNTS.sakura, `alcohol`): Minato,
- * Sato Ramen, the Coral Bay Bar on Kitano-jima, whose ice boxes go up the ferry's ramp, and Mr Fujita's shed on the west
- * pier: the half-week's crates by his chair and the empties out (world/fujita-day.js). Sakura's own beer comes in with
- * the depot's other goods; the shop is not a drop.
+ * Sato Ramen, the Coral Bay Bar on Kitano-jima, whose ice boxes wait at the Port Terminal's freight counter for the 14:45
+ * boat (the ferry is at Kitano-jima through the late morning: world/ferry-timetable.js), and Mr Fujita's shed on the west
+ * pier: a full crate for the one of empties by his chair (world/fujita-day.js). Sakura's own beer comes in with the
+ * depot's other goods; the shop is not a drop.
  */
 const minute=m=>((m%1440)+1440)%1440;
 export const TRADE_ROUND=Object.freeze({
@@ -30,10 +31,10 @@ export const TRADE_ROUND=Object.freeze({
    aboard:'Thao fetches it herself in Minato’s white kei truck on the way back from the market.'}),
   Object.freeze({account:'ramen',days:Object.freeze([2,5]),at:'10:50',where:'Sato Ramen’s door',place:'sato-ramen',
    aboard:'It rides in Thao’s truck with the Minato order, one crate left at the back door.'}),
-  Object.freeze({account:'coral-bay-bar',days:Object.freeze([2,5]),at:'10:58',where:'the ferry ramp, for the Kitano-jima crossing',place:'ferry',
-   aboard:'Thao leaves the ice boxes at the ramp, and Kōji, the bosun that week, stows them on the car deck himself.'}),
-  Object.freeze({account:'fujita-shed',days:Object.freeze([2,5]),at:'11:06',where:'Mr Fujita’s shed, the crates carried out along the pier from the west quay',place:'boatyard',
-   aboard:'Thuan wheels them down from the depot on the hand truck after the morning boat.'}),
+  Object.freeze({account:'coral-bay-bar',days:Object.freeze([2,5]),at:'10:58',where:'the Port Terminal’s freight counter, the ice boxes for the 14:45 boat to Kitano-jima',place:'port',
+   aboard:'Thao drops the ice boxes at the Port Terminal on her way back from the market, and Kōji, the bosun that week, stows them on the car deck himself before the 14:45.'}),
+  Object.freeze({account:'fujita-shed',days:Object.freeze([2,5]),at:'11:06',where:'Mr Fujita’s shed, a full crate carried out along the pier from the west quay and the empties back',place:'boatyard',
+   aboard:'Thuan wheels the crate down from the depot on the hand truck after the morning boat.'}),
  ]),
  empties:Object.freeze({at:'11:30',where:'the crate yard across Main Street, Sakura Trading’s since the Higas closed',point:Object.freeze([-7.2,12.4])}),
 });

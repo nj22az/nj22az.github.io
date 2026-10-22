@@ -303,7 +303,7 @@ const SHOPS=Object.freeze({
  // Higa Liquor, shut for good (the owner, 22 October 2026; commerce/higa-liquor.js): the shutter is down under its own
  // canvas awning (higa-liquor-dressing.js), the closing notice on it, and the drink is Sakura's. The sign stays up.
  'higa-saketen':{interior:'liquor',awning:false,jp:"Higa Liquor Store",en:'Higa liquor · closed',bg:'#f7ead6',accent:'#8a3b2e',upright:"Awamori",uprightBg:'#8a3b2e',
-  inspect:{label:'Read the notice on the shutter',title:'Higa Liquor · '+HIGA_NOTICE.jp,text:HIGA_NOTICE.en}},
+  inspect:{label:'Read the notice on the shutter',title:'Higa Liquor · closing notice',text:HIGA_NOTICE.en}},
  // Aragaki Confectionery, closed (cast.js PLACES): nobody keeps it, and nobody lives behind it. The faded
  // sign stays up.
  arakaki:{interior:'sweets',awning:false,jp:"Aragaki Confectionery Store",en:'Arakaki sweets · closed',bg:'#efe6cf',accent:'#5f7d76',upright:"Sweets",uprightBg:'#8a9a94',
@@ -386,7 +386,7 @@ function buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes}){
  // Moved again on 21 October 2026 for the yuntaku bench (higa-liquor-dressing.js): nose-in to the pier at the Kitano Road
  // corner, beside the empties, clear of the door.
  solid(bicycle(kit,EAST_ROW.minX-.95,liquor.minZ+.42,{ry:0,colour:0x2b2d30,basket:false,id:'higa-liquor-bicycle',owner:'Grandmother Higa',
-  why:'The shop’s old black delivery bicycle with the big carrier, from the days her husband did the rounds. The shop is shut, but Grandmother Higa still wheels it up Kitano Road to the bath with her lunch in the carrier. It lives against its own shopfront, clear of the door and the footway.'}));
+  why:'The shop’s old black delivery bicycle with the big carrier, from the days her husband did the rounds. Nobody has ridden it since the shop shut, and Grandmother Higa will not sell it: it leans against its own shopfront, clear of the shutter and the footway, and the bench’s regulars lean their bags on it.'}));
 }
 
 function buildYardRow(kit,solid,{anchor,inspect,onAction,getMinutes}){

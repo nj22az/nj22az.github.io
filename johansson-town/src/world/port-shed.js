@@ -21,12 +21,13 @@ export {tvProgramme} from './fujita-day.js';
  * off. Signed off at twenty past, he sits in the sagging armchair, his feet on a timber footstool, with a small glass
  * of beer, and flips channels on an old CRT on a fish crate (fujita-day.js: what is on, when he laughs, how the beer
  * goes): the night game's last innings, the late news, the variety shows, snow when the last station signs off. His
- * Umineko comes in large bottles, two crates at a time on Sakura Trading's round (Higa Liquor's van until the shop closed):
+ * Umineko comes in large bottles, a crate at a time on Sakura Trading's round (Higa Liquor's van until the shop closed):
  * the crate stands at his right hand, the bottle he is
  * on at his left foot, and the evening's empties stand in front of him. Around him: nets and glass floats hung from
  * the rafters, a camp stove and kettle, rubber boots, a calendar from the co-op and a folded cot kept for visitors.
  * At 23.30 he switches off the set and walks aboard his houseboat Shiosai alongside the pier, leaving the empties on
- * the floor; at six he returns to the shed and stands them in the crate by the door for the round.
+ * the floor; at six he returns to the shed and stands them back in the crate at his right hand, which the round swaps
+ * for a full one on Tuesdays and Fridays.
  *
  * Pier frame: the shed stands on the west edge of the L-pier, open to the east.
  */
@@ -322,7 +323,7 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
    boat.tick({sleeping:fujita.userData.sleepBlend>.01,player:getPlayerPosition(),night:poolGlow(minutes)});
    // The beer: the crate, the floor, the bottle he is on, the glass; none of it before he signs off (fujita-day.js
    // FUJITA_DAY.start is the master's sign-off). The pile stays in the shed overnight, when he has gone aboard Shiosai,
-   // until he stands it in the crate by the door at six, for the round.
+   // until he stands it back in the crate at his right hand at six.
    const b=fujitaBeer(minutes),u=fujita.userData,seated=!u.ferryShoreTask&&!u.onWatch&&routine.state==='watching',pouring=seated&&b.phase==='pour';
    for(const mesh of full)mesh.count=b.full;
    // One crate of twenty is more than an evening's drinking now; the second and the one on top are gone with the day shift.

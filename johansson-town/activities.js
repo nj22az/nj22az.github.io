@@ -1024,7 +1024,7 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
     show("In front of the cash register · At the till",'Thuan: "Cards, stamps, ferry tickets, and the bottles from the back since the Higas closed. The gum is the only thing here anyone buys on impulse."',[
       ...COUNTER_GOODS.map(item=>[`${item.jp} · ¥${item.price.toLocaleString('en-GB')}`,()=>{const result=sellAtTill(item.en,item.price,item.unitCost);
         receipt(item.jp,result.ok?item.en+' is in your bag.':result.message);}]),
-      ...SAKURA_BOTTLES.map(p=>[`${p.name} · ¥${p.cost}`,()=>{const result=sellAtTill(p.item,p.cost);if(!result.ok){receipt(p.name,result.message);return;}onTime(2);receipt('Sakura Shōten',p.text);}]),
+      ...SAKURA_BOTTLES.map(p=>[`${p.name} · ¥${p.cost}`,()=>{const result=sellAtTill(p.item,p.cost,p.unitCost);if(!result.ok){receipt(p.name,result.message);return;}onTime(2);receipt('Sakura Shōten',p.text);}]),
       ['Nothing, thank you',close]]);
   }
   // Local players: several people can keep their own progress on one device. Switching
