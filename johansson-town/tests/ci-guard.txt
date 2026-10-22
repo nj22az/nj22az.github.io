@@ -60,3 +60,7 @@ skirt-follow.test.mjs
 pair-poses.test.mjs
 izakaya-bar.test.mjs
 izakaya-beer.test.mjs
+ambient-resident-blocking.test.mjs
+bookkeeper-return-route.test.mjs
+ramen-kitchen.test.mjs
+resident-after-work.test.mjs
