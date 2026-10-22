@@ -6,10 +6,13 @@ import releaseFiles from '../release-files.cjs';
 import patchBuilder from './build-patch.cjs';
 const app=resolve(import.meta.dirname,'..'),repo=resolve(app,'..');
 const site=join(app,'site');rmSync(site,{recursive:true,force:true});mkdirSync(site,{recursive:true});
-const omit=new Set(['node_modules','.git','tests','tools','scripts','art','briefs','output','docs']);
+const omit=new Set(['node_modules','.git','tests','tools','scripts','art','briefs','output']);
 for(const dir of ['johansson-town','avatar-creator','form-3d-studio','assets','css']){
- if(existsSync(join(repo,dir)))cpSync(join(repo,dir),join(site,dir),{recursive:true,filter:source=>!omit.has(basename(source))&&!basename(source).startsWith('.')});
+ if(existsSync(join(repo,dir)))cpSync(join(repo,dir),join(site,dir),{recursive:true,filter:source=>!omit.has(basename(source))&&!basename(source).startsWith('.')&&source!==join(repo,'johansson-town/docs')});
 }
+// Keep the runtime component notice while leaving historical plans and QA captures out.
+mkdirSync(join(site,'johansson-town/docs'),{recursive:true});
+cpSync(join(repo,'johansson-town/docs/SPECTOR-LICENSE.txt'),join(site,'johansson-town/docs/SPECTOR-LICENSE.txt'));
 for(const name of ['LICENSE.md','THIRD_PARTY_NOTICES.md','config.js','shared.js','styles.css','theme-bootstrap.js']){
  if(existsSync(join(repo,name)))cpSync(join(repo,name),join(site,name));
 }
