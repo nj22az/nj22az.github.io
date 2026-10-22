@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="650" viewBox="0 0 1100 650">
+<rect width="1100" height="650" fill="#f6f3eb"/>
+<style>text{font-family:Arial,sans-serif;fill:#243e46}.small{font-size:13px}.label{font-size:12px}.title{font-size:25px;font-weight:bold}</style>
+<text x="28" y="40" class="title">Northern site review - existing uses, no relocation approved</text>
+<text x="28" y="66" class="small">Source a0fb347 | world metres | +z away from harbour shown upwards | diagram omits roads and terrain details</text>
+<line x1="25" y1="100" x2="25" y2="615" stroke="#deded5"/><text x="17" y="637" class="label">-40</text>
+<line x1="95" y1="100" x2="95" y2="615" stroke="#deded5"/><text x="87" y="637" class="label">-30</text>
+<line x1="165" y1="100" x2="165" y2="615" stroke="#deded5"/><text x="157" y="637" class="label">-20</text>
+<line x1="235" y1="100" x2="235" y2="615" stroke="#deded5"/><text x="227" y="637" class="label">-10</text>
+<line x1="305" y1="100" x2="305" y2="615" stroke="#deded5"/><text x="297" y="637" class="label">0</text>
+<line x1="375" y1="100" x2="375" y2="615" stroke="#deded5"/><text x="367" y="637" class="label">10</text>
+<line x1="445" y1="100" x2="445" y2="615" stroke="#deded5"/><text x="437" y="637" class="label">20</text>
+<line x1="515" y1="100" x2="515" y2="615" stroke="#deded5"/><text x="507" y="637" class="label">30</text>
+<line x1="585" y1="100" x2="585" y2="615" stroke="#deded5"/><text x="577" y="637" class="label">40</text>
+<line x1="655" y1="100" x2="655" y2="615" stroke="#deded5"/><text x="647" y="637" class="label">50</text>
+<line x1="25" y1="615" x2="660" y2="615" stroke="#deded5"/><text x="4" y="615" class="label">20</text>
+<line x1="25" y1="545" x2="660" y2="545" stroke="#deded5"/><text x="4" y="545" class="label">30</text>
+<line x1="25" y1="475" x2="660" y2="475" stroke="#deded5"/><text x="4" y="475" class="label">40</text>
+<line x1="25" y1="405" x2="660" y2="405" stroke="#deded5"/><text x="4" y="405" class="label">50</text>
+<line x1="25" y1="335" x2="660" y2="335" stroke="#deded5"/><text x="4" y="335" class="label">60</text>
+<line x1="25" y1="265" x2="660" y2="265" stroke="#deded5"/><text x="4" y="265" class="label">70</text>
+<line x1="25" y1="195" x2="660" y2="195" stroke="#deded5"/><text x="4" y="195" class="label">80</text>
+<line x1="25" y1="125" x2="660" y2="125" stroke="#deded5"/><text x="4" y="125" class="label">90</text>
+<rect x="81" y="356" width="56" height="63" fill="#ded5ba" stroke="#6b8174" stroke-width="2"/>
+<text x="84" y="373" class="label">6</text>
+<rect x="417" y="251" width="182" height="70" fill="#ded5ba" stroke="#6b8174" stroke-width="2"/>
+<text x="420" y="268" class="label">north-block</text>
+<text x="421" y="287" class="label">Garden + monthly parking</text><text x="421" y="304" class="label">26 x 10 m / 260 m2</text>
+<rect x="172" y="356" width="56" height="63" fill="#ded5ba" stroke="#6b8174" stroke-width="2"/>
+<text x="175" y="373" class="label">7</text>
+<rect x="354" y="356" width="56" height="63" fill="#ded5ba" stroke="#6b8174" stroke-width="2"/>
+<text x="357" y="373" class="label">9</text>
+<rect x="81" y="258" width="56" height="63" fill="#cfe0c1" stroke="#6b8174" stroke-width="2"/>
+<text x="84" y="275" class="label">10</text>
+<rect x="172" y="258" width="56" height="63" fill="#cfe0c1" stroke="#6b8174" stroke-width="2"/>
+<text x="175" y="275" class="label">11</text>
+<rect x="263" y="258" width="56" height="63" fill="#cfe0c1" stroke="#6b8174" stroke-width="2"/>
+<text x="266" y="275" class="label">12</text>
+<rect x="391.8" y="439.29999999999995" width="197.40000000000003" height="143.5" fill="#c7d8df" stroke="#597787" stroke-width="2"/><text x="399.8" y="461.29999999999995" class="label">Current civic grounds</text><text x="399.8" y="479.29999999999995" class="label">School / hall / clinic / utilities</text>
+<text x="700" y="110" class="small">What the map establishes</text>
+<text x="700" y="144" class="small">Cane plots 10, 11, 12: each 8 x 9 m.</text>
+<text x="700" y="165" class="small">They are separate plots, not one free block.</text>
+<text x="700" y="199" class="small">Existing classroom shell: 9 x 7.2 m.</text>
+<text x="700" y="220" class="small">A single small plot leaves little support space.</text>
+<text x="700" y="254" class="small">North block: garden + parking, not vacant.</text>
+<text x="700" y="275" class="small">Reassignment needs replacement uses/access.</text>
+<text x="700" y="309" class="small">Lots 6, 7, 9 already support community uses.</text>
+<text x="700" y="343" class="small">Keep the clinic and power-house services.</text>
+<text x="700" y="377" class="small">No school site or new land ownership assigned.</text>
+<text x="700" y="411" class="small">Existing game minimap already exists.</text>
+<text x="700" y="432" class="small">Update its footprints/pins after site approval.</text>
+<text x="700" y="480" class="small">Planning sketch only - not a buildable survey.</text>
+</svg>

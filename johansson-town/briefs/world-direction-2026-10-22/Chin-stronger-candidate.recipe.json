@@ -1,0 +1,143 @@
+{
+  "v": 1,
+  "name": "Chin",
+  "age": "adult",
+  "body": {
+    "height": 0.5,
+    "build": 0.65,
+    "proportion": "classic",
+    "silhouette": "masculine",
+    "skin": "#b27449"
+  },
+  "head": {
+    "size": 0.47,
+    "shape": 0.42,
+    "form": "narrow",
+    "jaw": 0.62,
+    "cheeks": 0.3,
+    "roundness": 0
+  },
+  "hair": {
+    "style": "buzz",
+    "colour": "#1c1714",
+    "flip": false,
+    "length": 0,
+    "volume": 0.5,
+    "tieColour": "#f4f1ea"
+  },
+  "eyes": {
+    "style": "narrow",
+    "colour": "#2a1d16",
+    "size": 0.45,
+    "width": 0.5,
+    "spacing": 0.5,
+    "height": 0.5,
+    "tilt": 0.5
+  },
+  "brows": {
+    "style": "straight",
+    "colour": "#1c1714",
+    "size": 0.55,
+    "spacing": 0.5,
+    "height": 0.5,
+    "tilt": 0.5
+  },
+  "nose": {
+    "style": "line",
+    "size": 0.45,
+    "height": 0.5,
+    "x": 0.5
+  },
+  "mouth": {
+    "style": "soft",
+    "colour": "#b8544a",
+    "size": 0.45,
+    "width": 0.5,
+    "height": 0.5,
+    "x": 0.5
+  },
+  "glasses": {
+    "style": "none",
+    "enabled": true,
+    "colour": "#2b2b2b",
+    "size": 0.5,
+    "height": 0.5
+  },
+  "facial": {
+    "colour": "#1c1714",
+    "size": 0.5,
+    "height": 0.5,
+    "width": 0.5,
+    "paint": "none",
+    "moustache": "none",
+    "beard": "none",
+    "style": "none"
+  },
+  "blush": 0.25,
+  "freckles": false,
+  "mole": false,
+  "wrinkles": 0,
+  "moleSpot": {
+    "x": 0.77,
+    "height": 0.33,
+    "size": 0.5
+  },
+  "marks": {
+    "forehead": false,
+    "worry": false,
+    "frown": false,
+    "lids": false,
+    "bags": false,
+    "crowsfeet": false,
+    "smilelines": false,
+    "cheeks": false,
+    "dimples": false,
+    "cleft": false,
+    "stubble": false,
+    "rosy": false,
+    "cocked": false,
+    "blushing": false
+  },
+  "outfit": {
+    "top": "tee",
+    "topColour": "#a9c3df",
+    "pattern": "none",
+    "bottom": "shorts",
+    "bottomColour": "#2b2b2b",
+    "bottomPattern": "none",
+    "footwear": "sandals",
+    "shoes": "#6d4a32",
+    "hat": "cap",
+    "hatColour": "#1f2228",
+    "accent": "#e8742a",
+    "belt": "none",
+    "beltColour": "#16171b",
+    "number": 0
+  },
+  "accessories": {
+    "earrings": "none",
+    "neckwear": "none",
+    "colour": "#e0b93a",
+    "necklaceColour": "#e0b93a",
+    "pin": false
+  },
+  "swim": {
+    "colour": "#2f5f9e",
+    "bath": "towel"
+  },
+  "profile": {
+    "pace": 0.7,
+    "talk": 0.4,
+    "show": 0.75,
+    "outlook": 0.7,
+    "pitch": 0.5,
+    "speed": 0.5,
+    "timbre": "auto",
+    "softness": 0.5,
+    "vibrato": 0,
+    "month": 9,
+    "day": 3,
+    "favourite": "#3fa0c8",
+    "catchphrase": ""
+  }
+}

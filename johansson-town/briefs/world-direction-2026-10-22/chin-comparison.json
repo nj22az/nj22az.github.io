@@ -1,0 +1,16 @@
+{
+  "status": "candidate only; not applied to World; no visual acceptance",
+  "before": {
+    "build": 0.32,
+    "heightMetres": 1.58,
+    "torsoWidth": 0.371142,
+    "armRadius": 0.0494935
+  },
+  "candidate": {
+    "build": 0.65,
+    "heightMetres": 1.58,
+    "torsoWidth": 0.42393375000000005,
+    "armRadius": 0.0547075
+  },
+  "limitations": "The present Build dial increases width, depth and limb radius together; it is not a dedicated musculature control. Outfit and identity retained."
+}
