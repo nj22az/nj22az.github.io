@@ -155,6 +155,7 @@ import { circleHitsRect,circleHitsCircle,standingHitsRect,canStepBetween,roomBou
 import {useTownColour} from './render/single-pass-colour.js';
 import { createCelPass } from './render/cel.js?snappy=1';
 import { createInkPipeline, GRADE_DEFAULTS } from './render/ink-pipeline.js?snappy=1';
+import {LOOKS,readLook,writeLook,lookCSS,lookNeedsPipeline} from './render/looks.js';
 import { createInkRecovery } from './render/ink-recovery.js';
 import {createGraphicsLifecycle} from './render/graphics-lifecycle.js';
 import {BUILD_CATALOGUE} from './build/catalogue.js';
@@ -332,11 +333,32 @@ function compileTown(object,{async=false}={}){
   if(async)renderer.compileAsync?.(object,camera,scene)?.catch?.(()=>{});else renderer.compile(object,camera);
  }catch{}finally{renderer.setRenderTarget(previous);}
 }
+/**
+ * The chosen look (render/looks.js, Settings · Look in the Town book). With the ink pipeline it is the pipeline's last
+ * pass; without it only the colour looks show, as a CSS filter on the canvas. A filter someone else put on the canvas
+ * (the photo studio's film) is left alone.
+ */
+let look=readLook(globalThis.localStorage),lookFilter='';
+function applyLook(){
+ pipeline?.setLook(look);
+ const css=pipeline?'none':lookCSS(look),want=css==='none'?'':css,el=renderer.domElement;
+ if(el.style.filter===lookFilter)el.style.filter=want;
+ lookFilter=want;
+ const button=$('#lookButton');if(button)button.textContent=LOOKS[look].label;
+}
+function setLook(name){look=writeLook(globalThis.localStorage,name);applyLook();}
+function lookMenu(){
+ const full=graphics.postprocess;
+ const offered=Object.entries(LOOKS).filter(([id])=>full||!lookNeedsPipeline(id));
+ activities.menu('Look','How the whole town is drawn. Now: '+LOOKS[look].label+'. '+LOOKS[look].hint+(full?'':'\n\nThis device runs reduced graphics, so only the colour looks are offered.'),[
+  ...offered.filter(([id])=>id!==look).map(([id,l])=>[l.label,()=>{setLook(id);activities.close();say(l.label+' · '+l.hint,3);}]),
+  ['Close',()=>activities.close()]]);
+}
 /** Plain output, for while the ink is away. */
-function renderPlain(){useTownColour(renderer);}
+function renderPlain(){useTownColour(renderer);applyLook();}
 function buildInk(){
  if(!graphics.postprocess){renderPlain();return true;}
- try{pipeline=createInkPipeline(renderer,INK_OPTIONS);renderer.toneMapping=THREE.NoToneMapping;renderer.toneMappingExposure=1;return true;}
+ try{pipeline=createInkPipeline(renderer,INK_OPTIONS);renderer.toneMapping=THREE.NoToneMapping;renderer.toneMappingExposure=1;applyLook();return true;}
  catch(error){pipeline=null;console.warn('Ink pipeline unavailable, rendering plain:',error.message);renderPlain();return false;}
 }
 buildInk();
@@ -358,6 +380,8 @@ window.__JOHANSSON_LOOK__={get ink(){return !!pipeline;},get inkFailures(){retur
  },
  // Live knobs, so the look can be judged against the town instead of against numbers.
  tune:v=>pipeline?.tune(v),
+ // The chosen look (Settings · Look), readable and settable for audits.
+ get style(){return look;},setStyle:name=>setLook(name),
  flatten:v=>celPass.setFlatten(v),
  get lights(){return {ambient,bounce,uplight,sun};},
  get state(){return pipeline?.state||null;}};
@@ -607,6 +631,7 @@ function keepPocketPhoto(shades,palette=pocketModel().palette){
  return r;
 }
 $('#pocketButton')?.addEventListener('click',()=>{toggleDir(false);raisePocket();});
+$('#lookButton')?.addEventListener('click',()=>{toggleDir(false);lookMenu();});
 $('#cameraButton').onclick=()=>{toggleDir(false);openCamera();};$('#viewButton')&&($('#viewButton').onclick=()=>{if(started){toggleDir(false);setThirdPerson(!thirdPerson);}});$('#movesButton')&&($('#movesButton').onclick=()=>{toggleDir(false);movesMenu();});
 const PLAYER_RADIUS=.28,NPC_RADIUS=.35,MAX_FRAME_DT=.1,SIM_STEP=1/60;
 const move2=new THREE.Vector2(),fwVec=new THREE.Vector3(),rtVec=new THREE.Vector3(),moveVec=new THREE.Vector3(),turnQ=new THREE.Quaternion(),yAxis=new THREE.Vector3(0,1,0);

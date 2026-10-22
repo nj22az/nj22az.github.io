@@ -65,3 +65,4 @@ ambient-resident-blocking.test.mjs
 bookkeeper-return-route.test.mjs
 ramen-kitchen.test.mjs
 resident-after-work.test.mjs
+looks.test.mjs
