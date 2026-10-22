@@ -20,14 +20,15 @@ const PALETTES={
  tilt:{sky:'#7cc4f5',ground:'#5fc24a',wall:'#fff1d0',roof:'#ec3b2a',door:'#7a4a2a',sun:'#ffd23f'},
  print:{sky:'#2e5c8a',ground:'#7d9a6a',wall:'#f1e6cc',roof:'#c8452e',door:'#2a2420',sun:'#f1e6cc'},
  watercolour:{sky:'#bcdcf0',ground:'#bfe0a8',wall:'#fbf4e6',roof:'#f08a7a',door:'#c49a7c',sun:'#ffe08a'},
+ flat:{sky:'#6fc3ff',ground:'#7ed957',wall:'#fff6d8',roof:'#ff5a3c',door:'#8a5a2b',sun:'#ffd93b'},
  oil:{sky:'#5e8fc4',ground:'#4f8a3a',wall:'#e9d3a8',roof:'#a8321f',door:'#4a2c18',sun:'#f2b632'},
 };
 
 /** The little scene in one look, as an SVG string (48×48). Every swatch is the same house, so the style is the difference. */
 export function lookSwatch(id,uid=id){
  const p=PALETTES[id]||PALETTES.none,pixel=id==='pocket'||id==='snes';
- const ink=id==='lines'?'#2b2b33':id==='manga'||id==='print'?'#141418':id==='crayon'?'#6c6670':id==='watercolour'?'#9a8f88':null;
- const line=ink?` stroke="${ink}" stroke-width="${id==='manga'||id==='print'?2:id==='crayon'||id==='watercolour'?1.2:1.5}" stroke-linejoin="round"${id==='watercolour'?' stroke-opacity=".55"':''}`:'';
+ const ink=id==='lines'?'#2b2b33':id==='flat'?'#2b2121':id==='manga'||id==='print'?'#141418':id==='crayon'?'#6c6670':id==='watercolour'?'#9a8f88':null;
+ const line=ink?` stroke="${ink}" stroke-width="${id==='flat'?2.6:id==='manga'||id==='print'?2:id==='crayon'||id==='watercolour'?1.2:1.5}" stroke-linejoin="round"${id==='watercolour'?' stroke-opacity=".55"':''}`:'';
  const defs=[],over=[];
  if(id==='manga'){
   defs.push(`<pattern id="d${uid}" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><circle cx="2" cy="2" r="1.05" fill="#141418"/></pattern>`,

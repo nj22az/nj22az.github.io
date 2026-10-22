@@ -132,3 +132,19 @@ stroke by more than ~0.06–0.18 gets its original colour back, at full strength
 eyes, brows, mouth, stubble and sign letters. The phone version shares it. Checked in software Chromium with Johansson's face
 from the front at 0.8 m and the Sakura Shōten front from 2.4 m behind him: before, the sign text and can-bin label were
 illegible; after, "SAKURA SHŌTEN · FOOD & DAILY GOODS", 冷たい飲み物 and his features show, and the brushwork elsewhere stays.
+
+## Cartoon look, and outlines from 1/depth — 23 October 2026, small hours
+Owner (with a Crayon Shin-chan game screenshot): "a manga filter that makes it look flat like shin chan even though it's 3d,
+like a screenshot looks like it's drawn". New look **Cartoon** (`flat`):
+- `LOOKS.flat.flatten=0`. `applyLook` calls `celPass.scaleFlatten(lookFlatten(look))`, new in render/cel.js. That scales every
+  photographic map's own amount (FLATTEN/ARCH_FLATTEN) and gives each back when the look changes; districts streamed in while
+  it is on arrive scaled too (test in cel-look.test.mjs). Without the pipeline the scale stays 1.
+- Shader: a light 2×2 Kuwahara to remove grain; faces and lettering restored as in Oil; tones stepped (hue kept) up close;
+  saturation up; thick ink that wanders slightly. Smoothing and steps fade out 8–20 m and the thick ink 25–50 m, so distant
+  texture is not turned into contour lines.
+- `edges()` (shared by Lines, Manga, Crayon, Print, Watercolour, Cartoon) now takes the second difference of **1/depth**,
+  which is exactly zero on any plane in perspective. Depth's own second difference grows on grazing ground with the square of
+  the line width, and drew wavy stripes across the paving with Cartoon's thick line. Checked: Cartoon, Lines, Manga and Crayon
+  still draw silhouettes and creases; the wavy stripes are gone except a faint trace far down the road.
+Checks: focused tests pass. Software Chromium shots of Johansson's face, the Sakura front, the school gate and the Community
+Hall in Cartoon (several rounds: grass specks, a jagged dress edge and the paving waves were found and fixed).

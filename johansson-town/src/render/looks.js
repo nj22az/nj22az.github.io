@@ -33,6 +33,7 @@ export const LOOKS=Object.freeze({
  print:{label:'Woodblock print',short:'Print',hint:'Ukiyo-e: flat woodblock colours, bold outlines, a graded sky on paper.'},
  watercolour:{label:'Watercolour',short:'Paint',hint:'Soft washes that bleed and pool at their edges on rough paper.'},
  // 64 samples a pixel on a computer; phones and tablets draw the light version, 16 samples (lookFragment).
+ flat:{label:'Cartoon',short:'Cartoon',hint:'Flat colours and thick outlines, like a TV cartoon.',flatten:0},
  oil:{label:'Oil painting',short:'Oil',hint:'Thick brushwork on canvas, with faces and lettering kept.'},
 });
 
@@ -40,6 +41,8 @@ export const LOOKS=Object.freeze({
  * the choice is not saved any more and an old saved one is removed (clearSavedLook). */
 export const LOOK_KEY='johansson-town-look';
 export const isLook=name=>Object.hasOwn(LOOKS,name);
+/** How much of the town's photographic surface maps a look keeps (render/cel.js scaleFlatten): 1 unless it says. */
+export const lookFlatten=name=>LOOKS[name]?.flatten??1;
 export function clearSavedLook(storage){try{storage?.removeItem(LOOK_KEY);}catch{}}
 /** The CSS filter for the canvas when there is no pipeline to run the look: only the colour looks have one. */
 export const lookCSS=name=>LOOKS[name]?.css||'none';
@@ -74,11 +77,15 @@ float unit(){return max(1.0,uResolution.y/1080.0);}
 float edges(vec2 uv,float width,float detail){
  vec2 t=uTexel*width;
  float dc=viewDepth(uv);
- float sx=(viewDepth(uv-vec2(t.x,0.0))+viewDepth(uv+vec2(t.x,0.0))-2.0*dc)/dc;
- float sy=(viewDepth(uv+vec2(0.0,t.y))+viewDepth(uv-vec2(0.0,t.y))-2.0*dc)/dc;
- // Depth is stored in fixed point: on ground seen at a grazing angle its rounding alone reaches a few
- // thousandths and draws stripes across the road, so a crease has to stand well clear of that.
- float shape=smoothstep(0.012,0.03,max(0.0,sx)+max(0.0,sy));
+ // The second difference of 1/depth, not of depth: 1/depth changes evenly across any flat surface in a perspective
+ // view, so a road or a floor seen at a grazing angle gives exactly nothing however wide the line, while a silhouette
+ // (the far side drops away) and a crease still do. Depth's own second difference grows on a grazing plane with the
+ // square of the line's width, and its rounding then drew wavy stripes across the ground.
+ float ic=1.0/dc;
+ float sx=(1.0/viewDepth(uv-vec2(t.x,0.0))+1.0/viewDepth(uv+vec2(t.x,0.0))-2.0*ic)*dc;
+ float sy=(1.0/viewDepth(uv+vec2(0.0,t.y))+1.0/viewDepth(uv-vec2(0.0,t.y))-2.0*ic)*dc;
+ // Fixed-point depth still rounds a little, so a crease has to stand clear of that.
+ float shape=smoothstep(0.012,0.03,max(0.0,-sx)+max(0.0,-sy));
  float tl=luma(texture2D(tDiffuse,uv+vec2(-t.x,t.y)).rgb),tc=luma(texture2D(tDiffuse,uv+vec2(0.0,t.y)).rgb),tr=luma(texture2D(tDiffuse,uv+t).rgb);
  float ml=luma(texture2D(tDiffuse,uv-vec2(t.x,0.0)).rgb),mr=luma(texture2D(tDiffuse,uv+vec2(t.x,0.0)).rgb);
  float bl=luma(texture2D(tDiffuse,uv-t).rgb),bc=luma(texture2D(tDiffuse,uv-vec2(0.0,t.y)).rgb),br=luma(texture2D(tDiffuse,uv+vec2(t.x,-t.y)).rgb);
@@ -301,6 +308,53 @@ void main(){
  // Some of the white of the paper is left unpainted in the lightest places.
  wash=mix(wash,paper,smoothstep(0.8,0.95,luma(soft))*0.7);
  gl_FragColor=vec4(clamp(wash,0.0,1.0),1.0);
+}`,
+ // Cartoon: the town's surface photographs are taken away before this pass (LOOKS.flat.flatten, render/cel.js), so
+ // what arrives is cel-shaded flat colour. Here the last grain is smoothed out, the tones go to a few flat steps with
+ // their hue kept, the colour is brightened, and thick, slightly wandering outlines are inked over it. Faces and
+ // lettering are kept as in the oil painting.
+ flat:`
+void main(){
+ float u=unit();
+ vec2 p=vUv*uResolution/u;
+ vec2 t=uTexel*1.7*u;
+ vec3 m[4];vec3 s[4];
+ for(int k=0;k<4;k++){m[k]=vec3(0.0);s[k]=vec3(0.0);}
+ for(int j=0;j<=1;j++)for(int i=0;i<=1;i++){
+  vec2 o=vec2(float(i)*2.0+0.5,float(j)*2.0+0.5);
+  vec3 a=texture2D(tDiffuse,vUv+vec2(-o.x,-o.y)*t).rgb;m[0]+=a;s[0]+=a*a;
+  vec3 b=texture2D(tDiffuse,vUv+vec2(o.x,-o.y)*t).rgb;m[1]+=b;s[1]+=b*b;
+  vec3 c=texture2D(tDiffuse,vUv+o*t).rgb;m[2]+=c;s[2]+=c*c;
+  vec3 d=texture2D(tDiffuse,vUv+vec2(-o.x,o.y)*t).rgb;m[3]+=d;s[3]+=d*d;
+ }
+ vec3 col=vec3(0.0);float best=1e9;
+ for(int k=0;k<4;k++){
+  vec3 mean=m[k]/4.0;vec3 v=abs(s[k]/4.0-mean*mean);
+  float var=v.r+v.g+v.b;
+  if(var<best){best=var;col=mean;}
+ }
+ vec3 orig=texture2D(tDiffuse,vUv).rgb;
+ float depth=viewDepth(vUv),near=1.0-smoothstep(9.0,22.0,depth);
+ // Far off, a fine pattern (brick paving) is already a faint moiré; picking the calmest corner would sharpen it into
+ // wavy stripes, so from 8 m out the picture is kept as it is.
+ col=mix(col,orig,smoothstep(8.0,20.0,depth));
+ col=mix(col,orig,smoothstep(0.08,0.2,abs(luma(orig)-luma(col)))*near);
+ // A few flat tones, hue kept: shading gradients become steps, as on a painted cel.
+ float l=luma(col);
+ vec3 hue=col/max(l,0.03);
+ float steps=(floor(l*4.0)+0.5)/4.0;
+ // Further off, where textures shrink to noise, steps would draw contour lines across them: they fade out by 20 m.
+ col=clamp(hue*mix(l,steps,0.4*(1.0-smoothstep(8.0,20.0,depth))),0.0,1.0);
+ col=mix(vec3(luma(col)),col,1.3)*1.04+0.02;
+ // Thick ink, wandering a little as a brush pen does.
+ vec2 wob=(vec2(noise(p*0.035),noise(p*0.035+9.0))-0.5)*uTexel*2.5*u;
+ // Ink follows the shapes (depth); painted pattern (block walls, small print) gets only a light line.
+ float e=edges(vUv+wob,2.4*u,0.35);
+ // The thick ink is for what is near; further off the ink pass's own thin outline carries on, as a cartoon background
+ // is drawn finer.
+ e*=1.0-smoothstep(25.0,50.0,depth);
+ col=mix(col,vec3(0.17,0.13,0.13),clamp(e*1.3,0.0,1.0));
+ gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
 }`,
  // Oil painting: a Kuwahara filter (each pixel takes the mean of whichever of its four neighbouring squares is
  // calmest), so areas flatten into strokes and edges stay crisp, on a canvas weave.

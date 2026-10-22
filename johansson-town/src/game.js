@@ -151,7 +151,7 @@ import { circleHitsRect,circleHitsCircle,standingHitsRect,canStepBetween,roomBou
 import {useTownColour} from './render/single-pass-colour.js';
 import { createCelPass } from './render/cel.js?snappy=1';
 import { createInkPipeline, GRADE_DEFAULTS } from './render/ink-pipeline.js?snappy=1';
-import {LOOKS,isLook,clearSavedLook,lookCSS,lookNeedsPipeline} from './render/looks.js';
+import {LOOKS,isLook,clearSavedLook,lookCSS,lookNeedsPipeline,lookFlatten} from './render/looks.js';
 import {createFreeCamera} from './input/free-camera.js';
 import {createLookPicker,lookSwatch} from './ui/look-picker.js';
 import {svg as uiIcon} from './ui/icons.js';
@@ -344,6 +344,9 @@ let look='none',lookFilter='';
 clearSavedLook(globalThis.localStorage);
 function applyLook(){
  pipeline?.setLook(look);
+ // The Cartoon look takes the photographic surface maps away at the material, so its colour is flat before the pass.
+ // Without the pipeline nothing would ink it, so the maps stay.
+ celPass.scaleFlatten(pipeline?lookFlatten(look):1);
  const css=pipeline?'none':lookCSS(look),want=css==='none'?'':css,el=renderer.domElement;
  if(el.style.filter===lookFilter)el.style.filter=want;
  lookFilter=want;

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createInkPipeline} from '../src/render/ink-pipeline.js';
-import {LOOKS,LOOK_KEY,isLook,clearSavedLook,lookCSS,lookNeedsPipeline,lookFragment} from '../src/render/looks.js';
+import {LOOKS,LOOK_KEY,isLook,clearSavedLook,lookCSS,lookNeedsPipeline,lookFlatten,lookFragment} from '../src/render/looks.js';
 
 function fakeRenderer(){
  const calls=[];
@@ -18,7 +18,7 @@ function fakeRenderer(){
 const renders=renderer=>renderer.calls.filter(([kind])=>kind==='render');
 
 test('every look but Natural has a shader of its own, and the menu offers the requested set',()=>{
- assert.deepEqual(Object.keys(LOOKS),['none','mono','sepia','pocket','snes','lines','crt','manga','crayon','tilt','print','watercolour','oil']);
+ assert.deepEqual(Object.keys(LOOKS),['none','mono','sepia','pocket','snes','lines','crt','manga','crayon','tilt','print','watercolour','flat','oil']);
  assert.equal(lookFragment('none'),null);
  for(const name of Object.keys(LOOKS).filter(n=>n!=='none')){
   const source=lookFragment(name);
@@ -59,7 +59,7 @@ test('reduced graphics keep the colour looks as a CSS filter and offer nothing t
  assert.equal(lookCSS('none'),'none');
  assert.match(lookCSS('mono'),/grayscale/);
  assert.match(lookCSS('sepia'),/sepia/);
- for(const name of ['pocket','snes','lines','crt','manga','crayon','tilt','print','watercolour','oil'])assert.ok(lookNeedsPipeline(name),name);
+ for(const name of ['pocket','snes','lines','crt','manga','crayon','tilt','print','watercolour','flat','oil'])assert.ok(lookNeedsPipeline(name),name);
  assert.ok(!lookNeedsPipeline('none')&&!lookNeedsPipeline('mono'));
 });
 
@@ -68,4 +68,9 @@ test('the oil painting has a lighter version for phones and tablets, and every l
  assert.doesNotMatch(full,/#define LIGHT/);
  assert.match(light,/^#define LIGHT\n/);
  for(const name of Object.keys(LOOKS).filter(n=>n!=='none'))assert.match(lookFragment(name,{light:true}),/void main\(\)\{/,name);
+});
+
+test('only the Cartoon look takes the surface photographs away',()=>{
+ assert.deepEqual(Object.keys(LOOKS).filter(n=>lookFlatten(n)!==1),['flat']);
+ assert.equal(lookFlatten('flat'),0);
 });
