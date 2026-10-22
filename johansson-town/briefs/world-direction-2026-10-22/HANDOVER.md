@@ -1,0 +1,11 @@
+# World direction handover - 22 October 2026
+
+Branch: `codex/world-direction-2026-10-22`, based on main `a0fb347ced9250b2e5a6210ba068bf595a7ca310`. Planning only; separate from open Sakura audit PR #366 and stair repair PR #364. The current owner message broadens the programme and changes Fujita's intended role and the terminal office's purpose. Directory instructions carry a new owner-direction addendum; live roster/geometry remain unchanged.
+
+Read [MASTER-BRIEF.md](MASTER-BRIEF.md). It records confirmed ownership/cast/building direction separately from proposals, maps the eight existing ship post types, recommends a new master while retaining Ryo as mate, and preserves Tetsuo as electrician and Mac's coverage of Johansson. No captain appointment or property transfer has occurred. No crew-family/home deletion is authorised.
+
+Useful preparation: source-coordinate northern-plot map and data, showing existing uses; isolated normalized stronger-Chin recipe and engine measurement comparison, never applied to the cast. Build 0.32 -> 0.65 makes torso about 14.2% wider and arm radius about 10.5% larger without changing height; Build also broadens the waist/depth, so visual review is required. No screenshot or .blend is claimed. Blender executable and bpy were unavailable in the inspected runtime; this does not block planning/data work.
+
+Checks actually done: source instructions/handovers and roster, crew posts/quarters, avatar recipe/measurement, school/classroom, lots and minimap wiring inspected; recipe normalized and measured through the shared engine; site coordinates exported from live source constants; SVG parsed and rendered/inspected; Markdown links and diff whitespace checked. No gameplay, runtime, route/collision, save, physical-device or Blender build tests were performed. No game code or runtime changed.
+
+Next: ask captain, Johansson day-to-day role and northern-site displacement questions. Then reconcile/greybox the terminal office first. Audit actual ship berths/watch/relief and Sakura storage capacity before corresponding removals. Keep the existing classroom, useful community plot functions and all current ferry/ticket/harbour services. The property portfolio and roof-access detail remain unspecified. Do not ask again for already-established Sakura footprint/support requirements.

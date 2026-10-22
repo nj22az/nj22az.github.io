@@ -1,0 +1,281 @@
+{
+  "lots": [
+    {
+      "id": "kitahama-4-lot",
+      "rect": {
+        "minX": 20,
+        "maxX": 28,
+        "minZ": 62,
+        "maxZ": 71
+      },
+      "name": "kitahama-north-block",
+      "use": []
+    },
+    {
+      "id": "kitahama-5-lot",
+      "rect": {
+        "minX": 33,
+        "maxX": 41,
+        "minZ": 62,
+        "maxZ": 71
+      },
+      "name": "kitahama-north-block",
+      "use": []
+    },
+    {
+      "id": "kitahama-6-lot",
+      "rect": {
+        "minX": -32,
+        "maxX": -24,
+        "minZ": 48,
+        "maxZ": 57
+      },
+      "name": "Mac\u2019s garden",
+      "use": [
+        "garden",
+        "barbecue"
+      ]
+    },
+    {
+      "id": "kitahama-north-block",
+      "rect": {
+        "minX": 16,
+        "maxX": 42,
+        "minZ": 62,
+        "maxZ": 72
+      },
+      "name": "The lane garden and Kitahama monthly parking",
+      "use": [
+        "vegetable-garden",
+        "monthly-parking"
+      ]
+    },
+    {
+      "id": "kitahama-7-lot",
+      "rect": {
+        "minX": -19,
+        "maxX": -11,
+        "minZ": 48,
+        "maxZ": 57
+      },
+      "name": "The youth association\u2019s store and the eisa ground",
+      "use": [
+        "association-store",
+        "practice-ground"
+      ]
+    },
+    {
+      "id": "kitahama-9-lot",
+      "rect": {
+        "minX": 7,
+        "maxX": 15,
+        "minZ": 48,
+        "maxZ": 57
+      },
+      "name": "The footpath bicycle shed and the hoop",
+      "use": [
+        "bicycle-shed",
+        "play"
+      ]
+    },
+    {
+      "id": "kitahama-10-lot",
+      "rect": {
+        "minX": -32,
+        "maxX": -24,
+        "minZ": 62,
+        "maxZ": 71
+      },
+      "name": "The association\u2019s cane",
+      "use": [
+        "sugar-cane"
+      ]
+    },
+    {
+      "id": "kitahama-11-lot",
+      "rect": {
+        "minX": -19,
+        "maxX": -11,
+        "minZ": 62,
+        "maxZ": 71
+      },
+      "name": "The association\u2019s cane",
+      "use": [
+        "sugar-cane"
+      ]
+    },
+    {
+      "id": "kitahama-12-lot",
+      "rect": {
+        "minX": -6,
+        "maxX": 2,
+        "minZ": 62,
+        "maxZ": 71
+      },
+      "name": "The association\u2019s cane",
+      "use": [
+        "sugar-cane"
+      ]
+    }
+  ],
+  "school": {
+    "id": "school-grounds",
+    "surface": "stone",
+    "minX": 12.4,
+    "maxX": 40.6,
+    "minZ": 24.6,
+    "maxZ": 45.1,
+    "building": {
+      "minX": 14.5,
+      "maxX": 39.5,
+      "minZ": 36.5,
+      "maxZ": 44.5,
+      "floor": 0.15,
+      "storey": 3.3,
+      "roof": 3.45,
+      "parapet": 4.05
+    },
+    "corridor": {
+      "minZ": 34.1,
+      "maxZ": 36.5
+    },
+    "bays": 7,
+    "tower": {
+      "minX": 18.4,
+      "maxX": 22.6,
+      "minZ": 36.5,
+      "maxZ": 40.5,
+      "top": 9.9
+    },
+    "genkan": {
+      "x": 20.5,
+      "half": 0.95,
+      "z": 36.5
+    },
+    "field": {
+      "minX": 13.2,
+      "maxX": 39.8,
+      "minZ": 28.8,
+      "maxZ": 33.3
+    },
+    "gate": {
+      "x": 20.5,
+      "half": 1.75,
+      "z": 24.6
+    },
+    "seawall": {
+      "east": 41,
+      "south": 45.1,
+      "height": 1.05
+    },
+    "westWall": 12,
+    "bikeShed": {
+      "minX": 34,
+      "maxX": 37.1,
+      "minZ": 25.3,
+      "maxZ": 28
+    },
+    "wash": {
+      "x": 37.1,
+      "z": 33.55,
+      "w": 2.8,
+      "d": 0.7
+    },
+    "bars": {
+      "x": 38.3,
+      "z": 32.5,
+      "w": 2.6
+    },
+    "flagpole": {
+      "x": 30.5,
+      "z": 32.8
+    },
+    "sandpit": {
+      "minX": 35.8,
+      "maxX": 39.4,
+      "minZ": 29.6,
+      "maxZ": 31.6
+    },
+    "powerHouse": {
+      "minX": 25.2,
+      "maxX": 30.5,
+      "minZ": 24.4,
+      "maxZ": 29.8,
+      "height": 3.6,
+      "door": [
+        31.2,
+        27.1
+      ],
+      "tank": [
+        27.2,
+        31.05
+      ],
+      "compound": {
+        "minX": 24.6,
+        "maxX": 31.8,
+        "minZ": 24.6,
+        "maxZ": 31.9,
+        "gate": [
+          25.8,
+          28.4
+        ],
+        "height": 1.5
+      }
+    },
+    "parking": {
+      "minX": 31,
+      "maxX": 39.6,
+      "minZ": 28.9,
+      "maxZ": 32.4
+    },
+    "canopy": {
+      "minX": 18.8,
+      "maxX": 22.2,
+      "minZ": 31.9,
+      "maxZ": 34.1,
+      "height": 3
+    }
+  },
+  "buildings": [
+    {
+      "id": "school",
+      "name": "Minato Elementary School",
+      "sign": "Minato Elementary School",
+      "minX": 14.5,
+      "maxX": 24,
+      "wall": 15525330,
+      "columns": [
+        14.5,
+        18.07,
+        21.64,
+        24
+      ]
+    },
+    {
+      "id": "community-hall",
+      "name": "Minato Community Hall",
+      "sign": "Minato Community Hall",
+      "minX": 25.5,
+      "maxX": 31.5,
+      "wall": 14936795,
+      "columns": [
+        25.5,
+        28.5,
+        31.5
+      ]
+    },
+    {
+      "id": "clinic",
+      "name": "Minato Clinic",
+      "sign": "Minato Clinic",
+      "minX": 33,
+      "maxX": 39.5,
+      "wall": 15987178,
+      "columns": [
+        33,
+        36.25,
+        39.5
+      ]
+    }
+  ]
+}

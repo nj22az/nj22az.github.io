@@ -240,3 +240,11 @@ table's nearer end. Her hands meet what they take and nothing passes through the
 `tests/izakaya-bar.test.mjs`); on Linux the bottle tips over the glass with its stream and the tap's lever is pulled
 (`BUDGET.pouring`), on the web the glass fills as she holds the bottle over it. Dishes are cooked as before; a resident's
 food still appears with their drink.
+
+## Owner direction - 22 October 2026: ferry company and building replan
+
+The owner's latest direction supersedes earlier Fujita-master and exclusive-Johansson terminal-office descriptions for future implementation: Thuan and Johansson jointly own the ferry line and share a company office; Fujita is a retired captain, not the active master; Tetsuo stays the electrician; ship routines should chiefly stay aboard with a self-contained crew; Chin should look stronger through the shared avatar system. Some island property ownership is intended, but no portfolio/equity split is specified.
+
+Sakura keeps its roughly 139 m2 footprint and all selected on-site support functions (shift desk/cash, tea/meal breaks, lie-down room, stock/archive). The former upper office is to give way to a roof/tank and small inside staff-door stair, subject to capacity and safe access design. Consolidate school/community kitchen with teachers' and community office space in a northern building, retaining the present classroom; preserve the clinic/power house unless separately instructed and update the existing minimap after siting.
+
+These are owner design directions, **not a claim that the live code is updated**. Candidate captain, relief/ownership details, site/displaced uses and roof access remain to settle. Read [the master brief](briefs/world-direction-2026-10-22/MASTER-BRIEF.md) for confirmed requirements, source findings, proposed crew, delivery sequence and limits. Do not invent property transfers, erase shore families or leave the ferry without a serving master. Implement and verify each coherent change separately.
