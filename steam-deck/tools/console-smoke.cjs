@@ -31,6 +31,17 @@ const {rectanglesSeparated}=require('./layout-acceptance.cjs');
  // for real sampled frames so both movement and camera receive the same test input.
  const axes=async value=>{await page.evaluate(value=>{window.__pad.axes=value;},value);await sampled();await sampled();};
  const state=()=>page.evaluate(()=>window.johanssonDesktopUI.snapshot());
+ // Outdoor fixtures must not depend on the real clock's sleeping cabin start.
+ // B's near-door exit remains exercised independently in the owned-home check.
+ const outdoors=async()=>{
+  await page.evaluate(async()=>{
+   await window.johanssonLinuxWorld.wake();
+   const audit=window.__JOHANSSON_AUDIT__;
+   if(audit.player.room)await audit.leave();
+  });
+  await page.waitForFunction(()=>{const audit=window.__JOHANSSON_AUDIT__;return !audit.player.room&&!audit.blocked.roomLoading&&!audit.blocked.catchingUp;});
+  assert.equal(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room),null,'Outdoor fixture has settled outside');
+ };
  const click=async action=>{
   const target=page.locator(`#desktopMenu [data-action="${action}"]`).last();
   if(!await target.isVisible())await page.locator(`#desktopTabs [data-tab="${['controls','display','updates','quit'].includes(action)?'settings':action==='people'?'people':'pause'}"]`).click();
