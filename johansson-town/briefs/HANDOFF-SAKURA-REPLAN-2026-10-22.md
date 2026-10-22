@@ -4,6 +4,8 @@
 
 The owner is unhappy with Sakura and its office, wants a CAD audit against Tomato Konbini in New Yokosuka, and is considering removing the upper floor and moving the office to the ferry terminal. They explicitly ask questions to avoid breaking the game. **This authorises audit and proposals, not demolition, relocation, altered shop size, changed staff schedules or save migration.** Existing inside-only/fade instructions remain active until a replan is agreed.
 
+Review: [draft PR #366](https://github.com/nj22az/nj22az.github.io/pull/366), audit commit eaf87fef48cf546ccf232c89df1a37c768d065b7. Not merged.
+
 ## Work completed
 
 Branch `codex/sakura-audit-cad`, based on main `a0fb347ced9250b2e5a6210ba068bf595a7ca310`; separate from stair repair PR #364. Read root/directory instructions and latest linked handovers, source geometry/access and New Yokosuka research. Current DCBN collision metadata was checked on the source repository. PR #362 is concurrent staffing/trade work and must be considered before future implementation.
