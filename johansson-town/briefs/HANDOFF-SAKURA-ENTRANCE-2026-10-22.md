@@ -33,3 +33,9 @@ Source stair blob: `712fad96930f68ae125078807ace90feb3db9c93`. Rebuilt runtime s
 ## Next
 
 Draft PR #364 is submitted with screenshots and passing local test evidence. Owner visual review follows; do not merge on the strength of automated checks alone. Physical iPhone Safari and installed Linux acceptance remain unverified. Unrelated quality recovery stays in its own work.
+
+## Integration update — 22 October 2026, Europe/Copenhagen
+
+The owner requested “Fix it” after the next-priority review. The original stair source, regression tests and QA evidence have been applied to current main `a0704ef99e552405acad0d440b5162743d43dcfe` in an isolated worktree. The runtime has been rebuilt from the combined current source, preserving peaceful gameplay, Look picker and Free camera. Historical test counts and screenshots above describe the earlier candidate, not this integration.
+
+Local Chromium is absent and its download returned invalid ZIP data. A narrowly scoped GitHub Actions visual check now runs the existing actual-game stair harness in first and third person and uploads its screenshots and round-trip reports. Current-main acceptance is pending; no fresh device or installed Linux release is claimed.

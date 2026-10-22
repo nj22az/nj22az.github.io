@@ -70,21 +70,17 @@ app.whenReady().then(async()=>{
     audit.setTime(8*60+35);audit.step(100);audit.teleport(-7,-15,0,0);
    })()`);
    if(process.env.WORLD_SCREENSHOT)fs.writeFileSync(process.env.WORLD_SCREENSHOT.replace('.png','-island.png'),(await window.webContents.capturePage()).toPNG());
-   const festival=await window.webContents.executeJavaScript('(async()=>{dispatchEvent(new Event("johansson-festival-menu"));const press=(text)=>{const b=[...document.querySelectorAll("#activityActions button")].find(b=>b.textContent===text);if(!b)throw Error("Missing festival action: "+text);b.click();};press("Harbour quay · Chin");press("Take part");await new Promise(r=>setTimeout(r,1500));return {stage:!!document.getElementById("festivalHUD"),text:document.getElementById("activityBody")?.textContent};})()');
-   console.log('FESTIVAL_SMOKE',JSON.stringify(festival));if(!festival.stage)throw Error('Actual quay stage did not start: '+festival.text);
-
+   const peaceful=await window.webContents.executeJavaScript(`(async()=>{
+    const a=window.__JOHANSSON_AUDIT__,funds=a.activities.state.yen;
+    for(const [x,z] of [[-7,-15],[4,3],[0,15],[19.8,-40]]){a.teleport(x,z,0,0);dispatchEvent(new Event('johansson-festival-menu'));a.step(200);}
+    a.setTime(289*1440+720);a.step(100);
+    for(const code of ['KeyJ','KeyK','KeyL','Space']){document.dispatchEvent(new KeyboardEvent('keydown',{code,bubbles:true}));document.dispatchEvent(new KeyboardEvent('keyup',{code,bubbles:true}));}
+    await new Promise(r=>setTimeout(r,500));
+    return {hud:!!document.getElementById('festivalHUD'),launcher:!!document.getElementById('festivalButton'),api:!!a.festival,unchanged:a.activities.state.yen===funds};
+   })()`);
+   console.log('PEACEFUL_SMOKE',JSON.stringify(peaceful));if(peaceful.hud||peaceful.launcher||peaceful.api||!peaceful.unchanged)throw Error('Retired combat remained accessible');
    if(process.env.WORLD_SCREENSHOT)fs.writeFileSync(process.env.WORLD_SCREENSHOT,(await window.webContents.capturePage()).toPNG());
-   for(const id of ['park-towel','shopping-ladle','ferry-finale']){
-    // The scheduled ferry must really be alongside for her car-deck stage.
-    // Leave the exhibition, set a published layover, then step the real simulation.
-    // setTime refreshes with dt=0; ferry.update deliberately waits for a positive step.
-    if(id==='ferry-finale')await window.webContents.executeJavaScript(`window.__JOHANSSON_AUDIT__.festival.auditLeave();window.__JOHANSSON_AUDIT__.setTime(8*60+35);window.__JOHANSSON_AUDIT__.step(100);const ferry=window.__JOHANSSON_AUDIT__.world.ferry;if(ferry.berth!=='town'||ferry.phase!=='waiting')throw Error('The 08:35 timetable fixture must be alongside at Minato');`);
-    const stage=await window.webContents.executeJavaScript(`(async()=>{const ok=window.__JOHANSSON_AUDIT__.festival.auditStage(${JSON.stringify(id)},{watch:true});await new Promise(r=>setTimeout(r,1200));return {ok,text:document.getElementById('activityBody')?.textContent};})()`);
-    console.log('STAGE_SMOKE',id,JSON.stringify(stage));if(!stage.ok)throw Error('Stage failed: '+id+' '+stage.text);
-    if(process.env.WORLD_SCREENSHOT)fs.writeFileSync(process.env.WORLD_SCREENSHOT.replace('.png','-'+id+'.png'),(await window.webContents.capturePage()).toPNG());
-   }
-   const calendar=await window.webContents.executeJavaScript(`(()=>{window.__JOHANSSON_AUDIT__.festival.auditLeave();window.__JOHANSSON_AUDIT__.festival.tournamentMenu();return document.getElementById('activityTitle').textContent;})()`);console.log('TOURNAMENT_SMOKE',calendar);
-   const desktop=await window.webContents.executeJavaScript(`(async()=>{window.__JOHANSSON_AUDIT__.festival.auditLeave();window.johanssonDesktopUI.open();const menu=document.getElementById('desktopMenu');const opened=!menu.hidden;menu.querySelector('[data-action="save"]').click();await new Promise(r=>setTimeout(r,1000));menu.querySelector('[data-tab="settings"]').click();menu.querySelector('[data-action="display"]').click();menu.querySelector('[data-action="hud"]').click();const hidden=document.documentElement.classList.contains('desktop-hide-hud');return {opened,hidden,status:document.getElementById('desktopStatus').textContent};})()`);
+   const desktop=await window.webContents.executeJavaScript(`(async()=>{window.johanssonDesktopUI.open();const menu=document.getElementById('desktopMenu');const opened=!menu.hidden;menu.querySelector('[data-action="save"]').click();await new Promise(r=>setTimeout(r,1000));menu.querySelector('[data-tab="settings"]').click();menu.querySelector('[data-action="display"]').click();menu.querySelector('[data-action="hud"]').click();const hidden=document.documentElement.classList.contains('desktop-hide-hud');return {opened,hidden,status:document.getElementById('desktopStatus').textContent};})()`);
    console.log('DESKTOP_SMOKE',JSON.stringify(desktop));if(!desktop.opened||!desktop.hidden)throw Error('Desktop pause/HUD controls failed');
    if(!readSnapshot(saveDir()))throw Error('Save backup was not written');
 

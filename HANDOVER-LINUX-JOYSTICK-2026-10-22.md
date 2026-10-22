@@ -89,3 +89,20 @@ is the one thing to watch.
 
 **Next:** get the three answers. Capture the real pads' `navigator.getGamepads()` (id, mapping, button count, axes at
 rest and with each stick moved) as a test fixture. Fix, then release 0.2.17 per the steps above.
+
+
+## Release update — 2026-10-22T23:17:22+02:00 (Europe/Copenhagen)
+
+[Linux 0.2.17](https://github.com/nj22az/nj22az.github.io/releases/tag/johansson-world-linux-v0.2.17) is now published via
+[#370](https://github.com/nj22az/nj22az.github.io/pull/370), release commit
+`1c204ad415483e097c279f5ade19f89cf3ad39a8`. It removes current fighting,
+safely migrates old combat saves and includes accepted main World work, including
+the new Look setting and frozen Free camera. Source integration, exact-tree
+acceptance and [public installer verification](https://github.com/nj22az/nj22az.github.io/actions/runs/39854364138) passed.
+See [the signed handover](johansson-town/briefs/HANDOFF-COMBAT-WITHDRAWAL-2026-10-22.md)
+and [release evidence](linux-port/acceptance-0.2.17.md).
+
+This release does **not** include the separate saved-axis repair proposed in
+#362. Real Steam Deck/8BitDo checks and the diagnostic questions above remain
+outstanding. Version 0.2.17 is consumed: a further controller release needs the
+next unpublished version, at least 0.2.18. Preserve all published assets and saves.

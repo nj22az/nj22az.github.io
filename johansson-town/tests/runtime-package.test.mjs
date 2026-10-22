@@ -66,3 +66,12 @@ test('every stylesheet link carries a hash of the file it points at',async()=>{
  }
  }
 });
+
+test('delivered chunks contain no retired combat handlers, menus, damage simulation or rewards',async()=>{
+ const {readdir}=await import('node:fs/promises');
+ for(const name of await readdir(new URL('../runtime/',import.meta.url))){
+  if(!name.endsWith('.js'))continue;
+  const code=await readFile(new URL('../runtime/'+name,import.meta.url),'utf8');
+  for(const marker of ['festivalHUD','festival-active','johansson-festival-menu','Watch the exhibition','Annual Harbour Tournament','personal-quarrel\',','nearFoe','Johansson’s fists','Go down to floor B','Golden Ladle and ¥400'])assert.equal(code.includes(marker),false,name+' still ships '+marker);
+ }
+});

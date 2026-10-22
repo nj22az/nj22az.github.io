@@ -38,6 +38,13 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
+    "title": "Cave descent closed",
+    "organisation": "Town Services",
+    "text": "The descent is closed. Stay at the cave mouth.",
+    "source": "notice:Cave descent closed"
+  },
+  {
+    "type": "Notice",
     "title": "Island freight and dock shifts",
     "organisation": "Town Services",
     "text": "WESTERN QUAY · ISLAND LIFELINE\nCargo crews: 07:00–22:00. Early boat: ice, rice and shop supplies. Afternoon: post, repair parts and village parcels. Evening: chilled fish and outgoing mail.\nThe harbour master runs the cargo yard and keeps the freight book at the dispatch desk. Ferry passengers use the marked main quay. Dock Electrical & Repairs is beside the warehouse. Keep its doorway and the hoist bay clear.",
