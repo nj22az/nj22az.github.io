@@ -26,3 +26,7 @@ node_modules
 
 # Portable room drafts are not World publication data.
 /johansson-town/data/studio/projects/
+
+# Reproducible character-review intermediates (curated evidence is committed).
+/.identity-review-baseline-*/
+/avatar-creator/docs/qa/identity-v1/raw/

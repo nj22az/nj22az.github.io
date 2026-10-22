@@ -25,5 +25,8 @@ export function shapeHeadPoint(point,profile){
  point.x*=1-profile.taper*lower+cheek;
  // A slightly flatter facial plane gives eyes and mouths a readable surface.
  if(point.z>0)point.z*=1-.08*Math.max(0,1-Math.abs(y)*1.4);
+ // The opt-in storybook study rounds the lower facial plane in profile as well
+ // as in silhouette. Every face attachment and hair surface uses this same field.
+ if(profile.lowerFace&&point.z>0)point.z*=1+profile.lowerFace*Math.exp(-(((y+.48)/.30)**2));
  return point;
 }

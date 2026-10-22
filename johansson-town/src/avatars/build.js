@@ -10,6 +10,7 @@ import {drawFace,faceLayout,INK_NOSES,BEARD_SHELL,drawBeardShell} from './face.j
 import {buildFaceObjects} from './face-objects.js';
 import {beardSpec} from './beard-mesh.js';
 import {headProfile,shapeHeadPoint} from './head-profile.js';
+import {storybookProfile,storybookHairPoint,renderStyleOf} from './storybook-style.js';
 import {longBraidPoints} from './braid-path.js';
 import {pleatedSkirtGeometry} from './pleated-skirt.js';
 import {celFrom} from '../render/cel.js';
@@ -49,18 +50,19 @@ const STAGES=Object.freeze({
  adult:{base:1.36,span:.44,head:1.12},
  elder:{base:1.33,span:.34,head:1.14},
 });
-export function measure(recipe){
+export function measure(recipe,{renderStyle='classic'}={}){
+ renderStyle=renderStyleOf(renderStyle);const storybook=renderStyle==='island-storybook-v1';
  const r=normalizeRecipe(recipe);
  const stage=STAGES[r.age]||STAGES.adult;
  const H=stage.base+r.body.height*stage.span,k=H/1.6,build=r.body.build;
- const profile=headProfile(r.head),Rh=(.19+r.head.size*.055)*k*stage.head*(r.body.proportion==='rounded'?1.30:1),headSX=profile.width,headSY=profile.height;
+ const profile=storybook?storybookProfile(headProfile(r.head)):headProfile(r.head),Rh=(.19+r.head.size*.055)*k*stage.head*(r.body.proportion==='rounded'?1.30:1),headSX=profile.width,headSY=profile.height;
  const rounded=r.body.proportion==='rounded';
- const neck=.055*k,body=H-Rh*2*headSY-neck;
+ const neck=(storybook?(r.age==='child'?.065:.073):.055)*k,body=H-Rh*2*headSY-neck;
  const leg=body*(rounded?.37:.47),torso=body-leg;
  const foot=.07*k,thigh=(leg-foot)*.5,shin=thigh;
  const legR=(.058+build*.024)*k,armR=(.045+build*.016)*k;
  const feminine=r.body.silhouette==='feminine',masculine=r.body.silhouette==='masculine';
- const width=(.3+build*.15)*k*(rounded?1.20:1)*(feminine?.94:masculine?1.08:1),depth=(.2+build*.09)*k*(rounded?1.15:1);
+ const width=(.3+build*.15)*k*(storybook?1.045:1)*(rounded?1.20:1)*(feminine?.94:masculine?1.08:1),depth=(.2+build*.09)*k*(rounded?1.15:1);
  const hips=width*(feminine?1.13:masculine?.9:1),waistRatio=feminine?.79:masculine?.98:.96;
  const upper=(rounded?.18:.22)*k,fore=(rounded?.16:.2)*k,hand=.056*k;
  const hipY=leg,chestY=hipY+torso*.5,neckY=hipY+torso,headY=neckY+neck;
@@ -375,7 +377,7 @@ function addHair(list,recipe,m){
  // Hair and hat are built in head-bone space, then carried to model space.
  const at=(x,y,z)=>[x,m.headY+y,z];
  const cap=style==='longbraids'?null:hairCap(style,recipe.hair.flip);
- if(cap){const p=cap.attributes.position,v=new THREE.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);shapeHeadPoint(v,m.profile);p.setXYZ(i,v.x,v.y,v.z);}cap.computeVertexNormals();
+ if(cap){const p=cap.attributes.position,v=new THREE.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);if(m.renderStyle)storybookHairPoint(v,cap.userData.hairField?.keep[i]??1,side,style);shapeHeadPoint(v,m.profile);p.setXYZ(i,v.x,v.y,v.z);}cap.computeVertexNormals();
   // The cap's own field, laid out the way part() lays out its triangles (one vertex per corner, in index order).
   const hf=cap.userData.hairField,index=cap.index;
   const piece=part(list,cap,'head',c,M(cx,m.headY+cy,0,0,0,0,...S));
@@ -1733,10 +1735,13 @@ function fitFlags(parts){const flags=new Float32Array(vertexCount(parts));let at
 
 /**
  * @param {object} input recipe (anything; it is normalized)
- * @param {{shadows?:boolean,faceSize?:number}} [options]
+ * @param {{shadows?:boolean,faceSize?:number,renderStyle?:'classic'|'island-storybook-v1'}} [options]
  */
-export function buildAvatar(input,{shadows=true,faceSize=256}={}){
- const recipe=normalizeRecipe(input),m=measure(recipe);
+export function buildAvatar(input,{shadows=true,faceSize=256,renderStyle='classic'}={}){
+ renderStyle=renderStyleOf(renderStyle);
+ const recipe=normalizeRecipe(input),m=measure(recipe,{renderStyle});
+ // Rendering is opt-in and never written into the stored appearance recipe.
+ if(renderStyle!=='classic')m.renderStyle=renderStyle;
  const swing=springRest(recipe,m),rest={...restPositions(m),...swing.rest},bones={},list=BONES.map(name=>{const b=new THREE.Bone();b.name=name;bones[name]=b;return b;});
  for(const name of BONES){
   const b=bones[name],p=rest[name],parent=PARENT[name];
@@ -1891,7 +1896,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  }
 
  const avatar={
-  recipe,measure:m,root,body,bones,face,height:m.H,outfit:'clothes',hasHat,garment:material.userData.garment,springSetup:swing,springs:null,
+  recipe,renderStyle,measure:m,root,body,bones,face,height:m.H,outfit:'clothes',hasHat,garment:material.userData.garment,springSetup:swing,springs:null,
   setOpenHands(on){on=!!on;if(handsOpen===on)return;handsOpen=on;geometry.attributes.position.array.set(on?openFingerPositions:closedFingerPositions,fingerStart*3);geometry.attributes.position.needsUpdate=true;},
   /** Hat on or off. Off, it is somebody else's job to show where it went (buildHatProp). */
   setHat(on){if(seeThrough)seeThrough.visible=!!on;geometry.setDrawRange(0,on||!hasHat?Infinity:hatStart);if(hairCovered!==!!on){hairCovered=!!on;if(hatHairRanges.length)applyHair(mainHair);}},

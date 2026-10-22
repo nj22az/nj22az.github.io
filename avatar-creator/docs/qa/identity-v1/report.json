@@ -1,0 +1,649 @@
+{
+  "baseline": "9f7ccd4cf498eb266f5eec6b215332ff483ee9d4",
+  "renderer": "Chromium SwiftShader; software, not device performance",
+  "captures": [
+    {
+      "file": "baseline-0-front.png",
+      "person": "Johansson",
+      "action": "neutral",
+      "view": "front",
+      "seconds": 0,
+      "drawCalls": 5,
+      "triangles": 33248,
+      "heights": [
+        1.6768,
+        1.6768
+      ]
+    },
+    {
+      "file": "baseline-0-quarter.png",
+      "person": "Johansson",
+      "action": "neutral",
+      "view": "quarter",
+      "seconds": 0,
+      "drawCalls": 5,
+      "triangles": 33248,
+      "heights": [
+        1.6768,
+        1.6768
+      ]
+    },
+    {
+      "file": "baseline-0-profile.png",
+      "person": "Johansson",
+      "action": "neutral",
+      "view": "profile",
+      "seconds": 0,
+      "drawCalls": 5,
+      "triangles": 33248,
+      "heights": [
+        1.6768,
+        1.6768
+      ]
+    },
+    {
+      "file": "baseline-0-body.png",
+      "person": "Johansson",
+      "action": "neutral",
+      "view": "body",
+      "seconds": 0,
+      "drawCalls": 5,
+      "triangles": 33248,
+      "heights": [
+        1.6768,
+        1.6768
+      ]
+    },
+    {
+      "file": "baseline-1-front.png",
+      "person": "Thuan",
+      "action": "neutral",
+      "view": "front",
+      "seconds": 0,
+      "drawCalls": 4,
+      "triangles": 35604,
+      "heights": [
+        1.6210622130548582,
+        1.6210622130548582
+      ]
+    },
+    {
+      "file": "baseline-1-quarter.png",
+      "person": "Thuan",
+      "action": "neutral",
+      "view": "quarter",
+      "seconds": 0,
+      "drawCalls": 4,
+      "triangles": 35604,
+      "heights": [
+        1.6210622130548582,
+        1.6210622130548582
+      ]
+    },
+    {
+      "file": "baseline-1-profile.png",
+      "person": "Thuan",
+      "action": "neutral",
+      "view": "profile",
+      "seconds": 0,
+      "drawCalls": 4,
+      "triangles": 35604,
+      "heights": [
+        1.6210622130548582,
+        1.6210622130548582
+      ]
+    },
+    {
+      "file": "baseline-1-body.png",
+      "person": "Thuan",
+      "action": "neutral",
+      "view": "body",
+      "seconds": 0,
+      "drawCalls": 4,
+      "triangles": 35604,
+      "heights": [
+        1.6210622130548582,
+        1.6210622130548582
+      ]
+    },
+    {
+      "file": "baseline-2-front.png",
+      "person": "Tetsuo",
+      "action": "neutral",
+      "view": "front",
+      "seconds": 0,
+      "drawCalls": 8,
+      "triangles": 25392,
+      "heights": [
+        1.6328,
+        1.6328
+      ]
+    },
+    {
+      "file": "baseline-2-quarter.png",
+      "person": "Tetsuo",
+      "action": "neutral",
+      "view": "quarter",
+      "seconds": 0,
+      "drawCalls": 8,
+      "triangles": 25392,
+      "heights": [
+        1.6328,
+        1.6328
+      ]
+    },
+    {
+      "file": "baseline-2-profile.png",
+      "person": "Tetsuo",
+      "action": "neutral",
+      "view": "profile",
+      "seconds": 0,
+      "drawCalls": 8,
+      "triangles": 25392,
+      "heights": [
+        1.6328,
+        1.6328
+      ]
+    },
+    {
+      "file": "baseline-2-body.png",
+      "person": "Tetsuo",
+      "action": "neutral",
+      "view": "body",
+      "seconds": 0,
+      "drawCalls": 8,
+      "triangles": 25392,
+      "heights": [
+        1.6328,
+        1.6328
+      ]
+    },
+    {
+      "file": "baseline-3-front.png",
+      "person": "Grandmother Higa",
+      "action": "neutral",
+      "view": "front",
+      "seconds": 0,
+      "drawCalls": 8,
+      "triangles": 36136,
+      "heights": [
+        1.4480000000000002,
+        1.4480000000000002
+      ]
+    },
+    {
+      "file": "baseline-3-quarter.png",
+      "person": "Grandmother Higa",
+      "action": "neutral",
+      "view": "quarter",
+      "seconds": 0,
+      "drawCalls": 8,
+      "triangles": 36136,
+      "heights": [
+        1.4480000000000002,
+        1.4480000000000002
+      ]
+    },
+    {
+      "file": "baseline-3-profile.png",
+      "person": "Grandmother Higa",
+      "action": "neutral",
+      "view": "profile",
+      "seconds": 0,
+      "drawCalls": 8,
+      "triangles": 36136,
+      "heights": [
+        1.4480000000000002,
+        1.4480000000000002
+      ]
+    },
+    {
+      "file": "baseline-3-body.png",
+      "person": "Grandmother Higa",
+      "action": "neutral",
+      "view": "body",
+      "seconds": 0,
+      "drawCalls": 8,
+      "triangles": 36136,
+      "heights": [
+        1.4480000000000002,
+        1.4480000000000002
+      ]
+    },
+    {
+      "file": "baseline-4-front.png",
+      "person": "Mai",
+      "action": "neutral",
+      "view": "front",
+      "seconds": 0,
+      "drawCalls": 4,
+      "triangles": 32224,
+      "heights": [
+        1.2100000000000002,
+        1.2100000000000002
+      ]
+    },
+    {
+      "file": "baseline-4-quarter.png",
+      "person": "Mai",
+      "action": "neutral",
+      "view": "quarter",
+      "seconds": 0,
+      "drawCalls": 4,
+      "triangles": 32224,
+      "heights": [
+        1.2100000000000002,
+        1.2100000000000002
+      ]
+    },
+    {
+      "file": "baseline-4-profile.png",
+      "person": "Mai",
+      "action": "neutral",
+      "view": "profile",
+      "seconds": 0,
+      "drawCalls": 4,
+      "triangles": 32224,
+      "heights": [
+        1.2100000000000002,
+        1.2100000000000002
+      ]
+    },
+    {
+      "file": "baseline-4-body.png",
+      "person": "Mai",
+      "action": "neutral",
+      "view": "body",
+      "seconds": 0,
+      "drawCalls": 4,
+      "triangles": 32224,
+      "heights": [
+        1.2100000000000002,
+        1.2100000000000002
+      ]
+    },
+    {
+      "file": "compare-0-front.png",
+      "person": "Johansson",
+      "action": "neutral",
+      "view": "front",
+      "seconds": 0,
+      "drawCalls": 5,
+      "triangles": 33248,
+      "heights": [
+        1.6768,
+        1.6768
+      ]
+    },
+    {
+      "file": "compare-0-quarter.png",
+      "person": "Johansson",
+      "action": "neutral",
+      "view": "quarter",
+      "seconds": 0,
+      "drawCalls": 5,
+      "triangles": 33248,
+      "heights": [
+        1.6768,
+        1.6768
+      ]
+    },
+    {
+      "file": "compare-0-profile.png",
+      "person": "Johansson",
+      "action": "neutral",
+      "view": "profile",
+      "seconds": 0,
+      "drawCalls": 5,
+      "triangles": 33248,
+      "heights": [
+        1.6768,
+        1.6768
+      ]
+    },
+    {
+      "file": "compare-0-body.png",
+      "person": "Johansson",
+      "action": "neutral",
+      "view": "body",
+      "seconds": 0,
+      "drawCalls": 5,
+      "triangles": 33248,
+      "heights": [
+        1.6768,
+        1.6768
+      ]
+    },
+    {
+      "file": "compare-1-front.png",
+      "person": "Thuan",
+      "action": "neutral",
+      "view": "front",
+      "seconds": 0,
+      "drawCalls": 4,
+      "triangles": 35604,
+      "heights": [
+        1.6210622130548582,
+        1.6210622130548582
+      ]
+    },
+    {
+      "file": "compare-1-quarter.png",
+      "person": "Thuan",
+      "action": "neutral",
+      "view": "quarter",
+      "seconds": 0,
+      "drawCalls": 4,
+      "triangles": 35604,
+      "heights": [
+        1.6210622130548582,
+        1.6210622130548582
+      ]
+    },
+    {
+      "file": "compare-1-profile.png",
+      "person": "Thuan",
+      "action": "neutral",
+      "view": "profile",
+      "seconds": 0,
+      "drawCalls": 4,
+      "triangles": 35604,
+      "heights": [
+        1.6210622130548582,
+        1.6210622130548582
+      ]
+    },
+    {
+      "file": "compare-1-body.png",
+      "person": "Thuan",
+      "action": "neutral",
+      "view": "body",
+      "seconds": 0,
+      "drawCalls": 4,
+      "triangles": 35604,
+      "heights": [
+        1.6210622130548582,
+        1.6210622130548582
+      ]
+    },
+    {
+      "file": "compare-2-front.png",
+      "person": "Tetsuo",
+      "action": "neutral",
+      "view": "front",
+      "seconds": 0,
+      "drawCalls": 8,
+      "triangles": 25392,
+      "heights": [
+        1.6328,
+        1.6328
+      ]
+    },
+    {
+      "file": "compare-2-quarter.png",
+      "person": "Tetsuo",
+      "action": "neutral",
+      "view": "quarter",
+      "seconds": 0,
+      "drawCalls": 8,
+      "triangles": 25392,
+      "heights": [
+        1.6328,
+        1.6328
+      ]
+    },
+    {
+      "file": "compare-2-profile.png",
+      "person": "Tetsuo",
+      "action": "neutral",
+      "view": "profile",
+      "seconds": 0,
+      "drawCalls": 8,
+      "triangles": 25392,
+      "heights": [
+        1.6328,
+        1.6328
+      ]
+    },
+    {
+      "file": "compare-2-body.png",
+      "person": "Tetsuo",
+      "action": "neutral",
+      "view": "body",
+      "seconds": 0,
+      "drawCalls": 8,
+      "triangles": 25392,
+      "heights": [
+        1.6328,
+        1.6328
+      ]
+    },
+    {
+      "file": "compare-3-front.png",
+      "person": "Grandmother Higa",
+      "action": "neutral",
+      "view": "front",
+      "seconds": 0,
+      "drawCalls": 8,
+      "triangles": 36136,
+      "heights": [
+        1.4480000000000002,
+        1.4480000000000002
+      ]
+    },
+    {
+      "file": "compare-3-quarter.png",
+      "person": "Grandmother Higa",
+      "action": "neutral",
+      "view": "quarter",
+      "seconds": 0,
+      "drawCalls": 8,
+      "triangles": 36136,
+      "heights": [
+        1.4480000000000002,
+        1.4480000000000002
+      ]
+    },
+    {
+      "file": "compare-3-profile.png",
+      "person": "Grandmother Higa",
+      "action": "neutral",
+      "view": "profile",
+      "seconds": 0,
+      "drawCalls": 8,
+      "triangles": 36136,
+      "heights": [
+        1.4480000000000002,
+        1.4480000000000002
+      ]
+    },
+    {
+      "file": "compare-3-body.png",
+      "person": "Grandmother Higa",
+      "action": "neutral",
+      "view": "body",
+      "seconds": 0,
+      "drawCalls": 8,
+      "triangles": 36136,
+      "heights": [
+        1.4480000000000002,
+        1.4480000000000002
+      ]
+    },
+    {
+      "file": "compare-4-front.png",
+      "person": "Mai",
+      "action": "neutral",
+      "view": "front",
+      "seconds": 0,
+      "drawCalls": 4,
+      "triangles": 32224,
+      "heights": [
+        1.2100000000000002,
+        1.2100000000000002
+      ]
+    },
+    {
+      "file": "compare-4-quarter.png",
+      "person": "Mai",
+      "action": "neutral",
+      "view": "quarter",
+      "seconds": 0,
+      "drawCalls": 4,
+      "triangles": 32224,
+      "heights": [
+        1.2100000000000002,
+        1.2100000000000002
+      ]
+    },
+    {
+      "file": "compare-4-profile.png",
+      "person": "Mai",
+      "action": "neutral",
+      "view": "profile",
+      "seconds": 0,
+      "drawCalls": 4,
+      "triangles": 32224,
+      "heights": [
+        1.2100000000000002,
+        1.2100000000000002
+      ]
+    },
+    {
+      "file": "compare-4-body.png",
+      "person": "Mai",
+      "action": "neutral",
+      "view": "body",
+      "seconds": 0,
+      "drawCalls": 4,
+      "triangles": 32224,
+      "heights": [
+        1.2100000000000002,
+        1.2100000000000002
+      ]
+    }
+  ],
+  "errors": [],
+  "deterministicReplay": true,
+  "phoneKeyboard": true,
+  "baselinePixelMatches": [
+    [
+      0,
+      "front",
+      true
+    ],
+    [
+      0,
+      "quarter",
+      true
+    ],
+    [
+      0,
+      "profile",
+      true
+    ],
+    [
+      0,
+      "body",
+      true
+    ],
+    [
+      1,
+      "front",
+      true
+    ],
+    [
+      1,
+      "quarter",
+      true
+    ],
+    [
+      1,
+      "profile",
+      true
+    ],
+    [
+      1,
+      "body",
+      true
+    ],
+    [
+      2,
+      "front",
+      true
+    ],
+    [
+      2,
+      "quarter",
+      true
+    ],
+    [
+      2,
+      "profile",
+      true
+    ],
+    [
+      2,
+      "body",
+      true
+    ],
+    [
+      3,
+      "front",
+      true
+    ],
+    [
+      3,
+      "quarter",
+      true
+    ],
+    [
+      3,
+      "profile",
+      true
+    ],
+    [
+      3,
+      "body",
+      true
+    ],
+    [
+      4,
+      "front",
+      true
+    ],
+    [
+      4,
+      "quarter",
+      true
+    ],
+    [
+      4,
+      "profile",
+      true
+    ],
+    [
+      4,
+      "body",
+      true
+    ]
+  ],
+  "rawCaptures": "Reproducible intermediates under raw/; not committed",
+  "evidence": [
+    "review-0.jpg",
+    "performance-0.jpg",
+    "motion-0.gif",
+    "review-1.jpg",
+    "performance-1.jpg",
+    "motion-1.gif",
+    "review-2.jpg",
+    "performance-2.jpg",
+    "motion-2.gif",
+    "review-3.jpg",
+    "performance-3.jpg",
+    "motion-3.gif",
+    "review-4.jpg",
+    "performance-4.jpg",
+    "motion-4.gif"
+  ]
+}
