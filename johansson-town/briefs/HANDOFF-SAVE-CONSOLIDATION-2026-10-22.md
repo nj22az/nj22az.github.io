@@ -16,7 +16,7 @@ expected retired Reiko's saved location to survive the approved cast migration.
 - Branch: `codex/consolidation-save-guard`.
 - PR: [#369](https://github.com/nj22az/nj22az.github.io/pull/369).
 - Implementation commit: `0ac026969b1e7643933403c2a624b81661d5b8e6`.
-- State: implemented and locally verified; open, not merged, deployed or released.
+- State: merged to main as `97579cc0b4bfd4af3523e3ae0bf25d672643d82b` on the owner's instruction; no new Linux release published.
 
 ## Fix and acceptance
 
@@ -56,3 +56,45 @@ no remote pass is claimed. The subsequent handover commit changes documentation 
 Next: inspect GitHub checks, then merge #369 only on the owner's instruction.
 Keep the remaining afternoon-handoff issues open; two formerly failing files
 have now been repaired across #368 and #369.
+
+
+## Merge and remaining-work review — 2026-10-22T22:34:52+02:00
+
+PR #369 was squash-merged on the owner's instruction after the
+[GitHub guard](https://github.com/nj22az/nj22az.github.io/actions/runs/39849438531)
+passed on final head `a9ab4dcfc5b335d4d84b84213606646b1bbef5b3`.
+Merge: `97579cc0b4bfd4af3523e3ae0bf25d672643d82b`. Linux CI was still running at the merge;
+no installed Linux or physical-controller acceptance is claimed.
+
+The two selected test repairs (#368 and #369) are now on main. The guarded set
+is 66 files; the local candidate passed 350 tests. This is not a claim that the
+entire repository test suite passes. No full-suite recount was performed.
+
+Verified open PRs relevant to the remaining World work:
+
+| Work | Current state and next action |
+| --- | --- |
+| Withdraw current fighting | [#365](https://github.com/nj22az/nj22az.github.io/pull/365) implemented and open. Highest recovery priority: integrate against current main, verify, merge on owner approval, then package a new Linux version. |
+| Sakura stockroom stair entrance | [#364](https://github.com/nj22az/nj22az.github.io/pull/364) implemented with comparisons; draft awaiting visual acceptance. |
+| Doctor identity and controller settings repair | [#362](https://github.com/nj22az/nj22az.github.io/pull/362) implemented and open. Nhung's new role supersedes the old “choose a doctor” handover question. Controller hardware verification remains. |
+| Higa Liquor closure into Sakura | [#363](https://github.com/nj22az/nj22az.github.io/pull/363) implemented and open, stacked on #362; integrate #362 first. Reconcile older shop/bench tasks with the closure. |
+| Catalogue consistency | [#329](https://github.com/nj22az/nj22az.github.io/pull/329) remains open with its own tests; check current-base compatibility rather than duplicate the repair. |
+| Ferry ownership/crew, Sakura facilities, relocated school and community kitchen | [#367](https://github.com/nj22az/nj22az.github.io/pull/367), alongside [#366](https://github.com/nj22az/nj22az.github.io/pull/366), is planning only. Site verification and implementation remain; no island walk, demolition or runtime role change established. |
+
+Still outstanding in the source handovers: banner/pole and dock clearances,
+quay/junction markings, residential/service-corner dressing and planting;
+Community Hall dressing; clinic seating; fixed-pose NPC seat edges; older comic
+seat metadata; Umi-no-yu's outdoor bench; police/terminal comic backdrops;
+remaining Japanese signs, park canopy and tending routines; phone performance;
+and other failing-test groups. The clinic/doctor and Higa items must be reconciled
+with #362/#363 before further work.
+
+The release list was checked: the latest published Linux version is still
+`johansson-world-linux-v0.2.16`. A later accepted game change needs a new version;
+do not overwrite that release. Studio identity/hand redesign also remains on
+separate open branches; these test merges do not implement it.
+
+Next recommended work: review and integrate #365 combat withdrawal, then the
+visible recovery items. No other open PR was authorised for merge in this task.
+This addendum changes documentation only; checked Markdown targets and preserved
+the existing handover history.
