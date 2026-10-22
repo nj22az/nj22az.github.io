@@ -59,12 +59,13 @@ function context(w,h){
 const load=url=>{if(!images.has(url))images.set(url,new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(Error('Missing comic set: '+url));img.src=url;}));return images.get(url);};
 async function placeViews(base){views??=fetch(base+'assets/images/feed/views.json').then(r=>r.ok?r.json():{}).catch(()=>({}));return views;}
 
-/** Poses a resident: a gesture, standing or (with a seat height) seated, the legs kept on the seat. */
-function pose(avatar,name,expression,seatHeight=null){
+/** Poses a resident: a gesture, standing or (with a seat height) seated, the legs kept on the seat (and, with the seat's
+ *  front edge, the shins hanging in front of it: animate.js seatFront). */
+function pose(avatar,name,expression,seatHeight=null,seatFront){
  const animator=createAvatarAnimator(avatar),duration=GESTURES[name],time=Number.isFinite(duration)?duration*.43:.7,seated=name==='Sit'||seatHeight!=null;
  if(duration)animator.play(name);
  const steps=Math.max(1,Math.ceil(time/.025));
- for(let i=0;i<steps;i++)animator.update(time/steps,{expression,seated,seatHeight:seatHeight??.48});
+ for(let i=0;i<steps;i++)animator.update(time/steps,{expression,seated,seatHeight:seatHeight??.48,seatFront});
  avatar.paintFace({expression,blink:0,talk:0,look:[0,0]});
 }
 
@@ -156,7 +157,7 @@ function arrange(set,view,count,seed,sitting,clear){
   const d=Math.hypot(cam.x-x,cam.z-z),q=onScreen(x,t.surfaceY,z);if(!q||d<2.2)continue;
   const face=(-Math.sin(t.yaw)*(cam.x-x)-Math.cos(t.yaw)*(cam.z-z))/(d||1);
   if(face<.3)continue;
-  seats.push({x,y,z,sx:(q.x+1)/2,d,face,seat:{height,yaw:t.yaw}});
+  seats.push({x,y,z,sx:(q.x+1)/2,d,face,seat:{height,yaw:t.yaw,front:t.front}});
  }
  const good=a=>Math.abs(a.d-3.2)+Math.abs(a.sx-.5)*2-(a.seat?a.face*.6:0);
  stands.sort((a,b)=>good(a)-good(b));seats.sort((a,b)=>good(a)-good(b));
@@ -313,7 +314,7 @@ async function drawSetPanel({ctx,w,h,set,p,shot,actors,scene,base,place,i}){
    // a little: towards the camera for a close-up, towards the other person otherwise.
    const ahead=a.mark.seat.yaw+Math.PI,want=shot==='close'&&a.name===p.focus||!others.length?toCam:toOther;
    a.holder.rotation.y=ahead+clamp(wrap(want-ahead),.35);
-   pose(a.avatar,a.pose&&a.pose!=='Idle'?a.pose:'Sit',a.expression,a.mark.seat.height);
+   pose(a.avatar,a.pose&&a.pose!=='Idle'?a.pose:'Sit',a.expression,a.mark.seat.height,a.mark.seat.front);
   }else{
    // In conversation they face each other, opened a little to the camera, as on a stage.
    // A close-up is on a face, so its subject turns to the camera; the rest face each other.
@@ -399,7 +400,7 @@ function stage(actors,camera,p){
   if(a.seated){
    const ahead=a.mark.seat.yaw+Math.PI,want=p.shot==='close'&&a.name===p.focus||!others.length?toCam:toOther;
    a.holder.rotation.y=ahead+clamp(wrap(want-ahead),.35);
-   pose(a.avatar,a.pose&&a.pose!=='Idle'?a.pose:'Sit',a.expression,a.mark.seat.height);
+   pose(a.avatar,a.pose&&a.pose!=='Idle'?a.pose:'Sit',a.expression,a.mark.seat.height,a.mark.seat.front);
   }else{
    const turn=others.length?wrap(toOther-toCam):0,facing=p.shot==='close'&&a.name===p.focus?.3:.78;
    a.holder.rotation.y=others.length?toCam+clamp(turn*facing,1.15):toCam;

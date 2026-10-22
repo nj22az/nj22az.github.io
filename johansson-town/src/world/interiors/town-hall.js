@@ -1,4 +1,5 @@
 import * as THREE from '../../../vendor/three.module.js';
+import {benchSeat} from '../seat-slots.js';
 import {buildAvatar} from '../../avatars/build.js';
 import {createAvatarAnimator} from '../../avatars/animate.js';
 import {normalizeRecipe} from '../../avatars/recipe.js';
@@ -227,7 +228,8 @@ export function buildClinic({room,reg,action,collider=()=>{}}){
   plate(group,'WC',{w:.3,h:.18,at:[2.16,2.15,2.0],ry:-Math.PI/2,bg:'#c0392b',fg:'#f8f4ea',size:.7});}
  box([.36,.06,.36],[1.5,.03,2.4],0xe8ebe6,'Scales');box([.04,1.9,.04],[1.8,.95,hd-.08],0xd8d2c4,'Height rod');box([.2,.03,.12],[1.72,1.62,hd-.1],0xd8d2c4);
  box([1.3,.42,.4],[1.0,.21,.75],0x7fa7b8,'Waiting bench');collider(1.0,.75,1.3,.42,.45);
- const waitingSeat=new THREE.Object3D();waitingSeat.position.set(1,1,.75);waitingSeat.userData.npcInteraction=false;waitingSeat.userData.seat={position:[1,0,.75],stand:[1,0,1.5],surfaceY:.42,eyeY:1.14,yaw:0,pitch:0};group.add(waitingSeat);reg(waitingSeat,'Sit in the clinic waiting room',()=>action('seat','Clinic waiting bench','A place to rest until the doctor is ready.'),true);
+ const waitingSeat=new THREE.Object3D();waitingSeat.position.set(1,1,.75);waitingSeat.userData.npcInteraction=false;// (its back to the partition, z .5: the sitter faces the waiting room and the street door, +z, and stands up into it)
+ waitingSeat.userData.seat=benchSeat({id:'clinic-waiting-bench',position:[1,0,.75],stand:[1,0,1.5],surfaceY:.42,eyeY:1.14,yaw:Math.PI,pitch:0},{length:1.3,front:.2});group.add(waitingSeat);reg(waitingSeat,'Sit in the clinic waiting room',()=>action('seat','Clinic waiting bench','A place to rest until the doctor is ready.'),true);
  // The hours board inside the door, and a calendar from the pharmacy in Naha.
  const hours=plate(group,"Clinic",{w:.7,h:.36,at:[1.2,1.75,hd-.03],ry:Math.PI,bg:'#f8f4ea',fg:'#c0392b',sub:"Mon–Fri 9–12 · 14–17 · Earth 9–12"});hours.name='Clinic hours';
  box([.36,.5,.02],[-1.85,1.6,-hd+.03],0xf8f4ea,'Pharmacy calendar');box([.32,.18,.02],[-1.85,1.73,-hd+.04],0x7fb0d8);

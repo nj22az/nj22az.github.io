@@ -55,8 +55,10 @@ test('its colliders are the card\'s: the body on the old footprint, 1.14 high, a
  layout.dispose();
 });
 
-test('its seat is the old seat exactly: the mark, the stand spot, the height and the turn',()=>{
- assert.deepEqual(ONSEN_SEATS.massage,{id:'massage',label:'Sit in the massage chair (¥100)',position:[4.25,0,3.55],stand:[3.4,0,3.55],eyeY:1.12,yaw:Math.PI/2,surfaceY:.5});
+test('its seat is the old seat exactly: the mark, the stand spot, the height and the turn, and its front edge from the card',()=>{
+ assert.deepEqual(ONSEN_SEATS.massage,{id:'massage',label:'Sit in the massage chair (¥100)',position:[4.25,0,3.55],stand:[3.4,0,3.55],eyeY:1.12,yaw:Math.PI/2,surfaceY:.5,front:CHAIR.seat('seat').front});
+ // (the mark 5 cm behind the seat's front edge: a sitter's shins hang in front of it, animate.js seatFront)
+ assert.equal(ONSEN_SEATS.massage.front,.05);
  const s=CHAIR.seat('seat');assert.deepEqual([s.position,s.stand,s.surfaceY,s.yaw],[ONSEN_SEATS.massage.position,ONSEN_SEATS.massage.stand,.5,Math.PI/2]);
  // The card's coin spot is a film mark only: it is 0.17 m from the koagari's corner, too tight to offer as a place to stand.
  const coin=CHAIR.spot('coin');assert.deepEqual(coin.position,[3.72,0,3.3]);

@@ -7,6 +7,7 @@ import {recipeFor} from '../src/avatars/cast.js';
 import {normalizeRecipe} from '../src/avatars/recipe.js';
 import {createAvatarAnimator} from '../src/avatars/animate.js';
 import {ISLAND_OUTFITS} from '../src/avatars/outfits.js';
+import {seatRooms,seatEdge} from './seat-edge.mjs';
 installDOM();
 
 /**
@@ -41,14 +42,29 @@ const BODIES=[
  ['Grandmother Sakurai (wide trousers)',dressed('Wide sitter',{bottom:'widepants'}),'clothes','trousers'],
 ];
 /** The seats: the seat's top `h` over the floor, its `depth` from the front edge back, the mark `front` behind that edge,
- *  its `thick`ness (a slab; a floor cushion is solid to the floor). */
+ *  its `thick`ness (a slab; a floor cushion is solid to the floor). Two benches as the town's are, then the town's own
+ *  chairs, stools, cushions and benches, each with its `front` as World says it and its depth and thickness as its mesh is
+ *  drawn (seat-edge.mjs): the shallowest stool, the lowest, a dining chair, a counter stool, a floor cushion, the bath's
+ *  tatami edge, a deep bench and a narrow one. */
 const SEATS=[
  ['a park bench',{h:.46,depth:.45,front:.225,thick:.06}],
  ['a deep bench',{h:.5,depth:.6,front:.3,thick:.08}],
- ['a chair',{h:.45,depth:.42,front:.2,thick:.05}],
- ['a stool',{h:.6,depth:.36,front:.18,thick:.05}],
- ['a floor cushion',{h:.09,depth:.55,front:.25,thick:.09}],
 ];
+const REAL=[
+ ['Tetsuo’s yard home','Sit at Tetsuo’s table','Tetsuo’s stool'],
+ ['Umi-no-yu','Wash at the tap','a wash stool at Umi-no-yu'],
+ ['a concrete family home','Sit at the dining table','a dining chair'],
+ ['Minato and Sato Ramen','Sit at the counter','a counter stool at Minato'],
+ ['a concrete family home','Sit at the tea table','a zabuton'],
+ ['Umi-no-yu','Sit on the tatami','the tatami edge at Umi-no-yu'],
+ ['domestic arrivals','Sit in domestic arrivals','the arrivals bench'],
+ ['the clinic','Sit in the clinic waiting room','the clinic bench'],
+];
+const rooms=await seatRooms();
+for(const [room,label,name] of REAL){
+ const r=rooms.find(r=>r.name===room),seat=r.seats.find(s=>s.label===label).seat,edge=seatEdge(r.room,seat);
+ SEATS.push([name,{h:seat.surfaceY-seat.position[1],depth:seat.front+edge.back,front:seat.front,thick:edge.thick}]);
+}
 function seeded(seed=7){let s=seed;return ()=>{s=(s*16807)%2147483647;return s/2147483647;};}
 function sit(recipe,outfit,seat,frames=90){
  const avatar=buildAvatar(recipe,{shadows:false});avatar.wear(outfit);const holder=new THREE.Group();holder.add(avatar.root);

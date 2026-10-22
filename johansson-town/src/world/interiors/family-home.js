@@ -103,12 +103,13 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
  for(const [dx,c] of [[-.35,0xe8742a],[.35,0xf4d23c]])box([.12,.12,.12],[a.x+dx,1.36,a.z+.12],c,'Offering');
  collider(a.x,a.z,1.2,.5,1.3);}
  const visitorSeats=[];
- const addSeat=(x,z,yaw,surfaceY,label,stand)=>visitorSeats.push({label,position:[x,0,z],stand:stand||[x+Math.sin(yaw)*.65,0,z+Math.cos(yaw)*.65],surfaceY,yaw});
- if(!redTile)for(const [x,z,yaw,stand] of [[-1.3,-.25,Math.PI,[-.15,0,-.25]],[-1.3,.95,0,[-1.3,0,1.4]],[-2.15,.35,-Math.PI/2,[-2.15,0,1.55]],[-.45,.35,Math.PI/2,[.05,0,.35]]])addSeat(x,z,yaw,.445,'Sit at the dining table',stand);
+ // (`front`: the dining chairs are .38 deep, the zabuton .48)
+ const addSeat=(x,z,yaw,surfaceY,label,stand,front)=>visitorSeats.push({label,position:[x,0,z],stand:stand||[x+Math.sin(yaw)*.65,0,z+Math.cos(yaw)*.65],surfaceY,yaw,front});
+ if(!redTile)for(const [x,z,yaw,stand] of [[-1.3,-.25,Math.PI,[-.15,0,-.25]],[-1.3,.95,0,[-1.3,0,1.4]],[-2.15,.35,-Math.PI/2,[-2.15,0,1.55]],[-.45,.35,Math.PI/2,[.05,0,.35]]])addSeat(x,z,yaw,.445,'Sit at the dining table',stand,.19);
  // Low table and cushions in the tatami room; the television.
  box([1.1,.05,.75],[table.x,.36,table.z],0x6b4a32,'Low table');collider(table.x,table.z,1.1,.75,.4);
  // Keep cushions inside the west wall and out from under the altar cabinet.
- for(const [dx,dz] of (redTile?[[0,.62],[0,-.62],[-.75,0],[.75,0]]:[[0,.62],[-.6,0],[.75,0]])){box([.48,.07,.48],[table.x+dx,.04,table.z+dz],0x3f6f8a,'Zabuton');const stand=!redTile&&dx<0?[-1.1,0,-1.45]:redTile&&dx<0?[.5,0,1]:redTile&&dz<0?[1.05,0,.1]:redTile&&dx>0?[2.35,0,1.85]:undefined;addSeat(table.x+dx,table.z+dz,Math.atan2(dx,dz),.075,'Sit at the tea table',stand);}
+ for(const [dx,dz] of (redTile?[[0,.62],[0,-.62],[-.75,0],[.75,0]]:[[0,.62],[-.6,0],[.75,0]])){box([.48,.07,.48],[table.x+dx,.04,table.z+dz],0x3f6f8a,'Zabuton');const stand=!redTile&&dx<0?[-1.1,0,-1.45]:redTile&&dx<0?[.5,0,1]:redTile&&dz<0?[1.05,0,.1]:redTile&&dx>0?[2.35,0,1.85]:undefined;addSeat(table.x+dx,table.z+dz,Math.atan2(dx,dz),.075,'Sit at the tea table',stand,.24);}
  {const g=new THREE.Group();g.position.set(tv.x,0,tv.z);g.rotation.y=tv.ry;group.add(g);
   const add=(size,at,c,name)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.position.set(...at);if(name)m.name=name;g.add(m);};
   add([.8,.42,.4],[0,.21,0],0x6b4a32,'TV stand');add([.58,.44,.42],[0,.64,.02],0x2b2b2b,'Television');
@@ -142,7 +143,7 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
    const hatHook=redTile?{position:[.8+i*.25,1.6,hd-.04],yaw:Math.PI}:{position:[.7,1.6,2.15+i*.35],yaw:-Math.PI/2};
    addHatPeg(box,hatHook);
    const k=i%3,stand=redTile?[[table.x,0,table.z+.95],[1.05,0,.1],[.5,0,1]][k]:[[-1.3,0,1.4],[.05,0,.35],[-2.15,0,1.2]][k];
-   homeLayouts[name]={...FAMILY_HOME_LAYOUT,...bed,table:[seats[k][0],0,seats[k][1]],tableStand:stand,tableSeatHeight:redTile?.075:.445,tableSeatYaw:[0,redTile?Math.PI:Math.PI/2,Math.PI/2][k],door:[0,0,hd-.5],hatHook};
+   homeLayouts[name]={...FAMILY_HOME_LAYOUT,...bed,table:[seats[k][0],0,seats[k][1]],tableStand:stand,tableSeatHeight:redTile?.075:.445,tableSeatFront:redTile?.24:.19,tableSeatYaw:[0,redTile?Math.PI:Math.PI/2,Math.PI/2][k],door:[0,0,hd-.5],hatHook};
   });
   // Thuan's wardrobe: against the nibanza's back wall (where a family keeps its altar), or
   // in the 2DK's west tatami room.

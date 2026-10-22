@@ -3,14 +3,15 @@ import * as THREE from '../../../vendor/three.module.js';
 import {createPlanKit} from './house-plan.js';
 
 export const OFFICE_STAFF={'Harbour master':[-1.85,0,-1.20]};
-export const OFFICE_DESK_SEAT={position:[-2.52,0,-2.02],stand:[-1.85,0,-1.20],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.18,yaw:0,pitch:0};
+// (`front`: how far ahead of the mark the seat's front edge is, seat-slots.js; the chairs' seats are .46 square, the tea stool .36)
+export const OFFICE_DESK_SEAT={position:[-2.52,0,-2.02],stand:[-1.85,0,-1.20],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.18,yaw:0,pitch:0,front:.23};
 /**
  * On the island the harbour master lives here: a tatami mat and futon behind a
  * folding screen on the east side, a tea stool, his coat on a stand. home-residents.js
  * walks him to bed from these points.
  */
 export const OFFICE_HOME_LAYOUT=Object.freeze({bounds:{minX:-3.37,maxX:3.37,minZ:-3.37,maxZ:3.37},spawn:[0,0,2.4],exit:[0,1.1,3.34],
- door:[0,0,2.45],table:[-.9,0,1.35],tableSeatHeight:FURNITURE_HEIGHTS.seat,bedside:[1.0,0,.95],bed:[2.1,.35,1.82],
+ door:[0,0,2.45],table:[-.9,0,1.35],tableSeatHeight:FURNITURE_HEIGHTS.seat,tableSeatFront:.18,bedside:[1.0,0,.95],bed:[2.1,.35,1.82],
  cover:{position:[2.1,.41,1.22],width:1.1,length:1.3,axis:'z'},
  hatHook:{mode:'stand',position:[2.9,1.76,-.45],yaw:Math.PI/2}});
 export function buildOfficeWorkplace({room:parent,reg,action,collider=()=>{}}){
@@ -57,8 +58,8 @@ export function buildOfficeWorkplace({room:parent,reg,action,collider=()=>{}}){
  {const kit=createPlanKit({box:(size,pos,c,name)=>box(name||'WC wall',size,pos,c),collider,height:2.9,wall:0xeee6cf,frame:0x6f8a76});
   kit.partition(-3.37,1.4,-2.2,1.4);kit.partition(-2.2,1.4,-2.2,3.37,[[1.6,2.4]]);
   kit.wetRoom(-3.33,-2.24,1.44,3.33,'Toilet',true,'x1');}
- const visitorSeat=new THREE.Object3D();visitorSeat.position.set(1.14,.7,-2.05);visitorSeat.userData.npcInteraction=false;visitorSeat.userData.seat={position:[1.14,0,-2.0],stand:[1.14,0,-1.1],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.2,yaw:0,pitch:0};room.add(visitorSeat);reg(visitorSeat,'Sit at the visitor desk',()=>action('seat','Visitor desk','A clean writing pad and the harbour ledgers are ready.'),true);
- for(const [id,x,z,top,yaw,sx,sz,label] of [['office-stool',2.91,-1.39,FURNITURE_HEIGHTS.seat,0,2.25,-.7,'Sit on the office stool'],['office-tea-stool',-.9,1.35,FURNITURE_HEIGHTS.seat,0,-1.65,1.35,'Sit in the tea corner']]){const seat=new THREE.Object3D();seat.position.set(sx,.9,sz);seat.userData.npcInteraction=false;seat.userData.seat={id,position:[x,0,z],stand:[sx,0,sz],surfaceY:top,eyeY:top+.72,yaw,pitch:0};room.add(seat);reg(seat,label,()=>action('seat',label,'A quiet moment in the harbour office.'),true);}
+ const visitorSeat=new THREE.Object3D();visitorSeat.position.set(1.14,.7,-2.05);visitorSeat.userData.npcInteraction=false;visitorSeat.userData.seat={position:[1.14,0,-2.0],stand:[1.14,0,-1.1],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.2,yaw:0,pitch:0,front:.23};room.add(visitorSeat);reg(visitorSeat,'Sit at the visitor desk',()=>action('seat','Visitor desk','A clean writing pad and the harbour ledgers are ready.'),true);
+ for(const [id,x,z,top,yaw,sx,sz,label,front] of [['office-stool',2.91,-1.39,FURNITURE_HEIGHTS.seat,0,2.25,-.7,'Sit on the office stool',.23],['office-tea-stool',-.9,1.35,FURNITURE_HEIGHTS.seat,0,-1.65,1.35,'Sit in the tea corner',.18]]){const seat=new THREE.Object3D();seat.position.set(sx,.9,sz);seat.userData.npcInteraction=false;seat.userData.seat={id,position:[x,0,z],stand:[sx,0,sz],surfaceY:top,eyeY:top+.72,yaw,pitch:0,front};room.add(seat);reg(seat,label,()=>action('seat',label,'A quiet moment in the harbour office.'),true);}
  setFurnitureSurface(room,{from:.9,to:FURNITURE_HEIGHTS.table,props:/^(Clerk computer|Clerk CRT|Clerk green|Computer record|Clerk keyboard|Keyboard key|Harbour master nameplate|HARBOUR MASTER)/});
  return {computer,staff:OFFICE_STAFF};
 }

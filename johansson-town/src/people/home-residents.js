@@ -29,7 +29,7 @@ function createHomeResident({world,parent,collides=()=>false,onBorrow=()=>{},get
   entrySteps=[];leaving=false;
   const g=person.g,stillHome=residentPlan(person.profile,clock,getRain(),getState()).place==='home';
   saved.parent.add(g);g.position.set(person.profile.home[0],groundHeight(...person.profile.home),person.profile.home[1]);g.quaternion.copy(saved.rotation);g.userData.hit.inside=saved.inside;
-  for(const key of ['inHome','socialPose','seatHeight','chairBlend','heldItem','sleeping','waking','sleepBlend','roomTransition','facePlayerUntil','chatHold'])delete g.userData[key];
+  for(const key of ['inHome','socialPose','seatHeight','seatFront','chairBlend','heldItem','sleeping','waking','sleepBlend','roomTransition','facePlayerUntil','chatHold'])delete g.userData[key];
   if(stillHome){g.userData.indoors='home';g.visible=false;}else{delete g.userData.indoors;g.visible=true;}
   const home=world.homes?.get(person.profile.name);if(home)home.occupied=stillHome;
   saved=null;rest=0;sleepBlend=0;tableBlend=0;
@@ -51,13 +51,13 @@ function createHomeResident({world,parent,collides=()=>false,onBorrow=()=>{},get
   const routine=homeRoutine(person.profile,minutes),bedtime=plan.place==='home'&&['sleep','wake','bedtime'].includes(routine.id);
   g.userData.place=site.id;g.userData.activity=plan.place==='home'?routine.activity:'leaving home';
   g.userData.sleeping=bedtime&&routine.id==='sleep';g.userData.waking=bedtime&&routine.id==='wake';
-  delete g.userData.socialPose;delete g.userData.seatHeight;delete g.userData.chairBlend;delete g.userData.heldItem;
+  delete g.userData.socialPose;delete g.userData.seatHeight;delete g.userData.seatFront;delete g.userData.chairBlend;delete g.userData.heldItem;
   const occupied=getPlayerSeat(),tableTaken=occupied&&Math.hypot(occupied[0]-layout.table[0],occupied[2]-layout.table[2])<.55;
   const atTable=plan.place==='home'&&!bedtime&&!tableTaken,tableStand=layout.tableStand||layout.table;
   if(!atTable&&tableBlend>0){
    tableBlend=Math.max(0,tableBlend-dt*2);setTable(g,tableStand,tableBlend,'Sit');
    g.userData.sleeping=false;g.userData.waking=false;g.userData.roomTransition=true;
-   if(tableBlend===0)for(const key of ['socialPose','seatHeight','chairBlend'])delete g.userData[key];
+   if(tableBlend===0)for(const key of ['socialPose','seatHeight','seatFront','chairBlend'])delete g.userData[key];
    return;
   }
   if(!bedtime&&rest>0){
@@ -90,6 +90,8 @@ function createHomeResident({world,parent,collides=()=>false,onBorrow=()=>{},get
   g.position.set(stand[0]+(at[0]-stand[0])*amount,stand[1]+(at[1]-stand[1])*amount,stand[2]+(at[2]-stand[2])*amount);
   g.rotation.set(0,layout.tableSeatYaw??0,0);g.userData.socialPose=pose;
   g.userData.seatHeight=(layout.tableSeatHeight??.42)+at[1]-g.position.y;g.userData.chairBlend=amount;
+  // (where the seat's front edge is, so the shins hang in front of it: animate.js seatFront)
+  if(Number.isFinite(layout.tableSeatFront))g.userData.seatFront=layout.tableSeatFront;
  }
  function setRest(g,amount,asleep){
   const from=layout.bedside,to=layout.bed;

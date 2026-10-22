@@ -188,11 +188,12 @@ export function higaDeliveryBook(minutes){
 export const YUNTAKU=Object.freeze({
  bench:Object.freeze({x:5.32,z0:9.38,z1:10.78,depth:.42,height:.44}),
  crates:Object.freeze([Object.freeze({id:'mac',x:4.0,z:9.75}),Object.freeze({id:'fuji',x:4.0,z:10.45})]),
+ // (`front`: how far ahead of the mark the seat's front edge is, seat-slots.js: the bench's at x 5.11, the crates .36 deep)
  seats:Object.freeze({
-  tetsuo:Object.freeze({at:Object.freeze([5.3,9.75]),stand:Object.freeze([4.72,9.2]),height:.44,yaw:Math.PI/2}),
-  player:Object.freeze({at:Object.freeze([5.3,10.45]),stand:Object.freeze([4.75,11.2]),height:.44,yaw:Math.PI/2}),
-  mac:Object.freeze({at:Object.freeze([4.0,9.75]),stand:Object.freeze([3.3,9.75]),height:.31,yaw:-Math.PI/2}),
-  fuji:Object.freeze({at:Object.freeze([4.0,10.45]),stand:Object.freeze([3.3,10.45]),height:.31,yaw:-Math.PI/2}),
+  tetsuo:Object.freeze({at:Object.freeze([5.3,9.75]),stand:Object.freeze([4.72,9.2]),height:.44,yaw:Math.PI/2,front:.19}),
+  player:Object.freeze({at:Object.freeze([5.3,10.45]),stand:Object.freeze([4.75,11.2]),height:.44,yaw:Math.PI/2,front:.19}),
+  mac:Object.freeze({at:Object.freeze([4.0,9.75]),stand:Object.freeze([3.3,9.75]),height:.31,yaw:-Math.PI/2,front:.18}),
+  fuji:Object.freeze({at:Object.freeze([4.0,10.45]),stand:Object.freeze([3.3,10.45]),height:.31,yaw:-Math.PI/2,front:.18}),
  }),
  sitters:Object.freeze([
   Object.freeze({name:'Tetsuo',seat:'tetsuo',from:1110,to:1200,
