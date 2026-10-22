@@ -98,7 +98,8 @@ its base. Its findings, all fixed in the second commit unless said:
   were before this change.
 - The upstairs windows of the shut shop glow at dusk with every window of the quarter (one shared material), as they did
   while it was open; nobody lives over the shop.
-- The economy model does not know Sakura's Saturday closing (see the review).
+- ~~The economy model does not know Sakura's Saturday closing (see the review).~~ Closed: the owner closed the money
+  model for now (22 October, night; AGENTS.md).
 
 ## Next action
 Every check in checks.md passes. The owner looks at the before/after photographs and merges the doctor PR (#362) first

@@ -256,6 +256,14 @@ is `briefs/higa-liquor-closes/`.
 - **The yuntaku bench stays**: Tetsuo and Mac still sit out front of an evening with a bottle from Sakura; the bench no
   longer depends on the shop's hours.
 
+## Owner's decision — 22 October 2026 (night): the money model is closed for now
+
+The owner: "close the money model for now, we need to simplify background processes." `src/economy/town-economy.js`
+(the year-by-day simulation of households, shops, the ferry's orders and the bars) is not extended or wired into the
+game; its open issues (it does not know Sakura's Saturday closing) are closed with it. It never ran in the game: only
+`tests/town-economy.test.mjs` runs it. `economy/goods.js` stays in use. The next step the owner named is to simplify the
+background processes (`src/edition.js` lists them per edition); ask before switching any of them off.
+
 ## Verification
 
 Use focused geometry, collision, navigation and schedule checks. The whole game boots in a cloud session's software
