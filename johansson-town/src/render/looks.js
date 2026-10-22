@@ -32,8 +32,8 @@ export const LOOKS=Object.freeze({
  tilt:{label:'Miniature',short:'Mini',hint:'Tilt-shift: the top and bottom go soft, and the island looks like a model.'},
  print:{label:'Woodblock print',short:'Print',hint:'Ukiyo-e: flat woodblock colours, bold outlines, a graded sky on paper.'},
  watercolour:{label:'Watercolour',short:'Paint',hint:'Soft washes that bleed and pool at their edges on rough paper.'},
- // 64 samples a pixel: offered on computers only (game.js drawableLooks), never on a phone or tablet.
- oil:{label:'Oil painting',short:'Oil',hint:'Thick brushwork on canvas.',heavy:true},
+ // 64 samples a pixel on a computer; phones and tablets draw the light version, 16 samples (lookFragment).
+ oil:{label:'Oil painting',short:'Oil',hint:'Thick brushwork on canvas.'},
 });
 
 /** Where an earlier build saved the look. The owner (22 October 2026): every start is Natural, whatever was used last, so
@@ -45,8 +45,6 @@ export function clearSavedLook(storage){try{storage?.removeItem(LOOK_KEY);}catch
 export const lookCSS=name=>LOOKS[name]?.css||'none';
 /** Whether a look can show at all without the ink pipeline. */
 export const lookNeedsPipeline=name=>name!=='none'&&!LOOKS[name]?.css;
-/** Too heavy for a phone or tablet's GPU every frame. */
-export const lookIsHeavy=name=>!!LOOKS[name]?.heavy;
 
 // Shared by every look. tDiffuse is the graded sRGB picture; tDepth the scene's depth.
 const COMMON=`
@@ -311,17 +309,24 @@ void main(){
  float u=unit();
  vec2 p=vUv*uResolution/u;
  vec2 t=uTexel*2.6*u;
+ // A phone or tablet (LIGHT) takes 2x2 samples a square, spread over the same reach, instead of 4x4.
+#ifdef LIGHT
+ const int R=1;const float STEP=2.0;const float OFF=0.5;const float N=4.0;
+#else
+ const int R=3;const float STEP=1.0;const float OFF=0.0;const float N=16.0;
+#endif
  vec3 m[4];vec3 s[4];
  for(int k=0;k<4;k++){m[k]=vec3(0.0);s[k]=vec3(0.0);}
- for(int j=0;j<=3;j++)for(int i=0;i<=3;i++){
-  vec3 a=texture2D(tDiffuse,vUv+vec2(-float(i),-float(j))*t).rgb;m[0]+=a;s[0]+=a*a;
-  vec3 b=texture2D(tDiffuse,vUv+vec2(float(i),-float(j))*t).rgb;m[1]+=b;s[1]+=b*b;
-  vec3 c=texture2D(tDiffuse,vUv+vec2(float(i),float(j))*t).rgb;m[2]+=c;s[2]+=c*c;
-  vec3 d=texture2D(tDiffuse,vUv+vec2(-float(i),float(j))*t).rgb;m[3]+=d;s[3]+=d*d;
+ for(int j=0;j<=R;j++)for(int i=0;i<=R;i++){
+  vec2 o=vec2(float(i)*STEP+OFF,float(j)*STEP+OFF);
+  vec3 a=texture2D(tDiffuse,vUv+vec2(-o.x,-o.y)*t).rgb;m[0]+=a;s[0]+=a*a;
+  vec3 b=texture2D(tDiffuse,vUv+vec2(o.x,-o.y)*t).rgb;m[1]+=b;s[1]+=b*b;
+  vec3 c=texture2D(tDiffuse,vUv+o*t).rgb;m[2]+=c;s[2]+=c*c;
+  vec3 d=texture2D(tDiffuse,vUv+vec2(-o.x,o.y)*t).rgb;m[3]+=d;s[3]+=d*d;
  }
  vec3 col=vec3(0.0);float best=1e9;
  for(int k=0;k<4;k++){
-  vec3 mean=m[k]/16.0;vec3 v=abs(s[k]/16.0-mean*mean);
+  vec3 mean=m[k]/N;vec3 v=abs(s[k]/N-mean*mean);
   float var=v.r+v.g+v.b;
   if(var<best){best=var;col=mean;}
  }
@@ -336,10 +341,10 @@ void main(){
 }`
 };
 
-/** The full fragment shader for a look, or null for Natural. */
-export function lookFragment(name){
+/** The full fragment shader for a look, or null for Natural. `light` asks for the version a phone or tablet can afford. */
+export function lookFragment(name,{light=false}={}){
  const body=FRAGMENTS[name];
- return body?COMMON+body:null;
+ return body?(light?'#define LIGHT\n':'')+COMMON+body:null;
 }
 
 /** Whether a look samples the scene's depth (and so must be fed the depth texture). */

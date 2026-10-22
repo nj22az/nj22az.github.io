@@ -2,8 +2,9 @@ import {execFileSync} from 'node:child_process';
 // Reproducible actual-game Sakura stair photographs and round-trip checks.
 // Run alone with a software Chromium: node tools/sakura-entrance-photos.mjs [--source] [--baseline=<commit>] <out>
 // --baseline serves that commit's stair module inside the current game; before and after share the same fixture.
+// Optional --electron=/path/to/electron uses offscreen Chromium; --photos-only captures just the comparison views.
 // Browser viewport emulation is not physical iPhone Safari acceptance.
-import {chromium} from 'playwright';
+import {chromium,_electron} from 'playwright';
 import {createServer} from 'node:http';
 import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {resolve,dirname,extname} from 'node:path';
@@ -24,8 +25,17 @@ const server=createServer(async(req,res)=>{try{const path=decodeURIComponent(new
  let body=oldStairs&&file===resolve(root,'src/world/interiors/sakura-stairs.js')?oldStairs:await readFile(file);if(SOURCE&&file===resolve(root,'index.html'))body=sourcePage(body.toString());
  res.writeHead(200,{'content-type':TYPES[extname(file)]||'application/octet-stream','cache-control':'no-store'});res.end(body);}catch{res.writeHead(404);res.end();}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
-const browser=await chromium.launch({executablePath:process.env.TOWN_CHROMIUM_PATH||chromium.executablePath(),args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--no-sandbox']});
-const t0=Date.now(),at=()=>+((Date.now()-t0)/1000).toFixed(1),report={source:SOURCE,viewport:[390,844],physicalDevice:false,steps:[],errors:[]};
+const electronPath=args.find(a=>a.startsWith('--electron='))?.slice(11);
+async function openBrowser(){
+ if(!electronPath)return chromium.launch({executablePath:process.env.TOWN_CHROMIUM_PATH||chromium.executablePath(),args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--no-sandbox']});
+ // Offscreen Electron supplies Chromium when a standalone browser is unavailable. No desktop preload/bridge: web edition.
+ const main=resolve(out,'headless.cjs');
+ await writeFile(main,"const {app,BrowserWindow}=require('electron');app.whenReady().then(()=>new BrowserWindow({show:false,webPreferences:{offscreen:true}}).loadURL('about:blank'));\n");
+ const app=await _electron.launch({executablePath:electronPath,args:['--no-sandbox','--ozone-platform=headless','--use-angle=swiftshader','--enable-unsafe-swiftshader',main]});
+ return {newContext:async({viewport})=>{const c=app.context(),page=await app.firstWindow();await page.setViewportSize(viewport);return {addInitScript:c.addInitScript.bind(c),newPage:async()=>page};},close:()=>app.close()};
+}
+const browser=await openBrowser();
+const t0=Date.now(),at=()=>+((Date.now()-t0)/1000).toFixed(1),report={source:SOURCE,renderer:electronPath?'Electron/Chromium offscreen':'Chromium',viewport:[390,844],physicalDevice:false,steps:[],errors:[]};
 report.skippedBasePhotos=args.includes('--skip-base');
 const step=(name,extra={})=>{report.steps.push({name,s:at(),...extra});console.log(at()+'s',name);};
 try{
@@ -46,6 +56,7 @@ try{
  const views={front:{pos:[.4,1.6,-5.6],at:[-2.7,1.4,-4.8]},side:{pos:[.15,1.6,-6.15],at:[-3.2,1.35,-4.8]},low:{pos:[-.85,.65,-5.75],at:[-2.7,1.1,-4.6]},stockroom:{pos:[3.9,1.6,-5.75],at:[-3,1.4,-5.0]}};
  report.revision=baseline||execFileSync('git',['rev-parse','HEAD'],{cwd:site}).toString().trim();report.views=views;report.fixture={edition:'web',townMinutes:294*1440+740,weather:'sunny',save:'fresh',physicalDevice:false};
  for(const [name,cam] of Object.entries(views))if(!args.includes('--skip-base')&&(!args.includes('--front-only')||name==='front'))await shot(name,cam);
+ if(args.includes('--photos-only')){await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2)+'\n');await browser.close();server.close();process.exit(0);}
  if(args.includes('--front-only')){const old=JSON.parse(await readFile(resolve(out,'report.json'),'utf8'));old.views.front=views.front;await writeFile(resolve(out,'report.json'),JSON.stringify(old,null,2)+'\n');await browser.close();server.close();process.exit(0);}
  await page.evaluate(wanted=>{if(window.__JOHANSSON_AUDIT__.mouse.thirdPerson!==wanted)document.querySelector('#viewButton').click();},!args.includes('--first'));
  report.thirdPerson=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.mouse.thirdPerson);

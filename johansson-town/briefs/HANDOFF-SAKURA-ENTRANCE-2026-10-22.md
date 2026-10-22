@@ -59,3 +59,11 @@ Completed checks:
 **Implementation and source checks complete; visual owner acceptance and merge remain outstanding.** The owner requested the fix but has not expressly accepted the before/after appearance. Preserve the repository's visual-review rule: “Visual changes merge only after the owner has seen before/after photos” (21 October morning handover), and merge on the owner's word with the GitHub guard green (evening handover). PR remains open and is not deployed. No new Linux release, physical iPhone Safari or physical Steam Deck acceptance is claimed.
 
 Next: review the linked comparison and current CI images; resolve any capture/check failure; merge after owner acceptance, preserving newer main work and rebuilding again if source changes. Linux 0.2.17 remains the published version; any future release must use a new version.
+
+## Owner review revision — 23 October 2026, Europe/Copenhagen
+
+The owner reviewed the before/after screenshots and said: “It’s better but not good, the whole stairs should be there even if we don’t see up”. The five-tread entrance candidate is **not accepted** and its pictures above are superseded. No merge is authorised by that review.
+
+The revised architecture models both full twelve-tread flights, their 180-degree turning landing and the top landing. The lower run reaches 2.005 m and the return reaches the existing 4.01 m upper floor. Closed risers and wall-mounted handrails make this a real stair, without a black panel truncating the lower run. Full-height plaster encloses the well and a central wall hides the return around the bend. The same complete stair geometry is built in the shop and office frames; the office's safety volumes remain colliders only and are invisible. Safe arrivals, triggers, prompt and automatic fade passage, inside-only access and fire escape are retained.
+
+Work is based on main `b4a4320e5a3369a8c114274d5ee22de250bc4463`; the newer rendering fixes are preserved. The initial actual-game look exposed a coplanar upper-tread/end-wall patch, corrected by putting the enclosure face 8 cm forward of the tread ends. No z-fighting tolerance or exclusion changed. Fresh final tests and captures follow below.

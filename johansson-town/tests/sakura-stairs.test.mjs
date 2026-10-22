@@ -57,7 +57,8 @@ test('the passage, as data: where each end starts, where he goes into the dark, 
  for(const [end,on,dark] of [['foot',onSakuraStairFoot,P.foot.dark],['head',onSakuraStairHead,P.head.dark]]){
   const E=P[end],last=E.walk.at(-1);
   // He walks into the dark: at the end of the walk his body is in it.
-  assert.ok(dark.some(b=>inBox([last[0]-R,Math.max(last[1],b[4]+.1),last[2]],b)),`${end}: the walk ends with him in the dark`);
+  if(end==='head')assert.ok(dark.some(b=>inBox([last[0]-R,Math.max(last[1],b[4]+.1),last[2]],b)),`${end}: the walk ends with him in the dark`);
+  else assert.ok(last[0]<E.trigger.x[1],'the up walk continues inside the stair before the screen fades');
   // He arrives a step off the stair at the other end, so he does not go straight back.
   const other=end==='foot'?P.head:P.foot,at=other.arrive.at,onOther=end==='foot'?onSakuraStairHead:onSakuraStairFoot;
   assert.ok(!onOther({x:at[0],y:at[1],z:at[2]}),`arriving by the ${end==='foot'?'head':'foot'}, he is not on the stair`);
@@ -70,11 +71,13 @@ test('the passage, as data: where each end starts, where he goes into the dark, 
  assert.match(P.why,/20 October 2026/);
 });
 
-test('the shop: five treads up from the stockroom into a black that is solid, the stair walkable only onto its first treads',async()=>{
+test('the shop: a complete staircase is modelled, but only its fade-passage entrance is walkable',async()=>{
  const {room,prompts,blocked,colliders,taken}=await shop(),names=[];room.traverse(o=>names.push(o.name));
  assert.equal(names.filter(n=>n==='Sakura lower stair tread').length,P.foot.treads);
  assert.equal(names.filter(n=>n==='Sakura upper stair tread').length,0,'no upper flight in the shop');
- assert.ok(!names.some(n=>/landing lens|stair landing|top landing/i.test(n)),'no walked landing');
+ assert.equal(names.filter(n=>n==='Sakura return stair tread').length,12,'complete return flight');
+ assert.ok(names.includes('Sakura turning landing'));assert.ok(names.includes('Sakura top landing'));
+ assert.ok(!names.some(n=>/landing lens/i.test(n)),'no walked landing camera');
  const black=[];room.traverse(o=>{if(o.isMesh&&o.material?.userData?.darkness)black.push(o);});
  assert.equal(black.length,P.foot.dark.length);
  for(const o of black){assert.ok(o.material.isMeshBasicMaterial,'unlit: never shaded by the cel pass');assert.equal(o.material.color.getHex(),0x000000);}
@@ -84,6 +87,7 @@ test('the shop: five treads up from the stockroom into a black that is solid, th
  const r=reach(blocked,[-.2,-5.6],{minX:-6,maxX:1,minZ:-6.9,maxZ:-4});
  assert.ok(r.has(...[P.foot.arrive.at[0],P.foot.arrive.at[2]]),'the foot, where he arrives coming down, is reachable');
  assert.ok(r.cells().some(([x,z])=>onSakuraStairFoot({x,y:0,z})),'he can step onto the stair');
+ assert.ok(!r.cells().some(([x,z])=>x<-2.65&&z>-5.15),'ordinary walking cannot continue up the complete flight');
  const into=(x,z,b)=>Math.hypot(x-Math.max(b[0],Math.min(x,b[1])),z-Math.max(b[2],Math.min(z,b[3])))<R-.02;
  for(const [x,z] of r.cells())assert.ok(!P.foot.dark.some(b=>b[4]<1&&into(x,z,b)),`walked into the dark at ${x.toFixed(2)},${z.toFixed(2)}`);
  assert.ok(colliders.filter(c=>c.minY>=0).length>0);
@@ -97,24 +101,27 @@ test('the stockroom sees a bounded stair recess and a closed ceiling, never sky 
    const yaw=Math.PI/2+k*.15,h=sees(room,[x,y,z],yaw,pitch);
    if(!h){bad.push(`sky from ${x},${y},${z} yaw ${yaw.toFixed(2)} pitch ${pitch}`);continue;}
    const p=h.point,beyond=p.x<-2.94&&p.z<-4.08||p.y>3.0&&p.x<-.62&&p.z<-4.08;
-   if(beyond&&!dark(h)&&h.object.name!=='Sakura stockroom stair soffit')bad.push(`${h.object.name} at ${p.toArray().map(v=>v.toFixed(2))} from ${x},${y},${z}`);
+   if(beyond&&!dark(h)&&!/^Sakura (?:stockroom stair soffit|stairwell roof|stair |lower stair tread|return stair tread|turning landing|top landing)/.test(h.object.name))bad.push(`${h.object.name} at ${p.toArray().map(v=>v.toFixed(2))} from ${x},${y},${z}`);
   }
  }
  assert.deepEqual(bad.slice(0,8),[],`${bad.length} views past the dark`);
 });
 
-test('the dark is recessed behind a framed 1.1 m opening; side and high views see architecture',async()=>{
+test('a framed entrance shows real risers and complete flights; the bend hides the return',async()=>{
  const {room}=await shop();
- for(const b of P.foot.dark){
-  assert.ok(b[1]<=-2.93,'black starts over a metre behind the doorway');
-  assert.ok(b[2]>=-5.15&&b[3]<=-4.07,'black stays between the enclosing walls');
-  assert.ok(b[5]<2.98,'no black reaches the ceiling or upper storey');
- }
- for(const [from,name] of [
-  [[.05,1.6,-5.8],'Sakura stair alcove wall'],
-  [[.05,2.65,-4.6],'Sakura stair lintel'],
- ])assert.equal(sees(room,from,Math.PI/2,0)?.object.name,name);
- assert.ok(dark(sees(room,[-1.1,1.6,-4.6],Math.PI/2,0)),'the opening still reads as a dark stair');
+ assert.equal(P.foot.dark.length,0,'no black plug terminates the lower flight');
+ assert.equal(sees(room,[.05,2.65,-4.6],Math.PI/2,0)?.object.name,'Sakura stair lintel');
+ assert.equal(sees(room,[-1.1,1.6,-4.6],Math.PI/2,0)?.object.name,'Sakura lower stair tread','the eye meets real risers, not a black wall');
+ const lower=[],upper=[],landings=[];room.traverse(o=>{
+  if(o.name==='Sakura lower stair tread')lower.push(o);
+  if(o.name==='Sakura return stair tread')upper.push(o);
+  if(/Sakura (turning|top) landing/.test(o.name))landings.push(o);
+ });
+ assert.equal(lower.length,12);assert.equal(upper.length,12);assert.equal(landings.length,2);
+ const top=m=>m.position.y+m.geometry.parameters.height/2;
+ assert.ok(Math.abs(top(lower.at(-1))-2.005)<1e-9,'lower flight reaches the mid landing');
+ assert.ok(Math.abs(top(upper.at(-1))-4.01)<1e-9,'return flight reaches the office floor');
+ assert.ok(upper.every(m=>m.position.z<-5.6),'return flight is behind the separating wall');
  // A growing camera/head envelope along the scripted walk stays within the 1.1 m stair and under its head/soffit.
  for(const [x,y,z] of P.foot.walk){
   assert.ok(z-.28>=-5.15&&z+.28<=-4.07);
@@ -122,9 +129,10 @@ test('the dark is recessed behind a framed 1.1 m opening; side and high views se
  }
 });
 
-test('the office: the stair head goes down four treads into the dark, a rail and a solid pit, and nobody walks out over it',()=>{
+test('the office: the same complete stair descends below the hall; its rail and invisible safety barriers prevent falls',()=>{
  const {room,prompts,blocked,layout}=office(),names=[];room.traverse(o=>names.push(o.name));
- assert.equal(names.filter(n=>n==='Sakura upper stair tread').length,P.head.treads);
+ assert.equal(names.filter(n=>n==='Sakura return stair tread').length,P.head.treads);
+ assert.equal(names.filter(n=>n==='Sakura lower stair tread').length,12,'the full staircase also exists below the office');
  assert.ok(names.includes('Stair rail'));
  assert.deepEqual(layout.spawn,[...P.head.arrive.at]);assert.equal(layout.yaw,P.head.arrive.yaw);
  assert.ok(prompts.some(p=>p.label==='Go downstairs'));
@@ -137,7 +145,7 @@ test('the office: the stair head goes down four treads into the dark, a rail and
  for(const [x,z] of [[-1.2,-4.15],[-.8,-3.4],[-1.2,-2.6],[-2.3,-5.5],[0,-5.2]])for(let k=0;k<16;k++)for(const pitch of [-1.2,-.8,-.5,-.25]){
   const h=sees(room,[x,1.6,z],k*Math.PI/8,pitch);
   if(!h){bad.push(`nothing from ${x},${z}`);continue;}
-  if(h.point.y<-.035&&!dark(h)&&h.object.name!=='Sakura upper stair tread')bad.push(`${h.object.name} at ${h.point.toArray().map(v=>v.toFixed(2))}`);
+  if(h.point.y<-.035&&!dark(h)&&!(/^(?:Sakura (?:lower stair tread|return stair tread|turning landing|top landing|stair handrail)|Stairwell (?:floor|.*wall)|Office timber floor)/.test(h.object.name)))bad.push(`${h.object.name} at ${h.point.toArray().map(v=>v.toFixed(2))}`);
  }
  assert.deepEqual(bad.slice(0,8),[],`${bad.length} views into the pit that are not dark`);
 });

@@ -256,3 +256,7 @@ and costumes remain artistic assets. A future dedicated Virtua Fighter/Tekken
 inspired mode requires separately approved work; it is not part of this build.
 Implementation, release and verification are recorded in
 [the combat-withdrawal handover](briefs/HANDOFF-COMBAT-WITHDRAWAL-2026-10-22.md).
+
+## Owner's clarification — 23 October 2026: Sakura has a complete staircase
+
+The owner rejected the shortened five-tread entrance: “the whole stairs should be there even if we don’t see up”. Model both complete flights and their turning and top landings in the enclosed stairwell, including the geometry hidden around the bend. The shop and office must use that same stair geometry in their respective local frames. Do not terminate the visible run with a black panel. This clarifies the architecture; the 20 October fade passage, safe arrivals, inside-only upstairs access and fire-escape rules remain. The flight is not freely traversable.
