@@ -4,7 +4,8 @@
  * Inspired by Super Mario Odyssey's Snapshot Mode as recreated by Daniel Ilett in
  * smo-shaders (MIT, https://github.com/daniel-ilett/smo-shaders): greyscale, sepia,
  * the hand-held and 16-bit pixel looks, the line drawing and the CRT. Manga and
- * Pencil crayon are this town's own. The shaders are written fresh for three.js;
+ * Pencil crayon are this town's own, as are Miniature (tilt-shift), Woodblock
+ * print (ukiyo-e), Watercolour and Oil painting (a Kuwahara filter). The shaders are written fresh for three.js;
  * Unity's HLSL does not port line for line.
  *
  * A look is one more full-screen pass at the very end of the ink pipeline
@@ -28,16 +29,24 @@ export const LOOKS=Object.freeze({
  crt:{label:'Old TV',short:'TV',hint:'A curved tube with scanlines.'},
  manga:{label:'Manga',short:'Manga',hint:'Black ink, screentone dots and hatching, as in a printed comic.'},
  crayon:{label:'Pencil crayon',short:'Crayon',hint:'Coloured pencil strokes on textured paper.'},
+ tilt:{label:'Miniature',short:'Mini',hint:'Tilt-shift: the top and bottom go soft, and the island looks like a model.'},
+ print:{label:'Woodblock print',short:'Print',hint:'Ukiyo-e: flat woodblock colours, bold outlines, a graded sky on paper.'},
+ watercolour:{label:'Watercolour',short:'Paint',hint:'Soft washes that bleed and pool at their edges on rough paper.'},
+ // 64 samples a pixel: offered on computers only (game.js drawableLooks), never on a phone or tablet.
+ oil:{label:'Oil painting',short:'Oil',hint:'Thick brushwork on canvas.',heavy:true},
 });
 
+/** Where an earlier build saved the look. The owner (22 October 2026): every start is Natural, whatever was used last, so
+ * the choice is not saved any more and an old saved one is removed (clearSavedLook). */
 export const LOOK_KEY='johansson-town-look';
 export const isLook=name=>Object.hasOwn(LOOKS,name);
-export function readLook(storage){try{const v=storage?.getItem(LOOK_KEY);return isLook(v)?v:'none';}catch{return 'none';}}
-export function writeLook(storage,name){const look=isLook(name)?name:'none';try{storage?.setItem(LOOK_KEY,look);}catch{}return look;}
+export function clearSavedLook(storage){try{storage?.removeItem(LOOK_KEY);}catch{}}
 /** The CSS filter for the canvas when there is no pipeline to run the look: only the colour looks have one. */
 export const lookCSS=name=>LOOKS[name]?.css||'none';
 /** Whether a look can show at all without the ink pipeline. */
 export const lookNeedsPipeline=name=>name!=='none'&&!LOOKS[name]?.css;
+/** Too heavy for a phone or tablet's GPU every frame. */
+export const lookIsHeavy=name=>!!LOOKS[name]?.heavy;
 
 // Shared by every look. tDiffuse is the graded sRGB picture; tDepth the scene's depth.
 const COMMON=`
@@ -216,6 +225,115 @@ void main(){
  col=mix(col,vec3(0.24,0.23,0.26),clamp(e,0.0,1.0)*0.85);
  gl_FragColor=vec4(col,1.0);
 }`,
+ // Tilt-shift: a sharp band across the middle and a growing blur above and below it, with the colour lifted a
+ // little, as a photograph of a model railway. The blur is a golden-angle disc of 24 taps.
+ tilt:`
+void main(){
+ float u=unit();
+ vec3 c=texture2D(tDiffuse,vUv).rgb;
+ float away=abs(vUv.y-0.46);
+ float radius=smoothstep(0.07,0.42,away)*16.0*u;
+ if(radius>0.4){
+  vec3 sum=c;float n=1.0;
+  for(int i=1;i<24;i++){
+   float fi=float(i),r=sqrt(fi/24.0)*radius,a=fi*2.39996;
+   sum+=texture2D(tDiffuse,vUv+vec2(cos(a),sin(a))*r*uTexel).rgb;n+=1.0;
+  }
+  c=sum/n;
+ }
+ float l=luma(c);
+ c=mix(vec3(l),c,1.45);
+ c=(c-0.5)*1.12+0.53;
+ gl_FragColor=vec4(clamp(c,0.0,1.0),1.0);
+}`,
+ // Ukiyo-e: every colour goes to the nearest of a woodblock printer's few inks, printed flat on cream paper with a
+ // key-block outline; the sky becomes the printed gradient (bokashi) from Prussian blue to paper.
+ print:`
+vec3 inkFor(vec3 c){
+ vec3 best=vec3(0.0);float d=1e9;
+ vec3 inks[10];
+ inks[0]=vec3(0.95,0.91,0.81);inks[1]=vec3(0.12,0.23,0.37);inks[2]=vec3(0.18,0.36,0.54);inks[3]=vec3(0.56,0.70,0.79);
+ inks[4]=vec3(0.78,0.27,0.18);inks[5]=vec3(0.85,0.64,0.25);inks[6]=vec3(0.49,0.60,0.42);inks[7]=vec3(0.16,0.14,0.13);
+ inks[8]=vec3(0.85,0.55,0.55);inks[9]=vec3(0.54,0.35,0.23);
+ for(int i=0;i<10;i++){vec3 e=(c-inks[i])*vec3(1.0,1.25,0.8);float k=dot(e,e);if(k<d){d=k;best=inks[i];}}
+ return best;
+}
+void main(){
+ float u=unit();
+ vec2 p=vUv*uResolution/u;
+ vec3 c=texture2D(tDiffuse,vUv).rgb;
+ // A little more colour first, so pale painted walls still find their ink.
+ float l=luma(c);
+ vec3 col=inkFor(clamp(mix(vec3(l),c,1.35),0.0,1.0));
+ if(viewDepth(vUv)>uSkyDepth){
+  float t=smoothstep(0.55,1.0,vUv.y);
+  col=mix(vec3(0.93,0.89,0.79),vec3(0.17,0.33,0.52),t);
+ }
+ // Paper and wood grain show through the ink, stronger along the grain.
+ float grain=noise(vec2(p.x*0.04,p.y*0.9))*0.6+noise(p*0.5)*0.4;
+ col*=0.94+0.08*grain;
+ float e=edges(vUv,1.4*u,0.9);
+ col=mix(col,vec3(0.13,0.11,0.10),clamp(e,0.0,1.0));
+ gl_FragColor=vec4(col,1.0);
+}`,
+ // Watercolour: the colour is sampled a little off where it belongs (the wash wanders), lightened as a transparent
+ // pigment, darkened where washes meet (the wet edge), and granulated by rough paper.
+ watercolour:`
+void main(){
+ float u=unit();
+ vec2 p=vUv*uResolution/u;
+ // The wash wanders off the drawing, a few pixels and on two scales.
+ vec2 wander=((vec2(noise(p*0.012),noise(p*0.012+31.0))-0.5)*12.0+(vec2(noise(p*0.06),noise(p*0.06+7.0))-0.5)*4.0)*uTexel*u;
+ vec2 uv=vUv+wander;
+ vec3 sum=vec3(0.0);
+ for(int i=0;i<8;i++){float a=float(i)*0.785398;sum+=texture2D(tDiffuse,uv+vec2(cos(a),sin(a))*uTexel*3.0*u).rgb;}
+ vec3 soft=sum/8.0;
+ // Fewer, flatter tones: a painter mixes a handful of washes, not every shade.
+ soft=floor(soft*6.0+0.5)/6.0*0.6+soft*0.4;
+ vec3 paper=vec3(0.985,0.97,0.935);
+ // Transparent pigment over paper, darker and lighter in blooms across each wash.
+ float bloom=noise(p*0.008)*0.6+noise(p*0.03)*0.4;
+ vec3 wash=mix(paper,soft,0.55+0.4*bloom);
+ // Where washes meet, the pigment pools and dries to a darker rim.
+ float edge=edges(uv,1.8*u,1.0);
+ wash=mix(wash,soft*0.62,clamp(edge,0.0,1.0)*0.75);
+ // Rough paper: pigment settles in the hollows (granulation).
+ float tooth=noise(p*0.55)*0.55+noise(p*1.7)*0.45;
+ wash*=0.88+0.16*tooth;
+ // Some of the white of the paper is left unpainted in the lightest places.
+ wash=mix(wash,paper,smoothstep(0.8,0.95,luma(soft))*0.7);
+ gl_FragColor=vec4(clamp(wash,0.0,1.0),1.0);
+}`,
+ // Oil painting: a Kuwahara filter (each pixel takes the mean of whichever of its four neighbouring squares is
+ // calmest), so areas flatten into strokes and edges stay crisp, on a canvas weave.
+ oil:`
+void main(){
+ float u=unit();
+ vec2 p=vUv*uResolution/u;
+ vec2 t=uTexel*2.6*u;
+ vec3 m[4];vec3 s[4];
+ for(int k=0;k<4;k++){m[k]=vec3(0.0);s[k]=vec3(0.0);}
+ for(int j=0;j<=3;j++)for(int i=0;i<=3;i++){
+  vec3 a=texture2D(tDiffuse,vUv+vec2(-float(i),-float(j))*t).rgb;m[0]+=a;s[0]+=a*a;
+  vec3 b=texture2D(tDiffuse,vUv+vec2(float(i),-float(j))*t).rgb;m[1]+=b;s[1]+=b*b;
+  vec3 c=texture2D(tDiffuse,vUv+vec2(float(i),float(j))*t).rgb;m[2]+=c;s[2]+=c*c;
+  vec3 d=texture2D(tDiffuse,vUv+vec2(-float(i),float(j))*t).rgb;m[3]+=d;s[3]+=d*d;
+ }
+ vec3 col=vec3(0.0);float best=1e9;
+ for(int k=0;k<4;k++){
+  vec3 mean=m[k]/16.0;vec3 v=abs(s[k]/16.0-mean*mean);
+  float var=v.r+v.g+v.b;
+  if(var<best){best=var;col=mean;}
+ }
+ col=mix(vec3(luma(col)),col,1.35);
+ col=(col-0.5)*1.1+0.5;
+ // Brush strokes: short diagonal marks catching the light, and the canvas weave under them.
+ vec2 q=mat2(0.8,-0.6,0.6,0.8)*p;
+ float stroke=noise(vec2(q.x*0.035,q.y*0.32));
+ float weave=(sin(p.x*1.9)*sin(p.y*1.9))*0.5+0.5;
+ col*=0.94+0.09*stroke+0.04*weave;
+ gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
+}`
 };
 
 /** The full fragment shader for a look, or null for Natural. */

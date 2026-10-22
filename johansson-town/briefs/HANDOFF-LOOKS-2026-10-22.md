@@ -11,7 +11,7 @@ the game looks like", then: "Yea but I want one more, manga or pencil crayon gra
 - `johansson-town/src/render/ink-pipeline.js`: an optional final look pass after FXAA, using a lazily allocated `rtLook`
   target. Natural adds no pass; each look's shader compiles the first time it is chosen. `pipeline.setLook(name)`.
 - `johansson-town/src/game.js`: the Town book gets a **Settings › Look** row (`#lookButton`) that opens a menu.
-  The choice is saved in `localStorage` key `johansson-town-look`. Without the ink pipeline (reduced graphics) only
+  The choice was first saved in `localStorage` key `johansson-town-look`; see "Not saved" below. Without the ink pipeline (reduced graphics) only
   Black & white and Sepia are offered, as a CSS filter on the canvas. Audits use `__JOHANSSON_LOOK__.style` / `.setStyle(name)`.
 - `index.html`: the setting row. `src/ui/icon-controls.js`: its icon. `runtime/` rebuilt.
 - `tests/looks.test.mjs` (new, added to `tests/ci-guard.txt`).
@@ -93,3 +93,26 @@ camera bar (not the Town book or the shared activity menus).
 - `tests/look-picker.test.mjs` (new, in the guard).
 Checks: focused tests (free camera, looks, picker, visual-audit-freeze, runtime-package, audit-boot) pass. Built runtime at
 390×844 touch: the picker opened from the tile, Crayon applied live, the free camera bar showed icons and stepped looks.
+
+## Four more looks — 22 October 2026, night
+Owner: "Add the shaders you suggested". Added to `src/render/looks.js` and the picker (`src/ui/look-picker.js` swatches):
+- **Miniature** (`tilt`): tilt-shift. A sharp band at 46% height, a 24-tap golden-angle blur growing above and below, and
+  stronger saturation and contrast.
+- **Woodblock print** (`print`): ukiyo-e. Nearest of ten woodblock inks, a key-block outline, wood/paper grain, and the sky
+  replaced by a Prussian-blue-to-paper bokashi.
+- **Watercolour** (`watercolour`): domain-warped, softened and partly posterised washes over paper. It has blooms, darker
+  wet edges, granulation, and unpainted paper in the lightest tones.
+- **Oil painting** (`oil`): a 4-sector Kuwahara (64 samples a pixel) with brush-stroke and canvas texture. `heavy:true`:
+  `drawableLooks` leaves it off handheld devices, and a saved `oil` falls back to Natural on one.
+FSR 1 (the DLSS alternative the owner asked about) was suggested as a performance feature and is **not** built: it is
+an upscaler, not a look. It would replace the final bilinear scale when the resolution governor drops below 1 and needs
+measuring on real devices first.
+Checks: focused tests 43 pass. Software Chromium: all four rendered on the street, Print and Oil in the Community Hall, with
+no shader errors. Miniature, Watercolour and Oil were strengthened after the first look. The picker shows 13 looks on desktop.
+Not measured: frame cost of Oil/Watercolour/Miniature on real GPUs.
+
+## Not saved: every start is Natural — 22 October 2026, night
+Owner: "Should revert to normal when restarting the game regardless which one I have used". The look is no longer saved.
+`game.js` starts at `look='none'` and calls `clearSavedLook`, which removes the old `johansson-town-look` key, on every start;
+`readLook`/`writeLook` are gone. Checked in software Chromium: Manga chosen and an old `oil` key planted, then reload and
+START gave `none`, with the key removed. Focused tests pass.

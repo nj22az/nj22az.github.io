@@ -39,3 +39,7 @@ Draft PR #364 is submitted with screenshots and passing local test evidence. Own
 The owner requested “Fix it” after the next-priority review. The original stair source, regression tests and QA evidence have been applied to current main `a0704ef99e552405acad0d440b5162743d43dcfe` in an isolated worktree. The runtime has been rebuilt from the combined current source, preserving peaceful gameplay, Look picker and Free camera. Historical test counts and screenshots above describe the earlier candidate, not this integration.
 
 Local Chromium is absent and its download returned invalid ZIP data. A narrowly scoped GitHub Actions visual check now runs the existing actual-game stair harness in first and third person and uploads its screenshots and round-trip reports. Current-main acceptance is pending; no fresh device or installed Linux release is claimed.
+
+### Current-main refresh
+
+Main advanced during verification to `0ee177da830a1419efe4f1b1d89a482139124410` (four additional Looks and Natural on each launch). Those source, tests and generated baseline changes were retained and the stair runtime rebuilt again. The first integration passed 31 focused checks and the full guard (371 tests, 70 files, 184 seconds). The refreshed candidate is undergoing the same full guard. The earlier screenshots remain historical; fresh CI capture is required before final acceptance.
