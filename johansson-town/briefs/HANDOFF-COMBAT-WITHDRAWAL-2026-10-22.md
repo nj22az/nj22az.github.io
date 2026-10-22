@@ -2,7 +2,7 @@
 
 ## Status and source
 
-[PR #365](https://github.com/nj22az/nj22az.github.io/pull/365), branch `codex/withdraw-combat`, implements P0 of the owner's [recovery plan, PR #349](https://github.com/nj22az/nj22az.github.io/pull/349). **Owner-approved integration is merged to main as `4a52d5d2161f9691b8f3e808ba959389f463e578`. Current-source World checks passed; Linux 0.2.17 release acceptance remains in progress in PR #370. No new Linux release is claimed yet.**
+[PR #365](https://github.com/nj22az/nj22az.github.io/pull/365), branch `codex/withdraw-combat`, implements P0 of the owner's [recovery plan, PR #349](https://github.com/nj22az/nj22az.github.io/pull/349). **Complete and signed off: merged to main as `4a52d5d2161f9691b8f3e808ba959389f463e578`; Linux 0.2.17 published through PR #370. Current-source World/native/offline/console and public installer/checksum checks passed. Physical-device acceptance remains outstanding.**
 
 Verified implementation/harness head: `e5b0ceabf6c58a1db68b0ab58f4bb5eaadda5810`, on main `a0fb347ced9250b2e5a6210ba068bf595a7ca310`. Initial implementation: `13e54e09233a3add4753f1e9892bd06375cfc3ec`; safe arena/travel migration and explicit offline gates: `4029c0af213588af097d7db3a60b10889ae179ae`. The final follow-up changes only this handover and its root index; gameplay, runtime and acceptance code remain identical to the verified head.
 
@@ -93,3 +93,48 @@ Next: complete exact-tree Linux acceptance; merge #370 into the Linux release
 branch; verify publication, native startup, installer and checksums; then update
 main's version metadata, public downloads and this handover. Physical devices
 remain unverified. The browser source merge alone does not update installed Linux copies.
+
+
+## Final release sign-off — 2026-10-22T23:17:22+02:00 (Europe/Copenhagen)
+
+**Completed by Codex on the owner's instruction.** The latest section supersedes
+the earlier pending/review/release steps above.
+
+- Browser source: #365 merged as `4a52d5d2161f9691b8f3e808ba959389f463e578`.
+  [Pages deployment](https://github.com/nj22az/nj22az.github.io/actions/runs/39852951385)
+  succeeded at the subsequent handover-only main commit
+  `557f153224d02d3a532d0dc5f66822368096eb83`.
+- Exact release candidate: `98136ef8ea425828674d3188cea9c1e93f6b4df8`.
+  #370 merged into `codex/johansson-world-steam-deck` as
+  `1c204ad415483e097c279f5ade19f89cf3ad39a8`; the candidate and merge
+  trees are identical: `bc30fa65c8bb134841a04f7b3b094873f62889b4`.
+- [Linux 0.2.17](https://github.com/nj22az/nj22az.github.io/releases/tag/johansson-world-linux-v0.2.17) is published. Its immutable tag resolves
+  to that release merge. Version 0.2.16 and its assets are retained.
+
+Final software evidence:
+
+| Check | Actual result |
+| --- | --- |
+| [Exact release World guard](https://github.com/nj22az/nj22az.github.io/actions/runs/39851951906) | 367 passed, 0 failed, 69 files, 225 seconds hosted; local combined guard 193 seconds. |
+| [Exact release Linux acceptance](https://github.com/nj22az/nj22az.github.io/actions/runs/39851951948) | 37 desktop and 57 targeted game tests; controller recovery; real native startup/stability/disk saves; no combat HUD, launcher or API; unchanged money; offline browser; four layouts; all 26 canonical identities; owned beds; peaceful insults; saved identity/settings and old combat/cave recovery passed. Final report: `passed:true`, `errors:[]`, `missing:[]`. |
+| Accepted archive inspection | All 1,559 inventoried files matched SHA-256, byte count and mode; embedded inventory matched its external copy; no extras/missing files or retired combat modules. Private candidate archive digest `55767c98ceadd73878c9d6bfba2e7a2d346ba179f40e72ae0cec512573f11cff` is not the published archive digest. |
+| Current captures inspected | Peaceful repeated-insult conversation, safe harbour recovery and native guide. The previously noted identity-chip/dialogue overlap is still visible and remains a separate UI task. |
+| [Release/public installation](https://github.com/nj22az/nj22az.github.io/actions/runs/39854364138) | Published new assets, repeated controller/native/offline checks and installed the public archive successfully with checksum verification. |
+| Published metadata | Downloaded `latest-linux.json` and `SHA256SUMS` agree with GitHub's archive/installer asset digests. Full archive: 261,963,891 bytes, SHA-256 `9bfc838d78f021cf210098cab61f4333e0edccf63ffa05c5bc45a01e2866ab0f`. Patch from 0.2.16: 6,348,417 bytes, SHA-256 `c6c1cdc53887bc99b784ff818298712c3e6594e631f6da13ca6be849ab355ef9`. |
+
+Acceptance artifact: [12459335900](https://github.com/nj22az/nj22az.github.io/actions/runs/39851951948/artifacts/12459335900).
+Public release evidence: [linux-port/acceptance-0.2.17.md](../../linux-port/acceptance-0.2.17.md).
+
+Main publication synchronises package/lock/installer/release-note metadata to
+0.2.17, the public installer copy, Linux download links and current guides.
+Historical change-log entries are preserved; current fighting instructions are
+removed. The public installer matches the published installer digest. Shell
+syntax, version agreement, HTML anchors/details and Markdown/whitespace checks
+passed. These final metadata/documentation edits do not change the accepted game
+or runtime. The new Look styles and frozen Free camera are retained.
+
+Real Steam Deck, 8BitDo Bluetooth and iPhone Safari acceptance remains unverified.
+The proposed saved-axis repair in #362 is not included; the next controller
+release must use the next unpublished version (at least 0.2.18). Do not overwrite
+0.2.17. Other quality-recovery items, Sakura #364 and the doctor/Higa plans remain
+separate. No future fighting replacement was built or authorised here.
