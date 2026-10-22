@@ -58,12 +58,30 @@ function face(jp){
 }
 
 /**
+ * The same board two minutes before the Minato Maru sails from beside it (the owner, 21 October 2026; ferry-timetable.js):
+ * a red band with 出港, then DEPARTING with her time and where she goes, so whoever is on the pier or her gangway knows
+ * she will not wait.
+ */
+function departingFace(time,jp){
+ return paint(512,360,(ctx,w,h)=>{
+  ctx.fillStyle='#f4f1e8';ctx.fillRect(0,0,w,h);
+  ctx.fillStyle='#b8302a';ctx.fillRect(0,0,w,h*.46);
+  ctx.strokeStyle='#b8302a';ctx.lineWidth=10;ctx.strokeRect(5,5,w-10,h-10);
+  const font='"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='#ffffff';ctx.font=`bold 120px ${font}`;ctx.fillText('出港',w/2,h*.24,w-50);
+  ctx.fillStyle='#b8302a';ctx.font=`bold 60px ${font}`;ctx.fillText('DEPARTING '+time,w/2,h*.62,w-50);
+  ctx.fillStyle='#24406b';ctx.font=`bold 38px ${font}`;ctx.fillText('みなと丸 · '+jp,w/2,h*.85,w-60);
+ });
+}
+
+/**
  * Both signs, with their prompts. `onUse(destination)` is called with where the sign's crossing goes ('airport' from
  * Minato, 'town' from Kitano-jima). Each pole is a collider; the board is above a walker's head.
  */
 export function buildQuickCrossings({parent,colliders=null,register=()=>{},onUse=()=>{}}){
  const S=QUICK_SIGN,B=S.board,steel=new THREE.MeshStandardMaterial({color:0x9aa0a3,metalness:.5,roughness:.45});
- const edge=new THREE.MeshStandardMaterial({color:0x24406b,roughness:.6}),anchors=[];
+ const edge=new THREE.MeshStandardMaterial({color:0x24406b,roughness:.6}),anchors=[],boards={};
  for(const [from,q] of Object.entries(QUICK_CROSSING)){
   const g=new THREE.Group();g.name='Landing sign (のりば) · '+q.jp;g.position.set(q.at[0],q.ground,q.at[1]);g.rotation.y=q.yaw;parent.add(g);
   const pole=new THREE.Mesh(new THREE.CylinderGeometry(S.pole,S.pole,S.height,12),steel);pole.position.y=S.height/2;pole.name='Landing sign pole';g.add(pole);
@@ -71,12 +89,27 @@ export function buildQuickCrossings({parent,colliders=null,register=()=>{},onUse
   // Without a page to paint on (the tests, the tools) the box is plain enamel.
   const map=typeof document==='undefined'?null:face(q.jp),front=new THREE.MeshStandardMaterial({map,color:map?0xffffff:0xf4f1e8,roughness:.55});
   const board=new THREE.Mesh(new THREE.BoxGeometry(B.w,B.h,B.depth),[edge,edge,edge,edge,front,front]);
-  board.position.set(0,B.bottom+B.h/2,0);board.name='Landing sign board';g.add(board);
+  // Its face changes (出港 before she sails, setDeparting below), so the board is never merged into the static batch.
+  board.position.set(0,B.bottom+B.h/2,0);board.name='Landing sign board';board.userData.dynamicProp=true;g.add(board);
+  boards[from]={board,map,shown:null};
   for(const o of [pole,board])o.castShadow=o.receiveShadow=true;
   if(colliders)colliders.push({id:q.id,x:q.at[0],z:q.at[1],w:.16,d:.16,height:S.height});
   // The prompt beside the pole at hand height, on the walking side.
   const a=new THREE.Object3D();a.position.set(q.side[0],1,q.side[1]);g.add(a);
   register(a,q.label,()=>onUse(q.to));anchors.push(a);
  }
+ /**
+  * `setDeparting(from, time)`: the board at `from` ('town' or 'airport') reads 出港 · DEPARTING `time`; with no time it
+  * is her landing sign again. `departing(from)` is what it reads now, for the tests.
+  */
+ anchors.setDeparting=(from,time=null)=>{
+  const b=boards[from];if(!b||b.shown===time)return;b.shown=time;
+  if(typeof document==='undefined')return;
+  // The faces as drawn now: the cel look (render/cel.js) swaps in its own materials, copying the map.
+  const faces=[...new Set([b.board.material[4],b.board.material[5]])],old=faces[0].map,next=time?departingFace(time,QUICK_CROSSING[from].jp):b.map;
+  for(const m of faces){m.map=next;m.needsUpdate=true;}
+  if(old&&old!==b.map&&old!==next)old.dispose();
+ };
+ anchors.departing=from=>boards[from]?.shown??null;
  return anchors;
 }

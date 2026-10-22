@@ -27,19 +27,19 @@ import {FERRY_WORKING_DAY} from '../people/ferry-crew.js';
  * three and six bottles an evening (the day decides), from a small glass he fills three
  * times a bottle, pouring with his left hand without getting out of the chair. A glass
  * goes down sip by sip; when it is empty he pours the next; he never puts an empty back
- * in the crate, he stands it on the floor. After the set goes off at half past eleven he
+ * in the crate, he stands it on the floor. After the set goes off at a quarter to one he
  * walks aboard Shiosai and sleeps it off, and signs on sober at five past six.
  */
 
 export const FUJITA_DAY=Object.freeze({
- start:FERRY_WORKING_DAY.signOff, // signed off from the last boat: he sits down with the first bottle (22:20)
- end:23*60+30,            // the set goes off; he goes aboard Shiosai
+ start:FERRY_WORKING_DAY.signOff, // signed off from the last boat back from Kitano-jima: the first bottle (23:15)
+ end:24*60+45,            // the set goes off after midnight (00:45); he goes aboard Shiosai
  collect:6*60,            // the Higas' van: last night's empties go, a crate comes
  min:3,max:6,             // bottles an evening
  glassesPerBottle:3,      // a large bottle fills his small glass three times
  pour:.1,                 // minutes a pour takes (six seconds)
  crate:20,                // large bottles to a crate
- signOff:23*60+20,        // the last station signs off; snow after
+ signOff:24*60+30,        // the last station signs off (00:30); snow after
 });
 
 /** A repeatable number in [0, 1) for any whole numbers. */
@@ -50,6 +50,8 @@ export function seeded(...keys){
 }
 
 const local=m=>((m%1440)+1440)%1440,dayOf=m=>Math.floor(m/1440);
+/** The evening's own clock: after midnight, before the van at six, is still last night's evening (minutes past 24:00). */
+const evening=minutes=>{const m=local(minutes);return m<FUJITA_DAY.collect?{m:m+1440,day:dayOf(minutes)-1}:{m,day:dayOf(minutes)};};
 
 /** How many bottles he gets through on a given evening (three to six). */
 export function bottlesFor(day){const D=FUJITA_DAY;return D.min+Math.floor(seeded(day,7)*(D.max-D.min+1));}
@@ -57,9 +59,9 @@ export function bottlesFor(day){const D=FUJITA_DAY;return D.min+Math.floor(seede
 /** What is on at this hour of the evening, and how much he likes coming back to it (1997's late schedules). */
 function channelsAt(m){
  const h=m/60,list=[['variety',3],['drama',2],['cooking',1]];
- if(h<23)list.push(['baseball',6]);   // the night game's last innings, then the baseball news
- if(h>=22.5&&h<23.25)list.push(['news',3]);   // the late news
- if(h>=23)list.push(['weather',1]);   // tomorrow's weather, the last thing on
+ if(h<24)list.push(['baseball',6]);   // the night game's highlights and the baseball news, before midnight
+ if(h<24.5)list.push(['news',3]);   // the late news
+ if(h>=24)list.push(['weather',1]);   // tomorrow's weather, the last thing on
  return list;
 }
 
@@ -68,7 +70,7 @@ function channelsAt(m){
  * station has signed off and he has not noticed). Each stay lasts 3 to 12 minutes.
  */
 export function tvProgramme(minutes){
- const m=local(minutes),day=dayOf(minutes);
+ const {m,day}=evening(minutes);
  if(m<FUJITA_DAY.start||m>=FUJITA_DAY.end)return 'off';
  if(m>=FUJITA_DAY.signOff)return 'snow';
  // Walk the day's stays from the first: each is 3 to 12 minutes long.
@@ -108,11 +110,10 @@ export function laughingAt(minutes,tipsy=0){
  *   tipsy   0..3, how merry he is
  */
 export function fujitaBeer(minutes){
- const D=FUJITA_DAY,m=local(minutes),day=dayOf(minutes);
- // After midnight: yesterday's pile is still round him until the van comes at six.
- if(m<D.collect){const n=bottlesFor(day-1);return {phase:'doze',glass:0,bottle:null,pouring:null,empties:n,full:0,bottles:n,tipsy:3};}
+ const D=FUJITA_DAY,{m,day}=evening(minutes);
  const n=bottlesFor(day),glasses=n*D.glassesPerBottle;
  if(m<D.start)return {phase:'waiting',glass:0,bottle:null,pouring:null,empties:0,full:n,bottles:n,tipsy:0};
+ // After the set goes off: the evening's pile is still round him until the van comes at six.
  if(m>=D.end)return {phase:'doze',glass:0,bottle:null,pouring:null,empties:n,full:0,bottles:n,tipsy:3};
  const slot=(D.end-D.start)/glasses,k=Math.min(glasses-1,Math.floor((m-D.start)/slot)),t=m-D.start-k*slot;
  const pouring=t<D.pour?t/D.pour:null,poured=k+(pouring===null?1:pouring);

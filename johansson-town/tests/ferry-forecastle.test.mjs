@@ -40,7 +40,12 @@ test('passenger and vehicle floors follow actual access position throughout prep
  for(const stage of ['preparing','securing']){
   run.operation.stage=stage;assert.equal(walk.partOpen('gangway'),true);assert.equal(walk.partOpen('ramp'),true);
  }
- run.operation.stage='closing-access';assert.equal(walk.partOpen('gangway'),false);assert.equal(walk.partOpen('ramp'),false);
+ // As she closes up, the gangway and the ramp are floors only while still fully out: whoever is on them is walked off
+ // to the nearer end before they move (island/play.js clearAccess; briefs/ferry-timetable.md), never left on nothing.
+ run.operation.stage='closing-access';run.gangwayOut=1;run.rampDown=1;assert.equal(walk.partOpen('gangway'),true);assert.equal(walk.partOpen('ramp'),true);
+ run.gangwayOut=.98;assert.equal(walk.partOpen('gangway'),false,'a stowing gangway is no floor');
+ run.operation.stage='raising-ramp';run.rampDown=.97;assert.equal(walk.partOpen('ramp'),false,'a rising ramp is no floor');
+ run.operation.stage='letting-go';run.gangwayOut=1;run.rampDown=1;assert.equal(walk.partOpen('gangway'),false);assert.equal(walk.partOpen('ramp'),false);
  run.phase='waiting';run.operation.stage='alongside';run.gangwayOut=.8;run.rampDown=.8;
  assert.equal(walk.partOpen('gangway'),false,'a visible, moving gangway is not an open floor');assert.equal(walk.partOpen('ramp'),false);
  run.gangwayOut=1;run.rampDown=1;assert.equal(walk.partOpen('gangway'),true);assert.equal(walk.partOpen('ramp'),true);

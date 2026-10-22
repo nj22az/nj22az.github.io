@@ -33,14 +33,17 @@ test('visible chocks and straps follow the actual model wheel centres and can be
 });
 
 test('a background arrival does not change Johansson’s journey or advance the town clock',()=>{
- const s=ferryServiceFixture(),q=QUICK_CROSSING.town;s.player.position.set(q.stand[0],q.ground,q.stand[1]);s.run.beginCrossing('airport',{automatic:true});
- s.until(()=>s.run.operation?.stage==='alongside');s.tick(.1);
+ // Her 08:45 sailing (world/ferry-timetable.js) with him ashore at the landing sign.
+ const s=ferryServiceFixture({minute:8*60+41.9}),q=QUICK_CROSSING.town;s.player.position.set(q.stand[0],q.ground,q.stand[1]);
+ s.until(()=>s.run.operation?.stage==='passage');s.until(()=>s.run.operation?.stage==='alongside');s.tick(.1);
+ assert.equal(s.run.berth,'airport');
  assert.equal(s.timePasses.length,0);assert.equal(s.state.island.journey.location,'town');assert.equal(s.state.island.visits,0);assert.equal(s.play.active,false);assert.equal(s.play.snapshot().cinematic,false);
 });
 
-test('an accepted passenger request permits walking and accounts only the remaining advertised journey time',()=>{
- const s=ferryServiceFixture(),before=s.minutes;s.play.action('airport-ferry');assert.match(s.menu.text,/crew prepare the ship/);s.chooseDeparture();s.tick(0);
- assert.equal(s.play.cinematic,false);assert.equal(s.play.snapshot().cinematic,false);assert.equal(s.run.operation.stage,'preparing');
- s.complete();assert.equal(s.state.island.journey.location,'airport');assert.equal(s.state.island.visits,1);assert.ok(Math.abs(s.minutes-before-22)<.01);assert.equal(s.timePasses.length,1);
+test('a passenger aboard at her time walks freely and accounts only the remaining advertised journey time',()=>{
+ const s=ferryServiceFixture({minute:8*60+41.9});s.play.action('airport-ferry');assert.match(s.menu.text,/does not wait/);s.choose('Go aboard');s.tick(0);
+ assert.equal(s.play.cinematic,false);assert.equal(s.play.snapshot().cinematic,false);assert.ok(s.aboard());
+ s.until(()=>s.state.island.journey.location==='airport',{seconds:2400,step:.25});assert.equal(s.state.island.visits,1);
+ assert.ok(Math.abs(s.minutes-(8*60+45+22))<.3,'the advertised arrival, 09:07 ('+s.minutes+')');assert.equal(s.timePasses.length,1);
  const after=s.minutes;s.play.tick(0);s.play.tick(0);assert.equal(s.minutes,after,'completion is observed exactly once');assert.equal(s.timePasses.length,1);
 });
