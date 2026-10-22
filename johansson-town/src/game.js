@@ -151,6 +151,8 @@ import { circleHitsRect,circleHitsCircle,standingHitsRect,canStepBetween,roomBou
 import {useTownColour} from './render/single-pass-colour.js';
 import { createCelPass } from './render/cel.js?snappy=1';
 import { createInkPipeline, GRADE_DEFAULTS } from './render/ink-pipeline.js?snappy=1';
+import {LOOKS,readLook,writeLook,lookCSS,lookNeedsPipeline} from './render/looks.js';
+import {createFreeCamera} from './input/free-camera.js';
 import { createInkRecovery } from './render/ink-recovery.js';
 import {createGraphicsLifecycle} from './render/graphics-lifecycle.js';
 import {BUILD_CATALOGUE} from './build/catalogue.js';
@@ -328,11 +330,32 @@ function compileTown(object,{async=false}={}){
   if(async)renderer.compileAsync?.(object,camera,scene)?.catch?.(()=>{});else renderer.compile(object,camera);
  }catch{}finally{renderer.setRenderTarget(previous);}
 }
+/**
+ * The chosen look (render/looks.js, Settings · Look in the Town book). With the ink pipeline it is the pipeline's last
+ * pass; without it only the colour looks show, as a CSS filter on the canvas. A filter someone else put on the canvas
+ * (the photo studio's film) is left alone.
+ */
+let look=readLook(globalThis.localStorage),lookFilter='';
+function applyLook(){
+ pipeline?.setLook(look);
+ const css=pipeline?'none':lookCSS(look),want=css==='none'?'':css,el=renderer.domElement;
+ if(el.style.filter===lookFilter)el.style.filter=want;
+ lookFilter=want;
+ const button=$('#lookButton');if(button)button.textContent=LOOKS[look].label;
+}
+function setLook(name){look=writeLook(globalThis.localStorage,name);applyLook();}
+function lookMenu(){
+ const full=graphics.postprocess;
+ const offered=Object.entries(LOOKS).filter(([id])=>full||!lookNeedsPipeline(id));
+ activities.menu('Look','How the whole town is drawn. Now: '+LOOKS[look].label+'. '+LOOKS[look].hint+(full?'':'\n\nThis device runs reduced graphics, so only the colour looks are offered.'),[
+  ...offered.filter(([id])=>id!==look).map(([id,l])=>[l.label,()=>{setLook(id);activities.close();say(l.label+' · '+l.hint,3);}]),
+  ['Close',()=>activities.close()]]);
+}
 /** Plain output, for while the ink is away. */
-function renderPlain(){useTownColour(renderer);}
+function renderPlain(){useTownColour(renderer);applyLook();}
 function buildInk(){
  if(!graphics.postprocess){renderPlain();return true;}
- try{pipeline=createInkPipeline(renderer,INK_OPTIONS);renderer.toneMapping=THREE.NoToneMapping;renderer.toneMappingExposure=1;return true;}
+ try{pipeline=createInkPipeline(renderer,INK_OPTIONS);renderer.toneMapping=THREE.NoToneMapping;renderer.toneMappingExposure=1;applyLook();return true;}
  catch(error){pipeline=null;console.warn('Ink pipeline unavailable, rendering plain:',error.message);renderPlain();return false;}
 }
 buildInk();
@@ -354,6 +377,8 @@ window.__JOHANSSON_LOOK__={get ink(){return !!pipeline;},get inkFailures(){retur
  },
  // Live knobs, so the look can be judged against the town instead of against numbers.
  tune:v=>pipeline?.tune(v),
+ // The chosen look (Settings · Look), readable and settable for audits.
+ get style(){return look;},setStyle:name=>setLook(name),
  flatten:v=>celPass.setFlatten(v),
  get lights(){return {ambient,bounce,uplight,sun};},
  get state(){return pipeline?.state||null;}};
@@ -534,6 +559,19 @@ async function openKaraoke(){
  finally{concertLoading=false;}
 }
 $('#photoButton').onclick=openPhotoStudio;
+/**
+ * Free camera (Town book, or O): the town stops where it stands and the lens flies loose round it (input/free-camera.js).
+ * The loop draws the frozen world through renderStill; leaving puts the view straight back, as play recomputes it.
+ */
+const freeCamera=createFreeCamera({canvas:renderer.domElement,settings:()=>cameraControls.settings,onChange:()=>resetInput()});
+function openFreeCamera(){
+ if(!started||freeCamera.active||photoLoading||photoStudio?.active||inspector?.active||itemViewer?.active||concert?.active||roomLoading||catchingUp||activities?.paused)return;
+ toggleDir(false);cameraControls.close();if(pocket?.raised)lowerPocket();spawnScene?.cancel('free camera');
+ const view=new THREE.Euler().setFromQuaternion(camera.quaternion,'YXZ'),feet=player.position.y;
+ // Seen from outside he has to be there, in the first-person view too; the hands at the lens are not.
+ ensureJohansson();
+ freeCamera.enter({position:camera.position,yaw:view.y,pitch:view.x},current?{floor:()=>feet,radius:14,ceiling:feet+6}:{floor:(x,z)=>groundHeight(x,z),radius:80});
+}
 function openCamera(){if(!started||inspector?.active||activities?.paused)return;if(window.johanssonDesktopUI){window.johanssonDesktopUI.open('controls');return;}cameraControls.open();}
 /** Named places that are not a building: the photo studio's locations, and where the pocket camera says a photo was taken. */
 function photoSpots(){
@@ -602,6 +640,7 @@ function keepPocketPhoto(shades,palette=pocketModel().palette){
  return r;
 }
 $('#pocketButton')?.addEventListener('click',()=>{toggleDir(false);raisePocket();});
+$('#lookButton')?.addEventListener('click',()=>{toggleDir(false);lookMenu();});
 $('#cameraButton').onclick=()=>{toggleDir(false);openCamera();};$('#viewButton')&&($('#viewButton').onclick=()=>{if(started){toggleDir(false);setThirdPerson(!thirdPerson);}});$('#movesButton')&&($('#movesButton').onclick=()=>{toggleDir(false);movesMenu();});
 const PLAYER_RADIUS=.28,NPC_RADIUS=.35,MAX_FRAME_DT=.1,SIM_STEP=1/60;
 const move2=new THREE.Vector2(),fwVec=new THREE.Vector3(),rtVec=new THREE.Vector3(),moveVec=new THREE.Vector3(),turnQ=new THREE.Quaternion(),yAxis=new THREE.Vector3(0,1,0);
@@ -962,7 +1001,7 @@ function followOnsenWear(){const w=onsenWear();if(w&&w!==bathWear){bathWear=w;jo
 function updateJohansson(dt){
  for(const entity of linuxBorrowed.keys())entity.visible=false;
  const ferryView=islandPlay?.phase==='ferry'&&islandPlay.cinematic;
- hands.firstPersonVisible=!thirdPerson&&!johansson?.drinking&&!spawnScene?.active&&!islandPlay?.cinematic&&current?.id!==CITY_RESTAURANT.id;
+ hands.firstPersonVisible=!freeCamera.active&&!thirdPerson&&!johansson?.drinking&&!spawnScene?.active&&!islandPlay?.cinematic&&current?.id!==CITY_RESTAURANT.id;
  if(ferryView&&!johansson)ensureJohansson();
  if(!johansson)return;
  followOnsenWear();
@@ -976,7 +1015,7 @@ function updateJohansson(dt){
  const partner=conversationName?(conversationName==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===conversationName)?.g):null;
  if(partner){partner.getWorldPosition(lookPoint);lookPoint.y+=1.5;johansson.lookAt(lookPoint);}else johansson.lookAt(spawnScene?.gaze||null);
  setSwingFocus(camera.position);
- johansson.update(dt,{sleeping:!!linuxLife?.inBed,speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,seatFront:seated?parkSeat?.front:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,firstPersonDrinking:!thirdPerson&&started&&!inspector?.active&&!spawnScene?.active,visible:!!linuxLife?.inBed||islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5:shipRoom()||houseboatCabin()?thirdDistance>=HEAD_CAM:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active});
+ johansson.update(dt,{sleeping:!!linuxLife?.inBed,speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,seatFront:seated?parkSeat?.front:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,firstPersonDrinking:!thirdPerson&&started&&!inspector?.active&&!spawnScene?.active,visible:freeCamera.active||!!linuxLife?.inBed||islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5:shipRoom()||houseboatCabin()?thirdDistance>=HEAD_CAM:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active});
  // Sakura: one thing in his hand, more in a basket, until he pays (shop-carry.js).
  shopCarry.sync(activities?.state?.konbini?.basket,current?.id==='market'&&johansson.ready);
 }
@@ -2034,6 +2073,7 @@ document.addEventListener('keydown',e=>{
  if(e.code==='Escape'){toggleDir(false);return;}
  if(e.code==='KeyC'&&!e.repeat){openCamera();return;}
  if(e.code==='KeyP'&&!e.repeat){openPhotoStudio();return;}
+ if(e.code==='KeyO'&&!e.repeat){openFreeCamera();return;}
  if(!$('#directory').classList.contains('hidden')){if(e.code==='KeyQ')toggleDir(false);return;}
  if(e.code==='KeyF'&&!e.repeat&&!pocket?.raised){raisePocket();return;}
  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','Home'].includes(e.code))e.preventDefault();keys[e.code]=true;
@@ -2048,6 +2088,7 @@ const hudIcons=dressHud({onBag:()=>{if(started&&!activities.paused){toggleDir(fa
 const quietHud=createQuietHud();
 function cleanView(){if(!started)return;toggleDir(false);quietHud.photo(true);}
 $('#cleanViewButton').onclick=cleanView;
+$('#freeCameraButton').onclick=openFreeCamera;
 function toggleRunning(){if(!started||activities.paused||inspector?.active||seated)return;setRunning(!touchRunning);}
 // Touch-down works while another finger holds the movement stick; a synthetic click may be suppressed.
 $('#run').onpointerdown=e=>{if(e.button!==undefined&&e.button!==0)return;e.preventDefault();e.stopPropagation();pressedControls.add('run');toggleRunning();};
@@ -2367,26 +2408,31 @@ loadingProgress?.complete('walking');loadingProgress?.start('preview');
 const detailStream=createDetailStream({enabled:graphics.streamDetails,...(window.johanssonDesktop?{lookAhead:32,radiusScale:1.8,maxConcurrent:2,maxPending:4,timeoutMs:30000}:{}),onStart:id=>launchReport.stage('Loading detail: '+id),onChange:()=>{invalidateDetails();walkSurface.add(town);}});window.__JOHANSSON_STREAMING__=detailStream.stats;
 // With ?audit in the address, a harness can put the player anywhere and look down on
 // the town from a fixed camera. Nothing reads it otherwise.
+/**
+ * Paints the normal world path without advancing animation, input or the clock: the audit's stills and the free camera.
+ * `view` ({pos,at}) places the camera; without it the camera stays where it was put. `sweep` (seconds) cel-shades new
+ * arrivals on the live game's cadence instead of sweeping the whole scene every draw.
+ */
+function renderStill(view,{sweep=null}={}){
+ activeRoomLayout?.realUpdate?.();
+ if(graphicsLifecycle?.lost)return false;
+ if(concert?.active){concert.render();return true;}
+ if(photoStudio?.active){photoStudio.render();return true;}
+ if(conversationLine)updateConversationLift(0);
+ if(view){camera.position.set(...view.pos);camera.lookAt(...view.at);camera.updateMatrixWorld();}
+ // The hourly callbacks include shutter interpolation. Frozen draws only
+ // refresh view-dependent lighting; fixture time synchronises hours once.
+ setTime({updateHours:false});lightBudget.update();colliderGrid.refresh();if(sweep===null)celPass.apply(scene);else sweepCel(sweep);
+ placeWorldBalloons();
+ if(!current)renderOutdoor();
+ else if(streetFrontageOf(current))present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:streetFrontageOf(current)}));
+ else present(()=>renderer.render(scene,camera));
+ return true;
+}
 if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__={
  frozen:new URLSearchParams(location.search).has('visual-audit'),
  /** Paint the normal world path without advancing animation, input or the clock. */
- render(){
-  activeRoomLayout?.realUpdate?.();
-  if(graphicsLifecycle?.lost)return false;
-  if(concert?.active){concert.render();return true;}
-  if(photoStudio?.active){photoStudio.render();return true;}
-  if(conversationLine)updateConversationLift(0);
-  const view=this.camera||(!spawnScene?.active&&activeRoomLayout?.fixedCamera);
-  if(view){camera.position.set(...view.pos);camera.lookAt(...view.at);camera.updateMatrixWorld();}
-  // The hourly callbacks include shutter interpolation. Frozen draws only
-  // refresh view-dependent lighting; fixture time synchronises hours once.
-  setTime({updateHours:false});lightBudget.update();colliderGrid.refresh();celPass.apply(scene);
-  placeWorldBalloons();
-  if(!current)renderOutdoor();
-  else if(streetFrontageOf(current))present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:streetFrontageOf(current)}));
-  else present(()=>renderer.render(scene,camera));
-  return true;
- },
+ render(){return renderStill(this.camera||(!spawnScene?.active&&activeRoomLayout?.fixedCamera));},
  setTime(value,{rain=false}={}){
   if(!Number.isFinite(value))throw new Error('Audit time must be finite town minutes');
   minutes=value;followRealClock=false;townClock.set(minutes,1);weatherMode='fixed';weatherKind=rain?'rain':'sunny';weather=!!rain;world.setRain(weather);
@@ -2623,7 +2669,7 @@ let titleElapsed=0,titleFrame=0,titleReported=false;
 const titleReduced=matchMedia('(prefers-reduced-motion: reduce)');
 let desktopFrameAt=performance.now(),desktopSampleAt=desktopFrameAt,desktopFrames=0,desktopWorst=0;
 function desktopFrameStats(){if(!window.johanssonDesktop)return;const at=performance.now();desktopFrames++;desktopWorst=Math.max(desktopWorst,at-desktopFrameAt);desktopFrameAt=at;if(at-desktopSampleAt<2000)return;const d=document.documentElement.dataset;d.renderFps=String(Math.round(desktopFrames*1000/(at-desktopSampleAt)));d.frameWorst=desktopWorst.toFixed(1);d.drawCalls=String(renderer.info.render.calls);d.textures=String(renderer.info.memory.textures);desktopSampleAt=at;desktopFrames=0;desktopWorst=0;}
-function loop(){requestAnimationFrame(loop);if(graphicsLifecycle?.lost){clock.getDelta();return;}desktopFrameStats();if(document.documentElement.dataset.desktopMenu==='open'){clock.getDelta();return;}activeRoomLayout?.realUpdate?.();if(concert?.active){const dt=Math.min(clock.getDelta(),MAX_FRAME_DT);updateController(dt);concert.render();return;}if(concertLoading){clock.getDelta();return;}if(window.__JOHANSSON_AUDIT__?.frozen){const frozenDt=clock.getDelta();
+function loop(){requestAnimationFrame(loop);if(graphicsLifecycle?.lost){clock.getDelta();return;}desktopFrameStats();if(document.documentElement.dataset.desktopMenu==='open'){clock.getDelta();return;}activeRoomLayout?.realUpdate?.();if(concert?.active){const dt=Math.min(clock.getDelta(),MAX_FRAME_DT);updateController(dt);concert.render();return;}if(concertLoading){clock.getDelta();return;}if(freeCamera.active){const dt=Math.min(clock.getDelta(),MAX_FRAME_DT);if(detailsStarted&&!document.hidden)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});freeCamera.update(dt,camera);updateJohansson(0);renderStill(null,{sweep:dt});return;}if(window.__JOHANSSON_AUDIT__?.frozen){const frozenDt=clock.getDelta();
  // Before START the title still draws: its first frame is what marks the island drawn and opens START (islandDrawn).
  // Frozen, it never drew, and every ?visual-audit harness waited at 97% for ever ("Drawing the island").
  if(!started){renderTitle(frozenDt);return;}
