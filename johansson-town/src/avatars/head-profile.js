@@ -28,5 +28,12 @@ export function shapeHeadPoint(point,profile){
  // The opt-in storybook study rounds the lower facial plane in profile as well
  // as in silhouette. Every face attachment and hair surface uses this same field.
  if(profile.lowerFace&&point.z>0)point.z*=1+profile.lowerFace*Math.exp(-(((y+.48)/.30)**2));
+ // Authored cheek relief: two soft volumes in the facial plane, rather than
+ // merely stretching the outline. Face drawings, glasses, nose and drink contact
+ // follow this same field through their existing surface coordinates.
+ if(profile.cheekRelief&&point.z>0){
+  const cheeks=Math.exp(-(((point.x-.52)/.28)**2))+Math.exp(-(((point.x+.52)/.28)**2));
+  point.z+=profile.cheekRelief*cheeks*Math.exp(-(((y+.22)/.26)**2))*Math.min(1,point.z*2);
+ }
  return point;
 }

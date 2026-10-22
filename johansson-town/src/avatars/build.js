@@ -51,18 +51,18 @@ const STAGES=Object.freeze({
  elder:{base:1.33,span:.34,head:1.14},
 });
 export function measure(recipe,{renderStyle='classic'}={}){
- renderStyle=renderStyleOf(renderStyle);const storybook=renderStyle==='island-storybook-v1';
+ renderStyle=renderStyleOf(renderStyle);const storybook=renderStyle!=='classic',v2=renderStyle==='island-storybook-v2';
  const r=normalizeRecipe(recipe);
  const stage=STAGES[r.age]||STAGES.adult;
  const H=stage.base+r.body.height*stage.span,k=H/1.6,build=r.body.build;
- const profile=storybook?storybookProfile(headProfile(r.head)):headProfile(r.head),Rh=(.19+r.head.size*.055)*k*stage.head*(r.body.proportion==='rounded'?1.30:1),headSX=profile.width,headSY=profile.height;
+ const profile=storybook?storybookProfile(headProfile(r.head),v2?2:1):headProfile(r.head),Rh=(.19+r.head.size*.055)*k*stage.head*(v2?(r.age==='child'?.97:.93):1)*(r.body.proportion==='rounded'?1.30:1),headSX=profile.width,headSY=profile.height;
  const rounded=r.body.proportion==='rounded';
- const neck=(storybook?(r.age==='child'?.065:.073):.055)*k,body=H-Rh*2*headSY-neck;
+ const neck=(storybook?(r.age==='child'?.065:(v2?.070:.073)):.055)*k,body=H-Rh*2*headSY-neck;
  const leg=body*(rounded?.37:.47),torso=body-leg;
  const foot=.07*k,thigh=(leg-foot)*.5,shin=thigh;
  const legR=(.058+build*.024)*k,armR=(.045+build*.016)*k;
  const feminine=r.body.silhouette==='feminine',masculine=r.body.silhouette==='masculine';
- const width=(.3+build*.15)*k*(storybook?1.045:1)*(rounded?1.20:1)*(feminine?.94:masculine?1.08:1),depth=(.2+build*.09)*k*(rounded?1.15:1);
+ const width=(.3+build*.15)*k*(v2?1.14:storybook?1.045:1)*(rounded?1.20:1)*(feminine?.94:masculine?1.08:1),depth=(.2+build*.09)*k*(rounded?1.15:1);
  const hips=width*(feminine?1.13:masculine?.9:1),waistRatio=feminine?.79:masculine?.98:.96;
  const upper=(rounded?.18:.22)*k,fore=(rounded?.16:.2)*k,hand=.056*k;
  const hipY=leg,chestY=hipY+torso*.5,neckY=hipY+torso,headY=neckY+neck;
@@ -377,7 +377,7 @@ function addHair(list,recipe,m){
  // Hair and hat are built in head-bone space, then carried to model space.
  const at=(x,y,z)=>[x,m.headY+y,z];
  const cap=style==='longbraids'?null:hairCap(style,recipe.hair.flip);
- if(cap){const p=cap.attributes.position,v=new THREE.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);if(m.renderStyle)storybookHairPoint(v,cap.userData.hairField?.keep[i]??1,side,style);shapeHeadPoint(v,m.profile);p.setXYZ(i,v.x,v.y,v.z);}cap.computeVertexNormals();
+ if(cap){const p=cap.attributes.position,v=new THREE.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);if(m.renderStyle)storybookHairPoint(v,cap.userData.hairField?.keep[i]??1,side,style,m.renderStyle==='island-storybook-v2'?2:1);shapeHeadPoint(v,m.profile);p.setXYZ(i,v.x,v.y,v.z);}cap.computeVertexNormals();
   // The cap's own field, laid out the way part() lays out its triangles (one vertex per corner, in index order).
   const hf=cap.userData.hairField,index=cap.index;
   const piece=part(list,cap,'head',c,M(cx,m.headY+cy,0,0,0,0,...S));
@@ -813,6 +813,7 @@ export const wearsSwimSkirt=recipe=>wearsSwimTop(recipe)&&(recipe.age==='elder'|
 
 function torsoProfile(recipe,m){
  const belly=1+(recipe.body.build-.5)*.12,hipRatio=m.hips/m.width;
+ if(m.renderStyle==='island-storybook-v2')return [[0,-.1],[hipRatio*.86,-.08],[hipRatio,.05],[hipRatio,.13],[hipRatio,.15],[m.waistRatio*belly,.3],[m.waistRatio,.5],[1,.7],[1,.8],[.95,.88],[.79,.95],[.57,1.01],[.26,1.035],[0,1.04]];
  return [[0,-.1],[hipRatio*.86,-.08],[hipRatio,.05],[hipRatio,.13],[hipRatio,.15],[m.waistRatio*belly,.3],[m.waistRatio*(1+(belly-1)*.6),.5],[1,.66],[.985,.74],[.95,.8],[.88,.87],[.76,.93],[.58,.98],[.38,1.01],[.19,1.03],[0,1.04]];
 }
 /**
@@ -1599,7 +1600,7 @@ function buildHead(recipe,m,faceSize){
  // The face is shaded as if it were flat and tipped up to the light, as a drawn face
  // is: a sphere's own normals put a hard shadow line straight across the cheeks.
  const nrm=g.attributes.normal,n=new THREE.Vector3(),toward=new THREE.Vector3(0,.4,.92).normalize();
- for(let i=0;i<nrm.count;i++){n.fromBufferAttribute(nrm,i);n.lerp(toward,THREE.MathUtils.smoothstep(n.z,-.35,.45)*.7).normalize();nrm.setXYZ(i,n.x,n.y,n.z);}
+ for(let i=0;i<nrm.count;i++){n.fromBufferAttribute(nrm,i);n.lerp(toward,THREE.MathUtils.smoothstep(n.z,-.35,.45)*(m.renderStyle==='island-storybook-v2'?.4:.7)).normalize();nrm.setXYZ(i,n.x,n.y,n.z);}
  // atan2 wraps on the rear/side seam. Interpolating from u=0 to u=1
  // across a triangle paints the whole face there, including red lips.
  // Give those triangles their own plain-skin UVs, retaining smooth normals.
@@ -1639,7 +1640,7 @@ function beardShell(m,faceSize){
  g.scale(m.Rh*m.headSX,m.Rh*m.headSY,m.Rh*.98);g.computeVertexNormals();
  // Leaned toward the light as the face's normals are, so the beard shades with the face beneath it.
  const nrm=g.attributes.normal,n=new THREE.Vector3(),toward=new THREE.Vector3(0,.4,.92).normalize();
- for(let i=0;i<nrm.count;i++){n.fromBufferAttribute(nrm,i);n.lerp(toward,THREE.MathUtils.smoothstep(n.z,-.35,.45)*.7).normalize();nrm.setXYZ(i,n.x,n.y,n.z);}
+ for(let i=0;i<nrm.count;i++){n.fromBufferAttribute(nrm,i);n.lerp(toward,THREE.MathUtils.smoothstep(n.z,-.35,.45)*(m.renderStyle==='island-storybook-v2'?.4:.7)).normalize();nrm.setXYZ(i,n.x,n.y,n.z);}
  const material=celFrom(new THREE.MeshStandardMaterial({map:texture,transparent:true,alphaTest:.04}),{bands:'soft3'});
  material.depthWrite=false;
  const mesh=new THREE.Mesh(g,material);mesh.name='Shimanchu painted beard';mesh.renderOrder=1;mesh.castShadow=false;mesh.receiveShadow=true;
@@ -1735,7 +1736,7 @@ function fitFlags(parts){const flags=new Float32Array(vertexCount(parts));let at
 
 /**
  * @param {object} input recipe (anything; it is normalized)
- * @param {{shadows?:boolean,faceSize?:number,renderStyle?:'classic'|'island-storybook-v1'}} [options]
+ * @param {{shadows?:boolean,faceSize?:number,renderStyle?:'classic'|'island-storybook-v1'|'island-storybook-v2'}} [options]
  */
 export function buildAvatar(input,{shadows=true,faceSize=256,renderStyle='classic'}={}){
  renderStyle=renderStyleOf(renderStyle);

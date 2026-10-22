@@ -35,7 +35,7 @@ export const PARTS=Object.freeze({
  silhouette:Object.freeze(['neutral','feminine','masculine']),
  head:HEAD_FORMS,
  hair:Object.freeze(['crop','sidepart','bob','long','ponytail','sweptponytail','braids','longbraids','bun','spiky','perm','buzz','afro','horseshoe','bald','pixie','shoulder','curtains','slick','mullet','topknot','pigtails','twinbuns']),
- eyes:Object.freeze(['round','dot','almond','sleepy','lashes','narrow','sparkle','gentle','doe','cat','droopy','heavy','bright','tired','squint','starry']),
+ eyes:Object.freeze(['round','dot','almond','sleepy','lashes','narrow','sparkle','gentle','doe','cat','droopy','heavy','bright','tired','squint','starry','islandbead','islandlid','islandbright']),
  brows:Object.freeze(['straight','arched','thick','thin','worried','bushy','angled','short','rounded','tapered','feathered','maro','none']),
  nose:Object.freeze(['button','dot','line','wide','hook','pointed','snub','bulb','ridge',...Object.keys(INK_NOSES),'none']),   // then the ink noses (face.js)
  mouth:Object.freeze(['smile','flat','grin','small','wide','smirk','pout','cat','teeth','open','lopsided','tongue','buck','soft']),
@@ -216,7 +216,7 @@ export function randomRecipe(seed=Math.random().toString(36)){
   // (The dice keep to the parts they always dealt, so a look made from a seed never changes when the maker grows.)
   head:{size:.4+r()*.25,shape:r(),form:any(HEAD_FORMS.slice(0,12)),jaw:r(),cheeks:r()},
   hair:{style:hair,colour:older?any(['#9a9a96','#d8d6d0','#5a3a22']):any(pal.hair.slice(0,6)),flip:r()<.5},
-  eyes:{style:any(PARTS.eyes),colour:any(pal.eyes),size:.3+r()*.5,spacing:.3+r()*.4,height:.4+r()*.2,tilt:.35+r()*.3},
+  eyes:{style:any(PARTS.eyes.slice(0,16)),colour:any(pal.eyes),size:.3+r()*.5,spacing:.3+r()*.4,height:.4+r()*.2,tilt:.35+r()*.3},
   brows:{style:any(PARTS.brows.slice(0,6)),colour:older?'#8a8a86':'#1c1714',size:.4+r()*.3,height:.4+r()*.3,tilt:.3+r()*.4},
   nose:{style:any(PARTS.nose.slice(0,5)),size:.3+r()*.5,height:.4+r()*.2},
   mouth:{style:any(PARTS.mouth),colour:feminine&&r()<.5?any(pal.lips):'#b8544a',size:.35+r()*.4,height:.4+r()*.2},

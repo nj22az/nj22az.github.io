@@ -5,11 +5,11 @@ import {resolve,basename} from 'node:path';
 import assert from 'node:assert/strict';
 const require=createRequire(process.env.PLAYWRIGHT_PACKAGE||new URL('../../johansson-town/package.json',import.meta.url));
 const {chromium}=require('playwright');
-const out=resolve(process.env.IDENTITY_OUT||'avatar-creator/docs/qa/identity-v1/raw');await mkdir(out,{recursive:true});
+const out=resolve(process.env.IDENTITY_OUT||'avatar-creator/docs/qa/identity-v2/raw');await mkdir(out,{recursive:true});
 const baselineRoot=await mkdtemp(resolve('.identity-review-baseline-'));
 // Fetching missing archive blobs is git's normal partial-clone operation.
 const frozen='9f7ccd4cf498eb266f5eec6b215332ff483ee9d4';
-const archive=execFileSync('git',['archive',frozen,'johansson-town/src','johansson-town/vendor'],{maxBuffer:32*1024*1024});
+const archive=execFileSync('git',['-C',process.env.IDENTITY_GIT_ROOT||resolve('.'),'archive',frozen,'johansson-town/src','johansson-town/vendor'],{maxBuffer:32*1024*1024});
 execFileSync('tar',['-xf','-','-C',baselineRoot],{input:archive});
 await mkdir(resolve(baselineRoot,'avatar-creator'));
 for(const file of ['identity-review.html','identity-review.js'])await cp(resolve('avatar-creator',file),resolve(baselineRoot,'avatar-creator',file));
@@ -46,12 +46,26 @@ try{
    await page.locator('#stage').screenshot({path:resolve(out,`${i}-${action}-${String(f).padStart(2,'0')}.png`)});
   }
  }
+ for(const [i,person] of ['Johansson','Thuan'].entries())for(const [j,form] of ['','round','soft-square','pear'].entries()){
+  await page.getByLabel('Prototype head shape',{exact:true}).selectOption(form);
+  await page.evaluate(person=>window.identityReview.capture({person,view:'front'}),person);
+  await page.locator('#stage').screenshot({path:resolve(out,`custom-${i}-${j}.png`)});
+ }
+ await page.getByLabel('Prototype head shape',{exact:true}).selectOption('');
  await page.setViewportSize({width:390,height:844});
  await page.evaluate(()=>window.identityReview.capture({person:'Thuan',view:'body'}));
  await page.screenshot({path:resolve(out,'review-phone.png'),fullPage:true});
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'Phone must not overflow horizontally');
  await page.getByLabel('Character',{exact:true}).focus();await page.keyboard.press('ArrowDown');await page.keyboard.press('Enter');
  assert.equal(await page.getByLabel('Character',{exact:true}).inputValue(),'Tetsuo');
+ const originalShape=await page.evaluate(()=>window.identityReview.subjects[0].avatar.recipe.head.form);
+ await page.getByLabel('Prototype head shape',{exact:true}).selectOption('pear');
+ const faceShape=await page.evaluate(()=>window.identityReview.subjects[1].avatar.recipe.head.form);assert.equal(faceShape,'pear');
+ assert.equal(await page.evaluate(()=>window.identityReview.subjects[0].avatar.recipe.head.form), originalShape);
+ await page.getByLabel('Prototype head shape',{exact:true}).selectOption('');
+ await page.getByLabel('Prototype eye drawing',{exact:true}).selectOption('islandbright');
+ assert.equal(await page.evaluate(()=>window.identityReview.subjects[1].avatar.recipe.eyes.style),'islandbright');
+ await page.getByLabel('Prototype eye drawing',{exact:true}).selectOption('house');
  assert.deepEqual(errors,[]);report.deterministicReplay=true;report.phoneKeyboard=true;
  await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2)+'\n');console.log('Identity baseline/comparisons, fixed-time motion samples, seek determinism and phone keyboard checks passed.');
 }finally{await browser.close();server.kill();await rm(baselineRoot,{recursive:true,force:true});}

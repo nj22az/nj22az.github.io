@@ -240,6 +240,30 @@ function drawEye(ctx,x,y,s,side,eyes,state,look,tilt,width=1){
   ctx.restore();return;
  }
  if(state==='happy'){ctx.lineWidth=5.2;ctx.beginPath();ctx.moveTo(-13,4);ctx.quadraticCurveTo(0,-21,13,4);ctx.stroke();ctx.restore();return;}
+ // Original island eye drawings: a seed-shaped coloured iris with an ink rim,
+ // a slim pupil and a short reflected dash. Existing expression/blink/symbol
+ // branches above remain shared, and the recipe's placement/colour/tilt still apply.
+ if(['islandbead','islandlid','islandbright'].includes(style)){
+  const lid=style==='islandlid',bright=style==='islandbright',rx=bright?12:11,ry=bright?15:lid?9:12;
+  ctx.save();ctx.translate(look[0]*2,look[1]*2);
+  if(lid){
+   const edge=()=>{ctx.beginPath();ctx.moveTo(-rx,-ry*.25);ctx.quadraticCurveTo(0,-ry*.6,rx,-ry*.25);ctx.bezierCurveTo(rx,ry*.85,-rx,ry,-rx,-ry*.25);ctx.closePath();};
+   edge();ctx.fillStyle='#f6eddb';ctx.fill();ctx.lineWidth=2;ctx.stroke();ctx.save();edge();ctx.clip();
+   ctx.fillStyle=eyes.colour;ctx.beginPath();ctx.ellipse(look[0],ry*.28,rx*.63,ry*.82,0,0,TAU);ctx.fill();
+   ctx.fillStyle=line;ctx.beginPath();ctx.ellipse(look[0],ry*.25,3.4,ry*.64,0,0,TAU);ctx.fill();ctx.restore();
+   ctx.strokeStyle=line;ctx.lineWidth=3.5;ctx.beginPath();ctx.moveTo(-rx-1,-ry*.25);ctx.quadraticCurveTo(0,-ry*.6,rx+1,-ry*.25);ctx.stroke();
+   ctx.restore();ctx.restore();return;
+  }
+  const outline=()=>{ctx.beginPath();ctx.moveTo(-rx,1);ctx.bezierCurveTo(-rx,-ry*.8,-rx*.2,-ry*1.12,rx*.45,-ry*.8);ctx.bezierCurveTo(rx*1.12,-ry*.4,rx,ry*.68,rx*.25,ry);ctx.bezierCurveTo(-rx*.6,ry*1.12,-rx,ry*.55,-rx,1);ctx.closePath();};
+  outline();ctx.fillStyle=eyes.colour;ctx.fill();ctx.lineWidth=2.6;ctx.stroke();
+  ctx.save();outline();ctx.clip();ctx.fillStyle=line;ctx.beginPath();ctx.ellipse(0,1,bright?4:3.7,ry*.65,0,0,TAU);ctx.fill();
+  if(lid){ctx.fillStyle=ctx.canvas.__skin;ctx.fillRect(-15,-ry-3,30,ry*.65);}
+  ctx.restore();
+  ctx.strokeStyle=line;ctx.lineWidth=lid?4:3;
+  ctx.beginPath();ctx.moveTo(-rx-1,lid?-ry*.32:0);ctx.quadraticCurveTo(-2,lid?-ry*.56:-ry*1.18,rx+1,lid?-ry*.22:-ry*.35);ctx.stroke();
+  if(!lid){ctx.strokeStyle='#f4ead7';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-3,-ry*.38);ctx.lineTo(1,-ry*.49);ctx.stroke();}
+  ctx.restore();ctx.restore();return;
+ }
  const wide=state==='wide'?1.3:1;
  const rx=(style==='narrow'?12:style==='dot'?6:style==='sparkle'?13:style==='doe'?12.5:style==='cat'||style==='heavy'?12:11.5)*wide,
   ry=(style==='narrow'?4.2:style==='dot'?9:style==='almond'?9.5:style==='cat'?9:style==='sparkle'?15:style==='doe'?15:style==='heavy'?12:13.5)*wide;

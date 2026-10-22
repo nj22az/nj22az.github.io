@@ -30,3 +30,4 @@ node_modules
 # Reproducible character-review intermediates (curated evidence is committed).
 /.identity-review-baseline-*/
 /avatar-creator/docs/qa/identity-v1/raw/
+/avatar-creator/docs/qa/identity-v2/raw/

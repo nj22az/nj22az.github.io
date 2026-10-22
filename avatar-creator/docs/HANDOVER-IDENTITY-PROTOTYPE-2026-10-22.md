@@ -1,6 +1,25 @@
 # Johansson Studio character prototype — 22 October 2026
 
-## State, baseline and review gate
+## Current review: v2 following owner feedback
+
+The owner found v1 visually indistinguishable and clarified the aim: a customisable, Mii-inspired but independently authored **Johansson** identity. V1 was not accepted. Its evidence below is historical; [v2 is now the active comparison](qa/identity-v2/README.md). PR #357 remains a draft; nothing has been merged or applied across the World cast.
+
+Implemented in this revision:
+
+- `island-storybook-v2` remains an opt-in shared builder style. Adult/teen/elder head radius is 93% of classic, child 97%; shoulder/garment width is 114%; head profiles retain individual families, with fuller cheek contours, 12% lower-face shaping and two authored 3D cheek relief fields. Facial normals retain more sculpted form. V1 remains available for historical comparison.
+- Three independently drawn eye families: **Island ink**, **Island lids**, **Island bright**. They use the existing face drawing, expression, placement, colour and recipe system. The ordinary shared creator exposes them as selectable parts with readable labels; recipe encode/decode preserves them. Existing eye names remain, and the seeded generator deliberately continues choosing from its original 16 eyes. Five frozen seed hashes guard that compatibility.
+- Review page has working head-shape, cheek, head-size and eye-drawing controls. Original characters remain on the left; customisation affects the right only. The v2 default selects an appropriate island eye family, while keeping the original face parts available. `customisation.jpg` demonstrates several head shapes on the same two identities.
+- Wider torso construction and existing collar/cuff geometry fit the new dimensions. No claim of new complete wardrobe or hair libraries: hair receives a restrained mass change, while new authored haircuts, clothing assets, mouth families and interface art remain further work.
+
+Verification: **36 focused tests passed**, including all 19 eye styles through expressions, classic geometry hashes, v1/v2 skeleton and seated/tea contacts, new eye save/open round trips, five unchanged generation seeds, existing customisation/silhouette/drink grips and the three rebuilt runtime-package checks. The complete browser run passed fixed-time seeking, all five characters/views/performance samples, 390×844 overflow, keyboard character selection and working head/eye selection with the left character unchanged. Twenty frozen-main render halves remain pixel-identical. Full-speed owner playback and physical-device performance remain unverified.
+
+Runtime is rebuilt from main `125255c3` plus these sources, retaining that published main graph for cached pages. New v2 body proportions are **not yet a persisted appearance version**; no claim is made that exporting an ordinary recipe alone preserves the opt-in body style. New eye parts do survive current-engine recipe round trips. A persisted style contract and complete GLB/scene/World-save sweep remain release gates.
+
+The new eye paths and cheek fields are original code authored here; existing asset provenance and legal questions remain open. No Nintendo clearance is claimed. Hands and PR #301 remain untouched; digit-total clarification is still required before hand modelling.
+
+Next: owner reviews whether the v2 construction and eye families give the intended Johansson identity. Then refine the chosen direction and author stronger hair, wardrobe and mouth choices; continue the creator history/library/reliability stages separately. Exact revision commit is recorded in the follow-up delivery entry.
+
+## V1 historical state, baseline and review gate
 
 Owner requested a publishable, distinctive Johansson identity while retaining the cast's playful appeal. This is the **first opt-in shape study**, not an approved cast rollout or a release.
 

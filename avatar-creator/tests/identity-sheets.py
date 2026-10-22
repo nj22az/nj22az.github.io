@@ -1,13 +1,13 @@
 from PIL import Image,ImageDraw,ImageFont,ImageChops
 from pathlib import Path
 import sys,json
-p=Path(sys.argv[1] if len(sys.argv)>1 else 'avatar-creator/docs/qa/identity-v1/raw')
+p=Path(sys.argv[1] if len(sys.argv)>1 else 'avatar-creator/docs/qa/identity-v2/raw')
 out=p.parent
 font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',18)
 small=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',14)
 names=['Johansson','Thuan','Tetsu','Grandmother Higa','Mai']
 for i,name in enumerate(names):
- sheet=Image.new('RGB',(1232,4*(300)+75),'#eee8dc');d=ImageDraw.Draw(sheet);d.text((20,12),f'{name} — original / storybook v1 | main 9f7ccd4c',font=font,fill='#303632')
+ sheet=Image.new('RGB',(1232,4*(300)+75),'#eee8dc');d=ImageDraw.Draw(sheet);d.text((20,12),f'{name} — original / Johansson v2 | main 9f7ccd4c',font=font,fill='#303632')
  for j,view in enumerate(['front','quarter','profile','body']):
   im=Image.open(p/f'compare-{i}-{view}.png').convert('RGB');im.thumbnail((1232,270))
   sheet.paste(im,((1232-im.width)//2,75+j*300+26));d.text((20,75+j*300),view,font=small,fill='#303632')
@@ -38,3 +38,12 @@ report['baselinePixelMatches']=checks
 report['rawCaptures']='Reproducible intermediates under raw/; not committed'
 report['evidence']=[f'{kind}-{i}.{ext}' for i in range(5) for kind,ext in [('review','jpg'),('performance','jpg'),('motion','gif')]]
 (out/'report.json').write_text(json.dumps(report,indent=2)+'\n')
+# Larger front comparisons and a working-customisation strip for owner review.
+for i,name in [(0,'Johansson'),(1,'Thuan')]:
+ im=Image.open(p/f'compare-{i}-front.png').convert('RGB');sheet=Image.new('RGB',(im.width,im.height+50),'#eee8dc');sheet.paste(im,(0,50));d=ImageDraw.Draw(sheet);d.text((20,12),name+' — current',font=font,fill='#303632');d.text((im.width//2+20,12),'Johansson prototype — original island eyes',font=font,fill='#303632');sheet.save(out/f'portrait-{i}.jpg',quality=93)
+sheet=Image.new('RGB',(1232,770),'#eee8dc');d=ImageDraw.Draw(sheet);d.text((20,12),'The same characters, with selectable Johansson head shapes',font=font,fill='#303632')
+for i,name in [(0,'Johansson'),(1,'Thuan')]:
+ d.text((20,i*355+50),name,font=font,fill='#303632')
+ for j,label in enumerate(['Current','New default','Round','Soft square']):
+  im=Image.open(p/(f'compare-{i}-front.png' if j==0 else f'custom-{i}-{j-1}.png')).convert('RGB');im=im.crop((0 if j==0 else im.width//2,0,im.width//2 if j==0 else im.width,im.height));im.thumbnail((308,282));sheet.paste(im,(j*308,i*355+110));d.text((j*308+20,i*355+82),label,font=font,fill='#303632')
+sheet.save(out/'customisation.jpg',quality=93)
