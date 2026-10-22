@@ -7,7 +7,7 @@ Start here on every task, then read the latest applicable notes below. Maintain 
 | Food service and seating integration: PR #350 on main plus PR #351 | [22 October combined integration review](johansson-town/briefs/HANDOFF-FOOD-SEATING-INTEGRATION-2026-10-22.md). [Merged PR #356](https://github.com/nj22az/nj22az.github.io/pull/356), squash commit `2fd64868fe6da67619cef618ed8c67174843a96f`. Owner approved the combined screenshots; handover signed off. |
 | Johansson World: world, characters, benches and storytelling | [22 October 2026 afternoon World handoff](johansson-town/briefs/HANDOFF-2026-10-22-afternoon.md) (seated poses #351, civic comic backdrops #352, retired-cast tests #353), after the [morning one](johansson-town/briefs/HANDOFF-2026-10-22.md). Also read the earlier notes they reference. |
 | Minato Izakaya: food preparation, separate food/drink delivery and serving clearances | [22 October 2026 food-service handover](johansson-town/briefs/HANDOFF-IZAKAYA-FOOD-2026-10-22.md). Read alongside the World handoff. |
-| Nhung becomes the island doctor (Dr Kakazu retired into her); Front-Row's trade and Saturday closing at Sakura; queued: Higa Liquor closes into Sakura | **Finished, PR to main open, not merged** (branch `claude/clever-ride-qdpo8s`; merge only on the owner's word): [task folder](johansson-town/briefs/nhung-doctor/progress.md) (progress, checks, inputs) and the session note below. Higa Liquor: its own stacked PR on `claude/clever-ride-qdpo8s-higa-liquor`. |
+| Nhung becomes the island doctor (Dr Kakazu retired into her); Front-Row's trade and Saturday closing at Sakura; queued: Higa Liquor closes into Sakura | **Finished, [PR #362](https://github.com/nj22az/nj22az.github.io/pull/362) to main, not merged** (branch `claude/clever-ride-qdpo8s`; merge only on the owner's word): [task folder](johansson-town/briefs/nhung-doctor/progress.md) (progress, checks, inputs) and the session note below. Higa Liquor: its own stacked PR on `claude/clever-ride-qdpo8s-higa-liquor`. |
 | Claude Code skills: Colorfigures (hand-inked interactive isometric figures) | **Merged** to main as [PR #361](https://github.com/nj22az/nj22az.github.io/pull/361) (squash `a0fb347c`), only `.claude/skills/colorfigures/` (8 files, MIT, reviewed before adding). Signed off. |
 | Linux edition, controllers, right-stick camera and release integration | [22 October 2026 Linux controller handover](HANDOVER-LINUX-JOYSTICK-2026-10-22.md). Read alongside the World handoff for shared game changes. |
 
@@ -37,7 +37,7 @@ step. Do not merge (2) to main before the CI guard is green and the runtime is r
 ## Session handover — 22 October 2026 (late evening), branch `claude/clever-ride-qdpo8s`
 
 The branch holds `claude/laughing-rubin-6p25x2` (the controller fix `84baf00`, the doctor work in progress, Colorfigures)
-plus main merged in, then the finishing commits. One PR to main carries both the controller fix (its own commit, kept as
+plus main merged in, then the finishing commits. One PR to main, [#362](https://github.com/nj22az/nj22az.github.io/pull/362), carries both the controller fix (its own commit, kept as
 it was) and **Nhung becomes the island doctor**; it is not merged: main deploys the site, and the owner merges on their
 word.
 

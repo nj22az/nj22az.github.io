@@ -121,7 +121,7 @@ commit unless said):
 - steam-deck: 39/39 (the controller fix).
 
 ## Next action
-1. The owner looks at the before/after sheets and says whether to merge the PR (main deploys the site). Merge only on
+1. The owner looks at the before/after sheets and says whether to merge [PR #362](https://github.com/nj22az/nj22az.github.io/pull/362) (main deploys the site). Merge only on
    their word.
 2. The owner's answer on the sisters' jan-ken-pon (Open issues).
 3. Higa Liquor closes into Sakura: its own stacked PR on `claude/clever-ride-qdpo8s-higa-liquor` (the owner, 22 October:
