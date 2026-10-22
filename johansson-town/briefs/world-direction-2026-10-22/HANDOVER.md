@@ -2,6 +2,8 @@
 
 Branch: `codex/world-direction-2026-10-22`, based on main `a0fb347ced9250b2e5a6210ba068bf595a7ca310`. Planning only; separate from open Sakura audit PR #366 and stair repair PR #364. The current owner message broadens the programme and changes Fujita's intended role and the terminal office's purpose. Directory instructions carry a new owner-direction addendum; live roster/geometry remain unchanged.
 
+Review: [draft PR #367](https://github.com/nj22az/nj22az.github.io/pull/367), planning/candidate commit `ec64dec4f93def4ef625e938ddd95a29af4b9346`. Not merged.
+
 Read [MASTER-BRIEF.md](MASTER-BRIEF.md). It records confirmed ownership/cast/building direction separately from proposals, maps the eight existing ship post types, recommends a new master while retaining Ryo as mate, and preserves Tetsuo as electrician and Mac's coverage of Johansson. No captain appointment or property transfer has occurred. No crew-family/home deletion is authorised.
 
 Useful preparation: source-coordinate northern-plot map and data, showing existing uses; isolated normalized stronger-Chin recipe and engine measurement comparison, never applied to the cast. Build 0.32 -> 0.65 makes torso about 14.2% wider and arm radius about 10.5% larger without changing height; Build also broadens the waist/depth, so visual review is required. No screenshot or .blend is claimed. Blender executable and bpy were unavailable in the inspected runtime; this does not block planning/data work.
