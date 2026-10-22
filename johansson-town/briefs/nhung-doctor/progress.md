@@ -49,14 +49,20 @@ Committed as work in progress (22 October, evening) on `claude/laughing-rubin-6p
 1. Tests updated so far and passing: roster, cast, housing-consolidation, sisters, kitano-residents, sakura-small-office,
    paperwork, sakura-merchandising, products-move, higa-liquor-laundry, afterbath-outfit, bookkeeper-return-route,
    bookshop-customers (rewritten for the closed shop floor).
-2. Failing on the base branch too (not this change's): architect-masterplan "every registered building has a clear
-   complete circuit", building-stairs "all town stair flights", consolidation "old saved visits merge", continuous-life
-   "the hidden town advances Fujita to bed" (baseline: scratchpad affected-base.log, partial when written).
-3. Still failing and to check against the baseline: lot-dressing (parked cars), owned-vehicles (Nhung's red car's
-   purpose is still "airport book orders", and its 16:00 errand falls in afternoon surgery: give it the clinic's freight
-   at a time she is free), shopfronts (staff at their own shop: Nhung's is the clinic now), island-businesses (bookshop
-   workers), boot (runtime not rebuilt), the Studio/resident-group lists, cast-migration, the story and stand tests in
-   the affected list (`grep -lE` command in this session; 131 files).
+2. Baseline (the same 131 affected files on the base commit 84baf00): 761 pass, 27 fail. Failing there too, so not
+   this change's: building circuits, stair flights, old saved visits, Fujita's bedtime, fun-poses, no-z-fighting
+   (environment), Minato/ramen dining surfaces, the Obon eisa, interior release, resident groups/Studio pickers, all
+   five owned-vehicles tests, retired-layout dialogue, photo articles' portraits, Kōji's journeys, shelving islands,
+   shopfronts' staff, Thuan's bench break (two), Sato Ramen points, the Studio refusals and products, ground/pier edges,
+   resident paths, the whole-day run.
+3. Failing only with this change and not yet fixed (from the run before the test fixes above): lot-dressing "the parked
+   cars are the traffic's family" (bay 2 is Nhung's now), island-businesses "published businesses have reachable real
+   doors" and "bookshop and dock workshop keep distinct content … their own workers" (Nhung works at the clinic), boot
+   "Published island boots" (runtime not rebuilt), "every thing has a purpose, a real source and a home", "the retired
+   keep a buildable drawing …" and "every live list is exactly the 26" (now 25), "all eight posts are held by the
+   roster's holders", sakura-evening-guests "Nhung buys during her real evening errand at 60 Hz" and the two after it
+   (her evening is 17:00–18:00 at Sakura now; this file is in the CI guard), "the model is told who each person is".
+   Also give Nhung's red car (town-traffic.js, "airport book orders", 16:00) a purpose and time that fit the doctor.
 4. Then: `node tools/render-resident-guide.mjs` and `node tools/render-resident-shoot.mjs Nhung` (portraits and
    guide/portraits.json hash), a look at the stills, `npm run build:runtime` last, `node tools/ci-guard.mjs`, a separate
    review, then the queued Higa Liquor step.
