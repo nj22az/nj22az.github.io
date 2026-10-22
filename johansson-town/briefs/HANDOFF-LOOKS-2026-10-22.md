@@ -59,3 +59,11 @@ input were pixel-identical (the world is frozen). Esc returned to the original v
 Not checked: touch gestures and controller on real devices; the bar at phone width.
 Known: with the clock on real time, the wall clock keeps running while frozen, so the town catches up on leaving, as after any
 pause. The lens passes through walls, by design.
+
+## Pushed to main — 22 October 2026
+Owner: "Push camera to main". The branch, both the Look setting and the free camera since the camera commit builds on it,
+was merged with `origin/main` (3 commits: PRs #368 and #369 and their handover) and pushed to `main` directly, with no PR.
+`tests/visual-audit-freeze.test.mjs` (new on main) reads the audit's render body from `game.js` as text. It now also loads
+`renderStill`, which that body delegates to; its assertions are unchanged. After the merge: that test, consolidation,
+runtime-package, audit-boot, free-camera and looks tests: 19 pass. CI guard: 348 pass, 1 fail (the `no-z-fighting` out-of-memory
+abort in this container, also on main). Watch the `johansson-world.yml` run on main for the real result.

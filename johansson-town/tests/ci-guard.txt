@@ -48,8 +48,10 @@ drinking-game.test.mjs
 beach-shore.test.mjs
 johansson-study.test.mjs
 audit-boot.test.mjs
+visual-audit-freeze.test.mjs
 ferry-timetable.test.mjs
 boot.test.mjs
+consolidation.test.mjs
 seated-pose.test.mjs
 bench-two-seats.test.mjs
 seat-layouts.test.mjs
