@@ -78,7 +78,7 @@ PR [#301](https://github.com/nj22az/nj22az.github.io/pull/301) remains open and 
 | Classic recipes / unchanged default geometry | Completed for five fixtures | Expand legacy scene, World-save and GLB round trips before rollout |
 | Prototype seat and measured rim/lip contact | Completed for five fixtures | Full wardrobe/pose contact sweep and continuous playback |
 | Hand redesign | Failed prior prototype; deferred here | Resolve digit total, then new palm/back/side milestone |
-| New face, hair and wardrobe families | Proposed | Independently authored art, fit and expression review |
+| New face, hair and wardrobe families | Partial: three original eye families; further mouths/hair/wardrobe proposed | Independently authored art, fit and expression review |
 | Appearance Undo/Redo, locks, selective randomisation | Proposed | Transactional edit and keyboard/phone tests |
 | Named character library, duplicate/reopen/export | Proposed | Durable save/import/export round trips and failure cases |
 | Keyboard/responsive interface | Partial | Review page checked; full creator audit outstanding |
@@ -109,3 +109,10 @@ A qualified IP solicitor should review the actual silhouette/face/hair library, 
 - Owner requested screenshots during work; Johansson/Thuan comparison sheets were presented, with all five supplied in the final review package.
 - Local broad synchronisation was rejected by automatic approval review to protect uncommitted files. An independent delivery snapshot preserved the original checkout and incorporated the newer main without discarding its work. Continue from the remote PR branch rather than the interrupted original scratch checkout.
 - Next: owner visual review of proportions and movement, then any requested refinements. No rollout, hand redesign, merge or release has occurred.
+
+## V2 delivery entry
+
+- Revision commit: `77dbca87d0309d3b042499bfa7fd94a0914816a4`, following `703e02a01fe1276c3d417a719e5e3023aeef6893` on draft PR #357.
+- 36 focused tests pass, including three runtime-package checks. The full v2 browser capture, 20 pixel-identical classic comparisons, exact seeking, phone/keyboard and head/eye controls pass. New v2 sheets and motion/contact evidence are in `docs/qa/identity-v2/`.
+- Main defaults and World cast remain classic. New eye parts are selectable in the shared creator; the stronger body style remains an opt-in review option, without persisted style/export guarantees.
+- Remaining gates: owner aesthetic/full-speed motion review, physical-device performance, full wardrobe contacts, persisted appearance/style and GLB/scene/World-save acceptance, provenance and qualified IP review. Whole-repository/remote guard results have not been claimed green by this revision.
