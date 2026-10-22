@@ -33,18 +33,18 @@ test('between orders she keeps working round the kitchen',()=>{
 
 test('the regulars wait for Mrs Sato, eat a slow bowl with their own drink, and she refills it',()=>{
  installDOM();
- const room=new THREE.Group(),state={yen:0},ledger=createResidentLedger(()=>state),sato=cook(),reiko=guest('Reiko',0),kitchen=createRamenKitchen({getCook:()=>sato});
- const service=createVenueService({room,place:'ramen',getCustomers:()=>[reiko],getMinutes:()=>720,ledger,staffName:'Mrs Sato',kitchen,meal:MEALS.lunch,drinkFor:n=>SATO_LUNCH_DRINK[n],tableFor:p=>SATO_GUEST_SEATS[p.g.userData.ramenSeat].table});
+ const room=new THREE.Group(),state={yen:0},ledger=createResidentLedger(()=>state),sato=cook(),tetsuo=guest('Tetsuo',0),kitchen=createRamenKitchen({getCook:()=>sato});
+ const service=createVenueService({room,place:'ramen',getCustomers:()=>[tetsuo],getMinutes:()=>720,ledger,staffName:'Mrs Sato',kitchen,meal:MEALS.lunch,drinkFor:n=>SATO_LUNCH_DRINK[n],tableFor:p=>SATO_GUEST_SEATS[p.g.userData.ramenSeat].table});
  const seen=new Set();let deliveredAt=null,finishedAt=null,refilled=false;
  for(let i=0;i<60*400;i++){
-  service.update(1/60);kitchen.update(1/60);const u=reiko.g.userData,t=i/60;
+  service.update(1/60);kitchen.update(1/60);const u=tetsuo.g.userData,t=i/60;
   if(u.heldItem)seen.add(u.socialPose+':'+u.heldItem);
-  const rec=state.residentLife.Reiko.meals.ramen;
+  const rec=state.residentLife.Tetsuo.meals.ramen;
   if(deliveredAt==null&&rec.delivered)deliveredAt=t;if(finishedAt==null&&rec.finished)finishedAt=t;
   if(u.mealState==='lingering'&&/refill/.test(u.activity||''))refilled=true;
  }
  assert.ok(deliveredAt>8,'not before she has cooked it');
- assert.ok(seen.has('Eat:ramen')&&seen.has('Drink:coffee'),'eats ramen and drinks her coffee: '+[...seen]);
+ assert.ok(seen.has('Eat:ramen')&&seen.has('Drink:coffee'),'eats ramen and drinks his coffee: '+[...seen]);
  assert.ok(finishedAt-deliveredAt>100,'a slow bowl, not a gulp');
  assert.ok(refilled,'asks for, and gets, a refill');
  const bowl=room.children.find(o=>o.name==='Minato dish · ramen');assert.ok(Math.abs(bowl.position.y-SATO_GUEST_SEATS[0].table[1])<.01,'the bowl sits on the counter top');
