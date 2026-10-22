@@ -12,7 +12,7 @@ import {reach,drinkGrip} from './consume.js';
  *   {pour:object}   what the hand holds tipped by `tilt` with its spout over the object's rim;
  *   {rest:true}     hanging still at her side, out of the furniture she works at (no walking swing);
  *   {keep:true,up}  where it is now, going with her body (raised by `up`): just taken, as she steps back;
- *   {carry:true}    what the hand holds in front, the forearm level, as you carry a full glass.
+ *   {carry:true,forward} what the hand holds in front, the forearm level; wider dishes get extra clearance.
  * `u.workAvoid` are boxes ([min, max] in the world) the hands go over and never through: a worktop at her chest is
  * reached over its edge, and a hand comes back out over the edge before it drops to her side.
  * `u.workHeld[side]` is what that hand holds: it is taken into the hand as it is (it was reached for), and the palm
@@ -77,7 +77,7 @@ export function workHands(avatar,u,dt=1/60){
     at.kept??=avatar.root.worldToLocal(at.wrist.clone()).add(_e.set(0,h.up||0,0));target=avatar.root.localToWorld(_c.copy(at.kept));
    }
    else if(h.carry){
-    target=avatar.root.localToWorld(_c.set(sg*(m.shoulderX*.55),m.shoulderY-m.upper*.95,m.depth*.5+m.fore*.55));
+    target=avatar.root.localToWorld(_c.set(sg*(m.shoulderX*.55),m.shoulderY-m.upper*.95,m.depth*.5+m.fore*.55+(h.forward||0)));
     // Stepping in to a worktop with something in hand: it is carried up over the top first.
     if(h.high!=null&&held){const under=held.parent===hand?hand.getWorldPosition(_e).y-_box.setFromObject(held).min.y:.12;target.y=Math.max(target.y,h.high+under);}
    }
