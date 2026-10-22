@@ -1,0 +1,7 @@
+0.4s page loaded
+8.2s island ready
+11.7s playing
+30.3s photographed street-town-hall-gate
+30.3s entered the Community Hall
+39.4s photographed room-community-hall
+{"steps":6,"errors":[]}

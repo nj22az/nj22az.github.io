@@ -250,3 +250,10 @@ body.standalone-studio .shm .personality-reference h4{font-size:13px;letter-spac
  body.standalone-studio .shm[data-step=profile] .shm-side{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:8px}
  body.standalone-studio .shm[data-step=profile] .shm-dice{grid-column:2;grid-row:1;flex-direction:column;justify-content:center}
 }
+
+.studio-material-study{margin:12px 0;padding:12px;border:1px solid var(--isle-line,#c9bfae);border-radius:12px;min-width:0}
+.studio-material-study legend{font-weight:700;font-size:.85rem}
+.studio-material-study p{font-size:.78rem;line-height:1.5;margin:0 0 12px}
+.studio-preview-menu .studio-material-study label{display:grid;grid-template-columns:1fr;gap:4px;margin:8px 0}
+.studio-preview-menu .studio-material-study select{max-width:100%}
+.studio-material-study button{font-size:.8rem;white-space:normal}

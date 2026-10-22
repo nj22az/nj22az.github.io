@@ -71,3 +71,4 @@ harbour-festival.test.mjs
 looks.test.mjs
 free-camera.test.mjs
 look-picker.test.mjs
+material-presets.test.mjs
