@@ -69,7 +69,8 @@ test('both shared dining entrances clone one complete replacement from the same 
   const clone=other.getObjectByName(name),original=room.getObjectByName(name);
   assert.notEqual(clone,original);assert.deepEqual(clone.position.toArray(),original.position.toArray());
   const firstMesh=o=>{let found;o.traverse(m=>{if(m.isMesh&&!found)found=m;});return found;};
-  assert.equal(firstMesh(clone).geometry,firstMesh(original).geometry,'Repeated visits share immutable geometry');
+  // The vertices are shared; a room may hold its own index where a piece is lifted out to move (minato-bar.js liftPiece).
+  assert.equal(firstMesh(clone).geometry.attributes.position,firstMesh(original).geometry.attributes.position,'Repeated visits share immutable geometry');
  }
  sato.dispose();
 });
@@ -199,4 +200,67 @@ test('the furniture scan detects an accidentally doubled counter finish',()=>{
  const sheet=new THREE.Mesh(new THREE.PlaneGeometry(1,.3).rotateX(-Math.PI/2),new THREE.MeshStandardMaterial({color:0xffffff}));
  sheet.name='Accidental extra counter finish';sheet.position.set(P.counter.position[0],FURNITURE_HEIGHTS.serviceCounter+.0005,P.counter.position[2]);group.add(sheet);
  assert.ok(scan(group).some(f=>(f.a+f.b).includes(sheet.name)&&f.area>.2),'A second surface half a millimetre above the slate must fail');
+});
+
+// The owner's photo of 21 October: two cream bowls on the prep board drawn into each
+// other as one. They are tonight's otoshi now, apart on the board, the knife on top of it.
+const BOARD={minX:-1.97,maxX:-1.33,minZ:-1.735,maxZ:-1.365,minY:.935,maxY:1.02};
+const pointsIn=(name,box)=>{
+ const out=[],v=new THREE.Vector3();
+ room.traverse(mesh=>{const key=s=>s.replace(/[^a-z]/gi,'').toLowerCase();if(!mesh.isMesh||!key(mesh.name).endsWith(key(name)))return;const p=mesh.geometry.attributes.position;
+ for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i).applyMatrix4(mesh.matrixWorld);if(v.x>=box.minX&&v.x<=box.maxX&&v.z>=box.minZ&&v.z<=box.maxZ&&v.y>=box.minY&&v.y<=box.maxY)out.push(v.clone());}});
+ return out;
+};
+test('the otoshi bowls on the prep board stand apart, and the knife lies on the board',()=>{
+ // Each bowl is its own connected piece of the ceramic mesh: join vertices along triangle
+ // edges, then count the pieces with a vertex on the board.
+ const bowls=[];
+ room.traverse(mesh=>{
+  if(!mesh.isMesh||!/creamceramic$/i.test(mesh.name.replace(/[^a-z]/gi,'')))return;
+  const p=mesh.geometry.attributes.position,index=mesh.geometry.index,parent=Array.from({length:p.count},(_,i)=>i);
+  const find=i=>{while(parent[i]!==i)i=parent[i]=parent[parent[i]];return i;};
+  // glTF splits vertices at hard edges: the same position is the same point of the bowl.
+  const at=new Map(),v=new THREE.Vector3();for(let i=0;i<p.count;i++){const k=[p.getX(i),p.getY(i),p.getZ(i)].map(n=>n.toFixed(5)).join();if(at.has(k))parent[find(i)]=find(at.get(k));else at.set(k,i);}
+  for(let t=0;t<index.count;t+=3){const a=find(index.getX(t));parent[find(index.getX(t+1))]=a;parent[find(index.getX(t+2))]=a;}
+  const pieces=new Map();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i).applyMatrix4(mesh.matrixWorld);const r=find(i);if(!pieces.has(r))pieces.set(r,[]);pieces.get(r).push(v.clone());}
+  for(const points of pieces.values())if(points.some(q=>q.x>=BOARD.minX&&q.x<=BOARD.maxX&&q.z>=BOARD.minZ&&q.z<=BOARD.maxZ&&q.y>=BOARD.minY&&q.y<=BOARD.maxY))bowls.push(points);
+ });
+ bowls.sort((a,b)=>a[0].x-b[0].x);
+ assert.equal(bowls.length,2,'Two separate bowls on the board');
+ const shapes=bowls.map(points=>{const box=new THREE.Box3().setFromPoints(points),c=box.getCenter(new THREE.Vector3());return {c,r:Math.max(...points.map(p=>Math.hypot(p.x-c.x,p.z-c.z))),box};});
+ assert.ok(shapes[1].c.x-shapes[0].c.x>=shapes[0].r+shapes[1].r+.005,'Rims at least 5 mm apart: '+shapes.map(s=>s.c.x.toFixed(3)+'/'+s.r.toFixed(3)));
+ const board=pointsIn('Honey cedar',{...BOARD,minY:.9}),top=Math.max(...board.map(p=>p.y));
+ const edge=new THREE.Box3().setFromPoints(board);
+ for(const s of shapes){assert.ok(s.box.min.y>=top-.0005,'A bowl stands on the board, not in it');assert.ok(s.box.min.x>=edge.min.x&&s.box.max.x<=edge.max.x&&s.box.min.z>=edge.min.z&&s.box.max.z<=edge.max.z,'and wholly on it');}
+ for(const name of ['Brushed kitchen steel','Dark fittings']){
+  const knife=pointsIn(name,{...BOARD,minY:.9});assert.ok(knife.length,'The knife is on the board: '+name);
+  assert.ok(Math.min(...knife.map(p=>p.y))>=top-.0005,'The knife lies on the board, not in it: '+name);
+  for(const s of shapes)assert.ok(!knife.some(p=>Math.hypot(p.x-s.c.x,p.z-s.c.z)<s.r+.002),'The knife is clear of the bowls');
+ }
+});
+test('the prep board, its bowls and knife share no flickering plane',()=>{
+ const found=coplanarOverlaps(room,{regions:[{...BOARD,minY:.9}],tolerance:.002,minArea:.0005,keepIdentical:true});
+ assert.deepEqual(found.map(describe),[]);
+});
+
+// Thao's drinks station (minato-bar.js) stands on clear worktop: nothing of the fitted room or its dressing (the
+// oshibori warmer, the prep board, the grill) is under the rack, the pour or the tap, and nothing of it flickers.
+test('the drinks station stands on clear worktop, its glasses apart, sharing no plane with the room',async()=>{
+ const {MINATO_BAR}=await import('../src/world/interiors/minato-bar.js');
+ const station=room.getObjectByName('Minato drinks station');assert.ok(station,'built into the real room');
+ const B=MINATO_BAR,top=B.top,others=[];room.traverse(o=>{if(o.isMesh&&!o.name.startsWith('Rack ')){let p=o;while(p&&p!==station)p=p.parent;if(!p)others.push(o);}});
+ const [tx,tz,tw,td]=B.rack.tray,spots=[];
+ for(let x=tx-tw/2;x<=tx+tw/2+1e-6;x+=.04)for(let z=tz-td/2;z<=tz+td/2+1e-6;z+=.04)spots.push(['rack',x,z]);
+ for(const [name,[x,,z],r] of [['pour',B.pour.glass,.05],['tap',B.tap.at,.07],['tap glass',B.tap.glass,.05]])for(let a=0;a<8;a++)spots.push([name,x+Math.cos(a*Math.PI/4)*r,z+Math.sin(a*Math.PI/4)*r]);
+ const busy=spots.filter(([,x,z])=>{const hit=new THREE.Raycaster(new THREE.Vector3(x,1.8,z),new THREE.Vector3(0,-1,0)).intersectObjects(others,false)[0];return !hit||Math.abs(hit.point.y-top)>.002;}).map(([n,x,z])=>[n,+x.toFixed(2),+z.toFixed(2)]);
+ assert.deepEqual(busy,[],'clear worktop under the station');
+ const glasses=station.children.filter(o=>/^Rack /.test(o.name)).map(o=>new THREE.Box3().setFromObject(o).expandByScalar(-.001));
+ for(let i=0;i<glasses.length;i++)for(let j=i+1;j<glasses.length;j++)assert.ok(!glasses[i].intersectsBox(glasses[j]),'rack glasses '+i+' and '+j+' stand apart');
+ // With a glass set down where she pours and under the tap, as she does.
+ const {createDrinkProp}=await import('../src/people/izakaya-beer.js'),set=[['awamori',B.pour.glass],['draft',B.tap.glass]].map(([kind,at])=>{const g=createDrinkProp(kind);g.position.set(...at);room.add(g);return g;});
+ room.updateMatrixWorld(true);
+ const region={minX:tx-tw/2-.05,maxX:B.tap.at[0]+.1,minZ:-1.82,maxZ:-1.40,minY:top-.01,maxY:top+.4};
+ const found=coplanarOverlaps(room,{regions:[region],tolerance:.002,minArea:.0005,keepIdentical:true}).map(describe);
+ for(const g of set)g.removeFromParent();
+ assert.deepEqual(found,[]);
 });

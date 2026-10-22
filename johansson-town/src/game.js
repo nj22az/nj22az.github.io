@@ -1183,10 +1183,10 @@ function showShopThroughWindow(){
  return true;
 }
 function ensureThuan(){return storeClerk;}
-function startVenueService(place){venueService=createVenueService({room,place,drinkFor:name=>place==='izakaya'&&name==='Thuan'?'beer':null,tableFor:p=>place==='izakaya'?IZAKAYA_GUEST_SEATS[p.g.userData.izakayaSeat]?.table:SATO_GUEST_SEATS[p.g.userData.ramenSeat]?.table,getMinutes:()=>minutes,ledger:residentLedger,getCustomers:()=>world.people.filter(p=>place==='izakaya'?p.g.userData.inIzakaya:p.g.userData.inRamen),getStaff:()=>place==='izakaya'?world.people.find(p=>p.profile.name==='Thao')?.g:null});}
+function startVenueService(place){venueService=createVenueService({room,place,bar:()=>beerService,drinkFor:name=>place==='izakaya'&&name==='Thuan'?'beer':null,tableFor:p=>place==='izakaya'?IZAKAYA_GUEST_SEATS[p.g.userData.izakayaSeat]?.table:SATO_GUEST_SEATS[p.g.userData.ramenSeat]?.table,getMinutes:()=>minutes,ledger:residentLedger,getCustomers:()=>world.people.filter(p=>place==='izakaya'?p.g.userData.inIzakaya:p.g.userData.inRamen),getStaff:()=>place==='izakaya'?world.people.find(p=>p.profile.name==='Thao')?.g:null});}
 function startSharedDiningServices(){
  izakayaTV=activeRoomLayout.television;izakayaGuests.sync(minutes);startVenueService('izakaya');
- beerService=createBeerService({room,say,blocked:environmentBlocked,getNao:()=>{const n=world.people.find(p=>p.profile.name==='Thao')?.g;return izakayaOpen(minutes)&&n&&n.userData.inIzakaya&&n.visible&&!n.userData.roomTransition?n:null;}});
+ beerService=createBeerService({room,say,blocked:environmentBlocked,bar:activeRoomLayout.bar,getNao:()=>{const n=world.people.find(p=>p.profile.name==='Thao')?.g;return izakayaOpen(minutes)&&n&&n.userData.inIzakaya&&n.visible&&!n.userData.roomTransition?n:null;}});
  // Sato's ongoing kitchen and regulars keep their lifetime across room visits.
  room.add(ramenLife);ramenLife.visible=true;ramenGuests.sync(minutes);
  ramenPlayerService=createRamenPlayerService({room,getSeat:()=>Number.isInteger(parkSeat?.ramenSeatId)?parkSeat:null,getMinutes:()=>minutes,getBalance:()=>activities.state.yen,pay:activities.spend,say,ticket:{has:item=>hasRamenTicket(activities.state,item),use:item=>{const used=useRamenTicket(activities.state,item);if(used)activities.save?.();return used;}},
@@ -2539,6 +2539,8 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  get seat(){return seated&&parkSeat?{position:[...parkSeat.position],stand:[...parkSeat.stand],surfaceY:parkSeat.surfaceY,yaw:parkSeat.yaw}:null;},
  get arrival(){return spawnScene?.snapshot();},
  get beer(){return beerService?{pending:beerService.pending,drink:beerService.drink}:null;},
+ /** Minato's service itself (izakaya-beer.js): photographs and tests order through it, as the menu does. */
+ get beerService(){return beerService;},
  get paused(){return !!(activities?.paused||concert?.active||concertLoading||photoStudio?.active||itemViewer?.active);},
  get blocked(){return {catchingUp,roomLoading,camera:!!cameraControls.active,inspector:!!inspector?.active,viewer:!!itemViewer?.active,photo:!!(photoStudio?.active||photoLoading||photoReturning),directory:!$('#directory').classList.contains('hidden'),started,hidden:document.hidden};},
  get johansson(){return johansson;},get hands(){return hands;},
