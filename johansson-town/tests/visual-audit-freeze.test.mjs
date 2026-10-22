@@ -4,6 +4,7 @@ import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 import * as THREE from '../vendor/three.module.js';
 import {clock as duskClock} from '../src/render/dusk.js';
+import {graphicsProfile} from '../src/render/startup-recovery.js';
 import {buildSakuraLife} from '../src/world/interiors/sakura-life.js';
 import {installDOM} from './fixtures.mjs';
 
@@ -16,7 +17,9 @@ test('repeated frozen draws refresh lighting and late materials without advancin
  const renderSource=source.slice(renderStart,source.indexOf('\n setTime(value',renderStart));
  let hours=0,shutterY=0,skyUpdates=0,celSweeps=0,outdoor=0,interior=0,market=0;
  const context={THREE,duskClock,world:{updateHours(){hours++;shutterY+=.02;}},minutes:1260,weather:false,weatherKind:'sunny',
-  current:null,graphicsLifecycle:null,activeRoomLayout:null,concert:null,photoStudio:null,spawnScene:null,player:new THREE.Group(),tabletLike:false,
+  // Match the live lighting dependencies; retain the production setTime/render bodies.
+  current:null,graphics:graphicsProfile(),graphicsLifecycle:null,activeRoomLayout:null,concert:null,photoStudio:null,spawnScene:null,player:new THREE.Group(),
+  SUN_REACH:46,nightLift:0,conversationLine:null,placeWorldBalloons(){},setRoadPaintLight(){},
   lightBudget:{update(){}},colliderGrid:{refresh(){}},
   sun:new THREE.DirectionalLight(),ambient:new THREE.HemisphereLight(),bounce:new THREE.PointLight(),uplight:new THREE.DirectionalLight(),UPLIGHT:.35,
   scene:new THREE.Scene(),camera:new THREE.PerspectiveCamera(),town:{},room:{},renderer:{render(){interior++;}},
@@ -33,6 +36,8 @@ test('repeated frozen draws refresh lighting and late materials without advancin
  assert.equal(shutterY,initialShutter,'Painting the same frozen frame cannot move the shutter');
  assert.equal(hours,1);assert.equal(skyUpdates,11,'Lighting still follows the chosen camera');
  assert.equal(celSweeps,10,'Streamed materials receive cel shading without simulation');assert.equal(outdoor,10);
+ assert.ok(context.sun.position.toArray().every(Number.isFinite),'Frozen lighting keeps a finite sun position');
+ assert.ok(context.sun.target.position.toArray().every(Number.isFinite),'Frozen lighting keeps a finite shadow target');
  assert.deepEqual(context.camera.position.toArray(),audit.camera.pos);
  context.current={id:'mayor-home'};audit.render();assert.equal(interior,1);
  context.current={id:'market'};audit.render();assert.equal(market,1);
