@@ -4,7 +4,7 @@ Start here on every task, then read the latest applicable notes below. Maintain 
 
 | Work area | Current handover |
 | --- | --- |
-| Johansson World: world, characters, benches and storytelling | [22 October 2026 World handoff](johansson-town/briefs/HANDOFF-2026-10-22.md). Also read the earlier notes it explicitly references. |
+| Johansson World: quality recovery and withdrawal of fighting | [22 October quality recovery handover](johansson-town/briefs/HANDOFF-2026-10-22-quality-recovery.md): owner's screenshot defects, immediate removal of current fighting from both editions, remedy sequence and acceptance gates. Planning only; fixes not implemented. Also read the [morning World handoff](johansson-town/briefs/HANDOFF-2026-10-22.md) and its earlier references for ongoing work. |
 | Linux edition, controllers, right-stick camera and release integration | [22 October 2026 Linux controller handover](HANDOVER-LINUX-JOYSTICK-2026-10-22.md). Read alongside the World handoff for shared game changes. |
 
 The Linux controller note contains newer merge and release information than the morning World note. Real-device confirmation of right-stick camera control on Bluetooth and Steam Deck remains outstanding; follow that note's reproduction steps.
