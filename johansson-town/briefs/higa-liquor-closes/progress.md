@@ -46,7 +46,8 @@ becomes Sakura Trading's, and the building stands shut with a notice on it." Don
   good, nobody keeps it, the round is Sakura Trading's, the shut front at every hour and the notice on the shutter),
   `products-move`, `sakura-merchandising`, `paperwork`, `sakura-small-office`, `town-economy`, `izakaya-backbar`,
   `okinawa-quarters`, `studio-apply` (the beer cannot go back to the Higas), `studio-mcp` (the beer's references show
-  Sato Ramen ordering it from Sakura), `no-z-fighting` (the shut front with its notice).
+  Sato Ramen ordering it from Sakura), `no-z-fighting` (the shut front with its notice), and after the review
+  `island-guide`, `fujita-day` and `east-lawn` (the shut shop's own floor is a closed room, not stranded ground).
 
 ## Separate review (22 October, late evening)
 A code-reviewer agent, given the diff, the owner's decision and the project rules, ran the tests on the change and on
@@ -101,4 +102,4 @@ its base. Its findings, all fixed in the second commit unless said:
 
 ## Next action
 Every check in checks.md passes. The owner looks at the before/after photographs and merges the doctor PR (#362) first
-and this one after it, each on their word (see HANDOVER.md for this PR's number).
+and this one, [PR #363](https://github.com/nj22az/nj22az.github.io/pull/363), after it, each on their word.
