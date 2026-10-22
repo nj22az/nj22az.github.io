@@ -1,0 +1,419 @@
+{
+  "source": false,
+  "viewport": [
+    390,
+    844
+  ],
+  "physicalDevice": false,
+  "steps": [
+    {
+      "name": "page loaded",
+      "s": 0.4
+    },
+    {
+      "name": "island ready",
+      "s": 8.4
+    },
+    {
+      "name": "playing",
+      "s": 9.8
+    },
+    {
+      "name": "entered Sakura",
+      "s": 9.9
+    },
+    {
+      "name": "photographed third-stockroom",
+      "s": 32.9
+    },
+    {
+      "name": "safe up arrival",
+      "s": 34.7
+    },
+    {
+      "name": "photographed up-arrival",
+      "s": 41.1
+    },
+    {
+      "name": "safe down arrival",
+      "s": 43.9
+    },
+    {
+      "name": "photographed down-arrival",
+      "s": 55.2
+    },
+    {
+      "name": "safe automatic up arrival",
+      "s": 56.5
+    },
+    {
+      "name": "safe automatic down arrival",
+      "s": 56.9
+    },
+    {
+      "name": "photographed desktop-stockroom",
+      "s": 73.9
+    },
+    {
+      "name": "photographed landscape",
+      "s": 96.2
+    }
+  ],
+  "errors": [],
+  "skippedBasePhotos": true,
+  "revision": "a0fb347ced9250b2e5a6210ba068bf595a7ca310",
+  "views": {
+    "front": {
+      "pos": [
+        0.4,
+        1.6,
+        -5.6
+      ],
+      "at": [
+        -2.7,
+        1.4,
+        -4.8
+      ]
+    },
+    "side": {
+      "pos": [
+        0.15,
+        1.6,
+        -6.15
+      ],
+      "at": [
+        -3.2,
+        1.35,
+        -4.8
+      ]
+    },
+    "low": {
+      "pos": [
+        -0.85,
+        0.65,
+        -5.75
+      ],
+      "at": [
+        -2.7,
+        1.1,
+        -4.6
+      ]
+    },
+    "stockroom": {
+      "pos": [
+        3.9,
+        1.6,
+        -5.75
+      ],
+      "at": [
+        -3,
+        1.4,
+        -5
+      ]
+    }
+  },
+  "fixture": {
+    "edition": "web",
+    "townMinutes": 424100,
+    "weather": "sunny",
+    "save": "fresh",
+    "physicalDevice": false
+  },
+  "thirdPerson": true,
+  "foot": {
+    "player": {
+      "position": [
+        -1.12,
+        0,
+        -4.6
+      ],
+      "yaw": 1.5707963267948966,
+      "room": "market"
+    },
+    "lens": {
+      "position": [
+        -0.8408955222352666,
+        2.0566241185984846,
+        -5.030663830914806
+      ],
+      "rotation": [
+        -0.09933367288921616,
+        1.5707963267948966,
+        0
+      ],
+      "distance": 0.28,
+      "ceiling": 2.7600000004470346,
+      "blocked": false
+    },
+    "navigation": {
+      "x": -1.12,
+      "z": -4.6,
+      "y": 0,
+      "radius": 0.28,
+      "room": "market",
+      "bounds": false,
+      "staticBlocked": false,
+      "residentBlocked": false,
+      "solids": [],
+      "residents": [],
+      "route": {
+        "id": "harbour-boardwalk",
+        "surface": "asphalt"
+      }
+    }
+  },
+  "up": {
+    "player": {
+      "position": [
+        -1.2,
+        0,
+        -3.95
+      ],
+      "yaw": 3.141592653589793,
+      "room": "sakura-office"
+    },
+    "lens": {
+      "position": [
+        -1.6342320677285722,
+        2.094516029437318,
+        -4.325534598812359
+      ],
+      "rotation": [
+        -0.1142400716436131,
+        3.141592653589793,
+        0
+      ],
+      "distance": 0.37673952245257336,
+      "ceiling": 2.579999952316284,
+      "blocked": false
+    },
+    "navigation": {
+      "x": -1.2,
+      "z": -3.95,
+      "y": 0,
+      "radius": 0.28,
+      "room": "sakura-office",
+      "bounds": false,
+      "staticBlocked": false,
+      "residentBlocked": false,
+      "solids": [],
+      "residents": [],
+      "route": {
+        "id": "harbour-boardwalk",
+        "surface": "asphalt"
+      }
+    }
+  },
+  "down": {
+    "player": {
+      "position": [
+        -1.12,
+        0,
+        -4.6
+      ],
+      "yaw": -1.5707963267948966,
+      "room": "market"
+    },
+    "lens": {
+      "position": [
+        -1.5664596264103323,
+        2.1241759777155713,
+        -4.6
+      ],
+      "rotation": [
+        -0.17453052672674188,
+        -1.5707963267948966,
+        0
+      ],
+      "distance": 0.4478921169450641,
+      "ceiling": 2.13000000089407,
+      "blocked": false
+    },
+    "navigation": {
+      "x": -1.12,
+      "z": -4.6,
+      "y": 0,
+      "radius": 0.28,
+      "room": "market",
+      "bounds": false,
+      "staticBlocked": false,
+      "residentBlocked": false,
+      "solids": [],
+      "residents": [],
+      "route": {
+        "id": "harbour-boardwalk",
+        "surface": "asphalt"
+      }
+    }
+  },
+  "walkEntry": [
+    {
+      "direction": "up",
+      "passage": true,
+      "fade": true,
+      "player": {
+        "position": [
+          -1.2,
+          0,
+          -3.95
+        ],
+        "yaw": 3.141592653589793,
+        "room": "sakura-office"
+      },
+      "lens": {
+        "position": [
+          -1.234675516223511,
+          2.167572066868258,
+          -4.490041570072954
+        ],
+        "rotation": [
+          -0.1924051392008555,
+          3.141592653589793,
+          0
+        ],
+        "distance": 0.5417743234771328,
+        "ceiling": 2.579999952316284,
+        "blocked": false
+      },
+      "navigation": {
+        "x": -1.2,
+        "z": -3.95,
+        "y": 0,
+        "radius": 0.28,
+        "room": "sakura-office",
+        "bounds": false,
+        "staticBlocked": false,
+        "residentBlocked": false,
+        "solids": [],
+        "residents": [],
+        "route": {
+          "id": "harbour-boardwalk",
+          "surface": "asphalt"
+        }
+      }
+    },
+    {
+      "direction": "down",
+      "passage": true,
+      "fade": true,
+      "player": {
+        "position": [
+          -1.12,
+          0,
+          -4.6
+        ],
+        "yaw": -1.5707963267948966,
+        "room": "market"
+      },
+      "lens": {
+        "position": [
+          -1.3829970787090806,
+          2.185744004270023,
+          -4.512223184651676
+        ],
+        "rotation": [
+          -0.370956012420528,
+          -1.5707963267948966,
+          0
+        ],
+        "distance": 0.2638409194588969,
+        "ceiling": 2.7600000004470346,
+        "blocked": false
+      },
+      "navigation": {
+        "x": -1.12,
+        "z": -4.6,
+        "y": 0,
+        "radius": 0.28,
+        "room": "market",
+        "bounds": false,
+        "staticBlocked": false,
+        "residentBlocked": false,
+        "solids": [],
+        "residents": [],
+        "route": {
+          "id": "harbour-boardwalk",
+          "surface": "asphalt"
+        }
+      }
+    }
+  ],
+  "basePhotoPass": {
+    "source": false,
+    "views": {
+      "front": {
+        "pos": [
+          0.4,
+          1.6,
+          -5.6
+        ],
+        "at": [
+          -2.7,
+          1.4,
+          -4.8
+        ]
+      },
+      "side": {
+        "pos": [
+          0.15,
+          1.6,
+          -6.15
+        ],
+        "at": [
+          -3.2,
+          1.35,
+          -4.8
+        ]
+      },
+      "low": {
+        "pos": [
+          -0.85,
+          0.65,
+          -5.75
+        ],
+        "at": [
+          -2.7,
+          1.1,
+          -4.6
+        ]
+      },
+      "stockroom": {
+        "pos": [
+          3.9,
+          1.6,
+          -5.75
+        ],
+        "at": [
+          -3,
+          1.4,
+          -5
+        ]
+      }
+    },
+    "fixture": {
+      "edition": "web",
+      "townMinutes": 424100,
+      "weather": "sunny",
+      "save": "fresh",
+      "physicalDevice": false
+    },
+    "steps": [
+      {
+        "name": "photographed front",
+        "s": 33.2
+      },
+      {
+        "name": "photographed side",
+        "s": 39.1
+      },
+      {
+        "name": "photographed low",
+        "s": 45.6
+      },
+      {
+        "name": "photographed stockroom",
+        "s": 54.5
+      }
+    ]
+  }
+}

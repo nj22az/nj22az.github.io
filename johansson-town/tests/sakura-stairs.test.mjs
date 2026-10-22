@@ -89,7 +89,7 @@ test('the shop: five treads up from the stockroom into a black that is solid, th
  assert.ok(colliders.filter(c=>c.minY>=0).length>0);
 });
 
-test('from the stockroom the stair goes into darkness: no sky, no stairwell beyond, nothing that could flicker',async()=>{
+test('the stockroom sees a bounded stair recess and a closed ceiling, never sky or exposed darkness above the entrance',async()=>{
  // The eye and the lens behind him, from the stockroom floor and the foot of the stair, every way up and along the stair.
  const {room}=await shop(),bad=[];
  for(const x of [-1.6,-1.1,-.5,.2])for(const z of [-6.2,-5.5,-4.6])for(const y of [1.6,2.3]){
@@ -97,10 +97,29 @@ test('from the stockroom the stair goes into darkness: no sky, no stairwell beyo
    const yaw=Math.PI/2+k*.15,h=sees(room,[x,y,z],yaw,pitch);
    if(!h){bad.push(`sky from ${x},${y},${z} yaw ${yaw.toFixed(2)} pitch ${pitch}`);continue;}
    const p=h.point,beyond=p.x<-2.94&&p.z<-4.08||p.y>3.0&&p.x<-.62&&p.z<-4.08;
-   if(beyond&&!dark(h))bad.push(`${h.object.name} at ${p.toArray().map(v=>v.toFixed(2))} from ${x},${y},${z}`);
+   if(beyond&&!dark(h)&&h.object.name!=='Sakura stockroom stair soffit')bad.push(`${h.object.name} at ${p.toArray().map(v=>v.toFixed(2))} from ${x},${y},${z}`);
   }
  }
  assert.deepEqual(bad.slice(0,8),[],`${bad.length} views past the dark`);
+});
+
+test('the dark is recessed behind a framed 1.1 m opening; side and high views see architecture',async()=>{
+ const {room}=await shop();
+ for(const b of P.foot.dark){
+  assert.ok(b[1]<=-2.93,'black starts over a metre behind the doorway');
+  assert.ok(b[2]>=-5.15&&b[3]<=-4.07,'black stays between the enclosing walls');
+  assert.ok(b[5]<2.98,'no black reaches the ceiling or upper storey');
+ }
+ for(const [from,name] of [
+  [[.05,1.6,-5.8],'Sakura stair alcove wall'],
+  [[.05,2.65,-4.6],'Sakura stair lintel'],
+ ])assert.equal(sees(room,from,Math.PI/2,0)?.object.name,name);
+ assert.ok(dark(sees(room,[-1.1,1.6,-4.6],Math.PI/2,0)),'the opening still reads as a dark stair');
+ // A growing camera/head envelope along the scripted walk stays within the 1.1 m stair and under its head/soffit.
+ for(const [x,y,z] of P.foot.walk){
+  assert.ok(z-.28>=-5.15&&z+.28<=-4.07);
+  assert.ok(y+1.6<2.35,'the head clears the lintel even before fading');
+ }
 });
 
 test('the office: the stair head goes down four treads into the dark, a rail and a solid pit, and nobody walks out over it',()=>{

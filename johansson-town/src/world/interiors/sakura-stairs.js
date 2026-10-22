@@ -6,7 +6,7 @@ import * as THREE from '../../../vendor/three.module.js';
  * and we disappear into there and when it loads we come up on the upper floor").
  *
  * So the shop and its office are two rooms. In the shop (the market room) the lower flight rises from the stockroom for
- * five treads and goes into darkness: everything of the stairwell beyond them is black, solid to the walk and to the lens.
+ * five treads inside a framed entrance and goes into recessed darkness, solid to the walk and to the lens.
  * Stepping onto the first tread (or "Go upstairs") walks him up into the dark while the picture fades to black, and the
  * office storey opens as its own room (interiors/sakura-office-room.js), the shop not loaded at all, with him at the stair
  * head in the hall facing up it. Coming down is the same from the stair head: four treads going down into the dark, and
@@ -41,9 +41,8 @@ export const SAKURA_STAIR_PASSAGE=Object.freeze({
   // Coming down he arrives at the foot, a step clear of the first tread, facing the stockroom.
   arrive:Object.freeze({at:Object.freeze([-1.12,0,-4.6]),yaw:-Math.PI/2}),
   prompt:Object.freeze([-1.55,1.1,-4.6]),
-  // The black: the rest of the lower flight and the turning landing; the alcove south of the flight (under the upper
-  // flight that was); the stairwell over the stockroom's ceiling opening. Out to the stockroom's walls (x -5.72, z -6.86), 5 mm clear of the north wall (z -4.07) so no two faces share a plane.
-  dark:Object.freeze([dark(-5.71,-2.93,-6.85,-4.075,0,SAKURA_STAIR.height+2.8),dark(-2.93,-1.8,-6.85,-5.18,0,2.9),dark(-2.93,-.6,-6.85,-4.075,2.9,SAKURA_STAIR.height+2.8)]),
+  // Darkness is only the recessed end of the first run, inside the enclosure. No black wall or ceiling in the room.
+  dark:Object.freeze([dark(-5.65,-2.93,-5.14,-4.08,0,2.84)]),
  }),
  /** The office's end, in the office's frame. */
  head:Object.freeze({
@@ -78,23 +77,33 @@ function addDark(group,boxes,solid,name,{over=null}={}){
 }
 
 /**
- * The shop's end of the stair: five treads of the lower flight rising from the stockroom into the dark, the under-stair
- * wall beside them, the stairwell's north wall against the restroom, the prompt. Returns its colliders (shop frame).
+ * The shop's end: five treads into recessed darkness, an enclosed alcove, timber doorway and stockroom soffit.
+ * Returns its colliders (shop frame); the floor transition and office end are unchanged.
  */
 export function buildSakuraStairFoot({room,reg=()=>{},go=()=>{}}){
  const group=new THREE.Group();group.name='Sakura internal stairwell';room.add(group);
- const F=SAKURA_STAIR_PASSAGE.foot,H=SAKURA_STAIR.height,colliders=[];
+ const F=SAKURA_STAIR_PASSAGE.foot,colliders=[];
  const solid=(x,z,w,d,height,minY=0)=>colliders.push({x,z,w,d,height,minY});
  const wood=new THREE.MeshStandardMaterial({color:0x8d7458,roughness:.88}),plaster=new THREE.MeshStandardMaterial({color:0xece1ca,roughness:.9});
  const box=(w,h,d,x,y,z,name,m=wood)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.name=name;group.add(o);return o;};
+ const wall=(x0,x1,y0,y1,z0,z1,name,m=plaster)=>{
+  box(x1-x0,y1-y0,z1-z0,(x0+x1)/2,(y0+y1)/2,(z0+z1)/2,name,m);
+  solid((x0+x1)/2,(z0+z1)/2,x1-x0,z1-z0,y1-y0,y0);
+ };
  for(let i=0;i<F.treads;i++)box(TREAD,.1,1.1,-1.8-(i+.5)*TREAD,(i+1)*RISE-.05,-4.6,'Sakura lower stair tread');
- // The under-stair wall on the flight's north side, and over the restroom partition the stairwell's north wall: the lens
- // keeps out of the toilet.
- box(2.9,3.05,.06,-3.15,1.525,-4.02,'Sakura stair guard');solid(-3.15,-4.02,2.9,.06,3.05,0);
- for(const [x0,x1,y0] of [[-5.7,-4.6,0],[-4.6,-.6,2.9]]){
-  box(x1-x0,H-y0,STAIR_NORTH.z1-STAIR_NORTH.z0,(x0+x1)/2,(H+y0)/2,(STAIR_NORTH.z0+STAIR_NORTH.z1)/2,'Sakura stairwell north wall',plaster);
-  solid((x0+x1)/2,(STAIR_NORTH.z0+STAIR_NORTH.z1)/2,x1-x0,STAIR_NORTH.z1-STAIR_NORTH.z0,H-y0,y0);
- }
+ // A small shop's enclosed stair, entered from the east: 1.1 m wide, a 2.35 m head, with the first five treads visible.
+ // The southern dead alcove is closed by a real wall. The ceiling closes the former two-storey hole, meeting the
+ // shell at x -.6 / y 2.98, and stays above the scripted walk's head. Nothing changes the office room or its access.
+ wall(-5.7,-1.8,0,2.98,-4.07,-4.035,'Sakura stair north enclosure');
+ wall(-5.7,-1.8,0,2.98,-5.23,-5.15,'Sakura stair south enclosure');
+ wall(-1.88,-1.8,0,2.98,-6.83,-5.23,'Sakura stair alcove wall');
+ wall(-5.7,-1.88,0,2.98,-6.83,-5.23,'Sakura enclosed under-stair space');
+ wall(-1.88,-1.8,2.35,2.98,-5.15,-4.07,'Sakura stair lintel');
+ wall(-5.7,-.6,2.98,3.02,-6.86,-4.035,'Sakura stockroom stair soffit');
+ // Timber linings sit proud of the plaster by centimetres; their ends meet rather than sharing exposed faces.
+ wall(-1.8,-1.72,0,2.35,-5.23,-5.15,'Sakura stair south jamb',wood);
+ wall(-1.8,-1.72,0,2.35,-4.07,-4.035,'Sakura stair north jamb',wood);
+ wall(-1.8,-1.72,2.35,2.43,-5.23,-4.035,'Sakura stair head trim',wood);
  addDark(group,F.dark,solid,'Sakura stairwell darkness');
  const a=new THREE.Object3D();a.position.set(...F.prompt);a.name='Go upstairs';group.add(a);reg(a,'Go upstairs',()=>go('up'),true);
  return {colliders,group};
