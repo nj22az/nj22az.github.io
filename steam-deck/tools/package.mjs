@@ -6,7 +6,7 @@ import releaseFiles from '../release-files.cjs';
 import patchBuilder from './build-patch.cjs';
 const app=resolve(import.meta.dirname,'..'),repo=resolve(app,'..');
 const site=join(app,'site');rmSync(site,{recursive:true,force:true});mkdirSync(site,{recursive:true});
-const omit=new Set(['node_modules','.git','tests','tools','scripts','art','briefs','output']);
+const omit=new Set(['node_modules','.git','tests','tools','scripts','art','briefs','output','docs']);
 for(const dir of ['johansson-town','avatar-creator','form-3d-studio','assets','css']){
  if(existsSync(join(repo,dir)))cpSync(join(repo,dir),join(site,dir),{recursive:true,filter:source=>!omit.has(basename(source))&&!basename(source).startsWith('.')});
 }

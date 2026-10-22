@@ -10,7 +10,7 @@ import {broadleafGeometry,TREE_GREENS} from './okinawa/trees.js';
  * nine-metre headwall and a sign saying no pedestrians -- the footpath up past the old
  * terminus comes to a low mouth in the rock of a smaller, wooded headland, with a sacred
  * rope across it, a stone lantern and a weathered sign. You can walk a couple of metres in
- * out of the light; past that it goes down into the dark, which is the dungeon.
+ * out of the light; past that it goes down into the dark, whose descent is closed.
  *
  * The file keeps the name it had when the tunnel was a cartoon gag, and TUNNEL keeps its
  * name too: the map, the shore and the old bus code all place themselves by it.
@@ -18,7 +18,7 @@ import {broadleafGeometry,TREE_GREENS} from './okinawa/trees.js';
 /**
  * October 2026: the island has no sea cave. The headland, its tunnel and the cave mouth
  * are gone, and the land they stood on is plain island ground waiting for the new
- * residential quarter (docs/RESIDENTIAL-PLAN.md). The dungeon under the cave is paused,
+ * residential quarter (docs/RESIDENTIAL-PLAN.md). The descent under the cave is closed,
  * not deleted: set this back to true and the hill, the cave and the way down return.
  */
 export const CAVE_ACTIVE=false;
@@ -307,7 +307,7 @@ export function buildCoyoteTunnel({parent,colliders,register,onAction,shadows=fa
  let anchor=null;
  if(register){
   anchor=new THREE.Object3D();anchor.position.set(TUNNEL.x,1.2,CAVE_MOUTH.z+.6);parent.add(anchor);
-  register(anchor,'Go into the old sea cave',()=>onAction?.('dungeon'));
+  register(anchor,'Read the closed descent notice',()=>onAction?.('read','Cave descent closed','The descent is closed. Stay at the cave mouth.'));
   const read=new THREE.Object3D();read.position.set(TUNNEL.x+W+.9,1.3,front-2);parent.add(read);
   register(read,'Read the cave sign',()=>onAction?.('inspect','The old sea cave',
    "Painted on the board: Old Cave, the old cave. The rope across the mouth is new straw each New Year. The fishermen say it goes down a long way under the headland, further than anyone has walked, and that things wash up in it that never came from the sea."));

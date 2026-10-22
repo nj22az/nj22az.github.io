@@ -21,14 +21,11 @@ const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwr
  await page.waitForTimeout(4000);
  await page.screenshot({path:path.resolve(__dirname,'../dist/offline-island.png')});
  await page.evaluate(()=>dispatchEvent(new Event('johansson-festival-menu')));
- await page.getByRole('button',{name:'Harbour quay · Chin',exact:true}).click();
- await page.getByRole('button',{name:'Take part',exact:true}).click();
- const stage=await page.locator('#festivalHUD').count();
- if(stage!==1)throw Error('First actual island stage did not open: '+await page.locator('#activityBody').textContent());
- await page.waitForTimeout(1000);await page.screenshot({path:path.resolve(__dirname,'../dist/festival-quay.png')});
- await page.keyboard.press('Escape');
+ for(const key of ['KeyJ','KeyK','KeyL','Space'])await page.keyboard.press(key);
+ if(await page.locator('#festivalHUD,#festivalButton').count())throw Error('Retired combat is accessible offline');
+ await page.screenshot({path:path.resolve(__dirname,'../dist/peaceful-quay.png')});
  await page.evaluate(()=>dispatchEvent(new Event('johansson-desktop-save')));
  const saved=await page.evaluate(()=>Object.keys(localStorage).filter(k=>k.startsWith('johansson-town')).length);
- console.log(JSON.stringify({running:true,stage:true,saved,errors,missing:[...new Set(missing)],blockedRemote:remote.length}));
+ console.log(JSON.stringify({running:true,combatAccessible:false,saved,errors,missing:[...new Set(missing)],blockedRemote:remote.length}));
  await browser.close();if(errors.length||missing.length)process.exitCode=1;
 })().catch(error=>{console.error(error);process.exit(1);});

@@ -1,6 +1,6 @@
 import {playableRoster,restoreLife,shouldSleep,insultResident,apologiseTo,canonicalResidentName} from './life-state.js';
 /** Linux-only possession and personal homes. Rendering and navigation stay owned by the game. */
-export function createLinuxLife({state,names,getMinutes,getPose,getEntityPose,applyIdentity,spawnHome,spawnOutside,startQuarrel,menu,close,save,say}){
+export function createLinuxLife({state,names,getMinutes,getPose,getEntityPose,applyIdentity,spawnHome,spawnOutside,menu,close,save,say}){
  const roster=playableRoster(names);let life=state.desktopLife=restoreLife(state.desktopLife,roster),inBed=false,bed=null,busy=false,generation=0;
  const current=()=>roster.find(p=>p.name===life.active);
  function checkpoint(){const p=getPose();if(!p)return;life.people[life.active].checkpoint={x:p.x,z:p.z,yaw:p.yaw,atHome:!!p.atHome};state.desktopLife=life;}
@@ -20,17 +20,17 @@ export function createLinuxLife({state,names,getMinutes,getPose,getEntityPose,ap
  }
  function social(target,result=null){
   if(target===life.active)return;
-  const text=result?.text||'Choose your words. Repeated insults can turn a conversation into a fight. You can apologise or walk away.';
+  const text=result?.text||'Choose your words. If words become hurtful, the conversation ends. You can apologise or walk away.';
   const choices=[['Apologise',()=>{apologiseTo(life,target);save();menu(target,'Apology accepted. Give each other a little space.',[['Leave',close]],{desktopSocial:false});}],['Leave them alone',close]];
   if(!result||result.kind==='warning')choices.push(['Insult '+target+(result?' again':''),()=>insult(target)]);
   menu(target,text,choices,{desktopSocial:false});
  }
- function insult(target){const result=insultResident(life,target,getMinutes());save();if(result.kind==='fight'){close();startQuarrel(life.active,target);return;}social(target,result);}
+ function insult(target){const result=insultResident(life,target,getMinutes());save();social(target,result);}
  applyIdentity(life.active);
  return {roster,current,snapshot,checkpoint,wake,goHome,select,
   leaveHome(){inBed=false;bed=null;},
   get inBed(){return inBed;},get busy(){return busy;},get active(){return life.active;},get bed(){return bed;},
   async start(){applyIdentity(life.active);if(shouldSleep(life.active,getMinutes())){await goHome({sleep:true});return true;}const saved=life.people[life.active].checkpoint;if(saved?.atHome){await goHome({sleep:false});return true;}if(saved){spawnOutside(saved);return true;}if(life.active!=='Johansson'){const p=getEntityPose(life.active);if(p)spawnOutside(p);else await goHome({sleep:false});return true;}return false;},
-  conversationActions(title,buttons,options={}){if(options.desktopSocial===false)return buttons;const name=canonicalResidentName(title.split('·')[0].trim());if(!roster.some(p=>p.name===name)||name===life.active||buttons.some(([label])=>/^Insult |^Lose your temper/.test(label)))return buttons;return [...buttons,['Lose your temper…',()=>social(name)]];},
+  conversationActions(title,buttons,options={}){if(options.desktopSocial===false)return buttons;const name=canonicalResidentName(title.split('·')[0].trim());if(!roster.some(p=>p.name===name)||name===life.active||buttons.some(([label])=>/^Insult |^Clear the air/.test(label)))return buttons;return [...buttons,['Clear the air…',()=>social(name)]];},
  };
 }

@@ -5,6 +5,26 @@ import {identityOf,ROSTER,retiredHomeFallback} from './people/roster.js';
 import {liveNameFor} from './people/cast.js';
 export {RENAMED_RESIDENTS,renameResidents};
 
+/** Withdraw the retired fighting save records without changing earned possessions or relationships.
+ * Shipped bouts lived in memory, not in saves. The defensive active/resume fields below also cover imported
+ * and audit saves. Progress alone never relocates an ordinary player. Re-run on every load so old imports work. */
+export function migrateCombat(saved){
+ const retired=id=>typeof id==='string'&&/^(dungeon|arena|personal-quarrel|harbour-festival|festival-bout|ferry-arena)$/.test(id);
+ const encounter=record=>record&&typeof record==='object'&&(record.active===true||record.bout||record.encounter||record.activeEncounter||record.resume);
+ const pointInCombat=p=>p&&[p.room,p.roomId,p.site,p.siteId,p.location,p.mode].some(retired);
+ const active=!!(encounter(saved.harbourFestival)||encounter(saved.combat)||encounter(saved.fight)||encounter(saved.quarrel)||saved.activeEncounter||saved.dungeonRun||saved.activeBout||pointInCombat(saved)||pointInCombat(saved.desktopCheckpoint)||Object.values(saved.desktopLife?.people||{}).some(p=>pointInCombat(p?.checkpoint)));
+ for(const key of ['harbourFestival','combat','fight','quarrel','activeEncounter','activeBout','dungeonRun','dungeonDeepest','arenaResume','hostility'])delete saved[key];
+ if(saved.desktopLife&&saved.desktopLife.version!==2)delete saved.desktopLife.tempers;
+ if(active){
+  // This is the existing fish-auction opening, tested for clear feet, camera and two-way street access.
+  const safe={x:19.8,z:-40,yaw:-1.03,pitch:0,ship:false};
+  saved.desktopCheckpoint={...safe};saved.combatRecovery=true;
+  for(const key of ['room','roomId','site','siteId','location','mode'])if(retired(saved[key]))delete saved[key];
+  for(const p of Object.values(saved.desktopLife?.people||{}))if(p&&typeof p==='object'&&(pointInCombat(p.checkpoint)||p===saved.desktopLife.people[saved.desktopLife.active]))p.checkpoint={x:safe.x,z:safe.z,yaw:safe.yaw,atHome:false};
+ }
+ saved.combatRevision=1;return saved;
+}
+
 export const SAVE_KEY='johansson-town-1988-v5';
 export const LEGACY_KEYS=['johansson-town-1988-v4','johansson-town-1988-v3'];
 /** Moves records kept under an old name to the new one; a record already under the new name wins; null drops it. */
@@ -166,6 +186,6 @@ export function rescueSave(storage,key){
 export const activeSlot=storage=>slotKey(readPlayers(storage).active);
 export function readSave(storage){
   const slot=slotKey(readPlayers(storage).active);
-  for(const key of slot===SAVE_KEY?[SAVE_KEY,SAVE_KEY+PREV_SUFFIX,...LEGACY_KEYS]:[slot,slot+PREV_SUFFIX])try{const value=JSON.parse(storage.getItem(key));if(value&&typeof value==='object'&&!Array.isArray(value)){if(Array.isArray(value.visited))value.visited=migratedVisits(value.visited.filter(id=>typeof id==='string'));const out=migrateCast(migrateHousing(migrateThuan(value)));Object.defineProperty(out,'readFrom',{value:key,enumerable:false});return out;}}catch{}
+  for(const key of slot===SAVE_KEY?[SAVE_KEY,SAVE_KEY+PREV_SUFFIX,...LEGACY_KEYS]:[slot,slot+PREV_SUFFIX])try{const value=JSON.parse(storage.getItem(key));if(value&&typeof value==='object'&&!Array.isArray(value)){if(Array.isArray(value.visited))value.visited=migratedVisits(value.visited.filter(id=>typeof id==='string'));const out=migrateCombat(migrateCast(migrateHousing(migrateThuan(value))));Object.defineProperty(out,'readFrom',{value:key,enumerable:false});return out;}}catch{}
   return null;
 }

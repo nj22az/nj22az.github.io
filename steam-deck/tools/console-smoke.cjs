@@ -21,6 +21,7 @@ const {rectanglesSeparated}=require('./layout-acceptance.cjs');
  page=await context.newPage();page.setDefaultTimeout(120000);page.on('pageerror',e=>{errors.push(e.message);console.log('PAGE_ERROR',e.message);});
  page.on('request',request=>{if(request.url().includes('/audio/'))audioRequests.push(request.url());});
  await page.addInitScript(version=>{
+  if(!localStorage.getItem('johansson-town-1988-v5'))localStorage.setItem('johansson-town-1988-v5',JSON.stringify({castRevision:2,loopYear:2026,yen:4321,inventory:['Tea'],harbourFestival:{active:true,bout:{spectating:true}},desktopCheckpoint:{x:0,z:0,yaw:0,room:'arena'}}));
   window.__pad={id:'Steam Deck test pad',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
   Object.defineProperty(navigator,'getGamepads',{value:()=>window.__pad?[window.__pad]:[],configurable:true});
   window.johanssonDesktop={offline:true,version,save:async()=>{dispatchEvent(new Event('johansson-desktop-save'));dispatchEvent(new Event('johansson-save'));window.__saved=true;},performance:async()=>[{type:'Renderer',workingSetMiB:120}],checkUpdate:async()=>({available:false}),installUpdate:async()=>({ready:false}),quit:async()=>{window.__quit=true;}};
@@ -74,6 +75,9 @@ const {rectanglesSeparated}=require('./layout-acceptance.cjs');
  assert.equal(await page.evaluate(()=>window.__JOHANSSON_STABILITY__?.ok),true,'Real world startup checks pass');
  await page.screenshot({path:path.join(out,'03-first-steps-1280.png')});await click('resume');
  await outdoors();
+ const recovered=await page.evaluate(()=>({pose:window.__JOHANSSON_POSE__,state:window.__JOHANSSON_AUDIT__.activities.state}));
+ assert.equal(recovered.state.harbourFestival,undefined);assert.equal(recovered.state.yen,4321);assert.ok(recovered.state.inventory.includes('Tea'));
+ assert.equal(await page.locator('#festivalHUD,#festivalButton').count(),0);assert.equal(await page.evaluate(()=>!!window.__JOHANSSON_AUDIT__.festival),false);
  // Find the same walkable harbour fixture used by the world audit.
  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.teleport(-7,-15,0,0));
  let before=await page.evaluate(()=>({...window.__JOHANSSON_POSE__}));await axes([0,-1,0,0]);await page.waitForTimeout(500);await axes([0,0,0,0]);
@@ -209,12 +213,19 @@ const {rectanglesSeparated}=require('./layout-acceptance.cjs');
  await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.teleport(-7,-15,0,0);window.__JOHANSSON_AUDIT__.activities.action('resident','Tetsuo');});
  console.log('Conversation opened',await page.locator('#activityTitle').textContent());
  const conversationTitle=await page.locator('#activityTitle').textContent();await tap(9);assert.equal((await state()).menu,true);await tap(1);assert.equal((await state()).menu,false);assert.equal(await page.locator('#activity').isVisible(),true,'Menu pause retains the open conversation');assert.equal(await page.locator('#activityTitle').textContent(),conversationTitle);
- await page.getByRole('button',{name:'Lose your temper…',exact:true}).click();
+ await page.getByRole('button',{name:'Clear the air…',exact:true}).click();
  const funds=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.activities.state.yen);
- for(let i=0;i<3;i++){await page.getByRole('button',{name:/^Insult Tetsuo/}).click();await page.waitForFunction(count=>window.__JOHANSSON_AUDIT__.activities.state.desktopLife.tempers['Johansson\u0000Tetsuo']?.count===count,i+1);assert.equal(await page.locator('#festivalHUD').count(),0,'Warnings come before a fight');}
- await page.screenshot({path:path.join(out,'11-last-warning.png')});await page.getByRole('button',{name:/^Insult Tetsuo/}).click();await page.waitForSelector('#festivalHUD');
- await sampled();await page.screenshot({path:path.join(out,'12-rare-quarrel.png')});await tap(9);assert.equal((await state()).menu,true);const pausedBout=await page.locator('#festivalHUD').textContent();await page.waitForTimeout(1200);assert.equal(await page.locator('#festivalHUD').textContent(),pausedBout,'Start pauses the actual quarrel');await tap(9);await tap(8);assert.equal(await page.locator('#festivalHUD').count(),0);assert.equal(await page.evaluate(()=>window.__JOHANSSON_AUDIT__.activities.state.yen),funds,'Quarrels award no festival money');
- await page.getByRole('button',{name:'Walk away',exact:true}).click();
+ for(let i=0;i<4;i++){await page.getByRole('button',{name:/^Insult Tetsuo/}).click();await page.waitForFunction(count=>window.__JOHANSSON_AUDIT__.activities.state.desktopLife.tempers['Johansson\u0000Tetsuo']?.count===count,i+1);assert.equal(await page.locator('#festivalHUD').count(),0,'Insults never start combat');}
+ assert.equal(await page.getByRole('button',{name:/^Insult Tetsuo/}).count(),0,'A hurtful conversation ends');
+ await page.screenshot({path:path.join(out,'11-peaceful-conversation.png')});
+ await tap(9);assert.equal((await state()).menu,true);await tap(9);
+ assert.equal(await page.evaluate(()=>window.__JOHANSSON_AUDIT__.activities.state.yen),funds,'No combat rewards');
+ await page.getByRole('button',{name:'Leave them alone',exact:true}).click();
+ await page.evaluate(()=>dispatchEvent(new Event('johansson-festival-menu')));
+ for(const key of ['KeyJ','KeyK','KeyL']){await page.keyboard.press(key);assert.equal(await page.locator('#festivalHUD').count(),0);}
+ for(const button of [0,1,3,5,8]){await tap(button);assert.equal(await page.locator('#festivalHUD').count(),0,'Old controller combinations cannot start combat');}
+ assert.equal(await page.evaluate(()=>!!window.__JOHANSSON_AUDIT__.festival),false);
+ await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.activities.close();document.querySelector('#closeDirectory')?.click();});
  // Persist a selected character as well as the controls.
  await page.evaluate(async()=>{window.__JOHANSSON_AUDIT__.setTime(60);await window.johanssonLinuxWorld.select('Thuan');window.__JOHANSSON_AUDIT__.activities.save();});await tap(9);
  await page.addInitScript(()=>{const NativeDate=Date,fixed=new NativeDate();fixed.setHours(1,0,0,0);const timestamp=fixed.getTime();window.Date=class extends NativeDate{constructor(...args){super(...(args.length?args:[timestamp]));}static now(){return timestamp;}};});
@@ -225,7 +236,15 @@ const {rectanglesSeparated}=require('./layout-acceptance.cjs');
  // Keeping both live exhausts the software renderer on the Linux runner.
  console.log('Linux acceptance passed; releasing it before web-only isolation check');
  await context.close();page=null;
- const web=await browser.newPage({viewport:{width:1280,height:800}});page=web;web.on('pageerror',e=>errors.push(e.message));await web.goto(url+'/johansson-town/?audit&cinematic=off',{waitUntil:'domcontentloaded'});await web.waitForFunction(()=>document.getElementById('title')?.dataset.scene==='ready',null,{timeout:120000});assert.equal(await web.evaluate(()=>window.johanssonLinuxWorld===undefined),true,'Web edition has no Linux character/home system');assert.equal(await web.locator('#desktopMenu').count(),0,'Web edition has no Linux console UI');await web.close();
+ const web=await browser.newPage({viewport:{width:1280,height:800}});page=web;web.on('pageerror',e=>errors.push(e.message));
+ await web.addInitScript(()=>localStorage.setItem('johansson-town-1988-v5',JSON.stringify({castRevision:2,loopYear:2026,yen:1234,inventory:['Tea'],dungeonRun:{hp:0},room:'dungeon'})));
+ await web.goto(url+'/johansson-town/?audit&cinematic=off',{waitUntil:'domcontentloaded'});await web.waitForFunction(()=>document.getElementById('title')?.dataset.scene==='ready',null,{timeout:120000});
+ assert.equal(await web.evaluate(()=>window.johanssonLinuxWorld===undefined),true,'Web edition has no Linux character/home system');assert.equal(await web.locator('#desktopMenu').count(),0,'Web edition has no Linux console UI');
+ await web.locator('#enter').click();await web.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&!window.__JOHANSSON_AUDIT__.blocked.catchingUp,null,{timeout:120000});
+ const recovery=await web.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;dispatchEvent(new Event('johansson-festival-menu'));return {pose:window.__JOHANSSON_POSE__,room:a.player.room,api:!!a.festival,inventory:a.activities.state.inventory};});
+ assert.equal(recovery.room,null);assert.equal(recovery.api,false);assert.ok(recovery.inventory.includes('Tea'));assert.ok(Math.hypot(recovery.pose.x-19.8,recovery.pose.z+40)<1,'Old cave save starts at the safe harbour opening');
+ for(const code of ['KeyJ','KeyK','KeyL','Space'])await web.keyboard.press(code);
+ assert.equal(await web.locator('#festivalHUD,#festivalButton').count(),0);await web.screenshot({path:path.join(out,'14-web-safe-recovery.png')});await web.close();
  fs.writeFileSync(path.join(out,'results.json'),JSON.stringify({passed:true,errors,missing:[...new Set(missing)],blockedRemote:remote.length},null,2));
  assert.deepEqual(errors,[],'No page errors');assert.deepEqual([...new Set(missing)].filter(p=>p!=='/favicon.ico'),[],'No missing packaged files');
  console.log(JSON.stringify({passed:true,errors,missing:[...new Set(missing)],blockedRemote:remote.length,out}));

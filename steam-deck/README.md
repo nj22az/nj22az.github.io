@@ -18,7 +18,7 @@ The complete island game runs locally in a standalone Electron Linux application
 - Existing named game slots are retained in the app profile. Disk snapshots keep a previous copy under the application data saves directory. Game updates do not replace this directory.
 - ☰ → People switches between the island's residents, using each person's appearance, home and saved position. Selection is also available before starting. Nighttime starts use the selected person's bed; night workers retain their own schedules. A or the left stick gets out of bed. ☰ → Island → Go home returns to their address, and a residential front door opens the same bedroom. Workplace residences and cabins retain their normal public access.
 - Families keep their existing shared addresses; each playable person has an owned bed. Additional scene residents use existing vacant addresses. Identity, personal checkpoints and disputes persist with the normal save.
-- Linux no longer offers recurring festival fights. Conversations offer an explicit “Lose your temper…” choice: three warnings precede a fourth insult starting a personal quarrel. Apologising or leaving avoids escalation; tempers decay and a cooldown prevents immediate repeated fights. Quarrels grant no festival rewards. Children and the established Johansson/Thuan/Thao/Nhung alliance do not fight.
+- Both editions are peaceful: festival bouts, tournaments, spectating, personal quarrels and the combat-dependent cave descent have been withdrawn. Hurtful conversations end without fighting; apologies and relationships remain. Old combat saves recover safely ashore and keep money, possessions and identity.
 
 ## Installed-game design
 
@@ -52,7 +52,7 @@ The terminal installer shows a vending-machine delivery animation during upgrade
 
 The vending-machine icon is launcher artwork. It is absent from the game's title/loading screen and pause header. The installer sets the Linux desktop shortcut icon and prints the PNG path for Steam shortcut artwork; existing Steam shortcuts can cache their prior artwork and may need it selected manually in Steam Desktop Mode.
 
-Menus use physical D-pad directions independently of gameplay remaps. D-pad Down navigates a list without toggling the gameplay HUD. Back leaves Controls and cancels a pending assignment; holding Back for one second deliberately assigns it. Menu cancels an assignment before it can close the pause screen. Gamepad activity hides the cursor; deliberate mouse movement/clicks restore it. Idle pad drift does not steal the pointer. The guide's “Every button & context” lists exploration, inspection, camera, menu and rare-quarrel controls with the current symbols.
+Menus use physical D-pad directions independently of gameplay remaps. D-pad Down navigates a list without toggling the gameplay HUD. Back leaves Controls and cancels a pending assignment; holding Back for one second deliberately assigns it. Menu cancels an assignment before it can close the pause screen. Gamepad activity hides the cursor; deliberate mouse movement/clicks restore it. Idle pad drift does not steal the pointer. The guide's “Every button & context” lists exploration, inspection, camera, and menu controls with the current symbols.
 
 Linux startup uses exact spatial filtering for paving and wire-obstruction queries. A local Chrome/Mac comparison measured title readiness at 10.7 seconds before and 5.6 seconds after; this is not a Steam Deck benchmark. Geometry, triangle hit tests, cel shading and the web edition's query paths are preserved.
 
