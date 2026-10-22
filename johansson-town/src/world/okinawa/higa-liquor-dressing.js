@@ -275,7 +275,8 @@ export function higaBuilding(kit,{trim=0x8a3b2e}={}){
  // The yuntaku bench and the two crate stools (commerce/higa-liquor.js YUNTAKU: the same numbers, in the world).
  {const B=YUNTAKU.bench,[bx0,bz0]=toLocal(B.x-B.depth/2,B.z0),[bx1,bz1]=toLocal(B.x+B.depth/2,B.z1);
   const x0=Math.min(bx0,bx1),x1=Math.max(bx0,bx1),z0=Math.min(bz0,bz1),z1=Math.max(bz0,bz1);
-  for(let i=0;i<4;i++)kit.block(x0,x1,B.height-.035,B.height,z0+.02+i*(z1-z0-.04)/4+.005,z0+.02+(i+1)*(z1-z0-.04)/4-.005,0xa98257);
+  // Four slats with 1 cm between them, the outer two flush with the bench's edges: the seat's `front` is where they end.
+  for(let i=0;i<4;i++)kit.block(x0,x1,B.height-.035,B.height,z0+i*(z1-z0)/4+(i?.005:0),z0+(i+1)*(z1-z0)/4-(i<3?.005:0),0xa98257);
   kit.block(x0+.04,x1-.04,B.height-.08,B.height-.035,z0+.03,z1-.03,DARK);
   for(const x of [x0+.08,x1-.08])for(const z of [z0+.06,z1-.06])kit.box(.06,B.height-.08,.06,x,(B.height-.08)/2,z,DARK);
   solids.push(kit.rect(x0,x1,z0,z1,B.height+.04,'higa-bench'));

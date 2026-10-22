@@ -15,6 +15,7 @@ import {STAND_SEQUENCES} from '../src/people/stand-sequences.js';
 import {HIGA_COUNTER_STAND,LAUNDRY_STANDS,LAUNDRY_SEATS} from '../src/people/shop-days.js';
 import {sitOnStand,standUpFromStand,seatedOn} from '../src/people/stand-seat.js';
 import {residentHome} from '../src/people/home-directory.js';
+import {seatEdge} from './seat-edge.mjs';
 
 /**
  * Higa Liquor and the coin laundry (the owner, 21 October 2026; AGENTS.md): who keeps them and when, the 留守 card, the
@@ -184,6 +185,17 @@ test('every place somebody stands is clear of every solid, and every seat is on 
  for(const [what,[x,z]] of stands)assert.deepEqual(solidAt(x,z).map(c=>c.id),[],what+' is clear');
  for(const [k,s] of Object.entries(YUNTAKU.seats))assert.ok(solidAt(...s.at,.05).some(c=>/higa-bench|higa-crate-stool/.test(c.id)),k+' sits on the bench or a crate');
  for(const s of LAUNDRY_SEATS)assert.ok(solidAt(...s.at,.05).some(c=>c.id==='laundry-bench'),'on the laundry bench');
+});
+
+test('the bench’s front edge is where its slats end: the sitters’ shins hang in front of it, not through the top',()=>{
+ // (seat-slots.js `front`, measured on the drawn bench as tests/seat-edge.mjs measures the rooms' seats; 1 cm, as there)
+ let seat=null;world.group.traverse(o=>{if(o.userData.seat?.id==='higa-yuntaku-bench')seat=o.userData.seat;});
+ assert.ok(seat,'the player’s end of the bench is a seat');
+ for(const [k,s] of [['player',seat],['tetsuo',{...seat,position:[YUNTAKU.seats.tetsuo.at[0],0,YUNTAKU.seats.tetsuo.at[1]],front:YUNTAKU.seats.tetsuo.front}]]){
+  const edge=seatEdge(world.group,s);assert.ok(edge,k+': the bench is drawn under the mark');
+  assert.ok(Math.abs(edge.front-s.front)<=.01,`${k}: says ${s.front}, the slats end at ${edge.front.toFixed(3)}`);
+  assert.ok(Math.abs(edge.front-YUNTAKU.seats[k].front)<=.01,k+': YUNTAKU says the same');
+ }
 });
 
 test('the hours move the front: open doors by day, the card and shut doors at two, the shutter at night',()=>{
