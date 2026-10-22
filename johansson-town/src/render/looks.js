@@ -33,7 +33,7 @@ export const LOOKS=Object.freeze({
  print:{label:'Woodblock print',short:'Print',hint:'Ukiyo-e: flat woodblock colours, bold outlines, a graded sky on paper.'},
  watercolour:{label:'Watercolour',short:'Paint',hint:'Soft washes that bleed and pool at their edges on rough paper.'},
  // 64 samples a pixel on a computer; phones and tablets draw the light version, 16 samples (lookFragment).
- oil:{label:'Oil painting',short:'Oil',hint:'Thick brushwork on canvas.'},
+ oil:{label:'Oil painting',short:'Oil',hint:'Thick brushwork on canvas, with faces and lettering kept.'},
 });
 
 /** Where an earlier build saved the look. The owner (22 October 2026): every start is Natural, whatever was used last, so
@@ -330,6 +330,12 @@ void main(){
   float var=v.r+v.g+v.b;
   if(var<best){best=var;col=mean;}
  }
+ // What a painter keeps sharp: small marks much darker or lighter than the stroke over them (letters on a sign, eyes,
+ // brows and a mouth) come back on top of the paint, close by; further off the picture stays all brushwork.
+ vec3 orig=texture2D(tDiffuse,vUv).rgb;
+ float detail=abs(luma(orig)-luma(col));
+ float near=1.0-smoothstep(9.0,22.0,viewDepth(vUv));
+ col=mix(col,orig,smoothstep(0.06,0.18,detail)*near);
  col=mix(vec3(luma(col)),col,1.35);
  col=(col-0.5)*1.1+0.5;
  // Brush strokes: short diagonal marks catching the light, and the canvas weave under them.

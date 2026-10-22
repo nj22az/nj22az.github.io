@@ -124,3 +124,11 @@ shader then takes 2×2 samples a sector over the same reach (16 a pixel, not 64)
 it, and game.js sets `lightLooks:handheld`. `heavy`/`lookIsHeavy` are removed. Checked in software Chromium at 390×844 with
 touch: 13 looks offered, and Oil drew the light version without shader errors, close to the computer version. Not measured:
 frame rate on a real phone or iPad.
+
+## Oil keeps faces and lettering — 22 October 2026, night
+Owner: "facial features should still be able to show even in oil… And signs too… face details and text should be able to show
+even though it's so heavily stylised". In the oil shader, after the Kuwahara, any pixel whose luminance differs from the painted
+stroke by more than ~0.06–0.18 gets its original colour back, at full strength up to 9 m and fading out by 22 m. That covers
+eyes, brows, mouth, stubble and sign letters. The phone version shares it. Checked in software Chromium with Johansson's face
+from the front at 0.8 m and the Sakura Shōten front from 2.4 m behind him: before, the sign text and can-bin label were
+illegible; after, "SAKURA SHŌTEN · FOOD & DAILY GOODS", 冷たい飲み物 and his features show, and the brushwork elsewhere stays.
