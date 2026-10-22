@@ -15,6 +15,8 @@ test('repeated frozen draws refresh lighting and late materials without advancin
  const lightSource=source.slice(source.indexOf('function setTime('),source.indexOf("$('#exitRoomButton').onclick="));
  const renderStart=source.indexOf(' render(){',source.indexOf('window.__JOHANSSON_AUDIT__={'));
  const renderSource=source.slice(renderStart,source.indexOf('\n setTime(value',renderStart));
+ // The audit's render() delegates to renderStill, which the free camera shares; run that production body too.
+ const stillSource=source.slice(source.indexOf('function renderStill('),source.indexOf("if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__"));
  let hours=0,shutterY=0,skyUpdates=0,celSweeps=0,outdoor=0,interior=0,market=0;
  const context={THREE,duskClock,world:{updateHours(){hours++;shutterY+=.02;}},minutes:1260,weather:false,weatherKind:'sunny',
   // Match the live lighting dependencies; retain the production setTime/render bodies.
@@ -29,7 +31,7 @@ test('repeated frozen draws refresh lighting and late materials without advancin
   celPass:{apply(){celSweeps++;}},renderOutdoor(){outdoor++;},present:draw=>draw(),
   shopStreetView:{render(){market++;}},sakuraShop:{layout:{frontZ:0}},streetFrontageOf:site=>site?.id==='market'||site?.id==='izakaya'?{}:null};
  context.scene.background=new THREE.Color();
- vm.runInNewContext(lightSource+'\nglobalThis.auditRender=({'+renderSource+'}).render;',context);
+ vm.runInNewContext(lightSource+'\n'+stillSource+'\nglobalThis.auditRender=({'+renderSource+'}).render;',context);
  context.setTime();assert.equal(hours,1);const initialShutter=shutterY;
  const audit={camera:{pos:[4,2,-17],at:[-5,1.2,-13]},render:context.auditRender};
  for(let i=0;i<10;i++)audit.render();

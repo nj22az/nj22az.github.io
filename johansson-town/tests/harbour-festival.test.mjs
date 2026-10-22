@@ -36,7 +36,7 @@ test('every adult, child and family pair ends repeated insults without a fight, 
 });
 test('source has no combat launcher, keyboard/touch/controller handler, simulation or public API',()=>{
  const game=text('src/game.js'),life=text('src/desktop/life.js'),activities=text('activities.js');
- for(const marker of ['createHarbourFestival','createFists','buildDungeon','festivalHUD','festivalButton','johansson-festival-menu','startQuarrel','festival.quarrel','dungeonLayout','flashHurt','finishDungeon','dungeon?.strike','festival.render','festival,'])assert.equal(game.includes(marker),false,marker);
+ for(const marker of ['createHarbourFestival','createFists','buildDungeon','festivalHUD','festivalButton','johansson-festival-menu','startQuarrel','festival.quarrel','dungeonLayout','flashHurt','finishDungeon','dungeon?.strike','festival.render','festival,','festival?.active','if(fists)'])assert.equal(game.includes(marker),false,marker);
  assert.equal(life.includes('startQuarrel'),false);assert.equal(life.includes("result.kind==='fight'"),false);assert.equal(activities.includes('restoreFestival'),false);
  for(const file of ['src/progression/harbour-festival.js','src/progression/harbour-festival-view.js','src/dungeon/dungeon.js','src/dungeon/generate.js','src/interact/fists.js'])assert.equal(existsSync(new URL('../'+file,import.meta.url)),false,file);
  assert.match(text('src/world/coyote-tunnel.js'),/Read the closed descent notice/);assert.doesNotMatch(text('src/world/coyote-tunnel.js'),/onAction\?\.\('dungeon'\)/);
