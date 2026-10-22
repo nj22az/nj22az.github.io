@@ -9,5 +9,18 @@
   "runtimePackageTests": 3,
   "softwareChromium": true,
   "physicalDevice": false,
-  "ownerVisualApproval": false
+  "ownerVisualApproval": true,
+  "merged": true,
+  "mergeCommit": "2fd64868fe6da67619cef618ed8c67174843a96f",
+  "reconciledHead": "b0605d032a6e17921e8184b899b868e75fac9d44",
+  "hostedWorldGuard": {
+    "run": 39749540716,
+    "conclusion": "success"
+  },
+  "linuxConsoleAcceptance": {
+    "run": 39749540735,
+    "statusAtSignoff": "in_progress"
+  },
+  "mergeTimeDrinkingRuntimeTests": 10,
+  "newMainFixtureTests": 9
 }

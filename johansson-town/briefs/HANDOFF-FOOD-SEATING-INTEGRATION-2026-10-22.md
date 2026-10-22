@@ -2,12 +2,13 @@
 
 ## State
 
-Draft review: [PR #356](https://github.com/nj22az/nj22az.github.io/pull/356). Combined implementation commit: `b446e39f662b4d004e6c76cb6067d77d22e84d45`. Hosted checks must be verified before merging; the test results below are the completed local runs.
+**Owner approved the combined screenshots and instructed “Looks good merge” on 22 October 2026. PR #356 is squash-merged into main as `2fd64868fe6da67619cef618ed8c67174843a96f`. Integration is complete.**
 
-Branch: `codex/food-seating-integration`, based on main `96a0f83583bb8f10c379f2640cd0216fd4294faa`.
-PR #350 had already received the owner's visual approval and was merged as `16407e2822ce2379fb0661042d2c21ddd7334c8d`; its sign-off is on main. Do not repeat that work or treat it as still a draft. PR #351 remains open at `5364c8c4d1cfc33a4cd45c5ba69a4c2c13bc97cb`; its seating changes are incorporated into this integration branch. Both PR discussions were empty when inspected. Main was rechecked and had not moved.
+Original combined implementation: `b446e39f662b4d004e6c76cb6067d77d22e84d45`; review documentation: `20e6fc6f6b7b475142f4fb9872f4d059e26ace49`; reconciled approved head: `b0605d032a6e17921e8184b899b868e75fac9d44`. Branch: `codex/food-seating-integration`.
 
-This combined result is **for owner visual approval**. It has not been merged into main or published. Do not merge either this integration or the old seating branch without the owner's explicit approval of the combined pictures and a green hosted World guard. Physical iPhone/Safari, native Linux/Electron and Steam Deck acceptance are unperformed.
+PR #350 was already merged as `16407e2822ce2379fb0661042d2c21ddd7334c8d`. Another session merged PR #351 as `096ee3c97c9f8df1c94add4a47215e8c46f109b8` while this approval was pending. Fresh comparison showed its game sources and runtime identical to this reviewed integration. The merge-time rebuild reproduced the same current chunks and source hash; previous-generation compatibility chunks were retained. The capture-tool conflict was resolved with the reviewed integration tool. The reconciled commit's entire tree is identical to the approved review tree.
+
+Hosted **Johansson World guard #70 passed** on the reconciled head ([run](https://github.com/nj22az/nj22az.github.io/actions/runs/39749540716)). Main then gained test-fixture repairs through PR #353 (`9f7ccd4`), with no game-code changes; those four files passed an additional **9 tests** locally against this integration. A merge-time drinking/runtime-package run also passed **10 tests**. PR #356 was merged onto that newer main after those checks. Linux console acceptance #66 was still running at sign-off; it is not claimed passed. Physical iPhone/Safari, native Linux/Electron and Steam Deck acceptance remain unperformed. No new Linux release or deployment acceptance is claimed.
 
 ## Changes and resolution
 
@@ -28,7 +29,7 @@ This combined result is **for owner visual approval**. It has not been merged in
 
 ## Next actions
 
-1. Present the combined evidence for owner visual approval. Preserve this approval gate.
-2. After approval, recheck main and PR #351's head; if either changed, reconcile again and rebuild from combined sources. Refresh affected checks and photographs.
-3. With approval and a green hosted World guard, merge the combined integration; then reconcile #351 as already included rather than merging its obsolete runtime separately.
-4. Physical-device confirmation and a new Linux release remain separate work.
+1. No food-service or seating integration work remains. Both original improvements and this verification/evidence change are on main; do not merge the old branches again.
+2. Check the outstanding Linux console acceptance result and record any demonstrated defect separately. Its status at this sign-off was in progress.
+3. Physical iPhone/Safari and Steam Deck confirmation remain outstanding.
+4. A new Linux release is separate work; no installer or release version was changed here.
