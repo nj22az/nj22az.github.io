@@ -197,9 +197,32 @@ No new people; everything below is data first (`src/commerce/higa-liquor.js`, `s
   08:00–09:30, before the mailbag, sweeping, clearing the filters, emptying the coin boxes and pinning the notices.
   Officer Mori, as near, may not keep a business and sleeps after the night patrol; Tetsuo, as near, has no free hour,
   and mends the machines when asked. The laundry is open 24 hours; Thao washes the family's futon covers on Sundays
-  14:15–15:45, Ms Uezu brings the crew cabin's linen ashore on the first day of her week off, Dr Kakazu washes on
-  Wednesday nights; its noticeboard carries the street's story hooks (the missing cat, the found sandal, the lessons)
+  14:15–15:45, Ms Uezu brings the crew cabin's linen ashore on the first day of her week off, Nhung (the doctor since 22 October)
+  washes the clinic's towels and coats on Wednesday nights; its noticeboard carries the street's story hooks (the missing cat, the found sandal, the lessons)
   and the town calendar's week.
+
+## Owner's decision — 22 October 2026: Nhung is the island doctor
+
+The owner, after the audit of the two Dr Kakazus: "use the best looking one", then "Can they be consolidated into other
+characters? Have this female doctor replace Nhung". Their answers to the follow-up questions settle the rest:
+
+- **Nhung is the island doctor.** She keeps her name, age, family (Kōji, Riku, her sisters) and home at 3 Kitahama, and
+  takes the clinic doctor's look (`avatars/cast.js` Nhung: white coat over a sage shirt, half-rim glasses, hair tied
+  back, white shoes; her bookseller's look is `FORMER_NHUNG_RECIPE`, history only). The clinic room draws her at her desk
+  (`interiors/town-hall.js`, `DOCTOR`/`DOCTOR_TITLE` "Dr Nhung"); her walking body stays indoors there in surgery hours
+  (`workplaces.js` OWN_STAFF_ROOMS), so there is never a second one.
+- **Dr Ken Kakazu is retired** into her (`roster.js` RETIRED `dr-ken`, name `Dr Kakazu`): his patients, pairs, laundry
+  evening, parking bay and the doctor's bag are Nhung's; his flat behind the clinic is retired (no door). RETIRED_HOMES lands
+  `clinic` on itself, because the id also names the clinic, which stays. His drawing and article are history
+  (`RETIRED_RECIPES`, `guide/articles.mjs` RETIRED_ARTICLES).
+- **Her week** (`people/clinic-hours.js`): surgery Monday to Friday 9–12 and 14–17, Saturday 9–12; the town's paper in
+  the evenings at the back bench of the old Front-Row shop (place `paper`, indoors); Saturday afternoon is her own;
+  Sunday she keeps Sakura.
+- **Front-Row's trade is Sakura's**: the books and the stationery and office supplies (`merchandising.js` SUPPLIERS.sakura
+  `stationery`, the accounts' `stationery` lines); the shop floor is unstaffed, the reading copies stay, the last
+  second-hand books and the paper go by the honesty tin, and nobody browses there (`bookshop-visits.js`).
+- **Sakura shuts on Saturdays** (土曜定休; `sakura-rota.js` sakuraClosedDay): Thuan's weekend on Kitano-jima is unchanged,
+  Nhung keeps Sunday, and Higa Liquor's delivery to Sakura is on Fridays (Kōji's round Tuesday and Friday).
 
 ## Verification
 

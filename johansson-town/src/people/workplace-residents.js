@@ -2,6 +2,7 @@ import {createRoomWalk,atDestination} from './room-walk.js';
 import {residentPlan} from './social.js';
 import {createTownActivities} from './town-activities.js';
 import {standNow} from './stand-points.js';
+import {OWN_STAFF_ROOMS} from './workplaces.js';
 
 /** On a stand point: turn to its facing at a walker's pace, then its pose and tool (stand-points.js). */
 function faceStand(g,stand,dt){
@@ -78,7 +79,7 @@ export function createWorkplaceResidents({world,parent,getTargets,collides,getPl
   }
  }
  function leave(){for(const person of [...borrowed.keys()])restore(person);interactions?.dispose();interactions=null;walker?.clear();walker=null;site=null;departing=null;}
- return {enter(next,minutes){leave();if(!world.people.some(p=>p.profile.workSite===next.id))return;site=next;
+ return {enter(next,minutes){leave();if(OWN_STAFF_ROOMS.includes(next.id)||!world.people.some(p=>p.profile.workSite===next.id))return;site=next;
   walker=createRoomWalk(collides,{bounds:getLayout()?.bounds});
   interactions=createTownActivities({getTargets,collides,getPlayerPosition,getState,ledger,inside:true});update(0,minutes,false,true);
  },update,restore:leave};

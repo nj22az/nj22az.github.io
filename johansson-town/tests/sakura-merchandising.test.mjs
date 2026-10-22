@@ -43,12 +43,15 @@ test('Sakura supplies every business in town, with lines it really stocks',async
   assert.ok(a.why.length>30&&a.delivery.length>20,a.name+' says why and when');
  }
  for(const id of ['izakaya','ramen','onsen','frontrow','form3d','office'])assert.ok(TRADE_ACCOUNTS[id],id+' buys from Sakura');
- // Alcohol comes from the Higas, office supplies from Front-Row; Sakura sells neither on account.
+ // Alcohol comes from the Higas; Sakura sells none on account. Office supplies are Sakura's since 22 October 2026 (Front-Row's,
+ // when Nhung became the island doctor): named `stationery` goods on an account, never shelf lines.
  const {ACCOUNTS,SUPPLIERS,suppliersOf}=await import('../src/commerce/merchandising.js');
  for(const a of Object.values(TRADE_ACCOUNTS))assert.ok(!a.lines.includes('beer')&&!a.lines.includes('notebook'),a.name+' gets alcohol and stationery from their own suppliers');
  assert.ok(suppliersOf('izakaya').some(s=>s.supplier==='higa-saketen'),'Higa Liquor supplies Minato');
  assert.ok(ACCOUNTS['higa-saketen'].market,'Higa Liquor supplies Sakura');
- assert.ok(ACCOUNTS.frontrow.office&&ACCOUNTS.frontrow['community-kitchen'],'Front-Row supplies the offices: the harbour\u2019s and the Community Hall\u2019s register');
+ assert.equal(SUPPLIERS.frontrow,undefined,'Front-Row supplies nothing since Nhung became the doctor');assert.equal(ACCOUNTS.frontrow,undefined);
+ assert.ok(SUPPLIERS.sakura.stationery.length>=5&&/stationery/.test(SUPPLIERS.sakura.goods),'Sakura supplies the stationery');
+ for(const site of ['office','community-kitchen','school','koban'])assert.ok(TRADE_ACCOUNTS[site].stationery?.length&&TRADE_ACCOUNTS[site].stationery.every(l=>typeof l==='string'&&l.length>3),site+' takes its stationery from Sakura');
  for(const [id,s] of Object.entries(SUPPLIERS)){assert.ok(residents.has(s.owner),s.owner+' runs '+s.name);for(const [site,a] of Object.entries(ACCOUNTS[id])){assert.ok(new RegExp(`id:'${site}'|'${site}'`).test(sources),site+' is a real place');assert.ok(a.owner?residents.has(a.owner):a.contact,site);}}
  // The florist's trade is Sakura's since Mrs Kinjō retired (docs/CAST-CONSOLIDATION.md addendum 3): decorations ride on the accounts.
  const {decorBuyers}=await import('../src/commerce/merchandising.js');

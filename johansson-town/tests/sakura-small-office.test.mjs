@@ -75,16 +75,17 @@ test('the notes, the calendar and the rota say what the town’s data says',()=>
  assert.match(note('boat'),/8:30 boat/);assert.ok(HARBOUR_LINE.includes(510),'the 08:30 boat');
  assert.match(note('boat'),/mandarin juice, water/);
  const higa=sakuraPaperwork().find(p=>p.id==='higa-invoice');
- assert.ok(higa.rows.some(r=>/^Sat 18 Oct/.test(r[0])&&r[1]===5),'5 cases on Saturday the 18th');
+ assert.ok(higa.rows.some(r=>/^Fri 17 Oct/.test(r[0])&&r[1]===5),'5 cases on Friday the 17th (the shop shuts on Saturdays since 22 October 2026)');
  assert.equal(higa.totals.deposit/higa.totals.crates,300);assert.match(note('higa'),/5 cases.*¥300 a crate/);
  assert.match(note('eisa'),/Eisa poster/);
  const riku=[...CORE,...SUPPORTING].find(p=>p.id==='riku');assert.ok(riku&&riku.age<12,'Riku is a boy at school');
- // October 1997: the first was a Wednesday; the Higa marks are Saturdays.
+ // October 1997: the first was a Wednesday; the Higa marks are Fridays, the closed marks Saturdays.
  assert.equal(new Date(1997,9,1).getDay(),SMALL_OFFICE_CALENDAR.firstWeekday);
- for(const m of SMALL_OFFICE_CALENDAR.marks.filter(m=>m.text==='Higa'))assert.equal(new Date(1997,9,m.day).getDay(),6,m.day+' is a Saturday');
+ for(const m of SMALL_OFFICE_CALENDAR.marks.filter(m=>m.text==='Higa'))assert.equal(new Date(1997,9,m.day).getDay(),5,m.day+' is a Friday');
+ for(const m of SMALL_OFFICE_CALENDAR.marks.filter(m=>m.text==='closed'))assert.equal(new Date(1997,9,m.day).getDay(),6,m.day+' is a Saturday');
  // The rota: the shop's own, day by day (a week of October 1997 in town minutes: 13 October was a Monday).
- assert.deepEqual(SMALL_OFFICE_ROTA.map(r=>r.who),['Thuan','Thuan','Thuan','Thuan','Thuan','Nhung','Nhung']);
- assert.ok(SMALL_OFFICE_ROTA.every(r=>r.hours===SAKURA_HOURS_TEXT&&r.hours==='9:00–20:30'));
+ assert.deepEqual(SMALL_OFFICE_ROTA.map(r=>r.who),['Thuan','Thuan','Thuan','Thuan','Thuan','closed','Nhung']);
+ assert.ok(SMALL_OFFICE_ROTA.filter(r=>r.who!=='closed').every(r=>r.hours===SAKURA_HOURS_TEXT&&r.hours==='9:00–20:30'));
  assert.ok(['Thuan','Nhung'].includes(sakuraClerkAt(600)));
 });
 

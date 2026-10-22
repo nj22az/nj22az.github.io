@@ -72,7 +72,7 @@ const PART_ENTRIES={
   // in (put on in the first), and plain, without a print; the accent is the shirt under a vest, the class colour on a PE
   // shirt, the jersey's piping.
   shirt:{label:'Open-collar shirt',category:'Work & uniform',tags:['office','school','summer school','town hall','power station','clinic','pen','collar'],
-   who:'Jack Reed at the harbour office, Dr Kakazu under his white coat, and Daichi at summer school',why:'The island’s office and school shirt: short sleeves, the top button open, and a pen in the pocket.',
+   who:'Jack Reed at the harbour office, Nhung under her white coat at the clinic, and Daichi at summer school',why:'The island’s office and school shirt: short sleeves, the top button open, and a pen in the pocket.',
    colourways:[{name:'Paper white',colours:{'outfit.topColour':'#f4f1ea','outfit.accent':'#2f4f7f','outfit.pattern':'none'}},{name:'Sky',colours:{'outfit.topColour':'#8fbfe0','outfit.accent':'#2f4f7f','outfit.pattern':'none'}}]},
   vest:{label:'Vest over a shirt',category:'Work & uniform',tags:['uniform','waistcoat','harbour office','bus','police','ticket window','port terminal','1990s'],
    who:'the harbour master, Officer Mori, Tetsuo, Aya at the purser’s window and Ms Ganaha at the ticket window',why:'The 1990s service uniform their own looks describe: a vest over a short-sleeved shirt.',

@@ -5,7 +5,7 @@ import {airportWorld} from '../world/airport-ground.js';
  * home record their profiles read (residents.js), the way Kitahama's residents have theirs (kitahama-layout.js). They
  * cannot walk there from Minato: in town they are ferry commuters, away "at home on Kitano-jima" between the boats.
  * Thuan is Johansson's wife and lives with him at kitano-1 and nowhere else (docs/CAST-CONSOLIDATION.md addendum 4,
- * phase 3): the 08:30 boat in, the 22:00 boat home, and the weekend on the island while Nhung keeps the shop.
+ * phase 3): the 08:30 boat in, the 22:00 boat home, and the weekend on the island while the shop shuts on Saturday and Nhung keeps it on Sunday.
  */
 // Only Johansson and Thuan live on the hamlet (the creator, 2026-10-12), and only Thuan is a walking resident of the town.
 export const KITANO_RESIDENT_HOMES=Object.freeze({'kitano-1':Object.freeze(['Thuan'])});

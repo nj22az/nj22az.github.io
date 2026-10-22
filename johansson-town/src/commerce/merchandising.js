@@ -39,20 +39,21 @@ export const buyersOf=id=>MERCHANDISING[id]?.for||[];
 export const linesFor=name=>Object.entries(MERCHANDISING).filter(([,m])=>m.for.includes(name)).map(([id])=>id);
 
 /**
- * Who supplies whom. Three wholesalers keep the town's businesses going, each in its own trade:
+ * Who supplies whom. Two wholesalers keep the town's businesses going, each in its own trade:
  *
  *   sakura        Sakura Shōten, Thuan's outright (docs/CAST-CONSOLIDATION.md §3), from its depot in the Quay
  *                 Warehouse (Sakura Trading): the everyday goods — drinks, food, washing, paper goods, batteries —
  *                 and, since Mrs Kinjō retired (§6, addendum 3), the town's flowers and decorations: the season's
  *                 window dressing, festival trimmings, lanterns and wreaths, for the shops, the bar, the bath, the
  *                 school and the town hall. Those are `decor` lines on an account, named goods rather than shelf
- *                 stock: they come in with the depot's deliveries, not off the gondolas.
+ *                 stock: they come in with the depot's deliveries, not off the gondolas. Since 22 October 2026
+ *                 (the owner) also the stationery and office supplies Front-Row sold, when Nhung became the island
+ *                 doctor: paper, ledgers, pens and envelopes for the town's offices, the school and the police box,
+ *                 `stationery` lines on an account, named goods like the decorations.
  *   higa-saketen  Higa Liquor on Main Street: all the alcohol, carried by Kōji's round on his weeks ashore
  *                 (commerce/higa-liquor.js HIGA_ROUND). Sakura's beer comes from the Higas,
  *                 and so do Minato's bottle keep and tap, Sato Ramen's bottles and the Coral Bay
  *                 Bar's ice boxes on Kitano-jima.
- *   frontrow      Front-Row Books & Stationery: paper, ledgers, pens and envelopes for the town's
- *                 offices, the school and the police box.
  *
  * Only places that are open trade (src/people/cast.js PLACES): the Fumoto co-op has closed, so Sakura and the Higas
  * no longer send it a Wednesday crate; the Rainflower pavilion sells nothing and supplies nobody.
@@ -63,12 +64,11 @@ export const linesFor=name=>Object.entries(MERCHANDISING).filter(([,m])=>m.for.i
  * SHOP_STOCK ids for Sakura; the other suppliers' goods, and Sakura's decorations, are named in their own lists.
  */
 export const SUPPLIERS=Object.freeze({
- sakura:{name:'Sakura Shōten (Sakura Trading)',owner:'Thuan',depot:'warehouse',goods:'Everyday goods: drinks, food, washing, paper goods, batteries; and the town’s flowers and decorations.',
-  decor:['seasonal window decorations','Tanabata bamboo and paper strips','New Year kadomatsu and shimenawa','paper lanterns and festival bunting','wreaths and table flowers','bouquets, from the buckets by the door']},
+ sakura:{name:'Sakura Shōten (Sakura Trading)',owner:'Thuan',depot:'warehouse',goods:'Everyday goods: drinks, food, washing, paper goods, batteries; the town’s flowers and decorations; and its stationery and office supplies.',
+  decor:['seasonal window decorations','Tanabata bamboo and paper strips','New Year kadomatsu and shimenawa','paper lanterns and festival bunting','wreaths and table flowers','bouquets, from the buckets by the door'],
+  stationery:['A4 copy paper by the ream','account ledgers and receipt books','ballpoint pens by the box','envelopes, long and square','cellophane tape and glue','exercise books and pencils']},
  'higa-saketen':{name:'Higa Liquor',owner:'Grandmother Higa',goods:'Beer, awamori, sake and shōchū.',
   stock:['Umineko lager, crates and kegs','awamori, from the 180 ml bottles to the clay kame','sake for warming','shōchū for the mixes']},
- frontrow:{name:'Front-Row Books & Stationery',owner:'Nhung',goods:'Office supplies and stationery.',
-  stock:['A4 copy paper by the ream','account ledgers and receipt books','ballpoint pens by the box','envelopes, long and square','cellophane tape and glue']},
 });
 
 export const ACCOUNTS=Object.freeze({
@@ -81,18 +81,18 @@ export const ACCOUNTS=Object.freeze({
    delivery:'At half past ten, while the stock comes up to the boil.'},
   onsen:{name:'Umi-no-yu',owner:'Miss Higa',lines:['milk','soda','soap','detergent'],decor:['seasonal flowers for the bandai'],
    why:'Bottled milk and ramune for the fridge by the bandai — the after-bath drink — soap for the washing stools, and powder for the towels. A small vase on the bandai, changed with the season, the first thing a bather sees.',
-   delivery:'Mornings before the bath opens; the milk crate is the heaviest thing Thuan carries all week. The flowers every other Saturday.'},
-  frontrow:{name:'Front-Row Books & Stationery',owner:'Nhung',lines:['tea','biscuit','battery'],
-   why:'Tea and biscuits for the reading corner, batteries for the press-room radio.',
-   delivery:'Thursdays, when the evening paper is set and there is a quiet hour.'},
+   delivery:'Mornings before the bath opens; the milk crate is the heaviest thing Thuan carries all week. The flowers every other Friday.'},
+  frontrow:{name:'the town’s paper, at the old Front-Row shop',owner:'Nhung',lines:['tea','biscuit','battery'],
+   why:'Tea and biscuits for the evenings at the back bench, batteries for the press-room radio.',
+   delivery:'Thursdays, left inside the door for the evening, when the paper is set.'},
   form3d:{name:'Chin & Tetsuo Repairs',owner:'Chin',lines:['battery','coffee','rice'],
    why:'Batteries by the box for testing radios, canned coffee for the bench, and a lunch order of rice balls.',
    delivery:'Lunch at noon on the bicycle; batteries when Tetsuo remembers to ask.'},
-  office:{name:'Johansson Harbour Office',owner:'Johansson',lines:['battery','coffee','tea','water'],
-   why:'Batteries for the quay lamps, and drinks for the crews.',
-   delivery:'With the first ferry, on the harbour cart.'},
-  koban:{name:'Minato Police Station',owner:'Officer Mori',lines:['water','rice','battery'],
-   why:'Water and a rice ball for the night patrol, batteries for the torch.',
+  office:{name:'Johansson Harbour Office',owner:'Johansson',lines:['battery','coffee','tea','water'],stationery:['log books for tides and freight','A4 copy paper','carbon receipt books'],
+   why:'Batteries for the quay lamps, and drinks for the crews. The harbour’s records too: tide tables, freight manifests and receipts for the ferry.',
+   delivery:'With the first ferry, on the harbour cart; the paper and the log books with it.'},
+  koban:{name:'Minato Police Station',owner:'Officer Mori',lines:['water','rice','battery'],stationery:['the incident book','ballpoint pens'],
+   why:'Water and a rice ball for the night patrol, batteries for the torch; the incident book has to be the right kind, and pens disappear from a police station.',
    delivery:'Officer Mori collects it himself, at closing, and calls it a patrol.'},
   'coral-bay-bar':{name:'the Coral Bay Bar on Kitano-jima',contact:'the beach bar keeper',lines:['orange','water'],
    why:'Mandarin and shikuwasa juice for the children and the drivers, and water for anyone who fell asleep under a parasol.',
@@ -100,20 +100,20 @@ export const ACCOUNTS=Object.freeze({
   // The Community Hall's account, the community kitchen's, took on the mayor's office's when the office went
   // (21 October 2026, briefs/town-hall-zone.md phase M): the tea and crackers for the register's visitors, and the
   // wreaths and bunting for the town's ceremonies, which the hall holds now.
-  'community-kitchen':{name:'the Community Hall',owner:'Mrs Nakamura',lines:['curry','soy','tuna','rice','tea','crackers','tissues'],decor:['ceremony wreaths','festival bunting'],
-   why:'The Saturday curry for the whole street and onigiri for the volunteers; tea, rice crackers and tissues for whoever comes to the register or the assembly. Wreaths and bunting for openings, prize days and the town\u2019s festivals.',
+  'community-kitchen':{name:'the Community Hall',owner:'Mrs Nakamura',lines:['curry','soy','tuna','rice','tea','crackers','tissues'],decor:['ceremony wreaths','festival bunting'],stationery:['A4 copy paper','envelopes','account ledgers','cellophane tape'],
+   why:'The Saturday curry for the whole street and onigiri for the volunteers; tea, rice crackers and tissues for whoever comes to the register or the assembly. Wreaths and bunting for openings, prize days and the town\u2019s festivals. Paper, envelopes and ledgers for the register, the minutes, the town accounts and the notice board.',
    delivery:'Friday evening, so the pot can start early; the wreaths the morning of each ceremony.'},
-  school:{name:'the island school',contact:'the head teacher',lines:['milk','tissues'],decor:['sports day bunting','graduation flowers'],
-   why:'School milk, and tissues every hay-fever season. Bunting for sports day in the autumn and flowers for the graduation in March.',
+  school:{name:'the island school',contact:'the head teacher',lines:['milk','tissues'],decor:['sports day bunting','graduation flowers'],stationery:['exercise books','pencils','glue'],
+   why:'School milk, and tissues every hay-fever season. Bunting for sports day in the autumn and flowers for the graduation in March. A new term’s exercise books, and the glue that is always running out.',
    delivery:'First thing on Mondays, by the school gate; the bunting and the flowers the day before, with the children helping to carry.'},
-  clinic:{name:'the clinic',contact:'the clinic nurse',lines:['tissues','soap','water','peaches'],
+  clinic:{name:'the clinic',owner:'Nhung',lines:['tissues','soap','water','peaches'],
    why:'Tissues and soap for the waiting room, water for patients, and tinned peaches for anyone kept in overnight.',
    delivery:'Whenever the clinic telephones; it is never urgent and always is.'},
  },
  'higa-saketen':{
   market:{name:'Sakura Shōten',owner:'Thuan',lines:['Umineko lager, cases of cans'],
    why:'The beer column in Sakura’s cold cabinet, nearest the till.',
-   delivery:'Saturday mornings at a quarter to eleven, Kōji’s kei truck on Higa Liquor’s round in his weeks ashore and Thuan’s trolley across Main Street in his weeks at sea (higa-liquor.js); Thuan counts the cases off.'},
+   delivery:'Friday mornings at five past eleven (Saturday, until the shop took it as its closing day), Kōji’s kei truck on Higa Liquor’s round in his weeks ashore and Thuan’s trolley across Main Street in his weeks at sea (higa-liquor.js); Thuan counts the cases off.'},
   izakaya:{name:'Minato Izakaya',owner:'Thao',lines:['Umineko lager, kegs and bottles','awamori for the bottle keep','sake for warming','shōchū for the mixes'],
    why:'Everything behind Minato’s bar: the tap, the keep shelf, the tokkuri and the highballs.',
    delivery:'Kegs on Tuesdays and Fridays at a quarter to eleven, rolled down the side passage before the noren goes up: Kōji’s round, or Thao’s own truck in his weeks at sea.'},
@@ -126,23 +126,6 @@ export const ACCOUNTS=Object.freeze({
   'fujita-shed':{name:'Mr Fujita’s shed on the pier',contact:'Mr Fujita',lines:['Umineko lager, large bottles'],
    why:'Twenty-four to forty-nine large bottles a day, three small glasses a bottle, poured from the armchair in front of the television.',
    delivery:'Six every morning at the pier root: the day’s crates down, yesterday’s empties up off his floor. Returnable bottles, counted by Grandmother Higa.'},
- },
- frontrow:{
-  office:{name:'Johansson Harbour Office',owner:'Johansson',lines:['log books for tides and freight','A4 copy paper','carbon receipt books'],
-   why:'The harbour’s records: tide tables, freight manifests and receipts for the ferry.',
-   delivery:'Nhung brings it down from Front-Row with the morning paper.'},
-  'community-kitchen':{name:'the Community Hall',contact:'the town clerk',lines:['A4 copy paper','envelopes','account ledgers','cellophane tape'],
-   why:'The register, the assembly\u2019s minutes, letters to the main island, the town accounts and the notice board, kept at the hall since the mayor\u2019s office went.',
-   delivery:'With the Monday paper round.'},
-  school:{name:'the island school',contact:'the head teacher',lines:['exercise books','pencils','glue'],
-   why:'A new term’s exercise books, and the glue that is always running out.',
-   delivery:'The week before term, in boxes the children carry in.'},
-  koban:{name:'Minato Police Station',owner:'Officer Mori',lines:['the incident book','ballpoint pens'],
-   why:'The incident book has to be the right kind, and pens disappear from a police station.',
-   delivery:'Officer Mori collects it himself.'},
-  market:{name:'Sakura Shōten',owner:'Thuan',lines:['receipt rolls','account ledgers','price-gun labels'],
-   why:'The till’s receipt rolls, Sakura’s own trade ledgers, and labels for the price gun.',
-   delivery:'Whenever Thuan visits her sister.'},
  },
 });
 /** Sakura's trade accounts (the business site id → its order). */

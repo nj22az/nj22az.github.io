@@ -31,7 +31,7 @@ export const LAUNDRY_SEATS=Object.freeze([
  Object.freeze({key:'laundry-bench-0',at:laundry(-.8,-1.2),stand:laundry(-.8,-.55),height:.42,yaw:-Math.PI/2,front:.16}),
  Object.freeze({key:'laundry-bench-1',at:laundry(.2,-1.2),stand:laundry(.2,-.55),height:.42,yaw:-Math.PI/2,front:.16}),
 ]);
-const SEAT_OF=Object.freeze({'Ms Uezu':0,'Dr Kakazu':0,Thao:1});
+const SEAT_OF=Object.freeze({'Ms Uezu':0,Nhung:0,Thao:1});
 const isSaturday=minutes=>townCalendarAt(minutes).weekday===6;
 
 /**

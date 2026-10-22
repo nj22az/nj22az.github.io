@@ -23,7 +23,7 @@ const LIFE=Object.freeze({
  'Mrs Sato':{dayOff:'Sunday',leisure:['the fish auction at nine','Kitahama pocket park bench']},
  'Officer Mori':{dayOff:'Thursday',leisure:['the seawall with a fishing rod','Sato Ramen at lunch']},
  'Harbour master':{dayOff:'Sunday',leisure:['Mr Fujita’s shed on the pier, for the ballgame','the quay at dusk']},
- Nhung:{dayOff:'Tuesday',leisure:['the window chair at Front-Row','the beach']},
+ Nhung:{dayOff:'Saturday afternoon',leisure:['the window chair at Front-Row','the beach']},
  Chin:{dayOff:'Sunday',leisure:['Star Port at the arcade cabinet','Minato']},
  Tetsuo:{dayOff:'Monday',leisure:['the pier with his radio','Minato']},
 });

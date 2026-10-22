@@ -27,7 +27,7 @@ export const STAND_SEQUENCES=Object.freeze(Object.fromEntries([
   pt(-6.1,-29.4,W,[180,300],'sweeping the pavement by the bin','south of the doorway, by the bin: the last of the sweepings go in it',{pose:'Sweep',tool:'broom'}),
  ]),
  // The shop floor (Sakura's own frame, world/interiors/sakura-layout.js): whoever the rota puts at the counter.
- seq('sakura-floor','sakura','the clerk on the rota (Thuan on weekdays, Nhung at the weekend)','A shopkeeper alone in a shop this size is at the till most of the day and leaves it only for the jobs that cannot wait: the cold drinks and the window.',[
+ seq('sakura-floor','sakura','the clerk on the rota (Thuan on weekdays, Nhung on Sunday)','A shopkeeper alone in a shop this size is at the till most of the day and leaves it only for the jobs that cannot wait: the cold drinks and the window.',[
   pt(5.29,.85,W,[300,1200],'at the till, facing the shop','the clerk’s stand point, 0.75 m behind the counter’s front (New Yokosuka’s konbini, §3.1): where she can see the door and both aisles',{pose:'CounterIdle'}),
   pt(2.39,-2.66,N,[120,480],'facing up the cold drinks, beer to the front','the cooler’s column nearest the till, the beer and the cold tea that sell first and leave gaps',{pose:'Interact'}),
   pt(5.29,.85,W,[300,900],'back at the till','the till again: nobody should wait to pay while she is in an aisle',{pose:'CounterIdle'}),

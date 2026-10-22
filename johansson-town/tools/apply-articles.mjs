@@ -19,7 +19,9 @@ const FIX={
  Thuan:{friend:'Thao',role:'Owner of Sakura Shōten',place:'Sakura Shōten, and the boat home to Kitano-jima',
   islandPersonality:{title:'Neighbourhood spark',traits:['Warm','independent','observant'],habit:'Sets aside a regular’s favourite tea before they ask.',ambition:'Make Sakura the shop every island household can rely on.',favourite:'The last boat home, with the shop’s takings counted'}},
  Thao:{friend:'Thuan'},
- Nhung:{friend:'Officer Mori',role:'Bookseller and editor of the town paper',place:'Front-Row Books and its printing bench'},
+ // Nhung is the island doctor since 22 October 2026 (the owner): Dr Kakazu's post, look and patients are hers.
+ Nhung:{friend:'Officer Mori',role:'Island doctor and editor of the town paper',place:'The town hall clinic, and the printing bench of the old Front-Row shop in the evenings',
+  dailyLife:'Next, please. And then the paper.'},
  'Harbour master':{friend:'Mrs Sato',role:'Harbour agent',place:'Harbour Office and the Minato berth'},
  Chin:{friend:'Tetsuo',role:'Motorman of the Minato Maru and workshop repairman',place:'The engine room and the Chin & Tetsuo workshop',
   islandPersonality:{title:'The careful maker',traits:['Inventive','patient','dry-witted'],habit:'Lines up his tools before touching a new repair.',ambition:'Keep the ship’s diesels and the town’s boats running on the same bench.',favourite:'A finished repair that looks effortless'}},
@@ -36,9 +38,6 @@ const FIX={
  Riku:{friend:'Vy'},
  Vy:{friend:'Mai'},
  // The eleven who joined the guide in phase 5: the ship's people, the port clerk, the doctor, Mai and the relief engineer.
- 'Dr Kakazu':{friend:'Mrs Sato',role:'Island doctor',place:'The town hall clinic',portrait:'assets/images/residents/dr-kakazu.webp',
-  dailyLife:'Next, please. No, you may not pay for my lunch either.',
-  islandPersonality:{title:'The outsider everyone feeds',traits:['Attentive','wry','unhurried'],habit:'Writes down the advice his patients ignore, and gives it again next week.',ambition:'Leave the island’s blood pressure lower than he found it.',favourite:'The stool Thao keeps him at Minato'}},
  Mai:{friend:'Vy',role:'Island school pupil',place:'Island school, Blue Coral and Harbour Park',portrait:'assets/images/residents/mai.webp',
   dailyLife:'The rabbit is fed. Now the hard half of the homework. Vy says so.',
   islandPersonality:{title:'The rabbit’s keeper',traits:['Loyal','careful','quietly funny'],habit:'Feeds the class rabbit before the bell and says goodbye to it after.',ambition:'Keep the rabbit through the summer and Vy through the kanji test.',favourite:'Whatever scoop is left once Vy has the guava'}},

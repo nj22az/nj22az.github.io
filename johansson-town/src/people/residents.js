@@ -23,9 +23,10 @@ const WORKPLACE_HOMES={
 export const THUAN_PROFILE={...residentialHome('Thuan'),"name":"Thuan","age":25,"role":"Sakura owner","height":1.64,"work":[-4,-25.5],"evening":restaurantApproach('izakaya'),"friend":"Thao","start":540,"close":1200,"retire":1410,"supperStart":null,"supperEnd":null};
 // The walking residents. Reiko, the Bus driver and Barfly were retired in phase 4 of the consolidation (roster.js
 // RETIRED): Nhung prints the paper, the Harbour master keeps his own stories, and Minato's regulars are the residents.
+// Dr Kakazu retired into Nhung on 22 October 2026: she is the island doctor (clinic-hours.js), the clinic her work.
 export const ACTIVE_RESIDENT_NAMES=Object.freeze(['Nhung','Chin','Mrs Sato','Harbour master','Tetsuo','Officer Mori','Thao','Thuan']);
 const NEIGHBOURHOOD={
- Nhung:{friend:'Thao',gossip:'I put Tama in the paper. He has been sitting on the entire edition ever since.',clue:'The books and the town’s paper share our counter. Tama still prefers the window chair.'},
+ Nhung:{friend:'Thao',role:'the island doctor',gossip:'I put Tama in the paper. He has been sitting on the entire edition ever since.',clue:'Surgery is nine to twelve and two to five. In the evening I set the town’s paper at the old Front-Row shop; Sakura sells the books now.'},
  'Mrs Sato':{friend:'Thuan',gossip:'Thuan calls her plant the assistant manager. I am still waiting for it to help with the stock.'},
  'Harbour master':{friend:'Mrs Sato',gossip:'Ms Ganaha sends the sailing list up from the terminal every morning. I check it against the harbour clock.'},
  Thao:{friend:'Thuan',gossip:'Thuan is my little sister; she takes the last boat home to Kitano-jima every night and is back on the half past eight. Nhung says I am stubborn. I say I am right.'},
@@ -36,7 +37,7 @@ const NEIGHBOURHOOD={
 export const RESIDENTS=ACTIVE_RESIDENT_NAMES.map(name=>{
  const source=name==='Thuan'?THUAN_PROFILE:PROFILES.find(p=>p.name===name);
  const diningPoint=point=>point&&point[0]===24&&point[1]>=18&&point[1]<=25?restaurantApproach('izakaya'):point;
- const shopFloor={Nhung:'books',Chin:'workshop',Tetsuo:'workshop'}[name];
+ const shopFloor={Chin:'workshop',Tetsuo:'workshop'}[name];
  const profile={...source,...NEIGHBOURHOOD[name],work:({'Harbour master':[HARBOUR_OFFICE.door[0],HARBOUR_OFFICE.door[2]],'Officer Mori':[...KOBAN.door],Thao:IZAKAYA_DOOR})[name]||diningPoint(source.work),evening:({Nhung:[.15,18.7],Chin:[.15,17.6], 'Mrs Sato':TOWN_DESTINATIONS.bus,'Harbour master':[0,-48],Tetsuo:[.15,16.5],'Officer Mori':[0,28],Thao:IZAKAYA_DOOR})[name]||diningPoint(source.evening),...residentialHome(name)};
  // The shop staff stand at their own shop's door, and where that door is depends on
  // the layout, which is not known yet. Read it when somebody asks.
@@ -53,7 +54,7 @@ export const RESIDENTS=ACTIVE_RESIDENT_NAMES.map(name=>{
 export function residentHomeDescription(name){
  const h=activeHomeForResident(name),primary=homeForResident(name);if(!h)return '';
  if(name==='Tetsuo')return 'I live at '+h.address+', behind the shop. My mother’s people were Chinens, from Kitano-jima; the workshop is home now.';
- if(name==='Thuan')return 'My home is '+primary.address+', with my husband Johansson. I come over on the half past eight boat and go home on the last one; at the weekend Nhung keeps the shop.';
+ if(name==='Thuan')return 'My home is '+primary.address+', with my husband Johansson. I come over on the half past eight boat and go home on the last one. The shop shuts on Saturdays, and on Sunday Nhung keeps it.';
  if(name==='Chin')return 'My place is at '+h.address+', bro, with my wife Thao and our daughter Vy.';
  const roommates=h.members.filter(m=>m.name!==name&&!m.secondary).map(m=>m.name),guests=h.members.filter(m=>m.secondary&&m.name!==name).map(m=>m.name);
  return 'I live at '+h.address+'.'+(roommates.length?' I share my home with '+roommates.join(' and ')+'.':'')+(guests.length?' '+guests.join(' and ')+' stays here on weekdays.':'');

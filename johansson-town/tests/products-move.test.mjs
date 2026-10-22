@@ -39,8 +39,18 @@ legacy.SUPPLIERS.sakura={...legacy.SUPPLIERS.sakura,goods:now.SUPPLIERS.sakura.g
 // are the Community Hall's (the community kitchen's): the hall orders what the office ordered, as well as its own.
 {const hall=now.ACCOUNTS.sakura['community-kitchen'],was=[legacy.ACCOUNTS.sakura['community-kitchen'],legacy.ACCOUNTS.sakura['mayor-office']];
  assert.deepEqual(hall.lines,was.flatMap(a=>a.lines),'the hall orders the kitchen\u2019s lines and the office\u2019s');
- assert.deepEqual(now.ACCOUNTS.frontrow['community-kitchen'].lines,legacy.ACCOUNTS.frontrow['mayor-office'].lines,'the hall\u2019s register takes the office\u2019s stationery');
- for(const supplier of ['sakura','frontrow']){assert.equal(now.ACCOUNTS[supplier]['mayor-office'],undefined);delete legacy.ACCOUNTS[supplier]['mayor-office'];legacy.ACCOUNTS[supplier]['community-kitchen']=now.ACCOUNTS[supplier]['community-kitchen'];}}
+ assert.deepEqual(now.ACCOUNTS.sakura['community-kitchen'].stationery,legacy.ACCOUNTS.frontrow['mayor-office'].lines,'the hall\u2019s register takes the office\u2019s stationery');
+ assert.equal(now.ACCOUNTS.sakura['mayor-office'],undefined);delete legacy.ACCOUNTS.sakura['mayor-office'];legacy.ACCOUNTS.sakura['community-kitchen']=now.ACCOUNTS.sakura['community-kitchen'];
+ legacy.ACCOUNTS.frontrow['community-kitchen']=legacy.ACCOUNTS.frontrow['mayor-office'];delete legacy.ACCOUNTS.frontrow['mayor-office'];}
+// 22 October 2026 (the owner): Nhung is the island doctor and Front-Row's trade is Sakura's. Front-Row's supplier record
+// and its accounts are gone; what each business ordered from it is now the `stationery` of its Sakura account (Sakura's
+// own receipt rolls and ledgers are its own stock), Sakura's supplier record lists the stationery, the paper's account
+// (`frontrow`) and the clinic's (Nhung's) say so, and every account keeps its shelf lines.
+assert.equal(now.SUPPLIERS.frontrow,undefined);assert.equal(now.ACCOUNTS.frontrow,undefined);
+for(const [site,was] of Object.entries(legacy.ACCOUNTS.frontrow)){if(site==='market')continue;assert.deepEqual(now.ACCOUNTS.sakura[site].stationery,was.lines,site+' orders the same stationery from Sakura');}
+delete legacy.SUPPLIERS.frontrow;delete legacy.ACCOUNTS.frontrow;
+legacy.SUPPLIERS.sakura={...legacy.SUPPLIERS.sakura,goods:now.SUPPLIERS.sakura.goods,stationery:now.SUPPLIERS.sakura.stationery};
+for(const site of ['frontrow','office','koban','community-kitchen','school','clinic']){const was=legacy.ACCOUNTS.sakura[site],is=now.ACCOUNTS.sakura[site];assert.deepEqual(is.lines,was.lines,site+' keeps its shelf lines');legacy.ACCOUNTS.sakura[site]=is;}
 for(const site of ['izakaya','onsen','school']){const was=legacy.ACCOUNTS.sakura[site],is=now.ACCOUNTS.sakura[site];assert.deepEqual(is.lines,was.lines,site+' keeps its shelf lines');legacy.ACCOUNTS.sakura[site]={...was,why:is.why,delivery:is.delivery,decor:is.decor};}
 // Phase 4 retired the people some accounts' deliveries named (Reiko's evening press): the data's delivery line is the
 // one that reads, and it names a live resident; the lines and everything else about the account are unchanged.

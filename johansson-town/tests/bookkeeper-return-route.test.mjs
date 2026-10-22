@@ -13,8 +13,9 @@ import {groundHeight,planHeight,setWalkSurface} from '../src/world/layout.js';
 import {createWalkSurface} from '../src/world/walk-surface.js';
 import {townBoundsBlocked,circleHitsRect,standingHitsRect,canStepBetween} from '../physics.js';
 
-// (Reiko retired in phase 4 and 1 Front-Row Yard is lawn again: Nhung lives at 3 Kitahama, people/residents.js.)
-test('Nhung walks from Sakura back to Front Row and her home on the drawn floors',async()=>{
+// (Reiko retired in phase 4 and 1 Front-Row Yard is lawn again: Nhung lives at 3 Kitahama, people/residents.js. Since
+// 22 October 2026 she is the island doctor and sets the town's paper at Front-Row in the evening: place `paper`.)
+test('Nhung walks from Sakura to Front-Row for the paper and home on the drawn floors',async()=>{
  installDOM();globalThis.self=globalThis;
  const {createTown}=await import('../src/world/town.js');
  const {createBusinesses}=await import('../src/world/businesses.js');
@@ -55,9 +56,9 @@ test('Nhung walks from Sakura back to Front Row and her home on the drawn floors
   // controller from the saved market exit until both workers enter their shop.
   for(const name of ['Nhung']){
    const profile=world.people.find(p=>p.profile.name===name).profile;
-   const minute=Array.from({length:1440},(_,m)=>m).find(m=>{const p=residentPlan(profile,m,false,{});return p.place==='work'&&Math.hypot(p.target[0]-books[0],p.target[1]-books[1])<.01;});
-   assert.notEqual(minute,undefined,name+' bookshop shift');
-   for(const [from,indoors,clock,destination] of [[MARKET_THRESHOLD,'market',minute,books],[books,'work',180,profile.home]]){
+   const minute=Array.from({length:7*1440},(_,m)=>m).find(m=>{const p=residentPlan(profile,m,false,{});return p.place==='paper'&&Math.hypot(p.target[0]-books[0],p.target[1]-books[1])<.01;});
+   assert.notEqual(minute,undefined,name+' evening at the paper');
+   for(const [from,indoors,clock,destination] of [[MARKET_THRESHOLD,'market',minute,books],[books,'paper',180,profile.home]]){
     const g=new THREE.Group();g.userData.name=name;
     const saved={inventory:[],residentLocations:{[name]:{position:[...from],indoors}}};
     const ai=createCastAI({world:{people:[{g,profile}]},player:new THREE.Group(),state:()=>saved,paused:()=>false,collides:blocked});

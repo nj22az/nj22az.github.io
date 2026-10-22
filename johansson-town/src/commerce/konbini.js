@@ -1,7 +1,7 @@
 import {GROCERY_ITEMS} from './catalogue.js';
 import {takeShopStock,returnShopStock,SOLD_OUT} from './shop-stock.js';
 import {recordSakuraSale,shopEntry} from './sakura-economy.js';
-import {sakuraTillOpen,SAKURA_HOURS_TEXT} from './sakura-rota.js';
+import {sakuraTillOpen,SAKURA_HOURS_TEXT,SAKURA_DAYS_TEXT} from './sakura-rota.js';
 
 /**
  * The counter ritual at Sakura Shōten.
@@ -156,7 +156,7 @@ export function checkout(state,{warm=false,bag=true}={},minutes=0,thuanAvailable
  const m=((minutes%1440)+1440)%1440;
  const lines=basketLines(state),total=basketTotal(state);
  if(!lines.length)return {ok:false,message:'Your basket is empty.'};
- if(!sakuraHoursOpen(minutes))return {ok:false,message:'The till is closed. Sakura is open '+SAKURA_HOURS_TEXT+'.'};
+ if(!sakuraHoursOpen(minutes))return {ok:false,message:'The till is closed. Sakura is open '+SAKURA_HOURS_TEXT+', '+SAKURA_DAYS_TEXT+'.'};
  if(thuanAvailable===false)return {ok:false,message:SAKURA_AWAY_MESSAGE};
  if(state.yen<total)return {ok:false,message:'You do not have enough yen for all of that.'};
  if(state.inventory.length+konbini.basket.length>100)return {ok:false,message:'Your bag is full.'};
@@ -248,7 +248,7 @@ const HOT_BY_ID=new Map(HOT_SNACKS.map(s=>[s.id,s]));
 export function buyHotSnack(state,id,minutes=0,thuanAvailable=true){
  const snack=HOT_BY_ID.get(id);
  if(!snack)return {ok:false,message:'That is not in the hot case today.'};
- if(!sakuraHoursOpen(minutes))return {ok:false,message:'The hot case is switched off. Sakura is open '+SAKURA_HOURS_TEXT+'.'};
+ if(!sakuraHoursOpen(minutes))return {ok:false,message:'The hot case is switched off. Sakura is open '+SAKURA_HOURS_TEXT+', '+SAKURA_DAYS_TEXT+'.'};
  if(thuanAvailable===false)return {ok:false,message:SAKURA_AWAY_MESSAGE};
  if(state.yen<snack.cost)return {ok:false,message:'You do not have enough yen for that.'};
  if(state.inventory.length>=100)return {ok:false,message:'Your bag is full.'};

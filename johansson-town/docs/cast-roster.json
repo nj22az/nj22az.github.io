@@ -1,12 +1,12 @@
 {
- "status": "phase 5 of docs/CAST-CONSOLIDATION.md, the last: the stories, the guide, the directories, the Studio lists and the docs name exactly these 26 (the ten retired keep only drawings for history, avatars/cast.js RETIRED_RECIPES); the report is docs/CAST-CONSOLIDATION-REPORT.md",
+ "status": "phase 5 of docs/CAST-CONSOLIDATION.md, the last: the stories, the guide, the directories, the Studio lists and the docs name exactly these 25 (the eleven retired keep only drawings for history, avatars/cast.js RETIRED_RECIPES); the report is docs/CAST-CONSOLIDATION-REPORT.md",
  "canonDate": "2026-10-19",
  "source": "docs/CAST-CONSOLIDATION.md",
  "counts": {
-  "core": 21,
+  "core": 20,
   "supporting": 5,
-  "retired": 10,
-  "households": 14
+  "retired": 11,
+  "households": 13
  },
  "core": [
   {
@@ -129,7 +129,7 @@
    "nationality": "Vietnamese",
    "was": [],
    "avatar": "Nhung",
-   "role": "the eldest sister; runs Front-Row Books and produces a modest local paper; Koji’s wife and Riku’s mother",
+   "role": "the island doctor (the owner, 22 October 2026: the clinic doctor’s look and post are hers, Dr Ken retired into her): surgery at the town hall clinic weekdays and Saturday mornings, house calls, on call at night; prints the town’s small paper in the evenings at the back bench of the old Front-Row shop; Sakura’s Sunday clerk; the eldest sister; Koji’s wife and Riku’s mother",
    "post": null,
    "relief": null,
    "shore": [],
@@ -296,28 +296,6 @@
    "room": null,
    "oldHomes": [],
    "household": "koban"
-  },
-  {
-   "id": "dr-ken",
-   "name": "Dr Ken",
-   "fullName": "Dr Ken Kakazu",
-   "category": "core",
-   "sex": "m",
-   "age": 34,
-   "nationality": "Japanese",
-   "was": [
-    "Dr Kakazu"
-   ],
-   "avatar": "Dr Kakazu",
-   "role": "the island doctor; private accommodation separate from the clinic",
-   "post": null,
-   "relief": null,
-   "shore": [],
-   "home": "clinic",
-   "berth": null,
-   "room": null,
-   "oldHomes": [],
-   "household": "clinic"
   },
   {
    "id": "emi",
@@ -730,6 +708,22 @@
     ],
     "purpose": "a smaller local paper, beside the bookshop; her friendship with Nhung stays as backstory"
    }
+  },
+  {
+   "id": "dr-ken",
+   "name": "Dr Kakazu",
+   "category": "retired",
+   "was": [
+    "Dr Ken",
+    "Dr Ken Kakazu"
+   ],
+   "home": "clinic",
+   "transfer": {
+    "to": [
+     "nhung"
+    ],
+    "purpose": "the island doctor: the clinic, its hours, house calls and the night telephone"
+   }
   }
  ],
  "households": [
@@ -794,13 +788,6 @@
     "jack"
    ],
    "note": "the Harbour Office residence"
-  },
-  {
-   "home": "clinic",
-   "members": [
-    "dr-ken"
-   ],
-   "note": "the doctor’s private flat"
   },
   {
    "home": "nakamura",
@@ -1001,6 +988,7 @@
   "post-office": "ferry-terminal",
   "florist": "market",
   "rainflower-florist": "market",
-  "izakaya": "izakaya"
+  "izakaya": "izakaya",
+  "clinic": "clinic"
  }
 }

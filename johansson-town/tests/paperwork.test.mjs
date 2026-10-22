@@ -30,9 +30,9 @@ test('the stock book values each line at its unit cost',()=>{
  assert.equal(s.totals.value,sum(s.rows,5));assert.equal(s.totals.units,sum(s.rows,1)+sum(s.rows,2));assert.equal(s.totals.lines,SHOP_STOCK.length);
 });
 
-test('the rota follows the shop’s hours: Thuan on weekdays, Nhung at the weekend',()=>{
+test('the rota follows the shop’s hours: Thuan on weekdays, shut on Saturday, Nhung on Sunday',()=>{
  const r=paper('rota');assert.equal(r.rows.length,7);
- assert.deepEqual(r.rows.map(x=>x[1]),['Thuan','Thuan','Thuan','Thuan','Thuan','Nhung','Nhung']);
+ assert.deepEqual(r.rows.map(x=>x[1]),['Thuan','Thuan','Thuan','Thuan','Thuan','closed','Nhung']);assert.equal(r.rows[5][3],0);
  assert.equal(r.totals.total,sum(r.rows,3));assert.equal(r.totals.Thuan+r.totals.Nhung,r.totals.total);
 });
 
@@ -50,8 +50,8 @@ test('Higa Liquor bills the lager by the case at its unit cost, plus the crate d
  assert.equal(h.totals.deposit,h.totals.crates*300);assert.equal(h.totals.total,h.totals.goods+h.totals.deposit);
 });
 
-test('Front-Row’s invoice prices come from its own list and add up',()=>{
- const f=paper('frontrow-invoice');
- for(const [name,qty,price,amount] of f.rows){assert.equal(price,STATIONERY.find(s=>s.name===name).price);assert.equal(amount,qty*price);}
- assert.equal(f.totals.total,sum(f.rows,3));assert.equal(f.totals.subtotal,f.totals.total);
+// Front-Row's stationery invoice went with its trade (Sakura's since 22 October 2026): the shop's own stationery list stays.
+test('no Front-Row invoice any more; Sakura’s own stationery is priced',()=>{
+ assert.equal(sakuraPaperwork().some(p=>p.id==='frontrow-invoice'),false);
+ assert.ok(STATIONERY.length>=4&&STATIONERY.every(s=>s.price>0&&s.why.length>10));
 });

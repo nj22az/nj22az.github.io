@@ -1,7 +1,7 @@
 /**
  * The consolidated cast, as data (docs/CAST-CONSOLIDATION.md: the owner's brief of 19 October 2026, the addendum
- * winning where they differ). One identity record per person: 21 core and 5 supporting identities, the ten retired
- * ones and where their purpose went, the 14 core households, the supporting quarters, the eight ship posts and the
+ * winning where they differ). One identity record per person: 20 core and 5 supporting identities, the eleven retired
+ * ones and where their purpose went, the 13 core households, the supporting quarters, the eight ship posts and the
  * shore roles. This is what the phases switch the game over to (the brief, "How it is run": 2 the ship, 3 the
  * households, 4 the removals, 5 the stories and directories, all done). The game reads it for name resolution (cast.js
  * castMember, renamed.js formerNames, avatars/cast.js recipeFor) and the save migration (save.js migrateCast); from
@@ -32,7 +32,7 @@
  *    inspected it (world/kitano-hamlet.js): a walled plot with its gate on the hamlet lane, a concrete house with the
  *    family-home interior every Kitahama house has (world/interiors/family-home.js: a bed, a table, a door), its
  *    nameplate and visit prompt, 25 m from the pier he works. He rents it from the Shiromas in Naha. It is recorded
- *    as supporting accommodation (QUARTERS, the registry's `quarters` flag), outside the 14 core households.
+ *    as supporting accommodation (QUARTERS, the registry's `quarters` flag), outside the core households.
  *  - Ages and sexes come from cast.js. Jack and Mac carry the ages of the identities they replace (58 and 61); the
  *    brief gives none. Dr Ken's full name joins the brief's display name to the source's surname Kakazu. The
  *    supporting crew's ages are phase 2's (cast.js gives everybody one).
@@ -50,7 +50,7 @@ const who=(id,o)=>Object.freeze({id,name:o.name,fullName:o.fullName||o.name,cate
  post:o.post||null,relief:o.relief||null,shore:Object.freeze(o.shore||[]),home:o.home||null,berth:o.berth||null,
  room:o.room||null,oldHomes:Object.freeze(o.oldHomes||[]),household:o.household===undefined?o.home||null:o.household});
 
-/** The 21 core residents (brief §4), in the brief's order. */
+/** The core residents (brief §4: 21, Dr Ken retired into Nhung on 22 October 2026), in the brief's order. */
 export const CORE=Object.freeze([
  who('nils',{name:'Nils',fullName:'Nils Johansson',sex:'m',nationality:'Swedish',was:['Johansson'],avatar:'Johansson',post:'chief',home:'kitano-1',berth:'ferry-chief-cabin',oldHomes:['ferry'],
   role:'the player; Swedish chief engineer of the Minato Maru; married to Thuan'}),
@@ -62,7 +62,7 @@ export const CORE=Object.freeze([
   role:'motorman aboard the Minato Maru; mechanical repairman at the workshop with Tetsu when ashore; Thao’s husband and Vy’s father'}),
  who('vy',{name:'Vy',sex:'f',age:11,avatar:'Vy',home:'kitahama-1',role:'Thao and Chin’s daughter; a pupil at the island school'}),
  who('nhung',{name:'Nhung',sex:'f',age:37,nationality:'Vietnamese',avatar:'Nhung',home:'kitahama-3',oldHomes:['resident-home-aya'],
-  role:'the eldest sister; runs Front-Row Books and produces a modest local paper; Koji’s wife and Riku’s mother'}),
+  role:'the island doctor (the owner, 22 October 2026: the clinic doctor’s look and post are hers, Dr Ken retired into her): surgery at the town hall clinic weekdays and Saturday mornings, house calls, on call at night; prints the town’s small paper in the evenings at the back bench of the old Front-Row shop; Sakura’s Sunday clerk; the eldest sister; Koji’s wife and Riku’s mother'}),
  who('koji',{name:'Koji',fullName:'Kōji',sex:'m',age:38,was:['Kōji'],avatar:'Kōji',relief:'bosun',home:'kitahama-3',
   role:'fisherman and the bosun’s relief; drives Higa Liquor’s deliveries in his kei truck on his weeks ashore, paid by the round (the owner, 21 October 2026); Nhung’s husband and Riku’s father'}),
  who('riku',{name:'Riku',sex:'m',age:9,avatar:'Riku',home:'kitahama-3',role:'Nhung and Koji’s son; a pupil at the island school; Vy’s cousin'}),
@@ -76,8 +76,6 @@ export const CORE=Object.freeze([
   role:'owns Sato Ramen, which keeps its name; stays ashore'}),
  who('mori',{name:'Mori',fullName:'Officer Mori',sex:'m',age:45,nationality:'Japanese',was:['Officer Mori'],avatar:'Officer Mori',home:'koban',
   role:'the island’s police officer; the desk and the night patrol; his accommodation moves into the police station to come (addendum 1), koban staying his home id'}),
- who('dr-ken',{name:'Dr Ken',fullName:'Dr Ken Kakazu',sex:'m',age:34,nationality:'Japanese',was:['Dr Kakazu'],avatar:'Dr Kakazu',home:'clinic',
-  role:'the island doctor; private accommodation separate from the clinic'}),
  who('emi',{name:'Emi',fullName:'Emi Nakamura',sex:'f',age:40,nationality:'Japanese',was:['Mrs Nakamura'],avatar:'Mrs Nakamura',home:'nakamura',
   role:'keeps the dessert counter (Nakamura Zenzai and Blue Coral) and the community kitchen; Mai’s mother'}),
  who('mai',{name:'Mai',fullName:'Mai Nakamura',sex:'f',age:10,was:['Nakamura Mai'],avatar:'Mai',home:'nakamura',role:'Emi’s daughter; a pupil at the island school; Vy’s best friend'}),
@@ -105,7 +103,7 @@ export const SUPPORTING=Object.freeze([
 export const ROSTER=Object.freeze([...CORE,...SUPPORTING]);
 
 /**
- * The ten retired core identities (brief §6): who takes over what they did, and the home each leaves. A retired person
+ * The retired core identities (brief §6's ten, and Dr Ken on 22 October 2026): who takes over what they did, and the home each leaves. A retired person
  * keeps no body, schedule, home, shift, directory entry or scene; their purpose moves, their home goes (RETIRED_HOMES),
  * their relationships are rewritten by phase 4, and only coherent historical mentions remain.
  */
@@ -122,9 +120,13 @@ export const RETIRED=Object.freeze([
  gone('kinjo',{name:'Mrs Kinjō',home:'kinjo',to:['thuan'],purpose:'flowers and decorations, supplied by Sakura; the florist pavilion goes'}),
  gone('barfly',{name:'Barfly',home:'izakaya',to:['fuji'],purpose:'the izakaya’s regulars and gossip, from the residents themselves, Fuji among them off duty'}),
  gone('reiko',{name:'Reiko',home:'resident-home-aya',to:['nhung'],purpose:'a smaller local paper, beside the bookshop; her friendship with Nhung stays as backstory'}),
+ // The owner, 22 October 2026 ("Have this female doctor replace Nhung"): the clinic's doctor is Nhung; Dr Ken's post,
+ // patients and evenings go to her. His flat behind the clinic goes with him; in RETIRED_HOMES `clinic` lands on itself,
+ // because the id also names the clinic, which stays: a saved `clinic` or `home-clinic` lands at the clinic's door.
+ gone('dr-ken',{name:'Dr Kakazu',was:['Dr Ken','Dr Ken Kakazu'],home:'clinic',to:['nhung'],purpose:'the island doctor: the clinic, its hours, house calls and the night telephone'}),
 ]);
 
-/** The 14 core households (brief §7, addendum 1, 4 and 6): primary homes and who sleeps there. */
+/** The core households (brief §7's 14 less the doctor's flat, 22 October 2026; addendum 1, 4 and 6): primary homes and who sleeps there. */
 const household=(home,members,note)=>Object.freeze({home,members:Object.freeze(members),note});
 export const HOUSEHOLDS=Object.freeze([
  household('kitano-1',['nils','thuan'],'Johansson & Thuan’s house on Kitano-jima; Nils’s cabin aboard is duty accommodation, not a home'),
@@ -135,7 +137,6 @@ export const HOUSEHOLDS=Object.freeze([
  household('kitahama-2',['aki'],'2 Kitahama'),
  household('koban',['mori'],'Mori’s accommodation moves inside the police station built next to the kōban, a later job; koban stays the logical id (addendum 1)'),
  household('office',['jack'],'the Harbour Office residence'),
- household('clinic',['dr-ken'],'the doctor’s private flat'),
  household('nakamura',['emi','mai'],'above the dessert business'),
  household('kitahama-flat-3',['mac'],'one of the two attached ground-floor houses Kitahama Heights becomes (addendum 6); the id is kept for migration'),
  household('kitahama-flat-4',['mika'],'the other attached ground-floor house; the id is kept for migration'),
@@ -191,6 +192,8 @@ export const RETIRED_HOMES=Object.freeze({
  'kitahama-4':'community-kitchen','kitahama-5':'community-kitchen','kitahama-6':'community-kitchen',kinjo:'community-kitchen',oshiro:'community-kitchen',
  'resident-home-aya':'community-kitchen','kitano-3':'community-kitchen','kitahama-flat-1':'community-kitchen','kitahama-flat-2':'community-kitchen',
  shimabukuro:'ferry-terminal','post-office':'ferry-terminal',florist:'market','rainflower-florist':'market',izakaya:'izakaya',
+ // The doctor's flat (Dr Kakazu, retired 22 October 2026): the clinic itself stays, so the id lands on itself.
+ clinic:'clinic',
 });
 /** The home records that retire: the service ids above are counters, not homes; izakaya's building stays, Barfly's registration goes. */
 export const RETIRED_HOME_IDS=Object.freeze(Object.keys(RETIRED_HOMES).filter(id=>!['post-office','florist','rainflower-florist'].includes(id)));
@@ -217,7 +220,7 @@ export const namesOf=key=>{const p=identityOf(key);return p?[p.name,...(p.fullNa
 
 /** The roster as a document: docs/cast-roster.json mirrors it (tools/write-cast-roster.mjs; tests/roster.test.mjs keeps them equal). */
 export const rosterDocument=()=>({
- status:'phase 5 of docs/CAST-CONSOLIDATION.md, the last: the stories, the guide, the directories, the Studio lists and the docs name exactly these 26 (the ten retired keep only drawings for history, avatars/cast.js RETIRED_RECIPES); the report is docs/CAST-CONSOLIDATION-REPORT.md',
+ status:'phase 5 of docs/CAST-CONSOLIDATION.md, the last: the stories, the guide, the directories, the Studio lists and the docs name exactly these 25 (the eleven retired keep only drawings for history, avatars/cast.js RETIRED_RECIPES); the report is docs/CAST-CONSOLIDATION-REPORT.md',
  canonDate:'2026-10-19',source:'docs/CAST-CONSOLIDATION.md',counts:{core:CORE.length,supporting:SUPPORTING.length,retired:RETIRED.length,households:HOUSEHOLDS.length},
  core:CORE,supporting:SUPPORTING,retired:RETIRED,households:HOUSEHOLDS,quarters:QUARTERS,shipPosts:SHIP_POSTS,shipPostAliases:SHIP_POST_ALIASES,shoreRoles:SHORE_ROLES,retiredHomes:RETIRED_HOMES,
 });

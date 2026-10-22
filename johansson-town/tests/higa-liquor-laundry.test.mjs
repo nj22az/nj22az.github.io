@@ -10,6 +10,8 @@ import {higaLiquorState,higaLiquorKeeper,higaShutterDown,higaDoorsShut,higaRusuC
 import {LAUNDRY_KEEPER,LAUNDRY_VISITS,LAUNDRY_MACHINES,LAUNDRY_NOTICES,laundryVisitsOn,laundryMachinesAt,visitTimeline,
  playerWashStage,freeMachine,laundryNotices} from '../src/commerce/coin-laundry.js';
 import {canonicalDay} from '../src/people/canonical-day.js';
+import {RESIDENTS} from '../src/people/residents.js';
+import {residentPlan} from '../src/people/social.js';
 import {CAST,PLACES,castMember} from '../src/people/cast.js';
 import {STAND_SEQUENCES} from '../src/people/stand-sequences.js';
 import {HIGA_COUNTER_STAND,LAUNDRY_STANDS,LAUNDRY_SEATS} from '../src/people/shop-days.js';
@@ -57,10 +59,11 @@ test('Grandmother Higa keeps the counter, Yui on Saturdays; the canonical day pu
 });
 
 test('the round is Kōji’s on his weeks ashore only, between the ice plant and his sleep, to the shop’s own accounts',()=>{
- const tueAshore=dayWith(2,true),tueAboard=dayWith(2,false),satAshore=dayWith(6,true),wedAshore=dayWith(3,true);
+ const tueAshore=dayWith(2,true),tueAboard=dayWith(2,false),friAshore=dayWith(5,true),satAshore=dayWith(6,true),wedAshore=dayWith(3,true);
  assert.equal(higaRoundToday(at(tueAshore,10)),true);assert.equal(higaRoundToday(at(tueAboard,10)),false,'never on his weeks aboard');
  assert.equal(higaRoundToday(at(wedAshore,10)),false,'and only on the days with a drop');
- assert.deepEqual(higaDropsOn(at(satAshore,10)).map(s=>s.account),['market']);
+ // Sakura's cases come on Friday since the shop took Saturday as its closing day (the owner, 22 October 2026).
+ assert.deepEqual(higaDropsOn(at(friAshore,10)).map(s=>s.account),['izakaya','ramen','coral-bay-bar','market']);assert.equal(higaRoundToday(at(satAshore,10)),false,'no round on Saturday');
  assert.deepEqual(higaDropsOn(at(tueAshore,10)).map(s=>s.account),['izakaya','ramen','coral-bay-bar']);
  for(const s of HIGA_ROUND.stops)assert.ok(ACCOUNTS['higa-saketen'][s.account],s.account+' is one of the shop’s accounts');
  assert.deepEqual([...new Set(HIGA_ROUND.stops.map(s=>s.account))].sort(),['coral-bay-bar','izakaya','market','ramen'],'the four customers the owner named');
@@ -115,7 +118,7 @@ test('the laundry’s keeper is Ms Ganaha, the nearest with a free morning, on a
 
 test('washing days come from the residents’ own days and the ship’s rota, and no two visits share a machine at once',()=>{
  const sun=dayWith(0),wed=dayWith(3);
- assert.ok(laundryVisitsOn(at(sun,12)).some(v=>v.name==='Thao'));assert.ok(laundryVisitsOn(at(wed,12)).some(v=>v.name==='Dr Kakazu'));
+ assert.ok(laundryVisitsOn(at(sun,12)).some(v=>v.name==='Thao'));assert.ok(laundryVisitsOn(at(wed,12)).some(v=>v.name==='Nhung'));
  // Ms Uezu: the first day of her week ashore, when Kōji takes her place aboard.
  for(let d=10000;d<10042;d++){const m=d*DAY+600,on=laundryVisitsOn(m).some(v=>v.name==='Ms Uezu');assert.equal(on,rotaWeek(m)===1&&d%7===0);}
  for(const v of LAUNDRY_VISITS){const t=visitTimeline(v);assert.ok(t.wash[0]>=v.from&&t.fold[0]<=v.to&&t.wash[1]<=t.dry[0],v.name+'’s washing fits the visit');}
@@ -123,13 +126,14 @@ test('washing days come from the residents’ own days and the ship’s rota, an
   const busy=new Map();
   for(const v of laundryVisitsOn(d*DAY+m)){if(m<v.from||m>=v.to)continue;for(const id of [...v.washers,v.dryer]){assert.ok(!busy.has(id),`${id} is ${busy.get(id)}’s and ${v.name}’s at ${m}`);busy.set(id,v.name);}}
  }
- // Each visitor is free then by their own day: Thao is up (she sleeps until noon), Dr Kakazu is back from supper.
- assert.equal(canonicalDay('Dr Kakazu',at(wed,21,40)).place,'coin-laundry');
- assert.equal(canonicalDay('Dr Kakazu',at(wed,21,40)).stand.seat.key,LAUNDRY_SEATS[0].key,'on the bench while it washes');
+ // Each visitor is free then by their own day: Thao is up (she sleeps until noon), Nhung, the doctor since 22 October 2026,
+ // has set the paper's page (Dr Kakazu's evening, with the clinic's towels, is hers).
+ const nhung=RESIDENTS.find(p=>p.name==='Nhung'),plan=residentPlan(nhung,at(wed,21,40),false,{});
+ assert.equal(plan.place,'coin-laundry');assert.equal(plan.stand.seat.key,LAUNDRY_SEATS[0].key,'on the bench while it washes');
 });
 
 test('the machines turn on the clock: a resident’s washer, then their dryer, and the player’s own wash',()=>{
- const wed=dayWith(3),v=LAUNDRY_VISITS.find(v=>v.name==='Dr Kakazu'),t=visitTimeline(v);
+ const wed=dayWith(3),v=LAUNDRY_VISITS.find(v=>v.name==='Nhung'),t=visitTimeline(v);
  const state=(m,id)=>laundryMachinesAt(wed+m).find(s=>s.id===id);
  assert.equal(state(t.wash[0]+1,'W3').running,'wash');assert.equal(state(t.dry[0]+1,'D2').running,'dry');assert.equal(state(t.dry[0]+1,'W3').running,null);
  assert.equal(state(t.wash[0]-30,'W3').running,null,'nothing turns before anyone comes');

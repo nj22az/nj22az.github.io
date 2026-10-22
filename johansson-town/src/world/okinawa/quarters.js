@@ -645,7 +645,7 @@ const NAMEPLATES=Object.freeze({
  kamiya:'An empty red-tile house, swept, with the water off at the main.',
  'kitahama-1':'Thao, Chin and Vy\'s house: a red-tile roof, a hinpun, and a row of herb pots that Thuan named after customers when she stayed here. The gate latch is oiled so the late shift does not wake anybody.',
  'kitahama-2':'Mrs Sato\'s house, concrete and very tidy, with a stock pot always on the back step to cool. She walks down to the morning auction at half past five and has the ramen stock on by seven.',
- 'kitahama-3':'Nhung, Kōji and Riku\'s house. A wetsuit on the line, fish boxes stacked by the gate, a football in the yard, a crate of reading copies from the bookshop in the genkan, and a radio that plays the weather on the hour.',
+ 'kitahama-3':'Nhung, Kōji and Riku\'s house. A wetsuit on the line, fish boxes stacked by the gate, a football in the yard, a crate of reading copies from the old bookshop and the doctor’s bag in the genkan, and a radio that plays the weather on the hour.',
  'fumoto-1':'The oldest house in Fumoto, red tile behind a hinpun, and empty. The shutters are down and the yard has gone to grass.',
  'fumoto-2':'An empty red-tile house. Hand-carved shisa still sit on the gate, from the year the co-op store opened.',
  'fumoto-3':'An empty concrete house, rebuilt after Typhoon Della in 1977. The back kitchen once made the hamlet’s tofu; it is dark now, with the water off at the main.',

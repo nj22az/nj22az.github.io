@@ -73,11 +73,11 @@ const partOf=(block,part)=>dress({status:'part',partOf:block,what:part});
  */
 const NORTH_BLOCK=dress({
  status:'dressed',name:'The lane garden and Kitahama monthly parking',use:Object.freeze(['vegetable-garden','monthly-parking']),
- for:'1, 2 and 3 Kitahama (the garden); Kōji, Dr Ken and Mac (the parking); the Kitahama residents’ association, which lets both',
+ for:'1, 2 and 3 Kitahama (the garden); Kōji, Nhung and Mac (the parking); the Kitahama residents’ association, which lets both',
  why:'Kitahama’s houses are walled plots with a pedestrian gate and no drive, and their yards are full (1 Kitahama’s hinpun and herb pots, Mrs Sato’s stock pot on the back step, Kōji’s fish boxes), so the lane wanted ground to grow on and somewhere to leave a car off the 3 m lanes. Cars come up the approach from the beach, so the bays are at its end; the garden is where the households are.',
  ground:'grass, as every Kitahama lot; crushed coral under the four bays only',
  hours:'The garden is busiest from six to eight in the morning and after five, out of the sun. The cars hardly move: everything on Minato is a walk away.',
- stories:Object.freeze(['the first gōyā of the summer, and whose turn it is','Mac under his bonnet on his week ashore, Chin and Tetsu leaning on the wing','Dr Ken’s car going out at night for a house call','crows and the negi','Thao teaching Riku the Vietnamese names of the herbs','the bay to let']),
+ stories:Object.freeze(['the first gōyā of the summer, and whose turn it is','Mac under his bonnet on his week ashore, Chin and Tetsu leaning on the wing','Nhung’s car going out at night for a house call','crows and the negi','Thao teaching Riku the Vietnamese names of the herbs','the bay to let']),
  props:[
   prop('herb-bed','Thao’s herb bed: lemongrass, rau răm and perilla',R(18.4,23.4,62.8,64.0),1.3,'1 Kitahama is across the lane; the herbs her family cooks with are not sold on the island'),
   prop('negi-bed','Mrs Sato’s spring onions',R(24.6,29.6,62.8,64.0),.8,'for her own kitchen at 2 Kitahama; she likes to pull them the minute she needs them'),
@@ -92,7 +92,7 @@ const NORTH_BLOCK=dress({
   prop('parking-hedge','the parking’s hibiscus hedge',R(30.8,41.2,67.7,68.3),1.0,'between the cars and the garden'),
   prop('parking-sign','the monthly parking sign (月極駐車場) on its posts',R(35.35,36.65,67.22,67.38),1.9,'at the back of the bays, read from the lane'),
   prop('bay-1-truck','Kōji’s white kei truck, reversed into bay 1',R(31.3,32.9,63.6,67.05),1.99,'for the outboard, the ice chests and the nets when the boat comes out of the water',{owner:'Kōji',bay:1}),
-  prop('bay-2-car','Dr Ken’s little kei car, in bay 2',R(33.95,35.45,63.55,67.0),1.82,'for house calls to Kitahama and the far end of the island; the clinic has no bay of its own',{owner:'Dr Ken',bay:2}),
+  prop('bay-2-car','Nhung’s little kei car, in bay 2',R(33.95,35.45,63.55,67.0),1.82,'for house calls to Kitahama and the far end of the island; the clinic has no bay of its own',{owner:'Nhung',bay:2}),
   prop('bay-3-hatchback','Mac’s old yellow hatchback, its bonnet up, in bay 3',R(36.43,38.17,63.15,67.1),1.86,'an engineer keeps an old engine running for the pleasure of it: the bonnet is up more often than the car is driven',{owner:'Mac',bay:3}),
   prop('mac-toolbox','Mac’s red toolbox, on the gravel by his front wheel',R(38.24,38.44,63.25,63.67),.3,'the spanners for the job in hand, in reach of the open bonnet and inside his own bay, off the lane',{owner:'Mac',bay:3}),
   prop('bay-4-stops','the empty bay’s wheel stops',R(39.05,40.75,66.65,66.85),.17,'bay 4 is to let',{bay:4}),

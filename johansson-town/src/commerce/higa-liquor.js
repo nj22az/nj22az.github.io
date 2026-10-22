@@ -115,7 +115,7 @@ export const HIGA_KUSU=Object.freeze({id:'higa-kusu',jp:'古酒',name:'The Higa 
 export const HIGA_ROUND=Object.freeze({
  driver:'Kōji',vehicle:'Kōji’s white kei truck (Kitahama monthly parking, bay 1)',
  pay:1500,payText:'¥1,500 a round, cash from the till, written in the delivery book',
- days:Object.freeze([2,5,6]),start:630,end:705,
+ days:Object.freeze([2,5]),start:630,end:705,
  why:'Kōji is on the quay from half past four and asleep from noon: the round fits between the ice for the boats and his sleep, on his weeks ashore, and the truck he already has for the ice chests carries twenty crates.',
  // Where he loads and where he leaves the empties: Higa's own front, and the crate yard across Main Street (lots.js).
  load:Object.freeze({at:Object.freeze([4.6,7.15]),what:'loading the round from the crates by the door'}),
@@ -126,7 +126,8 @@ export const HIGA_ROUND=Object.freeze({
    aboard:'It rides in Thao’s truck with the Minato order, one crate left at the back door.'}),
   Object.freeze({account:'coral-bay-bar',days:Object.freeze([2,5]),at:'10:58',where:'the ferry ramp, for the Kitano-jima crossing',place:'ferry',
    aboard:'Thao leaves the ice boxes at the ramp, and Kōji, the bosun that week, stows them on the car deck himself.'}),
-  Object.freeze({account:'market',days:Object.freeze([6]),at:'10:42',where:'Sakura’s door',place:'market',
+  // Sakura's cases came on Saturdays until the shop took Saturday as its closing day (the owner, 22 October 2026).
+  Object.freeze({account:'market',days:Object.freeze([5]),at:'11:06',where:'Sakura’s door',place:'market',
    aboard:'Thuan wheels the cases across Main Street herself on Sakura’s trolley.'}),
  ]),
  empties:Object.freeze({at:'11:30',where:'Higa Liquor’s crate yard, across Main Street',point:Object.freeze([-7.2,12.4])}),
@@ -164,7 +165,7 @@ export function higaRoundAt(minutes){
 export function higaDeliveryBook(minutes){
  const accounts=ACCOUNTS['higa-saketen'],ashore=kojiAshore(minutes),days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
  const lines=[`${SUPPLIERS['higa-saketen'].name} · delivery book`,
-  ashore?`This week: Kōji’s truck, Tue · Fri · Sat from 10:30 (${HIGA_ROUND.payText}).`:'This week Kōji is at sea as the bosun’s relief: the customers collect.',''];
+  ashore?`This week: Kōji’s truck, Tue · Fri from 10:30 (${HIGA_ROUND.payText}).`:'This week Kōji is at sea as the bosun’s relief: the customers collect.',''];
  for(const s of HIGA_ROUND.stops){
   const a=accounts[s.account];
   lines.push(`${a.name} (${s.days.map(d=>days[d]).join(' · ')}, ${s.at})`,'  '+a.lines.join('; '),'  '+(ashore?'Kōji, to '+s.where+'.':s.aboard));
