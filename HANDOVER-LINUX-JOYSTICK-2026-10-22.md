@@ -1,46 +1,50 @@
 # Linux controller handover — 22 October 2026
 
-## Owner's next priority
+## First task for the next agent
 
-The owner reports: **“The right joystick should control camera now it doesn’t on either Bluetooth or steam deck.”**
-Fix actual horizontal and vertical camera control with the Steam Deck's built-in right stick and the Bluetooth controller. Do not treat simulated-controller tests as proof that either physical device works. The controller model, reported mapping and Steam Input configuration have not yet been captured. The owner requested the Linux work be integrated into main and these notes supplied to a new agent.
+The owner reported: **“The right joystick should control camera now it doesn’t on either Bluetooth or steam deck.”**
 
-Read `AGENTS.md`, `CLAUDE.md`, `johansson-town/AGENTS.md` and directory instructions first. Preserve the current main world and its approved visuals. Keep concurrent town-hall/backdrop and character work separate. Do not split repositories.
+That report preceded a concurrent controller repair and the publication of **Linux 0.2.16**. First confirm the installed version and test 0.2.16 on both the built-in Steam Deck controls and the Bluetooth controller. Real-device confirmation is still missing. Do not claim a hardware fix from simulated-controller tests, and do not duplicate the already-merged #340.
 
-## Published baseline
+Read `AGENTS.md`, `CLAUDE.md`, `johansson-town/AGENTS.md` and directory instructions. Preserve the approved world, visuals, crew, saves and controls; keep unrelated backdrop/character work separate. No repository split.
 
-- Linux **0.2.15** is already published: [release](https://github.com/nj22az/nj22az.github.io/releases/tag/johansson-world-linux-v0.2.15), [install/update](https://nj22az.github.io/linux-port/install/).
-- Its tag points to `1071a3880a35c12fed7ec8057710366bf1776805` on `codex/johansson-world-steam-deck`. Do not overwrite the tag or release assets. A shipped controller correction requires a subsequent version, at least 0.2.16; inspect latest releases first.
-- Approved ferry implementation: #333, main `e16d14fff20f9342c693d98700271f1563fa4dc3`. Linux integration: #338, `6f69315ec6d89702896810ca5c3dc051f2046497`. Native/console night-start fixture: #343, `1071a3880a35c12fed7ec8057710366bf1776805`.
-- Public guides/evidence: #344, main `68c8de703d950677996d298da712076139122396`; see `linux-port/acceptance-0.2.15.md`.
-- Release run [39707936489](https://github.com/nj22az/nj22az.github.io/actions/runs/39707936489) passed native startup, controller recovery, disk saves, publication and a fresh installation of the public archive with SHA-256 verification.
-- Full archive: 444,779,537 bytes, SHA-256 `7a0c48a787a87ce6ecb66b66282800deb9e143450bff55ee7080e08682a314c4`. Compatible 0.2.14 patch: 2,209,477 bytes, SHA-256 `9338fb93f5d6658fab72056a5958af967590a480d59d1eeafc4ed007c54da7d5`.
+## Current main and release state
 
-## Existing controller repair — investigate before duplicating it
+- [PR #345](https://github.com/nj22az/nj22az.github.io/pull/345) merged the released Linux edition with main through `9b578fa`, preserving the approved #342 bench/clothing work and main's newer bar service/hand work. Merge: `32f6994d95320d1cfdf291ec8a951dc3927f89fe`.
+- [PR #193](https://github.com/nj22az/nj22az.github.io/pull/193) then brought the published 0.2.16 controller repair into main. Merge: `f72413df9daba9b776be25382f80e58b8e57b480`. Its remaining delta was exactly ten `steam-deck/` files; the tested World source/runtime was unchanged.
+- [PR #340](https://github.com/nj22az/nj22az.github.io/pull/340) is **MERGED**, not open. Its final tested source was `33cfc3c0ccf247ed07a26c93c6cf8cf9680ef91a`; the Linux merge/release commit is `8a04557518d7a2f15e3e1940f1faf8d2ba75ac5a`. Their trees are identical.
+- [Linux 0.2.16](https://github.com/nj22az/nj22az.github.io/releases/tag/johansson-world-linux-v0.2.16) is already published. Full acceptance [39726497285](https://github.com/nj22az/nj22az.github.io/actions/runs/39726497285) and release/public installer verification [39728457286](https://github.com/nj22az/nj22az.github.io/actions/runs/39728457286) passed. Do not overwrite its tag/assets. A further shipped correction needs the next unpublished version, at least 0.2.17; inspect latest releases first.
+- Linux 0.2.15 remains the historical ferry release at `1071a388`: #333 approved the ferry, #338 integrated it into Linux, #343 repaired night-start acceptance setup. Its evidence is `linux-port/acceptance-0.2.15.md`. Do not revive closed duplicate #335.
+- Another agent handled the 0.2.16 release. Inspect current public guides/installer and open follow-ups before editing them; do not duplicate or overwrite concurrent release-documentation work. The earlier ferry-release follow-up was completed and disabled. No new controller follow-up was scheduled here.
 
-[PR #340](https://github.com/nj22az/nj22az.github.io/pull/340), branch `claude/linux-bluetooth-controller`, head `c5eef5eda4b2c75c3e38f5d233e82de6fea2d169`, is OPEN and targets the Linux integration branch. It is **not in published 0.2.15** and is not included in this main integration.
+## What #340 changes
 
-It adds `steam-deck/ui/pad-layout.mjs`, normalising unmapped Linux xpad/xpadneo, hid-playstation, hid-nintendo and hid-generic layouts. Triggers and D-pad hats become buttons. `controller.mjs` selects a pad being pressed instead of an idle virtual pad; `console-ui.mjs` distinguishes switching connected pads from losing one. It includes three driver-layout/late-connect/multiple-pad regression tests. Review its assumptions: first-seen axes may not be resting, button counts alone may not identify a driver, and an explicit saved controller selection wins over automatic takeover.
+`steam-deck/ui/pad-layout.mjs` normalises unmapped Linux driver layouts (xpad/xpadneo, hid-playstation, hid-nintendo, hid-generic). Triggers and D-pad hats become standard buttons, preventing resting trigger axes being treated as the camera.
 
-Its overall run [39688481038](https://github.com/nj22az/nj22az.github.io/actions/runs/39688481038) failed, but **the controller recovery and full console/browser checks passed**, recording zero page errors and missing files. The failure was native festival setup starting indoors after a sleeping cabin start: `FESTIVAL_SMOKE stage:false`, “Step outside onto the island before joining the festival.” This is the same acceptance-fixture problem subsequently fixed by #343. Do not mislabel that run as a demonstrated controller regression, and do not merge #340 solely because the fake-pad tests pass. Rebase/combine it with current source and rerun full acceptance.
+`controller.mjs` permits a pad being pressed to take over from an idle virtual pad. An explicitly saved controller choice still wins. `console-ui.mjs` distinguishes switching connected pads from losing one and displays the driver-layout status.
 
-## Trace and reproduce
+The original #340 run failed in the **native festival fixture**, not its browser/controller checks: it started indoors after a sleeping cabin start. #343 subsequently fixed that fixture. The final 0.2.16 acceptance/release succeeded. Old PR text saying “ship in 0.2.14” is stale.
 
-1. Capture version, launch route (Steam Gaming Mode, Steam Desktop Mode, direct executable), controller ID, `mapping`, index, button count and every raw axis at rest and while moving each stick independently. Include all connected pads: Steam Input can expose an idle virtual pad beside a physical one. Avoid guessing which axis is the right stick.
-2. Check saved Controls & camera settings: selected controller, horizontal/vertical axes, swapped sticks, dead zone, sensitivity and invert Y. Test a fresh profile and a retained old profile; preserve the user's existing saves and bindings. Verify the Steam Input layout emits right-stick joystick axes; if it emits mouse motion instead, trace that path explicitly.
-3. Follow `steam-deck/ui/controller.mjs` → `steam-deck/ui/console-ui.mjs` → the desktop input bridge → `johansson-town/src/input/analogue.js` and `src/game.js` camera update. Compare raw axes, normalised `frame.look`, selected pad and actual yaw/pitch. Check menu/reconnect suppression, active-device choice, camera modes and focus/pointer-lock conditions.
-4. Reproduce the real failure with a captured device fixture, then add regression coverage that fails before the fix. Retain standard pads, unmapped pads, late connection, two-pad takeover, held-button suppression, reconnect/remap persistence, movement, menus and near-door B exit.
-5. Run the actual built game. Check yaw and pitch with each physical device, while walking and standing, indoors and outdoors, after pause/resume, reconnect and restart. Report physical checks honestly if hardware is unavailable.
+## Reproduce and diagnose any remaining fault
 
-## Integration and validation rules
+1. Record version and launch route: Steam Gaming Mode, Steam Desktop Mode or direct executable. Capture every connected Gamepad's ID, index, `mapping`, button count and raw axes at rest and while moving each stick independently. Include virtual pads. The actual Bluetooth model/layout has not been captured.
+2. Inspect saved Controls & camera settings: selected controller, look/move axes, swapped sticks, dead zone, sensitivity and invert Y. Compare a fresh profile with the retained old one while preserving saves/bindings. Check whether Steam Input emits joystick axes or mouse motion.
+3. Follow `steam-deck/ui/controller.mjs` and `pad-layout.mjs` → `console-ui.mjs`/`window.johanssonDesktopInput` → `johansson-town/src/input/analogue.js` and `src/game.js`. Compare raw axes, normalised `frame.look`, active device and actual yaw/pitch. Inspect focus, menu/reconnect suppression and camera mode.
+4. Review assumptions, without treating them as proven causes: the first sampled axes may not be resting; button counts may not identify a driver; axis-only movement may need device takeover; retained raw-axis settings may interact with newly normalised axes; an explicit controller selection can retain an idle device.
+5. Capture the real failing device as a regression fixture. Retain standard/unmapped pads, late connection, two-pad behaviour, held-button suppression, remaps/reconnect, movement, menu controls and near-door B exit.
+6. Verify yaw and pitch with each real device while standing/walking, indoors/outdoors, after pause, reconnect and restart. State hardware limits honestly if no device is available.
 
-The Linux-to-main integration combines released Linux source with main through `9b578fa`, retaining main's later izakaya/bar service, hand work and compact-room assets rather than restoring older Linux copies. The approved two-person bench and clothing-fit work (#342) is retained, including seatFront through the avatar update alongside sleeping. The game conflicts preserve Linux sleeping/owned-home handling, bed-restricted exit plus ferry departure context, and desktop pause/festival/frame handling. Generated runtime is rebuilt from the combined source, last. Do not copy either parent's whole index or runtime over the combination.
+## Validation and integration safeguards
 
-The published ferry is already owner-approved: scheduled departures, T−2 horn/sign/passenger choices, safe gangway closure, walkable onboard travel, safe destination exit, passenger/vehicle save migration, Mac's relief watch, full Linux crew simulation and separate request-only quick crossing must remain intact.
+The combined World/runtime in #345 passed [World guard 39727702564](https://github.com/nj22az/nj22az.github.io/actions/runs/39727702564): **311 tests across 59 files**. [Linux run 39727702559](https://github.com/nj22az/nj22az.github.io/actions/runs/39727702559) passed four layouts, all 26 residents, owned beds/waking/doorway B, conversations/quarrel pause, save/controller reload, web isolation, zero page errors/missing files, actual native startup/festival stages and disk saves.
 
-Baseline evidence: integration run [39686445369](https://github.com/nj22az/nj22az.github.io/actions/runs/39686445369) passed 258 World tests across 49 files, 68 focused ferry/controller/access tests, 35 desktop tests, 2,624 offline files and native checks. Final pre-release console run [39702000847](https://github.com/nj22az/nj22az.github.io/actions/runs/39702000847) passed all four layouts, 26 canonical residents, owned beds/waking/doorway B, saved identity/controller reload, conversations and web isolation. Those results establish the 0.2.15 baseline, not the owner's newly reported hardware behaviour or the newly combined main build.
+The 0.2.16 repair separately passed its full release-tree acceptance. All **38 desktop tests** also passed locally on the proposed main + 0.2.16 combination. This native-only merge did not change the World/runtime tested in #345. Do not describe these software results as physical Steam Deck acceptance.
 
-Build/test starting points:
+Main retains both `seatFront` and native `sleeping` in the game/actor updates, native bed-restricted exit plus ferry departure context, and desktop pause/festival handling. The combined runtime entry is `boot-CLW2OJgY.js`. Never copy either parent's whole index/runtime over a source combination; rebuild last.
+
+Keep the approved timetable, T−2 horn/sign/choices, safe gangway closure, walking onboard travel and destination exit, passenger/vehicle save migration, Mac's relief watch, full Linux crew simulation and separate request-only quick crossing intact.
+
+## Commands and next release
 
 ```sh
 npm ci --prefix steam-deck
@@ -50,6 +54,6 @@ node --test johansson-town/tests/controller-game.test.mjs johansson-town/tests/r
 cd johansson-town && node tools/ci-guard.mjs
 ```
 
-Install the existing pinned Vite/Spector build dependencies as the workflows do. `npm run package --prefix steam-deck` prepares the installed site; `npm run test:console --prefix steam-deck` then exercises the real browser world. Read `.github/workflows/linux-console-check.yml` and `johansson-world-linux.yml` for recovery/native/package/installer gates. Full console coverage takes minutes under software rendering; do not run other browsers beside it. Keep assertions; fix setup instead of weakening checks.
+Install the pinned Vite/Spector dependencies as the workflows do. Package with `npm run package --prefix steam-deck`, then run `npm run test:console --prefix steam-deck`. Read `.github/workflows/linux-console-check.yml` and `johansson-world-linux.yml` for recovery/native/offline/installer gates. Software-rendered full acceptance can take many minutes; do not run other browsers alongside it or weaken assertions to finish sooner.
 
-Before shipping, bump the next unpublished Linux version, rebuild combined runtime last, pass the full guard/desktop/ferry/console/offline/native gates, and verify publication plus the public installer/checksum. Update guides separately after success. The earlier ferry-release follow-up is complete and disabled; no controller follow-up has been scheduled. Physical Steam Deck/GPU/Steam Input acceptance remains outstanding.
+Before another release, bump the next unpublished version, rebuild runtime last if World source changes, complete appropriate World/desktop/ferry/console/offline/native checks, verify actual publication and the public installer/checksum, then update guides separately. Preserve existing save locations and published release assets.
