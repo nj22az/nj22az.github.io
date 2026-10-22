@@ -20,6 +20,11 @@ test('dead zone removes drift, diagonals stay bounded, missing axes stay neutral
  const p=pad();p.axes=[];assert.deepEqual(createDesktopInput(()=>({})).sample([p]).look,{x:0,y:0});
  assert.deepEqual(profileSettings({moveAxes:[NaN,-1],bindings:[Infinity]}).moveAxes,[0,1]);
 });
+test('a Look or Move pair saved past the pad\'s axes falls back to the default sticks',async()=>{
+ const {createDesktopInput}=await load(),p=pad('');p.axes=[0,-.9,.9,0];
+ const frame=createDesktopInput(()=>({lookAxes:[3,4],moveAxes:[0,6]})).sample([p]);
+ assert.ok(frame.look.x>.7,'The right stick still turns the camera');assert.ok(frame.move.y<-.7,'The left stick still walks');
+});
 test('selected controller and hotplug keep the active device stable',async()=>{
  const {createDesktopInput}=await load(),a=pad(),b=pad('');a.id='Deck';b.id='USB pad';b.index=2;
  const input=createDesktopInput(()=>({controller:'USB pad'}));b.axes[1]=-1;
