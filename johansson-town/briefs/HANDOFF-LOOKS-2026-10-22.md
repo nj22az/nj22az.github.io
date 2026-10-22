@@ -35,3 +35,27 @@ the game looks like", then: "Yea but I want one more, manga or pencil crayon gra
   luminance if the owner wants more grey.
 - Photo studio captures already include the live look (they read the canvas); its own films still apply on top.
 - Possible follow-ups: let the storyteller's comics choose a look; an oil-painting look for the photo studio only.
+
+## Free camera (same branch, second commit)
+Owner: "Could you add a free camera option too? So I could rotate and view the scene from any angle; it freezes the game".
+
+- `johansson-town/src/input/free-camera.js` (new): a pure flight step (`stepFreeCamera`) and the controller. Keys: W A S D or
+  arrows to fly, E/Space up, Q/C down, Shift faster, Alt slower, mouse drag to look, wheel forward and back. Touch: one finger
+  looks, pinch moves, two-finger drag slides. Controller: left stick flies, right stick looks, triggers/bumpers go down and up,
+  B leaves. Esc, O or Exit leaves; "Back to start" returns to the entry view. Movement eases in and out. The camera never goes
+  below the ground or the room floor and stays on a leash (80 m outdoors, 14 m indoors) so streamed districts stay drawn.
+  It respects the player's sensitivity and invert-Y settings.
+- `johansson-town/src/game.js`: Town book tile **Free camera** (`#freeCameraButton`) and the O key. While free, the loop
+  consumes the clock delta and draws through `renderStill` (the audit's former `render()` body, now shared), so no simulation,
+  animation, input or saves advance. Johansson's body is shown even in first person, and the first-person hands are hidden.
+  Leaving needs no restore, because play recomputes the camera on the next frame.
+- `tests/free-camera.test.mjs` (new, in the CI guard).
+
+Checks: `node --test` on the free-camera, looks, cel-look, runtime-package and audit-boot tests: 35 pass. CI guard: 344 pass,
+1 fail (the same `no-z-fighting` out-of-memory failure; `--max-old-space-size` does not reach its child process). `node tools/cloud-boot-smoke.mjs`
+on the rebuilt runtime: clean, so audit stills still work through `renderStill`. Source boot in software Chromium at 960×600:
+O entered (HUD hidden, bar shown); E+S rose and backed off; a mouse drag turned the view. Two screenshots 4 s apart with no
+input were pixel-identical (the world is frozen). Esc returned to the original view with the HUD back.
+Not checked: touch gestures and controller on real devices; the bar at phone width.
+Known: with the clock on real time, the wall clock keeps running while frozen, so the town catches up on leaving, as after any
+pause. The lens passes through walls, by design.
