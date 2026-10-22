@@ -268,7 +268,7 @@ export function buildTetsuoFlat({site,profile,room,reg,action,collider=()=>{}}){
  const zc=futonZ,layout={
   bounds:{minX:-hw+.05,maxX:hw-.05,minZ:-hd+.05,maxZ:hd-.05},spawn:[X(doorX),0,hd-.5],exit:[X(doorX),1.1,hd-.04],door:[X(doorX),0,hd-.45],
   bed:[X(futonX),.28,zc+.75],bedside:[X(futonX+.75),0,zc+.55],cover:{position:[X(futonX),.36,zc+.15],width:.9,length:1.3,axis:'z'},
-  table:[X(kx),0,.06],tableStand:[X(kx-.05),0,.5],tableSeatHeight:.11,tableSeatYaw:0,hatHook,
+  table:[X(kx),0,.06],tableStand:[X(kx-.05),0,.5],tableSeatHeight:.11,tableSeatFront:.28,tableSeatYaw:0,hatHook,
  };
  let elapsed=0,lastMinutes=0,bedding={amount:0,phase:'stored'},workRequired=false,workStage=null,workAge=0,observedNeed=null,screenClock=0;
  const awake=m=>!['sleep','wake','bedtime'].includes(homeRoutine(profile,m).id);

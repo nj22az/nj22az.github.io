@@ -24,6 +24,8 @@ export const BEACH_CORNER_SEATS=Object.freeze([-.55,.55].map((dz,i)=>Object.free
  id:'beach-chair-'+i,label:'Sit in the beach chair',beachCorner:true,
  position:[C.x,sand(C.x,C.z+dz),C.z+dz],stand:[C.x-1.05,sand(C.x-1.05,C.z+dz),C.z+dz],
  surfaceY:sand(C.x,C.z+dz)+.2575,eyeY:sand(C.x,C.z+dz)+.92,yaw:-Math.PI/2,pitch:.04,
+ // (the canvas seat runs .5 m, its middle 2 cm ahead of the mark: its front edge is .27 m ahead, seat-slots.js `front`)
+ front:.27,
 })));
 
 function stripes(){

@@ -190,7 +190,7 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},downstair
   box([.46,.07,.46],[x,FURNITURE_HEIGHTS.seat-.035,z],0x3f4d47,'Desk chair seat');box([.06,.48,.42],[x-.22,FURNITURE_HEIGHTS.seat+.28,z],0x3f4d47,'Desk chair back');
   cyl(.03,FURNITURE_HEIGHTS.seat-.1,[x,(FURNITURE_HEIGHTS.seat-.1)/2+.06,z],0x6f7773,'Desk chair column',8);cyl(.26,.05,[x,.035,z],0x2f3532,'Desk chair base',5);}
  const chair=anchor([item('chair').at[0],1,item('chair').at[2]],'Sit at the harbour desk',()=>action('seat','Sakura office','The ferry berth lies beyond the harbour window: the deliveries come off there, and the 22:00 boat home leaves from it.'));
- chair.userData.seat={position:[...item('chair').at],stand:[...SAKURA_OFFICE.deskStand],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.12,yaw:-Math.PI/2,pitch:0};
+ chair.userData.seat={position:[...item('chair').at],stand:[...SAKURA_OFFICE.deskStand],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.12,yaw:-Math.PI/2,pitch:0,front:.23};
  {const l=item('ledger');box(l.size,[l.at[0],l.at[1]+.015,l.at[2]],0xd7ceb4,'Till ledger');box([.01,.032,.3],[l.at[0],l.at[1]+.016,l.at[2]],0x7a5c3e,'Till ledger spine');
   // The fax telephone: its body, the handset on its cradle along the left, the paper roll's slanted tray at the back.
   const p=item('phone'),[px,py,pz]=p.at,[pw,ph,pd]=p.size,FAX=0xd8cdb0;box(p.size,[px,py+ph/2,pz],FAX,'Desk telephone');

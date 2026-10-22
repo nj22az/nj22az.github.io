@@ -4,6 +4,7 @@ Start here on every task, then read the latest applicable notes below. Maintain 
 
 | Work area | Current handover |
 | --- | --- |
+| Food service and seating integration: PR #350 on main plus PR #351 | [22 October combined integration review](johansson-town/briefs/HANDOFF-FOOD-SEATING-INTEGRATION-2026-10-22.md). Owner visual approval pending; not merged. |
 | Johansson World: world, characters, benches and storytelling | [22 October 2026 World handoff](johansson-town/briefs/HANDOFF-2026-10-22.md). Also read the earlier notes it explicitly references. |
 | Minato Izakaya: food preparation, separate food/drink delivery and serving clearances | [22 October 2026 food-service handover](johansson-town/briefs/HANDOFF-IZAKAYA-FOOD-2026-10-22.md). Read alongside the World handoff. |
 | Linux edition, controllers, right-stick camera and release integration | [22 October 2026 Linux controller handover](HANDOVER-LINUX-JOYSTICK-2026-10-22.md). Read alongside the World handoff for shared game changes. |

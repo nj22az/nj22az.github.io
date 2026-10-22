@@ -1,0 +1,13 @@
+{
+  "baseMain": "96a0f83583bb8f10c379f2640cd0216fd4294faa",
+  "seatingHead": "5364c8c4d1cfc33a4cd45c5ba69a4c2c13bc97cb",
+  "runtimeSource": "9d620bbe3ed3f40ecca877a6f078999a399f613103062765eb5928ef1ce8508c",
+  "guardTests": 336,
+  "guardFiles": 60,
+  "focusedTests": 68,
+  "webTests": 30,
+  "runtimePackageTests": 3,
+  "softwareChromium": true,
+  "physicalDevice": false,
+  "ownerVisualApproval": false
+}
