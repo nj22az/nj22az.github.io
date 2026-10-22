@@ -1,5 +1,5 @@
 import {MINATO_COMPACT} from '../world/interiors/minato-compact-plan.js';
-import {SHARED_DINING_BOUNDS} from '../world/interiors/shared-dining-layout.js';
+import {SHARED_DINING_BOUNDS,SHARED_DINING_SEAT_FRONT} from '../world/interiors/shared-dining-layout.js';
 import {createRoomWalk} from './room-walk.js';
 import {buildServingDish,buildServingDrink,buildServingBite} from './izakaya-serving-visuals.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -66,7 +66,7 @@ function boothService(x,z){
 const boothSeat=(id,row,label)=>{
  const x=booth.seatX[1],z=booth.benchZ[row],topZ=booth.position[2]+(row===0?-1:1)*booth.tableDepth*.2,serveX=booth.standX[1];
  const drinkZ=booth.position[2]+(row===0?-1:1)*(booth.tableDepth/2-.07),service=boothService(x,drinkZ);
- return Object.freeze({id,label,position:[x,0,z],stand:[serveX,0,z],surfaceY:plan.seatHeight,eyeY:row===0?1.14:1.2,yaw:row===0?Math.PI:0,
+ return Object.freeze({id,label,position:[x,0,z],stand:[serveX,0,z],surfaceY:plan.seatHeight,eyeY:row===0?1.14:1.2,yaw:row===0?Math.PI:0,front:SHARED_DINING_SEAT_FRONT.bench,
   table:[service.spotX,booth.tableTop,drinkZ],dish:[x+(row===0?.15:-.15),booth.tableTop,topZ],serve:[serveX,0,topZ],
   route:service.route,close:service.close,
  });
@@ -76,7 +76,7 @@ export const IZAKAYA_PLAYER_SEATS=Object.freeze({
  window:boothSeat('window',1,'Sit and enjoy the evening'),
  // The five counter stools, among the regulars.
  ...Object.fromEntries(plan.counterStools.map((x,i)=>['counter'+i,Object.freeze({id:'counter'+i,label:'Sit at the counter',counter:true,
-  position:[x,0,plan.counterSeatZ],stand:[x,0,plan.counterStandZ],surfaceY:plan.seatHeight,eyeY:1.32,yaw:0,
+  position:[x,0,plan.counterSeatZ],stand:[x,0,plan.counterStandZ],surfaceY:plan.seatHeight,eyeY:1.32,yaw:0,front:SHARED_DINING_SEAT_FRONT.stool,
   table:[x+.15,plan.counter.top,COUNTER_EDGE-.06],dish:[x-.12,plan.counter.top,plan.counter.position[2]+plan.counter.depth*.25],
   serve:[x+.4,0,COUNTER_EDGE+.18],...counterService(x)})])),
 });

@@ -27,8 +27,9 @@ export const LAUNDRY_STANDS=Object.freeze({
 });
 /** The bench's two places: [sit, stand] in the world, facing the machines (world +x). Visitors take them in this order. */
 export const LAUNDRY_SEATS=Object.freeze([
- Object.freeze({key:'laundry-bench-0',at:laundry(-.8,-1.2),stand:laundry(-.8,-.55),height:.42,yaw:-Math.PI/2}),
- Object.freeze({key:'laundry-bench-1',at:laundry(.2,-1.2),stand:laundry(.2,-.55),height:.42,yaw:-Math.PI/2}),
+ // (the bench's front edge, local z -1.04, is .16 ahead of the marks: `front`, seat-slots.js)
+ Object.freeze({key:'laundry-bench-0',at:laundry(-.8,-1.2),stand:laundry(-.8,-.55),height:.42,yaw:-Math.PI/2,front:.16}),
+ Object.freeze({key:'laundry-bench-1',at:laundry(.2,-1.2),stand:laundry(.2,-.55),height:.42,yaw:-Math.PI/2,front:.16}),
 ]);
 const SEAT_OF=Object.freeze({'Ms Uezu':0,'Dr Kakazu':0,Thao:1});
 const isSaturday=minutes=>townCalendarAt(minutes).weekday===6;
@@ -56,13 +57,13 @@ export function shopDayPlan(name,minutes,{pointFor=()=>null}={}){
  // The yuntaku bench in the shop's evening opening.
  const seat=yuntakuSeatAt(name,minutes);
  if(seat)return {place:'higa-bench',target:[...seat.stand],activity:'a bottle on the bench outside Higa Liquor',
-  stand:Object.freeze({yaw:seat.yaw,pose:'Drink',held:'beer',seat:Object.freeze({key:'higa-'+seat.id,at:seat.at,height:seat.height}),why:seat.why})};
+  stand:Object.freeze({yaw:seat.yaw,pose:'Drink',held:'beer',seat:Object.freeze({key:'higa-'+seat.id,at:seat.at,height:seat.height,front:seat.front}),why:seat.why})};
  // Washing day at the coin laundry.
  const visit=laundryVisitAt(name,minutes);
  if(visit){
   if(visit.stage==='waiting'){const s=LAUNDRY_SEATS[SEAT_OF[name]??0];
    return {place:'coin-laundry',target:[...s.stand],activity:'waiting for the washing on the coin laundry bench, a manga open',
-    stand:Object.freeze({yaw:s.yaw,pose:'Read',held:'paper',seat:Object.freeze({key:s.key,at:s.at,height:s.height}),why:visit.why})};}
+    stand:Object.freeze({yaw:s.yaw,pose:'Read',held:'paper',seat:Object.freeze({key:s.key,at:s.at,height:s.height,front:s.front}),why:visit.why})};}
   const t=visit.timeline,stage=visit.stage==='folding'?'table':m<t.wash[0]?visit.washers[0]:visit.dryer,S=LAUNDRY_STANDS[stage];
   return {place:'coin-laundry',target:[...S.at],activity:visit.stage==='folding'?'folding the washing at the coin laundry':'loading the machines at the coin laundry',
    stand:Object.freeze({yaw:S.yaw,pose:'Interact',why:visit.why})};

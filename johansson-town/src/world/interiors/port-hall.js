@@ -149,7 +149,7 @@ export function buildPortHall({room,reg,collider=()=>{},action,naha=()=>{},upsta
   const zz=z+(i-2)*.55,x=-.6+row*1.9;
   box('Hall seat',[.46,.06,.46],[x,.44,zz],seatColours[row]);
   const back=box('Hall seat back',[.06,.42,.46],[x+.24,.68,zz],seatColours[row]);back.rotation.z=-.1;
-  const seat=spot([x-.65,.9,zz],'Sit in the ferry waiting hall',()=>action('seat','Ferry waiting hall','A seat by the pier windows while you wait for the boat.'));seat.userData.seat={id:'port-hall-'+row+'-'+i,position:[x,0,zz],stand:[x-.85,0,zz],surfaceY:.47,eyeY:1.18,yaw:Math.PI/2,pitch:0};
+  const seat=spot([x-.65,.9,zz],'Sit in the ferry waiting hall',()=>action('seat','Ferry waiting hall','A seat by the pier windows while you wait for the boat.'));seat.userData.seat={id:'port-hall-'+row+'-'+i,position:[x,0,zz],stand:[x-.85,0,zz],surfaceY:.47,eyeY:1.18,yaw:Math.PI/2,pitch:0,front:.23};
  }
  for(const [x,z] of [[-.6,-.6],[1.3,1.2]]){
   box('Bench rail',[.08,.07,2.72],[x,.33,z],0x77847e);

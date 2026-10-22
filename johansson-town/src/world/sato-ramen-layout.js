@@ -1,4 +1,4 @@
-import {SHARED_DINING_BOUNDS,SHARED_DINING_FLOOR,SHARED_DINING_COLLIDERS} from './interiors/shared-dining-layout.js';
+import {SHARED_DINING_BOUNDS,SHARED_DINING_FLOOR,SHARED_DINING_COLLIDERS,SHARED_DINING_SEAT_FRONT} from './interiors/shared-dining-layout.js';
 import {MINATO_COMPACT as P} from './interiors/minato-compact-plan.js';
 /**
  * Sato Ramen: the corner shop on Minato's alley flank, open at lunch while Minato is shut.
@@ -15,8 +15,8 @@ export const SATO_ROOM=Object.freeze({
  spawn:Object.freeze([...P.ramenEntrance.spawn]),exit:Object.freeze([...P.ramenEntrance.exit]),yaw:0,
 });
 /** Three chrome stools at the counter and two at the wall ledge. */
-export const SATO_COUNTER=Object.freeze(P.ramenStools.map(x=>Object.freeze({position:[x,0,P.ramenSeatZ],height:P.seatHeight,surfaceY:P.seatHeight,yaw:0,stand:[x,0,P.ramenStandZ],table:[x,P.ramenCounter.top,P.ramenCounter.position[2]+.15]})));
-export const SATO_LEDGE=Object.freeze(P.ramenLedge.seatZ.map(z=>Object.freeze({position:[P.ramenLedge.seatX,0,z],height:P.seatHeight,surfaceY:P.seatHeight,yaw:-Math.PI/2,stand:[P.ramenLedge.standX,0,z],table:[P.ramenLedge.position[0]-.05,P.ramenLedge.top,z]})));
+export const SATO_COUNTER=Object.freeze(P.ramenStools.map(x=>Object.freeze({position:[x,0,P.ramenSeatZ],height:P.seatHeight,surfaceY:P.seatHeight,yaw:0,front:SHARED_DINING_SEAT_FRONT.stool,stand:[x,0,P.ramenStandZ],table:[x,P.ramenCounter.top,P.ramenCounter.position[2]+.15]})));
+export const SATO_LEDGE=Object.freeze(P.ramenLedge.seatZ.map(z=>Object.freeze({position:[P.ramenLedge.seatX,0,z],height:P.seatHeight,surfaceY:P.seatHeight,yaw:-Math.PI/2,front:SHARED_DINING_SEAT_FRONT.stool,stand:[P.ramenLedge.standX,0,z],table:[P.ramenLedge.position[0]-.05,P.ramenLedge.top,z]})));
 export const SATO_CORNER=Object.freeze([]);
 /**
  * Where the lunch regulars sit: every other stool first, so there is room for you, then

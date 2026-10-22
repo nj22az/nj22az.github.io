@@ -3,6 +3,9 @@ import {MINATO_COMPACT as P} from './minato-compact-plan.js';
 // Blender, the two doors, the walkers and the furniture share this measured plan.
 // Bounds describe the usable inside faces. Solids retain their authored dimensions;
 // there is no scale applied to the room or its people.
+/** How far ahead of a sitter's mark a seat's front edge is (seat-slots.js `front`), measured on the fitted GLB: the round
+ *  counter, ramen and ledge stools are .38 across, the booth benches as deep as the plan says. */
+export const SHARED_DINING_SEAT_FRONT=Object.freeze({stool:.19,bench:P.booth.benchDepth/2});
 export const SHARED_DINING_BOUNDS=Object.freeze({...P.bounds});
 export const SHARED_DINING_FLOOR=Object.freeze(P.floorPolygon.map(p=>Object.freeze([...p])));
 const solid=(id,fixture,height=fixture.top??fixture.height)=>({id,x:fixture.position[0],z:fixture.position[2]+(fixture.collisionOffsetZ||0),w:fixture.width,d:fixture.depth,height});

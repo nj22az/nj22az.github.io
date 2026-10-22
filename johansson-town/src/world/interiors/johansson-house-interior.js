@@ -593,7 +593,7 @@ function furnishGround(s,{action,television,post}){
    // behind the cushion, away from the table.
    const [px,,pz]=s.at(x,y,0),yaw=Math.atan2(px-cx,pz-cz);
    const o=s.anchor(x,y,.8,'Sit at the low table',()=>action('seat','Low table','Tea from the thermos, still warm. Through the window, the hinpun and the lane, and somebody’s bicycle going down to the pier.'));
-   o.userData.seat={position:[px,0,pz],stand:[px+Math.sin(yaw)*.75,0,pz+Math.cos(yaw)*.75],surfaceY:.09,eyeY:.82,yaw,pitch:0};
+   o.userData.seat={position:[px,0,pz],stand:[px+Math.sin(yaw)*.75,0,pz+Math.cos(yaw)*.75],surfaceY:.09,eyeY:.82,yaw,pitch:0,front:.25};
   }
   // The television on its cabinet against the north wall, facing the table.
   s.box(.9,.4,.45,tx+.6,y1-.22,.23,C.timberDark);s.solid(tx+.13,y1-.45,tx+1.07,y1,0,1);
