@@ -1,6 +1,6 @@
 # Handover — Studio material and lighting prototype, 23 October 2026
 
-Status: implemented for visual review on `codex/studio-material-prototype`; not merged, deployed or artistically signed off. World defaults are unchanged. Implementation PR/commit are recorded below after publication.
+Status: implemented for visual review on `codex/studio-material-prototype`; not merged, deployed or artistically signed off. World defaults are unchanged. [Implementation PR #372](https://github.com/nj22az/nj22az.github.io/pull/372). Implementation commit: `0606b350175b56224b2176869106689926c0d2fa`; tested/uploaded tree `d1f08cff406b51f319ee740a2cbfca5f6b4d791e`. The following handover-only commit adds these review links; the runtime and tested source remain unchanged.
 
 ## Starting state and concurrent work
 
