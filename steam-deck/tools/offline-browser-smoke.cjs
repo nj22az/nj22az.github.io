@@ -4,7 +4,7 @@ const {chromium}=require('playwright');
  const root=path.resolve(__dirname,'../site'),errors=[],missing=[],remote=[];
  const browser=await chromium.launch({...(process.env.WORLD_CHROME?{executablePath:process.env.WORLD_CHROME}:{}),headless:true,args:['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
  fs.mkdirSync(path.resolve(__dirname,'../dist'),{recursive:true});
- const page=await browser.newPage({viewport:{width:1280,height:800}});
+ const page=await browser.newPage({viewport:{width:1280,height:800}});page.setDefaultTimeout(120000);
  page.on('pageerror',error=>errors.push(error.message));
  await page.addInitScript(version=>{window.johanssonDesktop={offline:true,version};navigator.getGamepads=()=>[];},require('../package.json').version);
  const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.wav':'audio/wav','.hdr':'application/octet-stream','.wasm':'application/wasm','.css':'text/css','.json':'application/json','.glb':'model/gltf-binary','.gltf':'model/gltf+json','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.mp3':'audio/mpeg','.ogg':'audio/ogg','.mp4':'video/mp4'};

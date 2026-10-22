@@ -12,8 +12,9 @@ const {rectanglesSeparated}=require('./layout-acceptance.cjs');
  const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.glb':'model/gltf-binary','.gltf':'model/gltf+json','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.wav':'audio/wav','.mp4':'video/mp4'};
  const server=http.createServer((req,res)=>{const url=new URL(req.url,'http://localhost');let file=path.resolve(root,'.'+decodeURIComponent(url.pathname));if(url.pathname.endsWith('/'))file=path.join(file,'index.html');if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){missing.push(url.pathname);res.writeHead(404);res.end();return;}res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream'});fs.createReadStream(file).pipe(res);});
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const url='http://127.0.0.1:'+server.address().port;
- let page;
- const launchBrowser=()=>chromium.launch({headless:true,...(process.env.WORLD_CHROME?{executablePath:process.env.WORLD_CHROME}:{}),args:process.platform==='linux'?['--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']:[]});
+ let page,browserServer;
+ const bounded=async(task,label,ms=120000)=>{let timer;try{return await Promise.race([task,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error(label+' timed out')),ms);})]);}finally{clearTimeout(timer);}};
+ const launchBrowser=async()=>{browserServer=await chromium.launchServer({headless:true,...(process.env.WORLD_CHROME?{executablePath:process.env.WORLD_CHROME}:{}),args:process.platform==='linux'?['--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']:[]});return chromium.connect(browserServer.wsEndpoint());};
  let browser=await launchBrowser();
  try{
  console.log('Browser launched');
@@ -236,8 +237,8 @@ const {rectanglesSeparated}=require('./layout-acceptance.cjs');
  // Release the full Linux world before starting the separate web-only world.
  // Keeping both live exhausts the software renderer on the Linux runner.
  console.log('Linux acceptance passed; releasing it before web-only isolation check');
- await context.close();page=null;await browser.close();browser=await launchBrowser();
- const web=await browser.newPage({viewport:{width:1280,height:800}});page=web;web.on('pageerror',e=>errors.push(e.message));
+ page=null;await bounded(browserServer.kill(),'Stop Linux browser',60000);console.log('Linux browser stopped; launching web recovery');browser=await launchBrowser();
+ const web=await browser.newPage({viewport:{width:1280,height:800}});page=web;web.setDefaultTimeout(120000);web.on('pageerror',e=>errors.push(e.message));
  await web.addInitScript(()=>localStorage.setItem('johansson-town-1988-v5',JSON.stringify({castRevision:2,loopYear:2026,yen:1234,inventory:['Tea'],dungeonRun:{hp:0},room:'dungeon'})));
  await web.goto(url+'/johansson-town/?audit&cinematic=off',{waitUntil:'domcontentloaded'});await web.waitForFunction(()=>document.getElementById('title')?.dataset.scene==='ready',null,{timeout:120000});
  assert.equal(await web.evaluate(()=>window.johanssonLinuxWorld===undefined),true,'Web edition has no Linux character/home system');assert.equal(await web.locator('#desktopMenu').count(),0,'Web edition has no Linux console UI');
@@ -246,9 +247,9 @@ const {rectanglesSeparated}=require('./layout-acceptance.cjs');
  const recovery=await web.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;dispatchEvent(new Event('johansson-festival-menu'));return {pose:window.__JOHANSSON_POSE__,room:a.player.room,api:!!a.festival,inventory:a.activities.state.inventory};});
  assert.equal(recovery.room,null);assert.equal(recovery.api,false);assert.ok(recovery.inventory.includes('Tea'));assert.ok(Math.hypot(recovery.pose.x-19.8,recovery.pose.z+40)<1,'Old cave save starts at the safe harbour opening');
  for(const code of ['KeyJ','KeyK','KeyL','Space'])await web.keyboard.press(code);
- assert.equal(await web.locator('#festivalHUD,#festivalButton').count(),0);await web.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.frozen=true;a.renderFrozen=false;a.render();});await web.screenshot({path:path.join(out,'14-web-safe-recovery.png')});await web.close();
+ assert.equal(await web.locator('#festivalHUD,#festivalButton').count(),0);console.log('Web recovery assertions passed; capturing still');await bounded(web.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.frozen=true;a.renderFrozen=false;}),'Freeze web capture');await web.screenshot({path:path.join(out,'14-web-safe-recovery.png')});
  fs.writeFileSync(path.join(out,'results.json'),JSON.stringify({passed:true,errors,missing:[...new Set(missing)],blockedRemote:remote.length},null,2));
  assert.deepEqual(errors,[],'No page errors');assert.deepEqual([...new Set(missing)].filter(p=>p!=='/favicon.ico'),[],'No missing packaged files');
  console.log(JSON.stringify({passed:true,errors,missing:[...new Set(missing)],blockedRemote:remote.length,out}));
- } catch(error) {if(page){await page.screenshot({path:path.join(out,'failure.png')}).catch(()=>{});console.log('FAILURE_STATE',await page.evaluate(()=>({desktop:window.johanssonDesktopUI?.snapshot(),boot:document.getElementById('bootStatus')?.textContent,fatal:document.getElementById('fatal')?.textContent,fatalVisible:!!document.getElementById('fatal')&&!document.getElementById('fatal').hidden&&getComputedStyle(document.getElementById('fatal')).display!=='none',portraits:[...document.querySelectorAll('.console-roster img')].map(img=>({src:img.currentSrc,complete:img.complete,width:img.naturalWidth}))})).catch(()=>({})));}throw error;} finally {await browser.close();await new Promise(resolve=>server.close(resolve));}
-})().catch(error=>{console.error(error);process.exitCode=1;});
+ } catch(error) {if(page){await page.screenshot({path:path.join(out,'failure.png'),timeout:5000}).catch(()=>{});console.log('FAILURE_STATE',await bounded(page.evaluate(()=>({desktop:window.johanssonDesktopUI?.snapshot(),boot:document.getElementById('bootStatus')?.textContent,fatal:document.getElementById('fatal')?.textContent,fatalVisible:!!document.getElementById('fatal')&&!document.getElementById('fatal').hidden&&getComputedStyle(document.getElementById('fatal')).display!=='none',portraits:[...document.querySelectorAll('.console-roster img')].map(img=>({src:img.currentSrc,complete:img.complete,width:img.naturalWidth}))})),'Failure diagnostics',5000).catch(()=>({})));}throw error;} finally {await bounded(browserServer.kill(),'Stop test browser',60000);server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
+})().catch(error=>{console.error(error);process.exit(1);});
