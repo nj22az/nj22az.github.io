@@ -83,7 +83,7 @@ export function buildCompactShop({site,room,reg:register,collider:addCollider,ac
   bench('Reading table',2.15,.4,1.45,.8,FURNITURE_HEIGHTS.table);
   anchor([1.4,1,-2.45],'Ask about the new arrivals','read','Nhung’s book recommendations','A sea adventure, an island history, and a well-loved poetry collection. Nhung will help you find a book without hurrying you.','Nhung');
   anchor([2.15,1,.4],'Browse the local history books','read','Local history reading table','Reading copies stay in the shop. Please return each book to its marked place.');
-  const seat=chair(-3.7,2.85,Math.PI/2);seat.userData.seat={position:[-3.7,0,2.85],stand:[-3.02,0,2.95],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.12,yaw:Math.PI/2,pitch:0};seat.userData.npcInteraction=false;reg(seat,'Sit in the reading chair',()=>action('seat','Reading chair','A quiet chair beside the window. Read for a while, with the harbour outside.'),true);
+  const seat=chair(-3.7,2.85,Math.PI/2);seat.userData.seat={position:[-3.7,0,2.85],stand:[-3.02,0,2.95],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.12,yaw:Math.PI/2,pitch:0,front:.22};seat.userData.npcInteraction=false;reg(seat,'Sit in the reading chair',()=>action('seat','Reading chair','A quiet chair beside the window. Read for a while, with the harbour outside.'),true);
   // The name board hangs from the ceiling over the aisle, facing the door: the back wall is books.
   board('FRONT-ROW BOOKS','BOOKS · NEWSPAPERS · LOCAL STORIES',[0,2.42,-1.4],2.6);
  }else if(site.industrialWorkshop){

@@ -36,19 +36,20 @@ try{
  await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.setTime(20*60+15);a.enter('izakaya');});
  await page.waitForFunction(()=>!window.__JOHANSSON_AUDIT__.blocked.roomLoading);await page.evaluate(()=>window.__JOHANSSON_AUDIT__.step(3000));
 
- await page.addStyleTag({content:'body>*:not(#game){visibility:hidden!important}#game{visibility:visible!important}#prompt{display:none!important}'});
+ const captureStyle=await page.addStyleTag({content:'body>*:not(#game){visibility:hidden!important}#game{visibility:visible!important}#prompt{display:none!important}'});
  await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.renderFrozen=false;});
  const frames=[];
  if(args.includes('--details')){
-  for(const name of ['drink-first','range','plating','collection','carry','food-placement','food-served']){
+  for(const name of ['drink-placement','drink-first','range','plating','collection','carry','food-placement','food-served']){
+   if(!wanted(name))continue;
    const trace=await page.evaluate(name=>{
     const a=window.__JOHANSSON_AUDIT__,draw=a.render,states=[];a.render=()=>{};
     const snapshot=()=>{const t=a.world.people.find(p=>p.profile.name==='Thao').g;return {seconds:window.__foodCaptureTime||0,work:a.beerService.working,activity:t.userData.activity,thao:t.position.toArray(),customers:a.world.people.filter(p=>p.g.userData.inIzakaya&&p.profile.name!=='Thao').map(p=>({name:p.profile.name,meal:p.g.userData.mealState,held:p.g.userData.heldItem,activity:p.g.userData.activity})),accounts:JSON.parse(JSON.stringify(a.activities.state.residentLife))};};
     try{
      for(let i=0;i<1800;i++){
       const t=a.world.people.find(p=>p.profile.name==='Thao').g,w=a.beerService.working,r=a.activities.state.residentLife?.Nhung?.meals?.izakaya;
-      const hit=name==='drink-first'?r?.drinkDelivered&&!r.foodDelivered:name==='range'?w?.kind==='rice'&&w.step==='station'&&t.userData.activity.startsWith('preparing')&&w.close:name==='plating'?w?.kind==='rice'&&w.step==='plate'&&t.userData.activity.startsWith('plating'):name==='collection'?w?.step==='collect'&&t.userData.workHeld?.R?.userData.consumable==='food':name==='carry'?w?.kind==='rice'&&w.phase==='carrying'&&t.position.z>-.7:name==='food-placement'?w?.kind==='rice'&&w.phase==='placing':r?.foodDelivered;
-      if(hit){a.step(name==='food-placement'?650:200);states.push(snapshot());return states;}
+      const hit=name==='drink-placement'?w?.kind==='draft'&&w.phase==='placing':name==='drink-first'?r?.drinkDelivered&&!r.foodDelivered:name==='range'?w?.kind==='rice'&&w.step==='station'&&t.userData.activity.startsWith('preparing')&&w.close:name==='plating'?w?.kind==='rice'&&w.step==='plate'&&t.userData.activity.startsWith('plating'):name==='collection'?w?.step==='collect'&&t.userData.workHeld?.R?.userData.consumable==='food':name==='carry'?w?.kind==='rice'&&w.phase==='carrying'&&t.position.z>-.7:name==='food-placement'?w?.kind==='rice'&&w.phase==='placing':r?.foodDelivered;
+      if(hit){a.step(['drink-placement','food-placement'].includes(name)?650:200);states.push(snapshot());return states;}
       a.setTime(1215);a.step(100);window.__foodCaptureTime=(window.__foodCaptureTime||0)+.1;
       if(i%10===0)states.push(snapshot());
      }
@@ -80,4 +81,6 @@ try{
  await writeFile(resolve(out,'sequence.json'),JSON.stringify(frames,null,2));
  console.log('captured',frames.length,'steps');
  }
+ await captureStyle.evaluate(e=>e.remove());
+ await page.screenshot({path:resolve(out,'hud.png')});
 }finally{await browser.close();server.close();}

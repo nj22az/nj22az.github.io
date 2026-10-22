@@ -98,7 +98,7 @@ export function buildYardHomeInterior({site,room,reg,action,collider=()=>{}}){
   const bed=kit.futon(X(fx),zc,style.top,name+' futon');
   const hatHook={position:[X(1.3+i*.2),1.6+i*.12,hd-.05],yaw:Math.PI};addHatPeg(box,hatHook);
   homeLayouts[name]={bounds:{minX:-hw+.05,maxX:hw-.05,minZ:-hd+.05,maxZ:hd-.05},spawn:[X(doorX),0,hd-.5],exit:[X(doorX),1.1,hd-.04],
-   ...bed,table:i?[X(1.25),0,.5]:[X(.6),0,-.2],tableStand:i?[X(1.05),0,.85]:[X(.6),0,.55],tableSeatHeight:.445,tableSeatYaw:i?0:-s*Math.PI/2,door:[X(doorX),0,hd-.45],hatHook};
+   ...bed,table:i?[X(1.25),0,.5]:[X(.6),0,-.2],tableStand:i?[X(1.05),0,.85]:[X(.6),0,.55],tableSeatHeight:.445,tableSeatFront:.16,tableSeatYaw:i?0:-s*Math.PI/2,door:[X(doorX),0,hd-.45],hatHook};
   anchor([X(fx),.6,zc+.9],'Inspect '+name+'’s belongings',()=>action('inspect',name+' at home',(p?.role||'')+'. '+name+' keeps a futon, a hook by the door and a stool at the table.'));
  });
  registerHomeSeats({parent:group,reg,action,layouts:homeLayouts});

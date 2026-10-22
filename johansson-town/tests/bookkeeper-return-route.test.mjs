@@ -13,7 +13,8 @@ import {groundHeight,planHeight,setWalkSurface} from '../src/world/layout.js';
 import {createWalkSurface} from '../src/world/walk-surface.js';
 import {townBoundsBlocked,circleHitsRect,standingHitsRect,canStepBetween} from '../physics.js';
 
-test('Nhung and Reiko walk from Sakura back to Front Row and their yard home on the drawn floors',async()=>{
+// (Reiko retired in phase 4 and 1 Front-Row Yard is lawn again: Nhung lives at 3 Kitahama, people/residents.js.)
+test('Nhung walks from Sakura back to Front Row and her home on the drawn floors',async()=>{
  installDOM();globalThis.self=globalThis;
  const {createTown}=await import('../src/world/town.js');
  const {createBusinesses}=await import('../src/world/businesses.js');
@@ -52,7 +53,7 @@ test('Nhung and Reiko walk from Sakura back to Front Row and their yard home on 
   for(const [from,to,label] of [[MARKET_THRESHOLD,books,'Sakura to bookshop'],[books,MARKET_THRESHOLD,'Bookshop to Sakura'],[books,home,'Bookshop to shared home'],[home,books,'Shared home to bookshop']])checkRoute(from,to,label);
   // A reachable graph is insufficient: run the actual forward-facing schedule
   // controller from the saved market exit until both workers enter their shop.
-  for(const name of ['Nhung','Reiko']){
+  for(const name of ['Nhung']){
    const profile=world.people.find(p=>p.profile.name===name).profile;
    const minute=Array.from({length:1440},(_,m)=>m).find(m=>{const p=residentPlan(profile,m,false,{});return p.place==='work'&&Math.hypot(p.target[0]-books[0],p.target[1]-books[1])<.01;});
    assert.notEqual(minute,undefined,name+' bookshop shift');

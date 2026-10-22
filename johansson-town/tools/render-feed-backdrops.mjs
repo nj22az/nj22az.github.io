@@ -82,15 +82,16 @@ try{
    const at=new THREE.Vector3(x,s.surfaceY??y+.45,z),d=at.distanceTo(cam);if(d<1.2||d>9)return;
    const ndc=at.clone().project(camera);if(ndc.z>1||Math.abs(ndc.x)>.95||ndc.y<-.98||ndc.y>.9)return;
    seen.add(key);
-   seats.push({id,position:s.position.map(r),stand:(s.stand||s.position).map(r),surfaceY:r(s.surfaceY??y+.45),yaw:r(s.yaw||0),...(Array.isArray(s.table)?{table:s.table.map(r)}:{})});
+   seats.push({id,position:s.position.map(r),stand:(s.stand||s.position).map(r),surfaceY:r(s.surfaceY??y+.45),yaw:r(s.yaw||0),...(Number.isFinite(s.front)?{front:r(s.front)}:{}),...(Array.isArray(s.table)?{table:s.table.map(r)}:{})});
   };
   base.updateMatrixWorld(true);base.traverse(o=>{
    const s=o.userData.seat,h=o.userData.hit;if(!s||!h||!!h.inside!==inside||s.soak||o.userData.officeTask)return;
    for(let p=o;p;p=p.parent)if(!p.visible)return;
-   visit(s,h.label||o.name||'seat');
+   // (a bench's places, seat-slots.js, each a seat of its own: two can sit on it in a comic as in World)
+   for(const slot of s.slots||[s])visit({...s,...slot},h.label||o.name||'seat');
   });
   // Seats only residents use, with no marker of their own (Minato's table bench).
-  if(a.roomNavigation?.id==='izakaya'){const {IZAKAYA_GUEST_SEATS}=await import('/johansson-town/src/people/indoor-residents.js');for(const s of IZAKAYA_GUEST_SEATS)visit({position:s.position,stand:s.stand,surfaceY:s.surfaceY,yaw:s.yaw},'Minato guest seat');}
+  if(a.roomNavigation?.id==='izakaya'){const {IZAKAYA_GUEST_SEATS}=await import('/johansson-town/src/people/indoor-residents.js');for(const s of IZAKAYA_GUEST_SEATS)visit({position:s.position,stand:s.stand,surfaceY:s.surfaceY,yaw:s.yaw,front:s.front},'Minato guest seat');}
   return seats;
  };
 

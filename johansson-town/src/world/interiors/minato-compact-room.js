@@ -225,7 +225,7 @@ export function buildCompactDiningRoom({room,reg=()=>{},collider=()=>{},action=(
  }
  [...SATO_COUNTER,...SATO_LEDGE].forEach((seat,i)=>{
   const ledge=i>=SATO_COUNTER.length,o=anchor([seat.position[0],1,seat.position[2]],ledge?'Sit at the wall ledge':'Sit at the ramen counter',()=>action('seat',ledge?'Sato Ramen ledge':'Sato Ramen counter','A red stool and a glass of cold water. Mrs Sato nods over the steam.'));
-  o.userData.seat={ramenSeatId:i,position:[...seat.position],stand:[...seat.stand],eyeY:seat.height+.6,yaw:seat.yaw,pitch:0,table:[...seat.table],surfaceY:seat.surfaceY};
+  o.userData.seat={ramenSeatId:i,position:[...seat.position],stand:[...seat.stand],eyeY:seat.height+.6,yaw:seat.yaw,pitch:0,table:[...seat.table],surfaceY:seat.surfaceY,front:seat.front};
  });
  anchor([P.details.ticketMachine[0],1.15,P.details.ticketMachine[2]+.44],'Use the ticket machine',()=>action('ramen-ticket'));
  anchor([1.4,1.25,-1.10],'Inspect the shared kitchen',()=>action('inspect','Minato and Sato shared kitchen','Thao’s evening counter and Mrs Sato’s lunch counter share the washing, storage and cooking line. The open passage links both rooms; the grill, noodle boiler and stock pots stand on real worktops.')).userData.promptPenalty=.8;
