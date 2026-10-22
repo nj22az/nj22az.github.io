@@ -1,0 +1,16 @@
+✔ the shop interior keeps within its draw and triangle budget (249.631905ms)
+✔ every board shows its line in more than one flavour, and the extra facings are never stock (86.083161ms)
+✔ the passage, as data: where each end starts, where he goes into the dark, and where he comes out (1.151001ms)
+✔ the shop: a complete staircase is modelled, but only its fade-passage entrance is walkable (298.276826ms)
+✔ the stockroom sees a bounded stair recess and a closed ceiling, never sky or exposed darkness above the entrance (763.102201ms)
+✔ a framed entrance shows real risers and complete flights; the bend hides the return (53.331246ms)
+✔ the office: the same complete stair descends below the hall; its rail and invisible safety barriers prevent falls (71.355588ms)
+✔ game.js runs the passage and walks no flight: the fade, the other room, the arrival; the old stair code is gone (1.315043ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1676.420437

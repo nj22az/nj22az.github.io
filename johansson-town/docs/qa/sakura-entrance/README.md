@@ -1,3 +1,5 @@
+> **Superseded after owner review on 23 October.** See the [complete-stair revision and fresh images](full-stair-2026-10-23/README.md). The five-tread pictures below are historical.
+
 # Sakura stockroom stair entrance — 22 October 2026
 
 This is the actual game, not an isolated room render. The before fixture uses main `a0fb347ced9250b2e5a6210ba068bf595a7ca310` and serves that revision's stair module; the after fixture uses the rebuilt runtime with the proposed entrance. The room, time, weather, camera coordinates and viewport are otherwise matched.

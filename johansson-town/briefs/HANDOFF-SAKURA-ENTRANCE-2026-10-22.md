@@ -67,3 +67,15 @@ The owner reviewed the before/after screenshots and said: “It’s better but n
 The revised architecture models both full twelve-tread flights, their 180-degree turning landing and the top landing. The lower run reaches 2.005 m and the return reaches the existing 4.01 m upper floor. Closed risers and wall-mounted handrails make this a real stair, without a black panel truncating the lower run. Full-height plaster encloses the well and a central wall hides the return around the bend. The same complete stair geometry is built in the shop and office frames; the office's safety volumes remain colliders only and are invisible. Safe arrivals, triggers, prompt and automatic fade passage, inside-only access and fire escape are retained.
 
 Work is based on main `b4a4320e5a3369a8c114274d5ee22de250bc4463`; the newer rendering fixes are preserved. The initial actual-game look exposed a coplanar upper-tread/end-wall patch, corrected by putting the enclosure face 8 cm forward of the tread ends. No z-fighting tolerance or exclusion changed. Fresh final tests and captures follow below.
+
+### Complete-stair validation and delivery
+
+Code commit `68fc1a27189036071cc6aed8e56b41a951f1033f` has exactly local tested tree `87a24ce9282f01b816fbf31e67c36403dc1a96b9` (local commit `83222c98`). Runtime source SHA-256 is `eaa8747ae32edf501df5bc1fabff2c4941a7fc5fce7e97e5d81798f1fe1b8855`. The subsequent evidence/handover commit changes only documentation, images and reports. Delivery remains on PR #364 / `codex/sakura-stair-entrance`.
+
+[Fresh complete-stair pictures, reports and reproduction instructions](../docs/qa/sakura-entrance/full-stair-2026-10-23/README.md). Both full flights and landings now exist in both room frames. The original five-tread comparison is superseded and must not be offered as the new design.
+
+Completed: eight focused stair/budget tests; zero direct coplanar findings in the foot and office; all 13 z-fighting tests; eight actual rebuilt-game transitions across first/third person, prompt/walking and both directions, with zero page errors and clear arrivals/cameras. The full guard attempt passed 359 individual checks before the z-fighting test process exited without an assertion result. Its isolated rerun passed all 13 checks, giving 372 passing checks across completed runs. A green single hosted guard is still required before merge; do not describe the interrupted invocation as passed. The first geometry/budget failures were corrected without changing test limits or scanner exclusions.
+
+Pictures are actual web-edition game captures through offscreen Electron/Chromium with SwiftShader, at phone/desktop/landscape sizes. The optional renderer fallback and photos-only mode are now part of the existing capture tool for reproducibility. No installed Linux release or physical-device acceptance is claimed. Source and runtime rebuild passed; ground baseline and passage behaviour are retained.
+
+The owner has not accepted the revised pictures. PR remains a draft, unmerged and undeployed. Next: review the new comparison, require current hosted checks to pass, then merge only on the owner's word; preserve any intervening main work.
