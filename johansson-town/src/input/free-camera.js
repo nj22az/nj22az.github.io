@@ -8,7 +8,7 @@
  * town), and this module owns every key, pointer and controller input:
  *
  *   keyboard  W A S D or arrows fly, E / Space up, Q / C down, Shift faster, Alt slower; drag the mouse to look,
- *             the wheel moves forward and back
+ *             the wheel moves forward and back; L steps to the next Look
  *   touch     one finger looks; two fingers pinch to move forward and back, and drag together to slide and rise
  *   controller left stick flies, right stick looks, triggers (or bumpers) down and up, B leaves
  *
@@ -52,6 +52,7 @@ html.free-camera #hud,html.free-camera #mobile,html.free-camera #subtitle{visibi
  background:rgba(20,28,28,.78);color:#f4f1ea;font:600 13px/1.35 system-ui,sans-serif;pointer-events:auto}
 #freeCamera[hidden]{display:none}
 #freeCamera p{margin:0}
+@media (max-width:720px){#freeCamera{flex-wrap:wrap;justify-content:center;width:calc(100vw - 32px);padding:10px}#freeCamera p{flex:1 1 100%;text-align:center}}
 #freeCamera button{min-height:40px;padding:8px 12px;border:1px solid rgba(255,255,255,.35);border-radius:8px;
  background:rgba(255,255,255,.12);color:inherit;font:700 13px system-ui,sans-serif;letter-spacing:0;white-space:nowrap}
 `;
@@ -60,13 +61,16 @@ html.free-camera #hud,html.free-camera #mobile,html.free-camera #subtitle{visibi
  * @param {object} o
  * @param {HTMLCanvasElement} o.canvas
  * @param {()=>{sensitivity?:number,invertY?:boolean}} [o.settings] the player's own look settings (Controls)
+ * @param {{label:()=>string,next:()=>void}} [o.look] the town's Look (render/looks.js): a button and L step through them
  * @param {(free:{active:boolean})=>void} [o.onChange] told when the camera comes loose and when it is put back
  */
-export function createFreeCamera({canvas,doc=globalThis.document,win=globalThis,settings=()=>({}),onChange=()=>{}}={}){
+export function createFreeCamera({canvas,doc=globalThis.document,win=globalThis,settings=()=>({}),look:style=null,onChange=()=>{}}={}){
  const keys=new Set(),pointers=new Map();
  let active=false,pose=null,start=null,limits={},bar=null,look={x:0,y:0},dolly=0,slide={x:0,y:0},pinch=null,padExit=false;
  const coarse=()=>!!win.matchMedia?.('(pointer:coarse)').matches;
 
+ function showStyle(){const b=bar?.querySelector('[data-look]');if(b&&style)b.textContent='Look · '+style.label();}
+ function nextStyle(){if(!style)return;style.next();showStyle();}
  function ensureBar(){
   if(bar)return bar;
   const style=doc.createElement('style');style.textContent=STYLE;doc.head.append(style);
@@ -74,7 +78,9 @@ export function createFreeCamera({canvas,doc=globalThis.document,win=globalThis,
   const hint=doc.createElement('p');hint.dataset.hint='';
   const reset=doc.createElement('button');reset.type='button';reset.textContent='Back to start';reset.onclick=()=>{if(start)pose={...start,velocity:{x:0,y:0,z:0}};};
   const exit=doc.createElement('button');exit.type='button';exit.textContent='Exit';exit.setAttribute('aria-label','Leave the free camera (Esc)');exit.onclick=()=>leave();
-  bar.append(hint,reset,exit);doc.body.append(bar);
+  bar.append(hint);
+  if(style){const b=doc.createElement('button');b.type='button';b.dataset.look='';b.setAttribute('aria-label','Next look (L)');b.onclick=()=>nextStyle();bar.append(b);}
+  bar.append(reset,exit);doc.body.append(bar);
   return bar;
  }
 
@@ -93,10 +99,10 @@ export function createFreeCamera({canvas,doc=globalThis.document,win=globalThis,
   active=true;
   doc.exitPointerLock?.();
   doc.documentElement.classList.add('free-camera');
-  const b=ensureBar();b.hidden=false;
+  const b=ensureBar();b.hidden=false;showStyle();
   b.querySelector('[data-hint]').textContent=coarse()
    ?'Free camera · one finger looks, pinch to move, two fingers slide'
-   :'Free camera · WASD fly · E/Q up and down · drag to look · Shift faster · Esc leaves';
+   :'Free camera · WASD fly · E/Q up and down · drag to look · Shift faster · L changes the look · Esc leaves';
   onChange({active:true});
   return true;
  }
@@ -116,6 +122,7 @@ export function createFreeCamera({canvas,doc=globalThis.document,win=globalThis,
   if(own(e)&&(e.code==='Enter'||e.code==='Space'||e.code==='Tab'))return;
   e.stopImmediatePropagation();e.preventDefault();
   if((e.code==='Escape'||e.code==='KeyO')&&!e.repeat){leave();return;}
+  if(e.code==='KeyL'&&!e.repeat){nextStyle();return;}
   keys.add(e.code);
  },true);
  win.addEventListener('keyup',e=>{if(!active)return;keys.delete(e.code);e.stopImmediatePropagation();},true);

@@ -341,12 +341,15 @@ function applyLook(){
  const css=pipeline?'none':lookCSS(look),want=css==='none'?'':css,el=renderer.domElement;
  if(el.style.filter===lookFilter)el.style.filter=want;
  lookFilter=want;
- const button=$('#lookButton');if(button)button.textContent=LOOKS[look].label;
+ const button=$('#lookButton');if(button)button.textContent='Look · '+LOOKS[look].label;
 }
 function setLook(name){look=writeLook(globalThis.localStorage,name);applyLook();}
+/** The looks this device can draw, in menu order: the free camera's L and Look button step through them. */
+const drawableLooks=()=>Object.keys(LOOKS).filter(id=>graphics.postprocess||!lookNeedsPipeline(id));
+function nextLook(){const ids=drawableLooks();setLook(ids[(ids.indexOf(look)+1)%ids.length]);}
 function lookMenu(){
  const full=graphics.postprocess;
- const offered=Object.entries(LOOKS).filter(([id])=>full||!lookNeedsPipeline(id));
+ const offered=drawableLooks().map(id=>[id,LOOKS[id]]);
  activities.menu('Look','How the whole town is drawn. Now: '+LOOKS[look].label+'. '+LOOKS[look].hint+(full?'':'\n\nThis device runs reduced graphics, so only the colour looks are offered.'),[
   ...offered.filter(([id])=>id!==look).map(([id,l])=>[l.label,()=>{setLook(id);activities.close();say(l.label+' · '+l.hint,3);}]),
   ['Close',()=>activities.close()]]);
@@ -563,7 +566,7 @@ $('#photoButton').onclick=openPhotoStudio;
  * Free camera (Town book, or O): the town stops where it stands and the lens flies loose round it (input/free-camera.js).
  * The loop draws the frozen world through renderStill; leaving puts the view straight back, as play recomputes it.
  */
-const freeCamera=createFreeCamera({canvas:renderer.domElement,settings:()=>cameraControls.settings,onChange:()=>resetInput()});
+const freeCamera=createFreeCamera({canvas:renderer.domElement,settings:()=>cameraControls.settings,look:{label:()=>LOOKS[look].label,next:nextLook},onChange:()=>resetInput()});
 function openFreeCamera(){
  if(!started||freeCamera.active||photoLoading||photoStudio?.active||inspector?.active||itemViewer?.active||concert?.active||roomLoading||catchingUp||activities?.paused)return;
  toggleDir(false);cameraControls.close();if(pocket?.raised)lowerPocket();spawnScene?.cancel('free camera');

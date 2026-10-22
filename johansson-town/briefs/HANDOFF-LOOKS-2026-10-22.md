@@ -67,3 +67,15 @@ was merged with `origin/main` (3 commits: PRs #368 and #369 and their handover) 
 `renderStill`, which that body delegates to; its assertions are unchanged. After the merge: that test, consolidation,
 runtime-package, audit-boot, free-camera and looks tests: 19 pass. CI guard: 348 pass, 1 fail (the `no-z-fighting` out-of-memory
 abort in this container, also on main). Watch the `johansson-world.yml` run on main for the real result.
+
+## Easier to find — 22 October 2026, evening
+Owner: "The shaders doesn't work? Or I can't find them". The live site (boot `CrnpvRVi`) had them and they worked at phone
+size, but the Look row was folded two levels deep (Town book › Town tools › Settings). Changes:
+- The Look control is now a Town tools tile beside Free camera (`#lookButton`, text "Look · <current>"), not a Settings row.
+- The free camera bar has a "Look · <current>" button, and L steps through the looks while flying (`look` option of
+  `createFreeCamera`; `nextLook`/`drawableLooks` in game.js). Reduced graphics only step through the colour looks.
+- The free camera bar wraps at phone width (the hint was squeezed into a narrow column and Exit was cut off).
+Checks: focused tests 40 pass. CI guard: 355 pass, 1 fail (the same `no-z-fighting` out-of-memory abort here). A built runtime
+run at 390×844 with touch: the tile is visible in Town tools; free camera opened from the tile; the bar's Look button stepped
+Natural › Black & white › Sepia … › Manga, each drawn. Live site before this change was checked the same way: the old path
+worked, so nothing was broken, only hidden.

@@ -82,3 +82,12 @@ test('held keys fly the camera and are let go on leaving',()=>{
  for(let i=0;i<30;i++)free.update(1/60,camera);
  assert.equal(camera.position.z,0,'W from last time is not still held');
 });
+
+test('L and the Look button step through the looks without leaving the free camera',()=>{
+ const b=fakeBrowser(),order=['none','manga','crayon'];let i=0;
+ const free=createFreeCamera({doc:b.doc,win:b.win,look:{label:()=>order[i],next:()=>{i=(i+1)%order.length;}}});
+ b.fire('keydown',{code:'KeyL'});assert.equal(i,0,'closed, L belongs to the game');
+ free.enter({position:{x:0,y:2,z:0},yaw:0,pitch:0});
+ b.fire('keydown',{code:'KeyL'});b.fire('keydown',{code:'KeyL'});
+ assert.equal(order[i],'crayon');assert.ok(free.active);
+});
