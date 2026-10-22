@@ -1,0 +1,14 @@
+✔ the passage, as data: where each end starts, where he goes into the dark, and where he comes out (1.140582ms)
+✔ the shop: five treads up from the stockroom into a black that is solid, the stair walkable only onto its first treads (228.911018ms)
+✔ the stockroom sees a bounded stair recess and a closed ceiling, never sky or exposed darkness above the entrance (820.472727ms)
+✔ the dark is recessed behind a framed 1.1 m opening; side and high views see architecture (56.988494ms)
+✔ the office: the stair head goes down four treads into the dark, a rail and a solid pit, and nobody walks out over it (69.59613ms)
+✔ game.js runs the passage and walks no flight: the fade, the other room, the arrival; the old stair code is gone (1.276928ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1710.200143

@@ -1,0 +1,37 @@
+name: Sakura stair visual acceptance
+on:
+  pull_request:
+    paths:
+      - 'johansson-town/src/world/interiors/sakura-stairs.js'
+      - 'johansson-town/tools/sakura-entrance-photos.mjs'
+      - '.github/workflows/sakura-stair-check.yml'
+permissions:
+  contents: read
+concurrency:
+  group: sakura-stair-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  stairs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install browser tools
+        working-directory: johansson-town
+        run: |
+          npm ci --no-audit --no-fund
+          npx playwright install --with-deps chromium
+      - name: Photograph rebuilt game and verify both stair directions
+        working-directory: johansson-town
+        run: |
+          node tools/sakura-entrance-photos.mjs output/sakura-stair/third-person
+          node tools/sakura-entrance-photos.mjs --first output/sakura-stair/first-person
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sakura-stair-acceptance
+          path: johansson-town/output/sakura-stair/
+          if-no-files-found: warn
