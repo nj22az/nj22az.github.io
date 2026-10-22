@@ -48,42 +48,54 @@ const dead=v=>Math.abs(v)<DEADZONE?0:(v-Math.sign(v)*DEADZONE)/(1-DEADZONE);
 const STYLE=`
 html.free-camera #hud,html.free-camera #mobile,html.free-camera #subtitle{visibility:hidden!important}
 #freeCamera{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:40;
- display:flex;align-items:center;gap:12px;max-width:calc(100vw - 32px);padding:8px 8px 8px 14px;border-radius:12px;
- background:rgba(20,28,28,.78);color:#f4f1ea;font:600 13px/1.35 system-ui,sans-serif;pointer-events:auto}
+ display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;color:#f4f1ea;font:600 12px/1.3 system-ui,sans-serif}
 #freeCamera[hidden]{display:none}
-#freeCamera p{margin:0}
-@media (max-width:720px){#freeCamera{flex-wrap:wrap;justify-content:center;width:calc(100vw - 32px);padding:10px}#freeCamera p{flex:1 1 100%;text-align:center}}
-#freeCamera button{min-height:40px;padding:8px 12px;border:1px solid rgba(255,255,255,.35);border-radius:8px;
- background:rgba(255,255,255,.12);color:inherit;font:700 13px system-ui,sans-serif;letter-spacing:0;white-space:nowrap}
+#freeCamera .free-hint{margin:0;padding:6px 10px;border-radius:999px;background:rgba(20,28,28,.72);white-space:nowrap;transition:opacity .6s}
+#freeCamera .free-hint.gone{opacity:0}
+#freeCamera kbd{display:inline-block;min-width:18px;margin:0 1px;padding:1px 4px;border-radius:4px;background:rgba(255,255,255,.18);font:700 11px system-ui,sans-serif;text-align:center}
+#freeCamera .free-buttons{display:flex;gap:10px;padding:6px;border-radius:999px;background:rgba(20,28,28,.72);pointer-events:auto}
+#freeCamera button{display:grid;place-items:center;width:48px;height:48px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.14);color:inherit}
+#freeCamera button svg{width:24px;height:24px}
+#freeCamera button[data-look] svg{width:40px;height:40px;border-radius:50%}
+#freeCamera button:focus-visible{outline:3px solid #9fe0c8;outline-offset:2px}
 `;
 
 /**
  * @param {object} o
  * @param {HTMLCanvasElement} o.canvas
  * @param {()=>{sensitivity?:number,invertY?:boolean}} [o.settings] the player's own look settings (Controls)
- * @param {{label:()=>string,next:()=>void}} [o.look] the town's Look (render/looks.js): a button and L step through them
+ * @param {{id:()=>string,label:()=>string,next:()=>void}} [o.look] the town's Look (render/looks.js): a button and L step through them
+ * @param {(name:string)=>string} [o.icon] an icon's SVG (ui/icons.js svg)
+ * @param {(id:string)=>string} [o.swatch] a look's picture (ui/look-picker.js lookSwatch), shown on the Look button
  * @param {(free:{active:boolean})=>void} [o.onChange] told when the camera comes loose and when it is put back
  */
-export function createFreeCamera({canvas,doc=globalThis.document,win=globalThis,settings=()=>({}),look:style=null,onChange=()=>{}}={}){
+export function createFreeCamera({canvas,doc=globalThis.document,win=globalThis,settings=()=>({}),look:style=null,icon=()=>'',swatch=()=>'',onChange=()=>{}}={}){
  const keys=new Set(),pointers=new Map();
  let active=false,pose=null,start=null,limits={},bar=null,look={x:0,y:0},dolly=0,slide={x:0,y:0},pinch=null,padExit=false;
  const coarse=()=>!!win.matchMedia?.('(pointer:coarse)').matches;
 
- function showStyle(){const b=bar?.querySelector('[data-look]');if(b&&style)b.textContent='Look · '+style.label();}
+ let hintTimer=null;
+ function showStyle(){const b=bar?.querySelector('[data-look]');if(!b||!style)return;b.innerHTML=swatch(style.id());b.setAttribute('aria-label',`Look: ${style.label()}. Next look (L)`);b.title=style.label();}
  function nextStyle(){if(!style)return;style.next();showStyle();}
+ function button(name,label,run){const b=doc.createElement('button');b.type='button';b.innerHTML=icon(name);b.setAttribute('aria-label',label);b.title=label;b.onclick=run;return b;}
  function ensureBar(){
   if(bar)return bar;
-  const style=doc.createElement('style');style.textContent=STYLE;doc.head.append(style);
+  const css=doc.createElement('style');css.textContent=STYLE;doc.head.append(css);
   bar=doc.createElement('div');bar.id='freeCamera';bar.hidden=true;bar.setAttribute('role','region');bar.setAttribute('aria-label','Free camera');
-  const hint=doc.createElement('p');hint.dataset.hint='';
-  const reset=doc.createElement('button');reset.type='button';reset.textContent='Back to start';reset.onclick=()=>{if(start)pose={...start,velocity:{x:0,y:0,z:0}};};
-  const exit=doc.createElement('button');exit.type='button';exit.textContent='Exit';exit.setAttribute('aria-label','Leave the free camera (Esc)');exit.onclick=()=>leave();
-  bar.append(hint);
-  if(style){const b=doc.createElement('button');b.type='button';b.dataset.look='';b.setAttribute('aria-label','Next look (L)');b.onclick=()=>nextStyle();bar.append(b);}
-  bar.append(reset,exit);doc.body.append(bar);
+  const hint=doc.createElement('p');hint.className='free-hint';hint.dataset.hint='';
+  const row=doc.createElement('div');row.className='free-buttons';
+  if(style){const b=button('camera','Next look (L)',()=>nextStyle());b.dataset.look='';row.append(b);}
+  row.append(button('reset','Back to where you started',()=>{if(start)pose={...start,velocity:{x:0,y:0,z:0}};}),button('close','Leave the free camera (Esc)',()=>leave()));
+  bar.append(hint,row);doc.body.append(bar);
   return bar;
  }
-
+ /** The controls, in keys or gestures, for a few seconds; then only the buttons stay. */
+ function showHint(){
+  const hint=bar.querySelector('[data-hint]');
+  hint.innerHTML=coarse()?'drag to look · pinch to move · two fingers slide'
+   :'<kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> fly · <kbd>E</kbd><kbd>Q</kbd> up/down · drag to look · <kbd>L</kbd> look · <kbd>Esc</kbd>';
+  hint.classList.remove('gone');clearTimeout(hintTimer);hintTimer=setTimeout(()=>hint.classList.add('gone'),4500);hintTimer?.unref?.();
+ }
  /**
   * @param {{position:{x,y,z},yaw:number,pitch:number}} view where the lens is now
   * @param {{floor?:(x:number,z:number)=>number,radius?:number,ceiling?:number}} [bounds]
@@ -99,10 +111,7 @@ export function createFreeCamera({canvas,doc=globalThis.document,win=globalThis,
   active=true;
   doc.exitPointerLock?.();
   doc.documentElement.classList.add('free-camera');
-  const b=ensureBar();b.hidden=false;showStyle();
-  b.querySelector('[data-hint]').textContent=coarse()
-   ?'Free camera · one finger looks, pinch to move, two fingers slide'
-   :'Free camera · WASD fly · E/Q up and down · drag to look · Shift faster · L changes the look · Esc leaves';
+  const b=ensureBar();b.hidden=false;showStyle();showHint();
   onChange({active:true});
   return true;
  }

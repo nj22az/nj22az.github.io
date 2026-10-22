@@ -79,3 +79,17 @@ Checks: focused tests 40 pass. CI guard: 355 pass, 1 fail (the same `no-z-fighti
 run at 390×844 with touch: the tile is visible in Town tools; free camera opened from the tile; the bar's Look button stepped
 Natural › Black & white › Sepia … › Manga, each drawn. Live site before this change was checked the same way: the old path
 worked, so nothing was broken, only hidden.
+
+## Icons instead of text — 22 October 2026, night
+Owner: "The menus are too text heavy, can they be more icon based?"; asked which menus, they chose the Look picker and the free
+camera bar (not the Town book or the shared activity menus).
+- `src/ui/look-picker.js` (new): a 3×3 bottom sheet. Each look is shown as the same little house drawn in that style
+  (`lookSwatch`, inline SVG) with a one-word name (`LOOKS[id].short`). A tap applies the look live and the sheet stays open;
+  ×, Escape or a tap above the sheet closes it. While open it swallows keys and wheel, and stops pointer events reaching the
+  game. It replaces the activities.menu Look list.
+- The Town tools tile now just reads "Look".
+- Free camera bar: three round icon buttons (current look's picture, which steps to the next; reset; close). The controls
+  hint shows as keycaps/short gestures for 4.5 s, then fades.
+- `tests/look-picker.test.mjs` (new, in the guard).
+Checks: focused tests (free camera, looks, picker, visual-audit-freeze, runtime-package, audit-boot) pass. Built runtime at
+390×844 touch: the picker opened from the tile, Crayon applied live, the free camera bar showed icons and stepped looks.

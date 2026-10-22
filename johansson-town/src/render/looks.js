@@ -19,15 +19,15 @@
 
 /** In the order the menu offers them. `css` is the stand-in where the town draws without the ink pipeline. */
 export const LOOKS=Object.freeze({
- none:{label:'Natural',hint:'The town as it is drawn.'},
- mono:{label:'Black & white',hint:'Greyscale, a little punch in the contrast.',css:'grayscale(1) contrast(1.12)'},
- sepia:{label:'Sepia',hint:'An old brown photograph.',css:'sepia(.9) contrast(.95)'},
- pocket:{label:'Pocket Gentleman',hint:'Four greens and big pixels, like the hand-held camera.'},
- snes:{label:'16-bit',hint:'Chunky pixels and a short palette, like a cartridge game.'},
- lines:{label:'Line drawing',hint:'Pencil outlines on white paper.'},
- crt:{label:'Old TV',hint:'A curved tube with scanlines.'},
- manga:{label:'Manga',hint:'Black ink, screentone dots and hatching, as in a printed comic.'},
- crayon:{label:'Pencil crayon',hint:'Coloured pencil strokes on textured paper.'},
+ none:{label:'Natural',short:'Natural',hint:'The town as it is drawn.'},
+ mono:{label:'Black & white',short:'B&W',hint:'Greyscale, a little punch in the contrast.',css:'grayscale(1) contrast(1.12)'},
+ sepia:{label:'Sepia',short:'Sepia',hint:'An old brown photograph.',css:'sepia(.9) contrast(.95)'},
+ pocket:{label:'Pocket Gentleman',short:'Pocket',hint:'Four greens and big pixels, like the hand-held camera.'},
+ snes:{label:'16-bit',short:'16-bit',hint:'Chunky pixels and a short palette, like a cartridge game.'},
+ lines:{label:'Line drawing',short:'Lines',hint:'Pencil outlines on white paper.'},
+ crt:{label:'Old TV',short:'TV',hint:'A curved tube with scanlines.'},
+ manga:{label:'Manga',short:'Manga',hint:'Black ink, screentone dots and hatching, as in a printed comic.'},
+ crayon:{label:'Pencil crayon',short:'Crayon',hint:'Coloured pencil strokes on textured paper.'},
 });
 
 export const LOOK_KEY='johansson-town-look';

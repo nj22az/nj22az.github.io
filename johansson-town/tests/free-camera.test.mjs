@@ -49,7 +49,7 @@ test('a pinch or the wheel moves a set distance once',()=>{
 /** Just enough of a browser to see who gets the keys. */
 function fakeBrowser(){
  const listeners=[],classes=new Set(),made=[];
- const el=()=>{const e={children:[],hidden:false,dataset:{},style:{},append(...c){this.children.push(...c);},setAttribute(){},querySelector(){return {set textContent(v){e.hint=v;}};},contains:()=>false};made.push(e);return e;};
+ const el=()=>{const e={children:[],hidden:false,dataset:{},style:{},classList:{add(){},remove(){}},append(...c){this.children.push(...c);},setAttribute(){},querySelector(){return {classList:{add(){},remove(){}},setAttribute(){},set innerHTML(v){e.hint=v;}};},contains:()=>false};made.push(e);return e;};
  const doc={head:{append(){}},body:{append(){}},documentElement:{classList:{add:c=>classes.add(c),remove:c=>classes.delete(c)}},createElement:el,exitPointerLock(){}};
  const win={addEventListener:(type,fn)=>listeners.push({type,fn}),matchMedia:()=>({matches:false}),navigator:{}};
  const fire=(type,extra={})=>{const e={type,code:extra.code,repeat:false,target:{},stopped:false,prevented:false,cancelable:true,
@@ -85,7 +85,7 @@ test('held keys fly the camera and are let go on leaving',()=>{
 
 test('L and the Look button step through the looks without leaving the free camera',()=>{
  const b=fakeBrowser(),order=['none','manga','crayon'];let i=0;
- const free=createFreeCamera({doc:b.doc,win:b.win,look:{label:()=>order[i],next:()=>{i=(i+1)%order.length;}}});
+ const free=createFreeCamera({doc:b.doc,win:b.win,look:{id:()=>order[i],label:()=>order[i],next:()=>{i=(i+1)%order.length;}}});
  b.fire('keydown',{code:'KeyL'});assert.equal(i,0,'closed, L belongs to the game');
  free.enter({position:{x:0,y:2,z:0},yaw:0,pitch:0});
  b.fire('keydown',{code:'KeyL'});b.fire('keydown',{code:'KeyL'});
