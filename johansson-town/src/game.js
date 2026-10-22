@@ -37,7 +37,7 @@ import {streetToRoom,roomToStreet} from './world/doorway.js';
 import {buildClassroom} from './world/interiors/classroom.js';
 import {buildOnsenInterior,ONSEN_ROOM,ONSEN_ASSETS} from './world/interiors/onsen.js';
 import {loadAsset,assetLoaded} from './catalog/catalog.js';
-import {townDate as townDateOf,realTownMinutes,clockCatchUp,townClockLineAt,readClockSetting,writeClockSetting,startingMinutes,createClock} from './town-clock.js';
+import {realTownMinutes,clockCatchUp,townClockLineAt,readClockSetting,writeClockSetting,startingMinutes,createClock} from './town-clock.js';
 import {createRamenPlayerService} from './people/ramen-player-service.js';
 import {hasRamenTicket,useRamenTicket} from './people/ramen-ticket.js';
 import {createRamenKitchen} from './people/ramen-kitchen.js';
