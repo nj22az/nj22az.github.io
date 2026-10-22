@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 const {chromium}=createRequire(new URL('../../johansson-town/package.json',import.meta.url))('playwright');
 const base=process.env.STUDIO_TEST_URL||'http://127.0.0.1:8765',out=new URL('../../johansson-town/docs/qa/motion-terminal/',import.meta.url);
 await mkdir(out,{recursive:true});
-const browser=await chromium.launch({headless:true,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+const browser=await chromium.launch({headless:true,...process.env.STUDIO_BROWSER?{executablePath:process.env.STUDIO_BROWSER}:{},args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
 try{
  const page=await browser.newPage({viewport:{width:1365,height:900}}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));

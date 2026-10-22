@@ -1,3 +1,4 @@
+import {normalizeMotion} from '../johansson-town/src/avatars/motion.js';
 import {normalizeTake} from './acting/takes.mjs';
 import {KNOWN_POSES,KNOWN_EXPRESSIONS} from './scene-catalogue.mjs?v=20261020-acting';
 import {SNAP} from './scene-snap.mjs?v=20261011-2';
@@ -26,14 +27,14 @@ export function normalizeScene(raw,normalizeRecipe=r=>structuredClone(r)){
  out.top=text(raw.top);out.bottom=text(raw.bottom);
  if([raw.camera?.position,raw.camera?.target].every(v=>Array.isArray(v)&&v.length===3&&v.every(n=>Number.isFinite(n)&&Math.abs(n)<=30))){out.camera.position=[...raw.camera.position];out.camera.target=[...raw.camera.target];out.camera.fov=clamp(raw.camera.fov,25,75,43);}
  if(['dash','chaos','escape'].includes(raw.effect))out.effect=raw.effect;
- if(raw.furniture&&typeof raw.furniture==='object'){out.furniture={};for(const id of ['desk','chair']){const r=raw.furniture[id];if(!r||typeof r!=='object')continue;const o={visible:r.visible!==false,size:clamp(r.size,.5,1.5,1)};for(const k of ['position','rotation'])if(Array.isArray(r[k])&&r[k].length===3&&r[k].every(Number.isFinite))o[k]=r[k].map(n=>clamp(n,k==='position'?-4:-Math.PI,k==='position'?4:Math.PI,0));out.furniture[id]=o;}}
+ if(raw.furniture&&typeof raw.furniture==='object'){out.furniture={};for(const id of ['desk','chair']){const r=raw.furniture[id];if(!r||typeof r!=='object')continue;const o={visible:r.visible!==false,size:clamp(r.size,.5,1.5,1)};for(const k of ['position','rotation'])if(Array.isArray(r[k])&&r[k].length===3&&r[k].every(Number.isFinite))o[k]=r[k].map(n=>clamp(n,k==='position'?-4:-Math.PI,k==='position'?4:Math.PI,0));if(Number.isFinite(r.supportY))o.supportY=clamp(r.supportY,0,1,0);out.furniture[id]=o;}}
 
  out.actors=(Array.isArray(raw.actors)?raw.actors:[]).slice(0,MAX_ACTORS).filter(a=>a&&a.recipe&&typeof a.recipe==='object'&&!Array.isArray(a.recipe)).map((a,i)=>({
   id:'actor-'+i,name:text(a.name)||'Character',recipe:normalizeRecipe(a.recipe),
   y:clamp(a.y,0,1.5,0),liftedBy:typeof a.liftedBy==='string'?a.liftedBy:'',
   x:raw.version===2?clamp(a.x,-SNAP.bounds,SNAP.bounds,0):i*.65,z:raw.version===2?clamp(a.z,-SNAP.bounds,SNAP.bounds,0):0,size:raw.version===2?clamp(a.size,.6,1.4,1):1,seat:raw.version===2?text(a.seat):'',
   turn:clamp(a.turn,-180,180,0),pose:KNOWN_POSES.has(a.pose)?a.pose:'Idle',
-  expression:KNOWN_EXPRESSIONS.has(a.expression)?a.expression:'smile',speech:text(a.speech),speechStyle:['shout','large'].includes(a.speechStyle)?a.speechStyle:'bubble',...a.take?{take:safeTake(a.take),takeLoop:a.takeLoop===true}:{}
+  expression:KNOWN_EXPRESSIONS.has(a.expression)?a.expression:'smile',speech:text(a.speech),speechStyle:['shout','large'].includes(a.speechStyle)?a.speechStyle:'bubble',...a.take?{take:safeTake(a.take),takeLoop:a.takeLoop===true}:{},...a.bodyMotion?{bodyMotion:normalizeMotion(a.bodyMotion),motionTime:clamp(a.motionTime,0,30,0)}:{},...['desk','chair'].includes(a.propTouch?.prop)&&['L','R'].includes(a.propTouch?.side)?{propTouch:{prop:a.propTouch.prop,side:a.propTouch.side}}:{}
  }));
  const source=(Array.isArray(raw.actors)?raw.actors:[]).filter(a=>a&&a.recipe&&typeof a.recipe==='object'&&!Array.isArray(a.recipe)).slice(0,MAX_ACTORS);
  const ids=new Map(source.map((a,i)=>[a.id,'actor-'+i])),used=new Set();
