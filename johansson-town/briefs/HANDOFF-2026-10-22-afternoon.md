@@ -61,7 +61,7 @@ controller code has changed.
 |---|---|---|---|
 | 1 | Right stick doesn't move the camera (Steam Deck, 8BitDo Switch Pro over Bluetooth) | Likely cause 2 (a saved Look axis past the pad's four axes) fixed on `claude/laughing-rubin-6p25x2`, for 0.2.17, unreleased; still waiting on the owner's three answers | Linux joystick handover |
 | 2 | Community Hall kitchen is bare (blank booking sheet, plain grey board); comics there look empty | Open; recapture `town-hall` after dressing it | `interiors/town-hall.js` `buildCommunityKitchen` |
-| 3 | Two Dr Kakazus: the cast's resident vs the clinic room's `DOCTOR_RECIPE` | Open; the owner to choose one | `avatars/cast.js`, `interiors/town-hall.js` |
+| 3 | Two Dr Kakazus: the cast's resident vs the clinic room's `DOCTOR_RECIPE` | **Decided** by the owner (22 October, evening): the clinic look is Nhung's, Dr Kakazu retired into her. In progress on `claude/laughing-rubin-6p25x2` (`briefs/nhung-doctor/`) | `avatars/cast.js`, `interiors/town-hall.js` |
 | 4 | Clinic comic view has no seat (the bench is behind the camera); the patient's stool is not a seat | Open | `feed/places.js`, `interiors/town-hall.js` |
 | 5 | Higa's yuntaku bench: `front` 0.19, its slats end about 0.16 | **Fixed and merged** (#359): the outer slats are flush with the bench's edges; `higa-liquor-laundry.test.mjs` measures it (1 cm) | `okinawa/higa-liquor-dressing.js` |
 | 6 | Fixed-pose NPCs pose without `front` (clinic doctor, school figures, Higa at the bandai, Ganaha, Fujita's chair) | Open | each room's animator call |
@@ -69,6 +69,9 @@ controller code has changed.
 | 8 | Umi-no-yu's outdoor bench: GLB, one place, no `front` | Open | `world/park-onsen.js` |
 | 9 | Police station and port terminal comic backdrops | Open since phase 5 | `render-feed-backdrops.mjs police-station port-hall` |
 | 10 | About 32 already-failing test files (other groups of the 21 October morning handoff) | Open; fix a group, add it to `tests/ci-guard.txt` | `HANDOFF-2026-10-21.md` |
+| 12 | Texts that still count the island before the consolidation | Clinic fixed on the branch (the couch, the X-ray). Open: the classroom's pupil list names three children not in the cast; the countryside's Ōshiro farm has "three generations" nobody in the cast is | `interiors/classroom.js`, `world/countryside.js` |
+| 13 | The player is called "Mayor" (clinic texts, letters) though the mayor's office went | Open; the owner to decide the word | `interiors/town-hall.js`, `mail/letters.js` |
+| 14 | Higa Liquor closes; Sakura sells and supplies all alcohol; Kōji's round becomes Sakura Trading's; the building stands shut | Decided by the owner (22 October); queued after the doctor change | `briefs/nhung-doctor/progress.md` |
 | 11 | English signs to make Japanese, the gajumaru crown, park keepers' routines, Higa's evening bench, phone performance | Open | `HANDOFF-2026-10-21.md` |
 
 ## Still open from earlier handoffs

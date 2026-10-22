@@ -45,7 +45,8 @@ See `sources/task.md`. Branch `claude/laughing-rubin-6p25x2` (nj22az.github.io).
   Do it as its own step after this change is green.
 
 ## Next action
-Committed as work in progress (22 October, evening) on `claude/laughing-rubin-6p25x2`, not merged, no PR.
+Signed off for handover (22 October, evening): work in progress on `claude/laughing-rubin-6p25x2`, not merged, no PR.
+The tree is committed and pushed; `node_modules` is not (run `npm ci` in `johansson-town/` first).
 1. Tests updated so far and passing: roster, cast, housing-consolidation, sisters, kitano-residents, sakura-small-office,
    paperwork, sakura-merchandising, products-move, higa-liquor-laundry, afterbath-outfit, bookkeeper-return-route,
    bookshop-customers (rewritten for the closed shop floor).
