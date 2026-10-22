@@ -4,7 +4,7 @@
 
 ## Start with the ferry office and operating roles
 
-Recommended order: (1) agree the ferry company and active master/relief arrangements; (2) reconcile and greybox the shared terminal office; (3) make the ship's duty routines and accommodation self-contained; (4) redesign Sakura's roof and validate its ground-floor support rooms; (5) select and greybox the northern school/community building; (6) author the agreed building shells in Blender and integrate/test one location at a time. Chin's appearance can be reviewed as a separate small visual change.
+Recommended order: (1) implement the approved company/command roles after resolving relief arrangements; (2) reconcile and greybox the shared terminal office; (3) make the ship's duty routines and accommodation self-contained; (4) redesign Sakura's roof and validate its ground-floor support rooms; (5) select and greybox the northern school/community building; (6) author the agreed building shells in Blender and integrate/test one location at a time. Chin's appearance can be reviewed as a separate small visual change.
 
 Blender is suitable for the shells, roof, tank, trim and furniture. Keep doors, shop products, interactions, collision, navigation, room IDs and schedules attached to the game's shared data. A monolithic replacement GLB would lose those responsibilities unless reconnected. Author in metres with explicit origins and export collections separately. `tools/blender/build-school.py` contains hard-coded older dimensions while current `school-layout.js` has a later single-storey campus; do not regenerate the school from that script unchanged.
 
@@ -13,7 +13,7 @@ Blender is suitable for the shells, roof, tank, trim and furniture. Keep doors, 
 - Thuan and Johansson jointly own the ferry line in the game. Thuan has a place in the ferry office too. No equity percentage, corporate name or title portfolio has been specified.
 - Some island real estate is intended to belong to them; the properties are not identified. Do not transfer other households, public plots, the terminal or the school to them by inference.
 - The ship's crew should work as a self-contained group, seen ashore sparingly. This means duties, meals, rest and ordinary off-watch time chiefly aboard; it does not authorise deleting Chin's family, shore homes or meaningful occasional shore leave.
-- Fujita is a **retired sea captain**, not the active master. Preserve his character, houseboat and stories; a replacement master is needed before changing the live duty roster.
+- Fujita is a **retired sea captain**, not the active master. Preserve his character, houseboat and stories. The owner has now appointed Ryo as captain for implementation.
 - Tetsuo remains the electrician. Retain his island/workshop role and purposeful maintenance visits; do not turn him into an unrelated full-time deckhand.
 - Chin should look stronger and clearly adult, using the shared avatar creator/system.
 - Sakura retains its approximately 139 m2 footprint and all previously selected on-site functions: shift desk/secure cash, tea/meal break, lie-down/rest room, bulk stock/archives.
@@ -27,14 +27,16 @@ Provide two identifiable work areas: Johansson's technical desk, machinery drawi
 
 Keep the existing Harbour Office and shore staff distinct. Preserve ticketing, post/parcels, Ganaha's counter, waiting seats and ferry departures. Reconcile the waiting-room interior (9 x 7 m) with the exterior hall (4.1 x 7.3 m), and the upper records shell/access, before authoring a final office model. Do not simply move Sakura's shop safe, stock and account books into the company office. The previous exclusive-Johansson terminal sketch in PR #366 is superseded by this shared-owner direction; its footprint and storage safeguards remain useful.
 
-## Proposed ship's crew - decision table, not live appointments
+## Approved command roles and proposed remaining crew - not yet implemented
 
 | Function | Proposed person | What changes / remains to settle |
 | --- | --- | --- |
-| Master | New dedicated experienced captain (recommended) | Retains Ryo as chief officer. Name, original look, berth and bridge relief provision to be specified. Alternative: promote Ryo and recruit an experienced mate. Do not make Ren a qualified mate by assumption. |
-| Chief officer | Ryo | Keep lookout, access and vehicle-deck/ramp responsibilities. Bridge relief capability needs an explicit profile/watch plan. |
-| Chief engineer / relief | Johansson and Mac | Existing live system is Johansson when aboard, Mac when absent. Preserve that autonomy pending the owner's choice of Johansson's day-to-day role. A shore owner/technical-manager option could make Mac the operating chief, but is not assumed. |
-| Motorman | Chin | Engine-room rounds, maintenance and assistance; aboard during ship duty. Keep family/home identity and agreed off-duty workshop role until a new rota is specified. |
+| Master | **Ryo — owner approved** | Promote from chief officer; bridge relief and the vacated mate post must be resolved before switching live operations. |
+| Chief officer | To be appointed | Ryo's former post is vacant in the new plan. Do not promote Ren or invent a qualified mate by assumption. |
+| Chief engineer | **Chin — owner approved** | Supersedes his motorman assignment. Reconcile profile, command, engine-room duties and accommodation; do not leave duplicate chief/motorman assignments. |
+| Owner / technical manager | **Johansson — owner approved** | Shore management with Thuan as joint owner. No routine chief-engineer watch or departure dependency. |
+| Relief engineer | Mac | Retain engineering relief capacity; final rota must support Chin rather than substitute for Johansson's presence. |
+| Motorman | To be resolved | Chin's promotion vacates this post. Audit workload/relief before deciding whether a separate person is required. |
 | Bosun | Nao; Koji as existing relief | Mooring/deck work. Preserve the relief arrangement; do not quietly remove Koji's fishing/delivery functions. |
 | Deck hand | Ren | Lines, gangway and rounds; ship-based duty. |
 | Purser | Aya | Passenger/vehicle counts and onboard service, distinct from Ganaha's terminal counter. |
@@ -42,7 +44,7 @@ Keep the existing Harbour Office and shore staff distinct. Preserve ticketing, p
 | Electrician (shore support) | Tetsuo | Planned electrical jobs aboard and island/workshop work ashore. |
 | Retired captain | Fujita | No required bridge watch, startup command or departure dependency; occasional advice/story visits only. |
 
-This fills the eight existing ship post types, with shore support and relief separated. It is not a claim that eight names already provide a complete relief rota. Check the 06:05-22:20 working day, bridge/engine cover, meals, rest, berths and days off. Preserve the fixed timetable: she never waits for Johansson or either owner. Several listed berths are data reservations rather than fully verified drawn accommodation; inspect every bed/locker/mess seat before declaring the crew self-contained.
+The owner-approved promotions leave chief-officer and motorman coverage unresolved. This is not a complete relief rota or a live roster change. Check the 06:05-22:20 working day, bridge/engine cover, meals, rest, berths and days off. Preserve the fixed timetable: she never waits for Johansson or either owner. Several listed berths are data reservations rather than fully verified drawn accommodation; inspect every bed/locker/mess seat before declaring the crew self-contained.
 
 Before live implementation, update the roster once, then all consumers: ferry-crew, master-commute, fujita-day, aboard/shore bodies, operations/startup authorisation, households, biographies, dialogue, stories and save migration. Preserve stable Fujita identity instead of deleting him. Never let owner status substitute for the serving master's operational command.
 
@@ -70,7 +72,7 @@ Give the tank a supported roof/plinth and appropriate plumbing/maintenance clear
 
 ## Proposed delivery order and acceptance gates
 
-1. Decide active captain and Johansson's operational role; record owners separately from crew command. Property portfolio can remain deferred.
+1. Implement Ryo captain, Chin chief engineer and Johansson owner/technical manager after resolving mate/motorman coverage; record owners separately from crew command. Property portfolio can remain deferred.
 2. Draw and greybox the shared terminal office against the actual port exterior; test both desks, stairs/access, window views and all passenger/harbour services.
 3. Implement crew posts, relief and onboard routines/accommodation as one focused change; prove sailing with the player ashore, owner visiting, and old saves.
 4. Preview Chin's shared-engine recipe separately; apply only the reviewed appearance with pose/clothing/clearance checks.
@@ -80,10 +82,10 @@ Give the tank a supported roof/plinth and appropriate plumbing/maintenance clear
 
 No broad simultaneous rebuild, demolition, live crew swap or asset replacement has occurred. No .blend file, in-game minimap change, character screenshot or physical-device test is claimed by this planning task.
 
-## Questions still needed
+## Decisions and next verification
 
-- Captain: a new dedicated master while retaining Ryo as mate, or promote Ryo and recruit a new mate?
-- Johansson: keep rotating chief-engineer duties with Mac covering absences, or become principally shore owner/technical manager with Mac operating chief?
-- Northern site: may the garden/parking block be reassigned if both uses are replaced, or must those uses stay in place while another site is found?
+The owner has decided: Ryo is captain; Chin is chief engineer; Johansson is owner and technical manager. These supersede the earlier new-captain and rotating-Johansson-chief proposals. Thuan remains joint owner, Tetsuo electrician and Fujita retired captain.
 
-Property parcels, company name/equity and exact roof-access behaviour can be decided later; none is invented to make this plan appear complete.
+The owner requested an MCP walk of the island to choose the school site. See [SCHOOL-SITE-RECOMMENDATION.md](SCHOOL-SITE-RECOMMENDATION.md): public-game startup failed with a graphics-engine error after a retry, and the document offered no WebMCP tools. No walk or successful in-game site inspection is claimed. The northern garden/parking block is the provisional best of the measured cleared-plot options; siting, outdoor provision and displacement remain unapproved.
+
+Property parcels, company name/equity and exact roof-access behaviour can be decided later. Chief-officer and motorman coverage need an operating plan before implementation.
