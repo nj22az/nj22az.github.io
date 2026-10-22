@@ -1,0 +1,142 @@
+{
+  "revision": "B",
+  "owner_decisions": {
+    "ground_footprint": "retain existing 138.75 m2 polygon",
+    "terminal_office": "Johansson ferry and engineering work",
+    "retain_at_sakura": [
+      "daily desk and secure cash storage",
+      "tea and meal-break corner",
+      "lie-down/rest room",
+      "bulk stock and archive storage"
+    ]
+  },
+  "implementation_authorised": false,
+  "zones": [
+    {
+      "id": "rest",
+      "label": "LIE-DOWN ROOM",
+      "x0": -5.7,
+      "x1": -2.9,
+      "z0": -6.78,
+      "z1": -3.95,
+      "area_m2": 7.924
+    },
+    {
+      "id": "staff_access",
+      "label": "STAFF ACCESS",
+      "x0": -2.9,
+      "x1": -1.7,
+      "z0": -6.78,
+      "z1": -3.95,
+      "area_m2": 3.396
+    },
+    {
+      "id": "tea",
+      "label": "TEA / MEAL BREAK",
+      "x0": -1.7,
+      "x1": 0.5,
+      "z0": -6.78,
+      "z1": -3.95,
+      "area_m2": 6.226
+    },
+    {
+      "id": "stock_archive",
+      "label": "BULK / ARCHIVE",
+      "x0": 0.5,
+      "x1": 5.7,
+      "z0": -6.78,
+      "z1": -3.95,
+      "area_m2": 14.716
+    }
+  ],
+  "conditional_removal": "No upper-floor removal before inventory/storage-capacity, routes, saves and full-size mock-up pass. Retain upper storage at Sakura if required; do not move it off-site without another decision.",
+  "openings": [
+    {
+      "x": -2.9,
+      "z0": -5.15,
+      "z1": -4.25
+    },
+    {
+      "x": -1.7,
+      "z0": -5.15,
+      "z1": -4.25
+    },
+    {
+      "x": 0.5,
+      "z0": -5.15,
+      "z1": -4.25
+    }
+  ],
+  "route": [
+    [
+      -3.8,
+      -4.65
+    ],
+    [
+      -2.3,
+      -4.65
+    ],
+    [
+      -0.6,
+      -4.65
+    ],
+    [
+      3.8,
+      -4.65
+    ],
+    [
+      3.8,
+      -6.2
+    ]
+  ],
+  "fixtures": [
+    {
+      "id": "futon",
+      "x0": -5.45,
+      "x1": -3.45,
+      "z0": -6.45,
+      "z1": -5.45,
+      "zone": "rest"
+    },
+    {
+      "id": "tea_counter",
+      "x0": -1.6,
+      "x1": 0.25,
+      "z0": -6.68,
+      "z1": -6.08,
+      "zone": "tea"
+    },
+    {
+      "id": "break_table",
+      "x0": -1.3,
+      "x1": -0.5,
+      "z0": -5.65,
+      "z1": -5.15,
+      "zone": "tea"
+    },
+    {
+      "id": "bulk_shelf_west",
+      "x0": 0.6,
+      "x1": 2.8,
+      "z0": -6.68,
+      "z1": -6.08,
+      "zone": "stock_archive"
+    },
+    {
+      "id": "bulk_shelf_east",
+      "x0": 4.5,
+      "x1": 5.6,
+      "z0": -6.68,
+      "z1": -6.08,
+      "zone": "stock_archive"
+    },
+    {
+      "id": "archive_cabinet",
+      "x0": 5.1,
+      "x1": 5.65,
+      "z0": -5.85,
+      "z1": -4.95,
+      "zone": "stock_archive"
+    }
+  ]
+}
