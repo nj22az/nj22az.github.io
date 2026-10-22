@@ -83,7 +83,7 @@ const LABEL={
  crop:'Crop',sidepart:'Side part',bob:'Bob',long:'Long',sweptponytail:'Swept low ponytail',ponytail:'Ponytail',braids:'Original Thuận braids',longbraids:'Twin braids · Thuan',bun:'Bun',spiky:'Spiky',perm:'Perm',buzz:'Buzz',afro:'Afro',horseshoe:'Horseshoe',bald:'Bald',
  pixie:'Pixie',shoulder:'Shoulder',curtains:'Centre part',slick:'Slicked back',mullet:'Mullet',topknot:'Topknot',pigtails:'Pigtails',twinbuns:'Twin buns',
  round:'Round',dot:'Dot',almond:'Almond',sleepy:'Sleepy',lashes:'Lashes',narrow:'Narrow',sparkle:'Sparkle',gentle:'Gentle',
- doe:'Doe',cat:'Cat',droopy:'Droopy',heavy:'Heavy-lidded',bright:'Bright',tired:'Tired',squint:'Squint',starry:'Starry',
+ doe:'Doe',cat:'Cat',droopy:'Droopy',heavy:'Heavy-lidded',bright:'Bright',tired:'Tired',squint:'Squint',starry:'Starry',islandbead:'Island ink',islandlid:'Island lids',islandbright:'Island bright',
  angled:'Angled',short:'Short',rounded:'Rounded',tapered:'Tapered',feathered:'Feathered',maro:'Maro',
  pointed:'Pointed',snub:'Snub',bulb:'Bulb',ridge:'Ridge',
  teeth:'Teeth',open:'Open',lopsided:'Lopsided',tongue:'Tongue out',buck:'Buck teeth',soft:'Soft',

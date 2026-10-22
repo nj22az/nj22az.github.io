@@ -1,0 +1,932 @@
+[
+  {
+    "name": "Johansson",
+    "recipe": {
+      "v": 1,
+      "name": "Johansson",
+      "age": "adult",
+      "body": {
+        "height": 0.72,
+        "build": 0.72,
+        "proportion": "classic",
+        "silhouette": "masculine",
+        "skin": "#dc9d7a"
+      },
+      "head": {
+        "size": 0.48,
+        "shape": 0.45,
+        "form": "square",
+        "jaw": 0.75,
+        "cheeks": 0.55,
+        "roundness": 0
+      },
+      "hair": {
+        "style": "horseshoe",
+        "colour": "#b8b4aa",
+        "flip": false,
+        "length": 0,
+        "volume": 0.5,
+        "tieColour": "#f4f1ea"
+      },
+      "eyes": {
+        "style": "gentle",
+        "colour": "#3d6a8a",
+        "size": 0.45,
+        "width": 0.5,
+        "spacing": 0.52,
+        "height": 0.5,
+        "tilt": 0.45
+      },
+      "brows": {
+        "style": "bushy",
+        "colour": "#a8a49a",
+        "size": 0.6,
+        "spacing": 0.5,
+        "height": 0.55,
+        "tilt": 0.45
+      },
+      "nose": {
+        "style": "wide",
+        "size": 0.6,
+        "height": 0.48,
+        "x": 0.5
+      },
+      "mouth": {
+        "style": "smile",
+        "colour": "#a8433e",
+        "size": 0.55,
+        "width": 0.5,
+        "height": 0.5,
+        "x": 0.5
+      },
+      "glasses": {
+        "style": "none",
+        "enabled": true,
+        "colour": "#2b2b2b",
+        "size": 0.5,
+        "height": 0.5
+      },
+      "facial": {
+        "colour": "#b8b4aa",
+        "size": 0.5,
+        "height": 0.5,
+        "width": 0.5,
+        "paint": "none",
+        "moustache": "none",
+        "beard": "stubble",
+        "style": "stubble"
+      },
+      "blush": 0.35,
+      "freckles": false,
+      "mole": false,
+      "wrinkles": 0.7,
+      "moleSpot": {
+        "x": 0.77,
+        "height": 0.33,
+        "size": 0.5
+      },
+      "marks": {
+        "forehead": false,
+        "worry": false,
+        "frown": false,
+        "lids": false,
+        "bags": false,
+        "crowsfeet": false,
+        "smilelines": false,
+        "cheeks": false,
+        "dimples": false,
+        "cleft": false,
+        "stubble": false,
+        "rosy": false,
+        "cocked": false,
+        "blushing": false
+      },
+      "outfit": {
+        "top": "kariyushi",
+        "topColour": "#7fb0d8",
+        "pattern": "flowers",
+        "bottom": "shorts",
+        "bottomColour": "#c8b48a",
+        "bottomPattern": "none",
+        "footwear": "sandals",
+        "shoes": "#6d4a32",
+        "hat": "none",
+        "hatColour": "#f4f1ea",
+        "accent": "#f4f1ea",
+        "belt": "none",
+        "beltColour": "#16171b",
+        "number": 0
+      },
+      "accessories": {
+        "earrings": "none",
+        "neckwear": "none",
+        "colour": "#e0b93a",
+        "necklaceColour": "#e0b93a",
+        "pin": false
+      },
+      "swim": {
+        "colour": "#2f5f9e",
+        "bath": "towel"
+      },
+      "profile": {
+        "pace": 0.3,
+        "talk": 0.7,
+        "show": 0.7,
+        "outlook": 0.8,
+        "pitch": 0.5,
+        "speed": 0.5,
+        "timbre": "auto",
+        "softness": 0.5,
+        "vibrato": 0,
+        "month": 1,
+        "day": 30,
+        "favourite": "#3fa0c8",
+        "catchphrase": ""
+      }
+    },
+    "measure": {
+      "H": 1.6768,
+      "k": 1.048,
+      "Rh": 0.25400166400000007,
+      "headSX": 1.024,
+      "headSY": 1.025,
+      "profile": {
+        "width": 1.024,
+        "height": 1.025,
+        "taper": -0.215,
+        "cheek": 0.006500000000000006,
+        "crown": 0,
+        "corners": 0
+      },
+      "neck": 0.057640000000000004,
+      "torso": 0.5821819920640001,
+      "leg": 0.5162745967360001,
+      "foot": 0.07336000000000001,
+      "thigh": 0.22145729836800004,
+      "shin": 0.22145729836800004,
+      "legR": 0.07889344000000001,
+      "armR": 0.05923296,
+      "width": 0.46179072,
+      "hips": 0.415611648,
+      "waistRatio": 0.98,
+      "depth": 0.27751040000000005,
+      "upper": 0.23056000000000001,
+      "fore": 0.2096,
+      "hand": 0.058688000000000004,
+      "hipY": 0.5162745967360001,
+      "chestY": 0.8073655927680001,
+      "neckY": 1.0984565888000002,
+      "headY": 1.1560965888,
+      "headCentre": 1.400827192064,
+      "shoulderX": 0.219048768,
+      "shoulderY": 1.0198565888000002,
+      "hipX": 0.09974679552,
+      "seatDrop": 0.074948768
+    },
+    "geometrySHA256": "b508eaed21ac089b1a2a50bf8743ae212ac43a01e39ce34f68d62b76d66f4725"
+  },
+  {
+    "name": "Thuan",
+    "recipe": {
+      "v": 1,
+      "name": "Thuan",
+      "age": "adult",
+      "body": {
+        "height": 0.593323211488314,
+        "build": 0.542255296627991,
+        "proportion": "classic",
+        "silhouette": "feminine",
+        "skin": "#f1cfae"
+      },
+      "head": {
+        "size": 0.5215226767235436,
+        "shape": 0.6005432652309537,
+        "form": "diamond",
+        "jaw": 0.9990857432130724,
+        "cheeks": 0.7257326100952923,
+        "roundness": 0
+      },
+      "hair": {
+        "style": "braids",
+        "colour": "#1c1714",
+        "flip": false,
+        "length": 0,
+        "volume": 0.5,
+        "tieColour": "#f4f1ea"
+      },
+      "eyes": {
+        "style": "heavy",
+        "colour": "#5a3a22",
+        "size": 0.41854057607706635,
+        "width": 0.5,
+        "spacing": 0.4285156256519258,
+        "height": 0.4026084071956575,
+        "tilt": 0.5415620451094583
+      },
+      "brows": {
+        "style": "straight",
+        "colour": "#1c1714",
+        "size": 0.406187979481183,
+        "spacing": 0.5,
+        "height": 0.5545342293567955,
+        "tilt": 0.36713311206549404
+      },
+      "nose": {
+        "style": "dot",
+        "size": 0.7617855430115015,
+        "height": 0.504130235221237,
+        "x": 0.5
+      },
+      "mouth": {
+        "style": "wide",
+        "colour": "#cc3d52",
+        "size": 0.45115002514794467,
+        "width": 0.5,
+        "height": 0.4591116582043469,
+        "x": 0.5
+      },
+      "glasses": {
+        "style": "none",
+        "enabled": true,
+        "colour": "#2b2b2b",
+        "size": 0.5676982353907079,
+        "height": 0.5755009217653424
+      },
+      "facial": {
+        "colour": "#3a2618",
+        "size": 0.38588148076087236,
+        "height": 0.41594491247087717,
+        "width": 0.5,
+        "paint": "none",
+        "moustache": "none",
+        "beard": "none",
+        "style": "none"
+      },
+      "blush": 0.31557518243789673,
+      "freckles": false,
+      "mole": false,
+      "wrinkles": 0,
+      "moleSpot": {
+        "x": 0.35863798088394105,
+        "height": 0.32676913728937507,
+        "size": 0.48333446895703674
+      },
+      "marks": {
+        "forehead": false,
+        "worry": false,
+        "frown": false,
+        "lids": false,
+        "bags": false,
+        "crowsfeet": false,
+        "smilelines": false,
+        "cheeks": false,
+        "dimples": false,
+        "cleft": false,
+        "stubble": false,
+        "rosy": false,
+        "cocked": false,
+        "blushing": false
+      },
+      "outfit": {
+        "top": "polo",
+        "topColour": "#2b2b2b",
+        "pattern": "none",
+        "bottom": "shorts",
+        "bottomColour": "#9a6a42",
+        "bottomPattern": "none",
+        "footwear": "sneakers",
+        "shoes": "#f4f1ea",
+        "hat": "none",
+        "hatColour": "#f4f1ea",
+        "accent": "#3fa0c8",
+        "belt": "none",
+        "beltColour": "#16171b",
+        "number": 0
+      },
+      "accessories": {
+        "earrings": "none",
+        "neckwear": "none",
+        "colour": "#e0b93a",
+        "necklaceColour": "#e0b93a",
+        "pin": false
+      },
+      "swim": {
+        "colour": "#2f5f9e",
+        "bath": "towel"
+      },
+      "profile": {
+        "pace": 0.7,
+        "talk": 0.35,
+        "show": 0.75,
+        "outlook": 0.75,
+        "pitch": 0.5,
+        "speed": 0.5,
+        "timbre": "auto",
+        "softness": 0.5,
+        "vibrato": 0,
+        "month": 3,
+        "day": 15,
+        "favourite": "#3fa0c8",
+        "catchphrase": ""
+      }
+    },
+    "measure": {
+      "H": 1.6210622130548582,
+      "k": 1.0131638831592864,
+      "Rh": 0.24814997145907497,
+      "headSX": 0.9620651918277144,
+      "headSY": 1.0899456734769046,
+      "profile": {
+        "width": 0.9620651918277144,
+        "height": 1.0899456734769046,
+        "taper": 0.25020113649312403,
+        "cheek": 0.13934523931238801,
+        "crown": 0,
+        "corners": 0
+      },
+      "neck": 0.05572401357376075,
+      "torso": 0.5429310586938314,
+      "leg": 0.48146716525679384,
+      "foot": 0.07092147182115005,
+      "thigh": 0.2052728467178219,
+      "shin": 0.2052728467178219,
+      "legR": 0.07194894879112597,
+      "armR": 0.054382670454092785,
+      "width": 0.3631766960122569,
+      "hips": 0.4103896664938502,
+      "waistRatio": 0.79,
+      "depth": 0.25207819001143483,
+      "upper": 0.222896054295043,
+      "fore": 0.2026327766318573,
+      "hand": 0.05673717745692004,
+      "hipY": 0.48146716525679384,
+      "chestY": 0.7529326946037096,
+      "neckY": 1.0243982239506253,
+      "headY": 1.080122237524386,
+      "headCentre": 1.334364026023708,
+      "shoulderX": 0.17071181391530987,
+      "shoulderY": 0.9484109327136788,
+      "hipX": 0.09849351995852405,
+      "seatDrop": 0.06835150135156967
+    },
+    "geometrySHA256": "7a46affd50749a918fc14b179ca7e4e426b92f81f0aeec460a40c7bdc6d7a922"
+  },
+  {
+    "name": "Tetsuo",
+    "recipe": {
+      "v": 1,
+      "name": "Tetsuo",
+      "age": "adult",
+      "body": {
+        "height": 0.62,
+        "build": 0.5,
+        "proportion": "classic",
+        "silhouette": "masculine",
+        "skin": "#dca97e"
+      },
+      "head": {
+        "size": 0.5,
+        "shape": 0.5,
+        "form": "narrow",
+        "jaw": 0.55,
+        "cheeks": 0.35,
+        "roundness": 0
+      },
+      "hair": {
+        "style": "horseshoe",
+        "colour": "#8a8680",
+        "flip": false,
+        "length": 0,
+        "volume": 0.5,
+        "tieColour": "#f4f1ea"
+      },
+      "eyes": {
+        "style": "sleepy",
+        "colour": "#2a1d16",
+        "size": 0.45,
+        "width": 0.5,
+        "spacing": 0.5,
+        "height": 0.5,
+        "tilt": 0.5
+      },
+      "brows": {
+        "style": "bushy",
+        "colour": "#8a8680",
+        "size": 0.6,
+        "spacing": 0.5,
+        "height": 0.5,
+        "tilt": 0.5
+      },
+      "nose": {
+        "style": "hook",
+        "size": 0.55,
+        "height": 0.5,
+        "x": 0.5
+      },
+      "mouth": {
+        "style": "flat",
+        "colour": "#b8544a",
+        "size": 0.8,
+        "width": 1,
+        "height": 0.5,
+        "x": 0.5
+      },
+      "glasses": {
+        "style": "half",
+        "enabled": true,
+        "colour": "#2b2b2b",
+        "size": 0.5,
+        "height": 0.5
+      },
+      "facial": {
+        "colour": "#1c1714",
+        "size": 0.5,
+        "height": 0.5,
+        "width": 0.5,
+        "paint": "none",
+        "moustache": "none",
+        "beard": "none",
+        "style": "none"
+      },
+      "blush": 0.25,
+      "freckles": false,
+      "mole": false,
+      "wrinkles": 0.6,
+      "moleSpot": {
+        "x": 0.77,
+        "height": 0.33,
+        "size": 0.5
+      },
+      "marks": {
+        "forehead": false,
+        "worry": false,
+        "frown": false,
+        "lids": false,
+        "bags": false,
+        "crowsfeet": false,
+        "smilelines": false,
+        "cheeks": false,
+        "dimples": false,
+        "cleft": false,
+        "stubble": false,
+        "rosy": false,
+        "cocked": false,
+        "blushing": false
+      },
+      "outfit": {
+        "top": "jacket",
+        "topColour": "#6b6f4a",
+        "pattern": "none",
+        "bottom": "trousers",
+        "bottomColour": "#4a4238",
+        "bottomPattern": "none",
+        "footwear": "sneakers",
+        "shoes": "#3a2a1e",
+        "hat": "none",
+        "hatColour": "#f4f1ea",
+        "accent": "#e8d7b0",
+        "belt": "none",
+        "beltColour": "#16171b",
+        "number": 0
+      },
+      "accessories": {
+        "earrings": "none",
+        "neckwear": "none",
+        "colour": "#e0b93a",
+        "necklaceColour": "#e0b93a",
+        "pin": true
+      },
+      "swim": {
+        "colour": "#2f5f9e",
+        "bath": "towel"
+      },
+      "profile": {
+        "pace": 0.3,
+        "talk": 0.65,
+        "show": 0.2,
+        "outlook": 0.35,
+        "pitch": 0.5,
+        "speed": 0.5,
+        "timbre": "auto",
+        "softness": 0.5,
+        "vibrato": 0,
+        "month": 12,
+        "day": 4,
+        "favourite": "#3fa0c8",
+        "catchphrase": ""
+      }
+    },
+    "measure": {
+      "H": 1.6328,
+      "k": 1.0205,
+      "Rh": 0.2485938,
+      "headSX": 0.84,
+      "headSY": 1.16,
+      "profile": {
+        "width": 0.84,
+        "height": 1.16,
+        "taper": 0.239,
+        "cheek": -0.019500000000000003,
+        "crown": 0,
+        "corners": 0
+      },
+      "neck": 0.0561275,
+      "torso": 0.52996548852,
+      "leg": 0.46996939548,
+      "foot": 0.071435,
+      "thigh": 0.19926719774,
+      "shin": 0.19926719774,
+      "legR": 0.071435,
+      "armR": 0.054086499999999996,
+      "width": 0.41330249999999996,
+      "hips": 0.37197224999999995,
+      "waistRatio": 0.98,
+      "depth": 0.2500225,
+      "upper": 0.22451,
+      "fore": 0.2041,
+      "hand": 0.057148,
+      "hipY": 0.46996939548,
+      "chestY": 0.7349521397400001,
+      "neckY": 0.999934884,
+      "headY": 1.056062384,
+      "headCentre": 1.3271290635200002,
+      "shoulderX": 0.19583394999999998,
+      "shoulderY": 0.9233973839999999,
+      "hipX": 0.08927333999999998,
+      "seatDrop": 0.06786325
+    },
+    "geometrySHA256": "bcf8e28c258e7fd300af24199c803378806f2972b0ed48e773f193eb9d6b4e5e"
+  },
+  {
+    "name": "Grandmother Higa",
+    "recipe": {
+      "v": 1,
+      "name": "Grandmother Higa",
+      "age": "adult",
+      "body": {
+        "height": 0.2,
+        "build": 0.6,
+        "proportion": "classic",
+        "silhouette": "feminine",
+        "skin": "#dca97e"
+      },
+      "head": {
+        "size": 0.48,
+        "shape": 0.5,
+        "form": "round",
+        "jaw": 0.7,
+        "cheeks": 0.85,
+        "roundness": 0
+      },
+      "hair": {
+        "style": "perm",
+        "colour": "#d8d6d0",
+        "flip": false,
+        "length": 0,
+        "volume": 0.5,
+        "tieColour": "#f4f1ea"
+      },
+      "eyes": {
+        "style": "gentle",
+        "colour": "#2a1d16",
+        "size": 0.4,
+        "width": 0.5,
+        "spacing": 0.5,
+        "height": 0.5,
+        "tilt": 0.5
+      },
+      "brows": {
+        "style": "thin",
+        "colour": "#9a9a96",
+        "size": 0.5,
+        "spacing": 0.5,
+        "height": 0.5,
+        "tilt": 0.5
+      },
+      "nose": {
+        "style": "button",
+        "size": 0.55,
+        "height": 0.5,
+        "x": 0.5
+      },
+      "mouth": {
+        "style": "smile",
+        "colour": "#b8544a",
+        "size": 0.45,
+        "width": 0.5,
+        "height": 0.5,
+        "x": 0.5
+      },
+      "glasses": {
+        "style": "half",
+        "enabled": true,
+        "colour": "#8a4a3a",
+        "size": 0.5,
+        "height": 0.5
+      },
+      "facial": {
+        "colour": "#1c1714",
+        "size": 0.5,
+        "height": 0.5,
+        "width": 0.5,
+        "paint": "none",
+        "moustache": "none",
+        "beard": "none",
+        "style": "none"
+      },
+      "blush": 0.4,
+      "freckles": false,
+      "mole": false,
+      "wrinkles": 1,
+      "moleSpot": {
+        "x": 0.77,
+        "height": 0.33,
+        "size": 0.5
+      },
+      "marks": {
+        "forehead": false,
+        "worry": false,
+        "frown": false,
+        "lids": false,
+        "bags": false,
+        "crowsfeet": false,
+        "smilelines": false,
+        "cheeks": false,
+        "dimples": false,
+        "cleft": false,
+        "stubble": false,
+        "rosy": false,
+        "cocked": false,
+        "blushing": false
+      },
+      "outfit": {
+        "top": "blouse",
+        "topColour": "#8a4ab8",
+        "pattern": "flowers",
+        "bottom": "longskirt",
+        "bottomColour": "#6d7478",
+        "bottomPattern": "none",
+        "footwear": "sneakers",
+        "shoes": "#2b2b2b",
+        "hat": "none",
+        "hatColour": "#f4f1ea",
+        "accent": "#f4d23c",
+        "belt": "none",
+        "beltColour": "#16171b",
+        "number": 0
+      },
+      "accessories": {
+        "earrings": "none",
+        "neckwear": "none",
+        "colour": "#e0b93a",
+        "necklaceColour": "#e0b93a",
+        "pin": false
+      },
+      "swim": {
+        "colour": "#2f5f9e",
+        "bath": "towel"
+      },
+      "profile": {
+        "pace": 0.7110236220472441,
+        "talk": 0.32677165354330706,
+        "show": 0.7677165354330708,
+        "outlook": 0.45905511811023625,
+        "pitch": 0.5,
+        "speed": 0.5,
+        "timbre": "auto",
+        "softness": 0.5,
+        "vibrato": 0,
+        "month": 7,
+        "day": 1,
+        "favourite": "#3fa0c8",
+        "catchphrase": ""
+      }
+    },
+    "measure": {
+      "H": 1.4480000000000002,
+      "k": 0.905,
+      "Rh": 0.21934304000000004,
+      "headSX": 1.03,
+      "headSY": 1.01,
+      "profile": {
+        "width": 1.03,
+        "height": 1.01,
+        "taper": 0.056000000000000015,
+        "cheek": 0.0455,
+        "crown": 0,
+        "corners": 0
+      },
+      "neck": 0.049775,
+      "torso": 0.5062305913760001,
+      "leg": 0.44892146782400005,
+      "foot": 0.06335,
+      "thigh": 0.19278573391200002,
+      "shin": 0.19278573391200002,
+      "legR": 0.06552200000000001,
+      "armR": 0.049413,
+      "width": 0.33177300000000004,
+      "hips": 0.37490349,
+      "waistRatio": 0.79,
+      "depth": 0.22987000000000002,
+      "upper": 0.1991,
+      "fore": 0.18100000000000002,
+      "hand": 0.05068,
+      "hipY": 0.44892146782400005,
+      "chestY": 0.7020367635120002,
+      "neckY": 0.9551520592000002,
+      "headY": 1.0049270592000001,
+      "headCentre": 1.2131713413760001,
+      "shoulderX": 0.15600390000000003,
+      "shoulderY": 0.8872770592000002,
+      "hipX": 0.0899768376,
+      "seatDrop": 0.06224590000000001
+    },
+    "geometrySHA256": "2d944dcd7799508c80327c14d768545ef41fe5f8c3292b8cd71a25effef1f08a"
+  },
+  {
+    "name": "Mai",
+    "recipe": {
+      "v": 1,
+      "name": "Mai",
+      "age": "child",
+      "body": {
+        "height": 0.45,
+        "build": 0.35,
+        "proportion": "classic",
+        "silhouette": "feminine",
+        "skin": "#e8bf98"
+      },
+      "head": {
+        "size": 0.5,
+        "shape": 0.5,
+        "form": "oval",
+        "jaw": 0.5,
+        "cheeks": 0.5,
+        "roundness": 0
+      },
+      "hair": {
+        "style": "bob",
+        "colour": "#2c211b",
+        "flip": false,
+        "length": 0,
+        "volume": 0.5,
+        "tieColour": "#f4f1ea"
+      },
+      "eyes": {
+        "style": "round",
+        "colour": "#2a1d16",
+        "size": 0.5,
+        "width": 0.5,
+        "spacing": 0.5,
+        "height": 0.5,
+        "tilt": 0.5
+      },
+      "brows": {
+        "style": "thin",
+        "colour": "#1c1714",
+        "size": 0.5,
+        "spacing": 0.5,
+        "height": 0.5,
+        "tilt": 0.5
+      },
+      "nose": {
+        "style": "button",
+        "size": 0.5,
+        "height": 0.5,
+        "x": 0.5
+      },
+      "mouth": {
+        "style": "smile",
+        "colour": "#b8544a",
+        "size": 0.5,
+        "width": 0.5,
+        "height": 0.5,
+        "x": 0.5
+      },
+      "glasses": {
+        "style": "none",
+        "enabled": true,
+        "colour": "#2b2b2b",
+        "size": 0.5,
+        "height": 0.5
+      },
+      "facial": {
+        "colour": "#1c1714",
+        "size": 0.5,
+        "height": 0.5,
+        "width": 0.5,
+        "paint": "none",
+        "moustache": "none",
+        "beard": "none",
+        "style": "none"
+      },
+      "blush": 0.25,
+      "freckles": false,
+      "mole": false,
+      "wrinkles": 0,
+      "moleSpot": {
+        "x": 0.77,
+        "height": 0.33,
+        "size": 0.5
+      },
+      "marks": {
+        "forehead": false,
+        "worry": false,
+        "frown": false,
+        "lids": false,
+        "bags": false,
+        "crowsfeet": false,
+        "smilelines": false,
+        "cheeks": false,
+        "dimples": false,
+        "cleft": false,
+        "stubble": false,
+        "rosy": false,
+        "cocked": false,
+        "blushing": false
+      },
+      "outfit": {
+        "top": "tee",
+        "topColour": "#e59c72",
+        "pattern": "none",
+        "bottom": "skirt",
+        "bottomColour": "#2d3a52",
+        "bottomPattern": "none",
+        "footwear": "sneakers",
+        "shoes": "#3f6fb0",
+        "hat": "none",
+        "hatColour": "#f4f1ea",
+        "accent": "#f4d23c",
+        "belt": "none",
+        "beltColour": "#16171b",
+        "number": 0
+      },
+      "accessories": {
+        "earrings": "none",
+        "neckwear": "none",
+        "colour": "#e0b93a",
+        "necklaceColour": "#e0b93a",
+        "pin": false
+      },
+      "swim": {
+        "colour": "#2f5f9e",
+        "bath": "towel"
+      },
+      "profile": {
+        "pace": 0.6417322834645669,
+        "talk": 0.8433070866141733,
+        "show": 0.29527559055118113,
+        "outlook": 0.6858267716535433,
+        "pitch": 0.5,
+        "speed": 0.5,
+        "timbre": "auto",
+        "softness": 0.5,
+        "vibrato": 0,
+        "month": 7,
+        "day": 1,
+        "favourite": "#3fa0c8",
+        "catchphrase": ""
+      }
+    },
+    "measure": {
+      "H": 1.2100000000000002,
+      "k": 0.7562500000000001,
+      "Rh": 0.230278125,
+      "headSX": 0.94,
+      "headSY": 1.08,
+      "profile": {
+        "width": 0.94,
+        "height": 1.08,
+        "taper": 0.22,
+        "cheek": 0,
+        "crown": 0,
+        "corners": 0
+      },
+      "neck": 0.041593750000000006,
+      "torso": 0.3556329150000001,
+      "leg": 0.31537258500000004,
+      "foot": 0.05293750000000001,
+      "thigh": 0.1312175425,
+      "shin": 0.1312175425,
+      "legR": 0.05021500000000001,
+      "armR": 0.03826625,
+      "width": 0.2505834375,
+      "hips": 0.283159284375,
+      "waistRatio": 0.79,
+      "depth": 0.17507187500000002,
+      "upper": 0.16637500000000002,
+      "fore": 0.15125000000000002,
+      "hand": 0.042350000000000006,
+      "hipY": 0.31537258500000004,
+      "chestY": 0.49318904250000006,
+      "neckY": 0.6710055000000001,
+      "headY": 0.7125992500000001,
+      "headCentre": 0.9463776025000001,
+      "shoulderX": 0.11763846875,
+      "shoulderY": 0.6142867500000001,
+      "hipX": 0.06795822824999999,
+      "seatDrop": 0.047704250000000004
+    },
+    "geometrySHA256": "87de9deee3424a41e863993c6b4e242c3fc3f6b6da9bd295352be7a442cbe078"
+  }
+]
