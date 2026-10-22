@@ -42,7 +42,10 @@ word), then the queued Higa Liquor step.
     at all hours (as it did Dr Kakazu), so on a Sunday she was at her desk and behind Sakura's counter at once.
   - The avatar's open front (jacket, cardigan) is chosen by angle round the body, not distance across it
     (`avatars/build.js` torsoColour): on a narrow-waisted body the next column's triangles came in and the shirt was a
-    jagged zigzag (Nhung's sage shirt; the old bookseller jacket too). Neutral bodies draw exactly as before.
+    jagged zigzag (Nhung's sage shirt, and Ms Uezu's). It is now the same two front columns at every height; at the
+    shoulders, where the body rounds into the neck, the old rule had taken a few more triangles in, so the Harbour
+    master's, Tetsuo's and Ren's lose a small notch there (the separate review counted 13 triangles each). Their
+    portraits and article photos are re-rendered.
   - Leftover old-canon text: Sakura's flyer ("closed Saturdays"), the town papers regenerated (the clinic notice said
     the doctor lives behind the clinic), the small office's calendar writes both marks on the 31st (Higa and pay), the
     wardrobe notes, a chat clue, the doctor's bag ("on foot or by car", she has the bay-2 car).
@@ -84,26 +87,42 @@ word), then the queued Higa Liquor step.
   bathhouse; the Higa Liquor building stands shut, a notice on the shutter saying liquor is at Sakura (no new geometry).
   Do it as its own step after this change is green.
 
+## Separate review (22 October, evening)
+A code-reviewer agent, given the diff, the owner's decisions and the project rules, found (all fixed in the finishing
+commit unless said):
+- Sakura still had shoppers on Saturdays, when it is shut (Thao's soda, the harbour master's lunch): `visitsMarket` and
+  Thao's day now ask `sakuraOpenAt`.
+- Her bedtime (22:20) cut off the Wednesday laundry she took over from Dr Kakazu (21:15–22:30): she goes to bed at 23:00,
+  as he did (`home-life.js`); the folding happens, and the car's evening boats are over by then.
+- The phone directory showed the raw place `paper`: `home-directory.js` maps it to Front-Row.
+- On Sunday mornings she walked to the clinic before turning back to Sakura: her walk before nine goes to Sakura then.
+- `products-move.test.mjs` had been loosened (six accounts replaced whole): it now replaces only the fields that changed.
+- The sisters' game could send Nhung alone to the park while Thuan was on Kitano-jima: `sistersAtPlay` asks
+  `thuanWeekendAway`, and the test checks both or neither, day by day.
+- Text: Sakura's sales book, the bookshop bicycle, the bath's mirror adverts, the evening news, the Saturday happening's
+  line, the cookery-book favour's letter, her listed day in `cast.js`, Thuan's medicine-shelf line (the "clinic boat"),
+  paperwork comments.
+- The coat fix changes the shoulders' band on every jacket or cardigan, not only the narrow-waisted: shown on the coat
+  sheet (Tetsuo, the Harbour master, Ren, Ms Uezu).
+- Not fixed, reported: her red car still borrows her body across to Kitano-jima for the evening run (the fleet's way of
+  driving, older than this change); she owns two cars (the bay-2 kei car for house calls, the red one at the airport
+  yard, the owner's to keep); the car has a quarter of an hour at Minato to catch the 22:15 back.
+  `people/bookshop-customers.js` is dead code now that nobody browses at Front-Row; left in place.
+
+## Checks run (22 October, evening, on this machine: node 22, 4 cores)
+- Full `tests/*.test.mjs` on the base commit 84baf00: 2,102 tests, 54 failing. On the finishing commit before the review
+  fixes: 4 failing that do not fail on the base: the two runtime tests (rebuilt since) and two directory tests that still
+  counted 26 people (updated). fun-poses timed out on the base only because a render ran beside it; it passes here.
+- After the review fixes: the 64 test files that read the residents' plans, the directory, the papers and the quarters:
+  every failure there also fails on the base commit. `boot` and `runtime-package` pass after the rebuild.
+- `node tools/ci-guard.mjs`, alone, after `npm run build:runtime`: 333 of 334. The one, `no-z-fighting.test.mjs`, runs
+  out of memory on this machine's Node 22 heap on the base commit too; with `--max-old-space-size=10240` all ten of its
+  tests pass. CI runs Node 24.
+- steam-deck: 39/39 (the controller fix).
+
 ## Next action
-Signed off for handover (22 October, evening): work in progress on `claude/laughing-rubin-6p25x2`, not merged, no PR.
-The tree is committed and pushed; `node_modules` is not (run `npm ci` in `johansson-town/` first).
-1. Tests updated so far and passing: roster, cast, housing-consolidation, sisters, kitano-residents, sakura-small-office,
-   paperwork, sakura-merchandising, products-move, higa-liquor-laundry, afterbath-outfit, bookkeeper-return-route,
-   bookshop-customers (rewritten for the closed shop floor).
-2. Baseline (the same 131 affected files on the base commit 84baf00): 761 pass, 27 fail. Failing there too, so not
-   this change's: building circuits, stair flights, old saved visits, Fujita's bedtime, fun-poses, no-z-fighting
-   (environment), Minato/ramen dining surfaces, the Obon eisa, interior release, resident groups/Studio pickers, all
-   five owned-vehicles tests, retired-layout dialogue, photo articles' portraits, Kōji's journeys, shelving islands,
-   shopfronts' staff, Thuan's bench break (two), Sato Ramen points, the Studio refusals and products, ground/pier edges,
-   resident paths, the whole-day run.
-3. Failing only with this change and not yet fixed (from the run before the test fixes above): lot-dressing "the parked
-   cars are the traffic's family" (bay 2 is Nhung's now), island-businesses "published businesses have reachable real
-   doors" and "bookshop and dock workshop keep distinct content … their own workers" (Nhung works at the clinic), boot
-   "Published island boots" (runtime not rebuilt), "every thing has a purpose, a real source and a home", "the retired
-   keep a buildable drawing …" and "every live list is exactly the 26" (now 25), "all eight posts are held by the
-   roster's holders", sakura-evening-guests "Nhung buys during her real evening errand at 60 Hz" and the two after it
-   (her evening is 17:00–18:00 at Sakura now; this file is in the CI guard), "the model is told who each person is".
-   Also give Nhung's red car (town-traffic.js, "airport book orders", 16:00) a purpose and time that fit the doctor.
-4. Then: `node tools/render-resident-guide.mjs` and `node tools/render-resident-shoot.mjs Nhung` (portraits and
-   guide/portraits.json hash), a look at the stills, `npm run build:runtime` last, `node tools/ci-guard.mjs`, a separate
-   review, then the queued Higa Liquor step.
+1. The owner looks at the before/after sheets and says whether to merge the PR (main deploys the site). Merge only on
+   their word.
+2. The owner's answer on the sisters' jan-ken-pon (Open issues).
+3. Higa Liquor closes into Sakura: its own stacked PR on `claude/clever-ride-qdpo8s-higa-liquor` (the owner, 22 October:
+   "Own stacked PR"); its task folder is `briefs/higa-liquor-closes/`.

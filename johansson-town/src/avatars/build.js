@@ -884,8 +884,8 @@ function addBody(list,recipe,m,swim=false){
   if(tank||running)return skin;
   // An open front shows the shirt under it (the accent colour); the happi coat's front is painted (garment.js). It is
   // the lathe's front columns, chosen by their angle round the body (π/14, the first column either side of the middle,
-  // as the old measure across picked on a straight body): by distance across, a waist narrower than the chest let the
-  // next column's triangles in and the shirt's edge zigzagged.
+  // the band the old measure across picked down a straight chest): by distance across, a waist narrower than the chest
+  // let the next column's triangles in and the shirt's edge zigzagged, and so did the shoulders where they round in.
   if(['jacket','cardigan'].includes(o.top)&&p.z>D*.18&&Math.abs(Math.atan2(p.x*D,p.z*W))<Math.PI/14)return o.accent;
   if(o.top==='sundress'&&(p.y-hipY)/m.torso>.78)return skin;
   return top;

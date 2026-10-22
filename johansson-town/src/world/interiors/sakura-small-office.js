@@ -45,7 +45,7 @@ export const SMALL_OFFICE_ITEMS=Object.freeze([
   why:'Thuan’s working desk against the east wall, its drawer pedestal at the back so her knees and the chair have the front half: the sales book, the delivery notes and the till rolls. Back in the corner, out of the door’s swing, facing the calendar and the rota.',
   period:'A grey steel single-pedestal office desk with a green linoleum top, 1000 × 700 mm, the desk of every Japanese small office from the 1970s to the 1990s.'}),
  item({id:'ledger',name:'Sales ledger',jp:'売上帳',owner:'Thuan',at:[6.36,.7,-3.24],size:[.3,.02,.42],
-  why:'The green cloth-bound sales book, open at the day with a pencil in the gutter: each evening Thuan copies the till’s Z report into it and the drawer is counted against it. Front-Row supplies it, one a quarter (paperwork.js STATIONERY).',
+  why:'The green cloth-bound sales book, open at the day with a pencil in the gutter: each evening Thuan copies the till’s Z report into it and the drawer is counted against it. One a quarter, from Sakura Trading’s own stationery since Front-Row’s trade came to Sakura (paperwork.js STATIONERY).',
   period:'A 1990s A4 account book with a green cloth cover and red-ruled columns; small shops kept their books by hand next to the register’s roll.'}),
  item({id:'lamp',name:'Desk lamp',jp:'電気スタンド',owner:'Thuan',at:[6.66,.7,-2.98],size:[.14,.48,.14],watts:40,
   why:'A gooseneck lamp clamped at the front of the desk and bent over the book: the tube overhead throws her own shadow on the page.',

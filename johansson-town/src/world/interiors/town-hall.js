@@ -156,8 +156,8 @@ export const DOCTOR='Nhung',DOCTOR_TITLE='Dr Nhung';
 
 /**
  * `doctorIn`: whether the doctor is at work in the clinic as the player comes in (game.js reads Nhung's own day: her
- * body indoors at work). Read once, at the door: she is at her desk, or the desk is empty and the chair turned in, and
- * she never vanishes while the player watches. Without it (the room tests, the comic backdrops) she is at her desk.
+ * body indoors at work). Read once, at the door: she is at her desk, or the desk is empty, and she never vanishes while
+ * the player watches. Without it (the room tests, the comic backdrops) she is at her desk.
  */
 export function buildClinic({room,reg,action,collider=()=>{},doctorIn=()=>true}){
  const group=new THREE.Group();group.name='Clinic';room.add(group);

@@ -26,7 +26,7 @@ const ROLES=Object.freeze({Johansson:'Chief engineer',Thuan:'Sakura owner',Thao:
  Ryo:'Ferry chief officer',Ren:'Ferry deck hand',Aya:'Ferry purser',Jun:'Ferry cook-steward',Kai:'Kitano line hand'});
 // The post and parcel counter is at the Port Terminal (phase 3), so a saved 'post-office' points there; the flowers are
 // Sakura's (addendum 3), so 'florist' points at the shop.
-const PLACE_IDS=Object.freeze({sakura:'market',books:'frontrow',workshop:'form3d','sato-ramen':'ramen','town-hall':'community-kitchen',
+const PLACE_IDS=Object.freeze({sakura:'market',books:'frontrow',paper:'frontrow',workshop:'form3d','sato-ramen':'ramen','town-hall':'community-kitchen',
  port:'ferry-terminal',ferry:'ferry-terminal','post-office':'ferry-terminal','higa-liquor':'higa-saketen',
  florist:'market',zenzai:'nakamura','blue-coral':'nakamura','power-station':'power-station'});
 const INDOOR_FLAGS=Object.freeze({inMarket:'market',inIzakaya:'izakaya',inRamen:'ramen',inOnsen:'onsen',inBookshop:'frontrow',inWorkshop:'form3d'});

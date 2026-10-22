@@ -16,9 +16,10 @@
  *   for: merchandising.js zones) and a fixed seed, never a random draw at run time.
  * - Trade accounts pay the shelf price less 10 %, rounded down to the yen: a wholesaler's discount to a regular, the
  *   way the depot bills the izakaya's crates.
- * - Higa Liquor bills Sakura the lager at its unit cost by the case of 24, delivered Saturday mornings, plus the
- *   returnable crate deposit (¥300 a crate, refunded when the empties go back).
- * - Front-Row's stationery prices are its own list below (1997 shop prices for the trade), with why Sakura buys each.
+ * - Higa Liquor bills Sakura the lager at its unit cost by the case of 24, delivered Friday mornings (Saturday until
+ *   the shop took it as its closing day), plus the returnable crate deposit (¥300 a crate, refunded when the empties go back).
+ * - Sakura's own stationery (till rolls, ledgers, labels, delivery pads) is the list below, at 1997 shop prices, with why
+ *   the shop uses each.
  */
 import {SHOP_STOCK,stockSpec} from './shop-stock.js';
 import {ACCOUNTS,SUPPLIERS} from './merchandising.js';
@@ -90,7 +91,7 @@ function deliveryNote(site='izakaya'){
   totals:{subtotal:total,tax:includedTax(total),total},notes:[account.delivery,'Trade price: shelf price less 10 %. Tax included. Payable at the end of the month.']};
 }
 
-/** Higa Liquor's invoice to Sakura for October's lager (Saturday deliveries, cases of 24). */
+/** Higa Liquor's invoice to Sakura for October's lager (Friday deliveries, cases of 24). */
 function higaInvoice(){
  const beer=stockSpec('beer'),cases=[['Fri 3 Oct',4],['Fri 10 Oct',4],['Fri 17 Oct',5]];
  const rows=cases.map(([day,n])=>[day+' · '+beer.name+', 350 ml cans, case of 24',n,24*beer.unitCost,n*24*beer.unitCost]);

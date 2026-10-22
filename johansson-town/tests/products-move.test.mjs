@@ -50,7 +50,13 @@ assert.equal(now.SUPPLIERS.frontrow,undefined);assert.equal(now.ACCOUNTS.frontro
 for(const [site,was] of Object.entries(legacy.ACCOUNTS.frontrow)){if(site==='market')continue;assert.deepEqual(now.ACCOUNTS.sakura[site].stationery,was.lines,site+' orders the same stationery from Sakura');}
 delete legacy.SUPPLIERS.frontrow;delete legacy.ACCOUNTS.frontrow;
 legacy.SUPPLIERS.sakura={...legacy.SUPPLIERS.sakura,goods:now.SUPPLIERS.sakura.goods,stationery:now.SUPPLIERS.sakura.stationery};
-for(const site of ['frontrow','office','koban','community-kitchen','school','clinic']){const was=legacy.ACCOUNTS.sakura[site],is=now.ACCOUNTS.sakura[site];assert.deepEqual(is.lines,was.lines,site+' keeps its shelf lines');legacy.ACCOUNTS.sakura[site]=is;}
+// What each account's record says now, field by field: the paper's name, why and delivery; the stationery the offices,
+// the hall and the school order, and their why (and the harbour's delivery); the clinic's keeper, Nhung, not a nurse.
+// Every other field is compared as it was.
+const REWRITTEN={frontrow:['name','why','delivery'],office:['stationery','why','delivery'],koban:['stationery','why'],'community-kitchen':['stationery','why'],school:['stationery','why'],clinic:['owner','contact']};
+for(const [site,keys] of Object.entries(REWRITTEN)){const was=legacy.ACCOUNTS.sakura[site],is=now.ACCOUNTS.sakura[site];assert.deepEqual(is.lines,was.lines,site+' keeps its shelf lines');
+ const next={...was};for(const key of keys){if(key in is)next[key]=is[key];else delete next[key];}legacy.ACCOUNTS.sakura[site]=next;}
+assert.equal(now.ACCOUNTS.sakura.clinic.owner,'Nhung');
 for(const site of ['izakaya','onsen','school']){const was=legacy.ACCOUNTS.sakura[site],is=now.ACCOUNTS.sakura[site];assert.deepEqual(is.lines,was.lines,site+' keeps its shelf lines');legacy.ACCOUNTS.sakura[site]={...was,why:is.why,delivery:is.delivery,decor:is.decor};}
 // Phase 4 retired the people some accounts' deliveries named (Reiko's evening press): the data's delivery line is the
 // one that reads, and it names a live resident; the lines and everything else about the account are unchanged.

@@ -15,6 +15,9 @@ export function sleepHours(profile){
  if(profile.name==='Tetsuo')return {sleep:140,wake:620};
  // Chin is the ferry's motorman (ferry-crew.js FERRY_WORKING_DAY: signed on 06:05, off 23:15 after the last boat back, then the izakaya).
  if(profile.name==='Chin')return {sleep:1425,wake:300};
+ // The doctor is on call: to bed at eleven, after the Wednesday laundry (coin-laundry.js) and the clinic's medicines off
+ // the evening boats (world/town-traffic.js), as Dr Kakazu was before he retired into her (22 October 2026).
+ if(profile.name==='Nhung')return {sleep:1380,wake:minute(profile.start-90)};
  return {sleep:minute(profile.retire+20),wake:minute(profile.start-90)};
 }
 export function homeRoutine(profile,minutes){

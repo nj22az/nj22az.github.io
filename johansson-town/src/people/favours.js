@@ -24,14 +24,14 @@ export const FAVOURS=Object.freeze([
    'Nhung (profiles.json, hello): she bookmarks the funny parts.',
    'Minato (people/izakaya-beer.js DISHES): Thao serves a rolled dashi omelette.',
    'Front-Row Books (world/interiors/bookshop-detail.js): a Cookery section on the east wall, the reading copies that stayed when Nhung became the doctor.',
-   'Nhung is the island doctor (people/clinic-hours.js): surgery until five, so she hands it over at the clinic.',
+   'Nhung is the island doctor (people/clinic-hours.js): in surgery hours she hands it over at the clinic, between patients; on a Sunday, at Sakura’s counter.',
   ],
   // Nhung's surgery ends at 17:00 and Minato opens at 16:00 (clinic-hours.js, profiles.json): it is asked by day,
   // handed over in the evening, and done by midnight.
   askBy:15*60,
   // Asked while Nhung is at the clinic (until 17:00); Minato is open into the night, so it can be done today.
   askUntil:17*60,
-  letter:'I have found something for my sister Thao, and it cannot come from me. Could you call in at the clinic today, between my patients? I am there until five.',
+  letter:'I have found something for my sister Thao, and it cannot come from me. Could you come and find me today? In surgery hours I am at the clinic, between my patients; on a Sunday, at Sakura’s counter.',
   thanks:'Thank you for yesterday. Thao has not said a word about the book, which means she has read it. Not a word to her, please.',
   lines:Object.freeze({
    ask:'{face:scheme}Thao says her dashi omelette is perfect as it is.{p} This cookery book disagrees,{p} and I have bookmarked the page.{p:2} {face:smile}Take it to Minato for me?{p} From her big sister,{p} she would never open it.',

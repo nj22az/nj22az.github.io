@@ -525,7 +525,7 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending,eastQuayBoat})
 const WEST_YARD_BICYCLES=Object.freeze([
  Object.freeze({id:'west-yard-bicycle-tetsuo',colour:0x3d6f8f,basket:false,owner:'Tetsuo',why:'Tetsuo’s, from 2 Front-Row Yard across the yard: he rides it to the power house’s switchboard and round the lane lights, his toolbag on the carrier.'}),
  Object.freeze({id:'west-yard-bicycle-laundry',colour:0xb03a3a,frame:'step',owner:'the coin laundry’s customers',why:'Whoever has a wash going round leaves a bicycle here; this one has been here since Tuesday, and nobody minds.'}),
- Object.freeze({id:'west-yard-bicycle-bookshop',colour:0xd9d2c0,owner:'Front-Row Books & Stationery',why:'The bookshop’s errand bicycle: Front-Row supplies the town’s office paper, so ledgers go round to Sakura’s office and chalk to the school in its basket.'}),
+ Object.freeze({id:'west-yard-bicycle-bookshop',colour:0xd9d2c0,owner:'Nhung (the town paper)',why:'The old bookshop’s errand bicycle, kept for the paper: the week’s copies go round to the harbour office, the kōban and the hall in its basket.'}),
  Object.freeze({id:'west-yard-bicycle-workshop',colour:0x3a7a5a,owner:'Chin & Tetsuo’s workshop',why:'The workshop’s spare, lent to whoever is fetching a part from the depot.'}),
 ]);
 

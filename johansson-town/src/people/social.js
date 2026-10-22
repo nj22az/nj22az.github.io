@@ -4,7 +4,7 @@ import {calledToQuay} from './shore-duty.js';
 import {standNow} from './stand-points.js';
 import {quayBreakPlan} from './quay-breaks.js';
 import {onWatch} from './ferry-crew.js';
-import {onSakuraShift} from '../commerce/sakura-rota.js';
+import {onSakuraShift,sakuraOpenAt} from '../commerce/sakura-rota.js';
 import {doctorAtClinic,clinicOpenAt} from './clinic-hours.js';
 import {townCalendarAt} from '../town-clock.js';
 import {izakayaJob} from './izakaya-hours.js';
@@ -109,7 +109,7 @@ const THUAN_WALK=Object.freeze([
 export const SISTERS_PLAY=Object.freeze({start:880,end:914,thuan:[PARK_STAND[0]+.75,PARK_STAND[1]+.2],nhung:[PARK_STAND[0]-.75,PARK_STAND[1]+.2]});
 export const sistersPlayDay=minutes=>Math.floor(minutes/1440)%2===1&&!clinicOpenAt(Math.floor(minutes/1440)*1440+SISTERS_PLAY.start);
 export function sistersAtPlay(profile,minutes,rain=false){
- if(rain||!sistersPlayDay(minutes)||!['Thuan','Nhung'].includes(profile?.name))return null;
+ if(rain||!sistersPlayDay(minutes)||!['Thuan','Nhung'].includes(profile?.name)||thuanWeekendAway(minutes))return null;
  const m=minuteOfDay(minutes);if(m<SISTERS_PLAY.start||m>=SISTERS_PLAY.end)return null;
  const thuan=profile.name==='Thuan';
  return {place:'park',target:thuan?SISTERS_PLAY.thuan:SISTERS_PLAY.nhung,play:thuan?'Nhung':'Thuan',activity:'playing jan-ken-pon with '+(thuan?'her big sister Nhung':'her little sister Thuan')+' in the park'};
@@ -140,7 +140,9 @@ export function naoBeforeShift(profile,minutes,rain=false){
  const shift=shiftFor(profile),m=minuteOfDay(minutes);
  if(!shift||m<shift.arrival+30||m>=shift.start)return null;
  if(rain)return {place:'izakaya',target:IZAKAYA_DOOR,activity:'tidying Minato before opening'};
- return NAO_DAY.find(leg=>m<leg.until)||null;
+ // On a Saturday Sakura is shut (commerce/sakura-rota.js): no soda, she starts her walk round the park.
+ const leg=NAO_DAY.find(leg=>m<leg.until)||null;
+ return leg?.place==='market'&&!sakuraOpenAt(minutes)?NAO_DAY.find(leg=>leg.place!=='market'):leg;
 }
 
 /** Alternate dry evenings at Minato, keyed to the saved town day.
@@ -245,7 +247,8 @@ export function supperGuests(minutes){
  return PROFILES.filter(p=>ACTIVE_RESIDENT_NAMES.includes(p.name)&&p.name!=='Thao'&&inTimeRange(minute,p.supperStart,p.supperEnd)).slice(0,IZAKAYA_SEATS.length);
 }
 export function visitsMarket(profile,minutes,state=null){
- if(onSakuraShift(profile?.name,minutes))return false;
+ // Not while the shop is shut (Saturdays since 22 October 2026, and the night; commerce/sakura-rota.js).
+ if(onSakuraShift(profile?.name,minutes)||!sakuraOpenAt(minutes))return false;
  const visit=marketVisitsForDay(minutes)[profile.name],account=state?.residentLife?.[profile.name],meal=account?.day===Math.floor(minutes/1440)?(marketVisitPurpose(profile.name,minutes,state||{})==='goods'?(account.shopping||account.meals?.market):account.meals?.market):null;
  if(meal?.finished)return false;
  const ordering=Number.isFinite(meal?.started)&&minutes>=meal.started&&minutes<meal.started+160&&minuteOfDay(minutes)<1200;
@@ -477,7 +480,8 @@ export function residentPlan(profile,minutes,rain=false,state=null){
  // Sleep/breakfast above and night shifts retain priority.
  const shift=shiftFor(profile),m=minuteOfDay(minutes);
  if(HOME_RESIDENT_NAMES.has(profile?.name)&&shift&&!shift.permanent&&inTimeRange(m,shift.start-30,shift.start)){
-  const place=profile.name==='Thuan'?'market':profile.name==='Thao'?'izakaya':'work';
+  // Nhung keeps Sakura's counter on Sunday (commerce/sakura-rota.js), so her walk then is to the shop, not the clinic.
+  const place=profile.name==='Thuan'||profile.name==='Nhung'&&onSakuraShift('Nhung',minutes-m+shift.start)?'market':profile.name==='Thao'?'izakaya':'work';
   const target=place==='market'?MARKET_THRESHOLD:place==='izakaya'?IZAKAYA_DOOR:place==='ramen'?RAMEN_DOOR:profile.work;
   return {place,target,activity:'walking to work before opening'};
  }

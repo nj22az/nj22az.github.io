@@ -47,7 +47,7 @@ export const HAPPENINGS=Object.freeze([
  // Saturday afternoon since Nhung became the island doctor (22 October 2026): surgery ends at noon and Sakura is shut.
  {id:'nhung-day-off',title:'Nhung’s afternoon off',on:{weekday:6},hours:[840,960],
   cast:{Nhung:at('stroll',[31.6,1.5],'reading on the sea wall on her afternoon off')},
-  lines:{Nhung:'Saturday afternoon. Surgery is over, the paper is printed, and nobody is going to show me their knee until Monday.'}},
+  lines:{Nhung:'Saturday. Surgery until noon, the paper is printed, and after twelve nobody is going to show me their knee until Monday.'}},
  {id:'star-port-night',title:'High-score night at Star Port',on:{weekday:6},hours:[1140,1230],
   cast:{Chin:profile=>at('work',profile.work,'Saturday night: chasing his own high score at Star Port')},
   lines:{Chin:'Saturday night, bro. Star Port, me and the machine. One of us goes home a legend.'}},

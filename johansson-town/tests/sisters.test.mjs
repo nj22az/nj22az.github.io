@@ -24,7 +24,10 @@ test('Nhung, Thao and Thuan are sisters, eldest to youngest, and Nhung wears the
 test('on a play day Nhung and Thuan play jan-ken-pon facing each other in the park, but never in surgery hours',async t=>{
  const {clinicOpenAt}=await import('../src/people/clinic-hours.js');
  for(let d=0;d<14;d++){const m=d*1440+890;if(clinicOpenAt(m))assert.equal(sistersAtPlay(who('Thuan'),m),null,'surgery on day '+d);}
- const plays=d=>['Thuan','Nhung'].every(name=>/jan-ken-pon/.test(residentPlan(who(name),d*1440+890,false,{},true).activity||''));
+ const playing=(name,d)=>/jan-ken-pon/.test(residentPlan(who(name),d*1440+890,false,{},true).activity||'');
+ // Never one sister alone at the game: not Nhung on a Saturday while Thuan is on Kitano-jima.
+ for(let d=0;d<14;d++)assert.equal(playing('Nhung',d),playing('Thuan',d),'both or neither on day '+d);
+ const plays=d=>playing('Thuan',d)&&playing('Nhung',d);
  const day=[...Array(14).keys()].find(plays);
  if(day===undefined){t.todo('no play day in two weeks: Thuan is in town only on surgery afternoons (the owner to place the game)');return;}
  const m=day*1440+890;

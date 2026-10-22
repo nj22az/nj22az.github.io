@@ -1000,7 +1000,7 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
     if(closed){show('Medicine shelf',closed,[['Back',close]]);return;}
     // Every box on the shelf, not a selection of them.
     const items=[...MEDICINES,STAMINA_DRINK];
-    show("Medicine · Medicine shelf",'Thuan: "What do you need? If it is more than a cold, the clinic boat comes on Thursdays."',[
+    show("Medicine · Medicine shelf",'Thuan: "What do you need? If it is more than a cold, my sister is at the clinic: nine to twelve and two to five."',[
       ...items.map(item=>[`${item.jp}${item.sub?' '+item.sub:''} · ¥${item.price.toLocaleString('en-GB')}`,()=>{const result=sellAtTill(item.en,item.price);if(!result.ok){receipt(item.jp,result.message);return;}onTime(2);
         receipt(item.jp,item.en+' is in your bag. Thuan writes the dose on the box in marker, the way she does for everyone.');}]),
       ['Nothing, thank you',close]]);
