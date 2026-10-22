@@ -1235,7 +1235,8 @@ function roomShell(s){
  if(s.id==='sakura-office'){const g=new THREE.Group();g.name='Sakura office storey';room.add(g);activeRoomLayout=buildSakuraOfficeRoom({...shared,room:g,downstairs:()=>takeSakuraStair('down'),evacuate:evacuateSakuraOffice});return;}
  if(s.id==='school'){activeRoomLayout=buildClassroom(shared);return;}
  if(s.id==='community-kitchen'){activeRoomLayout=buildCommunityKitchen(shared);return;}
- if(s.id==='clinic'){activeRoomLayout=buildClinic(shared);return;}
+ // The doctor is at her desk when Nhung's own day has her at work in the clinic (people/clinic-hours.js), read at the door.
+ if(s.id==='clinic'){activeRoomLayout=buildClinic({...shared,doctorIn:()=>world.people.find(p=>p.profile.name==='Nhung')?.g.userData.indoors==='work'});return;}
  if(s.id==='ferry-terminal'){activeRoomLayout=buildPortHall({...shared,naha:takeNahaBoat,upstairs:()=>crossThreshold(async()=>{leaveRoom();const office=SITES.find(site=>site.id==='office');if(office)await enterRoom(office);})});return;}
  if(s.id===CITY_RESTAURANT.id){
   // A fixed scene: no hands in front of the camera, and the dinner menu opens as you sit down.

@@ -1,10 +1,17 @@
 # Progress: Nhung becomes the island doctor
 
 ## Task
-See `sources/task.md`. Branch `claude/laughing-rubin-6p25x2` (nj22az.github.io).
+See `sources/task.md`. Started on `claude/laughing-rubin-6p25x2`; finished on `claude/clever-ride-qdpo8s` (the same
+commits, then the finishing ones; nj22az.github.io). The owner's finishing brief of 22 October (evening): fix the tests
+that fail only because of this change, give Nhung's red car a doctor's purpose out of surgery, render her portraits and
+look at them, rebuild the runtime last, the CI guard alone, a separate review, a PR to main (merged only on the owner's
+word), then the queued Higa Liquor step.
 
 ## Outputs
-(in progress)
+- The change on `claude/clever-ride-qdpo8s`, PR to main (see HANDOVER.md for its number and state).
+- Portraits: `assets/images/residents/07.webp` (Nhung), the shoot's `nhung-1`, `nhung-2` and `koji-2` (Kōji's photo with
+  her); `guide/portraits.json`, `resident-guide.js`.
+- The before/after sheet: sent to the owner in the session, not committed (scratchpad `nhung-before-after.png`).
 
 ## Completed
 - Audit of the two doctors (clinic look chosen).
@@ -18,10 +25,31 @@ See `sources/task.md`. Branch `claude/laughing-rubin-6p25x2` (nj22az.github.io).
 - Dr Kakazu's references moved to Nhung (laundry, parking bay, places, belongings, products, guide).
 - Guide: Nhung's article rewritten; Dr Kakazu's moved to RETIRED_ARTICLES; residents.json regenerated.
 - Docs: root CLAUDE.md trade line; johansson-town/AGENTS.md owner's decision section.
+- Finishing session (22 October, evening; `claude/clever-ride-qdpo8s`):
+  - The eleven tests that failed only with this change, updated where they stated the old arrangement: lot-dressing
+    (bay 2 is Nhung's), island-businesses (Nhung's work is the clinic, nobody keeps Front-Row's floor; the old shop's
+    worker is Nhung at the paper at 19:40), resident-belongings (Front-Row's stationery is Sakura's: the five things
+    bought there now come `from:'sakura'`), retired-recipes (eleven retired, nine drawn, the live 25), ship-posts (the
+    roster is 25), sakura-evening-guests (her errand at Sakura is 17:00–18:00, after surgery), town-talk (her role).
+  - Front-Row draws Nhung at the back bench while her plan says `paper` (`workplaces.js` EVENING_DESKS, `workRoomOf`;
+    `workplace-residents.js`): before, the room was empty while she was "indoors" there. Her bookshop mornings
+    (`stand-sequences.js` frontrow-morning) are gone; frontrow-paper's words are the evening's.
+  - Her red car (`town-traffic.js`): the clinic's medicines from the airport freight, Mondays and Thursdays on the
+    21:38 boat in and the 22:15 out (`weekdays` on an appointment), never in surgery; Wednesday evening is her laundry.
+  - The clinic room draws her at her desk only when her own day has her at work there, read at the door (`buildClinic`
+    `doctorIn`, game.js), with "Talk to Dr Nhung" (her conversation, so the cookery-book favour's "call in at the
+    clinic" can be done); out of hours the stool and the scales say the doctor is out. Before, the room drew the doctor
+    at all hours (as it did Dr Kakazu), so on a Sunday she was at her desk and behind Sakura's counter at once.
+  - The avatar's open front (jacket, cardigan) is chosen by angle round the body, not distance across it
+    (`avatars/build.js` torsoColour): on a narrow-waisted body the next column's triangles came in and the shirt was a
+    jagged zigzag (Nhung's sage shirt; the old bookseller jacket too). Neutral bodies draw exactly as before.
+  - Leftover old-canon text: Sakura's flyer ("closed Saturdays"), the town papers regenerated (the clinic notice said
+    the doctor lives behind the clinic), the small office's calendar writes both marks on the 31st (Higa and pay), the
+    wardrobe notes, a chat clue, the doctor's bag ("on foot or by car", she has the bay-2 car).
+  - The sisters test no longer passes without looking: there is no play day (see Open issues), so it reports a todo.
 
 ## Decisions
-- Sakura on Saturday opens at 13:00, after Nhung's morning surgery and lunch: Thuan's weekend stays on Kitano-jima
-  (addendum 4) and nobody else is invented for the counter. The owner may overrule.
+- ~~Sakura on Saturday opens at 13:00~~ (first considered; superseded by the owner's Saturday closing below).
 - `clinic` is in `RETIRED_HOMES` landing on itself: the id also names the clinic, which stays, so a saved `clinic` or
   `home-clinic` lands at the clinic (`retiredHomeFallback` keeps it; the registry shows no fallback).
 - Saturday (the owner, 22 October, asked): Sakura shuts on Saturdays; Higa's Sakura delivery moves to Friday; Nhung's
@@ -29,6 +57,11 @@ See `sources/task.md`. Branch `claude/laughing-rubin-6p25x2` (nj22az.github.io).
 - The clinic room keeps drawing the doctor at her desk itself; Nhung's walking body is never borrowed into the clinic.
 - The sisters' jan-ken-pon in the park (14:40) does not happen while the clinic is open, so on weekdays Thuan takes her
   walk instead; the game survives only if the clinic is shut at that time.
+- The red car keeps its home at the airport yard (the fleet's model); its run is on the timetable's evening boats so no
+  surgery and no laundry evening is touched. The fleet's other appointments (10:00, 13:00) do not match the timetable
+  either; that is the fleet's, not this change's (all five owned-vehicles tests fail on the base commit).
+- Front-Row's door hours in `town.js` isOpen (closed at weekends, 9:00–18:30) only set a flag nothing reads; rooms open
+  at any hour, so the player can walk in on Nhung at the paper. Left as it is.
 
 ## Open issues
 - The owner (22 October): texts written before the consolidation still count the old island. Fixed in the clinic (the
@@ -37,6 +70,13 @@ See `sources/task.md`. Branch `claude/laughing-rubin-6p25x2` (nj22az.github.io).
   in the cast; the island has three pupils) and the countryside's Ōshiro farm ("three generations", `world/countryside.js`).
 - The game calls the player "Mayor" (the clinic's check-up and scales, mail/letters.js greetings), although the roster's
   Nils is the chief engineer and the mayor's office went on 21 October. A game-wide wording, left for the owner.
+- **For the owner: the sisters' jan-ken-pon has no day now.** It is in Thuan's afternoon break (14:40), which is
+  afternoon surgery on weekdays, and Thuan spends Saturday and Sunday on Kitano-jima, so over any fortnight it never
+  happens (checked day by day; `tests/sisters.test.mjs` reports it as a todo rather than passing without looking).
+  Where should it go: their lunch, the cones outside Sakura at eight, or a Sunday Thuan comes over?
+- Sakura sells the books by order at the till (Front-Row's note: "ask Thuan at the till"); no book shelf was added
+  (no new geometry). If the owner wants books on Sakura's shelves, that is a merchandising and layout job.
+- The clinic room's lines still call the player "Mayor" (open issue above).
 ## Queued (the owner, 22 October, answered; not started)
 - "The sisters basically run commerce and healthcare on the island … maybe we don't need a liquor store, Sakura can sell
   liquor too." Answers: close Higa Liquor; Sakura sells all alcohol over the counter and supplies Minato, Sato Ramen and

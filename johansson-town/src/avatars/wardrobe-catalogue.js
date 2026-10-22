@@ -61,7 +61,7 @@ const PART_ENTRIES={
   police:{label:'Police jacket',category:'Work & uniform',tags:['police','officer','patrol','uniform','1994','kōban','tie'],who:'Officer Mori',
    why:'The 1994-pattern police jacket: navy, notched lapels, three dark-gold buttons, shoulder straps, the rank plate on the left breast and the emblem on the right arm, over a white shirt and tie.'},
   hoodie:{label:'Hooded sweater',category:'Everyday',tags:['hoodie','rain','early boats','pier'],who:'Chin, Daichi, Masaru, Kenta, Hiroshi and the Cold-storage kid',why:'A hood and a pocket for the early boats, the rainy season and the windy pier.'},
-  cardigan:{label:'Cardigan',category:'Everyday',tags:['knit','January','winter','bookshop','florist'],who:'Thuan at the flower buckets on January mornings; Nhung in the air-conditioned bookshop',why:'A knitted layer for the north wind of January, and for air-conditioning.'},
+  cardigan:{label:'Cardigan',category:'Everyday',tags:['knit','January','winter','bookshop','florist'],who:'Thuan at the flower buckets on January mornings; Nhung in the air-conditioned bookshop, before she became the island doctor',why:'A knitted layer for the north wind of January, and for air-conditioning.'},
   overalls:{label:'Work overalls',category:'Work & uniform',tags:['cargo yard','quay','repair','workshop'],who:'Kōji at the auction; Chin on a repair',why:'A bib with pockets that takes the grease and the crates.'},
   sundress:{label:'Sundress bodice',category:'Everyday',tags:['dress','summer','Sunday','beach'],who:'Mai and Vy at the beach',why:'The coolest thing to wear on a hot Sunday.'},
   festival:{label:'Happi coat',category:'Island & festival',tags:['happi','festival coat','eisa','tug-of-war','Obon','steward','andagi'],who:'the stewards at the eisa night, the tug-of-war and the andagi stall',why:'A happi coat shows who is helping to run the festival.'},
@@ -105,7 +105,7 @@ const PART_ENTRIES={
   longskirt:{label:'Long skirt',category:'Skirts',tags:['shrine','verandah'],who:'Nhung, Miss Higa, Grandmother Higa and Yoshiko',why:'A long skirt that keeps the sun and the mosquitoes off.'},
   widepants:{label:'Wide trousers',category:'Trousers & shorts',tags:['monpe','work','garden','quay'],who:'the harbour day shift; Grandmother Higa at the liquor counter',why:'Loose trousers that let the air in on a hot shift.'},
   cropped:{label:'Cropped trousers',category:'Trousers & shorts',tags:['rain','rainy season'],who:'Kenta and the Cold-storage kid in the rainy season',why:'Hems clear of the puddles in May and June.'},
-  culottes:{label:'Culottes',category:'Skirts',tags:['bookshop','ladder'],who:'Nhung at Front-Row Books',why:'As cool as a skirt, and easy on the ladder to the top shelves.'},
+  culottes:{label:'Culottes',category:'Skirts',tags:['bookshop','ladder'],who:'Nhung at Front-Row Books, before she became the island doctor',why:'As cool as a skirt, and easy on the ladder to the top shelves.'},
   pleatedskirt:{label:'Pleated skirt',category:'Skirts',tags:['school uniform','ferry','pleats'],who:'Vy and Hana with the sailor uniform; Thuan; the harbour visitor',why:'Pleats that swing on the walk to the ferry and fall back neat.'},
  },
  footwear:{

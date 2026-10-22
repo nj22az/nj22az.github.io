@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {residentPlan,sistersAtPlay,sistersPlayDay,SAKURA_FREEZER,thuanAtMinato} from '../src/people/social.js';
+import {residentPlan,sistersAtPlay,SAKURA_FREEZER,thuanAtMinato} from '../src/people/social.js';
 import {RESIDENTS} from '../src/people/residents.js';
 import {PROFILES} from '../src/people/profiles.js';
 import {recipeFor} from '../src/avatars/cast.js';
@@ -18,17 +18,22 @@ test('Nhung, Thao and Thuan are sisters, eldest to youngest, and Nhung wears the
 });
 
 // The game is in Thuan's afternoon break (14:40), which is afternoon surgery on a weekday: the doctor stays with her
-// patients, so the sisters play only on a day the clinic is shut then, and none of Thuan's days in town is.
-test('on a play day Nhung and Thuan play jan-ken-pon facing each other in the park, but never in surgery hours',async()=>{
+// patients, so the sisters play only on a day the clinic is shut then, and none of Thuan's days in town is (her weekends
+// are on Kitano-jima). Until the owner gives the game another time, there is no play day, and the test says so as a todo
+// rather than passing without looking.
+test('on a play day Nhung and Thuan play jan-ken-pon facing each other in the park, but never in surgery hours',async t=>{
  const {clinicOpenAt}=await import('../src/people/clinic-hours.js');
  for(let d=0;d<14;d++){const m=d*1440+890;if(clinicOpenAt(m))assert.equal(sistersAtPlay(who('Thuan'),m),null,'surgery on day '+d);}
- const day=[0,1].find(d=>sistersPlayDay(d*1440));if(day===undefined)return;const m=day*1440+890;
+ const plays=d=>['Thuan','Nhung'].every(name=>/jan-ken-pon/.test(residentPlan(who(name),d*1440+890,false,{},true).activity||''));
+ const day=[...Array(14).keys()].find(plays);
+ if(day===undefined){t.todo('no play day in two weeks: Thuan is in town only on surgery afternoons (the owner to place the game)');return;}
+ const m=day*1440+890;
  for(const name of ['Thuan','Nhung']){
   const plan=residentPlan(who(name),m,false,{},true);
   assert.equal(plan.place,'park');assert.match(plan.activity,/jan-ken-pon/);assert.equal(plan.play,name==='Thuan'?'Nhung':'Thuan');
  }
  assert.equal(sistersAtPlay(who('Thuan'),m,true),null,'rain calls the game off');
- assert.equal(sistersAtPlay(who('Thuan'),day+1440+890),null,'not every day');
+ assert.equal(sistersAtPlay(who('Thuan'),(day+1)*1440+890),null,'not every day');
 });
 
 test('after surgery: Thuan at the counter, supper at home, ice cream at the freezer, Minato on her nights',()=>{

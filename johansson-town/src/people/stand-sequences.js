@@ -34,14 +34,10 @@ export const STAND_SEQUENCES=Object.freeze(Object.fromEntries([
   pt(-4.6,3.2,S,[120,300],'wiping the west window, where the magazine rack stood','the west window, the shop’s face to the lane: the sale poster and the glass are what passers-by see',{pose:'Wipe',tool:'cloth'}),
  ]),
  // ── Front-Row Books (world/bookshop-workshop-layout.js; its own frame) ──
- seq('frontrow-morning','frontrow','Nhung','Opening a bookshop is the counter, the new arrivals laid out, and the reading copies back where they belong.',[
-  pt(-2.6,1.2,S,[300,900],'at the counter with the ledger','behind the bookselling counter, facing the door: customers come in to ask for a book',{pose:'CounterIdle'}),
-  pt(1.4,-2.0,N,[120,480],'laying out the new arrivals','the new-arrivals table along the back wall: the second-hand books come in by the box',{pose:'Interact'}),
-  pt(2.15,1.45,N,[120,300],'putting the reading copies back in their places','the reading table: the local history copies stay in the shop and go back to their marked places',{pose:'Interact'}),
- ]),
- seq('frontrow-paper','frontrow','Nhung','In the afternoon the town’s small paper is set and printed at the back bench, between customers.',[
-  pt(-2.0,-2.0,N,[600,1500],'setting the paper’s page at the back bench','the back bench with the proofs and the wrapping roll: the paper is set here, out of the customers’ way',{pose:'Use'}),
-  pt(-2.6,1.2,S,[300,900],'at the counter, the proofs beside the till','the counter: a customer comes before the paper',{pose:'CounterIdle'}),
+ // Since 22 October 2026 (the owner) Nhung is the island doctor and the shop floor is unstaffed: the paper is her evening's.
+ seq('frontrow-paper','frontrow','Nhung','In the evening, after surgery and supper, the town’s small paper is set and printed at the back bench of the old shop.',[
+  pt(-2.0,-2.0,N,[600,1500],'setting the paper’s page at the back bench','the back bench with the proofs and the wrapping roll: the paper is set here',{pose:'Use'}),
+  pt(-2.6,1.2,S,[300,900],'at the counter, counting the honesty tin','the counter: the day’s coins from the honesty tin by the till, the proofs beside it',{pose:'CounterIdle'}),
   pt(-2.0,-2.0,N,[300,900],'reading the page’s proofs for corrections','the back bench again, for the corrections in Nhung’s hand',{pose:'Use'}),
  ]),
  // ── Sato Ramen's kitchen (world/sato-ramen-layout.js SATO_KITCHEN; people/ramen-kitchen.js walks the aisle) ──

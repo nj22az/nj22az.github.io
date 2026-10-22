@@ -493,7 +493,7 @@ export function residentPlan(profile,minutes,rain=false,state=null){
 }
 export const GOSSIP=[
  {id:'yuri-evening',a:'Thuan',b:'Thao',line:'Thuan: I told the assistant manager I would be on the last ferry.\nThao: The plant?\nThuan: He looked very disappointed. I watered him twice.',clue:'Thuan leaves Sakura for the Harbour Line after closing. Check the terminal timetable for her evening service.'},
- {id:'apron',a:'Nhung',b:'Chin',line:'Nhung: Tama needs his own column.\nChin: What would he write, bro?\nNhung: Strong opinions about the window chair.',clue:'Nhung prints a page of town news at the bookshop counter.'},
+ {id:'apron',a:'Nhung',b:'Chin',line:'Nhung: Tama needs his own column.\nChin: What would he write, bro?\nNhung: Strong opinions about the window chair.',clue:'Nhung prints a page of town news at the old bookshop in the evenings.'},
  {id:'radio',a:'Chin',b:'Tetsuo',line:'Chin: Hey, bro, I fixed the crackling.\nTetsuo: That was the music.\nChin: Totally improved it, then, dude.',clue:'Find the street radio and try the other stations.'},
  {id:'fish',a:'Harbour master',b:'Tetsuo',line:'Tetsuo: The harbour radio crackled at nine.\nHarbour master: That was the weather.\nTetsuo: The weather has never crackled before.',clue:'The harbour master keeps the office radio; Tetsuo keeps every radio on the island.'},
  {id:'special',a:'Thao',b:'Mrs Sato',line:'Mrs Sato: Is that a proper supper?\nThao: You taught me the portions.\nMrs Sato: Good. Then there will be seconds.',clue:'Try Thao’s supper special at the counter.'}
