@@ -50,8 +50,26 @@ Nothing to finish there.
 - Umi-no-yu's outdoor bench ("Cool off on the bench") is a GLB streamed in later; it still has one place and no `front`.
 
 ## The Linux controller
-Not touched. The owner asked to be asked first, before the controller code changes again: **which Bluetooth pad and
-which Linux distribution** (Steam Deck desktop mode or another PC). See `HANDOVER-LINUX-JOYSTICK-2026-10-22.md`.
+The owner's devices are **a Steam Deck and an 8BitDo controller in Switch Pro mode (Bluetooth)**. Three questions are
+still open (version and launch route; left stick vs right; the Controls page's device name and Look axes), as are the
+likely causes: Steam Input's desktop layout, a saved Look axis past the normalised four, and the pad switching only on a
+button press. All are in `HANDOVER-LINUX-JOYSTICK-2026-10-22.md` ("Update, 22 October 2026 (afternoon)"). No
+controller code has changed.
+
+## Outstanding issues (log; keep it current)
+| # | Issue | State | Where |
+|---|---|---|---|
+| 1 | Right stick doesn't move the camera (Steam Deck, 8BitDo Switch Pro over Bluetooth) | Waiting on the owner's three answers | Linux joystick handover |
+| 2 | Community Hall kitchen is bare (blank booking sheet, plain grey board); comics there look empty | Open; recapture `town-hall` after dressing it | `interiors/town-hall.js` `buildCommunityKitchen` |
+| 3 | Two Dr Kakazus: the cast's resident vs the clinic room's `DOCTOR_RECIPE` | Open; the owner to choose one | `avatars/cast.js`, `interiors/town-hall.js` |
+| 4 | Clinic comic view has no seat (the bench is behind the camera); the patient's stool is not a seat | Open | `feed/places.js`, `interiors/town-hall.js` |
+| 5 | Higa's yuntaku bench: `front` 0.19, its slats end about 0.16 | Open (#342's number) | `commerce/higa-liquor.js` YUNTAKU |
+| 6 | Fixed-pose NPCs pose without `front` (clinic doctor, school figures, Higa at the bandai, Ganaha, Fujita's chair) | Open | each room's animator call |
+| 7 | Comic sets captured before #351 lack `front` and bench places | Open; `render-feed-backdrops.mjs --seats-only` | `assets/images/feed/views.json` |
+| 8 | Umi-no-yu's outdoor bench: GLB, one place, no `front` | Open | `world/park-onsen.js` |
+| 9 | Police station and port terminal comic backdrops | Open since phase 5 | `render-feed-backdrops.mjs police-station port-hall` |
+| 10 | About 32 already-failing test files (other groups of the 21 October morning handoff) | Open; fix a group, add it to `tests/ci-guard.txt` | `HANDOFF-2026-10-21.md` |
+| 11 | English signs to make Japanese, the gajumaru crown, park keepers' routines, Higa's evening bench, phone performance | Open | `HANDOFF-2026-10-21.md` |
 
 ## Still open from earlier handoffs
 English signs, the gajumaru crown, the park keepers' routines, Higa's evening bench, the other failing-test groups
