@@ -16,7 +16,7 @@ The plan distinguishes documented production facts from our recommendations. Pix
 
 ## Branch, PR and repository state
 
-Planning branch: `codex/johansson-hand-redesign-plan`, based on freshly verified main `0f4b7c7e69082283f6f8ef9719a01b5ea0904df9` (PR #359, Higa bench). Root/World instructions are unchanged from the initial read. This delivery contains **documentation and one clearly labelled rejected-evidence image only**, no source/runtime modifications. Exact delivery commit/PR will be entered below after creation.
+Planning branch: `codex/johansson-hand-redesign-plan`, based on freshly verified main `0f4b7c7e69082283f6f8ef9719a01b5ea0904df9` (PR #359, Higa bench). Root/World instructions are unchanged from the initial read. This delivery contains **documentation and one clearly labelled rejected-evidence image only**, no source/runtime modifications. Delivery: [draft PR #360](https://github.com/nj22az/nj22az.github.io/pull/360), planning/evidence commit `534565cebd698851a3a6b37ee6e73def07efaa6d`. No source/runtime implementation is delivered. The following documentation commit records these identifiers.
 
 Earlier identity work remains separate: [PR #357](https://github.com/nj22az/nj22az.github.io/pull/357), head `9a6feee0d0aafb9b2db821d1f6ab3e69f146a0f2`, open/draft/unmerged, now conflicting. Its v2 shapes are not owner-approved cast defaults. Audit [PR #355](https://github.com/nj22az/nj22az.github.io/pull/355) is a separate proposal document. Body-pose PR #300 was open/unmerged/conflicting at the initial inspection; hand PR #301 open/unmerged/rejected. Do not merge them as part of this plan.
 
