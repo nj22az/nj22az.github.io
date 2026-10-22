@@ -42,7 +42,8 @@ export function createGamepadInput(){
 export function createMenuRepeat(){
  let previous='',remaining=0;
  return (frame,dt)=>{
-  const direction=frame.held[12]||frame.move.y<-.55?'up':frame.held[13]||frame.move.y>.55?'down':frame.held[14]||frame.move.x<-.55?'left':frame.held[15]||frame.move.x>.55?'right':'';
+  const navigation=frame.navigation||frame.held;
+  const direction=navigation[12]||frame.move.y<-.55?'up':navigation[13]||frame.move.y>.55?'down':navigation[14]||frame.move.x<-.55?'left':navigation[15]||frame.move.x>.55?'right':'';
   remaining-=dt;
   if(direction!==previous){previous=direction;remaining=.38;return direction;}
   if(direction&&remaining<=0){remaining=.13;return direction;}

@@ -1,0 +1,248 @@
+/* Installed Linux edition: quiet HUD, full-screen pause sections and Deck controls. */
+.linux-console{--console-ink:#24335e;--console-paper:#f7f9ff;--console-green:#e84d6b;--console-accent:#e84d6b;--console-action-width:clamp(280px,32vw,420px)}
+.linux-console #mobile,.linux-console #directoryButton,.linux-console #fullscreenButton,.linux-console #hud .timecard,.linux-console #worldEdition,.linux-console #festivalButton{display:none!important}
+.linux-console #hud{padding:20px 24px!important}
+.linux-console #hud .topbar{gap:18px!important;align-items:flex-start!important}
+.linux-console #hud .placard,.linux-console #clock{background:#111b23bd!important;color:#fff!important;border:0!important;border-radius:4px!important;box-shadow:none!important;padding:8px 12px!important;min-width:0!important}
+.linux-console #hud .placard b{font:650 16px/1.35 system-ui!important;letter-spacing:.02em!important;color:#fff!important}
+.linux-console #hud .placard small{display:none!important}
+.linux-console #clock{font:600 18px/1.4 system-ui!important}
+.linux-console #hud .status-stack{margin-right:140px}
+.linux-console #subtitle{top:auto!important;bottom:112px!important;left:24px!important;right:auto!important;transform:none!important;height:auto!important;width:min(680px,calc(100vw - var(--console-action-width) - 72px))!important;max-width:calc(100vw - var(--console-action-width) - 72px)!important;background:#111b23db!important;color:#fff!important;box-shadow:none!important;border:0!important;border-radius:4px!important;font:18px/1.5 system-ui!important;padding:12px 16px!important;white-space:normal;overflow-wrap:anywhere;text-align:left}
+/* Clear the shared quiet HUD's centre anchors: Linux reserves a right-hand action column. */
+.linux-console #contextActions{bottom:24px!important;left:auto!important;right:24px!important;transform:none!important;width:var(--console-action-width)!important;max-width:calc(100vw - 48px)!important;max-height:calc(100dvh - 180px);overflow:auto;padding:4px;pointer-events:auto;gap:8px!important}
+.linux-console #contextActions>button:not(.context-primary){display:none!important}
+.linux-console #contextActions>button.context-primary{display:flex!important;align-items:center!important;gap:14px!important;min-height:52px!important;flex-shrink:0;height:auto!important;background:#f7f9fff5!important;color:#24335e!important;border:2px solid #bbccf2!important;border-radius:18px!important;box-shadow:none!important;font:600 18px/1.4 system-ui!important;letter-spacing:0!important;padding:12px 16px!important;white-space:normal;text-align:left}
+.linux-console #contextActions .context-label{display:block;flex:1;min-width:0;-webkit-line-clamp:unset;line-clamp:unset;overflow:visible;white-space:normal;overflow-wrap:anywhere;word-break:normal}
+.linux-console #contextActions .context-glyph{display:grid!important;place-items:center;flex:none;width:30px;height:30px;color:#e84d6b}.linux-console #contextActions>button>kbd{display:none!important}
+.linux-console #hud #contextActions>button.context-primary:after{content:none!important;display:grid;place-items:center;flex:none;min-width:30px;height:30px;border:1px solid currentColor;border-radius:50%;font:700 17px system-ui}
+.linux-console :is(#activityActions,#directory,#titleSlots) button{min-height:46px!important;font-size:17px!important;letter-spacing:0!important}
+.linux-console :is(#activityActions,#directoryGrid,#titleSlots) button{height:auto;white-space:normal;overflow-wrap:anywhere;text-overflow:clip}
+.linux-console :is(#activity,#directory) :is(p,dd,summary){font-size:max(16px,1em)}
+.linux-console :is(#activity,#directory,#titleSlots) :is(button,input,select,summary):focus{outline:3px solid #e84d6b!important;outline-offset:3px!important}
+.linux-console :is(.desktop-hide-hud #hud,.desktop-hide-hud #festivalHUD),.linux-console.desktop-hide-hud :is(#hud,#festivalHUD,#deckHints,#desktopIdentity){visibility:hidden!important}
+#desktopOpenMenu{position:fixed;top:20px;right:24px;z-index:950;display:flex;align-items:center;gap:9px;min-height:46px;padding:8px 12px;background:#111b23bd;color:#fff;border:0;border-radius:4px;font:600 16px system-ui;letter-spacing:0;cursor:pointer}
+#desktopOpenMenu:focus-visible{outline:3px solid #e84d6b;outline-offset:3px}
+#deckHints{position:fixed;left:24px;bottom:24px;display:flex;flex-wrap:wrap;gap:8px 20px;max-width:calc(100vw - var(--console-action-width) - 72px);z-index:900;pointer-events:none;color:#fff;text-shadow:0 2px 3px #081017;font:600 15px/1.5 system-ui}
+#deckHints span{white-space:nowrap}
+#deckHints [hidden],#desktopSaveHint[hidden],#desktopMenu[hidden],#deckHints[hidden],#desktopOpenMenu[hidden],#desktopIdentity[hidden]{display:none!important}
+.festival-active :is(#deckHints,#desktopIdentity){display:none!important}
+#desktopMenu{position:fixed;inset:0;z-index:100000;padding:24px 32px;background:#edf3fffa;display:grid;place-items:center;color:#24335e;font:17px/1.45 system-ui;letter-spacing:0;isolation:isolate}
+#desktopMenu *,#desktopOpenMenu{box-sizing:border-box}
+#desktopMenu .console-shell{display:grid;grid-template-rows:auto auto minmax(0,1fr) auto auto;width:min(1200px,100%);height:100%;min-height:0;overflow:hidden}
+#desktopMenu .console-header{padding:0 4px 18px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+#desktopMenu .console-eyebrow{margin:0 0 4px;color:#526390;font-size:12px;font-weight:650;letter-spacing:.12em}
+#desktopMenu h1{font:650 clamp(28px,3.3vw,40px)/1.15 system-ui;margin:0;letter-spacing:-.02em}
+#desktopMenu h2{font:650 22px/1.3 system-ui;margin:0 0 14px}
+#desktopMenu p{margin:0 0 16px}
+#desktopMenu button,#desktopMenu select,#desktopMenu summary{font:600 17px/1.4 system-ui;letter-spacing:0;color:#24335e;background:#ffffff;border:1px solid #c5d1ed;border-radius:14px;min-height:48px;padding:11px 16px;cursor:pointer;white-space:normal;overflow-wrap:anywhere}
+#desktopMenu select{appearance:auto;color-scheme:light}
+#desktopMenu button{text-align:left}
+#desktopMenu button:hover,#desktopMenu summary:hover{background:#edf3ff}
+#desktopMenu :is(button,input,select,summary):focus{outline:4px solid #e84d6b;outline-offset:3px;position:relative;z-index:1}
+#desktopMenu button:disabled{opacity:.4;cursor:default}
+#desktopMenu button small{display:block;font:400 14px/1.4 system-ui;margin-top:3px;color:#53638b}
+#desktopMenu .console-close{background:transparent;display:flex;align-items:center;gap:10px;border-color:transparent}
+#desktopTabs{display:flex;gap:4px;align-items:center;border-bottom:1px solid #c5d1ed;padding:0 4px 12px}
+#desktopTabs button{background:transparent;border:0;border-bottom:3px solid transparent;border-radius:0;min-width:130px;text-align:center}
+#desktopTabs button[aria-current=page]{color:#b12d52;border-bottom-color:#e84d6b}
+#desktopTabs>span{padding:0 16px}
+#desktopMenu .console-content{min-height:0;overflow:auto;overscroll-behavior:contain;display:grid;grid-template-columns:minmax(260px,.85fr) minmax(0,1fr);gap:40px;padding:24px 5px;scrollbar-gutter:stable;scroll-padding:8px}
+#desktopMenu .console-content:has(.console-page){display:block}
+#desktopMenu .console-nav{display:grid;gap:8px;align-content:start;padding:4px}
+#desktopMenu .console-nav button{width:100%;min-height:50px}
+#desktopMenu .console-nav button[data-action=resume]{background:#e84d6b;color:#ffffff;border-color:#e84d6b}
+#desktopMenu .console-postcard{align-self:start;min-width:0;background:transparent}
+#desktopMenu .console-postcard>.console-island-photo{width:100%;height:clamp(130px,24vh,240px);display:block;object-fit:cover;border-radius:4px}
+#desktopMenu .console-postcard>div{padding:20px 0}
+#desktopMenu .console-footer{padding:14px 4px 0;border-top:1px solid #c5d1ed;display:flex;justify-content:space-between;align-items:center;gap:20px;font-size:14px;line-height:1.5}
+#desktopMenu .console-footer p{margin:0;max-width:62ch;overflow-wrap:anywhere}
+#desktopMenu .console-footer>div:first-child{flex:1;min-width:0}
+#desktopMenu .console-footer>div:last-child{flex:none;white-space:nowrap;display:flex;gap:8px;align-items:center}
+#desktopMenu kbd,#deckHints kbd,#desktopOpenMenu kbd{display:inline-block;border:1px solid #cbd6da99;border-radius:4px;padding:1px 6px;font:650 .9em/1.5 system-ui;text-shadow:none;color:inherit;background:#dfe7ff}
+#desktopMenu .console-page{max-width:100%;padding:4px}
+#desktopMenu .console-page>.console-nav{max-width:880px}
+#desktopMenu .console-intro{font-size:18px;max-width:78ch;margin-bottom:24px;color:#435580}
+#desktopMenu .console-guide{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin:0 0 24px}
+#desktopMenu .console-guide article{padding:20px;border-left:2px solid #e84d6b;background:#e5ecff}
+#desktopMenu .console-guide p{margin:0}
+#desktopMenu .stick-symbol{display:block;font-size:24px;font-weight:700;color:#b12d52;margin-bottom:16px}
+#desktopMenu .console-help-row{padding:16px 0 4px;border-top:1px solid #c5d1ed}
+#desktopMenu .console-actions{display:flex;gap:16px;margin-top:18px;flex-wrap:wrap}
+#desktopMenu .console-settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+#desktopMenu .console-setting{display:block;margin:0 0 18px}
+#desktopMenu .console-setting>span{display:flex;justify-content:space-between;gap:10px}
+#desktopMenu .console-setting output{font-weight:700;color:#b12d52}
+#desktopMenu .console-setting select{display:block;width:100%;margin-top:8px;font-size:16px}
+#desktopMenu input[type=range]{display:block;width:100%;height:36px;accent-color:#e84d6b;cursor:pointer}
+#desktopMenu input[type=checkbox]{width:23px;height:23px;accent-color:#e84d6b;flex:none}
+#desktopMenu .console-check{display:flex;gap:12px;align-items:center;margin:14px 0}
+#desktopMenu :is(.console-small,.console-device){font-size:14px;color:#53638b;overflow-wrap:anywhere}
+#desktopMenu .console-bindings{display:grid;gap:8px;margin-bottom:20px}
+#desktopMenu .console-bindings button{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;font-size:16px}
+#desktopMenu .console-axis{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:12px 0;font-size:15px}
+#desktopMenu .console-stick-test{display:flex;justify-content:space-around;padding:20px 0;gap:20px}
+#desktopMenu .console-stick-test>span{display:grid;justify-items:center;gap:12px;font-size:12px;font-weight:700}
+#desktopMenu .console-stick-test i{display:block;width:24px;height:24px;margin:18px 25px;border-radius:50%;background:#e84d6b;outline:18px solid #d4dfff;border:2px solid #6179b5}
+#desktopMenu .console-stick-test output{font:13px ui-monospace,monospace}
+#desktopMenu #desktopScrollHint{font-size:12px;color:#e84d6b}
+#desktopMenu .console-roster{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:4px}
+#desktopMenu .console-roster button{min-height:100px}
+#desktopIdentity{position:fixed;left:24px;top:72px;z-index:900;color:#fff;padding:4px 10px;border-radius:4px;background:#111b23bd;font:600 14px/1.4 system-ui;pointer-events:none}
+.linux-console.festival-active #festivalHUD{top:92px!important}
+.linux-console #start{padding:0!important;width:100vw;height:100dvh;overflow:hidden}
+.linux-console #start .title-screen{height:100dvh;min-height:0;max-height:none;width:100%;border:0;border-radius:0;overflow:hidden}
+.linux-console #start .title-center{align-items:flex-start;max-height:calc(100dvh - 48px);padding:42px 52px 16px}
+.linux-console #start .title-logo{align-items:flex-start;text-align:left}
+.linux-console #start .title-world-space{min-height:20px;flex:1}
+.linux-console #start .title-settings,.linux-console #start .title-wip{display:none}
+.linux-console #start .title-menu{width:360px;max-width:calc(100vw - 104px);margin-top:20px}
+.linux-console #start .title-player{font-size:14px}
+.linux-console #start .title-player b{font-size:17px;max-width:none;overflow:visible;white-space:normal;overflow-wrap:anywhere}
+.linux-console #start #titleActionHint{font-size:14px}
+.linux-console #start #title .title-menu .title-secondary :is(button,.title-guide){font-size:16px;min-height:46px}
+.linux-console #start .title-foot{justify-content:flex-start;padding-left:52px}
+.linux-console #start .title-loading{margin-top:20px}
+@media(max-height:700px){#desktopMenu{padding:16px 24px}#desktopMenu .console-header{padding-bottom:12px}#desktopMenu .console-content{padding:16px 5px}#desktopMenu h1{font-size:28px}#desktopTabs{padding-bottom:8px}#desktopMenu .console-footer{padding-top:10px}#desktopMenu .console-nav{gap:6px}#desktopMenu .console-nav button{min-height:46px;padding:9px 14px}#desktopMenu .console-postcard>.console-island-photo{height:130px}}
+@media(max-width:900px){#desktopMenu .console-roster{grid-template-columns:repeat(2,minmax(0,1fr))}#desktopMenu .console-settings-grid{gap:28px}#desktopMenu .console-guide{gap:12px}#desktopMenu .console-guide article{padding:14px}#desktopMenu .console-footer{font-size:12px}#deckHints{font-size:13px;gap:6px 12px}}
+@media(max-width:600px){#desktopMenu{padding:12px}#desktopMenu .console-content{display:block}#desktopMenu .console-postcard{display:none}#desktopMenu .console-settings-grid,#desktopMenu .console-guide{grid-template-columns:1fr}#desktopMenu .console-footer{flex-wrap:wrap;gap:8px}#desktopTabs button{min-width:0;flex:1}#desktopTabs>span{padding:0 4px}}
+@media(max-height:600px){.linux-console #start .title-center{padding:22px 32px 8px}.linux-console #start .title-menu{margin-top:10px;gap:8px;padding:12px}.linux-console #start .title-foot{padding-left:32px}}
+
+.linux-console[data-desktop-menu=open] :is(#hud,#activity,#directory,#start,#cameraPanel,#festivalHUD,#deckHints,#desktopIdentity){visibility:hidden!important}
+.linux-console #activity.conversation.rpg #activityActions button{background:#ffffff;color:#24335e;border:1px solid #a8bce7;border-radius:4px;box-shadow:none;font:600 18px/1.4 system-ui!important}
+.linux-console #activity.conversation.rpg #activityActions button:is(.selected,:focus){background:#e7edff;border-color:#e84d6b;outline:2px solid #e84d6b;outline-offset:1px}
+.linux-console #activity.conversation.rpg .activity-card{background:#f7f9fffa;border:1px solid #a8bce7;border-radius:6px;box-shadow:none}
+.linux-console #activity.conversation.rpg #activityTitle::before{color:#24335e}
+.linux-console #directory .directory-card{width:min(1000px,100%);max-height:calc(100dvh - 56px);border:1px solid #a8bce7;border-radius:6px;background:#f7f9fffa;color:#24335e;box-shadow:none}
+.linux-console #directory :is(.directory-head h2,.directory-section){color:#24335e}
+.linux-console #directory :is(.directory-head p,.directory-foot){color:#53638b}
+.linux-console #directory #directoryGrid .dir-item,.linux-console #directory #townControls :is(.app-tile,#bagButton){background:#ffffff;border:1px solid #a8bce7;border-radius:4px;color:#24335e}
+.linux-console #directory #directoryGrid .dir-item>b{color:#24335e}
+.linux-console #directory #directoryGrid .dir-item>span{color:#53638b}
+
+#desktopModalHints{display:flex;align-items:center;gap:8px;margin:8px 0 12px;color:#4e608d;font:600 15px/1.4 system-ui}
+#desktopModalHints[hidden]{display:none!important}
+#desktopModalHints kbd{display:inline-block;padding:1px 6px;border:1px solid currentColor;border-radius:4px;font:650 14px/1.5 system-ui}
+.linux-console #activity:not(.conversation) #desktopModalHints{color:#29404a}
+
+/* Island organiser: original cel-like pictograms, postcards and resident cards. */
+#desktopMenu{background-color:#edf3ff;background-image:radial-gradient(#b9cbed88 1px,transparent 1px);background-size:22px 22px}
+#desktopMenu .console-shell{position:relative}
+#desktopMenu .console-header{border-bottom:0;padding-bottom:18px}
+#desktopMenu .console-eyebrow{color:#3b5599;font-size:11px;letter-spacing:.13em;font-weight:800}
+#desktopMenu .console-eyebrow>span{display:inline-block;color:#b12d52;margin-left:12px}
+#desktopMenu h1{font-weight:850;color:#25366c;letter-spacing:-.045em}
+#desktopMenu .console-close{border:2px solid #c5d1ed;border-radius:24px;background:white}
+#desktopTabs{border:0;gap:8px;padding:0 4px 14px}
+#desktopTabs button{display:flex;align-items:center;justify-content:center;gap:10px;border-radius:24px;border:2px solid transparent;min-width:138px;padding:9px 20px;color:#4b608e}
+#desktopTabs button[aria-current=page]{background:#2d4694;color:white;border-color:#2d4694}
+.console-icon{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;flex:none}
+.console-icon svg{width:1.55em;height:1.55em;display:block}
+#desktopMenu .console-content{gap:32px;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);padding-top:10px}
+#desktopMenu .console-launcher{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;padding:8px;align-content:center;height:100%}
+#desktopMenu .console-launcher button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:132px;background:white;border:2px solid #b8c9ed;border-bottom-width:5px;border-radius:23px;text-align:center;font-weight:750;color:#263c7b;padding:16px 10px;transition:transform .12s,border-color .12s}
+#desktopMenu .console-launcher button:hover{transform:translateY(-2px);border-color:#7897db}
+#desktopMenu .console-launcher button:focus{border-color:#e84d6b;outline:3px solid white;outline-offset:1px;box-shadow:0 0 0 5px #e84d6b;transform:translateY(-2px)}
+#desktopMenu .console-tile-icon{display:grid;place-items:center;width:68px;height:68px;border-radius:23px;background:#dbeaff;color:#315fc0}
+#desktopMenu .console-tile-icon .console-icon svg{width:42px;height:42px;stroke-width:1.9}
+#desktopMenu [data-action=resume] .console-tile-icon{background:#ffe1e7;color:#bf3159}
+#desktopMenu [data-action=bag] .console-tile-icon,#desktopMenu [data-action=updates] .console-tile-icon{background:#e5dcff;color:#7050b4}
+#desktopMenu [data-action=home] .console-tile-icon,#desktopMenu [data-action=display] .console-tile-icon{background:#ffe6cf;color:#a65622}
+#desktopMenu [data-action=save] .console-tile-icon{background:#d9f3fb;color:#246e94}
+#desktopMenu [data-action=help] .console-tile-icon{background:#ffe0f1;color:#a94382}
+#desktopMenu [data-action=quit] .console-tile-icon{background:#ffe1e7;color:#ad3153}
+#desktopMenu .console-postcard{align-self:center;border:2px solid #b8c9ed;border-radius:24px;background:white;overflow:hidden;transform:rotate(1deg)}
+#desktopMenu .console-postcard .console-island-photo{border-radius:0;height:clamp(120px,22vh,210px);border-bottom:3px solid #c5d7f6}
+#desktopMenu .console-postcard .console-passport{padding:18px;display:flex;align-items:center;gap:14px}
+#desktopMenu .console-passport h2{font-size:24px;margin-bottom:4px}
+#desktopMenu .console-passport p{font-size:14px;margin:0;color:#53638b}
+#desktopMenu .console-postcard .console-postcard-tip{margin:0 18px 18px;display:flex;gap:10px;align-items:center;font-size:14px;color:#405789}
+#desktopMenu .console-postcard-tip .console-icon{color:#c4416a}
+#desktopMenu .console-portrait{display:block;width:78px;height:78px;object-fit:cover;border-radius:50%;background:#e7efff;border:3px solid #c9d7f8;flex:none}
+#desktopMenu .console-selection{min-height:28px;font-size:16px;font-weight:600;color:#425a91;padding:4px 8px 12px}
+#desktopMenu .console-selection[hidden]{display:none}
+#desktopMenu .console-footer{border-color:#b8c9ed;font-size:13px;color:#53638b}
+#desktopMenu .console-footer kbd{color:#263c7b;background:white;border:1px solid #92a7d5;min-width:23px;text-align:center}
+#desktopMenu .console-settings-launcher{grid-template-columns:repeat(4,minmax(0,1fr));max-width:none;align-content:start;gap:24px;padding-top:30px}
+#desktopMenu .console-settings-launcher button{min-height:180px}
+#desktopMenu .console-roster{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;padding:8px}
+#desktopMenu .console-roster button{display:flex;flex-direction:column;align-items:center;gap:6px;min-height:210px;border-radius:20px;border:2px solid #bfd0ef;border-bottom-width:5px;position:relative;text-align:center;padding:16px 10px;background:#fff}
+#desktopMenu .console-roster button[aria-pressed=true]{border-color:#e84d6b;background:#fff5f8}
+#desktopMenu .console-resident-name{font-size:18px;font-weight:800}
+#desktopMenu .console-roster small{font-size:13px;margin:0;line-height:1.35;max-width:100%;display:block}
+#desktopMenu .console-roster small .console-icon svg{width:15px;height:15px;margin-right:4px}
+#desktopMenu .console-playing{font-size:11px;padding:2px 8px;border-radius:12px;color:#fff;background:#b22f53;font-weight:700}
+#desktopMenu .console-guide article{border:2px solid #c5d1ed;border-bottom:5px solid #a8bce7;border-radius:18px;background:white}
+#desktopMenu .console-guide article>.console-icon{color:#315fc0;float:right;font-size:24px}
+#desktopMenu .stick-symbol{color:#bc3459;margin-bottom:10px}
+#desktopMenu .console-controller-map{margin:0 auto 18px;max-width:440px;text-align:center}
+#desktopMenu .console-controller-map svg{width:100%;max-height:140px;display:block}
+#desktopMenu .console-controller-map figcaption{font-size:13px;color:#53638b;margin:4px}
+#desktopMenu .console-settings-grid{gap:36px}
+#desktopMenu .console-bindings button{border-radius:12px;border-color:#c5d1ed}
+#desktopMenu .console-bindings kbd{background:#2d4694;color:white;min-width:36px;text-align:center}
+#desktopMenu .console-settings-grid h2{color:#263c7b}
+#desktopMenu .console-actions button{display:flex;align-items:center;gap:12px}
+#desktopMenu .console-page>[data-action]{display:flex;align-items:center;gap:12px;margin:12px 0}
+#desktopMenu .console-settings-grid [data-action]{margin:8px 0;display:flex;gap:10px;align-items:center}
+#desktopMenu .console-actions .console-tile-icon,#desktopMenu .console-settings-grid .console-tile-icon{width:auto;height:auto;background:none}
+#desktopMenu .console-actions .console-tile-icon svg,#desktopMenu .console-settings-grid .console-tile-icon svg{width:24px;height:24px}
+.linux-console #activity.conversation.rpg #activityActions button{border-width:2px;border-radius:16px;color:#263c7b}
+.linux-console #activity.conversation.rpg .activity-card{border:2px solid #a8bce7;border-radius:24px;background:#f7f9fff5}
+.linux-console #activity.conversation.rpg #activityTitle::before{color:#263c7b}
+.linux-console #directory .directory-card{border:2px solid #a8bce7;border-radius:24px}
+.linux-console #directory #directoryGrid .dir-item,.linux-console #directory #townControls :is(.app-tile,#bagButton){border:2px solid #bfd0ef;border-radius:16px}
+.linux-console #directory .app-icon{background:#dce8ff;color:#315fc0;border-radius:14px}
+.linux-console #directory #directoryGrid .dir-item>span{color:#53638b}
+.linux-console #start .title-menu{background:#f7f9fff5;border:2px solid #a8bce7;border-radius:24px;box-shadow:none;color:#263c7b}
+.linux-console #start .title-primary{background:#2d4694!important;color:white!important;border-radius:16px!important;border:2px solid #263c7b!important}
+.linux-console #start :is(.title-secondary button,.title-guide){background:white!important;color:#263c7b!important;border:2px solid #c5d1ed!important;border-radius:12px!important}
+.linux-console #start .title-player{color:#53638b}.linux-console #start .title-player b{color:#263c7b}
+.linux-console #contextActions .console-action-key{display:grid;place-items:center;flex:none;min-width:32px;min-height:32px;background:#2d4694;color:white;border-radius:50%;font:750 17px system-ui;padding:4px}
+.console-button-diamond{display:inline-block;vertical-align:middle;width:42px;height:42px}
+.console-prompt-name{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+@media(max-width:1000px){#desktopMenu .console-roster{grid-template-columns:repeat(3,minmax(0,1fr))}#desktopMenu .console-content{gap:22px}#desktopMenu .console-launcher{gap:14px}#desktopMenu .console-launcher button{min-height:124px;font-size:16px}#desktopMenu .console-settings-launcher{grid-template-columns:repeat(2,minmax(0,1fr))}#desktopMenu .console-settings-launcher button{min-height:120px}}
+@media(max-height:700px){#desktopMenu .console-launcher button{min-height:115px;gap:8px;padding:12px 8px}#desktopMenu .console-tile-icon{width:58px;height:58px;border-radius:18px}#desktopMenu .console-tile-icon .console-icon svg{width:36px;height:36px}#desktopMenu .console-postcard .console-island-photo{height:126px}#desktopMenu .console-postcard .console-passport{padding:12px}#desktopMenu .console-postcard-tip{font-size:12px!important}#desktopMenu .console-passport h2{font-size:20px}#desktopMenu .console-header{padding-bottom:12px}#desktopMenu .console-selection{font-size:14px;padding-bottom:8px}#desktopMenu .console-settings-launcher{padding-top:10px}#desktopMenu .console-controller-map svg{max-height:110px}}
+@media(max-width:700px){#desktopMenu .console-content{display:block}#desktopMenu .console-postcard{display:none}#desktopMenu .console-launcher{grid-template-columns:repeat(3,minmax(0,1fr));height:auto}#desktopMenu .console-roster{grid-template-columns:repeat(2,minmax(0,1fr))}#desktopTabs button{min-width:0;padding:8px 12px}#desktopTabs>span{padding:0 2px}#desktopMenu .console-eyebrow>span{display:none}#desktopMenu .console-settings-grid{grid-template-columns:1fr}#desktopMenu .console-settings-launcher{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){#desktopMenu button{transition:none!important;transform:none!important}}
+
+.linux-console #start{--title-green:#2d4694;--title-text:#26366c;--title-surface:#f7f9ff}
+.linux-console #start .title-screen::before{background:linear-gradient(180deg,#edf3fff2 0%,#edf3ffb0 18%,transparent 36%,transparent 65%,#edf3ff30 100%)}
+.linux-console #start .logo-main{color:#26366c}.linux-console #start .logo-town{color:#c23c63}
+.linux-console #start .title-menu #enter{background:#2d4694;border-radius:16px;border:2px solid #263c7b}
+.linux-console #start .title-menu #enter:hover{background:#263c7b}
+#desktopMenu .console-postcard .console-portrait{width:78px;height:78px;min-width:78px;border-radius:50%;object-fit:cover}
+#desktopMenu .console-tile-icon .ui-icon{width:42px!important;height:42px!important}
+#desktopMenu .console-tile-icon .console-icon{font-size:27px}
+#desktopMenu .console-nav button[data-action=resume]{background:#fff;color:#263c7b;border-color:#b8c9ed}
+#desktopMenu .console-nav button[data-action=resume]:focus{background:#e84d6b;color:white;border-color:#e84d6b}
+#desktopMenu .console-roster .console-icon .ui-icon{width:15px!important;height:15px!important}
+/* The same organiser material carries into inventory, dialogue and save sheets. */
+.linux-console{--line-text:#26366c;--line-secondary:#53638b;--line-green:#2d4694;--line-white:#f7f9ff;--line-surface:#e7edff;--line-border:#b8c9ed}
+.linux-console #activity:not(.conversation) .activity-card{border:2px solid #b8c9ed;border-radius:24px;background:#f7f9fff5;color:#26366c;box-shadow:none;max-height:calc(100dvh - 64px)}
+.linux-console #activity:not(.conversation) #activityActions button{border:2px solid #b8c9ed;border-radius:14px;background:white;color:#263c7b;box-shadow:none}
+.linux-console #activity:not(.conversation) #activityActions button:focus{background:#e7edff;border-color:#e84d6b}
+.linux-console #activity.bag-view .bag-hero{background:#e7ddff;border-radius:24px;color:#7050b4}
+.linux-console #activity.bag-view #activityActions .bag-tile{border:2px solid #c5d1ed;border-bottom-width:4px;border-radius:18px;background:white}
+.linux-console #activity.bag-view .bag-tile .ui-icon{color:#7050b4;width:38px;height:38px}
+.linux-console #activity.bag-view .bag-name{color:#263c7b}
+.linux-console #activity.bag-view .bag-n{color:#b12d52}
+.linux-console #start .title-slots-card{border:2px solid #b8c9ed;border-radius:24px;background:#f7f9ff;color:#26366c;box-shadow:none}
+.linux-console #start .title-slots-card button{border:2px solid #c5d1ed;background:white;color:#263c7b;min-height:48px}
+
+#desktopMenu .console-portrait{position:relative;overflow:hidden}
+#desktopMenu .console-portrait .console-resident-photo{position:absolute;width:250%;height:250%;max-width:none;left:-75%;top:0;object-fit:cover;border:0;border-radius:0}
+
+/* Original vending-machine identity; UI lettering remains crisp and native. */
+.linux-console #titleLogo{position:relative}
+.console-brand-icon{object-fit:cover;border-radius:18px;box-shadow:0 8px 24px #101c4a40;margin:0 0 18px}
+#desktopMenu .console-eyebrow{display:flex;align-items:center;gap:8px}
+.console-menu-brand{border-radius:9px;object-fit:cover}
+@media(max-height:700px){.console-brand-icon{width:56px;height:56px;border-radius:13px;margin-bottom:10px}}
+@media(max-height:600px){.console-brand-icon{position:absolute;left:calc(100% + 18px);top:0;width:64px;height:64px}}
+
+/* Controller focus is the cursor, including buttons with their own cursor rule. */
+html.linux-console[data-input-mode=controller],html.linux-console[data-input-mode=controller] *{cursor:none!important}
+.console-control-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 24px}
+.console-control-list>div{display:flex;align-items:center;gap:12px}.console-control-list dt{min-width:50px}.console-control-list dd{margin:0}
+@media(max-width:700px){.console-control-list{grid-template-columns:1fr}}

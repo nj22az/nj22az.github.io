@@ -102,6 +102,11 @@ test('pending delivery is announced once instead of repeatedly on each frame',()
  assert.equal(status.hidden,true);assert.equal(value,'');
 });
 
+test('console action cycling stays selected until the nearby context changes',()=>{
+ const {doc}=fixture(),calls=[],rail=createContextRail({doc,onAction:id=>calls.push(id)}),state={...idle,targetLabel:'Read the noticeboard',enterLabel:'Enter the waiting hall'};
+ rail.update(state);assert.equal(rail.primary.id,'act');assert.equal(rail.cycle(1),true);assert.equal(rail.primary.id,'enterBuildingButton');rail.update(state);rail.activatePrimary();assert.equal(calls.at(-1),'enterBuildingButton');rail.cycle(-1);assert.equal(rail.primary.id,'act');rail.cycle(1);rail.update({...state,targetLabel:'Talk to the harbour master'});assert.equal(rail.primary.id,'act');rail.update({...idle});assert.equal(rail.cycle(1),false);
+});
+
 test('the last action fades out with its words on it, but can no longer be pressed or read',()=>{
  const {doc,get}=fixture(),calls=[],rail=createContextRail({doc,onAction:id=>calls.push(id)});
  rail.update({...idle,targetLabel:'Look at the fire escape'});

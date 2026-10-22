@@ -35,6 +35,14 @@ test('late success updates the live model and removes a timeout without a duplic
  finish(true);await tick();assert.equal(entry.status,'ready');assert.deepEqual(stream.stats.failed,[]);assert.equal(changed,1);
 });
 
+test('desktop preload overlaps two jobs, bounds pending decodes, and looks further ahead',async()=>{
+ const done=[],calls=[],stream=createDetailStream({lookAhead:32,radiusScale:1.8,maxConcurrent:2,maxPending:2,timeoutMs:5});
+ for(let i=0;i<4;i++)stream.add({id:'detail-'+i,x:60+i,z:0,radius:20,load:()=>{calls.push(i);return new Promise(resolve=>done.push(resolve));}});
+ stream.update({x:0,z:0},{x:1,z:0});stream.update({x:0,z:0},{x:1,z:0});stream.update({x:0,z:0},{x:1,z:0});await tick();assert.deepEqual(calls,[0,1]);
+ await new Promise(resolve=>setTimeout(resolve,10));stream.update({x:0,z:0},{x:1,z:0});await tick();assert.deepEqual(calls,[0,1]);
+ done.forEach(resolve=>resolve(true));await tick();stream.update({x:0,z:0},{x:1,z:0});await tick();assert.deepEqual(calls,[0,1,2]);done.at(-1)(true);await tick();
+});
+
 test('constrained startup leaves optional fallbacks in place without fetching or holding the arrival camera',async()=>{
  let calls=0,changes=0;const stream=createDetailStream({enabled:false,onChange:()=>changes++});
  stream.add({id:'large-building',x:0,z:0,radius:100,load:()=>{calls++;return true;}});

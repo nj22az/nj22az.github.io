@@ -1,3 +1,4 @@
+import {restoreFestival} from './src/progression/harbour-festival.js';
 import {bagEntries,BAG_CATEGORIES} from './src/commerce/bag-catalogue.js';
 import {personalityOf,DIALS,dialStep,hasVoiceRefinement} from './src/avatars/personality.js';
 import {personalityReference} from './src/avatars/personality-questions.js';
@@ -105,7 +106,7 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
     const {saved,turned}=openYear(read);yearTurned=turned;
     if(saved&&typeof saved==='object'){state.loopYear=saved.loopYear;state.loops=saved.loops|0;pendingAbsence=pendingTownAbsence(saved);state.pendingTownMinutes=pendingAbsence;
       state.homeDecor=restoreHomeDecor(saved.homeDecor);state.pocketAlbum=restoreAlbum(saved.pocketAlbum);state.pocketTaken=Number.isInteger(saved.pocketTaken)&&saved.pocketTaken>0?Math.min(saved.pocketTaken,999999):0;state.pocketSeen=restoreSeen(saved.pocketSeen,state.pocketAlbum);state.diary=restoreDiary(saved.diary);state.news=restoreNews(saved.news);state.post=restorePost(saved.post);awaySince=Number.isFinite(saved.savedAt)?saved.savedAt:0;state.impressions=restoreImpressions(saved.impressions);state.favours=restoreFavours(saved.favours);state.errand=restoreFavourErrand(saved.errand);state.greeted=saved.greeted&&typeof saved.greeted==='object'?Object.fromEntries(Object.entries(saved.greeted).filter(([k,v])=>typeof k==='string'&&Number.isSafeInteger(v)).slice(-60)):{};
-      state.concert=cleanConcert(saved.concert);state.relationships=restoreRelationships(saved.relationships);
+      state.harbourFestival=restoreFestival(saved.harbourFestival);state.desktopCheckpoint=saved.desktopCheckpoint;if(window.johanssonDesktop)state.desktopLife=saved.desktopLife;state.concert=cleanConcert(saved.concert);state.relationships=restoreRelationships(saved.relationships);
       state.heardHappenings=Array.isArray(saved.heardHappenings)?saved.heardHappenings.filter(x=>typeof x==='string').slice(-40):[];
       state.thuanOutfit=['nozomi','sailor'].includes(saved.thuanOutfit)?saved.thuanOutfit:'clothes';{const house=restoreHouseState(saved[HOUSE_SAVE]);if(house)state[HOUSE_SAVE]=house;}state.island=restoreIsland(saved.island);state.documentArchive=restoreArchive(saved.documentArchive);state.sakura=saved.sakura;state.bookshop=saved.bookshop;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.konbini=saved.konbini;state.residentLife=restoreResidentLife(saved.residentLife);state.friendship=restoreFriendship(saved.friendship);state.residentLocations=saved.residentLocations;state.housingRevision=saved.housingRevision;
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
@@ -123,6 +124,7 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
 
   if(!Number.isInteger(state.loopYear)){state.loopYear=realYear();state.loops=0;}
   if(yearTurned)setTimeout(()=>say('1 January 1997, again. The year has started over; your friends still know you.',8),6000);
+  state.harbourFestival=restoreFestival(state.harbourFestival);
   state.relationships=restoreRelationships(state.relationships);
   state.story=restoreStory(state.story);
   ensureDailyQuests(state);
@@ -180,6 +182,7 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
   function close(){dialogueBox.close();modal.classList.remove('bag-view','flyer-view','letter-view','pocket-album-view','resident-record');ledgerView=null;magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
   // options.mood: how Thuan's face looks for this line (her lines only; others release it).
   function show(title,text,buttons=[],options={}){
+    if(window.johanssonDesktop&&window.johanssonLinuxWorld)buttons=window.johanssonLinuxWorld.conversationActions(title,buttons,options);
     modal.classList.remove('bag-view','flyer-view','letter-view','pocket-album-view','resident-record');ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modal.classList.remove('office-records');
     magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');
     modalRevision++;const revision=modalRevision;
@@ -201,7 +204,7 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
    * The post (src/mail/post.js): who the mayor is, as a letter-writer sees him, and who
    * each sender is. The roster's default "Visitor" is still the mayor, Johansson.
    */
-  const playerName=()=>{const n=activePlayer(localStorage)?.name;return n&&n!=='Visitor'?n:'Johansson';};
+  const playerName=()=>{if(window.johanssonDesktop&&window.johanssonLinuxWorld)return window.johanssonLinuxWorld.active;const n=activePlayer(localStorage)?.name;return n&&n!=='Visitor'?n:'Johansson';};
   function senderOf(name){
     const profile=RESIDENTS.find(p=>p.name===name)||PROFILES.find(p=>p.name===name),recipe=recipeFor(name);
     if(!profile&&!recipe)return null;
