@@ -151,7 +151,7 @@ import { circleHitsRect,circleHitsCircle,standingHitsRect,canStepBetween,roomBou
 import {useTownColour} from './render/single-pass-colour.js';
 import { createCelPass } from './render/cel.js?snappy=1';
 import { createInkPipeline, GRADE_DEFAULTS } from './render/ink-pipeline.js?snappy=1';
-import {LOOKS,isLook,clearSavedLook,lookCSS,lookNeedsPipeline,lookIsHeavy} from './render/looks.js';
+import {LOOKS,isLook,clearSavedLook,lookCSS,lookNeedsPipeline} from './render/looks.js';
 import {createFreeCamera} from './input/free-camera.js';
 import {createLookPicker,lookSwatch} from './ui/look-picker.js';
 import {svg as uiIcon} from './ui/icons.js';
@@ -306,6 +306,8 @@ const INK_OPTIONS={
  // colour target; the canvas itself only receives the FXAA pass and stays single-sample.
  superScale:window.johanssonDesktop?1:graphics.superScale,samples:graphics.samples,preferHalfFloat:graphics.preferHalfFloat,
  pixelBudget:graphics.pixelBudget,
+ // Phones and tablets draw the lighter version of a look where it has one (the oil painting's 16 samples, not 64).
+ lightLooks:handheld,
  // FXAA is a single pass and it is the one that resolves the line work, so it is
  // worth having on the devices whose buffers need it most.
  fxaa:true,
@@ -347,9 +349,8 @@ function applyLook(){
  lookFilter=want;
 }
 function setLook(name){look=isLook(name)?name:'none';applyLook();}
-/** The looks this device can draw, in menu order: the free camera's L and Look button step through them. Oil painting is
- * left off phones and tablets, whose GPUs would drop frames on its 64 samples a pixel. */
-const drawableLooks=()=>Object.keys(LOOKS).filter(id=>(graphics.postprocess||!lookNeedsPipeline(id))&&!(handheld&&lookIsHeavy(id)));
+/** The looks this device can draw, in menu order: the free camera's L and Look button step through them. */
+const drawableLooks=()=>Object.keys(LOOKS).filter(id=>graphics.postprocess||!lookNeedsPipeline(id));
 function nextLook(){const ids=drawableLooks();setLook(ids[(ids.indexOf(look)+1)%ids.length]);}
 /** The Look picker (ui/look-picker.js): a picture per look, chosen live over the town. */
 const lookPicker=createLookPicker({looks:LOOKS,available:drawableLooks,current:()=>look,choose:setLook,onOpen:()=>resetInput(),onClose:()=>resetInput()});

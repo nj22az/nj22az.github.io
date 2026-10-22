@@ -116,3 +116,11 @@ Owner: "Should revert to normal when restarting the game regardless which one I 
 `game.js` starts at `look='none'` and calls `clearSavedLook`, which removes the old `johansson-town-look` key, on every start;
 `readLook`/`writeLook` are gone. Checked in software Chromium: Manga chosen and an old `oil` key planted, then reload and
 START gave `none`, with the key removed. Focused tests pass.
+
+## Oil painting on phones and tablets too — 22 October 2026, night
+Owner: "I really like oil, are you sure it won't work on the website". It always worked on the website on computers; it was
+hidden on handheld devices. Now every device offers it. `lookFragment(name,{light})` prepends `#define LIGHT`, and the oil
+shader then takes 2×2 samples a sector over the same reach (16 a pixel, not 64). `createInkPipeline({lightLooks})` passes
+it, and game.js sets `lightLooks:handheld`. `heavy`/`lookIsHeavy` are removed. Checked in software Chromium at 390×844 with
+touch: 13 looks offered, and Oil drew the light version without shader errors, close to the computer version. Not measured:
+frame rate on a real phone or iPad.

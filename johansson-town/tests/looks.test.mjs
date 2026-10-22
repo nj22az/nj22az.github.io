@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createInkPipeline} from '../src/render/ink-pipeline.js';
-import {LOOKS,LOOK_KEY,isLook,clearSavedLook,lookCSS,lookNeedsPipeline,lookIsHeavy,lookFragment} from '../src/render/looks.js';
+import {LOOKS,LOOK_KEY,isLook,clearSavedLook,lookCSS,lookNeedsPipeline,lookFragment} from '../src/render/looks.js';
 
 function fakeRenderer(){
  const calls=[];
@@ -63,6 +63,9 @@ test('reduced graphics keep the colour looks as a CSS filter and offer nothing t
  assert.ok(!lookNeedsPipeline('none')&&!lookNeedsPipeline('mono'));
 });
 
-test('only the oil painting is too heavy for a phone',()=>{
- assert.deepEqual(Object.keys(LOOKS).filter(lookIsHeavy),['oil']);
+test('the oil painting has a lighter version for phones and tablets, and every look still builds both ways',()=>{
+ const full=lookFragment('oil'),light=lookFragment('oil',{light:true});
+ assert.doesNotMatch(full,/#define LIGHT/);
+ assert.match(light,/^#define LIGHT\n/);
+ for(const name of Object.keys(LOOKS).filter(n=>n!=='none'))assert.match(lookFragment(name,{light:true}),/void main\(\)\{/,name);
 });

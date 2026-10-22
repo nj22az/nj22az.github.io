@@ -204,8 +204,9 @@ function makeQuad(fragmentShader,uniforms){
  * @param {number} [options.samples] MSAA samples for the scene target (WebGL2 only)
  * @param {boolean} [options.preferHalfFloat] Allow eight-bit targets on constrained devices
  * @param {number} [options.ink] ink colour
+ * @param {boolean} [options.lightLooks] draw the lighter version of a look where it has one (phones and tablets)
  */
-export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxaa=true,samples=4,preferHalfFloat=true,ink=0x2b2a33,inkOptions={},gradeOptions={}}={}){
+export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxaa=true,samples=4,preferHalfFloat=true,ink=0x2b2a33,inkOptions={},gradeOptions={},lightLooks=false}={}){
  const capabilities=renderer.capabilities||{};
  // Half-float keeps the grade from banding. Where it is not available the chain
  // still runs, just on eight bits.
@@ -265,7 +266,7 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
  let rtLook=null;
  function lookPass(name){
   if(lookPasses.has(name))return lookPasses.get(name);
-  const fragment=lookFragment(name);
+  const fragment=lookFragment(name,{light:lightLooks});
   const pass=fragment?makeQuad(fragment,{
    tDiffuse:{value:null},tDepth:{value:rtScene.depthTexture},
    uTexel:{value:new THREE.Vector2(1,1)},uResolution:{value:new THREE.Vector2(2,2)},
