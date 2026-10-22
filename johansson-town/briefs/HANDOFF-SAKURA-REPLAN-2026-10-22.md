@@ -14,6 +14,8 @@ Branch `codex/sakura-audit-cad`, based on main `a0fb347ced9250b2e5a6210ba068bf59
 
 Confirmed: ground polygon 138.75 m2; small office 5.92 m2; upstairs office 22.88 m2; upper room envelope 128.64 m2, not just an office. Terminal exterior waiting hall 29.93 m2 versus interior builder 63 m2; existing Harbour Office and upper records shell cannot be treated as vacant. See the audit for reference/measurement distinctions.
 
+Revision B owner requirements, drawings and checks: commit `013d8872cf67b6efdca15376ac6602e64b132577`. Planning only, on the same open draft PR #366.
+
 ## Owner answers - confirmed in this conversation
 
 1. Retain the current approximately 139 m2 ground footprint, including the existing street frontage.
