@@ -31,6 +31,17 @@ const {rectanglesSeparated}=require('./layout-acceptance.cjs');
  // for real sampled frames so both movement and camera receive the same test input.
  const axes=async value=>{await page.evaluate(value=>{window.__pad.axes=value;},value);await sampled();await sampled();};
  const state=()=>page.evaluate(()=>window.johanssonDesktopUI.snapshot());
+ // Outdoor fixtures must not depend on the real clock's sleeping cabin start.
+ // B's near-door exit remains exercised independently in the owned-home check.
+ const outdoors=async()=>{
+  await page.evaluate(async()=>{
+   await window.johanssonLinuxWorld.wake();
+   const audit=window.__JOHANSSON_AUDIT__;
+   if(audit.player.room)await audit.leave();
+  });
+  await page.waitForFunction(()=>{const audit=window.__JOHANSSON_AUDIT__;return !audit.player.room&&!audit.blocked.roomLoading&&!audit.blocked.catchingUp;});
+  assert.equal(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room),null,'Outdoor fixture has settled outside');
+ };
  const click=async action=>{
   const target=page.locator(`#desktopMenu [data-action="${action}"]`).last();
   if(!await target.isVisible())await page.locator(`#desktopTabs [data-tab="${['controls','display','updates','quit'].includes(action)?'settings':action==='people'?'people':'pause'}"]`).click();
@@ -62,7 +73,7 @@ const {rectanglesSeparated}=require('./layout-acceptance.cjs');
  await page.waitForTimeout(500);assert.equal((await state()).page,'help');assert.equal((await state()).menu,true,'First entry explains what to do');
  assert.equal(await page.evaluate(()=>window.__JOHANSSON_STABILITY__?.ok),true,'Real world startup checks pass');
  await page.screenshot({path:path.join(out,'03-first-steps-1280.png')});await click('resume');
- if(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room!==null&&!window.johanssonLinuxWorld.inBed)){await tap(1);await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).room===null);}
+ await outdoors();
  // Find the same walkable harbour fixture used by the world audit.
  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.teleport(-7,-15,0,0));
  let before=await page.evaluate(()=>({...window.__JOHANSSON_POSE__}));await axes([0,-1,0,0]);await page.waitForTimeout(500);await axes([0,0,0,0]);
@@ -73,7 +84,7 @@ const {rectanglesSeparated}=require('./layout-acceptance.cjs');
  await click('quit');assert.equal(await page.evaluate(()=>!!window.__quit),false,'Opening Quit never closes the game');await tap(1);assert.equal((await state()).page,'settings');await tap(9);
  await page.screenshot({path:path.join(out,'04-gameplay-1280.png')});
  // Night harbour: the old tonal cricket loop must never be loaded in Linux.
- if(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room!==null)){await tap(1);await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).room===null);}
+ await outdoors();
  await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.setTime(1380);window.__JOHANSSON_AUDIT__.teleport(4.9,-42.6,-Math.PI/2,0);});
  await sampled();await page.waitForTimeout(1200);
  assert.equal(audioRequests.some(url=>url.includes('/crickets.wav')),false,'No repeating electronic cricket beep at night');
@@ -194,7 +205,7 @@ const {rectanglesSeparated}=require('./layout-acceptance.cjs');
  assert.deepEqual(selectable.map(person=>person.name).sort(),expectedNames,'Every living resident is selectable, with no retired extras');for(const person of selectable)assert.equal(person.model,identityOf(person.name)?.avatar||person.name,person.name+' uses its canonical authored recipe');
  await page.evaluate(async()=>{window.__JOHANSSON_AUDIT__.setTime(720);await window.johanssonLinuxWorld.select('Johansson');});
  console.log('Testing conversation escalation');
- if(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room!==null&&!window.johanssonLinuxWorld.inBed)){await tap(1);await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).room===null);}
+ await outdoors();
  await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.teleport(-7,-15,0,0);window.__JOHANSSON_AUDIT__.activities.action('resident','Tetsuo');});
  console.log('Conversation opened',await page.locator('#activityTitle').textContent());
  const conversationTitle=await page.locator('#activityTitle').textContent();await tap(9);assert.equal((await state()).menu,true);await tap(1);assert.equal((await state()).menu,false);assert.equal(await page.locator('#activity').isVisible(),true,'Menu pause retains the open conversation');assert.equal(await page.locator('#activityTitle').textContent(),conversationTitle);

@@ -55,7 +55,20 @@ app.whenReady().then(async()=>{
    console.log('WORLD_SMOKE',JSON.stringify(result));
    if(result.desktopVersion!==app.getVersion())throw Error('Displayed version differs from running application');
    if(!result.running||!result.stability?.ok)throw Error('World startup checks failed: '+JSON.stringify(result.stability));
-   await window.webContents.executeJavaScript('document.querySelector("#desktopMenu:not([hidden]) [data-action=resume]")?.click();window.johanssonLinuxWorld?.wake();if(!document.getElementById("exitRoomButton").classList.contains("hidden"))document.getElementById("exitRoomButton").click();window.__JOHANSSON_AUDIT__.teleport(-7,-15,0,0);');
+   // The real clock may start Johansson asleep inside his cabin. Outdoor smoke
+   // stages need an explicit fixture exit; the contextual B/Exit button is only
+   // offered beside the doorway and is separately checked by console acceptance.
+   await window.webContents.executeJavaScript(`(async()=>{
+    document.querySelector('#desktopMenu:not([hidden]) [data-action=resume]')?.click();
+    await window.johanssonLinuxWorld?.wake();
+    const audit=window.__JOHANSSON_AUDIT__;
+    if(audit.player.room)await audit.leave();
+    const ready=()=>!audit.player.room&&!audit.blocked.roomLoading&&!audit.blocked.catchingUp;
+    const deadline=Date.now()+120000;
+    while(!ready()&&Date.now()<deadline)await new Promise(r=>setTimeout(r,100));
+    if(!ready())throw Error('Outdoor smoke setup did not settle: '+JSON.stringify({player:audit.player,blocked:audit.blocked}));
+    audit.setTime(8*60+35);audit.step(100);audit.teleport(-7,-15,0,0);
+   })()`);
    if(process.env.WORLD_SCREENSHOT)fs.writeFileSync(process.env.WORLD_SCREENSHOT.replace('.png','-island.png'),(await window.webContents.capturePage()).toPNG());
    const festival=await window.webContents.executeJavaScript('(async()=>{dispatchEvent(new Event("johansson-festival-menu"));const press=(text)=>{const b=[...document.querySelectorAll("#activityActions button")].find(b=>b.textContent===text);if(!b)throw Error("Missing festival action: "+text);b.click();};press("Harbour quay · Chin");press("Take part");await new Promise(r=>setTimeout(r,1500));return {stage:!!document.getElementById("festivalHUD"),text:document.getElementById("activityBody")?.textContent};})()');
    console.log('FESTIVAL_SMOKE',JSON.stringify(festival));if(!festival.stage)throw Error('Actual quay stage did not start: '+festival.text);
