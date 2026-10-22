@@ -2,7 +2,7 @@
 
 ## Status and source
 
-[PR #365](https://github.com/nj22az/nj22az.github.io/pull/365), branch `codex/withdraw-combat`, implements P0 of the owner's [recovery plan, PR #349](https://github.com/nj22az/nj22az.github.io/pull/349). **Implementation and software acceptance are complete; owner review is required. Nothing is merged, deployed or released by this task.**
+[PR #365](https://github.com/nj22az/nj22az.github.io/pull/365), branch `codex/withdraw-combat`, implements P0 of the owner's [recovery plan, PR #349](https://github.com/nj22az/nj22az.github.io/pull/349). **Owner-approved integration is merged to main as `4a52d5d2161f9691b8f3e808ba959389f463e578`. Current-source World checks passed; Linux 0.2.17 release acceptance remains in progress in PR #370. No new Linux release is claimed yet.**
 
 Verified implementation/harness head: `e5b0ceabf6c58a1db68b0ab58f4bb5eaadda5810`, on main `a0fb347ced9250b2e5a6210ba068bf595a7ca310`. Initial implementation: `13e54e09233a3add4753f1e9892bd06375cfc3ec`; safe arena/travel migration and explicit offline gates: `4029c0af213588af097d7db3a60b10889ae179ae`. The final follow-up changes only this handover and its root index; gameplay, runtime and acceptance code remain identical to the verified head.
 
@@ -53,3 +53,43 @@ An unrelated visual observation remains: the desktop identity chip overlaps the 
 2. After approval, integrate into `codex/johansson-world-steam-deck`, inspect current releases, and assign the next unpublished version (0.2.17 or later). Version 0.2.16 was the latest published prerelease when checked on 22 October; **its tag/assets were not overwritten**. Local/CI candidates deliberately used the existing source version for validation and must never be uploaded over that release.
 3. Follow HANDOVER-LINUX-JOYSTICK-2026-10-22.md and the release workflow: version/package-lock/installer/release note, full appropriate acceptance on the release tree, new immutable assets, installer/checksum verification, then public download/guide updates. Main source changes alone do not update an installed Linux application.
 4. Physical-device verification remains outstanding. Future fighting requires a separate approved design/prototype and stays outside the peaceful ordinary build; do not revive random street fights or insult escalation.
+
+
+## Current-main integration and merge — 2026-10-22T22:54:41+02:00
+
+The owner instructed proceeding with integration. Main first acquired the #368/#369
+test repairs and then concurrent rendering styles/free camera at
+`af053a44dafe7d0ffe5dc0f3958829eb10aed18c`. These are retained. The merge removes
+stale `festival?.active` and `if(fists)` references from the free-camera additions;
+the source withdrawal test now rejects them. The runtime was rebuilt with a
+peaceful previous manifest, so old combat payloads are not retained.
+
+Verified combined candidate: `9431a9b689f3bbc36148b1b7a5f576032ca64ba7`,
+tree `1df0876e60a750962037bb9e1fccab00bba70d6d`.
+Squash merge of #365: `4a52d5d2161f9691b8f3e808ba959389f463e578`.
+The merged tree matches the candidate exactly.
+
+Checks: **367 local guard tests passed across 69 files (193 s)**; 23 focused
+looks/free-camera/frozen-render/withdrawal/runtime checks passed. Earlier
+desktop (37) and withdrawal/save/cast (17) checks also passed.
+[Current-source GitHub guard](https://github.com/nj22az/nj22az.github.io/actions/runs/39851915816)
+passed before merge. Runtime source hash:
+`9393340c1c5bce6f09c5b5b229e7fe48780bc1c05bfa7d13f2374f708c3cd520`.
+The Look and Free camera buttons remain in the published page; combat UI does not.
+
+Local cloud-boot photography could not launch: `/opt/pw-browsers/chromium` is
+absent in this session. No local screenshot success is claimed. Hosted native,
+offline and console acceptance is running again for the new source.
+
+Linux release candidate [#370](https://github.com/nj22az/nj22az.github.io/pull/370),
+`98136ef8ea425828674d3188cea9c1e93f6b4df8`, has the same World tree plus version,
+lockfile, installer and notes at **0.2.17**. Its World guard passed; its full
+[Linux acceptance](https://github.com/nj22az/nj22az.github.io/actions/runs/39851951948)
+is pending. The separate proposed controller-settings repair (#362) is excluded.
+Published 0.2.16 and its assets are untouched. Public-download/installer/guide
+updates are prepared locally and must not be published until the new release is verified.
+
+Next: complete exact-tree Linux acceptance; merge #370 into the Linux release
+branch; verify publication, native startup, installer and checksums; then update
+main's version metadata, public downloads and this handover. Physical devices
+remain unverified. The browser source merge alone does not update installed Linux copies.
