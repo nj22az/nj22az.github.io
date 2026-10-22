@@ -1,5 +1,5 @@
 /* Build stamps this identifier; saved games remain in localStorage. */
-const VERSION = '30a7ccbb98b5ae6770c0';
+const VERSION = 'c42f45f7d0e2a29a9621';
 const PREFIX='johansson-town-';
 const CACHE=PREFIX+VERSION;
 const SCOPE=new URL('./',self.location.href).href;
@@ -15,3 +15,4 @@ self.addEventListener('fetch',event=>{
   catch{const hit=await caches.match(req);if(hit)return hit;if(req.mode==='navigate'){const home=await caches.match(new URL('./',SCOPE));if(home)return home;}return new Response('This part of the island needs a connection. Reconnect and try again.',{status:503,headers:{'Content-Type':'text/plain'}});}
  })());
 });
+

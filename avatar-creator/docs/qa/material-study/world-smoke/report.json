@@ -1,0 +1,35 @@
+{
+  "source": false,
+  "viewport": [
+    390,
+    844
+  ],
+  "physicalDevice": false,
+  "steps": [
+    {
+      "name": "page loaded",
+      "s": 0.4
+    },
+    {
+      "name": "island ready",
+      "s": 8.2
+    },
+    {
+      "name": "playing",
+      "s": 11.7
+    },
+    {
+      "name": "photographed street-town-hall-gate",
+      "s": 30.3
+    },
+    {
+      "name": "entered the Community Hall",
+      "s": 30.3
+    },
+    {
+      "name": "photographed room-community-hall",
+      "s": 39.4
+    }
+  ],
+  "errors": []
+}

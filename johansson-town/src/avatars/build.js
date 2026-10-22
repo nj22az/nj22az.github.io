@@ -12,6 +12,7 @@ import {beardSpec} from './beard-mesh.js';
 import {headProfile,shapeHeadPoint} from './head-profile.js';
 import {longBraidPoints} from './braid-path.js';
 import {pleatedSkirtGeometry} from './pleated-skirt.js';
+import {collectSurfaceRegions} from './material-presets.js';
 import {celFrom} from '../render/cel.js';
 import {createTowelFit} from './towel-fit.js';
 import {addPoliceCap,policeCapTuck,addPoliceJacket,addDutyBelt} from './police-uniform.js';
@@ -129,7 +130,7 @@ function latheRadius(prof,t){for(let i=1;i<prof.length;i++){const [r0,y0]=prof[i
  * A part: geometry in model space, painted, bound to one bone -- or, for a limb, shared
  * between bones by a function of where each vertex is, so a joint bends as one soft piece.
  */
-function part(list,geometry,bone,hex,matrix,uvAt=null){
+function part(list,geometry,bone,hex,matrix,uvAt=null,surface=null){
  let g=geometry.index?geometry.toNonIndexed():geometry.clone();
  for(const key of Object.keys(g.attributes))if(!['position','normal'].includes(key))g.deleteAttribute(key);
  if(matrix)g.applyMatrix4(matrix);
@@ -162,6 +163,7 @@ function part(list,geometry,bone,hex,matrix,uvAt=null){
  g.setAttribute('skinWeight',new THREE.BufferAttribute(weight,4));
  // How much ink outline this part carries (1 everywhere unless a part says otherwise).
  g.setAttribute('ink',new THREE.BufferAttribute(new Float32Array(n).fill(1),1));
+ g.userData.surface=surface||(typeof bone==='string'&&/^(neck|hand)/.test(bone)?'skin':'cotton');
  list.push(g);
  if(geometry!==g&&!geometry.userData?.keep)geometry.dispose?.();
  return g;
@@ -172,7 +174,7 @@ function tube(list,a,b,r,bone,hex,segments=10){
  const A=new THREE.Vector3(...a),B=new THREE.Vector3(...b),d=B.clone().sub(A),len=d.length();
  const g=new THREE.CapsuleGeometry(r,Math.max(.001,len),3,segments);
  const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());
- part(list,g,bone,hex,new THREE.Matrix4().compose(A.clone().add(B).multiplyScalar(.5),q,new THREE.Vector3(1,1,1)));
+ return part(list,g,bone,hex,new THREE.Matrix4().compose(A.clone().add(B).multiplyScalar(.5),q,new THREE.Vector3(1,1,1)));
 }
 /**
  * A limb: one capsule from a to b, tapering from r0 to r1, its skin shared between the
@@ -180,7 +182,7 @@ function tube(list,a,b,r,bone,hex,segments=10){
  * from one bone to the next over a soft band -- and `root` lends the top of the limb to
  * the body, so a shoulder or hip rounds off instead of hinging on a seam.
  */
-function limb(list,a,b,r0,r1,hex,{bone,joints=[],root=null,soft=.13,segments=14,uvAt=null}={}){
+function limb(list,a,b,r0,r1,hex,{bone,joints=[],root=null,soft=.13,segments=14,uvAt=null,surface=null}={}){
  const A=new THREE.Vector3(...a),B=new THREE.Vector3(...b),d=B.clone().sub(A),len=d.length(),dir=d.clone().normalize();
  // A capsule with rings all along it (three's own has none between its caps), so the
  // skin has somewhere to bend.
@@ -205,7 +207,7 @@ function limb(list,a,b,r0,r1,hex,{bone,joints=[],root=null,soft=.13,segments=14,
   if(root){const w=root[1]*(1-THREE.MathUtils.smoothstep(t,-.04,root[2]??.2));out=out.map(([n,x])=>[n,x*(1-w)]);out.push([root[0],w]);}
   return out;
  };
- part(list,g,share,hex,new THREE.Matrix4().compose(A.clone().add(B).multiplyScalar(.5),q,new THREE.Vector3(1,1,1)),uvAt);
+ part(list,g,share,hex,new THREE.Matrix4().compose(A.clone().add(B).multiplyScalar(.5),q,new THREE.Vector3(1,1,1)),uvAt,surface);
 }
 const ball=(list,r,at,bone,hex,s=[1,1,1],w=12,h=8)=>part(list,new THREE.SphereGeometry(r,w,h),bone,hex,M(at[0],at[1],at[2],0,0,0,...s));
 /** The builder's own tools, for the wardrobe pieces built in their own modules (police-uniform.js, kerchief.js). */
@@ -889,8 +891,12 @@ function addBody(list,recipe,m,swim=false){
  };
  // The shirt's details are painted, not modelled (garment.js): the torso carries the
  // garment texture's UVs, the cloth stays its vertex colour underneath.
+ const torsoSurface=p=>{
+  if(swim)return !bare&&(p.y<waist||onePiece&&p.y<hipY+m.torso*SWIMSUIT.top)?'cotton':'skin';
+  return p.y>=waist&&(tank||running||o.top==='sundress'&&(p.y-hipY)/m.torso>.78)?'skin':'cotton';
+ };
  const torsoSkin=p=>{const chest=THREE.MathUtils.smoothstep(p.y,hipY+m.torso*.15,hipY+m.torso*.55);return [['hips',1-chest],['chest',chest]];};
- part(list,lathe,torsoSkin,torsoColour,M(0,hipY,0,0,0,0,W/2,m.torso,D/2),swim?null:p=>torsoUV(p,m));
+ part(list,lathe,torsoSkin,torsoColour,M(0,hipY,0,0,0,0,W/2,m.torso,D/2),swim?null:p=>torsoUV(p,m),torsoSurface);
  if(tank){
   // The vest: a thin shell over the body from the waist to straight across the chest,
   // so its edge is a clean line, and two straps that follow the shoulders over the top.
@@ -990,13 +996,14 @@ function addBody(list,recipe,m,swim=false){
   const sleeve=coveredSleeve&&(SHIRT_SLEEVES.includes(o.top)||ACCENT_SLEEVES.includes(o.top))?o.accent:top,below=coveredSleeve&&UNDERSHIRT_ARMS.includes(o.top)?o.accent:skin;
   const ends=longSleeve&&SLEEVE_END[o.top]?sh[1]-(m.upper+m.fore)*SLEEVE_END[o.top]:null;
   const armColour=coveredSleeve?(longSleeve?(ends===null?sleeve:p=>p.y>=ends?sleeve:skin):p=>p.y>=sh[1]-m.upper*.58?sleeve:below):skin;
-  limb(list,sh,hd,m.armR*1.04,m.armR*.86,armColour,longSleeve?{...arm,uvAt:p=>sleeveUV(p,sh,hd,sx)}:arm);
+  const armSurface=p=>!coveredSleeve?'skin':longSleeve?(ends===null||p.y>=ends?'cotton':'skin'):p.y>=sh[1]-m.upper*.58||UNDERSHIRT_ARMS.includes(o.top)?'cotton':'skin';
+  limb(list,sh,hd,m.armR*1.04,m.armR*.86,armColour,{...arm,surface:armSurface,...longSleeve?{uvAt:p=>sleeveUV(p,sh,hd,sx)}:{}});
   // The shoulder: a rounded cap over the joint, in the shirt, that joins the arm to the
   // torso. Its inner side stays with the chest and its outer side goes with the arm, so
   // it stretches over a raised arm rather than coming apart from the body.
   const capShare=p=>{const w=THREE.MathUtils.smoothstep(Math.abs(p.x),m.shoulderX-m.armR*1.1,m.shoulderX+m.armR*.3);return [['chest',1-w],['shoulder'+s,w]];};
   // Flattened on top so the shoulder slopes from the neck rather than standing up in a pad.
-  part(list,new THREE.SphereGeometry(m.armR*1.18,16,12),capShare,swim||tank||running||o.top==='sundress'?skin:sleeve,M(sh[0]-sx*m.armR*.12,sh[1]-m.armR*.05,0,0,0,0,1,.62,Math.min(1.1,D/W*1.6)));
+  part(list,new THREE.SphereGeometry(m.armR*1.18,16,12),capShare,swim||tank||running||o.top==='sundress'?skin:sleeve,M(sh[0]-sx*m.armR*.12,sh[1]-m.armR*.05,0,0,0,0,1,.62,Math.min(1.1,D/W*1.6)),null,swim||tank||running||o.top==='sundress'?'skin':'cotton');
   // A short sleeve: one closed, rounded sleeve over the top of the arm, starting inside the
   // shoulder cap and lent to the chest at its top, so the shirt runs from the neck to the
   // hem without a seam. A kariyushi's is a little roomier and boxier, as real ones are.
@@ -1038,7 +1045,7 @@ function addBody(list,recipe,m,swim=false){
   // Wide trousers are gathered at the ankle, as monpe are, so their rounded end stays inside the shoe or the sandal's sole
   // when the feet are up (a floor sit), instead of showing through it.
   const cloth=stripes?p=>stripes(p,hp[0],14):bottom;
-  limb(list,hp,an,m.legR*(b==='widepants'?1.32:1.02),m.legR*.86,trousers?cloth:skin,leg);
+  limb(list,hp,an,m.legR*(b==='widepants'?1.32:1.02),m.legR*.86,trousers?cloth:skin,{...leg,surface:trousers?'cotton':'skin'});
   if(b==='cropped'||b==='culottes'){const end=b==='cropped'?m.foot+m.shin*.35:hipY-m.thigh*1.12;limb(list,hp,[hp[0],end,0],m.legR*(b==='culottes'?1.55:1.12),m.legR*(b==='culottes'?1.7:1.16),cloth,leg);}
   // Shorts and trunks: a wider piece over the top of the thigh.
   if(b==='shorts'||b==='swim'&&!bare)limb(list,[hp[0],hp[1]+m.legR*.3,0],[hp[0]*1.04,hipY-m.thigh*(b==='swim'?(onePiece?SWIMSUIT.legs:SWIMSUIT.trunks):.55),0],m.legR*1.2,m.legR*1.26,bottom,{...leg,joints:[]});
@@ -1050,14 +1057,14 @@ function addBody(list,recipe,m,swim=false){
   // Feet: bare (and at the beach, and after the bath), or in sandals, sneakers or leather shoes.
   const wear=swim?'barefoot':o.footwear;
   if(wear==='barefoot'||wear==='sandals'){
-   ball(list,m.legR*1.12,[sx*m.hipX,m.foot*.55,m.legR*.5],'foot'+s,skin,[1,.55,1.7],12,8);
+   ball(list,m.legR*1.12,[sx*m.hipX,m.foot*.55,m.legR*.5],'foot'+s,skin,[1,.55,1.7],12,8).userData.surface='skin';
    if(wear==='sandals'){
     // Setta: a flat sole and a thong strap over the top of the foot.
     // Deep enough that the bare foot above never shows through its underside (a broad adult's foot reaches 0.9 cm down).
     ball(list,m.legR*1.24,[sx*m.hipX,m.foot*.12,m.legR*.55],'foot'+s,recipe.age==='elder'?'#6b4a32':'#c8a878',[1,.24,1.8],12,6);
     ball(list,m.legR*.42,[sx*m.hipX,m.foot*.55+m.legR*.55,m.legR*.95],'foot'+s,o.shoes,[2.3,.5,.8],10,6);
    }
-  }else addShoe(list,recipe,m,s,wear);
+  }else{const shoeStart=list.length;addShoe(list,recipe,m,s,wear);for(const g of list.slice(shoeStart))g.userData.surface='legacy';}
  }
  // The house dress's skirt and an older woman's swimsuit's little skirt are cloth round the legs (addHullSkirt).
  if(b==='housedress')addHullSkirt(list,recipe,m,'housedress',bottom);
@@ -1735,7 +1742,7 @@ function fitFlags(parts){const flags=new Float32Array(vertexCount(parts));let at
  * @param {object} input recipe (anything; it is normalized)
  * @param {{shadows?:boolean,faceSize?:number}} [options]
  */
-export function buildAvatar(input,{shadows=true,faceSize=256}={}){
+export function buildAvatar(input,{shadows=true,faceSize=256,materialStudy=false}={}){
  const recipe=normalizeRecipe(input),m=measure(recipe);
  const swing=springRest(recipe,m),rest={...restPositions(m),...swing.rest},bones={},list=BONES.map(name=>{const b=new THREE.Bone();b.name=name;bones[name]=b;return b;});
  for(const name of BONES){
@@ -1750,7 +1757,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
   for(let i=0;i<4;i++)part(parts,new THREE.CapsuleGeometry(m.hand*.105,m.hand*(i===0||i===3?.40:.60),3,6),'hand'+side,recipe.body.skin,M(x+(i-1.5)*m.hand*.37,y-m.hand*(i===0||i===3?1.65:1.85),m.hand*.04,0,0,(i-1.5)*.16));
  }
  const fingerEnd=parts.reduce((n,g)=>n+g.attributes.position.count,0);
- addNose(parts,recipe,m);
+ const noseFrom=parts.length;addNose(parts,recipe,m);for(const g of parts.slice(noseFrom))g.userData.surface='skin';
  // Ears.
  const ears=list=>{
   const visible=recipe.hair.style==='braids';
@@ -1760,8 +1767,8 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
    if(visible)ball(list,m.Rh*.105,[at[0]+s*m.Rh*.018,at[1],at[2]+m.Rh*.145],'head',new THREE.Color(recipe.body.skin).multiplyScalar(.91).getStyle(),[.55,1,.22],8,6);
   }
  };
- ears(parts);
- const mainHairFrom=parts.length;addHair(parts,recipe,m);const mainHairSpan=hairSpan(parts,mainHairFrom,parts.length);addAccessories(parts,recipe,m);
+ const earsFrom=parts.length;ears(parts);for(const g of parts.slice(earsFrom))g.userData.surface='skin';
+ const mainHairFrom=parts.length;addHair(parts,recipe,m);const mainHairSpan=hairSpan(parts,mainHairFrom,parts.length);for(const g of parts.slice(mainHairFrom))g.userData.surface='hair';const accessoriesFrom=parts.length;addAccessories(parts,recipe,m);
  // The hat goes in last, so taking it off is drawing one range shorter: people hang it
  // up when they get home (home-residents.js) and put it back on to go out.
  const hatStart=parts.reduce((n,g)=>n+g.attributes.position.count,0),hatLayers=[];wearHat(parts,recipe,m,hatLayers);
@@ -1770,6 +1777,8 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  let hairCovered=true;
  // Each shoe's vertices, so a shoe can come off and leave a sock (setShoe).
  const shoeRanges={L:[],R:[]};{let at=0;for(const g of parts){const n=g.attributes.position.count;if(g.userData.shoe)shoeRanges[g.userData.shoe].push([at,n]);at+=n;}}
+ for(const g of parts.slice(accessoriesFrom))g.userData.surface='legacy';
+ const materialRegions=materialStudy?collectSurfaceRegions(parts):null;
  const bodyFit=fitFlags(parts);const geometry=mergeGeometries(parts,false);parts.forEach(g=>g.dispose());
  if(bodyFit.some(f=>f>0))geometry.setAttribute('towelFit',new THREE.BufferAttribute(bodyFit,1));
  const hasHat=geometry.attributes.position.count>hatStart;
@@ -1778,6 +1787,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  geometry.computeBoundingSphere();
  const material=bodyMaterial(recipe,m);
  const body=new THREE.SkinnedMesh(geometry,material);body.name='Shimanchu body';
+ if(materialRegions){body.userData.materialRegions=materialRegions;body.userData.materialHatStart=hatStart;}
  body.add(bones.root);body.bind(new THREE.Skeleton(list));
  // The hat's see-through layer (the trucker's mesh), on the body's skeleton: hidden with the body and with the hat.
  const seeThrough=hatLayer(hatLayers,{shadows});if(seeThrough){seeThrough.bind(body.skeleton,body.bindMatrix);body.add(seeThrough);}
@@ -2034,6 +2044,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
   dispose(){
    seeThrough?.userData.dispose();
    faceObjects.userData.dispose();
+   body.skeleton.dispose();
    body.customDepthMaterial?.dispose();if(body.towelFit)outline.material.dispose();
    geometry.dispose();material.dispose();material.map?.dispose();face.texture.dispose();face.head.geometry.dispose();face.head.material.dispose();
    if(alternativeBody){alternativeBody.geometry.dispose();alternativeBody.material.map?.dispose();alternativeBody.material.dispose();}

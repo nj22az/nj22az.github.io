@@ -1,6 +1,7 @@
+import {createMaterialPanel} from './material-panel.js';
 import {createActingPanel} from './acting/panel.js?v=20261016-1';
 import {createPerformancePanel} from './performance-panel.js?v=20261017-1';
-import {openCreator} from '../johansson-town/src/avatars/creator.js?v=20261020-motion';
+import {openCreator} from '../johansson-town/src/avatars/creator.js?v=20261023-materials';
 import {ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/src/avatars/cast.js';
 import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js';
 import {normalizeRecipe,decodeRecipe} from '../johansson-town/src/avatars/recipe.js';
@@ -55,7 +56,7 @@ function switchMode(mode,{focus=true}={}){
  if(focus)modes.querySelector(`[data-mode="${mode}"]`)?.focus({preventScroll:true});
 }
 function createCharacterEditor(){
-const creator=openCreator({recipe:currentRecipe,templates,startAt:'look',keepOpenOnSave:true,saveLabel:'Save character',shareLink:code=>new URL('./?r='+code,location.href).href,onSave:save,onClose:recipe=>{currentRecipe=recipe;if(!switching)location.href='/#projects';}});
+const creator=openCreator({materialStudy:true,recipe:currentRecipe,templates,startAt:'look',keepOpenOnSave:true,saveLabel:'Save character',shareLink:code=>new URL('./?r='+code,location.href).href,onSave:save,onClose:recipe=>{currentRecipe=recipe;if(!switching)location.href='/#projects';}});
 document.getElementById('loading')?.remove();
 creator.root.setAttribute('aria-label','Johansson Studio');
 creator.root.querySelector('canvas').setAttribute('aria-label','Your character. Drag to turn.');
@@ -100,7 +101,7 @@ function cleanup(){profileObserver.disconnect();acting.dispose();performancePane
 
 // Inspect the same character in several views without changing its design.
 const preview=document.createElement('details');preview.className='studio-preview';
-const previewTitle=document.createElement('summary');previewTitle.textContent='Preview & performance';preview.append(previewTitle);
+const previewTitle=document.createElement('summary');previewTitle.textContent='Preview & surfaces';preview.append(previewTitle);
 const previewMenu=document.createElement('div');previewMenu.className='studio-preview-menu';preview.append(previewMenu);
 function previewSelect(label,options,action){
  const row=document.createElement('label');row.append(label);
@@ -108,7 +109,8 @@ function previewSelect(label,options,action){
 }
 previewSelect('View',[['front','Front'],['quarter','Three-quarter'],['left','Left profile'],['right','Right profile'],['back','Back']],angle=>creator.setPreview({angle}));
 previewSelect('Framing',[['auto','Automatic'],['face','Face detail'],['full','Full body']],framing=>creator.setPreview({framing}));
-previewSelect('Lighting',[['warm','Warm'],['neutral','Neutral studio'],['contour','Side light']],lighting=>creator.setPreview({lighting}));
+const lightingSelect=previewSelect('Lighting',[['warm','Warm'],['neutral','Neutral studio'],['contour','Side light'],['daylight','Daylight'],['interior','Warm interior']],lighting=>creator.setPreview({lighting}));
+const materialPanel=createMaterialPanel({creator,lightingSelect,status});previewMenu.append(materialPanel);
 // Reuse the creator's expression catalogue and pose controls on phones as well.
 const expression=creator.root.querySelector('[aria-label="Preview expression"]');
 const expressionRow=document.createElement('label');expressionRow.append('Expression',expression);previewMenu.append(expressionRow);
@@ -119,7 +121,7 @@ const performancePanel=createPerformancePanel({creator,expression,pose,status});
 expressionRow.remove();poseRow.remove();
 const acting=createActingPanel({onStart:()=>creator.setPerformance({frozen:false}),onFrame:frame=>creator.setActingFrame(frame),getControls:()=>({expression:expression.value==='auto'?'neutral':expression.value,pose:pose.value,strength:creator.performance.strength}),onStop:()=>creator.setPerformance({frozen:true})});
 performancePanel.root.append(acting.root);
-previewMenu.prepend(performancePanel.root);
+previewMenu.prepend(materialPanel,performancePanel.root);
 creator.root.querySelector('.shm-side').append(preview);
 const featureReset=document.createElement('button');featureReset.type='button';featureReset.className='studio-reset-feature';featureReset.textContent='Reset feature';featureReset.title='Restore this feature to the loaded template or design. Undo remains available.';
 featureReset.onclick=()=>{creator.resetFeature();status.textContent='Selected feature restored. Undo reverses this change.';};
@@ -154,5 +156,6 @@ if(new URLSearchParams(location.search).has('agent'))import('./studio-api.js?v=2
 requestAnimationFrame(()=>requestAnimationFrame(()=>{const a=document.activeElement;if(a&&a!==document.body&&a.closest('.shm'))a.blur();}));
 window.addEventListener('pagehide',()=>{editor?.cleanup();workspace?.dispose();home?.dispose();model?.dispose();rooms?.dispose();worldLibrary?.dispose();},{once:true});
 // For tests: the Make model workspace once opened.
+if(new URLSearchParams(location.search).has('agent'))Object.defineProperty(window,'__studioCharacter',{get:()=>editor?.creator,configurable:true});
 Object.defineProperty(window,'__studioModel',{get:()=>model,configurable:true});
 

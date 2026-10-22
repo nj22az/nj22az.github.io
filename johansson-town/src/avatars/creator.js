@@ -1,3 +1,5 @@
+import {createAvatarMaterialStudy} from './material-presets.js';
+import {applyMaterialLighting} from '../render/studio-lighting.js';
 import {outfitAllowedFor,appropriateOutfit} from './outfits.js';
 import {SETS,SLOTS,SLOT_AT,ISLAND_PALETTE,ISLAND_HEX,entryFor,labelFor,wornSet,wornLine,searchWardrobe,putOnSet,accessibleName} from './wardrobe-catalogue.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -436,7 +438,7 @@ const CSS=`
  * @param {boolean} [options.keepOpenOnSave] save without leaving the editor
  * @returns {object} creator controls, current recipe and transparent PNG export
  */
-export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},onClose=()=>{},saveLabel='Save and play',shareLink=null,startAt='look',voice=null,owner=null,templates=null,keepOpenOnSave=false}={}){
+export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},onClose=()=>{},saveLabel='Save and play',shareLink=null,startAt='look',voice=null,owner=null,templates=null,keepOpenOnSave=false,materialStudy=false}={}){
  if(!document.getElementById('shimanchu-css')){const style=document.createElement('style');style.id='shimanchu-css';style.textContent=CSS;document.head.append(style);}
  let wardrobeOwner=owner||start.name;let recipe=normalizeRecipe({...start,outfit:appropriateOutfit(wardrobeOwner,start.outfit)});const history=[];const viewPositions=new Map();let featureBaseline=structuredClone(recipe);
  let step=STEPS.some(s=>s[0]===startAt)?startAt:'look',tab='body',page='style',pose='idle',expression='auto',previewFacing=0,hairThumbView='front',wearing='clothes',dress=null,previewFraming='auto';
@@ -505,11 +507,14 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  const floor=new THREE.Mesh(new THREE.CircleGeometry(.62,40),new THREE.MeshBasicMaterial({color:0xf6d79c}));floor.rotation.x=-Math.PI/2;scene.add(floor);
  const holder=new THREE.Group();scene.add(holder);
  const camera=new THREE.PerspectiveCamera(28,1,.05,50);
+ let surfaceStudy=null,studySettings={mode:'legacy',cloth:'cotton'},previewLighting='warm';
  let avatar=null,animator=null,spin=0,spinVelocity=0,dragging=null,frame=0,dirty=true,clock=performance.now(),focus=0,featureDrag=null;
  const frames={face:null,full:null};
  function rebuild(){
+  surfaceStudy?.dispose();surfaceStudy=null;
   if(avatar){avatar.root.removeFromParent();avatar.dispose();}
-  avatar=buildAvatar(recipe,{shadows:false,faceSize:512});
+  avatar=buildAvatar(recipe,{shadows:false,faceSize:512,materialStudy});
+  if(materialStudy){surfaceStudy=createAvatarMaterialStudy(avatar);surfaceStudy.set(studySettings);}
   if(performanceEnabled)attachPerformance();
   animator=createAvatarAnimator(avatar);holder.add(avatar.root);
   // Dressed as the preview says; a child asked into the towel comes out in swimwear.
@@ -556,7 +561,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   else if(!featureDrag&&pose!=='walk')holder.rotation.y=Math.PI+spin;
   const talking=speech&&speech.typing;
   if(!featureDrag&&(!performanceEnabled||!performanceState.state.frozen))updatePerformance(dt,talking);
-  if(!featureDrag)aim(dt);renderer.render(scene,camera);
+  if(!featureDrag)aim(dt);surfaceStudy?.refresh();renderer.render(scene,camera);
  }
  function attachPerformance(){
   const paint=createPerformancePainter(avatar,recipe);
@@ -1192,7 +1197,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   stopSpeech();cancelAnimationFrame(frame);stopPictures();inView?.disconnect();clearTimeout(searchDue);observer?.disconnect();viewport?.removeEventListener('resize',fitViewport);viewport?.removeEventListener('scroll',fitViewport);
   root.removeEventListener('keydown',swallow);root.removeEventListener('keyup',swallow);
   const out=normalizeRecipe({...recipe,name:name.value});
-  motionPanel.dispose();avatar?.dispose();thumbTarget.dispose();renderer.dispose();renderer.forceContextLoss?.();floor.geometry.dispose();floor.material.dispose();root.remove();previousFocus?.focus?.();
+  motionPanel.dispose();surfaceStudy?.dispose();avatar?.dispose();thumbTarget.dispose();renderer.dispose();renderer.forceContextLoss?.();floor.geometry.dispose();floor.material.dispose();root.remove();previousFocus?.focus?.();
   if(saving)onSave(out);onClose(out,saving);
  }
  close.onclick=()=>finish(false);
@@ -1214,12 +1219,14 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   if(['auto','face','full'].includes(framing)){previewFraming=framing;syncFocus();}
   if(mood==='auto'||EXPRESSION_NAMES.includes(mood)){expression=mood;const input=poses.querySelector('[aria-label="Preview expression"]');if(input)input.value=mood;}
   const lights={warm:[0xffffff,0xc8a878,2.2,0xfff4e0,1.9,[2,4,5]],neutral:[0xffffff,0x8896aa,1.8,0xffffff,2.2,[-3,4,5]],contour:[0xddeaff,0x647388,1.1,0xffffff,3.2,[4,2,2]]};
-  if(Object.hasOwn(lights,lighting)){const [sky,ground,fill,key,power,position]=lights[lighting];fillLight.color.setHex(sky);fillLight.groundColor.setHex(ground);fillLight.intensity=fill;sun.color.setHex(key);sun.intensity=power;sun.position.set(...position);}
+  if(applyMaterialLighting(lighting,fillLight,sun))previewLighting=lighting;
+  else if(Object.hasOwn(lights,lighting)){previewLighting=lighting;const [sky,ground,fill,key,power,position]=lights[lighting];fillLight.color.setHex(sky);fillLight.groundColor.setHex(ground);fillLight.intensity=fill;sun.color.setHex(key);sun.intensity=power;sun.position.set(...position);}
  }
  /** Render a full-body transparent PNG independently of the preview's face zoom. */
  function exportPNG(size=1024){
   endDrag();if(dirty){rebuild();dirty=false;updatePerformance(0);}
   size=Math.max(256,Math.min(2048,Math.round(size)||1024));
+  surfaceStudy?.refresh();
   const target=new THREE.WebGLRenderTarget(size,size,{depthBuffer:true});target.texture.colorSpace=THREE.SRGBColorSpace;
   const previous=renderer.getRenderTarget(),clearColour=renderer.getClearColor(new THREE.Color()),alpha=renderer.getClearAlpha(),floorVisible=floor.visible;
   const shot=camera.clone();shot.aspect=1;shot.updateProjectionMatrix();
@@ -1237,6 +1244,6 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
 
  rebuild();dirty=false;renderPoses();goTo(step);loop();close.focus();
- return {close:()=>finish(false),get recipe(){return normalizeRecipe({...recipe,name:name.value});},get root(){return root;},goTo,showIn,setRecipe,setPreview,setPerformance,setActingFrame,get performance(){return performanceState.state;},resetFeature,exportPNG,save:()=>finish(true),get wearing(){return wearing;}};
+ return {close:()=>finish(false),get recipe(){return normalizeRecipe({...recipe,name:name.value});},get root(){return root;},goTo,showIn,setRecipe,setPreview,setPerformance,setActingFrame,setMaterialStudy(options){if(!materialStudy)return;studySettings={...studySettings,...options};surfaceStudy?.set(studySettings);return surfaceStudy?.state;},get materialStudy(){if(!materialStudy)return undefined;return {...surfaceStudy?.state,lighting:previewLighting,threeRevision:THREE.REVISION,exposure:renderer.toneMappingExposure,toneMapping:renderer.toneMapping,outputColorSpace:renderer.outputColorSpace};},get performance(){return performanceState.state;},resetFeature,exportPNG,save:()=>finish(true),get wearing(){return wearing;}};
 }
 
