@@ -26,11 +26,12 @@ test('a dish is cooked at its station, carried across the counter, and eaten a b
  const {DISHES,KITCHEN_STATIONS,MINATO_MENU}=await import('../src/people/izakaya-beer.js');
  const room=new THREE.Group(),nao=new THREE.Group(),said=[];nao.position.set(...NAO_STATION);
  const service=createBeerService({room,getNao:()=>nao,blocked:()=>false,say:t=>said.push(t),bar:buildMinatoBar(room)});
+ const {MINATO_FOOD}=await import('../src/people/izakaya-food.js');
  const seat=IZAKAYA_PLAYER_SEATS.counter2;
  assert.equal(service.order('karaage',seat),true);
  let atFryer=false;const phases=new Set();
  for(let i=0;i<4000&&service.pending;i++){service.update(1/30);phases.add(service.pending?.phase);
-  const f=KITCHEN_STATIONS.fryer;if(Math.hypot(nao.position.x-f[0],nao.position.z-f[2])<.05&&nao.userData.socialPose==='Use')atFryer=true;}
+  const f=MINATO_FOOD.fryer.close;if(Math.hypot(nao.position.x-f[0],nao.position.z-f[1])<.05&&nao.userData.workHands?.R?.place)atFryer=true;}
  assert.ok(atFryer,'she fries it at the fryer');assert.deepEqual([...phases].filter(Boolean),['cooking','carrying','stepping','placing','bowing','leaving','returning']);
  assert.deepEqual(service.dish,{kind:'karaage',left:DISHES.karaage.bites,bites:DISHES.karaage.bites});
  assert.equal(service.drink,null,'food and drink have their own places on the table');

@@ -60,3 +60,4 @@ skirt-follow.test.mjs
 pair-poses.test.mjs
 izakaya-bar.test.mjs
 izakaya-beer.test.mjs
+izakaya-food.test.mjs

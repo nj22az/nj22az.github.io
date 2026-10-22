@@ -45,3 +45,11 @@ test('exactly coincident residents separate by a full body width in one resoluti
   if(fixed)assert.deepEqual([a.x,a.z],[0,0]);
  }
 });
+
+test('a service worker uses her measured close-up radius beside a seated customer',()=>{
+ const customer={x:-3.5,z:-.18,fixed:true},thao={x:-3.1,z:-.42,radius:.13};
+ assert.equal(separateBodies([customer,thao]),0,'the legal service point must not be pushed out of reach');
+ thao.x=-3.4;thao.z=-.22;
+ const checked=[];separateBodies([customer,thao],{blocked:(x,z,r)=>{checked.push(r);return false;}});
+ assert.ok(dist(customer,thao)>=.13+BODY_RADIUS);assert.ok(checked.every(r=>r===.13));
+});
