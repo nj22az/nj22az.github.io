@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createInkPipeline} from '../src/render/ink-pipeline.js';
-import {LOOKS,LOOK_KEY,readLook,writeLook,lookCSS,lookNeedsPipeline,lookFragment} from '../src/render/looks.js';
+import {LOOKS,LOOK_KEY,readLook,writeLook,lookCSS,lookNeedsPipeline,lookIsHeavy,lookFragment} from '../src/render/looks.js';
 
 function fakeRenderer(){
  const calls=[];
@@ -18,7 +18,7 @@ function fakeRenderer(){
 const renders=renderer=>renderer.calls.filter(([kind])=>kind==='render');
 
 test('every look but Natural has a shader of its own, and the menu offers the requested set',()=>{
- assert.deepEqual(Object.keys(LOOKS),['none','mono','sepia','pocket','snes','lines','crt','manga','crayon']);
+ assert.deepEqual(Object.keys(LOOKS),['none','mono','sepia','pocket','snes','lines','crt','manga','crayon','tilt','print','watercolour','oil']);
  assert.equal(lookFragment('none'),null);
  for(const name of Object.keys(LOOKS).filter(n=>n!=='none')){
   const source=lookFragment(name);
@@ -61,6 +61,10 @@ test('reduced graphics keep the colour looks as a CSS filter and offer nothing t
  assert.equal(lookCSS('none'),'none');
  assert.match(lookCSS('mono'),/grayscale/);
  assert.match(lookCSS('sepia'),/sepia/);
- for(const name of ['pocket','snes','lines','crt','manga','crayon'])assert.ok(lookNeedsPipeline(name),name);
+ for(const name of ['pocket','snes','lines','crt','manga','crayon','tilt','print','watercolour','oil'])assert.ok(lookNeedsPipeline(name),name);
  assert.ok(!lookNeedsPipeline('none')&&!lookNeedsPipeline('mono'));
+});
+
+test('only the oil painting is too heavy for a phone',()=>{
+ assert.deepEqual(Object.keys(LOOKS).filter(lookIsHeavy),['oil']);
 });

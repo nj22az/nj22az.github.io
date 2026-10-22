@@ -151,7 +151,7 @@ import { circleHitsRect,circleHitsCircle,standingHitsRect,canStepBetween,roomBou
 import {useTownColour} from './render/single-pass-colour.js';
 import { createCelPass } from './render/cel.js?snappy=1';
 import { createInkPipeline, GRADE_DEFAULTS } from './render/ink-pipeline.js?snappy=1';
-import {LOOKS,readLook,writeLook,lookCSS,lookNeedsPipeline} from './render/looks.js';
+import {LOOKS,readLook,writeLook,lookCSS,lookNeedsPipeline,lookIsHeavy} from './render/looks.js';
 import {createFreeCamera} from './input/free-camera.js';
 import {createLookPicker,lookSwatch} from './ui/look-picker.js';
 import {svg as uiIcon} from './ui/icons.js';
@@ -338,6 +338,7 @@ function compileTown(object,{async=false}={}){
  * (the photo studio's film) is left alone.
  */
 let look=readLook(globalThis.localStorage),lookFilter='';
+if(handheld&&lookIsHeavy(look))look='none';
 function applyLook(){
  pipeline?.setLook(look);
  const css=pipeline?'none':lookCSS(look),want=css==='none'?'':css,el=renderer.domElement;
@@ -345,8 +346,9 @@ function applyLook(){
  lookFilter=want;
 }
 function setLook(name){look=writeLook(globalThis.localStorage,name);applyLook();}
-/** The looks this device can draw, in menu order: the free camera's L and Look button step through them. */
-const drawableLooks=()=>Object.keys(LOOKS).filter(id=>graphics.postprocess||!lookNeedsPipeline(id));
+/** The looks this device can draw, in menu order: the free camera's L and Look button step through them. Oil painting is
+ * left off phones and tablets, whose GPUs would drop frames on its 64 samples a pixel. */
+const drawableLooks=()=>Object.keys(LOOKS).filter(id=>(graphics.postprocess||!lookNeedsPipeline(id))&&!(handheld&&lookIsHeavy(id)));
 function nextLook(){const ids=drawableLooks();setLook(ids[(ids.indexOf(look)+1)%ids.length]);}
 /** The Look picker (ui/look-picker.js): a picture per look, chosen live over the town. */
 const lookPicker=createLookPicker({looks:LOOKS,available:drawableLooks,current:()=>look,choose:setLook,onOpen:()=>resetInput(),onClose:()=>resetInput()});
