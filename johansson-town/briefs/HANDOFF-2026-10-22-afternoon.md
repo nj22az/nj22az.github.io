@@ -68,7 +68,7 @@ controller code has changed.
 | 7 | Comic sets captured before #351 lack `front` and bench places | Open; `render-feed-backdrops.mjs --seats-only` | `assets/images/feed/views.json` |
 | 8 | Umi-no-yu's outdoor bench: GLB, one place, no `front` | Open | `world/park-onsen.js` |
 | 9 | Police station and port terminal comic backdrops | Open since phase 5 | `render-feed-backdrops.mjs police-station port-hall` |
-| 10 | About 32 already-failing test files (other groups of the 21 October morning handoff) | Open; fix a group, add it to `tests/ci-guard.txt` | `HANDOFF-2026-10-21.md` |
+| 10 | About 32 already-failing test files (other groups of the 21 October morning handoff) | One repaired in PR #368: `visual-audit-freeze.test.mjs`, now in the guard; see [signed handover](HANDOFF-FROZEN-AUDIT-2026-10-22.md). Remaining groups open; not recounted | `HANDOFF-2026-10-21.md` |
 | 11 | English signs to make Japanese, the gajumaru crown, park keepers' routines, Higa's evening bench, phone performance | Open | `HANDOFF-2026-10-21.md` |
 
 ## Still open from earlier handoffs
