@@ -12,13 +12,14 @@ export function migrateCombat(saved){
  const retired=id=>typeof id==='string'&&/^(dungeon|arena|personal-quarrel|harbour-festival|festival-bout|ferry-arena)$/.test(id);
  const encounter=record=>record&&typeof record==='object'&&(record.active===true||record.bout||record.encounter||record.activeEncounter||record.resume);
  const pointInCombat=p=>p&&[p.room,p.roomId,p.site,p.siteId,p.location,p.mode].some(retired);
- const active=!!(encounter(saved.harbourFestival)||encounter(saved.combat)||encounter(saved.fight)||encounter(saved.quarrel)||saved.activeEncounter||saved.dungeonRun||saved.activeBout||pointInCombat(saved)||pointInCombat(saved.desktopCheckpoint)||Object.values(saved.desktopLife?.people||{}).some(p=>pointInCombat(p?.checkpoint)));
+ const active=!!(encounter(saved.harbourFestival)||encounter(saved.combat)||encounter(saved.fight)||encounter(saved.quarrel)||saved.activeEncounter||saved.dungeonRun||saved.activeBout||saved.arenaResume||pointInCombat(saved)||pointInCombat(saved.desktopCheckpoint)||Object.values(saved.desktopLife?.people||{}).some(p=>pointInCombat(p?.checkpoint)));
  for(const key of ['harbourFestival','combat','fight','quarrel','activeEncounter','activeBout','dungeonRun','dungeonDeepest','arenaResume','hostility'])delete saved[key];
  if(saved.desktopLife&&saved.desktopLife.version!==2)delete saved.desktopLife.tempers;
  if(active){
   // This is the existing fish-auction opening, tested for clear feet, camera and two-way street access.
   const safe={x:19.8,z:-40,yaw:-1.03,pitch:0,ship:false};
   saved.desktopCheckpoint={...safe};saved.combatRecovery=true;
+  if(saved.island?.journey&&typeof saved.island.journey==='object')saved.island.journey.location='town';
   for(const key of ['room','roomId','site','siteId','location','mode'])if(retired(saved[key]))delete saved[key];
   for(const p of Object.values(saved.desktopLife?.people||{}))if(p&&typeof p==='object'&&(pointInCombat(p.checkpoint)||p===saved.desktopLife.people[saved.desktopLife.active]))p.checkpoint={x:safe.x,z:safe.z,yaw:safe.yaw,atHome:false};
  }

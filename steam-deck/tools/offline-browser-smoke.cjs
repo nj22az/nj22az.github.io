@@ -1,13 +1,13 @@
 const fs=require('node:fs'),path=require('node:path');
-const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');
+const {chromium}=require('playwright');
 (async()=>{
  const root=path.resolve(__dirname,'../site'),errors=[],missing=[],remote=[];
- const browser=await chromium.launch({executablePath:process.env.WORLD_CHROME||'/root/.cache/ms-playwright/chromium_headless_shell-1161/chrome-linux/headless_shell',headless:true,dumpio:true,args:['--no-sandbox','--single-process','--no-zygote','--in-process-gpu','--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
+ const browser=await chromium.launch({...(process.env.WORLD_CHROME?{executablePath:process.env.WORLD_CHROME}:{}),headless:true,args:['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
  fs.mkdirSync(path.resolve(__dirname,'../dist'),{recursive:true});
  const page=await browser.newPage({viewport:{width:1280,height:800}});
  page.on('pageerror',error=>errors.push(error.message));
- await page.addInitScript(()=>{window.johanssonDesktop={offline:true,version:'0.2.2'};navigator.getGamepads=()=>[];});
- const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.glb':'model/gltf-binary','.gltf':'model/gltf+json','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.mp3':'audio/mpeg','.ogg':'audio/ogg','.mp4':'video/mp4'};
+ await page.addInitScript(version=>{window.johanssonDesktop={offline:true,version};navigator.getGamepads=()=>[];},require('../package.json').version);
+ const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.wav':'audio/wav','.hdr':'application/octet-stream','.wasm':'application/wasm','.css':'text/css','.json':'application/json','.glb':'model/gltf-binary','.gltf':'model/gltf+json','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.mp3':'audio/mpeg','.ogg':'audio/ogg','.mp4':'video/mp4'};
  await page.route('**/*',async route=>{
   const url=new URL(route.request().url());if(url.hostname!=='world.local'){remote.push(url.href);return route.abort();}
   let file=path.resolve(root,'.'+decodeURIComponent(url.pathname));if(url.pathname.endsWith('/'))file=path.join(file,'index.html');

@@ -15,11 +15,11 @@ test('retired progress is discarded, preserving property, relationships, identit
  assert.deepEqual(migrateCombat(clone(saved)),saved,'Migration is idempotent');
 });
 test('active, spectator, tournament, cave and imported arena saves recover to the safe harbour opening',()=>{
- for(const marker of [{harbourFestival:{active:true,bout:{spectating:true}}},{harbourFestival:{resume:{tournament:true}}},{combat:{active:true}},{activeBout:{}},{dungeonRun:{hp:0}},{room:'dungeon'},{desktopCheckpoint:{x:0,z:0,yaw:0,room:'arena'}},{desktopLife:{active:'Thuan',people:{Thuan:{checkpoint:{x:0,z:0,yaw:0,room:'ferry-arena'}}}}}]){
-  const raw={castRevision:2,yen:500,inventory:['Tea'],...clone(marker)};
+ for(const marker of [{harbourFestival:{active:true,bout:{spectating:true}}},{harbourFestival:{resume:{tournament:true}}},{combat:{active:true}},{activeBout:{}},{arenaResume:{stage:'ferry-finale'}},{dungeonRun:{hp:0}},{room:'dungeon'},{desktopCheckpoint:{x:0,z:0,yaw:0,room:'arena'}},{desktopLife:{active:'Thuan',people:{Thuan:{checkpoint:{x:0,z:0,yaw:0,room:'ferry-arena'}}}}}]){
+  const raw={castRevision:2,yen:500,inventory:['Tea'],island:{journey:{location:'airport',ticket:true},projects:{harbour:2}},...clone(marker)};
   const storage={getItem:key=>key===SAVE_KEY?JSON.stringify(raw):null};
   const saved=readSave(storage);assert.equal(saved.combatRecovery,true,JSON.stringify(marker));assert.deepEqual(saved.desktopCheckpoint,{x:19.8,z:-40,yaw:-1.03,pitch:0,ship:false});
-  assert.equal(saved.yen,500);assert.deepEqual(saved.inventory,['Tea']);assert.equal(saved.dungeonRun,undefined);assert.equal(saved.harbourFestival,undefined);
+  assert.equal(saved.island.journey.location,'town');assert.equal(saved.island.journey.ticket,true);assert.equal(saved.island.projects.harbour,2);assert.equal(saved.yen,500);assert.deepEqual(saved.inventory,['Tea']);assert.equal(saved.dungeonRun,undefined);assert.equal(saved.harbourFestival,undefined);
   const life=saved.desktopLife;if(life)assert.equal(life.people.Thuan.checkpoint.atHome,false);
   // Once game startup consumes the transient flag and saves, subsequent loads do not move the player again.
   delete saved.combatRecovery;assert.equal(readSave({getItem:key=>key===SAVE_KEY?JSON.stringify(saved):null}).combatRecovery,undefined);

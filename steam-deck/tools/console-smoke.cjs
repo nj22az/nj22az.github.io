@@ -241,6 +241,7 @@ const {rectanglesSeparated}=require('./layout-acceptance.cjs');
  await web.goto(url+'/johansson-town/?audit&cinematic=off',{waitUntil:'domcontentloaded'});await web.waitForFunction(()=>document.getElementById('title')?.dataset.scene==='ready',null,{timeout:120000});
  assert.equal(await web.evaluate(()=>window.johanssonLinuxWorld===undefined),true,'Web edition has no Linux character/home system');assert.equal(await web.locator('#desktopMenu').count(),0,'Web edition has no Linux console UI');
  await web.locator('#enter').click();await web.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&!window.__JOHANSSON_AUDIT__.blocked.catchingUp,null,{timeout:120000});
+ await web.waitForFunction(()=>{const p=window.__JOHANSSON_POSE__;return p&&Math.hypot(p.x-19.8,p.z+40)<1;});
  const recovery=await web.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;dispatchEvent(new Event('johansson-festival-menu'));return {pose:window.__JOHANSSON_POSE__,room:a.player.room,api:!!a.festival,inventory:a.activities.state.inventory};});
  assert.equal(recovery.room,null);assert.equal(recovery.api,false);assert.ok(recovery.inventory.includes('Tea'));assert.ok(Math.hypot(recovery.pose.x-19.8,recovery.pose.z+40)<1,'Old cave save starts at the safe harbour opening');
  for(const code of ['KeyJ','KeyK','KeyL','Space'])await web.keyboard.press(code);
