@@ -1,4 +1,5 @@
 import {buildNeighbourhoodGround} from './neighbourhood-ground.js';
+import {benchSeat} from './seat-slots.js';
 import {buildGround,groundMaterial} from './ground-build.js';
 import {buildPaths} from './ground-paths.js';
 import {coastWalkGround,topOf} from './ground-plan-coast.js';
@@ -200,7 +201,7 @@ function addStreetLife(world,options,factory){
   const glow=createLampGlow(group,lanternSpots);
   const inspect=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('inspect',title,text),options.register);interactions++;};
   const read=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('read',title,text),options.register);interactions++;};
-  const seat=(pos,label,title,text)=>{const marker=anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);marker.userData.seat={position:[.6,0,18.02],stand:[.6,0,17.2],surfaceY:.62,eyeY:1.26,yaw:0,pitch:0};interactions++;};
+  const seat=(pos,label,title,text)=>{const marker=anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);marker.userData.seat=benchSeat({position:[.6,0,18.02],stand:[.6,0,17.2],surfaceY:.62,eyeY:1.26,yaw:0,pitch:0},{length:1.78,front:.26});interactions++;};
   const machine=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('machine',title,text),options.register);interactions++;};
 
   // Keep the x=1.9 pavement route open from Higa to the police station. The bench sits

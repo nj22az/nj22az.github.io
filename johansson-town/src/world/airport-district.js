@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {benchSeat} from './seat-slots.js';
 import {AIRPORT_PLAZA as P,AIRPORT_SHOPS,AIRPORT_GATES} from './airport-district-plan.js';
 import {airportWorld,AIRPORT_HEIGHT,AIRPORT_PUBLIC_FLOORS} from './airport-ground.js';
 import {TROPIC_PLACES,tropicHeight,tropicalPlantings} from './tropical-island.js';
@@ -33,7 +34,7 @@ export function buildAirportDistrict({world,register,onAction}){
   for(const dx of [-.9,.9])box('Island bench leg',[.12,.42,.5],[x+dx,floor+.2,z],0x6a4a32);
   const p=airportWorld(x,z),s=airportWorld(x,z+1.1*facing),seat=anchor(x,z+1.1*facing,'Sit on the bench','seat',title,text,floor+1);
   const surfaceY=SEA_LEVEL+floor+.52;
-  seat.userData.seat={id,position:[p[0],SEA_LEVEL+floor,p[1]],stand:[s[0],SEA_LEVEL+floor,s[1]],surfaceY,eyeY:surfaceY+.72,yaw:yaw+(facing>0?0:Math.PI),pitch:0};
+  seat.userData.seat=benchSeat({id,position:[p[0],SEA_LEVEL+floor,p[1]],stand:[s[0],SEA_LEVEL+floor,s[1]],surfaceY,eyeY:surfaceY+.72,yaw:yaw+(facing>0?0:Math.PI),pitch:0},{length:2.2,front:.3});
   world.colliders.push({id:'Island bench',x:p[0],z:p[1],yaw,w:2.2,d:.6,minY:SEA_LEVEL+floor,height:.55});
  };
  // The plaza: one paved floor from check-in to the kiosks, at the height its walk record gives.

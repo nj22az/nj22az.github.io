@@ -34,7 +34,7 @@ Its overall run [39688481038](https://github.com/nj22az/nj22az.github.io/actions
 
 ## Integration and validation rules
 
-The Linux-to-main integration combines released Linux source with main `68c8de7`, retaining main's later izakaya/bar service, hand work and compact-room assets rather than restoring older Linux copies. The game conflicts preserve Linux sleeping/owned-home handling, bed-restricted exit plus ferry departure context, and desktop pause/festival/frame handling. Generated runtime is rebuilt from the combined source, last. Do not copy either parent's whole index or runtime over the combination.
+The Linux-to-main integration combines released Linux source with main through `9b578fa`, retaining main's later izakaya/bar service, hand work and compact-room assets rather than restoring older Linux copies. The approved two-person bench and clothing-fit work (#342) is retained, including seatFront through the avatar update alongside sleeping. The game conflicts preserve Linux sleeping/owned-home handling, bed-restricted exit plus ferry departure context, and desktop pause/festival/frame handling. Generated runtime is rebuilt from the combined source, last. Do not copy either parent's whole index or runtime over the combination.
 
 The published ferry is already owner-approved: scheduled departures, T−2 horn/sign/passenger choices, safe gangway closure, walkable onboard travel, safe destination exit, passenger/vehicle save migration, Mac's relief watch, full Linux crew simulation and separate request-only quick crossing must remain intact.
 
