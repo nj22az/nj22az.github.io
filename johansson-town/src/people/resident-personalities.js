@@ -41,6 +41,11 @@ export function restoreResidentLife(saved){
   for(const place of ['market','izakaya','ramen']){
    const meal=source.meals?.[place];if(!meal||!['bun','rice','tea','ramen','fish','yakitori'].includes(meal.item))continue;
    record.meals[place]={stockClaim:meal.stockClaim&&['bun','rice','tea'].includes(meal.stockClaim.item)&&Number.isSafeInteger(meal.stockClaim.unitCost)?{item:meal.stockClaim.item,unitCost:meal.stockClaim.unitCost}:null,item:meal.item,drink:meal.drink==='beer'?'beer':'tea',delivered:meal.delivered===true,finished:meal.finished===true,started:Number.isFinite(meal.started)?meal.started:null,waited:Number.isFinite(meal.waited)?Math.max(0,Math.min(45,meal.waited)):0,eaten:Number.isFinite(meal.eaten)?Math.max(0,Math.min(42,meal.eaten)):0};
+   if(place==='izakaya'){
+    const target=record.meals[place];
+    for(const key of ['foodDelivered','drinkDelivered','paid','drinkOnly'])if(typeof meal[key]==='boolean')target[key]=meal[key];
+    for(const key of ['sipped','drunk','rounds','nextRound'])if(Number.isFinite(meal[key])&&meal[key]>=0)target[key]=meal[key];
+   }
   }
   const shopping=source.shopping;
   if(shopping&&['browse','pickup','queue','paid','finished'].includes(shopping.phase)&&Number.isFinite(shopping.started)&&(stockSpec(shopping.item)||shopping.phase==='browse'&&!shopping.picked)){

@@ -144,7 +144,7 @@ export function createCharacters(options={}){
       const u=entity.userData;
       if(u.lying||u.ridingBicycle)continue;
       entity.getWorldPosition(scratch);
-      bodies.push({entity,x:scratch.x,z:scratch.z,x0:scratch.x,z0:scratch.z,space:entity.parent,
+      bodies.push({entity,radius:u.serviceRadius,x:scratch.x,z:scratch.z,x0:scratch.x,z0:scratch.z,space:entity.parent,
         fixed:entity!==playerEntity&&(u.ferryCrew||u.ferryShoreTask||bodyBusy(entity)&&!entity.userData.character?.moving||conversations.has(entity)||!!u.sleeping||Number.isFinite(u.seatHeight))});
     }
     if(bodies.length<2)return;
