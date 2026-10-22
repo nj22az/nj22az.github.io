@@ -81,3 +81,12 @@ A qualified IP solicitor should review the actual silhouette/face/hair library, 
 3. If the direction is approved, improve neck/shoulder transitions and author a small original face/hair/garment family, then repeat contact and expression review.
 4. Implement creator history/locks and character-library round trips in separate reviewable stages. Preserve old recipes and add an explicit persisted appearance version only when rollout semantics are approved.
 5. Complete remote guard, physical-device performance/accessibility, GLB/scene/save compatibility, provenance and solicitor review before commercial release.
+
+## Delivery entry
+
+- Implementation/evidence/runtime commit: `5d5dbab58bd2ee97f2a7409cc2831ef3de663518`.
+- Draft review PR: [#357](https://github.com/nj22az/nj22az.github.io/pull/357), based on main `125255c3eb97d6792ada7efa89cefd7ceddc37d6`. Open, unmerged; no owner acceptance inferred.
+- Final delivery runtime build and all three runtime-package checks passed against that newer main. The added `storybook-style.test.mjs` is in the CI guard. Remote checks are still pending at handover.
+- Owner requested screenshots during work; Johansson/Thuan comparison sheets were presented, with all five supplied in the final review package.
+- Local broad synchronisation was rejected by automatic approval review to protect uncommitted files. An independent delivery snapshot preserved the original checkout and incorporated the newer main without discarding its work. Continue from the remote PR branch rather than the interrupted original scratch checkout.
+- Next: owner visual review of proportions and movement, then any requested refinements. No rollout, hand redesign, merge or release has occurred.
