@@ -144,7 +144,7 @@ test('a blocked service point waits safely and replans when it opens',()=>{
  const [x,,z]=NAO_STATION,target=[x-2,z],obstacle={x:target[0],z:target[1],w:.5,d:.5};let closed=true;
  const blocked=(px,pz,r)=>closed&&circleHitsRect(px,pz,r,obstacle);
  const f=fixture(blocked),seat={table:[target[0],.72,target[1]+.5],serve:[target[0],0,target[1]],route:[target]};
- assert.equal(f.service.order('dashimaki',seat),true);tick(f,12,blocked);
+ assert.equal(f.service.order('dashimaki',seat),true);tick(f,90,blocked);
  assert.equal(f.service.pending?.phase,'carrying');
  assert.equal(f.service.served,0,'an unreachable approach cannot deliver through furniture');
  closed=false;tick(f,60,blocked);
@@ -160,7 +160,7 @@ test('the final few centimetres of a service approach are collision checked',()=
  assert.equal(f.service.order('dashimaki',seat),true);tick(f,8,blocked);
  assert.equal(f.service.served,0,'being within the room walker arrival tolerance is insufficient');
  assert.ok(f.nao.position.x<=x+.04);
- closed=false;tick(f,30,blocked);
+ closed=false;tick(f,90,blocked);
  assert.equal(f.service.pending,null);
  assert.equal(f.service.served,1);
  f.service.clear();
