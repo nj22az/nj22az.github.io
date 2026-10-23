@@ -5,6 +5,8 @@
 Review: [PR #374](https://github.com/nj22az/nj22az.github.io/pull/374), open and unmerged.
 The World guard and Linux console acceptance were in progress at handover; no CI pass is claimed.
 
+**Owner priority, 23 October 2026:** making Minato island impeccable and immersive is priority 1. The third city island is low priority and deferred. Retain this research and proposal for later; do not begin further city design, prototyping or implementation unless the owner explicitly reprioritises it.
+
 ## Request and delivered scope
 
 The owner requested adding <https://github.com/mrdoob/slop-newyork/> to the Johansson World repository and
@@ -35,7 +37,6 @@ are not tested by this planning change. The schematic depicts the proposal, not 
 
 ## Next concrete action
 
-Produce measured CAD/site and interior plans for the phase-1 terminal, specialist shop, café and staff homes.
-Agree those proportions before implementation. Audit current cast/ship decisions before assigning workers or a
-new vessel: historical role descriptions conflict with newer owner requests. Keep the existing scheduled ferry
-service intact, and do not start a WebGPU migration or an island-wide build as a shortcut.
+Return to the current Minato quality and immersion work. The previously proposed city CAD/site-plan task is deferred, along with all subsequent city phases. Preserve the reference material for later.
+
+Priority update validation: checked the four documentation edits against the owner's instruction. No runtime changes or gameplay tests. PR #374 remains open and unmerged; its description identifies the proposal as deferred.
