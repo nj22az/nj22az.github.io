@@ -1,5 +1,5 @@
 import * as THREE from '../johansson-town/vendor/three.module.js';
-import {lookFragment,LOOKS} from '../johansson-town/src/render/looks.js?v=20261023-recovery';
+import {lookFragment,LOOKS} from '../johansson-town/src/render/looks.js?v=20261023-print-media';
 export function createComicLook(){let renderer,failed=false,texture,quad;const scene=new THREE.Scene(),camera=new THREE.Camera(),materials=new Map(),dataTextures=new Map();
  const dataTexture=input=>{if(!dataTextures.has(input)){const t=new THREE.Texture(input);t.colorSpace=THREE.NoColorSpace;t.minFilter=t.magFilter=THREE.NearestFilter;t.generateMipmaps=false;t.needsUpdate=true;dataTextures.set(input,t);if(dataTextures.size>12){const [key,value]=dataTextures.entries().next().value;value.dispose();dataTextures.delete(key);}}return dataTextures.get(input);};
  return {draw(input,ctx,name,{quality='export',capture=null}={}){const w=input.width,h=input.height;if(name==='none'){ctx.drawImage(input,0,0);return;}

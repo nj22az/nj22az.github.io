@@ -1,4 +1,4 @@
-import {normalLook} from '../johansson-town/src/render/looks.js?v=20261023-recovery';
+import {normalLook} from '../johansson-town/src/render/looks.js?v=20261023-print-media';
 import {normalizeTake} from './acting/takes.mjs';
 import {KNOWN_POSES,KNOWN_EXPRESSIONS} from './scene-catalogue.mjs?v=20261020-acting';
 import {SNAP} from './scene-snap.mjs?v=20261011-2';

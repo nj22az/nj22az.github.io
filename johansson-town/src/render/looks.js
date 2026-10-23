@@ -1,3 +1,4 @@
+import {RISOGRAPH_GLSL,PENCIL_MANGA_GLSL,BRUSH_OIL_GLSL,RUBBER_STAMP_GLSL} from './print-media-shaders.js';
 import {PENCIL_GLSL,WASH_GLSL,SURFACE_GLSL} from './illustration-modules.js';
 /**
  * Looks: the whole town redrawn in another style, chosen under Settings in the Town book.
@@ -37,6 +38,10 @@ export const LOOKS=Object.freeze({
  flat:{label:'Cartoon',short:'Cartoon',hint:'Flat colours and thick outlines, like a TV cartoon.',flatten:0},
  oil:{label:'Oil painting',short:'Oil',hint:'Thick brushwork on canvas, with faces and lettering kept.'},
  sketchbook:{label:'Architectural sketchbook',short:'Sketch',hint:'Warm wash, broken pencil and porous graphite.'},
+ riso:{label:'Risograph',short:'Riso',hint:'Experimental: coral and teal ink plates, grain and slight misregistration.',experimental:true},
+ pencilManga:{label:'Pencil manga',short:'Pencil',hint:'Experimental: clean manga contours with broken graphite strokes in deep shadows.',experimental:true},
+ brushOil:{label:'Heavy brush oil',short:'Brush',hint:'Experimental: broad directional paint dabs, with facial features and contours retained.',experimental:true},
+ stamp:{label:'Rubber stamp',short:'Stamp',hint:'Experimental: worn burgundy ink, cut silhouettes and irregular pressure on warm paper.',experimental:true},
 });
 
 /** Where an earlier build saved the look. The owner (22 October 2026): every start is Natural, whatever was used last, so
@@ -557,13 +562,18 @@ float graphite=edges(vUv,1.3*u,.45)*(.36+.38*noise(p*.7));
 vec3 pencil=mix(vec3(.24,.22,.23),vec3(.192,.176,.184),uComic);
 paint=mix(paint,pencil,clamp(graphite,0.0,1.0));gl_FragColor=vec4(clamp(paint,0.0,1.0),1.0);}`;
 
+FRAGMENTS.riso=RISOGRAPH_GLSL;
+FRAGMENTS.pencilManga=`${PENCIL_GLSL}${SURFACE_GLSL}${PENCIL_MANGA_GLSL}`;
+FRAGMENTS.brushOil=BRUSH_OIL_GLSL;
+FRAGMENTS.stamp=RUBBER_STAMP_GLSL;
+
 /** The full fragment shader for a look, or null for Natural. `light` asks for the version a phone or tablet can afford. */
 export function lookFragment(name,{light=false,depth=true,normals=false,surfaceStrokes=false}={}){
  const body=FRAGMENTS[name];
  return body?(light?'#define LIGHT\n':'')+(surfaceStrokes?'#define SURFACE_STROKES\n':'')+(depth?'#define HAS_DEPTH\n':'')+(normals?'#define HAS_NORMALS\n':'')+COMMON+SPOT+body:null;
 }
 
-export const lookNormals=name=>['lines','manga','crayon','flat','print','sketchbook'].includes(name);
+export const lookNormals=name=>['lines','manga','crayon','flat','print','sketchbook','riso','pencilManga','brushOil','stamp'].includes(name);
 export const lookSurfaceStrokes=name=>['crayon','sketchbook'].includes(name);
 
 /** Whether a look samples the scene's depth (and so must be fed the depth texture). */

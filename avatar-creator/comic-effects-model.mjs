@@ -1,4 +1,4 @@
-import {isLook,normalLook,retiredLook} from '../johansson-town/src/render/looks.js?v=20261023-recovery';
+import {isLook,normalLook,retiredLook} from '../johansson-town/src/render/looks.js?v=20261023-print-media';
 const num=(v,lo,hi,d)=>Number.isFinite(Number(v))?Math.max(lo,Math.min(hi,Number(v))):d;
 export const safeImage=s=>typeof s==='string'&&s.length<2800000&&/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(s)?s:'';
 export function normalEffects(p={}){return {look:normalLook(p?.look),...p?.focus?{focus:{mode:p.focus.mode==='tilt'?'tilt':'depth',distance:num(p.focus.distance,.1,2000,6),range:num(p.focus.range,.1,1000,3)}}:{},assets:(Array.isArray(p?.assets)?p.assets:[]).slice(0,20).filter(a=>a&&['star','heart','arrow','image','text'].includes(a.kind)).map((a,i)=>({id:'asset-'+i,kind:a.kind,x:num(a.x,0,1,.5),y:num(a.y,0,1,.5),size:num(a.size,.03,.8,.18),rotation:num(a.rotation,-180,180,0),opacity:num(a.opacity,.05,1,1),text:String(a.text||'').slice(0,120),image:safeImage(a.image)})).filter(a=>a.kind!=='image'||a.image)};}
