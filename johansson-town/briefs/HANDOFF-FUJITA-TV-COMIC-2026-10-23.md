@@ -1,5 +1,9 @@
 # Fujita television comic — Studio integration, 23 October 2026
 
+## Shader comparison — 23 October 2026
+
+Owner requested one version for each shader. Rendered all 14 current Studio looks (Natural plus 13 effects) on all three panels of the delivered Thuan comic through `createSceneWorkspace.afterEffects` and the existing `createComicEffects`/shared look shader code. The source layered project was preserved. Dialogue stays above the picture shader. All 14 exports completed without page errors, shader errors or fallback warnings; visually reviewed the labelled comparison sheet. Deliverables: fourteen 3200 px PNG strips, `all-shaders-comparison.jpg` (3284 × 4480), and `make-something-all-shaders.zip` containing the full-resolution variants and look manifest. No functional source changes or runtime rebuild. This remains the 2D After effects shader workflow with flat depth, as documented above; no new 3D depth captures or physical-device acceptance claimed.
+
 ## “Make something of your life” — Thuan revision, 23 October 2026
 
 Owner requested a new three-panel comic: concerned Thuan urges the canonical Fujita avatar to make something of his
