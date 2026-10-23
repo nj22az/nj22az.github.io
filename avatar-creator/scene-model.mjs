@@ -1,4 +1,4 @@
-import {isLook} from '../johansson-town/src/render/looks.js';
+import {normalLook} from '../johansson-town/src/render/looks.js?v=20261023-recovery';
 import {normalizeTake} from './acting/takes.mjs';
 import {KNOWN_POSES,KNOWN_EXPRESSIONS} from './scene-catalogue.mjs?v=20261020-acting';
 import {SNAP} from './scene-snap.mjs?v=20261011-2';
@@ -19,7 +19,7 @@ export function emptyScene(){return {version:2,location:'harbour',format:'landsc
 export function normalizeScene(raw,normalizeRecipe=r=>structuredClone(r)){
  const out=emptyScene();if(!raw||![1,2].includes(raw.version))return out;
  out.location=LOCATIONS.some(([id])=>id===raw.location)?raw.location:out.location;
- out.look=isLook(raw.look)?raw.look:'none';
+ out.look=normalLook(raw.look);
  out.format=['landscape','square','portrait'].includes(raw.format)?raw.format:out.format;
  out.style=['photo','meme','comic'].includes(raw.style)?raw.style:out.style;
  out.camera={orbit:clamp(raw.camera?.orbit,-180,180,0),elevation:clamp(raw.camera?.elevation,-25,40,0),zoom:clamp(raw.camera?.zoom,.55,1.8,1)};

@@ -1,3 +1,4 @@
+import {PENCIL_GLSL,WASH_GLSL,SURFACE_GLSL} from './illustration-modules.js';
 /**
  * Looks: the whole town redrawn in another style, chosen under Settings in the Town book.
  *
@@ -14,8 +15,8 @@
  * time it is chosen, never at startup. Only the 3D canvas is redrawn; menus, speech
  * and signs on the HUD stay as they are.
  *
- * Every pattern (dither, screentone, hatching, paper) is fixed to the screen and
- * never animated, so nothing shimmers while the camera is still.
+ * Print patterns stay still; pencil strokes use rest/surface coordinates where available.
+ * No pattern is driven by animation time.
  */
 
 /** In the order the menu offers them. `css` is the stand-in where the town draws without the ink pipeline. */
@@ -35,12 +36,16 @@ export const LOOKS=Object.freeze({
  // 64 samples a pixel on a computer; phones and tablets draw the light version, 16 samples (lookFragment).
  flat:{label:'Cartoon',short:'Cartoon',hint:'Flat colours and thick outlines, like a TV cartoon.',flatten:0},
  oil:{label:'Oil painting',short:'Oil',hint:'Thick brushwork on canvas, with faces and lettering kept.'},
+ sketchbook:{label:'Architectural sketchbook',short:'Sketch',hint:'Warm wash, broken pencil and porous graphite.'},
 });
 
 /** Where an earlier build saved the look. The owner (22 October 2026): every start is Natural, whatever was used last, so
  * the choice is not saved any more and an old saved one is removed (clearSavedLook). */
 export const LOOK_KEY='johansson-town-look';
 export const isLook=name=>Object.hasOwn(LOOKS,name);
+const RETIRED_LOOKS=Object.freeze({storybook:'flat',sunday:'flat',gouache:'oil'});
+export const retiredLook=name=>Object.hasOwn(RETIRED_LOOKS,name);
+export const normalLook=name=>isLook(name)?name:retiredLook(name)?RETIRED_LOOKS[name]:'none';
 /** How much of the town's photographic surface maps a look keeps (render/cel.js scaleFlatten): 1 unless it says. */
 export const lookFlatten=name=>LOOKS[name]?.flatten??1;
 export function clearSavedLook(storage){try{storage?.removeItem(LOOK_KEY);}catch{}}
@@ -54,13 +59,43 @@ const COMMON=`
 #include <packing>
 uniform sampler2D tDiffuse;
 uniform sampler2D tDepth;
+uniform sampler2D tNormal;
+uniform mat4 uProjectionInverse;
+uniform mat4 uCameraWorld;
+uniform float uComic;
+uniform float uFocusMode;
+uniform float uFocusDistance;
+uniform float uFocusRange;
+uniform float uDepthPacked;
+float readDepth(vec2 uv){vec4 d=texture2D(tDepth,uv);return uDepthPacked>.5?dot(d.rgb,vec3(65536.0,256.0,1.0))*(255.0/16777215.0):d.x;}
 uniform vec2 uTexel;
 uniform vec2 uResolution;
 uniform float uNear,uFar,uSkyDepth;
 varying vec2 vUv;
 
 float luma(vec3 c){return dot(c,vec3(0.2126,0.7152,0.0722));}
-float viewDepth(vec2 uv){return -perspectiveDepthToViewZ(texture2D(tDepth,uv).x,uNear,uFar);}
+float viewDepth(vec2 uv){
+#ifdef HAS_DEPTH
+ return -perspectiveDepthToViewZ(readDepth(uv),uNear,uFar);
+#else
+ return 1.0;
+#endif
+}
+float distanceFade(vec2 uv,float near,float far){
+#ifdef HAS_DEPTH
+ return 1.0-smoothstep(near,far,viewDepth(uv));
+#else
+ return 1.0;
+#endif
+}
+vec3 surfacePosition(vec2 uv){
+#ifdef HAS_DEPTH
+ vec4 p=uProjectionInverse*vec4(uv*2.0-1.0,readDepth(uv)*2.0-1.0,1.0);
+ return (uCameraWorld*vec4(p.xyz/p.w,1.0)).xyz;
+#else
+ return vec3(uv*uResolution/1080.0,0.0);
+#endif
+}
 float hash(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
 float noise(vec2 p){
  vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
@@ -75,8 +110,11 @@ float unit(){return max(1.0,uResolution.y/1080.0);}
 // Outlines: the second difference of depth (silhouettes and creases, as the ink pass
 // finds them) plus a luminance Sobel (painted detail, window frames, signs).
 float edges(vec2 uv,float width,float detail){
- vec2 t=uTexel*width;
+ vec3 anchor=surfacePosition(uv);
+ float pressure=0.78+0.44*noise(anchor.xy*3.7+anchor.z*0.23);
+ vec2 t=uTexel*width*pressure;
  float dc=viewDepth(uv);
+#ifdef HAS_DEPTH
  // The second difference of 1/depth, not of depth: 1/depth changes evenly across any flat surface in a perspective
  // view, so a road or a floor seen at a grazing angle gives exactly nothing however wide the line, while a silhouette
  // (the far side drops away) and a crease still do. Depth's own second difference grows on a grazing plane with the
@@ -86,6 +124,15 @@ float edges(vec2 uv,float width,float detail){
  float sy=(1.0/viewDepth(uv+vec2(0.0,t.y))+1.0/viewDepth(uv-vec2(0.0,t.y))-2.0*ic)*dc;
  // Fixed-point depth still rounds a little, so a crease has to stand clear of that.
  float shape=smoothstep(0.012,0.03,max(0.0,-sx)+max(0.0,-sy));
+#else
+ float shape=0.0;
+#endif
+#ifdef HAS_NORMALS
+ vec4 nc=texture2D(tNormal,uv);
+ float bend=0.0;
+ for(int k=0;k<4;k++){vec2 d=k==0?vec2(t.x,0.0):k==1?vec2(-t.x,0.0):k==2?vec2(0.0,t.y):vec2(0.0,-t.y);vec4 nn=texture2D(tNormal,uv+d);bend=max(bend,length(nc.rgb-nn.rgb)*min(nc.a,nn.a));}
+ shape=max(shape,smoothstep(0.08,0.24,bend));
+#endif
  // A Sobel on colour, not brightness alone: a light-blue collar on a light-blue shirt differs in hue far more than in
  // lightness. Close by it looks a little harder, so a figure's own lines (collar, pocket, cuffs) are drawn.
  vec3 tl=texture2D(tDiffuse,uv+vec2(-t.x,t.y)).rgb,tc=texture2D(tDiffuse,uv+vec2(0.0,t.y)).rgb,tr=texture2D(tDiffuse,uv+t).rgb;
@@ -93,11 +140,11 @@ float edges(vec2 uv,float width,float detail){
  vec3 bl=texture2D(tDiffuse,uv-t).rgb,bc=texture2D(tDiffuse,uv-vec2(0.0,t.y)).rgb,br=texture2D(tDiffuse,uv+vec2(t.x,-t.y)).rgb;
  vec3 gx=(tr+2.0*mr+br)-(tl+2.0*ml+bl),gy=(tl+2.0*tc+tr)-(bl+2.0*bc+br);
  float g=length(vec2(length(gx),length(gy)))*0.577;
- float close=1.0-smoothstep(4.0,14.0,dc);
+ float close=distanceFade(uv,4.0,14.0);
  float paint=smoothstep(mix(0.32,0.2,close),mix(0.62,0.42,close),g)*detail;
  float e=max(shape,paint);
  // Distance thins the lines out, so the horizon is not scribbled over.
- return e*(1.0-smoothstep(uSkyDepth*0.35,uSkyDepth,dc));
+ return e*distanceFade(uv,uSkyDepth*0.35,uSkyDepth);
 }
 `;
 
@@ -115,7 +162,7 @@ float spotBlack(vec2 uv,float u){
   best=max(best,ring/8.0-c);
  }
  // Filled or not, rather than greyed: a half-tone fill read as a smudge. Only marks that are themselves dark.
- return smoothstep(0.1,0.15,best)*(1.0-smoothstep(0.55,0.65,c))*(1.0-smoothstep(6.0,16.0,viewDepth(uv)));
+ return smoothstep(0.13,0.22,best)*(1.0-smoothstep(0.30,0.46,c))*distanceFade(uv,6.0,16.0);
 }
 `;
 
@@ -123,16 +170,16 @@ const FRAGMENTS={
  mono:`
 void main(){
  vec3 c=texture2D(tDiffuse,vUv).rgb;
- float l=clamp((luma(c)-0.5)*1.12+0.5,0.0,1.0);
+ float l=clamp((dot(c,vec3(0.28,0.60,0.12))-0.5)*1.18+0.5,0.0,1.0);
+ l=mix(l,l*l*(3.0-2.0*l),0.58);
  gl_FragColor=vec4(vec3(l),1.0);
 }`,
  sepia:`
 void main(){
  vec3 c=texture2D(tDiffuse,vUv).rgb;
- // The Filter Effects matrix for sepia(0.9), then contrast(0.95): the photo studio's own film.
- mat3 m=mat3(0.4537,0.3141,0.2448, 0.6921,0.7174,0.4806, 0.1701,0.1512,0.2179);
- vec3 s=clamp(m*c,0.0,1.0);
- gl_FragColor=vec4(clamp((s-0.5)*0.95+0.5,0.0,1.0),1.0);
+ float l=clamp((luma(c)-0.48)*1.12+0.5,0.0,1.0);
+ vec3 shadow=vec3(0.17,0.085,0.035),paper=vec3(0.985,0.945,0.835);
+ gl_FragColor=vec4(mix(shadow,paper,smoothstep(0.015,0.99,l)),1.0);
 }`,
  // The Pocket Gentleman's four greens (pocket-camera.js), over 144 lines, ordered dither.
  pocket:`
@@ -143,6 +190,7 @@ void main(){
  float l=luma(texture2D(tDiffuse,centre).rgb);
  l=clamp((l-0.14)*1.4,0.0,1.0);
  float shade=floor(clamp(l*3.0+bayer4(cell)-0.5,0.0,3.0)+0.5);
+ shade=mix(shade,0.0,step(.72,edges(centre,px,.85)));
  vec3 c=shade<0.5?vec3(24.0,48.0,32.0):shade<1.5?vec3(62.0,98.0,56.0):shade<2.5?vec3(130.0,158.0,76.0):vec3(200.0,212.0,138.0);
  gl_FragColor=vec4(c/255.0,1.0);
 }`,
@@ -152,7 +200,17 @@ void main(){
  float px=max(2.0,floor(uResolution.y/240.0));
  vec2 cell=floor(vUv*uResolution/px);
  vec3 c=texture2D(tDiffuse,(cell+0.5)*px/uResolution).rgb;
- c=floor(c*15.0+bayer4(cell)*0.9+0.05)/15.0;
+ vec3 palette[16];
+ palette[0]=vec3(.07,.09,.13);palette[1]=vec3(.21,.19,.27);palette[2]=vec3(.36,.25,.23);palette[3]=vec3(.57,.35,.27);
+ palette[4]=vec3(.77,.52,.36);palette[5]=vec3(.94,.73,.51);palette[6]=vec3(1.0,.90,.69);palette[7]=vec3(.98,.98,.92);
+ palette[8]=vec3(.18,.35,.32);palette[9]=vec3(.31,.53,.37);palette[10]=vec3(.57,.70,.43);palette[11]=vec3(.22,.35,.54);
+ palette[12]=vec3(.42,.60,.70);palette[13]=vec3(.70,.78,.73);palette[14]=vec3(.68,.24,.24);palette[15]=vec3(.87,.64,.24);
+ c+=vec3((bayer4(cell)-.5)*.075);
+ vec3 ink=palette[0];float best=100.0;
+ for(int i=0;i<16;i++){vec3 delta=(c-palette[i])*vec3(1.0,1.2,.9);float d=dot(delta,delta);if(d<best){best=d;ink=palette[i];}}
+ c=ink;
+ float boundary=edges((cell+.5)*px/uResolution,px,0.30);
+ c=mix(c,palette[0],step(.82,boundary)*.8);
  gl_FragColor=vec4(clamp(c,0.0,1.0),1.0);
 }`,
  lines:`
@@ -172,7 +230,8 @@ void main(){
  q*=1.0+dot(q,q)*vec2(0.035,0.05);
  vec2 uv=q*0.5+0.5;
  if(any(lessThan(uv,vec2(0.0)))||any(greaterThan(uv,vec2(1.0)))){gl_FragColor=vec4(0.0,0.0,0.0,1.0);return;}
- vec3 c=texture2D(tDiffuse,uv).rgb;
+ float fringe=pow(length(q),2.0)*1.35*uTexel.x;
+ vec3 c=vec3(texture2D(tDiffuse,uv+vec2(fringe,0.0)).r,texture2D(tDiffuse,uv).g,texture2D(tDiffuse,uv-vec2(fringe,0.0)).b);
  // A soft bleed of the neighbouring colour, as a tube smears.
  c=mix(c,texture2D(tDiffuse,uv+vec2(uTexel.x*2.0,0.0)).rgb,0.25);
  float lines=uResolution.y/max(2.0,floor(uResolution.y/270.0));
@@ -182,7 +241,7 @@ void main(){
  c*=scan*mask*1.12;
  // The tube's own vignette: the corners fall away.
  vec2 v=uv*(1.0-uv.yx);
- c*=pow(clamp(v.x*v.y*18.0,0.0,1.0),0.28);
+ c*=pow(clamp(v.x*v.y*18.0,0.0,1.0),0.16);
  gl_FragColor=vec4(clamp(c,0.0,1.0),1.0);
 }`,
  // Printed-comic black and white: solid ink outlines, white highlights, a 45-degree
@@ -192,7 +251,7 @@ float tone(vec2 p,float l){
  // Dots on a rotated grid, their radius from how dark it is; anti-aliased edges.
  vec2 r=mat2(0.7071,-0.7071,0.7071,0.7071)*p/6.0;
  float d=length(fract(r)-0.5);
- float radius=sqrt(clamp(1.0-l,0.0,1.0))*0.62;
+ float radius=sqrt(clamp(1.0-l,0.0,1.0))*0.56419;
  return 1.0-smoothstep(radius-0.08,radius+0.08,d);
 }
 float hatch(vec2 p,vec2 dir,float spacing,float width){
@@ -203,17 +262,23 @@ void main(){
  float u=unit();
  vec2 p=vUv*uResolution/u;
  vec3 c=texture2D(tDiffuse,vUv).rgb;
+#ifdef HAS_DEPTH
+ // Flat graphic backdrops already contain their own ink. Threshold their fills once,
+ // without outlining both sides of every speed ray or screening its paper.
+ if(readDepth(vUv)>.999999){gl_FragColor=vec4(vec3(step(.35,luma(c))),1.0);return;}
+#endif
  float l=clamp((luma(c)-0.5)*1.25+0.52,0.0,1.0);
- float ink=0.0;
- if(l<0.82)ink=tone(p,mix(1.0,l,smoothstep(0.82,0.7,l)));
- if(l<0.36)ink=max(ink,hatch(p,vec2(0.7071,0.7071),5.0,1.1));
- if(l<0.22)ink=max(ink,hatch(p,vec2(0.7071,-0.7071),5.0,1.1));
- if(l<0.1)ink=1.0;
- // The sky keeps clean paper with a light tone, as a background page would.
- if(viewDepth(vUv)>uSkyDepth)ink=min(ink,tone(p,0.86));
+ // Discrete printable tones: clean paper, 20%, 48%, 72%, then spot ink.
+ float density=l>.80?0.0:l>.48?.20:l>.23?.48:l>.095?.72:1.0;
+ float ink=density<.001?0.0:density>.99?1.0:tone(p,1.0-density);
+ // Cross-hatching is reserved for the darkest screened tone, not skin and walls.
+ if(l<.16&&l>.095)ink=max(ink,hatch(p,vec2(.7071,-.7071),9.0,.7));
+#ifdef HAS_DEPTH
+ if(viewDepth(vUv)>uSkyDepth)ink=min(ink,tone(p,.94));
+#endif
  ink=max(ink,max(edges(vUv,1.5*u,1.0),spotBlack(vUv,u)));
- vec3 paper=vec3(0.97,0.965,0.95);
- gl_FragColor=vec4(mix(paper,vec3(0.06,0.06,0.08),clamp(ink,0.0,1.0)),1.0);
+ // One-bit pigment: tone coverage comes from the dots, never a grey wash below them.
+ gl_FragColor=vec4(vec3(1.0-step(.5,ink)),1.0);
 }`,
  // Coloured pencil on rough paper: the colour goes down in diagonal strokes that skip
  // the paper's tooth, a second layer crosses the darks, and a graphite outline.
@@ -225,8 +290,11 @@ float strokes(vec2 p,vec2 dir,float spacing){
  // Each stroke has its own pressure, and fades in and out along its length.
  float pressure=0.55+0.45*hash(vec2(lane,7.0));
  float body=1.0-abs(fract(across/spacing)-0.5)*2.0;
- float run=0.5+0.5*noise(vec2(along*0.035,lane*1.7));
- return smoothstep(0.15,0.75,body)*pressure*run;
+ float segment=floor(along/28.0+hash(vec2(lane,11.0)));
+ float phase=fract(along/28.0+hash(vec2(lane,11.0)));
+ float run=smoothstep(.03,.16,phase)*(1.0-smoothstep(.68,.94,phase));
+ float wax=smoothstep(.17,.67,noise(p*2.4+hash(vec2(lane,segment))*7.0));
+ return smoothstep(0.15,0.75,body)*pressure*run*mix(.22,1.0,wax);
 }
 void main(){
  float u=unit();
@@ -234,22 +302,37 @@ void main(){
  vec3 c=texture2D(tDiffuse,vUv).rgb;
  float l=luma(c);
  // Pencils are brighter and softer than paint: lift the colour towards pastel.
+#ifdef HAS_DEPTH
+ vec3 surface=surfacePosition(vUv);
+ vec3 n=vec3(0.0,0.0,1.0);
+#ifdef HAS_NORMALS
+ n=abs((uCameraWorld*vec4(texture2D(tNormal,vUv).rgb*2.0-1.0,0.0)).xyz);
+#endif
+ p=(n.z>n.x&&n.z>n.y?surface.xy:n.y>n.x?surface.xz:surface.zy)*150.0;
+#endif
  vec3 pigment=clamp(mix(vec3(l),c,1.18)*0.92+0.04,0.0,1.0);
  float tooth=noise(p*0.9)*0.6+noise(p*2.3)*0.4;
  vec3 paper=vec3(0.975,0.96,0.93)-0.05*tooth;
  float dark=1.0-l;
- float cover=strokes(p,vec2(0.6,0.8),4.0)*smoothstep(0.0,0.55,dark+0.35);
- cover=max(cover,strokes(p,vec2(-0.8,0.6),3.5)*smoothstep(0.35,0.8,dark));
+ float cover=strokes(p,vec2(.7071,.7071),4.0)*(1.0-smoothstep(.70,.75,l));
+ cover=max(cover,strokes(p,vec2(.5,-.866),3.5)*(1.0-smoothstep(.38,.45,l)));
  // The pigment catches on the tooth's peaks first.
  cover*=smoothstep(0.15,0.65,tooth+cover*0.6);
- cover=clamp(cover*1.25,0.0,1.0);
+ #ifdef SURFACE_STROKES
+ float chroma=max(c.r,max(c.g,c.b))-min(c.r,min(c.g,c.b));
+ float wash=mix(.18,.86,smoothstep(.035,.18,chroma));
+ cover=max(wash,1.0-smoothstep(.60,.94,l));
+#else
+ cover=clamp(cover*1.25,0.0,1.0)*(1.0-smoothstep(.76,.94,l));
+#endif
  vec3 col=mix(paper,pigment*mix(vec3(1.0),paper,0.12),cover);
  // A little burnish where the darkest colour is pressed hard.
  col=mix(col,pigment*0.82,smoothstep(0.7,0.95,dark)*0.5);
  // Graphite lines, wobbling a little as a hand-drawn line does.
  vec2 wobble=(vec2(noise(p*0.05),noise(p*0.05+17.0))-0.5)*uTexel*2.5*u;
  float e=edges(vUv+wobble,1.3*u,0.7)*(0.55+0.45*noise(p*0.3));
- col=mix(col,vec3(0.24,0.23,0.26),clamp(e,0.0,1.0)*0.85);
+ vec3 graphite=mix(vec3(.24,.23,.26),vec3(.192,.184,.208),uComic);
+ col=mix(col,graphite,clamp(e,0.0,1.0)*mix(.85,1.0,uComic));
  gl_FragColor=vec4(col,1.0);
 }`,
  // Tilt-shift: a sharp band across the middle and a growing blur above and below it, with the colour lifted a
@@ -258,13 +341,26 @@ void main(){
 void main(){
  float u=unit();
  vec3 c=texture2D(tDiffuse,vUv).rgb;
+#ifdef HAS_DEPTH
+ float centreDepth=viewDepth(vUv);
+ float focus=uFocusDistance>0.0?uFocusDistance:viewDepth(vec2(.5));if(focus>uSkyDepth)focus=6.0;
+ float radius=uFocusMode>.5?smoothstep(.07,.42,abs(vUv.y-.46))*16.0*u:smoothstep(0.0,max(.1,uFocusRange),abs(centreDepth-focus))*12.0*u;
+#else
+ // Legacy picture-only panels retain an explicit 2D tilt-shift approximation.
  float away=abs(vUv.y-0.46);
  float radius=smoothstep(0.07,0.42,away)*16.0*u;
+#endif
  if(radius>0.4){
   vec3 sum=c;float n=1.0;
   for(int i=1;i<24;i++){
    float fi=float(i),r=sqrt(fi/24.0)*radius,a=fi*2.39996;
-   sum+=texture2D(tDiffuse,vUv+vec2(cos(a),sin(a))*r*uTexel).rgb;n+=1.0;
+   vec2 sampleUV=vUv+vec2(cos(a),sin(a))*r*uTexel;
+#ifdef HAS_DEPTH
+   float weight=1.0-smoothstep(.15,.75,abs(viewDepth(sampleUV)-centreDepth));
+#else
+   float weight=1.0;
+#endif
+   sum+=texture2D(tDiffuse,sampleUV).rgb*weight;n+=weight;
   }
   c=sum/n;
  }
@@ -281,8 +377,8 @@ vec3 inkFor(vec3 c){
  vec3 inks[10];
  inks[0]=vec3(0.95,0.91,0.81);inks[1]=vec3(0.12,0.23,0.37);inks[2]=vec3(0.18,0.36,0.54);inks[3]=vec3(0.56,0.70,0.79);
  inks[4]=vec3(0.78,0.27,0.18);inks[5]=vec3(0.85,0.64,0.25);inks[6]=vec3(0.49,0.60,0.42);inks[7]=vec3(0.16,0.14,0.13);
- inks[8]=vec3(0.85,0.55,0.55);inks[9]=vec3(0.54,0.35,0.23);
- for(int i=0;i<10;i++){vec3 e=(c-inks[i])*vec3(1.0,1.25,0.8);float k=dot(e,e);if(k<d){d=k;best=inks[i];}}
+ inks[8]=vec3(0.90,0.74,0.57);inks[9]=vec3(0.54,0.35,0.23);
+ for(int i=0;i<10;i++){vec3 rgb=c-inks[i];vec3 e=vec3(dot(rgb,vec3(.25,.5,.25)),rgb.r-rgb.b,rgb.g-(rgb.r+rgb.b)*.5);float k=dot(e*vec3(2.0,.55,.7),e*vec3(2.0,.55,.7));if(k<d){d=k;best=inks[i];}}
  return best;
 }
 void main(){
@@ -299,7 +395,7 @@ void main(){
  // Paper and wood grain show through the ink, stronger along the grain.
  float grain=noise(vec2(p.x*0.04,p.y*0.9))*0.6+noise(p*0.5)*0.4;
  col*=0.94+0.08*grain;
- float e=edges(vUv,1.4*u,0.9);
+ float e=edges(vUv+vec2(.9,-.65)*uTexel*u,1.4*u,0.9);
  col=mix(col,vec3(0.13,0.11,0.10),clamp(e,0.0,1.0));
  gl_FragColor=vec4(col,1.0);
 }`,
@@ -310,7 +406,7 @@ void main(){
  float u=unit();
  vec2 p=vUv*uResolution/u;
  // The wash wanders off the drawing, a few pixels and on two scales.
- vec2 wander=((vec2(noise(p*0.012),noise(p*0.012+31.0))-0.5)*12.0+(vec2(noise(p*0.06),noise(p*0.06+7.0))-0.5)*4.0)*uTexel*u;
+ vec2 wander=((vec2(noise(p*0.012),noise(p*0.012+31.0))-0.5)*6.0+(vec2(noise(p*0.06),noise(p*0.06+7.0))-0.5)*2.0)*uTexel*u;
  vec2 uv=vUv+wander;
  vec3 sum=vec3(0.0);
  for(int i=0;i<8;i++){float a=float(i)*0.785398;sum+=texture2D(tDiffuse,uv+vec2(cos(a),sin(a))*uTexel*3.0*u).rgb;}
@@ -320,7 +416,7 @@ void main(){
  vec3 paper=vec3(0.985,0.97,0.935);
  // Transparent pigment over paper, darker and lighter in blooms across each wash.
  float bloom=noise(p*0.008)*0.6+noise(p*0.03)*0.4;
- vec3 wash=mix(paper,soft,0.55+0.4*bloom);
+ vec3 wash=mix(paper,soft,0.72+0.18*bloom);
  // Where washes meet, the pigment pools and dries to a darker rim.
  float edge=edges(uv,1.8*u,1.0);
  wash=mix(wash,soft*0.62,clamp(edge,0.0,1.0)*0.75);
@@ -364,10 +460,14 @@ void main(){
  // A few flat tones, hue kept: shading gradients become steps, as on a painted cel.
  float l=luma(col);
  vec3 hue=col/max(l,0.03);
- float steps=(floor(l*4.0)+0.5)/4.0;
- // Further off, where textures shrink to noise, steps would draw contour lines across them: they fade out by 20 m.
- col=clamp(hue*mix(l,steps,0.4*(1.0-smoothstep(8.0,20.0,depth))),0.0,1.0);
- col=mix(vec3(luma(col)),col,1.3)*1.04+0.02;
+ float steps=l<.32?.24:l<.68?.52:.86;
+ // Step brightness only. Cap the common gain rather than clipping separate channels:
+ // wood, grey walls and skin keep their hue instead of neon saturation bands.
+ float stepped=mix(l,steps,.48*(1.0-smoothstep(8.0,20.0,depth)));
+ col=hue*stepped;
+ col/=max(1.0,max(col.r,max(col.g,col.b)));
+ vec3 shadowTint=mix(vec3(.94,.93,.98),vec3(1.0),smoothstep(.25,.55,l));
+ col*=shadowTint;
  // Thick ink, wandering a little as a brush pen does.
  vec2 wob=(vec2(noise(p*0.035),noise(p*0.035+9.0))-0.5)*uTexel*2.5*u;
  // Ink follows the shapes (depth); painted pattern (block walls, small print) gets only a light line.
@@ -384,21 +484,32 @@ void main(){
 void main(){
  float u=unit();
  vec2 p=vUv*uResolution/u;
- vec2 t=uTexel*2.6*u;
+ vec2 t=uTexel*3.2*u;
+ float xx=0.0,yy=0.0,xy=0.0;
+ for(int k=0;k<5;k++){
+  vec2 q=k==0?vUv:k==1?vUv+vec2(2.0*u*uTexel.x,0.0):k==2?vUv-vec2(2.0*u*uTexel.x,0.0):k==3?vUv+vec2(0.0,2.0*u*uTexel.y):vUv-vec2(0.0,2.0*u*uTexel.y);
+  vec3 gx=texture2D(tDiffuse,q+vec2(uTexel.x*u,0.0)).rgb-texture2D(tDiffuse,q-vec2(uTexel.x*u,0.0)).rgb;
+  vec3 gy=texture2D(tDiffuse,q+vec2(0.0,uTexel.y*u)).rgb-texture2D(tDiffuse,q-vec2(0.0,uTexel.y*u)).rgb;
+  xx+=dot(gx,gx);yy+=dot(gy,gy);xy+=dot(gx,gy);
+ }
+ float trace=xx+yy,anisotropy=clamp(sqrt((xx-yy)*(xx-yy)+4.0*xy*xy)/max(trace,.00001),0.0,1.0);
+ float angle=trace>.00001?.5*atan(2.0*xy,xx-yy)+1.570796:0.0;
+ vec2 along=vec2(cos(angle),sin(angle)),across=vec2(-along.y,along.x);
+ mat2 brush=mat2(along*mix(1.0,1.65,anisotropy),across*mix(1.0,.65,anisotropy));
  // A phone or tablet (LIGHT) takes 2x2 samples a square, spread over the same reach, instead of 4x4.
 #ifdef LIGHT
  const int R=1;const float STEP=2.0;const float OFF=0.5;const float N=4.0;
 #else
- const int R=3;const float STEP=1.0;const float OFF=0.0;const float N=16.0;
+ const int R=4;const float STEP=1.0;const float OFF=0.0;const float N=25.0;
 #endif
  vec3 m[4];vec3 s[4];
  for(int k=0;k<4;k++){m[k]=vec3(0.0);s[k]=vec3(0.0);}
  for(int j=0;j<=R;j++)for(int i=0;i<=R;i++){
   vec2 o=vec2(float(i)*STEP+OFF,float(j)*STEP+OFF);
-  vec3 a=texture2D(tDiffuse,vUv+vec2(-o.x,-o.y)*t).rgb;m[0]+=a;s[0]+=a*a;
-  vec3 b=texture2D(tDiffuse,vUv+vec2(o.x,-o.y)*t).rgb;m[1]+=b;s[1]+=b*b;
-  vec3 c=texture2D(tDiffuse,vUv+o*t).rgb;m[2]+=c;s[2]+=c*c;
-  vec3 d=texture2D(tDiffuse,vUv+vec2(-o.x,o.y)*t).rgb;m[3]+=d;s[3]+=d*d;
+  vec3 a=texture2D(tDiffuse,vUv+(brush*vec2(-o.x,-o.y))*t).rgb;m[0]+=a;s[0]+=a*a;
+  vec3 b=texture2D(tDiffuse,vUv+(brush*vec2(o.x,-o.y))*t).rgb;m[1]+=b;s[1]+=b*b;
+  vec3 c=texture2D(tDiffuse,vUv+(brush*o)*t).rgb;m[2]+=c;s[2]+=c*c;
+  vec3 d=texture2D(tDiffuse,vUv+(brush*vec2(-o.x,o.y))*t).rgb;m[3]+=d;s[3]+=d*d;
  }
  vec3 col=vec3(0.0);float best=1e9;
  for(int k=0;k<4;k++){
@@ -406,11 +517,14 @@ void main(){
   float var=v.r+v.g+v.b;
   if(var<best){best=var;col=mean;}
  }
+ // A restrained light-catching ridge between clustered paint dabs, not the canvas grid.
+ float ridge=clamp(length(fwidth(col))*3.0,0.0,1.0);
+ col+=col*.05*ridge;
  // What a painter puts back last, as flat marks over the paint: anything small that is much darker than the stroke
  // painted over it (eyes, brows, a mouth, letters) as a thick dark mark, and anything much lighter (a highlight in an
  // eye, white letters on a dark sign) as a flat light one. The darks are taken from a small ring around the pixel, which
  // thickens each mark so a face reads from across the street. Close by only; further off it is all brushwork.
- float near=1.0-smoothstep(9.0,22.0,viewDepth(vUv));
+ float near=distanceFade(vUv,9.0,22.0);
  float base=luma(col),dark=0.0;
  for(int k=0;k<8;k++){
   float a=float(k)*0.785398;
@@ -426,16 +540,31 @@ void main(){
  vec2 q=mat2(0.8,-0.6,0.6,0.8)*p;
  float stroke=noise(vec2(q.x*0.035,q.y*0.32));
  float weave=(sin(p.x*1.9)*sin(p.y*1.9))*0.5+0.5;
- col*=0.94+0.09*stroke+0.04*weave;
+ float thinPaint=smoothstep(.65,.95,luma(col));
+ col*=1.0+thinPaint*((stroke-.5)*.035+(weave-.5)*.016);
  gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
 }`
 };
+FRAGMENTS.sketchbook=`${PENCIL_GLSL}${WASH_GLSL}${SURFACE_GLSL}
+void main(){float u=unit();vec3 raw=texture2D(tDiffuse,vUv).rgb;float lum=luma(raw);vec2 p=illustrationCoord(vUv);
+vec3 paint=wetEdge(paperWash(mix(vec3(lum),raw,.68),.86),vUv);
+#ifndef SURFACE_STROKES
+paint*=1.0-.32*pencilShade(p,lum);
+#endif
+// Strengthen comic colour only; the approved World sketch wash remains unchanged.
+paint=mix(vec3(luma(paint)),paint,mix(1.0,1.25,uComic));
+float graphite=edges(vUv,1.3*u,.45)*(.36+.38*noise(p*.7));
+vec3 pencil=mix(vec3(.24,.22,.23),vec3(.192,.176,.184),uComic);
+paint=mix(paint,pencil,clamp(graphite,0.0,1.0));gl_FragColor=vec4(clamp(paint,0.0,1.0),1.0);}`;
 
 /** The full fragment shader for a look, or null for Natural. `light` asks for the version a phone or tablet can afford. */
-export function lookFragment(name,{light=false}={}){
+export function lookFragment(name,{light=false,depth=true,normals=false,surfaceStrokes=false}={}){
  const body=FRAGMENTS[name];
- return body?(light?'#define LIGHT\n':'')+COMMON+SPOT+body:null;
+ return body?(light?'#define LIGHT\n':'')+(surfaceStrokes?'#define SURFACE_STROKES\n':'')+(depth?'#define HAS_DEPTH\n':'')+(normals?'#define HAS_NORMALS\n':'')+COMMON+SPOT+body:null;
 }
+
+export const lookNormals=name=>['lines','manga','crayon','flat','print','sketchbook'].includes(name);
+export const lookSurfaceStrokes=name=>['crayon','sketchbook'].includes(name);
 
 /** Whether a look samples the scene's depth (and so must be fed the depth texture). */
 export const lookUsesDepth=name=>/viewDepth|edges\(/.test(FRAGMENTS[name]||'');

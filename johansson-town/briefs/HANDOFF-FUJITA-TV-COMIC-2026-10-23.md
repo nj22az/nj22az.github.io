@@ -1,5 +1,7 @@
 # Fujita television comic — Studio integration, 23 October 2026
 
+Latest: [shared shader implementation and acceptance](HANDOFF-SHARED-SHADERS-2026-10-23.md), superseding the planning-only status below.
+
 ## Owner feedback: shared World and Studio shader improvements — 23 October 2026
 
 Owner supplied Gemini's fourteen-style critique, then explicitly extended the useful points to World. Verified the four relevant shader/material files against main `c43be1b4` by blob hash. Recorded the corrected diagnosis and staged implementation in [the shared illustration shader plan](SHARED-SHADER-ILLUSTRATION-PLAN-2026-10-23.md). Important: toon materials, 45-degree variable-density dots, CRT curvature, fixed woodblock inks, watercolour warp/pooling and a Kuwahara filter already exist. Studio After effects lacks real depth/normals, and both Studio wrappers force LIGHT. World/Studio use the same GLSL factory but do not supply equivalent material/capture data. Next work: common capability/quality integration and Manga/Cartoon/Oil before/after proof; auxiliary capture and surface-anchored strokes follow. This is a verified plan only, with no new shader implementation, visual deployment or device acceptance. Existing fourteen variants and PDF are unchanged. Planning source commit `715244b8` on local branch `codex/fujita-tv-comic-2026-10-23`; this documentation update goes to main, with no shader implementation PR yet. Validation: code/blob review, existing-feature audit and `git diff --check`; no runtime tests required for documentation.

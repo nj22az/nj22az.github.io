@@ -21,48 +21,50 @@ const PALETTES={
  print:{sky:'#2e5c8a',ground:'#7d9a6a',wall:'#f1e6cc',roof:'#c8452e',door:'#2a2420',sun:'#f1e6cc'},
  watercolour:{sky:'#bcdcf0',ground:'#bfe0a8',wall:'#fbf4e6',roof:'#f08a7a',door:'#c49a7c',sun:'#ffe08a'},
  flat:{sky:'#6fc3ff',ground:'#7ed957',wall:'#fff6d8',roof:'#ff5a3c',door:'#8a5a2b',sun:'#ffd93b'},
+ sketchbook:{sky:'#dce6df',ground:'#b9c6a1',wall:'#f5ead5',roof:'#c8a191',door:'#958778',sun:'#f2e6bd'},
  oil:{sky:'#5e8fc4',ground:'#4f8a3a',wall:'#e9d3a8',roof:'#a8321f',door:'#4a2c18',sun:'#f2b632'},
 };
 
 /** The little scene in one look, as an SVG string (48×48). Every swatch is the same house, so the style is the difference. */
 export function lookSwatch(id,uid=id){
- const p=PALETTES[id]||PALETTES.none,pixel=id==='pocket'||id==='snes';
- const ink=id==='lines'?'#2b2b33':id==='flat'?'#2b2121':id==='manga'||id==='print'?'#141418':id==='crayon'?'#6c6670':id==='watercolour'?'#9a8f88':null;
- const line=ink?` stroke="${ink}" stroke-width="${id==='flat'?2.6:id==='manga'||id==='print'?2:id==='crayon'||id==='watercolour'?1.2:1.5}" stroke-linejoin="round"${id==='watercolour'?' stroke-opacity=".55"':''}`:'';
+ const media={sketchbook:'crayon'}[id]||id;
+ const p=PALETTES[id]||PALETTES.none,pixel=media==='pocket'||media==='snes';
+ const ink=media==='lines'?'#2b2b33':media==='flat'?'#2b2121':media==='manga'||media==='print'?'#141418':media==='crayon'?'#6c6670':media==='watercolour'?'#9a8f88':null;
+ const line=ink?` stroke="${ink}" stroke-width="${media==='flat'?2.6:media==='manga'||media==='print'?2:media==='crayon'||media==='watercolour'?1.2:1.5}" stroke-linejoin="round"${media==='watercolour'?' stroke-opacity=".55"':''}`:'';
  const defs=[],over=[];
- if(id==='manga'){
+ if(media==='manga'){
   defs.push(`<pattern id="d${uid}" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><circle cx="2" cy="2" r="1.05" fill="#141418"/></pattern>`,
    `<pattern id="h${uid}" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="1" height="3" fill="#141418"/></pattern>`);
   over.push(`<rect width="48" height="30" fill="url(#d${uid})"/>`,`<rect y="30" width="48" height="18" fill="url(#h${uid})"/>`);
  }
- if(id==='crayon'){
+ if(media==='crayon'){
   defs.push(`<pattern id="c${uid}" width="3.2" height="3.2" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)"><rect width="1.1" height="3.2" fill="#ffffff" opacity=".55"/></pattern>`);
  }
- if(id==='print'){
+ if(media==='print'){
   // The printed sky: Prussian blue at the top, fading to paper at the horizon.
   defs.push(`<linearGradient id="b${uid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f3a5f"/><stop offset="1" stop-color="#f1e6cc"/></linearGradient>`);
   over.push(`<rect width="48" height="30" fill="url(#b${uid})"/>`);
  }
- if(id==='watercolour')defs.push(`<filter id="w${uid}" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence baseFrequency=".08" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="2.5"/></filter>`);
- if(id==='oil')defs.push(`<pattern id="o${uid}" width="6" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(-20)"><path d="M0 2h4" stroke="#fff" stroke-opacity=".28" stroke-width="1.4" stroke-linecap="round"/></pattern>`);
- if(id==='crt')defs.push(`<pattern id="s${uid}" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="2" height="1" fill="#000" opacity=".28"/></pattern>`);
+ if(media==='watercolour')defs.push(`<filter id="w${uid}" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence baseFrequency=".08" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="2.5"/></filter>`);
+ if(media==='oil')defs.push(`<pattern id="o${uid}" width="6" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(-20)"><path d="M0 2h4" stroke="#fff" stroke-opacity=".28" stroke-width="1.4" stroke-linecap="round"/></pattern>`);
+ if(media==='crt')defs.push(`<pattern id="s${uid}" width="2" height="2" patternUnits="userSpaceOnUse"><rect width="2" height="1" fill="#000" opacity=".28"/></pattern>`);
  // The pixel looks get a stepped roof and a square sun, on whole pixels.
  const roof=pixel?`<path d="M12 22h24v-3h-3v-3h-3v-3h-3v-3h-6v3h-3v3h-3v3h-3z" fill="${p.roof}"/>`
   :`<path d="M11 22L24 10L37 22Z" fill="${p.roof}"${line}/>`;
  const sun=pixel?`<rect x="34" y="5" width="8" height="8" fill="${p.sun}"/>`:`<circle cx="38" cy="9" r="5" fill="${p.sun}"${line}/>`;
  const scene=[
   `<rect width="48" height="30" fill="${p.sky}"/>`,`<rect y="30" width="48" height="18" fill="${p.ground}"/>`,
-  id==='lines'?'<path d="M0 30H48" stroke="#2b2b33" stroke-width="1.2"/>':'',
+  media==='lines'?'<path d="M0 30H48" stroke="#2b2b33" stroke-width="1.2"/>':'',
   ...over,sun,
   `<rect x="14" y="21" width="20" height="16" fill="${p.wall}"${line}/>`,roof,
   `<rect x="22" y="28" width="5" height="9" fill="${p.door}"${line}/>`,
-  id==='crayon'?`<rect width="48" height="48" fill="url(#c${uid})"/>`:'',
-  id==='oil'?`<rect width="48" height="48" fill="url(#o${uid})"/>`:'',
+  media==='crayon'?`<rect width="48" height="48" fill="url(#c${uid})"/>`:'',
+  media==='oil'?`<rect width="48" height="48" fill="url(#o${uid})"/>`:'',
   // Tilt-shift: the top and bottom of the picture go soft.
-  id==='tilt'?`<rect width="48" height="13" fill="#fff" opacity=".55"/><rect y="38" width="48" height="10" fill="#fff" opacity=".55"/>`:'',
-  id==='crt'?`<rect width="48" height="48" fill="url(#s${uid})"/><rect x="1" y="1" width="46" height="46" rx="9" fill="none" stroke="#101418" stroke-width="3"/>`:'',
+  media==='tilt'?`<rect width="48" height="13" fill="#fff" opacity=".55"/><rect y="38" width="48" height="10" fill="#fff" opacity=".55"/>`:'',
+  media==='crt'?`<rect width="48" height="48" fill="url(#s${uid})"/><rect x="1" y="1" width="46" height="46" rx="9" fill="none" stroke="#101418" stroke-width="3"/>`:'',
  ].join('');
- const body=id==='watercolour'?`<g filter="url(#w${uid})">${scene}</g>`:scene;
+ const body=media==='watercolour'?`<g filter="url(#w${uid})">${scene}</g>`:scene;
  return `<svg viewBox="0 0 48 48" aria-hidden="true"${pixel?' shape-rendering="crispEdges"':''}><defs>${defs.join('')}</defs>${body}</svg>`;
 }
 

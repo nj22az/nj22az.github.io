@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createInkPipeline} from '../src/render/ink-pipeline.js';
-import {LOOKS,LOOK_KEY,isLook,clearSavedLook,lookCSS,lookNeedsPipeline,lookFlatten,lookFragment} from '../src/render/looks.js';
+import {LOOKS,LOOK_KEY,isLook,clearSavedLook,lookCSS,lookNeedsPipeline,lookFlatten,lookFragment,normalLook} from '../src/render/looks.js';
 
 function fakeRenderer(){
  const calls=[];
@@ -18,7 +18,7 @@ function fakeRenderer(){
 const renders=renderer=>renderer.calls.filter(([kind])=>kind==='render');
 
 test('every look but Natural has a shader of its own, and the menu offers the requested set',()=>{
- assert.deepEqual(Object.keys(LOOKS),['none','mono','sepia','pocket','snes','lines','crt','manga','crayon','tilt','print','watercolour','flat','oil']);
+ assert.deepEqual(Object.keys(LOOKS),['none','mono','sepia','pocket','snes','lines','crt','manga','crayon','tilt','print','watercolour','flat','oil','sketchbook']);
  assert.equal(lookFragment('none'),null);
  for(const name of Object.keys(LOOKS).filter(n=>n!=='none')){
   const source=lookFragment(name);
@@ -59,7 +59,7 @@ test('reduced graphics keep the colour looks as a CSS filter and offer nothing t
  assert.equal(lookCSS('none'),'none');
  assert.match(lookCSS('mono'),/grayscale/);
  assert.match(lookCSS('sepia'),/sepia/);
- for(const name of ['pocket','snes','lines','crt','manga','crayon','tilt','print','watercolour','flat','oil'])assert.ok(lookNeedsPipeline(name),name);
+ for(const name of ['pocket','snes','lines','crt','manga','crayon','tilt','print','watercolour','flat','oil','sketchbook'])assert.ok(lookNeedsPipeline(name),name);
  assert.ok(!lookNeedsPipeline('none')&&!lookNeedsPipeline('mono'));
 });
 
@@ -70,7 +70,15 @@ test('the oil painting has a lighter version for phones and tablets, and every l
  for(const name of Object.keys(LOOKS).filter(n=>n!=='none'))assert.match(lookFragment(name,{light:true}),/void main\(\)\{/,name);
 });
 
-test('only the Cartoon look takes the surface photographs away',()=>{
+test('only Cartoon takes the surface photographs away',()=>{
  assert.deepEqual(Object.keys(LOOKS).filter(n=>lookFlatten(n)!==1),['flat']);
  assert.equal(lookFlatten('flat'),0);
 });
+
+test('all retained styles keep the World ink prepass',()=>{
+ const renderer=fakeRenderer(),render=renderer.render.bind(renderer),seen=[];renderer.render=scene=>{const u=scene?.children?.[0]?.material?.uniforms;if(u?.uInkEnabled)seen.push(u.uInkEnabled.value);render(scene);};const pipeline=createInkPipeline(renderer,{superScale:1});
+ for(const look of ['oil','flat','sketchbook','none']){pipeline.setLook(look);pipeline.render(r=>r.render());}
+ assert.deepEqual(seen,[1,1,1,1]);pipeline.dispose();
+});
+
+test('retired experiments are absent from the picker and normalize to clean styles',()=>{for(const [old,next] of Object.entries({storybook:'flat',sunday:'flat',gouache:'oil'})){assert.equal(isLook(old),false);assert.equal(lookFragment(old),null);assert.equal(normalLook(old),next);}assert.equal(normalLook('__proto__'),'none');assert.equal(normalLook('sketchbook'),'sketchbook');});

@@ -390,6 +390,7 @@ window.__JOHANSSON_LOOK__={get ink(){return !!pipeline;},get inkFailures(){retur
  // The chosen look (Town tools › Look), readable and settable for audits.
  get style(){return look;},setStyle:name=>setLook(name),
  flatten:v=>celPass.setFlatten(v),
+ focus:v=>pipeline?.setLookFocus(v),
  get lights(){return {ambient,bounce,uplight,sun};},
  get state(){return pipeline?.state||null;}};
 let celTick=0;
