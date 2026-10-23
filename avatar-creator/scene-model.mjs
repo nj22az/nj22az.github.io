@@ -9,7 +9,7 @@ export const LOCATIONS=Object.freeze([
  ['fujita-shed','Fujita’s television shed'],['sakura','Sakura Shōten'],['sakura-street','Outside Sakura'],['minato','Minato Izakaya'],
  ['dock-workshop','Chin & Tetsuo Repairs'],['sato-ramen','Sato Ramen'],['books','Front-Row Books'],['onsen','Umi-no-yu lobby'],
  ['classroom','Island classroom'],['town-hall','Mayor’s office'],['harbour','Harbour'],['pier','Outer pier'],
- ['park','Harbour Park'],['garden','Japanese garden'],['rainflower','Rainflower Lane']
+ ['seawall','Seawall bench'],['park','Harbour Park'],['garden','Japanese garden'],['rainflower','Rainflower Lane']
 ]);
 // Poses and faces are World's own lists (scene-catalogue.mjs); a saved scene keeps any pose or face World knows.
 export {POSES,EXPRESSIONS} from './scene-catalogue.mjs?v=20261020-acting';

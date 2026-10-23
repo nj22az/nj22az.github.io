@@ -210,7 +210,7 @@ async function exportAsset({key,params=null,card=null,png=true}={}){
 
 let comicWorkspace;
 async function comicAfterEffects(options={}){
- const {createSceneWorkspace}=await import('./scene.js?v=20261023-creator-mark');
+ const {createSceneWorkspace}=await import('./scene.js?v=20261023-seawall');
  if(!comicWorkspace){comicWorkspace=createSceneWorkspace({getCharacter:()=>({}),onEdit(){},onMode(){}});comicWorkspace.root.hidden=true;document.body.append(comicWorkspace.root);}
  return comicWorkspace.afterEffects(options);
 }

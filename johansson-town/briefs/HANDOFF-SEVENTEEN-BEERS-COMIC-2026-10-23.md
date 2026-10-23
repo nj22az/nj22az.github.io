@@ -1,0 +1,13 @@
+# Seventeen Beers - Risograph sea-wall comic
+
+Owner request, 23 October 2026: Fujita sits happily on the sea-wall bench; Johansson walks over and says "You look happy." Fujita smiles: "Thanks for noticing. I just had 17 beers." No extra joke, warning, teaching point or reaction balloon. Owner singled out Risograph as particularly useful.
+
+Produced in actual Johansson Studio with the shared `riso` shader and canonical `Mr Fujita` and `Johansson` recipes. Three square panels in a 3200 x 1079 strip. Once-only editable Johansson creator mark on the final panel. The bench is the existing World west-promenade seat `seawall-bench-4`, at (-38.35, 4), not duplicated geometry. Real seawall, tetrapods and town in the background. No construction/remodelling, game shader changes or World geometry changes.
+
+Added a reusable `seawall` Studio location and `seawall-view.mjs` camera. The existing generic outdoor builder supplies the real scene; no change to the World builder required. Registered the location and cache-versioned the affected Studio imports. `seventeen-beers-comic.mjs` is the saved editable story factory; `render-seventeen-beers.mjs` reproduces the capture. Fujita has a bounded recorded head glance and smile, and Johansson uses Walk for the approach then Idle. Iterated framing to keep both characters in the opening panel and avoid overlapping heads. Dialogue remains separate from clean picture layers.
+
+Branch `codex/seventeen-beers-comic-2026-10-23`, based on main `e9d53aa3fa6d544a80e0674d0ad4f9bab8b8794b`. Local implementation commit `0a2234dcb3b12de6baf0e3a94796a204f658dd0d`. Source is intended for main so the delivered project opens with its new camera location; no Linux release required.
+
+Validation: twelve focused recipe, creator-mark, scene model and current-runtime checks passed; final recipe test passed again after camera/acting refinements. Actual Chromium/SwiftShader rendered all three scenes; strip inspected for speech-bubble clearance, complete character framing and readable bench placement. Real Studio After effects reopened the layered project, edited/removed/restored its creator mark and passed its image round-trip checks with zero warnings. No physical-device performance assertion. Runtime remains current without rebuilding since these are avatar-only changes.
+
+Delivered `deliverables/seventeen-beers/seventeen-beers-risograph.png` and `seventeen-beers.studio.json`, both saved persistently. The latter retains recipes, poses, camera, creator mark, clean plates and lettering for all three panels. Existing comics and shader kernels unchanged. Next: owner visual review; preserve the simple three-beat gag and continue Minato priority.

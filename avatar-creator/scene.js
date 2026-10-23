@@ -1,3 +1,4 @@
+import {SEAWALL_VIEW} from './seawall-view.mjs';
 import {CREATOR_MARK_KEY,normalCreatorMark,projectCreatorMark,drawCreatorMark} from './creator-mark.mjs';
 import {stageComicPresentation} from './scene-comic-presentation.js';
 import {createComicEffects} from './comic-effects.js?v=20261023-print-media';
@@ -29,7 +30,7 @@ import {normalizeRecipe} from '../johansson-town/src/avatars/recipe.js';
 import {drawCaptions,comicLayout,FORMATS} from '../johansson-town/src/photo/layout.js';
 import {buildSceneWorld} from './scene-world.js?v=20261023-fujita';
 import {poseSceneAvatar,placeSceneAvatar,movingPose} from './scene-avatar.js?v=20261023-fujita';
-import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,emptyScene,normalizeScene,addCharacter,removeCharacter,restoreCharacter,panelOrder,text,placementOf,applyPlacement,samePlacement} from './scene-model.mjs?v=20261023-print-media';
+import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,emptyScene,normalizeScene,addCharacter,removeCharacter,restoreCharacter,panelOrder,text,placementOf,applyPlacement,samePlacement} from './scene-model.mjs?v=20261023-seawall';
 import {pickMoment,applyMoment,aim} from './scene-moments.mjs?v=20261011-2';
 import {POSE_GROUPS,EXPRESSION_GROUPS,seatedPose} from './scene-catalogue.mjs?v=20261023-fujita';
 import {turnToward,touchAngle,twistTurn,nudgeStep,placeToolbar,pickBox,nearestSeat} from './scene-controls.mjs?v=20261011-2';
@@ -130,7 +131,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  resident.append(optgroup('Residents of Johansson World',RESIDENT_NAMES.map(n=>new Option(nameOf(n),n))),
   ...Object.keys(STUDIO_CHARACTERS).length?[optgroup('Studio characters',Object.entries(STUDIO_CHARACTERS).map(([id,c])=>new Option(c.name,'studio:'+id)))]:[],
   optgroup('Other designs',[new Option('Thuận · original','design:thuan-original')]));
- for(const [id,name] of LOCATIONS){const b=document.createElement('button');b.type='button';b.dataset.location=id;b.setAttribute('aria-label',name);const img=document.createElement('img');img.src=id==='fujita-shed'?'../johansson-town/assets/images/feed/pier.webp':id==='classroom'?'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="240" height="180"><rect width="240" height="180" fill="#eee4cc"/><rect x="25" y="22" width="190" height="82" fill="#355d50"/><text x="120" y="71" text-anchor="middle" fill="white" font-size="22">Classroom</text><path d="M50 130H190M65 130V165M175 130V165" stroke="#795c3b" stroke-width="8"/></svg>'):`../johansson-town/assets/images/feed/${id}.webp`;img.alt='';img.loading='lazy';const label=document.createElement('span');label.textContent=name;b.append(img,label);b.onclick=()=>{state.location=id;state.camera={orbit:0,elevation:0,zoom:1};for(const a of state.actors){a.seat='';a.x=0;a.z=0;}forget();changed();sync();announce(name+' selected. Continue to Add characters.');};$('.scene-locations').append(b);}
+ for(const [id,name] of LOCATIONS){const b=document.createElement('button');b.type='button';b.dataset.location=id;b.setAttribute('aria-label',name);const img=document.createElement('img');img.src=['fujita-shed','seawall'].includes(id)?'../johansson-town/assets/images/feed/pier.webp':id==='classroom'?'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="240" height="180"><rect width="240" height="180" fill="#eee4cc"/><rect x="25" y="22" width="190" height="82" fill="#355d50"/><text x="120" y="71" text-anchor="middle" fill="white" font-size="22">Classroom</text><path d="M50 130H190M65 130V165M175 130V165" stroke="#795c3b" stroke-width="8"/></svg>'):`../johansson-town/assets/images/feed/${id}.webp`;img.alt='';img.loading='lazy';const label=document.createElement('span');label.textContent=name;b.append(img,label);b.onclick=()=>{state.location=id;state.camera={orbit:0,elevation:0,zoom:1};for(const a of state.actors){a.seat='';a.x=0;a.z=0;}forget();changed();sync();announce(name+' selected. Continue to Add characters.');};$('.scene-locations').append(b);}
  $('.scene-hint').textContent=touch?'Tap a character to select them. Drag to move: they snap onto seats, counters and beside people. Twist two fingers to turn.':'Click a character to select them. Drag to move: they snap onto seats, counters and beside people. Hold Alt (Option) while dragging to place freely. Q and E turn, the arrow keys nudge, Delete removes.';
  const snapSwitch=$('[data-setting="snap"]');snapSwitch.checked=snapOn;
  snapSwitch.addEventListener('change',()=>{snapOn=snapSwitch.checked;try{localStorage.setItem(SNAP_KEY,snapOn?'1':'0');}catch{}announce(snapOn?'Characters snap onto seats, counters and beside people.':'Characters go exactly where you drop them.');});
@@ -278,7 +279,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  async function loadWorld(id){
   if(world&&worldId===id)return world;
   views??=await fetch(new URL('../johansson-town/assets/images/feed/views.json',import.meta.url)).then(r=>{if(!r.ok)throw Error('Locations unavailable');return r.json();});
-  views.classroom={wide:CLASSROOM_VIEW};
+  views.classroom={wide:CLASSROOM_VIEW};views.seawall=SEAWALL_VIEW;
   const next=await buildSceneWorld(id,views,townData);townData=next.townData||townData;world?.dispose();world=next;worldId=id;renderer?.renderLists.dispose();
   field('seat').replaceChildren(new Option('Stand on ground',''),...world.seats.filter(s=>Math.hypot(s.position[0]-world.origin[0],s.position[2]-world.origin[2])<SNAP.reach).map(s=>{const o=new Option(s.label,s.id);o.dataset.label=s.label;return o;}));
   return world;
