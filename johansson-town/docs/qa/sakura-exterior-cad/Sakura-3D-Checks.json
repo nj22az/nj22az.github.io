@@ -1,0 +1,53 @@
+{
+  "initial": {
+    "pointLights": 0,
+    "invalidTransforms": 0,
+    "boxes": 2864,
+    "labels": [
+      "さくら商店",
+      "手洗い",
+      "休憩室",
+      "酒・ソフトドリンク",
+      "お弁当・おにぎり",
+      "パン・カップ麺",
+      "菓子・おつまみ",
+      "日用品・文具",
+      "将来用"
+    ],
+    "signWireTop": 2.8,
+    "ceilingHeight": 2.8,
+    "draws": 49
+  },
+  "iso": {
+    "calls": 49,
+    "modeVisible": false,
+    "error": ""
+  },
+  "door": {
+    "calls": 45,
+    "modeVisible": false,
+    "error": ""
+  },
+  "clerk": {
+    "calls": 53,
+    "modeVisible": false,
+    "error": ""
+  },
+  "office": {
+    "calls": 48,
+    "modeVisible": false,
+    "error": ""
+  },
+  "roof": {
+    "calls": 66,
+    "modeVisible": true,
+    "error": ""
+  },
+  "phone": {
+    "width": 390,
+    "scrollWidth": 390,
+    "panelOpen": false
+  },
+  "delivery": "self-contained file://",
+  "errors": []
+}
