@@ -8,7 +8,7 @@ export function buildSakuraShotenInterior(THREE){
  function group(n){if(!groups[n]){groups[n]=new THREE.Group();groups[n].name=n;root.add(groups[n]);}return groups[n];}
  function box(g,x,z,w,d,h,mat,y=0,name=''){
   const key=g+':'+mat;if(!batches.has(key))batches.set(key,{g,mat,items:[]});batches.get(key).items.push({x,z,w,d,h,y,name});
-  if(name)solids.push({name,x,z,w,d,h,y});
+  solids.push({g,name,x,z,w,d,h,y});
  }
  const textMatCache=new Map();
  function text(g,x,z,y,w,jp,en='',color='#285b48',yaw=0){
@@ -43,12 +43,12 @@ export function buildSakuraShotenInterior(THREE){
  text('RoomLabels',7800,8190,2480,2600,'酒・ソフトドリンク','BEER / SAKE / DRINKS','#3e6578');
  // Receiving racks leave the relocated rear door and cold-room lane unobstructed.
  for(let y=150;y<1850;y+=420){box('Fixtures',13400,8340,500,1700,30,'steel',y);productRun('Stock',13430,8380,400,1600,y+30,9,3);}
- box('Fixtures',12350,10040,900,500,800,'blue');box('Fixtures',10600,8400,600,800,90,'steel',80);box('Fixtures',10600,9080,600,45,800,'steel');
+ box('Fixtures',12350,10040,900,500,800,'blue');box('Fixtures',12500,9000,600,800,90,'steel',80);box('Fixtures',12500,9680,600,45,800,'steel');
  // Raised shift office with openings, low desk and observation glazing.
  box('Floors',11400,6200,2500,2040,150,'backfloor');
  box('Partitions',11400,6200,90,2040,850,'partition',150);box('Partitions',11400,6200,90,2040,500,'partition',2100);box('Partitions',11420,6350,25,1200,1000,'glass',1100);
  for(const[x,w]of[[11400,800],[13100,800]])box('Partitions',x,6200,w,100,2600,'partition');
- for(const[x,w]of[[10400,1600],[12900,1000]])box('Partitions',x,8240,w,100,2600,'partition');
+ for(const[x,w]of[[11400,600],[12900,1000]])box('Partitions',x,8240,w,100,2600,'partition');
  box('Fixtures',13200,6660,600,1100,720,'wood',150);box('Fixtures',11550,7660,450,450,650,'steel',150);box('Fixtures',12700,7100,450,450,420,'blue',150);
  box('Fixtures',13300,6900,350,400,300,'beige',870);box('Fixtures',13270,6930,25,320,220,'screen',920);
  // Full west chiller. Thin product cards sit on shelves instead of intersecting them.
