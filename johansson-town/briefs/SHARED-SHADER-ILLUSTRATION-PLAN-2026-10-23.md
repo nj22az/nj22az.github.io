@@ -1,6 +1,6 @@
 # Shared World and Studio illustration-shader improvement plan
 
-23 October 2026. Status: **code-verified review and proposed implementation; no shader changes implemented by this document.**
+23 October 2026. Status: **implemented on the review branch; see [implementation handover](HANDOFF-SHARED-SHADERS-2026-10-23.md) for current checks, evidence and remaining acceptance.**
 
 The owner supplied Gemini's review of all fourteen Thuan comic variations and explicitly extended its useful points
 to World as well as Studio. Treat the visual observations as review evidence, not as an authoritative description of

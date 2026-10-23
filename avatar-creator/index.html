@@ -26,10 +26,10 @@
 </head>
 <body class="creator-page standalone-studio">
   <noscript>Enable JavaScript to create your character.</noscript>
-  <section id="comic-start" hidden style="max-width:1400px;margin:24px auto;padding:16px;font:18px system-ui"><h1>Johansson Studio comic</h1><img id="comic-start-image" src="/avatar-creator/comics/fujita-tv.svg?v=20261023-bubble" alt="Fujita’s three-panel TV comic" style="width:100%;height:auto" hidden><p id="comic-start-note" role="status">Opening the editable scenes…</p><p><a href="/avatar-creator/comics/fujita-tv.html">View Fujita’s comic without the 3D editor</a></p><button onclick="location.reload()">Retry opening Studio</button></section>
+  <section id="comic-start" hidden style="max-width:1400px;margin:24px auto;padding:16px;font:18px system-ui"><h1>Johansson Studio comic</h1><img id="comic-start-image" src="/avatar-creator/comics/fujita-tv.svg?v=20261023-illustration" alt="Fujita’s three-panel TV comic" style="width:100%;height:auto" hidden><p id="comic-start-note" role="status">Opening the editable scenes…</p><p><a href="/avatar-creator/comics/fujita-tv.html">View Fujita’s comic without the 3D editor</a></p><button onclick="location.reload()">Retry opening Studio</button></section>
   <script>if(new URLSearchParams(location.search).get('comic')==='fujita-tv'||location.hash.startsWith('#studio=')){document.getElementById('comic-start').hidden=false;document.getElementById('comic-start-image').hidden=new URLSearchParams(location.search).get('comic')!=='fujita-tv';}window.addEventListener('unhandledrejection',()=>{const n=document.getElementById('comic-start-note');if(n)n.textContent='The editor could not finish loading. The comic preview remains available. Use Retry to try again.';});</script>
   <p id="loading" role="status">Loading Johansson Studio…</p>
-  <script type="module" src="/avatar-creator/studio.js?v=20261023-thuan-comic"></script>
+  <script type="module" src="/avatar-creator/studio.js?v=20261023-illustration"></script>
 </body>
 </html>
 

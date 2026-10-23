@@ -349,3 +349,9 @@ Whether to raise the host's MCP timeout is the creator's decision, and no reposi
 Native workshop authoring: `world_room_open`, `world_room_check`, `world_room_publish`, `world_room_rollback`.
 See [WORKSHOP-ROUNDTRIP.md](WORKSHOP-ROUNDTRIP.md) for the revision-checked World round trip, imported props and intentional
 floating. Publishing updates local World data; runtime build, review and git deployment remain explicit steps.
+
+## Shared illustration capture — 23 October 2026
+
+Fresh scene captures retain optional version-1 `capture` metadata: opaque RGB24 depth PNG, normal PNG, dimensions, near/far planes, inverse projection and camera-world matrices, sky depth and focus settings. Import validates PNG headers, dimensions and finite bounded metadata. Legacy picture-only projects still open; geometry-dependent effects explain their 2D approximation. Re-capture through Edit scene for the full Cartoon material treatment or rest-space pencil strokes. `baseLook` prevents applying the same baked effect twice.
+
+`comic_after_effects` panel edits accept `focus: {mode: "depth" | "tilt", distance, range}`. Captured Miniature panels expose the same controls in After effects. Preview uses a smaller shader sample budget; PNG export uses full quality. Lettering, translation and added assets remain editable after the picture shader. See [implementation handover](../../johansson-town/briefs/HANDOFF-SHARED-SHADERS-2026-10-23.md).
