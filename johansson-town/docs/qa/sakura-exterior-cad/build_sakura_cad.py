@@ -81,8 +81,9 @@ d.label(6950,11200,'14,260 x 11,000 EXTERIOR / 13,900 x 10,640 CLEAR BOX',8)
 d.dim((-180,-180),(14080,-180),-1450,'14,260 fixed shell')
 d.dim((-180,-180),(-180,10820),-1050,'11,000 fixed shell',True)
 # Rear 2,400 mm service strip; room allocations are gross partition zones.
-for x,w in [(0,3300),(4200,1000),(5200,5200),(10400,1600),(12900,1000)]:
+for x,w in [(0,3300),(4200,1000),(5200,5200),(11400,600),(12900,1000)]:
  if x!=5200:d.line(x,8240,x+w,8240,'WALLS')
+d.line(10400,8240,11400,8240,'STAFF');d.label(10900,7970,'STOCK ACCESS 1,000',5)
 d.line(3300,8240,4200,8240,'STAFF');d.label(3750,7990,'STAFF ONLY',5)
 for x in [1400,2400]:
  for a,b in [(8240,9300),(10200,10640)]:d.line(x,a,x,b,'WALLS')
@@ -108,7 +109,7 @@ d.line(10400,9300,10400,10200,'STAFF');d.label(10150,9740,'900 DOOR',5,angle=90)
 d.label(12050,10580,'RECEIVING',6)
 fixture(d,'DRY','DRY STOCK',13400,8340,500,1700,'STAFF','#f1e8d7',False);d.label(13650,9190,'DRY STOCK',5,angle=90)
 fixture(d,'RETURN','EMPTIES',12350,10040,900,500,'STAFF','#f1e8d7')
-fixture(d,'CART','STOCK CART',10600,8400,600,800,'STAFF','#f1e8d7',False);d.label(10900,8800,'CART',5)
+fixture(d,'CART','STOCK CART',12500,9000,600,800,'STAFF','#f1e8d7',False);d.label(12800,9400,'CART',5)
 # Explicitly proposed rear-door relocation, not the previous 7,850 mm source axis.
 d.line(10975,10640,12025,10640,'STAFF')
 d.arrow([(11500,11200),(11500,9760),(10600,9760)])
