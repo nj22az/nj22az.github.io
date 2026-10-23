@@ -118,6 +118,8 @@ assets/
 
 ## Johansson Town
 
+**Owner priority, 23 October 2026:** making Minato island impeccable and immersive is priority 1. The third city island is low priority and deferred. Retain this research and proposal for later; do not begin further city design, prototyping or implementation unless the owner explicitly reprioritises it.
+
 **Purpose: Johansson Town is a storytelling game.** Everything it does should tell stories — to teach,
 to make people laugh, for drama, or just to be silly — and at the highest quality we can reach.
 Exploring the town is the fun, awesome bonus: every place, person and item discovered feeds the
@@ -139,6 +141,7 @@ that makes more or better stories.
   Yokosuka): the catalogue of real home interiors, convenience stores, shops, bars, harbour and back lanes we plan
   Minato's from. The owner (19 October 2026): its 1986 does not matter, small-town Japan keeps its old parts in the
   90s and today. Study and measure there, never copy: `johansson-town/docs/research/new-yokosuka.md`.
+- **City construction reference: Slop New York** (<https://github.com/mrdoob/slop-newyork>): spatial batching, road graphs and traffic research for the proposed third city island, paired with New Yokosuka for Japanese streets and rooms. Read `johansson-town/docs/research/slop-newyork.md` and `johansson-town/briefs/THIRD-CITY-ISLAND-2026-10-23.md`. This is a planning reference; retain the current engine and review attributed code adaptations separately.
 - **The town's trade** (`johansson-town/src/commerce/merchandising.js`): Sakura Shōten, Thuan's outright, is a konbini
   *and* the town's supplier of everyday goods, from its depot in the Quay Warehouse (Sakura Trading), and of flowers and
   decorations since Mrs Kinjō retired (the consolidation's ruling 3; Rainflower Florist no longer supplies anything).
