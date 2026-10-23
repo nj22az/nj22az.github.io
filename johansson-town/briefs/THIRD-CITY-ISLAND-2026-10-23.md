@@ -4,6 +4,8 @@
 New Yokosuka. **Status: planning only; no third island is playable or connected to a ferry in this change.**
 Island name, final position, businesses, cast additions and sailing times below remain proposals.
 
+**Owner priority, 23 October 2026:** making Minato island impeccable and immersive is priority 1. The third city island is low priority and deferred. Retain this research and proposal for later; do not begin further city design, prototyping or implementation unless the owner explicitly reprioritises it.
+
 ## Purpose and identity
 
 Create a separate, denser Japanese port city within Johansson World's 1997 Okinawan setting. Minato stays the
@@ -121,5 +123,4 @@ Future runtime PRs run the World guard, focused ground/collision/navigation/sche
 moving traffic at crossings, contact and z-fighting. Exercise browser and Linux paths; record physical-device limits.
 Present visual evidence before merging visual changes, following the repository's working rules.
 
-**Next concrete task:** produce the phase-1 measured site plan and room plans before any city geometry reaches the
-main world. Confirm the first block's proportions and its complete return journey, then implement that block alone.
+**Deferred next step, only after explicit reprioritisation:** produce the phase-1 measured site plan and room plans before any city geometry reaches the main world. Current work takes priority on Minato's quality and immersion.
