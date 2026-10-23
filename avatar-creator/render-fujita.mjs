@@ -13,9 +13,10 @@ const result=await page.evaluate(async()=>{
  const {createSceneWorkspace}=await import('/avatar-creator/scene.js');
  const work=createSceneWorkspace({getCharacter:()=>recipeFor('Johansson'),onEdit(){},onMode(){}});
  const {fujitaComic}=await import('/avatar-creator/fujita-comic.mjs');
- const scenes=fujitaComic(recipeFor),panels=[];for(const scene of scenes){const r=await work.renderScene(scene);panels.push({image:r.image,scene:r.scene,framing:r.framing});}
+ const scenes=fujitaComic(recipeFor),panels=[];for(const scene of scenes){const r=await work.renderScene(scene);panels.push({image:r.image,scene:r.scene,layer:r.layer,framing:r.framing});}
  const comic=await work.renderComic(scenes,{layout:'strip'});return {panels,comic};
  });
+await fs.writeFile(root+'/avatar-creator/comics/fujita-tv.layers.json',JSON.stringify({format:'johansson-studio-layers',version:1,panels:result.panels.map(p=>({scene:p.scene,...p.layer}))}));
 for(let i=0;i<result.panels.length;i++)await fs.writeFile(out+`/panel-${i+1}.png`,Buffer.from(result.panels[i].image.split(',')[1],'base64'));
 await fs.writeFile(out+'/fujita-tv.png',Buffer.from(result.comic.image.split(',')[1],'base64'));
 await fs.writeFile(out+'/fujita-tv.studio.json',JSON.stringify(result.comic.project));
