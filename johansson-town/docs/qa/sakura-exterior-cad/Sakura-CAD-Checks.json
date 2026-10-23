@@ -1,0 +1,14 @@
+{
+  "dxf_audit_errors": 0,
+  "dxf_audit_fixes": 0,
+  "units": "millimetres",
+  "floor_polygon_area_m2": 138.75,
+  "entities": 427,
+  "fixture_count": 16,
+  "gameplay_tested": false,
+  "fixture_corners_inside_floor": true,
+  "fixed_fixture_envelopes_do_not_overlap": true,
+  "pdf_pages": 3,
+  "pdf_format": "A3 landscape",
+  "visual_review": "Three pages rendered and visually reviewed; no game acceptance."
+}
