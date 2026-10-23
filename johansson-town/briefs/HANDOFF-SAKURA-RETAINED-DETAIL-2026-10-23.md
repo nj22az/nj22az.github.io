@@ -84,3 +84,5 @@ Checks: 21 focused builder/counter/queue/checkout/runtime-package checks passed 
 Branch remains `codex/sakura-retain-detail`, draft PR #378, based for this pass on `27a858eb716fe7d7aaf3dcde905485129b249e41`. No merge/deployment. Current runtime is committed alongside source; immediate predecessor files already on the remote branch are retained for cached-page compatibility. Next: owner review of this bay, then CAD-audited endcap stocking using original products and the earlier actor/exterior/storage/save acceptance work. Preserve the opt-in switch until the full replacement is accepted.
 
 Implementation and standing-rule commit: `b96352aad6cc80f2542b1b00679880503f3d981f` on draft PR #378. The following documentation commit records that exact revision; no construction change after validation.
+
+Delivery integrity: all 11 runtime/CAD blobs verified against local Git blob hashes. The largest runtime chunk required chunked transfer after a tool output limit truncated the initial upload; corrected before final delivery. Validated game blob: `b89a92283839ebaf6aab777da54f77a800f10f12`. Source and runtime now match the locally tested/captured build.
