@@ -1,14 +1,14 @@
 import {stageComicPresentation} from './scene-comic-presentation.js';
-import {createComicEffects} from './comic-effects.js?v=20261023-illustration';
-import {normalLayer,normalEffects,editEffectsPanels} from './comic-effects-model.mjs?v=20261023-illustration';
-import {sceneLink as editableLink} from './scene-links.mjs?v=20261023-illustration';
+import {createComicEffects} from './comic-effects.js?v=20261023-hybrids';
+import {normalLayer,normalEffects,editEffectsPanels} from './comic-effects-model.mjs?v=20261023-hybrids';
+import {sceneLink as editableLink} from './scene-links.mjs?v=20261023-hybrids';
 import {LOOKS,isLook} from '../johansson-town/src/render/looks.js';
-import {createSceneLooks} from './scene-looks.js?v=20261023-illustration';
+import {createSceneLooks} from './scene-looks.js?v=20261023-hybrids';
 import {fujitaComic} from './fujita-comic.mjs';
 import {stageComicExit} from './scene-exit.js?v=20261020-vi';
 import {gradientMap} from '../johansson-town/src/render/cel.js';
 import {createSceneFacePainter} from './scene-face.js';
-import {drawShout,drawStatement,drawComicChaos,drawComicBorder} from './scene-lettering.js?v=20261023-illustration';
+import {drawShout,drawStatement,drawComicChaos,drawComicBorder} from './scene-lettering.js?v=20261023-hybrids';
 import {CLASSROOM_VIEW} from './classroom-stage.js';
 import {classroomComic} from './classroom-comic.mjs?v=20261020-vi';
 import {createSoleFinder} from '../johansson-town/src/avatars/foot-ground.js';
@@ -28,7 +28,7 @@ import {normalizeRecipe} from '../johansson-town/src/avatars/recipe.js';
 import {drawCaptions,comicLayout,FORMATS} from '../johansson-town/src/photo/layout.js';
 import {buildSceneWorld} from './scene-world.js?v=20261023-fujita';
 import {poseSceneAvatar,placeSceneAvatar,movingPose} from './scene-avatar.js?v=20261023-fujita';
-import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,emptyScene,normalizeScene,addCharacter,removeCharacter,restoreCharacter,panelOrder,text,placementOf,applyPlacement,samePlacement} from './scene-model.mjs?v=20261023-illustration';
+import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,emptyScene,normalizeScene,addCharacter,removeCharacter,restoreCharacter,panelOrder,text,placementOf,applyPlacement,samePlacement} from './scene-model.mjs?v=20261023-hybrids';
 import {pickMoment,applyMoment,aim} from './scene-moments.mjs?v=20261011-2';
 import {POSE_GROUPS,EXPRESSION_GROUPS,seatedPose} from './scene-catalogue.mjs?v=20261023-fujita';
 import {turnToward,touchAngle,twistTurn,nudgeStep,placeToolbar,pickBox,nearestSeat} from './scene-controls.mjs?v=20261011-2';
@@ -145,7 +145,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  sceneLink=bindSaveLink($('[data-save="scene"]'),sceneFile,{say:say('scene'),words:{busy:'The picture is still being drawn. Try again in a moment.',...saved('Picture')}});
  function composeComic(){
   const layout=comicLayout(panels.length,layoutStyle,layoutStyle==='strip'?3200:1800);if(panels.length&&panels.every(p=>Math.abs(p.image.width/p.image.height-panels[0].image.width/panels[0].image.height)<.01)){const aspect=panels[0].image.width/panels[0].image.height,cellH=layout.cells[0].w/aspect;for(let i=0;i<layout.cells.length;i++){layout.cells[i].h=cellH;layout.cells[i].y=18+Math.floor(i/(layoutStyle==='strip'?panels.length:Math.min(2,panels.length)))*(cellH+18);}layout.height=Math.ceil(Math.max(...layout.cells.map(c=>c.y+c.h))+18);}const out=document.createElement('canvas');out.width=layout.width;out.height=layout.height;const c=out.getContext('2d');c.fillStyle='#fff';c.fillRect(0,0,out.width,out.height);
-  panels.forEach((p,i)=>{const r=layout.cells[i],s=Math.min(r.w/p.image.width,r.h/p.image.height),w=p.image.width*s,h=p.image.height*s;c.drawImage(p.image,r.x+(r.w-w)/2,r.y+(r.h-h)/2,w,h);c.strokeStyle='#243442';c.lineWidth=2;drawComicBorder(c,r.x,r.y,r.w,r.h,['manga','lines','crayon','print'].includes(p.post?.look||p.scene?.look));});
+  panels.forEach((p,i)=>{const r=layout.cells[i],s=Math.min(r.w/p.image.width,r.h/p.image.height),w=p.image.width*s,h=p.image.height*s;c.drawImage(p.image,r.x+(r.w-w)/2,r.y+(r.h-h)/2,w,h);c.strokeStyle='#243442';c.lineWidth=2;drawComicBorder(c,r.x,r.y,r.w,r.h,['manga','lines','crayon','print','storybook','sunday','sketchbook'].includes(p.post?.look||p.scene?.look));});
   return out;
  }
  let comicLink=()=>{};const comicFile=createReadyFile({name:'johansson-studio-comic.png',type:'image/png',build:()=>panels.length?canvasToBlob(composeComic()):null,
@@ -351,7 +351,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
      environment.scene.traverse(o=>{if(o.isHemisphereLight){const before=o.intensity;o.intensity=1.35;restore.push(()=>o.intensity=before);}});
     }
     environment.sky?.update(camera,1,false,false);looks??=createSceneLooks(renderer);looks.render(environment.scene,camera,snapshot.look,{capture:wantsCapture,quality:wantsCapture?'export':'preview',focusDistance:camera.position.distanceTo(target),skyDepth:snapshot.backdrop==='hero'?100000:120});
-    currentPost=null;canvas.width=w;canvas.height=h;ctx.drawImage(renderer.domElement,0,0);if(snapshot.effect==='dash'){const contacts=snapshot.backdrop==='paper'?records.filter(r=>movingPose(r.actor.pose)&&!r.actor.y&&!r.actor.seat).map(r=>{const soles=createSoleFinder(r.avatar)(),side=soles.L.y<soles.R.y?'L':'R',point=r.avatar.root.worldToLocal(r.avatar.bones['foot'+side].getWorldPosition(new THREE.Vector3()));point.y=soles[side].y;point.z=soles[side].z;return r.avatar.root.localToWorld(point).project(camera);}):[];drawDash(ctx,w,h,contacts);}if(['chaos','escape'].includes(snapshot.effect))drawComicChaos(ctx,w,h,records.map(r=>headCentre(r.avatar).project(camera)),snapshot.effect==='escape');cleanCanvas??=document.createElement('canvas');if(cleanCanvas.width!==w||cleanCanvas.height!==h){cleanCanvas.width=w;cleanCanvas.height=h;}cleanCanvas.getContext('2d').drawImage(canvas,0,0);currentLayer={hasCapture:wantsCapture,baseLook:snapshot.look||'none',lettering:{bubbles:bubbles.map((b,i)=>({id:records[i].actor.id,x:b.x,y:b.y,headTop:b.headTop,visible:b.visible}))}};const overlay=document.createElement('canvas');overlay.width=w;overlay.height=h;drawCaptions(overlay.getContext('2d'),w,h,{style:snapshot.style,top:snapshot.top,bottom:snapshot.bottom,bubbles:bubbles.filter(b=>!b.shout&&!b.large)});ctx.drawImage(overlay,0,0);for(const b of bubbles.filter(b=>b.shout))drawShout(ctx,w,h,b.text);for(const b of bubbles.filter(b=>b.large))drawStatement(ctx,w,h,b.text,b.x,Math.min(...bubbles.map(p=>p.headTop).filter(y=>Number.isFinite(y)&&y>0)),['manga','lines','crayon','print'].includes(snapshot.look));
+    currentPost=null;canvas.width=w;canvas.height=h;ctx.drawImage(renderer.domElement,0,0);if(snapshot.effect==='dash'){const contacts=snapshot.backdrop==='paper'?records.filter(r=>movingPose(r.actor.pose)&&!r.actor.y&&!r.actor.seat).map(r=>{const soles=createSoleFinder(r.avatar)(),side=soles.L.y<soles.R.y?'L':'R',point=r.avatar.root.worldToLocal(r.avatar.bones['foot'+side].getWorldPosition(new THREE.Vector3()));point.y=soles[side].y;point.z=soles[side].z;return r.avatar.root.localToWorld(point).project(camera);}):[];drawDash(ctx,w,h,contacts);}if(['chaos','escape'].includes(snapshot.effect))drawComicChaos(ctx,w,h,records.map(r=>headCentre(r.avatar).project(camera)),snapshot.effect==='escape');cleanCanvas??=document.createElement('canvas');if(cleanCanvas.width!==w||cleanCanvas.height!==h){cleanCanvas.width=w;cleanCanvas.height=h;}cleanCanvas.getContext('2d').drawImage(canvas,0,0);currentLayer={hasCapture:wantsCapture,baseLook:snapshot.look||'none',lettering:{bubbles:bubbles.map((b,i)=>({id:records[i].actor.id,x:b.x,y:b.y,headTop:b.headTop,visible:b.visible}))}};const overlay=document.createElement('canvas');overlay.width=w;overlay.height=h;drawCaptions(overlay.getContext('2d'),w,h,{style:snapshot.style,top:snapshot.top,bottom:snapshot.bottom,bubbles:bubbles.filter(b=>!b.shout&&!b.large)});ctx.drawImage(overlay,0,0);for(const b of bubbles.filter(b=>b.shout))drawShout(ctx,w,h,b.text);for(const b of bubbles.filter(b=>b.large))drawStatement(ctx,w,h,b.text,b.x,Math.min(...bubbles.map(p=>p.headTop).filter(y=>Number.isFinite(y)&&y>0)),['manga','lines','crayon','print','storybook','sunday','sketchbook'].includes(snapshot.look));
     // Where each character is on the picture (fractions of it), for picking, the outline and the toolbar.
     const right=new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld,0);
     boxes=placed.map(p=>{const corners=[];for(const x of [p.box.min.x,p.box.max.x])for(const y of [p.box.min.y,p.box.max.y])for(const z of [p.box.min.z,p.box.max.z])corners.push(new THREE.Vector3(x,y,z).project(camera));

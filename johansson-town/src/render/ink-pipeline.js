@@ -1,7 +1,7 @@
 import {createLookBuffers} from './look-buffers.js';
 import {drawWithLookMaterials} from './look-materials.js';
 import * as THREE from '../../vendor/three.module.js';
-import {lookFragment} from './looks.js';
+import {lookFragment,lookNormals,lookSurfaceStrokes,lookInk} from './looks.js';
 
 /**
  * The 3D-to-2D pass: what turns a lit 3D town into a drawn one.
@@ -268,7 +268,7 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
  let rtLook=null;
  function lookPass(name){
   if(lookPasses.has(name))return lookPasses.get(name);
-  const fragment=lookFragment(name,{light:lightLooks,depth:true,normals:['lines','manga','crayon','flat','print'].includes(name),surfaceStrokes:name==='crayon'});
+  const fragment=lookFragment(name,{light:lightLooks,depth:true,normals:lookNormals(name),surfaceStrokes:lookSurfaceStrokes(name)});
   const pass=fragment?makeQuad(fragment,{
    tDiffuse:{value:null},tDepth:{value:rtScene.depthTexture},tNormal:{value:null},uDepthPacked:{value:0},uProjectionInverse:{value:new THREE.Matrix4()},uCameraWorld:{value:new THREE.Matrix4()},uFocusMode:{value:0},uFocusDistance:{value:0},uFocusRange:{value:3},
    uTexel:{value:new THREE.Vector2(1,1)},uResolution:{value:new THREE.Vector2(2,2)},
@@ -340,11 +340,11 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
     renderer.setRenderTarget(rtScene);
     renderer.clear();
     drawWithLookMaterials(renderer,state.look,draw);
-    if(view&&['lines','manga','crayon','flat','print'].includes(state.look))auxiliary.render(draw,width,height);
+    if(view&&lookNormals(state.look))auxiliary.render(draw,width,height);
 
     // Ink and grade share one draw and one sample of the scene colour. A
     // disabled ink/grade changes uniforms, never the linear -> sRGB conversion.
-    compositePass.material.uniforms.uInkEnabled.value=state.ink?1:0;
+    compositePass.material.uniforms.uInkEnabled.value=state.ink&&lookInk(state.look)?1:0;
     compositePass.material.uniforms.uAmount.value=state.grade?1:0;
     compositePass.material.uniforms.tDiffuse.value=rtScene.texture;
     const look=state.look==='none'?null:lookPass(state.look);

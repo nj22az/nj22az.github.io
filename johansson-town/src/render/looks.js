@@ -1,3 +1,4 @@
+import {CEL_GLSL,PENCIL_GLSL,DOT_GLSL,OIL_GLSL,WASH_GLSL,SURFACE_GLSL} from './illustration-modules.js';
 /**
  * Looks: the whole town redrawn in another style, chosen under Settings in the Town book.
  *
@@ -35,6 +36,10 @@ export const LOOKS=Object.freeze({
  // 64 samples a pixel on a computer; phones and tablets draw the light version, 16 samples (lookFragment).
  flat:{label:'Cartoon',short:'Cartoon',hint:'Flat colours and thick outlines, like a TV cartoon.',flatten:0},
  oil:{label:'Oil painting',short:'Oil',hint:'Thick brushwork on canvas, with faces and lettering kept.'},
+ storybook:{label:'Storybook',short:'Story',hint:'Cel colour, a soft wash and pencil shadows under hand-inked contours.',flatten:0},
+ sunday:{label:'Sunday strip',short:'Sunday',hint:'Warm cel colour with printed dots and bold comic ink.',flatten:0},
+ sketchbook:{label:'Sketchbook',short:'Sketch',hint:'Loose colour wash, broken pencil shading and porous graphite.'},
+ gouache:{label:'Impasto gouache',short:'Gouache',hint:'Chunky clustered paint in three tones, without an ink contour pass.'},
 });
 
 /** Where an earlier build saved the look. The owner (22 October 2026): every start is Natural, whatever was used last, so
@@ -241,17 +246,7 @@ void main(){
  // Printed-comic black and white: solid ink outlines, white highlights, a 45-degree
  // screentone in the mid tones that grows into hatching and then solid black.
  manga:`
-float tone(vec2 p,float l){
- // Dots on a rotated grid, their radius from how dark it is; anti-aliased edges.
- vec2 r=mat2(0.7071,-0.7071,0.7071,0.7071)*p/6.0;
- float d=length(fract(r)-0.5);
- float radius=sqrt(clamp(1.0-l,0.0,1.0))*0.56419;
- return 1.0-smoothstep(radius-0.08,radius+0.08,d);
-}
-float hatch(vec2 p,vec2 dir,float spacing,float width){
- float s=abs(fract(dot(p,dir)/spacing)-0.5)*spacing;
- return 1.0-smoothstep(width-0.6,width+0.6,s);
-}
+${DOT_GLSL}
 void main(){
  float u=unit();
  vec2 p=vUv*uResolution/u;
@@ -277,19 +272,7 @@ void main(){
  // Coloured pencil on rough paper: the colour goes down in diagonal strokes that skip
  // the paper's tooth, a second layer crosses the darks, and a graphite outline.
  crayon:`
-float strokes(vec2 p,vec2 dir,float spacing){
- float along=dot(p,vec2(-dir.y,dir.x));
- float across=dot(p,dir)+noise(vec2(along*0.02,dot(p,dir)*0.05))*4.0;
- float lane=floor(across/spacing);
- // Each stroke has its own pressure, and fades in and out along its length.
- float pressure=0.55+0.45*hash(vec2(lane,7.0));
- float body=1.0-abs(fract(across/spacing)-0.5)*2.0;
- float segment=floor(along/28.0+hash(vec2(lane,11.0)));
- float phase=fract(along/28.0+hash(vec2(lane,11.0)));
- float run=smoothstep(.03,.16,phase)*(1.0-smoothstep(.68,.94,phase));
- float wax=smoothstep(.17,.67,noise(p*2.4+hash(vec2(lane,segment))*7.0));
- return smoothstep(0.15,0.75,body)*pressure*run*mix(.22,1.0,wax);
-}
+${PENCIL_GLSL}
 void main(){
  float u=unit();
  vec2 p=vUv*uResolution/u;
@@ -313,7 +296,9 @@ void main(){
  // The pigment catches on the tooth's peaks first.
  cover*=smoothstep(0.15,0.65,tooth+cover*0.6);
  #ifdef SURFACE_STROKES
- cover=1.0-smoothstep(.70,.75,l);
+ float chroma=max(c.r,max(c.g,c.b))-min(c.r,min(c.g,c.b));
+ float wash=mix(.18,.86,smoothstep(.035,.18,chroma));
+ cover=max(wash,1.0-smoothstep(.60,.94,l));
 #else
  cover=clamp(cover*1.25,0.0,1.0)*(1.0-smoothstep(.76,.94,l));
 #endif
@@ -454,7 +439,7 @@ void main(){
  float steps=l<.32?.24:l<.68?.52:.86;
  // Step brightness only. Cap the common gain rather than clipping separate channels:
  // wood, grey walls and skin keep their hue instead of neon saturation bands.
- float stepped=mix(l,steps,.48*(1.0-smoothstep(8.0,20.0,depth)));
+ float stepped=mix(l,steps,(l>.7?1.0:.72)*(1.0-smoothstep(8.0,20.0,depth)));
  col=hue*stepped;
  col/=max(1.0,max(col.r,max(col.g,col.b)));
  vec3 shadowTint=mix(vec3(.94,.93,.98),vec3(1.0),smoothstep(.25,.55,l));
@@ -471,46 +456,9 @@ void main(){
 }`,
  // Oil painting: a Kuwahara filter (each pixel takes the mean of whichever of its four neighbouring squares is
  // calmest), so areas flatten into strokes and edges stay crisp, on a canvas weave.
- oil:`
+ oil:`${OIL_GLSL}
 void main(){
- float u=unit();
- vec2 p=vUv*uResolution/u;
- vec2 t=uTexel*3.2*u;
- float xx=0.0,yy=0.0,xy=0.0;
- for(int k=0;k<5;k++){
-  vec2 q=k==0?vUv:k==1?vUv+vec2(2.0*u*uTexel.x,0.0):k==2?vUv-vec2(2.0*u*uTexel.x,0.0):k==3?vUv+vec2(0.0,2.0*u*uTexel.y):vUv-vec2(0.0,2.0*u*uTexel.y);
-  vec3 gx=texture2D(tDiffuse,q+vec2(uTexel.x*u,0.0)).rgb-texture2D(tDiffuse,q-vec2(uTexel.x*u,0.0)).rgb;
-  vec3 gy=texture2D(tDiffuse,q+vec2(0.0,uTexel.y*u)).rgb-texture2D(tDiffuse,q-vec2(0.0,uTexel.y*u)).rgb;
-  xx+=dot(gx,gx);yy+=dot(gy,gy);xy+=dot(gx,gy);
- }
- float trace=xx+yy,anisotropy=clamp(sqrt((xx-yy)*(xx-yy)+4.0*xy*xy)/max(trace,.00001),0.0,1.0);
- float angle=trace>.00001?.5*atan(2.0*xy,xx-yy)+1.570796:0.0;
- vec2 along=vec2(cos(angle),sin(angle)),across=vec2(-along.y,along.x);
- mat2 brush=mat2(along*mix(1.0,1.65,anisotropy),across*mix(1.0,.65,anisotropy));
- // A phone or tablet (LIGHT) takes 2x2 samples a square, spread over the same reach, instead of 4x4.
-#ifdef LIGHT
- const int R=1;const float STEP=2.0;const float OFF=0.5;const float N=4.0;
-#else
- const int R=4;const float STEP=1.0;const float OFF=0.0;const float N=25.0;
-#endif
- vec3 m[4];vec3 s[4];
- for(int k=0;k<4;k++){m[k]=vec3(0.0);s[k]=vec3(0.0);}
- for(int j=0;j<=R;j++)for(int i=0;i<=R;i++){
-  vec2 o=vec2(float(i)*STEP+OFF,float(j)*STEP+OFF);
-  vec3 a=texture2D(tDiffuse,vUv+(brush*vec2(-o.x,-o.y))*t).rgb;m[0]+=a;s[0]+=a*a;
-  vec3 b=texture2D(tDiffuse,vUv+(brush*vec2(o.x,-o.y))*t).rgb;m[1]+=b;s[1]+=b*b;
-  vec3 c=texture2D(tDiffuse,vUv+(brush*o)*t).rgb;m[2]+=c;s[2]+=c*c;
-  vec3 d=texture2D(tDiffuse,vUv+(brush*vec2(-o.x,o.y))*t).rgb;m[3]+=d;s[3]+=d*d;
- }
- vec3 col=vec3(0.0);float best=1e9;
- for(int k=0;k<4;k++){
-  vec3 mean=m[k]/N;vec3 v=abs(s[k]/N-mean*mean);
-  float var=v.r+v.g+v.b;
-  if(var<best){best=var;col=mean;}
- }
- // A restrained light-catching ridge between clustered paint dabs, not the canvas grid.
- float ridge=clamp(length(fwidth(col))*3.0,0.0,1.0);
- col+=col*.05*ridge;
+ float u=unit();vec2 p=vUv*uResolution/u;vec3 col=oilCluster(vUv);
  // What a painter puts back last, as flat marks over the paint: anything small that is much darker than the stroke
  // painted over it (eyes, brows, a mouth, letters) as a thick dark mark, and anything much lighter (a highlight in an
  // eye, white letters on a dark sign) as a flat light one. The darks are taken from a small ring around the pixel, which
@@ -524,7 +472,7 @@ void main(){
  float light=luma(texture2D(tDiffuse,vUv).rgb)-base;
  dark=max(dark,base-luma(texture2D(tDiffuse,vUv).rgb));
  col=mix(col,vec3(0.97,0.95,0.9),smoothstep(0.1,0.22,light)*near);
- col=mix(col,vec3(0.16,0.12,0.11),smoothstep(0.1,0.22,dark)*near*0.9);
+ col=mix(col,texture2D(tDiffuse,vUv).rgb,smoothstep(0.1,0.22,dark)*near*.45);
  col=mix(vec3(luma(col)),col,1.35);
  col=(col-0.5)*1.1+0.5;
  // Brush strokes: short diagonal marks catching the light, and the canvas weave under them.
@@ -536,12 +484,33 @@ void main(){
  gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
 }`
 };
+const hybrid=(base,shade,ink)=>`${CEL_GLSL}${PENCIL_GLSL}${DOT_GLSL}${WASH_GLSL}${SURFACE_GLSL}
+void main(){float u=unit();vec3 raw=texture2D(tDiffuse,vUv).rgb;float lum=luma(raw);vec2 p=illustrationCoord(vUv);vec3 paint;
+${base}
+${shade}
+${ink}
+gl_FragColor=vec4(clamp(paint,0.0,1.0),1.0);}`;
+FRAGMENTS.storybook=hybrid('paint=wetEdge(mix(vec3(.98,.96,.91),celColour(raw,1.0),.94),vUv);',`
+#ifndef SURFACE_STROKES
+paint*=1.0-.27*pencilShade(p,lum)*(1.0-smoothstep(.35,.45,lum));
+#endif`, 'float ink=edges(vUv,1.8*u,.4);paint=mix(paint,vec3(.09,.07,.075),clamp(ink,0.0,1.0));');
+FRAGMENTS.sunday=hybrid('paint=mix(vec3(.99,.96,.89),celColour(raw,1.0),.94);', 'float density=lum<.45?.32:lum<.68?.16:0.0;float dots=density>0.0?step(.5,tone(vUv*uResolution/u,1.0-density)):0.0;paint*=1.0-.50*dots;', 'float ink=max(edges(vUv,2.0*u,.55),lum<.10?1.0:0.0);paint=mix(paint,vec3(.035),clamp(ink,0.0,1.0));');
+FRAGMENTS.sketchbook=hybrid('paint=wetEdge(paperWash(mix(vec3(lum),raw,.68),.86),vUv);', `
+#ifndef SURFACE_STROKES
+paint*=1.0-.32*pencilShade(p,lum);
+#endif`, 'float graphite=edges(vUv,1.3*u,.45)*(.36+.38*noise(p*.7));paint=mix(paint,vec3(.24,.22,.23),clamp(graphite,0.0,1.0));');
+FRAGMENTS.gouache=`${CEL_GLSL}${OIL_GLSL}
+void main(){vec3 paint=celColour(oilCluster(vUv),1.0);vec3 raw=texture2D(tDiffuse,vUv).rgb;float detail=smoothstep(.28,.50,luma(paint)-luma(raw));paint=mix(paint,celColour(raw,.65),detail*.70);float tooth=noise(vUv*uResolution*.3);paint*=1.0+(tooth-.5)*.012*smoothstep(.65,.95,luma(paint));gl_FragColor=vec4(clamp(paint,0.0,1.0),1.0);}`;
 
 /** The full fragment shader for a look, or null for Natural. `light` asks for the version a phone or tablet can afford. */
 export function lookFragment(name,{light=false,depth=true,normals=false,surfaceStrokes=false}={}){
  const body=FRAGMENTS[name];
  return body?(light?'#define LIGHT\n':'')+(surfaceStrokes?'#define SURFACE_STROKES\n':'')+(depth?'#define HAS_DEPTH\n':'')+(normals?'#define HAS_NORMALS\n':'')+COMMON+SPOT+body:null;
 }
+
+export const lookNormals=name=>['lines','manga','crayon','flat','print','storybook','sunday','sketchbook'].includes(name);
+export const lookSurfaceStrokes=name=>['crayon','storybook','sketchbook'].includes(name);
+export const lookInk=name=>!['oil','gouache'].includes(name);
 
 /** Whether a look samples the scene's depth (and so must be fed the depth texture). */
 export const lookUsesDepth=name=>/viewDepth|edges\(/.test(FRAGMENTS[name]||'');

@@ -13,6 +13,7 @@ import {resolve,dirname,extname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..'),site=resolve(root,'..');
 const args=process.argv.slice(2),SOURCE=args.includes('--source');
+const proofLooks=(args.find(a=>a.startsWith('--looks='))?.slice(8)||'manga,flat,oil,crayon').split(',');
 const baselineRef=args.find(a=>a.startsWith('--baseline='))?.slice(11),baselineHTML=baselineRef?execFileSync('git',['show',baselineRef+':johansson-town/index.html'],{cwd:site,encoding:'utf8'}):null;
 const out=resolve(args.find(a=>!a.startsWith('--'))||resolve(root,'output/cloud-boot-smoke'));await mkdir(out,{recursive:true});
 const TYPES={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.css':'text/css','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.glb':'model/gltf-binary','.svg':'image/svg+xml','.hdr':'application/octet-stream','.wasm':'application/wasm'};
@@ -41,10 +42,10 @@ try{
  await page.addStyleTag({content:'body>*:not(#game){visibility:hidden!important}#game{visibility:visible!important}'});
  const shot=async(name,cam)=>{await page.evaluate(c=>{const a=window.__JOHANSSON_AUDIT__;a.camera=c;a.render();},cam);await page.waitForTimeout(300);
   await page.locator('#game').screenshot({path:resolve(out,name+'.png')});step('photographed '+name);};
- for(const look of ['manga','flat','oil','crayon']){await page.evaluate(n=>window.__JOHANSSON_LOOK__.setStyle(n),look);await shot('street-'+look,{pos:[20.5,1.7,21.5],at:[22.5,1.4,34]});if(!await page.evaluate(n=>window.__JOHANSSON_LOOK__.state?.look===n,look))throw Error('World fell back from '+look);}
+ for(const look of proofLooks){await page.evaluate(n=>window.__JOHANSSON_LOOK__.setStyle(n),look);await shot('street-'+look,{pos:[20.5,1.7,21.5],at:[22.5,1.4,34]});if(!await page.evaluate(n=>window.__JOHANSSON_LOOK__.state?.look===n,look))throw Error('World fell back from '+look);}
  await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__;a.camera=null;await a.enter('community-kitchen');});
  await page.waitForFunction(()=>!window.__JOHANSSON_AUDIT__.blocked.roomLoading);step('entered the Community Hall');
- for(const look of ['manga','flat','oil','crayon']){await page.evaluate(n=>window.__JOHANSSON_LOOK__.setStyle(n),look);await shot('room-'+look,{pos:[-1.5,1.6,2.2],at:[2,1,-1.5]});if(!await page.evaluate(n=>window.__JOHANSSON_LOOK__.state?.look===n,look))throw Error('World fell back from '+look);}
+ for(const look of proofLooks){await page.evaluate(n=>window.__JOHANSSON_LOOK__.setStyle(n),look);await shot('room-'+look,{pos:[-1.5,1.6,2.2],at:[2,1,-1.5]});if(!await page.evaluate(n=>window.__JOHANSSON_LOOK__.state?.look===n,look))throw Error('World fell back from '+look);}
 }finally{await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2)+'\n');await browser.close();server.close();}
 console.log(JSON.stringify({steps:report.steps.length,errors:report.errors}));
 if(report.errors.length)process.exit(1);
