@@ -210,7 +210,7 @@ async function exportAsset({key,params=null,card=null,png=true}={}){
 
 let comicWorkspace;
 async function comicAfterEffects(options={}){
- const {createSceneWorkspace}=await import('./scene.js?v=20261023-effects-mcp');
+ const {createSceneWorkspace}=await import('./scene.js?v=20261023-thuan-comic');
  if(!comicWorkspace){comicWorkspace=createSceneWorkspace({getCharacter:()=>({}),onEdit(){},onMode(){}});comicWorkspace.root.hidden=true;document.body.append(comicWorkspace.root);}
  return comicWorkspace.afterEffects(options);
 }
