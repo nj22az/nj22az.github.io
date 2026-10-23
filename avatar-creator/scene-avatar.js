@@ -1,3 +1,6 @@
+import {buildBeerBottle} from '../johansson-town/src/people/izakaya-serving-visuals.js';
+import {disposeServing} from '../johansson-town/src/people/izakaya-beer.js';
+import {fitAvatarHeldProp} from '../johansson-town/src/avatars/consume.js';
 import * as THREE from '../johansson-town/vendor/three.module.js';
 import {createAvatarAnimator,GESTURES} from '../johansson-town/src/avatars/animate.js';
 import {createFootGrounder} from '../johansson-town/src/avatars/foot-ground.js';
@@ -5,10 +8,12 @@ import {reachHand} from './scene-contact.js';
 import {seatedPose} from './scene-catalogue.mjs?v=20261020-acting';
 
 export const movingPose=name=>['Walk','Run','SchoolRun'].includes(name);
+const held=new WeakMap();
 const motion=new WeakMap(),supports=new WeakMap();
-export function poseSceneAvatar(avatar,{pose='Idle',expression='smile',turn=0,seatHeight=.48,time:sample=0}){
+export function poseSceneAvatar(avatar,{pose='Idle',expression='smile',turn=0,seatHeight=.48,seatFront,heldItem,time:sample=0}){
  avatar.bones.head.scale.set(1,1,1);
- const custom=pose;pose=({SchoolRest:'Sit',SchoolProtest:'Idle',SchoolRun:'Idle',ComicLeap:'Idle',SchoolEscape:'Idle',LiftedBack:'Idle',HoldBack:'Idle'})[pose]||pose;
+ let prop=held.get(avatar);if(heldItem==='beer'&&!prop){prop=buildBeerBottle();prop.traverse(o=>{if(/cap/i.test(o.name))o.visible=false;});Object.assign(prop.userData,{drinkKind:'bottle',portion:.7,rimHeight:.278,grip:{radius:.038,height:.14}});avatar.bones.handR.add(prop);held.set(avatar,prop);}else if(!heldItem&&prop){disposeServing(prop);held.delete(avatar);prop=null;}
+ const custom=pose;pose=({ResolveFist:'Idle',SitBeer:'Sit',SchoolRest:'Sit',SchoolProtest:'Idle',SchoolRun:'Idle',ComicLeap:'Idle',SchoolEscape:'Idle',LiftedBack:'Idle',HoldBack:'Idle'})[pose]||pose;
  const duration=GESTURES[pose],time=Number.isFinite(duration)?duration*.43:.7;
  if(movingPose(custom)){
   const elapsed=Math.floor(Math.max(0,Math.min(60,sample))/.025+1e-8)*.025+.5;let track=motion.get(avatar);
@@ -24,9 +29,12 @@ export function poseSceneAvatar(avatar,{pose='Idle',expression='smile',turn=0,se
  }else{
   const animator=createAvatarAnimator(avatar,{random:()=>.5,initialTime:0});if(duration)animator.play(pose);
   const steps=Math.ceil(time/.025);
-  for(let i=0;i<steps;i++)animator.update(time/steps,{expression,seated:seatedPose(pose),seatHeight});
+  for(let i=0;i<steps;i++)animator.update(time/steps,{expression,seated:seatedPose(pose),seatHeight,seatFront,heldProp:prop});
+  if(prop)fitAvatarHeldProp(avatar,prop,animator.consumption?.lift||0);
  }
  const b=avatar.bones;
+ if(custom==='ResolveFist'){b.chest.rotation.set(-.10,.10,0);b.head.rotation.set(.12,.10,0);b.shoulderR.rotation.set(-1.1,0,-.6);b.elbowR.rotation.x=-1.8;b.shoulderL.rotation.set(.15,0,.35);b.elbowL.rotation.x=-1.2;b.thighL.rotation.z=.10;b.thighR.rotation.z=-.10;}
+ if(custom==='SitBeer'){b.shoulderR.rotation.set(-.65,0,-.15);b.elbowR.rotation.x=-1.15;}
  if(custom==='SchoolRest'){b.spine.rotation.x=.14;b.chest.rotation.x=.62;b.head.rotation.x=-.26;b.head.scale.set(1.06,.93,1);b.shoulderL.rotation.set(-1.2,0,.25);b.elbowL.rotation.x=-1.7;b.shoulderR.rotation.set(-1.2,0,-.25);b.elbowR.rotation.x=-1.7;}
  if(custom==='SchoolProtest'){b.hips.rotation.x=-.08;b.chest.rotation.set(-.32,0,.08);b.head.rotation.set(-.28,0,-.10);b.shoulderL.rotation.set(-.15,.1,2.6);b.shoulderR.rotation.set(-.5,-.12,-2.15);b.elbowL.rotation.x=-.65;b.elbowR.rotation.x=-.18;b.handL.rotation.z=.4;b.handR.rotation.z=-.35;}
  if(custom==='SchoolRun'){b.hips.rotation.x=.16;b.chest.rotation.x+=.22;b.head.rotation.x-=.08;b.shoulderL.rotation.x*=1.35;b.shoulderR.rotation.x*=1.35;b.elbowL.rotation.x=-1.45;b.elbowR.rotation.x=-1.45;let ground=supports.get(avatar);if(!ground){ground=createFootGrounder(avatar);supports.set(avatar,ground);}ground(0);}
@@ -37,6 +45,9 @@ export function poseSceneAvatar(avatar,{pose='Idle',expression='smile',turn=0,se
  avatar.paintFace({expression,blink:0,talk:0,look:custom==='LiftedBack'&&expression==='embarrassed'?[0,.8]:[0,0]});
  // Town roots face -z. Scene portraits look into a camera on +z.
  avatar.root.rotation.y=turn*Math.PI/180;avatar.root.updateMatrixWorld(true);
+ if(custom==='ResolveFist'){const m=avatar.measure;reachHand(avatar,'R',avatar.root.localToWorld(new THREE.Vector3(-(m.Rh*m.headSX+m.hand*1.35),m.headCentre-m.Rh*m.headSY*.35,.17*m.k)));}
+ if(custom==='ResolveFist'){let ground=supports.get(avatar);if(!ground){ground=createFootGrounder(avatar);supports.set(avatar,ground);}ground(0);}
+ if(custom==='SitBeer'&&prop)fitAvatarHeldProp(avatar,prop,0);
  if(custom==='SchoolRest'){for(const [side,x] of [['L',.12],['R',-.12]]){const at=b.head.localToWorld(new THREE.Vector3(x,avatar.measure.Rh*avatar.measure.headSY*.45,.12));reachHand(avatar,side,at);}}
  const box=new THREE.Box3().setFromObject(avatar.root),size=box.getSize(new THREE.Vector3()),centre=box.getCenter(new THREE.Vector3());
  const height=Math.max(2.3,size.y*1.12,size.x*1.7);
@@ -50,6 +61,7 @@ export function poseSceneAvatar(avatar,{pose='Idle',expression='smile',turn=0,se
  * floor. The animator lifts or lowers the root itself (a seated body's bottom on its seat, on the floor when the seat
  * height is 0; a jump), in the body's own units: that offset is kept, scaled with the character.
  */
-export function placeSceneAvatar(avatar,{x,y,z},size=1){
- avatar.root.position.set(x,y+avatar.root.position.y*size,z);avatar.root.updateMatrixWorld(true);
+export function placeSceneAvatar(avatar,{x,y,z,seat},size=1){
+ const offset=seat?new THREE.Vector3(avatar.root.position.x,0,avatar.root.position.z).applyAxisAngle(new THREE.Vector3(0,1,0),seat.yaw||0).multiplyScalar(size):new THREE.Vector3();
+ avatar.root.position.set(x+offset.x,y+avatar.root.position.y*size,z+offset.z);avatar.root.updateMatrixWorld(true);
 }
