@@ -59,19 +59,19 @@ export function drawSakuraDetailPrints(ctx){
  });
 }
 function batch(name){
- const bodies=[],prints=[],colour=new THREE.Color(),features=[];
+ const bodies=[],prints=[],colour=new THREE.Color(),features=[];let offset=[0,0,0];const move=pos=>pos.map((v,i)=>v+offset[i]);
  const part=(geometry,hex,pos=[0,0,0],rotation=null)=>{
   if(rotation)geometry.applyMatrix4(new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(...rotation)));
-  geometry.translate(...pos);colour.set(hex);const c=new Float32Array(geometry.attributes.position.count*3);
+  geometry.translate(...move(pos));colour.set(hex);const c=new Float32Array(geometry.attributes.position.count*3);
   for(let i=0;i<c.length;i+=3)c.set([colour.r,colour.g,colour.b],i);geometry.setAttribute('color',new THREE.BufferAttribute(c,3));bodies.push(geometry);
  };
  const box=(w,h,d,x,y,z,c)=>part(new THREE.BoxGeometry(w,h,d),c,[x,y,z]);
  const cyl=(r,h,x,y,z,c,rb=r)=>part(new THREE.CylinderGeometry(r,rb,h,10),c,[x,y,z]);
  const print=(id,w,h,pos,yaw=0,flat=false)=>{
   const index=SAKURA_DETAIL_PRINTS.findIndex(p=>p.id===id);if(index<0)throw Error('Unknown Sakura print '+id);
-  const g=new THREE.PlaneGeometry(w,h);if(flat)g.rotateX(-Math.PI/2);else g.rotateY(yaw);g.translate(...pos);
+  const g=new THREE.PlaneGeometry(w,h);if(flat)g.rotateX(-Math.PI/2);else g.rotateY(yaw);g.translate(...move(pos));
   const uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,(index%COLS+.03+uv.getX(i)*.94)/COLS,1-(Math.floor(index/COLS)+.03+(1-uv.getY(i))*.94)/ROWS);
-  prints.push(g);features.push({id,width:w,height:h,position:[...pos],yaw,flat});
+  prints.push(g);features.push({id,width:w,height:h,position:move(pos),yaw,flat});
  };
  const finish=()=>{
   const group=new THREE.Group();group.name=name;group.userData.features=features;
@@ -83,13 +83,14 @@ function batch(name){
   }
   return group;
  };
- return {part,box,cyl,print,finish};
+ return {part,box,cyl,print,finish,place:v=>{offset=v||[0,0,0];}};
 }
 
 /** A 1997 cash register, not a flat blank block, and the clerk's actual working supplies. */
-export function buildSakuraCounterDetail(room){
+export function buildSakuraCounterDetail(room,{placements={}}={}){
  const b=batch('Sakura checkout equipment'),{box,cyl,print}=b;
  const cream=0xe3e5d8,dark=0x3d4946,key=0xf2efe3,steel=0x9aa9a4;
+ b.place(placements.till);
  const top=FURNITURE_HEIGHTS.serviceCounter,registerZ=1.17,dz=registerZ-.75;
  // The low register sits beside the clerk's face line, with all equipment on the counter.
  box(.38,.075,.38,4.80,top+.0375,registerZ,cream);box(.012,.018,.30,4.608,top+.031,registerZ,dark);box(.30,.05,.31,4.81,top+.10,registerZ,dark);
@@ -110,12 +111,15 @@ export function buildSakuraCounterDetail(room){
  for(const x of [4.57,4.69])box(.01,.032,.18,x,top+.027,trayZ,0x528e9f);
  for(const z of [trayZ-.085,trayZ+.085])box(.11,.032,.01,4.63,top+.027,z,0x528e9f);
  print('tray',.103,.145,[4.63,top+.0135,trayZ],0,true);
+ for(const offset of placements.microwaves||[placements.microwave]){b.place(offset);
  // Microwave in the existing cabinet's middle bay. No part enters the staff aisle.
  box(.33,.205,.35,6.42,.8245,1.60,cream);box(.014,.145,.285,6.255,.825,1.60,dark);
  box(.008,.126,.207,6.246,.825,1.57,0x394f4b);
  box(.008,.12,.015,6.244,.825,1.678,steel);
  box(.006,.025,.27,6.249,.914,1.585,dark);print('microwave',.26,.023,[6.241,.914,1.585],-Math.PI/2);
  for(let i=0;i<3;i++)box(.01,.012,.016,6.246,.87-i*.03,1.746,i?0xc6cabf:0x659269);
+ }
+ b.place(placements.supplies);
  // Stacks of folded bags, nested paper cups and chopsticks in their sleeve.
  for(let i=0;i<7;i++)box(.25,.005,.115,6.42,.726+i*.006,1.215,i%2?0xccb284:0xdfcda9);
  for(let i=0;i<5;i++)cyl(.036,.05,6.39,.79+i*.014,1.31,0xf4f0df,.025);
@@ -123,6 +127,7 @@ export function buildSakuraCounterDetail(room){
  for(let i=0;i<5;i++)box(.004,.165,.004,6.514+i*.008,.81,1.288,0x9f8051);
  const C=SAKURA_TILL_CABINET;
  print('supplies',.29,.045,[C.x0-.006,.698,1.285],-Math.PI/2);
+ b.place(placements.copy);
  // The existing entry-side machine gains a scanner lid, keypad and a fed-out sheet.
  const P=COPY_MACHINE;
  box(.215,.018,.39,P.x+.125,.973,P.z+.05,0xf0efe4);
@@ -132,10 +137,10 @@ export function buildSakuraCounterDetail(room){
  box(.34,.009,.075,P.x,.53,P.z-.278,steel);
  box(.29,.002,.028,P.x,.537,P.z-.303,0xf7f2e2);
  // Canopy cards face the aisle, not the wall; separate bays make the offer readable.
- for(const [id,z] of [['rice',-.93],['sandwich',.43],['dairy',1.79]])print(id,1.19,.13,[CHILLER.x1-.172,CHILLER.canopy+.092,z],Math.PI/2);
+ for(const [id,z] of [['rice',-.93],['sandwich',.43],['dairy',1.79]]){b.place(placements[id]);print(id,1.19,.13,[CHILLER.x1-.172,CHILLER.canopy+.092,z],Math.PI/2);}
  const group=b.finish();
  const drawer=new THREE.Mesh(new THREE.BoxGeometry(.24,.045,.28),new THREE.MeshStandardMaterial({color:dark,roughness:.68}));
- drawer.name='Sakura cash drawer';drawer.position.set(4.84,top+.035,registerZ);group.add(drawer);
+ drawer.name='Sakura cash drawer';drawer.position.set(4.84+(placements.till?.[0]||0),top+.035+(placements.till?.[1]||0),registerZ+(placements.till?.[2]||0));group.add(drawer);
  room.add(group);return group;
 }
 

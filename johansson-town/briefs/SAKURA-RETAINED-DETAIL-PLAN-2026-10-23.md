@@ -80,3 +80,17 @@ The branch prototype passed software Chromium checks at 1440 x 1000 and 390 x 84
 Measured draws/triangles (not FPS): overview 132/171,858; entrance 78/74,676; clerk 122/135,454; office 111/113,242; roof 149/172,750. The extra detail has a measurable cost; compare the real game before setting budgets.
 
 Screenshots: overview, aisle, fresh-food shelf and phone layout. They show the actual branch prototype, not a live-game implementation. Collision navigation, actors/hand contact, operational stock behaviour, complete prop retention, production materials/exterior, saves, physical iPad and full game guard remain unverified. The previous downloaded HTML stalled in the owner's iPad attachment viewer; do not repeat that as an accepted delivery route. A hosted review URL remains future work.
+
+## Stage 2 working candidate — 23 October 2026
+
+The owner added Japanese Miniature Scenes and the other useful konbini repositories as supporting inspiration; see [the reference register](../docs/research/sakura-references.md). Proceeding on the existing branch is authorised; a merge/deployment is not.
+
+The real `buildSakuraInterior` now has an opt-in `?sakura-rebuild` candidate. The shell, stock fitting and layout are reusable source modules, with the same rigid translation into the existing shop frame (CAD metres to room: x−6.95, y, 3.91−depth). The default game remains on the existing shop while the replacement is accepted.
+
+The candidate uses the standard shop controller/character system. Product slots, approaches, queues and restock jobs read the display's returned layout; no product IDs, counted capacities, prices or stock-save keys change. Original register/drawer, scanner, cash tray, microwave, counter supplies, copier details, hot food, baskets, price channels/tags and the complete dated magazine rack have been adapted. Eight independently opening cold doors and the existing smooth automatic front-door mechanism are connected. New source strings for physical Japanese signs live in separate JSON; controls/inspect actions remain English. The sign font subset is embedded under the existing OFL notice.
+
+Fitting corrections discovered by actual route tests: office openings widened to 1.10 m; trolley parked against the east dry-stock rack; safe/chair adjusted to clear the route; desk has a supported top and legs so the chair can tuck underneath. The office floor stays level in this candidate, removing the proposed 150 mm step from the CAD review. This is an explicit design difference, not a claim the earlier drawing is unchanged. The clerk's old idle stand sequence is not reused at obsolete coordinates; the candidate waits at its new till between jobs until the full routine is mapped.
+
+Focused checks exercise every SKU approach with a 0.36 m radius walker, the staff approach and receiving, queue/browse clearances, counted-slot depletion/refill, independent doors and the drawer contract. These do not establish actor hand contact, complete prop retention or physical-device performance.
+
+Still needed before replacement: migrate the remaining original detail and office/rest/storage functions; measure actual reserves; align the final exterior/rear delivery/roof service route; handle all upstairs save/prompt/story references; validate real customer checkout/restocking/hand contacts and final materials; review actual-game desktop/phone/iPad evidence. Do not enable the candidate by default merely because it boots.

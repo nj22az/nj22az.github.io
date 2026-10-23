@@ -56,13 +56,13 @@ export const inDoorPath=(x,z)=>x>DOOR_PATH.minX&&x<DOOR_PATH.maxX&&z>DOOR_PATH.m
  * whoever is left over browses, keeping their aisle while they wait, or the first aisle nobody is in. Returns a Map
  * id → {kind, index} (`kind:'hold'` when every aisle is taken too: they stay where they are).
  */
-export function assignSakuraQueue(entries){
+export function assignSakuraQueue(entries,{queue=SAKURA_QUEUE,browse=SAKURA_BROWSE}={}){
  const out=new Map(),taken=new Set(),browsing=new Set();
  for(const e of entries)if(e.phase==='paid'&&e.held?.kind==='queue'){out.set(e.id,{kind:'queue',index:e.held.index});taken.add(e.held.index);}
  const waiting=entries.filter(e=>e.phase==='queue').sort((a,b)=>a.since-b.since||(String(a.id)<String(b.id)?-1:1));
  const left=[];
  for(const e of waiting){
-  const index=SAKURA_QUEUE.findIndex((_,i)=>!taken.has(i));
+  const index=queue.findIndex((_,i)=>!taken.has(i));
   if(index<0){left.push(e);continue;}
   taken.add(index);out.set(e.id,{kind:'queue',index});
  }
@@ -70,7 +70,7 @@ export function assignSakuraQueue(entries){
  for(const e of left)if(e.held?.kind==='browse'&&!browsing.has(e.held.index)){browsing.add(e.held.index);out.set(e.id,{kind:'browse',index:e.held.index});}
  for(const e of left){
   if(out.has(e.id))continue;
-  const index=SAKURA_BROWSE.findIndex((_,i)=>!browsing.has(i));
+  const index=browse.findIndex((_,i)=>!browsing.has(i));
   if(index<0){out.set(e.id,{kind:'hold'});continue;}
   browsing.add(index);out.set(e.id,{kind:'browse',index});
  }

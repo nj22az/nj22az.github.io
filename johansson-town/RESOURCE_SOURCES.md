@@ -11,3 +11,10 @@ The Look setting (`src/render/looks.js`) takes its set of looks from Super Mario
 `resource-catalog.js` retains the existing prop-source catalogue. Its approved/future entries are intake candidates, not a statement that a file is included. The retired procedural and VRoid character prototypes were removed in the 2026 cleanup; see docs/EXPANSION-NOTES.md for where to recover them. ambientCG and GSI imagery are not included.
 
 Accept a new asset only with exact-file provenance and permission to redistribute. Keep required notices on screen and in the ledger. Preserve collision/interaction anchors when a visual model fails. Do not add remote asset URLs or franchise scans to the runtime.
+
+
+## Sakura working references — 23 October 2026
+
+The owner added [Japanese Miniature Scenes](https://github.com/xiaoninemao/japanese-miniature-scenes) and retained the useful konbini repositories as supporting inspiration. The [Sakura reference register](docs/research/sakura-references.md) records their separate purposes: New Yokosuka for proportions/circulation; period chain photographs for equipment/merchandising; Japanese Miniature Scenes and Rainy Night Konbini for detail/weather/light; Yorimichi for visit rhythm; SandyKidYao Konbini and Station Corner as secondary comparisons.
+
+This stage imports no new third-party source code, models or audio from these references. It reuses Sakura’s existing original product/prop generators and the shared World character system. Reference descriptions are not verified architectural measurements or a blanket asset licence.

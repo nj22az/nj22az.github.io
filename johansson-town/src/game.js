@@ -1270,7 +1270,7 @@ function roomShell(s){
  if(s.id===NAHA_ARRIVALS.id){clearRoom();town.visible=false;room.visible=true;activeRoomLayout=buildAirportArrivals({room,reg,action:activities.action,onReturn:()=>islandPlay.returnFlight()});return;}
  clearRoom({enteringMarket:s.id==='market'});town.visible=false;room.visible=true;
  const shared={site:s,room,reg,collider:roomCollider,action:(...args)=>{if(!islandPlay?.action(...args))activities.action(...args);},exit:leaveRoom};
- if(s.id==='market'){activeRoomLayout={...sakuraShop.layout,blocked:(x,z,r)=>suppliedRoomBoundsBlocked(SAKURA_LAYOUT,x,z,r)};return;}
+ if(s.id==='market'){activeRoomLayout={...sakuraShop.layout,blocked:(x,z,r)=>suppliedRoomBoundsBlocked(sakuraShop.layout,x,z,r)};return;}
  if(s.linuxResidence){activeRoomLayout=buildLinuxBedroom({...shared,box,owner:s.owner,exit:leaveRoom,onRest:()=>{if(linuxLife?.active===s.owner)linuxLife.goHome({sleep:true}).catch(error=>say(error.message));}});return;}
  // Sakura's office storey: a room of its own, reached only up the shop's stair (sakura-stairs.js); its fire door the only
  // other way out, from inside.
@@ -1407,7 +1407,7 @@ async function finishStairPassage(){
 }
 /** Stepping onto the stair at either end starts the passage, once he has stepped off it since he arrived. */
 function checkSakuraStair(){
- if(stairPassage||!current)return;
+ if(stairPassage||!current||activeRoomLayout?.candidate)return;
  const p=player.position,end=current.id==='market'?onSakuraStairFoot(p):current.id==='sakura-office'?onSakuraStairHead(p):false;
  if(!end){stairArmed=true;return;}
  if(stairArmed)takeSakuraStair(current.id==='market'?'up':'down');

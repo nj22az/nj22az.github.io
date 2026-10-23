@@ -37,15 +37,15 @@ function talkerTexture(){
  refreshSakuraPrint(t,draw,SAKURA_TALKERS.map(t=>t[0]+t[1]).join(''));return t;
 }
 
-export function buildShelfEdges(room){
+export function buildShelfEdges(room,{shelves=SAKURA_SHELVES}={}){
  const rails=[],cards=[];
- for(const [id,shelf] of Object.entries(SAKURA_SHELVES)){
+ for(const [id,shelf] of Object.entries(shelves)){
   if(!shelf.width||shelf.fridge!=null)continue;
   const front=new THREE.Vector3(Math.sin(shelf.yaw),0,Math.cos(shelf.yaw)),along=new THREE.Vector3(Math.cos(shelf.yaw),0,-Math.sin(shelf.yaw));
   for(const [i,level] of shelf.levels.entries()){
    const put=(g,dx,dy,depth)=>{g.rotateY(shelf.yaw);g.translate(shelf.x+front.x*depth+along.x*dx,level+dy,shelf.z+front.z*depth+along.z*dx);return g;};
-   rails.push(colourise(put(new THREE.BoxGeometry(shelf.width,.034,.012),0,-.024,.112),0xf7f1e1));
-   rails.push(colourise(put(new THREE.BoxGeometry(shelf.width,.006,.014),0,-.006,.113),0xc8342d));
+   rails.push(colourise(put(new THREE.BoxGeometry(shelf.width,.034,.012),0,-.024,shelf.frontDepth??.112),0xf7f1e1));
+   rails.push(colourise(put(new THREE.BoxGeometry(shelf.width,.006,.014),0,-.006,(shelf.frontDepth??.112)+.001),0xc8342d));
    const talker=TALKER_AT[id];
    if(talker&&talker[1]===i){
     // A card on a clear stalk at the end of the board, edge on to the shelf front.

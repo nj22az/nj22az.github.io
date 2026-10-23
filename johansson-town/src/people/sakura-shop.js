@@ -32,7 +32,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
  // The clerk follows the rota (commerce/sakura-rota.js): Thuan, the owner, on weekdays and Nhung at the weekend; nobody
  // at night, when the shop is shut. When the shift changes, the counter's services are bound to the new body; the shut
  // hours keep the last clerk's binding.
- const layout=SAKURA_LAYOUT,colliders=layout.colliders,clerkFor=m=>world.people.find(p=>p.profile.name===sakuraClerkAt(m))||null;
+ let layout=SAKURA_LAYOUT,colliders=layout.colliders;const clerkFor=m=>world.people.find(p=>p.profile.name===sakuraClerkAt(m))||null;
  let person=clerkFor(getMinutes())||world.people.find(p=>p.profile.name==='Thuan');
  const reg=(object,label,fn,inside=true)=>{object.userData.persistentShop=true;register(object,label,fn,inside);};
  const blocked=(x,z,r=.3)=>suppliedRoomBoundsBlocked(layout,x,z,r)||colliders.some(c=>circleHitsRect(x,z,r,c));
@@ -41,7 +41,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   return world.people.some(p=>p!==excluded&&p.g.userData.inMarket&&p.g.visible&&Math.hypot(p.g.position.x-x,p.g.position.z-z)<r+(p===person?layout.clearance:.35));
  };
  let backRoomsFetched=false,lastDt=1/60;
- const display=buildSakuraInterior({room:group,reg,action,exit,stair:dir=>stair(dir)});display.updateStock(state.sakura.stock);
+ const display=buildSakuraInterior({room:group,reg,action,exit,stair:dir=>stair(dir)});layout=display.layout;colliders=layout.colliders;display.updateStock(state.sakura.stock);
  const checkout=createCheckoutFeedback({drawer:display.cashDrawer,
   getSale:()=>state.sakura.journal?.findLast(entry=>entry.kind==='Sale'),
   onSale:()=>townAudio.bells([[1568,0],[2093,.09]],.16)});
@@ -187,6 +187,6 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    checkout.update(dt,!!isInside());display.refrigerator.update(dt);display.updateStock(state.sakura.stock);
    // The office door opens for whoever is in the shop and near it: the player, Thuan, anyone borrowed in.
    // The front door, from inside, opens the same way (the street side has its own).
-   if(display.officeDoor){const points=[];if(isInside()){const p=getPlayerPosition();points.push([p.x,p.z]);}for(const other of world.people)if(other.g.parent===group)points.push([other.g.position.x,other.g.position.z]);display.officeDoor.update(dt,points);display.frontDoor?.update(dt,points);}},
+   if(display.officeDoor||display.frontDoor){const points=[];if(isInside()){const p=getPlayerPosition();points.push([p.x,p.z]);}for(const other of world.people)if(other.g.parent===group)points.push([other.g.position.x,other.g.position.z]);display.officeDoor?.update(dt,points);display.frontDoor?.update(dt,points);}},
  };
 }

@@ -47,7 +47,7 @@ export function createRetailClerk({person,room,layout,collides,getWork,completeW
   return routed(point,dt);
  };
  /** Between jobs, the clerk's stand points (stand-sequences.js sakura-floor): the till, the cooler, the window. */
- const standing=()=>{const minutes=getMinutes();return Number.isFinite(minutes)?standNow(person.profile.name,minutes,'sakura','sakura-floor'):null;};
+ const standing=()=>{if(layout.candidate)return null;const minutes=getMinutes();return Number.isFinite(minutes)?standNow(person.profile.name,minutes,'sakura','sakura-floor'):null;};
  const isStockJob=value=>value?.type==='restock'||value?.type==='restock-prep';
  const clearHandling=()=>{delete clerk.userData.shopReach;delete clerk.userData.heldItem;delete clerk.userData.shopGoods;delete clerk.userData.restocking;delete clerk.userData.tool;};
  const clerkTarget=point=>{if(!point)return null;const target=new THREE.Vector3(...point);room.updateWorldMatrix(true,false);clerk.updateWorldMatrix(true,false);room.localToWorld(target);clerk.worldToLocal(target);return target.toArray();};

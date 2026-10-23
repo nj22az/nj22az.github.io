@@ -1,3 +1,5 @@
+import {sakuraRebuildRequested} from './sakura-rebuild-layout.js';
+import {buildSakuraRebuild} from './sakura-rebuild.js';
 import {buildSakuraBaskets} from './sakura-baskets.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {buildSpecialsBoard} from './sakura-specials-board.js';
@@ -77,6 +79,7 @@ function dressBackbar(room,anchor,action,materials){
  if(look)anchor([look.x-.15,1.2,look.z],'Buy from the till counter',()=>action('sakura-counter-goods'));
 }
 export function buildSakuraInterior({room,reg,action,exit,stair=()=>{}}){
+ if(sakuraRebuildRequested())return buildSakuraRebuild({room,reg,action,exit});
  const layout={...SAKURA_LAYOUT,colliders:[...SAKURA_LAYOUT.colliders]},unitPositions=new Map(),unitApproaches=new Map(),batches=[],materials=shopProductMaterials(),dummy=new THREE.Object3D(),zero=new THREE.Matrix4().makeScale(0,0,0);
  const refrigerator=createShopRefrigerator(room,reg);
  const advertising=createStoreAdvertising({room,reg,action,posterSpecs:[]});

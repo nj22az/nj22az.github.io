@@ -12,6 +12,7 @@ import {SAKURA_QUEUE,SAKURA_BROWSE,assignSakuraQueue,yawOf} from '../world/inter
 
 
 export function createShopRetail({world,state,ledger,display,collides,getMinutes,isOccupied=()=>false}){
+ const shelves=display.productShelves||SAKURA_SHELVES,queue=display.layout.queue||SAKURA_QUEUE,browse=display.layout.browse||SAKURA_BROWSE;
  const layout=display.layout,COUNTER=layout.checkout,STOCKROOM=layout.stockroom,walkers=new Map(),customers=new Map();let activeJob=null;
  const radius=.35;
  function walk(person,target,dt){
@@ -39,7 +40,7 @@ export function createShopRetail({world,state,ledger,display,collides,getMinutes
  }
  function arriving(person,minutes){return visit(person,minutes);}
  function point(item,slot){return display.unitPositions.get(item+':'+slot)||[0,1,0];}
- function stand(item,slot=Math.max(0,state.sakura.stock[item].shelf-1)){return display.unitApproaches.get(item+':'+slot)||SAKURA_SHELVES[item].stand;}
+ function stand(item,slot=Math.max(0,state.sakura.stock[item].shelf-1)){return display.unitApproaches.get(item+':'+slot)||shelves[item].stand;}
  function face(g,yaw,dt){const angle=Math.atan2(Math.sin(yaw-g.rotation.y),Math.cos(yaw-g.rotation.y));g.rotation.y+=THREE.MathUtils.clamp(angle,-dt*2.6,dt*2.6);return Math.abs(angle)<.025;}
  function clear(person){for(const key of ['heldItem','shopGoods','shopReach','shopping'])delete person.g.userData[key];}
  function finish(person,record){
@@ -62,7 +63,7 @@ export function createShopRetail({world,state,ledger,display,collides,getMinutes
  function queuePlaces(){
   const entries=[...customers].filter(([p,r])=>p.g.userData.inMarket&&!r.finished&&(r.phase==='queue'||r.phase==='paid'))
    .map(([p,r])=>({id:p.profile.name,phase:r.phase,since:Number.isFinite(r.queuedAt)?r.queuedAt:r.started,held:r.queueSpot||null}));
-  places=assignSakuraQueue(entries);
+  places=assignSakuraQueue(entries,{queue,browse});
  }
  function update(dt){
   const minutes=getMinutes(),open=true;if(BUDGET.trade)advanceDeliveries(state,minutes);queuePlaces();
@@ -78,20 +79,20 @@ export function createShopRetail({world,state,ledger,display,collides,getMinutes
     if(walk(person,stand(record.item),dt)){record.phase='pickup';record.timer=1.2;}
    }else if(record.phase==='pickup'){
     const count=state.sakura.stock[record.item].shelf;if(!count){soldOut(person,record);continue;}
-    if(!face(g,SAKURA_SHELVES[record.item].yaw,dt))continue;display.accessShelf(record.item);g.userData.shopReach=point(record.item,count-1);record.timer-=dt;
+    if(!face(g,shelves[record.item].yaw,dt))continue;display.accessShelf(record.item);g.userData.shopReach=point(record.item,count-1);record.timer-=dt;
     if(record.timer<=0){const claim=BUDGET.trade?takeShopStock(state,record.item):{item:record.item,virtual:true};delete g.userData.shopReach;if(!claim){record.item=null;record.phase='browse';continue;}record.picked=true;record.phase='queue';record.queuedAt=minutes;}
    }else if(record.phase==='queue'){
     const place=places.get(person.profile.name)||{kind:'hold'},name=stockSpec(record.item).name.toLowerCase();
     record.queueSpot=place.kind==='hold'?record.queueSpot||null:place;
     if(place.kind==='queue'){
-     const spot=SAKURA_QUEUE[place.index];
+     const spot=queue[place.index];
      g.userData.activity=place.index===0?'paying for '+name:'next in the queue for the till with '+name;
      record.atCounter=place.index===0&&walk(person,[spot.x,0,spot.z],dt)&&face(g,yawOf(spot.facing),dt);
      if(place.index>0&&walk(person,[spot.x,0,spot.z],dt))face(g,yawOf(spot.facing),dt);
     }else{
      // Both queue spots are taken: an aisle's browsing spot, the purchase in hand, until one comes free.
      record.atCounter=false;g.userData.activity='browsing with '+name+' in hand until the queue clears';
-     const spot=place.kind==='browse'?SAKURA_BROWSE[place.index]:null;
+     const spot=place.kind==='browse'?browse[place.index]:null;
      if(spot&&walk(person,[spot.x,0,spot.z],dt))face(g,yawOf(spot.facing),dt);
     }
    }else if(record.phase==='paid'){
@@ -119,7 +120,7 @@ export function createShopRetail({world,state,ledger,display,collides,getMinutes
    return null;
   }
   const stock=state.sakura.stock[item.id],slot=stock.shelf,reach=point(item.id,slot);
-  activeJob={type:preparation?'restock-prep':'restock',item:item.id,name:item.name,quantity:Math.min(item.capacity-stock.shelf,stock.reserve),slot,position:stand(item.id),pickup:STOCKROOM,target:reach,reach,yaw:SAKURA_SHELVES[item.id].yaw,ready:preparation?()=>closingStockPending(state,getMinutes()):undefined};return activeJob;
+  activeJob={type:preparation?'restock-prep':'restock',item:item.id,name:item.name,quantity:Math.min(item.capacity-stock.shelf,stock.reserve),slot,position:stand(item.id),pickup:STOCKROOM,target:reach,reach,yaw:shelves[item.id].yaw,ready:preparation?()=>closingStockPending(state,getMinutes()):undefined};return activeJob;
  }
  function complete(job){
   if(job!==activeJob)return;const minutes=getMinutes();
