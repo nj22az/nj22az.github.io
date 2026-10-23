@@ -1,0 +1,9 @@
+{
+  "decoration_count": 20,
+  "same_wall_overlaps": 0,
+  "all_below_ceiling": true,
+  "west_chiller_clear": true,
+  "front_entrance_clear": true,
+  "dxf_audit_errors": 0,
+  "source_commit": "bdb7c824a21b3ac7ebe2947d269056545010999f"
+}

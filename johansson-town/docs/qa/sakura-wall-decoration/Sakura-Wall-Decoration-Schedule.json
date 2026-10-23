@@ -1,0 +1,600 @@
+{
+  "drawing": "JW-SAK-DEC-01",
+  "revision": "A",
+  "date": "2026-10-23",
+  "source_commit": "bdb7c824a21b3ac7ebe2947d269056545010999f",
+  "units": "mm",
+  "exterior": [
+    14260,
+    11000
+  ],
+  "clear_interior": [
+    13900,
+    10640
+  ],
+  "ceiling_mm": 2800,
+  "origin": "SW internal floor corner; X east, depth north, height above finished floor",
+  "status": "Design coordination proposal; decoration not yet placed in runtime",
+  "items": [
+    {
+      "id": "N01",
+      "wall": "north_sales",
+      "start_mm": 3425,
+      "width_mm": 650,
+      "bottom_mm": 2310,
+      "height_mm": 160,
+      "name": "Staff rest door plate",
+      "artwork_copy": "休憩室",
+      "material": "cream enamel / dark green print",
+      "purpose": "Keep customers out of staff rest without obscuring the doorway.",
+      "status": "proposed",
+      "projection_mm": 8,
+      "cad_center_mm": [
+        3750.0,
+        8232,
+        2390.0
+      ],
+      "three_center_m": [
+        -3.2,
+        2.39,
+        -4.322
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "N02",
+      "wall": "north_sales",
+      "start_mm": 5400,
+      "width_mm": 4800,
+      "bottom_mm": 2400,
+      "height_mm": 240,
+      "name": "Beverage category header",
+      "artwork_copy": "酒・ソフトドリンク",
+      "material": "blue painted fascia / cream print",
+      "purpose": "Identify the rear drinks wall from the entrance; replace existing floating board.",
+      "status": "proposed",
+      "projection_mm": 8,
+      "cad_center_mm": [
+        7800.0,
+        8232,
+        2520.0
+      ],
+      "three_center_m": [
+        0.85,
+        2.52,
+        -4.322
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "W01",
+      "wall": "west",
+      "start_mm": 1400,
+      "width_mm": 1400,
+      "bottom_mm": 2230,
+      "height_mm": 220,
+      "name": "Onigiri / sandwich header",
+      "artwork_copy": "おにぎり・サンドイッチ",
+      "material": "green washable fascia",
+      "purpose": "Breakfast and quick lunches nearest the front.",
+      "status": "proposed",
+      "projection_mm": 8,
+      "cad_center_mm": [
+        8,
+        2100.0,
+        2340.0
+      ],
+      "three_center_m": [
+        -6.942,
+        2.34,
+        1.81
+      ],
+      "three_inward_normal": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "W02",
+      "wall": "west",
+      "start_mm": 3000,
+      "width_mm": 1400,
+      "bottom_mm": 2230,
+      "height_mm": 220,
+      "name": "Bento header",
+      "artwork_copy": "お弁当",
+      "material": "green washable fascia",
+      "purpose": "Main meal category over its original products.",
+      "status": "proposed",
+      "projection_mm": 8,
+      "cad_center_mm": [
+        8,
+        3700.0,
+        2340.0
+      ],
+      "three_center_m": [
+        -6.942,
+        2.34,
+        0.21
+      ],
+      "three_inward_normal": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "W03",
+      "wall": "west",
+      "start_mm": 4600,
+      "width_mm": 1400,
+      "bottom_mm": 2230,
+      "height_mm": 220,
+      "name": "Noodles / salad header",
+      "artwork_copy": "麺・サラダ",
+      "material": "green washable fascia",
+      "purpose": "Chilled meal grouping, clear of the open case.",
+      "status": "proposed",
+      "projection_mm": 8,
+      "cad_center_mm": [
+        8,
+        5300.0,
+        2340.0
+      ],
+      "three_center_m": [
+        -6.942,
+        2.34,
+        -1.39
+      ],
+      "three_inward_normal": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "W04",
+      "wall": "west",
+      "start_mm": 6200,
+      "width_mm": 1600,
+      "bottom_mm": 2230,
+      "height_mm": 220,
+      "name": "Milk / chilled drinks header",
+      "artwork_copy": "牛乳・チルド飲料",
+      "material": "green washable fascia",
+      "purpose": "Daily needs next to rear beverage circulation.",
+      "status": "proposed",
+      "projection_mm": 8,
+      "cad_center_mm": [
+        8,
+        7000.0,
+        2340.0
+      ],
+      "three_center_m": [
+        -6.942,
+        2.34,
+        -3.09
+      ],
+      "three_inward_normal": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "E01",
+      "wall": "east",
+      "start_mm": 1450,
+      "width_mm": 594,
+      "bottom_mm": 1600,
+      "height_mm": 420,
+      "name": "J Coffee advertisement",
+      "artwork_copy": "J COFFEE",
+      "material": "A2 landscape print / shallow frame",
+      "purpose": "Reuse Sakura/J Coffee artwork near the microwave and hot-water service.",
+      "status": "proposed",
+      "projection_mm": 8,
+      "cad_center_mm": [
+        13892,
+        1747.0,
+        1810.0
+      ],
+      "three_center_m": [
+        6.942,
+        1.81,
+        2.163
+      ],
+      "three_inward_normal": [
+        -1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "E02",
+      "wall": "east",
+      "start_mm": 2700,
+      "width_mm": 850,
+      "bottom_mm": 1650,
+      "height_mm": 400,
+      "name": "Counter service board",
+      "artwork_copy": "宅配便・公共料金",
+      "material": "cream board / dark green print",
+      "purpose": "Explain the parcel and payment services already supported by the shop.",
+      "status": "proposed",
+      "projection_mm": 8,
+      "cad_center_mm": [
+        13892,
+        3125.0,
+        1850.0
+      ],
+      "three_center_m": [
+        6.942,
+        1.85,
+        0.785
+      ],
+      "three_inward_normal": [
+        -1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "E03",
+      "wall": "east",
+      "start_mm": 3900,
+      "width_mm": 650,
+      "bottom_mm": 1550,
+      "height_mm": 350,
+      "name": "Staff hygiene instruction",
+      "artwork_copy": "手洗い・清潔に",
+      "material": "laminated washable print",
+      "purpose": "Readable working reminder above the preparation area.",
+      "status": "proposed",
+      "projection_mm": 8,
+      "cad_center_mm": [
+        13892,
+        4225.0,
+        1725.0
+      ],
+      "three_center_m": [
+        6.942,
+        1.725,
+        -0.315
+      ],
+      "three_inward_normal": [
+        -1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "E04",
+      "wall": "east",
+      "start_mm": 4800,
+      "width_mm": 1300,
+      "bottom_mm": 2300,
+      "height_mm": 180,
+      "name": "Tobacco cabinet header",
+      "artwork_copy": "たばこ",
+      "material": "timber fascia / cream print",
+      "purpose": "Label the retained cabinet without covering stock or its access.",
+      "status": "proposed",
+      "projection_mm": 8,
+      "cad_center_mm": [
+        13892,
+        5450.0,
+        2390.0
+      ],
+      "three_center_m": [
+        6.942,
+        2.39,
+        -1.54
+      ],
+      "three_inward_normal": [
+        -1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "E05",
+      "wall": "east",
+      "start_mm": 6500,
+      "width_mm": 420,
+      "bottom_mm": 1300,
+      "height_mm": 594,
+      "name": "Office calendar",
+      "artwork_copy": "1997年10月",
+      "material": "paper calendar / clip",
+      "purpose": "Give Thuan a practical date reference beside the desk; calendar is dynamic.",
+      "status": "proposed",
+      "projection_mm": 8,
+      "cad_center_mm": [
+        13892,
+        6710.0,
+        1597.0
+      ],
+      "three_center_m": [
+        6.942,
+        1.597,
+        -2.8
+      ],
+      "three_inward_normal": [
+        -1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "E06",
+      "wall": "east",
+      "start_mm": 7200,
+      "width_mm": 700,
+      "bottom_mm": 1500,
+      "height_mm": 500,
+      "name": "Office rota / delivery board",
+      "artwork_copy": "勤務表・納品予定",
+      "material": "cork / timber frame",
+      "purpose": "Use existing shop rota and delivery data, not arbitrary paperwork.",
+      "status": "proposed",
+      "projection_mm": 8,
+      "cad_center_mm": [
+        13892,
+        7550.0,
+        1750.0
+      ],
+      "three_center_m": [
+        6.942,
+        1.75,
+        -3.64
+      ],
+      "three_inward_normal": [
+        -1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "E07",
+      "wall": "east",
+      "start_mm": 8500,
+      "width_mm": 1300,
+      "bottom_mm": 2050,
+      "height_mm": 220,
+      "name": "Receiving rack label",
+      "artwork_copy": "在庫・返品",
+      "material": "cream washable board",
+      "purpose": "Identify stock and returns over the rack; preserve loading clearance.",
+      "status": "proposed",
+      "projection_mm": 8,
+      "cad_center_mm": [
+        13892,
+        9150.0,
+        2160.0
+      ],
+      "three_center_m": [
+        6.942,
+        2.16,
+        -5.24
+      ],
+      "three_inward_normal": [
+        -1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "S01",
+      "wall": "south",
+      "start_mm": 1000,
+      "width_mm": 594,
+      "bottom_mm": 1400,
+      "height_mm": 420,
+      "name": "J Coffee window poster",
+      "artwork_copy": "J COFFEE",
+      "material": "A2 landscape print, inward facing",
+      "purpose": "Reuse an existing brand; keep most of the shop window transparent.",
+      "status": "proposed",
+      "projection_mm": 8,
+      "cad_center_mm": [
+        1297.0,
+        8,
+        1610.0
+      ],
+      "three_center_m": [
+        -5.653,
+        1.61,
+        3.902
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        -1
+      ]
+    },
+    {
+      "id": "S02",
+      "wall": "south",
+      "start_mm": 4250,
+      "width_mm": 297,
+      "bottom_mm": 1400,
+      "height_mm": 420,
+      "name": "Flower service poster",
+      "artwork_copy": "お花あります",
+      "material": "A3 portrait print, inward facing",
+      "purpose": "Show Sakura now supplies flowers; no obsolete florist branding.",
+      "status": "proposed",
+      "projection_mm": 8,
+      "cad_center_mm": [
+        4398.5,
+        8,
+        1610.0
+      ],
+      "three_center_m": [
+        -2.5515,
+        1.61,
+        3.902
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        -1
+      ]
+    },
+    {
+      "id": "S03",
+      "wall": "south",
+      "start_mm": 8300,
+      "width_mm": 900,
+      "bottom_mm": 1900,
+      "height_mm": 180,
+      "name": "Window service strip",
+      "artwork_copy": "宅配便・コピー",
+      "material": "cream transparent-film lettering",
+      "purpose": "Signpost services above the bins without covering the entrance.",
+      "status": "proposed",
+      "projection_mm": 8,
+      "cad_center_mm": [
+        8750.0,
+        8,
+        1990.0
+      ],
+      "three_center_m": [
+        1.8,
+        1.99,
+        3.902
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        -1
+      ]
+    },
+    {
+      "id": "S04",
+      "wall": "south",
+      "start_mm": 8050,
+      "width_mm": 300,
+      "bottom_mm": 1250,
+      "height_mm": 210,
+      "name": "Opening-hours plate",
+      "artwork_copy": "営業時間",
+      "material": "cream small plate",
+      "purpose": "Print actual game hours from shop data; no invented 24-hour claim.",
+      "status": "proposed",
+      "projection_mm": 8,
+      "cad_center_mm": [
+        8200.0,
+        8,
+        1355.0
+      ],
+      "three_center_m": [
+        1.25,
+        1.355,
+        3.902
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        -1
+      ]
+    },
+    {
+      "id": "R01",
+      "wall": "rear",
+      "start_mm": 12300,
+      "width_mm": 300,
+      "bottom_mm": 1800,
+      "height_mm": 300,
+      "name": "Receiving clock",
+      "artwork_copy": "CLOCK",
+      "material": "original analogue clock",
+      "purpose": "Delivery-time reference above returns; clear of rear door.",
+      "status": "proposed",
+      "projection_mm": 8,
+      "cad_center_mm": [
+        12450.0,
+        10632,
+        1950.0
+      ],
+      "three_center_m": [
+        5.5,
+        1.95,
+        -6.722
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "R02",
+      "wall": "rear",
+      "start_mm": 2750,
+      "width_mm": 700,
+      "bottom_mm": 1300,
+      "height_mm": 600,
+      "name": "Staff rest noticeboard",
+      "artwork_copy": "スタッフ連絡",
+      "material": "cork / cream paper",
+      "purpose": "Retain archive and ordinary staff notices in the rest room.",
+      "status": "proposed",
+      "projection_mm": 8,
+      "cad_center_mm": [
+        3100.0,
+        10632,
+        1600.0
+      ],
+      "three_center_m": [
+        -3.85,
+        1.6,
+        -6.722
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "I01",
+      "wall": "office_south",
+      "start_mm": 11500,
+      "width_mm": 500,
+      "bottom_mm": 2280,
+      "height_mm": 150,
+      "name": "Shift office door plate",
+      "artwork_copy": "事務室",
+      "material": "cream enamel / dark green print",
+      "purpose": "Mark office on the solid west pier; do not cover the observation glazing.",
+      "status": "proposed",
+      "projection_mm": 8,
+      "cad_center_mm": [
+        11750.0,
+        6192,
+        2355.0
+      ],
+      "three_center_m": [
+        4.8,
+        2.355,
+        -2.282
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        1
+      ]
+    }
+  ]
+}
