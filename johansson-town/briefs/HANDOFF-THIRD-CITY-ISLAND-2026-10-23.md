@@ -1,8 +1,9 @@
 # Third city island — planning handover
 
 23 October 2026. Branch: `codex/third-city-island-plan`; base main inspected at
-`db8153ce92d55e475ce6a4f8f63357b100e6ee7d`. Delivery commit is the commit adding this note; inspect the branch
-log for its exact SHA. PR: pending creation at the time this note was written.
+`db8153ce92d55e475ce6a4f8f63357b100e6ee7d`. Planning commit: `811da7b9021930f5b270527eba8321fb362b8f31`.
+Review: [PR #374](https://github.com/nj22az/nj22az.github.io/pull/374), open and unmerged.
+The World guard and Linux console acceptance were in progress at handover; no CI pass is claimed.
 
 ## Request and delivered scope
 
