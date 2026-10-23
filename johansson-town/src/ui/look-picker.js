@@ -22,12 +22,16 @@ const PALETTES={
  watercolour:{sky:'#bcdcf0',ground:'#bfe0a8',wall:'#fbf4e6',roof:'#f08a7a',door:'#c49a7c',sun:'#ffe08a'},
  flat:{sky:'#6fc3ff',ground:'#7ed957',wall:'#fff6d8',roof:'#ff5a3c',door:'#8a5a2b',sun:'#ffd93b'},
  sketchbook:{sky:'#dce6df',ground:'#b9c6a1',wall:'#f5ead5',roof:'#c8a191',door:'#958778',sun:'#f2e6bd'},
+ riso:{sky:'#cbe0da',ground:'#73a7a4',wall:'#fbefd5',roof:'#d8594f',door:'#274b58',sun:'#f3baa1'},
+ pencilManga:{sky:'#fff',ground:'#eeece7',wall:'#fff',roof:'#646069',door:'#38353d',sun:'#fff'},
+ brushOil:{sky:'#81a1c6',ground:'#648048',wall:'#e5bf95',roof:'#b55732',door:'#433a37',sun:'#f1cc6b'},
+ stamp:{sky:'#fbf4df',ground:'#fbf4df',wall:'#fbf4df',roof:'#7d1729',door:'#7d1729',sun:'#fbf4df'},
  oil:{sky:'#5e8fc4',ground:'#4f8a3a',wall:'#e9d3a8',roof:'#a8321f',door:'#4a2c18',sun:'#f2b632'},
 };
 
 /** The little scene in one look, as an SVG string (48×48). Every swatch is the same house, so the style is the difference. */
 export function lookSwatch(id,uid=id){
- const media={sketchbook:'crayon'}[id]||id;
+ const media={sketchbook:'crayon',pencilManga:'crayon',brushOil:'oil',riso:'print',stamp:'lines'}[id]||id;
  const p=PALETTES[id]||PALETTES.none,pixel=media==='pocket'||media==='snes';
  const ink=media==='lines'?'#2b2b33':media==='flat'?'#2b2121':media==='manga'||media==='print'?'#141418':media==='crayon'?'#6c6670':media==='watercolour'?'#9a8f88':null;
  const line=ink?` stroke="${ink}" stroke-width="${media==='flat'?2.6:media==='manga'||media==='print'?2:media==='crayon'||media==='watercolour'?1.2:1.5}" stroke-linejoin="round"${media==='watercolour'?' stroke-opacity=".55"':''}`:'';
@@ -72,7 +76,7 @@ const STYLE=`
 #lookPicker{position:fixed;inset:0;z-index:62;display:flex;align-items:flex-end;justify-content:center;background:linear-gradient(transparent 40%,rgba(10,16,16,.35))}
 #lookPicker[hidden]{display:none}
 #lookPicker .look-sheet{width:min(400px,calc(100% - 16px));margin:0 0 max(12px,env(safe-area-inset-bottom));padding:14px 14px 16px;border-radius:18px;
- background:#fbf9f3;color:#1d2825;box-shadow:0 10px 40px rgba(0,0,0,.25);font:700 12px/1.2 system-ui,sans-serif}
+ max-height:calc(100dvh - 24px);overflow-y:auto;background:#fbf9f3;color:#1d2825;box-shadow:0 10px 40px rgba(0,0,0,.25);font:700 12px/1.2 system-ui,sans-serif}
 #lookPicker .look-head{display:flex;align-items:center;justify-content:space-between;margin:0 2px 10px}
 #lookPicker .look-head svg{width:22px;height:22px}
 #lookPicker .look-close{display:grid;place-items:center;width:40px;height:40px;padding:0;border:0;border-radius:50%;background:#eceee6;color:inherit}

@@ -46,6 +46,11 @@ try{
  await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__;a.camera=null;await a.enter('community-kitchen');});
  await page.waitForFunction(()=>!window.__JOHANSSON_AUDIT__.blocked.roomLoading);step('entered the Community Hall');
  for(const look of proofLooks){await page.evaluate(n=>window.__JOHANSSON_LOOK__.setStyle(n),look);await shot('room-'+look,{pos:[-1.5,1.6,2.2],at:[2,1,-1.5]});if(!await page.evaluate(n=>window.__JOHANSSON_LOOK__.state?.look===n,look))throw Error('World fell back from '+look);}
+ if(args.includes('--izakaya')){
+  await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__;a.camera=null;a.setTime(19*60);await a.enter('izakaya');});
+  await page.waitForFunction(()=>!window.__JOHANSSON_AUDIT__.blocked.roomLoading);step('entered Minato Izakaya');
+  for(const look of proofLooks){await page.evaluate(n=>window.__JOHANSSON_LOOK__.setStyle(n),look);await shot('izakaya-'+look,{pos:[1.0,1.75,-1.0],at:[-1.8,1.1,-3.0]});if(!await page.evaluate(n=>window.__JOHANSSON_LOOK__.state?.look===n,look))throw Error('World fell back from '+look);}
+ }
 }catch(error){report.errors.push(error.message);throw error;}finally{await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2)+'\n');await browser.close();server.close();}
 console.log(JSON.stringify({steps:report.steps.length,errors:report.errors}));
 if(report.errors.length)process.exit(1);

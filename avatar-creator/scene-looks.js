@@ -2,7 +2,7 @@
 import * as THREE from '../johansson-town/vendor/three.module.js';
 import {createLookBuffers} from '../johansson-town/src/render/look-buffers.js';
 import {withLookMaterials} from '../johansson-town/src/render/look-materials.js?v=20261023-recovery';
-import {lookFragment,lookNormals,lookSurfaceStrokes} from '../johansson-town/src/render/looks.js?v=20261023-recovery';
+import {lookFragment,lookNormals,lookSurfaceStrokes} from '../johansson-town/src/render/looks.js?v=20261023-print-media';
 const vertex='varying vec2 vUv; void main(){vUv=uv;gl_Position=vec4(position.xy,0.0,1.0);}';
 const colour=`vec4 studioColour(vec2 uv){vec4 c=texture2D(tDiffuse,uv);vec3 lo=c.rgb*12.92;vec3 hi=1.055*pow(max(c.rgb,vec3(0.0)),vec3(1.0/2.4))-0.055;return vec4(mix(hi,lo,lessThanEqual(c.rgb,vec3(0.0031308))),c.a);}\n`;
 export function createSceneLooks(renderer){

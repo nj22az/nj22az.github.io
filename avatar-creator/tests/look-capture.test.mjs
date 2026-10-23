@@ -12,3 +12,11 @@ test('lossless capture survives project layers and rejects corrupt encodings, si
 });
 
 test('retired preset projects retain their baked marker and migrate editable effects',()=>{for(const [old,next] of Object.entries({storybook:'flat',sunday:'flat',gouache:'oil'})){assert.equal(normalizeScene({version:2,look:old,actors:[]}).look,next);const layer=normalLayer({plate:png,baseLook:old,post:{look:old}});assert.equal(layer.baseLook,old);assert.equal(layer.post.look,next);}});
+
+test('new print/media presets survive scene and editable layered-project normalization',()=>{
+ for(const look of ['riso','pencilManga','brushOil','stamp']){
+  assert.equal(normalizeScene({version:2,look,actors:[]}).look,look);
+  const layer=normalLayer({plate:png,capture,baseLook:look,post:{look}});
+  assert.equal(layer.baseLook,look);assert.equal(layer.post.look,look);assert.deepEqual(layer.capture,capture);
+ }
+});
