@@ -5,7 +5,7 @@ import {openCreator} from '../johansson-town/src/avatars/creator.js?v=20261020-m
 import {ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/src/avatars/cast.js';
 import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js';
 import {normalizeRecipe,decodeRecipe} from '../johansson-town/src/avatars/recipe.js';
-import {createSceneWorkspace} from './scene.js?v=20261023-bubble';
+import {createSceneWorkspace} from './scene.js?v=20261023-effects';
 import {createWorldPanel} from './world-panel.js?v=20261011-1';
 import {createHomeWorkspace} from './home.js?v=20261011-1';
 import {createModelWorkspace} from './model.js?v=20261020-workshop';
@@ -40,7 +40,7 @@ let currentRecipe=shared||restored||recipeFor('Johansson'),editor=null,workspace
 const modes=document.createElement('nav');modes.className='studio-modes';modes.setAttribute('aria-label','Johansson Studio modes');
 for(const [id,label] of [['character','Edit character'],['home','Decorate home'],['scene','Build scene'],['comic','Make comic'],['model','Make model'],['rooms','Edit room'],['library','World library']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.mode=id;b.onclick=()=>switchMode(id);modes.append(b);}
 document.body.prepend(modes);
-function switchMode(mode,{focus=true}={}){
+function switchMode(mode,{focus=true,render=true}={}){
  if(mode!=='rooms')rooms?.hide();
  if(mode!=='library')worldLibrary?.hide();
  if(editor&&mode==='character'){editor.creator.goTo('look');return;}
@@ -51,7 +51,7 @@ function switchMode(mode,{focus=true}={}){
  else if(mode==='model'){workspace?.hide();home?.hide();model??=createModelWorkspace();model.show();}
  else if(mode==='library'){workspace?.hide();home?.hide();model?.hide();rooms?.hide();worldLibrary??=createWorldLibrary({onOpen:async e=>{if(e.access==='model'){if(e.id.startsWith('home:')){switchMode('rooms');await rooms.show();await rooms.addWorldAsset(e);}else{switchMode('model');await model.open(e.id);}}else{switchMode('scene');if(e.access==='character')workspace.useCharacter(recipeFor(e.name),null);else workspace.setLocation(e.id.slice(9));}},onRoomModel:async e=>{switchMode('rooms');await rooms.show();await rooms.addWorldAsset(e);}});worldLibrary.show();}
  else if(mode==='rooms'){workspace?.hide();home?.hide();model?.hide();rooms??=createRoomWorkspace({onScene:async id=>{switchMode('scene');workspace.setLocation(id);}});rooms.show();}
- else{home?.hide();model?.hide();workspace??=createSceneWorkspace({getCharacter:()=>currentRecipe,onMode:switchMode,onEdit:(recipe,id)=>{currentRecipe=recipe;editingId=id;switchMode('character');}});if(editingId){workspace.useCharacter(currentRecipe,editingId);editingId=null;}workspace.show(mode);}
+ else{home?.hide();model?.hide();workspace??=createSceneWorkspace({getCharacter:()=>currentRecipe,onMode:switchMode,onEdit:(recipe,id)=>{currentRecipe=recipe;editingId=id;switchMode('character');}});if(editingId){workspace.useCharacter(currentRecipe,editingId);editingId=null;}workspace.show(mode,{render});}
  for(const b of modes.children)b.setAttribute('aria-pressed',String(b.dataset.mode===mode));
  if(focus)modes.querySelector(`[data-mode="${mode}"]`)?.focus({preventScroll:true});
 }
@@ -153,7 +153,7 @@ document.getElementById('loading')?.remove();
 let opened=true,openingError='';let sharedProject=null;try{sharedProject=await readSceneLink(location.hash);}catch(e){opened=false;openingError=e.message;}
 if(sharedProject){switchMode('comic',{focus:false});await workspace.openShared(sharedProject);}
 else if(new URLSearchParams(location.search).get('comic')==='fujita-tv'){
- switchMode('comic',{focus:false});
+ switchMode('comic',{focus:false,render:false});
  opened=await workspace.openFujita();
 }else switchMode('character',{focus:false});
 if(opened)document.getElementById('comic-start')?.remove();else document.getElementById('comic-start-note')?.replaceChildren(document.createTextNode(openingError||'The 3D editor could not load. You can still read the comic above and retry opening Studio.'));
