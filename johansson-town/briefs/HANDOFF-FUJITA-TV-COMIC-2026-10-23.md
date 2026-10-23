@@ -8,7 +8,7 @@ Changed `drawStatement` to draw one continuous bubble/tail outline and fit its w
 
 Checks: the actual three-panel Studio production render was regenerated and inspected. Browser Canvas checks for the two dialogue lines at head-top 0.29/0.25 retained 83.9/28.2 px clearance on a 1200 px panel, and the tail join pixel is solid bubble fill [255,253,244,255], with no dark border seam. Seven existing link/model tests pass. `git diff --check` passes. Source changes are confined to Studio and its preview; no shared runtime rebuild needed. Extreme camera framing can still leave insufficient room above the cast; the new sizing does not promise arbitrary framing without any overlap.
 
-Publishing branch: `codex/studio-bubble-clearance-2026-10-23`. Publication is in progress; exact release details will follow.
+Publishing branch: `codex/studio-bubble-clearance-2026-10-23`. [PR #377](https://github.com/nj22az/nj22az.github.io/pull/377) merged as `2362971452a3f7e4af9e06475227aff90910f0fa`, from publishing commit `a27f4ec09e667b9e087d37340916d49236867949`. Pages rollout is in progress. Corrected image and project both saved as version 3 under their existing identities.
 
 ## Editable sharing and immediate preview — owner follow-up
 
