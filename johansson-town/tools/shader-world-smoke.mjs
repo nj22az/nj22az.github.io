@@ -46,6 +46,6 @@ try{
  await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__;a.camera=null;await a.enter('community-kitchen');});
  await page.waitForFunction(()=>!window.__JOHANSSON_AUDIT__.blocked.roomLoading);step('entered the Community Hall');
  for(const look of proofLooks){await page.evaluate(n=>window.__JOHANSSON_LOOK__.setStyle(n),look);await shot('room-'+look,{pos:[-1.5,1.6,2.2],at:[2,1,-1.5]});if(!await page.evaluate(n=>window.__JOHANSSON_LOOK__.state?.look===n,look))throw Error('World fell back from '+look);}
-}finally{await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2)+'\n');await browser.close();server.close();}
+}catch(error){report.errors.push(error.message);throw error;}finally{await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2)+'\n');await browser.close();server.close();}
 console.log(JSON.stringify({steps:report.steps.length,errors:report.errors}));
 if(report.errors.length)process.exit(1);
