@@ -1,5 +1,5 @@
 {
-  "revision": "D",
+  "revision": "E",
   "date": "2026-10-23",
   "units": "mm",
   "building_storeys": 1,
@@ -27,158 +27,208 @@
     ]
   ],
   "proposed_clear_floor_area_m2": 147.896,
+  "dedicated_rear_plus_office_m2": 38.46,
+  "dedicated_rear_plus_office_pct": 26.004760101693083,
   "fixture_envelopes": [
     {
-      "id": "G1",
-      "name": "PANTRY",
-      "x": 2400,
-      "y": 1900,
+      "id": "DRY",
+      "name": "DRY STOCK",
+      "x": 13400,
+      "y": 8340,
+      "w": 500,
+      "d": 1700
+    },
+    {
+      "id": "RETURN",
+      "name": "EMPTIES",
+      "x": 12350,
+      "y": 10040,
       "w": 900,
-      "d": 2700
+      "d": 500
     },
     {
-      "id": "G2",
-      "name": "SNACKS",
-      "x": 4900,
-      "y": 1900,
-      "w": 900,
-      "d": 2700
-    },
-    {
-      "id": "G3",
-      "name": "DAILY GOODS",
-      "x": 7600,
-      "y": 1900,
-      "w": 900,
-      "d": 2700
-    },
-    {
-      "id": "C1",
-      "name": "FRESH FOOD",
-      "x": 120,
-      "y": 1900,
-      "w": 850,
-      "d": 2600
-    },
-    {
-      "id": "C2",
-      "name": "DRINKS / BEER / DAIRY",
-      "x": 4700,
-      "y": 6580,
-      "w": 4800,
+      "id": "CART",
+      "name": "STOCK CART",
+      "x": 10600,
+      "y": 8400,
+      "w": 600,
       "d": 800
     },
     {
-      "id": "F1",
-      "name": "ICE / FROZEN",
-      "x": 2800,
-      "y": 6500,
-      "w": 1200,
-      "d": 700
-    },
-    {
-      "id": "M1",
-      "name": "MAGAZINES / NEWSPAPERS",
-      "x": 1200,
-      "y": 120,
-      "w": 2700,
-      "d": 450
-    },
-    {
-      "id": "S1",
-      "name": "COPY / FAX",
-      "x": 9250,
-      "y": 120,
+      "id": "FRESH",
+      "name": "FRESH-FOOD MULTIDECK",
+      "x": 0,
+      "y": 1200,
       "w": 700,
-      "d": 600
+      "d": 7040
     },
     {
-      "id": "P1",
-      "name": "FLOWERS",
+      "id": "G1",
+      "name": "BREAD / PANTRY",
+      "x": 1850,
+      "y": 2400,
+      "w": 900,
+      "d": 4500
+    },
+    {
+      "id": "G2",
+      "name": "SNACKS / CANDY",
+      "x": 3800,
+      "y": 2400,
+      "w": 900,
+      "d": 4500
+    },
+    {
+      "id": "G3",
+      "name": "DAILY / STATIONERY",
+      "x": 5750,
+      "y": 2400,
+      "w": 900,
+      "d": 4500
+    },
+    {
+      "id": "ICE",
+      "name": "ICE CREAM / BAGGED ICE",
+      "x": 7700,
+      "y": 2300,
+      "w": 900,
+      "d": 4500
+    },
+    {
+      "id": "TILL",
+      "name": "SERVICE COUNTER",
       "x": 11300,
-      "y": 120,
-      "w": 900,
-      "d": 650
+      "y": 1400,
+      "w": 800,
+      "d": 4800
     },
     {
-      "id": "B1",
-      "name": "BASKETS",
-      "x": 5150,
-      "y": 120,
-      "w": 450,
-      "d": 450
-    },
-    {
-      "id": "T1",
-      "name": "CHECKOUT",
-      "x": 11400,
-      "y": 1300,
+      "id": "WORK",
+      "name": "BACK COUNTER",
+      "x": 13300,
+      "y": 1400,
       "w": 600,
-      "d": 3000
+      "d": 4800
     },
     {
-      "id": "T2",
-      "name": "BACK WORKTOP",
-      "x": 13230,
-      "y": 1300,
-      "w": 550,
-      "d": 3000
+      "id": "MAG",
+      "name": "MAGAZINES / MANGA",
+      "x": 0,
+      "y": 0,
+      "w": 5800,
+      "d": 550
     },
     {
-      "id": "K1",
-      "name": "TEA / MEAL BREAK",
-      "x": 11100,
-      "y": 7560,
-      "w": 1800,
+      "id": "BASKET",
+      "name": "BASKETS",
+      "x": 5500,
+      "y": 800,
+      "w": 400,
+      "d": 500
+    },
+    {
+      "id": "BINS",
+      "name": "SORTED BINS",
+      "x": 8200,
+      "y": 0,
+      "w": 1400,
       "d": 600
     },
     {
-      "id": "R1",
-      "name": "DRY STOCK",
-      "x": 3500,
-      "y": 10020,
-      "w": 3500,
-      "d": 500
+      "id": "KIOSK",
+      "name": "TICKETS",
+      "x": 9700,
+      "y": 0,
+      "w": 600,
+      "d": 800
     },
     {
-      "id": "R2",
-      "name": "COLD BACKSTOCK",
-      "x": 8800,
-      "y": 10020,
-      "w": 1400,
-      "d": 500
-    },
-    {
-      "id": "R3",
-      "name": "EMPTIES",
-      "x": 12880,
-      "y": 10020,
-      "w": 900,
-      "d": 500
-    },
-    {
-      "id": "R4",
-      "name": "CHECK-IN",
-      "x": 13080,
-      "y": 8160,
-      "w": 700,
-      "d": 1200
-    },
-    {
-      "id": "R5",
-      "name": "ARCHIVE / DECOR",
-      "x": 3500,
-      "y": 7620,
-      "w": 2500,
-      "d": 500
+      "id": "COPY",
+      "name": "COPY / FAX",
+      "x": 10400,
+      "y": 0,
+      "w": 1000,
+      "d": 800
     }
   ],
-  "toilet": {
-    "x": 120,
-    "y": 8580,
-    "w": 1800,
-    "d": 1940,
-    "access": "stockroom through hygiene lobby"
+  "rear_zones": [
+    {
+      "id": "WC-lobby",
+      "x": [
+        0,
+        2400
+      ],
+      "y": [
+        8240,
+        10640
+      ]
+    },
+    {
+      "id": "rest-archive",
+      "x": [
+        2400,
+        5200
+      ],
+      "y": [
+        8240,
+        10640
+      ]
+    },
+    {
+      "id": "cold-room",
+      "x": [
+        5200,
+        10400
+      ],
+      "y": [
+        8240,
+        10440
+      ]
+    },
+    {
+      "id": "receiving",
+      "x": [
+        10400,
+        13900
+      ],
+      "y": [
+        8240,
+        10640
+      ]
+    }
+  ],
+  "rear_delivery_door": {
+    "centre_x": 11500,
+    "width": 1050,
+    "y": 10640,
+    "status": "proposed relocation from earlier 7850 axis"
+  },
+  "cold_room": {
+    "glass_doors": 8,
+    "door_width": 600,
+    "rack_depth": 700,
+    "clear_lane": 1350,
+    "insulation": 75,
+    "east_staff_door": 900
+  },
+  "gondola": {
+    "body_length": 3600,
+    "endcaps": [
+      450,
+      450
+    ],
+    "total_length": 4500,
+    "y": [
+      2400,
+      6900
+    ],
+    "height": 1350,
+    "aisles": [
+      1150,
+      1050,
+      1050,
+      1050
+    ]
   },
   "roof": {
     "deck_height": 4010,
@@ -200,17 +250,16 @@
       "flight_width": 900,
       "risers": 20,
       "rise": 200.5,
-      "going": 250,
-      "access": "ground to roof only; no second floor"
+      "going": 250
     }
   },
   "internal_stair": null,
   "upper_occupied_floor": false,
-  "principal_aisles_mm": [
-    1430,
-    1600,
-    1800
-  ],
-  "staff_aisle_mm": 1230,
-  "counter_height_mm": 780
+  "counter_height_mm": 780,
+  "counter_depth_mm": 800,
+  "period": {
+    "ticket_terminal": "early 1997-style original prop",
+    "FamiPort": false,
+    "ATM": "reserved footprint only"
+  }
 }
