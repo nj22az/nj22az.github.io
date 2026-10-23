@@ -1,9 +1,9 @@
 {
   "drawing": "JW-SAK-EXT-ROOF-POP-01",
-  "revision": "B",
+  "revision": "C",
   "date": "2026-10-23",
   "source_commit": "baf26f20b07671eba51428bd70cd7d333ffcccea",
-  "status": "Audited game-environment coordination CAD and finished poster assets; not constructed in runtime",
+  "status": "Site-coordinated candidate construction schedule; roof access scenery only",
   "units": "mm",
   "origin": "SW internal floor corner; x east, depth north, height up",
   "shell": {
@@ -133,41 +133,41 @@
     "capacity_note": "External cylinder geometry about 1.36 cubic metres; working capacity is not rated. Allow approximately 1 tonne water in the visual load brief; structural design unresolved."
   },
   "stair": {
-    "status": "Proposed external roof-only service/escape stair; rear-yard fit unverified",
+    "status": "Rotated parallel to rear wall on existing apron; no gameplay traversal",
     "flights": [
       [
-        1000,
-        11820,
-        1000,
-        2600
+        5500,
+        12070,
+        2600,
+        1000
       ],
       [
-        2250,
-        11820,
-        1000,
-        2600
+        5500,
+        10820,
+        2600,
+        1000
       ]
     ],
     "groundLanding": [
-      1000,
-      10820,
+      4500,
+      12070,
       1000,
       1000
     ],
     "midLanding": [
+      8100,
+      10820,
       1000,
-      14420,
-      2250,
-      1000
+      2250
     ],
     "topLanding": [
-      2250,
+      4500,
       10640,
       1000,
       1180
     ],
     "roofGate": [
-      2250,
+      4500,
       10640,
       1000
     ],
@@ -176,12 +176,15 @@
     "rise": 182.2727272727,
     "going": 260,
     "flightGoings": 10,
-    "clearWidth": 1000,
+    "clearWidth": 956,
     "midLevel": 2005,
     "topLevel": 4010,
     "railHeight": 1100,
-    "yardExtension": 4600,
-    "guardGap": 250
+    "yardExtension": 2250,
+    "guardGap": 250,
+    "orientation": "parallel to rear wall; first flight ascends east, second west",
+    "treadWidth": 1000,
+    "steelEnvelope": 45
   },
   "roof": {
     "fall": "Indicative tapered finish 1:100 to rear; structural slab datum stays 4010; local finish/support interfaces to resolve",
@@ -219,11 +222,11 @@
     ],
     "serviceWalk": [
       [
-        2750,
+        5000,
         10640
       ],
       [
-        2750,
+        5000,
         10140
       ],
       [
@@ -469,11 +472,8 @@
     }
   ],
   "unverified": [
-    "Rear-yard availability for the 4600 mm external stair projection and ground escape route",
-    "Actual exterior registration against the town scene and original exterior artwork",
-    "Tank anchors, roof load path, wind resistance and rated tank capacity",
-    "Real hydraulic sizing/backflow protection and exact site drainage outfall",
-    "Statutory egress and guard compliance; this is a game-environment coordination drawing"
+    "Real structural anchors/load path, wind restraint and hydraulic/outfall sizing are outside this virtual environment model",
+    "Physical device performance and playable roof/stair access remain unverified; no roof entry prompt"
   ],
   "branches": [
     {
@@ -557,5 +557,38 @@
       ],
       "purpose": "Counter handwash point"
     }
-  ]
+  ],
+  "site": {
+    "cadToWorld": "world=[-7.63-depth/1000, height/1000, -20.35-x/1000]",
+    "outsideWorld": [
+      -18.45,
+      -7.45,
+      -34.43,
+      -20.17
+    ],
+    "stairWorld": [
+      -20.7,
+      -18.45,
+      -29.45,
+      -24.85
+    ],
+    "apronWorld": [
+      -21.6,
+      -18.5,
+      -34.65,
+      -24.3
+    ],
+    "outerPassage": 855,
+    "deliveryWorldZ": [
+      -32.375,
+      -31.325
+    ],
+    "condensersCad": [
+      3200,
+      10820,
+      1000,
+      650
+    ],
+    "scope": "Opt-in scenery/colliders; no roof enter prompt, stair walking level, hydraulic simulation or certified construction"
+  }
 }

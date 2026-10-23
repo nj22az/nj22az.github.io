@@ -1,7 +1,8 @@
+import {buildSakuraRoof} from './sakura-roof.js';
 import SIGN_JP from './sakura-rebuild-signs.json' with {type:'json'};
 // Sakura Shoten Rev E: standalone design prototype, not game runtime wiring.
 // CAD (x,depth,z-height) in mm -> Three (x/1000,height/1000,-depth/1000).
-export function buildSakuraShotenInterior(THREE,{placeholderStock=true,doors=true,levelOffice=false,omit=()=>false}={}){
+export function buildSakuraShotenInterior(THREE,{placeholderStock=true,doors=true,levelOffice=false,roof=true,omit=()=>false}={}){
  const root=new THREE.Group();root.name='SakuraShoten_RevE';
  const groups={},batches=new Map(),solids=[],labels=[];
  const palettes={floor:0xe9e1d0,backfloor:0xc3c9c4,wall:0xeee5cf,partition:0xf4f0e5,cream:0xe7dfc8,shelf:0xbcb7a8,steel:0x959f9c,cold:0xd7e4e5,light:0xecf7ff,glass:0xabcacb,wood:0xb08a5e,top:0xf1e9d9,beige:0xc9c0aa,screen:0x234938,green:0x28654e,orange:0xbf663c,blue:0x477386,futon:0xf5e8d8,red:0x9c4b3f,pink:0xd29a8a,yellow:0xd9b564};
@@ -86,21 +87,8 @@ export function buildSakuraShotenInterior(THREE,{placeholderStock=true,doors=tru
   // Each board spans Y=2.125..2.475; wires stop at 2.8 m, never above ceiling.
   const wireMat=new THREE.LineBasicMaterial({color:0x635f55});for(const[, ,x]of lines){box('HangingSigns',x-250,2175,1400,50,350,x===3800?'orange':'green',2125);const pts=[];for(const dx of [-.6,.6])pts.push(new THREE.Vector3((x+450)/1000+dx,2.475,-2.2),new THREE.Vector3((x+450)/1000+dx,2.8,-2.2));group('HangingSigns').add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),wireMat));}
  }
- // Roof, tank and compact external stair are visible in the roof inspection mode.
- box('Roof',-180,-180,14260,11000,150,'wall',3860);
- for(const x of [-100,13900])box('Roof',x,0,60,10640,1100,'steel',4010);
- box('Roof',0,0,13900,60,1100,'steel',4010);box('Roof',0,10600,13000,60,1100,'steel',4010);
- box('Roof',10100,7700,1600,1600,200,'steel',4010);const tank=new THREE.Mesh(new THREE.CylinderGeometry(.6,.6,1.2,24),mats.cold);tank.position.set(10.9,4.81,-8.5);tank.castShadow=true;group('Roof').add(tank);
- const rise=200.5;
- for(let i=0;i<9;i++){box('Roof',13000-(i+1)*250,10820,250,900,(i+1)*rise,'steel');box('Roof',10750+i*250,11840,250,900,(i+1)*rise,'steel',2005);}
- box('Roof',9850,10820,900,1920,120,'steel',1885);box('Roof',13000,10340,900,2400,120,'steel',3890);
- // Continuous rails follow both stair flights; roof gate remains clear.
- function rail(a,b){const p=new THREE.Vector3(...a),q=new THREE.Vector3(...b),delta=q.clone().sub(p);const m=new THREE.Mesh(new THREE.CylinderGeometry(.022,.022,delta.length(),6),mats.steel);m.position.copy(p.add(q).multiplyScalar(.5));m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),delta.normalize());group('Roof').add(m);}
- for(const z of [-10.82,-11.72])rail([13,1,z],[10.75,3.005,z]);
- for(const z of [-11.84,-12.74])rail([10.75,3.005,z],[13,5.01,z]);
- for(const x of [13,13.9])rail([x,5.01,-10.34],[x,5.01,-12.74]);
- rail([9.85,3.005,-10.82],[9.85,3.005,-12.74]);rail([9.85,3.005,-10.82],[10.75,3.005,-10.82]);rail([9.85,3.005,-12.74],[10.75,3.005,-12.74]);
- for(const [x,z,y]of [[13000,10820,0],[10750,10820,2005],[10750,11720,2005],[10750,11840,2005],[13000,11840,4010],[13000,12740,4010],[13900,12740,4010],[13900,10340,4010],[9850,10820,2005],[9850,12740,2005]])box('Roof',x-22,z-22,44,44,1000,'steel',y);
+ // Corrected CAD roof replaces the obsolete prototype stair and tank.
+ if(roof){groups.Roof=buildSakuraRoof(root);groups.Roof.name='Roof';}else group('Roof');
  // Material/parent batches reduce hundreds of boxes to a bounded draw set.
  const unit=new THREE.BoxGeometry(1,1,1),o=new THREE.Object3D();
  for(const b of batches.values()){const mesh=new THREE.InstancedMesh(unit,mats[b.mat],b.items.length);mesh.name=b.g+':'+b.mat;mesh.castShadow=b.mat!=='glass'&&b.mat!=='light';mesh.receiveShadow=true;for(let i=0;i<b.items.length;i++){const q=b.items[i];o.position.set((q.x+q.w/2)/1000,(q.y+q.h/2)/1000,-(q.z+q.d/2)/1000);o.scale.set(q.w/1000,q.h/1000,q.d/1000);o.updateMatrix();mesh.setMatrixAt(i,o.matrix);}mesh.computeBoundingSphere();group(b.g).add(mesh);}

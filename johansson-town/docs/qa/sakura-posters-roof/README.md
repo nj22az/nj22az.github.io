@@ -1,3 +1,19 @@
+## Implementation update / Rev C / 23 October 2026
+
+The four posters are now installed in the opt-in `?sakura-rebuild` candidate. Runtime artwork is served locally from `assets/graphics/advertising/sakura-campaigns/`; master artwork remains here. Original product packaging, prices and stock IDs are retained.
+
+`Sakura-Site-Correction-Rev-C.pdf/dxf` and `design.json` supersede the Rev B stair plan. The source CAD-to-town transform is `world=[-7.63-depth/1000,height/1000,-20.35-x/1000]`, matching the fixed 14260 x 11000 box. The 4600 mm projection did not fit the existing apron. Rotating the stair parallel to the wall gives 2250 nominal projection; including 45 mm stringer steel leaves 855 mm to the apron edge. Flights have 1000 mm treads and 956 mm between the 44 mm rails. These are virtual-environment dimensions, not certified egress. The retained timber sign/tile hood/awning and street advertisements govern the frontage; the Rev B proposed fascia is not a replacement for those original fittings.
+
+The candidate exterior now has one storey, corrected rear delivery opening, supported roof tank, inspection steps/platform/guards, separate fill/downfeed/overflow/scour/vent and BOH branch geometry, rainwater pipes and separate WC vent. Old upper shell, obsolete escape ladder and duplicate back services are suppressed only in the candidate. Condensers move to CAD X3200-4200. The roof stair has scenery collision, no walking level or entry prompt; working roof access/escape gameplay is unfinished. No hydraulic simulation or real structural design is claimed.
+
+Construction shares `src/world/interiors/sakura-roof-design.json`, checked byte-for-data against `design.json`. `build-site-cad.py` reproduces the corrected drawing/audit. `design-rev-b.json` preserves the historical nine-page proposal; `build-cad.py` now explicitly reproduces that historical revision. Do not construct its superseded projecting stair.
+
+Capture final built game with `TOWN_CHROMIUM_PATH=/path/to/chrome-headless-shell node tools/sakura-rebuild-review.mjs --posters /absolute/output`, then `python docs/qa/sakura-posters-roof/build-progress-pdf.py /absolute/output /absolute/review.pdf`. Images are actual game views, not generated mock-ups. Full checks and remaining limits are recorded in the Sakura retained-detail handover.
+
+---
+
+## Historical Rev B drawing/artwork delivery (before construction)
+
 # Sakura posters, exterior, roof and water services - Rev B
 
 Owner requested full playful advertisements, roof CAD with the water tank, tank piping and exterior CAD; then one absurd advertisement with a pretty adult woman promoting something Sakura sells. This package supplies finished poster assets and audited coordination CAD. It does not construct or alter the game runtime.

@@ -1,0 +1,561 @@
+{
+  "drawing": "JW-SAK-EXT-ROOF-POP-01",
+  "revision": "B",
+  "date": "2026-10-23",
+  "source_commit": "baf26f20b07671eba51428bd70cd7d333ffcccea",
+  "status": "Audited game-environment coordination CAD and finished poster assets; not constructed in runtime",
+  "units": "mm",
+  "origin": "SW internal floor corner; x east, depth north, height up",
+  "shell": {
+    "outside": [
+      -180,
+      -180,
+      14260,
+      11000
+    ],
+    "inside": [
+      0,
+      0,
+      13900,
+      10640
+    ],
+    "ceiling": 2800,
+    "wallTop": 3860,
+    "roofSlab": 150,
+    "roofLevel": 4010,
+    "guardHeight": 1100,
+    "entrance": [
+      6000,
+      7900
+    ],
+    "delivery": [
+      10975,
+      12025
+    ],
+    "doorHeight": 2100,
+    "glazingSill": 400,
+    "glazingHead": 2200,
+    "fascia": [
+      2300,
+      2800
+    ]
+  },
+  "posters": [
+    {
+      "id": "P01",
+      "title": "Kogane / Snack emergency",
+      "asset": "Kogane-Snack-Emergency.webp",
+      "sku": "chips",
+      "wall": "east",
+      "start": 5000,
+      "bottom": 1600,
+      "width": 420,
+      "height": 594,
+      "purpose": "Exuberant snack campaign above the low tobacco dispenser; no price or sale claims."
+    },
+    {
+      "id": "P02",
+      "title": "Hamabe / Moon rabbit",
+      "asset": "Hamabe-Moon-Rabbit.webp",
+      "sku": "crackers",
+      "wall": "east",
+      "start": 5520,
+      "bottom": 1600,
+      "width": 420,
+      "height": 594,
+      "purpose": "Rice-cracker campaign paired with Kogane, below the retained tobacco header."
+    },
+    {
+      "id": "P03",
+      "title": "Oden dance",
+      "asset": "Oden-Dance.webp",
+      "sku": null,
+      "wall": "east",
+      "start": 4050,
+      "bottom": 2030,
+      "width": 420,
+      "height": 594,
+      "purpose": "Hot-food illustration above the hygiene notice; keep the notice and preparation worktop readable."
+    },
+    {
+      "id": "P04",
+      "title": "Tissue Diva",
+      "asset": "Tissue-Diva.webp",
+      "sku": "tissues",
+      "wall": "west",
+      "start": 300,
+      "bottom": 1300,
+      "width": 420,
+      "height": 594,
+      "purpose": "Absurd adult glamour advertisement for ordinary facial tissues near the front magazines; no medical or price claims."
+    }
+  ],
+  "tank": {
+    "center": [
+      10900,
+      8500
+    ],
+    "diameter": 1200,
+    "bodyHeight": 1200,
+    "base": [
+      10100,
+      7700,
+      1600,
+      1600
+    ],
+    "standHeight": 350,
+    "standTop": 4360,
+    "top": 5560,
+    "ventTop": 5760,
+    "hatch": [
+      10500,
+      8500,
+      450
+    ],
+    "serviceZone": [
+      8500,
+      7000,
+      3900,
+      3000
+    ],
+    "inspectionPlatform": [
+      9800,
+      8150,
+      500,
+      700,
+      4760
+    ],
+    "inspectionStepHeights": [
+      250,
+      500,
+      750
+    ],
+    "capacity_note": "External cylinder geometry about 1.36 cubic metres; working capacity is not rated. Allow approximately 1 tonne water in the visual load brief; structural design unresolved."
+  },
+  "stair": {
+    "status": "Proposed external roof-only service/escape stair; rear-yard fit unverified",
+    "flights": [
+      [
+        1000,
+        11820,
+        1000,
+        2600
+      ],
+      [
+        2250,
+        11820,
+        1000,
+        2600
+      ]
+    ],
+    "groundLanding": [
+      1000,
+      10820,
+      1000,
+      1000
+    ],
+    "midLanding": [
+      1000,
+      14420,
+      2250,
+      1000
+    ],
+    "topLanding": [
+      2250,
+      10640,
+      1000,
+      1180
+    ],
+    "roofGate": [
+      2250,
+      10640,
+      1000
+    ],
+    "risers": 22,
+    "flightRisers": 11,
+    "rise": 182.2727272727,
+    "going": 260,
+    "flightGoings": 10,
+    "clearWidth": 1000,
+    "midLevel": 2005,
+    "topLevel": 4010,
+    "railHeight": 1100,
+    "yardExtension": 4600,
+    "guardGap": 250
+  },
+  "roof": {
+    "fall": "Indicative tapered finish 1:100 to rear; structural slab datum stays 4010; local finish/support interfaces to resolve",
+    "drains": [
+      [
+        600,
+        10600
+      ],
+      [
+        13200,
+        10600
+      ]
+    ],
+    "rainwaterPipes": [
+      [
+        600,
+        10870
+      ],
+      [
+        13200,
+        10870
+      ]
+    ],
+    "rainwaterNominalDiameter": 75,
+    "emergencyScupper": [
+      7000,
+      10820,
+      4085
+    ],
+    "equipmentReserve": [
+      5000,
+      8200,
+      2000,
+      1000
+    ],
+    "serviceWalk": [
+      [
+        2750,
+        10640
+      ],
+      [
+        2750,
+        10140
+      ],
+      [
+        9000,
+        10140
+      ],
+      [
+        9000,
+        8500
+      ]
+    ],
+    "walkWidth": 1000,
+    "wcVent": [
+      1700,
+      9800,
+      100,
+      4510
+    ]
+  },
+  "pipes": [
+    {
+      "id": "CW-F",
+      "name": "Mains fill / float valve",
+      "dn": 25,
+      "color": "#297ca0",
+      "points": [
+        [
+          12600,
+          10870,
+          600
+        ],
+        [
+          12600,
+          10870,
+          3200
+        ],
+        [
+          12600,
+          8500,
+          3200
+        ],
+        [
+          11600,
+          8500,
+          3200
+        ],
+        [
+          11600,
+          8500,
+          5480
+        ],
+        [
+          11450,
+          8500,
+          5480
+        ]
+      ],
+      "purpose": "Meter/isolation at rear, concealed plenum run, sealed roof sleeve, float-controlled tank inlet."
+    },
+    {
+      "id": "CW-S",
+      "name": "Tank supply / isolation",
+      "dn": 32,
+      "color": "#2456a0",
+      "points": [
+        [
+          11450,
+          8400,
+          4440
+        ],
+        [
+          11600,
+          8400,
+          4440
+        ],
+        [
+          11600,
+          8400,
+          3000
+        ],
+        [
+          12600,
+          8400,
+          3000
+        ],
+        [
+          12600,
+          10550,
+          3000
+        ],
+        [
+          12600,
+          10550,
+          1300
+        ]
+      ],
+      "purpose": "Downfeed through separate sealed sleeve into receiving-area manifold; branch in plenum to WC, washbasin and counter handwash."
+    },
+    {
+      "id": "OF",
+      "name": "Screened overflow / visible air gap",
+      "dn": 50,
+      "color": "#ce7c30",
+      "points": [
+        [
+          11450,
+          8600,
+          5480
+        ],
+        [
+          11600,
+          8600,
+          5480
+        ],
+        [
+          11600,
+          8600,
+          3700
+        ],
+        [
+          12900,
+          8600,
+          3675
+        ],
+        [
+          12900,
+          10870,
+          3650
+        ],
+        [
+          12900,
+          10870,
+          650
+        ]
+      ],
+      "purpose": "Dedicated gravity route to visible rear tundish/air gap; do not connect directly to foul waste."
+    },
+    {
+      "id": "DR",
+      "name": "Tank scour drain / low valve",
+      "dn": 25,
+      "color": "#a95742",
+      "points": [
+        [
+          10900,
+          8500,
+          4360
+        ],
+        [
+          10900,
+          8750,
+          4360
+        ],
+        [
+          11600,
+          8750,
+          4360
+        ],
+        [
+          11600,
+          8750,
+          3500
+        ],
+        [
+          12980,
+          8750,
+          3450
+        ],
+        [
+          12980,
+          10870,
+          3400
+        ],
+        [
+          12980,
+          10870,
+          650
+        ]
+      ],
+      "purpose": "Low-point valve and separate discharge above the same visible rear drain area; keep away from delivery and stair."
+    },
+    {
+      "id": "VT",
+      "name": "Screened vent / gooseneck",
+      "dn": 50,
+      "color": "#598369",
+      "points": [
+        [
+          11050,
+          8500,
+          5560
+        ],
+        [
+          11050,
+          8500,
+          5760
+        ],
+        [
+          11150,
+          8500,
+          5760
+        ],
+        [
+          11150,
+          8500,
+          5680
+        ]
+      ],
+      "purpose": "Downturned screened vent; separate from WC soil vent and rainwater."
+    }
+  ],
+  "serviceCurb": {
+    "box": [
+      11500,
+      8250,
+      200,
+      600
+    ],
+    "top": 4310,
+    "sleeves": [
+      "CW-F",
+      "CW-S",
+      "OF",
+      "DR"
+    ],
+    "note": "Separate sleeves in a flashed and capped upstand inside the tank base zone; no pipe runs across the walking route."
+  },
+  "valves": [
+    {
+      "id": "V1",
+      "pipe": "CW-F",
+      "location": "Rear mains riser at 600 above ground"
+    },
+    {
+      "id": "V2",
+      "pipe": "CW-S",
+      "location": "Tank outlet at 4440, accessible from east service side"
+    },
+    {
+      "id": "V3",
+      "pipe": "DR",
+      "location": "Low-point drain, reachable beside the plinth"
+    }
+  ],
+  "unverified": [
+    "Rear-yard availability for the 4600 mm external stair projection and ground escape route",
+    "Actual exterior registration against the town scene and original exterior artwork",
+    "Tank anchors, roof load path, wind resistance and rated tank capacity",
+    "Real hydraulic sizing/backflow protection and exact site drainage outfall",
+    "Statutory egress and guard compliance; this is a game-environment coordination drawing"
+  ],
+  "branches": [
+    {
+      "id": "CW-WB",
+      "dn": 15,
+      "points": [
+        [
+          12600,
+          10550,
+          3000
+        ],
+        [
+          1800,
+          10550,
+          3000
+        ],
+        [
+          1800,
+          8600,
+          3000
+        ],
+        [
+          1800,
+          8600,
+          950
+        ]
+      ],
+      "purpose": "Staff washbasin supply"
+    },
+    {
+      "id": "CW-WC",
+      "dn": 15,
+      "points": [
+        [
+          1800,
+          10550,
+          3000
+        ],
+        [
+          475,
+          10550,
+          3000
+        ],
+        [
+          475,
+          10400,
+          3000
+        ],
+        [
+          475,
+          10400,
+          850
+        ]
+      ],
+      "purpose": "WC cistern supply"
+    },
+    {
+      "id": "CW-HW",
+      "dn": 20,
+      "points": [
+        [
+          12600,
+          8400,
+          3000
+        ],
+        [
+          13600,
+          8400,
+          3000
+        ],
+        [
+          13600,
+          4450,
+          3000
+        ],
+        [
+          13600,
+          4450,
+          950
+        ]
+      ],
+      "purpose": "Counter handwash point"
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import {sakuraRebuildRequested} from '../interiors/sakura-rebuild-layout.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {paint,trs} from './kit.js';
 import {GROUND_LAYER} from '../ground-layers.js';
@@ -202,12 +203,11 @@ function dressSakura(kit,solid,{inspect}){
  const S=SAKURA_BOX;
  // The office's upper shell, its windows and its fire door are owned by thuan-flat.js; the office is reached by the
  // stair inside the shop (interiors/sakura-stairs.js), so the back carries a fire escape and no way in.
- sakuraFireEscape(kit,solid,{inspect});
- sakuraBackServices(kit,solid);
+ if(!sakuraRebuildRequested()){sakuraFireEscape(kit,solid,{inspect});sakuraBackServices(kit,solid);}
  sakuraServiceStrip(kit);
  // The meters on the back wall, between the extractor and the bicycles.
  const W=SAKURA_BACK.wall;
- kit.box(.2,.45,.35,W-.1,1.6,-22.8,0x8a8578);kit.box(.18,.35,.3,W-.09,1.6,-21.9,0x9a958a);
+ if(!sakuraRebuildRequested()){kit.box(.2,.45,.35,W-.1,1.6,-22.8,0x8a8578);kit.box(.18,.35,.3,W-.09,1.6,-21.9,0x9a958a);}
  // Side walls: the ice-cream mural, the enamel tins and the delivery banner facing up the street, two tins facing the
  // quay (SAKURA_WALL_ADS). Each is on the wall's face: the storefront's side walls stand .18 outside the plan line.
  for(const a of SAKURA_WALL_ADS){

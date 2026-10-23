@@ -1,3 +1,5 @@
+import {sakuraRebuildRequested} from './interiors/sakura-rebuild-layout.js';
+import {buildSakuraRoof} from './interiors/sakura-roof.js';
 import {createShopGlass} from './shop-glass.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
@@ -62,6 +64,7 @@ const DOOR_HEIGHT=2.25;
  */
 export function buildStorefront({parent,site,register,enter,label,placement,span}){
  const width=span?.width??10,depth=span?.depth??8.2,doorX=span?.doorX??-2.5;
+ const candidate=sakuraRebuildRequested();
  const half=width/2,mid=-depth/2,back=-depth;
  const x=placement?.x??site.side*7.55,z=placement?.z??site.z;
  const yaw=placement?.yaw??-site.side*Math.PI/2,scale=placement?.scale??1;
@@ -69,9 +72,9 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
  const group=new THREE.Group();group.name='Sakura glass storefront';group.position.set(x,0,z);group.rotation.y=yaw;group.scale.set(sx,sy,sz);parent.add(group);
  buildSakuraDetails(group,{width,depth,doorX});
  const surfaces=createMaterials(),materials=new Map();function box(size,pos,color,kind=null){if(!materials.has(color))materials.set(color,new THREE.MeshStandardMaterial({color,roughness:.67}));const o=new THREE.Mesh(new THREE.BoxGeometry(...size),kind?surfaces.material(kind,color):materials.get(color));o.position.set(...pos);o.castShadow=true;o.receiveShadow=true;o.userData.staticProp=true;group.add(o);return o;}
- box([width,.18,depth],[0,.09,mid],0xdad9c8,'plaster');box([width,3.7,.18],[0,1.85,back-.09],0xeee7d1,'plaster');
- for(const wall of [-1,1])box([.18,3.8,depth],[wall*(half+.09),1.9,mid],0xd9d7c9,'plaster');
- box([width+.5,.22,depth+.5],[0,3.9,mid],0xd5d0bd);
+ box([width,.18,depth],[0,.09,mid],0xdad9c8,'plaster');if(candidate){for(const [a,b] of [[-half,4.025],[5.075,half]])box([b-a,3.86,.18],[(a+b)/2,1.93,back-.09],0xeee7d1,'plaster');box([1.05,1.76,.18],[4.55,2.98,back-.09],0xeee7d1,'plaster');box([1.05,2.1,.06],[4.55,1.05,back-.13],0x42514a);box([.08,.04,.04],[4.9,1,back-.175],0xc4c7b9);}else box([width,3.7,.18],[0,1.85,back-.09],0xeee7d1,'plaster');
+ for(const wall of [-1,1])box([.18,candidate?3.86:3.8,depth],[wall*(half+.09),candidate?1.93:1.9,mid],0xd9d7c9,'plaster');
+ if(!candidate)box([width+.5,.22,depth+.5],[0,3.9,mid],0xd5d0bd);
  // A family shop's signboard, not a chain's band: a long board of dark wood with the
  // name on a cream panel, under a short hood of red Okinawan tile.
  box([width+.3,.8,.45],[0,3.25,.12],0x5b3f2a);
@@ -115,7 +118,7 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
  // The back of house. It was never seen while the shop stood in an invisible box with
  // only its frontage on walkable ground; now that you can walk round it, a blank wall
  // the size of the building is the thing you notice.
- if(span){
+ if(span&&!candidate){
   // Everything here is dark for its own good: under this town's sun a mid grey renders
   // as cream, and a fitting the colour of the wall it is bolted to is not a fitting.
   const wall=back-.19,door=.9;
@@ -137,6 +140,7 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
    box([.37,.02,.26],[pallet[0]+dx,y+.29,pallet[1]+dz],0x5a3a22);  // the bottles' shoulders and caps
   }
  }
+ if(candidate){const roof=buildSakuraRoof(group);roof.position.x=-6.95;}
  const [ax,az]=localToWorld(x,z,yaw,scale,doorX,.85);
  const anchor=new THREE.Object3D();anchor.position.set(ax,1.2,az);parent.add(anchor);register?.(anchor,'Enter '+site.title,()=>enter(site));
  const door=buildSlidingDoor({group,doorX,width:DOOR,glazing,box});

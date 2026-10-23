@@ -8,7 +8,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A3,landscape
 from reportlab.lib.utils import ImageReader
 P=Path(__file__).resolve().parent
-D=json.loads((P/'design.json').read_text());S=D['shell'];T=D['tank'];ST=D['stair'];R=D['roof']
+D=json.loads((P/'design-rev-b.json').read_text());S=D['shell'];T=D['tank'];ST=D['stair'];R=D['roof']
 WALL=json.loads((P/'retained-wall-placements.json').read_text())['items']
 OUT=P/'Sakura-Posters-Exterior-Roof-CAD.pdf'
 # Audit measurements before drafting/any construction. A clear failure stops output.

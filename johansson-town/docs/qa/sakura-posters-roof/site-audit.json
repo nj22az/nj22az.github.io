@@ -1,0 +1,11 @@
+{
+  "revision": "C",
+  "checks": {
+    "equal_rise": true,
+    "apron_fit": true,
+    "outer_passage_mm": 855,
+    "delivery_separation_mm": 1875,
+    "dxf_errors": 0
+  },
+  "scope": "Opt-in scenery/colliders; no roof enter prompt, stair walking level, hydraulic simulation or certified construction"
+}

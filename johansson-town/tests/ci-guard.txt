@@ -73,3 +73,5 @@ free-camera.test.mjs
 look-picker.test.mjs
 
 sakura-rebuild.test.mjs
+
+sakura-posters-roof.test.mjs

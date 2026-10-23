@@ -1,0 +1,698 @@
+{
+  "source": false,
+  "viewport": [
+    390,
+    844
+  ],
+  "physicalDevice": false,
+  "steps": [
+    {
+      "name": "page loaded",
+      "s": 0.4
+    },
+    {
+      "name": "island ready",
+      "s": 8.4
+    },
+    {
+      "name": "playing",
+      "s": 11.1
+    },
+    {
+      "name": "entered candidate Sakura",
+      "s": 15.9
+    },
+    {
+      "name": "photographed Sakura-Campaign-Counter",
+      "s": 29.8
+    },
+    {
+      "name": "photographed Sakura-Tissue-Diva",
+      "s": 52.4
+    },
+    {
+      "name": "photographed Sakura-Campaign-Mobile",
+      "s": 70.1
+    },
+    {
+      "name": "photographed Sakura-Roof-Exterior",
+      "s": 97.3
+    },
+    {
+      "name": "photographed Sakura-Roof-Tank",
+      "s": 122.6
+    },
+    {
+      "name": "photographed Sakura-Front-Exterior",
+      "s": 147
+    },
+    {
+      "name": "photographed Sakura-Rear-Stair",
+      "s": 170.4
+    }
+  ],
+  "errors": [],
+  "playerHiddenForCamera": true,
+  "posters": {
+    "revision": "C",
+    "placements": [
+      {
+        "id": "P01",
+        "title": "Kogane / Snack emergency",
+        "asset": "Kogane-Snack-Emergency.webp",
+        "sku": "chips",
+        "wall": "east",
+        "start": 5000,
+        "bottom": 1600,
+        "width": 420,
+        "height": 594,
+        "purpose": "Exuberant snack campaign above the low tobacco dispenser; no price or sale claims.",
+        "center": [
+          6.941,
+          1.897,
+          -1.2999999999999998
+        ],
+        "normal": [
+          -1,
+          0,
+          0
+        ],
+        "cutaway": true
+      },
+      {
+        "id": "P02",
+        "title": "Hamabe / Moon rabbit",
+        "asset": "Hamabe-Moon-Rabbit.webp",
+        "sku": "crackers",
+        "wall": "east",
+        "start": 5520,
+        "bottom": 1600,
+        "width": 420,
+        "height": 594,
+        "purpose": "Rice-cracker campaign paired with Kogane, below the retained tobacco header.",
+        "center": [
+          6.941,
+          1.897,
+          -1.8200000000000003
+        ],
+        "normal": [
+          -1,
+          0,
+          0
+        ],
+        "cutaway": true
+      },
+      {
+        "id": "P03",
+        "title": "Oden dance",
+        "asset": "Oden-Dance.webp",
+        "sku": null,
+        "wall": "east",
+        "start": 4050,
+        "bottom": 2030,
+        "width": 420,
+        "height": 594,
+        "purpose": "Hot-food illustration above the hygiene notice; keep the notice and preparation worktop readable.",
+        "center": [
+          6.941,
+          2.327,
+          -0.34999999999999964
+        ],
+        "normal": [
+          -1,
+          0,
+          0
+        ],
+        "cutaway": true
+      },
+      {
+        "id": "P04",
+        "title": "Tissue Diva",
+        "asset": "Tissue-Diva.webp",
+        "sku": "tissues",
+        "wall": "west",
+        "start": 300,
+        "bottom": 1300,
+        "width": 420,
+        "height": 594,
+        "purpose": "Absurd adult glamour advertisement for ordinary facial tissues near the front magazines; no medical or price claims.",
+        "center": [
+          -6.941,
+          1.597,
+          3.4000000000000004
+        ],
+        "normal": [
+          1,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "roof": {
+    "revision": "C",
+    "roofLevel": 4010,
+    "stair": {
+      "status": "Rotated parallel to rear wall on existing apron; no gameplay traversal",
+      "flights": [
+        [
+          5500,
+          12070,
+          2600,
+          1000
+        ],
+        [
+          5500,
+          10820,
+          2600,
+          1000
+        ]
+      ],
+      "groundLanding": [
+        4500,
+        12070,
+        1000,
+        1000
+      ],
+      "midLanding": [
+        8100,
+        10820,
+        1000,
+        2250
+      ],
+      "topLanding": [
+        4500,
+        10640,
+        1000,
+        1180
+      ],
+      "roofGate": [
+        4500,
+        10640,
+        1000
+      ],
+      "risers": 22,
+      "flightRisers": 11,
+      "rise": 182.2727272727,
+      "going": 260,
+      "flightGoings": 10,
+      "clearWidth": 956,
+      "midLevel": 2005,
+      "topLevel": 4010,
+      "railHeight": 1100,
+      "yardExtension": 2250,
+      "guardGap": 250,
+      "orientation": "parallel to rear wall; first flight ascends east, second west",
+      "treadWidth": 1000,
+      "steelEnvelope": 45
+    },
+    "pipeRoutes": [
+      {
+        "id": "CW-F",
+        "dn": 25,
+        "points": [
+          [
+            12600,
+            10870,
+            600
+          ],
+          [
+            12600,
+            10870,
+            3200
+          ],
+          [
+            12600,
+            8500,
+            3200
+          ],
+          [
+            11600,
+            8500,
+            3200
+          ],
+          [
+            11600,
+            8500,
+            5480
+          ],
+          [
+            11450,
+            8500,
+            5480
+          ]
+        ]
+      },
+      {
+        "id": "CW-S",
+        "dn": 32,
+        "points": [
+          [
+            11450,
+            8400,
+            4440
+          ],
+          [
+            11600,
+            8400,
+            4440
+          ],
+          [
+            11600,
+            8400,
+            3000
+          ],
+          [
+            12600,
+            8400,
+            3000
+          ],
+          [
+            12600,
+            10550,
+            3000
+          ],
+          [
+            12600,
+            10550,
+            1300
+          ]
+        ]
+      },
+      {
+        "id": "OF",
+        "dn": 50,
+        "points": [
+          [
+            11450,
+            8600,
+            5480
+          ],
+          [
+            11600,
+            8600,
+            5480
+          ],
+          [
+            11600,
+            8600,
+            3700
+          ],
+          [
+            12900,
+            8600,
+            3675
+          ],
+          [
+            12900,
+            10870,
+            3650
+          ],
+          [
+            12900,
+            10870,
+            650
+          ]
+        ]
+      },
+      {
+        "id": "DR",
+        "dn": 25,
+        "points": [
+          [
+            10900,
+            8500,
+            4360
+          ],
+          [
+            10900,
+            8750,
+            4360
+          ],
+          [
+            11600,
+            8750,
+            4360
+          ],
+          [
+            11600,
+            8750,
+            3500
+          ],
+          [
+            12980,
+            8750,
+            3450
+          ],
+          [
+            12980,
+            10870,
+            3400
+          ],
+          [
+            12980,
+            10870,
+            650
+          ]
+        ]
+      },
+      {
+        "id": "VT",
+        "dn": 50,
+        "points": [
+          [
+            11050,
+            8500,
+            5560
+          ],
+          [
+            11050,
+            8500,
+            5760
+          ],
+          [
+            11150,
+            8500,
+            5760
+          ],
+          [
+            11150,
+            8500,
+            5680
+          ]
+        ]
+      },
+      {
+        "id": "CW-WB",
+        "dn": 15,
+        "points": [
+          [
+            12600,
+            10550,
+            3000
+          ],
+          [
+            1800,
+            10550,
+            3000
+          ],
+          [
+            1800,
+            8600,
+            3000
+          ],
+          [
+            1800,
+            8600,
+            950
+          ]
+        ]
+      },
+      {
+        "id": "CW-WC",
+        "dn": 15,
+        "points": [
+          [
+            1800,
+            10550,
+            3000
+          ],
+          [
+            475,
+            10550,
+            3000
+          ],
+          [
+            475,
+            10400,
+            3000
+          ],
+          [
+            475,
+            10400,
+            850
+          ]
+        ]
+      },
+      {
+        "id": "CW-HW",
+        "dn": 20,
+        "points": [
+          [
+            12600,
+            8400,
+            3000
+          ],
+          [
+            13600,
+            8400,
+            3000
+          ],
+          [
+            13600,
+            4450,
+            3000
+          ],
+          [
+            13600,
+            4450,
+            950
+          ]
+        ]
+      }
+    ],
+    "site": {
+      "cadToWorld": "world=[-7.63-depth/1000, height/1000, -20.35-x/1000]",
+      "outsideWorld": [
+        -18.45,
+        -7.45,
+        -34.43,
+        -20.17
+      ],
+      "stairWorld": [
+        -20.7,
+        -18.45,
+        -29.45,
+        -24.85
+      ],
+      "apronWorld": [
+        -21.6,
+        -18.5,
+        -34.65,
+        -24.3
+      ],
+      "outerPassage": 855,
+      "deliveryWorldZ": [
+        -32.375,
+        -31.325
+      ],
+      "condensersCad": [
+        3200,
+        10820,
+        1000,
+        650
+      ],
+      "scope": "Opt-in scenery/colliders; no roof enter prompt, stair walking level, hydraulic simulation or certified construction"
+    },
+    "tank": {
+      "center": [
+        10900,
+        8500
+      ],
+      "diameter": 1200,
+      "bodyHeight": 1200,
+      "base": [
+        10100,
+        7700,
+        1600,
+        1600
+      ],
+      "standHeight": 350,
+      "standTop": 4360,
+      "top": 5560,
+      "ventTop": 5760,
+      "hatch": [
+        10500,
+        8500,
+        450
+      ],
+      "serviceZone": [
+        8500,
+        7000,
+        3900,
+        3000
+      ],
+      "inspectionPlatform": [
+        9800,
+        8150,
+        500,
+        700,
+        4760
+      ],
+      "inspectionStepHeights": [
+        250,
+        500,
+        750
+      ],
+      "capacity_note": "External cylinder geometry about 1.36 cubic metres; working capacity is not rated. Allow approximately 1 tonne water in the visual load brief; structural design unresolved."
+    },
+    "access": "Scenery only; no roof entry or walking level"
+  },
+  "shop": {
+    "customers": [],
+    "stock": {
+      "tea": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "coffee": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "rice": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "biscuit": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "soap": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "notebook": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "postcard": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "battery": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "cola": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "water": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "beer": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "noodles": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "milk": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "chips": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "crackers": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "chocolate": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "candy": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "curry": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "soy": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "soup": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "peaches": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "tuna": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "detergent": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "tissues": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "toothpaste": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "orange": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "soda": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "yogurt": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "bread": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "bento": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "sandwich": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "pudding": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "bun": {
+        "shelf": 12,
+        "reserve": 24
+      }
+    }
+  },
+  "cast": [
+    {
+      "name": "Thuan",
+      "clip": null,
+      "gesture": null,
+      "moving": false,
+      "speed": 0,
+      "activity": "Sakura owner",
+      "indoors": "market",
+      "visible": true,
+      "flags": [
+        "inMarket"
+      ],
+      "at": [
+        5.5,
+        1.01,
+        1.57
+      ]
+    }
+  ]
+}

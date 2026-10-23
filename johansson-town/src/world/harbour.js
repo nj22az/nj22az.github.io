@@ -1,3 +1,4 @@
+import {sakuraRebuildRequested} from './interiors/sakura-rebuild-layout.js';
 import {japaneseSign,signText} from './okinawa/signs.js';
 import {benchSeat} from './seat-slots.js';
 import {QUAY_BAYS} from './town-traffic.js';
@@ -192,12 +193,13 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       // is why this was never simply made bigger. The door moves to the middle with it,
       // where the interior's own door is.
       {
-       const centre=s.z+1.2,span={width:SAKURA_FRONT.width,depth:SAKURA_FRONT.depth,doorX:0};
-       const storefront=buildStorefront({parent:group,site:s,register,enter,label,span,placement:{x:front,z:centre,yaw:Math.PI/2,scale:1}});
+       const candidate=sakuraRebuildRequested(),centre=s.z+1.2,span={width:candidate?13.9:SAKURA_FRONT.width,depth:candidate?10.64:SAKURA_FRONT.depth,doorX:0};
+       const storefront=buildStorefront({parent:group,site:s,register,enter,label,span,placement:{x:candidate?front-.18:front,z:centre,yaw:Math.PI/2,scale:1}});
        shopDoors.push(storefront.shopDoor);
        s.x=front;s.door=[front+1.95,0,centre];
        // Upstairs is Sakura's main office (thuan-flat.js), entered through the shop.
-       buildThuanFlat(storefront,{sites,shopDoor:s.door});
+       if(!candidate)buildThuanFlat(storefront,{sites,shopDoor:s.door});
+       if(candidate)colliders.push({x:-19.575,z:-27.15,w:2.25,d:4.6,height:5.11,kind:'sakura-roof-stair'});
        // Turned a quarter: the frontage runs along z and the shop runs back along -x.
        obstacle(front-span.depth/2,centre,span.depth,span.width);return;
       }
