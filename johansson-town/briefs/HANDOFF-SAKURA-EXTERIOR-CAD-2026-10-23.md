@@ -8,6 +8,10 @@ Owner: make a new CAD first, using the existing exterior as the guideline, with 
 
 Main inspected at `e15be1738e2e68c1f1ba323b9992dc89661751f4`. Read root and World instructions, HANDOVER.md and the 21/22 October World handovers. Read the more recent unmerged Sakura replan handover on PR #366 at `0d6e756993273ac4c6e2dba7ea58a166a9e811bb`. #366 remains open/draft; #364 complete stair remains open/draft at `cb262811775a58890ba1cd84e76ba833a875b05c`; #363 alcohol consolidation remains open at `7d586c8a731b511f80e3ad182bd0e3b1ed4d2087`. Do not mistake those plans or branches for main.
 
+## Review branch
+
+Delivery branch: `codex/sakura-exterior-led-cad`; [draft PR #373](https://github.com/nj22az/nj22az.github.io/pull/373). Drawing/source commits `6082bbad9f4282ae8908f5ce3cfb63fa59fba048` through `d7109a2df0edcaa4fb8b957dd67c7977396bd4d6`; handover/index through `6c99728c92749edfcedad82b6e45dacc64582770`. Open draft, not merged or deployed. The PDF and complete review package were delivered alongside the PR; the repository stores the reproducible source and editable DXF.
+
 ## Drawing basis and decisions
 
 - Existing exterior is the controlling envelope. Live `harbour.js` passes the 14.26 x 11.00 m nominal span to `storefront.js`; the central front door is 1.90 m and the rear delivery door is 0.90 m right of its axis. Nominal span excludes projecting wall skins/eaves. The heavy rectangle in the drawing is aligned around the inset source floor for conservative fit comparison; it is not a fresh world-space mesh survey.
