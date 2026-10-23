@@ -14,8 +14,8 @@
  * time it is chosen, never at startup. Only the 3D canvas is redrawn; menus, speech
  * and signs on the HUD stay as they are.
  *
- * Every pattern (dither, screentone, hatching, paper) is fixed to the screen and
- * never animated, so nothing shimmers while the camera is still.
+ * Print patterns stay still; pencil strokes use rest/surface coordinates where available.
+ * No pattern is driven by animation time.
  */
 
 /** In the order the menu offers them. `css` is the stand-in where the town draws without the ink pipeline. */
@@ -256,6 +256,11 @@ void main(){
  float u=unit();
  vec2 p=vUv*uResolution/u;
  vec3 c=texture2D(tDiffuse,vUv).rgb;
+#ifdef HAS_DEPTH
+ // Flat graphic backdrops already contain their own ink. Threshold their fills once,
+ // without outlining both sides of every speed ray or screening its paper.
+ if(readDepth(vUv)>.999999){gl_FragColor=vec4(vec3(step(.35,luma(c))),1.0);return;}
+#endif
  float l=clamp((luma(c)-0.5)*1.25+0.52,0.0,1.0);
  // Discrete printable tones: clean paper, 20%, 48%, 72%, then spot ink.
  float density=l>.80?0.0:l>.48?.20:l>.23?.48:l>.095?.72:1.0;
@@ -266,8 +271,8 @@ void main(){
  if(viewDepth(vUv)>uSkyDepth)ink=min(ink,tone(p,.94));
 #endif
  ink=max(ink,max(edges(vUv,1.5*u,1.0),spotBlack(vUv,u)));
- vec3 paper=vec3(0.97,0.965,0.95);
- gl_FragColor=vec4(mix(paper,vec3(0.06,0.06,0.08),clamp(ink,0.0,1.0)),1.0);
+ // One-bit pigment: tone coverage comes from the dots, never a grey wash below them.
+ gl_FragColor=vec4(vec3(1.0-step(.5,ink)),1.0);
 }`,
  // Coloured pencil on rough paper: the colour goes down in diagonal strokes that skip
  // the paper's tooth, a second layer crosses the darks, and a graphite outline.
@@ -279,8 +284,11 @@ float strokes(vec2 p,vec2 dir,float spacing){
  // Each stroke has its own pressure, and fades in and out along its length.
  float pressure=0.55+0.45*hash(vec2(lane,7.0));
  float body=1.0-abs(fract(across/spacing)-0.5)*2.0;
- float run=0.5+0.5*noise(vec2(along*0.035,lane*1.7));
- return smoothstep(0.15,0.75,body)*pressure*run;
+ float segment=floor(along/28.0+hash(vec2(lane,11.0)));
+ float phase=fract(along/28.0+hash(vec2(lane,11.0)));
+ float run=smoothstep(.03,.16,phase)*(1.0-smoothstep(.68,.94,phase));
+ float wax=smoothstep(.17,.67,noise(p*2.4+hash(vec2(lane,segment))*7.0));
+ return smoothstep(0.15,0.75,body)*pressure*run*mix(.22,1.0,wax);
 }
 void main(){
  float u=unit();
@@ -300,12 +308,12 @@ void main(){
  float tooth=noise(p*0.9)*0.6+noise(p*2.3)*0.4;
  vec3 paper=vec3(0.975,0.96,0.93)-0.05*tooth;
  float dark=1.0-l;
- float cover=strokes(p,vec2(0.6,0.8),4.0)*smoothstep(0.0,0.55,dark+0.35);
- cover=max(cover,strokes(p,vec2(-0.8,0.6),3.5)*smoothstep(0.35,0.8,dark));
+ float cover=strokes(p,vec2(.7071,.7071),4.0)*(1.0-smoothstep(.70,.75,l));
+ cover=max(cover,strokes(p,vec2(.5,-.866),3.5)*(1.0-smoothstep(.38,.45,l)));
  // The pigment catches on the tooth's peaks first.
  cover*=smoothstep(0.15,0.65,tooth+cover*0.6);
  #ifdef SURFACE_STROKES
- cover=1.0-smoothstep(.80,.98,l);
+ cover=1.0-smoothstep(.70,.75,l);
 #else
  cover=clamp(cover*1.25,0.0,1.0)*(1.0-smoothstep(.76,.94,l));
 #endif
@@ -443,10 +451,14 @@ void main(){
  // A few flat tones, hue kept: shading gradients become steps, as on a painted cel.
  float l=luma(col);
  vec3 hue=col/max(l,0.03);
- float steps=(floor(l*4.0)+0.5)/4.0;
- // Further off, where textures shrink to noise, steps would draw contour lines across them: they fade out by 20 m.
- col=clamp(hue*mix(l,steps,0.4*(1.0-smoothstep(8.0,20.0,depth))),0.0,1.0);
- col=mix(vec3(luma(col)),col,1.3)*1.04+0.02;
+ float steps=l<.32?.24:l<.68?.52:.86;
+ // Step brightness only. Cap the common gain rather than clipping separate channels:
+ // wood, grey walls and skin keep their hue instead of neon saturation bands.
+ float stepped=mix(l,steps,.48*(1.0-smoothstep(8.0,20.0,depth)));
+ col=hue*stepped;
+ col/=max(1.0,max(col.r,max(col.g,col.b)));
+ vec3 shadowTint=mix(vec3(.94,.93,.98),vec3(1.0),smoothstep(.25,.55,l));
+ col*=shadowTint;
  // Thick ink, wandering a little as a brush pen does.
  vec2 wob=(vec2(noise(p*0.035),noise(p*0.035+9.0))-0.5)*uTexel*2.5*u;
  // Ink follows the shapes (depth); painted pattern (block walls, small print) gets only a light line.
@@ -496,6 +508,9 @@ void main(){
   float var=v.r+v.g+v.b;
   if(var<best){best=var;col=mean;}
  }
+ // A restrained light-catching ridge between clustered paint dabs, not the canvas grid.
+ float ridge=clamp(length(fwidth(col))*3.0,0.0,1.0);
+ col+=col*.05*ridge;
  // What a painter puts back last, as flat marks over the paint: anything small that is much darker than the stroke
  // painted over it (eyes, brows, a mouth, letters) as a thick dark mark, and anything much lighter (a highlight in an
  // eye, white letters on a dark sign) as a flat light one. The darks are taken from a small ring around the pixel, which
@@ -516,7 +531,8 @@ void main(){
  vec2 q=mat2(0.8,-0.6,0.6,0.8)*p;
  float stroke=noise(vec2(q.x*0.035,q.y*0.32));
  float weave=(sin(p.x*1.9)*sin(p.y*1.9))*0.5+0.5;
- col*=0.94+0.09*stroke+0.04*weave;
+ float thinPaint=smoothstep(.65,.95,luma(col));
+ col*=1.0+thinPaint*((stroke-.5)*.035+(weave-.5)*.016);
  gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
 }`
 };

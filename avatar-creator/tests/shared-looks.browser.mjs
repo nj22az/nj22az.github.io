@@ -17,6 +17,13 @@ test('shared look pipeline: numeric capture, material restoration, skinned strok
   buffers.dispose();renderer.dispose();renderer.forceContextLoss();return {encoded,expected,dp,np,reset,restored,cutDepth};
  });
  assert.ok(Math.abs(numeric.encoded-numeric.expected)<2e-7,JSON.stringify(numeric));assert.equal(numeric.dp[3],255);assert.ok(numeric.cutDepth>.9999,JSON.stringify(numeric));assert.ok(numeric.np[2]>250);assert.equal(numeric.reset,0);assert.equal(numeric.restored,true);
+ const pigments=await page.evaluate(async()=>{
+  const {createComicLook}=await import('/avatar-creator/comic-look.js'),look=createComicLook(),input=document.createElement('canvas'),output=document.createElement('canvas');input.width=output.width=128;input.height=output.height=64;const ctx=input.getContext('2d'),out=output.getContext('2d');
+  for(let x=0;x<128;x++){const v=Math.round(x/127*255);ctx.fillStyle=`rgb(${v},${v},${v})`;ctx.fillRect(x,0,1,64);}
+  look.draw(input,out,'manga');const manga=out.getImageData(0,0,128,64).data;let nonBinary=0;for(let i=0;i<manga.length;i+=4)if(![0,255].includes(manga[i])||manga[i]!==manga[i+1]||manga[i]!==manga[i+2])nonBinary++;
+  look.draw(input,out,'flat');const flat=out.getImageData(0,0,128,64).data;let neutralDrift=0;for(let i=0;i<flat.length;i+=4)neutralDrift=Math.max(neutralDrift,Math.max(flat[i],flat[i+1],flat[i+2])-Math.min(flat[i],flat[i+1],flat[i+2]));look.dispose();return {nonBinary,neutralDrift};
+ });
+ assert.equal(pigments.nonBinary,0,'Manga pigment is strictly black or white across a continuous grey ramp');assert.ok(pigments.neutralDrift<=14,JSON.stringify(pigments));
  const world=await page.evaluate(async()=>{
   const T=await import('/johansson-town/vendor/three.module.js'),{createInkPipeline}=await import('/johansson-town/src/render/ink-pipeline.js'),{LOOKS}=await import('/johansson-town/src/render/looks.js'),{buildSceneWorld}=await import('/avatar-creator/scene-world.js'),{buildAvatar}=await import('/johansson-town/src/avatars/build.js'),{recipeFor}=await import('/johansson-town/src/avatars/cast.js'),{poseSceneAvatar}=await import('/avatar-creator/scene-avatar.js');
   const views=await(await fetch('/johansson-town/assets/images/feed/views.json')).json(),renderer=new T.WebGLRenderer({preserveDrawingBuffer:true});renderer.setSize(384,288);renderer.outputColorSpace=T.SRGBColorSpace;const pipeline=createInkPipeline(renderer,{superScale:1,samples:0,fxaa:false});const timing=[];
