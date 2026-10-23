@@ -34,8 +34,9 @@ test('candidate retains catalogue keys, counted slots and stock depletion; suppo
 
 test('candidate price tickets match catalogue, stay clear of products, and calendar refresh works',()=>{
  installDOM();const room=new THREE.Group(),display=buildSakuraRebuild({room,reg(){},action(){},exit(){}});
- const labels=display.advertising.labels,prices=labels.filter(l=>l.kind==='price'),cards=labels.filter(l=>l.kind==='decoration');
- assert.equal(prices.length,96);assert.equal(cards.length,9);
+ const labels=display.advertising.labels,prices=labels.filter(l=>l.kind==='price'),cards=labels.filter(l=>l.kind!=='price');
+ assert.equal(prices.length,96);assert.equal(cards.length,9);assert.equal(cards.filter(c=>c.kind==='starburst').length,6);
+ for(const tag of cards.filter(c=>c.kind==='starburst'))assert.equal(tag.outline_mm.length,24);
  for(const tag of labels){
   const shelf=display.productShelves[tag.id];assert.ok(Math.abs(tag.along)+tag.width/2<=shelf.width/2,tag.id+' leaves its bay');
   assert.ok(tag.position[1]+tag.height/2<tag.level,tag.id+' rises over deck');

@@ -11,7 +11,7 @@ import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {resolve,dirname,extname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..'),site=resolve(root,'..');
-const args=process.argv.slice(2),SOURCE=args.includes('--source'),STICKERS=args.includes('--stickers');
+const args=process.argv.slice(2),SOURCE=args.includes('--source'),POP=args.includes('--pop'),STICKERS=args.includes('--stickers')||POP;
 const out=resolve(args.find(a=>!a.startsWith('--'))||resolve(root,'output/cloud-boot-smoke'));await mkdir(out,{recursive:true});
 const TYPES={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.css':'text/css','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.glb':'model/gltf-binary','.svg':'image/svg+xml','.hdr':'application/octet-stream','.wasm':'application/wasm'};
 const sourcePage=html=>html.replace(/<link rel="modulepreload" data-town-runtime[^>]*>\n?/g,'')
@@ -47,15 +47,18 @@ try{
  await page.setViewportSize({width:1280,height:800});
  if(STICKERS){
   await shot('Sakura-Shelf-Detail',{pos:[-3.95,.96,-1.70],at:[-3.15,.68,-1.70]});
+  if(POP)await shot('Sakura-Starburst-Fresh',{pos:[-5.45,1.08,1.83],at:[-6.24,.86,1.83]});
   const atlas=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.room.getObjectByName('Sakura prices and paper stickers').material.map.image.toDataURL('image/png'));
   await writeFile(resolve(out,'Sakura-Shelf-Prints.png'),Buffer.from(atlas.split(',')[1],'base64'));
   report.stickers=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.room.getObjectByName('Sakura prices and paper stickers').userData.labels);
  }
+ if(!POP){
  await shot('Sakura-Game-Entrance',{pos:[0,1.45,2.8],at:[0,1,-3.7]});
  await shot('Sakura-Game-Checkout',{pos:[3.0,1.4,1.0],at:[5.5,.95,.7]});
  await shot('Sakura-Game-Aisle',{pos:[-3.675,1.4,2.4],at:[-3.675,1,-2.8]});
  await page.setViewportSize({width:390,height:844});
  await shot('Sakura-Game-Mobile',{pos:[0,1.45,2.8],at:[0,1,-3.7]});
+ }
  report.shop=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.shop);report.cast=await page.evaluate(()=>window.__JOHANSSON_CAST__.takes.filter(p=>p.flags.includes('inMarket')));
 
 }finally{await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2)+'\n');await browser.close();server.close();}
