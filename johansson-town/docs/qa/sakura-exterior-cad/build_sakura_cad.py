@@ -29,7 +29,7 @@ def header(title,sub):
  txt(14*mm,H-36*mm,sub,9)
  c.setStrokeColor(HexColor('#cbd2d1'));c.line(14*mm,H-41*mm,W-14*mm,H-41*mm)
  txt(14*mm,12*mm,'23 OCT 2026  |  EXTERIOR-LED DESIGN PROPOSAL  |  GAME NOT MODIFIED',8)
- txt(W-70*mm,12*mm,f'JW-SAK-CAD-{page:02d} / Rev C',8)
+ txt(W-70*mm,12*mm,f'JW-SAK-CAD-{page:02d} / Rev D',8)
 def end():c.showPage()
 class Drawing:
  def __init__(self,px,py,scale=60,dx=0,dy=0):self.px=px;self.py=py;self.k=mm/scale;self.dx=dx;self.dy=dy
@@ -68,186 +68,176 @@ class Drawing:
    dim=ms.add_linear_dim(base=(self.dx+a[0],self.dy+y),p1=(self.dx+a[0],self.dy+a[1]),p2=(self.dx+b[0],self.dy+b[1]),angle=0,override={'dimtxt':110,'dimasz':80,'dimdec':0,'dimclrd':8,'dimclre':8,'dimclrt':8})
   dim.render()
 
-# Coordinates: mm, source floor front-left (0,0), depth towards rear.
-FLOOR=[(0,0),(13600,0),(13600,7830),(12500,7830),(12500,10660),(1100,10660),(1100,7830),(0,7830)]
+# Coordinates: mm from new clear floor front-left; exterior box is fixed.
+FLOOR=[(0,0),(13900,0),(13900,10640),(0,10640)]
 fixtures=[]
 def fixture(d,id,name,x,y,w,h,layer='FIXTURES',fill='#edf2eb',label=True):
  d.rect(x,y,w,h,layer,fill);fixtures.append(dict(id=id,name=name,x=x,y=y,w=w,d=h))
  if label:d.label(x+w/2,y+h/2,name)
-
-header('A new shop within the existing exterior','01 / Ground-floor plan 1:60 at A3, print at 100%  |  All dimensions in mm  |  Front faces Main Street')
+header('One storey. The whole exterior box.','01 / Revised ground-floor plan 1:60 at A3, print at 100%  |  Dimensions in mm  |  Front faces Main Street')
 d=Drawing(25*mm,59*mm,60)
-# Exterior guide: nominal frontage/depth in live harbour/storefront source.
-d.rect(-330,-170,14260,11000,'EXTERIOR')
-d.poly(FLOOR,'FLOOR');d.label(6800,11200,'EXISTING EXTERIOR: 14,260 x 11,000 nominal span',8)
-# Front glazing and central sliding door, kept on existing axis.
-d.line(0,0,5850,0,'COLD');d.line(7750,0,13600,0,'COLD')
-for a,b in [(5850,6800),(6800,7750)]:d.line(a,50,b,50,'COLD')
-d.arrow([(6800,-800),(6800,950)]);d.label(6800,-1100,'MAIN STREET / EXISTING CENTRAL ENTRANCE',8)
-d.dim((-330,-170),(13930,-170),-1450,'14,260 exterior guide')
-d.dim((-330,-170),(-330,10830),-1050,'11,000 exterior guide',True)
-# Back-of-house partition with a 1.0 m sliding stockroom door.
-for x,w in [(0,9550),(10550,3050)]:d.rect(x,7710,w,120,'WALLS',fill='#d8dedc')
-d.line(9550,7770,10550,7770,'STAFF');d.label(10050,7520,'D2 1,000',6)
-# WC and office walls, sliding entrances (no door sweep in circulation).
-for x,y,w,h in [(2120,5450,120,2260),(0,5330,800,120),(1700,5330,540,120),(10960,5500,120,2210),(11080,5500,500,120),(12480,5500,1120,120)]:d.rect(x,y,w,h,'WALLS',fill='#d8dedc')
-d.line(800,5390,1700,5390,'STAFF');d.line(11580,5560,12480,5560,'STAFF')
-d.label(1200,7500,'STAFF WC',7);d.label(1200,7270,'2,000 x 2,260',6)
-d.rect(400,6550,420,700,'FIXTURES','#f4f4ee');d.circle(610,7030,160,'FIXTURES')
-d.rect(1470,6870,500,400,'COLD','#e5eff3');d.label(1715,6500,'basin',6)
-d.label(12300,7470,'SHIFT OFFICE',7);d.label(12300,7250,'desk + secure cash',6)
-d.rect(12880,5930,600,1100,'STAFF','#f1e8d7');d.circle(12420,6470,240,'STAFF');d.rect(11250,6940,450,500,'STAFF','#f1e8d7')
-# Three short gondolas, 900 deep, 3 bays x 900; centre aisle is clear on door axis.
+d.rect(-180,-180,14260,11000,'EXTERIOR')
+d.poly(FLOOR,'FLOOR');d.label(6950,11200,'EXTERIOR BOX 14,260 x 11,000 / SINGLE STOREY',8)
+d.line(0,0,6000,0,'COLD');d.line(7900,0,13900,0,'COLD')
+for a,b in [(6000,6950),(6950,7900)]:d.line(a,50,b,50,'COLD')
+d.arrow([(6950,-800),(6950,950)]);d.label(6950,-1100,'MAIN STREET / CENTRAL SLIDING ENTRANCE 1,900',8)
+d.dim((-180,-180),(14080,-180),-1450,'14,260 fixed exterior')
+d.dim((-180,-180),(-180,10820),-1050,'11,000 fixed exterior',True)
+# Full-width rear stockroom. No internal stair, no upper occupied floor.
+for x,w in [(0,9950),(11050,2850)]:d.rect(x,7380,w,120,'WALLS',fill='#d8dedc')
+d.line(9950,7440,11050,7440,'STAFF');d.label(10500,7160,'STOCKROOM / 1,100',6)
+d.label(7200,9650,'RECEIVING / DRY STOCK / ARCHIVE',8)
+d.label(7200,9360,'Full-width rear stockroom - all storage stays on site',6)
+# Ground-level rest room, with futon; no staircase beside it.
+for x,y,w,h in [(2120,5200,120,2180),(0,5080,1050,120),(1950,5080,290,120)]:d.rect(x,y,w,h,'WALLS',fill='#d8dedc')
+d.line(1050,5140,1950,5140,'STAFF')
+d.label(1700,6250,'STAFF REST / 2,000 x 2,180',6,angle=90)
+d.rect(300,5330,1000,2000,'STAFF','#f1e8d7');d.label(790,6260,'FUTON',6,angle=90)
+# Office remains close to Thuan's till; upper-floor functions now live at ground level.
+for x,y,w,h in [(11260,5500,120,1880),(11380,5500,350,120),(12630,5500,1270,120)]:d.rect(x,y,w,h,'WALLS',fill='#d8dedc')
+d.line(11730,5560,12630,5560,'STAFF')
+d.label(12600,7150,'SHIFT OFFICE / SAFE',7)
+d.rect(13180,5900,600,1100,'STAFF','#f1e8d7');d.circle(12720,6450,240,'STAFF');d.rect(11550,6810,450,450,'STAFF','#f1e8d7')
 for id,name,x in [('G1','PANTRY',2400),('G2','SNACKS',4900),('G3','DAILY GOODS',7600)]:
- fixture(d,id,name,x,1900,900,2700,label=False)
- d.line(x+450,1900,x+450,4600)
+ fixture(d,id,name,x,1900,900,2700,label=False);d.line(x+450,1900,x+450,4600)
  for yy in [2800,3700]:d.line(x,yy,x+900,yy)
  d.label(x+450,3250,name,7,angle=90)
-d.dim((3300,4600),(4900,4600),4930,'1,600 aisle')
-d.dim((5800,4600),(7600,4600),4930,'1,800 main aisle')
-# Chilled wall, freezer, magazines, shop services and flowers.
-fixture(d,'C1','FRESH FOOD',120,1900,850,3200,'COLD','#e3eff2',False);d.label(545,3500,'BENTO / ONIGIRI / MILK',6,angle=90)
-fixture(d,'C2','DRINKS / BEER / DAIRY',4100,6910,4800,800,'COLD','#e3eff2')
-for xx in range(4900,8900,800):d.line(xx,6910,xx,7710,'COLD')
-fixture(d,'F1','ICE / FROZEN',2500,6500,1200,700,'COLD','#e3eff2')
+d.dim((3300,4600),(4900,4600),4880,'1,600 aisle')
+d.dim((5800,4600),(7600,4600),4880,'1,800 main aisle')
+fixture(d,'C1','FRESH FOOD',120,1900,850,2600,'COLD','#e3eff2',False);d.label(545,3200,'BENTO / ONIGIRI / MILK',6,angle=90)
+fixture(d,'C2','DRINKS / BEER / DAIRY',4700,6580,4800,800,'COLD','#e3eff2')
+for xx in range(5500,9500,800):d.line(xx,6580,xx,7380,'COLD')
+fixture(d,'F1','ICE / FROZEN',2800,6500,1200,700,'COLD','#e3eff2')
 fixture(d,'M1','MAGAZINES / NEWSPAPERS',1200,120,2700,450)
-fixture(d,'S1','COPY / FAX',9100,120,700,600)
-fixture(d,'P1','FLOWERS',11000,120,900,650)
-fixture(d,'B1','BASKETS',5000,120,450,450,label=False);d.label(5225,850,'BASKETS',6)
-# Checkout along east edge, with short walking route to worktop rather than reaching across it.
-fixture(d,'T1','CHECKOUT',11100,1300,600,3000,'STAFF','#f1e8d7',False);d.label(11400,2800,'TILL / BAGGING / HOT CASE',6,angle=90)
-fixture(d,'T2','BACK WORKTOP',12930,1300,550,3000,'STAFF','#f1e8d7',False);d.label(13200,2800,'MICROWAVE / HOT WATER / HAND BASIN',6,angle=90)
-d.rect(11100,1500,600,600,'STAFF','#d5c7ab');d.label(11220,1840,'POS',6,angle=90)
-d.circle(12050,1800,240,'STAFF');d.label(12240,1170,'THUAN',7)
-for i,y in enumerate([2000,3000,4000]):d.circle(10400,y,240);d.label(10400,y+70,str(i+1),7)
-d.label(9700,4200,'QUEUE',7)
-d.arrow([(6800,1100),(10050,1100),(10400,1800)])
+fixture(d,'S1','COPY / FAX',9250,120,700,600)
+fixture(d,'P1','FLOWERS',11300,120,900,650)
+fixture(d,'B1','BASKETS',5150,120,450,450,label=False);d.label(5375,850,'BASKETS',6)
+fixture(d,'T1','CHECKOUT',11400,1300,600,3000,'STAFF','#f1e8d7',False);d.label(11700,2800,'TILL / BAGGING / HOT CASE',6,angle=90)
+fixture(d,'T2','BACK WORKTOP',13230,1300,550,3000,'STAFF','#f1e8d7',False);d.label(13500,2800,'MICROWAVE / HOT WATER / HAND BASIN',6,angle=90)
+d.rect(11400,1500,600,600,'STAFF','#d5c7ab');d.label(11520,1840,'POS',6,angle=90)
+d.circle(12350,1800,240,'STAFF');d.label(12540,1170,'THUAN',7)
+for i,y in enumerate([2000,3000,4000]):d.circle(10700,y,240);d.label(10700,y+70,str(i+1),7)
+d.label(10000,4200,'QUEUE',7)
+d.arrow([(6950,1100),(10350,1100),(10700,1800)])
 d.circle(6700,5550,750,'ROUTE',True);d.label(6700,5560,'1,500',6);d.label(6700,5300,'turning zone',6)
-d.dim((11700,4300),(12930,4300),4720,'1,230 staff aisle')
+d.dim((12000,4300),(13230,4300),4720,'1,230 staff aisle')
 d.dim((970,1900),(2400,1900),1650,'1,430')
-# Rear stockroom, retained at Sakura. Full physical staircase inside reserved envelope.
-d.rect(1100,7830,5220,2830,'STAFF',fill='#f7f2e9')
-d.rect(6200,7830,120,120,'WALLS',fill='#d8dedc')
-d.rect(6200,9050,120,1610,'WALLS',fill='#d8dedc')
-d.label(6610,8530,'1,100',5)
-d.label(8800,9500,'RECEIVING / STOCK / ARCHIVE',7)
-d.label(8800,9230,'Upper storage retained; no stock moved off site',6)
-fixture(d,'R1','DRY STOCK',6500,9200,500,1340,'STAFF','#f1e8d7')
-fixture(d,'R2','COLD BACKSTOCK',9200,10040,1400,500,'COLD','#e3eff2')
-fixture(d,'R3','EMPTIES',11400,10040,800,500,'STAFF','#f1e8d7')
-fixture(d,'R4','CHECK-IN',11680,8250,700,1200,'STAFF','#f1e8d7')
-d.rect(6500,8150,600,800,'STAFF','#f1e8d7');d.label(6800,8520,'CART',6)
-# Original exterior rear door is 0.9 m right of the central entrance axis.
-rear_door_x=7700;d.line(rear_door_x-525,10660,rear_door_x+525,10660,'STAFF')
-d.arrow([(rear_door_x,11250),(rear_door_x,8850),(10050,8850),(10050,7200)])
-d.label(10100,11150,'REAR DELIVERY DOOR / 1,050',7)
-# Full U stair: 24 risers, two flights, 11 goings each; upper/lower overlap only in section.
-sx=1220;sy=7950;landing=1100;going=250;run=2750;top=1100
-for yy in [sy,sy+1220]:
- d.rect(sx,yy,landing+run+top,1100,'STAFF')
- for i in range(12):d.line(sx+landing+i*going,yy,sx+landing+i*going,yy+1100,'STAFF')
-d.line(sx,sy+1100,sx+1100,sy+1100,'STAFF')
-d.arrow([(sx+landing+run-100,sy+550),(sx+landing+100,sy+550),(sx+550,sy+550),(sx+550,sy+1770),(sx+landing+run-100,sy+1770)],'STAFF')
-d.label(3700,10380,'FULL U-STAIR / 24 RISERS / UP',6)
-d.label(5350,8480,'FOOT',5);d.label(5350,9710,'TOP',5)
-# Side notes and scale bar.
+# WC inside the storage area, behind a small hygiene lobby, not on the sales floor.
+for x,y,w,h in [(1920,8580,120,450),(1920,9930,120,590),(0,8460,2040,120),(2040,8580,1200,120),(3120,8580,120,150),(3120,9630,120,890)]:d.rect(x,y,w,h,'WALLS',fill='#d8dedc')
+d.line(1980,9030,1980,9930,'STAFF');d.line(3180,8730,3180,9630,'STAFF')
+d.rect(0,10520,3240,120,'WALLS',fill='#d8dedc')
+d.label(980,10290,'STAFF WC',7);d.label(980,10020,'1,800 x 1,940',6)
+d.rect(370,9250,420,700,'FIXTURES','#f4f4ee');d.circle(580,9730,150,'FIXTURES')
+d.rect(1320,9950,460,400,'COLD','#e3eff2');d.label(1510,9700,'basin',5)
+d.label(2590,10070,'HYGIENE',6);d.label(2590,9810,'LOBBY',6)
+# Tea/meal corner is separated from WC by its solid front wall.
+fixture(d,'K1','TEA / MEAL BREAK',11100,7560,1800,600,'STAFF','#f1e8d7')
+d.label(12000,8490,'SINK / KETTLE / LUNCH',5)
+fixture(d,'R1','DRY STOCK',3500,10020,3500,500,'STAFF','#f1e8d7')
+fixture(d,'R2','COLD BACKSTOCK',8800,10020,1400,500,'COLD','#e3eff2')
+fixture(d,'R3','EMPTIES',12880,10020,900,500,'STAFF','#f1e8d7')
+fixture(d,'R4','CHECK-IN',13080,8160,700,1200,'STAFF','#f1e8d7')
+fixture(d,'R5','ARCHIVE / DECOR',3500,7620,2500,500,'STAFF','#f1e8d7')
+d.rect(6500,7940,600,800,'STAFF','#f1e8d7');d.label(6800,8310,'CART',6)
+# The existing rear door axis is retained; outside service stair is on sheet 2.
+rear_door_x=7850;d.line(7325,10640,8375,10640,'STAFF')
+d.arrow([(7850,11250),(7850,8840),(10500,8840),(10500,7080)])
+d.label(10700,11150,'DELIVERIES / OUTSIDE TO ROOF STAIR',6)
 x=285*mm;y=H-52*mm
 for title,body in [
- ('EXTERIOR IS THE LIMIT','Heavy outline = the existing 14.26 x 11.00 m nominal storefront span. It is not enlarged to fit furniture. The inset stepped floor retains the source 138.75 m2 footprint.'),
- ('A LEGIBLE SMALL SHOP','Three 2.7 m shelf runs; 1.43-1.80 m principal browsing aisles. Fresh food is easy to reach; drinks pull customers to the rear. The queue sits clear of the central entrance.'),
- ('THUAN CAN WORK HERE','Low 780 mm counter; 600 mm depth. Clear 1,230 mm work aisle and 1,200 mm opening around its rear end. Shift desk and cash safe stay nearby.'),
- ('SUPPORT ROOMS STAY','Ground floor: WC, shift office, receiving and stock. Upstairs: tea/meal corner, dedicated rest room, archive and decoration stores. No demolition or stock relocation.'),
- ('DRAWING STATUS','Proposed partitions: 120 mm. Fixture and aisle dimensions are design values. Actual avatar reach, camera movement, stock quantities and upstairs stair alignment require the next greybox check.')]:
+ ('ONE STOREY ONLY','The former upper floor and internal staircase are removed from this proposal. The 14.26 x 11.00 m exterior box controls the new full rectangular plan.'),
+ ('USE THE WHOLE BOX','A proposed 180 mm perimeter allowance leaves 13.90 x 10.64 m inside, approximately 147.90 m2 before internal partitions. The old stepped interior is retired; there are no unused rear corners.'),
+ ('TOILET IN THE STOCKROOM','The staff WC opens through a small hygiene lobby within the rear stockroom. It has no door directly onto the sales floor. A separate hand basin remains at the food-service worktop.'),
+ ('THUAN AT GROUND LEVEL','Shift desk and safe stay near the till. A dedicated lie-down room, tea/meal corner, archive and decoration stock are all on the ground floor.'),
+ ('ROOF ACCESS ONLY','A compact external rear steel stair serves the water tank and roof escape. It connects ground to roof only, never to a second storey. Its plan and water-tank service space are shown on sheet 2.')]:
  txt(x,y,title,9,True);y-=15;y=para(x,y,body,108*mm,9,13)-17
 d.line(0,-2200,3000,-2200,'DIM')
 for xx in range(0,3001,1000):d.line(xx,-2300,xx,-2100,'DIM');d.label(xx,-2500,f'{xx//1000} m',7)
-txt(25*mm,29*mm,'Exterior outline aligned to the source floor for fit comparison; wall skins/eaves are excluded from nominal span.',7)
+txt(25*mm,29*mm,'180 mm perimeter allowance is proposed. Register against the existing exterior mesh before construction in the game.',7)
 end()
 
-header('Human-scale fittings and a complete stair','02 / Counter section and stair section  |  Dimensions in mm  |  Proposed working heights')
-q=Drawing(40*mm,165*mm,20,dx=18000)
-q.label(1420,1780,'A-A / CHECKOUT WORKING SECTION  1:20',10)
-q.line(-200,0,2900,0,'EXTERIOR')
-q.rect(0,0,600,780,'STAFF','#f1e8d7');q.label(300,400,'COUNTER',8)
-q.rect(1830,0,550,780,'STAFF','#f1e8d7');q.label(2105,400,'WORKTOP',8)
-q.rect(1830,780,500,350,'COLD','#e3eff2');q.label(2090,1240,'MICROWAVE',7)
-q.rect(100,780,300,260,'STAFF','#e2dfd6');q.label(250,1150,'LOW POS',7)
-q.line(1000,0,1000,770,'ROUTE');q.line(1000,770,960,1130,'ROUTE');q.circle(960,1270,135,'ROUTE');q.line(960,1130,720,920,'ROUTE');q.line(720,920,470,850,'ROUTE')
-q.dim((0,0),(0,780),-120,'780',True)
-q.dim((600,0),(1830,0),-210,'1,230 CLEAR')
-q.dim((0,780),(600,780),1530,'600 COUNTER DEPTH')
-q.label(1200,-510,'Figure is schematic: use the actual Thuan rig for final reach validation.',8)
-x=285*mm;y=H-56*mm
-for title,body in [('WORKING REACH','Keep scanner, cash drawer, bags and hot-case handle within a proposed 350 mm routine reach of the clerk-side edge. Thuan walks to the microwave and hand basin rather than reaching across the whole work aisle.'),('SHELVES','Gondolas: 900 mm overall depth, 1,400 mm top, four decks at 300 / 600 / 900 / 1,200 mm. Heavy rice and detergent low; daily-use goods below 1,200 mm. Wall chillers 800-850 mm deep; maximum case height 2,000 mm.'),('CEILING AND SERVICES','Proposed sales ceiling 2,700 mm, below the existing approximately 4,010 mm upper-floor level. Space above allows lighting, wiring and cooling services. Use flush fluorescent fittings, a tiled floor, cooler hum and restrained signage.'),('PERIOD AND OPERATIONS','1997: cash, receipt roll, telephone/fax, copier and phone cards. No smartphone checkout or modern self-service coffee tower. Packaged bento, onigiri and sandwiches; warm buns and microwave service at the staffed counter.')]:
- txt(x,y,title,9,True);y-=15;y=para(x,y,body,108*mm,9,13)-17
-# Schematic full U stair section developed along travel line, compressed at 1:40.
-s=Drawing(40*mm,50*mm,60,dx=18000,dy=5000)
-s.label(4400,4950,'B-B / FULL STAIR, DEVELOPED SECTION  1:60',10)
-rise=4010/24
-pts=[(0,0),(1100,0)]
-for i in range(12):
- xx=1100+i*250;pts.extend([(xx,(i+1)*rise),(xx+250,(i+1)*rise)])
-# 12 risers have 11 going spaces before the landing; draw last tread as landing transition.
-pts=[(0,0),(1100,0)]
-for i in range(12):
- xx=1100+min(i,11)*250;pts.append((xx,(i+1)*rise))
- if i<11:pts.append((xx+250,(i+1)*rise))
-pts.append((4950,2005))
-for i in range(12):
- xx=4950+min(i,11)*250;pts.append((xx,2005+(i+1)*rise))
- if i<11:pts.append((xx+250,2005+(i+1)*rise))
-pts.append((8800,4010))
-for a,b in zip(pts,pts[1:]):s.line(*a,*b,'STAFF')
-s.line(0,0,8800,0,'FLOOR');s.line(7700,4010,8800,4010,'EXTERIOR')
-s.dim((0,0),(0,4010),-450,'4,010 floor to floor',True)
-s.label(1800,-400,'12 RISERS',8);s.label(6100,-400,'12 RISERS',8)
-s.label(4400,-830,'24 x 167.083 rise; 250 going; 1,100 clear flights and landings.',8)
-s.label(4400,-1190,'Both flights, return landing, closed risers and rails exist; room change may still fade.',8)
-txt(26*mm,24*mm,'Section is developed along the U-shaped route. Stairwell plan is 4,950 x 2,320; align both floor frames before modelling.',8)
+header('A service roof, not another floor','02 / Roof plan 1:90 and side elevation 1:90 at A3  |  Counter detail 1:20  |  Dimensions in mm')
+r=Drawing(27*mm,104*mm,90,dx=18000)
+r.rect(-180,-180,14260,11000,'EXTERIOR');r.rect(0,0,13900,10640,'FLOOR')
+r.label(6950,5000,'SINGLE-STOREY SHOP BELOW',8)
+r.label(6950,4600,'ROOF: MAINTENANCE AND ESCAPE ONLY',7)
+# A guarded route connects the rear service stair with a 1.2 m tank service ring.
+r.circle(10900,8500,600,'COLD');r.label(10900,8550,'WATER',6);r.label(10900,8100,'TANK',6)
+r.rect(9100,6700,3600,3600,'COLD',dash=True);r.label(10900,6350,'1,200 SERVICE CLEARANCE',6)
+r.arrow([(12600,10640),(12600,9200),(12400,8500)],'ROUTE')
+# External dogleg service/escape stair, 20 risers, not interior floor area.
+sx=9850;sy=10820;run=2250;landing=900;top=900
+for yy in [sy,sy+1020]:
+ r.rect(sx,yy,4050,900,'STAFF')
+ for i in range(10):r.line(sx+landing+i*250,yy,sx+landing+i*250,yy+900,'STAFF')
+r.arrow([(13400,11270),(10000,11270),(10000,12290),(13400,12290)],'STAFF')
+r.label(11850,13200,'EXTERNAL ROOF STAIR: 4,050 x 1,920',7)
+r.label(11850,12850,'20 RISERS / 900 CLEAR / GUARDED LANDINGS',6)
+# Top landing comes back over the roof edge through a guarded bridge.
+r.rect(13000,10340,900,1500,'STAFF',dash=True);r.label(12600,10050,'SELF-CLOSING ROOF GATE',5)
+r.label(6950,-450,'FRONT / MAIN STREET',7)
+txt(26*mm,245*mm,'ROOF PLAN 1:90',9,True)
+# Single-storey side elevation: no windows or rooms above the shop.
+v=Drawing(27*mm,36*mm,90,dx=18000,dy=18000)
+v.line(-180,0,14080,0,'EXTERIOR');v.rect(-180,0,14260,4010,'EXTERIOR')
+v.line(-180,2700,14080,2700,'FLOOR',True);v.label(4800,2850,'2,700 SALES CEILING / SERVICES ABOVE',6)
+v.rect(10300,4210,1200,1200,'COLD');v.rect(10100,4010,1600,200,'STAFF')
+v.line(-180,5110,14080,5110,'STAFF')
+for xx in range(0,13901,1800):v.line(xx,4010,xx,5110,'STAFF')
+v.label(4800,5310,'GUARDED ROOF EDGE',6)
+v.label(4800,1450,'ONE OCCUPIED FLOOR',8)
+v.dim((-180,0),(-180,4010),-750,'4,010 ROOF DECK',True)
+v.label(6950,-650,'ELEVATION 1:90 / ROOF DATUM TAKEN FROM EXISTING LOWER BUILDING',7)
+# Compact till detail on right-hand side.
+q=Drawing(254*mm,147*mm,20,dx=36000)
+q.label(1200,1650,'COUNTER SECTION 1:20',9)
+q.line(-100,0,2500,0,'EXTERIOR');q.rect(0,0,600,780,'STAFF','#f1e8d7');q.rect(1830,0,550,780,'STAFF','#f1e8d7')
+q.rect(100,780,300,260,'STAFF','#d5c7ab');q.label(300,1160,'LOW POS',6)
+q.line(1000,0,1000,770,'ROUTE');q.line(1000,770,960,1130,'ROUTE');q.circle(960,1270,135,'ROUTE');q.line(960,1130,470,850,'ROUTE')
+q.dim((0,0),(0,780),-150,'780',True);q.dim((600,0),(1830,0),-220,'1,230 CLEAR')
+x=248*mm;y=110*mm
+for title,body in [('ROOF SERVICE','Proposed tank: 1,200 mm diameter x 1,200 mm high on a 200 mm curb. Clear maintenance ring 1,200 mm. Tank size and support are placeholders for the game model, to be checked before detailing.'),('COMPACT EXTERNAL ACCESS','Two 900 mm-wide steel flights, 20 risers x 200.5 mm, 250 mm goings and 900 mm landings. Handrails and guarded roof entry; a 1,100 mm edge guard is proposed. Ground service access and outward escape operation must be resolved together.'),('NO SECOND STOREY','Roof deck at approximately 4,010 mm retains the lower building/signboard height. Remove the former office-storey walls and windows. No upstairs office, rest room, archive or internal stair remains.')]:
+ txt(x,y,title,9,True);y-=14;y=para(x,y,body,150*mm,8,11)-13
 end()
 
-header('What Sakura needs, and why it is placed there','03 / Fixture schedule, operating brief and source record  |  Planning basis for the next modelling stage')
+header('The shop programme, all on one floor','03 / Fixture and space schedule  |  Supersedes Rev C and its retained upper-storey arrangement')
 rows=[
- ('G1-G3','3 double-sided gondolas','900 x 2,700 each','Pantry; snacks; household goods. Low enough for counter sightlines.'),
- ('C1','Open fresh-food chiller','850 x 3,200','Bento, onigiri, sandwiches, milk and small chilled foods near the front.'),
- ('C2','Six-door cold cabinet','4,800 x 800','Tea, water, canned coffee, soft drinks, dairy and beer at the rear.'),
- ('F1','Chest freezer','1,200 x 700','Ice, frozen meals and packaged ice cream; lid needs clear opening space.'),
- ('T1','Staffed service counter','600 x 3,000; H780','Low till, bagging surface, hot case/bun steamer, stamps and ferry tickets.'),
- ('T2','Worktop and hygiene point','550 x 3,000; H780','Microwave, hot-water pot, hand basin, supplies; separate from the WC basin.'),
- ('M1 / S1','Magazine rack; copier/fax','2,700 x 450; 700 x 600','Window-side reading and practical neighbourhood services.'),
- ('P1 / B1','Flower display; baskets','900 x 650; 450 x 450','Sakura sells bouquets and everyday goods; keep the door and its sensors clear.'),
- ('R1-R4','Receiving and backstock','See editable floor plan','Count deliveries, date chilled goods, stage trolley, sort empties and cardboard.'),
- ('Office','Shift desk and secure cash','2,400 x 2,090 clear','Ledger, telephone, safe and staff belongings; short route back to the till.'),
- ('WC','Toilet and wash basin','2,000 x 2,260 clear','Staff sanitary provision; enclosed sliding entry from the shop.'),
- ('Upper','Tea, rest, archive, decorations','Existing upper outline retained','Keep all four previously requested support functions at Sakura; no stock moved away.')]
-xx=[14*mm,40*mm,112*mm,175*mm]; yy=H-53*mm
+ ('G1-G3','3 low double-sided gondolas','900 x 2,700; H1,400','Pantry, snacks and daily goods. Four decks; 64.8 m shelf edge in total.'),
+ ('C1','Fresh-food wall chiller','850 x 2,600','Bento, onigiri, sandwiches and dairy near the front; no WC beside it.'),
+ ('C2 / F1','Drinks cabinet; chest freezer','4,800 x 800; 1,200 x 700','Cold drinks, beer, milk, ice and frozen food, clear of the stockroom door.'),
+ ('T1 / T2','Checkout and worktop','600 / 550 deep; H780','Thuan serves at a low counter; 1,230 mm staff aisle and short work routes.'),
+ ('M1 / S1','Magazines; copier/fax','2,700 x 450; 700 x 600','Window-side reading and neighbourhood services, leaving the door clear.'),
+ ('Office','Daily desk and secure cash','2,400 x 1,760 clear','Ground-floor ledger, phone, chair and safe beside the till.'),
+ ('Rest','Dedicated staff lie-down room','2,000 x 2,180 clear','A 1,000 x 2,000 futon, sliding entrance; no separate upstairs room.'),
+ ('K1','Tea and meal-break corner','1,800 x 600 worktop','Ground-level staff sink, kettle and lunch area, outside the WC enclosure.'),
+ ('WC','Stockroom WC and hygiene lobby','WC 1,800 x 1,940 clear','Access only through the rear stock area; no door onto the sales floor.'),
+ ('R1-R5','Receiving, stock, archive, decor','Full-width rear band','Dry and cold backstock, counted deliveries, trolley, empties and archives.'),
+ ('Roof','Tank and external roof stair','Stair 4,050 x 1,920','Maintenance and escape access only. It is not an occupied second floor.')]
+xx=[14*mm,40*mm,112*mm,175*mm];yy=H-53*mm
 for x,t in zip(xx,['ID','FITTING / SPACE','SIZE / BASIS','PURPOSE']):txt(x,yy,t,8,True)
 yy-=7*mm
 for row in rows:
  c.setStrokeColor(HexColor('#dce1df'));c.line(14*mm,yy+4*mm,W-14*mm,yy+4*mm)
  for i,(x,t) in enumerate(zip(xx,row)):para(x,yy,t,[24,70,61,230][i]*mm,8,10)
  yy-=12*mm
-yy-=3*mm
-left=14*mm;right=218*mm
-txt(left,yy,'DESIGN LOGIC',9,True)
-y=para(left,yy-15,'A customer enters on the existing centre line, picks up a basket, chooses fresh food or a short aisle, and pays without blocking the door. Three queue spots sit beside the till. A 1,500 mm turning zone is reserved behind the gondolas.',190*mm,9,13)
-y=para(left,y-8,'Thuan opens and checks the cold stock, faces shelves, serves at the till, checks deliveries at the back and writes the shift ledger beside the counter. Tea and a lie-down remain available upstairs. No new staffing or hours are assumed.',190*mm,9,13)
-y=para(left,y-8,'The three gondolas provide 64.8 linear metres of shelf edge at four decks (3 runs x 2 faces x 2.7 m x 4). This is fixture capacity, not proof that all existing retail, archive and decoration quantities fit.',190*mm,9,13)
-txt(right,yy,'SOURCE AND VERIFICATION LIMITS',9,True)
-y=para(right,yy-15,'Exterior: current main e15be1738e2e, harbour.js -> buildStorefront, span 14.26 x 11.00 m, central door 1.90 m. Side wall skins project beyond that nominal span; no nominal-span expansion is proposed. Floor: sakura-layout.js, 138.75 m2 stepped polygon.',187*mm,8,11)
-y=para(right,y-7,'New Yokosuka: repository study new-yokosuka-lessons.md (19 Oct), DCBN store shell 8.03 x 4.23 m, 2.41 m ceiling; near-door counter 1.6 x 1.2 m and window rack 2.1 x 0.45 m. These are inherited research measurements, not fresh measurements in this session. The live viewer catalogue did not populate.',187*mm,8,11)
-y=para(right,y-7,'Open PR #366 Rev B supplied the on-site support requirements. Open #364 models a complete staircase. Open #363 proposes Sakura alcohol consolidation; its future stock capacity must be reconciled. No PR is merged by this drawing.',187*mm,8,11)
-y=para(right,y-7,'Next: 1:1 greybox against the actual exterior mesh, actual Thuan rig/reach, stock capacity, door and camera paths, both stair frames and shop save/service checks. Drawing clearances are geometric design values; no gameplay or physical-device acceptance is claimed.',187*mm,8,11)
-txt(14*mm,27*mm,'References: github.com/brynnb/new-yokosuka  |  www.newyokosuka.com/asset-viewer/  |  github.com/nj22az/nj22az.github.io/pull/366',7)
-end();c.save()
-doc.saveas(ROOT/'Sakura-Konbini-CAD.dxf')
-area=abs(sum(x*b-y*a for (x,y),(a,b) in zip(FLOOR,FLOOR[1:]+FLOOR[:1])))/2/1e6
-assert abs(area-138.75)<.001
-data={'revision':'C','date':'2026-10-23','units':'mm','basis_commit':'e15be1738e2e68c1f1ba323b9992dc89661751f4','exterior_nominal_span':[14260,11000],'exterior_guide_rect':[-330,-170,14260,11000],'guide_alignment':'Conservative fit comparison, not an exterior mesh survey; side wall skins/eaves excluded from nominal span.','floor_polygon':FLOOR,'floor_area_m2':area,'fixture_envelopes':fixtures,'stair':{'risers':24,'rise':4010/24,'going':250,'width':1100,'plan':[1220,7950,4950,2320]},'principal_aisles_mm':[1430,1600,1800],'staff_aisle_mm':1230,'counter_height_mm':780,'new_yokosuka_measurements':'Inherited repository study of 19 October; live catalogue unavailable in this session.'}
+yy-=6*mm
+txt(14*mm,yy,'OWNER CHANGE - 23 OCTOBER',9,True)
+y=para(14*mm,yy-15,'A single-storey konbini using the whole exterior box. Remove the large staircase and second floor. Put the toilet within the stockroom. Provide only a small roof-access stair for the water tank and fire escape. This supersedes the earlier instruction to retain upstairs support rooms.',190*mm,9,13)
+y=para(14*mm,y-8,'The earlier support functions remain at Sakura, now on the ground floor: daily desk/cash, tea/meal break, dedicated lie-down space and stock/archive/decor. The full rectangular floor replaces the old stepped imported interior.',190*mm,9,13)
+y=para(14*mm,y-8,'Customer route: central entry, fresh food or short aisles, queue beside the till. Delivery route: rear door, receiving, cold/dry stock, stockroom door. Toilet and roof service remain behind the shop operation.',190*mm,9,13)
+txt(218*mm,yy,'BASIS AND NEXT VALIDATION',9,True)
+y=para(218*mm,yy-15,'Exterior guide: current source span 14.26 x 11.00 m. Proposed wall allowance 180 mm each side; clear floor 13.90 x 10.64 m = 147.896 m2 before partitions. This is a new proposed fit, not a claim about the old stepped model.',187*mm,8,11)
+y=para(218*mm,y-7,'New Yokosuka informs merchandising and human-scale fittings through the inherited 19 October repository study. It does not determine the size of Sakura. No reference assets or code are copied.',187*mm,8,11)
+y=para(218*mm,y-7,'Next: register the new rectangular floor to the actual exterior mesh; check ground-level support/storage capacity, Thuan reach, camera and shopper/trolley routes, WC privacy, roof tank/service route and the rear stair against the lane. Stair projection is outside the fixed shop box and requires site-clearance validation.',187*mm,8,11)
+y=para(218*mm,y-7,'CAD only. No game, save, door, staffing, inventory or live building change has been implemented. Single-storey implementation must retire upstairs entry and migrate old upstairs saves safely.',187*mm,8,11)
+txt(14*mm,27*mm,'Sources: existing Sakura exterior source; New Yokosuka measured lessons; owner single-storey revision of 23 October 2026.',7)
+end();c.save();doc.saveas(ROOT/'Sakura-Konbini-CAD.dxf')
+area=13900*10640/1e6
+data={'revision':'D','date':'2026-10-23','units':'mm','building_storeys':1,'exterior_nominal_span':[14260,11000],'proposed_perimeter_allowance_mm':180,'floor_polygon':FLOOR,'proposed_clear_floor_area_m2':area,'fixture_envelopes':fixtures,'toilet':{'x':120,'y':8580,'w':1800,'d':1940,'access':'stockroom through hygiene lobby'},'roof':{'deck_height':4010,'tank':{'centre':[10900,8500],'diameter':1200,'height':1200,'curb':200,'service_clearance':1200},'external_stair':{'x':9850,'y':10820,'w':4050,'d':1920,'flight_width':900,'risers':20,'rise':200.5,'going':250,'access':'ground to roof only; no second floor'}},'internal_stair':None,'upper_occupied_floor':False,'principal_aisles_mm':[1430,1600,1800],'staff_aisle_mm':1230,'counter_height_mm':780}
 (ROOT/'Sakura-Konbini-Layout.json').write_text(json.dumps(data,indent=2))
-audit=ezdxf.readfile(ROOT/'Sakura-Konbini-CAD.dxf').audit()
-assert not audit.errors
-assert doc.units==4
-checks={'dxf_audit_errors':len(audit.errors),'dxf_audit_fixes':len(audit.fixes),'units':'millimetres','floor_polygon_area_m2':area,'entities':len(ms),'fixture_count':len(fixtures),'gameplay_tested':False}
-(ROOT/'Sakura-CAD-Checks.json').write_text(json.dumps(checks,indent=2))
-print(json.dumps(checks))
+audit=ezdxf.readfile(ROOT/'Sakura-Konbini-CAD.dxf').audit();assert not audit.errors
+for f in fixtures:assert 0<=f['x']<=f['x']+f['w']<=13900 and 0<=f['y']<=f['y']+f['d']<=10640,f['id']
+for i,a in enumerate(fixtures):
+ for b in fixtures[i+1:]:assert not (min(a['x']+a['w'],b['x']+b['w'])>max(a['x'],b['x']) and min(a['y']+a['d'],b['y']+b['d'])>max(a['y'],b['y'])),(a['id'],b['id'])
+checks={'revision':'D','dxf_audit_errors':len(audit.errors),'dxf_audit_fixes':len(audit.fixes),'units':'millimetres','proposed_clear_floor_area_m2':area,'entities':len(ms),'fixture_count':len(fixtures),'fixture_corners_inside_floor':True,'fixture_envelopes_do_not_overlap':True,'building_storeys':1,'internal_stair_removed':True,'toilet_access':'stockroom only','roof_stair':'external ground-to-roof service/escape only','gameplay_tested':False}
+(ROOT/'Sakura-CAD-Checks.json').write_text(json.dumps(checks,indent=2));print(json.dumps(checks))
