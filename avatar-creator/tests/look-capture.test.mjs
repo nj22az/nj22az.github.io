@@ -1,3 +1,4 @@
+import {normalizeScene} from '../scene-model.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';
 import {normalCapture,normalLayer,normalEffects} from '../comic-effects-model.mjs';
 const png='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScLbtAAAAABJRU5ErkJggg==';
@@ -9,3 +10,5 @@ test('lossless capture survives project layers and rejects corrupt encodings, si
  assert.equal(normalLayer({plate:png,capture:{...capture,width:999999}}),null);assert.ok(normalLayer({plate:png}));
  const p=normalEffects({look:'tilt',focus:{distance:-10,range:99999}});assert.deepEqual(p.focus,{mode:'depth',distance:.1,range:1000});
 });
+
+test('retired preset projects retain their baked marker and migrate editable effects',()=>{for(const [old,next] of Object.entries({storybook:'flat',sunday:'flat',gouache:'oil'})){assert.equal(normalizeScene({version:2,look:old,actors:[]}).look,next);const layer=normalLayer({plate:png,baseLook:old,post:{look:old}});assert.equal(layer.baseLook,old);assert.equal(layer.post.look,next);}});

@@ -74,3 +74,15 @@ Delivered `deliverables/shared-shader-upgrade/hybrid-illustrations/johansson-hyb
 After effects applies the picture recipe; full cel material treatment still needs Edit scene and Update panel. The Cartoon/Storybook/Sunday notice now states this even for a plate with captured depth, since geometry buffers alone cannot reconstruct or flatten its original materials. Saved depth still supports geometry-aware picture edges and surface-coordinate strokes. This clarification changes the status notice, not rendered pixels.
 
 No merge or deployment performed. Full geometry guard remains blocked by the previously documented memory exhaustion; no actual-device frame-rate acceptance claimed. Next: owner review of the four prototypes, the cheek comparison and broader paint rendering; retain Minato priority and complete those outstanding checks before rollout.
+
+## Visual recovery after owner rejection - 23 October 2026
+
+This section supersedes the hybrid rollout described above. Owner explicitly rejected Storybook's scratches, Sunday's dirty colour dots and Gouache/lineless Oil losing readable geometry. Remove Storybook, Sunday Strip and Impasto Gouache; do not revive these presets without a new request. Preserve the successful continuous-pigment Crayon cheek fix and the architectural Sketchbook.
+
+Restored Cartoon, Manga and Oil fragment kernels from local `303fb52a` (the second pre-hybrid refinement). Restored the World ink prepass for all active styles and the pre-hybrid Oil kernel/detail treatment. No paint style now disables contour ink. Simplified the shared helper module to only wash/pencil stages used by Sketchbook; removed the discarded recipes, material treatments and picker icons. Catalogue: original fourteen plus Architectural sketchbook, fifteen total. Natural remains unchanged.
+
+Retained Crayon's chroma-aware continuous pigment wash. Added a uniform adapter context (`uComic`: World 0, Studio/After effects 1): comic Crayon uses 20 percent darker graphite and firmer edge coverage; comic Sketchbook gets 25 percent more colour saturation and darker graphite. World Sketchbook retains the approved soft wash and porous line treatment. No new raw-luminance hatch or dot treatment is applied to Cartoon, Manga or Oil.
+
+Retired saved scene/effect IDs migrate to Cartoon (`storybook`/`sunday`) or Oil (`gouache`). A baked retired picture retains its base marker and shows a specific Edit scene/Update panel notice; changing its effect cannot unbake scratches, dots or missing detail. Original scene camera/poses stay editable. Imports are versioned `20261023-recovery`.
+
+Initial validation: 41 focused look/material/picker/capture/scene checks passed. Added regression coverage for retired catalogue entries, effect migration/baked markers and ink enabled across retained styles. Current WebGL, production comic recaptures and game proof are recorded below when complete. Earlier geometry-guard memory failure and lack of physical-device performance acceptance remain open.

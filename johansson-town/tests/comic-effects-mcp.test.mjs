@@ -13,11 +13,11 @@ test('MCP After effects exports, replaces text/assets and reopens the layered pr
  try{
   await client.connect(new StdioClientTransport({command:process.execPath,args:['johansson-town/tools/studio/server.mjs'],cwd:CODE_ROOT,env:{...process.env,JOHANSSON_STUDIO_ROOT:root},stderr:'inherit'}));
   const call=async(name,args={})=>{const r=await client.callTool({name,arguments:args},{timeout:150000});assert.notEqual(r.isError,true,JSON.stringify(r.content));return {data:JSON.parse(r.content.find(c=>c.type==='text').text),image:r.content.find(c=>c.type==='image')};};
-  const info=await call('comic_effects_info');assert.equal(info.data.looks.length,18);for(const id of ['storybook','sunday','sketchbook','gouache'])assert.ok(info.data.looks.some(l=>l.id===id));
+  const info=await call('comic_effects_info');assert.equal(info.data.looks.length,15);assert.ok(info.data.looks.some(l=>l.id==='sketchbook'));for(const id of ['storybook','sunday','gouache'])assert.ok(!info.data.looks.some(l=>l.id===id));
   const opened=await call('comic_after_effects',{name:'original'});assert.equal(opened.data.panels.length,3);assert.ok(opened.data.shareUrl.includes('#studio='));assert.ok(opened.image.data.length>10000);
   const actor=opened.data.panels[0].actors.find(a=>a.speech).id;
-  const edited=await call('comic_after_effects',{projectFile:opened.data.projectPath,name:'edited',edits:[{panel:1,look:'manga',dialogue:[{actor,text:'These are replacement words!'}],assets:[{kind:'star',x:.7,y:.6,rotation:25},{kind:'text',text:'AFTER WORK',x:.4,y:.9}]},{panel:2,look:'storybook'}]});
-  assert.equal(edited.data.panels[0].look,'manga');assert.equal(edited.data.panels[1].look,'storybook');assert.equal(edited.data.panels[0].actors.find(a=>a.id===actor).speech,'These are replacement words!');assert.equal(edited.data.panels[0].assets.length,2);
+  const edited=await call('comic_after_effects',{projectFile:opened.data.projectPath,name:'edited',edits:[{panel:1,look:'manga',dialogue:[{actor,text:'These are replacement words!'}],assets:[{kind:'star',x:.7,y:.6,rotation:25},{kind:'text',text:'AFTER WORK',x:.4,y:.9}]},{panel:2,look:'sketchbook'}]});
+  assert.equal(edited.data.panels[0].look,'manga');assert.equal(edited.data.panels[1].look,'sketchbook');assert.equal(edited.data.panels[0].actors.find(a=>a.id===actor).speech,'These are replacement words!');assert.equal(edited.data.panels[0].assets.length,2);
   assert.notEqual(opened.image.data,edited.image.data);
   const project=JSON.parse(await readFile(join(root,edited.data.projectPath),'utf8'));assert.equal(project.panelLayers[0].post.assets[0].x,.7);
   const reopened=await call('comic_after_effects',{projectFile:edited.data.projectPath,name:'reopened'});assert.equal(reopened.image.data,edited.image.data);

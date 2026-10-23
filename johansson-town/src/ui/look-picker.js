@@ -21,16 +21,13 @@ const PALETTES={
  print:{sky:'#2e5c8a',ground:'#7d9a6a',wall:'#f1e6cc',roof:'#c8452e',door:'#2a2420',sun:'#f1e6cc'},
  watercolour:{sky:'#bcdcf0',ground:'#bfe0a8',wall:'#fbf4e6',roof:'#f08a7a',door:'#c49a7c',sun:'#ffe08a'},
  flat:{sky:'#6fc3ff',ground:'#7ed957',wall:'#fff6d8',roof:'#ff5a3c',door:'#8a5a2b',sun:'#ffd93b'},
- storybook:{sky:'#b9dce8',ground:'#a4b974',wall:'#efe0be',roof:'#b95f43',door:'#736050',sun:'#f7df9c'},
- sunday:{sky:'#f0dfb6',ground:'#91ad69',wall:'#fbebc2',roof:'#d9654b',door:'#5a4540',sun:'#f6cd61'},
  sketchbook:{sky:'#dce6df',ground:'#b9c6a1',wall:'#f5ead5',roof:'#c8a191',door:'#958778',sun:'#f2e6bd'},
- gouache:{sky:'#7da6ba',ground:'#708e4f',wall:'#e2cba4',roof:'#a65137',door:'#68503e',sun:'#e1bb64'},
  oil:{sky:'#5e8fc4',ground:'#4f8a3a',wall:'#e9d3a8',roof:'#a8321f',door:'#4a2c18',sun:'#f2b632'},
 };
 
 /** The little scene in one look, as an SVG string (48×48). Every swatch is the same house, so the style is the difference. */
 export function lookSwatch(id,uid=id){
- const media={storybook:'flat',sunday:'manga',sketchbook:'crayon',gouache:'oil'}[id]||id;
+ const media={sketchbook:'crayon'}[id]||id;
  const p=PALETTES[id]||PALETTES.none,pixel=media==='pocket'||media==='snes';
  const ink=media==='lines'?'#2b2b33':media==='flat'?'#2b2121':media==='manga'||media==='print'?'#141418':media==='crayon'?'#6c6670':media==='watercolour'?'#9a8f88':null;
  const line=ink?` stroke="${ink}" stroke-width="${media==='flat'?2.6:media==='manga'||media==='print'?2:media==='crayon'||media==='watercolour'?1.2:1.5}" stroke-linejoin="round"${media==='watercolour'?' stroke-opacity=".55"':''}`:'';
