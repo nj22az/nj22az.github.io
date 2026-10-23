@@ -31,3 +31,21 @@ test('candidate retains catalogue keys, counted slots and stock depletion; suppo
  display.frontDoor.set(1);assert.equal(display.frontDoor.amount,1);display.frontDoor.set(null);
  assert.ok(room.getObjectByName('Sakura cash drawer'));assert.ok(display.layout.candidate);
 });
+
+test('candidate price tickets match catalogue, stay clear of products, and calendar refresh works',()=>{
+ installDOM();const room=new THREE.Group(),display=buildSakuraRebuild({room,reg(){},action(){},exit(){}});
+ const labels=display.advertising.labels,prices=labels.filter(l=>l.kind==='price'),cards=labels.filter(l=>l.kind==='decoration');
+ assert.equal(prices.length,96);assert.equal(cards.length,9);
+ for(const tag of labels){
+  const shelf=display.productShelves[tag.id];assert.ok(Math.abs(tag.along)+tag.width/2<=shelf.width/2,tag.id+' leaves its bay');
+  assert.ok(tag.position[1]+tag.height/2<tag.level,tag.id+' rises over deck');
+  const geometry=new THREE.PlaneGeometry(tag.width,tag.height);geometry.rotateY(tag.yaw);geometry.translate(...tag.position);geometry.computeBoundingBox();
+  for(const e of display.stock.envelopes){
+   const box=new THREE.Box3(new THREE.Vector3(...e.min).add(new THREE.Vector3(-6.95,0,3.91)),new THREE.Vector3(...e.max).add(new THREE.Vector3(-6.95,0,3.91)));
+   assert.equal(geometry.boundingBox.intersectsBox(box),false,tag.id+' overlaps '+e.id);
+  }
+  geometry.dispose();
+ }
+ for(const p of PRODUCTS.filter(p=>p.cells.price!=null))assert.ok(prices.filter(l=>l.id===p.id).every(l=>l.price===p.price),p.id+' price differs');
+ display.tick(0,295*1440+740);display.tick(0,0);display.tick(0);
+});

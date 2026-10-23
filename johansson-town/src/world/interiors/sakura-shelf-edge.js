@@ -37,7 +37,7 @@ function talkerTexture(){
  refreshSakuraPrint(t,draw,SAKURA_TALKERS.map(t=>t[0]+t[1]).join(''));return t;
 }
 
-export function buildShelfEdges(room,{shelves=SAKURA_SHELVES}={}){
+export function buildShelfEdges(room,{shelves=SAKURA_SHELVES,talkers=true}={}){
  const rails=[],cards=[];
  for(const [id,shelf] of Object.entries(shelves)){
   if(!shelf.width||shelf.fridge!=null)continue;
@@ -47,7 +47,7 @@ export function buildShelfEdges(room,{shelves=SAKURA_SHELVES}={}){
    rails.push(colourise(put(new THREE.BoxGeometry(shelf.width,.034,.012),0,-.024,shelf.frontDepth??.112),0xf7f1e1));
    rails.push(colourise(put(new THREE.BoxGeometry(shelf.width,.006,.014),0,-.006,(shelf.frontDepth??.112)+.001),0xc8342d));
    const talker=TALKER_AT[id];
-   if(talker&&talker[1]===i){
+   if(talkers&&talker&&talker[1]===i){
     // A card on a clear stalk at the end of the board, edge on to the shelf front.
     // Two cards back to back, so it reads the right way round from either end of the aisle.
     for(const side of [1,-1]){

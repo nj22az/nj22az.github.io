@@ -1,0 +1,1887 @@
+{
+  "source": false,
+  "viewport": [
+    390,
+    844
+  ],
+  "physicalDevice": false,
+  "steps": [
+    {
+      "name": "page loaded",
+      "s": 0.5
+    },
+    {
+      "name": "island ready",
+      "s": 10
+    },
+    {
+      "name": "playing",
+      "s": 11
+    },
+    {
+      "name": "entered candidate Sakura",
+      "s": 17.9
+    },
+    {
+      "name": "photographed Sakura-Shelf-Detail",
+      "s": 47.7
+    },
+    {
+      "name": "photographed Sakura-Game-Entrance",
+      "s": 112.9
+    },
+    {
+      "name": "photographed Sakura-Game-Checkout",
+      "s": 134.6
+    },
+    {
+      "name": "photographed Sakura-Game-Aisle",
+      "s": 162.1
+    },
+    {
+      "name": "photographed Sakura-Game-Mobile",
+      "s": 184.6
+    }
+  ],
+  "errors": [],
+  "playerHiddenForCamera": true,
+  "stickers": [
+    {
+      "id": "tea",
+      "kind": "price",
+      "position": [
+        -1.25,
+        0.28800000000000003,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.328,
+      "along": 0,
+      "front": 0.37,
+      "price": 120
+    },
+    {
+      "id": "tea",
+      "kind": "price",
+      "position": [
+        -1.25,
+        0.6679999999999999,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.708,
+      "along": 0,
+      "front": 0.37,
+      "price": 120
+    },
+    {
+      "id": "tea",
+      "kind": "price",
+      "position": [
+        -1.25,
+        1.048,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 1.088,
+      "along": 0,
+      "front": 0.37,
+      "price": 120
+    },
+    {
+      "id": "coffee",
+      "kind": "price",
+      "position": [
+        -0.6500000000000004,
+        0.28800000000000003,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.328,
+      "along": 0,
+      "front": 0.37,
+      "price": 120
+    },
+    {
+      "id": "coffee",
+      "kind": "price",
+      "position": [
+        -0.6500000000000004,
+        0.6679999999999999,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.708,
+      "along": 0,
+      "front": 0.37,
+      "price": 120
+    },
+    {
+      "id": "coffee",
+      "kind": "price",
+      "position": [
+        -0.6500000000000004,
+        1.048,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 1.088,
+      "along": 0,
+      "front": 0.37,
+      "price": 120
+    },
+    {
+      "id": "rice",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.505,
+        2.09
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.545,
+      "along": 0,
+      "front": 0.34,
+      "price": 110
+    },
+    {
+      "id": "rice",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.855,
+        2.09
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.895,
+      "along": 0,
+      "front": 0.34,
+      "price": 110
+    },
+    {
+      "id": "rice",
+      "kind": "price",
+      "position": [
+        -6.24,
+        1.205,
+        2.09
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 1.245,
+      "along": 0,
+      "front": 0.34,
+      "price": 110
+    },
+    {
+      "id": "biscuit",
+      "kind": "price",
+      "position": [
+        -3.167,
+        0.304,
+        0.41000000000000014
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 100
+    },
+    {
+      "id": "biscuit",
+      "kind": "price",
+      "position": [
+        -3.167,
+        0.624,
+        0.41000000000000014
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 100
+    },
+    {
+      "id": "biscuit",
+      "kind": "price",
+      "position": [
+        -3.167,
+        0.944,
+        0.41000000000000014
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 100
+    },
+    {
+      "id": "soap",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.304,
+        -0.21999999999999975
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 90
+    },
+    {
+      "id": "soap",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.624,
+        -0.21999999999999975
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 90
+    },
+    {
+      "id": "soap",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.944,
+        -0.21999999999999975
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 90
+    },
+    {
+      "id": "notebook",
+      "kind": "price",
+      "position": [
+        -1.2169999999999999,
+        0.304,
+        -1.8900000000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 80
+    },
+    {
+      "id": "notebook",
+      "kind": "price",
+      "position": [
+        -1.2169999999999999,
+        0.624,
+        -1.8900000000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 80
+    },
+    {
+      "id": "notebook",
+      "kind": "price",
+      "position": [
+        -1.2169999999999999,
+        0.944,
+        -1.8900000000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 80
+    },
+    {
+      "id": "postcard",
+      "kind": "price",
+      "position": [
+        -1.2169999999999999,
+        0.304,
+        -0.7400000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 50
+    },
+    {
+      "id": "postcard",
+      "kind": "price",
+      "position": [
+        -1.2169999999999999,
+        0.624,
+        -0.7400000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 50
+    },
+    {
+      "id": "postcard",
+      "kind": "price",
+      "position": [
+        -1.2169999999999999,
+        0.944,
+        -0.7400000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 50
+    },
+    {
+      "id": "battery",
+      "kind": "price",
+      "position": [
+        -1.2169999999999999,
+        0.304,
+        0.41000000000000014
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 180
+    },
+    {
+      "id": "battery",
+      "kind": "price",
+      "position": [
+        -1.2169999999999999,
+        0.624,
+        0.41000000000000014
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 180
+    },
+    {
+      "id": "battery",
+      "kind": "price",
+      "position": [
+        -1.2169999999999999,
+        0.944,
+        0.41000000000000014
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 180
+    },
+    {
+      "id": "cola",
+      "kind": "price",
+      "position": [
+        1.1499999999999995,
+        0.28800000000000003,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.328,
+      "along": 0,
+      "front": 0.37,
+      "price": 120
+    },
+    {
+      "id": "cola",
+      "kind": "price",
+      "position": [
+        1.1499999999999995,
+        0.6679999999999999,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.708,
+      "along": 0,
+      "front": 0.37,
+      "price": 120
+    },
+    {
+      "id": "cola",
+      "kind": "price",
+      "position": [
+        1.1499999999999995,
+        1.048,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 1.088,
+      "along": 0,
+      "front": 0.37,
+      "price": 120
+    },
+    {
+      "id": "water",
+      "kind": "price",
+      "position": [
+        -0.04999999999999982,
+        0.28800000000000003,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.328,
+      "along": 0,
+      "front": 0.37,
+      "price": 110
+    },
+    {
+      "id": "water",
+      "kind": "price",
+      "position": [
+        -0.04999999999999982,
+        0.6679999999999999,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.708,
+      "along": 0,
+      "front": 0.37,
+      "price": 110
+    },
+    {
+      "id": "water",
+      "kind": "price",
+      "position": [
+        -0.04999999999999982,
+        1.048,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 1.088,
+      "along": 0,
+      "front": 0.37,
+      "price": 110
+    },
+    {
+      "id": "beer",
+      "kind": "price",
+      "position": [
+        2.3500000000000005,
+        0.28800000000000003,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.328,
+      "along": 0,
+      "front": 0.37,
+      "price": 220
+    },
+    {
+      "id": "beer",
+      "kind": "price",
+      "position": [
+        2.3500000000000005,
+        0.6679999999999999,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.708,
+      "along": 0,
+      "front": 0.37,
+      "price": 220
+    },
+    {
+      "id": "beer",
+      "kind": "price",
+      "position": [
+        2.3500000000000005,
+        1.048,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 1.088,
+      "along": 0,
+      "front": 0.37,
+      "price": 220
+    },
+    {
+      "id": "noodles",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.304,
+        0.55375
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 150
+    },
+    {
+      "id": "noodles",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.624,
+        0.55375
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 150
+    },
+    {
+      "id": "noodles",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.944,
+        0.55375
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 150
+    },
+    {
+      "id": "milk",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.505,
+        -3.41
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.545,
+      "along": 0,
+      "front": 0.34,
+      "price": 110
+    },
+    {
+      "id": "milk",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.855,
+        -3.41
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.895,
+      "along": 0,
+      "front": 0.34,
+      "price": 110
+    },
+    {
+      "id": "milk",
+      "kind": "price",
+      "position": [
+        -6.24,
+        1.205,
+        -3.41
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 1.245,
+      "along": 0,
+      "front": 0.34,
+      "price": 110
+    },
+    {
+      "id": "chips",
+      "kind": "price",
+      "position": [
+        -3.167,
+        0.304,
+        -1.8900000000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 100
+    },
+    {
+      "id": "chips",
+      "kind": "price",
+      "position": [
+        -3.167,
+        0.624,
+        -1.8900000000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 100
+    },
+    {
+      "id": "chips",
+      "kind": "price",
+      "position": [
+        -3.167,
+        0.944,
+        -1.8900000000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 100
+    },
+    {
+      "id": "crackers",
+      "kind": "price",
+      "position": [
+        -3.167,
+        0.304,
+        -0.7400000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 110
+    },
+    {
+      "id": "crackers",
+      "kind": "price",
+      "position": [
+        -3.167,
+        0.624,
+        -0.7400000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 110
+    },
+    {
+      "id": "crackers",
+      "kind": "price",
+      "position": [
+        -3.167,
+        0.944,
+        -0.7400000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 110
+    },
+    {
+      "id": "chocolate",
+      "kind": "price",
+      "position": [
+        -2.2330000000000005,
+        0.304,
+        0.12249999999999962
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 100
+    },
+    {
+      "id": "chocolate",
+      "kind": "price",
+      "position": [
+        -2.2330000000000005,
+        0.624,
+        0.12249999999999962
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 100
+    },
+    {
+      "id": "chocolate",
+      "kind": "price",
+      "position": [
+        -2.2330000000000005,
+        0.944,
+        0.12249999999999962
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 100
+    },
+    {
+      "id": "candy",
+      "kind": "price",
+      "position": [
+        -2.2330000000000005,
+        0.304,
+        -1.6025
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 90
+    },
+    {
+      "id": "candy",
+      "kind": "price",
+      "position": [
+        -2.2330000000000005,
+        0.624,
+        -1.6025
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 90
+    },
+    {
+      "id": "candy",
+      "kind": "price",
+      "position": [
+        -2.2330000000000005,
+        0.944,
+        -1.6025
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 90
+    },
+    {
+      "id": "curry",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.304,
+        -0.30874999999999986
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 180
+    },
+    {
+      "id": "curry",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.624,
+        -0.30874999999999986
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 180
+    },
+    {
+      "id": "curry",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.944,
+        -0.30874999999999986
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 180
+    },
+    {
+      "id": "soy",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.304,
+        -1.1712500000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 160
+    },
+    {
+      "id": "soy",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.624,
+        -1.1712500000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 160
+    },
+    {
+      "id": "soy",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.944,
+        -1.1712500000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 160
+    },
+    {
+      "id": "soup",
+      "kind": "price",
+      "position": [
+        -5.117,
+        0.304,
+        -0.7400000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 120
+    },
+    {
+      "id": "soup",
+      "kind": "price",
+      "position": [
+        -5.117,
+        0.624,
+        -0.7400000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 120
+    },
+    {
+      "id": "soup",
+      "kind": "price",
+      "position": [
+        -5.117,
+        0.944,
+        -0.7400000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 120
+    },
+    {
+      "id": "peaches",
+      "kind": "price",
+      "position": [
+        -5.117,
+        0.304,
+        0.41000000000000014
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 190
+    },
+    {
+      "id": "peaches",
+      "kind": "price",
+      "position": [
+        -5.117,
+        0.624,
+        0.41000000000000014
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 190
+    },
+    {
+      "id": "peaches",
+      "kind": "price",
+      "position": [
+        -5.117,
+        0.944,
+        0.41000000000000014
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 190
+    },
+    {
+      "id": "tuna",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.304,
+        -2.0337500000000004
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 160
+    },
+    {
+      "id": "tuna",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.624,
+        -2.0337500000000004
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 160
+    },
+    {
+      "id": "tuna",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.944,
+        -2.0337500000000004
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 160
+    },
+    {
+      "id": "detergent",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.304,
+        0.5749999999999997
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 240
+    },
+    {
+      "id": "detergent",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.624,
+        0.5749999999999997
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 240
+    },
+    {
+      "id": "detergent",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.944,
+        0.5749999999999997
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 240
+    },
+    {
+      "id": "tissues",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.304,
+        -1.1050000000000004
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 130
+    },
+    {
+      "id": "tissues",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.624,
+        -1.1050000000000004
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 130
+    },
+    {
+      "id": "tissues",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.944,
+        -1.1050000000000004
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 130
+    },
+    {
+      "id": "toothpaste",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.304,
+        -2.035
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 180
+    },
+    {
+      "id": "toothpaste",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.624,
+        -2.035
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 180
+    },
+    {
+      "id": "toothpaste",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.944,
+        -2.035
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 180
+    },
+    {
+      "id": "orange",
+      "kind": "price",
+      "position": [
+        0.5499999999999998,
+        0.28800000000000003,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.328,
+      "along": 0,
+      "front": 0.37,
+      "price": 120
+    },
+    {
+      "id": "orange",
+      "kind": "price",
+      "position": [
+        0.5499999999999998,
+        0.6679999999999999,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.708,
+      "along": 0,
+      "front": 0.37,
+      "price": 120
+    },
+    {
+      "id": "orange",
+      "kind": "price",
+      "position": [
+        0.5499999999999998,
+        1.048,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 1.088,
+      "along": 0,
+      "front": 0.37,
+      "price": 120
+    },
+    {
+      "id": "soda",
+      "kind": "price",
+      "position": [
+        1.7499999999999991,
+        0.28800000000000003,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.328,
+      "along": 0,
+      "front": 0.37,
+      "price": 100
+    },
+    {
+      "id": "soda",
+      "kind": "price",
+      "position": [
+        1.7499999999999991,
+        0.6679999999999999,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.708,
+      "along": 0,
+      "front": 0.37,
+      "price": 100
+    },
+    {
+      "id": "soda",
+      "kind": "price",
+      "position": [
+        1.7499999999999991,
+        1.048,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 1.088,
+      "along": 0,
+      "front": 0.37,
+      "price": 100
+    },
+    {
+      "id": "yogurt",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.505,
+        -2.3100000000000005
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.545,
+      "along": 0,
+      "front": 0.34,
+      "price": 110
+    },
+    {
+      "id": "yogurt",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.855,
+        -2.3100000000000005
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.895,
+      "along": 0,
+      "front": 0.34,
+      "price": 110
+    },
+    {
+      "id": "yogurt",
+      "kind": "price",
+      "position": [
+        -6.24,
+        1.205,
+        -2.3100000000000005
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 1.245,
+      "along": 0,
+      "front": 0.34,
+      "price": 110
+    },
+    {
+      "id": "bread",
+      "kind": "price",
+      "position": [
+        -5.117,
+        0.304,
+        -1.8900000000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 150
+    },
+    {
+      "id": "bread",
+      "kind": "price",
+      "position": [
+        -5.117,
+        0.624,
+        -1.8900000000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 150
+    },
+    {
+      "id": "bread",
+      "kind": "price",
+      "position": [
+        -5.117,
+        0.944,
+        -1.8900000000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 150
+    },
+    {
+      "id": "bento",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.505,
+        -0.11000000000000029
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.545,
+      "along": 0,
+      "front": 0.34,
+      "price": 480
+    },
+    {
+      "id": "bento",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.855,
+        -0.11000000000000029
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.895,
+      "along": 0,
+      "front": 0.34,
+      "price": 480
+    },
+    {
+      "id": "bento",
+      "kind": "price",
+      "position": [
+        -6.24,
+        1.205,
+        -0.11000000000000029
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 1.245,
+      "along": 0,
+      "front": 0.34,
+      "price": 480
+    },
+    {
+      "id": "sandwich",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.505,
+        0.9900000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.545,
+      "along": 0,
+      "front": 0.34,
+      "price": 230
+    },
+    {
+      "id": "sandwich",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.855,
+        0.9900000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.895,
+      "along": 0,
+      "front": 0.34,
+      "price": 230
+    },
+    {
+      "id": "sandwich",
+      "kind": "price",
+      "position": [
+        -6.24,
+        1.205,
+        0.9900000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 1.245,
+      "along": 0,
+      "front": 0.34,
+      "price": 230
+    },
+    {
+      "id": "pudding",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.505,
+        -1.21
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.545,
+      "along": 0,
+      "front": 0.34,
+      "price": 130
+    },
+    {
+      "id": "pudding",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.855,
+        -1.21
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.895,
+      "along": 0,
+      "front": 0.34,
+      "price": 130
+    },
+    {
+      "id": "pudding",
+      "kind": "price",
+      "position": [
+        -6.24,
+        1.205,
+        -1.21
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 1.245,
+      "along": 0,
+      "front": 0.34,
+      "price": 130
+    },
+    {
+      "id": "rice",
+      "kind": "decoration",
+      "position": [
+        -6.24,
+        0.855,
+        1.6549999999999998
+      ],
+      "width": 0.14,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.895,
+      "along": 0.435,
+      "front": 0.34,
+      "price": null
+    },
+    {
+      "id": "coffee",
+      "kind": "decoration",
+      "position": [
+        -0.4275000000000003,
+        0.6679999999999999,
+        -4.39
+      ],
+      "width": 0.085,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.708,
+      "along": 0.22250000000000003,
+      "front": 0.37,
+      "price": null
+    },
+    {
+      "id": "bento",
+      "kind": "decoration",
+      "position": [
+        -6.24,
+        0.855,
+        -0.5450000000000003
+      ],
+      "width": 0.14,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.895,
+      "along": 0.435,
+      "front": 0.34,
+      "price": null
+    },
+    {
+      "id": "bread",
+      "kind": "decoration",
+      "position": [
+        -5.117,
+        0.624,
+        -1.4000000000000004
+      ],
+      "width": 0.14,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0.4900000000000001,
+      "front": 0.207,
+      "price": null
+    },
+    {
+      "id": "chips",
+      "kind": "decoration",
+      "position": [
+        -3.167,
+        0.624,
+        -1.4000000000000004
+      ],
+      "width": 0.14,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0.4900000000000001,
+      "front": 0.207,
+      "price": null
+    },
+    {
+      "id": "chocolate",
+      "kind": "decoration",
+      "position": [
+        -2.2330000000000005,
+        0.624,
+        -0.6550000000000004
+      ],
+      "width": 0.14,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0.7775,
+      "front": 0.207,
+      "price": null
+    },
+    {
+      "id": "pudding",
+      "kind": "decoration",
+      "position": [
+        -6.24,
+        0.855,
+        -1.645
+      ],
+      "width": 0.14,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.895,
+      "along": 0.435,
+      "front": 0.34,
+      "price": null
+    },
+    {
+      "id": "notebook",
+      "kind": "decoration",
+      "position": [
+        -1.2169999999999999,
+        0.624,
+        -1.4000000000000004
+      ],
+      "width": 0.14,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0.4900000000000001,
+      "front": 0.207,
+      "price": null
+    },
+    {
+      "id": "soap",
+      "kind": "decoration",
+      "position": [
+        -0.28300000000000025,
+        0.624,
+        -0.5199999999999998
+      ],
+      "width": 0.14,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0.3,
+      "front": 0.207,
+      "price": null
+    }
+  ],
+  "shop": {
+    "customers": [],
+    "stock": {
+      "tea": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "coffee": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "rice": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "biscuit": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "soap": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "notebook": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "postcard": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "battery": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "cola": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "water": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "beer": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "noodles": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "milk": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "chips": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "crackers": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "chocolate": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "candy": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "curry": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "soy": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "soup": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "peaches": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "tuna": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "detergent": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "tissues": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "toothpaste": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "orange": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "soda": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "yogurt": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "bread": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "bento": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "sandwich": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "pudding": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "bun": {
+        "shelf": 12,
+        "reserve": 24
+      }
+    }
+  },
+  "cast": [
+    {
+      "name": "Thuan",
+      "clip": null,
+      "gesture": null,
+      "moving": false,
+      "speed": 0,
+      "activity": "Sakura owner",
+      "indoors": "market",
+      "visible": true,
+      "flags": [
+        "inMarket"
+      ],
+      "at": [
+        5.5,
+        1.01,
+        1.57
+      ]
+    }
+  ]
+}

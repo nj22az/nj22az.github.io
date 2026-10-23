@@ -1,0 +1,19 @@
+{
+  "shop":"さくら商店",
+  "tax":"税込",
+  "recommend":"おすすめ",
+  "everyday":"いつもの",
+  "autumn":"秋のおやつ",
+  "products":{"tea":"緑茶","coffee":"コーヒー","rice":"おにぎり","biscuit":"ビスケット","soap":"石けん","notebook":"ノート","postcard":"はがき","battery":"乾電池","cola":"コーラ","water":"水","beer":"ビール","noodles":"カップ麺","milk":"牛乳","chips":"ポテトチップス","crackers":"せんべい","chocolate":"チョコレート","candy":"あめ","curry":"カレー","soy":"しょうゆ","soup":"スープ","peaches":"もも缶","tuna":"ツナ缶","detergent":"洗剤","tissues":"ティッシュ","toothpaste":"歯みがき","orange":"オレンジ","soda":"ソーダ","yogurt":"ヨーグルト","bread":"パン","bento":"お弁当","sandwich":"サンドイッチ","pudding":"プリン"},
+  "cards":[
+    {"id":"rice","icon":"rice","copy":"recommend","paper":"#ffe8e2","reason":"Thuan's quick lunch recommendation beside the rice balls."},
+    {"id":"coffee","icon":"coffee","copy":"everyday","paper":"#fff0ca","reason":"A familiar daily coffee, identified with a smiling cup."},
+    {"id":"bento","icon":"flower","copy":"recommend","paper":"#ffe8e2","reason":"Thuan's meal recommendation in the fresh-food run."},
+    {"id":"bread","icon":"flower","copy":"everyday","paper":"#fff0ca","reason":"A small breakfast cue on the bread shelf."},
+    {"id":"chips","icon":"leaf","copy":"autumn","paper":"#fff0ca","reason":"October snack display; seasonal art follows the game calendar."},
+    {"id":"chocolate","icon":"flower","copy":"recommend","paper":"#ffe8e2","reason":"A small sweet treat picked by Thuan."},
+    {"id":"pudding","icon":"rice","copy":"recommend","paper":"#ffe8e2","reason":"A cheerful dessert recommendation at the chilled sweets."},
+    {"id":"notebook","icon":"flower","copy":"everyday","paper":"#e5f0df","reason":"Stationery for the school and island residents."},
+    {"id":"soap","icon":"flower","copy":"everyday","paper":"#e5f0df","reason":"Daily necessities receive the same care as the food."}
+  ]
+}
