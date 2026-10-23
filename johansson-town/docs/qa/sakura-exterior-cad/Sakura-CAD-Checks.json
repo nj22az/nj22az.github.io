@@ -1,14 +1,19 @@
 {
+  "revision": "D",
   "dxf_audit_errors": 0,
   "dxf_audit_fixes": 0,
   "units": "millimetres",
-  "floor_polygon_area_m2": 138.75,
-  "entities": 427,
-  "fixture_count": 16,
-  "gameplay_tested": false,
+  "proposed_clear_floor_area_m2": 147.896,
+  "entities": 434,
+  "fixture_count": 18,
   "fixture_corners_inside_floor": true,
-  "fixed_fixture_envelopes_do_not_overlap": true,
+  "fixture_envelopes_do_not_overlap": true,
+  "building_storeys": 1,
+  "internal_stair_removed": true,
+  "toilet_access": "stockroom only",
+  "roof_stair": "external ground-to-roof service/escape only",
+  "gameplay_tested": false,
   "pdf_pages": 3,
   "pdf_format": "A3 landscape",
-  "visual_review": "Three pages rendered and visually reviewed; no game acceptance."
+  "visual_review": "All three sheets rendered and inspected; rest-room label and roof/elevation separation corrected."
 }
