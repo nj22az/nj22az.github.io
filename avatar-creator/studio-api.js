@@ -1,8 +1,8 @@
 // Johansson Studio's agent API, loaded only when the page is opened with ?agent (by the johansson-studio MCP server's
 // headless page, or by an agent in a browser). It draws with the Studio's own code -- World's avatar builder and the
 // Build scene posing, World's packs and the one label renderer -- so a portrait, a pack or a baked label an agent
-// renders is what the creator sees on the iPad. Nothing here changes or saves anything; stage 4 adds the editing API
-// and WebMCP on top (avatar-creator/docs/STUDIO-MCP.md).
+// renders is what the creator sees on the iPad. Comic edits create an isolated output copy; no API here publishes
+// World data. See avatar-creator/docs/STUDIO-MCP.md.
 import * as THREE from '../johansson-town/vendor/three.module.js';
 import {drawLabel} from '../johansson-town/src/commerce/label-art.js';
 import {drawFreshLabel} from '../johansson-town/src/commerce/fresh-labels.js';
@@ -15,7 +15,7 @@ import {normalizeRecipe,seeded} from '../johansson-town/src/avatars/recipe.js';
 import {poseSceneAvatar} from './scene-avatar.js?v=20261011-1';
 import {KNOWN_POSES,KNOWN_EXPRESSIONS} from './scene-catalogue.mjs';
 
-export const VERSION=2;
+export const VERSION=3;
 /** The view's turn, in degrees: a body at turn 0 faces the camera. */
 export const VIEWS=Object.freeze({front:0,quarter:-35,left:-90,right:90,back:180});
 const LIGHTS={warm:[0xffffff,0xc8a878,2.2,0xfff4e0,1.9,[2,4,5]]};
@@ -208,5 +208,11 @@ async function exportAsset({key,params=null,card=null,png=true}={}){
  return {card:r.card,resolved:r.resolved,checks:r.checks,ok:r.ok,glb:base64(r.glb),stl:base64(r.stl.bytes),png:r.png?base64(r.png):null,print:r.stl.words,triangles:r.stl.report.triangles};
 }
 
+let comicWorkspace;
+async function comicAfterEffects(options={}){
+ const {createSceneWorkspace}=await import('./scene.js');
+ if(!comicWorkspace){comicWorkspace=createSceneWorkspace({getCharacter:()=>({}),onEdit(){},onMode(){}});comicWorkspace.root.hidden=true;document.body.append(comicWorkspace.root);}
+ return comicWorkspace.afterEffects(options);
+}
 window.__JOHANSSON_STUDIO__=Object.freeze({version:VERSION,ready:true,views:Object.keys(VIEWS),poses:[...KNOWN_POSES],expressions:[...KNOWN_EXPRESSIONS],renderPortrait,
- productViews:['front','back','turn','shelf','flat','cell'],bakeLabel,cropPicture,renderProduct,exportAsset});
+ productViews:['front','back','turn','shelf','flat','cell'],bakeLabel,cropPicture,renderProduct,exportAsset,comicAfterEffects});

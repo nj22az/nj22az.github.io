@@ -1,5 +1,33 @@
 # Fujita television comic — Studio integration, 23 October 2026
 
+## After effects MCP wiring — 23 October 2026
+
+Owner requested “Mcp wire the after effects”. Studio MCP 1.7.0 now registers `comic_effects_info` and
+`comic_after_effects`; workflow discovery and server instructions route agents to them. The latter opens the
+built-in clean Fujita panels or a bounded repository-relative layered project, replaces actor dialogue/captions,
+applies any shared look, replaces sticker/text/image asset lists, translates the original en/sv script, and exports
+PNG plus `.studio.json` and a bounded editable link. Empty dialogue removes its bubble. Large image assets return a
+project and an explicit link-size warning. Input projects cannot be overwritten by using the same output name.
+
+The agent page API v3 exposes `comicAfterEffects`, using `createSceneWorkspace.afterEffects` and the existing
+`createComicEffects.render`. No new rendering pipeline or World data changes. Pure edit validation is atomic;
+pictures are prepared before replacing the isolated render workspace. MCP exports use the existing allowlisted
+transactional writer. `TOWN_CHROMIUM_PATH` supports a preinstalled Chromium for acceptance. The existing `.mcp.json`
+server entry needs no change; restart that MCP connection after pulling to discover new tools. This repository
+change does not install or attach a new connector to the current ChatGPT host.
+
+Validation: 27 focused effect/link/scene/World-runtime/MCP regression checks pass. A real MCP stdio client and
+headless Chromium pass opening all three panels, discovering 14 looks, dialogue replacement/removal, Manga,
+star/text/image assets, exact PNG equivalence after project reopening, original Swedish preset, rejection of
+custom auto-translation, traversal and input overwrite, and project fallback for oversized links. Browser acceptance
+command: `STUDIO_BROWSER_TEST=1 node --test johansson-town/tests/comic-effects-mcp.test.mjs` (custom Chromium path used
+in this environment). Four runtime-package checks also pass after integrating current main `175f8304`; no shared
+runtime sources changed, so no runtime rebuild. Physical iPad/native share remains unverified.
+
+Implementation commit `d15ab1cf`, local branch `codex/fujita-tv-comic-2026-10-23`. Publishing branch
+`codex/studio-after-effects-mcp-2026-10-23`; publication pending at this checkpoint. Setup and examples:
+[STUDIO-MCP.md](../../avatar-creator/docs/STUDIO-MCP.md#comic-after-effects-mcp-17).
+
 ## After effects — second comic step, 23 October 2026
 
 Owner requested a named second step after assembly to edit the finished comic: shaders, assets, replacement lettering and translation. Follow-up explicitly confirmed replacing text outright.
