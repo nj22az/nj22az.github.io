@@ -1872,7 +1872,7 @@ function visitPlace(s){
  if(current)leaveRoom();placeAtEntrance(s);resetInput();toggleDir(false);clearNavigation();drawMap();say(s.title+' · You took a familiar shortcut.',5);return true;
 }
 function toggleDir(open){if(inspector?.active)return;if(open){townBook?.home();updateDirectory();document.exitPointerLock?.();resetInput();}$('#directory').classList.toggle('hidden',!open);document.body.classList.toggle('town-menu-open',!!open);$('#directoryButton').setAttribute('aria-expanded',String(open));if(open)$('#closeDirectory').focus();else $('#directoryButton').focus();}
-$('#directoryButton').onclick=()=>toggleDir(true);$('#residentRecordsButton').onclick=()=>{toggleDir(false);activities.residentRecords(directoryCards().map(p=>p.name));};$('#closeDirectory').onclick=()=>toggleDir(false);
+$('#directoryButton').onclick=()=>toggleDir(true);$('#closeDirectory').onclick=()=>toggleDir(false);
 $('#ferryOperationsButton').onclick=()=>{toggleDir(false);document.exitPointerLock?.();resetInput();ferryOperations?.open();};
 function updateDirectory(){
  {const m=pocketModel(),tile=$('#pocketButton');if(tile){tile.textContent=m.name;tile.setAttribute('aria-label',`Raise the ${m.name} camera (F)`);}}

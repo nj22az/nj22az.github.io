@@ -166,3 +166,18 @@ Checks: CI guard 359 pass, 1 fail (the same `no-z-fighting` out-of-memory abort)
 820×1180 and 390×844 with touch: the button is visible at bottom right; home grid → Settings page → back → Places page →
 close → reopen shows home; the Free camera tile works from the grid. Not done: a real iPad, and the desktop editions'
 own menu (`johanssonDesktopUI`), which is untouched.
+
+## Town book folded to eight tiles; shorter place cards — 23 October 2026
+Owner, yes to the proposal: fold 15 tiles into 8, shorten the place cards, merge the stylesheets.
+- `index.html`: `#townControls` is the whole home screen (the Town tools / book-sections wrappers are gone). It holds
+  Camera (`details.menu-camera`: Photo, Pocket, Free camera, Clean view, Look), Map (`details.menu-places`: the walking map
+  above the place list; `.menu-map` is gone, merged in), People (`#peopleButton`), Field book, Moves, Ferry, Settings
+  (`details.menu-settings`: Controls and Save tiles above the rows), and Bag, which hud-icons appends and shows only when
+  something is carried. CSS `order` puts them as Camera, Map, People, Field book, Bag, Moves, Ferry, Settings.
+- The Residents tile is gone: People opens the Map page on its People list, whose cards already have Resident record.
+  Its `onclick` line in game.js is removed; `activities.residentRecords` stays (the record's "Back to residents").
+- `src/ui/town-directory.js`: a place card shows its name, one line and Directions; its tags and walking directions are in
+  `.town-more`, opened by a tap on the card.
+Checks: town-directory, boot, travel-webmcp, ui-icons, runtime-package, audit-boot and visual-audit-freeze pass. Built
+runtime at 390×844 and 820×1180 with touch: home has 8 tiles; Camera, Map, People (People list) and Settings pages; back;
+close and reopen go home; Free camera works from the Camera page.
