@@ -1,3 +1,4 @@
+import {wrapCaption} from '../johansson-town/src/photo/layout.js';
 /** Unboxed comic shouting. Wraps to the panel, reserves the top third for readable acting. */
 export function drawShout(ctx,w,h,text){
  const words=String(text||'').toUpperCase().split(/\s+/).filter(Boolean);if(!words.length)return;
@@ -25,8 +26,7 @@ export function drawStatement(ctx,w,h,text,speaker=.5,headTop=1,inked=false){
  const available=Math.max(w*.11,Math.min(h*.32,ceiling-y-tailHeight));
  let size=w*.047,lines=[],lh,bh;
  for(let attempt=0;attempt<36;attempt++){
-  ctx.font=`700 ${size}px system-ui,sans-serif`;lines=[];let line='';
-  for(const word of words){const next=line?line+' '+word:word;if(line&&ctx.measureText(next).width>w*.79){lines.push(line);line=word;}else line=next;}if(line)lines.push(line);
+  ctx.font=`700 ${size}px system-ui,sans-serif`;lines=wrapCaption(ctx,text,w*.79,20);
   lh=size*1.24;bh=lines.length*lh+size*1.1;
   if(bh<=available&&lines.every(l=>ctx.measureText(l).width<=w*.79))break;size*=.96;
  }

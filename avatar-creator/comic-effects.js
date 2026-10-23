@@ -1,6 +1,6 @@
 import {LOOKS,retiredLook} from '../johansson-town/src/render/looks.js?v=20261023-recovery';
 import {drawCaptions} from '../johansson-town/src/photo/layout.js';
-import {drawStatement,drawShout} from './scene-lettering.js?v=20261023-recovery';
+import {drawStatement,drawShout} from './scene-lettering.js?v=20261023-languages';
 import {createComicLook} from './comic-look.js?v=20261023-recovery';
 import {normalEffects,translateComic} from './comic-effects-model.mjs';
 const image=url=>new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=()=>reject(Error('The image could not load.'));i.src=url;});

@@ -1,5 +1,5 @@
 import {stageComicPresentation} from './scene-comic-presentation.js';
-import {createComicEffects} from './comic-effects.js?v=20261023-recovery';
+import {createComicEffects} from './comic-effects.js?v=20261023-languages';
 import {normalLayer,normalEffects,editEffectsPanels} from './comic-effects-model.mjs?v=20261023-recovery';
 import {sceneLink as editableLink} from './scene-links.mjs?v=20261023-recovery';
 import {LOOKS,isLook} from '../johansson-town/src/render/looks.js';
@@ -8,7 +8,7 @@ import {fujitaComic} from './fujita-comic.mjs';
 import {stageComicExit} from './scene-exit.js?v=20261020-vi';
 import {gradientMap} from '../johansson-town/src/render/cel.js';
 import {createSceneFacePainter} from './scene-face.js';
-import {drawShout,drawStatement,drawComicChaos,drawComicBorder} from './scene-lettering.js?v=20261023-recovery';
+import {drawShout,drawStatement,drawComicChaos,drawComicBorder} from './scene-lettering.js?v=20261023-languages';
 import {CLASSROOM_VIEW} from './classroom-stage.js';
 import {classroomComic} from './classroom-comic.mjs?v=20261020-vi';
 import {createSoleFinder} from '../johansson-town/src/avatars/foot-ground.js';
