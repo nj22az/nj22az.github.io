@@ -124,7 +124,4 @@ textures, supporting auxiliary render buffers, not reconstruction of geometry fr
 https://archive.threejs.org/docs/api/en/renderers/WebGLRenderTarget.html and
 https://threejs.org/docs/pages/DepthTexture.html . Match proposed calls to this repository's r170 vendor.
 
-Next implementation task: stages 1-2 on a shared-rendering branch, starting with capability/quality parity and a
-Manga/Cartoon/Oil proof. Coordinate shared material edits with PR #371's material prototype work and the latest
-handover, verifying its current branch/status before editing. Remaining styles and new capture schema follow the
-same common core after that proof, rather than changing fourteen effects and World's base lighting in one patch.
+Implementation now exists in [PR #382](https://github.com/nj22az/nj22az.github.io/pull/382). See the [implementation handover](HANDOFF-SHARED-SHADERS-2026-10-23.md) for exact source, completed checks, three-style proof, auxiliary schema and remaining acceptance. The next action is visual review, memory-sufficient geometry-guard validation and actual-device profiling; this plan's earlier audit remains historical evidence.

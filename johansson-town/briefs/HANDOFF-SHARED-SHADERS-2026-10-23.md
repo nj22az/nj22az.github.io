@@ -1,6 +1,6 @@
 # Shared illustration shaders — implementation handover
 
-23 October 2026. Branch `codex/shared-illustration-shaders-2026-10-23`. Implementation rebased onto main `03dd675c5e70f166e29f9f87eb30a76a4d4f19f6`, preserving the newly merged Nhung/Higa/controller work. Review PR and final check results are recorded below before sign-off. Visual changes are not merged or deployed.
+23 October 2026. Branch `codex/shared-illustration-shaders-2026-10-23`. Implementation rebased onto main `03dd675c5e70f166e29f9f87eb30a76a4d4f19f6`, preserving the newly merged Nhung/Higa/controller work. [PR #382](https://github.com/nj22az/nj22az.github.io/pull/382) is open and mergeable, with implementation publishing commit `bae2618fa31514f592a5053ac8dd186ae6f0ae1b` (local implementation `ff657a3b`, integration/runtime/docs `bddb0b3a`). Final check results follow below. Visual changes are not merged or deployed.
 
 ## Delivered behaviour
 
@@ -17,8 +17,8 @@ Lettering stays editable after effects, including replacement, translation and a
 - 40 focused shader/cel/material/comic checks passed before integration; after rebasing, seven capture/material/runtime checks passed, including current-source runtime fingerprints.
 - Comprehensive real WebGL browser test passed before and after integration: numeric depth error below 2e-7, normal orientation, alpha cutouts with texture transforms, source material restoration, two actual World environments across all fourteen looks plus Manga/Cartoon/Oil night cases (34 combinations), camera and pose changes.
 - Real MCP stdio + Chromium regression passed. Saved project focus controls including tilt mode round-tripped through the actual Studio UI. All fourteen legacy picture-only looks compiled without shader errors.
-- Matched-camera compiled-game checks passed on old and revised builds: street and Community Hall, Manga/Cartoon/Oil/Crayon, 12 steps each, zero errors/fallbacks. Latest-main integrated smoke and guard results follow below.
-- Pre-integration full guard: 361 passes, one process-level failure in `no-z-fighting.test.mjs`; isolated TAP rerun reports SIGKILL, with cgroup OOM kills observed. This is not a passing full guard. No test weakened or skipped to mask it. Latest-main rerun pending at time of initial note.
+- Matched-camera compiled-game checks passed on old and revised builds: street and Community Hall, Manga/Cartoon/Oil/Crayon, 12 steps each, zero errors/fallbacks. Latest-main integrated compiled-game smoke also passed: 12 steps, all eight requested street/interior screenshots, zero errors/fallbacks, 106.4 s total. The comprehensive shared pipeline and runtime checks passed again after integration.
+- Pre-integration full guard: 361 passes, one process-level failure in `no-z-fighting.test.mjs`; isolated TAP rerun reports SIGKILL, with cgroup OOM kills observed. This is not a passing full guard. No test weakened or skipped to mask it. Latest-main full rerun was interrupted under the same memory pressure; isolated latest-main retry with a 2 GiB heap conclusively reports JavaScript heap exhaustion (SIGABRT). No full-guard pass is claimed. The guard must run on a better-provisioned runner.
 - Runtime rebuilt after latest-main integration (10.24 s); native browser checks use software WebGL. Timings include compilation and are not physical GPU/iPad/iPhone performance acceptance. Device frame-rate targets and owner visual acceptance remain outstanding.
 
 ## Review files
@@ -34,3 +34,5 @@ Saved separate Manga, Cartoon and Oil full-strip previews, a three-page before/a
 Reproduce with `avatar-creator/render-shader-proof.mjs` (optional `STUDIO_PROOF_OUTPUT`), `STUDIO_BROWSER_TEST=1 node --test avatar-creator/tests/shared-looks.browser.mjs`, and `node johansson-town/tools/shader-world-smoke.mjs <output>` (`--baseline=<git-ref>` for an available retained build). Set `TOWN_CHROMIUM_PATH` when Chromium is outside Playwright's default cache. Do not overwrite the original reference PNGs.
 
 Next: review separate before/after strips, complete the geometry guard on a sufficiently provisioned runner if memory termination persists, measure actual target devices, then merge/deploy only after the planned visual review. Minato remains the priority; no island expansion is part of this work.
+
+Final sign-off: implementation and review files delivered in open, mergeable PR #382; no merge/deployment claimed. `git diff --check` passed. Current runtime entry is `boot-bEI-4URo.js`; source fingerprints match. The incomplete geometry guard and actual-device profiling remain explicitly open.
