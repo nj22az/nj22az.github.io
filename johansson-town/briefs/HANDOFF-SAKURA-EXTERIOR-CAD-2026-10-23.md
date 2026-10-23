@@ -10,7 +10,7 @@ The owner supplied a detailed merchandising grid, a Three.js HTML prototype and 
 
 Branch `codex/sakura-exterior-led-cad`; [draft PR #373](https://github.com/nj22az/nj22az.github.io/pull/373), unmerged. Rev D files through `b261c199cca45e19751dfc42c3fab24aa6f7723b`, handover/index through `b9b85cc650ac5ce3740a45b1e8ca575968f02e23`. Rev C's upper-floor retention is superseded. Original exterior source: main `e15be1738e2e68c1f1ba323b9992dc89661751f4`. Before any game implementation, recheck current main and concurrent #366/#364/#363; none of those older proposals overrides the owner's current single-storey direction.
 
-Rev E drawing/prototype/checks are recorded through `ac5c26d7501336f5514770614bb799850ec90e1b`; CAD source began at `6dbc77f52221db0501e4ce50ffaec0ebd95be523`. The self-contained preview was also verified through a local `file://` open with no network dependencies.
+Final Rev E source and route checks recorded through `e1b2a71cd81b55c0f0b61fb05c3811fc07dfa08c`. Self-contained local-file opening passed with zero network dependencies. A 600 x 800 mm test envelope was clear at 41 samples along the level receiving-to-sales route; this is a sampled geometry check, not a real NPC/navigation/cart-turning acceptance.
 
 ## Current layout and resolved discrepancies
 
@@ -18,6 +18,7 @@ Rev E drawing/prototype/checks are recorded through `ac5c26d7501336f5514770614bb
 - Rear strip 33.36 m2 plus office 5.10 m2 = 38.46 m2, **26.0%** of 147.896 m2. The remaining 74% includes retail fixtures/counter functions; it is not net walkable sales area or a certified universal 1990s ratio.
 - Three 900 x 4,500 mm islands: 3,600 body plus 450 endcaps each end. Y=2,400..6,900 resolves the supplied 100 mm discrepancy and preserves the 1,340 mm rear cross-aisle. Heights 1,350; freezer 850. Specified 1,050/1,150 mm aisles await actual-avatar and camera checks.
 - Eight 600 mm beverage doors. Cold-room external depth 2,200 = 75 + 700 rack + 1,350 clear lane + 75. No crates stacked in the required cold-room lane. East 900 mm staff door reaches receiving directly.
+- A separate 1,000 mm level opening at X=10,400..11,400 connects receiving directly to sales, bypassing the +150 mm office. The parked cart is clear of this supply route.
 - Controlled staff entry added from rear sales aisle to rest/WC. Office has south staff-aisle and north receiving openings. The owner's HTML had a solid rear partition and no usable WC door; those were corrected.
 - Owner's rear delivery-door centre **X=11,500** is explicitly a **proposed relocation** from the earlier 7,850 mm axis, not an unchanged source opening. Width 1,050. Register the opening, rear lane and roof stair before implementation.
 - Counter retains 780 mm surface height, 800 mm front depth and 1,200 mm staff aisle. Hot zone fits 600 mm oden + 350 steamer + 450 compact case. Two POS/basket well, microwaves, basin and tobacco rack. The deeper counter requires actual Thuan contact/reach validation; no reaching animation is claimed.
