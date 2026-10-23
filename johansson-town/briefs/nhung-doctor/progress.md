@@ -80,7 +80,7 @@ word), then the queued Higa Liquor step.
 - Sakura sells the books by order at the till (Front-Row's note: "ask Thuan at the till"); no book shelf was added
   (no new geometry). If the owner wants books on Sakura's shelves, that is a merchandising and layout job.
 - The clinic room's lines still call the player "Mayor" (open issue above).
-## Queued (the owner, 22 October, answered; not started)
+## Queued (the owner, 22 October, answered; done in its own stacked PR, `briefs/higa-liquor-closes/`)
 - "The sisters basically run commerce and healthcare on the island … maybe we don't need a liquor store, Sakura can sell
   liquor too." Answers: close Higa Liquor; Sakura sells all alcohol over the counter and supplies Minato, Sato Ramen and
   the Coral Bay Bar from its depot; Kōji's round becomes Sakura Trading's delivery round; Gran Higa keeps only the

@@ -215,7 +215,7 @@ test('products: list, get with its references, change a price (dry run, draft, p
  const got=await call('product_get',{id:'Umineko lager'});
  assert.equal(got.data.id,'beer','a product is found by its name too');
  assert.ok(got.data.references.code.some(r=>/^src\/game\.js:\d+ /.test(r))&&got.data.references.code.some(r=>/^src\/people\/friendship\.js:\d+ /.test(r)),'the literals the plan names');
- assert.ok(got.data.references.accounts.some(a=>/^Sato Ramen \(from higa-saketen\)/.test(a)));
+ assert.ok(got.data.references.accounts.some(a=>/^Sato Ramen \(from sakura\): Umineko lager/.test(a)),'the bars’ drink is Sakura Trading’s since Higa Liquor closed');
  assert.ok(got.data.references.drawings.some(r=>/sakura-backroom\.js/.test(r)),'the backroom crates its label does not reach');
  assert.match(got.data.retire,/^Refused while \d+ code lines/);assert.ok(got.data.findings.some(f=>/blue/.test(f)));
  const dry=await call('product_update',{id:'beer',set:{price:240},note:'The new excise on beer this autumn.'});

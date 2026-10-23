@@ -60,7 +60,7 @@ export const STAND_SEQUENCES=Object.freeze(Object.fromEntries([
   pt(.55,1.95,W,[120,300],'pinning the week’s notices on the lobby board','the lobby notice board on the partition: lost property, the traffic-safety week, the typhoon notice',{pose:'Interact'}),
  ]),
  // ── Gran Higa's garden (the dressed Kinjō lot, world/okinawa/lots.js KINJO; world frame) ──
- seq('higa-garden','world','Grandmother Higa','An obaa’s morning garden round before the liquor counter: the vines, the water, the beds and the altar flowers (the lot’s hours: from six to half past eight).',[
+ seq('higa-garden','world','Grandmother Higa','An obaa’s morning garden round before the bath: the vines, the water, the beds and the altar flowers (the lot’s hours: from six to half past eight).',[
   pt(-31.4,-8.4,W,[300,900],'tying up the gōyā vines on the A-frame','the gōyā frame against the west wall, out of the salt wind',{pose:'Interact'}),
   pt(-30.1,-10.0,E,[120,300],'filling the watering can from the water jar','the kame by the gate, filled from the hose so the water is warm for the beds',{pose:'Interact'}),
   pt(-30.5,-6.6,E,[300,900],'weeding the island greens','the greens and chillies east of the path, in the morning sun',{pose:'Interact'}),

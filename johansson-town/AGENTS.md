@@ -224,6 +224,46 @@ characters? Have this female doctor replace Nhung". Their answers to the follow-
 - **Sakura shuts on Saturdays** (土曜定休; `sakura-rota.js` sakuraClosedDay): Thuan's weekend on Kitano-jima is unchanged,
   Nhung keeps Sunday, and Higa Liquor's delivery to Sakura is on Fridays (Kōji's round Tuesday and Friday).
 
+## Owner's decision — 22 October 2026: Higa Liquor closes into Sakura
+
+The owner, during the Nhung change: "The sisters basically run commerce and healthcare on the island … maybe we don't
+need a liquor store, Sakura can sell liquor too", then their answers and the finishing brief: "close Higa Liquor. Sakura
+sells and supplies all alcohol, Kōji's round becomes Sakura Trading's, and the building stands shut with a notice on it."
+This supersedes the liquor-shop parts of the 21 October decision above (its bench and coin laundry stand). The task folder
+is `briefs/higa-liquor-closes/`.
+
+- **Higa Liquor is shut for good** (`commerce/higa-liquor.js`): the shutter down at every hour, the doors shut, the lights
+  off, a hand-written 閉店のお知らせ taped to the shutter (`HIGA_NOTICE`: thanks, and お酒は さくら商店へ), read from the
+  street; no new geometry. The fittings and the family kusu stay inside behind the shutter. The 留守 card, the hours and
+  the counter's menu are gone; its sign stays up.
+- **Sakura sells all the alcohol**: the cans of lager in the cold cabinet as before, and the bottles the Higas sold
+  (awamori miniature, the large Umineko, one-cup sake) from the stock room at the till (`commerce/konbini.js`
+  `SAKURA_BOTTLES`), at the Higas' prices; on Saturdays, when Sakura is shut, there is no bottle to take away (the bench's regulars buy
+  Saturday's on Friday; the bars still pour).
+- **Sakura Trading supplies it** (`merchandising.js` SUPPLIERS.sakura `alcohol`, and `alcohol` lines on the accounts of
+  Minato, Sato Ramen, the Coral Bay Bar and Mr Fujita's shed); the economy's Higa business is gone, the bars pay
+  Sakura's trade price for drink (`economy/town-economy.js` `barTrade`), and a product with alcohol must be supplied by
+  `sakura` (`studio/rules.js`).
+- **Kōji's round is Sakura Trading's** (`commerce/trade-round.js` `TRADE_ROUND`): Tuesdays and Fridays from 10:30 on his
+  weeks ashore, loading at the depot in the Quay Warehouse, then Minato, Sato Ramen, the Port Terminal's freight counter
+  (the Coral Bay Bar's ice boxes, for the 14:45 boat: the ferry is at Kitano-jima in the late morning) and Mr Fujita's
+  shed (whose six o'clock van is gone: the round swaps his crate, full for empties, and at six he stands the night's
+  empties back in it), the empties to the crate yard across Main Street, which Sakura Trading rents from Grandmother
+  Higa. The Coral Bay Bar's juice goes on the morning boat, as before. ¥1,500 a round from Sakura's till; the round's book is
+  read at Sakura's back office. In his weeks aboard the customers collect, as before.
+- **Grandmother Higa keeps only the bathhouse**: the bandai 10:00–12:00 and 13:00–17:00, the garden and the verandah;
+  Yui no longer minds a counter on Saturdays.
+- **The yuntaku bench stays**: Tetsuo and Mac still sit out front of an evening with a bottle from Sakura; the bench no
+  longer depends on the shop's hours.
+
+## Owner's decision — 22 October 2026 (night): the money model is closed for now
+
+The owner: "close the money model for now, we need to simplify background processes." `src/economy/town-economy.js`
+(the year-by-day simulation of households, shops, the ferry's orders and the bars) is not extended or wired into the
+game; its open issues (it does not know Sakura's Saturday closing) are closed with it. It never ran in the game: only
+`tests/town-economy.test.mjs` runs it. `economy/goods.js` stays in use. The next step the owner named is to simplify the
+background processes (`src/edition.js` lists them per edition); ask before switching any of them off.
+
 ## Verification
 
 Use focused geometry, collision, navigation and schedule checks. The whole game boots in a cloud session's software

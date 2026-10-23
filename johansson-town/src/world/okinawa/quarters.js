@@ -32,9 +32,9 @@ import {WEST_YARD} from '../west-yard.js';
 import {createVendingMachine,vendingReady,hydrateVending,VENDING_MACHINE} from '../vending.js';
 import {windowGlow} from '../../render/dusk.js';
 import {dessertShopOpen} from '../blue-coral-shop.js';
-import {higaFrontage,higaPoint} from './higa-liquor-dressing.js';
+import {higaFrontage} from './higa-liquor-dressing.js';
 import {laundryFrontage,LAUNDRY_BENCH,laundryPoint} from './coin-laundry-dressing.js';
-import {higaLiquorState,higaDeliveryBook,HIGA_KUSU,YUNTAKU,yuntakuSeatAt} from '../../commerce/higa-liquor.js';
+import {HIGA_NOTICE,YUNTAKU,yuntakuSeatAt} from '../../commerce/higa-liquor.js';
 import {laundryNotices,laundryMachinesAt,LAUNDRY_MANGA} from '../../commerce/coin-laundry.js';
 
 /**
@@ -95,8 +95,8 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  const old=dressOldTown(kit,solid,{inspect,anchor,onAction,vending,group});
 
  const {meshes,materials}=kit.finish(group,'Okinawan quarter');
- // What follows the clock at Higa Liquor and the coin laundry: the doors, the 留守 card, the shutter and the lights; the
- // machines turning, the baskets, the misted glass and the day's notices (higa-liquor-dressing.js, coin-laundry-dressing.js).
+ // Higa Liquor's front, shut for good with its notice on the shutter (higa-liquor-dressing.js), and what follows the clock
+ // at the coin laundry: the machines turning, the baskets, the misted glass and the day's notices (coin-laundry-dressing.js).
  const higa=higaFrontage({shadows}),coinLaundry=laundryFrontage({shadows});group.add(higa.group,coinLaundry.group);
  colliders.push(higa.shutterSolid,higa.doorSolid);
  world.colliders.push(...colliders);
@@ -107,7 +107,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
   if(materials.lamp)materials.lamp.emissiveIntensity=.1+glow*1.6;
   for(const machine of vendings)machine.userData.night?.(glow);   // the drinks machines' light on the pavement
   old.shutter.update(minutes);
-  higa.update(minutes);coinLaundry.update(minutes,world.laundryWash||null);
+  coinLaundry.update(minutes,world.laundryWash||null);
  });
  if(!vendingReady())for(const machine of vendings)(world.details??=[]).push({id:'okinawa-vending-'+machine.id,x:machine.position.x,z:machine.position.z,radius:44,load:()=>hydrateVending(machine,{shadows})});
  return {group,meshes,colliders,materials,shutter:old.shutter,laneEdges,higa,coinLaundry};
@@ -300,10 +300,10 @@ const SHOPS=Object.freeze({
   buy:{label:'Buy a zenzai',title:"Nakamura Zenzai · Nakamura Zenzai",cost:250,item:'Zenzai',text:'Okinawan zenzai: a mountain of shaved ice over sweet kintoki beans and little white mochi, in a glass bowl that sweats on the counter. Mrs Nakamura has been making it on this corner since the Americans left.'},
   // The island's one sweet counter: when Aragaki Confectionery shut, Mrs Nakamura took on the sata andagi.
   more:[{label:'Buy sata andagi',title:"Nakamura Zenzai · sata andagi",cost:120,item:'Sata andagi',text:'Okinawan doughnuts, fried in the back in the morning until they crack open and smile, to the recipe from the old sweet shop over the road. Three to a paper bag, still warm, sugar on your fingers.',dz:1.3}]},
- // Higa Liquor walks in through its glass doors under a canvas awning of its own (higa-liquor-dressing.js); the counter
- // is the activities' 'higa-liquor' menu, which knows the hours and who is behind it (commerce/higa-liquor.js).
- 'higa-saketen':{interior:'liquor',awning:false,jp:"Higa Liquor Store",en:'Higa liquor · awamori',bg:'#f7ead6',accent:'#8a3b2e',upright:"Awamori",uprightBg:'#8a3b2e',
-  buy:{label:'Buy a bottle of awamori',action:'higa-liquor'}},
+ // Higa Liquor, shut for good (the owner, 22 October 2026; commerce/higa-liquor.js): the shutter is down under its own
+ // canvas awning (higa-liquor-dressing.js), the closing notice on it, and the drink is Sakura's. The sign stays up.
+ 'higa-saketen':{interior:'liquor',awning:false,jp:"Higa Liquor Store",en:'Higa liquor · closed',bg:'#f7ead6',accent:'#8a3b2e',upright:"Awamori",uprightBg:'#8a3b2e',
+  inspect:{label:'Read the notice on the shutter',title:'Higa Liquor · closing notice',text:HIGA_NOTICE.en}},
  // Aragaki Confectionery, closed (cast.js PLACES): nobody keeps it, and nobody lives behind it. The faded
  // sign stays up.
  arakaki:{interior:'sweets',awning:false,jp:"Aragaki Confectionery Store",en:'Arakaki sweets · closed',bg:'#efe6cf',accent:'#5f7d76',upright:"Sweets",uprightBg:'#8a9a94',
@@ -334,17 +334,13 @@ function shopFront(kit,solid,plot,frame,{anchor,inspect,onAction,getMinutes=()=>
 /** A prompt only the player uses: residents never pick it as something to do in their free time (town-activities.js). */
 const private_=a=>{if(a)a.userData.npcInteraction=false;return a;};
 /**
- * Higa Liquor's prompts inside and out (commerce/higa-liquor.js): the delivery book and the family kusu on the counter,
- * read while the shop is open, and the yuntaku bench out front, a seat at any hour.
+ * The shut Higa Liquor's bench out front (commerce/higa-liquor.js YUNTAKU), a seat at any hour: the shop's counter, its
+ * delivery book and the family kusu are behind the shutter now.
  */
 function higaPrompts({anchor,onAction,getMinutes}){
- const shut=()=>{const s=higaLiquorState(getMinutes());return s==='open'?null:s==='away'?'The doors are shut, and a card hangs on the handle: “Out. Back at five.” Grandmother Higa is at the bandai at Umi-no-yu.':'The shutter is down. Higa Liquor opens at nine, and again from five to eight.';};
- const [bx,bz]=higaPoint(-1.0,-.05),[kx,kz]=higaPoint(-1.62,-.05);
- private_(anchor(bx,1.2,bz,'Read Higa Liquor’s delivery book',()=>{const no=shut();onAction?.('read','Higa Liquor · delivery book',no||higaDeliveryBook(getMinutes()));}));
- private_(anchor(kx,1.2,kz,'Look at the Higa family kusu',()=>{const no=shut();onAction?.('inspect',HIGA_KUSU.name,no||`${HIGA_KUSU.why}\n\n${HIGA_KUSU.neverSold}`);}));
  const P=YUNTAKU.seats.player,seat=private_(anchor(P.at[0]-.55,1,P.at[1],'Sit on the bench outside Higa Liquor',()=>{
   const m=getMinutes(),here=YUNTAKU.sitters.filter(s=>yuntakuSeatAt(s.name,m)).map(s=>s.name);
-  onAction?.('seat','Higa Liquor’s bench',here.length?`You sit down at the end of the bench. ${here.join(' and ')} ${here.length>1?'are':'is'} already here with a bottle each, talking about nothing in particular, which is the point.`:'A timber bench and two upturned beer crates in front of the shop. In the evening opening the men sit here with a bottle from the counter.');}));
+  onAction?.('seat','Higa Liquor’s bench',here.length?`You sit down at the end of the bench. ${here.join(' and ')} ${here.length>1?'are':'is'} already here with a bottle each from Sakura, talking about nothing in particular, which is the point.`:'A timber bench and two upturned beer crates in front of the shut shop. Of an evening the men still sit here with a bottle, bought at Sakura now.');}));
  // The player's end of the bench; Tetsuo's is the other (YUNTAKU.seats.tetsuo): the bench is two places already. Facing the
  // street as Tetsuo does (P.yaw), with the shop at the back: it faced the shop's wall, and a body slid forward to the seat's
  // front edge (seatFront) would have gone into the backrest.
@@ -384,13 +380,13 @@ function buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes}){
  if(seat)seat.userData.seat=benchSeat({id:'nakamura-dessert-bench',position:[bx,0,bz],stand:[bx-.8,0,bz],surfaceY:.49,eyeY:1.12,yaw:-Math.PI/2,pitch:-.03},{length:1.4,front:.22});
  // The old lane up to the sea bath between the shop-houses is Kitano Road now (kitano-link.js):
  // its stepping stones, lanterns, pot plants and the vending machine made way for the carriageway.
- // Higa Liquor's delivery bicycle, against its own shopfront. It stood on the kerb in the crossing's planter until the
+ // Higa Liquor's old delivery bicycle, against its own (shut) shopfront. It stood on the kerb in the crossing's planter until the
  // owner's phone found it there (20 October 2026).
  const liquor=EAST_ROW.plots.find(p=>p.id==='higa-saketen');
  // Moved again on 21 October 2026 for the yuntaku bench (higa-liquor-dressing.js): nose-in to the pier at the Kitano Road
  // corner, beside the empties, clear of the door.
- solid(bicycle(kit,EAST_ROW.minX-.95,liquor.minZ+.42,{ry:0,colour:0x2b2d30,basket:false,id:'higa-liquor-bicycle',owner:'Higa Liquor (Grandmother Higa)',
-  why:'The shop’s old black delivery bicycle with the big carrier, from the days her husband did the rounds. Grandmother Higa still wheels it up Kitano Road with a bottle tied on for a regular who cannot come down, an order too small for the van. It lives against its own shopfront, clear of the door and the footway.'}));
+ solid(bicycle(kit,EAST_ROW.minX-.95,liquor.minZ+.42,{ry:0,colour:0x2b2d30,basket:false,id:'higa-liquor-bicycle',owner:'Grandmother Higa',
+  why:'The shop’s old black delivery bicycle with the big carrier, from the days her husband did the rounds. Nobody has ridden it since the shop shut, and Grandmother Higa will not sell it: it leans against its own shopfront, clear of the shutter and the footway, and the bench’s regulars lean their bags on it.'}));
 }
 
 function buildYardRow(kit,solid,{anchor,inspect,onAction,getMinutes}){

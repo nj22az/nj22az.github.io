@@ -57,7 +57,7 @@ import {VENDING_PRODUCTS,DRINKABLE,EMPTY_CAN,CAN_REFUND} from './src/commerce/ve
 import {SAKURA_SPECIALS,SPECIAL_BY_NAME,specialsOpen} from './src/commerce/sakura-specials.js';
 import {MEDICINES,STAMINA_DRINK} from './src/world/interiors/sakura-dressing.js';
 import {STORE_ITEMS} from './src/commerce/catalogue.js';
-import {higaLiquorState,higaLiquorKeeper,HIGA_COUNTER,HIGA_LIQUOR_HOURS_TEXT,higaDeliveryBook} from './src/commerce/higa-liquor.js';
+import {roundDeliveryBook} from './src/commerce/trade-round.js';
 import {LAUNDRY_MACHINES,LAUNDRY_POWDER,playerWashStage,freeMachine} from './src/commerce/coin-laundry.js';
 import {SHOPIFY_CONFIG} from './src/commerce/shopify-config.js';
 import {createShopify} from './src/commerce/shopify.js';
@@ -89,7 +89,7 @@ import {planFavours,favourWaiting,clueFor,favourLine,askFavour,replyFavour,favou
 import {recipeFor} from './src/avatars/cast.js';
 import {GROCERY_ITEMS} from './src/commerce/catalogue.js';
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
- checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen,HOT_SNACKS,buyHotSnack,thuanRecommends} from './src/commerce/konbini.js';
+ checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen,HOT_SNACKS,buyHotSnack,thuanRecommends,SAKURA_BOTTLES} from './src/commerce/konbini.js';
 
 export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResidentLocations=()=>null,onOpen=()=>{},onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onEat=()=>false,onTreat=()=>{},onDrink=()=>false,onSnack=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,getTipsy=()=>0,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false,getMassageChair=()=>null}) {
   const $=s=>document.querySelector(s);
@@ -682,6 +682,7 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
     const paperwork=()=>show(title,"Wait a minute.\nThe shop books live in the back office — I can fetch them.",[
       ['Sell items from my bag',workshopUI.selling],
       ['Read the shop ledger',shopLedger],
+      ['Read the drink round’s book',()=>read('Sakura Trading · drink round',roundDeliveryBook(getMinutes()))],
       back,
     ]);
     const counter=()=>show(title,"Welcome!\nWhat can I do for you?",[
@@ -1019,9 +1020,11 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
   function sakuraCounterGoods(){
     const closed=sakuraTillClosed();
     if(closed){show('Till counter',closed,[['Back',close]]);return;}
-    show("In front of the cash register · At the till",'Thuan: "Cards, stamps, ferry tickets. The gum is the only thing here anyone buys on impulse."',[
+    // The bottles are here since Higa Liquor closed (the owner, 22 October 2026; konbini.js SAKURA_BOTTLES).
+    show("In front of the cash register · At the till",'Thuan: "Cards, stamps, ferry tickets, and the bottles from the back since the Higas closed. The gum is the only thing here anyone buys on impulse."',[
       ...COUNTER_GOODS.map(item=>[`${item.jp} · ¥${item.price.toLocaleString('en-GB')}`,()=>{const result=sellAtTill(item.en,item.price,item.unitCost);
         receipt(item.jp,result.ok?item.en+' is in your bag.':result.message);}]),
+      ...SAKURA_BOTTLES.map(p=>[`${p.name} · ¥${p.cost}`,()=>{const result=sellAtTill(p.item,p.cost,p.unitCost);if(!result.ok){receipt(p.name,result.message);return;}onTime(2);receipt('Sakura Shōten',p.text);}]),
       ['Nothing, thank you',close]]);
   }
   // Local players: several people can keep their own progress on one device. Switching
@@ -1364,18 +1367,6 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
     catch{if(!modalOpen||revision!==modalRevision)return;show('Harbour office records','The records could not be loaded. Please try again.',[['Try again',()=>officeRecords(id)],['Close records',close]]);}
   }
   /**
-   * Higa Liquor's counter (commerce/higa-liquor.js): open 9–12 and 17–20, Grandmother Higa or, on Saturdays, Yui; the
-   * card on the door between, the shutter at night. Its own goods, priced as 1997 priced them.
-   */
-  function higaLiquor(){
-    const now=getMinutes(),open=higaLiquorState(now);
-    if(open!=='open'){show('Higa Liquor',open==='away'?'The glass doors are shut and a card hangs on the handle: “Out. Back at five.” Grandmother Higa is at the bandai at Umi-no-yu until then.':`The shutter is down. Higa Liquor is open ${HIGA_LIQUOR_HOURS_TEXT}.`,[['Leave',close]]);return;}
-    const yui=higaLiquorKeeper(now)==='Miss Higa';
-    show('Higa Liquor',(yui?'Yui is minding the counter for her grandmother; it is Saturday, and her marking is in a pile by the register.':'Grandmother Higa looks up from her abacus.')+' Awamori in every size, the 1.8-litre bottles up the wall, the cold case by the door, and the old jar behind the counter that is not for sale.',
-      [...HIGA_COUNTER.map(p=>[`${p.name} · ¥${p.cost}`,()=>{if(!spend(p.cost,'Higa Liquor · '+p.name))return;onTime(2);addItem(p.item);tone(620,.12);receipt('Higa Liquor',p.text);}]),
-       ['Read the delivery book',()=>read('Higa Liquor · delivery book',higaDeliveryBook(getMinutes()))],['Leave',close]]);
-  }
-  /**
    * A wash at the coin laundry (commerce/coin-laundry.js): load a free washer, it runs on the town clock, then a dryer,
    * then fold. The save keeps it (state.coinLaundry), and the machine turns in the world while it runs.
    */
@@ -1418,7 +1409,6 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
       case 'store-catalogue':show('Thuan’s mail-order book',realShop.enabled?'Real-world products. Current prices and Shopify checkout are shown separately from town yen.':'A pink ribbon marks the next page. Thuan is still preparing the mail-order selection.',[...STORE_ITEMS.filter(i=>realShop.enabled&&SHOPIFY_CONFIG.products[i.id]).map(i=>[i.name,()=>realProduct(i)]),['Close',close]]);break;
       case 'travel-progress':show('Earn your town shortcuts',travelStatusText(state),[['Back to exploring',close]]);break;
       case 'vending':vending();break;
-      case 'higa-liquor':higaLiquor();break;
       case 'coin-laundry':coinLaundry();break;
       case 'recycle-cans':recycleCans();break;
       case 'sakura-specials':specialsMenu();break;

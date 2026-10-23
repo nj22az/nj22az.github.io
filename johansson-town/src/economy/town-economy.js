@@ -8,8 +8,8 @@ import {MERCHANDISING,TRADE_ACCOUNTS} from '../commerce/merchandising.js';
  *
  * The chain:
  *   mainland wholesalers --ferry--> Sakura (konbini and trade depot)
- *   Sakura --on account--> Higa Liquor (all alcohol), Minato, Sato Ramen, Umi-no-yu, offices
- *   Higa Liquor --trade--> Minato (kegs, bottles), Sato Ramen (bottles); --retail--> the town
+ *   Sakura --on account--> Minato (kegs, bottles and the rest), Sato Ramen (bottles), Umi-no-yu, offices
+ *   Sakura --retail--> the town, the drink over its counter since Higa Liquor closed (22 October 2026)
  *   Minato pours by the measure: a bottle is opened and drained ml by ml.
  *
  * Money: households (everyone who lives here, as one purse) earn public wages and the fish
@@ -25,15 +25,17 @@ import {MERCHANDISING,TRADE_ACCOUNTS} from '../commerce/merchandising.js';
 export const ECONOMY_VERSION=1;
 const BAR=Object.keys({...ALCOHOL,...BAR_SOFT}).filter(id=>GOODS[id].measure?.minato);
 
-/** Higa Liquor's trade price to bars: about a tenth under retail, never under cost plus a tenth (a keg has no shelf price). */
-export const higaTrade=id=>{const g=GOODS[id],floor=g.trade*1.1;return Math.round(Math.max(floor,g.retail?g.retail*.9:g.trade*1.15)/5)*5;};
+/**
+ * Sakura's trade price for drink to the bars: about a tenth under retail, never under cost plus a tenth (a keg has no
+ * shelf price). It was Higa Liquor's until the shop closed and Sakura took the trade (22 October 2026).
+ */
+export const barTrade=id=>{const g=GOODS[id],floor=g.trade*1.1;return Math.round(Math.max(floor,g.retail?g.retail*.9:g.trade*1.15)/5)*5;};
 
 /** Who keeps what, and how much they keep in hand (days of an average day's use). */
 export const BUSINESSES=Object.freeze({
  sakura:{name:'Sakura Shōten',owner:'Thuan',float:150000,draw:.35,overhead:{town:1700,mainland:1100},cover:6},
- higa:{name:'Higa Liquor',owner:'Grandmother Higa',float:40000,overhead:{town:500,mainland:250},cover:10,supplier:'sakura',goods:Object.keys(ALCOHOL)},
- minato:{name:'Minato Izakaya',owner:'Thao',float:30000,overhead:{town:2800,mainland:1800},cover:7,supplier:'higa',goods:[...Object.keys(ALCOHOL).filter(id=>GOODS[id].measure?.minato),...Object.keys(BAR_SOFT)]},
- sato:{name:'Sato Ramen',owner:'Mrs Sato',float:15000,overhead:{town:1500,mainland:900},cover:7,supplier:'higa',goods:['beer-bottle']},
+ minato:{name:'Minato Izakaya',owner:'Thao',float:30000,overhead:{town:2800,mainland:1800},cover:7,supplier:'sakura',goods:[...Object.keys(ALCOHOL).filter(id=>GOODS[id].measure?.minato),...Object.keys(BAR_SOFT)]},
+ sato:{name:'Sato Ramen',owner:'Mrs Sato',float:15000,overhead:{town:1500,mainland:900},cover:7,supplier:'sakura',goods:['beer-bottle']},
  onsen:{name:'Umi-no-yu',owner:'Grandmother Higa',float:15000,overhead:{town:2600,mainland:1400},cover:7,goods:['milk','soda','soap','detergent']},
 });
 
@@ -54,14 +56,14 @@ export function createEconomy({day=0}={}){
  for(const [id,b] of Object.entries(BUSINESSES))s.biz[id]={cash:b.float,stock:{},open:{},sales:0,costs:0};
  // Opening stock, as if the last week's ferries had come in: so the first day is not a famine.
  for(const id of Object.keys(GROCERIES))s.biz.sakura.stock[id]=12;
- for(const id of Object.keys(ALCOHOL))s.biz.sakura.stock[id]=4;
+ // The drink: the wholesale buffer and what was Higa Liquor's counter stock, in the one stock room now.
+ for(const id of Object.keys(ALCOHOL))s.biz.sakura.stock[id]=id==='beer-keg'?8:14;
  for(const id of Object.keys(BAR_SOFT))s.biz.sakura.stock[id]=4;
- for(const id of BUSINESSES.higa.goods)s.biz.higa.stock[id]=id==='beer-keg'?4:10;
  for(const id of BUSINESSES.minato.goods)s.biz.minato.stock[id]=id==='beer-keg'?3:4;
  s.biz.sato.stock['beer-bottle']=12;for(const id of BUSINESSES.onsen.goods)s.biz.onsen.stock[id]=12;
  return s;
 }
-function newYear(){return {lowest:{},imports:0,freight:0,exports:0,wages:0,tourists:0,drawings:0,overheadsOut:0,days:0,typhoonDays:0,stockouts:0,demand:0,monthly:Array.from({length:12},()=>({minato:0,sakura:0,higa:0,households:0}))};}
+function newYear(){return {lowest:{},imports:0,freight:0,exports:0,wages:0,tourists:0,drawings:0,overheadsOut:0,days:0,typhoonDays:0,stockouts:0,demand:0,monthly:Array.from({length:12},()=>({minato:0,sakura:0,households:0}))};}
 
 const month=date=>date.getUTCMonth();
 /** Sell up to n units of a good from a business's stock; returns what was sold. */
@@ -87,7 +89,7 @@ export function simulateDay(s,date){
  // Typhoon season: now and then the ferry does not run, and nobody goes out.
  if(s.typhoon>0)s.typhoon--;else if(m>=6&&m<=9&&r()<.025)s.typhoon=1+Math.floor(r()*2);
  const storm=s.typhoon>0;if(storm){s.year.typhoonDays++;events.push({kind:'typhoon'});}
- // Morning: yesterday's orders come in. The ferry brings Sakura's; Sakura and the Higas deliver theirs.
+ // Morning: yesterday's orders come in. The ferry brings Sakura's; Sakura delivers the town's.
  const due=s.orders.filter(o=>o.due<=s.day&&!(storm&&o.from==='ferry'));
  s.orders=s.orders.filter(o=>!due.includes(o));
  for(const o of due){
@@ -98,7 +100,7 @@ export function simulateDay(s,date){
   }else{
    const got=Math.min(o.qty,s.biz[o.from].stock[o.good]|0);if(!got){s.orders.push({...o,due:s.day+1});continue;}
    s.biz[o.from].stock[o.good]-=got;s.biz[o.to].stock[o.good]=(s.biz[o.to].stock[o.good]|0)+got;use(s,o.from,o.good,got);
-   const price=(o.from==='higa'?higaTrade(o.good):GOODS[o.good].trade)*got;pay(s,o.to,o.from,price);s.biz[o.from].sales+=price;s.biz[o.to].costs+=price;
+   const price=(ALCOHOL[o.good]?barTrade(o.good):GOODS[o.good].trade)*got;pay(s,o.to,o.from,price);s.biz[o.from].sales+=price;s.biz[o.to].costs+=price;
    events.push({kind:'delivery',from:o.from,to:o.to,good:o.good,qty:got});
    if(got<o.qty)s.orders.push({...o,qty:o.qty-got,due:s.day+1});
   }
@@ -119,9 +121,10 @@ export function simulateDay(s,date){
   if(tourists&&['water','tea','rice','postcard','sandwich'].includes(id)){const t=sell(s,'sakura',id,draw(tourists*.8,r));if(t){s.biz.sakura.cash+=t*g.retail;s.biz.sakura.sales+=t*g.retail;s.year.tourists+=t*g.retail;}}
   s.year.monthly[m].sakura+=n*g.retail;
  }
- // Higa Liquor's counter: a can for tonight, a bottle for a visit, sake when it is cold.
+ // The drink over Sakura's counter (Higa Liquor's until it closed): a can for tonight, a bottle for a visit, sake when
+ // it is cold.
  for(const [id,rate] of [['beer-can',14*SEASON.beer[m]],['beer-bottle',4*SEASON.beer[m]],['awamori-720',1.6],['sake-1800',.8*SEASON.sake[m]],['shochu-1800',.6]]){
-  const n=take('higa',id,rate*spend*(weekend?1.3:1),GOODS[id].retail);s.year.monthly[m].higa+=n*GOODS[id].retail;
+  const n=take('sakura',id,rate*spend*(weekend?1.3:1),GOODS[id].retail);s.year.monthly[m].sakura+=n*GOODS[id].retail;
  }
  // Minato: tables of an evening, two or three drinks each, poured from real bottles.
  const covers=draw((weekend?26:15)*SEASON.nights[m]*spend*(1+tourists*.25)*(festival?1.4:1)*(storm?.3:1),r);
@@ -178,10 +181,10 @@ function reorder(s){
   if(id==='sakura')continue;
   for(const good of b.goods||[]){
    const use=averageUse(s,id,good),want=Math.ceil(use*b.cover)+1,have=(s.biz[id].stock[good]|0)+pending(id,good);
-   const from=ALCOHOL[good]?(id==='higa'?'sakura':'higa'):'sakura';
+   const from='sakura',priceOf=g=>ALCOHOL[g]?barTrade(g):GOODS[g].trade;
    if(have<want*.6){
     // Only what the till can pay for on delivery.
-    const price=from==='higa'?higaTrade(good):GOODS[good].trade,owed=s.orders.filter(o=>o.to===id&&o.from!=='ferry').reduce((t,o)=>t+o.qty*(o.from==='higa'?higaTrade(o.good):GOODS[o.good].trade),0);
+    const price=priceOf(good),owed=s.orders.filter(o=>o.to===id&&o.from!=='ferry').reduce((t,o)=>t+o.qty*priceOf(o.good),0);
     const qty=Math.min(want-have,Math.floor(Math.max(0,s.biz[id].cash-owed)/price));
     if(qty>0)s.orders.push({from,to:id,good,qty,due:s.day+1});
    }

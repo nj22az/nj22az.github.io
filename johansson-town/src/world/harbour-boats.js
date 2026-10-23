@@ -293,7 +293,7 @@ export const CARGO_BOAT_LOOK=Object.freeze({
  /** What she has brought in today, on her hatch, and why (merchandising.js: Sakura Trading is the town's supplier). */
  load:Object.freeze([
   Object.freeze({id:'sakura-container',what:'A 12-foot box of shop stock for Sakura Trading’s depot in the Quay Warehouse, the depot’s name painted on its side.'}),
-  Object.freeze({id:'higa-beer',what:'Two pallets of yellow Umineko crates for Higa Liquor, who supply every bar and shop in town with drink.'}),
+  Object.freeze({id:'higa-beer',what:'Two pallets of yellow Umineko crates for Sakura Trading’s depot, who supply every bar and shop in town with drink since Higa Liquor closed.'}),
   Object.freeze({id:'rice',what:'A sling of rice in 30 kg sacks, on the crane’s hook over the open hatch: the island’s rice comes by sea.'}),
  ]),
 });

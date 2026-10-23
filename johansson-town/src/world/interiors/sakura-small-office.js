@@ -90,7 +90,7 @@ export const SMALL_OFFICE_ITEMS=Object.freeze([
   why:'On the west wall facing the desk: the reminders that are not on the calendar, and the photographs.',
   period:'A pine-framed cork board with drawing pins and sticky notes.'}),
  item({id:'calendar',wall:'east',name:'Calendar',jp:'さくら商事 平成9年10月',owner:'Thuan',at:[6.82,1.62,-3.62],size:[.01,.46,.32],
-  why:'Sakura Trading’s own calendar, the one the depot gives every account at New Year (Chin has one too), above the desk: the Higa Liquor Fridays and the month’s end.',
+  why:'Sakura Trading’s own calendar, the one the depot gives every account at New Year (Chin has one too), above the desk: the drink round’s Tuesdays and Fridays and the month’s end.',
   period:'A one-month wall calendar of October 1997, Heisei 9, the supplier’s name in red across the top.'}),
  item({id:'rota',wall:'east',name:'Staff rota',jp:'勤務表',owner:'Thuan',at:[6.82,1.56,-3.08],size:[.01,.4,.3],
   why:'Who keeps the counter which day, beside the calendar: Thuan on weekdays, Saturday shut, Nhung on Sunday, the shop’s own hours.',
@@ -115,8 +115,8 @@ export const SMALL_OFFICE_FRIDGE=Object.freeze([
 export const SMALL_OFFICE_NOTES=Object.freeze([
  Object.freeze({id:'boat',text:'8:30 boat: Coral Bay crate on the cart (mandarin juice, water)',by:'Thuan',colour:'#ffe28a',
   source:'merchandising.js ACCOUNTS.sakura["coral-bay-bar"]: lines orange and water, on the morning car ferry; commuter-schedule.js HARBOUR_LINE 08:30'}),
- Object.freeze({id:'higa',text:'Fri: Higa Liquor van. 5 cases lager, count them. Empties back (¥300 a crate)',by:'Thuan',colour:'#ff9dc6',
-  source:'paperwork.js higaInvoice: Friday deliveries, 5 cases on Fri 17 Oct, the ¥300 crate deposit; the shop shuts on Saturdays (sakura-rota.js)'}),
+ Object.freeze({id:'round',text:'Tue · Fri 10:30: Kōji’s round at the depot. Count the crates out, empties back!',by:'Thuan',colour:'#ff9dc6',
+  source:'trade-round.js TRADE_ROUND: Kōji loads at the Quay Warehouse depot at 10:30 on Tuesdays and Fridays; the empties back to the crate yard (Higa Liquor’s round until it closed, 22 October 2026)'}),
  Object.freeze({id:'eisa',text:'Eisa poster: back to the youth association (Kitahama)',by:'Thuan',colour:'#a6e57c',
   source:'sakura-dressing.js: the Eisa poster on the back wall, August’s Obon; lots.js: the youth association’s store on the eisa ground'}),
  Object.freeze({id:'riku',text:'Riku: homework FIRST, then games!',by:'Nhung',colour:'#9fd6f0',
@@ -133,7 +133,7 @@ export const SMALL_OFFICE_PHOTOS=Object.freeze([
 /** October 1997 (1 October was a Wednesday): what is marked on the calendar, and why. */
 export const SMALL_OFFICE_CALENDAR=Object.freeze({year:1997,month:10,era:'平成9年',firstWeekday:3,days:31,
  marks:Object.freeze([
-  ...[3,10,17,24,31].map(day=>Object.freeze({day,text:'Higa',why:'Higa Liquor’s Friday delivery (paperwork.js higaInvoice)'})),
+  ...[3,7,10,14,17,21,24,28,31].map(day=>Object.freeze({day,text:'round',why:'Kōji’s drink round from the depot, Tuesdays and Fridays (trade-round.js)'})),
   ...[4,11,18,25].map(day=>Object.freeze({day,text:'closed',why:'Saturday, the shop’s closing day (sakura-rota.js)'})),
   Object.freeze({day:31,text:'pay',why:'The month’s invoices are paid at the end of the month (paperwork.js deliveryNote)'}),
  ])});

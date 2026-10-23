@@ -7,9 +7,13 @@ Start here on every task, then read the latest applicable notes below. Maintain 
 | Food service and seating integration: PR #350 on main plus PR #351 | [22 October combined integration review](johansson-town/briefs/HANDOFF-FOOD-SEATING-INTEGRATION-2026-10-22.md). [Merged PR #356](https://github.com/nj22az/nj22az.github.io/pull/356), squash commit `2fd64868fe6da67619cef618ed8c67174843a96f`. Owner approved the combined screenshots; handover signed off. |
 | Johansson World: world, characters, benches and storytelling | [22 October 2026 afternoon World handoff](johansson-town/briefs/HANDOFF-2026-10-22-afternoon.md) (seated poses #351, civic comic backdrops #352, retired-cast tests #353), after the [morning one](johansson-town/briefs/HANDOFF-2026-10-22.md). Also read the earlier notes they reference. |
 | Minato Izakaya: food preparation, separate food/drink delivery and serving clearances | [22 October 2026 food-service handover](johansson-town/briefs/HANDOFF-IZAKAYA-FOOD-2026-10-22.md). Read alongside the World handoff. |
-| Nhung becomes the island doctor (Dr Kakazu retired into her); Front-Row's trade and Saturday closing at Sakura; queued: Higa Liquor closes into Sakura | **Finished, [PR #362](https://github.com/nj22az/nj22az.github.io/pull/362) to main, not merged** (branch `claude/clever-ride-qdpo8s`; merge only on the owner's word): [task folder](johansson-town/briefs/nhung-doctor/progress.md) (progress, checks, inputs) and the session note below. Higa Liquor: its own stacked PR on `claude/clever-ride-qdpo8s-higa-liquor`. |
+| Nhung becomes the island doctor (Dr Kakazu retired into her); Front-Row's trade and Saturday closing at Sakura | **Finished, [PR #362](https://github.com/nj22az/nj22az.github.io/pull/362) to main, not merged** (branch `claude/clever-ride-qdpo8s`; merge only on the owner's word): [task folder](johansson-town/briefs/nhung-doctor/progress.md) and the session notes below. |
+| Higa Liquor closes into Sakura (Sakura sells and supplies all the drink, Kōji's round is Sakura Trading's, the shop shut with a notice) | **Finished, stacked [PR #363](https://github.com/nj22az/nj22az.github.io/pull/363) on #362, not merged** (branch `claude/clever-ride-qdpo8s-higa-liquor`; merge after #362, on the owner's word): [task folder](johansson-town/briefs/higa-liquor-closes/progress.md) and the session note below. |
+| Where #362 and #363 stand, the merge order, the money model closed for now, and the next step (simplify background processes) | **Latest:** [22 October 2026 night handoff](johansson-town/briefs/HANDOFF-2026-10-22-night.md). Supersedes the two session notes of 22 October (late evening, night) below for state; they keep the detail. |
 | Claude Code skills: Colorfigures (hand-inked interactive isometric figures) | **Merged** to main as [PR #361](https://github.com/nj22az/nj22az.github.io/pull/361) (squash `a0fb347c`), only `.claude/skills/colorfigures/` (8 files, MIT, reviewed before adding). Signed off. |
 | Linux edition, controllers, right-stick camera and release integration | [22 October 2026 Linux controller handover](HANDOVER-LINUX-JOYSTICK-2026-10-22.md). Read alongside the World handoff for shared game changes. |
+
+The newest note is the [22 October 2026 night handoff](johansson-town/briefs/HANDOFF-2026-10-22-night.md): #362 and #363 open, merge #362 first; the money model closed for now; next, simplify background processes.
 
 The Linux controller note contains newer merge and release information than the morning World note. Real-device confirmation of right-stick camera control on Bluetooth and Steam Deck remains outstanding; follow that note's reproduction steps. Its evening update: a saved Look axis past the pad's axes now falls back to the right stick (`84baf00`, for 0.2.17, unreleased; it rides the Nhung doctor PR from `claude/clever-ride-qdpo8s`).
 
@@ -55,3 +59,19 @@ Sunday and it shuts on Saturday; books at Sakura are by order only; the clinic's
 Next agent: the PR waits on the owner. The Higa Liquor step (Sakura sells and supplies all alcohol, Kōji's round is
 Sakura Trading's, the shop stands shut with a notice) is its own stacked PR, branch
 `claude/clever-ride-qdpo8s-higa-liquor` on top of this one, task folder `johansson-town/briefs/higa-liquor-closes/`.
+
+## Session handover — 22 October 2026 (night), branch `claude/clever-ride-qdpo8s-higa-liquor`
+
+**Higa Liquor closes into Sakura** (the owner, 22 October: "close Higa Liquor. Sakura sells and supplies all alcohol,
+Kōji's round becomes Sakura Trading's, and the building stands shut with a notice on it"; their answer on how: "Own
+stacked PR"; [PR #363](https://github.com/nj22az/nj22az.github.io/pull/363)). The branch is the doctor branch (`claude/clever-ride-qdpo8s`, PR #362) plus this change; its PR is based
+on the doctor branch, so it shows only this change. Merge #362 first, then this one, each on the owner's word: main
+deploys the site, and this branch's runtime was built from the doctor branch's, keeping that build's chunks.
+
+The owner's decision and its details: `johansson-town/AGENTS.md`, "Owner's decision — 22 October 2026: Higa Liquor
+closes into Sakura"; the work, the review and the open issues: the
+[task folder](johansson-town/briefs/higa-liquor-closes/progress.md) (`progress.md`, `checks.md`, `sources/task.md`).
+
+Next agent: both PRs wait on the owner. Open for them: the walking Kōji keeps to the ice plant between the depot and
+the crate yard (the drops are in the data, not walked); the economy model does not know Sakura's Saturday closing; the
+Higa feed backdrop is still to be captured.
