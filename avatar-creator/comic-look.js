@@ -11,7 +11,7 @@ export function createComicLook(){let renderer,failed=false,texture,quad;const s
   const u=m.uniforms;u.tDiffuse.value=texture;u.uTexel.value.set(1/w,1/h);u.uResolution.value.set(w,h);
   if(depth){u.tDepth.value=dataTexture(capture.depth);u.tNormal.value=normal?dataTexture(capture.normal):null;u.uProjectionInverse.value.fromArray(capture.projectionInverse);u.uCameraWorld.value.fromArray(capture.cameraWorld);u.uSkyDepth.value=capture.skyDepth||120;u.uNear.value=capture.near;u.uFar.value=capture.far;u.uFocusMode.value=capture.focusMode==='tilt'?1:0;u.uFocusDistance.value=capture.focusDistance;u.uFocusRange.value=capture.focusRange;}
   quad.material=m;renderer.render(scene,camera);ctx.drawImage(renderer.domElement,0,0);
-  if(['flat','storybook','sunday'].includes(name)&&!depth)return 'Cartoon colour is applied to this picture. For the full material treatment choose Cartoon in Edit scene, then Update panel.';
+  if(['flat','storybook','sunday'].includes(name))return `${LOOKS[name].label} colour is applied to this picture. For the full 3D material treatment choose this look in Edit scene, then Update panel.`;
   if(!depth&&['tilt','crayon','sketchbook'].includes(name))return 'This older panel uses the 2D approximation. Edit scene → Update panel captures depth and normals for surface strokes and focus.';
  },dispose(){texture?.dispose();for(const t of dataTextures.values())t.dispose();quad?.geometry.dispose();for(const m of materials.values())m.dispose();renderer?.dispose();renderer?.forceContextLoss();}};
 }
