@@ -190,3 +190,14 @@ holds something much darker than the painted stroke gets a flat dark mark (0.16,
 a flat cream one. That makes eyes, brows, smile and sign letters thick and readable. Checked in software Chromium on
 Johansson's face at 0.8 m and the Sakura front at 2.4 m. A first, stronger setting inked the shop interior too heavily and
 was eased (thresholds 0.1–0.22, 90%).
+
+## Spot blacks and colour lines in the drawn looks — 23 October 2026
+Owner (Line drawing screenshot at the izakaya): "his eyebrows should be fully black here and his eyes too… the collar on the
+shirt should have its outline on the chest". In `looks.js`:
+- New shared `spotBlack()`, used by Line drawing, Manga and Cartoon. Within 6–16 m, a pixel darker than its surroundings by
+  more than 0.1–0.15 luminance (the best of three rings, 6/14/28 px) is filled solid, if it is not itself light (luma under
+  0.55–0.65). That makes eyes and brows solid black; big dark areas stay outlined. Partial fills first left grey smudges,
+  so the step is narrow.
+- `edges()` now takes its Sobel on colour (RGB length × 0.577), not luminance, with lower thresholds within 4–14 m, so a
+  light-blue collar on a light-blue shirt is drawn. This affects every look that uses `edges()`.
+Checked in software Chromium with Johansson's face at 1 m and the Sakura front, in Lines, Manga and Cartoon.

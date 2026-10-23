@@ -86,14 +86,36 @@ float edges(vec2 uv,float width,float detail){
  float sy=(1.0/viewDepth(uv+vec2(0.0,t.y))+1.0/viewDepth(uv-vec2(0.0,t.y))-2.0*ic)*dc;
  // Fixed-point depth still rounds a little, so a crease has to stand clear of that.
  float shape=smoothstep(0.012,0.03,max(0.0,-sx)+max(0.0,-sy));
- float tl=luma(texture2D(tDiffuse,uv+vec2(-t.x,t.y)).rgb),tc=luma(texture2D(tDiffuse,uv+vec2(0.0,t.y)).rgb),tr=luma(texture2D(tDiffuse,uv+t).rgb);
- float ml=luma(texture2D(tDiffuse,uv-vec2(t.x,0.0)).rgb),mr=luma(texture2D(tDiffuse,uv+vec2(t.x,0.0)).rgb);
- float bl=luma(texture2D(tDiffuse,uv-t).rgb),bc=luma(texture2D(tDiffuse,uv-vec2(0.0,t.y)).rgb),br=luma(texture2D(tDiffuse,uv+vec2(t.x,-t.y)).rgb);
- float gx=(tr+2.0*mr+br)-(tl+2.0*ml+bl),gy=(tl+2.0*tc+tr)-(bl+2.0*bc+br);
- float paint=smoothstep(0.32,0.62,length(vec2(gx,gy)))*detail;
+ // A Sobel on colour, not brightness alone: a light-blue collar on a light-blue shirt differs in hue far more than in
+ // lightness. Close by it looks a little harder, so a figure's own lines (collar, pocket, cuffs) are drawn.
+ vec3 tl=texture2D(tDiffuse,uv+vec2(-t.x,t.y)).rgb,tc=texture2D(tDiffuse,uv+vec2(0.0,t.y)).rgb,tr=texture2D(tDiffuse,uv+t).rgb;
+ vec3 ml=texture2D(tDiffuse,uv-vec2(t.x,0.0)).rgb,mr=texture2D(tDiffuse,uv+vec2(t.x,0.0)).rgb;
+ vec3 bl=texture2D(tDiffuse,uv-t).rgb,bc=texture2D(tDiffuse,uv-vec2(0.0,t.y)).rgb,br=texture2D(tDiffuse,uv+vec2(t.x,-t.y)).rgb;
+ vec3 gx=(tr+2.0*mr+br)-(tl+2.0*ml+bl),gy=(tl+2.0*tc+tr)-(bl+2.0*bc+br);
+ float g=length(vec2(length(gx),length(gy)))*0.577;
+ float close=1.0-smoothstep(4.0,14.0,dc);
+ float paint=smoothstep(mix(0.32,0.2,close),mix(0.62,0.42,close),g)*detail;
  float e=max(shape,paint);
  // Distance thins the lines out, so the horizon is not scribbled over.
  return e*(1.0-smoothstep(uSkyDepth*0.35,uSkyDepth,dc));
+}
+`;
+
+// Spot blacks, as an inker fills them: a small mark much darker than what is around it (an eye, a brow, a letter) is
+// filled solid, close by. The rings are wider than such a mark and narrower than a dark doorway, so big dark areas are
+// still only outlined rather than blotted out.
+const SPOT=`
+float spotBlack(vec2 uv,float u){
+ // Three rings, because an eye seen close fills more of the screen than a ring can reach across: the mark counts as dark
+ // against whichever ring sees round it.
+ float c=luma(texture2D(tDiffuse,uv).rgb),best=0.0;
+ for(int r=0;r<3;r++){
+  float radius=r==0?6.0:r==1?14.0:28.0,ring=0.0;
+  for(int k=0;k<8;k++){float a=float(k)*0.785398+float(r)*0.39;ring+=luma(texture2D(tDiffuse,uv+vec2(cos(a),sin(a))*uTexel*radius*u).rgb);}
+  best=max(best,ring/8.0-c);
+ }
+ // Filled or not, rather than greyed: a half-tone fill read as a smudge. Only marks that are themselves dark.
+ return smoothstep(0.1,0.15,best)*(1.0-smoothstep(0.55,0.65,c))*(1.0-smoothstep(6.0,16.0,viewDepth(uv)));
 }
 `;
 
@@ -142,7 +164,7 @@ void main(){
  // A touch of tone in the darkest places, so a dark doorway does not read as paper.
  float l=luma(texture2D(tDiffuse,vUv).rgb);
  float tone=(1.0-smoothstep(0.08,0.3,l))*0.22;
- gl_FragColor=vec4(mix(paper,vec3(0.17,0.17,0.2),clamp(max(e,tone),0.0,1.0)),1.0);
+ gl_FragColor=vec4(mix(paper,vec3(0.17,0.17,0.2),clamp(max(max(e,tone),spotBlack(vUv,u)),0.0,1.0)),1.0);
 }`,
  crt:`
 void main(){
@@ -189,7 +211,7 @@ void main(){
  if(l<0.1)ink=1.0;
  // The sky keeps clean paper with a light tone, as a background page would.
  if(viewDepth(vUv)>uSkyDepth)ink=min(ink,tone(p,0.86));
- ink=max(ink,edges(vUv,1.5*u,1.0));
+ ink=max(ink,max(edges(vUv,1.5*u,1.0),spotBlack(vUv,u)));
  vec3 paper=vec3(0.97,0.965,0.95);
  gl_FragColor=vec4(mix(paper,vec3(0.06,0.06,0.08),clamp(ink,0.0,1.0)),1.0);
 }`,
@@ -349,7 +371,7 @@ void main(){
  // Thick ink, wandering a little as a brush pen does.
  vec2 wob=(vec2(noise(p*0.035),noise(p*0.035+9.0))-0.5)*uTexel*2.5*u;
  // Ink follows the shapes (depth); painted pattern (block walls, small print) gets only a light line.
- float e=edges(vUv+wob,2.4*u,0.35);
+ float e=max(edges(vUv+wob,2.4*u,0.35),spotBlack(vUv,u));
  // The thick ink is for what is near; further off the ink pass's own thin outline carries on, as a cartoon background
  // is drawn finer.
  e*=1.0-smoothstep(25.0,50.0,depth);
@@ -412,7 +434,7 @@ void main(){
 /** The full fragment shader for a look, or null for Natural. `light` asks for the version a phone or tablet can afford. */
 export function lookFragment(name,{light=false}={}){
  const body=FRAGMENTS[name];
- return body?(light?'#define LIGHT\n':'')+COMMON+body:null;
+ return body?(light?'#define LIGHT\n':'')+COMMON+SPOT+body:null;
 }
 
 /** Whether a look samples the scene's depth (and so must be fed the depth texture). */
