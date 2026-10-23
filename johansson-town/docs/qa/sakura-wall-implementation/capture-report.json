@@ -1,0 +1,3148 @@
+{
+  "source": false,
+  "viewport": [
+    390,
+    844
+  ],
+  "physicalDevice": false,
+  "steps": [
+    {
+      "name": "page loaded",
+      "s": 0.5
+    },
+    {
+      "name": "island ready",
+      "s": 10.9
+    },
+    {
+      "name": "playing",
+      "s": 12.3
+    },
+    {
+      "name": "entered candidate Sakura",
+      "s": 16.7
+    },
+    {
+      "name": "photographed Sakura-Shelf-Detail",
+      "s": 41.1
+    },
+    {
+      "name": "photographed Sakura-Materials-Entrance",
+      "s": 97.6
+    },
+    {
+      "name": "photographed Sakura-Dressed-Counter",
+      "s": 113.9
+    }
+  ],
+  "errors": [],
+  "playerHiddenForCamera": true,
+  "stickers": [
+    {
+      "id": "tea",
+      "kind": "price",
+      "position": [
+        -1.25,
+        0.28800000000000003,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.328,
+      "along": 0,
+      "front": 0.37,
+      "price": 120,
+      "outline_mm": null
+    },
+    {
+      "id": "tea",
+      "kind": "price",
+      "position": [
+        -1.25,
+        0.6679999999999999,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.708,
+      "along": 0,
+      "front": 0.37,
+      "price": 120,
+      "outline_mm": null
+    },
+    {
+      "id": "tea",
+      "kind": "price",
+      "position": [
+        -1.25,
+        1.048,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 1.088,
+      "along": 0,
+      "front": 0.37,
+      "price": 120,
+      "outline_mm": null
+    },
+    {
+      "id": "coffee",
+      "kind": "price",
+      "position": [
+        -0.6500000000000004,
+        0.28800000000000003,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.328,
+      "along": 0,
+      "front": 0.37,
+      "price": 120,
+      "outline_mm": null
+    },
+    {
+      "id": "coffee",
+      "kind": "price",
+      "position": [
+        -0.6500000000000004,
+        0.6679999999999999,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.708,
+      "along": 0,
+      "front": 0.37,
+      "price": 120,
+      "outline_mm": null
+    },
+    {
+      "id": "coffee",
+      "kind": "price",
+      "position": [
+        -0.6500000000000004,
+        1.048,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 1.088,
+      "along": 0,
+      "front": 0.37,
+      "price": 120,
+      "outline_mm": null
+    },
+    {
+      "id": "rice",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.505,
+        2.09
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.545,
+      "along": 0,
+      "front": 0.34,
+      "price": 110,
+      "outline_mm": null
+    },
+    {
+      "id": "rice",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.855,
+        2.09
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.895,
+      "along": 0,
+      "front": 0.34,
+      "price": 110,
+      "outline_mm": null
+    },
+    {
+      "id": "rice",
+      "kind": "price",
+      "position": [
+        -6.24,
+        1.205,
+        2.09
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 1.245,
+      "along": 0,
+      "front": 0.34,
+      "price": 110,
+      "outline_mm": null
+    },
+    {
+      "id": "biscuit",
+      "kind": "price",
+      "position": [
+        -3.167,
+        0.304,
+        0.41000000000000014
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 100,
+      "outline_mm": null
+    },
+    {
+      "id": "biscuit",
+      "kind": "price",
+      "position": [
+        -3.167,
+        0.624,
+        0.41000000000000014
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 100,
+      "outline_mm": null
+    },
+    {
+      "id": "biscuit",
+      "kind": "price",
+      "position": [
+        -3.167,
+        0.944,
+        0.41000000000000014
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 100,
+      "outline_mm": null
+    },
+    {
+      "id": "soap",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.304,
+        -0.21999999999999975
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 90,
+      "outline_mm": null
+    },
+    {
+      "id": "soap",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.624,
+        -0.21999999999999975
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 90,
+      "outline_mm": null
+    },
+    {
+      "id": "soap",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.944,
+        -0.21999999999999975
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 90,
+      "outline_mm": null
+    },
+    {
+      "id": "notebook",
+      "kind": "price",
+      "position": [
+        -1.2169999999999999,
+        0.304,
+        -1.8900000000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 80,
+      "outline_mm": null
+    },
+    {
+      "id": "notebook",
+      "kind": "price",
+      "position": [
+        -1.2169999999999999,
+        0.624,
+        -1.8900000000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 80,
+      "outline_mm": null
+    },
+    {
+      "id": "notebook",
+      "kind": "price",
+      "position": [
+        -1.2169999999999999,
+        0.944,
+        -1.8900000000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 80,
+      "outline_mm": null
+    },
+    {
+      "id": "postcard",
+      "kind": "price",
+      "position": [
+        -1.2169999999999999,
+        0.304,
+        -0.7400000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 50,
+      "outline_mm": null
+    },
+    {
+      "id": "postcard",
+      "kind": "price",
+      "position": [
+        -1.2169999999999999,
+        0.624,
+        -0.7400000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 50,
+      "outline_mm": null
+    },
+    {
+      "id": "postcard",
+      "kind": "price",
+      "position": [
+        -1.2169999999999999,
+        0.944,
+        -0.7400000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 50,
+      "outline_mm": null
+    },
+    {
+      "id": "battery",
+      "kind": "price",
+      "position": [
+        -1.2169999999999999,
+        0.304,
+        0.41000000000000014
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 180,
+      "outline_mm": null
+    },
+    {
+      "id": "battery",
+      "kind": "price",
+      "position": [
+        -1.2169999999999999,
+        0.624,
+        0.41000000000000014
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 180,
+      "outline_mm": null
+    },
+    {
+      "id": "battery",
+      "kind": "price",
+      "position": [
+        -1.2169999999999999,
+        0.944,
+        0.41000000000000014
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 180,
+      "outline_mm": null
+    },
+    {
+      "id": "cola",
+      "kind": "price",
+      "position": [
+        1.1499999999999995,
+        0.28800000000000003,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.328,
+      "along": 0,
+      "front": 0.37,
+      "price": 120,
+      "outline_mm": null
+    },
+    {
+      "id": "cola",
+      "kind": "price",
+      "position": [
+        1.1499999999999995,
+        0.6679999999999999,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.708,
+      "along": 0,
+      "front": 0.37,
+      "price": 120,
+      "outline_mm": null
+    },
+    {
+      "id": "cola",
+      "kind": "price",
+      "position": [
+        1.1499999999999995,
+        1.048,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 1.088,
+      "along": 0,
+      "front": 0.37,
+      "price": 120,
+      "outline_mm": null
+    },
+    {
+      "id": "water",
+      "kind": "price",
+      "position": [
+        -0.04999999999999982,
+        0.28800000000000003,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.328,
+      "along": 0,
+      "front": 0.37,
+      "price": 110,
+      "outline_mm": null
+    },
+    {
+      "id": "water",
+      "kind": "price",
+      "position": [
+        -0.04999999999999982,
+        0.6679999999999999,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.708,
+      "along": 0,
+      "front": 0.37,
+      "price": 110,
+      "outline_mm": null
+    },
+    {
+      "id": "water",
+      "kind": "price",
+      "position": [
+        -0.04999999999999982,
+        1.048,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 1.088,
+      "along": 0,
+      "front": 0.37,
+      "price": 110,
+      "outline_mm": null
+    },
+    {
+      "id": "beer",
+      "kind": "price",
+      "position": [
+        2.3500000000000005,
+        0.28800000000000003,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.328,
+      "along": 0,
+      "front": 0.37,
+      "price": 220,
+      "outline_mm": null
+    },
+    {
+      "id": "beer",
+      "kind": "price",
+      "position": [
+        2.3500000000000005,
+        0.6679999999999999,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.708,
+      "along": 0,
+      "front": 0.37,
+      "price": 220,
+      "outline_mm": null
+    },
+    {
+      "id": "beer",
+      "kind": "price",
+      "position": [
+        2.3500000000000005,
+        1.048,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 1.088,
+      "along": 0,
+      "front": 0.37,
+      "price": 220,
+      "outline_mm": null
+    },
+    {
+      "id": "noodles",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.304,
+        0.55375
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 150,
+      "outline_mm": null
+    },
+    {
+      "id": "noodles",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.624,
+        0.55375
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 150,
+      "outline_mm": null
+    },
+    {
+      "id": "noodles",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.944,
+        0.55375
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 150,
+      "outline_mm": null
+    },
+    {
+      "id": "milk",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.505,
+        -3.41
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.545,
+      "along": 0,
+      "front": 0.34,
+      "price": 110,
+      "outline_mm": null
+    },
+    {
+      "id": "milk",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.855,
+        -3.41
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.895,
+      "along": 0,
+      "front": 0.34,
+      "price": 110,
+      "outline_mm": null
+    },
+    {
+      "id": "milk",
+      "kind": "price",
+      "position": [
+        -6.24,
+        1.205,
+        -3.41
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 1.245,
+      "along": 0,
+      "front": 0.34,
+      "price": 110,
+      "outline_mm": null
+    },
+    {
+      "id": "chips",
+      "kind": "price",
+      "position": [
+        -3.167,
+        0.304,
+        -1.8900000000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 100,
+      "outline_mm": null
+    },
+    {
+      "id": "chips",
+      "kind": "price",
+      "position": [
+        -3.167,
+        0.624,
+        -1.8900000000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 100,
+      "outline_mm": null
+    },
+    {
+      "id": "chips",
+      "kind": "price",
+      "position": [
+        -3.167,
+        0.944,
+        -1.8900000000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 100,
+      "outline_mm": null
+    },
+    {
+      "id": "crackers",
+      "kind": "price",
+      "position": [
+        -3.167,
+        0.304,
+        -0.7400000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 110,
+      "outline_mm": null
+    },
+    {
+      "id": "crackers",
+      "kind": "price",
+      "position": [
+        -3.167,
+        0.624,
+        -0.7400000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 110,
+      "outline_mm": null
+    },
+    {
+      "id": "crackers",
+      "kind": "price",
+      "position": [
+        -3.167,
+        0.944,
+        -0.7400000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 110,
+      "outline_mm": null
+    },
+    {
+      "id": "chocolate",
+      "kind": "price",
+      "position": [
+        -2.2330000000000005,
+        0.304,
+        0.12249999999999962
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 100,
+      "outline_mm": null
+    },
+    {
+      "id": "chocolate",
+      "kind": "price",
+      "position": [
+        -2.2330000000000005,
+        0.624,
+        0.12249999999999962
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 100,
+      "outline_mm": null
+    },
+    {
+      "id": "chocolate",
+      "kind": "price",
+      "position": [
+        -2.2330000000000005,
+        0.944,
+        0.12249999999999962
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 100,
+      "outline_mm": null
+    },
+    {
+      "id": "candy",
+      "kind": "price",
+      "position": [
+        -2.2330000000000005,
+        0.304,
+        -1.6025
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 90,
+      "outline_mm": null
+    },
+    {
+      "id": "candy",
+      "kind": "price",
+      "position": [
+        -2.2330000000000005,
+        0.624,
+        -1.6025
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 90,
+      "outline_mm": null
+    },
+    {
+      "id": "candy",
+      "kind": "price",
+      "position": [
+        -2.2330000000000005,
+        0.944,
+        -1.6025
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 90,
+      "outline_mm": null
+    },
+    {
+      "id": "curry",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.304,
+        -0.30874999999999986
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 180,
+      "outline_mm": null
+    },
+    {
+      "id": "curry",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.624,
+        -0.30874999999999986
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 180,
+      "outline_mm": null
+    },
+    {
+      "id": "curry",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.944,
+        -0.30874999999999986
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 180,
+      "outline_mm": null
+    },
+    {
+      "id": "soy",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.304,
+        -1.1712500000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 160,
+      "outline_mm": null
+    },
+    {
+      "id": "soy",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.624,
+        -1.1712500000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 160,
+      "outline_mm": null
+    },
+    {
+      "id": "soy",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.944,
+        -1.1712500000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 160,
+      "outline_mm": null
+    },
+    {
+      "id": "soup",
+      "kind": "price",
+      "position": [
+        -5.117,
+        0.304,
+        -0.7400000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 120,
+      "outline_mm": null
+    },
+    {
+      "id": "soup",
+      "kind": "price",
+      "position": [
+        -5.117,
+        0.624,
+        -0.7400000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 120,
+      "outline_mm": null
+    },
+    {
+      "id": "soup",
+      "kind": "price",
+      "position": [
+        -5.117,
+        0.944,
+        -0.7400000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 120,
+      "outline_mm": null
+    },
+    {
+      "id": "peaches",
+      "kind": "price",
+      "position": [
+        -5.117,
+        0.304,
+        0.41000000000000014
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 190,
+      "outline_mm": null
+    },
+    {
+      "id": "peaches",
+      "kind": "price",
+      "position": [
+        -5.117,
+        0.624,
+        0.41000000000000014
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 190,
+      "outline_mm": null
+    },
+    {
+      "id": "peaches",
+      "kind": "price",
+      "position": [
+        -5.117,
+        0.944,
+        0.41000000000000014
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 190,
+      "outline_mm": null
+    },
+    {
+      "id": "tuna",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.304,
+        -2.0337500000000004
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 160,
+      "outline_mm": null
+    },
+    {
+      "id": "tuna",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.624,
+        -2.0337500000000004
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 160,
+      "outline_mm": null
+    },
+    {
+      "id": "tuna",
+      "kind": "price",
+      "position": [
+        -4.183000000000001,
+        0.944,
+        -2.0337500000000004
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 160,
+      "outline_mm": null
+    },
+    {
+      "id": "detergent",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.304,
+        0.5749999999999997
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 240,
+      "outline_mm": null
+    },
+    {
+      "id": "detergent",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.624,
+        0.5749999999999997
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 240,
+      "outline_mm": null
+    },
+    {
+      "id": "detergent",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.944,
+        0.5749999999999997
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 240,
+      "outline_mm": null
+    },
+    {
+      "id": "tissues",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.304,
+        -1.1050000000000004
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 130,
+      "outline_mm": null
+    },
+    {
+      "id": "tissues",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.624,
+        -1.1050000000000004
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 130,
+      "outline_mm": null
+    },
+    {
+      "id": "tissues",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.944,
+        -1.1050000000000004
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 130,
+      "outline_mm": null
+    },
+    {
+      "id": "toothpaste",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.304,
+        -2.035
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 180,
+      "outline_mm": null
+    },
+    {
+      "id": "toothpaste",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.624,
+        -2.035
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 180,
+      "outline_mm": null
+    },
+    {
+      "id": "toothpaste",
+      "kind": "price",
+      "position": [
+        -0.28300000000000025,
+        0.944,
+        -2.035
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 180,
+      "outline_mm": null
+    },
+    {
+      "id": "orange",
+      "kind": "price",
+      "position": [
+        0.5499999999999998,
+        0.28800000000000003,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.328,
+      "along": 0,
+      "front": 0.37,
+      "price": 120,
+      "outline_mm": null
+    },
+    {
+      "id": "orange",
+      "kind": "price",
+      "position": [
+        0.5499999999999998,
+        0.6679999999999999,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.708,
+      "along": 0,
+      "front": 0.37,
+      "price": 120,
+      "outline_mm": null
+    },
+    {
+      "id": "orange",
+      "kind": "price",
+      "position": [
+        0.5499999999999998,
+        1.048,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 1.088,
+      "along": 0,
+      "front": 0.37,
+      "price": 120,
+      "outline_mm": null
+    },
+    {
+      "id": "soda",
+      "kind": "price",
+      "position": [
+        1.7499999999999991,
+        0.28800000000000003,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.328,
+      "along": 0,
+      "front": 0.37,
+      "price": 100,
+      "outline_mm": null
+    },
+    {
+      "id": "soda",
+      "kind": "price",
+      "position": [
+        1.7499999999999991,
+        0.6679999999999999,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 0.708,
+      "along": 0,
+      "front": 0.37,
+      "price": 100,
+      "outline_mm": null
+    },
+    {
+      "id": "soda",
+      "kind": "price",
+      "position": [
+        1.7499999999999991,
+        1.048,
+        -4.39
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 0,
+      "level": 1.088,
+      "along": 0,
+      "front": 0.37,
+      "price": 100,
+      "outline_mm": null
+    },
+    {
+      "id": "yogurt",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.505,
+        -2.3100000000000005
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.545,
+      "along": 0,
+      "front": 0.34,
+      "price": 110,
+      "outline_mm": null
+    },
+    {
+      "id": "yogurt",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.855,
+        -2.3100000000000005
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.895,
+      "along": 0,
+      "front": 0.34,
+      "price": 110,
+      "outline_mm": null
+    },
+    {
+      "id": "yogurt",
+      "kind": "price",
+      "position": [
+        -6.24,
+        1.205,
+        -2.3100000000000005
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 1.245,
+      "along": 0,
+      "front": 0.34,
+      "price": 110,
+      "outline_mm": null
+    },
+    {
+      "id": "bread",
+      "kind": "price",
+      "position": [
+        -5.117,
+        0.304,
+        -1.8900000000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.344,
+      "along": 0,
+      "front": 0.207,
+      "price": 150,
+      "outline_mm": null
+    },
+    {
+      "id": "bread",
+      "kind": "price",
+      "position": [
+        -5.117,
+        0.624,
+        -1.8900000000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0,
+      "front": 0.207,
+      "price": 150,
+      "outline_mm": null
+    },
+    {
+      "id": "bread",
+      "kind": "price",
+      "position": [
+        -5.117,
+        0.944,
+        -1.8900000000000006
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.984,
+      "along": 0,
+      "front": 0.207,
+      "price": 150,
+      "outline_mm": null
+    },
+    {
+      "id": "bento",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.505,
+        -0.11000000000000029
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.545,
+      "along": 0,
+      "front": 0.34,
+      "price": 480,
+      "outline_mm": null
+    },
+    {
+      "id": "bento",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.855,
+        -0.11000000000000029
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.895,
+      "along": 0,
+      "front": 0.34,
+      "price": 480,
+      "outline_mm": null
+    },
+    {
+      "id": "bento",
+      "kind": "price",
+      "position": [
+        -6.24,
+        1.205,
+        -0.11000000000000029
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 1.245,
+      "along": 0,
+      "front": 0.34,
+      "price": 480,
+      "outline_mm": null
+    },
+    {
+      "id": "sandwich",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.505,
+        0.9900000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.545,
+      "along": 0,
+      "front": 0.34,
+      "price": 230,
+      "outline_mm": null
+    },
+    {
+      "id": "sandwich",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.855,
+        0.9900000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.895,
+      "along": 0,
+      "front": 0.34,
+      "price": 230,
+      "outline_mm": null
+    },
+    {
+      "id": "sandwich",
+      "kind": "price",
+      "position": [
+        -6.24,
+        1.205,
+        0.9900000000000002
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 1.245,
+      "along": 0,
+      "front": 0.34,
+      "price": 230,
+      "outline_mm": null
+    },
+    {
+      "id": "pudding",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.505,
+        -1.21
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.545,
+      "along": 0,
+      "front": 0.34,
+      "price": 130,
+      "outline_mm": null
+    },
+    {
+      "id": "pudding",
+      "kind": "price",
+      "position": [
+        -6.24,
+        0.855,
+        -1.21
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.895,
+      "along": 0,
+      "front": 0.34,
+      "price": 130,
+      "outline_mm": null
+    },
+    {
+      "id": "pudding",
+      "kind": "price",
+      "position": [
+        -6.24,
+        1.205,
+        -1.21
+      ],
+      "width": 0.2,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 1.245,
+      "along": 0,
+      "front": 0.34,
+      "price": 130,
+      "outline_mm": null
+    },
+    {
+      "id": "rice",
+      "kind": "starburst",
+      "position": [
+        -6.24,
+        0.84,
+        1.66
+      ],
+      "width": 0.15,
+      "height": 0.095,
+      "yaw": 1.5707963267948966,
+      "level": 0.895,
+      "along": 0.43,
+      "front": 0.34,
+      "price": null,
+      "outline_mm": [
+        [
+          0,
+          -47.5
+        ],
+        [
+          13.976,
+          -33.035
+        ],
+        [
+          37.5,
+          -41.136
+        ],
+        [
+          38.184,
+          -24.183
+        ],
+        [
+          64.952,
+          -23.75
+        ],
+        [
+          52.16,
+          -8.852
+        ],
+        [
+          75,
+          0
+        ],
+        [
+          52.16,
+          8.852
+        ],
+        [
+          64.952,
+          23.75
+        ],
+        [
+          38.184,
+          24.183
+        ],
+        [
+          37.5,
+          41.136
+        ],
+        [
+          13.976,
+          33.035
+        ],
+        [
+          0,
+          47.5
+        ],
+        [
+          -13.976,
+          33.035
+        ],
+        [
+          -37.5,
+          41.136
+        ],
+        [
+          -38.184,
+          24.183
+        ],
+        [
+          -64.952,
+          23.75
+        ],
+        [
+          -52.16,
+          8.852
+        ],
+        [
+          -75,
+          0
+        ],
+        [
+          -52.16,
+          -8.852
+        ],
+        [
+          -64.952,
+          -23.75
+        ],
+        [
+          -38.184,
+          -24.183
+        ],
+        [
+          -37.5,
+          -41.136
+        ],
+        [
+          -13.976,
+          -33.035
+        ]
+      ]
+    },
+    {
+      "id": "coffee",
+      "kind": "starburst",
+      "position": [
+        -0.43750000000000033,
+        0.6555,
+        -4.39
+      ],
+      "width": 0.105,
+      "height": 0.09,
+      "yaw": 0,
+      "level": 0.708,
+      "along": 0.21250000000000002,
+      "front": 0.37,
+      "price": null,
+      "outline_mm": [
+        [
+          0,
+          -45
+        ],
+        [
+          9.783,
+          -31.296
+        ],
+        [
+          26.25,
+          -38.971
+        ],
+        [
+          26.729,
+          -22.91
+        ],
+        [
+          45.466,
+          -22.5
+        ],
+        [
+          36.512,
+          -8.386
+        ],
+        [
+          52.5,
+          0
+        ],
+        [
+          36.512,
+          8.386
+        ],
+        [
+          45.466,
+          22.5
+        ],
+        [
+          26.729,
+          22.91
+        ],
+        [
+          26.25,
+          38.971
+        ],
+        [
+          9.783,
+          31.296
+        ],
+        [
+          0,
+          45
+        ],
+        [
+          -9.783,
+          31.296
+        ],
+        [
+          -26.25,
+          38.971
+        ],
+        [
+          -26.729,
+          22.91
+        ],
+        [
+          -45.466,
+          22.5
+        ],
+        [
+          -36.512,
+          8.386
+        ],
+        [
+          -52.5,
+          0
+        ],
+        [
+          -36.512,
+          -8.386
+        ],
+        [
+          -45.466,
+          -22.5
+        ],
+        [
+          -26.729,
+          -22.91
+        ],
+        [
+          -26.25,
+          -38.971
+        ],
+        [
+          -9.783,
+          -31.296
+        ]
+      ]
+    },
+    {
+      "id": "bento",
+      "kind": "starburst",
+      "position": [
+        -6.24,
+        0.84,
+        -0.5400000000000003
+      ],
+      "width": 0.15,
+      "height": 0.095,
+      "yaw": 1.5707963267948966,
+      "level": 0.895,
+      "along": 0.43,
+      "front": 0.34,
+      "price": null,
+      "outline_mm": [
+        [
+          0,
+          -47.5
+        ],
+        [
+          13.976,
+          -33.035
+        ],
+        [
+          37.5,
+          -41.136
+        ],
+        [
+          38.184,
+          -24.183
+        ],
+        [
+          64.952,
+          -23.75
+        ],
+        [
+          52.16,
+          -8.852
+        ],
+        [
+          75,
+          0
+        ],
+        [
+          52.16,
+          8.852
+        ],
+        [
+          64.952,
+          23.75
+        ],
+        [
+          38.184,
+          24.183
+        ],
+        [
+          37.5,
+          41.136
+        ],
+        [
+          13.976,
+          33.035
+        ],
+        [
+          0,
+          47.5
+        ],
+        [
+          -13.976,
+          33.035
+        ],
+        [
+          -37.5,
+          41.136
+        ],
+        [
+          -38.184,
+          24.183
+        ],
+        [
+          -64.952,
+          23.75
+        ],
+        [
+          -52.16,
+          8.852
+        ],
+        [
+          -75,
+          0
+        ],
+        [
+          -52.16,
+          -8.852
+        ],
+        [
+          -64.952,
+          -23.75
+        ],
+        [
+          -38.184,
+          -24.183
+        ],
+        [
+          -37.5,
+          -41.136
+        ],
+        [
+          -13.976,
+          -33.035
+        ]
+      ]
+    },
+    {
+      "id": "bread",
+      "kind": "decoration",
+      "position": [
+        -5.117,
+        0.624,
+        -1.4000000000000004
+      ],
+      "width": 0.14,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0.4900000000000001,
+      "front": 0.207,
+      "price": null,
+      "outline_mm": null
+    },
+    {
+      "id": "chips",
+      "kind": "starburst",
+      "position": [
+        -3.167,
+        0.609,
+        -1.4050000000000005
+      ],
+      "width": 0.15,
+      "height": 0.095,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0.4850000000000001,
+      "front": 0.207,
+      "price": null,
+      "outline_mm": [
+        [
+          0,
+          -47.5
+        ],
+        [
+          13.976,
+          -33.035
+        ],
+        [
+          37.5,
+          -41.136
+        ],
+        [
+          38.184,
+          -24.183
+        ],
+        [
+          64.952,
+          -23.75
+        ],
+        [
+          52.16,
+          -8.852
+        ],
+        [
+          75,
+          0
+        ],
+        [
+          52.16,
+          8.852
+        ],
+        [
+          64.952,
+          23.75
+        ],
+        [
+          38.184,
+          24.183
+        ],
+        [
+          37.5,
+          41.136
+        ],
+        [
+          13.976,
+          33.035
+        ],
+        [
+          0,
+          47.5
+        ],
+        [
+          -13.976,
+          33.035
+        ],
+        [
+          -37.5,
+          41.136
+        ],
+        [
+          -38.184,
+          24.183
+        ],
+        [
+          -64.952,
+          23.75
+        ],
+        [
+          -52.16,
+          8.852
+        ],
+        [
+          -75,
+          0
+        ],
+        [
+          -52.16,
+          -8.852
+        ],
+        [
+          -64.952,
+          -23.75
+        ],
+        [
+          -38.184,
+          -24.183
+        ],
+        [
+          -37.5,
+          -41.136
+        ],
+        [
+          -13.976,
+          -33.035
+        ]
+      ]
+    },
+    {
+      "id": "chocolate",
+      "kind": "starburst",
+      "position": [
+        -2.2330000000000005,
+        0.609,
+        -0.6500000000000005
+      ],
+      "width": 0.15,
+      "height": 0.095,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0.7725000000000001,
+      "front": 0.207,
+      "price": null,
+      "outline_mm": [
+        [
+          0,
+          -47.5
+        ],
+        [
+          13.976,
+          -33.035
+        ],
+        [
+          37.5,
+          -41.136
+        ],
+        [
+          38.184,
+          -24.183
+        ],
+        [
+          64.952,
+          -23.75
+        ],
+        [
+          52.16,
+          -8.852
+        ],
+        [
+          75,
+          0
+        ],
+        [
+          52.16,
+          8.852
+        ],
+        [
+          64.952,
+          23.75
+        ],
+        [
+          38.184,
+          24.183
+        ],
+        [
+          37.5,
+          41.136
+        ],
+        [
+          13.976,
+          33.035
+        ],
+        [
+          0,
+          47.5
+        ],
+        [
+          -13.976,
+          33.035
+        ],
+        [
+          -37.5,
+          41.136
+        ],
+        [
+          -38.184,
+          24.183
+        ],
+        [
+          -64.952,
+          23.75
+        ],
+        [
+          -52.16,
+          8.852
+        ],
+        [
+          -75,
+          0
+        ],
+        [
+          -52.16,
+          -8.852
+        ],
+        [
+          -64.952,
+          -23.75
+        ],
+        [
+          -38.184,
+          -24.183
+        ],
+        [
+          -37.5,
+          -41.136
+        ],
+        [
+          -13.976,
+          -33.035
+        ]
+      ]
+    },
+    {
+      "id": "pudding",
+      "kind": "starburst",
+      "position": [
+        -6.24,
+        0.84,
+        -1.64
+      ],
+      "width": 0.15,
+      "height": 0.095,
+      "yaw": 1.5707963267948966,
+      "level": 0.895,
+      "along": 0.43,
+      "front": 0.34,
+      "price": null,
+      "outline_mm": [
+        [
+          0,
+          -47.5
+        ],
+        [
+          13.976,
+          -33.035
+        ],
+        [
+          37.5,
+          -41.136
+        ],
+        [
+          38.184,
+          -24.183
+        ],
+        [
+          64.952,
+          -23.75
+        ],
+        [
+          52.16,
+          -8.852
+        ],
+        [
+          75,
+          0
+        ],
+        [
+          52.16,
+          8.852
+        ],
+        [
+          64.952,
+          23.75
+        ],
+        [
+          38.184,
+          24.183
+        ],
+        [
+          37.5,
+          41.136
+        ],
+        [
+          13.976,
+          33.035
+        ],
+        [
+          0,
+          47.5
+        ],
+        [
+          -13.976,
+          33.035
+        ],
+        [
+          -37.5,
+          41.136
+        ],
+        [
+          -38.184,
+          24.183
+        ],
+        [
+          -64.952,
+          23.75
+        ],
+        [
+          -52.16,
+          8.852
+        ],
+        [
+          -75,
+          0
+        ],
+        [
+          -52.16,
+          -8.852
+        ],
+        [
+          -64.952,
+          -23.75
+        ],
+        [
+          -38.184,
+          -24.183
+        ],
+        [
+          -37.5,
+          -41.136
+        ],
+        [
+          -13.976,
+          -33.035
+        ]
+      ]
+    },
+    {
+      "id": "notebook",
+      "kind": "decoration",
+      "position": [
+        -1.2169999999999999,
+        0.624,
+        -1.4000000000000004
+      ],
+      "width": 0.14,
+      "height": 0.065,
+      "yaw": -1.5707963267948966,
+      "level": 0.664,
+      "along": 0.4900000000000001,
+      "front": 0.207,
+      "price": null,
+      "outline_mm": null
+    },
+    {
+      "id": "soap",
+      "kind": "decoration",
+      "position": [
+        -0.28300000000000025,
+        0.624,
+        -0.5199999999999998
+      ],
+      "width": 0.14,
+      "height": 0.065,
+      "yaw": 1.5707963267948966,
+      "level": 0.664,
+      "along": 0.3,
+      "front": 0.207,
+      "price": null,
+      "outline_mm": null
+    }
+  ],
+  "wallPlacements": [
+    {
+      "id": "N01",
+      "wall": "north_sales",
+      "name": "Staff rest door plate",
+      "width_mm": 650,
+      "height_mm": 160,
+      "artwork_copy": "休憩室",
+      "three_center_m": [
+        -3.2,
+        2.39,
+        -4.322
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        1
+      ],
+      "purpose": "Keep customers out of staff rest without obscuring the doorway.",
+      "center": [
+        -3.2,
+        2.39,
+        -4.322
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "N02",
+      "wall": "north_sales",
+      "name": "Beverage category header",
+      "width_mm": 4800,
+      "height_mm": 240,
+      "artwork_copy": "酒・ソフトドリンク",
+      "three_center_m": [
+        0.85,
+        2.52,
+        -4.322
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        1
+      ],
+      "purpose": "Identify the rear drinks wall from the entrance; replace existing floating board.",
+      "center": [
+        0.85,
+        2.52,
+        -4.322
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "W01",
+      "wall": "west",
+      "name": "Onigiri / sandwich header",
+      "width_mm": 1400,
+      "height_mm": 220,
+      "artwork_copy": "おにぎり・サンドイッチ",
+      "three_center_m": [
+        -6.942,
+        2.34,
+        1.81
+      ],
+      "three_inward_normal": [
+        1,
+        0,
+        0
+      ],
+      "purpose": "Breakfast and quick lunches nearest the front.",
+      "center": [
+        -6.942,
+        2.34,
+        1.81
+      ],
+      "normal": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "W02",
+      "wall": "west",
+      "name": "Bento header",
+      "width_mm": 1400,
+      "height_mm": 220,
+      "artwork_copy": "お弁当",
+      "three_center_m": [
+        -6.942,
+        2.34,
+        0.21
+      ],
+      "three_inward_normal": [
+        1,
+        0,
+        0
+      ],
+      "purpose": "Main meal category over its original products.",
+      "center": [
+        -6.942,
+        2.34,
+        0.21
+      ],
+      "normal": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "W03",
+      "wall": "west",
+      "name": "Noodles / salad header",
+      "width_mm": 1400,
+      "height_mm": 220,
+      "artwork_copy": "麺・サラダ",
+      "three_center_m": [
+        -6.942,
+        2.34,
+        -1.39
+      ],
+      "three_inward_normal": [
+        1,
+        0,
+        0
+      ],
+      "purpose": "Chilled meal grouping, clear of the open case.",
+      "center": [
+        -6.942,
+        2.34,
+        -1.39
+      ],
+      "normal": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "W04",
+      "wall": "west",
+      "name": "Milk / chilled drinks header",
+      "width_mm": 1600,
+      "height_mm": 220,
+      "artwork_copy": "牛乳・チルド飲料",
+      "three_center_m": [
+        -6.942,
+        2.34,
+        -3.09
+      ],
+      "three_inward_normal": [
+        1,
+        0,
+        0
+      ],
+      "purpose": "Daily needs next to rear beverage circulation.",
+      "center": [
+        -6.942,
+        2.34,
+        -3.09
+      ],
+      "normal": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "E01",
+      "wall": "east",
+      "name": "J Coffee advertisement",
+      "width_mm": 594,
+      "height_mm": 420,
+      "artwork_copy": "J COFFEE",
+      "three_center_m": [
+        6.942,
+        1.81,
+        2.163
+      ],
+      "three_inward_normal": [
+        -1,
+        0,
+        0
+      ],
+      "purpose": "Reuse Sakura/J Coffee artwork near the microwave and hot-water service.",
+      "center": [
+        6.942,
+        1.81,
+        2.163
+      ],
+      "normal": [
+        -1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "E02",
+      "wall": "east",
+      "name": "Counter service board",
+      "width_mm": 850,
+      "height_mm": 400,
+      "artwork_copy": "宅配便・公共料金",
+      "three_center_m": [
+        6.942,
+        1.85,
+        0.785
+      ],
+      "three_inward_normal": [
+        -1,
+        0,
+        0
+      ],
+      "purpose": "Explain the parcel and payment services already supported by the shop.",
+      "center": [
+        6.942,
+        1.85,
+        0.785
+      ],
+      "normal": [
+        -1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "E03",
+      "wall": "east",
+      "name": "Staff hygiene instruction",
+      "width_mm": 650,
+      "height_mm": 350,
+      "artwork_copy": "手洗い・清潔に",
+      "three_center_m": [
+        6.942,
+        1.725,
+        -0.315
+      ],
+      "three_inward_normal": [
+        -1,
+        0,
+        0
+      ],
+      "purpose": "Readable working reminder above the preparation area.",
+      "center": [
+        6.942,
+        1.725,
+        -0.315
+      ],
+      "normal": [
+        -1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "E04",
+      "wall": "east",
+      "name": "Tobacco cabinet header",
+      "width_mm": 1300,
+      "height_mm": 180,
+      "artwork_copy": "たばこ",
+      "three_center_m": [
+        6.942,
+        2.39,
+        -1.54
+      ],
+      "three_inward_normal": [
+        -1,
+        0,
+        0
+      ],
+      "purpose": "Label the retained cabinet without covering stock or its access.",
+      "center": [
+        6.942,
+        2.39,
+        -1.54
+      ],
+      "normal": [
+        -1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "E05",
+      "wall": "east",
+      "name": "Office calendar",
+      "width_mm": 420,
+      "height_mm": 594,
+      "artwork_copy": "1997年10月",
+      "three_center_m": [
+        6.942,
+        1.597,
+        -2.8
+      ],
+      "three_inward_normal": [
+        -1,
+        0,
+        0
+      ],
+      "purpose": "Give Thuan a practical date reference beside the desk; calendar is dynamic.",
+      "center": [
+        6.942,
+        1.597,
+        -2.8
+      ],
+      "normal": [
+        -1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "E06",
+      "wall": "east",
+      "name": "Office rota / delivery board",
+      "width_mm": 700,
+      "height_mm": 500,
+      "artwork_copy": "勤務表・納品予定",
+      "three_center_m": [
+        6.942,
+        1.75,
+        -3.64
+      ],
+      "three_inward_normal": [
+        -1,
+        0,
+        0
+      ],
+      "purpose": "Use existing shop rota and delivery data, not arbitrary paperwork.",
+      "center": [
+        6.942,
+        1.75,
+        -3.64
+      ],
+      "normal": [
+        -1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "E07",
+      "wall": "east",
+      "name": "Receiving rack label",
+      "width_mm": 1300,
+      "height_mm": 220,
+      "artwork_copy": "在庫・返品",
+      "three_center_m": [
+        6.942,
+        2.16,
+        -5.24
+      ],
+      "three_inward_normal": [
+        -1,
+        0,
+        0
+      ],
+      "purpose": "Identify stock and returns over the rack; preserve loading clearance.",
+      "center": [
+        6.942,
+        2.16,
+        -5.24
+      ],
+      "normal": [
+        -1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "S01",
+      "wall": "south",
+      "name": "J Coffee window poster",
+      "width_mm": 594,
+      "height_mm": 420,
+      "artwork_copy": "J COFFEE",
+      "three_center_m": [
+        -5.653,
+        1.61,
+        3.902
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        -1
+      ],
+      "purpose": "Reuse an existing brand; keep most of the shop window transparent.",
+      "center": [
+        -5.653,
+        1.61,
+        3.902
+      ],
+      "normal": [
+        0,
+        0,
+        -1
+      ]
+    },
+    {
+      "id": "S02",
+      "wall": "south",
+      "name": "Flower service poster",
+      "width_mm": 297,
+      "height_mm": 420,
+      "artwork_copy": "お花あります",
+      "three_center_m": [
+        -2.5515,
+        1.61,
+        3.902
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        -1
+      ],
+      "purpose": "Show Sakura now supplies flowers; no obsolete florist branding.",
+      "center": [
+        -2.5515,
+        1.61,
+        3.902
+      ],
+      "normal": [
+        0,
+        0,
+        -1
+      ]
+    },
+    {
+      "id": "S03",
+      "wall": "south",
+      "name": "Window service strip",
+      "width_mm": 900,
+      "height_mm": 180,
+      "artwork_copy": "宅配便・コピー",
+      "three_center_m": [
+        1.8,
+        1.99,
+        3.902
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        -1
+      ],
+      "purpose": "Signpost services above the bins without covering the entrance.",
+      "center": [
+        1.8,
+        1.99,
+        3.902
+      ],
+      "normal": [
+        0,
+        0,
+        -1
+      ]
+    },
+    {
+      "id": "S04",
+      "wall": "south",
+      "name": "Opening-hours plate",
+      "width_mm": 300,
+      "height_mm": 210,
+      "artwork_copy": "営業時間",
+      "three_center_m": [
+        1.25,
+        1.355,
+        3.902
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        -1
+      ],
+      "purpose": "Print actual game hours from shop data; no invented 24-hour claim.",
+      "center": [
+        1.25,
+        1.355,
+        3.902
+      ],
+      "normal": [
+        0,
+        0,
+        -1
+      ]
+    },
+    {
+      "id": "R01",
+      "wall": "rear",
+      "name": "Receiving clock",
+      "width_mm": 300,
+      "height_mm": 300,
+      "artwork_copy": "CLOCK",
+      "three_center_m": [
+        5.5,
+        1.95,
+        -6.722
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        1
+      ],
+      "purpose": "Delivery-time reference above returns; clear of rear door.",
+      "center": [
+        5.5,
+        1.95,
+        -6.722
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "R02",
+      "wall": "rear",
+      "name": "Staff rest noticeboard",
+      "width_mm": 700,
+      "height_mm": 600,
+      "artwork_copy": "スタッフ連絡",
+      "three_center_m": [
+        -3.85,
+        1.6,
+        -6.722
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        1
+      ],
+      "purpose": "Retain archive and ordinary staff notices in the rest room.",
+      "center": [
+        -3.85,
+        1.6,
+        -6.722
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "I01",
+      "wall": "office_south",
+      "name": "Shift office door plate",
+      "width_mm": 500,
+      "height_mm": 150,
+      "artwork_copy": "事務室",
+      "three_center_m": [
+        4.8,
+        2.355,
+        -2.282
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        1
+      ],
+      "purpose": "Mark office on the solid west pier; do not cover the observation glazing.",
+      "center": [
+        4.8,
+        2.355,
+        -2.282
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    }
+  ],
+  "shop": {
+    "customers": [],
+    "stock": {
+      "tea": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "coffee": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "rice": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "biscuit": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "soap": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "notebook": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "postcard": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "battery": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "cola": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "water": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "beer": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "noodles": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "milk": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "chips": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "crackers": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "chocolate": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "candy": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "curry": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "soy": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "soup": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "peaches": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "tuna": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "detergent": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "tissues": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "toothpaste": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "orange": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "soda": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "yogurt": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "bread": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "bento": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "sandwich": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "pudding": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "bun": {
+        "shelf": 12,
+        "reserve": 24
+      }
+    }
+  },
+  "cast": [
+    {
+      "name": "Thuan",
+      "clip": null,
+      "gesture": null,
+      "moving": false,
+      "speed": 0,
+      "activity": "Sakura owner",
+      "indoors": "market",
+      "visible": true,
+      "flags": [
+        "inMarket"
+      ],
+      "at": [
+        5.5,
+        1.01,
+        1.57
+      ]
+    }
+  ]
+}

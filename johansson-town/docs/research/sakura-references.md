@@ -27,3 +27,7 @@ The other small konbini projects were identified through their repository/topic 
 3. Day/night window readability, ordinary visit rhythm and weather detail, assessed in the actual game at desktop and phone sizes.
 
 Atmosphere follows a functioning, coherent shop; it must not obscure clipping, blocked routes or floating stock. Compare the baseline and candidate with the same Look, clock, weather and camera.
+
+## Gondola construction references - 23 October 2026
+
+[Lozier upright](https://www.lozier.com/products/lozier-gondola/uprite/) describes steel welded framing, slots and levelling; its [product index](https://www.lozier.com/products/product-index/) lists hardboard/pegboard/woodgrain and wire back options. Used to distinguish construction materials from decorative finish in Sakura: steel trays/posts, laminate-faced hardboard backs, wood-effect end panels and clear PET retainers. These are general construction references, not a claim of exact 1997 Japanese manufacturer/model. No vendor drawings, code or assets imported.

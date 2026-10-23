@@ -50,3 +50,18 @@ test('candidate price tickets match catalogue, stay clear of products, and calen
  for(const p of PRODUCTS.filter(p=>p.cells.price!=null))assert.ok(prices.filter(l=>l.id===p.id).every(l=>l.price===p.price),p.id+' price differs');
  display.tick(0,295*1440+740);display.tick(0,0);display.tick(0);
 });
+
+test('wall dressing follows all 20 CAD placements and live shop/calendar data; gondolas retain datums',async()=>{
+ installDOM();const {readFile}=await import('node:fs/promises');
+ const cad=JSON.parse(await readFile(new URL('../docs/qa/sakura-wall-decoration/Sakura-Wall-Decoration-Schedule.json',import.meta.url),'utf8'));
+ const room=new THREE.Group(),d=buildSakuraRebuild({room,reg(){},action(){},exit(){}});
+ assert.equal(d.wallDressing.placements.length,20);
+ for(const p of d.wallDressing.placements){const expected=cad.items.find(c=>c.id===p.id);assert.deepEqual(p.center,expected.three_center_m);assert.deepEqual(p.normal,expected.three_inward_normal);assert.equal(p.width_mm,expected.width_mm);assert.equal(p.height_mm,expected.height_mm);}
+ assert.equal(d.shell.userData.groups.RoomLabels.children.filter(c=>c.visible).length,2);
+ d.wallDressing.refresh(295*1440+740);const old=d.wallDressing.mesh.material.map.version;
+ const hands=room.getObjectByName('Sakura receiving clock hands'),angle=hands.children[1].rotation.z;
+ d.wallDressing.refresh(295*1440+741);assert.notEqual(hands.children[1].rotation.z,angle);assert.equal(d.wallDressing.mesh.material.map.version,old,'clock should not reupload wall atlas');
+ assert.equal(d.wallDressing.state().hours,'9:00–20:30');assert.equal(d.wallDressing.state().till,'20:00');
+ d.wallDressing.refresh(0);assert.equal(d.wallDressing.state().date.getMonth(),0);
+ assert.deepEqual(d.gondolas.userData.tops,[.344,.664,.984]);assert.deepEqual(d.gondolas.userData.footprintMm,[900,4500]);assert.ok(d.gondolas.getObjectByName('Sakura gondola pet'));assert.ok(d.gondolas.getObjectByName('Sakura gondola timber'));
+});

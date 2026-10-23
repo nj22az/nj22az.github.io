@@ -1,0 +1,402 @@
+{
+  "cad": "JW-SAK-DEC-01 Rev A",
+  "items": [
+    {
+      "id": "N01",
+      "wall": "north_sales",
+      "name": "Staff rest door plate",
+      "width_mm": 650,
+      "height_mm": 160,
+      "artwork_copy": "休憩室",
+      "three_center_m": [
+        -3.2,
+        2.39,
+        -4.322
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        1
+      ],
+      "purpose": "Keep customers out of staff rest without obscuring the doorway."
+    },
+    {
+      "id": "N02",
+      "wall": "north_sales",
+      "name": "Beverage category header",
+      "width_mm": 4800,
+      "height_mm": 240,
+      "artwork_copy": "酒・ソフトドリンク",
+      "three_center_m": [
+        0.85,
+        2.52,
+        -4.322
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        1
+      ],
+      "purpose": "Identify the rear drinks wall from the entrance; replace existing floating board."
+    },
+    {
+      "id": "W01",
+      "wall": "west",
+      "name": "Onigiri / sandwich header",
+      "width_mm": 1400,
+      "height_mm": 220,
+      "artwork_copy": "おにぎり・サンドイッチ",
+      "three_center_m": [
+        -6.942,
+        2.34,
+        1.81
+      ],
+      "three_inward_normal": [
+        1,
+        0,
+        0
+      ],
+      "purpose": "Breakfast and quick lunches nearest the front."
+    },
+    {
+      "id": "W02",
+      "wall": "west",
+      "name": "Bento header",
+      "width_mm": 1400,
+      "height_mm": 220,
+      "artwork_copy": "お弁当",
+      "three_center_m": [
+        -6.942,
+        2.34,
+        0.21
+      ],
+      "three_inward_normal": [
+        1,
+        0,
+        0
+      ],
+      "purpose": "Main meal category over its original products."
+    },
+    {
+      "id": "W03",
+      "wall": "west",
+      "name": "Noodles / salad header",
+      "width_mm": 1400,
+      "height_mm": 220,
+      "artwork_copy": "麺・サラダ",
+      "three_center_m": [
+        -6.942,
+        2.34,
+        -1.39
+      ],
+      "three_inward_normal": [
+        1,
+        0,
+        0
+      ],
+      "purpose": "Chilled meal grouping, clear of the open case."
+    },
+    {
+      "id": "W04",
+      "wall": "west",
+      "name": "Milk / chilled drinks header",
+      "width_mm": 1600,
+      "height_mm": 220,
+      "artwork_copy": "牛乳・チルド飲料",
+      "three_center_m": [
+        -6.942,
+        2.34,
+        -3.09
+      ],
+      "three_inward_normal": [
+        1,
+        0,
+        0
+      ],
+      "purpose": "Daily needs next to rear beverage circulation."
+    },
+    {
+      "id": "E01",
+      "wall": "east",
+      "name": "J Coffee advertisement",
+      "width_mm": 594,
+      "height_mm": 420,
+      "artwork_copy": "J COFFEE",
+      "three_center_m": [
+        6.942,
+        1.81,
+        2.163
+      ],
+      "three_inward_normal": [
+        -1,
+        0,
+        0
+      ],
+      "purpose": "Reuse Sakura/J Coffee artwork near the microwave and hot-water service."
+    },
+    {
+      "id": "E02",
+      "wall": "east",
+      "name": "Counter service board",
+      "width_mm": 850,
+      "height_mm": 400,
+      "artwork_copy": "宅配便・公共料金",
+      "three_center_m": [
+        6.942,
+        1.85,
+        0.785
+      ],
+      "three_inward_normal": [
+        -1,
+        0,
+        0
+      ],
+      "purpose": "Explain the parcel and payment services already supported by the shop."
+    },
+    {
+      "id": "E03",
+      "wall": "east",
+      "name": "Staff hygiene instruction",
+      "width_mm": 650,
+      "height_mm": 350,
+      "artwork_copy": "手洗い・清潔に",
+      "three_center_m": [
+        6.942,
+        1.725,
+        -0.315
+      ],
+      "three_inward_normal": [
+        -1,
+        0,
+        0
+      ],
+      "purpose": "Readable working reminder above the preparation area."
+    },
+    {
+      "id": "E04",
+      "wall": "east",
+      "name": "Tobacco cabinet header",
+      "width_mm": 1300,
+      "height_mm": 180,
+      "artwork_copy": "たばこ",
+      "three_center_m": [
+        6.942,
+        2.39,
+        -1.54
+      ],
+      "three_inward_normal": [
+        -1,
+        0,
+        0
+      ],
+      "purpose": "Label the retained cabinet without covering stock or its access."
+    },
+    {
+      "id": "E05",
+      "wall": "east",
+      "name": "Office calendar",
+      "width_mm": 420,
+      "height_mm": 594,
+      "artwork_copy": "1997年10月",
+      "three_center_m": [
+        6.942,
+        1.597,
+        -2.8
+      ],
+      "three_inward_normal": [
+        -1,
+        0,
+        0
+      ],
+      "purpose": "Give Thuan a practical date reference beside the desk; calendar is dynamic."
+    },
+    {
+      "id": "E06",
+      "wall": "east",
+      "name": "Office rota / delivery board",
+      "width_mm": 700,
+      "height_mm": 500,
+      "artwork_copy": "勤務表・納品予定",
+      "three_center_m": [
+        6.942,
+        1.75,
+        -3.64
+      ],
+      "three_inward_normal": [
+        -1,
+        0,
+        0
+      ],
+      "purpose": "Use existing shop rota and delivery data, not arbitrary paperwork."
+    },
+    {
+      "id": "E07",
+      "wall": "east",
+      "name": "Receiving rack label",
+      "width_mm": 1300,
+      "height_mm": 220,
+      "artwork_copy": "在庫・返品",
+      "three_center_m": [
+        6.942,
+        2.16,
+        -5.24
+      ],
+      "three_inward_normal": [
+        -1,
+        0,
+        0
+      ],
+      "purpose": "Identify stock and returns over the rack; preserve loading clearance."
+    },
+    {
+      "id": "S01",
+      "wall": "south",
+      "name": "J Coffee window poster",
+      "width_mm": 594,
+      "height_mm": 420,
+      "artwork_copy": "J COFFEE",
+      "three_center_m": [
+        -5.653,
+        1.61,
+        3.902
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        -1
+      ],
+      "purpose": "Reuse an existing brand; keep most of the shop window transparent."
+    },
+    {
+      "id": "S02",
+      "wall": "south",
+      "name": "Flower service poster",
+      "width_mm": 297,
+      "height_mm": 420,
+      "artwork_copy": "お花あります",
+      "three_center_m": [
+        -2.5515,
+        1.61,
+        3.902
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        -1
+      ],
+      "purpose": "Show Sakura now supplies flowers; no obsolete florist branding."
+    },
+    {
+      "id": "S03",
+      "wall": "south",
+      "name": "Window service strip",
+      "width_mm": 900,
+      "height_mm": 180,
+      "artwork_copy": "宅配便・コピー",
+      "three_center_m": [
+        1.8,
+        1.99,
+        3.902
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        -1
+      ],
+      "purpose": "Signpost services above the bins without covering the entrance."
+    },
+    {
+      "id": "S04",
+      "wall": "south",
+      "name": "Opening-hours plate",
+      "width_mm": 300,
+      "height_mm": 210,
+      "artwork_copy": "営業時間",
+      "three_center_m": [
+        1.25,
+        1.355,
+        3.902
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        -1
+      ],
+      "purpose": "Print actual game hours from shop data; no invented 24-hour claim."
+    },
+    {
+      "id": "R01",
+      "wall": "rear",
+      "name": "Receiving clock",
+      "width_mm": 300,
+      "height_mm": 300,
+      "artwork_copy": "CLOCK",
+      "three_center_m": [
+        5.5,
+        1.95,
+        -6.722
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        1
+      ],
+      "purpose": "Delivery-time reference above returns; clear of rear door."
+    },
+    {
+      "id": "R02",
+      "wall": "rear",
+      "name": "Staff rest noticeboard",
+      "width_mm": 700,
+      "height_mm": 600,
+      "artwork_copy": "スタッフ連絡",
+      "three_center_m": [
+        -3.85,
+        1.6,
+        -6.722
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        1
+      ],
+      "purpose": "Retain archive and ordinary staff notices in the rest room."
+    },
+    {
+      "id": "I01",
+      "wall": "office_south",
+      "name": "Shift office door plate",
+      "width_mm": 500,
+      "height_mm": 150,
+      "artwork_copy": "事務室",
+      "three_center_m": [
+        4.8,
+        2.355,
+        -2.282
+      ],
+      "three_inward_normal": [
+        0,
+        0,
+        1
+      ],
+      "purpose": "Mark office on the solid west pier; do not cover the observation glazing."
+    }
+  ],
+  "copy": {
+    "wash": "手洗い・清潔に",
+    "services": "宅配便・公共料金",
+    "flowers": "お花あります",
+    "weekdays": "月火水木金土日",
+    "hours": "営業時間",
+    "till": "レジ受付",
+    "rest": "スタッフ連絡",
+    "office": "事務室",
+    "calendar": "さくら商事",
+    "rota": "勤務表・納品予定",
+    "deliveries": "納品予定は帳簿へ",
+    "staff": "スタッフ専用",
+    "coffee": "ひと休みしませんか",
+    "rest_message": "休憩後は整理整頓",
+    "stock": "在庫・返品"
+  }
+}
