@@ -139,6 +139,7 @@ that makes more or better stories.
   Yokosuka): the catalogue of real home interiors, convenience stores, shops, bars, harbour and back lanes we plan
   Minato's from. The owner (19 October 2026): its 1986 does not matter, small-town Japan keeps its old parts in the
   90s and today. Study and measure there, never copy: `johansson-town/docs/research/new-yokosuka.md`.
+- **City construction reference: Slop New York** (<https://github.com/mrdoob/slop-newyork>): spatial batching, road graphs and traffic research for the proposed third city island, paired with New Yokosuka for Japanese streets and rooms. Read `johansson-town/docs/research/slop-newyork.md` and `johansson-town/briefs/THIRD-CITY-ISLAND-2026-10-23.md`. This is a planning reference; retain the current engine and review attributed code adaptations separately.
 - **The town's trade** (`johansson-town/src/commerce/merchandising.js`): Sakura Shōten, Thuan's outright, is a konbini
   *and* the town's supplier of everyday goods, from its depot in the Quay Warehouse (Sakura Trading), and of flowers and
   decorations since Mrs Kinjō retired (the consolidation's ruling 3; Rainflower Florist no longer supplies anything).

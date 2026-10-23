@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 760" role="img" aria-labelledby="title desc">
+<title id="title">Johansson World: third city island concept</title><desc id="desc">A zoning schematic: homes north, cafés west, shopping in the centre, cargo east and passenger quay south. Not a measured site plan.</desc>
+<rect width="1000" height="760" fill="#f5f2e9"/>
+<g font-family="Arial, sans-serif" fill="#243b40"><text x="48" y="54" font-size="27" font-weight="bold">THIRD CITY ISLAND</text><text x="48" y="82" font-size="16">1997 Okinawan port city · Proposal, 23 October 2026</text></g>
+<rect x="48" y="110" width="904" height="540" rx="28" fill="#d4e6e9"/>
+<path d="M180 150 L730 150 L840 220 L840 515 L740 575 L290 575 L155 490 L135 265Z" fill="#e7e2cf" stroke="#657b72" stroke-width="3"/>
+<path d="M195 175 L715 175 L808 236 L808 494 L729 545 L303 545 L185 472 L166 275Z" fill="none" stroke="#faf8f1" stroke-width="12"/>
+<path d="M495 210V535 M220 310H780 M220 435H780" stroke="#9b9d95" stroke-width="20" fill="none"/>
+<g font-family="Arial, sans-serif" fill="#243b40" text-anchor="middle">
+<rect x="240" y="195" width="460" height="92" rx="6" fill="#c5d6bd" stroke="#657b72"/><text x="470" y="232" font-size="21" font-weight="bold">OCCUPIED HOMES</text><text x="470" y="261" font-size="15">Shop-house flats · Courtyard · Daily routines</text>
+<rect x="210" y="335" width="200" height="75" rx="6" fill="#e7c6a9" stroke="#957253"/><text x="310" y="366" font-size="20" font-weight="bold">BACK LANES</text><text x="310" y="393" font-size="15">Cafés · Game room</text>
+<rect x="435" y="330" width="130" height="96" rx="6" fill="#ead69e" stroke="#957e45"/><text x="500" y="363" font-size="18" font-weight="bold">SHOPPING</text><text x="500" y="390" font-size="15">Specialist shops</text><text x="500" y="412" font-size="15">Fabric · Repairs</text>
+<rect x="615" y="330" width="165" height="168" rx="6" fill="#c6cdd1" stroke="#6e7f87"/><text x="697" y="369" font-size="20" font-weight="bold">CARGO QUAY</text><text x="697" y="397" font-size="15">Warehouse · Loading</text><text x="697" y="423" font-size="15">Workers’ break room</text><text x="697" y="478" font-size="14">Separated service access</text>
+<rect x="320" y="465" width="260" height="61" rx="6" fill="#e8dfbd" stroke="#957e45"/><text x="450" y="491" font-size="20" font-weight="bold">PASSENGER TERMINAL</text><text x="450" y="513" font-size="14">Tickets · Waiting · Next departures</text>
+<path d="M442 527V610" stroke="#637f89" stroke-width="12"/><path d="M472 592V634H412V592" fill="#f6f5ef" stroke="#637f89" stroke-width="2"/>
+<rect x="195" y="325" width="403" height="215" fill="none" stroke="#a54c37" stroke-width="3" stroke-dasharray="9 6"/>
+<text x="265" y="596" font-size="15" fill="#8d412f">First playable block</text><path d="M266 578L208 541" stroke="#a54c37" stroke-width="2"/>
+<text x="675" y="595" font-size="16">Shore walk</text><text x="858" y="157" font-size="20" font-weight="bold">N ↑</text>
+</g><g font-family="Arial, sans-serif" fill="#243b40"><text x="48" y="690" font-size="17">Proposed envelope: approximately 600 × 420 m. First block: approximately 120 × 100 m.</text><text x="48" y="718" font-size="15">Zoning schematic only · Districts and routes are indicative · No gameplay or ferry route implemented</text></g></svg>
