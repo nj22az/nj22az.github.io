@@ -25,7 +25,7 @@ Physical iPad acceptance remains unverified.
 Saved a new PNG and layered project (separate from the earlier comic), both successfully retained:
 `make-something.png` (`libfile_e75500655b1881919955d454ebefb4f7`) and `make-something.studio.json`
 (`libfile_27c50f9f39f08191939e590c1c435255`). Local source commit c252dcbca1f5c232dd1776ba02877321c0dd31e7 on
-`codex/fujita-tv-comic-2026-10-23`; publishing branch `codex/thuan-make-something-2026-10-23`, publication pending.
+`codex/fujita-tv-comic-2026-10-23`; publishing branch `codex/thuan-make-something-2026-10-23`. [PR #381](https://github.com/nj22az/nj22az.github.io/pull/381) merged as `070f8f548c89766e7c21144b795944b4038f026f`, from publishing commit `b90205ee83149b758b1d7160890f787f89af85d2`. Cache-versioned model/link imports are included (local follow-up `79f0a2e3`); the browser acceptance and 15 checks passed again. At handoff the Pages and World guard runs were still in progress, and the public new layer-pack URL still returned 404. The PNG and editable project are delivered now; do not describe the new online route as verified live. Next: verify the public Studio entry references `studio.js?v=20261023-thuan-comic`, the 585,764-byte new layer pack returns successfully, and the direct comic route opens. Existing comic routes remain available.
 
 ## After effects MCP wiring — 23 October 2026
 
