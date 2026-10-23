@@ -1,6 +1,17 @@
 # Fujita television comic — Studio integration, 23 October 2026
 
-## Studio integration — latest owner instruction
+## Editable sharing and immediate preview — owner follow-up
+
+Owner: “It won’t open the comic, can you show me the comic now, then add a share comic scene function”. The previous Pages deployment is now confirmed successful and serves the new Studio entry point; PR #375’s World guard also passed on GitHub. A public headless check was blocked by ERR_EMPTY_RESPONSE in this environment, so that is not evidence of the owner’s precise failure. The cloud browser has WebGL disabled. Do not assume the owner’s device has that limitation.
+
+- **Share scene** opens the native share sheet or exposes a copyable editable URL for the current scene. **Share comic** includes the captured panel scenes and layout. URLs contain compressed scene data in the fragment, preserving recipes, poses, expressions, camera, shader and text; they do not upload content to a server. Long performance takes may exceed the bounded link size; download the project instead.
+- Opening a shared URL rebuilds editable scenes. Hash-only navigation reloads the Studio entry point so opening another link in an existing Studio tab also works.
+- `/avatar-creator/comics/fujita-tv.html` displays a lightweight pre-rendered comic without loading the 3D editor. The original `?comic=fujita-tv` entry now shows that same preview before the module graph/3D scenes finish, and retains it with a retry option when rendering fails. This prevents a blank loading page from being the only way to view the comic; it does not establish the cause of every device-specific editor failure.
+- Decoder accepts at most four scenes, limits URL and decompressed sizes, validates its envelope, and passes scenes through existing normalization. No executable code or remote scene URL is accepted.
+
+Checks: 7 model/link tests pass, including Unicode, independent panels, rejected malformed/oversized input and round-trip settings. Actual headless WebGL UI: Share comic produced a 2,383-character URL, navigation reopened three editable panels; Share scene retained Manga, camera orbit 14 and Wave in a fresh load. Same-tab hash navigation tested. No page errors. A separate run with WebGL deliberately unavailable kept the comic preview visible and showed the recovery message. Both screenshots inspected. `git diff --check` passed. Existing shared engine and runtime are unchanged, so no runtime rebuild required. Physical iPad native share sheet remains unverified. Publication of this follow-up is in progress.
+
+## Studio integration — earlier owner instruction
 
 The owner requested opening the comic in Studio, trying shaders, changing angles and poses, and updating the current published version if needed. This supersedes the earlier local-production-only scope below.
 
