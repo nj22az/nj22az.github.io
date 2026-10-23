@@ -4,19 +4,7 @@
 #hud .placard b{color:#f4ead3;font-size:12px;text-shadow:0 1px 4px #000;letter-spacing:.08em}
 #hud .placard small,#hud .timecard{display:none}
 #hud #clock{font-size:15px;padding:4px 8px;border-radius:12px;box-shadow:none;background:#132b35b8;border:0}
-#hud #directoryButton{top:max(68px,calc(env(safe-area-inset-top) + 62px));right:max(14px,env(safe-area-inset-right));min-height:44px;border-radius:22px;padding:8px 16px;font-size:12px;letter-spacing:.04em}
-#directory .directory-card{max-height:90dvh;overflow-y:auto;overscroll-behavior:contain;border-radius:24px}
-#directory #wallet{position:static;display:block;border:0;box-shadow:none;background:transparent;color:#415e4e;margin:8px 0;font-size:17px}
-#directory .menu-tools{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
-#directory #fullscreenButton,#directory #townControls{position:static;transform:none;inset:auto;width:auto;max-width:none;margin:0;border:0;background:transparent;box-shadow:none}
-#directory #townControls{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-start}
-#directory #townControls button,#directory #fullscreenButton{flex:0 1 auto;min-height:44px;padding:10px 14px;font-size:12px;letter-spacing:.02em;border-radius:14px;background:#d9e4d6;color:#243d38;border:1px solid #b8c9b4}
-#directory #closeDirectory{min-height:44px;padding:10px 14px;border-radius:14px}
-#directory .menu-map{margin:12px 0;color:#243d38}
-#directory .menu-map summary{cursor:pointer;min-height:44px;padding:12px;border-radius:12px;background:#e8dfc9}
-#directory .map-frame{position:static;inset:auto;margin:8px 0;width:fit-content;opacity:1}
-#directory .map-frame canvas{position:static;width:110px;height:200px}
-#directory h3{color:#41584d;margin:20px 0 8px;font-size:14px}
+
 @media(pointer:coarse){
  #hud #prompt{display:none}
  /* Seated opening: show the Stand prompt so touch matches desktop (touch-ui still labels #act). */
@@ -85,9 +73,9 @@
 .touch-controls #act .act-glyph .ui-icon{width:32px;height:32px;margin:0 auto 3px}
 .touch-controls #act .act-glyph{display:block;line-height:0}
 @media(pointer:coarse){
- #hud #directoryButton,#hud #cameraButton,#hud #viewButton,#hud #movesButton,#hud #bagButton{
+ #hud #cameraButton,#hud #viewButton,#hud #movesButton,#hud #bagButton{
   width:48px;height:48px;min-height:48px;padding:0;border-radius:50%;display:grid;place-items:center;font-size:0!important;letter-spacing:0}
- #hud #directoryButton::before,#hud #cameraButton::before,#hud #viewButton::before,#hud #movesButton::before{width:22px;height:22px;margin:0}
+ #hud #cameraButton::before,#hud #viewButton::before,#hud #movesButton::before{width:22px;height:22px;margin:0}
  #hud #bagButton .ui-icon{width:22px;height:22px;grid-area:1/1}
  #hud #bagButton .bag-label{display:none}
  #hud #bagButton .bag-count{position:absolute;top:-3px;right:-3px;font-size:11px}
@@ -118,8 +106,7 @@
 /* ==== Living-town HUD details (living-town.css) ==== */
 /* Warm paper and lacquer: compact controls, generous touch targets. */
 :root{--town-cream:#fff2d5;--town-ink:#493e43;--town-red:#b74e56;--town-green:#41776b}
-#hud #directoryButton{background:var(--town-cream);color:var(--town-ink);border:2px solid #fff8e8;box-shadow:0 3px 0 #74544d66;border-radius:18px;letter-spacing:0;text-transform:none}
-#directory .directory-card{background:#fff5df;color:#493e43;border:3px solid #e2c29c}
+
 #activity .activity-card{background:#fff4db;border-color:#e4be95;color:#493e43;border-radius:24px;box-shadow:0 6px 0 #553f3930,0 16px 48px #251a2230}
 #activity #activityActions{gap:9px}
 #activity #activityActions button{min-height:46px;background:#f5dfbe;color:#493e43;border:1px solid #ddb990;border-radius:15px;text-transform:none;letter-spacing:0;box-shadow:0 3px 0 #d5af8540;transition:transform .12s,background .12s}
@@ -134,14 +121,12 @@
 #hud #subtitle{background:#fff2dbeb;color:#4c4141;border:1px solid #dbbe91;border-radius:18px;padding:12px 18px;text-shadow:none;max-width:min(560px,86vw)}
 :is(#exitRoomButton,#enterBuildingButton){position:fixed;left:max(16px,env(safe-area-inset-left));top:max(86px,calc(env(safe-area-inset-top) + 76px));z-index:90;min-height:48px;padding:12px 18px;border:2px solid #fff6de;border-radius:18px;background:#a94435;color:#fff8e9;font:800 15px system-ui;letter-spacing:0;box-shadow:0 4px 0 #65382c;cursor:pointer}
 :is(#exitRoomButton,#enterBuildingButton):focus-visible{outline:3px solid #f7cd6c;outline-offset:4px}
-#directoryGrid .izakaya-shortcut{grid-column:1/-1;background:#a94435;color:#fff8e9;border-color:#efc891;border-radius:16px;padding:16px;min-height:64px}
-#directoryGrid .izakaya-shortcut span{color:#fff0d4}
+
 @media(prefers-reduced-motion:reduce){#activity #activityActions button{transition:none}}
 @media(pointer:coarse) and (max-width:430px){#movementActions{right:100px;width:74px}#movementActions #run{width:74px}#act{right:14px;width:76px;height:76px}}
 
 #hud #waypoint{position:fixed;pointer-events:auto;top:max(108px,calc(env(safe-area-inset-top) + 102px));left:max(14px,env(safe-area-inset-left));max-width:calc(100vw - 28px);min-height:44px;padding:10px 14px;border:2px solid #eed1ac;border-radius:15px;background:#fff2dbe8;color:#704d4e;font:700 13px system-ui;cursor:pointer}
 #hud #waypoint:focus-visible{outline:3px solid #f7cd6c;outline-offset:3px}
-#directoryGrid [data-id="travel-progress"]{grid-column:1/-1;background:#eadcbd;color:#635443;border:2px dashed #c8ae83;border-radius:16px}
 
 /* One nearby exchange; never captures touch input or competes with menus. */
 .neighbour-chat{position:fixed;z-index:12;pointer-events:none;width:210px;max-width:58vw;padding:9px 12px;background:#fff3d9;color:#3d3530;border:2px solid #b59670;border-radius:16px;box-shadow:0 3px 0 #4a342333;transform:translate(-50%,-100%);font:13px/1.35 system-ui,sans-serif;text-align:left}

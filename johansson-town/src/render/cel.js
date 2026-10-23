@@ -337,6 +337,14 @@ export function applyCelShading(root,{tint=DEFAULT_TINT,seen=null,force=false,co
 export function createCelPass({tint=DEFAULT_TINT}={}){
  const seen=new WeakSet();
  const flattened=new Set();
+ // Each map's own amount (FLATTEN, ARCH_FLATTEN …) before any scale, so a look can take the maps away and give them back.
+ const natural=new WeakMap();
+ let scale=1;
+ function scaleFlatten(k){
+  scale=k;
+  for(const uniform of flattened){if(!natural.has(uniform))natural.set(uniform,uniform.value);uniform.value=natural.get(uniform)*k;}
+  return k;
+ }
  const stats={converted:0,skipped:0,visited:0,sweeps:0};
  return {
   stats,
@@ -346,13 +354,20 @@ export function createCelPass({tint=DEFAULT_TINT}={}){
    * differently under this, so it is worth being able to judge it against the town.
    */
   setFlatten(value){
-   for(const uniform of flattened)uniform.value=value;
+   for(const uniform of flattened){uniform.value=value;natural.set(uniform,value);}
+   if(scale!==1)scaleFlatten(scale);
    return value;
   },
+  /**
+   * Scales every photographic map's own amount: 0 takes them all away (flat colour, the Cartoon look), 1 puts each back as
+   * it was. Materials converted later take the same scale.
+   */
+  scaleFlatten,
   apply(root){
    const pass=applyCelShading(root,{tint,seen,collect:flattened});
    stats.converted+=pass.converted;stats.skipped+=pass.skipped;stats.visited+=pass.visited;
    stats.sweeps++;
+   if(scale!==1&&pass.converted)scaleFlatten(scale);
    return pass;
   }
  };

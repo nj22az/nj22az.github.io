@@ -2,18 +2,29 @@
 
 Start here on every task, then read the latest applicable notes below. Maintain this index whenever a new note supersedes one of these. For an area without a note, create and link one when handing over work. Dates alone do not settle conflicting information: verify current branches, PRs, checks and releases.
 
+## Current owner priority — 23 October 2026
+
+**Make Minato impeccable and immersive: “a little paradise that you wish were real.”**
+Read the [Minato design direction in the World handover](johansson-town/briefs/HANDOFF-2026-10-22-afternoon.md#owner-direction--23-october-2026-minato-comes-first).
+Refine existing places, residents' daily lives, comfortable interactions, atmosphere and reliability.
+The third city island is low priority and deferred until explicitly reprioritised by the owner.
+
 | Work area | Current handover |
 | --- | --- |
+| Studio: Fujita television comic | [23 October production handover](johansson-town/briefs/HANDOFF-FUJITA-TV-COMIC-2026-10-23.md). Latest: new Thuan “Make something of your life” comic with an unnamed man, hero burst and football ending; see the Thuan revision section ([PR #381](https://github.com/nj22az/nj22az.github.io/pull/381), merged `070f8f54`; image/project delivered, Pages verification pending). After effects MCP 1.7 adds discovery and comic editing/export tools; see the MCP wiring section in the handover ([PR #380](https://github.com/nj22az/nj22az.github.io/pull/380), merged `b287e702`). After effects adds replacement text, shader looks, image/sticker assets and English/Swedish versions. [PR #379](https://github.com/nj22az/nj22az.github.io/pull/379) merged as `101dc238`; After effects verified live. Earlier: corrected speech-bubble joins and head clearance ([PR #377](https://github.com/nj22az/nj22az.github.io/pull/377), merged `23629714`); built-in editable comic, camera/pose editing and 14 per-panel shader looks; project round-trip verified. Merged in [PR #375](https://github.com/nj22az/nj22az.github.io/pull/375) as `fffc491b`; Pages deployment verified. Editable scene/comic sharing and the immediate preview merged in [PR #376](https://github.com/nj22az/nj22az.github.io/pull/376), `ee165872`; public comic viewer and Studio sharing entry verified live. |
+| Current fighting withdrawal: web and Linux | [22 October implementation handover](johansson-town/briefs/HANDOFF-COMBAT-WITHDRAWAL-2026-10-22.md). [PR #365](https://github.com/nj22az/nj22az.github.io/pull/365): merged to main as `4a52d5d2161f9691b8f3e808ba959389f463e578`; [Linux 0.2.17](https://github.com/nj22az/nj22az.github.io/releases/tag/johansson-world-linux-v0.2.17) published through merged [PR #370](https://github.com/nj22az/nj22az.github.io/pull/370). 367 World checks, full Linux acceptance and public installer/checksum verification passed; signed off. |
 | Food service and seating integration: PR #350 on main plus PR #351 | [22 October combined integration review](johansson-town/briefs/HANDOFF-FOOD-SEATING-INTEGRATION-2026-10-22.md). [Merged PR #356](https://github.com/nj22az/nj22az.github.io/pull/356), squash commit `2fd64868fe6da67619cef618ed8c67174843a96f`. Owner approved the combined screenshots; handover signed off. |
 | Johansson World: world, characters, benches and storytelling | [22 October 2026 afternoon World handoff](johansson-town/briefs/HANDOFF-2026-10-22-afternoon.md) (seated poses #351, civic comic backdrops #352, retired-cast tests #353), after the [morning one](johansson-town/briefs/HANDOFF-2026-10-22.md). Also read the earlier notes they reference. |
 | Minato Izakaya: food preparation, separate food/drink delivery and serving clearances | [22 October 2026 food-service handover](johansson-town/briefs/HANDOFF-IZAKAYA-FOOD-2026-10-22.md). Read alongside the World handoff. |
-| Nhung becomes the island doctor (Dr Kakazu retired into her); Front-Row's trade and Saturday closing at Sakura | **Finished, [PR #362](https://github.com/nj22az/nj22az.github.io/pull/362) to main, not merged** (branch `claude/clever-ride-qdpo8s`; merge only on the owner's word): [task folder](johansson-town/briefs/nhung-doctor/progress.md) and the session notes below. |
-| Higa Liquor closes into Sakura (Sakura sells and supplies all the drink, Kōji's round is Sakura Trading's, the shop shut with a notice) | **Finished, stacked [PR #363](https://github.com/nj22az/nj22az.github.io/pull/363) on #362, not merged** (branch `claude/clever-ride-qdpo8s-higa-liquor`; merge after #362, on the owner's word): [task folder](johansson-town/briefs/higa-liquor-closes/progress.md) and the session note below. |
-| Where #362 and #363 stand, the merge order, the money model closed for now, and the next step (simplify background processes) | **Latest:** [22 October 2026 night handoff](johansson-town/briefs/HANDOFF-2026-10-22-night.md). Supersedes the two session notes of 22 October (late evening, night) below for state; they keep the detail. |
+| Nhung becomes the island doctor (Dr Kakazu retired into her); Front-Row's trade and Saturday closing at Sakura | **Merged** to main through [PR #362](https://github.com/nj22az/nj22az.github.io/pull/362) on the owner's word (23 October 2026; branch `claude/clever-ride-qdpo8s`, with main merged in and the runtime rebuilt): [task folder](johansson-town/briefs/nhung-doctor/progress.md) and the session notes below. |
+| Higa Liquor closes into Sakura (Sakura sells and supplies all the drink, Kōji's round is Sakura Trading's, the shop shut with a notice) | **Merged**: [PR #363](https://github.com/nj22az/nj22az.github.io/pull/363) into #362's branch (`41fed9ec`), and with it to main through #362 (23 October 2026): [task folder](johansson-town/briefs/higa-liquor-closes/progress.md) and the session note below. |
+| #362 and #363 merged; the money model closed for now; the next step (simplify background processes) | **Latest:** [22 October 2026 night handoff](johansson-town/briefs/HANDOFF-2026-10-22-night.md). Supersedes the two session notes of 22 October (late evening, night) below for state; they keep the detail. |
 | Claude Code skills: Colorfigures (hand-inked interactive isometric figures) | **Merged** to main as [PR #361](https://github.com/nj22az/nj22az.github.io/pull/361) (squash `a0fb347c`), only `.claude/skills/colorfigures/` (8 files, MIT, reviewed before adding). Signed off. |
+| Look setting (shader styles under Settings in the Town book) and Free camera (frozen fly-round view) | [22 October 2026 looks handover](johansson-town/briefs/HANDOFF-LOOKS-2026-10-22.md). Branch `claude/upbeat-hamilton-4bhz8q`, pushed straight to `main` on the owner's instruction ("Push camera to main"). |
+| World test maintenance: save consolidation and frozen screenshot regression | [22 October save-consolidation sign-off](johansson-town/briefs/HANDOFF-SAVE-CONSOLIDATION-2026-10-22.md), PR #369, merged as `97579cc0b4bfd4af3523e3ae0bf25d672643d82b`; 350 local checks and the GitHub guard passed. Earlier [frozen-audit sign-off](johansson-town/briefs/HANDOFF-FROZEN-AUDIT-2026-10-22.md), PR #368, merged as `67856af51864165014f12299966065411b3eb381`. Read alongside the World handoff. |
 | Linux edition, controllers, right-stick camera and release integration | [22 October 2026 Linux controller handover](HANDOVER-LINUX-JOYSTICK-2026-10-22.md). Read alongside the World handoff for shared game changes. |
 
-The newest note is the [22 October 2026 night handoff](johansson-town/briefs/HANDOFF-2026-10-22-night.md): #362 and #363 open, merge #362 first; the money model closed for now; next, simplify background processes.
+The newest note for Nhung the doctor and Higa Liquor is the [22 October 2026 night handoff](johansson-town/briefs/HANDOFF-2026-10-22-night.md): both merged to main through #362 on 23 October; the money model closed for now; next, simplify background processes.
 
 The Linux controller note contains newer merge and release information than the morning World note. Real-device confirmation of right-stick camera control on Bluetooth and Steam Deck remains outstanding; follow that note's reproduction steps. Its evening update: a saved Look axis past the pad's axes now falls back to the right stick (`84baf00`, for 0.2.17, unreleased; it rides the Nhung doctor PR from `claude/clever-ride-qdpo8s`).
 
@@ -28,7 +39,7 @@ Next agent: read the handover for your work area, verify live repository state, 
 ## Session handover — 22 October 2026 (evening), branch `claude/laughing-rubin-6p25x2`
 
 Not merged; no PR. Three things live on this branch, in this order:
-1. `84baf00` **Controller fix** (steam-deck, for Linux 0.2.17, unreleased): a saved Look/Move pair past the pad's axes
+1. `84baf00` **Controller fix** (steam-deck; 0.2.17 was published without it, so it ships in 0.2.18 or later): a saved Look/Move pair past the pad's axes
    falls back to the default sticks; test added, 39/39 desktop tests passed. Ready on its own; see the Linux note.
 2. `a30a254`, `3fe01c0` and the commit carrying this note: **Nhung becomes the island doctor**, work in progress. Start
    with [its task folder](johansson-town/briefs/nhung-doctor/progress.md) (`progress.md`, `checks.md`,
@@ -39,6 +50,8 @@ Next agent: finish (2) per its Next action, keep (1) with it or split it into it
 step. Do not merge (2) to main before the CI guard is green and the runtime is rebuilt: main deploys the site.
 
 ## Session handover — 22 October 2026 (late evening), branch `claude/clever-ride-qdpo8s`
+
+**Update, 23 October:** merged to main through #362 on the owner's word; see the [night handoff](johansson-town/briefs/HANDOFF-2026-10-22-night.md).
 
 The branch holds `claude/laughing-rubin-6p25x2` (the controller fix `84baf00`, the doctor work in progress, Colorfigures)
 plus main merged in, then the finishing commits. One PR to main, [#362](https://github.com/nj22az/nj22az.github.io/pull/362), carries both the controller fix (its own commit, kept as
@@ -61,6 +74,8 @@ Sakura Trading's, the shop stands shut with a notice) is its own stacked PR, bra
 `claude/clever-ride-qdpo8s-higa-liquor` on top of this one, task folder `johansson-town/briefs/higa-liquor-closes/`.
 
 ## Session handover — 22 October 2026 (night), branch `claude/clever-ride-qdpo8s-higa-liquor`
+
+**Update, 23 October:** merged to main through #362 on the owner's word; see the [night handoff](johansson-town/briefs/HANDOFF-2026-10-22-night.md).
 
 **Higa Liquor closes into Sakura** (the owner, 22 October: "close Higa Liquor. Sakura sells and supplies all alcohol,
 Kōji's round becomes Sakura Trading's, and the building stands shut with a notice on it"; their answer on how: "Own

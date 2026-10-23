@@ -29,7 +29,7 @@ export function controlIcon(label=''){
  const item=itemIcon(value);return item==='box'?'eye':item;
 }
 
-const BUTTON_ICONS=Object.freeze({viewButton:'eye',timeButton:'clock',weatherButton:'sun',soundButton:'music',fullscreenButton:'screen',closeActivity:'close',closeDirectory:'close'});
+const BUTTON_ICONS=Object.freeze({viewButton:'eye',timeButton:'clock',weatherButton:'sun',lookButton:'star',soundButton:'music',fullscreenButton:'screen',closeActivity:'close',closeDirectory:'close'});
 const TARGETS='#activity button,#directory button,.shm-pill,.shm-next,.shm-save,.shm-pages button,#photoStudio button,#cameraPanel button,#qte button,.modal-card button';
 
 /** Add one icon without removing artwork, labels, focus, or child event listeners. */

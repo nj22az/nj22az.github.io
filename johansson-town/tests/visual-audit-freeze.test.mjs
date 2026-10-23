@@ -4,6 +4,7 @@ import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 import * as THREE from '../vendor/three.module.js';
 import {clock as duskClock} from '../src/render/dusk.js';
+import {graphicsProfile} from '../src/render/startup-recovery.js';
 import {buildSakuraLife} from '../src/world/interiors/sakura-life.js';
 import {installDOM} from './fixtures.mjs';
 
@@ -14,9 +15,13 @@ test('repeated frozen draws refresh lighting and late materials without advancin
  const lightSource=source.slice(source.indexOf('function setTime('),source.indexOf("$('#exitRoomButton').onclick="));
  const renderStart=source.indexOf(' render(){',source.indexOf('window.__JOHANSSON_AUDIT__={'));
  const renderSource=source.slice(renderStart,source.indexOf('\n setTime(value',renderStart));
+ // The audit's render() delegates to renderStill, which the free camera shares; run that production body too.
+ const stillSource=source.slice(source.indexOf('function renderStill('),source.indexOf("if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__"));
  let hours=0,shutterY=0,skyUpdates=0,celSweeps=0,outdoor=0,interior=0,market=0;
  const context={THREE,duskClock,world:{updateHours(){hours++;shutterY+=.02;}},minutes:1260,weather:false,weatherKind:'sunny',
-  current:null,graphicsLifecycle:null,activeRoomLayout:null,concert:null,photoStudio:null,spawnScene:null,player:new THREE.Group(),tabletLike:false,
+  // Match the live lighting dependencies; retain the production setTime/render bodies.
+  current:null,graphics:graphicsProfile(),graphicsLifecycle:null,activeRoomLayout:null,concert:null,photoStudio:null,spawnScene:null,player:new THREE.Group(),
+  SUN_REACH:46,nightLift:0,conversationLine:null,placeWorldBalloons(){},setRoadPaintLight(){},
   lightBudget:{update(){}},colliderGrid:{refresh(){}},
   sun:new THREE.DirectionalLight(),ambient:new THREE.HemisphereLight(),bounce:new THREE.PointLight(),uplight:new THREE.DirectionalLight(),UPLIGHT:.35,
   scene:new THREE.Scene(),camera:new THREE.PerspectiveCamera(),town:{},room:{},renderer:{render(){interior++;}},
@@ -26,13 +31,15 @@ test('repeated frozen draws refresh lighting and late materials without advancin
   celPass:{apply(){celSweeps++;}},renderOutdoor(){outdoor++;},present:draw=>draw(),
   shopStreetView:{render(){market++;}},sakuraShop:{layout:{frontZ:0}},streetFrontageOf:site=>site?.id==='market'||site?.id==='izakaya'?{}:null};
  context.scene.background=new THREE.Color();
- vm.runInNewContext(lightSource+'\nglobalThis.auditRender=({'+renderSource+'}).render;',context);
+ vm.runInNewContext(lightSource+'\n'+stillSource+'\nglobalThis.auditRender=({'+renderSource+'}).render;',context);
  context.setTime();assert.equal(hours,1);const initialShutter=shutterY;
  const audit={camera:{pos:[4,2,-17],at:[-5,1.2,-13]},render:context.auditRender};
  for(let i=0;i<10;i++)audit.render();
  assert.equal(shutterY,initialShutter,'Painting the same frozen frame cannot move the shutter');
  assert.equal(hours,1);assert.equal(skyUpdates,11,'Lighting still follows the chosen camera');
  assert.equal(celSweeps,10,'Streamed materials receive cel shading without simulation');assert.equal(outdoor,10);
+ assert.ok(context.sun.position.toArray().every(Number.isFinite),'Frozen lighting keeps a finite sun position');
+ assert.ok(context.sun.target.position.toArray().every(Number.isFinite),'Frozen lighting keeps a finite shadow target');
  assert.deepEqual(context.camera.position.toArray(),audit.camera.pos);
  context.current={id:'mayor-home'};audit.render();assert.equal(interior,1);
  context.current={id:'market'};audit.render();assert.equal(market,1);

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from '../../johansson-town/vendor/three.module.js';
 import {installDOM} from '../../johansson-town/tests/fixtures.mjs';
 import {buildAvatar} from '../../johansson-town/src/avatars/build.js';
-import {CAST_RECIPES,ORIGINAL_THUAN_RECIPE} from '../../johansson-town/src/avatars/cast.js';
+import {CAST_RECIPES,ORIGINAL_THUAN_RECIPE,recipeFor} from '../../johansson-town/src/avatars/cast.js';
 import {poseSceneAvatar,placeSceneAvatar} from '../scene-avatar.js';
 import {POSES} from '../scene-model.mjs';
 installDOM();
@@ -57,4 +57,35 @@ test('small and large characters sit on low, standard and bar-height seats: the 
   try{assert.ok(Math.abs(p.bottom-(floor+seat))<.015,label+': the bottom on the seat ('+(p.bottom-floor).toFixed(3)+' m up)');assert.ok(p.feet>floor-.01,label+': feet not in the floor ('+(p.feet-floor).toFixed(3)+')');}
   finally{p.done();}
  }
+});
+
+// The actual shed's low seat, short legs and footstool: catch the lost forward seat offset.
+test('Fujita’s shoes clear the shed seat and rest on the footstool during a sip',()=>{
+ for(const pose of ['Sit','SitDrink']){
+  const avatar=buildAvatar(recipeFor('Mr Fujita'),{shadows:false,faceSize:64});
+  try{
+   poseSceneAvatar(avatar,{pose,expression:'neutral',turn:180,seatHeight:.34,seatFront:.15});
+   placeSceneAvatar(avatar,{x:.35,y:.06,z:.8,seat:{yaw:0}});
+   const v=new THREE.Vector3();let feet=0,lowest=Infinity;
+   avatar.root.traverse(o=>{if(!o.isSkinnedMesh||o.name.includes('outline'))return;const {skinIndex:I,skinWeight:W}=o.geometry.attributes;
+    for(let i=0;i<I.count;i++){let weight=0;for(let k=0;k<4;k++)if(/^foot[LR]$/.test(o.skeleton.bones[I.getComponent(i,k)].name))weight+=W.getComponent(i,k);if(weight<.7)continue;
+     o.getVertexPosition(i,v);v.applyMatrix4(o.matrixWorld);feet++;lowest=Math.min(lowest,v.y);
+     assert.ok(!(v.x>.04&&v.x<.66&&v.y>.28&&v.y<.4&&v.z>.65&&v.z<1.09),pose+': shoe inside chair');
+     assert.ok(v.y>=.1875,pose+': shoe inside footstool');
+    }});
+   assert.ok(feet>0);assert.ok(Math.abs(lowest-.188)<.0005,pose+': feet supported by stool');
+  }finally{avatar.dispose();}
+ }
+});
+
+test('Fujita’s determined fist has a bent elbow and clears his face',()=>{
+ const avatar=buildAvatar(recipeFor('Mr Fujita'),{shadows:false,faceSize:64});
+ try{
+  poseSceneAvatar(avatar,{pose:'ResolveFist',expression:'excited',turn:20});
+  const point=n=>avatar.bones[n].getWorldPosition(new THREE.Vector3());
+  const elbow=point('elbowR'),angle=point('shoulderR').sub(elbow).angleTo(point('handR').sub(elbow));
+  assert.ok(angle<Math.PI*150/180,'elbow visibly bent, not a straight raised arm');
+  const fist=avatar.root.worldToLocal(point('handR')),m=avatar.measure;
+  assert.ok(Math.abs(fist.x)>m.Rh*m.headSX+m.hand*.5,'fist outside cheek silhouette');
+ }finally{avatar.dispose();}
 });

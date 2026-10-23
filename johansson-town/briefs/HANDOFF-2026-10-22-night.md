@@ -4,17 +4,19 @@ Read first: `CLAUDE.md`, `AGENTS.md`, `johansson-town/AGENTS.md` (its two newest
 doctor" and "Higa Liquor closes into Sakura", and the short one on the money model at the end), then the two task folders
 below. This note says where the day's work stands and what the owner decided last.
 
-## The two PRs (both open, not merged)
+## The two PRs: merged (the owner, 23 October: "Merge")
 
-| PR | Branch → base | What | State at hand-over |
-|---|---|---|---|
-| [#362](https://github.com/nj22az/nj22az.github.io/pull/362) | `claude/clever-ride-qdpo8s` → `main` | Nhung becomes the island doctor (Dr Kakazu retired into her; Front-Row's trade is Sakura's; Sakura shuts on Saturdays), and the Linux controller fix `84baf00` (0.2.17, unreleased) as its own commit | Head `279e652`: guard and linux green, mergeable |
-| [#363](https://github.com/nj22az/nj22az.github.io/pull/363) | `claude/clever-ride-qdpo8s-higa-liquor` → `claude/clever-ride-qdpo8s` | Higa Liquor closes into Sakura: Sakura sells and supplies all the drink, Kōji's round is Sakura Trading's, the shop stands shut with a notice on its shutter | Guard green on `853e02f`, mergeable; this note's commit follows it |
+| PR | What | How it reached main |
+|---|---|---|
+| [#363](https://github.com/nj22az/nj22az.github.io/pull/363) | Higa Liquor closes into Sakura: Sakura sells and supplies all the drink, Kōji's round is Sakura Trading's, the shop stands shut with a notice on its shutter | Merged into #362's branch `claude/clever-ride-qdpo8s` (merge commit `41fed9ec`) |
+| [#362](https://github.com/nj22az/nj22az.github.io/pull/362) | Nhung becomes the island doctor (Dr Kakazu retired into her; Front-Row's trade is Sakura's; Sakura shuts on Saturdays), and the Linux controller fix `84baf00` as its own commit | `main` merged into the branch (48 commits since the PRs opened: comics, looks, the combat withdrawal, Linux 0.2.17), the runtime rebuilt once from main's, then squash-merged to `main` with #363 inside it |
 
-**Merge order: #362 first, then #363, each only on the owner's word: main deploys the live site.** #363's runtime was
-built from #362's (it keeps that build's chunks and prunes main's older ones), so merging #363 into main on its own
-would drop the chunks the live site loads now. After #362 merges, retarget #363 to `main` (merge `main` into its
-branch if GitHub asks; no rebuild needed unless main moved on).
+Why one deploy: each runtime build keeps the previous build's chunks and prunes older ones, so two builds landing on
+main back to back would drop the chunks of the build players have loaded now. Merging #363 into #362's branch first
+gave one build on top of main's.
+
+**Linux:** 0.2.17 was published from main on 22 October without the controller fix (`HANDOVER-LINUX-JOYSTICK-2026-10-22.md`,
+release update). The fix is on main now and ships in the next Linux release, 0.2.18 or later; still unconfirmed on hardware.
 
 The work, the checks and the reviews: `briefs/nhung-doctor/` and `briefs/higa-liquor-closes/` (each has `progress.md`,
 `checks.md`, `sources/task.md`). The before/after sheets were sent to the owner in the session and are not committed.
@@ -57,5 +59,5 @@ The work, the checks and the reviews: `briefs/nhung-doctor/` and `briefs/higa-li
   Higa feed backdrop is still to be captured; the shut shop's upstairs windows glow at dusk with the rest of the quarter.
 
 ## Session housekeeping
-- Both PRs had a subscription in the session that wrote this; its scheduled check-ins are stopped, none pending.
+- Both PRs were merged on the owner's word; the session's subscriptions end with them, and no check-ins are pending.
 - The worktrees it used are in its scratchpad and go with the container; nothing in them is unpushed.

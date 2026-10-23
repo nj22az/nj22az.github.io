@@ -303,3 +303,19 @@ table's nearer end. Her hands meet what they take and nothing passes through the
 `tests/izakaya-bar.test.mjs`); on Linux the bottle tips over the glass with its stream and the tap's lever is pulled
 (`BUDGET.pouring`), on the web the glass fills as she holds the bottle over it. Dishes are cooked as before; a resident's
 food still appears with their drink.
+
+
+## Owner's decision — 22 October 2026: withdraw current fighting
+
+The ordinary browser and Linux game are peaceful. Festival bouts, tournaments,
+spectating, insult-triggered fights, attack controls, damage/rewards and the
+combat-dependent cave descent are withdrawn. Preserve normal conversations,
+apologies, peaceful festivals, relationships, dining, ferry operations and saves.
+Old active combat/cave/arena saves recover at the safe harbour opening without
+losing property, identity or travel progress.
+
+Do not restore dormant combat launchers or payloads. Shared Studio/story poses
+and costumes remain artistic assets. A future dedicated Virtua Fighter/Tekken
+inspired mode requires separately approved work; it is not part of this build.
+Implementation, release and verification are recorded in
+[the combat-withdrawal handover](briefs/HANDOFF-COMBAT-WITHDRAWAL-2026-10-22.md).

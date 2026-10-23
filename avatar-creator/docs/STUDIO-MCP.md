@@ -16,6 +16,52 @@ Sakura Shōten's products, change their labels, words, prices, purpose and shelf
 line. It does this through the `johansson-studio` tools, which use the same data and drawing code as Johansson Studio on
 the iPad.
 
+## Comic After effects (MCP 1.7)
+
+`comic_effects_info` lists the actual shared shader ids and editing rules. `comic_after_effects` opens the built-in
+Fujita television comic when `projectFile` is omitted, or a repository-relative layered Studio `.json` project.
+It uses the same clean picture, assets and lettering renderer as **2. After effects** in Studio.
+
+```json
+{"name":"fujita-open"}
+```
+
+Read the returned `panels` to find each speaker's actor id. Replace text, apply a shader and add assets:
+
+```json
+{
+  "projectFile":"output/studio-mcp/scenes/fujita-open.studio.json",
+  "name":"fujita-edited",
+  "edits":[{
+    "panel":1,
+    "look":"manga",
+    "dialogue":[{"actor":"REPLACE_WITH_RETURNED_ACTOR_ID","text":"Time to do something, Fujita!"}],
+    "assets":[{"kind":"star","x":0.8,"y":0.7,"size":0.15}]
+  }]
+}
+```
+
+Panel numbers start at **1**. `dialogue` replaces the named actor's speech; an empty string removes its bubble.
+`bottom` replaces the caption; `top` switches to meme text. `assets` replaces that panel's complete asset list;
+use `[]` to remove all assets, or include the existing entries to retain them. Kinds: star, heart, arrow, text,
+image. Images use resized PNG/JPEG/WebP base64 data URLs, bounded to 2.8 million characters. Position is 0–1,
+size .03–.8, rotation −180–180 degrees and opacity .05–1. There are at most 20 assets per panel.
+
+`language:"en"` / `"sv"` switches the original Fujita script **before** explicit edits. Custom wording has no saved
+translation and is refused without changing files; supply translated replacement text for any other language.
+Each call returns a PNG preview, new `.studio.json`, speaker/asset summary, and an editable `shareUrl` when it fits.
+Oversized image-bearing links report `shareWarning`; exchange the project file instead. Import that file with
+**Open project → 2. After effects**. Older projects without clean layers need **Edit scene → Update panel** first.
+
+This is an output transformation, so no World draft or publish step is involved. Use a different `name` from the
+input project: it is never overwritten. The server serialises calls and exports files through Studio's existing
+allowlisted writer. `window.__JOHANSSON_STUDIO__.comicAfterEffects(options)` exposes the same transformation on
+agent pages (`?agent`); this does not install a connector in the chat host. Restart an existing `johansson-studio`
+MCP connection to discover the new tools. `.mcp.json` already points at this server.
+
+Browser acceptance: `STUDIO_BROWSER_TEST=1 node --test johansson-town/tests/comic-effects-mcp.test.mjs`.
+Set `TOWN_CHROMIUM_PATH` only when using an existing custom Chromium installation.
+
 ## For the creator
 
 Ask in plain words:

@@ -11,7 +11,7 @@ export const seatedPose=name=>name==='SchoolRest'||name==='Sit'||/^Sit[A-Z]/.tes
 
 const POSE_GROUP={
  everyday:['Walk','Run','Idle','Wave','Point','Bow','BowDeep','Nod','HeadShake','Shrug','Clap','Think','LookAround','Talk','Phone','Stretch','HandsOnHips','CheekRest','ScratchHead','HairTuck','ChinTap','CollarTug','HeelRock','Crouch','PickUp','Offer','Call'],
- funny:['SchoolEscape','ComicLeap','SchoolProtest','SchoolRun','LiftedBack','HoldBack','Laugh','Cheer','Tada','Heart','Peace','Coy','DoubleCheek','HeelKick','Kachashi','Fist','Hop','Gasp','Stomp','Slump','Fidget','EvilLaugh','WindUp','Sing','FanWild','FingerStop','BentStuck','CrabWalk','FrozenAbsurd','BasketHead','CordWrapped'],
+ funny:['ResolveFist','SchoolEscape','ComicLeap','SchoolProtest','SchoolRun','LiftedBack','HoldBack','Laugh','Cheer','Tada','Heart','Peace','Coy','DoubleCheek','HeelKick','Kachashi','Fist','Hop','Gasp','Stomp','Slump','Fidget','EvilLaugh','WindUp','Sing','FanWild','FingerStop','BentStuck','CrabWalk','FrozenAbsurd','BasketHead','CordWrapped'],
 };
 /** World moves that do not stand on their own in a still: a fight's split second, work with a thing that is not in the
  *  picture (a shelf, a breaker, a rod, a dryer, a torch, a coin), or a body carried by others. */
@@ -19,7 +19,7 @@ const NEEDS_MORE=new Set(['Jab','JabL','Swipe','Hurt','Tackle','Jump','Drink','E
  'FishIdle','Reel','Tape','HoldUp','HoldUpStraws','WriteAbove','PoleFlick','GrenadeCoin','CoinToCheek','CupHands','Reach','HoldOn',
  'Aim','LieKnead','KneelHug','BowWalk','Peek','BannerUp','TorchUp','TorchOff','ReachBack','ChairUncurl','CarriedBent',
  'CarriedPlank','CarryFurniture','CarryLegs']);
-const POSE_LABEL={Idle:'Standing',BowDeep:'Deep bow',HeadShake:'Shake head',LookAround:'Look around',HandsOnHips:'Hands on hips',CheekRest:'Hand on cheek',
+const POSE_LABEL={ResolveFist:'Determined fist',SitBeer:'Hold a beer',Idle:'Standing',BowDeep:'Deep bow',HeadShake:'Shake head',LookAround:'Look around',HandsOnHips:'Hands on hips',CheekRest:'Hand on cheek',
  ScratchHead:'Scratch head',HairTuck:'Tuck hair',ChinTap:'Tap chin',CollarTug:'Tug collar',HeelRock:'Rock on heels',Crouch:'Squat',
  PickUp:'Pick up',Talk:'Chat',Tada:'Ta-da!',DoubleCheek:'Both cheeks',HeelKick:'Heel kick',Kachashi:'Dance',EvilLaugh:'Evil laugh',
  WindUp:'Wind up',FanWild:'Wild fan',FingerStop:'Stop!',BentStuck:'Stuck back',CrabWalk:'Crab walk',FrozenAbsurd:'Teapot',
@@ -58,7 +58,7 @@ export function expressionGroups(names){
  return Object.entries(groups).filter(([,list])=>list.length).map(([id,list])=>({id,title:GROUP_TITLES[id],items:list}));
 }
 
-export const STUDIO_POSES=Object.freeze(['Walk','Run','SchoolEscape','ComicLeap','SchoolRest','SchoolProtest','SchoolRun','LiftedBack','HoldBack']);
+export const STUDIO_POSES=Object.freeze(['ResolveFist','SitBeer','Walk','Run','SchoolEscape','ComicLeap','SchoolRest','SchoolProtest','SchoolRun','LiftedBack','HoldBack']);
 const worldPoses=[...STUDIO_POSES,...Object.keys(animate.GESTURES||{})],worldStory=animate.STORY_POSES||new Set();
 const worldFaces=[...(face.EXPRESSION_NAMES||['neutral','smile'])];
 export const POSE_GROUPS=Object.freeze(poseGroups(worldPoses,{story:worldStory,menu:MOVES}));
