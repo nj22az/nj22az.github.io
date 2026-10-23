@@ -181,3 +181,12 @@ Owner, yes to the proposal: fold 15 tiles into 8, shorten the place cards, merge
 Checks: town-directory, boot, travel-webmcp, ui-icons, runtime-package, audit-boot and visual-audit-freeze pass. Built
 runtime at 390×844 and 820×1180 with touch: home has 8 tiles; Camera, Map, People (People list) and Settings pages; back;
 close and reopen go home; Free camera works from the Camera page.
+
+## Oil: faces painted, features as thick flat marks — 23 October 2026
+Owner: "The characters and their faces should be applied by the shaders too in oil… letters and details of the faces could
+be strengthened… I couldn't see the faces… maybe just thicker flat 2D details". The oil shader no longer pastes the
+original pixels back. Everything stays painted, and up to 9 m (fading by 22 m) a pixel whose 8-tap ring (radius 1.25 px)
+holds something much darker than the painted stroke gets a flat dark mark (0.16, 0.12, 0.11); something much lighter gets
+a flat cream one. That makes eyes, brows, smile and sign letters thick and readable. Checked in software Chromium on
+Johansson's face at 0.8 m and the Sakura front at 2.4 m. A first, stronger setting inked the shop interior too heavily and
+was eased (thresholds 0.1–0.22, 90%).

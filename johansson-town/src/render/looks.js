@@ -384,12 +384,20 @@ void main(){
   float var=v.r+v.g+v.b;
   if(var<best){best=var;col=mean;}
  }
- // What a painter keeps sharp: small marks much darker or lighter than the stroke over them (letters on a sign, eyes,
- // brows and a mouth) come back on top of the paint, close by; further off the picture stays all brushwork.
- vec3 orig=texture2D(tDiffuse,vUv).rgb;
- float detail=abs(luma(orig)-luma(col));
+ // What a painter puts back last, as flat marks over the paint: anything small that is much darker than the stroke
+ // painted over it (eyes, brows, a mouth, letters) as a thick dark mark, and anything much lighter (a highlight in an
+ // eye, white letters on a dark sign) as a flat light one. The darks are taken from a small ring around the pixel, which
+ // thickens each mark so a face reads from across the street. Close by only; further off it is all brushwork.
  float near=1.0-smoothstep(9.0,22.0,viewDepth(vUv));
- col=mix(col,orig,smoothstep(0.06,0.18,detail)*near);
+ float base=luma(col),dark=0.0;
+ for(int k=0;k<8;k++){
+  float a=float(k)*0.785398;
+  dark=max(dark,base-luma(texture2D(tDiffuse,vUv+vec2(cos(a),sin(a))*uTexel*1.25*u).rgb));
+ }
+ float light=luma(texture2D(tDiffuse,vUv).rgb)-base;
+ dark=max(dark,base-luma(texture2D(tDiffuse,vUv).rgb));
+ col=mix(col,vec3(0.97,0.95,0.9),smoothstep(0.1,0.22,light)*near);
+ col=mix(col,vec3(0.16,0.12,0.11),smoothstep(0.1,0.22,dark)*near*0.9);
  col=mix(vec3(luma(col)),col,1.35);
  col=(col-0.5)*1.1+0.5;
  // Brush strokes: short diagonal marks catching the light, and the canvas weave under them.
