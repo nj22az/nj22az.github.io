@@ -1,0 +1,202 @@
+{
+  "revision": "C",
+  "date": "2026-10-23",
+  "units": "mm",
+  "basis_commit": "e15be1738e2e68c1f1ba323b9992dc89661751f4",
+  "exterior_nominal_span": [
+    14260,
+    11000
+  ],
+  "exterior_guide_rect": [
+    -330,
+    -170,
+    14260,
+    11000
+  ],
+  "guide_alignment": "Conservative fit comparison, not an exterior mesh survey; side wall skins/eaves excluded from nominal span.",
+  "floor_polygon": [
+    [
+      0,
+      0
+    ],
+    [
+      13600,
+      0
+    ],
+    [
+      13600,
+      7830
+    ],
+    [
+      12500,
+      7830
+    ],
+    [
+      12500,
+      10660
+    ],
+    [
+      1100,
+      10660
+    ],
+    [
+      1100,
+      7830
+    ],
+    [
+      0,
+      7830
+    ]
+  ],
+  "floor_area_m2": 138.75,
+  "fixture_envelopes": [
+    {
+      "id": "G1",
+      "name": "PANTRY",
+      "x": 2400,
+      "y": 1900,
+      "w": 900,
+      "d": 2700
+    },
+    {
+      "id": "G2",
+      "name": "SNACKS",
+      "x": 4900,
+      "y": 1900,
+      "w": 900,
+      "d": 2700
+    },
+    {
+      "id": "G3",
+      "name": "DAILY GOODS",
+      "x": 7600,
+      "y": 1900,
+      "w": 900,
+      "d": 2700
+    },
+    {
+      "id": "C1",
+      "name": "FRESH FOOD",
+      "x": 120,
+      "y": 1900,
+      "w": 850,
+      "d": 3200
+    },
+    {
+      "id": "C2",
+      "name": "DRINKS / BEER / DAIRY",
+      "x": 4100,
+      "y": 6910,
+      "w": 4800,
+      "d": 800
+    },
+    {
+      "id": "F1",
+      "name": "ICE / FROZEN",
+      "x": 2500,
+      "y": 6500,
+      "w": 1200,
+      "d": 700
+    },
+    {
+      "id": "M1",
+      "name": "MAGAZINES / NEWSPAPERS",
+      "x": 1200,
+      "y": 120,
+      "w": 2700,
+      "d": 450
+    },
+    {
+      "id": "S1",
+      "name": "COPY / FAX",
+      "x": 9100,
+      "y": 120,
+      "w": 700,
+      "d": 600
+    },
+    {
+      "id": "P1",
+      "name": "FLOWERS",
+      "x": 11000,
+      "y": 120,
+      "w": 900,
+      "d": 650
+    },
+    {
+      "id": "B1",
+      "name": "BASKETS",
+      "x": 5000,
+      "y": 120,
+      "w": 450,
+      "d": 450
+    },
+    {
+      "id": "T1",
+      "name": "CHECKOUT",
+      "x": 11100,
+      "y": 1300,
+      "w": 600,
+      "d": 3000
+    },
+    {
+      "id": "T2",
+      "name": "BACK WORKTOP",
+      "x": 12930,
+      "y": 1300,
+      "w": 550,
+      "d": 3000
+    },
+    {
+      "id": "R1",
+      "name": "DRY STOCK",
+      "x": 6500,
+      "y": 9200,
+      "w": 500,
+      "d": 1340
+    },
+    {
+      "id": "R2",
+      "name": "COLD BACKSTOCK",
+      "x": 9200,
+      "y": 10040,
+      "w": 1400,
+      "d": 500
+    },
+    {
+      "id": "R3",
+      "name": "EMPTIES",
+      "x": 11400,
+      "y": 10040,
+      "w": 800,
+      "d": 500
+    },
+    {
+      "id": "R4",
+      "name": "CHECK-IN",
+      "x": 11680,
+      "y": 8250,
+      "w": 700,
+      "d": 1200
+    }
+  ],
+  "stair": {
+    "risers": 24,
+    "rise": 167.08333333333334,
+    "going": 250,
+    "width": 1100,
+    "plan": [
+      1220,
+      7950,
+      4950,
+      2320
+    ]
+  },
+  "principal_aisles_mm": [
+    1430,
+    1600,
+    1800
+  ],
+  "staff_aisle_mm": 1230,
+  "counter_height_mm": 780,
+  "new_yokosuka_measurements": "Inherited repository study of 19 October; live catalogue unavailable in this session."
+}
