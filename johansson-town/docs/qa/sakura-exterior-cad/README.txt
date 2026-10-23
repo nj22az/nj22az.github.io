@@ -1,16 +1,15 @@
-SAKURA KONBINI - EXTERIOR-LED CAD / REV C / 23 OCTOBER 2026
+SAKURA KONBINI - SINGLE-STOREY CAD / REV D / 23 OCTOBER 2026
 
-Open Sakura-Konbini-CAD.pdf for three A3 review sheets.
-Open Sakura-Konbini-CAD.dxf in a CAD application. One unit = one millimetre.
-Model space contains the ground plan and the counter and developed stair sections.
-Drawing layers separate exterior, floor, walls, fixtures, cold cases, staff fittings,
-dimensions, proposed routes and text. Dimension entities and text are editable.
+This revision supersedes Rev C. One occupied floor; full rectangular exterior box.
+No internal staircase or second floor. Toilet inside stockroom, reached through a
+hygiene lobby. A compact external rear stair serves only the water tank and roof
+escape route. All desk, cash, tea/rest and storage functions are at ground level.
 
-Sakura-Konbini-Layout.json supplies the proposed fixture coordinates.
-build_sakura_cad.py reproduces the PDF, DXF and initial check data using Python,
-ReportLab and ezdxf. Sakura-CAD-Checks.json includes the final review checks.
-HANDOFF-SAKURA-EXTERIOR-CAD-2026-10-23.md records the scope, evidence and next checks.
+Sakura-Konbini-CAD.pdf: three A3 sheets, ground plan, roof/elevation, schedule.
+Sakura-Konbini-CAD.dxf: editable CAD. One unit = one millimetre.
+Sakura-Konbini-Layout.json: fixture and roof coordinates.
+build_sakura_cad.py: reproduces drawings with Python ReportLab and ezdxf.
+Sakura-CAD-Checks.json: completed drawing checks.
+HANDOFF-SAKURA-EXTERIOR-CAD-2026-10-23.md: current scope and next validation.
 
-The existing exterior is the size limit. No game changes are implemented.
-The upper floor and its support functions remain; no stock is moved away.
-The full physical stair is drawn; final upper/lower frame registration is pending.
+CAD proposal only. The game has not been modified or deployed.
