@@ -148,3 +148,21 @@ like a screenshot looks like it's drawn". New look **Cartoon** (`flat`):
   still draw silhouettes and creases; the wavy stripes are gone except a faint trace far down the road.
 Checks: focused tests pass. Software Chromium shots of Johansson's face, the Sakura front, the school gate and the Community
 Hall in Cartoon (several rounds: grass specks, a jagged dress edge and the paving waves were found and fixed).
+
+## Town book as icon tiles; its button within thumb reach — 23 October 2026, morning
+Owner (iPad screenshots): "It's difficult to reach the menu buttons, and when I'm in the menu I want the menu to be more icon
+based, too much tapping and looking for what I want."
+- `index.html`: Settings moved out of Town tools. Settings, Map ("Walking map") and Places ("Places, homes and people") sit
+  in a new `.book-sections` wrapper, all still `<details>`. Town tools is open by default and Places no longer is. The Field
+  book tile's icon is now book and Look's is star.
+- `src/ui/town-book-home.js` (new): the home screen. `#directory[data-page]` is `home` or the open section, and opening a
+  section's summary (also by webmcp.js and the MCP session) closes the others and shows it as a page; closing it goes home.
+  The book always opens on home (`toggleDir` → `townBook.home()`), and tapping the dimmed town around it closes it. Some
+  tile labels are shortened (Photo, Free camera, Ferry, Save …); Pocket and Bag keep theirs.
+- `town-book.css` (new, loaded last): a 4-column grid (3 under 520 px) of 94 px icon tiles, the section tiles beneath, and a
+  page header with a back arrow. On touch screens the book button is a 60 px round button at bottom right, above the
+  movement button, and fades no further than 0.8.
+Checks: CI guard 359 pass, 1 fail (the same `no-z-fighting` out-of-memory abort). Built runtime in software Chromium at
+820×1180 and 390×844 with touch: the button is visible at bottom right; home grid → Settings page → back → Places page →
+close → reopen shows home; the Free camera tile works from the grid. Not done: a real iPad, and the desktop editions'
+own menu (`johanssonDesktopUI`), which is untouched.

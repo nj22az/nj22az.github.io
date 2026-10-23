@@ -1,0 +1,48 @@
+/*
+ * The Town book as a home screen of icon tiles (src/ui/town-book-home.js), and its button within thumb reach on a
+ * touch screen. The owner, 23 October 2026: "It's difficult to reach the menu buttons, and when I'm in the menu I want
+ * the menu to be more icon based, too much tapping and looking for what I want." Loaded last, so it settles the earlier
+ * layers' tile rules (tomodachi-ui, quiet-ui, line-ui, town-directory) without editing them.
+ */
+
+/* Home: the tools are the page, never folded away. */
+#directory #townTools{margin:0;padding:0;border:0}
+#directory #townTools>summary{display:none}
+#directory #townControls.menu-apps{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:10px!important;margin:4px 0 0!important;padding:0!important}
+#directory #townControls.menu-apps :is(.app-tile,#bagButton){display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:8px!important;
+ min-width:0!important;min-height:94px!important;padding:12px 4px 10px!important;border:0!important;border-radius:16px!important;background:#eef1ea!important;box-shadow:none!important;
+ color:#1d2825!important;font:700 13px/1.2 var(--line-font)!important;text-align:center!important;letter-spacing:0!important;overflow-wrap:anywhere}
+#directory #townControls.menu-apps .app-tile::before{width:34px!important;height:34px!important;flex:0 0 34px!important;margin:0!important}
+#directory #townControls.menu-apps #bagButton>.ui-icon,#directory #townControls.menu-apps #bagButton>svg{width:34px!important;height:34px!important;flex:0 0 34px!important}
+#directory #townControls.menu-apps :is(.app-tile,#bagButton):active{transform:scale(.97)}
+
+/* Settings, Map and Places: three more tiles on the home screen, each opening as a page. */
+#directory .book-sections{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:10px 0 0}
+#directory .book-sections>details{margin:0!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important}
+#directory .book-sections>details>summary{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:94px;padding:12px 4px 10px;
+ list-style:none;border:0;border-radius:16px;background:#e3efe6;color:#1d2825;font:700 13px/1.2 var(--line-font);text-align:center;cursor:pointer}
+#directory .book-sections>details>summary::-webkit-details-marker{display:none}
+#directory .book-sections>details>summary::after{content:none}
+#directory .book-sections>details>summary::before{content:"";display:block;width:34px;height:34px;flex:0 0 34px;background:currentColor;
+ -webkit-mask:var(--icon) center/contain no-repeat;mask:var(--icon) center/contain no-repeat;transform:none}
+
+/* A page: only the open section, its tile turned into a header with a back arrow. */
+#directory:not([data-page="home"]) #townTools{display:none}
+#directory:not([data-page="home"]) .book-sections{display:block;margin:0}
+#directory:not([data-page="home"]) .book-sections>details:not([open]){display:none}
+#directory .book-sections>details[open]>summary{flex-direction:row;justify-content:flex-start;gap:10px;min-height:48px;margin:0 0 8px;padding:8px 4px;
+ background:none;font:800 20px/1.2 var(--line-font)}
+#directory .book-sections>details[open]>summary::before{width:24px;height:24px;flex:0 0 24px;-webkit-mask-image:var(--back);mask-image:var(--back)}
+
+@media (max-width:520px){
+ #directory #townControls.menu-apps{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+
+/* The book's button where a thumb rests: bottom right, bigger, and never faded so far it is lost. */
+@media (pointer:coarse){
+ #hud #directoryButton{top:auto!important;bottom:calc(max(16px,env(safe-area-inset-bottom)) + 60px)!important;right:max(16px,env(safe-area-inset-right))!important;
+  width:60px!important;height:60px!important;min-height:60px!important;padding:0!important;border-radius:50%!important;
+  background:#fff8ea!important;border:1px solid #ffffffcc!important;box-shadow:0 4px 14px rgb(0 0 0 / .18)!important;color:#1d2825!important}
+ #hud #directoryButton::before{width:28px!important;height:28px!important}
+ html.hud-idle #hud #directoryButton{opacity:.8!important}
+}

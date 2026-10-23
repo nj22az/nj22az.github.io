@@ -154,6 +154,7 @@ import { createInkPipeline, GRADE_DEFAULTS } from './render/ink-pipeline.js?snap
 import {LOOKS,isLook,clearSavedLook,lookCSS,lookNeedsPipeline,lookFlatten} from './render/looks.js';
 import {createFreeCamera} from './input/free-camera.js';
 import {createLookPicker,lookSwatch} from './ui/look-picker.js';
+import {setupTownBookHome} from './ui/town-book-home.js';
 import {svg as uiIcon} from './ui/icons.js';
 import { createInkRecovery } from './render/ink-recovery.js';
 import {createGraphicsLifecycle} from './render/graphics-lifecycle.js';
@@ -192,6 +193,8 @@ loadingProgress?.complete('accessories');
 window.__JOHANSSON_RUNTIME_VERSION__='ios-colour-2';
 
 const $=s=>document.querySelector(s);
+/** The Town book's home screen of icon tiles (ui/town-book-home.js); set up once the book's buttons are wired. */
+let townBook=null;
 const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const touch=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;
 // The offline Linux edition (steam-deck/) draws as a desktop whatever its input.
@@ -1868,7 +1871,7 @@ function visitPlace(s){
  if(!travelProgress(activities.state).unlocked)return markPlace(s);
  if(current)leaveRoom();placeAtEntrance(s);resetInput();toggleDir(false);clearNavigation();drawMap();say(s.title+' · You took a familiar shortcut.',5);return true;
 }
-function toggleDir(open){if(inspector?.active)return;if(open){updateDirectory();document.exitPointerLock?.();resetInput();}$('#directory').classList.toggle('hidden',!open);document.body.classList.toggle('town-menu-open',!!open);$('#directoryButton').setAttribute('aria-expanded',String(open));if(open)$('#closeDirectory').focus();else $('#directoryButton').focus();}
+function toggleDir(open){if(inspector?.active)return;if(open){townBook?.home();updateDirectory();document.exitPointerLock?.();resetInput();}$('#directory').classList.toggle('hidden',!open);document.body.classList.toggle('town-menu-open',!!open);$('#directoryButton').setAttribute('aria-expanded',String(open));if(open)$('#closeDirectory').focus();else $('#directoryButton').focus();}
 $('#directoryButton').onclick=()=>toggleDir(true);$('#residentRecordsButton').onclick=()=>{toggleDir(false);activities.residentRecords(directoryCards().map(p=>p.name));};$('#closeDirectory').onclick=()=>toggleDir(false);
 $('#ferryOperationsButton').onclick=()=>{toggleDir(false);document.exitPointerLock?.();resetInput();ferryOperations?.open();};
 function updateDirectory(){
@@ -2095,6 +2098,7 @@ const hudIcons=dressHud({onBag:()=>{if(started&&!activities.paused){toggleDir(fa
 const quietHud=createQuietHud();
 function cleanView(){if(!started)return;toggleDir(false);quietHud.photo(true);}
 $('#cleanViewButton').onclick=cleanView;
+townBook=setupTownBookHome({onClose:()=>toggleDir(false)});
 $('#freeCameraButton').onclick=openFreeCamera;
 function toggleRunning(){if(!started||activities.paused||inspector?.active||seated)return;setRunning(!touchRunning);}
 // Touch-down works while another finger holds the movement stick; a synthetic click may be suppressed.
