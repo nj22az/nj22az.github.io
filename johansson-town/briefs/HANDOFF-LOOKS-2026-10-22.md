@@ -201,3 +201,23 @@ shirt should have its outline on the chest". In `looks.js`:
 - `edges()` now takes its Sobel on colour (RGB length × 0.577), not luminance, with lower thresholds within 4–14 m, so a
   light-blue collar on a light-blue shirt is drawn. This affects every look that uses `edges()`.
 Checked in software Chromium with Johansson's face at 1 m and the Sakura front, in Lines, Manga and Cartoon.
+
+## One stylesheet for the Town book — 23 October 2026
+Owner, yes to "merge the stylesheets: less code, nothing looks different".
+- Every rule whose own target is the book or its button (`#directory…` outside any `:is()/:has()/:not()/:where()`) was moved
+  out of base, context-controls, dual-controls, tomodachi-ui, quiet-ui, context-rail, line-ui, quiet-hud and
+  town-directory into `town-book.css`, in cascade order (172 rules). Shared rules such as line-ui's
+  `:is(#directory,#activity,…)` stay where they are. One moved declaration had to change, because a later shared rule had
+  always overridden it: `#directory h3{color:#41584d}` lost its colour.
+- Pruning: each moved declaration was deleted if no element its rule matches changed any computed value, across 7 viewports
+  (340–1280 wide, one landscape) × 6 states (closed, closed and idle, home, Camera, Map, Settings) in a touch and a
+  mouse Chromium, on a snapshot of the real HUD and book. Rules with :hover/:focus etc., or with any selector matching
+  nothing in the snapshot, were kept whole. That removed 433 of 833 declarations. A further 17 selectors naming classes
+  that exist nowhere in the game's HTML/JS (`.menu-tools`, `.menu-map`, `.izakaya-shortcut`, `.directory-section`) went.
+- Final full comparison (every computed property of every element and pseudo-element under the book and button): identical
+  to the original, for touch and mouse. Totals for those 10 files: 150.4 KB → 138.3 KB, `!important` 198 → 162; the
+  book's rules are in 1 file instead of 8. Orphaned comments removed; quiet-hud's header now points to town-book.css.
+- The tools (CSS parser, mover, pruner, oracle) are scratch scripts, not committed. The test page cannot cover hover/focus,
+  states while other dialogues are open, or person and home cards beyond the snapshot; those rules were kept whole.
+Checks: CI guard 359 pass, 1 fail (the known `no-z-fighting` out-of-memory abort). Real game at 390×844 touch and 1280×800
+mouse: HUD, home, Camera, Map, Settings render as before.
