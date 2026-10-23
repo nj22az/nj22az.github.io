@@ -1,5 +1,5 @@
 import {createComicEffects} from './comic-effects.js';
-import {normalLayer,normalEffects,editEffectsPanels} from './comic-effects-model.mjs';
+import {normalLayer,normalEffects,editEffectsPanels} from './comic-effects-model.mjs?v=20261023-effects-mcp';
 import {sceneLink as editableLink} from './scene-links.mjs';
 import {LOOKS,isLook} from '../johansson-town/src/render/looks.js';
 import {createSceneLooks} from './scene-looks.js';
