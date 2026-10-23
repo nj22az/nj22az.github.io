@@ -1,0 +1,216 @@
+{
+  "revision": "D",
+  "date": "2026-10-23",
+  "units": "mm",
+  "building_storeys": 1,
+  "exterior_nominal_span": [
+    14260,
+    11000
+  ],
+  "proposed_perimeter_allowance_mm": 180,
+  "floor_polygon": [
+    [
+      0,
+      0
+    ],
+    [
+      13900,
+      0
+    ],
+    [
+      13900,
+      10640
+    ],
+    [
+      0,
+      10640
+    ]
+  ],
+  "proposed_clear_floor_area_m2": 147.896,
+  "fixture_envelopes": [
+    {
+      "id": "G1",
+      "name": "PANTRY",
+      "x": 2400,
+      "y": 1900,
+      "w": 900,
+      "d": 2700
+    },
+    {
+      "id": "G2",
+      "name": "SNACKS",
+      "x": 4900,
+      "y": 1900,
+      "w": 900,
+      "d": 2700
+    },
+    {
+      "id": "G3",
+      "name": "DAILY GOODS",
+      "x": 7600,
+      "y": 1900,
+      "w": 900,
+      "d": 2700
+    },
+    {
+      "id": "C1",
+      "name": "FRESH FOOD",
+      "x": 120,
+      "y": 1900,
+      "w": 850,
+      "d": 2600
+    },
+    {
+      "id": "C2",
+      "name": "DRINKS / BEER / DAIRY",
+      "x": 4700,
+      "y": 6580,
+      "w": 4800,
+      "d": 800
+    },
+    {
+      "id": "F1",
+      "name": "ICE / FROZEN",
+      "x": 2800,
+      "y": 6500,
+      "w": 1200,
+      "d": 700
+    },
+    {
+      "id": "M1",
+      "name": "MAGAZINES / NEWSPAPERS",
+      "x": 1200,
+      "y": 120,
+      "w": 2700,
+      "d": 450
+    },
+    {
+      "id": "S1",
+      "name": "COPY / FAX",
+      "x": 9250,
+      "y": 120,
+      "w": 700,
+      "d": 600
+    },
+    {
+      "id": "P1",
+      "name": "FLOWERS",
+      "x": 11300,
+      "y": 120,
+      "w": 900,
+      "d": 650
+    },
+    {
+      "id": "B1",
+      "name": "BASKETS",
+      "x": 5150,
+      "y": 120,
+      "w": 450,
+      "d": 450
+    },
+    {
+      "id": "T1",
+      "name": "CHECKOUT",
+      "x": 11400,
+      "y": 1300,
+      "w": 600,
+      "d": 3000
+    },
+    {
+      "id": "T2",
+      "name": "BACK WORKTOP",
+      "x": 13230,
+      "y": 1300,
+      "w": 550,
+      "d": 3000
+    },
+    {
+      "id": "K1",
+      "name": "TEA / MEAL BREAK",
+      "x": 11100,
+      "y": 7560,
+      "w": 1800,
+      "d": 600
+    },
+    {
+      "id": "R1",
+      "name": "DRY STOCK",
+      "x": 3500,
+      "y": 10020,
+      "w": 3500,
+      "d": 500
+    },
+    {
+      "id": "R2",
+      "name": "COLD BACKSTOCK",
+      "x": 8800,
+      "y": 10020,
+      "w": 1400,
+      "d": 500
+    },
+    {
+      "id": "R3",
+      "name": "EMPTIES",
+      "x": 12880,
+      "y": 10020,
+      "w": 900,
+      "d": 500
+    },
+    {
+      "id": "R4",
+      "name": "CHECK-IN",
+      "x": 13080,
+      "y": 8160,
+      "w": 700,
+      "d": 1200
+    },
+    {
+      "id": "R5",
+      "name": "ARCHIVE / DECOR",
+      "x": 3500,
+      "y": 7620,
+      "w": 2500,
+      "d": 500
+    }
+  ],
+  "toilet": {
+    "x": 120,
+    "y": 8580,
+    "w": 1800,
+    "d": 1940,
+    "access": "stockroom through hygiene lobby"
+  },
+  "roof": {
+    "deck_height": 4010,
+    "tank": {
+      "centre": [
+        10900,
+        8500
+      ],
+      "diameter": 1200,
+      "height": 1200,
+      "curb": 200,
+      "service_clearance": 1200
+    },
+    "external_stair": {
+      "x": 9850,
+      "y": 10820,
+      "w": 4050,
+      "d": 1920,
+      "flight_width": 900,
+      "risers": 20,
+      "rise": 200.5,
+      "going": 250,
+      "access": "ground to roof only; no second floor"
+    }
+  },
+  "internal_stair": null,
+  "upper_occupied_floor": false,
+  "principal_aisles_mm": [
+    1430,
+    1600,
+    1800
+  ],
+  "staff_aisle_mm": 1230,
+  "counter_height_mm": 780
+}
