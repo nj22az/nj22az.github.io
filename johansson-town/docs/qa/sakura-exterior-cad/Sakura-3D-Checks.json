@@ -18,6 +18,14 @@
     "ceilingHeight": 2.8,
     "draws": 49
   },
+  "levelSupplyRoute": {
+    "samples": 41,
+    "envelope": [
+      600,
+      800
+    ],
+    "clear": true
+  },
   "iso": {
     "calls": 49,
     "modeVisible": false,
