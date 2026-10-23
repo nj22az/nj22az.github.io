@@ -621,7 +621,7 @@
         ]
       },
       "capacity": 24,
-      "supplier": "higa-saketen",
+      "supplier": "sakura",
       "drink": {
         "alcohol": true,
         "container": "can",
@@ -1635,7 +1635,7 @@
         "for": [
           "Grandmother Higa",
           "Mrs Sato",
-          "Dr Kakazu"
+          "Nhung"
         ],
         "why": "Soy rice crackers with tea, for visitors.",
         "placed": "Front face, the low boards: a big bag for visitors, easy to lift down, under the crisps."
@@ -2081,7 +2081,7 @@
         "zone": "daily",
         "for": [
           "Miss Higa",
-          "Dr Kakazu",
+          "Nhung",
           "Officer Mori"
         ],
         "why": "Tissues for hay fever, a cold, or a sad film.",

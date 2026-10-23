@@ -9,13 +9,13 @@ test('Mr Fujita gets through three to six bottles an evening, after he signs off
  assert.ok(Math.min(...n)===3&&Math.max(...n)===6,'the whole range turns up');
  // The master (people/ferry-crew.js) is sober on watch: the first bottle is poured when he signs off, never earlier.
  assert.equal(FUJITA_DAY.start,FERRY_WORKING_DAY.signOff);
- // After midnight the evening goes on until the set goes off at a quarter to one; then he sleeps until the van at six.
+ // After midnight the evening goes on until the set goes off at a quarter to one; then he sleeps until six, when he signs on and stands the empties back in the crate.
  for(let m=FUJITA_DAY.end-1440;m<FUJITA_DAY.start;m+=5){const b=fujitaBeer(1440+m);assert.ok(b.phase==='doze'&&m<FUJITA_DAY.collect||b.phase==='waiting',`sober at ${m}`);if(m>=FUJITA_DAY.collect)assert.equal(b.tipsy,0);}
 });
 
-test('the empties pile up all day, go with the morning van, and every bottle is accounted for', () => {
+test('the empties pile up all day, go back in the crate at six, and every bottle is accounted for', () => {
  const day=10,n=bottlesFor(day);let last=-1,pours=0,wasPouring=false;
- // The evening's day runs from the van at six to the next, past midnight.
+ // The evening's day runs from six, when the empties go back in the crate, to the next six, past midnight.
  for(let m=day*1440+FUJITA_DAY.collect;m<(day+1)*1440+FUJITA_DAY.collect;m+=.02){
   const b=fujitaBeer(m),t=((m%1440)+1440)%1440;
   assert.ok(b.glass>=0&&b.glass<=1);
@@ -27,7 +27,7 @@ test('the empties pile up all day, go with the morning van, and every bottle is 
  }
  assert.equal(last,n,'every bottle is on the floor by the end of the day');
  assert.equal(pours,n*FUJITA_DAY.glassesPerBottle,'three glasses a bottle');
- assert.equal(fujitaBeer(day*1440+6*60+15).empties,0,'the van has taken them');
+ assert.equal(fujitaBeer(day*1440+6*60+15).empties,0,'back in the crate at six');
  assert.equal(fujitaBeer((day+1)*1440+3*60).empties,n,'he sleeps among them');
 });
 

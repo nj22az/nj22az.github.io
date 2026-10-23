@@ -28,17 +28,18 @@ export const FEED_PLACES=Object.freeze([
   doing:['waiting for the bus','carrying out a delivery crate','reading the shop window','sheltering under the awning'],
   activity:{hold:['can','coffee'],chance:.7,sit:0},
   shot:{at:[-1,-24],camera:{pos:[3.5,1.7,-21.5],at:[-5.5,2,-27.3]}}},
- {id:'minato',name:'Minato Izakaya',short:'Minato',kind:'bar',regulars:['Thao','Chin','Mr Fujita','Mac','Dr Kakazu','Ren'],
+ {id:'minato',name:'Minato Izakaya',short:'Minato',kind:'bar',regulars:['Thao','Chin','Mr Fujita','Mac','Nhung','Ren'],
   things:['the bottle keep','the karaoke machine','the pink telephone','the yakitori grill','the red stools','the oden pot','the lantern'],
   doing:['queueing for karaoke','tidying the bottle keep','fanning the yakitori grill','sharing a plate of edamame','writing a name on a bottle tag'],
   activity:{hold:['draft','draft','bottle','sake','awamori'],chance:.95,sit:.65},
   shot:{room:'izakaya',time:1200}},
- {id:'sato-ramen',name:'Sato Ramen',short:'Sato Ramen',kind:'food',regulars:['Mrs Sato','Harbour master','Officer Mori','Dr Kakazu','Ms Uezu','Ms Ganaha'],
+ {id:'sato-ramen',name:'Sato Ramen',short:'Sato Ramen',kind:'food',regulars:['Mrs Sato','Harbour master','Officer Mori','Nhung','Ms Uezu','Ms Ganaha'],
   things:['the ticket machine','the stock pot','the red stools','the noodle basket','the chopstick box','the window table for two'],
   doing:['feeding the ticket machine','waiting for a bowl of shoyu ramen','watching the stock pot','slurping noodles','mending something at the window table'],
   activity:{hold:['coffee','can'],chance:.5,sit:.8},
   shot:{room:'ramen'}},
- {id:'books',name:'Front-Row Books',short:'Front-Row Books',kind:'shop',regulars:['Nhung','Officer Mori'],
+ // The shop floor closed on 22 October 2026 (Sakura sells the books; Nhung, the doctor, prints the paper here in the evening).
+ {id:'books',name:'the old Front-Row shop, where the town paper is printed',short:'Front-Row',kind:'shop',regulars:['Nhung','Officer Mori'],
   things:['the window seat','the town paper','the poetry shelf','a paper bookmark slip','the printing bench','Tama the cat'],
   doing:['reading on the window seat','proofreading the town paper','tucking slips into books','negotiating with Tama the cat'],
   activity:{hold:['coffee'],chance:.35,sit:0},
@@ -50,7 +51,7 @@ export const FEED_PLACES=Object.freeze([
   shot:{room:'onsen'}},
  // The town hall's place is the Community Hall's kitchen since the mayor's office went (21 October 2026,
  // briefs/town-hall-zone.md phase M); its backdrops were shot on 22 October 2026 (node tools/render-feed-backdrops.mjs town-hall).
- {id:'town-hall',name:'the Community Hall',short:'the town hall',kind:'civic',regulars:['Dr Kakazu','Mrs Nakamura'],captured:true,
+ {id:'town-hall',name:'the Community Hall',short:'the town hall',kind:'civic',regulars:['Nhung','Mrs Nakamura'],captured:true,
   things:['the document register','the request box','the booking sheet','the rice cookers','the work islands','the aprons on their pegs'],
   doing:['filing a request at the register','putting a request in the box','booking the stoves for Saturday','reading the booking sheet','waiting for the rice to cook','tying on an apron'],
   activity:{hold:['coffee'],chance:.5,sit:0},
@@ -65,7 +66,7 @@ export const FEED_PLACES=Object.freeze([
   // (from the back corner by the door: the blackboard, the sea windows and the rows of desks; at noon on a Wednesday in
   // term, 22 October (day 294, town-clock.js): the board is dated by the day it is drawn on, and 1 January is a holiday)
   shot:{room:'school',camera:{pos:[-3.93,1.6,3.07],at:[.6,1,-.6]},time:294*1440+720}},
- {id:'clinic',name:'Minato Clinic',short:'the clinic',kind:'civic',regulars:['Dr Kakazu'],captured:true,
+ {id:'clinic',name:'Minato Clinic',short:'the clinic',kind:'civic',regulars:['Nhung'],captured:true,
   things:['the waiting bench','the eye chart','the examination couch','the X-ray lightbox','the scales and the height rod','the medicine cabinet','the clinic hours'],
   doing:['waiting on the bench','reading the eye chart','being weighed','looking at an X-ray on the lightbox','reading the clinic hours','sitting down for a check-up'],
   activity:{hold:[],chance:0,sit:.6},
@@ -83,13 +84,15 @@ export const FEED_PLACES=Object.freeze([
   shot:{room:'ferry-terminal',time:840}},
  // Higa Liquor and the coin laundry (the owner, 21 October 2026; commerce/higa-liquor.js, commerce/coin-laundry.js): their
  // regulars are the people the data puts there, their things are in the rooms, and the laundry's noticeboard is where the
- // street's story hooks are pinned (LAUNDRY_NOTICES). Street shots, waiting for `render-feed-backdrops.mjs higa-liquor coin-laundry`.
- {id:'higa-liquor',name:'Higa Liquor',short:'Higa Liquor',kind:'shop',regulars:['Grandmother Higa','Miss Higa','Kōji','Tetsuo','Mac'],captured:false,
-  things:['the counter and its abacus','the delivery book','the family kusu that is not for sale','the “back at five” card on the door','the cold case','the awamori jars','the crates of empties','the bench out front','the crate stools','the sugidama'],
-  doing:['buying a bottle for a visit','reading the delivery book upside down','asking the price of the old jar','loading the round into the kei truck','sitting on the bench with a bottle','waiting for the shop to open at five','counting the empties back'],
+ // street's story hooks are pinned (LAUNDRY_NOTICES). Higa Liquor is shut for good since 22 October 2026 (the owner): its
+ // story place is the shutter with the notice and the bench out front, where the evening still sits with a bottle from
+ // Sakura. Street shots, waiting for `render-feed-backdrops.mjs higa-liquor coin-laundry`.
+ {id:'higa-liquor',name:'the shut Higa Liquor and its bench',short:'Higa Liquor',kind:'shop',regulars:['Tetsuo','Mac'],captured:false,
+  things:['the shutter, down for good','the closing notice taped to it','the family kusu behind the shutter, still not for sale','the crates of empties','the bench out front','the crate stools','the sugidama going brown'],
+  doing:['reading the notice on the shutter','pointing a visitor down the street to Sakura','sitting on the bench with a bottle from Sakura','counting the empties back','asking after the old jar'],
   activity:{hold:['bottle','can'],chance:.6,sit:.4},
   shot:{at:[3.3,8.4],camera:{pos:[-1.5,1.7,4.5],at:[7.5,1.8,8.8]},time:1110}},
- {id:'coin-laundry',name:'the coin laundry',short:'the laundry',kind:'shop',regulars:['Ms Ganaha','Thao','Ms Uezu','Dr Kakazu'],captured:false,
+ {id:'coin-laundry',name:'the coin laundry',short:'the laundry',kind:'shop',regulars:['Ms Ganaha','Thao','Ms Uezu','Nhung'],captured:false,
   things:['the noticeboard','the missing-cat notice','the found blue sandal','the manga shelf','the vinyl bench','the change machine','dryer 2, which eats coins','the folding counter','the powder box','a basket of somebody’s washing'],
   doing:['waiting for the spin','reading a manga on the bench','pinning up a notice','folding warm towels at the window','feeding coins into the dryer','reading the noticeboard','emptying the coin boxes'],
   activity:{hold:['can','coffee'],chance:.35,sit:.5},

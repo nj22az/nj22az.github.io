@@ -2,7 +2,8 @@ import * as THREE from '../../../vendor/three.module.js';
 import {benchSeat} from '../seat-slots.js';
 import {buildAvatar} from '../../avatars/build.js';
 import {createAvatarAnimator} from '../../avatars/animate.js';
-import {normalizeRecipe} from '../../avatars/recipe.js';
+import {recipeFor} from '../../avatars/cast.js';
+import {CLINIC_HOURS_TEXT} from '../../people/clinic-hours.js';
 import {createPlanKit} from './house-plan.js';
 
 /**
@@ -141,22 +142,24 @@ export function buildCommunityKitchen({room,reg,action,collider=()=>{}}){
 }
 
 /**
- * 診療所, the island clinic: the old meeting room, given over to the doctor the prefecture
- * posts here for two years at a time (Dr Kakazu, this year). Pink tiles, peach walls, the
+ * 診療所, the island clinic: the old meeting room, given over to the island doctor, Nhung since 22 October 2026
+ * (the owner: Dr Kakazu, posted from Naha, retired into her; her hours are people/clinic-hours.js). Pink tiles, peach walls, the
  * examination couch behind its pink curtain, the doctor's desk with the beige monitor and
  * the X-ray lightbox, the round green stool for the patient, the glass medicine cabinet,
  * the Landolt-ring eye chart, the drip stand and the scales by the door.
  *
  * Drawn from scratch to the room contract; nothing in it is anybody else's model.
  */
-export const CLINIC_HOURS=Object.freeze(["Mon–Fri · Mon–Fri 9:00–12:00, 14:00–17:00","Earth · Sat 9:00–12:00",'After hours: ring the bell, the doctor lives behind the clinic','Emergencies to Naha by the ferry, or the prefecture helicopter from Kitano-jima']);
-export const DOCTOR='Dr Kakazu';
-const DOCTOR_RECIPE={name:DOCTOR,age:'adult',body:{height:.42,build:.4,skin:'#e3b48e'},head:{size:.46,shape:.5,form:'oval',jaw:.35,cheeks:.4},
- hair:{style:'ponytail',colour:'#1f1813'},eyes:{style:'almond',colour:'#2a1d16',size:.5},brows:{style:'straight',colour:'#1f1813',size:.45},
- nose:{style:'line',size:.4},mouth:{style:'small',colour:'#b8544a',size:.42},glasses:{style:'half',colour:'#5a4a3a'},blush:.15,
- outfit:{top:'jacket',topColour:'#f6f6f2',bottom:'trousers',bottomColour:'#3a4658',shoes:'#f4f1ea',accent:'#7fb0d8'},accessories:{neckwear:'none'}};
+export const CLINIC_HOURS=CLINIC_HOURS_TEXT;
+/** Who the doctor is (the cast's name, people/cast.js), and what the island calls her. */
+export const DOCTOR='Nhung',DOCTOR_TITLE='Dr Nhung';
 
-export function buildClinic({room,reg,action,collider=()=>{}}){
+/**
+ * `doctorIn`: whether the doctor is at work in the clinic as the player comes in (game.js reads Nhung's own day: her
+ * body indoors at work). Read once, at the door: she is at her desk, or the desk is empty, and she never vanishes while
+ * the player watches. Without it (the room tests, the comic backdrops) she is at her desk.
+ */
+export function buildClinic({room,reg,action,collider=()=>{},doctorIn=()=>true}){
  const group=new THREE.Group();group.name='Clinic';room.add(group);
  const box=shell(group,{floor:0xf0b8b0,wall:0xf6e2d2,dado:0xeab4b4,ceiling:0xf7f3ea});
  const {w,d,h}=SHELL,hw=w/2,hd=d/2,white=0xf4f3ee,steel=0xc4c9c6;
@@ -231,22 +234,26 @@ export function buildClinic({room,reg,action,collider=()=>{}}){
  const waitingSeat=new THREE.Object3D();waitingSeat.position.set(1,1,.75);waitingSeat.userData.npcInteraction=false;// (its back to the partition, z .5: the sitter faces the waiting room and the street door, +z, and stands up into it)
  waitingSeat.userData.seat=benchSeat({id:'clinic-waiting-bench',position:[1,0,.75],stand:[1,0,1.5],surfaceY:.42,eyeY:1.14,yaw:Math.PI,pitch:0},{length:1.3,front:.2});group.add(waitingSeat);reg(waitingSeat,'Sit in the clinic waiting room',()=>action('seat','Clinic waiting bench','A place to rest until the doctor is ready.'),true);
  // The hours board inside the door, and a calendar from the pharmacy in Naha.
- const hours=plate(group,"Clinic",{w:.7,h:.36,at:[1.2,1.75,hd-.03],ry:Math.PI,bg:'#f8f4ea',fg:'#c0392b',sub:"Mon–Fri 9–12 · 14–17 · Earth 9–12"});hours.name='Clinic hours';
+ const hours=plate(group,"Clinic",{w:.7,h:.36,at:[1.2,1.75,hd-.03],ry:Math.PI,bg:'#f8f4ea',fg:'#c0392b',sub:"Mon–Fri 9–12 · 14–17 · Sat 9–12"});hours.name='Clinic hours';
  box([.36,.5,.02],[-1.85,1.6,-hd+.03],0xf8f4ea,'Pharmacy calendar');box([.32,.18,.02],[-1.85,1.73,-hd+.04],0x7fb0d8);
- // The doctor at her desk, turned to the patient's stool.
- let doctor=null;
+ // The doctor at her desk, turned to the patient's stool: Nhung, drawn as the cast draws her (avatars/cast.js), only
+ // while her day has her here; then she is herself to talk to (the favours that ask the player to call in at the clinic).
+ let doctor=null;const here=doctorIn();
  // Faces are painted on a canvas, so without a page (the room tests) she is left out.
- if(typeof document!=='undefined'&&document.createElement){
-  doctor=buildAvatar(normalizeRecipe(DOCTOR_RECIPE),{shadows:true,faceSize:128});doctor.animator=createAvatarAnimator(doctor);
-  const seat=new THREE.Group();seat.name=DOCTOR;seat.position.set(chair[0],0,chair[1]);seat.rotation.y=-Math.PI/2+.4;
+ if(here&&typeof document!=='undefined'&&document.createElement){
+  doctor=buildAvatar(recipeFor(DOCTOR),{shadows:true,faceSize:128});doctor.animator=createAvatarAnimator(doctor);
+  const seat=new THREE.Group();seat.name=DOCTOR_TITLE;seat.position.set(chair[0],0,chair[1]);seat.rotation.y=-Math.PI/2+.4;
   doctor.root.rotation.y=0;seat.add(doctor.root);group.add(seat);
+  reg(seat,'Talk to '+DOCTOR_TITLE,()=>action('resident',DOCTOR),true);
  }
- anchor([stool[0],.9,stool[1]],'Sit down for a check-up',()=>action('inspect','Check-up · '+DOCTOR,"She wheels round, warms the stethoscope on her palm and listens: front, back, \"breathe in, hold it.\" Blood pressure 132 over 84. \"The salt in the champurū, Mayor, and the awamori. Walk to the lighthouse and back twice a week and come and see me after Obon.\" She writes it on a pink card and puts it in the chart rack under Yo."));
+ // With the doctor out, the stool and the scales say so instead of her lines.
+ const out='The doctor is out: surgery is '+CLINIC_HOURS[0].replace(/^Mon–Fri /,'Monday to Friday ')+', and '+CLINIC_HOURS[1].replace(/^Sat /,'Saturday ')+'. After hours, ring the bell.';
+ anchor([stool[0],.9,stool[1]],'Sit down for a check-up',()=>!here?action('read','Check-up · '+DOCTOR_TITLE,out):action('inspect','Check-up · '+DOCTOR_TITLE,"She wheels round, warms the stethoscope on her palm and listens: front, back, \"breathe in, hold it.\" Blood pressure 132 over 84. \"The salt in the champurū, Mayor, and the awamori. Walk to the lighthouse and back twice a week and come and see me after Obon.\" She writes it on a pink card and puts it in the chart rack under Yo."));
  anchor([-.75,1.4,-hd+.4],'Read the eye chart',()=>action('inspect',"Visual acuity chart · eye chart",'Rings with a gap in them, smaller row by row: say which way the gap points. You get to the sixth row before the rings close up. 1.0 in the right eye, 0.8 in the left; the reading glasses stay.'));
- anchor([1.45,1.6,-hd+.5],'Look at the X-ray',()=>action('inspect','Chest film',"Somebody's ribs on the lightbox, a name in marker on the corner tape: Oshiro. The doctor has drawn a small circle on the left lung and written old · old, nothing to worry about, with a smiling face."));
+ anchor([1.45,1.6,-hd+.5],'Look at the X-ray',()=>action('inspect','Chest film',"Somebody's ribs on the lightbox, a name in marker on the corner tape: Fujita. The doctor has drawn a small circle on the left lung and written old · old, nothing to worry about, with a smiling face."));
  anchor([mx+.5,1.3,mz],'Look in the medicine cabinet',()=>action('read','Medicine cabinet',"Brown bottles and white boxes behind glass, every shelf labelled in the doctor's neat katakana: Antipyretic for fevers, Stomach medicine for stomachs, the habu antivenom in the fridge underneath (two vials, checked monthly, the date on the door), seasickness tablets for the ferry, sting cream for jellyfish season, and one shelf that just says Children · children."));
- anchor([1.5,1,2.0],'Weigh yourself',()=>action('inspect','Scales','The needle swings and settles at 84 kilograms. The doctor, without turning round: "Shoes on, Mayor. Call it eighty-three."'));
- anchor([cx+.3,.9,-1.2],'Look at the couch',()=>action('inspect','Examination couch','Green vinyl under a roll of paper sheet, the curtain on its rail half drawn. Every child on the island has had a splinter out here, and most of the fishermen a fish hook.'));
+ anchor([1.5,1,2.0],'Weigh yourself',()=>action('inspect','Scales','The needle swings and settles at 84 kilograms.'+(here?' The doctor, without turning round: "Shoes on, Mayor. Call it eighty-three."':' Shoes on, so call it eighty-three.')));
+ anchor([cx+.3,.9,-1.2],'Look at the couch',()=>action('inspect','Examination couch','Green vinyl under a roll of paper sheet, the curtain on its rail half drawn. Vy, Riku and Mai have each had a splinter out here, and Kōji, the island’s one fisherman, a fish hook, twice.'));
  anchor([1.2,1.6,hd-.4],'Read the clinic hours',()=>action('read',"Minato Clinic · Minato Clinic",CLINIC_HOURS.join('\n')));
  const layout={...layoutFor(),clinic:true};
  if(doctor){const animator=doctor.animator;layout.tick=(dt)=>animator.update(Math.min(.1,dt||0),{speed:0,seated:true,seatHeight:.47,expression:'smile'});layout.tick(0);}

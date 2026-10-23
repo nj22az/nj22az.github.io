@@ -334,8 +334,8 @@ Whether to raise the host's MCP timeout is the creator's decision, and no reposi
 - The can in the hand is blue (`drink.handColour` `#2d6b9a`) while the can on the shelf is gold.
 - The posters advertise GOLDEN MILK TEA, NIGHT SHIFT and STICK BITES, which are not the shelf's NAGI, PORT 88 and
   KOMOREBI (`store-advertising.js` `POSTER_SPECS`).
-- Who supplies alcohol contradicts itself: `economy/goods.js` and `economy/town-economy.js` have Sakura supplying Higa,
-  while `merchandising.js`, CLAUDE.md and the products data have Higa supplying Sakura.
+- ~~Who supplies alcohol contradicts itself~~: settled on 22 October 2026, when Higa Liquor closed. Sakura Trading supplies
+  all of it, in `merchandising.js`, the economy, CLAUDE.md and the products data (`supplier: "sakura"`).
 - A real brand, Orion, is still used in World (`data/studio/brand-rules.json` `knownIssues` lists every place).
 - The beer's and the coffee's backs say "Nutrition (per bottle)" on a can (`pack.back.unit`).
 - The old `PACKS` listed a few shapes and sizes the shelf never built (`pack.declared`: orange as a carton, the sandwich

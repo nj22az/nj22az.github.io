@@ -142,8 +142,13 @@ that makes more or better stories.
 - **The town's trade** (`johansson-town/src/commerce/merchandising.js`): Sakura Shōten, Thuan's outright, is a konbini
   *and* the town's supplier of everyday goods, from its depot in the Quay Warehouse (Sakura Trading), and of flowers and
   decorations since Mrs Kinjō retired (the consolidation's ruling 3; Rainflower Florist no longer supplies anything).
-  Higa Liquor supplies all alcohol (to Sakura, Minato, Sato Ramen and the Coral Bay Bar on Kitano-jima); Front-Row Books
-  & Stationery supplies office supplies. Blue Coral on Rainflower Lane is the town's only ice-cream shop.
+  Since Nhung became the island doctor (the owner, 22 October 2026; Dr Kakazu retired into her) Sakura also sells the
+  books and supplies the stationery and office goods Front-Row did; Front-Row is the town paper's print room in the
+  evenings, and Sakura shuts on Saturdays. Higa Liquor has closed (the owner, 22 October 2026): Sakura sells all the
+  alcohol over its counter and supplies it to Minato, Sato Ramen, the Coral Bay Bar on Kitano-jima and Mr Fujita's shed
+  on Sakura Trading's round, Kōji's on his weeks ashore (`commerce/trade-round.js`); the shop stands shut with a notice
+  on its shutter, and Grandmother Higa keeps only the bathhouse. Blue Coral on Rainflower Lane is the town's only
+  ice-cream shop.
 
 ## Sjöskolan
 

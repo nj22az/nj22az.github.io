@@ -523,7 +523,7 @@ export function validateProduct(p,{where=`products.${p?.id}`,brands,retired=[]}=
   const d=p.drink;
   if(!d||typeof d!=='object'||typeof d.alcohol!=='boolean'||!['can','bottle'].includes(d.container)||!isHex(d.handColour)||Object.keys(d).some(k=>!['alcohol','container','handColour'].includes(k)))
    add(`${where}.drink`,'drink','A drink of its own is {alcohol: true or false, container: "can" or "bottle", handColour: #rrggbb}.');
-  else if(d.alcohol&&p.supplier!=='higa-saketen')add(`${where}.supplier`,'supplier','All the alcohol in town comes from Higa Liquor (supplier "higa-saketen"), Sakura\'s beer included.');
+  else if(d.alcohol&&p.supplier!=='sakura')add(`${where}.supplier`,'supplier','All the alcohol in town comes from Sakura Trading (supplier "sakura") since Higa Liquor closed (22 October 2026), Sakura\'s beer included.');
  }
  return out;
 }

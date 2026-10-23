@@ -14,6 +14,7 @@ import {SAKURA_CLERK_POINT,SAKURA_CLERK_APPROACH,SAKURA_QUEUE} from '../src/worl
 import {ACCOUNTS} from '../src/commerce/merchandising.js';
 import {HARBOUR_LINE} from '../src/people/commuter-schedule.js';
 import {sakuraPaperwork} from '../src/commerce/paperwork.js';
+import {TRADE_ROUND} from '../src/commerce/trade-round.js';
 import {SAKURA_HOURS_TEXT,sakuraClerkAt} from '../src/commerce/sakura-rota.js';
 import {CORE,SUPPORTING} from '../src/people/roster.js';
 import {BUDGETS} from '../src/edition.js';
@@ -74,17 +75,22 @@ test('the notes, the calendar and the rota say what the town’s data says',()=>
  assert.deepEqual(coral.lines,['orange','water']);assert.match(coral.delivery,/morning car ferry/);
  assert.match(note('boat'),/8:30 boat/);assert.ok(HARBOUR_LINE.includes(510),'the 08:30 boat');
  assert.match(note('boat'),/mandarin juice, water/);
- const higa=sakuraPaperwork().find(p=>p.id==='higa-invoice');
- assert.ok(higa.rows.some(r=>/^Sat 18 Oct/.test(r[0])&&r[1]===5),'5 cases on Saturday the 18th');
- assert.equal(higa.totals.deposit/higa.totals.crates,300);assert.match(note('higa'),/5 cases.*¥300 a crate/);
+ // The drink round, Sakura Trading's since Higa Liquor closed (22 October 2026): Kōji loads at the depot at 10:30 on
+ // Tuesdays and Fridays (trade-round.js).
+ assert.equal(sakuraPaperwork().some(p=>p.id==='higa-invoice'),false,'no Higa Liquor invoice any more');
+ assert.deepEqual(TRADE_ROUND.days,[2,5]);assert.equal(TRADE_ROUND.start,630);assert.equal(TRADE_ROUND.load.place,'warehouse');
+ assert.match(note('round'),/^Tue · Fri 10:30: Kōji’s round at the depot/);
  assert.match(note('eisa'),/Eisa poster/);
  const riku=[...CORE,...SUPPORTING].find(p=>p.id==='riku');assert.ok(riku&&riku.age<12,'Riku is a boy at school');
- // October 1997: the first was a Wednesday; the Higa marks are Saturdays.
+ // October 1997: the first was a Wednesday; the round's marks are every Tuesday and Friday, the closed marks Saturdays.
  assert.equal(new Date(1997,9,1).getDay(),SMALL_OFFICE_CALENDAR.firstWeekday);
- for(const m of SMALL_OFFICE_CALENDAR.marks.filter(m=>m.text==='Higa'))assert.equal(new Date(1997,9,m.day).getDay(),6,m.day+' is a Saturday');
+ const roundDays=SMALL_OFFICE_CALENDAR.marks.filter(m=>m.text==='round').map(m=>m.day);
+ assert.deepEqual(roundDays,Array.from({length:31},(_,i)=>i+1).filter(d=>TRADE_ROUND.days.includes(new Date(1997,9,d).getDay())),'every round day, and only those');
+ assert.equal(SMALL_OFFICE_CALENDAR.marks.some(m=>m.text==='Higa'),false);
+ for(const m of SMALL_OFFICE_CALENDAR.marks.filter(m=>m.text==='closed'))assert.equal(new Date(1997,9,m.day).getDay(),6,m.day+' is a Saturday');
  // The rota: the shop's own, day by day (a week of October 1997 in town minutes: 13 October was a Monday).
- assert.deepEqual(SMALL_OFFICE_ROTA.map(r=>r.who),['Thuan','Thuan','Thuan','Thuan','Thuan','Nhung','Nhung']);
- assert.ok(SMALL_OFFICE_ROTA.every(r=>r.hours===SAKURA_HOURS_TEXT&&r.hours==='9:00–20:30'));
+ assert.deepEqual(SMALL_OFFICE_ROTA.map(r=>r.who),['Thuan','Thuan','Thuan','Thuan','Thuan','closed','Nhung']);
+ assert.ok(SMALL_OFFICE_ROTA.filter(r=>r.who!=='closed').every(r=>r.hours===SAKURA_HOURS_TEXT&&r.hours==='9:00–20:30'));
  assert.ok(['Thuan','Nhung'].includes(sakuraClerkAt(600)));
 });
 

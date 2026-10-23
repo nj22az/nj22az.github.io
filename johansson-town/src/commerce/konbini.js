@@ -1,7 +1,8 @@
 import {GROCERY_ITEMS} from './catalogue.js';
 import {takeShopStock,returnShopStock,SOLD_OUT} from './shop-stock.js';
 import {recordSakuraSale,shopEntry} from './sakura-economy.js';
-import {sakuraTillOpen,SAKURA_HOURS_TEXT} from './sakura-rota.js';
+import {sakuraTillOpen,SAKURA_HOURS_TEXT,SAKURA_DAYS_TEXT} from './sakura-rota.js';
+import {ALCOHOL} from '../economy/goods.js';
 
 /**
  * The counter ritual at Sakura Shōten.
@@ -156,7 +157,7 @@ export function checkout(state,{warm=false,bag=true}={},minutes=0,thuanAvailable
  const m=((minutes%1440)+1440)%1440;
  const lines=basketLines(state),total=basketTotal(state);
  if(!lines.length)return {ok:false,message:'Your basket is empty.'};
- if(!sakuraHoursOpen(minutes))return {ok:false,message:'The till is closed. Sakura is open '+SAKURA_HOURS_TEXT+'.'};
+ if(!sakuraHoursOpen(minutes))return {ok:false,message:'The till is closed. Sakura is open '+SAKURA_HOURS_TEXT+', '+SAKURA_DAYS_TEXT+'.'};
  if(thuanAvailable===false)return {ok:false,message:SAKURA_AWAY_MESSAGE};
  if(state.yen<total)return {ok:false,message:'You do not have enough yen for all of that.'};
  if(state.inventory.length+konbini.basket.length>100)return {ok:false,message:'Your bag is full.'};
@@ -243,12 +244,24 @@ export const HOT_SNACKS=Object.freeze([
  {id:'oden',jp:"Oden",name:'Oden cup',cost:200,unitCost:80,line:'Daikon, egg and a fish cake from the pot, with a ladle of broth and a dab of karashi.'},
 ]);
 const HOT_BY_ID=new Map(HOT_SNACKS.map(s=>[s.id,s]));
+/**
+ * The bottles over the counter (the owner, 22 October 2026: Higa Liquor has closed, and Sakura sells all the alcohol): what
+ * Grandmother Higa's counter sold, kept in the stock room behind the till and handed over by whoever has it, at the
+ * Higas' prices, and rung in at what they cost Sakura to land (economy/goods.js, by the millilitre). The cans of lager
+ * stay in the cold cabinet's column nearest the till (products-data.js beer).
+ */
+const landedPerMl=(id,ml)=>Math.round((ALCOHOL[id].wholesale+ALCOHOL[id].freight)*ml/ALCOHOL[id].ml);
+export const SAKURA_BOTTLES=Object.freeze([
+ Object.freeze({id:'awamori-mini',name:'Awamori miniature (180 ml)',cost:600,unitCost:landedPerMl('awamori-720',180),item:'Awamori miniature',text:'A little 180 ml bottle of island awamori, 30 per cent, wrapped in newspaper the way the Higas wrapped them. Keep it for a guest, Thuan says.'}),
+ Object.freeze({id:'umineko-large',name:'Umineko lager, large bottle',cost:330,unitCost:landedPerMl('beer-bottle',633),item:'Umineko lager',text:'A large returnable bottle from the stock room, ¥5 back on the empty. Bring the bottle back, Thuan says; they go back to the depot.'}),
+ Object.freeze({id:'sake-cup',name:'One-cup sake',cost:220,unitCost:landedPerMl('sake-1800',180),item:'One-cup sake',text:'A glass cup of sake with a ring-pull lid, the kind a man takes to the bench outside the old liquor shop.'}),
+]);
 
 /** Buys one hot snack at the counter: cash, straight into the bag, rung into the till. */
 export function buyHotSnack(state,id,minutes=0,thuanAvailable=true){
  const snack=HOT_BY_ID.get(id);
  if(!snack)return {ok:false,message:'That is not in the hot case today.'};
- if(!sakuraHoursOpen(minutes))return {ok:false,message:'The hot case is switched off. Sakura is open '+SAKURA_HOURS_TEXT+'.'};
+ if(!sakuraHoursOpen(minutes))return {ok:false,message:'The hot case is switched off. Sakura is open '+SAKURA_HOURS_TEXT+', '+SAKURA_DAYS_TEXT+'.'};
  if(thuanAvailable===false)return {ok:false,message:SAKURA_AWAY_MESSAGE};
  if(state.yen<snack.cost)return {ok:false,message:'You do not have enough yen for that.'};
  if(state.inventory.length>=100)return {ok:false,message:'Your bag is full.'};

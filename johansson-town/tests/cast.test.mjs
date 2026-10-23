@@ -89,8 +89,8 @@ test('the registry is built from the cast: one home each, empty standing homes t
  assert.deepEqual(CAST.filter(homeGone).map(p=>p.name),[],'nobody in the cast names a retired home');
 });
 
-test('the ten retired identities have no body, household, shift, nameplate, place or relationship anywhere (phase 4)',()=>{
- assert.equal(RETIRED.length,10);
+test('the retired identities (phase 4’s ten, and Dr Kakazu into Nhung) have no body, household, shift, nameplate, place or relationship anywhere',()=>{
+ assert.equal(RETIRED.length,11);
  const bodies=[...NEIGHBOURS.map(n=>n.name),...WORLD_CAST.map(p=>p.name),...FERRY_PEOPLE];
  for(const r of RETIRED){
   for(const name of [r.name,...r.was,r.id]){
@@ -108,7 +108,7 @@ test('the ten retired identities have no body, household, shift, nameplate, plac
  // No duplicate bodies: a street neighbour is never also a walking resident, and every neighbour is one body.
  assert.equal(new Set(NEIGHBOURS.map(n=>n.name)).size,NEIGHBOURS.length);
  for(const n of NEIGHBOURS)assert.ok(!WORLD_CAST.some(p=>p.name===n.name),n.name+' has one body');
- assert.equal(CAST.filter(p=>!p.supporting).length,21);assert.equal(CAST.length,26);
+ assert.equal(CAST.filter(p=>!p.supporting).length,20);assert.equal(CAST.length,25);
 });
 
 test('the guide shows only the cast',async()=>{

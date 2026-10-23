@@ -110,7 +110,7 @@ export const TOWN_DIALS=Object.freeze(Object.fromEntries(Object.entries({
  Johansson:[.3,.7,.7,.8],          // Wanderer: sixty-odd, sunburnt, in no hurry, glad of everything
  Thuan:[.7,.35,.75,.75],           // Festival friend: quick, polite, bright as her blouse
  'Miss Higa':[.25,.3,.3,.3],        // Lighthouse keeper: steady at the blackboard and the bandai
- Nhung:[.6,.65,.4,.75],             // Joker: the eldest sister, playful mischief behind the bookshop counter
+ Nhung:[.6,.65,.4,.75],             // Joker: the eldest sister, playful mischief behind the doctor’s desk
  Chin:[.7,.4,.75,.7],             // Festival friend: enthusiastic tinkerer
  'Mrs Sato':[.4,.75,.7,.3],        // Big heart: affectionately formidable
  'Harbour master':[.3,.7,.3,.65],  // Easy neighbour: dry wit, soft heart

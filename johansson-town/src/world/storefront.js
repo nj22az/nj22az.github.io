@@ -127,8 +127,8 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
   box([.58,.1,.34],[door-2.5,1.84,wall-.155],0x5d564a);           // its lid
   box([1.2,.86,.5],[-half+2.8,2.3,wall-.235],0x6d736d);           // extractor
   for(const y of [2.12,2.3,2.48])box([1.0,.06,.54],[-half+2.8,y,wall-.275],0x4a4f4a);
-  // The empties, back in their cases on a pallet by the door for Higa Liquor's van to take away (Higa supplies
-  // Sakura's beer: commerce/merchandising.js). The row against the wall stands two high.
+  // The empties, back in their cases on a pallet by the door for the depot's hand truck to take away (Sakura Trading
+  // buys in its own beer since Higa Liquor closed: commerce/merchandising.js). The row against the wall stands two high.
   const pallet=[half-4.4,wall-.52];
   box([.9,.06,.7],[pallet[0],.03,pallet[1]],0x5d5a50);             // the pallet
   for(const [dx,dz,layer,colour] of [[-.22,-.17,0,0xd9a832],[.22,-.17,0,0xb8432f],[-.22,.17,0,0xb8432f],[.22,.17,0,0xd9a832],[-.22,.17,1,0xd9a832],[.22,.17,1,0xb8432f]]){

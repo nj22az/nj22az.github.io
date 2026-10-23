@@ -6,7 +6,7 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {createIslandBusinesses,businessId,migratedVisits} from '../src/world/businesses.js';
 import {createTown} from '../src/world/town.js';
-import {assignWorkplaces} from '../src/people/workplaces.js';
+import {assignWorkplaces,EVENING_DESKS,workRoomOf} from '../src/people/workplaces.js';
 import {createCastAI} from '../src/people/schedules.js';
 import {residentPlan} from '../src/people/social.js';
 import {createWorkplaceResidents} from '../src/people/workplace-residents.js';
@@ -59,7 +59,9 @@ test('published businesses have reachable real doors and a clear passage beside 
   assert.notDeepEqual(TOWN_DESTINATIONS.workshop,TOWN_DESTINATIONS.books);assert.deepEqual(TOWN_DESTINATIONS.workshop,[sites.find(s=>s.id==='form3d').door[0],sites.find(s=>s.id==='form3d').door[2]]);
   assert.deepEqual(TOWN_DESTINATIONS.books,[sites.find(s=>s.id==='frontrow').door[0],1.6]);
   const roles=Object.fromEntries(world.people.map(p=>[p.profile.name,p.profile.workSite]));
-  for(const name of ['Nhung','Reiko'].filter(inCast))assert.equal(roles[name],'frontrow');for(const name of ['Chin','Tetsuo'].filter(inCast))assert.equal(roles[name],'form3d');
+  // Nhung is the island doctor (22 October 2026): her work is the clinic, and nobody keeps Front-Row's floor by day.
+  if(inCast('Nhung'))assert.equal(roles.Nhung,'clinic');assert.ok(!Object.values(roles).includes('frontrow'),'Front-Row’s shop floor is unstaffed');
+  for(const name of ['Chin','Tetsuo'].filter(inCast))assert.equal(roles[name],'form3d');
   if(inCast('Harbour master'))assert.equal(roles['Harbour master'],'office');if(inCast('Mrs Sato'))assert.equal(roles['Mrs Sato'],'ramen');
   for(let minute=0;minute<1440;minute+=10)for(const p of world.people){
    // Sato Ramen is on the island now, beside Minato: open at lunch, with Mrs Sato in from 10:30.
@@ -72,7 +74,7 @@ test('published businesses have reachable real doors and a clear passage beside 
 test('bookshop and dock workshop keep distinct content, accessible rooms and their own workers',()=>{
  try{
   const c=setup(),ids=[];
-  for(const id of ['frontrow','form3d']){
+  for(const [id,minute] of [['frontrow',1180],['form3d',1050]]){
    const site=c.sites.find(s=>s.id===id),r=roomFor(c,site),nav=createNavigation(r.blocked,{step:.16,heightAt:()=>0,bounds:r.layout.bounds});
    assert.equal(!!r.layout.workshop,id==='form3d');
    const content=buildBusinessContent({site,room:r.room,register:c.register,onInspect(){},onAction(){}});ids.push(...content.objects.keys());
@@ -82,15 +84,17 @@ test('bookshop and dock workshop keep distinct content, accessible rooms and the
    }
    // Chin's workSite is still the workshop, but since the consolidation (docs/CAST-CONSOLIDATION.md, phase 2) he is the
    // ferry's motorman, aboard 06:05–22:20 (social.js onWatch), and Tetsuo keeps the bench alone while she sails
-   // (ferry-crew.js). So the workers expected in the room are the ones whose day puts them there at 17:30.
-   const assigned=c.world.people.filter(p=>p.profile.workSite===id),ledger=createResidentLedger(()=>c.state);
-   const staff=assigned.filter(p=>residentPlan(p.profile,1050,false,c.state).place==='work');
-   assert.ok(staff.length,id+' has a worker in at 17:30');
-   for(const p of assigned.filter(p=>!staff.includes(p)))assert.equal(residentPlan(p.profile,1050,false,c.state).place,'ferry',p.profile.name+' is aboard, not missing');
-   for(const p of staff)ledger.account(p.profile.name,1050).shopping={finished:true};startClock(c,1050);
-   const service=staffService(c,r);service.enter(site,1050);
+   // (ferry-crew.js). Front-Row's floor is unstaffed since Nhung became the island doctor (22 October 2026); she sets the
+   // town's paper at its back bench in the evening (workplaces.js EVENING_DESKS). So the workers expected in the room
+   // are the ones whose day puts them there: 17:30 in the workshop, 19:40 at the paper.
+   const assigned=c.world.people.filter(p=>p.profile.workSite===id||EVENING_DESKS[p.profile.name]?.site===id),ledger=createResidentLedger(()=>c.state);
+   const staff=assigned.filter(p=>workRoomOf(p.profile,residentPlan(p.profile,minute,false,c.state))===id);
+   assert.ok(staff.length,id+' has a worker in at minute '+minute);
+   for(const p of assigned.filter(p=>!staff.includes(p)))assert.equal(residentPlan(p.profile,minute,false,c.state).place,'ferry',p.profile.name+' is aboard, not missing');
+   for(const p of staff)ledger.account(p.profile.name,minute).shopping={finished:true};startClock(c,minute);
+   const service=staffService(c,r);service.enter(site,minute);
    for(const p of staff)assert.equal(p.g.userData.inWorkplace,id);
-   for(let i=0;i<500;i++){service.update(.1,1050+i*.025,false);for(const p of staff)assert.equal(r.blocked(p.g.position.x,p.g.position.z,.28),false,p.profile.name+' clear of furniture');}
+   for(let i=0;i<500;i++){service.update(.1,minute+i*.025,false);for(const p of staff)assert.equal(r.blocked(p.g.position.x,p.g.position.z,.28),false,p.profile.name+' clear of furniture');}
    for(let i=0;i<1000;i++)service.update(.1,1500,false);
    for(const p of staff)assert.equal(p.g.userData.inWorkplace,undefined,p.profile.name+' leaves by the door');
    service.restore();r.layout.workshop?.dispose();

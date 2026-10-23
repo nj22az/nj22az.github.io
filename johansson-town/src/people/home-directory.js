@@ -18,16 +18,15 @@ import {airportWorld,airportSurface} from '../world/airport-ground.js';
 
 /** Read-only directory data. No DOM, renderer, save writes, clock changes or character movement. */
 const ROLES=Object.freeze({Johansson:'Chief engineer',Thuan:'Sakura owner',Thao:'Izakaya owner',Chin:'Ferry motorman and repairman',
- Vy:'School pupil',Nhung:'Bookseller and the town’s paper','Kōji':'Fisherman and catch sorter',Riku:'School pupil','Miss Higa':'Teacher and bathhouse attendant',
- 'Grandmother Higa':'Bathhouse and liquor-shop owner',Tetsuo:'Radio repairer and electrician','Mrs Sato':'Ramen cook',
+ Vy:'School pupil',Nhung:'Doctor, and the town’s paper','Kōji':'Fisherman and catch sorter',Riku:'School pupil','Miss Higa':'Teacher and bathhouse attendant',
+ 'Grandmother Higa':'Bathhouse owner',Tetsuo:'Radio repairer and electrician','Mrs Sato':'Ramen cook',
  'Officer Mori':'Police officer','Harbour master':'Harbour master',
- 'Dr Kakazu':'Doctor',
  'Mrs Nakamura':'Zenzai and ice-cream shopkeeper',Mai:'School pupil',Mac:'Relief engineer',
  'Ms Uezu':'Ferry bosun','Ms Ganaha':'Port clerk: tickets, parcels and post','Mr Fujita':'Ferry master',
  Ryo:'Ferry chief officer',Ren:'Ferry deck hand',Aya:'Ferry purser',Jun:'Ferry cook-steward',Kai:'Kitano line hand'});
 // The post and parcel counter is at the Port Terminal (phase 3), so a saved 'post-office' points there; the flowers are
 // Sakura's (addendum 3), so 'florist' points at the shop.
-const PLACE_IDS=Object.freeze({sakura:'market',books:'frontrow',workshop:'form3d','sato-ramen':'ramen','town-hall':'community-kitchen',
+const PLACE_IDS=Object.freeze({sakura:'market',books:'frontrow',paper:'frontrow',workshop:'form3d','sato-ramen':'ramen','town-hall':'community-kitchen',
  port:'ferry-terminal',ferry:'ferry-terminal','post-office':'ferry-terminal','higa-liquor':'higa-saketen',
  florist:'market',zenzai:'nakamura','blue-coral':'nakamura','power-station':'power-station'});
 const INDOOR_FLAGS=Object.freeze({inMarket:'market',inIzakaya:'izakaya',inRamen:'ramen',inOnsen:'onsen',inBookshop:'frontrow',inWorkshop:'form3d'});

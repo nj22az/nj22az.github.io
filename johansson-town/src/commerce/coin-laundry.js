@@ -59,10 +59,11 @@ export const LAUNDRY_VISITS=Object.freeze([
   what:'the crew cabin’s sheets and her own week’s clothes, off the ship',
   why:'She lives aboard on her week on (people/ferry-crew.js); the first morning of her week off she brings the linen ashore to the machines nearest the quay, two washers at once.',
   on:minutes=>rotaWeek(minutes)===1&&Math.floor(minutes/DAY)%7===0}),
- Object.freeze({name:'Dr Kakazu',from:1275,to:1350,washers:Object.freeze(['W3']),dryer:'D2',
+ // Dr Kakazu's evening until he retired into Nhung (22 October 2026): the clinic's washing is the doctor's, whoever she is.
+ Object.freeze({name:'Nhung',from:1275,to:1350,washers:Object.freeze(['W3']),dryer:'D2',
   when:'Wednesdays, 21:15–22:30',
-  what:'his white coats and the clinic’s towels',
-  why:'Posted from Naha for two years, he has no machine in his rooms: one evening a week, after supper at Minato and back on call from nine, he washes here with his pager on the bench beside him, two minutes from the clinic’s telephone by bicycle.',
+  what:'her white coats and the clinic’s towels',
+  why:'The clinic has no machine, and the family’s twin-tub at 3 Kitahama is for Kōji’s and Riku’s things, not the patients’ towels: one evening a week, after the paper’s page is set and on call from nine, she washes here with the clinic’s pager on the bench beside her.',
   on:minutes=>townCalendarAt(minutes).weekday===3}),
 ]);
 

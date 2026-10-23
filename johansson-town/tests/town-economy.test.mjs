@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {GOODS,ALCOHOL,measureMargin} from '../src/economy/goods.js';
-import {createEconomy,simulateDay,closeYear,higaTrade,BUSINESSES,pour} from '../src/economy/town-economy.js';
+import {createEconomy,simulateDay,closeYear,barTrade,BUSINESSES,pour} from '../src/economy/town-economy.js';
 
 const day=n=>new Date(Date.UTC(1997,0,1+n));
 
@@ -11,11 +11,12 @@ test('every good climbs the 1997 price ladder: mainland, ferry, Sakura, the shel
   assert.ok(g.trade>g.wholesale+g.freight,id+': Sakura sells on above her landed cost');
   if(g.retail)assert.ok(g.retail>g.trade,id+': the shelf price is above the trade price');
  }
+ // The bars pay Sakura's trade price for drink (Higa Liquor's until it closed, 22 October 2026): a tenth over the floor.
  for(const id of Object.keys(ALCOHOL)){
-  assert.ok(higaTrade(id)>GOODS[id].trade,id+': Higa Liquor sells to bars above what it paid Sakura');
-  const m=measureMargin(id,'minato',higaTrade(id));
+  assert.ok(barTrade(id)>GOODS[id].trade,id+': Sakura sells to bars above its own trade floor');
+  const m=measureMargin(id,'minato',barTrade(id));
   // Spirits earn their bar three to four times over by the glass; draught, about two and a half.
-  if(m&&m.measures>1)assert.ok(m.bottle>=higaTrade(id)*(id==='beer-keg'?2.2:2.8)&&m.bottle<=higaTrade(id)*7,id+': sold by the measure ('+m.bottle+' from '+higaTrade(id)+')');
+  if(m&&m.measures>1)assert.ok(m.bottle>=barTrade(id)*(id==='beer-keg'?2.2:2.8)&&m.bottle<=barTrade(id)*7,id+': sold by the measure ('+m.bottle+' from '+barTrade(id)+')');
  }
  // Real 1997 prices: a can of beer ¥220, a large bottle at the bar ¥600, a mug of draught ¥450.
  assert.equal(GOODS['beer-can'].retail,220);assert.equal(GOODS['beer-bottle'].measure.minato.price,600);
@@ -61,5 +62,8 @@ test('the town has its ups and downs and balances over the year',()=>{
 test('every business in the economy is kept by somebody in the cast, and Umi-no-yu by its owner, Grandmother Higa',async()=>{
  const {CAST_NAMES}=await import('../src/people/cast.js');
  for(const [id,b] of Object.entries(BUSINESSES))assert.ok(CAST_NAMES.includes(b.owner),id+': '+b.owner+' is in the cast');
- assert.equal(BUSINESSES.onsen.owner,'Grandmother Higa');assert.equal(BUSINESSES.higa.owner,'Grandmother Higa');
+ // Higa Liquor closed on 22 October 2026: she keeps the bath only, and the bars buy their drink from Sakura.
+ assert.equal(BUSINESSES.onsen.owner,'Grandmother Higa');assert.equal(BUSINESSES.higa,undefined,'Higa Liquor trades no more');
+ for(const [id,b] of Object.entries(BUSINESSES))if(b.supplier)assert.equal(b.supplier,'sakura',id+' buys from Sakura');
+ const s=createEconomy();for(const id of Object.keys(ALCOHOL))assert.ok(s.biz.sakura.stock[id]>0,'Sakura keeps '+id+' in its stock room');
 });
