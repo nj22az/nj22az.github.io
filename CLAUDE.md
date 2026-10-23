@@ -118,6 +118,8 @@ assets/
 
 ## Johansson Town
 
+**Owner priority, 23 October 2026:** making Minato island impeccable and immersive is priority 1. The third city island is low priority and deferred. Retain this research and proposal for later; do not begin further city design, prototyping or implementation unless the owner explicitly reprioritises it.
+
 **Purpose: Johansson Town is a storytelling game.** Everything it does should tell stories — to teach,
 to make people laugh, for drama, or just to be silly — and at the highest quality we can reach.
 Exploring the town is the fun, awesome bonus: every place, person and item discovered feeds the
