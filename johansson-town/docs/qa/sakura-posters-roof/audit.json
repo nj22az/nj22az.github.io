@@ -1,0 +1,46 @@
+{
+  "drawing": "JW-SAK-EXT-ROOF-POP-01",
+  "revision": "B",
+  "source_commit": "baf26f20b07671eba51428bd70cd7d333ffcccea",
+  "status": "Geometric checks passed; physical/site dependencies below block runtime roof construction",
+  "checks": {
+    "posters": 4,
+    "same_face_poster_and_retained_notice_overlaps": 0,
+    "poster_tops_below_ceiling": true,
+    "stair_risers": 22,
+    "stair_total_rise": 4010.0,
+    "service_walk_width": 1000,
+    "walk_obstacle_overlaps": 0,
+    "delivery_door_clear_of_stair": true,
+    "tank_height_and_sleeve_clearance": true,
+    "overflow_and_drain_nonascending": true,
+    "orthogonal_pipe_plan_routes": true,
+    "dxf_reopen_errors": 0
+  },
+  "corrected_findings": [
+    {
+      "issue": "Prototype stair levels did not match its step sequence",
+      "correction": "22 equal 182.273 mm rises, two flights of 11; 10 goings x 260 mm per flight"
+    },
+    {
+      "issue": "Prototype stair crowded the rear delivery area",
+      "correction": "Separate west rear stair; delivery opening retained at X10975-12025"
+    },
+    {
+      "issue": "200 mm tank pad did not leave enough space over a 300 mm roof sleeve upstand",
+      "correction": "350 mm level stand; outlet/drain above the 4310 sleeve top"
+    },
+    {
+      "issue": "A service walkway near the rear edge or inspection steps would conflict",
+      "correction": "Rear walk at depth10140, west approach at X9000; 1000 mm clear width checked"
+    }
+  ],
+  "unverified": [
+    "Rear-yard availability for the 4600 mm external stair projection and ground escape route",
+    "Actual exterior registration against the town scene and original exterior artwork",
+    "Tank anchors, roof load path, wind resistance and rated tank capacity",
+    "Real hydraulic sizing/backflow protection and exact site drainage outfall",
+    "Statutory egress and guard compliance; this is a game-environment coordination drawing"
+  ],
+  "construction": "No runtime, exterior collision, stair traversal or plumbing implementation in this drawing pass"
+}
