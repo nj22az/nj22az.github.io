@@ -30,6 +30,11 @@ The work, the checks and the reviews: `briefs/nhung-doctor/` and `briefs/higa-li
   `no-z-fighting` out of memory on this container's heap as on the base; it passes with `--max-old-space-size=10240`.
   On GitHub both guards pass in full.
 - A separate code review of each change; their findings fixed, the rest reported in the task folders.
+- On the merge (23 October; #363 inside, main merged in, the runtime rebuilt once on main's): full `tests/*.test.mjs`
+  2,115 tests, 50 failing; against the Higa branch's run the one new failure is `resident-guide` ("Portraits must be
+  regenerated after avatar source changes"), which fails on `main` itself: main changed `src/render/cel.js` (the looks
+  work) without regenerating the portraits. `node tools/ci-guard.mjs` alone: 70 files, 359 of 360, `no-z-fighting` out
+  of memory here and 13 of 13 with `--max-old-space-size=10240`. GitHub's guard passed on the merge.
 - Not run: anything on a physical device (the controller fix is still unconfirmed on hardware; see
   `HANDOVER-LINUX-JOYSTICK-2026-10-22.md`).
 
@@ -50,6 +55,11 @@ The work, the checks and the reviews: `briefs/nhung-doctor/` and `briefs/higa-li
   `machinery`, `countedMoney`, `liveDocuments` and `pouring`. The web edition (the live site) has them off and walks
   only the residents within `residentRadius` (45 m). Which of these to switch off or cut is the owner's to choose; ask
   before changing any flag, since each changes what the player sees.
+
+## Open on main (not from this work)
+- `tests/resident-guide.test.mjs` fails on main: the portraits' fingerprint (`guide/portraits.json`) includes
+  `src/render/cel.js`, which the looks work changed without re-rendering. Regenerate with
+  `node tools/render-resident-guide.mjs` (and the shoot) when the looks settle, and look at the portraits.
 
 ## Open for the owner
 - The sisters' jan-ken-pon has no day now (`tests/sisters.test.mjs` reports it as a todo).
