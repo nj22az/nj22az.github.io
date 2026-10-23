@@ -1,5 +1,32 @@
 # Fujita television comic — Studio integration, 23 October 2026
 
+## “Make something of your life” — Thuan revision, 23 October 2026
+
+Owner requested a new three-panel comic: concerned Thuan urges the canonical Fujita avatar to make something of his
+life without naming him; he responds as an inspired manga hero; the ending shows beer and football on television.
+`make-something-comic.mjs` uses canonical recipes and the existing bar, ResolveFist and seated drinking poses.
+Dialogue contains no Fujita name. Thuan speaks in the Minato bar; the man vows to live with purpose against a radial
+hero burst; he watches the closing minutes of a football match in the shed. The older built-in TV comic is preserved.
+
+Studio-only `hero` backdrop and `football` television presentation survive scene/project normalisation. The football
+picture is applied to the existing CRT screen material and restored after capture; World television schedules and
+geometry are unchanged. The hero backdrop hides location meshes and supplies a deterministic radial texture behind
+the actual avatar. Controls offer Manga hero burst. Canonical `make-something:0..2` layer references allow fast
+editable sharing and opening without rebuilding the 3D scenes. Direct route:
+`/avatar-creator/?comic=make-something` (After effects). Re-render with `node avatar-creator/render-make-something.mjs`.
+
+Validation: production Studio rendered all three scenes and the full 3200 px strip; reviewed the full comic, readable
+balloons, fist silhouette, grounded feet, beer and actual green football picture. Fifteen effect/link/scene/runtime
+checks pass. Real browser acceptance passed direct layer-pack opening, all three panel choices, hero/football text,
+and layered project import with no page errors. The first browser attempt caught a base-URL fetch error; fixed using
+`new URL(..., import.meta.url)` and reran successfully. `git diff --check` passes. No shared runtime sources changed.
+Physical iPad acceptance remains unverified.
+
+Saved a new PNG and layered project (separate from the earlier comic), both successfully retained:
+`make-something.png` (`libfile_e75500655b1881919955d454ebefb4f7`) and `make-something.studio.json`
+(`libfile_27c50f9f39f08191939e590c1c435255`). Local source commit c252dcbca1f5c232dd1776ba02877321c0dd31e7 on
+`codex/fujita-tv-comic-2026-10-23`; publishing branch `codex/thuan-make-something-2026-10-23`, publication pending.
+
 ## After effects MCP wiring — 23 October 2026
 
 Owner requested “Mcp wire the after effects”. Studio MCP 1.7.0 now registers `comic_effects_info` and
