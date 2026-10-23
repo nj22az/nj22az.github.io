@@ -1,10 +1,11 @@
+import {readSceneLink} from './scene-links.mjs';
 import {createActingPanel} from './acting/panel.js?v=20261016-1';
 import {createPerformancePanel} from './performance-panel.js?v=20261017-1';
 import {openCreator} from '../johansson-town/src/avatars/creator.js?v=20261020-motion';
 import {ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/src/avatars/cast.js';
 import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js';
 import {normalizeRecipe,decodeRecipe} from '../johansson-town/src/avatars/recipe.js';
-import {createSceneWorkspace} from './scene.js?v=20261020-vi';
+import {createSceneWorkspace} from './scene.js?v=20261023-bubble';
 import {createWorldPanel} from './world-panel.js?v=20261011-1';
 import {createHomeWorkspace} from './home.js?v=20261011-1';
 import {createModelWorkspace} from './model.js?v=20261020-workshop';
@@ -147,7 +148,15 @@ creator.root.addEventListener('keydown',event=>{
 return {creator,cleanup};
 }
 
-switchMode('character',{focus:false});
+window.addEventListener('hashchange',()=>{if(location.hash.startsWith('#studio='))location.reload();});
+document.getElementById('loading')?.remove();
+let opened=true,openingError='';let sharedProject=null;try{sharedProject=await readSceneLink(location.hash);}catch(e){opened=false;openingError=e.message;}
+if(sharedProject){switchMode('comic',{focus:false});await workspace.openShared(sharedProject);}
+else if(new URLSearchParams(location.search).get('comic')==='fujita-tv'){
+ switchMode('comic',{focus:false});
+ opened=await workspace.openFujita();
+}else switchMode('character',{focus:false});
+if(opened)document.getElementById('comic-start')?.remove();else document.getElementById('comic-start-note')?.replaceChildren(document.createTextNode(openingError||'The 3D editor could not load. You can still read the comic above and retry opening Studio.'));
 // For agents only (the johansson-studio MCP server's page): ?agent adds window.__JOHANSSON_STUDIO__ (studio-api.js).
 if(new URLSearchParams(location.search).has('agent'))import('./studio-api.js?v=20261014-1').catch(e=>console.warn('Johansson Studio: agent API',e));
 // The maker focuses its close button on open; on first load nothing should wear a focus ring until the user acts.

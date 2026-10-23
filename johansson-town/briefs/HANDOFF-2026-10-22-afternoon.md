@@ -3,6 +3,36 @@
 Read first: `CLAUDE.md`, `AGENTS.md`, `johansson-town/AGENTS.md`, then `HANDOFF-2026-10-22.md` (this morning's) and the
 two of 21 October it points to (the morning one has the working recipe). This note says what was done since.
 
+## Owner direction — 23 October 2026: Minato comes first
+
+The owner: “I want Minato to feel like a little paradise that you wish were real.”
+
+**Priority 1 is making Minato impeccable and immersive.** The third city island is low priority and deferred;
+retain its research and proposal for later. Do not begin further city design, prototyping or implementation
+unless the owner explicitly reprioritises it. This supersedes the city proposal's earlier next-step recommendation.
+
+The guiding experience is a small, believable paradise where someone would want to spend an ordinary day.
+Apply this direction to the existing island:
+
+- **Beautiful places:** shaded lanes, flowering gardens, clear water, inviting shopfronts and warm evening windows,
+  consistent with Minato's 1997 Okinawan setting and established cartoon style.
+- **A reassuring daily rhythm:** shops opening, deliveries arriving, neighbours greeting one another and the ferry
+  sounding across the harbour. Residents have credible work, breaks, meals and journeys home.
+- **Comfortable places to linger:** a favourite café seat, the onsen, a harbour bench and quiet rooms overlooking
+  the sea. Sitting, ordering, drinking and watching the town should feel complete and dependable.
+- **People worth knowing:** recognisable habits, friendships, small troubles and gentle humour. Their ordinary
+  activities should make the island feel inhabited throughout the day.
+- **Care in every detail:** convincing proportions, coherent interiors and exteriors, natural movement, pleasing
+  sound, reliable interactions and smooth performance. Clipping, flickering, floating objects, broken routes and
+  visibly artificial behaviour undermine the experience and remain defects to resolve.
+
+Use this review question for every proposed improvement: **does this make being in Minato more pleasurable
+and believable?** Prioritise completing and refining existing places and daily experiences. These examples
+guide quality decisions; they do not authorise unrelated expansion or override newer specific owner instructions.
+
+Handover update only: no game or runtime changes, no gameplay tests run, and no existing issue is signed off
+by recording this direction.
+
 ## Checked at the start
 #342 (benches), #340 (Linux 0.2.16, into `codex/johansson-world-steam-deck`) and #346 (handoff) were all merged already.
 Nothing to finish there.
