@@ -1,0 +1,76 @@
+{
+  "errors": [],
+  "failedRequests": [],
+  "views": [
+    {
+      "draws": 132,
+      "triangles": 171858
+    },
+    {
+      "draws": 78,
+      "triangles": 74676
+    },
+    {
+      "draws": 122,
+      "triangles": 135454
+    },
+    {
+      "draws": 111,
+      "triangles": 113242
+    },
+    {
+      "draws": 149,
+      "triangles": 172750
+    }
+  ],
+  "geometry": {
+    "fingerprint": "b146a268e43c91b29b36d0ba24cc6a9680f8dd8c1b9a861b942c6c0cb53f7807",
+    "productLines": 33,
+    "countedCapacity": 780,
+    "displayInstances": 1254,
+    "ids": [
+      "tea",
+      "coffee",
+      "water",
+      "orange",
+      "cola",
+      "soda",
+      "beer",
+      "rice",
+      "sandwich",
+      "bento",
+      "pudding",
+      "yogurt",
+      "milk",
+      "bread",
+      "soup",
+      "peaches",
+      "noodles",
+      "curry",
+      "soy",
+      "tuna",
+      "chips",
+      "crackers",
+      "biscuit",
+      "chocolate",
+      "candy",
+      "notebook",
+      "postcard",
+      "battery",
+      "detergent",
+      "soap",
+      "tissues",
+      "toothpaste",
+      "bun"
+    ],
+    "overlaps": 0,
+    "invalid": 0,
+    "outside": 0
+  },
+  "mobile": {
+    "viewport": 390,
+    "width": 390,
+    "panelOpen": false
+  },
+  "scope": "Standalone branch prototype, software Chromium. No live-game or physical-iPad acceptance."
+}
