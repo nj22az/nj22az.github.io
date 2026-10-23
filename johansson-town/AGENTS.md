@@ -2,6 +2,8 @@
 
 Read the repository's [AGENTS.md](../AGENTS.md) and [CLAUDE.md](../CLAUDE.md). Their working discipline applies here.
 
+For every spatial remodel, follow the root [CAD-before-remodel rule](../AGENTS.md#owners-rule---23-october-2026-cad-before-every-remodel): draw, self-audit, correct the CAD, then construct and verify against it. Apply this to candidate branches as well as production work.
+
 ## Owner's current decisions — 18 October 2026
 
 - Keep Minato a compact urban port town. Do not restore rural districts or expand its shoreline for housing.

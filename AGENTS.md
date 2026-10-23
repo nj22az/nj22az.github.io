@@ -9,6 +9,17 @@ Read the existing `CLAUDE.md` and any instructions in the directory being change
 
 These supplement the owner's instructions and existing project rules. They do not authorise unrelated work or override the owner's stated decisions.
 
+## Owner's rule - 23 October 2026: CAD before every remodel
+
+Every building, room, shop, counter, shelving or other spatial remodel must follow this sequence, including work in a review branch:
+
+1. **Draw CAD first.** Measure and record the existing exterior shell, openings, floor levels and retained fixtures. Draw a dimensioned plan and the relevant elevations/sections, with units, coordinates and revision. The owner's fixed exterior governs the interior. Keep the editable CAD and a readable review drawing with the work.
+2. **Audit the CAD yourself before construction.** Check dimensions and proportions, overlaps, doors and their swings, routes/egress, working and customer clearances, character scale/reach/sightlines, shelf/product fit, materials/supports and service access. Compare retained objects and intended uses with the actual source/assets. Record findings, assumptions and checks; identify anything unverified.
+3. **Fix the drawing before implementing.** Resolve every finding that invalidates the layout or intended use, update affected dimensions and rerun the audit. Do not build a known-bad plan and defer its correction to decoration. Unresolved consequential dimensions or dependencies block that part of construction; independent drawing/audit work can continue.
+4. **Construct from the corrected CAD, then verify.** Share measured placement data with the implementation where practical. Compare the built result with the CAD, inspect actual-game views at player and worker height, test affected routes/interactions, and correct discrepancies. Keep screenshots and the audit results with the handover. A visual mock-up alone does not establish working geometry or character contact.
+
+The user requested this as a standing instruction: "for any remodel draw a cad first and audit yourself and fix what needs fixing before implement construction". This is a required work sequence, not a new permission/approval gate.
+
 ## Handover: required at the start and end of every task
 
 These instructions apply to every agent working in this repository.

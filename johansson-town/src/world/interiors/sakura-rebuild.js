@@ -6,6 +6,7 @@ import {buildSakuraCounterDetail,buildSakuraHotFood} from './sakura-counter-deta
 import {buildMagazineRack} from './sakura-magazine-rack.js';
 import {buildShelfEdges} from './sakura-shelf-edge.js';
 import {buildSakuraShelfStickers} from './sakura-shelf-stickers.js';
+import {buildSakuraCounterDensity} from './sakura-counter-density.js';
 import {buildSakuraWallDressing} from './sakura-wall-dressing.js';
 import {buildSakuraGondolaDetail} from './sakura-gondola-detail.js';
 import {buildSakuraBaskets} from './sakura-baskets.js';
@@ -19,7 +20,7 @@ if(sakuraRebuildRequested()&&typeof FontFace!=='undefined'){try{const font=new F
 
 // Production API candidate, deliberately opt-in while prop/actor/save acceptance is in progress.
 export function buildSakuraRebuild({room,reg,action,exit}){
- const omit=(g,x,z,w,d,h,mat,y)=>(g==='ExteriorWalls'&&x===6000&&w===1900)||(g==='Fixtures'&&[1850,3800,5750].some(gx=>x>=gx&&x+w<=gx+900&&z>=2400&&z+d<=6900))||g==='Fixtures'&&((x===0&&z===0&&w===5800)||(x===5500&&z===800)||(x>=11300&&x<12100&&z<4800&&y>=780)||(x>=13280&&x<=13300&&z>=1800&&z<=3500&&y>=780));
+ const omit=(g,x,z,w,d,h,mat,y)=>(g==='Fixtures'&&((x===13500&&z===4800&&h===750)||(x===11650&&z===4800&&h===100)))||(g==='ExteriorWalls'&&x===6000&&w===1900)||(g==='Fixtures'&&[1850,3800,5750].some(gx=>x>=gx&&x+w<=gx+900&&z>=2400&&z+d<=6900))||g==='Fixtures'&&((x===0&&z===0&&w===5800)||(x===5500&&z===800)||(x>=11300&&x<12100&&z<4800&&y>=780)||(x>=13280&&x<=13300&&z>=1800&&z<=3500&&y>=780));
  const shell=buildSakuraShotenInterior(THREE,{placeholderStock:false,doors:false,levelOffice:true,omit});shell.name='Sakura single-storey candidate';shell.userData.sharedAsset=true;shell.position.set(...SAKURA_REBUILD_OFFSET);room.add(shell);
  const gondolas=buildSakuraGondolaDetail(shell);
  const g=shell.userData.groups;for(const label of g.RoomLabels.children){const wash=Math.abs(label.position.x-1.87)<.001;label.visible=wash||Math.abs(label.position.x-11.95)<.001;if(wash)label.position.z=-8.232;}g.Ceiling.visible=true;g.ExteriorWalls.visible=true;g.Roof.visible=false;
@@ -28,6 +29,7 @@ export function buildSakuraRebuild({room,reg,action,exit}){
  buildShelfEdges(room,{shelves:stock.productShelves,talkers:false});
  const advertising=buildSakuraShelfStickers(room,{shelves:stock.productShelves});
  const wallDressing=buildSakuraWallDressing(room);
+ const counterDensity=buildSakuraCounterDensity(room);
  const equipment=buildSakuraCounterDetail(room,{placements:{till:[.05,0,-.16],microwaves:[[.23,.058,-.24],[.23,.058,-1.44]],supplies:[.23,.058,-.715],copy:[1.85,0,.01],rice:[-.45,-.35,2.4],sandwich:[-.45,-.35,-.43],dairy:[-.45,-.35,-4.1]}});
  const hot={x:4.925,z:-2.065,w:.45,d:.45,h:.4,top:.78};buildSakuraHotFood(room,hot);
  const magazine=buildMagazineRack(room);magazine.group.position.set(-5.85,0,3.60);magazine.group.rotation.y=Math.PI;
@@ -53,5 +55,5 @@ export function buildSakuraRebuild({room,reg,action,exit}){
  const drinkIds=['tea','coffee','water','orange','cola','soda','beer'];
  function updateLighting(minutes){if(!Number.isFinite(minutes))return;fill.intensity=1.7*fluorescent(minutes);const date=townCalendarAt(minutes).date;magazine.refresh(date);advertising.setMonth(date.getMonth()+1);wallDressing.refresh(minutes);}
  const nothing=()=>{};
- return {layout,shell,stock,frontDoor,productShelves:stock.productShelves,unitPositions:stock.unitPositions,unitApproaches:stock.unitApproaches,updateStock:stock.updateStock,refrigerator,accessShelf:id=>refrigerator.open(drinkIds.indexOf(id)),cashDrawer:equipment.getObjectByName('Sakura cash drawer'),updateLighting,smallOffice:{setHours:nothing,setWeather:nothing},decorations:{refresh:nothing,tick:nothing},advertising,wallDressing,gondolas,ready:async()=>wallDressing.ready,loadBackRooms:nothing,tick:(time,minutes)=>updateLighting(minutes),dispose:nothing};
+ return {layout,shell,stock,frontDoor,productShelves:stock.productShelves,unitPositions:stock.unitPositions,unitApproaches:stock.unitApproaches,updateStock:stock.updateStock,refrigerator,accessShelf:id=>refrigerator.open(drinkIds.indexOf(id)),cashDrawer:equipment.getObjectByName('Sakura cash drawer'),updateLighting,smallOffice:{setHours:nothing,setWeather:nothing},decorations:{refresh:nothing,tick:nothing},advertising,wallDressing,gondolas,counterDensity,ready:async()=>wallDressing.ready,loadBackRooms:nothing,tick:(time,minutes)=>updateLighting(minutes),dispose:nothing};
 }

@@ -65,3 +65,26 @@ test('wall dressing follows all 20 CAD placements and live shop/calendar data; g
  d.wallDressing.refresh(0);assert.equal(d.wallDressing.state().date.getMonth(),0);
  assert.deepEqual(d.gondolas.userData.tops,[.344,.664,.984]);assert.deepEqual(d.gondolas.userData.footprintMm,[900,4500]);assert.ok(d.gondolas.getObjectByName('Sakura gondola pet'));assert.ok(d.gondolas.getObjectByName('Sakura gondola timber'));
 });
+
+test('counter dressing stays within CAD work surfaces, below tobacco header, and clear of wall notices',async()=>{
+ installDOM();const {readFile}=await import('node:fs/promises');
+ const cad=JSON.parse(await readFile(new URL('../src/world/interiors/sakura-counter-density.json',import.meta.url),'utf8'));
+ const room=new THREE.Group(),d=buildSakuraRebuild({room,reg(){},action(){},exit(){}}),detail=d.counterDensity;
+ assert.equal(detail.userData.packFronts,48);assert.equal(detail.userData.stockChanges,false);assert.equal(detail.userData.newInteractions,false);
+ const c=cad.cabinet;assert.equal(c.rows*c.columns,48);assert.equal(c.bottom-c.supportHeight,cad.counterTop,'cabinet supports must meet worktop');
+ const {measure}=await import('../src/avatars/build.js'),{recipeFor}=await import('../src/avatars/cast.js');const m=measure(recipeFor('Thuan'));
+ const high=(c.bottom+55+(c.rows-1)*c.rowPitch+c.packHeight/2)/1000;assert.ok(Math.hypot((c.x+18-13050)/1000,high-m.shoulderY)<m.upper+m.fore+m.hand*.55,'highest pack exceeds static reach');assert.ok(c.x>=13300&&c.x+c.width<=13900);assert.ok(c.depth>=1400&&c.depth+c.length<=6200);
+ const header=d.wallDressing.placements.find(p=>p.id==='E04');assert.ok(c.bottom+c.height<(header.center[1]*1000-header.height_mm/2));
+ for(const id of ['oden','impulse','ticketStand']){
+  const p=cad[id];assert.equal(p.bottom,cad.counterTop);assert.ok(p.x>=11300&&p.x+p.width<=12100,id+' must stay on counter');assert.ok(p.depth>=1400&&p.depth+p.length<=6200);
+ }
+ assert.ok(room.getObjectByName('Sakura scanner coiled cord'));assert.ok(room.getObjectByName('Sakura cash drawer'));
+ assert.ok(!d.shell.userData.solids.some(s=>s.g==='Fixtures'&&s.x===13500&&s.z===4800&&s.h===750),'old cabinet removed');
+ // All stock and routes are exercised by the retained-catalogue test above.
+ const bounds=new THREE.Box3().setFromObject(detail);assert.ok(bounds.min.x>4.35&&bounds.max.x<=6.951);assert.ok(bounds.max.y<2.3);
+ for(const print of d.wallDressing.placements.filter(p=>p.normal[0]===-1&&p.id!=='E04')){
+  const minDepth=(3.91-print.center[2])*1000-print.width_mm/2,maxDepth=minDepth+print.width_mm;
+  const minY=print.center[1]*1000-print.height_mm/2,maxY=minY+print.height_mm;
+  assert.ok(c.depth+c.length<=minDepth||c.depth>=maxDepth||c.bottom+c.height<=minY||c.bottom>=maxY,'cabinet hides '+print.id);
+ }
+});

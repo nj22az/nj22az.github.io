@@ -1,0 +1,13 @@
+{
+  "focused_pass": 21,
+  "focused_fail": 0,
+  "runtime_build": "passed",
+  "guard_files": 71,
+  "guard_pass": 363,
+  "guard_fail": 1,
+  "guard_failure": "no-z-fighting worker: JavaScript heap out of memory at 1536 MB limit",
+  "capture_errors": [],
+  "physical_device": false,
+  "new_interactions": false,
+  "deployed": false
+}

@@ -1,0 +1,61 @@
+{
+  "drawing": "JW-SAK-CTR-01 Rev B",
+  "units": "mm",
+  "origin": "south-west internal corner; x east, depth north, height up",
+  "counterTop": 780,
+  "cabinet": {
+    "x": 13300,
+    "depth": 4800,
+    "width": 600,
+    "length": 1300,
+    "bottom": 850,
+    "height": 550,
+    "columns": 12,
+    "rows": 4,
+    "purpose": "Numbered tobacco dispenser on the back worktop, pack fronts within the actual stylised avatar reach; rear storage reaches the wall. Fictional scenery only.",
+    "rowPitch": 110,
+    "packHeight": 85,
+    "supportHeight": 70
+  },
+  "oden": {
+    "x": 11650,
+    "depth": 4800,
+    "width": 450,
+    "length": 600,
+    "bottom": 780,
+    "height": 100,
+    "purpose": "A working-looking hot-food vessel beside the retained warmer, within the existing counter envelope."
+  },
+  "impulse": {
+    "x": 11340,
+    "depth": 4120,
+    "width": 240,
+    "length": 280,
+    "bottom": 780,
+    "height": 220,
+    "purpose": "Small gum display beside checkout; visual dressing, no new stock or save IDs."
+  },
+  "ticketStand": {
+    "x": 11800,
+    "depth": 4320,
+    "width": 160,
+    "length": 130,
+    "bottom": 780,
+    "height": 240,
+    "purpose": "A small prize-ticket display; drawing gameplay is deferred."
+  },
+  "endcap": {
+    "x": 1850,
+    "depth": 2400,
+    "width": 900,
+    "length": 450,
+    "height": 1350,
+    "decks": [
+      344,
+      664,
+      984
+    ],
+    "implementation": "CAD proposal only; retain original product size and count before stocking this bay.",
+    "purpose": "Seasonal pantry merchandising in the existing endcap; clear 2300 mm front cross-aisle."
+  }
+}

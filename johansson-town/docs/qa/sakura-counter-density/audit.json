@@ -1,0 +1,30 @@
+{
+  "revision": "JW-SAK-CTR-01 Rev B",
+  "findings": [
+    {
+      "issue": "Rev A upper pack fronts exceeded avatar arm reach",
+      "fix": "Rev B lower dispenser on back worktop, accessible front edge",
+      "status": "corrected in CAD before revised construction"
+    },
+    {
+      "issue": "Visual review: 70 mm dispenser gap above worktop needs visible supports",
+      "fix": "Four steel feet from 780 mm worktop to 850 mm cabinet base, added to CAD before construction correction",
+      "status": "corrected"
+    }
+  ],
+  "avatar": {
+    "height": 1.6210622130548582,
+    "shoulder": 0.9484109327136788,
+    "armReach": 0.4567342785282063
+  },
+  "highestPackCentre": 1.2775,
+  "assumedShoulderApproachX": 13.05,
+  "requiredReach": 0.4244097244495946,
+  "scope": "Static reach envelope only; actual picking animation not added or accepted",
+  "checks": {
+    "dxfErrors": 0,
+    "counterTop": 780,
+    "staffAisle": 1200,
+    "retainedCatalogueUnchanged": true
+  }
+}
