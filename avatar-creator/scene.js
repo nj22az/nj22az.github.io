@@ -5,7 +5,7 @@ import {fujitaComic} from './fujita-comic.mjs';
 import {stageComicExit} from './scene-exit.js?v=20261020-vi';
 import {gradientMap} from '../johansson-town/src/render/cel.js';
 import {createSceneFacePainter} from './scene-face.js';
-import {drawShout,drawStatement,drawComicChaos} from './scene-lettering.js?v=20261020-vi';
+import {drawShout,drawStatement,drawComicChaos} from './scene-lettering.js?v=20261023-bubble';
 import {CLASSROOM_VIEW} from './classroom-stage.js';
 import {classroomComic} from './classroom-comic.mjs?v=20261020-vi';
 import {createSoleFinder} from '../johansson-town/src/avatars/foot-ground.js';
@@ -337,7 +337,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
     for(const {actor,avatar,position} of records){
      const box=new THREE.Box3().setFromObject(avatar.root),head=headCentre(avatar),projected=head.clone().project(camera);
      const visible=projected.z<1&&projected.z>-1&&!solid(camera.position,head);
-     const top=new THREE.Vector3(head.x,box.max.y,head.z).project(camera);bubbles.push({shout:actor.speechStyle==='shout',large:actor.speechStyle==='large',text:actor.speech,x:(projected.x+1)/2,y:(1-top.y)/2-(w/h)*.10-.025,visible});
+     const top=new THREE.Vector3(head.x,box.max.y,head.z).project(camera);bubbles.push({shout:actor.speechStyle==='shout',large:actor.speechStyle==='large',text:actor.speech,headTop:(1-top.y)/2,x:(projected.x+1)/2,y:(1-top.y)/2-(w/h)*.10-.025,visible});
      placed.push({id:actor.id,box,face:headCentre(avatar),radius:avatar.measure.Rh*Math.max(avatar.measure.headSX,avatar.measure.headSY)*actor.size,visible,feet:new THREE.Vector3(position.x,position.y,position.z)});
      const live=state.actors.find(a=>a.id===actor.id);if(live){live.x=actor.x;live.z=actor.z;live.seat=actor.seat;}
     }
@@ -347,7 +347,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
      environment.scene.traverse(o=>{if(o.isHemisphereLight){const before=o.intensity;o.intensity=1.35;restore.push(()=>o.intensity=before);}});
     }
     environment.sky?.update(camera,1,false,false);looks??=createSceneLooks(renderer);looks.render(environment.scene,camera,snapshot.look);
-    canvas.width=w;canvas.height=h;ctx.drawImage(renderer.domElement,0,0);if(snapshot.effect==='dash'){const contacts=snapshot.backdrop==='paper'?records.filter(r=>movingPose(r.actor.pose)&&!r.actor.y&&!r.actor.seat).map(r=>{const soles=createSoleFinder(r.avatar)(),side=soles.L.y<soles.R.y?'L':'R',point=r.avatar.root.worldToLocal(r.avatar.bones['foot'+side].getWorldPosition(new THREE.Vector3()));point.y=soles[side].y;point.z=soles[side].z;return r.avatar.root.localToWorld(point).project(camera);}):[];drawDash(ctx,w,h,contacts);}if(['chaos','escape'].includes(snapshot.effect))drawComicChaos(ctx,w,h,records.map(r=>headCentre(r.avatar).project(camera)),snapshot.effect==='escape');const overlay=document.createElement('canvas');overlay.width=w;overlay.height=h;drawCaptions(overlay.getContext('2d'),w,h,{style:snapshot.style,top:snapshot.top,bottom:snapshot.bottom,bubbles:bubbles.filter(b=>!b.shout&&!b.large)});ctx.drawImage(overlay,0,0);for(const b of bubbles.filter(b=>b.shout))drawShout(ctx,w,h,b.text);for(const b of bubbles.filter(b=>b.large))drawStatement(ctx,w,h,b.text,b.x);
+    canvas.width=w;canvas.height=h;ctx.drawImage(renderer.domElement,0,0);if(snapshot.effect==='dash'){const contacts=snapshot.backdrop==='paper'?records.filter(r=>movingPose(r.actor.pose)&&!r.actor.y&&!r.actor.seat).map(r=>{const soles=createSoleFinder(r.avatar)(),side=soles.L.y<soles.R.y?'L':'R',point=r.avatar.root.worldToLocal(r.avatar.bones['foot'+side].getWorldPosition(new THREE.Vector3()));point.y=soles[side].y;point.z=soles[side].z;return r.avatar.root.localToWorld(point).project(camera);}):[];drawDash(ctx,w,h,contacts);}if(['chaos','escape'].includes(snapshot.effect))drawComicChaos(ctx,w,h,records.map(r=>headCentre(r.avatar).project(camera)),snapshot.effect==='escape');const overlay=document.createElement('canvas');overlay.width=w;overlay.height=h;drawCaptions(overlay.getContext('2d'),w,h,{style:snapshot.style,top:snapshot.top,bottom:snapshot.bottom,bubbles:bubbles.filter(b=>!b.shout&&!b.large)});ctx.drawImage(overlay,0,0);for(const b of bubbles.filter(b=>b.shout))drawShout(ctx,w,h,b.text);for(const b of bubbles.filter(b=>b.large))drawStatement(ctx,w,h,b.text,b.x,Math.min(...bubbles.map(p=>p.headTop).filter(y=>Number.isFinite(y)&&y>0)));
     // Where each character is on the picture (fractions of it), for picking, the outline and the toolbar.
     const right=new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld,0);
     boxes=placed.map(p=>{const corners=[];for(const x of [p.box.min.x,p.box.max.x])for(const y of [p.box.min.y,p.box.max.y])for(const z of [p.box.min.z,p.box.max.z])corners.push(new THREE.Vector3(x,y,z).project(camera));

@@ -1,5 +1,15 @@
 # Fujita television comic — Studio integration, 23 October 2026
 
+## Speech-bubble correction — 23 October 2026
+
+Owner observed panel 1 graphics clipping through the speech bubble and asked whether this was code-related. Confirmed two code issues in Studio lettering: the closed bubble border crossed the separately stroked tail base, and the fixed-size bubble/tail ignored projected character head heights.
+
+Changed `drawStatement` to draw one continuous bubble/tail outline and fit its wrapped text into the space above the projected cast. Scene rendering now supplies head-top positions. Current panel 1 uses two lines with a clear gap above Johansson; panel 2 retains two lines and clear head space. Updated the public preview asset and cache-versioned both viewer and editor entry points. Recaptured the PNG and editable project, keeping the existing Library identities.
+
+Checks: the actual three-panel Studio production render was regenerated and inspected. Browser Canvas checks for the two dialogue lines at head-top 0.29/0.25 retained 83.9/28.2 px clearance on a 1200 px panel, and the tail join pixel is solid bubble fill [255,253,244,255], with no dark border seam. Seven existing link/model tests pass. `git diff --check` passes. Source changes are confined to Studio and its preview; no shared runtime rebuild needed. Extreme camera framing can still leave insufficient room above the cast; the new sizing does not promise arbitrary framing without any overlap.
+
+Publishing branch: `codex/studio-bubble-clearance-2026-10-23`. Publication is in progress; exact release details will follow.
+
 ## Editable sharing and immediate preview — owner follow-up
 
 Owner: “It won’t open the comic, can you show me the comic now, then add a share comic scene function”. The previous Pages deployment is now confirmed successful and serves the new Studio entry point; PR #375’s World guard also passed on GitHub. A public headless check was blocked by ERR_EMPTY_RESPONSE in this environment, so that is not evidence of the owner’s precise failure. The cloud browser has WebGL disabled. Do not assume the owner’s device has that limitation.
