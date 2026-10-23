@@ -1,5 +1,22 @@
 # Fujita television comic — Studio integration, 23 October 2026
 
+## After effects — second comic step, 23 October 2026
+
+Owner requested a named second step after assembly to edit the finished comic: shaders, assets, replacement lettering and translation. Follow-up explicitly confirmed replacing text outright.
+
+- Studio now offers **1. Make comic → 2. After effects** and **Next: After effects** after capture. Direct route: `/avatar-creator/?comic=fujita-tv&step=effects`.
+- Captures retain a clean picture and separate lettering anchors. After effects rewrites dialogue/captions and redraws their bubbles; it does not paint new wording over the old text. Empty dialogue removes that bubble. Pictures are encoded only on capture/export, rather than encoding every animated preview frame.
+- Fourteen shared shader looks work on the captured picture; Apply look to all panels is available. Lettering stays clear above the image look. These are 2D postprocessing effects; depth-sensitive shaders use a flat depth value rather than the original scene depth. Original is the captured appearance (which can already include a scene shader).
+- Assets: original stars/hearts/arrows, editable text labels and PNG/JPEG/WebP image upload; drag or adjust position, size, rotation and opacity; remove/reset. Asset images are resized before storage. The art and assets remain under the lettering layer.
+- Original Fujita dialogue switches English ↔ Swedish. Custom dialogue/captions can be replaced in any language. No AI translation service is installed: unknown custom wording is left untouched with an instruction to enter its translation. Do not describe it as a general automatic translator.
+- Layered projects preserve post-effects and image assets in Download/Open project. Sharing links preserve effects and canonical picture references; large image assets can exceed the bounded URL size, in which case the editable project is the sharing route.
+- A 559 KB built-in layer pack opens this finished comic without rebuilding its 3D locations. It also allows shared After effects copies of these same shots to open without WebGL. Fresh captured scenes without canonical picture references still need their 3D renderer when reopened from a scene link. Original/mono/sepia fallback and text/assets remain usable without WebGL; unsupported looks show Original with an explanation.
+- Old project panels without clean layers require Edit scene → Update panel once. Existing camera/pose editing remains in step 1, and updating a scene retains its post-effect settings.
+
+Validation: 13 model/link/effect/runtime checks pass. Real headless WebGL UI exercised all 14 looks with no page errors, English/Swedish switching, replacement dialogue, star movement by controls, project download/reopen, effect-bearing share-link reopening and 3200 px PNG export. An independently disabled-WebGL session replaced dialogue, uploaded an image and rotated it, and used the mono fallback. Phone 390×844 and tablet 820×1180 had no document overflow; desktop/phone screenshots inspected and confirmed actual picture pixels remain under lettering. Production rendering regenerated the clean layers successfully. `git diff --check` passes. Latest shared shader changes from main `33f713f5` were integrated and checked; World runtime package checks pass without a rebuild. Physical iPad touch dragging/native share sheet remains unverified.
+
+Local implementation commit `35337900`, integrated on branch `codex/fujita-tv-comic-2026-10-23`. Publishing branch `codex/studio-after-effects-2026-10-23`; publication in progress.
+
 ## Speech-bubble correction — 23 October 2026
 
 Owner observed panel 1 graphics clipping through the speech bubble and asked whether this was code-related. Confirmed two code issues in Studio lettering: the closed bubble border crossed the separately stroked tail base, and the fixed-size bubble/tail ignored projected character head heights.
