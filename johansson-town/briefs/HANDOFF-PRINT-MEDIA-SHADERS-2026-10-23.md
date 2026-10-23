@@ -32,3 +32,7 @@ Accepted Manga, Cartoon, Oil and Crayon main fragment bodies were compared byte-
 Saved eleven final deliverables successfully: four comic PNGs, four standalone Izakaya PNGs, `johansson-print-media-review.pdf` (eight pages), `johansson-print-media-game-screenshots.zip` (twelve game PNGs and report), and `johansson-print-media-editable.zip` (four layered Studio projects). Local directory: `deliverables/print-media/`. Previous accepted deliveries remain untouched.
 
 Next: owner visual review of the four independent experiments, then merge only the accepted work. No physical-device FPS, Safari or native Linux package acceptance has been performed for these new looks; no Linux release or live Pages publication is claimed. Retain accepted presets unchanged during further tuning. The PR and exact publishing commit are recorded in the final review update below.
+
+## Published review update
+
+[PR #383](https://github.com/nj22az/nj22az.github.io/pull/383) is open, not merged: publishing implementation commit `9aa922e1f754b2e742b3598f0403f99d8206d261`, based on main `d4912912`. Local documentation commit `10bbb85`. Eleven final files were saved with their persistent identities verified. Review PDF and individual previews are delivered with the response. CI may still be running; the local checks above are completed evidence, not a claim about an unfinished cloud run.
