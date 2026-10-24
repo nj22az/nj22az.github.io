@@ -1,9 +1,15 @@
 # Handover: the Pixar world, from 24 October 2026 (for any coding agent)
 
-> **Done on 24 October, evening (the owner's choice):** each repo now has three branches: `main` (the cartoon World;
-> the studio's main holds all useful studio work), `development` (Codex's prototypes; in this repo it starts as the
-> single-storey Sakura prototype), `pixar` (the Pixar work). Every other branch is a tag `archive/<name>`; restore one
-> with `git checkout -b <name> archive/<name>`. The branch recommendation below is history.
+> **Branches, 24 October evening (the owner's choice: "main , and the Pixar branch , and a development branch").**
+> Done in both repos: `main`, `development`, `pixar`, and `archive-2026-10-24`, whose single commit has every older
+> branch's last commit as a parent (each name and commit listed in its message: `git checkout -b <name> <commit>`
+> restores one). Site: `development` starts as Codex's single-storey Sakura prototype; `pixar` is `main` with these notes.
+> Studio: all three equal `main`, which now holds the cast, the poster and the konbini plan.
+> **Not done:** deleting the old branches. The cloud session's git proxy refuses deletions and tags. On the owner's Mac, in
+> each repo: `git fetch origin --prune && git for-each-ref --format='%(refname:lstrip=3)' refs/remotes/origin | grep -v -E
+> '^(HEAD|main|development|pixar|archive-2026-10-24)$' | xargs -n 50 git push origin --delete`. Their open pull requests
+> close; the work stays in the archive. Unmerged work to review in the studio's archive: `claude/catalogue-roles`,
+> `claude/mario-artist-study`, `codex/finish-haunted-vending-machine`.
 
 ## In one minute
 
