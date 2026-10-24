@@ -1,5 +1,15 @@
 # Hotels & Parking
 
+## Current Swedish publication — 24 October 2026
+
+The latest owner instruction is to establish confirmed free guest-parking fees first.
+The Swedish update lists 18 verified Scandics, with free weekday/weekend outdoor
+tariffs, registration notes and paid alternatives. A free-option label does not
+mean every parking area is free, no registration, or a guaranteed space. Detailed
+colour refinement is deferred. The CSV now appends seven evidence fields (37 total).
+See [the current handover](HANDOVER-SCANDIC-2026-10-24.md). Historical counts below
+describe earlier releases, not the current register.
+
 An independent Blog subsection, linked from `/blog/`. Hotel reviews do not enter
 the general article catalogue or the homepage's article feed.
 

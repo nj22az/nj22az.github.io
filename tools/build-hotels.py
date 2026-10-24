@@ -241,6 +241,7 @@ def build(reviews):
       <p class="hotel-eyebrow">The travel register</p>
       <h1>Hotels &amp; Parking</h1>
       <p class="hotel-intro">Find hotels with confirmed free guest parking in Sweden, Denmark, Norway and Finland. Compare parking arrangements and use the map to see the hotels that match your filters.</p>
+      <p class="hotel-findings-note"><strong>Swedish Scandic update: 18 reviewed hotels with a free outdoor option on weekdays and weekends.</strong> This is a verified subset, not the complete chain. The free-parking label applies to the named area only. Registration instructions and paid garages are stated in each entry. <a href="/blog/hotels/scandic-sweden-findings-2026-10-24.json">View the dated evidence records</a>.</p>
     </header>
     <section aria-labelledby="hotel-register-title">
       <div class="hotel-register-heading"><h2 id="hotel-register-title">Hotel register</h2><a class="hotel-download" href="/blog/hotels/hotel-reviews.csv" download>Download spreadsheet (CSV)</a></div>
