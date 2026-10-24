@@ -29,5 +29,7 @@
   "skellefteaGarageSeparate": true,
   "vasterasRegistrationPreserved": true,
   "personalPricesPreserved": true,
-  "coverageComplete": false
+  "coverageComplete": false,
+  "mapCoverageNotice": true,
+  "unknownCoordinatesAreNotPlotted": true
 }
