@@ -558,7 +558,7 @@ paint*=1.0-.32*pencilShade(p,lum);
 #endif
 // Strengthen comic colour only; the approved World sketch wash remains unchanged.
 paint=mix(vec3(luma(paint)),paint,mix(1.0,1.25,uComic));
-float graphite=edges(vUv,1.3*u,.45)*(.36+.38*noise(p*.7));
+float graphite=max(edges(vUv,1.3*u,.45)*(.36+.38*noise(p*.7)),spotBlack(vUv,u));
 vec3 pencil=mix(vec3(.24,.22,.23),vec3(.192,.176,.184),uComic);
 paint=mix(paint,pencil,clamp(graphite,0.0,1.0));gl_FragColor=vec4(clamp(paint,0.0,1.0),1.0);}`;
 

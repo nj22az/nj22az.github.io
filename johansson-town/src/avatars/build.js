@@ -1659,6 +1659,15 @@ function buildHead(recipe,m,faceSize){
  // a dim room still reads. Every head form, the soft sculpted one too (the owner, 24 October 2026: Vy's "shiny 3d head"
  // must be cel shaded like the rest of the characters).
  const material=celFrom(new THREE.MeshStandardMaterial({map:texture,roughness:.82,emissive:0xffffff,emissiveMap:texture,emissiveIntensity:.05}),{bands:'soft3'});
+ // Keep the painted eyes, brows and mouth readable in dim scenes before any Look
+ // converts the picture to paper/ink. A floor on albedo lighting leaves daylight
+ // unchanged, unlike adding more emission to every face at every hour.
+ const faceCompile=material.onBeforeCompile,faceKey=material.customProgramCacheKey.bind(material);
+ material.onBeforeCompile=(shader,renderer)=>{faceCompile.call(material,shader,renderer);
+  shader.fragmentShader=shader.fragmentShader.replace('#include <opaque_fragment>',
+   'outgoingLight = max( outgoingLight, diffuseColor.rgb * 0.5 );\n#include <opaque_fragment>');
+ };
+ material.customProgramCacheKey=()=>faceKey()+':face-light-floor-v1';
  const head=new THREE.Mesh(g,material);head.name='Shimanchu head';
  head.position.y=m.headCentre-m.headY;
  if(INK_NOSES[recipe.nose.style])head.add(inkNoseBump(recipe,m,material,{PHI0,PHI,TH0,TH}));

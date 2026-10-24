@@ -88,3 +88,5 @@ conversation-eyes.test.mjs
 vehicle-body-collision.test.mjs
 sakura-wall-band.test.mjs
 sakura-street-poster.test.mjs
+
+face-lighting.test.mjs
