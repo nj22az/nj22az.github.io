@@ -1,0 +1,10 @@
+✔ tests/izakaya-bar.test.mjs (2570.680528ms)
+✔ tests/minato-compact.test.mjs (591.679083ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2579.360309
