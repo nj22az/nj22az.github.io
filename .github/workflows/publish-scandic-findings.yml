@@ -1,0 +1,49 @@
+name: Publish reviewed Swedish Scandic parking findings
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/publish-scandic-findings.yml]
+permissions:
+  contents: write
+concurrency:
+  group: hotel-findings-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Apply only reviewed parking evidence
+        run: python3 tools/apply-scandic-findings.py --enrich-locations
+      - name: Verify data and generated page
+        run: |
+          python3 tools/build-hotels.test.py
+          python3 tools/build-hotels.py --check
+          node --check blog/hotels/hotels.js
+          node --check blog/hotels/hotels-map.js
+          node tools/blog-feed.test.cjs
+          git diff --check
+      - name: Preserve tested publication files
+        uses: actions/upload-artifact@v4
+        with:
+          name: reviewed-scandic-publication
+          path: |
+            blog/hotels/
+            css/hotels.css
+            css/hotels-map.css
+            tools/build-hotels.py
+            tools/build-hotels.test.py
+            tools/apply-scandic-findings.py
+            HANDOVER.md
+          retention-days: 7
+      - name: Commit scoped hotel update without force
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add blog/hotels/hotels.json blog/hotels/index.html blog/hotels/hotel-reviews.csv blog/hotels/README.md blog/hotels/HANDOVER-SCANDIC-2026-10-24.md blog/hotels/SCANDIC-PUBLICATION-CHECKS-2026-10-24.json tools/build-hotels.py HANDOVER.md
+          git diff --cached --quiet && exit 0
+          git commit -m 'Publish verified Swedish Scandic free outdoor parking and paid-garage distinctions'
+          git push origin HEAD:main
