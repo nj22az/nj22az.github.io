@@ -74,8 +74,21 @@ clerk walks (to `staffApproach`, then the straight step into the till pocket, no
 the age refusal (now both current wordings). Runtime rebuilt; `origin/main` merged in (handover text only).
 
 Checks run after all of it: the 232 shop/Studio/game-build tests 232/232, and the **full CI guard with a 10 GB heap:
-391/391, 75 files, all green**. Not run: phone/iPad views, physical devices. A PR to main carries all three commits for
-the owner to merge (main deploys the site). Next: the owner reviews and merges; then re-take the Blender cabinet in `jojo`.
+391/391, 75 files, all green**. Not run: phone/iPad views, physical devices.
+
+**Merged and published.** [PR #388](https://github.com/nj22az/nj22az.github.io/pull/388), squash `2cc5a6b`, merged on the
+owner's word. On the PR, `guard` passed; `linux` (Linux console acceptance, run 40079598412) logged "Linux acceptance
+passed" and was then cut off by the step's `timeout 20m` in the web-only recovery that follows (exit 124), as on #383's
+run 39972713417; this session could not re-run it (403), and the owner chose to merge (see the PR comment). On main the
+World guard (run 40081981794) and Pages deployment (run 40081981319) passed; the public site serves `boot-B2WrrZ5x.js`
+and its Sakura chunk reads "Eisa" and "Sakura · Eisa poster".
+
+Next: (1) **Linux 0.2.18**, only with the owner's go-ahead: the offline Linux edition still ships 0.2.17's World ("Acer",
+the old cabinet) and lacks the controller fix `84baf00`; bump `steam-deck/package.json`, add `steam-deck/releases/0.2.18.md`,
+bring main into the release branch and follow the release steps in
+[the Linux handover](HANDOVER-LINUX-JOYSTICK-2026-10-22.md#commands-and-next-release). (2) The Linux console check's
+20-minute step budget is now too tight for its web-only recovery after a full acceptance; give that step its own
+budget rather than weakening it. (3) Re-take the Blender cabinet in `jojo`.
 
 ## Repository instructions handover — 22 October 2026
 
