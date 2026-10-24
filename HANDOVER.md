@@ -1,5 +1,7 @@
 # Latest handovers
 
+**24 October owner reversal — Sakura keeps its upstairs office and staff rest room.** Do not promote the single-storey architecture from draft PRs #378/#384/#385. The corrected, proposed architecture is [revision F1](johansson-town/briefs/HANDOFF-SAKURA-RETAINED-ARCHITECTURE-2026-10-24.md), with the construction plan and six-sheet CAD review on Studio `pixar` ([commit 7157cd71](https://github.com/nj22az/jojo/commit/7157cd7109e32773d7ed264f04c95f6a44fa8f51)). Read this before the historical single-storey row below. No runtime construction, main promotion or owner visual approval.
+
 Start here on every task, then read the latest applicable notes below. Maintain this index whenever a new note supersedes one of these. For an area without a note, create and link one when handing over work. Dates alone do not settle conflicting information: verify current branches, PRs, checks and releases.
 
 ## Current owner priority — 23 October 2026
