@@ -90,6 +90,16 @@ bring main into the release branch and follow the release steps in
 20-minute step budget is now too tight for its web-only recovery after a full acceptance; give that step its own
 budget rather than weakening it. (3) Re-take the Blender cabinet in `jojo`.
 
+**Linux 0.2.18, prepared on the owner's go-ahead** (branch `claude/peaceful-johnson-103tja`, PR into
+`codex/johansson-world-steam-deck`). The release branch was main at #365 plus 0.2.17's four version files, all already on
+main, so current main (with this note) was merged in and the tree checked equal to main's. Then: `steam-deck/package.json`,
+`package-lock.json` and `install.sh` at 0.2.18; `steam-deck/releases/0.2.18.md` (looks, Town book, Nhung/Higa Liquor,
+Vy, greeting eyes, Eisa poster, cold cabinet, the controller fallback `84baf00`); and the Linux console check's
+full-acceptance step given 30 minutes (job 45) so its web-only recovery is not cut off. `npm test --prefix steam-deck`
+38/38. Publishing happens when the PR merges into the release branch (`johansson-world-linux.yml`); the owner confirms
+that merge. After it: verify the release assets, installer and checksum, then point the website's downloads at 0.2.18
+on main (`world/index.html`, `johansson-world/install.sh`, `linux-port/install/index.html`), as 7624d98 did for 0.2.17.
+
 ## Repository instructions handover — 22 October 2026
 
 The owner requested that every new agent check the latest handover and update it when finished. Root [AGENTS.md](AGENTS.md#handover-required-at-the-start-and-end-of-every-task) now requires that lifecycle for every task, including partial or blocked work. [CLAUDE.md](CLAUDE.md) repeats the entry point so both Claude and Codex encounter it.

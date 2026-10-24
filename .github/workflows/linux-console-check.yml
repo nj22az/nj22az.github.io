@@ -14,7 +14,8 @@ jobs:
     runs-on: ubuntu-24.04
     # Full software-rendered console coverage includes 26 residents, a reload,
     # a separate web boot and native saves after the four-size/controller checks.
-    timeout-minutes: 40
+    # The steps before the full acceptance take about ten minutes.
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -47,7 +48,8 @@ jobs:
       - name: Verify packaged site without network access
         run: node steam-deck/tools/offline-browser-smoke.cjs
       - name: Full world controller, layout, resident and save acceptance
-        run: timeout 20m npm run test:console --prefix steam-deck
+        # The web-only recovery runs after the Linux acceptance in this step; 20 minutes cut it off (#388).
+        run: timeout 30m npm run test:console --prefix steam-deck
       - uses: actions/upload-artifact@v4
         if: always()
         with:
