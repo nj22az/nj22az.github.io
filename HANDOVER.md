@@ -56,6 +56,14 @@ shading, Make a face, harbour noticeboard and woodland diorama, solid cars and t
 Steam Library and Gamepad layout). `npm test --prefix steam-deck` passed locally. Release PR into the release branch;
 merging it publishes. After: verify assets, installer, checksum; point the website at 0.2.19 on main.
 
+**0.2.19 published:** #394 squash `e5d0c94` (its Linux console acceptance, run 40117841659, passed), [release workflow
+40120289660](https://github.com/nj22az/nj22az.github.io/actions/runs/40120289660) green. Verified by hand: archive and
+0.2.18→0.2.19 patch match `SHA256SUMS`, the manifest and GitHub's digests; the app reports 0.2.19; the packaged
+`build.js` has Vy's cel shading; the release installer equals the website's. Evidence:
+`linux-port/acceptance-0.2.19.md`. The website (World page, install guide, installer at 0.2.19; the comparison table's web
+column now says play as any resident; a 0.2.19 change-log entry) goes to main in its own PR. Still unverified: a real
+Steam Deck, above all whether the Gamepad layout fixes the owner's controls.
+
 ## Session handover — 24 October 2026 (late evening), branch `claude/peaceful-johnson-103tja`: Vy cel-shaded
 
 #392 (Steam Gaming Mode install, Deck Gamepad layout, REA) is merged as `b845f0b` and live; the owner has still to run the
