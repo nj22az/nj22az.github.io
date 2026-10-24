@@ -2,11 +2,12 @@ import * as THREE from '../../vendor/three.module.js';
 import {assetURL} from '../assets.js';
 
 /**
- * Sakura's street poster on another building (drawing SP-NK-001 rev C, docs/qa/sakura-street-poster/). The owner
+ * Sakura's street poster on another building (drawing SP-NK-001 rev D, docs/qa/sakura-street-poster/). The owner
  * (24 October 2026): "make the ads for Sakura Konbini make a poster we can put on the wall on another building", then
  * "Use another building maybe the ice cream shop".
  *
- * A B1 poster (728 x 1030) of Thuan, pasted to a painted 12 mm board on the south wall of Nakamura / Blue Coral, the
+ * A large poster (1400 x 1980, B proportions; rev C's B1 made bigger at the owner's word: "can you make it bigger?") of
+ * Thuan, pasted to a painted 18 mm board on the south wall of Nakamura / Blue Coral, the
  * ice-cream shop: the plain plaster side that faces down Main Street toward Sakura and the harbour, between its window
  * (x ≈ 10) and the back corner (x 13.4). "After the ice cream, a cold tea." Sakura is a short walk down Main Street
  * toward the harbour from here; NAGI ¥120 is the catalogue's price.
@@ -19,11 +20,11 @@ import {assetURL} from '../assets.js';
  * faced only the narrow lane. Neither was published.
  */
 export const SAKURA_STREET_POSTER=Object.freeze({
- revision:'C',
+ revision:'D',
  asset:'graphics/advertising/sakura-street-poster.webp',
- paper:Object.freeze([728,1030]),board:Object.freeze({w:760,h:1062,t:12,colour:0x2f4a3c}),
+ paper:Object.freeze([1400,1980]),board:Object.freeze({w:1440,h:2020,t:18,colour:0x2f4a3c}),
  building:'Nakamura · Blue Coral',face:'south wall',
- centre:Object.freeze({x:11.9,y:1760}),
+ centre:Object.freeze({x:11.92,y:1780}),
  wallFace:-14.15,normal:Object.freeze([0,0,-1]),
  // the south wall as built: from the shop front (x 5.7) to the back corner (x 13.4), plaster to the first floor
  wall:Object.freeze({from:5.7,to:13.4,window:Object.freeze([9.55,10.45]),firstFloor:3300}),

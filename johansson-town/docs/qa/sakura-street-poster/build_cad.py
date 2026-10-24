@@ -1,9 +1,9 @@
-"""Sakura's street poster on Nakamura / Blue Coral's south wall, drawing SP-NK-001 revision C, from the placement's data
+"""Sakura's street poster on Nakamura / Blue Coral's south wall, drawing SP-NK-001 revision D, from the placement's data
 (src/world/sakura-street-poster.js) and the town as the game builds it (audit.json, tools/street-poster-audit.mjs).
 Writes beside this file:
 
-    Sakura-Street-Poster-Rev-C.pdf   one A3 sheet: the south wall seen from the street 1:30, a section 1:10, the checks
-    Sakura-Street-Poster-Rev-C.dxf   1:1 millimetres, R2010
+    Sakura-Street-Poster-Rev-D.pdf   one A3 sheet: the south wall seen from the street 1:30, a section 1:10, the checks
+    Sakura-Street-Poster-Rev-D.dxf   1:1 millimetres, R2010
     checks.json
 
     python3 docs/qa/sakura-street-poster/build_cad.py   (from johansson-town/; needs node, Pillow, reportlab, ezdxf)
@@ -37,11 +37,11 @@ b0, b1 = cx - bw / 2, cx + bw / 2
 y0, y1 = cy - bh / 2, cy + bh / 2
 wf, wt, win0, win1 = mm(W['from']), mm(W['to']), mm(W['window'][0]), mm(W['window'][1])
 check('B1 paper inside its board with a margin', P['paper'][0] < bw and P['paper'][1] < bh, f"{P['paper']} on {bw} x {bh}")
-check('B1 proportions (728 x 1030)', P['paper'] == [728, 1030])
+check('B-series proportions (1 : 1.414)', abs(P['paper'][1] / P['paper'][0] - 2 ** .5) < .005, f"{P['paper']}")
 check('board 300 clear of the window', b0 - win1 >= 300, f'{b0 - win1:.0f} mm')
 check('board 300 clear of the back corner', wt - b1 >= 300, f'{wt - b1:.0f} mm')
 check('board under the first floor with 300 to spare', y1 <= W['firstFloor'] - 300, f'top {y1:.0f}')
-check('poster centre at eye level (1500..1800)', 1500 <= cy <= 1800, f'{cy}')
+check('poster bottom above the planter and passers-by (600)', y0 >= 600, f'bottom {y0:.0f}')
 check('nothing of the built town 3..400 out from the wall within 300 of the board', not AUD['intruders'],
       ', '.join(AUD['intruders']))
 check("on the shop's side wall, away from its front, door and flag (open Nakamura audit)", b0 - wf >= 3000,
@@ -65,11 +65,11 @@ msp.add_line((H(wt), W['firstFloor']), (H(wf), W['firstFloor']), dxfattribs={'la
 rect(H(win1), 900, H(win0), 2100, 'FIXTURE')
 rect(H(b1), y0, H(b0), y1, 'POSTER')
 rect(H(cx + P['paper'][0] / 2), cy - P['paper'][1] / 2, H(cx - P['paper'][0] / 2), cy + P['paper'][1] / 2, 'POSTER')
-msp.add_text('SP-NK-001 rev C: Sakura street poster, Nakamura / Blue Coral south wall (seen from the street)', height=80,
+msp.add_text('SP-NK-001 rev D: Sakura street poster, Nakamura / Blue Coral south wall (seen from the street)', height=80,
              dxfattribs={'layer': 'TEXT'}).set_placement((H(wt), W['firstFloor'] + 3000))
-for old in glob.glob(os.path.join(HERE, 'Sakura-Street-Poster-Rev-[AB].*')):
+for old in glob.glob(os.path.join(HERE, 'Sakura-Street-Poster-Rev-[ABC].*')):
     os.remove(old)
-path = os.path.join(HERE, 'Sakura-Street-Poster-Rev-C.dxf')
+path = os.path.join(HERE, 'Sakura-Street-Poster-Rev-D.dxf')
 doc.saveas(path)
 from ezdxf import recover  # noqa: E402
 _, aud = recover.readfile(path)
@@ -81,11 +81,11 @@ from reportlab.lib.utils import ImageReader  # noqa: E402
 from PIL import Image  # noqa: E402
 PW, PH = landscape(A3)
 k = 72 / 25.4 / 30
-c = canvas.Canvas(os.path.join(HERE, 'Sakura-Street-Poster-Rev-C.pdf'), pagesize=landscape(A3))
+c = canvas.Canvas(os.path.join(HERE, 'Sakura-Street-Poster-Rev-D.pdf'), pagesize=landscape(A3))
 c.setLineWidth(.8)
 c.rect(20, 20, PW - 40, PH - 40)
 c.setFont('Helvetica-Bold', 13)
-c.drawString(40, PH - 50, 'Sakura street poster on Nakamura / Blue Coral, south wall seen from the street, 1:30 (rev C)')
+c.drawString(40, PH - 50, 'Sakura street poster on Nakamura / Blue Coral, south wall seen from the street, 1:30 (rev D)')
 ox, oy = 90, 170
 X = lambda x: ox + (wt - x) * k  # noqa: E731
 Y = lambda y: oy + y * k  # noqa: E731
@@ -110,7 +110,7 @@ c.line(X(b0), Y(y0) - 18, X(win1), Y(y0) - 18)
 c.drawCentredString((X(b0) + X(win1)) / 2, Y(y0) - 28, f'{b0 - win1:.0f} to the window')
 c.line(X(wt), Y(y0) - 18, X(b1), Y(y0) - 18)
 c.drawCentredString((X(wt) + X(b1)) / 2, Y(y0) - 28, f'{wt - b1:.0f}')
-c.drawCentredString(X(cx), Y(y1) + 10, f'board {bw} x {bh} x 12, B1 paper 728 x 1030')
+c.drawCentredString(X(cx), Y(y1) + 10, f'board {bw} x {bh} x 18, paper 1400 x 1980')
 c.drawCentredString((X(win0) + X(win1)) / 2, Y(2100) + 8, 'window')
 c.drawString(X(wt), Y(0) - 14, 'east: back corner')
 c.drawRightString(X(wf), Y(0) - 14, 'west: shop front on Main Street (door, counter, flag on that face)')
@@ -121,7 +121,7 @@ c.setFillColorRGB(.18, .29, .24)
 c.rect(sx, sy + 120 * s10, 12 * s10, 1062 * s10 * .9, fill=1)
 c.setFillColorRGB(0, 0, 0)
 c.setFont('Helvetica', 8)
-c.drawString(sx - 200 * s10, sy - 14, 'SECTION 1:10: plaster wall | 12 mm painted board | paper 3 mm proud')
+c.drawString(sx - 200 * s10, sy - 14, 'SECTION 1:10: plaster wall | 18 mm painted board | paper 3 mm proud')
 c.setFont('Helvetica', 7.5)
 yy = 360
 c.drawString(sx - 40, yy, f'Checks: {sum(x["ok"] for x in CHECKS)} of {len(CHECKS)} pass')
@@ -131,7 +131,7 @@ for i, ck in enumerate(CHECKS):
 c.setFillColorRGB(0, 0, 0)
 c.rect(PW - 300, 20, 280, 60)
 c.setFont('Helvetica-Bold', 11)
-c.drawString(PW - 292, 58, 'SP-NK-001  rev C  24 Oct 2026')
+c.drawString(PW - 292, 58, 'SP-NK-001  rev D  24 Oct 2026')
 c.setFont('Helvetica', 8)
 c.drawString(PW - 292, 44, 'Johansson World · Minato · Nakamura / Blue Coral')
 c.drawString(PW - 292, 30, 'millimetres; virtual-environment drawing')
