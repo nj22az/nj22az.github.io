@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Minato Farm</title>
+<link rel="apple-touch-icon" href="assets/town-192.png">
+<link rel="stylesheet" href="farm.css">
+</head>
+<body>
+<header><h1>Minato Farm</h1><div id="stats"></div></header>
+<main>
+  <div id="plots" role="grid" aria-label="Fields"></div>
+  <div id="msg" role="status"></div>
+</main>
+<nav id="tools" aria-label="Seeds">
+  <button data-seed="rice"><img src="assets/island-onigiri.webp" alt="">Rice<small></small></button>
+  <button data-seed="noodle"><img src="assets/island-ramen.webp" alt="">Wheat<small></small></button>
+  <button data-seed="cabbage"><img src="assets/island-gyoza.webp" alt="">Cabbage<small></small></button>
+  <button data-seed="pumpkin"><img src="assets/island-curry.webp" alt="">Pumpkin<small></small></button>
+  <button data-seed="milk"><img src="assets/island-icecream.webp" alt="">Milk cow<small></small></button>
+</nav>
+<script src="farm.js"></script>
+</body>
+</html>

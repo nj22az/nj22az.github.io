@@ -94,3 +94,7 @@ closes into Sakura"; the work, the review and the open issues: the
 Next agent: both PRs wait on the owner. Open for them: the walking Kōji keeps to the ice plant between the depot and
 the crate yard (the drops are in the data, not walked); the economy model does not know Sakura's Saturday closing; the
 Higa feed backdrop is still to be captured.
+
+## Minato Farm (iOS-ready farm simulator) — 24 October 2026
+
+New standalone folder [`farm-sim/`](farm-sim/README.md): plain HTML/JS game in `www/` using Johansson World food art, town icon and title backdrop (copied from `johansson-town/assets`), wrapped with a Capacitor config (`capacitor.config.json`, `package.json`) for iOS. Checks run: `node --check www/farm.js` only. Not run in a browser, Capacitor or Xcode; no device test. Next: play-test, run `npx cap add ios` on a Mac, add a 1024px app icon, then decide on art/gameplay depth (residents as customers, seasons). The game itself is untouched.
