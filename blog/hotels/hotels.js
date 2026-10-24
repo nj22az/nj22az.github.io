@@ -10,11 +10,12 @@
   var table = document.querySelector('[data-hotel-table]');
   var notes = document.querySelector('[data-hotel-notes]');
   var query = form.elements.namedItem('search');
+  var country = form.elements.namedItem('country');
   var parking = form.elements.namedItem('parking');
   var receipt = form.elements.namedItem('receipt');
 
   function normalise(value) {
-    return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('en');
+    return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('en').replace(/ø/g, 'o').replace(/æ/g, 'ae');
   }
 
   function matchesParking(row, filter) {
@@ -31,16 +32,18 @@
     rows.forEach(function (row) {
       var text = normalise(row.dataset.search);
       var show = terms.every(function (term) { return text.includes(term); }) &&
+        (!country.value || row.dataset.country === country.value) &&
         matchesParking(row, parking.value) &&
         (!receipt.value || row.dataset.hotelReceipt === receipt.value);
       row.hidden = !show;
       if (show) visible.add(row.dataset.hotelRow);
     });
     reviews.forEach(function (review) { review.hidden = !visible.has(review.dataset.hotelNote); });
-    count.textContent = visible.size + ' of ' + rows.length + ' hotel ' + (rows.length === 1 ? 'review' : 'reviews') + ' shown';
+    count.textContent = visible.size + ' of ' + rows.length + ' ' + (rows.length === 1 ? 'hotel' : 'hotels') + ' shown';
     empty.hidden = visible.size !== 0;
     table.hidden = visible.size === 0;
     notes.hidden = visible.size === 0;
+    document.dispatchEvent(new CustomEvent('hotel-filter-change', { detail: { visibleIds: Array.from(visible) } }));
   }
 
   form.addEventListener('input', filter);

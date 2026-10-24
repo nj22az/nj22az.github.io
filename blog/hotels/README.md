@@ -7,33 +7,76 @@ the general article catalogue or the homepage's article feed.
 
 1. Add the owner's observations to `hotels.json`. Use a stable review id and hotel
    id. `recordedOn` is when the note was recorded; do not infer precise stay dates.
-2. Record prices **paid for that stay**, with the currency separately. The page
-   calculates the total from room and parking amounts. Do not replace these with
-   a hotel's current advertised tariff.
+2. Record accommodation prices **paid for the complete stay** in `roomPaid`, with
+   `nights`, an ISO `currency` where known and a `priceNote`. The page calculates
+   the total from room and parking amounts. Unknown amounts and nights are `null`,
+   never zero. If a receipt supplies only an ambiguous currency label, preserve it
+   in `currencyLabel`, leave `currency` null and explain that in `priceNote`.
+   Do not replace a paid price with a hotel's current advertised tariff.
 3. Use `true`, `false` or `null` for free parking, easy parking and inclusion on the
    hotel receipt. Unknown ease must never qualify for the free-and-easy filter.
-4. Verify hotel identity/address against the official hotel or parking page.
-   Attribute the review, prices and receipt experience to the personal stay
-   report. Do not invent service, breakfast, cleanliness or numerical ratings.
+   Free parking has a zero charge and a receipt state of not applicable on the
+   page/export. Use `parkingLabel` and `parkingSummary` to describe registration
+   requirements or distinguish a free outdoor option from a paid garage.
+4. Verify hotel identity, street, postcode and country against the official hotel
+   page. Use the full country name and two-letter `countryCode`. Identify whether
+   each note comes from a stay report or published hotel information; do not
+   invent service, breakfast, cleanliness or numerical ratings. Never commit
+   receipt/message screenshots, guest names, booking references, card details,
+   personal contact information or exact stay dates.
 5. Run `python3 tools/build-hotels.py`. Commit the data and generated page together.
 6. Refresh `hotel-reviews.csv` from the same records using a spreadsheet tool.
    Preserve numeric prices, ISO recorded dates, source URLs and UTF-8 place names.
    CSV totals are exported values; the website derives them from the inputs.
-   Compare the CSV fields and totals with the JSON before publishing.
-7. Run `python3 tools/build-hotels.py --check` and check filtering, reset, the CSV
+   Include nights, average accommodation price per night, the price basis and
+   coordinate sources. Compare all CSV fields and totals with the JSON before
+   publishing; do not mix a multi-night total with a nightly rate.
+7. Run `python3 tools/build-hotels.py --check` and check combined country/parking/
+   receipt/search filters, map selection, location controls, reset, the CSV
    download and narrow-screen layout. Update the relevant handover.
 
 The site has no build dependency: generated HTML and the CSV are served directly.
-`hotels.js` progressively adds filters to the existing table and matching notes.
+`hotels.js` progressively adds filters to the existing table and matching notes,
+and dispatches `hotel-filter-change` with the visible review ids for the map.
 The complete register and CSV remain available without JavaScript.
 
-## Future map
+## Map and location
 
-The address, city, country and stable hotel id are stored for a future map.
-`coordinates` stays `null` until independently verified. When available, use
-`{"latitude": 0, "longitude": 0, "sourceUrl": "https://…"}` with the actual
-verified coordinates and a source; never substitute zeroes for an unknown point.
-No map, geolocation prompt or map service dependency is added at this stage.
+`hotels-map.js` uses Leaflet 1.9.4, loaded with the official SRI hashes, and
+OpenStreetMap tiles. Attribution remains visible and normal browser caching and
+referrer behaviour are retained. There is no tile prefetch, offline download,
+runtime geocoding or location backend. **Mock tile requests in automated browser
+checks**; do not pan/zoom a headless browser against the public tile service.
+
+Each hotel's `coordinates` contains `latitude`, `longitude` and `sourceUrl`.
+Use the official property marker or an authoritative property-specific source;
+never substitute a city centre, static-map viewport centre or zeroes for an
+unknown point. A missing point stays null and is not plotted.
+
+The map uses the same visible review ids as the table and notes. Show my location
+requests a single browser reading only after a click. Update refreshes it; Clear
+removes it and ignores any pending response. A position and its accuracy circle
+exist only in memory and are never added to the data, CSV, logs or storage.
+The tile provider receives normal map-view requests, so do not claim that the
+viewed area is hidden from it. Denied/failed location permission and a missing
+map library leave the hotel register usable.
+
+All seven initial property points are verified. The six Scandic points come from
+their official `/map-view` property-marker data; Marina's point comes from the
+`!3d`/`!4d` coordinates of the Google Maps place link on its official homepage.
+
+## Danish additions
+
+Hotel Marina, Scandic Aalborg Øst, Scandic Aarhus Vest, Scandic Kolding,
+Scandic Opus Horsens and Scandic Sønderborg have free outdoor parking.
+Marina requires the reported APCOA tablet registration at reception; Kolding
+also requires reception registration. Opus's garage is paid.
+
+Marina's permitted receipt amount is 5,728.46 kr for five nights including taxes
+and fees after a booking credit, averaging 1,145.69 kr per night. The screenshot
+does not show an ISO currency code, so neither SEK nor DKK is assumed. No raw
+receipt or private conversation is published. The other new room prices remain
+unknown. Ease is unassessed for all seven entries.
 
 ## First entry
 

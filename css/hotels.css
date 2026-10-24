@@ -15,7 +15,7 @@
 .hotel-register-heading{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:12px 24px;margin:36px 0 18px}
 .hotel-page h2{font-size:clamp(23px,3vw,30px);line-height:1.25;font-weight:700}
 .hotel-download{display:inline-flex;align-items:center;min-height:44px;font-size:14px;text-decoration:underline;text-underline-offset:3px}
-.hotel-filters{display:grid;grid-template-columns:minmax(200px,1.6fr) minmax(180px,1fr) minmax(170px,1fr) auto;gap:14px;align-items:end;margin-bottom:20px}
+.hotel-filters{display:grid;grid-template-columns:minmax(180px,1.4fr) minmax(130px,.8fr) minmax(170px,1fr) minmax(170px,1fr) auto;gap:14px;align-items:end;margin-bottom:20px}
 .hotel-field{display:grid;gap:7px;min-width:0}
 .hotel-filters label{font-size:13px;font-weight:600}
 .hotel-filters input,.hotel-filters select{width:100%;min-width:0;min-height:46px;padding:10px 12px;border:1px solid var(--border-hover);border-radius:4px;background:var(--surface-card);color:var(--ink);font:400 15px/1.4 var(--font-body)}
@@ -29,10 +29,13 @@
 .hotel-table .hotel-money{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .hotel-table thead .hotel-money{white-space:normal}
 .hotel-table .hotel-total{font-weight:700}
+.hotel-table .hotel-unknown,.hotel-table .hotel-cell-note{white-space:normal}
+.hotel-table .hotel-unknown{display:block;font-size:12px;line-height:1.6;color:var(--ink-light);font-weight:400}
 .hotel-table th[scope="row"]{font-weight:400}
 .hotel-name{font-weight:700;font-size:16px;line-height:1.35;text-decoration:underline;text-underline-offset:3px}
 .hotel-place,.hotel-recorded,.hotel-cell-note{display:block;font-size:12px;line-height:1.6;margin-top:7px;color:var(--ink-light)}
 .hotel-tag{display:inline-block;max-width:100%;padding:3px 7px;border:1px solid var(--border-hover);border-radius:4px;font-size:12px;line-height:1.6;font-weight:600;color:var(--ink)}
+.hotel-country{margin-top:8px}
 .hotel-table a:not(.hotel-name){text-decoration:underline;text-underline-offset:3px}
 .hotel-empty{border:1px solid var(--border);padding:28px 20px;line-height:1.75;background:var(--surface-raised)}
 .hotel-empty strong{display:block;margin-bottom:6px}
