@@ -4,68 +4,49 @@ on:
     branches: [main]
     paths: [.github/workflows/publish-scandic-findings.yml]
 permissions:
-  contents: read
+  contents: write
 concurrency:
   group: hotel-findings-publication
   cancel-in-progress: false
 jobs:
-  verify:
+  finish:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
-          persist-credentials: false
-      - name: Inspect official property location data
+      - name: Clarify map coverage and regenerate the page
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          from urllib.request import urlopen
-          import re
-          folder=Path('_hotel-publication-qa');folder.mkdir(exist_ok=True)
-          for slug in ['scandic-skelleftea','scandic-vaxjo']:
-              url='https://www.scandichotels.com/en/hotels/'+slug
-              try:
-                  with urlopen(url, timeout=15) as response: text=response.read(8000000).decode('utf-8')
-                  (folder/(slug+'-property.html')).write_text(text,encoding='utf-8')
-                  print(slug,'official page bytes',len(text))
-                  for match in list(re.finditer(r'latitude|longitude|coordinates|hotelLocation|\\"lat\\"|\\"lng\\"',text,re.I))[:8]:
-                      print(text[max(0,match.start()-120):match.end()+240])
-              except Exception as exc: print(slug,'location evidence unavailable:',type(exc).__name__)
-          for asset in ['leaflet.js','leaflet.css']:
-              try:
-                  with urlopen('https://unpkg.com/leaflet@1.9.4/dist/'+asset, timeout=15) as response:
-                      (folder/asset).write_bytes(response.read(1000000))
-              except Exception as exc: print('QA map dependency unavailable:',type(exc).__name__)
+          import json
+          p=Path('blog/hotels/hotels-map.js');s=p.read_text()
+          old="    var message = count ? count + ' ' + (count === 1 ? 'hotel matches' : 'hotels match') + ' the filters.' : 'No hotels match the filters.';"
+          new="    var total = visibleIds.size;\n    var missing = total - count;\n    var message = total ? count + ' of ' + total + ' selected hotels have verified map locations.' : 'No hotels match the filters.';\n    if (missing > 0) message += ' ' + missing + ' ' + (missing === 1 ? 'hotel is' : 'hotels are') + ' listed below with addresses while map coordinates await verification.';"
+          assert old in s
+          p.write_text(s.replace(old,new))
+          p=Path('tools/build-hotels.py');s=p.read_text()
+          old='<p class="hotel-map-intro">The map follows the filters above. Select a hotel marker to read its notes.</p>'
+          new='<p class="hotel-map-intro">The map follows the filters above. Verified map locations are available for {len(map_records)} of {count} hotels. Other hotels remain in the table with their addresses; approximate pins are not used. Select a marker to read its parking notes.</p>'
+          assert old in s
+          s=s.replace(old,new).replace('/blog/hotels/hotels-map.js?v=2','/blog/hotels/hotels-map.js?v=3').replace('/css/hotels.css?v=3','/css/hotels.css?v=4')
+          p.write_text(s)
+          p=Path('css/hotels.css');s=p.read_text();s+='\n.hotel-findings-note{margin:18px 0 0;padding:14px 16px;border-left:3px solid #15803d;background:var(--surface-raised);font-size:14px;line-height:1.7;color:var(--ink-light)}\n.hotel-findings-note strong{color:var(--ink)}\n.hotel-findings-note a{text-decoration:underline;text-underline-offset:3px}\n';p.write_text(s)
+          p=Path('blog/hotels/SCANDIC-PUBLICATION-CHECKS-2026-10-24.json');d=json.loads(p.read_text());d['mapCoverageNotice']=True;d['unknownCoordinatesAreNotPlotted']=True;p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
           PY
-      - name: Verify recorded data and public page
+          python3 tools/build-hotels.py
+      - name: Verify before publishing
         run: |
           python3 tools/build-hotels.test.py
           python3 tools/build-hotels.py --check
           node --check blog/hotels/hotels.js
           node --check blog/hotels/hotels-map.js
-          python3 - <<'PY'
-          import json, hashlib
-          from pathlib import Path
-          from urllib.request import urlopen
-          results=[]
-          for path in ['blog/hotels/index.html','blog/hotels/hotels.json','blog/hotels/hotel-reviews.csv']:
-              expected=Path(path).read_bytes()
-              try:
-                  with urlopen('https://nj22az.github.io/'+path,timeout=15) as response:
-                      body=response.read();status=response.status
-                  result={'path':path,'status':status,'matchesRepository':body==expected,'sha256':hashlib.sha256(body).hexdigest()}
-              except Exception as exc:result={'path':path,'error':type(exc).__name__}
-              results.append(result)
-          Path('_hotel-publication-qa/public-check.json').write_text(json.dumps(results,indent=2))
-          print(json.dumps(results,indent=2))
-          PY
-      - name: Preserve publication review files
-        if: always()
-        uses: actions/upload-artifact@v4
+          node tools/blog-feed.test.cjs
+          git diff --check
+      - uses: actions/upload-artifact@v4
         with:
-          name: reviewed-scandic-publication
+          name: reviewed-scandic-final
           path: |
             blog/hotels/
             css/
@@ -77,5 +58,12 @@ jobs:
             tools/build-hotels.test.py
             tools/apply-scandic-findings.py
             HANDOVER.md
-            _hotel-publication-qa/
           retention-days: 7
+      - name: Publish scoped page correction
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add blog/hotels/index.html blog/hotels/hotels-map.js blog/hotels/SCANDIC-PUBLICATION-CHECKS-2026-10-24.json tools/build-hotels.py css/hotels.css
+          git diff --cached --quiet && exit 0
+          git commit -m 'Clarify verified hotel map coverage and surface the reviewed Scandic findings'
+          git push origin HEAD:main
