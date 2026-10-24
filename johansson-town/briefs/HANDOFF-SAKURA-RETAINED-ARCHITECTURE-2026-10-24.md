@@ -30,7 +30,7 @@ corrected before delivery. These are review drawing checks, not game/Blender/str
 
 Open: structural capacity and full load paths, refrigeration sizing/services, complete props/stock capacity, detailed moving
 door envelopes, clay registration, actual mesh duplicates/coplanarity and frame-by-frame cast contacts. Owner visual approval
-is not recorded. Full replacement Blender environment remains unbuilt.
+of the whole architecture is not recorded. Refrigeration choice is approved below. Full replacement Blender environment remains unbuilt.
 
 ## Branches and next action
 
@@ -42,3 +42,9 @@ See corrected Studio plan: https://github.com/nj22az/jojo/blob/pixar/3d/sakura/P
 Checks: https://github.com/nj22az/jojo/blob/pixar/3d/sakura/checks.md
 
 Studio delivery commit: `7157cd7109e32773d7ed264f04c95f6a44fa8f51`. This World commit contains documentation only.
+
+## Owner refrigeration decision - 24 October 2026
+
+"Use the proposed reach-in cabinets". The eight-door 5200 × 800 × 2400 mm bank proceeds to detailed design. The walk-in alternative is no longer an open owner choice. Keep the upstairs office/rest room and all protected receiving/stair routes. Next: door sweeps, maintenance and ventilation access, product capacity, electrical/heat-rejection/condensate coordination. This decision covers the refrigeration arrangement only; other visual and technical gates remain.
+
+Recorded in Studio `pixar` commit `389cbde4e3eedbd820cd759b65c5c76804324c6a` (plan, progress, CAD JSON and generator). Metadata/documentation only; generator syntax checked. No geometry or runtime change, construction or publication.
