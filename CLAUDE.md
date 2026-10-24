@@ -150,6 +150,10 @@ that makes more or better stories.
   on its shutter, and Grandmother Higa keeps only the bathhouse. Blue Coral on Rainflower Lane is the town's only
   ice-cream shop.
 
+**Workflow (the owner, 24 October 2026; AGENTS.md):** Codex prototypes detailed three.js rooms and characters on
+`prototype/` branches; Claude takes them to Pixar standard in Blender (`nj22az/jojo`, `pixar/` branches); `main` keeps the
+simplified, cute cartoon three.js World until the Pixar world is complete.
+
 ## Sjöskolan
 
 **Läs `sjoskolan/ANDRINGSLOGG.md` först.** Där står reglerna från tidigare fel (ledtrådar utan svaret, verkliga exempel,
