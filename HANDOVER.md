@@ -39,6 +39,44 @@ The newest note for Nhung the doctor and Higa Liquor is the [22 October 2026 nig
 
 The Linux controller note contains newer merge and release information than the morning World note. Real-device confirmation of right-stick camera control on Bluetooth and Steam Deck remains outstanding; follow that note's reproduction steps. Its evening update: a saved Look axis past the pad's axes now falls back to the right stick (`84baf00`, for 0.2.17, unreleased; it rides the Nhung doctor PR from `claude/clever-ride-qdpo8s`).
 
+## Session handover — 24 October 2026, branch `claude/peaceful-johnson-103tja`: the "Acer" poster and the cold cabinet
+
+A small World fix from the Pixar handover's list of slips. Sakura's Eisa festival poster printed "Acer" (a machine
+translation of エイサー) and its inspect title read "Acer · Eisa poster". Now it prints "Eisa" and the title reads
+"Sakura · Eisa poster", like the sale poster next to it (`src/world/interiors/sakura-dressing.js`). The glossary entry that
+caused it (`docs/ENGLISH-LOCALISATION.json`) now reads "Eisa". Runtime rebuilt with `npm run build:runtime`. One older
+`sakura-interior-*` chunk still contains "Acer" because the build keeps the previous build's chunks for open tabs, and
+the next rebuild prunes it.
+
+Checks run: `runtime-package`, `sakura-dressing`, `izakaya-posters`, `ferry-timetable-words`, `sakura-small-office` and
+`sakura-upstairs`, 30/30 passed. Not run: the full `ci-guard` and any in-game look at the poster (no GPU browser check).
+Pushed to the branch, no PR, not merged.
+
+**Then the cold cabinet, on the owner's go-ahead.** The drinks' `placed` notes were right and the shelf numbers were
+upside down (tea at the bottom, children's drinks at the top, milk at the bottom). Every cold-cabinet line's levels are
+mirrored in `johansson-town/data/studio/products.json` and `src/commerce/products-data.js` is regenerated
+(`tools/studio/build-data.mjs`, `--check` passes); runtime rebuilt. Now tea, water and cola stand at eye level, coffee, orange
+and soda low, milk on top and beer low in the column by the till. Tests that pinned the old numbers updated, none weakened:
+`products-move` gains a dated adjustment that asserts each line is exactly mirrored; the `studio-apply` double-booking and
+empty-shelf cases and the `studio-mcp` beer row use the mirrored shelves. Before/after screenshots from the built game
+(headless Chromium, desktop) were checked and sent to the owner.
+
+Checks run: the catalogue, konbini, products, runtime-package, Sakura, shop, Studio and vending tests plus
+`higa-shop-collision` and `housing-consolidation`: 228 of 232 passed. The 4 failures fail the same way on the unchanged
+branch: `catalog` (catalog-data.js out of date), `shop-display` (three islands with a route), and two in `studio-apply`
+(Mrs Kinjō is not a resident; the flavour cell case). Not run: the full `ci-guard`, phone/iPad views. The Blender poster set
+in `jojo` copies this cabinet and should be re-taken.
+
+**Then four stale checks, on the owner's "work after them".** The four failures above were the tests, not the town:
+`catalog-data.js` regenerated from `assets/catalog` (one cap's buyer note); `shop-display` routes the till the way the
+clerk walks (to `staffApproach`, then the straight step into the till pocket, now checked clear at `staffBody`);
+`studio-apply` used Mrs Kinjō and the Bus driver, who have left the cast (now Nhung), and matched only the old wording of
+the age refusal (now both current wordings). Runtime rebuilt; `origin/main` merged in (handover text only).
+
+Checks run after all of it: the 232 shop/Studio/game-build tests 232/232, and the **full CI guard with a 10 GB heap:
+391/391, 75 files, all green**. Not run: phone/iPad views, physical devices. A PR to main carries all three commits for
+the owner to merge (main deploys the site). Next: the owner reviews and merges; then re-take the Blender cabinet in `jojo`.
+
 ## Repository instructions handover — 22 October 2026
 
 The owner requested that every new agent check the latest handover and update it when finished. Root [AGENTS.md](AGENTS.md#handover-required-at-the-start-and-end-of-every-task) now requires that lifecycle for every task, including partial or blocked work. [CLAUDE.md](CLAUDE.md) repeats the entry point so both Claude and Codex encounter it.

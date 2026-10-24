@@ -64,7 +64,11 @@ test('the shelving stands in three islands with a route to every shelf',async()=
   const blocked=(x,z,r=.3)=>suppliedRoomBoundsBlocked(SAKURA_LAYOUT,x,z,r)||SAKURA_LAYOUT.colliders.some(c=>circleHitsRect(x,z,r,c));
   const nav=createNavigation(blocked,{step:.2,heightAt:()=>0,bounds:SAKURA_LAYOUT.bounds,radius:SAKURA_LAYOUT.clearance});
   const from={x:SAKURA_LAYOUT.entrance[0],z:SAKURA_LAYOUT.entrance[2]},stranded=[];
-  for(const [name,[x,,z]] of [...Object.entries(SAKURA_SHELVES).map(([id,shelf])=>[id,shelf.stand]),['the till',SAKURA_LAYOUT.staff],['the stockroom',SAKURA_LAYOUT.stockroom]]){
+  // The till is routed to its approach; the clerk's last step into the till pocket is a straight one at her body's
+  // width (retail-clerk.js tillStep), so that step must be clear too.
+  const [tx,,tz]=SAKURA_LAYOUT.staff,[ax,,az]=SAKURA_LAYOUT.staffApproach;
+  for(let k=0;k<=10;k++)assert.ok(!blocked(ax+(tx-ax)*k/10,az+(tz-az)*k/10,SAKURA_LAYOUT.staffBody),'the step into the till pocket is clear');
+  for(const [name,[x,,z]] of [...Object.entries(SAKURA_SHELVES).map(([id,shelf])=>[id,shelf.stand]),['the till',SAKURA_LAYOUT.staffApproach],['the stockroom',SAKURA_LAYOUT.stockroom]]){
    const route=nav.path(from,{x,z}),end=route.at(-1);
    if(!route.length||Math.hypot(end[0]-x,end[1]-z)>.25)stranded.push(name);
   }

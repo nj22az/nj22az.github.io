@@ -210,7 +210,7 @@ test('products: list, get with its references, change a price (dry run, draft, p
  assert.equal(list.data.count,8);assert.match(list.data.room,/^4 more products and 30 more flavours fit/);
  const beerRow=list.data.products.find(p=>p.id==='beer');
  assert.deepEqual([beerRow.brand,beerRow.label,beerRow.flavours,beerRow.unpublished],['UMINEKO · Beer','painted',['Dry','Black'],false]);
- assert.match(beerRow.where,/cold cabinet, column 3 .*nearest the till.*shelves 2, 3, 4/);
+ assert.match(beerRow.where,/cold cabinet, column 3 .*nearest the till.*shelves 0, 1, 2/);
  assert.equal((await call('product_list',{query:'umineko'})).data.products[0].id,'beer');
  const got=await call('product_get',{id:'Umineko lager'});
  assert.equal(got.data.id,'beer','a product is found by its name too');

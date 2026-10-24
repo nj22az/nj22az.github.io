@@ -78,6 +78,15 @@ legacy.SUPPLIERS.sakura={...legacy.SUPPLIERS.sakura,goods:now.SUPPLIERS.sakura.g
 for(const [site,keys] of Object.entries({izakaya:['alcohol'],ramen:['alcohol','why','delivery'],'coral-bay-bar':['alcohol','why','delivery'],'fujita-shed':['why','delivery']})){
  const was=legacy.ACCOUNTS.sakura[site],is=now.ACCOUNTS.sakura[site];assert.deepEqual(is.lines,was.lines,site+' keeps its shelf lines');
  const next={...was};for(const key of keys)next[key]=is[key];legacy.ACCOUNTS.sakura[site]=next;}
+// 24 October 2026 (the owner): the cold cabinet's shelves were numbered from the top, against the rule that counts them
+// from the bottom, so every drink stood the other way up from its `placed` note (tea low, children's drinks high). Each
+// line's shelves are mirrored, top for bottom, and World walks them up each column again; nothing else about a shelf moves.
+{const {FRIDGE_LEVELS}=await import('../src/world/interiors/sakura-layout.js'),mirror=y=>FRIDGE_LEVELS[FRIDGE_LEVELS.length-1-FRIDGE_LEVELS.indexOf(y)];
+ const fridge=Object.keys(legacy.SAKURA_SHELVES).filter(id=>legacy.SAKURA_SHELVES[id].fitting==='fridge');
+ for(const id of fridge){const was=legacy.SAKURA_SHELVES[id],is=now.SAKURA_SHELVES[id];
+  assert.deepEqual(is.levels,was.levels.map(mirror).sort((a,b)=>a-b),id+' stands mirrored in its column');legacy.SAKURA_SHELVES[id]={...was,levels:is.levels};}
+ const order=Object.keys(now.SAKURA_SHELVES).filter(id=>fridge.includes(id));let i=0;
+ legacy.SAKURA_SHELVES=Object.fromEntries(Object.entries(legacy.SAKURA_SHELVES).map(([id,s])=>fridge.includes(id)?[order[i],legacy.SAKURA_SHELVES[order[i++]]]:[id,s]));}
 for(const name of Object.keys(legacy.linesFor))if(!live(name))delete legacy.linesFor[name];
 for(const [name,want] of Object.entries(now.linesFor)){assert.ok(castMember(name),name+' buys at Sakura but is not in the cast');for(const line of legacy.linesFor[name]||[])assert.ok(want.includes(line),name+' keeps the '+line);legacy.linesFor[name]=want;}
 
