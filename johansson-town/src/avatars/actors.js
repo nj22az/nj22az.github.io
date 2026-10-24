@@ -167,10 +167,11 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
   cancelTableDrink(){const result=tableDrink?.cancel();tableDrink=null;drinkingArm?.dispose();drinkingArm=null;return result;},
   play(name,{face}={}){
    if(tableDrink?.active)api.cancelTableDrink();
-   move=name;if(face)api.express(face,3);
+   move=name;
    const map={Bow:'Bow',Wave:'Wave'};if(!animator.play(map[name]||name))animator.play('Nod');
    const faces={Wave:'happy',Clap:'happy',Kachashi:'laugh',Laugh:'laugh',Think:'thinking',Shrug:'worried',HeadShake:'grumpy',Bow:'content',Nod:'content',Stretch:'content',LookAround:'surprised',SitToast:'happy',Heart:'happy',Peace:'laugh',Coy:'smile',Tada:'laugh',HandsOnHips:'content',HeelKick:'happy'};
-   if(faces[name])api.express(faces[name],(GESTURES[name]===Infinity?4:GESTURES[name]||2)+.6);
+   if(face)api.express(face,3);
+   else if(faces[name])api.express(faces[name],(GESTURES[name]===Infinity?4:GESTURES[name]||2)+.6);
   },
   express(name,seconds=3){expression=name;expressionUntil=seconds>0?time+seconds:0;},
   speak(seconds=2){speakUntil=Math.max(speakUntil,time+seconds);},
