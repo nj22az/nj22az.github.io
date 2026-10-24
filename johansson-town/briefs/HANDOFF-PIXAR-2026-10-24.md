@@ -168,3 +168,6 @@ new name and deleting the old one closes a branch's pull request. From now on, n
 - **Shelf notes vs shelf rule.** The cold-cabinet products' `purpose.placed` notes say coffee is "under the tea" and
   milk is at the "top of the last column". They contradict `shelf.levels`, which counts from the bottom.
 - **"Acer".** The Eisa poster's print reads "Acer" where it means Eisa (`sakura-dressing.js`, `eisaPoster`).
+  **Fixed 24 October** (branch `claude/peaceful-johnson-103tja`): the poster prints "Eisa", its inspect title reads
+  "Sakura · Eisa poster", and the cause, `"エイサー": "Acer"` in `docs/ENGLISH-LOCALISATION.json`, now reads "Eisa".
+  Runtime rebuilt. For the Blender poster set, re-take the label from World if it copied "Acer".

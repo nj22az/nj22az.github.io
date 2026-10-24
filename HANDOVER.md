@@ -39,6 +39,20 @@ The newest note for Nhung the doctor and Higa Liquor is the [22 October 2026 nig
 
 The Linux controller note contains newer merge and release information than the morning World note. Real-device confirmation of right-stick camera control on Bluetooth and Steam Deck remains outstanding; follow that note's reproduction steps. Its evening update: a saved Look axis past the pad's axes now falls back to the right stick (`84baf00`, for 0.2.17, unreleased; it rides the Nhung doctor PR from `claude/clever-ride-qdpo8s`).
 
+## Session handover — 24 October 2026, branch `claude/peaceful-johnson-103tja`: the "Acer" poster
+
+A small World fix from the Pixar handover's list of slips. Sakura's Eisa festival poster printed "Acer" (a machine
+translation of エイサー) and its inspect title read "Acer · Eisa poster". Now it prints "Eisa" and the title reads
+"Sakura · Eisa poster", like the sale poster next to it (`src/world/interiors/sakura-dressing.js`). The glossary entry that
+caused it (`docs/ENGLISH-LOCALISATION.json`) now reads "Eisa". Runtime rebuilt with `npm run build:runtime`. One older
+`sakura-interior-*` chunk still contains "Acer" because the build keeps the previous build's chunks for open tabs, and
+the next rebuild prunes it.
+
+Checks run: `runtime-package`, `sakura-dressing`, `izakaya-posters`, `ferry-timetable-words`, `sakura-small-office` and
+`sakura-upstairs`, 30/30 passed. Not run: the full `ci-guard` and any in-game look at the poster (no GPU browser check).
+Pushed to the branch, no PR, not merged. Still open for the owner: the cold-cabinet shelf notes vs `shelf.levels`
+(see the [Pixar handover](johansson-town/briefs/HANDOFF-PIXAR-2026-10-24.md#slips-found-in-world-left-for-the-owner)).
+
 ## Repository instructions handover — 22 October 2026
 
 The owner requested that every new agent check the latest handover and update it when finished. Root [AGENTS.md](AGENTS.md#handover-required-at-the-start-and-end-of-every-task) now requires that lifecycle for every task, including partial or blocked work. [CLAUDE.md](CLAUDE.md) repeats the entry point so both Claude and Codex encounter it.

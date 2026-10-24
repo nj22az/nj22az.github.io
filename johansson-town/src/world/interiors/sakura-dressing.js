@@ -179,7 +179,7 @@ function salePoster(){
 }
 /** The posters Sakura draws itself (the others come from Thuan's label atlas, store-advertising.js). */
 const OWN_POSTERS={
- eisa:{texture:()=>eisaPoster(),name:'Eisa festival poster',verb:'Read the Eisa poster',title:"Acer · Eisa poster",
+ eisa:{texture:()=>eisaPoster(),name:'Eisa festival poster',verb:'Read the Eisa poster',title:"Sakura · Eisa poster",
   text:"The youth association’s Eisa: drummers and dancers down the harbour road on the last night of Obon, ending at the festival ground. Thuan has written \"Rest 8/17\" underneath in marker -- closed that evening, so she can go."},
  sale:{texture:()=>salePoster(),name:'Sakura sale poster',verb:'Read the sale poster',title:'Sakura · SALE poster',
   text:'All drinks 30% off this week. The "30% OFF" corner was torn off once -- by Tetsuo, of all people, laughing like a madman -- and Thuan chased it back down Main Street. The tear was exactly 50 cm, her last half metre of tape, and it is taped straight back. Nhung had hoped to sell her a new roll.'},
@@ -198,7 +198,7 @@ function eisaPoster(){
    ctx.fillStyle='#c8312c';ctx.beginPath();ctx.ellipse(0,-120,34,28,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#14100e';
    ctx.fillRect(-26,-220,52,10);ctx.restore();
   }
-  ctx.fillStyle='#fff6dc';ctx.textAlign='center';ctx.font=`bold 96px ${SERIF}`;ctx.fillText("Acer",w/2,150);
+  ctx.fillStyle='#fff6dc';ctx.textAlign='center';ctx.font=`bold 96px ${SERIF}`;ctx.fillText("Eisa",w/2,150);
   ctx.font=`bold 40px ${SERIF}`;ctx.fillText("Minato Town Youth Association",w/2,215);
   ctx.fillStyle='#14100e';ctx.fillRect(0,h-78,w,78);ctx.fillStyle='#ffe9a8';ctx.font=`bold 30px ${GOTHIC}`;
   ctx.fillText("Old Obon Night of Ukui　Port Festival Plaza",w/2,h-44);ctx.font=`18px ${GOTHIC}`;ctx.fillText("1997　Sponsored Minato Town Youth Association/Fishery Cooperative",w/2,h-16);
