@@ -1,0 +1,17 @@
+{
+  "counter": {
+    "meshes": 15,
+    "triangles": 866,
+    "lights": 0,
+    "uniqueTextures": 2,
+    "texturePixels": 57344
+  },
+  "roof": {
+    "meshes": 8,
+    "triangles": 2100,
+    "lights": 0,
+    "uniqueTextures": 2,
+    "texturePixels": 212992
+  },
+  "note": "Built geometry/texture counts, not GPU draw-pass or physical-device FPS measurements. Vending contact is a separate two-triangle mesh and128px texture."
+}
