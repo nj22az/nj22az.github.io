@@ -2,6 +2,8 @@
 
 Start here on every task, then read the latest applicable notes below. Maintain this index whenever a new note supersedes one of these. For an area without a note, create and link one when handing over work. Dates alone do not settle conflicting information: verify current branches, PRs, checks and releases.
 
+**Sakura keeps its upper-floor office (the owner, 24 October 2026, 20:07: "Actually Im starting to like the top floor office on Sakura , abort removing it").** The single-storey Sakura (Codex's `development` prototype, draft PRs #378/#384/#385, CAD Rev D/E "one storey, roof-only stair") is **not** to be carried to `main`, and the Pixar konbini is not to drop the upstairs. Main is unchanged: the office and rest room upstairs stay (`src/world/interiors/sakura-office-room.js`, `SAKURA_UPSTAIRS`). Ground-floor detail from that prototype may still be proposed on its own, without removing the upper floor.
+
 ## Next week's priority — from 24 October 2026: the Pixar world
 
 **The Pixar-style konbini (Sakura Shōten) with Thuan, Johansson and Fujita interactions.** Three branches in each repo (the owner, 24 October): `main` (the cartoon World), `development` (Codex's prototypes), `pixar` (the Pixar work); every other branch is kept as an `archive/<name>` tag. Start from [the Pixar handover](johansson-town/briefs/HANDOFF-PIXAR-2026-10-24.md); the branch survey is [docs/BRANCHES-2026-10-24.md](docs/BRANCHES-2026-10-24.md).
