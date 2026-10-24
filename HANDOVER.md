@@ -101,6 +101,17 @@ full-acceptance step given 30 minutes (job 45) so its web-only recovery is not c
 that merge. After it: verify the release assets, installer and checksum, then point the website's downloads at 0.2.18
 on main (`world/index.html`, `johansson-world/install.sh`, `linux-port/install/index.html`), as 7624d98 did for 0.2.17.
 
+**0.2.18 published** on the owner's word: [PR #389](https://github.com/nj22az/nj22az.github.io/pull/389) squash
+`c7540727` into `codex/johansson-world-steam-deck`; its Linux console acceptance (run 40084048887) passed in 30 minutes,
+the full-acceptance step in 21. [Release workflow 40086718443](https://github.com/nj22az/nj22az.github.io/actions/runs/40086718443)
+passed every step, published [the prerelease](https://github.com/nj22az/nj22az.github.io/releases/tag/johansson-world-linux-v0.2.18)
+and verified the public installer. Checked by hand afterwards: archive and 0.2.17→0.2.18 patch match `SHA256SUMS`,
+`latest-linux.json` and GitHub's digests; the app reports 0.2.18; the packaged Sakura chunk has the Eisa fix. Evidence:
+[`linux-port/acceptance-0.2.18.md`](linux-port/acceptance-0.2.18.md). A PR to main carries the release files, that evidence
+and the website (World page, install guide, installer at 0.2.18; the player guide's Town book paths and shop list
+updated to the eight-tile book and the closed Higa Liquor; a 24 October change-log entry). The woodland diorama merged
+to main after the release and ships next time. Still unverified: physical Steam Deck, 8BitDo, iPhone.
+
 ## Repository instructions handover — 22 October 2026
 
 The owner requested that every new agent check the latest handover and update it when finished. Root [AGENTS.md](AGENTS.md#handover-required-at-the-start-and-end-of-every-task) now requires that lifecycle for every task, including partial or blocked work. [CLAUDE.md](CLAUDE.md) repeats the entry point so both Claude and Codex encounter it.
