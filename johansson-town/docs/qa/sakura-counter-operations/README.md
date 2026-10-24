@@ -24,3 +24,5 @@ NODE_OPTIONS=--max-old-space-size=6144 node tools/ci-guard.mjs --test-concurrenc
 The capture script emits PNG files; the review generator compresses JPEG evidence into the checked-in compact PDF. `implementation/report.json` records the actual browser pass, zero page errors and shop/cast state. Original PNG captures are local intermediates; retained JPEGs are the final evidence. Preserve remote predecessor runtime chunks when building so cached pages can finish loading.
 
 The separate stair-chain CAD is **unbuilt**. Its bases fit D12092-13048 and stop10mm before the first tread; the855mm outside passage is untouched. Release hardware, sign hangers, anchorage, worker sightlines and the ground/stair interface remain unresolved. Frontage and all parent rebuild acceptance limits remain open.
+
+Final validation: focused12/12, runtime-package4/4, runtime build and the full73-file guard381/381 passed in326s with6144MB Node test heap. This heap is for audits, not a graphics setting or mobile performance result.
