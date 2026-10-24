@@ -47,6 +47,23 @@ The newest note for Nhung the doctor and Higa Liquor is the [22 October 2026 nig
 
 The Linux controller note contains newer merge and release information than the morning World note. Real-device confirmation of right-stick camera control on Bluetooth and Steam Deck remains outstanding; follow that note's reproduction steps. Its evening update: a saved Look axis past the pad's axes now falls back to the right stick (`84baf00`, for 0.2.17, unreleased; it rides the Nhung doctor PR from `claude/clever-ride-qdpo8s`).
 
+## Session handover — 24 October 2026 (night), branch `claude/peaceful-johnson-103tja`: Linux 0.2.19
+
+#393 (Vy cel-shaded) is merged as `94613e2`. The owner: "Linux is still 0.2.18" and "Yes build it pls". Prepared as 0.2.18
+was: current main merged into `codex/johansson-world-steam-deck` (tree checked equal to main), version 0.2.19 in
+`steam-deck/package.json`, `package-lock.json`, both `install.sh` copies, and `steam-deck/releases/0.2.19.md` (Vy cel
+shading, Make a face, harbour noticeboard and woodland diorama, solid cars and the flowerbed bench, the installer's
+Steam Library and Gamepad layout). `npm test --prefix steam-deck` passed locally. Release PR into the release branch;
+merging it publishes. After: verify assets, installer, checksum; point the website at 0.2.19 on main.
+
+**0.2.19 published:** #394 squash `e5d0c94` (its Linux console acceptance, run 40117841659, passed), [release workflow
+40120289660](https://github.com/nj22az/nj22az.github.io/actions/runs/40120289660) green. Verified by hand: archive and
+0.2.18→0.2.19 patch match `SHA256SUMS`, the manifest and GitHub's digests; the app reports 0.2.19; the packaged
+`build.js` has Vy's cel shading; the release installer equals the website's. Evidence:
+`linux-port/acceptance-0.2.19.md`. The website (World page, install guide, installer at 0.2.19; the comparison table's web
+column now says play as any resident; a 0.2.19 change-log entry) goes to main in its own PR. Still unverified: a real
+Steam Deck, above all whether the Gamepad layout fixes the owner's controls.
+
 ## Session handover — 24 October 2026 (late evening), branch `claude/peaceful-johnson-103tja`: Vy cel-shaded
 
 #392 (Steam Gaming Mode install, Deck Gamepad layout, REA) is merged as `b845f0b` and live; the owner has still to run the
