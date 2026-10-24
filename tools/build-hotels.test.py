@@ -18,10 +18,43 @@ class ParkingAdmissionTests(unittest.TestCase):
         self.records = json.loads((ROOT / 'blog/hotels/hotels.json').read_text(encoding='utf-8'))['reviews']
         self.free = copy.deepcopy(next(row for row in self.records if row['freeParking'] is True))
 
-    def test_published_register_has_dated_confirmation_without_inventing_ease(self):
+    def test_published_register_has_dated_confirmation_and_correct_categories(self):
         builder.validate(self.records)
-        self.assertTrue(any(row['freeParking'] is False for row in self.records))
-        self.assertTrue(any(row['freeParking'] is True and row['easyParking'] is None for row in self.records))
+        for row in self.records:
+            category = builder.parking_category(row)
+            if row['freeParking']:
+                self.assertEqual(category, 'free')
+            else:
+                self.assertEqual(category, 'easy' if row['parkingPaymentAtHotel'] else 'avoid')
+            self.assertNotIn('easyParking', row)
+
+    def test_easy_means_paid_at_hotel_without_assuming_receipt_inclusion(self):
+        row = copy.deepcopy(next(row for row in self.records if row['freeParking'] is False))
+        row['name'] = 'Synthetic hotel-payment test fixture'
+        row['parkingPaymentAtHotel'] = True
+        row['parkingOnHotelReceipt'] = None
+        row['parkingSummary'] = 'Paid parking can be settled at hotel reception.'
+        builder.validate([row])
+        self.assertEqual(builder.parking_category(row), 'easy')
+        self.assertIn('hotel-parking-easy', builder.render_row(row))
+        self.assertIn('Easy parking · Pay at hotel', builder.render_row(row))
+        row['parkingPaymentAtHotel'] = False
+        self.assertEqual(builder.parking_category(row), 'avoid')
+
+    def test_unknown_paid_payment_route_cannot_be_guessed_as_easy_or_avoid(self):
+        row = copy.deepcopy(next(row for row in self.records if row['freeParking'] is False))
+        for value in (None, 'true', 1):
+            with self.subTest(paymentAtHotel=value):
+                row['parkingPaymentAtHotel'] = value
+                with self.assertRaises(ValueError):
+                    builder.validate([row])
+
+    def test_free_parking_has_no_payment_route(self):
+        for value in (True, False):
+            with self.subTest(paymentAtHotel=value):
+                self.free['parkingPaymentAtHotel'] = value
+                with self.assertRaises(ValueError):
+                    builder.validate([self.free])
 
     def test_discovery_candidate_cannot_enter_register(self):
         for value in (None, 'true', 1):

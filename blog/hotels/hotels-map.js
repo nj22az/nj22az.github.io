@@ -17,13 +17,20 @@
   }
 
   if (!window.L) { unavailable(); return; }
+  var parkingCategories = {
+    free: { label: 'Free parking', marker: 'Free' },
+    easy: { label: 'Easy parking · Pay at hotel', marker: 'Easy' },
+    avoid: { label: 'Paid parking · Avoid', marker: 'Avoid' }
+  };
   var hotels;
   try {
     hotels = JSON.parse(data.textContent);
     if (!Array.isArray(hotels)) throw new Error('Invalid hotel data');
   } catch (error) { unavailable(); return; }
   hotels = hotels.filter(function (hotel) {
-    return Number.isFinite(hotel.latitude) && Math.abs(hotel.latitude) <= 90 &&
+    return hotel && typeof hotel.parkingCategory === 'string' &&
+      Object.prototype.hasOwnProperty.call(parkingCategories, hotel.parkingCategory) &&
+      Number.isFinite(hotel.latitude) && Math.abs(hotel.latitude) <= 90 &&
       Number.isFinite(hotel.longitude) && Math.abs(hotel.longitude) <= 180;
   });
 
@@ -52,11 +59,20 @@
     var heading = document.createElement('strong');
     heading.textContent = hotel.name;
     box.appendChild(heading);
-    [hotel.address, [hotel.city, hotel.country].filter(Boolean).join(', '), hotel.parkingLabel].filter(Boolean).forEach(function (text) {
+    [hotel.address, [hotel.city, hotel.country].filter(Boolean).join(', ')].filter(Boolean).forEach(function (text) {
       var line = document.createElement('p');
       line.textContent = text;
       box.appendChild(line);
     });
+    var parking = document.createElement('p');
+    parking.className = 'hotel-map-parking hotel-map-parking-' + hotel.parkingCategory;
+    parking.textContent = parkingCategories[hotel.parkingCategory].label;
+    box.appendChild(parking);
+    if (hotel.parkingSummary) {
+      var summary = document.createElement('p');
+      summary.textContent = hotel.parkingSummary;
+      box.appendChild(summary);
+    }
     var reviewId = hotel.reviewId || 'review-' + hotel.id;
     if (/^[a-z0-9-]+$/.test(reviewId)) {
       var link = document.createElement('a');
@@ -68,11 +84,17 @@
   }
 
   hotels.forEach(function (hotel) {
+    var category = parkingCategories[hotel.parkingCategory];
+    var label = hotel.name + ', ' + hotel.city + ' — ' + category.label;
     var marker = L.marker([hotel.latitude, hotel.longitude], {
-      title: hotel.name + ', ' + hotel.city,
-      alt: hotel.name + ', ' + hotel.city,
-      icon: L.divIcon({ className: 'hotel-map-marker', html: '<span aria-hidden="true">H</span>', iconSize: [32, 32], iconAnchor: [16, 16] })
+      title: label,
+      alt: label,
+      icon: L.divIcon({ className: 'hotel-map-marker hotel-map-marker-' + hotel.parkingCategory, html: '<span aria-hidden="true">' + category.marker + '</span>', iconSize: [48, 28], iconAnchor: [24, 14] })
     }).bindPopup(popup(hotel), { maxWidth: 260, minWidth: 170 });
+    marker.on('add', function () {
+      var element = marker.getElement();
+      if (element) element.setAttribute('aria-label', label);
+    });
     markers.set(hotel.id, marker);
   });
 

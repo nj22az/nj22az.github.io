@@ -19,11 +19,7 @@
   }
 
   function matchesParking(row, filter) {
-    if (filter === 'free') return row.dataset.freeParking === 'true';
-    if (filter === 'free-easy') return row.dataset.freeParking === 'true' && row.dataset.easyParking === 'true';
-    if (filter === 'external-paid') return row.dataset.parkingType === 'external-paid';
-    if (filter === 'paid') return row.dataset.freeParking === 'false';
-    return true;
+    return !filter || row.dataset.parkingCategory === filter;
   }
 
   function filter() {

@@ -17,6 +17,19 @@ PARKING = {
     'hotel-paid': 'Hotel paid parking',
     'free': 'Free parking',
 }
+PARKING_CATEGORIES = {
+    'free': 'Free parking',
+    'easy': 'Easy parking · Pay at hotel',
+    'avoid': 'Paid parking · Avoid',
+}
+
+
+def parking_category(review):
+    if review.get('freeParking') is True:
+        return 'free'
+    if review.get('freeParking') is False and type(review.get('parkingPaymentAtHotel')) is bool:
+        return 'easy' if review['parkingPaymentAtHotel'] else 'avoid'
+    raise ValueError(f'{review.get("name", "Hotel")}: confirm the parking charge and payment route before publishing')
 
 
 def e(value):
@@ -96,10 +109,13 @@ def validate_parking_confirmation(review):
         raise ValueError(f'{label}: parking confirmation needs an HTTPS source')
     if free and (review.get('parkingType') != 'free' or review.get('parkingPaid') != 0):
         raise ValueError(f'{label}: confirmed free parking must have a free arrangement and zero charge')
+    if free and review.get('parkingPaymentAtHotel') is not None:
+        raise ValueError(f'{label}: payment at the hotel is not applicable to free parking; use null')
     if not free and (review.get('parkingType') not in ('external-paid', 'hotel-paid') or review.get('parkingPaid') == 0):
         raise ValueError(f'{label}: confirmed paid parking must have a paid arrangement')
     if not isinstance(review.get('parkingSummary'), str) or not review['parkingSummary'].strip():
         raise ValueError(f'{label}: describe the verified parking option and any known conditions')
+    parking_category(review)
 
 
 def validate(reviews):
@@ -117,7 +133,7 @@ def validate(reviews):
         nights = review.get('nights')
         assert nights is None or (type(nights) is int and nights > 0), 'Nights must be a positive integer or null'
         assert review['parkingType'] in PARKING, 'Unknown parking type'
-        for key in ('freeParking', 'easyParking', 'parkingOnHotelReceipt'):
+        for key in ('freeParking', 'parkingPaymentAtHotel', 'parkingOnHotelReceipt'):
             assert review[key] is None or type(review[key]) is bool, f'{key} must be true, false or null'
         for key in ('roomPaid', 'parkingPaid'):
             value = review[key]
@@ -137,19 +153,19 @@ def validate(reviews):
 
 def render_row(review):
     verification = review['parkingVerification']
+    category = parking_category(review)
     receipt = receipt_label(review)
-    ease = {True: 'Easy parking reported', False: 'Parking difficulty reported', None: 'Ease not assessed'}[review['easyParking']]
     search = ' '.join(review.get(key) or '' for key in ('name', 'city', 'country', 'address', 'postalCode', 'parkingOperator', 'parkingSummary'))
     receipt_note = e(review['parkingReceipt'])
     if review['freeParking'] is not True and review['parkingUrl']:
         receipt_note = f'On this stay. <a href="{e(review["parkingUrl"])}">{receipt_note}</a>.'
     place = ', '.join((review['address'], ' '.join(value for value in (review.get('postalCode'), review['city']) if value)))
-    return f'''          <tr role="row" data-hotel-row="{e(review['id'])}" data-search="{e(search)}" data-country="{e(review['countryCode'])}" data-free-parking="{state(review['freeParking'])}" data-easy-parking="{state(review['easyParking'])}" data-parking-type="{e(review['parkingType'])}" data-hotel-receipt="{receipt_state(review)}">
+    return f'''          <tr role="row" data-hotel-row="{e(review['id'])}" data-search="{e(search)}" data-country="{e(review['countryCode'])}" data-free-parking="{state(review['freeParking'])}" data-parking-category="{category}" data-parking-type="{e(review['parkingType'])}" data-hotel-receipt="{receipt_state(review)}">
             <th scope="row" role="rowheader" data-label="Hotel"><a class="hotel-name" href="#review-{e(review['id'])}">{e(review['name'])}</a><span class="hotel-place">{e(place)}</span><span class="hotel-tag hotel-country">{e(review['country'])}</span><span class="hotel-recorded">Recorded <time datetime="{e(review['recordedOn'])}">{date_label(review['recordedOn'])}</time></span></th>
             <td role="cell" data-label="Room total" class="hotel-money">{price_cell(review['roomPaid'], review, include_nights=True)}</td>
             <td role="cell" data-label="Parking" class="hotel-money">{price_cell(review['parkingPaid'], review, free=review['freeParking'] is True)}</td>
             <td role="cell" data-label="Stay total" class="hotel-money hotel-total">{price_cell(total_paid(review), review, include_nights=True)}</td>
-            <td role="cell" data-label="Parking arrangement" class="hotel-parking"><span class="hotel-tag">{e(review.get('parkingLabel') or PARKING[review['parkingType']])}</span><span class="hotel-cell-note">{e(review['parkingSummary'])}<br>{ease}<br><a href="{e(verification['sourceUrl'])}">Checked <time datetime="{e(verification['checkedOn'])}">{date_label(verification['checkedOn'])}</time></a></span></td>
+            <td role="cell" data-label="Parking arrangement" class="hotel-parking"><span class="hotel-tag hotel-parking-{category}">{e(PARKING_CATEGORIES[category])}</span><span class="hotel-cell-note">{e(review['parkingSummary'])}<br><a href="{e(verification['sourceUrl'])}">Checked <time datetime="{e(verification['checkedOn'])}">{date_label(verification['checkedOn'])}</time></a></span></td>
             <td role="cell" data-label="Parking receipt" class="hotel-receipt"><span class="hotel-tag">{receipt}</span><span class="hotel-cell-note">{receipt_note}</span></td>
             <td role="cell" data-label="Short review" class="hotel-summary">{e(review['summary'])}</td>
           </tr>'''
@@ -157,12 +173,11 @@ def render_row(review):
 
 def render_review(review):
     paragraphs = '\n'.join('        <p>' + e(paragraph) + '</p>' for paragraph in review['review'])
-    tags = [review['country'], review.get('parkingLabel') or PARKING[review['parkingType']]]
-    if review['freeParking'] is True:
-        tags.append('No parking charge')
-    elif review['parkingOnHotelReceipt'] is False:
-        tags.extend(['Separate parking receipt', 'Parking not on hotel receipt'])
-    tag_list = ''.join('<li class="hotel-tag">' + e(tag) + '</li>' for tag in tags)
+    category = parking_category(review)
+    tags = [(review['country'], ''), (PARKING_CATEGORIES[category], ' hotel-parking-' + category)]
+    if review['freeParking'] is not True and review['parkingOnHotelReceipt'] is False:
+        tags.extend([('Separate parking receipt', ''), ('Parking not on hotel receipt', '')])
+    tag_list = ''.join('<li class="hotel-tag' + css + '">' + e(tag) + '</li>' for tag, css in tags)
     links = f'<a href="{e(review["hotelUrl"])}">Official hotel information</a>'
     if review['parkingUrl'] and review['parkingUrl'] != review['hotelUrl']:
         links += f'<a href="{e(review["parkingUrl"])}">Parking information</a>'
@@ -187,7 +202,9 @@ def build(reviews):
         'id': review['id'], 'name': review['name'], 'city': review['city'], 'country': review['country'],
         'address': ', '.join(value for value in (review['address'], review.get('postalCode')) if value),
         'latitude': review['coordinates']['latitude'], 'longitude': review['coordinates']['longitude'],
-        'parkingLabel': review.get('parkingLabel') or PARKING[review['parkingType']], 'reviewId': 'review-' + review['id']
+        'parkingCategory': parking_category(review),
+        'parkingLabel': PARKING_CATEGORIES[parking_category(review)],
+        'parkingSummary': review['parkingSummary'], 'reviewId': 'review-' + review['id']
     } for review in reviews if review['coordinates'] is not None]
     map_json = json.dumps(map_records, ensure_ascii=False).replace('<', '\\u003c')
     return f'''<!DOCTYPE html>
@@ -211,9 +228,9 @@ def build(reviews):
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <script src="/theme-bootstrap.js?v=hotels-1"></script>
   <link rel="stylesheet" href="/styles.css?v=popwave-icons-2">
-  <link rel="stylesheet" href="/css/hotels.css?v=2">
+  <link rel="stylesheet" href="/css/hotels.css?v=3">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="/css/hotels-map.css?v=1">
+  <link rel="stylesheet" href="/css/hotels-map.css?v=2">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -223,16 +240,17 @@ def build(reviews):
     <header>
       <p class="hotel-eyebrow">The travel register</p>
       <h1>Hotels &amp; Parking</h1>
-      <p class="hotel-intro">Hotel reviews and confirmed parking information from Sweden, Denmark, Norway and Finland. Find free guest parking and use the map to see the hotels that match your filters.</p>
+      <p class="hotel-intro">Find hotels with confirmed free guest parking in Sweden, Denmark, Norway and Finland. Compare parking arrangements and use the map to see the hotels that match your filters.</p>
     </header>
     <section aria-labelledby="hotel-register-title">
       <div class="hotel-register-heading"><h2 id="hotel-register-title">Hotel register</h2><a class="hotel-download" href="/blog/hotels/hotel-reviews.csv" download>Download spreadsheet (CSV)</a></div>
+      <ul class="hotel-parking-legend" aria-label="Parking categories"><li class="hotel-tag hotel-parking-free">Green · Free parking</li><li class="hotel-tag hotel-parking-easy">Yellow · Easy parking — pay at hotel</li><li class="hotel-tag hotel-parking-avoid">Red · Paid parking — avoid</li></ul>
       <form class="hotel-filters" data-hotel-filters hidden role="search" aria-label="Filter hotel reviews">
         <div class="hotel-field hotel-search"><label for="hotel-search">Hotel or place</label><input id="hotel-search" type="search" name="search" placeholder="Search hotel, city or country" autocomplete="off"></div>
         <div class="hotel-field"><label for="hotel-country">Country</label><select id="hotel-country" name="country"><option value="">All countries</option>{country_options}</select></div>
-        <div class="hotel-field"><label for="hotel-parking">Parking</label><select id="hotel-parking" name="parking"><option value="">All parking</option><option value="free">Free parking</option><option value="free-easy">Free and easy parking</option><option value="external-paid">External paid parking</option><option value="paid">All paid parking</option></select></div>
+        <div class="hotel-field"><label for="hotel-parking">Parking</label><select id="hotel-parking" name="parking"><option value="free" selected>Green — Free parking</option><option value="easy">Yellow — Easy parking</option><option value="avoid">Red — Paid parking / avoid</option><option value="">All parking</option></select></div>
         <div class="hotel-field"><label for="hotel-receipt">Parking on hotel receipt</label><select id="hotel-receipt" name="receipt"><option value="">Any arrangement</option><option value="not-applicable">No parking charge</option><option value="true">Yes</option><option value="false">No — separate receipt</option><option value="unknown">Not confirmed</option></select></div>
-        <button type="reset" class="hotel-reset">Clear filters</button>
+        <button type="reset" class="hotel-reset">Reset filters</button>
       </form>
       <p class="hotel-count" data-hotel-count role="status" aria-live="polite">{count} {'hotel' if count == 1 else 'hotels'}</p>
       <section class="hotel-map-section" aria-labelledby="hotel-map-title">
@@ -255,7 +273,7 @@ def build(reviews):
 {rows}
         </tbody>
       </table>
-      <div class="hotel-empty" data-hotel-empty hidden><strong>No hotels match these filters.</strong><p>“Free and easy parking” includes only hotels where both have been confirmed. Use Clear filters to see every entry.</p></div>
+      <div class="hotel-empty" data-hotel-empty hidden><strong>No hotels match these filters.</strong><p>Change a filter or choose All parking to see the other options. Reset filters returns to free parking.</p></div>
       <p class="hotel-price-note">The spreadsheet contains every hotel in the register. Free-parking tags refer to the specified guest parking option; charging a vehicle or choosing a paid garage can cost extra.</p>
     </section>
     <section class="hotel-notes" data-hotel-notes aria-labelledby="hotel-notes-title">
@@ -265,7 +283,7 @@ def build(reviews):
     <section class="hotel-method" aria-labelledby="hotel-method-title">
       <h2 id="hotel-method-title">What this register records</h2>
       <p>Hotels join the free-parking list only after their own published information confirms free guest parking. Each parking entry links to its source and check date, with known registration requirements and paid alternatives explained. Coverage grows as hotels are verified.</p>
-      <p>Parking cost, ease of parking and receipt arrangements are recorded separately. “Not assessed” means there is not yet enough first-hand information to judge that point. A hotel only appears under “Free and easy parking” when both conditions have been reported.</p>
+      <p>Green means confirmed free guest parking, the preferred option and default filter. Yellow means “Easy parking”: parking costs money, but you can pay at the hotel. Red means paid parking handled separately through an external payment route — avoid. Payment at the hotel and inclusion on the hotel receipt are recorded separately.</p>
       <p>Stay reports and official hotel information are identified in each note. Personal names, booking references, card details and exact stay dates are excluded. Prices and parking arrangements can change; the recorded date keeps each entry in context.</p>
     </section>
   </main>
@@ -273,9 +291,9 @@ def build(reviews):
   <script src="/config.js?v=blog-1"></script>
   <script src="/shared.js?v=blog-1"></script>
   <script id="hotel-map-data" type="application/json">{map_json}</script>
-  <script src="/blog/hotels/hotels.js?v=2"></script>
+  <script src="/blog/hotels/hotels.js?v=3"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="/blog/hotels/hotels-map.js?v=1"></script>
+  <script src="/blog/hotels/hotels-map.js?v=2"></script>
 </body>
 </html>
 '''

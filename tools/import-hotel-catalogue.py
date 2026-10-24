@@ -314,7 +314,7 @@ def build_catalogue(content_paths, reference_path, source_date, reference_date):
                 "parking": {"classification": classification, "status": status,
                             "amenityEvidence": evidence, "qualificationFlags": sorted(set(flags))},
                 "roomPrice": None, "parkingPrice": None, "currency": None,
-                "parkingEase": None, "parkingOnHotelReceipt": None,
+                "parkingPaymentAtHotel": None, "parkingOnHotelReceipt": None,
             })
     if not counts["inputRecords"]:
         raise InputError("No property records were supplied")

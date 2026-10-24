@@ -75,7 +75,7 @@ class CatalogueTests(unittest.TestCase):
         result = self.import_records(records)
         self.assertEqual([row["sourceId"] for row in result["records"] if row["parking"]["status"] == "candidate"], ["1"])
         for row in result["records"]:
-            for field in ("roomPrice", "parkingPrice", "currency", "parkingEase", "parkingOnHotelReceipt"):
+            for field in ("roomPrice", "parkingPrice", "currency", "parkingPaymentAtHotel", "parkingOnHotelReceipt"):
                 self.assertIsNone(row[field])
             self.assertNotIn("review", row)
             self.assertNotIn("stayDate", row)

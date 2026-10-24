@@ -35,6 +35,10 @@
 .hotel-name{font-weight:700;font-size:16px;line-height:1.35;text-decoration:underline;text-underline-offset:3px}
 .hotel-place,.hotel-recorded,.hotel-cell-note{display:block;font-size:12px;line-height:1.6;margin-top:7px;color:var(--ink-light)}
 .hotel-tag{display:inline-block;max-width:100%;padding:3px 7px;border:1px solid var(--border-hover);border-radius:4px;font-size:12px;line-height:1.6;font-weight:600;color:var(--ink)}
+.hotel-tag.hotel-parking-free{color:#14532d;background:#dcfce7;border-color:#15803d}
+.hotel-tag.hotel-parking-easy{color:#713f12;background:#fef08a;border-color:#a16207}
+.hotel-tag.hotel-parking-avoid{color:#7f1d1d;background:#fee2e2;border-color:#b91c1c}
+.hotel-parking-legend{display:flex;flex-wrap:wrap;gap:8px 12px;list-style:none;padding:0;margin:0 0 22px}
 .hotel-country{margin-top:8px}
 .hotel-table a:not(.hotel-name){text-decoration:underline;text-underline-offset:3px}
 .hotel-empty{border:1px solid var(--border);padding:28px 20px;line-height:1.75;background:var(--surface-raised)}

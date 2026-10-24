@@ -23,7 +23,7 @@
       "parkingPaid": 0,
       "priceNote": "Total paid for five nights, including taxes and fees after a booking credit; average 1,145.69 kr per night. The receipt shows “kr” without an ISO currency code. Not a current advertised rate.",
       "freeParking": true,
-      "easyParking": null,
+      "parkingPaymentAtHotel": null,
       "parkingType": "free",
       "parkingLabel": "Free outdoor parking",
       "parkingOperator": "APCOA",
@@ -70,7 +70,7 @@
       "parkingPaid": 0,
       "priceNote": "Room price not recorded. Free outdoor guest parking confirmed in official hotel information.",
       "freeParking": true,
-      "easyParking": null,
+      "parkingPaymentAtHotel": null,
       "parkingType": "free",
       "parkingLabel": "Free outdoor parking",
       "parkingOperator": null,
@@ -81,7 +81,7 @@
       "summary": "Free outdoor parking immediately outside the hotel. Room price not recorded.",
       "review": [
         "Scandic Aalborg Øst is included for its free outdoor guest parking immediately outside the hotel. Parking spaces cannot be reserved in advance.",
-        "The room price and a detailed stay assessment have not been recorded. Parking ease remains unassessed."
+        "The room price and a detailed stay assessment have not been recorded."
       ],
       "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-aalborg-ost",
       "parkingUrl": "https://www.scandichotels.com/en/hotels/scandic-aalborg-ost",
@@ -116,7 +116,7 @@
       "parkingPaid": 0,
       "priceNote": "Room price not recorded. Free outdoor guest parking confirmed in official hotel information.",
       "freeParking": true,
-      "easyParking": null,
+      "parkingPaymentAtHotel": null,
       "parkingType": "free",
       "parkingLabel": "Free outdoor parking",
       "parkingOperator": null,
@@ -127,7 +127,7 @@
       "summary": "Free guest parking in an enclosed outdoor car park. Room price not recorded.",
       "review": [
         "Scandic Aarhus Vest offers free guest parking in an enclosed outdoor car park. Parking spaces cannot be reserved in advance.",
-        "The hotel joins the free-parking shortlist. The room price, a detailed stay assessment and parking ease have not been recorded."
+        "The hotel joins the free-parking shortlist. The room price and a detailed stay assessment have not been recorded."
       ],
       "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-aarhus-vest",
       "parkingUrl": "https://www.scandichotels.com/en/hotels/scandic-aarhus-vest",
@@ -162,7 +162,7 @@
       "parkingPaid": 0,
       "priceNote": "Room price not recorded. Free outdoor guest parking confirmed in official hotel information.",
       "freeParking": true,
-      "easyParking": null,
+      "parkingPaymentAtHotel": null,
       "parkingType": "free",
       "parkingLabel": "Free outdoor parking",
       "parkingOperator": null,
@@ -173,7 +173,7 @@
       "summary": "Free outdoor parking after vehicle registration at reception. Room price not recorded.",
       "review": [
         "Scandic Kolding offers free outdoor parking, with vehicle registration required at reception. Parking spaces cannot be reserved in advance; electric-vehicle charging is charged separately.",
-        "The room price and a detailed stay assessment have not been recorded. Parking ease remains unassessed."
+        "The room price and a detailed stay assessment have not been recorded."
       ],
       "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-kolding",
       "parkingUrl": "https://www.scandichotels.com/en/hotels/scandic-kolding",
@@ -208,7 +208,7 @@
       "parkingPaid": 0,
       "priceNote": "Room price not recorded. Free outdoor guest parking confirmed in official hotel information.",
       "freeParking": true,
-      "easyParking": null,
+      "parkingPaymentAtHotel": null,
       "parkingType": "free",
       "parkingLabel": "Free outdoor parking",
       "parkingOperator": null,
@@ -219,7 +219,7 @@
       "summary": "Free outdoor parking; the garage carries a separate charge. Room price not recorded.",
       "review": [
         "Scandic Opus Horsens qualifies for the shortlist through its free outdoor parking. The hotel also offers a paid garage, so the free-parking tag applies specifically to the outdoor spaces.",
-        "Parking spaces cannot be reserved in advance. The room price, a detailed stay assessment and parking ease have not been recorded."
+        "Parking spaces cannot be reserved in advance. The room price and a detailed stay assessment have not been recorded."
       ],
       "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-opus-horsens",
       "parkingUrl": "https://www.scandichotels.com/en/hotels/scandic-opus-horsens",
@@ -254,7 +254,7 @@
       "parkingPaid": 0,
       "priceNote": "Room price not recorded. Free outdoor guest parking confirmed in official hotel information.",
       "freeParking": true,
-      "easyParking": null,
+      "parkingPaymentAtHotel": null,
       "parkingType": "free",
       "parkingLabel": "Free outdoor parking",
       "parkingOperator": null,
@@ -265,7 +265,7 @@
       "summary": "Free outdoor parking outside the hotel. Room price not recorded.",
       "review": [
         "Scandic Sønderborg offers free outdoor guest parking outside the hotel. Parking spaces cannot be reserved in advance.",
-        "The hotel joins the free-parking shortlist. The room price, a detailed stay assessment and parking ease have not been recorded."
+        "The hotel joins the free-parking shortlist. The room price and a detailed stay assessment have not been recorded."
       ],
       "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-sonderborg",
       "parkingUrl": "https://www.scandichotels.com/en/hotels/scandic-sonderborg",
@@ -296,7 +296,7 @@
       "roomPaid": 1107,
       "parkingPaid": 105,
       "freeParking": false,
-      "easyParking": null,
+      "parkingPaymentAtHotel": false,
       "parkingType": "external-paid",
       "parkingOperator": "Pair Parking",
       "parkingPayment": "Pair Parking website",
@@ -347,7 +347,7 @@
       "parkingPaid": 0,
       "priceNote": "Room price not recorded. Free guest parking confirmed in official hotel information.",
       "freeParking": true,
-      "easyParking": null,
+      "parkingPaymentAtHotel": null,
       "parkingType": "free",
       "parkingLabel": "Free outdoor parking",
       "parkingOperator": null,
@@ -362,7 +362,7 @@
       "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-sundsvall-nord",
       "parkingUrl": "https://www.scandichotels.com/en/hotels/scandic-sundsvall-nord",
       "identityCheckedOn": "2026-10-24",
-      "sourceNote": "Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Coordinates come from the Visit Sweden property record. Room price, stay dates and parking ease have not been assessed.",
+      "sourceNote": "Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Coordinates come from the Visit Sweden property record. Room price and stay dates have not been recorded.",
       "parkingVerification": {
         "status": "confirmed-free",
         "checkedOn": "2026-10-24",
@@ -392,7 +392,7 @@
       "parkingPaid": 0,
       "priceNote": "Room price not recorded. Free guest parking confirmed in official hotel information.",
       "freeParking": true,
-      "easyParking": null,
+      "parkingPaymentAtHotel": null,
       "parkingType": "free",
       "parkingLabel": "Free outdoor parking",
       "parkingOperator": null,
@@ -407,7 +407,7 @@
       "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-ostersund-syd",
       "parkingUrl": "https://www.scandichotels.com/en/hotels/scandic-ostersund-syd",
       "identityCheckedOn": "2026-10-24",
-      "sourceNote": "Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Coordinates come from the Visit Sweden property record. Room price, stay dates and parking ease have not been assessed.",
+      "sourceNote": "Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Coordinates come from the Visit Sweden property record. Room price and stay dates have not been recorded.",
       "parkingVerification": {
         "status": "confirmed-free",
         "checkedOn": "2026-10-24",
@@ -437,7 +437,7 @@
       "parkingPaid": 0,
       "priceNote": "Room price not recorded. Free guest parking confirmed in official hotel information.",
       "freeParking": true,
-      "easyParking": null,
+      "parkingPaymentAtHotel": null,
       "parkingType": "free",
       "parkingLabel": "Free guest parking",
       "parkingOperator": null,
@@ -452,7 +452,7 @@
       "hotelUrl": "https://jamteborg.se/",
       "parkingUrl": "https://jamteborg.se/",
       "identityCheckedOn": "2026-10-24",
-      "sourceNote": "Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Coordinates come from the Visit Sweden property record. Room price, stay dates and parking ease have not been assessed.",
+      "sourceNote": "Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Coordinates come from the Visit Sweden property record. Room price and stay dates have not been recorded.",
       "parkingVerification": {
         "status": "confirmed-free",
         "checkedOn": "2026-10-24",
@@ -482,7 +482,7 @@
       "parkingPaid": 0,
       "priceNote": "Room price not recorded. Free guest parking confirmed in official hotel information.",
       "freeParking": true,
-      "easyParking": null,
+      "parkingPaymentAtHotel": null,
       "parkingType": "free",
       "parkingLabel": "Free outdoor parking",
       "parkingOperator": null,
@@ -497,7 +497,7 @@
       "hotelUrl": "https://www.thonhotels.com/hotels/norway/bergen/thon-hotel-bergen-airport/",
       "parkingUrl": "https://www.thonhotels.com/hotels/norway/bergen/thon-hotel-bergen-airport/",
       "identityCheckedOn": "2026-10-24",
-      "sourceNote": "Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Address and coordinates come from the official property page or its property map. Room price, stay dates and parking ease have not been assessed.",
+      "sourceNote": "Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Address and coordinates come from the official property page or its property map. Room price and stay dates have not been recorded.",
       "parkingVerification": {
         "status": "confirmed-free",
         "checkedOn": "2026-10-24",
@@ -527,7 +527,7 @@
       "parkingPaid": 0,
       "priceNote": "Room price not recorded. Free guest parking confirmed in official hotel information.",
       "freeParking": true,
-      "easyParking": null,
+      "parkingPaymentAtHotel": null,
       "parkingType": "free",
       "parkingLabel": "Free outdoor parking",
       "parkingOperator": null,
@@ -542,7 +542,7 @@
       "hotelUrl": "https://www.thonhotels.com/hotels/norway/elverum/thon-hotel-elgstua/",
       "parkingUrl": "https://www.thonhotels.com/hotels/norway/elverum/thon-hotel-elgstua/",
       "identityCheckedOn": "2026-10-24",
-      "sourceNote": "Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Address and coordinates come from the official property page or its property map. Room price, stay dates and parking ease have not been assessed.",
+      "sourceNote": "Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Address and coordinates come from the official property page or its property map. Room price and stay dates have not been recorded.",
       "parkingVerification": {
         "status": "confirmed-free",
         "checkedOn": "2026-10-24",
@@ -572,7 +572,7 @@
       "parkingPaid": 0,
       "priceNote": "Room price not recorded. Free guest parking confirmed in official hotel information.",
       "freeParking": true,
-      "easyParking": null,
+      "parkingPaymentAtHotel": null,
       "parkingType": "free",
       "parkingLabel": "Free guest parking",
       "parkingOperator": null,
@@ -587,7 +587,7 @@
       "hotelUrl": "https://www.thonhotels.com/hotels/norway/al/thon-hotel-hallingdal/",
       "parkingUrl": "https://www.thonhotels.com/hotels/norway/al/thon-hotel-hallingdal/",
       "identityCheckedOn": "2026-10-24",
-      "sourceNote": "Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Address and coordinates come from the official property page or its property map. Room price, stay dates and parking ease have not been assessed.",
+      "sourceNote": "Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Address and coordinates come from the official property page or its property map. Room price and stay dates have not been recorded.",
       "parkingVerification": {
         "status": "confirmed-free",
         "checkedOn": "2026-10-24",
@@ -617,7 +617,7 @@
       "parkingPaid": 0,
       "priceNote": "Room price not recorded. Free guest parking confirmed in official hotel information.",
       "freeParking": true,
-      "easyParking": null,
+      "parkingPaymentAtHotel": null,
       "parkingType": "free",
       "parkingLabel": "Free outdoor parking",
       "parkingOperator": null,
@@ -632,7 +632,7 @@
       "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-espoo",
       "parkingUrl": "https://www.scandichotels.com/en/hotels/scandic-espoo",
       "identityCheckedOn": "2026-10-24",
-      "sourceNote": "Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Address and coordinates come from the official property page or its property map. Room price, stay dates and parking ease have not been assessed.",
+      "sourceNote": "Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Address and coordinates come from the official property page or its property map. Room price and stay dates have not been recorded.",
       "parkingVerification": {
         "status": "confirmed-free",
         "checkedOn": "2026-10-24",
@@ -662,7 +662,7 @@
       "parkingPaid": 0,
       "priceNote": "Room price not recorded. Free guest parking confirmed in official hotel information.",
       "freeParking": true,
-      "easyParking": null,
+      "parkingPaymentAtHotel": null,
       "parkingType": "free",
       "parkingLabel": "Free outdoor parking",
       "parkingOperator": null,
@@ -677,7 +677,7 @@
       "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-laajavuori",
       "parkingUrl": "https://www.scandichotels.com/en/hotels/scandic-laajavuori",
       "identityCheckedOn": "2026-10-24",
-      "sourceNote": "Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Address and coordinates come from the official property page or its property map. Room price, stay dates and parking ease have not been assessed.",
+      "sourceNote": "Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Address and coordinates come from the official property page or its property map. Room price and stay dates have not been recorded.",
       "parkingVerification": {
         "status": "confirmed-free",
         "checkedOn": "2026-10-24",
@@ -707,7 +707,7 @@
       "parkingPaid": 0,
       "priceNote": "Room price not recorded. Free guest parking confirmed in official hotel information.",
       "freeParking": true,
-      "easyParking": null,
+      "parkingPaymentAtHotel": null,
       "parkingType": "free",
       "parkingLabel": "Free outdoor parking",
       "parkingOperator": null,
@@ -722,7 +722,7 @@
       "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-waskia",
       "parkingUrl": "https://www.scandichotels.com/en/hotels/scandic-waskia",
       "identityCheckedOn": "2026-10-24",
-      "sourceNote": "Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Address and coordinates come from the official property page or its property map. Room price, stay dates and parking ease have not been assessed.",
+      "sourceNote": "Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Address and coordinates come from the official property page or its property map. Room price and stay dates have not been recorded.",
       "parkingVerification": {
         "status": "confirmed-free",
         "checkedOn": "2026-10-24",

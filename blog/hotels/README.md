@@ -27,6 +27,28 @@ If a published policy changes or becomes uncertain, remove the affected hotel
 from the public free-parking register until it is checked again. Preserve known
 paid stay observations, including Scandic Elmia, as clearly labelled paid entries.
 
+## Parking colours: the owner's corrected definition
+
+| Colour | Category | Meaning |
+| --- | --- | --- |
+| Green | Free parking | Confirmed free guest parking; the preferred option and default filter. |
+| Yellow | Easy parking | Parking is paid, and payment can be settled at the hotel. |
+| Red | Paid parking — Avoid | Parking is paid separately through an external payment route. |
+
+“Easy parking” refers to **payment at the hotel**. The old physical-ease field and
+combined free-and-easy category have been removed. Free parking always qualifies
+for green. Use `parkingPaymentAtHotel: null` when parking is free; for paid
+parking, verify `true` (yellow) or `false` (red). Unknown payment routing cannot
+be assigned a colour or published. `parkingOnHotelReceipt` is a separate billing
+fact and may remain unknown even when payment at reception is confirmed.
+
+Table and review labels, map markers/popups, filters and the CSV share these
+definitions. Colours retain their meaning across themes, and text labels convey
+the same categories. The visitor's own map position is blue. Reset filters
+returns to green/free parking; All parking shows the complete register. Without
+JavaScript, all records remain readable with their category labels. Current
+counts: **15 green, 0 yellow, 1 red (Scandic Elmia)**.
+
 ## Updating the register
 
 1. Add confirmed parking facts or the owner's observations to `hotels.json` after
@@ -39,8 +61,8 @@ paid stay observations, including Scandic Elmia, as clearly labelled paid entrie
    in `currencyLabel`, leave `currency` null and explain that in `priceNote`.
    Do not replace a paid price with a hotel's current advertised tariff.
 3. Use `true` or `false` for free parking, supported by `parkingVerification`.
-   Ease and inclusion on the hotel receipt may remain `null`. Unknown ease must
-   never qualify for the free-and-easy filter.
+   Record the paid-parking payment route using `parkingPaymentAtHotel` as above.
+   Inclusion on the hotel receipt may remain `null`.
    Free parking has a zero charge and a receipt state of not applicable on the
    page/export. Use `parkingLabel` and `parkingSummary` to describe registration
    requirements or distinguish a free outdoor option from a paid garage.
@@ -55,7 +77,9 @@ paid stay observations, including Scandic Elmia, as clearly labelled paid entrie
    Preserve numeric prices, ISO recorded dates, source URLs and UTF-8 place names.
    CSV totals are exported values; the website derives them from the inputs.
    Include nights, average accommodation price per night, the price basis and
-   coordinate sources, parking confirmation status, check date and source.
+   coordinate sources, parking confirmation status, check date, source, parking
+   category and payment-at-hotel state. Column O is now Parking category and
+   column AD is Payment at hotel, giving 30 columns.
    Compare all CSV fields and totals with the JSON before
    publishing; do not mix a multi-night total with a nightly rate.
 7. Run `python3 tools/build-hotels.test.py` and `python3 tools/build-hotels.py --check`.
@@ -104,7 +128,7 @@ and the existing paid Elmia stay. The nine additions are Scandic Sundsvall Nord,
 Scandic Östersund Syd, Hotell Jämteborg, Thon Hotel Bergen Airport, Thon Hotel
 Elgstua, Thon Hotel Hallingdal, Scandic Espoo, Scandic Laajavuori and Scandic
 Waskia. Their own property pages were checked on 24 October 2026. Their room
-prices, personal stay assessments and parking ease remain unknown.
+prices and personal stay assessments remain unknown.
 
 This is a growing verified directory, not a complete census of Nordic hotels.
 The Expedia repository findings, access requirements and offline import process
@@ -122,11 +146,11 @@ Marina's permitted receipt amount is 5,728.46 kr for five nights including taxes
 and fees after a booking credit, averaging 1,145.69 kr per night. The screenshot
 does not show an ISO currency code, so neither SEK nor DKK is assumed. No raw
 receipt or private conversation is published. The other new room prices remain
-unknown. Ease is unassessed for all seven entries.
+unknown.
 
 ## First entry
 
 Scandic Elmia, Jönköping, recorded 24 October 2026. Room SEK 1,107; parking SEK 105;
 total SEK 1,212. External paid parking through Pair; a separate website receipt
 was available and parking could not be put on the hotel receipt on this stay.
-Ease of parking and precise stay dates have not been independently supplied.
+Precise stay dates have not been independently supplied.

@@ -12,7 +12,10 @@ The current register contains 15 confirmed free guest-parking options: Denmark
 6, Sweden 3, Norway 3 and Finland 3. The separate existing Scandic Elmia stay
 retains its confirmed external paid-parking status. These are verified examples,
 not an exhaustive national inventory. New researched entries have no invented
-room prices, personal stay reviews, parking-ease rating or billing experience.
+room prices, personal stay reviews or billing experience. The owner's corrected
+categories are green for free parking, yellow for paid parking settled at the
+hotel, and red/Avoid for paid parking settled separately. “Easy parking” means
+the yellow payment arrangement; it is not a physical-ease assessment.
 
 Confirmation is recorded in `parkingVerification` with a status, source URL and
 check date. The static-page generator rejects unknown or inconsistent parking
@@ -104,7 +107,9 @@ and `coverage: "input catalogue only"`. A matching amenity is a lead for
 verification, never automatic publication approval. Fees, policies, check-in
 text and parking-related descriptive/checkout text create review flags. Raw
 descriptions and contact information are not copied into the audit. Unknown
-prices, ease and receipt arrangements remain null.
+prices and receipt/payment arrangements remain unknown. The audit does not
+assign public green/yellow/red categories; these require the verified facts
+described in the register README.
 
 Ten focused offline tests cover reference resolution, false positives,
 conditional/nearby/valet parking, qualifications, protected coordinates and
