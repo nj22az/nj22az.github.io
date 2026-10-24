@@ -1,0 +1,348 @@
+{
+  "source": false,
+  "viewport": [
+    390,
+    844
+  ],
+  "physicalDevice": false,
+  "steps": [
+    {
+      "name": "page loaded",
+      "s": 0.4
+    },
+    {
+      "name": "island ready",
+      "s": 13.4
+    },
+    {
+      "name": "playing",
+      "s": 14.9
+    },
+    {
+      "name": "entered candidate Sakura",
+      "s": 24.3
+    },
+    {
+      "name": "photographed Sakura-Operations-Paperwork",
+      "s": 50.1
+    },
+    {
+      "name": "photographed Sakura-Operations-Cats",
+      "s": 70.1
+    },
+    {
+      "name": "photographed Sakura-Operations-Mustard",
+      "s": 99.4
+    },
+    {
+      "name": "photographed Sakura-Operations-Counter",
+      "s": 128.7
+    }
+  ],
+  "errors": [],
+  "playerHiddenForCamera": true,
+  "operations": {
+    "drawing": "JW-SAK-OPS-01",
+    "revision": "B",
+    "props": [
+      {
+        "id": "waybills",
+        "box": [
+          11870,
+          3970,
+          225,
+          150
+        ],
+        "bottom": 780,
+        "height": 125,
+        "wall": 3,
+        "paper": [
+          190,
+          110
+        ],
+        "target": [
+          11990,
+          4050,
+          885
+        ],
+        "purpose": "Three stepped paper trays; blank operational stationery, no new service or transaction."
+      },
+      {
+        "id": "pen",
+        "box": [
+          12020,
+          3820,
+          60,
+          130
+        ],
+        "bottom": 780,
+        "height": 140,
+        "stand": [
+          12050,
+          3850,
+          780,
+          120
+        ],
+        "penEnds": [
+          [
+            12050,
+            3850,
+            805
+          ],
+          [
+            12050,
+            3930,
+            917
+          ]
+        ],
+        "tether": [
+          [
+            12050,
+            3850,
+            784
+          ],
+          [
+            12034,
+            3870,
+            784
+          ],
+          [
+            12034,
+            3910,
+            784
+          ],
+          [
+            12045,
+            3940,
+            784
+          ],
+          [
+            12065,
+            3940,
+            784
+          ],
+          [
+            12065,
+            3920,
+            784
+          ],
+          [
+            12050,
+            3930,
+            917
+          ]
+        ],
+        "target": [
+          12050,
+          3890,
+          862
+        ],
+        "purpose": "Pen base on worktop; pen held in base and curved tether returns to pen end."
+      },
+      {
+        "id": "charity",
+        "box": [
+          11900,
+          4480,
+          140,
+          100
+        ],
+        "bottom": 780,
+        "height": 160,
+        "wall": 3,
+        "slot": [
+          80,
+          4
+        ],
+        "target": [
+          11970,
+          4530,
+          940
+        ],
+        "copy": "FOR THE HARBOUR CATS",
+        "purpose": "Original cat illustration; scenery only, no donation prompt or money controller."
+      },
+      {
+        "id": "karashi",
+        "box": [
+          11980,
+          4710,
+          120,
+          80
+        ],
+        "bottom": 780,
+        "height": 100,
+        "wall": 2,
+        "sachets": 8,
+        "target": [
+          12045,
+          4750,
+          869
+        ],
+        "purpose": "Staff-served mustard sachets; rear clip bridges10mm to the retained vat. Customer self-service is not claimed."
+      }
+    ],
+    "stockChanges": false,
+    "newInteractions": false,
+    "routeChanges": false,
+    "meshes": 3,
+    "triangles": 1418
+  },
+  "shop": {
+    "customers": [],
+    "stock": {
+      "tea": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "coffee": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "rice": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "biscuit": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "soap": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "notebook": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "postcard": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "battery": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "cola": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "water": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "beer": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "noodles": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "milk": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "chips": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "crackers": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "chocolate": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "candy": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "curry": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "soy": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "soup": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "peaches": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "tuna": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "detergent": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "tissues": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "toothpaste": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "orange": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "soda": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "yogurt": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "bread": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "bento": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "sandwich": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "pudding": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "bun": {
+        "shelf": 12,
+        "reserve": 24
+      }
+    }
+  },
+  "cast": [
+    {
+      "name": "Thuan",
+      "clip": null,
+      "gesture": null,
+      "moving": false,
+      "speed": 0,
+      "activity": "Sakura owner",
+      "indoors": "market",
+      "visible": true,
+      "flags": [
+        "inMarket"
+      ],
+      "at": [
+        5.5,
+        1.01,
+        1.57
+      ]
+    }
+  ]
+}

@@ -1,0 +1,283 @@
+{
+  "drawing": "JW-SAK-OPS-01",
+  "revision": "B",
+  "date": "2026-10-24",
+  "units": "mm",
+  "basis": "6f1570f91347976f04f199546301dc73e42869c9",
+  "counter": [
+    11300,
+    1400,
+    800,
+    4800
+  ],
+  "top": 780,
+  "staffAisle": [
+    12100,
+    1400,
+    1200,
+    4800
+  ],
+  "shoulderX": 12350,
+  "shoulderHeight": 948.41,
+  "staticReach": 456.734,
+  "props": [
+    {
+      "id": "waybills",
+      "box": [
+        11870,
+        3970,
+        225,
+        150
+      ],
+      "bottom": 780,
+      "height": 125,
+      "wall": 3,
+      "paper": [
+        190,
+        110
+      ],
+      "target": [
+        11990,
+        4050,
+        885
+      ],
+      "purpose": "Three stepped paper trays; blank operational stationery, no new service or transaction."
+    },
+    {
+      "id": "pen",
+      "box": [
+        12020,
+        3820,
+        60,
+        130
+      ],
+      "bottom": 780,
+      "height": 140,
+      "stand": [
+        12050,
+        3850,
+        780,
+        120
+      ],
+      "penEnds": [
+        [
+          12050,
+          3850,
+          805
+        ],
+        [
+          12050,
+          3930,
+          917
+        ]
+      ],
+      "tether": [
+        [
+          12050,
+          3850,
+          784
+        ],
+        [
+          12034,
+          3870,
+          784
+        ],
+        [
+          12034,
+          3910,
+          784
+        ],
+        [
+          12045,
+          3940,
+          784
+        ],
+        [
+          12065,
+          3940,
+          784
+        ],
+        [
+          12065,
+          3920,
+          784
+        ],
+        [
+          12050,
+          3930,
+          917
+        ]
+      ],
+      "target": [
+        12050,
+        3890,
+        862
+      ],
+      "purpose": "Pen base on worktop; pen held in base and curved tether returns to pen end."
+    },
+    {
+      "id": "charity",
+      "box": [
+        11900,
+        4480,
+        140,
+        100
+      ],
+      "bottom": 780,
+      "height": 160,
+      "wall": 3,
+      "slot": [
+        80,
+        4
+      ],
+      "target": [
+        11970,
+        4530,
+        940
+      ],
+      "copy": "FOR THE HARBOUR CATS",
+      "purpose": "Original cat illustration; scenery only, no donation prompt or money controller."
+    },
+    {
+      "id": "karashi",
+      "box": [
+        11980,
+        4710,
+        120,
+        80
+      ],
+      "bottom": 780,
+      "height": 100,
+      "wall": 2,
+      "sachets": 8,
+      "target": [
+        12045,
+        4750,
+        869
+      ],
+      "purpose": "Staff-served mustard sachets; rear clip bridges10mm to the retained vat. Customer self-service is not claimed."
+    }
+  ],
+  "retained": [
+    {
+      "id": "coin-tray",
+      "box": [
+        11565,
+        3420,
+        130,
+        180
+      ],
+      "bottom": 780,
+      "height": 43
+    },
+    {
+      "id": "cups",
+      "box": [
+        13534,
+        3279,
+        72,
+        72
+      ],
+      "bottom": 823,
+      "height": 106
+    },
+    {
+      "id": "bags",
+      "box": [
+        13475,
+        3352.5,
+        250,
+        115
+      ],
+      "bottom": 781.5,
+      "height": 41
+    },
+    {
+      "id": "microwave-1",
+      "box": [
+        13435,
+        2375,
+        330,
+        350
+      ],
+      "bottom": 780,
+      "height": 205
+    },
+    {
+      "id": "microwave-2",
+      "box": [
+        13435,
+        3575,
+        330,
+        350
+      ],
+      "bottom": 780,
+      "height": 205
+    },
+    {
+      "id": "gum",
+      "box": [
+        11340,
+        4120,
+        240,
+        280
+      ],
+      "bottom": 780,
+      "height": 220
+    },
+    {
+      "id": "oden",
+      "box": [
+        11650,
+        4800,
+        450,
+        600
+      ],
+      "bottom": 780,
+      "height": 100
+    },
+    {
+      "id": "ticketStand",
+      "box": [
+        11800,
+        4320,
+        160,
+        130
+      ],
+      "bottom": 780,
+      "height": 240
+    },
+    {
+      "id": "scanner-cord-protected",
+      "box": [
+        11743,
+        3710,
+        207,
+        232
+      ],
+      "bottom": 780,
+      "height": 29
+    },
+    {
+      "id": "scanner-return-cord",
+      "box": [
+        11925,
+        2890,
+        30,
+        1052
+      ],
+      "bottom": 780,
+      "height": 29
+    }
+  ],
+  "corrections": [
+    "Original west-side charity box and karashi proposal could not be replenished within Thuans measured arm envelope. Move both to staff-served east edge.",
+    "Waybill rack moved90mm east so its paper pickup is within static reach. Pen moved south and shortened footprint to avoid the rack.",
+    "No customer self-service, donation, parcel transaction or live hand contact is introduced. Existing actor routes are retained."
+  ],
+  "limits": [
+    "Static shoulder approach at X12350; live grasp and replenishment animation remain unverified.",
+    "Artist-authored dimensions; no JIS or manufacturer certification.",
+    "Stair chain and frontage remain separate unbuilt work."
+  ]
+}

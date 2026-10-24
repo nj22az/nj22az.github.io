@@ -1,0 +1,68 @@
+{
+  "drawing": "JW-SAK-CHAIN-01",
+  "revision": "A",
+  "date": "2026-10-24",
+  "units": "mm",
+  "status": "CAD proposal only; unbuilt",
+  "basis": "6f1570f91347976f04f199546301dc73e42869c9",
+  "groundLanding": [
+    4500,
+    12070,
+    1000,
+    1000
+  ],
+  "clearDepth": [
+    12092,
+    13048
+  ],
+  "barrier": {
+    "status": "Separate safety-detail CAD next; existing no-traversal collider unchanged",
+    "post_centres": [
+      [
+        5350,
+        12232
+      ],
+      [
+        5350,
+        12908
+      ]
+    ],
+    "ground": 40,
+    "post_diameter": 60,
+    "post_height": 850,
+    "base_diameter": 280,
+    "chain": {
+      "diameter": 12,
+      "span": 676,
+      "end_height": 780,
+      "sag": 110
+    },
+    "plate": {
+      "width": 300,
+      "height": 200,
+      "thickness": 4,
+      "center_depth": 12570,
+      "bottom": 450,
+      "copy": "STAFF ONLY"
+    },
+    "audit": "Posts inset140 from the956 clear-width edges: base footprint stays within depth12092-13048, avoiding the855 outer passage. Posts on ground landing before first tread."
+  },
+  "absoluteChainEnd": 820,
+  "absoluteChainLow": 710,
+  "firstTreadX": 5500,
+  "audit": {
+    "baseDepthBounds": [
+      12092,
+      13048
+    ],
+    "firstTreadGap": 10,
+    "outerPassageUnchanged": 855,
+    "dxfErrors": 0
+  },
+  "limits": [
+    "Not a certified stair or emergency-exit design.",
+    "Release hardware, sign hangers, anchorage and actual worker sightlines require detail before construction.",
+    "No traversal, collider, prompt or escape-gameplay change.",
+    "No claim that the existing +40 apron and stair start at0 form a compliant physical threshold."
+  ]
+}
