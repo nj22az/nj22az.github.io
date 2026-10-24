@@ -1,0 +1,45 @@
+name: Vehicle collision source bundle
+on:
+  push:
+    branches: [development]
+    paths: ['.github/workflows/vehicle-collision-source-2026-10-24.yml']
+permissions:
+  contents: read
+jobs:
+  bundle:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: abd504177e8866f8b986b3eaded98ead60a349c8
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install existing locked development dependencies
+        working-directory: johansson-town
+        run: npm ci --no-audit --no-fund
+      - name: Package source and tests, without large media or credentials
+        run: |
+          python3 - <<'PY'
+          import pathlib, tarfile
+          roots = ['johansson-town', 'avatar-creator', 'assets', 'css']
+          skip = {'.git', '.cache', 'docs', 'diorama', 'linux', 'dist', 'releases'}
+          media = {'.blend', '.glb', '.gltf', '.mp4', '.mov', '.webm', '.zip', '.gz', '.pdf', '.stl', '.dxf'}
+          with tarfile.open('vehicle-collision-source.tar.gz', 'w:gz') as out:
+              for name in ['AGENTS.md', 'CLAUDE.md', 'HANDOVER.md', 'ANIMATION_DIRECTION.md', 'config.js', 'shared.js', 'styles.css']:
+                  p=pathlib.Path(name)
+                  if p.is_file(): out.add(p, recursive=False)
+              for root in roots:
+                  for p in pathlib.Path(root).rglob('*'):
+                      if not p.is_file() or p.is_symlink() or any(part in skip for part in p.parts): continue
+                      if p.suffix.lower() in media or p.stat().st_size > 12*1024*1024: continue
+                      if p.name.startswith('.env') or p.name in {'.npmrc', '.netrc'}: continue
+                      out.add(p, recursive=False)
+          print(pathlib.Path('vehicle-collision-source.tar.gz').stat().st_size)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vehicle-collision-main-source
+          path: vehicle-collision-source.tar.gz
+          retention-days: 1
