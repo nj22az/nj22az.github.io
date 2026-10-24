@@ -1643,7 +1643,7 @@ function buildHead(recipe,m,faceSize){
  // The face is shaded as if it were flat and tipped up to the light, as a drawn face
  // is: a sphere's own normals put a hard shadow line straight across the cheeks.
  const nrm=g.attributes.normal,n=new THREE.Vector3(),toward=new THREE.Vector3(0,.4,.92).normalize();
- for(let i=0;i<nrm.count;i++){n.fromBufferAttribute(nrm,i);n.lerp(toward,THREE.MathUtils.smoothstep(n.z,-.35,.45)*(recipe.head.form==='sculpted'?.15:.7)).normalize();nrm.setXYZ(i,n.x,n.y,n.z);}
+ for(let i=0;i<nrm.count;i++){n.fromBufferAttribute(nrm,i);n.lerp(toward,THREE.MathUtils.smoothstep(n.z,-.35,.45)*.7).normalize();nrm.setXYZ(i,n.x,n.y,n.z);}
  // atan2 wraps on the rear/side seam. Interpolating from u=0 to u=1
  // across a triangle paints the whole face there, including red lips.
  // Give those triangles their own plain-skin UVs, retaining smooth normals.
@@ -1656,12 +1656,12 @@ function buildHead(recipe,m,faceSize){
    for(let j=0;j<3;j++)U.setXY(i+j,.002,.002);
  }
  // Cel-shaded like the town, on its high-key ramp, and a little self-lit so a face in
- // a dim room still reads.
- const baseMaterial=new THREE.MeshStandardMaterial({map:texture,roughness:.82,emissive:0xffffff,emissiveMap:texture,emissiveIntensity:.05});
- const material=recipe.head.form==='sculpted'?baseMaterial:celFrom(baseMaterial,{bands:'soft3'});
+ // a dim room still reads. Every head form, the soft sculpted one too (the owner, 24 October 2026: Vy's "shiny 3d head"
+ // must be cel shaded like the rest of the characters).
+ const material=celFrom(new THREE.MeshStandardMaterial({map:texture,roughness:.82,emissive:0xffffff,emissiveMap:texture,emissiveIntensity:.05}),{bands:'soft3'});
  const head=new THREE.Mesh(g,material);head.name='Shimanchu head';
  head.position.y=m.headCentre-m.headY;
- if(INK_NOSES[recipe.nose.style]&&recipe.head.form!=='sculpted')head.add(inkNoseBump(recipe,m,material,{PHI0,PHI,TH0,TH}));
+ if(INK_NOSES[recipe.nose.style])head.add(inkNoseBump(recipe,m,material,{PHI0,PHI,TH0,TH}));
  // The scruffy beard is painted on a shell (the other beards are built: beard-mesh.js).
  const beard=recipe.facial?.paint==='scruff'?beardShell(m,faceSize):null;if(beard)head.add(beard.mesh);
  return {head,canvas,ctx,texture,beard};
@@ -1684,7 +1684,7 @@ function beardShell(m,faceSize){
  g.scale(m.Rh*m.headSX,m.Rh*m.headSY,m.Rh*.98);g.computeVertexNormals();
  // Leaned toward the light as the face's normals are, so the beard shades with the face beneath it.
  const nrm=g.attributes.normal,n=new THREE.Vector3(),toward=new THREE.Vector3(0,.4,.92).normalize();
- for(let i=0;i<nrm.count;i++){n.fromBufferAttribute(nrm,i);n.lerp(toward,THREE.MathUtils.smoothstep(n.z,-.35,.45)*(recipe.head.form==='sculpted'?.15:.7)).normalize();nrm.setXYZ(i,n.x,n.y,n.z);}
+ for(let i=0;i<nrm.count;i++){n.fromBufferAttribute(nrm,i);n.lerp(toward,THREE.MathUtils.smoothstep(n.z,-.35,.45)*.7).normalize();nrm.setXYZ(i,n.x,n.y,n.z);}
  const material=celFrom(new THREE.MeshStandardMaterial({map:texture,transparent:true,alphaTest:.04}),{bands:'soft3'});
  material.depthWrite=false;
  const mesh=new THREE.Mesh(g,material);mesh.name='Shimanchu painted beard';mesh.renderOrder=1;mesh.castShadow=false;mesh.receiveShadow=true;

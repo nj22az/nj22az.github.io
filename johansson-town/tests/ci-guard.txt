@@ -29,6 +29,7 @@ sakura-dialogue.test.mjs
 sakura-dressing.test.mjs
 sakura-evening-guests.test.mjs
 sakura-flyer.test.mjs
+woodland-poster.test.mjs
 sakura-light-transitions.test.mjs
 sakura-merchandising.test.mjs
 sakura-office-exterior.test.mjs
@@ -82,3 +83,6 @@ authored-skirt.test.mjs
 tailored-skirt.test.mjs
 
 conversation-eyes.test.mjs
+
+# Cars remain solid while driving, waiting and travelling aboard the ferry.
+vehicle-body-collision.test.mjs

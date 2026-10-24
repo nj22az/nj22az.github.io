@@ -228,7 +228,7 @@ def build(reviews):
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <script src="/theme-bootstrap.js?v=hotels-1"></script>
   <link rel="stylesheet" href="/styles.css?v=popwave-icons-2">
-  <link rel="stylesheet" href="/css/hotels.css?v=3">
+  <link rel="stylesheet" href="/css/hotels.css?v=4">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <link rel="stylesheet" href="/css/hotels-map.css?v=2">
 </head>
@@ -241,6 +241,7 @@ def build(reviews):
       <p class="hotel-eyebrow">The travel register</p>
       <h1>Hotels &amp; Parking</h1>
       <p class="hotel-intro">Find hotels with confirmed free guest parking in Sweden, Denmark, Norway and Finland. Compare parking arrangements and use the map to see the hotels that match your filters.</p>
+      <p class="hotel-findings-note"><strong>Swedish Scandic update: 18 reviewed hotels with a free outdoor option on weekdays and weekends.</strong> This is a verified subset, not the complete chain. The free-parking label applies to the named area only. Registration instructions and paid garages are stated in each entry. <a href="/blog/hotels/scandic-sweden-findings-2026-10-24.json">View the dated evidence records</a>.</p>
     </header>
     <section aria-labelledby="hotel-register-title">
       <div class="hotel-register-heading"><h2 id="hotel-register-title">Hotel register</h2><a class="hotel-download" href="/blog/hotels/hotel-reviews.csv" download>Download spreadsheet (CSV)</a></div>
@@ -255,7 +256,7 @@ def build(reviews):
       <p class="hotel-count" data-hotel-count role="status" aria-live="polite">{count} {'hotel' if count == 1 else 'hotels'}</p>
       <section class="hotel-map-section" aria-labelledby="hotel-map-title">
         <h3 id="hotel-map-title">Map of selected hotels</h3>
-        <p class="hotel-map-intro">The map follows the filters above. Select a hotel marker to read its notes.</p>
+        <p class="hotel-map-intro">The map follows the filters above. Verified map locations are available for {len(map_records)} of {count} hotels. Other hotels remain in the table with their addresses; approximate pins are not used. Select a marker to read its parking notes.</p>
         <div class="hotel-map-controls" data-hotel-map-controls hidden>
           <button type="button" id="hotel-locate">Show my location</button>
           <button type="button" id="hotel-fit-map">Fit selected hotels</button>
@@ -293,7 +294,7 @@ def build(reviews):
   <script id="hotel-map-data" type="application/json">{map_json}</script>
   <script src="/blog/hotels/hotels.js?v=3"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="/blog/hotels/hotels-map.js?v=2"></script>
+  <script src="/blog/hotels/hotels-map.js?v=3"></script>
 </body>
 </html>
 '''

@@ -15,9 +15,15 @@ The third city island is low priority and deferred until explicitly reprioritise
 
 | Work area | Current handover |
 | --- | --- |
+| World: Nakamura / Blue Coral exterior CAD audit | [24 October measured exterior audit](johansson-town/briefs/HANDOFF-NAKAMURA-EXTERIOR-AUDIT-2026-10-24.md), recorded in `cfad7c39`. Source and owner-screenshot review: pole lies in the family-door approach; banner and crossarm are perpendicular; no base/fixing or pole collider in the builder. Measurements and proposed wall-mounted correction recorded. **Audit only: no runtime change, repair or gameplay acceptance.** Next: implement and verify entrance/queue/flag envelopes and open/closed views. |
+| World: moving car collisions | [24 October vehicle-collision repair](johansson-town/briefs/HANDOFF-VEHICLE-COLLISION-2026-10-24.md). Verified candidate: vehicle colliders follow driving/held/reversing/ferry poses, live dynamic spatial queries and no conversations with seated drivers. Full guard and compiled-game desktop/phone-width checks pass; publication pending. |
+| World / Studio: Thuan CAD and shared game arms/hands/legs/feet | [24 October Thuan CAD](johansson-town/briefs/HANDOFF-THUAN-CAD-2026-10-24.md), updated **14:00 UTC**. **Revision A, amendment 2: design/reference mathematics only; no game mesh or runtime changes.** **12 A3 sheets**, 12-region 1:1 proposal DXF with **27 native dimensions**, original 16 preserved, zero audit errors/fixes; current measured DXF unchanged. Directional elbow/knee fans, outfit-specific full-arm coverage, axial-only helper with last-12-mm wrist blend, existing six-sided fingers/cupping, collar **122×130 clear / 142×150 outer / 10 mm recess**, staged foot roll and separate scalar AO specified. Foot reference: **1,419,860 evaluations, minimum Y = 0 mm and support error = 0 mm**, within stated flat-plane assumptions; no actual-shoe/gait acceptance. **20 captures: 17 baseline + three current-model static candidates**; **26.099 mm lower-arm clearance** remains static. Ceiling **62 bones**, first 28 stable, ≤4 weights; canonical Thuan ≤22k primary triangles, other recipes ≤4,198 net extra. Source review **62bd8870**, measured geometry **30771c7**; World/film scales remain separate. Twelve PDF pages record no text overflow. Final amendment-2 aggregate/package-save verification: **39/39 artifact checks pass; ZIP CRC and hashes verified; eight deliverables saved**; established file identities retained in the handover. Next: compatible shared game prototype on `development`, full motion/Look/device validation before promotion. |
+| World: realistic harbour noticeboard remake | [24 October noticeboard handover](johansson-town/briefs/HANDOFF-NOTICEBOARD-DESIGN-2026-10-24.md). **Implemented from revision A and published to `main` on the owner's word** (evening of 24 October): measured case, hood, acrylic doors, posts on their two grades; papers in their drawn places with no stacked faces; corrected flyer hours and map. Woodland/flyer/z-fighting tests and the compiled-game review pass; physical-device check outstanding. |
+| World: bench beside the harbour notice board and ferry-office door hood | [24 October frontage correction](johansson-town/briefs/HANDOFF-FERRY-OFFICE-FRONTAGE-2026-10-24.md). Earlier unreferenced review never reached live main. **Published and verified** as [`580de3c1`](https://github.com/nj22az/nj22az.github.io/commit/580de3c1ed4f12c3e2f962dd49370435bf4256cb). Bench and door hood removed; newer woodland poster/board/viewer and old-save compatibility preserved. Local World guard **400/400**, extra checks **20/20**, six real-game views and poster open/close pass. GitHub guard and Pages passed; **54/54 live files** match. Signed off. |
+| World: woodland diorama notice-board poster | [24 October woodland-poster handover](johansson-town/briefs/HANDOFF-WOODLAND-POSTER-2026-10-24.md). Corrected R3 poster on the harbour board; **Look** opens the local 3D viewer. **Published to main as `afe5ba6`; Pages verified live.** Full GitHub World guard **401/401**, final compiled-game 14/14, and ten live-file integrity checks pass. See the note for controls, evidence and Linux-package limits. |
 | World website / Linux consolidation | [24 October World website handover](world/HANDOVER-2026-10-24.md). Current-game Konbini hero; Linux downloads, guide and development integrated into World; old Linux anchors retained through redirects. Desktop/iPad/phone browser checks pass. Prepared for owner-authorised publication with Vy. |
 | Studio / Avatar Creator: Vy from the supplied GLB | [24 October Vy reference handover](johansson-town/briefs/HANDOFF-VY-REFERENCE-2026-10-24.md). **Owner accepted and authorised replacing current Vy everywhere, including the website.** Shared default, saved-look upgrades, guide photos and mascot complete. All 4 pair tests and complete **387-check World guard pass**; merged greeting/runtime 8/8 and built-game smoke pass. Implemented in `8033aa3`, combined with newer main in `83bb0e7`; publication verification pending. |
-| Blog: Hotels & Parking | [24 October hotel-register handover](blog/hotels/HANDOVER-2026-10-24.md). **Owner's colour/category correction prepared and verified; publication pending** from main `2e4992c`. Green = free (15 hotels, default filter); yellow = paid at hotel (0); red = external paid/Avoid (Elmia). Fixed table/map colours, blue own location, 30-column CSV and strict dated confirmation. Eight admission tests, ten offline importer tests and full browser check pass. Nordic additions deployed; full catalogue access remains unavailable. |
+| Blog: Hotels & Parking | [24 October Swedish Scandic findings](blog/hotels/HANDOVER-SCANDIC-2026-10-24.md). Eighteen Swedish Scandics with official free outdoor weekday/weekend parking; 32 total records. Skellefteå paid garage separated; registration notes retained. JSON, generated page and 37-column CSV updated. See the note for publication/check status. |
 | Conversation greeting eyes | [24 October correction and validation](johansson-town/briefs/HANDOFF-CONVERSATION-EYES-2026-10-24.md). One-line nod expression correction; actual controller tests, rebuilt runtime, complete guard and built-game smoke passed on the validation branch. Check the note and current main for promotion state. |
 | Studio: Seventeen Beers sea-wall comic | [23 October sea-wall comic handover](johansson-town/briefs/HANDOFF-SEVENTEEN-BEERS-COMIC-2026-10-23.md). Canonical Fujita/Johansson, actual promenade bench, Risograph and editable creator mark; PNG/project and nineteen-style PDF delivered, with Risograph first and one complete strip per page. Reusable sea-wall camera location added to Studio. |
 | Studio: Pixar-style rigged cast in Blender (Thuận, Johansson, Mr Fujita; clothes) | **Studio repo** `nj22az/jojo`, branch `pixar` (was `claude/lucid-sagan-ztc2th`), folder `3d/cast/` (`README.md`, `progress.md`, `checks.md`, `sources/task.md`). 23 October 2026, a prototype, not a World asset; nothing in World changed. **Thuận**: generated body (Higgsfield `z_image` + Tripo H3.1) rigged in Blender from code (IK legs with reverse foot, braids, jaw, clavicles, two-bone arm solve, code-sculpted five-digit hands grafted at the wrists). **Johansson** (lean, 180 cm, "her husband, not grandpa"): no credits, the shape from Hunyuan3D-2mini run on the CPU (`hunyuan_cpu.py`), painted in Blender from the concept (`concept_paint.py`), rigged the same way. **Mr Fujita**: the rejected heavy first Johansson, repurposed by the owner, shirt re-dyed yellow, head drawn in to 75%, shown at 160 cm. **Clothes** (`wardrobe.py`, `shots_outfit.py`): Thuận in a white balloon-sleeved blouse, black pinafore and velvet bow, posed after an owner's reference photo (pose and clothes only). Open: Johansson's sides are painted from front/back only; Thuận's painted eyes (no blink/aim); sleeve folds above ~70° arm raise; clothes are modelled per pose (stills), not yet skinned for animation. **Poster shoot** (24 October): Sakura's cold cabinet and its corner of the shop rebuilt in Blender from World's measures, for stills only (`set_sakura.py`, `props.py`: World's painted labels, every line in its World flavours), Thuan holding NAGI; layout `art/poster/sakura_tea.py`. Found in World and left for the owner: the cold-cabinet products' `purpose.placed` notes (coffee "under the tea", milk "top of the last column", tea "eye level") contradict `shelf.levels`, which count from the bottom (`studio/rules.js`), so the game shows them the other way round. **Next week's priority** (the owner, 24 October): the Pixar-style konbini with Thuan, Johansson and Fujita interactions; start from `jojo/3d/sakura/progress.md`. **Pixar-style konbini plan** (24 October): `jojo/3d/sakura/PLAN.md`, built from Codex's single-storey Sakura (`codex/sakura-counter-operations` pinned at 719f1435, draft PR #385 on #384/#378), CAD first as the owner's rule asks; the poster moves to its walk-in cold room. The poster set itself builds World's current room (`set_sakura.room`). Also found in World and left for the owner: the Eisa poster's print reads "Acer" where it means Eisa (`sakura-dressing.js` eisaPoster). The owner renders finals on a Mac M1 Pro (`jojo/3d/cast/RENDER-ON-PC.md`). Credits used ~19.9 of 22; `libopengl0` was installed in the container for MeshLab (add it to the setup script to keep it). The Codex hand plan (draft PR #360) is the background; its five-digit rule is kept. |
@@ -38,6 +44,77 @@ The third city island is low priority and deferred until explicitly reprioritise
 The newest note for Nhung the doctor and Higa Liquor is the [22 October 2026 night handoff](johansson-town/briefs/HANDOFF-2026-10-22-night.md): both merged to main through #362 on 23 October; the money model closed for now; next, simplify background processes.
 
 The Linux controller note contains newer merge and release information than the morning World note. Real-device confirmation of right-stick camera control on Bluetooth and Steam Deck remains outstanding; follow that note's reproduction steps. Its evening update: a saved Look axis past the pad's axes now falls back to the right stick (`84baf00`, for 0.2.17, unreleased; it rides the Nhung doctor PR from `claude/clever-ride-qdpo8s`).
+
+## Session handover — 24 October 2026 (late evening), branch `claude/peaceful-johnson-103tja`: Vy cel-shaded
+
+#392 (Steam Gaming Mode install, Deck Gamepad layout, REA) is merged as `b845f0b` and live; the owner has still to run the
+`--steam` command on the Deck and report whether the controls work.
+
+The owner: "Vy has a shiny 3d head instead of being celshaded like the rest of the characters, can you implement full cel
+shading on her" and "bring her head to the avatar creator". Cause: the `sculpted` head form (Vy's, from the 24 October
+reference work) was deliberately exempt in `src/avatars/build.js`: plain `MeshStandardMaterial` instead of
+`celFrom(…,{bands:'soft3'})`, near-sphere normals (0.15 lerp against everyone else's 0.7) and no ink-nose bump. Now every
+head form is shaded the same; the sculpted silhouette is kept. Her head was already in Studio's Face → Style picker as
+"Soft sculpted" (the last of 19 shapes); it now renders cel-shaded there too (checked in Studio on Johansson).
+
+Resident guide portraits re-rendered with `tools/render-resident-guide.mjs` (the hash covers `build.js`): Vy's is now
+flat-shaded; five others (06, Aya, Mai, Mr Fujita, Ms Ganaha) had been stale and now show the tailored skirt the game
+already draws. Checks: Studio before/after renders of Vy and Thuan looked at (Thuan unchanged); 32 avatar/Vy tests;
+runtime rebuilt; full guard 409/409, 77 files. Next: Linux 0.2.19 (the owner noticed Linux is still 0.2.18).
+
+## Session handover — 24 October 2026 (evening), branch `claude/peaceful-johnson-103tja`: Steam Gaming Mode install, Deck controls, REA
+
+**#391 (play as anyone, faces) is merged** (`28f68fc`). Its second Linux failure was real: the console check still asserted
+the old "web has no character system" rule; the check now asserts the web starts as Johansson, out of bed, no Linux UI.
+
+**Owner, 24 October:** the installer should put the game in Steam's Gaming Mode, and on the Deck "no controls work … I
+can only move the camera by touching the screen … the install should map to the controller". The installer
+(`steam-deck/install.sh`, copied byte-for-byte to `johansson-world/install.sh`, the website's command) now:
+- writes a *Johansson World* non-Steam shortcut into every Steam account's `userdata/<id>/config/shortcuts.vdf` (binary
+  KeyValues; other shortcuts kept; an earlier hand-made *Johansson World* entry replaced; first original kept as
+  `shortcuts.vdf.before-johansson-world`), closing Steam first with `steam -shutdown` if it is running, since Steam
+  overwrites the file otherwise;
+- sets Steam Input for it to the Deck's built-in `controller_neptune_gamepad_fps.vdf` ("Gamepad with Camera Controls") in
+  `steamapps/common/Steam Controller Configs/<id>/config/configset_controller_neptune.vdf`, keyed by the lowercased name,
+  with a backup. Likely cause of the owner's fault: Steam guessing a keyboard/mouse layout for an unknown non-Steam game;
+- `sh install.sh --steam` does only those two steps for an existing install; `JOHANSSON_NO_STEAM=1` skips them.
+Sources: the configset format, key and template name from Valve's steam-for-linux issue 13251 and community projects
+(Deckhand #25, kuluu-ffxi #568). **Unverified:** the root key `controller_config` is used only when the file does not
+exist yet (an existing file keeps its own root); no physical Steam Deck was available, so whether this fixes the
+owner's controls is not yet confirmed. Ask the owner to run the `--steam` command and report.
+
+The website: install guide and World page say the installer adds the game to the Library with the Gamepad layout and
+give the `--steam` command; the copy buttons now copy their own block (the World page's button was broken: no
+`.ferry-install` ancestor); script cache `?v=2`.
+
+**REA** (`morluto/rea`) is a permanent development tool: `.mcp.json` registers `rea` pinned at `rea-agents@6.7.0`; root
+`AGENTS.md` (new section) and `CLAUDE.md` say what to use it on and its limits. `npx -y rea-agents@6.7.0 --help` ran here.
+
+Checks: `npm test --prefix steam-deck` 39/39, the installer fixture now covering the Library entry, the Steam Input layout,
+backups and a second `--steam` run without duplicates; both pages in Chromium at 390 px: every copy button copies its own
+command, no overflow, no page errors.
+
+## Session handover — 24 October 2026 (afternoon), branch `claude/peaceful-johnson-103tja`: play as anyone and faces on the web
+
+The owner asked whether "play any character", posing and emotions could come to the web, and chose both. Posing was
+already there (Moves: 43 moves, 9 full-body poses with faces; the Photo studio). Added: **Town book → People → Play as**
+on every playable resident's card (25), using Linux's own possession (`src/desktop/life.js`); on the web it runs only
+while you play someone other than Johansson (`playingResident()` in `src/game.js`), so Johansson's web opening, house
+and view are unchanged. Web saves keep who you play (`activities.js` loads `desktopLife`); residents and letters use that
+name. **Moves → Make a face**: all 46 faces with their glyphs, held ten seconds (Neutral lets go); switching character
+resets the face. The Moves text follows who you play. Insult/apology choices and full conversations stay Linux's.
+Recorded in `johansson-town/AGENTS.md` under the 19 October edition ruling.
+
+Checks: `town-directory` gains a Play as test; `controller-game`, `edition`, `harbour-festival`, `town-directory`
+16/16 before it; **full CI guard 400/400, 76 files**; runtime rebuilt, `runtime-package` 4/4. Real built game in
+headless Chromium (web, no desktop shell): Moves lists Make a face, the 46 faces open and Lovestruck applies; People
+shows 25 Play as buttons with Johansson's "Playing now"; Thuan is controlled with her own body and a neutral face, the
+book closes, Moves describes her; back to Johansson works; the save holds the choice; no page errors. Screenshots
+looked at. Not checked: phone/iPad, touch controls, Linux edition after the change (its console check runs on the PR).
+
+Open for the owner: a resident who is indoors when chosen starts at home in the plain Linux bedroom
+(`desktop/bedroom.js`), which is much simpler than the town's dressed interiors; worth dressing per home before this is
+promoted widely.
 
 ## Session handover — 24 October 2026, branch `claude/peaceful-johnson-103tja`: the "Acer" poster and the cold cabinet
 
@@ -99,6 +176,17 @@ full-acceptance step given 30 minutes (job 45) so its web-only recovery is not c
 38/38. Publishing happens when the PR merges into the release branch (`johansson-world-linux.yml`); the owner confirms
 that merge. After it: verify the release assets, installer and checksum, then point the website's downloads at 0.2.18
 on main (`world/index.html`, `johansson-world/install.sh`, `linux-port/install/index.html`), as 7624d98 did for 0.2.17.
+
+**0.2.18 published** on the owner's word: [PR #389](https://github.com/nj22az/nj22az.github.io/pull/389) squash
+`c7540727` into `codex/johansson-world-steam-deck`; its Linux console acceptance (run 40084048887) passed in 30 minutes,
+the full-acceptance step in 21. [Release workflow 40086718443](https://github.com/nj22az/nj22az.github.io/actions/runs/40086718443)
+passed every step, published [the prerelease](https://github.com/nj22az/nj22az.github.io/releases/tag/johansson-world-linux-v0.2.18)
+and verified the public installer. Checked by hand afterwards: archive and 0.2.17→0.2.18 patch match `SHA256SUMS`,
+`latest-linux.json` and GitHub's digests; the app reports 0.2.18; the packaged Sakura chunk has the Eisa fix. Evidence:
+[`linux-port/acceptance-0.2.18.md`](linux-port/acceptance-0.2.18.md). [PR #390](https://github.com/nj22az/nj22az.github.io/pull/390), merged as `5a5bddb` and verified live, carries the release files, that evidence
+and the website (World page, install guide, installer at 0.2.18; the player guide's Town book paths and shop list
+updated to the eight-tile book and the closed Higa Liquor; a 24 October change-log entry). The woodland diorama merged
+to main after the release and ships next time. Still unverified: physical Steam Deck, 8BitDo, iPhone.
 
 ## Repository instructions handover — 22 October 2026
 

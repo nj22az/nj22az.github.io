@@ -123,6 +123,12 @@ less, by the named budgets there. Nothing else asks which edition it is. Later r
   (`commerce/paperwork.js`, `tests/paperwork.test.mjs`). On Linux the ledger is the live shop's.
 - Outside a page (node's suites) the edition is Linux unless `JOHANSSON_EDITION=web`; `tests/edition.test.mjs` holds
   the web budgets and the Linux path.
+- **Playing as any resident and making faces come to the web** (the owner, 24 October 2026, asked whether "play any
+  character", posing and emotions could be brought to the web: "Both"). Town book → People has *Play as* on every
+  playable resident's card (`desktop/life.js`, the same possession Linux uses); the web runs it only while you play
+  someone other than Johansson (`playingResident()` in `game.js`), so Johansson's web opening, house and view are
+  unchanged. Moves → *Make a face* offers every face the painter knows, held for ten seconds. Conversations stay the web's
+  short lines; the insult and apology choices stay Linux's.
 
 ## Owner's decision — 21 October 2026: no way in without a working interior
 
