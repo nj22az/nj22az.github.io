@@ -40,7 +40,13 @@ Built entry: `boot-DiC5Khan.js`. Source fingerprint: `48d8fd3dbb11414d0a8139cbe1
 
 The final rebuilt-game run passed all 14 acceptance checks in 122.3 seconds, with zero page errors. Final desktop and phone captures, the exact report and the geometry rerun are in [the QA folder](../docs/qa/woodland-poster-2026-10-24/README.md).
 
-All required local guard files have passing results after the targeted correction and rerun described above. The full GitHub guard will run on the published revision. This checked tree is prepared for the owner-authorised publication to `main`; the release confirmation below is updated after promotion and live verification.
+**Published and verified.** Implementation commit [`afe5ba69526a5c20bc47ab53abfad412aae73159`](https://github.com/nj22az/nj22az.github.io/commit/afe5ba69526a5c20bc47ab53abfad412aae73159) was promoted directly to `main` on the owner’s request. The full [GitHub World guard](https://github.com/nj22az/nj22az.github.io/actions/runs/40083681589) passed **401/401 tests across 76 files**, with zero failures, skips or todos, in 285 seconds.
+
+The [Pages deployment](https://github.com/nj22az/nj22az.github.io/actions/runs/40083680718) succeeded. Ten live files were downloaded and compared byte-for-byte with the reviewed checkout: game entry/source fingerprint/service worker, viewer HTML/JavaScript/CSS, both poster images, and the complete compressed Blender model. All matched. Exact live checks are in [publication.json](../docs/qa/woodland-poster-2026-10-24/publication.json).
+
+Live entry: <https://nj22az.github.io/johansson-town/>. Walk to the harbour notice board and choose **Look**. Direct viewer: <https://nj22az.github.io/johansson-town/diorama/woodland/>. Existing open game sessions should reload to receive the updated runtime.
+
+This final sign-off changes only handover/verification records. The tested and live source fingerprint remains `48d8fd3dbb11414d0a8139cbe1e4342e90f613d1186ff507608aeaf2e1292079`. No further implementation work is outstanding.
 
 ## Verification limits
 

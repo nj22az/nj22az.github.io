@@ -14,3 +14,5 @@ The before image was captured from main `a3a4ad0`, and the after images from the
 No physical-device, Safari or packaged Linux acceptance is implied.
 
 [Validation summary](validation-summary.json) records the initial geometry failure, its correction and passing rerun. [Full geometry rerun](geometry-check.txt): 13/13 pass.
+
+[Live publication verification](publication.json): all ten downloaded files match the reviewed build. The implementation commit’s [full GitHub guard](https://github.com/nj22az/nj22az.github.io/actions/runs/40083681589) passed 401/401 tests across 76 files.
