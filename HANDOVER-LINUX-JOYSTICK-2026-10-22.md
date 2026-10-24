@@ -116,3 +116,10 @@ This release does **not** include the separate saved-axis repair proposed in
 #362. Real Steam Deck/8BitDo checks and the diagnostic questions above remain
 outstanding. Version 0.2.17 is consumed: a further controller release needs the
 next unpublished version, at least 0.2.18. Preserve all published assets and saves.
+
+## Update, 24 October 2026: 0.2.18 published
+
+[Linux 0.2.18](https://github.com/nj22az/nj22az.github.io/releases/tag/johansson-world-linux-v0.2.18) carries the saved-axis
+fallback (`84baf00`) and main's World of 24 October; evidence in `linux-port/acceptance-0.2.18.md`, session note in
+`HANDOVER.md`. Version 0.2.18 is consumed: the next release is at least 0.2.19. The console check's full-acceptance step
+now has 30 minutes (job 45). Real Steam Deck/8BitDo confirmation of right-stick camera control is still outstanding.

@@ -76,8 +76,42 @@ clerk walks (to `staffApproach`, then the straight step into the till pocket, no
 the age refusal (now both current wordings). Runtime rebuilt; `origin/main` merged in (handover text only).
 
 Checks run after all of it: the 232 shop/Studio/game-build tests 232/232, and the **full CI guard with a 10 GB heap:
-391/391, 75 files, all green**. Not run: phone/iPad views, physical devices. A PR to main carries all three commits for
-the owner to merge (main deploys the site). Next: the owner reviews and merges; then re-take the Blender cabinet in `jojo`.
+391/391, 75 files, all green**. Not run: phone/iPad views, physical devices.
+
+**Merged and published.** [PR #388](https://github.com/nj22az/nj22az.github.io/pull/388), squash `2cc5a6b`, merged on the
+owner's word. On the PR, `guard` passed; `linux` (Linux console acceptance, run 40079598412) logged "Linux acceptance
+passed" and was then cut off by the step's `timeout 20m` in the web-only recovery that follows (exit 124), as on #383's
+run 39972713417; this session could not re-run it (403), and the owner chose to merge (see the PR comment). On main the
+World guard (run 40081981794) and Pages deployment (run 40081981319) passed; the public site serves `boot-B2WrrZ5x.js`
+and its Sakura chunk reads "Eisa" and "Sakura · Eisa poster".
+
+Next: (1) **Linux 0.2.18**, only with the owner's go-ahead: the offline Linux edition still ships 0.2.17's World ("Acer",
+the old cabinet) and lacks the controller fix `84baf00`; bump `steam-deck/package.json`, add `steam-deck/releases/0.2.18.md`,
+bring main into the release branch and follow the release steps in
+[the Linux handover](HANDOVER-LINUX-JOYSTICK-2026-10-22.md#commands-and-next-release). (2) The Linux console check's
+20-minute step budget is now too tight for its web-only recovery after a full acceptance; give that step its own
+budget rather than weakening it. (3) Re-take the Blender cabinet in `jojo`.
+
+**Linux 0.2.18, prepared on the owner's go-ahead** (branch `claude/peaceful-johnson-103tja`, PR into
+`codex/johansson-world-steam-deck`). The release branch was main at #365 plus 0.2.17's four version files, all already on
+main, so current main (with this note) was merged in and the tree checked equal to main's. Then: `steam-deck/package.json`,
+`package-lock.json` and `install.sh` at 0.2.18; `steam-deck/releases/0.2.18.md` (looks, Town book, Nhung/Higa Liquor,
+Vy, greeting eyes, Eisa poster, cold cabinet, the controller fallback `84baf00`); and the Linux console check's
+full-acceptance step given 30 minutes (job 45) so its web-only recovery is not cut off. `npm test --prefix steam-deck`
+38/38. Publishing happens when the PR merges into the release branch (`johansson-world-linux.yml`); the owner confirms
+that merge. After it: verify the release assets, installer and checksum, then point the website's downloads at 0.2.18
+on main (`world/index.html`, `johansson-world/install.sh`, `linux-port/install/index.html`), as 7624d98 did for 0.2.17.
+
+**0.2.18 published** on the owner's word: [PR #389](https://github.com/nj22az/nj22az.github.io/pull/389) squash
+`c7540727` into `codex/johansson-world-steam-deck`; its Linux console acceptance (run 40084048887) passed in 30 minutes,
+the full-acceptance step in 21. [Release workflow 40086718443](https://github.com/nj22az/nj22az.github.io/actions/runs/40086718443)
+passed every step, published [the prerelease](https://github.com/nj22az/nj22az.github.io/releases/tag/johansson-world-linux-v0.2.18)
+and verified the public installer. Checked by hand afterwards: archive and 0.2.17→0.2.18 patch match `SHA256SUMS`,
+`latest-linux.json` and GitHub's digests; the app reports 0.2.18; the packaged Sakura chunk has the Eisa fix. Evidence:
+[`linux-port/acceptance-0.2.18.md`](linux-port/acceptance-0.2.18.md). A PR to main carries the release files, that evidence
+and the website (World page, install guide, installer at 0.2.18; the player guide's Town book paths and shop list
+updated to the eight-tile book and the closed Higa Liquor; a 24 October change-log entry). The woodland diorama merged
+to main after the release and ships next time. Still unverified: physical Steam Deck, 8BitDo, iPhone.
 
 ## Repository instructions handover — 22 October 2026
 
