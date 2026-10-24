@@ -60,6 +60,11 @@ try{
    return frame;
   };
   await photographBoard('woodland-board-after-desktop');
+  // The remade case (JW-NB rev A) from the other sides: oblique, rear, the hood and header close up.
+  for(const [name,pos,at] of [['noticeboard-oblique-desktop',[7.3,1.45,-31.7],[5.5,1.6,-33.2]],['noticeboard-rear-desktop',[4.4,1.55,-35.4],[5.5,1.4,-33.2]],['noticeboard-header-close-desktop',[5.9,1.95,-32.55],[5.5,2.05,-33.15]],['noticeboard-flyer-close-desktop',[6.0,1.55,-32.6],[5.965,1.53,-33.2]]]){
+   await page.evaluate(([pos,at])=>{const a=window.__JOHANSSON_AUDIT__;a.camera=null;a.teleport(3.5,-31.25,0,0);a.step(50);a.camera={pos,at};a.render();},[pos,at]);
+   await page.locator('#game').screenshot({path:resolve(out,name+'.png')});record(name);
+  }
   await openBoard();
   await page.screenshot({path:resolve(out,'woodland-board-look-menu-desktop.png')});
   check('board menu still does not request model',report.modelRequests===0);

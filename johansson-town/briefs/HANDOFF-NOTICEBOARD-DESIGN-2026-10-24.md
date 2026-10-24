@@ -1,7 +1,7 @@
 # Harbour noticeboard remake - design issue, 24 October 2026
 
 **Updated:** 13:35 CEST / 11:35 UTC.  
-**Status:** dimensioned design and corrected print artwork delivered; replacement game asset not implemented.  
+**Status:** implemented in the game from revision A and published to `main` on the owner's word (24 October, 18:20: "Bring it to main after you built it", "Push pls"). See *Implementation* below.  
 **Baseline:** `main` at `f3d7a4e03dbfc421f79d1ca9dd266c0946fe4d47`. This handover/index change is documentation only.
 
 ## Owner request
@@ -89,3 +89,35 @@ The older generic "Other harbour notices" prose mentions tide times and fish-mar
 - [Woodland poster handover](HANDOFF-WOODLAND-POSTER-2026-10-24.md) and [completed bench/frontage correction](HANDOFF-FERRY-OFFICE-FRONTAGE-2026-10-24.md).
 
 **Next action:** use revision A as the measured basis for the noticeboard prototype and correct the generator/accessibility text together. The drawing task is complete; implementation and in-game acceptance remain outstanding.
+
+## Implementation — 24 October 2026, evening
+
+Built on `main` from the schedule above, and published to `main` on the owner's instruction (not via `development`).
+
+- `src/world/harbour-noticeboard.js`: `NOTICEBOARD` holds the revision A numbers; `buildHarbourNoticeboard()` builds the case
+  (back panel, stiles, sill rail with three underside drain slots, transom, header plate, top rail), the pinboard core and a
+  cork face cut away where the papers and the mullion are, the 25 mm mullion, two 25 mm door frames with clear acrylic at
+  D 40–45, hinges and cylinder locks, the 2 mm hood (30 mm fall over 250 mm) with front drip, rear upstand to V 2169.6,
+  side cheeks and two gusset brackets on the post lines, and the 80 x 80 posts from 5 mm under their own grades (left +40,
+  right +20) with side drain holes. Foundations stay schematic (nothing below grade is built). Collider 1550 x 260 as
+  before; height comes from the model (2180).
+- Envelope: the M8 fixings are drawn from inside the case into inserts in the posts, so no hardware passes D -130; the
+  test asserts the built box is U ±775, D ±130, V top 2180.
+- Papers: woodland sheet 800 x 560 (print 780 x 520) at U -247.5 / V 1530; flyer contain-fitted to the A3 space at U 465
+  (420 mm high). Both lie 0.5 mm proud of the cork *in its cut-outs*: no paper lies over another face (the old 6 mm
+  workaround is gone). The paper margin is a ring round the print in the print's own plane.
+- Clear panes do not take clicks (`raycast` is empty), so a click on the glass reaches the paper behind and opens the board.
+- Header plate artwork: `assets/graphics/noticeboard/header.webp`, printed by `scripts/build-noticeboard-header.py`
+  (Noto Sans CJK JP Bold, OFL).
+- Wording: flyer generator, `src/commerce/sakura-flyer.js` and regenerated `src/office/town-papers.js` now read
+  "OPEN SUN–FRI 09:00–20:30 · PURCHASES UNTIL 20:00 / CLOSED SATURDAYS · CASH ONLY · PRICES INCLUDE TAX" (hours from
+  `SAKURA_HOURS`), "Front-Row reading room" instead of Bookshop, Main Street instead of the retired bus stop. The board menu's
+  invented "Other harbour notices" (tide times, fish market) became "About the board", describing what is actually pinned.
+- Tests: `woodland-poster.test.mjs` rewritten for the drawn places, envelope, hood fall, post grades, click-through glazing
+  and zero coplanar faces (10/10); `sakura-bench` (board name), `sakura-flyer`, `context-actions` pass; `no-z-fighting` 13/13
+  (needs `NODE_OPTIONS=--max-old-space-size=4600` in this container). Full `ci-guard` not run locally; GitHub's run on the push
+  is the full guard.
+- Compiled game (`tools/woodland-poster-review.mjs`, now also shooting oblique, rear, header and flyer close-ups): all entry
+  and return checks passed (Look opens one viewer, hidden World stops rendering, Escape/Back/Close clean up, position kept,
+  phone fits, no page errors). Not checked: a physical iPhone/iPad, FPS.
+- Open: the board's colours were judged in SwiftShader screenshots only; the cork was warmed once after the first capture.

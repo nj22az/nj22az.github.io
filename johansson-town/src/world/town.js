@@ -13,6 +13,7 @@ import {buildTownPower} from './town-power.js';
 import {beginPowerPlan} from './okinawa/props.js';
 import {buildDocklandsLife} from './docklands-life.js';
 import {addSakuraFlyer} from './sakura-flyers.js';
+import {buildHarbourNoticeboard,FLYER_PLACE} from './harbour-noticeboard.js';
 import {addWoodlandPoster,WOODLAND_POSTER} from './woodland-poster.js';
 import {buildIslandLandscape} from './island-landscape.js';
 import {buildBlueCoralShop} from './blue-coral-shop.js';
@@ -213,8 +214,9 @@ function addStreetLife(world,options,factory){
   const postbox=factory.postbox(.5,15.1,-Math.PI/2);postbox.collider.yaw=-Math.PI/2;
   addWithCollider(group,colliders,postbox);
   inspect([1.4,1,15.1],'Inspect post box','Post box','The collection plate lists two pickups: 10:30 and 16:30. A few handwritten postcards are visible through the slot.');
-  addWithCollider(group,colliders,factory.noticeBoard(5.5,-33.2,0));
-  addSakuraFlyer(group,{position:[5.87,1.55,-33.115],width:.43});
+  // The harbour noticeboard, remade from drawings JW-NB-001..004 rev A (harbour-noticeboard.js); its papers lie on it.
+  addWithCollider(group,colliders,buildHarbourNoticeboard());
+  addSakuraFlyer(group,{position:FLYER_PLACE.position,width:FLYER_PLACE.width});
   addWoodlandPoster(group,{register:options.register,onAction:options.onAction});interactions++;
   anchor(group,[5.5,1,-32.5],WOODLAND_POSTER.prompt,()=>options.onAction?.('harbour-notice-board'),options.register);interactions++;
 

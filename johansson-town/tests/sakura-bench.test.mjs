@@ -12,7 +12,7 @@ test('the removed Sakura viewing bench leaves no seat or collider and keeps the 
   for(const name of ['sakura-viewing-bench','sakura-bench-seat'])assert.equal(world.group.getObjectByName(name),undefined,name);
   assert.equal(world.sakuraBench,undefined);
   assert.ok(!world.colliders.some(c=>c.id==='sakura-bench'),'No invisible bench collider');
-  for(const name of ['prop:notice-board','Sakura flyer on harbour notice board','Johansson woodland poster · harbour notice board'])assert.ok(world.group.getObjectByName(name),name+' remains');
+  for(const name of ['Minato harbour noticeboard (JW-NB rev A)','Sakura flyer on harbour notice board','Johansson woodland poster · harbour notice board'])assert.ok(world.group.getObjectByName(name),name+' remains');
   assert.ok(world.colliders.some(c=>c.x===5.5&&c.z===-33.2),'The retained noticeboard keeps its collider');
   assert.ok(!(world.details||[]).some(d=>d.id==='sakura-bench'),'Streaming cannot restore the deleted bench');
   assert.ok(!labels.includes('Sit and look at Sakura'),'No seat prompt remains at the former bench');

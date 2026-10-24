@@ -463,7 +463,7 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
     const owned=state.inventory.includes(FLYER_ITEM);
     show('Sakura Shop · neighbourhood flyer',owned?'Your copy, picked up in town.':'A bright paper flyer from Thuan’s shop. You can take a free copy.',[
       ...(!owned?[['Take a free copy',()=>{if(collectSakuraFlyer(state)){note('Picked up Thuan’s Sakura shop flyer. A copy is filed at Community Hall.');sakuraFlyer(location);}else say('Your bag is full. Make some room for a flyer.');}]]:[]),
-      ...(location==='Harbour notice board'?[['Other harbour notices',()=>read('Harbour notice board','Notices cover tide times, a lost glove, fish-market hours and a warning about the outer pier after dark.')]]:[]),
+      ...(location==='Harbour notice board'?[['About the board',()=>read('Harbour notice board','Minato’s noticeboard: a green aluminium case under a small rain hood, its two acrylic doors kept locked. Behind them, Thuan’s Sakura flyer and the woodland print. The rest of the cork is waiting for the next notice.')]]:[]),
       ...(location==='Bag'?[['Back to the bag',bag]]:[]),['Put it away',close]
     ]);
     modal.classList.add('flyer-view');

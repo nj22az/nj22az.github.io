@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
-import {createPropFactory} from '../prop-factory.js';
+import {buildHarbourNoticeboard,FLYER_PLACE,NOTICEBOARD} from '../src/world/harbour-noticeboard.js';
 import {addSakuraFlyer} from '../src/world/sakura-flyers.js';
 import {WOODLAND_POSTER,addWoodlandPoster} from '../src/world/woodland-poster.js';
 import {FLYER_ITEM} from '../src/commerce/sakura-flyer.js';
@@ -44,36 +44,56 @@ function viewerDOM(href='https://nj22az.github.io/johansson-town/',{asyncHistory
  return {...dom,acts,frames,events,docEvents,open,message,history:window.history,get backCalls(){return backCalls;},async settleHistory(){while(pendingBack.length)await Promise.all(pendingBack.splice(0));}};
 }
 
-test('the woodland sheet fits the existing board beside Thuan’s flyer and is directly pickable',()=>{
+test('the woodland sheet and Thuan’s flyer sit in their drawn places on the remade board and stay pickable',()=>{
  installDOM();
- const root=new THREE.Group(),factory=createPropFactory({shadows:false}),board=factory.noticeBoard(5.5,-33.2,0);
+ const root=new THREE.Group(),board=buildHarbourNoticeboard();
  root.add(board.object);
- const flyer=addSakuraFlyer(root,{position:[5.87,1.55,-33.115],width:.43}),registered=[],actions=[];
+ const flyer=addSakuraFlyer(root,{position:FLYER_PLACE.position,width:FLYER_PLACE.width}),registered=[],actions=[];
  const poster=addWoodlandPoster(root,{register:(o,label,fn)=>{o.userData.hit={label,fn};registered.push(o);},onAction:(...args)=>actions.push(args)});
  root.updateMatrixWorld(true);
- const box=new THREE.Box3().setFromObject(poster),flyerBox=new THREE.Box3().setFromObject(flyer);
- assert.ok(box.min.x>=5.5-1.48/2&&box.max.x<=5.5+1.48/2,'Within the real board width');
- assert.ok(box.min.y>=1.55-1.1/2&&box.max.y<=1.55+1.1/2,'Within the real board height');
- assert.ok(box.max.x<flyerBox.min.x,'The existing flyer remains fully visible');
- assert.ok(box.min.z>-33.2+.05,'Paper is in front of the board, with a physical gap');
+ const box=new THREE.Box3().setFromObject(poster.getObjectByName('Woodland poster paper')),flyerBox=new THREE.Box3().setFromObject(flyer.getObjectByName('Thuan’s English shop flyer'));
+ const u=x=>Math.round((x-5.5)*10000)/10,v=y=>Math.round(y*10000)/10,S=NOTICEBOARD.sight;
+ // JW-NB-003: the 800 x 560 woodland sheet centred U -247.5 V 1530, inside the left door's sight opening
+ assert.deepEqual([u(box.min.x),u(box.max.x),v(box.min.y),v(box.max.y)],[-647.5,152.5,1250,1810]);
+ assert.ok(u(box.min.x)>=S.left.u[0]&&u(box.max.x)<=S.left.u[1]&&v(box.min.y)>=S.left.v[0]&&v(box.max.y)<=S.left.v[1]);
+ // the A3 flyer space at U 465, the 900:1280 sheet contain-fitted: full 420 mm height, inside the right door's opening
+ assert.equal(v(flyerBox.max.y)-v(flyerBox.min.y),420);assert.equal(Math.round(u(flyerBox.min.x)+u(flyerBox.max.x)),930);
+ assert.ok(u(flyerBox.min.x)>=S.right.u[0]&&u(flyerBox.max.x)<=S.right.u[1]);
+ // both papers lie between the pinboard face and the acrylic, in front of the cut-away board
+ const D=z=>Math.round((z+33.2)*10000)/10;
+ assert.ok(D(box.min.z)>NOTICEBOARD.backingFront&&D(box.max.z)<NOTICEBOARD.acrylic[0]);
  const print=poster.getObjectByName('Johansson woodland poster print');
  assert.equal(print.geometry.parameters.width/print.geometry.parameters.height,1.5);
+ assert.deepEqual([print.geometry.parameters.width,print.geometry.parameters.height].map(x=>Math.round(x*1000)),[780,520]);
  assert.equal(print.material.type,'MeshBasicMaterial');assert.equal(print.material.toneMapped,false);
  assert.equal(registered[0],poster);assert.equal(poster.userData.hit.label,WOODLAND_POSTER.prompt);
  poster.userData.hit.fn();assert.deepEqual(actions,[['harbour-notice-board']]);
- assert.equal(board.collider.w,1.55,'No new obstruction or enlarged board');
- factory.dispose();
+ // a click on the glazing goes through to the paper behind it
+ const ray=new THREE.Raycaster(new THREE.Vector3(5.5-.2475,1.53,-32),new THREE.Vector3(0,0,-1));
+ const first=ray.intersectObjects(root.children,true)[0];
+ let o=first.object;while(o&&!o.userData.hit)o=o.parent;
+ assert.equal(o,poster,'the first thing a click meets is the woodland print, not the acrylic');
+ assert.equal(board.collider.w,1.55,'The closed plan envelope stays 1550 x 260');assert.equal(board.collider.d,.26);
 });
 
-test('the woodland paper and print remain separated beyond the town’s depth tolerance',()=>{
- const root=new THREE.Group(),poster=addWoodlandPoster(root);
- const scan=()=>coplanarOverlaps(root,{tolerance:.002,minArea:.05});
- assert.deepEqual(scan(),[],'The printed face must not fight its backing');
- // Sensitivity: the old 2 mm gap rounds just below the threshold in Float32.
- poster.getObjectByName('Woodland poster paper').position.z=-.005;
- const fault=scan();
- assert.equal(fault.length,1);assert.ok(fault[0].area>.25);
- assert.match(fault[0].a+fault[0].b,/Woodland poster paper/);
+test('the remade board: drawn envelope, hood fall, posts on their two grades, nothing flashing',()=>{
+ installDOM();
+ const root=new THREE.Group(),board=buildHarbourNoticeboard();root.add(board.object);
+ addSakuraFlyer(root,{position:FLYER_PLACE.position,width:FLYER_PLACE.width});addWoodlandPoster(root);
+ root.updateMatrixWorld(true);
+ const b=new THREE.Box3().setFromObject(board.object);
+ const mmR=x=>Math.round(x*10000)/10;
+ assert.deepEqual([mmR(b.min.x-5.5),mmR(b.max.x-5.5)],[-775,775],'the hood is the widest part');
+ assert.deepEqual([mmR(b.min.z+33.2),mmR(b.max.z+33.2)],[-130,130],'within the 260 mm plan depth');
+ assert.equal(mmR(b.max.y),2180,'hood rear top');
+ const post=side=>new THREE.Box3().setFromObject(board.object.getObjectByName(`Noticeboard ${side} post`));
+ assert.equal(mmR(post('left').min.y),35);assert.equal(mmR(post('right').min.y),15);
+ assert.equal(mmR(post('left').max.y),2100);
+ const hood=new THREE.Box3().setFromObject(board.object.getObjectByName('Noticeboard hood sheet'));
+ assert.equal(mmR(hood.max.y)-mmR(hood.min.y),32,'30 mm fall plus the 2 mm sheet');
+ assert.ok(board.object.getObjectByName('Noticeboard header plate · みなと掲示板 / MINATO NOTICEBOARD'));
+ assert.deepEqual(coplanarOverlaps(root,{tolerance:.002,minArea:.0004}),[],'no two faces on one plane');
+ assert.equal(board.object.getObjectByName('Noticeboard left acrylic').raycast(),undefined);
 });
 
 test('one board menu offers Look and retains the existing free shop flyer without creating a viewer',()=>{
@@ -83,7 +103,7 @@ test('one board menu offers Look and retains the existing free shop flyer withou
  const image=document.querySelector('#activityBody').children.find(el=>el.tagName==='IMG');
  assert.equal(image.src,WOODLAND_POSTER.image);
  dom.button('Read Thuan’s flyer');assert.match(document.querySelector('#activityTitle').textContent,/Sakura Shop/);
- assert.ok(dom.has('Take a free copy'));assert.ok(dom.has('Other harbour notices'));
+ assert.ok(dom.has('Take a free copy'));assert.ok(dom.has('About the board'));
  dom.button('Take a free copy');assert.deepEqual(dom.acts.state.inventory,[FLYER_ITEM]);
  assert.equal(dom.has('Take a free copy'),false);assert.equal(dom.frames.length,0);
  dom.acts.close();assert.equal(dom.acts.paused,false);
