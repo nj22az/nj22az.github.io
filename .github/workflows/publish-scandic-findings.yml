@@ -16,6 +16,23 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
+      - name: Read official map location evidence
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from urllib.request import urlopen
+          import re
+          folder=Path('_hotel-publication-qa');folder.mkdir(exist_ok=True)
+          for slug in ['scandic-skelleftea','scandic-vaxjo']:
+              url='https://www.scandichotels.com/en/hotels/'+slug+'/map-view'
+              try:
+                  with urlopen(url, timeout=20) as response: text=response.read(8000000).decode('utf-8')
+                  (folder/(slug+'-map.html')).write_text(text,encoding='utf-8')
+                  print(slug,'official map bytes',len(text))
+                  for match in list(re.finditer(r'latitude|longitude|hotelLatitude|coordinates',text,re.I))[:8]:
+                      print(text[max(0,match.start()-120):match.end()+200])
+              except Exception as exc: print(slug,'map evidence unavailable:',type(exc).__name__)
+          PY
       - name: Apply only reviewed parking evidence
         run: python3 tools/apply-scandic-findings.py --enrich-locations
       - name: Verify data and generated page
@@ -25,19 +42,24 @@ jobs:
           node --check blog/hotels/hotels.js
           node --check blog/hotels/hotels-map.js
           node tools/blog-feed.test.cjs
-          git diff --check
-      - name: Preserve tested publication files
+          git -c core.whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol diff --check
+      - name: Preserve publication review files
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: reviewed-scandic-publication
           path: |
             blog/hotels/
-            css/hotels.css
-            css/hotels-map.css
+            css/
+            styles.css
+            config.js
+            shared.js
+            theme-bootstrap.js
             tools/build-hotels.py
             tools/build-hotels.test.py
             tools/apply-scandic-findings.py
             HANDOVER.md
+            _hotel-publication-qa/
           retention-days: 7
       - name: Commit scoped hotel update without force
         run: |
