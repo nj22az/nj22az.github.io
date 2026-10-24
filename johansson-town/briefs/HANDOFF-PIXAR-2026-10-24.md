@@ -167,6 +167,10 @@ new name and deleting the old one closes a branch's pull request. From now on, n
 
 - **Shelf notes vs shelf rule.** The cold-cabinet products' `purpose.placed` notes say coffee is "under the tea" and
   milk is at the "top of the last column". They contradict `shelf.levels`, which counts from the bottom.
+  **Fixed 24 October** on the owner's go-ahead (branch `claude/peaceful-johnson-103tja`): the numbers were wrong, not the
+  notes. Every cold-cabinet line's `shelf.levels` is mirrored (0↔4, 1↔3) in `data/studio/products.json`: tea, water and
+  cola at eye level (2–4), coffee, orange and soda low (0–1), milk on top (3–4), beer low by the till (0–2). For the
+  Blender set (`jojo`, `set_sakura.py` / `props.py`): re-take the cabinet from World, since NAGI tea now stands at eye level.
 - **"Acer".** The Eisa poster's print reads "Acer" where it means Eisa (`sakura-dressing.js`, `eisaPoster`).
   **Fixed 24 October** (branch `claude/peaceful-johnson-103tja`): the poster prints "Eisa", its inspect title reads
   "Sakura · Eisa poster", and the cause, `"エイサー": "Acer"` in `docs/ENGLISH-LOCALISATION.json`, now reads "Eisa".

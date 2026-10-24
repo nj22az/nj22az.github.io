@@ -39,7 +39,7 @@ The newest note for Nhung the doctor and Higa Liquor is the [22 October 2026 nig
 
 The Linux controller note contains newer merge and release information than the morning World note. Real-device confirmation of right-stick camera control on Bluetooth and Steam Deck remains outstanding; follow that note's reproduction steps. Its evening update: a saved Look axis past the pad's axes now falls back to the right stick (`84baf00`, for 0.2.17, unreleased; it rides the Nhung doctor PR from `claude/clever-ride-qdpo8s`).
 
-## Session handover — 24 October 2026, branch `claude/peaceful-johnson-103tja`: the "Acer" poster
+## Session handover — 24 October 2026, branch `claude/peaceful-johnson-103tja`: the "Acer" poster and the cold cabinet
 
 A small World fix from the Pixar handover's list of slips. Sakura's Eisa festival poster printed "Acer" (a machine
 translation of エイサー) and its inspect title read "Acer · Eisa poster". Now it prints "Eisa" and the title reads
@@ -50,8 +50,22 @@ the next rebuild prunes it.
 
 Checks run: `runtime-package`, `sakura-dressing`, `izakaya-posters`, `ferry-timetable-words`, `sakura-small-office` and
 `sakura-upstairs`, 30/30 passed. Not run: the full `ci-guard` and any in-game look at the poster (no GPU browser check).
-Pushed to the branch, no PR, not merged. Still open for the owner: the cold-cabinet shelf notes vs `shelf.levels`
-(see the [Pixar handover](johansson-town/briefs/HANDOFF-PIXAR-2026-10-24.md#slips-found-in-world-left-for-the-owner)).
+Pushed to the branch, no PR, not merged.
+
+**Then the cold cabinet, on the owner's go-ahead.** The drinks' `placed` notes were right and the shelf numbers were
+upside down (tea at the bottom, children's drinks at the top, milk at the bottom). Every cold-cabinet line's levels are
+mirrored in `johansson-town/data/studio/products.json` and `src/commerce/products-data.js` is regenerated
+(`tools/studio/build-data.mjs`, `--check` passes); runtime rebuilt. Now tea, water and cola stand at eye level, coffee, orange
+and soda low, milk on top and beer low in the column by the till. Tests that pinned the old numbers updated, none weakened:
+`products-move` gains a dated adjustment that asserts each line is exactly mirrored; the `studio-apply` double-booking and
+empty-shelf cases and the `studio-mcp` beer row use the mirrored shelves. Before/after screenshots from the built game
+(headless Chromium, desktop) were checked and sent to the owner.
+
+Checks run: the catalogue, konbini, products, runtime-package, Sakura, shop, Studio and vending tests plus
+`higa-shop-collision` and `housing-consolidation`: 228 of 232 passed. The 4 failures fail the same way on the unchanged
+branch: `catalog` (catalog-data.js out of date), `shop-display` (three islands with a route), and two in `studio-apply`
+(Mrs Kinjō is not a resident; the flavour cell case). Not run: the full `ci-guard`, phone/iPad views. The Blender poster set
+in `jojo` copies this cabinet and should be re-taken. Next: the owner reviews; a PR to main carries both fixes on request.
 
 ## Repository instructions handover — 22 October 2026
 
