@@ -150,7 +150,7 @@ export const WALL_POSTERS=Object.freeze([
  {id:'coffee',position:[-4.62,2.3,-2.433],yaw:0,size:[.74,1.1]},
  {id:'biscuit',position:[4.57,1.82,-2.35],yaw:-Math.PI/2,size:[.94,1.41]},
  // Up and along, clear of the cash corner under it (sakura-corners.js).
- {id:'eisa',position:[-3.45,2.0,-3.94],yaw:0,size:[.74,1.04]},
+ {id:'eisa',position:[-3.45,1.92,-3.94],yaw:0,size:[.74,1.04]},
  // Thuan's own sale poster, 50 × 70 cm, on the side wall by the door: the first thing you see walking in, so this week's
  // cold drinks are an impulse buy. Its top-left corner carries a "30% OFF" burst. Tetsuo (of all people) once tore that
  // corner off with a mad laugh (30 cm along the top, 40 cm down the side) and Thuan chased it back down Main Street; it is

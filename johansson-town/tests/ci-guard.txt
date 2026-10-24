@@ -86,3 +86,4 @@ conversation-eyes.test.mjs
 
 # Cars remain solid while driving, waiting and travelling aboard the ferry.
 vehicle-body-collision.test.mjs
+sakura-wall-band.test.mjs

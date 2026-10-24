@@ -101,8 +101,8 @@
     "file": "preload-helper-PPVm8Dsz.js",
     "name": "preload-helper"
   },
-  "_sakura-interior-tAInkNAZ.js": {
-    "file": "sakura-interior-tAInkNAZ.js",
+  "_sakura-interior-DCnBUV6k.js": {
+    "file": "sakura-interior-DCnBUV6k.js",
     "name": "sakura-interior",
     "isDynamicEntry": true,
     "imports": [
@@ -177,7 +177,7 @@
     ]
   },
   "src/boot.js": {
-    "file": "boot-CcKjLmJ9.js",
+    "file": "boot-Dutva12h.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
@@ -193,7 +193,7 @@
     ]
   },
   "src/feed/mount.js": {
-    "file": "feed-BrMe8cY-.js",
+    "file": "feed-CfIX1N5A.js",
     "name": "feed",
     "src": "src/feed/mount.js",
     "isEntry": true,
@@ -211,7 +211,7 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-BZeQkKEk.js",
+    "file": "game-C7WQaqLF.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
@@ -229,7 +229,7 @@
       "_shopping-lane-plan-D0DhEU8_.js",
       "_onsen-BuqSe_26.js",
       "_catalog-CCk-2H3b.js",
-      "_sakura-interior-tAInkNAZ.js",
+      "_sakura-interior-DCnBUV6k.js",
       "src/world/interiors/sato-ramen.js",
       "_friendship-D-153hkW.js",
       "src/world/interiors/town-hall.js",
@@ -255,7 +255,7 @@
     ]
   },
   "src/scene/scene-world.js": {
-    "file": "scene-world-lwpoTUbf.js",
+    "file": "scene-world-DMIqOyJ1.js",
     "name": "scene-world",
     "src": "src/scene/scene-world.js",
     "isDynamicEntry": true,
@@ -273,7 +273,7 @@
       "_storyteller-DFpIt5VF.js"
     ],
     "dynamicImports": [
-      "_sakura-interior-tAInkNAZ.js",
+      "_sakura-interior-DCnBUV6k.js",
       "_halloween-D8uB6cFd.js",
       "src/world/interiors/sato-ramen.js",
       "_actors-C5XPTPpJ.js",
