@@ -45,7 +45,6 @@ import { createTown as createBaseTown } from './harbour.js?snappy=1';
 import { createPropFactory, createLivingProps } from '../../prop-factory.js';
 import {buildStreetPlants,preloadStreetPlants} from './street-plants.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
-import {buildSakuraBench} from './sakura-bench.js';
 import {applyShopAddresses} from './town-grid.js';
 import {izakayaPlot} from './dining-layout.js';
 import {buildBeachLife} from './beach-life.js';
@@ -336,7 +335,6 @@ export function createTown(options){
   // The street's lamp lights, for a renderer that sets the hour once (src/scene/scene-world.js) rather than ticking the town.
   world.streetLights=street.lights;
   world.docklandsLife=buildDocklandsLife(world,options);
-  buildSakuraBench(world,{shadows:options.shadows,register:options.register,onAction:options.onAction,factory});
   // Thuan's break. Only the island has a yard behind the shop to put it in.
   world.staffBench=buildStaffBench({parent:world.group,factory,colliders:world.colliders,
    shadows:options.shadows,register:options.register,onAction:options.onAction});

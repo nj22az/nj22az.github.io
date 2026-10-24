@@ -52,7 +52,7 @@ import {createHomeResidents} from './people/home-residents.js';
 import {buildPoliceStationInterior} from './world/interiors/police-station.js';
 import {buildPortHall} from './world/interiors/port-hall.js';
 import {PORT_BUILDING} from './world/port-building.js';
-import {chooseOpening,OPENINGS} from './world/openings.js';
+import {chooseOpening,OPENINGS,recoverSakuraBenchCheckpoint} from './world/openings.js';
 import {createMotion,createAutoRun,swipeLook,steerYaw} from './input/touch-feel.js';
 import {createRecorder,createPlayer} from './input/replay.js';
 import {createPocketViewfinder} from './photo/pocket-viewfinder.js';
@@ -752,17 +752,12 @@ function takeNahaBoat(){
 }
 SITES.forEach(s=>doors.set(s.id,new THREE.Vector3(...(s.door||[s.side*4,0,s.z+2.5]))));
 for(const place of world.landmarks||[])if(place.exitPosition)doors.set(place.id,new THREE.Vector3(...place.exitPosition));
-// Start seated on the east sidewalk, looking across at Sakura Shōten.
-const konbini=SITES.find(site=>site.id==='market');
-const konbiniDoor=doors.get('market');
-const benchSeat=((world.sakuraBench?.seat))||null;
-if(benchSeat){
-  player.position.set(...benchSeat.position);
-  yaw=benchSeat.yaw;pitch=benchSeat.pitch;
-  parkSeat={...benchSeat};
-  seated=true;world.spawn=benchSeat.stand;
-}else if(konbiniDoor){player.position.copy(konbiniDoor);yaw=konbini.streetFrontage?.yaw??Math.PI/2;world.spawn=player.position.toArray();}
-else if(world.spawn)player.position.set(...world.spawn);
+// A clear standing point while the title or audit awaits its chosen opening. The viewing
+// bench across from Sakura was removed on 24 October 2026; no hidden seat remains here.
+const harbourOpening=OPENINGS.find(o=>o.id==='fish-auction');
+const [harbourStartX,harbourStartZ]=harbourOpening.stand;
+player.position.set(harbourStartX,groundHeight(harbourStartX,harbourStartZ),harbourStartZ);
+yaw=harbourOpening.facing;world.spawn=player.position.toArray();
 activities=createActivities({say,onLaundry:wash=>{world.laundryWash=wash||null;},onKaraoke:openKaraoke,onOpen:()=>toggleDir(false),onOutfit:on=>wearSwim(on),getOutfit:()=>swimwear,getMassageChair:()=>massageChair(),onMove:name=>{johansson?.play(name);},getBeerTable:()=>beerService?{drink:beerService.drink,dish:beerService.dish,order:beerService.pending,naoHere:!!world.people.find(p=>p.profile.name==='Thao'&&p.g.userData.inIzakaya&&p.g.visible)}:null,onOrderDrink:kind=>!!beerService?.order(kind,parkSeat?.izakaya),getTipsy:()=>tipsy,onSip:()=>sipDrink(),onEat:()=>eatDish(),onSnack:item=>{const inv=activities.state.inventory,i=inv.indexOf(item);if(i<0)return false;inv.splice(i,1);activities.save();activities.close();hands.bite(SPECIAL_BY_NAME[item]?.bite||(HOT_SNACKS.some(snack=>snack.id==='nikuman'&&snack.name===item)?'bun':'rice'));johansson?.play(seated?'SitEat':'Eat');say(item+'. Still warm.',3);return true;},onTreat:name=>{const g=world.people.find(p=>p.profile.name===name)?.g;if(g){g.userData.residentSpeech={text:"Cheers!",until:minutes+4};characters?.gesture?.(g);}},onInspectModel:item=>inspector.open(item),onInspectShopGood:item=>{resetInput();document.exitPointerLock?.();(itemViewer??=createItemViewer()).open(item);},getResidentLocations:()=>({...castAI?.snapshot?.(),...neighbours?.snapshot?.()}),getTableService:()=>Number.isInteger(parkSeat?.ramenSeatId)?ramenPlayerService:null,onStand:standUp,onConversation:setConversation,onDialoguePhase,getMinutes:()=>minutes,getSocialContext:()=>({inside:activityPlace(),thuanAvailable:world.people.some(p=>p.profile.name===sakuraClerkAt(minutes)&&p.g.userData.inMarket&&p.g.visible&&!p.g.userData.sleeping),names:sharedDining(current)?[...new Set([...izakayaGuests.sync(minutes),...ramenGuests.sync(minutes)])]:[]}),onMap:()=>{const c=document.createElement("canvas");c.width=680;c.height=640;c.style.width="100%";c.style.height="auto";c.style.position="static";c.setAttribute("aria-label","Folded visitor map, Minato Machi, 1997");drawTownMap(c.getContext("2d"),c.width,c.height,{sites:SITES,landmarks:world.landmarks,homes:canonicalHomeSites(directoryCards()),people:world.people,player:mapPlayer(),yaw,visited:activities.state.visited,target:navigationTarget,route:navigationPath});return c;},onPhone:()=>{const p=world.people.find(p=>p.g.userData.name==='Harbour master');if(p&&(p.g.position.z<-37)){characters.gesture(p.g);activities.close();say('The harbour master answers from the quay.',4);return true;}return false;},onPurchase:name=>{const p=new THREE.Vector3();active?.object?.getWorldPosition(p);hands.offer(name,p);return true;},onSeat:name=>{const bench=active?.object?.userData.seat;
  // A bench has a place for each sitter (seat-slots.js): the free one nearest him, beside whoever is on it already.
  const selected=bench?.slots?freeSlot(bench,player.position.x,player.position.z,s=>active.object.userData.slotsTaken?.[s.slot]||occupiedByPerson(s.position[0],s.position[2])):bench;
@@ -1830,7 +1825,7 @@ function walkingSegmentClear(a,b,maxLength=Infinity){
  for(let i=1;i<=steps;i++){const t=distance?length/distance*i/steps:1,x=a.x+(b.x-a.x)*t,z=a.z+(b.z-a.z)*t,next=sample(x,z),component=sample(x,previousZ);if(next.blocked||component.blocked||Math.abs(component.y-previous.y)>.24||Math.abs(next.y-component.y)>.24)return false;previous=next;previousZ=z;}return true;
 }
 function startWalkingDirections(){
- const generation=++navigationGeneration,stand=!current&&seated?(parkSeat?.stand||world.sakuraBench?.seat?.stand):null,
+ const generation=++navigationGeneration,stand=!current&&seated?parkSeat?.stand:null,
   start=stand?{x:stand[0],z:stand[2]??stand[1]}:{x:mapPlayer().x,z:mapPlayer().z},destination=targetPoint(navigationTarget);
  navigationStarted=performance.now();navigationPath=[];navigationIndex=1;navigationLeg=null;
  if(!destination){navigationPlan={status:'unreachable',reason:'missing-entrance'};return;}
@@ -1898,17 +1893,15 @@ function updateDirectory(){
  drawMap();
 }
 /**
- * Where the game starts (world/openings.js): one of a few good moments in town, picked
- * for the hour, instead of always the bench across from Sakura. The audit harness keeps
- * the bench unless it names an opening with ?spawn=.
+ * Where the game starts (world/openings.js): a dock sight picked for the hour. The audit
+ * harness keeps the safe harbour standing point unless it names an opening with ?spawn=.
  */
 function beginAtOpening(){
  if(activities.state.combatRecovery){delete activities.state.combatRecovery;standUpAt(19.8,-40,-1.03);return {caption:"Welcome back. You are safely ashore by the fish auction."};}
- const params=new URLSearchParams(location.search),force=params.get('spawn')||(graphics.quietOpening?'sakura-bench':null);
+ const params=new URLSearchParams(location.search),force=params.get('spawn')||(graphics.quietOpening?harbourOpening.id:null);
  if(params.has('audit')&&!force)return null;
  if(activities.state.island?.journey.location!=='town'&&activities.state.island){islandPlay.recover();return null;}
  const opening=chooseOpening({minutes,rain:weather,force,context:{ferryAlongside:world.ferry?.berth==='town'&&world.ferry?.phase==='waiting'}});
- if(opening.id==='sakura-bench')return opening;
  if(opening.room){const door=doors.get(opening.room);if(door){standUpAt(door.x,door.z,Math.PI);}preloadIzakaya(['interior']);return opening;}
  if(opening.stand){const [x,z]=opening.stand==='bus-platform'?transitStop().platform:opening.stand;standUpAt(x,z,opening.facing);return opening;}
  if(opening.seat&&sitOnSeat(opening.seat))return opening;
@@ -1952,7 +1945,7 @@ function startArrivalScene(opening){
  if(!graphics.cinematic)return;
  const params=new URLSearchParams(location.search);
  if(params.has('visual-audit')||params.has('audit')&&!params.has('spawn')||params.get('cinematic')==='off')return;
- spawnScene.start({id:opening?.id||'sakura-bench',inside:!!current,yaw:parkSeat?.yaw??yaw,establish:!!opening?.docks,hold:openingLoads});
+ spawnScene.start({id:opening?.id||harbourOpening.id,inside:!!current,yaw:parkSeat?.yaw??yaw,establish:!!opening?.docks,hold:openingLoads});
 }
 // Queue shared shaders once. This renderer's async poll can outlive materials replaced
 // by the detail stream; compile queues GPU work without retaining disposed materials.
@@ -1966,10 +1959,10 @@ function enterWorld(){
  townSky.mesh.rotation.y=0;
  startWeather();
 let opening=beginAtOpening();
-if(window.johanssonDesktop){const cp=activities.state.desktopCheckpoint;if(cp&&!cp.ship&&[cp.x,cp.z,cp.yaw].every(Number.isFinite)&&Math.abs(cp.x)<1000&&Math.abs(cp.z)<1000&&!environmentBlocked(cp.x,cp.z,PLAYER_RADIUS)){
+if(window.johanssonDesktop){const cp=recoverSakuraBenchCheckpoint(activities.state.desktopCheckpoint);if(cp!==activities.state.desktopCheckpoint)activities.state.desktopCheckpoint=cp;if(cp&&!cp.ship&&[cp.x,cp.z,cp.yaw].every(Number.isFinite)&&Math.abs(cp.x)<1000&&Math.abs(cp.z)<1000&&!environmentBlocked(cp.x,cp.z,PLAYER_RADIUS)){
  seated=false;parkSeat=null;player.position.set(cp.x,groundHeight(cp.x,cp.z),cp.z);yaw=cp.yaw;pitch=Number.isFinite(cp.pitch)?Math.max(-1.25,Math.min(1.15,cp.pitch)):0;opening={caption:'Welcome back. Your island progress is restored.'};
 }}
-started=true;controlsTouchedAt=performance.now();if(mobile){touchSticks.hint(true);stickHintUntil=performance.now()+4500;}if(!window.__JOHANSSON_BOOTING__)$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;startupRecovery.running();camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(opening?.caption||(seated?'Stand — Sakura is across the street.':'Sakura — step up to meet Thuan.'),5);runStabilityChecks();
+started=true;controlsTouchedAt=performance.now();if(mobile){touchSticks.hint(true);stickHintUntil=performance.now()+4500;}if(!window.__JOHANSSON_BOOTING__)$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;startupRecovery.running();camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(opening?.caption||'Welcome to Minato.',5);runStabilityChecks();
 if(linuxLife){linuxLife.start().then(placed=>{if(!placed){if(opening?.room)openInside(opening);else startArrivalScene(opening);}}).catch(error=>say(error.message,6));}else if(opening?.room)openInside(opening);else startArrivalScene(opening);
 }
 
