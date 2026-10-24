@@ -1,0 +1,12 @@
+{
+  "columns": 6,
+  "rotatedSlots": [
+    19,
+    21,
+    23
+  ],
+  "capacity": 24,
+  "display": 36,
+  "overlaps": 0,
+  "fixtureFit": true
+}

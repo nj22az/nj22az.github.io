@@ -1,0 +1,355 @@
+{
+  "drawing": "JW-SAK-ATM-01",
+  "revision": "B",
+  "date": "2026-10-24",
+  "units": "mm",
+  "basis": "1514a3825af4b78b78ee434557fa3a5520f9d137",
+  "origin": "CAD SW internal floor corner; x east, depth north, y up",
+  "roof": {
+    "level": 4010,
+    "pads": [
+      [
+        4600,
+        10500,
+        800,
+        140
+      ],
+      [
+        4600,
+        9700,
+        4800,
+        800
+      ],
+      [
+        8600,
+        8500,
+        600,
+        1200
+      ]
+    ],
+    "padThickness": 20,
+    "tilePitch": 400,
+    "tileJoint": 20,
+    "trim": [
+      [
+        80,
+        80,
+        13740,
+        100
+      ],
+      [
+        80,
+        180,
+        100,
+        10380
+      ],
+      [
+        13720,
+        180,
+        100,
+        10380
+      ],
+      [
+        180,
+        10460,
+        4320,
+        100
+      ],
+      [
+        5500,
+        10460,
+        8220,
+        100
+      ]
+    ],
+    "trimThickness": 2,
+    "purpose": "Service pads stop at inspection-step approach. Flush dark drainage-edge finish; no roof regrading or new traversal."
+  },
+  "crates": {
+    "box": [
+      7440,
+      12300,
+      460,
+      400
+    ],
+    "bottom": 40,
+    "height": 280,
+    "count": 3,
+    "wall": 18,
+    "purpose": "Empty fictional Sakura/Higa return crates under the high end of the lower flight; no stock or save changes. Heavier moulded waist bands and raised branded panels replace the cage-like first render.",
+    "midBand": [
+      124,
+      24
+    ],
+    "labelPanel": {
+      "width": 220,
+      "height": 90,
+      "bottom": 83,
+      "projection": 0.5,
+      "copy": [
+        "SAKURA",
+        "HIGA",
+        "SAKURA"
+      ],
+      "foot": "RETURN CRATE"
+    }
+  },
+  "counter": {
+    "top": 780,
+    "retained": [
+      {
+        "id": "coin-tray",
+        "box": [
+          11565,
+          3420,
+          130,
+          180
+        ],
+        "bottom": 780,
+        "height": 43
+      },
+      {
+        "id": "cups",
+        "box": [
+          13534,
+          3279,
+          72,
+          72
+        ],
+        "bottom": 823,
+        "height": 106
+      },
+      {
+        "id": "bags",
+        "box": [
+          13475,
+          3352.5,
+          250,
+          115
+        ],
+        "bottom": 781.5,
+        "height": 41
+      },
+      {
+        "id": "microwave-1",
+        "box": [
+          13435,
+          2375,
+          330,
+          350
+        ],
+        "bottom": 780,
+        "height": 205
+      },
+      {
+        "id": "microwave-2",
+        "box": [
+          13435,
+          3575,
+          330,
+          350
+        ],
+        "bottom": 780,
+        "height": 205
+      },
+      {
+        "id": "gum",
+        "box": [
+          11340,
+          4120,
+          240,
+          280
+        ],
+        "bottom": 780,
+        "height": 220
+      }
+    ],
+    "chopsticks": {
+      "box": [
+        13670,
+        3215,
+        80,
+        80
+      ],
+      "bottom": 780,
+      "height": 136,
+      "shiftDepth": -80,
+      "purpose": "Replace existing opaque cup with clear acrylic; move 80 mm to clear bags. Base corrected to touch the780 worktop; retained sticks rest on the3mm cup floor."
+    },
+    "supplies": {
+      "box": [
+        13340,
+        3070,
+        260,
+        150
+      ],
+      "bottom": 780,
+      "height": 140,
+      "purpose": "Divided acrylic straw / individually wrapped wet-wipe holder beside retained cups and chopsticks."
+    },
+    "odenTag": {
+      "x": 11296,
+      "depth": 4670,
+      "bottom": 1010,
+      "width": 100,
+      "height": 65,
+      "copy": [
+        "\u304a\u3067\u3093",
+        "HOT & READY"
+      ],
+      "purpose": "Small authored crayon tag on a wire clip beside the existing oden vat; no sale, new-arrival or toilet policy claim.",
+      "outline": [
+        [
+          0.0,
+          -32.5
+        ],
+        [
+          9.317,
+          -22.603
+        ],
+        [
+          25.0,
+          -28.146
+        ],
+        [
+          25.456,
+          -16.546
+        ],
+        [
+          43.301,
+          -16.25
+        ],
+        [
+          34.773,
+          -6.057
+        ],
+        [
+          50.0,
+          0.0
+        ],
+        [
+          34.773,
+          6.057
+        ],
+        [
+          43.301,
+          16.25
+        ],
+        [
+          25.456,
+          16.546
+        ],
+        [
+          25.0,
+          28.146
+        ],
+        [
+          9.317,
+          22.603
+        ],
+        [
+          0.0,
+          32.5
+        ],
+        [
+          -9.317,
+          22.603
+        ],
+        [
+          -25.0,
+          28.146
+        ],
+        [
+          -25.456,
+          16.546
+        ],
+        [
+          -43.301,
+          16.25
+        ],
+        [
+          -34.773,
+          6.057
+        ],
+        [
+          -50.0,
+          0.0
+        ],
+        [
+          -34.773,
+          -6.057
+        ],
+        [
+          -43.301,
+          -16.25
+        ],
+        [
+          -25.456,
+          -16.546
+        ],
+        [
+          -25.0,
+          -28.146
+        ],
+        [
+          -9.317,
+          -22.603
+        ]
+      ]
+    },
+    "basin": {
+      "box": [
+        13300,
+        4200,
+        600,
+        500
+      ],
+      "bottom": 780,
+      "height": 90,
+      "purpose": "Replace the solid placeholder with an open stainless handwash basin and tap, retaining its envelope.",
+      "tap": {
+        "x": 13825,
+        "depth": 4450,
+        "bottom": 870,
+        "height": 160,
+        "spoutToX": 13670
+      }
+    }
+  },
+  "riceWobble": [
+    {
+      "level": 895,
+      "row": 1,
+      "column": 1,
+      "degrees": -2
+    },
+    {
+      "level": 895,
+      "row": 1,
+      "column": 3,
+      "degrees": 3
+    },
+    {
+      "level": 895,
+      "row": 1,
+      "column": 5,
+      "degrees": -2.5
+    }
+  ],
+  "contactShadows": {
+    "opacity": 0.18,
+    "offset": 1.5,
+    "radiusMultiplier": 1.24,
+    "depthWrite": false,
+    "polygonOffset": true,
+    "purpose": "Soft radial contact only: microwaves, dispenser feet, vending base, tank feet and stair posts. No lights or shadow maps added."
+  },
+  "chiller": {
+    "body": "#c3d9dd",
+    "interior": "#b7d9e1",
+    "emissive": "#a6e1ed",
+    "intensity": 0.24,
+    "purpose": "Cooler inside-back/shelf surfaces, original product materials unchanged."
+  },
+  "scope": "Candidate only. No new inventory, route, actor, calendar, audio or roof-access system. Purchased stock creates real gaps; no fake empty slots."
+}

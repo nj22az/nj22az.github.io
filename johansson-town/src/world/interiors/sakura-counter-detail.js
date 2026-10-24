@@ -87,7 +87,7 @@ function batch(name){
 }
 
 /** A 1997 cash register, not a flat blank block, and the clerk's actual working supplies. */
-export function buildSakuraCounterDetail(room,{placements={}}={}){
+export function buildSakuraCounterDetail(room,{placements={},refinedSupplies=false}={}){
  const b=batch('Sakura checkout equipment'),{box,cyl,print}=b;
  const cream=0xe3e5d8,dark=0x3d4946,key=0xf2efe3,steel=0x9aa9a4;
  b.place(placements.till);
@@ -123,8 +123,8 @@ export function buildSakuraCounterDetail(room,{placements={}}={}){
  // Stacks of folded bags, nested paper cups and chopsticks in their sleeve.
  for(let i=0;i<7;i++)box(.25,.005,.115,6.42,.726+i*.006,1.215,i%2?0xccb284:0xdfcda9);
  for(let i=0;i<5;i++)cyl(.036,.05,6.39,.79+i*.014,1.31,0xf4f0df,.025);
- box(.08,.13,.06,6.53,.793,1.29,0xd1bb91);
- for(let i=0;i<5;i++)box(.004,.165,.004,6.514+i*.008,.81,1.288,0x9f8051);
+ if(!refinedSupplies)box(.08,.13,.06,6.53,.793,1.29,0xd1bb91);
+ for(let i=0;i<5;i++)box(.004,.165,.004,6.514+i*.008,.81-(refinedSupplies?.0025:0),1.288+(refinedSupplies?.08:0),0x9f8051);
  const C=SAKURA_TILL_CABINET;
  print('supplies',.29,.045,[C.x0-.006,.698,1.285],-Math.PI/2);
  b.place(placements.copy);

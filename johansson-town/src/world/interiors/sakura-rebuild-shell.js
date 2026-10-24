@@ -5,8 +5,8 @@ import SIGN_JP from './sakura-rebuild-signs.json' with {type:'json'};
 export function buildSakuraShotenInterior(THREE,{placeholderStock=true,doors=true,levelOffice=false,roof=true,omit=()=>false}={}){
  const root=new THREE.Group();root.name='SakuraShoten_RevE';
  const groups={},batches=new Map(),solids=[],labels=[];
- const palettes={floor:0xe9e1d0,backfloor:0xc3c9c4,wall:0xeee5cf,partition:0xf4f0e5,cream:0xe7dfc8,shelf:0xbcb7a8,steel:0x959f9c,cold:0xd7e4e5,light:0xecf7ff,glass:0xabcacb,wood:0xb08a5e,top:0xf1e9d9,beige:0xc9c0aa,screen:0x234938,green:0x28654e,orange:0xbf663c,blue:0x477386,futon:0xf5e8d8,red:0x9c4b3f,pink:0xd29a8a,yellow:0xd9b564};
- const mats=Object.fromEntries(Object.entries(palettes).map(([k,color])=>[k,new THREE.MeshStandardMaterial({color,roughness:k==='steel'?.35:.8,metalness:k==='steel'?.35:0,...(k==='light'?{emissive:0xe4f1ff,emissiveIntensity:.7}:{}),...(k==='screen'?{emissive:0x224a33,emissiveIntensity:.3}:{}),...(k==='glass'?{transparent:true,opacity:.2,depthWrite:false}:{} )})]));
+ const palettes={floor:0xe9e1d0,backfloor:0xc3c9c4,wall:0xeee5cf,partition:0xf4f0e5,cream:0xe7dfc8,shelf:0xbcb7a8,steel:0x959f9c,cold:0xd7e4e5,light:0xecf7ff,glass:0xabcacb,wood:0xb08a5e,top:0xf1e9d9,beige:0xc9c0aa,screen:0x234938,green:0x28654e,orange:0xbf663c,blue:0x477386,coldInside:0xb7d9e1,coldShelf:0xc3d9dd,futon:0xf5e8d8,red:0x9c4b3f,pink:0xd29a8a,yellow:0xd9b564};
+ const mats=Object.fromEntries(Object.entries(palettes).map(([k,color])=>[k,new THREE.MeshStandardMaterial({color,roughness:k==='steel'?.35:.8,metalness:k==='steel'?.35:0,...(k==='light'?{emissive:0xe4f1ff,emissiveIntensity:.7}:{}),...(k==='screen'?{emissive:0x224a33,emissiveIntensity:.3}:{}),...(k==='coldInside'?{emissive:0xa6e1ed,emissiveIntensity:.24}:{}),...(k==='glass'?{transparent:true,opacity:.2,depthWrite:false}:{} )})]));
  function group(n){if(!groups[n]){groups[n]=new THREE.Group();groups[n].name=n;root.add(groups[n]);}return groups[n];}
  function box(g,x,z,w,d,h,mat,y=0,name=''){
   if(levelOffice&&x>=11400&&z>=6200&&z+d<=8240){if(g==='Floors'&&h===150)return;if(y>=150)y-=150;}if(omit(g,x,z,w,d,h,mat,y))return;if(levelOffice&&g==='Fixtures'&&x===13200&&z===6660&&h===720){box(g,x,z,w,d,40,mat,830);for(const xx of [x,x+w-45])for(const zz of [z,z+d-45])box(g,xx,zz,45,45,680,mat,0);return;}const key=g+':'+mat;if(!batches.has(key))batches.set(key,{g,mat,items:[]});batches.get(key).items.push({x,z,w,d,h,y,name});
@@ -54,8 +54,8 @@ export function buildSakuraShotenInterior(THREE,{placeholderStock=true,doors=tru
  box('Fixtures',13200,6660,600,1100,720,'wood',150);box('Fixtures',11530,7660,450,450,650,'steel',150);box('Fixtures',12800,7100,450,450,420,'blue',150);
  box('Fixtures',13300,6900,350,400,300,'beige',870);box('Fixtures',13270,6930,25,320,220,'screen',920);
  // Full west chiller. Thin product cards sit on shelves instead of intersecting them.
- box('Fixtures',0,1200,700,7040,320,'cold');box('Fixtures',0,1200,90,7040,1800,'light',320);box('Fixtures',0,1200,700,7040,150,'green',1970);
- for(let s=0;s<4;s++){let y=520+s*350;box('Fixtures',90,1220,570,7000,25,'top',y);productRun('Stock',140,1270,450,6900,y+25,38,3);}
+ box('Fixtures',0,1200,700,7040,320,'cold');box('Fixtures',0,1200,90,7040,1800,'coldInside',320);box('Fixtures',0,1200,700,7040,150,'green',1970);
+ for(let s=0;s<4;s++){let y=520+s*350;box('Fixtures',90,1220,570,7000,25,'coldShelf',y);productRun('Stock',140,1270,450,6900,y+25,38,3);}
  text('RoomLabels',720,3550,2090,1600,SIGN_JP.sign4,'BENTO / ONIGIRI','#285b48',Math.PI/2);
  const lines=[[SIGN_JP.sign5,'BREAD / NOODLES',1850],[SIGN_JP.sign6,'SNACKS / CANDY',3800],[SIGN_JP.sign7,'DAILY GOODS',5750]];
  for(const[jp,en,x]of lines){let z=2400;box('Fixtures',x+415,z+450,70,3600,1350,'cream');box('Fixtures',x,z,900,4500,140,'cream');for(let y=320;y<=960;y+=320){for(const side of [0,500]){box('Fixtures',x+side,z+450,400,3600,24,'shelf',y);productRun('Stock',x+side+25,z+500,340,3500,y+24,18,3);}for(const zz of [z,z+4050]){box('Fixtures',x,zz,900,440,24,'shelf',y);productRun('Stock',x+25,zz+25,850,380,y+24,2,7);}}
