@@ -58,3 +58,10 @@ Implement the small repair using shared placement data for geometry, purpose not
 Check the resulting full flag/bracket envelope against jambs, counter queue, awning, lanterns, nearby planting and pedestrian routes. Verify opening and closing remove/show all relevant parts and colliders. Run focused Nakamura/enterable-site/ground/sign geometry checks, the World CI guard, then rebuild runtime and verify its package for a runtime change. Capture front, both obliques and overhead views, open and closed, plus walk-through at the family entrance and counter. Physical iPhone/iPad acceptance remains pending.
 
 Checks actually performed here: read and compared the current source construction and the owner's supplied image; calculated jamb gap, pole projection, flag extents and attachment-plane mismatch from those constants. No automated gameplay tests, new rendered views, GPU checks or physical-device tests were run. All six findings remain open; none is signed off by this documentation.
+
+## Drawing delivery — 24 October 2026
+
+Owner requested to see the CAD. Delivered a two-sheet A3 PDF (existing simplified front elevation 1:40, entrance plan 1:10, flag plan 1:10, proposed mount 1:25), plus millimetre DXF model-space views. Proposal is explicitly provisional; the PDF is an audit drawing, not a complete architectural survey. Both final PDF pages visually inspected after correcting layout. DXF reopened with ezdxf: zero audit errors and zero fixes. PDF reopened: two pages. DXF dimensions are drawn linework/text, not native associative dimension entities. No runtime changes or new gameplay tests.
+
+- [Drawing PDF](https://chatgpt.com/library?file_id=libfile_ec512abac9648191b9fc7f5fd62d2ba0&account_id=personal)
+- [CAD DXF](https://chatgpt.com/library?file_id=libfile_ad0ec431df908191917443393c812a2d&account_id=personal)
