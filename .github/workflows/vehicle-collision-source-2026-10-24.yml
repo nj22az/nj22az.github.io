@@ -1,45 +1,90 @@
-name: Vehicle collision source bundle
+name: Vehicle collision validation
 on:
   push:
     branches: [development]
-    paths: ['.github/workflows/vehicle-collision-source-2026-10-24.yml']
+    paths: ['.github/workflows/vehicle-collision-source-2026-10-24.yml', '.github/vehicle-collision-2026-10-24.patch.gz.b64']
 permissions:
-  contents: read
+  contents: write
 jobs:
-  bundle:
+  validate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: abd504177e8866f8b986b3eaded98ead60a349c8
+          path: transport
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: review
+          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Install existing locked development dependencies
-        working-directory: johansson-town
+      - name: Verify and apply the locally tested patch
+        working-directory: review
+        run: |
+          mkdir -p ../evidence
+          git rev-parse HEAD | tee ../evidence/base-sha.txt
+          python3 - <<'PY'
+          import pathlib,base64,gzip,hashlib
+          encoded=pathlib.Path('../transport/.github/vehicle-collision-2026-10-24.patch.gz.b64').read_text().strip()
+          # Correct the single transport transcription before the mandatory byte-for-byte hash check.
+          encoded=encoded.replace('pgs8cenTm','pgs82c8senTm')
+          patch=gzip.decompress(base64.b64decode(encoded,validate=True))
+          assert hashlib.sha256(patch).hexdigest()=='d67ed0d611bb6e90c4d329d9af2b6dcbf0e00a5462665be986783ad96d49a36a'
+          pathlib.Path('../evidence/fix.patch').write_bytes(patch)
+          PY
+          git apply --check ../evidence/fix.patch
+          git apply ../evidence/fix.patch
+          git diff --check
+      - name: Install locked development dependencies
+        working-directory: review/johansson-town
         run: npm ci --no-audit --no-fund
-      - name: Package source and tests, without large media or credentials
+      - name: Rebuild production runtime
+        working-directory: review/johansson-town
+        run: npm run build:runtime 2>&1 | tee ../../evidence/build.txt
+      - name: Focused movement and interaction regressions
+        working-directory: review/johansson-town
+        run: node --test --test-concurrency=2 tests/vehicle-body-collision.test.mjs tests/collider-grid.test.mjs tests/body-collision.test.mjs tests/rectangle-collision.test.mjs tests/driver-grip.test.mjs tests/runtime-package.test.mjs 2>&1 | tee ../../evidence/focused.txt
+      - name: Complete World guard
+        working-directory: review/johansson-town
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: node tools/ci-guard.mjs --test-concurrency=2 2>&1 | tee ../../evidence/guard.txt
+      - name: Install browser for real compiled-game acceptance
+        working-directory: review/johansson-town
+        run: npx playwright install --with-deps chromium
+      - name: Real player collision, driver interaction and phone-width photographs
+        working-directory: review/johansson-town
+        run: node tools/vehicle-collision-smoke.mjs ../../evidence/game 2>&1 | tee ../../evidence/game.txt
+      - name: Record verified candidate and handover without changing main
+        working-directory: review
+        env:
+          RUN_ID: ${{ github.run_id }}
         run: |
           python3 - <<'PY'
-          import pathlib, tarfile
-          roots = ['johansson-town', 'avatar-creator', 'assets', 'css']
-          skip = {'.git', '.cache', 'docs', 'diorama', 'linux', 'dist', 'releases'}
-          media = {'.blend', '.glb', '.gltf', '.mp4', '.mov', '.webm', '.zip', '.gz', '.pdf', '.stl', '.dxf'}
-          with tarfile.open('vehicle-collision-source.tar.gz', 'w:gz') as out:
-              for name in ['AGENTS.md', 'CLAUDE.md', 'HANDOVER.md', 'ANIMATION_DIRECTION.md', 'config.js', 'shared.js', 'styles.css']:
-                  p=pathlib.Path(name)
-                  if p.is_file(): out.add(p, recursive=False)
-              for root in roots:
-                  for p in pathlib.Path(root).rglob('*'):
-                      if not p.is_file() or p.is_symlink() or any(part in skip for part in p.parts): continue
-                      if p.suffix.lower() in media or p.stat().st_size > 12*1024*1024: continue
-                      if p.name.startswith('.env') or p.name in {'.npmrc', '.netrc'}: continue
-                      out.add(p, recursive=False)
-          print(pathlib.Path('vehicle-collision-source.tar.gz').stat().st_size)
+          import pathlib,json,os,shutil
+          evidence=pathlib.Path('../evidence'); report=json.loads((evidence/'game/report.json').read_text()); assert report['passed']
+          qa=pathlib.Path('johansson-town/docs/qa/vehicle-collision-2026-10-24');qa.mkdir(parents=True,exist_ok=True)
+          for filename in ['focused.txt','guard.txt','build.txt','base-sha.txt']:shutil.copyfile(evidence/filename,qa/filename)
+          for p in (evidence/'game').iterdir():shutil.copyfile(p,qa/p.name)
+          note=pathlib.Path('johansson-town/briefs/HANDOFF-VEHICLE-COLLISION-2026-10-24.md')
+          note.write_text('# Vehicle collision repair — 24 October 2026\n\n## Owner report\nThe phone screenshot shows overlapping bodies in Tetsuo\u2019s green kei truck outside Sakura, with a Talk to Tetsuo prompt.\n\n## Cause and correction\nDeparting vehicles moved their pedestrian collider off-map until parking again. The shared road placement now synchronises the same oriented collider for parked, driving, held, reversing, waiting and ferry-carried vehicles. Vertical bounds follow wheel height instead of blocking the ground underneath a raised car. The collision grid queries the small dynamic set at its current pose without rebuilding all static cells. Driving residents are excluded from proximity prompts, direct clicks and queued click arrivals; vehicle inspection and ordinary walking conversations remain available.\n\n## Evidence\nNine new regression checks cover all four sides, rotations, forward/reverse/held states, old-bay clearance, visibility, elevated deck bounds, live spatial cells, Tetsuo\u2019s real departure and driver prompt/click gating. The full World guard and the production-runtime check passed. Actual compiled-game acceptance walks the player into each side of the held truck, checks the moving boundary and old-overlap recovery, and captures desktop and phone-width views. See [QA evidence](../docs/qa/vehicle-collision-2026-10-24/report.json), focused.txt and guard.txt in that folder.\n\n## Publication state\nVerified candidate, not yet promoted to main. Validation workflow '+os.environ['RUN_ID']+'. Main must be fast-forwarded only after reviewing screenshots and checking its current head; preserve concurrent unrelated changes. This candidate is retained by a review tag, not a new branch. No physical iPhone/Safari, packaged Linux or live GPS test was performed.\n\n## Next action\nReview screenshots, promote this checked candidate to main, verify Pages deployment, then remove the temporary validation transport files from development. Do not merge the development prototype branch.\n')
+          index=pathlib.Path('HANDOVER.md');text=index.read_text();row='| World: moving car collisions | [24 October vehicle-collision repair](johansson-town/briefs/HANDOFF-VEHICLE-COLLISION-2026-10-24.md). Verified candidate: vehicle colliders follow driving/held/reversing/ferry poses, live dynamic spatial queries and no conversations with seated drivers. Full guard and compiled-game desktop/phone-width checks pass; publication pending. |\n'
+          marker='| --- | --- |\n';assert marker in text;text=text.replace(marker,marker+row,1);index.write_text(text)
           PY
+          git add HANDOVER.md johansson-town/src/game.js johansson-town/src/world/collider-grid.js johansson-town/src/world/road-network.js johansson-town/src/world/town-traffic.js johansson-town/tests/ci-guard.txt johansson-town/tests/vehicle-body-collision.test.mjs johansson-town/tools/vehicle-collision-smoke.mjs johansson-town/runtime johansson-town/index.html johansson-town/sw.js johansson-town/creator/index.html johansson-town/briefs/HANDOFF-VEHICLE-COLLISION-2026-10-24.md johansson-town/docs/qa/vehicle-collision-2026-10-24
+          git diff --cached --check
+          git config user.name 'Nils Johansson'
+          git config user.email '154246134+nj22az@users.noreply.github.com'
+          git commit -m 'Keep cars solid while moving and prevent conversations with seated drivers'
+          git rev-parse HEAD | tee ../evidence/candidate-sha.txt
+          git diff HEAD^ --stat > ../evidence/changed-files.txt
+          git push origin HEAD:refs/tags/review/vehicle-collision-2026-10-24-${RUN_ID}
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: vehicle-collision-main-source
-          path: vehicle-collision-source.tar.gz
-          retention-days: 1
+          name: vehicle-collision-validation
+          path: evidence
+          retention-days: 3
