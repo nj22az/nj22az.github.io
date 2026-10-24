@@ -4,7 +4,6 @@ const H=(sleep,wake)=>Object.freeze({sleep,wake});
 export const CANONICAL_REST=Object.freeze({
  Vy:H(1260,420),'Kōji':H(1260,225),Riku:H(1260,420),
  'Miss Higa':H(1380,420),'Grandmother Higa':H(1260,390),
- 'Dr Kakazu':H(1380,450),
  'Mrs Nakamura':H(1290,315),Mai:H(1260,420),
  Mac:H(1320,285),
  // Ms Ganaha keeps the port window until 22:15 (ganaha.js) and is home by half past.

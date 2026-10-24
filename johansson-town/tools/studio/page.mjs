@@ -19,7 +19,7 @@ export class StudioPage{
    const preview=await serveGame({root:CODE_ROOT,mounts:['johansson-town','avatar-creator']});
    let browser;
    try{
-    browser=await chromium.launch({headless:true,args:[...process.getuid?.()===0?['--no-sandbox']:[],'--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+    browser=await chromium.launch({headless:true,...process.env.TOWN_CHROMIUM_PATH?{executablePath:process.env.TOWN_CHROMIUM_PATH}:{},args:[...process.getuid?.()===0?['--no-sandbox']:[],'--use-angle=swiftshader','--enable-unsafe-swiftshader']});
     const context=await browser.newContext({viewport:{width:IPAD.width,height:IPAD.height},deviceScaleFactor:IPAD.deviceScaleFactor,hasTouch:true,serviceWorkers:'block'});
     const local=new URL(preview.url).origin;
     await context.route('**/*',route=>route.request().url().startsWith(local+'/')?route.continue():route.abort());

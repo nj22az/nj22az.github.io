@@ -27,21 +27,17 @@ export const STAND_SEQUENCES=Object.freeze(Object.fromEntries([
   pt(-6.1,-29.4,W,[180,300],'sweeping the pavement by the bin','south of the doorway, by the bin: the last of the sweepings go in it',{pose:'Sweep',tool:'broom'}),
  ]),
  // The shop floor (Sakura's own frame, world/interiors/sakura-layout.js): whoever the rota puts at the counter.
- seq('sakura-floor','sakura','the clerk on the rota (Thuan on weekdays, Nhung at the weekend)','A shopkeeper alone in a shop this size is at the till most of the day and leaves it only for the jobs that cannot wait: the cold drinks and the window.',[
+ seq('sakura-floor','sakura','the clerk on the rota (Thuan on weekdays, Nhung on Sunday)','A shopkeeper alone in a shop this size is at the till most of the day and leaves it only for the jobs that cannot wait: the cold drinks and the window.',[
   pt(5.29,.85,W,[300,1200],'at the till, facing the shop','the clerk’s stand point, 0.75 m behind the counter’s front (New Yokosuka’s konbini, §3.1): where she can see the door and both aisles',{pose:'CounterIdle'}),
   pt(2.39,-2.66,N,[120,480],'facing up the cold drinks, beer to the front','the cooler’s column nearest the till, the beer and the cold tea that sell first and leave gaps',{pose:'Interact'}),
   pt(5.29,.85,W,[300,900],'back at the till','the till again: nobody should wait to pay while she is in an aisle',{pose:'CounterIdle'}),
   pt(-4.6,3.2,S,[120,300],'wiping the west window, where the magazine rack stood','the west window, the shop’s face to the lane: the sale poster and the glass are what passers-by see',{pose:'Wipe',tool:'cloth'}),
  ]),
  // ── Front-Row Books (world/bookshop-workshop-layout.js; its own frame) ──
- seq('frontrow-morning','frontrow','Nhung','Opening a bookshop is the counter, the new arrivals laid out, and the reading copies back where they belong.',[
-  pt(-2.6,1.2,S,[300,900],'at the counter with the ledger','behind the bookselling counter, facing the door: customers come in to ask for a book',{pose:'CounterIdle'}),
-  pt(1.4,-2.0,N,[120,480],'laying out the new arrivals','the new-arrivals table along the back wall: the second-hand books come in by the box',{pose:'Interact'}),
-  pt(2.15,1.45,N,[120,300],'putting the reading copies back in their places','the reading table: the local history copies stay in the shop and go back to their marked places',{pose:'Interact'}),
- ]),
- seq('frontrow-paper','frontrow','Nhung','In the afternoon the town’s small paper is set and printed at the back bench, between customers.',[
-  pt(-2.0,-2.0,N,[600,1500],'setting the paper’s page at the back bench','the back bench with the proofs and the wrapping roll: the paper is set here, out of the customers’ way',{pose:'Use'}),
-  pt(-2.6,1.2,S,[300,900],'at the counter, the proofs beside the till','the counter: a customer comes before the paper',{pose:'CounterIdle'}),
+ // Since 22 October 2026 (the owner) Nhung is the island doctor and the shop floor is unstaffed: the paper is her evening's.
+ seq('frontrow-paper','frontrow','Nhung','In the evening, after surgery and supper, the town’s small paper is set and printed at the back bench of the old shop.',[
+  pt(-2.0,-2.0,N,[600,1500],'setting the paper’s page at the back bench','the back bench with the proofs and the wrapping roll: the paper is set here',{pose:'Use'}),
+  pt(-2.6,1.2,S,[300,900],'at the counter, counting the honesty tin','the counter: the day’s coins from the honesty tin by the till, the proofs beside it',{pose:'CounterIdle'}),
   pt(-2.0,-2.0,N,[300,900],'reading the page’s proofs for corrections','the back bench again, for the corrections in Nhung’s hand',{pose:'Use'}),
  ]),
  // ── Sato Ramen's kitchen (world/sato-ramen-layout.js SATO_KITCHEN; people/ramen-kitchen.js walks the aisle) ──
@@ -64,7 +60,7 @@ export const STAND_SEQUENCES=Object.freeze(Object.fromEntries([
   pt(.55,1.95,W,[120,300],'pinning the week’s notices on the lobby board','the lobby notice board on the partition: lost property, the traffic-safety week, the typhoon notice',{pose:'Interact'}),
  ]),
  // ── Gran Higa's garden (the dressed Kinjō lot, world/okinawa/lots.js KINJO; world frame) ──
- seq('higa-garden','world','Grandmother Higa','An obaa’s morning garden round before the liquor counter: the vines, the water, the beds and the altar flowers (the lot’s hours: from six to half past eight).',[
+ seq('higa-garden','world','Grandmother Higa','An obaa’s morning garden round before the bath: the vines, the water, the beds and the altar flowers (the lot’s hours: from six to half past eight).',[
   pt(-31.4,-8.4,W,[300,900],'tying up the gōyā vines on the A-frame','the gōyā frame against the west wall, out of the salt wind',{pose:'Interact'}),
   pt(-30.1,-10.0,E,[120,300],'filling the watering can from the water jar','the kame by the gate, filled from the hose so the water is warm for the beds',{pose:'Interact'}),
   pt(-30.5,-6.6,E,[300,900],'weeding the island greens','the greens and chillies east of the path, in the morning sun',{pose:'Interact'}),

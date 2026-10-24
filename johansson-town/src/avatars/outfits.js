@@ -33,7 +33,7 @@ export const ISLAND_OUTFITS=Object.freeze([
  {id:'raincloud-rambler',name:'Raincloud rambler',label:'Raincloud rambler',category:'Everyday',tags:['rain','rainy season','tsuyu','hood','June'],
   who:'Kenta and the Cold-storage kid on rainy-season mornings',why:'A hood up for the showers of May and June, and hems clear of the puddles.',outfit:{top:'hoodie',topColour:'#7fb0d8',bottom:'cropped',bottomColour:'#6d7478',footwear:'sneakers',shoes:'#f4f1ea',accent:'#f4d23c',pattern:'none'}},
  {id:'bookshop-afternoon',name:'Bookshop afternoon',label:'Bookshop afternoon',category:'Work',tags:['Front-Row Books','bookshop','stationery','shop'],
-  who:'Nhung at Front-Row Books & Stationery',why:'A cardigan for the air-conditioned shop, culottes for the ladder to the top shelves.',outfit:{top:'cardigan',topColour:'#9a6a42',bottom:'culottes',bottomColour:'#c8b48a',footwear:'shoes',shoes:'#473b2f',accent:'#e0c078',pattern:'none'}},
+  who:'Nhung at Front-Row Books & Stationery, before she became the island doctor (her clinic look is her own now)',why:'A cardigan for the air-conditioned shop, culottes for the ladder to the top shelves.',outfit:{top:'cardigan',topColour:'#9a6a42',bottom:'culottes',bottomColour:'#c8b48a',footwear:'shoes',shoes:'#473b2f',accent:'#e0c078',pattern:'none'}},
  {id:'festival-coat',name:'Island festival coat',label:'Festival coat',category:'Festival',tags:['happi','eisa','tug-of-war','Obon','andagi','steward'],
   who:'the stewards at the eisa night, the tug-of-war and the andagi stall',why:'A happi coat shows who is helping to run the festival.',outfit:{top:'festival',topColour:'#2f5f9e',bottom:'shorts',bottomColour:'#27304d',footwear:'sandals',shoes:'#c8b48a',accent:'#f4f1ea',pattern:'none'}},
  {id:'cloud-cafe-uniform',name:'Cloud café uniform',label:'Café uniform',category:'Work',tags:['Blue Coral','ice cream','Rainflower Lane','counter'],
@@ -89,6 +89,7 @@ export const ISLAND_OUTFITS=Object.freeze([
  {id:'sunday-pinafore',name:'Sunday pinafore',label:'Sunday pinafore',category:'Everyday',tags:['Sunday','dress','pinafore','school trip','shrine'],
   who:'Mai on Sundays; Miss Higa on school trips',why:'A pinafore dress over a white tee: smart enough for the shrine, tough enough for the playground.',
   outfit:{top:'pinafore',topColour:'#f4f1ea',accent:'#e8b83e',bottom:'skirt',bottomColour:'#2f4f7f',bottomPattern:'none',footwear:'shoes',shoes:'#6e4a33',pattern:'none'}},
+ {id:'vy-monochrome',name:'Vy monochrome layers',label:'Vy monochrome',category:'Everyday',tags:['Vy','stripes','vest','panel skirt'],who:'Vy off school',why:'A striped long-sleeve tee, layered charcoal vest, soft panel skirt and white sneakers.',outfit:{top:'stripedvest',topColour:'#24252b',accent:'#f4f1ea',bottom:'skirt',skirtCut:'panel',skirtLength:.5,skirtFlare:.5,bottomColour:'#24252b',footwear:'sneakers',shoes:'#f4f1ea',pattern:'none',bottomPattern:'none'}},
 ]);
 
 /** Town-made costumes for the Port Festival parade. Headwear is chosen separately so the face stays visible. */

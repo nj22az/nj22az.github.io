@@ -71,21 +71,23 @@ export function buildCompactShop({site,room,reg:register,collider:addCollider,ac
   // entrance and central aisle open between the counter, the desks and the reading table.
   bench('Bookselling counter',-2.55,2.12,1.65,.55,FURNITURE_HEIGHTS.serviceCounter);
   box('Brass till',[.25,.19,.22],[-3.05,FURNITURE_HEIGHTS.serviceCounter+.095,2.12],0x53685d);
-  anchor([-2.55,1,2.12],'Browse the bookshop ledger','read','Books & the town paper','Nhung keeps the reading copies and the town’s paper, which she prints at the back bench, at the front counter.','Nhung');
-  const newspaper=anchor([-1.85,1,2.12],'Buy newspaper · ¥80','buy','Evening newspaper',{cost:80,item:'Evening newspaper',text:'Nhung’s small town paper, a page of harbour news and corrections, printed at the back bench and sold at her counter.'});newspaper.userData.npcInteraction=false;
+  // Unstaffed since 22 October 2026: Nhung is the island doctor, Sakura sells the books and the stationery, and what is
+  // left here (the reading copies, the paper, the last second-hand books) goes by the honesty tin (無人販売).
+  anchor([-2.55,1,2.12],'Read the note on the counter','read','A note on the counter','“The books and the stationery are at Sakura Shōten now. The reading copies stay: please put each one back in its place. The paper is ¥80, the paperbacks ¥300; the tin is by the till. Surgery is 9–12 and 2–5 at the town hall. Nhung”','Nhung');
+  const newspaper=anchor([-1.85,1,2.12],'Buy newspaper · ¥80','buy','Evening newspaper',{cost:80,item:'Evening newspaper',text:'Nhung’s small town paper, a page of harbour news and corrections, printed at the back bench in the evening. You leave ¥80 in the tin by the till.'});newspaper.userData.npcInteraction=false;
   bench('Newspaper and book wrapping desk',-2.55,-2.84,2.45,.5,FURNITURE_HEIGHTS.table);
   box('Wrapping paper roll',[.65,.11,.22],[-2.7,FURNITURE_HEIGHTS.table+.055,-2.84],0xc8b493);
   box('Evening newspaper proofs',[.48,.025,.36],[-2.0,FURNITURE_HEIGHTS.table+.0125,-2.84],0xf1ead8);
   anchor([-1.65,1,-2.55],'Read the editor’s proofs','read','Editor’s desk','Corrections and harbour reports for the next edition, in Nhung’s hand.','Nhung');
   bench('New arrivals display',1.62,-2.84,4.0,.5,FURNITURE_HEIGHTS.table);
   for(let i=0;i<12;i++)box('New and second-hand books',[.22,.11,.32],[.1+(i%6)*.53,FURNITURE_HEIGHTS.table+.055+Math.floor(i/6)*.13,-2.84],[0x814c3e,0x4d6668,0xa49267][i%3]);
-  const usedBook=anchor([-1.4,1,2.12],'Buy a second-hand paperback · ¥300','buy','Second-hand paperback',{cost:300,item:'Second-hand paperback',text:'Nhung wraps a well-loved paperback in brown paper.'});usedBook.userData.npcInteraction=false;
+  const usedBook=anchor([-1.4,1,2.12],'Buy a second-hand paperback · ¥300','buy','Second-hand paperback',{cost:300,item:'Second-hand paperback',text:'One of the last of the shop’s second-hand paperbacks, wrapped in brown paper from the roll; ¥300 in the tin by the till.'});usedBook.userData.npcInteraction=false;
   bench('Reading table',2.15,.4,1.45,.8,FURNITURE_HEIGHTS.table);
-  anchor([1.4,1,-2.45],'Ask about the new arrivals','read','Nhung’s book recommendations','A sea adventure, an island history, and a well-loved poetry collection. Nhung will help you find a book without hurrying you.','Nhung');
+  anchor([1.4,1,-2.45],'Look at the last of the display','read','What is left on the display','A sea adventure, an island history and a well-loved poetry collection, each with one of Nhung’s slips in it. New books come in through Sakura now: ask Thuan at the till.','Nhung');
   anchor([2.15,1,.4],'Browse the local history books','read','Local history reading table','Reading copies stay in the shop. Please return each book to its marked place.');
   const seat=chair(-3.7,2.85,Math.PI/2);seat.userData.seat={position:[-3.7,0,2.85],stand:[-3.02,0,2.95],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.12,yaw:Math.PI/2,pitch:0,front:.22};seat.userData.npcInteraction=false;reg(seat,'Sit in the reading chair',()=>action('seat','Reading chair','A quiet chair beside the window. Read for a while, with the harbour outside.'),true);
   // The name board hangs from the ceiling over the aisle, facing the door: the back wall is books.
-  board('FRONT-ROW BOOKS','BOOKS · NEWSPAPERS · LOCAL STORIES',[0,2.42,-1.4],2.6);
+  board('FRONT-ROW BOOKS','THE TOWN PAPER · READING COPIES',[0,2.42,-1.4],2.6);
  }else if(site.industrialWorkshop){
   // Chin's half of the back wall (fabrication and the Form 3D printer); Tetsuo's electrical bench is the other half.
   begin('fabrication-bench');

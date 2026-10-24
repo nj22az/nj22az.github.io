@@ -9,6 +9,22 @@ Read the existing `CLAUDE.md` and any instructions in the directory being change
 
 These supplement the owner's instructions and existing project rules. They do not authorise unrelated work or override the owner's stated decisions.
 
+## Owner's workflow — 24 October 2026: prototypes, Pixar, main
+
+The owner: "I want the workflow to be like this , codex prototypes and makes a detailed three.js room and characters and
+you improve upon this to reach Pixar standard , main keeps the simplified but cute and relatable cartoony three js until
+we have a perfect Pixar world".
+
+- **Codex prototypes** detailed three.js rooms and characters on the `development` branch (behind a URL flag when
+  they run in World, as `?sakura-rebuild` does). Prototypes are not merged into `main`.
+- **Claude takes a prototype to Pixar standard**, in Blender (the studio repo `nj22az/jojo`: `3d/cast/`, `3d/sakura/`),
+  on the `pixar` branch, reading the prototype's CAD and data rather than copying it.
+- **`main` keeps the simplified, cute and relatable cartoon three.js** World until the Pixar world is complete; its
+  fixes and small features merge as before.
+- **Three branches only** (the owner, 24 October 2026: "I basically want main , and the Pixar branch , and a development
+  branch"): `main`, `development`, `pixar`, in both repos. Every older branch is kept as a tag `archive/<name>`
+  (`git checkout -b <name> archive/<name>` restores one). The survey before the clean-up: `docs/BRANCHES-2026-10-24.md`.
+
 ## Handover: required at the start and end of every task
 
 These instructions apply to every agent working in this repository.

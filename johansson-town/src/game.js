@@ -151,8 +151,11 @@ import { circleHitsRect,circleHitsCircle,standingHitsRect,canStepBetween,roomBou
 import {useTownColour} from './render/single-pass-colour.js';
 import { createCelPass } from './render/cel.js?snappy=1';
 import { createInkPipeline, GRADE_DEFAULTS } from './render/ink-pipeline.js?snappy=1';
-import {LOOKS,readLook,writeLook,lookCSS,lookNeedsPipeline} from './render/looks.js';
+import {LOOKS,isLook,clearSavedLook,lookCSS,lookNeedsPipeline,lookFlatten} from './render/looks.js';
 import {createFreeCamera} from './input/free-camera.js';
+import {createLookPicker,lookSwatch} from './ui/look-picker.js';
+import {setupTownBookHome} from './ui/town-book-home.js';
+import {svg as uiIcon} from './ui/icons.js';
 import { createInkRecovery } from './render/ink-recovery.js';
 import {createGraphicsLifecycle} from './render/graphics-lifecycle.js';
 import {BUILD_CATALOGUE} from './build/catalogue.js';
@@ -190,6 +193,8 @@ loadingProgress?.complete('accessories');
 window.__JOHANSSON_RUNTIME_VERSION__='ios-colour-2';
 
 const $=s=>document.querySelector(s);
+/** The Town book's home screen of icon tiles (ui/town-book-home.js); set up once the book's buttons are wired. */
+let townBook=null;
 const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const touch=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;
 // The offline Linux edition (steam-deck/) draws as a desktop whatever its input.
@@ -304,6 +309,8 @@ const INK_OPTIONS={
  // colour target; the canvas itself only receives the FXAA pass and stays single-sample.
  superScale:window.johanssonDesktop?1:graphics.superScale,samples:graphics.samples,preferHalfFloat:graphics.preferHalfFloat,
  pixelBudget:graphics.pixelBudget,
+ // Phones and tablets draw the lighter version of a look where it has one (the oil painting's 16 samples, not 64).
+ lightLooks:handheld,
  // FXAA is a single pass and it is the one that resolves the line work, so it is
  // worth having on the devices whose buffers need it most.
  fxaa:true,
@@ -331,26 +338,29 @@ function compileTown(object,{async=false}={}){
  }catch{}finally{renderer.setRenderTarget(previous);}
 }
 /**
- * The chosen look (render/looks.js, Settings · Look in the Town book). With the ink pipeline it is the pipeline's last
+ * The chosen look (render/looks.js; Town tools › Look, or the free camera), for this visit only. With the ink pipeline it is the pipeline's last
  * pass; without it only the colour looks show, as a CSS filter on the canvas. A filter someone else put on the canvas
  * (the photo studio's film) is left alone.
  */
-let look=readLook(globalThis.localStorage),lookFilter='';
+// Every start is Natural, whichever look was used last time (the owner, 22 October 2026).
+let look='none',lookFilter='';
+clearSavedLook(globalThis.localStorage);
 function applyLook(){
  pipeline?.setLook(look);
+ // The Cartoon look takes the photographic surface maps away at the material, so its colour is flat before the pass.
+ // Without the pipeline nothing would ink it, so the maps stay.
+ celPass.scaleFlatten(pipeline?lookFlatten(look):1);
  const css=pipeline?'none':lookCSS(look),want=css==='none'?'':css,el=renderer.domElement;
  if(el.style.filter===lookFilter)el.style.filter=want;
  lookFilter=want;
- const button=$('#lookButton');if(button)button.textContent=LOOKS[look].label;
 }
-function setLook(name){look=writeLook(globalThis.localStorage,name);applyLook();}
-function lookMenu(){
- const full=graphics.postprocess;
- const offered=Object.entries(LOOKS).filter(([id])=>full||!lookNeedsPipeline(id));
- activities.menu('Look','How the whole town is drawn. Now: '+LOOKS[look].label+'. '+LOOKS[look].hint+(full?'':'\n\nThis device runs reduced graphics, so only the colour looks are offered.'),[
-  ...offered.filter(([id])=>id!==look).map(([id,l])=>[l.label,()=>{setLook(id);activities.close();say(l.label+' · '+l.hint,3);}]),
-  ['Close',()=>activities.close()]]);
-}
+function setLook(name){look=isLook(name)?name:'none';applyLook();}
+/** The looks this device can draw, in menu order: the free camera's L and Look button step through them. */
+const drawableLooks=()=>Object.keys(LOOKS).filter(id=>graphics.postprocess||!lookNeedsPipeline(id));
+function nextLook(){const ids=drawableLooks();setLook(ids[(ids.indexOf(look)+1)%ids.length]);}
+/** The Look picker (ui/look-picker.js): a picture per look, chosen live over the town. */
+const lookPicker=createLookPicker({looks:LOOKS,available:drawableLooks,current:()=>look,choose:setLook,onOpen:()=>resetInput(),onClose:()=>resetInput()});
+function lookMenu(){lookPicker.show();}
 /** Plain output, for while the ink is away. */
 function renderPlain(){useTownColour(renderer);applyLook();}
 function buildInk(){
@@ -377,9 +387,10 @@ window.__JOHANSSON_LOOK__={get ink(){return !!pipeline;},get inkFailures(){retur
  },
  // Live knobs, so the look can be judged against the town instead of against numbers.
  tune:v=>pipeline?.tune(v),
- // The chosen look (Settings · Look), readable and settable for audits.
+ // The chosen look (Town tools › Look), readable and settable for audits.
  get style(){return look;},setStyle:name=>setLook(name),
  flatten:v=>celPass.setFlatten(v),
+ focus:v=>pipeline?.setLookFocus(v),
  get lights(){return {ambient,bounce,uplight,sun};},
  get state(){return pipeline?.state||null;}};
 let celTick=0;
@@ -563,7 +574,7 @@ $('#photoButton').onclick=openPhotoStudio;
  * Free camera (Town book, or O): the town stops where it stands and the lens flies loose round it (input/free-camera.js).
  * The loop draws the frozen world through renderStill; leaving puts the view straight back, as play recomputes it.
  */
-const freeCamera=createFreeCamera({canvas:renderer.domElement,settings:()=>cameraControls.settings,onChange:()=>resetInput()});
+const freeCamera=createFreeCamera({canvas:renderer.domElement,settings:()=>cameraControls.settings,look:{id:()=>look,label:()=>LOOKS[look].label,next:nextLook},icon:name=>uiIcon(name),swatch:id=>lookSwatch(id,'free'),onChange:()=>resetInput()});
 function openFreeCamera(){
  if(!started||freeCamera.active||photoLoading||photoStudio?.active||inspector?.active||itemViewer?.active||concert?.active||roomLoading||catchingUp||activities?.paused)return;
  toggleDir(false);cameraControls.close();if(pocket?.raised)lowerPocket();spawnScene?.cancel('free camera');
@@ -1267,7 +1278,8 @@ function roomShell(s){
  if(s.id==='sakura-office'){const g=new THREE.Group();g.name='Sakura office storey';room.add(g);activeRoomLayout=buildSakuraOfficeRoom({...shared,room:g,downstairs:()=>takeSakuraStair('down'),evacuate:evacuateSakuraOffice});return;}
  if(s.id==='school'){activeRoomLayout=buildClassroom(shared);return;}
  if(s.id==='community-kitchen'){activeRoomLayout=buildCommunityKitchen(shared);return;}
- if(s.id==='clinic'){activeRoomLayout=buildClinic(shared);return;}
+ // The doctor is at her desk when Nhung's own day has her at work in the clinic (people/clinic-hours.js), read at the door.
+ if(s.id==='clinic'){activeRoomLayout=buildClinic({...shared,doctorIn:()=>world.people.find(p=>p.profile.name==='Nhung')?.g.userData.indoors==='work'});return;}
  if(s.id==='ferry-terminal'){activeRoomLayout=buildPortHall({...shared,naha:takeNahaBoat,upstairs:()=>crossThreshold(async()=>{leaveRoom();const office=SITES.find(site=>site.id==='office');if(office)await enterRoom(office);})});return;}
  if(s.id===CITY_RESTAURANT.id){
   // A fixed scene: no hands in front of the camera, and the dinner menu opens as you sit down.
@@ -1861,8 +1873,8 @@ function visitPlace(s){
  if(!travelProgress(activities.state).unlocked)return markPlace(s);
  if(current)leaveRoom();placeAtEntrance(s);resetInput();toggleDir(false);clearNavigation();drawMap();say(s.title+' · You took a familiar shortcut.',5);return true;
 }
-function toggleDir(open){if(inspector?.active)return;if(open){updateDirectory();document.exitPointerLock?.();resetInput();}$('#directory').classList.toggle('hidden',!open);document.body.classList.toggle('town-menu-open',!!open);$('#directoryButton').setAttribute('aria-expanded',String(open));if(open)$('#closeDirectory').focus();else $('#directoryButton').focus();}
-$('#directoryButton').onclick=()=>toggleDir(true);$('#residentRecordsButton').onclick=()=>{toggleDir(false);activities.residentRecords(directoryCards().map(p=>p.name));};$('#closeDirectory').onclick=()=>toggleDir(false);
+function toggleDir(open){if(inspector?.active)return;if(open){townBook?.home();updateDirectory();document.exitPointerLock?.();resetInput();}$('#directory').classList.toggle('hidden',!open);document.body.classList.toggle('town-menu-open',!!open);$('#directoryButton').setAttribute('aria-expanded',String(open));if(open)$('#closeDirectory').focus();else $('#directoryButton').focus();}
+$('#directoryButton').onclick=()=>toggleDir(true);$('#closeDirectory').onclick=()=>toggleDir(false);
 $('#ferryOperationsButton').onclick=()=>{toggleDir(false);document.exitPointerLock?.();resetInput();ferryOperations?.open();};
 function updateDirectory(){
  {const m=pocketModel(),tile=$('#pocketButton');if(tile){tile.textContent=m.name;tile.setAttribute('aria-label',`Raise the ${m.name} camera (F)`);}}
@@ -2088,6 +2100,7 @@ const hudIcons=dressHud({onBag:()=>{if(started&&!activities.paused){toggleDir(fa
 const quietHud=createQuietHud();
 function cleanView(){if(!started)return;toggleDir(false);quietHud.photo(true);}
 $('#cleanViewButton').onclick=cleanView;
+townBook=setupTownBookHome({onClose:()=>toggleDir(false)});
 $('#freeCameraButton').onclick=openFreeCamera;
 function toggleRunning(){if(!started||activities.paused||inspector?.active||seated)return;setRunning(!touchRunning);}
 // Touch-down works while another finger holds the movement stick; a synthetic click may be suppressed.

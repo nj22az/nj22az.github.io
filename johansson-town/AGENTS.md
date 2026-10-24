@@ -197,9 +197,72 @@ No new people; everything below is data first (`src/commerce/higa-liquor.js`, `s
   08:00–09:30, before the mailbag, sweeping, clearing the filters, emptying the coin boxes and pinning the notices.
   Officer Mori, as near, may not keep a business and sleeps after the night patrol; Tetsuo, as near, has no free hour,
   and mends the machines when asked. The laundry is open 24 hours; Thao washes the family's futon covers on Sundays
-  14:15–15:45, Ms Uezu brings the crew cabin's linen ashore on the first day of her week off, Dr Kakazu washes on
-  Wednesday nights; its noticeboard carries the street's story hooks (the missing cat, the found sandal, the lessons)
+  14:15–15:45, Ms Uezu brings the crew cabin's linen ashore on the first day of her week off, Nhung (the doctor since 22 October)
+  washes the clinic's towels and coats on Wednesday nights; its noticeboard carries the street's story hooks (the missing cat, the found sandal, the lessons)
   and the town calendar's week.
+
+## Owner's decision — 22 October 2026: Nhung is the island doctor
+
+The owner, after the audit of the two Dr Kakazus: "use the best looking one", then "Can they be consolidated into other
+characters? Have this female doctor replace Nhung". Their answers to the follow-up questions settle the rest:
+
+- **Nhung is the island doctor.** She keeps her name, age, family (Kōji, Riku, her sisters) and home at 3 Kitahama, and
+  takes the clinic doctor's look (`avatars/cast.js` Nhung: white coat over a sage shirt, half-rim glasses, hair tied
+  back, white shoes; her bookseller's look is `FORMER_NHUNG_RECIPE`, history only). The clinic room draws her at her desk
+  (`interiors/town-hall.js`, `DOCTOR`/`DOCTOR_TITLE` "Dr Nhung"); her walking body stays indoors there in surgery hours
+  (`workplaces.js` OWN_STAFF_ROOMS), so there is never a second one.
+- **Dr Ken Kakazu is retired** into her (`roster.js` RETIRED `dr-ken`, name `Dr Kakazu`): his patients, pairs, laundry
+  evening, parking bay and the doctor's bag are Nhung's; his flat behind the clinic is retired (no door). RETIRED_HOMES lands
+  `clinic` on itself, because the id also names the clinic, which stays. His drawing and article are history
+  (`RETIRED_RECIPES`, `guide/articles.mjs` RETIRED_ARTICLES).
+- **Her week** (`people/clinic-hours.js`): surgery Monday to Friday 9–12 and 14–17, Saturday 9–12; the town's paper in
+  the evenings at the back bench of the old Front-Row shop (place `paper`, indoors); Saturday afternoon is her own;
+  Sunday she keeps Sakura.
+- **Front-Row's trade is Sakura's**: the books and the stationery and office supplies (`merchandising.js` SUPPLIERS.sakura
+  `stationery`, the accounts' `stationery` lines); the shop floor is unstaffed, the reading copies stay, the last
+  second-hand books and the paper go by the honesty tin, and nobody browses there (`bookshop-visits.js`).
+- **Sakura shuts on Saturdays** (土曜定休; `sakura-rota.js` sakuraClosedDay): Thuan's weekend on Kitano-jima is unchanged,
+  Nhung keeps Sunday, and Higa Liquor's delivery to Sakura is on Fridays (Kōji's round Tuesday and Friday).
+
+## Owner's decision — 22 October 2026: Higa Liquor closes into Sakura
+
+The owner, during the Nhung change: "The sisters basically run commerce and healthcare on the island … maybe we don't
+need a liquor store, Sakura can sell liquor too", then their answers and the finishing brief: "close Higa Liquor. Sakura
+sells and supplies all alcohol, Kōji's round becomes Sakura Trading's, and the building stands shut with a notice on it."
+This supersedes the liquor-shop parts of the 21 October decision above (its bench and coin laundry stand). The task folder
+is `briefs/higa-liquor-closes/`.
+
+- **Higa Liquor is shut for good** (`commerce/higa-liquor.js`): the shutter down at every hour, the doors shut, the lights
+  off, a hand-written 閉店のお知らせ taped to the shutter (`HIGA_NOTICE`: thanks, and お酒は さくら商店へ), read from the
+  street; no new geometry. The fittings and the family kusu stay inside behind the shutter. The 留守 card, the hours and
+  the counter's menu are gone; its sign stays up.
+- **Sakura sells all the alcohol**: the cans of lager in the cold cabinet as before, and the bottles the Higas sold
+  (awamori miniature, the large Umineko, one-cup sake) from the stock room at the till (`commerce/konbini.js`
+  `SAKURA_BOTTLES`), at the Higas' prices; on Saturdays, when Sakura is shut, there is no bottle to take away (the bench's regulars buy
+  Saturday's on Friday; the bars still pour).
+- **Sakura Trading supplies it** (`merchandising.js` SUPPLIERS.sakura `alcohol`, and `alcohol` lines on the accounts of
+  Minato, Sato Ramen, the Coral Bay Bar and Mr Fujita's shed); the economy's Higa business is gone, the bars pay
+  Sakura's trade price for drink (`economy/town-economy.js` `barTrade`), and a product with alcohol must be supplied by
+  `sakura` (`studio/rules.js`).
+- **Kōji's round is Sakura Trading's** (`commerce/trade-round.js` `TRADE_ROUND`): Tuesdays and Fridays from 10:30 on his
+  weeks ashore, loading at the depot in the Quay Warehouse, then Minato, Sato Ramen, the Port Terminal's freight counter
+  (the Coral Bay Bar's ice boxes, for the 14:45 boat: the ferry is at Kitano-jima in the late morning) and Mr Fujita's
+  shed (whose six o'clock van is gone: the round swaps his crate, full for empties, and at six he stands the night's
+  empties back in it), the empties to the crate yard across Main Street, which Sakura Trading rents from Grandmother
+  Higa. The Coral Bay Bar's juice goes on the morning boat, as before. ¥1,500 a round from Sakura's till; the round's book is
+  read at Sakura's back office. In his weeks aboard the customers collect, as before.
+- **Grandmother Higa keeps only the bathhouse**: the bandai 10:00–12:00 and 13:00–17:00, the garden and the verandah;
+  Yui no longer minds a counter on Saturdays.
+- **The yuntaku bench stays**: Tetsuo and Mac still sit out front of an evening with a bottle from Sakura; the bench no
+  longer depends on the shop's hours.
+
+## Owner's decision — 22 October 2026 (night): the money model is closed for now
+
+The owner: "close the money model for now, we need to simplify background processes." `src/economy/town-economy.js`
+(the year-by-day simulation of households, shops, the ferry's orders and the bars) is not extended or wired into the
+game; its open issues (it does not know Sakura's Saturday closing) are closed with it. It never ran in the game: only
+`tests/town-economy.test.mjs` runs it. `economy/goods.js` stays in use. The next step the owner named is to simplify the
+background processes (`src/edition.js` lists them per edition); ask before switching any of them off.
 
 ## Verification
 
@@ -240,3 +303,19 @@ table's nearer end. Her hands meet what they take and nothing passes through the
 `tests/izakaya-bar.test.mjs`); on Linux the bottle tips over the glass with its stream and the tap's lever is pulled
 (`BUDGET.pouring`), on the web the glass fills as she holds the bottle over it. Dishes are cooked as before; a resident's
 food still appears with their drink.
+
+
+## Owner's decision — 22 October 2026: withdraw current fighting
+
+The ordinary browser and Linux game are peaceful. Festival bouts, tournaments,
+spectating, insult-triggered fights, attack controls, damage/rewards and the
+combat-dependent cave descent are withdrawn. Preserve normal conversations,
+apologies, peaceful festivals, relationships, dining, ferry operations and saves.
+Old active combat/cave/arena saves recover at the safe harbour opening without
+losing property, identity or travel progress.
+
+Do not restore dormant combat launchers or payloads. Shared Studio/story poses
+and costumes remain artistic assets. A future dedicated Virtua Fighter/Tekken
+inspired mode requires separately approved work; it is not part of this build.
+Implementation, release and verification are recorded in
+[the combat-withdrawal handover](briefs/HANDOFF-COMBAT-WITHDRAWAL-2026-10-22.md).

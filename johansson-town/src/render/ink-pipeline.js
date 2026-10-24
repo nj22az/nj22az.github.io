@@ -1,5 +1,7 @@
+import {createLookBuffers} from './look-buffers.js';
+import {drawWithLookMaterials} from './look-materials.js';
 import * as THREE from '../../vendor/three.module.js';
-import {lookFragment} from './looks.js';
+import {lookFragment,lookNormals,lookSurfaceStrokes} from './looks.js';
 
 /**
  * The 3D-to-2D pass: what turns a lit 3D town into a drawn one.
@@ -204,8 +206,9 @@ function makeQuad(fragmentShader,uniforms){
  * @param {number} [options.samples] MSAA samples for the scene target (WebGL2 only)
  * @param {boolean} [options.preferHalfFloat] Allow eight-bit targets on constrained devices
  * @param {number} [options.ink] ink colour
+ * @param {boolean} [options.lightLooks] draw the lighter version of a look where it has one (phones and tablets)
  */
-export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxaa=true,samples=4,preferHalfFloat=true,ink=0x2b2a33,inkOptions={},gradeOptions={}}={}){
+export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxaa=true,samples=4,preferHalfFloat=true,ink=0x2b2a33,inkOptions={},gradeOptions={},lightLooks=false}={}){
  const capabilities=renderer.capabilities||{};
  // Half-float keeps the grade from banding. Where it is not available the chain
  // still runs, just on eight bits.
@@ -259,15 +262,15 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
  const fxaaPass=makeQuad(FXAA_FRAGMENT,{tDiffuse:{value:null},uTexel:{value:new THREE.Vector2(1,1)}});
 
  const size=new THREE.Vector2(0,0);
- const state={ink:true,grade:true,fxaa,scale:superScale,samples:msaa,hdr:halfFloat,look:'none'};
+ const state={ink:true,grade:true,fxaa,scale:superScale,samples:msaa,hdr:halfFloat,look:'none',focusDistance:0,focusRange:3,focusMode:0};
  // One pass per look, compiled the first time it is chosen; the target only once a look needs it.
- const lookPasses=new Map();
+ const lookPasses=new Map();const auxiliary=createLookBuffers(renderer);let view=null;
  let rtLook=null;
  function lookPass(name){
   if(lookPasses.has(name))return lookPasses.get(name);
-  const fragment=lookFragment(name);
+  const fragment=lookFragment(name,{light:lightLooks,depth:true,normals:lookNormals(name),surfaceStrokes:lookSurfaceStrokes(name)});
   const pass=fragment?makeQuad(fragment,{
-   tDiffuse:{value:null},tDepth:{value:rtScene.depthTexture},
+   tDiffuse:{value:null},tDepth:{value:rtScene.depthTexture},tNormal:{value:null},uDepthPacked:{value:0},uProjectionInverse:{value:new THREE.Matrix4()},uCameraWorld:{value:new THREE.Matrix4()},uComic:{value:0},uFocusMode:{value:0},uFocusDistance:{value:0},uFocusRange:{value:3},
    uTexel:{value:new THREE.Vector2(1,1)},uResolution:{value:new THREE.Vector2(2,2)},
    uNear:{value:0.1},uFar:{value:220},uSkyDepth:{value:settings.skyDepth}
   }):null;
@@ -317,10 +320,11 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
   /** Time of day still lifts the picture; with tone mapping off the grade carries it. */
   /** Chooses a look by name (looks.js); an unknown name is Natural. */
   setLook(name){state.look=lookFragment(name)?name:'none';},
+  setLookFocus({distance=0,range=3,mode='depth'}={}){if(!['depth','tilt'].includes(mode)||!Number.isFinite(distance)||distance<0||distance>2000||!Number.isFinite(range)||range<.1||range>1000)throw Error('Invalid focus distance or range.');state.focusMode=mode==='tilt'?1:0;state.focusDistance=distance;state.focusRange=range;},
   setExposure(value){compositePass.material.uniforms.uExposure.value=value;},
   /** Camera clip planes feed the depth linearisation; re-read them each frame. */
   setCamera(camera){
-   if(!camera)return;
+   if(!camera)return;view=camera;
    compositePass.material.uniforms.uNear.value=camera.near;
    compositePass.material.uniforms.uFar.value=camera.far;
   },
@@ -335,7 +339,8 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
    try{
     renderer.setRenderTarget(rtScene);
     renderer.clear();
-    draw(renderer);
+    drawWithLookMaterials(renderer,state.look,draw);
+    if(view&&lookNormals(state.look))auxiliary.render(draw,width,height);
 
     // Ink and grade share one draw and one sample of the scene colour. A
     // disabled ink/grade changes uniforms, never the linear -> sRGB conversion.
@@ -359,6 +364,7 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
      const u=look.material.uniforms,source=compositePass.material.uniforms;
      u.tDiffuse.value=(state.fxaa?rtLook:rtColour).texture;
      u.uTexel.value.set(1/width,1/height);u.uResolution.value.set(width,height);
+     u.uFocusMode.value=state.focusMode;u.uFocusDistance.value=state.focusDistance;u.uFocusRange.value=state.focusRange;u.tNormal.value=auxiliary.target?.texture||null;if(view){u.uProjectionInverse.value.copy(view.projectionMatrixInverse);u.uCameraWorld.value.copy(view.matrixWorld);}
      u.uNear.value=source.uNear.value;u.uFar.value=source.uFar.value;
      renderer.setRenderTarget(null);
      look.render(renderer);
@@ -372,6 +378,7 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
   /** The target the town is drawn into: shaders compiled ahead of time are compiled for it (game.js compileTown). */
   get sceneTarget(){return rtScene;},
   dispose(){
+   auxiliary.dispose();
    [rtScene,rtColour,rtLook].forEach(rt=>rt?.dispose());
    [compositePass,fxaaPass,...lookPasses.values()].forEach(p=>p?.dispose());
   }

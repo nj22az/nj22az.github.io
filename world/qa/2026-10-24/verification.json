@@ -1,0 +1,51 @@
+{
+  "views": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false,
+      "nav": [
+        "Projects",
+        "World",
+        "Blog",
+        "Sjöskolan"
+      ],
+      "hero": "/assets/world/sakura-current.webp?v=20261024"
+    },
+    {
+      "name": "ipad",
+      "width": 834,
+      "height": 1112,
+      "overflow": false,
+      "nav": [
+        "Projects",
+        "World",
+        "Blog",
+        "Sjöskolan"
+      ],
+      "hero": "/assets/world/sakura-current.webp?v=20261024"
+    },
+    {
+      "name": "phone",
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "nav": [
+        "Projects",
+        "World",
+        "Blog",
+        "Sjöskolan"
+      ],
+      "hero": "/assets/world/sakura-current.webp?v=20261024"
+    }
+  ],
+  "redirects": [
+    "/world/#linux",
+    "/world/#downloads",
+    "/world/#demo-evidence",
+    "/world/#changes"
+  ],
+  "errors": [],
+  "linuxDownload": "0.2.17 (existing published package)"
+}

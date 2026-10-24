@@ -13,7 +13,8 @@ import {stockSpec} from '../src/commerce/shop-stock.js';
 import {MAGAZINE_RACK} from '../src/world/interiors/sakura-magazine-rack.js';
 import {SAKURA_LAYOUT} from '../src/world/interiors/sakura-layout.js';
 
-const DT=1/60,EVENING=1115;
+// Her evening errand starts when surgery ends at 17:00 (clinic-hours.js, commuter-schedule.js Nhung.finish).
+const DT=1/60,EVENING=1025;
 const CHAT='chatting with Thuan at the counter';
 function fixture({finished=false,player=null}={}){
  installDOM();const scene=new THREE.Scene(),street=new THREE.Group();scene.add(street);
@@ -55,8 +56,8 @@ function walkUntil(f,condition,seconds=300){
  assert.fail('Nhung did not finish her real evening route within '+seconds+' seconds: '+f.aya.g.position.toArray()+' '+f.aya.g.userData.activity);
 }
 function leaveEvening(f){
- // Her visit to Thuan at the counter runs an hour after the bookshop shuts (social.js AFTER_WORK).
- f.setMinutes(1172);assert.notEqual(residentPlan(f.aya.profile,f.minutes,false,f.state).place,'market');
+ // Her visit to Thuan at the counter runs an hour after surgery ends (social.js AFTER_WORK); then supper at home.
+ f.setMinutes(1082);assert.notEqual(residentPlan(f.aya.profile,f.minutes,false,f.state).place,'market');
  walkUntil(f,()=>!f.aya.g.userData.inMarket);assert.notEqual(f.aya.g.parent,f.shop.group,'Nhung crosses the real exit and returns to her street parent');
 }
 

@@ -32,15 +32,18 @@ test('Thuan spends the weekend at home on Kitano-jima: the Friday 22:00 boat out
  assert.equal(thuan.homeAddress,'Kitano hamlet, Kitano-jima');
 });
 
-test('Sakura is Thuan’s outright and keeps shop hours: Thuan on weekdays, Nhung at the weekend, nobody at night; Chin, the motorman, never',()=>{
+// Since 22 October 2026 (the owner) Nhung is the island doctor: surgery on Saturday morning, so Sakura shuts on Saturdays.
+test('Sakura is Thuan’s outright and keeps shop hours: Thuan on weekdays, shut on Saturday, Nhung on Sunday, nobody at night; Chin, the motorman, never',()=>{
  assert.equal(SUPPLIERS.sakura.owner,'Thuan');assert.deepEqual([...SAKURA_STAFF],['Thuan','Nhung']);assert.deepEqual([...PLACES.sakura.keepers],['Thuan','Nhung']);
- assert.equal(sakuraClerkAt(at(1,600)),'Thuan');assert.equal(sakuraClerkAt(at(3,600)),'Nhung');assert.equal(sakuraClerkAt(at(4,1229)),'Nhung');
- for(const day of [1,3,5]){for(const m of [1230,180,420,539]){assert.equal(sakuraClerkAt(at(day,m)),null,'nobody at the counter at '+m);assert.equal(sakuraOpenAt(at(day,m)),false,'shut at '+m);}assert.equal(sakuraOpenAt(at(day,540)),true);assert.equal(sakuraOpenAt(at(day,1229)),true);}
+ assert.equal(sakuraClerkAt(at(1,600)),'Thuan');assert.equal(sakuraClerkAt(at(4,600)),'Nhung');assert.equal(sakuraClerkAt(at(4,1229)),'Nhung');
+ for(let m=0;m<1440;m+=5){assert.equal(sakuraClerkAt(at(3,m)),null,'shut all Saturday: '+m);assert.equal(sakuraOpenAt(at(3,m)),false,'shut all Saturday: '+m);}
+ for(const day of [1,4,5]){for(const m of [1230,180,420,539]){assert.equal(sakuraClerkAt(at(day,m)),null,'nobody at the counter at '+m);assert.equal(sakuraOpenAt(at(day,m)),false,'shut at '+m);}assert.equal(sakuraOpenAt(at(day,540)),true);assert.equal(sakuraOpenAt(at(day,1229)),true);}
  for(let m=0;m<1440;m+=5)for(const day of [1,3])assert.notEqual(sakuraClerkAt(at(day,m)),'Grandmother Sakurai','the retired owner keeps no counter at '+m);
  for(let m=0;m<1440;m+=5)for(const day of [1,3])assert.notEqual(sakuraClerkAt(at(day,m)),'Chin','Chin has no Sakura shift at '+m);
  assert.ok(isWeekend(at(3,0))&&isWeekend(at(4,1439))&&!isWeekend(at(5,0)));
- for(let m=0;m<1440;m+=5)assert.equal(residentPlan(profile('Nhung'),at(3,m)).place==='bookshop',false,'Front Row is closed on Saturday: '+m);
- assert.equal(residentPlan(profile('Nhung'),at(3,700)).place,'market','Nhung minds Sakura on Saturday');
+ for(const day of [3,4])for(let m=0;m<1440;m+=5)assert.equal(residentPlan(profile('Nhung'),at(day,m)).place==='bookshop',false,'nobody browses at Front-Row: '+m);
+ assert.equal(residentPlan(profile('Nhung'),at(3,600)).place,'work','Saturday morning surgery');assert.notEqual(residentPlan(profile('Nhung'),at(3,900)).place,'work','and the afternoon is hers');
+ assert.equal(residentPlan(profile('Nhung'),at(4,700)).place,'market','Nhung minds Sakura on Sunday');
  assert.equal(residentPlan(profile('Chin'),at(1,600)).place,'ferry','Chin is aboard as the motorman by day');assert.equal(residentPlan(profile('Chin'),at(1,1300)).place,'ferry');
  assert.notEqual(residentPlan(profile('Chin'),at(1,1400)).place,'ferry','and ashore after he signs off');
 });

@@ -1,3 +1,6 @@
+import {authoredSkirtGeometry,authoredSkirtMaterial} from './authored-skirt.js';
+import {skirtSpec,skirtRadiusAt,tailoredSkirtGeometry} from './skirt-shape.js';
+import {longFringeGeometry} from './long-fringe.js';
 import {SWEPT_PONYTAIL} from './swept-ponytail-mesh.js';
 import {POLO_COLLAR} from './contrast-polo-mesh.js';
 import {THUAN_SAILOR_OUTFIT,AFTERBATH,houseDressColour} from './outfit-constants.js';
@@ -24,7 +27,9 @@ import {ASSET_HATS,isAssetHat,assetHatPieces,hatTuck,weaveTexture} from './hat-a
  *
  * The body is one skinned mesh: every part -- torso, limbs, shoes, hair -- is a
  * simple rounded shape painted with vertex colour and bound rigidly to one bone, so the
- * whole person is a single draw call and moves like a jointed toy, which is the look.
+ * legacy body is a single draw call and moves like a jointed toy, which is the look.
+ * The optional authored panel skirt is a third main mesh with its own cloth
+ * material, bound to the same skeleton and fitted with the shared cloth path.
  * The head is the second draw call: a sphere whose front carries the painted face. The
  * hat is the last range of the body, so it can be taken off and hung up.
  *
@@ -52,19 +57,20 @@ const STAGES=Object.freeze({
 export function measure(recipe){
  const r=normalizeRecipe(recipe);
  const stage=STAGES[r.age]||STAGES.adult;
+ const studio=r.body.proportion==='studio';
  const H=stage.base+r.body.height*stage.span,k=H/1.6,build=r.body.build;
- const profile=headProfile(r.head),Rh=(.19+r.head.size*.055)*k*stage.head*(r.body.proportion==='rounded'?1.30:1),headSX=profile.width,headSY=profile.height;
+ const profile=headProfile(r.head),Rh=(.19+r.head.size*.055)*k*stage.head*(studio?.82:1)*(r.body.proportion==='rounded'?1.30:1),headSX=profile.width,headSY=profile.height;
  const rounded=r.body.proportion==='rounded';
  const neck=.055*k,body=H-Rh*2*headSY-neck;
- const leg=body*(rounded?.37:.47),torso=body-leg;
+ const leg=body*(studio?.60:rounded?.37:.47),torso=body-leg;
  const foot=.07*k,thigh=(leg-foot)*.5,shin=thigh;
- const legR=(.058+build*.024)*k,armR=(.045+build*.016)*k;
+ const legR=(.058+build*.024)*k*(studio?.9:1),armR=(.045+build*.016)*k*(studio?.85:1);
  const feminine=r.body.silhouette==='feminine',masculine=r.body.silhouette==='masculine';
- const width=(.3+build*.15)*k*(rounded?1.20:1)*(feminine?.94:masculine?1.08:1),depth=(.2+build*.09)*k*(rounded?1.15:1);
- const hips=width*(feminine?1.13:masculine?.9:1),waistRatio=feminine?.79:masculine?.98:.96;
- const upper=(rounded?.18:.22)*k,fore=(rounded?.16:.2)*k,hand=.056*k;
+ const width=(.3+build*.15)*k*(rounded?1.20:1)*(feminine?.94:masculine?1.08:1)*(studio?.84:1),depth=(.2+build*.09)*k*(rounded?1.15:1)*(studio?.87:1);
+ const hips=width*(feminine?1.13:masculine?.9:1),waistRatio=studio?(feminine?.76:.88):feminine?.79:masculine?.98:.96;
+ const upper=(rounded?.18:.22)*k*(studio?.92:1),fore=(rounded?.16:.2)*k*(studio?.92:1),hand=.056*k*(studio?.9:1);
  const hipY=leg,chestY=hipY+torso*.5,neckY=hipY+torso,headY=neckY+neck;
- return {H,k,Rh,headSX,headSY,profile,neck,torso,leg,foot,thigh,shin,legR,armR,width,hips,waistRatio,depth,upper,fore,hand,hipY,chestY,neckY,headY,
+ return {studio,panelSkirt:r.outfit.bottom==='skirt'&&r.outfit.skirtCut==='panel',skirtLength:r.outfit.skirtLength,skirtFlare:r.outfit.skirtFlare,H,k,Rh,headSX,headSY,profile,neck,torso,leg,foot,thigh,shin,legR,armR,width,hips,waistRatio,depth,upper,fore,hand,hipY,chestY,neckY,headY,
   // The arm hangs from just inside the torso's edge, below its top, so the shoulder
   // rounds over it instead of the arm standing clear of the body.
   headCentre:headY+Rh*headSY*.94,shoulderX:width/2-armR*.2,shoulderY:neckY-.075*k,hipX:hips*.24,
@@ -131,16 +137,17 @@ function latheRadius(prof,t){for(let i=1;i<prof.length;i++){const [r0,y0]=prof[i
  */
 function part(list,geometry,bone,hex,matrix,uvAt=null){
  let g=geometry.index?geometry.toNonIndexed():geometry.clone();
+ const authoredUV=geometry.userData.keepUV?g.attributes.uv.array.slice():null;
  for(const key of Object.keys(g.attributes))if(!['position','normal'].includes(key))g.deleteAttribute(key);
  if(matrix)g.applyMatrix4(matrix);
- const n=g.attributes.position.count,uv=new Float32Array(n*2);
+ const n=g.attributes.position.count,uv=authoredUV||new Float32Array(n*2);
  // Every part samples the garment texture; all but the torso sample its empty strip.
  if(uvAt){
   const P=g.attributes.position,q=new THREE.Vector3();
   for(let i=0;i<n;i++){q.fromBufferAttribute(P,i);const [u,v]=uvAt(q);uv[i*2]=u;uv[i*2+1]=v;}
   // A triangle across the back seam would sweep the whole texture: bring it round.
   for(let i=0;i<n;i+=3){const us=[uv[i*2],uv[i*2+2],uv[i*2+4]];if(Math.max(...us)-Math.min(...us)>.5)for(let j=0;j<3;j++)if(uv[(i+j)*2]<.5)uv[(i+j)*2]+=1;}
- }else for(let i=0;i<n;i++){uv[i*2]=PLAIN_UV[0];uv[i*2+1]=PLAIN_UV[1];}
+ }else if(!geometry.userData.keepUV)for(let i=0;i<n;i++){uv[i*2]=PLAIN_UV[0];uv[i*2+1]=PLAIN_UV[1];}
  g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  const colours=new Float32Array(n*3),index=new Uint16Array(n*4),weight=new Float32Array(n*4);
  const paint=typeof hex==='function'?hex:null,share=typeof bone==='function'?bone:null;
@@ -232,6 +239,7 @@ const HAIR=Object.freeze({
  crop:{front:.46,side:.02,back:-.5,radius:1.07,faceHalf:.78},
  sidepart:{front:.4,swoop:.28,side:0,back:-.5,radius:1.08,faceHalf:.78},
  bob:{front:.24,side:-.62,back:-.66,radius:1.12,faceHalf:.64},
+ longfringe:{fringe:.30,front:.24,side:-.5,back:-.7,radius:1.10,faceHalf:.72},
  long:{front:.3,side:-.62,back:-.7,radius:1.11,faceHalf:.64},
  ponytail:{front:.44,side:.02,back:-.25,radius:1.08,faceHalf:.78},
  braids:{front:.4,swoop:.26,side:-.12,back:-.6,radius:1.08,faceHalf:.74},
@@ -314,6 +322,7 @@ function cutHairCap(style,flip,spec){
   }
   // The fringe: straight across (arched a little, so it frames the brow), or swept down to one side from a parting.
   let front=spec.front+.06*(v.x/spec.faceHalf)**2;
+  if(spec.fringe)front+=spec.fringe*Math.pow(.5+.5*Math.cos((v.x+.08)*24),10);
   if(spec.swoop)front-=spec.swoop*smooth(v.x*side,-.3,.5);
   if(spec.centre)front-=spec.centre*smooth(Math.abs(v.x),.04,.42);
   // Outside the face's opening (its top corners rounded, so the line turns down at the temples in a curve as hair
@@ -326,9 +335,10 @@ function cutHairCap(style,flip,spec){
   return Math.min(Math.min(outFace,c)-hh*hh*kk*.25,ear*.1);
  };
  // (A piece that covers only part of the head, a beard, takes a finer patch of the sphere: spec.patch.)
- const sphere=spec.patch?new THREE.SphereGeometry(1,...spec.patch):new THREE.SphereGeometry(1,64,44),S=sphere.attributes.position,T=sphere.index.array;
+ const segments=spec.fringe?128:64,rings=spec.fringe?88:44;
+ const sphere=spec.patch?new THREE.SphereGeometry(1,...spec.patch):new THREE.SphereGeometry(1,segments,rings),S=sphere.attributes.position,T=sphere.index.array;
  // The sphere's seam (its first and last meridian) made exactly one, so no pinholes show along it.
- if(!spec.patch)for(let iy=0;iy<=44;iy++)S.setXYZ(iy*65+64,S.getX(iy*65),S.getY(iy*65),S.getZ(iy*65));
+ if(!spec.patch)for(let iy=0;iy<=rings;iy++){const i=iy*(segments+1);S.setXYZ(i+segments,S.getX(i),S.getY(i),S.getZ(i));}
  const pts=[],fs=new Float32Array(S.count);
  for(let i=0;i<S.count;i++){pts.push(new THREE.Vector3().fromBufferAttribute(S,i));fs[i]=fieldOf(pts[i]);}
  const xyz=[],keep=[],field=[],tris=[],at=new Map(),cuts=new Map(),q=new THREE.Vector3();
@@ -396,6 +406,7 @@ function addHair(list,recipe,m){
    g.setIndex(indices);g.computeVertexNormals();part(list,g,asset.kind==='tail'?tailShare:'head',new THREE.Color(asset.colour==='scalp'?recipe.body.skin:c).multiplyScalar(asset.shade).getStyle());
   }
  }
+ if(style==='longfringe')part(list,longFringeGeometry(recipe,m),tailShare,c);
  if(style==='long'){ball(list,R*.95,at(0,cy-R*.72,-R*.55),tailShare,c,[1.05,1.25,.5]);}
  if(style==='ponytail'){ball(list,R*.34,at(0,cy+R*.1,-R*1.05),'head',c,[1,1,1]);ball(list,R*.3,at(0,cy-R*.45,-R*1.18),tailShare,c,[.9,1.9,.9]);ball(list,R*.16,at(0,cy+R*.1,-R*1.2),'head',recipe.outfit.accent);}
  if(style==='bun'){ball(list,R*.42,at(0,cy+R*.95,-R*.3),'head',c);}
@@ -455,6 +466,7 @@ function addHair(list,recipe,m){
  // How much each hair point is tucked (head-cover.js): a fitted cap from its band up, a kerchief under its cloth, the
  // other full hats everything above the line y = 0.3.
  const tuck=recipe.outfit.hat==='police'?policeCapTuck:recipe.outfit.hat==='kerchief'?kerchiefTuck:(x,y)=>y>.3?1:0;
+ if(style==='longfringe')for(const g of list.slice(hairStart))g.attributes.ink.array.fill(.35);
  if(!HAIR_OUT_HATS.includes(recipe.outfit.hat))for(const g of list.slice(hairStart)){
   const pos=g.attributes.position;g.userData.hatHair={position:pos.array.slice(),normal:g.attributes.normal.array.slice()};for(let i=0;i<pos.count;i++){
    const x=pos.getX(i)/S[0],y=(pos.getY(i)-m.headCentre)/S[1],z=pos.getZ(i)/S[2],r=Math.hypot(x,y,z);
@@ -798,7 +810,7 @@ function addNecklace(list,recipe,m,colour){
 }
 
 /** Long hair, a lipstick or no beard and a slight build: a swimming costume, not trunks. */
-export const wearsSwimTop=recipe=>recipe.facial.style==='none'&&(['bob','long','ponytail','sweptponytail','braids','longbraids','bun','perm','shoulder','pigtails','twinbuns'].includes(recipe.hair.style)||recipe.mouth.colour!=='#b8544a');
+export const wearsSwimTop=recipe=>recipe.facial.style==='none'&&(['longfringe','bob','long','ponytail','sweptponytail','braids','longbraids','bun','perm','shoulder','pigtails','twinbuns'].includes(recipe.hair.style)||recipe.mouth.colour!=='#b8544a');
 /**
  * Swimwear (wear('swim')), modest, for Umi-no-yu's shared rock bath and the beach: a one-piece costume from the hips to
  * straight across above the bust, on two straps, with short legs, for anyone who would wear a swimsuit top; bath trunks to
@@ -873,7 +885,7 @@ function addBody(list,recipe,m,swim=false){
  const lathe=new THREE.LatheGeometry(prof.map(([r,y])=>new THREE.Vector2(r,y)),28);
  // The hem sits on a row of the lathe, so it is a clean line rather than a zigzag.
  // Underwear sits lower than a waistband.
- const waist=hipY+m.torso*(briefs?.05:.13);
+ const waist=m.panelSkirt&&!swim?skirtSpec(m).waist:hipY+m.torso*(briefs?.05:.13);
  // Striped trousers (bottomPattern 'stripes'): the stripes run down the legs and round the seat, one lathe column each.
  const stripes=bottomStripes(o,bottom,swim);
  const torsoColour=p=>{
@@ -882,8 +894,11 @@ function addBody(list,recipe,m,swim=false){
   if(p.y<waist)return stripes&&Math.hypot(p.x/(W/2),p.z/(D/2))>.55?stripes(p,0,28,W/2,D/2):bottom;
   // Under a tank top the body is bare; the vest is its own garment, added below.
   if(tank||running)return skin;
-  // An open front shows the shirt under it (the accent colour); the happi coat's front is painted (garment.js).
-  if(['jacket','cardigan'].includes(o.top)&&p.z>D*.18&&Math.abs(p.x)<W*.13)return o.accent;
+  // An open front shows the shirt under it (the accent colour); the happi coat's front is painted (garment.js). It is
+  // the lathe's front columns, chosen by their angle round the body (π/14, the first column either side of the middle,
+  // the band the old measure across picked down a straight chest): by distance across, a waist narrower than the chest
+  // let the next column's triangles in and the shirt's edge zigzagged, and so did the shoulders where they round in.
+  if(['jacket','cardigan'].includes(o.top)&&p.z>D*.18&&Math.abs(Math.atan2(p.x*D,p.z*W))<Math.PI/14)return o.accent;
   if(o.top==='sundress'&&(p.y-hipY)/m.torso>.78)return skin;
   return top;
  };
@@ -906,6 +921,7 @@ function addBody(list,recipe,m,swim=false){
   }
  }
  if(running)runningShirt(list,recipe,m,top);
+ if(!swim&&o.top==='stripedvest')layeredStripedVest(list,recipe,m);
  // A one-piece costume: the torso itself is painted (torsoColour) to a clean line along a row of the lathe, and two
  // flat straps run from it over the shoulders and down the back to it again.
  if(onePiece)addStraps(list,bodyVolume(recipe,m),m,{x:W/2*.4,from:SWIMSUIT.top-.04,hw:.014*m.k,th:.003*m.k,gap:.002*m.k,colour:bottom,skin:'chest'});
@@ -961,10 +977,10 @@ function addBody(list,recipe,m,swim=false){
  if(!swim&&o.top==='apron'){
   const topY=hipY+m.torso*.75,bottomY=hipY-m.thigh*.78;
   const apron=new THREE.PlaneGeometry(W*.7,topY-bottomY,8,14);apron.translate(0,(topY+bottomY)/2,0);
-  const positions=apron.attributes.position,skirt=['skirt','longskirt'].includes(o.bottom),len=o.bottom==='longskirt'?m.thigh+m.shin*.85:m.thigh*.9;
+  const positions=apron.attributes.position,skirt=['skirt','longskirt'].includes(o.bottom),len=o.bottom==='longskirt'?m.thigh+m.shin*.85:m.thigh*.9,cut=o.bottom==='skirt'?skirtSpec(m):null;
   for(let i=0;i<positions.count;i++){
    const y=positions.getY(i),t=(y-hipY)/m.torso;
-   const radius=y>=hipY?W/2*latheRadius(prof,t):skirt?THREE.MathUtils.lerp(m.hips*.53,m.hips*.66+len*.22,THREE.MathUtils.clamp((hipY+.03-y)/len,0,1)):W*.52;
+   const radius=y>=hipY?W/2*latheRadius(prof,t):cut?skirtRadiusAt(cut,(cut.waist-y)/cut.length):skirt?THREE.MathUtils.lerp(m.hips*.53,m.hips*.66+len*.22,THREE.MathUtils.clamp((hipY+.03-y)/len,0,1)):W*.52;
    const x=positions.getX(i)*(y>hipY?1-THREE.MathUtils.clamp(t,0,1)*.25:1);
    positions.setXYZ(i,x,y,radius*D/W*Math.sqrt(Math.max(.05,1-(x/radius)**2))+.025*m.k);
   }apron.computeVertexNormals();
@@ -1062,8 +1078,8 @@ function addBody(list,recipe,m,swim=false){
  // The house dress's skirt and an older woman's swimsuit's little skirt are cloth round the legs (addHullSkirt).
  if(b==='housedress')addHullSkirt(list,recipe,m,'housedress',bottom);
  if(b==='swim'&&!bare&&wearsSwimSkirt(recipe))addHullSkirt(list,recipe,m,'swim',bottom);
- if(DRESS_BOTTOMS.includes(b)){
-  const len=b==='skirt'||b==='pleatedskirt'?m.thigh*.9:m.thigh+m.shin*.85;
+ if(DRESS_BOTTOMS.includes(b)&&!(b==='skirt'&&o.skirtCut==='panel'&&!swim)){
+  const len=skirtSpec(m,b).length;
   // The skirt hangs from the hips and, lower down, goes with the legs: seated, it lies on the lap; and a long skirt,
   // below the knee, goes with the shins, so seated it falls over them instead of sticking out past the knees like a tube.
   const drape=p=>{
@@ -1074,13 +1090,19 @@ function addBody(list,recipe,m,swim=false){
    const shin=b==='longskirt'?THREE.MathUtils.smoothstep(hipY-p.y,m.thigh*.82,m.thigh*1.02):0;
    return [['hips',1-leg],['thighL',leg*(1-shin)*w],['thighR',leg*(1-shin)*(1-w)],['kneeL',leg*shin*w],['kneeR',leg*shin*(1-w)]];
   };
-  const skirt=b==='pleatedskirt'?pleatedSkirtGeometry(m,len):new THREE.CylinderGeometry(m.hips*.53,m.hips*.66+len*.22,len,32,8,true);
+  const skirt=b==='skirt'?tailoredSkirtGeometry(m):b==='pleatedskirt'?pleatedSkirtGeometry(m,len):new THREE.CylinderGeometry(m.hips*.53,m.hips*.66+len*.22,len,32,8,true);
   const hem=hemSpec(recipe,m);
   const cloth=part(list,skirt,hem?quarterShare(hem,drape):drape,o.bottomPattern==='plaid'?(p=>{const vertical=Math.floor((Math.atan2(p.x,p.z)*12/Math.PI))%4===0,horizontal=Math.floor((hipY-p.y)/(.06*m.k))%4===0;return vertical||horizontal?o.accent:bottom;}):b==='pleatedskirt'?(p=>{
    const angle=Math.atan2(p.x,p.z*W/D),phase=((angle/(Math.PI*2)*12)%1+1)%1;
    const crease=Math.min(phase,1-phase)<.13,down=(waist-p.y)/len;
    return crease&&down>.12?new THREE.Color(bottom).multiplyScalar(.87).getStyle():bottom;
-  }):bottom,M(0,waist-len/2,0,0,0,0,1,1,D/W));cloth.userData.fit=2;
+  }):bottom,M(0,waist-len/2,0,0,0,0,1,1,D/W));
+  if(b==='skirt'){
+   // The lining has real thickness, but no second ink shell poking through its hem.
+   const P=cloth.attributes.position,N=cloth.attributes.normal,I=cloth.attributes.ink;
+   for(let i=0;i<P.count;i++)I.setX(i,N.getX(i)*P.getX(i)+N.getZ(i)*P.getZ(i)<0?0:.55);
+  }
+  cloth.userData.fit=2;
  }
 }
 
@@ -1338,6 +1360,30 @@ function laidFrames(vol,points){
  * on the shoulders that run down over the shell's edge. Its skin is the torso's own at every height.
  */
 export const RUNNING_VEST=Object.freeze({hem:.02,neckFront:.8,neckBack:.86,straps:.92,armhole:.7,strapAt:.52,gap:.006});
+function layeredStripedVest(list,recipe,m){
+ const vol=bodyVolume(recipe,m),W=m.width,D=m.depth,k=m.k;
+ const skin=p=>{const chest=THREE.MathUtils.smoothstep(p.y,m.hipY+m.torso*.15,m.hipY+m.torso*.55);return [['hips',1-chest],['chest',chest]];};
+ const make=(points,hw,across=3)=>{
+  const frames=laidFrames(vol,points),g=part(list,clothStrip(vol,frames,{hw,th:.002*k,gap:.007*k,across}).geometry,skin,recipe.outfit.topColour);
+  g.attributes.ink.array.fill(.22);
+ };
+ for(const side of [-1,1]){
+  const points=[.38,.48,.60,.72,.84,.94].map(t=>{
+   const x=side*W*(.32-.04*(t-.38)),r=latheRadius(vol.prof,t);
+   return new THREE.Vector3(x,m.hipY+t*m.torso,D/2*Math.sqrt(Math.max(.001,r*r-(x/(W/2))**2)));
+  });
+  make(points,W*.105);
+  const x=side*W*.27,top=vol.tAt(Math.abs(x)/(W/2)+.02);
+  const arc=[];
+  for(const zsign of [1,-1])for(let i=0;i<=6;i++){
+   const t=THREE.MathUtils.lerp(.89,top,zsign===1?i/6:1-i/6),r=latheRadius(vol.prof,t);
+   arc.push(new THREE.Vector3(x,m.hipY+t*m.torso,zsign*D/2*Math.sqrt(Math.max(0,r*r-(x/(W/2))**2))));
+  }
+  make(arc,W*.10,2);
+ }
+ make([.38,.52,.68,.82,.91].map(t=>vol.surf(Math.PI,t)),W*.37,6);
+}
+
 function runningShirt(list,recipe,m,colour){
  const vol=bodyVolume(recipe,m),V=RUNNING_VEST,W=m.width,D=m.depth,k=m.k;
  // Its top edge round the body, by the angle from the front: the scoop, the strap's root, the armhole, the back's scoop.
@@ -1465,7 +1511,7 @@ function addTenugui(list,recipe,m){
  * - the end tucked in at the back of the crown, a flap with its band near the edge, coming out from under that turn.
  * Long hair needs more towel round it: a fuller dome (LONG_HAIR).
  */
-const LONG_HAIR=new Set(['bob','long','ponytail','braids','longbraids','bun','perm','shoulder','pigtails','twinbuns','afro','mullet','curtains']);
+const LONG_HAIR=new Set(['longfringe','bob','long','ponytail','braids','longbraids','bun','perm','shoulder','pigtails','twinbuns','afro','mullet','curtains']);
 export const TURBAN=Object.freeze({front:.54,side:.3,back:-.48,lift:.16,radius:1.17,longRadius:1.23,snug:1.05,swell:.3,inner:.96,tuck:.08,
  twist:Object.freeze({reach:1.45,radius:.11,turns:1.5,band:Object.freeze([.5,.63])}),
  hem:Object.freeze({rows:Object.freeze([-.03,0,.03,.06,.09,.13,.17,.2]),band:Object.freeze([.09,.17])}),flap:Object.freeze({from:2.38,to:2.95,band:Object.freeze([.6,.78])})});
@@ -1597,7 +1643,7 @@ function buildHead(recipe,m,faceSize){
  // The face is shaded as if it were flat and tipped up to the light, as a drawn face
  // is: a sphere's own normals put a hard shadow line straight across the cheeks.
  const nrm=g.attributes.normal,n=new THREE.Vector3(),toward=new THREE.Vector3(0,.4,.92).normalize();
- for(let i=0;i<nrm.count;i++){n.fromBufferAttribute(nrm,i);n.lerp(toward,THREE.MathUtils.smoothstep(n.z,-.35,.45)*.7).normalize();nrm.setXYZ(i,n.x,n.y,n.z);}
+ for(let i=0;i<nrm.count;i++){n.fromBufferAttribute(nrm,i);n.lerp(toward,THREE.MathUtils.smoothstep(n.z,-.35,.45)*(recipe.head.form==='sculpted'?.15:.7)).normalize();nrm.setXYZ(i,n.x,n.y,n.z);}
  // atan2 wraps on the rear/side seam. Interpolating from u=0 to u=1
  // across a triangle paints the whole face there, including red lips.
  // Give those triangles their own plain-skin UVs, retaining smooth normals.
@@ -1611,10 +1657,11 @@ function buildHead(recipe,m,faceSize){
  }
  // Cel-shaded like the town, on its high-key ramp, and a little self-lit so a face in
  // a dim room still reads.
- const material=celFrom(new THREE.MeshStandardMaterial({map:texture,emissive:0xffffff,emissiveMap:texture,emissiveIntensity:.05}),{bands:'soft3'});
+ const baseMaterial=new THREE.MeshStandardMaterial({map:texture,roughness:.82,emissive:0xffffff,emissiveMap:texture,emissiveIntensity:.05});
+ const material=recipe.head.form==='sculpted'?baseMaterial:celFrom(baseMaterial,{bands:'soft3'});
  const head=new THREE.Mesh(g,material);head.name='Shimanchu head';
  head.position.y=m.headCentre-m.headY;
- if(INK_NOSES[recipe.nose.style])head.add(inkNoseBump(recipe,m,material,{PHI0,PHI,TH0,TH}));
+ if(INK_NOSES[recipe.nose.style]&&recipe.head.form!=='sculpted')head.add(inkNoseBump(recipe,m,material,{PHI0,PHI,TH0,TH}));
  // The scruffy beard is painted on a shell (the other beards are built: beard-mesh.js).
  const beard=recipe.facial?.paint==='scruff'?beardShell(m,faceSize):null;if(beard)head.add(beard.mesh);
  return {head,canvas,ctx,texture,beard};
@@ -1637,7 +1684,7 @@ function beardShell(m,faceSize){
  g.scale(m.Rh*m.headSX,m.Rh*m.headSY,m.Rh*.98);g.computeVertexNormals();
  // Leaned toward the light as the face's normals are, so the beard shades with the face beneath it.
  const nrm=g.attributes.normal,n=new THREE.Vector3(),toward=new THREE.Vector3(0,.4,.92).normalize();
- for(let i=0;i<nrm.count;i++){n.fromBufferAttribute(nrm,i);n.lerp(toward,THREE.MathUtils.smoothstep(n.z,-.35,.45)*.7).normalize();nrm.setXYZ(i,n.x,n.y,n.z);}
+ for(let i=0;i<nrm.count;i++){n.fromBufferAttribute(nrm,i);n.lerp(toward,THREE.MathUtils.smoothstep(n.z,-.35,.45)*(recipe.head.form==='sculpted'?.15:.7)).normalize();nrm.setXYZ(i,n.x,n.y,n.z);}
  const material=celFrom(new THREE.MeshStandardMaterial({map:texture,transparent:true,alphaTest:.04}),{bands:'soft3'});
  material.depthWrite=false;
  const mesh=new THREE.Mesh(g,material);mesh.name='Shimanchu painted beard';mesh.renderOrder=1;mesh.castShadow=false;mesh.receiveShadow=true;
@@ -1792,6 +1839,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  const root=new THREE.Group();root.name='Shimanchu · '+(recipe.name||'resident');
  // Keep the skeleton and face visible when a clothing mesh is swapped out.
  root.add(body,bones.root);root.rotation.y=Math.PI;
+ let panelBody=null,panelOutline=null;
  let outline=addOutline(root,body,true);addOutline(face.head,face.head,false);
  const openFingerPositions=geometry.attributes.position.array.slice(fingerStart*3,fingerEnd*3),closedFingerPositions=openFingerPositions.slice();
  for(let i=fingerStart;i<fingerEnd;i++){const sx=geometry.attributes.skinIndex.getX(i)===BI.handL?1:-1,j=(i-fingerStart)*3;closedFingerPositions[j]=sx*(m.shoulderX+.015);closedFingerPositions[j+1]=m.shoulderY-m.upper-m.fore-m.hand*.55;closedFingerPositions[j+2]=0;}
@@ -1980,7 +2028,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
    }
    if(['nozomi','sailor'].includes(outfit)&&alternativeKey!==outfit){
     if(alternativeBody){hairRecords.splice(hairRecords.indexOf(altHair),1);alternativeBody.removeFromParent();alternativeOutline.removeFromParent();alternativeBody.geometry.dispose();alternativeBody.material.map?.dispose();alternativeBody.material.dispose();}
-    alternativeKey=outfit;const r=normalizeRecipe({...recipe,outfit:{...recipe.outfit,...(outfit==='sailor'?THUAN_SAILOR_OUTFIT:SHOPPING_LANE_OUTFIT)}}),parts=[];addBody(parts,r,m);addNose(parts,r,m);ears(parts);
+    alternativeKey=outfit;const r=normalizeRecipe({...recipe,outfit:{...recipe.outfit,skirtCut:'classic',...(outfit==='sailor'?THUAN_SAILOR_OUTFIT:SHOPPING_LANE_OUTFIT)}}),parts=[];addBody(parts,r,m);addNose(parts,r,m);ears(parts);
     const hairStart=parts.length;addHair(parts,r,m);const span=hairSpan(parts,hairStart,parts.length);
     const g=mergeGeometries(parts,false);parts.forEach(p=>p.dispose());alternativeBody=new THREE.SkinnedMesh(g,bodyMaterial(r,m));alternativeBody.name=outfit==='sailor'?'Thuan · harbour academy sailor':'Thuan · shopping lane outfit';alternativeBody.bind(body.skeleton,body.bindMatrix);alternativeBody.castShadow=shadows;alternativeBody.frustumCulled=false;root.add(alternativeBody);alternativeOutline=addOutline(root,alternativeBody,true);
     altHair=hairRecord(g,span);
@@ -2025,6 +2073,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
     :['swim','towel','afterbath'].includes(outfit)?{...recipe,outfit:{...recipe.outfit,top:'tank',bottom:'shorts'},...(outfit==='afterbath'&&afterbathBody?.userData.afterbath.women?{hair:{...recipe.hair,style:'crop'}}:{})}:recipe;
    if(avatar.springKey!==outfit){avatar.springKey=outfit;avatar.springs?.reset();avatar.springSetup=springRest(normalizeRecipe(worn),m);avatar.springs=createSprings(avatar);}
    body.visible=!['swim','towel','nozomi','sailor','afterbath'].includes(outfit);outline.visible=body.visible;
+   if(panelBody){panelBody.visible=body.visible;panelOutline.visible=body.visible;}
    if(alternativeBody){alternativeBody.visible=outfit===alternativeKey;alternativeOutline.visible=alternativeBody.visible;}
    if(swimBody){swimBody.visible=outfit==='swim';swimOutline.visible=swimBody.visible;}
    if(towelBody){towelBody.visible=outfit==='towel';towelOutline.visible=towelBody.visible;}
@@ -2033,6 +2082,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
   },
   dispose(){
    seeThrough?.userData.dispose();
+   if(panelBody){panelBody.geometry.dispose();panelBody.material.map?.dispose();panelBody.material.dispose();panelBody.customDepthMaterial?.dispose();panelOutline.material.dispose();}
    faceObjects.userData.dispose();
    body.customDepthMaterial?.dispose();if(body.towelFit)outline.material.dispose();
    geometry.dispose();material.dispose();material.map?.dispose();face.texture.dispose();face.head.geometry.dispose();face.head.material.dispose();
@@ -2041,6 +2091,12 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
   },
  };
  if(bodyFit.some(f=>f>0)){outline.removeFromParent();outline=fitCloth(body);}
+ if(m.panelSkirt){
+  const pieces=[],spec=skirtSpec(m);
+  const drape=p=>{const down=THREE.MathUtils.smoothstep(spec.waist-p.y,0,spec.length),side=THREE.MathUtils.smoothstep(p.x,-m.width*.2,m.width*.2),front=THREE.MathUtils.smoothstep(p.z,-m.depth*.35,m.depth*.22),leg=down*.45*(.35+.65*front);return [['hips',1-leg],['thighL',leg*side],['thighR',leg*(1-side)]];};
+  const g=part(pieces,authoredSkirtGeometry(m,bodyVolume(recipe,m)),quarterShare(hemSpec(recipe,m),drape),recipe.outfit.bottomColour);g.attributes.ink.array.fill(.12);g.setAttribute('towelFit',new THREE.BufferAttribute(new Float32Array(g.attributes.position.count).fill(2),1));
+  panelBody=new THREE.SkinnedMesh(g,authoredSkirtMaterial(recipe.outfit));panelBody.name='Authored panel skirt';panelBody.bind(body.skeleton,body.bindMatrix);panelBody.castShadow=shadows;panelBody.receiveShadow=true;panelBody.frustumCulled=false;root.add(panelBody);panelOutline=fitCloth(panelBody);avatar.skirt=panelBody;
+ }
  avatar.springs=createSprings(avatar);
  avatar.paintFace({});
  return avatar;

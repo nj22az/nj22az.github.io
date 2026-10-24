@@ -9,7 +9,7 @@ import {CARGO_BOAT_LOOK} from '../harbour-boats.js';
  * harbour office: "Here are some suggestions on how to enhance the office, maybe something can be useful"). Studied, not
  * copied: each thing is here because somebody in the town uses it, and says who and why, so a story can pick it up.
  * Left out, with the reason: an ashtray (nobody in the cast smokes), the marine radio, hard hat and life vest (this is a
- * konbini's office, not the harbour master's), a beer carton (Higa Liquor supplies alcohol; the rest room is not its
+ * konbini's office, not the harbour master's), a beer carton (Sakura Trading supplies the alcohol; the rest room is not its
  * store), a noren at the futon cupboard (it has its sliding fronts), the fan's ribbons (they would have to flutter).
  *
  * Coordinates are the office's frame (sakura-office-room.js). Everything printed is one 1024 px sheet (one texture, one
@@ -53,7 +53,7 @@ const D=(id,name,room,at,who,why,period=null)=>Object.freeze({id,name,room,at:Ob
 export const SAKURA_OFFICE_DRESSING=Object.freeze([
  D('departures','Departures whiteboard','office',[5.35,1.55,.55],'Thuan','The boats the shop lives by, written up from the timetables, for Thuan and for the customers who buy their ferry punch cards at the till: her boat home at 22:15, the cargo boat that brings the depot’s stock, the morning boat that takes the Coral Bay Bar’s order. Over the fridge on the back wall, where she sees it from the desk and from the door.','A magnetic whiteboard in an aluminium frame, marker tray and two magnets; the times in black, the shop’s own notes in red.'),
  D('route-map','Route map poster','office',[6.34,1.55,1],'Thuan','The sea lanes the shop’s stock comes by: the cargo boats from Naha to Minato and the Minato Maru over to Kitano-jima, where the Coral Bay Bar is an account. A shipping agent’s give-away.','沖縄航路図: a printed route map, the routes in red over a pale sea, as the island lines handed out to their customers.'),
- D('desk-mat','Desk mat','office',[5.9,.74,2.15],'Thuan','A green vinyl mat over the desk top, the day’s notes tucked under it: the depot’s number, the Higa Liquor order day, the bank’s hours.','Green transparent PVC desk mats were on every Japanese office desk.'),
+ D('desk-mat','Desk mat','office',[5.9,.74,2.15],'Thuan','A green vinyl mat over the desk top, the day’s notes tucked under it: the depot’s number, Kōji’s round days, the bank’s hours.','Green transparent PVC desk mats were on every Japanese office desk.'),
  D('hanko','Hanko tray','office',[5.76,.74,2.6],'Thuan','The shop’s seal and its red ink pad: every delivery slip from the depot is stamped received.','A lacquered tray with the company seal (角印) and a shuniku pad.'),
  D('pen-can','Pen can','office',[6.2,.74,1.86],'Thuan','A rinsed coffee can from the shop’s own cold cabinet, holding the pens and the red marker for the board.','A 190 g steel coffee can, the island’s favourite, its label an invented one (島珈琲).'),
  D('binoculars','Binoculars','office',[6.2,.74,1.68],'Thuan','On the desk by the harbour window: she watches for the depot’s van on the quay and for the cargo boat coming in.','Black 7 × 50 porro-prism binoculars.'),

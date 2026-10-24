@@ -10,6 +10,9 @@ export const BOOKSHOP_WORKSHOP_ROOM=Object.freeze({
 export const BOOKSHOP_WORKSHOP=Object.freeze({
  title:'Front-Row Books',jp:'Front-Row Books',sub:'BOOKS · NEWSPAPERS · LOCAL STORIES',
  bookshop:true,side:-1,
- line:'Nhung’s small neighbourhood bookshop, with reading copies, second-hand books and the town’s small paper, which she prints herself.',
- directions:'On the west pavement, north of Minato Izakaya. A quiet bookshop with a window reading chair and a counter for recommendations.',
+ // Since 22 October 2026 (the owner) Nhung is the island doctor and Sakura sells the books and the stationery: the shop
+ // floor is unstaffed, the reading copies and the last second-hand books sold from an honesty tin, and the back bench
+ // prints the town's paper in the evenings. The room is as it was drawn.
+ line:'The old bookshop, where Nhung prints the town’s small paper in the evenings; the reading copies stay, the last second-hand books go by the honesty tin, and the new ones are at Sakura.',
+ directions:'On the west pavement, north of Minato Izakaya. The window reading chair is still there; leave the coins in the tin on the counter.',
 });

@@ -13,6 +13,7 @@ import {ASSET_TOOLS} from './assets.mjs';
 import {MODEL_TOOLS} from './models.mjs';
 import {FILM_PIPELINE_TOOLS} from './film-pipeline.mjs';
 import {WORLD_LIBRARY_TOOLS} from './world-library.mjs';
+import {COMIC_EFFECTS_TOOLS} from './comic-effects.mjs';
 import {SCENE_TOOLS} from './scenes.mjs';
 import {ROOM_TOOLS} from './rooms.mjs';
 
@@ -107,8 +108,7 @@ const FINDINGS={
  beer:['The can in the hand is blue (drink.handColour #2d6b9a) while the can on the shelf is gold: fixing it is a visible batch of its own.',
   'Its back panel says "Nutrition (per bottle)" (pack.back.unit "bottle") on a can, as the coffee\'s does.',
   'The 350 ml can is 94 × 135 mm in World; a real one is 66 × 122 mm (decision 6: game scale on purpose?).',
-  'Who supplies alcohol contradicts itself: economy/goods.js and town-economy.js have Sakura supplying Higa; merchandising.js and the data have Higa supplying Sakura.',
-  'Retiring it waits for the creator: friendship.js (gift likes), game.js (drinking it), the Higa trade lines and more name it (product_get references).'],
+  'Retiring it waits for the creator: friendship.js (gift likes), game.js (drinking it), the bars’ drink lines and more name it (product_get references).'],
  tea:['The poster beside the tea advertises GOLDEN MILK TEA, not NAGI (store-advertising.js POSTER_SPECS).'],
  coffee:['The poster beside the coffee advertises NIGHT SHIFT, not PORT 88 (store-advertising.js POSTER_SPECS).'],
  biscuit:['The poster beside the biscuits advertises STICK BITES, not KOMOREBI (store-advertising.js POSTER_SPECS).'],
@@ -292,7 +292,7 @@ export const TOOLS=[
    rooms:['room_create','room_open','room_get','room_import_model','room_edit','room_check','room_render','room_export'],
    worldRooms:{supported:['dock-workshop'],tools:['world_room_open','world_room_check','world_room_publish','world_room_rollback']},
    assets:['asset_list','asset_export','asset_draft','asset_publish','world_asset_list','world_asset_get'],
-   comics:['scene_classroom_example','scene_render','comic_render'],
+   comics:['scene_classroom_example','scene_render','comic_render','comic_effects_info','comic_after_effects'],
    film:{tools:['film_pipeline_info','scene_export_film'],engine:'nj22az/jojo/remotion',desktopServer:'town-studio owns desktop status, get_latest, film scripts and explicitly confirmed deployment; do not duplicate its renderer.'},
    exchange:'Browser IndexedDB and MCP drafts are separate. Exchange .room.json explicitly. GLB exports contain static geometry; editable room files retain IDs, reusable assets and native bindings.',
    approval:'Preview and validate first. Only after creator approval call the relevant publish tool with dryRun:false. This writes local data only. Build runtime, validate, review the exact diff and deploy separately. Never infer approval from a successful check.',
@@ -429,7 +429,7 @@ export const TOOLS=[
  ...PRODUCT_TOOLS,
  ...ASSET_TOOLS,
  ...MODEL_TOOLS,
- ...SCENE_TOOLS,...ROOM_TOOLS,...WORLD_ROOM_TOOLS,...WORLD_LIBRARY_TOOLS,...FILM_PIPELINE_TOOLS,
+ ...SCENE_TOOLS,...COMIC_EFFECTS_TOOLS,...ROOM_TOOLS,...WORLD_ROOM_TOOLS,...WORLD_LIBRARY_TOOLS,...FILM_PIPELINE_TOOLS,
 ];
 export const TOOL_BY_NAME=Object.freeze(Object.fromEntries(TOOLS.map(t=>[t.name,t])));
 

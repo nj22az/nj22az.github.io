@@ -47,10 +47,14 @@ export function createDesktopInput(getProfile) {
     if (!pad) return {...empty(), pad: null};
     selected = pad.index + ':' + pad.id;
     const buttons = profile.bindings.map(i => pad.buttons[i] || {pressed: false, value: 0});
+    // A pair saved for a pad's raw layout (the xpad right stick is axes 3 and 4)
+    // can point past the four standard axes it is read as now: use the default.
+    const axes = (pair, fallback) => pair.every(i => i < pad.axes.length) ? pair : fallback;
+    const [mx, my] = axes(profile.moveAxes, [0, 1]), [lx, ly] = axes(profile.lookAxes, [2, 3]);
     return {
       connected: true, pad,
-      move: radialStick(pad.axes[profile.moveAxes[0]], pad.axes[profile.moveAxes[1]], deadzone),
-      look: radialStick(pad.axes[profile.lookAxes[0]], pad.axes[profile.lookAxes[1]], deadzone),
+      move: radialStick(pad.axes[mx], pad.axes[my], deadzone),
+      look: radialStick(pad.axes[lx], pad.axes[ly], deadzone),
       held: buttons.map(b => b.pressed || b.value > .55),
       navigation: Array.from(pad.buttons,b=>!!b.pressed||b.value>.55),
       zoom: clamp(buttons[7]?.value, 0, 1),

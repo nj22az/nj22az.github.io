@@ -1,3 +1,4 @@
+import {FUJITA_VIEW,buildFujitaStage} from '../../../avatar-creator/fujita-stage.js';
 import {WORKSHOP_VIEW} from './workshop-view.js';
 import * as THREE from '../../vendor/three.module.js';
 import {createTown} from '../world/town.js';
@@ -12,7 +13,7 @@ import {hitsSolid,slideTo} from './scene-physics.mjs';
 import {SNAP,seatKey,matchSeat,numberLabels,seatTurn,counterEdges,edgeLine,personMarks} from './scene-snap.mjs';
 import {buildClassroomStage} from '../../../avatar-creator/classroom-stage.js';
 const BLOCKERS=7;
-const interiors=new Set(['sakura','minato','sato-ramen','books','onsen','town-hall','classroom','dock-workshop']);
+const interiors=new Set(['sakura','minato','sato-ramen','books','onsen','town-hall','classroom','dock-workshop','fujita-shed']);
 const noop=()=>{};
 /**
  * The hour on a street: the game's own clock (src/render/dusk.js) for the sun's colour and
@@ -35,12 +36,14 @@ function setClock({minutes,camera,inside,scene,world,sun,fill,sky}){
 }
 export async function buildSceneWorld(id,views,townData=null){
  if(id==='dock-workshop')views={...views,'dock-workshop':WORKSHOP_VIEW};
+ if(id==='fujita-shed')views[id]=FUJITA_VIEW;
  const inside=interiors.has(id);
  const scene=!inside&&townData?townData.scene:new THREE.Scene(),room=new THREE.Group();scene.background=new THREE.Color(inside?0xe8e4d8:0xb4dce8);if(inside)scene.add(room);
  const solids=[],reg=(o,label)=>{o.userData.studioLabel=label;};
  const collider=(x,z,w,d,height,minY)=>solids.push({x,z,w,d,height,minY});
  const options={room,reg,collider,action:noop,exit:noop};let api,layout,world;
  if(!inside){world=townData?.world||createTown({scene,sites:createIslandBusinesses(),mobile:true,shadows:true,maxAnisotropy:2,register:reg,enter:noop,onAction:noop,getPlayerPosition:()=>new THREE.Vector3()});solids.push(...world.colliders);for(const p of world.people||[])if(p.g)p.g.visible=false;}
+ else if(id==='fujita-shed'){api=buildFujitaStage(options);layout=api;solids.push(...api.colliders);}
  else if(id==='classroom'){api=buildClassroomStage(options);layout=api;solids.push(...api.colliders);}
  else if(id==='sakura'){const m=await import('../world/interiors/sakura-interior.js');api=m.buildSakuraInterior(options);await api.ready();layout=api.layout;solids.push(...(layout.colliders||[]));}
  else if(id==='minato'||id==='sato-ramen'){

@@ -1,11 +1,12 @@
 /**
  * Sakura's paperwork as the web edition shows it (the owner, 19 October 2026: "I'd like the documents and spreadsheets
  * to be realistic"; AGENTS.md, the web edition): the till roll, the stock book, the week's rota, the delivery note to
- * an account and the two suppliers' invoices, as a small Okinawan konbini and its wholesalers wrote them in October 1997.
+ * an account, as a small Okinawan konbini and its wholesaler wrote them in October 1997.
  *
  * On the web nothing runs the shop's books (edition.js `liveDocuments`), so these are one deterministic snapshot made
  * from the data: the products and their tax-inclusive prices and unit costs (products-data.js, shop-stock.js), who
- * supplies whom (merchandising.js: Sakura Trading, Higa Liquor, Front-Row Books & Stationery) and the rota
+ * supplies whom (merchandising.js: Sakura Trading, the town's one wholesaler since it took Front-Row's stationery and Higa
+ * Liquor's drink, 22 October 2026) and the rota
  * (sakura-rota.js). The same data always makes the same papers, and every total is the sum of its lines
  * (tests/paperwork.test.mjs). On Linux the ledger is the live shop's (shop-ledger.js).
  *
@@ -16,9 +17,10 @@
  *   for: merchandising.js zones) and a fixed seed, never a random draw at run time.
  * - Trade accounts pay the shelf price less 10 %, rounded down to the yen: a wholesaler's discount to a regular, the
  *   way the depot bills the izakaya's crates.
- * - Higa Liquor bills Sakura the lager at its unit cost by the case of 24, delivered Saturday mornings, plus the
- *   returnable crate deposit (¥300 a crate, refunded when the empties go back).
- * - Front-Row's stationery prices are its own list below (1997 shop prices for the trade), with why Sakura buys each.
+ * - The lager is Sakura Trading's own buying since Higa Liquor closed (22 October 2026), so no supplier bills Sakura for
+ *   it any more: Higa Liquor's invoice went with its trade, as Front-Row's did.
+ * - Sakura's own stationery (till rolls, ledgers, labels, delivery pads) is the list below, at 1997 shop prices, with why
+ *   the shop uses each.
  */
 import {SHOP_STOCK,stockSpec} from './shop-stock.js';
 import {ACCOUNTS,SUPPLIERS} from './merchandising.js';
@@ -39,7 +41,7 @@ function seeded(word){let h=2166136261;for(const c of word){h^=c.charCodeAt(0);h
 const ZONE_PACE=Object.freeze({drinks:[9,22],counter:[8,14],fresh:[5,12],daily:[2,7],pantry:[1,5],sweets:[3,9]});
 const zoneOf=id=>PRODUCT_BY_ID[id]?.purpose?.zone;
 
-/** Front-Row Books & Stationery's trade list for Sakura (merchandising.js ACCOUNTS.frontrow.market). */
+/** The stationery Sakura keeps for its own till and books: Front-Row's trade list until Sakura took over the stationery (22 October 2026), its own stock now. */
 export const STATIONERY=Object.freeze([
  Object.freeze({id:'receipt-rolls',name:'Till receipt rolls, 58 mm (box of 10)',unit:'box',price:1200,why:'The register prints a roll in about two trading days.'}),
  Object.freeze({id:'ledger',name:'Account ledger, A4, 100 leaves',unit:'book',price:780,why:'Sakura Trading’s accounts book, one a quarter.'}),
@@ -67,17 +69,17 @@ function stockBook(){
  return {id:'stock-book',kind:'sheet',title:'Sakura Shōten · Stock book',jp:'在庫表',from:'Sakura Shōten',date:DAY+', after closing',number:'Stock count 42',
   columns:['Item','On shelf','Back room','Retail','Unit cost','Value at cost'],rows,
   totals:{lines:rows.length,units:rows.reduce((s,r)=>s+r[1]+r[2],0),value:rows.reduce((s,r)=>s+r[5],0)},
-  notes:['Unit cost is what Sakura pays its suppliers; the lager is Higa Liquor’s, everything else Sakura Trading’s own buying.']};
+  notes:['Unit cost is what Sakura pays its suppliers: all of it Sakura Trading’s own buying, the lager too since Higa Liquor closed.']};
 }
 
-/** The week's rota from the shop's own hours (sakura-rota.js): Thuan on weekdays, Nhung at the weekend. */
+/** The week's rota from the shop's own hours (sakura-rota.js): Thuan on weekdays, Saturday shut, Nhung on Sunday. */
 function rota(){
  const hours=(SAKURA_HOURS.close-SAKURA_HOURS.open)/60;
- const rows=WEEK.map((day,i)=>[day+' Oct',i<5?'Thuan':'Nhung',SAKURA_HOURS_TEXT,hours]);
+ const rows=WEEK.map((day,i)=>i===5?[day+' Oct','closed','—',0]:[day+' Oct',i<5?'Thuan':'Nhung',SAKURA_HOURS_TEXT,hours]);
  const by=name=>rows.filter(r=>r[1]===name).reduce((s,r)=>s+r[3],0);
  return {id:'rota',kind:'sheet',title:'Sakura Shōten · Counter rota',jp:'勤務表',from:'Sakura Shōten',date:'Week of 13–19 October 1997',number:'Week 42',
   columns:['Day','At the counter','Hours','Hours worked'],rows,totals:{Thuan:by('Thuan'),Nhung:by('Nhung'),total:rows.reduce((s,r)=>s+r[3],0)},
-  notes:['The till closes at 20:00; the last half hour is the restock, the shutter down at 20:30.','Thuan comes over on the 08:30 boat on weekdays; Nhung keeps the weekend.']};
+  notes:['The till closes at 20:00; the last half hour is the restock, the shutter down at 20:30.','Thuan comes over on the 08:30 boat on weekdays; the shop shuts on Saturdays; Nhung keeps Sunday, her day away from the clinic.']};
 }
 
 /** A delivery note from the depot (Sakura Trading) to one account, with that account's own lines (merchandising.js). */
@@ -90,27 +92,8 @@ function deliveryNote(site='izakaya'){
   totals:{subtotal:total,tax:includedTax(total),total},notes:[account.delivery,'Trade price: shelf price less 10 %. Tax included. Payable at the end of the month.']};
 }
 
-/** Higa Liquor's invoice to Sakura for October's lager (Saturday deliveries, cases of 24). */
-function higaInvoice(){
- const beer=stockSpec('beer'),cases=[['Sat 4 Oct',4],['Sat 11 Oct',4],['Sat 18 Oct',5]];
- const rows=cases.map(([day,n])=>[day+' · '+beer.name+', 350 ml cans, case of 24',n,24*beer.unitCost,n*24*beer.unitCost]);
- const goods=rows.reduce((s,r)=>s+r[3],0),crates=cases.reduce((s,[,n])=>s+n,0),deposit=crates*300;
- return {id:'higa-invoice',kind:'invoice',title:'Higa Liquor · Invoice',jp:'請求書',from:SUPPLIERS['higa-saketen'].name+', Nishi-machi',to:'Sakura Shōten (attn. Thuan)',
-  date:'Sat 18 October 1997',number:'H-9710-07',columns:['Delivery','Cases','Per case','Amount'],rows,
-  totals:{goods,crates,deposit,total:goods+deposit,tax:includedTax(goods)},notes:[ACCOUNTS['higa-saketen'].market.delivery,'Crate deposit ¥300 a crate, refunded on return of the empties.']};
-}
-
-/** Front-Row Books & Stationery's invoice to Sakura (receipt rolls, the ledger, labels, delivery pads). */
-function frontRowInvoice(){
- const qty={'receipt-rolls':2,ledger:1,labels:2,'delivery-pads':3};
- const rows=STATIONERY.map(s=>[s.name,qty[s.id],s.price,qty[s.id]*s.price]);const total=rows.reduce((s,r)=>s+r[3],0);
- return {id:'frontrow-invoice',kind:'invoice',title:'Front-Row Books & Stationery · Invoice',jp:'請求書',from:SUPPLIERS.frontrow.name,to:'Sakura Shōten (attn. Thuan)',
-  date:'Thu 16 October 1997',number:'FR-0412',columns:['Item','Qty','Price','Amount'],rows,totals:{subtotal:total,tax:includedTax(total),total},
-  notes:[ACCOUNTS.frontrow.market.delivery,'Prices include consumption tax.']};
-}
-
 /** Every paper, in the order the folder holds them. */
-export function sakuraPaperwork(){return [tillRoll(),stockBook(),rota(),deliveryNote('izakaya'),higaInvoice(),frontRowInvoice()];}
+export function sakuraPaperwork(){return [tillRoll(),stockBook(),rota(),deliveryNote('izakaya')];}
 
 const el=(tag,text,cls)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(cls)node.className=cls;return node;};
 const cell=v=>typeof v==='number'?(Number.isInteger(v)&&Math.abs(v)>=100?yen(v):String(v)):String(v);

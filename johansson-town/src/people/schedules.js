@@ -108,7 +108,8 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    (x,z)=>collides(x,z,.32),(x,z)=>Math.abs(groundHeight(x,z)-g.position.y)<.45);
   return point?clearOfTunnelMouth(point):null;
  };
- const indoorDoor=(profile,place)=>place==='bookshop'?TOWN_DESTINATIONS.books:place==='home'?profile.home:place==='market'?MARKET_THRESHOLD:place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='onsen'?ONSEN_DOOR:place==='bus'?transitStop().queue:place==='work'&&profile.workSite?profile.work:null;
+ // 'paper': Nhung's evenings at the back bench of the old Front-Row shop (social.js AFTER_WORK), indoors behind its door.
+ const indoorDoor=(profile,place)=>place==='bookshop'||place==='paper'?TOWN_DESTINATIONS.books:place==='home'?profile.home:place==='market'?MARKET_THRESHOLD:place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='onsen'?ONSEN_DOOR:place==='bus'?transitStop().queue:place==='work'&&profile.workSite?profile.work:null;
  function destination(person,target,tag){
   const key=person.g.userData.name+'/'+tag+'/'+target.join(',');if(destinations.has(key))return destinations.get(key);
   for(let radius=0;radius<=10;radius+=.85)for(let i=0;i<(radius?24:1);i++){
@@ -352,7 +353,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    }
    // Venue thresholds must not be displaced by generic crowd spacing.
    // A stand point or a claimed quay spot (plan.stand) is its own mark, measured and held: never spread for the crowd.
-   if(!plan.stand&&!(tag==='work'&&v.workSite)&&!['home','bookshop','izakaya','ramen','market','onsen','bus','station','nap'].includes(tag)&&!tag.startsWith('patrol')&&!tag.startsWith('town-activity'))target=destination(p,target,tag);
+   if(!plan.stand&&!(tag==='work'&&v.workSite)&&!['home','bookshop','paper','izakaya','ramen','market','onsen','bus','station','nap'].includes(tag)&&!tag.startsWith('patrol')&&!tag.startsWith('town-activity'))target=destination(p,target,tag);
    // Each stand point is its own leg, so the walk is planned again from one to the next.
    if(plan.stand&&Number.isFinite(plan.stand.index))tag+='-'+plan.stand.index;
    if(!initialised.has(g)){
@@ -375,7 +376,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    }
    if(g.userData.indoors&&g.userData.indoors!==tag){delete g.userData.indoors;routes.delete(g);}
    if(p===thuan&&tag==='nap'&&staffBreak?.update(dt,true)){routes.delete(g);outside.push(p);continue;}
-   const indoor=['home','bookshop','izakaya','ramen','market','onsen'].includes(tag)||tag==='work'&&v.workSite;
+   const indoor=['home','bookshop','paper','izakaya','ramen','market','onsen'].includes(tag)||tag==='work'&&v.workSite;
    const arrived=()=>Math.hypot(g.position.x-target[0],g.position.z-target[1])<(tag==='onsen'?ONSEN_ENTRY_RADIUS:.85);
    const yieldTarget=p!==thuan?yieldAsideForThuan(p):null;
    if(yieldTarget){

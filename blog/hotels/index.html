@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<!-- Generated from hotels.json by tools/build-hotels.py. -->
+<html lang="en" data-theme="cobalt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hotels &amp; Parking | Blog – The Office of Nils Johansson</title>
+  <meta name="description" content="Verified free guest parking in Sweden, Denmark, Norway and Finland, with dated sources, country filters, a hotel map and personal stay notes.">
+  <link rel="canonical" href="https://nj22az.github.io/blog/hotels/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Hotels &amp; Parking – The Office of Nils Johansson">
+  <meta property="og:description" content="Hotels in Sweden, Denmark, Norway and Finland: confirmed parking, short notes, a filtered map and prices paid.">
+  <meta property="og:url" content="https://nj22az.github.io/blog/hotels/">
+  <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#343ec9">
+  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+  <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script src="/theme-bootstrap.js?v=hotels-1"></script>
+  <link rel="stylesheet" href="/styles.css?v=popwave-icons-2">
+  <link rel="stylesheet" href="/css/hotels.css?v=3">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="/css/hotels-map.css?v=2">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <nav id="site-nav" class="site-nav"></nav>
+  <main id="main-content" class="hotel-page">
+    <nav class="blog-section-nav" aria-label="Blog sections"><a href="/blog/">Articles</a><a href="/blog/hotels/" aria-current="page">Hotels &amp; Parking</a></nav>
+    <header>
+      <p class="hotel-eyebrow">The travel register</p>
+      <h1>Hotels &amp; Parking</h1>
+      <p class="hotel-intro">Find hotels with confirmed free guest parking in Sweden, Denmark, Norway and Finland. Compare parking arrangements and use the map to see the hotels that match your filters.</p>
+    </header>
+    <section aria-labelledby="hotel-register-title">
+      <div class="hotel-register-heading"><h2 id="hotel-register-title">Hotel register</h2><a class="hotel-download" href="/blog/hotels/hotel-reviews.csv" download>Download spreadsheet (CSV)</a></div>
+      <ul class="hotel-parking-legend" aria-label="Parking categories"><li class="hotel-tag hotel-parking-free">Green · Free parking</li><li class="hotel-tag hotel-parking-easy">Yellow · Easy parking — pay at hotel</li><li class="hotel-tag hotel-parking-avoid">Red · Paid parking — avoid</li></ul>
+      <form class="hotel-filters" data-hotel-filters hidden role="search" aria-label="Filter hotel reviews">
+        <div class="hotel-field hotel-search"><label for="hotel-search">Hotel or place</label><input id="hotel-search" type="search" name="search" placeholder="Search hotel, city or country" autocomplete="off"></div>
+        <div class="hotel-field"><label for="hotel-country">Country</label><select id="hotel-country" name="country"><option value="">All countries</option><option value="DK">Denmark</option><option value="FI">Finland</option><option value="NO">Norway</option><option value="SE">Sweden</option></select></div>
+        <div class="hotel-field"><label for="hotel-parking">Parking</label><select id="hotel-parking" name="parking"><option value="free" selected>Green — Free parking</option><option value="easy">Yellow — Easy parking</option><option value="avoid">Red — Paid parking / avoid</option><option value="">All parking</option></select></div>
+        <div class="hotel-field"><label for="hotel-receipt">Parking on hotel receipt</label><select id="hotel-receipt" name="receipt"><option value="">Any arrangement</option><option value="not-applicable">No parking charge</option><option value="true">Yes</option><option value="false">No — separate receipt</option><option value="unknown">Not confirmed</option></select></div>
+        <button type="reset" class="hotel-reset">Reset filters</button>
+      </form>
+      <p class="hotel-count" data-hotel-count role="status" aria-live="polite">16 hotels</p>
+      <section class="hotel-map-section" aria-labelledby="hotel-map-title">
+        <h3 id="hotel-map-title">Map of selected hotels</h3>
+        <p class="hotel-map-intro">The map follows the filters above. Select a hotel marker to read its notes.</p>
+        <div class="hotel-map-controls" data-hotel-map-controls hidden>
+          <button type="button" id="hotel-locate">Show my location</button>
+          <button type="button" id="hotel-fit-map">Fit selected hotels</button>
+          <button type="button" id="hotel-clear-location" hidden>Clear my location</button>
+        </div>
+        <div id="hotel-map" class="hotel-map" role="region" aria-label="Filtered hotels and your location" hidden></div>
+        <p id="hotel-map-status" class="hotel-map-status" role="status" aria-live="polite">Enable JavaScript to use the map. All hotel addresses are listed below.</p>
+        <p class="hotel-map-privacy">Show my location asks your browser for permission. Your position is used for this map view and is not saved in the register. Map tiles are provided by <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>.</p>
+      </section>
+      <table class="hotel-table" data-hotel-table role="table">
+        <caption>Room and stay totals cover the stated number of nights, not a nightly rate. Stay total = room + parking. Unknown prices remain unrecorded; these are not current advertised rates.</caption>
+        <colgroup><col style="width:18%"><col style="width:8%"><col style="width:8%"><col style="width:8%"><col style="width:19%"><col style="width:23%"><col style="width:16%"></colgroup>
+        <thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Hotel</th><th scope="col" role="columnheader" class="hotel-money">Room total</th><th scope="col" role="columnheader" class="hotel-money">Parking</th><th scope="col" role="columnheader" class="hotel-money">Stay total</th><th scope="col" role="columnheader">Parking arrangement</th><th scope="col" role="columnheader">Parking receipt</th><th scope="col" role="columnheader">Short review</th></tr></thead>
+        <tbody role="rowgroup">
+          <tr role="row" data-hotel-row="hotel-marina-2026-10-24" data-search="Hotel Marina Vedbæk Denmark Vedbæk Strandvej 391 2950 APCOA Register your vehicle on the APCOA tablet at hotel reception to park free." data-country="DK" data-free-parking="true" data-parking-category="free" data-parking-type="free" data-hotel-receipt="not-applicable">
+            <th scope="row" role="rowheader" data-label="Hotel"><a class="hotel-name" href="#review-hotel-marina-2026-10-24">Hotel Marina</a><span class="hotel-place">Vedbæk Strandvej 391, 2950 Vedbæk</span><span class="hotel-tag hotel-country">Denmark</span><span class="hotel-recorded">Recorded <time datetime="2026-10-24">24 October 2026</time></span></th>
+            <td role="cell" data-label="Room total" class="hotel-money">5,728.46<span class="hotel-cell-note">kr · 5 nights</span></td>
+            <td role="cell" data-label="Parking" class="hotel-money">0<span class="hotel-cell-note">No charge</span></td>
+            <td role="cell" data-label="Stay total" class="hotel-money hotel-total">5,728.46<span class="hotel-cell-note">kr · 5 nights</span></td>
+            <td role="cell" data-label="Parking arrangement" class="hotel-parking"><span class="hotel-tag hotel-parking-free">Free parking</span><span class="hotel-cell-note">Register your vehicle on the APCOA tablet at hotel reception to park free.<br><a href="https://hotelmarina.dk/ankomst/">Checked <time datetime="2026-10-24">24 October 2026</time></a></span></td>
+            <td role="cell" data-label="Parking receipt" class="hotel-receipt"><span class="hotel-tag">No parking charge</span><span class="hotel-cell-note">Not applicable — no parking charge</span></td>
+            <td role="cell" data-label="Short review" class="hotel-summary">Free outdoor parking after registration on the APCOA tablet at reception.</td>
+          </tr>
+          <tr role="row" data-hotel-row="scandic-aalborg-ost-2026-10-24" data-search="Scandic Aalborg Øst Aalborg Ø Denmark Hadsundvej 200 9220  Free outdoor guest parking immediately outside the hotel; spaces cannot be reserved." data-country="DK" data-free-parking="true" data-parking-category="free" data-parking-type="free" data-hotel-receipt="not-applicable">
+            <th scope="row" role="rowheader" data-label="Hotel"><a class="hotel-name" href="#review-scandic-aalborg-ost-2026-10-24">Scandic Aalborg Øst</a><span class="hotel-place">Hadsundvej 200, 9220 Aalborg Ø</span><span class="hotel-tag hotel-country">Denmark</span><span class="hotel-recorded">Recorded <time datetime="2026-10-24">24 October 2026</time></span></th>
+            <td role="cell" data-label="Room total" class="hotel-money"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking" class="hotel-money">0<span class="hotel-cell-note">No charge</span></td>
+            <td role="cell" data-label="Stay total" class="hotel-money hotel-total"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking arrangement" class="hotel-parking"><span class="hotel-tag hotel-parking-free">Free parking</span><span class="hotel-cell-note">Free outdoor guest parking immediately outside the hotel; spaces cannot be reserved.<br><a href="https://www.scandichotels.com/en/hotels/scandic-aalborg-ost">Checked <time datetime="2026-10-24">24 October 2026</time></a></span></td>
+            <td role="cell" data-label="Parking receipt" class="hotel-receipt"><span class="hotel-tag">No parking charge</span><span class="hotel-cell-note">Not applicable — no parking charge</span></td>
+            <td role="cell" data-label="Short review" class="hotel-summary">Free outdoor parking immediately outside the hotel. Room price not recorded.</td>
+          </tr>
+          <tr role="row" data-hotel-row="scandic-aarhus-vest-2026-10-24" data-search="Scandic Aarhus Vest Aarhus V Denmark Rytoften 3 8210  Free enclosed outdoor car park for hotel guests; spaces cannot be reserved." data-country="DK" data-free-parking="true" data-parking-category="free" data-parking-type="free" data-hotel-receipt="not-applicable">
+            <th scope="row" role="rowheader" data-label="Hotel"><a class="hotel-name" href="#review-scandic-aarhus-vest-2026-10-24">Scandic Aarhus Vest</a><span class="hotel-place">Rytoften 3, 8210 Aarhus V</span><span class="hotel-tag hotel-country">Denmark</span><span class="hotel-recorded">Recorded <time datetime="2026-10-24">24 October 2026</time></span></th>
+            <td role="cell" data-label="Room total" class="hotel-money"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking" class="hotel-money">0<span class="hotel-cell-note">No charge</span></td>
+            <td role="cell" data-label="Stay total" class="hotel-money hotel-total"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking arrangement" class="hotel-parking"><span class="hotel-tag hotel-parking-free">Free parking</span><span class="hotel-cell-note">Free enclosed outdoor car park for hotel guests; spaces cannot be reserved.<br><a href="https://www.scandichotels.com/en/hotels/scandic-aarhus-vest">Checked <time datetime="2026-10-24">24 October 2026</time></a></span></td>
+            <td role="cell" data-label="Parking receipt" class="hotel-receipt"><span class="hotel-tag">No parking charge</span><span class="hotel-cell-note">Not applicable — no parking charge</span></td>
+            <td role="cell" data-label="Short review" class="hotel-summary">Free guest parking in an enclosed outdoor car park. Room price not recorded.</td>
+          </tr>
+          <tr role="row" data-hotel-row="scandic-kolding-2026-10-24" data-search="Scandic Kolding Kolding Denmark Kokholm 2 6000  Register your car at reception for free outdoor parking. EV charging costs extra." data-country="DK" data-free-parking="true" data-parking-category="free" data-parking-type="free" data-hotel-receipt="not-applicable">
+            <th scope="row" role="rowheader" data-label="Hotel"><a class="hotel-name" href="#review-scandic-kolding-2026-10-24">Scandic Kolding</a><span class="hotel-place">Kokholm 2, 6000 Kolding</span><span class="hotel-tag hotel-country">Denmark</span><span class="hotel-recorded">Recorded <time datetime="2026-10-24">24 October 2026</time></span></th>
+            <td role="cell" data-label="Room total" class="hotel-money"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking" class="hotel-money">0<span class="hotel-cell-note">No charge</span></td>
+            <td role="cell" data-label="Stay total" class="hotel-money hotel-total"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking arrangement" class="hotel-parking"><span class="hotel-tag hotel-parking-free">Free parking</span><span class="hotel-cell-note">Register your car at reception for free outdoor parking. EV charging costs extra.<br><a href="https://www.scandichotels.com/en/hotels/scandic-kolding">Checked <time datetime="2026-10-24">24 October 2026</time></a></span></td>
+            <td role="cell" data-label="Parking receipt" class="hotel-receipt"><span class="hotel-tag">No parking charge</span><span class="hotel-cell-note">Not applicable — no parking charge</span></td>
+            <td role="cell" data-label="Short review" class="hotel-summary">Free outdoor parking after vehicle registration at reception. Room price not recorded.</td>
+          </tr>
+          <tr role="row" data-hotel-row="scandic-opus-horsens-2026-10-24" data-search="Scandic Opus Horsens Horsens Denmark Egebjergvej 1 8700  Outdoor parking is free. The hotel garage is paid." data-country="DK" data-free-parking="true" data-parking-category="free" data-parking-type="free" data-hotel-receipt="not-applicable">
+            <th scope="row" role="rowheader" data-label="Hotel"><a class="hotel-name" href="#review-scandic-opus-horsens-2026-10-24">Scandic Opus Horsens</a><span class="hotel-place">Egebjergvej 1, 8700 Horsens</span><span class="hotel-tag hotel-country">Denmark</span><span class="hotel-recorded">Recorded <time datetime="2026-10-24">24 October 2026</time></span></th>
+            <td role="cell" data-label="Room total" class="hotel-money"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking" class="hotel-money">0<span class="hotel-cell-note">No charge</span></td>
+            <td role="cell" data-label="Stay total" class="hotel-money hotel-total"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking arrangement" class="hotel-parking"><span class="hotel-tag hotel-parking-free">Free parking</span><span class="hotel-cell-note">Outdoor parking is free. The hotel garage is paid.<br><a href="https://www.scandichotels.com/en/hotels/scandic-opus-horsens">Checked <time datetime="2026-10-24">24 October 2026</time></a></span></td>
+            <td role="cell" data-label="Parking receipt" class="hotel-receipt"><span class="hotel-tag">No parking charge</span><span class="hotel-cell-note">Not applicable — no parking charge</span></td>
+            <td role="cell" data-label="Short review" class="hotel-summary">Free outdoor parking; the garage carries a separate charge. Room price not recorded.</td>
+          </tr>
+          <tr role="row" data-hotel-row="scandic-sonderborg-2026-10-24" data-search="Scandic Sønderborg Sønderborg Denmark Ellegårdvej 27 6400  Free outdoor guest parking outside the hotel; spaces cannot be reserved." data-country="DK" data-free-parking="true" data-parking-category="free" data-parking-type="free" data-hotel-receipt="not-applicable">
+            <th scope="row" role="rowheader" data-label="Hotel"><a class="hotel-name" href="#review-scandic-sonderborg-2026-10-24">Scandic Sønderborg</a><span class="hotel-place">Ellegårdvej 27, 6400 Sønderborg</span><span class="hotel-tag hotel-country">Denmark</span><span class="hotel-recorded">Recorded <time datetime="2026-10-24">24 October 2026</time></span></th>
+            <td role="cell" data-label="Room total" class="hotel-money"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking" class="hotel-money">0<span class="hotel-cell-note">No charge</span></td>
+            <td role="cell" data-label="Stay total" class="hotel-money hotel-total"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking arrangement" class="hotel-parking"><span class="hotel-tag hotel-parking-free">Free parking</span><span class="hotel-cell-note">Free outdoor guest parking outside the hotel; spaces cannot be reserved.<br><a href="https://www.scandichotels.com/en/hotels/scandic-sonderborg">Checked <time datetime="2026-10-24">24 October 2026</time></a></span></td>
+            <td role="cell" data-label="Parking receipt" class="hotel-receipt"><span class="hotel-tag">No parking charge</span><span class="hotel-cell-note">Not applicable — no parking charge</span></td>
+            <td role="cell" data-label="Short review" class="hotel-summary">Free outdoor parking outside the hotel. Room price not recorded.</td>
+          </tr>
+          <tr role="row" data-hotel-row="scandic-elmia-2026-10-24" data-search="Scandic Elmia Jönköping Sweden Elmiavägen 8 554 54 Pair Parking Paid through Pair Parking’s website; separate receipt." data-country="SE" data-free-parking="false" data-parking-category="avoid" data-parking-type="external-paid" data-hotel-receipt="false">
+            <th scope="row" role="rowheader" data-label="Hotel"><a class="hotel-name" href="#review-scandic-elmia-2026-10-24">Scandic Elmia</a><span class="hotel-place">Elmiavägen 8, 554 54 Jönköping</span><span class="hotel-tag hotel-country">Sweden</span><span class="hotel-recorded">Recorded <time datetime="2026-10-24">24 October 2026</time></span></th>
+            <td role="cell" data-label="Room total" class="hotel-money">1,107<span class="hotel-cell-note">SEK · 1 night</span></td>
+            <td role="cell" data-label="Parking" class="hotel-money">105<span class="hotel-cell-note">SEK</span></td>
+            <td role="cell" data-label="Stay total" class="hotel-money hotel-total">1,212<span class="hotel-cell-note">SEK · 1 night</span></td>
+            <td role="cell" data-label="Parking arrangement" class="hotel-parking"><span class="hotel-tag hotel-parking-avoid">Paid parking · Avoid</span><span class="hotel-cell-note">Paid through Pair Parking’s website; separate receipt.<br><a href="https://www.scandichotels.com/en/hotels/scandic-elmia">Checked <time datetime="2026-10-24">24 October 2026</time></a></span></td>
+            <td role="cell" data-label="Parking receipt" class="hotel-receipt"><span class="hotel-tag">Not on hotel receipt</span><span class="hotel-cell-note">On this stay. <a href="https://manager.pair.se/booking/new/6db02c70-57fc-11ef-9256-499bf887b022?lang=en_GB">Available via Pair Parking website</a>.</span></td>
+            <td role="cell" data-label="Short review" class="hotel-summary">Satisfactory overnight stay at a fair room price.</td>
+          </tr>
+          <tr role="row" data-hotel-row="scandic-sundsvall-nord-2026-10-24" data-search="Scandic Sundsvall Nord Sundsvall Sweden Värdshusbacken 6 856 50  Free outdoor guest parking, with 150 spaces; spaces cannot be reserved." data-country="SE" data-free-parking="true" data-parking-category="free" data-parking-type="free" data-hotel-receipt="not-applicable">
+            <th scope="row" role="rowheader" data-label="Hotel"><a class="hotel-name" href="#review-scandic-sundsvall-nord-2026-10-24">Scandic Sundsvall Nord</a><span class="hotel-place">Värdshusbacken 6, 856 50 Sundsvall</span><span class="hotel-tag hotel-country">Sweden</span><span class="hotel-recorded">Recorded <time datetime="2026-10-24">24 October 2026</time></span></th>
+            <td role="cell" data-label="Room total" class="hotel-money"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking" class="hotel-money">0<span class="hotel-cell-note">No charge</span></td>
+            <td role="cell" data-label="Stay total" class="hotel-money hotel-total"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking arrangement" class="hotel-parking"><span class="hotel-tag hotel-parking-free">Free parking</span><span class="hotel-cell-note">Free outdoor guest parking, with 150 spaces; spaces cannot be reserved.<br><a href="https://www.scandichotels.com/en/hotels/scandic-sundsvall-nord">Checked <time datetime="2026-10-24">24 October 2026</time></a></span></td>
+            <td role="cell" data-label="Parking receipt" class="hotel-receipt"><span class="hotel-tag">No parking charge</span><span class="hotel-cell-note">Not applicable — no parking charge</span></td>
+            <td role="cell" data-label="Short review" class="hotel-summary">Free outdoor guest parking, with 150 spaces; spaces cannot be reserved.</td>
+          </tr>
+          <tr role="row" data-hotel-row="scandic-ostersund-syd-2026-10-24" data-search="Scandic Östersund Syd Östersund Sweden Krondikesvägen 97 831 60  Free outdoor guest parking, with 100 spaces; spaces cannot be reserved." data-country="SE" data-free-parking="true" data-parking-category="free" data-parking-type="free" data-hotel-receipt="not-applicable">
+            <th scope="row" role="rowheader" data-label="Hotel"><a class="hotel-name" href="#review-scandic-ostersund-syd-2026-10-24">Scandic Östersund Syd</a><span class="hotel-place">Krondikesvägen 97, 831 60 Östersund</span><span class="hotel-tag hotel-country">Sweden</span><span class="hotel-recorded">Recorded <time datetime="2026-10-24">24 October 2026</time></span></th>
+            <td role="cell" data-label="Room total" class="hotel-money"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking" class="hotel-money">0<span class="hotel-cell-note">No charge</span></td>
+            <td role="cell" data-label="Stay total" class="hotel-money hotel-total"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking arrangement" class="hotel-parking"><span class="hotel-tag hotel-parking-free">Free parking</span><span class="hotel-cell-note">Free outdoor guest parking, with 100 spaces; spaces cannot be reserved.<br><a href="https://www.scandichotels.com/en/hotels/scandic-ostersund-syd">Checked <time datetime="2026-10-24">24 October 2026</time></a></span></td>
+            <td role="cell" data-label="Parking receipt" class="hotel-receipt"><span class="hotel-tag">No parking charge</span><span class="hotel-cell-note">Not applicable — no parking charge</span></td>
+            <td role="cell" data-label="Short review" class="hotel-summary">Free outdoor guest parking, with 100 spaces; spaces cannot be reserved.</td>
+          </tr>
+          <tr role="row" data-hotel-row="hotell-jamteborg-2026-10-24" data-search="Hotell Jämteborg Östersund Sweden Storgatan 54 831 30  Free guest parking behind the hotel. EV charging is available; charging prices are not verified." data-country="SE" data-free-parking="true" data-parking-category="free" data-parking-type="free" data-hotel-receipt="not-applicable">
+            <th scope="row" role="rowheader" data-label="Hotel"><a class="hotel-name" href="#review-hotell-jamteborg-2026-10-24">Hotell Jämteborg</a><span class="hotel-place">Storgatan 54, 831 30 Östersund</span><span class="hotel-tag hotel-country">Sweden</span><span class="hotel-recorded">Recorded <time datetime="2026-10-24">24 October 2026</time></span></th>
+            <td role="cell" data-label="Room total" class="hotel-money"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking" class="hotel-money">0<span class="hotel-cell-note">No charge</span></td>
+            <td role="cell" data-label="Stay total" class="hotel-money hotel-total"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking arrangement" class="hotel-parking"><span class="hotel-tag hotel-parking-free">Free parking</span><span class="hotel-cell-note">Free guest parking behind the hotel. EV charging is available; charging prices are not verified.<br><a href="https://jamteborg.se/">Checked <time datetime="2026-10-24">24 October 2026</time></a></span></td>
+            <td role="cell" data-label="Parking receipt" class="hotel-receipt"><span class="hotel-tag">No parking charge</span><span class="hotel-cell-note">Not applicable — no parking charge</span></td>
+            <td role="cell" data-label="Short review" class="hotel-summary">Free guest parking behind the hotel. EV charging is available; charging prices are not verified.</td>
+          </tr>
+          <tr role="row" data-hotel-row="thon-hotel-bergen-airport-2026-10-24" data-search="Thon Hotel Bergen Airport Kokstad Norway Kokstadvegen 3 5257  Free parking outside the entrance. Buses and large vehicles require prior agreement." data-country="NO" data-free-parking="true" data-parking-category="free" data-parking-type="free" data-hotel-receipt="not-applicable">
+            <th scope="row" role="rowheader" data-label="Hotel"><a class="hotel-name" href="#review-thon-hotel-bergen-airport-2026-10-24">Thon Hotel Bergen Airport</a><span class="hotel-place">Kokstadvegen 3, 5257 Kokstad</span><span class="hotel-tag hotel-country">Norway</span><span class="hotel-recorded">Recorded <time datetime="2026-10-24">24 October 2026</time></span></th>
+            <td role="cell" data-label="Room total" class="hotel-money"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking" class="hotel-money">0<span class="hotel-cell-note">No charge</span></td>
+            <td role="cell" data-label="Stay total" class="hotel-money hotel-total"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking arrangement" class="hotel-parking"><span class="hotel-tag hotel-parking-free">Free parking</span><span class="hotel-cell-note">Free parking outside the entrance. Buses and large vehicles require prior agreement.<br><a href="https://www.thonhotels.com/hotels/norway/bergen/thon-hotel-bergen-airport/">Checked <time datetime="2026-10-24">24 October 2026</time></a></span></td>
+            <td role="cell" data-label="Parking receipt" class="hotel-receipt"><span class="hotel-tag">No parking charge</span><span class="hotel-cell-note">Not applicable — no parking charge</span></td>
+            <td role="cell" data-label="Short review" class="hotel-summary">Free parking outside the entrance. Buses and large vehicles require prior agreement.</td>
+          </tr>
+          <tr role="row" data-hotel-row="thon-hotel-elgstua-2026-10-24" data-search="Thon Hotel Elgstua Elverum Norway Trondheimsvegen 9 2406  Free guest parking immediately outside the hotel. EV charging prices are not verified." data-country="NO" data-free-parking="true" data-parking-category="free" data-parking-type="free" data-hotel-receipt="not-applicable">
+            <th scope="row" role="rowheader" data-label="Hotel"><a class="hotel-name" href="#review-thon-hotel-elgstua-2026-10-24">Thon Hotel Elgstua</a><span class="hotel-place">Trondheimsvegen 9, 2406 Elverum</span><span class="hotel-tag hotel-country">Norway</span><span class="hotel-recorded">Recorded <time datetime="2026-10-24">24 October 2026</time></span></th>
+            <td role="cell" data-label="Room total" class="hotel-money"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking" class="hotel-money">0<span class="hotel-cell-note">No charge</span></td>
+            <td role="cell" data-label="Stay total" class="hotel-money hotel-total"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking arrangement" class="hotel-parking"><span class="hotel-tag hotel-parking-free">Free parking</span><span class="hotel-cell-note">Free guest parking immediately outside the hotel. EV charging prices are not verified.<br><a href="https://www.thonhotels.com/hotels/norway/elverum/thon-hotel-elgstua/">Checked <time datetime="2026-10-24">24 October 2026</time></a></span></td>
+            <td role="cell" data-label="Parking receipt" class="hotel-receipt"><span class="hotel-tag">No parking charge</span><span class="hotel-cell-note">Not applicable — no parking charge</span></td>
+            <td role="cell" data-label="Short review" class="hotel-summary">Free guest parking immediately outside the hotel. EV charging prices are not verified.</td>
+          </tr>
+          <tr role="row" data-hotel-row="thon-hotel-hallingdal-2026-10-24" data-search="Thon Hotel Hallingdal Ål Norway Sundrevegen 82 3570  Free guest parking confirmed by the hotel. The parking area and registration procedure are not specified." data-country="NO" data-free-parking="true" data-parking-category="free" data-parking-type="free" data-hotel-receipt="not-applicable">
+            <th scope="row" role="rowheader" data-label="Hotel"><a class="hotel-name" href="#review-thon-hotel-hallingdal-2026-10-24">Thon Hotel Hallingdal</a><span class="hotel-place">Sundrevegen 82, 3570 Ål</span><span class="hotel-tag hotel-country">Norway</span><span class="hotel-recorded">Recorded <time datetime="2026-10-24">24 October 2026</time></span></th>
+            <td role="cell" data-label="Room total" class="hotel-money"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking" class="hotel-money">0<span class="hotel-cell-note">No charge</span></td>
+            <td role="cell" data-label="Stay total" class="hotel-money hotel-total"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking arrangement" class="hotel-parking"><span class="hotel-tag hotel-parking-free">Free parking</span><span class="hotel-cell-note">Free guest parking confirmed by the hotel. The parking area and registration procedure are not specified.<br><a href="https://www.thonhotels.com/hotels/norway/al/thon-hotel-hallingdal/">Checked <time datetime="2026-10-24">24 October 2026</time></a></span></td>
+            <td role="cell" data-label="Parking receipt" class="hotel-receipt"><span class="hotel-tag">No parking charge</span><span class="hotel-cell-note">Not applicable — no parking charge</span></td>
+            <td role="cell" data-label="Short review" class="hotel-summary">Free guest parking confirmed by the hotel. The parking area and registration procedure are not specified.</td>
+          </tr>
+          <tr role="row" data-hotel-row="scandic-espoo-2026-10-24" data-search="Scandic Espoo Espoo Finland Nihtisillantie 1 02630  Free parking in the hotel’s outdoor car park; spaces cannot be reserved." data-country="FI" data-free-parking="true" data-parking-category="free" data-parking-type="free" data-hotel-receipt="not-applicable">
+            <th scope="row" role="rowheader" data-label="Hotel"><a class="hotel-name" href="#review-scandic-espoo-2026-10-24">Scandic Espoo</a><span class="hotel-place">Nihtisillantie 1, 02630 Espoo</span><span class="hotel-tag hotel-country">Finland</span><span class="hotel-recorded">Recorded <time datetime="2026-10-24">24 October 2026</time></span></th>
+            <td role="cell" data-label="Room total" class="hotel-money"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking" class="hotel-money">0<span class="hotel-cell-note">No charge</span></td>
+            <td role="cell" data-label="Stay total" class="hotel-money hotel-total"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking arrangement" class="hotel-parking"><span class="hotel-tag hotel-parking-free">Free parking</span><span class="hotel-cell-note">Free parking in the hotel’s outdoor car park; spaces cannot be reserved.<br><a href="https://www.scandichotels.com/en/hotels/scandic-espoo">Checked <time datetime="2026-10-24">24 October 2026</time></a></span></td>
+            <td role="cell" data-label="Parking receipt" class="hotel-receipt"><span class="hotel-tag">No parking charge</span><span class="hotel-cell-note">Not applicable — no parking charge</span></td>
+            <td role="cell" data-label="Short review" class="hotel-summary">Free parking in the hotel’s outdoor car park; spaces cannot be reserved.</td>
+          </tr>
+          <tr role="row" data-hotel-row="scandic-laajavuori-2026-10-24" data-search="Scandic Laajavuori Jyväskylä Finland Laajavuorentie 30 40740  Free outdoor parking, with 300 spaces; no advance reservations. Plugit EV charging is paid." data-country="FI" data-free-parking="true" data-parking-category="free" data-parking-type="free" data-hotel-receipt="not-applicable">
+            <th scope="row" role="rowheader" data-label="Hotel"><a class="hotel-name" href="#review-scandic-laajavuori-2026-10-24">Scandic Laajavuori</a><span class="hotel-place">Laajavuorentie 30, 40740 Jyväskylä</span><span class="hotel-tag hotel-country">Finland</span><span class="hotel-recorded">Recorded <time datetime="2026-10-24">24 October 2026</time></span></th>
+            <td role="cell" data-label="Room total" class="hotel-money"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking" class="hotel-money">0<span class="hotel-cell-note">No charge</span></td>
+            <td role="cell" data-label="Stay total" class="hotel-money hotel-total"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking arrangement" class="hotel-parking"><span class="hotel-tag hotel-parking-free">Free parking</span><span class="hotel-cell-note">Free outdoor parking, with 300 spaces; no advance reservations. Plugit EV charging is paid.<br><a href="https://www.scandichotels.com/en/hotels/scandic-laajavuori">Checked <time datetime="2026-10-24">24 October 2026</time></a></span></td>
+            <td role="cell" data-label="Parking receipt" class="hotel-receipt"><span class="hotel-tag">No parking charge</span><span class="hotel-cell-note">Not applicable — no parking charge</span></td>
+            <td role="cell" data-label="Short review" class="hotel-summary">Free outdoor parking, with 300 spaces; no advance reservations. Plugit EV charging is paid.</td>
+          </tr>
+          <tr role="row" data-hotel-row="scandic-waskia-2026-10-24" data-search="Scandic Waskia Vaasa Finland Lemmenpolku 3 65170  Free outdoor parking next to the hotel, with 80 spaces; spaces cannot be reserved." data-country="FI" data-free-parking="true" data-parking-category="free" data-parking-type="free" data-hotel-receipt="not-applicable">
+            <th scope="row" role="rowheader" data-label="Hotel"><a class="hotel-name" href="#review-scandic-waskia-2026-10-24">Scandic Waskia</a><span class="hotel-place">Lemmenpolku 3, 65170 Vaasa</span><span class="hotel-tag hotel-country">Finland</span><span class="hotel-recorded">Recorded <time datetime="2026-10-24">24 October 2026</time></span></th>
+            <td role="cell" data-label="Room total" class="hotel-money"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking" class="hotel-money">0<span class="hotel-cell-note">No charge</span></td>
+            <td role="cell" data-label="Stay total" class="hotel-money hotel-total"><span class="hotel-unknown">Not recorded</span></td>
+            <td role="cell" data-label="Parking arrangement" class="hotel-parking"><span class="hotel-tag hotel-parking-free">Free parking</span><span class="hotel-cell-note">Free outdoor parking next to the hotel, with 80 spaces; spaces cannot be reserved.<br><a href="https://www.scandichotels.com/en/hotels/scandic-waskia">Checked <time datetime="2026-10-24">24 October 2026</time></a></span></td>
+            <td role="cell" data-label="Parking receipt" class="hotel-receipt"><span class="hotel-tag">No parking charge</span><span class="hotel-cell-note">Not applicable — no parking charge</span></td>
+            <td role="cell" data-label="Short review" class="hotel-summary">Free outdoor parking next to the hotel, with 80 spaces; spaces cannot be reserved.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="hotel-empty" data-hotel-empty hidden><strong>No hotels match these filters.</strong><p>Change a filter or choose All parking to see the other options. Reset filters returns to free parking.</p></div>
+      <p class="hotel-price-note">The spreadsheet contains every hotel in the register. Free-parking tags refer to the specified guest parking option; charging a vehicle or choosing a paid garage can cost extra.</p>
+    </section>
+    <section class="hotel-notes" data-hotel-notes aria-labelledby="hotel-notes-title">
+      <h2 id="hotel-notes-title">Reviews &amp; parking notes</h2>
+      <article class="hotel-review" id="review-hotel-marina-2026-10-24" data-hotel-note="hotel-marina-2026-10-24" aria-labelledby="title-hotel-marina-2026-10-24">
+        <h3 id="title-hotel-marina-2026-10-24">Hotel Marina — Vedbæk</h3>
+        <p class="hotel-review-meta">Vedbæk Strandvej 391, 2950 Vedbæk, Denmark<br>Recorded <time datetime="2026-10-24">24 October 2026</time></p>
+        <p>Hotel Marina offers free outdoor guest parking at Vedbæk Strandvej 391. Register the vehicle on the APCOA tablet at reception; the hotel’s arrival information also confirms that reception-tablet registration is required.</p>
+        <p>The recorded accommodation payment was 5,728.46 kr for five nights, including taxes and fees after a booking credit. This works out to an average of 1,145.69 kr per night. The supplied receipt labels the currency only as “kr”, so no SEK or DKK currency code has been assumed.</p>
+        <p>Free parking makes Marina a useful addition to the parking shortlist. No separate parking payment is recorded. A broader assessment of the room, service and other facilities has not been supplied.</p>
+        <ul class="hotel-review-tags" aria-label="Country and parking tags"><li class="hotel-tag">Denmark</li><li class="hotel-tag hotel-parking-free">Free parking</li></ul>
+        <p class="hotel-source">Accommodation payment taken from a supplied receipt. APCOA tablet procedure reported by the guest; free outdoor parking and registration at reception confirmed on the official hotel website on 24 October 2026. Personal and booking details are omitted.<br><a href="https://hotelmarina.dk/">Official hotel information</a><a href="https://hotelmarina.dk/ankomst/">Parking information</a></p>
+      </article>
+      <article class="hotel-review" id="review-scandic-aalborg-ost-2026-10-24" data-hotel-note="scandic-aalborg-ost-2026-10-24" aria-labelledby="title-scandic-aalborg-ost-2026-10-24">
+        <h3 id="title-scandic-aalborg-ost-2026-10-24">Scandic Aalborg Øst — Aalborg Ø</h3>
+        <p class="hotel-review-meta">Hadsundvej 200, 9220 Aalborg Ø, Denmark<br>Recorded <time datetime="2026-10-24">24 October 2026</time></p>
+        <p>Scandic Aalborg Øst is included for its free outdoor guest parking immediately outside the hotel. Parking spaces cannot be reserved in advance.</p>
+        <p>The room price and a detailed stay assessment have not been recorded.</p>
+        <ul class="hotel-review-tags" aria-label="Country and parking tags"><li class="hotel-tag">Denmark</li><li class="hotel-tag hotel-parking-free">Free parking</li></ul>
+        <p class="hotel-source">Reported parking information checked against the official hotel page on 24 October 2026. The room price and a detailed stay assessment have not been supplied. Parking conditions may change; check the signs and reception instructions on arrival.<br><a href="https://www.scandichotels.com/en/hotels/scandic-aalborg-ost">Official hotel information</a><a href="https://www.scandichotels.com/en/hotels/scandic-aalborg-ost/map-view">Hotel map location</a></p>
+      </article>
+      <article class="hotel-review" id="review-scandic-aarhus-vest-2026-10-24" data-hotel-note="scandic-aarhus-vest-2026-10-24" aria-labelledby="title-scandic-aarhus-vest-2026-10-24">
+        <h3 id="title-scandic-aarhus-vest-2026-10-24">Scandic Aarhus Vest — Aarhus V</h3>
+        <p class="hotel-review-meta">Rytoften 3, 8210 Aarhus V, Denmark<br>Recorded <time datetime="2026-10-24">24 October 2026</time></p>
+        <p>Scandic Aarhus Vest offers free guest parking in an enclosed outdoor car park. Parking spaces cannot be reserved in advance.</p>
+        <p>The hotel joins the free-parking shortlist. The room price and a detailed stay assessment have not been recorded.</p>
+        <ul class="hotel-review-tags" aria-label="Country and parking tags"><li class="hotel-tag">Denmark</li><li class="hotel-tag hotel-parking-free">Free parking</li></ul>
+        <p class="hotel-source">Reported parking information checked against the official hotel page on 24 October 2026. The room price and a detailed stay assessment have not been supplied. Parking conditions may change; check the signs and reception instructions on arrival.<br><a href="https://www.scandichotels.com/en/hotels/scandic-aarhus-vest">Official hotel information</a><a href="https://www.scandichotels.com/en/hotels/scandic-aarhus-vest/map-view">Hotel map location</a></p>
+      </article>
+      <article class="hotel-review" id="review-scandic-kolding-2026-10-24" data-hotel-note="scandic-kolding-2026-10-24" aria-labelledby="title-scandic-kolding-2026-10-24">
+        <h3 id="title-scandic-kolding-2026-10-24">Scandic Kolding — Kolding</h3>
+        <p class="hotel-review-meta">Kokholm 2, 6000 Kolding, Denmark<br>Recorded <time datetime="2026-10-24">24 October 2026</time></p>
+        <p>Scandic Kolding offers free outdoor parking, with vehicle registration required at reception. Parking spaces cannot be reserved in advance; electric-vehicle charging is charged separately.</p>
+        <p>The room price and a detailed stay assessment have not been recorded.</p>
+        <ul class="hotel-review-tags" aria-label="Country and parking tags"><li class="hotel-tag">Denmark</li><li class="hotel-tag hotel-parking-free">Free parking</li></ul>
+        <p class="hotel-source">Reported parking information checked against the official hotel page on 24 October 2026. The room price and a detailed stay assessment have not been supplied. Parking conditions may change; check the signs and reception instructions on arrival.<br><a href="https://www.scandichotels.com/en/hotels/scandic-kolding">Official hotel information</a><a href="https://www.scandichotels.com/en/hotels/scandic-kolding/map-view">Hotel map location</a></p>
+      </article>
+      <article class="hotel-review" id="review-scandic-opus-horsens-2026-10-24" data-hotel-note="scandic-opus-horsens-2026-10-24" aria-labelledby="title-scandic-opus-horsens-2026-10-24">
+        <h3 id="title-scandic-opus-horsens-2026-10-24">Scandic Opus Horsens — Horsens</h3>
+        <p class="hotel-review-meta">Egebjergvej 1, 8700 Horsens, Denmark<br>Recorded <time datetime="2026-10-24">24 October 2026</time></p>
+        <p>Scandic Opus Horsens qualifies for the shortlist through its free outdoor parking. The hotel also offers a paid garage, so the free-parking tag applies specifically to the outdoor spaces.</p>
+        <p>Parking spaces cannot be reserved in advance. The room price and a detailed stay assessment have not been recorded.</p>
+        <ul class="hotel-review-tags" aria-label="Country and parking tags"><li class="hotel-tag">Denmark</li><li class="hotel-tag hotel-parking-free">Free parking</li></ul>
+        <p class="hotel-source">Reported parking information checked against the official hotel page on 24 October 2026. The room price and a detailed stay assessment have not been supplied. Parking conditions may change; check the signs and reception instructions on arrival.<br><a href="https://www.scandichotels.com/en/hotels/scandic-opus-horsens">Official hotel information</a><a href="https://www.scandichotels.com/en/hotels/scandic-opus-horsens/map-view">Hotel map location</a></p>
+      </article>
+      <article class="hotel-review" id="review-scandic-sonderborg-2026-10-24" data-hotel-note="scandic-sonderborg-2026-10-24" aria-labelledby="title-scandic-sonderborg-2026-10-24">
+        <h3 id="title-scandic-sonderborg-2026-10-24">Scandic Sønderborg — Sønderborg</h3>
+        <p class="hotel-review-meta">Ellegårdvej 27, 6400 Sønderborg, Denmark<br>Recorded <time datetime="2026-10-24">24 October 2026</time></p>
+        <p>Scandic Sønderborg offers free outdoor guest parking outside the hotel. Parking spaces cannot be reserved in advance.</p>
+        <p>The hotel joins the free-parking shortlist. The room price and a detailed stay assessment have not been recorded.</p>
+        <ul class="hotel-review-tags" aria-label="Country and parking tags"><li class="hotel-tag">Denmark</li><li class="hotel-tag hotel-parking-free">Free parking</li></ul>
+        <p class="hotel-source">Reported parking information checked against the official hotel page on 24 October 2026. The room price and a detailed stay assessment have not been supplied. Parking conditions may change; check the signs and reception instructions on arrival.<br><a href="https://www.scandichotels.com/en/hotels/scandic-sonderborg">Official hotel information</a><a href="https://www.scandichotels.com/en/hotels/scandic-sonderborg/map-view">Hotel map location</a></p>
+      </article>
+      <article class="hotel-review" id="review-scandic-elmia-2026-10-24" data-hotel-note="scandic-elmia-2026-10-24" aria-labelledby="title-scandic-elmia-2026-10-24">
+        <h3 id="title-scandic-elmia-2026-10-24">Scandic Elmia — Jönköping</h3>
+        <p class="hotel-review-meta">Elmiavägen 8, 554 54 Jönköping, Sweden<br>Recorded <time datetime="2026-10-24">24 October 2026</time></p>
+        <p>Scandic Elmia provided a satisfactory overnight stay at a fair room price of SEK 1,107. Parking cost a further SEK 105, bringing the recorded total for the room and parking to SEK 1,212.</p>
+        <p>Parking was paid separately through Pair Parking’s website, where the parking receipt was also available. On this stay, the parking charge could not be included on the hotel receipt.</p>
+        <p>The room price was reasonable. The additional parking cost and separate receipt should be taken into account when comparing alternatives, particularly for business travel. This stay does not qualify for the free-parking shortlist.</p>
+        <ul class="hotel-review-tags" aria-label="Country and parking tags"><li class="hotel-tag">Sweden</li><li class="hotel-tag hotel-parking-avoid">Paid parking · Avoid</li><li class="hotel-tag">Separate parking receipt</li><li class="hotel-tag">Parking not on hotel receipt</li></ul>
+        <p class="hotel-source">Personal stay report recorded 24 October 2026. The hotel name and address were checked against the official Scandic and Pair booking pages. Prices, assessment and receipt arrangements describe this stay; they are not a current tariff or a statement of permanent hotel policy.<br><a href="https://www.scandichotels.com/en/hotels/scandic-elmia">Official hotel information</a><a href="https://manager.pair.se/booking/new/6db02c70-57fc-11ef-9256-499bf887b022?lang=en_GB">Parking information</a><a href="https://www.scandichotels.com/en/hotels/scandic-elmia/map-view">Hotel map location</a></p>
+      </article>
+      <article class="hotel-review" id="review-scandic-sundsvall-nord-2026-10-24" data-hotel-note="scandic-sundsvall-nord-2026-10-24" aria-labelledby="title-scandic-sundsvall-nord-2026-10-24">
+        <h3 id="title-scandic-sundsvall-nord-2026-10-24">Scandic Sundsvall Nord — Sundsvall</h3>
+        <p class="hotel-review-meta">Värdshusbacken 6, 856 50 Sundsvall, Sweden<br>Recorded <time datetime="2026-10-24">24 October 2026</time></p>
+        <p>Scandic Sundsvall Nord confirms free outdoor guest parking on weekdays and weekends. The hotel lists 150 spaces, which cannot be reserved in advance.</p>
+        <ul class="hotel-review-tags" aria-label="Country and parking tags"><li class="hotel-tag">Sweden</li><li class="hotel-tag hotel-parking-free">Free parking</li></ul>
+        <p class="hotel-source">Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Coordinates come from the Visit Sweden property record. Room price and stay dates have not been recorded.<br><a href="https://www.scandichotels.com/en/hotels/scandic-sundsvall-nord">Official hotel information</a><a href="https://data.visitsweden.com/store/216/metadata/243">Hotel map location</a></p>
+      </article>
+      <article class="hotel-review" id="review-scandic-ostersund-syd-2026-10-24" data-hotel-note="scandic-ostersund-syd-2026-10-24" aria-labelledby="title-scandic-ostersund-syd-2026-10-24">
+        <h3 id="title-scandic-ostersund-syd-2026-10-24">Scandic Östersund Syd — Östersund</h3>
+        <p class="hotel-review-meta">Krondikesvägen 97, 831 60 Östersund, Sweden<br>Recorded <time datetime="2026-10-24">24 October 2026</time></p>
+        <p>Scandic Östersund Syd confirms free outdoor guest parking on weekdays and weekends. The hotel lists 100 spaces, which cannot be reserved in advance.</p>
+        <ul class="hotel-review-tags" aria-label="Country and parking tags"><li class="hotel-tag">Sweden</li><li class="hotel-tag hotel-parking-free">Free parking</li></ul>
+        <p class="hotel-source">Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Coordinates come from the Visit Sweden property record. Room price and stay dates have not been recorded.<br><a href="https://www.scandichotels.com/en/hotels/scandic-ostersund-syd">Official hotel information</a><a href="https://data.visitsweden.com/store/120/metadata/2745">Hotel map location</a></p>
+      </article>
+      <article class="hotel-review" id="review-hotell-jamteborg-2026-10-24" data-hotel-note="hotell-jamteborg-2026-10-24" aria-labelledby="title-hotell-jamteborg-2026-10-24">
+        <h3 id="title-hotell-jamteborg-2026-10-24">Hotell Jämteborg — Östersund</h3>
+        <p class="hotel-review-meta">Storgatan 54, 831 30 Östersund, Sweden<br>Recorded <time datetime="2026-10-24">24 October 2026</time></p>
+        <p>Hotell Jämteborg confirms free guest parking behind the hotel. Electric-vehicle charging is available, but charging prices and any registration requirements have not been verified.</p>
+        <ul class="hotel-review-tags" aria-label="Country and parking tags"><li class="hotel-tag">Sweden</li><li class="hotel-tag hotel-parking-free">Free parking</li></ul>
+        <p class="hotel-source">Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Coordinates come from the Visit Sweden property record. Room price and stay dates have not been recorded.<br><a href="https://jamteborg.se/">Official hotel information</a><a href="https://data.visitsweden.com/store/120/metadata/2744">Hotel map location</a></p>
+      </article>
+      <article class="hotel-review" id="review-thon-hotel-bergen-airport-2026-10-24" data-hotel-note="thon-hotel-bergen-airport-2026-10-24" aria-labelledby="title-thon-hotel-bergen-airport-2026-10-24">
+        <h3 id="title-thon-hotel-bergen-airport-2026-10-24">Thon Hotel Bergen Airport — Kokstad</h3>
+        <p class="hotel-review-meta">Kokstadvegen 3, 5257 Kokstad, Norway<br>Recorded <time datetime="2026-10-24">24 October 2026</time></p>
+        <p>Thon Hotel Bergen Airport confirms free parking outside its entrance, with 110 spaces. Buses and large vehicles require prior agreement. EV charging is available; charging prices have not been verified.</p>
+        <ul class="hotel-review-tags" aria-label="Country and parking tags"><li class="hotel-tag">Norway</li><li class="hotel-tag hotel-parking-free">Free parking</li></ul>
+        <p class="hotel-source">Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Address and coordinates come from the official property page or its property map. Room price and stay dates have not been recorded.<br><a href="https://www.thonhotels.com/hotels/norway/bergen/thon-hotel-bergen-airport/">Official hotel information</a></p>
+      </article>
+      <article class="hotel-review" id="review-thon-hotel-elgstua-2026-10-24" data-hotel-note="thon-hotel-elgstua-2026-10-24" aria-labelledby="title-thon-hotel-elgstua-2026-10-24">
+        <h3 id="title-thon-hotel-elgstua-2026-10-24">Thon Hotel Elgstua — Elverum</h3>
+        <p class="hotel-review-meta">Trondheimsvegen 9, 2406 Elverum, Norway<br>Recorded <time datetime="2026-10-24">24 October 2026</time></p>
+        <p>Thon Hotel Elgstua confirms that guests can park free immediately outside the hotel. EV chargers, including Tesla charging, are available; charging prices and any registration requirements have not been verified.</p>
+        <ul class="hotel-review-tags" aria-label="Country and parking tags"><li class="hotel-tag">Norway</li><li class="hotel-tag hotel-parking-free">Free parking</li></ul>
+        <p class="hotel-source">Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Address and coordinates come from the official property page or its property map. Room price and stay dates have not been recorded.<br><a href="https://www.thonhotels.com/hotels/norway/elverum/thon-hotel-elgstua/">Official hotel information</a></p>
+      </article>
+      <article class="hotel-review" id="review-thon-hotel-hallingdal-2026-10-24" data-hotel-note="thon-hotel-hallingdal-2026-10-24" aria-labelledby="title-thon-hotel-hallingdal-2026-10-24">
+        <h3 id="title-thon-hotel-hallingdal-2026-10-24">Thon Hotel Hallingdal — Ål</h3>
+        <p class="hotel-review-meta">Sundrevegen 82, 3570 Ål, Norway<br>Recorded <time datetime="2026-10-24">24 October 2026</time></p>
+        <p>Thon Hotel Hallingdal explicitly lists free parking among its amenities. The reviewed hotel details do not specify the parking area or any registration procedure.</p>
+        <ul class="hotel-review-tags" aria-label="Country and parking tags"><li class="hotel-tag">Norway</li><li class="hotel-tag hotel-parking-free">Free parking</li></ul>
+        <p class="hotel-source">Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Address and coordinates come from the official property page or its property map. Room price and stay dates have not been recorded.<br><a href="https://www.thonhotels.com/hotels/norway/al/thon-hotel-hallingdal/">Official hotel information</a></p>
+      </article>
+      <article class="hotel-review" id="review-scandic-espoo-2026-10-24" data-hotel-note="scandic-espoo-2026-10-24" aria-labelledby="title-scandic-espoo-2026-10-24">
+        <h3 id="title-scandic-espoo-2026-10-24">Scandic Espoo — Espoo</h3>
+        <p class="hotel-review-meta">Nihtisillantie 1, 02630 Espoo, Finland<br>Recorded <time datetime="2026-10-24">24 October 2026</time></p>
+        <p>Scandic Espoo confirms that its outdoor car park is free on weekdays and weekends. Spaces cannot be reserved in advance. EV charging prices and any registration requirements have not been verified.</p>
+        <ul class="hotel-review-tags" aria-label="Country and parking tags"><li class="hotel-tag">Finland</li><li class="hotel-tag hotel-parking-free">Free parking</li></ul>
+        <p class="hotel-source">Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Address and coordinates come from the official property page or its property map. Room price and stay dates have not been recorded.<br><a href="https://www.scandichotels.com/en/hotels/scandic-espoo">Official hotel information</a><a href="https://www.scandichotels.com/en/hotels/scandic-espoo/map-view">Hotel map location</a></p>
+      </article>
+      <article class="hotel-review" id="review-scandic-laajavuori-2026-10-24" data-hotel-note="scandic-laajavuori-2026-10-24" aria-labelledby="title-scandic-laajavuori-2026-10-24">
+        <h3 id="title-scandic-laajavuori-2026-10-24">Scandic Laajavuori — Jyväskylä</h3>
+        <p class="hotel-review-meta">Laajavuorentie 30, 40740 Jyväskylä, Finland<br>Recorded <time datetime="2026-10-24">24 October 2026</time></p>
+        <p>Scandic Laajavuori confirms free outdoor parking on weekdays and weekends, with 300 spaces. Spaces cannot be reserved. EV charging through Plugit is charged separately and requires the app or online payment.</p>
+        <ul class="hotel-review-tags" aria-label="Country and parking tags"><li class="hotel-tag">Finland</li><li class="hotel-tag hotel-parking-free">Free parking</li></ul>
+        <p class="hotel-source">Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Address and coordinates come from the official property page or its property map. Room price and stay dates have not been recorded.<br><a href="https://www.scandichotels.com/en/hotels/scandic-laajavuori">Official hotel information</a><a href="https://www.scandichotels.com/en/hotels/scandic-laajavuori/map-view">Hotel map location</a></p>
+      </article>
+      <article class="hotel-review" id="review-scandic-waskia-2026-10-24" data-hotel-note="scandic-waskia-2026-10-24" aria-labelledby="title-scandic-waskia-2026-10-24">
+        <h3 id="title-scandic-waskia-2026-10-24">Scandic Waskia — Vaasa</h3>
+        <p class="hotel-review-meta">Lemmenpolku 3, 65170 Vaasa, Finland<br>Recorded <time datetime="2026-10-24">24 October 2026</time></p>
+        <p>Scandic Waskia confirms free outdoor parking next to the hotel on weekdays and weekends, with 80 spaces. Spaces cannot be reserved in advance. EV charging prices and any registration requirements have not been verified.</p>
+        <ul class="hotel-review-tags" aria-label="Country and parking tags"><li class="hotel-tag">Finland</li><li class="hotel-tag hotel-parking-free">Free parking</li></ul>
+        <p class="hotel-source">Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Address and coordinates come from the official property page or its property map. Room price and stay dates have not been recorded.<br><a href="https://www.scandichotels.com/en/hotels/scandic-waskia">Official hotel information</a><a href="https://www.scandichotels.com/en/hotels/scandic-waskia/map-view">Hotel map location</a></p>
+      </article>
+    </section>
+    <section class="hotel-method" aria-labelledby="hotel-method-title">
+      <h2 id="hotel-method-title">What this register records</h2>
+      <p>Hotels join the free-parking list only after their own published information confirms free guest parking. Each parking entry links to its source and check date, with known registration requirements and paid alternatives explained. Coverage grows as hotels are verified.</p>
+      <p>Green means confirmed free guest parking, the preferred option and default filter. Yellow means “Easy parking”: parking costs money, but you can pay at the hotel. Red means paid parking handled separately through an external payment route — avoid. Payment at the hotel and inclusion on the hotel receipt are recorded separately.</p>
+      <p>Stay reports and official hotel information are identified in each note. Personal names, booking references, card details and exact stay dates are excluded. Prices and parking arrangements can change; the recorded date keeps each entry in context.</p>
+    </section>
+  </main>
+  <footer id="site-footer" class="site-footer"></footer>
+  <script src="/config.js?v=blog-1"></script>
+  <script src="/shared.js?v=blog-1"></script>
+  <script id="hotel-map-data" type="application/json">[{"id": "hotel-marina-2026-10-24", "name": "Hotel Marina", "city": "Vedbæk", "country": "Denmark", "address": "Vedbæk Strandvej 391, 2950", "latitude": 55.8503682, "longitude": 12.5688971, "parkingCategory": "free", "parkingLabel": "Free parking", "parkingSummary": "Register your vehicle on the APCOA tablet at hotel reception to park free.", "reviewId": "review-hotel-marina-2026-10-24"}, {"id": "scandic-aalborg-ost-2026-10-24", "name": "Scandic Aalborg Øst", "city": "Aalborg Ø", "country": "Denmark", "address": "Hadsundvej 200, 9220", "latitude": 57.02102, "longitude": 9.963698, "parkingCategory": "free", "parkingLabel": "Free parking", "parkingSummary": "Free outdoor guest parking immediately outside the hotel; spaces cannot be reserved.", "reviewId": "review-scandic-aalborg-ost-2026-10-24"}, {"id": "scandic-aarhus-vest-2026-10-24", "name": "Scandic Aarhus Vest", "city": "Aarhus V", "country": "Denmark", "address": "Rytoften 3, 8210", "latitude": 56.166405, "longitude": 10.150745, "parkingCategory": "free", "parkingLabel": "Free parking", "parkingSummary": "Free enclosed outdoor car park for hotel guests; spaces cannot be reserved.", "reviewId": "review-scandic-aarhus-vest-2026-10-24"}, {"id": "scandic-kolding-2026-10-24", "name": "Scandic Kolding", "city": "Kolding", "country": "Denmark", "address": "Kokholm 2, 6000", "latitude": 55.532097, "longitude": 9.470907, "parkingCategory": "free", "parkingLabel": "Free parking", "parkingSummary": "Register your car at reception for free outdoor parking. EV charging costs extra.", "reviewId": "review-scandic-kolding-2026-10-24"}, {"id": "scandic-opus-horsens-2026-10-24", "name": "Scandic Opus Horsens", "city": "Horsens", "country": "Denmark", "address": "Egebjergvej 1, 8700", "latitude": 55.877026, "longitude": 9.842796, "parkingCategory": "free", "parkingLabel": "Free parking", "parkingSummary": "Outdoor parking is free. The hotel garage is paid.", "reviewId": "review-scandic-opus-horsens-2026-10-24"}, {"id": "scandic-sonderborg-2026-10-24", "name": "Scandic Sønderborg", "city": "Sønderborg", "country": "Denmark", "address": "Ellegårdvej 27, 6400", "latitude": 54.929806, "longitude": 9.80607, "parkingCategory": "free", "parkingLabel": "Free parking", "parkingSummary": "Free outdoor guest parking outside the hotel; spaces cannot be reserved.", "reviewId": "review-scandic-sonderborg-2026-10-24"}, {"id": "scandic-elmia-2026-10-24", "name": "Scandic Elmia", "city": "Jönköping", "country": "Sweden", "address": "Elmiavägen 8, 554 54", "latitude": 57.7871, "longitude": 14.229562, "parkingCategory": "avoid", "parkingLabel": "Paid parking · Avoid", "parkingSummary": "Paid through Pair Parking’s website; separate receipt.", "reviewId": "review-scandic-elmia-2026-10-24"}, {"id": "scandic-sundsvall-nord-2026-10-24", "name": "Scandic Sundsvall Nord", "city": "Sundsvall", "country": "Sweden", "address": "Värdshusbacken 6, 856 50", "latitude": 62.41404300000001, "longitude": 17.3458234, "parkingCategory": "free", "parkingLabel": "Free parking", "parkingSummary": "Free outdoor guest parking, with 150 spaces; spaces cannot be reserved.", "reviewId": "review-scandic-sundsvall-nord-2026-10-24"}, {"id": "scandic-ostersund-syd-2026-10-24", "name": "Scandic Östersund Syd", "city": "Östersund", "country": "Sweden", "address": "Krondikesvägen 97, 831 60", "latitude": 63.15934788448138, "longitude": 14.672277669415754, "parkingCategory": "free", "parkingLabel": "Free parking", "parkingSummary": "Free outdoor guest parking, with 100 spaces; spaces cannot be reserved.", "reviewId": "review-scandic-ostersund-syd-2026-10-24"}, {"id": "hotell-jamteborg-2026-10-24", "name": "Hotell Jämteborg", "city": "Östersund", "country": "Sweden", "address": "Storgatan 54, 831 30", "latitude": 63.17541181609499, "longitude": 14.635464222245282, "parkingCategory": "free", "parkingLabel": "Free parking", "parkingSummary": "Free guest parking behind the hotel. EV charging is available; charging prices are not verified.", "reviewId": "review-hotell-jamteborg-2026-10-24"}, {"id": "thon-hotel-bergen-airport-2026-10-24", "name": "Thon Hotel Bergen Airport", "city": "Kokstad", "country": "Norway", "address": "Kokstadvegen 3, 5257", "latitude": 60.289966, "longitude": 5.260713, "parkingCategory": "free", "parkingLabel": "Free parking", "parkingSummary": "Free parking outside the entrance. Buses and large vehicles require prior agreement.", "reviewId": "review-thon-hotel-bergen-airport-2026-10-24"}, {"id": "thon-hotel-elgstua-2026-10-24", "name": "Thon Hotel Elgstua", "city": "Elverum", "country": "Norway", "address": "Trondheimsvegen 9, 2406", "latitude": 60.88376012789416, "longitude": 11.540001800518153, "parkingCategory": "free", "parkingLabel": "Free parking", "parkingSummary": "Free guest parking immediately outside the hotel. EV charging prices are not verified.", "reviewId": "review-thon-hotel-elgstua-2026-10-24"}, {"id": "thon-hotel-hallingdal-2026-10-24", "name": "Thon Hotel Hallingdal", "city": "Ål", "country": "Norway", "address": "Sundrevegen 82, 3570", "latitude": 60.63146, "longitude": 8.563814, "parkingCategory": "free", "parkingLabel": "Free parking", "parkingSummary": "Free guest parking confirmed by the hotel. The parking area and registration procedure are not specified.", "reviewId": "review-thon-hotel-hallingdal-2026-10-24"}, {"id": "scandic-espoo-2026-10-24", "name": "Scandic Espoo", "city": "Espoo", "country": "Finland", "address": "Nihtisillantie 1, 02630", "latitude": 60.207737, "longitude": 24.75284, "parkingCategory": "free", "parkingLabel": "Free parking", "parkingSummary": "Free parking in the hotel’s outdoor car park; spaces cannot be reserved.", "reviewId": "review-scandic-espoo-2026-10-24"}, {"id": "scandic-laajavuori-2026-10-24", "name": "Scandic Laajavuori", "city": "Jyväskylä", "country": "Finland", "address": "Laajavuorentie 30, 40740", "latitude": 62.259068, "longitude": 25.695864, "parkingCategory": "free", "parkingLabel": "Free parking", "parkingSummary": "Free outdoor parking, with 300 spaces; no advance reservations. Plugit EV charging is paid.", "reviewId": "review-scandic-laajavuori-2026-10-24"}, {"id": "scandic-waskia-2026-10-24", "name": "Scandic Waskia", "city": "Vaasa", "country": "Finland", "address": "Lemmenpolku 3, 65170", "latitude": 63.08838, "longitude": 21.58997, "parkingCategory": "free", "parkingLabel": "Free parking", "parkingSummary": "Free outdoor parking next to the hotel, with 80 spaces; spaces cannot be reserved.", "reviewId": "review-scandic-waskia-2026-10-24"}]</script>
+  <script src="/blog/hotels/hotels.js?v=3"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="/blog/hotels/hotels-map.js?v=2"></script>
+</body>
+</html>

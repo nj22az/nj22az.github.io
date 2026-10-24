@@ -288,8 +288,9 @@ test('hair states: half-dried (one side dry and blown out, the other wet and fla
  // With the towel on her head the hair under it stays as it lies.
  n.wear('towel');nh.forEach((i,k)=>assert.ok(new THREE.Vector3().fromBufferAttribute(NP,i).equals(before[k]),'covered hair is left alone'));
  n.wear('towel',{headTowel:false});assert.ok(new THREE.Vector3().fromBufferAttribute(NP,nh[0]).distanceTo(dried[0])<1e-6,'and back to the state uncovered');
- // Her beret: hair under a hat is tucked and stays tucked; hat off, the state shows.
- const hat=buildAvatar(nhung,{shadows:false}),HP=hat.body.geometry.attributes.position,hh=hairOf(hat.body,nhung),tucked=hh.map(i=>new THREE.Vector3().fromBufferAttribute(HP,i));
+ // A beret (hers from the bookshop days; the doctor wears none since 22 October 2026): hair under a hat is tucked and
+ // stays tucked; hat off, the state shows.
+ const hat=buildAvatar(normalizeRecipe({...nhung,outfit:{...nhung.outfit,hat:'beret',hatColour:'#5f8f6a'}}),{shadows:false}),HP=hat.body.geometry.attributes.position,hh=hairOf(hat.body,nhung),tucked=hh.map(i=>new THREE.Vector3().fromBufferAttribute(HP,i));
  hat.setHairState('halfDry');hh.forEach((i,k)=>assert.ok(new THREE.Vector3().fromBufferAttribute(HP,i).equals(tucked[k])));
  hat.setHat(false);assert.ok(hh.some((i,k)=>new THREE.Vector3().fromBufferAttribute(HP,i).distanceTo(tucked[k])>.01));
  hat.setHat(true);hh.forEach((i,k)=>assert.ok(new THREE.Vector3().fromBufferAttribute(HP,i).equals(tucked[k])));

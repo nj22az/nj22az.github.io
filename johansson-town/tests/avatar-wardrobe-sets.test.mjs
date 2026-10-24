@@ -99,7 +99,12 @@ test('every set still changes into the bath and the lobby clothes, one body at a
  for(const s of SETS)for(const who of ['Thuan','Tetsuo']){
   const a=buildAvatar(dressed(CAST_RECIPES[who],s.outfit),{shadows:false,faceSize:64});
   for(const m of [...(BATCH_1.includes(s.id)&&who==='Thuan'?['swim','towel']:[]),'afterbath','clothes']){
-   assert.equal(a.wear(m),m,`${s.id} on ${who}: ${m}`);assert.equal(shown(a),1,`${s.id} on ${who} in ${m}: one body`);
+   assert.equal(a.wear(m),m,`${s.id} on ${who}: ${m}`);
+   // The authored panel cut is a declared additional cloth material/mesh; bath
+   // transitions must hide it as well as the everyday body, never leave it on.
+   const expected=1+(m==='clothes'&&a.skirt?1:0);
+   assert.equal(shown(a),expected,`${s.id} on ${who} in ${m}: one body plus declared garment`);
+   if(a.skirt)assert.equal(a.skirt.visible,m==='clothes',`${s.id}: no everyday skirt left on in ${m}`);
    const dress=a.root.getObjectByProperty('name','Shimanchu after the bath · house dress')?.userData.afterbath.dress;
    if(m==='afterbath'&&who==='Thuan')assert.ok(dress&&dress!=='#ffffff',`${s.id}: house dress ${dress}`);
   }

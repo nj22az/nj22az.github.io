@@ -1,6 +1,6 @@
 import {THUAN_STUDIO_DESIGN} from './thuan-studio-design.js';
 import {HARBOUR_POLO_OUTFIT} from './outfits.js';
-import {residentRecipe} from './wardrobe.js';
+import {residentRecipe,adoptResidentAppearance} from './wardrobe.js';
 import {BIRTHDAYS} from '../people/birthdays-data.js';
 import {normalizeRecipe,seeded,PARTS,ageClass} from './recipe.js';
 import {PROFILES} from '../people/profiles.js';
@@ -40,6 +40,12 @@ const castSet=entries=>Object.freeze(Object.fromEntries(Object.entries(entries).
  return [name,normalizeRecipe(withBirthday({...r,body:{...r.body,silhouette:r.body.silhouette==='neutral'?(female?'feminine':'masculine'):r.body.silhouette}},name))];
 })));
 
+/** Nhung as the bookseller she was until 22 October 2026, when she became the island doctor (CAST_RECIPES.Nhung). */
+export const FORMER_NHUNG_RECIPE=R({name:'Nhung',accessories:{earrings:'hoops',pin:true,colour:'#c8a060'},body:{height:.34,build:.38,skin:'#efc9a4'},head:{size:.5,shape:.52,form:'round',jaw:.35,cheeks:.6},
+  hair:{style:'bob',colour:'#2e211b'},eyes:{style:'round',colour:'#3a2a1e',size:.6,spacing:.5,height:.5,tilt:.5},
+  brows:{style:'arched',colour:'#2e211b',size:.45},nose:{style:'button',size:.35},mouth:{style:'small',colour:'#c4485a',size:.45},
+  blush:.45,
+  outfit:{hat:'beret',hatColour:'#5f8f6a',top:'jacket',topColour:'#5f8f6a',pattern:'dots',bottom:'longskirt',bottomColour:'#e6d3b0',shoes:'#6b4a2e',accent:'#f4e4c8'}});
 export const CAST_RECIPES=castSet({
  // Photo reference: a blonde adult with shoulder-length hair, arched brows,
  // almond eyes and berry lips. A neutral editable name, not an invented identity.
@@ -73,13 +79,15 @@ export const CAST_RECIPES=castSet({
   brows:{style:'straight',colour:'#1c1714',size:.45,tilt:.42},nose:{style:'button',size:.35},mouth:{style:'flat',colour:'#b8544a',size:.42},blush:.2,
   accessories:{earrings:'studs',colour:'#e0b93a'},
   outfit:{top:'tee',topColour:'#f4f1ea',bottom:'shorts',bottomColour:'#7fb0d8',footwear:'sandals',shoes:'#f4f1ea',accent:'#7fb0d8'}}),
- // Front-Row Books & Workshop, and the two little houses behind it. Nhung is the eldest of
- // the three sisters (Nhung, Thao, Thuan).
- Nhung:R({name:'Nhung',accessories:{earrings:'hoops',pin:true,colour:'#c8a060'},body:{height:.34,build:.38,skin:'#efc9a4'},head:{size:.5,shape:.52,form:'round',jaw:.35,cheeks:.6},
-  hair:{style:'bob',colour:'#2e211b'},eyes:{style:'round',colour:'#3a2a1e',size:.6,spacing:.5,height:.5,tilt:.5},
-  brows:{style:'arched',colour:'#2e211b',size:.45},nose:{style:'button',size:.35},mouth:{style:'small',colour:'#c4485a',size:.45},
-  blush:.45,
-  outfit:{hat:'beret',hatColour:'#5f8f6a',top:'jacket',topColour:'#5f8f6a',pattern:'dots',bottom:'longskirt',bottomColour:'#e6d3b0',shoes:'#6b4a2e',accent:'#f4e4c8'}}),
+ // Nhung, the eldest of the three sisters (Nhung, Thao, Thuan), is the island doctor since 22 October 2026 (the owner:
+ // "Have this female doctor replace Nhung"): the look the clinic's doctor had at her desk (world/interiors/town-hall.js,
+ // the room's own drawing until then) is hers everywhere. A white coat over a sage shirt (her own colour; the clinic drew it pale blue, Thao's), round half-rim glasses,
+ // her hair tied back and white clinic shoes. Her bookseller's look (a beret and a dotted green jacket over a long skirt,
+ // her hair in a bob) is kept below as FORMER_NHUNG_RECIPE, for history and Studio.
+ Nhung:R({name:'Nhung',age:'adult',body:{height:.42,build:.4,silhouette:'feminine',skin:'#e3b48e'},head:{size:.46,shape:.5,form:'oval',jaw:.35,cheeks:.4},
+  hair:{style:'ponytail',colour:'#1f1813'},eyes:{style:'almond',colour:'#2a1d16',size:.5},brows:{style:'straight',colour:'#1f1813',size:.45},
+  nose:{style:'line',size:.4},mouth:{style:'small',colour:'#b8544a',size:.42},glasses:{style:'half',colour:'#5a4a3a'},blush:.15,
+  outfit:{top:'jacket',topColour:'#f6f6f2',bottom:'trousers',bottomColour:'#3a4658',shoes:'#f4f1ea',accent:'#8fb39a'},accessories:{neckwear:'none'}}),
  Reiko:R({name:'Reiko',accessories:{neckwear:'scarf',colour:'#d8342c'},body:{height:.46,build:.42,skin:'#e8bf98'},head:{size:.47,shape:.44,form:'oval',jaw:.4,cheeks:.4},
   hair:{style:'ponytail',colour:'#1c1714'},eyes:{style:'almond',colour:'#2a1d16',size:.5,tilt:.6},
   brows:{style:'straight',colour:'#1c1714',size:.5},nose:{style:'line',size:.4},mouth:{style:'smirk',colour:'#a8433e',size:.45},
@@ -122,13 +130,12 @@ export const CAST_RECIPES=castSet({
 
 /** The people of the new streets, drawn to their lines in neighbours.js. */
 export const NEIGHBOUR_RECIPES=castSet({
- // Vy: a high-school girl in her sailor uniform -- white blouse, red ribbon, navy pleated
- // skirt -- long dark hair tied back. A teen, so the maker's life stage sets her height
- // and proportions (recipe.js AGES).
- Vy:R({name:'Vy',age:'teen',body:{silhouette:'feminine',height:.42,build:.3,skin:'#efd2b4'},head:{size:.5,shape:.42,form:'oval',jaw:.3,cheeks:.5},
-  hair:{style:'ponytail',colour:'#1c1714'},eyes:{style:'gentle',colour:'#2a1d16',size:.58,tilt:.5},brows:{style:'thin',colour:'#1c1714',size:.45},
-  nose:{style:'dot',size:.32},mouth:{style:'soft',colour:'#c4485a',size:.4},blush:.35,
-  outfit:{top:'sailor',topColour:'#f4f1ea',bottom:'pleatedskirt',bottomColour:'#27304d',footwear:'shoes',shoes:'#2b2b2b',accent:'#d8342c'}}),
+ // Vy, eleven: the owner's 24 October GLB reference, rebuilt as editable shared parts.
+ // Long loose dark hair and a fringe, oval eyes and monochrome everyday clothes.
+ Vy:R({name:'Vy',age:'child',body:{proportion:'studio',silhouette:'feminine',height:.42,build:.3,skin:'#f1cfae'},head:{size:.55,shape:.52,form:'sculpted',jaw:.32,cheeks:.65,roundness:.12},
+  hair:{style:'longfringe',colour:'#1c1c24',length:.65,volume:.6},eyes:{style:'inkoval',colour:'#2a1d16',size:.72,width:.35,spacing:.53,tilt:.5},brows:{style:'rounded',colour:'#1c1c24',size:.4},
+  nose:{style:'drawn',size:.42},mouth:{style:'smile',colour:'#b8544a',size:.42},blush:.3,
+  outfit:{skirtCut:'panel',top:'stripedvest',topColour:'#24252b',bottom:'skirt',bottomColour:'#24252b',footwear:'sneakers',shoes:'#f4f1ea',accent:'#f4f1ea'}}),
  Riku:R({body:{silhouette:'masculine',height:.56,build:.55,skin:'#c89a74'},hair:{style:'crop',colour:'#33271f'},eyes:{style:'round'},brows:{style:'thick'},mouth:{style:'smile'},outfit:{top:'polo',topColour:'#587d83',bottom:'trousers',bottomColour:'#505f65',hat:'helmet',hatColour:'#dabb55'}}),
 
  // Retired in phase 4 (roster.js RETIRED; RETIRED_RECIPES keeps the drawings for Studio and history): Grandmother Sakurai,
@@ -166,9 +173,9 @@ const aged=(recipe,name)=>{const age=ageClass(AGE_OF.get(name)),named=name&&!rec
  * recipe drawn here. With no published looks it is exactly baseRecipe.
  */
 export function recipeFor(name='',{looks=LOOKS}={}){
- const saved=residentRecipe(name);if(saved)return saved;
  const look=Object.hasOwn(looks,name)?looks[name]:null;
- return look?.set?normalizeRecipe(applyLook(baseRecipe(name),look.set)):baseRecipe(name);
+ const canonical=look?.set?normalizeRecipe(applyLook(baseRecipe(name),look.set)):baseRecipe(name);
+ return name==='Vy'?adoptResidentAppearance(name,canonical):residentRecipe(name)||canonical;
 }
 
 
