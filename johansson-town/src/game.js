@@ -1517,7 +1517,7 @@ function welcomeAtCounter(forward){
   if(towards.length()>3||forward.dot(towards.normalize())<.65)return;
   storeWelcomed=true;characters.gesture(storeClerk);
 }
-function interaction(){if(pocket?.raised){active=null;$('#prompt').classList.remove('on');return;}if(seated){active=null;const chair=massageChair(),timer=chair?.state();$('#prompt').textContent=chair?'Massage '+(timer.running?timer.reads:'¥'+chair.coin)+' · Stand':Number.isInteger(parkSeat?.ramenSeatId)?(ramenPlayerService?.order?.delivered?'Eat / drink · Stand':ramenPlayerService?.order?'Order on its way · Stand':'Order food · Stand'):'Stand';$('#prompt').classList.add('on');return;}active=null;let best=null,dmax=3.1,bestScore=Infinity;const p=player.position.clone();p.y+=1;const fw=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));welcomeAtCounter(fw);for(const o of interactables){const h=o.userData.hit;const inside=h.inside||!!(o.userData.inMarket&&current?.id==='market');if(o.userData.visualReady===false||!o.visible||current&&!inside||!current&&inside)continue;let visible=true;for(let a=o.parent;a;a=a.parent)if(!a.visible)visible=false;if(!visible)continue;const q=new THREE.Vector3();o.getWorldPosition(q);if(o.userData.sameLevel&&Math.abs(q.y-p.y)>1.2)continue;const target=q.clone(),v=q.sub(p),d=v.length();if(d>dmax)continue;v.y=0;
+function interaction(){if(pocket?.raised){active=null;$('#prompt').classList.remove('on');return;}if(seated){active=null;const chair=massageChair(),timer=chair?.state();$('#prompt').textContent=chair?'Massage '+(timer.running?timer.reads:'¥'+chair.coin)+' · Stand':Number.isInteger(parkSeat?.ramenSeatId)?(ramenPlayerService?.order?.delivered?'Eat / drink · Stand':ramenPlayerService?.order?'Order on its way · Stand':'Order food · Stand'):'Stand';$('#prompt').classList.add('on');return;}active=null;let best=null,dmax=3.1,bestScore=Infinity;const p=player.position.clone();p.y+=1;const fw=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));welcomeAtCounter(fw);for(const o of interactables){const h=o.userData.hit;const inside=h.inside||!!(o.userData.inMarket&&current?.id==='market');if(o.userData.visualReady===false||o.userData.inVehicle||!o.visible||current&&!inside||!current&&inside)continue;let visible=true;for(let a=o.parent;a;a=a.parent)if(!a.visible)visible=false;if(!visible)continue;const q=new THREE.Vector3();o.getWorldPosition(q);if(o.userData.sameLevel&&Math.abs(q.y-p.y)>1.2)continue;const target=q.clone(),v=q.sub(p),d=v.length();if(d>dmax)continue;v.y=0;
   // What you are facing, not merely what is nearest: things behind you or well off to the
   // side are out (unless you are all but touching them), and people come before things.
   const facingDot=v.lengthSq()?fw.dot(v.normalize()):1;if(facingDot<.3&&d>.9)continue;
@@ -2052,10 +2052,11 @@ canvas.addEventListener('click',event=>{
  const hits=ray.intersectObjects(scene.children,true).filter(h=>{for(let o=h.object;o;o=o.parent)if(!o.visible||o===player)return false;return h.distance<60;});
  const hit=hits[0];if(!hit)return;
  let object=hit.object;while(object&&!object.userData.hit)object=object.parent;
+ if(object?.userData.inVehicle)return;
  // Batched street props keep their action on a separate anchor. Resolve that anchor
  // only close to the visible surface, so hidden actions cannot be clicked through walls.
  if(!object){let best=36;for(const candidate of interactables){
-  const h=candidate.userData.hit;if(!h||candidate.userData.visualReady===false)continue;
+  const h=candidate.userData.hit;if(!h||candidate.userData.visualReady===false||candidate.userData.inVehicle)continue;
   let visible=true;for(let o=candidate;o;o=o.parent)if(!o.visible)visible=false;
   const inside=h.inside||candidate.userData.inMarket&&current?.id==='market';
   if(!visible||!!current!==!!inside)continue;
@@ -2067,7 +2068,7 @@ canvas.addEventListener('click',event=>{
  }}
  if(object){
   const target=object.getWorldPosition(new THREE.Vector3()),space=current,fn=object.userData.hit.fn;
-  const interact=()=>{if(current===space&&object.visible&&target.distanceTo(player.position)<3.4){yaw=Math.atan2(player.position.x-target.x,player.position.z-target.z);active={...object.userData.hit,object};fn?.();}};
+  const interact=()=>{if(current===space&&object.visible&&!object.userData.inVehicle&&target.distanceTo(player.position)<3.4){yaw=Math.atan2(player.position.x-target.x,player.position.z-target.z);active={...object.userData.hit,object};fn?.();}};
   if(target.distanceTo(player.position)<3.4){pointWalk.cancel();interact();return;}
   if(!pointWalk.walk(player.position,target,{space,onArrival:interact}))say('There is no clear path from here.',2);
   return;

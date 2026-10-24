@@ -82,3 +82,7 @@
   .hotel-page{max-width:none;padding:0}.hotel-page h1{font-size:30px}.hotel-intro{font-size:14px}
   .hotel-review{break-inside:avoid}.hotel-table{font-size:11px}.hotel-table th,.hotel-table td{padding:8px}
 }
+
+.hotel-findings-note{margin:18px 0 0;padding:14px 16px;border-left:3px solid #15803d;background:var(--surface-raised);font-size:14px;line-height:1.7;color:var(--ink-light)}
+.hotel-findings-note strong{color:var(--ink)}
+.hotel-findings-note a{text-decoration:underline;text-underline-offset:3px}
