@@ -88,8 +88,17 @@ input.onchange=async()=>{
  catch{status.textContent='Unable to open this design. Choose a Johansson Studio design file (.avatar.json).';}finally{input.value='';}
 };
 const openDesign=button('Open design',()=>input.click());
+const nativeFighter=button('Export native fighter',async()=>{
+ nativeFighter.disabled=true;
+ try{const {exportNativeFighter}=await import('./native-export.js');const {bytes}=exportNativeFighter(creator.recipe);
+  const url=URL.createObjectURL(new Blob([bytes],{type:'application/octet-stream'}));download(url,filename()+'.jwf');setTimeout(()=>URL.revokeObjectURL(url),60000);
+  status.textContent='Native fighter exported with this character’s geometry, skeleton, face and clothing.';
+ }catch(error){console.error(error);status.textContent='Native export failed. Your character is unchanged.';}
+ finally{nativeFighter.disabled=false;}
+});
+
 const shareCharacter=creator.root.querySelector('.shm-top button');if(shareCharacter){shareCharacter.textContent='Share character link';fileMenu.append(shareCharacter);}
-label.className='studio-template';fileMenu.append(label,downloadDesign,openDesign);const world=createWorldPanel({creator,status});toolbar.append(status,world,files,input);
+label.className='studio-template';fileMenu.append(label,downloadDesign,openDesign,nativeFighter);const world=createWorldPanel({creator,status});toolbar.append(status,world,files,input);
 fileMenu.addEventListener('click',event=>{if(event.target.closest('button'))files.open=false;});
 select.addEventListener('change',()=>{files.open=false;});
 const closeFiles=event=>{if(!files.contains(event.target))files.open=false;if(!world.contains(event.target))world.open=false;};document.addEventListener('click',closeFiles);

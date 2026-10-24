@@ -1,0 +1,28 @@
+{
+  "vertices": 102066,
+  "opaqueVertices": 100236,
+  "sourceVertices": 296658,
+  "sourceMeshes": 43,
+  "textures": 10,
+  "format": "Johansson Studio native ferry arena",
+  "version": 3,
+  "source": "buildFerryModel",
+  "ship": "Minato Maru",
+  "origin": {
+    "station": 24,
+    "sourceDeckY": 1.1,
+    "sourceZ": 6.75
+  },
+  "selection": {
+    "minTriangleMaxY": 0.9800000000000001,
+    "minTriangleMaxZ": 2.6,
+    "structuralGeometry": "All above-deck untextured source triangles retained"
+  },
+  "atlas": {
+    "width": 2048,
+    "height": 2048
+  },
+  "geometry": "Original source triangles; only a coordinate-origin translation is applied",
+  "sourceCommit": "0ca25b7dce3beef58ab1fd5cb84ba1629c032157",
+  "sha256": "365ef05eec7da3a7912bc9ac11781f86998fe0d39c49b4ed42d33ab59dacea7f"
+}
