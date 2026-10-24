@@ -1,0 +1,304 @@
+{
+  "source": false,
+  "viewport": [
+    390,
+    844
+  ],
+  "physicalDevice": false,
+  "steps": [
+    {
+      "name": "page loaded",
+      "s": 0.4
+    },
+    {
+      "name": "island ready",
+      "s": 10.6
+    },
+    {
+      "name": "playing",
+      "s": 11.4
+    },
+    {
+      "name": "entered candidate Sakura",
+      "s": 15.1
+    },
+    {
+      "name": "photographed Sakura-Atmosphere-Roof",
+      "s": 46.1
+    },
+    {
+      "name": "photographed Sakura-Atmosphere-Crates",
+      "s": 72.6
+    }
+  ],
+  "errors": [],
+  "playerHiddenForCamera": true,
+  "atmosphere": {
+    "drawing": "JW-SAK-ATM-01",
+    "revision": "B",
+    "stockChanges": false,
+    "retained": [
+      {
+        "id": "coin-tray",
+        "box": [
+          11565,
+          3420,
+          130,
+          180
+        ],
+        "bottom": 780,
+        "height": 43
+      },
+      {
+        "id": "cups",
+        "box": [
+          13534,
+          3279,
+          72,
+          72
+        ],
+        "bottom": 823,
+        "height": 106
+      },
+      {
+        "id": "bags",
+        "box": [
+          13475,
+          3352.5,
+          250,
+          115
+        ],
+        "bottom": 781.5,
+        "height": 41
+      },
+      {
+        "id": "microwave-1",
+        "box": [
+          13435,
+          2375,
+          330,
+          350
+        ],
+        "bottom": 780,
+        "height": 205
+      },
+      {
+        "id": "microwave-2",
+        "box": [
+          13435,
+          3575,
+          330,
+          350
+        ],
+        "bottom": 780,
+        "height": 205
+      },
+      {
+        "id": "gum",
+        "box": [
+          11340,
+          4120,
+          240,
+          280
+        ],
+        "bottom": 780,
+        "height": 220
+      }
+    ],
+    "contacts": 6
+  },
+  "roofAtmosphere": {
+    "drawing": "JW-SAK-ATM-01",
+    "revision": "B",
+    "tiles": 32,
+    "crates": {
+      "box": [
+        7440,
+        12300,
+        460,
+        400
+      ],
+      "bottom": 40,
+      "height": 280,
+      "count": 3,
+      "wall": 18,
+      "purpose": "Empty fictional Sakura/Higa return crates under the high end of the lower flight; no stock or save changes. Heavier moulded waist bands and raised branded panels replace the cage-like first render.",
+      "midBand": [
+        124,
+        24
+      ],
+      "labelPanel": {
+        "width": 220,
+        "height": 90,
+        "bottom": 83,
+        "projection": 0.5,
+        "copy": [
+          "SAKURA",
+          "HIGA",
+          "SAKURA"
+        ],
+        "foot": "RETURN CRATE"
+      }
+    },
+    "printedCrates": 3,
+    "contacts": 12,
+    "routeChanges": false
+  },
+  "shop": {
+    "customers": [],
+    "stock": {
+      "tea": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "coffee": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "rice": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "biscuit": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "soap": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "notebook": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "postcard": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "battery": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "cola": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "water": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "beer": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "noodles": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "milk": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "chips": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "crackers": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "chocolate": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "candy": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "curry": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "soy": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "soup": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "peaches": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "tuna": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "detergent": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "tissues": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "toothpaste": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "orange": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "soda": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "yogurt": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "bread": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "bento": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "sandwich": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "pudding": {
+        "shelf": 24,
+        "reserve": 48
+      },
+      "bun": {
+        "shelf": 12,
+        "reserve": 24
+      }
+    }
+  },
+  "cast": [
+    {
+      "name": "Thuan",
+      "clip": null,
+      "gesture": null,
+      "moving": false,
+      "speed": 0,
+      "activity": "Sakura owner",
+      "indoors": "market",
+      "visible": true,
+      "flags": [
+        "inMarket"
+      ],
+      "at": [
+        5.5,
+        1.01,
+        1.57
+      ]
+    }
+  ]
+}

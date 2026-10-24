@@ -1,0 +1,31 @@
+{
+  "drawing": "JW-SAK-ATM-01",
+  "revision": "B",
+  "checks": {
+    "counter_overlaps": 0,
+    "roof_obstruction_overlaps": 0,
+    "crate_top": 880,
+    "minimum_stair_underside": 1413.182,
+    "delivery_and_passage_unchanged": true,
+    "stock": {
+      "columns": 6,
+      "rotatedSlots": [
+        19,
+        21,
+        23
+      ],
+      "capacity": 24,
+      "display": 36,
+      "overlaps": 0,
+      "fixtureFit": true
+    },
+    "dxf_errors": 0
+  },
+  "corrected_findings": [
+    "Existing opaque chopstick cup moved80mm clear of bags; new clear cup base lowered6mm to the worktop",
+    "First crate render read as cages; add moulded waist bands and branded raised panels within the audited envelope"
+  ],
+  "limits": [
+    "Visual game dressing only; no new traversal, live hydraulics, full flicker or physical-device acceptance"
+  ]
+}

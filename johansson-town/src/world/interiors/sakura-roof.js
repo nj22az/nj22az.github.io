@@ -1,3 +1,4 @@
+import {buildSakuraRoofAtmosphere} from './sakura-atmosphere.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import DATA from './sakura-roof-design.json' with {type:'json'};
@@ -49,5 +50,6 @@ export function buildSakuraRoof(parent){
  box(10000,10830,400,100,550,950,0x7c887b);
  for(const b of batches.values()){const geometry=mergeGeometries(b.list);b.list.forEach(g=>g.dispose());const mesh=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({color:b.color,metalness:b.metal?.45:.15,roughness:.7}));mesh.castShadow=true;mesh.receiveShadow=true;mesh.name='Sakura roof construction';group.add(mesh);}
  group.userData={revision:DATA.revision,roofLevel:4010,stair:s,pipeRoutes:records,site:DATA.site,tank:t,access:'Scenery only; no roof entry or walking level'};
+ buildSakuraRoofAtmosphere(group);
  return group;
 }

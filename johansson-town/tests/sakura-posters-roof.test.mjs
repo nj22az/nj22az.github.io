@@ -20,6 +20,6 @@ test('roof construction uses corrected apron fit, equal risers and complete sepa
  const roof=buildSakuraRoof(new THREE.Group()),u=roof.userData;assert.equal(u.revision,'C');assert.equal(u.roofLevel,4010);
  assert.ok(Math.abs(u.stair.risers*u.stair.rise-4010)<.001);assert.equal(3150-u.stair.yardExtension-u.stair.steelEnvelope,855);assert.equal(u.pipeRoutes.length,8);
  assert.deepEqual(u.pipeRoutes.map(p=>p.id),['CW-F','CW-S','OF','DR','VT','CW-WB','CW-WC','CW-HW']);
- roof.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(roof);assert.ok(b.max.y>=5.76&&b.max.y<5.9);assert.ok(b.min.z>=-13.116);assert.ok(b.max.z<=.181);
+ roof.updateMatrixWorld(true);const b=new THREE.Box3();roof.traverse(o=>{if(o.isMesh&&o.material.depthWrite!==false){o.geometry.computeBoundingBox();b.union(o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld));}});assert.ok(b.max.y>=5.76&&b.max.y<5.9);assert.ok(b.min.z>=-13.116);assert.ok(b.max.z<=.181);
  assert.match(u.access,/no roof entry/);let lights=0;roof.traverse(o=>{if(o.isLight)lights++;});assert.equal(lights,0,'roof adds no point-light workload');
 });

@@ -1,3 +1,4 @@
+import {addSakuraContacts} from '../interiors/sakura-atmosphere.js';
 import {sakuraRebuildRequested} from '../interiors/sakura-rebuild-layout.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {paint,trs} from './kit.js';
@@ -89,6 +90,7 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  // One machine, not a bank: vending is kept to a few places worth stopping at (Sakura,
  // the onsen lane, the fish quay) rather than every frontage (docs/AMPLIFY-AUDIT.md).
  vending(SAKURA_VENDING.x,SAKURA_VENDING.z,SAKURA_VENDING.ry,SAKURA_VENDING.y);
+ if(sakuraRebuildRequested())addSakuraContacts(group,[{id:'vending base',center:[SAKURA_VENDING.x,SAKURA_VENDING.y+.0015,SAKURA_VENDING.z],size:[VENDING_MACHINE.size.depth*1.24,VENDING_MACHINE.size.width*1.24]}]);
  // The can recycling box (空きかん): a blue box with a round hole in the lid. Bring your
  // empties back here and Thuan gives a little for each from the till.
  {const bx=front+.4,bz=door-doorClear-.5;

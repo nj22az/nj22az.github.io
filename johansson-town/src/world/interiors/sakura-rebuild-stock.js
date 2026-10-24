@@ -1,3 +1,4 @@
+import ATM from './sakura-atmosphere.json' with {type:'json'};
 // Layout experiment only. Reuse World's product geometry, atlas and flavour code unchanged.
 import * as THREE from '../../../vendor/three.module.js';
 import {PRODUCTS,FINGERPRINT} from '../../commerce/products-data.js';
@@ -38,7 +39,7 @@ export function retainSakuraStock(root,{offset=[0,0,0],printedExamples=true}={})
   const matrices=[];let slot=0;
   for(const level of b.levels)for(let row=0;row<rows;row++)for(let col=0;col<columns;col++){
    const along=(col-(columns-1)/2)*(size.x+.01),back=(row-.5)*(size.z+.01),x=b.x+Math.cos(b.yaw)*along+Math.sin(b.yaw)*back,z=b.z-Math.sin(b.yaw)*along+Math.cos(b.yaw)*back,y=level+.002-template.bounds.min.y;
-   dummy.position.set(x,y,z);dummy.rotation.set(0,b.yaw,0);dummy.scale.set(1,1,1);dummy.updateMatrix();parts.forEach(m=>m.setMatrixAt(slot,dummy.matrix));
+   dummy.position.set(x,y,z);const wobble=b.id==='rice'?ATM.riceWobble.find(w=>w.level/1000===level&&w.row===row&&w.column===col):null;dummy.rotation.set(0,b.yaw+(wobble?wobble.degrees*Math.PI/180:0),0);dummy.scale.set(1,1,1);dummy.updateMatrix();parts.forEach(m=>m.setMatrixAt(slot,dummy.matrix));
    const k=flavourForColumn(b.id,col,columns);setFlavour(art,slot,b.id,k);parts[0].setColorAt(slot,flavourTint(b.id,k));
    if(slot<p.capacity){matrices.push(dummy.matrix.clone());unitPositions.set(b.id+':'+slot,[x+offset[0],y+size.y/2+offset[1],z+offset[2]]);
     const distance=b.x<1?.90:b.z<-8?1.1:.74;

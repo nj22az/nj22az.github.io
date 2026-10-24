@@ -1,3 +1,4 @@
+import {crayon} from './sakura-crayon.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import {GROCERY_ITEMS} from '../../commerce/catalogue.js';
@@ -15,13 +16,7 @@ function icon(c,kind,x,y){
  else flower(c,x,y,33);
 }
 // Deterministic wax-pencil lettering: individually tilted glyphs and small pigment gaps.
-function crayon(c,text,x,y,size,ink){
- const layer=document.createElement('canvas');layer.width=320;layer.height=128;const p=layer.getContext('2d');p.font=`800 ${size}px ${FONT}`;p.fillStyle=ink;
- const widths=[...text].map(ch=>p.measureText(ch).width),scale=Math.min(1,205/widths.reduce((a,b)=>a+b,0));let cursor=x-widths.reduce((a,b)=>a+b,0)*scale/2;
- [...text].forEach((ch,i)=>{p.save();p.translate(cursor+widths[i]*scale/2,y+Math.sin(i*2.3)*1.3);p.rotate(Math.sin(i*1.7)*.045);p.scale(scale,1);p.textAlign='center';p.fillText(ch,0,0);p.restore();cursor+=widths[i]*scale;});
- p.globalCompositeOperation='destination-out';p.fillStyle='rgba(0,0,0,.32)';for(let i=0;i<360;i++){const xx=(i*73)%320,yy=(i*37)%128;p.fillRect(xx,yy,1+(i%3),.7);}
- c.drawImage(layer,0,0);
-}
+
 function starCard(c,t){
  c.beginPath();t.outline_mm.forEach(([x,y],i)=>{const xx=4+(x/t.width_mm+.5)*312,yy=4+(y/t.height_mm+.5)*120;if(i)c.lineTo(xx,yy);else c.moveTo(xx,yy);});c.closePath();c.fillStyle=t.paper;c.fill();c.strokeStyle=t.ink;c.lineWidth=2;c.stroke();
  c.save();c.clip();c.fillStyle='rgba(250,245,217,.72)';for(const x of [131,177]){c.save();c.translate(x,16);c.rotate(x===131?-.12:.10);c.fillRect(0,0,18,13);c.restore();}

@@ -1,0 +1,30 @@
+{
+  "drawing": "JW-SAK-COUNTER-NEXT-01",
+  "date": "2026-10-24",
+  "status": "Coordinate proposals for the next dimensioned CAD pass; not runtime construction",
+  "units": "mm",
+  "origin": "SW internal floor corner; x east, depth north, height up",
+  "dimension_basis": "Owner-supplied envelopes and measured current Sakura fixtures. No JIS or manufacturer certification claimed.",
+  "retain": ["Existing working POS and VFD", "Blue coin tray", "Barcode scanner and coil", "Detailed divided oden vat", "Bun case", "Copier", "Existing price/POP cards", "Original catalogue and save IDs"],
+  "counter_proposals": [
+    {"id":"waybill-rack","box":[11780,3970,225,150],"bottom":780,"height":125,"parts":[{"kind":"base","size":[225,150,4]},{"kind":"three stepped trays","paper_envelope":[190,110],"tier_pitch":35}],"purpose":"Physical paperwork for the already advertised parcel service; staff-side access"},
+    {"id":"chained-pen","box":[12010,3890,60,250],"bottom":780,"height":140,"parts":[{"kind":"pen","diameter":9,"length":140},{"kind":"stand","diameter":30,"height":120},{"kind":"flexible tether","diameter":3,"length":330}],"purpose":"Tethered to the waybill rack; path/contact to be drawn before construction"},
+    {"id":"cat-charity-box","box":[11340,3740,140,100],"bottom":780,"height":160,"parts":[{"kind":"clear acrylic walls","thickness":3},{"kind":"coin slot","size":[80,4]},{"kind":"original cat label","size":[110,70],"copy":"FOR THE HARBOUR CATS"}],"purpose":"Original animal illustration; decorative proposal, no donation-money system"},
+    {"id":"karashi-holder","box":[11520,5050,120,80],"bottom":780,"height":100,"parts":[{"kind":"open sachet holder","wall":2},{"kind":"folded clip","gap_to_oden":10},{"kind":"sachets","size":[45,65],"count":8}],"purpose":"Mustard sachets at the existing vat; customer-side access and staff replenishment approach to be checked"}
+  ],
+  "stair_chain_proposal": {
+    "status":"Separate safety-detail CAD next; existing no-traversal collider unchanged",
+    "post_centres":[[5350,12232],[5350,12908]],"ground":40,"post_diameter":60,"post_height":850,"base_diameter":280,
+    "chain":{"diameter":12,"span":676,"end_height":780,"sag":110},
+    "plate":{"width":300,"height":200,"thickness":4,"center_depth":12570,"bottom":450,"copy":"STAFF ONLY"},
+    "audit":"Posts inset140 from the956 clear-width edges: base footprint stays within depth12092-13048, avoiding the855 outer passage. Posts on ground landing before first tread."
+  },
+  "frontage_next": {
+    "priority":"Umbrella stand / service stickers / payphone bay after actual threshold and pedestrian CAD",
+    "candidate_bay_world_m":{"x":[-7.29,-6.87],"z":[-29.01,-28.59]},
+    "alternatives":["420x420 payphone stand", "Original sleepy rain-frog statue holding a tissue box, on a360x320 wheeled base"],
+    "constraint":"The same bay cannot contain both. Maintain door/mat/bin clearances; exact ground, navigation and lens checks remain pending.",
+    "mascot_budget_target":{"opaque_draws_max":8,"triangles_max":1800,"lights":0,"actor_system":false,"status":"Proposed budget only; no model benchmark yet"}
+  },
+  "remaining_checks":["Dimensioned plans/elevations and actual retained-object bounds", "Worker/customer reach and replenishment", "Door, queue, route and lens clearances", "Services and prices versus game data", "Specific model/standard evidence before any JIS label", "Gas meter only if a real gas consumer/service is established", "Season-aware banners; no invented new-arrival or service claims", "Inspect existing door/ambience system before adding audio"]
+}
