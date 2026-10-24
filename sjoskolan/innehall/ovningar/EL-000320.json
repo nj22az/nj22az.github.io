@@ -1,0 +1,112 @@
+{
+  "id": "EL-000320",
+  "titel": "Full kompensation",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "P = 2 000 W, PF = 0,80 induktivt. Hur stor kapacitiv reaktiv effekt Q_{C} ger PF = 1? Ange beloppet."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vaxelstromslabbet/lessons.mjs CHALLENGES[11] (id kompensering)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "Kompensationen ska ta ut lastens induktiva Q. Q = P · tan(arccos 0,80).",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "svar": [
+      {
+        "storhet": "|Q_{C}|",
+        "varde": 1500,
+        "tolerans": {
+          "rel": 0.01
+        },
+        "enhet": "var",
+        "berakning": "ac.kompensering"
+      }
+    ],
+    "status": "saknas",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "P": {
+      "varde": 2000,
+      "enhet": "W"
+    },
+    "PF": {
+      "varde": 0.8
+    }
+  },
+  "simulator": {
+    "labb": "vaxelstromslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "vaxelstromslabbet.forvantat",
+      "facit": 1500,
+      "tolerans": {
+        "rel": 0.01
+      }
+    },
+    "scenario": "effekt",
+    "initial": {
+      "U": 230,
+      "f": 60,
+      "P": 2000,
+      "pf": 0.8,
+      "character": "induktiv",
+      "Qc": 0,
+      "Rcable": 0.2
+    },
+    "fraga": {
+      "storhet": "QcFull",
+      "etikett": "|Q_{C}|",
+      "enhet": "var",
+      "belopp": true
+    },
+    "dolj": [
+      "QcFull",
+      "Q",
+      "Q2",
+      "S",
+      "S2",
+      "triangleValues"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 2500,
+          "text": "Det är S, inte Q. Q = √(S² − P²)."
+        }
+      ],
+      "ratt": "Dra nu Q_{C}-reglaget till ditt svar och se PF och strömmen efter kompensering."
+    },
+    "kallhanvisning": "Fördjupning: kompensation",
+    "teoriavsnitt": "kompensering",
+    "alias": "kompensering"
+  }
+}

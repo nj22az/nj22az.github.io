@@ -1,0 +1,75 @@
+{
+ "v43_01": {
+  "src": "sjoskolan/vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+  "dst": "sjoskolan/vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx",
+  "slides": {
+   "7": [
+    "th",
+    "v43_01_s07_kurva",
+    "Principskiss av en ström–tidskurva: långsam utlösning vid överlast och snabb vid kortslutning"
+   ],
+   "8": [
+    "th",
+    "v43_01_s08_jordfel",
+    "Jordfelsbrytare: L och N går genom en summaströmtransformator; en läckström till jord ger skillnaden I-delta som påverkar utlösaren"
+   ],
+   "9": [
+    "th",
+    "v43_01_s09_exempel",
+    "Jordfelsbrytare med 2,000 A ut och 1,985 A tillbaka; differensströmmen 15 mA"
+   ],
+   "12": [
+    "th",
+    "v43_01_s21_kontaktor",
+    "Kontaktor K1 i opåverkat läge: spolen, en NO-kontakt 13–14 som är öppen och en NC-kontakt 21–22 som är sluten"
+   ],
+   "14": [
+    "th",
+    "v43_01_s23_selektivitet",
+    "Huvudskydd och tre gruppskydd; vid fel i grupp B löser bara grupp B medan övriga är i drift"
+   ],
+   "15": [
+    "th",
+    "v43_01_s24_exempel",
+    "Stapeldiagram: skydd A har 4,5 kA och skydd B 10 kA brytförmåga jämfört med möjlig felström 7 kA"
+   ]
+  }
+ },
+ "v43_02": {
+  "src": "sjoskolan/vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+  "dst": "sjoskolan/vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx",
+  "slides": {
+   "6": [
+    "th",
+    "v43_02_s06_trafo",
+    "Ideal transformator med lindningarna N1 och N2; 440 V på primärsidan och 110 V på sekundärsidan"
+   ],
+   "10": [
+    "th",
+    "v43_02_s08_slip",
+    "Stator med fyra poler vid 60 Hz; fältet roterar med 1 800 r/min och rotorn med 1 746 r/min"
+   ],
+   "14": [
+    "th",
+    "v43_02_s21_start",
+    "Principskiss av startström över tid för direktstart och Y/Δ-start med omkoppling"
+   ],
+   "15": [
+    "th",
+    "v43_02_s22_omriktare",
+    "Frekvensomriktare: likriktare, DC-mellanled med lagrad energi och växelriktare med pulsad utgång"
+   ]
+  }
+ },
+ "v43_03": {
+  "src": "sjoskolan/vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+  "dst": "sjoskolan/vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx",
+  "slides": {
+   "13": [
+    "th",
+    "v43_03_s24_exempel",
+    "9 V-krets med öppen seriekontakt och ohmsk last: 9 V över kontakten, 0 V över lasten och ingen ström"
+   ]
+  }
+ }
+}

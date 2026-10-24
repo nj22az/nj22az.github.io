@@ -1,0 +1,783 @@
+1
+00:00:00,500 --> 00:00:02,420
+A cabin lamp has gone dark.
+
+2
+00:00:02,640 --> 00:00:04,261
+Shall we guess, or measure?
+
+3
+00:00:04,481 --> 00:00:07,681
+Join cadet Saga and the Gull in the multimeter lab.
+
+4
+00:00:07,901 --> 00:00:11,720
+We will practise connections, instrument selection and calculations.
+
+5
+00:00:11,940 --> 00:00:15,503
+Finally, we will record a result that the next watch can understand.
+
+6
+00:00:17,500 --> 00:00:21,404
+Voltage is the difference in electrical potential between two points.
+
+7
+00:00:21,624 --> 00:00:25,571
+In this course, its symbol is the letter U, and its unit is the volt.
+
+8
+00:00:25,791 --> 00:00:29,951
+The meter compares the point at the red probe with the point at the black probe.
+
+9
+00:00:30,171 --> 00:00:33,691
+A voltage measurement therefore always needs two measurement points.
+
+10
+00:00:35,500 --> 00:00:39,383
+Current describes how much electric charge passes a point each second.
+
+11
+00:00:39,603 --> 00:00:42,931
+Its symbol is the letter I, and its unit is the ampere.
+
+12
+00:00:43,151 --> 00:00:46,863
+To measure current, the current in that branch must pass through the instrument.
+
+13
+00:00:47,083 --> 00:00:52,075
+The moving dots show the current direction in our model, not the actual speed of the charges.
+
+14
+00:00:54,000 --> 00:00:56,603
+Resistance describes opposition to current.
+
+15
+00:00:56,823 --> 00:00:59,895
+Its symbol is the letter R, and its unit is the ohm.
+
+16
+00:01:00,115 --> 00:01:02,461
+For a resistive load, we use Ohm's law.
+
+17
+00:01:02,681 --> 00:01:07,289
+Twelve volts across one hundred and twenty ohms gives zero point one amperes.
+
+18
+00:01:07,509 --> 00:01:10,197
+Here, we treat the lamp as a constant resistance.
+
+19
+00:01:10,417 --> 00:01:13,425
+A real lamp's resistance can change with temperature.
+
+20
+00:01:15,500 --> 00:01:20,428
+This is a twelve-volt source with protective electrical separation and current limiting.
+
+21
+00:01:20,648 --> 00:01:24,360
+F one is the fuse, S one the switch, and H one the cabin lamp.
+
+22
+00:01:24,580 --> 00:01:27,161
+P one and P two are the lamp terminals.
+
+23
+00:01:27,381 --> 00:01:29,899
+The return conductor leads back to the source.
+
+24
+00:01:30,119 --> 00:01:33,831
+Practical connections are made during a supervised laboratory session.
+
+25
+00:01:36,000 --> 00:01:38,389
+The rotary selector chooses the function.
+
+26
+00:01:38,609 --> 00:01:41,553
+The display shows the number, unit and measurement mode.
+
+27
+00:01:41,773 --> 00:01:45,805
+D C means direct current, and A C means alternating current.
+
+28
+00:01:46,025 --> 00:01:48,116
+The black lead goes into COM.
+
+29
+00:01:48,336 --> 00:01:52,432
+The red lead goes into volts and ohms, or the appropriate current socket.
+
+30
+00:01:52,652 --> 00:01:57,089
+Autoranging selects the range, but you still choose the function and sockets.
+
+31
+00:01:59,000 --> 00:02:03,245
+What are you measuring, between which points, and approximately how much do you expect?
+
+32
+00:02:03,465 --> 00:02:06,431
+Inspect the leads, probes and instrument for damage.
+
+33
+00:02:06,651 --> 00:02:09,445
+Select the correct function, sockets and range.
+
+34
+00:02:09,665 --> 00:02:12,417
+Check the connections before switching on the supply.
+
+35
+00:02:12,637 --> 00:02:17,160
+In our training circuit, always disconnect the supply before changing connections.
+
+36
+00:02:19,000 --> 00:02:20,877
+We want to measure across the lamp.
+
+37
+00:02:21,097 --> 00:02:24,660
+With the supply disconnected, Saga selects D C volts.
+
+38
+00:02:24,880 --> 00:02:27,333
+The black lead connects COM to P two.
+
+39
+00:02:27,553 --> 00:02:30,348
+The red lead connects the voltage socket to P one.
+
+40
+00:02:30,568 --> 00:02:32,915
+The lamp's current path remains complete.
+
+41
+00:02:33,135 --> 00:02:35,716
+The meter is connected in parallel with the lamp.
+
+42
+00:02:35,936 --> 00:02:38,539
+COM does not automatically mean earth.
+
+43
+00:02:40,500 --> 00:02:43,828
+After checking the connections, we switch on the training circuit.
+
+44
+00:02:44,048 --> 00:02:47,141
+The model reads twelve point zero zero volts D C.
+
+45
+00:02:47,361 --> 00:02:52,012
+The voltmeter has a high input resistance, so only a small current flows through it.
+
+46
+00:02:52,232 --> 00:02:55,880
+Later, we will see why even that small current can affect the result.
+
+47
+00:02:58,000 --> 00:03:01,328
+First, we disconnect the supply and swap the probe positions.
+
+48
+00:03:01,548 --> 00:03:04,108
+After checking, we switch the supply on again.
+
+49
+00:03:04,328 --> 00:03:06,760
+The meter now reads minus twelve volts.
+
+50
+00:03:06,980 --> 00:03:08,943
+The magnitude is unchanged.
+
+51
+00:03:09,163 --> 00:03:13,771
+The minus sign tells us that the red probe is at a lower potential than the black probe.
+
+52
+00:03:15,500 --> 00:03:17,697
+Now we want to measure the lamp current.
+
+53
+00:03:17,917 --> 00:03:21,672
+Disconnect the supply and open the link between K one and K two.
+
+54
+00:03:21,892 --> 00:03:27,311
+Select D C amperes and a current socket with suitable limits, as specified in the manual.
+
+55
+00:03:27,531 --> 00:03:30,688
+Connect red to K one, and black COM to K two.
+
+56
+00:03:30,908 --> 00:03:32,657
+The meter bridges the gap.
+
+57
+00:03:34,500 --> 00:03:38,212
+After the instructor has checked the connections, switch on the supply.
+
+58
+00:03:38,432 --> 00:03:41,611
+All the current in the lamp branch now passes through the meter.
+
+59
+00:03:41,831 --> 00:03:46,737
+Our simplified model reads zero point one amperes, or one hundred milliamperes.
+
+60
+00:03:46,957 --> 00:03:49,261
+Record the actual reading with its unit.
+
+61
+00:03:49,481 --> 00:03:53,535
+Observe the instrument's fuse requirements, time limit and current limit.
+
+62
+00:03:55,500 --> 00:03:58,145
+After measuring current, disconnect the supply.
+
+63
+00:03:58,365 --> 00:04:01,267
+Remove the meter and restore the link in the circuit.
+
+64
+00:04:01,487 --> 00:04:04,260
+Move the red lead back to the volts and ohms socket.
+
+65
+00:04:04,480 --> 00:04:09,685
+This habit reduces the risk of beginning the next voltage measurement with a dangerous connection.
+
+66
+00:04:11,500 --> 00:04:13,527
+The Gull wants to measure voltage.
+
+67
+00:04:13,747 --> 00:04:17,715
+The selector is correct, but the red lead is still in the ampere socket.
+
+68
+00:04:17,935 --> 00:04:19,321
+What must change?
+
+69
+00:04:19,541 --> 00:04:21,355
+Pause the film and decide.
+
+70
+00:04:21,575 --> 00:04:25,244
+The current input has low resistance and can short-circuit a source.
+
+71
+00:04:25,464 --> 00:04:29,368
+Simply turning the selector to volts does not make the wrong socket safe.
+
+72
+00:04:29,588 --> 00:04:31,785
+Do not try this incorrect connection.
+
+73
+00:04:35,500 --> 00:04:39,511
+For resistance measurements, the meter supplies its own small test signal.
+
+74
+00:04:39,731 --> 00:04:45,043
+Disconnect the supply, verify that voltage is absent, and deal safely with stored energy.
+
+75
+00:04:45,263 --> 00:04:48,591
+Isolate the component by disconnecting at least one terminal.
+
+76
+00:04:48,811 --> 00:04:55,680
+With the leads in COM and volts and ohms, and the selector on ohms, we measure one thousand ohms: one kilohm.
+
+77
+00:04:57,500 --> 00:05:01,767
+With the equipment isolated and verified dead, select continuity.
+
+78
+00:05:01,987 --> 00:05:04,163
+First, touch the probe tips together.
+
+79
+00:05:04,383 --> 00:05:06,985
+Low resistance normally produces a beep.
+
+80
+00:05:07,205 --> 00:05:11,237
+An intact fuse, removed from the circuit, also has low resistance.
+
+81
+00:05:11,457 --> 00:05:13,612
+An open path may display O L.
+
+82
+00:05:13,832 --> 00:05:16,477
+This can also mean resistance above the range.
+
+83
+00:05:16,697 --> 00:05:19,151
+A beep never proves that a circuit is dead.
+
+84
+00:05:21,000 --> 00:05:25,971
+Two one-thousand-ohm resistors are connected in parallel, with no external supply.
+
+85
+00:05:26,191 --> 00:05:30,585
+The meter's test current has two paths, and the meter reads five hundred ohms.
+
+86
+00:05:30,805 --> 00:05:35,797
+Disconnecting one branch leaves a single path, and the reading becomes one thousand ohms.
+
+87
+00:05:36,017 --> 00:05:40,220
+Other connected paths can therefore distort a component's resistance measurement.
+
+88
+00:05:42,000 --> 00:05:46,843
+A transient is a very brief voltage spike, for example when a motor is switched off.
+
+89
+00:05:47,063 --> 00:05:52,801
+If insulation breaks down, the supply can continue feeding a short circuit and a dangerous arc.
+
+90
+00:05:53,021 --> 00:05:59,037
+The CAT rating describes the measurement environment for which the instrument's protection has been tested.
+
+91
+00:05:59,257 --> 00:06:02,671
+The same operating voltage can require different categories.
+
+92
+00:06:04,500 --> 00:06:08,361
+Category two includes plug-connected appliances on the load side.
+
+93
+00:06:08,581 --> 00:06:15,387
+Category three covers fixed installations, distribution boards and fixed motors, including single-phase systems.
+
+94
+00:06:15,607 --> 00:06:19,425
+Category four covers the origin of the low-voltage installation.
+
+95
+00:06:19,645 --> 00:06:21,907
+It does not mean every outdoor wire.
+
+96
+00:06:22,127 --> 00:06:26,628
+The older category one refers to circuits without a direct mains connection.
+
+97
+00:06:26,848 --> 00:06:29,195
+Check their particular limits in the manual.
+
+98
+00:06:31,000 --> 00:06:35,779
+Can a category two meter have a higher voltage rating than a category four meter?
+
+99
+00:06:35,999 --> 00:06:36,916
+Yes.
+
+100
+00:06:37,136 --> 00:06:41,125
+But a higher voltage rating never substitutes for the required category.
+
+101
+00:06:41,345 --> 00:06:43,735
+One instrument can have several ratings.
+
+102
+00:06:43,955 --> 00:06:48,285
+A higher category does not automatically require a lower rated voltage.
+
+103
+00:06:48,505 --> 00:06:53,497
+Check voltage to earth, voltage between sockets, and the limits of the selected function.
+
+104
+00:06:55,500 --> 00:07:03,991
+In this example, category two at one thousand volts and category three at six hundred volts are tested with brief six-thousand-volt impulses.
+
+105
+00:07:04,211 --> 00:07:08,285
+But the test-source resistances are twelve ohms and two ohms respectively.
+
+106
+00:07:08,505 --> 00:07:10,937
+Lower resistance can deliver more current.
+
+107
+00:07:11,157 --> 00:07:15,403
+Category four at six hundred volts is tested here at eight thousand volts.
+
+108
+00:07:15,623 --> 00:07:19,889
+These are test values, never permissible continuous measuring voltages.
+
+109
+00:07:22,000 --> 00:07:25,477
+The work plan requires category three, six hundred volts.
+
+110
+00:07:25,697 --> 00:07:28,577
+Meter A is category two, one thousand volts.
+
+111
+00:07:28,797 --> 00:07:31,784
+Meter B is category three, six hundred volts.
+
+112
+00:07:32,004 --> 00:07:33,391
+Which do you choose?
+
+113
+00:07:33,611 --> 00:07:35,467
+B meets both requirements.
+
+114
+00:07:35,687 --> 00:07:38,033
+The entire measuring system must meet them.
+
+115
+00:07:38,253 --> 00:07:41,965
+A category four meter with category two probes is not sufficient.
+
+116
+00:07:42,185 --> 00:07:45,236
+Removing probe-tip covers may also change the rating.
+
+117
+00:07:45,456 --> 00:07:46,779
+Read the manual.
+
+118
+00:07:50,000 --> 00:07:52,773
+Resolution is the smallest step on the display.
+
+119
+00:07:52,993 --> 00:07:59,607
+Here, the difference between twelve point zero zero and twelve point zero one volts is one hundredth of a volt.
+
+120
+00:07:59,827 --> 00:08:04,691
+The error limit describes the instrument's specified deviation under stated conditions.
+
+121
+00:08:04,911 --> 00:08:08,516
+Tolerance describes the range allowed for the equipment being tested.
+
+122
+00:08:08,736 --> 00:08:10,848
+Keep these three concepts separate.
+
+123
+00:08:13,000 --> 00:08:18,803
+Assume a specification of plus or minus zero point five per cent of the reading, plus two counts.
+
+124
+00:08:19,023 --> 00:08:21,839
+One count is zero point zero one volts.
+
+125
+00:08:22,059 --> 00:08:26,581
+At twelve volts, the percentage contribution is zero point zero six volts.
+
+126
+00:08:26,801 --> 00:08:30,065
+The two counts contribute zero point zero two volts.
+
+127
+00:08:30,285 --> 00:08:34,104
+Adding them gives plus or minus zero point zero eight volts.
+
+128
+00:08:34,324 --> 00:08:37,631
+This interval covers only the stated instrument error limit.
+
+129
+00:08:39,500 --> 00:08:44,727
+Use the same specification and resolution, but now the display reads twenty-four volts.
+
+130
+00:08:44,947 --> 00:08:46,845
+Pause and calculate first.
+
+131
+00:08:47,065 --> 00:08:50,564
+The percentage contribution is zero point one two volts.
+
+132
+00:08:50,784 --> 00:08:54,133
+Two counts still contribute zero point zero two volts.
+
+133
+00:08:54,353 --> 00:08:58,087
+The error limit is plus or minus zero point one four volts.
+
+134
+00:08:58,307 --> 00:09:03,171
+The interval runs from twenty-three point eight six to twenty-four point one four volts.
+
+135
+00:09:06,500 --> 00:09:09,572
+In the extension example, the meter reads eight volts.
+
+136
+00:09:09,792 --> 00:09:16,640
+Its specification is plus or minus one per cent, plus three counts, with a resolution of one hundredth of a volt.
+
+137
+00:09:16,860 --> 00:09:21,639
+The contributions are zero point zero eight and zero point zero three volts.
+
+138
+00:09:21,859 --> 00:09:24,355
+Their sum is zero point one one volts.
+
+139
+00:09:24,575 --> 00:09:27,540
+Always use the specification for the actual range.
+
+140
+00:09:29,500 --> 00:09:33,255
+The equipment requires twelve volts, plus or minus five per cent.
+
+141
+00:09:33,475 --> 00:09:40,877
+Five per cent is zero point six volts, giving an allowed range of eleven point four zero to twelve point six zero volts.
+
+142
+00:09:41,097 --> 00:09:46,516
+Our measurement is eleven point five zero, plus or minus zero point one zero volts.
+
+143
+00:09:46,736 --> 00:09:48,421
+The whole interval fits.
+
+144
+00:09:48,641 --> 00:09:51,351
+This exercise includes the boundary values.
+
+145
+00:09:51,571 --> 00:09:54,771
+In real work, acceptance rules must be agreed beforehand.
+
+146
+00:09:56,500 --> 00:09:59,807
+Writing 'the voltage is eleven point eight' is not enough.
+
+147
+00:10:00,027 --> 00:10:03,269
+Record the unit, measurement points and operating state.
+
+148
+00:10:03,489 --> 00:10:08,481
+Identify the instrument, function, range, resolution and relevant specification.
+
+149
+00:10:08,701 --> 00:10:13,501
+Include the error limit, requirement and conclusion, together with the date and operator.
+
+150
+00:10:13,721 --> 00:10:15,769
+This is fictional teaching data.
+
+151
+00:10:15,989 --> 00:10:19,573
+Record real information in actual work; never guess it.
+
+152
+00:10:21,500 --> 00:10:24,209
+We now leave the lamp and examine a sensor model.
+
+153
+00:10:24,429 --> 00:10:28,312
+Two resistors, each one megohm, divide ten volts equally.
+
+154
+00:10:28,532 --> 00:10:33,012
+With no meter connected, the voltage across the lower resistor is five volts.
+
+155
+00:10:33,232 --> 00:10:36,005
+What happens when a real voltmeter is connected?
+
+156
+00:10:38,000 --> 00:10:42,459
+The voltmeter's ten-megohm input is in parallel with the lower resistor.
+
+157
+00:10:42,679 --> 00:10:47,820
+The equivalent parallel resistance is about zero point nine zero nine megohms.
+
+158
+00:10:48,040 --> 00:10:53,139
+The voltage-divider equation then gives approximately four point seven six two volts.
+
+159
+00:10:53,359 --> 00:10:57,519
+With a resolution of one hundredth, the display reads four point seven six.
+
+160
+00:10:57,739 --> 00:11:01,045
+The meter has changed the voltage we wanted to investigate.
+
+161
+00:11:03,000 --> 00:11:06,413
+Change only the meter's input resistance to one megohm.
+
+162
+00:11:06,633 --> 00:11:10,580
+One megohm in parallel with one megohm is half a megohm.
+
+163
+00:11:10,800 --> 00:11:17,115
+Ten times one half, divided by one plus one half, gives approximately three point three three three volts.
+
+164
+00:11:17,335 --> 00:11:19,361
+Pause and check the calculation.
+
+165
+00:11:23,000 --> 00:11:26,691
+Compare the result with the original five volts, without the meter.
+
+166
+00:11:26,911 --> 00:11:32,329
+Divide the difference by the original value to obtain about minus thirty-three point three per cent.
+
+167
+00:11:32,549 --> 00:11:34,853
+The minus sign means a lower voltage.
+
+168
+00:11:35,073 --> 00:11:38,529
+Large resistances in the sensor circuit make the effect clear.
+
+169
+00:11:38,749 --> 00:11:41,992
+Higher input resistance causes less loading in this model.
+
+170
+00:11:42,212 --> 00:11:45,433
+Loading error is separate from the instrument's own error limit.
+
+171
+00:11:47,500 --> 00:11:53,111
+For the extension example, the source is nine volts and all three resistances are two megohms.
+
+172
+00:11:53,331 --> 00:11:56,595
+Without the meter, the voltage is four point five volts.
+
+173
+00:11:56,815 --> 00:11:59,844
+The lower parallel combination is one megohm.
+
+174
+00:12:00,064 --> 00:12:02,752
+With the meter connected, we obtain three volts.
+
+175
+00:12:02,972 --> 00:12:06,556
+Once again, the change is minus thirty-three point three per cent.
+
+176
+00:12:08,500 --> 00:12:10,932
+An ammeter also changes the circuit.
+
+177
+00:12:11,152 --> 00:12:15,760
+Twelve volts across one hundred and twenty ohms gives zero point one amperes.
+
+178
+00:12:15,980 --> 00:12:20,545
+If the meter adds one ohm, the total becomes one hundred and twenty-one ohms.
+
+179
+00:12:20,765 --> 00:12:24,541
+Current falls to about zero point zero nine nine two amperes.
+
+180
+00:12:24,761 --> 00:12:27,172
+The shunt and fuse cause a voltage drop.
+
+181
+00:12:27,392 --> 00:12:30,400
+Instrument manuals often call this burden voltage.
+
+182
+00:12:32,500 --> 00:12:35,657
+Why do we measure volts in parallel and amperes in series?
+
+183
+00:12:35,877 --> 00:12:39,077
+Why must resistance be measured in an isolated circuit?
+
+184
+00:12:39,297 --> 00:12:41,132
+Explain using a diagram.
+
+185
+00:12:41,352 --> 00:12:44,957
+Distinguish resolution, error limit, tolerance and loading error.
+
+186
+00:12:45,177 --> 00:12:52,409
+The correct category and voltage rating provide protection for the measurement environment, but they do not make the reading more accurate.
+
+187
+00:12:54,500 --> 00:12:57,401
+Saga and the Gull now have a method instead of a guess.
+
+188
+00:12:57,621 --> 00:13:01,995
+Open the Multimeter Lab, predict the value, and select the function and sockets.
+
+189
+00:13:02,215 --> 00:13:03,964
+Connect, read and explain.
+
+190
+00:13:04,184 --> 00:13:07,683
+Then draw the correct measurement circuit and write a short record.
+
+191
+00:13:07,903 --> 00:13:13,727
+Follow the course submission instructions and the instructor's directions during practical laboratory work.
+
+192
+00:13:15,500 --> 00:13:19,745
+This film complements the presentation on multimeters and measurement errors.
+
+193
+00:13:19,965 --> 00:13:25,277
+References and additional Swedish videos are listed in the presentation and below this player.
+
+194
+00:13:25,497 --> 00:13:28,655
+The instrument shown here is a simplified teaching model.
+
+195
+00:13:28,875 --> 00:13:34,059
+For practical work, follow the actual instrument manual and the relevant safety procedures.
+
+196
+00:13:34,279 --> 00:13:36,199
+Thank you for joining us aboard.

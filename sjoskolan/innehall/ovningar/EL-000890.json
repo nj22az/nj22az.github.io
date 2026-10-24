@@ -1,0 +1,169 @@
+{
+  "id": "EL-000890",
+  "titel": "Vägledning om strukturellt brandskydd (2024)",
+  "sprak": "sv",
+  "typ": "flerval",
+  "revision": 1,
+  "granskning": {
+    "status": "utkast",
+    "kommentar": "Quiz vecka 42 (lärarens beslut 11 okt 2026: tio frågor per text, A–E, egna ord). Varje svar kontrollerat ordagrant mot PDF:en (citat och sida i lärarens facit). Facit finns bara hashat, klartexten utanför repot."
+  },
+  "larande": {
+    "mal": [
+      "LM-3"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v42-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Läs avsnitt 1–5 (sidorna 4–8). Svara på varje fråga med en bokstav. Frågorna säger var i texten du ska läsa.",
+    "delfragor": [
+      {
+        "id": "a",
+        "typ": "flerval",
+        "text": "Avsnitt 1. Vad är vägledningen till för?",
+        "alternativ": [
+          "Att förbjuda att nya fartyg av aluminium eller komposit används i svensk inrikes trafik.",
+          "Att lära besättningen hur man upptäcker och släcker en brand i maskinrummet ombord på ett fartyg av stål.",
+          "Att förklara godkända sätt att kontrollera konstruktionens brandskydd i fartyg som inte är av stål.",
+          "Att ersätta SOLAS med nya svenska regler som ska gälla för alla fartyg i internationell trafik."
+        ],
+        "ledtrad": "avsnitt 1 Syfte"
+      },
+      {
+        "id": "b",
+        "typ": "flerval",
+        "text": "Avsnitt 2. Vägledningen gäller fartyg av annat än stål som byggs eller byggs om. Vilka är den främst skriven för?",
+        "alternativ": [
+          "Rederier, varv, konsulter och erkända organisationer (RO).",
+          "Besättningar, maskinbefäl och elektriker som arbetar ombord.",
+          "Hamnar, räddningstjänster och kustbevakningen som släcker bränder.",
+          "Sjöfartsskolor som utbildar besättningar i brandskydd ombord."
+        ],
+        "ledtrad": "avsnitt 2 Omfattning"
+      },
+      {
+        "id": "c",
+        "typ": "flerval",
+        "text": "Avsnitt 3. Ett nytt fartyg av komposit ska börja användas. Vem ansvarar för att det kontrolleras att fartyget uppfyller kraven?",
+        "alternativ": [
+          "Varvet som byggde fartyget.",
+          "Transportstyrelsen.",
+          "Befälhavaren ombord.",
+          "Redaren.",
+          "Den erkända organisationen (RO)."
+        ],
+        "ledtrad": "avsnitt 3 Roller"
+      },
+      {
+        "id": "d",
+        "typ": "flerval",
+        "text": "Avsnitt 4. Enligt TSFS 2017:26 ska bärande delar stå emot brand medan fartyget utryms. Vilken möjlighet ger det redaren?",
+        "alternativ": [
+          "Att slippa utrymningsövningar om skrovet har extra mycket brandskydd.",
+          "Att anpassa brandskyddet efter hur lång tid utrymningen verkligen tar.",
+          "Att själv godkänna sin utrymningsplan, utan att Transportstyrelsen är inblandad.",
+          "Att bygga i vilket material som helst, utan några brandprov."
+        ],
+        "ledtrad": "avsnitt 4 Beskrivning"
+      },
+      {
+        "id": "e",
+        "typ": "flerval",
+        "text": "Avsnitt 4. I SOLAS delas skott in i klasser som A60, A30 och A0. Vad ska ett A-klassat skott vara gjort av?",
+        "alternativ": [
+          "Vilket material som helst, om skottet först har klarat ett godkänt brandprov.",
+          "Brandbegränsande material (FRM), som skott får vara enligt HSC-koden för snabba fartyg.",
+          "Stål, eller ett material som inte brinner och är likvärdigt med stål.",
+          "Brännbart material, om det är tillräckligt tjockt och har bra isolering på båda sidor."
+        ],
+        "ledtrad": "avsnitt 4 Beskrivning"
+      },
+      {
+        "id": "f",
+        "typ": "flerval",
+        "text": "Avsnitt 4. I ett utrymme med större brandrisk är brandskyddstiden (SFP) 60 minuter. Hur lång tid får utrymningen högst ta enligt formeln?",
+        "alternativ": [
+          "Cirka 13 minuter.",
+          "Cirka 18 minuter.",
+          "Cirka 20 minuter.",
+          "Cirka 53 minuter."
+        ],
+        "ledtrad": "avsnitt 4 Beskrivning"
+      },
+      {
+        "id": "g",
+        "typ": "flerval",
+        "text": "Avsnitt 5.1. Redaren väljer att följa HSC-kodens alla regler om brandskydd. Vad ska redaren då göra?",
+        "alternativ": [
+          "Visa med dokument att fartyget uppfyller de reglerna.",
+          "Ingenting mer, eftersom HSC-koden redan är godkänd av myndigheten.",
+          "Bara låta fartyget gå i fartområde D och E.",
+          "Låta Transportstyrelsen bedöma en brandteknisk analys av skrovet."
+        ],
+        "ledtrad": "avsnitt 5.1 Alternativ 1"
+      },
+      {
+        "id": "h",
+        "typ": "flerval",
+        "text": "Avsnitt 5.2. Ett intyg från ett RO är otydligt och kan tyda på att fartyget är mindre säkert än ett stålfartyg. Vilken rätt har Transportstyrelsen då?",
+        "alternativ": [
+          "Ingen rätt alls. Ett intyg från ett RO måste alltid godtas.",
+          "Rätt att själv skriva ett nytt och tydligare intyg åt redaren.",
+          "Rätt att kräva att fartyget byggs om i stål innan det används.",
+          "Rätt att underkänna intyget som bevis för att kraven uppfylls."
+        ],
+        "ledtrad": "avsnitt 5.2 Alternativ 2"
+      },
+      {
+        "id": "i",
+        "typ": "flerval",
+        "text": "Avsnitt 5.3. Skrovet är inte byggt av FRM och FRD, alltså de brandskyddande material och skott som HSC-koden beskriver. Vad bör då tas fram?",
+        "alternativ": [
+          "En analys av brandsäkerheten enligt MSC circ. 1574, som Transportstyrelsen får bedöma.",
+          "En analys av brandsäkerheten enligt SOLAS, som varvet och redaren sedan godkänner själva.",
+          "Ett intyg från besättningen om att brandskyddet har provats ombord.",
+          "En plan för att byta ut skrovet mot ett skrov av stål."
+        ],
+        "ledtrad": "avsnitt 5.3 Alternativ 3"
+      },
+      {
+        "id": "j",
+        "typ": "flerval",
+        "text": "Avsnitt 5.4. A60 går inte att uppfylla med fartygets material, så varvet vill använda ett skott godkänt som FRD 60. Vad gäller då?",
+        "alternativ": [
+          "FRD 60 och A60 är samma klass, så inget extra behöver visas.",
+          "FRD 60 kan aldrig ersätta A60, eftersom de två proven görs på olika sätt.",
+          "FRD 60 kan vara likvärdigt med A60, men det måste visas i dokument.",
+          "FRD 60 är alltid bättre än A60, så det godtas helt utan kontroll."
+        ],
+        "ledtrad": "avsnitt 5.4 Alternativ 4"
+      }
+    ],
+    "svarsformat": "Svara med A, B, C, D eller E i quizet."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "Transportstyrelsen, vägledning version 01 (2024-05-10)",
+        "roll": "quiz vecka 42, läses hemma"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "Transportstyrelsen, ”Vägledning för verifiering av strukturellt brandskydd för nationella fartyg av annat material än stål”, version 01, 2024-05-10.",
+    "resurser": [
+      {
+        "url": "vecka-42/aktuell/Transportstyrelsen_vagledning_strukturellt_brandskydd_2024.pdf",
+        "titel": "Transportstyrelsens vägledning om strukturellt brandskydd (PDF)",
+        "kortnamn": "vägledningen om brandskydd"
+      }
+    ],
+    "losning_publik": false
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Saltade hashar i vecka-42/aktuell/quiz-nyckel.mjs; klartexten finns utanför repot (verktyg/inlamning/facit.py)."
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "id": "EL-000716",
+  "titel": "Avslutsfråga: v42_03",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 3,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-6",
+      "LM-7"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v42-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilken kontroll visar att din viktigaste skyddsåtgärd faktiskt fungerar?",
+    "instruktion": "Lämna riskbedömningen i inlämningen senast i dag, fredag 16 oktober. Ange arbetsgräns, faror, åtgärder, ansvar, kvarstående risk och kontrollerad regelhänvisning."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx bild 35",
+        "revision": "8cabde3",
+        "roll": "avslutsfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "id": "EL-000650",
+  "titel": "Lägre ingångsresistans",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v39-03",
+      "T-labb-multimetersimulator"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Samma källa och samma R_{1} och R_{2}. Nu är R_{m} = 1 MΩ. Beräkna spänningen. Jämför med 5,000 V utan mätare."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx bild 60 och facit bild 61",
+        "revision": "8cabde3",
+        "roll": "övning i presentationen Multimeter och mätfel"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "R_{p} = (1 MΩ · 1 MΩ) / (1 MΩ + 1 MΩ) = 0,5 MΩ U_{m} = 10 V · 0,5 MΩ / (1 MΩ + 0,5 MΩ) ≈ 3,333 V Avrundat till 0,01 V: 3,33 V",
+    "status": "migrerad",
+    "kalla": "Facitbild 61",
+    "svar": [
+      {
+        "storhet": "U_{m}",
+        "varde": 3.333,
+        "enhet": "V",
+        "tolerans": {
+          "abs": 0.001
+        },
+        "berakning": "spanningsdelare.belastad"
+      }
+    ]
+  },
+  "parametrar": {
+    "U": {
+      "varde": 10
+    },
+    "R1": {
+      "varde": 1000000.0
+    },
+    "R2": {
+      "varde": 1000000.0
+    },
+    "Rin": {
+      "varde": 1000000.0
+    }
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "$schema": "../schema/placering.schema.json",
+  "yta": "kontrollfragor",
+  "titel": "Kontrollfrågor sist i varje del",
+  "publik": "elev",
+  "exportor": "delsidor_veckor",
+  "placeringar": [
+    {
+      "ovning": "EL-000868",
+      "plats": "vecka-41/aktuell/Del_1.html",
+      "del": "v41_01",
+      "ordning": 1,
+      "nummer": "Kontrollfråga 1.1",
+      "ankare": "v41_01-k1"
+    },
+    {
+      "ovning": "EL-000869",
+      "plats": "vecka-41/aktuell/Del_1.html",
+      "del": "v41_01",
+      "ordning": 2,
+      "nummer": "Kontrollfråga 1.2",
+      "ankare": "v41_01-k2"
+    },
+    {
+      "ovning": "EL-000870",
+      "plats": "vecka-41/aktuell/Del_1.html",
+      "del": "v41_01",
+      "ordning": 3,
+      "nummer": "Kontrollfråga 1.3",
+      "ankare": "v41_01-k3"
+    },
+    {
+      "ovning": "EL-000871",
+      "plats": "vecka-41/aktuell/Del_2.html",
+      "del": "v41_02",
+      "ordning": 1,
+      "nummer": "Kontrollfråga 2.1",
+      "ankare": "v41_02-k1"
+    },
+    {
+      "ovning": "EL-000872",
+      "plats": "vecka-41/aktuell/Del_2.html",
+      "del": "v41_02",
+      "ordning": 2,
+      "nummer": "Kontrollfråga 2.2",
+      "ankare": "v41_02-k2"
+    },
+    {
+      "ovning": "EL-000873",
+      "plats": "vecka-41/aktuell/Del_2.html",
+      "del": "v41_02",
+      "ordning": 3,
+      "nummer": "Kontrollfråga 2.3",
+      "ankare": "v41_02-k3"
+    },
+    {
+      "ovning": "EL-000874",
+      "plats": "vecka-41/aktuell/Del_3.html",
+      "del": "v41_03",
+      "ordning": 1,
+      "nummer": "Kontrollfråga 3.1",
+      "ankare": "v41_03-k1"
+    },
+    {
+      "ovning": "EL-000875",
+      "plats": "vecka-41/aktuell/Del_3.html",
+      "del": "v41_03",
+      "ordning": 2,
+      "nummer": "Kontrollfråga 3.2",
+      "ankare": "v41_03-k2"
+    },
+    {
+      "ovning": "EL-000876",
+      "plats": "vecka-41/aktuell/Del_3.html",
+      "del": "v41_03",
+      "ordning": 3,
+      "nummer": "Kontrollfråga 3.3",
+      "ankare": "v41_03-k3"
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "id": "EL-000882",
+  "titel": "Ett bleck som saknas",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "utkast"
+  },
+  "larande": {
+    "mal": [
+      "LM-5",
+      "LM-8"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-kurs-v41-03",
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Blecken ska ligga för Δ. Du mäter U1–V1 = 4,2 Ω, V1–W1 = 4,2 Ω och W1–U1 = 8,4 Ω. En lindning har resistansen 4,2 Ω. Vad visar mätningen, och vilket bleck saknas?",
+    "samband": [
+      "Δ: alla par (2/3) · R_{lindning}"
+    ],
+    "givet": "Spänningslös motor. Sladdarnas resistans avdragen. Δ-blecken ska vara U1–W2, V1–U2 och W1–V2.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "I en hel Δ-koppling visar alla tre paren samma värde. Två par med en lindning och ett par med två lindningar i serie betyder att triangeln är öppen.",
+      "status": "utkast"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna först vad en hel Δ skulle ge. Rita sedan triangeln och ta bort ett bleck i taget tills mätvärdena stämmer.",
+      "status": "utkast"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Räkna (2/3) · R för en hel Δ och jämför med mätvärdena. 2) Rita lindningarna U, V och W med blecken. 3) Pröva: vilket bleck gör att vägen mellan W1 och U1 bara går genom två lindningar? Samma sätt att resonera: en felsökning jämför förväntat och uppmätt i varje punkt.",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "En hel Δ skulle ge (2/3) · 4,2 = 2,8 Ω mellan alla par. Här visar två par en lindning (4,2 Ω) och W1–U1 två lindningar i serie (8,4 Ω). Triangeln är öppen: blecket U1–W2 saknas. Då går vägen U1–U2–V1–V2–W1 genom lindningarna U och V, och lindningen W hänger bara i W1.",
+    "status": "utkast",
+    "kalla": "Kursens facit (publikt)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_03-q6",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 25 och 26",
+        "roll": "presentationens stöd- och övningsbild"
+      },
+      {
+        "kalla": "sjoskolan/labbhandbok/vecka-41.html",
+        "roll": "labbpasset med motorn, startaren och strömtången"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  }
+}

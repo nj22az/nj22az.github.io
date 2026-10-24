@@ -1,0 +1,34 @@
+{
+  "id": "EL-000726",
+  "titel": "Avslutsfråga: v44_02",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 2,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v44-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilka anläggningsuppgifter behövs innan ett arbetsavstånd kan bestämmas?",
+    "instruktion": "Uppgiften Högspänning och strömtransformator i inlämningen bygger på del 2. Inga praktiska HV-manövrer ingår i distanspasset."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx bild 36",
+        "revision": "8cabde3",
+        "roll": "avslutsfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

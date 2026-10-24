@@ -1,0 +1,21 @@
+/* Only a decoded video frame replaces the finished harbour still. */
+.office-port{position:relative;min-width:0;aspect-ratio:16/9;margin:0;overflow:hidden;border-radius:20px;background:#8acde6;isolation:isolate;text-align:left}
+.office-port>img,.office-port>.office-port-stage{display:block;width:100%;height:100%;object-fit:contain;border:0;border-radius:0}
+.office-port>.office-port-stage{position:absolute;inset:0;opacity:0;pointer-events:none}
+.office-port[data-motion]>.office-port-stage{opacity:1}
+.office-port figcaption{position:absolute;inset:auto 0 0;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:64px;padding:20px 16px 12px;background:linear-gradient(transparent,#102639cc);font:600 12px/1.4 var(--font-body,system-ui,sans-serif);color:#fff;pointer-events:none}
+.office-port-caption{min-width:0}
+.office-port button{display:grid;place-items:center;flex:none;width:44px;height:44px;border:1px solid #ffffff88;border-radius:50%;padding:0;background:#182c40cc;color:#fff;cursor:pointer;pointer-events:auto}
+.office-port button:hover{background:#182c40}
+.office-port button:focus-visible{outline:3px solid white;outline-offset:3px}
+.office-port button[hidden]{display:none}
+.office-port button svg{width:15px;height:15px;fill:currentColor}
+.office-port [data-icon=pause]{display:none}
+.office-port[data-playing] [data-icon=pause]{display:block}
+.office-port[data-playing] [data-icon=play]{display:none}
+@media(max-width:600px){.office-port figcaption{padding:16px 12px 8px;font-size:11px}}
+@media print{.office-port .office-port-stage,.office-port button{display:none!important}}
+
+.office-port-stage{visibility:hidden}.office-port[data-motion]>.office-port-stage{visibility:visible;pointer-events:auto}.office-port-stage video{display:block;width:100%;height:100%;object-fit:contain}
+.office-port-controls{display:flex;align-items:center;gap:8px;flex:none}.office-port .office-port-next{width:auto;max-width:132px;border-radius:999px;padding:0 12px;font:700 12px/1.3 var(--font-body,system-ui,sans-serif)}
+@media(max-width:420px){.office-port-controls{gap:5px}.office-port .office-port-next{max-width:74px;padding:0 8px;font-size:10px}}

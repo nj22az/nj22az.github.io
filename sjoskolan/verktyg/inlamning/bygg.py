@@ -1,0 +1,163 @@
+#!/usr/bin/env python3
+"""Sidmall för inlämningsuppgifterna vecka-XX/aktuell/Inlamning.html.
+
+Uppgifterna ligger i innehållsdatabasen (sjoskolan/innehall, ytan inlamning) och skrivs av
+    python3 sjoskolan/innehall/innehall.py bygg inlamning
+Här finns bara veckornas rubrik och sista inlämningsdag samt HTML-mallen. Veckor i SJALVRATTANDE får svarsfält,
+Rätta och Lämna in (sjalvrattning.py); nyckeln med hashade svar skrivs av facit.py.
+"""
+import sys
+from html import escape
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import sjalvrattning as S  # noqa: E402  självrättande inlämning (vecka 42 och framåt)
+
+V = '20260930'
+MONTHS = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december']
+# Mappnamnen ändras aldrig. 'vecka' är veckan eleven ser: kursen började vecka 38, så vecka-37/ undervisades vecka 38,
+# och vecka-38/ (Frånskiljning och mätteknik) ingår i vecka 40 och lämnas in med den (verktyg/veckosidor/bygg.py).
+VECKOR = {
+    37: {'titel': 'Elens grunder och elsäkerhet', 'sista': '2026-09-20', 'vecka': 38},
+    38: {'titel': 'Frånskiljning och mätteknik', 'sista': '2026-10-04', 'vecka': 40, 'veckosida': '/sjoskolan/vecka-40/aktuell/',
+         'notis': 'Ingår i vecka 40. Lämnas in senast söndag 4 oktober, tillsammans med växelströmsuppgifterna. D på den här sidan räknas ur ditt namn och är ett annat tal än D i växelströmsuppgifterna.'},
+    39: {'titel': 'Effekt, Kirchhoff och multimeter', 'sista': '2026-09-27'},
+    40: {'titel': 'Växelström', 'sista': '2026-10-04',
+         'notis': 'Veckans inlämning 1–3 (Frånskiljning och mätteknik) lämnar du på en egen sida. Här finns inlämning 4–7.', 'notis_lank': ('/sjoskolan/vecka-38/aktuell/Inlamning.html', 'Inlämning: Frånskiljning och mätteknik')},
+    41: {'titel': 'Trefas och laboration', 'sista': '2026-10-11'},
+    42: {'titel': 'Elektriska risker och skydd', 'sista': '2026-10-16'},  # lärarens beslut 11 okt: allt lämnas in senast fredag
+    # Lärarens beslut 12 oktober: vecka 43 och 44 rättar sig själva som vecka 42, och allt lämnas in senast fredag.
+    # Vecka 45:s felsökningsrapport (EL-000828) och analys av mätdata (EL-000826) lämnas in med vecka 43 och 44: de står
+    # med svarsrutor som inlämning 4 där, och på vecka 45:s sida finns en hänvisning (lamnas_med).
+    43: {'titel': 'Komponenter, motorer, scheman och felsökning', 'sista': '2026-10-23',
+         'notis': 'Inlämning 4, felsökningsrapporten, bygger på del 4 (Systematisk felsökning). Den lämnas in med vecka 43.'},
+    44: {'titel': 'Elsystem, mätteknik och repetition', 'sista': '2026-10-30',
+         'notis': 'Inlämning 4, analysen av mätdata, bygger på del 4 (Analys av mätresultat). Den lämnas in med vecka 44.'},
+    45: {'titel': 'Felsökning, analys och övningstenta', 'sista': None, 'frivillig': True, 'lamnas_med': S.LAMNAS_MED,
+         'notis': 'Övningstentan på den här sidan är frivillig och betygsätts inte. Det praktiska provet i vecka 45 bedöms separat: tre protokoll och en riskbedömning lämnas som PDF i ett mejl senast onsdag 4 november kl. 20.00. Felsökningsrapporten lämnar du med vecka 43, senast fredag 23 oktober, och analysen av mätdata med vecka 44, senast fredag 30 oktober.',
+         'notis_lank': ('../../praktiskt-prov.html#lamna', 'Praktiskt prov: så lämnar du in')},
+}
+
+
+NAMNRUTA = '''<div class="sj-panel soft dbox"><h2>Ditt namn ger dina egna värden</h2><p>Flera uppgifter använder talet <strong>D</strong>, som räknas fram ur ditt namn. Skriv ditt för- och efternamn här, och skriv samma namn överst i inlämningen och i labbprotokollen. Läraren räknar fram samma D ur namnet och kan kontrollera dina svar.</p><p><label for="elevnamn">Förnamn och efternamn</label><br><input id="elevnamn" type="text" autocomplete="name" placeholder="Förnamn Efternamn"></p><p id="elevtal" aria-live="polite"><noscript>Sidan behöver JavaScript för att räkna fram D.</noscript></p></div>
+<script type="module">import {elevtal,fulltNamn,sparatNamn,sparaNamn} from '/sjoskolan/gemensamt/elevtal.mjs?v=20260930';const i=document.getElementById('elevnamn'),o=document.getElementById('elevtal');i.value=sparatNamn();const visa=()=>{const ok=fulltNamn(i.value);o.innerHTML=ok?`Ditt tal är <strong>D = ${elevtal(i.value)}</strong>. Använd det i uppgifterna nedan.`:'Skriv både förnamn och efternamn, så visas ditt D.';if(ok)sparaNamn(i.value);};i.addEventListener('input',visa);visa();</script>
+'''
+
+
+# Från vecka 41 lämnar eleven in med e-post till läraren. Veckosidan (verktyg/veckosidor/bygg.py) använder samma knapp.
+EPOST = 'nils@sjoskolan.se'
+
+
+def epost_knapp(nr, vn, pa_sidan=False):
+    """Rutan Så lämnar du in. pa_sidan: rutan står på inlämningssidan (annars på veckosidan)."""
+    if nr in SJALVRATTANDE:
+        return S.epost_ruta(EPOST, vn, pa_sidan)
+    from urllib.parse import quote
+    amne = quote(f'Inlämning vecka {vn}: Förnamn Efternamn')
+    kropp = quote(f'Hej!\n\nHär är min inlämning för vecka {vn}.\n\nNamn: \nBifogat: uträkningar (foto eller PDF) och labbprotokoll (PDF).\n')
+    qr = (f'<li>Skapa din QR-kod på sidan <a href="/sjoskolan/vecka-{nr}/aktuell/Resultat.html">Skicka resultat</a> och bifoga en skärmbild av den.</li>'
+          if nr in SVARSRUTOR else '')
+    return (f'<div class="sj-panel soft handin-mail"><h3>Så lämnar du in</h3><ol><li>Räkna och skriv på papper eller i dator. Ta tydliga foton eller spara som PDF.</li>'
+            f'<li>Skicka allt i <strong>ett</strong> mejl till <a href="mailto:{EPOST}">{EPOST}</a>.</li>'
+            f'<li>Ämnesrad: <strong>Inlämning vecka {vn}: ditt för- och efternamn</strong>.</li><li>Bifoga labbprotokollet som PDF.</li>{qr}</ol>'
+            f'<p><a class="sj-btn primary" href="mailto:{EPOST}?subject={amne}&amp;body={kropp}">Skriv mejlet till läraren</a></p></div>')
+
+
+def datum(iso):
+    y, m, d = map(int, iso.split('-'))
+    return f'{d} {MONTHS[m - 1]}'
+
+
+def veckodag(iso):
+    import datetime as _dt
+    return ['måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag', 'söndag'][_dt.date.fromisoformat(iso).weekday()]
+
+
+# Veckor med resultatkod: D slumpas på enheten, svaren skrivs i rutor och skickas med QR-koden (vecka-XX/aktuell/resultat.mjs).
+RESULTATKOD = {40}
+
+
+# Veckor med svarsrutor och resultatkod där D räknas ur namnet (vecka-XX/aktuell/inlamning-svar.mjs och Resultat.html).
+SVARSRUTOR = {41}
+
+
+# Veckor där inlämningssidan rättar sig själv (beslut 11 oktober 2026): svarsfält, Rätta med tre försök, Lämna in och PDF.
+# Fälten står i sjalvrattning.py, nyckeln (saltade hashar) skrivs av facit.py ur en klartextfil utanför repot.
+SJALVRATTANDE = S.SJALVRATTANDE
+
+
+def svarsfalt(nr, pl, p):
+    """Svarsfälten under en uppgift (innehall/export/inlamning.py). Tom sträng för andra veckor."""
+    return S.svarsfalt(nr, pl, p) if nr in SJALVRATTANDE else ''
+
+
+def utan_fragelista(nr, p):
+    """Sant när uppgiftens frågor står i svarsfälten (läsförståelsen), så att listan a–h inte upprepas."""
+    return nr in SJALVRATTANDE and S.utan_fragelista(nr, p)
+
+
+# Från vecka 42 har alla samma D (gemensamt/elevtal.mjs KURS_D). Bara den slutliga tentamen får individuella värden.
+KURS_D = 12
+KURSD_RUTA = (f'<div class="sj-panel soft dbox"><h2>Talet D</h2><p>Flera uppgifter använder talet <strong>D</strong>. '
+              f'Alla i klassen räknar med <strong>D = {KURS_D}</strong>. Sätt in {KURS_D} där det står D i uppgiften och räkna '
+              f'sedan som vanligt. Står det (10 + D) V är spänningen 10 + {KURS_D} = {10 + KURS_D} V.</p></div>\n')
+
+
+def dbox(nr):
+    if nr >= 42:
+        return KURSD_RUTA
+    if nr in SVARSRUTOR:
+        return (NAMNRUTA.replace('</p></div>\n<script', '</p><p>Skriv dina svar i rutorna under inlämning 1 och 2. De sparas i webbläsaren och följer med i QR-koden på sidan <a href="Resultat.html">Skicka resultat</a>. Uträkningar, visardiagram och protokoll lämnar du i mejlet.</p></div>\n<script', 1)
+                + f'<script type="module" src="/sjoskolan/vecka-{nr}/aktuell/inlamning-svar.mjs?v=20260929"></script>\n')
+    if nr not in RESULTATKOD:
+        return NAMNRUTA
+    return (f'<div class="sj-panel soft dbox"><h2>Ditt tal D</h2><p>Flera uppgifter använder talet <strong>D</strong>. Det slumpas första gången du öppnar veckan på en dator eller telefon och sparas där. Du behöver inte skriva ditt namn nu: det gör du i slutet, på sidan <a href="Resultat.html">Skicka resultat</a>.</p>'
+            '<p id="elevtal" aria-live="polite"><noscript>Sidan behöver JavaScript för att visa D.</noscript></p>'
+            '<details><summary>Har du redan ett D på en annan dator eller telefon?</summary><p><label for="annatD">Skriv D därifrån (1–31)</label><br><input id="annatD" inputmode="numeric" autocomplete="off" style="width:6em"> <button type="button" id="annatD-ok" class="sj-btn">Använd</button></p><p id="annatD-not" role="status"></p></details>'
+            '<h3>Så används D</h3><p>Sätt in ditt D där det står D i uppgiften och räkna ut dina egna startvärden först. Står det (10 + D) V och du har D = 7, är din spänning 10 + 7 = 17 V. D/10 med D = 7 är 0,7. Sedan räknar du uppgiften som vanligt med dina värden. Alla använder samma metod, men alla får olika tal.</p>'
+            '<p id="mina-varden" aria-live="polite"></p>'
+            '<p>I den guidade labben sätter du inte in D själv: labben räknar fram dina värden ur samma D och skriver dem i varje uppgift.</p>'
+            '<p>Skriv dina svar i rutorna under inlämning 4–6. De sparas i webbläsaren och följer med i QR-koden. Uträkningar och förklaringar lämnar du in som vanligt.</p></div>\n'
+            f'<script type="module" src="/sjoskolan/vecka-{nr}/aktuell/inlamning-svar.mjs?v={V}-d"></script>\n')
+
+
+REDOVISAR = ('<h2>Så redovisar du</h2><ul><li>Skriv givna värden, samband, insättning och svar med enhet.</li><li>Skriv förutsägelsen innan du tittar i labbet, och skriv sedan ditt avlästa värde.</li>'
+             '<li>Förklara med egna ord och egna siffror. Skilj på vad du har observerat och vad du drar för slutsats.</li><li>Bifoga labbprotokoll som PDF när uppgiften säger det.</li></ul>')
+BEDOMNING = ('<h2>Bedömning</h2><ul><li>Metoden syns och går att följa, och enheterna stämmer.</li><li>Labbvärdena är dina egna och jämförs med din beräkning.</li>'
+             '<li>Förklaringarna använder begreppen från genomgången.</li><li>Säkerhetsresonemang skiljer på observation och antagande och hittar inte på uppgifter som saknas.</li></ul>\n')
+
+
+def page(nr, w, items):
+    """items: uppgifternas HTML (från innehall/export/inlamning.py)."""
+    vn = w.get('vecka', nr)
+    veckosida = w.get('veckosida', f'/sjoskolan/vecka-{nr}/aktuell/')
+    notis = ''
+    if w.get('notis'):
+        lank = f' <a href="{w["notis_lank"][0]}">{escape(w["notis_lank"][1])}</a>' if w.get('notis_lank') else ''
+        notis = f'<p class="sj-panel week-note"><strong>{escape(w["notis"])}</strong>{lank}</p>\n'
+    kanal = f'med e-post till <a href="mailto:{EPOST}">{EPOST}</a>' if nr >= 41 else 'via den inlämningskanal läraren har anvisat'
+    mejl = epost_knapp(nr, vn, pa_sidan=True) + '\n' if nr >= 41 and not w.get('frivillig') else ''
+    sjalv = nr in SJALVRATTANDE
+    if sjalv:  # Inlämningen är en PDF som eleven laddar ner från sidan och lämnar in i Google Classroom.
+        kanal = 'i Google Classroom'
+    css = f'<link rel="stylesheet" href="/sjoskolan/gemensamt/sjalvrattning.css?v={S.VERSION}">' if sjalv else ''
+    # Vecka 45 har ingen inlämning med sista dag: övningstentan är frivillig, och de andra uppgifterna lämnas in med vecka 43 och 44.
+    lead = ('Övningstentan gör du inför tentamen. Den är frivillig och betygsätts inte.' if w.get('frivillig') else
+            f'Uppgifterna löses med veckans genomgångar och labbar. Lämna in senast {veckodag(w["sista"])} {datum(w["sista"])} {kanal}.')
+    redovisar = '' if sjalv or w.get('frivillig') else REDOVISAR
+    slut = (S.lamna_in(nr, vn, w['titel'], EPOST) + S.bedomning(nr)) if sjalv else ('' if w.get('frivillig') else BEDOMNING)
+    lasom = S.lasom_ruta(nr, vn) if sjalv else ''
+    skript = S.skript(nr) if sjalv else ''
+    return f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inlämning vecka {vn}: {escape(w["titel"])} · Sjöskolan</title><meta name="description" content="Inlämningsuppgifter för vecka {vn} som löses med veckans genomgångar och labbar."><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{nr}/aktuell/Inlamning.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v={V}"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}">{css}
+<style>.task{{margin:24px 0}}.course-main .task h2{{margin-top:0;font-size:23px}}.task .use{{font-size:15px;color:var(--sj-muted)}}.task ol{{padding-left:26px}}.task li{{margin:6px 0}}.task .hand-in{{margin:12px 0 0;padding-top:12px;border-top:1px solid var(--sj-line)}}.dbox{{max-width:72ch}}.dbox input{{min-height:44px;font:inherit;padding:4px 10px;width:22em;max-width:100%;border:1px solid var(--sj-field);border-radius:8px}}.course-main .dbox h2{{margin-top:0}}@media print{{.task{{break-inside:avoid;border:1px solid #999}}.dbox{{border:1px solid #999}}}}</style><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
+<body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a><a href="{veckosida}">Vecka {vn}</a></nav><main id="main-content" class="course-main"><div class="course-breadcrumb"><a href="{veckosida}">← Vecka {vn}</a></div><article class="course-reading">
+<p class="course-kicker">Vecka {vn} · inlämning</p><h1>Inlämningsuppgifter: {escape(w["titel"])}</h1>
+<p class="course-lead">{lead}</p>
+{notis}{mejl}{dbox(nr)}{redovisar}{lasom}
+{items}
+{slut}</article></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>{skript}</body></html>
+'''
+
+
+if __name__ == '__main__':
+    raise SystemExit('Kör: python3 sjoskolan/innehall/innehall.py bygg inlamning')

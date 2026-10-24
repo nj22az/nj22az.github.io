@@ -1,0 +1,106 @@
+{
+  "id": "EL-000853",
+  "titel": "Kabelns spänningsfall",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 3,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-formelblad"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En 24 V-last tar 10 A. Enkel kabellängd är 15 m och arean 4 mm² koppar (ρ = 0,0175 Ω·mm²/m). Beräkna slingresistans, spänningsfall i volt och procent, och förlusteffekt i kabeln.",
+    "delfragor": [
+      {
+        "id": "a",
+        "typ": "flerval",
+        "text": "Vilken är kabelns slingresistans?",
+        "alternativ": [
+          "0,525 Ω",
+          "0,131 Ω",
+          "0,0656 Ω",
+          "1,31 Ω"
+        ],
+        "ratt": 1
+      },
+      {
+        "id": "b",
+        "typ": "flerval",
+        "text": "Vilket spänningsfall får du i volt och procent av matningsspänningen?",
+        "alternativ": [
+          "1,31 V och cirka 5,5 %",
+          "0,656 V och cirka 2,7 %",
+          "13,1 V och cirka 54,7 %",
+          "1,31 V och cirka 0,55 %"
+        ],
+        "ratt": 0
+      },
+      {
+        "id": "c",
+        "typ": "flerval",
+        "text": "Vilken förlusteffekt utvecklas i kabeln?",
+        "alternativ": [
+          "Cirka 1,3 W",
+          "Cirka 131 W",
+          "240 W",
+          "Cirka 13 W"
+        ],
+        "ratt": 3
+      }
+    ]
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "tentamen.html övningstenta 3",
+        "revision": "8cabde3",
+        "roll": "uppgift i övningstentan"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "R_{slinga} = 0,0175 · 30/4 ≈ 0,131 Ω. ΔU = 10 · 0,131 ≈ 1,31 V ≈ 5,5 % av 24 V. P_{förlust} = 10² · 0,131 ≈ 13 W.",
+    "status": "migrerad",
+    "kalla": "Övningstentans lösning",
+    "svar": [
+      {
+        "storhet": "R_{slinga}",
+        "varde": 0.131,
+        "enhet": "Ω",
+        "tolerans": {
+          "rel": 0.01
+        },
+        "berakning": "ledare.slingresistans"
+      }
+    ]
+  },
+  "parametrar": {
+    "rho": {
+      "varde": 0.0175
+    },
+    "l": {
+      "varde": 15
+    },
+    "A": {
+      "varde": 4
+    }
+  },
+  "bedomning": {
+    "kursniva": "Veckor: v39",
+    "kriterier": [
+      "Tar med båda ledarna i kabelslingan och använder rätt referens för procenttalet.",
+      "Visar samband och enheter för spänningsfall och förlusteffekt."
+    ]
+  }
+}

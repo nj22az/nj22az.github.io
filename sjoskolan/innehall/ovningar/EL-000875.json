@@ -1,0 +1,50 @@
+{
+  "id": "EL-000875",
+  "titel": "Kontrollfråga 3.2",
+  "sprak": "sv",
+  "typ": "flerval",
+  "revision": 4,
+  "granskning": {
+    "status": "utkast"
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En labbsladd med 2,0 A läggs två varv genom strömtångens käft. Vad visar tången?",
+    "alternativ": [
+      "1,0 A",
+      "2,0 A",
+      "4,0 A"
+    ]
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Tången räknar strömmen varje gång ledaren passerar käften.",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "Strömmen passerar käften två gånger åt samma håll: 2 · 2,0 = 4,0 A.",
+    "status": "utkast",
+    "kommentar": "4,0 A"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/Del_3.html#kontroll",
+        "roll": "kontrollfråga sist i delen"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  }
+}

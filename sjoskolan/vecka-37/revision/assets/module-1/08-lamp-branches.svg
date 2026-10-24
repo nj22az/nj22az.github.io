@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="420" viewBox="0 0 820 420" role="img" aria-labelledby="title desc"><title id="title">Ett grenavbrott behöver inte släcka allt</title><desc id="desc">Två lampor har varsin gren. En öppen brytare i den högra grenen släcker endast den lampan i idealmodellen. Den gemensamma returen är hel.</desc><metadata>Symbols adapted from ma-laforge/ElectricalDiagrams, MIT licence. See /licenses/ElectricalDiagrams-MIT.txt.</metadata><defs><marker id="current-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#007d35"/></marker></defs><rect width="100%" height="100%" fill="white"/><text x="410.0" y="37" font-family="DejaVu Sans,sans-serif" font-size="25" text-anchor="middle" fill="#111" font-weight="700">Ett grenavbrott behöver inte släcka allt</text><polyline points="190,115 190,195.0" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><g transform="translate(190 225.0) rotate(0) scale(0.05) translate(-2600 -1000)"><g xmlns="http://www.w3.org/2000/svg" xmlns:ooo="http://xml.openoffice.org/svg/export" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:presentation="http://sun.com/xmlns/staroffice/presentation" xmlns:smil="http://www.w3.org/2001/SMIL20/" xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" class="Group">
+       <g class="com.sun.star.drawing.EllipseShape">
+        <g>
+         <path fill="none" stroke="rgb(0,0,0)" stroke-width="100" stroke-linejoin="round" d="M 2600,1600 C 2495,1600 2391,1572 2300,1520 2209,1467 2133,1391 2080,1300 2028,1209 2000,1105 2000,1000 2000,895 2028,791 2080,700 2133,609 2209,533 2300,480 2391,428 2495,400 2600,400 2705,400 2809,428 2900,480 2991,533 3067,609 3120,700 3172,791 3200,895 3200,1000 3200,1105 3172,1209 3120,1300 3067,1391 2991,1467 2900,1520 2809,1572 2705,1600 2600,1600 L 2600,1600 Z "/>
+        </g>
+       </g>
+       <g class="Group">
+        <g class="com.sun.star.drawing.LineShape">
+         <g>
+          <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" d="M 2600,600 L 2600,1000 "/>
+         </g>
+        </g>
+        <g class="com.sun.star.drawing.LineShape">
+         <g>
+          <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" d="M 2400,800 L 2800,800 "/>
+         </g>
+        </g>
+        <g class="com.sun.star.drawing.LineShape">
+         <g>
+          <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" d="M 2350,1250 L 2850,1250 "/>
+         </g>
+        </g>
+       </g>
+      </g>
+      </g><polyline points="190,255.0 190,335" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><text x="145" y="219.0" font-family="DejaVu Sans,sans-serif" font-size="18" text-anchor="end" fill="#111">Batteri</text><text x="145" y="246.0" font-family="DejaVu Sans,sans-serif" font-size="22" text-anchor="end" fill="#111">12 V</text><polyline points="190,115 655,115" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><polyline points="655,335 190,335" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><polyline points="420,115 420,195.0" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><g transform="translate(420 225.0) rotate(0) scale(0.05) translate(-8200 -2800)"><g xmlns="http://www.w3.org/2000/svg" xmlns:ooo="http://xml.openoffice.org/svg/export" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:presentation="http://sun.com/xmlns/staroffice/presentation" xmlns:smil="http://www.w3.org/2001/SMIL20/" xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" class="Group">
+       <g class="com.sun.star.drawing.EllipseShape">
+        <g>
+         <path fill="none" stroke="rgb(0,0,0)" stroke-width="100" stroke-linejoin="round" d="M 8200,3400 C 8095,3400 7991,3372 7900,3320 7809,3267 7733,3191 7680,3100 7628,3009 7600,2905 7600,2800 7600,2695 7628,2591 7680,2500 7733,2409 7809,2333 7900,2280 7991,2228 8095,2200 8200,2200 8305,2200 8409,2228 8500,2280 8591,2333 8667,2409 8720,2500 8772,2591 8800,2695 8800,2800 8800,2905 8772,3009 8720,3100 8667,3191 8591,3267 8500,3320 8409,3372 8305,3400 8200,3400 Z "/>
+        </g>
+       </g>
+       <g class="com.sun.star.drawing.LineShape">
+        <g>
+         <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" stroke-linecap="round" d="M 8400,3000 L 8000,2600 "/>
+        </g>
+       </g>
+       <g class="com.sun.star.drawing.LineShape">
+        <g>
+         <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" stroke-linecap="round" d="M 8400,2600 L 8000,3000 "/>
+        </g>
+       </g>
+      </g>
+      </g><polyline points="420,255.0 420,335" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><text x="465" y="232.0" font-family="DejaVu Sans,sans-serif" font-size="20" text-anchor="start" fill="#111">L1</text><polyline points="655,115 655,145" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><g transform="translate(655 190) rotate(90) scale(0.05) translate(-13900 -2800)"><g xmlns="http://www.w3.org/2000/svg" xmlns:ooo="http://xml.openoffice.org/svg/export" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:presentation="http://sun.com/xmlns/staroffice/presentation" xmlns:smil="http://www.w3.org/2001/SMIL20/" xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" class="Group">
+       <g class="com.sun.star.drawing.CustomShape">
+        <g>
+         </g>
+       </g>
+       <g class="com.sun.star.drawing.PolyPolygonShape">
+        <g>
+         <path fill="none" stroke="rgb(0,0,0)" stroke-width="100" stroke-linejoin="round" d="M 14500,2800 L 14800,2800 "/>
+        </g>
+       </g>
+       <g class="com.sun.star.drawing.PolyPolygonShape">
+        <g>
+         <path fill="none" stroke="rgb(0,0,0)" stroke-width="100" stroke-linejoin="round" d="M 13000,2800 L 13300,2800 "/>
+        </g>
+       </g>
+       <g class="Group">
+        <g class="com.sun.star.drawing.EllipseShape">
+         <g>
+          <path fill="rgb(255,255,255)" stroke="none" d="M 13300,2925 C 13278,2925 13257,2919 13238,2908 13218,2897 13203,2882 13192,2863 13181,2843 13175,2822 13175,2800 13175,2778 13181,2757 13192,2738 13203,2718 13218,2703 13238,2692 13257,2681 13278,2675 13300,2675 13322,2675 13343,2681 13363,2692 13382,2703 13397,2718 13408,2738 13419,2757 13425,2778 13425,2800 13425,2822 13419,2843 13408,2863 13397,2882 13382,2897 13363,2908 13343,2919 13322,2925 13300,2925 L 13300,2925 Z "/>
+          <path fill="none" stroke="rgb(0,0,0)" stroke-width="100" stroke-linejoin="round" d="M 13300,2925 C 13278,2925 13257,2919 13238,2908 13218,2897 13203,2882 13192,2863 13181,2843 13175,2822 13175,2800 13175,2778 13181,2757 13192,2738 13203,2718 13218,2703 13238,2692 13257,2681 13278,2675 13300,2675 13322,2675 13343,2681 13363,2692 13382,2703 13397,2718 13408,2738 13419,2757 13425,2778 13425,2800 13425,2822 13419,2843 13408,2863 13397,2882 13382,2897 13363,2908 13343,2919 13322,2925 13300,2925 Z "/>
+         </g>
+        </g>
+        <g class="com.sun.star.drawing.RectangleShape">
+         <g>
+          </g>
+        </g>
+       </g>
+       <g class="com.sun.star.drawing.LineShape">
+        <g>
+         <path fill="none" stroke="rgb(0,0,0)" stroke-width="100" stroke-linejoin="round" stroke-linecap="round" d="M 14500,2800 L 13200,1900 "/>
+        </g>
+       </g>
+       <g class="Group">
+        <g class="com.sun.star.drawing.EllipseShape">
+         <g>
+          <path fill="rgb(255,255,255)" stroke="none" d="M 14500,2925 C 14478,2925 14457,2919 14438,2908 14418,2897 14403,2882 14392,2863 14381,2843 14375,2822 14375,2800 14375,2778 14381,2757 14392,2738 14403,2718 14418,2703 14438,2692 14457,2681 14478,2675 14500,2675 14522,2675 14543,2681 14563,2692 14582,2703 14597,2718 14608,2738 14619,2757 14625,2778 14625,2800 14625,2822 14619,2843 14608,2863 14597,2882 14582,2897 14563,2908 14543,2919 14522,2925 14500,2925 L 14500,2925 Z "/>
+          <path fill="none" stroke="rgb(0,0,0)" stroke-width="100" stroke-linejoin="round" d="M 14500,2925 C 14478,2925 14457,2919 14438,2908 14418,2897 14403,2882 14392,2863 14381,2843 14375,2822 14375,2800 14375,2778 14381,2757 14392,2738 14403,2718 14418,2703 14438,2692 14457,2681 14478,2675 14500,2675 14522,2675 14543,2681 14563,2692 14582,2703 14597,2718 14608,2738 14619,2757 14625,2778 14625,2800 14625,2822 14619,2843 14608,2863 14597,2882 14582,2897 14563,2908 14543,2919 14522,2925 14500,2925 Z "/>
+         </g>
+        </g>
+        <g class="com.sun.star.drawing.RectangleShape">
+         <g>
+          </g>
+        </g>
+       </g>
+      </g>
+      </g><polyline points="655,235 655,250" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><g transform="translate(655 280) rotate(0) scale(0.05) translate(-8200 -2800)"><g xmlns="http://www.w3.org/2000/svg" xmlns:ooo="http://xml.openoffice.org/svg/export" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:presentation="http://sun.com/xmlns/staroffice/presentation" xmlns:smil="http://www.w3.org/2001/SMIL20/" xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" class="Group">
+       <g class="com.sun.star.drawing.EllipseShape">
+        <g>
+         <path fill="none" stroke="rgb(0,0,0)" stroke-width="100" stroke-linejoin="round" d="M 8200,3400 C 8095,3400 7991,3372 7900,3320 7809,3267 7733,3191 7680,3100 7628,3009 7600,2905 7600,2800 7600,2695 7628,2591 7680,2500 7733,2409 7809,2333 7900,2280 7991,2228 8095,2200 8200,2200 8305,2200 8409,2228 8500,2280 8591,2333 8667,2409 8720,2500 8772,2591 8800,2695 8800,2800 8800,2905 8772,3009 8720,3100 8667,3191 8591,3267 8500,3320 8409,3372 8305,3400 8200,3400 Z "/>
+        </g>
+       </g>
+       <g class="com.sun.star.drawing.LineShape">
+        <g>
+         <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" stroke-linecap="round" d="M 8400,3000 L 8000,2600 "/>
+        </g>
+       </g>
+       <g class="com.sun.star.drawing.LineShape">
+        <g>
+         <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" stroke-linecap="round" d="M 8400,2600 L 8000,3000 "/>
+        </g>
+       </g>
+      </g>
+      </g><polyline points="655,310 655,335" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><text x="705" y="286" font-family="DejaVu Sans,sans-serif" font-size="20" text-anchor="start" fill="#111">L2</text><circle cx="420" cy="115" r="4.5" fill="#111"/><circle cx="420" cy="335" r="4.5" fill="#111"/><text x="410" y="390" font-family="DejaVu Sans,sans-serif" font-size="19" text-anchor="middle" fill="#111">L1: hel väg · L2: öppen gren · gemensam retur är hel</text></svg>

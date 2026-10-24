@@ -8,3 +8,21 @@ node_modules/
 # Cloudflare Pages local dev secrets
 .dev.vars
 .wrangler/
+
+# Sjöskolans innehållsdatabas: genererat och dekrypterat arbetsmaterial
+sjoskolan/innehall/build/
+sjoskolan/innehall/.skyddat/
+sjoskolan/innehall/bok/.bok/
+__pycache__/
+sjoskolan/verktyg/qa/week43-results/
+sjoskolan/verktyg/qa/week43-report/
+sjoskolan/vaxelstromslabbet-utkast/node_modules
+
+# Local Studio previews; published World assets remain tracked.
+/output/studio-mcp/
+
+# a symlink named node_modules is not a directory, so node_modules/ alone would not catch it
+node_modules
+
+# Portable room drafts are not World publication data.
+/johansson-town/data/studio/projects/

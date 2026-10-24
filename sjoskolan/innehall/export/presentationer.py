@@ -1,0 +1,308 @@
+"""Presentationerna: skriver övningstexterna på bilderna ur databasen (ytorna presentation och presentation-fragor),
+gör om PDF:erna med LibreOffice och bygger om webbildspelen.
+
+Tung exportör: körs med `innehall.py bygg presentationer`. Bara presentationer vars text skiljer sig från databasen skrivs om.
+Bildernas formatering (typsnitt, storlek, färg) behålls: första körningen i varje textform används som mall,
+index X_{L} blir nedsänkta körningar. Former märkta kontroll=true skrivs inte om (text i figurer); de jämförs bara.
+"""
+import copy
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'migrering'))
+import rendera as R
+import text as T
+
+PUBLIK = 'elev'
+YTOR = ('presentation', 'presentation-fragor')
+
+
+def falt_text(pl, p, namn):
+    """Texten som ska stå i formen `namn` (en lista med stycken)."""
+    u, roll = p['uppgift'], pl.get('roll')
+    led = {l['niva']: l['text'] for l in p.get('ledtradar', [])}
+    if namn == 'titel':
+        if pl['del'] == 'v39_04':
+            return [f'{pl["nummer"]}. {p["titel"]}']
+        if pl['del'] == 'v37_04':
+            return [f'{pl["nummer"]}: {p["titel"]}']
+        return [p['titel']]
+    if namn == 'fraga':
+        return [u['fraga']]
+    if namn == 'kortfraga':
+        k = u.get('kortfraga') or u['fraga']
+        return [f'{pl["nummer"]}: {k}'] if pl['del'] == 'v37_02' else [k]
+    if namn == 'scenario':
+        return [u.get('scenario', '')]
+    if namn == 'instruktion':
+        return [u.get('instruktion', '')]
+    if namn == 'stod/samband':
+        return list(u.get('samband', []))
+    if namn == 'stod/begrepp':
+        return [led.get('begrepp', '')]
+    if namn == 'stod/givet':
+        return [f'Förutsättningar: {u.get("givet", "")}']
+    if namn == 'stod/metod':
+        return [f'Arbetsgång: {led.get("metod", "")}']
+    if namn == 'stod/losning':
+        return [(p.get('losning') or {}).get('text', '')]
+    raise ValueError(namn)
+
+
+def _former(slide):
+    from pptx.enum.shapes import MSO_SHAPE_TYPE
+    ut = {}
+
+    def g(shapes):
+        for sh in shapes:
+            if sh.shape_type == MSO_SHAPE_TYPE.GROUP:
+                g(sh.shapes)
+            elif sh.has_text_frame:
+                ut[sh.shape_id] = sh
+    g(slide.shapes)
+    return ut
+
+
+def stycke_text(p):
+    """Ett styckes text med markering, som kallor.pptx_text läser det."""
+    from pptx.oxml.ns import qn
+    buf = []
+    for r in p.runs:
+        rpr = r._r.find(qn('a:rPr'))
+        base = int(rpr.get('baseline', '0')) if rpr is not None else 0
+        t = r.text
+        buf.append(('_{%s}' % t) if base < 0 and t.strip() else ('^{%s}' % t) if base > 0 and t.strip() else t)
+    return re.sub(r'\s+', ' ', ''.join(buf)).strip()
+
+
+def satt_stycke(p, text):
+    """Skriver text med markering till ett stycke och behåller första körningens formatering."""
+    from pptx.oxml.ns import qn
+    runs = p.runs
+    if not runs:
+        p.text = T.ren_text(text)
+        return
+    mall = copy.deepcopy(runs[0]._r)
+    for r in runs:
+        r._r.getparent().remove(r._r)
+    # a:endParaRPr ska ligga sist; körningar läggs före den
+    end = p._p.find(qn('a:endParaRPr'))
+    for typ, t in T.delar(text):
+        r = copy.deepcopy(mall)
+        rpr = r.find(qn('a:rPr'))
+        if rpr is None:
+            rpr = r.makeelement(qn('a:rPr'), {})
+            r.insert(0, rpr)
+        if typ == 'sub':
+            rpr.set('baseline', '-25000')
+        elif typ == 'sup':
+            rpr.set('baseline', '30000')
+        elif 'baseline' in rpr.attrib:
+            del rpr.attrib['baseline']
+        tt = r.find(qn('a:t'))
+        tt.text = t
+        if end is not None:
+            end.addprevious(r)
+        else:
+            p._p.append(r)
+
+
+def satt_form(sh, stycken, bara_stycke=None):
+    """Skriver stycken till en form. bara_stycke: skriv bara stycke nr n (1-baserat)."""
+    tf = sh.text_frame
+    paras = list(tf.paragraphs)
+    if bara_stycke:
+        satt_stycke(paras[bara_stycke - 1], stycken[0])
+        return
+    mall = copy.deepcopy(paras[0]._p)
+    for p in paras[1:]:
+        p._p.getparent().remove(p._p)
+    satt_stycke(paras[0], stycken[0])
+    for s in stycken[1:]:
+        ny = copy.deepcopy(mall)
+        tf._txBody.append(ny)
+        from pptx.text.text import _Paragraph
+        satt_stycke(_Paragraph(ny, tf), s)
+
+
+def form_text(sh, bara_stycke=None):
+    paras = list(sh.text_frame.paragraphs)
+    if bara_stycke:
+        return [stycke_text(paras[bara_stycke - 1])]
+    return [stycke_text(p) for p in paras if stycke_text(p)]
+
+
+def skriv_deck(a, plats, placeringar):
+    from pptx import Presentation
+    fil = R.SJO / plats
+    prs = Presentation(fil)
+    slides = list(prs.slides)
+    andrat, avvik = 0, []
+    for pl, p in placeringar:
+        former = pl.get('former') or {}
+        # Kontrollformer: en text kan vara delad på flera former (fraga/1, fraga/2 …); delarna jämförs ihopslagna.
+        if pl.get('kontroll'):
+            grupper = {}
+            for namn, ref in former.items():
+                bas = re.sub(r'/\d+$', '', namn)
+                grupper.setdefault(bas, []).append(ref)
+            for bas, refs in grupper.items():
+                bild = pl['stodbild'] if bas.startswith('stod/') else pl['bild']
+                delar = []
+                for ref in refs:
+                    sh = _former(slides[bild - 1]).get(int(ref))
+                    delar += form_text(sh) if sh is not None else ['(saknas)']
+                nu, mal = T.normalisera(' '.join(delar)), T.normalisera(' '.join(x for x in falt_text(pl, p, bas) if x))
+                if nu != mal:
+                    avvik.append(f'{plats} bild {bild} ({p["id"]} {bas}): bilden har {nu!r}, databasen {mal!r}')
+            continue
+        for namn, ref in former.items():
+            bild = pl['stodbild'] if namn.startswith('stod/') else pl['bild']
+            sid, _, nr = ref.partition('/')
+            sh = _former(slides[bild - 1]).get(int(sid))
+            if sh is None:
+                avvik.append(f'{plats} bild {bild}: form {sid} saknas')
+                continue
+            mal = [T.normalisera(y) for x in falt_text(pl, p, namn) for y in x.split(' / ') if y]
+            nu = [T.normalisera(x) for x in form_text(sh, int(nr) if nr else None)]
+            if nu == mal:
+                continue
+            satt_form(sh, mal, int(nr) if nr else None)
+            andrat += 1
+    # Bildrubrikerna följer numreringsregistret (innehall/numrering.py): ”Övning 1.3” och ”Stöd till övning 1.3”.
+    for pl, p in placeringar:
+        if pl.get('kontroll') or not pl.get('nummer', '').startswith('Övning '):
+            continue
+        if int(re.search(r'vecka-(\d+)', plats).group(1)) <= 40:  # vecka 37–40 är klara och ändras inte (se verktyg/las)
+            continue
+        for bild, mall in ((pl.get('bild'), '{nr}'), (pl.get('stodbild'), 'Stöd till övning {k}')):
+            if not bild:
+                continue
+            mal = mall.format(nr=pl['nummer'], k=pl['nummer'][len('Övning '):])
+            for sh in slides[bild - 1].shapes:
+                if sh.has_text_frame and re.match(r'^(Stöd till övning|Övning) [\d.]+$', sh.text_frame.text.strip()) and sh.text_frame.text.strip() != mal:
+                    satt_form(sh, [mal])
+                    andrat += 1
+    if andrat:
+        prs.save(fil)
+    return andrat, avvik
+
+
+GENOMGANG_V40 = {'sinus': 'vecka-40/aktuell/v40_01_Sinusformad_vaxelspanning_elev.pptx', 'impedans': 'vecka-40/aktuell/v40_02_Reaktans_och_impedans_elev.pptx',
+                 'effekt': 'vecka-40/aktuell/v40_03_Effekt_i_vaxelstromskretsar_elev.pptx'}
+
+
+def kompakt(sh, tom_under, ned_till=None):
+    """Brödtext som inte ryms i 21 pt med tomma rader mellan styckena (till exempel Så räknar du-bilderna) får
+    styckeavstånd i stället för tomma rader och den största storleken 21–14 pt som ryms ovanför formeln eller
+    sidfoten. Text som ryms lämnas orörd. Uppskattningen: Calibri ≈ 0,48 · storlek per tecken, radhöjd 1,2 · storlek.
+    Returnerar True om något ändrades."""
+    import math
+    from pptx.util import Emu, Pt
+    if sh is None:
+        return False
+    stycken = [stycke_text(p) for p in sh.text_frame.paragraphs]
+    text = [t for t in stycken if t.strip()]
+    if not text:
+        return False
+    bredd = sh.width / 12700
+    botten = 5950000 if tom_under else (ned_till or sh.top + sh.height)
+    hojd_max = (botten - sh.top) / 12700
+
+    def hojd(pt, tomma, luft):
+        rader = sum(max(1, math.ceil(len(t) * 0.48 * pt / bredd)) for t in text)
+        return rader * 1.2 * pt + (len(text) - 1) * (1.2 * pt if tomma else luft)
+
+    if hojd(21, True, 0) <= min(hojd_max, sh.height / 12700):
+        return False
+    storlek = next((pt for pt in range(21, 13, -1) if hojd(pt, False, 8) <= hojd_max), 14)
+    andrat = False
+    for p in list(sh.text_frame.paragraphs):
+        if not stycke_text(p).strip() and len(sh.text_frame.paragraphs) > 1:
+            p._p.getparent().remove(p._p)
+            andrat = True
+    for p in sh.text_frame.paragraphs:
+        if p.space_after != Pt(8):
+            p.space_after = Pt(8)
+            andrat = True
+        for r in p.runs:
+            if r.font.size != Pt(storlek):
+                r.font.size = Pt(storlek)
+                andrat = True
+    if sh.top + sh.height != botten:
+        sh.height = Emu(botten - sh.top)
+        andrat = True
+    return andrat
+
+
+def genomgang_v40():
+    """Vecka 40:s presentationer följer genomgångens text (vecka-40/aktuell/lektioner.mjs): bild n + 1 = genomgångens bild n.
+    Formerna heter title, body, formula, check och svar (verktyg/ac/build-decks.mjs, Din tur-bilderna). Etiketter i figurerna får nedsänkta index."""
+    import json
+    from pptx import Presentation
+    js = "import('%s').then(m=>console.log(JSON.stringify(m.LESSONS)))" % (R.SJO / 'vecka-40' / 'aktuell' / 'lektioner.mjs').as_uri()
+    lek = json.loads(subprocess.run(['node', '--input-type=module', '-e', js], capture_output=True, text=True, check=True).stdout)
+    omskrivna = []
+    for l in lek:
+        fil = R.SJO / GENOMGANG_V40[l['id']]
+        prs = Presentation(fil)
+        slides = list(prs.slides)
+        andrat = 0
+        for i, s in enumerate(l['slides']):
+            former = {sh.name: sh for sh in _former(slides[i + 1]).values()}
+            mal = {'title': [s['title']], 'body': [y for b in s['body'] for y in (b, '')][:-1], 'formula': [s['formula']] if s.get('formula') else None}
+            # Kontrollfrågan och, på Din tur-bilderna, svaret (visas vid klick) kommer ur innehållsdatabasen.
+            mal['check'] = [s['check']] if s.get('check') else None
+            mal['svar'] = [s['answer']] if s.get('tur') and s.get('answer') else None
+            for namn, stycken in mal.items():
+                sh = former.get(namn)
+                if sh is None or stycken is None:
+                    continue
+                nu = [stycke_text(p) for p in sh.text_frame.paragraphs]
+                # Tomma stycken (luft mellan punkterna) räknas inte: en bild får ha tät layout med styckeavstånd.
+                if [x for x in nu if x] != [re.sub(r'\s+', ' ', x).strip() for x in stycken if x]:  # stycke_text slår ihop blanktecken
+                    satt_form(sh, stycken)
+                    andrat += 1
+            kropp = former.get('body')
+            under = [former[n].top for n in ('formula', 'check') if kropp is not None and n in former and s.get(n) and former[n].top > kropp.top]
+            if kompakt(former.get('body'), tom_under=not under, ned_till=min(under) - 60000 if under else None):
+                andrat += 1
+            for sh in former.values():
+                if sh.name.endswith('-label') and re.search(r'(?<![\w{])X[LC](?![\w}])', ' '.join(stycke_text(p) for p in sh.text_frame.paragraphs)):
+                    satt_form(sh, [re.sub(r'(?<![\w{])X([LC])(?![\w}])', r'X_{\1}', stycke_text(p)) for p in sh.text_frame.paragraphs])
+                    andrat += 1
+        if andrat:
+            prs.save(fil)
+            omskrivna.append(fil)
+    return omskrivna
+
+
+def pdf_och_bildspel(filer):
+    if not filer:
+        return
+    for f in filer:
+        subprocess.run(['soffice', '--headless', '--convert-to', 'pdf', '--outdir', str(f.parent), str(f)], check=True, capture_output=True)
+    subprocess.run([sys.executable, str(R.SJO / 'verktyg' / 'bildspel' / 'bygg.py')], check=True, capture_output=True)
+
+
+def bygg(a, kat):
+    decks = {}
+    for yta in YTOR:
+        for plats in a.platser(yta):
+            decks.setdefault(plats, []).extend(a.placeringar(yta, plats))
+    omskrivna, avvik, rev = [], [], {}
+    for plats, pls in sorted(decks.items()):
+        n, av = skriv_deck(a, plats, pls)
+        avvik += av
+        if n:
+            omskrivna.append(R.SJO / plats)
+        for pl, p in pls:
+            rev[p['id']] = p['revision']
+    omskrivna += genomgang_v40()
+    pdf_och_bildspel(omskrivna)
+    for x in avvik:
+        print('  obs', x)
+    print(f'  {len(omskrivna)} presentationer omskrivna (PDF och bildspel byggda om)')
+    return {'sammanfattning': f'{len(decks)} presentationer ur databasen, {len(avvik)} avvikelser i kontrollformer', 'avvikelser': avvik, 'revisioner': rev}

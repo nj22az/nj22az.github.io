@@ -1,0 +1,34 @@
+{
+  "id": "EL-000720",
+  "titel": "Avslutsfråga: v43_02",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 3,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-2"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v43-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilken del av en omriktare kan lagra energi efter att matningen brutits?",
+    "instruktion": "Uppgiften Motorns märkskylt i inlämningen bygger på del 2. Inlämningen senast fredag 23 oktober."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-43/aktuell/v43_02_Transformatorer_och_motorer_elev.pptx bild 35",
+        "revision": "8cabde3",
+        "roll": "avslutsfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

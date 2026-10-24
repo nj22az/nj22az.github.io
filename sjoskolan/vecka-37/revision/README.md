@@ -1,0 +1,25 @@
+# Modul 1 – kompletterande revision, 2026-10-16
+
+Elevversion för första kursveckan (vecka 38). Originalmaterialet i `../aktuell/` behålls. Den här versionen omfattar bara modul 1 och har samlad svensk teori, 13 omritade kretsscheman, 15 objektiva träningskontroller och en interaktiv DC-bänk med sex vägledda övningar.
+
+Inga privata elevdata, inloggningsuppgifter, lärarfacit till originalinlämningen eller andra kursmoduler ingår. Den privata kursens server och AI-arbetsrum publiceras inte här. Svar, läsregistrering och protokoll sparas i en separat lokal lagringsnyckel. Revisionssidan skickar inte in arbete.
+
+Fyra nedladdningar: hela modulen som PDF och PowerPoint, med neutral mall eller skolans ursprungliga sidfot. Löptexten i PowerPoint är redigerbar, figurerna är inbäddade och elevfilerna saknar talaranteckningar. Alla simulator- och repetitionslänkar använder den publika revisionen.
+
+Kretsmodellen och 3D-bänken är en fryst kopia av den reviderade modulens källor. Kursens tolerans 2 % används för den guidade träningen. Resistansövningens givna värden omfattar sladdarnas 0,2 Ω. Formella inlämningskrav, datum och bedömning finns på originalveckan. Skriftliga resonemang och laborationsunderlag kräver lärarbedömning.
+
+Three.js och ElectricalDiagrams behåller sina MIT-licenser i `vendor/THREE-LICENSE.txt` och `licenses/ElectricalDiagrams-MIT.txt`. Nils Johanssons kursmaterial följer repositoryts rättighetsvillkor.
+
+Teknisk verifiering omfattar innehåll, länkar, importberoenden, PDF/PowerPoint, sex övningsförlopp och att tillägget inte ersätter något originalinnehåll. Webbläsargranskning pågår: elevens första mätning och automatisk rättning har körts i publicerad Chrome. Den använda granskningswebbläsaren har WebGL avstängt, så 3D-rendering och fysisk iPadacceptans är fortfarande inte verifierade. `tools/layout-review.html` visar revisionen vid riktiga iframebredder för dator, surfplatta och mobil utan att ändra elevsidan.
+
+## Webbläsargranskning 16 oktober 2026
+
+Alla sex introduktionsövningar genomfördes i publicerad Chrome via de synliga elevreglagen: 12 V, 0 V, 12 V, 0 V, cirka 1,967 A och 6,2 Ω. Sex av sex registrerades automatiskt. Sparade försök behölls vid omladdning. Fri mätning gav direktavläsning. Arbetsvyn och återgången till exakt teoriavsnitt kontrollerades. Layouter vid 1180, 820 och 390 px granskades i riktiga iframebredder; detta är inte fysisk enhetsprovning.
+
+Granskningen rättade tom reservyta, oanvändbara kameraknappar utan WebGL, otydliga handlingsnamn, onödigt matningsfrånslag vid brytarmanövrering, teorilänkar från modal arbetsvy, mobilritningens etiketter, bakgrundsrullning och beskurna teorifigurer i surfplattebredd.
+
+CI-granskning av denna fortsättning: alla sex webbläsartester passerade i skrivbords-Chromium, telefonemulerad Chromium och surfplatteemulerad WebKit. Alla sex övningar slutfördes i varje projekt. Riktig WebGL-rendering, klick på 3D-terminaler, synkronisering med problistor och separerade returetiketter verifierades. Skärmbilder av bänk och instrument sparades för varje övning. Se `STUDENT-ACCEPTANCE.md`, `student-browser.config.mjs` och arbetsflödet **Module 1 browser acceptance**.
+
+Kvarstående acceptans: fysisk iPad/telefon, verklig pek-/dragkänsla och en faktisk nybörjarstudie är inte verifierade. Den manuella molnwebbläsaren hade WebGL avstängt; CI:s riktiga webbläsare renderade däremot bänken. Geometri, raycasting, probdragning och vred har också separata Three.js-tester.
+
+Fortlöpande vägledning ger ett namngivet handgrepp per klick. Separata problistor, synlig retur, kretsstatus, återställning med bevarade försök och progression vid avläsningsresultatet gör introduktionen lättare att följa. Originalveckan och frivilligheten bevaras.

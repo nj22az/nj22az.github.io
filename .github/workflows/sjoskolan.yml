@@ -1,0 +1,68 @@
+name: Sjöskolan kontroller
+
+on:
+  push:
+    paths: ['sjoskolan/**', '.github/workflows/sjoskolan.yml']
+  pull_request:
+    paths: ['sjoskolan/**', '.github/workflows/sjoskolan.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22.16.0'
+          package-manager-cache: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Beroende för delsidornas presentationsexport
+        run: python3 -m pip install python-pptx
+      - name: Innehållsdatabasen är giltig och de genererade filerna aktuella
+        run: |
+          python3 sjoskolan/innehall/innehall.py validera
+          python3 sjoskolan/innehall/innehall.py kontrollera
+          python3 sjoskolan/verktyg/las/veckolas.py kontrollera
+      - name: Vecka 40 – länkar och publicerade artefakter
+        run: python3 sjoskolan/verktyg/qa/week40.py
+      - name: Veckolås – beroenden och avgränsning
+        run: python3 -m unittest discover -s sjoskolan/verktyg/las -p 'test_*.py'
+      - name: Vecka 41–45 – teori och övningar hör ihop
+        run: python3 -m unittest discover -s sjoskolan/innehall/tests -p 'test_*.py'
+      - name: Labbens modelltester
+        run: node --test sjoskolan/*/model.test.mjs sjoskolan/verktyg/larare/las.test.mjs sjoskolan/gemensamt/labbprotokoll.test.mjs
+      - name: Vecka 40 – resultatkod och lärarlänk
+        env:
+          LARARLOSEN: ${{ secrets.LARARLOSEN }}
+        run: node --test sjoskolan/vecka-40/aktuell/resultat*.test.mjs
+      - name: Vecka 41 – resultatkod och skyddad läraracceptans
+        env:
+          LARARLOSEN: ${{ secrets.LARARLOSEN }}
+        run: node --test sjoskolan/vecka-41/aktuell/resultat*.test.mjs
+      - name: Vecka 42 – självrättande inlämning och quiz (rättning, försök, läsning, PDF, nycklar och sidor) och översikten Din vecka
+        run: |
+          # pdfinfo och pdftotext (poppler-utils) öppnar elevens PDF i testet; saknas de hoppar just den delen över.
+          command -v pdftotext >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils) || echo "poppler-utils saknas"
+          python3 -m unittest discover -s sjoskolan/verktyg/inlamning -p 'test_*.py'
+          node --test sjoskolan/gemensamt/sjalvrattning.test.mjs sjoskolan/gemensamt/pdf.test.mjs sjoskolan/vecka-42/aktuell/inlamning.test.mjs sjoskolan/vecka-42/aktuell/quiz.test.mjs sjoskolan/gemensamt/veckopanel.test.mjs sjoskolan/gemensamt/dagsvy.test.mjs
+      - name: Vecka 43–45 – självrättande inlämningar (fält, nycklar, delsidornas läsbekräftelser och vecka 45:s hänvisningar)
+        run: node --test sjoskolan/vecka-43/aktuell/inlamning.test.mjs sjoskolan/vecka-44/aktuell/inlamning.test.mjs sjoskolan/vecka-45/aktuell/inlamning.test.mjs
+      - name: Multimeterlabbets gränssnittstest
+        working-directory: sjoskolan/multimetersimulator
+        run: npm ci --ignore-scripts --no-audit --no-fund && npm test
+      - name: AC-labbens guidade arbetsgång och gränssnitt
+        working-directory: sjoskolan/vaxelstromslabbet
+        run: npm ci --ignore-scripts --no-audit --no-fund && npm test
+      - name: Vecka 40 – arbetsrum, läsprogress och stegvis hjälp
+        run: node --test sjoskolan/vecka-40/aktuell/arbetsrum*.test.mjs
+      - name: Filmernas repliker och textversioner
+        run: node sjoskolan/filmer/check.mjs
+      - name: Modul 1 – kompletterande revision, bevarade original och elevflöde
+        run: node --test sjoskolan/vecka-37/revision/*.test.mjs
+      - name: Övningstentamen – Google-quiz, poäng, facit och bevarade utkast
+        run: node --test sjoskolan/verktyg/tentamen/quiz.test.mjs

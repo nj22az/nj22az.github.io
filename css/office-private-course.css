@@ -1,0 +1,12 @@
+/* A quiet, image-only entrance; the course itself stays behind its private sign-in. */
+.office-private-course{max-width:1200px;margin:0 auto 12px;padding:0 24px;display:flex;justify-content:flex-end}
+.office-private-course a{display:flex;align-items:center;gap:12px;max-width:350px;min-height:92px;color:#43505b;text-decoration:none;font:400 13px/1.5 var(--font-body,system-ui,sans-serif)}
+.office-private-course img{width:66px;height:100px;flex:none;object-fit:contain;object-position:bottom;filter:drop-shadow(0 3px 3px #0001)}
+.office-private-course .whisper-note{position:relative;padding:10px 14px;border:1px solid #29364025;border-radius:12px;background:#fffef9}
+.office-private-course .whisper-note::before{content:"";position:absolute;left:-5px;top:28px;width:8px;height:8px;transform:rotate(45deg);background:#fffef9;border-left:1px solid #29364025;border-bottom:1px solid #29364025}
+.office-private-course small{display:block;font-size:11px;color:#65717a}
+.office-private-course strong{font-size:13px;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.office-private-course a:hover strong{color:#174566;text-decoration-thickness:2px}
+.office-private-course a:focus-visible{outline:3px solid #0067c7;outline-offset:5px;border-radius:12px}
+@media(max-width:600px){.office-private-course{justify-content:center;padding:0 20px;margin-bottom:20px}.office-private-course a{gap:8px;max-width:320px}.office-private-course img{width:58px;height:88px}}
+@media print{.office-private-course{display:none}}

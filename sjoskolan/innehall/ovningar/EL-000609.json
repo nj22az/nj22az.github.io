@@ -1,0 +1,33 @@
+{
+  "id": "EL-000609",
+  "titel": "Fall B: gångvägen, reservlampor och pumpen",
+  "sprak": "sv",
+  "typ": "fall",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-9"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v37-04"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Fall B bygger vidare på fall A. Den skadade lampan är nu tagen ur bruk genom säker hantering. Gångvägen behövs i ytterligare 90 minuter. Samma grupp försörjer också en pump, vars aktuella driftbehov behöver klarläggas. Lampa A kan tändas men miljölämplighet och drifttid är okända. För lampa B anger övningsunderlaget lämplighet för fallets miljö och minst två timmars drifttid i valt läge. B:s aktuella skick, laddning, placering och belysning av gångvägen ska fortfarande kontrolleras. Det är inte ett uppdrag att ändra kopplingen."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html Fall B",
+        "revision": "8cabde3",
+        "roll": "gemensamt fall för arbetsblad 1B"
+      }
+    ],
+    "publik": "elev"
+  }
+}

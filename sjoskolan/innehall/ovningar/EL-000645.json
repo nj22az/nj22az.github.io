@@ -1,0 +1,44 @@
+{
+  "id": "EL-000645",
+  "titel": "Vilken märkning räcker",
+  "sprak": "sv",
+  "typ": "flerval",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v39-03",
+      "T-labb-multimetersimulator"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Givet krav i arbetsplanen: CAT III 600 V Vilket instrument uppfyller det givna märkningskravet?",
+    "alternativ": [
+      "Instrument A: CAT II 1 000 V",
+      "Instrument B: CAT III 600 V"
+    ]
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx bild 38 och facit bild 39",
+        "revision": "8cabde3",
+        "roll": "övning i presentationen Multimeter och mätfel"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "B uppfyller båda delarna av kravet. CAT II 1 000 V ersätter inte CAT III 600 V. Mätare och mätsladdar måste båda uppfylla kravet.",
+    "status": "migrerad",
+    "kalla": "Facitbild 39"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "id": "EL-000728",
+  "titel": "Avslutsfråga: v44_03",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 3,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-8"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v44-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilken del av en mätning måste dokumenteras utöver det visade talet?",
+    "instruktion": "Inlämning 3 (Isolationslabbet) och 4 (analysen av mätdata) bygger på det här: mätvillkor och felgräns hör till resultatet. Inlämningen senast fredag 30 oktober."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx bild 35",
+        "revision": "8cabde3",
+        "roll": "avslutsfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

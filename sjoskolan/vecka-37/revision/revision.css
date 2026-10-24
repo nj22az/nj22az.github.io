@@ -1,0 +1,87 @@
+.revision-top {display:flex;flex-wrap:wrap;align-items:center;gap:16px;padding:16px max(18px,calc((100vw - 1120px)/2));border-bottom:1px solid #ddd;background:white;font-size:16px}
+.revision-top a {min-height:44px;display:inline-flex;align-items:center;font-weight:650}
+.revision-top span {font-size:14px;color:#555}
+html[data-module-theme="line"] .revision-main {margin:0 auto;max-width:1200px;padding:40px 28px}
+.revision-main section {scroll-margin-top:24px;margin:36px 0}
+.revision-main h1,.revision-main h2,.revision-main h3 {font-family:inherit;font-weight:700}
+.revision-main p {margin:12px 0}
+.revision-main .native-reading {margin:40px 0;max-width:850px}
+.revision-main .chapter-integrated-nav {position:static;gap:16px}
+.revision-main .module-relations {border:2px solid #a11b1b;background:white;color:#a11b1b;padding:20px;margin:32px 0;border-radius:8px}
+.revision-main .module-relations :is(h2,p,a,li) {color:#a11b1b}
+.revision-main .question {max-width:900px;margin:24px 0}
+.revision-main .question h3 {font-size:22px;line-height:1.5;margin:10px 0 20px}
+.revision-main .feedback {margin-top:16px}
+.revision-main textarea {width:100%;font:inherit;font-size:17px;min-height:120px;padding:12px;border:1px solid #888;border-radius:8px}
+.revision-main .schematic-scroll {max-width:100%;overflow:auto}
+.revision-main .lab-layout {grid-template-columns:minmax(0,1.3fr) minmax(290px,1fr)}
+.revision-return {margin:48px 0}
+html[data-module-theme="line"] .revision-main .lab-panel {padding:20px}
+@media(max-width:1000px){.revision-main .lab-layout {display:flex;flex-direction:column}.revision-main .lab-panel {order:-1;width:100%}.revision-main .lab-layout>div {width:100%}}
+@media(max-width:600px){html[data-module-theme="line"] .revision-main {padding:28px 18px}.revision-top{padding:12px 18px}.revision-main .module-head h1{font-size:34px}}
+@media print{.revision-top,.chapter-integrated-nav,.lab-viewport,.lab-view-controls,.dc-interaction-toolbar,.q-form button,#download-progress{display:none}.revision-main {max-width:none!important;padding:0!important}.question,.module-relations{break-inside:avoid}}
+
+/* One electrical model, three learning modes. */
+.dc-workspace{--dc-green:#08763a;--dc-border:#c8d4cc;font-size:17px;line-height:1.55;color:#17251d}
+.dc-workspace [hidden]{display:none!important}
+.dc-workspace button,.dc-workspace summary,.dc-workspace select{font:inherit;min-height:48px}
+.dc-workspace button{border:1px solid var(--dc-border);border-radius:9px;padding:10px 14px;background:#fff;color:#17251d;cursor:pointer}
+.dc-workspace button[aria-pressed=true]{background:#e6f6eb;border:2px solid var(--dc-green);color:#075c2e}
+.dc-workspace button:disabled{opacity:.5;cursor:default}
+.dc-workspace :is(button,input,select,textarea,summary):focus-visible{outline:3px solid #075c2e;outline-offset:3px}
+.dc-mode-tabs,.dc-bench-tools,.dc-dial,.dc-jacks,.dc-terminal-list{display:flex;flex-wrap:wrap;gap:8px}
+.dc-mode-tabs{margin:20px 0}.dc-mode-tabs button{flex:1;font-weight:700}
+.dc-task{border:1px solid var(--dc-border);border-left:5px solid var(--dc-green);padding:20px;border-radius:12px;background:#f5faf6;margin:20px 0}
+.dc-task select{max-width:100%}.dc-task button{margin-right:8px}
+.dc-work-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(290px,1fr);gap:24px;align-items:start}
+.dc-work-grid>div{min-width:0}.dc-bench-tools{margin:0 0 12px}.dc-bench-tools [data-action=red]{color:#a51d2c}.dc-bench-tools [data-action=black]{color:#17251d}
+.dc-workspace .lab-viewport{position:relative;width:100%;height:440px;min-height:300px;overflow:hidden;border:1px solid var(--dc-border);border-radius:12px}
+.dc-workspace .lab-viewport canvas{display:block;width:100%;height:100%}
+.dc-workspace .dc-object-controls{position:absolute;inset:0;pointer-events:none}
+.dc-workspace .dc-object-target{position:absolute;transform:translate(-50%,-50%);pointer-events:auto;font-size:13px;line-height:1.1;min-width:44px;min-height:44px;padding:5px;background:#fffefa;border:2px solid #42584b;box-shadow:0 1px 4px #0002}
+.dc-workspace .dc-snap-target,.dc-workspace .dc-next-target{outline:4px solid #08763a;outline-offset:3px;background:#d9f5df}
+.dc-workspace .dc-bench-status{position:absolute;left:8px;bottom:8px;max-width:95%;background:#fffefa;padding:4px 8px;border-radius:6px;font-size:14px}
+.dc-instrument{border:2px solid #324c3c;border-radius:20px;padding:20px;background:#f2f5ed}
+.dc-digital{display:block;padding:18px 10px;border-radius:8px;border:2px solid #425642;background:#e2edda;color:#15281b;font:700 clamp(24px,3vw,38px)/1.25 ui-monospace,monospace;text-align:right;overflow-wrap:anywhere;min-height:78px;font-variant-numeric:tabular-nums}
+.dc-workspace fieldset{border:0;padding:0;margin:18px 0}.dc-workspace legend{font-weight:700;margin-bottom:8px}.dc-dial button{flex:1 0 25%}.dc-jacks button{flex:1}.dc-workspace label{display:block;font-weight:600;margin:14px 0}
+.dc-workspace :is(input,select,textarea){display:block;width:100%;box-sizing:border-box;font:inherit;border:1px solid #718277;border-radius:8px;padding:10px;background:#fff;color:#17251d;margin-top:7px}
+.dc-workspace details{padding:14px;border:1px solid var(--dc-border);border-radius:10px;margin:16px 0;background:#fff}.dc-workspace summary{cursor:pointer;font-weight:650;padding:8px 0}
+.dc-workspace #dc-measure-form{padding:4px 0 16px}.dc-workspace #dc-result:not(:empty){padding:16px;border:1px solid var(--dc-border);border-radius:10px;background:#fff}
+.dc-circuit{width:100%;height:auto;display:block;background:white}.dc-circuit text{font:19px system-ui,sans-serif;fill:#17251d}.dc-wire{stroke:#17251d;stroke-width:4;fill:none;stroke-linecap:round;stroke-linejoin:round}.dc-symbol{stroke:#17251d;stroke-width:4;fill:white}.dc-node{fill:#17251d}.dc-flow{stroke:#08763a;stroke-width:4;fill:none}.dc-sealed{fill:#eef2ef;stroke:#536b5d;stroke-width:2;stroke-dasharray:5 4}.dc-circuit .dc-probe-label{font-weight:700;font-size:16px}.dc-circuit .red{fill:#a51d2c}
+.dc-terminal-list button{flex:1 0 40%;font-size:16px}.dc-log article{border-top:1px solid var(--dc-border);padding:14px 0}.dc-log small{font-size:14px}.dc-circuit-controls{margin-top:20px}.dc-circuit-controls button{margin:4px}
+@media(max-width:900px){.dc-work-grid{grid-template-columns:1fr}.dc-task{padding:16px}.dc-instrument-column{display:grid;grid-template-columns:1fr 1fr;gap:20px}.dc-instrument{grid-row:span 2}.dc-workspace .lab-viewport{height:400px}}
+@media(max-width:600px){.dc-instrument-column{display:block}.dc-workspace .lab-viewport{height:340px}.dc-bench-tools button{flex:1 0 28%;padding:8px;font-size:15px}.dc-mode-tabs button{padding:10px 6px;font-size:15px}.dc-circuit text{font-size:22px}.dc-task select{font-size:16px}}
+@media print{.dc-bench-tools,.dc-mode-tabs,.dc-workspace form,.dc-workspace button,.dc-instrument{display:none}.dc-work-grid{display:block}.dc-log article{break-inside:avoid}}
+
+.dc-workspace #dc-circuit{overflow-x:auto}.dc-workspace .dc-circuit{min-width:640px}
+/* Browser review: compact workbench, clear fallback and native focus management. */
+.dc-workspace-heading{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.dc-workspace-heading .eyebrow{margin:0}.dc-workspace-heading button{font-weight:700}
+.dc-workspace .dc-task{padding:14px 18px;margin:16px 0}.dc-workspace .dc-task p{margin:8px 0}.dc-workspace .dc-task label{margin:0 0 8px}
+.dc-workspace .dc-guidance{padding:10px 12px;background:#e5f4e8;border-radius:8px;font-weight:650;border-left:3px solid #08763a}
+.dc-workspace .dc-view-note{font-size:15px;line-height:1.5;padding:12px;background:#f1f5f2;border:1px solid #c8d4cc;border-radius:8px}
+.dc-workspace .dc-circuit{min-width:0;width:100%}.dc-workspace .dc-circuit text{font-size:22px}.dc-workspace .dc-circuit .dc-probe-label{font-size:19px}
+.dc-workspace #dc-schema{overflow:hidden}.dc-workspace #dc-circuit{overflow-x:visible}
+.dc-work-dialog{box-sizing:border-box;max-width:1500px;max-height:none;width:calc(100% - 32px);height:calc(100% - 32px);margin:16px auto;padding:24px;overflow:auto;border:1px solid #c8d4cc;border-radius:16px;background:white;color:#17251d;font-family:system-ui,sans-serif}
+.dc-work-dialog::backdrop{background:#14271bb3}.dc-work-dialog .dc-workspace>h3{margin:12px 0;font-size:24px}.dc-work-dialog .dc-workspace>p{margin:8px 0}
+.dc-work-dialog .dc-mode-tabs{margin:14px 0}.dc-work-dialog .dc-work-grid{grid-template-columns:minmax(0,1.4fr) minmax(310px,1fr)}
+.dc-work-dialog #dc-task{font-size:16px}.dc-work-dialog .dc-instrument{padding:16px}.dc-work-dialog .dc-instrument .eyebrow{margin:0 0 10px}.dc-work-dialog .dc-instrument #dc-reading-detail{font-size:15px;line-height:1.4}
+.dc-work-dialog .dc-log{margin-top:28px}.dc-work-dialog .dc-log p{margin:8px 0}.dc-work-dialog .dc-log article{border-top:1px solid #c8d4cc}
+@media(max-width:900px){.dc-work-dialog .dc-work-grid{grid-template-columns:1fr}.dc-work-dialog{padding:18px}.dc-workspace .dc-circuit text{font-size:24px}}
+@media(max-width:600px){.dc-work-dialog{width:100%;height:100%;margin:0;border:0;border-radius:0;padding:16px}.dc-workspace .dc-task{padding:12px}.dc-workspace .dc-circuit{min-width:440px}.dc-workspace #dc-circuit{overflow-x:auto}.dc-workspace .dc-circuit text{font-size:25px}.dc-workspace-heading button{width:100%}}
+.dc-schema-compact{display:none}
+@media(max-width:600px){.dc-workspace .dc-schema-wide{display:none}.dc-workspace .dc-schema-compact{display:block}.dc-workspace .dc-circuit-compact{min-width:0;width:100%}.dc-workspace .dc-circuit-compact text{font-size:17px}.dc-workspace .dc-circuit-compact .dc-probe-label{font-size:14px}.dc-workspace .dc-circuit-compact .dc-small-note{font-size:13px}.dc-workspace #dc-circuit{overflow-x:visible}}
+
+html.dc-work-open{overflow:hidden}
+@media(min-width:600px){html[data-module-theme="line"] .native-reading .schematic-scroll img,html[data-module-theme="line"] .weekly-bridge .schematic-scroll img{width:100%;max-width:820px;height:auto}}
+
+/* Keep the current step, probe endpoints and circuit state usable without 3D. */
+#dc-guidance {border-top:1px solid var(--dc-border)}
+#dc-guidance [data-action=guided-step],#dc-continue .btn{background:#08763a;color:white;font-weight:700}
+.dc-probe-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dc-probe-controls label{min-width:0;margin:0 0 12px}
+.dc-state{border-left:4px solid #08763a;background:#edf6ef;padding:12px 14px}
+.dc-workspace .dc-circuit{min-width:0}
+.dc-dial button{flex:1 0 40%;font-size:16px}
+#dc-continue{margin:16px 0}
+@media(max-width:600px){.dc-probe-controls{grid-template-columns:1fr}.dc-workspace .dc-circuit{min-width:0}.dc-instrument{padding:14px}.dc-circuit-controls button{margin:4px 0;width:100%}}

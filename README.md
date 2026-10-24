@@ -4,6 +4,28 @@ My personal website, where I share about my life.
 
 **Live:** [nj22az.github.io](https://nj22az.github.io)
 
+## Ownership and reuse
+
+**My original work is not generally open source. Copyright © Nils Johansson.
+All rights reserved, except for explicitly separately licensed material.**
+
+Commercial sale and licensing of my original teaching materials, writing,
+applications and media are reserved to me. No one else may sell, repackage,
+republish or use that material in paid products or courses without my prior
+written permission. Giving credit alone does not grant permission.
+
+This is a public portfolio repository. Visitors may use the published site as
+provided, and students may use supplied course materials for their own study.
+GitHub's public-repository viewing and forking rights remain unaffected.
+
+Third-party components and previously licensed material retain their own terms,
+including the existing MIT open-model recipes, CC0 audio and GPL-covered
+vectorizer code. I do not claim exclusive rights over those components.
+
+Read the [copyright and permissions notice](LICENSE.md) and
+[third-party credits and licences](THIRD_PARTY_NOTICES.md) for the precise scope,
+upstream repositories, authors and reuse details.
+
 ---
 
 ## Tech Stack
@@ -11,9 +33,9 @@ My personal website, where I share about my life.
 | Layer | Technology |
 |-------|-----------|
 | Markup | Semantic HTML5, multi-page |
-| Styling | Modular CSS with warm cream/teal-green design tokens |
+| Styling | Modular CSS with ten switchable visual systems |
 | Scripts | Vanilla JavaScript, no frameworks |
-| Typography | [Nunito](https://fonts.google.com/specimen/Nunito) (display + body) |
+| Typography | Theme-specific Google Fonts and system fallbacks |
 | Icons | Inline SVG paths (Lucide / SF Symbols aesthetic) |
 | Logo | Inline SVG rubber-stamp seal (theme-adaptive via `currentColor`) |
 | Hosting | GitHub Pages (auto-deploys on push) |
@@ -35,7 +57,9 @@ python3 -m http.server 8000
 ├── index.html              Main portal (hero, schedule, projects, journal, about, locations)
 ├── blog/index.html         Blog page (WordPress API)
 ├── config.js               All site data, projects, icons, logo, schedule
-├── shared.js               Shared nav, footer, theme toggle
+├── shared.js               Shared nav, footer, expandable theme switcher
+├── subpage-theme.js       Carries the selected palette into same-origin apps
+├── subpage-theme.css      Palette bridge for internal project interfaces
 ├── styles.css              CSS entry point — imports modular files from css/
 ├── css/                    Modular CSS files (tokens, nav, hero, sections, bento, etc.)
 ├── _posts/                 Markdown blog post archive
@@ -49,11 +73,11 @@ python3 -m http.server 8000
 
 ## How the Theme Works
 
-1. `<html data-theme="light">` is set by default (warm cream)
-2. CSS uses custom properties scoped to `[data-theme="dark"]` and `[data-theme="light"]`
-3. `shared.js` reads/writes `localStorage.getItem("nj-theme")` and updates the attribute
-4. A sun/moon toggle button in the top nav switches the theme
-5. Dark mode uses true black (#000000) for AMOLED displays
+1. `<html data-theme="cobalt">` is the first-load default
+2. CSS uses custom properties scoped to each theme ID
+3. `theme-bootstrap.js` chooses a non-repeating random theme whenever the homepage loads
+4. The hamburger menu contains an expandable switcher with eleven brand-neutral options: Cobalt, Mossy, Cute, Colorgrid, Crimson, Inkcraft, Clarity, Horizon, Swift, Botanical, and Popwave
+5. Manual choices update the current page, and internal project pages inherit the latest choice through `subpage-theme.js`; external sites are unaffected
 6. The SVG logo uses `currentColor`, so it adapts automatically
 
 ## How the Logo Works
@@ -84,11 +108,13 @@ Need a new icon? Add to `CONFIG.icons`:
 iconName: "M... SVG path data ...",
 ```
 
+To remove a project from the public grid without deleting it, move its record from `CONFIG.projects` to `CONFIG.archivedProjects`.
+
 ## How to Add a New Page
 
 1. Create `new-page/index.html`
 2. Use the same HTML shell as existing pages:
-   - `<html lang="en" data-theme="light">`
+   - `<html lang="en" data-theme="cobalt">`
    - `<nav id="site-nav" class="site-nav"></nav>` in body
    - `<footer id="site-footer" class="site-footer"></footer>`
    - Load `config.js` then `shared.js`
@@ -98,6 +124,7 @@ iconName: "M... SVG path data ...",
 
 None. The site is entirely static.
 
-## License
+## Rights and credits
 
-Copyright Nils Johansson. All rights reserved.
+[Copyright and permissions](LICENSE.md) ·
+[Third-party credits and notices](THIRD_PARTY_NOTICES.md)

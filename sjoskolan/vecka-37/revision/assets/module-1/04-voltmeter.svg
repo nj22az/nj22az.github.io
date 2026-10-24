@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="420" viewBox="0 0 820 420" role="img" aria-labelledby="title desc"><title id="title">Spänning mäts mellan två punkter</title><desc id="desc">En voltmeter är parallellkopplad mellan A och B, samma två noder som resistorn. Batteriet modelleras som en ideal 12 V-källa.</desc><metadata>Symbols adapted from ma-laforge/ElectricalDiagrams, MIT licence. See /licenses/ElectricalDiagrams-MIT.txt.</metadata><defs><marker id="current-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#007d35"/></marker></defs><rect width="100%" height="100%" fill="white"/><text x="410.0" y="37" font-family="DejaVu Sans,sans-serif" font-size="25" text-anchor="middle" fill="#111" font-weight="700">Spänning mäts mellan två punkter</text><polyline points="190,115 190,187.5" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><g transform="translate(190 217.5) rotate(0) scale(0.05) translate(-2600 -1000)"><g xmlns="http://www.w3.org/2000/svg" xmlns:ooo="http://xml.openoffice.org/svg/export" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:presentation="http://sun.com/xmlns/staroffice/presentation" xmlns:smil="http://www.w3.org/2001/SMIL20/" xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" class="Group">
+       <g class="com.sun.star.drawing.EllipseShape">
+        <g>
+         <path fill="none" stroke="rgb(0,0,0)" stroke-width="100" stroke-linejoin="round" d="M 2600,1600 C 2495,1600 2391,1572 2300,1520 2209,1467 2133,1391 2080,1300 2028,1209 2000,1105 2000,1000 2000,895 2028,791 2080,700 2133,609 2209,533 2300,480 2391,428 2495,400 2600,400 2705,400 2809,428 2900,480 2991,533 3067,609 3120,700 3172,791 3200,895 3200,1000 3200,1105 3172,1209 3120,1300 3067,1391 2991,1467 2900,1520 2809,1572 2705,1600 2600,1600 L 2600,1600 Z "/>
+        </g>
+       </g>
+       <g class="Group">
+        <g class="com.sun.star.drawing.LineShape">
+         <g>
+          <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" d="M 2600,600 L 2600,1000 "/>
+         </g>
+        </g>
+        <g class="com.sun.star.drawing.LineShape">
+         <g>
+          <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" d="M 2400,800 L 2800,800 "/>
+         </g>
+        </g>
+        <g class="com.sun.star.drawing.LineShape">
+         <g>
+          <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" d="M 2350,1250 L 2850,1250 "/>
+         </g>
+        </g>
+       </g>
+      </g>
+      </g><polyline points="190,247.5 190,320" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><text x="145" y="211.5" font-family="DejaVu Sans,sans-serif" font-size="18" text-anchor="end" fill="#111">Batteri</text><text x="145" y="238.5" font-family="DejaVu Sans,sans-serif" font-size="22" text-anchor="end" fill="#111">12 V</text><polyline points="190,115 635,115" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><polyline points="190,320 635,320" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><polyline points="450,115 450,187.5" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><g transform="translate(450 217.5) rotate(90) scale(0.05) translate(-3600 -9400)"><g xmlns="http://www.w3.org/2000/svg" xmlns:ooo="http://xml.openoffice.org/svg/export" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:presentation="http://sun.com/xmlns/staroffice/presentation" xmlns:smil="http://www.w3.org/2001/SMIL20/" xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" class="com.sun.star.drawing.RectangleShape">
+       <g>
+        <path fill="none" stroke="rgb(0,0,0)" stroke-width="100" stroke-linejoin="round" d="M 3600,9600 L 3000,9600 3000,9200 4200,9200 4200,9600 3600,9600 Z "/>
+       </g>
+      </g>
+      </g><polyline points="450,247.5 450,320" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><text x="492" y="224.5" font-family="DejaVu Sans,sans-serif" font-size="20" text-anchor="start" fill="#111">R</text><polyline points="635,115 635,187.5" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><g transform="translate(635 217.5) rotate(0) scale(0.05) translate(-13000 -7800)"><g xmlns="http://www.w3.org/2000/svg" xmlns:ooo="http://xml.openoffice.org/svg/export" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:presentation="http://sun.com/xmlns/staroffice/presentation" xmlns:smil="http://www.w3.org/2001/SMIL20/" xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" class="com.sun.star.drawing.EllipseShape">
+       <g>
+        <path fill="none" stroke="rgb(0,0,0)" stroke-width="100" stroke-linejoin="round" d="M 13000,8400 C 12895,8400 12791,8372 12700,8320 12609,8267 12533,8191 12480,8100 12428,8009 12400,7905 12400,7800 12400,7695 12428,7591 12480,7500 12533,7409 12609,7333 12700,7280 12791,7228 12895,7200 13000,7200 13105,7200 13209,7228 13300,7280 13391,7333 13467,7409 13520,7500 13572,7591 13600,7695 13600,7800 13600,7905 13572,8009 13520,8100 13467,8191 13391,8267 13300,8320 13209,8372 13105,8400 13000,8400 Z "/>
+        <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="12745" y="8040"><tspan font-family="Liberation Serif, serif" font-size="706px" font-weight="400" lengthAdjust="spacingAndGlyphs" textLength="511" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">V</tspan></tspan></tspan></text>
+       </g>
+      </g>
+      </g><polyline points="635,247.5 635,320" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><circle cx="450" cy="115" r="4.5" fill="#111"/><circle cx="450" cy="320" r="4.5" fill="#111"/><text x="450" y="92" font-family="DejaVu Sans,sans-serif" font-size="20" text-anchor="middle" fill="#111">A</text><text x="450" y="350" font-family="DejaVu Sans,sans-serif" font-size="20" text-anchor="middle" fill="#111">B</text><text x="635" y="281" font-family="DejaVu Sans,sans-serif" font-size="20" text-anchor="middle" fill="#111">12 V</text><text x="410" y="390" font-family="DejaVu Sans,sans-serif" font-size="18" text-anchor="middle" fill="#111">Mätaren jämför A med B · den mäter inte ”ström i punkten”</text></svg>

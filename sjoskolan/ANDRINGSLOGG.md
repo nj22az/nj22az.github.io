@@ -1,0 +1,1095 @@
+# Ändringslogg och lärdomar – Sjöskolan
+
+Läs reglerna innan du ändrar något i kursen, boken, labbarna eller filmerna. Varje regel kommer från ett fel som
+faktiskt har gjorts. När ett nytt fel upptäcks: rätta det, lägg till en regel här och gör den helst till en
+automatisk kontroll. Lägg till en rad under Ändringar efter varje större ändring.
+
+Målet för allt material: **det ska vara lätt att lära sig.**
+
+## Regler
+
+### Innehåll och pedagogik
+
+1. **En ledtråd får aldrig ge uppgiftens svar.** Metod och exempel räknas med andra tal än uppgiften. Kontrollera
+   också att exemplet inte råkar ge samma svar (600 W vid 120 V gav 5,0 A, samma som uppgiften).
+   *Kontroll: `innehall.py kontrollera` (svar_i_ledtradar).*
+2. **Ett genomräknat exempel får inte ge svaret på en övning i samma kapitel.** Y/Δ-exemplet (200 V, 20 Ω) gav
+   exakt övningarnas 5,77 A, 10 A och 17,32 A. Jämför nya exempelvärden mot alla svar i databasen innan de används.
+   *Manuell kontroll (skript i ändringen 2026-09-27).*
+3. **Exempel ska vara verkliga.** Hemma: vägguttag 230 V, 50 Hz, vattenkokare 2 300 W. Ombord: 440 V och 254 V,
+   60 Hz, 690 V, motorer, styrtransformator 230/24 V. Inte godtyckliga tal eller andra länders nät (120 V, 240 V).
+4. **Uppgifter på riggen stannar på skyddsklenspänning.** Labbarnas mätuppgifter och protokollexempel följer den
+   fysiska riggen (SELV, 9–24 V). Det är exemplen och ledtrådarna som hämtas från hem och fartyg.
+5. **Visa var eleven kan läsa.** En uppgift som kräver en metod pekar på exakt bild i genomgången
+   (”Läs genomgången del 1, avsnitt 7: …”), räknat ur lektionerna så att det stämmer när bilder flyttas.
+6. **Ge eleven ett tydligt besked.** Visa elevens egen förutsägelse med den etiketten (”Din förutsägelse”), aldrig
+   ”Förväntat”, och säg om den stämmer (Rätt! / Skiljer sig) med kursens tolerans 2 %.
+7. **Förkortningar förklaras.** Varje förkortning finns i `innehall/beteckningar.json` och förklaras första gången.
+   *Kontroll: `innehall.py kontrollera` (vecka 40, BETECKNINGSSIDOR).*
+
+### Notation
+
+8. **En storhet har ett skrivsätt, index är alltid nedsänkta.** U_{pp}, U_{RMS}, U_{F}, U_{gren}, I_{L}, X_{L}.
+   Aldrig Upp, Urms, U_{fas}, XL, låtsasindex (Xᴸ) eller understreck utan klammer (U_fas, X_L).
+   *Kontroll: `notation.py` i `innehall.py kontrollera`. Tänk på text i figurer (PNG) och i filmer: de kontrolleras
+   bara via källfilerna (`verktyg/figurer/figs*.py`, `filmer/films`).*
+9. **En upphöjd siffra avslutar ordet** (UL², XL²). Kontrollen missade dem tills gränsen rättades.
+10. **Genererad text ska behålla markeringen.** Exportörer som plattar ut X_{L} till XL (ren_text) ger ihopskrivna
+    former. Använd markeringen och rendera nedsänkt (markHtml, rendera.h), även i generatorer för veckosidor.
+
+### Teknik
+
+11. **Redigera källan, inte den genererade filen.** Poster → `innehall.py revidera` och `bygg`. Veckosidor →
+    `verktyg/veckosidor/bygg.py`. CI avvisar inaktuella filer.
+12. **Samma exempel finns på flera ställen.** Ett genomräknat exempel kan finnas på övningssidan, i boken (text och
+    figur), i presentationen och bildspelet och i filmerna. Sök överallt (även `filmer/films`,
+    bokens `.bok/epub`, `bildspel/*/data.json`) och ändra allt i samma ändring, eller låt bli.
+13. **Byt cacheversion när en modul ändras** (`?v=` i import och `<script>`), annars ser eleverna gammal kod.
+14. **CSS som gäller alla `span` i ett block bryter översättningsskyddet.** `oversattning.js` lägger `span` runt tal
+    med enhet. Använd barnselektorer (`dd > span`), inte `dd span {display:block}`.
+15. **`innehall.py revidera --alla` utan skyddade filer** får bara jämföra den publika hashen (rättat 2026-09-26).
+    Revidera helst med de skyddade filerna öppna; annars måste posten revideras igen nästa gång de är öppna.
+16. **Main kan ha nya commits från andra sessioner.** Hämta och slå ihop, skriv aldrig över. Lös konflikter i källor
+    för hand och bygg om genererade filer med verktygen.
+17. **Lösenord skrivs aldrig i repot.** Lärar- och bokklartext ligger utanför git (`.skyddat/`, `bok/.bok/`).
+
+20. **Filmens exempel får inte vara en övnings svar.** Vägguttaget 230 V, 50 Hz vid 2,5 ms är övning EL-000854, så
+    växelströmsfilmen räknar på fartyget (440 V, 60 Hz, 2,0 ms). Kontrollera filmens tal mot svaren i databasen.
+21. **En film ska gå att ändra utan ny inspelning.** Filmerna ritas ur `filmer/films/*.mjs` med text i bubblor och
+    undertexter. Talmanus för en senare röst görs med `filmer/tal.mjs`.
+22. **Genomgången får inte räkna labbens uppgifter.** Ledtrådarna pekar på genomgången, så den ska lära ut metoden
+    med andra tal. Genomgången för vecka 40 räknade exakt labbens värden (20 ms, 16,97 V, 30 Ω, 50 Ω, 0,24 A, 5 A,
+    10 A) och fördjupningsbilderna var ordagrant räkna-först-uppgifterna. Kontrollera nya exempel mot `simulator`-
+    posternas svar, även för presentationer, stegfilmer och figurer (`visuals.mjs`, diagram i PowerPoint).
+23. **Ett exempel får inte ge svaret på en annan uppgift i samma labb.** *Kontroll: `svar_i_ledtradar` jämför nu också med
+    de andra uppgifterna i samma labb (tal med enhet).*
+
+24. **Eleven identifieras med namn, inte med ett tal.** Personliga värden räknas fram ur namnet med samma funktion
+    överallt (`gemensamt/elevtal.mjs`, lärarguiden och `berakningar.elevtal`). Nya personliga uppgifter ska ha facit i
+    lärarguiden och ett test som visar att facit och labbet ger samma tal.
+25. **Protokoll ska visa hur eleven kom fram till svaret.** En ändrad förutsägelse får aldrig skriva över den första;
+    protokollet visar första förutsägelse, antal försök och tider.
+
+26. **Eleven ska alltid veta nästa steg.** Varje del har samma väg: genomgång → film → övningar, labben sist.
+    Samma ord överallt: Genomgång (avsnitt), Bildspel (bilder, PowerPoint, PDF), Artikel, Film, Övningar, Labb,
+    Inlämning. Inga interna koder (v40_01) i elevtext. Extramaterial ligger under ”Mer att läsa”.
+
+27. **Elevens PowerPoint har inga talaranteckningar.** Anteckningarna innehöll lärarråd och facit. Lärarkopian med
+    anteckningar krypteras i `larare/filer/` och laddas ner från utbildningsguiden. *Kontroll: `verktyg/qa/week40.py`.*
+
+28. **Räknaren och enheterna förklaras där de behövs.** `gemensamt/raknehjalp.mjs` visar korten RAD, DEG och prefix
+    automatiskt i genomgång, artikel, labb och övningar när texten innehåller u(t), sin(2π…), arctan/fasvinkel eller
+    mH, µF, ms. Allt samlat på `gemensamt/Raknehjalp.html` med omvandlare. Nya kurstexter får korten utan extra arbete.
+
+29. **Namnet skrivs sist, D slumpas per enhet (vecka 40 och framåt).** `mittD()` i `gemensamt/elevtal.mjs`. Eleven
+    skickar resultaten som QR-kod (`vecka-XX/aktuell/Resultat.html`); läraren läser dem i `larare/resultat.html`.
+    Facit för resultatkoden finns bara i den krypterade lärarsidan, aldrig i elevens moduler. Vecka 37–39 räknar
+    fortfarande D ur namnet (`RESULTATKOD` i `verktyg/inlamning/bygg.py` och `verktyg/veckosidor/bygg.py`).
+    Undantag (lärarens beslut 2026-10-11): från vecka 42 rättar inlämningssidan sig själv (`SJALVRATTANDE` i
+    `verktyg/inlamning/bygg.py`). Elevens sida har då bara saltade SHA-256-hashar av godkända svar
+    (`vecka-XX/aktuell/inlamning-nyckel.mjs`, skrivs av `verktyg/inlamning/facit.py` ur en klartextfil utanför repot),
+    aldrig svaren i klartext, och beskedet visar aldrig svaret. Hasharna är inget säkert skydd, så läraren ser alltid
+    första svar och antal försök. Varje fält har tre försök per omgång (`MAX_FORSOK`); efter tre fel låses fältet tills
+    eleven har bekräftat del 1–3 och texten som lästa efter låsningen (`sj-last:vecka-NN`), och då börjar en ny omgång.
+    Ett rätt fält förblir rätt. Eleven lämnar in en PDF i Google Classroom, inte ett mejl med svaren.
+30. **Lärarmanuset och frågorna har var sin källa.** Manuset (Säg, Fråga, Klicka, Tänk på) står i `note` i
+    `vecka-40/aktuell/lektioner.mjs`. Frågor och svar på bilderna, också Din tur, är poster i innehållsdatabasen
+    (ytan `genomgang-v40`) och synkas till presentationerna av `bygg presentationer` (formerna check och svar).
+    Lärarkopiorna byggs om med `verktyg/larare/lararnoter.py` efter varje ändring. Nya exempelvärden jämförs med
+    alla svar för vecka 40, även inlämningens facit för D = 1–31, med samma enhet (regel 2).
+
+30. **Resultatkoder ska tåla båda transportformaten och kortning.** Ett befintligt komprimerings-API kan sakna
+    `deflate-raw`; använd då JSON-reservformatet. Kortning får inte dela Unicode-surrogatpar eller lämna text när
+    gränsen är noll. Trasiga koder ska ge ett läsbart fel även när webbläsarens strömfel saknar meddelande.
+    *Kontroll: `node --test sjoskolan/vecka-40/aktuell/resultat*.test.mjs` (lärarsidans integration kräver `LARARLOSEN`).*
+31. **Mappen är inte veckan.** Kursen började vecka 38, så `vecka-37/` visas som vecka 38 och `vecka-38/` ingår i vecka 40.
+    Byt aldrig namn på en mapp (länkar, nedladdningar, resultatkoder, sparade elevdata). Ändra veckan eleven ser:
+    `vecka` i `verktyg/veckosidor/bygg.py` och `verktyg/inlamning/bygg.py`, startsidans lista och `weeks`, och bygg om
+    veckosidor, inlämning (`innehall.py bygg`) och bildspel (`verktyg/bildspel/bygg.py`, fältet `vecka`).
+32. **Resurslänkar skrivs relativt `sjoskolan/`.** ”Använd:”-länkar på inlämningssidorna utan mapp (`Elevuppgifter.html`,
+    `Elevprotokoll.html`, `01A_…`) pekade på filer som inte finns. *Kontroll: `innehall.py kontrollera` (resurslänkar).*
+33. **Numrera vecka för vecka: Övning del.nummer och Inlämning N.** Numren V2-1, E1, ”övning v40_02 nr 3” och
+    ”uppgift 1” på två sidor samtidigt gick inte att följa. Vecka 40: del 1 frånskiljning (1.1–1.7), del 2 sinus,
+    del 3 spole, del 4 effekt; inlämning 1–3 (frånskiljning) och 4–7 (växelström). Registret är fältet `nummer` i
+    placeringarna och reglerna står i `innehall/numrering.py`. Ändra reglerna och kör `numrering.py --skriv`, aldrig
+    numren för hand. En övningstext hänvisar inte till ett nummer (”som i uppgift 9”), utan skriver ”föregående övning”
+    eller övningens namn, eftersom samma post har olika nummer i kursen och boken.
+    *Kontroll: `innehall.py kontrollera` (numrering).*
+34. **Figurer i presentationer är bilder, inte PowerPoint-diagram eller lösa linjer.** Vecka 40:s kurvdiagram (inbäddad
+    arbetsbok) och trianglar av separata linjer ritades fel i PowerPoint och Keynote, fast LibreOffice-renderingen såg
+    rätt ut. Figurerna ritas ur webbens `vecka-40/aktuell/visuals.mjs` med `verktyg/ac/figurbilder.py`. Etiketter står vid
+    sin egen sida och får inte krocka; kurvor med olika enheter (u och i) ritas med olika höjd. Frånskiljningens
+    presentation (v38_01) ritas på samma sätt med `verktyg/ac/scheman_v38.py`.
+35. **En klar vecka låses.** Vecka 40 är låst (`verktyg/las/veckolas.py`, `verktyg/las/vecka-40.json`): SHA-256 för varje
+    fil i veckan. CI och `innehall.py kontrollera` stoppar varje ändring. Arbeta framåt; ändra en låst vecka bara efter ett
+    uttryckligt beslut (`veckolas.py las-upp 40`, ändra, `veckolas.py las 40`). Exportörer ska inte röra låsta veckor.
+36. **Varje vecka har en sida per del, som vecka 40.** Från vecka 41 bygger `innehall/export/delsidor_veckor.py`
+    Del_N.html ur presentationen (teori, exempel, figurer) och databasen (övningar med ledtrådstrappa och facit). Ändras en
+    presentation: kör `verktyg/veckosidor/figurer_ur_presentationer.py`, sedan `innehall.py bygg`. Ritningar i
+    presentationer ritas med `verktyg/ac/scheman_veckor.py`, manus med `verktyg/larare/lararmanus.py NN`.
+37. **Veckolåset följer också simulatorns körningsberoenden.** En låst veckomapp räcker inte när labbet,
+    resultatkoden och lärarstödet använder filer utanför mappen. `veckolas.py` följer explicita startfiler och
+    jämför både hashar och hela beroendemängden; nya dynamiskt laddade resurser ska tas med innan omlåsning.
+    Frys inte hela gemensamma mappar. *Kontroll: `verktyg/las/test_veckolas.py` och `veckolas.py kontrollera`.*
+38. **3D bara där det fysiska är poängen.** 3D-figurer används för maskiner och apparater som eleven ska känna igen
+    (generatorn, plinten, transformatorns kärna). Visare, kurvor och formler ritas i 2D. Figuren ska vara läsbar i
+    halva bildbredden: rendera modellen mindre hellre än att krympa etiketterna. En etikett som dubblerar en annan tas bort.
+    3D-figurerna i vecka 41 byggs av `verktyg/figurer/figurer3d.py` (del 1–2) och `figurer3d_del3.py` (del 3 och labbet),
+    inte av `scheman_veckor.py` eller `figs41.py`. Labbets figurer renderas ur Motorlabbets egen scen, så att bilderna
+    och simulatorn aldrig visar olika utrustning. En figur i elevmaterialet får inte avslöja felsökningens fel.
+39. **Ett facit visar aldrig ett oavrundat tal.** Vecka 40 visade û ≈ 16,970562748477143 V och fem liknande svar i
+    sex veckor, eftersom sidgeneratorerna skrev `str(varde)`. Svaret formateras med `rendera.svarsvarde`: postens
+    `avrundning`, annars tre värdesiffror. *Kontroll: `innehall.py kontrollera` (oavrundat tal i facit).*
+40. **En del heter samma sak överallt.** Vecka 40:s inlämning kallade sinus ”del 1”, spolen ”del 2” och effekten ”del 3”,
+    medan veckosidan och labben kallar dem del 2–4. Hänvisningar pekar på delsidan med samma nummer som veckosidan.
+41. **En 3D-figur måste vara fysiskt rätt i detalj.** 3D gör bilden konkret, så en förenkling som är ofarlig i 2D blir
+    fel: en motor med fötterna direkt på stålkrovet är jordad genom fötterna, och då ger en bruten PE ingen
+    beröringsspänning. Rita det som gör påståendet sant (gummidämpare) och skriv ut det. Markera på en skylt där handtaget
+    pekar, och visa alla mätpunkter (PE hör till spänningsprovningen). Granska varje ny figur som elektriker och sjöingenjör.
+42. **Talen i en övningsfigur ska stå i övningen.** Övning 1.4 i vecka 41 visade U_{F} = 120 V när uppgiften sa 230 V:
+    figuren ritades till en äldre version. *Kontroll: `verktyg/figurer/figurkontroll.py` (i `innehall.py kontrollera`).*
+43. **En tidsbild och en kurva ska visa samma ögonblick.** Står det ”rotorn i bilden” under en kurva ska tidpunkten vara
+    markerad i kurvan (5 ms för L1 = sin ωt), annars läser eleven t = 0.
+44. **Revidera poster med skyddat innehåll med lösenordet laddat.** `skyddat packa-upp`, `revidera`, `skyddat packa` och
+    ta bort klartexten. Annars stämmer inte kontrollsumman och `bygg larare` stoppar (EL-000810–813).
+
+
+### Boken
+
+18. **PDF:en sätts med `innehall/bok/sattning/satt.mjs`** (paged.js via lokal HTTP; typsnitt med absoluta adresser,
+    annars faller Chromium tillbaka på ett annat typsnitt). Efter ändring: kryptera `bok.pdf.enc`, bygg provkapitel
+    och förhandsbilder, uppdatera `manifest.json` och ladda upp den nya PDF:en i Shopify (görs av Nils).
+19. **Text i bokens figurer** ändras genom att bara siffror eller index ritas om och resten av raden behålls.
+
+45. **Jämför mätvärden i samma enhet.** Multimeterns autorange returnerar `value` i displayens Ω eller kΩ.
+    Normalisera före kontroll och prova alla riggar på båda sidor om enhetsbytet.
+
+46. **SVG-reservvyer behöver attributstyrning.** Visa/dölj SVG med `toggleAttribute("hidden", ...)`;
+    `.hidden` på SVG kan bli en vanlig JS-egenskap utan att ändra synligheten. Prova WebGL-reservläget i webbläsare.
+
+47. **Teorikoppling är ett pedagogiskt val, inte ordlikhet.** Vecka 41–45 anger exakt `teorikort` i placeringen.
+    Samma rubrik styr Öva nu och Ledtråd 1; saknad eller tvetydig rubrik stoppar exporten.
+    *Kontroll: `innehall/tests/test_delsidor_veckor.py`.*
+
+48. **Sambandet under frågan får inte innehålla svaret.** Övning 2.2 i vecka 42 frågade vilken utgåva som gäller, och
+    sambandsraden ”Utgåvans grund: SS-EN 50110-1 utgåva 4:2024” stod direkt ovanför på sidan och på stödbilden. Samband,
+    givet och stödbildens text räknas som ledtrådar (regel 1). *Manuell kontroll.*
+
+49. **En ja/nej-fråga ska ha ett säkert svar.** Inlämning 2 b i vecka 43 frågade ”Löser jordfelsbrytaren?”, och med kursens D
+    fanns inget säkert svar. Fråga efter det som gäller säkert (”Måste den lösa?”) och räkna igenom kursens D (D = 12) och
+    gränsfallen innan frågan publiceras. Skriv inte uppgiftens tal eller svar här: inlämningen rättar sig själv. *Manuell kontroll.*
+
+50. **Ett mätvärde i en uppgift ska gå att mäta med det angivna instrumentet.** Analysuppgiften i vecka 44 gav pumpen 20,12 V på en
+    voltmeter med upplösningen 0,1 V, och R_{efter} = 0,10 Ω var mindre än sin egen osäkerhet (±0,11 Ω). Isolationslabbet lät provaren
+    driva 10 mA genom 50 kΩ vid 500 V, vilket en verklig isolationsprovare inte orkar. Kontrollera upplösning, felgräns och instrumentets
+    största ström, och att ett beräknat resultat är klart större än sin osäkerhet. *Manuell kontroll.*
+
+51. **Delsidan läses ur presentationen.** Vecka 41–45:s delsidor (teori, exempel, figurer, ”Det här ska du kunna”) genereras ur
+    veckans pptx (`innehall/export/delsidor_veckor.py`). En ny bildmall med en etikett ovanför rubriken gav delsidan fel rubrik, och en
+    figur som flyttade till en annan bild hittades inte (filnamnet bygger på bildnumret). Lektionsbilderna har rubriken som bildens
+    första text och avsnittets nummer i sidfoten, och delsidan hittar figuren på innehållet. Jämför delsidans text före och efter när en
+    presentation ändras: inlämningens hänvisningar ”del N, avsnitt M” bygger på den. *Kontroll: `innehall.py bygg` stoppar när ett
+    teorikort saknas; jämför delsidans text manuellt.*
+
+52. **Stöd som visas efter en fråga får inte ge svaret på en annan fråga.** En punkt i checklistan i inlämning 1 vecka 42
+    namngav svaret på flervalsfråga d, och listan visades så fort första versionen var låst. Punkten säger nu ”alla
+    energikällor som kan finnas kvar när gruppen är bortkopplad”, och listan visas först när fråga d är rätt eller låst
+    (`checklista_efter` i `verktyg/inlamning/sjalvrattning.py`). Läs varje lista, mall och exempel som visas under
+    inlämningen mot alla frågor som fortfarande är öppna. Skriv inte heller svaret här eller i ett test: testet tar fram
+    det godkända alternativet ur nyckeln. *Kontroll: `vecka-42/aktuell/inlamning.test.mjs`.*
+
+53. **Generatorerna ska gå att köra med Python 3.11 (CI).** `verktyg/veckosidor/kursplan.py` hade en f-sträng med samma
+    citattecken inuti (kräver 3.12). CI kunde då inte läsa kursplanens enkla texter, inlämningssidan blev en annan än den
+    lokala och kontrollen stoppade (”INAKTUELL vecka-42/aktuell/Inlamning.html”). Skriv inga f-strängar med samma
+    citattecken eller bakåtsnedstreck i uttrycket. *Kontroll: `python3.11 -m py_compile` på ändrade filer före push.*
+
+54. **En exportör och en modul under `verktyg/` får inte heta likadant.** `innehall.py bygg` hämtar exportörerna med namnet
+    (`importlib.import_module`), och flera mallar lägger `verktyg/…` först i `sys.path`. Sidmallen
+    `verktyg/inlamning/lasforstaelse.py` skuggade exportören med samma namn, och bygget stannade (”has no attribute
+    PUBLIK”). Mallen för en exportör heter `<namn>_mall.py` (`verktyg/inlamning/quiz_mall.py`). *Kontroll: `innehall.py bygg`.*
+
+55. **Bokstaven i quizens facit är alternativets plats i posten.** Quiz.html visar alternativen i postens ordning med
+    bokstäverna A–E, och lärarens facit och nyckeln (`quiz-nyckel.mjs`) använder samma bokstäver. Flyttas, läggs till eller
+    tas ett alternativ bort i posten pekar facit annars på fel svar utan att något syns. Ändra facit samtidigt, kör
+    `innehall.py revidera`, `facit.py 42 --sida quiz` och `innehall.py bygg quiz`. Skriv aldrig facit (ratt, svar,
+    forklaring) i posten. *Kontroll: `vecka-42/aktuell/quiz.test.mjs` stoppar när posten har ny revision; bygget stoppar
+    på facitfält i posten.*
+
+56. **Ett facit i fritext räknas om när uppgiftens tal ändras.** Lärarfacit för EL-000826 (analys av mätdata) räknade
+    felgränsen med pumpspänningar från en äldre version av uppgiften, och räkna-först-facit för Isolationslabbet
+    (EL-000825) har två värden från en äldre version av labbet. Räkna om `larare.facit_rader` när talen i posten eller
+    labbet ändras, eller använd en beräkningsfunktion (`lib/berakningar.py`, `lararfacit`) i stället för fasta tal. Skriv
+    aldrig lärarens facit här (det är skyddat). *Manuell kontroll; den självrättande nyckeln räknas ur uppgiftens text och
+    prövas av `vecka-XX/aktuell/inlamning.test.mjs`.*
+57. **Övningens figur står på placeringen, och en figur hittas på sitt innehåll.** När vecka 43–45:s presentationer
+    gjordes om till lektionsmallen försvann övningsbilderna, och med dem 17 övningsfigurer från delsidorna (till exempel
+    transformatorn i övning 2.1 i vecka 43). En ny bild 11 hade dessutom kunnat visa den gamla filen `v43_02-b11-1.png`,
+    som hörde till övning 2.1. Nu står övningens figur som `figurer` (fil och alt-text) på placeringen i
+    `placeringar/kurs-formelstod.json`, och delsidan letar upp en figur på bildens innehåll före bildnumret. En fil med
+    bildens nummer men annat innehåll stoppar bygget. *Automatisk kontroll: `delsidor_veckor.py` stoppar vid saknad fil
+    eller fel innehåll, och `figurkontroll.py` (i `innehall.py kontrollera`) prövar att talen i alt-texten står i övningen.*
+58. **Slå upp en fil på filnamnet, inte på sökvägen.** Delar som undervisas en annan vecka står på veckosidan som
+    `../../vecka-45/aktuell/<fil>`. Bildspelet slog upp titeln på hela sökvägen, hittade den inte och tog titelbildens
+    första text, så *Analys av mätresultat* fick titeln ”Tisdag 27 oktober” (`verktyg/bildspel/bygg.py`, `_titles`).
+    *Manuell kontroll: läs titlarna i `bildspel/lista.json` efter bygget.*
+59. **Hjälpmedlens exempel får inte vara en uppgift i kursen.** Formelsamlingen och formelbladet används vid övningar,
+    inlämningar och tentamen. 25 av formelsamlingens räknade exempel räknade en övnings uppgift med samma tal (24 V över
+    12 Ω, R = 30 Ω och X = 40 Ω, strömtransformatorn 200/5 A vid 120 A …), gav en övnings svar eller räknade som
+    övningstentan, och formelbladet gav kopplingen och eftersläpningen i inlämning 1 vecka 43. Övningstentan i sin tur
+    räknade på genomgångens 230 V över 50 Ω. Nätets fasta värden (T och T/3 vid 50 och 60 Hz, U_{F} vid 400 och 440 V,
+    n_{s} för fyra poler) är referensvärden och får stå. Ändra ett exempel i `verktyg/formelsamling/bygg.py` och kör
+    skriptet; jämför nya tal med alla svar i databasen och med övningstentan. *Kontroll:
+    `innehall/tests/test_formelsamling_exempel.py` (formelsamlingen); formelbladet och övningstentan manuellt.*
+
+60. **Klassens räkneexempel ska kunna visas i sin helhet.** Jämför både mellansteg och slutsvar med veckans övriga
+    övningar och inlämning. Byt klassens tal när de sammanfaller, i stället för att förbjuda läraren att visa metoden.
+    Kontrollera också det nya exemplet i ledtrådstrappan. En kursvariant får en egen post när originalet även används
+    i boken; befintligt övningsnummer, ankare och sparad elevprogress behålls.
+
+61. **En veckosida ska inte visas som flera likadana ingångar i kursöversikten.** Vecka 43 och 44 hade två modulkort
+    var med samma veckolänk och sista dag. Samla veckans delar i ett kort. Behåll gamla modulankare, länkar till
+    delar som ligger i en annan veckomapp, labbens frågeparametrar och nycklarna för sparade övningar.
+
+62. **Övningstentans facit visas i ett separat nedladdningsbart dokument.** Webbsidan innehåller frågor och länkar,
+    inga lösningar i hopfälld HTML. Frågor, facit, PDF och Google-quiz byggs ur samma poster. PDF:ernas källhash
+    kontrolleras så att dokument inte blir inaktuella. Google-quiz med skrivna motiveringar skapas som opublicerat
+    utkast; läraren granskar och väljer när resultat släpps innan publicering.
+
+63. **När övningstentans gränssnitt ändras ska lektionsvägledningen följa med.** Kontrollera lärarmanus,
+    presentationskällan och bildspelet samt veckosidornas beskrivningar. Övningsfacit är offentlig repetition;
+    skyddade provfel och lärarbedömning hålls åtskilda. Dela frågefönstret under självständigt arbete och ha
+    facit-PDF:en i ett odelat fönster. Historiska migreringsskript läser sin låsta källrevision och ändras inte.
+
+64. **Nedladdning är inte inlämning.** Resultatrutan ska ange samma bilagor som elevinstruktionen och lärarmanuset.
+    En reservkanal får inte lovas utan lärarbeslut. Vecka 43: PDF och separat ritningsfoto i Classroom; vid hinder
+    kontaktas läraren för godkänt alternativ. Kontrollera också beskedet efter Lämna in.
+
+## Ändringar
+
+- **2026-10-21** Vecka 43: elevinstruktionen, nedladdningsdelen och resultatrutan anger PDF plus separat foto av
+  ritningen i inlämning 3. Ingen generell e-postreserv är beslutad i kursens instruktioner; vid Classroom-hinder ska
+  eleven kontakta läraren före fredag 23 oktober för ett godkänt alternativ. Fredagens Google Docs-manus har samma
+  besked. Resultatrutan säger uttryckligen att webbsidan inte skickat något till Classroom. Bara sidmodulens
+  cacheversion byts; rättningsmodul, frågor, nycklar, kriterier, försök, lagringsnycklar och sista dag behålls.
+  Kontroll: 63 godkända enhetstester (tre skyddade facitkontroller hoppades över utan klartext), aktuella genererade
+  filer samt DOM-flöde med syntetiska svar i alla fyra uppgifter, Rätta, första version, PDF-knapp och ändrat svar.
+  Test-PDF: tre A4-sidor, innehåll kontrollerat med Poppler och alla sidor visuellt granskade. Live-nedladdning
+  fungerade i Chrome. Den automatiska webbläsarkontrollen gav 12 godkända tester i desktop Chromium, telefonläge\n  (Pixel 7/Chromium) och iPad Mini/WebKit, inklusive PDF-nedladdning, bilagekrav, kontaktalternativ och horisontell\n  överrinning. Testets äldre tvetydiga inlämningslänk avgränsas till Hela veckan. CI: körning 39600886306.\n  Ingen verklig elevinlämning eller Classroom-uppladdning gjordes; fysisk mobil/Safari återstår.
+
+- **2026-10-20** Fredag 30 oktober: lärarinstruktionen i Google Docs hänvisar nu till de separata fråge- och
+  facit-PDF:erna i stället för borttagna lösningsknappar. Förberedelsen anger privat facitfönster och delat
+  frågefönster. Presentationskälla, bild 18 i PowerPoint/PDF/webbildspel, veckokällans beskrivningar och
+  veckosidor 44–45 rättade. Tentamenssidan förtydligar självständigt försök före egen rättning och gränsen
+  mot skyddat provmaterial. De tolv frågorna, deras ankare, PDF-länkar och examinationsarrangemang behålls.
+  Kontroll: båda nedladdningarna slutförda på den publicerade sidan; PDF:erna har tre läsbara sidor vardera.
+  Bild 18 renderad och visuellt granskad. Övriga 21 presentationssidor bevarade, inga skyddade filer ändrade.
+  Livekontrollen visade gammal bildspelstext efter uppdatering: visaren kontrollerar nu aktuell JSON vid öppning
+  och versionsmärker bildadresser med presentationens stämpel, så att gamla bilder inte blandas med ny text.
+
+- **2026-10-19** Övningstentan: lösningarna borttagna ur webbsidans HTML. Samma tolv frågor och ankare finns kvar;
+  separata nedladdningsbara PDF:er för frågor respektive facit med lösningsgång. Frågorna och lösningarna är oförändrade.
+  Google Apps Script skapar en frivillig övningsquiz med sex ämnesavsnitt, 36 automatiska delfrågor och tolv skriftliga
+  motiveringar (60 träningspoäng). Delfrågor, facit och två bedömningskriterier per uppgift ligger i de tolv källposterna.
+  Formuläret skapas stängt och opublicerat; omkörning bevarar formulär och elevsvar. Inga skyddade lärarfiler används.
+  Lokal kontroll: innehållsbygge, PDF:ernas alla sex sidor visuellt granskade samt tester för facitkoppling, poäng,
+  omkörning och avbrutet bygge. Skriptet har inte körts i lärarens Google-konto. Modul 1:s bevarandekontroll skyddar nu det första modulkortet
+  och originalveckans filer, så att den inte fryser kursöversikten för senare veckor.
+
+- **2026-10-19** Kursöversikten: vecka 43:s komponenter/scheman och felsökning samlade i ett kort, vecka 44:s
+  elsystem och mätteknik/analys i ett kort. Modulerna visas i följd 1–9. Gamla ankare modul-1–11 behålls och leder
+  till samma innehåll; alla tidigare lektions-, labb- och inlämningslänkar finns kvar. Varje samlad vecka räknar
+  sina 40 övningar med samma sparade nycklar som tidigare. Veckosidor, filer, uppgifter och sista dagar är oförändrade.
+  Kontroll: samtliga 71 utgående länkar, 23 ankare och 200 övningar bevarade; 19 berörda publicerade länkar svarar
+  HTTP 200. Innehållskontrollen godkänd. Webbläsare vid 1440 och 390 px: gamla bokmärken, sparade framsteg, filter
+  och rätt modulnummer i Nu-rutan och nästa inlämning även vecka 44–45.
+
+- **2026-10-19** Vecka 43, övning 2.5: separat kursvariant EL-000891 ersätter EL-000165 på kursens yta. En tiopolig
+  60 Hz-motor vid 684 r/min ger synkront varvtal 720 r/min och eftersläpning 5,0 %. Ledtråd 3 använder genomgångens
+  åttapoliga exempel med andra svar. Sex poler vid 60 Hz valdes bort eftersom det ger samma varvtal som övning 2.6.
+  Delsida, Formelstöd, bild 12 i den 21 bilder långa presentationen, PDF och webbildspel följer kursvarianten.
+  Tisdagens lärarinstruktion i Google Docs visar alla mellansteg och tillåter facit efter eget försök. Numrering,
+  länkar, läxor och elevprogress behålls. Inlämningens uppgifter, rättningsnyckel, sista dag och Classroom-flöde
+  ändras inte. Bokens originaluppgift och skyddade material behålls separat.
+
+- **2026-10-18** Beslut av Nils Johansson: kompletta egna protokoll för station 2 (vecka 43) och station 3 (vecka 44) får återanvändas; luckor kompletteras mot stationskraven och riskbedömningen. Ursprung och kompletteringar anges, originalets förutsägelser, försök och mätningar bevaras. Tre protokoll och riskbedömningen lämnas fortfarande in, och individuellt muntligt prov med ett nytt okänt fel kvarstår. Skriftliga tentamen är ännu inte schemalagd. Bokning och möteslänk är fortsatt obekräftade. Elevsidor, veckosidans generator och båda aktuella lärarmanusen i Google Docs följer beslutet.
+
+- **2026-10-18** Examination vecka 45: elevsidorna skiljer frivillig övningstenta, veckoinlämningar och bedömt praktiskt prov. Samma tre PDF-protokoll och riskbedömning, mejladress, ämnesrad och onsdag 4 november 20.00 anges; muntligt 5–6 november, 15 minuter. Bokning, möteslänk och skriftligt provs exakta tider/åtkomst/inlämning markeras som ännu inte publicerade. Veckosidans generator använder ingen påhittad starttid för skriftliga tentamen. Inlämningssidan vecka 45 skiljer också frivillig övningstenta från det bedömda praktiska provet, med länk till provets inlämningsinstruktion. Tidigare protokoll bevaras; återanvändning är fortfarande ett lärarbeslut. Aktuella lärarmanus i Google Docs har samma administrativa avstämning och beslutsunderlag. Inga dolda fel, lärarfacit, simulatorvärden eller bedömningsgränser ändrade.
+
+- **2026-10-18** Vecka 43 fredag: 15 minuter eget arbete i del 3 (3.6, 3.7, 3.9), 12 minuter med 1.2–1.3 och 13 minuter med lampkretsens mätplan och 1.10 i del 4. Alla teoriavsnitt, exempel, nummer och länkar bevaras. Upprepade övningar är tydligt frivilliga och räknas inte som ogjorda läxor. Samma inlämning, facit, skyddade lärarfiler och sista dag. Lärarinstruktionen i Google Docs följer tiderna och samlar avslutningen, utan genomgång av bedömda labbfel.
+
+- **2026-10-16** Modul 1 visuellt granskad i publicerad webbläsare: första mätningen ger rätt värde och återkoppling. Reservvyn fick bort den tomma 3D-rutan och oanvändbara kameraknappar. Nästa handgrepp visas direkt; en separat arbetsvy använder dialog med återställd fokus. Fortsättningens 24 V-protokoll skiljs tydligt från introduktionen på 12 V. Ingen diagnos avslöjas vid tomt val. Layoutkontroll finns separat för 1180, 820 och 390 px; WebGL är avstängt i granskningswebbläsaren, så renderad 3D och fysisk iPad är inte godkända på den grunden.
+
+- **2026-10-16** Modul 1:s frivilliga revision har fått en stabil 3D-arbetsvy med separat kamerarotation, större probmål, tryck-/dragkoppling, lossning av en prob och Ångra med skyddsspärr. Ett synkroniserat kopplingsschema visar avbrott och lastström. Multimeterns reglage är samlade. Introduktion, fri direktavläsning och dolda felsökningsfall använder samma mätmodell. Samtliga försök, diagnoser och tidigare protokoll bevaras; automatisk återkoppling länkar till teorin. Originalveckan och dess formella uppgifter är oförändrade.
+
+- **2026-10-16** Förtydligat att modul 1:s nya material är frivilligt extra stöd. Originalveckans steg och inlämning visas först; länken till den utökade genomgången ligger efter veckans ordinarie arbetsgång. Modulens ordinarie länk i kursöversikten går fortsatt till originalveckan.
+
+- **2026-10-16** Modul 1 i första kursveckan (vecka 38, mappen vecka-37) har en separat kompletterande revision under `vecka-37/revision/`. Samlad svensk teori, omritade scheman, självrättande träning, automatisk läsregistrering och sex guidade 3D-mätövningar. Revisionslänk tillagd i veckosidans och kursöversiktens generatorer. Originalets innehåll, filer, datum, uppgifter, elevdata och inlämningslänkar behålls. Revisionens lokala elevdata har en egen nyckel. Nedladdningarna innehåller revisionens träningsmaterial, inte originalinlämningarnas skyddade lärarfacit.
+
+- **2026-10-11** Vecka 43 fredag och vecka 44 efter genomgången av lärarmanusen. Ledtråd 3 i övning 3.7 och 3.8 (EL-000177,
+  EL-000178) räknade med 24 V och gav därmed svaren på Hållkretslabbets räkna-först-uppgifter (labbet använder 24 V just för att
+  inte sammanfalla med kursens 12 V-övningar, regel 22–23); exemplen använder nu 48 V. Isolationslabbet delas på två läxor:
+  uppgifterna om jordfel i IT-nätet och mätning 1–5 efter måndagen, isolationsresistans, isolationsprovning och mätning 6–8
+  efter tisdagen (del 3). Upplägget för del 4 i vecka 43 visar avsnitt 1–4 och 5–7 där de kommer i presentationen. Två
+  entimmeslektioner i rad har ingen paus (”Klockan 10.00”, inte ”Efter pausen”). Avslutsfrågorna EL-000722 och EL-000728
+  beskriver det inlämningen faktiskt frågar efter. Veckans rad säger ”Inlämningen, uppgift 1–4” också i vecka 44, och
+  extraövningarna står i läxorna. Övning 2.1 vecka 44 (EL-000191) säger kursens gränser, inte bokens. Facit i övning 3.3
+  skriver R_{p}, och övning 3.4 har svaret û med. Ledtråd 1 skriver ett samband som är en hel mening som en mening (förut
+  ”Utgå från Vilken väg …?.”). Figuren till neutralpunktsjordning (v44_02) har texten inne i slingan, så att den inte korsar
+  ledarna. Kvar för läraren: övning 1.4 i felsökningen (EL-000214) ger samma 24 V som labbets uppgift om öppen STOPP, men
+  posten delas med boken.
+- **2026-10-11** Vecka 43 måndag och tisdag efter genomgången av lärarmanusen. Måndagens läxa är inlämningens uppgift 2
+  (skyddsdata, del 1) och tisdagens uppgift 1 (motorns märkskylt, som behöver del 2); förut sa måndagen ”uppgift 1 och 2”.
+  Tisdagens upplägg följer bildernas ordning: avsnitt 1–3 och ett exempel, övning 2.1–2.4, eftersläpningen (avsnitt 4) och
+  ett exempel, övning 2.5. En rad i upplägget som nämner avsnitt räknas som ämne på veckosidan. Avslutsfrågorna EL-000718 och
+  EL-000720 pekade på uppgifter som inte finns (”motorstyrningsschema”, ”funktionsbeskrivning av motorstartaren”) och pekar
+  nu på inlämningens uppgifter. Ledtråd 3 i övning 1.4 (EL-000154) räknade med inlämningens 8,000 A och använder nu 6,000 A.
+  Veckans rad på bilderna säger ”Inlämningen, uppgift 1–4” (felsökningsrapporten är uppgift 4, ingen egen inlämning).
+  Delsidornas avsnitt Labben säger i veckor med dagar att labben står i läxorna och under Hela veckan, och länkar dit
+  (veckosidan har ingen ruta #labb längre).
+- **2026-10-11** Rutan Din del visar **Före lektionen**: läxor från en annan lektion som gäller delen. Vecka 43 del 3 läses och
+  övning 3.1–3.5 görs efter tisdagens lektion, före fredagens genomgång; det stod bara i tisdagens ruta. Läxornas länkar
+  räknas om från delsidans mapp (delarna i vecka-45/), och en länk till delsidan själv blir ett ankare på sidan.
+- **2026-10-11** Lektionsbildernas titelbild mäter rubrikens bredd (Carlito Bold, samma mått som Calibri) i stället för att
+  räkna tecken (`rubrikrader` i `verktyg/lektionsbilder/bygg.py`). ”Komponenter och skydd”, ”Systematisk felsökning” och
+  ”Analys av mätresultat” ryms på en rad men fick plats för två, så underrubriken hamnade för långt ned.
+- **2026-10-11** Vecka 41 övning 3.10 (EL-000886, tången runt motorkabeln): facit sa att 0,2 A kunde vara ”liten osymmetri”.
+  Utan neutralledare är summan av fasströmmarna noll också när faserna är olika belastade; 0,2 A är ström som tar en annan
+  väg (läckström tillbaka via skrovet) eller tångens eget fel. Sambandet heter nu I_{1} + I_{2} + I_{3} = 0 utan
+  neutralledare (”vid symmetri” stryks). Revision 2; delsidan och Formelstöd vecka 41 är ombyggda.
+- **2026-10-11** Vecka 43 och 44 visas som dagar, som vecka 42 (`DAGSVY = {42, 43, 44}`): I dag, en ruta per lektionsdag i
+  dagens färg (vecka 44 har två entimmeslektioner måndag och tisdag i samma ruta), Hela veckan (inlämningen med fyra uppgifter,
+  Hållkretslabbet respektive Isolationslabbet och övningstentan, övningarna) och rutan Din del på alla delsidor, också delarna
+  i vecka-45/ som undervisas i vecka 43 och 44. Övningarnas läge räknas nu per lektion: en läxa räknar övningarna i sin text och
+  länk (”Gör övning 2.4–2.6”, `#v44_02-q4`), också i en annan del (del 3:s övning 3.1–3.5 efter tisdagen i vecka 43), och ”På
+  lektionen” räknar övningarna på bilderna Övningar tillsammans (vecka 43 fredag: 3.6 och 3.7). Läxan ”Läs del N” i vecka
+  43–45 säger att eleven ska trycka på ”Jag har läst del N” (delsidorna har knappen sedan inlämningen blev självrättande), del 4
+  i vecka 43 har fått sin läsläxa, och felsökningsrapporten och analysen av mätdata länkar till inlämning 4 i vecka 43 och
+  44. Åtta presentationer är ombyggda för bilden ”Det här gör du nu”. Veckosidornas bildantal stämmer med de nya
+  presentationerna, och sista dagen skrivs med veckodagen ur datumet (`sista_dag`), inte alltid ”söndag” (vecka 44:s sida
+  sa ”söndag 30 oktober”, som är en fredag). Test: `innehall/tests/test_lektionernas_ovningar.py` och `gemensamt/dagsvy.test.mjs`.
+- **2026-10-11** Övningsfigurerna på delsidorna i vecka 43–45 (17 stycken) står nu som `figurer` på övningens placering i
+  `kurs-formelstod.json` och följer inte längre med presentationen (regel 57). Schemat och databasen har fältet,
+  `figurkontroll.py` jämför alt-textens tal med övningsposten, och figurer hittas på innehållet före bildnumret. Delsidorna
+  blev byte för byte desamma.
+- **2026-10-11** Vecka 43 och 44 rättar sig själva som vecka 42 (lärarens beslut 12 oktober): svarsfält med tre försök,
+  rutan Låsta frågor med veckans alla delar, Lämna in och en PDF till Google Classroom under Vecka 43 och Vecka 44. Allt
+  lämnas in senast fredag (23 och 30 oktober), aldrig söndag. Fälten står i `verktyg/inlamning/sjalvrattning.py`
+  (`FORMULAR[43]`, `FORMULAR[44]`): tal där svaret är ett tal (D = 12), val med fyra alternativ där eleven ska välja, och
+  skrivna delar med första version och checklista (hållkretsen i inlämning 3 och felsökningsrapporten i vecka 43, slutsatsen
+  i analysen av mätdata i vecka 44). Felsökningsrapporten (EL-000828) och analysen av mätdata (EL-000826) hör till del 4 i
+  vecka 43 och 44, som ligger bland vecka 45:s sidor; de står nu som inlämning 4 i sin vecka, och vecka 45:s sida behåller
+  ankarna med en hänvisning dit. Vecka 45 har bara den frivilliga övningstentan. Delsidorna i vecka-45/ bekräftar läsningen
+  för veckan eleven läser dem i (`sj-last:vecka-43` `del-4`, `sj-last:vecka-44` `del-4` och `del-5`) och länkar tillbaka
+  till den veckans inlämning; delarna hittas ur sidornas rubrikrad (`delsidor`). Hänvisningarna går till delens avsnitt med
+  rubriken, också i en annan veckas mapp. `veckoStatus(vecka, plan)` tar byggets plan (`inlamning_plan`) och veckans delar;
+  `falt_per_lm(vecka, 'inlamning')` räknar vecka 43 och 44. Nycklarna (`vecka-43/44/aktuell/inlamning-nyckel.mjs`) är
+  skrivna ur klartext utanför repot och jämförda med lärarens skyddade facit (regel 56). Tester:
+  `verktyg/inlamning/provvecka.mjs` (gemensamma), `vecka-43/44/45/aktuell/inlamning.test.mjs`.
+- **2026-10-11** Vecka 44 fredag, del 5 av 5 (filerna i `vecka-45/`): ny presentation *Repetition inför tentamen* i
+  lektionsbildernas mall (`verktyg/lektionsbilder/lektion_v45_03.py`), 22 bilder i stället för 36. Delsidan har kvar de sju
+  avsnitten med samma rubriker och alla meningar, formler och tal, och båda exemplen. Nytt avsnitt 8 *Så går tentamensveckan
+  till* (ur `tentamen.html`, `praktiskt-prov.html` och `VECKOR[45]`); avsnitt 7 säger att tentamen är i vecka 45 och att de
+  praktiska lärandemålen bedöms i det praktiska provet. Upplägget nämner tentans områden; övningstentan gås igenom på sidan
+  Tentamen, inga lösningar på bilderna. Kursens notation: P = √3 · U_{L} · I_{L} · PF (var P₃_{F}), R_{1}, R_{2} och I_{tot}.
+  EL-000733 och EL-000734 märkta LM-4, LM-3 och LM-8 (frågan nämner kretsar, AC/trefas, säkerhet och mätanalys). Bildspelet
+  tog dagchipet på titelbilden som presentationens titel när filen ligger i en annan veckas mapp; `verktyg/bildspel/bygg.py`
+  hoppar nu över det som delsidan gör. Övningsfigurerna till 3.2, 3.3, 3.5 och 3.10 står kvar på delsidan, nu ur övningarnas
+  placeringar (regel 57).
+- **2026-10-11** Vecka 44 tisdag: *Fördjupad mätteknik* (del 3, 15.00–16.00) och *Analys av mätresultat* (del 4, 16.00–17.00,
+  filerna i `vecka-45/`) i lektionsbildernas mall, 18 bilder var i stället för 36 (`verktyg/lektionsbilder/lektion_v44_03.py`
+  och `lektion_v45_02.py`). Entimmeslektioner utan paus: alla sju teoriavsnitt och båda exemplen med samma rubriker och i samma
+  ordning, och övning 3.1–3.3 respektive 2.1–2.3 tillsammans. Delsidorna har samma teori, formler, exempel och figurer; ”Det här
+  ska du kunna” har de gamla målen och ett nytt. Övningsfigurerna till 3.4, 3.6 (del 3) och 2.4 (del 4) står kvar på
+  delsidan, nu ur övningarnas placeringar (regel 57). Figurspecen (`verktyg/figurer/spec44.json`, `spec45.json`) har de nya bildnumren och inga övningsbilder.
+  Avslutsfrågorna säger fredag 30 oktober och analysen av mätdata i stället för söndag 1 november och felsökningsrapporten
+  (EL-000728, EL-000732). Start- och avslutsfrågan för del 4 (EL-000731, EL-000732) var märkta LM-4 men tränar LM-8 och LM-7;
+  EL-000728 har LM-4 och LM-8. Bildspelet slår upp titeln på filnamnet (regel 58). Lärarkopiorna är inte ombyggda (kräver
+  LARARLOSEN).
+- **2026-10-11** Vecka 43 fredag: de två entimmeslektionerna i lektionsbildernas mall (`verktyg/lektionsbilder/lektion_v43_03.py`
+  och `lektion_v45_01.py`). *Elscheman och dokumentation*, del 3, 09.00–10.00: 18 bilder i stället för 36, en genomgång med
+  elevernas frågor (de har läst delen och gjort övning 3.1–3.5 hemma) och övning 3.6 och 3.7 tillsammans. *Systematisk
+  felsökning*, del 4 av 4, 10.00–11.00 (filerna kvar i `vecka-45/`, `'vecka': 43`): 19 bilder i stället för 36, övning
+  1.1–1.3 efter avsnitt 4 och 1.4–1.5 efter avsnitt 7 (fem övningar ryms inte på en bild). Delsidorna har samma sju avsnitt
+  med samma rubriker, samma två exempel och samma teorifigurer; texten följer bilderna. Start- och avslutsfrågorna
+  EL-000721, 722, 729 och 730 är märkta LM-5 (730 också LM-8) i stället för LM-4, och avslutsfrågorna säger senast i dag,
+  fredag 23 oktober (inte söndag 25 oktober eller ”på tisdag”). Bildspelet hämtar titeln för en del i en annan veckas mapp
+  med filnamnet (`verktyg/bildspel/bygg.py`, regel 58); annars hette felsökningens bildspel ”Fredag 23 oktober”. Övningsfigurerna till
+  3.6–3.8 och 1.4, 1.7 står kvar på delsidorna, nu ur övningarnas placeringar (regel 57). Lärarkopiorna av
+  v43_03 och v45_01 är inte ombyggda (kräver LARARLOSEN).
+- **2026-10-11** Vecka 43 måndag och tisdag: nya presentationer i lektionsbildernas mall, *Komponenter och skydd* (20 bilder i
+  stället för 36) och *Transformatorer och motorer* (21 bilder i stället för 36, med veckans labb: Hållkretslabbet, Räkna först).
+  Innehållet står i `verktyg/lektionsbilder/lektion_v43_01.py` och `lektion_v43_02.py` (LEKTION och HEMMA), omslagen är de
+  tidigare titelbilderna. Delsidorna del 1 och 2 har samma sju avsnitt med samma rubriker och ordning, samma två exempel och
+  samma figurer; texten följer bilderna, och tal och enhet hålls ihop med hårda mellanslag som i `verktyg/figurer/insert.py`.
+  Övning 1.2–1.5 och 1.1 respektive 2.1–2.5 görs på lektionen, var och en efter sitt avsnitt (teorikorten). Start- och
+  avslutsfrågorna EL-000717–720 var märkta LM-4 och är nu LM-1 (EL-000720 LM-1 och LM-2). `verktyg/figurer/spec43.json` följer
+  de nya bildnumren. Övning 2.1 och 2.2 visar
+  sina figurer ur övningarnas placeringar (regel 57).
+- **2026-10-11** Vecka 44 måndag: del 1 *Lågspänningssystem* (09.00–10.00) och del 2 *Högspänningssystem* (10.00–11.00) i
+  lektionsbildernas mall (`verktyg/lektionsbilder/lektion_v44_01.py`, `lektion_v44_02.py`), 20 och 19 bilder i stället för 37.
+  Delsidorna har kvar sina åtta avsnitt med samma rubriker och ordning (”Läs genomgången del 1, avsnitt 3: TN-system” och
+  Isolationslabbets ”avsnitt 5” gäller), all teori, båda exemplen per del och alla teori- och exempelfigurer. Övning 1.1–1.5
+  görs tillsammans på två bilder (en övningsbild rymmer fyra övningar) och 2.1–2.3 på en; 2.4–2.6 är läxa och 2.7–2.10 extra.
+  Del 1 avsnitt 1 förklarar nu bokstäverna i TN, TT och IT (startfrågan), del 2 förklarar förkortningen HV, och I₂/I₁ i
+  strömtransformatorexemplet skrivs I_{2}/I_{1}. Start- och avslutsfrågorna EL-000723–726 var märkta LM-4 och är nu LM-2,
+  LM-2, LM-1 och LM-2/LM-3; avslutsfrågornas instruktioner pekar på inlämningens uppgifter i stället för ett
+  ”v44-underlag” som inte finns. Övningsfigurerna till 1.6, 1.7 och 2.4 står kvar på delsidorna, nu ur övningarnas placeringar (regel 57).
+  Lärarkopiorna av v44_01–02 är inte omgjorda (kräver LARARLOSEN).
+- **2026-10-11** Granskning av tentamensveckan: övningstentan (EL-000851–862). Alla uppgifter, lösningssteg, enheter och
+  avrundningar är omräknade och stämmer. Rättat: uppgift 5 räknade R = 40 Ω och X_{L} = 30 Ω, alltså övning 3.3–3.6 vecka 40
+  med R och X bytta (|Z| = 50 Ω) och genomgångens 230/50 = 4,6 A, fast sidan säger att värdena är nya. Nu R = 20 Ω och
+  X_{L} = 15 Ω: |Z| = 25 Ω, I = 9,2 A, cos φ = 0,80, P ≈ 1 693 W, Q ≈ 1 270 var och S = 2 116 VA (kontrollerat mot alla svar i
+  databasen). Uppgift 4–7 och 9 använde 230/400 V och 50 Hz utan sammanhang; nu vägguttaget hemma eller nätet i land
+  (regeln från 2026-09-29). Notation: R_{p} (uppgift 2), R_{slinga} och P_{förlust} (uppgift 3), R_{iso} (uppgift 11), och
+  uppgift 4 säger stigande nollpassage som resten av kursen. EL-000852–857, 859 och 861 reviderade (inga skyddade fält).
+- **2026-10-11** Formelsamlingen (`verktyg/formelsamling/bygg.py`, HTML och PDF) och formelbladet (regel 59). 25 exempel som
+  var övningar eller gav deras svar har nya tal, kontrollerade mot alla svar i databasen: F1–F2 (övning 1.5 vecka 39), F8, F11,
+  F13 och F16 (övning 2.4, 2.8 och 2.9 vecka 39), F19 (övningstentans 230 V vid 50 Hz; nu filmens 440 V, 60 Hz och 2,0 ms),
+  F20, F22–F26, F28 och F30 (övning 2.8, 3.2–3.6 och 4.6 vecka 40, 3.5 vecka 45, övningstentans uppgift 5), F36 (2.10 vecka 41),
+  F38 (övning 2.6 och 3.8 och kontrollfråga 2.3 vecka 41, övning 2.7 vecka 43; nu Δ/Y 690/1 200 V på 690 V), F42 (övning 3.8
+  vecka 42; nu kursens 5 · 3 och 2 · 3), F47 (övning 1.3 och 1.9 vecka 43), F51 (övning 2.4 vecka 44; nu kursens
+  k_{I} = I_{1,märk}/I_{2,märk}, I_{2} = I_{1}/k_{I} och 400/5 A vid 320 A), F52 och F58 (övning 3.3 och 3.6 vecka 44), F56
+  (övning 2.2 i Analys av mätresultat), F59 (övning 1.9 vecka 41) och F60 (övning 1.7 i Systematisk felsökning). Bilagan med
+  beteckningar följer nu `beteckningar.json` (Z_{s}, U_{0}, I_{Δ}, R_{p} med flera saknades). PDF:en byggs som förut med
+  reservtypsnitten (Carlito och Liberation Sans); med Google Fonts blir den dubbelt så stor (Type 3). Nytt test:
+  `innehall/tests/test_formelsamling_exempel.py` stoppar 15 av de gamla exemplen (F60 var också övning 2.10 i Analys av
+  mätresultat, EL-000230).
+  Formelbladet: 12 V RMS (övning 2.3 vecka 40) är nu 440 V RMS ≈ 622 V, motorns märkning Δ/Y 690/1 200 V på 690 V
+  (Δ/Y 400/690 V på 400 V var övningstentans uppgift 9 och inlämning 1 vecka 43), eftersläpningen 1 750 r/min på 1 800
+  (1 440 r/min på 1 500 var inlämningens svar), toleransen 470 Ω ±10 % och R_{iso} i isolationsraden.
+- **2026-10-11** Praktiskt prov och Motorlabbet. Station 3 beskriver nu det Isolationslabbets protokoll faktiskt har:
+  isolationsövervakningen och jordfelet (mätning 1–5) och provningen av motor M3 med 500 V DC (mätning 6–8); läckströmmen
+  visas av provaren och skrivs i kommentaren (protokollet har ingen egen ruta för den eller för provspänningen).
+  Motorlabbets protokoll hade kolumnen ”Förväntat” och har nu ”Din förutsägelse” (regel 6), som de andra labbarna.
+  README säger att alla har D = 12, samma lindningar (5,20, 5,16 och 5,24 Ω) och samma fel (lös mutter på V1–U2).
+  Datum, tider och inlämning stämmer med `veckosidor/bygg.py` VECKOR[45]; regler, bedömning och inlämningssätt är oförändrade.
+- **2026-10-11** Vecka 42: delsidorna Del_1–3 har rutan **Din del** överst (lärarens önskan: delsidorna ska vara
+  översikter som veckosidan). Dagens färg och tid, lektionens läge (I dag, Pågår nu, Om 2 dagar, Har varit), vad vi
+  pratar om, presentationen, läxorna efter lektionen med läge (samma lista som bilden ”Det här gör du nu”), övning
+  N.1–N.5 på lektionen och Hela veckan (texterna, quizet och inlämningen med sista dag och läge). Samma data och kod
+  som veckosidan: `dagsvy.delpanel_html` (anropas av `innehall/export/delsidor_veckor.py`) och `visaDel` i
+  `gemensamt/dagsvy.mjs`. Rutan räknar om när eleven bockar en övning eller trycker på läst-knappen.
+- **2026-10-11** Vecka 42, lärarens beslut: allt lämnas in senast fredag, inget på söndag. Inlämningen 1–3 har sista dag
+  fredag 16 oktober (veckosidan, inlämningssidan, startsidans modul, bilderna, avslutsfrågorna EL-000714 och
+  EL-000716, lärarmanusen). Quizet är kvar till torsdag 15 oktober. Sista dag skrivs nu med rätt veckodag ur datumet
+  (`kursplan._sista`, `inlamning/bygg.py`, `startsida/bygg.py`), inte alltid ”söndag”. Veckans läxa, de fyra texterna
+  från Transportstyrelsen, har en egen ruta först under Hela veckan med texterna att ladda ner.
+- **2026-10-11** Quiz vecka 42 har fyra texter med tio frågor var (A–D, två frågor A–E): EL-000887 (riktlinjer för
+  riskanalysarbete, omskriven, revision 4), EL-000888 (elektrifiering av fartyg 2023), EL-000889 (anslutning till
+  landbaserat elnät 2015) och EL-000890 (strukturellt brandskydd 2024). Lärarens krav: frågorna och svaren står med
+  egna, enklare ord än texten (inga fyra ord i följd ur PDF:en), rätt svar betyder samma sak som texten, felaktiga
+  alternativ motsägs av texten, och rätt bokstav är jämnt fördelad och olika mönster i de fyra texterna. Varje svar är
+  kontrollerat ordagrant mot PDF:en (citat och sida i lärarens facit på Drive). Undvikna delar: inaktuella
+  regelhänvisningar och fel i 2015-texten (selektivitet, kontaktlinser, jordens magnetfält), figur 5 och de
+  överlappande intervallen i riskanalysriktlinjen. Måndagens källbild länkar Transportstyrelsens nya adress (den gamla
+  gav 404).
+- **2026-10-11** Vecka 42: läsuppgiften heter **Quiz** (lärarens beslut). Fyra texter från Transportstyrelsen läses hemma och
+  besvaras senast torsdag 15 oktober: riktlinjer för riskanalysarbete (2019), elektrifiering av fartyg (2023), anslutning av
+  fartyg till landbaserat elnät (2015) och vägledningen om strukturellt brandskydd (2024). Alla fyra ligger som PDF i
+  `vecka-42/aktuell/` och går att ladda ner från rutan Quiz under Hela veckan. Bilderna och lärarmanusen säger quiz.
+- **2026-10-11** Vecka 42: veckosidan visar dagen (lärarens önskan: eleven ser vad lektionen i dag handlar om, läraren
+  visar bara presentationen, och alla läxor går att förstå från sidan). Rutan I dag överst (tid, rubrik, passen ur
+  presentationens upplägg och Öppna presentationen; utan lektion närmaste sista dag och nästa lektion), en ruta per
+  lektionsdag i egen färg (måndag grön, tisdag blå, fredag magenta; också på presentationens titelbild) med upplägg, mål och
+  läxor efter lektionen, och Hela veckan utan dagfärg: quizet om fyra texter från Transportstyrelsen (senast torsdag 15 oktober), inlämningen (senast
+  söndag 18 oktober) och övningarna. Läxorna skrivs en gång i `lektioner.py HEMMA` och står både på bilden ”Det här
+  gör du nu” och på sidan. Måndagens och tisdagens bilder säger nu quizet senast torsdag; tisdagens hänvisning
+  till ”uppgift 4” är borta. Delsidan hoppar över dagens namn på titelbilden (`Dag: …`). `verktyg/veckosidor/dagsvy.py`,
+  `gemensamt/dagsvy.mjs`, test `gemensamt/dagsvy.test.mjs`.
+- **2026-10-11** Vecka 42: läsningen av texterna blir en egen sida, **Quiz** (`vecka-42/aktuell/Quiz.html`, lärarens beslut
+  11 oktober). Eleven läser texterna (PDF) hemma och svarar senast torsdag 15 oktober på flervalsfrågor med bokstäverna
+  A–E i postens ordning (ingen blandning). Varje text är en post: `uppgift.fraga` är läsanvisningen, delfrågorna har
+  `alternativ` (4–5) och `ledtrad`, `referenser.resurser[0]` är PDF:en (nytt valfritt `kortnamn` i schemat) och
+  `rattigheter` källan. Texterna och deras ordning står i den nya ytan `innehall/placeringar/quiz.json` (exportören
+  `innehall/export/quiz.py`, mallen `verktyg/inlamning/quiz_mall.py`, sidans skript `gemensamt/quiz-sida.mjs`); `numrering.py`
+  numrerar dem Text 1, 2 … Tre försök per fråga; en låst fråga får tre nya försök när eleven har tryckt ”Jag har läst om
+  texten” för just den texten efter låsningen (rutan Låsta frågor visar bara texter med låsta frågor). Hänvisningen vid
+  fel är ”Läs <ledtrad> i <textens korta namn>.” Lämna in visar x av y rätt per text, och eleven laddar ner
+  `Vecka42_Quiz_<Namn>.pdf` och lämnar in den i Google Classroom. Egen lagring (`sj-v42-quiz`, `sj-omlasning:vecka-42`)
+  och egen nyckel (`quiz-nyckel.mjs`, `facit.py 42 --sida quiz` med facit i bokstäver per post). EL-000887 flyttade från
+  inlämningen till quizen; inlämningen är uppgift 1–3 igen, dess ruta Låsta frågor kräver bara del 1–3, och gamla svar
+  på flyttade fält tas bort när inlämningen öppnas. För veckosidan: `quizStatus(vecka, plan)` i
+  `gemensamt/sjalvrattning.mjs` och `falt_per_lm(vecka, sida)`/`quiz_plan(vecka)` i `verktyg/inlamning/sjalvrattning.py`.
+  Tester: `verktyg/inlamning/test_quiz.py` (motorn med påhittade texter), `vecka-42/aktuell/quiz.test.mjs` och
+  `gemensamt/sjalvrattning.test.mjs`; CI kör båda.
+- **2026-10-11** CI var röd efter sammanslagningen av den självrättande inlämningen: `kursplan.py` gick inte att läsa med
+  Python 3.11 (regel 53). Rättat; `kursplan_framsteg` bryter ut kursplanens punkter ur `veckopanel_html` (samma utdata).
+- **2026-10-11** Vecka 42: ”Din vecka” räknar inlämningens fält per kursplanspunkt redan från sidan (`kursplan.py`
+  `_inlamningens_falt`, samma räkning som `veckoStatus`), så att totalerna är desamma före och efter att eleven har öppnat
+  formuläret. Utan sparad plan står rutan Inlämningen kvar som ”Inte påbörjad” i stället för ”0 av 0 rätt”. CI kör
+  `gemensamt/veckopanel.test.mjs`. Regel 51 i den självrättande inlämningens gren blev regel 52.
+- **2026-10-11** Vecka 42 fredag: ny presentation *Riskbedömning och skydd* i lektionsbildernas mall, 21 bilder i stället för 36, med
+  en bild för veckans labb (Multimeterlabbet, Välj CAT-klass; bildtypen `labb`, som delsidan hoppar över). Delsidan del 3 har samma
+  sex avsnitt, tre exempel och figurer. Läsuppgiftens begrepp ur Transportstyrelsens riktlinjer (ALARP, konsekvensgrader) står inte på
+  bilderna, så att läsförståelsen i inlämningen prövar läsningen.
+- **2026-10-11** Vecka 42 tisdag: ny presentation *Regler, ansvar och arbetsmetoder* i lektionsbildernas mall, 20 bilder i stället för 36.
+  Avsnitt 6 *Regler för fartyg* visar nu vilka regler som gäller vilka fartyg (LM-3): TSFS 2017:26 för nationell sjöfart, TSFS 2019:4 för
+  fartyg med internationella certifikat, TSFS 2019:56 för arbetsmiljön ombord (redaren räknas som arbetsgivare) och ISM-kodens SMS.
+  Start- och avslutsfrågorna för vecka 42 del 2 och 3 (EL-000713–716) var märkta LM-4 och är nu LM-3 respektive LM-6/LM-7.
+  Mallen ger långa rubriker två rader, tätare rader på kursplanbilden vid tre eller fler punkter och två rader åt långa källor.
+- **2026-10-11** Vecka 42: översikten ”Din vecka” överst på veckosidan (`verktyg/veckosidor/kursplan.py` `veckopanel_html`,
+  `gemensamt/veckopanel.mjs`, test `gemensamt/veckopanel.test.mjs`): steg klara, delar lästa (”Jag har läst” på delsidorna),
+  övningar klara, inlämningen (rätt svar eller inlämnad) och dagar kvar, och kursplanens punkter med stapel i områdets färg
+  (övningar plus inlämningens svar per punkt). Siffrorna räknas i elevens webbläsare. Rutorna längst ned i ”Det här lär du dig”
+  visas inte längre på veckor med översikten, så att varje siffra står en gång. Gäller vecka 42 (`PANEL`).
+- **2026-10-11** Övning 2.8 (EL-000138), facit: TSFS 2014:1 upphävdes den 1 mars 2019 genom TSFS 2019:4 *om maskininstallation,
+  elektrisk installation och periodvis obemannat maskinrum* (övergångsbestämmelserna i TSFS 2019:4, punkt 2; konsoliderad utgåva
+  t.o.m. TSFS 2021:101). Facit sade att TSFS 2017:26 ”om konstruktion och utrustning av fartyg” ersatte den, men TSFS 2017:26 heter
+  *om fartyg i nationell sjöfart* och upphäver inte TSFS 2014:1. Facit nämner nu båda: 2019:4 upphävde, 2017:26 gäller fartyg i
+  nationell sjöfart. Rättelsen 2026-09-29 nedan är därmed ändrad. Bokens skyddade lösning (bok.enc) behöver samma rättelse
+  (kräver BOKLOSEN). Regel: en uppgift om att en föreskrift har upphävts kontrolleras i den nya föreskriftens övergångsbestämmelser.
+- **2026-10-11** Vecka 42 måndag: ny presentation *Elektriska risker* i lektionsbildernas fasta mall (`verktyg/lektionsbilder/`),
+  20 bilder i stället för 36: titel, kursplanen i dag (LM-2), startfråga, upplägg, delsidans sju teoriavsnitt och två exempel i
+  samma ordning, övningar tillsammans på delsidan (1.2–1.4 och 1.1, 1.5), paus, avslutsfråga, sammanfattning, det här gör du nu och
+  källor. Övningstexterna står inte längre på bilderna (övningarna görs på delsidan med ledtrådar och facit), presentationens
+  övningsplaceringar är borttagna och start- och avslutsfrågan har nya bild- och formnummer. Delsidan del 1 har samma avsnitt,
+  rubriker och figurer; texten följer bilderna. Start- och avslutsfrågan (EL-000711, EL-000712) var märkta LM-4 men tränar LM-2.
+- **2026-10-11** Inlämningen vecka 42, lärarens nya krav inför måndag 12 oktober (regel 29 och 52). Varje fält som
+  rättas har tre försök per omgång och visar ”Försök kvar: N”; efter tredje felet låses fältet (”Låst – läs om veckan”),
+  och rutan Låsta frågor överst i formuläret ber eleven läsa om del 1–3 och Transportstyrelsens text (länk och status
+  för varje). När alla fyra är bekräftade efter låsningen får de låsta fälten tre nya försök (omgången sparas per fält). Delsidorna
+  Del_1–3 har sist rutan ”Har du läst hela del N?” (`innehall/export/delsidor_veckor.py`, bara veckor i
+  `SJALVRATTANDE`); knappen öppnas när slutet av sidan har varit i bild och sidan har varit synlig minst 3 minuter
+  (`gemensamt/lasbekraftelse.mjs`). Bekräftelserna sparas i localStorage `sj-last:vecka-42` som `{"del-1": ISO, "del-2":
+  ISO, "del-3": ISO, "text": ISO}`. Ny uppgift Inlämning 4, Läsförståelse (EL-000887, LM-3, LM-7, LM-2) om
+  Transportstyrelsens riktlinjer för riskanalysarbete (TSG 2020-3130; ingen officiell webbadress hittades, så PDF:en
+  ligger i `vecka-42/aktuell/` med källan angiven); hänvisningen vid fel är avsnittet, aldrig svaret, och fråga f är ett
+  heltalsfält 1–5. Schemat tillåter flerval med `delfragor` i stället för `alternativ`. Flervalsfrågorna har fyra
+  alternativ i en fast blandad ordning. Lämna in kontrollerar allt och visar resultatet; sedan laddar eleven ner en
+  riktig PDF (`gemensamt/pdf.mjs`, Helvetica WinAnsi utan bibliotek, `Vecka42_Inlamning_Fornamn_Efternamn.pdf`) och
+  lämnar in den i Google Classroom under Vecka 42. Mejl (bara ämnesrad) finns kvar som reserv; den långa mejltexten och
+  kopieringen är borta. Checklistan nämner inte längre svaret på fråga d och visas först när d är rätt eller låst (regel
+  52). Ett av valen i inlämning 3 godkänner två alternativ, enligt lärarens facit; facit.py tar en lista med id när flera
+  alternativ godkänns, men aldrig alla. `veckoStatus(vecka)` i
+  `gemensamt/sjalvrattning.mjs` ger veckosidan namn, inlämningstid, rätt per uppgift och kursplanens mål, låsta fält och
+  läsningen. Tester: `gemensamt/sjalvrattning.test.mjs`, `gemensamt/pdf.test.mjs` (pdfinfo, pdftotext),
+  `vecka-42/aktuell/inlamning.test.mjs`; CI installerar poppler-utils för PDF-testet.
+
+- **2026-10-11** Inlämningen vecka 42 rättar sig själv (lärarens beslut, regel 29). Under varje uppgift finns svarsfält:
+  tal (U_{beröring} i V, strömmen i mA), flerval, rullistor för kategori och märkspänning på de tre mätplatserna (samma
+  logik som Multimeterlabbet, Välj CAT-klass) och textrutor för riskbedömningen, som låses som första version innan en
+  checklista visas. Rätta ger Rätt! eller Skiljer sig med en hänvisning till delsidans avsnitt, aldrig svaret; tal godkänns
+  inom 2 % med komma eller punkt (regel 6). Sidan sparar första svar, sista svar, antal försök och tid (regel 25), och
+  Lämna in visar resultatet, öppnar ett mejl till läraren (högst 1 800 tecken, annars bifogas PDF:en) och sparar en PDF.
+  Rätta svar finns bara som saltade SHA-256-hashar i `vecka-42/aktuell/inlamning-nyckel.mjs` (`verktyg/inlamning/facit.py`
+  ur klartext utanför repot). Fälten står i `verktyg/inlamning/sjalvrattning.py`, logiken i `gemensamt/sjalvrattning*.mjs`.
+  Rutan Så lämnar du in (inlämningssidan och veckosidan) följer flödet; foton av uträkningar behövs bara om läraren ber om
+  det. Tester: `gemensamt/sjalvrattning.test.mjs`, `vecka-42/aktuell/inlamning.test.mjs` (stoppar när EL-000817–819 får ny
+  revision: kontrollera svaren och kör facit.py igen). Lärarguidens skyddade facit för EL-000817–819 är inte jämfört (kräver LARARLOSEN).
+- **2026-10-11** Inlämningsuppgifterna EL-000801–828 har kursplanens punkter som de faktiskt tränar. Tidigare var de satta
+  mekaniskt (beräkning = LM-4, resonemang = LM-2 + LM-7), så veckornas översikt visade fel punkter.
+
+- **2026-10-11** Färgkod efter kursplanens fyra områden (komponenter, elsäkerhet och regler, mätning och analys,
+  felsökning och dokumentation) på veckosidorna och startsidans moduler; startsidan byggs nu av
+  `verktyg/startsida/bygg.py`. Veckosidorna 42–45: ”Klart” på varje steg styr vilket steg som är nu, och bara det
+  stegets knapp är blå. Löptext på delsidor och genomgångar har radavstånd 1,8 (Zenn). Se DESIGN.md.
+- **2026-10-11** Färre dokument och en tydlig handling: alla veckor utom vecka 40 är en numrerad väg med en knapp per
+  del (”Öppna del N”; delsidan har teori, exempel, övningar och bildspelet), labben och ”Gör inlämningen”. Rutan
+  ”Nästa steg” överst visar steget att göra nu. Film, extra läsning och fördjupning ligger under ”Mer”. Kursplanens
+  punkter fälls ut på begäran.
+- **2026-10-11** Granskningen av vecka 44 (och del 4 Analys av mätresultat) rättad. Formelstöd-sidorna i `vecka-44/` och `vecka-45/` följer
+  nu presentationerna och delsidorna (de gamla exemplen gav svaren på övning 1.8 och 2.4 och på 2.5 i del 4; regel 2 och 12), och
+  strömtransformatorexemplet är 400/5 A vid 320 A = 4,0 A överallt (bild 24, figur, delsida, bildspel, Formelstöd), så att det inte är
+  ledtrådens räkning i övning 2.4. Tolv ledtrådar och samband som gav svaret är omskrivna (regel 1 och 48), också Ledtråd 3 i 2.10, 3.10
+  och 2.8 (del 4) som räknade upp facit. Nedsänkta index i posterna och nya beteckningar Z_{s}, U_{0}, k_{I}, R_{p}, R_{fram}/R_{retur},
+  ΔU_{fram} med flera, x_{max}/x_{min} och û_{visad}, med de ihopskrivna formerna i `avradda`; IT-nät har en exakt definition och
+  ström–tidskurva ett stavsätt. Isolationslabbet räknar fartygets nät med 60 Hz (I_{fel} = 287 mA i uppgiften och protokollet), felsvaret
+  95,8 mA förklaras med rätt fysik, den skadade kabeln har 0,5 MΩ (1,0 mA, som en verklig provare klarar) och hänvisningarna säger
+  ”Del 1, övning 1.4” i stället för v44_01-koder. Labbprotokollet (alla labbar) har kolumnen ”Din förutsägelse” (regel 6) och säger att
+  protokollet ingår i bedömningen och lämnas in som PDF; ny cacheversion i alla labbar som använder det. Analysuppgiften (inlämningen)
+  har mätbara värden: pumpen (20,0 + D/10) V före och 22,5 V efter, strömmen 6,0 och 6,4 A (regel 50). Formelbladet gav svaren på 1.8,
+  2.4 och 3.3 och har nya exempel. Lärarkopiorna (v44_01–03, v45_02, lärarguiden) och boken är inte uppdaterade (kräver
+  LARARLOSEN/BOKLOSEN): revidera EL-000181–184, 187–190, 194, 195, 197, 199–201, 204, 207–210, 221, 223, 225, 226, 228–230, 329–336,
+  410 och 826 igen med de skyddade filerna öppna, och kontrollera lärarfacit för EL-000825 (protokollets I_{fel} = 287 mA vid 60 Hz) och
+  EL-000826.
+
+- **2026-10-11** Granskningen av vecka 43 (och del 4 Systematisk felsökning) rättad. Delsidorna räknar de flyttade delarna
+  (`veckans_delar` ur `FLYTTAD` i delsidor_veckor.py): vecka 43 har del 1–4 och vecka 44 del 1–5, och del 3 leder vidare till
+  del 4 i `vecka-45/`. Övning 2.3 (tvåpolig, 3 000 r/min), 2.5 (1 430 r/min, 4,7 %) och 2.7 (440 V ombord, Δ/Y 254/440 och
+  440/760 V) gav inte längre inlämning 1:s svar (regel 2); Y/Δ-bilden i v43_02 räknar på 690/1 200 V. Facit i 1.5 och 2.2 svarar
+  på hela frågan, sju ledtrådar och samband gav svaret (regel 1, 48), index i U_{spole}, U_{kontakt}, R_{extra} och I_{Δ}
+  (ny i beteckningar.json), Hållkretslabbet hänvisar till ”Genomgång del 3, avsnitt …” och ”Del 3, övning 3.7” i stället för
+  v43_03-koder. Inlämning 2 b frågar ”Måste jordfelsbrytaren lösa?” (regel 49), D = 12 i postens parameter (vecka 43 inlämning 1–2, vecka 44 inlämning 2, analysuppgiften i vecka-45/).
+  Övning 1.2 i felsökningen och teoribilden nämner fem funktioner (minst fyra efterfrågas), ”lågimpediv” är borta, facit visar
+  tusental med mellanrum (1 500) och förlusten i 2.9 med en decimal. Sjutton frågor och lösningar med enklare svenska.
+  Lärarkopiorna (v43_01–03, v45_01, lärarguiden) och boken är inte uppdaterade (kräver LARARLOSEN/BOKLOSEN): revidera
+  EL-000153–155, 157–159, 162, 163, 165, 167, 169–174, 176–180, 212–215, 217–220, 321–328, 820, 821, 824 och 826 igen
+  med de skyddade filerna öppna.
+
+- **2026-10-11** Granskningen av vecka 42 rättad. Exemplen gav övningarnas svar (regel 2): riskpoängen är nu 5 · 3 = 15 och
+  2 · 3 = 6 överallt (övningssidan hade en äldre version), Del 1 E1 en vinkelslip med klämd kabel (ny figur), E2 ett böjt
+  låsbleck och Del 2 E1 en landanslutning. Övning 2.2 har nytt samband (regel 48), 1.3 skriver V_{A} och V_{B} (potential)
+  och 2.7:s ledtrådar listar inte längre svaret. Femton övningar och inlämning 2 med enklare svenska; inlämning 2 d nämner
+  säkringen eller dvärgbrytaren, inlämning 3 mäter på en utgående grupp i huvudtavlan, D = 12 i postens parameter.
+  Nya förkortningar (UPS, TSFS, SEK, SS-EN, IEC, ESA, AMS, HLR, TMAS, SOLAS, TN, C/E, ETO, SMS, V_{A}); VA och kvar räknas bara
+  efter ett tal, så att ”finns kvar” och V_{A} inte ger enhetskort. Avklippt text i figurerna till 1.4 och riskmatrisen
+  rättad (`figs42.py`). Lärarkopiorna (v42_01–03, lärarguiden) och boken är inte uppdaterade (kräver LARARLOSEN/BOKLOSEN):
+  revidera EL-000123, 126, 131–134, 137–140, 142, 144, 145, 148–150, 818 och 819 igen med de skyddade filerna öppna.
+
+- **2026-10-11** Enklare veckosidor. Vecka 42–45 är en enda numrerad väg (lektion online → hemma → labb → inlämning,
+  `enkel_vecka` i bygg.py) i stället för fyra listor med samma delar. Kursplanens punkter visas med enkla ord (`ENKEL` i
+  `kursplan.py`; den formella texten när man pekar på koden) och med var punkten tränas. Vecka 45 har egna rubriker per steg.
+
+- **2026-10-11** Från vecka 42 räknar alla elever med samma D = 12 (`KURS_D` i `gemensamt/elevtal.mjs`,
+  `verktyg/inlamning/bygg.py` och `innehall/lib/berakningar.py`): inlämningssidorna 42–45 visar D = 12 i stället för
+  namnrutan och Motorlabbet använder `kursD()`. Bara den slutliga tentamen får individuella värden. Vecka 38–41 är
+  oförändrade (redan inlämnade med eget D). Lärarguidens facit: räkna med D = 12.
+
+- **2026-10-11** EL-000213 (Mittpunkt, felsökning) hade fel facit: B har 0 V, så felet ligger mellan källan och B, inte
+  efter B. Rättat i posten och på delsidan och övningssidan. Boken (bok.enc) och lärarkopian av v45_01 är inte
+  uppdaterade (kräver BOKLOSEN/LARARLOSEN); revidera posten igen med de skyddade filerna öppna.
+
+- **2026-10-11** Varje veckosida har en översikt efter kursplanens punkter LM-1–9 (`verktyg/veckosidor/kursplan.py`):
+  vilka punkter veckan tränar, och för varje punkt delarna, labben och inlämningsuppgifterna, med elevens avbockade
+  övningar. Kopplingen kommer ur övningsposternas `larande.mal` och placeringarna. Vecka 40 är upplåst (beslut: kurswebben
+  görs om); låstestet hoppar över när låset saknas. Vecka 41:s e-posttext (protokoll som foton) ligger nu i generatorn.
+
+- **2026-10-11** Vecka 45:s delar flyttade: felsökning till vecka 43 (del 4), analys och repetition till vecka 44
+  (del 4–5); filerna ligger kvar i `vecka-45/` och veckorna länkar dit (`'delsida'`, `FLYTTAD` i delsidor_veckor.py).
+  Vecka 45 är tentamensvecka med skriftlig tentamen online och praktiskt prov i simulatorerna (`praktiskt-prov.html`)
+  med muntlig avstämning. Lektionerna från vecka 42 står som online. Inga notiser om distans eller flyttat innehåll:
+  hela kursen ges på distans och inlämningarna visar vad som ska göras. Startsidan är en översikt över elva moduler.
+  Tentamens veckotabell visar veckorna eleven ser (38–44), inte mappnumren.
+
+- **2026-10-06** PR #115 återapplicerad på aktuell main: explicita teorikort för alla 150 övningar vecka 41–45,
+  bevarade kontrollfrågor och senare innehåll. Delsidorna ombyggda från källan; aktuell CI kompletterad med
+  python-pptx och fokuserade kopplingstester. Numeriska teoriöverskrivningar ersatta med rubrikreferenser.
+
+- **2026-09-30** PR #113 framflyttad: multimeterns övning 7 behåller läsbara diagrametiketter, separat spetsrad och sladdar i kanten; main:s senare notation och elevdata bevarade. Ny cacheversion. 24 modell-/DOM-tester och 10 Chromium-fall godkända på telefon, surfplatta och två skrivbordsbredder. Fysisk iPhone/iPad och WebKit kvarstår separat.
+
+- **2026-09-28** Vecka 40:s lås förstärkt med Växelströmslabbets transitiva körningsberoenden, även genererade
+  uppgifter, beräkningar, instrumentbänk och använda gemensamma moduler. Manifestet utökat från 148 till 174 filer;
+  tidigare hashar och allt elevmaterial oförändrade. Kontroll av startfiler, omfattning och tillkomna/bortfallna
+  beroenden samt regressionstester i CI. Oanvända senare-veckofiler, labbtester och byggverktyg lämnas utanför låset.
+
+- **2026-09-28** Vecka 40, övning 1–30: en tredje ledtråd ”steg för steg” i varje post (formel i kursens notation, ordning, enhetsomvandling, RAD/DEG, rimlighetskoll och ett exempel med andra tal, kontrollerat mot alla svar i databasen). Visas som Ledtråd 3 i arbetsrummet och på övningssidan.
+- **2026-09-28** Lärarsidorna följer den nya planen: lärarportalens veckolista, utbildningsguiden vecka 38 (kursvecka 1, mapp vecka-37), frånskiljningen som måndag pass 1 i vecka 40, vecka 40:s plan med lektionstider och hemmablock, Lärarstöd vecka 40 och talaranteckningarna på bild 2 i lärarens PowerPoint v40_01–03. Upplåst utanför repot och låst igen.
+- **2026-09-28** Vecka 40: verkliga lektionstider i dagplanen och lärarens anteckningar (måndag 09.00–11.00, tisdag 15.00–17.00, fredag 09.00–11.00); hemmablocken börjar när lektionen slutar.
+- **2026-09-27** Kursen började vecka 38, inte vecka 37. Startsidan visar vecka 38–45 (Elens grunder vecka 38,
+  14–18 september) och väljer vecka 40 från måndag 28 september. Frånskiljning och mätteknik (mappen `vecka-38`, inte
+  undervisad) ingår i vecka 40, måndag; den gamla sidan säger det och länkar dit, och dess inlämning lämnas senast
+  söndag 4 oktober. Presentationens sidfot och omslag (kursvecka 3, vecka 40) och bildspelet omgjorda. Vecka 40 har en
+  plan dag för dag (`dagplan.mjs`): lektion måndag, tisdag och fredag, hemma måndag kväll, onsdag, torsdag och helgen
+  med steg, tid, avbockning, framsteg från övningssidan och ”Före nästa lektion”; panelen ”I dag” visar nästa steg.
+  Lärarens anteckningar i `lektioner.mjs` följer planen. Mappar, länkar och resultatkoder oförändrade. Trasiga
+  ”Använd:”-länkar i inlämning vecka 37, 38 och 41 rättade (regel 32).
+- **2026-09-28** Räknarhjälpen förklarar med interaktiva bilder (`gemensamt/raknehjalp-bilder.mjs`): radianen som
+  bågen mätt i radier, snurrande visare till sinuskurva (u(t) vid 440 V/60 Hz), samma knapptryck i RAD och DEG,
+  impedanstriangeln med fasvinkeln och prefixtrappan där kommat flyttar tre platser per steg. Exempeltalen
+  (1,5 ms, 0,565 rad, 333 V, R 30 Ω/X_{L} 45 Ω) kontrollerade mot databasens svar. Korten i `raknehjalp.mjs` oförändrade.
+- **2026-09-28** Trefaslabbets stationsprotokoll (EL-000406) pekade på en flik ”Neutralledaren” som inte finns; nu ”2 Bruten neutralledare”.
+- **2026-09-28** Trefas-, Hållkrets- och Isolationslabbet enklare på iPad och mobil: uppgiften står först och reglagen
+  bredvid diagrammet från 768 px (inte klistrade), flikarna blir en lista på mobil, S1 och S0 skriver läget (släppt /
+  ✓ intryckt). Ingen knapp ser vald ut efter ett tryck (:hover), 44 px tryckytor, större reglageknopp, 17 px text och
+  fält i protokollet (ingen inzoomning i iOS). Beskedet efter ”Hämta avläsning” står i mätningens ruta. Ny
+  `gemensamt/labbpekskarm.css`; Växelströmslabbet och multimetern oförändrade. Sparade protokoll och länkar oförändrade.
+- **2026-09-28** Växelströmslabbet enklare på iPad och mobil: steget skrivs ut (Steg 1 av 3) och stegraden är
+  status, inte knappar. Förutsägelsen står bredvid rutan där värdet visas efter sparandet. Bänken visar uppgiftens
+  instrument i närbild med en rad Visa: och en rad Bild: (3D-bild/Siffror); vridning borttagen så att sidan alltid
+  kan rullas. Dubbeltryck ignoreras kort efter stegbyte, tydliga fel per fält, 44 px tryckytor och 17 px text i
+  labbets egna delar. Sparade svar (v3-nyckeln) och QR-flödet oförändrade. 33 tester.
+- **2026-09-27** Fokuserade regressionstester för vecka 40:s resultatkoder: z/j-rundtur, svenska tal, Unicode,
+  kortningsgränser, trasiga koder, version/vecka, partiella labbdata, separat labb-D och lärarsidans verkliga
+  hashimport. Rättat komprimeringsreservväg, Unicode-/nollkortning och tomma felmeddelanden. Kortningsbeskedet
+  jämför nu med originaltexten och samma datasnapshot används genom QR-kortningen. Cacheversioner uppdaterade;
+  lärarsidan behåller krypteringen. Separat CI-steg, utan presentatörs- eller sorteringstester.
+
+- **2026-09-25** Innehållsdatabasen (`innehall/`), kursrevision, arbetsmapp för boken.
+- **2026-09-26** Vecka 40: alla förkortningar förklarade. En storhet, ett skrivsätt i allt material (notation.py och
+  CI). Växelströmsfilmen renderad om med nedsänkta index. Lärarsidor och bok med kursens notation. Ny PDF av boken
+  (223 sidor, rättad september 2026). Översättningsskydd för formler och enheter (`gemensamt/oversattning.js`).
+  Talmanus för kortfilmerna (`filmer/tal.mjs`).
+- **2026-09-27** Växelströmslabbet: elevens förutsägelse och besked (Rätt!/Skiljer sig), ledtrådar utan svaret och
+  med exempel från hem och fartyg, läshänvisning till rätt bild i genomgången. Genomräknade exempel från fartyget:
+  fas och linje 254/440 V, Y och Δ på 440 V, styrtransformator 230/24 V (övningssidor, bok, presentationer).
+  Automatisk kontroll att ledtrådar inte ger svaret; kontroll av understreck utan klammer.
+- **2026-09-27** Den engelska filmen Alternating Current Aboard (`acfilm`) borttagen. Ny svensk repetitionsfilm
+  Växelström ombord (`filmer/films/vaxelstrom.mjs`, 4 min): 440 V/60 Hz, momentanvärde, spole och kondensator,
+  impedans 5/12/13 Ω, pumpmotor 1 380 W med PF 0,80, effekttriangel och kompensering. Pausa-och-räkna-moment.
+- **2026-09-27** Vecka 40: momentanvärde på 440 V/60 Hz vid 2,0 ms och kompensering för pumpmotor 1 380 W vid 230 V
+  (övningssida, bok med figur 7.3 och 9.3). Övningar med utländska nät bytta (U_{F} = 230 V, transformator 230 V).
+  Labbens pumpuppgifter 1 500 W. Genomgång, presentationer, bildspel, lektionsartiklar och stegfilmer räknar med
+  hemmets och fartygets värden i stället för labbens. Stegfilmerna har svensk text utan ljud; den engelska rösten är
+  borttagen. Ny bok-PDF (223 sidor).
+- **2026-09-27** Granskning av vecka 40 ur lärarens perspektiv. Rättat: ledtrådar där exemplet gav svaret på nästa
+  labbuppgift (fläktmotor 5,0 A, vattenkokare 10 A), inaktuellt labbfacit i lärarportalen (S och Q för pumpen),
+  tavelexempel i utbildningsguiden som var labbens värden, nedsänkta index på lärarsidorna.
+- **2026-09-27** Eleven skriver sitt namn i stället för D (inlämning alla veckor, guidade växelströmslabben, lärarguiden,
+  Lärarstöd vecka 40). Guidade labben ger egna värden ur namnet; protokollet visar första förutsägelse, antal försök och
+  tider. Inlämning vecka 40 uppgift 4 omformulerad. Ledtrådsexempel flyttade utanför elevernas svarsintervall.
+- **2026-09-27** Elev- och lärargranskning av vecka 40: ”Eget försök” i genomgången gav svaret på övning EL-000075,
+  EL-000064 och räkna-först-uppgiften EL-000319; nya värden (48 V/120 Hz, 90/120 Ω vid 230 V, 4 140 W vid PF 0,60).
+  Lärarsidornas upplägg samordnat med elevsidan: måndag, tisdag, fredag 2 × 45 min, labben sist.
+- **2026-09-27** Vecka 40 lättare att följa: veckosidan visar tre steg per del (genomgång, film, övningar) och
+  inlämningen överst; övningssidan visar en del i taget med ”Markera som klar” och framsteg; genomgången börjar med
+  ”Det här ska du kunna” och visar bara rullistan i telefonen; filmer och genomgång pekar på nästa steg; samma ord
+  överallt.
+- **2026-09-27** Vecka 40: talaranteckningar borttagna ur elevernas PowerPoint; lärarkopior med uppdaterat dagsupplägg
+  krypterade i `larare/filer/`, nedladdning i utbildningsguiden. (Vecka 39: v39_03 har fortfarande anteckningar.)
+- **2026-09-27** Räknarhjälp: RAD/DEG och prefix förklaras automatiskt där de behövs (genomgång, artikel, labb,
+  övningar) och på sidan Räknarhjälp med omvandlare, länkad under Att slå upp.
+- **2026-09-27** Vecka 40, radianer och grader: ny bild 12 i v40_01 (genomgång, artikel, bildspel, elev- och
+  lärarpresentation, 18 bilder) med hjulfigur, och filmen Radianer och grader (Måns och Sigge, 2 min). Filmen länkas
+  från veckosidan del 1, RAD-kortet i räknarhjälpen och Raknehjalp.html. Måndagens pass 2 börjar med bild 12 före
+  övning 6–7; fördjupningen är nu bild 13–14. Lärarplanen (PDF) omgjord med de nya bildnumren.
+- **2026-09-27** Vecka 40, resultatkod: D slumpas på elevens enhet och namnet skrivs först i slutet. Svarsrutor för
+  inlämning uppgift 1–3, sidan Skicka resultat med QR-kod (inlämningssvar, guidade labbens protokoll, avbockade
+  övningar) och lärarsidan Resultatkoder (kamera, skärmbilder eller länk; rätt/fel mot elevens D, klasslista, CSV).
+  Lärarsidornas lösenord kan sparas på lärarens enhet. Måndagens pass 2 omplanerat (bild 13 tillsammans, bild 14
+  självstudier, inlämning påbörjas, QR-kod sist).
+- **2026-09-27** Lärarportalen, Inlämningar under lektionen (`larare/resultat.html?vy=presentera`): en rad per elev
+  med rätt/fel per svar i uppgift 1–3 och labbet, klassens summa, ordning efter namn, flest fel eller senaste kod,
+  initialer i stället för namn. Uppdateras direkt när en kod läses på datorn, också i en annan flik.
+- **2026-09-28** Vecka 40, läs upp och låt eleverna göra: fem Din tur-bilder (belysningsnätet 254 V, momentanvärde
+  i vägguttaget, ventilationsfläkten |Z| och φ, kylskåpets kompressor) som poster EL-000863–867, i genomgången,
+  elev- och lärarpresentationerna (svaret visas vid klick). Lärarmanus till alla bilder (Säg, Fråga, Klicka),
+  lärarkopiorna byggs med `verktyg/larare/lararnoter.py`. Nya bildnummer i dagsplanerna och utbildningsguiden.
+- **2026-09-28** Sammanslagning med main (verkliga lektionstider, arbetsrummet, Så räknar du-exemplen): manus och
+  Din tur-bilder följer den nya planen. Långa brödtexter i vecka 40:s presentationer får automatiskt den största
+  storlek som ryms (`kompakt` i `innehall/export/presentationer.py`); Så räknar du-texten gick annars in i sidfoten.
+  40 poster som main reviderat utan skyddade filer registrerades om med `revidera --alla` och lärarlösenordet.
+- **2026-09-28** Vecka 40, en sida per del (`Del_1.html`–`Del_3.html`, exportören `delsidor`): Översikt → Teori →
+  Exempel → Övningar → Fredag: labben. Varje övning har Ledtråd 1 (vilken formel och vilket teoriavsnitt), Ledtråd 2
+  (hur du börjar), räknarhjälp och facit; avbockningen följer med i QR-koden. Veckosidan och dagplanen länkar dit.
+- **2026-09-28** Registervård och numrering vecka för vecka (`innehall/numrering.py`, 456 nummer). Övningarna heter
+  nu Övning del.nummer på webben, i presentationerna, i facit, i lärarmanus och i QR-koden. Vecka 40: del 1–4, inlämning
+  1–7, lärarens QR-granskare visar Inlämning 4–6. Fem övningstexter som hänvisade till gamla nummer skrevs om.
+- **2026-09-28** Instrumentkorten M1 och M2 är datablad (`innehall/export/datablad.py`, `gemensamt/datablad.css`): bild av
+  instrumentet med uttag, tabellen Vad instrumentet kan mäta (Ja/Nej och mätområde) och tekniska data. Uppgifterna står
+  strukturerat i `studieplan-v40.json` (kort). M2 fick mätområden och CAT III 600 V. Korten visas en gång per övning.
+- **2026-09-28** Komponentkortet är också ett datablad: IEC-symbol, beteckning, märkdata, läge i vila och vad kortet inte
+  anger (säkringens AC/DC-märkning och brytförmåga). På mobil staplas raderna. Uppgifterna står i `studieplan-v40.json`
+  (komponentkort). M2:s mätområden behålls.
+- **2026-09-28** Vecka 40:s presentationer: kurvdiagram och trianglar ersatta med bilder ur webbens figurer (samma i
+  PowerPoint, Keynote och webben). Figurerna rättade: trianglarnas etiketter krockade, periodmarkeringen låg över kurvan,
+  resistorns u och i låg ovanpå varandra. Större text i presentationerna. Lärarkopior, PDF och bildspel byggda om.
+- **2026-09-28** Frånskiljning och mätteknik (v38_01): blockschemat, symbolerna och de två kopplingsschemana (bild 4, 6,
+  11, 12) är bilder i stället för lösa linjer och rutor. PDF och bildspel byggda om.
+- **2026-09-28** Måndagens presentation i en fil (del 1 frånskiljning, del 2 sinus, övningar, hemuppgift, QR-koder till
+  webben): elevversion utan anteckningar på veckosidan (`vecka-40/aktuell/Mandag_28_sep_vecka40.pptx` och `.pdf`),
+  lärarversion med manus krypterad i lärarportalen (`larare/filer/Mandag_28_sep_vecka40_larare.pptx.enc`).
+- **2026-09-28** Veckosidan vecka 40 börjar med dagens presentation (rutan väljer dagens eller nästa lektion efter datum:
+  måndag del 1–2, tisdag del 3, fredag del 4). Därefter Lösningar och självhjälp (del 1–4), labben, inlämningen, Så arbetar
+  du och den detaljerade planen.
+- **2026-09-28** Frånskiljning och mätteknik (v38_01): omslagets båtfoto ersatt med en ritad effektbrytare i FRÅN-läge,
+  låst med hänglås och skylten FRÅNSKILD – MANÖVRERA EJ (`verktyg/ac/brytare.mjs`). Även i måndagens samlade presentation.
+  `verktyg/bildspel/bygg.py` hoppar över presentationer som inte heter vXX_NN.
+- **2026-09-28** Vecka 40 låst (148 filer, även frånskiljningsmaterialet som undervisas måndag vecka 40). Presentationernas
+  rubriker följer numreringsregistret från vecka 41 (”Övning 1.3”, ”Stöd till övning 1.3”); vecka 37–40 rörs inte.
+- **2026-09-28** Vecka 41 och 42 som vecka 40: veckosidan börjar med Veckans presentationer (del för del, Öppna och
+  PowerPoint), sedan Lösningar och självhjälp (gäller vecka 41–45). Lärarkopior med manus i lärarportalen
+  (`verktyg/larare/lararmanus.py`: bildens text, guidens förklaringar och kontrollfrågor, facit och ledtråd på
+  övningsbilderna). Diagrammet och de två kopplingsschemana i vecka 41 är bilder (`verktyg/ac/scheman_v41.py`).
+  Passbilderna och Simulerade stationer använder övningsnumren d.k. Guidens Uᴸ/Uꜰ rättade till nedsänkta index.
+  Databasen: två kontrollerade poster granskade, EL-000100 är resonemang, strukturerade svar för EL-000091, 099, 114
+  och 123. `validera`: 0 fel, 0 anmärkningar.
+- **2026-09-28** Vecka 41–45 i nivå med vecka 40: en delsida per del (15 sidor: översikt med mål och startfråga, teori
+  och exempel ur presentationen med figurer, 150 övningar med ledtråd 1–3, räknarhjälp, facit och avbockning). Veckosidorna
+  länkar dit (Öppna del N, Övningar och facit i presentationsrutan). Vecka 43–45: övningsnummer d.k i passbilderna,
+  ritningarna i v43_03 (symboler, huvudström, hållkrets) och v44_01 (enlinjeschema) som bilder, lärarkopior med manus
+  och facit i lärarportalen för alla femton presentationer i vecka 41–45.
+- **2026-09-28** Tydligare väg för eleven, vecka 41–45: veckosidan visar framsteg per del (”3 av 10 övningar klara”,
+  ”Nästa” på första ofärdiga del), övningssidan hänvisar till delsidan, och inlämningens ”Använd:” börjar med delsidan
+  (Del N: teori och övningar).
+- **2026-09-28** Vecka 41: ledtråd 3 (steg för steg med andra tal, fartygsvärden) för alla 20 beräkningsövningar. Delsidan
+  visar den i stället för hänvisningen till exemplet. Kontrollen stoppade ett exempel som innehöll svaret (11 kW mot
+  11,3 A) och det byttes. Övning 2.2 hänvisade till ”uppgift 1” och säger nu ”föregående övning”.
+- **2026-09-28** Vecka 42–45: ledtråd 3 (steg för steg med andra tal) för alla 44 beräkningsövningar. Kontrollen stoppade
+  ett exempel som gav svaret (23,2 mot 23,1) och det byttes. Rättat: EL-000157 räknade med 400 V i stället för 440 V,
+  EL-000225 hänvisade till ”uppgift 4” (nu ”föregående övning”), EL-000235 hade svaret som φ i stället för cos φ.
+  Lärarkopior med manus för vecka 43–45 byggda om. Vecka 40 orörd (låset oförändrat).
+- **2026-09-29** Vecka 41–45: inlämning med e-post till nils@sjoskolan.se. Inlämningssidan och veckosidan har rutan
+  ”Så lämnar du in” (ett mejl, ämnesrad med vecka och namn, labbprotokoll som PDF) och en knapp som öppnar ett ifyllt
+  mejl. Adressen och rutan finns på ett ställe (`verktyg/inlamning/bygg.py`, `EPOST`, `epost_knapp`). Vecka 40 orörd.
+- **2026-09-29** Vecka 41–45: ledtråd 3 (”steg för steg”) för alla 86 resonemangsövningar. Ledtråden ger frågor i
+  ordning som bygger upp svaret, ofta med ett annat fall, men inte svaret. Två utkast som räknade upp svaret
+  (arbetsmetoderna i ESA, pumpens funktioner) skrevs om före publicering. Delsidan visar ”Ledtråd 3: steg för steg”
+  för resonemang och ”steg för steg med andra tal” för beräkningar.
+- **2026-09-29** Vecka 41–45: schemat är måndag 09.00–11.00 (del 1), tisdag 15.00–17.00 (del 2) och fredag 09.00–11.00
+  (del 3), samma som vecka 40. Rutan ”Veckans presentationer” visar dag, datum och tid för varje del, och markerar
+  dagens lektion med ”Idag” eller nästa lektion i veckan med ”Nästa lektion”. Vecka 40 orörd.
+- **2026-09-29** Vecka 41–45, veckosidan: den dubbla knappen ”Börja med del 1” är borttagen (delens egen knapp och
+  ”Nästa” visar var eleven fortsätter). Rutan med presentationerna slutar med vad som ska vara klart senast söndag:
+  övningarna, labben och inlämningen med e-post. Förut stod fristen bara längst ner. Vecka 40 orörd.
+- **2026-09-29** Delsidorna vecka 41–45 blev kortare och mer pedagogiska. Teorin består av kort, ett per avsnitt, med
+  rubrik och avsnittets formel synliga. Eleven öppnar ett avsnitt i taget, och varje avsnitt slutar med ”Öva nu”: de
+  övningar som bygger på det. Exemplen visas ett steg i taget (”Visa steg 2 av 3”, ”Visa alla steg”), så att eleven
+  hinner försöka själv. Länkar från ledtrådarna öppnar rätt kort. Utan JavaScript syns allt. Övningarna börjar nu
+  efter ungefär 3 800 px på mobil, mot 7 300 px förut. Vecka 40 orörd.
+- **2026-09-29** Notation vecka 41–45. Nya kanoniska beteckningar i `beteckningar.json`: P_{in}, P_{axel}, P_{total},
+  U_{1,gren}/U_{2,gren}, I_{1,märk}/I_{2,märk}, U_{förv}, U_{uppmätt}, R_{nom}, R_{före}/R_{efter}, R_{iso}, I_{fel},
+  Z_{fel}. De gamla formerna (Paxel, Ptotal, U₁,gren …) står i `avradda`, så CI stoppar dem. Presentationer, delsidor,
+  isolationslabbet, poster och bokens skyddade text är omskrivna, och figurerna i v41_02 (bild 22, 30, 34) och v41_03
+  (bild 32) är omritade. De nya beteckningarna har `labbdata: false` och följer inte med i `beteckningar.gen.mjs`,
+  som vecka 40:s växelströmslabb läser (låst). Pᵢₙ och Pförlust står kvar i vecka 39 (arbeta bara framåt).
+  Regel: en ny beteckning efter vecka 40 får `labbdata: false`.
+- **2026-09-29** Ny formelsamling för hela kursen: `gemensamt/Formelsamling.pdf` (A4, 11 sidor) och
+  `gemensamt/Formelsamling.html`. Den har 58 numrerade formler (F1–F58) i kursens ordning, vecka 38–45. Varje formel har
+  beteckningar med enhet, utlösta former, ett räknat exempel med fartygsvärden och ”Se upp” med det vanligaste felet.
+  Dessutom finns ”Så använder du formelsamlingen” i fyra steg, registret ”Jag söker …”, prefix, konstanter och nät samt
+  en bilaga med beteckningar (ur `beteckningar.json`) och svenska–engelska. Samlingen länkas från startsidan, tentamen,
+  formelbladet och veckosidorna 41–45. Källa: `verktyg/formelsamling/bygg.py` (skriver HTML och PDF). Notationen
+  kontrolleras av `notation.py`. Regel: ändra en formel i `bygg.py` och kör skriptet, redigera aldrig HTML eller PDF.
+- **2026-09-29** Samma notation i hela kursen, även vecka 39, formelbladet, tentamen och simulatorerna. Nya kanoniska
+  beteckningar: P_{nyttig}, P_{förlust}, U_{in}/U_{ut}, I_{in}/I_{ut}/I_{retur}, R_{min}/R_{max}, U_{th}/R_{th}, R_{in},
+  R_{tot}/I_{tot}, U_{last}/I_{last}/R_{last}, U_{källa}, R_{slinga}, U_{prov}, I_{läck}, U_{tång}, U_{beröring}, I_{k},
+  I_{cu} och n_{s}. Pᵢₙ ska skrivas P_{in}. Alla har `labbdata: false`. Multimetersimulatorn behåller nu markeringen i
+  texten och ritar index nedsänkt (markHtml), medan protokollet får oformaterad text (markText). Tidigare plattade
+  exportören till ”Ukälla”. Vecka 40 orörd (låset oförändrat, QA grön).
+- **2026-09-29** Granskning av formelsamlingen. Alla exempel är omräknade. En täckningskontroll mot alla övningars
+  `samband` hittade samband som saknades. Nya formler: två spänningskällor i serie, nodspänning, spänningar i RL-krets
+  och spänning mellan två mätpunkter. Utökade formler: fall i % och P_{förlust} i kabel, Thévenin ur spänningsdelare,
+  PF = P/S, Q_{total}, fasavstånd, neutralström med två faser, spänningsdelare med last samt tolerans och krav.
+  Förtydligat: effekt vid växelström (F2), kabellängd och slinga, kortslutningsslingan, 30 mA för jordfelsbrytare
+  och att felströmsmodellen gäller TN-system. Etiketter som ”två faser:” ritas små. Nu 62 formler på 12 sidor.
+  Regel: kör täckningskontrollen (alla `samband`) när nya övningar läggs till.
+- **2026-09-29** Formelsamlingen är nu en bok på 30 sidor A4. Omslag och baksida följer POPEYE
+  (awesome-design-md-jp, design-md/popeye): koboltblått #343ec9, vikt 400, spärrad DM Sans, asymmetriska hörn 24/5 px
+  och orange logotyp. Omslaget har trefaskurvor, kapitelremsa och ”62 formler”. Baksidan har presentationstext, kapitel,
+  QR-kod till webbversionen och en formelremsa. Inlagan följer LINE (design-md/line): vitt, svart text, grönt #06c755
+  och kort med 12 px hörn, med LINE:s webbstorlekar anpassade till tryck. Nytt innehåll: titelsida med kolofon, förord,
+  innehåll med sidnummer (räknas i två pass), metoden i fem steg med ett genomräknat pumpexempel, ”Sex vanliga fel”,
+  rimlighetstabell med värden ombord, kapitelöppningar med ”Det här ska du kunna”, register, bilagor och
+  anteckningssidor (jämnt antal sidor för dubbelsidig utskrift). Länkarna i PDF:en fungerar. Källa:
+  `verktyg/formelsamling/bygg.py`.
+- **2026-09-29** Vecka 41 har nu samma stöd som vecka 40, i fyra delar:
+  1) **Svarsfält** under inlämning 1 och 2 (nio tal). D räknas ur namnet, som förut. `vecka-41/aktuell/inlamning-svar.mjs`
+     kopplas in via `SVARSRUTOR` i `verktyg/inlamning/bygg.py`.
+  2) **Resultatkod (QR)** på `vecka-41/aktuell/Resultat.html`: svar, kontrollfrågor, övningar, stationsprotokoll A–C
+     (mätningar, utanför tolerans, felsökningar med slutsats) och lösta uppgifter i Trefaslabbet. Kodningen ligger i den
+     nya `gemensamt/resultatkod.mjs`, eftersom vecka 40:s modul är låst. Inlämningsmejlet ska ha QR-koden som bilaga.
+  3) **Lärarsida** `larare/resultat-v41.html` (krypterad): facit ur namnets D, klassöversikt, presentatörsvy,
+     kamera/skärmbild/klistra in och CSV. Den varnar när kodens D inte stämmer med namnet. Den länkas från portalen och
+     från guiden för vecka 41. Vecka 40:s lärarsida är orörd.
+  4) **Veckans plan** på veckosidan (41–45): lektion och hemma, dag för dag, med markeringen ”Nu”.
+  **Kontrollfrågor:** tre per del, sist i övningarna. Nio flervalsposter EL-000868–876 och ytan
+  `placeringar/kontrollfragor.json`. Rätt alternativ står i `losning.kommentar` (`losning.svarstext` är ett skyddat
+  bokfält). Svaren sparas under `sj-kontroll:vecka-41`. Facit för lärarsidan genereras till
+  `vecka-41/aktuell/kontrollfragor.gen.mjs`.
+  Tester: `vecka-41/aktuell/resultat.test.mjs` (i CI). Kedjan är provad hela vägen: inlämning, delsida, QR, krypterad
+  lärarsida. Vecka 40 orörd.
+  Regel: en knapp på delsidan får inte ha klassen `del-klar` om den inte bockar av en övning, eftersom avbockningen
+  letar efter `.del-ovning`.
+- **2026-09-29** Granskning av vecka 41–45 ur fyra perspektiv: elektriker, fartygsingenjör, lärare och sjöman. Genomgånget:
+  alla övningar, inlämningar, kontrollfrågor och presentationernas teoribilder. Rättat:
+  - **Hållkretsen (EL-000118, EL-000239, EL-000218):** facit mätte spänning över hållkontakten medan START hölls in. Det
+    ger alltid ungefär 0 V (START ligger parallellt) och skiljer inte orsakerna åt. Nu: spänningslös resistansmätning i
+    hållvägen medan K1 påverkas enligt instruktionen.
+  - **Elolycka (EL-000127, EL-000128):** ”Larma 112” och ”kontakta sjukvården” är ändrat till fartygets nödinstruktion och
+    bryggan, TMAS till sjöss och 112 i hamn. Presentationen sa redan detta.
+  - **Reläskydd (EL-000195):** facit besvarade inte frågan om hjälpspänning. Svaret är tillagt.
+  - **Bogpropeller (EL-000824):** strömtransformatorn 200/1 A var underdimensionerad för 159–457 A. Nu 600/1 A, också i
+    lärarfacit.
+  - **Kontrollfråga 1.1:** ”fas och neutral” ombord är ändrat till ”generatorns neutralpunkt”, eftersom ombordnätet sällan
+    har utdragen neutralledare.
+  - **Beröringsspänning (EL-000818):** modellen anges som TN-system, inte IT-nät.
+  - **Lärarfacit 43-2b:** den uppmätta differensströmmen heter I_{Δ}, märkvärdet I_{Δn}.
+  För kontroll av läraren (kunde inte verifieras här): att TSFS 2014:1 är upphävd genom TSFS 2019:4, att övergångsdatumet
+  för SS-EN 50110-1 utgåva 4:2024 är 29 maj 2026, och om SS-EN 50110-1 har fyra arbetsmetoder som ESA eller tre.
+  Regel: en kontroll ska ge olika resultat för olika orsaker. Mät aldrig över en kontakt som har en sluten kontakt parallellt.
+- **2026-09-29 – Lärarens verifiering av granskningen.**
+  - **Övning 2.8 (EL-000138):** TSFS 2014:1 ersattes av TSFS 2017:26, inte av TSFS 2019:4. Lösningen nämner också
+    SOLAS kapitel II-1 del D för internationell fart. Samma rättelse är gjord i bokens skyddade lösning.
+  - **v42_02, bild 7:** SS-EN 50110-1 har tre arbetsmetoder: utan spänning, med spänning och nära spänning. ESA:s
+    indelning i fyra står som en egen rad.
+  - **Land och sjö:** övningar med 400 V eller 50 Hz anger nu sammanhanget i förutsättningarna (landström vid kaj,
+    landnät, nätstation i land). Gäller EL-000092–094, 101–109, 163–165, 167, 187, 193 och 236.
+  - Övergångsdatumet 29 maj 2026 för SS-EN 50110-1 utgåva 4:2024 är bekräftat.
+  Regel: när en uppgift använder 400 V eller 50 Hz ska texten säga att det gäller land eller landström vid kaj.
+  Ombord till sjöss gäller 440 V och 60 Hz. Frekvensen påverkar n_{s} och X_{L}.
+- **2026-09-29 – ESA:s fyra arbetsmetoder mot standardens tre.** Facit i övning EL-000133 (kursen och boken) lyder nu:
+  arbete utan spänning, arbete med spänning (AMS), arbete inom närområde (arbete nära spänning) och arbete utanför
+  närområde. En mening förklarar att SS-EN 50110-1 har tre metoder och att ESA lägger till arbete utanför närområde.
+  v42_02 bild 7 skriver: ”SS-EN 50110-1: tre metoder (…). ESA: fyra metoder (kompletterar med arbete utanför närområde).”
+  Regel: när ESA:s fyra metoder nämns ska standardens tre stå bredvid, så att begreppen inte blandas ihop.
+- **2026-09-29 – Jordfel i IT-nät (v41_01 bild 7, Del 1 avsnitt 3).** ”Vid ett jordfel kan en fas ha hela 440 V mot
+  skrovet” är ändrat till ”Vid ett jordfel får de två friska faserna hela 440 V mot skrovet”. Den felande fasen ligger
+  då på skrovets potential. De två andra faserna går från ≈ 254 V till linjespänningen mot skrov.
+  Regel: säg vilken fas som avses när spänning mot skrov beskrivs vid jordfel.
+- **2026-09-29 – Figurerna i v41 Del 1 (fas- och linjespänning).**
+  - **Bild 6:** sinusfiguren har en fjärde, streckad kurva U_{12} = L1 − L2 med toppvärdet √3. Axeln går till ±√3, så
+    linjespänningen syns större än fasspänningen.
+  - **Övning 1.2 (bild 13):** etiketten L2 krockade med ”Δt = ?” och är flyttad.
+  - **Bild 7:** U_{F} (U_{1N}, U_{2N}, U_{3N}) mäts mellan en fas och nollpunkten. U_{L} (U_{12}, U_{23}, U_{31}) mäts
+    mellan två faser.
+  - **Bild 8:** U_{12} = U_{1N} − U_{2N} är en vektoriell skillnad. U_{L} = √3 · U_{F} i ett symmetriskt system,
+    aldrig 2 · U_{F}.
+  - **Bild 23:** vid nollavbrott eller jordfel kan fas–jord visa allt från 0 V till hela U_{L}.
+  - Alt-texterna till figurerna säger samma sak (`spec41.json`, `scheman_veckor.py`).
+  Regel: en normaliserad kurva med fasspänningar ska inte lämnas ensam där linjespänning diskuteras. Visa U_{L} med
+  toppvärdet √3 eller skriv det ut.
+- **2026-09-29 – v41 Del 2 (Y, Δ och trefaseffekt) granskad.**
+  - **Exempel E2** gav I_{L} ≈ 5,77 A, samma svar som övning 2.2. Det bröt regel 2. Exemplet räknar nu ombord:
+    P_{axel} = 3,0 kW, η = 0,80, PF = 0,75, 440 V, vilket ger P_{in} = 3,75 kW, I_{L} ≈ 6,56 A och förlust 0,75 kW
+    (v41_02 bild 24).
+  - **Teorihänvisningar:** övning 2.3 pekar nu på Teori 3 (I_{L} = √3 · I_{gren}), 2.4 och 2.10 på Teori 4
+    (Trefaseffekt). Placeringen kan ange avsnittet med det nya fältet `teori` i `kurs-formelstod.json`. Att vikta
+    formelord i det automatiska valet prövades men flyttade 25 hänvisningar i vecka 41–45, flera till sämre avsnitt.
+  - **Övning 2.7 (EL-000107):** ledtråd 1 löd ”Utgå från Jämför …”. Principen står nu som ”Nätets U_{L} = märkvärdet
+    för driftkopplingen”.
+  - **Teori:** ”I symmetrisk Δ är grenspänning och linjespänning lika” gäller alltid, inte bara vid symmetri (bild 4).
+    Trefaseffekt har fått raden ”Osymmetrisk last: summera fasernas aktiva effekter” (bild 8).
+  - Figurerna är kontrollerade, bland annat plintbyglarna för Y och Δ. De är oförändrade.
+  Regel: kontrollera varje övnings teorihänvisning mot avsnittet där formeln faktiskt står. Ange `teori` i
+  placeringen när det automatiska valet blir fel.
+- **2026-09-29 – v41 Del 2 byggd som Del 1: figurerna definierar storheterna.**
+  - **Bild 6 (Y/Δ):** U_{L} står som dubbelpil mellan L1 och L2. Grenen med U_{gren} är markerad. Stjärnpunkten heter
+    ”stjärnpunkt” och inte N, eftersom en Y-last inte behöver ha en utdragen neutralledare. Etiketterna är större. Texten
+    lyder: ”I Y … stjärnpunkten: U_{gren} = U_{F}. I Δ … två faser: U_{gren} = U_{L}.”
+  - **Bild 7 (strömmar i Δ):** figuren visar I_{L1}, som delar sig i I_{12} och I_{31}. En visarbild bredvid visar
+    I_{L1} = I_{12} − I_{31} som vektoriell skillnad med beloppet √3 · I_{gren}, samma bild som U_{12} i Del 1.
+  - **Bild 21 (plinten):** under Y står ”lindning: U_{L}/√3” och under Δ ”lindning: U_{L}”. Texten säger att märkningen
+    anger nätets U_{L} för varje koppling.
+  - Alt-texterna säger samma sak (`spec41.json`, `scheman_veckor.py`).
+  Regel: en teorifigur ska visa mellan vilka punkter storheten gäller. Den ska inte bara visa kopplingen.
+- **2026-09-29 – Granskning av v41 Del 2 (extern genomgång).** Alla tal, facit och kontrollfrågor är bekräftade, och
+  märkningen land/sjö följs. Två förslag är genomförda:
+  - **Ordlistan:** S, P och Q har fått trefassambandet (S = √3 · U_{L} · I_{L}, P = … · cos φ, Q = … · sin φ) i det
+    nya fältet `trefas` i `beteckningar.json`. Tillägget visas på delsidor och kurssidor från vecka 41. Vecka 40 är
+    låst och visar det inte, och fältet följer inte med till `beteckningar.gen.mjs`.
+  - **Övning 2.6 (EL-000106):** facit förklarar också varför Δ väljs bort: varje lindning skulle få 400 V mot
+    märkspänningen 230 V. Bokens lösning hade redan steget.
+  Regel: en definition i ordlistan som bara gäller enfas ska få trefasformen när trefas införs.
+- **2026-09-29 – Labbhandbok för läraren (`labbhandbok/`, olåst, noindex, inte länkad från elevsidorna).** Den bygger på
+  laborationsunderlaget och inköpsguiden (position 01–16) och har tre sidor:
+  - **Översikt och beslut:** vad det inköpta räcker till, kopplingen till LM-1…LM-9 och beslut som ska kontrolleras
+    (märkskylt, startarens kapsling, 12 V-riggarna som inte är inköpta, gruppstorlek).
+  - **Iordningställ motorstationen:** motorn och startaren är övningsobjekt som aldrig ansluts. Blecken kopplar Y och Δ,
+    och eleverna går igenom delarna. Lärarens referensmätning: 2R i Y, (2/3)R i Δ, kvoten 3.
+  - **Labbpasset 9/10:** tre roterande stationer (motorn, startaren och skylten, strömtången på SELV), protokoll,
+    handledning och ett förslag till ny Del 3.
+  Motorn körs inte, och regel 4 (SELV) gäller oförändrad. Del 3 i vecka 41 är ännu inte ombyggd.
+  Regel: labbuppgifter bygger bara på utrustning som finns i inköpslistan. Utrustning som inte är inköpt, som
+  12 V-trefasriggen, används inte i elevmaterialet.
+- **2026-09-29 – Vecka 41 Del 3 ombyggd med de fysiska stationerna.** Del 3 byggde tidigare på 12 V-riggar som inte
+  är inköpta (DC-delare, trefastränare, hållkrets). Nu bygger den på motorn och startaren, som aldrig ansluts, och på
+  strömtången vid DC-aggregatet (SELV). Allt som ändrats:
+  - **Presentationen v41_03:** sju teoriavsnitt: labbets ramar, motorns delar och märkskylt, lindningar och plint, Y och
+    Δ med bleck (2R och (2/3)R, kvoten 3), startarens delar, strömtången, protokoll och slutsats. Två exempel och nya
+    figurer (`figs41.py`, `spec41.json`).
+  - **Övningar 3.1–3.10:** nya poster EL-000877–886. De gamla posterna EL-000111–120 finns kvar i boken. Kontrollfrågorna
+    (EL-000874–876) och start- och avslutsfrågan (EL-000709, 710) är omskrivna. Övning 3.1 och 3.6 pekar på Teori 4
+    genom fältet `teori`.
+  - **Elevsidan `Labbet.html`:** stationerna M, S och T med regler, steg och protokoll. Inlämning 3 (EL-000816) och
+    lärarfacit följer den.
+  - **Veckosidan och startsidan:** ny text för del 3. Veckoplanen säger att övning 3.1–3.5 görs före träffen.
+    Simulerade stationer A, B och C är nu frivillig extra övning.
+  Regel: labbuppgifter bygger bara på inköpt utrustning. Övningarna använder exempeltal tills lärarens referensmätning
+  finns.
+- **2026-09-29 – Labbet vecka 41 flyttat till fredag 11.00–16.00 med lunch 12.00–13.00.** Genomgången av del 3 är
+  kl. 09.00–11.00. Stationerna M, S och T har nu 40 minuter var, så att varje elev kopplar och mäter själv.
+  - **Felsökningsuppdrag på slutet:** läraren lägger in ett fel i plinten (saknat bleck, fel koppling, lös mutter), och
+    varje grupp hittar det med en felsökningslogg (observation, hypotes, kontroll, slutsats).
+  - **Uppdaterat:** labbhandboken (tidsplan, morgonchecklista för lärare som kommer först på fredagen), Labbet.html,
+    v41_03 bild 3 och veckoplanen.
+- **2026-09-29 – Fredag vecka 41: genomgången av del 3 är självstudier på distans 09.00–11.00, och labbet är på plats
+  11.00–16.00.** Eleverna läser genomgången själva, gör övning 3.1–3.5 och skriver sina förutsägelser innan de kommer.
+  Veckoplanen, veckosidans rad om presentationerna, v41_03 bild 3, Labbet.html och labbhandboken säger nu det, och
+  lärarens förberedelse på plats ligger före 11.00.
+- **2026-09-29 – Del 3 läses efter del 2, som avslutning på veckans teori.** Eleverna läser genomgången av del 3 själva
+  och gör övning 3.1–3.5 mellan tisdag kväll och torsdag. Fredag förmiddag är de på plats men gör annat förberedande
+  arbete, och labbet är 11.00–16.00. Veckoplanen, rutan med presentationerna (”Läs själv efter del 2, senast
+  torsdag”), v41_03 bild 3, Labbet.html och labbhandboken säger nu det.
+- **2026-09-29 – Del 2 fick de två saknade teorifigurerna, och Motorlabbet är nytt.**
+  - **Del 2:** teoriavsnitten Trefaseffekt (effekttriangel för 440 V, 20 A, cos φ = 0,85) och Trefastransformatorn
+    (Dyn 6,6 kV/440 V med U_{1,gren} och U_{2,gren}) har nu figur, som de andra avsnitten.
+  - **Motorlabbet (`motorlabbet/`):** labbet vecka 41 i 3D för den som inte kan komma. Samma stationer och protokoll
+    som på plats: motorns plint med Y och Δ och multimeter, startaren med testknapp, tången med ett varv, två varv och
+    hårnål, och en felsökning med ett fel per elev.
+    - Resistansen räknas med nodanalys för varje bleckkombination. Lindningarna får egna värden ur elevens D.
+    - Reglerna från den fysiska labben gäller: blecken flyttas bara med mätsladdarna bortkopplade, och sladden vid
+      tången bara med utgången avslagen.
+    - Utan WebGL fungerar allt med knapparna och plintbilden. three.js buntas lokalt (`tools/build.mjs`).
+    - Motorlabbet är länkat från veckosidan, Labbet.html och labbhandboken. `model.test.mjs` körs i CI.
+  Regel: en distansversion av en fysisk labb ska ha samma steg, regler och protokoll som labben på plats. Simulerade
+  värden märks som simulerade.
+- **2026-09-29** 3D-figurer i vecka 41 del 1 och 2 och en interaktiv generator:
+    - Gemensamma three.js-modeller i `figurer3d/modeller.mjs` (generator, stjärnkoppling, plint, transformator),
+      renderade headless och etiketterade med kursens typsnitt av `verktyg/figurer/figurer3d.py`.
+    - v41_01 bild 4: generatorn i Y med kabeln, U_{L} mellan två fasledare och U_{F} mellan fasledare och N.
+    - v41_01 bild 6: generatorn med tre spolar 120° isär bredvid sinuskurvorna (ersätter enbart kurvorna).
+    - v41_02 bild 21: plinten i 3D, Y och Δ med bleck. Bild 23: transformatorn med tre ben, primär Δ 6,6 kV, sekundär Y 440 V.
+    - `generatorn/`: vrid rotorn och se u1, u2 och u3 ritas i takt, summan är 0 V. Länkad från veckosidan och Del 1
+      teori 2 (`INTERAKTIV` i `delsidor_veckor.py`).
+  Regel 38.
+- **2026-09-29** 3D-figurer i vecka 41 del 3 och i labbet, renderade ur Motorlabbets bänk (`motorlabbet/rendera.html`):
+    - v41_03 bild 6 motorns delar, bild 7 plinten med ohmmeterns sladdar och lindningarna streckade, bild 17 (övning 3.4)
+      motorn med stängd låda, bild 21 startarens delar, bild 22 strömtången en gång, två varv och hårnål. Bild 6 och 22
+      har nu figuren i full bredd mellan texten, som bild 21. Resistansnät och stapeldiagram är kvar i 2D.
+    - Labbet.html: en bild per station M, S och T. Labbhandboken: samma stationsbilder och de tre felen i felsökningen
+      (bara i handboken, `labbhandbok/bilder/`).
+    - Hjälpfunktionerna för 3D-figurerna ligger i `verktyg/figurer/fig3d.py`.
+
+- **2026-09-29** Vecka 40 granskad inför fredagen (upplåst, ändrad, låst igen: Del_1–3.html och Inlamning.html):
+    - Sex facit med oavrundade tal rättade (övning 2.3, 2.5, 2.10, 3.6, 3.9 och 4.9). Samma formatering i vecka 41–45,
+      där svaren nu följer postens avrundning (0,60 i stället för 0,6, 12 i stället för 12,0).
+    - Inlämning 4–6 pekar på delsidorna med veckosidans numrering (del 2–4). Inlämning 7 säger inte längre att
+      inlämning 6 ska vara klar före labben, eftersom labben görs på fredagens lektion och inlämning 6 efteråt.
+    - Ny sida i labbhandboken: `labbhandbok/vecka-40.html`, fredagens plan med tidsplan, vad labben kräver från
+      måndag, tisdag och torsdag, tre stopp för samtal och vanliga fel.
+- **2026-09-29** Vecka 40: hur D används står nu där eleven ser D (upplåst, ändrad, låst igen).
+    - Inlämningen: rutan Så används D med ett exempel på insättning (D = 7), elevens egna startvärden för inlämning 4–6
+      (bara insättningen, inga svar) och att labben räknar fram värdena själv.
+    - Guidade labben: D står överst, med samma förklaring, i stället för bara i det hopfällda protokollet.
+    - Labbhandboken (vecka-40.html): ett kort manus för att förklara D och en tabell över hur D används i varje uppgift.
+- **2026-09-30** Växelströmslabbet: rubrikradens länkar och Först-rutan sa ”del 1–3” och pekade på den äldre
+  genomgångssidan. Nu del 2–4 och delsidorna, som veckosidan (regel 40). Vecka 40 upplåst, ändrad, låst igen.
+- **2026-09-30** Utkast `vaxelstromslabbet-utkast/`: en kopia av fredagens labb där Hela bänken visar sladdarna
+  (sinus: mätarna och oscilloskopet parallellt över källan; spolen: källa, strömmätare och komponentplatta i serie, med
+  pilar för strömmens väg). Originalet och låset för vecka 40 är orörda tills läraren godkänner. Se utkastets README.
+- **2026-09-30** Vecka 42: fem 3D-figurer (`figurer3d/sakerhet.mjs`, `verktyg/figurer/figurer3d_v42.py`): v42_01 bild 7
+  beröringsspänning (pumpmotor på gummidämpare, isolationsfel, bruten PE, punkterna A och B), bild 8 ljusbåge i ett öppet
+  fack, v42_02 bild 7 riskområde och närområde som skal åt alla håll, v42_03 bild 8 frånskilj, lås och märk samt
+  spänningsprovning mot L1, L2, L3 och PE, bild 21 jordnings- och kortslutningsdon efter en synligt öppen frånskiljare.
+  Etiketterna placeras i spalter (`fig3d.spalter`) och håller 11–13 pt i bildens högra kolumn.
+- **2026-09-30** Vecka 41 granskad bild för bild. Rättat: övning 1.4 visade U_{F} = 120 V (uppgiften: 230 V); bild 6 i del 1
+  markerar nu 5 ms i kurvan och att rotorn vrids medurs; texten i övning 1.10 låg över en ledning. Övriga figurer stämmer
+  (visare, Y/Δ-bleck, resistansnät, effekttriangel, startarens kontakter, tångens varv). Ny kontroll: figurkontroll.py.
+  EL-000810–813 reviderade med det skyddade innehållet uppackat (regel 44).
+
+- **2026-09-30** Multimeterlabbet, Station A: R1-kontrollen normaliserar Ω/kΩ så rigg 2, 5 och 6 kan godkännas.
+  R2 använder samma kontroll. Regressioner täcker alla riggar, båda spetsordningarna, felkopplingar och steg 3 → 4 → 5.
+  Cacheversionerna är uppdaterade; elevframsteg och protokoll behåller sina lagringsnycklar.
+  Kontroll: 26 modell-/DOM-tester och 14 Chromium-tester godkända (två pektester gäller bara pekprojekten).
+  Station A genomförd i alla nio steg vid 390, 820, 1024 och 1440 px; sparade övningar och protokoll behålls vid omladdning.
+
+- **2026-09-30** Första etappen av den onumrerade slutsektionen `simulatorer/`: 3D-maskinrum, Johanssons verkliga
+  avatar med arbetskläder och skyddsutrustning, Station A med nio steg, mätspetsar i händerna, tangent-/peknavigation
+  och 2D-reservläge. Kopierad mätmodell och registrerade källhashar; veckolabben är orörda. Framsteg och protokoll
+  använder egna lagringsnycklar. Övriga 3D-stationer är tydligt markerade som kommande.
+  Kontroll: 24 modell-/sessionstester, 14 Chromium-kontroller vid 390, 820, 1024 och 1440 px; två pektester
+  hoppas över i skrivbordsprojekten. Hela Station A, riktiga 3D-kontakter, armräckvidd, sparande, CSV och WebGL-reservläge.
+- **2026-10-01** Vecka 40, inlämning 7 (EL-000813): uppgiftstexten omformulerad. Den sa ”gör labben när du har gått
+  igenom del 2–4” och direkt efter ”den görs på fredagens lektion”, blandade labbet/labben och hade ”Stämde alla, välj …”.
+  Samma innehåll, tydligare ordning. Upplåst, ändrad, låst igen. Reviderad utan skyddade filer (regel 15).
+- **2026-10-01** Vecka 40, inlämning 6 d (EL-000812): frågan ”Hur mycket minskar förlusten …?” passade inte svarsrutan
+  ”Ny kabelförlust i % av den tidigare”. Nu: ”Hur stor blir den nya förlusten i matningskabeln, i procent av den
+  tidigare?” Facit och resultatkod oförändrade. Upplåst, ändrad, låst igen. Reviderad utan skyddade filer (regel 15).
+- **2026-10-01** Labbhandboken (`labbhandbok/index.html`, `station-5.html`, `vecka-40.html`, `vecka-41.html`) är nu
+  krypterad med lärarlösenordet som lärarportalen (`verktyg/larare/las.mjs`). Den var publik klartext med D-formlerna
+  för varje labbuppgift och svaren till fredagens stopp. Länkad från lärarportalen under Labbar. Äldre klartext finns
+  kvar i git-historiken.
+- **2026-10-03** Maskinrummet, Station B · Växelström med Erik (`simulatorer/vaxelstrom/`): vecka 40:s guidade labb i
+  3D med samma åtta uppgifter (EL-000337–344), samma D-värden och samma protokoll, och ett nytt steg där Erik,
+  maskinrummets elektriker, visar mätningen innan avläsningen syns. Bänken är SELV (kalibrator, källa, oscilloskop,
+  R och L, M1 True RMS och M2 sinuskalibrerad); X_{L} och |Z| mäts som U/I. Landströmmens 230 V vid kaj hanterar
+  bara Erik (lastbank R/L och effektanalysator). Eriks repliker innehåller inga svar (test). Vecka 40 orörd och låst;
+  modellfilerna är kopior med hash i `snapshot.json`. Rummet ligger i `rum.mjs`, Station A oförändrad (testerna går
+  igenom). Plan för övriga stationer: `simulatorer/PLAN-ERIK.md`.
+  Regel: Erik säger aldrig ett svar eller elevens tal, och kliver åt sidan när avläsningen visas så att eleven ser instrumentet.
+- **2026-10-03** Maskinrummet, Station A: Erik står nu vid bänken i huvudsidans 3D-rum (`simulatorer/`), bredvid
+  Johansson. Knappen *Erik visar steget* låter honom peka ut, med sina egna armar, vred, uttag, länk P–A, matning och
+  var spetsarna ska sitta i varje av de nio stegen. Det han pekar på markeras med en ring. Manuset ligger i
+  `simulatorer/stationA-manus.mjs`, ett inslag per steg. Test: Erik nämner inga tal och pekar bara på mätpunkter som
+  steget självt nämner. Utan WebGL visas stegen som text. Stegen, kontrollerna och protokollet är oförändrade.
+  Regel: i ett steg där eleven själv ska koppla visar Erik var, men det är eleven som kopplar och läser av.
+
+- **2026-10-05** Vecka 41, PR #153: fredagens M/S/T-körplan och separat protokollbilaga bevarade. Inlämning 3:s rättade länkar, distansalternativ och felsökningslogg flyttade till källposten EL-000816 så att innehållsbygget inte återställer den gamla texten. Skyddade lärarsidor kontrollerade och synkroniserade 8 oktober; se rättelsen nedan.
+
+- **2026-10-08** Vecka 41, PR #153: lärarportal, labbhandbok, frivilliga A/B/C och QR-visning upplåsta, granskade och krypterade igen. Lärarens körplan har samma tider och återställningar som elevsidan; samma borttagna bleck används för varje grupp. Fredagens grundarbete är M/S/T eller Motorlabbet, inte A/B/C. QR redovisar frivilliga A/B/C separat från inlämning 3, vars protokoll/felsökningslogg bifogas som PDF eller tydliga foton. Bedömning uppdaterad i skyddade källposten EL-000816 (revision 6) och lärarguiden ombyggd. Utgåvans konflikt löst genom ombyggnad mot aktuell main.
+
+- **2026-10-21 – Vecka 44, lärarens undervisning före bedömning.** Den skyddade utbildningsguiden är avstämd mot dagsmanusen 26–27 oktober: oberoende isolations- och TT-exempel, kvalitativ förklaring av IT-system och första/andra fel, samt fullständig säker mätordning. Bedömningslabbets genomräknade resultat tas bort ur undervisningsstödet. Lärarkopiorna ska ha dagens elevbilder och rätt guideavsnitt på rätt bild; `week44_acceptance.py` kontrollerar dekrypterade anteckningar, identisk synlig bild-XML och oförändrade elev-/bedömningsfiler. Publicerad teori och självstudieövningar behålls. Regel: ett skyddat undervisningsstöd kan också avslöja bedömningen när läraren följer det; granska både guiden och dess exporterade talaranteckningar mot aktuellt dagsmanus.
+
+  Verifierat vid publicering: de äldre lärarkopiorna hade 37/37/36 bilder och två innehöll de äldre guideexemplen. Ombyggda kopior har 20/19/18 bilder, identisk synlig bild-XML mot dagens elevkopior och bedömningsgräns på varje anteckningsbild. Befintlig IT-film innehåller avsiktligt publicerad fas–skrov-teori och behålls liksom självstudieövningarna. Google-guiden reviderad separat. Elevfrågor, svar, protokoll, försök och arbetsmängd är oförändrade.
+
+  Även tisdagens del 4 (filnamn v45_02, oförändrad mapp) är kontrollerad: den äldre lärarkopian hade 36 bilder med oberoende exempel. Ny krypterad lärarkopia har dagens 18 elevbilder och en särskild gräns mot inlämningens före-/efteranalys. Alla fyra lärarkopior kontrollerade mot elevens synliga bild-XML. Inga elevfiler ändrade.

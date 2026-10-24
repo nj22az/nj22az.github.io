@@ -1,0 +1,58 @@
+{
+  "id": "EL-000345",
+  "titel": "Spänning",
+  "sprak": "sv",
+  "typ": "matning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-labb-multimetersimulator",
+      "T-bildspel-v39-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Mät spänningen över hyttlampan."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "multimetersimulator/lessons.mjs LESSONS[0] (id voltage)",
+        "revision": "8cabde3",
+        "roll": "stegvis övning i multimeterlabbet"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "labb": {
+    "variant": "simulerad",
+    "steg": [
+      {
+        "id": "s1",
+        "text": "Välj V ⎓ och uttaget V Ω. Anslut svart till P2 och röd till P1. Slå på 12 V och läs av.",
+        "ledtrad": "En voltmeter kopplas parallellt med lasten. Svart spets är referensen. Förväntat värde är 12,00 V.",
+        "varfor": "Rätt: mätaren ligger parallellt med lampan. Dess höga ingångsresistans gör att nästan ingen extra ström tas från kretsen.",
+        "kod": {
+          "test": "multimetersimulator.voltage.1"
+        }
+      }
+    ]
+  },
+  "simulator": {
+    "labb": "multimetersimulator",
+    "scenario": "lamp",
+    "validering": {
+      "typ": "steg"
+    },
+    "kallhanvisning": "Multimeter och mätfel, bild 10–16",
+    "alias": "voltage"
+  }
+}

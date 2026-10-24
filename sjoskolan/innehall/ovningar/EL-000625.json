@@ -1,0 +1,33 @@
+{
+  "id": "EL-000625",
+  "titel": "Förberedelsefråga 1B: 2",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2"
+    ],
+    "niva": "forberedelse",
+    "teori": [
+      "T-bildspel-v37-04"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vad kan en skadad sladd innebära på ett fuktigt däck?",
+    "instruktion": "Fundera i 10–15 minuter och skriv några stödord. Du behöver inte kunna svaret ännu."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-37/aktuell/v37_03_Forberedelsefragor_1B_elev.pptx bild 1, stycke 2",
+        "revision": "8cabde3",
+        "roll": "förberedelsefråga före genomgången"
+      }
+    ],
+    "publik": "elev"
+  }
+}

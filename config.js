@@ -6,24 +6,23 @@
 const CONFIG = {
   site: {
     title: "The Office of Nils Johansson",
-    tagline: "Engineer. Builder. Explorer.",
+    tagline: "Engineering in the field. Building beyond it.",
     description:
-      "A digital hub for field engineering projects, technical writing, and tools built from real-world deployments.",
+      "Field service engineering, industrial commissioning, and practical digital tools shaped by work across marine and international environments.",
+    footerTagline: "Field engineering, practical tools, and writing from work across borders.",
     url: "https://nj22az.github.io",
     copyright: "\u00A9 " + new Date().getFullYear() + " Nils Johansson",
   },
 
   author: {
     name: "Nils Johansson",
-    role: "Field Service Engineer (Marine Engineer)",
+    role: "Field Service Engineer \u00b7 Marine Systems",
     location: "Southeast Asia",
-    bio: "Marine engineer turned field service engineer with a background in maritime operations, precision material testing systems, and industrial commissioning. Used to working independently in complex technical environments, I combine hands-on engineering experience with structured execution and strong cross-cultural awareness.",
-    photo: "/assets/images/nils-profile.jpg",
+    bio: "Marine engineer turned field service engineer, working across maritime systems, precision material testing, and industrial commissioning. I combine hands-on diagnostics with structured delivery, clear documentation, and cross-cultural collaboration.",
     social: {
       github: "https://github.com/nj22az",
       linkedin: "https://www.linkedin.com/in/nils-johansson-86744583",
-      etsy: "https://www.etsy.com/shop/Colonialclub",
-      wordpress: "https://theofficeofnils.wordpress.com",
+      store: "https://3va6hr-fw.myshopify.com/",
     },
     locations: [
       {
@@ -48,26 +47,60 @@ const CONFIG = {
   navigation: [
     { id: "home", label: "Home" },
     { id: "projects", label: "Projects" },
-    { id: "journal", label: "Journal" },
+    { id: "world", label: "Johansson World", url: "/world/" },
+    { id: "shop", label: "Shop", url: "https://3va6hr-fw.myshopify.com/" },
+    { id: "blog", label: "Blog", url: "/blog/" },
     { id: "about", label: "About" },
     { id: "locations", label: "Locations" },
   ],
 
   projects: [
     {
-      title: "The Front-Row Seat",
+      title: "Maintenance Programme Demo",
       description:
-        "Read a six-book historical omnibus online — an illustrated compact edition with adjustable type and dark mode. Each book stands alone; together they follow five centuries of the East India Company from one Thames-side tavern.",
-      url: "/the-front-row-seat/",
+        "Try an English maintenance programme for technical equipment. Explore sample assets, scheduled tasks, inspection checklists, risk assessments and service history. Demonstration data; changes stay in your browser.",
+      url: "/maintenance-demo/",
       icon: "notebook",
-      tags: ["Six Books", "Historical Fiction", "Read Online"],
+      tags: ["Demo", "Maintenance", "Engineering"],
+      bento: "wide",
+      featured: true,
+    },
+    {
+      title: "Sjöskolan – elteknik",
+      description:
+        "Svenskt elevmaterial för elteknik ombord: presentationer, bildövningar och metodstöd för vecka 37–45. Multimeter, SELV-rigg, trefas och felsökning.",
+      url: "/sjoskolan/",
+      icon: "notebook",
+      tags: ["Sjöfart", "Elteknik", "Elevmaterial"],
+      bento: "wide",
+      featured: true,
+    },
+    {
+      title: "Elteknik och ell\u00e4ra",
+      description:
+        "Textbook for marine and industrial electrical engineering: 24 chapters, 240 exercises with full solutions, formula card and index. E-book price read live from Shopify \u2014 or download a free sample chapter.",
+      url: "/elteknik/",
+      shopifyProductUrl: "https://3va6hr-fw.myshopify.com/products/elteknik-och-ellara.js",
+      icon: "notebook",
+      image: "/elteknik/files/omslag.jpg?v=20261017",
+      tags: ["Book", "Elteknik", "YH"],
+      bento: "wide",
+      featured: true,
+    },
+    {
+      title: "Johansson World",
+      description:
+        "A storytelling game set in Johansson Town, a 1997 Okinawan harbour town. Meet the residents and discover the shops, bathhouse and waterfront.",
+      url: "/world/",
+      icon: "home",
+      tags: ["3D World", "Exploration", "Okinawa"],
       bento: "wide",
       featured: true,
     },
     {
       title: "GitHub",
       description:
-        "Open-source projects, tools, and code experiments. Browse repositories, contributions, and engineering side projects.",
+        "Open-source tools, working prototypes, and engineering experiments with an emphasis on practical use.",
       url: "https://github.com/nj22az",
       icon: "github",
       tags: ["Code", "Open Source", "Projects"],
@@ -77,7 +110,7 @@ const CONFIG = {
     {
       title: "LinkedIn",
       description:
-        "Professional profile, career history, and industry connections. Field service engineering across maritime and industrial sectors.",
+        "Career history and professional work across maritime systems, industrial equipment, and international field service.",
       url: "https://www.linkedin.com/in/nils-johansson-86744583",
       icon: "linkedin",
       tags: ["Career", "Networking", "Engineering"],
@@ -85,20 +118,20 @@ const CONFIG = {
       featured: true,
     },
     {
-      title: "Etsy Shop",
+      title: "JOJO-Engineering Shop",
       description:
-        "Curated digital products and templates built from real engineering workflows and field deployments.",
-      url: "https://www.etsy.com/shop/Colonialclub",
+        "Printify-made apparel, drinkware, and field-ready merchandise from JOJO-Engineering.",
+      url: "https://3va6hr-fw.myshopify.com/",
       icon: "store",
-      tags: ["Templates", "Digital Products", "Shop"],
+      tags: ["Printify", "Merchandise", "Shop"],
       bento: "normal",
       featured: true,
     },
     {
-      title: "WordPress Blog",
+      title: "Blog",
       description:
-        "Long-form technical dispatches and cultural reflections from engineering deployments around the world.",
-      url: "https://theofficeofnils.wordpress.com",
+        "Long-form technical dispatches and cultural reflections from engineering work around the world.",
+      url: "/blog/",
       icon: "wordpress",
       tags: ["Writing", "Engineering", "Travel"],
       bento: "wide",
@@ -107,35 +140,32 @@ const CONFIG = {
     {
       title: "StepWise",
       description:
-        "Interactive step-by-step calculator for engineering workflows. Built for precision and clarity.",
+        "A test-point planner for measurement tasks: create evenly spaced or percentage targets, convert units, and export the plan.",
       url: "https://nj22az.github.io/stepbuddy/",
       icon: "calculator",
       tags: ["Tool", "Calculator", "Engineering"],
       bento: "normal",
       featured: true,
     },
+  ],
+
+  archivedProjects: [
     {
       title: "Jonsson's Anslagstavla",
       description:
-        "A small shop of practical products made in Stora Mell\u00f6sa, Sweden. Browse the catalog, order online, and pay with Swish. Available in Swedish and English.",
+        "A bilingual shop for practical products made in Stora Mell\u00f6sa, with online ordering and Swish payment.",
       url: "/shop/",
       icon: "package",
       tags: ["Shop", "Products", "Sweden"],
       bento: "wide",
-      featured: true,
+      featured: false,
+      archived: true,
     },
   ],
 
-  /** WordPress API for journal feed */
   wordpressApi:
     "https://public-api.wordpress.com/wp/v2/sites/theofficeofnils.wordpress.com/posts",
 
-  /**
-   * Inline SVG logo — rubber-stamp seal style.
-   * Uses currentColor for theme adaptability.
-   * @param {number} size - width/height in px
-   */
-  /** Rectangular nav logo — wide, readable at nav bar height */
   navLogo: function (h) {
     var height = h || 32;
     var width = Math.round(height * 5.6);
@@ -146,7 +176,6 @@ const CONFIG = {
     '</svg>';
   },
 
-  /** Circular seal logo — for hero and about sections */
   logo: (function () {
     var _id = 0;
     return function (size) {
@@ -167,7 +196,6 @@ const CONFIG = {
     };
   })(),
 
-  // Inline SVG icon paths (SF Symbols / Lucide style, 24x24 viewBox)
   icons: {
     github:
       "M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4M9 18c-4.51 2-5-2-7-2",
@@ -197,7 +225,122 @@ const CONFIG = {
       "M4 2h16a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2ZM6 6h12v4H6ZM6 14h2M6 18h2M10 14h2M10 18h2M14 14h4v4h-4Z",
     printer3d:
       "M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6Z",
+    joystick:
+      "M21 17a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2ZM6 15v-2a6 6 0 0 1 12 0v2M12 9V7M12 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z",
     package:
       "M16.5 9.4l-9-5.19M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16ZM3.27 6.96 12 12.01l8.73-5.05M12 22.08V12",
+    zap:
+      "M13 2 3 14h9l-1 8 10-12h-9l1-8Z",
   },
 };
+
+
+
+/* Homepage project explorer: purpose, first steps and previews. */
+CONFIG.projectExplorer = [
+  {
+    "id": "world",
+    "category": "create",
+    "title": "Johansson World",
+    "eyebrow": "A LITTLE ISLAND LIFE · 1997",
+    "summary": "Step into an Okinawan harbour town. Walk the waterfront, visit the shops and meet the people who live there.",
+    "url": "/johansson-town/",
+    "action": "Start the game",
+    "titleUrl": "/world/",
+    "secondaryUrl": "/world/",
+    "secondaryAction": "About the world",
+    "downloadUrl": "/world/#downloads",
+    "platforms": ["Linux", "x86-64", "Steam Deck"],
+    "format": "3D exploration",
+    "language": "English",
+    "status": "Work in progress",
+    "firstTry": "Start exploring, walk towards Sakura Konbini, then approach a resident or an object to see what you can do.",
+    "features": [
+      "A walkable town with shops, homes and a waterfront",
+      "Residents, everyday routines and small discoveries",
+      "A harbour, ferry routes and places to explore"
+    ],
+    "preview": "world"
+  },
+  {
+    "id": "maintenance",
+    "category": "tools",
+    "title": "Maintenance Desk",
+    "eyebrow": "FROM THE ENGINEER’S WORKBENCH",
+    "summary": "Turn equipment care into a clear programme. Try scheduled tasks, inspection checklists and follow-up actions in a fictional workshop.",
+    "url": "/maintenance-demo/",
+    "action": "Try the maintenance demo",
+    "format": "Interactive demo",
+    "language": "English",
+    "status": "Demo",
+    "firstTry": "Open the cooling water pump, choose a maintenance task and record a sample inspection. Your changes stay in your browser.",
+    "features": [
+      "Calendar and operating-hour maintenance schedules",
+      "Risk assessments, checklists and corrective actions",
+      "Service history with backup export and restore"
+    ],
+    "preview": "maintenance"
+  },
+  {
+    "id": "course",
+    "category": "learn",
+    "title": "Sjöskolan · Electrical engineering",
+    "eyebrow": "LEARNING THROUGH DOING",
+    "summary": "A practical course space for electrical work on board. Explore the lessons, practise measurements and work through guided exercises.",
+    "url": "/sjoskolan/",
+    "action": "Browse the course",
+    "format": "Course & simulators",
+    "language": "Swedish",
+    "status": "Learning resource",
+    "firstTry": "Open the multimeter simulator and work through a measurement exercise. Course material and instructions are in Swedish.",
+    "features": [
+      "Lessons connecting electrical theory to marine examples",
+      "Interactive simulators and measurement exercises",
+      "Guided laboratory material and formula support"
+    ],
+    "preview": "course",
+    "secondaryUrl": "/sjoskolan/multimetersimulator/",
+    "secondaryAction": "Try the multimeter"
+  },
+  {
+    "id": "book",
+    "category": "learn",
+    "title": "Elteknik och ellära",
+    "eyebrow": "THE BOOK BEHIND THE PRACTICE",
+    "summary": "Electrical engineering for marine and industrial work, collected in one Swedish textbook. Read a free sample before exploring the full book.",
+    "url": "/elteknik/",
+    "action": "Discover the book",
+    "format": "Textbook",
+    "language": "Swedish",
+    "status": "Free sample available",
+    "firstTry": "Download the free sample chapter. The book page provides the full contents and current purchase details.",
+    "features": [
+      "24 chapters spanning marine and industrial electrical engineering",
+      "240 exercises with full solutions",
+      "A formula card and index for reference"
+    ],
+    "preview": "book",
+    "secondaryUrl": "/elteknik/files/provkapitel.pdf",
+    "secondaryAction": "Read the free sample"
+  },
+  {
+    "id": "stepwise",
+    "category": "tools",
+    "title": "StepWise",
+    "eyebrow": "PLAN THE MEASUREMENT",
+    "summary": "Turn a measurement range into test targets. Choose even spacing or percentage points, add units, then copy or export the plan.",
+    "url": "/stepbuddy/",
+    "action": "Plan test points",
+    "format": "Test-point planner",
+    "language": "English",
+    "status": "Browser tool",
+    "firstTry": "Load the 0–10 kN example: five points give 0, 2.5, 5, 7.5 and 10 kN. Or try a pressure range or a 4–20 mA signal.",
+    "features": [
+      "Evenly spaced targets or custom percentages of a span",
+      "Force, pressure, signal and other units with conversions",
+      "Named ranges, display precision, copy and CSV export"
+    ],
+    "preview": "stepwise"
+  }
+];
+

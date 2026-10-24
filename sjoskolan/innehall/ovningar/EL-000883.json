@@ -1,0 +1,69 @@
+{
+  "id": "EL-000883",
+  "titel": "Startarens kontakter",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 2,
+  "granskning": {
+    "status": "utkast"
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-kurs-v41-03",
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Spänningslöst visar 13–14 överområde och 95–96 0,1 Ω. Vad betyder värdena? Vad visar 95–96 efter överlastreläets testknapp, och varför?",
+    "samband": [
+      "NO: öppen i vila. NC: sluten i vila"
+    ],
+    "givet": "Startaren är ett övningsobjekt och är aldrig ansluten. Kontaktorn är opåverkad.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "13–14 är kontaktorns hjälpkontakt. 95–96 sitter på överlastreläet.",
+      "status": "utkast"
+    },
+    {
+      "niva": "metod",
+      "text": "Bestäm om varje kontakt är normalt öppen eller normalt sluten, och vad testknappen gör med överlastreläet.",
+      "status": "utkast"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Överområde betyder ingen förbindelse, nästan 0 Ω betyder sluten kontakt. 2) Vilken kontakt är NO och vilken NC? 3) Testknappen gör samma sak som en överlast. Samma sätt att resonera som för STOPP och START i hållkretsen.",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "13–14 är en normalt öppen hjälpkontakt (NO): öppen när kontaktorn är opåverkad. 95–96 är överlastreläets normalt slutna kontakt (NC). Testknappen löser ut reläet som vid en överlast. Då öppnar 95–96 och mätaren visar överområde tills reläet återställs. I en ansluten krets bryter 95–96 då matningen till spolen och kontaktorn släpper.",
+    "status": "utkast",
+    "kalla": "Kursens facit (publikt)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_03-q7",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 27 och 28",
+        "roll": "presentationens stöd- och övningsbild"
+      },
+      {
+        "kalla": "sjoskolan/labbhandbok/vecka-41.html",
+        "roll": "labbpasset med motorn, startaren och strömtången"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  }
+}

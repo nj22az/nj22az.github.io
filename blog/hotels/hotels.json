@@ -1,0 +1,36 @@
+{
+  "reviews": [
+    {
+      "id": "scandic-elmia-2026-10-24",
+      "hotelId": "scandic-elmia",
+      "name": "Scandic Elmia",
+      "city": "Jönköping",
+      "country": "Sweden",
+      "countryCode": "SE",
+      "address": "Elmiavägen 8",
+      "coordinates": null,
+      "recordedOn": "2026-10-24",
+      "stayDates": null,
+      "currency": "SEK",
+      "roomPaid": 1107,
+      "parkingPaid": 105,
+      "freeParking": false,
+      "easyParking": null,
+      "parkingType": "external-paid",
+      "parkingOperator": "Pair Parking",
+      "parkingPayment": "Pair Parking website",
+      "parkingReceipt": "Available via Pair Parking website",
+      "parkingOnHotelReceipt": false,
+      "summary": "Satisfactory overnight stay at a fair room price.",
+      "review": [
+        "Scandic Elmia provided a satisfactory overnight stay at a fair room price of SEK 1,107. Parking cost a further SEK 105, bringing the recorded total for the room and parking to SEK 1,212.",
+        "Parking was paid separately through Pair Parking’s website, where the parking receipt was also available. On this stay, the parking charge could not be included on the hotel receipt.",
+        "The room price was reasonable. The additional parking cost and separate receipt should be taken into account when comparing alternatives, particularly for business travel. This stay does not qualify for the free-parking shortlist."
+      ],
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-elmia",
+      "parkingUrl": "https://manager.pair.se/booking/new/6db02c70-57fc-11ef-9256-499bf887b022?lang=en_GB",
+      "identityCheckedOn": "2026-10-24",
+      "sourceNote": "Personal stay report recorded 24 October 2026. The hotel name and address were checked against the official Scandic and Pair booking pages. Prices, assessment and receipt arrangements describe this stay; they are not a current tariff or a statement of permanent hotel policy."
+    }
+  ]
+}

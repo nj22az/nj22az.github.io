@@ -1,0 +1,83 @@
+{
+  "id": "EL-000859",
+  "titel": "Motorn",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 3,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-1"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-formelblad"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En fyrpolig motor är märkt 7,5 kW, Δ/Y 400/690 V, 1 455 r/min, η = 0,89 och cos φ = 0,84. Nätet i land är 400 V, 50 Hz. Vilken koppling används? Beräkna eftersläpning, elektrisk inmatning och linjeström vid märklast.",
+    "delfragor": [
+      {
+        "id": "a",
+        "typ": "flerval",
+        "text": "Vilken koppling ska motorn ha på det angivna nätet?",
+        "alternativ": [
+          "Y",
+          "Valfri koppling ger samma märkdrift.",
+          "Varken Y eller Δ får användas vid någon nätspänning.",
+          "Δ"
+        ],
+        "ratt": 3
+      },
+      {
+        "id": "b",
+        "typ": "flerval",
+        "text": "Vilken eftersläpning har motorn vid märklast?",
+        "alternativ": [
+          "97,0 %",
+          "4,5 %",
+          "3,0 %",
+          "0,30 %"
+        ],
+        "ratt": 2
+      },
+      {
+        "id": "c",
+        "typ": "flerval",
+        "text": "Vilken elektrisk inmatning och linjeström får du vid märklast?",
+        "alternativ": [
+          "Cirka 8,43 kW och 8,36 A",
+          "Cirka 8,43 kW och 14,5 A",
+          "7,50 kW och 12,9 A",
+          "Cirka 6,68 kW och 11,5 A"
+        ],
+        "ratt": 1
+      }
+    ]
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "tentamen.html övningstenta 9",
+        "revision": "8cabde3",
+        "roll": "uppgift i övningstentan"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "Δ, eftersom lindningen är avsedd för 400 V. n_{s} = 1 500 r/min, s = 45/1 500 = 3,0 %. P_{in} = 7,5/0,89 ≈ 8,43 kW. I_{L} = 8 430/(√3 · 400 · 0,84) ≈ 14,5 A.",
+    "status": "migrerad",
+    "kalla": "Övningstentans lösning"
+  },
+  "bedomning": {
+    "kursniva": "Veckor: v43",
+    "kriterier": [
+      "Motiverar kopplingen från märkdata och visar beräkningen av eftersläpning.",
+      "Skiljer axeleffekt från elektrisk inmatning och visar beräkningen av linjeström."
+    ]
+  }
+}

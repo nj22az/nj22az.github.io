@@ -1,0 +1,125 @@
+/* Three named workspaces: character editing, scene composition and comic panels. */
+[hidden]{display:none!important}
+body.standalone-studio{--studio-mode-height:calc(58px + env(safe-area-inset-top))}
+.studio-modes{position:fixed;inset:0 0 auto;z-index:20000;height:var(--studio-mode-height);padding-top:env(safe-area-inset-top)!important;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 12px;background:#fff;border-bottom:1px solid var(--line-border);box-sizing:border-box}
+.studio-modes button{flex:0 1 220px;min-height:44px;border:1px solid transparent;border-radius:10px;background:transparent;color:var(--line-text);font:600 14px var(--line-font);cursor:pointer}
+.studio-modes button[aria-pressed=true]{background:var(--line-green);color:#fff}
+body.standalone-studio .shm{top:var(--studio-mode-height)!important;height:calc(100dvh - var(--studio-mode-height))!important;bottom:auto!important;grid-template-rows:auto auto minmax(0,1fr)!important}
+body.standalone-studio .shm .shm-foot,body.standalone-studio .shm .shm-poses{display:none!important}
+body.standalone-studio .shm .shm-main{min-height:0}
+body.standalone-studio .studio-tools{flex-wrap:wrap}
+body.standalone-studio .studio-file-menu button{width:100%}
+.scene-workspace{margin-top:var(--studio-mode-height);padding:20px max(16px,env(safe-area-inset-right)) max(32px,env(safe-area-inset-bottom));max-width:1600px;box-sizing:border-box;margin-inline:auto}
+.scene-workspace *{box-sizing:border-box}
+.scene-workspace :is(button,select,input){font:500 14px var(--line-font);color:var(--line-text);min-height:44px;border:1px solid var(--line-border);border-radius:9px;background:#fff;padding:10px;max-width:100%}
+.scene-workspace button{cursor:pointer}
+.scene-workspace button:disabled{opacity:.45;cursor:default}
+.scene-workspace :is(button,select,input,a):focus-visible,.studio-modes button:focus-visible{outline:3px solid var(--line-green);outline-offset:3px}
+.scene-workspace input[type=range]{padding:6px;width:100%;accent-color:var(--line-green)}
+.scene-workspace label{display:grid;gap:6px;margin-block:12px;font-size:14px;font-weight:600}
+.scene-workspace h1{font-size:24px;margin:0 0 6px}.scene-workspace h2{font-size:19px;margin:0 0 10px}
+.scene-workspace p{font-size:14px;line-height:1.5;margin:0 0 14px;color:var(--line-secondary)}
+.scene-heading{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}.scene-heading>div{flex:1 1 440px}.scene-heading p{margin-bottom:0}
+.scene-steps{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding:3px 3px 8px;scrollbar-width:thin}.scene-steps button{flex:1 0 auto}.scene-steps [aria-current=step]{background:var(--line-green);color:#fff;border-color:var(--line-green)}
+.scene-layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(300px,1fr);gap:22px;align-items:start}
+.scene-picture{position:sticky;top:calc(var(--studio-mode-height) + 16px);min-width:0}
+.scene-picture canvas{display:block;width:100%;height:auto;background:var(--line-border);border:1px solid var(--line-border);border-radius:12px;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.scene-selection{position:absolute;border:2px dashed #ffcc54;border-radius:10px;pointer-events:none;box-shadow:0 0 0 1px #263a3644}
+/* Caught by a seat, a person or a counter while dragging: the same outline, solid. Nothing else is drawn. */
+.scene-selection{box-sizing:border-box}.scene-selection[data-locked]{border-style:solid;border-width:3px}
+.scene-picture .scene-hint{margin-top:10px}.scene-status{min-height:24px;color:var(--line-text)!important}
+.scene-controls{background:#fff;border:1px solid var(--line-border);border-radius:14px;padding:20px;min-width:0}
+.scene-locations{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.scene-locations button{display:grid;gap:6px;padding:5px;text-align:left;font-size:12px}.scene-locations img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px}.scene-locations span{padding:3px}.scene-locations [aria-pressed=true]{border:2px solid var(--line-green);background:#e6f9ee}
+.scene-workspace .scene-primary{background:var(--line-green);border-color:var(--line-green);color:#fff}
+.scene-actor-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.scene-actor-controls label{margin:4px 0}.scene-actor-controls button{font-size:13px}
+.scene-workspace .scene-snap{grid-column:1/-1;display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer}
+.scene-workspace .scene-snap input{flex:none;width:22px;height:22px;min-height:0;margin:0;padding:0;accent-color:var(--line-green)}
+.scene-next{display:flex;justify-content:space-between;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line-border)}
+.scene-comic{margin-top:20px;padding:20px;background:#fff;border:1px solid var(--line-border);border-radius:14px}.scene-comic>button{margin:4px}
+.scene-panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:16px}.scene-panels figure{margin:0}.scene-panels img{width:100%;border:1px solid var(--line-border);border-radius:10px}.scene-panels figure>div{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.scene-panels :is(button,.scene-save){font-size:12px}
+@media(max-width:800px){.scene-workspace{padding:14px 12px 30px}.scene-layout{grid-template-columns:minmax(0,1fr);gap:12px}.scene-picture{position:relative;top:0}.scene-controls{padding:16px}.scene-heading h1{font-size:21px}.scene-heading>:is(button,a){flex:1}.scene-steps button{font-size:12px}.scene-panels{grid-template-columns:1fr}.scene-locations{grid-template-columns:repeat(3,minmax(0,1fr))}.studio-modes{gap:3px;padding:0 6px}.studio-modes button{font-size:13px;padding:6px}.scene-comic{padding:14px}}
+@media(max-width:400px){.scene-locations{grid-template-columns:repeat(2,minmax(0,1fr))}.scene-actor-controls{grid-template-columns:1fr 1fr}.scene-next button{font-size:12px}.studio-modes button{font-size:12px}}
+
+.scene-frame{position:relative}
+.scene-workspace[data-mode=comic] .scene-layout{grid-template-columns:minmax(0,1fr)}
+.scene-workspace[data-mode=comic] .scene-picture{max-width:740px;position:relative;top:0}
+.scene-camera{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}.scene-camera label{display:grid;gap:8px;font-size:14px}.scene-camera input{width:100%;min-height:36px}.scene-camera button{grid-column:1/-1}.scene-picture canvas{cursor:grab}.scene-picture canvas:active{cursor:grabbing}@media(max-width:600px){.scene-camera{grid-template-columns:1fr}}
+
+/* Links that save a file look like the buttons beside them (a real <a download>: see studio-share.mjs). */
+.scene-workspace :is(.scene-save,.scene-button){display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border:1px solid var(--line-border);border-radius:9px;background:#fff;color:var(--line-text);font:500 14px var(--line-font);text-decoration:none;cursor:pointer;-webkit-user-select:none;user-select:none}
+.scene-workspace .scene-save.scene-primary{background:var(--line-green);border-color:var(--line-green);color:#fff;font-weight:700}
+.scene-workspace :is(.scene-save,.scene-button)[aria-disabled=true]{opacity:.45;cursor:default}
+.scene-save-row{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 6px}.scene-save-row>*{flex:1 1 140px}
+.scene-workspace .scene-save-note:empty,.scene-workspace .scene-export-status:empty{display:none}
+.scene-workspace .scene-save-note{font-size:13px;margin:0 0 8px}
+.scene-workspace .scene-export-status{color:var(--line-text);font-weight:600;margin:0 0 10px}
+.scene-workspace .scene-label{font-size:14px;font-weight:600;color:var(--line-text);margin:14px 0 6px}
+/* A short list of choices as one row of buttons (picture format, comic layout). */
+.scene-choice{display:flex;gap:6px;flex-wrap:wrap}.scene-choice button{flex:1 1 0;min-width:96px}
+.scene-workspace .scene-choice [aria-pressed=true]{border:2px solid var(--line-green);background:#e6f9ee;padding:9px}
+
+/* The cast strip: who is in the scene. The selected chip has a green edge and tint, and nothing else. */
+.scene-strip{display:flex;gap:8px;overflow-x:auto;padding:10px 2px 2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.scene-strip::-webkit-scrollbar{display:none}
+.scene-chip{flex:0 0 auto;display:flex;align-items:center;border:1px solid var(--line-border);border-radius:28px;background:#fff;padding:3px}
+.scene-chip[data-selected]{border-color:var(--line-green);background:#e6f9ee;box-shadow:inset 0 0 0 1px var(--line-green)}
+.scene-workspace .scene-chip-pick{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 6px 0 0;border:0;border-radius:24px;background:transparent;font-weight:600;max-width:190px}
+.scene-chip-pick img,.scene-chip-face{flex:none;width:40px;height:40px;border-radius:50%;background:#e7eeeb;object-fit:cover}
+.scene-chip-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scene-workspace .scene-chip-remove{flex:none;display:grid;place-items:center;width:44px;height:44px;min-height:44px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--line-secondary)}
+.scene-workspace .scene-chip-remove:hover{color:var(--line-text);background:#00000008}
+
+/* The toolbar beside the selected character (placed by placeToolbar in scene-controls.mjs). */
+.scene-toolbar{position:absolute;z-index:3;display:flex;gap:2px;padding:4px;background:#fffffff5;border:1px solid var(--line-border);border-radius:14px;box-shadow:0 6px 20px #24344229}
+.scene-workspace .scene-toolbar button{display:grid;place-items:center;width:44px;height:44px;min-height:44px;padding:0;border:0;border-radius:10px;background:transparent;color:var(--line-text)}
+.scene-workspace .scene-toolbar button:hover:not(:disabled){background:#e6f9ee}
+.scene-workspace .scene-toolbar button:disabled{opacity:.3}
+.scene-toolbar [data-tool=turn-right] svg{transform:scaleX(-1)}
+.scene-toolbar svg{width:22px;height:22px}
+
+/* Pose and expression: labelled buttons in groups, scrolling inside their own box. */
+.scene-workspace .scene-picker-title{font-size:15px;margin:16px 0 6px}
+.scene-picker{max-height:min(300px,42vh);overflow-y:auto;overscroll-behavior:contain;border:1px solid var(--line-border);border-radius:12px;padding:4px 10px 10px;background:var(--line-surface)}
+.scene-workspace .scene-picker h4{position:sticky;top:-4px;z-index:1;margin:0 -10px 6px;padding:8px 10px 4px;background:var(--line-surface);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--line-secondary)}
+.scene-picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px;margin-bottom:6px}
+.scene-workspace .scene-picker-grid button{min-height:44px;padding:6px 8px;font-size:13px;line-height:1.2;text-align:center;overflow-wrap:anywhere}
+.scene-workspace .scene-picker-grid [aria-pressed=true]{border:2px solid var(--line-green);background:#e6f9ee;padding:5px 7px}
+.scene-workspace [data-picker=expression] .scene-picker-grid button{display:grid;justify-items:center;gap:4px;padding:6px 4px}
+.scene-workspace [data-picker=expression] .scene-picker-grid [aria-pressed=true]{padding:5px 3px}
+.scene-face{width:32px;height:32px;border-radius:50%}
+.scene-workspace .scene-pane-note{margin:0 0 4px}
+.scene-workspace .scene-moment{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0 0 12px}
+.scene-workspace .scene-moment-note{margin:0;font-size:.9em;opacity:.8;flex:1 1 14em}
+
+/* Undo after removing a character or a panel. */
+.scene-toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20001;display:flex;align-items:center;gap:6px;max-width:calc(100vw - 32px);padding:4px 4px 4px 16px;border-radius:12px;background:#1f2a2e;color:#fff;font:500 14px var(--line-font);box-shadow:0 10px 30px #0004}
+.scene-toast-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.scene-workspace .scene-toast button{min-height:44px;padding:0 14px;border:0;border-radius:9px;background:transparent;color:#7fe7ad;font-weight:700}
+.scene-workspace .scene-toast button:hover{background:#ffffff14}
+
+/* The full-screen preview: press and hold the picture to save it (World's base CSS turns the callout off). */
+.studio-sheet{position:fixed;inset:0;z-index:30000;display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;gap:8px;padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));background:#101719;color:#fff;font-family:var(--line-font);box-sizing:border-box}
+.studio-sheet[hidden]{display:none}
+.studio-sheet-bar{display:flex;align-items:center;gap:8px}
+.studio-sheet-bar h2{flex:1;margin:0;font-size:18px;font-weight:700;color:#fff}
+.studio-sheet :is(.studio-sheet-save,.studio-sheet-close){display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border-radius:10px;font:700 15px var(--line-font);text-decoration:none;cursor:pointer;box-sizing:border-box}
+.studio-sheet .studio-sheet-save{background:var(--line-green);color:#fff;border:1px solid var(--line-green)}
+.studio-sheet .studio-sheet-save[aria-disabled=true]{opacity:.45}
+.studio-sheet .studio-sheet-close{background:transparent;color:#fff;border:1px solid #ffffff55}
+.studio-sheet :is(a,button):focus-visible{outline:3px solid #7fe7ad;outline-offset:2px}
+.studio-sheet-stage{min-height:0;display:grid;place-items:center}
+.studio-sheet-image{display:block;max-width:100%;max-height:100%;max-height:calc(100dvh - 150px);object-fit:contain;border-radius:4px;background:#fff;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto;pointer-events:auto;touch-action:auto}
+.studio-sheet-tip,.studio-sheet-status{margin:0;text-align:center;font-size:14px;color:#d6e2de}
+.studio-sheet-status:empty{display:none}
+
+@media(max-width:800px){.scene-picker{max-height:min(280px,40vh)}}
+@media(max-width:400px){.scene-picker-grid{grid-template-columns:repeat(auto-fill,minmax(84px,1fr))}.scene-chip-pick{max-width:150px}}
+.scene-camera-box{margin:14px 0 0}
+.scene-camera-box>summary{display:flex;align-items:center;gap:8px;min-height:44px;font-size:14px;font-weight:600;cursor:pointer;list-style:none}
+.scene-camera-box>summary::-webkit-details-marker{display:none}
+.scene-camera-box>summary::after{content:'';width:8px;height:8px;border:solid var(--line-secondary);border-width:0 2px 2px 0;transform:rotate(45deg) translateY(-3px);margin-left:2px}
+.scene-camera-box[open]>summary::after{transform:rotate(225deg) translate(-2px,-1px)}
+.scene-camera-box .scene-camera{margin-top:4px}
+
+/* Keep every workspace reachable when the mode bar exceeds a phone width. */
+@media(max-width:800px){.studio-modes{justify-content:flex-start;overflow-x:auto}.studio-modes button{flex:0 0 auto;min-width:84px}}

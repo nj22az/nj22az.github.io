@@ -1,0 +1,33 @@
+{
+  "id": "EL-000724",
+  "titel": "Avslutsfråga: v44_01",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 2,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v44-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilket nytt fel kan göra ett kvarstående första isolationsfel betydligt farligare?",
+    "instruktion": "Uppgiften Jämför jordningssystemen i inlämningen bygger på del 1. Inlämningen senast fredag 30 oktober."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-44/aktuell/v44_01_Lagspanningssystem_elev.pptx bild 36",
+        "revision": "8cabde3",
+        "roll": "avslutsfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

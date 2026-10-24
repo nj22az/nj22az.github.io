@@ -1,0 +1,92 @@
+{
+  "workflow": "Johansson World Blender -> GLB -> audit -> preview -> Three.js",
+  "blender": "4.5.3 LTS",
+  "triangles": 27760,
+  "meshes": 21,
+  "bytes": 1196268,
+  "sha256": "2a85f07c2b90af6ec01679593be9856f774ce4531c68d8ec030a47788e5728e6",
+  "sourceSpecSHA256": "419bea86bea54272c65e9870aa111d757109620b27c1836fc44106b267b2ff3a",
+  "ports": {
+    "sourcePlus": [
+      -0.24,
+      0.115,
+      -0.025
+    ],
+    "sourceMinus": [
+      -0.33,
+      0.115,
+      -0.025
+    ],
+    "switchIn": [
+      -0.12,
+      0.043,
+      -0.095
+    ],
+    "switchOut": [
+      -0.01,
+      0.043,
+      -0.095
+    ],
+    "loadPlus": [
+      0.15,
+      0.043,
+      -0.065
+    ],
+    "loadMinus": [
+      0.3,
+      0.043,
+      -0.065
+    ],
+    "returnLeft": [
+      0.015,
+      0.043,
+      0.06
+    ],
+    "returnRight": [
+      0.065,
+      0.043,
+      0.06
+    ],
+    "meterRed": [
+      -0.063,
+      0.085,
+      0.235
+    ],
+    "meterBlack": [
+      -0.099,
+      0.085,
+      0.235
+    ],
+    "meterMA": [
+      -0.027,
+      0.085,
+      0.235
+    ],
+    "meterA": [
+      0.009,
+      0.085,
+      0.235
+    ]
+  },
+  "movable": [
+    "SwitchLever",
+    "ReturnLink",
+    "ProbeRed",
+    "ProbeBlack",
+    "MeterDial"
+  ],
+  "originalGeometry": true,
+  "renderReview": {
+    "passed": true,
+    "method": "Blender CPU geometry and connection review",
+    "states": [
+      "closed",
+      "open",
+      "return-fault",
+      "measurement-voltage",
+      "measurement-current"
+    ],
+    "webglBrowserTest": false,
+    "ipadPerformanceTest": false
+  }
+}

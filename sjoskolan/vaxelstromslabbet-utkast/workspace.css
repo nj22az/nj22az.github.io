@@ -1,0 +1,75 @@
+/* DESIGN.md · labb: instrument till vänster, uppgiften till höger på bred skärm. Uppgiften först på smalare skärm. */
+.ac-workspace{display:flex;flex-direction:column}
+.ac-heading>div{min-width:0}.ac-heading h1{overflow-wrap:anywhere}
+.challenge-select select{min-width:0;max-width:100%;width:100%}
+.readouts>div{min-width:0;overflow-wrap:anywhere}
+/* Uppgiften står före bänken i HTML, så att tabbordning och skärmläsare följer det som syns på iPad och mobil. */
+/* Inget är klistrat (sticky): uppgiften rullar med sidan, så att inget scrollar inuti sig självt på iPad. */
+@media(min-width:1100px){
+  .ac-workspace:not(:has(#guided-workspace[hidden])){display:grid;grid-template-columns:minmax(0,1.3fr) minmax(380px,1fr);gap:24px;align-items:start}
+  .ac-workspace>#equipment-bench{order:1;margin:0}
+  .ac-workspace>#guided-workspace{order:2;margin:0;max-width:none}
+  .ac-workspace .guide-pickers{grid-template-columns:1fr}
+}
+/* Arbetsgången är en statusrad, inte knappar: aktuellt steg blått och fetstilt, klara steg gröna med ”klart”, kommande grå. */
+.guide-progress{list-style:none;display:flex;flex-wrap:wrap;gap:4px 12px;padding:0;margin:4px 0 20px}
+.guide-progress li{font-size:15px;color:#5d7282;padding:0;border:0}
+.guide-progress li+li::before{content:"→ ";content:"→ " / "";color:#5d7282;font-weight:normal}
+.guide-progress li.klart{color:var(--sj-ok,#176844)}
+.guide-progress [aria-current=step]{color:var(--lab-blue);font-weight:bold}
+.ac-app :focus-visible{outline:3px solid #163248;outline-offset:2px;box-shadow:0 0 0 6px #ffd43d}
+.ac-app button,.guide select,.guide input,.guide textarea{border-radius:8px}
+.ac-app .guide input,.ac-app .guide select,.ac-app .guide textarea{min-height:48px;border:1px solid #5d7282;border-radius:8px}
+/* Bänkens bildhöjd per brytpunkt (DESIGN.md: 768 och 1100 px). */
+.ac-app .equipment-view{height:300px}
+@media(max-width:767px){.ac-app .equipment-view{height:260px}}
+@media(min-width:1100px){.ac-app .equipment-view{height:320px}}
+@media(min-width:1250px){.ac-app .equipment-view{height:360px}}
+/* Pekskärmar: :hover fastnar efter ett tryck. Bara den valda knappen ska se vald ut. */
+@media (hover:none){
+ .mode-picker button:not([aria-pressed=true]):hover,.equipment button:not([aria-pressed=true]):hover,.guide button:not(.primary):hover,.panel button:not(.primary):not(.plain):hover{border-color:var(--lab-line);background:#fff}
+ .ac-app button.primary:hover{background:var(--lab-blue)}
+ .ac-app .tabs button:hover{background:none}
+ .ac-app .lp button:not(.lp-fetch):hover{border-color:var(--lp-line);background:#fff}
+ .ac-app .lp .lp-fetch:hover{background:var(--lp-blue);border-color:var(--lp-blue)}
+}
+.mode-picker [aria-pressed=true]::before,.equipment [aria-pressed=true]::before{content:"✓ "}
+.equipment button[aria-pressed=true]{background:var(--lab-blue);color:#fff;border-color:var(--lab-blue)}
+/* Utskriften ska innehålla hela protokollet, även från en bred arbetsyta. */
+@media print{
+  .ac-workspace:not(:has(#guided-workspace[hidden])){display:block}
+  .ac-workspace>#guided-workspace{max-width:none}
+}
+/* DESIGN.md: brödtext 17 px, ingen text under 14 px, tryckytor minst 44 px. Gäller bara den här labben (lab.css delas med andra labbar). */
+.ac-page .ac-app{font-size:17px}
+.ac-page .fig figcaption,.ac-page .legend,.ac-page .readouts dt,.ac-page .readouts dd>span,.ac-page .num,.ac-page .lock-note,.ac-page .progress,.ac-page .deck-ref,.ac-page .tabs button span,.ac-page .control label,.ac-page .muted{font-size:14px}
+.ac-page .fig figcaption,.ac-page .deck-ref{letter-spacing:.06em}
+.ac-page .num input{min-height:44px!important;width:96px}
+.ac-page .control input[type=range]{min-height:44px;margin:0}
+.ac-page .check{min-height:44px}
+.ac-page .check input{width:24px;height:24px}
+.ac-page #hint summary,.ac-page .teacher-notes summary{min-height:44px;display:flex;align-items:center}
+.ac-page .teacher-notes summary::before{content:"▸";margin-right:8px}.ac-page .teacher-notes[open] summary::before{content:"▾"}
+.ac-page .teacher-notes summary::-webkit-details-marker{display:none}
+.ac-page .tabs button{min-height:48px}
+/* Station B:s protokoll (gemensamt/labbprotokoll.css) i den här labben. */
+.ac-page .lp button,.ac-page .lp .lp-fetch{min-height:44px;padding:8px 14px}
+.ac-page .lp input:not([type=checkbox]),.ac-page .lp select{min-height:44px}
+.ac-page .lp label{font-size:14px}
+.ac-page .lp small,.ac-page .lp-kicker,.ac-page .lp-opt,.ac-page .lp-foot{font-size:14px}
+.ac-page .lp-checks label{min-height:44px;align-items:center;padding:4px 0}
+.ac-page .lp-checks input{width:24px;height:24px;margin-top:0}
+.ac-page .lp-example summary{min-height:44px;display:flex;align-items:center}
+/* Länkar i löptext: större tryckyta utan att raden flyttas. */
+.ac-page .deck-links a{display:inline-flex;align-items:center;min-height:44px}
+.ac-page .deck-links{row-gap:0}
+.ac-page .lab-start a,.ac-page .guide-support a,.ac-page #guide-storage a,.ac-page .station-intro a,.ac-page .lab-beteckningar .muted a{padding:14px 0}
+.ac-page #guide-storage a{font-weight:bold}
+/* ”Se värdet på labbänken” och ”Tillbaka till uppgiften” är sekundära knappar. */
+.ac-page .guide-to-bench,.ac-page .equipment-back a{display:inline-flex;align-items:center;min-height:44px;padding:8px 14px;border:1px solid var(--lab-line);border-radius:8px;background:#fff;color:var(--lab-blue);font-weight:bold;text-decoration:none}
+.ac-page .equipment-back{margin:0;padding:0 24px 16px}
+.ac-workspace:has(#guided-workspace[hidden]) .equipment-back{display:none}
+@media(min-width:1100px){.ac-page .guide-bench-link,.ac-page .equipment-back{display:none}}
+@media(max-width:767px){.ac-page .equipment-back{padding:0 18px 14px}}
+.ac-page .equipment-status:empty{display:none}
+.ac-app .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}

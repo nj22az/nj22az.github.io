@@ -1,0 +1,68 @@
+{
+  "id": "EL-000880",
+  "titel": "Motorns delar",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 2,
+  "granskning": {
+    "status": "utkast"
+  },
+  "larande": {
+    "mal": [
+      "LM-1"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-kurs-v41-03",
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilken del av motorn öppnar du för att koppla Y eller Δ, och vilka uppgifter på märkskylten avgör kopplingen? Vad gör fläkten och lagersköldarna?",
+    "samband": [
+      "Märkskylten avgör kopplingen"
+    ],
+    "givet": "Motorn har stomme med kylflänsar, fläktkåpa, lagersköldar, kopplingslåda och märkskylt. Den är aldrig ansluten.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Lindningsändarna sitter i plinten. Märkskylten anger spänning, ström, frekvens och effekt.",
+      "status": "utkast"
+    },
+    {
+      "niva": "metod",
+      "text": "Leta upp var lindningsändarna finns och vilken rad på skylten som anger två spänningar med Δ och Y.",
+      "status": "utkast"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Var sitter plinten? 2) Vilken rad på skylten har Δ och Y? 3) Vad behöver motorn för att inte bli för varm, och vad bär axeln? Samma sätt att resonera som vid startaren: börja med vad delen gör.",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "Kopplingslådan (plintlådan) öppnas: där sitter plinten med de sex lindningsändarna och blecken. Kopplingen avgörs av skyltens spänningar för Δ och Y jämförda med nätets linjespänning, och av att frekvensen på skylten stämmer med nätet. Fläkten på axeln kyler motorn genom flänsarna. Lagersköldarna bär lagren som håller rotorn.",
+    "status": "utkast",
+    "kalla": "Kursens facit (publikt)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_03-q4",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 16 och 17",
+        "roll": "presentationens stöd- och övningsbild"
+      },
+      {
+        "kalla": "sjoskolan/labbhandbok/vecka-41.html",
+        "roll": "labbpasset med motorn, startaren och strömtången"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  }
+}

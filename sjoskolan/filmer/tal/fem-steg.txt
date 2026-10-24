@@ -1,0 +1,18 @@
+Fem steg – Säkerhetsåtgärder före arbete utan spänning
+
+Måns (7 s): Sigge ska arbeta i kopplingslådan Ktre. Räcker det att slå ifrån en brytare?
+Sigge (6 s): Nej, men vi börjar där. Jag öppnar Qett, som är avsedd för frånskiljning.
+Måns (5.8 s): Ktre är fortfarande spänningssatt! Det finns en UPS också.
+Sigge (6.8 s): Därför kartlägger vi alla matningsvägar. Nu öppnar jag Qtvå också.
+Sigge (6.5 s): Jag låser båda brytarna och sätter skylt med namn. Ktre är ännu inte kontrollerad.
+Måns (6.3 s): En skylt informerar. Låset hindrar att någon slår till.
+Sigge (6 s): Först provar jag provaren mot en känd källa. Den visar spänning.
+Sigge (6.8 s): Sedan mäter jag på Ktre, mellan alla ledare och mot jord. Ingen spänning.
+Måns (6.8 s): Och sist mot den kända källan igen, så att provaren fortfarande fungerar!
+Sigge (6.5 s): Där det krävs jordas och kortsluts ledarna, synligt från arbetsstället.
+Sigge (6.3 s): Det är vanligt vid högspänning. Beredningen anger när det gäller.
+Måns (4 s): Grannkretsen är fortfarande i drift!
+Sigge (8.8 s): Den skärmar vi av eller håller avstånd till, enligt beredningen.
+Sigge (7.5 s): Fem steg, i ordning. Först därefter ger den ansvarige enligt arbetstillståndet startbesked.
+Måns (7.8 s): Och ändras något under arbetet, stoppar vi och gör en ny bedömning!
+Sigge (3.3 s): Precis. Vi ses!

@@ -1,0 +1,34 @@
+{
+  "id": "EL-000730",
+  "titel": "Avslutsfråga: v45_01",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 2,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-8",
+      "LM-5"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v45-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilket resultat skulle få dig att överge din första felhypotes?",
+    "instruktion": "Skriv felsökningsrapporten med minst två hypoteser och en kontroll som skiljer dem. Felsök två felmoduler i Hållkretslabbet, en i taget. Senast i dag, fredag 23 oktober."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx bild 35",
+        "revision": "8cabde3",
+        "roll": "avslutsfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

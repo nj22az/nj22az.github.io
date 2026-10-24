@@ -1,0 +1,33 @@
+name: Week 43 student navigation
+on:
+  push:
+    paths: ['sjoskolan/vecka-43/**', 'sjoskolan/vecka-45/aktuell/Del_1.html', 'sjoskolan/verktyg/qa/week43*', 'sjoskolan/verktyg/qa/week43-browser/**', '.github/workflows/week43-navigation.yml']
+  pull_request:
+    paths: ['sjoskolan/vecka-43/**', 'sjoskolan/vecka-45/aktuell/Del_1.html', 'sjoskolan/verktyg/qa/week43*', 'sjoskolan/verktyg/qa/week43-browser/**', '.github/workflows/week43-navigation.yml']
+permissions:
+  contents: read
+jobs:
+  student-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22.16.0'
+          package-manager-cache: false
+      - name: Install existing pinned test dependencies
+        working-directory: sjoskolan/multimetersimulator
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Install Chromium and WebKit
+        run: node sjoskolan/multimetersimulator/node_modules/@playwright/test/cli.js install --with-deps chromium webkit
+      - name: Desktop, phone and iPad student journeys
+        run: node sjoskolan/multimetersimulator/node_modules/@playwright/test/cli.js test -c sjoskolan/verktyg/qa/week43-browser.config.mjs --workers=2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: week43-navigation-evidence
+          path: |
+            sjoskolan/verktyg/qa/week43-results/
+            sjoskolan/verktyg/qa/week43-report/
+          retention-days: 14

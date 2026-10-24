@@ -1,0 +1,103 @@
+[
+  {
+    "id": "johansson-welcome",
+    "name": "Johansson",
+    "pose": "Wave",
+    "expression": "smile",
+    "source": "Johansson Studio MCP render_portrait",
+    "size": 768,
+    "background": "transparent"
+  },
+  {
+    "id": "johansson-point",
+    "name": "Johansson",
+    "pose": "Point",
+    "expression": "smile",
+    "source": "Johansson Studio MCP render_portrait",
+    "size": 768,
+    "background": "transparent"
+  },
+  {
+    "id": "johansson-inspect",
+    "name": "Johansson",
+    "pose": "Think",
+    "expression": "thinking",
+    "source": "Johansson Studio MCP render_portrait",
+    "size": 768,
+    "background": "transparent"
+  },
+  {
+    "id": "thuan-explain",
+    "name": "Thuan",
+    "pose": "Shrug",
+    "expression": "smile",
+    "source": "Johansson Studio MCP render_portrait",
+    "size": 768,
+    "background": "transparent"
+  },
+  {
+    "id": "thuan-complete",
+    "name": "Thuan",
+    "pose": "Cheer",
+    "expression": "happy",
+    "source": "Johansson Studio MCP render_portrait",
+    "size": 768,
+    "background": "transparent"
+  },
+  {
+    "id": "johansson-tada",
+    "name": "Johansson",
+    "pose": "Tada",
+    "expression": "excited",
+    "view": "quarter",
+    "source": "Johansson Studio MCP render_portrait"
+  },
+  {
+    "id": "thuan-peace",
+    "name": "Thuan",
+    "pose": "Peace",
+    "expression": "wink",
+    "view": "front",
+    "source": "Johansson Studio MCP render_portrait"
+  },
+  {
+    "id": "thuan-dance",
+    "name": "Thuan",
+    "pose": "Kachashi",
+    "expression": "happy",
+    "view": "quarter",
+    "source": "Johansson Studio MCP render_portrait"
+  },
+  {
+    "id": "tetsuo-teach",
+    "name": "Tetsuo",
+    "pose": "Point",
+    "expression": "smile",
+    "view": "quarter",
+    "source": "Johansson Studio MCP render_portrait"
+  },
+  {
+    "id": "tetsuo-think",
+    "name": "Tetsuo",
+    "pose": "ChinTap",
+    "expression": "thinking",
+    "view": "front",
+    "source": "Johansson Studio MCP render_portrait"
+  },
+  {
+    "id": "vy-psst",
+    "name": "Vy",
+    "pose": "Shush",
+    "expression": "excited",
+    "view": "quarter",
+    "source": "Johansson Studio MCP render_portrait",
+    "size": 768,
+    "background": "transparent",
+    "output": [
+      368,
+      512
+    ],
+    "script": "scripts/render-vy-whisper.cjs",
+    "appearanceRevision": 1
+  }
+]

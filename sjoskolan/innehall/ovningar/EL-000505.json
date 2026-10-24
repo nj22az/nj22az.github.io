@@ -1,0 +1,38 @@
+{
+  "id": "EL-000505",
+  "titel": "Reaktans och enheter",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v40-02",
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Hur många henry är 100 mH?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-40/aktuell/lektioner.mjs LESSONS impedans bild xl",
+        "revision": "8cabde3",
+        "roll": "kontrollfråga i genomgången"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "100 mH = 0,100 H.",
+    "status": "migrerad"
+  }
+}

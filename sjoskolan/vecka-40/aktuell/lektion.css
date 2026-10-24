@@ -1,0 +1,18 @@
+/* Lektionsartiklar vecka 40 (genereras inte; layout för Lektion_N.html) */
+.art-main{max-width:1160px}.art-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;align-items:start}
+.art-toc{position:sticky;top:16px}.art-toc details{border:1px solid var(--sj-line,#cad8e2);border-radius:12px;padding:8px 14px;background:#fff}
+.art-toc summary{font-weight:700;cursor:pointer;min-height:44px;display:flex;align-items:center}.art-toc ol{padding-left:20px;margin:6px 0 8px}.art-toc li{margin:6px 0}
+.art-artikel{max-width:72ch}.art-meta{font-size:15px;color:var(--sj-muted,#4d6579)}
+.art-del{margin:24px 0 32px}.art-rad{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.lesson-visual{margin:0;border:1px solid var(--sj-line,#cad8e2);border-radius:12px;padding:8px;background:#fff}.lesson-visual svg{width:100%;height:auto;display:block}
+.lesson-visual figcaption{font-size:14px;color:var(--sj-muted,#4d6579);margin-top:6px}
+.art-prova{margin:12px 0 0;border-left:8px solid var(--sj-accent,#064f91);padding:6px 16px;background:var(--sj-soft,#edf4f9);border-radius:0 12px 12px 0}
+.art-prova p{margin:6px 0}.art-uppgift{margin:16px 0 24px;padding:4px 0 4px 16px;border-left:4px solid var(--sj-line,#cad8e2)}
+.art-artikel .art-uppgift h3{margin-top:8px}.art-lank{margin:12px 0}
+.facit,.ledtrad{margin:12px 0 0;border:1px solid var(--sj-line,#cad8e2);border-radius:12px;padding:4px 16px;background:#fff}
+.facit{border-left:8px solid var(--sj-ok,#176844)}.ledtrad{border-left:8px solid var(--sj-accent,#064f91)}
+.facit[open],.ledtrad[open]{padding-bottom:12px}.facit p,.ledtrad p{margin:4px 0 0}.facit summary,.ledtrad summary{cursor:pointer;min-height:44px;display:flex;align-items:center}
+.art-nav{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:32px 0 0;padding-top:16px;border-top:1px solid var(--sj-line,#cad8e2)}
+@media(min-width:900px){.art-rad:has(.lesson-visual){grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.art-rad .lesson-visual{order:2}}
+@media(max-width:899px){.art-layout{grid-template-columns:minmax(0,1fr)}.art-toc{position:static}.art-toc details{padding:4px 14px}.art-toc details:not([open]) ol{display:none}}
+@media print{.art-toc,.art-nav,.school-nav{display:none}.facit,.ledtrad{display:none}}

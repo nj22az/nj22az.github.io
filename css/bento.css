@@ -129,6 +129,38 @@
 
 .bento-card .card-tags { display: flex; flex-wrap: wrap; gap: 0.375rem; margin-top: auto; }
 
+.bento-cover {
+  margin: -2rem -2rem 1.25rem;
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #16110f;
+}
+.bento-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.bento-badge {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.85rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f4ebe3;
+  background: rgba(22, 17, 15, 0.82);
+  border: 1px solid rgba(244, 235, 227, 0.18);
+  padding: 0.3rem 0.7rem;
+  border-radius: 9999px;
+  backdrop-filter: blur(8px);
+}
+.bento-card.has-cover {
+  padding-top: 2rem;
+}
+
 /* ── Large bento card special styling ── */
 .bento-large .bento-icon { width: 4rem; height: 4rem; border-radius: 1.25rem; }
 .bento-large .bento-icon svg { width: 28px; height: 28px; }

@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0d0d10" media="(prefers-color-scheme: dark)" />
+    <meta name="description" content="A private, offline-capable Image to SVG converter and parametric 3D studio for printable keychains, open models, boxes, and SVG, 3MF, STL and STEP export." />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Form 3D" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./form-icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./form-icon.svg" />
+    <link rel="stylesheet" href="./styles.css?v=15" />
+    <title>Form 3D Studio</title>
+    <script src="/theme-bootstrap.js?v=random-2"></script>
+    <script src="/subpage-theme.js?v=random-2"></script>
+    <link rel="stylesheet" href="/subpage-theme.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="https://nj22az.github.io/" aria-label="Back to The Office of Nils Johansson">
+          <img src="./form-icon.svg" alt="" width="36" height="36" />
+          <span><strong>Form 3D</strong><small>Studio</small></span>
+        </a>
+        <div class="suite-switcher" role="tablist" aria-label="Studio workspace">
+          <button class="active" id="model-workspace-tab" data-suite-workspace="model" type="button" role="tab" aria-selected="true" aria-controls="model-workspace">3D Studio</button>
+          <button id="vector-workspace-tab" data-suite-workspace="vector" type="button" role="tab" aria-selected="false" aria-controls="vector-workspace">Image → SVG</button>
+        </div>
+        <div class="top-actions">
+          <span class="offline-badge" id="connection-badge"><i></i><span>Works offline</span></span>
+          <button class="quiet-button hidden" id="install-button" type="button">Install app</button>
+          <a class="quiet-button" href="https://nj22az.github.io/">Home</a>
+        </div>
+      </header>
+
+      <main class="workspace" id="model-workspace" role="tabpanel" aria-labelledby="model-workspace-tab">
+        <aside class="control-panel glass-panel" aria-label="Model controls">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">New model</p>
+              <h1>Create</h1>
+            </div>
+            <button class="icon-button" id="reset-button" type="button" title="Reset model" aria-label="Reset model">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8m0-5v5h5" /></svg>
+            </button>
+          </div>
+
+          <div class="segmented" role="tablist" aria-label="Model type">
+            <button class="active" data-mode="keychain" type="button" role="tab" aria-selected="true">Keychain</button>
+            <button data-mode="box" type="button" role="tab" aria-selected="false">Box</button>
+            <button data-mode="library" type="button" role="tab" aria-selected="false">Templates</button>
+            <button data-mode="cylinder" type="button" role="tab" aria-selected="false">Cylinder</button>
+          </div>
+
+          <section class="control-section keychain-controls">
+            <div class="section-title"><span>Artwork</span><span class="privacy-label">On-device only</span></div>
+            <label class="drop-zone" id="drop-zone" for="image-input">
+              <input id="image-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,image/avif,image/svg+xml" />
+              <span class="drop-preview" id="drop-preview">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V19a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2.5M8 8l4-4 4 4m-4-4v12" /></svg>
+              </span>
+              <span class="drop-copy"><strong id="upload-label">Choose an image</strong><small id="upload-format">PNG, JPG, WebP, AVIF or SVG</small></span>
+              <span class="drop-action">Browse</span>
+            </label>
+            <div class="inline-actions">
+              <button class="text-button" id="demo-art-button" type="button">Use sample art</button>
+              <button class="text-button" data-open-vector type="button">Refine in Image → SVG</button>
+              <button class="text-button hidden" id="clear-art-button" type="button">Remove image</button>
+            </div>
+          </section>
+
+          <section class="control-section keychain-controls">
+            <div class="section-title"><span>Keychain dimensions</span><span>mm</span></div>
+            <div class="range-row">
+              <label for="key-width">Width</label><output data-output="keyWidth">52</output>
+              <input id="key-width" data-param="keyWidth" type="range" min="32" max="85" step="1" value="52" />
+            </div>
+            <div class="range-row">
+              <label for="key-height">Height</label><output data-output="keyHeight">30</output>
+              <input id="key-height" data-param="keyHeight" type="range" min="18" max="55" step="1" value="30" />
+            </div>
+            <div class="range-row">
+              <label for="key-thickness">Base thickness</label><output data-output="keyThickness">3.0</output>
+              <input id="key-thickness" data-param="keyThickness" type="range" min="1.6" max="7" step="0.2" value="3" />
+            </div>
+            <div class="range-row">
+              <label for="hole-size">Ring hole</label><output data-output="holeSize">5.0</output>
+              <input id="hole-size" data-param="holeSize" type="range" min="3" max="9" step="0.2" value="5" />
+            </div>
+          </section>
+
+          <section class="control-section keychain-controls">
+            <div class="section-title"><span>Sticker artwork</span><span>Fit → rotate → attach</span></div>
+            <div class="range-row">
+              <label for="artwork-thickness">Artwork thickness</label><output data-output="artworkThickness">0.45</output>
+              <input id="artwork-thickness" data-param="artworkThickness" type="range" min="0.2" max="1.2" step="0.05" value="0.45" />
+            </div>
+            <div class="range-row">
+              <label for="artwork-rotation">Rotate artwork</label><output data-output="artworkRotation">0°</output>
+              <input id="artwork-rotation" data-param="artworkRotation" type="range" min="-180" max="180" step="5" value="0" />
+            </div>
+            <div class="range-row">
+              <label for="detail">Image detail</label><output data-output="detail">64</output>
+              <input id="detail" data-param="detail" type="range" min="32" max="96" step="8" value="64" />
+            </div>
+            <div class="range-row">
+              <label for="monochrome-threshold">Black detail</label><output data-output="monochromeThreshold">35%</output>
+              <input id="monochrome-threshold" data-param="monochromeThreshold" type="range" min="15" max="85" step="1" value="35" />
+            </div>
+            <div class="range-row">
+              <label for="image-smoothing">Edge smoothing</label><output data-output="imageSmoothing">Clean</output>
+              <input id="image-smoothing" data-param="imageSmoothing" type="range" min="0" max="2" step="1" value="1" />
+            </div>
+            <label class="switch-row"><span>Remove image background</span><input id="remove-background" data-param="removeBackground" type="checkbox" checked /><i></i></label>
+            <div class="range-row background-controls">
+              <label for="background-tolerance">Background tolerance</label><output data-output="backgroundTolerance">14%</output>
+              <input id="background-tolerance" data-param="backgroundTolerance" type="range" min="3" max="32" step="1" value="14" />
+            </div>
+            <div class="ams-palette" id="ams-palette" aria-label="Detected AMS palette"></div>
+            <p class="control-note">VTracer first makes a clean monochrome SVG. The visible contours—not the empty image margins—are centred on a thin rounded white sticker, then rotated and attached to the keychain as one printable piece. Use the <button class="inline-link" data-open-vector type="button">Image → SVG workspace</button> for before-and-after comparison and advanced controls.</p>
+          </section>
+
+          <section class="control-section library-controls hidden">
+            <div class="section-title"><span>Printable templates</span><span class="privacy-label">On-device</span></div>
+            <label class="select-row" for="open-model-select">
+              <span>Parametric model</span>
+              <select id="open-model-select" data-param="openModel">
+                <option value="cableRing">Johansson cable ring</option>
+                <option value="applePencilCase">Apple Pencil Pro case</option>
+                <option value="spurGear">Involute spur gear</option>
+                <option value="hexBolt">Threaded hex bolt</option>
+                <option value="lBracket">Reinforced L-bracket</option>
+              </select>
+            </label>
+            <p class="control-note">Built locally with the <a href="https://github.com/jscad/OpenJSCAD.org">MIT-licensed JSCAD engine</a>. Every export is generated privately in this browser and remains available offline.</p>
+          </section>
+
+          <section class="control-section library-ring-controls hidden">
+            <div class="section-title"><span>Cable ring builder</span><span>mm</span></div>
+            <div class="range-row">
+              <label for="ring-outer-diameter">Outer diameter</label><output data-output="ringOuterDiameter">115</output>
+              <input id="ring-outer-diameter" data-param="ringOuterDiameter" type="range" min="45" max="180" step="1" value="115" />
+            </div>
+            <div class="range-row">
+              <label for="ring-inner-diameter">Inner diameter</label><output data-output="ringInnerDiameter">40</output>
+              <input id="ring-inner-diameter" data-param="ringInnerDiameter" type="range" min="20" max="160" step="1" value="40" />
+            </div>
+            <div class="range-row">
+              <label for="ring-height">Height</label><output data-output="ringHeight">18</output>
+              <input id="ring-height" data-param="ringHeight" type="range" min="3" max="30" step="1" value="18" />
+            </div>
+            <label class="switch-row"><span>Add cable loading slot</span><input id="ring-tray" data-param="ringTray" type="checkbox" /><i></i></label>
+            <div class="range-row ring-slot-controls hidden">
+              <label for="ring-slot-width">Slot width</label><output data-output="ringTrayWidth">10.0</output>
+              <input id="ring-slot-width" data-param="ringTrayWidth" type="range" min="4" max="24" step="0.5" value="10" />
+            </div>
+            <p class="control-note">The optional full-depth loading slot keeps the ring a single watertight body while letting an existing cable enter without disconnecting it.</p>
+          </section>
+
+          <section class="control-section library-pencil-controls hidden">
+            <div class="section-title"><span>Apple Pencil Pro case</span><span>Resin-ready</span></div>
+            <div class="range-row">
+              <label for="pencil-length">Pencil length</label><output data-output="pencilLength">166.0</output>
+              <input id="pencil-length" data-param="pencilLength" type="range" min="164" max="168" step="0.1" value="166" />
+            </div>
+            <div class="range-row">
+              <label for="pencil-diameter">Pencil diameter</label><output data-output="pencilDiameter">8.90</output>
+              <input id="pencil-diameter" data-param="pencilDiameter" type="range" min="8.6" max="9.4" step="0.05" value="8.9" />
+            </div>
+            <div class="range-row">
+              <label for="pencil-end-protection">End protection</label><output data-output="pencilEndProtection">7.0</output>
+              <input id="pencil-end-protection" data-param="pencilEndProtection" type="range" min="4" max="10" step="0.5" value="7" />
+            </div>
+            <div class="range-row">
+              <label for="pencil-clearance">Radial clearance</label><output data-output="pencilClearance">0.40</output>
+              <input id="pencil-clearance" data-param="pencilClearance" type="range" min="0.25" max="0.7" step="0.05" value="0.4" />
+            </div>
+            <div class="range-row">
+              <label for="pencil-wall">Shell wall</label><output data-output="pencilWall">1.20</output>
+              <input id="pencil-wall" data-param="pencilWall" type="range" min="1" max="2" step="0.1" value="1.2" />
+            </div>
+            <div class="range-row">
+              <label for="pencil-cap-clearance">Loose cap gap</label><output data-output="pencilCapClearance">0.70</output>
+              <input id="pencil-cap-clearance" data-param="pencilCapClearance" type="range" min="0.5" max="1" step="0.05" value="0.7" />
+            </div>
+            <label class="switch-row"><span>HG Maru Gothic Pro JOHANSSON © wordmark</span><input id="pencil-logo" data-param="pencilLogo" type="checkbox" checked /><i></i></label>
+            <label class="switch-row"><span>Arrange two capsule parts for printing</span><input id="pencil-print-layout" data-param="pencilPrintLayout" type="checkbox" checked /><i></i></label>
+            <p class="control-note"><strong>Loose-fit resin capsule:</strong> by default the Cap clears the Body by 0.70 mm per side, adjustable from 0.50–1.00 mm, so its cylindrical wall does not grip or retain the case. Only the two rounded deep lugs, 0.50 mm-per-side radiused paths and 0.65 mm drop pockets retain it—no friction fit or resin flex is required. The matching flat aligns when fully locked.</p>
+            <p class="control-note">Insert the Pencil into the Body, push the loose Cap fully on, turn it 75° to the stop and let it settle into the pocket. Axial pull—or gravity when the Cap faces down—keeps the lugs behind the pocket shoulders. Push inward about 0.65 mm before reversing the turn. Both domes remain vented and the print layout tilts both open interiors for drainage.</p>
+          </section>
+
+          <section class="control-section library-gear-controls hidden">
+            <div class="section-title"><span>Spur gear</span><span>20° pressure angle</span></div>
+            <div class="range-row">
+              <label for="gear-teeth">Teeth</label><output data-output="gearTeeth">20</output>
+              <input id="gear-teeth" data-param="gearTeeth" type="range" min="8" max="40" step="1" value="20" />
+            </div>
+            <div class="range-row">
+              <label for="gear-module">Module</label><output data-output="gearModule">1.0</output>
+              <input id="gear-module" data-param="gearModule" type="range" min="0.6" max="2" step="0.1" value="1" />
+            </div>
+            <div class="range-row">
+              <label for="gear-thickness">Thickness</label><output data-output="gearThickness">5.0</output>
+              <input id="gear-thickness" data-param="gearThickness" type="range" min="2" max="10" step="0.5" value="5" />
+            </div>
+            <div class="range-row">
+              <label for="gear-bore">Bore</label><output data-output="gearBore">5.0</output>
+              <input id="gear-bore" data-param="gearBore" type="range" min="1.5" max="12" step="0.5" value="5" />
+            </div>
+          </section>
+
+          <section class="control-section library-bolt-controls hidden">
+            <div class="section-title"><span>Threaded bolt</span><span>Coarse pitch</span></div>
+            <div class="range-row">
+              <label for="bolt-diameter">Nominal diameter</label><output data-output="boltDiameter">6.0</output>
+              <input id="bolt-diameter" data-param="boltDiameter" type="range" min="3" max="12" step="0.5" value="6" />
+            </div>
+            <div class="range-row">
+              <label for="bolt-length">Under-head length</label><output data-output="boltLength">24</output>
+              <input id="bolt-length" data-param="boltLength" type="range" min="8" max="50" step="1" value="24" />
+            </div>
+            <p class="control-note">The triangular right-hand thread is generated as one continuous manifold surface rather than a decorative texture.</p>
+          </section>
+
+          <section class="control-section library-bracket-controls hidden">
+            <div class="section-title"><span>Reinforced bracket</span><span>Four holes</span></div>
+            <div class="range-row">
+              <label for="bracket-width">Width</label><output data-output="bracketWidth">42</output>
+              <input id="bracket-width" data-param="bracketWidth" type="range" min="20" max="80" step="1" value="42" />
+            </div>
+            <div class="range-row">
+              <label for="bracket-height">Height</label><output data-output="bracketHeight">38</output>
+              <input id="bracket-height" data-param="bracketHeight" type="range" min="20" max="80" step="1" value="38" />
+            </div>
+            <div class="range-row">
+              <label for="bracket-leg">Base leg</label><output data-output="bracketLeg">34</output>
+              <input id="bracket-leg" data-param="bracketLeg" type="range" min="18" max="65" step="1" value="34" />
+            </div>
+            <div class="range-row">
+              <label for="bracket-thickness">Plate thickness</label><output data-output="bracketThickness">4.0</output>
+              <input id="bracket-thickness" data-param="bracketThickness" type="range" min="2.4" max="8" step="0.2" value="4" />
+            </div>
+            <div class="range-row">
+              <label for="bracket-hole">Hole diameter</label><output data-output="bracketHole">5.0</output>
+              <input id="bracket-hole" data-param="bracketHole" type="range" min="2.5" max="12" step="0.5" value="5" />
+            </div>
+          </section>
+
+          <section class="control-section box-controls hidden">
+            <div class="section-title"><span>Box dimensions</span><span>mm</span></div>
+            <div class="range-row">
+              <label for="box-width">Width</label><output data-output="boxWidth">76</output>
+              <input id="box-width" data-param="boxWidth" type="range" min="45" max="140" step="1" value="76" />
+            </div>
+            <div class="range-row">
+              <label for="box-depth">Depth</label><output data-output="boxDepth">54</output>
+              <input id="box-depth" data-param="boxDepth" type="range" min="35" max="110" step="1" value="54" />
+            </div>
+            <div class="range-row">
+              <label for="box-height">Height</label><output data-output="boxHeight">34</output>
+              <input id="box-height" data-param="boxHeight" type="range" min="20" max="75" step="1" value="34" />
+            </div>
+            <div class="range-row">
+              <label for="box-corner-radius">Corner radius</label><output data-output="boxCornerRadius">7.0</output>
+              <input id="box-corner-radius" data-param="boxCornerRadius" type="range" min="2" max="14" step="0.5" value="7" />
+            </div>
+          </section>
+
+          <section class="control-section box-controls hidden">
+            <div class="section-title"><span>Construction</span><span>mm</span></div>
+            <div class="range-row">
+              <label for="box-wall">Wall thickness</label><output data-output="boxWall">2.4</output>
+              <input id="box-wall" data-param="boxWall" type="range" min="1.6" max="4.5" step="0.1" value="2.4" />
+            </div>
+            <div class="range-row">
+              <label for="box-bottom">Floor thickness</label><output data-output="boxBottom">2.4</output>
+              <input id="box-bottom" data-param="boxBottom" type="range" min="1.6" max="5" step="0.1" value="2.4" />
+            </div>
+            <div class="range-row">
+              <label for="box-clearance">Lid clearance</label><output data-output="boxClearance">0.35</output>
+              <input id="box-clearance" data-param="boxClearance" type="range" min="0.15" max="0.8" step="0.05" value="0.35" />
+            </div>
+          </section>
+
+          <section class="control-section box-controls hidden">
+            <div class="section-title"><span>Lid &amp; hardware</span><span>Assembly</span></div>
+            <label class="switch-row"><span>Add fitted cover</span><input id="box-lid" data-param="boxLid" type="checkbox" checked /><i></i></label>
+            <label class="switch-row"><span>Add print-in-place hinges</span><input id="box-hinges" data-param="boxHinges" type="checkbox" checked /><i></i></label>
+            <label class="switch-row"><span>Add concealed cover latch</span><input id="box-latch" data-param="boxLatch" type="checkbox" checked /><i></i></label>
+            <div class="range-row">
+              <label for="box-lid-thickness">Cover thickness</label><output data-output="boxLidThickness">2.6</output>
+              <input id="box-lid-thickness" data-param="boxLidThickness" type="range" min="1.8" max="5" step="0.1" value="2.6" />
+            </div>
+            <div class="range-row">
+              <label for="box-lid-angle">Opening angle</label><output data-output="boxLidAngle">68°</output>
+              <input id="box-lid-angle" data-param="boxLidAngle" type="range" min="0" max="120" step="2" value="68" />
+            </div>
+            <div class="range-row">
+              <label for="box-hinge-size">Hinge diameter</label><output data-output="boxHingeDiameter">6.0</output>
+              <input id="box-hinge-size" data-param="boxHingeDiameter" type="range" min="4" max="9" step="0.2" value="6" />
+            </div>
+            <div class="range-row gear-controls">
+              <label for="box-gear-module">Gear module</label><output data-output="boxGearModule">0.80</output>
+              <input id="box-gear-module" data-param="boxGearModule" type="range" min="0.65" max="1.05" step="0.05" value="0.8" />
+            </div>
+            <div class="range-row gear-controls">
+              <label for="box-gear-bay-depth">Cover mechanism depth</label><output data-output="boxGearBayDepth">9.2 mm</output>
+              <input id="box-gear-bay-depth" data-param="boxGearBayDepth" type="range" min="8" max="12" step="0.2" value="9.2" />
+            </div>
+            <div class="range-row gear-controls">
+              <label for="box-gear-turn">Drive rotation</label><output data-output="boxGearTurn">0° · locked</output>
+              <input id="box-gear-turn" data-param="boxGearTurn" type="range" min="0" max="110" step="2" value="0" />
+            </div>
+            <div class="mechanism-actions gear-controls" role="group" aria-label="Latch and print position">
+              <button class="active" data-gear-state="0" type="button" aria-pressed="true">Lock</button>
+              <button data-gear-state="96" type="button" aria-pressed="false">Release</button>
+              <button id="prepare-box-print" type="button">Prepare to print</button>
+            </div>
+            <p class="control-note">The 12:18 reduction, captive gears and rotary hook sit between the cover's outer skin and inner liner. Only a recessed dial and the small internal keeper window remain visible.</p>
+            <p class="control-note"><strong>Print in place:</strong> export with the cover at 0° and the latch Released, then place either side wall on the build plate. The hinge and gear planes remain vertical, with at least 0.40 mm moving clearance and no enclosed horizontal roof to bridge.</p>
+          </section>
+
+          <section class="control-section cylinder-controls hidden">
+            <div class="section-title"><span>Cylinder dimensions</span><span>mm</span></div>
+            <div class="range-row">
+              <label for="cylinder-diameter">Diameter</label><output data-output="cylinderDiameter">36</output>
+              <input id="cylinder-diameter" data-param="cylinderDiameter" type="range" min="8" max="100" step="1" value="36" />
+            </div>
+            <div class="range-row">
+              <label for="cylinder-height">Height</label><output data-output="cylinderHeight">18</output>
+              <input id="cylinder-height" data-param="cylinderHeight" type="range" min="2" max="80" step="1" value="18" />
+            </div>
+            <div class="range-row">
+              <label for="cylinder-sides">Smoothness</label><output data-output="cylinderSides">48</output>
+              <input id="cylinder-sides" data-param="cylinderSides" type="range" min="16" max="96" step="8" value="48" />
+            </div>
+          </section>
+
+          <section class="control-section">
+            <div class="section-title"><span>Material colour</span></div>
+            <div class="swatches" role="group" aria-label="Preview colour">
+              <button class="swatch active" data-color="#0a84ff" style="--swatch:#0a84ff" type="button" aria-label="Blue"></button>
+              <button class="swatch" data-color="#30d158" style="--swatch:#30d158" type="button" aria-label="Green"></button>
+              <button class="swatch" data-color="#ff9f0a" style="--swatch:#ff9f0a" type="button" aria-label="Orange"></button>
+              <button class="swatch" data-color="#ff375f" style="--swatch:#ff375f" type="button" aria-label="Pink"></button>
+              <button class="swatch" data-color="#bf5af2" style="--swatch:#bf5af2" type="button" aria-label="Purple"></button>
+              <button class="swatch" data-color="#8e8e93" style="--swatch:#8e8e93" type="button" aria-label="Graphite"></button>
+            </div>
+          </section>
+        </aside>
+
+        <section class="viewer-panel glass-panel" aria-label="3D preview">
+          <div class="viewer-toolbar">
+            <div>
+              <p class="eyebrow">Live preview</p>
+              <h2 id="model-title">SVG sticker keychain</h2>
+            </div>
+            <div class="viewer-actions">
+              <button class="tool-button" id="view-reset" type="button" title="Reset view" aria-label="Reset view">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 5-3 5 3v6l-5 3-5-3Zm5 3 5-3m-5 3L7 7m5 3v6M5 17l-2 1 2 1m14-2 2 1-2 1" /></svg>
+              </button>
+              <button class="tool-button" id="wireframe-button" type="button" title="Toggle edges" aria-pressed="false">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9Zm0 0v9m8-4.5-8 4.5-8-4.5m8 4.5v9" /></svg>
+              </button>
+            </div>
+          </div>
+          <div class="canvas-wrap" id="canvas-wrap">
+            <canvas id="viewport" aria-label="Interactive 3D model preview"></canvas>
+            <div class="view-hint"><span>Drag to rotate</span><span>Scroll to zoom</span></div>
+            <div class="axis-gizmo" aria-hidden="true"><span class="axis-x">X</span><span class="axis-y">Y</span><span class="axis-z">Z</span></div>
+          </div>
+          <div class="model-stats">
+            <div><span>Size</span><strong id="size-stat">—</strong></div>
+            <div><span>Triangles</span><strong id="triangle-stat">—</strong></div>
+            <div><span>Bodies</span><strong id="body-stat">—</strong></div>
+            <div><span>Units</span><strong>Millimetres</strong></div>
+          </div>
+        </section>
+
+        <aside class="export-panel glass-panel" aria-label="Export controls">
+          <div class="panel-heading compact">
+            <div><p class="eyebrow">Ready to make</p><h2>Export</h2></div>
+            <span class="check-badge" title="Watertight bodies">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 4 8-8" /></svg>
+            </span>
+          </div>
+          <p class="panel-copy">Your model is generated privately in this browser. Nothing is uploaded.</p>
+
+          <div class="export-card">
+            <div class="file-icon">STL</div>
+            <div><strong>STL mesh</strong><small>3D printing &amp; slicers</small></div>
+            <button data-export="stl" type="button">Export</button>
+          </div>
+          <div class="export-card">
+            <div class="file-icon step">STEP</div>
+            <div><strong>STEP AP242</strong><small>Tessellated CAD solids</small></div>
+            <button data-export="step" type="button">Export</button>
+          </div>
+          <div class="export-card ams-export">
+            <div class="file-icon svg">SVG</div>
+            <div><strong>Sticker artwork</strong><small>Black vector · fitted white backing</small></div>
+            <button data-export="svg" type="button">Export</button>
+          </div>
+          <div class="export-card ams-export">
+            <div class="file-icon ams">3MF</div>
+            <div><strong>AMS sticker project</strong><small>Three attached bodies · SVG included</small></div>
+            <button data-export="3mf" type="button">Export</button>
+          </div>
+
+          <div class="compatibility">
+            <span>Compatible with</span>
+            <div><b>Bambu Studio</b><b>Shapr3D</b><b>PrusaSlicer</b><b>Cura</b><b>Fusion</b></div>
+          </div>
+
+          <details>
+            <summary>Export notes</summary>
+            <p>SVG is the clean traced picture. The model fits it to a thin rounded sticker backing by its visible contours. 3MF preserves the keychain, backing and attached black SVG as three AMS bodies; STL and STEP retain the printable geometry.</p>
+          </details>
+
+          <div class="offline-card">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 18H6a4 4 0 0 1-.7-7.94A7 7 0 0 1 18.7 9a4.5 4.5 0 0 1-.7 9h-2.5M12 12v9m-3-3 3 3 3-3" /></svg>
+            <div><strong>Offline by design</strong><small>Open once, then use without internet.</small></div>
+          </div>
+        </aside>
+      </main>
+
+      <section class="vector-workspace hidden" id="vector-workspace" role="tabpanel" aria-labelledby="vector-workspace-tab">
+        <iframe id="vector-studio-frame" src="./image-to-svg/?embed=1" title="Image to SVG workspace" allow="clipboard-write" loading="eager"></iframe>
+      </section>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./open-models.js?v=17" defer></script>
+    <script src="./monochrome-svg.js?v=13" defer></script>
+    <script src="./image-to-svg/keychain-bridge.js?v=2" defer></script>
+    <script src="./cover-latch-geometry.js?v=1" defer></script>
+    <script src="./step-export.js?v=1" defer></script>
+    <script src="./app.js?v=21" defer></script>
+  </body>
+</html>

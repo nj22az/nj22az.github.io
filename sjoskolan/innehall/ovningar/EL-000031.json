@@ -1,0 +1,80 @@
+{
+  "id": "EL-000031",
+  "titel": "Pumpens effekt",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-04",
+      "T-kurs-v39-01",
+      "T-bildspel-v39-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En DC-pump tar 3,0 A vid 24 V. Beräkna tillförd elektrisk effekt.",
+    "samband": [
+      "P = U · I"
+    ],
+    "givet": "Likström med konstant 24 V och 3,0 A. Tillförd effekt är den elektriska effekt pumpen tar emot.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "P är elektrisk effekt i W, U spänning i V och I ström i A.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Multiplicera spänningen med strömmen. Kontrollera att enheten blir V · A = W.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "P = 24 V · 3,0 A = 72 W.",
+    "svar": [
+      {
+        "storhet": "P",
+        "varde": 72.0,
+        "avrundning": "heltal",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "W"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch009.xhtml#ch4-q1 och ch037.xhtml#sol4-s1",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-39/aktuell/Formelstod_och_ovningar.html#v39_01-q1",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx bild 10 och 11",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

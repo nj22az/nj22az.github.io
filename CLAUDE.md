@@ -2,6 +2,10 @@
 
 Guidance for Claude Code when working in this repository.
 
+**Every task: read [HANDOVER.md](HANDOVER.md) and the latest applicable linked handover before starting; update the handover before finishing or transferring the work.** Follow the full [handover rules in AGENTS.md](AGENTS.md#handover-required-at-the-start-and-end-of-every-task), including partial and blocked work.
+
+For animation, character performances, films and their rendering tools, also read [ANIMATION_DIRECTION.md](ANIMATION_DIRECTION.md), adapted from the owner's *Opus 5.5 promt.pdf*. The same guidance applies to Codex through [AGENTS.md](AGENTS.md). Preserve the current engine, cast and interactive performance budgets; apply the reference's expensive render settings to suitable offline deliveries.
+
 ## Commands
 
 ### Local Development
@@ -111,3 +115,72 @@ assets/
   images/               # Photos, icons
   video/                # Video assets
 ```
+
+## Johansson Town
+
+**Purpose: Johansson Town is a storytelling game.** Everything it does should tell stories — to teach,
+to make people laugh, for drama, or just to be silly — and at the highest quality we can reach.
+Exploring the town is the fun, awesome bonus: every place, person and item discovered feeds the
+storyteller and opens more stories and experiences. When choosing between features, prefer the one
+that makes more or better stories.
+
+- The storyteller (`johansson-town/src/feed/`) builds coherent stories from a database of genres,
+  real places, residents and items; it may be random and silly, but it must always make sense.
+- Comics are shot inside the real rooms (captured by `tools/render-feed-backdrops.mjs`), with the
+  residents' own looks, walks, poses and props. Quality over quantity.
+- New places, residents, props and moves should be usable by the storyteller, not only by the game.
+- **No glitches, jagged edges or unnatural behaviour.** Anything that clips, pops, floats, flickers or
+  moves in a way a person would not is a bug, not polish for later.
+- **Nothing is random.** Every item, prop and product has a purpose: who it is for, why they would want
+  it, and why it is placed where it is. Shops are merchandised with a philosophy (traffic, impulse,
+  daily needs, the people who actually live here); record that reasoning with the data so it can be
+  tested and so stories can use it.
+- **Permanent inspiration: New Yokosuka** (<https://github.com/brynnb/new-yokosuka>, a browser recreation of Shenmue's
+  Yokosuka): the catalogue of real home interiors, convenience stores, shops, bars, harbour and back lanes we plan
+  Minato's from. The owner (19 October 2026): its 1986 does not matter, small-town Japan keeps its old parts in the
+  90s and today. Study and measure there, never copy: `johansson-town/docs/research/new-yokosuka.md`.
+- **The town's trade** (`johansson-town/src/commerce/merchandising.js`): Sakura Shōten, Thuan's outright, is a konbini
+  *and* the town's supplier of everyday goods, from its depot in the Quay Warehouse (Sakura Trading), and of flowers and
+  decorations since Mrs Kinjō retired (the consolidation's ruling 3; Rainflower Florist no longer supplies anything).
+  Since Nhung became the island doctor (the owner, 22 October 2026; Dr Kakazu retired into her) Sakura also sells the
+  books and supplies the stationery and office goods Front-Row did; Front-Row is the town paper's print room in the
+  evenings, and Sakura shuts on Saturdays. Higa Liquor has closed (the owner, 22 October 2026): Sakura sells all the
+  alcohol over its counter and supplies it to Minato, Sato Ramen, the Coral Bay Bar on Kitano-jima and Mr Fujita's shed
+  on Sakura Trading's round, Kōji's on his weeks ashore (`commerce/trade-round.js`); the shop stands shut with a notice
+  on its shutter, and Grandmother Higa keeps only the bathhouse. Blue Coral on Rainflower Lane is the town's only
+  ice-cream shop.
+
+**Workflow (the owner, 24 October 2026; AGENTS.md):** Codex prototypes detailed three.js rooms and characters on
+`development`; Claude takes them to Pixar standard in Blender (`nj22az/jojo`, branch `pixar`); `main` keeps the
+simplified, cute cartoon three.js World until the Pixar world is complete.
+
+## Sjöskolan
+
+**Läs `sjoskolan/ANDRINGSLOGG.md` först.** Där står reglerna från tidigare fel (ledtrådar utan svaret, verkliga exempel,
+notation, samma exempel på flera ställen). Lägg till en rad efter varje ändring och en regel när ett nytt fel hittas.
+
+Kursen under `sjoskolan/` har ett eget designsystem: `sjoskolan/DESIGN.md` (grundvärden i `sjoskolan/gemensamt/sjoskolan.css`). Kurssidor och labbar använder Sjöskolans meny och fasta färger, inte webbplatsens `shared.js`-teman.
+
+### Övningsinnehåll
+
+Alla övningar, ledtrådar, lösningar, labbuppgifter och lärarfacit i Sjöskolan och boken lever i `sjoskolan/innehall/`
+(`ovningar/*.json`, `placeringar/*.json`, `skyddat/*.enc`). Redigera aldrig övningstext i kurssidor, `*.gen.mjs`,
+presentationer, bildspel, lärarguiden eller boken: ändra posten, kör `innehall.py revidera` och `innehall.py bygg`
+(se `sjoskolan/innehall/README.md`). CI avvisar inaktuella genererade filer. Lärar- och boklösenord skrivs aldrig i repot.
+
+### Notation
+
+En storhet har ett enda skrivsätt i allt elevmaterial: den kanoniska formen i `sjoskolan/innehall/beteckningar.json`
+(U_{pp}, U_{RMS}, U_{F}, U_{gren}, I_{L}, X_{L} …). Index skrivs `X_{L}` och renderas nedsänkt, aldrig XL, Upp eller Xᴸ.
+Nya varianter läggs i `avradda`; `innehall.py kontrollera` (CI) stoppar dem, `notation.py skriv-om` rättar dem.
+
+### Översättning
+
+Elevsidorna är `lang="sv"` och laddar `/sjoskolan/gemensamt/oversattning.js` (i `<head>`, `defer`). Skriptet markerar formler,
+storhetssymboler med index och tal med enhet `translate="no"`, så att maskinöversättning (Chrome, Edge, tillägg i Safari)
+inte ändrar dem. Safaris inbyggda översättning stöder inte svenska. Nya sidor och sidgeneratorer ska ta med skriptet; CI kontrollerar det.
+
+## Shared coding discipline
+
+Read [AGENTS.md](AGENTS.md) for the owner-adopted working rules based on multica-ai/andrej-karpathy-skills. For Johansson World also read [johansson-town/AGENTS.md](johansson-town/AGENTS.md), including the latest household and ship-role decisions. Preserve the existing project guidance above; the owner's more recent explicit decisions take precedence over older character descriptions.
+

@@ -1,0 +1,126 @@
+{
+  "id": "EL-000304",
+  "titel": "Bruten neutralledare",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-trefaslabbet",
+      "T-bildspel-v41-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Två laster, 23 Ω på L1 och 46 Ω på L2, har gemensam stjärnpunkt. L3 är obelastad och neutralledaren är bruten. Beräkna spänningen över lasten på L2."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "trefaslabbet/lessons.mjs CHALLENGES[3] (id bruten)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "Utan neutralledare ligger de två lasterna i serie mellan L1 och L2, alltså över 400 V. Dela spänningen i förhållande till resistanserna.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "Lasterna ligger i serie över U_{L} = 400 V. I = 400/(23 + 46) ≈ 5,80 A. U över 46 Ω = 5,80 · 46 ≈ 267 V, mer än U_{F} = 231 V.",
+    "svar": [
+      {
+        "storhet": "U över 46 Ω",
+        "varde": 266.667,
+        "tolerans": {
+          "rel": 0.01
+        },
+        "enhet": "V",
+        "berakning": "trefas.bruten_neutral_u"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "UL": {
+      "varde": 400,
+      "enhet": "V"
+    },
+    "R1": {
+      "varde": 23,
+      "enhet": "Ω"
+    },
+    "R2": {
+      "varde": 46,
+      "enhet": "Ω"
+    },
+    "Rx": {
+      "varde": 46,
+      "enhet": "Ω"
+    }
+  },
+  "simulator": {
+    "labb": "trefaslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "trefaslabbet.forvantat",
+      "facit": 266.667,
+      "tolerans": {
+        "rel": 0.01
+      }
+    },
+    "scenario": "neutral",
+    "initial": {
+      "UL": 400,
+      "R1": 23,
+      "R2": 46,
+      "R3": 92,
+      "on1": true,
+      "on2": true,
+      "on3": false,
+      "neutral": false
+    },
+    "fraga": {
+      "storhet": "U2",
+      "etikett": "U över 46 Ω",
+      "enhet": "V"
+    },
+    "dolj": [
+      "U1",
+      "U2",
+      "U3",
+      "I1",
+      "I2",
+      "shift",
+      "phasorValues"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 230.94,
+          "text": "Det gäller bara med hel neutralledare. Nu ligger lasterna i serie över linjespänningen."
+        },
+        {
+          "varde": 133.333,
+          "text": "Det är spänningen över 23 Ω-lasten. Frågan gäller lasten på 46 Ω."
+        }
+      ]
+    },
+    "kallhanvisning": "v41_01 · bild 22 och övning 10",
+    "alias": "bruten"
+  }
+}

@@ -1,0 +1,171 @@
+{
+  "id": "EL-000887",
+  "titel": "Transportstyrelsens riktlinjer för riskanalysarbete (2019)",
+  "sprak": "sv",
+  "typ": "flerval",
+  "revision": 4,
+  "granskning": {
+    "status": "utkast",
+    "kommentar": "Quiz vecka 42 (lärarens beslut 11 okt 2026: tio frågor per text, A–E, egna ord). Varje svar kontrollerat ordagrant mot PDF:en (citat och sida i lärarens facit). Facit finns bara hashat, klartexten utanför repot."
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3",
+      "LM-7"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v42-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Läs kapitel 1–2, avsnitt 3.2.10 och 3.3.3 samt bilaga 4 (PDF-sidorna 5–16, 25, 29–31 och 46–47). Svara på varje fråga med en bokstav. Frågorna säger var i texten du ska läsa.",
+    "delfragor": [
+      {
+        "id": "a",
+        "typ": "flerval",
+        "text": "Avsnitt 1.1. I vilket läge görs den sortens riskanalys som riktlinjen handlar om?",
+        "alternativ": [
+          "När en elektriker ska göra ett arbete ombord, till exempel byta en armatur",
+          "När redaren vill visa att ett nytt eller ombyggt fartyg uppfyller kraven",
+          "När en olycka har skett ombord och orsaken ska utredas",
+          "När fartyget har sin årliga besiktning och certifikaten ska förnyas"
+        ],
+        "ledtrad": "avsnitt 1.1 om när en riskanalys görs"
+      },
+      {
+        "id": "b",
+        "typ": "flerval",
+        "text": "Avsnitt 2.1.1. Vilka två saker vägs ihop när riktlinjen beskriver en risk?",
+        "alternativ": [
+          "Hur sannolikt det är att något händer och vilka följder det får",
+          "Hur sannolikt det är att något händer och hur lätt felet upptäcks",
+          "Vilken fara som finns och hur allvarlig skadan kan bli",
+          "Vilken fara som finns och vilka skydd som redan finns ombord"
+        ],
+        "ledtrad": "avsnitt 2.1.1 Risk"
+      },
+      {
+        "id": "c",
+        "typ": "flerval",
+        "text": "Avsnitt 2.1.7. Vilka delar består en riskbedömning av?",
+        "alternativ": [
+          "Hitta riskerna, åtgärda dem och sedan kontrollera att åtgärderna fungerar",
+          "Hitta riskerna, analysera dem och värdera hur stora de är",
+          "Utreda gamla olyckor, hitta orsaken och skriva en rapport om dem",
+          "Hitta riskerna, informera hela besättningen och sätta upp varningsskyltar"
+        ],
+        "ledtrad": "avsnitt 2.1.7 Riskbedömning"
+      },
+      {
+        "id": "d",
+        "typ": "flerval",
+        "text": "Avsnitt 2.1.11, tabell 1 och texten under. En elektriker som fått en elchock kan inte jobba på fyra dygn, men behöver inte ligga på sjukhus. Hur klassas olyckan i tabell 1?",
+        "alternativ": [
+          "Mindre olycka",
+          "Lindrig olycka",
+          "Allvarlig olycka",
+          "Dödsolycka"
+        ],
+        "ledtrad": "avsnitt 2.1.11 Konsekvensbedömning, tabell 1 och texten under"
+      },
+      {
+        "id": "e",
+        "typ": "flerval",
+        "text": "Avsnitt 2.2. Ett rederi har fyra projekt. För vilket av dem säger avsnittet att rederiet måste kontakta Transportstyrelsen?",
+        "alternativ": [
+          "En färja byggs om till eldrift och laddas från land",
+          "En fiskebåt får ny belysning och fler eluttag i styrhytten",
+          "Ett dieseldrivet fartyg byter till en ny, större dieselmotor",
+          "Ett lastfartyg får en ny radar och ett nytt sjökortssystem"
+        ],
+        "ledtrad": "avsnitt 2.2 Sammansättning av konstruktionsgruppen"
+      },
+      {
+        "id": "f",
+        "typ": "flerval",
+        "text": "Avsnitt 2.4 och 2.4.1. En risk ligger inom ALARP-området. Vad betyder det?",
+        "alternativ": [
+          "Risken är så obetydlig att den kan godtas som den är",
+          "Risken kan godtas när minst en åtgärd mot den är gjord",
+          "Risken kan aldrig godtas, och arbetet måste stoppas direkt",
+          "Risken kan godtas när alla rimliga åtgärder mot den är gjorda"
+        ],
+        "ledtrad": "avsnitt 2.4 Riskkriterier och 2.4.1 ALARP"
+      },
+      {
+        "id": "g",
+        "typ": "flerval",
+        "text": "Avsnitt 3.2.10. Du gör ett felträd för en brandpump som inte startar. Hur ska händelsen högst upp i trädet (topphändelsen) beskrivas?",
+        "alternativ": [
+          "Brett, så att den täcker alla fel som pumpen kan få",
+          "Tydligt och exakt: vad som hände, var det hände och när",
+          "Som orsaken till felet, till exempel en säkring som har gått",
+          "Som en åtgärd, till exempel att pumpen ska provköras oftare"
+        ],
+        "ledtrad": "avsnitt 3.2.10 Felträdsanalys (FTA)"
+      },
+      {
+        "id": "h",
+        "typ": "flerval",
+        "text": "Avsnitt 3.3.3, figur 12. Ett fel i en elcentral beräknas hända i snitt en gång per 50 år. Vilken sannolikhetsgrad ger figuren för felet?",
+        "alternativ": [
+          "Grad 1",
+          "Grad 2",
+          "Grad 3",
+          "Grad 4",
+          "Grad 5"
+        ],
+        "ledtrad": "avsnitt 3.3.3 Riskmatris, figur 12"
+      },
+      {
+        "id": "i",
+        "typ": "flerval",
+        "text": "Avsnitt 3.3.3. I riskmatrisen landar en risk i det område där den inte får godtas. Vilket är nästa steg?",
+        "alternativ": [
+          "Minska risken med åtgärder eller mer analys, och sedan bedöma den igen",
+          "Minska risken med en åtgärd och gå vidare utan någon ny bedömning",
+          "Skriva in risken i listan över risker och gå vidare till nästa",
+          "Vänta med åtgärder tills fartyget är klart och analysen görs om"
+        ],
+        "ledtrad": "avsnitt 3.3.3 Riskmatris, stycket efter figur 12"
+      },
+      {
+        "id": "j",
+        "typ": "flerval",
+        "text": "Bilaga 4. Du hjälper till att hitta riskkällor inför en ombyggnad. Vilken grupp består av riskkällor från bilagan?",
+        "alternativ": [
+          "Ritningar, olycksstatistik och erfarenheter från liknande fartyg",
+          "Utbildning, varningsskyltar och nya säkerhetsrutiner ombord",
+          "Elfel i köksutrustning, elektronik och tvättmaskiner",
+          "Personskador, miljöskador och skador på fartyg eller last"
+        ],
+        "ledtrad": "bilaga 4 Risker ombord"
+      }
+    ],
+    "svarsformat": "Svara med A, B, C, D eller E i quizet."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "Transportstyrelsen, TSG 2020-3130 (2019-12-03)",
+        "roll": "quiz vecka 42, läses hemma"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "Transportstyrelsen, ”Transportstyrelsens riktlinjer för riskanalysarbete – för fartyg i nationell fart (TSFS 2017:26)”, TSG 2020-3130, 2019-12-03.",
+    "resurser": [
+      {
+        "url": "vecka-42/aktuell/Transportstyrelsen_riktlinjer_riskanalysarbete.pdf",
+        "titel": "Transportstyrelsens riktlinjer för riskanalysarbete (PDF)",
+        "kortnamn": "riktlinjerna för riskanalysarbete"
+      }
+    ],
+    "losning_publik": false
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Saltade hashar i vecka-42/aktuell/quiz-nyckel.mjs; klartexten finns utanför repot (verktyg/inlamning/facit.py)."
+  }
+}

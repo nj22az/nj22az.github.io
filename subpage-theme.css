@@ -1,0 +1,114 @@
+/* Shared same-origin theme bridge. Loaded after each subpage's own stylesheet. */
+
+html.site-themed-subpage {
+  accent-color: var(--site-theme-accent);
+}
+
+/* Form 3D and its vector workspace use the full selected palette. */
+html.site-theme-studio {
+  --bg: var(--site-theme-bg);
+  --panel: color-mix(in srgb, var(--site-theme-surface) 94%, transparent);
+  --panel-solid: var(--site-theme-surface);
+  --panel-soft: var(--site-theme-surface-2);
+  --surface: color-mix(in srgb, var(--site-theme-surface) 92%, transparent);
+  --surface-solid: var(--site-theme-surface);
+  --surface-2: var(--site-theme-surface-2);
+  --text: var(--site-theme-text);
+  --secondary: var(--site-theme-muted);
+  --tertiary: color-mix(in srgb, var(--site-theme-muted) 72%, transparent);
+  --muted: var(--site-theme-muted);
+  --line: var(--site-theme-border);
+  --blue: var(--site-theme-accent);
+  --blue-dark: var(--site-theme-accent-hover);
+  --blue-pressed: var(--site-theme-accent-hover);
+  --blue-soft: var(--site-theme-accent-soft);
+  --accent: var(--site-theme-accent);
+  --accent-2: var(--site-theme-accent-hover);
+}
+html.site-theme-studio .app-mark,
+html.site-theme-studio .brand-mark {
+  background: var(--site-theme-accent);
+}
+
+/* The book keeps its reading controls while inheriting the chosen palette. */
+html.site-theme-reader {
+  --bg: var(--site-theme-bg);
+  --surface: var(--site-theme-surface);
+  --surface-2: var(--site-theme-surface-2);
+  --text: var(--site-theme-text);
+  --text-2: var(--site-theme-muted);
+  --text-3: color-mix(in srgb, var(--site-theme-muted) 78%, transparent);
+  --hairline: var(--site-theme-border);
+  --hairline-strong: color-mix(in srgb, var(--site-theme-border) 72%, var(--site-theme-text));
+  --accent: var(--site-theme-accent);
+  --bar-bg: color-mix(in srgb, var(--site-theme-bg) 82%, transparent);
+}
+html.site-theme-reader .contents,
+html.site-theme-reader .reader { --accent: var(--site-theme-accent); }
+html.site-theme-reader[data-theme="dark"] {
+  --bg: #0b0c0f;
+  --surface: color-mix(in srgb, var(--site-theme-accent) 9%, #17181c);
+  --surface-2: color-mix(in srgb, var(--site-theme-accent) 13%, #24252a);
+  --text: #f2f2f4;
+  --text-2: #bbbcc2;
+  --text-3: #91939b;
+  --hairline: rgba(255,255,255,.14);
+  --hairline-strong: rgba(255,255,255,.23);
+  --bar-bg: rgba(12,13,16,.82);
+}
+@media (prefers-color-scheme: dark) {
+  html.site-theme-reader[data-theme="auto"] {
+    --bg: #0b0c0f;
+    --surface: color-mix(in srgb, var(--site-theme-accent) 9%, #17181c);
+    --surface-2: color-mix(in srgb, var(--site-theme-accent) 13%, #24252a);
+    --text: #f2f2f4;
+    --text-2: #bbbcc2;
+    --text-3: #91939b;
+    --hairline: rgba(255,255,255,.14);
+    --hairline-strong: rgba(255,255,255,.23);
+    --bar-bg: rgba(12,13,16,.82);
+  }
+}
+html.site-theme-pelican {
+  --flame: var(--site-theme-highlight);
+  --edge: color-mix(in srgb, var(--site-theme-highlight) 28%, transparent);
+}
+html.site-theme-motion {
+  --gold: var(--site-theme-highlight);
+  --line: color-mix(in srgb, var(--site-theme-highlight) 46%, transparent);
+}
+
+/* Legacy engineering notes retain their grid while adopting the palette. */
+html.site-theme-engineering {
+  --ink: var(--site-theme-text);
+  --line: var(--site-theme-text);
+  --muted: var(--site-theme-muted);
+  --paper: var(--site-theme-bg);
+  --panel: var(--site-theme-surface);
+  --pastel-blue: color-mix(in srgb, var(--site-theme-accent) 9%, var(--site-theme-surface));
+  --pastel-mint: color-mix(in srgb, var(--site-theme-highlight) 10%, var(--site-theme-surface));
+  --pastel-yellow: color-mix(in srgb, var(--site-theme-highlight) 14%, var(--site-theme-surface));
+  --pastel-peach: color-mix(in srgb, var(--site-theme-accent) 7%, var(--site-theme-surface));
+  --pastel-lavender: color-mix(in srgb, var(--site-theme-accent) 11%, var(--site-theme-surface));
+  --badge-blue: var(--site-theme-accent);
+  --link: var(--site-theme-accent);
+}
+
+/* The archived shop remains restorable and no longer overwrites site choice. */
+html.site-theme-shop {
+  --ink: var(--site-theme-text);
+  --ink-light: var(--site-theme-muted);
+  --ink-faint: color-mix(in srgb, var(--site-theme-muted) 75%, transparent);
+  --surface: var(--site-theme-bg);
+  --surface-raised: var(--site-theme-surface-2);
+  --surface-card: var(--site-theme-surface);
+  --surface-hover: color-mix(in srgb, var(--site-theme-accent) 8%, var(--site-theme-surface));
+  --surface-mint: var(--site-theme-surface-2);
+  --border: var(--site-theme-border);
+  --border-hover: color-mix(in srgb, var(--site-theme-border) 70%, var(--site-theme-text));
+  --accent: var(--site-theme-accent);
+  --accent-hover: var(--site-theme-accent-hover);
+  --accent-glow: var(--site-theme-accent-soft);
+  --divider: var(--site-theme-highlight);
+  --nav-bg: color-mix(in srgb, var(--site-theme-bg) 92%, transparent);
+}

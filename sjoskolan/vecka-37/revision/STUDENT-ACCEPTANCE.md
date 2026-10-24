@@ -1,0 +1,40 @@
+# Module 1 student acceptance — 16 October 2026
+
+Scope: optional revision only. The original course week, ordinary submission and grading remain authoritative and unchanged.
+
+## Observed on the published version
+
+A desktop Chrome walkthrough completed all six exercises through visible controls, without teacher instructions: closed-load voltage 12.00 V; open-switch load voltage 0.00 V; source voltage with open switch 12.00 V; broken-return load voltage 0.00 V; series current 1.967 A for a 2 A ideal prediction; isolated resistance 6.2 Ω including leads.
+
+Observed friction:
+
+- Requesting a hint was necessary again after each operation because the hint disappeared on render.
+- Return continuity was hidden inside a disclosure needed for exercise 4.
+- Selecting a probe colour and then a terminal required repeated navigation between controls.
+- The next-exercise control was far from the measurement feedback and allowed progression before any successful attempt.
+- Changing the current socket while powered produced an error; its recovery required finding a separate supply control.
+- The WebGL fallback retained a large empty viewport and camera controls with no effect.
+
+The cloud browser reports WebGL disabled by its environment. This does **not** establish a production 3D defect. Its real rendered equipment could not be visually accepted there. No physical iPad was available.
+
+## Supported changes
+
+Persistent next-handgrip guidance now explains and performs **one named operation per click**, through the same instrument model as the detailed controls. It never predicts, measures or marks an exercise complete for the student. The student still supplies a prediction, unit and reason. Each probe also has a direct, labelled endpoint list; the 3D tap/drag controls remain available.
+
+Return controls are visible. Circuit status distinguishes supply off, isolated source, open switch, broken return and the series bridge. Ordinary switch operation does not add a redundant power cycle. Rewiring retains the repository’s power-off guidance. Recovery explicitly disconnects probes before resetting protection; restarting cannot clear a tripped instrument. Every submitted attempt remains in the protocol.
+
+Success places the next-exercise button beside the result. The exercise selector still permits revisiting any scenario. The fallback hides the unavailable viewport and camera controls, and opens the circuit diagram. The existing native work-view dialog and current diagnosis validation are preserved. Responsive endpoint lists avoid small drag targets; the schematic scales within its container.
+
+## Verification
+
+- `node --test sjoskolan/vecka-37/revision/*.test.mjs`: model, actual DOM events, guided progression, protection recovery, original preservation and export hashes.
+- Browser suite: `node sjoskolan/multimetersimulator/node_modules/@playwright/test/cli.js test -c sjoskolan/vecka-37/revision/student-browser.config.mjs`.
+- Three browser projects: desktop Chromium, phone Chromium with Pixel 7 viewport/touch emulation, and WebKit with iPad Mini viewport/touch emulation. These are browser-engine tests, **not physical-device certification**.
+- Each browser journey uses only rendered guidance and controls, completes all six exercises, captures each instrument, checks page overflow and reload persistence, and tests direct probe lists, wrong-unit correction and tripped-protection recovery.
+- CI retains screenshots, the rendered-3D/fallback state, failure traces and the HTML test report as `module-one-browser-evidence`.
+
+The first browser run passed all six browser tests on commit `226dd1555d63659d405a23ece1c6e91733c0ff92`: 18 completed exercise scenarios across the three projects, plus correction/recovery checks. All three projects created a real WebGL canvas. Captured 3D equipment and instrument screenshots were reviewed; the close return labels overlapped. Their projected placement is now separated, with geometric regression coverage at 390, 820 and 1180 px. The final browser rerun also checks actual 3D terminal clicks, endpoint-list synchronisation and non-overlapping return targets, and captures each scenario’s bench.
+
+Physical iPad Safari, actual touch/drag ergonomics on a device and a real first-time learner study remain outstanding. Browser emulation and an expert walkthrough do not certify those.
+
+Final integrated browser acceptance on commit `f8a832d9720d2aafda986dedb4c1e20658b30191` passed all six browser tests and the wider Sjöskolan workflow. Actual 3D terminal clicks and non-overlapping targets passed at all three sizes. [Browser run](https://github.com/nj22az/nj22az.github.io/actions/runs/38894236286). Later concurrent improvements to compact diagram labels, work-view scroll locking and tablet theory figures were preserved during the final merge.

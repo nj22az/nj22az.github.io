@@ -69,3 +69,44 @@
   transition: color 0.2s;
 }
 .post-link:hover { color: var(--accent-hover); }
+
+/* Featured series (Elteknik ombord) */
+.series-feature {
+  display: grid; grid-template-columns: 180px 1fr; gap: 2.5rem; align-items: start;
+  background: var(--surface-card); border: 1px solid var(--border); border-radius: 1.5rem;
+  padding: 2rem; margin-bottom: 3rem;
+}
+.series-feature-cover img { width: 100%; height: auto; border-radius: 0.375rem; box-shadow: var(--shadow-card); }
+.series-feature .page-eyebrow { margin-bottom: 0.5rem; }
+.series-feature h2 { font-family: var(--font-display); font-weight: 800; font-size: clamp(1.5rem, 3vw, 2rem); margin-bottom: 0.75rem; }
+.series-feature h2 a { color: var(--accent); }
+.series-feature p { color: var(--ink-light); line-height: 1.75; margin-bottom: 1.25rem; max-width: 40rem; }
+.series-feature p a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.series-parts { list-style: none; padding: 0; margin: 0 0 1.25rem; border-top: 1px dashed var(--border); }
+.series-parts li { border-bottom: 1px dashed var(--border); }
+.series-parts a {
+  display: grid; grid-template-columns: 2rem 1fr; column-gap: 0.75rem; padding: 0.7rem 0.25rem;
+  color: var(--ink); transition: color 0.2s;
+}
+.series-parts a:hover .t { color: var(--accent); }
+.series-parts .nr { grid-row: span 2; font-family: var(--font-display); font-weight: 800; color: var(--accent); }
+.series-parts .t { font-weight: 700; }
+.series-parts .s { font-size: 0.875rem; color: var(--ink-faint); }
+
+.journal-heading {
+  font-family: var(--font-display); font-weight: 800; font-size: 1.5rem;
+  color: var(--ink); margin-bottom: 1.25rem;
+}
+.load-more-wrap { text-align: center; margin-top: 0.5rem; }
+.load-more {
+  font: inherit; font-weight: 700; color: var(--accent); background: var(--surface-card);
+  border: 1px solid var(--border-hover); border-radius: 999px; padding: 0.75rem 1.75rem; cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.load-more:hover { border-color: var(--accent); box-shadow: var(--shadow-card); }
+.load-more:disabled { opacity: 0.6; cursor: progress; }
+
+@media (max-width: 640px) {
+  .series-feature { grid-template-columns: 1fr; gap: 1.5rem; padding: 1.5rem; }
+  .series-feature-cover { max-width: 140px; }
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <base href="/johansson-town/">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#06c755">
+  <meta name="apple-mobile-web-app-title" content="Johansson Studio">
+  <title>Johansson Studio</title>
+  <meta name="description" content="Create characters, compose scenes in Johansson World locations, and export photographs, memes and comics as PNG.">
+  <link rel="canonical" href="https://nj22az.github.io/avatar-creator/">
+  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+  <link rel="apple-touch-icon" href="/johansson-town/assets/icons/town-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LINE+Seed+JP:wght@400;700;800&display=swap">
+  <!-- ā ē ī ō ū from Figtree: LINE Seed JP draws their bars beside the letter (johansson-town/index.html) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;700;800&text=%C4%81%C4%93%C4%AB%C5%8D%C5%AB%C4%80%C4%92%C4%AA%C5%8C%C5%AA&display=swap">
+  <link rel="stylesheet" href="/johansson-town/creator/creator.css">
+  <link rel="stylesheet" href="/johansson-town/line-ui.css">
+  <link rel="stylesheet" href="/avatar-creator/studio.css?v=20261017-life">
+  <link rel="stylesheet" href="/avatar-creator/comic-effects.css?v=20261023-1">
+  <link rel="stylesheet" href="/avatar-creator/scene.css?v=20261020-staging">
+  <link rel="stylesheet" href="/avatar-creator/model.css?v=20261020-integrated">
+  <link rel="stylesheet" href="/avatar-creator/world-library.css?v=20261020-1">
+</head>
+<body class="creator-page standalone-studio">
+  <noscript>Enable JavaScript to create your character.</noscript>
+  <section id="comic-start" hidden style="max-width:1400px;margin:24px auto;padding:16px;font:18px system-ui"><h1>Johansson Studio comic</h1><img id="comic-start-image" src="/avatar-creator/comics/fujita-tv.svg?v=20261023-recovery" alt="Fujita’s three-panel TV comic" style="width:100%;height:auto" hidden><p id="comic-start-note" role="status">Opening the editable scenes…</p><p><a href="/avatar-creator/comics/fujita-tv.html">View Fujita’s comic without the 3D editor</a></p><button onclick="location.reload()">Retry opening Studio</button></section>
+  <script>if(new URLSearchParams(location.search).get('comic')==='fujita-tv'||location.hash.startsWith('#studio=')){document.getElementById('comic-start').hidden=false;document.getElementById('comic-start-image').hidden=new URLSearchParams(location.search).get('comic')!=='fujita-tv';}window.addEventListener('unhandledrejection',()=>{const n=document.getElementById('comic-start-note');if(n)n.textContent='The editor could not finish loading. The comic preview remains available. Use Retry to try again.';});</script>
+  <p id="loading" role="status">Loading Johansson Studio…</p>
+  <script type="module" src="/avatar-creator/studio.js?v=20261024-vy-default"></script>
+</body>
+</html>
+
+
