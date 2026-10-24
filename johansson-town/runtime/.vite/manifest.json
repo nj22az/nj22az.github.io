@@ -1,6 +1,6 @@
 {
-  "_actors-Bl9VvVWx.js": {
-    "file": "actors-Bl9VvVWx.js",
+  "_actors-DEfhiuxW.js": {
+    "file": "actors-DEfhiuxW.js",
     "name": "actors",
     "isDynamicEntry": true,
     "imports": [
@@ -49,8 +49,8 @@
       "_harbour-park-plan-Bw-xqtUj.js"
     ]
   },
-  "_halloween-BHpjqN2M.js": {
-    "file": "halloween-BHpjqN2M.js",
+  "_halloween-p_ZaKBjs.js": {
+    "file": "halloween-p_ZaKBjs.js",
     "name": "halloween",
     "isDynamicEntry": true,
     "imports": [
@@ -59,7 +59,7 @@
       "_animate-DVw8V9Is.js",
       "_hat-models-BUXQrhK0.js",
       "_harbour-park-plan-Bw-xqtUj.js",
-      "_actors-Bl9VvVWx.js",
+      "_actors-DEfhiuxW.js",
       "_staff-bench-7rO6OvZC.js",
       "_storyteller-BCF-E4y0.js"
     ]
@@ -84,8 +84,8 @@
     "file": "icons-DfeBIm6m.js",
     "name": "icons"
   },
-  "_onsen-ByT4zg_s.js": {
-    "file": "onsen-ByT4zg_s.js",
+  "_onsen-BqYLWfHC.js": {
+    "file": "onsen-BqYLWfHC.js",
     "name": "onsen",
     "isDynamicEntry": true,
     "imports": [
@@ -93,7 +93,7 @@
       "_fish-B2eYD-vz.js",
       "_animate-DVw8V9Is.js",
       "_hat-models-BUXQrhK0.js",
-      "_halloween-BHpjqN2M.js",
+      "_halloween-p_ZaKBjs.js",
       "_catalog-BmPuBky0.js"
     ]
   },
@@ -101,13 +101,13 @@
     "file": "preload-helper-PPVm8Dsz.js",
     "name": "preload-helper"
   },
-  "_sakura-interior-NU_M8s1j.js": {
-    "file": "sakura-interior-NU_M8s1j.js",
+  "_sakura-interior-BgDRKQCU.js": {
+    "file": "sakura-interior-BgDRKQCU.js",
     "name": "sakura-interior",
     "isDynamicEntry": true,
     "imports": [
       "_compact-shops-DHSWUsrf.js",
-      "_halloween-BHpjqN2M.js",
+      "_halloween-p_ZaKBjs.js",
       "_harbour-park-plan-Bw-xqtUj.js",
       "_fish-B2eYD-vz.js",
       "_catalog-BmPuBky0.js",
@@ -161,7 +161,7 @@
     ]
   },
   "src/avatars/guide-portraits.js": {
-    "file": "portraits-KKCHfo1E.js",
+    "file": "portraits-grMcbTpS.js",
     "name": "portraits",
     "src": "src/avatars/guide-portraits.js",
     "isEntry": true,
@@ -171,13 +171,13 @@
       "_hat-models-BUXQrhK0.js",
       "_staff-bench-7rO6OvZC.js",
       "_studio-handoff-DSCQpYnx.js",
-      "_actors-Bl9VvVWx.js",
+      "_actors-DEfhiuxW.js",
       "_shopping-lane-plan-D0DhEU8_.js",
       "_harbour-park-plan-Bw-xqtUj.js"
     ]
   },
   "src/boot.js": {
-    "file": "boot-CSqOOSL-.js",
+    "file": "boot-DpwdRtaM.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
@@ -193,7 +193,7 @@
     ]
   },
   "src/feed/mount.js": {
-    "file": "feed-BPztvWAZ.js",
+    "file": "feed-CdqjCchs.js",
     "name": "feed",
     "src": "src/feed/mount.js",
     "isEntry": true,
@@ -211,7 +211,7 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-C38xgZqd.js",
+    "file": "game-C5S-JUDk.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
@@ -219,17 +219,17 @@
       "_preload-helper-PPVm8Dsz.js",
       "_harbour-park-plan-Bw-xqtUj.js",
       "_staff-bench-7rO6OvZC.js",
-      "_halloween-BHpjqN2M.js",
+      "_halloween-p_ZaKBjs.js",
       "_fish-B2eYD-vz.js",
       "_compact-shops-DHSWUsrf.js",
       "_hat-models-BUXQrhK0.js",
-      "_actors-Bl9VvVWx.js",
+      "_actors-DEfhiuxW.js",
       "_icons-DfeBIm6m.js",
       "_animate-DVw8V9Is.js",
       "_shopping-lane-plan-D0DhEU8_.js",
-      "_onsen-ByT4zg_s.js",
+      "_onsen-BqYLWfHC.js",
       "_catalog-BmPuBky0.js",
-      "_sakura-interior-NU_M8s1j.js",
+      "_sakura-interior-BgDRKQCU.js",
       "src/world/interiors/sato-ramen.js",
       "_friendship-CDPx2JGq.js",
       "src/world/interiors/town-hall.js",
@@ -255,17 +255,17 @@
     ]
   },
   "src/scene/scene-world.js": {
-    "file": "scene-world-BCSL_Kv1.js",
+    "file": "scene-world-CkNoiJPw.js",
     "name": "scene-world",
     "src": "src/scene/scene-world.js",
     "isDynamicEntry": true,
     "imports": [
       "_preload-helper-PPVm8Dsz.js",
       "_compact-shops-DHSWUsrf.js",
-      "_halloween-BHpjqN2M.js",
+      "_halloween-p_ZaKBjs.js",
       "_staff-bench-7rO6OvZC.js",
       "_fish-B2eYD-vz.js",
-      "_actors-Bl9VvVWx.js",
+      "_actors-DEfhiuxW.js",
       "_animate-DVw8V9Is.js",
       "_shopping-lane-plan-D0DhEU8_.js",
       "_hat-models-BUXQrhK0.js",
@@ -273,38 +273,38 @@
       "_storyteller-BCF-E4y0.js"
     ],
     "dynamicImports": [
-      "_sakura-interior-NU_M8s1j.js",
-      "_halloween-BHpjqN2M.js",
+      "_sakura-interior-BgDRKQCU.js",
+      "_halloween-p_ZaKBjs.js",
       "src/world/interiors/sato-ramen.js",
-      "_actors-Bl9VvVWx.js",
+      "_actors-DEfhiuxW.js",
       "_compact-shops-DHSWUsrf.js",
       "_compact-shops-DHSWUsrf.js",
       "_compact-shops-DHSWUsrf.js",
       "_compact-shops-DHSWUsrf.js",
-      "_onsen-ByT4zg_s.js",
+      "_onsen-BqYLWfHC.js",
       "src/world/interiors/town-hall.js"
     ]
   },
   "src/world/interiors/sato-ramen.js": {
-    "file": "sato-ramen-nq1sckCI.js",
+    "file": "sato-ramen-CVPGSj1Z.js",
     "name": "sato-ramen",
     "src": "src/world/interiors/sato-ramen.js",
     "isDynamicEntry": true,
     "imports": [
       "_compact-shops-DHSWUsrf.js",
-      "_halloween-BHpjqN2M.js",
+      "_halloween-p_ZaKBjs.js",
       "_fish-B2eYD-vz.js",
       "_staff-bench-7rO6OvZC.js",
       "_harbour-park-plan-Bw-xqtUj.js",
       "_shopping-lane-plan-D0DhEU8_.js",
       "_animate-DVw8V9Is.js",
       "_hat-models-BUXQrhK0.js",
-      "_actors-Bl9VvVWx.js",
+      "_actors-DEfhiuxW.js",
       "_storyteller-BCF-E4y0.js"
     ]
   },
   "src/world/interiors/town-hall.js": {
-    "file": "town-hall-FuBRKh54.js",
+    "file": "town-hall-_Ryfvu-6.js",
     "name": "town-hall",
     "src": "src/world/interiors/town-hall.js",
     "isDynamicEntry": true,
@@ -313,11 +313,11 @@
       "_fish-B2eYD-vz.js",
       "_animate-DVw8V9Is.js",
       "_hat-models-BUXQrhK0.js",
-      "_halloween-BHpjqN2M.js",
+      "_halloween-p_ZaKBjs.js",
       "_staff-bench-7rO6OvZC.js",
       "_harbour-park-plan-Bw-xqtUj.js",
       "_shopping-lane-plan-D0DhEU8_.js",
-      "_actors-Bl9VvVWx.js",
+      "_actors-DEfhiuxW.js",
       "_storyteller-BCF-E4y0.js"
     ]
   },
