@@ -104,7 +104,10 @@
 
   function updateStatus() {
     var count = selected().length;
-    var message = count ? count + ' ' + (count === 1 ? 'hotel matches' : 'hotels match') + ' the filters.' : 'No hotels match the filters.';
+    var total = visibleIds.size;
+    var missing = total - count;
+    var message = total ? count + ' of ' + total + ' selected hotels have verified map locations.' : 'No hotels match the filters.';
+    if (missing > 0) message += ' ' + missing + ' ' + (missing === 1 ? 'hotel is' : 'hotels are') + ' listed below with addresses while map coordinates await verification.';
     if (position) message += ' Your location is shown; estimated accuracy ' + Math.round(position.accuracy).toLocaleString('en-GB') + ' metres.';
     if (locationMessage) message += ' ' + locationMessage;
     if (tileError) message += ' Some map tiles could not load. Hotel markers and the register remain available.';

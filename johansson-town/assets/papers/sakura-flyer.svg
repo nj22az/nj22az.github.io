@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="900" height="1280" viewBox="0 0 900 1280" role="img" aria-labelledby="title desc">
-<title id="title">Sakura Shop — Thuan's neighbourhood flyer</title><desc id="desc">English 1997 shop flyer: rice balls, green tea, potato crisps, a stamp-card offer and a schematic map from the bus stop to the harbour.</desc>
+<title id="title">Sakura Shop — Thuan's neighbourhood flyer</title><desc id="desc">English 1997 shop flyer: rice balls, green tea, potato crisps, a stamp-card offer and a schematic map of Main Street down to the harbour.</desc>
 <defs><pattern id="paper" width="13" height="17" patternUnits="userSpaceOnUse"><circle cx="3" cy="4" r=".65" fill="#ad8552" opacity=".16"/><circle cx="10" cy="13" r=".7" fill="#fff" opacity=".4"/></pattern></defs>
 <rect width="900" height="1280" fill="#f7e5b4"/><rect width="900" height="1280" fill="url(#paper)"/>
 <g fill="none" stroke="#a83432"><rect x="22" y="22" width="856" height="1236" stroke-width="8"/><path d="M27 46H873M27 70H873M27 1210H873M27 1234H873" stroke-width="10"/></g>
@@ -22,11 +22,12 @@
 <g transform="translate(53 940)"><rect width="794" height="203" fill="#f6efe0" stroke="#b44a3a" stroke-width="3"/><text x="19" y="32" font-size="22" font-weight="bold">FIND US ON MAIN STREET</text><text x="19" y="59" font-size="16">Neighbourhood sketch · north is up</text>
 <path d="M380 16V187" stroke="#d1cabc" stroke-width="46"/><path d="M380 77H702" stroke="#d1cabc" stroke-width="22"/>
 <path d="M380 34V173" stroke="#fff" stroke-width="2" stroke-dasharray="9 9"/>
-<rect x="170" y="68" width="133" height="38" fill="#decbaa" stroke="#867058"/><text x="236" y="94" text-anchor="middle" font-size="19">Bookshop</text>
+<rect x="170" y="62" width="133" height="50" fill="#decbaa" stroke="#867058"/><text x="236" y="83" text-anchor="middle" font-size="17">Front-Row</text><text x="236" y="103" text-anchor="middle" font-size="15">reading room</text>
 <rect x="128" y="118" width="175" height="55" fill="#bf4242" stroke="#982d32"/><text x="216" y="142" text-anchor="middle" font-size="21" font-weight="bold" fill="#fff4d4">SAKURA SHOP</text><text x="216" y="163" text-anchor="middle" font-size="16" fill="#fff4d4">Thuan is here!</text>
 <path d="M353 145H310M322 136L309 145L322 154" fill="none" stroke="#b44035" stroke-width="5"/>
-<text x="403" y="26" font-size="19">↑ Bus stop</text><text x="403" y="184" font-size="19">↓ Harbour / notice board</text>
+<text x="403" y="26" font-size="19">↑ Main Street</text><text x="403" y="184" font-size="19">↓ Harbour / notice board</text>
 </g>
-<text x="450" y="1181" text-anchor="middle" font-size="25" font-weight="bold">OPEN DAILY 09:00–20:00 · CASH ONLY · TAX INCLUDED</text>
-<text x="450" y="1199" text-anchor="middle" font-size="12">Johansson Town · 1997 neighbourhood edition · Free copy · Filed at Community Hall</text>
+<text x="450" y="1166" text-anchor="middle" font-size="22" font-weight="bold">OPEN SUN–FRI 09:00–20:30 · PURCHASES UNTIL 20:00</text>
+<text x="450" y="1190" text-anchor="middle" font-size="22" font-weight="bold">CLOSED SATURDAYS · CASH ONLY · PRICES INCLUDE TAX</text>
+<text x="450" y="1203" text-anchor="middle" font-size="11">Johansson Town · 1997 neighbourhood edition · Free copy · Filed at Community Hall</text>
 </g></svg>

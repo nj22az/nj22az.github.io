@@ -15,7 +15,6 @@ import {CARGO_CALLS} from './cargo-shipping.js';
  * point facing a way, or go inside and sit), and what the first caption says.
  */
 export const OPENINGS=Object.freeze([
- {id:'sakura-bench',weight:3,hours:[0,1440],seat:'Sit and look at Sakura',caption:'Sakura is across the street.'},
  {id:'izakaya',weight:3,open:izakayaOpen,room:'izakaya',seat:'Sit at the counter',drink:'draft',caption:'Minato · a cold beer in front of you, and Thao behind the counter.'},
  {id:'ramen',weight:3,open:satoRamenOpen,room:'ramen',seat:'Sit at the ramen counter',meal:'shoyu',caption:'Sato Ramen · a bowl of shoyu ramen steaming in front of you, and Mrs Sato at the pots.'},
  // At the pier's end (z -88 since 2026-10), among the anglers' things, facing the breakwater's east light.
@@ -46,6 +45,18 @@ export const OPENINGS=Object.freeze([
  // Beside the ferry's landing sign (ferry-quick-crossing.js), looking out across the strait to Kitano-jima.
  {id:'landing-sign',docks:true,weight:2,hours:[0,1440],stand:[-2.6,-70.4],facing:-.89,caption:'The ferry landing · Kitano-jima across the strait.'},
 ]);
+
+/** Old Linux checkpoints can be on the removed bench's seat, inside the retained shrubs.
+ * Only its former 1.78 × 0.64 m rotated footprint is recovered; neighbouring paths, homes
+ * and aboard-ship checkpoints keep their own positions. Both Linux checkpoint stores use this. */
+export function recoverSakuraBenchCheckpoint(point){
+ if(!point||point.atHome||point.ship||point.room||![point.x,point.z].every(Number.isFinite))return point;
+ // The former bench faced Sakura at (-7.45, -26.8); its collider centre was at local z = -0.025 m.
+ const yaw=Math.atan2(14.05,-5.2),c=Math.cos(yaw),s=Math.sin(yaw),dx=point.x-6.6,dz=point.z+32;
+ if(Math.abs(dx*c-dz*s)>.89||Math.abs(dx*s+dz*c+.025)>.32)return point;
+ const safe=OPENINGS.find(o=>o.id==='fish-auction');
+ return {...point,x:safe.stand[0],z:safe.stand[1],yaw:safe.facing};
+}
 const SEEN_KEY='johansson-town-openings-seen';
 
 const LAST_KEY='johansson-town-opening';
@@ -57,8 +68,9 @@ const LAST_KEY='johansson-town-opening';
  * opening by name.
  */
 export function chooseOpening({minutes,rain=false,force=null,random=Math.random,storage=globalThis.localStorage,context={}}={}){
- // The island has no bus stop any more; the old name finds the ferry.
- const name=force==='bus-stop'?'ferry':force;
+ // Retired places keep old links usable: the bus stop finds the ferry, and the removed
+ // Sakura viewing bench (24 October 2026) finds the clear standing point by the fish auction.
+ const name=force==='bus-stop'?'ferry':force==='sakura-bench'?'fish-auction':force;
  const byName=name&&OPENINGS.find(o=>o.id===name);if(byName)return byName;
  const fits=OPENINGS.filter(o=>o.docks&&(o.open?o.open(minutes):inTimeRange(minutes,...o.hours))&&!(rain&&o.dry)&&(!o.when||o.when(context)));
  let last=null,seen=[];try{last=storage?.getItem(LAST_KEY);seen=JSON.parse(storage?.getItem(SEEN_KEY)||'[]');}catch{}

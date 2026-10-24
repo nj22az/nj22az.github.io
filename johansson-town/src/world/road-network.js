@@ -109,6 +109,17 @@ export function pathPose(path,s,out={}){
  return out;
 }
 
+/** Keep the same pedestrian collider on the car, including while held or carried by the ferry.
+ * `moving` means its pose is dynamic, not that it is non-solid. Height is relative to minY,
+ * so a car on the ferry deck does not make an invisible wall down to the sea.
+ */
+export function syncVehicleCollider(v){
+ const c=v.solid;if(!c)return;c.moving=true;
+ if(v.g.visible===false){c.x=c.z=1e6;return;}
+ const p=v.g.position;
+ Object.assign(c,{x:p.x,z:p.z,yaw:v.g.rotation.y,minY:p.y,height:2});
+}
+
 /**
  * The drivers. Each vehicle: {g (has position/rotation), length, width}. obstacles()
  * returns people and other things to keep clear of as [{x,z,r}].
@@ -168,7 +179,7 @@ export function createTraffic({obstacles=()=>[]}={}){
  }
  function place(v){
   pathPose(v.trip.path,v.s,pose);
-  v.g.position.set(pose.x,pose.y,pose.z);v.g.rotation.order='YXZ';v.g.rotation.set(v.trip.reverse?pose.pitch:-pose.pitch,pose.yaw+(v.trip.reverse?Math.PI:0),0);
+  v.g.position.set(pose.x,pose.y,pose.z);v.g.rotation.order='YXZ';v.g.rotation.set(v.trip.reverse?pose.pitch:-pose.pitch,pose.yaw+(v.trip.reverse?Math.PI:0),0);syncVehicleCollider(v);
  }
  return {
   vehicles,
@@ -180,10 +191,11 @@ export function createTraffic({obstacles=()=>[]}={}){
   },
   /** Stops wherever it is and puts it at the end of its trip (the clock jumped). */
   finish(v){if(!v.trip)return;v.s=v.trip.path.length;place(v);const done=v.trip.onArrive;v.trip=null;v.speed=0;done?.(v);},
-  park(v,{x,y,z,yaw}){v.trip=null;v.speed=0;v.g.position.set(x,y,z);v.g.rotation.order='YXZ';v.g.rotation.set(0,yaw,0);v.g.visible=true;},
+  park(v,{x,y,z,yaw}){v.trip=null;v.speed=0;v.g.position.set(x,y,z);v.g.rotation.order='YXZ';v.g.rotation.set(0,yaw,0);v.g.visible=true;syncVehicleCollider(v);},
   update(dt){
    dt=Math.min(dt,.1);
    for(const v of vehicles){
+    syncVehicleCollider(v);
     if(!v.trip)continue;if(v.hold){v.speed=0;continue;}
     const target=speedFor(v,dt);
     if(target>v.speed)v.speed=Math.min(target,v.speed+DRIVING.accel*dt);

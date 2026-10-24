@@ -44,3 +44,18 @@ test('character switching restores independent positions, saves identity and use
  minutes=60;await api.select('Nhung');assert.equal(api.inBed,true);assert.equal(api.current().home.id,state.desktopLife.people.Nhung.home);assert.equal(api.wake(),true);assert.equal(api.inBed,false);assert.ok(saved>3);
  const reloaded=createLinuxLife({...opts,state:JSON.parse(JSON.stringify(state))});assert.equal(reloaded.active,'Nhung');await reloaded.start();assert.equal(reloaded.inBed,true);
 });
+
+test('old bench checkpoints recover on startup and character switching without moving other residents',async()=>{
+ const {createLinuxLife}=await import('../../johansson-town/src/desktop/life.js');
+ const yaw=Math.atan2(14.05,-5.2),bench={x:6.6-.08*Math.sin(yaw),z:-32-.08*Math.cos(yaw),yaw,atHome:false};
+ const ordinary={x:14,z:13,yaw:1,atHome:false},home={...bench,atHome:true};
+ const state={desktopLife:{version:2,active:'Johansson',people:{Johansson:{checkpoint:{...bench}},Thuan:{checkpoint:{...bench}},Chin:{checkpoint:{...ordinary}},Nhung:{checkpoint:{...home}}}}};
+ let at={x:0,z:0,yaw:0},homes=0;
+ const api=createLinuxLife({state,names:[],getMinutes:()=>720,getPose:()=>at,getEntityPose:()=>null,applyIdentity(){},
+  spawnOutside:point=>{at=point;},spawnHome:async()=>{homes++;return {position:[0,0,0],stand:[1,0,0],axis:'z'};},menu(){},close(){},save(){},say(){}});
+ const safe={...bench,x:19.8,z:-40,yaw:-1.03};
+ assert.equal(await api.start(),true);assert.deepEqual(at,safe);assert.deepEqual(state.desktopLife.people.Johansson.checkpoint,safe);
+ await api.select('Thuan');assert.deepEqual(at,safe);assert.deepEqual(state.desktopLife.people.Thuan.checkpoint,safe);
+ await api.select('Chin');assert.deepEqual(at,ordinary);assert.equal(homes,0);
+ assert.deepEqual(state.desktopLife.people.Nhung.checkpoint,home,'A home checkpoint is not an outdoor bench position');
+});

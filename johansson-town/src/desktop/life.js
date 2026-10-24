@@ -1,7 +1,10 @@
 import {playableRoster,restoreLife,shouldSleep,insultResident,apologiseTo,canonicalResidentName} from './life-state.js';
+import {recoverSakuraBenchCheckpoint} from '../world/openings.js';
 /** Linux-only possession and personal homes. Rendering and navigation stay owned by the game. */
 export function createLinuxLife({state,names,getMinutes,getPose,getEntityPose,applyIdentity,spawnHome,spawnOutside,menu,close,save,say}){
  const roster=playableRoster(names);let life=state.desktopLife=restoreLife(state.desktopLife,roster),inBed=false,bed=null,busy=false,generation=0;
+ // Restore all resident records before start/select so neither path can place someone in the former bench's shrubs.
+ for(const person of Object.values(life.people))if(person.checkpoint)person.checkpoint=recoverSakuraBenchCheckpoint(person.checkpoint);
  const current=()=>roster.find(p=>p.name===life.active);
  function checkpoint(){const p=getPose();if(!p)return;life.people[life.active].checkpoint={x:p.x,z:p.z,yaw:p.yaw,atHome:!!p.atHome};state.desktopLife=life;}
  function snapshot(){return {active:life.active,home:current().home,inBed,busy,roster:roster.map(p=>({name:p.name,home:p.home.address})),bed:bed?{position:bed.position,stand:bed.stand,axis:bed.axis}:null};}

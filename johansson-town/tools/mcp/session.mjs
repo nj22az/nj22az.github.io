@@ -12,7 +12,7 @@ export const sourceIndex=html=>html.replace(/<link rel="modulepreload" data-town
  .replace(/\.\/runtime\/feed-[A-Za-z0-9_-]+\.js/g,'./src/feed/mount.js').replace(/\.\/runtime\/portraits-[A-Za-z0-9_-]+\.js/g,'./src/avatars/guide-portraits.js');
 export class TownAuditSession{
  constructor({launch=options=>chromium.launch(options),serve=serveGame}={}){this.launch=launch;this.serve=serve;this.generation=0;this.stopping=false;this.page=null;this.history=[];this.errors=[];this.findings=[];this.closing=false;}
- async start({viewport='desktop',spawn='sakura-bench',headless=true,time='12:00',source=false}={}){
+ async start({viewport='desktop',spawn='fish-auction',headless=true,time='12:00',source=false}={}){
   await this.close();if(this.stopping)throw Error('Test server is closing.');
   this.closing=false;this.errors=[];this.history=[];this.findings=[];const generation=this.generation;
   let preview,browser,context,page;const check=()=>{if(this.stopping||generation!==this.generation)throw Error('Test session startup was cancelled.');};

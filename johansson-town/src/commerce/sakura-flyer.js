@@ -8,10 +8,10 @@ export const FLYER_PAPER=Object.freeze({type:'Flyer',title:'Sakura Shop · Thuan
  'SAKURA SHOP — Your little island convenience store',
  '1997 neighbourhood edition · Prepared by Thuan',
  // Shut on Saturdays since Nhung became the island doctor (the owner, 22 October 2026; sakura-rota.js).
- 'Open 9:00–20:30, closed Saturdays. Cash only. All prices include tax.',
+ 'Open Sunday to Friday 9:00–20:30, purchases until 20:00. Closed Saturdays. Cash only. All prices include tax.',
  ...FLYER_PRODUCTS.map(item=>item.name+' · ¥'+item.cost),
  'One stamp per ¥'+STAMP_PER_YEN+' spent in a visit. Collect '+CARD_STAMPS+' stamps for a free '+gift.name.toLowerCase()+'.',
- 'Find us on Main Street, beside the harbour approach. The map is a neighbourhood sketch; the bus stop is north and the harbour is south.',
+ 'Find us on Main Street, beside the harbour approach. The map is a neighbourhood sketch; Main Street runs north and the harbour is south.',
  'Meet Jaga-bo, our KOGANE potato-crisp mascot. Drop in and say hello to Thuan!',
  'Free copies at Sakura’s counter and the harbour notice board. Community Hall keeps a filed copy for one year.'
 ].join('\n')});

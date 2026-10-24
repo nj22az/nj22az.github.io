@@ -180,6 +180,10 @@ Elevsidorna är `lang="sv"` och laddar `/sjoskolan/gemensamt/oversattning.js` (i
 storhetssymboler med index och tal med enhet `translate="no"`, så att maskinöversättning (Chrome, Edge, tillägg i Safari)
 inte ändrar dem. Safaris inbyggda översättning stöder inte svenska. Nya sidor och sidgeneratorer ska ta med skriptet; CI kontrollerar det.
 
+## Tools
+
+**REA** (reverse engineering for agents, `morluto/rea`) is a permanent development tool, registered as the `rea` MCP server in `.mcp.json` at a pinned version. Read the REA section of [AGENTS.md](AGENTS.md) for what to use it on and its limits.
+
 ## Shared coding discipline
 
 Read [AGENTS.md](AGENTS.md) for the owner-adopted working rules based on multica-ai/andrej-karpathy-skills. For Johansson World also read [johansson-town/AGENTS.md](johansson-town/AGENTS.md), including the latest household and ship-role decisions. Preserve the existing project guidance above; the owner's more recent explicit decisions take precedence over older character descriptions.
