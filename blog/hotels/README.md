@@ -3,18 +3,44 @@
 An independent Blog subsection, linked from `/blog/`. Hotel reviews do not enter
 the general article catalogue or the homepage's article feed.
 
+## Admission rule: confirmed parking only
+
+The owner's instruction on 24 October 2026 is binding: **do not add a hotel when
+we do not know whether guest parking is free.** Check the current property-owned
+hotel information before adding a discovered free-parking hotel. An API amenity,
+tourism feed, map tag, search result or generic chain list is a research lead;
+resolve the property-specific conditions before publication. Exclude ambiguous,
+conflicting and stale claims until they are resolved.
+
+Every published record has `parkingVerification` with `status` (`confirmed-free`
+or `confirmed-paid`), `checkedOn` (ISO date) and `sourceUrl` (the reviewed hotel or
+parking URL). The generator rejects missing, unknown or inconsistent parking
+confirmation. This checks the recorded evidence contract; a person must still
+read the source and establish the facts. It does not fetch or automatically
+reverify live websites.
+
+Keep the free option precise: normal guest parking for the stay, including any
+registration instructions. Free outdoor parking does not make a paid garage or
+EV charging free. A hotel with only nearby public parking, a few free hours or
+an unexplained parking package is not admitted as a confirmed free hotel.
+If a published policy changes or becomes uncertain, remove the affected hotel
+from the public free-parking register until it is checked again. Preserve known
+paid stay observations, including Scandic Elmia, as clearly labelled paid entries.
+
 ## Updating the register
 
-1. Add the owner's observations to `hotels.json`. Use a stable review id and hotel
-   id. `recordedOn` is when the note was recorded; do not infer precise stay dates.
+1. Add confirmed parking facts or the owner's observations to `hotels.json` after
+   applying the admission rule above. Use a stable review id and hotel id.
+   `recordedOn` is when the note was recorded; do not infer precise stay dates.
 2. Record accommodation prices **paid for the complete stay** in `roomPaid`, with
    `nights`, an ISO `currency` where known and a `priceNote`. The page calculates
    the total from room and parking amounts. Unknown amounts and nights are `null`,
    never zero. If a receipt supplies only an ambiguous currency label, preserve it
    in `currencyLabel`, leave `currency` null and explain that in `priceNote`.
    Do not replace a paid price with a hotel's current advertised tariff.
-3. Use `true`, `false` or `null` for free parking, easy parking and inclusion on the
-   hotel receipt. Unknown ease must never qualify for the free-and-easy filter.
+3. Use `true` or `false` for free parking, supported by `parkingVerification`.
+   Ease and inclusion on the hotel receipt may remain `null`. Unknown ease must
+   never qualify for the free-and-easy filter.
    Free parking has a zero charge and a receipt state of not applicable on the
    page/export. Use `parkingLabel` and `parkingSummary` to describe registration
    requirements or distinguish a free outdoor option from a paid garage.
@@ -29,9 +55,11 @@ the general article catalogue or the homepage's article feed.
    Preserve numeric prices, ISO recorded dates, source URLs and UTF-8 place names.
    CSV totals are exported values; the website derives them from the inputs.
    Include nights, average accommodation price per night, the price basis and
-   coordinate sources. Compare all CSV fields and totals with the JSON before
+   coordinate sources, parking confirmation status, check date and source.
+   Compare all CSV fields and totals with the JSON before
    publishing; do not mix a multi-night total with a nightly rate.
-7. Run `python3 tools/build-hotels.py --check` and check combined country/parking/
+7. Run `python3 tools/build-hotels.test.py` and `python3 tools/build-hotels.py --check`.
+   Check combined country/parking/
    receipt/search filters, map selection, location controls, reset, the CSV
    download and narrow-screen layout. Update the relevant handover.
 
@@ -64,6 +92,24 @@ map library leave the hotel register usable.
 All seven initial property points are verified. The six Scandic points come from
 their official `/map-view` property-marker data; Marina's point comes from the
 `!3d`/`!4d` coordinates of the Google Maps place link on its official homepage.
+
+The nine Nordic additions use official hotel map/structured-data points for
+Norway and Finland and property-specific Visit Sweden tourism records for the
+three Swedish points. Every coordinate retains its own source URL.
+
+## Nordic additions and Expedia research
+
+The register contains 16 hotels: 15 with a confirmed free guest-parking option
+and the existing paid Elmia stay. The nine additions are Scandic Sundsvall Nord,
+Scandic Östersund Syd, Hotell Jämteborg, Thon Hotel Bergen Airport, Thon Hotel
+Elgstua, Thon Hotel Hallingdal, Scandic Espoo, Scandic Laajavuori and Scandic
+Waskia. Their own property pages were checked on 24 October 2026. Their room
+prices, personal stay assessments and parking ease remain unknown.
+
+This is a growing verified directory, not a complete census of Nordic hotels.
+The Expedia repository findings, access requirements and offline import process
+are documented in [NORDIC-CATALOGUE-2026-10-24.md](NORDIC-CATALOGUE-2026-10-24.md).
+Research candidates and imported audits do not enter the public data, map or CSV.
 
 ## Danish additions
 

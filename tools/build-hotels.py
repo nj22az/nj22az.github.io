@@ -16,7 +16,6 @@ PARKING = {
     'external-paid': 'External paid parking',
     'hotel-paid': 'Hotel paid parking',
     'free': 'Free parking',
-    'unknown': 'Parking not assessed',
 }
 
 
@@ -73,9 +72,40 @@ def price_cell(value, review, include_nights=False, free=False):
     return money(value) + '<span class="hotel-cell-note">' + e(label) + '</span>'
 
 
+def validate_parking_confirmation(review):
+    """Require a reviewed source before any record can enter the public register."""
+    label = review.get('name', review.get('id', 'Hotel'))
+    free = review.get('freeParking')
+    if type(free) is not bool:
+        raise ValueError(f'{label}: confirm whether guest parking is free before publishing')
+    verification = review.get('parkingVerification')
+    expected = 'confirmed-free' if free else 'confirmed-paid'
+    if not isinstance(verification, dict) or verification.get('status') != expected:
+        raise ValueError(f'{label}: parking confirmation must match the recorded parking status')
+    try:
+        checked = dt.date.fromisoformat(verification['checkedOn'])
+    except (KeyError, TypeError, ValueError):
+        raise ValueError(f'{label}: parking confirmation needs an ISO check date') from None
+    if checked > dt.date.today():
+        raise ValueError(f'{label}: parking cannot be confirmed on a future date')
+    source = verification.get('sourceUrl')
+    if not isinstance(source, str) or source not in (review.get('hotelUrl'), review.get('parkingUrl')):
+        raise ValueError(f'{label}: link parking confirmation to the reviewed hotel or parking source')
+    url = urlparse(source)
+    if url.scheme != 'https' or not url.netloc:
+        raise ValueError(f'{label}: parking confirmation needs an HTTPS source')
+    if free and (review.get('parkingType') != 'free' or review.get('parkingPaid') != 0):
+        raise ValueError(f'{label}: confirmed free parking must have a free arrangement and zero charge')
+    if not free and (review.get('parkingType') not in ('external-paid', 'hotel-paid') or review.get('parkingPaid') == 0):
+        raise ValueError(f'{label}: confirmed paid parking must have a paid arrangement')
+    if not isinstance(review.get('parkingSummary'), str) or not review['parkingSummary'].strip():
+        raise ValueError(f'{label}: describe the verified parking option and any known conditions')
+
+
 def validate(reviews):
     ids = set()
     for review in reviews:
+        validate_parking_confirmation(review)
         assert re.fullmatch(r'[a-z0-9-]+', review['id']), 'Use a stable URL-safe review id'
         assert review['id'] not in ids, 'Duplicate review id'
         ids.add(review['id'])
@@ -106,6 +136,7 @@ def validate(reviews):
 
 
 def render_row(review):
+    verification = review['parkingVerification']
     receipt = receipt_label(review)
     ease = {True: 'Easy parking reported', False: 'Parking difficulty reported', None: 'Ease not assessed'}[review['easyParking']]
     search = ' '.join(review.get(key) or '' for key in ('name', 'city', 'country', 'address', 'postalCode', 'parkingOperator', 'parkingSummary'))
@@ -118,7 +149,7 @@ def render_row(review):
             <td role="cell" data-label="Room total" class="hotel-money">{price_cell(review['roomPaid'], review, include_nights=True)}</td>
             <td role="cell" data-label="Parking" class="hotel-money">{price_cell(review['parkingPaid'], review, free=review['freeParking'] is True)}</td>
             <td role="cell" data-label="Stay total" class="hotel-money hotel-total">{price_cell(total_paid(review), review, include_nights=True)}</td>
-            <td role="cell" data-label="Parking arrangement" class="hotel-parking"><span class="hotel-tag">{e(review.get('parkingLabel') or PARKING[review['parkingType']])}</span><span class="hotel-cell-note">{e(review.get('parkingSummary') or review.get('parkingOperator') or '')}<br>{ease}</span></td>
+            <td role="cell" data-label="Parking arrangement" class="hotel-parking"><span class="hotel-tag">{e(review.get('parkingLabel') or PARKING[review['parkingType']])}</span><span class="hotel-cell-note">{e(review['parkingSummary'])}<br>{ease}<br><a href="{e(verification['sourceUrl'])}">Checked <time datetime="{e(verification['checkedOn'])}">{date_label(verification['checkedOn'])}</time></a></span></td>
             <td role="cell" data-label="Parking receipt" class="hotel-receipt"><span class="hotel-tag">{receipt}</span><span class="hotel-cell-note">{receipt_note}</span></td>
             <td role="cell" data-label="Short review" class="hotel-summary">{e(review['summary'])}</td>
           </tr>'''
@@ -166,11 +197,11 @@ def build(reviews):
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hotels &amp; Parking | Blog – The Office of Nils Johansson</title>
-  <meta name="description" content="Hotel reviews and parking notes from Denmark and Sweden, with country filters, a hotel map, prices paid and receipt arrangements.">
+  <meta name="description" content="Verified free guest parking in Sweden, Denmark, Norway and Finland, with dated sources, country filters, a hotel map and personal stay notes.">
   <link rel="canonical" href="https://nj22az.github.io/blog/hotels/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Hotels &amp; Parking – The Office of Nils Johansson">
-  <meta property="og:description" content="Hotels in Denmark and Sweden: short reviews, free-parking filters, a map and prices paid.">
+  <meta property="og:description" content="Hotels in Sweden, Denmark, Norway and Finland: confirmed parking, short notes, a filtered map and prices paid.">
   <meta property="og:url" content="https://nj22az.github.io/blog/hotels/">
   <meta name="twitter:card" content="summary">
   <meta name="theme-color" content="#343ec9">
@@ -192,7 +223,7 @@ def build(reviews):
     <header>
       <p class="hotel-eyebrow">The travel register</p>
       <h1>Hotels &amp; Parking</h1>
-      <p class="hotel-intro">Short hotel reviews and parking notes from Denmark and Sweden. Compare the recorded costs, find free parking and use the map to see the hotels that match your filters.</p>
+      <p class="hotel-intro">Hotel reviews and confirmed parking information from Sweden, Denmark, Norway and Finland. Find free guest parking and use the map to see the hotels that match your filters.</p>
     </header>
     <section aria-labelledby="hotel-register-title">
       <div class="hotel-register-heading"><h2 id="hotel-register-title">Hotel register</h2><a class="hotel-download" href="/blog/hotels/hotel-reviews.csv" download>Download spreadsheet (CSV)</a></div>
@@ -233,6 +264,7 @@ def build(reviews):
     </section>
     <section class="hotel-method" aria-labelledby="hotel-method-title">
       <h2 id="hotel-method-title">What this register records</h2>
+      <p>Hotels join the free-parking list only after their own published information confirms free guest parking. Each parking entry links to its source and check date, with known registration requirements and paid alternatives explained. Coverage grows as hotels are verified.</p>
       <p>Parking cost, ease of parking and receipt arrangements are recorded separately. “Not assessed” means there is not yet enough first-hand information to judge that point. A hotel only appears under “Free and easy parking” when both conditions have been reported.</p>
       <p>Stay reports and official hotel information are identified in each note. Personal names, booking references, card details and exact stay dates are excluded. Prices and parking arrangements can change; the recorded date keeps each entry in context.</p>
     </section>
