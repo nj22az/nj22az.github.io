@@ -2,6 +2,10 @@
 
 Start here on every task, then read the latest applicable notes below. Maintain this index whenever a new note supersedes one of these. For an area without a note, create and link one when handing over work. Dates alone do not settle conflicting information: verify current branches, PRs, checks and releases.
 
+## Next week's priority — from 24 October 2026: the Pixar world
+
+**The Pixar-style konbini (Sakura Shōten) with Thuan, Johansson and Fujita interactions.** Codex prototypes in three.js (`prototype/`), Claude takes it to Pixar standard in Blender (`nj22az/jojo`, `pixar/`), `main` stays the cartoon World. Start from [the Pixar handover](johansson-town/briefs/HANDOFF-PIXAR-2026-10-24.md); the branch survey is [docs/BRANCHES-2026-10-24.md](docs/BRANCHES-2026-10-24.md).
+
 ## Current owner priority — 23 October 2026
 
 **Make Minato impeccable and immersive: “a little paradise that you wish were real.”**
