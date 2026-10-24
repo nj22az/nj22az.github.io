@@ -9,8 +9,10 @@ Departing vehicles moved their pedestrian collider off-map until parking again. 
 ## Evidence
 Nine new regression checks cover all four sides, rotations, forward/reverse/held states, old-bay clearance, visibility, elevated deck bounds, live spatial cells, Tetsuo’s real departure and driver prompt/click gating. The full World guard and the production-runtime check passed. Actual compiled-game acceptance walks the player into each side of the held truck, checks the moving boundary and old-overlap recovery, and captures desktop and phone-width views. See [QA evidence](../docs/qa/vehicle-collision-2026-10-24/report.json), focused.txt and guard.txt in that folder.
 
-## Publication state
-Verified candidate, not yet promoted to main. Validation workflow 40098829273. Main must be fast-forwarded only after reviewing screenshots and checking its current head; preserve concurrent unrelated changes. This candidate is retained by a review tag, not a new branch. No physical iPhone/Safari, packaged Linux or live GPS test was performed.
+## Publication state — published and verified
+Implementation `e12ab3b4042a14e74bad463f6fca4b0c25007425` was fast-forwarded to main after reviewing the compiled-game evidence. The complete World guard passed **409/409 checks across 77 files**; the focused suite plus runtime packaging passed **28/28**. All nine new regression checks failed against the original source before the repair. The compiled-game acceptance passes all four walking approaches, a moving vehicle, driver prompt exclusion and safe recovery from an existing overlap; no page errors. Third-person desktop and phone-width photographs were recaptured without changing any production source or runtime file.
 
-## Next action
-Review screenshots, promote this checked candidate to main, verify Pages deployment, then remove the temporary validation transport files from development. Do not merge the development prototype branch.
+[Publication evidence](../docs/qa/vehicle-collision-2026-10-24/publication.json) verifies the public HTML, service worker, manifest, source fingerprint and changed compiled entry/chunks byte-for-byte against the tested implementation. [Game report](../docs/qa/vehicle-collision-2026-10-24/report.json). Original build/guard workflow: 40098829273. Publication verification workflow: 40099838159.
+
+## Limits and next action
+No physical iPhone/Safari or packaged Linux test was performed. Existing web tabs must reload; saves are preserved. The shared source is repaired, but no new Linux installer was released. The temporary development transport/workflow files are removed after successful sign-off; the prototype branch is not merged. No implementation work remains for this defect.

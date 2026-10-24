@@ -1,0 +1,51 @@
+{
+  "implementationCommit": "e12ab3b4042a14e74bad463f6fca4b0c25007425",
+  "verifiedAt": "2026-10-24T13:53:58Z",
+  "files": [
+    {
+      "path": "johansson-town/index.html",
+      "matches": true,
+      "sha256": "1abdadd1514e2ec983b863f575049fb311f1b61139cf694b41cde32aeddd1fe2",
+      "bytes": 46241
+    },
+    {
+      "path": "johansson-town/runtime/source.json",
+      "matches": true,
+      "sha256": "8a779f5d9210f58e1d0d72ee900be91ae484d0a8838e393ce3c22b6c1aaf260f",
+      "bytes": 83
+    },
+    {
+      "path": "johansson-town/sw.js",
+      "matches": true,
+      "sha256": "e8ed187bbe3585d34df8d270fec79662a28f0476c64f4ecf635c877ea565f38b",
+      "bytes": 2308
+    },
+    {
+      "path": "johansson-town/runtime/.vite/manifest.json",
+      "matches": true,
+      "sha256": "a98a789ed3c8a03e6f20912d074d6baaca29e5bba6f0dea3cedb6b0b4b570ddf",
+      "bytes": 9565
+    },
+    {
+      "path": "johansson-town/runtime/boot-CY-tclsF.js",
+      "matches": true,
+      "sha256": "fa559d7c5efe747c2fa3d972266d92a88e4966c6a9c2f45dfa4f598253458bae",
+      "bytes": 4259
+    },
+    {
+      "path": "johansson-town/runtime/game-Buy7-zOP.js",
+      "matches": true,
+      "sha256": "408866c60bac9c56aa0a738d9e5f63bca2fcadd4ddab0dc3a79af7867e416e04",
+      "bytes": 867619
+    },
+    {
+      "path": "johansson-town/runtime/scene-world-c33QZh7D.js",
+      "matches": true,
+      "sha256": "039b50608b5a48acc280b3308e4d3ff58cf542bd9815cf97fd4029bc3631b335",
+      "bytes": 38928
+    }
+  ],
+  "passed": true,
+  "validationRun": 40098829273,
+  "signoffRun": "40099838159"
+}

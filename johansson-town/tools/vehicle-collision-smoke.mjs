@@ -51,7 +51,8 @@ try{
   assert.ok(clearance>=.27&&clearance<.65,`${side}: body clearance ${clearance}`);
   assert.notEqual(after.active,'Talk to Tetsuo');check('ordinary walking blocked on '+side,{clearance,moved});
  }
- await page.keyboard.press('v');
+ if(!await page.evaluate(()=>window.__JOHANSSON_AUDIT__.mouse.thirdPerson))await page.keyboard.press('v');
+ assert.equal(await page.evaluate(()=>window.__JOHANSSON_AUDIT__.mouse.thirdPerson),true);check('third-person view enabled for collision photographs');
  await page.evaluate(()=>{
   const a=window.__JOHANSSON_AUDIT__,v=a.world.traffic.islanders[0];a.teleport(v.g.position.x+1.08,v.g.position.z+.3,Math.PI/2,0);a.step(100);
   a.camera={pos:[v.g.position.x+5,2.8,v.g.position.z+5],at:[v.g.position.x,1.1,v.g.position.z]};a.render();

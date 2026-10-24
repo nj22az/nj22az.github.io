@@ -42,6 +42,10 @@
       "moved": 0.8348740490617175
     },
     {
+      "name": "third-person view enabled for collision photographs",
+      "passed": true
+    },
+    {
       "name": "desktop and phone-width game views captured",
       "passed": true
     },
