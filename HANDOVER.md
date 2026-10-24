@@ -41,6 +41,28 @@ The newest note for Nhung the doctor and Higa Liquor is the [22 October 2026 nig
 
 The Linux controller note contains newer merge and release information than the morning World note. Real-device confirmation of right-stick camera control on Bluetooth and Steam Deck remains outstanding; follow that note's reproduction steps. Its evening update: a saved Look axis past the pad's axes now falls back to the right stick (`84baf00`, for 0.2.17, unreleased; it rides the Nhung doctor PR from `claude/clever-ride-qdpo8s`).
 
+## Session handover — 24 October 2026 (afternoon), branch `claude/peaceful-johnson-103tja`: play as anyone and faces on the web
+
+The owner asked whether "play any character", posing and emotions could come to the web, and chose both. Posing was
+already there (Moves: 43 moves, 9 full-body poses with faces; the Photo studio). Added: **Town book → People → Play as**
+on every playable resident's card (25), using Linux's own possession (`src/desktop/life.js`); on the web it runs only
+while you play someone other than Johansson (`playingResident()` in `src/game.js`), so Johansson's web opening, house
+and view are unchanged. Web saves keep who you play (`activities.js` loads `desktopLife`); residents and letters use that
+name. **Moves → Make a face**: all 46 faces with their glyphs, held ten seconds (Neutral lets go); switching character
+resets the face. The Moves text follows who you play. Insult/apology choices and full conversations stay Linux's.
+Recorded in `johansson-town/AGENTS.md` under the 19 October edition ruling.
+
+Checks: `town-directory` gains a Play as test; `controller-game`, `edition`, `harbour-festival`, `town-directory`
+16/16 before it; **full CI guard 400/400, 76 files**; runtime rebuilt, `runtime-package` 4/4. Real built game in
+headless Chromium (web, no desktop shell): Moves lists Make a face, the 46 faces open and Lovestruck applies; People
+shows 25 Play as buttons with Johansson's "Playing now"; Thuan is controlled with her own body and a neutral face, the
+book closes, Moves describes her; back to Johansson works; the save holds the choice; no page errors. Screenshots
+looked at. Not checked: phone/iPad, touch controls, Linux edition after the change (its console check runs on the PR).
+
+Open for the owner: a resident who is indoors when chosen starts at home in the plain Linux bedroom
+(`desktop/bedroom.js`), which is much simpler than the town's dressed interiors; worth dressing per home before this is
+promoted widely.
+
 ## Session handover — 24 October 2026, branch `claude/peaceful-johnson-103tja`: the "Acer" poster and the cold cabinet
 
 A small World fix from the Pixar handover's list of slips. Sakura's Eisa festival poster printed "Acer" (a machine
@@ -108,7 +130,7 @@ the full-acceptance step in 21. [Release workflow 40086718443](https://github.co
 passed every step, published [the prerelease](https://github.com/nj22az/nj22az.github.io/releases/tag/johansson-world-linux-v0.2.18)
 and verified the public installer. Checked by hand afterwards: archive and 0.2.17→0.2.18 patch match `SHA256SUMS`,
 `latest-linux.json` and GitHub's digests; the app reports 0.2.18; the packaged Sakura chunk has the Eisa fix. Evidence:
-[`linux-port/acceptance-0.2.18.md`](linux-port/acceptance-0.2.18.md). A PR to main carries the release files, that evidence
+[`linux-port/acceptance-0.2.18.md`](linux-port/acceptance-0.2.18.md). [PR #390](https://github.com/nj22az/nj22az.github.io/pull/390), merged as `5a5bddb` and verified live, carries the release files, that evidence
 and the website (World page, install guide, installer at 0.2.18; the player guide's Town book paths and shop list
 updated to the eight-tile book and the closed Higa Liquor; a 24 October change-log entry). The woodland diorama merged
 to main after the release and ships next time. Still unverified: physical Steam Deck, 8BitDo, iPhone.
