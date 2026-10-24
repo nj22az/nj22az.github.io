@@ -25,6 +25,23 @@ we have a perfect Pixar world".
   branch"): `main`, `development`, `pixar`, in both repos. Every older branch is kept as a tag `archive/<name>`
   (`git checkout -b <name> archive/<name>` restores one). The survey before the clean-up: `docs/BRANCHES-2026-10-24.md`.
 
+## Development tool: REA, reverse engineering for agents — 24 October 2026
+
+The owner: "https://github.com/morluto/rea use this as a permanent asset in Johansson World and nj22az.github.io
+development". REA (MIT, `rea-agents` on npm) gives an agent tools to inspect native binaries, JavaScript/Electron
+applications, .NET assemblies and websites, with the evidence for each conclusion.
+
+- **Registered for every session** in `.mcp.json` as `rea`, pinned to one exact version (`npx -y rea-agents@6.7.0 mcp`),
+  as REA's installation guide recommends for persistent registrations. Raise the pin deliberately, after reading the
+  release notes; never `@latest` in the shared config. Terminal use: `npx -y rea-agents@6.7.0 <command>` (`--help` lists
+  them). Codex registers it with `npx -y rea-agents@6.7.0 setup --client codex` (see REA's `docs/installation.md`).
+- **Use it on our own things first:** the packaged Linux edition (`steam-deck/dist/`, an Electron app:
+  `analyze-javascript-application`), the website and World bundles, Johansson Studio, Steam's behaviour around our
+  shortcut and controller files, and libraries we depend on, to understand and debug them from the outside.
+- **Study, measure, never copy** (as for New Yokosuka): REA's own disclaimer is the boundary. No DRM, licence-check or
+  anti-cheat circumvention, no cheats, no reproducing another product's code or assets. Learn how a feature works,
+  then build our own. Record what was inspected and why with the work.
+
 ## Handover: required at the start and end of every task
 
 These instructions apply to every agent working in this repository.
