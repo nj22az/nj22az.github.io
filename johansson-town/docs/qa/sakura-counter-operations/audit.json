@@ -1,0 +1,26 @@
+{
+  "drawing": "JW-SAK-OPS-01",
+  "revision": "B",
+  "counterOverlaps": 0,
+  "retainedOverlaps": 0,
+  "staffAisle": 1200,
+  "staticReachMm": {
+    "waybills": 365.542,
+    "pen": 312.197,
+    "charity": 380.093,
+    "karashi": 315.168
+  },
+  "availableReachMm": 456.734,
+  "supportLevel": 780,
+  "dxfErrors": 0,
+  "correctedFindings": [
+    "Original west-side charity box and karashi proposal could not be replenished within Thuans measured arm envelope. Move both to staff-served east edge.",
+    "Waybill rack moved90mm east so its paper pickup is within static reach. Pen moved south and shortened footprint to avoid the rack.",
+    "No customer self-service, donation, parcel transaction or live hand contact is introduced. Existing actor routes are retained."
+  ],
+  "limits": [
+    "Static shoulder approach at X12350; live grasp and replenishment animation remain unverified.",
+    "Artist-authored dimensions; no JIS or manufacturer certification.",
+    "Stair chain and frontage remain separate unbuilt work."
+  ]
+}

@@ -11,7 +11,7 @@ import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {resolve,dirname,extname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..'),site=resolve(root,'..');
-const args=process.argv.slice(2),SOURCE=args.includes('--source'),POP=args.includes('--pop'),ATMOSPHERE=args.includes('--atmosphere'),POSTERS=args.includes('--posters'),DENSITY=args.includes('--density'),WALLS=args.includes('--walls'),STICKERS=args.includes('--stickers')||POP||WALLS;
+const args=process.argv.slice(2),SOURCE=args.includes('--source'),POP=args.includes('--pop'),OPS=args.includes('--operations'),ATMOSPHERE=args.includes('--atmosphere'),POSTERS=args.includes('--posters'),DENSITY=args.includes('--density'),WALLS=args.includes('--walls'),STICKERS=args.includes('--stickers')||POP||WALLS;
 const out=resolve(args.find(a=>!a.startsWith('--'))||resolve(root,'output/cloud-boot-smoke'));await mkdir(out,{recursive:true});
 const TYPES={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.css':'text/css','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.glb':'model/gltf-binary','.svg':'image/svg+xml','.hdr':'application/octet-stream','.wasm':'application/wasm'};
 const sourcePage=html=>html.replace(/<link rel="modulepreload" data-town-runtime[^>]*>\n?/g,'')
@@ -59,6 +59,13 @@ try{
   await writeFile(resolve(out,'Sakura-Wall-Prints.png'),Buffer.from(atlas.split(',')[1],'base64'));
   report.wallPlacements=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.room.getObjectByName('Sakura measured wall prints').userData.placements);
  }
+ if(OPS){
+  await shot('Sakura-Operations-Paperwork',{pos:[5.4,1.18,.25],at:[5.08,.86,-.13]});
+  await shot('Sakura-Operations-Cats',{pos:[4.25,1.08,-.54],at:[5.03,.87,-.64]});
+  await shot('Sakura-Operations-Mustard',{pos:[5.65,1.12,-.65],at:[5.08,.84,-.86]});
+  await shot('Sakura-Operations-Counter',{pos:[3.5,1.48,.45],at:[5.5,1.02,-.62]});
+  report.operations=await page.evaluate(()=>{const g=window.__JOHANSSON_AUDIT__.room.getObjectByName('Sakura counter operational props');let meshes=0,triangles=0;g.traverse(o=>{if(o.isMesh){meshes++;triangles+=(o.geometry.index?.count??o.geometry.attributes.position.count)/3;}});return {...g.userData,meshes,triangles};});
+ }
  if(ATMOSPHERE){
   if(!args.includes('--quick')&&!args.includes('--roof-detail'))await shot('Sakura-Atmosphere-Counter',{pos:[4.2,1.65,-.6],at:[6.9,1.8,-1.2]});
   if(!args.includes('--roof-detail'))await shot('Sakura-Atmosphere-Oden',{pos:[3.3,1.28,-1.4],at:[4.65,.95,-1.15]});
@@ -92,7 +99,7 @@ try{
   await shot('Sakura-Oden-Detail',{pos:[3.9,1.5,-1.25],at:[4.85,.85,-1.2]});
   report.counterDensity=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.room.getObjectByName('Sakura dense counter bay').userData);
  }
- if(!POP&&!WALLS&&!DENSITY&&!POSTERS&&!ATMOSPHERE){
+ if(!POP&&!WALLS&&!DENSITY&&!POSTERS&&!ATMOSPHERE&&!OPS){
  await shot('Sakura-Game-Entrance',{pos:[0,1.45,2.8],at:[0,1,-3.7]});
  await shot('Sakura-Game-Checkout',{pos:[3.0,1.4,1.0],at:[5.5,.95,.7]});
  await shot('Sakura-Game-Aisle',{pos:[-3.675,1.4,2.4],at:[-3.675,1,-2.8]});

@@ -1,3 +1,4 @@
+import {buildSakuraCounterOperations} from './sakura-counter-operations.js';
 import {buildSakuraCounterAtmosphere} from './sakura-atmosphere.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {buildSakuraShotenInterior} from './sakura-rebuild-shell.js';
@@ -34,7 +35,7 @@ export function buildSakuraRebuild({room,reg,action,exit}){
  const campaignPosters=buildSakuraCampaignPosters(room);
  const counterDensity=buildSakuraCounterDensity(room);
  const equipment=buildSakuraCounterDetail(room,{refinedSupplies:true,placements:{till:[.05,0,-.16],microwaves:[[.23,.058,-.24],[.23,.058,-1.44]],supplies:[.23,.058,-.715],copy:[1.85,0,.01],rice:[-.45,-.35,2.4],sandwich:[-.45,-.35,-.43],dairy:[-.45,-.35,-4.1]}});
- const atmosphere=buildSakuraCounterAtmosphere(room);
+ const atmosphere=buildSakuraCounterAtmosphere(room);buildSakuraCounterOperations(room);
  const hot={x:4.925,z:-2.065,w:.45,d:.45,h:.4,top:.78};buildSakuraHotFood(room,hot);
  const magazine=buildMagazineRack(room);magazine.group.position.set(-5.85,0,3.60);magazine.group.rotation.y=Math.PI;
  const basket=buildSakuraBaskets(room);basket.position.set(-1.25-(-1.84),0,2.86-3.48);
