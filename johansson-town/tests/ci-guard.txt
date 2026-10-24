@@ -29,6 +29,7 @@ sakura-dialogue.test.mjs
 sakura-dressing.test.mjs
 sakura-evening-guests.test.mjs
 sakura-flyer.test.mjs
+woodland-poster.test.mjs
 sakura-light-transitions.test.mjs
 sakura-merchandising.test.mjs
 sakura-office-exterior.test.mjs

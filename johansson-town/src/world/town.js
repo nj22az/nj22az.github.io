@@ -13,6 +13,7 @@ import {buildTownPower} from './town-power.js';
 import {beginPowerPlan} from './okinawa/props.js';
 import {buildDocklandsLife} from './docklands-life.js';
 import {addSakuraFlyer} from './sakura-flyers.js';
+import {addWoodlandPoster,WOODLAND_POSTER} from './woodland-poster.js';
 import {buildIslandLandscape} from './island-landscape.js';
 import {buildBlueCoralShop} from './blue-coral-shop.js';
 import {createTownTraffic} from './town-traffic.js';
@@ -215,7 +216,8 @@ function addStreetLife(world,options,factory){
   inspect([1.4,1,15.1],'Inspect post box','Post box','The collection plate lists two pickups: 10:30 and 16:30. A few handwritten postcards are visible through the slot.');
   addWithCollider(group,colliders,factory.noticeBoard(5.5,-33.2,0));
   addSakuraFlyer(group,{position:[5.87,1.55,-33.115],width:.43});
-  anchor(group,[5.5,1,-32.5],'Read Thuan’s shop flyer · harbour notice board',()=>options.onAction?.('sakura-flyer','Harbour notice board'),options.register);interactions++;
+  addWoodlandPoster(group,{register:options.register,onAction:options.onAction});interactions++;
+  anchor(group,[5.5,1,-32.5],WOODLAND_POSTER.prompt,()=>options.onAction?.('harbour-notice-board'),options.register);interactions++;
 
   addWithCollider(group,colliders,factory.utilityCabinet(.5,13.2,0));
   inspect([.5,1,12.35],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
