@@ -4,19 +4,20 @@ on:
     branches: [main]
     paths: [.github/workflows/publish-scandic-findings.yml]
 permissions:
-  contents: write
+  contents: read
 concurrency:
   group: hotel-findings-publication
   cancel-in-progress: false
 jobs:
-  publish:
+  verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
-      - name: Read official map location evidence
+          persist-credentials: false
+      - name: Inspect official property location data
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -24,25 +25,42 @@ jobs:
           import re
           folder=Path('_hotel-publication-qa');folder.mkdir(exist_ok=True)
           for slug in ['scandic-skelleftea','scandic-vaxjo']:
-              url='https://www.scandichotels.com/en/hotels/'+slug+'/map-view'
+              url='https://www.scandichotels.com/en/hotels/'+slug
               try:
-                  with urlopen(url, timeout=20) as response: text=response.read(8000000).decode('utf-8')
-                  (folder/(slug+'-map.html')).write_text(text,encoding='utf-8')
-                  print(slug,'official map bytes',len(text))
-                  for match in list(re.finditer(r'latitude|longitude|hotelLatitude|coordinates',text,re.I))[:8]:
-                      print(text[max(0,match.start()-120):match.end()+200])
-              except Exception as exc: print(slug,'map evidence unavailable:',type(exc).__name__)
+                  with urlopen(url, timeout=15) as response: text=response.read(8000000).decode('utf-8')
+                  (folder/(slug+'-property.html')).write_text(text,encoding='utf-8')
+                  print(slug,'official page bytes',len(text))
+                  for match in list(re.finditer(r'latitude|longitude|coordinates|hotelLocation|\\"lat\\"|\\"lng\\"',text,re.I))[:8]:
+                      print(text[max(0,match.start()-120):match.end()+240])
+              except Exception as exc: print(slug,'location evidence unavailable:',type(exc).__name__)
+          for asset in ['leaflet.js','leaflet.css']:
+              try:
+                  with urlopen('https://unpkg.com/leaflet@1.9.4/dist/'+asset, timeout=15) as response:
+                      (folder/asset).write_bytes(response.read(1000000))
+              except Exception as exc: print('QA map dependency unavailable:',type(exc).__name__)
           PY
-      - name: Apply only reviewed parking evidence
-        run: python3 tools/apply-scandic-findings.py --enrich-locations
-      - name: Verify data and generated page
+      - name: Verify recorded data and public page
         run: |
           python3 tools/build-hotels.test.py
           python3 tools/build-hotels.py --check
           node --check blog/hotels/hotels.js
           node --check blog/hotels/hotels-map.js
-          node tools/blog-feed.test.cjs
-          git -c core.whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol diff --check
+          python3 - <<'PY'
+          import json, hashlib
+          from pathlib import Path
+          from urllib.request import urlopen
+          results=[]
+          for path in ['blog/hotels/index.html','blog/hotels/hotels.json','blog/hotels/hotel-reviews.csv']:
+              expected=Path(path).read_bytes()
+              try:
+                  with urlopen('https://nj22az.github.io/'+path,timeout=15) as response:
+                      body=response.read();status=response.status
+                  result={'path':path,'status':status,'matchesRepository':body==expected,'sha256':hashlib.sha256(body).hexdigest()}
+              except Exception as exc:result={'path':path,'error':type(exc).__name__}
+              results.append(result)
+          Path('_hotel-publication-qa/public-check.json').write_text(json.dumps(results,indent=2))
+          print(json.dumps(results,indent=2))
+          PY
       - name: Preserve publication review files
         if: always()
         uses: actions/upload-artifact@v4
@@ -61,11 +79,3 @@ jobs:
             HANDOVER.md
             _hotel-publication-qa/
           retention-days: 7
-      - name: Commit scoped hotel update without force
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add blog/hotels/hotels.json blog/hotels/index.html blog/hotels/hotel-reviews.csv blog/hotels/README.md blog/hotels/HANDOVER-SCANDIC-2026-10-24.md blog/hotels/SCANDIC-PUBLICATION-CHECKS-2026-10-24.json tools/build-hotels.py HANDOVER.md
-          git diff --cached --quiet && exit 0
-          git commit -m 'Publish verified Swedish Scandic free outdoor parking and paid-garage distinctions'
-          git push origin HEAD:main
