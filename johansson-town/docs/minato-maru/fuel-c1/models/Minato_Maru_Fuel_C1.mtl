@@ -1,0 +1,5 @@
+newmtl fuel
+Kd 0.54 0.42 0.23
+newmtl equipment
+Kd 0.55 0.62 0.63
+d 0.25

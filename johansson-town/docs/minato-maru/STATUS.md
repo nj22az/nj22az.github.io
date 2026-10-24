@@ -1,6 +1,6 @@
 # The Minato Maru: status of the vessel and engine particulars
 
-**Revision B — for design review; construction not approved.** Johansson World game vessel, issued 2026-10-13. Generated from the ship's data by `node tools/ferry-status.mjs`
+**Revision B reference + C1 fuel addendum — for design review; construction not approved.** C1 fuel-only issue 2026-10-17; immutable Revision B issued 2026-10-13. Generated from the ship's data by `node tools/ferry-status.mjs`
 (`tests/ferry-status.test.mjs` fails when this report no longer matches the data), so the numbers here are the ones the game, the
 drawings and the plant run on. Sources: `src/world/ferry-ship.js` (particulars, machinery, electrics, loads, safety), `ferry-model.js`
 (the loft), `ferry-interior.js` (the machinery spaces as built), `ferry-piping.js`, `ferry-electrical.js`, `ferry-plant.js`,
@@ -140,7 +140,7 @@ Source numerical consistency checks (`electricalChecks()`): zero mismatches in t
 | exhaust | 14 | 8 | — |
 | hydraulics | 13 | 17 | Steering: hpu1 / hpu2; Ramp: rp1 / rp2 |
 
-The graph contains 210 lines and 151 machinery-space anchors. There are 55 accepted engineering routes and 151 unresolved positive-bore connections. The 172 coloured game preview runs are illustrative and unverified; graph connectivity alone does not prove physical pipe routing. Every pumped service has two means in the source (14 pairs), with hydraulic capacity and installation verification still open.
+The graph contains 210 lines and 151 machinery-space anchors. There are 67 accepted engineering routes and 139 unresolved positive-bore connections. The 172 coloured game preview runs are illustrative and unverified; graph connectivity alone does not prove physical pipe routing. Every pumped service has two means in the source (14 pairs), with hydraulic capacity and installation verification still open. C1 rechecks 22 fuel external connections with separate proposed ports, access reservations and retained non-fuel services; 0 fuel geometric issues remain. See [the C1 fuel-only addendum](fuel-c1/README.md). All C1 interfaces, internal manifold assemblies, tank partitions, hydraulic sizing, fittings and unvalidated services remain design holds; geometry-clear is not installation approval.
 
 ## 5. Life-saving and fire safety (sheet 6)
 

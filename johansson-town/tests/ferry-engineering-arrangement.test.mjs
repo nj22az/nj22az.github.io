@@ -54,7 +54,7 @@ test('accepted paths survive a fresh exact outside-radius equipment/pipe audit; 
  const ER=FERRY_ENGINE_ROOM;
  const obstacles=FERRY_INTERIOR.boxes.filter(b=>b.solid&&b.name&&!/side|deckhead|bulkhead|trunk|casing|partition|escape|plates/.test(b.name));
  const existing=[];
- for(const r of FERRY_INTERIOR.engineeringPipes){const a={...FERRY_INTERIOR.anchors[r.system+'/'+r.from],id:r.system+'/'+r.from},b={...FERRY_INTERIOR.anchors[r.system+'/'+r.to],id:r.system+'/'+r.to};
+ for(const r of FERRY_INTERIOR.engineeringPipes){const a=r.revision==='C1'?r.terminals[0]:{...FERRY_INTERIOR.anchors[r.system+'/'+r.from],id:r.system+'/'+r.from},b=r.revision==='C1'?r.terminals[1]:{...FERRY_INTERIOR.anchors[r.system+'/'+r.to],id:r.system+'/'+r.to};
   assert.deepEqual(validatePipeRoute(r.points,{y0:ER.floor,y1:ER.deckhead,W:ER.side,obstacles},r.dn,{a,b,existing}),{ok:true},r.lineId);existing.push(r);}
  const q=FERRY_INTERIOR.anchors['fuel/qcv'];assert.ok(q.pos[1]+q.off+pipeRadius(20)<ER.deckhead);
  assert.equal(FERRY_ENGINEERING_ARRANGEMENT.status,'concept-requires-redesign');assert.match(FERRY_ENGINEERING_ARRANGEMENT.removal.verification,/unresolved/);
