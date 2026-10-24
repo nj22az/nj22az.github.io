@@ -1,4 +1,5 @@
 import {SAKURA_FONT,refreshSakuraPrint} from './sakura-print.js';
+import {assetURL} from '../../assets.js';
 import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
@@ -30,6 +31,7 @@ const CELLS={
 };
 function sheet(){
  const c=document.createElement('canvas');c.width=SHEET.w;c.height=SHEET.h;
+ let perfumeImage=null;
  const draw=ctx=>{
  const at=(name,draw)=>{const [x,y,w,h]=CELLS[name];ctx.save();ctx.translate(x,y);ctx.beginPath();ctx.rect(0,0,w,h);ctx.clip();draw(ctx,w,h);ctx.restore();};
  const text=(s,x,y,size,colour,weight=900)=>{ctx.fillStyle=colour;ctx.font=`${weight} ${size}px ${MARU}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(s,x,y,1000);};
@@ -76,6 +78,9 @@ function sheet(){
   c.fillStyle='#2a8fcc';for(let i=0;i<4;i++){c.beginPath();c.moveTo(0,250+i*14);c.bezierCurveTo(w*.3,236+i*14,w*.6,264+i*14,w,250+i*14);c.lineTo(w,262+i*14);c.bezierCurveTo(w*.6,276+i*14,w*.3,248+i*14,0,262+i*14);c.fill();}
   text("お月見",w/2,52,48,'#8a2c1d');text('MOON VIEWING DUMPLINGS',w/2,330,18,'#8a2c1d',800);
  });
+ // Replace the existing poster's atlas pixels, never its plane or its depth.
+ // The original seasonal print remains the offline/failed-load fallback.
+ if(perfumeImage)at('posterSummer',(ctx,w,h)=>ctx.drawImage(perfumeImage,0,0,w,h));
  // The cash machine's prints.
  at('atmHeader',(c,w,h)=>{c.fillStyle='#1f5aa6';c.fillRect(0,0,w,h);c.fillStyle='#ffffff';c.font=`900 72px ${MARU}`;c.textAlign='left';c.textBaseline='middle';c.fillText('ATM',24,66);c.font=`800 28px ${MARU}`;c.fillText('HARBOUR BANK',210,48);c.fillStyle='#bfe0ff';c.font=`700 22px ${MARU}`;c.fillText('Cash · 8:00–21:00',210,88);});
  at('atmScreen',(c,w,h)=>{const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#2d7fbf');g.addColorStop(1,'#1d4f8a');c.fillStyle=g;c.fillRect(0,0,w,h);text('Welcome',w/2,52,32,'#ffffff',800);c.fillStyle='#ffffff';c.fillRect(30,92,w-60,34);c.fillRect(30,140,w-60,34);text('Withdraw',w/2,109,20,'#1d4f8a',800);text('Balance',w/2,157,20,'#1d4f8a',800);});
@@ -85,7 +90,16 @@ function sheet(){
  };
  draw(c.getContext('2d'));
  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;
- refreshSakuraPrint(t,draw,'カップ麺・食品お菓子日用品今月のイチ押し！宝くじ配達宅配便お月見写真プリントABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789¥');return t;
+ refreshSakuraPrint(t,draw,'カップ麺・食品お菓子日用品今月のイチ押し！宝くじ配達宅配便お月見写真プリントABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789¥');
+ // Repaint the same atlas when the small local photograph arrives. No new mesh,
+ // collider, material or texture is created; this avoids Z-fighting and leaks.
+ const photo=new Image();
+ let disposed=false;
+ t.addEventListener('dispose',()=>{disposed=true;photo.onload=null;photo.onerror=null;});
+ photo.onload=()=>{if(disposed)return;perfumeImage=photo;draw(c.getContext('2d'));t.needsUpdate=true;};
+ photo.onerror=()=>{if(!disposed)console.warn('Sakura perfume poster unavailable; retaining the seasonal window print.');};
+ photo.src=assetURL('graphics/advertising/sakura-perfume-1997.jpg');
+ return t;
 }
 /** A plane carrying one cell of the sheet. */
 function printed(name,w,h){
