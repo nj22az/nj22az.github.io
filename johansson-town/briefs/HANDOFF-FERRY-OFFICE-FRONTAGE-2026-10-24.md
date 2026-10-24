@@ -29,9 +29,16 @@ Exact local verification metadata is in [verification.json](../docs/qa/ferry-off
 
 The reproducible [before-and-after gallery](../docs/qa/ferry-office-frontage/README.md) uses the real compiled game, with matching portrait, desktop and phone doorway cameras. `tools/ferry-office-frontage-photos.mjs` also checks the deleted objects and seating prompt, safe legacy opening, retained board/flyer, and Look opening and closing the woodland viewer.
 
-## Publication state
+## Completion: published, verified and signed off
 
-Prepared directly from `main` `7356f64ad017afa2e38e41403ecbcd3fd83b1e09`; no additional remote branch or prototype merge. Local verification is complete. Publication and live-file verification are the remaining steps at this commit; their exact results will be recorded in the completion update.
+Published directly to `main` as [`580de3c1ed4f12c3e2f962dd49370435bf4256cb`](https://github.com/nj22az/nj22az.github.io/commit/580de3c1ed4f12c3e2f962dd49370435bf4256cb), with parent `7356f64ad017afa2e38e41403ecbcd3fd83b1e09`. The remote commit tree exactly matched the locally staged and tested tree, `c5b3f9b9b882bed15e88b6da5bd9cab18ee78b9d`. Promotion used an expected-head check and no force. No additional remote branch or prototype merge.
+
+- [Pages deployment 40088349611](https://github.com/nj22az/nj22az.github.io/actions/runs/40088349611) succeeded at **13:04:42 CEST, 24 October 2026**.
+- [GitHub World guard 40088350128](https://github.com/nj22az/nj22az.github.io/actions/runs/40088350128) succeeded for the exact implementation commit at **13:09:12 CEST**.
+- **54/54 live files match the tested checkout byte for byte**, including the page, service worker, fingerprint, current runtime manifest, all 32 current runtime files and changed source modules. All 27 runtime references in the entry page resolve in that checked graph.
+- All **11 woodland assets** still match their original manifest hashes, including the posters, viewer and compressed 3D model. Exact live hashes and workflow results are in [publication.json](../docs/qa/ferry-office-frontage/publication.json).
+
+The final evidence/handover update changes documentation only; the tested and live source fingerprint above remains unchanged. It is based on `5a5bddb09c2445ccb1936b7e5e670db7366e3a6f`, preserving the concurrently published Linux 0.2.18 release records from PR #390; that commit changes no World source or runtime. The requested web removal is complete. An already-open game keeps its in-memory scene until reloaded; the site’s service worker retrieves navigations from the network and the new page uses the rebuilt content-hashed bundles. No saved-game deletion is required.
 
 ## Limits
 
