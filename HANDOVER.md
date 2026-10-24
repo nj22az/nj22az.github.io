@@ -45,6 +45,23 @@ The newest note for Nhung the doctor and Higa Liquor is the [22 October 2026 nig
 
 The Linux controller note contains newer merge and release information than the morning World note. Real-device confirmation of right-stick camera control on Bluetooth and Steam Deck remains outstanding; follow that note's reproduction steps. Its evening update: a saved Look axis past the pad's axes now falls back to the right stick (`84baf00`, for 0.2.17, unreleased; it rides the Nhung doctor PR from `claude/clever-ride-qdpo8s`).
 
+## Session handover — 24 October 2026 (late evening), branch `claude/peaceful-johnson-103tja`: Vy cel-shaded
+
+#392 (Steam Gaming Mode install, Deck Gamepad layout, REA) is merged as `b845f0b` and live; the owner has still to run the
+`--steam` command on the Deck and report whether the controls work.
+
+The owner: "Vy has a shiny 3d head instead of being celshaded like the rest of the characters, can you implement full cel
+shading on her" and "bring her head to the avatar creator". Cause: the `sculpted` head form (Vy's, from the 24 October
+reference work) was deliberately exempt in `src/avatars/build.js`: plain `MeshStandardMaterial` instead of
+`celFrom(…,{bands:'soft3'})`, near-sphere normals (0.15 lerp against everyone else's 0.7) and no ink-nose bump. Now every
+head form is shaded the same; the sculpted silhouette is kept. Her head was already in Studio's Face → Style picker as
+"Soft sculpted" (the last of 19 shapes); it now renders cel-shaded there too (checked in Studio on Johansson).
+
+Resident guide portraits re-rendered with `tools/render-resident-guide.mjs` (the hash covers `build.js`): Vy's is now
+flat-shaded; five others (06, Aya, Mai, Mr Fujita, Ms Ganaha) had been stale and now show the tailored skirt the game
+already draws. Checks: Studio before/after renders of Vy and Thuan looked at (Thuan unchanged); 32 avatar/Vy tests;
+runtime rebuilt; full guard 409/409, 77 files. Next: Linux 0.2.19 (the owner noticed Linux is still 0.2.18).
+
 ## Session handover — 24 October 2026 (evening), branch `claude/peaceful-johnson-103tja`: Steam Gaming Mode install, Deck controls, REA
 
 **#391 (play as anyone, faces) is merged** (`28f68fc`). Its second Linux failure was real: the console check still asserted
