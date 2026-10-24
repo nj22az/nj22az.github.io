@@ -1,6 +1,6 @@
 import {THUAN_STUDIO_DESIGN} from './thuan-studio-design.js';
 import {HARBOUR_POLO_OUTFIT} from './outfits.js';
-import {residentRecipe} from './wardrobe.js';
+import {residentRecipe,adoptResidentAppearance} from './wardrobe.js';
 import {BIRTHDAYS} from '../people/birthdays-data.js';
 import {normalizeRecipe,seeded,PARTS,ageClass} from './recipe.js';
 import {PROFILES} from '../people/profiles.js';
@@ -130,13 +130,12 @@ export const CAST_RECIPES=castSet({
 
 /** The people of the new streets, drawn to their lines in neighbours.js. */
 export const NEIGHBOUR_RECIPES=castSet({
- // Vy: a high-school girl in her sailor uniform -- white blouse, red ribbon, navy pleated
- // skirt -- long dark hair tied back. A teen, so the maker's life stage sets her height
- // and proportions (recipe.js AGES).
- Vy:R({name:'Vy',age:'teen',body:{silhouette:'feminine',height:.42,build:.3,skin:'#efd2b4'},head:{size:.5,shape:.42,form:'oval',jaw:.3,cheeks:.5},
-  hair:{style:'ponytail',colour:'#1c1714'},eyes:{style:'gentle',colour:'#2a1d16',size:.58,tilt:.5},brows:{style:'thin',colour:'#1c1714',size:.45},
-  nose:{style:'dot',size:.32},mouth:{style:'soft',colour:'#c4485a',size:.4},blush:.35,
-  outfit:{top:'sailor',topColour:'#f4f1ea',bottom:'pleatedskirt',bottomColour:'#27304d',footwear:'shoes',shoes:'#2b2b2b',accent:'#d8342c'}}),
+ // Vy, eleven: the owner's 24 October GLB reference, rebuilt as editable shared parts.
+ // Long loose dark hair and a fringe, oval eyes and monochrome everyday clothes.
+ Vy:R({name:'Vy',age:'child',body:{proportion:'studio',silhouette:'feminine',height:.42,build:.3,skin:'#f1cfae'},head:{size:.55,shape:.52,form:'sculpted',jaw:.32,cheeks:.65,roundness:.12},
+  hair:{style:'longfringe',colour:'#1c1c24',length:.65,volume:.6},eyes:{style:'inkoval',colour:'#2a1d16',size:.72,width:.35,spacing:.53,tilt:.5},brows:{style:'rounded',colour:'#1c1c24',size:.4},
+  nose:{style:'drawn',size:.42},mouth:{style:'smile',colour:'#b8544a',size:.42},blush:.3,
+  outfit:{skirtCut:'panel',top:'stripedvest',topColour:'#24252b',bottom:'skirt',bottomColour:'#24252b',footwear:'sneakers',shoes:'#f4f1ea',accent:'#f4f1ea'}}),
  Riku:R({body:{silhouette:'masculine',height:.56,build:.55,skin:'#c89a74'},hair:{style:'crop',colour:'#33271f'},eyes:{style:'round'},brows:{style:'thick'},mouth:{style:'smile'},outfit:{top:'polo',topColour:'#587d83',bottom:'trousers',bottomColour:'#505f65',hat:'helmet',hatColour:'#dabb55'}}),
 
  // Retired in phase 4 (roster.js RETIRED; RETIRED_RECIPES keeps the drawings for Studio and history): Grandmother Sakurai,
@@ -174,9 +173,9 @@ const aged=(recipe,name)=>{const age=ageClass(AGE_OF.get(name)),named=name&&!rec
  * recipe drawn here. With no published looks it is exactly baseRecipe.
  */
 export function recipeFor(name='',{looks=LOOKS}={}){
- const saved=residentRecipe(name);if(saved)return saved;
  const look=Object.hasOwn(looks,name)?looks[name]:null;
- return look?.set?normalizeRecipe(applyLook(baseRecipe(name),look.set)):baseRecipe(name);
+ const canonical=look?.set?normalizeRecipe(applyLook(baseRecipe(name),look.set)):baseRecipe(name);
+ return name==='Vy'?adoptResidentAppearance(name,canonical):residentRecipe(name)||canonical;
 }
 
 

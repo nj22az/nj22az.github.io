@@ -2,6 +2,8 @@
   "sourceFiles": [
     "guide/residents.json",
     "src/avatars/build.js",
+    "src/avatars/authored-skirt.js",
+    "src/avatars/authored-skirt-data.js",
     "src/avatars/cast.js",
     "src/avatars/looks.js",
     "src/avatars/looks-data.js",
@@ -13,6 +15,6 @@
     "src/people/resident-personalities.js",
     "src/render/cel.js"
   ],
-  "sha256": "ec719b5493904ac641f18902630850e313fee69901f69e4061c093ba24c16cfa",
+  "sha256": "0becbe2296c50965e0a2c259834b5ea45c8564eb7b2976b07f6ad86442716a72",
   "count": 25
 }

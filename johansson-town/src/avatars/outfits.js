@@ -89,6 +89,7 @@ export const ISLAND_OUTFITS=Object.freeze([
  {id:'sunday-pinafore',name:'Sunday pinafore',label:'Sunday pinafore',category:'Everyday',tags:['Sunday','dress','pinafore','school trip','shrine'],
   who:'Mai on Sundays; Miss Higa on school trips',why:'A pinafore dress over a white tee: smart enough for the shrine, tough enough for the playground.',
   outfit:{top:'pinafore',topColour:'#f4f1ea',accent:'#e8b83e',bottom:'skirt',bottomColour:'#2f4f7f',bottomPattern:'none',footwear:'shoes',shoes:'#6e4a33',pattern:'none'}},
+ {id:'vy-monochrome',name:'Vy monochrome layers',label:'Vy monochrome',category:'Everyday',tags:['Vy','stripes','vest','panel skirt'],who:'Vy off school',why:'A striped long-sleeve tee, layered charcoal vest, soft panel skirt and white sneakers.',outfit:{top:'stripedvest',topColour:'#24252b',accent:'#f4f1ea',bottom:'skirt',skirtCut:'panel',skirtLength:.5,skirtFlare:.5,bottomColour:'#24252b',footwear:'sneakers',shoes:'#f4f1ea',pattern:'none',bottomPattern:'none'}},
 ]);
 
 /** Town-made costumes for the Port Festival parade. Headwear is chosen separately so the face stays visible. */

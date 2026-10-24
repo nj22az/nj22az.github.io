@@ -73,4 +73,12 @@ free-camera.test.mjs
 look-picker.test.mjs
 
 look-materials.test.mjs
+
+# Editable Vy reference parts and recipe round-trip.
+vy-reference.test.mjs
+authored-skirt.test.mjs
+
+# Shared tailored-skirt fit, shell topology and body proportions.
+tailored-skirt.test.mjs
+
 conversation-eyes.test.mjs

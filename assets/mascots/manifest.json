@@ -97,6 +97,7 @@
       368,
       512
     ],
-    "script": "scripts/render-vy-whisper.cjs"
+    "script": "scripts/render-vy-whisper.cjs",
+    "appearanceRevision": 1
   }
 ]
