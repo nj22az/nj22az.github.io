@@ -45,6 +45,38 @@ The newest note for Nhung the doctor and Higa Liquor is the [22 October 2026 nig
 
 The Linux controller note contains newer merge and release information than the morning World note. Real-device confirmation of right-stick camera control on Bluetooth and Steam Deck remains outstanding; follow that note's reproduction steps. Its evening update: a saved Look axis past the pad's axes now falls back to the right stick (`84baf00`, for 0.2.17, unreleased; it rides the Nhung doctor PR from `claude/clever-ride-qdpo8s`).
 
+## Session handover — 24 October 2026 (evening), branch `claude/peaceful-johnson-103tja`: Steam Gaming Mode install, Deck controls, REA
+
+**#391 (play as anyone, faces) is merged** (`28f68fc`). Its second Linux failure was real: the console check still asserted
+the old "web has no character system" rule; the check now asserts the web starts as Johansson, out of bed, no Linux UI.
+
+**Owner, 24 October:** the installer should put the game in Steam's Gaming Mode, and on the Deck "no controls work … I
+can only move the camera by touching the screen … the install should map to the controller". The installer
+(`steam-deck/install.sh`, copied byte-for-byte to `johansson-world/install.sh`, the website's command) now:
+- writes a *Johansson World* non-Steam shortcut into every Steam account's `userdata/<id>/config/shortcuts.vdf` (binary
+  KeyValues; other shortcuts kept; an earlier hand-made *Johansson World* entry replaced; first original kept as
+  `shortcuts.vdf.before-johansson-world`), closing Steam first with `steam -shutdown` if it is running, since Steam
+  overwrites the file otherwise;
+- sets Steam Input for it to the Deck's built-in `controller_neptune_gamepad_fps.vdf` ("Gamepad with Camera Controls") in
+  `steamapps/common/Steam Controller Configs/<id>/config/configset_controller_neptune.vdf`, keyed by the lowercased name,
+  with a backup. Likely cause of the owner's fault: Steam guessing a keyboard/mouse layout for an unknown non-Steam game;
+- `sh install.sh --steam` does only those two steps for an existing install; `JOHANSSON_NO_STEAM=1` skips them.
+Sources: the configset format, key and template name from Valve's steam-for-linux issue 13251 and community projects
+(Deckhand #25, kuluu-ffxi #568). **Unverified:** the root key `controller_config` is used only when the file does not
+exist yet (an existing file keeps its own root); no physical Steam Deck was available, so whether this fixes the
+owner's controls is not yet confirmed. Ask the owner to run the `--steam` command and report.
+
+The website: install guide and World page say the installer adds the game to the Library with the Gamepad layout and
+give the `--steam` command; the copy buttons now copy their own block (the World page's button was broken: no
+`.ferry-install` ancestor); script cache `?v=2`.
+
+**REA** (`morluto/rea`) is a permanent development tool: `.mcp.json` registers `rea` pinned at `rea-agents@6.7.0`; root
+`AGENTS.md` (new section) and `CLAUDE.md` say what to use it on and its limits. `npx -y rea-agents@6.7.0 --help` ran here.
+
+Checks: `npm test --prefix steam-deck` 39/39, the installer fixture now covering the Library entry, the Steam Input layout,
+backups and a second `--steam` run without duplicates; both pages in Chromium at 390 px: every copy button copies its own
+command, no overflow, no page errors.
+
 ## Session handover — 24 October 2026 (afternoon), branch `claude/peaceful-johnson-103tja`: play as anyone and faces on the web
 
 The owner asked whether "play any character", posing and emotions could come to the web, and chose both. Posing was
