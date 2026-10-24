@@ -65,7 +65,17 @@ Checks run: the catalogue, konbini, products, runtime-package, Sakura, shop, Stu
 `higa-shop-collision` and `housing-consolidation`: 228 of 232 passed. The 4 failures fail the same way on the unchanged
 branch: `catalog` (catalog-data.js out of date), `shop-display` (three islands with a route), and two in `studio-apply`
 (Mrs Kinjō is not a resident; the flavour cell case). Not run: the full `ci-guard`, phone/iPad views. The Blender poster set
-in `jojo` copies this cabinet and should be re-taken. Next: the owner reviews; a PR to main carries both fixes on request.
+in `jojo` copies this cabinet and should be re-taken.
+
+**Then four stale checks, on the owner's "work after them".** The four failures above were the tests, not the town:
+`catalog-data.js` regenerated from `assets/catalog` (one cap's buyer note); `shop-display` routes the till the way the
+clerk walks (to `staffApproach`, then the straight step into the till pocket, now checked clear at `staffBody`);
+`studio-apply` used Mrs Kinjō and the Bus driver, who have left the cast (now Nhung), and matched only the old wording of
+the age refusal (now both current wordings). Runtime rebuilt; `origin/main` merged in (handover text only).
+
+Checks run after all of it: the 232 shop/Studio/game-build tests 232/232, and the **full CI guard with a 10 GB heap:
+391/391, 75 files, all green**. Not run: phone/iPad views, physical devices. A PR to main carries all three commits for
+the owner to merge (main deploys the site). Next: the owner reviews and merges; then re-take the Blender cabinet in `jojo`.
 
 ## Repository instructions handover — 22 October 2026
 
