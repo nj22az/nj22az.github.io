@@ -502,7 +502,7 @@ function furnishBasement(s,{action}){
   s.box(.6,.6,.04,2.4,7.5,.45,C.timberDark);s.solid(2.1,7.2,2.7,7.8,0,.47);
   s.blk(x0+.3,y0,0,3.4,y0+.5,1.05,C.timberDark);s.solid(x0+.3,y0,3.4,y0+.52,0,1.1);
   for(let i=0;i<6;i++)s.cyl(.04,.04,.28,x0+.6+i*.4,y0+.2,1.19,[0x3f6a4a,0x8a5a2b,0xe9e2d0][i%3],{segments:8});
-  s.anchor(1.8,y0+.9,1.2,'Look at the bar',say('The club’s bar','Awamori from Higa Liquor in its jars, a bottle of aquavit from the Christmas parcel, and the club’s book of who owes what.'));
+  s.anchor(1.8,y0+.9,1.2,'Look at the bar',say('The club’s bar','Awamori in its jars, from Higa Liquor before it closed, a bottle of aquavit from the Christmas parcel, and the club’s book of who owes what.'));
   s.anchor(2.4,y1-.8,1.2,'Look at the club’s books',say('Reading club','The reading club’s shelves: this month Tanizaki, next month Lagerlöf in a translation nobody has finished. The minutes are kept by Nhung.'));
   for(const [x,y] of [[x0+.3,5.5],[x1-.3,y1-.6]]){s.cyl(.02,.02,1.5,x,y,.75,0x3a3632);s.cyl(.14,.2,.2,x,y,1.55,0xf3e7c4,{finish:'glow'});s.solid(x-.15,y-.15,x+.15,y+.15,0,1.6);}}
  // The stair hall: the preserves and the typhoon kit along the south wall (under the genkan), the dehumidifier.
@@ -622,7 +622,7 @@ function furnishGround(s,{action,television,post}){
   s.blk(x0,9.1,0,x0+.7,y1,1.75,0xe8ebe6);s.solid(x0,9.1,x0+.72,y1,0,1.75);
   s.blk(x0,5.9,1.55,x0+.35,6.85,2.25,0xe8e3d6);s.blk(x0,8.55,1.55,x0+.35,9.0,2.25,0xe8e3d6);
   s.anchor(x0+.8,6.9,1.1,'Make tea',say('Kettle','You put the kettle on. Jasmine tea, the way Thuan makes it, in the pot her mother sent from Hội An.'));
-  s.anchor(x0+.8,9.45,1.2,'Look in the fridge',say('Fridge','Orion beer from Higa Liquor, goya for tomorrow, a jar of Thuan’s nước chấm, and the herring Mr Higa ordered in for midsummer.'));
+  s.anchor(x0+.8,9.45,1.2,'Look in the fridge',say('Fridge','Orion beer from Sakura, goya for tomorrow, a jar of Thuan’s nước chấm, and the herring Mr Higa ordered in for midsummer.'));
   // The dining table for four, under the north window.
   const dx=2.5,dy=8.75;s.box(1.4,.8,.04,dx,dy,.72,C.timberDark);for(const [a,b] of [[-.62,-.33],[.62,-.33],[-.62,.33],[.62,.33]])s.box(.05,.05,.7,dx+a,dy+b,.35,0x5a3f2a);
   s.solid(dx-.7,dy-.4,dx+.7,dy+.4,0,.76);

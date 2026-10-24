@@ -124,7 +124,7 @@ test('the parked cars are the traffic’s family, on the ground, inside their pa
  const {buildVehicle,parkedVehicleFit,VEHICLE_SIZE}=await import('../src/world/road-vehicles.js');
  const {createKit}=await import('../src/world/okinawa/kit.js');
  const north=clearedLot('kitahama-north-block').dressing;
- assert.deepEqual(PARKED_CARS.map(c=>c.owner),['Kōji','Dr Ken','Mac']);
+ assert.deepEqual(PARKED_CARS.map(c=>c.owner),['Kōji','Nhung','Mac']);
  for(const car of PARKED_CARS){
   const p=north.props.find(q=>q.id===car.prop),fit=parkedVehicleFit(car.kind,{bonnet:car.bonnet}),at=parkedCarPlace(car,fit);
   assert.equal(p.owner,car.owner,car.prop+' is its owner’s');assert.ok(VEHICLE_SIZE[car.kind],car.kind+' is a kind the traffic has');

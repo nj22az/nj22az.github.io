@@ -3,7 +3,7 @@
    load this page). Loaded last, so it is the HUD's final word over the older sheets. Behaviour: src/ui/quiet-hud.js.
 
    - One chip top left: the place and the time ("Minato Machi · 14:11").
-   - The town book: a small icon button top right, level with the chip.
+   - The town book and its button: town-book.css.
    - The next action: a compact pill at the bottom centre, fading in and out (hidden rail: context-actions.js).
    - No Run button: on touch, pushing the stick past about 85% runs (src/input/touch-feel.js createAutoRun); Shift,
      and the controller's bumper, still run. Jump, when it shows, is a small button in the bottom-right corner.
@@ -45,13 +45,6 @@ html.hud-photo{--hud-dim:0}
 #hud .topbar #clock::before{content:"·";margin:0 6px;color:var(--hud-ink-soft)}
 body.conversation-open #hud .topbar{opacity:0}
 
-/* The town book: a small icon button, level with the chip. */
-#hud #directoryButton{top:calc(var(--hud-top) - 6px)!important;right:max(16px,env(safe-area-inset-right))!important;width:44px!important;height:44px!important;min-height:44px!important;
- padding:0!important;border:1px solid var(--hud-edge)!important;border-radius:22px!important;background:var(--hud-surface)!important;color:var(--hud-ink)!important;
- box-shadow:none!important;filter:none!important;-webkit-backdrop-filter:var(--hud-blur);backdrop-filter:var(--hud-blur);
- opacity:var(--hud-dim);transition:opacity var(--hud-fade) ease}
-#hud #directoryButton::before{width:20px;height:20px}
-#hud #directoryButton:focus-visible{outline:2px solid var(--hud-accent);outline-offset:2px}
 
 #hud #waypoint{border:1px solid var(--hud-edge);border-radius:22px;background:var(--hud-surface);color:var(--hud-ink);box-shadow:none;
  -webkit-backdrop-filter:var(--hud-blur);backdrop-filter:var(--hud-blur);font:600 14px/1.3 var(--hud-font);opacity:var(--hud-dim);transition:opacity var(--hud-fade) ease}

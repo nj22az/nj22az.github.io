@@ -65,7 +65,7 @@
   selectedTheme = getPageTheme();
   var pagePath = location.pathname;
   var usesFullTheme = pagePath === "/" || pagePath === "/index.html" ||
-    pagePath === "/blog/" || pagePath === "/blog/index.html" ||
+    pagePath === "/blog/" || pagePath === "/blog/index.html" || pagePath.startsWith("/blog/hotels/") ||
     pagePath.startsWith("/linux-port/") || pagePath === "/world/" || pagePath === "/world/index.html";
   if (usesFullTheme) document.documentElement.setAttribute("data-theme", selectedTheme);
 

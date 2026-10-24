@@ -8,7 +8,7 @@ export const MINATO_WALNUT_LAYOUT=Object.freeze({
  counter:Object.freeze({file:'minato-walnut-counter.glb',name:'Minato walnut counter',position:Object.freeze([-.8,.04,-2.34]),width:8.4,depth:.83,height:.74}),
 });
 
-/** Original fictional stock. Thao chooses the range; Higa Liquor supplies it.
+/** Original fictional stock. Thao chooses the range; Sakura Trading supplies it (Higa Liquor did until it closed).
  * Local awamori anchors a harbour bar whose visiting crews also order familiar spirits.
  * Keeping the descriptions as data makes this stock available to the storyteller.
  */
@@ -27,10 +27,10 @@ export const MINATO_FICTIONAL_SPIRITS=Object.freeze([
  ['sierra_candela','Sierra Candela','Tequila blanco','An imported agave spirit for visiting sailors.'],
  ['orchard_hour','Orchard Hour','Pear liqueur','A gentle fruit liqueur after the meal.'],
  ['black_tide','Black Tide','Coffee liqueur','A dark coffee finish to the evening.'],
-].map(([id,name,spirit,reason])=>Object.freeze({id,name,spirit,reason,owner:'Thao',supplier:'Higa Liquor',fictional:true,place:'izakaya'})));
+].map(([id,name,spirit,reason])=>Object.freeze({id,name,spirit,reason,owner:'Thao',supplier:'Sakura Trading',fictional:true,place:'izakaya'})));
 
 export const MINATO_WALNUT_STORY=Object.freeze({
  title:'Thao’s back bar',
- text:'Thao chose this walnut cabinet for Minato. Higa Liquor supplies its fourteen house brands: local awamori, visiting crews’ whiskies and a small selection for mixed drinks. Each bottle has its own label. The brass rails keep the stock in place, and the low matching counter leaves the conversation open.',
- owner:'Thao',supplier:'Higa Liquor',brands:MINATO_FICTIONAL_SPIRITS,
+ text:'Thao chose this walnut cabinet for Minato. Sakura Trading supplies its fourteen house brands: local awamori, visiting crews’ whiskies and a small selection for mixed drinks. Each bottle has its own label. The brass rails keep the stock in place, and the low matching counter leaves the conversation open.',
+ owner:'Thao',supplier:'Sakura Trading',brands:MINATO_FICTIONAL_SPIRITS,
 });

@@ -89,3 +89,30 @@ is the one thing to watch.
 
 **Next:** get the three answers. Capture the real pads' `navigator.getGamepads()` (id, mapping, button count, axes at
 rest and with each stick moved) as a test fixture. Fix, then release 0.2.17 per the steps above.
+
+## Update, 22 October 2026 (evening): likely cause 2 fixed in code
+
+Branch `claude/laughing-rubin-6p25x2`. `steam-deck/ui/controller.mjs` `read` now falls back to the default sticks
+(Move [0, 1], Look [2, 3]) when a saved pair points past the axes the pad is read with, so a profile saved against
+the raw xpad layout (Look 3 and 4) no longer leaves the camera dead after 0.2.16's four-axis normalisation. The saved
+profile is left as it is (the Controls page still shows the old numbers until the owner changes them). New test in
+`steam-deck/tests/controller.test.cjs`: it fails on the old code and passes now; all 39 desktop tests pass. This is not
+released: 0.2.17 was published without it (see the release update below); it reaches `main` through #362 on
+23 October and ships in the next Linux release, **0.2.18 or later**. Causes 1 (Steam Input's desktop layout) and 3 (switching
+pads only on a button press) are unchanged, and the owner's three answers are still needed. Nothing confirmed on hardware.
+
+## Release update — 2026-10-22T23:17:22+02:00 (Europe/Copenhagen)
+
+[Linux 0.2.17](https://github.com/nj22az/nj22az.github.io/releases/tag/johansson-world-linux-v0.2.17) is now published via
+[#370](https://github.com/nj22az/nj22az.github.io/pull/370), release commit
+`1c204ad415483e097c279f5ade19f89cf3ad39a8`. It removes current fighting,
+safely migrates old combat saves and includes accepted main World work, including
+the new Look setting and frozen Free camera. Source integration, exact-tree
+acceptance and [public installer verification](https://github.com/nj22az/nj22az.github.io/actions/runs/39854364138) passed.
+See [the signed handover](johansson-town/briefs/HANDOFF-COMBAT-WITHDRAWAL-2026-10-22.md)
+and [release evidence](linux-port/acceptance-0.2.17.md).
+
+This release does **not** include the separate saved-axis repair proposed in
+#362. Real Steam Deck/8BitDo checks and the diagnostic questions above remain
+outstanding. Version 0.2.17 is consumed: a further controller release needs the
+next unpublished version, at least 0.2.18. Preserve all published assets and saves.

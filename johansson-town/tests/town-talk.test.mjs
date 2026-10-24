@@ -40,7 +40,7 @@ test('the model is told who each person is, and its answer is checked before any
  const messages=chatPrompt(who('Masaru'),who('Tetsuo'),{minutes:17*60+40,rain:true,place:'the harbour street'});
  assert.match(messages[1].content,/Masaru, 51, .*Boisterous cook-at-heart\. Typhoon/);
  assert.match(messages[1].content,/Tetsuo, 40.*Quiet craftsman/);assert.match(messages[1].content,/17:40, in the rain/);
- assert.match(describe(who('Nhung')),/Nhung, 37, bookshop assistant/);
+ assert.match(describe(who('Nhung')),/Nhung, 37, island doctor/);
  const ok=parseChat('Sure! {"lines":[{"who":"A","text":"Masaru: The squid is winning."},{"who":"B","text":"Let it."},{"who":"A","text":"\\"Never!\\""},{"who":"B","text":"Then bring a bigger pot."}]}','Masaru','Tetsuo');
  assert.deepEqual(ok,{speakers:[0,1,0,1],lines:['The squid is winning.','Let it.','Never!','Then bring a bigger pot.']});
  assert.equal(parseChat('{"lines":[{"who":"A","text":"As an AI I cannot"},{"who":"B","text":"Hi"}]}'),null);

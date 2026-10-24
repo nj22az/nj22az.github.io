@@ -11,8 +11,8 @@ import {SHOP_STOCK} from '../commerce/shop-stock.js';
  *   freight     the ferry's charge to bring one unit over (about four per cent of its value,
  *               more for heavy glass)
  *   trade       Sakura's price to the town's businesses on account: landed cost plus a fifth,
- *               or plus eight per cent on alcohol, which Sakura only wholesales to the Higas
- *   retail      the shelf price — Sakura's for groceries, the Higas' for alcohol
+ *               or plus eight per cent on alcohol, the floor under the bars' price (town-economy.js barTrade)
+ *   retail      the shelf price — Sakura's, the drink over its counter since Higa Liquor closed
  *   measure     how a bar sells it: `ml` per measure and `price` per measure (Minato)
  *
  * A konbini's gross margin is about thirty per cent, a liquor store's about a quarter (the
@@ -22,7 +22,7 @@ import {SHOP_STOCK} from '../commerce/shop-stock.js';
 const landed=g=>g.wholesale+g.freight;
 const tradeOf=(g,mark=1.2)=>Math.round(landed(g)*mark/5)*5;
 
-/** Alcohol: Sakura brings it over and sells it on to Higa Liquor, who sell it to the town and the bars. */
+/** Alcohol: Sakura brings it over and sells it to the town over its counter and to the bars on its round (Higa Liquor's trade until the shop closed, 22 October 2026). */
 export const ALCOHOL=Object.freeze({
  'beer-can':{name:'Umineko lager, 350 ml can',unit:'can',ml:350,wholesale:168,freight:6,retail:220},
  'beer-bottle':{name:'Umineko lager, 633 ml bottle',unit:'bottle',ml:633,wholesale:250,freight:10,retail:330,measure:{minato:{ml:633,price:600,name:'large bottle'}}},

@@ -4,7 +4,8 @@ import {calledToQuay} from './shore-duty.js';
 import {standNow} from './stand-points.js';
 import {quayBreakPlan} from './quay-breaks.js';
 import {onWatch} from './ferry-crew.js';
-import {onSakuraShift,isWeekend} from '../commerce/sakura-rota.js';
+import {onSakuraShift,sakuraOpenAt} from '../commerce/sakura-rota.js';
+import {doctorAtClinic,clinicOpenAt} from './clinic-hours.js';
 import {townCalendarAt} from '../town-clock.js';
 import {izakayaJob} from './izakaya-hours.js';
 import {HARBOUR_PARK_SEATS} from '../world/harbour-park-plan.js';
@@ -14,7 +15,7 @@ export {marketVisitsForDay,RAMEN_VISITS} from './market-visits.js';
 import {IZAKAYA_DOOR} from '../world/dining-layout.js';
 import {MINATO_COMPACT} from '../world/interiors/minato-compact-plan.js';
 import {SHOP_CROSSING_Z} from '../world/main-road.js';
-import {MARKET_THRESHOLD} from '../world/town-grid.js';
+import {MARKET_THRESHOLD,TOWN_DESTINATIONS} from '../world/town-grid.js';
 import {STAFF_BENCH} from '../world/staff-bench.js';
 import {PROFILES} from './profiles.js';
 import {ACTIVE_RESIDENT_NAMES,RESIDENTS,HOME_OWNERS} from './residents.js';
@@ -99,15 +100,16 @@ const THUAN_WALK=Object.freeze([
  {until:THUAN_WALK_END,place:'market',target:MARKET_THRESHOLD,activity:'walking back to Sakura',pace:1.4},
 ].map(Object.freeze));
 /**
- * The three sisters: Nhung (the eldest, at the bookshop), Thao (Minato) and Thuan (the
+ * The three sisters: Nhung (the eldest, the island doctor), Thao (Minato) and Thuan (the
  * youngest, at Sakura). On the dry days Thuan is not at Minato in the evening, Nhung takes her break when Thuan does, and
  * the two of them play jan-ken-pon in the park instead of Thuan's nap and walk; `play`
- * names the partner, and the schedule (schedules.js) faces them off and plays.
+ * names the partner, and the schedule (schedules.js) faces them off and plays. Not while the clinic is open: the
+ * doctor does not leave her patients for a game (clinic-hours.js), so on a surgery afternoon Thuan takes her walk.
  */
 export const SISTERS_PLAY=Object.freeze({start:880,end:914,thuan:[PARK_STAND[0]+.75,PARK_STAND[1]+.2],nhung:[PARK_STAND[0]-.75,PARK_STAND[1]+.2]});
-export const sistersPlayDay=minutes=>Math.floor(minutes/1440)%2===1;
+export const sistersPlayDay=minutes=>Math.floor(minutes/1440)%2===1&&!clinicOpenAt(Math.floor(minutes/1440)*1440+SISTERS_PLAY.start);
 export function sistersAtPlay(profile,minutes,rain=false){
- if(rain||!sistersPlayDay(minutes)||!['Thuan','Nhung'].includes(profile?.name))return null;
+ if(rain||!sistersPlayDay(minutes)||!['Thuan','Nhung'].includes(profile?.name)||thuanWeekendAway(minutes))return null;
  const m=minuteOfDay(minutes);if(m<SISTERS_PLAY.start||m>=SISTERS_PLAY.end)return null;
  const thuan=profile.name==='Thuan';
  return {place:'park',target:thuan?SISTERS_PLAY.thuan:SISTERS_PLAY.nhung,play:thuan?'Nhung':'Thuan',activity:'playing jan-ken-pon with '+(thuan?'her big sister Nhung':'her little sister Thuan')+' in the park'};
@@ -138,7 +140,9 @@ export function naoBeforeShift(profile,minutes,rain=false){
  const shift=shiftFor(profile),m=minuteOfDay(minutes);
  if(!shift||m<shift.arrival+30||m>=shift.start)return null;
  if(rain)return {place:'izakaya',target:IZAKAYA_DOOR,activity:'tidying Minato before opening'};
- return NAO_DAY.find(leg=>m<leg.until)||null;
+ // On a Saturday Sakura is shut (commerce/sakura-rota.js): no soda, she starts her walk round the park.
+ const leg=NAO_DAY.find(leg=>m<leg.until)||null;
+ return leg?.place==='market'&&!sakuraOpenAt(minutes)?NAO_DAY.find(leg=>leg.place!=='market'):leg;
 }
 
 /** Alternate dry evenings at Minato, keyed to the saved town day.
@@ -174,14 +178,18 @@ export function onsenInvitationDay(profile,minutes,rain=false,state=null){
 // the harbour and a closing walk. The last leg is deliberately omitted so every
 // resident still returns to the normal bus plan with ample boarding time.
 const AFTER_WORK=Object.freeze({
- // The eldest sister's evening is her sisters': Thuan at Sakura's counter, a Blue Coral cone
- // from the lane, eaten outside while Thuan locks up, then, on Thuan's Minato nights, Minato,
- // where Thao is behind the bar (afterWorkPlan).
+ // The eldest sister's evening after surgery (17:00, clinic-hours.js): Thuan at Sakura's counter, supper at home with
+ // Kōji and Riku, the town's paper at the back bench of the old Front-Row shop, a Blue Coral cone from the lane eaten
+ // outside Sakura while Thuan locks up, then, on Thuan's Minato nights, Minato, where Thao is behind the bar, and on
+ // the others the paper again (afterWorkPlan). `home` stops go to her own door; the shop's door is read when asked.
  Nhung:Object.freeze([
   {until:60,place:'market',target:MARKET_THRESHOLD,activity:'visiting her little sister Thuan at the Sakura counter'},
-  {until:90,place:'stroll',target:SAKURA_FREEZER[1],activity:'waiting outside Sakura with two Blue Coral cones from Nakamura’s, for Thuan to lock up'},
-  {until:105,place:'stroll',target:SAKURA_FREEZER[1],activity:'sharing Blue Coral cones with Thuan outside Sakura'},
-  {until:180,place:'izakaya',target:IZAKAYA_DOOR,activity:'at Minato with her sisters Thao and Thuan',withThuan:true},
+  {until:150,place:'home',home:true,activity:'supper at home with Kōji and Riku'},
+  {until:175,place:'paper',get target(){return TOWN_DESTINATIONS.books;},activity:'setting the town’s paper at the back bench of the old Front-Row shop'},
+  {until:180,place:'stroll',target:SAKURA_FREEZER[1],activity:'waiting outside Sakura with two Blue Coral cones from Nakamura’s, for Thuan to lock up'},
+  {until:195,place:'stroll',target:SAKURA_FREEZER[1],activity:'sharing Blue Coral cones with Thuan outside Sakura'},
+  {until:255,place:'izakaya',target:IZAKAYA_DOOR,activity:'at Minato with her sisters Thao and Thuan',withThuan:true,
+   otherwise:{place:'paper',get target(){return TOWN_DESTINATIONS.books;},activity:'printing the town’s paper at the back bench of the old Front-Row shop'}},
  ]),
  Chin:Object.freeze([
   {until:55,place:'market',target:MARKET_THRESHOLD,activity:'buying a cold soda after work'},
@@ -218,8 +226,8 @@ export function afterWorkPlan(profile,minutes,rain=false){
  const available=departureFor(profile,false)-shift.finish-60;
  if(elapsed<0||elapsed>=available)return null;
  const stop=routine.find(stop=>elapsed<Math.min(stop.until,available))||null;
- // Nhung goes on to Minato only on the nights Thuan does.
- if(stop?.withThuan&&!thuanVisitsIzakaya(minutes))return null;
+ // Nhung goes on to Minato only on the nights Thuan does; on the others, what the stop says instead.
+ if(stop?.withThuan&&!thuanVisitsIzakaya(minutes))return stop.otherwise||null;
  return stop;
 }
 export function thuanEveningPlace(minutes){
@@ -239,7 +247,8 @@ export function supperGuests(minutes){
  return PROFILES.filter(p=>ACTIVE_RESIDENT_NAMES.includes(p.name)&&p.name!=='Thao'&&inTimeRange(minute,p.supperStart,p.supperEnd)).slice(0,IZAKAYA_SEATS.length);
 }
 export function visitsMarket(profile,minutes,state=null){
- if(onSakuraShift(profile?.name,minutes))return false;
+ // Not while the shop is shut (Saturdays since 22 October 2026, and the night; commerce/sakura-rota.js).
+ if(onSakuraShift(profile?.name,minutes)||!sakuraOpenAt(minutes))return false;
  const visit=marketVisitsForDay(minutes)[profile.name],account=state?.residentLife?.[profile.name],meal=account?.day===Math.floor(minutes/1440)?(marketVisitPurpose(profile.name,minutes,state||{})==='goods'?(account.shopping||account.meals?.market):account.meals?.market):null;
  if(meal?.finished)return false;
  const ordering=Number.isFinite(meal?.started)&&minutes>=meal.started&&minutes<meal.started+160&&minuteOfDay(minutes)<1200;
@@ -250,7 +259,7 @@ export function visitsRamen(profile,minutes){
  return profile?.name!=='Thuan'&&!!satoLunch(profile,minutes);
 }
 /**
- * The Front-Row staff at home in the yard, and Nhung at 3 Kitahama since phase 3 (her bookshop day is the same; the
+ * The Front-Row staff at home in the yard, and Nhung at 3 Kitahama since phase 3 (the doctor's day since 22 October 2026; the
  * walk home is to Kitahama's cross lane): to work for their shift, a Sakura errand or an evening stop when one is due,
  * and otherwise home — where they eat, read and, at night, sleep in their own beds for anybody who opens the door to see.
  */
@@ -262,23 +271,27 @@ function satoLunch(profile,minutes){
  return slot&&satoRamenOpen(minutes)&&inTimeRange(minutes,...slot)?{place:'ramen',target:RAMEN_DOOR,activity:'lunch at Sato Ramen'}:null;
 }
 /** Yard residents whose evening runs longer than the usual two hours. */
-const YARD_EVENING=Object.freeze({Nhung:180});
+const YARD_EVENING=Object.freeze({Nhung:255});
 /** Where Chin's street body waits while the ship has him: the terminal, where he steps ashore when he signs off. */
 const ABOARD_AS_MOTORMAN=Object.freeze({place:'ferry',target:[8,-38],activity:'motorman aboard the Minato Maru'});
 function yardResidentPlan(profile,minutes,rain=false,state=null){
- // Sakura's weekend (commerce/sakura-rota.js): Nhung keeps the day counter while Thuan is home on Kitano-jima.
+ // Sakura's Sunday (commerce/sakura-rota.js): Nhung keeps the day counter while Thuan is home on Kitano-jima.
  if(onSakuraShift(profile.name,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'minding Sakura’s counter for Thuan'};
  const lunch=satoLunch(profile,minutes);if(lunch)return lunch;
  const play=sistersAtPlay(profile,minutes,rain);if(play)return play;
- if(shiftActive(profile,minutes)&&!(profile.name==='Nhung'&&isWeekend(minutes)))return {place:'work',target:profile.work,activity:profile.role};
+ // The doctor keeps the clinic's hours (clinic-hours.js), not a shop's shift: weekdays, and Saturday morning.
+ const doctor=profile.name==='Nhung';
+ if(doctor?doctorAtClinic(minutes):shiftActive(profile,minutes))return {place:'work',target:profile.work,activity:profile.role};
  if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'a shopping errand at Sakura'};
  const morning=MORNING_PARK[profile.name];
  // Aimed beside the bench, not at its step: with somebody already on it, they wait off to one side.
  if(!rain&&morning&&inTimeRange(minutes,...morning))return {place:'park',target:[PARK_STAND[0]+1.4,PARK_STAND[1]+.9],activity:'sitting in the park'};
  // Their evening stops were timed against the last bus; living next door, they take
  // at most a couple of hours after work before heading home to bed.
- const shift=shiftFor(profile),evening=shift&&minuteOfDay(minutes-shift.finish)<(YARD_EVENING[profile.name]||120)?afterWorkPlan(profile,minutes,rain):null;
- if(evening)return evening;
+ // Nhung's evening routine follows a surgery day; Saturday afternoon and Sunday evening are her own, at home.
+ const workday=!doctor||(()=>{const w=townCalendarAt(minutes).weekday;return w>=1&&w<=5;})();
+ const shift=shiftFor(profile),evening=workday&&shift&&minuteOfDay(minutes-shift.finish)<(YARD_EVENING[profile.name]||120)?afterWorkPlan(profile,minutes,rain):null;
+ if(evening)return evening.home?{place:'home',target:profile.home,activity:evening.activity}:{...evening,target:evening.target};
  return {place:'home',target:profile.home,activity:rain?'sheltering at home':livesInYard(profile)?'at home in the yard':'at home at 3 Kitahama'};
 }
 /**
@@ -328,7 +341,7 @@ export const ferryWords=text=>typeof text!=='string'?text:text
  * Thuan is Johansson's wife (the creator, 2026-10-12; docs/KITANO-JIMA.md §3) and lives with him on Kitano-jima only
  * (docs/CAST-CONSOLIDATION.md addendum 4): every evening the 22:00 boat home and every morning the 08:30 boat in
  * (commuter-schedule.js COMMUTER_SHIFTS.Thuan), and from the Friday boat to the Monday one she stays on the island
- * while Nhung keeps the shop.
+ * while the shop shuts on Saturday and Nhung keeps it on Sunday.
  */
 export function thuanWeekendAway(minutes){
  const w=townCalendarAt(minutes).weekday,m=minuteOfDay(minutes);
@@ -367,7 +380,7 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
  if(profile.name==='Thao'){const job=izakayaJob('Thao',minutes);if(job)return {place:'izakaya',target:IZAKAYA_DOOR,activity:job.activity};}
  if(livesAtWork(profile))return workplaceResidentPlan(profile,minutes,rain,state);
  // Chin keeps the yard's day (lunch at Sato, the workshop, the evening) from 1 Kitahama, where he lives with Thao (batch 7b),
- // and Nhung the bookshop's from 3 Kitahama, where she lives with Kōji and Riku (phase 3).
+ // and Nhung the clinic's from 3 Kitahama, where she lives with Kōji and Riku (phase 3).
  if(livesInYard(profile)||profile.name==='Chin'||profile.name==='Nhung')return yardResidentPlan(profile,minutes,rain,state);
  const phase=commuterPhase(profile,minutes,rain),bus=(activity='waiting for the Harbour Line')=>({place:'bus',target:transitStop().queue,activity});
  // exit is the platform (clear of the tunnel mouth) — never roadEndZ/arch.
@@ -467,7 +480,8 @@ export function residentPlan(profile,minutes,rain=false,state=null){
  // Sleep/breakfast above and night shifts retain priority.
  const shift=shiftFor(profile),m=minuteOfDay(minutes);
  if(HOME_RESIDENT_NAMES.has(profile?.name)&&shift&&!shift.permanent&&inTimeRange(m,shift.start-30,shift.start)){
-  const place=profile.name==='Thuan'?'market':profile.name==='Thao'?'izakaya':'work';
+  // Nhung keeps Sakura's counter on Sunday (commerce/sakura-rota.js), so her walk then is to the shop, not the clinic.
+  const place=profile.name==='Thuan'||profile.name==='Nhung'&&onSakuraShift('Nhung',minutes-m+shift.start)?'market':profile.name==='Thao'?'izakaya':'work';
   const target=place==='market'?MARKET_THRESHOLD:place==='izakaya'?IZAKAYA_DOOR:place==='ramen'?RAMEN_DOOR:profile.work;
   return {place,target,activity:'walking to work before opening'};
  }
@@ -483,7 +497,7 @@ export function residentPlan(profile,minutes,rain=false,state=null){
 }
 export const GOSSIP=[
  {id:'yuri-evening',a:'Thuan',b:'Thao',line:'Thuan: I told the assistant manager I would be on the last ferry.\nThao: The plant?\nThuan: He looked very disappointed. I watered him twice.',clue:'Thuan leaves Sakura for the Harbour Line after closing. Check the terminal timetable for her evening service.'},
- {id:'apron',a:'Nhung',b:'Chin',line:'Nhung: Tama needs his own column.\nChin: What would he write, bro?\nNhung: Strong opinions about the window chair.',clue:'Nhung prints a page of town news at the bookshop counter.'},
+ {id:'apron',a:'Nhung',b:'Chin',line:'Nhung: Tama needs his own column.\nChin: What would he write, bro?\nNhung: Strong opinions about the window chair.',clue:'Nhung prints a page of town news at the old bookshop in the evenings.'},
  {id:'radio',a:'Chin',b:'Tetsuo',line:'Chin: Hey, bro, I fixed the crackling.\nTetsuo: That was the music.\nChin: Totally improved it, then, dude.',clue:'Find the street radio and try the other stations.'},
  {id:'fish',a:'Harbour master',b:'Tetsuo',line:'Tetsuo: The harbour radio crackled at nine.\nHarbour master: That was the weather.\nTetsuo: The weather has never crackled before.',clue:'The harbour master keeps the office radio; Tetsuo keeps every radio on the island.'},
  {id:'special',a:'Thao',b:'Mrs Sato',line:'Mrs Sato: Is that a proper supper?\nThao: You taught me the portions.\nMrs Sato: Good. Then there will be seconds.',clue:'Try Thao’s supper special at the counter.'}

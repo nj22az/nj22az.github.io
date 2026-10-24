@@ -193,11 +193,16 @@ test('every open patch of the east side can be walked to from the road',async()=
   }
   return false;
  };
- const stranded=[];
+ // Higa Liquor is shut for good (the owner, 22 October 2026; commerce/higa-liquor.js): its floor is behind the shutter
+ // and the shut doors on purpose, a closed room and not stranded ground. Only the shop-house itself is set aside.
+ const {HIGA_FRAME}=await import('../src/world/okinawa/higa-liquor-dressing.js');
+ const inShutShop=(x,z)=>{const lz=HIGA_FRAME.origin[0]-x,lx=z-HIGA_FRAME.origin[1];return Math.abs(lx)<HIGA_FRAME.W&&Math.abs(lz)<HIGA_FRAME.D-.15;};
+ const stranded=[];let shutCells=0;
  for(let x=EAST_LAWN.minX;x<=EAST_LAWN.maxX;x+=STEP)for(let z=EAST_LAWN.minZ;z<=EAST_LAWN.maxZ;z+=STEP){
   const gx=+x.toFixed(1),gz=+z.toFixed(1);
-  if(open(gx,gz)&&!seen.has(key(gx,gz))&&!fineReach(gx,gz))stranded.push(gx+','+gz);
+  if(open(gx,gz)&&!seen.has(key(gx,gz))&&!fineReach(gx,gz)){if(inShutShop(gx,gz))shutCells++;else stranded.push(gx+','+gz);}
  }
+ assert.ok(shutCells>0,'the shut shop’s floor is out of reach behind its shutter');
  assert.deepEqual(stranded.slice(0,8),[],'East-side ground you can stand on but cannot reach');
  assert.ok(seen.size>15000,'The flood stopped early: '+seen.size+' cells');
 

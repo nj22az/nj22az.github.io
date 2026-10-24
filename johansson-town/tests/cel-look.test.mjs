@@ -274,3 +274,23 @@ test('a room can ask that its lamps stop at its walls: point lights then light o
  assert.equal((body.match(/step\( 0\.0, dot\( geometryNormal/g)||[]).length,1,'only the point lights: the sun and the spot lights keep their wrap');
  assert.notEqual(plain.customProgramCacheKey(),toon.customProgramCacheKey(),'its own program');
 });
+
+test('a look can take the photographic maps away and give each back its own amount',async()=>{
+ const {createCelPass}=await import('../src/render/cel.js');
+ const pass=createCelPass();
+ const root=new THREE.Group();
+ const textured=()=>{const m=new THREE.MeshStandardMaterial({map:new THREE.Texture(),normalMap:new THREE.Texture(),roughnessMap:new THREE.Texture()});return m;};
+ root.add(new THREE.Mesh(new THREE.BufferGeometry(),textured()));
+ pass.apply(root);
+ const uniform=root.children[0].material.userData.flatten;
+ if(!uniform)return; // this three.js build has no map chunk to patch; nothing to scale
+ const own=uniform.value;
+ pass.scaleFlatten(0);assert.equal(uniform.value,0);
+ // A district that streams in while the look is on arrives flat too.
+ const later=new THREE.Group();later.add(new THREE.Mesh(new THREE.BufferGeometry(),textured()));
+ pass.apply(later);
+ assert.equal(later.children[0].material.userData.flatten.value,0);
+ pass.scaleFlatten(1);
+ assert.equal(uniform.value,own);
+ assert.equal(later.children[0].material.userData.flatten.value,own);
+});

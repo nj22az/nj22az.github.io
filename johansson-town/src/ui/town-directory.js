@@ -81,9 +81,14 @@ export function renderTownDirectory(container,{cards=[],places=[],progress={},on
   article.append(actions);return article;
  }
  function placeCard(place){
-  const {article}=makeCard('place',place.title||place.id,place.sub||place.category||'Place');article.dataset.placeId=place.id;
+  // A name, one line and Directions; what it is and how to find it open with a tap on the card.
+  const {article}=makeCard('place',place.title||place.id);article.dataset.placeId=place.id;
   if(place.line)article.append(el('p','town-address',place.line));
-  if(place.directions)article.append(el('p','town-activity',place.directions));
+  const more=el('div','town-more');more.hidden=true;
+  more.append(el('p','town-eyebrow',place.sub||place.category||'Place'));
+  if(place.directions)more.append(el('p','town-activity',place.directions));
+  article.append(more);article.classList.add('town-expandable');
+  article.addEventListener('click',e=>{if(!e.target.closest?.('button'))more.hidden=!more.hidden;});
   const actions=el('div','town-actions'),directions=action('',()=>onPlace?.(place),place,'town-action town-primary');
   directions.dataset.id=place.id;directions.dataset.travel='locked';directions.setAttribute('aria-label','Directions to '+(place.title||place.id));
   // Existing travel tools read the destination's b text. The visible action stays explicit.

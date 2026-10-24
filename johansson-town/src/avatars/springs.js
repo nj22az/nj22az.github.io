@@ -1,3 +1,4 @@
+import {skirtSpec} from './skirt-shape.js';
 import {POLICE_UNIFORM} from './police-data.js';
 import * as THREE from '../../vendor/three.module.js';
 import {longBraidPoints} from './braid-path.js';
@@ -35,8 +36,7 @@ export const SWING=Object.freeze({
 export function hemSpec(recipe,m){
  const o=recipe.outfit,hipY=m.hipY,waist=hipY+m.torso*(o.bottom==='underwear'?.05:.13);
  if(DRESS_BOTTOMS.includes(o.bottom)){
-  const len=o.bottom==='longskirt'?m.thigh+m.shin*.85:m.thigh*.9,r=m.hips*.66+len*.22;
-  return {kind:'skirt',waist,length:len,rx:r,rz:r*m.depth/m.width};
+  return {kind:'skirt',...skirtSpec(m,o.bottom)};
  }
  if(o.top==='kariyushi'){
   // An island shirt is worn out over the shorts: its hem hangs a hand's width below the waist.
@@ -57,10 +57,11 @@ export function springRest(recipe,m){
  // Hair: a ponytail from its tie, long hair from the back of the head.
  const tail=style==='sweptponytail'?[[0,H(-R*.45),-R*1.02],[0,H(-R*.95),-R*1.19],[0,H(-R*1.48),-R*1.02]]
   :style==='ponytail'?[[0,H(R*.1),-R*1.12],[0,H(-R*.45),-R*1.18],[0,H(-R*1.02),-R*1.2]]
+  :style==='longfringe'?[[0,H(-R*.1),-R*.65],[0,H(-R*(.9+recipe.hair.length*.3)),-R*.7],[0,H(-R*(1.7+recipe.hair.length*.8)),-R*.65]]
   :style==='long'?[[0,H(-R*.05),-R*.55],[0,H(-R*.7),-R*.58],[0,H(-R*1.38),-R*.55]]
   :[[0,H(0),-R*.5],[0,H(-R*.3),-R*.5],[0,H(-R*.6),-R*.5]];
  rest.hairA=tail[0];rest.hairB=tail[1];
- if(style==='ponytail'||style==='sweptponytail'||style==='long')chains.push({bones:['hairA','hairB'],tip:tail[2],...SWING.hair,kind:'hair'});
+ if(style==='ponytail'||style==='sweptponytail'||style==='long'||style==='longfringe')chains.push({bones:['hairA','hairB'],tip:tail[2],...SWING.hair,kind:'hair'});
  // Braids: from behind each ear to the shoulders.
  for(const [s,side] of [[1,'L'],[-1,'R']]){
   const x=s*R*.85;

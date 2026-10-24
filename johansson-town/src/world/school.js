@@ -397,7 +397,7 @@ export function buildSchool(world,options){
   // The Community Hall's door is the kitchen's: the register (sign it yourself; nobody keeps the counter) and the request
   // box are inside it (interiors/town-hall.js), as is the way through to the meeting room.
   ['community-kitchen','Community Hall',"Community Hall · Kitchen",'KITCHEN · REGISTER · MEETING ROOM',27.0,'Go into the Community Hall','Open to every household · the register is self-service · the women’s association on Saturdays'],
-  ['clinic','Minato Clinic',"Clinic",'DR KAKAZU',34.1,'Go into the clinic','Mon–Fri 9–12, 14–17 · Sat 9–12 · ring the bell after hours'],
+  ['clinic','Minato Clinic',"Clinic",'DR NHUNG',34.1,'Go into the clinic','Mon–Fri 9–12, 14–17 · Sat 9–12 · ring the bell after hours'],
  ]){
   const at=[x,0,B.minZ-.7],s={id,title,jp,sub,x,z:B.minZ-.7,color:0x587a6a,accent:'#2d5a4c',line,door:at,exitPosition:[x,0,B.minZ-1.4],approachPosition:[x,0,B.minZ-1.4],entryFacing:Math.PI,opens:'00:00'};
   options.sites.push(s);

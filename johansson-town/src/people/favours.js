@@ -16,21 +16,22 @@ import {renderLine,seedOf} from '../dialogue/markup.js';
 
 export const FAVOURS=Object.freeze([
  Object.freeze({
-  id:'nhung-cookbook',kind:'deliver',from:'Nhung',to:'Thao',item:'Cookery book',at:'Front-Row Books',
+  id:'nhung-cookbook',kind:'deliver',from:'Nhung',to:'Thao',item:'Cookery book',at:'Minato Clinic',
   // The town's own facts, as the game shows them, which is why this favour exists.
   why:[
    'Thao (people/residents.js, her gossip): "Nhung says I am stubborn. I say I am right."',
    'Nhung (her name tab): "Playful mischief, the eldest sister"; the three sisters, Nhung, Thao and Thuan (people/neighbour-chats.js).',
    'Nhung (profiles.json, hello): she bookmarks the funny parts.',
    'Minato (people/izakaya-beer.js DISHES): Thao serves a rolled dashi omelette.',
-   'Front-Row Books (world/interiors/bookshop-detail.js): a Cookery section on the east wall.',
+   'Front-Row Books (world/interiors/bookshop-detail.js): a Cookery section on the east wall, the reading copies that stayed when Nhung became the doctor.',
+   'Nhung is the island doctor (people/clinic-hours.js): in surgery hours she hands it over at the clinic, between patients; on a Sunday, at Sakura’s counter.',
   ],
-  // Nhung works until 18:30 and Minato opens at 16:00 (profiles.json): it is asked by day,
+  // Nhung's surgery ends at 17:00 and Minato opens at 16:00 (clinic-hours.js, profiles.json): it is asked by day,
   // handed over in the evening, and done by midnight.
   askBy:15*60,
-  // Asked while Nhung is at the counter (until 18:30); Minato is open into the night, so it can be done today.
-  askUntil:18*60,
-  letter:'I have found something for my sister Thao, and it cannot come from me. Could you call in at Front-Row Books today? I am at the counter until half past six.',
+  // Asked while Nhung is at the clinic (until 17:00); Minato is open into the night, so it can be done today.
+  askUntil:17*60,
+  letter:'I have found something for my sister Thao, and it cannot come from me. Could you come and find me today? In surgery hours I am at the clinic, between my patients; on a Sunday, at Sakura’s counter.',
   thanks:'Thank you for yesterday. Thao has not said a word about the book, which means she has read it. Not a word to her, please.',
   lines:Object.freeze({
    ask:'{face:scheme}Thao says her dashi omelette is perfect as it is.{p} This cookery book disagrees,{p} and I have bookmarked the page.{p:2} {face:smile}Take it to Minato for me?{p} From her big sister,{p} she would never open it.',
@@ -85,18 +86,18 @@ export const FAVOURS=Object.freeze([
   friendship:Object.freeze({'Harbour master':10,'Mrs Sato':3}),
  }),
  Object.freeze({
-  id:'nhung-rain-book',kind:'return',from:'Nhung',to:'Harbour master',item:'Rain-stained book',at:'Front-Row Books',
+  id:'nhung-rain-book',kind:'return',from:'Nhung',to:'Harbour master',item:'Rain-stained book',at:'Minato Clinic',
   why:[
    'Nhung (profiles.json, her clue): "A rain-stained book is drying at the harbour office."',
    'Nhung (profiles.json, hello): "I bookmark the funny parts — apparently that is not how a lending library works."',
    'Harbour master (profiles.json, hello): "I can predict rain by my knees."; he stays on the quay (activities.js).',
-   'Hours (profiles.json): Nhung at the counter 9:00 to 18:30, the harbour master 5:00 to 14:00.',
+   'Hours (clinic-hours.js, profiles.json): Nhung at the clinic 9:00 to 17:00, the harbour master 5:00 to 14:00.',
   ],
   // The book is with the harbour master, who goes off at two: asked in the morning.
   askBy:12*60,
   // Asked in time to reach the harbour office before the harbour master goes off at two.
   askUntil:13*60,doneBy:14*60,
-  letter:'A book of ours went out in the rain and ended up drying at the harbour office instead of coming home. Could you call in at Front-Row Books today? I will explain at the counter.',
+  letter:'A book of ours went out in the rain and ended up drying at the harbour office instead of coming home. Could you call in at the clinic today? I will explain between patients.',
   thanks:'Thank you for bringing the book home. It is back on the window shelf, a little wavy and very proud of itself. I have put a card in it: reserved for the harbour master.',
   // Her clue said the book was drying at the harbour office; once it is home, that is no longer true.
   clueAfter:'The book that went out in the rain is back on our window shelf. Wavy, but readable.',

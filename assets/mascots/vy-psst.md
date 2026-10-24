@@ -1,11 +1,11 @@
 # Vy’s Psst mascot
 
-Rendered with the same Johansson Studio portrait pipeline and settings recorded for `johansson-tada` in `manifest.json`: three-quarter view, excited expression (outlined white eyes and irises), transparent background, 768 px source. Vy uses her existing game recipe and the existing Shush pose. The avatar builder supplies the game’s cel materials and ink outlines. No replacement model or generated artwork is used.
+Rendered from the owner-approved Vy default on 24 October 2026: Studio proportions, soft sculpted head, ink oval eyes, long fringe, striped tee with a layered vest and the authored panel skirt. The actual shared avatar and existing Shush pose are rendered through Johansson Studio, with an excited expression, three-quarter view and transparent background. No generated artwork is used.
 
-Reproduce with Playwright installed and this website served locally:
+Reproduce with Playwright installed:
 
 ```
-WORLD_PREVIEW=http://127.0.0.1:5191 node scripts/render-vy-whisper.cjs
+TOWN_CHROMIUM_PATH=/path/to/chromium node scripts/render-vy-whisper.cjs
 ```
 
-The script crops transparent margins and fits the render into 368 × 512 pixels, then saves WebP with alpha. The homepage loads only the exported cutout, without loading Studio or a 3D renderer.
+The script starts its own local preview unless WORLD_PREVIEW is supplied. It renders at 768 px, crops transparent margins and fits the character into 368 × 512 pixels, then saves WebP with alpha. The Linux Port website page loads this exported cutout without loading Studio or a 3D renderer.

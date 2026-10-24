@@ -5,7 +5,8 @@ const shifts={
  // Work hours stay unchanged. Departure identifies the service's arrival time.
  // Thuan: the 08:30 boat from Kitano-jima, the shop 09:00–20:00 and its closing restock, the 22:00 boat home (docs/CAST-CONSOLIDATION.md addendum 4).
  Thuan:{arrival:510,start:540,finish:1200,departure:1320},
- Nhung:{arrival:510,start:540,finish:1110,departure:1320},
+ // Nhung: the clinic's surgery, 9:00–17:00 with the lunch gap (clinic-hours.js decides her day; this is her evening's start).
+ Nhung:{arrival:510,start:540,finish:1020,departure:1320},
  // Chin: the ferry's motorman (ferry-crew.js FERRY_WORKING_DAY, 06:05–23:15, social.js keeps his street body at the
  // terminal meanwhile); the evening after he signs off is his, the workshop bench and the izakaya.
  Chin:{arrival:360,start:365,finish:1395,departure:1320},
@@ -84,7 +85,7 @@ export function shiftActive(profile,minutes){
 export const livesInYard=profile=>YARD_RESIDENT_NAMES.includes(typeof profile==='string'?profile:profile?.name);
 /**
  * Since the island grew, Thao, Mrs Sato and (since phase 3) Nhung live in Kitahama (kitahama-layout.js). They keep
- * their own days -- the izakaya, the lunch counter, the bookshop -- but where the timetable used to put them on the
+ * their own days -- the izakaya, the lunch counter, the clinic -- but where the timetable used to put them on the
  * ferry, they walk home. Thuan is not among them any more: she really does take the boat (addendum 4).
  */
 export const livesInKitahama=profile=>ISLAND_RESIDENT_NAMES.includes(typeof profile==='string'?profile:profile?.name);

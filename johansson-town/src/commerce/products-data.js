@@ -2,7 +2,7 @@
 // Studio or with the johansson-studio tools (avatar-creator/docs/STUDIO-MCP.md). CI refuses a copy that does not match the data.
 const freeze=value=>{if(value&&typeof value==='object'){for(const v of Object.values(value))freeze(v);Object.freeze(value);}return value;};
 /** The sha256 of the products, prints and retired lines (their canonical JSON). */
-export const FINGERPRINT='b146a268e43c91b29b36d0ba24cc6a9680f8dd8c1b9a861b942c6c0cb53f7807';
+export const FINGERPRINT='05b6d8a09295b486d839fdbbe19d8e674ebb869a61826392abd0926aca094d9f';
 /** Sakura Shōten's products, in the order Thuan walks the floor (data/studio/products.json says what every field is). */
 export const PRODUCTS=freeze([
  {
@@ -77,9 +77,9 @@ export const PRODUCTS=freeze([
    "fitting": "fridge",
    "column": 0,
    "levels": [
-    0,
-    1,
-    2
+    2,
+    3,
+    4
    ]
   },
   "capacity": 24,
@@ -157,8 +157,8 @@ export const PRODUCTS=freeze([
    "fitting": "fridge",
    "column": 0,
    "levels": [
-    3,
-    4
+    0,
+    1
    ]
   },
   "capacity": 24,
@@ -230,9 +230,9 @@ export const PRODUCTS=freeze([
    "fitting": "fridge",
    "column": 1,
    "levels": [
-    0,
-    1,
-    2
+    2,
+    3,
+    4
    ]
   },
   "capacity": 24,
@@ -316,8 +316,8 @@ export const PRODUCTS=freeze([
    "fitting": "fridge",
    "column": 1,
    "levels": [
-    3,
-    4
+    0,
+    1
    ]
   },
   "capacity": 24,
@@ -389,9 +389,9 @@ export const PRODUCTS=freeze([
    "fitting": "fridge",
    "column": 2,
    "levels": [
-    0,
-    1,
-    2
+    2,
+    3,
+    4
    ]
   },
   "capacity": 24,
@@ -463,8 +463,8 @@ export const PRODUCTS=freeze([
    "fitting": "fridge",
    "column": 2,
    "levels": [
-    3,
-    4
+    0,
+    1
    ]
   },
   "capacity": 24,
@@ -540,8 +540,8 @@ export const PRODUCTS=freeze([
    "fitting": "fridge",
    "column": 3,
    "levels": [
-    0,
-    1
+    3,
+    4
    ]
   },
   "capacity": 24,
@@ -618,13 +618,13 @@ export const PRODUCTS=freeze([
    "fitting": "fridge",
    "column": 3,
    "levels": [
-    2,
-    3,
-    4
+    0,
+    1,
+    2
    ]
   },
   "capacity": 24,
-  "supplier": "higa-saketen",
+  "supplier": "sakura",
   "drink": {
    "alcohol": true,
    "container": "can",
@@ -1638,7 +1638,7 @@ export const PRODUCTS=freeze([
    "for": [
     "Grandmother Higa",
     "Mrs Sato",
-    "Dr Kakazu"
+    "Nhung"
    ],
    "why": "Soy rice crackers with tea, for visitors.",
    "placed": "Front face, the low boards: a big bag for visitors, easy to lift down, under the crisps."
@@ -2084,7 +2084,7 @@ export const PRODUCTS=freeze([
    "zone": "daily",
    "for": [
     "Miss Higa",
-    "Dr Kakazu",
+    "Nhung",
     "Officer Mori"
    ],
    "why": "Tissues for hay fever, a cold, or a sad film.",

@@ -1,0 +1,50 @@
+/** Real Creator/Studio review: controls, body stages and posed authored skirt. */
+import {createRequire} from 'node:module';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {resolve} from 'node:path';
+import {spawn} from 'node:child_process';
+import {recipeFor} from '../johansson-town/src/avatars/cast.js';
+import {encodeRecipe} from '../johansson-town/src/avatars/recipe.js';
+const {chromium}=createRequire(new URL('../johansson-town/package.json',import.meta.url))('playwright');
+const out=resolve(process.argv[2]||'deliverables/vy-integrated');await mkdir(out,{recursive:true});
+const server=spawn('python3',['-u','-m','http.server','5196','--bind','127.0.0.1'],{cwd:new URL('../',import.meta.url)});
+let browser;
+try{
+ await new Promise((done,fail)=>{server.stdout.once('data',done);server.once('error',fail);});
+ browser=await chromium.launch({executablePath:process.env.TOWN_CHROMIUM_PATH,headless:true,args:['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+ const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ page.on('console',m=>{if(m.type()==='error'&&/THREE|shader|WebGL/i.test(m.text()))errors.push(m.text());});
+ await page.goto('http://127.0.0.1:5196/avatar-creator/?agent&r='+encodeRecipe(recipeFor('Vy')));
+ await page.waitForFunction(()=>window.__JOHANSSON_STUDIO__?.ready,{timeout:120000});
+ const result=await page.evaluate(async()=>{
+  const {recipeFor}=await import('/johansson-town/src/avatars/cast.js');
+  const r=recipeFor('Vy'),api=window.__JOHANSSON_STUDIO__,images=[];
+  for(const view of ['front','quarter','left','back'])images.push({name:'vy-'+view,data:api.renderPortrait(r,{view,expression:'smile',size:1024})});
+  images.push({name:'vy-face',data:api.renderPortrait(r,{framing:'face',size:1024})});
+  for(const pose of ['Walk','Run','Sit'])images.push({name:'vy-'+pose.toLowerCase(),data:api.renderPortrait(r,{pose,view:'quarter',size:1024})});
+  for(const age of ['teen','adult','elder'])images.push({name:age+'-quarter',data:api.renderPortrait({...r,age},{view:'quarter',size:768})});
+  return {images,recipe:r};
+ });
+ for(const {name,data} of result.images)await writeFile(resolve(out,name+'.png'),Buffer.from(data.split(',')[1],'base64'));
+ await writeFile(resolve(out,'Vy-Creator.avatar.json'),JSON.stringify({format:'nj-avatar-studio',version:1,recipe:result.recipe},null,2)+'\n');
+ await page.screenshot({path:resolve(out,'creator-overview.png')});
+ console.log('UI TABS',await page.getByRole('tab').allTextContents());
+ const bottoms=page.getByRole('tab',{name:'Bottoms',exact:true});
+ await bottoms.click();
+ const panel=page.getByRole('button',{name:'Panel skirt',exact:true});
+ await panel.waitFor({state:'visible'});await panel.click();
+ if(await panel.getAttribute('aria-pressed')!=='true')throw Error('Panel cut did not select');
+ await page.screenshot({path:resolve(out,'creator-skirt-controls.png')});
+ const adjust=page.getByRole('tab',{name:'Adjust',exact:true});await adjust.click();
+ await page.getByRole('slider',{name:'Skirt length',exact:true}).evaluate(input=>{input.value='0.7';input.dispatchEvent(new Event('input',{bubbles:true}));});
+ await page.screenshot({path:resolve(out,'creator-skirt-adjust.png')});
+ await page.getByRole('tab',{name:'Face',exact:true}).click();
+ await page.getByRole('tab',{name:'Style',exact:true}).click();
+ await page.getByRole('button',{name:'Soft sculpted',exact:true}).click();
+ await page.screenshot({path:resolve(out,'creator-head-option.png')});
+ const report={portraits:result.images.length,controls:'Panel cut selected; length slider edited; sculpted head selected',errors};
+ await writeFile(resolve(out,'creator-verification.json'),JSON.stringify(report,null,2)+'\n');
+ if(errors.length)throw Error(errors.join('\n'));
+ console.log(JSON.stringify(report));
+}finally{if(browser)await browser.close();server.kill();}

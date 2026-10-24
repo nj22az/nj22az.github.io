@@ -5,7 +5,8 @@
  * - code: its inventory name ("Umineko lager") anywhere in World's code, and its id as a quoted word ('beer') in the
  *   code that handles Sakura's stock; each as file:line with the line itself;
  * - tests: the same, in World's tests (retiring it would break them);
- * - accounts: the trade accounts (merchandising.js ACCOUNTS) whose lines name it;
+ * - accounts: the trade accounts (merchandising.js ACCOUNTS) whose lines name it, their shelf lines or their named drink
+ *   (`alcohol`, Sakura Trading's since Higa Liquor closed);
  * - drawings: its brand's own words (UMINEKO, Umineko, 海猫) in code that draws something of its own, a crate, a
  *   bottle or a poster, which a new label does not change.
  * A retire is refused while there is any code, test or account reference: those need the creator's choice first
@@ -56,8 +57,10 @@ export async function productReferences(product,{root=CODE_ROOT}={}){
   });
  }
  const {ACCOUNTS}=await import('../../src/commerce/merchandising.js'),accounts=[];
- for(const [supplier,list] of Object.entries(ACCOUNTS))for(const [site,a] of Object.entries(list))
-  if(a.lines.some(l=>l===product.id||l.includes(name)||(product.brand?.jp&&l.includes(product.brand.jp))))accounts.push({supplier,site,name:a.name,lines:a.lines.filter(l=>l===product.id||l.includes(name)||l.includes(product.brand?.jp))});
+ for(const [supplier,list] of Object.entries(ACCOUNTS))for(const [site,a] of Object.entries(list)){
+  const named=[...a.lines,...(a.alcohol||[])].filter(l=>l===product.id||l.includes(name)||(product.brand?.jp&&l.includes(product.brand.jp)));
+  if(named.length)accounts.push({supplier,site,name:a.name,lines:named});
+ }
  return {code,tests,accounts,drawings,blocking:code.length+tests.length+accounts.length};
 }
 

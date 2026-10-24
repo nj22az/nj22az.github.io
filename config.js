@@ -47,7 +47,7 @@ const CONFIG = {
   navigation: [
     { id: "home", label: "Home" },
     { id: "projects", label: "Projects" },
-    { id: "linux-port", label: "Linux Port", url: "/linux-port/" },
+    { id: "world", label: "Johansson World", url: "/world/" },
     { id: "shop", label: "Shop", url: "https://3va6hr-fw.myshopify.com/" },
     { id: "blog", label: "Blog", url: "/blog/" },
     { id: "about", label: "About" },
@@ -249,7 +249,7 @@ CONFIG.projectExplorer = [
     "titleUrl": "/world/",
     "secondaryUrl": "/world/",
     "secondaryAction": "About the world",
-    "downloadUrl": "/linux-port/",
+    "downloadUrl": "/world/#downloads",
     "platforms": ["Linux", "x86-64", "Steam Deck"],
     "format": "3D exploration",
     "language": "English",

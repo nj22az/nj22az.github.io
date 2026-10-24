@@ -1,10 +1,11 @@
+import {readSceneLink} from './scene-links.mjs?v=20261023-creator-mark';
 import {createActingPanel} from './acting/panel.js?v=20261016-1';
 import {createPerformancePanel} from './performance-panel.js?v=20261017-1';
-import {openCreator} from '../johansson-town/src/avatars/creator.js?v=20261020-motion';
+import {openCreator} from '../johansson-town/src/avatars/creator.js?v=20261024-vy-integrated';
 import {ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/src/avatars/cast.js';
 import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js';
 import {normalizeRecipe,decodeRecipe} from '../johansson-town/src/avatars/recipe.js';
-import {createSceneWorkspace} from './scene.js?v=20261020-vi';
+import {createSceneWorkspace} from './scene.js?v=20261023-seawall';
 import {createWorldPanel} from './world-panel.js?v=20261011-1';
 import {createHomeWorkspace} from './home.js?v=20261011-1';
 import {createModelWorkspace} from './model.js?v=20261020-workshop';
@@ -27,11 +28,11 @@ const designs=templates.slice(1),residents=RESIDENT_NAMES.map(n=>[n,recipeFor(n)
 const initialNote='';
 const status=document.createElement('span');status.className='studio-status';status.setAttribute('role','status');status.textContent=initialNote;
 let restored=null;
-try{const stored=JSON.parse(localStorage.getItem(SAVE_KEY));if(stored?.format==='nj-avatar-studio'&&stored.recipe)restored=normalizeRecipe(stored.recipe);}catch{}
+try{const stored=JSON.parse(localStorage.getItem(SAVE_KEY));if(stored?.format==='nj-avatar-studio'&&stored.recipe){restored=normalizeRecipe(stored.recipe);if(restored.name==='Vy'&&!(stored.appearanceRevision>=1)){restored=normalizeRecipe({...recipeFor('Vy'),profile:restored.profile});localStorage.setItem(SAVE_KEY,JSON.stringify({...stored,recipe:restored,appearanceRevision:1}));}}}catch{}
 const code=new URLSearchParams(location.search).get('r');
 const shared=code?decodeRecipe(code):null;
 function save(recipe){
- try{localStorage.setItem(SAVE_KEY,JSON.stringify({format:'nj-avatar-studio',version:1,recipe}));status.textContent='Character saved in this browser. Download a design for a portable copy.';}
+ try{localStorage.setItem(SAVE_KEY,JSON.stringify({format:'nj-avatar-studio',version:1,recipe,...(recipe.name==='Vy'?{appearanceRevision:1}:{})}));status.textContent='Character saved in this browser. Download a design for a portable copy.';}
  catch{status.textContent='Browser storage is unavailable. Use Download design to save your character.';}
 }
 
@@ -39,7 +40,7 @@ let currentRecipe=shared||restored||recipeFor('Johansson'),editor=null,workspace
 const modes=document.createElement('nav');modes.className='studio-modes';modes.setAttribute('aria-label','Johansson Studio modes');
 for(const [id,label] of [['character','Edit character'],['home','Decorate home'],['scene','Build scene'],['comic','Make comic'],['model','Make model'],['rooms','Edit room'],['library','World library']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.mode=id;b.onclick=()=>switchMode(id);modes.append(b);}
 document.body.prepend(modes);
-function switchMode(mode,{focus=true}={}){
+function switchMode(mode,{focus=true,render=true}={}){
  if(mode!=='rooms')rooms?.hide();
  if(mode!=='library')worldLibrary?.hide();
  if(editor&&mode==='character'){editor.creator.goTo('look');return;}
@@ -50,7 +51,7 @@ function switchMode(mode,{focus=true}={}){
  else if(mode==='model'){workspace?.hide();home?.hide();model??=createModelWorkspace();model.show();}
  else if(mode==='library'){workspace?.hide();home?.hide();model?.hide();rooms?.hide();worldLibrary??=createWorldLibrary({onOpen:async e=>{if(e.access==='model'){if(e.id.startsWith('home:')){switchMode('rooms');await rooms.show();await rooms.addWorldAsset(e);}else{switchMode('model');await model.open(e.id);}}else{switchMode('scene');if(e.access==='character')workspace.useCharacter(recipeFor(e.name),null);else workspace.setLocation(e.id.slice(9));}},onRoomModel:async e=>{switchMode('rooms');await rooms.show();await rooms.addWorldAsset(e);}});worldLibrary.show();}
  else if(mode==='rooms'){workspace?.hide();home?.hide();model?.hide();rooms??=createRoomWorkspace({onScene:async id=>{switchMode('scene');workspace.setLocation(id);}});rooms.show();}
- else{home?.hide();model?.hide();workspace??=createSceneWorkspace({getCharacter:()=>currentRecipe,onMode:switchMode,onEdit:(recipe,id)=>{currentRecipe=recipe;editingId=id;switchMode('character');}});if(editingId){workspace.useCharacter(currentRecipe,editingId);editingId=null;}workspace.show(mode);}
+ else{home?.hide();model?.hide();workspace??=createSceneWorkspace({getCharacter:()=>currentRecipe,onMode:switchMode,onEdit:(recipe,id)=>{currentRecipe=recipe;editingId=id;switchMode('character');}});if(editingId){workspace.useCharacter(currentRecipe,editingId);editingId=null;}workspace.show(mode,{render});}
  for(const b of modes.children)b.setAttribute('aria-pressed',String(b.dataset.mode===mode));
  if(focus)modes.querySelector(`[data-mode="${mode}"]`)?.focus({preventScroll:true});
 }
@@ -147,9 +148,22 @@ creator.root.addEventListener('keydown',event=>{
 return {creator,cleanup};
 }
 
-switchMode('character',{focus:false});
+window.addEventListener('hashchange',()=>{if(location.hash.startsWith('#studio='))location.reload();});
+document.getElementById('loading')?.remove();
+let opened=true,openingError='';let sharedProject=null;try{sharedProject=await readSceneLink(location.hash);}catch(e){opened=false;openingError=e.message;}
+if(sharedProject){switchMode('comic',{focus:false,render:false});await workspace.openShared(sharedProject);}
+else if(new URLSearchParams(location.search).get('comic')==='make-something'){
+ switchMode('comic',{focus:false,render:false});
+ const response=await fetch(new URL('./comics/make-something.layers.json',import.meta.url));if(!response.ok)throw Error('Comic layers unavailable.');const pack=await response.json();
+ await workspace.openShared({scenes:pack.panels.map(p=>p.scene),refs:pack.panels.map((p,i)=>'make-something:'+i),layout:'strip',step:'effects'});
+}
+else if(new URLSearchParams(location.search).get('comic')==='fujita-tv'){
+ switchMode('comic',{focus:false,render:false});
+ opened=await workspace.openFujita();
+}else switchMode('character',{focus:false});
+if(opened)document.getElementById('comic-start')?.remove();else document.getElementById('comic-start-note')?.replaceChildren(document.createTextNode(openingError||'The 3D editor could not load. You can still read the comic above and retry opening Studio.'));
 // For agents only (the johansson-studio MCP server's page): ?agent adds window.__JOHANSSON_STUDIO__ (studio-api.js).
-if(new URLSearchParams(location.search).has('agent'))import('./studio-api.js?v=20261014-1').catch(e=>console.warn('Johansson Studio: agent API',e));
+if(new URLSearchParams(location.search).has('agent'))import('./studio-api.js?v=20261023-seawall').catch(e=>console.warn('Johansson Studio: agent API',e));
 // The maker focuses its close button on open; on first load nothing should wear a focus ring until the user acts.
 requestAnimationFrame(()=>requestAnimationFrame(()=>{const a=document.activeElement;if(a&&a!==document.body&&a.closest('.shm'))a.blur();}));
 window.addEventListener('pagehide',()=>{editor?.cleanup();workspace?.dispose();home?.dispose();model?.dispose();rooms?.dispose();worldLibrary?.dispose();},{once:true});

@@ -14,8 +14,7 @@
       ['Projects',location.pathname==='/'||location.pathname==='/index.html'?'#projects':'/#projects','Projects',paths.projects],
       ['Johansson World','/world/','World',paths.world],
       ['Blog','/blog/','Blog',CONFIG.icons.notebook],
-      ['Sjöskolan — electronics course','/sjoskolan/','Sjöskolan',paths.course],
-      ['Linux Port','/linux-port/','Linux',CONFIG.icons.joystick]
+      ['Sjöskolan — electronics course','/sjoskolan/','Sjöskolan',paths.course]
     ];
     nav.classList.add('office-quick-links');
     nav.setAttribute('aria-label','Quick access');nav.setAttribute('role','group');

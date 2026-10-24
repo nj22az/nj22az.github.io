@@ -241,8 +241,8 @@ function drawEye(ctx,x,y,s,side,eyes,state,look,tilt,width=1){
  }
  if(state==='happy'){ctx.lineWidth=5.2;ctx.beginPath();ctx.moveTo(-13,4);ctx.quadraticCurveTo(0,-21,13,4);ctx.stroke();ctx.restore();return;}
  const wide=state==='wide'?1.3:1;
- const rx=(style==='narrow'?12:style==='dot'?6:style==='sparkle'?13:style==='doe'?12.5:style==='cat'||style==='heavy'?12:11.5)*wide,
-  ry=(style==='narrow'?4.2:style==='dot'?9:style==='almond'?9.5:style==='cat'?9:style==='sparkle'?15:style==='doe'?15:style==='heavy'?12:13.5)*wide;
+ const rx=(style==='narrow'?12:(style==='dot'||style==='inkoval')?6:style==='sparkle'?13:style==='doe'?12.5:style==='cat'||style==='heavy'?12:11.5)*wide,
+  ry=(style==='narrow'?4.2:(style==='dot'||style==='inkoval')?9:style==='almond'?9.5:style==='cat'?9:style==='sparkle'?15:style==='doe'?15:style==='heavy'?12:13.5)*wide;
  // Simple dark ovals and drawn lids keep emotions readable at street scale.
  // Almond and sparkle eyes retain their authored iris shapes.
  if(['round','gentle','lashes','sleepy','bright','tired','starry'].includes(style)){
@@ -268,9 +268,9 @@ function drawEye(ctx,x,y,s,side,eyes,state,look,tilt,width=1){
   // Tired eyes: a soft bag under each.
   if(style==='tired'){ctx.strokeStyle='rgba(43,38,35,.45)';ctx.lineWidth=1.8;ctx.beginPath();ctx.arc(0,h*.2,10,Math.PI*.2,Math.PI*.8);ctx.stroke();ctx.strokeStyle=line;}
   if(style==='lashes'){ctx.lineWidth=2.8;for(let i=0;i<2;i++){ctx.beginPath();ctx.moveTo(side*5,-5-i*3);ctx.lineTo(side*(11+i*2),-8-i*4);ctx.stroke();}}
- }else if(style==='dot'){
+ }else if(style==='dot'||style==='inkoval'){
   ctx.beginPath();ctx.ellipse(look[0]*2,look[1]*2,rx,ry,0,0,TAU);ctx.fill();
-  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(2+look[0]*2,-3,2.2,0,TAU);ctx.fill();
+  if(style==='dot'){ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(2+look[0]*2,-3,2.2,0,TAU);ctx.fill();}
  }else if(style==='narrow'){
   ctx.beginPath();ctx.ellipse(0,0,rx,ry,0,0,TAU);ctx.fill();
  }else if(style==='squint'){

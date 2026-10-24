@@ -170,15 +170,17 @@ function headGap(A,poseA,B,poseB,M){
 }
 /** The nearest the two bodies (torsos, heads, legs, and the arms a pose itself places: `armsA`, `armsB`, as armTo takes
  *  them; not the arms the reach solver places after) come to each other. */
-function bodyGap(A,poseA,B,poseB,M,armsA=null,armsB=null,heads=true,skirts=false){
+function bodyGap(A,poseA,B,poseB,M,armsA=null,armsB=null,heads=true,skirts=false,headMargin=0){
  const I=new THREE.Matrix4(),fB=field(B,poseB,M,armsB,heads),fA=field(A,poseA,I,armsA,heads),FA=posed(A,withArms(poseA,armsA)),FB=posed(B,withArms(poseB,armsB));
  let g=Infinity;
  for(const {bone,p} of bodyPoints(A,!!armsA,skirts))g=Math.min(g,fB(FA.at(bone,p)));
  for(const {bone,p} of bodyPoints(B,!!armsB,skirts))g=Math.min(g,fA(FB.at(bone,p).applyMatrix4(M)));
  // (and the heads against the other's body: a chin on a shoulder, a child's head at a chest)
  const hA=posed(A,poseA).bone('head'),hB=new THREE.Matrix4().multiplyMatrices(M,posed(B,poseB).bone('head'));
- for(let i=0;i<A.pts.length;i+=4)g=Math.min(g,fB(_v.copy(A.pts[i]).applyMatrix4(hA)));
- for(let i=0;i<B.pts.length;i+=4)g=Math.min(g,fA(_v.copy(B.pts[i]).applyMatrix4(hB)));
+ if(heads){
+  for(let i=0;i<A.pts.length;i+=4)g=Math.min(g,fB(_v.copy(A.pts[i]).applyMatrix4(hA))-headMargin);
+  for(let i=0;i<B.pts.length;i+=4)g=Math.min(g,fA(_v.copy(B.pts[i]).applyMatrix4(hB))-headMargin);
+ }
  return g;
 }
 /** A point on the partner's torso surface (angle `a` round it: 0 its front, π its back, +π/2 its left; `t` up it), the
@@ -196,8 +198,8 @@ const tAt=(body,y)=>clamp((y-body.m.hipY)/body.m.torso,.08,.96);
 /** How far an arm reaching for a partner may turn: forward and up to overhead, out to the side or across the chest, never
  *  wound round backward or windmilled over the head (the right arm's terms: x forward negative, z out to the right negative). */
 const ARM_BOUNDS=Object.freeze([[-2.4,.6],[-1.2,1.2],[-1.6,1],[-2.3,0],[-1.2,1.2]]);
-const armSpec=(side,joints,head,target,keepOut,seed,{elbow=null,hand=[0,0,0],twist=.4,upper=true,touch=false}={})=>({pose:()=>joints,hair:true,head,only:side,
- [side]:{root:target,keepOut,seed,hand,upper,twist,touch,press:true,bounds:ARM_BOUNDS,...(elbow?{elbow:()=>elbow}:{})}});
+const armSpec=(side,joints,head,target,keepOut,seed,{elbow=null,hand=[0,0,0],twist=.4,upper=true,touch=false,multiStart=false}={})=>({pose:()=>joints,hair:true,head,only:side,
+ [side]:{root:target,keepOut,seed,hand,upper,twist,touch,multiStart,press:true,bounds:ARM_BOUNDS,...(elbow?{elbow:()=>elbow}:{})}});
 
 /** The stance of a fight: the left foot forward with the knee bent, the right braced back, both soles flat. */
 const stance=(front,knee,back,spread=.14)=>({thighL:[front,0,spread],kneeL:[knee,0,0],footL:[-(front+knee),0,-spread],thighR:[back,0,-spread],kneeR:[matchKnee(front,knee,back),0,0],footR:[-(back+matchKnee(front,knee,back)),0,spread]});
@@ -319,7 +321,7 @@ function fitFacing(ctx,{grabT,wide,leanA,armsB,reel,handA,off=.95}){
   for(let t=t0;t>=.5;t-=.06){
    // (A's left fist on B's right collar: B's right is at A's left once B faces A)
    const targets=['L','R'].map(s=>{const k=s==='L'?1:-1,o=onPartner(B,-k*wide,t,A.m.hand,off);return {side:s,p:FB.at(o.bone,o.p).applyMatrix4(PM),shoulder:FA.pos('shoulder'+s)};});
-   const fit=()=>{const keepA=field(B,pB,PM,armsB,true,false),specs=targets.map(o=>armSpec(o.side,pA,pA.head,o.p.toArray(),keepA,[-1.25,.15,-.05,-.45,0],{hand:handA,upper:true}));
+   const fit=()=>{const keepA=field(B,pB,PM,armsB,true,false),specs=targets.map(o=>armSpec(o.side,pA,pA.head,o.p.toArray(),keepA,[-1.25,.15,-.05,-.45,0],{hand:handA,upper:true,multiStart:B.m.studio}));
     return {dx:0,dz,yawB,A:{joints:pA,near:specs[0],far:()=>specs[1],keep:()=>keepA},B:{joints:pB}};};
    if(targets.every(o=>o.p.distanceTo(o.shoulder)<=A.reach*.82))return fit();
    last=fit;
@@ -353,7 +355,8 @@ const BACK_CLOTH=.006;
  *  them (positive toward A's right), so negative: the lens on A's left, across the line between the two. */
 export const BACK_TO_BACK_VIEW=-(Math.PI/2-BACK_TURN);
 function fitBackToBack(ctx){
- const {A,B}=ctx,yawB=Math.PI-2*BACK_TURN;
+ const {A,B}=ctx,yawB=Math.PI-2*BACK_TURN,flowingHair=A.avatar.recipe.hair.style==='longfringe'||B.avatar.recipe.hair.style==='longfringe';
+ const panelClearance=(A.avatar.recipe.outfit.skirtCut==='panel'||B.avatar.recipe.outfit.skirtCut==='panel')?.01*Math.max(A.m.k,B.m.k):0;
  // B's place: behind A and to A's left, along the line between the two fronts (A's front +z, B's at yawB), so B's back
  // faces A's; s metres along it
  const ux=Math.sin(yawB),uz=Math.cos(yawB)-1,ul=Math.hypot(ux,uz),at=s=>({dx:ux/ul*s,dz:uz/ul*s,yawB});
@@ -363,15 +366,21 @@ function fitBackToBack(ctx){
  // planted a little apart, the knees straight
  const legsA=stance(-.25,.25,.04,.08),swap=j=>j.replace(/[LR]$/,c=>c==='L'?'R':'L');
  const legs=k=>k>0?legsA:Object.fromEntries(Object.entries(legsA).map(([j,[x,y,z]])=>[swap(j),[x,-y,-z]]));
- const body=(k,out)=>({hips:[0,0,0],spine:[-.02,k*.08,0],chest:[-.04+fw*out*.4,k*.14,k*sd*out*.5],neck:[-.04+fw*out*.6,0,k*sd*out*.5],head:[-.14-fw*out,k*.38,k*sd*out*.3],...legs(k)});
+ const body=(k,out)=>{
+  if(!flowingHair)return {hips:[0,0,0],spine:[-.02,k*.08,0],chest:[-.04+fw*out*.4,k*.14,k*sd*out*.5],neck:[-.04+fw*out*.6,0,k*sd*out*.5],head:[-.14-fw*out,k*.38,k*sd*out*.3],...legs(k)};
+  // Hinge from the pelvis, with the legs counter-rotated to keep the soles
+  // planted. This clears hanging hair while the lower backs can still meet.
+  const x=fw*out*.7,z=k*sd*out*.5,lower=legs(k);
+  for(const side of ['L','R']){const a=lower['thigh'+side];lower['thigh'+side]=[a[0]-x,a[1],a[2]-z];}
+  return {hips:[x,0,z],spine:[-.02,k*.08,0],chest:[-.04+fw*out*.15,k*.14,k*sd*out*.15],neck:[-.04+fw*out*.15,0,k*sd*out*.15],head:[-.14-fw*out,k*.38,k*sd*out*.3],...lower};
+ };
  let best=null;
- for(let out=0;out<=.8;out+=.04){
+ for(let out=0;out<=(flowingHair?1.2:.8);out+=.04){
   const pA=body(1,out),pB=body(-1,out);
-  const ok=heads=>s=>{const M=pairMatrix(at(s));return (!heads||headGap(A,pA,B,pB,M)>=PAIR_GAP.heads)&&bodyGap(A,pA,B,pB,M,null,null,heads,true)>=PAIR_GAP.bodies+(A.skirt.length||B.skirt.length?BACK_CLOTH*Math.max(A.m.k,B.m.k):0);};
+  const ok=heads=>s=>{const M=pairMatrix(at(s));return (!heads||headGap(A,pA,B,pB,M)>=PAIR_GAP.heads)&&bodyGap(A,pA,B,pB,M,null,null,heads,true,flowingHair?.012:0)>=PAIR_GAP.bodies+panelClearance+(A.skirt.length||B.skirt.length?BACK_CLOTH*Math.max(A.m.k,B.m.k):0);};
   const s=bisect(.05,1.4,ok(true)),bodies=bisect(.05,s,ok(false));
   best={s,pA,pB,out};
-  // (the backs within a centimetre of where the bodies alone would put them: the heads are not what holds them apart)
-  if(s-bodies<=.01)break;
+  if(s-bodies<=.005)break;
  }
  const {s,pA,pB}=best,place=at(s),PM=pairMatrix(place),PMi=PM.clone().invert();
  // arms folded across the chest (fun-poses Huff's: each mitten on the front of the torso, on the other side), on the body

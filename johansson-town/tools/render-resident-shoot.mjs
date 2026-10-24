@@ -45,7 +45,9 @@ try{
      const actor={avatar,pose:i?'Idle':photo.pose,expression:i?'smile':photo.expression};poseStudioActor(actor);actors.push(actor);
     });
     const h=Math.max(...actors.map(a=>a.avatar.height)),camera=new THREE.PerspectiveCamera(30,W/H,.05,60);
-    const aim=h*.5,dist=names.length>1?h*2.55:h*2.05;camera.position.set(.15,aim+h*.12,dist);camera.lookAt(0,aim,0);
+    const aim=h*.5;let dist=names.length>1?h*2.55:h*2.05,cx=0;
+    if(names.length>1){set.scene.updateMatrixWorld(true);const bounds=new THREE.Box3().setFromObject(stage),size=bounds.getSize(new THREE.Vector3());cx=bounds.getCenter(new THREE.Vector3()).x;dist=Math.max(dist,size.x/(2*Math.tan(Math.PI/12)*(W/H))*1.12);}
+    camera.position.set(cx+.15,aim+h*.12,dist);camera.lookAt(cx,aim,0);
     set.scene.updateMatrixWorld(true);actors.forEach(a=>a.avatar.body.skeleton.update());renderer.render(set.scene,camera);
     const flat=document.createElement('canvas');flat.width=W;flat.height=H;const ctx=flat.getContext('2d');ctx.drawImage(canvas,0,0);
     if(photo.film&&photo.film!=='none'){const px=ctx.getImageData(0,0,W,H);applyFilm(px.data,photo.film);ctx.putImageData(px,0,0);}

@@ -22,7 +22,7 @@ body.office-home .nav-links.office-quick-links{display:flex;align-items:center;g
  body.office-home .nav-inner{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:60px 44px;gap:0 12px;padding-inline:16px}
  body.office-home .nav-brand{grid-column:1;grid-row:1;max-width:210px;width:100%;min-width:0}
  body.office-home .nav-actions{grid-column:2;grid-row:1;gap:8px;margin-left:0}
- body.office-home .nav-links.office-quick-links{grid-column:1/-1;grid-row:2;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));width:100%;gap:2px;margin:0}
+ body.office-home .nav-links.office-quick-links{grid-column:1/-1;grid-row:2;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;gap:2px;margin:0}
  .office-quick-links a{min-width:0;padding:3px 2px;font-size:10px;gap:2px}.office-quick-links svg{width:18px;height:18px}
  body.office-home .office-hero{padding-top:132px}body.office-home .menu-overlay{top:116px;max-height:calc(100dvh - 132px)}
  .office-calendar-toggle{gap:7px;padding-inline:9px;font-size:11px}.office-calendar-toggle time{padding-left:7px}
