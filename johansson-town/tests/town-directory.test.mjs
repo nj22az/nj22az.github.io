@@ -70,3 +70,20 @@ test('resident records appear only for supported people and never advertise a tr
  assert.equal(all(root,n=>n.dataset.residentRecord).length,0);api.destroy();
  api=renderTownDirectory(root,{cards,canRecord:()=>true});assert.equal(all(root,n=>n.dataset.residentRecord).length,0);api.destroy();
 });
+
+test('Play as appears for playable residents, marks who you are, and is never a travel target',()=>{
+ const root=container(),calls=[],cards=residentCards().filter(c=>['Johansson','Thuan','Riku'].includes(c.name));
+ let active='Johansson';
+ const api=renderTownDirectory(root,{cards,canPlayAs:name=>name!=='Riku',playing:name=>name===active,onPlayAs:(...args)=>calls.push(args)});
+ tab(root,'people').onclick();
+ const plays=all(root,n=>n.dataset.playAs);assert.deepEqual(plays.map(n=>n.dataset.playAs),['Johansson','Thuan']);
+ const johansson=plays[0],thuan=plays[1];
+ assert.equal(johansson.textContent,'Playing now');assert.ok(johansson.disabled);
+ assert.equal(thuan.textContent,'Play as Thuan');assert.ok(!thuan.disabled);
+ assert.equal(thuan.dataset.id,undefined);assert.equal(thuan.dataset.travel,undefined);
+ thuan.onclick();assert.equal(calls[0][0],'Thuan');assert.equal(calls[0][1],cards.find(c=>c.name==='Thuan'));
+ active='Thuan';api.refresh(cards);
+ assert.equal(find(root,n=>n.dataset.playAs==='Thuan').textContent,'Playing now');
+ assert.equal(find(root,n=>n.dataset.playAs==='Johansson').textContent,'Play as Johansson');
+ api.destroy();
+});

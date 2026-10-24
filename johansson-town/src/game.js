@@ -114,6 +114,7 @@ import {lineFeeling} from './avatars/body-language.js';
 import {sharedMind,startMindIfChosen} from './people/thuan-mind.js';
 import {createNeighbourWriter} from './people/town-mind.js';
 import {MOVES} from './avatars/moves.js';
+import {EXPRESSION_NAMES,EXPRESSION_GLYPHS} from './avatars/face.js';
 import {createAvatarJohansson,playerRecipe,playerRecipeKey} from './avatars/actors.js';
 import {TABLE_DRINK_KINDS} from './avatars/table-drink.js';
 import {setSwingFocus} from './avatars/springs.js';
@@ -515,6 +516,9 @@ let photoStudio=null,photoLoading=false,spawnScene=null;
 let concert=null,concertLoading=false;
 let ferryWalk=null;
 let linuxLife=null,linuxOwnHomeSite=null;const linuxBorrowed=new Map();
+// Playing as a resident (desktop/life.js). Linux always plays through it; the web does only while you play someone other
+// than Johansson (the owner, 24 October 2026), so Johansson's web opening, house and view stay as they were.
+const playingResident=()=>!!linuxLife&&(!!window.johanssonDesktop||linuxLife.active!=='Johansson');
 let current=null,active=null,started=false,yaw=0,pitch=-.05,minutes=realTownMinutes(),subtitleTimer=0,weather=false,activities=null,timePreset=0,characters=null;
 const keys={},clock=new THREE.Clock();
 const gamepadInput=createGamepadInput(),menuRepeat=createMenuRepeat();
@@ -817,7 +821,13 @@ function ensureJohansson(){if(!johansson){johansson=createAvatarJohansson({scene
 /** The view you chose goes through the door with you, both ways: V or the Town book switches it anywhere. */
 function setThirdPerson(value,announce=true){spawnScene?.cancel('view');thirdPerson=!!value;try{localStorage.setItem(VIEW_KEY,thirdPerson?'third':'first');}catch{}if(thirdPerson)ensureJohansson();hands.firstPersonVisible=!thirdPerson;const b=$('#viewButton');if(b){b.textContent=thirdPerson?'Behind him':'His own eyes';b.setAttribute('aria-pressed',String(thirdPerson));}if(announce)say(thirdPerson?'Third-person view · V to look through his eyes again':'First-person view · V to step back',3);}
 function playMove(name){if(!thirdPerson)setThirdPerson(true,false);ensureJohansson().play(name);}
-function movesMenu(){if(!started||activities.paused)return;activities.menu('Moves','Johansson, sixty-odd, bald and sunburnt, in his kariyushi shirt. What will he do?',[...MOVES.map(([name,label])=>[label,()=>{activities.close();playMove(name);}]),['Back',activities.close]]);}
+function movesMenu(){if(!started||activities.paused)return;
+ const who=playingResident()?linuxLife.current():null,text=who?who.name+': '+who.role.split(';')[0]+'. What now?':'Johansson, sixty-odd, bald and sunburnt, in his kariyushi shirt. What will he do?';
+ activities.menu('Moves',text,[['Make a face…',()=>{activities.close();facesMenu();}],...MOVES.map(([name,label])=>[label,()=>{activities.close();playMove(name);}]),['Back',activities.close]]);}
+/** Any of the faces the face painter knows (avatars/face.js), held for ten seconds; Neutral lets it go. */
+const FACE_SECONDS=10;
+function makeFace(name){if(!thirdPerson)setThirdPerson(true,false);ensureJohansson().express(name,name==='neutral'?0:FACE_SECONDS);}
+function facesMenu(){if(!started||activities.paused)return;activities.menu('Make a face','A face holds for ten seconds. Neutral lets it go.',[...EXPRESSION_NAMES.map(name=>[(EXPRESSION_GLYPHS[name]?EXPRESSION_GLYPHS[name]+'  ':'')+name[0].toUpperCase()+name.slice(1),()=>{activities.close();makeFace(name);}]),['Back to Moves',()=>{activities.close();movesMenu();}]]);}
 const tpPivot=new THREE.Vector3(),tpDir=new THREE.Vector3(),tpRight=new THREE.Vector3(),lookPoint=new THREE.Vector3();
 /** Over the right shoulder, pulled in before anything solid comes between him and the lens. */
 /** Whether the camera itself would be inside something: walls and anything taller than the lens. */
@@ -1444,7 +1454,7 @@ let roomAssetsTry=0;
 async function enterRoom(s,arrival=null){replayInterrupted();lowerPocket();spawnScene?.cancel('room');
  if(roomLoading)return;
  s=SITES.find(site=>site.id===businessId(s.id))||s;
- if(linuxLife&&s.id===linuxLife.current().home.siteId&&(s.isResidence||s.homeOwner||s.familyHome||s.id==='mayor-home'))s=linuxOwnHomeSite(linuxLife.current());
+ if(playingResident()&&s.id===linuxLife.current().home.siteId&&(s.isResidence||s.homeOwner||s.familyHome||s.id==='mayor-home'))s=linuxOwnHomeSite(linuxLife.current());
  if(s.id==='market'){roomLoading=true;resetInput();let ready=false;try{ready=await sakuraShop.ready();}finally{roomLoading=false;}if(!ready){say('Could not open Sakura. Please try the door again.',5);return;}}
  // Buildings remain accessible; business hours govern staff and service only.
  if((s.id==='izakaya'||(s.id==='ramen'))&&!izakayaReady('interior')){
@@ -1735,7 +1745,7 @@ function replayStep(frame){
 function finishPlayerStep(dt,fromX,fromZ){
  playerSpeed=THREE.MathUtils.damp(playerSpeed,Math.hypot(player.position.x-fromX,player.position.z-fromZ)/Math.max(dt,1e-3),12,dt);
 
- player.visible=false;camera.position.copy(player.position).add(fwVec.set(0,seated?(parkSeat?parkSeat.eyeY-player.position.y:1.15):(linuxLife?ensureJohansson().avatar.height*.92:1.7)+(cameraControls.settings.bob&&move2.lengthSq()>.02?Math.sin(elapsed*11)*.018:0),0));camera.rotation.order='YXZ';const sway=Math.min(1,tipsy/DRUNK);camera.rotation.set(pitch+Math.sin(elapsed*.9)*.012*sway,yaw+Math.sin(elapsed*.55)*.02*sway,Math.sin(elapsed*.7)*.025*sway);if(thirdPerson)placeThirdPerson(dt);else if(current)camera.position.y=Math.min(camera.position.y,indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y)??Infinity);
+ player.visible=false;camera.position.copy(player.position).add(fwVec.set(0,seated?(parkSeat?parkSeat.eyeY-player.position.y:1.15):(playingResident()?ensureJohansson().avatar.height*.92:1.7)+(cameraControls.settings.bob&&move2.lengthSq()>.02?Math.sin(elapsed*11)*.018:0),0));camera.rotation.order='YXZ';const sway=Math.min(1,tipsy/DRUNK);camera.rotation.set(pitch+Math.sin(elapsed*.9)*.012*sway,yaw+Math.sin(elapsed*.55)*.02*sway,Math.sin(elapsed*.7)*.025*sway);if(thirdPerson)placeThirdPerson(dt);else if(current)camera.position.y=Math.min(camera.position.y,indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y)??Infinity);
  const fov=cameraControls.settings.fov-controllerFrame.zoom*18;if(Math.abs(camera.fov-fov)>.01){camera.fov=THREE.MathUtils.damp(camera.fov,fov,12,dt);camera.updateProjectionMatrix();}
 }
 
@@ -1885,6 +1895,8 @@ function updateDirectory(){
   onFindPerson:(target,card)=>{const live=directoryCards().find(c=>c.name===card.name)||card,position=live.personTarget||target;return markPlace({...position,trackPerson:card.name,directions:(live.current.source==='schedule'?'Scheduled location: ':'Current location: ')+live.current.locationLabel+'. '+(position.directions||'Follow the walking route.')});},
   onPlace:markPlace,onShortcut:visitPlace,
   canRecord:activities.canResidentRecord,onRecord:name=>{toggleDir(false);activities.residentRecord(name);},
+  canPlayAs:name=>!!linuxLife?.roster.some(p=>p.name===name),playing:name=>linuxLife?.active===name,
+  onPlayAs:name=>{if(!linuxLife||linuxLife.busy)return;toggleDir(false);linuxLife.select(name,{started}).then(()=>say('Playing as '+name+'.',4)).catch(error=>say(error.message,5));},
   onStudio:()=>activities.saveBeforeLeaving(()=>{location.href=new URL('../avatar-creator/',location.href).href;}),
   onTravelProgress:()=>{toggleDir(false);activities.action('travel-progress');}});
  const extras=document.createElement('details');extras.className='town-records';const title=document.createElement('summary');title.textContent='Reading and radio';extras.append(title);
@@ -1963,7 +1975,7 @@ if(window.johanssonDesktop){const cp=recoverSakuraBenchCheckpoint(activities.sta
  seated=false;parkSeat=null;player.position.set(cp.x,groundHeight(cp.x,cp.z),cp.z);yaw=cp.yaw;pitch=Number.isFinite(cp.pitch)?Math.max(-1.25,Math.min(1.15,cp.pitch)):0;opening={caption:'Welcome back. Your island progress is restored.'};
 }}
 started=true;controlsTouchedAt=performance.now();if(mobile){touchSticks.hint(true);stickHintUntil=performance.now()+4500;}if(!window.__JOHANSSON_BOOTING__)$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;startupRecovery.running();camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(opening?.caption||'Welcome to Minato.',5);runStabilityChecks();
-if(linuxLife){linuxLife.start().then(placed=>{if(!placed){if(opening?.room)openInside(opening);else startArrivalScene(opening);}}).catch(error=>say(error.message,6));}else if(opening?.room)openInside(opening);else startArrivalScene(opening);
+if(playingResident()){linuxLife.start().then(placed=>{if(!placed){if(opening?.room)openInside(opening);else startArrivalScene(opening);}}).catch(error=>say(error.message,6));}else if(opening?.room)openInside(opening);else startArrivalScene(opening);
 }
 
 function desktopCheckpoint(){
@@ -1977,7 +1989,7 @@ addEventListener('johansson-desktop-save',desktopCheckpoint);
 addEventListener('johansson-desktop-pause',resetInput);
 addEventListener('johansson-desktop-resume',()=>{gamepadInput.suspend();clock.getDelta();resetInput();});
 if(window.johanssonDesktop)setInterval(desktopCheckpoint,30000);
-if(window.johanssonDesktop){
+{
  const allEntities=()=>[...world.people.map(p=>p.g),...(world.neighbours||[]),...(characters?.actors||[]).map(a=>a.entity)].filter(Boolean);
  const canonicalEntity=name=>allEntities().find(g=>g!==player&&canonicalResidentName(g.userData.name)===name);
  const homeSite=person=>{
@@ -1992,7 +2004,7 @@ if(window.johanssonDesktop){
   getEntityPose:name=>{const g=canonicalEntity(name);if(!g||g.userData.hit?.inside||g.userData.indoors||g.userData.inVehicle)return null;const p=g.getWorldPosition(new THREE.Vector3());return {x:p.x,z:p.z,yaw:g.rotation.y};},
   applyIdentity:name=>{
    for(const [g,was] of linuxBorrowed){g.userData.playerControlled=was.controlled;g.visible=was.visible;}linuxBorrowed.clear();
-   const actor=ensureJohansson();actor.setRecipe(name==='Johansson'?playerRecipe():recipeFor(name));actor.root.name=name+' (controlled)';
+   const actor=ensureJohansson();actor.setRecipe(name==='Johansson'?playerRecipe():recipeFor(name));actor.express('neutral',0);actor.root.name=name+' (controlled)';
    for(const g of allEntities())if(g!==player&&canonicalResidentName(g.userData.name)===name){linuxBorrowed.set(g,{visible:g.visible,controlled:g.userData.playerControlled});g.userData.playerControlled=true;g.visible=false;}
   },
   spawnHome:async(person,sleep)=>{if(current)leaveRoom();activities.close();toggleDir(false);spawnScene?.cancel();const site=homeSite(person);await enterRoom(site);if(current?.id!==site.id)throw Error('The home could not open.');const layout=activeRoomLayout;player.position.set(...layout.bedside);yaw=0;pitch=-.1;setThirdPerson(true,false);const bedPosition=[...layout.bed];bedPosition[2]=-2.23+ensureJohansson().avatar.measure.headCentre;return {position:bedPosition,stand:[...layout.bedside],axis:layout.bedAxis};},
