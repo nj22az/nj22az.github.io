@@ -45,10 +45,29 @@ its timing, motion and screenshots using existing audit hooks.
 - Runtime build and JavaScript syntax check passed.
 - Independent read-only source review found no blocking defect or startup-order issue;
   ordinary menu/inspection transitions clear the conversation before opening.
-- Full guard and actual-game comparison: results recorded in the final delivery update.
+- Local full guard: 71 files, 69 passed, two failed because the sparse checkout lacked
+  `art/izakaya/compact/plan.json`, `art/izakaya/walnut-runtime-report.json` and the existing
+  compact-room browser report. Restoring those tracked fixtures made both affected files
+  (`minato-compact`, `izakaya-bar`) pass. No game source, test or assertion changed for
+  those reruns. Logs retain the original failed invocation and the successful reruns.
+- Actual built-game checks passed at 390 × 844 and 1280 × 800: open-eyed greeting,
+  expression expiry, blink recovery, changing speech, stationary position/legs,
+  conversation pause and ordinary inventory pause; zero page errors. The final capture also verifies actual actor visibility, giving 9/9 checks at each
+  size (18/18 total). Original main reproduces exactly the four greeting/blink/speech
+  failures; both original and corrected captures have zero page errors.
 
 ## Delivery and next action
 
 Prepared for owner review. Main has not been changed; the repository requires owner
-approval before merging visual changes. Final delivery records the fix commit, PR,
-full guard result and actual-game evidence here. Physical-device acceptance is not claimed.
+approval before merging visual changes. Implementation commit: `d1ed2d5885189d601e271b767778c9d50b338fdb`.
+Review: [PR #386](https://github.com/nj22az/nj22az.github.io/pull/386), targeting `main`.
+GitHub guard and Linux acceptance are running; no result is claimed until verified.
+The final photographs were inspected: the original greeting/listening frames show
+closed eyes; the corrected greeting and eight-second listening frames show open eyes.
+Evidence and reproduction: [conversation-eyes review](../docs/qa/conversation-eyes/README.md).
+The actual-game harness is `tools/conversation-eyes-smoke.mjs`; its 390 × 844 original
+comparison and corrected 390 × 844 / 1280 × 800 reports are under that evidence folder.
+
+Next: owner reviews the before/after views, then approve merge. Before merging, verify
+checks on the current PR head and whether main has advanced. If runtime integration is
+needed, rebuild once from current main's manifest so its cached chunks remain available. Physical-device acceptance is not claimed.

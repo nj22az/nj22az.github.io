@@ -1,0 +1,13 @@
+✔ tests/avatar-expressions.test.mjs (554.827725ms)
+✔ tests/avatars.test.mjs (4125.694793ms)
+✔ tests/conversation.test.mjs (829.147407ms)
+✔ tests/dialogue-rpg.test.mjs (786.879461ms)
+✔ tests/runtime-package.test.mjs (609.442948ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4141.039739
