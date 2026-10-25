@@ -2,8 +2,10 @@
 
 ## Delivery state
 
-Prepared for the owner's requested publication on `main`. Exact implementation
-commit and Pages verification will be appended after deployment.
+**Published to main as `7a8adf680a17fac7bef79f334a3b5198818e6fff`.**
+[Pages deployment 40161562449](https://github.com/nj22az/nj22az.github.io/actions/runs/40161562449)
+completed successfully for the exact implementation commit. Public HTML, hotel CSS,
+hotel filter script, shared navigation and theme bootstrap all match the tested bytes.
 Continue from the [completed coordinate/feed delivery](HANDOVER-MAP-FEED-2026-10-25.md).
 
 ## Changes
@@ -43,6 +45,15 @@ Continue from the [completed coordinate/feed delivery](HANDOVER-MAP-FEED-2026-10
 
 ## Next action
 
-Verify Pages and compare public HTML/CSS/filter/shared/bootstrap bytes to the tested
-delivery. Append exact deployment evidence. Future hotel additions still require
-property-level parking confirmation; chain filtering does not relax that rule.
+Publication is verified. Future hotel additions still require property-level parking
+confirmation; chain filtering does not relax that rule.
+
+## Follow-up: Finnish hotel research
+
+The owner then requested verified Finnish free-parking research.
+[Eight additional properties](FINLAND-PARKING-RESEARCH-2026-10-25.md) were confirmed
+against their own sites: four Scandics, two Sokos properties, Kauppi and Kajanus.
+Rosendahl and Eden Nokia were excluded because their official outdoor tariffs are paid.
+The research shortlist has not been imported into hotel data/CSV/map. Registration
+remains unknown where the property does not specify it; full identity/address/map
+verification is the next concrete prerequisite for a later import.

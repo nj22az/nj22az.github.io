@@ -1,0 +1,44 @@
+{
+  "implementationCommit": "7a8adf680a17fac7bef79f334a3b5198818e6fff",
+  "checkedOn": "2026-10-25",
+  "pagesRun": 40161562449,
+  "pagesConclusion": "success",
+  "hotelTests": 12,
+  "chromiumInteractionChecks": 29,
+  "chromiumFallbackChecks": 9,
+  "viewportWidths": [
+    1440,
+    834,
+    390,
+    320
+  ],
+  "hotelDataAndCsvChanged": false,
+  "theme": "fixed note-inspired hotel design",
+  "publicFiles": [
+    {
+      "path": "blog/hotels/index.html",
+      "matches": true,
+      "sha256": "b266df1a41617bcc036f9c03e126be51f7fb4a9362c9ff4bdc8184eeb4dd4d7f"
+    },
+    {
+      "path": "css/hotels.css",
+      "matches": true,
+      "sha256": "4e3970b13dc8e27b4b0ce411d3b7c62331ff048bf95a29d14cb2e3f4368a9ee2"
+    },
+    {
+      "path": "blog/hotels/hotels.js",
+      "matches": true,
+      "sha256": "bc4846b5532e9782aaa7f59e09c41e34d406ba6760bdb83cb93e71ed567481ac"
+    },
+    {
+      "path": "theme-bootstrap.js",
+      "matches": true,
+      "sha256": "2924289ebb46e94d1a4771bf75e431d78fa50f82314a2e279c8667cbf8209ba6"
+    },
+    {
+      "path": "shared.js",
+      "matches": true,
+      "sha256": "4cb368c85689c2fa092cf4fdaee9953613a89872a1f5229b2ff61d29e6e0f5c7"
+    }
+  ]
+}
