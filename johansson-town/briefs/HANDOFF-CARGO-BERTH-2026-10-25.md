@@ -30,3 +30,14 @@ Finish the release guard and compiled-game review, publish the checked main cand
 - All 9 focused cargo/ground checks pass; the ground-standard baseline remains empty. The current main ferry route passes the new berth clearance check without modification.
 - Actual compiled-game desktop overhead/pedestrian and 390×844 phone views reviewed. Quay navigation, shore walking and arrival/departure checks pass. A missing woodland poster and a reset on the small temporary HTTP server affected the preliminary browser runs; the tracked poster was restored and final verification uses the repository's audit server (128-connection backlog). Final browser and live verification follow below.
 - Physical iPhone Safari and Steam Deck were not tested. No Linux installer/package was changed.
+
+## Published and verified
+
+- **Application published to main:** `fe9a38d9052ba6d05a9d36599ae9f4e1b46e4521` (original main parent `a2571ca7ad3bef882e198c6493550898a3d176f9`). The owner's explicit publication request was used; no prototype, Pixar, cast, housing or Linux release work was merged.
+- **GitHub Pages succeeded:** [deployment 40199019181](https://github.com/nj22az/nj22az.github.io/actions/runs/40199019181).
+- **Complete GitHub World guard succeeded:** [run 40199020429](https://github.com/nj22az/nj22az.github.io/actions/runs/40199020429), including the new cargo-berth regression. The initial sparse-checkout fixture omissions do not remain in the published guard.
+- **37 live files verified byte-for-byte** against the release: index, service worker, source stamp, the new CAD GLB and every current manifest entry. Exact hashes are in `docs/qa/cargo-berth/live-files.json`.
+- **Published-game browser review passed:** desktop overhead and pedestrian views, 390×844 phone dock and approach views, full dock navigation probes, actual keyboard movement on the shore approach, mooring removal on departure and the quay remaining when the ship is away. Zero browser errors. Screenshots and the report are in `docs/qa/cargo-berth/live/`; the candidate's four views and report are in `docs/qa/cargo-berth/`.
+- Live app: <https://nj22az.github.io/johansson-town/?v=cargo-fe9a38d>. The new berth is off the eastern shore. The existing ship call calendar remains every third day, alongside 08:00–15:00; the quay is always present.
+
+No further implementation action is required for this publication. Real iPhone/Safari and Steam Deck checks remain unperformed. The follow-up documentation commit records the verified application release without changing its runtime or model bytes.
