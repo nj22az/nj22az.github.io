@@ -76,4 +76,4 @@ Dim-light captures from the final package: [Natural](qa/0.2.21/dim-natural.png),
 
 **Physical Steam Deck acceptance remains unverified.** Tests inject the virtual Gamepad packets the layout is configured to produce. They cannot establish Steam's live loading of the local template, physical stick/trackpad behaviour or feel, Gaming Mode performance, battery life or suspend/resume. No physical hardware success is claimed.
 
-Website publication and final link verification pending.
+Website publication `43a638509fdabf721297489cd2b14e00333d15b3` verified after [Pages deployment 40170586119](https://github.com/nj22az/nj22az.github.io/actions/runs/40170586119): **26 files**, both guide aliases, **7 current release links**, all four versioned installer commands and installer/release byte equality passed. [Live verification](qa/0.2.21/public-site-verification.json). The following sign-off commit records these checks without changing the approved release artifacts.
