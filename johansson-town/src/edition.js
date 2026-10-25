@@ -49,7 +49,8 @@ export const BUDGETS=Object.freeze({
   residentRadius:45,
   /** A seen resident whose detour search found no way round tries again after this many town minutes, not every 3 s. */
   detourRetryMinutes:.5,
-  neighbourChats:false,
+  /** One nearby, turn-taking exchange at a time; distant residents still use the reduced timetable. */
+  neighbourChats:true,
   /** One short line for the moment (people/greetings.js shortGreeting) and whatever they sell or serve. */
   conversations:false,
   trade:false,

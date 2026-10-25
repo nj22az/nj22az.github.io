@@ -1,9 +1,10 @@
 import {PROFILES} from './profiles.js';
+import {CAST} from './cast.js';
 import {RENAMED_RESIDENTS} from './renamed.js';
 
 export const MEMORY_KINDS=Object.freeze(['chat','meal','help','disagreement','reconcile']);
 export const MEMORY_LIMIT=8;
-const names=new Set([...PROFILES.map(p=>p.name),'Thuan','Johansson']);
+const names=new Set([...PROFILES.map(p=>p.name),...CAST.map(p=>p.name),'Thuan','Johansson']);
 const canonical=name=>RENAMED_RESIDENTS[name]||name;
 const pair=(a,b)=>{a=canonical(a);b=canonical(b);return a!==b&&names.has(a)&&names.has(b)?[a,b].sort():null;};
 export const relationshipKey=(a,b)=>pair(a,b)?.join('|')||null;
