@@ -35,8 +35,11 @@
   }
 
   var selectedTheme = null;
+  var lockedTheme = document.documentElement.getAttribute("data-theme-lock");
+  if (!isValid(lockedTheme)) lockedTheme = null;
 
   function remember(themeId) {
+    if (lockedTheme) { selectedTheme = lockedTheme; return; }
     if (!isValid(themeId)) return;
     selectedTheme = themeId;
     write(localStorage, THEME_KEY, themeId);
@@ -50,6 +53,7 @@
   }
 
   function getPageTheme() {
+    if (lockedTheme) return lockedTheme;
     if (isValid(selectedTheme)) return selectedTheme;
     var previousTheme = read(localStorage, THEME_KEY);
     var pagePath = location.pathname;

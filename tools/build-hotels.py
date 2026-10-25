@@ -36,6 +36,15 @@ def e(value):
     return escape(str(value), quote=True)
 
 
+def hotel_chain(review):
+    # Existing official property identities, not an affiliation inferred from location.
+    if review['name'].startswith('Scandic '):
+        return 'Scandic'
+    if review['name'].startswith('Thon Hotel '):
+        return 'Thon Hotels'
+    return 'Other hotels'
+
+
 def state(value):
     return 'unknown' if value is None else str(value).lower()
 
@@ -160,7 +169,7 @@ def render_row(review):
     if review['freeParking'] is not True and review['parkingUrl']:
         receipt_note = f'On this stay. <a href="{e(review["parkingUrl"])}">{receipt_note}</a>.'
     place = ', '.join((review['address'], ' '.join(value for value in (review.get('postalCode'), review['city']) if value)))
-    return f'''          <tr role="row" data-hotel-row="{e(review['id'])}" data-search="{e(search)}" data-country="{e(review['countryCode'])}" data-free-parking="{state(review['freeParking'])}" data-parking-category="{category}" data-parking-type="{e(review['parkingType'])}" data-hotel-receipt="{receipt_state(review)}">
+    return f'''          <tr role="row" data-hotel-row="{e(review['id'])}" data-search="{e(search)}" data-country="{e(review['countryCode'])}" data-chain="{e(hotel_chain(review))}" data-free-parking="{state(review['freeParking'])}" data-parking-category="{category}" data-parking-type="{e(review['parkingType'])}" data-hotel-receipt="{receipt_state(review)}">
             <th scope="row" role="rowheader" data-label="Hotel"><a class="hotel-name" href="#review-{e(review['id'])}">{e(review['name'])}</a><span class="hotel-place">{e(place)}</span><span class="hotel-tag hotel-country">{e(review['country'])}</span><span class="hotel-recorded">Recorded <time datetime="{e(review['recordedOn'])}">{date_label(review['recordedOn'])}</time></span></th>
             <td role="cell" data-label="Room total" class="hotel-money">{price_cell(review['roomPaid'], review, include_nights=True)}</td>
             <td role="cell" data-label="Parking" class="hotel-money">{price_cell(review['parkingPaid'], review, free=review['freeParking'] is True)}</td>
@@ -234,6 +243,8 @@ def build(reviews):
     count = len(reviews)
     countries = sorted({(review['countryCode'], review['country']) for review in reviews}, key=lambda item: item[1])
     country_options = ''.join(f'<option value="{e(code)}">{e(name)}</option>' for code, name in countries)
+    chains = sorted({hotel_chain(review) for review in reviews}, key=lambda name: (name == 'Other hotels', name))
+    chain_options = ''.join(f'<option value="{e(name)}">{e(name)}</option>' for name in chains)
     map_records = [{
         'id': review['id'], 'name': review['name'], 'city': review['city'], 'country': review['country'],
         'address': ', '.join(value for value in (review['address'], review.get('postalCode')) if value),
@@ -245,7 +256,7 @@ def build(reviews):
     map_json = json.dumps(map_records, ensure_ascii=False).replace('<', '\\u003c')
     return f'''<!DOCTYPE html>
 <!-- Generated from hotels.json by tools/build-hotels.py. -->
-<html lang="en" data-theme="cobalt">
+<html lang="en" data-theme="clarity" data-theme-lock="clarity" data-hotel-design="note">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -257,14 +268,14 @@ def build(reviews):
   <meta property="og:description" content="Hotels in Sweden, Denmark, Norway and Finland: confirmed parking, short notes, a filtered map and prices paid.">
   <meta property="og:url" content="https://nj22az.github.io/blog/hotels/">
   <meta name="twitter:card" content="summary">
-  <meta name="theme-color" content="#343ec9">
+  <meta name="theme-color" content="#333333">
   <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
   <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <script src="/theme-bootstrap.js?v=hotels-1"></script>
+  <script src="/theme-bootstrap.js?v=hotel-fixed-1"></script>
   <link rel="stylesheet" href="/styles.css?v=popwave-icons-2">
-  <link rel="stylesheet" href="/css/hotels.css?v=5">
+  <link rel="stylesheet" href="/css/hotels.css?v=6">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <link rel="stylesheet" href="/css/hotels-map.css?v=2">
 </head>
@@ -285,6 +296,7 @@ def build(reviews):
       <form class="hotel-filters" data-hotel-filters hidden role="search" aria-label="Filter hotel reviews">
         <div class="hotel-field hotel-search"><label for="hotel-search">Hotel or place</label><input id="hotel-search" type="search" name="search" placeholder="Search hotel, city or country" autocomplete="off"></div>
         <div class="hotel-field"><label for="hotel-country">Country</label><select id="hotel-country" name="country"><option value="">All countries</option>{country_options}</select></div>
+        <div class="hotel-field"><label for="hotel-chain">Hotel chain</label><select id="hotel-chain" name="chain"><option value="">All chains</option>{chain_options}</select></div>
         <div class="hotel-field"><label for="hotel-parking">Parking</label><select id="hotel-parking" name="parking"><option value="free" selected>Green — Free parking</option><option value="easy">Yellow — Easy parking</option><option value="avoid">Red — Paid parking / avoid</option><option value="">All parking</option></select></div>
         <div class="hotel-field"><label for="hotel-receipt">Parking on hotel receipt</label><select id="hotel-receipt" name="receipt"><option value="">Any arrangement</option><option value="not-applicable">No parking charge</option><option value="true">Yes</option><option value="false">No — separate receipt</option><option value="unknown">Not confirmed</option></select></div>
         <button type="reset" class="hotel-reset">Reset filters</button>
@@ -332,9 +344,9 @@ def build(reviews):
   </main>
   <footer id="site-footer" class="site-footer"></footer>
   <script src="/config.js?v=blog-1"></script>
-  <script src="/shared.js?v=blog-1"></script>
+  <script src="/shared.js?v=hotel-fixed-1"></script>
   <script id="hotel-map-data" type="application/json">{map_json}</script>
-  <script src="/blog/hotels/hotels.js?v=3"></script>
+  <script src="/blog/hotels/hotels.js?v=4"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="/blog/hotels/hotels-map.js?v=4"></script>
 </body>

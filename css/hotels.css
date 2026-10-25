@@ -15,7 +15,7 @@
 .hotel-register-heading{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:12px 24px;margin:36px 0 18px}
 .hotel-page h2{font-size:clamp(23px,3vw,30px);line-height:1.25;font-weight:700}
 .hotel-download{display:inline-flex;align-items:center;min-height:44px;font-size:14px;text-decoration:underline;text-underline-offset:3px}
-.hotel-filters{display:grid;grid-template-columns:minmax(180px,1.4fr) minmax(130px,.8fr) minmax(170px,1fr) minmax(170px,1fr) auto;gap:14px;align-items:end;margin-bottom:20px}
+.hotel-filters{display:grid;grid-template-columns:minmax(180px,1.4fr) repeat(4,minmax(135px,1fr)) auto;gap:14px;align-items:end;margin-bottom:20px}
 .hotel-field{display:grid;gap:7px;min-width:0}
 .hotel-filters label{font-size:13px;font-weight:600}
 .hotel-filters input,.hotel-filters select{width:100%;min-width:0;min-height:46px;padding:10px 12px;border:1px solid var(--border-hover);border-radius:4px;background:var(--surface-card);color:var(--ink);font:400 15px/1.4 var(--font-body)}
@@ -55,7 +55,7 @@
 .hotel-method h2{font-size:20px;margin-bottom:12px;color:var(--ink)}
 .hotel-method p+p{margin-top:12px}
 .hotel-page :is(a,button,input,select):focus-visible,.blog-section-nav a:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
-@media(max-width:900px){
+@media(max-width:1100px){
   .hotel-filters{grid-template-columns:repeat(2,minmax(0,1fr))}
   .hotel-search{grid-column:1/-1}.hotel-reset{justify-self:start}
   .hotel-table,.hotel-table tbody{display:block}
@@ -127,3 +127,25 @@ body.hotel-site{min-width:0}
 @media(max-width:1000px){.hotel-discovery{grid-template-columns:minmax(0,1fr)}.hotel-discovery .hotel-map-section{position:static;grid-row:1}.hotel-review{max-width:760px;margin-inline:auto}.hotel-discovery .hotel-notes{width:100%}}
 @media(max-width:600px){.hotel-page{padding-inline:16px}.hotel-review{padding:20px 16px;border-radius:12px}.hotel-discovery{gap:24px}.hotel-discovery .hotel-map-section{padding:16px}.hotel-review .hotel-card-header h3{font-size:21px}.hotel-card-header{gap:10px}.hotel-card-avatar{width:42px;height:42px;flex-basis:42px}.hotel-review p.hotel-card-summary{font-size:16px}}
 @media print{.hotel-discovery{display:block}.hotel-card-actions{display:none}.hotel-review{box-shadow:none}}
+
+/* Fixed hotel design: note's reading/feed principles, adapted to our own content.
+   Reference: kzhrknt/awesome-design-md-jp/design-md/note/DESIGN.md. */
+html[data-hotel-design="note"]{
+  --ink:#08131a;--ink-light:#5a656b;--ink-faint:#6c777d;
+  --surface:#f5f8fa;--surface-raised:#f5f8fa;--surface-card:#fff;--surface-hover:#edf1f3;
+  --border:rgba(8,19,26,.14);--border-hover:rgba(8,19,26,.28);
+  --accent:#08131a;--accent-hover:#202a30;--nav-bg:#fff;
+  --font-body:"Helvetica Neue",Arial,sans-serif;--font-display:"Helvetica Neue",Arial,sans-serif;
+}
+html[data-hotel-design="note"] .menu-theme{display:none!important}
+html[data-hotel-design="note"] .site-nav{background:#fff;border-bottom:1px solid var(--border)}
+html[data-hotel-design="note"] .nav-hamburger{border-radius:10px;border-color:var(--border)}
+html[data-hotel-design="note"] .hotel-page{max-width:1280px}
+html[data-hotel-design="note"] .hotel-page>header{margin-bottom:22px}
+html[data-hotel-design="note"] .hotel-page h1{font-size:clamp(32px,4vw,44px)}
+html[data-hotel-design="note"] .hotel-review{border-radius:12px;box-shadow:0 2px 5px rgba(8,19,26,.025)}
+html[data-hotel-design="note"] .hotel-card-avatar{background:#f5f8fa;color:#363f42}
+html[data-hotel-design="note"] .hotel-filters :is(input,select),html[data-hotel-design="note"] .hotel-reset{border-radius:8px}
+html[data-hotel-design="note"] .hotel-findings-note{background:#fff;border-left-color:#08131a}
+html[data-hotel-design="note"] .hotel-card-details p{line-height:1.85}
+html[data-hotel-design="note"] .hotel-card-place,html[data-hotel-design="note"] .hotel-card-condition,html[data-hotel-design="note"] .hotel-card-checked{font-size:14px}

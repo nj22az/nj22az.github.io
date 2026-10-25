@@ -139,6 +139,15 @@ class ParkingAdmissionTests(unittest.TestCase):
         row = next(r for r in self.records if r['hotelId'] == 'scandic-vasteras')
         self.assertIn('Register at reception', builder.render_review(row))
 
+    def test_chain_filter_contains_only_groups_in_the_register(self):
+        html = builder.build(self.records)
+        self.assertIn('id="hotel-chain" name="chain"', html)
+        self.assertEqual({builder.hotel_chain(r) for r in self.records}, {'Scandic', 'Thon Hotels', 'Other hotels'})
+        self.assertEqual(sum(builder.hotel_chain(r) == 'Scandic' for r in self.records), 27)
+        for row in self.records:
+            self.assertIn('data-chain="' + builder.hotel_chain(row) + '"', builder.render_row(row))
+        self.assertIn('data-theme="clarity" data-theme-lock="clarity"', html)
+
 
 if __name__ == '__main__':
     unittest.main()

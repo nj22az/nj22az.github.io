@@ -1,5 +1,14 @@
 # Hotels & Parking
 
+## Chain filter and fixed design — 25 October 2026
+
+Hotel chain now intersects with country, search, parking and receipt filters.
+Current groups are Scandic, Thon Hotels and Other hotels; reset selects all chains.
+The hotel section has a fixed, note-inspired reading/feed design, independent of
+the homepage's changing theme. Its appearance selector is hidden, and visits do
+not change the theme preference used elsewhere. See [design rules](DESIGN.md) and
+the [latest handover](HANDOVER-CHAIN-DESIGN-2026-10-25.md).
+
 ## Map and feed update — 25 October 2026
 
 All 32 hotel records now have verified coordinates. The 16 previously unmapped

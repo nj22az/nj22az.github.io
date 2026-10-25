@@ -20,6 +20,7 @@
   /* ── Theme ── */
 
   var THEME_KEY = "nj-theme";
+  var lockedTheme = document.documentElement.getAttribute("data-theme-lock");
   var DESIGN_VER = "nj-design-v3";
   var THEMES = [
     {
@@ -101,12 +102,15 @@
     }
   ];
 
+  if (!THEMES.some(function (theme) { return theme.id === lockedTheme; })) lockedTheme = null;
+
   // One-time migration marker retained for earlier collections.
   if (!localStorage.getItem(DESIGN_VER)) {
     localStorage.setItem(DESIGN_VER, "1");
   }
 
   function getTheme() {
+    if (THEMES.some(function (theme) { return theme.id === lockedTheme; })) return lockedTheme;
     if (window.NJThemeVisit) return window.NJThemeVisit.get();
 
     var storedTheme = localStorage.getItem(THEME_KEY);
@@ -115,9 +119,12 @@
   }
 
   function applyTheme(theme) {
+    if (THEMES.some(function (item) { return item.id === lockedTheme; })) theme = lockedTheme;
     var selectedTheme = THEMES.find(function (item) { return item.id === theme; }) || THEMES[0];
     document.documentElement.setAttribute("data-theme", selectedTheme.id);
-    if (window.NJThemeVisit) {
+    if (lockedTheme) {
+      // A section's fixed design must not change the visitor's other-page preference.
+    } else if (window.NJThemeVisit) {
       window.NJThemeVisit.remember(selectedTheme.id);
     } else {
       localStorage.setItem(THEME_KEY, selectedTheme.id);
@@ -236,6 +243,7 @@
       '</div>';
 
     document.body.appendChild(overlay);
+    if (lockedTheme) overlay.querySelector('.menu-theme').hidden = true;
 
     // Backdrop for click-outside-to-close
     var backdrop = document.createElement("div");
