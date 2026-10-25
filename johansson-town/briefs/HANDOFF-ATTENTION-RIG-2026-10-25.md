@@ -82,8 +82,7 @@ CC0 label was not treated as permission to reuse Nintendo-derived material.
   [resident](../docs/qa/attention-rig/compiled-resident.png),
   [game report](../docs/qa/attention-rig/game-report.json).
 - `git diff --check` passes. [Verification manifest](../docs/qa/attention-rig/verification.json)
-  records the source fingerprint and counts. Implementation prepared on development;
-  publication is recorded in the follow-up below.
+  records the source fingerprint and counts. Publication is recorded in the follow-up below.
 
 ## Remaining acceptance
 
@@ -92,3 +91,7 @@ work is separate: this changes the existing rig's attention behaviour only.
 Review the prototype's conversation timing on a real device before considering
 default enablement or promotion to main. Preserve the other development
 prototypes and the retained Sakura upper-floor decision.
+
+## Publication sign-off
+
+Published to **development** as [8961269b](https://github.com/nj22az/nj22az.github.io/commit/8961269bcd2fdb56e33204601345990d28cc5be2). The connected GitHub service uploaded all 42 changed blobs; every returned blob SHA matched the tested local blob. Its complete tree **fa29d8c083a4deca8add578b5d9feeb7453a6083** equals the tested local tree. The remote branch ref was verified at that commit. No force update, main promotion, Pages deployment or Linux release. The 34-entry runtime graph and all prior-baseline manifest chunks are present.

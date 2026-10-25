@@ -35,5 +35,8 @@
     "guard.log": "0ab5f906a02d033ac3beb55433ea30a87f8f7250013897c2c9d20a59a24d744f",
     "no-z-fighting.log": "5145bd5fc67348179d350ccd07af1562c5c42d2c77979d5a66470025d32bd02a",
     "build.log": "ee18ac62272081ed202f68e97551d6e969b57d21e7e76a8574a05f9a7d1129dd"
-  }
+  },
+  "published_feature_commit": "8961269bcd2fdb56e33204601345990d28cc5be2",
+  "published_feature_tree": "fa29d8c083a4deca8add578b5d9feeb7453a6083",
+  "remote_tree_equals_tested_tree": true
 }
