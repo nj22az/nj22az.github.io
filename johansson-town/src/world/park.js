@@ -16,6 +16,7 @@ import {lanternGlow} from '../render/dusk.js';
 import {paintedTurf} from '../render/toy-surfaces.js';
 import {createKit,paint,rng} from './okinawa/kit.js';
 import {buildCherryTree,cherrySeason} from './cherry-tree.js';
+import {TREE_REBUILD} from './tree-designs.js';
 import {identityOf} from '../people/roster.js';
 import {GROUND_LAYER} from './ground-layers.js';
 export const PARK_TREE=Object.freeze([(HARBOUR_CHERRY[0]-PARK.x)/PARK.scale,(HARBOUR_CHERRY[1]-PARK.z)/PARK.scale]);
@@ -93,7 +94,7 @@ export function buildPark(world,options={}){
  // The harbour cherry is a kanhizakura: green in October, in flower late January to February (cherry-tree.js).
  const [tx,tz]=HARBOUR_CHERRY,cherry=buildCherryTree({scale:6.2,shadows});cherry.group.position.set(tx,0,tz);cherry.group.rotation.y=.6;group.add(cherry.group);
  const trees={blossom:cherry.meshes.blossom,leaf:cherry.meshes.leaf,cherry};
- world.colliders.push({id:'harbour-cherry',x:tx,z:tz,w:.48,d:.48,height:6.2,park:true});
+ world.colliders.push({id:'harbour-cherry',x:tx,z:tz,w:TREE_REBUILD?1.12:.48,d:TREE_REBUILD?1.12:.48,height:6.2,park:true});
  const dress=minutes=>cherry.dress(minutes);dress(0);
  for(const [x,z] of LAMP_POSITIONS){kit.cyl(.07,.1,.16,x,.08,z,0x8a8979,{segments:8});kit.cyl(.04,.05,2.55,x,1.4,z,0x35584c,{segments:8});kit.sphere(.16,x,2.77,z,0xfff4dc,{finish:'lamp'});world.colliders.push({id:'park-lamp',x,z,w:.2,d:.2,height:2.93,park:true});}
  const shrine=HARBOUR_SHRINE;kit.box(1.15,.15,.85,shrine.x,.075,shrine.z,0x8a897c);kit.box(.74,1.05,.54,shrine.x,.68,shrine.z,0x94604b);kit.box(1.1,.12,.8,shrine.x,1.3,shrine.z,0x4e665b);kit.box(.35,.55,.025,shrine.x,.65,shrine.z+.285,0x453e31);
@@ -225,6 +226,7 @@ function plant(kit,flowers,kind,x,z){
 /** The gajumaru: a knot of trunks, a broad spreading crown and aerial roots, all within its collider. Returns its centre. */
 function shadeTree(kit,world){
  const T=HARBOUR_SHADE_TREE,r=rng(11);
+ if(TREE_REBUILD){world.colliders.push(broadleaf(kit,T.x,T.z,{h:T.height,form:'spread',seed:11,name:'gajumaru',rootLimit:.84}));return T;}
  world.colliders.push(broadleaf(kit,T.x,T.z,{h:T.height,form:'spread',seed:11,name:'gajumaru'}));
  for(let i=0;i<5;i++){const a=i/5*Math.PI*2+r.next()*.5,rad=.45+r.next()*.25;kit.rod([T.x+Math.cos(a)*rad,0,T.z+Math.sin(a)*rad],[T.x+Math.cos(a)*.12,2.6,T.z+Math.sin(a)*.12],.12,0x6e5f4c,{segments:6});}
  for(let i=0;i<9;i++){const a=i/9*Math.PI*2+r.next()*.3,rad=.62+r.next()*.22;kit.rod([T.x+Math.cos(a)*rad*.8,3.1,T.z+Math.sin(a)*rad*.8],[T.x+Math.cos(a)*rad,.02,T.z+Math.sin(a)*rad],.022,0x7a6a56,{segments:4});}

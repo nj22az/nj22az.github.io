@@ -3,6 +3,7 @@ import {rng} from './kit.js';
 import {fishAt} from './fish.js';
 import {wallAd,WALL_ADS} from './signs.js';
 import {broadleaf} from './trees.js';
+import {TREE_REBUILD} from '../tree-designs.js';
 import {nakamuraBuilding} from './nakamura-dressing.js';
 import {higaInterior,higaBuilding,HIGA_FRAME} from './higa-liquor-dressing.js';
 import {laundryInterior,laundryBuilding,LAUNDRY_FRAME} from './coin-laundry-dressing.js';
@@ -336,12 +337,14 @@ export function hinpun(kit,x,z,w=2.4,{alongX=true}={}){
 
 /** A fukugi: tall, narrow and dense, planted in rows as a windbreak. */
 export function fukugi(kit,x,z,{h=5.5,seed=5}={}){
+ if(TREE_REBUILD)return broadleaf(kit,x,z,{h,form:'column',seed,name:'fukugi'});
  broadleaf(kit,x,z,{h,form:'column',seed});
  return kit.rect(x-.22,x+.22,z-.22,z+.22,h,'fukugi');
 }
 
 /** A gajumaru (banyan): a knot of trunks, hanging roots and a broad, low canopy. */
 export function gajumaru(kit,x,z,{seed=6,size=1}={}){
+ if(TREE_REBUILD)return broadleaf(kit,x,z,{h:6.4*size,form:'spread',seed,name:'gajumaru',rootLimit:.8*size});
  const r=rng(seed),s=size;
  for(let i=0;i<5;i++){
   const a=i/5*Math.PI*2+r.next(),rad=(.35+r.next()*.3)*s;

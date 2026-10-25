@@ -3,6 +3,7 @@
 # When a known-failing test is fixed, add it here. Run locally: node tools/ci-guard.mjs
 runtime-package.test.mjs
 edition.test.mjs
+tree-rebuild.test.mjs
 english-language.test.mjs
 sign-backs.test.mjs
 ground-standard.test.mjs

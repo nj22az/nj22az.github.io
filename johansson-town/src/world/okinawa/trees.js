@@ -16,6 +16,7 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import {trs,rng} from './kit.js';
+import {TREE_REBUILD,treeDesignParts,treeDesignGeometry,treeBarkEnvelope} from '../tree-designs.js';
 
 export const TREE_GREENS=Object.freeze({
  round:{light:0x72c04a,mid:0x48a23a,core:0x1f5226,bark:0x7a5638},
@@ -100,7 +101,14 @@ function frameFor(h,form,spread){
  * Adds a broadleaf to a kit at x,z: `h` metres tall. Returns a collider for its trunk.
  * `form`: 'round' | 'column' | 'spread'. `greens` overrides the form's palette.
  */
-export function broadleaf(kit,x,z,{h=5,form='round',spread=1,seed=1,greens,lite=false,name='tree'}={}){
+export function broadleaf(kit,x,z,{h=5,form='round',spread=1,seed=1,greens,lite=false,name='tree',rootLimit}={}){
+ if(TREE_REBUILD){
+  const family=form==='column'?'fukugi':form==='spread'?'banyan':'broadleaf',options={height:h,lod:lite?'far':'near',variant:Math.abs(Math.floor(seed))%3,rootLimit};
+  const r=rng(seed),turn=r.next()*Math.PI*2;
+  for(const part of treeDesignParts(family,options))kit.add(part.geometry,trs(x,0,z,0,turn,0,spread,1,spread),part.color);
+  const bounds=treeBarkEnvelope(family,options),radius=Math.max(.22,...[bounds.minX,bounds.maxX,bounds.minZ,bounds.maxZ].map(v=>Math.abs(v)))*spread;
+  return kit.rect(x-radius,x+radius,z-radius,z+radius,h,name);
+ }
  const r=rng(seed),pal=greens||TREE_GREENS[form]||TREE_GREENS.round,parts=broadleafParts(seed,{lite});
  const f=frameFor(h,form,spread),turn=r.next()*Math.PI*2,lean=(r.next()-.5)*.08;
  kit.add(parts.trunk,trs(x,0,z,0,turn,lean,f.tw,f.trunkH,f.tw),pal.bark);
@@ -115,6 +123,7 @@ export function broadleaf(kit,x,z,{h=5,form='round',spread=1,seed=1,greens,lite=
  * tall, so scale an instance by the tree's height; the round form unless told otherwise.
  */
 export function broadleafGeometry({form='round',variant=0,greens,lite=false}={}){
+ if(TREE_REBUILD)return treeDesignGeometry(form==='column'?'fukugi':form==='spread'?'banyan':'broadleaf',{height:1,lod:lite?'far':'near',variant});
  const pal=greens||TREE_GREENS[form]||TREE_GREENS.round,parts=broadleafParts(variant,{lite}),f=frameFor(1,form,1);
  const crown=trs(0,f.cy,0,0,0,0,f.rx,f.ry,f.rx),colour=new THREE.Color();
  const paint=(g,m,hex)=>{const out=g.clone();out.applyMatrix4(m);colour.set(hex);const n=out.attributes.position.count,c=new Float32Array(n*3);for(let i=0;i<n;i++)c.set([colour.r,colour.g,colour.b],i*3);out.setAttribute('color',new THREE.BufferAttribute(c,3));return out;};

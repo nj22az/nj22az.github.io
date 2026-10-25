@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-25",
+  "branch": "development",
+  "baseCommit": "955b5870e558be823e9d54e005f9420f7f93fa07",
+  "previewFlag": "tree-rebuild",
+  "worldGuard": {
+    "passed": 433,
+    "failed": 0,
+    "files": 85,
+    "seconds": 289
+  },
+  "focusedChecks": {
+    "passed": 16,
+    "failed": 0
+  },
+  "finalTreeAndRuntimeChecks": {
+    "passed": 10,
+    "failed": 0
+  },
+  "canonicalFamilies": 7,
+  "tropicalPreviewInstances": 222,
+  "plantingCentresUnchanged": true,
+  "cherryGeometryUnchanged": true,
+  "nearFarEnvelopeTolerance": 0.05,
+  "cadRootAmendment": "A1: inboard anchored banyan roots and radial site limits",
+  "browserReview": "local Chromium launch blocked by socket() failed: Operation not permitted; hosted compiled review pending",
+  "physicalDevicesVerified": false,
+  "publishedToMain": false
+}
