@@ -172,6 +172,38 @@ class ParkingAdmissionTests(unittest.TestCase):
         self.assertEqual(row['coordinates'], evidence['coordinates'])
         self.assertIn('Hotell Havanna, Krabbes väg 4', evidence['selectedPlaceEvidence'])
 
+    def test_swedish_audit_matches_every_catalogue_property_and_new_marker(self):
+        audit = json.loads((ROOT / 'blog/hotels/SCANDIC-SWEDEN-EVIDENCE-2026-10-25.json').read_text())
+        self.assertEqual(len(audit['properties']), 91)
+        self.assertEqual(len({p['hotelId'] for p in audit['properties']}), 91)
+        self.assertEqual(sum(p['category'] == 'avoid' for p in audit['properties']), 72)
+        for item in audit['properties']:
+            row = next(r for r in self.records if r['hotelId'] == item['hotelId'])
+            self.assertEqual(builder.hotel_chain(row), 'Scandic')
+            self.assertEqual(builder.parking_category(row), item['category'])
+            if item['disposition'] == 'added':
+                marker = json.loads('{' + item['markerEvidence'] + '}')
+                self.assertEqual(marker['hotelName'], row['name'])
+                self.assertEqual(row['coordinates'], item['coordinates'])
+                self.assertEqual(marker['coordinates'], {'lat': row['coordinates']['latitude'], 'lng': row['coordinates']['longitude']})
+                self.assertIsNone(row['roomPaid'])
+                self.assertEqual(row['parkingPaid'], 0 if row['freeParking'] else None)
+
+    def test_sweden_payment_and_tariff_edge_cases_remain_explicit(self):
+        kista = next(r for r in self.records if r['hotelId'] == 'scandic-kista')
+        self.assertIs(kista['parkingPaymentAtHotel'], True)
+        self.assertIsNone(kista['parkingOnHotelReceipt'])
+        self.assertEqual(builder.parking_category(kista), 'avoid')
+        no25 = next(r for r in self.records if r['hotelId'] == 'scandic-no-25')
+        self.assertTrue(no25['parkingVerification']['sourceUrl'].startswith('https://www.parkeringgoteborg.se/'))
+        self.assertIn('26/hour', no25['parkingSummary'])
+        stjorgen = next(r for r in self.records if r['hotelId'] == 'scandic-st-jorgen')
+        self.assertIn('273 SEK per night', stjorgen['parkingDetails']['weekday'])
+        self.assertIn('260 SEK per night', stjorgen['parkingDetails']['weekend'])
+        var = next(r for r in self.records if r['hotelId'] == 'scandic-varnamo')
+        self.assertEqual(builder.parking_category(var), 'free')
+        self.assertIsNone(var['parkingDetails']['registrationAtReception'])
+
     def test_unmapped_hotel_keeps_card_and_address_without_a_marker(self):
         row = copy.deepcopy(self.free)
         row['coordinates'] = None
@@ -194,7 +226,7 @@ class ParkingAdmissionTests(unittest.TestCase):
         html = builder.build(self.records)
         self.assertIn('id="hotel-chain" name="chain"', html)
         self.assertEqual({builder.hotel_chain(r) for r in self.records}, {'Scandic', 'Thon Hotels', 'Best Western', 'Other hotels'})
-        self.assertEqual(sum(builder.hotel_chain(r) == 'Scandic' for r in self.records), 53)
+        self.assertEqual(sum(builder.hotel_chain(r) == 'Scandic' for r in self.records), 121)
         for row in self.records:
             self.assertIn('data-chain="' + builder.hotel_chain(row) + '"', builder.render_row(row))
         self.assertIn('data-theme="clarity" data-theme-lock="clarity"', html)

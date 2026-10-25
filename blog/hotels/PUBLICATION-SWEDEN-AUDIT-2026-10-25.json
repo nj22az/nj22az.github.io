@@ -1,0 +1,38 @@
+{
+  "status": "locally-verified-publication-pending",
+  "checkedOn": "2026-10-25",
+  "scope": "91 Scandic catalogue-linked properties in Sweden",
+  "audited": 91,
+  "swedishAvoid": 72,
+  "swedishScandicFree": 19,
+  "addedAvoid": 67,
+  "addedFree": 1,
+  "totalHotels": 128,
+  "totalGreen": 34,
+  "totalEasy": 0,
+  "totalAvoid": 94,
+  "verifiedLocations": 128,
+  "originalRecordsAndCsvRowsPreserved": 60,
+  "checks": {
+    "builderTests": 17,
+    "generatedPageCurrent": true,
+    "themeRegression": true,
+    "blogFeedRegression": true,
+    "csvColumns": 37,
+    "viewportWidths": [
+      1440,
+      834,
+      390,
+      320
+    ],
+    "physicalDevices": false,
+    "realGps": false,
+    "chromiumInteractionAndLayout": 55,
+    "chromiumFallback": 9
+  },
+  "sha256": {
+    "blog/hotels/index.html": "087e4fb98b81959b91fc1c0a1eb74f8d74b461dbb174e09e9bbd890bb3d37d6d",
+    "blog/hotels/hotels.json": "1feff703350b012da348fb7f5ea930ebd7784726a45932e803955ebca3529895",
+    "blog/hotels/hotel-reviews.csv": "36b5e674f5c00f790c26917c373a98f349d75039b250b5c07e196a41a6b619e5"
+  }
+}

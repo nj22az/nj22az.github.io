@@ -53,7 +53,7 @@ def e(value):
 
 def hotel_chain(review):
     # Existing official property identities, not an affiliation inferred from location.
-    if review['name'].startswith('Scandic '):
+    if review['name'].startswith('Scandic ') or review['hotelId'] in ('haymarket-by-scandic', 'downtown-camper-by-scandic'):
         return 'Scandic'
     if review['name'].startswith('Best Western '):
         return 'Best Western'
@@ -364,7 +364,7 @@ def build(reviews):
     </section>
     <section class="hotel-method" aria-labelledby="hotel-method-title">
       <h2 id="hotel-method-title">What this register records</h2>
-      <p>Hotels join the free-parking list only after their own published information confirms free guest parking. Each parking entry links to its source and check date, with known registration requirements and paid alternatives explained. Coverage grows as hotels are verified. The paid Scandic list is a first batch, not a complete country census. <a href="/blog/hotels/SCANDIC-PAID-AUDIT-2026-10-25.md">Audit scope and checked properties</a>.</p>
+      <p>Hotels join the free-parking list only after their own published information confirms free guest parking. Each parking entry links to its source and check date, with known registration requirements and paid alternatives explained. Coverage grows as hotels are verified. The Swedish Scandic audit covers 91 catalogue-linked properties; the other countries remain partial batches. <a href="/blog/hotels/SCANDIC-SWEDEN-AUDIT-2026-10-25.md">Swedish Scandic audit</a> · <a href="/blog/hotels/SCANDIC-PAID-AUDIT-2026-10-25.md">Other Nordic checks</a>.</p>
       <p>Green means confirmed free guest parking, the preferred option and default filter. Yellow means “Easy parking”: parking costs money, but both payment at the hotel and inclusion on the hotel receipt are confirmed. Red means Avoid: paid parking with external payment, separate receipts or either fact unconfirmed, or a documented difficult-access report even when parking is free. An unconfirmed route stays labelled unknown; it is not a claim that hotel payment is impossible. Avoid is a parking preference, not a judgement of hotel quality. Payment at the hotel and inclusion on the hotel receipt are recorded separately.</p>
       <p>Stay reports and official hotel information are identified in each note. Personal names, booking references, card details and exact stay dates are excluded. Prices and parking arrangements can change; the recorded date keeps each entry in context.</p>
     </section>

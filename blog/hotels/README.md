@@ -1,5 +1,17 @@
 # Hotels & Parking
 
+## Swedish Scandic audit — 25 October 2026
+
+91 Swedish catalogue-linked property pages reviewed: **72 Avoid, 19 with verified
+free options**. This adds 67 Avoid entries and green Scandic Värnamo. Existing 60
+records and CSV rows remain unchanged. Haymarket and Downtown Camper correctly
+belong to the Scandic chain filter; no new chain affiliation is guessed.
+The register now contains **128 hotels, all mapped: 34 green, 0 Easy, 94 Avoid**.
+See the [Swedish audit and complete Avoid list](SCANDIC-SWEDEN-AUDIT-2026-10-25.md),
+[structured evidence](SCANDIC-SWEDEN-EVIDENCE-2026-10-25.json) and
+[current handover](HANDOVER-SWEDEN-AUDIT-2026-10-25.md).
+The policy below remains in force. Other hotel chains/countries are not a complete census.
+
 ## Field service parking decisions — 25 October 2026
 
 This directory serves field service engineers who need a straightforward overnight
@@ -35,8 +47,8 @@ remain unspecified, and availability is not guaranteed. Named selected-place
 coordinates are verified from the official contact page’s map embed.
 
 Scandic Odense is separately added with confirmed free outdoor weekday/weekend
-parking (120 spaces) and its official named map marker. There are 34 verified
-free-parking options in total; 33 remain preferred/green, with Best Western Odense
+parking (120 spaces) and its official named map marker. There are now 35 verified
+free-parking options in total; 34 remain preferred/green, with Best Western Odense
 excluded for access. These are distinct properties.
 
 ## Chain filter and fixed design — 25 October 2026
@@ -122,7 +134,7 @@ definitions. Colours retain their meaning across themes, and text labels convey
 the same categories. The visitor's own map position is blue. Reset filters
 returns to green/free parking; All parking shows the complete register. Without
 JavaScript, all records remain readable with their category labels. Current
-counts: **33 green, 0 yellow, 27 red; 60 hotels with 60 verified locations**.
+counts: **34 green, 0 yellow, 94 red; 128 hotels with 128 verified locations**.
 
 ## Updating the register
 
