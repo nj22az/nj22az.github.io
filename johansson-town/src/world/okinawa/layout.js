@@ -91,7 +91,7 @@ export const EAST_QUAY=Object.freeze({
  * The east quay's paving runs on east to the oil jetty's root (ground-plan-harbour.js); north of the jetty it ends at
  * x 42.3, in line with the fuel depot's court, and the beach runs from there to the water (step 4 of the ground plan).
  */
-export const EAST_QUAY_CORNER=Object.freeze({jettyFrom:OIL_JETTY.deck.minX+.1,beachFrom:42.3,jettyNorth:OIL_JETTY.deck.maxZ});
+export const EAST_QUAY_CORNER=Object.freeze({jettyFrom:OIL_JETTY.shore.minX+.1,beachFrom:42.3,jettyNorth:OIL_JETTY.shore.maxZ});
 export const eastQuayAt=(x,z,r=0)=>{
  const g=EAST_QUAY.gate,C=EAST_QUAY_CORNER;
  return x>=EAST_QUAY.minX-1+r&&x<=EAST_QUAY.maxX-r&&z>=EAST_QUAY.minZ+r&&z<=EAST_QUAY.maxZ-r

@@ -31,7 +31,9 @@
 import * as THREE from '../vendor/three.module.js';
 import {GROUND_CLASSES,GROUND_EDGE,DISTRICTS,districtAt,edgeRule,expectedTop,allowedTops} from '../src/world/ground-standard.js';
 import {planHeight} from '../src/world/layout.js';
-import {datumShift} from '../src/world/ground-plan.js';
+import {datumShift,laidAt} from '../src/world/ground-plan.js';
+import {cargoAccessPlan} from '../src/world/ground-plan-harbour.js';
+const CARGO_ACCESS_PLAN=cargoAccessPlan();
 
 /** Minato, from the breakwater to Kitahama's north shore. Kitano-jima keeps its own terrain and is not audited. */
 export const AUDIT_BOUNDS=Object.freeze({minX:-45,maxX:55,minZ:-110,maxZ:100});
@@ -152,7 +154,10 @@ export function collectGround(root,{bounds=AUDIT_BOUNDS,step=STEP}={}){
        if(inTri(ix*step,iz*step,a,b,c))roofs.add(ix+','+iz);
       continue;
      }
-     if(skip||maxY>MAX_Y+.02||minY<MIN_Y)continue;
+     // A generated ground grade can cross the low sampling window. Keep its full
+     // slope, so the land below a raised access ramp is not mistaken for its floor.
+     const plannedGrade=o.userData.groundClass&&minY<=MAX_Y+.02;
+     if(skip||!plannedGrade&&maxY>MAX_Y+.02||minY<MIN_Y)continue;
      const up=n.y>.85?1:two&&n.y<-.85?-1:0;if(!up)continue;
      const where=pieceWhere(o,ia);
      // A piece a source file named for what stands on the ground drew (a stair, a parked bicycle) is not ground.
@@ -276,6 +281,10 @@ function namedClass(t,x,z,d,patchAt){
  * itself is open island ground (layout.js planHeight), never inside the town where the plan is the datum.
  */
 function topsAt(cls,districtId,x,z){
+ // The raised working berth meets shore on a drawn, planned grade, not a new flat datum.
+ // Audit that grade against its measured plan just as Main Street follows its datum grades.
+ const cargo=laidAt(CARGO_ACCESS_PLAN,x,z);
+ if(cargo&&cargo.layer?.cls===cls)return [cargo.y];
  // Where a plan grades one datum into another (ground-plan.js MAIN_STREET_GRADES), the tops follow the datum there.
  const c=GROUND_CLASSES[cls],shift=datumShift(x,z,districtId),tops=allowedTops(cls,districtId).map(t=>t+shift);
  if(!c.alsoAt?.length||planHeight(x,z)<-.2)return tops;

@@ -1,11 +1,12 @@
-# Handover: rigged cartoon eyes in World, behind `?eyes3d` (25 October 2026)
+# Handover: rigged cartoon eyes in World (25 October 2026)
 
 Step 1 of the avatar remake (the creator: "remake the characters in the game with Blender … improve the current
 avatars: eyes, neck, hands, feet, hair, clothes"; "We are not looking for uncanny valley we want rigged cartoon eyes"; the
 cosy-anime critique of 13:19). Plan and Blender proofs: studio repo `nj22az/jojo`, `3d/cast/avatars-cad/HANDOFF.md`.
 
-**State: built and checked on branch `claude/avatar-remake-continue-llretw` (runtime rebuilt); off by default; not merged, not published.
-Waiting for the creator's approval of the look before it is switched on.**
+**State: the creator saw the sheets (25 October: "I think it looks better already"). On branch
+`claude/avatar-remake-continue-llretw` the eyes are now on for everyone (`?eyes3d=0` shows the painted ones), main merged
+in, runtime rebuilt. Not merged to main and not published: publishing waits for the owner's word.**
 
 ## What it is
 
@@ -27,8 +28,8 @@ deadpan, the big reaction eyes) and a **2D blink**: the lash line pulled down in
   `squint` style in every feeling): the discs hide and the canvas paints them, as today.
 - `animate.js`: a blink now closes over 0.04 s, holds and opens over 0.06 s (fractional values); the painted eyes are shut
   while it is past half, about 0.126 s against the 0.13 s before. Everything else that reads `blink` thresholds at 0.5.
-- Switch: `buildAvatar(recipe,{eyes3d})`, default `eyes3dRequested()` = the page's `?eyes3d` (World, Studio, any page that
-  builds avatars). The GLB export (`export.js`) always builds with painted eyes.
+- Switch: `buildAvatar(recipe,{eyes3d})`, default `eyes3dOn()`: on, unless the page asks `?eyes3d=0` (World, Studio, any
+  page that builds avatars). The GLB export (`export.js`) always builds with painted eyes.
 
 ## Checks run (25 October)
 
@@ -51,11 +52,18 @@ deadpan, the big reaction eyes) and a **2D blink**: the lash line pulled down in
 - `node tools/cloud-boot-smoke.mjs --eyes3d` on the rebuilt runtime (phone viewport, third person): island ready in 31 s,
   no page errors, street, room and `player-face` photographed; Johansson's eyes in the game: jojo
   `3d/cast/avatars-cad/eyes-game/Johansson-in-game.jpg`.
-- Not checked: a physical phone or a GPU browser (software GL only); the Studio avatar creator page with `?eyes3d`.
+- **After switching on by default and merging main** (`fe9a38d9`, the cargo berth): runtime rebuilt; full guard
+  `NODE_OPTIONS=--max-old-space-size=6144 node tools/ci-guard.mjs` **438/438, 84 files, all green**;
+  `cloud-boot-smoke --eyes3d` on the built runtime: no page errors, Johansson's face photographed (in the rain);
+  `eyes3d.browser.mjs` pass; `face-lighting.browser.mjs` pass with the rigged eyes (now its default) and with
+  `FACE_EYES3D=0` (painted). Run that one without `TOWN_CHROMIUM_PATH`: the full Chromium binary requests
+  `/favicon.ico`, which the test counts as an error (the headless shell does not).
+- Not checked: a physical phone or a GPU browser (software GL only); the Studio avatar creator page.
 
 ## Next
 
-1. The creator judges `eyes-game/*.jpg` (or World with `?eyes3d`). Notes go into `eyeShape` (sizes, lids, lash weight).
-2. On approval: make the switch default on (`eyes3dRequested` → true, keeping `?eyes3d=0` to compare), rebuild the runtime,
-   run the guard, publish.
-3. Then the remake's step 2, the neck (a drawing first), as the jojo handover lists.
+1. ~~The creator judges the sheets~~ (done: "looks better already"); ~~switch on by default~~ (done on the branch).
+2. Publish when the owner says so: merge the branch into main (merge main in first; rebuild the runtime with
+   `npm run build:runtime`, never by hand), run the guard, push, check Pages.
+3. Notes on the look go into `eyeShape` (sizes, lids, lash weight). Then the rest of the cosy-anime critique (the face
+   painter: brows, mouth line, stubble, blush, nose, ears) and the remake's step 2, the neck (a drawing first).

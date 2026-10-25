@@ -220,10 +220,10 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
-    "title": "Minato fuel depot · Port Town Fuel Base",
+    "title": "Minato fuel depot",
     "organisation": "Town Services",
-    "text": "Hazardous materials · No open flames allowed. Diesel oil (Light oil), 120 kilolitres. Filled from the tanker at the oil jetty every third day; drawn by the town truck for the power house at the town hall. In a typhoon the valves are closed and the jetty is out of bounds.",
-    "source": "notice:Minato fuel depot · Port Town Fuel Base"
+    "text": "Hazardous materials · No open flames. The shore tank stores diesel for the town power house. Keep the access and the bund clear.",
+    "source": "notice:Minato fuel depot"
   },
   {
     "type": "Notice",

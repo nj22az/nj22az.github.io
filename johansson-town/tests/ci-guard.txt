@@ -2,6 +2,7 @@
 # One file of johansson-town/tests/ per line. Every file here passes on main; keep it that way.
 # When a known-failing test is fixed, add it here. Run locally: node tools/ci-guard.mjs
 runtime-package.test.mjs
+cargo-berth.test.mjs
 edition.test.mjs
 neighbour-chats.test.mjs
 english-language.test.mjs

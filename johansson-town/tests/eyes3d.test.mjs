@@ -5,20 +5,21 @@ import {buildAvatar} from '../src/avatars/build.js';
 import {recipeFor} from '../src/avatars/cast.js';
 import {normalizeRecipe,PARTS} from '../src/avatars/recipe.js';
 import {drawFace,faceLayout,EXPRESSION_NAMES,eyesOf} from '../src/avatars/face.js';
-import {EYES_3D_STATES,EYE_PARAMS,eyeShape,eyesShow,eyes3dRequested} from '../src/avatars/eyes3d.js';
+import {EYES_3D_STATES,EYE_PARAMS,eyeShape,eyesShow,eyes3dOn} from '../src/avatars/eyes3d.js';
 import {installDOM} from './fixtures.mjs';
 
-// The rigged eyes (src/avatars/eyes3d.js; jojo 3d/cast/avatars-cad/HANDOFF.md, step 1): behind ?eyes3d until approved.
+// The rigged eyes (src/avatars/eyes3d.js; jojo 3d/cast/avatars-cad/HANDOFF.md, step 1): on, unless a page asks ?eyes3d=0.
 const SIX=['Thuan','Johansson','Tetsuo','Thao','Fujita','Vy'];
 
-test('the rigged eyes are off unless the page asks for them',()=>{
+test('the rigged eyes are on unless the page asks for the painted ones',()=>{
  installDOM();
- assert.equal(eyes3dRequested(),false);
- const plain=buildAvatar(recipeFor('Thuan'),{shadows:false});
- assert.equal(plain.eyes3d,null);assert.equal(plain.root.getObjectByName('Shimanchu eyes'),undefined);plain.dispose();
- globalThis.location.search='?eyes3d';
- try{assert.equal(eyes3dRequested(),true);const rigged=buildAvatar(recipeFor('Thuan'),{shadows:false});assert.ok(rigged.eyes3d);rigged.dispose();}
- finally{delete globalThis.location.search;}
+ assert.equal(eyes3dOn(),true);
+ const rigged=buildAvatar(recipeFor('Thuan'),{shadows:false});assert.ok(rigged.eyes3d);assert.ok(rigged.root.getObjectByName('Shimanchu eyes'));rigged.dispose();
+ globalThis.location.search='?eyes3d=0';
+ try{
+  assert.equal(eyes3dOn(),false);const plain=buildAvatar(recipeFor('Thuan'),{shadows:false});
+  assert.equal(plain.eyes3d,null);assert.equal(plain.root.getObjectByName('Shimanchu eyes'),undefined);plain.dispose();
+ }finally{delete globalThis.location.search;}
 });
 
 test('each eye sits on the head where the painter draws it, for all six residents',()=>{

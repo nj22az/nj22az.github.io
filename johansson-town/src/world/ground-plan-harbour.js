@@ -39,6 +39,15 @@ const NORTH_GRADE=1.5;
 const grade=(axis,a,ya,b,yb)=>({axis,a,ya,b,yb});
 const rect=(x0,x1,z0,z1)=>({x0:Math.min(x0,x1),x1:Math.max(x0,x1),z0:Math.min(z0,z1),z1:Math.max(z0,z1)});
 
+/** The shore approach to the raised CAD quay uses the town's concrete and grade generator. */
+export function cargoAccessPlan(){
+ const A=OIL_JETTY.access,D=OIL_JETTY.deck;
+ return {id:'cargo-berth-access',district:'harbour',layers:[
+  {cls:'concrete',name:'Cargo berth shore ramp',...rect(A.minX,A.rampEndX,A.minZ,A.maxZ),top:grade('x',A.minX,A.fromY,A.rampEndX,D.y),depth:.25,why:'A continuous shore grade reaches the cargo quay at its working freeboard.'},
+  {cls:'concrete',name:'Cargo berth access landing',...rect(A.rampEndX,A.maxX,A.minZ,A.maxZ),top:D.y,depth:.3,why:'A level turning space connects the shore ramp to the piled quay.'},
+ ]};
+}
+
 let layers=null;
 /** The quays' and their edges' layers: the plan without the copings, which need the pier and the ferry's landing. */
 function harbourLayers(){
@@ -59,7 +68,7 @@ function harbourLayers(){
   why:'The quay rises 6 cm over its last metre and a half to the west footway and the yard, so they run onto it without a step.'});
  L.push({cls:'quay',name:'Quay paving',...rect(seawallFoot,Q.minX-APRON_GRADE,N.minZ,Q.maxZ),top:APRON_TOP,why:'The Nishi quay\'s apron, from under the seawall to the main quay.'});
  L.push({cls:'quay',name:'Quay paving',...rect(Q.minX-APRON_GRADE,Q.minX,N.minZ,Q.maxZ),top:grade('x',Q.minX-APRON_GRADE,APRON_TOP,Q.minX,MAIN_QUAY_TOP),why:'The Nishi apron comes down to the main quay over a metre and a half.'});
- const jetty=OIL_JETTY.deck;
+ const jetty=OIL_JETTY.shore;
  L.push({cls:'quay',name:'Quay paving',...rect(Q.maxX+APRON_GRADE,BEACH_FROM,EQ.minZ,Q.maxZ-.001),top:APRON_TOP,why:'The east quay\'s apron, under the auction shed, the ice plant and the forklift\'s bay.'});
  L.push({cls:'quay',name:'Quay paving',...rect(BEACH_FROM,eastEnd,EQ.minZ,jetty.maxZ),top:APRON_TOP,why:'On to the oil jetty\'s root; north of it the beach.'});
  L.push({cls:'quay',name:'Quay paving',...rect(Q.maxX,Q.maxX+APRON_GRADE,EQ.minZ,Q.maxZ),top:grade('x',Q.maxX,MAIN_QUAY_TOP,Q.maxX+APRON_GRADE,APRON_TOP),why:'The east apron comes up from the main quay over a metre and a half.'});
@@ -75,6 +84,8 @@ function harbourLayers(){
  // street's road and the cargo driveway, which run onto the quay flush.
  for(const [x0,x1] of [[seawallFoot,MAIN_ROAD.west-GROUND_EDGE.kerb.width],[3.2,BEACH_EDGES.court.minX]])
   L.push({cls:'edging',edge:true,name:'Stone edging',...rect(x0,x1,Q.maxZ-.1,Q.maxZ),top:'flush',atLeast:EDGE_TOP,why:'The quay ends at a row of setts where the town\'s ground begins.'});
+ // The access builder lays these same layers, so the old apron stops under the new grade.
+ L.push(...cargoAccessPlan().layers.map(layer=>({...layer,drawnBy:'cargo-berth-access'})));
  return layers={layers:L,Q,N,EQ,seawallFoot,eastEnd};
 }
 const harbourGround={id:'harbour',district:'harbour',layers:null};

@@ -6,8 +6,9 @@ import {celFrom} from '../render/cel.js';
 /**
  * Rigged cartoon eyes (the creator, 25 October 2026: "We are not looking for uncanny valley we want rigged cartoon eyes";
  * and the cosy-anime critique: eyes nearly flush with the face, the iris sliding on them, a thicker curved upper lash
- * line, two highlights, a blink drawn as the lash line pulled down into a closed curve). Behind the switch `?eyes3d`
- * until the creator approves them (jojo 3d/cast/avatars-cad/HANDOFF.md).
+ * line, two highlights, a blink drawn as the lash line pulled down into a closed curve). On for everyone since the
+ * creator saw them ("I think it looks better already", 25 October 2026); `?eyes3d=0` shows the painted eyes, to compare
+ * (jojo 3d/cast/avatars-cad/HANDOFF.md).
  *
  * One shallow curved disc per eye on the head bone, laid over the head where the painter draws the eye (the head's own
  * projection, face-objects.js), a millimetre off the skin and a few at the middle of the eye. Its fragment shader draws
@@ -22,9 +23,9 @@ import {celFrom} from '../render/cel.js';
 export const EYES_3D_STATES=Object.freeze(['open','side','wide','worry','shock','angry','sad','shy','smiling','content','closed','happy','daze','dry']);
 const DRAWN=new Set(EYES_3D_STATES);
 
-/** Whether the switch is on in this page (`?eyes3d`). */
-export function eyes3dRequested(){
- try{return new URLSearchParams(globalThis.location?.search||'').has('eyes3d');}catch{return false;}
+/** Whether this page has the rigged eyes: yes, unless it asks for the painted ones (`?eyes3d=0`). */
+export function eyes3dOn(){
+ try{return new URLSearchParams(globalThis.location?.search||'').get('eyes3d')!=='0';}catch{return true;}
 }
 
 /** Whether the discs draw these eyes (style from the recipe, eyes from the expression), rather than the painter. */

@@ -1,7 +1,7 @@
 // Boots the whole game in a cloud session's software Chromium (swiftshader), presses START, and photographs one street
 // view and one room through the ?audit harness, timing each step: the check that the real game, not a stripped-down
 // scene, can be looked at from a cloud session.
-//   node tools/cloud-boot-smoke.mjs [--source] [--eyes3d] [out-dir]   (--eyes3d: the rigged eyes, src/avatars/eyes3d.js)
+//   node tools/cloud-boot-smoke.mjs [--source] [--eyes3d] [out-dir]   (--eyes3d: start in third person and photograph Johansson's face)
 // The built runtime by default (rebuild it first: npm run build:runtime); --source serves the source modules instead.
 // About 35 s to "Island ready" and 60 s to play on a 4-core cloud machine. Run it alone: browsers or test suites
 // running beside it starve it, and the island then takes many minutes to draw.

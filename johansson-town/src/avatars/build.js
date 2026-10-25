@@ -11,7 +11,7 @@ import {mergeGeometries,mergeVertices} from '../../vendor/BufferGeometryUtils.js
 import {normalizeRecipe,DRESS_BOTTOMS} from './recipe.js';
 import {drawFace,faceLayout,INK_NOSES,BEARD_SHELL,drawBeardShell} from './face.js';
 import {buildFaceObjects} from './face-objects.js';
-import {buildEyes3d,eyes3dRequested} from './eyes3d.js';
+import {buildEyes3d,eyes3dOn} from './eyes3d.js';
 import {beardSpec} from './beard-mesh.js';
 import {headProfile,shapeHeadPoint} from './head-profile.js';
 import {longBraidPoints} from './braid-path.js';
@@ -1790,9 +1790,9 @@ function fitFlags(parts){const flags=new Float32Array(vertexCount(parts));let at
 
 /**
  * @param {object} input recipe (anything; it is normalized)
- * @param {{shadows?:boolean,faceSize?:number,eyes3d?:boolean}} [options] eyes3d: rigged eyes (eyes3d.js), on with `?eyes3d`
+ * @param {{shadows?:boolean,faceSize?:number,eyes3d?:boolean}} [options] eyes3d: rigged eyes (eyes3d.js), off with `?eyes3d=0`
  */
-export function buildAvatar(input,{shadows=true,faceSize=256,eyes3d=eyes3dRequested()}={}){
+export function buildAvatar(input,{shadows=true,faceSize=256,eyes3d=eyes3dOn()}={}){
  const recipe=normalizeRecipe(input),m=measure(recipe);
  const swing=springRest(recipe,m),rest={...restPositions(m),...swing.rest},bones={},list=BONES.map(name=>{const b=new THREE.Bone();b.name=name;bones[name]=b;return b;});
  for(const name of BONES){

@@ -2,7 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';import {cre
 const {chromium}=createRequire(new URL('../../steam-deck/package.json',import.meta.url))('playwright');import {serveGame} from '../tools/mcp/static-server.mjs';
 // Actual shared head and World pipeline; software rendering, not physical Safari acceptance.
 // FACE_BROWSER_TEST=1 TOWN_CHROMIUM_PATH=/path/to/chromium node --test tests/face-lighting.browser.mjs
-// FACE_EYES3D=1 runs the same check on the rigged eyes (src/avatars/eyes3d.js).
+// The eyes are the rigged ones (src/avatars/eyes3d.js); FACE_EYES3D=0 runs the same check on the painted eyes.
 test('painted eyes survive dim lighting and repeated Look switching',{skip:!process.env.FACE_BROWSER_TEST,timeout:180000},async()=>{
  const sourceRoot=new URL('../',import.meta.url).pathname,root=process.env.FACE_GAME_ROOT||sourceRoot;
  if(process.env.FACE_GAME_ROOT){
@@ -27,7 +27,7 @@ test('painted eyes survive dim lighting and repeated Look switching',{skip:!proc
  for(const look of [...Object.keys(LOOKS),'none','sketchbook','flat','none']){pipeline.setLook(look);pipeline.render(r=>r.render(scene,camera));ctx.drawImage(renderer.domElement,0,0);const px=ctx.getImageData(0,0,w,h).data;
  const contrast=[-1,1].map(side=>{const eye=point(128+side*L.spread,L.eyeY,w,h),cheek=point(128+side*L.spread,L.eyeY+30,w,h);let dark=1,skin=0;for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){dark=Math.min(dark,luma(px,eye[0]+dx,eye[1]+dy,w));skin+=luma(px,cheek[0]+dx,cheek[1]+dy,w)/25;}return +(skin-dark).toFixed(4);});rows.push({w,lighting,look,contrast});if(w===1024&&lighting==='dim'&&['none','sketchbook','flat','oil'].includes(look))captures[look]=renderer.domElement.toDataURL('image/png');
  }}}
- pipeline.dispose();avatar.dispose();renderer.dispose();renderer.forceContextLoss();return {rows,captures};},!!process.env.FACE_EYES3D);
+ pipeline.dispose();avatar.dispose();renderer.dispose();renderer.forceContextLoss();return {rows,captures};},process.env.FACE_EYES3D!=='0');
  const {rows,captures}=result;if(process.env.FACE_OUTPUT_DIRECTORY){const out=resolve(process.env.FACE_OUTPUT_DIRECTORY);mkdirSync(out,{recursive:true});writeFileSync(resolve(out,'filter-report.json'),JSON.stringify({packagedRoot:root,physicalDevice:false,rows},null,2)+'\n');for(const [look,data] of Object.entries(captures))writeFileSync(resolve(out,look+'.png'),Buffer.from(data.split(',')[1],'base64'));}
  console.log(JSON.stringify(rows));assert.deepEqual(errors,[]);
  for(const r of rows){assert.ok(r.contrast.every(c=>c>=.045),JSON.stringify(r));}

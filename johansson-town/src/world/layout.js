@@ -9,7 +9,7 @@ import {airportSurface} from './airport-ground.js';
 import {kitanoRoadAt} from './kitano-link-plan.js';
 import {COAST_BOUNDS} from './island-coast.js';
 import {DINING,NIGHT_LANE,inDiningLane,IZAKAYA_LANE} from './dining-layout.js';
-import {oilJettyAt} from './oil-jetty-layout.js';
+import {oilJettyAt,oilJettyHeight} from './oil-jetty-layout.js';
 const OIL_JETTY_ROUTE=Object.freeze({id:'oil-jetty',surface:'stone'});
 import {PARK,parkHeight,parkApproachHeight,parkSkirtHeight} from './park-layout.js';
 import {inHarbourPark,harbourPondAt,parkPathAt,HARBOUR_PARK_PATHS} from './harbour-park-plan.js';
@@ -161,6 +161,7 @@ export function setWalkSurface(surface){globalThis.__JOHANSSON_WALK_SURFACE__=su
 /** Where feet go: the plan's ground, lifted onto whatever slab is drawn over it. */
 export function groundHeight(x,z){const h=planHeight(x,z),walk=globalThis.__JOHANSSON_WALK_SURFACE__;return walk?(walk.level?.(x,z)??(h+walk.lift(x,z))):h;}
 export function planHeight(x,z){
+ const berthHeight=oilJettyHeight(x,z);if(berthHeight!==null)return berthHeight;
  if(depotCourtAt(x,z))return 0;
  const boat=houseboatSurface(x,z);if(boat)return boat.y;
  {
