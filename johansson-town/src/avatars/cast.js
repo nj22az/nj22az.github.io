@@ -73,12 +73,13 @@ export const CAST_RECIPES=castSet({
  // the bath side, the swimwear and the after-bath clothes all follow it.
  Thuan:R({...THUAN_STUDIO_DESIGN,swim:{...THUAN_STUDIO_DESIGN.swim,style:'onepiece'}}),
  // Thao's owner-requested ribbon dress and a distinct adult face, 25 October 2026.
- // Keep her established stature and character; no earrings.
- Thao:R({name:'Thao',body:{height:.44,build:.3,silhouette:'feminine',skin:'#ecc6a0'},head:{size:.44,shape:.4,form:'sculpted',jaw:.38,cheeks:.44,roundness:.15},
+ // The owner's distinction: Thao is the more elegant beauty; Thuan remains cute and independent.
+ // Keep their identities and Thao's established stature; no earrings.
+ Thao:R({name:'Thao',body:{height:.44,build:.3,silhouette:'feminine',skin:'#ecc6a0'},head:{size:.43,shape:.4,form:'sculpted',jaw:.30,cheeks:.34,roundness:.10},
   hair:{style:'sidepartwaves',colour:'#241b19',length:.32,volume:.55,tieColour:'#202027'},
-  eyes:{style:'almond',colour:'#39281f',size:.55,width:.56,spacing:.47,height:.51,tilt:.58},
-  brows:{style:'tapered',colour:'#332320',size:.42,height:.56,tilt:.48},nose:{style:'nostrils',size:.28,height:.48},
-  mouth:{style:'soft',colour:'#b65b64',size:.47,width:.48,height:.48},blush:.23,mole:true,moleSpot:{x:.73,height:.35,size:.24},
+  eyes:{style:'cat',colour:'#39281f',size:.53,width:.66,spacing:.48,height:.51,tilt:.56},
+  brows:{style:'arched',colour:'#332320',size:.40,height:.55,tilt:.51},nose:{style:'nostrils',size:.23,height:.48},
+  mouth:{style:'soft',colour:'#b55367',size:.50,width:.56,height:.48},blush:.14,mole:true,moleSpot:{x:.73,height:.35,size:.24},
   accessories:{earrings:'none',colour:'#e0b93a'},
   outfit:{top:'ribbondress',topColour:'#f2b8c6',bottom:'skirt',skirtCut:'classic',bottomColour:'#f2b8c6',footwear:'sandals',shoes:'#6e4a33',accent:'#202027'}}),
  // Nhung, the eldest of the three sisters (Nhung, Thao, Thuan), is the island doctor since 22 October 2026 (the owner:

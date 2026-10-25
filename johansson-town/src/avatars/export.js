@@ -10,7 +10,7 @@ import {motionClip} from './motion.js';
  * Cel outlines and cloth clearance shaders stay in the game renderer. */
 export async function exportAvatarGLB(recipe,{motion=null}={}){
  const clip=motion?motionClip(motion):null;
- const a=buildAvatar(recipe,{shadows:false,faceSize:256}),extra=[];
+ const a=buildAvatar(recipe,{shadows:false,faceSize:256,eyes3d:false}),extra=[];
  try{
   a.root.rotation.set(0,0,0);a.setOpenHands(true);a.paintFace({expression:'neutral',blink:0,talk:0});
   for(const side of ['L','R']){

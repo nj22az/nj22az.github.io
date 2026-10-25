@@ -14,11 +14,12 @@
     "src/avatars/recipe.js",
     "src/avatars/outfit-constants.js",
     "src/avatars/face.js",
+    "src/avatars/eyes3d.js",
     "src/avatars/head-profile.js",
     "src/avatars/garment.js",
     "src/people/resident-personalities.js",
     "src/render/cel.js"
   ],
-  "sha256": "9a3ac78344e383b2ac2d973f7cf01652a60b928a076730274bc913ccff248d01",
+  "sha256": "236fba47a6f941e5848c6fc9792706df57b988b5022135a4f1fdbd4aeaeb9293",
   "count": 25
 }

@@ -110,3 +110,5 @@ tree-rebuild.test.mjs
 seawall-photo.test.mjs
 
 ribbon-dress.test.mjs
+eyes3d.test.mjs
+avatar-expressions.test.mjs

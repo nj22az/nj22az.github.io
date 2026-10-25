@@ -130,10 +130,16 @@ export const EXPRESSION_GLYPHS=Object.freeze({neutral:'•ᴗ•',happy:'◠ᴗ�
  dismay:'•_•;',calm:'•‿•',daze:'◔_◔',dry:'－_－',hope:'•̀ᴗ•́',focus:'•̀_•́',relieved:'˘◡˘',gobsmacked:'⊙Д⊙',smug:'¬‿¬',bawling:'ToT',starstruck:'★ᴗ★',
  sweatdrop:'^^;',blank:'○_○',pouting:'(•3•)',bleh:'^ڡ^',drowsy:'＝o＝',lovestruck:'♥ᴗ♥',fuming:'>д<',drooling:'¯﹃¯',wink:'•ᴗ<',raging:'>口<',seething:'^_^#',eyeroll:'◑_◑',scared:'°Д°;',kiss:'˘3˘',flustered:'⊙﹏⊙;'});
 
+/** What the eyes are doing in a face state, as drawFace reads it: the mood's eyes and where they look. */
+export function eyesOf(state={}){
+ const mood=MOOD[state.expression]||MOOD.neutral;
+ return {eyes:mood.eyes,look:state.gaze||mood.look||state.look||[0,0]};
+}
+
 /**
  * @param {CanvasRenderingContext2D} ctx
  * @param {object} recipe normalized
- * @param {{expression?:string,blink?:number,talk?:number,look?:[number,number],gaze?:[number,number],size?:number}} state
+ * @param {{expression?:string,blink?:number,talk?:number,look?:[number,number],gaze?:[number,number],size?:number,skipEyes?:boolean}} state
  *   `gaze` points the eyes even when the expression has a look of its own (a smirk at the camera for a sticker, a resident
  *   meeting the player's eye); `look` only applies where the expression has none.
  */
@@ -174,12 +180,13 @@ export function drawFace(ctx,recipe,state={}){
  drawFaceMarks(ctx,L,recipe);
  // The cartoon marks that go under the parts: a face going red, gloom lines, puffed-out cheeks.
  const fx=mood.fx||[];drawMarks(ctx,L,skin,fx.filter(f=>UNDER_MARKS.has(f)));
- // Eyes. Symbol eyes (stars, hearts, a wink...) are a drawing, not a lid: a blink leaves them be.
+ // Eyes. Symbol eyes (stars, hearts, a wink...) are a drawing, not a lid: a blink leaves them be. Rigged eyes
+ // (eyes3d.js) draw their own: skipEyes leaves them out of the canvas.
  const blink=Math.max(0,Math.min(1,state.blink||0));
  const eyesState=blink>.5&&!['happy','spiral',...SYMBOL_EYES].includes(mood.eyes)?'closed':mood.eyes;
  // A face that looks somewhere of its own (a sideways smirk, a drowsy look down) looks there, unless told where to gaze.
  const look=state.gaze||mood.look||state.look||[0,0];
- for(const s of [-1,1]){const captured=s<0?state.blinkLeft:state.blinkRight;const eye=Number.isFinite(captured)?(captured>.5?'closed':mood.eyes):eyesState;drawEye(ctx,128+s*L.spread,L.eyeY,L.eyeS,s,recipe.eyes,eye,look,L.eyeTilt,L.eyeW);}
+ if(!state.skipEyes)for(const s of [-1,1]){const captured=s<0?state.blinkLeft:state.blinkRight;const eye=Number.isFinite(captured)?(captured>.5?'closed':mood.eyes):eyesState;drawEye(ctx,128+s*L.spread,L.eyeY,L.eyeS,s,recipe.eyes,eye,look,L.eyeTilt,L.eyeW);}
  // Brows (oneBrow: the viewer's right one goes up on its own, the smug brow).
  if(recipe.brows.style!=='none')for(const s of [-1,1])drawBrow(ctx,128+s*L.browSpread,L.browY-mood.browLift-(s>0?(mood.oneBrow||0)+(recipe.marks?.cocked?7:0):0),L.browS,s,recipe.brows,L.browTilt,mood.brow);
  drawNose(ctx,L.noseX,L.noseY,L.noseS,recipe.nose.style,skin,line);

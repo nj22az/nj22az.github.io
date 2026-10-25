@@ -1,0 +1,22 @@
+✔ every eye style renders distinct moods, speech and blinks without changing identity (63.998268ms)
+✔ face repainting stays cached and preserves body/head draws with one rigged-eye draw (129.735818ms)
+✔ surprise raises both hands once and leaves walking and seated actions in control (129.243861ms)
+✔ the funny faces: each has its purpose, keeps its marks with every eye style, and is in every expression list (29.32077ms)
+✔ the rigged eyes are on unless the page asks for the painted ones (201.493908ms)
+✔ each eye sits on the head where the painter draws it, for all six residents (463.120953ms)
+✔ two eyes are one draw of a few hundred triangles, blended, writing no depth (238.97279ms)
+✔ every eye style has a shape for every drawn state: open eyes open, shut eyes shut (3.9345ms)
+✔ the painter leaves out the eyes the discs draw, and only those (32.433123ms)
+✔ gaze and blinks move the rigged eyes without repainting the face (40.18658ms)
+✔ Thao wears the shared Blender dress, long waves and no earrings; share codes preserve them (2.710002ms)
+✔ Blender bodice/straps fit a range of actual torso volumes and leave skin above the neckline (130.731355ms)
+✔ matching skirt has open waist/hem, bounded topology and outward surface normals (2.116462ms)
+✔ shared rig weights and clothing changes remain finite during walking and sitting (2495.029935ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2838.609088

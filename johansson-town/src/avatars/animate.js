@@ -980,7 +980,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   storyAfter(dt,s);
   // The face: blinks, words, glances, and whatever it is feeling.
   blinkIn-=dt;if(blinkIn<=0&&blinkT<0){blinkT=0;blinkIn=1.8+Math.random()*3.8;}
-  let blink=0;if(blinkT>=0){blinkT+=dt;blink=blinkT<.13?1:0;if(blinkT>=.13)blinkT=-1;}
+  // A blink closes in a frame or two, holds, and opens a little slower (rigged eyes draw every step; the painted ones
+  // are shut while it is past half, about the 0.13 s they always were).
+  let blink=0;if(blinkT>=0){blinkT+=dt;blink=blinkT<.04?blinkT/.04:blinkT<.11?1:Math.max(0,1-(blinkT-.11)/.06);if(blinkT>=.17)blinkT=-1;}
   if(s.talking){talkT-=dt;if(talkT<=0){talkT=.09+Math.random()*.12;talkOpen=talkOpen?0:(Math.random()<.8?1:0);}}else talkOpen=0;
   glanceIn-=dt;if(glanceIn<=0){glanceIn=1.2+Math.random()*3;glance=Math.random()<.45?[0,0]:[(Math.random()-.5)*1.6,(Math.random()-.5)*.8];}
   const face=s.sleeping?'sleep':expression;

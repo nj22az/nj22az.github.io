@@ -10,7 +10,7 @@ import * as THREE from '../vendor/three.module.js';
 installDOM();const original=document.createElement;
 document.createElement=tag=>tag==='canvas'?createCanvas(256,256):original(tag);
 const out=path.resolve(process.argv[2]||'johansson-town/docs/qa/thao-dress');fs.mkdirSync(out,{recursive:true});
-const a=buildAvatar(recipeFor('Thao'),{faceSize:1024,shadows:false});a.root.rotation.set(0,0,0);a.setOpenHands(true);a.paintFace({expression:'neutral',blink:0,talk:0});a.root.updateMatrixWorld(true);a.body.skeleton.update();
+const a=buildAvatar(recipeFor('Thao'),{faceSize:1024,shadows:false,eyes3d:false});a.root.rotation.set(0,0,0);a.setOpenHands(true);a.paintFace({expression:'neutral',blink:0,talk:0});a.root.updateMatrixWorld(true);a.body.skeleton.update();
 const seen=new Map(),materials=[];
 function material(m){if(seen.has(m))return seen.get(m);const i=materials.length;seen.set(m,i);let texture=null;
  if(m.map?.image?.toBuffer){texture='texture-'+i+'.png';fs.writeFileSync(path.join(out,texture),m.map.image.toBuffer('image/png'));}

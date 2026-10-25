@@ -32,7 +32,7 @@ test('every eye style renders distinct moods, speech and blinks without changing
  }
 });
 
-test('face repainting stays cached and preserves the two-draw avatar and current proportions',()=>{
+test('face repainting stays cached and preserves body/head draws with one rigged-eye draw',()=>{
  installDOM();
  const recipe=normalizeRecipe(),m=measure(recipe),avatar=buildAvatar(recipe,{shadows:false});
  // Adults wear the big-headed life-sim proportions: 1.12 of the original head.
@@ -43,7 +43,8 @@ test('face repainting stays cached and preserves the two-draw avatar and current
  assert.equal(avatar.paintFace({expression:'surprised'}),true);
  assert.equal(avatar.paintFace({talk:1}),true);
  assert.equal(avatar.paintFace({talk:1}),false);
- let draws=0,lines=0;avatar.root.traverse(o=>{if(o.isMesh&&o.visible)(o.userData.outline?lines++:draws++);});assert.equal(draws,2);assert.equal(lines,2,"body and head each carry one ink shell");
+ let draws=0,lines=0;avatar.root.traverse(o=>{if(o.isMesh&&o.visible)(o.userData.outline?lines++:draws++);});assert.equal(draws,3);assert.equal(lines,2,"body and head each carry one ink shell");
+ assert.equal(avatar.eyes3d.mesh.parent,avatar.bones.head,'the extra draw is the rigged eyes on the head');
  avatar.dispose();
 });
 

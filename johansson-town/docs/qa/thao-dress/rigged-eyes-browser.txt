@@ -1,0 +1,10 @@
+[{"name":"Thuan","turn":0,"inside":15009,"outside":0,"triangles":480},{"name":"Thuan","turn":0.55,"inside":10088,"outside":0,"triangles":480},{"name":"Johansson","turn":0,"inside":10374,"outside":0,"triangles":480},{"name":"Johansson","turn":0.55,"inside":6629,"outside":0,"triangles":480},{"name":"Tetsuo","turn":0,"inside":6128,"outside":0,"triangles":480},{"name":"Tetsuo","turn":0.55,"inside":4807,"outside":0,"triangles":480},{"name":"Thao","turn":0,"inside":11856,"outside":0,"triangles":480},{"name":"Thao","turn":0.55,"inside":9036,"outside":0,"triangles":480},{"name":"Fujita","turn":0,"inside":12652,"outside":0,"triangles":480},{"name":"Fujita","turn":0.55,"inside":10023,"outside":0,"triangles":480},{"name":"Vy","turn":0,"inside":4717,"outside":0,"triangles":480},{"name":"Vy","turn":0.55,"inside":3854,"outside":0,"triangles":480}]
+✔ the rigged eyes draw the eyes and change nothing else on the face (6004.182488ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6326.636011

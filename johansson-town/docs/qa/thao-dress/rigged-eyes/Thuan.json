@@ -1,0 +1,94 @@
+{
+ "name": "Thuan",
+ "triangles": 480,
+ "cells": [
+  {
+   "label": "painted today",
+   "eyes3dShowing": false
+  },
+  {
+   "label": "rigged",
+   "eyes3dShowing": true
+  },
+  {
+   "label": "look left",
+   "eyes3dShowing": true
+  },
+  {
+   "label": "look right",
+   "eyes3dShowing": true
+  },
+  {
+   "label": "look up",
+   "eyes3dShowing": true
+  },
+  {
+   "label": "look down",
+   "eyes3dShowing": true
+  },
+  {
+   "label": "blink 0.5",
+   "eyes3dShowing": true
+  },
+  {
+   "label": "blink 1",
+   "eyes3dShowing": true
+  },
+  {
+   "label": "three-quarter",
+   "eyes3dShowing": true
+  },
+  {
+   "label": "side",
+   "eyes3dShowing": true
+  },
+  {
+   "label": "smile",
+   "eyes3dShowing": true
+  },
+  {
+   "label": "happy",
+   "eyes3dShowing": true
+  },
+  {
+   "label": "angry",
+   "eyes3dShowing": true
+  },
+  {
+   "label": "sad",
+   "eyes3dShowing": true
+  },
+  {
+   "label": "surprised",
+   "eyes3dShowing": true
+  },
+  {
+   "label": "worried",
+   "eyes3dShowing": true
+  },
+  {
+   "label": "shy",
+   "eyes3dShowing": true
+  },
+  {
+   "label": "shock",
+   "eyes3dShowing": true
+  },
+  {
+   "label": "daze",
+   "eyes3dShowing": true
+  },
+  {
+   "label": "dry",
+   "eyes3dShowing": true
+  },
+  {
+   "label": "sleep",
+   "eyes3dShowing": true
+  },
+  {
+   "label": "dizzy (painted)",
+   "eyes3dShowing": false
+  }
+ ]
+}

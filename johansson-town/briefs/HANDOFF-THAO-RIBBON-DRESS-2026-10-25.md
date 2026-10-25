@@ -1,5 +1,7 @@
 # Thao: Blender ribbon dress and long side-part waves — 25 October 2026
 
+**Latest continuation:** the owner asked whether Thao has the newly rigged eyes. The original rework had painted eyes; the runtime now incorporates the exact shared eye system from main, retaining the reworked face, hair and dress. See the eye integration section below for current evidence and publication status. Saved Blender previews remain painted-eye portable exports.
+
 ## Owner request and delivery boundary
 
 Owner supplied a photograph and requested a reusable dress, fitted to Thao, a prettier and less generic Thao, no earrings, and Blender construction followed by game integration. Follow-up explicitly requested long hair like the reference and screenshots.
@@ -48,3 +50,28 @@ Re-read the supplied dress/hair reference and inspected the actual avatar and co
 Signed off: Codex — resumed the owner's Thao task, recovered the completed Blender work, checked the delivery boundary and revalidated source/runtime before committing to `development`.
 
 Fresh capture commands `node tools/render-thao-dress.mjs` and `TOWN_CHROMIUM_PATH=/tmp/johansson-chromium node tools/render-thao-world.mjs` both completed successfully: **five avatar views and two compiled-game views, zero page errors**. The room report confirms title/START, normal room entry and visible indoor Thao at the service station; refreshed screenshots were visually inspected against the supplied reference. No application source or model geometry changed during this continuation. `git diff --cached --check` passes after removing trailing blank-line whitespace from the preserved initial regression log.
+
+## Rigged-eye integration — latest owner follow-up
+
+- Original dress/hair delivery is published on remote `development` as **`1ac0ad6e4646bf75130dce9d1c90978f2cb38f6d`**. Local Git could read the repository but had no push credentials; the connected GitHub service published the files. Its returned tree SHA **`5ef8f059d20f817b62e5b1ef987fe9d9f5065597`** exactly matches the tested local tree. Local development was aligned with that same-content remote commit without discarding work.
+- Selectively ported `eyes3d.js`, face painting, fractional animation blinks, performance face painting and portable export integration from verified main **`9c7db3e823332598831adb4f577fca5cc5e2a435`** (main eye publication `b3ebec8a`). No whole-branch merge or architecture replacement. Thao's new sculpted face, long waves, no earrings and ribbon dress remain intact.
+- Runtime eyes are enabled by default, on the head bone: **480 triangles, one extra draw**, sliding gaze, smooth and per-eye blink, lids/lashes/highlights and expression states. `?eyes3d=0` retains the painted comparison; symbolic expressions retain their established painted fallback. Blender/GLB review exports explicitly retain painted eyes, matching main's portable export policy; do not claim those native files contain a Blender eye rig.
+- Focused eye, dress and expression suites: **14/14 pass**. Updated the existing expression test's obsolete two-draw assumption to include the one shared eye draw, preserving the two body/head outlines and checking attachment to the head. Added the previously unguarded expression suite and the eye suite to the guard.
+- Real ink-pipeline browser comparison: **pass**, twelve views across six residents. Final reworked Thao draws **11,856 / 9,036 eye pixels** in front / three-quarter views, **zero changed pixels outside the eyes**. [Browser log](../docs/qa/thao-dress/rigged-eyes-browser.txt).
+- [Thao eye sheet](../docs/qa/thao-dress/rigged-eyes/Thao.png) and [state report](../docs/qa/thao-dress/rigged-eyes/Thao.json): painted comparison, new eyes, four gaze directions, partial/full blink, turns and expressions; visually inspected. Updated Thao's resident portrait through the shared renderer and rebuilt runtime; package integrity **4/4 pass**.
+
+Final post-eye compiled-game captures, full guard and remote publication are recorded below when complete. Physical-device and continuous motion acceptance remain open.
+
+## Owner's appearance distinction — final Thao styling
+
+The owner: **"I want Thao to be 'Prettier' Than Thuan … Thuan is More cute, and independent."** Implemented as a visual distinction: Thao is the more elegant, poised sister, with wider lifted cat-shaped eyes and lashes, lightly arched brows, less cheek roundness, a more defined jaw, a smaller nose, restrained rose lips and less blush. Long side-part waves, pale pink ribbon dress, adult stature, beauty mark and no earrings remain. Thuan's approved recipe, personality and independent shop-owner role are preserved; no behavioural changes were made to either sister.
+
+Rendered and inspected matching Thao/Thuan eye sheets to compare their silhouettes and expressions. Reconstructed the complete native Thao model in Blender 4.5.3 from the final shared topology/weights and updated packed face texture; all five Blender studio renders were regenerated. The separate garment and hair source sculpts remain reusable. The studio export still uses painted fallback eyes, explicitly documented above; the game uses rigged eyes.
+
+Final style-focused checks **14/14 pass** ([log](../docs/qa/thao-dress/rigged-eyes-focused.txt)). Shared eye lighting/Look browser regression **passes**, 92 renders on Johansson across the existing 19 Looks and repeat switches, dim/day and two viewports; minimum measured contrast **0.0646**, required floor **0.045** ([log](../docs/qa/thao-dress/rigged-eyes-lighting.txt)). This is shared eye-pipeline evidence, not a Thao-specific 92-render claim. Final Thao eye comparison browser check passes as recorded above. Fresh five-view shared-avatar captures and two compiled-game izakaya captures use the final face and rigged eyes, with zero page errors. The owner was shown the new full-body and portrait captures during this continuation.
+
+## Final combined acceptance
+
+Final **462/462 World guard checks pass, 91 files, 333 seconds**, including runtime integrity, the rigged eyes, expression caching, garment fitting, paired poses and the existing World guard. Command: `NODE_OPTIONS=--max-old-space-size=6144 node tools/ci-guard.mjs --test-concurrency=2`. [Full current log](../docs/qa/thao-dress/rigged-eyes-full-guard.txt). No guard skips or failures. This result supersedes the earlier painted-eye 452-check delivery result for the final candidate. `git diff --cached --check` passes.
+
+Signed off: Codex — final elegant Thao styling, shared rigged eyes, Blender source refresh, actual avatar/room screenshots, visual comparison and full combined regression complete. Development publication verification follows; no main/Pages or Linux publication and no physical-device acceptance is claimed.
