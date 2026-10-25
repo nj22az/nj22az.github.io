@@ -1,3 +1,4 @@
+import {SEAWALL_PHOTO_ENABLED,seawallPhotoGround} from './seawall-photo-plan.js';
 /**
  * The ground of Kitahama, Nishi-machi, the west yard and the town hall's grounds, as plans for ground-build.js (the form
  * is ground-plan.js's): step 3 of the owner's ground plan (21 October 2026: "Can you make a plan to finally fix the roads
@@ -178,7 +179,7 @@ export function nishiGutterRuns(){
  return runs;
 }
 function nishiBase(){
- const L=[],grove=N.plots.find(p=>p.kind==='grove');
+ const L=SEAWALL_PHOTO_ENABLED?[seawallPhotoGround()]:[],grove=N.plots.find(p=>p.kind==='grove');
  L.push({cls:'coral-sand',name:'Nishi-machi coral yards',...rect(SEAWALL_FACE,NISHI_END,-38,MS.maxZ),top:CORAL,
   why:'Nishi-machi\'s yards between the coral walls are crushed coral, as old Okinawan house yards were.'});
  L.push({cls:'gravel',name:'The utaki\'s gravel',...rect(grove.minX,grove.maxX,grove.minZ,MS.maxZ),top:GRAVEL,

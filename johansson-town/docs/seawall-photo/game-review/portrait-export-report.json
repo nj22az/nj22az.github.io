@@ -1,0 +1,26 @@
+{
+  "softwareChromium": true,
+  "physicalDevice": false,
+  "errors": [],
+  "captures": [
+    "04-thuan-square-portrait",
+    "05-photo-studio-controls"
+  ],
+  "cleanExport": true,
+  "returned": {
+    "position": [
+      -37.1,
+      0.03999999910593033,
+      -6.65
+    ],
+    "yaw": 1.5707963267948966,
+    "room": null
+  },
+  "render": {
+    "programs": 123,
+    "calls": 14251,
+    "triangles": 20855277,
+    "geometries": 1261,
+    "textures": 205
+  }
+}

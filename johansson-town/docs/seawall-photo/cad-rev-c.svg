@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="650" viewBox="0 0 1050 650">
+<rect width="1050" height="650" fill="white"/>
+<g font-family="sans-serif" fill="#183c46" stroke="#183c46">
+<text x="35" y="35" font-size="22" stroke="none">JOHANSSON WORLD / JW-PH-001 REV C / OPTION A</text>
+<text x="35" y="61" font-size="14" stroke="none">Corrected Blender camera layout - dimensions mm; world X/Z coordinates metres</text>
+<rect x="100" y="110" width="460" height="320" fill="#e8f3f3"/>
+<rect x="455.99999999999994" y="110" width="104.0" height="320" fill="#f2eddf"/>
+<rect x="455.99999999999994" y="110" width="56.0" height="320" fill="#dce2d7"/>
+<rect x="129.00000000000006" y="146.0" width="326.9999999999999" height="48.0" fill="#b7c8c8"/>
+<rect x="447.6" y="204.0" width="2.8000000000000003" height="120" fill="#183c46"/>
+<rect x="406.50000000000006" y="147.5" width="5.0" height="5.0" fill="#183c46"/>
+<rect x="406.50000000000006" y="187.5" width="5.0" height="5.0" fill="#183c46"/>
+<rect x="366.50000000000006" y="147.5" width="5.0" height="5.0" fill="#183c46"/>
+<rect x="366.50000000000006" y="187.5" width="5.0" height="5.0" fill="#183c46"/>
+<rect x="326.50000000000006" y="147.5" width="5.0" height="5.0" fill="#183c46"/>
+<rect x="326.50000000000006" y="187.5" width="5.0" height="5.0" fill="#183c46"/>
+<rect x="286.50000000000006" y="147.5" width="5.0" height="5.0" fill="#183c46"/>
+<rect x="286.50000000000006" y="187.5" width="5.0" height="5.0" fill="#183c46"/>
+<rect x="246.50000000000006" y="147.5" width="5.0" height="5.0" fill="#183c46"/>
+<rect x="246.50000000000006" y="187.5" width="5.0" height="5.0" fill="#183c46"/>
+<rect x="206.50000000000006" y="147.5" width="5.0" height="5.0" fill="#183c46"/>
+<rect x="206.50000000000006" y="187.5" width="5.0" height="5.0" fill="#183c46"/>
+<rect x="166.50000000000006" y="147.5" width="5.0" height="5.0" fill="#183c46"/>
+<rect x="166.50000000000006" y="187.5" width="5.0" height="5.0" fill="#183c46"/>
+<rect x="130.49999999999997" y="147.5" width="5.0" height="5.0" fill="#183c46"/>
+<rect x="130.49999999999997" y="187.5" width="5.0" height="5.0" fill="#183c46"/>
+<circle cx="467.0" cy="277.0" r="5" fill="#c57643"/>
+<circle cx="534.0" cy="277.0" r="5" fill="#c57643"/>
+<line x1="534.0" y1="277.0" x2="467.0" y2="269.0" stroke="#c57643" stroke-dasharray="4 3"/>
+<text x="95" y="415" font-size="13" stroke="none">Pier: 16,000 seaward of wall centre; 2,400 wide; root extended to X -39.20</text>
+<text x="95" y="441" font-size="13" stroke="none">Portrait rail: 6,000 long; posts 140 x 140; 1,500 centres; post top +1,240</text>
+<text x="95" y="467" font-size="13" stroke="none">Deck top +40; slab 160; two 250 square piles per bent; 8 bents</text>
+<text x="650" y="115" font-size="16" stroke="none">SOURCE / MODEL AUDIT</text>
+<text x="650" y="147" font-size="13" stroke="none">Pier is SOUTH of the portrait bay.</text>
+<text x="650" y="173" font-size="13" stroke="none">Actual west-facing camera right is -Z.</text>
+<text x="650" y="199" font-size="13" stroke="none">Root: Z -13.20 .. -10.80</text>
+<text x="650" y="225" font-size="13" stroke="none">Rail: Z -10.30 .. -4.30</text>
+<text x="650" y="251" font-size="13" stroke="none">Subject: X -38.65 / Z -6.65</text>
+<text x="650" y="277" font-size="13" stroke="none">Camera: X -35.30 / Z -6.65</text>
+<text x="650" y="303" font-size="13" stroke="none">Camera Y +1.22 / FOV 34 degrees</text>
+<text x="650" y="329" font-size="13" stroke="none">Target: X -38.65 / Y +0.86 / Z -7.05</text>
+<text x="650" y="355" font-size="13" stroke="none">500 mm retained wall between bay/root</text>
+<text x="650" y="381" font-size="13" stroke="none">Garden and 2,800 mm walk retained</text>
+<text x="35" y="577" font-size="12" stroke="none">Construction source: design.json revision C and tools/blender/build-seawall-photo.py</text>
+<text x="35" y="602" font-size="12" stroke="none">Blender .blend and GLB supplied. Runtime uses evaluated Blender meshes plus the shared ground builder.</text>
+<text x="35" y="625" font-size="12" stroke="none">Earlier concept PDF is revision A: its left/right projection is superseded by this corrected plan.</text>
+</g></svg>

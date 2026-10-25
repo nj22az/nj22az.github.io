@@ -28,7 +28,7 @@ export function poseStudioActor(actor){
 export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onOpen,onClose,getLocations=()=>[],onLocation=null,cameraBlocked=()=>false}){
  const canvas=renderer.domElement,view=gameCamera.clone(false),stageGroup=new THREE.Group();stageGroup.name='Photo studio cast';
  const panels=[],actors=[],hidden=new Map();let opened=false,busy=false,dirty=true,selected=0,context,canvasHome,focusBefore,originalStyle;
- let editMode='move';
+ let editMode='move',locationPreset=null;
  let azimuth=0,elevation=.1,distance=2.4,targetHeight=1.05,panX=0,panZ=0;
  const set=createStudioSet();
  const ui=document.createElement('section');ui.id='photoStudio';ui.hidden=true;ui.setAttribute('role','dialog');ui.setAttribute('aria-modal','true');ui.setAttribute('aria-labelledby','photoTitle');
@@ -65,7 +65,7 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
  function restoreHidden(){for(const [o,visible] of hidden)o.visible=visible;hidden.clear();}
  function hideContext(){for(const o of context.hide){if(o&&o!==stageGroup&&!hidden.has(o)){hidden.set(o,o.visible);o.visible=false;}}}
  async function relocate(location){if(busy||!onLocation||location.id==='here')return;busy=true;updateButtons();announce('Opening '+location.title+'…');restoreHidden();stageGroup.removeFromParent();
-  try{await onLocation(location);set.set('town');field('backdrop').value='town';context=getContext();stageGroup.position.copy(context.position);stageGroup.position.add(new THREE.Vector3(-Math.sin(context.yaw)*2.5,0,-Math.cos(context.yaw)*2.5));stageGroup.rotation.y=context.yaw;scene.add(stageGroup);hideContext();resetCamera();announce(location.title);}
+  try{await onLocation(location);set.set('town');field('backdrop').value='town';context=getContext();locationPreset=location.photoPreset??null;stageGroup.position.copy(context.position);if(locationPreset)stageGroup.position.set(...locationPreset.subject);else stageGroup.position.add(new THREE.Vector3(-Math.sin(context.yaw)*2.5,0,-Math.cos(context.yaw)*2.5));stageGroup.rotation.y=context.yaw;scene.add(stageGroup);hideContext();resetCamera();if(locationPreset)field('format').value=locationPreset.format;announce(location.title);}
   catch(e){context=getContext();stageGroup.position.copy(context.position).add(new THREE.Vector3(-Math.sin(context.yaw)*2.5,0,-Math.cos(context.yaw)*2.5));stageGroup.rotation.y=context.yaw;scene.add(stageGroup);hideContext();announce('Could not open that place. Your cast and panels are safe.');console.warn('Photo location failed',e);}
   finally{busy=false;dirty=true;updateButtons();render();}}
 
@@ -114,7 +114,14 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
  const pocketOf=()=>FILMS[field('film').value]?.pocket;
  function showPocket(){const palette=pocketOf();pocketView.hidden=!palette;if(palette)pocketFilm(canvas,{palette,into:pocketView});}
  function render(){if(!opened||document.hidden)return;const resized=size();if(!dirty&&!resized)return;dirty=false;updateView();drawView();showPocket();drawCaptions(overlay.getContext('2d'),overlay.width,overlay.height,captions());}
- function resetCamera(){azimuth=0;elevation=.1;distance=2.4;targetHeight=1.05;panX=0;panZ=0;for(const [n,v] of Object.entries({azimuth:0,elevation:6,distance,targetHeight,panX,panZ,fov:50}))field(n).value=String(v);}
+ function resetCamera(){
+  azimuth=0;elevation=.1;distance=2.4;targetHeight=1.05;panX=0;panZ=0;let fov=50;
+  if(locationPreset){const p=locationPreset,target=new THREE.Vector3(...p.target),delta=new THREE.Vector3(...p.camera).sub(target),local=target.clone().sub(stageGroup.position).applyAxisAngle(new THREE.Vector3(0,1,0),-context.yaw);
+   azimuth=Math.atan2(delta.x,delta.z)-context.yaw;elevation=Math.atan2(delta.y,Math.hypot(delta.x,delta.z));distance=delta.length();targetHeight=local.y;panX=local.x;panZ=local.z;fov=p.fov;
+  }
+  for(const [n,v] of Object.entries({azimuth:azimuth*180/Math.PI,elevation:elevation*180/Math.PI,distance,targetHeight,panX,panZ,fov}))field(n).value=String(v);
+  dirty=true;
+ }
  function invalidateComic(){if(comicURL)URL.revokeObjectURL(comicURL);comicURL=null;$('[data-comic-link]').replaceChildren();}
  function film(){
   invalidateComic();$('[data-count]').textContent=String(panels.length);$('.photo-film').replaceChildren(...panels.map((panel,i)=>{
@@ -155,7 +162,7 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
   restoreHidden();set.set('town');clearActors();stageGroup.removeFromParent();canvasHome.parent.insertBefore(canvas,canvasHome.next?.parentNode===canvasHome.parent?canvasHome.next:null);canvas.style.cssText=originalStyle;
   onClose();if(focusBefore?.getClientRects?.().length)focusBefore.focus();else document.querySelector('#directoryButton')?.focus();
  }
- function open(){
+ function open(){locationPreset=null;
   if(opened)return;context=getContext();focusBefore=document.activeElement;canvasHome={parent:canvas.parentNode,next:canvas.nextSibling};originalStyle=canvas.style.cssText;opened=true;dirty=true;
   try{onOpen();document.exitPointerLock?.();document.documentElement.classList.add('photo-open');ui.hidden=false;frame.prepend(canvas);stageGroup.position.copy(context.position);stageGroup.position.add(new THREE.Vector3(-Math.sin(context.yaw)*2.5,0,-Math.cos(context.yaw)*2.5));stageGroup.rotation.y=context.yaw;setBackdrop(field('backdrop').value);canvas.style.filter=filmCSS(field('film').value);
    for(const o of context.hide.filter(Boolean)){if(!hidden.has(o)){hidden.set(o,o.visible);o.visible=false;}}
@@ -202,5 +209,5 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
  frame.onwheel=e=>{e.preventDefault();distance=THREE.MathUtils.clamp(distance+e.deltaY*.005,1.5,12);field('distance').value=String(distance);dirty=true;};
  for(const event of ['input','change','click'])ui.addEventListener(event,()=>{dirty=true;});
  document.addEventListener('keydown',e=>{if(!opened)return;e.stopPropagation();if((e.key==='Delete'||e.key==='Backspace')&&!/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)){e.preventDefault();if(!busy)$('[data-remove]').click();}if(e.key==='Escape'){e.preventDefault();close();}if(e.key==='Tab'){const all=[...ui.querySelectorAll('button,input,select,a[href],summary')].filter(o=>!o.disabled&&o.getClientRects().length),i=all.indexOf(document.activeElement);e.preventDefault();all[i<0?(e.shiftKey?all.length-1:0):(i+(e.shiftKey?-1:1)+all.length)%all.length]?.focus();}},true);
- return {open,close,render,get active(){return opened;},get panelCount(){return panels.length;},snapshot(){return {selected,actors:actors.map(a=>{const p=a.holder.getWorldPosition(new THREE.Vector3());p.y+=.9;p.project(view);return {name:a.name,x:a.x,y:a.y,z:a.z,pose:a.pose,turn:a.turn,scale:a.scale,outfit:{...a.avatar.recipe.outfit},screen:[(p.x+1)/2,(1-p.y)/2]};}),camera:{azimuth,elevation,distance},busy};}};
+ return {open,close,render,relocate:async id=>{const place=locations().find(p=>p.id===id);if(place)await relocate(place);},get active(){return opened;},get panelCount(){return panels.length;},snapshot(){return {selected,actors:actors.map(a=>{const p=a.holder.getWorldPosition(new THREE.Vector3());p.y+=.9;p.project(view);return {name:a.name,x:a.x,y:a.y,z:a.z,pose:a.pose,turn:a.turn,scale:a.scale,outfit:{...a.avatar.recipe.outfit},screen:[(p.x+1)/2,(1-p.y)/2]};}),camera:{azimuth,elevation,distance},busy};}};
 }

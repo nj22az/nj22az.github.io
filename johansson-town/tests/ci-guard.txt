@@ -105,3 +105,6 @@ skirt-motion.test.mjs
 swimwear.test.mjs
 
 tree-rebuild.test.mjs
+
+# Blender seawall overlook prototype.
+seawall-photo.test.mjs

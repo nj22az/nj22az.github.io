@@ -1,3 +1,4 @@
+import {seawallArmourKept} from './seawall-photo-plan.js';
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {SEA_LEVEL} from './ocean.js';
@@ -45,7 +46,7 @@ export function breakwaterPlacements(){
   for(const [dx,dy] of [[-1.05,-.35],[0,-.25],[1.05,-.35]])out.push([b.x+dx+(rnd()-.5)*.3,SEA_LEVEL+dy+rnd()*.1,z+(rnd()-.5)*.3,rnd()*6.28,(rnd()-.5)*.9,.95+rnd()*.2]);
   if(rnd()>.25)out.push([b.x+(rnd()-.5)*.6,SEA_LEVEL+.35+rnd()*.1,z+.6,rnd()*6.28,(rnd()-.5)*.9,.9+rnd()*.15]);
  }
- return out;
+ return out.filter(([x,,z])=>seawallArmourKept(x,z));
 }
 
 export function buildBreakwaters({parent,shadows=false}){

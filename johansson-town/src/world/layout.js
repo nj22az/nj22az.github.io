@@ -1,3 +1,4 @@
+import {seawallPhotoAt,SEAWALL_PHOTO,SEAWALL_PHOTO_ENABLED} from './seawall-photo-plan.js';
 import {streetClass,STREET_STANDARD} from './street-plan.js';
 import {DEPOT_COURT,depotCourtAt} from './architecture-ground.js';
 import {ARCHITECTURE_ROUTES} from './architecture-plan.js';
@@ -101,6 +102,7 @@ export function routeAt(x,z,r=0){
  return here;
 }
 function regionAt(x,z,r=0){
+ if(seawallPhotoAt(x,z,r))return {id:"nishi-photo-pier",surface:"stone"};
  if(depotCourtAt(x,z))return DEPOT_COURT;
  const boat=houseboatSurface(x,z,r);if(boat)return boat;
 
@@ -161,6 +163,7 @@ export function setWalkSurface(surface){globalThis.__JOHANSSON_WALK_SURFACE__=su
 /** Where feet go: the plan's ground, lifted onto whatever slab is drawn over it. */
 export function groundHeight(x,z){const h=planHeight(x,z),walk=globalThis.__JOHANSSON_WALK_SURFACE__;return walk?(walk.level?.(x,z)??(h+walk.lift(x,z))):h;}
 export function planHeight(x,z){
+ if(seawallPhotoAt(x,z))return SEAWALL_PHOTO.pier.top;
  if(depotCourtAt(x,z))return 0;
  const boat=houseboatSurface(x,z);if(boat)return boat.y;
  {
@@ -199,4 +202,4 @@ export function planHeight(x,z){
  }
  return 0;
 }
-export const MAP_BOUNDS={minX:COAST_BOUNDS.minX-3,maxX:420,minZ:-460,maxZ:COAST_BOUNDS.maxZ+3};
+export const MAP_BOUNDS={minX:SEAWALL_PHOTO_ENABLED?SEAWALL_PHOTO.pier.minX-3:COAST_BOUNDS.minX-3,maxX:420,minZ:-460,maxZ:COAST_BOUNDS.maxZ+3};

@@ -1,3 +1,4 @@
+import {seawallPhotoAt} from './seawall-photo-plan.js';
 /**
  * Minato's ground, as one rulebook: every outdoor surface the town is paved, planted or sanded with, how high its top
  * is, what colour it is, how it is finished, where it belongs and why, and what has to stand between it and each
@@ -92,7 +93,7 @@ export const DISTRICTS=Object.freeze([
  {id:'nishi-machi',name:'Nishi-machi',minX:-45,maxX:-24.6,minZ:-38,maxZ:29.3,datum:DATUM},
  {id:'kitahama',name:'Kitahama and the north',minX:-45,maxX:55,minZ:29.3,maxZ:100,datum:DATUM},
 ].map(Object.freeze));
-export function districtAt(x,z){return DISTRICTS.find(d=>x>=d.minX&&x<d.maxX&&z>=d.minZ&&z<d.maxZ)?.id??'outside';}
+export function districtAt(x,z){if(seawallPhotoAt(x,z))return 'nishi-machi';return DISTRICTS.find(d=>x>=d.minX&&x<d.maxX&&z>=d.minZ&&z<d.maxZ)?.id??'outside';}
 
 /**
  * The classes. `top` is the finished top above the datum, `tolerance` how far a drawn top may stray, `graded` a
@@ -119,7 +120,7 @@ export const GROUND_CLASSES=Object.freeze(Object.fromEntries([
   why:'Aprons, forecourts, yards and every footway that is not Main Street\'s: pale grey-beige poured concrete, at kerb height beside a road; a walk or a yard with no road beside it lies flush with the ground around it (flushTop), as a park path does.'},
  {id:'quay',name:'Quay concrete',finish:'heavy poured concrete, salt-stained, with a coping at the water',
   colour:0xb3b0a6,legacy:[0x909386,0x8b9192,0x8c918b,0x999283],top:.04,tolerance:.08,
-  where:['harbour'],
+  where:['harbour','nishi-machi'],
   why:'The quays and piers are at their own level for the boats; trucks drive onto them from the road flush, and the coping stone is the edge at the water.'},
  {id:'park-path',name:'Park path',finish:'rolled crushed stone, pale',
   colour:0xcbb994,legacy:[0xcfc2a0,0xd2c39d,0xc6b58c],top:.04,tolerance:.012,

@@ -1,0 +1,29 @@
+{
+  "softwareChromium": true,
+  "physicalDevice": false,
+  "errors": [],
+  "captures": [
+    "01-island-overview",
+    "02-pier-entrance",
+    "03-photo-bay",
+    "04-thuan-square-portrait",
+    "05-photo-studio-controls",
+    "06-tablet-entrance"
+  ],
+  "returned": {
+    "position": [
+      -37.1,
+      0.03999999910593033,
+      -6.65
+    ],
+    "yaw": 1.5707963267948966,
+    "room": null
+  },
+  "render": {
+    "programs": 131,
+    "calls": 37885,
+    "triangles": 107880713,
+    "geometries": 1288,
+    "textures": 206
+  }
+}

@@ -1,3 +1,5 @@
+import {seawallRetainedRuns} from '../seawall-photo-plan.js';
+import {buildSeawallPhoto} from '../seawall-photo.js';
 import {buildFishingBoat,EAST_QUAY_BOAT_LOOKS} from '../harbour-boats.js';
 import {benchSeat} from '../seat-slots.js';
 import {hangingRope} from '../timber-pier.js';
@@ -71,6 +73,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildNishiPlots(kit,solid,{inspect,anchor,onAction});
  buildWestQuay(kit,solid,{inspect,anchor,onAction,vending});
  buildPromenade(kit,solid,{anchor,onAction});
+ world.seawallPhoto=buildSeawallPhoto(world,{register,onAction,shadows});
  // North of the seawall the shore is the west-shore bank, in the same coral stone. See west-shore.js.
  buildWestShore(kit,solid,{anchor,onAction,group});
  buildYardRow(kit,solid,{anchor,inspect,onAction,getMinutes:()=>world.minutes??720});
@@ -122,9 +125,11 @@ function buildNishiGround(kit,solid){
  // The quay's apron and its coping are the harbour's ground (ground-plan-harbour.js, laid by harbour.js).
  // The seawall along the shore, and its quay edge along the harbour.
  const S=NISHI.seawall;
- kit.block(S.x-S.thickness/2,S.x+S.thickness/2,-.7,S.height,NISHI.minZ,NISHI.maxZ+.4,0xb9b4a6);
- kit.block(S.x-S.thickness/2-.04,S.x+S.thickness/2+.04,S.height,S.height+.08,NISHI.minZ,NISHI.maxZ+.4,0xa9a497);
- solid({id:'seawall',x:S.x,z:(NISHI.minZ+NISHI.maxZ)/2,w:S.thickness+.1,d:NISHI.maxZ-NISHI.minZ+.4,height:S.height});
+ for(const [z0,z1] of seawallRetainedRuns(NISHI.minZ,NISHI.maxZ+.4)){
+  kit.block(S.x-S.thickness/2,S.x+S.thickness/2,-.7,S.height,z0,z1,0xb9b4a6);
+  kit.block(S.x-S.thickness/2-.04,S.x+S.thickness/2+.04,S.height,S.height+.08,z0,z1,0xa9a497);
+  solid({id:'seawall',x:S.x,z:(z0+z1)/2,w:S.thickness+.1,d:z1-z0,height:S.height});
+ }
  // The quay edge, its yellow kerb and its solid edge, with a gap the width of the timber pier's walkway
  // (fujita-layout.js SHED_WALKWAY) where it lands, so you can walk onto the pier. The wall runs on under the
  // walkway as the shelf its stringers rest on (timber-pier.js); the gap was 4.8 m wide for the old L-shaped slab,

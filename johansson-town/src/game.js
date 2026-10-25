@@ -1,3 +1,4 @@
+import {SEAWALL_PHOTO_ENABLED,SEAWALL_PHOTO} from './world/seawall-photo-plan.js';
 import {canonicalResidentName} from './desktop/life-state.js';
 import {createLinuxLife} from './desktop/life.js';
 import {buildLinuxBedroom} from './desktop/bedroom.js';
@@ -532,7 +533,7 @@ function controlsAllowed(){return document.documentElement.dataset.desktopMenu!=
 function dragLook(dx,dy){spawnScene?.cancel();const turn=swipeLook(dx,dy,innerWidth,cameraControls.settings);yaw+=turn.yaw;pitch=THREE.MathUtils.clamp(pitch+turn.pitch,-1.25,1.15);}
 const walkMotion=createMotion(),touchAutoRun=createAutoRun();
 const touchSticks=createTouchSticks({canvas,movePad:$('#stick'),stickBase:$('#stickBase'),stickKnob:$('#knob'),enabled:controlsAllowed,onDrag:dragLook});
-async function openPhotoStudio(){if(concert?.active||concertLoading)return;spawnScene?.cancel('photo');
+async function openPhotoStudio(locationId=null){if(concert?.active||concertLoading)return;spawnScene?.cancel('photo');
  if(photoLoading||photoStudio?.active||!started||roomLoading||catchingUp||inspector?.active||activities?.paused)return;
  toggleDir(false);cameraControls.close();resetInput();photoLoading=true;photoOrigin={site:current,position:player.position.clone(),yaw,pitch,seated,parkSeat};
  try{
@@ -541,7 +542,7 @@ async function openPhotoStudio(){if(concert?.active||concertLoading)return;spawn
     getLocations:()=>[...new Map([...SITES.map(s=>({id:s.id,title:s.title,icon:s.homeOwner?'home':'door',site:s})),...(world.landmarks||[]).map(s=>s.id==='warehouse'?{id:s.id,title:s.title,icon:'door',site:s}:{id:s.id,title:s.title,icon:'map',x:s.exitPosition?.[0]??s.x,z:s.exitPosition?.[2]??s.z,y:s.exitPosition?.[1]}),{id:NAHA_ARRIVALS.id,title:NAHA_ARRIVALS.title,icon:'door',site:NAHA_ARRIVALS},{id:NAHA_TRIP.id,title:NAHA_TRIP.title,icon:'bowl',site:NAHA_TRIP},
      ...photoSpots().map(p=>({...p,icon:'map'}))].map(p=>[p.id,p])).values()],
     onLocation:async place=>{if(current)leaveRoom();if(place.site){await enterRoom(place.site);if(!current)throw Error('Room unavailable');}
-     else{let x=place.x,z=place.z;if(environmentBlocked(x,z,.32)){[x,z]=findClear(x,z);if(environmentBlocked(x,z,.32))throw Error('Choose a clear place');}player.position.set(x,place.y??groundHeight(x,z),z);yaw=0;pitch=0;}},
+     else{let x=place.x,z=place.z;if(environmentBlocked(x,z,.32)){[x,z]=findClear(x,z);if(environmentBlocked(x,z,.32))throw Error('Choose a clear place');}player.position.set(x,place.y??groundHeight(x,z),z);yaw=place.photoPreset?.yaw??0;pitch=0;}},
     getContext:()=>({position:player.position.clone(),yaw,
      cast:(characters?.actors||[]).map(a=>({name:a.entity.userData.name||a.avatar?.recipe?.name||'Resident',recipe:a.avatar?.recipe,outfit:a.outfit})),
      hide:[camera,johansson?.root,...(characters?.actors||[]).map(a=>a.entity)]}),
@@ -551,6 +552,7 @@ async function openPhotoStudio(){if(concert?.active||concertLoading)return;spawn
    });
   }
   photoStudio.open();
+  if(typeof locationId==='string')await photoStudio.relocate(locationId);
  }catch(error){console.warn('Photo studio could not open',error);say('Photo studio could not open. Please try again.',4);}
  finally{photoLoading=false;}
 }
@@ -594,6 +596,7 @@ function photoSpots(){
  // Keep the saved photo IDs while following the park's current public approach and the flowers, which are at Sakura's
  // door since the Rainflower pavilion came down (phase 4 of docs/CAST-CONSOLIDATION.md).
  return [
+  ...(SEAWALL_PHOTO_ENABLED?[SEAWALL_PHOTO.photo]:[]),
   {id:'photo-harbour',title:'Working harbour',at:'at the working harbour',x:-22,z:-39},
   {id:'photo-main',title:'Main shopping street',at:'on the main shopping street',x:-3,z:-20},
   {id:'photo-beach',title:'East beach',at:'on the east beach',x:38,z:-12},
@@ -714,7 +717,7 @@ function advanceWeather(){
  loadingProgress?.start('town');
  await paintLoading();
  launchReport.stage('Building town');
- const world=createTown({scene:town,desktop:!!window.johanssonDesktop,sites:SITES,mobile,shadows,kitano:'distant',maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:s=>crossThreshold(()=>enterRoom(s)),getPlayerPosition:()=>current?null:player.position,onAction:(...args)=>{if(islandPlay?.action(...args))return;if(args[0]==='dessert-menu'){activities.menu(args[1],'Mrs Nakamura serves shaved ice, warm andagi and Blue Coral scoops. Open 10:00–19:00.',[...args[2].map(p=>[p.title+' · ¥'+p.cost,()=>world.blueCoral.isOpen()?activities.action('buy',p.title,p):activities.action('read','Nakamura is closed','The counter closes at 19:00 and opens at 10:00.')]),['Keep walking',activities.close]]);return;}if(args[0]==='ferry-ladder'){ferryLadder(args[1]);return;}if(args[0]==='plant'){plantStation(args[1]);return;}if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person?.g.userData.sleeping){say(args[1]+' is sleeping. You can stay and watch the morning routine.',4);return;}if(person?.g.userData.waking||person?.g.userData.roomTransition){say(args[1]+' is '+person.g.userData.activity+'.',3);return;}if(person){person.g.userData.facePlayerUntil=performance.now()+1600;characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
+ const world=createTown({scene:town,desktop:!!window.johanssonDesktop,sites:SITES,mobile,shadows,kitano:'distant',maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:s=>crossThreshold(()=>enterRoom(s)),getPlayerPosition:()=>current?null:player.position,onAction:(...args)=>{if(args[0]==='seawall-photo'){void openPhotoStudio(SEAWALL_PHOTO.photo.id);return;}if(islandPlay?.action(...args))return;if(args[0]==='dessert-menu'){activities.menu(args[1],'Mrs Nakamura serves shaved ice, warm andagi and Blue Coral scoops. Open 10:00–19:00.',[...args[2].map(p=>[p.title+' · ¥'+p.cost,()=>world.blueCoral.isOpen()?activities.action('buy',p.title,p):activities.action('read','Nakamura is closed','The counter closes at 19:00 and opens at 10:00.')]),['Keep walking',activities.close]]);return;}if(args[0]==='ferry-ladder'){ferryLadder(args[1]);return;}if(args[0]==='plant'){plantStation(args[1]);return;}if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person?.g.userData.sleeping){say(args[1]+' is sleeping. You can stay and watch the morning routine.',4);return;}if(person?.g.userData.waking||person?.g.userData.roomTransition){say(args[1]+' is '+person.g.userData.activity+'.',3);return;}if(person){person.g.userData.facePlayerUntil=performance.now()+1600;characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
  // Colliders by where they are, for the camera, walking and residents (collider-grid.js).
  const colliderGrid=createColliderGrid(world.colliders);
  loadingProgress?.complete('town');
@@ -2421,7 +2424,7 @@ const invalidateDetails=()=>{townSections.invalidate();shopStreetView.invalidate
 loadingProgress?.start('walking');
 await paintLoading();
 launchReport.stage('Preparing walking surface');
-const walkSurface=createWalkSurface({minX:COAST_BOUNDS.minX-2,maxX:COAST_BOUNDS.maxX+2,minZ:COAST_BOUNDS.minZ-2,maxZ:COAST_BOUNDS.maxZ+2,base:planHeight});
+const walkSurface=createWalkSurface({minX:SEAWALL_PHOTO_ENABLED?SEAWALL_PHOTO.pier.minX-2:COAST_BOUNDS.minX-2,maxX:COAST_BOUNDS.maxX+2,minZ:COAST_BOUNDS.minZ-2,maxZ:COAST_BOUNDS.maxZ+2,base:planHeight});
 {const t0=performance.now();walkSurface.add(town);setWalkSurface(walkSurface);window.__JOHANSSON_WALK__={ms:Math.round(performance.now()-t0),get triangles(){return walkSurface.triangles;}};}
 loadingProgress?.complete('walking');loadingProgress?.start('preview');
 const detailStream=createDetailStream({enabled:graphics.streamDetails,...(window.johanssonDesktop?{lookAhead:32,radiusScale:1.8,maxConcurrent:2,maxPending:4,timeoutMs:30000}:{}),onStart:id=>launchReport.stage('Loading detail: '+id),onChange:()=>{invalidateDetails();walkSurface.add(town);}});window.__JOHANSSON_STREAMING__=detailStream.stats;

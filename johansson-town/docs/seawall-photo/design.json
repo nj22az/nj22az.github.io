@@ -1,0 +1,108 @@
+{
+  "id": "JW-PH-001",
+  "revision": "C",
+  "units": "metres",
+  "date": "2026-10-25",
+  "origin": [
+    -39.55,
+    0.04,
+    -7.3
+  ],
+  "coordinates": "World X east, Y up, Z north. Blender X=X, Y=-Z, Z=Y.",
+  "rail": {
+    "x": -39.55,
+    "minZ": -10.3,
+    "maxZ": -4.3,
+    "top": 1.24,
+    "post": 0.14,
+    "spacing": 1.5,
+    "railCentres": [
+      0.39,
+      0.79,
+      1.165
+    ],
+    "railHeight": 0.1,
+    "railDepth": 0.07,
+    "plinthTop": 0.14
+  },
+  "pier": {
+    "minX": -55.55,
+    "maxX": -39.2,
+    "minZ": -13.2,
+    "maxZ": -10.8,
+    "top": 0.04,
+    "slab": 0.16,
+    "railHeight": 1.1,
+    "pileBottom": -2.5,
+    "pileWidth": 0.25,
+    "bentX": [
+      -41.55,
+      -43.55,
+      -45.55,
+      -47.55,
+      -49.55,
+      -51.55,
+      -53.55,
+      -55.35
+    ],
+    "pileZ": [
+      -13.0,
+      -11.0
+    ]
+  },
+  "photo": {
+    "id": "photo-nishi-overlook",
+    "title": "Nishi seawall portrait",
+    "subject": [
+      -38.65,
+      0.04,
+      -6.65
+    ],
+    "camera": [
+      -35.3,
+      1.22,
+      -6.65
+    ],
+    "target": [
+      -38.65,
+      0.86,
+      -7.05
+    ],
+    "fov": 34,
+    "yaw": 1.5707963267948966,
+    "format": "square"
+  },
+  "audit": {
+    "existingWalk": [
+      -39.2,
+      -36.4
+    ],
+    "gardenWestWall": [
+      -34.7,
+      -34.1,
+      -10.6,
+      -0.8
+    ],
+    "cameraReservation": [
+      -35.8,
+      -34.8,
+      -7.15,
+      -6.15
+    ],
+    "rootWallCut": [
+      -13.2,
+      -10.8
+    ],
+    "retainedWallBetweenBayAndRoot": 0.5,
+    "waterY": -0.56,
+    "corrections": [
+      "Deck top +0.04 matches actual lane surface, not nominal 0",
+      "Root continues 0.35 m landward to promenade edge X -39.2",
+      "First bent starts seaward of abutment; end bent inset 0.20 m",
+      "Remove full tetrapod envelopes from pier/portrait shore only",
+      "Garden is occupied; camera stays entirely outside it",
+      "Retain entrance lamp at (-39.05,-2); its 200 mm footprint is outside pier deck",
+      "Blender camera review: mirror the scheme around subject Z -6.65. Actual camera right is -Z when facing west. Pier goes SOUTH of portrait bay; target Z -7.05."
+    ]
+  }
+}
