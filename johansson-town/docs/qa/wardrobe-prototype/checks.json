@@ -31,6 +31,8 @@
   "linuxRelease": false,
   "visualAcceptance": false,
   "implementationCommit": "9ff7fa6",
-  "remotePublication": "blocked by automatic approval review; no push",
-  "mainModified": false
+  "remotePublication": "published to development with explicit owner authorisation",
+  "mainModified": false,
+  "publishedImplementationCommit": "394eb0bb6ddb058ab657a26789df0dee8db7a323",
+  "verifiedPublishedTree": "4611c4ae66533411b11b064d5e18ac3b280d4220"
 }
