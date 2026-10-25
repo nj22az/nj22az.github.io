@@ -2632,7 +2632,7 @@ if(window.__JOHANSSON_AUDIT__){
  window.__JOHANSSON_AUDIT__.replay.root=window.__JOHANSSON_AUDIT__;
  window.__JOHANSSON_GRAPHICS__=createGraphicsInspector({canvas,renderer,canCapture:()=>!graphicsLifecycle?.lost&&started&&!document.hidden});
  window.advanceTime=ms=>window.__JOHANSSON_AUDIT__.step(ms);
- window.render_game_to_text=()=>JSON.stringify({coordinates:'x/z in metres; y is height; interiors use local coordinates',room:current?.id||null,...(window.johanssonDesktopUI?{desktop:window.johanssonDesktopUI.snapshot()}:{}),home:activeRoomLayout?.snapshot?.()||null,calendar:activeRoomLayout?.calendar?.()||null,discoveries:activeRoomLayout?.discoveries?.()||null,minutes,player:player.position.toArray(),seat:seated&&parkSeat?{surfaceY:parkSeat.surfaceY,position:parkSeat.position,stand:parkSeat.stand}:null,customers:bookshopCustomers.snapshot(),island:islandPlay?.snapshot(),arrival:spawnScene?.snapshot()});
+ window.render_game_to_text=()=>JSON.stringify({coordinates:'x/z in metres; y is height; interiors use local coordinates',room:current?.id||null,...(window.johanssonDesktopUI?{desktop:window.johanssonDesktopUI.snapshot()}:{}),home:activeRoomLayout?.snapshot?.()||null,calendar:activeRoomLayout?.calendar?.()||null,discoveries:activeRoomLayout?.discoveries?.()||null,minutes,cargoBerth:world.oilJetty?.snapshot?.()||null,player:player.position.toArray(),seat:seated&&parkSeat?{surfaceY:parkSeat.surfaceY,position:parkSeat.position,stand:parkSeat.stand}:null,customers:bookshopCustomers.snapshot(),island:islandPlay?.snapshot(),arrival:spawnScene?.snapshot()});
 }
 // Where the player is standing and what they are standing on. Read-only, and the same
 // answer the simulation uses, so a screenshot can be tied to a place on the ground.

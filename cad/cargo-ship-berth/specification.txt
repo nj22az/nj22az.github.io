@@ -1,0 +1,97 @@
+COASTAL CARGO SHIP AND BERTH — CONCEPT A
+25 October 2026
+
+Purpose
+An original exterior CAD concept for a believable coastal general cargo vessel
+and its berth. Created from scratch; no geometry from the existing game model
+is used. The reference screenshots supply context, not measured dimensions.
+
+Vessel dimensions (metres)
+Hull length:                  72.00
+Maximum moulded beam:         13.50
+Design waterline datum:        z = 0.00
+Assumed draft:                 3.60
+Main hull deck:                z = +2.40
+Moulded depth:                 6.00
+Main deck finish:              z = +2.52
+Forecastle deck finish:        z = +3.45
+Poop deck finish:              z = +3.25
+Highest mast point:            z = +15.30
+Overall including aft rail:    approximately 72.04
+
+Arrangement
+Bow points toward +X. The quay is on the negative-Y, starboard side.
+Hull station sections form a broad working midbody, rounded chine transitions,
+a narrowing stern and a fine bow. Plates have navy topsides, a dark boot topping
+around the waterline, and red underwater antifouling. Deck surfaces are green.
+The hull is an exterior solid envelope; internal holds are not excavated.
+
+Two hatch coamings, each 16.00 x 8.20, at X = -9.00 and +11.00. Eight separate
+cover panels per hatch, each 1.96 x 8.22. Panel tops at z = +3.64. Nominal deck
+width outside each coaming is about 2.65 per side in the parallel midbody.
+
+Aft accommodation has lower and upper levels, an enclosed wheelhouse,
+individual dark glazing, projecting bridge wings, navigation light housings,
+funnel, radar scanner, antennas and mainmast. Twin small pedestal cranes are
+positioned on the port side at X = -19.00 and +1.00, Y = +4.90. Their booms are
+stowed mainly fore-and-aft. No crane lifting capacity is specified.
+
+Deck fittings include railings, forecastle access treads, anchor windlasses,
+schematic chains and anchors, mooring bitts, vents, enclosed rescue boat,
+davits and two liferaft capsules. These are external visual components.
+Propulsion, rudder, machinery, internal stairs and working mechanisms are
+outside this first exterior arrangement.
+
+Berth dimensions (metres)
+Concrete quay length:          100.00
+Quay width:                     18.00
+Seaward concrete face:          Y = -7.90
+Landward edge:                  Y = -25.90
+Quay walking surface:           z = +2.10
+Primary slab thickness:          1.20
+Nominal hull-to-quay gap:         1.15 at the parallel midbody
+Fender projection:               1.15; nominal face contact with parallel hull
+Fender panel:                    1.85 wide x 2.10 high
+Fender longitudinal spacing:    12.00
+Bollard longitudinal spacing:   11.00
+Gangway walking width:           1.10
+Gangway horizontal reach:        5.25
+Gangway tread elevation:         +2.67 ship end to +2.24 quay end
+Schematic pile diameter:          0.96
+Schematic pile toe elevation:    z = -7.50
+
+The independent quay model includes a slab, fascia beam, three rows of
+supporting piles, transverse cap beams, coping, yellow edge stripe,
+movement-joint lines, rubber fender elements, face panels, horn bollards,
+three access ladders and two lighting poles. The combined assembly adds
+four schematic mooring lines and the access gangway. Mooring lines are
+for visual arrangement; lead angles, fairleads and loads need further design.
+Pile embedment, water depth, seabed and land connection are not determined.
+
+Files
+cargo-ship.step           Separate editable vessel solids, millimetres
+dock.step                 Separate editable quay solids, millimetres
+ship-and-berth.step       Combined vessel, quay, gangway and mooring assembly
+cargo-ship.glb            Coloured vessel mesh, metres
+dock.glb                  Coloured quay mesh, metres
+ship-and-berth.glb        Coloured combined scene, metres
+general-arrangement.svg   Vector plan, profile and berth plan with dimensions
+general-arrangement.png   Drawing preview
+ship-at-berth.png         Render of the actual combined CAD export
+cargo-ship.png            Separate vessel render
+dock.png                  Separate quay render
+build.py                  Parametric source; dimensions entered in metres
+drawing.py                Rebuilds the general-arrangement sheet
+render.py                 Blender render setup
+validation.json           Solid validity and model bounds from CAD generation
+
+Rebuild CAD: uvx --from build123d python build.py
+Rebuild drawing: python3 drawing.py
+Render: blender -b -t 6 -P render.py
+
+Design status
+Conceptual visual CAD, with assumed dimensions. No displacement, deadweight,
+stability, structural scantlings, berth capacity, fender energy, mooring loads
+or regulatory compliance have been calculated. The separate CAD solids pass
+geometric validity checks; this does not establish a buildable vessel or quay.
+The drawing is schematic; editable CAD geometry controls.
