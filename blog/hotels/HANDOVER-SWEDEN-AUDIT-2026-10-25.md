@@ -2,8 +2,10 @@
 
 ## Delivery state
 
-Prepared and locally verified; deployment and public-file verification will be
-recorded here after publication. Previous delivery:
+**Published to main as `b8e9dc1a4dac4fcd1ce9accd70fa9e759e75ed22`.**
+[GitHub Pages run 40165335805](https://github.com/nj22az/nj22az.github.io/actions/runs/40165335805)
+completed successfully. Public HTML, hotel JSON, CSV and the Swedish evidence JSON
+match the tested files byte for byte. Previous delivery:
 [60-hotel field service register](HANDOVER-SCANDIC-PAID-2026-10-25.md).
 
 ## Outcome and scope
@@ -80,7 +82,7 @@ can override it. No hotel-quality or safety rating is implied.
 
 ## Remaining work
 
-Publish, verify Pages and record sign-off below. Recheck receipt inclusion directly
+Publication is verified. Recheck receipt inclusion directly
 before moving any paid property to Easy. Follow up construction access before travel.
 Norway/Finland/Denmark and other chains remain separate work; do not infer nationwide
 hotel coverage from this Scandic catalogue audit.

@@ -1,5 +1,5 @@
 {
-  "status": "locally-verified-publication-pending",
+  "status": "published-and-verified",
   "checkedOn": "2026-10-25",
   "scope": "91 Scandic catalogue-linked properties in Sweden",
   "audited": 91,
@@ -34,5 +34,43 @@
     "blog/hotels/index.html": "087e4fb98b81959b91fc1c0a1eb74f8d74b461dbb174e09e9bbd890bb3d37d6d",
     "blog/hotels/hotels.json": "1feff703350b012da348fb7f5ea930ebd7784726a45932e803955ebca3529895",
     "blog/hotels/hotel-reviews.csv": "36b5e674f5c00f790c26917c373a98f349d75039b250b5c07e196a41a6b619e5"
-  }
+  },
+  "implementationCommit": "b8e9dc1a4dac4fcd1ce9accd70fa9e759e75ed22",
+  "branch": "main",
+  "pagesRun": {
+    "id": 40165335805,
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/40165335805"
+  },
+  "publicFiles": [
+    {
+      "path": "blog/hotels/index.html",
+      "url": "https://nj22az.github.io/blog/hotels/index.html?verify=b8e9dc1a4dac",
+      "match": true,
+      "sha256": "087e4fb98b81959b91fc1c0a1eb74f8d74b461dbb174e09e9bbd890bb3d37d6d",
+      "bytes": 957362
+    },
+    {
+      "path": "blog/hotels/hotels.json",
+      "url": "https://nj22az.github.io/blog/hotels/hotels.json?verify=b8e9dc1a4dac",
+      "match": true,
+      "sha256": "1feff703350b012da348fb7f5ea930ebd7784726a45932e803955ebca3529895",
+      "bytes": 405796
+    },
+    {
+      "path": "blog/hotels/hotel-reviews.csv",
+      "url": "https://nj22az.github.io/blog/hotels/hotel-reviews.csv?verify=b8e9dc1a4dac",
+      "match": true,
+      "sha256": "36b5e674f5c00f790c26917c373a98f349d75039b250b5c07e196a41a6b619e5",
+      "bytes": 184151
+    },
+    {
+      "path": "blog/hotels/SCANDIC-SWEDEN-EVIDENCE-2026-10-25.json",
+      "url": "https://nj22az.github.io/blog/hotels/SCANDIC-SWEDEN-EVIDENCE-2026-10-25.json?verify=b8e9dc1a4dac",
+      "match": true,
+      "sha256": "ad9ab61eda511cb2bb3ee1d64e280043d96870301da5bce7518d661fdefed567",
+      "bytes": 216960
+    }
+  ]
 }
