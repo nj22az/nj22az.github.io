@@ -16,6 +16,52 @@ Sakura Shōten's products, change their labels, words, prices, purpose and shelf
 line. It does this through the `johansson-studio` tools, which use the same data and drawing code as Johansson Studio on
 the iPad.
 
+## Comic After effects (MCP 1.7)
+
+`comic_effects_info` lists the actual shared shader ids and editing rules. `comic_after_effects` opens the built-in
+Fujita television comic when `projectFile` is omitted, or a repository-relative layered Studio `.json` project.
+It uses the same clean picture, assets and lettering renderer as **2. After effects** in Studio.
+
+```json
+{"name":"fujita-open"}
+```
+
+Read the returned `panels` to find each speaker's actor id. Replace text, apply a shader and add assets:
+
+```json
+{
+  "projectFile":"output/studio-mcp/scenes/fujita-open.studio.json",
+  "name":"fujita-edited",
+  "edits":[{
+    "panel":1,
+    "look":"manga",
+    "dialogue":[{"actor":"REPLACE_WITH_RETURNED_ACTOR_ID","text":"Time to do something, Fujita!"}],
+    "assets":[{"kind":"star","x":0.8,"y":0.7,"size":0.15}]
+  }]
+}
+```
+
+Panel numbers start at **1**. `dialogue` replaces the named actor's speech; an empty string removes its bubble.
+`bottom` replaces the caption; `top` switches to meme text. `assets` replaces that panel's complete asset list;
+use `[]` to remove all assets, or include the existing entries to retain them. Kinds: star, heart, arrow, text,
+image. Images use resized PNG/JPEG/WebP base64 data URLs, bounded to 2.8 million characters. Position is 0–1,
+size .03–.8, rotation −180–180 degrees and opacity .05–1. There are at most 20 assets per panel.
+
+`language:"en"` / `"sv"` switches the original Fujita script **before** explicit edits. Custom wording has no saved
+translation and is refused without changing files; supply translated replacement text for any other language.
+Each call returns a PNG preview, new `.studio.json`, speaker/asset summary, and an editable `shareUrl` when it fits.
+Oversized image-bearing links report `shareWarning`; exchange the project file instead. Import that file with
+**Open project → 2. After effects**. Older projects without clean layers need **Edit scene → Update panel** first.
+
+This is an output transformation, so no World draft or publish step is involved. Use a different `name` from the
+input project: it is never overwritten. The server serialises calls and exports files through Studio's existing
+allowlisted writer. `window.__JOHANSSON_STUDIO__.comicAfterEffects(options)` exposes the same transformation on
+agent pages (`?agent`); this does not install a connector in the chat host. Restart an existing `johansson-studio`
+MCP connection to discover the new tools. `.mcp.json` already points at this server.
+
+Browser acceptance: `STUDIO_BROWSER_TEST=1 node --test johansson-town/tests/comic-effects-mcp.test.mjs`.
+Set `TOWN_CHROMIUM_PATH` only when using an existing custom Chromium installation.
+
 ## For the creator
 
 Ask in plain words:
@@ -288,8 +334,8 @@ Whether to raise the host's MCP timeout is the creator's decision, and no reposi
 - The can in the hand is blue (`drink.handColour` `#2d6b9a`) while the can on the shelf is gold.
 - The posters advertise GOLDEN MILK TEA, NIGHT SHIFT and STICK BITES, which are not the shelf's NAGI, PORT 88 and
   KOMOREBI (`store-advertising.js` `POSTER_SPECS`).
-- Who supplies alcohol contradicts itself: `economy/goods.js` and `economy/town-economy.js` have Sakura supplying Higa,
-  while `merchandising.js`, CLAUDE.md and the products data have Higa supplying Sakura.
+- ~~Who supplies alcohol contradicts itself~~: settled on 22 October 2026, when Higa Liquor closed. Sakura Trading supplies
+  all of it, in `merchandising.js`, the economy, CLAUDE.md and the products data (`supplier: "sakura"`).
 - A real brand, Orion, is still used in World (`data/studio/brand-rules.json` `knownIssues` lists every place).
 - The beer's and the coffee's backs say "Nutrition (per bottle)" on a can (`pack.back.unit`).
 - The old `PACKS` listed a few shapes and sizes the shelf never built (`pack.declared`: orange as a carton, the sandwich
@@ -303,3 +349,15 @@ Whether to raise the host's MCP timeout is the creator's decision, and no reposi
 Native workshop authoring: `world_room_open`, `world_room_check`, `world_room_publish`, `world_room_rollback`.
 See [WORKSHOP-ROUNDTRIP.md](WORKSHOP-ROUNDTRIP.md) for the revision-checked World round trip, imported props and intentional
 floating. Publishing updates local World data; runtime build, review and git deployment remain explicit steps.
+
+## Shared illustration capture — 23 October 2026
+
+Fresh scene captures retain optional version-1 `capture` metadata: opaque RGB24 depth PNG, normal PNG, dimensions, near/far planes, inverse projection and camera-world matrices, sky depth and focus settings. Import validates PNG headers, dimensions and finite bounded metadata. Legacy picture-only projects still open; geometry-dependent effects explain their 2D approximation. Re-capture through Edit scene for the full Cartoon material treatment or rest-space pencil strokes. `baseLook` prevents applying the same baked effect twice.
+
+`comic_after_effects` panel edits accept `focus: {mode: "depth" | "tilt", distance, range}`. Captured Miniature panels expose the same controls in After effects. Preview uses a smaller shader sample budget; PNG export uses full quality. Lettering, translation and added assets remain editable after the picture shader. See [implementation handover](../../johansson-town/briefs/HANDOFF-SHARED-SHADERS-2026-10-23.md).
+
+## Illustration recovery - 23 October 2026
+
+The active shared catalogue contains the original fourteen looks plus `sketchbook` (Architectural sketchbook). Storybook, Sunday Strip and Impasto Gouache were rejected in visual review and removed from World Settings, Studio and the MCP schema. Old scene/effect projects map `storybook`/`sunday` to `flat`, and `gouache` to `oil`. A baked retired picture retains its marker and displays a recapture notice: Edit scene and Update panel rebuilds it from the geometry. Changing the saved look cannot erase marks already baked into its image.
+
+Cartoon, Manga and Oil restore their accepted pre-hybrid rendering; World keeps its ink prepass for every active style. Crayon retains the continuous pigment wash that fixed the white cheek patch. Architectural sketchbook keeps its approved World wash/graphite treatment; comic rendering alone adds 25 percent saturation and deeper graphite. Crayon comic contours also use a 20 percent darker pigment. The `uComic` adapter uniform is 0 in World and 1 in Studio/After effects, so these comic adjustments do not alter the World sketch.

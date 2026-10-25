@@ -19,6 +19,38 @@ Every building, room, shop, counter, shelving or other spatial remodel must foll
 4. **Construct from the corrected CAD, then verify.** Share measured placement data with the implementation where practical. Compare the built result with the CAD, inspect actual-game views at player and worker height, test affected routes/interactions, and correct discrepancies. Keep screenshots and the audit results with the handover. A visual mock-up alone does not establish working geometry or character contact.
 
 The user requested this as a standing instruction: "for any remodel draw a cad first and audit yourself and fix what needs fixing before implement construction". This is a required work sequence, not a new permission/approval gate.
+## Owner's workflow — 24 October 2026: prototypes, Pixar, main
+
+The owner: "I want the workflow to be like this , codex prototypes and makes a detailed three.js room and characters and
+you improve upon this to reach Pixar standard , main keeps the simplified but cute and relatable cartoony three js until
+we have a perfect Pixar world".
+
+- **Codex prototypes** detailed three.js rooms and characters on the `development` branch (behind a URL flag when
+  they run in World, as `?sakura-rebuild` does). Prototypes are not merged into `main`.
+- **Claude takes a prototype to Pixar standard**, in Blender (the studio repo `nj22az/jojo`: `3d/cast/`, `3d/sakura/`),
+  on the `pixar` branch, reading the prototype's CAD and data rather than copying it.
+- **`main` keeps the simplified, cute and relatable cartoon three.js** World until the Pixar world is complete; its
+  fixes and small features merge as before.
+- **Three branches only** (the owner, 24 October 2026: "I basically want main , and the Pixar branch , and a development
+  branch"): `main`, `development`, `pixar`, in both repos. Every older branch is kept as a tag `archive/<name>`
+  (`git checkout -b <name> archive/<name>` restores one). The survey before the clean-up: `docs/BRANCHES-2026-10-24.md`.
+
+## Development tool: REA, reverse engineering for agents — 24 October 2026
+
+The owner: "https://github.com/morluto/rea use this as a permanent asset in Johansson World and nj22az.github.io
+development". REA (MIT, `rea-agents` on npm) gives an agent tools to inspect native binaries, JavaScript/Electron
+applications, .NET assemblies and websites, with the evidence for each conclusion.
+
+- **Registered for every session** in `.mcp.json` as `rea`, pinned to one exact version (`npx -y rea-agents@6.7.0 mcp`),
+  as REA's installation guide recommends for persistent registrations. Raise the pin deliberately, after reading the
+  release notes; never `@latest` in the shared config. Terminal use: `npx -y rea-agents@6.7.0 <command>` (`--help` lists
+  them). Codex registers it with `npx -y rea-agents@6.7.0 setup --client codex` (see REA's `docs/installation.md`).
+- **Use it on our own things first:** the packaged Linux edition (`steam-deck/dist/`, an Electron app:
+  `analyze-javascript-application`), the website and World bundles, Johansson Studio, Steam's behaviour around our
+  shortcut and controller files, and libraries we depend on, to understand and debug them from the outside.
+- **Study, measure, never copy** (as for New Yokosuka): REA's own disclaimer is the boundary. No DRM, licence-check or
+  anti-cheat circumvention, no cheats, no reproducing another product's code or assets. Learn how a feature works,
+  then build our own. Record what was inspected and why with the work.
 
 ## Handover: required at the start and end of every task
 

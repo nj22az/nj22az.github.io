@@ -13,6 +13,9 @@ import {buildTownPower} from './town-power.js';
 import {beginPowerPlan} from './okinawa/props.js';
 import {buildDocklandsLife} from './docklands-life.js';
 import {addSakuraFlyer} from './sakura-flyers.js';
+import {buildHarbourNoticeboard,FLYER_PLACE} from './harbour-noticeboard.js';
+import {addSakuraStreetPoster} from './sakura-street-poster.js';
+import {addWoodlandPoster,WOODLAND_POSTER} from './woodland-poster.js';
 import {buildIslandLandscape} from './island-landscape.js';
 import {buildBlueCoralShop} from './blue-coral-shop.js';
 import {createTownTraffic} from './town-traffic.js';
@@ -44,7 +47,6 @@ import { createTown as createBaseTown } from './harbour.js?snappy=1';
 import { createPropFactory, createLivingProps } from '../../prop-factory.js';
 import {buildStreetPlants,preloadStreetPlants} from './street-plants.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
-import {buildSakuraBench} from './sakura-bench.js';
 import {applyShopAddresses} from './town-grid.js';
 import {izakayaPlot} from './dining-layout.js';
 import {buildBeachLife} from './beach-life.js';
@@ -213,9 +215,13 @@ function addStreetLife(world,options,factory){
   const postbox=factory.postbox(.5,15.1,-Math.PI/2);postbox.collider.yaw=-Math.PI/2;
   addWithCollider(group,colliders,postbox);
   inspect([1.4,1,15.1],'Inspect post box','Post box','The collection plate lists two pickups: 10:30 and 16:30. A few handwritten postcards are visible through the slot.');
-  addWithCollider(group,colliders,factory.noticeBoard(5.5,-33.2,0));
-  addSakuraFlyer(group,{position:[5.87,1.55,-33.115],width:.43});
-  anchor(group,[5.5,1,-32.5],'Read Thuan’s shop flyer · harbour notice board',()=>options.onAction?.('sakura-flyer','Harbour notice board'),options.register);interactions++;
+  // The harbour noticeboard, remade from drawings JW-NB-001..004 rev A (harbour-noticeboard.js); its papers lie on it.
+  addWithCollider(group,colliders,buildHarbourNoticeboard());
+  addSakuraFlyer(group,{position:FLYER_PLACE.position,width:FLYER_PLACE.width});
+  addWoodlandPoster(group,{register:options.register,onAction:options.onAction});interactions++;
+  // Sakura's street poster on the ice-cream shop's south wall (sakura-street-poster.js, drawing SP-NK-001).
+  addSakuraStreetPoster(group);
+  anchor(group,[5.5,1,-32.5],WOODLAND_POSTER.prompt,()=>options.onAction?.('harbour-notice-board'),options.register);interactions++;
 
   addWithCollider(group,colliders,factory.utilityCabinet(.5,13.2,0));
   inspect([.5,1,12.35],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
@@ -334,7 +340,6 @@ export function createTown(options){
   // The street's lamp lights, for a renderer that sets the hour once (src/scene/scene-world.js) rather than ticking the town.
   world.streetLights=street.lights;
   world.docklandsLife=buildDocklandsLife(world,options);
-  buildSakuraBench(world,{shadows:options.shadows,register:options.register,onAction:options.onAction,factory});
   // Thuan's break. Only the island has a yard behind the shop to put it in.
   world.staffBench=buildStaffBench({parent:world.group,factory,colliders:world.colliders,
    shadows:options.shadows,register:options.register,onAction:options.onAction});

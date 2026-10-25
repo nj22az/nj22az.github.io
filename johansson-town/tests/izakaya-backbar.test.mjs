@@ -106,12 +106,12 @@ test('the runtime replacement keeps bounded geometry and opaque, front-sided fin
  assert.ok(roomDraws<=50,'The complete fitted room uses '+roomDraws+' material draws');
 });
 
-test('forty-two physical bottles carry the fourteen fictional brands recorded for Thao and Higa Liquor',()=>{
+test('forty-two physical bottles carry the fourteen fictional brands recorded for Thao and Sakura Trading',()=>{
  const shelf=models[0],stock=shelf.getObjectByName('Backbar').userData,catalogue=api.MINATO_FICTIONAL_SPIRITS;
  assert.equal(stock.bottles.length,42);assert.equal(stock.brands.length,14);
  assert.equal(new Set(stock.bottles.map(b=>b.source)).size,42,'Each bottle has its own authored placement');
  assert.deepEqual([...new Set(stock.bottles.map(b=>b.brand))].sort(),catalogue.map(b=>b.name.toUpperCase()).sort());
- for(const brand of catalogue){assert.equal(brand.fictional,true);assert.equal(brand.owner,'Thao');assert.equal(brand.supplier,'Higa Liquor');assert.ok(brand.reason.length>20);}
+ for(const brand of catalogue){assert.equal(brand.fictional,true);assert.equal(brand.owner,'Thao');assert.equal(brand.supplier,'Sakura Trading','the drink is Sakura Trading’s since Higa Liquor closed');assert.ok(brand.reason.length>20);}
  let bodies,labels;
  shelf.traverse(o=>{if(!o.isMesh)return;const parts=o.userData.mergedParts||[];
   if(parts.some(p=>p.where.endsWith('/ solid body and closure')))bodies=o;

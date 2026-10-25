@@ -1,3 +1,4 @@
+import {normalizeFabric} from './fabric.js';
 /**
  * Shimanchu (島人, islander): the town's avatars.
  *
@@ -34,8 +35,8 @@ export const ageClass=years=>!Number.isFinite(+years)?'adult':years<13?'child':y
 export const PARTS=Object.freeze({
  silhouette:Object.freeze(['neutral','feminine','masculine']),
  head:HEAD_FORMS,
- hair:Object.freeze(['crop','sidepart','bob','long','ponytail','sweptponytail','braids','longbraids','bun','spiky','perm','buzz','afro','horseshoe','bald','pixie','shoulder','curtains','slick','mullet','topknot','pigtails','twinbuns']),
- eyes:Object.freeze(['round','dot','almond','sleepy','lashes','narrow','sparkle','gentle','doe','cat','droopy','heavy','bright','tired','squint','starry']),
+ hair:Object.freeze(['crop','sidepart','bob','long','ponytail','sweptponytail','braids','longbraids','bun','spiky','perm','buzz','afro','horseshoe','bald','pixie','shoulder','curtains','slick','mullet','topknot','pigtails','twinbuns','longfringe']),
+ eyes:Object.freeze(['round','dot','almond','sleepy','lashes','narrow','sparkle','gentle','doe','cat','droopy','heavy','bright','tired','squint','starry','inkoval']),
  brows:Object.freeze(['straight','arched','thick','thin','worried','bushy','angled','short','rounded','tapered','feathered','maro','none']),
  nose:Object.freeze(['button','dot','line','wide','hook','pointed','snub','bulb','ridge',...Object.keys(INK_NOSES),'none']),   // then the ink noses (face.js)
  mouth:Object.freeze(['smile','flat','grin','small','wide','smirk','pout','cat','teeth','open','lopsided','tongue','buck','soft']),
@@ -51,7 +52,7 @@ export const PARTS=Object.freeze({
   // The wardrobe plan's batch 2 (2026-10-11): painted on the body every top already has (garment.js).
   'shirt','vest','knitvest','gymtee','baseball',
   // Cute everyday wear (the creator, 2026-10-14: "characters need to … have cute clothes"), painted the same way.
-  'raglan','pinafore']),
+  'raglan','pinafore','stripedvest']),
  bottom:Object.freeze(['underwear','shorts','trousers','skirt','longskirt','widepants','cropped','culottes','pleatedskirt']),
  footwear:Object.freeze(['barefoot','sneakers','sandals','shoes','boots']),
  hat:Object.freeze(['none','cap','captain','police','helmet','straw','headband','kerchief','beanie','beret','bucket','ribbon','squid','teapot','sunflower','paperboat','mountain',
@@ -114,7 +115,7 @@ export const DEFAULT_RECIPE=Object.freeze({
  moleSpot:Object.freeze({x:.77,height:.33,size:.5}),
  // Everybody starts in the base layer -- a tank top, underwear and bare feet -- and
  // clothes are put on over it in the maker's wardrobe.
- outfit:Object.freeze({top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',shoes:'#6d4a32',hat:'none',hatColour:'#f4f1ea',accent:'#f4d23c',number:0,belt:'none',beltColour:'#16171b'}),
+ outfit:Object.freeze({skirtCut:'classic',skirtLength:.5,skirtFlare:.5,top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',shoes:'#6d4a32',hat:'none',hatColour:'#f4f1ea',accent:'#f4d23c',number:0,belt:'none',beltColour:'#16171b'}),
  accessories:Object.freeze({earrings:'none',neckwear:'none',colour:'#e0b93a',necklaceColour:'#e0b93a',pin:false}),
  // What they wear in the water, and (adults) whether they wrap up in a bath towel or wear
  // their swimwear at Umi-no-yu's family bath (avatars/build.js, bathOutfit).
@@ -133,7 +134,7 @@ export function normalizeRecipe(input={}){
  const flag=(v,f)=>v===undefined?f:!!v;
  return {
   v:1,name:String(r.name||'').slice(0,24),age:pick(AGES,r.age,'adult'),
-  body:sub('body',{height:num,build:num,proportion:(v)=>pick(['classic','rounded'],v,'classic'),silhouette:(v)=>pick(PARTS.silhouette,v,'neutral'),skin:col}),
+  body:sub('body',{height:num,build:num,proportion:(v)=>pick(['classic','rounded','studio'],v,'classic'),silhouette:(v)=>pick(PARTS.silhouette,v,'neutral'),skin:col}),
   head:sub('head',{size:num,shape:num,form:(v,f)=>pick(HEAD_FORMS,v,f),jaw:num,cheeks:num,roundness:num}),
   hair:sub('hair',{style:(v,f)=>pick(PARTS.hair,v,f),colour:col,flip:flag,length:num,volume:num,tieColour:(v,f)=>col(v,r.hair?.style==='braids'?col(r.outfit?.accent,f):f)}),
   eyes:sub('eyes',{style:(v,f)=>pick(PARTS.eyes,v,f),colour:col,size:num,width:num,spacing:num,height:num,tilt:num}),
@@ -147,6 +148,8 @@ export function normalizeRecipe(input={}){
   marks:sub('marks',Object.fromEntries(Object.keys(FACE_MARKS).map(k=>[k,flag]))),
   outfit:legacyDressed(r.outfit,sub('outfit',{top:(v,f)=>pick(PARTS.top,v,f),topColour:col,pattern:(v,f)=>PATTERNS.includes(v)?v:f,bottom:(v,f)=>pick(PARTS.bottom,v,f),bottomColour:col,bottomPattern:(v)=>BOTTOM_PATTERNS.includes(v)?v:'none',footwear:(v,f)=>pick(PARTS.footwear,v,f),shoes:col,hat:(v,f)=>pick(PARTS.hat,v,f),hatColour:col,accent:col,belt:(v,f)=>pick(PARTS.belt,v,f),beltColour:col,
    // A shirt number, 0–99 (0: none), worn by the tops in NUMBERED_TOPS.
+   skirtCut:(v)=>pick(['classic','panel','pressed'],v,'classic'),skirtLength:num,skirtFlare:num,
+   topFabric:normalizeFabric,skirtFabric:normalizeFabric,
    number:(v,f)=>(typeof v==='number'||typeof v==='string'&&v.trim()!=='')&&Number.isFinite(+v)?Math.min(99,Math.max(0,Math.round(+v))):f})),
   accessories:sub('accessories',{earrings:(v,f)=>pick(PARTS.earrings,v,f),neckwear:(v,f)=>pick(PARTS.neckwear,v,f),colour:col,necklaceColour:(v,f)=>col(v,col(r.accessories?.colour,f)),pin:flag}),
   swim:sub('swim',{colour:col,bath:(v,f)=>v==='swimwear'||v==='towel'?v:f}),

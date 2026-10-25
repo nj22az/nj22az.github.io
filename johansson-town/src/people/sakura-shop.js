@@ -29,7 +29,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   const meal=account.meals?.market;if(meal?.stockClaim&&!meal.delivered){returnShopStock(state,meal.stockClaim);meal.stockClaim=null;}if(meal)meal.finished=true;
   if(account.day!==Math.floor(getMinutes()/1440)){const visit=account.shopping;if(visit?.picked&&!visit.paid){returnShopStock(state,{item:visit.item});visit.picked=false;}}
  }
- // The clerk follows the rota (commerce/sakura-rota.js): Thuan, the owner, on weekdays and Nhung at the weekend; nobody
+ // The clerk follows the rota (commerce/sakura-rota.js): Thuan, the owner, on weekdays and Nhung on Sunday, the shop shut on Saturday; nobody
  // at night, when the shop is shut. When the shift changes, the counter's services are bound to the new body; the shut
  // hours keep the last clerk's binding.
  let layout=SAKURA_LAYOUT,colliders=layout.colliders;const clerkFor=m=>world.people.find(p=>p.profile.name===sakuraClerkAt(m))||null;

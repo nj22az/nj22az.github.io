@@ -11,7 +11,6 @@ const DURATION=5.6,RETURN_TIME=.9;
 // start again after START): what has not arrived by then streams in as he walks.
 const ESTABLISH=2.2,DESCEND=2.4,HOLD_MAX=ESTABLISH,ORBIT=.05;
 const SHOTS={
- 'sakura-bench':{angle:.85,distance:4.5,height:1.9,action:'Think'},
  'park-bench':{angle:-.9,distance:5.1,height:2.5,action:'LookAround',bird:true},
  pier:{angle:.95,distance:5,height:2.1,action:'LookAround',bird:true},
  ferry:{angle:-.85,distance:4.7,height:1.8,action:'Stretch',bird:true},
@@ -64,7 +63,7 @@ export function createSpawnScene({scene,camera,getActor,blocked,ground,onActive=
  }
  function begin(){
   const options=pending;pending=null;
-  const actor=getActor(),origin=actor.root.position.clone(),preset=SHOTS[options.id]||SHOTS['sakura-bench'];
+  const actor=getActor(),origin=actor.root.position.clone(),preset=SHOTS[options.id]||SHOTS['fish-auction'];
   const target=origin.clone().add(new THREE.Vector3(0,actor.lens.head,0));
   const distance=preset.distance*(camera.aspect<1?1.2:1),base=options.yaw||0;
   let from=null,to=null;

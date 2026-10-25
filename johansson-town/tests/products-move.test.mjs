@@ -39,17 +39,54 @@ legacy.SUPPLIERS.sakura={...legacy.SUPPLIERS.sakura,goods:now.SUPPLIERS.sakura.g
 // are the Community Hall's (the community kitchen's): the hall orders what the office ordered, as well as its own.
 {const hall=now.ACCOUNTS.sakura['community-kitchen'],was=[legacy.ACCOUNTS.sakura['community-kitchen'],legacy.ACCOUNTS.sakura['mayor-office']];
  assert.deepEqual(hall.lines,was.flatMap(a=>a.lines),'the hall orders the kitchen\u2019s lines and the office\u2019s');
- assert.deepEqual(now.ACCOUNTS.frontrow['community-kitchen'].lines,legacy.ACCOUNTS.frontrow['mayor-office'].lines,'the hall\u2019s register takes the office\u2019s stationery');
- for(const supplier of ['sakura','frontrow']){assert.equal(now.ACCOUNTS[supplier]['mayor-office'],undefined);delete legacy.ACCOUNTS[supplier]['mayor-office'];legacy.ACCOUNTS[supplier]['community-kitchen']=now.ACCOUNTS[supplier]['community-kitchen'];}}
+ assert.deepEqual(now.ACCOUNTS.sakura['community-kitchen'].stationery,legacy.ACCOUNTS.frontrow['mayor-office'].lines,'the hall\u2019s register takes the office\u2019s stationery');
+ assert.equal(now.ACCOUNTS.sakura['mayor-office'],undefined);delete legacy.ACCOUNTS.sakura['mayor-office'];legacy.ACCOUNTS.sakura['community-kitchen']=now.ACCOUNTS.sakura['community-kitchen'];
+ legacy.ACCOUNTS.frontrow['community-kitchen']=legacy.ACCOUNTS.frontrow['mayor-office'];delete legacy.ACCOUNTS.frontrow['mayor-office'];}
+// 22 October 2026 (the owner): Nhung is the island doctor and Front-Row's trade is Sakura's. Front-Row's supplier record
+// and its accounts are gone; what each business ordered from it is now the `stationery` of its Sakura account (Sakura's
+// own receipt rolls and ledgers are its own stock), Sakura's supplier record lists the stationery, the paper's account
+// (`frontrow`) and the clinic's (Nhung's) say so, and every account keeps its shelf lines.
+assert.equal(now.SUPPLIERS.frontrow,undefined);assert.equal(now.ACCOUNTS.frontrow,undefined);
+for(const [site,was] of Object.entries(legacy.ACCOUNTS.frontrow)){if(site==='market')continue;assert.deepEqual(now.ACCOUNTS.sakura[site].stationery,was.lines,site+' orders the same stationery from Sakura');}
+delete legacy.SUPPLIERS.frontrow;delete legacy.ACCOUNTS.frontrow;
+legacy.SUPPLIERS.sakura={...legacy.SUPPLIERS.sakura,goods:now.SUPPLIERS.sakura.goods,stationery:now.SUPPLIERS.sakura.stationery};
+// What each account's record says now, field by field: the paper's name, why and delivery; the stationery the offices,
+// the hall and the school order, and their why (and the harbour's delivery); the clinic's keeper, Nhung, not a nurse.
+// Every other field is compared as it was.
+const REWRITTEN={frontrow:['name','why','delivery'],office:['stationery','why','delivery'],koban:['stationery','why'],'community-kitchen':['stationery','why'],school:['stationery','why'],clinic:['owner','contact']};
+for(const [site,keys] of Object.entries(REWRITTEN)){const was=legacy.ACCOUNTS.sakura[site],is=now.ACCOUNTS.sakura[site];assert.deepEqual(is.lines,was.lines,site+' keeps its shelf lines');
+ const next={...was};for(const key of keys){if(key in is)next[key]=is[key];else delete next[key];}legacy.ACCOUNTS.sakura[site]=next;}
+assert.equal(now.ACCOUNTS.sakura.clinic.owner,'Nhung');
 for(const site of ['izakaya','onsen','school']){const was=legacy.ACCOUNTS.sakura[site],is=now.ACCOUNTS.sakura[site];assert.deepEqual(is.lines,was.lines,site+' keeps its shelf lines');legacy.ACCOUNTS.sakura[site]={...was,why:is.why,delivery:is.delivery,decor:is.decor};}
 // Phase 4 retired the people some accounts' deliveries named (Reiko's evening press): the data's delivery line is the
 // one that reads, and it names a live resident; the lines and everything else about the account are unchanged.
 const {isRetired}=await import('../src/people/roster.js');
 const retiredName=text=>typeof text==='string'&&/Reiko|Tōma|Kinjō|Ōshiro|Shimabukuro|Sakurai|Barfly|Bus driver|Higa Jr|Grandmother Chinen/.test(text);
 for(const [supplier,accounts] of Object.entries(legacy.ACCOUNTS))for(const [site,was] of Object.entries(accounts)){const is=now.ACCOUNTS[supplier]?.[site];if(is&&retiredName(was.delivery)&&is.delivery!==was.delivery){assert.ok(!retiredName(is.delivery),supplier+'/'+site+' names a live deliverer');assert.deepEqual(is.lines,was.lines);accounts[site]={...was,delivery:is.delivery};}}
-// 21 October 2026 (the owner's decision; commerce/higa-liquor.js HIGA_ROUND): Higa Liquor's orders are Kōji's round on his
-// weeks ashore, so its accounts' delivery lines say when and who carries them; what each account orders is unchanged.
-for(const [site,was] of Object.entries(legacy.ACCOUNTS['higa-saketen'])){const is=now.ACCOUNTS['higa-saketen'][site];assert.deepEqual(is.lines,was.lines,site+' keeps its order');legacy.ACCOUNTS['higa-saketen'][site]={...was,delivery:is.delivery};}
+// 22 October 2026 (the owner): Higa Liquor closes and Sakura sells and supplies all the alcohol, on Sakura Trading's round
+// (commerce/trade-round.js; the Higas' round since 21 October). Higa Liquor's supplier record and accounts are gone; what
+// each business ordered from it is now the `alcohol` of its Sakura account, line for line, Mr Fujita's shed an account
+// of its own; Sakura's own lager is its own buying (SOURCED_FROM is empty); Sakura's supplier record lists the drink; the
+// accounts that take drink say so in their why and delivery; every account keeps its shelf lines.
+assert.equal(now.SUPPLIERS['higa-saketen'],undefined);assert.equal(now.ACCOUNTS['higa-saketen'],undefined);
+for(const [site,was] of Object.entries(legacy.ACCOUNTS['higa-saketen'])){if(site==='market')continue;assert.deepEqual(now.ACCOUNTS.sakura[site].alcohol,was.lines,site+' orders the same drink from Sakura');}
+assert.equal(legacy.SOURCED_FROM.beer,'higa-saketen');assert.deepEqual(now.SOURCED_FROM,{},'Sakura buys its own lager');legacy.SOURCED_FROM={};
+assert.deepEqual(now.ACCOUNTS.sakura['fujita-shed'].lines,[],'Mr Fujita takes only the beer');
+legacy.ACCOUNTS.sakura['fujita-shed']={...legacy.ACCOUNTS['higa-saketen']['fujita-shed'],lines:[],alcohol:legacy.ACCOUNTS['higa-saketen']['fujita-shed'].lines};
+delete legacy.SUPPLIERS['higa-saketen'];delete legacy.ACCOUNTS['higa-saketen'];
+legacy.SUPPLIERS.sakura={...legacy.SUPPLIERS.sakura,goods:now.SUPPLIERS.sakura.goods,alcohol:now.SUPPLIERS.sakura.alcohol};
+for(const [site,keys] of Object.entries({izakaya:['alcohol'],ramen:['alcohol','why','delivery'],'coral-bay-bar':['alcohol','why','delivery'],'fujita-shed':['why','delivery']})){
+ const was=legacy.ACCOUNTS.sakura[site],is=now.ACCOUNTS.sakura[site];assert.deepEqual(is.lines,was.lines,site+' keeps its shelf lines');
+ const next={...was};for(const key of keys)next[key]=is[key];legacy.ACCOUNTS.sakura[site]=next;}
+// 24 October 2026 (the owner): the cold cabinet's shelves were numbered from the top, against the rule that counts them
+// from the bottom, so every drink stood the other way up from its `placed` note (tea low, children's drinks high). Each
+// line's shelves are mirrored, top for bottom, and World walks them up each column again; nothing else about a shelf moves.
+{const {FRIDGE_LEVELS}=await import('../src/world/interiors/sakura-layout.js'),mirror=y=>FRIDGE_LEVELS[FRIDGE_LEVELS.length-1-FRIDGE_LEVELS.indexOf(y)];
+ const fridge=Object.keys(legacy.SAKURA_SHELVES).filter(id=>legacy.SAKURA_SHELVES[id].fitting==='fridge');
+ for(const id of fridge){const was=legacy.SAKURA_SHELVES[id],is=now.SAKURA_SHELVES[id];
+  assert.deepEqual(is.levels,was.levels.map(mirror).sort((a,b)=>a-b),id+' stands mirrored in its column');legacy.SAKURA_SHELVES[id]={...was,levels:is.levels};}
+ const order=Object.keys(now.SAKURA_SHELVES).filter(id=>fridge.includes(id));let i=0;
+ legacy.SAKURA_SHELVES=Object.fromEntries(Object.entries(legacy.SAKURA_SHELVES).map(([id,s])=>fridge.includes(id)?[order[i],legacy.SAKURA_SHELVES[order[i++]]]:[id,s]));}
 for(const name of Object.keys(legacy.linesFor))if(!live(name))delete legacy.linesFor[name];
 for(const [name,want] of Object.entries(now.linesFor)){assert.ok(castMember(name),name+' buys at Sakura but is not in the cast');for(const line of legacy.linesFor[name]||[])assert.ok(want.includes(line),name+' keeps the '+line);legacy.linesFor[name]=want;}
 

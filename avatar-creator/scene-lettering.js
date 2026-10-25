@@ -1,3 +1,4 @@
+import {wrapCaption} from '../johansson-town/src/photo/layout.js';
 /** Unboxed comic shouting. Wraps to the panel, reserves the top third for readable acting. */
 export function drawShout(ctx,w,h,text){
  const words=String(text||'').toUpperCase().split(/\s+/).filter(Boolean);if(!words.length)return;
@@ -17,7 +18,7 @@ export function drawShout(ctx,w,h,text){
 }
 
 /** A large, complete speech bubble above the action, with a tail towards the speaker. */
-export function drawStatement(ctx,w,h,text,speaker=.5,headTop=1){
+export function drawStatement(ctx,w,h,text,speaker=.5,headTop=1,inked=false){
  const words=String(text||'').split(/\s+/).filter(Boolean);if(!words.length)return;
  ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
  const left=w*.05,right=w*.95,y=h*.025,tailHeight=w*.04,gap=w*.018;
@@ -25,16 +26,15 @@ export function drawStatement(ctx,w,h,text,speaker=.5,headTop=1){
  const available=Math.max(w*.11,Math.min(h*.32,ceiling-y-tailHeight));
  let size=w*.047,lines=[],lh,bh;
  for(let attempt=0;attempt<36;attempt++){
-  ctx.font=`700 ${size}px system-ui,sans-serif`;lines=[];let line='';
-  for(const word of words){const next=line?line+' '+word:word;if(line&&ctx.measureText(next).width>w*.79){lines.push(line);line=word;}else line=next;}if(line)lines.push(line);
+  ctx.font=`700 ${size}px system-ui,sans-serif`;lines=wrapCaption(ctx,text,w*.79,20);
   lh=size*1.24;bh=lines.length*lh+size*1.1;
   if(bh<=available&&lines.every(l=>ctx.measureText(l).width<=w*.79))break;size*=.96;
  }
  const bottom=y+bh,r=Math.min(bh*.43,w*.065),tail=Math.max(.16,Math.min(.84,speaker))*w;
  ctx.fillStyle='#fffdf4';ctx.strokeStyle='#202722';ctx.lineWidth=w*.004;ctx.lineJoin='round';
  // One closed outline: the lower edge opens into the tail, so no border crosses its mouth.
- ctx.beginPath();ctx.moveTo(left+r,y);ctx.lineTo(right-r,y);ctx.quadraticCurveTo(right,y,right,y+r);ctx.lineTo(right,bottom-r);ctx.quadraticCurveTo(right,bottom,right-r,bottom);
- ctx.lineTo(tail+w*.028,bottom);ctx.lineTo(tail,bottom+tailHeight);ctx.lineTo(tail-w*.047,bottom);ctx.lineTo(left+r,bottom);ctx.quadraticCurveTo(left,bottom,left,bottom-r);ctx.lineTo(left,y+r);ctx.quadraticCurveTo(left,y,left+r,y);ctx.closePath();ctx.fill();ctx.stroke();
+ const outline=()=>{ctx.beginPath();ctx.moveTo(left+r,y);ctx.lineTo(right-r,y);ctx.quadraticCurveTo(right,y,right,y+r);ctx.lineTo(right,bottom-r);ctx.quadraticCurveTo(right,bottom,right-r,bottom);
+ ctx.lineTo(tail+w*.028,bottom);ctx.lineTo(tail,bottom+tailHeight);ctx.lineTo(tail-w*.047,bottom);ctx.lineTo(left+r,bottom);ctx.quadraticCurveTo(left,bottom,left,bottom-r);ctx.lineTo(left,y+r);ctx.quadraticCurveTo(left,y,left+r,y);ctx.closePath();ctx.fill();ctx.stroke();};if(inked)inkPath(ctx,w,outline);else outline();
  ctx.fillStyle='#222';lines.forEach((l,i)=>ctx.fillText(l,w*.5,y+size*.55+lh*(i+.5)));ctx.restore();
  return {bottom:bottom+tailHeight,headTop:headTop*h,fontSize:size,lines};
 }
@@ -48,3 +48,13 @@ export function drawComicChaos(ctx,w,h,heads=[],escaping=false){
  for(const head of heads){const x=(head.x+1)*w*.5,y=(1-head.y)*h*.5;for(let i=0;i<3;i++){const dx=w*(-.12+i*.07),dy=h*(-.09-Math.abs(i-1)*.015);ctx.beginPath();ctx.moveTo(x+dx,y+dy);ctx.quadraticCurveTo(x+dx-w*.025,y+dy-h*.038,x+dx-w*.027,y+dy-h*.008);ctx.quadraticCurveTo(x+dx-w*.025,y+dy+h*.004,x+dx,y+dy);ctx.stroke();}}
  ctx.restore();
 }
+
+/** Small deterministic pen drift, applied only to a path. Text never enters this transform. */
+export function inkPath(ctx,w,draw){const old={moveTo:ctx.moveTo,lineTo:ctx.lineTo,quadraticCurveTo:ctx.quadraticCurveTo};let last=null;
+ const drift=(x,y)=>[x+Math.sin(x*.019+y*.027)*w*.00065,y+Math.sin(x*.025-y*.017+2)*w*.00065];
+ ctx.moveTo=function(x,y){last=[x,y];old.moveTo.apply(ctx,drift(x,y));};
+ ctx.lineTo=function(x,y){if(last){const [a,b]=last,n=Math.max(1,Math.ceil(Math.hypot(x-a,y-b)/(w*.045)));for(let i=1;i<=n;i++)old.lineTo.apply(ctx,drift(a+(x-a)*i/n,b+(y-b)*i/n));}else old.lineTo.apply(ctx,drift(x,y));last=[x,y];};
+ ctx.quadraticCurveTo=function(a,b,x,y){old.quadraticCurveTo.apply(ctx,[...drift(a,b),...drift(x,y)]);last=[x,y];};
+ try{return draw();}finally{Object.assign(ctx,old);}
+}
+export function drawComicBorder(ctx,x,y,w,h,inked=false){if(!inked){ctx.strokeRect(x,y,w,h);return;}inkPath(ctx,w,()=>{ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+w,y);ctx.lineTo(x+w,y+h);ctx.lineTo(x,y+h);ctx.lineTo(x,y);ctx.closePath();ctx.stroke();});}

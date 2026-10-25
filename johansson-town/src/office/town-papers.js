@@ -6,7 +6,7 @@ export const TOWN_PAPERS=[
     "organisation": "Sakura Shop",
     "author": "Thuan",
     "source": "flyer:sakura-shop-1997",
-    "text": "SAKURA SHOP — Your little island convenience store\n1997 neighbourhood edition · Prepared by Thuan\nOpen 9:00–20:30, every day. Cash only. All prices include tax.\nPlum rice ball · ¥110\nGreen tea · ¥120\nSalted potato crisps · ¥100\nOne stamp per ¥300 spent in a visit. Collect 10 stamps for a free green tea.\nFind us on Main Street, beside the harbour approach. The map is a neighbourhood sketch; the bus stop is north and the harbour is south.\nMeet Jaga-bo, our KOGANE potato-crisp mascot. Drop in and say hello to Thuan!\nFree copies at Sakura’s counter and the harbour notice board. Community Hall keeps a filed copy for one year."
+    "text": "SAKURA SHOP — Your little island convenience store\n1997 neighbourhood edition · Prepared by Thuan\nOpen Sunday to Friday 9:00–20:30, purchases until 20:00. Closed Saturdays. Cash only. All prices include tax.\nPlum rice ball · ¥110\nGreen tea · ¥120\nSalted potato crisps · ¥100\nOne stamp per ¥300 spent in a visit. Collect 10 stamps for a free green tea.\nFind us on Main Street, beside the harbour approach. The map is a neighbourhood sketch; Main Street runs north and the harbour is south.\nMeet Jaga-bo, our KOGANE potato-crisp mascot. Drop in and say hello to Thuan!\nFree copies at Sakura’s counter and the harbour notice board. Community Hall keeps a filed copy for one year."
   },
   {
     "type": "Notice",
@@ -299,7 +299,7 @@ export const TOWN_PAPERS=[
     "title": "Minato Clinic opening hours",
     "type": "Schedule",
     "organisation": "Minato Clinic",
-    "text": "Mon–Fri · Mon–Fri 9:00–12:00, 14:00–17:00\n\nEarth · Sat 9:00–12:00\n\nAfter hours: ring the bell, the doctor lives behind the clinic\n\nEmergencies to Naha by the ferry, or the prefecture helicopter from Kitano-jima",
+    "text": "Mon–Fri 9:00–12:00, 14:00–17:00\n\nSat 9:00–12:00\n\nAfter hours: ring the bell; the doctor’s telephone is answered at 3 Kitahama\n\nEmergencies to Naha by the ferry, or the prefecture helicopter from Kitano-jima",
     "source": "notice:Minato Clinic opening hours"
   },
   {

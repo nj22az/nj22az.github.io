@@ -1,14 +1,19 @@
-// Run with Playwright installed and the site served at WORLD_PREVIEW (default localhost:5191).
+// Run with Playwright installed; starts a local preview unless WORLD_PREVIEW is supplied.
 // Renders the real Vy recipe with Johansson Studio's existing Shh! pose; no generated artwork.
 const fs = require('node:fs');
 const path = require('node:path');
-const {chromium} = require('playwright');
+const {createRequire} = require('node:module');
+const {spawn} = require('node:child_process');
+const {chromium} = createRequire(path.resolve(__dirname,'../johansson-town/package.json'))('playwright');
 (async () => {
-  const browser = await chromium.launch({headless:true,channel:'chrome'});
+  const server = process.env.WORLD_PREVIEW ? null : spawn('python3',['-u','-m','http.server','5191','--bind','127.0.0.1'],{cwd:path.resolve(__dirname,'..')});
+  let browser;
   try {
+    if(server)await new Promise((done,fail)=>{server.stdout.once('data',done);server.once('error',fail);});
+    browser = await chromium.launch({headless:true,...(process.env.TOWN_CHROMIUM_PATH?{executablePath:process.env.TOWN_CHROMIUM_PATH}:{channel:'chrome'}),args:['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
     const page = await browser.newPage();
     await page.goto((process.env.WORLD_PREVIEW || 'http://127.0.0.1:5191')+'/avatar-creator/?agent');
-    await page.waitForFunction(() => window.__JOHANSSON_STUDIO__?.ready);
+    await page.waitForFunction(() => window.__JOHANSSON_STUDIO__?.ready,{timeout:120000});
     const webp = await page.evaluate(async () => {
       const {recipeFor} = await import('/johansson-town/src/avatars/cast.js');
       const data = window.__JOHANSSON_STUDIO__.renderPortrait(recipeFor('Vy'), {pose:'Shush',expression:'excited',view:'quarter',size:768,background:'transparent'});
@@ -26,5 +31,5 @@ const {chromium} = require('playwright');
     const output=path.resolve(__dirname,'../assets/mascots/vy-psst.webp');
     fs.writeFileSync(output,Buffer.from(webp,'base64'));
     console.log('Studio export:',output);
-  } finally {await browser.close();}
+  } finally {if(browser)await browser.close();server?.kill();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

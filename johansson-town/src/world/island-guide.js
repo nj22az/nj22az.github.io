@@ -26,7 +26,7 @@ export const ISLAND_PLACES=Object.freeze([
   says:'Five minutes down through the palms from the airport, love. White sand and two benches. Plenty of people take the morning boat just for that. Swimming only between the palms, the notice says, and mind the last ferry: it goes after the evening flight.',
   checks:[['src/world/airport-district.js','Swimming between the palms only'],['src/world/airport-district.js','Last ferry to Minato leaves after the evening flight'],['src/world/airport-district.js','Coral Bay, five minutes down through the palms'],['src/world/airport-district.js','Plenty of people come over on the morning ferry just for this']]},
  {id:'coral-bay-bar',name:'Coral Bay Bar',island:'kitano',kind:'shop',
-  says:'The little bar on the sand at Coral Bay: a cold bottle of Umineko lager for ¥300, or shikuwasa juice for ¥150. Higa Liquor sends the beer over on our boat.',
+  says:'The little bar on the sand at Coral Bay: a cold bottle of Umineko lager for ¥300, or shikuwasa juice for ¥150. Sakura Trading sends the beer over on our boat.',
   checks:[['src/world/airport-district.js','Umineko lager, cold bottle'],['src/world/airport-district.js','shikuwasa']]},
  {id:'turtle-cove',name:'Turtle Cove',island:'kitano',kind:'beach',
   says:'Over the hill past Hinata, round the east side. Green turtles come in on the rising tide to graze, they say. I have never had the patience to wait for one; you bring a book.',
@@ -46,8 +46,8 @@ export const ISLAND_PLACES=Object.freeze([
 
  // Johansson Island, beyond Main Street.
  {id:'umi-no-yu',name:'Umi-no-yu',island:'johansson',kind:'bath',
-  says:'The sea-water bath in Harbour Park, opposite Sakura. Follow the park path straight on from the gate to its door. Ten in the morning till ten at night, ¥300 for adults and ¥150 for children. The footbath keeps the bath’s hours and is free for residents. Grandmother Higa owns it and keeps the counter in the afternoon; her granddaughter, Miss Higa, has it in the evenings.',
-  checks:[['src/world/island-plan.js','The park opposite Sakura: Umi-no-yu'],['src/world/park.js','Straight on from the gate is Umi-no-yu'],['src/world/park-onsen.js','Bath 10:00–22:00, adults ¥300, children ¥150'],['src/world/park-onsen.js','The footbath keeps the bath’s hours and is free for residents'],['src/people/cast.js','owns Umi-no-yu and Higa Liquor'],['src/people/cast.js','keeps the bandai at Umi-no-yu in the evenings']]},
+  says:'The sea-water bath in Harbour Park, opposite Sakura. Follow the park path straight on from the gate to its door. Ten in the morning till ten at night, ¥300 for adults and ¥150 for children. The footbath keeps the bath’s hours and is free for residents. Grandmother Higa owns it and keeps the counter by day; her granddaughter, Miss Higa, has it in the evenings.',
+  checks:[['src/world/island-plan.js','The park opposite Sakura: Umi-no-yu'],['src/world/park.js','Straight on from the gate is Umi-no-yu'],['src/world/park-onsen.js','Bath 10:00–22:00, adults ¥300, children ¥150'],['src/world/park-onsen.js','The footbath keeps the bath’s hours and is free for residents'],['src/people/cast.js','owns Umi-no-yu and keeps its bandai by day'],['src/people/cast.js','keeps the bandai at Umi-no-yu in the evenings']]},
 
 ]);
 

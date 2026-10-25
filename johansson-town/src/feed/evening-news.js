@@ -27,7 +27,7 @@ export const QUIET_NEWS=Object.freeze([
  'Sakura Shōten’s radio played the same song twice before lunch. Staff deny singing along.',
  'A gull stood on the roof of the harbour office for most of the afternoon. Staff say it looked important.',
  'The ferry was late. Islanders were not surprised, and have asked us not to call this news.',
- 'At Front-Row Books, a customer read a whole novel in the window seat without buying it. The shop is calling it a review copy.',
+ 'At the old Front-Row shop, a reader finished a whole novel in the window seat. The honesty tin is calling it a review copy.',
  'Blue Coral says its busiest hour was the one after school. The ice cream did not last.',
  'The steam from Umi-no-yu was seen from the ferry pier at dusk. Bathers report that the water was, once again, hot.',
 ]);

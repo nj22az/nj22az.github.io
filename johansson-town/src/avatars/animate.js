@@ -475,6 +475,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     if(want.twist)c+=want.twist*((x[1]-seed[1])**2+(x[4]-seed[4])**2);
     return c;};
    let x=seed;for(const step of [.3,.1,.03])x=minimise(cost,x,step);
+   if(want.multiStart){for(const candidate of [[-.7,-.45,.4,-1.3,0],[-.7,.45,-.4,-1.3,0],[-1.6,-.3,-.3,-1,.2],[0,0,-.3,-1,0]]){let probe=candidate;for(const step of [.3,.1,.03])probe=minimise(cost,probe,step);if(cost(probe)<cost(x))x=probe;}}
    out[side]=mirror(x);out['hand'+side]=want.hand||null;
   }
   reached.set(name,out);return out;

@@ -128,7 +128,7 @@ export function lotPaint(){
 export const PARKING=Object.freeze({lines:Object.freeze([30.8,33.4,36.0,38.6,41.2]),bays:Object.freeze([32.1,34.7,37.3,39.9]),stopZ:66.75,lineZ:Object.freeze([62.5,67.1]),pad:PAD_TOP});
 export const PARKED_CARS=Object.freeze([
  Object.freeze({prop:'bay-1-truck',bay:1,kind:'kei truck',colour:0xf2f0ea,owner:'Kōji',load:'ice chest and rope'}),
- Object.freeze({prop:'bay-2-car',bay:2,kind:'kei car',colour:0xb8d0d8,owner:'Dr Ken'}),
+ Object.freeze({prop:'bay-2-car',bay:2,kind:'kei car',colour:0xb8d0d8,owner:'Nhung'}),
  Object.freeze({prop:'bay-3-hatchback',bay:3,kind:'car',colour:0xd8a83a,owner:'Mac',bonnet:'open'}),
 ]);
 /** Where a parked car's centre stands (its nose along -z, to the lane), from its wheels and its length (tail, local z). */
@@ -216,7 +216,7 @@ function northBlock({kit,solid,read},lot,put){
  read(24.0,61.8,'Look at the lane garden','The lane garden',
   'Four beds of red earth and a gōyā curtain, on the ground where 4 Kitahama stood. Thao’s herbs by the lane: lemongrass, rau răm and purple perilla, which nobody on the island sells. Mrs Sato’s spring onions next to them, for her own kitchen. Nhung’s handama behind, and Riku’s sunflowers, measured every Sunday against the shed. The standpipe is turned on at six.');
  read(36.0,63.2,'Read the monthly parking sign','Kitahama monthly parking',
-  'Monthly parking. One bay free. Contract holders only. Kitahama residents’ association.\n\nBay 1 is Kōji’s white kei truck, for the outboard and the ice chests. Bay 2 is Dr Ken’s little car, for house calls at the far end of the island. Bay 3 is Mac’s old yellow hatchback. Bay 4 is free: ask the association.','read');
+  'Monthly parking. One bay free. Contract holders only. Kitahama residents’ association.\n\nBay 1 is Kōji’s white kei truck, for the outboard and the ice chests. Bay 2 is Nhung’s little car, the doctor’s, for house calls at the far end of the island. Bay 3 is Mac’s old yellow hatchback. Bay 4 is free: ask the association.','read');
  read(37.3,62.2,'Look under Mac’s bonnet','Mac’s hatchback',
   'An old yellow hatchback with its bonnet up on the stay and a red toolbox by the front wheel. Mac keeps it running for the pleasure of it, and it is opened more often than it is driven. The air cleaner on top of the engine is new; the battery is not.');
 }

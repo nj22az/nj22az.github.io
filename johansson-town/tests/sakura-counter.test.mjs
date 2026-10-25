@@ -6,7 +6,6 @@ import {installDOM} from './fixtures.mjs';
 import {buildSakuraInterior} from '../src/world/interiors/sakura-interior.js';
 import {OFFICE_DOOR} from '../src/world/interiors/sakura-life.js';
 import {SAKURA_LAYOUT} from '../src/world/interiors/sakura-layout.js';
-import {buildSakuraBand} from '../src/world/interiors/sakura-cheer.js';
 
 function shop(){
  installDOM();
@@ -59,19 +58,4 @@ test('the office has a framed, panelled door that swings into the office for who
  for(let i=0;i<120;i++)door.update(1/30,[[0,2]]);
  assert.equal(door.angle,0,'Shut again once they have gone');
 });
-
-test('the wall frieze lists its goods after the shop name, never over it',()=>{
- // The canvas fixture measures text; the list must start beyond the name and end before the crest.
- installDOM();const calls=[];const real=globalThis.document.createElement.bind(globalThis.document);
- globalThis.document.createElement=tag=>{const el=real(tag);if(tag==='canvas'){const inner=el.getContext('2d');let font='';
-  const ctx=new Proxy(inner,{get:(t,k)=>k==='fillText'?(s,x,y)=>{calls.push({s,x,width:t.measureText(s).width*.55*parseFloat(font.match(/(\d+)px/)?.[1]||17)/17});}:k==='measureText'?s=>({width:t.measureText(s).width*.55*parseFloat(font.match(/(\d+)px/)?.[1]||17)/17}):k==='font'?font:t[k],set:(t,k,v)=>{if(k==='font')font=v;else t[k]=v;return true;}});
-  el.getContext=()=>ctx;}return el;};
- try{buildSakuraBand(new THREE.Group());}finally{globalThis.document.createElement=real;}
- // The stub measures about 0.55 em a character, close to the rounded gothic the band uses.
- const name=calls.find(c=>c.s==='Sakura Shop'&&c.x===28),lines=calls.filter(c=>/^Groceries|^Stamp/.test(c.s));
- assert.ok(name&&lines.length===2,'The name and both lines of goods are lettered');
- for(const l of lines){
-  assert.ok(l.x>=name.x+name.width,'The goods start after the shop name');
-  assert.ok(l.x+l.width<=1024-52-30,'and end before the crest');
- }
-});
+// The wall band's own checks moved to sakura-wall-band.test.mjs (drawings SK-WB rev A).

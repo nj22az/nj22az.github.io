@@ -114,7 +114,8 @@ test('Front-Row Books and the police station: every point reachable from the wor
  const sites=createIslandBusinesses();
  {const room=new THREE.Group(),cs=[];const layout=buildCompactShop({site:sites.find(s=>s.id==='frontrow'),room,reg(){},collider:(x,z,w,d)=>cs.push({x,z,w,d}),action(){},exit(){}});
   const blocked=(x,z,r=.3)=>cs.some(c=>circleHitsRect(x,z,r,c));
-  for(const id of ['frontrow-morning','frontrow-paper'])for(const p of STAND_SEQUENCES[id].points){
+  // Nhung's bookshop mornings went when she became the island doctor (22 October 2026); the paper is her evening's.
+  for(const id of ['frontrow-paper'])for(const p of STAND_SEQUENCES[id].points){
    assert.equal(blocked(p.x,p.z,.3),false,id+' clear');assert.ok(roomReach(blocked,layout.bounds,[layout.staff.Nhung[0],layout.staff.Nhung[2]],[p.x,p.z]),id+' reachable');
    assert.ok(Math.hypot(p.x-layout.spawn[0],p.z-layout.spawn[2])>1,'out of the doorway');
   }}

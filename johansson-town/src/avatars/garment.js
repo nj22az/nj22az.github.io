@@ -1,3 +1,4 @@
+import {paintFabric} from './fabric.js';
 import * as THREE from '../../vendor/three.module.js';
 import {hemSpec} from './springs.js';
 import {POLICE_UNIFORM} from './police-data.js';
@@ -52,7 +53,7 @@ const COLLARED=['contrastpolo','polo','blouse','kariyushi','jacket','smock','car
  * Tops worn over a shirt (a vest, a knitted vest): the body is the top, and the shirt under it shows at the neck and is
  * the sleeves, the shoulders and the underarms, in the accent colour (build.js addBody).
  */
-export const SHIRT_SLEEVES=Object.freeze(['vest','knitvest']);
+export const SHIRT_SLEEVES=Object.freeze(['vest','knitvest','stripedvest']);
 /**
  * Tops whose sleeves (with the shoulder caps and the underarms) are their own cloth in the accent colour: the raglan tee,
  * whose sleeves run up to the neck in a contrasting colour (build.js addBody).
@@ -133,6 +134,8 @@ export function paintGarment(ctx,recipe,m,radiusAt){
  const out=o.top==='kariyushi'||o.top==='police'?hemSpec(recipe,m):null;
  const k=m.k,neck=.92,hem=out?Math.max(GARMENT.T0+.02,(out.waist-out.length-m.hipY)/m.torso+.01):.15;
 
+ // Custom cloth stays in the garment's UV regions, never on skin or the blank strip.
+ if(o.topFabric){paintFabric(ctx,o.topFabric,top,0,Y(1.03),TW,Y(hem)-Y(1.03));marks.push('custom-fabric');}
  // Stripes and prints first, so collars and pockets sit over them.
  if(o.pattern==='stripes'&&!['tank','overalls','sundress'].includes(o.top)){
   const band=m.torso*.12*pxPerY,from=Y(1.0),to=Y(hem);
@@ -298,6 +301,14 @@ export function paintGarment(ctx,recipe,m,radiusAt){
   }
   // A vest over a shirt: the shirt (the accent colour) shows in the V, with its collar round the neck; four buttons, two
   // welt pockets. The shirt's sleeves are the arms (SHIRT_SLEEVES).
+  case 'stripedvest':{
+   // Open sleeveless vest over a Breton tee; the shirt and sleeves share the accent.
+   const w=W*.32;
+   poly([[-w,1.04],[w,1.04],[w*.95,hem],[-w*.95,hem]],o.accent,{stroke:null});
+   for(let t=.24;t<1;t+=.13)poly([[-w,t],[w,t],[w,t+.035],[-w,t+.035]],top,{stroke:null});
+   for(const s of [-1,1])path([[s*w,1.02],[s*w*.95,hem]],shade(top,.55),line);
+   marks.push('striped undershirt','open vest');hemRound();break;
+  }
   case 'vest':{
    const shirt=o.accent;
    poly([[-.088*k,1.0],[.088*k,1.0],[0,.6]],shirt);path([[0,.84],[0,.6]],shade(shirt,.6),line*.7);
@@ -393,6 +404,8 @@ export function paintGarment(ctx,recipe,m,radiusAt){
   // A raglan's sleeves (ACCENT_SLEEVES) are plain cloth in the accent the same way.
   const shirtSleeve=SHIRT_SLEEVES.includes(col)||ACCENT_SLEEVES.includes(col),cloth=shirtSleeve?o.accent:o.topColour;
   ctx.save();ctx.beginPath();ctx.rect(0,yTop,TW,end-yTop);ctx.clip();
+  if(o.topFabric&&!['tank','sundress','running'].includes(col))paintFabric(ctx,o.topFabric,cloth,0,yTop,TW,end-yTop);
+  if(col==='stripedvest'){ctx.fillStyle=o.topColour;const step=h/9;for(let y=yTop+step*.5;y<end;y+=step)ctx.fillRect(0,y,TW,Math.min(step*.22,end-y));marks.push('striped sleeves');}
   if(o.pattern==='stripes'&&!shirtSleeve){ctx.fillStyle='#f4f1ea';const band=m.torso*.12*pxV;for(let y=yTop+band;y<end;y+=band*2)ctx.fillRect(0,y,TW,Math.min(band,end-y));}
   if((o.pattern==='flowers'||o.pattern==='dots')&&!shirtSleeve){
    const flowers=o.pattern==='flowers',r=m.k*(flowers?(col==='kariyushi'?.05:.036):.016),petal=flowers?'#f8f6ef':o.accent;
@@ -418,4 +431,4 @@ export function paintGarment(ctx,recipe,m,radiusAt){
  return marks;
 }
 /** Tops whose sleeves run to the wrist (build.js longSleeve). */
-export const SLEEVED_LONG=Object.freeze(['jacket','smock','sailorlong','police','hoodie','cardigan','festival','lighthouse','lantern','reef']);
+export const SLEEVED_LONG=Object.freeze(['stripedvest','jacket','smock','sailorlong','police','hoodie','cardigan','festival','lighthouse','lantern','reef']);

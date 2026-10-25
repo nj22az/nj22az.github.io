@@ -74,13 +74,12 @@ export function buildPortBuilding({parent,label=()=>{},shadows=false,register,on
   for(let x=x0;x<=x1+.01;x+=(x1-x0)/Math.max(1,Math.round((x1-x0)/1.8)))kit.box(.07,1.38,.08,x,1.85,O.minZ-.04,ALU,{finish:'metal'});
   kit.box(x1-x0+.2,.08,.22,(x0+x1)/2,1.15,O.minZ-.1,SLAB);
  }
- // The town front: the office's windows either side of its door, and a concrete hood.
+ // The town front: the office's windows either side of its door.
  for(const x of [11.1,15.5]){
   kit.box(1.7,1.5,.05,x,1.9,O.maxZ+.03,GLASS,{finish:'window'});
   for(const dx of [-.85,0,.85])kit.box(.05,1.5,.08,x+dx,1.9,O.maxZ+.05,ALU,{finish:'metal'});
   kit.box(1.85,.07,.2,x,1.1,O.maxZ+.1,SLAB);
  }
- kit.block(12.25,14.35,2.28,2.38,O.maxZ,O.maxZ+.55,SLAB);
  kit.box(1.4,.5,.05,7.6,1.9,H.maxZ+.03,GLASS,{finish:'window'});
 
  // Red-tile pent roofs over the ground-floor eaves, south and north: the Okinawan touch.

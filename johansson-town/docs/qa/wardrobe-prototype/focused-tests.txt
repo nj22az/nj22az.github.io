@@ -1,0 +1,24 @@
+✔ panel skirt, controls, sculpted head and studio proportions round-trip; old recipes stay classic (3.835575ms)
+✔ authored topology keeps the 1472-triangle budget and fits actual upper torso surfaces across wearers (185.320605ms)
+✔ panel mesh uses shared bones, safe support weights, fitted waist, outfit switching and continuous poses (1620.524595ms)
+✔ untrusted fabric data is bounded and portable, while old looks remain opt-out (5.862256ms)
+✔ flood fills stay inside their region; fast strokes are continuous and transparent cells follow the garment colour (3.982966ms)
+✔ pressed pleats preserve open waist/hem, distinct front and seat shaping, finite UVs and a bounded mesh (5.695687ms)
+✔ pressed garment fits actual upper bodies and uses existing shared rig, cloth fit and outfit switching (7737.103427ms)
+✔ complete outfit sets and temporary uniforms do not inherit the old garments fabric (173.496103ms)
+✔ every wardrobe part and every set has a label, a category of its slot, who wears it and why (1.51124ms)
+✔ labels are per slot: the police jacket and the police cap read apart (0.95628ms)
+✔ set ids are unique, never a part id, and every set survives normalizeRecipe with nothing dropped (8.979608ms)
+✔ the eight batch-1 sets: island palette, a hat each, and the plan’s parts (0.887818ms)
+✔ the maker knows which set someone is wearing, and in which colourway (5.808225ms)
+✔ search finds items by label, the names in who, places and occasions, ignoring accents, grouped by slot (1.696507ms)
+✔ a set never leaves the last set’s hat on, and a hat of one’s own stays (77.827951ms)
+✔ the name a reader hears for every picture holds the words under it (WCAG 2.5.3, label in name) (0.338607ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8140.767433

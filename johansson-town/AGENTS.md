@@ -22,6 +22,7 @@ For every spatial remodel, follow the root [CAD-before-remodel rule](../AGENTS.m
 - Reduced graphics is a recovery mode only after two interrupted launches in a row, and the game says so and offers the full look back.
 - Where empty houses were removed, the street plan closes up around them: no vacant lawn or paving lots left where buildings stood.
 - New Yokosuka (<https://github.com/brynnb/new-yokosuka>) is a permanent inspiration for the World: "here you can see home interiors and convenience stores and everything we need"; its 1986 setting does not matter, "small town Japan still has much old parts in the 90s and even today". Plan homes, shops, streets and the harbour from its real rooms, measured and recorded as data; never copy its assets ([docs/research/new-yokosuka.md](docs/research/new-yokosuka.md)).
+- **Sakura keeps its upper floor** (the owner, 24 October 2026: "I'm starting to like the top floor office on Sakura, abort removing it"). Do not remove the upstairs office/rest room; the single-storey Sakura on `development` (#378/#384/#385) is not to reach `main` as a removal.
 - Sakura's upstairs is replanned (the owner: "The Sakura office is way too big and empty. I want maybe two windows you can look out from; now the whole island looks broken from the Sakura office. It should have like a bedroom or rest room upstairs too. Can you use anything from New Yokosuka?"). Read with the ruling above that the upper floor is the main office, not a home: the office shrinks to a small shop's office with its kitchenette and exactly two outlooks (Main Street from the front, the ferry berth from the desk's side window), and the rest room is a staff 休憩室/仮眠室, a 4½-mat tatami room with a futon in its cupboard for a rest between the shop and the late boat, or a night if the ferry ever cannot run; nobody lives there, and no canonical day sleeps there while the town does not stop for weather (`world/typhoons.js`). The plan, sizes and the New Yokosuka numbers it uses are data in `src/world/interiors/sakura-office-room.js` (`SAKURA_UPSTAIRS`); the island seen through the windows is drawn by every portal in view at once (`render/shop-street-view.js`).
 - Sakura's stair and the office's doors, 20 October 2026 (the owner, on his iPhone: "I don't want the stairs to be traversable it's too much errors when running up the stairs, I want the stairs to lead up to a black hole and we disappear into there and when it loads we come up on the upper floor. And more the entry to the upper office is only from inside not from outside now I have a button to enter the office when I'm outside Sakura, that's wrong. I guess it should be possible to evacuate through the fire ladder but that door only open from the inside"). The inside stair is a passage into darkness, never walked: from the stockroom its first treads rise into black, stepping onto them (or "Go upstairs") walks him into the dark while the picture fades, and the office storey opens as a room of its own at the stair head; coming down is the same and he arrives at the stair's foot in the stockroom (`src/world/interiors/sakura-stairs.js` `SAKURA_STAIR_PASSAGE`, game.js `takeSakuraStair`). Two rooms, the shop and the office; no flight, landing, landing lens or storey switching. The office is entered only from inside, up that stair: its site is `insideOnly` (`thuan-flat.js`) and has no door, button, pin, directory card or route outside. The fire door opens from inside only: "Evacuate by the fire escape" takes him out onto the landing and down the caged ladder to the yard; from the yard the fire escape is to look at, nothing more (`okinawa/old-town.js` `SAKURA_BACK`). Rooms are scanned for flashing faces at a phone's size (`tests/no-z-fighting.test.mjs`).
 
@@ -125,6 +126,12 @@ less, by the named budgets there. Nothing else asks which edition it is. Later r
   (`commerce/paperwork.js`, `tests/paperwork.test.mjs`). On Linux the ledger is the live shop's.
 - Outside a page (node's suites) the edition is Linux unless `JOHANSSON_EDITION=web`; `tests/edition.test.mjs` holds
   the web budgets and the Linux path.
+- **Playing as any resident and making faces come to the web** (the owner, 24 October 2026, asked whether "play any
+  character", posing and emotions could be brought to the web: "Both"). Town book → People has *Play as* on every
+  playable resident's card (`desktop/life.js`, the same possession Linux uses); the web runs it only while you play
+  someone other than Johansson (`playingResident()` in `game.js`), so Johansson's web opening, house and view are
+  unchanged. Moves → *Make a face* offers every face the painter knows, held for ten seconds. Conversations stay the web's
+  short lines; the insult and apology choices stay Linux's.
 
 ## Owner's decision — 21 October 2026: no way in without a working interior
 
@@ -199,9 +206,72 @@ No new people; everything below is data first (`src/commerce/higa-liquor.js`, `s
   08:00–09:30, before the mailbag, sweeping, clearing the filters, emptying the coin boxes and pinning the notices.
   Officer Mori, as near, may not keep a business and sleeps after the night patrol; Tetsuo, as near, has no free hour,
   and mends the machines when asked. The laundry is open 24 hours; Thao washes the family's futon covers on Sundays
-  14:15–15:45, Ms Uezu brings the crew cabin's linen ashore on the first day of her week off, Dr Kakazu washes on
-  Wednesday nights; its noticeboard carries the street's story hooks (the missing cat, the found sandal, the lessons)
+  14:15–15:45, Ms Uezu brings the crew cabin's linen ashore on the first day of her week off, Nhung (the doctor since 22 October)
+  washes the clinic's towels and coats on Wednesday nights; its noticeboard carries the street's story hooks (the missing cat, the found sandal, the lessons)
   and the town calendar's week.
+
+## Owner's decision — 22 October 2026: Nhung is the island doctor
+
+The owner, after the audit of the two Dr Kakazus: "use the best looking one", then "Can they be consolidated into other
+characters? Have this female doctor replace Nhung". Their answers to the follow-up questions settle the rest:
+
+- **Nhung is the island doctor.** She keeps her name, age, family (Kōji, Riku, her sisters) and home at 3 Kitahama, and
+  takes the clinic doctor's look (`avatars/cast.js` Nhung: white coat over a sage shirt, half-rim glasses, hair tied
+  back, white shoes; her bookseller's look is `FORMER_NHUNG_RECIPE`, history only). The clinic room draws her at her desk
+  (`interiors/town-hall.js`, `DOCTOR`/`DOCTOR_TITLE` "Dr Nhung"); her walking body stays indoors there in surgery hours
+  (`workplaces.js` OWN_STAFF_ROOMS), so there is never a second one.
+- **Dr Ken Kakazu is retired** into her (`roster.js` RETIRED `dr-ken`, name `Dr Kakazu`): his patients, pairs, laundry
+  evening, parking bay and the doctor's bag are Nhung's; his flat behind the clinic is retired (no door). RETIRED_HOMES lands
+  `clinic` on itself, because the id also names the clinic, which stays. His drawing and article are history
+  (`RETIRED_RECIPES`, `guide/articles.mjs` RETIRED_ARTICLES).
+- **Her week** (`people/clinic-hours.js`): surgery Monday to Friday 9–12 and 14–17, Saturday 9–12; the town's paper in
+  the evenings at the back bench of the old Front-Row shop (place `paper`, indoors); Saturday afternoon is her own;
+  Sunday she keeps Sakura.
+- **Front-Row's trade is Sakura's**: the books and the stationery and office supplies (`merchandising.js` SUPPLIERS.sakura
+  `stationery`, the accounts' `stationery` lines); the shop floor is unstaffed, the reading copies stay, the last
+  second-hand books and the paper go by the honesty tin, and nobody browses there (`bookshop-visits.js`).
+- **Sakura shuts on Saturdays** (土曜定休; `sakura-rota.js` sakuraClosedDay): Thuan's weekend on Kitano-jima is unchanged,
+  Nhung keeps Sunday, and Higa Liquor's delivery to Sakura is on Fridays (Kōji's round Tuesday and Friday).
+
+## Owner's decision — 22 October 2026: Higa Liquor closes into Sakura
+
+The owner, during the Nhung change: "The sisters basically run commerce and healthcare on the island … maybe we don't
+need a liquor store, Sakura can sell liquor too", then their answers and the finishing brief: "close Higa Liquor. Sakura
+sells and supplies all alcohol, Kōji's round becomes Sakura Trading's, and the building stands shut with a notice on it."
+This supersedes the liquor-shop parts of the 21 October decision above (its bench and coin laundry stand). The task folder
+is `briefs/higa-liquor-closes/`.
+
+- **Higa Liquor is shut for good** (`commerce/higa-liquor.js`): the shutter down at every hour, the doors shut, the lights
+  off, a hand-written 閉店のお知らせ taped to the shutter (`HIGA_NOTICE`: thanks, and お酒は さくら商店へ), read from the
+  street; no new geometry. The fittings and the family kusu stay inside behind the shutter. The 留守 card, the hours and
+  the counter's menu are gone; its sign stays up.
+- **Sakura sells all the alcohol**: the cans of lager in the cold cabinet as before, and the bottles the Higas sold
+  (awamori miniature, the large Umineko, one-cup sake) from the stock room at the till (`commerce/konbini.js`
+  `SAKURA_BOTTLES`), at the Higas' prices; on Saturdays, when Sakura is shut, there is no bottle to take away (the bench's regulars buy
+  Saturday's on Friday; the bars still pour).
+- **Sakura Trading supplies it** (`merchandising.js` SUPPLIERS.sakura `alcohol`, and `alcohol` lines on the accounts of
+  Minato, Sato Ramen, the Coral Bay Bar and Mr Fujita's shed); the economy's Higa business is gone, the bars pay
+  Sakura's trade price for drink (`economy/town-economy.js` `barTrade`), and a product with alcohol must be supplied by
+  `sakura` (`studio/rules.js`).
+- **Kōji's round is Sakura Trading's** (`commerce/trade-round.js` `TRADE_ROUND`): Tuesdays and Fridays from 10:30 on his
+  weeks ashore, loading at the depot in the Quay Warehouse, then Minato, Sato Ramen, the Port Terminal's freight counter
+  (the Coral Bay Bar's ice boxes, for the 14:45 boat: the ferry is at Kitano-jima in the late morning) and Mr Fujita's
+  shed (whose six o'clock van is gone: the round swaps his crate, full for empties, and at six he stands the night's
+  empties back in it), the empties to the crate yard across Main Street, which Sakura Trading rents from Grandmother
+  Higa. The Coral Bay Bar's juice goes on the morning boat, as before. ¥1,500 a round from Sakura's till; the round's book is
+  read at Sakura's back office. In his weeks aboard the customers collect, as before.
+- **Grandmother Higa keeps only the bathhouse**: the bandai 10:00–12:00 and 13:00–17:00, the garden and the verandah;
+  Yui no longer minds a counter on Saturdays.
+- **The yuntaku bench stays**: Tetsuo and Mac still sit out front of an evening with a bottle from Sakura; the bench no
+  longer depends on the shop's hours.
+
+## Owner's decision — 22 October 2026 (night): the money model is closed for now
+
+The owner: "close the money model for now, we need to simplify background processes." `src/economy/town-economy.js`
+(the year-by-day simulation of households, shops, the ferry's orders and the bars) is not extended or wired into the
+game; its open issues (it does not know Sakura's Saturday closing) are closed with it. It never ran in the game: only
+`tests/town-economy.test.mjs` runs it. `economy/goods.js` stays in use. The next step the owner named is to simplify the
+background processes (`src/edition.js` lists them per edition); ask before switching any of them off.
 
 ## Verification
 

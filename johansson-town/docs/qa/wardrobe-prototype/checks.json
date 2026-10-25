@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-25",
+  "branch": "development",
+  "baseMerge": "1aba40497283844d3a645b536582348f425b65ee",
+  "worldGuard": {
+    "tests": 427,
+    "passed": 427,
+    "files": 84,
+    "seconds": 520
+  },
+  "focused": {
+    "tests": 16,
+    "passed": 16
+  },
+  "editorDOM": {
+    "tests": 4,
+    "passed": 4,
+    "browser": false
+  },
+  "runtimeIntegrity": {
+    "tests": 4,
+    "passed": 4
+  },
+  "unrelatedFailure": {
+    "test": "wardrobe-batch2.test.mjs",
+    "assertion": "retired Shimabukuro search result",
+    "reproducedAtBase": true
+  },
+  "visualBrowser": "blocked: Chromium socket creation prohibited; escalation disabled; cloud loopback refused",
+  "physicalIPad": false,
+  "linuxRelease": false,
+  "visualAcceptance": false,
+  "implementationCommit": "9ff7fa6",
+  "remotePublication": "blocked by automatic approval review; no push",
+  "mainModified": false
+}

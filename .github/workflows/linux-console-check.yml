@@ -14,7 +14,8 @@ jobs:
     runs-on: ubuntu-24.04
     # Full software-rendered console coverage includes 26 residents, a reload,
     # a separate web boot and native saves after the four-size/controller checks.
-    timeout-minutes: 40
+    # The steps before the full acceptance take about ten minutes.
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -35,6 +36,14 @@ jobs:
         run: |
           node johansson-town/scripts/build-runtime.mjs
           npm run package --prefix steam-deck
+      - name: Packaged facial visibility across all Looks
+        env:
+          FACE_BROWSER_TEST: '1'
+          FACE_GAME_ROOT: steam-deck/dist/johansson-world/resources/app/site/johansson-town
+          FACE_OUTPUT_DIRECTORY: steam-deck/dist/face-visibility
+        run: |
+          steam-deck/node_modules/.bin/playwright install --with-deps chromium
+          node --test johansson-town/tests/face-lighting.browser.mjs
       - name: Controller recovery acceptance
         run: node steam-deck/tools/control-repair-smoke.cjs
       - name: Verify native application and disk saves
@@ -47,7 +56,8 @@ jobs:
       - name: Verify packaged site without network access
         run: node steam-deck/tools/offline-browser-smoke.cjs
       - name: Full world controller, layout, resident and save acceptance
-        run: timeout 20m npm run test:console --prefix steam-deck
+        # The web-only recovery runs after the Linux acceptance in this step; 20 minutes cut it off (#388).
+        run: timeout 30m npm run test:console --prefix steam-deck
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -57,6 +67,7 @@ jobs:
             steam-deck/dist/SHA256SUMS
             steam-deck/dist/latest-linux.json
             steam-deck/dist/bundle-manifest.json
+            steam-deck/dist/face-visibility/
             steam-deck/dist/console-qa/
             steam-deck/dist/control-repair/
             steam-deck/dist/linux-world*.png

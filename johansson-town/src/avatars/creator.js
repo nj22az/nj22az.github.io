@@ -1,3 +1,4 @@
+import {openFabricEditor} from './fabric-editor.js';
 import {outfitAllowedFor,appropriateOutfit} from './outfits.js';
 import {SETS,SLOTS,SLOT_AT,ISLAND_PALETTE,ISLAND_HEX,entryFor,labelFor,wornSet,wornLine,searchWardrobe,putOnSet,accessibleName} from './wardrobe-catalogue.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -80,7 +81,8 @@ const LABEL={
  ...Object.fromEntries(Object.entries(INK_NOSES).map(([id,n])=>[id,n.label])),   // the ink noses, named where they are drawn
  ...PAINTED_MOUSTACHES,...PAINTED_BEARDS,
  towel:'Bath towel',swimwear:'Swimwear',
- crop:'Crop',sidepart:'Side part',bob:'Bob',long:'Long',sweptponytail:'Swept low ponytail',ponytail:'Ponytail',braids:'Original Thuận braids',longbraids:'Twin braids · Thuan',bun:'Bun',spiky:'Spiky',perm:'Perm',buzz:'Buzz',afro:'Afro',horseshoe:'Horseshoe',bald:'Bald',
+ inkoval:'Ink ovals',studio:'Studio proportions',sculpted:'Soft sculpted',panel:'Panel skirt',pressed:'Pressed pleats',classic:'Classic',
+ crop:'Crop',sidepart:'Side part',bob:'Bob',long:'Long',longfringe:'Long with fringe',sweptponytail:'Swept low ponytail',ponytail:'Ponytail',braids:'Original Thuận braids',longbraids:'Twin braids · Thuan',bun:'Bun',spiky:'Spiky',perm:'Perm',buzz:'Buzz',afro:'Afro',horseshoe:'Horseshoe',bald:'Bald',
  pixie:'Pixie',shoulder:'Shoulder',curtains:'Centre part',slick:'Slicked back',mullet:'Mullet',topknot:'Topknot',pigtails:'Pigtails',twinbuns:'Twin buns',
  round:'Round',dot:'Dot',almond:'Almond',sleepy:'Sleepy',lashes:'Lashes',narrow:'Narrow',sparkle:'Sparkle',gentle:'Gentle',
  doe:'Doe',cat:'Cat',droopy:'Droopy',heavy:'Heavy-lidded',bright:'Bright',tired:'Tired',squint:'Squint',starry:'Starry',
@@ -107,7 +109,7 @@ const partLabel=(at,value)=>SLOT_AT[at]?labelFor(SLOT_AT[at],value):LABEL[value]
 export const TABS=[
  {id:'body',name:'Body',controls:[
   {kind:'chips',page:'style',at:'age',label:'Age',list:AGES},
-  {kind:'chips',page:'style',at:'body.proportion',label:'Proportions',list:['classic','rounded']},
+  {kind:'chips',page:'style',at:'body.proportion',label:'Proportions',list:['classic','rounded','studio']},
   {kind:'chips',page:'style',at:'body.silhouette',label:'Silhouette',list:PARTS.silhouette},
   {kind:'colours',page:'colour',at:'body.skin',label:'Skin',palette:PALETTE.skin},
   {kind:'stepper',page:'adjust',at:'body.height',label:'Height',less:'Shorter',more:'Taller'},
@@ -132,7 +134,9 @@ export const TABS=[
   {kind:'colours',page:'colour',at:'hair.colour',label:'Colour',palette:PALETTE.hair},
   {kind:'colours',page:'colour',at:'hair.tieColour',label:'Braid ties',palette:PALETTE.cloth,cloth:true,when:r=>['braids','longbraids'].includes(r.hair.style)},
   {kind:'slider',page:'adjust',at:'hair.length',label:'Braid length',low:'Upper chest',high:'Past waist',when:r=>r.hair.style==='longbraids'},
-  {kind:'slider',page:'adjust',at:'hair.volume',label:'Braid volume',low:'Fine',high:'Full',when:r=>r.hair.style==='longbraids'}]},
+  {kind:'slider',page:'adjust',at:'hair.volume',label:'Braid volume',low:'Fine',high:'Full',when:r=>r.hair.style==='longbraids'},
+  {kind:'slider',page:'adjust',at:'hair.length',label:'Hair length',low:'Shoulders',high:'Waist',when:r=>r.hair.style==='longfringe'},
+  {kind:'slider',page:'adjust',at:'hair.volume',label:'Hair volume',low:'Fine',high:'Full',when:r=>r.hair.style==='longfringe'}]},
  {id:'eyes',name:'Eyes',controls:[
   {kind:'parts',page:'style',at:'eyes.style',list:PARTS.eyes,draw:'eyes'},
   {kind:'colours',page:'colour',at:'eyes.colour',label:'Colour',palette:PALETTE.eyes},
@@ -176,6 +180,7 @@ export const TABS=[
  {id:'outfits',name:'Outfits',wardrobe:true,controls:[
   {kind:'sets',page:'style',at:'outfit',draw:'outfit'}]},
  {id:'top',name:'Top',wardrobe:true,controls:[
+  {kind:'fabric',page:'colour',target:'top',when:()=>new URLSearchParams(globalThis.location?.search||'').has('wardrobe')},
   {kind:'parts',page:'style',at:'outfit.top',list:PARTS.top,draw:'figure'},
   {kind:'chips',page:'style',at:'outfit.pattern',list:PATTERNS,label:'Print'},
   // A shirt number, only for the tops that carry one (the Seagulls jersey's back); 0 is none.
@@ -183,7 +188,12 @@ export const TABS=[
   {kind:'colours',page:'colour',at:'outfit.topColour',label:'Colour',palette:PALETTE.cloth,cloth:true},
   {kind:'colours',page:'colour',at:'outfit.accent',label:'Ribbons & print',palette:PALETTE.cloth,cloth:true}]},
  {id:'bottom',name:'Bottoms',wardrobe:true,controls:[
+  {kind:'fabric',page:'colour',target:'skirt',when:r=>new URLSearchParams(globalThis.location?.search||'').has('wardrobe')&&(['skirt','pleatedskirt'].includes(r.outfit.bottom))},
+  {kind:'chips',page:'style',at:'outfit.skirtCut',label:'Pleat construction',list:['classic','pressed'],when:r=>r.outfit.bottom==='pleatedskirt'&&new URLSearchParams(globalThis.location?.search||'').has('wardrobe')},
   {kind:'parts',page:'style',at:'outfit.bottom',list:PARTS.bottom,draw:'figure'},
+  {kind:'chips',page:'style',at:'outfit.skirtCut',label:'Skirt construction',list:['classic','panel'],when:r=>r.outfit.bottom==='skirt'},
+  {kind:'slider',page:'adjust',at:'outfit.skirtLength',label:'Skirt length',low:'Short',high:'Longer',when:r=>r.outfit.bottom==='skirt'&&r.outfit.skirtCut==='panel'},
+  {kind:'slider',page:'adjust',at:'outfit.skirtFlare',label:'Hem ease',low:'Straight',high:'Flared',when:r=>r.outfit.bottom==='skirt'&&r.outfit.skirtCut==='panel'},
   // Plaid on a skirt, stripes down trousers (build.js), in the accent colour.
   {kind:'chips',page:'style',at:'outfit.bottomPattern',list:BOTTOM_PATTERNS,label:'Pattern'},
   {kind:'colours',page:'colour',at:'outfit.bottomColour',label:'Colour',palette:PALETTE.cloth,cloth:true},
@@ -940,6 +950,10 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  function putOn(at,value){
   if(get(recipe,at)===value)return;
   change(at,value);const way=entryFor(SLOT_AT[at],value)?.colourways[0];if(way)wearColours(way.colours,false);
+  if(at==='outfit.bottom'&&tab==='bottom'&&new URLSearchParams(globalThis.location?.search||'').has('wardrobe')){
+   if(value!=='pleatedskirt'&&recipe.outfit.skirtCut==='pressed')recipe.outfit.skirtCut='classic';
+   renderBody();
+  }
  }
  /** Lay a colourway's fields (full recipe paths) over the recipe, as one undoable change unless `keep` is false. */
  function wearColours(colours,keep=true){
@@ -971,7 +985,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
    if(control.label&&!['toggle','stepper','position','number'].includes(control.kind))body.append(el('h4',{textContent:control.label}));
    if(control.kind==='face-forms'){
     const grid=el('div',{className:'shm-grid shm-face-forms',role:'group',ariaLabel:'Face shapes'}),skin=el('div',{className:'shm-swatches shm-face-skin',role:'group',ariaLabel:'Skin tone'});
-    for(const form of control.list){const c=el('canvas',{width:136,height:136}),label=({'soft-square':'Soft square','soft-round':'Soft round',wide:'Broad'}[form]||form[0].toUpperCase()+form.slice(1)),b=el('button',{type:'button',ariaLabel:label,title:label},c,label);b.setAttribute('aria-pressed',String(recipe.head.form===form));b.onclick=()=>{change('head.form',form);pressed(grid,b);};drawFaceFormThumb(c,form,recipe.body.skin);grid.append(b);}
+    for(const form of control.list){const c=el('canvas',{width:136,height:136}),label=({sculpted:'Soft sculpted','soft-square':'Soft square','soft-round':'Soft round',wide:'Broad'}[form]||form[0].toUpperCase()+form.slice(1)),b=el('button',{type:'button',ariaLabel:label,title:label},c,label);b.setAttribute('aria-pressed',String(recipe.head.form===form));b.onclick=()=>{change('head.form',form);pressed(grid,b);};drawFaceFormThumb(c,form,recipe.body.skin);grid.append(b);}
     for(const [i,hex] of PALETTE.skin.entries()){const b=el('button',{type:'button',ariaLabel:'Skin tone '+(i+1),title:'Skin tone '+(i+1)});b.style.background=hex;b.setAttribute('aria-pressed',String(recipe.body.skin===hex));b.onclick=()=>{change('body.skin',hex);renderBody();};skin.append(b);}
     body.append(el('div',{className:'shm-face-picker'},grid,skin));
    }else if(control.kind==='sets'){
@@ -1017,6 +1031,9 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
     const row=el('div',{className:'shm-chips'});
     for(const value of control.list.filter(v=>!control.at.startsWith('outfit')||outfitAllowedFor(wardrobeOwner,{...recipe.outfit,[control.at.split('.')[1]]:v}))){const b=el('button',{type:'button',textContent:LABEL[value]||value[0].toUpperCase()+value.slice(1)});b.setAttribute('aria-pressed',String(get(recipe,control.at)===value));b.onclick=()=>{change(control.at,value);pressed(row,b);if(control.at==='swim.bath')showIn(value==='towel'?'towel':'swim');};row.append(b);}
     body.append(row);
+   }else if(control.kind==='fabric'){
+    const b=el('button',{type:'button',className:'shm-pill',textContent:'Design fabric'});
+    b.onclick=()=>openFabricEditor({recipe:normalizeRecipe(recipe),target:control.target,onPreview:value=>setOutfit(value.outfit),getPreview:()=>exportPNG(256)});body.append(b);
    }else if(control.kind==='note'){
     body.append(el('p',{className:'shm-note',textContent:control.text}));
    }
@@ -1199,6 +1216,12 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
 
  /** Replace the editable character without closing the studio. */
  function setRecipe(value){endDrag();remember();chipFor.clear();viewPositions.clear();recipe=normalizeRecipe(value);featureBaseline=structuredClone(recipe);wardrobeOwner=recipe.name;name.value=recipe.name;dirty=true;faces=[];renderBody();}
+ /** Apply fabric edits without replacing the template's reset baseline or identity. */
+ function setOutfit(value){
+  const next=normalizeRecipe({...recipe,outfit:value}).outfit;
+  if(JSON.stringify(next)===JSON.stringify(recipe.outfit))return;
+  change('outfit',next);renderBody();
+ }
  /** Restore only controls belonging to the selected feature, as one undoable edit. */
  function resetFeature(){
   endDrag();const next=structuredClone(recipe),controls=TABS.find(t=>t.id===tab).controls;
@@ -1237,6 +1260,6 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
 
  rebuild();dirty=false;renderPoses();goTo(step);loop();close.focus();
- return {close:()=>finish(false),get recipe(){return normalizeRecipe({...recipe,name:name.value});},get root(){return root;},goTo,showIn,setRecipe,setPreview,setPerformance,setActingFrame,get performance(){return performanceState.state;},resetFeature,exportPNG,save:()=>finish(true),get wearing(){return wearing;}};
+ return {close:()=>finish(false),get recipe(){return normalizeRecipe({...recipe,name:name.value});},get root(){return root;},goTo,showIn,setRecipe,setOutfit,setPreview,setPerformance,setActingFrame,get performance(){return performanceState.state;},resetFeature,exportPNG,save:()=>finish(true),get wearing(){return wearing;}};
 }
 

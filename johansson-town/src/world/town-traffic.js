@@ -1,6 +1,6 @@
 import {createVehicleDrivers} from '../people/vehicle-driver.js';
 import * as THREE from '../../vendor/three.module.js';
-import {createRoadNetwork,createTraffic,makeLane} from './road-network.js';
+import {createRoadNetwork,createTraffic,makeLane,syncVehicleCollider} from './road-network.js';
 import {groundTopAt,MAIN_QUAY_TOP} from './ground-plan-harbour.js';
 import {GROUND_CLASSES} from './ground-standard.js';
 /** Where a wheel stands: on Main Street's and the quays' laid ground, else on the town's road level. */
@@ -16,6 +16,7 @@ import {AIRPORT_ISLAND} from './airport-island.js';
 import {AIRPORT_HEIGHT,airportWorld} from './airport-ground.js';
 import {AIRPORT_VEHICLE_YARD as Y,airportVehiclePoint,airportVehicleBay} from './airport-vehicle-yard.js';
 import {buildWheelSecuring} from './ferry-vehicle-securing.js';
+import {townCalendarAt} from '../town-clock.js';
 
 /** Owned vehicles travel on Main Street, the quay and the airport cargo court.
  * A single car shares the ferry's open foredeck with its existing resident driver.
@@ -133,11 +134,12 @@ export function createTownTraffic({parent,colliders=null,ferry=null,getPlayerPos
  const net=buildTownNetwork(),drivers=createVehicleDrivers({people});
  const obstacles=()=>{const out=[],p=getPlayerPosition?.();if(p)out.push({x:p.x,z:p.z,r:.4,player:true});for(const q of people()){const g=q?.g;if(g?.visible&&!g.userData.playerControlled&&!g.userData.inVehicle&&!g.userData.indoors)out.push({x:g.position.x,z:g.position.z,r:.35});}return out;};
  const traffic=createTraffic({obstacles});let serial=0,requestedCrossing=null;
- const make=(kind,colour,role,owner,purpose)=>{const g=buildVehicle(kind,colour);group.add(g);const v=traffic.add({g,kind,role,owner,driver:owner,purpose,id:'owned-car-'+(++serial),...VEHICLE_SIZE[kind]});Object.assign(g.userData,{owner,driver:owner,purpose,vehicleId:v.id});g.name=owner+' · '+kind;const a=new THREE.Object3D();a.position.y=1.2;g.add(a);register?.(a,'Inspect '+owner+'’s '+kind,()=>onAction?.('inspect',owner+'’s '+kind,'Owner and driver: '+owner+'. '+purpose+'.'));v.solid={id:'parked-vehicle',x:1e6,z:1e6,w:v.width,d:v.length,yaw:0,height:2};colliders?.push(v.solid);return v;};
+ const make=(kind,colour,role,owner,purpose)=>{const g=buildVehicle(kind,colour);group.add(g);const v=traffic.add({g,kind,role,owner,driver:owner,purpose,id:'owned-car-'+(++serial),...VEHICLE_SIZE[kind]});Object.assign(g.userData,{owner,driver:owner,purpose,vehicleId:v.id});g.name=owner+' · '+kind;const a=new THREE.Object3D();a.position.y=1.2;g.add(a);register?.(a,'Inspect '+owner+'’s '+kind,()=>onAction?.('inspect',owner+'’s '+kind,'Owner and driver: '+owner+'. '+purpose+'.'));v.solid={id:'parked-vehicle',moving:true,x:1e6,z:1e6,w:v.width,d:v.length,yaw:0,minY:0,height:2};colliders?.push(v.solid);return v;};
  const airportTaken=new Set(),townTaken=new Set();
  // Cars come and go, so the builder keeps their bays clear instead of asking whether one is parked now.
- const parkAt=(v,p)=>{v.solid.moving=true;v.where=p.where;v.bay=p.bay;v.shore=p.where==='airport'?'airport':'town';delete v.stageOrigin;traffic.park(v,p);Object.assign(v.solid,{x:p.x,z:p.z,yaw:p.yaw,height:p.y+1.9});};
- const unpark=v=>{v.solid.x=v.solid.z=1e6;if(v.where==='airport')airportTaken.delete(v.bay);if(v.where==='service')townTaken.delete(v.bay);v.where='driving';};
+ const parkAt=(v,p)=>{v.where=p.where;v.bay=p.bay;v.shore=p.where==='airport'?'airport':'town';delete v.stageOrigin;traffic.park(v,p);};
+ // Leaving a bay releases its reservation, never the car's physical collision boundary.
+ const unpark=v=>{if(v.where==='airport')airportTaken.delete(v.bay);if(v.where==='service')townTaken.delete(v.bay);v.where='driving';};
  const reserve=(shore)=>{const set=shore==='airport'?airportTaken:townTaken,order=shore==='airport'?[0,1,2,3,4,5]:[1,0];for(const i of order)if(!set.has(i)){set.add(i);return i;}return null;};
  const quayBay=i=>{const [x,z]=QUAY_BAYS[i];return {where:'quay',bay:i,x,y:wheelsAt(x,z),z,yaw:0};};
  const serviceBay=i=>{const [x,z]=SERVICE_BAYS[i];return {where:'service',bay:i,x,y:wheelsAt(x,z),z,yaw:Math.PI};};
@@ -147,16 +149,21 @@ export function createTownTraffic({parent,colliders=null,ferry=null,getPlayerPos
  // was Chin's, but Chin is the ferry's motorman through the ship's day (ferry-crew.js), his body the ship's then, and the
  // driver code refuses a body the ship has (vehicle-driver.js), so a truck of his would stand in its bay all day; the
  // workshop's airport freight is Tetsuo's islander run above.
- const fleet=[make('kei truck',0xf2f0ea,'ferry','Thao','Deliver airport dry goods to Minato Izakaya'),make('kei truck',0x2f6f9f,'ferry','Mrs Sato','Deliver airport kitchen supplies to Main Street'),make('car',0xc8432f,'ferry','Nhung','Deliver airport book orders to Main Street')];
- fleet.forEach((v,i)=>{v.home='airport';v.appointment={leave:600+i*180,back:690+i*180};const bay=reserve('airport');v.homeBay=bay;parkAt(v,airportVehicleBay(bay));});
+ // The red car is the island doctor's (Nhung since 22 October 2026, people/clinic-hours.js): the clinic's medicines from
+ // the wholesaler in Naha, off the airport freight, twice a week. Never in surgery, so it runs on the evening boats, over
+ // from Kitano-jima on the 21:38 and back on the 22:15 (ferry-timetable.js), on Mondays and Thursdays: Wednesday evening
+ // is her coin laundry (commerce/coin-laundry.js), Saturday afternoon and Sunday evening her own.
+ const fleet=[make('kei truck',0xf2f0ea,'ferry','Thao','Deliver airport dry goods to Minato Izakaya'),make('kei truck',0x2f6f9f,'ferry','Mrs Sato','Deliver airport kitchen supplies to Main Street'),make('car',0xc8432f,'ferry','Nhung','Bring the clinic’s medicines from the airport freight')];
+ const fleetAppointments=[{leave:600,back:690},{leave:780,back:870},{leave:1280,back:1320,weekdays:[1,4]}];
+ fleet.forEach((v,i)=>{v.home='airport';v.appointment=fleetAppointments[i];const bay=reserve('airport');v.homeBay=bay;parkAt(v,airportVehicleBay(bay));});
  const all=[...islanders,...fleet];
- const wantedShore=(v,minutes)=>{const m=((minutes%1440)+1440)%1440,a=v.appointment;return m>=a.leave&&m<a.back?(v.home==='town'?'airport':'town'):v.home;};
+ const wantedShore=(v,minutes)=>{const m=((minutes%1440)+1440)%1440,a=v.appointment,today=!a.weekdays||a.weekdays.includes(townCalendarAt(minutes).weekday);return today&&m>=a.leave&&m<a.back?(v.home==='town'?'airport':'town'):v.home;};
  function stage(v,destination){
   if(!drivers.board(v))return false;const shore=v.shore,bay=v.bay;unpark(v);v.shipDestination=destination;v.stageOrigin=shore;
   const path=shore==='airport'?net.path(['airport-stage-'+bay]):net.path([...(v.role==='islander'?['quay-out-'+v.homeBay,v.homeBay===LAYBY_BAY?'layby-north':'main-north','service-in-1','service-out-1']:['service-out-'+bay]),'main-south','town-ferry-stage']);
   traffic.drive(v,path,{onArrive:()=>{v.where='waiting-ferry';v.stageOrigin=shore;}});return true;
  }
- function sitOnDeck(v){ferry.ferry.updateMatrixWorld();const p=new THREE.Vector3(FERRY_VEHICLE_DECK_X,ferry.ferry.userData.deckY,FERRY_VEHICLE_DECK_Z).applyMatrix4(ferry.ferry.matrixWorld);v.g.position.copy(p);v.g.quaternion.copy(ferry.ferry.quaternion);v.g.visible=ferry.ferry.visible;}
+ function sitOnDeck(v){ferry.ferry.updateMatrixWorld();const p=new THREE.Vector3(FERRY_VEHICLE_DECK_X,ferry.ferry.userData.deckY,FERRY_VEHICLE_DECK_Z).applyMatrix4(ferry.ferry.matrixWorld);v.g.position.copy(p);v.g.quaternion.copy(ferry.ferry.quaternion);v.g.visible=ferry.ferry.visible;syncVehicleCollider(v);}
  function unload(v){
   if(!ferry.canUnload||!drivers.atWheel(v)||v.securing?.progress>0)return false;
   const shore=ferry.berth,directHome=shore==='town'&&v.role==='islander';const bay=directHome?v.homeBay:reserve(shore);if(bay===null)return false;

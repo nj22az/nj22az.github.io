@@ -37,12 +37,15 @@ export function playerRecipe(storage=globalThis.localStorage){
  // A save-file snapshot restores imported appearances; a later creator edit wins.
  try{
   const r=decodeRecipe(storage?.getItem(playerRecipeKey(storage)))||decodeRecipe(readSave(storage)?.avatarRecipe);
-  if(r)return {...r,outfit:appropriateOutfit(r.name||'Johansson',r.outfit)};
+  if(r){
+   if(r.name==='Vy'&&Number(storage?.getItem(playerRecipeKey(storage)+'.appearance-revision')||0)<1){const adopted=normalizeRecipe({...recipeFor('Vy'),profile:r.profile});savePlayerRecipe(adopted,storage);return adopted;}
+   return {...r,outfit:appropriateOutfit(r.name||'Johansson',r.outfit)};
+  }
  }catch{}
  return recipeFor('Johansson');
 }
 export function savePlayerRecipe(recipe,storage=globalThis.localStorage){
- const code=encodeRecipe({...recipe,outfit:appropriateOutfit(recipe.name||'Johansson',recipe.outfit)});try{storage?.setItem(playerRecipeKey(storage),code);}catch{}return code;
+ const code=encodeRecipe({...recipe,outfit:appropriateOutfit(recipe.name||'Johansson',recipe.outfit)});try{const key=playerRecipeKey(storage);storage?.setItem(key,code);if(recipe.name==='Vy')storage?.setItem(key+'.appearance-revision','1');}catch{}return code;
 }
 
 
@@ -169,7 +172,7 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
    if(tableDrink?.active)api.cancelTableDrink();
    move=name;if(face)api.express(face,3);
    const map={Bow:'Bow',Wave:'Wave'};if(!animator.play(map[name]||name))animator.play('Nod');
-   const faces={Wave:'happy',Clap:'happy',Kachashi:'laugh',Laugh:'laugh',Think:'thinking',Shrug:'worried',HeadShake:'grumpy',Bow:'content',Nod:'content',Stretch:'content',LookAround:'surprised',SitToast:'happy',Heart:'happy',Peace:'laugh',Coy:'smile',Tada:'laugh',HandsOnHips:'content',HeelKick:'happy'};
+   const faces={Wave:'happy',Clap:'happy',Kachashi:'laugh',Laugh:'laugh',Think:'thinking',Shrug:'worried',HeadShake:'grumpy',Bow:'content',Nod:'smile',Stretch:'content',LookAround:'surprised',SitToast:'happy',Heart:'happy',Peace:'laugh',Coy:'smile',Tada:'laugh',HandsOnHips:'content',HeelKick:'happy'};
    if(faces[name])api.express(faces[name],(GESTURES[name]===Infinity?4:GESTURES[name]||2)+.6);
   },
   express(name,seconds=3){expression=name;expressionUntil=seconds>0?time+seconds:0;},

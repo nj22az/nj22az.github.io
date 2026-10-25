@@ -1,0 +1,12 @@
+✔ actual editor draws, fills, undoes, previews both garments, cancels and preserves keyboard focus (258.355079ms)
+✔ keeping fabric supports image import, transparent PNG export and clearing without losing the other garment (87.819085ms)
+✔ stale image imports cannot overwrite newer painting or a cancelled editor (29.431555ms)
+✔ fabric paints actual garment pixels and sleeves while the skin UV strip stays transparent (38.440836ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1195.351807

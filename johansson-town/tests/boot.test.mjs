@@ -30,9 +30,10 @@ import {residentCards,canonicalHomeSites} from '../src/people/home-directory.js'
 }
 // Explicit post-consolidation addresses: removing a working door still fails this smoke.
 // Keep the visit expectation tied to this independent inventory, not the runtime's SITES.
-const EXPECTED_SITES=['clinic','community-kitchen','form3d','frontrow','home-clinic','home-higa','home-kitahama-3','home-kitahama-8','home-kitahama-flat-3','home-kitahama-flat-4','home-kitano-2','home-nakamura','izakaya','koban','market','mayor-home','office','onsen','ramen','resident-home-kenji','resident-home-mrs-sato','resident-home-thuan','school'];
-// Fourteen core households plus supporting accommodation and duty berths (CAST-CONSOLIDATION-REPORT.md).
-const EXPECTED_HOME_DESTINATIONS=['ferry-chief-cabin','ferry-crew-cabin','ferry-engineer-duty-berth','ferry-officer-cabin','fujita-houseboat','home-clinic','home-higa','home-kitahama-3','home-kitahama-8','home-kitahama-flat-3','home-kitahama-flat-4','home-kitano-2','home-nakamura','koban','mayor-home','office','resident-home-kenji','resident-home-mrs-sato','resident-home-thuan'];
+// The doctor's flat (home-clinic) went with Dr Kakazu on 22 October 2026: Nhung, the doctor now, lives at 3 Kitahama.
+const EXPECTED_SITES=['clinic','community-kitchen','form3d','frontrow','home-higa','home-kitahama-3','home-kitahama-8','home-kitahama-flat-3','home-kitahama-flat-4','home-kitano-2','home-nakamura','izakaya','koban','market','mayor-home','office','onsen','ramen','resident-home-kenji','resident-home-mrs-sato','resident-home-thuan','school'];
+// Thirteen core households plus supporting accommodation and duty berths (CAST-CONSOLIDATION-REPORT.md; roster.js HOUSEHOLDS).
+const EXPECTED_HOME_DESTINATIONS=['ferry-chief-cabin','ferry-crew-cabin','ferry-engineer-duty-berth','ferry-officer-cabin','fujita-houseboat','home-higa','home-kitahama-3','home-kitahama-8','home-kitahama-flat-3','home-kitahama-flat-4','home-kitano-2','home-nakamura','koban','mayor-home','office','resident-home-kenji','resident-home-mrs-sato','resident-home-thuan'];
 const root=resolve(new URL('..',import.meta.url).pathname);
 const fixtures=await import(pathToFileURL(resolve(root,'tests/fixtures.mjs')).href);
 import {provideCatalog} from './catalog-fixture.mjs';
@@ -71,7 +72,7 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     document.head=document.createElement('head');
     document.getElementById=id=>document.querySelector('#'+id);
     Object.assign(document.querySelector('#minimap'),{width:720,height:620});
-    // The game starts at one of several openings (world/openings.js); this test walks from the Sakura bench.
+    // A bookmarked bench URL now starts safely on foot at the fish auction (the bench was removed).
     globalThis.location.search='?spawn=sakura-bench&cinematic=off';
     globalThis.innerHeight=768;
     globalThis.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});
@@ -109,7 +110,7 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     const threeImport="import * as THREE from '"+threeUrl+"';";
     assert.ok(source.includes(threeImport),'Expected canonical vendored Three.js import');
     source=source.replace(threeImport,"import * as THREE from '"+rendererShim+"';");
-    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,advanceAbsentTown,catchUpFrame,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,groundHeight,characters,interaction,resizeRenderer,doInteract,touchSticks,residentBlocked,occupiedByPerson,environmentBlocked,updateContextControls,navigationLeg};\nexport const reviewRoom=()=>room;export const reviewShop=()=>sakuraShop;export const reviewSetActive=o=>active={...o.userData.hit,object:o};\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>{followRealClock=false;minutes=value;};export const reviewSetYaw=value=>yaw=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
+    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,advanceAbsentTown,catchUpFrame,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,groundHeight,characters,interaction,resizeRenderer,doInteract,touchSticks,residentBlocked,occupiedByPerson,environmentBlocked,updateContextControls,navigationLeg,seated,parkSeat};\nexport const reviewRoom=()=>room;export const reviewShop=()=>sakuraShop;export const reviewSetActive=o=>active={...o.userData.hit,object:o};\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>{followRealClock=false;minutes=value;};export const reviewSetYaw=value=>yaw=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
     // Exercise the new geometry in the full game, including actual room exits.
     const originalFetch=globalThis.fetch;
     globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:2048,height:2048,close(){}});
@@ -118,8 +119,6 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     const {preloadPark}=await import('../src/world/park.js?snappy=1');assert.equal(await preloadPark(),true);
     const {preloadIzakaya}=await import('../src/world/izakaya.js?snappy=1');
     assert.deepEqual(await preloadIzakaya(),{ready:2,total:2},'New izakaya exterior and existing dining room preloaded');
-    const {preloadSakuraBench}=await import('../src/world/sakura-bench.js');
-    assert.equal(await preloadSakuraBench(),true,'Sakura viewing bench preloaded');
     // World's catalogue (src/catalog): Umi-no-yu is built with Studio's massage chair, and the game opens its door only
     // once the chair's model is in hand (enterRoom, ONSEN_ASSETS). This DOM has no page for the catalogue to fetch in
     // (window.document), so the model is read from disk and handed over, as the room tests do (catalog-fixture.mjs).
@@ -128,10 +127,9 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     const api=await import(dataModule(source));
     const {Vector3}=await import(threeUrl);
     const {BOOKSHOP_WORKSHOP_ROOM}=await import('../src/world/bookshop-workshop-layout.js');
-    const {SAKURA_SHOP}=await import('../src/world/sakura-bench.js');
     const {circleHitsRect}=await import('../physics.js?snappy=1');
     assert.deepEqual(api.SITES.map(s=>s.id).sort(),EXPECTED_SITES);
-    assert.deepEqual(api.world.landmarks.map(s=>s.id).sort(),['airport-island','ferry-terminal','fujita-houseboat','harbour-park','home-clinic','home-higa','home-kitahama-flat-3','home-kitahama-flat-4','home-nakamura','nakamura','warehouse']);
+    assert.deepEqual(api.world.landmarks.map(s=>s.id).sort(),['airport-island','ferry-terminal','fujita-houseboat','harbour-park','home-higa','home-kitahama-flat-3','home-kitahama-flat-4','home-nakamura','nakamura','warehouse']);
     assert.deepEqual(api.world.harbourShops.map(s=>s.id).sort(),['form3d','frontrow','office']);
     assert.ok(api.world.group.getObjectByName('west-shop:frontrow'));
     assert.equal(api.world.group.getObjectByName('west-shop:form3d'),undefined,'Only one bookshop/workshop exterior');
@@ -150,18 +148,24 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     waiting.position.copy(savedPosition);waiting.visible=savedVisibility;
 
     const market=api.SITES.find(s=>s.id==='market'),books=api.SITES.find(s=>s.id==='frontrow');
-    const bench=api.world.sakuraBench;
     // The bus stop is an outdoor destination; the warehouse has an interior.
     const interiors=[...api.SITES,api.world.landmarks.find(s=>s.id==='warehouse')];
-    assert.equal(bench.source,'blender');
-    assert.deepEqual(api.player.position.toArray(),bench.seat.position,'Start seated on the viewing bench');
+    assert.equal(api.world.sakuraBench,undefined,'The removed bench has no world seat');
+    assert.equal(api.world.group.getObjectByName('sakura-bench-seat'),undefined);
+    assert.ok(!streetLabels.has('Sit and look at Sakura'),'No orphaned sit prompt');
+    assert.equal(api.seated,false);assert.equal(api.parkSeat,null);
+    assert.deepEqual([api.player.position.x,api.player.position.z],[19.8,-40],'The old bench URL starts at the safe harbour opening');
+    // This harness suppresses animation frames; ground contact is settled by the fixed physics step.
+    api.simulate(1/60);
+    assert.equal(api.player.position.y,api.groundHeight(19.8,-40),'Standing feet settle on the actual harbour ground');
+    assert.ok(!api.environmentBlocked(api.player.position.x,api.player.position.z),'Clear standing point');
     const look=api.camera.getWorldDirection(new Vector3());look.y=0;look.normalize();
-    const toShop=new Vector3(SAKURA_SHOP.x-api.player.position.x,0,SAKURA_SHOP.z-api.player.position.z).normalize();
-    assert.ok(look.dot(toShop)>.97,'Opening view faces the actual Sakura frontage');
-    const openingSit=api.player.position.clone();api.keys.KeyW=true;api.simulate(.1);api.keys.KeyW=false;
-    assert.ok(api.player.position.distanceTo(openingSit)>.2,'The first movement stands up and walks immediately');
-    assert.ok(!api.world.colliders.some(c=>circleHitsRect(bench.seat.stand[0],bench.seat.stand[2],.28,c)),'Clear stand-up point');
-    assert.ok(api.player.position.distanceTo(new Vector3(...bench.seat.stand))<.5,'Movement begins at the clear bench stand point');
+    const toAuction=new Vector3(25.5-api.player.position.x,0,-43.4-api.player.position.z).normalize();
+    assert.ok(look.dot(toAuction)>.97,'Opening view faces the fish auction');
+    const openingStart=api.player.position.clone();api.keys.KeyW=true;api.simulate(.1);api.keys.KeyW=false;
+    assert.ok(Math.hypot(api.player.position.x-openingStart.x,api.player.position.z-openingStart.z)>.1,'The first movement walks immediately');
+    assert.equal(api.seated,false);
+    assert.ok(!api.environmentBlocked(api.player.position.x,api.player.position.z),'Movement stays clear of solids');
     // The kerb furniture now stands at x=.5; exercise Run/strafe on the clear
     // middle of the east pavement instead of walking into the utility cabinet.
     api.player.position.set(2.5,0,14);api.reviewSetYaw(0);api.simulate(1/60);
@@ -271,12 +275,13 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     }
     assert.deepEqual([...visited].sort(),[...EXPECTED_SITES,'warehouse'].sort());
 
-    // The afternoon bookshop/workshop shift has Nhung and Tetsuo ashore.
+    // The afternoon workshop shift has Tetsuo ashore. Front-Row's floor is unstaffed by day since Nhung became the island
+    // doctor (22 October 2026): she sets the paper at its back bench in the evening, checked below.
     // Chin is signed on aboard, not afternoon workshop staff; Reiko is retired.
     // Opening a workplace must not duplicate a driver or borrow the ferry's motorman.
     const {createResidentLedger}=await import('../src/people/resident-personalities.js');
-    const ledger=createResidentLedger(()=>api.activities.state),staffNames=['Nhung','Tetsuo'];
-    const placeOf={Nhung:'frontrow',Tetsuo:'form3d'};
+    const ledger=createResidentLedger(()=>api.activities.state),staffNames=['Tetsuo'];
+    const placeOf={Tetsuo:'form3d'};
     for(const name of staffNames)ledger.account(name,1050).shopping={finished:true};
     api.reviewSetMinutes(1050);api.player.position.set(0,0,14);
     const staff=api.world.people.filter(p=>staffNames.includes(p.profile.name));
@@ -307,6 +312,11 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     await api.enterRoom({id:'stepwise'});assert.equal(api.reviewCurrentRoom().id,'form3d');
     api.reviewRoom().getObjectByName('Use Form 3D printer').userData.hit.fn();choose('Collect model');
     assert.ok(api.activities.state.inventory.includes('Johansson cable ring'));assert.equal(api.activities.state.yen,workshopBalance-40);api.leaveRoom();
+    // The evening at the paper (workplaces.js EVENING_DESKS): at 19:40 the old shop's room draws Nhung at the back bench.
+    {const nhung=api.world.people.find(p=>p.profile.name==='Nhung');ledger.account('Nhung',1180).shopping={finished:true};api.reviewSetMinutes(1180);
+     for(let i=0;i<1200&&nhung.g.userData.indoors!=='paper';i++)api.simulate(.1);
+     assert.equal(nhung.g.userData.indoors,'paper','Nhung is at the paper at 19:40');
+     await api.enterRoom(books);assert.equal(nhung.g.userData.inWorkplace,'frontrow','the old shop draws her at the back bench');assert.equal(nhung.g.visible,true);api.leaveRoom();}
 
     // Catch-up is queued now: drive the same bounded frame worker as the browser.
     api.reviewSetMinutes(5*1440+510);const journalBefore=api.activities.state.sakura.journal.length;

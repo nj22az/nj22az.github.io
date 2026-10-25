@@ -190,3 +190,34 @@ holds something much darker than the painted stroke gets a flat dark mark (0.16,
 a flat cream one. That makes eyes, brows, smile and sign letters thick and readable. Checked in software Chromium on
 Johansson's face at 0.8 m and the Sakura front at 2.4 m. A first, stronger setting inked the shop interior too heavily and
 was eased (thresholds 0.1–0.22, 90%).
+
+## Spot blacks and colour lines in the drawn looks — 23 October 2026
+Owner (Line drawing screenshot at the izakaya): "his eyebrows should be fully black here and his eyes too… the collar on the
+shirt should have its outline on the chest". In `looks.js`:
+- New shared `spotBlack()`, used by Line drawing, Manga and Cartoon. Within 6–16 m, a pixel darker than its surroundings by
+  more than 0.1–0.15 luminance (the best of three rings, 6/14/28 px) is filled solid, if it is not itself light (luma under
+  0.55–0.65). That makes eyes and brows solid black; big dark areas stay outlined. Partial fills first left grey smudges,
+  so the step is narrow.
+- `edges()` now takes its Sobel on colour (RGB length × 0.577), not luminance, with lower thresholds within 4–14 m, so a
+  light-blue collar on a light-blue shirt is drawn. This affects every look that uses `edges()`.
+Checked in software Chromium with Johansson's face at 1 m and the Sakura front, in Lines, Manga and Cartoon.
+
+## One stylesheet for the Town book — 23 October 2026
+Owner, yes to "merge the stylesheets: less code, nothing looks different".
+- Every rule whose own target is the book or its button (`#directory…` outside any `:is()/:has()/:not()/:where()`) was moved
+  out of base, context-controls, dual-controls, tomodachi-ui, quiet-ui, context-rail, line-ui, quiet-hud and
+  town-directory into `town-book.css`, in cascade order (172 rules). Shared rules such as line-ui's
+  `:is(#directory,#activity,…)` stay where they are. One moved declaration had to change, because a later shared rule had
+  always overridden it: `#directory h3{color:#41584d}` lost its colour.
+- Pruning: each moved declaration was deleted if no element its rule matches changed any computed value, across 7 viewports
+  (340–1280 wide, one landscape) × 6 states (closed, closed and idle, home, Camera, Map, Settings) in a touch and a
+  mouse Chromium, on a snapshot of the real HUD and book. Rules with :hover/:focus etc., or with any selector matching
+  nothing in the snapshot, were kept whole. That removed 433 of 833 declarations. A further 17 selectors naming classes
+  that exist nowhere in the game's HTML/JS (`.menu-tools`, `.menu-map`, `.izakaya-shortcut`, `.directory-section`) went.
+- Final full comparison (every computed property of every element and pseudo-element under the book and button): identical
+  to the original, for touch and mouse. Totals for those 10 files: 150.4 KB → 138.3 KB, `!important` 198 → 162; the
+  book's rules are in 1 file instead of 8. Orphaned comments removed; quiet-hud's header now points to town-book.css.
+- The tools (CSS parser, mover, pruner, oracle) are scratch scripts, not committed. The test page cannot cover hover/focus,
+  states while other dialogues are open, or person and home cards beyond the snapshot; those rules were kept whole.
+Checks: CI guard 359 pass, 1 fail (the known `no-z-fighting` out-of-memory abort). Real game at 390×844 touch and 1280×800
+mouse: HUD, home, Camera, Map, Settings render as before.

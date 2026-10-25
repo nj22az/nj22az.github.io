@@ -47,6 +47,7 @@ const PROPOSED_PARADE='children in the Port Festival parade (proposed)';
 /** Every wardrobe part, by slot, in PARTS order. */
 const PART_ENTRIES={
  top:{
+  stripedvest:{label:'Striped tee & vest',category:'Everyday',tags:['stripes','long sleeves','vest','Vy'],who:'Vy off school',why:'A striped cotton tee under a dark sleeveless vest for a cool afternoon by the harbour.',colourways:[{name:'Monochrome',colours:{'outfit.topColour':'#24252b','outfit.accent':'#f4f1ea'}}]},
   tank:{label:'Tank top',category:'Everyday',tags:['vest','base layer','summer'],who:'everyone, under it all; Nhung on the hottest days',why:'The base layer under every top, and on its own in August.'},
   tee:{label:'T-shirt',category:'Everyday',tags:['tee','cotton','summer'],who:'Thao, Chin, Kai and Kōji',why:'Cotton that is cheap, cool and dry on the line by noon.'},
   kariyushi:{label:'Kariyushi',category:'Island & festival',tags:['island shirt','aloha','town hall','summer','Minato'],who:'Johansson in his sky-blue one; Mr Fujita at Minato once he has signed off',why:'The island’s own summer shirt, worn untucked and open at the neck, even to the town hall.'},
@@ -61,7 +62,7 @@ const PART_ENTRIES={
   police:{label:'Police jacket',category:'Work & uniform',tags:['police','officer','patrol','uniform','1994','kōban','tie'],who:'Officer Mori',
    why:'The 1994-pattern police jacket: navy, notched lapels, three dark-gold buttons, shoulder straps, the rank plate on the left breast and the emblem on the right arm, over a white shirt and tie.'},
   hoodie:{label:'Hooded sweater',category:'Everyday',tags:['hoodie','rain','early boats','pier'],who:'Chin, Daichi, Masaru, Kenta, Hiroshi and the Cold-storage kid',why:'A hood and a pocket for the early boats, the rainy season and the windy pier.'},
-  cardigan:{label:'Cardigan',category:'Everyday',tags:['knit','January','winter','bookshop','florist'],who:'Thuan at the flower buckets on January mornings; Nhung in the air-conditioned bookshop',why:'A knitted layer for the north wind of January, and for air-conditioning.'},
+  cardigan:{label:'Cardigan',category:'Everyday',tags:['knit','January','winter','bookshop','florist'],who:'Thuan at the flower buckets on January mornings; Nhung in the air-conditioned bookshop, before she became the island doctor',why:'A knitted layer for the north wind of January, and for air-conditioning.'},
   overalls:{label:'Work overalls',category:'Work & uniform',tags:['cargo yard','quay','repair','workshop'],who:'Kōji at the auction; Chin on a repair',why:'A bib with pockets that takes the grease and the crates.'},
   sundress:{label:'Sundress bodice',category:'Everyday',tags:['dress','summer','Sunday','beach'],who:'Mai and Vy at the beach',why:'The coolest thing to wear on a hot Sunday.'},
   festival:{label:'Happi coat',category:'Island & festival',tags:['happi','festival coat','eisa','tug-of-war','Obon','steward','andagi'],who:'the stewards at the eisa night, the tug-of-war and the andagi stall',why:'A happi coat shows who is helping to run the festival.'},
@@ -72,7 +73,7 @@ const PART_ENTRIES={
   // in (put on in the first), and plain, without a print; the accent is the shirt under a vest, the class colour on a PE
   // shirt, the jersey's piping.
   shirt:{label:'Open-collar shirt',category:'Work & uniform',tags:['office','school','summer school','town hall','power station','clinic','pen','collar'],
-   who:'Jack Reed at the harbour office, Dr Kakazu under his white coat, and Daichi at summer school',why:'The island’s office and school shirt: short sleeves, the top button open, and a pen in the pocket.',
+   who:'Jack Reed at the harbour office, Nhung under her white coat at the clinic, and Daichi at summer school',why:'The island’s office and school shirt: short sleeves, the top button open, and a pen in the pocket.',
    colourways:[{name:'Paper white',colours:{'outfit.topColour':'#f4f1ea','outfit.accent':'#2f4f7f','outfit.pattern':'none'}},{name:'Sky',colours:{'outfit.topColour':'#8fbfe0','outfit.accent':'#2f4f7f','outfit.pattern':'none'}}]},
   vest:{label:'Vest over a shirt',category:'Work & uniform',tags:['uniform','waistcoat','harbour office','bus','police','ticket window','port terminal','1990s'],
    who:'the harbour master, Officer Mori, Tetsuo, Aya at the purser’s window and Ms Ganaha at the ticket window',why:'The 1990s service uniform their own looks describe: a vest over a short-sleeved shirt.',
@@ -101,11 +102,11 @@ const PART_ENTRIES={
   underwear:{label:'Underwear',category:'Trousers & shorts',tags:['base layer'],who:'everyone, under it all',why:'The base layer.'},
   shorts:{label:'Shorts',category:'Trousers & shorts',tags:['summer','beach','school'],who:'Johansson, Thao, Chin, Kōji and the schoolboys',why:'Knees out from May to October.'},
   trousers:{label:'Trousers',category:'Trousers & shorts',tags:['work','uniform'],who:'most of the island at work: Thuan, Nhung, Mrs Sato, Officer Mori and the harbour master',why:'Cotton trousers for work, and for the sun on the legs.'},
-  skirt:{label:'Skirt',category:'Skirts',tags:['summer','school'],who:'Miss Higa, Mrs Nakamura, Ms Ganaha and the schoolgirls',why:'A short A-line skirt for the heat.'},
+  skirt:{label:'Tailored skirt',category:'Skirts',tags:['summer','school'],who:'Miss Higa, Mrs Nakamura, Ms Ganaha and the schoolgirls',why:'A fitted waistband and rounded hips with a gently opened hem, tailored to the wearer.'},
   longskirt:{label:'Long skirt',category:'Skirts',tags:['shrine','verandah'],who:'Nhung, Miss Higa, Grandmother Higa and Yoshiko',why:'A long skirt that keeps the sun and the mosquitoes off.'},
-  widepants:{label:'Wide trousers',category:'Trousers & shorts',tags:['monpe','work','garden','quay'],who:'the harbour day shift; Grandmother Higa at the liquor counter',why:'Loose trousers that let the air in on a hot shift.'},
+  widepants:{label:'Wide trousers',category:'Trousers & shorts',tags:['monpe','work','garden','quay'],who:'the harbour day shift; Grandmother Higa in her garden',why:'Loose trousers that let the air in on a hot shift.'},
   cropped:{label:'Cropped trousers',category:'Trousers & shorts',tags:['rain','rainy season'],who:'Kenta and the Cold-storage kid in the rainy season',why:'Hems clear of the puddles in May and June.'},
-  culottes:{label:'Culottes',category:'Skirts',tags:['bookshop','ladder'],who:'Nhung at Front-Row Books',why:'As cool as a skirt, and easy on the ladder to the top shelves.'},
+  culottes:{label:'Culottes',category:'Skirts',tags:['bookshop','ladder'],who:'Nhung at Front-Row Books, before she became the island doctor',why:'As cool as a skirt, and easy on the ladder to the top shelves.'},
   pleatedskirt:{label:'Pleated skirt',category:'Skirts',tags:['school uniform','ferry','pleats'],who:'Vy and Hana with the sailor uniform; Thuan; the harbour visitor',why:'Pleats that swing on the walk to the ferry and fall back neat.'},
  },
  footwear:{
@@ -207,6 +208,8 @@ export function wornSet(outfit){
  */
 export function putOnSet(outfit,set,colours={}){
  const was=wornSet(outfit)?.set,next={...outfit,...set.outfit,...colours};
+ // A complete set replaces its garments' custom fabric, unless it supplies one.
+ for(const [garment,fabric] of [['top','topFabric'],['bottom','skirtFabric']])if(garment in set.outfit&&!(fabric in set.outfit))next[fabric]=null;
  // The same for a belt that came with a set (the police duty belt comes off with the uniform).
  for(const field of ['hat','belt'])if(!(field in set.outfit)&&was&&was.id!==set.id&&field in was.outfit&&outfit[field]===was.outfit[field])next[field]='none';
  return next;

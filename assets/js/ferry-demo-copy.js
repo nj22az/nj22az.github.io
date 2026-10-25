@@ -1,12 +1,14 @@
 'use strict';
 document.querySelectorAll('[data-ferry-copy]').forEach((button) => {
   button.addEventListener('click', async () => {
-    const panel = button.closest('.ferry-install');
-    const code = panel.querySelector('code');
-    const status = panel.querySelector('.ferry-copy-status');
+    // Each command block copies its own code; its status line follows it.
+    const block = button.closest('.ferry-command');
+    const code = block.querySelector('code');
+    const next = block.nextElementSibling;
+    const status = next && next.classList.contains('ferry-copy-status') ? next : document.createElement('p');
     try {
       await navigator.clipboard.writeText(code.textContent);
-      status.textContent = 'Install command copied. Paste it into Konsole.';
+      status.textContent = 'Command copied. Paste it into Konsole.';
       button.textContent = 'Copied';
     } catch {
       const range = document.createRange();

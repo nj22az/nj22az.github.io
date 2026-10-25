@@ -15,11 +15,13 @@ import {planHeight} from '../src/world/layout.js';
 import {standingHitsRect,townBoundsBlocked,canStepBetween} from '../physics.js';
 import {installDOM} from './fixtures.mjs';
 
-test('all 26 cast members have one canonical primary home; shared households map once; the crew’s cabins are aboard; no card points at a retired home',()=>{
+test('all 25 cast members have one canonical primary home; shared households map once; the crew’s cabins are aboard; no card points at a retired home',()=>{
  const cards=residentCards(),targets=canonicalHomeSites(cards);
- assert.equal(cards.length,26);assert.deepEqual(cards.map(c=>c.name),CAST.map(c=>c.name));
- // The 14 households' homes and Kai's rented Shiroma house are the shore home pins (phase 4: no retired flat, no removed house); the four who live aboard point at the terminal.
- assert.equal(targets.filter(t=>!t.aboard).length,15);assert.equal(new Set(targets.map(t=>t.homeId)).size,targets.length);
+ // 25 since Dr Kakazu retired into Nhung (22 October 2026, roster.js RETIRED).
+ assert.equal(cards.length,25);assert.deepEqual(cards.map(c=>c.name),CAST.map(c=>c.name));
+ // The 13 households' homes and Kai's rented Shiroma house are the shore home pins (phase 4: no retired flat, no removed house;
+ // the doctor's flat went with Dr Kakazu on 22 October 2026); the four who live aboard point at the terminal.
+ assert.equal(targets.filter(t=>!t.aboard).length,14);assert.equal(new Set(targets.map(t=>t.homeId)).size,targets.length);
  for(const name of ['Ryo','Ren','Aya','Jun'])assert.equal(cards.find(c=>c.name===name).home.aboard,true,name+' sleeps aboard');
  assert.equal(cards.find(c=>c.name==='Kai').home.id,'kitano-2');assert.equal(cards.find(c=>c.name==='Kai').home.target.id,'home-kitano-2');
  for(const card of cards){

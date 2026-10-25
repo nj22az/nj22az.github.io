@@ -23,7 +23,9 @@ export const ISLAND_HOMES=Object.freeze([
  // Removed in phase 4 (addendum 5): the Chinen house is gone from the hamlet's lane; the island's own ground is back.
  home('kitano-3','Former Chinen house, Kitano hamlet','Kitano hamlet','home-kitano-3',{retired:true}),
  home('office','Harbour Office · residence behind the screen','Harbour','office'),
- home('clinic','Doctor’s flat, Town Hall Clinic','Town Hall','home-clinic'),
+ // Retired on 22 October 2026 with Dr Kakazu (roster.js): Nhung, the doctor now, lives at 3 Kitahama. No door, no site;
+ // RETIRED_HOMES lands `clinic` on itself, since the id also names the clinic, which stays.
+ home('clinic','Former doctor’s flat, Town Hall Clinic','Town Hall','home-clinic',{retired:true}),
  home('ferry-chief-cabin','Johansson’s duty cabin, Minato Maru','Harbour','ferry-chief-cabin',{aboard:true,secondaryOnly:true}),
  home('ferry-engineer-duty-berth','Relief engineer’s duty berth, Minato Maru','Harbour','ferry-engineer-duty-berth',{aboard:true,secondaryOnly:true}),
  // The supporting crew's quarters aboard (roster.js QUARTERS; world/ferry-ship.js FERRY_GA mate-cabin, deckhand-cabin and

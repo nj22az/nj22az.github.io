@@ -241,7 +241,9 @@ const {rectanglesSeparated}=require('./layout-acceptance.cjs');
  const web=await browser.newPage({viewport:{width:1280,height:800}});page=web;web.setDefaultTimeout(120000);web.on('pageerror',e=>errors.push(e.message));
  await web.addInitScript(()=>localStorage.setItem('johansson-town-1988-v5',JSON.stringify({castRevision:2,loopYear:2026,yen:1234,inventory:['Tea'],dungeonRun:{hp:0},room:'dungeon'})));
  await web.goto(url+'/johansson-town/?audit&cinematic=off',{waitUntil:'domcontentloaded'});await web.waitForFunction(()=>document.getElementById('title')?.dataset.scene==='ready',null,{timeout:120000});
- assert.equal(await web.evaluate(()=>window.johanssonLinuxWorld===undefined),true,'Web edition has no Linux character/home system');assert.equal(await web.locator('#desktopMenu').count(),0,'Web edition has no Linux console UI');
+ // Since 24 October 2026 the web can play as any resident too (Town book → People → Play as), but it starts as Johansson
+ // and leaves his web opening alone; the Linux console UI stays Linux's.
+ assert.deepEqual(await web.evaluate(()=>({active:window.johanssonLinuxWorld?.active,inBed:window.johanssonLinuxWorld?.inBed})),{active:'Johansson',inBed:false},'Web edition starts as Johansson, out of bed');assert.equal(await web.locator('#desktopMenu').count(),0,'Web edition has no Linux console UI');
  await web.locator('#enter').click();await web.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&!window.__JOHANSSON_AUDIT__.blocked.catchingUp,null,{timeout:120000});
  await web.waitForFunction(()=>{const p=window.__JOHANSSON_POSE__;return p&&Math.hypot(p.x-19.8,p.z+40)<1;});
  const recovery=await web.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;dispatchEvent(new Event('johansson-festival-menu'));return {pose:window.__JOHANSSON_POSE__,room:a.player.room,api:!!a.festival,inventory:a.activities.state.inventory};});

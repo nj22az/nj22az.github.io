@@ -1,4 +1,4 @@
-import {isLook} from '../johansson-town/src/render/looks.js';
+import {normalLook} from '../johansson-town/src/render/looks.js?v=20261023-print-media';
 import {normalizeTake} from './acting/takes.mjs';
 import {KNOWN_POSES,KNOWN_EXPRESSIONS} from './scene-catalogue.mjs?v=20261020-acting';
 import {SNAP} from './scene-snap.mjs?v=20261011-2';
@@ -9,7 +9,7 @@ export const LOCATIONS=Object.freeze([
  ['fujita-shed','Fujita’s television shed'],['sakura','Sakura Shōten'],['sakura-street','Outside Sakura'],['minato','Minato Izakaya'],
  ['dock-workshop','Chin & Tetsuo Repairs'],['sato-ramen','Sato Ramen'],['books','Front-Row Books'],['onsen','Umi-no-yu lobby'],
  ['classroom','Island classroom'],['town-hall','Mayor’s office'],['harbour','Harbour'],['pier','Outer pier'],
- ['park','Harbour Park'],['garden','Japanese garden'],['rainflower','Rainflower Lane']
+ ['seawall','Seawall bench'],['park','Harbour Park'],['garden','Japanese garden'],['rainflower','Rainflower Lane']
 ]);
 // Poses and faces are World's own lists (scene-catalogue.mjs); a saved scene keeps any pose or face World knows.
 export {POSES,EXPRESSIONS} from './scene-catalogue.mjs?v=20261020-acting';
@@ -19,12 +19,12 @@ export function emptyScene(){return {version:2,location:'harbour',format:'landsc
 export function normalizeScene(raw,normalizeRecipe=r=>structuredClone(r)){
  const out=emptyScene();if(!raw||![1,2].includes(raw.version))return out;
  out.location=LOCATIONS.some(([id])=>id===raw.location)?raw.location:out.location;
- out.look=isLook(raw.look)?raw.look:'none';
+ out.look=normalLook(raw.look);
  out.format=['landscape','square','portrait'].includes(raw.format)?raw.format:out.format;
  out.style=['photo','meme','comic'].includes(raw.style)?raw.style:out.style;
  out.camera={orbit:clamp(raw.camera?.orbit,-180,180,0),elevation:clamp(raw.camera?.elevation,-25,40,0),zoom:clamp(raw.camera?.zoom,.55,1.8,1)};
  if(raw.exitLabel!==undefined)out.exitLabel=text(raw.exitLabel).slice(0,24);
- out.time=clamp(raw.time,0,60,0);if(raw.backdrop==='paper')out.backdrop='paper';
+ out.time=clamp(raw.time,0,60,0);if(['paper','hero'].includes(raw.backdrop))out.backdrop=raw.backdrop;if(raw.television==='football')out.television='football';
  out.top=text(raw.top);out.bottom=text(raw.bottom);
  if([raw.camera?.position,raw.camera?.target].every(v=>Array.isArray(v)&&v.length===3&&v.every(n=>Number.isFinite(n)&&Math.abs(n)<=30))){out.camera.position=[...raw.camera.position];out.camera.target=[...raw.camera.target];out.camera.fov=clamp(raw.camera.fov,25,75,43);}
  if(['dash','chaos','escape'].includes(raw.effect))out.effect=raw.effect;

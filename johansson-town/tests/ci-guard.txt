@@ -29,6 +29,7 @@ sakura-dialogue.test.mjs
 sakura-dressing.test.mjs
 sakura-evening-guests.test.mjs
 sakura-flyer.test.mjs
+woodland-poster.test.mjs
 sakura-light-transitions.test.mjs
 sakura-merchandising.test.mjs
 sakura-office-exterior.test.mjs
@@ -76,3 +77,23 @@ sakura-rebuild.test.mjs
 
 sakura-posters-roof.test.mjs
 sakura-atmosphere.test.mjs
+look-materials.test.mjs
+
+# Editable Vy reference parts and recipe round-trip.
+vy-reference.test.mjs
+authored-skirt.test.mjs
+
+# Shared tailored-skirt fit, shell topology and body proportions.
+tailored-skirt.test.mjs
+
+conversation-eyes.test.mjs
+
+# Cars remain solid while driving, waiting and travelling aboard the ferry.
+vehicle-body-collision.test.mjs
+sakura-wall-band.test.mjs
+sakura-street-poster.test.mjs
+
+face-lighting.test.mjs
+
+# Portable fabric data and opt-in pressed-pleat fit/motion.
+fabric.test.mjs

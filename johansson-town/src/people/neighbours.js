@@ -37,7 +37,7 @@ const H=(h,m=0)=>h*60+m;
 const ALL_NEIGHBOURS=Object.freeze([
  {name:'Riku',look:'Riku',height:1.32,role:'at home at 3 Kitahama',at:RIKU_HOME,home:RIKU_HOME,face:[0,1],hours:[[H(7),H(19)]],
   routine:[{from:0,at:RIKU_HOME,role:'at home at 3 Kitahama',home:true},{from:H(7,40),at:[RIKU_HOME[0],RIKU_HOME[1]-.8],role:'leaving for school'},{from:H(8,15),at:RIKU_HOME,role:'at school',away:true},{from:H(15,30),at:[12.5,-26.4],role:'playing in Harbour Park'},{from:H(17),at:[18,-9],role:'playing football on the park lawn'},{from:H(18,30),at:RIKU_HOME,role:'home with Kōji and Nhung at 3 Kitahama',home:true}],
-  lines:['I live at 3 Kitahama with Mum and Dad. Mum is Nhung at the bookshop; Dad sorts the fish. Vy is my cousin.',
+  lines:['I live at 3 Kitahama with Mum and Dad. Mum is Nhung, the island doctor; Dad sorts the fish. Vy is my cousin.',
    'Dad sorts the catch on the quay. I can watch the boats, but I am not allowed out on one until I can swim to the buoy.',
    'The open lawn beside Harbour Park is our football place. We keep the ball away from the pond and the bathhouse windows.']},
 

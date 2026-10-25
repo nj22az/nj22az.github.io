@@ -7,7 +7,7 @@ import {fascia,iceMural,enamel,catchFlag,poster,vertical,clothBanner} from './si
 import {potPlant,OKINAWA_COLOURS as C} from './houses.js';
 import {buoys,bicycle} from './props.js';
 import {VENDING_MACHINE} from '../vending.js';
-import {sakuraOpenAt as rotaOpenAt,SAKURA_HOURS_TEXT} from '../../commerce/sakura-rota.js';
+import {sakuraOpenAt as rotaOpenAt,SAKURA_HOURS_TEXT,SAKURA_DAYS_TEXT} from '../../commerce/sakura-rota.js';
 
 /**
  * The buildings that were here before the quarters went up, brought up to the street
@@ -31,7 +31,7 @@ export function dressOldTown(kit,solid,{inspect,anchor,onAction,vending,group}){
  return {shutter};
 }
 
-/** Sakura's hours are the rota's (commerce/sakura-rota.js): 9:00–20:30, every day, the shutter down in between. */
+/** Sakura's hours are the rota's (commerce/sakura-rota.js): 9:00–20:30, Sunday to Friday, the shutter down in between. */
 export const sakuraOpenAt=rotaOpenAt;
 /** Where you stand to buy a bouquet: in front of the flower buckets beyond the fruit trestle (sakuraShopfront), the town's flower stand since phase 4. */
 export const SAKURA_FLOWER_STAND=Object.freeze([-7.45+.95,-27.3+1.6+1.2+1.35]);
@@ -44,7 +44,7 @@ function shutterTexture(){
   for(let y=0;y<h;y+=9){ctx.fillStyle='rgba(60,66,70,.35)';ctx.fillRect(0,y,w,2);ctx.fillStyle='rgba(255,255,255,.25)';ctx.fillRect(0,y+2,w,1);}
   ctx.fillStyle='#a6333c';ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.font='bold 64px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';ctx.fillText("Sakura Shop",w/2,h*.46);
-  ctx.font='bold 22px sans-serif';ctx.fillText("SAKURA · OPEN "+SAKURA_HOURS_TEXT+" · 年中無休",w/2,h*.72);
+  ctx.font='bold 22px sans-serif';ctx.fillText("SAKURA · OPEN "+SAKURA_HOURS_TEXT+" · 土曜定休",w/2,h*.72);
   ctx.fillStyle='rgba(110,70,40,.25)';for(const x of [60,w-80])ctx.fillRect(x,h*.2,3,h*.7);
  });
 }
@@ -123,7 +123,7 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  kit.sign(enamel({jp:"Flowers",en:'BOUQUETS ¥250',bg:'#efe7ce',ink:'#376a51'}),.34,.26,front+.02,1.15,tz+1.35,{ry:Math.PI/2,depth:.01,name:'flower bucket sign'});
  anchor(front+.95,1,tz+1.35,'Buy a bouquet · ¥250',()=>sakuraOpenAt(clock)
   ?onAction?.('buy','Rainflower bouquet',{cost:250,item:'Rainflower bouquet',text:'Island-grown stems from the buckets by Sakura’s door, wrapped in brown paper at the till. Thuan cuts them the way Mrs Kinjō taught her. A little colour for a home, a dinner table or someone you care about.'})
-  :onAction?.('read','Sakura is closed','The bouquets are sold in the shop’s hours, '+SAKURA_HOURS_TEXT+'. The buckets stay out by the door.'));
+  :onAction?.('read','Sakura is closed','The bouquets are sold in the shop’s hours, '+SAKURA_HOURS_TEXT+', '+SAKURA_DAYS_TEXT+'. The buckets stay out by the door.'));
  // At the two corners of the frontage, so they mark the shop without standing in front
  // of its window.
  // One flag: Blue Coral is served at Nakamura's counter beside Harbour Park.
@@ -160,7 +160,7 @@ export const SAKURA_BIKES=Object.freeze([
  Object.freeze({id:'sakura-shop-bicycle',x:-19.13,z:-23.15,colour:0x3a7a5a,frame:'step',basket:true,owner:'Sakura (Thuan)',
   why:'The shop’s own bicycle, with the big basket: the run to the Quay Warehouse depot for a forgotten case, and the bags for the old customers on Nishi-machi who cannot carry them home.'}),
  Object.freeze({id:'nhung-bicycle',x:-19.13,z:-21.15,colour:0xd9d2c0,frame:'step',basket:true,owner:'Nhung',
-  why:'Nhung rides in from 3 Kitahama to keep the shop at the weekend and leaves it at the back, out of the customers’ way.'}),
+  why:'Nhung rides in from 3 Kitahama to keep the shop on Sunday and leaves it at the back, out of the customers’ way.'}),
 ]);
 
 /** Sakura's footprint and the height of its roof slab, as the storefront builds them. */
@@ -409,5 +409,5 @@ function dressBookshop(kit,solid,{inspect}){
  solid({id:'book-cart',x,z,w:.32,d:1.4,height:1});
  kit.sign(poster({title:'¥100',lines:["Paperback",'PAPERBACKS'],band:'#8a3b2e'}),.34,.46,x+.17,1.35,z,{ry:Math.PI/2,depth:.02,name:'book cart card'});
  inspect(x+.9,1,z,'Browse the ¥100 cart','Front-Row ¥100 cart',
-  'Paperbacks with their covers curled by the sea air: detective stories, a Ryūkyū cookery book, three copies of the same romance and a tide table from 1989. Nhung puts it out at nine and brings it in when it rains, which is most afternoons in June.');
+  'Paperbacks with their covers curled by the sea air: detective stories, a Ryūkyū cookery book, three copies of the same romance and a tide table from 1989. Nhung puts it out on her way to morning surgery, with a tin for the coins, and brings it in when she comes back to set the paper, or Kōji does when it rains, which is most afternoons in June.');
 }

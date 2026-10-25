@@ -37,6 +37,14 @@ jobs:
         run: node steam-deck/tools/prepare-patch.mjs
       - name: Package complete offline island
         run: npm run package --prefix steam-deck
+      - name: Packaged facial visibility across all Looks
+        env:
+          FACE_BROWSER_TEST: '1'
+          FACE_GAME_ROOT: steam-deck/dist/johansson-world/resources/app/site/johansson-town
+          FACE_OUTPUT_DIRECTORY: steam-deck/dist/face-visibility
+        run: |
+          steam-deck/node_modules/.bin/playwright install --with-deps chromium
+          node --test johansson-town/tests/face-lighting.browser.mjs
       # Full controller/layout acceptance is checked on the Linux integration PR.
       - name: Controller repair acceptance
         run: |
@@ -55,7 +63,9 @@ jobs:
         if: always()
         with:
           name: linux-world-verification
-          path: steam-deck/dist/linux-world*.png
+          path: |
+            steam-deck/dist/linux-world*.png
+            steam-deck/dist/face-visibility/
           if-no-files-found: ignore
       - name: Publish playable Linux prerelease
         env:

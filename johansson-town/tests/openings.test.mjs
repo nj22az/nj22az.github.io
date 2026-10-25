@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {OPENINGS,chooseOpening} from '../src/world/openings.js';
+import {OPENINGS,chooseOpening,recoverSakuraBenchCheckpoint} from '../src/world/openings.js';
 
 const memory=()=>{const m=new Map();return {getItem:k=>m.get(k)??null,setItem:(k,v)=>m.set(k,String(v))};};
 
@@ -35,6 +35,22 @@ test('an opening can be asked for by name, and every one says where you are',()=
   assert.equal(chooseOpening({force:o.id,storage:memory()}).id,o.id);
   assert.ok(o.caption&&(o.seat||o.stand||o.room),o.id+' has a place and a caption');
  }
+ // Old audit/bookmark URLs must not sit him on the deleted bench or fall through to a random start.
+ const retired=chooseOpening({force:'sakura-bench',storage:memory()});
+ assert.equal(retired.id,'fish-auction');assert.deepEqual(retired.stand,[19.8,-40]);assert.equal(retired.seat,undefined);
+});
+
+test('only checkpoints in the retired bench footprint recover to the harbour',()=>{
+ const yaw=Math.atan2(14.05,-5.2),c=Math.cos(yaw),s=Math.sin(yaw);
+ const point=(x,z)=>({x:6.6+x*c+z*s,z:-32-x*s+z*c,yaw,pitch:-.08});
+ // Both seated slots and the earlier centre-seat opening were saved by Linux.
+ for(const x of [-.36,0,.36]){
+  const saved=point(x,-.08),copy={...saved},recovered=recoverSakuraBenchCheckpoint(saved);
+  assert.deepEqual(recovered,{...saved,x:19.8,z:-40,yaw:-1.03});assert.deepEqual(saved,copy);
+  assert.equal(recoverSakuraBenchCheckpoint(recovered),recovered,'Recovery is idempotent');
+ }
+ for(const saved of [point(0,-1.45),point(.91,-.025),point(0,.31),point(0,-.36),{...point(0,-.08),atHome:true},{...point(0,-.08),ship:true},{...point(0,-.08),room:'office'},null,{}])
+  assert.equal(recoverSakuraBenchCheckpoint(saved),saved,'Unrelated positions and coordinate frames stay unchanged');
 });
 
 test('every dock sight stands him on the docks, clear of everything, facing what it names',async()=>{

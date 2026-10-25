@@ -52,7 +52,7 @@ import {createHomeResidents} from './people/home-residents.js';
 import {buildPoliceStationInterior} from './world/interiors/police-station.js';
 import {buildPortHall} from './world/interiors/port-hall.js';
 import {PORT_BUILDING} from './world/port-building.js';
-import {chooseOpening,OPENINGS} from './world/openings.js';
+import {chooseOpening,OPENINGS,recoverSakuraBenchCheckpoint} from './world/openings.js';
 import {createMotion,createAutoRun,swipeLook,steerYaw} from './input/touch-feel.js';
 import {createRecorder,createPlayer} from './input/replay.js';
 import {createPocketViewfinder} from './photo/pocket-viewfinder.js';
@@ -114,6 +114,7 @@ import {lineFeeling} from './avatars/body-language.js';
 import {sharedMind,startMindIfChosen} from './people/thuan-mind.js';
 import {createNeighbourWriter} from './people/town-mind.js';
 import {MOVES} from './avatars/moves.js';
+import {EXPRESSION_NAMES,EXPRESSION_GLYPHS} from './avatars/face.js';
 import {createAvatarJohansson,playerRecipe,playerRecipeKey} from './avatars/actors.js';
 import {TABLE_DRINK_KINDS} from './avatars/table-drink.js';
 import {setSwingFocus} from './avatars/springs.js';
@@ -390,6 +391,7 @@ window.__JOHANSSON_LOOK__={get ink(){return !!pipeline;},get inkFailures(){retur
  // The chosen look (Town tools › Look), readable and settable for audits.
  get style(){return look;},setStyle:name=>setLook(name),
  flatten:v=>celPass.setFlatten(v),
+ focus:v=>pipeline?.setLookFocus(v),
  get lights(){return {ambient,bounce,uplight,sun};},
  get state(){return pipeline?.state||null;}};
 let celTick=0;
@@ -514,6 +516,9 @@ let photoStudio=null,photoLoading=false,spawnScene=null;
 let concert=null,concertLoading=false;
 let ferryWalk=null;
 let linuxLife=null,linuxOwnHomeSite=null;const linuxBorrowed=new Map();
+// Playing as a resident (desktop/life.js). Linux always plays through it; the web does only while you play someone other
+// than Johansson (the owner, 24 October 2026), so Johansson's web opening, house and view stay as they were.
+const playingResident=()=>!!linuxLife&&(!!window.johanssonDesktop||linuxLife.active!=='Johansson');
 let current=null,active=null,started=false,yaw=0,pitch=-.05,minutes=realTownMinutes(),subtitleTimer=0,weather=false,activities=null,timePreset=0,characters=null;
 const keys={},clock=new THREE.Clock();
 const gamepadInput=createGamepadInput(),menuRepeat=createMenuRepeat();
@@ -751,17 +756,12 @@ function takeNahaBoat(){
 }
 SITES.forEach(s=>doors.set(s.id,new THREE.Vector3(...(s.door||[s.side*4,0,s.z+2.5]))));
 for(const place of world.landmarks||[])if(place.exitPosition)doors.set(place.id,new THREE.Vector3(...place.exitPosition));
-// Start seated on the east sidewalk, looking across at Sakura Shōten.
-const konbini=SITES.find(site=>site.id==='market');
-const konbiniDoor=doors.get('market');
-const benchSeat=((world.sakuraBench?.seat))||null;
-if(benchSeat){
-  player.position.set(...benchSeat.position);
-  yaw=benchSeat.yaw;pitch=benchSeat.pitch;
-  parkSeat={...benchSeat};
-  seated=true;world.spawn=benchSeat.stand;
-}else if(konbiniDoor){player.position.copy(konbiniDoor);yaw=konbini.streetFrontage?.yaw??Math.PI/2;world.spawn=player.position.toArray();}
-else if(world.spawn)player.position.set(...world.spawn);
+// A clear standing point while the title or audit awaits its chosen opening. The viewing
+// bench across from Sakura was removed on 24 October 2026; no hidden seat remains here.
+const harbourOpening=OPENINGS.find(o=>o.id==='fish-auction');
+const [harbourStartX,harbourStartZ]=harbourOpening.stand;
+player.position.set(harbourStartX,groundHeight(harbourStartX,harbourStartZ),harbourStartZ);
+yaw=harbourOpening.facing;world.spawn=player.position.toArray();
 activities=createActivities({say,onLaundry:wash=>{world.laundryWash=wash||null;},onKaraoke:openKaraoke,onOpen:()=>toggleDir(false),onOutfit:on=>wearSwim(on),getOutfit:()=>swimwear,getMassageChair:()=>massageChair(),onMove:name=>{johansson?.play(name);},getBeerTable:()=>beerService?{drink:beerService.drink,dish:beerService.dish,order:beerService.pending,naoHere:!!world.people.find(p=>p.profile.name==='Thao'&&p.g.userData.inIzakaya&&p.g.visible)}:null,onOrderDrink:kind=>!!beerService?.order(kind,parkSeat?.izakaya),getTipsy:()=>tipsy,onSip:()=>sipDrink(),onEat:()=>eatDish(),onSnack:item=>{const inv=activities.state.inventory,i=inv.indexOf(item);if(i<0)return false;inv.splice(i,1);activities.save();activities.close();hands.bite(SPECIAL_BY_NAME[item]?.bite||(HOT_SNACKS.some(snack=>snack.id==='nikuman'&&snack.name===item)?'bun':'rice'));johansson?.play(seated?'SitEat':'Eat');say(item+'. Still warm.',3);return true;},onTreat:name=>{const g=world.people.find(p=>p.profile.name===name)?.g;if(g){g.userData.residentSpeech={text:"Cheers!",until:minutes+4};characters?.gesture?.(g);}},onInspectModel:item=>inspector.open(item),onInspectShopGood:item=>{resetInput();document.exitPointerLock?.();(itemViewer??=createItemViewer()).open(item);},getResidentLocations:()=>({...castAI?.snapshot?.(),...neighbours?.snapshot?.()}),getTableService:()=>Number.isInteger(parkSeat?.ramenSeatId)?ramenPlayerService:null,onStand:standUp,onConversation:setConversation,onDialoguePhase,getMinutes:()=>minutes,getSocialContext:()=>({inside:activityPlace(),thuanAvailable:world.people.some(p=>p.profile.name===sakuraClerkAt(minutes)&&p.g.userData.inMarket&&p.g.visible&&!p.g.userData.sleeping),names:sharedDining(current)?[...new Set([...izakayaGuests.sync(minutes),...ramenGuests.sync(minutes)])]:[]}),onMap:()=>{const c=document.createElement("canvas");c.width=680;c.height=640;c.style.width="100%";c.style.height="auto";c.style.position="static";c.setAttribute("aria-label","Folded visitor map, Minato Machi, 1997");drawTownMap(c.getContext("2d"),c.width,c.height,{sites:SITES,landmarks:world.landmarks,homes:canonicalHomeSites(directoryCards()),people:world.people,player:mapPlayer(),yaw,visited:activities.state.visited,target:navigationTarget,route:navigationPath});return c;},onPhone:()=>{const p=world.people.find(p=>p.g.userData.name==='Harbour master');if(p&&(p.g.position.z<-37)){characters.gesture(p.g);activities.close();say('The harbour master answers from the quay.',4);return true;}return false;},onPurchase:name=>{const p=new THREE.Vector3();active?.object?.getWorldPosition(p);hands.offer(name,p);return true;},onSeat:name=>{const bench=active?.object?.userData.seat;
  // A bench has a place for each sitter (seat-slots.js): the free one nearest him, beside whoever is on it already.
  const selected=bench?.slots?freeSlot(bench,player.position.x,player.position.z,s=>active.object.userData.slotsTaken?.[s.slot]||occupiedByPerson(s.position[0],s.position[2])):bench;
@@ -821,7 +821,13 @@ function ensureJohansson(){if(!johansson){johansson=createAvatarJohansson({scene
 /** The view you chose goes through the door with you, both ways: V or the Town book switches it anywhere. */
 function setThirdPerson(value,announce=true){spawnScene?.cancel('view');thirdPerson=!!value;try{localStorage.setItem(VIEW_KEY,thirdPerson?'third':'first');}catch{}if(thirdPerson)ensureJohansson();hands.firstPersonVisible=!thirdPerson;const b=$('#viewButton');if(b){b.textContent=thirdPerson?'Behind him':'His own eyes';b.setAttribute('aria-pressed',String(thirdPerson));}if(announce)say(thirdPerson?'Third-person view · V to look through his eyes again':'First-person view · V to step back',3);}
 function playMove(name){if(!thirdPerson)setThirdPerson(true,false);ensureJohansson().play(name);}
-function movesMenu(){if(!started||activities.paused)return;activities.menu('Moves','Johansson, sixty-odd, bald and sunburnt, in his kariyushi shirt. What will he do?',[...MOVES.map(([name,label])=>[label,()=>{activities.close();playMove(name);}]),['Back',activities.close]]);}
+function movesMenu(){if(!started||activities.paused)return;
+ const who=playingResident()?linuxLife.current():null,text=who?who.name+': '+who.role.split(';')[0]+'. What now?':'Johansson, sixty-odd, bald and sunburnt, in his kariyushi shirt. What will he do?';
+ activities.menu('Moves',text,[['Make a face…',()=>{activities.close();facesMenu();}],...MOVES.map(([name,label])=>[label,()=>{activities.close();playMove(name);}]),['Back',activities.close]]);}
+/** Any of the faces the face painter knows (avatars/face.js), held for ten seconds; Neutral lets it go. */
+const FACE_SECONDS=10;
+function makeFace(name){if(!thirdPerson)setThirdPerson(true,false);ensureJohansson().express(name,name==='neutral'?0:FACE_SECONDS);}
+function facesMenu(){if(!started||activities.paused)return;activities.menu('Make a face','A face holds for ten seconds. Neutral lets it go.',[...EXPRESSION_NAMES.map(name=>[(EXPRESSION_GLYPHS[name]?EXPRESSION_GLYPHS[name]+'  ':'')+name[0].toUpperCase()+name.slice(1),()=>{activities.close();makeFace(name);}]),['Back to Moves',()=>{activities.close();movesMenu();}]]);}
 const tpPivot=new THREE.Vector3(),tpDir=new THREE.Vector3(),tpRight=new THREE.Vector3(),lookPoint=new THREE.Vector3();
 /** Over the right shoulder, pulled in before anything solid comes between him and the lens. */
 /** Whether the camera itself would be inside something: walls and anything taller than the lens. */
@@ -1277,7 +1283,8 @@ function roomShell(s){
  if(s.id==='sakura-office'){const g=new THREE.Group();g.name='Sakura office storey';room.add(g);activeRoomLayout=buildSakuraOfficeRoom({...shared,room:g,downstairs:()=>takeSakuraStair('down'),evacuate:evacuateSakuraOffice});return;}
  if(s.id==='school'){activeRoomLayout=buildClassroom(shared);return;}
  if(s.id==='community-kitchen'){activeRoomLayout=buildCommunityKitchen(shared);return;}
- if(s.id==='clinic'){activeRoomLayout=buildClinic(shared);return;}
+ // The doctor is at her desk when Nhung's own day has her at work in the clinic (people/clinic-hours.js), read at the door.
+ if(s.id==='clinic'){activeRoomLayout=buildClinic({...shared,doctorIn:()=>world.people.find(p=>p.profile.name==='Nhung')?.g.userData.indoors==='work'});return;}
  if(s.id==='ferry-terminal'){activeRoomLayout=buildPortHall({...shared,naha:takeNahaBoat,upstairs:()=>crossThreshold(async()=>{leaveRoom();const office=SITES.find(site=>site.id==='office');if(office)await enterRoom(office);})});return;}
  if(s.id===CITY_RESTAURANT.id){
   // A fixed scene: no hands in front of the camera, and the dinner menu opens as you sit down.
@@ -1447,7 +1454,7 @@ let roomAssetsTry=0;
 async function enterRoom(s,arrival=null){replayInterrupted();lowerPocket();spawnScene?.cancel('room');
  if(roomLoading)return;
  s=SITES.find(site=>site.id===businessId(s.id))||s;
- if(linuxLife&&s.id===linuxLife.current().home.siteId&&(s.isResidence||s.homeOwner||s.familyHome||s.id==='mayor-home'))s=linuxOwnHomeSite(linuxLife.current());
+ if(playingResident()&&s.id===linuxLife.current().home.siteId&&(s.isResidence||s.homeOwner||s.familyHome||s.id==='mayor-home'))s=linuxOwnHomeSite(linuxLife.current());
  if(s.id==='market'){roomLoading=true;resetInput();let ready=false;try{ready=await sakuraShop.ready();}finally{roomLoading=false;}if(!ready){say('Could not open Sakura. Please try the door again.',5);return;}}
  // Buildings remain accessible; business hours govern staff and service only.
  if((s.id==='izakaya'||(s.id==='ramen'))&&!izakayaReady('interior')){
@@ -1510,7 +1517,7 @@ function welcomeAtCounter(forward){
   if(towards.length()>3||forward.dot(towards.normalize())<.65)return;
   storeWelcomed=true;characters.gesture(storeClerk);
 }
-function interaction(){if(pocket?.raised){active=null;$('#prompt').classList.remove('on');return;}if(seated){active=null;const chair=massageChair(),timer=chair?.state();$('#prompt').textContent=chair?'Massage '+(timer.running?timer.reads:'¥'+chair.coin)+' · Stand':Number.isInteger(parkSeat?.ramenSeatId)?(ramenPlayerService?.order?.delivered?'Eat / drink · Stand':ramenPlayerService?.order?'Order on its way · Stand':'Order food · Stand'):'Stand';$('#prompt').classList.add('on');return;}active=null;let best=null,dmax=3.1,bestScore=Infinity;const p=player.position.clone();p.y+=1;const fw=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));welcomeAtCounter(fw);for(const o of interactables){const h=o.userData.hit;const inside=h.inside||!!(o.userData.inMarket&&current?.id==='market');if(o.userData.visualReady===false||!o.visible||current&&!inside||!current&&inside)continue;let visible=true;for(let a=o.parent;a;a=a.parent)if(!a.visible)visible=false;if(!visible)continue;const q=new THREE.Vector3();o.getWorldPosition(q);if(o.userData.sameLevel&&Math.abs(q.y-p.y)>1.2)continue;const target=q.clone(),v=q.sub(p),d=v.length();if(d>dmax)continue;v.y=0;
+function interaction(){if(pocket?.raised){active=null;$('#prompt').classList.remove('on');return;}if(seated){active=null;const chair=massageChair(),timer=chair?.state();$('#prompt').textContent=chair?'Massage '+(timer.running?timer.reads:'¥'+chair.coin)+' · Stand':Number.isInteger(parkSeat?.ramenSeatId)?(ramenPlayerService?.order?.delivered?'Eat / drink · Stand':ramenPlayerService?.order?'Order on its way · Stand':'Order food · Stand'):'Stand';$('#prompt').classList.add('on');return;}active=null;let best=null,dmax=3.1,bestScore=Infinity;const p=player.position.clone();p.y+=1;const fw=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));welcomeAtCounter(fw);for(const o of interactables){const h=o.userData.hit;const inside=h.inside||!!(o.userData.inMarket&&current?.id==='market');if(o.userData.visualReady===false||o.userData.inVehicle||!o.visible||current&&!inside||!current&&inside)continue;let visible=true;for(let a=o.parent;a;a=a.parent)if(!a.visible)visible=false;if(!visible)continue;const q=new THREE.Vector3();o.getWorldPosition(q);if(o.userData.sameLevel&&Math.abs(q.y-p.y)>1.2)continue;const target=q.clone(),v=q.sub(p),d=v.length();if(d>dmax)continue;v.y=0;
   // What you are facing, not merely what is nearest: things behind you or well off to the
   // side are out (unless you are all but touching them), and people come before things.
   const facingDot=v.lengthSq()?fw.dot(v.normalize()):1;if(facingDot<.3&&d>.9)continue;
@@ -1738,7 +1745,7 @@ function replayStep(frame){
 function finishPlayerStep(dt,fromX,fromZ){
  playerSpeed=THREE.MathUtils.damp(playerSpeed,Math.hypot(player.position.x-fromX,player.position.z-fromZ)/Math.max(dt,1e-3),12,dt);
 
- player.visible=false;camera.position.copy(player.position).add(fwVec.set(0,seated?(parkSeat?parkSeat.eyeY-player.position.y:1.15):(linuxLife?ensureJohansson().avatar.height*.92:1.7)+(cameraControls.settings.bob&&move2.lengthSq()>.02?Math.sin(elapsed*11)*.018:0),0));camera.rotation.order='YXZ';const sway=Math.min(1,tipsy/DRUNK);camera.rotation.set(pitch+Math.sin(elapsed*.9)*.012*sway,yaw+Math.sin(elapsed*.55)*.02*sway,Math.sin(elapsed*.7)*.025*sway);if(thirdPerson)placeThirdPerson(dt);else if(current)camera.position.y=Math.min(camera.position.y,indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y)??Infinity);
+ player.visible=false;camera.position.copy(player.position).add(fwVec.set(0,seated?(parkSeat?parkSeat.eyeY-player.position.y:1.15):(playingResident()?ensureJohansson().avatar.height*.92:1.7)+(cameraControls.settings.bob&&move2.lengthSq()>.02?Math.sin(elapsed*11)*.018:0),0));camera.rotation.order='YXZ';const sway=Math.min(1,tipsy/DRUNK);camera.rotation.set(pitch+Math.sin(elapsed*.9)*.012*sway,yaw+Math.sin(elapsed*.55)*.02*sway,Math.sin(elapsed*.7)*.025*sway);if(thirdPerson)placeThirdPerson(dt);else if(current)camera.position.y=Math.min(camera.position.y,indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y)??Infinity);
  const fov=cameraControls.settings.fov-controllerFrame.zoom*18;if(Math.abs(camera.fov-fov)>.01){camera.fov=THREE.MathUtils.damp(camera.fov,fov,12,dt);camera.updateProjectionMatrix();}
 }
 
@@ -1828,7 +1835,7 @@ function walkingSegmentClear(a,b,maxLength=Infinity){
  for(let i=1;i<=steps;i++){const t=distance?length/distance*i/steps:1,x=a.x+(b.x-a.x)*t,z=a.z+(b.z-a.z)*t,next=sample(x,z),component=sample(x,previousZ);if(next.blocked||component.blocked||Math.abs(component.y-previous.y)>.24||Math.abs(next.y-component.y)>.24)return false;previous=next;previousZ=z;}return true;
 }
 function startWalkingDirections(){
- const generation=++navigationGeneration,stand=!current&&seated?(parkSeat?.stand||world.sakuraBench?.seat?.stand):null,
+ const generation=++navigationGeneration,stand=!current&&seated?parkSeat?.stand:null,
   start=stand?{x:stand[0],z:stand[2]??stand[1]}:{x:mapPlayer().x,z:mapPlayer().z},destination=targetPoint(navigationTarget);
  navigationStarted=performance.now();navigationPath=[];navigationIndex=1;navigationLeg=null;
  if(!destination){navigationPlan={status:'unreachable',reason:'missing-entrance'};return;}
@@ -1888,6 +1895,8 @@ function updateDirectory(){
   onFindPerson:(target,card)=>{const live=directoryCards().find(c=>c.name===card.name)||card,position=live.personTarget||target;return markPlace({...position,trackPerson:card.name,directions:(live.current.source==='schedule'?'Scheduled location: ':'Current location: ')+live.current.locationLabel+'. '+(position.directions||'Follow the walking route.')});},
   onPlace:markPlace,onShortcut:visitPlace,
   canRecord:activities.canResidentRecord,onRecord:name=>{toggleDir(false);activities.residentRecord(name);},
+  canPlayAs:name=>!!linuxLife?.roster.some(p=>p.name===name),playing:name=>linuxLife?.active===name,
+  onPlayAs:name=>{if(!linuxLife||linuxLife.busy)return;toggleDir(false);linuxLife.select(name,{started}).then(()=>say('Playing as '+name+'.',4)).catch(error=>say(error.message,5));},
   onStudio:()=>activities.saveBeforeLeaving(()=>{location.href=new URL('../avatar-creator/',location.href).href;}),
   onTravelProgress:()=>{toggleDir(false);activities.action('travel-progress');}});
  const extras=document.createElement('details');extras.className='town-records';const title=document.createElement('summary');title.textContent='Reading and radio';extras.append(title);
@@ -1896,17 +1905,15 @@ function updateDirectory(){
  drawMap();
 }
 /**
- * Where the game starts (world/openings.js): one of a few good moments in town, picked
- * for the hour, instead of always the bench across from Sakura. The audit harness keeps
- * the bench unless it names an opening with ?spawn=.
+ * Where the game starts (world/openings.js): a dock sight picked for the hour. The audit
+ * harness keeps the safe harbour standing point unless it names an opening with ?spawn=.
  */
 function beginAtOpening(){
  if(activities.state.combatRecovery){delete activities.state.combatRecovery;standUpAt(19.8,-40,-1.03);return {caption:"Welcome back. You are safely ashore by the fish auction."};}
- const params=new URLSearchParams(location.search),force=params.get('spawn')||(graphics.quietOpening?'sakura-bench':null);
+ const params=new URLSearchParams(location.search),force=params.get('spawn')||(graphics.quietOpening?harbourOpening.id:null);
  if(params.has('audit')&&!force)return null;
  if(activities.state.island?.journey.location!=='town'&&activities.state.island){islandPlay.recover();return null;}
  const opening=chooseOpening({minutes,rain:weather,force,context:{ferryAlongside:world.ferry?.berth==='town'&&world.ferry?.phase==='waiting'}});
- if(opening.id==='sakura-bench')return opening;
  if(opening.room){const door=doors.get(opening.room);if(door){standUpAt(door.x,door.z,Math.PI);}preloadIzakaya(['interior']);return opening;}
  if(opening.stand){const [x,z]=opening.stand==='bus-platform'?transitStop().platform:opening.stand;standUpAt(x,z,opening.facing);return opening;}
  if(opening.seat&&sitOnSeat(opening.seat))return opening;
@@ -1950,7 +1957,7 @@ function startArrivalScene(opening){
  if(!graphics.cinematic)return;
  const params=new URLSearchParams(location.search);
  if(params.has('visual-audit')||params.has('audit')&&!params.has('spawn')||params.get('cinematic')==='off')return;
- spawnScene.start({id:opening?.id||'sakura-bench',inside:!!current,yaw:parkSeat?.yaw??yaw,establish:!!opening?.docks,hold:openingLoads});
+ spawnScene.start({id:opening?.id||harbourOpening.id,inside:!!current,yaw:parkSeat?.yaw??yaw,establish:!!opening?.docks,hold:openingLoads});
 }
 // Queue shared shaders once. This renderer's async poll can outlive materials replaced
 // by the detail stream; compile queues GPU work without retaining disposed materials.
@@ -1964,11 +1971,11 @@ function enterWorld(){
  townSky.mesh.rotation.y=0;
  startWeather();
 let opening=beginAtOpening();
-if(window.johanssonDesktop){const cp=activities.state.desktopCheckpoint;if(cp&&!cp.ship&&[cp.x,cp.z,cp.yaw].every(Number.isFinite)&&Math.abs(cp.x)<1000&&Math.abs(cp.z)<1000&&!environmentBlocked(cp.x,cp.z,PLAYER_RADIUS)){
+if(window.johanssonDesktop){const cp=recoverSakuraBenchCheckpoint(activities.state.desktopCheckpoint);if(cp!==activities.state.desktopCheckpoint)activities.state.desktopCheckpoint=cp;if(cp&&!cp.ship&&[cp.x,cp.z,cp.yaw].every(Number.isFinite)&&Math.abs(cp.x)<1000&&Math.abs(cp.z)<1000&&!environmentBlocked(cp.x,cp.z,PLAYER_RADIUS)){
  seated=false;parkSeat=null;player.position.set(cp.x,groundHeight(cp.x,cp.z),cp.z);yaw=cp.yaw;pitch=Number.isFinite(cp.pitch)?Math.max(-1.25,Math.min(1.15,cp.pitch)):0;opening={caption:'Welcome back. Your island progress is restored.'};
 }}
-started=true;controlsTouchedAt=performance.now();if(mobile){touchSticks.hint(true);stickHintUntil=performance.now()+4500;}if(!window.__JOHANSSON_BOOTING__)$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;startupRecovery.running();camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(opening?.caption||(seated?'Stand — Sakura is across the street.':'Sakura — step up to meet Thuan.'),5);runStabilityChecks();
-if(linuxLife){linuxLife.start().then(placed=>{if(!placed){if(opening?.room)openInside(opening);else startArrivalScene(opening);}}).catch(error=>say(error.message,6));}else if(opening?.room)openInside(opening);else startArrivalScene(opening);
+started=true;controlsTouchedAt=performance.now();if(mobile){touchSticks.hint(true);stickHintUntil=performance.now()+4500;}if(!window.__JOHANSSON_BOOTING__)$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;startupRecovery.running();camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(opening?.caption||'Welcome to Minato.',5);runStabilityChecks();
+if(playingResident()){linuxLife.start().then(placed=>{if(!placed){if(opening?.room)openInside(opening);else startArrivalScene(opening);}}).catch(error=>say(error.message,6));}else if(opening?.room)openInside(opening);else startArrivalScene(opening);
 }
 
 function desktopCheckpoint(){
@@ -1982,7 +1989,7 @@ addEventListener('johansson-desktop-save',desktopCheckpoint);
 addEventListener('johansson-desktop-pause',resetInput);
 addEventListener('johansson-desktop-resume',()=>{gamepadInput.suspend();clock.getDelta();resetInput();});
 if(window.johanssonDesktop)setInterval(desktopCheckpoint,30000);
-if(window.johanssonDesktop){
+{
  const allEntities=()=>[...world.people.map(p=>p.g),...(world.neighbours||[]),...(characters?.actors||[]).map(a=>a.entity)].filter(Boolean);
  const canonicalEntity=name=>allEntities().find(g=>g!==player&&canonicalResidentName(g.userData.name)===name);
  const homeSite=person=>{
@@ -1997,7 +2004,7 @@ if(window.johanssonDesktop){
   getEntityPose:name=>{const g=canonicalEntity(name);if(!g||g.userData.hit?.inside||g.userData.indoors||g.userData.inVehicle)return null;const p=g.getWorldPosition(new THREE.Vector3());return {x:p.x,z:p.z,yaw:g.rotation.y};},
   applyIdentity:name=>{
    for(const [g,was] of linuxBorrowed){g.userData.playerControlled=was.controlled;g.visible=was.visible;}linuxBorrowed.clear();
-   const actor=ensureJohansson();actor.setRecipe(name==='Johansson'?playerRecipe():recipeFor(name));actor.root.name=name+' (controlled)';
+   const actor=ensureJohansson();actor.setRecipe(name==='Johansson'?playerRecipe():recipeFor(name));actor.express('neutral',0);actor.root.name=name+' (controlled)';
    for(const g of allEntities())if(g!==player&&canonicalResidentName(g.userData.name)===name){linuxBorrowed.set(g,{visible:g.visible,controlled:g.userData.playerControlled});g.userData.playerControlled=true;g.visible=false;}
   },
   spawnHome:async(person,sleep)=>{if(current)leaveRoom();activities.close();toggleDir(false);spawnScene?.cancel();const site=homeSite(person);await enterRoom(site);if(current?.id!==site.id)throw Error('The home could not open.');const layout=activeRoomLayout;player.position.set(...layout.bedside);yaw=0;pitch=-.1;setThirdPerson(true,false);const bedPosition=[...layout.bed];bedPosition[2]=-2.23+ensureJohansson().avatar.measure.headCentre;return {position:bedPosition,stand:[...layout.bedside],axis:layout.bedAxis};},
@@ -2045,10 +2052,11 @@ canvas.addEventListener('click',event=>{
  const hits=ray.intersectObjects(scene.children,true).filter(h=>{for(let o=h.object;o;o=o.parent)if(!o.visible||o===player)return false;return h.distance<60;});
  const hit=hits[0];if(!hit)return;
  let object=hit.object;while(object&&!object.userData.hit)object=object.parent;
+ if(object?.userData.inVehicle)return;
  // Batched street props keep their action on a separate anchor. Resolve that anchor
  // only close to the visible surface, so hidden actions cannot be clicked through walls.
  if(!object){let best=36;for(const candidate of interactables){
-  const h=candidate.userData.hit;if(!h||candidate.userData.visualReady===false)continue;
+  const h=candidate.userData.hit;if(!h||candidate.userData.visualReady===false||candidate.userData.inVehicle)continue;
   let visible=true;for(let o=candidate;o;o=o.parent)if(!o.visible)visible=false;
   const inside=h.inside||candidate.userData.inMarket&&current?.id==='market';
   if(!visible||!!current!==!!inside)continue;
@@ -2060,7 +2068,7 @@ canvas.addEventListener('click',event=>{
  }}
  if(object){
   const target=object.getWorldPosition(new THREE.Vector3()),space=current,fn=object.userData.hit.fn;
-  const interact=()=>{if(current===space&&object.visible&&target.distanceTo(player.position)<3.4){yaw=Math.atan2(player.position.x-target.x,player.position.z-target.z);active={...object.userData.hit,object};fn?.();}};
+  const interact=()=>{if(current===space&&object.visible&&!object.userData.inVehicle&&target.distanceTo(player.position)<3.4){yaw=Math.atan2(player.position.x-target.x,player.position.z-target.z);active={...object.userData.hit,object};fn?.();}};
   if(target.distanceTo(player.position)<3.4){pointWalk.cancel();interact();return;}
   if(!pointWalk.walk(player.position,target,{space,onArrival:interact}))say('There is no clear path from here.',2);
   return;
@@ -2680,7 +2688,11 @@ let titleElapsed=0,titleFrame=0,titleReported=false;
 const titleReduced=matchMedia('(prefers-reduced-motion: reduce)');
 let desktopFrameAt=performance.now(),desktopSampleAt=desktopFrameAt,desktopFrames=0,desktopWorst=0;
 function desktopFrameStats(){if(!window.johanssonDesktop)return;const at=performance.now();desktopFrames++;desktopWorst=Math.max(desktopWorst,at-desktopFrameAt);desktopFrameAt=at;if(at-desktopSampleAt<2000)return;const d=document.documentElement.dataset;d.renderFps=String(Math.round(desktopFrames*1000/(at-desktopSampleAt)));d.frameWorst=desktopWorst.toFixed(1);d.drawCalls=String(renderer.info.render.calls);d.textures=String(renderer.info.memory.textures);desktopSampleAt=at;desktopFrames=0;desktopWorst=0;}
-function loop(){requestAnimationFrame(loop);if(graphicsLifecycle?.lost){clock.getDelta();return;}desktopFrameStats();if(document.documentElement.dataset.desktopMenu==='open'){clock.getDelta();return;}activeRoomLayout?.realUpdate?.();if(concert?.active){const dt=Math.min(clock.getDelta(),MAX_FRAME_DT);updateController(dt);concert.render();return;}if(concertLoading){clock.getDelta();return;}if(freeCamera.active){const dt=Math.min(clock.getDelta(),MAX_FRAME_DT);if(detailsStarted&&!document.hidden)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});freeCamera.update(dt,camera);updateJohansson(0);renderStill(null,{sweep:dt});return;}if(window.__JOHANSSON_AUDIT__?.frozen){const frozenDt=clock.getDelta();
+function loop(){requestAnimationFrame(loop);if(graphicsLifecycle?.lost){clock.getDelta();return;}
+// The diorama covers the World with its own WebGL view. Hold the hidden scene and
+// its clock while it is open; keep controller Back and paused audio responsive.
+if(activities?.viewerActive){const dt=Math.min(clock.getDelta(),MAX_FRAME_DT);resetInput();updateController(dt);townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused:true});return;}
+desktopFrameStats();if(document.documentElement.dataset.desktopMenu==='open'){clock.getDelta();return;}activeRoomLayout?.realUpdate?.();if(concert?.active){const dt=Math.min(clock.getDelta(),MAX_FRAME_DT);updateController(dt);concert.render();return;}if(concertLoading){clock.getDelta();return;}if(freeCamera.active){const dt=Math.min(clock.getDelta(),MAX_FRAME_DT);if(detailsStarted&&!document.hidden)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});freeCamera.update(dt,camera);updateJohansson(0);renderStill(null,{sweep:dt});return;}if(window.__JOHANSSON_AUDIT__?.frozen){const frozenDt=clock.getDelta();
  // Before START the title still draws: its first frame is what marks the island drawn and opens START (islandDrawn).
  // Frozen, it never drew, and every ?visual-audit harness waited at 97% for ever ("Drawing the island").
  if(!started){renderTitle(frozenDt);return;}

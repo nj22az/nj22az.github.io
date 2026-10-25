@@ -1,0 +1,39 @@
+✔ one list each for the prints, the skirts and the dice, used everywhere (4.653493ms)
+✔ the shirt number: a whole number 0–99, 0 for none, through the share code, a design file, a saved wardrobe and Studio (3.473039ms)
+✖ each batch-2 top is in the catalogue with who, why and its own colours from the island palette, and is found by who wears it (4.906ms)
+✔ what each top paints: collars, the shirt in a vest’s V, the name patch, the jersey’s lettering and number, the happi coat’s bands (608.262032ms)
+✔ a PE shirt’s name fits its patch: smaller, then cut after a whole word, a 24-letter name never runs off it (0.411505ms)
+✔ over a shirt the sleeves, shoulders and underarms are the shirt’s; a jersey’s arm is its undershirt; a happi coat’s sleeve ends on the forearm (144.594395ms)
+✔ standard check S: two draws and two ink shells, and at most 6k vertices over the base layer (a set 10k), on Thuan and a child (519.291803ms)
+✔ standard check S: each batch-2 top walks, runs, sits, bows, waves, raises both arms and rides a bicycle without popping (11399.717837ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 7
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12887.115174
+
+✖ failing tests:
+
+test at ../../../../tmp/wardrobe-baseline/johansson-town/tests/wardrobe-batch2.test.mjs:63:1
+✖ each batch-2 top is in the catalogue with who, why and its own colours from the island palette, and is found by who wears it (4.906ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+    assert.ok(found('Shimabukuro').includes('top:shirt'))
+
+      at TestContext.<anonymous> (file:///tmp/wardrobe-baseline/johansson-town/tests/wardrobe-batch2.test.mjs:72:60)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

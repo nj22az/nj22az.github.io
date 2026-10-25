@@ -4,10 +4,10 @@ if [ "$(uname -s)" != Linux ] || [ "$(uname -m)" != x86_64 ]; then
  echo 'This installer is for Steam Deck and x86-64 Linux PCs.' >&2; exit 1
 fi
 command -v python3 >/dev/null 2>&1 || { echo 'Python 3 is required by this installer.' >&2; exit 1; }
-python3 - <<'PY'
+python3 - "$@" <<'PY'
 import os,json,hashlib,urllib.request,tarfile,tempfile,shlex,sys,threading,shutil
 from pathlib import Path
-version='0.2.17'
+version='0.2.20'
 release='https://github.com/nj22az/nj22az.github.io/releases/download/johansson-world-linux-v'+version+'/'
 def get(url):
  return urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'Johansson-World-Installer'}),timeout=60)
@@ -46,7 +46,137 @@ class Progress:
   if kind is None:print('  [o o o]  [_]  Ding! Your island is ready.',flush=True)
   return False
 
+# Steam's Library: Johansson World as a non-Steam game, so it is there in Gaming Mode (the owner, 24 October 2026).
+def steam_vdf_read(data):
+ # Steam's binary KeyValues: 0 map, 1 string, 2 int32, 3 float, 7 uint64, 8 end of map.
+ pos=0
+ def text():
+  nonlocal pos
+  end=data.index(b'\0',pos);value=data[pos:end].decode('utf-8','replace');pos=end+1;return value
+ def table():
+  nonlocal pos
+  out=[]
+  while True:
+   kind=data[pos];pos+=1
+   if kind==8:return out
+   key=text()
+   if kind==0:out.append((key,0,table()))
+   elif kind==1:out.append((key,1,text()))
+   elif kind in (2,3):out.append((key,kind,data[pos:pos+4]));pos+=4
+   elif kind==7:out.append((key,7,data[pos:pos+8]));pos+=8
+   else:raise ValueError('Unknown Steam shortcut field')
+ return table()
+def steam_vdf_write(items):
+ out=bytearray()
+ for key,kind,value in items:
+  out.append(kind);out+=key.encode()+b'\0'
+  if kind==0:out+=steam_vdf_write(value)
+  elif kind==1:out+=value.encode()+b'\0'
+  else:out+=value
+ return bytes(out)+b'\x08'
+def steam_running():
+ for proc in Path('/proc').glob('[0-9]*'):
+  try:
+   if (proc/'comm').read_text().strip()=='steam':return True
+  except OSError:pass
+ return False
+def steam_text_read(text):
+ # Steam's text KeyValues: "key" "value" pairs and "key" { ... } blocks.
+ import re
+ tokens=re.findall(r'"((?:[^"\\]|\\.)*)"|([{}])',text);pos=0
+ def block():
+  nonlocal pos
+  out=[]
+  while pos<len(tokens):
+   word,brace=tokens[pos];pos+=1
+   if brace=='}':return out
+   if brace=='{':raise ValueError('Unexpected { in Steam settings')
+   nxt_word,nxt_brace=tokens[pos];pos+=1
+   out.append((word,block() if nxt_brace=='{' else nxt_word))
+  return out
+ return block()
+def steam_text_write(items,depth=0):
+ pad='\t'*depth;out=''
+ for key,value in items:
+  if isinstance(value,list):out+=pad+'"'+key+'"\n'+pad+'{\n'+steam_text_write(value,depth+1)+pad+'}\n'
+  else:out+=pad+'"'+key+'"\t\t"'+value+'"\n'
+ return out
+# Steam Input: the Deck's built-in "Gamepad with Camera Controls" layout, so the sticks and buttons reach the game as a
+# gamepad. Without it Steam may guess a keyboard-and-mouse layout for a non-Steam game, and only the touch screen works.
+STEAM_DECK_LAYOUT='controller_neptune_gamepad_fps.vdf'
+def steam_gamepad_layout(root,account,name):
+ configs=root/'steamapps/common/Steam Controller Configs'/account/'config'
+ if not (root/'steamapps').is_dir():return False
+ path=configs/'configset_controller_neptune.vdf';key=name.lower()
+ if path.exists():
+  raw=path.read_text(encoding='utf-8',errors='replace')
+  try:top=steam_text_read(raw)
+  except (ValueError,IndexError):print('Could not read',path,'- the controller layout was left unchanged.');return False
+  if len(top)!=1 or not isinstance(top[0][1],list):print('Unexpected',path,'- the controller layout was left unchanged.');return False
+  backup=configs/'configset_controller_neptune.vdf.before-johansson-world'
+  if not backup.exists():backup.write_text(raw,encoding='utf-8')
+  root_key,games=top[0]
+ else:
+  configs.mkdir(parents=True,exist_ok=True);root_key,games='controller_config',[]
+ games=[(k,v) for k,v in games if k.lower()!=key]+[(key,[('template',STEAM_DECK_LAYOUT)])]
+ temp=path.with_name('configset_controller_neptune.vdf.johansson-tmp');temp.write_text(steam_text_write([(root_key,games)]),encoding='utf-8');temp.replace(path)
+ return True
+def add_to_steam(launcher,icon):
+ import struct,subprocess,time,zlib
+ home=Path.home()
+ roots=[home/'.local/share/Steam',home/'.steam/steam',home/'.var/app/com.valvesoftware.Steam/.local/share/Steam']
+ configs=[]
+ for root in roots:
+  for user in sorted((root/'userdata').glob('[0-9]*')) if (root/'userdata').is_dir() else []:
+   config=user/'config'
+   if user.name!='0' and config.is_dir() and config.resolve() not in [c.resolve() for c in configs]:configs.append(config)
+ manual='Steam: Add a Game > Add a Non-Steam Game > Johansson World (or Browse to '+str(launcher)+').'
+ if not configs:print('Steam is not set up on this computer yet.',manual);return False
+ if steam_running():
+  print('Closing Steam for a moment to add Johansson World to your Library…',flush=True)
+  try:subprocess.run(['steam','-shutdown'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=30)
+  except (OSError,subprocess.SubprocessError):pass
+  for _ in range(60):
+   if not steam_running():break
+   time.sleep(1)
+  if steam_running():print('Steam is still open, so the Library entry was not added.',manual);return False
+ name='Johansson World';exe='"'+str(launcher)+'"'
+ appid=zlib.crc32((exe+name).encode())|0x80000000
+ entry=[('appid',2,struct.pack('<I',appid)),('AppName',1,name),('Exe',1,exe),('StartDir',1,'"'+str(launcher.parent)+'"'),
+  ('icon',1,str(icon)),('ShortcutPath',1,''),('LaunchOptions',1,''),('IsHidden',2,struct.pack('<i',0)),
+  ('AllowDesktopConfig',2,struct.pack('<i',1)),('AllowOverlay',2,struct.pack('<i',1)),('OpenVR',2,struct.pack('<i',0)),
+  ('Devkit',2,struct.pack('<i',0)),('DevkitGameID',1,''),('DevkitOverrideAppID',2,struct.pack('<i',0)),
+  ('LastPlayTime',2,struct.pack('<i',0)),('FlatpakAppID',1,''),('tags',0,[])]
+ added=layouts=0
+ for config in configs:
+  path=config/'shortcuts.vdf';shortcuts=[]
+  if path.exists():
+   raw=path.read_bytes()
+   try:
+    top=steam_vdf_read(raw)
+    shortcuts=next(v for k,t,v in top if k.lower()=='shortcuts' and t==0)
+   except (ValueError,IndexError,StopIteration):print('Could not read',path,'- it was left unchanged.',manual);continue
+   backup=config/'shortcuts.vdf.before-johansson-world'
+   if not backup.exists():backup.write_bytes(raw)
+  def ours(fields):
+   values={k:v for k,t,v in fields if t==1}
+   return values.get('AppName',values.get('appname'))==name or values.get('Exe',values.get('exe'))==exe
+  kept=[fields for k,t,fields in shortcuts if t==0 and not ours(fields)]
+  kept.append(entry)
+  data=steam_vdf_write([('shortcuts',0,[(str(i),0,fields) for i,fields in enumerate(kept)])])
+  temp=path.with_name('shortcuts.vdf.johansson-tmp');temp.write_bytes(data);temp.replace(path);added+=1
+  if steam_gamepad_layout(config.parent.parent.parent,config.parent.name,name):layouts+=1
+ if added:print('Added Johansson World to your Steam Library. In Gaming Mode it is under Library > Non-Steam.')
+ if layouts:print('Steam Input set to the Gamepad layout for Johansson World, so the sticks and buttons work in Gaming Mode.')
+ return added>0
+
 base=Path(os.environ.get('XDG_DATA_HOME',str(Path.home()/'.local/share')))/'johansson-world'
+launcher=Path.home()/'.local/bin/johansson-world'
+icon=base/'current/resources/app/site/desktop/icons/johansson-world-512.png'
+if '--steam' in sys.argv[1:]:
+ # Only the Steam Library entry, for a game that is already installed: sh install.sh --steam
+ if not (base/'current').is_symlink() or not launcher.exists():raise SystemExit('Install Johansson World first, then run this again with --steam.')
+ add_to_steam(launcher,icon);raise SystemExit(0)
 if base.exists() and not (base/'.johansson-world-install').exists():
  raise SystemExit('An unrecognised folder already exists at '+str(base))
 updating=(base/'current').is_symlink()
@@ -89,19 +219,15 @@ with Progress(('Updating' if updating else 'Installing')+' Johansson World '+ver
  next_link=base/'current.next'
  if next_link.is_symlink():next_link.unlink()
  next_link.symlink_to(destination);next_link.replace(current)
- bin_dir=Path.home()/'.local/bin';bin_dir.mkdir(parents=True,exist_ok=True)
- launcher=bin_dir/'johansson-world'
+ bin_dir=launcher.parent;bin_dir.mkdir(parents=True,exist_ok=True)
  launcher.write_text('#!/bin/sh\nexport JOHANSSON_INSTALL_ROOT='+shlex.quote(str(base))+'\nexec "$JOHANSSON_INSTALL_ROOT/current/JohanssonWorld" "$@"\n');launcher.chmod(0o755)
  apps=Path(os.environ.get('XDG_DATA_HOME',str(Path.home()/'.local/share')))/'applications';apps.mkdir(parents=True,exist_ok=True)
  quoted=str(launcher).replace('\\','\\\\').replace('"','\\"').replace('%','%%').replace('$','\\$').replace(chr(96),'\\'+chr(96))
  desktop=apps/'johansson-world.desktop'
- icon=base/'current/resources/app/site/desktop/icons/johansson-world-512.png'
  desktop.write_text('[Desktop Entry]\nType=Application\nName=Johansson World\nComment=Offline island life\nIcon='+str(icon)+'\nExec="'+quoted+'"\nTerminal=false\nCategories=Game;\n');desktop.chmod(0o755)
 print('Installed Johansson World '+version+':',destination)
-print('Steam: Add a Game > Add a Non-Steam Game > Johansson World.')
-print('If not listed, Browse to:',launcher)
-print('Steam shortcut artwork PNG:',icon)
-print('Existing Steam shortcuts may need their icon selected again in Desktop Mode.')
-print('Leave forced Proton disabled. Choose a Gamepad controller layout.')
+if os.environ.get('JOHANSSON_NO_STEAM') or not add_to_steam(launcher,icon):
+ print('Steam shortcut artwork PNG:',icon)
+print('Return to Gaming Mode to play. Leave forced Proton disabled; choose a Gamepad controller layout.')
 print('Menu opens pause. Updates are in Settings > Check for updates.')
 PY

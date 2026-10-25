@@ -15,7 +15,7 @@ const tab=(root,id)=>find(root,n=>n.tagName==='button'&&n.dataset.townFilter===i
 const search=root=>find(root,n=>n.tagName==='input');
 const text=root=>[root.textContent||'',...root.children.map(text)].join(' ');
 
-test('Places, Homes and all 26 People stay searchable; Show home and Find person call different targets',()=>{
+test('Places, Homes and all 25 People stay searchable; Show home and Find person call different targets',()=>{
  const root=container(),calls=[],places=[{id:'market',title:'Sakura Shōten',line:'Groceries',x:-5.5,y:0,z:-28.5},
   {id:'home-kitahama-3',title:'Kōji’s home',isResidence:true,x:37.65,z:67.3}];
  const cards=residentCards({sites:places,minutes:600}),api=renderTownDirectory(root,{cards,places,progress:{unlocked:false},
@@ -23,14 +23,15 @@ test('Places, Homes and all 26 People stay searchable; Show home and Find person
  assert.equal(root.dataset.townFilter,'places');assert.equal(all(root,n=>n.dataset.placeId).length,1);
  const direction=find(root,n=>n.dataset.id==='market');assert.equal(direction.dataset.travel,'locked');direction.onclick();assert.equal(calls.at(-1)[0],'place');
  assert.equal(all(root,n=>n.dataset.shortcut).length,0);
- // The 14 households' homes, Kai's rented house and the four cabins aboard: no removed house and no retired flat (phase 4).
- tab(root,'homes').onclick();assert.equal(all(root,n=>n.dataset.homeId).length,19);
+ // The 13 households' homes, Kai's rented house and the four cabins aboard: no removed house and no retired flat (phase 4;
+ // the doctor's flat went with Dr Kakazu on 22 October 2026).
+ tab(root,'homes').onclick();assert.equal(all(root,n=>n.dataset.homeId).length,18);
  const family=find(root,n=>n.dataset.homeId==='kitahama-1');for(const name of ['Thao','Chin','Vy'])assert.ok(text(family).includes(name));assert.ok(!text(family).includes('Thuan'),'Thuan’s weekday room is gone');
  search(root).value='koji';search(root).oninput();assert.equal(all(root,n=>n.dataset.homeId).length,1);
  find(root,n=>n.dataset.showHome==='kitahama-3').onclick();assert.equal(calls.at(-1)[1].homeId,'kitahama-3');assert.equal(calls.at(-1)[3].id,'kitahama-3');
  api.refresh(cards);assert.equal(search(root).value,'koji');assert.equal(root.dataset.townFilter,'homes');assert.equal(all(root,n=>n.dataset.homeId).length,1);
- search(root).value='';search(root).oninput();tab(root,'people').onclick();assert.equal(all(root,n=>n.dataset.personId).length,26);
- for(const name of ['Reiko','Barfly','Postman Tōma','Bus driver'])assert.equal(find(root,n=>n.dataset.personId===name),undefined,name+' is retired and has no card');
+ search(root).value='';search(root).oninput();tab(root,'people').onclick();assert.equal(all(root,n=>n.dataset.personId).length,25);
+ for(const name of ['Reiko','Barfly','Postman Tōma','Bus driver','Dr Kakazu'])assert.equal(find(root,n=>n.dataset.personId===name),undefined,name+' is retired and has no card');
  const thuan=find(root,n=>n.dataset.personId==='Thuan');assert.ok(text(thuan).includes('Home'));assert.ok(text(thuan).includes('Current location'));assert.ok(text(thuan).includes('Kitano hamlet'));
  find(thuan,n=>n.dataset.showHome==='kitano-1').onclick();assert.equal(calls.at(-1)[1].homeId,'kitano-1');
  find(thuan,n=>n.dataset.findPerson==='Thuan').onclick();assert.equal(calls.at(-1)[0],'person');assert.equal(calls.at(-1)[1].id,'market');
@@ -68,4 +69,21 @@ test('resident records appear only for supported people and never advertise a tr
  api=renderTownDirectory(root,{cards,onRecord:()=>{throw new Error('Unsupported records must stay hidden');}});
  assert.equal(all(root,n=>n.dataset.residentRecord).length,0);api.destroy();
  api=renderTownDirectory(root,{cards,canRecord:()=>true});assert.equal(all(root,n=>n.dataset.residentRecord).length,0);api.destroy();
+});
+
+test('Play as appears for playable residents, marks who you are, and is never a travel target',()=>{
+ const root=container(),calls=[],cards=residentCards().filter(c=>['Johansson','Thuan','Riku'].includes(c.name));
+ let active='Johansson';
+ const api=renderTownDirectory(root,{cards,canPlayAs:name=>name!=='Riku',playing:name=>name===active,onPlayAs:(...args)=>calls.push(args)});
+ tab(root,'people').onclick();
+ const plays=all(root,n=>n.dataset.playAs);assert.deepEqual(plays.map(n=>n.dataset.playAs),['Johansson','Thuan']);
+ const johansson=plays[0],thuan=plays[1];
+ assert.equal(johansson.textContent,'Playing now');assert.ok(johansson.disabled);
+ assert.equal(thuan.textContent,'Play as Thuan');assert.ok(!thuan.disabled);
+ assert.equal(thuan.dataset.id,undefined);assert.equal(thuan.dataset.travel,undefined);
+ thuan.onclick();assert.equal(calls[0][0],'Thuan');assert.equal(calls[0][1],cards.find(c=>c.name==='Thuan'));
+ active='Thuan';api.refresh(cards);
+ assert.equal(find(root,n=>n.dataset.playAs==='Thuan').textContent,'Playing now');
+ assert.equal(find(root,n=>n.dataset.playAs==='Johansson').textContent,'Play as Johansson');
+ api.destroy();
 });

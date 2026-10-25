@@ -10,9 +10,10 @@ const placeIsHome=p=>p.isResidence||p.homeId||p.familyHome||p.id==='mayor-home'|
  * Callbacks receive the actual route target: onShowHome(target,card,home), onFindPerson(target,card),
  * onPlace(place), onShortcut(place), onStudio(), onTravelProgress(). No callback moves somebody here.
  * Resident records are optional: canRecord(name) enables onRecord(name,card) for supported residents.
+ * Playing as a resident is optional too: canPlayAs(name) enables onPlayAs(name,card); playing(name) marks who you are.
  * refresh(cards) preserves the search, filter and controls while updating residents' whereabouts.
  */
-export function renderTownDirectory(container,{cards=[],places=[],progress={},onShowHome,onFindPerson,onPlace,onShortcut,onStudio,onTravelProgress,onRecord,canRecord}={}){
+export function renderTownDirectory(container,{cards=[],places=[],progress={},onShowHome,onFindPerson,onPlace,onShortcut,onStudio,onTravelProgress,onRecord,canRecord,onPlayAs,canPlayAs,playing}={}){
  mounted.get(container)?.destroy();
  const doc=container.ownerDocument||document;
  const el=(tag,className,value)=>{const n=doc.createElement(tag);if(className)n.className=className;if(value!==undefined)n.textContent=value;return n;};
@@ -65,6 +66,10 @@ export function renderTownDirectory(container,{cards=[],places=[],progress={},on
   if(onRecord&&canRecord?.(card.name)){
    const record=button('Resident record','town-action',()=>onRecord(card.name,card));
    record.dataset.residentRecord=card.name;record.setAttribute('aria-label','Open '+card.name+'’s resident record');actions.append(record);
+  }
+  if(onPlayAs&&canPlayAs?.(card.name)){
+   const now=!!playing?.(card.name),play=button(now?'Playing now':'Play as '+card.name,'town-action',()=>onPlayAs(card.name,card));
+   play.disabled=now;play.dataset.playAs=card.name;play.setAttribute('aria-label',now?'You are playing as '+card.name:'Play as '+card.name);actions.append(play);
   }
   article.append(actions);return article;
  }

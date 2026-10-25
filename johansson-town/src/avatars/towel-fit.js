@@ -1,3 +1,4 @@
+import {skirtSpec} from './skirt-shape.js';
 import * as THREE from '../../vendor/three.module.js';
 
 /**
@@ -101,7 +102,7 @@ export function createTowelFit(avatar,mesh){
   uTorso:{value:new THREE.Vector3(m.width/2*hipRatio,m.depth/2*hipRatio,clear)},
   uTorsoY:{value:new THREE.Vector3(m.hipY-m.torso*.08,m.hipY+m.torso*.05,m.hipY+m.torso*.15)},
   uSeat:{value:NO_SEAT},
-  uSkirt:{value:new THREE.Vector4(m.hipY+m.torso*.13,avatar.recipe.outfit.bottom==='longskirt'?m.thigh+m.shin*.85:m.thigh*.9,clear,m.depth)},
+  uSkirt:{value:new THREE.Vector4(skirtSpec(m,avatar.recipe.outfit.bottom).waist,skirtSpec(m,avatar.recipe.outfit.bottom).length,clear,m.depth)},
  };
  const hipsIndex=mesh.skeleton.bones.indexOf(bones.hips),inverse=new THREE.Matrix4(),a=new THREE.Vector3(),b=new THREE.Vector3(),down=new THREE.Vector3();
  const legs=[['thighL','kneeL'],['thighR','kneeR'],['kneeL','footL'],['kneeR','footR']];

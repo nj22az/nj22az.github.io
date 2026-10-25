@@ -142,8 +142,17 @@ that makes more or better stories.
 - **The town's trade** (`johansson-town/src/commerce/merchandising.js`): Sakura Shōten, Thuan's outright, is a konbini
   *and* the town's supplier of everyday goods, from its depot in the Quay Warehouse (Sakura Trading), and of flowers and
   decorations since Mrs Kinjō retired (the consolidation's ruling 3; Rainflower Florist no longer supplies anything).
-  Higa Liquor supplies all alcohol (to Sakura, Minato, Sato Ramen and the Coral Bay Bar on Kitano-jima); Front-Row Books
-  & Stationery supplies office supplies. Blue Coral on Rainflower Lane is the town's only ice-cream shop.
+  Since Nhung became the island doctor (the owner, 22 October 2026; Dr Kakazu retired into her) Sakura also sells the
+  books and supplies the stationery and office goods Front-Row did; Front-Row is the town paper's print room in the
+  evenings, and Sakura shuts on Saturdays. Higa Liquor has closed (the owner, 22 October 2026): Sakura sells all the
+  alcohol over its counter and supplies it to Minato, Sato Ramen, the Coral Bay Bar on Kitano-jima and Mr Fujita's shed
+  on Sakura Trading's round, Kōji's on his weeks ashore (`commerce/trade-round.js`); the shop stands shut with a notice
+  on its shutter, and Grandmother Higa keeps only the bathhouse. Blue Coral on Rainflower Lane is the town's only
+  ice-cream shop.
+
+**Workflow (the owner, 24 October 2026; AGENTS.md):** Codex prototypes detailed three.js rooms and characters on
+`development`; Claude takes them to Pixar standard in Blender (`nj22az/jojo`, branch `pixar`); `main` keeps the
+simplified, cute cartoon three.js World until the Pixar world is complete.
 
 ## Sjöskolan
 
@@ -170,6 +179,10 @@ Nya varianter läggs i `avradda`; `innehall.py kontrollera` (CI) stoppar dem, `n
 Elevsidorna är `lang="sv"` och laddar `/sjoskolan/gemensamt/oversattning.js` (i `<head>`, `defer`). Skriptet markerar formler,
 storhetssymboler med index och tal med enhet `translate="no"`, så att maskinöversättning (Chrome, Edge, tillägg i Safari)
 inte ändrar dem. Safaris inbyggda översättning stöder inte svenska. Nya sidor och sidgeneratorer ska ta med skriptet; CI kontrollerar det.
+
+## Tools
+
+**REA** (reverse engineering for agents, `morluto/rea`) is a permanent development tool, registered as the `rea` MCP server in `.mcp.json` at a pinned version. Read the REA section of [AGENTS.md](AGENTS.md) for what to use it on and its limits.
 
 ## Shared coding discipline
 

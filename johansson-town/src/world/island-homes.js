@@ -49,10 +49,10 @@ export function buildIslandHomes(world,options){
  // Separate residential entrances: customers never cross a private sleeping room.
  // Its door is on the shop-house's Main Street face, the building east of it: in is east (−π/2), as for every west gate.
  addHome(householdAtHome('nakamura'),[...NAKAMURA_HOME_DOOR],{upperHome:true,entryFacing:-Math.PI/2});
- addHome(householdAtHome('clinic'),[37.7,.04,35.1],{entrancePosition:[37.7,.15,36.4],entryFacing:Math.PI});
+ // (The doctor's flat behind the clinic went with Dr Kakazu on 22 October 2026: Nhung, the doctor now, lives at 3 Kitahama.)
  // (The flat over the former post office and Barfly's room at the izakaya were retired in phase 4: no door, no site.)
  function addHome(h,door,extra={}){
-  const id=h.home==='clinic'?'home-clinic':h.entranceSiteId;
+  const id=h.entranceSiteId;
   const site={id,title:householdTitle(h),sub:'PRIVATE HOME',homeId:h.home,isResidence:true,status:h.status,
    residents:[...h.residents],homeOwner:h.residents[0],homeOwners:[...h.residents],familyHome:h,houseKind:'concrete',ownRoom:true,
    door,exitPosition:[...door],approachPosition:[...door],x:door[0],z:door[2],opens:'00:00',line:h.address,...extra};

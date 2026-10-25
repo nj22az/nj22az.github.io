@@ -6,6 +6,7 @@ import {openYear,realYear} from './src/progression/year-loop.js';
 import {MINATO_MEMORY_STORY,MINATO_RECIPE_CARD} from './src/world/interiors/izakaya-exploration.js';
 import {foodArtForItem} from './src/commerce/food-art.js';
 import {FLYER_ITEM,FLYER_PATH,FLYER_PAPER,collectSakuraFlyer} from './src/commerce/sakura-flyer.js';
+import {WOODLAND_POSTER} from './src/world/woodland-poster.js';
 import {restoreIsland} from './src/island/services.js';
 import {HOUSE_SAVE,restoreHouseState} from './src/world/johansson-house.js';
 import {MOTOR_LINKS} from './src/workshop/motor-bench.js';
@@ -56,7 +57,7 @@ import {VENDING_PRODUCTS,DRINKABLE,EMPTY_CAN,CAN_REFUND} from './src/commerce/ve
 import {SAKURA_SPECIALS,SPECIAL_BY_NAME,specialsOpen} from './src/commerce/sakura-specials.js';
 import {MEDICINES,STAMINA_DRINK} from './src/world/interiors/sakura-dressing.js';
 import {STORE_ITEMS} from './src/commerce/catalogue.js';
-import {higaLiquorState,higaLiquorKeeper,HIGA_COUNTER,HIGA_LIQUOR_HOURS_TEXT,higaDeliveryBook} from './src/commerce/higa-liquor.js';
+import {roundDeliveryBook} from './src/commerce/trade-round.js';
 import {LAUNDRY_MACHINES,LAUNDRY_POWDER,playerWashStage,freeMachine} from './src/commerce/coin-laundry.js';
 import {SHOPIFY_CONFIG} from './src/commerce/shopify-config.js';
 import {createShopify} from './src/commerce/shopify.js';
@@ -88,7 +89,7 @@ import {planFavours,favourWaiting,clueFor,favourLine,askFavour,replyFavour,favou
 import {recipeFor} from './src/avatars/cast.js';
 import {GROCERY_ITEMS} from './src/commerce/catalogue.js';
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
- checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen,HOT_SNACKS,buyHotSnack,thuanRecommends} from './src/commerce/konbini.js';
+ checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen,HOT_SNACKS,buyHotSnack,thuanRecommends,SAKURA_BOTTLES} from './src/commerce/konbini.js';
 
 export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResidentLocations=()=>null,onOpen=()=>{},onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onEat=()=>false,onTreat=()=>{},onDrink=()=>false,onSnack=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,getTipsy=()=>0,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false,getMassageChair=()=>null}) {
   const $=s=>document.querySelector(s);
@@ -96,6 +97,7 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
   let awaySince=0,returnDay=null;
   let pendingAbsence=0,ledgerView=null,magazineView=null,yearTurned=false;let state={...defaults},timer=null,modalOpen=false,previousFocus=null,radioStation=0;
+  let woodlandView=null,woodlandHistoryBack=null;
 
   try {
     // A new real year starts the island's 1997 over, keeping friendships, the bag, money and decorating (year-loop.js).
@@ -105,7 +107,7 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
     const {saved,turned}=openYear(read);yearTurned=turned;
     if(saved&&typeof saved==='object'){state.loopYear=saved.loopYear;state.loops=saved.loops|0;pendingAbsence=pendingTownAbsence(saved);state.pendingTownMinutes=pendingAbsence;
       state.homeDecor=restoreHomeDecor(saved.homeDecor);state.pocketAlbum=restoreAlbum(saved.pocketAlbum);state.pocketTaken=Number.isInteger(saved.pocketTaken)&&saved.pocketTaken>0?Math.min(saved.pocketTaken,999999):0;state.pocketSeen=restoreSeen(saved.pocketSeen,state.pocketAlbum);state.diary=restoreDiary(saved.diary);state.news=restoreNews(saved.news);state.post=restorePost(saved.post);awaySince=Number.isFinite(saved.savedAt)?saved.savedAt:0;state.impressions=restoreImpressions(saved.impressions);state.favours=restoreFavours(saved.favours);state.errand=restoreFavourErrand(saved.errand);state.greeted=saved.greeted&&typeof saved.greeted==='object'?Object.fromEntries(Object.entries(saved.greeted).filter(([k,v])=>typeof k==='string'&&Number.isSafeInteger(v)).slice(-60)):{};
-      state.combatRecovery=saved.combatRecovery;state.desktopCheckpoint=saved.desktopCheckpoint;if(window.johanssonDesktop)state.desktopLife=saved.desktopLife;state.concert=cleanConcert(saved.concert);state.relationships=restoreRelationships(saved.relationships);
+      state.combatRecovery=saved.combatRecovery;state.desktopCheckpoint=saved.desktopCheckpoint;state.desktopLife=saved.desktopLife;state.concert=cleanConcert(saved.concert);state.relationships=restoreRelationships(saved.relationships);
       state.heardHappenings=Array.isArray(saved.heardHappenings)?saved.heardHappenings.filter(x=>typeof x==='string').slice(-40):[];
       state.thuanOutfit=['nozomi','sailor'].includes(saved.thuanOutfit)?saved.thuanOutfit:'clothes';{const house=restoreHouseState(saved[HOUSE_SAVE]);if(house)state[HOUSE_SAVE]=house;}state.island=restoreIsland(saved.island);state.documentArchive=restoreArchive(saved.documentArchive);state.sakura=saved.sakura;state.bookshop=saved.bookshop;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.konbini=saved.konbini;state.residentLife=restoreResidentLife(saved.residentLife);state.friendship=restoreFriendship(saved.friendship);state.residentLocations=saved.residentLocations;state.housingRevision=saved.housingRevision;
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
@@ -177,9 +179,10 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
     }
     proceed();return true;
   }
-  function close(){dialogueBox.close();modal.classList.remove('bag-view','flyer-view','letter-view','pocket-album-view','resident-record');ledgerView=null;magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
+  function close(){disposeWoodlandViewer();dialogueBox.close();modal.classList.remove('bag-view','flyer-view','letter-view','pocket-album-view','resident-record');ledgerView=null;magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
   // options.mood: how Thuan's face looks for this line (her lines only; others release it).
   function show(title,text,buttons=[],options={}){
+    disposeWoodlandViewer();
     if(window.johanssonDesktop&&window.johanssonLinuxWorld)buttons=window.johanssonLinuxWorld.conversationActions(title,buttons,options);
     modal.classList.remove('bag-view','flyer-view','letter-view','pocket-album-view','resident-record');ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modal.classList.remove('office-records');
     magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');
@@ -202,7 +205,7 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
    * The post (src/mail/post.js): who the mayor is, as a letter-writer sees him, and who
    * each sender is. The roster's default "Visitor" is still the mayor, Johansson.
    */
-  const playerName=()=>{if(window.johanssonDesktop&&window.johanssonLinuxWorld)return window.johanssonLinuxWorld.active;const n=activePlayer(localStorage)?.name;return n&&n!=='Visitor'?n:'Johansson';};
+  const playerName=()=>{const life=window.johanssonLinuxWorld;if(life&&(window.johanssonDesktop||life.active!=='Johansson'))return life.active;const n=activePlayer(localStorage)?.name;return n&&n!=='Visitor'?n:'Johansson';};
   function senderOf(name){
     const profile=RESIDENTS.find(p=>p.name===name)||PROFILES.find(p=>p.name===name),recipe=recipeFor(name);
     if(!profile&&!recipe)return null;
@@ -404,12 +407,63 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
     body.append(personalityReference());
   }
   const interestWord=i=>({read:'Reading',inspect:'Exploring',seat:'Taking a quiet break',shop:'Shopping',arcade:'Arcade games',machine:'Machines',radio:'Radio',office:'Harbour work',fish:'Fishing',phone:'Keeping in touch',post:'Letters',drink:'A drink with friends'}[i]||i);
+  function harbourNoticeBoard(){
+    show('Harbour notice board','Johansson woodland · a three-dimensional portrait of the island.',[
+      ['Look',woodlandViewer],['Read Thuan’s flyer',()=>sakuraFlyer('Harbour notice board')],['Close',close]
+    ]);
+    modal.classList.add('flyer-view');
+    const image=document.createElement('img');image.src=WOODLAND_POSTER.image;image.alt=WOODLAND_POSTER.description;
+    image.width=2048;image.height=1365;image.style.cssText='display:block;width:100%;height:auto;max-width:720px;margin:8px auto';body.append(image);
+  }
+  function disposeWoodlandViewer(){
+    const view=woodlandView;if(!view)return;
+    woodlandView=null;window.removeEventListener('message',view.message);window.removeEventListener('popstate',view.pop);
+    view.frame.remove();modal.classList.remove('woodland-view');
+    // Back closes this temporary view instead of leaving the running World. Only
+    // consume our own entry; an unrelated navigation/history state is never changed.
+    if(view.historyPushed&&window.history?.state?.johanssonDiorama===view.token){
+      // Traversal is asynchronous. A quick close/reopen must finish this Back
+      // before the next viewer pushes its own entry or listens for Back.
+      const pending={pop:null};
+      pending.pop=()=>{
+        if(woodlandHistoryBack!==pending)return;
+        window.removeEventListener('popstate',pending.pop);woodlandHistoryBack=null;
+        if(woodlandView)pushWoodlandHistory(woodlandView);
+      };
+      woodlandHistoryBack=pending;window.addEventListener('popstate',pending.pop);
+      try{window.history.back();}catch{pending.pop();}
+    }
+  }
+  function pushWoodlandHistory(view){
+    if(woodlandView!==view||woodlandHistoryBack)return;
+    try{
+      window.history.pushState({...window.history.state,johanssonDiorama:view.token},'',location.href);
+      view.historyPushed=true;window.addEventListener('popstate',view.pop);
+    }catch{/* The visible close control also works if this host has no history. */}
+  }
+  function woodlandViewer(){
+    show(WOODLAND_POSTER.title,'',[]);
+    const token=globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
+    const url=new URL(WOODLAND_POSTER.viewer,document.baseURI||location.href),origin=location.origin??new URL(location.href).origin;
+    url.searchParams.set('embedded','1');url.searchParams.set('token',token);
+    const frame=document.createElement('iframe');frame.title='Johansson woodland · interactive diorama';frame.src=url.href;
+    frame.setAttribute('aria-busy','true');frame.setAttribute('allow','fullscreen');frame.className='woodland-viewer';
+    const view={frame,token,historyPushed:false,message:null,pop:null};
+    view.message=event=>{
+      if(woodlandView!==view||event.source!==frame.contentWindow||event.origin!==origin||event.data?.token!==token)return;
+      if(event.data.type==='johansson-diorama-close')close();
+      else if(event.data.type==='johansson-diorama-ready')frame.setAttribute('aria-busy','false');
+    };
+    view.pop=event=>{if(woodlandView===view&&event.state?.johanssonDiorama!==token){view.historyPushed=false;close();}};
+    woodlandView=view;window.addEventListener('message',view.message);pushWoodlandHistory(view);
+    modal.classList.add('woodland-view');body.replaceChildren(frame);
+  }
   function sakuraFlyer(location='Bag'){
     fileDocument(state,FLYER_PAPER,getMinutes());save();
     const owned=state.inventory.includes(FLYER_ITEM);
     show('Sakura Shop · neighbourhood flyer',owned?'Your copy, picked up in town.':'A bright paper flyer from Thuan’s shop. You can take a free copy.',[
       ...(!owned?[['Take a free copy',()=>{if(collectSakuraFlyer(state)){note('Picked up Thuan’s Sakura shop flyer. A copy is filed at Community Hall.');sakuraFlyer(location);}else say('Your bag is full. Make some room for a flyer.');}]]:[]),
-      ...(location==='Harbour notice board'?[['Other harbour notices',()=>read('Harbour notice board','Notices cover tide times, a lost glove, fish-market hours and a warning about the outer pier after dark.')]]:[]),
+      ...(location==='Harbour notice board'?[['About the board',()=>read('Harbour notice board','Minato’s noticeboard: a green aluminium case under a small rain hood, its two acrylic doors kept locked. Behind them, Thuan’s Sakura flyer and the woodland print. The rest of the cork is waiting for the next notice.')]]:[]),
       ...(location==='Bag'?[['Back to the bag',bag]]:[]),['Put it away',close]
     ]);
     modal.classList.add('flyer-view');
@@ -680,6 +734,7 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
     const paperwork=()=>show(title,"Wait a minute.\nThe shop books live in the back office — I can fetch them.",[
       ['Sell items from my bag',workshopUI.selling],
       ['Read the shop ledger',shopLedger],
+      ['Read the drink round’s book',()=>read('Sakura Trading · drink round',roundDeliveryBook(getMinutes()))],
       back,
     ]);
     const counter=()=>show(title,"Welcome!\nWhat can I do for you?",[
@@ -998,7 +1053,7 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
     if(closed){show('Medicine shelf',closed,[['Back',close]]);return;}
     // Every box on the shelf, not a selection of them.
     const items=[...MEDICINES,STAMINA_DRINK];
-    show("Medicine · Medicine shelf",'Thuan: "What do you need? If it is more than a cold, the clinic boat comes on Thursdays."',[
+    show("Medicine · Medicine shelf",'Thuan: "What do you need? If it is more than a cold, my sister is at the clinic: nine to twelve and two to five."',[
       ...items.map(item=>[`${item.jp}${item.sub?' '+item.sub:''} · ¥${item.price.toLocaleString('en-GB')}`,()=>{const result=sellAtTill(item.en,item.price);if(!result.ok){receipt(item.jp,result.message);return;}onTime(2);
         receipt(item.jp,item.en+' is in your bag. Thuan writes the dose on the box in marker, the way she does for everyone.');}]),
       ['Nothing, thank you',close]]);
@@ -1017,9 +1072,11 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
   function sakuraCounterGoods(){
     const closed=sakuraTillClosed();
     if(closed){show('Till counter',closed,[['Back',close]]);return;}
-    show("In front of the cash register · At the till",'Thuan: "Cards, stamps, ferry tickets. The gum is the only thing here anyone buys on impulse."',[
+    // The bottles are here since Higa Liquor closed (the owner, 22 October 2026; konbini.js SAKURA_BOTTLES).
+    show("In front of the cash register · At the till",'Thuan: "Cards, stamps, ferry tickets, and the bottles from the back since the Higas closed. The gum is the only thing here anyone buys on impulse."',[
       ...COUNTER_GOODS.map(item=>[`${item.jp} · ¥${item.price.toLocaleString('en-GB')}`,()=>{const result=sellAtTill(item.en,item.price,item.unitCost);
         receipt(item.jp,result.ok?item.en+' is in your bag.':result.message);}]),
+      ...SAKURA_BOTTLES.map(p=>[`${p.name} · ¥${p.cost}`,()=>{const result=sellAtTill(p.item,p.cost,p.unitCost);if(!result.ok){receipt(p.name,result.message);return;}onTime(2);receipt('Sakura Shōten',p.text);}]),
       ['Nothing, thank you',close]]);
   }
   // Local players: several people can keep their own progress on one device. Switching
@@ -1362,18 +1419,6 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
     catch{if(!modalOpen||revision!==modalRevision)return;show('Harbour office records','The records could not be loaded. Please try again.',[['Try again',()=>officeRecords(id)],['Close records',close]]);}
   }
   /**
-   * Higa Liquor's counter (commerce/higa-liquor.js): open 9–12 and 17–20, Grandmother Higa or, on Saturdays, Yui; the
-   * card on the door between, the shutter at night. Its own goods, priced as 1997 priced them.
-   */
-  function higaLiquor(){
-    const now=getMinutes(),open=higaLiquorState(now);
-    if(open!=='open'){show('Higa Liquor',open==='away'?'The glass doors are shut and a card hangs on the handle: “Out. Back at five.” Grandmother Higa is at the bandai at Umi-no-yu until then.':`The shutter is down. Higa Liquor is open ${HIGA_LIQUOR_HOURS_TEXT}.`,[['Leave',close]]);return;}
-    const yui=higaLiquorKeeper(now)==='Miss Higa';
-    show('Higa Liquor',(yui?'Yui is minding the counter for her grandmother; it is Saturday, and her marking is in a pile by the register.':'Grandmother Higa looks up from her abacus.')+' Awamori in every size, the 1.8-litre bottles up the wall, the cold case by the door, and the old jar behind the counter that is not for sale.',
-      [...HIGA_COUNTER.map(p=>[`${p.name} · ¥${p.cost}`,()=>{if(!spend(p.cost,'Higa Liquor · '+p.name))return;onTime(2);addItem(p.item);tone(620,.12);receipt('Higa Liquor',p.text);}]),
-       ['Read the delivery book',()=>read('Higa Liquor · delivery book',higaDeliveryBook(getMinutes()))],['Leave',close]]);
-  }
-  /**
    * A wash at the coin laundry (commerce/coin-laundry.js): load a free washer, it runs on the town clock, then a dryer,
    * then fold. The save keeps it (state.coinLaundry), and the machine turns in the world while it runs.
    */
@@ -1416,7 +1461,6 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
       case 'store-catalogue':show('Thuan’s mail-order book',realShop.enabled?'Real-world products. Current prices and Shopify checkout are shown separately from town yen.':'A pink ribbon marks the next page. Thuan is still preparing the mail-order selection.',[...STORE_ITEMS.filter(i=>realShop.enabled&&SHOPIFY_CONFIG.products[i.id]).map(i=>[i.name,()=>realProduct(i)]),['Close',close]]);break;
       case 'travel-progress':show('Earn your town shortcuts',travelStatusText(state),[['Back to exploring',close]]);break;
       case 'vending':vending();break;
-      case 'higa-liquor':higaLiquor();break;
       case 'coin-laundry':coinLaundry();break;
       case 'recycle-cans':recycleCans();break;
       case 'sakura-specials':specialsMenu();break;
@@ -1448,6 +1492,7 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
       case 'ganaha':ganaha(detail);break;
       case 'arcade':arcade();break;
       case 'sakura-flyer':sakuraFlyer(name);break;
+      case 'harbour-notice-board':harbourNoticeBoard();break;
       case 'inspect':inspect(name,detail);break;
       // A broadcast is watched, not filed: the set is switched off, nothing goes in the archive.
       case 'watch':show(name,String(detail||''),[['Switch it off',close]]);break;
@@ -1479,5 +1524,5 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
 
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);
   $('#soundButton').textContent=state.sound?'On':'Off';radioStation=state.radioStation||0;save();{const label=onWeather?.('start');if(typeof label==='string')$('#weatherButton').textContent=label;}
-  return {action,documentArchive,inventory,bag,residentRecord,residentRecords,canResidentRecord,close,save,saveBeforeLeaving,keepPhoto,letGoPhoto,pocketAlbum,get album(){return state.pocketAlbum||[];},post,deliverPost,favourCard,get unreadPost(){return unreadCount(ensurePost(state).box);},spend,players,menu:show,dialogue:dialogueBox,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
+  return {action,documentArchive,inventory,bag,residentRecord,residentRecords,canResidentRecord,close,save,saveBeforeLeaving,keepPhoto,letGoPhoto,pocketAlbum,get album(){return state.pocketAlbum||[];},post,deliverPost,favourCard,get unreadPost(){return unreadCount(ensurePost(state).box);},spend,players,menu:show,dialogue:dialogueBox,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get viewerActive(){return !!woodlandView;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
 }
