@@ -1,0 +1,31 @@
+{
+  "hotelId": "best-western-plus-hotel-odense",
+  "name": "Best Western Plus Hotel Odense",
+  "identitySource": "https://www.bestwestern.dk/hoteller/96106",
+  "parkingSource": "https://hotelodense.dk/en/parkering/",
+  "checkedOn": "2026-10-25",
+  "coordinates": {
+    "latitude": 55.37033,
+    "longitude": 10.44978,
+    "sourceUrl": "https://www.bestwestern.dk/hoteller/96106"
+  },
+  "officialGeo": {
+    "@type": "GeoCoordinates",
+    "latitude": 55.37033,
+    "longitude": 10.44978
+  },
+  "officialPropertyPageSha256": "aa942f805e62763455d29365d34c4b8dd0e151a14c3c098a8ef54b9ff52352b3",
+  "officialParkingPageSha256": "2141a0d5da6cd36c87be280d530b2d6283a7b87c4a3609d6c251d9118b76bda6",
+  "officialFacts": [
+    "Free parking confirmed",
+    "Expansion temporarily closes part of the parking area; use signed green areas"
+  ],
+  "ownerReportedFacts": [
+    "Free parking was far from the hotel",
+    "Parking was on a construction site"
+  ],
+  "walkingDistanceMetres": null,
+  "stayDate": null,
+  "decision": "Avoid for practical access, while retaining confirmed free parking and zero fee.",
+  "identityBasis": "Best Western Plus Hotel Odense at Ørbækvej 350 matches the owner’s named city/brand and the official construction notice."
+}

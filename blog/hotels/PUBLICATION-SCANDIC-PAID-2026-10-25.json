@@ -1,0 +1,33 @@
+{
+  "status": "locally-verified-publication-pending",
+  "checkedOn": "2026-10-25",
+  "hotels": 60,
+  "green": 33,
+  "easy": 0,
+  "avoid": 27,
+  "verifiedLocations": 60,
+  "originalRecordsPreserved": 32,
+  "checks": {
+    "builderTests": 15,
+    "generatedPageCurrent": true,
+    "themeRegression": true,
+    "blogFeedRegression": true,
+    "csvColumns": 37,
+    "viewportWidths": [
+      1440,
+      834,
+      390,
+      320
+    ],
+    "physicalDevices": false,
+    "realGps": false,
+    "chromiumInteractionAndLayout": 48,
+    "chromiumFallback": 9
+  },
+  "sha256": {
+    "blog/hotels/hotels.json": "4c355f925f36bfe4941a6a704a63538291f914b83243aee494e2a8a4306478da",
+    "blog/hotels/index.html": "d7896d2fa850319c2cd8048b228d050e1161fa190a0276208bb07bbc0a50069f",
+    "blog/hotels/hotel-reviews.csv": "c707eeac0de59824dc938504ece72b657adba1ca7908898c35a674a4fcb34fcb",
+    "blog/hotels/hotels-map.js": "182dd4e8ee033952cb06c6e0664e6b14d2367f6e80d888720c1ca82b36ac5222"
+  }
+}

@@ -19,7 +19,7 @@
   if (!window.L) { unavailable(); return; }
   var parkingCategories = {
     free: { label: 'Free parking', marker: 'Free' },
-    easy: { label: 'Easy parking · Pay at hotel', marker: 'Easy' },
+    easy: { label: 'Easy parking · One hotel receipt', marker: 'Easy' },
     avoid: { label: 'Paid parking · Avoid', marker: 'Avoid' }
   };
   var hotels;
