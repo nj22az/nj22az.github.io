@@ -6,7 +6,8 @@ cosy-anime critique of 13:19). Plan and Blender proofs: studio repo `nj22az/jojo
 
 **State: the creator saw the sheets (25 October: "I think it looks better already"). On branch
 `claude/avatar-remake-continue-llretw` the eyes are now on for everyone (`?eyes3d=0` shows the painted ones), main merged
-in, runtime rebuilt. Not merged to main and not published: publishing waits for the owner's word.**
+in, runtime rebuilt. **Published to main on the owner's word ("Push", 25 October 2026)** by fast-forward from that branch
+(this note's commit); the live check is recorded below once Pages has deployed.**
 
 ## What it is
 
@@ -63,7 +64,6 @@ deadpan, the big reaction eyes) and a **2D blink**: the lash line pulled down in
 ## Next
 
 1. ~~The creator judges the sheets~~ (done: "looks better already"); ~~switch on by default~~ (done on the branch).
-2. Publish when the owner says so: merge the branch into main (merge main in first; rebuild the runtime with
-   `npm run build:runtime`, never by hand), run the guard, push, check Pages.
+2. ~~Publish~~ (done: pushed to main on the owner's "Push"); confirm the live site serves the new runtime.
 3. Notes on the look go into `eyeShape` (sizes, lids, lash weight). Then the rest of the cosy-anime critique (the face
    painter: brows, mouth line, stubble, blush, nose, ears) and the remake's step 2, the neck (a drawing first).
