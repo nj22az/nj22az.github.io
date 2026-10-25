@@ -96,3 +96,30 @@ test('the pad being used takes over from an idle one, and a remap still applies'
  settings.bindings[0]=3;press(real,3);input.sample(pads);press(real,3,false);input.sample(pads);press(real,3);assert.equal(input.sample(pads).pressed[0],true,'Remaps use the standard layout');
  assert.equal(input.read([virtual]).pad.id,'Steam Virtual Gamepad','Unplugging it falls back');
 });
+
+test('fixed Deck profile ignores stale remaps, axis swaps, glyphs and device selection',async()=>{
+ const {createDesktopInput,steamDeckProfile}=await load(),p=pad();p.id='Steam Virtual Gamepad';p.axes=[.8,-1,.9,-.7];
+ const saved={moveAxes:[2,3],lookAxes:[5,6],bindings:Array(17).fill(63),controller:'Disconnected Bluetooth pad',glyphs:'nintendo'};
+ const input=createDesktopInput(()=>saved,{steamDeck:true}),frame=input.sample([p]);
+ assert.ok(frame.move.x>0&&frame.move.y<0&&frame.look.x>0&&frame.look.y<0);
+ for(const [action,physical] of steamDeckProfile().bindings.entries()){
+  p.buttons.forEach(b=>{b.pressed=false;b.value=0;});input.sample([p]);
+  p.buttons[physical]={pressed:true,value:1};assert.equal(input.sample([p]).pressed[action],true,'fixed action '+action);
+ }
+ assert.equal(steamDeckProfile().glyphs,'deck');assert.deepEqual(saved.lookAxes,[5,6],'old preferences are retained but ignored');
+});
+test('Deck reads the Steam standard virtual pad and rejects raw driver guesses',async()=>{
+ const {createDesktopInput}=await load(),raw=pad('');raw.id='Steam Deck raw device';raw.axes=[0,0,-1,0,0,-1];raw.buttons[0].pressed=true;
+ const virtual=pad();virtual.id='Steam Virtual Gamepad';virtual.index=1;virtual.axes=[0,-1,1,0];
+ const input=createDesktopInput(()=>({controller:raw.id}),{steamDeck:true});
+ assert.equal(input.read([raw,virtual]).pad.id,virtual.id);assert.equal(input.read([raw]).connected,false);
+ assert.equal(input.sample([raw,virtual]).move.y,-1);assert.equal(input.sample([raw,virtual]).look.x,1);
+});
+test('Deck stick-only activity wakes a late virtual pad and reconnect suppresses held buttons',async()=>{
+ const {createDesktopInput}=await load(),a=pad(),b=pad();a.id='Idle virtual pad';b.id='Steam Virtual Gamepad';b.index=1;
+ const input=createDesktopInput(()=>({}),{steamDeck:true});assert.equal(input.read([a]).pad.id,a.id);
+ input.read([a,b]);b.axes[1]=-1;b.axes[2]=.8;assert.equal(input.read([a,b]).pad.id,b.id);
+ b.buttons[9]={pressed:true,value:1};assert.equal(input.sample([a,b]).pressed[9],false);
+ input.sample([]);assert.equal(input.sample([b]).pressed[9],false);assert.equal(input.sample([b]).move.y,-1);
+ b.buttons[9]={pressed:false,value:0};input.sample([b]);b.buttons[9]={pressed:true,value:1};assert.equal(input.sample([b]).pressed[9],true);
+});

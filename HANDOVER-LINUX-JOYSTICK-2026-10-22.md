@@ -1,6 +1,14 @@
 # Linux controller handover — 22 October 2026
 
-## First task for the next agent
+## Current direction — 25 October 2026, Linux 0.2.21
+
+Owner: “Control hard map to default steam deck so the sticks work and touch pads, don’t care about other compatibility on Linux for now.” This supersedes the earlier generic/Bluetooth priority. **Published 0.2.21** fixes the Deck profile and installs an original explicit trackpad template. [Release evidence, exact sources, checks and captures](linux-port/acceptance-0.2.21.md). PR #398, release `22a03f8ce69a1c0b6241a1fe4cbe14f79b53577e`, final candidate `78965d9ff54cc1907da9a22b4b758d40a7ad2f11`; candidate/test/release tree `9dbcadd435455ae250965f96a17e980d80c320ac`. Local/hosted regressions 42/42, guard 421/421, packaged rendering 92/19 Looks, actual compiled Deck movement/camera/recovery, native/offline/full baseline and actual previous-version update all pass. Old saved remaps are ignored without deleting them; camera settings/saves remain.
+
+Apply Steam's layout with the current installer in Desktop Mode (`--steam` repairs without download), then launch from Steam Library. Left stick/trackpad move; right stick/trackpad look, right click centres. Actual template loading and physical Deck acceptance remain unverified. Other Linux controller compatibility is outside this release's scope. Website verification pending.
+
+Next acceptance: on a physical Deck, apply the installer, launch 0.2.21 from Gaming Mode, test both sticks/trackpads, buttons/triggers, pause, reconnect and suspend/resume. Capture the Steam/client version, selected layout and actual Gamepad ID/mapping/axes/buttons at rest and during input. Keep this separate from the automated virtual-input results; do not resume other Linux controller work unless the owner reprioritises it.
+
+## Historical follow-up from 22 October
 
 The owner reported: **“The right joystick should control camera now it doesn’t on either Bluetooth or steam deck.”**
 

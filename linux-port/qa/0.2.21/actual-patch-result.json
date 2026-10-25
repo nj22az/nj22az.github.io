@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "from": "0.2.20",
+  "to": "0.2.21",
+  "oldArchiveSha256": "cede4a0676caecc579397e17baa016e251ab0203bb51e6dedcf53bdb6a2a7199",
+  "offered": {
+    "available": true,
+    "version": "0.2.20",
+    "next": "0.2.21",
+    "canInstall": true,
+    "notes": "# Johansson World Linux 0.2.21\n\nSteam Deck control update from production main `7c048393daaf614e242956cf3ee7b3f9bdc0f626`, retaining the published facial visibility correction.\n\n- Fixed Steam Deck axes, buttons and prompts. Old saved remaps and disconnected device selections cannot swap or disable the sticks; saved game progress and camera preferences remain.\n- Left stick and left trackpad move and navigate. Right stick and right trackpad look; right click centres the view. A confirms, B backs out, X jumps, Y opens Bag, R2 runs, L2 inspects, View opens the town book and Menu pauses.\n- The installer supplies and selects an explicit local Steam Deck layout, retaining other games and backups. Linux no longer attempts raw-driver or other-controller compatibility in its Deck profile.\n\n**Run the installer in Desktop Mode once to apply the trackpad layout**, then launch from Steam Library → Non-Steam. Existing installations can use `sh install.sh --steam` after updating the app. The in-game updater alone cannot apply Steam's layout while Steam is running.\n\nAutomated controller tests simulate Steam Input output. Physical Steam Deck acceptance and Steam's actual loading of the new template remain unverified. Other Linux controllers are outside this release's acceptance scope.\n\nSee `linux-port/acceptance-0.2.21.md` for release checks and evidence. Published 0.2.20 assets remain unchanged.\n",
+    "downloadBytes": 2391542,
+    "kind": "patch"
+  },
+  "installed": {
+    "ready": true,
+    "version": "0.2.21",
+    "kind": "patch",
+    "downloadBytes": 2391542
+  },
+  "oldTree": "f39239d9af722baec245df0a1ec265d338e3120d4d7b56497d2cdcda2f7f6a5f",
+  "targetTree": "ea3bb789949a7ba394b88e3d49dd2199396e6c7a4eb3839f200ea71c88283629",
+  "verifiedTargetFiles": 1625,
+  "oldInstallUnchanged": true,
+  "previousRetained": true,
+  "syntheticProfileByteIdentical": true,
+  "physicalLaunch": false,
+  "tarNoSameOwner": true,
+  "fixtureLocation": "private temporary directory",
+  "transport": "local copies of checksum-verified published bytes",
+  "requests": [
+    "https://api.github.com/repos/nj22az/nj22az.github.io/releases?per_page=30",
+    "https://github.com/nj22az/nj22az.github.io/releases/download/johansson-world-linux-v0.2.21/latest-linux.json",
+    "https://github.com/nj22az/nj22az.github.io/releases/download/johansson-world-linux-v0.2.21/johansson-world-linux-0.2.20-to-0.2.21.patch.tar.gz"
+  ]
+}

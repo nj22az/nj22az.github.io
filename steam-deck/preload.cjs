@@ -9,7 +9,7 @@ async function persist(){
  const data=snapshot(),result=await ipcRenderer.invoke('save-backup',data);lastSnapshot=JSON.stringify(data);return result;
 }
 contextBridge.exposeInMainWorld('johanssonDesktop',{
- offline:true,version:ipcRenderer.sendSync('app-info').version,save:persist,
+ offline:true,inputProfile:'steam-deck',version:ipcRenderer.sendSync('app-info').version,save:persist,
  performance:()=>ipcRenderer.invoke('performance-info'),
  checkUpdate:()=>ipcRenderer.invoke('check-update'),
  installUpdate:()=>ipcRenderer.invoke('install-update'),

@@ -51,8 +51,9 @@ app.whenReady().then(async()=>{
   // CI exercises the same local protocol and starts the real island.
   window.webContents.on('console-message',details=>console.log(details.message));
   setTimeout(async()=>{try{
-   const result=await window.webContents.executeJavaScript('(async()=>{const until=async(test,ms)=>{const end=Date.now()+ms;while(!test()&&Date.now()<end)await new Promise(r=>setTimeout(r,250));return test();};const enter=document.getElementById("enter");await until(()=>enter&&!enter.disabled,240000);enter.click();await until(()=>window.__JOHANSSON_RUNNING__===true&&window.__JOHANSSON_STABILITY__,120000);return {running:!!window.__JOHANSSON_RUNNING__,stability:window.__JOHANSSON_STABILITY__,version:window.__JOHANSSON_RUNTIME_VERSION__,desktopVersion:window.johanssonDesktop.version};})()');
+   const result=await window.webContents.executeJavaScript('(async()=>{const until=async(test,ms)=>{const end=Date.now()+ms;while(!test()&&Date.now()<end)await new Promise(r=>setTimeout(r,250));return test();};const enter=document.getElementById("enter");await until(()=>enter&&!enter.disabled,240000);enter.click();await until(()=>window.__JOHANSSON_RUNNING__===true&&window.__JOHANSSON_STABILITY__,120000);return {running:!!window.__JOHANSSON_RUNNING__,stability:window.__JOHANSSON_STABILITY__,version:window.__JOHANSSON_RUNTIME_VERSION__,desktopVersion:window.johanssonDesktop.version,inputProfile:window.johanssonDesktop.inputProfile};})()');
    console.log('WORLD_SMOKE',JSON.stringify(result));
+   if(result.inputProfile!=='steam-deck')throw Error('Packaged Steam Deck profile is missing');
    if(result.desktopVersion!==app.getVersion())throw Error('Displayed version differs from running application');
    if(!result.running||!result.stability?.ok)throw Error('World startup checks failed: '+JSON.stringify(result.stability));
    // The real clock may start Johansson asleep inside his cabin. Outdoor smoke
