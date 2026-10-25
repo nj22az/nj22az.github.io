@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {attentionRigOn,ATTENTION_LIMITS} from '../avatars/attention-rig.js';
 
 /**
  * Turning to face whoever is talking to you.
@@ -73,8 +74,14 @@ export function offBy(entity,point){
  * @param {number} [options.range] how close you have to be before someone notices you
  * @param {number} [options.turnRate]
  */
-export function createFacing({world,getPlayerPosition,getPlayerEyeHeight=()=>1.66,range=2.6,turnRate=6}){
+export function createFacing({world,getPlayerPosition,getPlayerEyeHeight=()=>1.66,range=2.6,turnRate=6,attentionRig=attentionRigOn()}){
  const point=new THREE.Vector3();
+ const turns=new WeakMap();
+ const ready=(entity,dt)=>{
+  if(!attentionRig)return true;
+  const held=(turns.get(entity)||0)+Math.max(0,dt);turns.set(entity,held);
+  return held>ATTENTION_LIMITS.bodyDelay;
+ };
  const stats={addressed:0,turning:0};
  return {stats,update(dt){
   const player=getPlayerPosition();
@@ -85,12 +92,13 @@ export function createFacing({world,getPlayerPosition,getPlayerEyeHeight=()=>1.6
    const data=entity.userData;
    const talking=data.playerConversation===true;
    // In a conversation of their own they look at each other (neighbour-chats.js), not at you.
-   if(!talking&&(data.chat||data.playing)){if(data.facingPlayer)delete data.facingPlayer;continue;}
+   if(!talking&&(data.chat||data.playing)){turns.delete(entity);if(data.facingPlayer)delete data.facingPlayer;continue;}
    const near=Math.hypot(entity.position.x-player.x,entity.position.z-player.z)<=range;
    // Standing next to someone is not the same as talking to them, so proximity only
    // earns a look when they have nothing else on.
    const busy=occupied(data,!!data.walking||!!data.character?.moving);
    if(!talking&&!(near&&!busy)){
+    turns.delete(entity);
     if(data.facingPlayer){delete data.facingPlayer;if(data.lookSource==='facing')delete data.lookTarget;}
     continue;
    }
@@ -100,16 +108,22 @@ export function createFacing({world,getPlayerPosition,getPlayerEyeHeight=()=>1.6
    // shop's own attention pass, which is why people outside stared straight ahead.
    data.lookTarget=point.toArray();data.lookSource='facing';
    data.facingPlayer=true;
-   if(busy||!talking)continue;
+   if(busy||!talking){turns.delete(entity);continue;}
+   if(!ready(entity,dt))continue;
    entity.rotation.y=turnToward(entity.rotation.y,faceYaw(entity.position,player),dt,turnRate);
    stats.turning++;
   }
   // Street neighbours you are talking to turn and look at you as well.
   for(const entity of world.neighbours||[]){
-   const data=entity?.userData;if(!data?.playerConversation)continue;
+   const data=entity?.userData;if(!data?.playerConversation){
+    if(entity)turns.delete(entity);
+    if(attentionRig&&data?.lookSource==='facing'){delete data.lookTarget;delete data.lookSource;}
+    continue;
+   }
    point.set(player.x,player.y+getPlayerEyeHeight(),player.z);
    data.lookTarget=point.toArray();data.lookSource='facing';stats.addressed++;
-   if(occupied(data,!!data.walking||!!data.character?.moving))continue;
+   if(occupied(data,!!data.walking||!!data.character?.moving)){turns.delete(entity);continue;}
+   if(!ready(entity,dt))continue;
    entity.rotation.y=turnToward(entity.rotation.y,faceYaw(entity.position,player),dt,turnRate);stats.turning++;
   }
   return stats;

@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {attentionRigOn,ATTENTION_LIMITS} from '../avatars/attention-rig.js';
 import {createBalloonPresenter,projectBalloonPerson,balloonViewport} from '../dialogue/world-balloon.js';
 import {lineFeeling} from '../avatars/body-language.js';
 import {recipeFor} from '../avatars/cast.js';
@@ -51,8 +52,13 @@ export const CHAT_REACH=Object.freeze({apart:4.6,near:.85,observer:14,cooldown:1
 // written ahead for pairs who are about to meet; otherwise from the written small talk,
 // in each speaker's own temperament (chat-lines.js).
 export function createNeighbourChats({world,observer,blocked=()=>false,state=()=>({}),onMemory=()=>{},writer=null,random=Math.random}){
+ const attentionRig=attentionRigOn();
  let clock=0,nextScan=2,active=null,sequence=0;const cooldown=new Map(),recent=new Map();
- const point=p=>{const v=p.g.getWorldPosition(new THREE.Vector3());v.y+=(p.profile.height||1.7)*.8;return v;};
+ const point=p=>{
+  const avatar=attentionRig&&p.g.userData.character?.avatar;
+  if(avatar){const v=new THREE.Vector3(0,avatar.measure.headCentre-avatar.measure.headY,0);return avatar.bones.head.localToWorld(v);}
+  const v=p.g.getWorldPosition(new THREE.Vector3());v.y+=(p.profile.height||1.7)*.8;return v;
+ };
  const signature=(p,minutes,rain)=>residentPlan(p.profile,minutes,rain,state()).place+'/'+place(p);
  const person=p=>({name:p.profile.name,age:p.profile.age,role:p.profile.role,personality:p.profile.personality,gossip:p.profile.gossip,profile:recipeFor(p.profile.name).profile});
  const pairKey=(a,b)=>[a.profile.name,b.profile.name].sort().join('|');
@@ -76,7 +82,7 @@ export function createNeighbourChats({world,observer,blocked=()=>false,state=()=
     // (Someone sitting keeps their seat and turns only their head.)
     p.g.userData.lookTarget=point(partner).toArray();p.g.userData.lookSource='chat';
     const sitting=Number.isFinite(p.g.userData.seatHeight)||p.g.userData.chairBlend>.5;
-    if(!sitting){const dx=partner.g.position.x-p.g.position.x,dz=partner.g.position.z-p.g.position.z,heading=Math.atan2(-dx,-dz),delta=Math.atan2(Math.sin(heading-p.g.rotation.y),Math.cos(heading-p.g.rotation.y));p.g.rotation.y+=delta*(1-Math.exp(-dt*5));}
+    if(!sitting&&(!attentionRig||elapsed>ATTENTION_LIMITS.bodyDelay)){const dx=partner.g.position.x-p.g.position.x,dz=partner.g.position.z-p.g.position.z,heading=Math.atan2(-dx,-dz),delta=Math.atan2(Math.sin(heading-p.g.rotation.y),Math.cos(heading-p.g.rotation.y));p.g.rotation.y+=delta*(1-Math.exp(-dt*5));}
    });return;
   }
   if(clock<nextScan)return;nextScan=clock+1;

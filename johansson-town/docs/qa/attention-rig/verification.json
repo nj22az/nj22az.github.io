@@ -1,0 +1,39 @@
+{
+  "base_commit": "96b743bb3b8b8286d52cbddf7aa84174f39d2d7d",
+  "branch": "development",
+  "flag": "attention-rig",
+  "default_enabled": false,
+  "runtime_source": {
+    "sha256": "1cdee72b2bf2aa50675c7c3dbcf1f6fceb1b074a936290f60845b47713a16272"
+  },
+  "boot": "boot-CTRsfkw6.js",
+  "runtime_entries": 34,
+  "focused": {
+    "passed": 35,
+    "failed": 0
+  },
+  "guard_parallel": {
+    "passed": 462,
+    "failed_processes": 1,
+    "exit_green": false
+  },
+  "isolated_geometry": {
+    "passed": 13,
+    "failed": 0
+  },
+  "guard_checks_covered": 475,
+  "compiled_game_page_errors": [],
+  "physical_device_tested": false,
+  "main_published": false,
+  "evidence_sha256": {
+    "attention-sheet.png": "f57f1be12483cacc5f5295048a74dee29c52e3d372e13b75d6105a0f7c119416",
+    "attention-motion.webm": "e1881088b788f8f81ace23ab6ad747eec37bf6df6c57d5d9b2114614f98e3d20",
+    "compiled-resident.png": "393140cfecb81aa688fb05e4d605d4350f9bbea0d141ff097f800079680167e0",
+    "report.json": "ef2bdc453cf0fa8b4a857be875bc84544e0916b35c1797cdd9217e4f7c02e52d",
+    "game-report.json": "e570ce58cb2a40ea5b64392f994308e2bbb6120a65cae3cbbb291229e600f347",
+    "focused.log": "9016baa9ec515f6fbaae74dc037841d16a2fa4241483bc87a6ff47649d096156",
+    "guard.log": "0ab5f906a02d033ac3beb55433ea30a87f8f7250013897c2c9d20a59a24d744f",
+    "no-z-fighting.log": "5145bd5fc67348179d350ccd07af1562c5c42d2c77979d5a66470025d32bd02a",
+    "build.log": "ee18ac62272081ed202f68e97551d6e969b57d21e7e76a8574a05f9a7d1129dd"
+  }
+}

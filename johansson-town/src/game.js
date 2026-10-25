@@ -76,6 +76,7 @@ import {createTownSections} from './render/town-sections.js';
 import {createShopStreetView} from './render/shop-street-view.js?konbini-1';
 import {createNeighbourChats,createChatBubble,clearChatLine} from './people/neighbour-chats.js?konbini-1';
 import {createFacing} from './people/facing.js';
+import {attentionRigOn} from './avatars/attention-rig.js';
 import {createIndoorResidents,IZAKAYA_GUEST_SEATS} from './people/indoor-residents.js?konbini-1';
 import {buildSuppliedRoom,suppliedRoomBoundsBlocked} from './world/supplied-rooms.js?snappy=1';
 import {travelProgress} from './progression/travel.js';
@@ -1084,7 +1085,8 @@ const neighbourChats=createNeighbourChats({world,observer:()=>player.position,bl
 const chatBubble=createChatBubble({camera,canvas,target:g=>characters.conversationTarget(g),blocked:chatBlocked,project:g=>projectSpeechActor(g)});
 // Whoever you are talking to turns to face you, unless they are mid-something, in
 // which case they answer over their shoulder. See people/facing.js.
-const facing=createFacing({world,getPlayerPosition:()=>player.position});
+const facing=createFacing({world,getPlayerPosition:()=>player.position,
+ getPlayerEyeHeight:attentionRigOn()?()=>seated?(parkSeat?.eyeY??player.position.y+1.15)-player.position.y:ensureJohansson().avatar.height*.92:undefined});
 let conversationLine=null;
 /**
  * Conversations are staged like Shenmue: the camera sits over Johansson's shoulder on

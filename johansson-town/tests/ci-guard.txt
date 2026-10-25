@@ -112,3 +112,6 @@ seawall-photo.test.mjs
 ribbon-dress.test.mjs
 eyes3d.test.mjs
 avatar-expressions.test.mjs
+
+# Original opt-in coordinated eye, neck and body attention.
+attention-rig.test.mjs

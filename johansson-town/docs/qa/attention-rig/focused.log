@@ -1,0 +1,43 @@
+✔ attention remains an explicit URL prototype and accepts an explicit animator option (105.860511ms)
+✔ eyes acknowledge first, the neck follows, and the chest joins a large turn last (47.118781ms)
+✔ the principal cast keeps attention within the specified joint and eye bounds (316.227506ms)
+✔ behind, distant and malformed targets cannot twist or poison a character (239.253515ms)
+✔ the same local target works under translated, rotated and scaled parents (61.171497ms)
+✔ release returns to neutral; a task takes immediate ownership without a stored turn (36.153106ms)
+✔ frame-rate variation keeps the settled result and per-step angular speed bounded (103.914018ms)
+✔ seated attention uses the actual head position, and occupied torsos stay still (83.115494ms)
+✔ performance poses, sleep and an explicit face direction retain priority (327.914811ms)
+✔ whole-body facing waits for the look, then turns; an occupied body remains fixed (0.864735ms)
+✔ ending a street-neighbour conversation releases its facing target (0.212288ms)
+✔ ambient conversations also wait for the look and use the seated partner actual head (87.082162ms)
+✔ ordinary URLs keep the previous animator behaviour (59.373004ms)
+✔ the rigged eyes are on unless the page asks for the painted ones (170.862341ms)
+✔ each eye sits on the head where the painter draws it, for all six residents (416.094235ms)
+✔ two eyes are one draw of a few hundred triangles, blended, writing no depth (265.848725ms)
+✔ every eye style has a shape for every drawn state: open eyes open, shut eyes shut (3.583685ms)
+✔ the painter leaves out the eyes the discs draw, and only those (42.585816ms)
+✔ gaze and blinks move the rigged eyes without repainting the face (47.838239ms)
+✔ someone mid-task answers over their shoulder, someone free does not (1.277943ms)
+✔ facing a point uses the same convention the town walks in (0.302303ms)
+✔ a turn takes the short way round and settles (0.295943ms)
+✔ being spoken to turns a free person all the way round (1.887726ms)
+✔ someone mid-task keeps their body where it was and only looks (0.979055ms)
+✔ speaking to a walking Thuan cannot turn her body away from her route (0.303475ms)
+✔ standing near someone earns a glance, not a pirouette (1.611122ms)
+✔ walking away is noticed: the look is dropped again (0.309703ms)
+✔ a look put there by the shop counter is left alone (0.589312ms)
+✔ a far-off crowd costs nothing and nobody moves (0.564656ms)
+✔ nobody outruns their own turn (0.136675ms)
+✔ Thuan forward-only travel rejects sideways and backward translation (0.129724ms)
+✔ nearby friends take turns, face each other, then release their schedules and cool down (5.507675ms)
+✔ player intervention and streaming cancel an exchange without stale talking flags (0.919357ms)
+✔ ambient bubble follows its speaker and hides behind walls or off screen (4.07518ms)
+✔ Thuan notices nearby customers, gives the till priority, and does not watch through furniture (2.948073ms)
+ℹ tests 35
+ℹ suites 0
+ℹ pass 35
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2037.919959

@@ -111,6 +111,7 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
   talking:!!(u.chat?.speaking||u.speakingUntil>now),
   expression:u.thuanExpression||feeling||(engaged?'smile':'neutral'),
   sleeping,conversing:!!(u.playerConversation||u.chat||u.playing),gaze:Array.isArray(u.lookTarget)?u.lookTarget:null,consumeElapsed:u.consumeElapsed,tipsy:u.tipsy||0,
+  attentionBusy:!!(u.restocking||u.shopReach||u.usingTownObject||u.roomTransition),
  });
  // A driver's hands are on the wheel, not hovering in front of it.
  const wheel=u.inVehicle&&entity.parent?.userData?.steeringWheel;

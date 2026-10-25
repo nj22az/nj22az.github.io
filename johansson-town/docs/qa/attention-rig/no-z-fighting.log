@@ -1,0 +1,21 @@
+✔ no two surfaces in Minato share a plane over more than 0.05 m² (the flashing the owner saw) (21.771681ms)
+✔ Sakura Shōten, its office storey and side walls: nothing over 0.01 m² flashes (0.283234ms)
+✔ the Minato izakaya and Sato Ramen: nothing over 0.01 m² flashes (0.405849ms)
+✔ Minato Police Station: nothing over 0.01 m² flashes (1.654031ms)
+✔ Nakamura Zenzai: nothing over 0.01 m² flashes (0.334672ms)
+✔ Harbour Park and Umi-no-yu's forecourt: nothing over 0.01 m² flashes (0.074772ms)
+✔ Nakamura Zenzai after hours: the shutter down over the counter shares no plane with the opening or the box (12663.479047ms)
+✔ Higa Liquor and the coin laundry: the shut front with its notice, and the turning machines share no plane (23272.342429ms)
+✔ the scan finds what it is for: a pane laid in a wall, and nothing where a decal is offset or a face is buried (1.749439ms)
+✔ Sakura’s office storey (office, rest room, kitchenette, hall and stair head): nothing over 0.0005 m² flashes (40.38832ms)
+✔ Sakura’s stockroom stair: the treads, the walls and the darkness they go into share no plane (127.978271ms)
+✔ the indoor scan catches the owner’s flicker: the old top landing laid in the hall’s floor, a plate 1.5 mm off its backing (31.750833ms)
+✔ station owner region detects a planted 0.04 m² pane 0.5 mm off its street wall (13950.555003ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 76319.536049

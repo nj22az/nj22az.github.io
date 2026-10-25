@@ -32,7 +32,7 @@ try{
  await context.addInitScript(()=>{localStorage.setItem('johansson-town-clock',JSON.stringify({start:'12:20',speed:1}));Element.prototype.requestFullscreen=async()=>{};});
  const page=await context.newPage();page.setDefaultTimeout(600000);
  page.on('pageerror',e=>report.errors.push(e.message));
- await page.goto(`http://127.0.0.1:${server.address().port}/johansson-town/?audit&visual-audit`);step('page loaded');
+ await page.goto(`http://127.0.0.1:${server.address().port}/johansson-town/?audit&visual-audit${args.includes('--attention-rig')?'&attention-rig':''}`);step('page loaded');
  await page.locator('#enter:not([disabled])').waitFor();step('island ready');
  await page.locator('#enter').click();
  await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_AUDIT__&&!window.__JOHANSSON_AUDIT__.blocked.catchingUp);step('playing');
@@ -41,6 +41,22 @@ try{
   await page.locator('#game').screenshot({path:resolve(out,name+'.png')});step('photographed '+name);};
  if(HERO){await page.evaluate(()=>window.__JOHANSSON_AUDIT__.setTime(10002*1440+12*60));await shot('sakura-current',{pos:[4,3.5,-36],at:[-12,2.8,-27.3]});}else{
  await shot('street-town-hall-gate',{pos:[20.5,1.7,21.5],at:[22.5,1.4,34]});
+ if(args.includes('--attention-rig')){
+  const probe=await page.evaluate(()=>{
+   const visible=g=>{for(let p=g;p;p=p.parent)if(!p.visible)return false;return true;};
+   const a=window.__JOHANSSON_AUDIT__,person=a.world.people.find(p=>!p.g.userData.indoors&&p.g.userData.character?.avatar&&visible(p.g.userData.character.avatar.root));
+   if(!person)throw Error('No resident avatar available for the compiled attention probe');
+   const actor=person.g.userData.character,avatar=actor.avatar,m=avatar.measure,anim=actor.animator;
+   const local=(x,y,z)=>avatar.root.localToWorld(avatar.bones.head.position.clone().set(x,y,z));
+   const target=local(1.3,m.headCentre+.25,2),samples=[];
+   for(let i=0;i<90;i++){anim.update(1/60,{gaze:target});if([4,11,74].includes(i))samples.push({frame:i+1,neck:avatar.bones.neck.rotation.y,eyes:[...avatar.faceState.look]});}
+   if(Math.abs(samples[2].neck)<.05)throw Error('Compiled resident did not use the attention neck layer');
+   const head=avatar.bones.head.localToWorld(avatar.bones.head.position.clone().set(0,m.headCentre-m.headY,0)),pos=local(0,m.headCentre+.04,1.8);
+   a.teleport(pos.x,pos.z);a.camera={pos:pos.toArray(),at:head.toArray()};a.render();
+   return {name:person.profile.name,samples,camera:a.camera,physicalDevice:false};
+  });
+  report.attention=probe;await page.waitForTimeout(1000);await page.evaluate(()=>window.__JOHANSSON_AUDIT__.render());await page.locator('#game').screenshot({path:resolve(out,'attention-resident.png')});step('compiled resident attention checked',{resident:probe.name});
+ }
  await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__;a.camera=null;await a.enter('community-kitchen');});
  await page.waitForFunction(()=>!window.__JOHANSSON_AUDIT__.blocked.roomLoading);step('entered the Community Hall');
  await shot('room-community-hall',{pos:[-1.5,1.6,2.2],at:[2,1,-1.5]});

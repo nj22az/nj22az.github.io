@@ -15,6 +15,7 @@ import {bodyVolume} from './build.js';
 import {storyProps,pocketSpot,PAPER,posedPoints} from './story-props.js';
 import {MUSIC_MOVES,musicPose} from './music-moves.js';
 import {EXPRESSIVE_POSES} from './expressive-poses.js';
+import {attentionRigOn,createAttentionRig} from './attention-rig.js';
 
 /**
  * Moves a Shimanchu. There are no animation clips: every pose is a handful of joint
@@ -341,8 +342,9 @@ export const EMOTION_GESTURE=Object.freeze({happy:'Hop',laugh:'Laugh',sad:'Slump
  *   talk (body-language.js). Off for the player's body, the photo studio and the maker,
  *   where somebody else says what the body does.
  */
-export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bowDepth=1,initialTime}={}){
+export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bowDepth=1,initialTime,attentionRig=attentionRigOn()}={}){
  const {bones,measure:m}=avatar;
+ const lookRig=attentionRig?createAttentionRig(avatar):null;
  const groundFeet=createFootGrounder(avatar),groundLying=createLieGrounder(avatar);
  const supportSeat=createSeatSupport(avatar),findUnderside=createUndersideFinder(avatar),findSoles=createSoleFinder(avatar);
  const style=bodyLanguage(avatar.recipe?.profile||{});
@@ -846,7 +848,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   let eyes=null;
   // The point looked at glides to a new person rather than jumping, and the look fades
   // in and out (and fades as they would have to turn right round), so a head never pops.
-  const wantGaze=!!(s.gaze&&!s.sleeping);
+  const wantGaze=!!(!lookRig&&s.gaze&&!s.sleeping);
   if(wantGaze){
    const g=s.gaze.isVector3?s.gaze:gazeLocal.set(...s.gaze);
    if(!hadGaze)gazeWorld.copy(g);else gazeWorld.lerp(g,1-Math.exp(-dt*8));
@@ -978,6 +980,13 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    R.rotation.x=th;R.position.y=THREE.MathUtils.lerp(standY,plankY,W);R.position.z=-h*Math.sin(th);plankTilt=true;
   }else if(plankTilt&&!lie){avatar.root.rotation.x=0;plankTilt=false;}
   storyAfter(dt,s);
+  if(lookRig){
+   // Work and authored performances retain head/hand contacts. A simple sit can
+   // still acknowledge a partner at their actual eye height.
+   const freePose=!s.pose||['Idle','Idle_Neutral','Sit','CounterIdle','Talk','Listen'].includes(s.pose);
+   const locked=!!(s.sleeping||s.lying||gesture||posed?.ramp>0||!freePose||consumption||kneel>0||s.headTo||headToW>.001);
+   eyes=lookRig.update(dt,s.gaze,{locked,chest:!moving&&!onChair&&!s.riding&&!s.driving&&!s.carrying&&!s.attentionBusy});
+  }
   // The face: blinks, words, glances, and whatever it is feeling.
   blinkIn-=dt;if(blinkIn<=0&&blinkT<0){blinkT=0;blinkIn=1.8+Math.random()*3.8;}
   // A blink closes in a frame or two, holds, and opens a little slower (rigged eyes draw every step; the painted ones

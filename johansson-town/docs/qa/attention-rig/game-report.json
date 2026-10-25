@@ -1,0 +1,82 @@
+{
+  "source": false,
+  "viewport": [
+    390,
+    844
+  ],
+  "physicalDevice": false,
+  "steps": [
+    {
+      "name": "page loaded",
+      "s": 0.4
+    },
+    {
+      "name": "island ready",
+      "s": 8.9
+    },
+    {
+      "name": "playing",
+      "s": 10.9
+    },
+    {
+      "name": "photographed street-town-hall-gate",
+      "s": 29
+    },
+    {
+      "name": "compiled resident attention checked",
+      "s": 44.5,
+      "resident": "Nhung"
+    },
+    {
+      "name": "entered the Community Hall",
+      "s": 44.5
+    },
+    {
+      "name": "photographed room-community-hall",
+      "s": 56.5
+    }
+  ],
+  "errors": [],
+  "attention": {
+    "name": "Nhung",
+    "samples": [
+      {
+        "frame": 5,
+        "neck": 0,
+        "eyes": [
+          0.8192834728526788,
+          -0.43194093096389996
+        ]
+      },
+      {
+        "frame": 12,
+        "neck": 0.14689750782576574,
+        "eyes": [
+          0.6875870683178933,
+          -0.32741846514183154
+        ]
+      },
+      {
+        "frame": 75,
+        "neck": 0.31977593337040305,
+        "eyes": [
+          -0.020145640495964054,
+          -0.07805908227958283
+        ]
+      }
+    ],
+    "camera": {
+      "pos": [
+        4.3,
+        1.3683202829757761,
+        32.2
+      ],
+      "at": [
+        4.267367646055345,
+        1.328532873522507,
+        34.03854170741842
+      ]
+    },
+    "physicalDevice": false
+  }
+}
