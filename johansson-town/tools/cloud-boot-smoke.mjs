@@ -1,7 +1,7 @@
 // Boots the whole game in a cloud session's software Chromium (swiftshader), presses START, and photographs one street
 // view and one room through the ?audit harness, timing each step: the check that the real game, not a stripped-down
 // scene, can be looked at from a cloud session.
-//   node tools/cloud-boot-smoke.mjs [--source] [out-dir]
+//   node tools/cloud-boot-smoke.mjs [--source] [--eyes3d] [out-dir]   (--eyes3d: the rigged eyes, src/avatars/eyes3d.js)
 // The built runtime by default (rebuild it first: npm run build:runtime); --source serves the source modules instead.
 // About 35 s to "Island ready" and 60 s to play on a 4-core cloud machine. Run it alone: browsers or test suites
 // running beside it starve it, and the island then takes many minutes to draw.
@@ -11,7 +11,7 @@ import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {resolve,dirname,extname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..'),site=resolve(root,'..');
-const args=process.argv.slice(2),SOURCE=args.includes('--source'),HERO=args.includes('--world-hero');
+const args=process.argv.slice(2),SOURCE=args.includes('--source'),HERO=args.includes('--world-hero'),EYES3D=args.includes('--eyes3d');
 const out=resolve(args.find(a=>!a.startsWith('--'))||resolve(root,'output/cloud-boot-smoke'));await mkdir(out,{recursive:true});
 const TYPES={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.css':'text/css','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.glb':'model/gltf-binary','.svg':'image/svg+xml','.hdr':'application/octet-stream','.wasm':'application/wasm'};
 const sourcePage=html=>html.replace(/<link rel="modulepreload" data-town-runtime[^>]*>\n?/g,'')
@@ -32,7 +32,7 @@ try{
  await context.addInitScript(()=>{localStorage.setItem('johansson-town-clock',JSON.stringify({start:'12:20',speed:1}));Element.prototype.requestFullscreen=async()=>{};});
  const page=await context.newPage();page.setDefaultTimeout(600000);
  page.on('pageerror',e=>report.errors.push(e.message));
- await page.goto(`http://127.0.0.1:${server.address().port}/johansson-town/?audit&visual-audit`);step('page loaded');
+ await page.goto(`http://127.0.0.1:${server.address().port}/johansson-town/?audit&visual-audit${EYES3D?'&eyes3d':''}`);step('page loaded');
  await page.locator('#enter:not([disabled])').waitFor();step('island ready');
  await page.locator('#enter').click();
  await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_AUDIT__&&!window.__JOHANSSON_AUDIT__.blocked.catchingUp);step('playing');
@@ -41,6 +41,8 @@ try{
   await page.locator('#game').screenshot({path:resolve(out,name+'.png')});step('photographed '+name);};
  if(HERO){await page.evaluate(()=>window.__JOHANSSON_AUDIT__.setTime(10002*1440+12*60));await shot('sakura-current',{pos:[4,3.5,-36],at:[-12,2.8,-27.3]});}else{
  await shot('street-town-hall-gate',{pos:[20.5,1.7,21.5],at:[22.5,1.4,34]});
+ // The rigged eyes, close: a lens in front of the player's face (the third-person view sees the back of the head).
+ if(EYES3D){const lens=await page.evaluate(()=>{const {position:[x,y,z],yaw}=window.__JOHANSSON_AUDIT__.player,f=[-Math.sin(yaw),-Math.cos(yaw)];return {pos:[x+f[0]*1.2,y+1.55,z+f[1]*1.2],at:[x,y+1.45,z]};});await shot('player-face',lens);}
  await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__;a.camera=null;await a.enter('community-kitchen');});
  await page.waitForFunction(()=>!window.__JOHANSSON_AUDIT__.blocked.roomLoading);step('entered the Community Hall');
  await shot('room-community-hall',{pos:[-1.5,1.6,2.2],at:[2,1,-1.5]});

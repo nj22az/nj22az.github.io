@@ -11,6 +11,7 @@ import {mergeGeometries,mergeVertices} from '../../vendor/BufferGeometryUtils.js
 import {normalizeRecipe,DRESS_BOTTOMS} from './recipe.js';
 import {drawFace,faceLayout,INK_NOSES,BEARD_SHELL,drawBeardShell} from './face.js';
 import {buildFaceObjects} from './face-objects.js';
+import {buildEyes3d,eyes3dRequested} from './eyes3d.js';
 import {beardSpec} from './beard-mesh.js';
 import {headProfile,shapeHeadPoint} from './head-profile.js';
 import {longBraidPoints} from './braid-path.js';
@@ -1789,9 +1790,9 @@ function fitFlags(parts){const flags=new Float32Array(vertexCount(parts));let at
 
 /**
  * @param {object} input recipe (anything; it is normalized)
- * @param {{shadows?:boolean,faceSize?:number}} [options]
+ * @param {{shadows?:boolean,faceSize?:number,eyes3d?:boolean}} [options] eyes3d: rigged eyes (eyes3d.js), on with `?eyes3d`
  */
-export function buildAvatar(input,{shadows=true,faceSize=256}={}){
+export function buildAvatar(input,{shadows=true,faceSize=256,eyes3d=eyes3dRequested()}={}){
  const recipe=normalizeRecipe(input),m=measure(recipe);
  const swing=springRest(recipe,m),rest={...restPositions(m),...swing.rest},bones={},list=BONES.map(name=>{const b=new THREE.Bone();b.name=name;bones[name]=b;return b;});
  for(const name of BONES){
@@ -1845,6 +1846,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  face.head.castShadow=shadows;face.head.receiveShadow=true;
  bones.head.add(face.head);
  const faceObjects=buildFaceObjects(recipe,m,{shadows});bones.head.add(faceObjects);
+ const eyes=eyes3d?buildEyes3d(recipe,m):null;if(eyes)bones.head.add(eyes.mesh);
  const root=new THREE.Group();root.name='Shimanchu · '+(recipe.name||'resident');
  // Keep the skeleton and face visible when a clothing mesh is swapped out.
  root.add(body,bones.root);root.rotation.y=Math.PI;
@@ -1948,7 +1950,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  }
 
  const avatar={
-  recipe,measure:m,root,body,bones,face,height:m.H,outfit:'clothes',hasHat,garment:material.userData.garment,springSetup:swing,springs:null,
+  recipe,measure:m,root,body,bones,face,eyes3d:eyes,height:m.H,outfit:'clothes',hasHat,garment:material.userData.garment,springSetup:swing,springs:null,
   setOpenHands(on){on=!!on;if(handsOpen===on)return;handsOpen=on;geometry.attributes.position.array.set(on?openFingerPositions:closedFingerPositions,fingerStart*3);geometry.attributes.position.needsUpdate=true;},
   /** Hat on or off. Off, it is somebody else's job to show where it went (buildHatProp). */
   setHat(on){if(seeThrough)seeThrough.visible=!!on;geometry.setDrawRange(0,on||!hasHat?Infinity:hatStart);if(hairCovered!==!!on){hairCovered=!!on;if(hatHairRanges.length)applyHair(mainHair);}},
@@ -1972,10 +1974,13 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
   /** Repaint the face if what it is doing has changed. */
   paintFace(state){
    const s=avatar.faceState,n={...s,...state};
-   const key=n.expression+'|'+(n.blink>.5?1:0)+'|'+(n.talk>.5?1:0)+'|'+Math.round(n.look[0]*2)+','+Math.round(n.look[1]*2);
+   // Rigged eyes follow every call (a gaze, a blink: no repaint); the canvas leaves out the eyes they draw.
+   const skipEyes=!!eyes?.update(n);
+   const key=skipEyes?n.expression+'|3d|'+(n.talk>.5?1:0):n.expression+'|'+(n.blink>.5?1:0)+'|'+(n.talk>.5?1:0)+'|'+Math.round(n.look[0]*2)+','+Math.round(n.look[1]*2);
+   if(skipEyes)Object.assign(s,n);
    if(key===avatar.faceKey)return false;
    avatar.faceKey=key;Object.assign(s,n);
-   drawFace(face.ctx,recipe,{...n,size:face.canvas.width,objects:true});face.texture.needsUpdate=true;
+   drawFace(face.ctx,recipe,{...n,size:face.canvas.width,objects:true,skipEyes});face.texture.needsUpdate=true;
    if(face.beard){drawBeardShell(face.beard.ctx,recipe,n);face.beard.texture.needsUpdate=true;}
    return true;
   },
@@ -2094,7 +2099,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
    if(panelBody){panelBody.geometry.dispose();panelBody.material.map?.dispose();panelBody.material.dispose();panelBody.customDepthMaterial?.dispose();panelOutline.material.dispose();}
    faceObjects.userData.dispose();
    body.customDepthMaterial?.dispose();if(body.towelFit)outline.material.dispose();
-   geometry.dispose();material.dispose();material.map?.dispose();face.texture.dispose();face.head.geometry.dispose();face.head.material.dispose();
+   geometry.dispose();material.dispose();material.map?.dispose();face.texture.dispose();face.head.geometry.dispose();face.head.material.dispose();eyes?.dispose();
    if(alternativeBody){alternativeBody.geometry.dispose();alternativeBody.material.map?.dispose();alternativeBody.material.dispose();}
    for(const [mesh,line] of [[swimBody,swimOutline],[towelBody,towelOutline],[afterbathBody,afterbathOutline]]){if(!mesh)continue;mesh.geometry.dispose();mesh.material.map?.dispose();mesh.material.dispose();mesh.customDepthMaterial?.dispose();if(mesh.towelFit)line.material.dispose();}
   },

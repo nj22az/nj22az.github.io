@@ -1,0 +1,54 @@
+# Handover: rigged cartoon eyes in World, behind `?eyes3d` (25 October 2026)
+
+Step 1 of the avatar remake (the creator: "remake the characters in the game with Blender … improve the current
+avatars: eyes, neck, hands, feet, hair, clothes"; "We are not looking for uncanny valley we want rigged cartoon eyes"; the
+cosy-anime critique of 13:19). Plan and Blender proofs: studio repo `nj22az/jojo`, `3d/cast/avatars-cad/HANDOFF.md`.
+
+**State: built and checked on branch `claude/avatar-remake-continue-llretw`; off by default; not merged, not published.
+Waiting for the creator's approval of the look before it is switched on.**
+
+## What it is
+
+`src/avatars/eyes3d.js`: one shallow curved disc per eye on the head bone (both eyes one mesh, one material, 480
+triangles), laid where the painter draws each eye (the head's own projection, `face-objects.js faceObjectPoint`), 1 mm off
+the skin and about 4 mm at the middle of the eye. A fragment shader draws the eye in the painter's own units
+(`face.js drawEye`): each style's sizes, the dark ovals (with a little of the eye colour low in them) and the white eyes
+(iris gradient, limbal ring, pupil), **two highlights**, a **thicker curved upper lash line** with an outer flick, a soft
+warm line on the outer third of the lower lid, the lid shapes of each feeling (cross, sad with a tear, shy, smiling, daze,
+deadpan, the big reaction eyes) and a **2D blink**: the lash line pulled down into the closed ∪ (happy: the ∩).
+
+- Gaze and blinks are numbers on the material: no repaint of the face canvas (`paintFace` keys the canvas without them
+  while the discs draw). The iris slides; per-eye blinks from a performance (`blinkLeft/Right`) are each eye's own.
+- The disc draws only the eye: transparent, no depth write, `renderOrder -1`. The ink pass (which reads depth), the Looks'
+  normals buffer (`look-buffers.js` skips materials without depth) and everything painted round the eyes (brows, the
+  nose bump) are exactly as before; glasses' lenses and a painted beard still draw over the eyes. An earlier version that
+  painted skin round the eye left rim dots, nudged brows a pixel and nicked the nose bump: found by a render diff, fixed.
+- The painter keeps the eyes the discs do not draw (stars, hearts, spirals, pain, wink, smug, droop, dreamy, and the
+  `squint` style in every feeling): the discs hide and the canvas paints them, as today.
+- `animate.js`: a blink now closes over 0.04 s, holds and opens over 0.06 s (fractional values); the painted eyes are shut
+  while it is past half, about 0.126 s against the 0.13 s before. Everything else that reads `blink` thresholds at 0.5.
+- Switch: `buildAvatar(recipe,{eyes3d})`, default `eyes3dRequested()` = the page's `?eyes3d` (World, Studio, any page that
+  builds avatars). The GLB export (`export.js`) always builds with painted eyes.
+
+## Checks run (25 October)
+
+- `node --test tests/eyes3d.test.mjs`: 6/6 (off by default; placement against the head's own texture coordinates for all
+  six residents, within 1.5 canvas units; 1–8 mm off the skin; ≤ 600 triangles, one draw, no depth write; a shape for
+  every style × drawn state; the canvas skips exactly the eyes the discs draw, for every expression; gaze and blinks
+  reach the shader without a repaint). Added to `tests/ci-guard.txt`.
+- `FACE_BROWSER_TEST=1 FACE_EYES3D=1 node --test tests/face-lighting.browser.mjs`: pass; minimum eye contrast in dim light
+  over every Look 0.0646, the same as the painted eyes (floor 0.045).
+- `EYES_BROWSER_TEST=1 node --test tests/eyes3d.browser.mjs`: the six residents front and three-quarter in the ink
+  pipeline; the eyes are drawn and no pixel outside them changes (result in the commit that adds this note).
+- `node tools/eyes3d-sheet.mjs`: a sheet per resident (painted today, rigged, four looks, half and full blink,
+  three-quarter, side, eleven feelings, dizzy painted). Copies for the creator: jojo `3d/cast/avatars-cad/eyes-game/`.
+  Every cell looked at: no clipping, glasses in front, Vy's fringe clear, Thuan's heavy lid at its painted height.
+- Full CI guard and `node tools/cloud-boot-smoke.mjs --source --eyes3d`: results in the commit that adds this note.
+- Not checked: a physical phone or a GPU browser (software GL only); the Studio avatar creator page with `?eyes3d`.
+
+## Next
+
+1. The creator judges `eyes-game/*.jpg` (or World with `?eyes3d`). Notes go into `eyeShape` (sizes, lids, lash weight).
+2. On approval: make the switch default on (`eyes3dRequested` → true, keeping `?eyes3d=0` to compare), rebuild the runtime,
+   run the guard, publish.
+3. Then the remake's step 2, the neck (a drawing first), as the jojo handover lists.
