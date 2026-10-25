@@ -4,7 +4,7 @@ Step 1 of the avatar remake (the creator: "remake the characters in the game wit
 avatars: eyes, neck, hands, feet, hair, clothes"; "We are not looking for uncanny valley we want rigged cartoon eyes"; the
 cosy-anime critique of 13:19). Plan and Blender proofs: studio repo `nj22az/jojo`, `3d/cast/avatars-cad/HANDOFF.md`.
 
-**State: built and checked on branch `claude/avatar-remake-continue-llretw`; off by default; not merged, not published.
+**State: built and checked on branch `claude/avatar-remake-continue-llretw` (runtime rebuilt); off by default; not merged, not published.
 Waiting for the creator's approval of the look before it is switched on.**
 
 ## What it is
@@ -38,12 +38,19 @@ deadpan, the big reaction eyes) and a **2D blink**: the lash line pulled down in
   reach the shader without a repaint). Added to `tests/ci-guard.txt`.
 - `FACE_BROWSER_TEST=1 FACE_EYES3D=1 node --test tests/face-lighting.browser.mjs`: pass; minimum eye contrast in dim light
   over every Look 0.0646, the same as the painted eyes (floor 0.045).
-- `EYES_BROWSER_TEST=1 node --test tests/eyes3d.browser.mjs`: the six residents front and three-quarter in the ink
-  pipeline; the eyes are drawn and no pixel outside them changes (result in the commit that adds this note).
+- `EYES_BROWSER_TEST=1 TOWN_CHROMIUM_PATH=/opt/pw-browsers/chromium node --test tests/eyes3d.browser.mjs`: pass. The six
+  residents front and three-quarter in the ink pipeline: 3,854–15,009 eye pixels drawn per view, **0 pixels changed
+  outside the eyes**. (After `npm ci` the local Playwright wants its own browser; point it at the container's.)
 - `node tools/eyes3d-sheet.mjs`: a sheet per resident (painted today, rigged, four looks, half and full blink,
   three-quarter, side, eleven feelings, dizzy painted). Copies for the creator: jojo `3d/cast/avatars-cad/eyes-game/`.
   Every cell looked at: no clipping, glasses in front, Vy's fringe clear, Thuan's heavy lid at its painted height.
-- Full CI guard and `node tools/cloud-boot-smoke.mjs --source --eyes3d`: results in the commit that adds this note.
+- Full CI guard (`node tools/ci-guard.mjs`, 83 files): 419/422 in one run. The three failures, none in avatar code, pass on
+  rerun: `english-language` (this container had no `node_modules`; passes after `npm ci`), `runtime-package` (passes after
+  `npm run build:runtime`, committed), `no-z-fighting` (the town scan ran out of node's default 2 GB heap here; 13/13
+  with `NODE_OPTIONS=--max-old-space-size=6144`, as on CI's larger runner).
+- `node tools/cloud-boot-smoke.mjs --eyes3d` on the rebuilt runtime (phone viewport, third person): island ready in 31 s,
+  no page errors, street, room and `player-face` photographed; Johansson's eyes in the game: jojo
+  `3d/cast/avatars-cad/eyes-game/Johansson-in-game.jpg`.
 - Not checked: a physical phone or a GPU browser (software GL only); the Studio avatar creator page with `?eyes3d`.
 
 ## Next

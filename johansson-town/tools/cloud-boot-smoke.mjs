@@ -29,7 +29,7 @@ const t0=Date.now(),at=()=>+((Date.now()-t0)/1000).toFixed(1),report={source:SOU
 const step=(name,extra={})=>{report.steps.push({name,s:at(),...extra});console.log(at()+'s',name);};
 try{
  const context=await browser.newContext({viewport:HERO?{width:1600,height:1000}:{width:390,height:844},serviceWorkers:'block'});
- await context.addInitScript(()=>{localStorage.setItem('johansson-town-clock',JSON.stringify({start:'12:20',speed:1}));Element.prototype.requestFullscreen=async()=>{};});
+ await context.addInitScript(()=>{localStorage.setItem('johansson-town-clock',JSON.stringify({start:'12:20',speed:1}));if(new URLSearchParams(location.search).has('eyes3d'))localStorage.setItem('johansson-town-view','third');Element.prototype.requestFullscreen=async()=>{};});
  const page=await context.newPage();page.setDefaultTimeout(600000);
  page.on('pageerror',e=>report.errors.push(e.message));
  await page.goto(`http://127.0.0.1:${server.address().port}/johansson-town/?audit&visual-audit${EYES3D?'&eyes3d':''}`);step('page loaded');
@@ -41,8 +41,9 @@ try{
   await page.locator('#game').screenshot({path:resolve(out,name+'.png')});step('photographed '+name);};
  if(HERO){await page.evaluate(()=>window.__JOHANSSON_AUDIT__.setTime(10002*1440+12*60));await shot('sakura-current',{pos:[4,3.5,-36],at:[-12,2.8,-27.3]});}else{
  await shot('street-town-hall-gate',{pos:[20.5,1.7,21.5],at:[22.5,1.4,34]});
- // The rigged eyes, close: a lens in front of the player's face (the third-person view sees the back of the head).
- if(EYES3D){const lens=await page.evaluate(()=>{const {position:[x,y,z],yaw}=window.__JOHANSSON_AUDIT__.player,f=[-Math.sin(yaw),-Math.cos(yaw)];return {pos:[x+f[0]*1.2,y+1.55,z+f[1]*1.2],at:[x,y+1.45,z]};});await shot('player-face',lens);}
+ // The rigged eyes, close: in third person (set above), a lens a metre in front of Johansson's face, along his head's facing.
+ if(EYES3D){const lens=await page.evaluate(()=>{const head=window.__JOHANSSON_MODEL__.avatar.face.head;head.updateWorldMatrix(true,false);const e=head.matrixWorld.elements,l=Math.hypot(e[8],e[9],e[10]),f=[e[8]/l,e[9]/l,e[10]/l];
+  return {pos:[e[12]+f[0],e[13]+f[1]+.05,e[14]+f[2]],at:[e[12],e[13]-.02,e[14]]};});await shot('player-face',lens);}
  await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__;a.camera=null;await a.enter('community-kitchen');});
  await page.waitForFunction(()=>!window.__JOHANSSON_AUDIT__.blocked.roomLoading);step('entered the Community Hall');
  await shot('room-community-hall',{pos:[-1.5,1.6,2.2],at:[2,1,-1.5]});

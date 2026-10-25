@@ -10,7 +10,7 @@ test('the rigged eyes draw the eyes and change nothing else on the face',{skip:!
  const server=await serveGame(resolve(new URL('..',import.meta.url).pathname));let browser;
  try{
   browser=await playwright.chromium.launch({executablePath:process.env.TOWN_CHROMIUM_PATH,args:['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
-  const page=await browser.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error'||/shader|program/i.test(m.text()))errors.push(m.text());});
+  const page=await browser.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if((m.type()==='error'||/shader|program/i.test(m.text()))&&!m.location().url?.endsWith('/favicon.ico'))errors.push(m.text());});
   await page.goto(server.url+'src/avatars/face.js');
   const rows=await page.evaluate(async()=>{
    const T=await import('/johansson-town/vendor/three.module.js'),{buildAvatar}=await import('/johansson-town/src/avatars/build.js'),{recipeFor}=await import('/johansson-town/src/avatars/cast.js');
