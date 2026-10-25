@@ -2,8 +2,10 @@
 
 ## Delivery state
 
-Prepared and locally verified; publication sign-off will be recorded here after
-GitHub Pages succeeds and the public files match the implementation.
+**Published to main as `f83e16d912f02bcbc7862e5b71c05245e736981c`.**
+[GitHub Pages run 40163517073](https://github.com/nj22az/nj22az.github.io/actions/runs/40163517073)
+completed successfully. Live HTML, JSON, CSV and map JavaScript match the tested
+implementation byte for byte. The publication report records their hashes.
 
 ## Final owner rules
 
@@ -76,7 +78,7 @@ without extra parking receipts or awkward access.
 
 ## Next actions and limits
 
-Publish and verify deployment as below. Country audit remains a growing batch;
+Publication is verified. Country audit remains a growing batch;
 expand the remaining Swedish/Norwegian/Finnish Scandics with the same evidence rule.
 Resolve hotel receipt inclusion directly before promoting any paid entry to Easy.
 Recheck Best Western access after works. Finnish free shortlist remains research

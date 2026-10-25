@@ -72,7 +72,7 @@ The long walk and construction-site experience remain attributed to the owner, n
 claimed as independently measured. No exact stay date, distance or construction
 completion date is supplied. Official Best Western property 96106 supplies coordinates.
 The dashboard retains free parking / zero fee and applies **Avoid · Difficult access**.
-This brings the register to 59 hotels: 32 green, 0 Easy, 27 Avoid. 33 properties have
+This brings the register to 60 hotels: 33 green, 0 Easy, 27 Avoid. 34 properties have
 a verified free parking option; one is excluded from green for difficult access.
 
 ## Final receipt rule and Scandic Odense

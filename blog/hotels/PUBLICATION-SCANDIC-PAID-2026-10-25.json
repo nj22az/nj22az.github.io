@@ -1,5 +1,5 @@
 {
-  "status": "locally-verified-publication-pending",
+  "status": "published-and-verified",
   "checkedOn": "2026-10-25",
   "hotels": 60,
   "green": 33,
@@ -29,5 +29,43 @@
     "blog/hotels/index.html": "d7896d2fa850319c2cd8048b228d050e1161fa190a0276208bb07bbc0a50069f",
     "blog/hotels/hotel-reviews.csv": "c707eeac0de59824dc938504ece72b657adba1ca7908898c35a674a4fcb34fcb",
     "blog/hotels/hotels-map.js": "182dd4e8ee033952cb06c6e0664e6b14d2367f6e80d888720c1ca82b36ac5222"
-  }
+  },
+  "implementationCommit": "f83e16d912f02bcbc7862e5b71c05245e736981c",
+  "branch": "main",
+  "pagesRun": {
+    "id": 40163517073,
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/40163517073"
+  },
+  "publicFiles": [
+    {
+      "path": "blog/hotels/index.html",
+      "url": "https://nj22az.github.io/blog/hotels/index.html?verify=f83e16d912f0",
+      "match": true,
+      "sha256": "d7896d2fa850319c2cd8048b228d050e1161fa190a0276208bb07bbc0a50069f",
+      "bytes": 448405
+    },
+    {
+      "path": "blog/hotels/hotels.json",
+      "url": "https://nj22az.github.io/blog/hotels/hotels.json?verify=f83e16d912f0",
+      "match": true,
+      "sha256": "4c355f925f36bfe4941a6a704a63538291f914b83243aee494e2a8a4306478da",
+      "bytes": 181471
+    },
+    {
+      "path": "blog/hotels/hotel-reviews.csv",
+      "url": "https://nj22az.github.io/blog/hotels/hotel-reviews.csv?verify=f83e16d912f0",
+      "match": true,
+      "sha256": "c707eeac0de59824dc938504ece72b657adba1ca7908898c35a674a4fcb34fcb",
+      "bytes": 83781
+    },
+    {
+      "path": "blog/hotels/hotels-map.js",
+      "url": "https://nj22az.github.io/blog/hotels/hotels-map.js?verify=f83e16d912f0",
+      "match": true,
+      "sha256": "182dd4e8ee033952cb06c6e0664e6b14d2367f6e80d888720c1ca82b36ac5222",
+      "bytes": 10564
+    }
+  ]
 }
