@@ -80,7 +80,8 @@ function cylinderAt(parent,name,mat,r,len,[u,v,d],axis='z'){
 }
 
 let headerTexture;
-function headerMaterial(){
+function headerMaterial(map){
+ if(map)return new THREE.MeshStandardMaterial({map,color:0xffffff,roughness:.5,metalness:.15});
  const mat=new THREE.MeshStandardMaterial({color:0x4e6858,roughness:.5,metalness:.4});
  if(globalThis.document?.baseURI){
   headerTexture??=new THREE.TextureLoader().load(assetURL(N.header.image),t=>{t.colorSpace=THREE.SRGBColorSpace;t.needsUpdate=true;});
@@ -94,7 +95,7 @@ function headerMaterial(){
  * The case, hood, posts and hardware, as one group in its place. The papers are added by their own modules at
  * WOODLAND_PLACE and FLYER_PLACE. Returns the town's prop shape: {object, collider}.
  */
-export function buildHarbourNoticeboard(){
+export function buildHarbourNoticeboard({spec:N=NOTICEBOARD,headerMap}={}){
  const g=new THREE.Group();g.name='Minato harbour noticeboard (JW-NB rev A)';g.position.set(...N.origin);g.rotation.y=N.yaw;
  const m=Object.fromEntries(Object.entries(MAT).map(([k,f])=>[k,f()]));
  const {cabinet:C,frame:F}=N,[U0,U1]=C.u,[V0,V1]=C.v,[D0,D1]=C.d;
@@ -106,7 +107,7 @@ export function buildHarbourNoticeboard(){
  slab(g,'Noticeboard right stile',m.frame,[sU1,U1],[V0,vHead0],[backFront,D1]);
  slab(g,'Noticeboard sill rail',m.frame,[sU0,sU1],[V0,vWin0],[backFront,D1]);
  slab(g,'Noticeboard transom',m.frame,[sU0,sU1],[vWin1,vHead0],[backFront,D1]);
- const header=new THREE.Mesh(new THREE.BoxGeometry(mm(U1-U0),mm(F.header),mm(D1-backFront)),[m.frame,m.frame,m.frame,m.frame,headerMaterial(),m.frame]);
+ const header=new THREE.Mesh(new THREE.BoxGeometry(mm(U1-U0),mm(F.header),mm(D1-backFront)),[m.frame,m.frame,m.frame,m.frame,headerMaterial(headerMap),m.frame]);
  header.name='Noticeboard header plate · みなと掲示板 / MINATO NOTICEBOARD';header.position.set(0,mm(vHead0+vHead1)/2,mm(backFront+D1)/2);g.add(header);
  slab(g,'Noticeboard top rail',m.frame,[U0,U1],[vHead1,V1],[backFront,D1]);
  // the pinboard: a backing slab, and its face with openings where the papers lie (no paper sits on a covered face)
@@ -160,5 +161,5 @@ export function buildHarbourNoticeboard(){
  for(const o of g.children)if(o.isMesh){o.castShadow=o.material!==m.acrylic;o.receiveShadow=true;}
  g.userData.noticeboard=N;
  const [pw,pd]=N.envelope.plan;
- return {object:g,collider:{id:'harbour-noticeboard',x:N.origin[0],z:N.origin[2],w:mm(pw),d:mm(pd)}};
+ return {object:g,collider:{id:'harbour-noticeboard',x:N.origin[0],z:N.origin[2],w:mm(pw),d:mm(pd),yaw:N.yaw}};
 }

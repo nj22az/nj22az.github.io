@@ -9,6 +9,7 @@ import {GROUND} from '../../render/ground-palette.js';
 const EAST_LAWN_SOUTH=-38;
 import * as THREE from '../../../vendor/three.module.js';
 import {createKit,rng} from './kit.js';
+import {buildAuctionBoard} from '../auction-board.js';
 import {buildWestShore} from '../west-shore.js';
 import {fishAt} from './fish.js';
 import {createMaterials} from '../../render/materials.js';
@@ -77,7 +78,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes:()=>world.minutes??720});
  buildEastBack(kit,solid,{anchor,inspect,onAction});
  if(GATEBALL_ACTIVE)buildGateball(kit,solid,{anchor,inspect,onAction});
- buildEastQuay(kit,solid,{anchor,inspect,onAction,vending,eastQuayBoat:(x,z,ry,opts)=>{
+ buildEastQuay(kit,solid,{group,anchor,inspect,onAction,vending,eastQuayBoat:(x,z,ry,opts)=>{
   // Her bow along the plan's +x turned by ry (as props.js drew her); she lies quay side to, her lines to the kerb.
   const face=EAST_QUAY.minZ-.45,side=Math.cos(ry)>0?-1:1,gap=face-(z+opts.beam/2);
   const boat=buildFishingBoat({...opts,shadows,name:opts.look.name,quayFenders:{side,radius:Math.min(.22,gap/2)}});boat.position.set(x,SEA_LEVEL,z);boat.rotation.y=ry+Math.PI/2;group.add(boat);boat.updateMatrixWorld(true);
@@ -443,7 +444,7 @@ export const AUCTION_VENDING=Object.freeze({x:EAST_QUAY.ice.minX-.05-.03-VENDING
  who:'the fishermen up from the boats, the ice plant’s men and the auction’s buyers',
  why:'Machines stand against a wall, on somebody’s supply: here the ice plant’s, on its west wall where the lane from the boats meets the walk to the gate. The boats are in by five and the bell goes at six, so a hot J-Coffee before it and a cold one after the floor is hosed. North of the ice door, so the forklift’s run to the boats stays clear; off the auction floor, which is for the catch.'});
 
-function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending,eastQuayBoat}){
+function buildEastQuay(kit,solid,{group,anchor,inspect,onAction,vending,eastQuayBoat}){
  const Q=EAST_QUAY,S=Q.shed,I=Q.ice,lane=GROUND_LAYER.apron;
  // The apron, the gate's paving and the quay's coping are the harbour's ground (ground-plan-harbour.js), run on east
  // to the oil jetty; here the edge's collider, its bollards and the tyres hung on its face. East of x 41.4 the walkable
@@ -481,8 +482,8 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending,eastQuayBoat})
  }
  solid({id:'auction-catch',x:S.minX+1.2+2.75,z:S.minZ+2+1.8,w:6.4,d:4.2,height:.5});
  kit.box(.6,.9,.6,S.maxX-1.2,.55,S.minZ+1.2,0xc9cdd0,{finish:'metal'});
- kit.box(1.6,1,.08,S.maxX-.3,1.7,(S.minZ+S.maxZ)/2,0x2c3a33,{ry:Math.PI/2});
- kit.sign(poster({title:"Today's auction",lines:["Maguro ¥2,800","Gurukun ¥900","Irabuchā ¥1,200","Sēika ¥1,500"],bg:'#2c3a33',ink:'#f2efe4',band:'#8a3b2e'}),1.1,1.5,S.maxX-.36,1.75,(S.minZ+S.maxZ)/2,{ry:-Math.PI/2,name:'auction prices'});
+ // The same supported, glazed cabinet as the harbour noticeboard; both posts meet the auction floor.
+ const board=buildAuctionBoard();group.add(board.object);solid(board.collider);
  inspect((S.minX+S.maxX)/2,1.2,S.maxZ+1,'Inspect the auction shed',"Minato fish auction · Auction market",
   'The boats are in by five and the auction is at six: a bell, a man with a clipboard shouting numbers too fast for anyone but the buyers, and a floor hosed down by seven. What is left in the crates went unsold, and will be somebody\'s supper: gurukun, Okinawa\'s own red fish; irabuchā, the blue parrotfish; mībai and shichūmachi. The maguro went first, and so did the sēika, a diamond squid the size of a cat.');
  // The ice plant: a tall concrete block with its chute swung out over the quay.

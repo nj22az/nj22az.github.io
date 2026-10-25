@@ -195,3 +195,25 @@ test('the registered desktop document origin takes precedence over the URL parse
  dom.message(frame,'johansson-diorama-ready');assert.equal(frame.getAttribute('aria-busy'),'false');
  dom.message(frame,'johansson-diorama-close');assert.equal(frame.removed,true);assert.equal(dom.acts.paused,false);
 });
+
+test('fish auction reuses the supported cabinet with prices in its glazing and posts on the shed floor',async()=>{
+ installDOM();
+ const {buildAuctionBoard,AUCTION_BOARD:N}=await import('../src/world/auction-board.js');
+ const {GROUND_LAYER}=await import('../src/world/ground-layers.js');
+ const {EAST_QUAY}=await import('../src/world/okinawa/layout.js');
+ const {object:g,collider:c}=buildAuctionBoard();g.updateMatrixWorld(true);
+ for(const side of ['left','right']){
+  const post=new THREE.Box3().setFromObject(g.getObjectByName(`Noticeboard ${side} post`));
+  assert.ok(Math.abs(post.min.y-(GROUND_LAYER.apron+.1-.005))<1e-6);
+ }
+ assert.equal(c.yaw,-Math.PI/2);assert.equal(c.id,'auction-price-board');
+ const box=new THREE.Box3().setFromObject(g);
+ assert.ok(box.max.x<EAST_QUAY.shed.maxX,'whole assembly stays on the auction floor');
+ assert.ok(box.min.x>EAST_QUAY.shed.minX+7.06,'clear of the catch collider');
+ for(const [name,side] of [['Auction prices','left'],['Auction hours','right']]){
+  const paper=g.getObjectByName(name),{width,height}=paper.geometry.parameters,s=N.sight[side];
+  assert.ok(paper.position.x-width/2>=s.u[0]/1000&&paper.position.x+width/2<=s.u[1]/1000);
+  assert.ok(paper.position.y-height/2>=s.v[0]/1000&&paper.position.y+height/2<=s.v[1]/1000);
+ }
+ assert.deepEqual(coplanarOverlaps(g,{tolerance:.002,minArea:.0004}),[]);
+});
