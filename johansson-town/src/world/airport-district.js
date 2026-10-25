@@ -4,6 +4,8 @@ import {AIRPORT_PLAZA as P,AIRPORT_SHOPS,AIRPORT_GATES} from './airport-district
 import {airportWorld,AIRPORT_HEIGHT,AIRPORT_PUBLIC_FLOORS} from './airport-ground.js';
 import {TROPIC_PLACES,tropicHeight,tropicalPlantings} from './tropical-island.js';
 import {SEA_LEVEL} from './ocean.js';
+import {AIRPORT_ISLAND} from './airport-island.js';
+import {TREE_REBUILD,treeBarkEnvelope,PALM_VARIANTS,FOREST_VARIANTS} from './tree-designs.js';
 import {islandBuildMaterial,thatchRoof,bambooPost,corrugatedRoof,stripedAwning,planks,shelfGoods} from './island-architecture.js';
 
 /**
@@ -104,7 +106,14 @@ export function buildAirportDistrict({world,register,onAction}){
  anchor(tx,tz,'Look into Turtle Cove','read','Turtle Cove','A sheltered inlet under the hill. Green turtles come in on the rising tide to graze; the fishermen from Minato leave this cove alone for them.');
  // Tree trunks are solid where people walk.
  const {palms,trees,pandanus,bananas,rocks}=tropicalPlantings();
- for(const [list,w,h] of [[palms,.5,4],[trees,.75,4.5],[pandanus,1.2,2.5],[bananas,.35,2],[rocks.filter(r=>r.hill),1.4,1.2]])for(const t of list){const [x,z]=airportWorld(t.u,t.v);world.colliders.push({id:'Island tree trunk',x,z,yaw:0,w:w*t.scale,d:w*t.scale,minY:SEA_LEVEL+t.y-.2,height:h});}
+ if(TREE_REBUILD){
+  for(const [list,family,variants] of [[palms,'palm',PALM_VARIANTS],[trees,'broadleaf',FOREST_VARIANTS],[pandanus,'pandanus',[{}]],[bananas,'banana',[{}]]])for(const t of list){
+   const options=variants[(t.kind??0)%variants.length],b=treeBarkEnvelope(family,options,2.2/t.scale),yaw=family==='palm'?-t.lean:t.turn;
+   const cx=(b.minX+b.maxX)/2*t.scale,cz=(b.minZ+b.maxZ)/2*t.scale,co=Math.cos(yaw),si=Math.sin(yaw),[x,z]=airportWorld(t.u+co*cx+si*cz,t.v-si*cx+co*cz);
+   world.colliders.push({id:'Island '+family+' trunk',treeFamily:family,x,z,yaw:yaw+AIRPORT_ISLAND.yaw,w:(b.maxX-b.minX)*t.scale+.04,d:(b.maxZ-b.minZ)*t.scale+.04,minY:SEA_LEVEL+t.y-.03,height:Math.max(2.2,Math.min((options.height||3.6)*.55,4.5))*t.scale});
+  }
+  for(const t of rocks.filter(r=>r.hill)){const [x,z]=airportWorld(t.u,t.v);world.colliders.push({id:'Island hill rock',x,z,yaw:0,w:1.4*t.scale,d:1.4*t.scale,minY:SEA_LEVEL+t.y-.2,height:1.2});}
+ }else for(const [list,w,h] of [[palms,.5,4],[trees,.75,4.5],[pandanus,1.2,2.5],[bananas,.35,2],[rocks.filter(r=>r.hill),1.4,1.2]])for(const t of list){const [x,z]=airportWorld(t.u,t.v);world.colliders.push({id:'Island tree trunk',x,z,yaw:0,w:w*t.scale,d:w*t.scale,minY:SEA_LEVEL+t.y-.2,height:h});}
 }
 
 /**

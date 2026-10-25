@@ -40,6 +40,9 @@ test('published page uses one compiled audio/boot graph with local hashed depend
  const game=Object.values(manifest).find(entry=>entry.src?.startsWith('src/game.js'));
  const dependencies=entry=>{const result=new Set([entry.file]);for(const key of entry.imports||[])for(const file of dependencies(manifest[key]))result.add(file);return result;};
  const gameFiles=dependencies(game),audioFiles=dependencies(audio),contexts=[];
+ const treeData=Object.values(manifest).find(entry=>entry.src==='src/world/tree-design-data.js');
+ assert.ok(treeData?.isDynamicEntry,'CAD tree geometry has its own cached chunk');
+ assert.ok(!gameFiles.has(treeData.file),'CAD tree data stays out of the static game preload graph');
  const concert=manifest['src/music/concert.js'];assert.ok(concert?.isDynamicEntry,'Karaoke loads only when the machine is used');assert.ok(!gameFiles.has(concert.file),'The concert adds no eager rendering or audio code');
  assert.ok(!html.includes('data-town-runtime href="./runtime/'+concert.file+'"'),'No concert preload on the title screen');
  const graphics=Object.values(manifest).find(entry=>entry.name==='spector.bundle');

@@ -91,3 +91,4 @@ sakura-wall-band.test.mjs
 sakura-street-poster.test.mjs
 
 face-lighting.test.mjs
+tree-rebuild.test.mjs

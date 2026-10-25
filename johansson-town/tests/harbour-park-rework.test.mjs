@@ -122,7 +122,7 @@ test('the footbath keeps the bath’s hours: soak and steam while it is open, th
 
 test('the new furniture stands on the lawn, clear of every walk: the guide board, the gajumaru, its bench and lamp',()=>{
  const {world}=park();
- for(const id of ['park-guide-board','gajumaru','gajumaru-roots','gajumaru-bench']){
+ for(const id of ['park-guide-board','gajumaru','gajumaru-bench']){
   const c=world.colliders.find(k=>k.id===id);assert.ok(c,id);
   for(const r of HARBOUR_PARK_PATHS)for(let i=1;i<r.points.length;i++){
    const a=r.points[i-1],b=r.points[i],n=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.2);
@@ -130,6 +130,8 @@ test('the new furniture stands on the lawn, clear of every walk: the guide board
   }
   assert.ok(!coastPaved(c.x,c.z),id+' is not on a laid walk');
  }
+ // The accepted tree uses one visible-bark collider for both trunk and inboard roots.
+ assert.equal(world.colliders.filter(c=>c.id==='gajumaru').length,1);
  const T=HARBOUR_SHADE_TREE;assert.ok(world.colliders.some(c=>c.park&&Math.abs(c.x-T.lamp[0])<1e-9&&Math.abs(c.z-T.lamp[1])<1e-9),'the gajumaru’s lamp');
  assert.ok(Math.hypot(PARK_GUIDE.read[0]-PARK_GUIDE.x,PARK_GUIDE.read[1]-PARK_GUIDE.z)<1.3,'the guide is read from in front of it');
  assert.notEqual(parkPathAt(...PARK_GUIDE.read),null,'and from the walk');

@@ -1,6 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {coconutPalm,rainforestTree,pandanus,bananaPlant,fern,shrub,grassTuft,rock,driftwood,shell} from './vegetation-kit.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
+import {TREE_REBUILD,treeDesignGeometry,PALM_VARIANTS,FOREST_VARIANTS} from './tree-designs.js';
 
 /**
  * Kitano-jima as a tropical island: white beaches, clear shallows, a jungle hill and the
@@ -279,13 +280,14 @@ export function buildTropicalIsland(group,{plants=true}={}){
  // The ferry quay's face, where the cargo court meets deep water.
  const quay=new THREE.Mesh(new THREE.BoxGeometry(1.2,4,19),mat(0xa8a396));quay.name='Kitano-jima ferry quay wall';quay.position.set(TROPIC_PLACES.quayU-.2,-.92,28);quay.userData.staticProp=true;group.add(quay);
  const P=tropicalPlantings(),m=new THREE.Matrix4(),q=new THREE.Quaternion(),s=new THREE.Vector3(),p=new THREE.Vector3(),up=new THREE.Vector3(0,1,0);
- const detail=[];let real=null,far=null;
+ const detail=[],treeLods=[];let real=null,far=null;
  /** One instanced draw per plant model into `parent`; `angle` turns it, `variant` picks which model of a kind. */
  const plantInto=parent=>(name,models,list,{material,angle=it=>it.turn,small=false}={})=>models.forEach((geometry,variant)=>{
   const items=list.filter(it=>(it.kind??0)%models.length===variant);if(!items.length)return;
   const im=new THREE.InstancedMesh(geometry,material,items.length);im.name=name;
   items.forEach((it,k)=>{q.setFromAxisAngle(up,angle(it));m.compose(p.set(it.u,it.y,it.v),q,s.setScalar(it.scale));im.setMatrixAt(k,m);});
   im.instanceMatrix.needsUpdate=true;im.computeBoundingSphere();im.computeBoundingBox?.();parent.add(im);if(small)detail.push(im);
+  if(TREE_REBUILD&&geometry.userData.treeDesign){const {family,options}=geometry.userData.treeDesign;treeLods.push({mesh:im,near:geometry,mid:treeDesignGeometry(family,{...options,lod:'mid'})});}
  });
  function addPlants(){
   if(real)return real;
@@ -294,10 +296,10 @@ export function buildTropicalIsland(group,{plants=true}={}){
   const foliage=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.9,side:THREE.DoubleSide});
   const solid=new THREE.MeshStandardMaterial({vertexColors:true,roughness:1}),plantOne=plantInto(real);
   const plant=(name,models,list,o={})=>plantOne(name,models,list,{material:foliage,...o});
-  plant('Coconut palms',[coconutPalm({seed:3,height:8.5,bow:1.8}),coconutPalm({seed:8,height:10,bow:3}),coconutPalm({seed:13,height:7,bow:1})],P.palms,{angle:it=>-it.lean});
-  plant('Rainforest trees',[rainforestTree({seed:2,height:8,spread:3.4}),rainforestTree({seed:5,height:10,spread:4,light:0x7cbd58,dark:0x285c31}),rainforestTree({seed:9,height:7,spread:3,light:0x8ab858,dark:0x33652f,mid:0x56913f})],P.trees);
-  plant('Adan (pandanus)',[pandanus({seed:4})],P.pandanus);
-  plant('Banana plants',[bananaPlant({seed:6})],P.bananas);
+  plant('Coconut palms',TREE_REBUILD?PALM_VARIANTS.map(v=>treeDesignGeometry('palm',v)):[coconutPalm({seed:3,height:8.5,bow:1.8}),coconutPalm({seed:8,height:10,bow:3}),coconutPalm({seed:13,height:7,bow:1})],P.palms,{angle:it=>-it.lean});
+  plant('Rainforest trees',TREE_REBUILD?FOREST_VARIANTS.map(v=>treeDesignGeometry('broadleaf',v)):[rainforestTree({seed:2,height:8,spread:3.4}),rainforestTree({seed:5,height:10,spread:4,light:0x7cbd58,dark:0x285c31}),rainforestTree({seed:9,height:7,spread:3,light:0x8ab858,dark:0x33652f,mid:0x56913f})],P.trees);
+  plant('Adan (pandanus)',[TREE_REBUILD?treeDesignGeometry('pandanus'):pandanus({seed:4})],P.pandanus);
+  plant('Banana plants',[TREE_REBUILD?treeDesignGeometry('banana'):bananaPlant({seed:6})],P.bananas);
   plant('Island shrubs',[shrub({seed:3}),shrub({seed:7,flowers:0xb83a78}),shrub({seed:11,flowers:0xd8423a})],P.bushes);
   plant('Forest ferns',[fern({seed:2})],P.ferns,{small:true});
   plant('Grass tufts',[grassTuft({seed:1}),grassTuft({seed:4,height:.6,blades:11})],P.grass.map((g,k)=>({...g,kind:k%2})),{small:true});
@@ -308,10 +310,11 @@ export function buildTropicalIsland(group,{plants=true}={}){
  }
  if(plants)addPlants();else far=farPlants(group,P);
  /** Ferns, grass and shells are only worth drawing within a stroll of them; the far plants only from across the strait. */
- let near=null;
+ let near=null,closeTrees=null;
  const lod=at=>{
   if(!at)return;const d=group.position.distanceTo(new THREE.Vector3(at.x,group.position.y,at.z));
   for(const x of detail)x.visible=d<=150;
+  if(TREE_REBUILD){closeTrees=d<(closeTrees?135:120);for(const tree of treeLods)tree.mesh.geometry=closeTrees?tree.near:tree.mid;}
   if(real&&far){near=d<(near?260:240);real.visible=near;far.visible=!near;}
  };
  return {terrain,plantings:P,lod,addPlants,get plants(){return real;},get farPlants(){return far;}};
@@ -323,6 +326,7 @@ export function buildTropicalIsland(group,{plants=true}={}){
  * triangles for the 355k of the real ones. Ferns, grass, shells and driftwood are not seen from there.
  */
 export function farPlants(group,P=tropicalPlantings()){
+ if(TREE_REBUILD)return designedFarPlants(group,P);
  const far=new THREE.Group();far.name='Kitano-jima distant plants';group.add(far);
  const paint=(geometry,hex)=>{const g=geometry.index?geometry.toNonIndexed():geometry,c=new THREE.Color(hex),n=g.attributes.position.count,col=new Float32Array(n*3);for(let i=0;i<n;i++)c.toArray(col,i*3);g.setAttribute('color',new THREE.BufferAttribute(col,3));g.deleteAttribute('uv');return g;};
  const shape=parts=>mergeGeometries(parts.map(([geometry,hex])=>paint(geometry,hex)),false);
@@ -344,6 +348,30 @@ export function farPlants(group,P=tropicalPlantings()){
   const im=new THREE.InstancedMesh(geometry,material,list.length);im.name='Kitano-jima distant '+kind;
   list.forEach((it,k)=>{q.setFromAxisAngle(up,it.turn??0);m.compose(p.set(it.u,it.y,it.v),q,s.setScalar(it.scale??1));im.setMatrixAt(k,m);});
   im.instanceMatrix.needsUpdate=true;im.computeBoundingSphere();far.add(im);
+ }
+ return far;
+}
+
+/** Same instances, seeds, lean and canonical silhouettes as the near trees, at a lower mesh sampling density. */
+function designedFarPlants(group,P){
+ const far=new THREE.Group();far.name='Kitano-jima distant plants';group.add(far);
+ const material=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95});
+ const matrix=new THREE.Matrix4(),q=new THREE.Quaternion(),s=new THREE.Vector3(),p=new THREE.Vector3(),up=new THREE.Vector3(0,1,0);
+ const lists=[['palms','palm',PALM_VARIANTS],['trees','broadleaf',FOREST_VARIANTS],['pandanus','pandanus',[{}]],['bananas','banana',[{}]]];
+ for(const [name,family,variants] of lists)variants.forEach((variant,i)=>{
+  const list=P[name].filter(it=>(it.kind??0)%variants.length===i);if(!list.length)return;
+  const mesh=new THREE.InstancedMesh(treeDesignGeometry(family,{...variant,lod:'far'}),material,list.length);mesh.name='Kitano-jima distant '+name;
+  list.forEach((it,k)=>{q.setFromAxisAngle(up,name==='palms'?-it.lean:it.turn);matrix.compose(p.set(it.u,it.y,it.v),q,s.setScalar(it.scale));mesh.setMatrixAt(k,matrix);});
+  mesh.instanceMatrix.needsUpdate=true;mesh.computeBoundingSphere();mesh.computeBoundingBox?.();far.add(mesh);
+ });
+ // Shrubs and rocks retain the old small silhouettes; do not duplicate the four tree collections.
+ const legacyP={...P,palms:[],trees:[],pandanus:[],bananas:[]};
+ // Build only the six simple shrub/rock batches, using the legacy path without changing the global flag.
+ for(const [name,color,radius,cy,flat] of [['bushes',0x4f8a42,.7,.55,.75],['rocks',0xbdb6a4,.6,.2,.6]]){
+  const list=legacyP[name];if(!list.length)continue;const geometry=new THREE.IcosahedronGeometry(radius,0).scale(1,flat,1).translate(0,cy,0),colors=new Float32Array(geometry.attributes.position.count*3),c=new THREE.Color(color);
+  for(let i=0;i<colors.length;i+=3)c.toArray(colors,i);geometry.setAttribute('color',new THREE.BufferAttribute(colors,3));
+  const mesh=new THREE.InstancedMesh(geometry,material,list.length);mesh.name='Kitano-jima distant '+name;
+  list.forEach((it,k)=>{q.setFromAxisAngle(up,it.turn??0);matrix.compose(p.set(it.u,it.y,it.v),q,s.setScalar(it.scale??1));mesh.setMatrixAt(k,matrix);});mesh.computeBoundingSphere();far.add(mesh);
  }
  return far;
 }

@@ -15,7 +15,7 @@ async function town(kitano){
 }
 const count=list=>list.reduce((m,k)=>m.set(k,(m.get(k)||0)+1),new Map());
 const names=root=>{const out=[];root.traverse(o=>{if(o.isMesh&&o.name&&!o.name.startsWith('static-props:'))out.push(o.name);});return out;};
-const KITANO_COLLIDERS=['Island tree trunk','Island bench','Lounge post','Beach bar post'];
+const KITANO_COLLIDERS=['Island palm trunk','Island broadleaf trunk','Island pandanus trunk','Island banana trunk','Island hill rock','Island bench','Lounge post','Beach bar post'];
 
 test('Kitano-jima at startup: its ground, airport, sites and a distant view, none of its plants, district or houses',async()=>{
  const {world,prompts,sites}=await town('distant'),island=world.airportIsland.group;
@@ -26,9 +26,11 @@ test('Kitano-jima at startup: its ground, airport, sites and a distant view, non
  // What the doors, the Town Book and the residents read is there from the start.
  for(const id of ['mayor-home','home-kitano-2'])assert.ok(sites.some(s=>s.id===id),'no site '+id);assert.ok(!sites.some(s=>s.id==='home-kitano-3'),'the Chinen house is gone (phase 4)');
  assert.ok(prompts.includes('Go home')&&prompts.includes('Airport ferry back to Minato'));
- // The distant view is light: a few thousand triangles where the plants are hundreds of thousands.
- let tris=0;island.getObjectByName('Kitano-jima distant plants').traverse(o=>{if(o.isInstancedMesh)tris+=o.geometry.attributes.position.count/3*o.count;});
- assert.ok(tris<20000,'distant plants: '+tris+' triangles');
+ // CAD crowns and fronds retain their silhouette across the strait. Count actual
+ // indexed triangles (vertex count / 3 undercounts these shared-vertex meshes).
+ const cost=root=>{let n=0;root.traverse(o=>{if(o.isInstancedMesh)n+=(o.geometry.index?.count??o.geometry.attributes.position.count)/3*o.count;});return n;};
+ const tris=cost(island.getObjectByName('Kitano-jima distant plants'));
+ assert.ok(tris<120000,'distant CAD plants: '+tris+' triangles');
  // Near the island it is "there"; at the Minato pier it is not.
  assert.ok(world.kitano.near(AIRPORT_ISLAND.x,AIRPORT_ISLAND.z)&&!world.kitano.near(-3,-71));
 });
