@@ -57,13 +57,26 @@ with tempfile.TemporaryDirectory() as folder:
   def layout():
    g={};exec(compile(source.split("\nbase=Path(",1)[0],'installer-functions','exec'),g)
    return g['steam_text_read']((layouts/'configset_controller_neptune.vdf').read_text())
-  assert layout()==[('controller_config',[('284160',[('template','controller_neptune_gamepad_fps.vdf')]),('johansson world',[('template','controller_neptune_gamepad_fps.vdf')])])],layout()
+  assert layout()==[('controller_config',[('284160',[('template','controller_neptune_gamepad_fps.vdf')]),('johansson world',[('template','controller_neptune_johansson_world.vdf')])])],layout()
   assert (layouts/'configset_controller_neptune.vdf.before-johansson-world').read_text()==layout_before
-  assert 'Steam Input set to the Gamepad layout' in text
+  assert 'Steam Input set to Johansson World - Steam Deck' in text
+  template=home/'.local/share/Steam/controller_base/templates/controller_neptune_johansson_world.vdf'
+  g={};exec(compile(source.split("\nbase=Path(",1)[0],'installer-functions','exec'),g)
+  assert template.read_text()==g['STEAM_DECK_LAYOUT_DATA']
+  mapping=g['steam_text_read'](template.read_text())[0][1]
+  groups={dict(v)['id']:dict(v) for k,v in mapping if k=='group'}
+  bindings=dict(dict(next(v for k,v in mapping if k=='preset'))['group_source_bindings'])
+  for i,input_source,out,mode in [('2','joystick','1','joystick_move'),('3','right_joystick','2','joystick_move'),('7','left_trackpad','1','joystick_move'),('8','right_trackpad','2','mouse_joystick')]:
+   assert bindings[i]==input_source+' active'
+   assert groups[i]['mode']==mode and dict(groups[i]['settings'])['output_joystick']==out
+  assert dict(groups['4']['settings'])['output_trigger']=='1' and dict(groups['5']['settings'])['output_trigger']=='2'
+  assert len(bindings)==9 and dict(mapping)['controller_type']=='controller_neptune'
+  template_before=template.read_text()
   sys.argv=['-','--steam'];sys.stdout=io.StringIO()
   try:exec(compile(source,'actual-linux-installer','exec'),{'__name__':'__main__'})
   except SystemExit as done:assert not done.code,done.code
   finally:sys.stdout=original
+  assert template.read_text()==template_before,'Layout installation is idempotent'
   assert entries()==first,'A second run does not duplicate the Library entry'
   assert [k for k,_ in layout()[0][1]]==['284160','johansson world'],'nor the controller layout'
  print(json.dumps({'mode':mode,'passed':True,'transcript':text}))

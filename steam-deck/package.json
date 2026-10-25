@@ -1,6 +1,6 @@
 {
   "name": "johansson-world-desktop",
-  "version": "0.2.20",
+  "version": "0.2.21",
   "description": "Johansson World offline Linux edition",
   "private": true,
   "main": "main.cjs",
