@@ -29,9 +29,9 @@ This is a small correction to the cartoon World, not the development/Pixar room 
 
 ## Delivery
 
-Implementation commit: `2d4a8006` (“Ground fish-market prices in the shared noticeboard cabinet”).
-All source/runtime checks passed. The initial push was held by automatic review; the owner explicitly authorised
-publication on 25 October: “@GitHub push to main”. This supersedes the earlier approval block.
-The local fix is a fast-forward of verified remote main `7c048393`; publication uses a normal push, without force.
-Pages deployment is checked after pushing. The Linux 0.2.20 package is immutable and does not contain this change;
-include the shared World fix in a future release after normal package acceptance.
+Published to `main` as [`ef546ca6`](https://github.com/nj22az/nj22az.github.io/commit/ef546ca6b54ae1b0c0a82f7420a518263d2d434a) through the connected GitHub plugin after the owner explicitly instructed “@GitHub push to main”.
+The remote tree `61247b259612bc8ad52e962c7ce3c7f8a1deeb5b` exactly matches the tested local candidate (local implementation `2d4a8006` plus approval notes). The command-line push lacked credentials; no force-push was used.
+
+[Pages deployment](https://github.com/nj22az/nj22az.github.io/actions/runs/40168563690): in_progress at this handover update.
+[Hosted World guard](https://github.com/nj22az/nj22az.github.io/actions/runs/40168564357) started; local guard passed 422/422.
+No physical-device or screenshot acceptance is claimed. The Linux 0.2.20 package is immutable and does not contain this change; include it in a future release after normal package acceptance.
