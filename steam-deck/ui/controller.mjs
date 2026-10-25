@@ -19,30 +19,35 @@ export function radialStick(x, y, deadzone = .16) {
   const scale = (Math.min(1, length) - d) / (1 - d) / length;
   return {x: x * scale, y: y * scale};
 }
-export function createDesktopInput(getProfile) {
+// The Linux package targets Steam Deck through Steam Input's standard virtual pad.
+// Saved experimental remaps never change its physical controls.
+export function steamDeckProfile() { return {...profileSettings(), glyphs: 'deck'}; }
+export function createDesktopInput(getProfile, {steamDeck = false} = {}) {
   let previous = null, identity = '', selected = '';
   // Per connected pad: its axes when first seen (to tell resting triggers from
   // sticks) and its buttons last read (to notice which pad is being used).
   const seen = new Map();
   const empty = () => ({connected: false, move: {x: 0, y: 0}, look: {x: 0, y: 0}, held: [], pressed: [], zoom: 0});
   function read(pads = [], deadzone = .16) {
-    const profile = profileSettings(getProfile());
-    const connected = Array.from(pads || []).filter(p => p?.connected && p.buttons?.length >= 2);
+    const profile = steamDeck ? steamDeckProfile() : profileSettings(getProfile());
+    const connected = Array.from(pads || []).filter(p => p?.connected && p.buttons?.length >= 2 && (!steamDeck || (p.mapping === 'standard' && p.axes?.length >= 4 && p.buttons.length >= 16)));
     for (const key of seen.keys()) if (!connected.some(p => p.index + ':' + p.id === key)) seen.delete(key);
     let used = null;
     const available = connected.map(raw => {
       const key = raw.index + ':' + raw.id;
       if (!seen.has(key)) seen.set(key, {rest: Array.from(raw.axes || []), held: []});
-      const memory = seen.get(key), pad = standardPad(raw, driverLayout(raw, memory.rest));
+      const memory = seen.get(key), pad = steamDeck ? raw : standardPad(raw, driverLayout(raw, memory.rest));
       const held = Array.from(pad.buttons, b => !!b?.pressed);
-      if (held.some((down, i) => down && !memory.held[i])) used ??= key;
+      const axisActive = steamDeck && Array.from(pad.axes).slice(0,4).some(a => Math.abs(a) > .3);
+      if (held.some((down, i) => down && !memory.held[i]) || (axisActive && !memory.axisActive)) used ??= key;
+      memory.axisActive = axisActive;
       memory.held = held;
       return pad;
     });
     // A pad that connects late, or the real pad beside Steam's virtual one, takes
     // over with its first press while the one being read is idle.
     const current = available.find(p => p.index + ':' + p.id === selected);
-    if (used && used !== selected && !current?.buttons.some(b => b?.pressed)) selected = used;
+    if (used && used !== selected && !current?.buttons.some(b => b?.pressed || b?.value > .55) && (!steamDeck || !Array.from(current?.axes || []).slice(0,4).some(a => Math.abs(a) > .3))) selected = used;
     const pad = available.find(p => p.id === profile.controller) || available.find(p => p.index + ':' + p.id === selected) || available.find(p => p.mapping === 'standard') || available[0];
     if (!pad) return {...empty(), pad: null};
     selected = pad.index + ':' + pad.id;

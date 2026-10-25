@@ -2,9 +2,16 @@
 
 ## Delivery state
 
-Prepared against production `main` at `344dc5d5cac9e73cd8d6b885a7d3bed2356f4715`.
+**Published to main and GitHub Pages.** Implementation commit:
+[`aa792244c914eec604b0aac4e5fb18ccaa4119cd`](https://github.com/nj22az/nj22az.github.io/commit/aa792244c914eec604b0aac4e5fb18ccaa4119cd),
+based on production `344dc5d5cac9e73cd8d6b885a7d3bed2356f4715`.
 The owner explicitly requested verification, readability improvements and publication.
-Publication/sign-off evidence will be appended after the main update and Pages result.
+[Pages deployment 40160561135](https://github.com/nj22az/nj22az.github.io/actions/runs/40160561135)
+completed successfully for that exact commit. Public HTML, JSON, CSV, map script
+and hotel stylesheet were fetched successfully and match the tested bytes exactly.
+[Public-file hashes](PUBLICATION-MAP-FEED-2026-10-25.json) preserve the result.
+Live page: <https://nj22az.github.io/blog/hotels/>.
+This sign-off changes documentation only; public application bytes remain the tested delivery.
 No new branch is required: the existing site instructions publish ordinary website fixes
 on main; the owner's main/development/pixar branch arrangement is preserved.
 
@@ -48,7 +55,7 @@ on main; the owner's main/development/pixar branch arrangement is preserved.
   Checks cover default/free, country/search/parking/reset filters, accent-insensitive
   Växjö search, marker counts, correct card-to-marker popup, zero results, all 32 hotels,
   simulated position/filter/clear, denied permission, pending-result cancellation,
-  missing-point counts and missing-Leaflet fallback. Desktop visual review completed.
+  missing-point counts and missing-Leaflet fallback. Desktop, iPad-width and phone-width visual review completed.
   The 320 px test exposed the shared body's minimum width plus a desktop scrollbar;
   `body.hotel-site` now permits a smaller content width without changing other pages.
 
@@ -64,6 +71,7 @@ The untracked preview/fixture directories and hosting configuration are not part
 
 ## Next action
 
-Verify the main commit, Pages deployment and public HTML/JSON/CSV/script/style bytes.
-Append the exact publication result here. Further hotel expansion remains a separate
-property-level parking verification task.
+Publication and five public-file comparisons are complete. Further hotel expansion
+remains a separate property-level parking verification task. Physical Safari/iPad/GPS
+acceptance remains unclaimed. Unrelated World guard and Linux acceptance workflows
+were still running/pending at this sign-off; no game or Linux code was modified.

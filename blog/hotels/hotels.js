@@ -11,6 +11,7 @@
   var notes = document.querySelector('[data-hotel-notes]');
   var query = form.elements.namedItem('search');
   var country = form.elements.namedItem('country');
+  var chain = form.elements.namedItem('chain');
   var parking = form.elements.namedItem('parking');
   var receipt = form.elements.namedItem('receipt');
 
@@ -29,6 +30,7 @@
       var text = normalise(row.dataset.search);
       var show = terms.every(function (term) { return text.includes(term); }) &&
         (!country.value || row.dataset.country === country.value) &&
+        (!chain.value || row.dataset.chain === chain.value) &&
         matchesParking(row, parking.value) &&
         (!receipt.value || row.dataset.hotelReceipt === receipt.value);
       row.hidden = !show;

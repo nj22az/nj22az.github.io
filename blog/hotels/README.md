@@ -1,5 +1,65 @@
 # Hotels & Parking
 
+## Swedish Scandic audit — 25 October 2026
+
+91 Swedish catalogue-linked property pages reviewed: **72 Avoid, 19 with verified
+free options**. This adds 67 Avoid entries and green Scandic Värnamo. Existing 60
+records and CSV rows remain unchanged. Haymarket and Downtown Camper correctly
+belong to the Scandic chain filter; no new chain affiliation is guessed.
+The register now contains **128 hotels, all mapped: 34 green, 0 Easy, 94 Avoid**.
+See the [Swedish audit and complete Avoid list](SCANDIC-SWEDEN-AUDIT-2026-10-25.md),
+[structured evidence](SCANDIC-SWEDEN-EVIDENCE-2026-10-25.json) and
+[current handover](HANDOVER-SWEDEN-AUDIT-2026-10-25.md).
+The policy below remains in force. Other hotel chains/countries are not a complete census.
+
+## Field service parking decisions — 25 October 2026
+
+This directory serves field service engineers who need a straightforward overnight
+stop, with little payment or receipt administration. Free guest parking remains the
+default. Easy requires **both** confirmed payment at the hotel **and** confirmed inclusion
+on the hotel receipt. Paid parking with either fact unconfirmed is Avoid. Free
+parking has no parking receipt requirement; access warnings can still make it Avoid.
+
+The owner confirmed external paid parking as Avoid, then added: **“Unclear payment
+is avoid.”** This applies to confirmed paid parking with an unknown payment route;
+unknown is retained as null, not converted into an assertion of external payment.
+The parking charge itself must still be verified. Avoid is a parking preference,
+not a quality, service or safety review.
+
+Best Western Plus Hotel Odense is also Avoid for difficult access, despite confirmed
+free parking. The owner reports a long walk and construction-site parking; the
+official hotel confirms expansion-related closures. Keep these sources distinct
+and recheck after construction. See [Odense evidence](ODENSE-ACCESS-EVIDENCE-2026-10-25.json).
+`parkingAccessWarning` records the attributed report; category calculation checks
+this warning before the fee/payment rule. Default green results exclude it; All
+parking and Avoid include it. Best Western has its own chain filter.
+
+The first paid-parking batch adds 25 Scandics in the requested sequence: Denmark 14,
+Sweden 4, Norway 3, Finland 4. All have official property-specific map markers.
+All 25 are Avoid: none has confirmed hotel-receipt inclusion. Original 32 records and CSV rows are unchanged.
+[Evidence and scope](SCANDIC-PAID-EVIDENCE-2026-10-25.json) and
+[handover](HANDOVER-SCANDIC-PAID-2026-10-25.md). This is not a complete Nordic census.
+
+Hotell Havanna, Varberg, is green for nearby free street parking. Ownership is
+not required: the owner reports plentiful spaces close by; the hotel’s own A–Ö
+page corroborates free nearby spaces. Street-by-street time limits and registration
+remain unspecified, and availability is not guaranteed. Named selected-place
+coordinates are verified from the official contact page’s map embed.
+
+Scandic Odense is separately added with confirmed free outdoor weekday/weekend
+parking (120 spaces) and its official named map marker. There are now 35 verified
+free-parking options in total; 34 remain preferred/green, with Best Western Odense
+excluded for access. These are distinct properties.
+
+## Chain filter and fixed design — 25 October 2026
+
+Hotel chain now intersects with country, search, parking and receipt filters.
+Current groups are Scandic, Thon Hotels, Best Western and Other hotels; reset selects all chains.
+The hotel section has a fixed, note-inspired reading/feed design, independent of
+the homepage's changing theme. Its appearance selector is hidden, and visits do
+not change the theme preference used elsewhere. See [design rules](DESIGN.md) and
+the [latest handover](HANDOVER-CHAIN-DESIGN-2026-10-25.md).
+
 ## Map and feed update — 25 October 2026
 
 All 32 hotel records now have verified coordinates. The 16 previously unmapped
@@ -43,8 +103,10 @@ reverify live websites.
 
 Keep the free option precise: normal guest parking for the stay, including any
 registration instructions. Free outdoor parking does not make a paid garage or
-EV charging free. A hotel with only nearby public parking, a few free hours or
-an unexplained parking package is not admitted as a confirmed free hotel.
+EV charging free. Nearby public parking can qualify when its free use and practical access are
+confirmed by property information or an attributed owner report. Record ownership,
+time limits and uncertainty explicitly. A few free hours or an unexplained parking
+package alone does not establish free parking for the stay.
 If a published policy changes or becomes uncertain, remove the affected hotel
 from the public free-parking register until it is checked again. Preserve known
 paid stay observations, including Scandic Elmia, as clearly labelled paid entries.
@@ -54,14 +116,17 @@ paid stay observations, including Scandic Elmia, as clearly labelled paid entrie
 | Colour | Category | Meaning |
 | --- | --- | --- |
 | Green | Free parking | Confirmed free guest parking; the preferred option and default filter. |
-| Yellow | Easy parking | Parking is paid, and payment can be settled at the hotel. |
-| Red | Paid parking — Avoid | Parking is paid separately through an external payment route. |
+| Yellow | Easy parking | Parking is paid at the hotel and confirmed on the hotel receipt. |
+| Red | Paid parking — Avoid | Paid parking has external payment, separate receipts or either fact unconfirmed; documented difficult access also qualifies. |
 
-“Easy parking” refers to **payment at the hotel**. The old physical-ease field and
-combined free-and-easy category have been removed. Free parking always qualifies
-for green. Use `parkingPaymentAtHotel: null` when parking is free; for paid
-parking, verify `true` (yellow) or `false` (red). Unknown payment routing cannot
-be assigned a colour or published. `parkingOnHotelReceipt` is a separate billing
+“Easy parking” requires **payment at the hotel and confirmed hotel-receipt inclusion**. The old physical-ease field and
+combined free-and-easy category have been removed. Free parking qualifies for green unless an attributed access warning makes it
+Avoid. A fee-free access warning keeps `freeParking: true` and zero parking charge. Use `parkingPaymentAtHotel: null` when parking is free; for paid
+parking, record payment at the hotel as `true`, `false` or `null`. Only `true` together
+with `parkingOnHotelReceipt: true` qualifies as yellow; otherwise paid parking is red. For confirmed paid parking, an unknown payment route is red/Avoid under the
+owner’s 25 October rule. Keep `parkingPaymentAtHotel: null` and
+`parkingType: "payment-unconfirmed"`; never rewrite unknown as false. Unknown
+parking charges still cannot be published. `parkingOnHotelReceipt` is a separate billing
 fact and may remain unknown even when payment at reception is confirmed.
 
 Table and review labels, map markers/popups, filters and the CSV share these
@@ -69,7 +134,7 @@ definitions. Colours retain their meaning across themes, and text labels convey
 the same categories. The visitor's own map position is blue. Reset filters
 returns to green/free parking; All parking shows the complete register. Without
 JavaScript, all records remain readable with their category labels. Current
-counts: **15 green, 0 yellow, 1 red (Scandic Elmia)**.
+counts: **34 green, 0 yellow, 94 red; 128 hotels with 128 verified locations**.
 
 ## Updating the register
 

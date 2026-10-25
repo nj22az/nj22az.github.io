@@ -7,7 +7,7 @@ command -v python3 >/dev/null 2>&1 || { echo 'Python 3 is required by this insta
 python3 - "$@" <<'PY'
 import os,json,hashlib,urllib.request,tarfile,tempfile,shlex,sys,threading,shutil
 from pathlib import Path
-version='0.2.19'
+version='0.2.21'
 release='https://github.com/nj22az/nj22az.github.io/releases/download/johansson-world-linux-v'+version+'/'
 def get(url):
  return urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'Johansson-World-Installer'}),timeout=60)
@@ -101,9 +101,355 @@ def steam_text_write(items,depth=0):
   if isinstance(value,list):out+=pad+'"'+key+'"\n'+pad+'{\n'+steam_text_write(value,depth+1)+pad+'}\n'
   else:out+=pad+'"'+key+'"\t\t"'+value+'"\n'
  return out
-# Steam Input: the Deck's built-in "Gamepad with Camera Controls" layout, so the sticks and buttons reach the game as a
-# gamepad. Without it Steam may guess a keyboard-and-mouse layout for a non-Steam game, and only the touch screen works.
-STEAM_DECK_LAYOUT='controller_neptune_gamepad_fps.vdf'
+# Original Deck-only layout, authored against Valve's Steam client KeyValues format.
+# A local template gives this non-Steam shortcut explicit trackpads as well as sticks.
+STEAM_DECK_LAYOUT='controller_neptune_johansson_world.vdf'
+STEAM_DECK_LAYOUT_DATA=r'''
+"controller_mappings"
+{
+	"version"		"3"
+	"game"		"Johansson World"
+	"title"		"Johansson World - Steam Deck"
+	"description"		"Fixed Deck controls: left stick and left trackpad move; right stick and right trackpad look. Right click centres the camera."
+	"controller_type"		"controller_neptune"
+	"major_revision"		"1"
+	"minor_revision"		"0"
+	"group"
+	{
+		"id"		"0"
+		"mode"		"four_buttons"
+		"inputs"
+		{
+			"button_a"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"xinput_button A"
+						}
+					}
+				}
+			}
+			"button_b"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"xinput_button B"
+						}
+					}
+				}
+			}
+			"button_x"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"xinput_button X"
+						}
+					}
+				}
+			}
+			"button_y"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"xinput_button Y"
+						}
+					}
+				}
+			}
+		}
+	}
+	"group"
+	{
+		"id"		"1"
+		"mode"		"dpad"
+		"inputs"
+		{
+			"dpad_north"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"xinput_button dpad_up"
+						}
+					}
+				}
+			}
+			"dpad_south"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"xinput_button dpad_down"
+						}
+					}
+				}
+			}
+			"dpad_west"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"xinput_button dpad_left"
+						}
+					}
+				}
+			}
+			"dpad_east"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"xinput_button dpad_right"
+						}
+					}
+				}
+			}
+		}
+		"settings"
+		{
+			"requires_click"		"0"
+		}
+	}
+	"group"
+	{
+		"id"		"2"
+		"mode"		"joystick_move"
+		"inputs"
+		{
+			"click"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"xinput_button JOYSTICK_LEFT"
+						}
+					}
+				}
+			}
+		}
+		"settings"
+		{
+			"output_joystick"		"1"
+			"deadzone_inner_radius"		"0"
+		}
+	}
+	"group"
+	{
+		"id"		"3"
+		"mode"		"joystick_move"
+		"inputs"
+		{
+			"click"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"xinput_button JOYSTICK_RIGHT"
+						}
+					}
+				}
+			}
+		}
+		"settings"
+		{
+			"output_joystick"		"2"
+			"deadzone_inner_radius"		"0"
+		}
+	}
+	"group"
+	{
+		"id"		"7"
+		"mode"		"joystick_move"
+		"inputs"
+		{
+			"click"
+			{
+				"activators"
+				{
+					"Soft_Press"
+					{
+						"bindings"
+						{
+							"binding"		"xinput_button JOYSTICK_LEFT"
+						}
+					}
+				}
+			}
+		}
+		"settings"
+		{
+			"output_joystick"		"1"
+			"deadzone_inner_radius"		"0"
+		}
+	}
+	"group"
+	{
+		"id"		"8"
+		"mode"		"mouse_joystick"
+		"inputs"
+		{
+			"click"
+			{
+				"activators"
+				{
+					"Soft_Press"
+					{
+						"bindings"
+						{
+							"binding"		"xinput_button JOYSTICK_RIGHT"
+						}
+					}
+				}
+			}
+		}
+		"settings"
+		{
+			"output_joystick"		"2"
+			"deadzone_inner_radius"		"0"
+		}
+	}
+	"group"
+	{
+		"id"		"4"
+		"mode"		"trigger"
+		"inputs"
+		{
+		}
+		"settings"
+		{
+			"output_trigger"		"1"
+		}
+	}
+	"group"
+	{
+		"id"		"5"
+		"mode"		"trigger"
+		"inputs"
+		{
+		}
+		"settings"
+		{
+			"output_trigger"		"2"
+		}
+	}
+	"group"
+	{
+		"id"		"6"
+		"mode"		"switches"
+		"inputs"
+		{
+			"button_escape"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"xinput_button start"
+						}
+					}
+				}
+			}
+			"button_menu"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"xinput_button select"
+						}
+					}
+				}
+			}
+			"left_bumper"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"xinput_button shoulder_left"
+						}
+					}
+				}
+			}
+			"right_bumper"
+			{
+				"activators"
+				{
+					"Full_Press"
+					{
+						"bindings"
+						{
+							"binding"		"xinput_button shoulder_right"
+						}
+					}
+				}
+			}
+		}
+	}
+	"preset"
+	{
+		"id"		"0"
+		"name"		"Default"
+		"group_source_bindings"
+		{
+			"0"		"button_diamond active"
+			"1"		"dpad active"
+			"2"		"joystick active"
+			"3"		"right_joystick active"
+			"4"		"left_trigger active"
+			"5"		"right_trigger active"
+			"6"		"switch active"
+			"7"		"left_trackpad active"
+			"8"		"right_trackpad active"
+		}
+	}
+	"settings"
+	{
+		"left_trackpad_mode"		"0"
+		"right_trackpad_mode"		"0"
+	}
+}
+'''
 def steam_gamepad_layout(root,account,name):
  configs=root/'steamapps/common/Steam Controller Configs'/account/'config'
  if not (root/'steamapps').is_dir():return False
@@ -118,6 +464,12 @@ def steam_gamepad_layout(root,account,name):
   root_key,games=top[0]
  else:
   configs.mkdir(parents=True,exist_ok=True);root_key,games='controller_config',[]
+ templates=root/'controller_base/templates';templates.mkdir(parents=True,exist_ok=True)
+ layout=templates/STEAM_DECK_LAYOUT
+ if layout.exists() and layout.read_text()!=STEAM_DECK_LAYOUT_DATA:
+  backup=layout.with_name(layout.name+'.before-johansson-world')
+  if not backup.exists():backup.write_bytes(layout.read_bytes())
+ temp=layout.with_name(layout.name+'.johansson-tmp');temp.write_text(STEAM_DECK_LAYOUT_DATA,encoding='utf-8');temp.replace(layout)
  games=[(k,v) for k,v in games if k.lower()!=key]+[(key,[('template',STEAM_DECK_LAYOUT)])]
  temp=path.with_name('configset_controller_neptune.vdf.johansson-tmp');temp.write_text(steam_text_write([(root_key,games)]),encoding='utf-8');temp.replace(path)
  return True
@@ -167,7 +519,7 @@ def add_to_steam(launcher,icon):
   temp=path.with_name('shortcuts.vdf.johansson-tmp');temp.write_bytes(data);temp.replace(path);added+=1
   if steam_gamepad_layout(config.parent.parent.parent,config.parent.name,name):layouts+=1
  if added:print('Added Johansson World to your Steam Library. In Gaming Mode it is under Library > Non-Steam.')
- if layouts:print('Steam Input set to the Gamepad layout for Johansson World, so the sticks and buttons work in Gaming Mode.')
+ if layouts:print('Steam Input set to Johansson World - Steam Deck: left stick/trackpad move; right stick/trackpad look. Launch from your Steam Library.')
  return added>0
 
 base=Path(os.environ.get('XDG_DATA_HOME',str(Path.home()/'.local/share')))/'johansson-world'
@@ -228,6 +580,6 @@ with Progress(('Updating' if updating else 'Installing')+' Johansson World '+ver
 print('Installed Johansson World '+version+':',destination)
 if os.environ.get('JOHANSSON_NO_STEAM') or not add_to_steam(launcher,icon):
  print('Steam shortcut artwork PNG:',icon)
-print('Return to Gaming Mode to play. Leave forced Proton disabled; choose a Gamepad controller layout.')
+print('Return to Gaming Mode to play. Leave forced Proton disabled. The Johansson World - Steam Deck layout supplies sticks and trackpads.')
 print('Menu opens pause. Updates are in Settings > Check for updates.')
 PY

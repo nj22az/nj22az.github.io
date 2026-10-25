@@ -21,7 +21,8 @@ test('a page without the desktop shell is the web edition; with it, Linux',()=>{
 test('Linux keeps every system; the web cuts only what is simulated, never what is drawn',()=>{
  const linux=BUDGETS.linux,web=BUDGETS.web;
  for(const key of ['residentsEverywhere','neighbourChats','conversations','trade','machinery','countedMoney','liveDocuments','pouring'])assert.equal(linux[key],true,'Linux keeps '+key);
- for(const key of ['residentsEverywhere','neighbourChats','conversations','trade','machinery','countedMoney','liveDocuments','pouring'])assert.equal(web[key],false,'the web cuts '+key);
+ assert.equal(web.neighbourChats,true,'nearby residents converse on the web');
+ for(const key of ['residentsEverywhere','conversations','trade','machinery','countedMoney','liveDocuments','pouring'])assert.equal(web[key],false,'the web cuts '+key);
  assert.ok(web.residentRadius>=30,'residents near the player live in full on the web');
  // Nothing in the budgets touches the look (the graphics ruling of 19 October: no device class drops it).
  for(const key of Object.keys(web))assert.doesNotMatch(key,/shadow|sample|hdr|ink|grade|dpr|resolution|stream/i);

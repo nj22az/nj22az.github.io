@@ -100,7 +100,7 @@ test('meal receipts and conversations follow the current side or seat, not the e
 test('the shared room syncs Minato guests from either door while Sato keeps its continuous update',()=>{
  const advance=between('function advanceTown(','/** Keeps the town on the device clock');
  for(const id of ['izakaya','ramen','market']){
-  const calls={minato:0,sato:0},service={sync:noop,update:noop};
+  const calls={minato:0,sato:0},service={sync:noop,update:noop,cancel:noop};
   const c={current:{id},minutes:720,elapsed:0,catchingUp:false,saveTick:0,townClock:{speed:1},islandPlay:null,
    activities:{tick:noop},evictIfClosed:noop,izakayaGuests:{sync:()=>calls.minato++},ramenGuests:{sync:()=>calls.sato++},onsenGuests:service,
    activeRoomLayout:null,homeOwner:()=>false,venueService:null,beerService:null,ramenPlayerService:null,

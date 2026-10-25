@@ -44,7 +44,7 @@ const place=p=>p.g.userData.inWorkplace|| (p.g.userData.inIzakaya?'izakaya':p.g.
 /** How long a line stays up: long enough to read, and a beat for the other to answer. */
 export const lineSeconds=text=>Math.min(6,Math.max(2.6,1.5+String(text||'').length*.055));
 /** Neighbours this far apart will stop for a chat, and this close to you you will see it. */
-export const CHAT_REACH=Object.freeze({apart:4.6,near:.85,observer:14,cooldown:18,between:1.5});
+export const CHAT_REACH=Object.freeze({apart:2.8,near:.85,observer:14,cooldown:18,between:1.5});
 
 // One local exchange at a time, near enough to the player to be overheard. The words
 // come from the town's language model when the player has it running (town-mind.js),
@@ -53,15 +53,27 @@ export const CHAT_REACH=Object.freeze({apart:4.6,near:.85,observer:14,cooldown:1
 export function createNeighbourChats({world,observer,blocked=()=>false,state=()=>({}),onMemory=()=>{},writer=null,random=Math.random}){
  let clock=0,nextScan=2,active=null,sequence=0;const cooldown=new Map(),recent=new Map();
  const point=p=>{const v=p.g.getWorldPosition(new THREE.Vector3());v.y+=(p.profile.height||1.7)*.8;return v;};
- const signature=(p,minutes,rain)=>residentPlan(p.profile,minutes,rain,state()).place+'/'+place(p);
- const person=p=>({name:p.profile.name,age:p.profile.age,role:p.profile.role,personality:p.profile.personality,gossip:p.profile.gossip,profile:recipeFor(p.profile.name).profile});
+ const signature=(p,minutes,rain)=>{const plan=residentPlan(p.profile,minutes,rain,state());return plan.place+'/'+plan.target?.join(',')+'/'+place(p);};
+ const person=p=>({name:p.profile.name,age:p.profile.age,role:p.profile.role||p.spec?.role,personality:p.profile.personality,gossip:p.profile.gossip,profile:recipeFor(p.profile.name).profile});
  const pairKey=(a,b)=>[a.profile.name,b.profile.name].sort().join('|');
  function cancel(){if(active){for(const p of active.pair){delete p.g.userData.chat;delete p.g.userData.chatHold;if(p.g.userData.lookSource==='chat'){delete p.g.userData.lookTarget;delete p.g.userData.lookSource;}cooldown.set(p.profile.name,clock+CHAT_REACH.cooldown+random()*10);}active=null;}nextScan=clock+CHAT_REACH.between;}
- function eligible(p){return visible(p.g)&&!p.g.userData.sleeping&&!p.g.userData.waking&&!p.g.userData.roomTransition&&!p.g.userData.shopping&&!p.g.userData.serving&&!p.g.userData.usingTownObject&&(!p.g.userData.mealState||p.g.userData.mealState==='finished')&&(!p.g.userData.indoors||place(p)!=='street')&&!(p.g.userData.facePlayerUntil>performance.now())&&!(p.profile.name==='Chin'&&state().kenjiEscort==='walking')&&p.g.position.distanceTo(observer())<CHAT_REACH.observer;}
+ function eligible(p){
+  const u=p.g.userData;
+  return visible(p.g)&&!u.playerControlled&&!u.playerConversation&&!u.inVehicle&&!u.ferryPassenger&&!u.aboardFerry&&!u.ferryCrew&&!u.ferryShoreTask&&!u.onWatch&&!u.boarding&&!u.playing
+   &&!u.sleeping&&!u.waking&&!u.roomTransition&&!u.shopping&&!u.serving&&!u.restocking&&!u.shopReach&&!u.usingTownObject
+   &&(!u.mealState||u.mealState==='finished')&&(!u.indoors||place(p)!=='street')&&!(u.facePlayerUntil>performance.now())
+   &&!(p.profile.name==='Chin'&&state().kenjiEscort==='walking')&&p.g.getWorldPosition(new THREE.Vector3()).distanceTo(observer())<CHAT_REACH.observer;
+ }
+ // A doorway or another controller may move a body during an exchange. Never keep
+ // two people talking through one another, across rooms, or after they have parted.
+ function withinReach(a,b){
+  const pa=a.g.getWorldPosition(new THREE.Vector3()),pb=b.g.getWorldPosition(new THREE.Vector3()),d=Math.hypot(pa.x-pb.x,pa.z-pb.z);
+  return a.g.parent===b.g.parent&&place(a)===place(b)&&Math.abs(pa.y-pb.y)<.65&&d>=CHAT_REACH.near&&d<=CHAT_REACH.apart;
+ }
  function update(dt,minutes,rain=false){
   clock+=dt;
   if(active){
-   if(active.pair.some((p,i)=>!eligible(p)||signature(p,minutes,rain)!==active.signatures[i])||blocked(point(active.pair[0]),point(active.pair[1]))){cancel();return;}
+   if(active.pair.some((p,i)=>!eligible(p)||signature(p,minutes,rain)!==active.signatures[i])||!withinReach(...active.pair)||blocked(point(active.pair[0]),point(active.pair[1]))){cancel();return;}
    const elapsed=clock-active.start;
    let turn=active.ends.findIndex(t=>elapsed<t);if(turn<0){
     const [a,b]=active.pair.map(p=>p.profile.name);
@@ -80,12 +92,12 @@ export function createNeighbourChats({world,observer,blocked=()=>false,state=()=
    });return;
   }
   if(clock<nextScan)return;nextScan=clock+1;
-  const people=world.people.filter(eligible);let best=null,soon=null;
+  const people=[...world.people,...(world.homeNeighbours||[])].filter(eligible);let best=null,soon=null;
   for(let i=0;i<people.length;i++)for(let j=i+1;j<people.length;j++){
    const a=people[i],b=people[j],d=a.g.position.distanceTo(b.g.position);if(place(a)!==place(b)||d<CHAT_REACH.near)continue;
    // Further off, the model can start writing for them before they meet.
    if(d<12&&(!soon||d<soon.d))soon={a,b,d};
-   if(d>CHAT_REACH.apart||(cooldown.get(a.profile.name)||0)>clock||(cooldown.get(b.profile.name)||0)>clock||blocked(point(a),point(b)))continue;
+   if(!withinReach(a,b)||(cooldown.get(a.profile.name)||0)>clock||(cooldown.get(b.profile.name)||0)>clock||blocked(point(a),point(b)))continue;
    const written=EXCHANGES.filter(e=>[a.profile.name,b.profile.name].includes(e[0])&&[a.profile.name,b.profile.name].includes(e[1])),authored=written.length?written[Math.floor(random()*written.length)]:null;
    const ready=writer?.has?.(person(a),person(b));
    const score=d+(ready?-6:0)+(authored&&!recent.get(pairKey(a,b))?.includes('authored')?-4:0)-connectionWeight(state(),a.profile.name,b.profile.name);if(!best||score<best.score)best={a,b,authored,score};

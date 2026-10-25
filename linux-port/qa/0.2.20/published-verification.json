@@ -1,0 +1,65 @@
+{
+  "release": "https://github.com/nj22az/nj22az.github.io/releases/tag/johansson-world-linux-v0.2.20",
+  "tag": "johansson-world-linux-v0.2.20",
+  "target": "a56db3686b853907f08335c88e0197b96b972b47",
+  "assets": [
+    {
+      "name": "bundle-manifest.json",
+      "bytes": 269997,
+      "sha256": "2e88a5ec4a2f14c57930ff3c12ad62742347a6aa0471dfb6bd71c1d03876e596"
+    },
+    {
+      "name": "install.sh",
+      "bytes": 12961,
+      "sha256": "8261db16ba46561a2c4b4fd74f1dae79941289566b7a0914e2000e2be020d541"
+    },
+    {
+      "name": "johansson-world-512.png",
+      "bytes": 261803,
+      "sha256": "30c8ee9eb18ec1e1f703f17dccc3df787f64943207a77c57bf9e90893193cbfa"
+    },
+    {
+      "name": "johansson-world-linux-0.2.19-to-0.2.20.patch.tar.gz",
+      "bytes": 1671472,
+      "sha256": "b42c1b59c0c59160dd4b8a1d72850df9d71ab71a98c594177be8a9f41bbe1f42"
+    },
+    {
+      "name": "johansson-world-linux-x64.tar.gz",
+      "bytes": 268577860,
+      "sha256": "cede4a0676caecc579397e17baa016e251ab0203bb51e6dedcf53bdb6a2a7199"
+    },
+    {
+      "name": "latest-linux.json",
+      "bytes": 771,
+      "sha256": "b887fece42ce5de625c8347cea065868072309633fdee4603439f452578918e1"
+    },
+    {
+      "name": "SHA256SUMS",
+      "bytes": 217,
+      "sha256": "ac594416efcf7e46dc53d24a3f7a01ef24ad023db3c51241f38a10455f356f67"
+    }
+  ],
+  "verified_files": 1621,
+  "production_runtime_modules": 32,
+  "shared_sources": {
+    "src/avatars/build.js": "8e56000989e3cb9146aeca1cefb6183334e428a5e9c5b32b8858915822b91608",
+    "src/render/looks.js": "78f7a9c2c8f291d23f59fee6b5842dc0ed6c547c5af1867722cd8459d43a615a",
+    "src/render/ink-pipeline.js": "001cc698fdd66b84473768e2f8dab9d2889a141ec59188881e6b986f6401e0a5"
+  },
+  "desktop_build": {
+    "version": "0.2.20",
+    "source": "a56db3686b853907f08335c88e0197b96b972b47",
+    "offline": true
+  },
+  "patches": [
+    {
+      "from": "0.2.19",
+      "baseTree": "f14b33975b33c02b34d724b9ab8b742e544a95861c777a554fde99886364ef71",
+      "runtime": "1662b562ceff7e8bce4d63da4ab7040a83e8afc7c011a51c1611a8309c4232b1",
+      "archiveUrl": "https://github.com/nj22az/nj22az.github.io/releases/download/johansson-world-linux-v0.2.20/johansson-world-linux-0.2.19-to-0.2.20.patch.tar.gz",
+      "sha256": "b42c1b59c0c59160dd4b8a1d72850df9d71ab71a98c594177be8a9f41bbe1f42",
+      "bytes": 1671472
+    }
+  ],
+  "previous_release_assets_unchanged": true
+}

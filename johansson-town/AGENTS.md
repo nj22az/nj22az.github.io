@@ -103,7 +103,7 @@ less, by the named budgets there. Nothing else asks which edition it is. Later r
   much dialogue"). On the web a resident near the player (within `residentRadius`) or in view walks and behaves as on
   Linux; out of sight and out of reach they keep their timetable without walking it (`people/attention.js`,
   `schedules.js` settle, `neighbours.js`): no route searched, no step taken, so nobody is ever seen to jump. No chats
-  between residents, no happenings chains, no multi-line conversations. Stand points (`full-life.js setStandFilter`) are
+  between residents (superseded for nearby ambient exchanges on 25 October below), no happenings chains, no multi-line player conversations. Stand points (`full-life.js setStandFilter`) are
   kept for residents in view, near or in the player's room; a seen resident whose detour finds no way round waits half a
   town minute before searching again (`detourRetryMinutes`): talking to a resident is one short line for the
   moment (`greetings.js shortGreeting`, at most 35 characters) and whatever they sell or serve. The full conversations,
@@ -130,6 +130,16 @@ less, by the named budgets there. Nothing else asks which edition it is. Later r
   someone other than Johansson (`playingResident()` in `game.js`), so Johansson's web opening, house and view are
   unchanged. Moves → *Make a face* offers every face the painter knows, held for ten seconds. Conversations stay the web's
   short lines; the insult and apology choices stay Linux's.
+
+## Owner's decision — 25 October 2026: restore residents' social behaviour on the web
+
+The owner: "can you bring back npc behaviours? That they talk and interact with each other in a realistic way".
+This supersedes the browser ban on chats between residents: `BUDGETS.web.neighbourChats` is on. The existing
+personality/relationship exchanges run one pair at a time within 14 m of the observer, at ordinary conversational
+distance, with alternating speakers, facing and gestures, a reading pause, a cooldown and release back to the day's
+routine. Written dialogue works without a language model. Vehicles, ship duties, service, shopping, sleeping,
+authored activities and the player-controlled resident take priority. No social simulation during time catch-up.
+Far-away timetable limits, player conversation limits, trade and machinery budgets stay as before.
 
 ## Owner's decision — 21 October 2026: no way in without a working interior
 

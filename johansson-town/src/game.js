@@ -2246,7 +2246,7 @@ function advanceTown(dt,playerPaused,fastForward=false){
     // The ramen counter: an order is cooked for five seconds, then set down in front of you.
     venueService?.update(dt);beerService?.update(dt);ramenPlayerService?.update(dt);
     workplaceResidents.update(dt,minutes,weather);bookshopCustomers.update(dt,minutes);
-    castAI?.update(dt,minutes,weather);sakuraShop.update(dt);ramenGuests.sync(minutes,dt);ramenMeals.update(dt);satoKitchen?.update(dt);if(BUDGET.neighbourChats)neighbourChats.update(dt,minutes,weather);
+    castAI?.update(dt,minutes,weather);sakuraShop.update(dt);ramenGuests.sync(minutes,dt);ramenMeals.update(dt);satoKitchen?.update(dt);if(BUDGET.neighbourChats&&!catchingUp&&!playerPaused)neighbourChats.update(dt,minutes,weather);else neighbourChats.cancel();
     if(current&&!catchingUp)world.updateLife(dt,elapsed,daylight(minutes),minutes);
     if(!catchingUp){ferryCrew?.update(dt,minutes);neighbours?.update(dt,minutes,current?null:player.position);}
     if(!current&&!catchingUp){const swell=hold();world.update(dt,elapsed,daylight(minutes),minutes);carry(swell);if(!activities.state.quickTravelNotified&&travelProgress(activities.state).unlocked)activities.save();world.beats?.update(dt,elapsed,minutes);}

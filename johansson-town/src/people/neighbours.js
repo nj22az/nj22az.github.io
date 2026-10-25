@@ -179,7 +179,7 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
    else p.path=canonicalStreetRoute(navigation,spec.name,g.position,phase.target);
   }
   u.activity=phase.activity;u.place=phase.place;
-  const free=!u.playerConversation&&!u.aboardFerry;
+  const free=!u.playerConversation&&!u.chatHold&&!u.aboardFerry;
   if(free&&p.steps.length){
    const to=p.steps[0],dx=to[0]-g.position.x,dy=to[1]-g.position.y,dz=to[2]-g.position.z,len=Math.hypot(dx,dy,dz),step=Math.min(len,dt*.75);
    if(len<.025){p.steps.shift();if(!p.steps.length&&p.thenStreet){p.thenStreet=false;p.path=canonicalStreetRoute(navigation,spec.name,g.position,phase.target);}}
@@ -194,9 +194,9 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
   const arrived=!moving&&(goal?Math.hypot(g.position.x-goal[0],g.position.z-goal[2])<.35:Math.hypot(g.position.x-tx,g.position.z-tz)<.35);
   if(upstairs)u.indoors='home';else delete u.indoors;
   u.sleeping=upstairs&&phase.rest==='sleep';
-  u.walking=moving&&!u.aboardFerry;
-  standAtPoint(g,spec,phase.stand,arrived&&!u.playerConversation,dt);
-  if(arrived&&counter&&!u.playerConversation)faceAlong(g,...spec.face);
+  u.walking=moving&&free;
+  if(!u.chatHold)standAtPoint(g,spec,phase.stand,arrived&&!u.playerConversation,dt);
+  if(arrived&&counter&&free)faceAlong(g,...spec.face);
   g.visible=!u.aboardFerry&&!upstairs&&!(arrived&&phase.school);
  }
  return {
@@ -250,15 +250,15 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
       else p.path=canonicalStreetRoute(navigation,spec.name,g.position,phase.target);
      }
      g.userData.activity=phase.activity;g.userData.place=phase.place;
-     if(!g.userData.playerConversation&&!g.userData.aboardFerry&&p.path?.length){
+     if(!g.userData.playerConversation&&!g.userData.chatHold&&!g.userData.aboardFerry&&p.path?.length){
       const to=p.path[0],dx=to[0]-g.position.x,dz=to[1]-g.position.z,len=Math.hypot(dx,dz),step=Math.min(len,dt*(spec.profile.age>65?.7:1));
       if(len<.06)p.path.shift();else {const x=g.position.x+dx/len*step,z=g.position.z+dz/len*step;if(!blocked(x,z,.3)){g.position.set(x,groundAt(x,z),z);faceAlong(g,dx,dz);}}
      }
      const arrived=Math.hypot(g.position.x-phase.target[0],g.position.z-phase.target[1])<.35;
      if(arrived&&phase.place==='home')g.userData.indoors='home';else delete g.userData.indoors;
      g.userData.sleeping=arrived&&phase.place==='home'&&phase.rest==='sleep';
-     g.userData.walking=!arrived&&!!p.path?.length&&!g.userData.aboardFerry;
-     standAtPoint(g,spec,phase.stand,arrived&&!p.path?.length&&!g.userData.playerConversation,dt);
+     g.userData.walking=!arrived&&!!p.path?.length&&!g.userData.chatHold&&!g.userData.aboardFerry;
+     if(!g.userData.chatHold)standAtPoint(g,spec,phase.stand,arrived&&!p.path?.length&&!g.userData.playerConversation,dt);
      g.visible=!g.userData.aboardFerry&&!(arrived&&(phase.place==='home'||phase.school));
      continue;
     }
