@@ -42,8 +42,15 @@ not yet judged by the creator.**
 - `node tools/cosy-face-sheet.mjs` (new): a sheet per resident, today beside cosy, front, three-quarter, side and six
   expressions plus talking, in the ink pipeline (software GL). Copies for the creator: jojo
   `3d/cast/avatars-cad/cosy-face/<name>.jpg` and `all-six-front-and-three-quarter.jpg`. Every cell looked at.
-- Full guard and runtime: see the end of this note.
-- Not checked: a physical phone or a GPU browser; the Studio avatar creator page; the booted game with `?cosy=1`.
+- Full guard (`NODE_OPTIONS=--max-old-space-size=6144 node tools/ci-guard.mjs`, 85 files): 424/427 in one run. Three
+  failures: `runtime-package` (source changed, runtime not yet rebuilt) and `no-z-fighting` and `pair-poses`, both killed
+  by the container (SIGKILL, memory, no failed assertion). After `npm run build:runtime` (committed): `runtime-package`
+  4/4, `no-z-fighting` 13/13, `pair-poses` 4/4, each run on its own.
+- `node tools/cloud-boot-smoke.mjs --eyes3d --cosy` (new `--cosy` flag: boots with `?cosy=1`) on the rebuilt runtime,
+  phone viewport: island ready in 34 s, 7 steps, no page errors; Johansson's face photographed in the street (jojo
+  `3d/cast/avatars-cad/cosy-face/Johansson-in-game.jpg`). Seen there: at phone close-up a **faint thin line still traces
+  the cosy nose's lower edge** (today's bold double ring is gone); to remove it, widen `noseFoot` or lower `noseProfile`.
+- Not checked: a physical phone or a GPU browser; the Studio avatar creator page.
 
 ## Open, for the creator
 

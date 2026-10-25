@@ -1,7 +1,7 @@
 // Boots the whole game in a cloud session's software Chromium (swiftshader), presses START, and photographs one street
 // view and one room through the ?audit harness, timing each step: the check that the real game, not a stripped-down
 // scene, can be looked at from a cloud session.
-//   node tools/cloud-boot-smoke.mjs [--source] [--eyes3d] [out-dir]   (--eyes3d: start in third person and photograph Johansson's face)
+//   node tools/cloud-boot-smoke.mjs [--source] [--eyes3d] [--cosy] [out-dir]   (--eyes3d: start in third person and photograph Johansson's face; --cosy: with ?cosy=1)
 // The built runtime by default (rebuild it first: npm run build:runtime); --source serves the source modules instead.
 // About 35 s to "Island ready" and 60 s to play on a 4-core cloud machine. Run it alone: browsers or test suites
 // running beside it starve it, and the island then takes many minutes to draw.
@@ -11,7 +11,7 @@ import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {resolve,dirname,extname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..'),site=resolve(root,'..');
-const args=process.argv.slice(2),SOURCE=args.includes('--source'),HERO=args.includes('--world-hero'),EYES3D=args.includes('--eyes3d');
+const args=process.argv.slice(2),SOURCE=args.includes('--source'),HERO=args.includes('--world-hero'),EYES3D=args.includes('--eyes3d'),COSY=args.includes('--cosy');
 const out=resolve(args.find(a=>!a.startsWith('--'))||resolve(root,'output/cloud-boot-smoke'));await mkdir(out,{recursive:true});
 const TYPES={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.css':'text/css','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.glb':'model/gltf-binary','.svg':'image/svg+xml','.hdr':'application/octet-stream','.wasm':'application/wasm'};
 const sourcePage=html=>html.replace(/<link rel="modulepreload" data-town-runtime[^>]*>\n?/g,'')
@@ -32,7 +32,7 @@ try{
  await context.addInitScript(()=>{localStorage.setItem('johansson-town-clock',JSON.stringify({start:'12:20',speed:1}));if(new URLSearchParams(location.search).has('eyes3d'))localStorage.setItem('johansson-town-view','third');Element.prototype.requestFullscreen=async()=>{};});
  const page=await context.newPage();page.setDefaultTimeout(600000);
  page.on('pageerror',e=>report.errors.push(e.message));
- await page.goto(`http://127.0.0.1:${server.address().port}/johansson-town/?audit&visual-audit${EYES3D?'&eyes3d':''}`);step('page loaded');
+ await page.goto(`http://127.0.0.1:${server.address().port}/johansson-town/?audit&visual-audit${EYES3D?'&eyes3d':''}${COSY?'&cosy=1':''}`);step('page loaded');
  await page.locator('#enter:not([disabled])').waitFor();step('island ready');
  await page.locator('#enter').click();
  await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_AUDIT__&&!window.__JOHANSSON_AUDIT__.blocked.catchingUp);step('playing');
