@@ -1,0 +1,18 @@
+✔ published runtime matches the current source rather than an older build (185.984918ms)
+✔ published page uses one compiled audio/boot graph with local hashed dependencies (60.836038ms)
+✔ every stylesheet link carries a hash of the file it points at (5.730256ms)
+✔ delivered chunks contain no retired combat handlers, menus, damage simulation or rewards (68.781622ms)
+✔ ordinary game retains full wall and water boundary (67.849649ms)
+✔ runtime and camera follow corrected editable CAD, one standard deck (0.306458ms)
+✔ actual world pedestrian routes and photo positions are clear, with guard rails at edges (402.07794ms)
+✔ old wall is cut; garden retained; whole armour envelopes removed (0.831062ms)
+✔ evaluated Blender meshes have finite unit normals, and ground comes from standard deck only (2.75565ms)
+✔ new pier, rail bay and retained shore have no exposed coplanar overlaps (12081.037534ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15592.325841
