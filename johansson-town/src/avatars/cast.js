@@ -72,13 +72,15 @@ export const CAST_RECIPES=castSet({
  // body silhouette is Studio's unset 'neutral', which the town resolves by who she is, as for everyone (castSet above):
  // the bath side, the swimwear and the after-bath clothes all follow it.
  Thuan:R({...THUAN_STUDIO_DESIGN,swim:{...THUAN_STUDIO_DESIGN.swim,style:'onepiece'}}),
- // Thuan's middle sister: slim, a high ponytail, a plain white tee and blue shorts.
- // Stubborn but friendly: the flat set mouth and straight brows, and the grin under them.
- Thao:R({name:'Thao',body:{height:.44,build:.3,silhouette:'feminine',skin:'#ecc6a0'},head:{size:.46,shape:.4,form:'oval',jaw:.3,cheeks:.4},
-  hair:{style:'ponytail',colour:'#1c1714'},eyes:{style:'almond',colour:'#2a1d16',size:.5,spacing:.5,height:.5,tilt:.55},
-  brows:{style:'straight',colour:'#1c1714',size:.45,tilt:.42},nose:{style:'button',size:.35},mouth:{style:'flat',colour:'#b8544a',size:.42},blush:.2,
-  accessories:{earrings:'studs',colour:'#e0b93a'},
-  outfit:{top:'tee',topColour:'#f4f1ea',bottom:'shorts',bottomColour:'#7fb0d8',footwear:'sandals',shoes:'#f4f1ea',accent:'#7fb0d8'}}),
+ // Thao's owner-requested ribbon dress and a distinct adult face, 25 October 2026.
+ // Keep her established stature and character; no earrings.
+ Thao:R({name:'Thao',body:{height:.44,build:.3,silhouette:'feminine',skin:'#ecc6a0'},head:{size:.44,shape:.4,form:'sculpted',jaw:.38,cheeks:.44,roundness:.15},
+  hair:{style:'sidepartwaves',colour:'#241b19',length:.32,volume:.55,tieColour:'#202027'},
+  eyes:{style:'almond',colour:'#39281f',size:.55,width:.56,spacing:.47,height:.51,tilt:.58},
+  brows:{style:'tapered',colour:'#332320',size:.42,height:.56,tilt:.48},nose:{style:'nostrils',size:.28,height:.48},
+  mouth:{style:'soft',colour:'#b65b64',size:.47,width:.48,height:.48},blush:.23,mole:true,moleSpot:{x:.73,height:.35,size:.24},
+  accessories:{earrings:'none',colour:'#e0b93a'},
+  outfit:{top:'ribbondress',topColour:'#f2b8c6',bottom:'skirt',skirtCut:'classic',bottomColour:'#f2b8c6',footwear:'sandals',shoes:'#6e4a33',accent:'#202027'}}),
  // Nhung, the eldest of the three sisters (Nhung, Thao, Thuan), is the island doctor since 22 October 2026 (the owner:
  // "Have this female doctor replace Nhung"): the look the clinic's doctor had at her desk (world/interiors/town-hall.js,
  // the room's own drawing until then) is hers everywhere. A white coat over a sage shirt (her own colour; the clinic drew it pale blue, Thao's), round half-rim glasses,

@@ -1,0 +1,35 @@
+✖ on every pair at the still: in nothing of the other body, the hands where the pose puts them, both on the floor (20820.351513ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 21062.483008
+
+✖ failing tests:
+
+test at johansson-town/tests/pair-poses.test.mjs:67:1
+✖ on every pair at the still: in nothing of the other body, the hands where the pose puts them, both on the floor (20820.351513ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   'Fight, Thao + Vy: Vy’s chest 7 mm into Thao',
+  +   'BackToBack, Thao + Vy: Thao’s skirtB 15 mm into Vy'
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///workspace/scratch/3cbe812a3d23/repo/johansson-town/tests/pair-poses.test.mjs:107:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'Fight, Thao + Vy: Vy’s chest 7 mm into Thao', 'BackToBack, Thao + Vy: Thao’s skirtB 15 mm into Vy' ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

@@ -1,0 +1,14 @@
+{
+  "authoring": "Blender 4.5.3 LTS",
+  "vertices": 2357,
+  "triangles": 3930,
+  "pieces": 22,
+  "source": "Owner photograph, bodice only; matching skirt is original design",
+  "coordinate_system": "X half-width, Y torso fraction, Z half-depth; skirt Y is normalized drop",
+  "notes": [
+    "Open neckline and hem",
+    "Flat wide straps",
+    "Scalloped mesh band and threaded black ribbon",
+    "No earrings included"
+  ]
+}

@@ -1,3 +1,5 @@
+import {SIDEPART_WAVES} from './sidepart-waves-data.js';
+import {ribbonBodicePieces,ribbonSkirtGeometry} from './ribbon-dress.js';
 import {pressedSkirtGeometry} from './pressed-skirt.js';
 import {authoredSkirtGeometry,authoredSkirtMaterial} from './authored-skirt.js';
 import {skirtSpec,skirtRadiusAt,tailoredSkirtGeometry} from './skirt-shape.js';
@@ -405,8 +407,8 @@ function addHair(list,recipe,m){
  const dark=new THREE.Color(c).multiplyScalar(.82).getStyle();
  // What hangs swings on its own chain of bones (springs.js); the rest is the head's.
  const swing=springRest(recipe,m),tailShare=chainShare('head',['hairA','hairB'],[swing.rest.hairA,swing.rest.hairB,swing.chains.find(ch=>ch.kind==='hair')?.tip??swing.rest.hairB]);
- if(style==='sweptponytail'||style==='longbraids'){
-  for(const asset of SWEPT_PONYTAIL){
+ if(style==='sweptponytail'||style==='longbraids'||style==='sidepartwaves'){
+  for(const asset of style==='sidepartwaves'?SIDEPART_WAVES:SWEPT_PONYTAIL){
    if(style==='longbraids'&&asset.kind==='tail')continue;
    const positions=asset.vertices.flatMap(([x,y,z])=>{
     const p=new THREE.Vector3(x*side,y,z);if(asset.kind==='head')shapeHeadPoint(p,m.profile);
@@ -477,7 +479,7 @@ function addHair(list,recipe,m){
  // How much each hair point is tucked (head-cover.js): a fitted cap from its band up, a kerchief under its cloth, the
  // other full hats everything above the line y = 0.3.
  const tuck=recipe.outfit.hat==='police'?policeCapTuck:recipe.outfit.hat==='kerchief'?kerchiefTuck:(x,y)=>y>.3?1:0;
- if(style==='longfringe')for(const g of list.slice(hairStart))g.attributes.ink.array.fill(.35);
+ if(style==='longfringe'||style==='sidepartwaves')for(const g of list.slice(hairStart))g.attributes.ink.array.fill(.35);
  if(!HAIR_OUT_HATS.includes(recipe.outfit.hat))for(const g of list.slice(hairStart)){
   const pos=g.attributes.position;g.userData.hatHair={position:pos.array.slice(),normal:g.attributes.normal.array.slice()};for(let i=0;i<pos.count;i++){
    const x=pos.getX(i)/S[0],y=(pos.getY(i)-m.headCentre)/S[1],z=pos.getZ(i)/S[2],r=Math.hypot(x,y,z);
@@ -894,7 +896,7 @@ function addBody(list,recipe,m,swim=false){
  // The base layer everyone has on under their clothes: a tank top and underwear.
  const tank=!swim&&o.top==='tank',briefs=!swim&&o.bottom==='underwear';
  // A running vest after the bath (outfits.js AFTERBATH) is its own shell over the bare body, like the tank top's.
- const running=!swim&&o.top==='running';
+ const running=!swim&&o.top==='running',ribbon=!swim&&o.top==='ribbondress';
  // The torso: a lathe, full width up to square shoulders that round off into the neck.
  // A sturdier build carries a little more round the middle, so a bare torso is shaped
  // like a body rather than a box.
@@ -916,7 +918,7 @@ function addBody(list,recipe,m,swim=false){
   // (Not where the lathe closes up between the legs: there the columns would meet in a pinwheel.)
   if(p.y<waist)return stripes&&Math.hypot(p.x/(W/2),p.z/(D/2))>.55?stripes(p,0,28,W/2,D/2):bottom;
   // Under a tank top the body is bare; the vest is its own garment, added below.
-  if(tank||running)return skin;
+  if(tank||running||ribbon)return skin;
   // An open front shows the shirt under it (the accent colour); the happi coat's front is painted (garment.js). It is
   // the lathe's front columns, chosen by their angle round the body (π/14, the first column either side of the middle,
   // the band the old measure across picked down a straight chest): by distance across, a waist narrower than the chest
@@ -928,7 +930,8 @@ function addBody(list,recipe,m,swim=false){
  // The shirt's details are painted, not modelled (garment.js): the torso carries the
  // garment texture's UVs, the cloth stays its vertex colour underneath.
  const torsoSkin=p=>{const chest=THREE.MathUtils.smoothstep(p.y,hipY+m.torso*.15,hipY+m.torso*.55);return [['hips',1-chest],['chest',chest]];};
- part(list,lathe,torsoSkin,torsoColour,M(0,hipY,0,0,0,0,W/2,m.torso,D/2),swim?null:p=>torsoUV(p,m));
+ const torsoPiece=part(list,lathe,torsoSkin,torsoColour,M(0,hipY,0,0,0,0,W/2,m.torso,D/2),swim||ribbon?null:p=>torsoUV(p,m));
+ if(ribbon){const P=torsoPiece.attributes.position,I=torsoPiece.attributes.ink;for(let i=0;i<P.count;i++)if(P.getY(i)<hipY+m.torso*.80)I.setX(i,0);}
  if(tank){
   // The vest: a thin shell over the body from the waist to straight across the chest,
   // so its edge is a clean line, and two straps that follow the shoulders over the top.
@@ -941,6 +944,13 @@ function addBody(list,recipe,m,swim=false){
    pts.push([x,hipY+m.torso*1.035,0]);
    const path=pts.concat(pts.slice(0,-1).reverse().map(([px,py,pz])=>[px,py,-pz]));
    for(let i=1;i<path.length;i++)tube(list,path[i-1],path[i],.016*m.k,'chest',top,6);
+  }
+ }
+ if(ribbon){
+  for(const piece of ribbonBodicePieces(m,bodyVolume(recipe,m))){
+   const share=p=>{const t=THREE.MathUtils.smoothstep(p.y,hipY+m.torso*.15,hipY+m.torso*.55);return [['hips',1-t],['chest',t]];};
+   const colour=piece.tone==='ribbon'?o.accent:piece.tone==='lace'?new THREE.Color(top).lerp(new THREE.Color('#fff4f8'),.24).getStyle():top;
+   part(list,piece.geometry,share,colour).attributes.ink.array.fill(piece.tone==='cloth'?.22:0);
   }
  }
  if(running)runningShirt(list,recipe,m,top);
@@ -1024,7 +1034,7 @@ function addBody(list,recipe,m,swim=false){
  // Arms: one soft piece from shoulder to wrist, bending at the elbow; a sleeve over the
  // top that rounds into the shoulder; a round hand.
  const longSleeve=!swim&&SLEEVED_LONG.includes(o.top);
- const coveredSleeve=!swim&&!tank&&!running&&o.top!=='sundress';
+ const coveredSleeve=!swim&&!tank&&!running&&!ribbon&&o.top!=='sundress';
  const armT=m.upper/(m.upper+m.fore);
  for(const s of ['L','R']){
   const sx=s==='L'?1:-1,sh=[sx*m.shoulderX,m.shoulderY,0],hd=[sx*(m.shoulderX+.015),m.shoulderY-m.upper-m.fore,0];
@@ -1044,12 +1054,12 @@ function addBody(list,recipe,m,swim=false){
   // it stretches over a raised arm rather than coming apart from the body.
   const capShare=p=>{const w=THREE.MathUtils.smoothstep(Math.abs(p.x),m.shoulderX-m.armR*1.1,m.shoulderX+m.armR*.3);return [['chest',1-w],['shoulder'+s,w]];};
   // Flattened on top so the shoulder slopes from the neck rather than standing up in a pad.
-  part(list,new THREE.SphereGeometry(m.armR*1.18,16,12),capShare,swim||tank||running||o.top==='sundress'?skin:sleeve,M(sh[0]-sx*m.armR*.12,sh[1]-m.armR*.05,0,0,0,0,1,.62,Math.min(1.1,D/W*1.6)));
+  part(list,new THREE.SphereGeometry(m.armR*1.18,16,12),capShare,swim||tank||running||ribbon||o.top==='sundress'?skin:sleeve,M(sh[0]-sx*m.armR*.12,sh[1]-m.armR*.05,0,0,0,0,1,.62,Math.min(1.1,D/W*1.6)));
   // A short sleeve: one closed, rounded sleeve over the top of the arm, starting inside the
   // shoulder cap and lent to the chest at its top, so the shirt runs from the neck to the
   // hem without a seam. A kariyushi's is a little roomier and boxier, as real ones are.
   // Its print and its hem band are painted (garment.js), not separate pieces.
-  if(!swim&&!longSleeve&&!tank&&!running&&o.top!=='sundress'){
+  if(!swim&&!longSleeve&&!tank&&!running&&!ribbon&&o.top!=='sundress'){
    const roomy=o.top==='kariyushi',a0=[sh[0]-sx*m.armR*.05,sh[1]+m.armR*.08,0],a1=[sh[0]+sx*.008,sh[1]-m.upper*(roomy?.52:.56),0];
    limb(list,a0,a1,m.armR*(roomy?1.20:1.16),m.armR*(roomy?1.16:1.12),sleeve,{...arm,joints:[],root:['chest',.55,.3],uvAt:p=>sleeveUV(p,a0,a1,sx)});
   }
@@ -1123,7 +1133,7 @@ function addBody(list,recipe,m,swim=false){
    const shin=b==='longskirt'?THREE.MathUtils.smoothstep(hipY-p.y,m.thigh*.82,m.thigh*1.02):0;
    return [['hips',1-leg],['thighL',leg*(1-shin)*w],['thighR',leg*(1-shin)*(1-w)],['kneeL',leg*shin*w],['kneeR',leg*shin*(1-w)]];
   };
-  const skirt=b==='skirt'?tailoredSkirtGeometry(m):b==='pleatedskirt'?pleatedSkirtGeometry(m,len):new THREE.CylinderGeometry(m.hips*.53,m.hips*.66+len*.22,len,32,8,true);
+  const skirt=b==='skirt'?(ribbon?ribbonSkirtGeometry(m):tailoredSkirtGeometry(m)):b==='pleatedskirt'?pleatedSkirtGeometry(m,len):new THREE.CylinderGeometry(m.hips*.53,m.hips*.66+len*.22,len,32,8,true);
   const hem=hemSpec(recipe,m);
   const cloth=part(list,skirt,hem?quarterShare(hem,drape):drape,o.bottomPattern==='plaid'?(p=>{const vertical=Math.floor((Math.atan2(p.x,p.z)*12/Math.PI))%4===0,horizontal=Math.floor((hipY-p.y)/(.06*m.k))%4===0;return vertical||horizontal?o.accent:bottom;}):b==='pleatedskirt'?(p=>{
    const angle=Math.atan2(p.x,p.z*W/D),phase=((angle/(Math.PI*2)*12)%1+1)%1;
@@ -1544,7 +1554,7 @@ function addTenugui(list,recipe,m){
  * - the end tucked in at the back of the crown, a flap with its band near the edge, coming out from under that turn.
  * Long hair needs more towel round it: a fuller dome (LONG_HAIR).
  */
-const LONG_HAIR=new Set(['longfringe','bob','long','ponytail','braids','longbraids','bun','perm','shoulder','pigtails','twinbuns','afro','mullet','curtains']);
+const LONG_HAIR=new Set(['sidepartwaves','longfringe','bob','long','ponytail','braids','longbraids','bun','perm','shoulder','pigtails','twinbuns','afro','mullet','curtains']);
 export const TURBAN=Object.freeze({front:.54,side:.3,back:-.48,lift:.16,radius:1.17,longRadius:1.23,snug:1.05,swell:.3,inner:.96,tuck:.08,
  twist:Object.freeze({reach:1.45,radius:.11,turns:1.5,band:Object.freeze([.5,.63])}),
  hem:Object.freeze({rows:Object.freeze([-.03,0,.03,.06,.09,.13,.17,.2]),band:Object.freeze([.09,.17])}),flap:Object.freeze({from:2.38,to:2.95,band:Object.freeze([.6,.78])})});

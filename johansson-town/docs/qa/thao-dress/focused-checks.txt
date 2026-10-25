@@ -1,0 +1,16 @@
+✔ Thao wears the shared Blender dress, long waves and no earrings; share codes preserve them (3.375895ms)
+✔ Blender bodice/straps fit a range of actual torso volumes and leave skin above the neckline (111.494624ms)
+✔ matching skirt has open waist/hem, bounded topology and outward surface normals (6.685024ms)
+✔ shared rig weights and clothing changes remain finite during walking and sitting (2466.25011ms)
+✔ published runtime matches the current source rather than an older build (340.937422ms)
+✔ published page uses one compiled audio/boot graph with local hashed dependencies (104.175358ms)
+✔ every stylesheet link carries a hash of the file it points at (6.425799ms)
+✔ delivered chunks contain no retired combat handlers, menus, damage simulation or rewards (177.508448ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2813.135928

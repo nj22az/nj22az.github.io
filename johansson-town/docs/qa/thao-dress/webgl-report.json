@@ -1,0 +1,11 @@
+{
+  "kind": "Actual WebGL shared avatar renderer; software Chromium; not physical-device acceptance",
+  "errors": [],
+  "views": [
+    "game-front",
+    "game-three-quarter",
+    "game-side",
+    "game-back",
+    "game-portrait"
+  ]
+}

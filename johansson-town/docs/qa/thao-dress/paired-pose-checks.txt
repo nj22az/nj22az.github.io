@@ -1,0 +1,16 @@
+✔ every pair is on the list with what it is for, its faces, and its two roles among the moves; the photo studio keeps them out of its single poses (0.841149ms)
+✔ on every pair at the still: in nothing of the other body, the hands where the pose puts them, both on the floor (19297.579641ms)
+✔ the fit is the same every time, and the partner stands where it says (124.803384ms)
+✔ each role plays alone like any move: smoothly, the same every time, and the body is itself again after (12715.808293ms)
+✔ Thao wears the shared Blender dress, long waves and no earrings; share codes preserve them (2.709225ms)
+✔ Blender bodice/straps fit a range of actual torso volumes and leave skin above the neckline (73.403383ms)
+✔ matching skirt has open waist/hem, bounded topology and outward surface normals (2.031921ms)
+✔ shared rig weights and clothing changes remain finite during walking and sitting (2720.415721ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 32354.489346

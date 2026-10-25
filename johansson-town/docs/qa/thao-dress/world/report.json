@@ -1,0 +1,46 @@
+{
+  "source": false,
+  "viewport": [
+    1280,
+    900
+  ],
+  "physicalDevice": false,
+  "steps": [
+    {
+      "name": "page loaded",
+      "s": 0.4
+    },
+    {
+      "name": "island ready",
+      "s": 13
+    },
+    {
+      "name": "playing",
+      "s": 15.1
+    },
+    {
+      "name": "entered Minato Izakaya",
+      "s": 23
+    },
+    {
+      "name": "Thao located",
+      "s": 23,
+      "position": [
+        0.95,
+        0,
+        -2.35
+      ],
+      "visible": true,
+      "indoor": true
+    },
+    {
+      "name": "photographed thao-in-izakaya",
+      "s": 58.1
+    },
+    {
+      "name": "photographed thao-izakaya-wide",
+      "s": 83.3
+    }
+  ],
+  "errors": []
+}

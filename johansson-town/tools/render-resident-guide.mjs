@@ -53,7 +53,7 @@ try {
  await writeFile(resolve(root,'resident-guide.js'),'// Generated from guide/residents.json by tools/render-resident-guide.mjs.\nwindow.JOHANSSON_RESIDENT_GUIDE = '+JSON.stringify(catalogue)+';\n');
  // outfit-constants.js: the outfits residents' own looks are built from (the harbour polo, Thuan's sailor set, the after-bath
  // clothes). The wardrobe sets in outfits.js change with every new set and are not hashed.
- const sourceFiles=['guide/residents.json','src/avatars/build.js','src/avatars/authored-skirt.js','src/avatars/authored-skirt-data.js','src/avatars/cast.js','src/avatars/looks.js','src/avatars/looks-data.js','src/avatars/recipe.js','src/avatars/outfit-constants.js','src/avatars/face.js','src/avatars/head-profile.js','src/avatars/garment.js','src/people/resident-personalities.js','src/render/cel.js'];
+ const sourceFiles=['guide/residents.json','src/avatars/build.js','src/avatars/ribbon-dress.js','src/avatars/ribbon-dress-data.js','src/avatars/sidepart-waves-data.js','src/avatars/springs.js','src/avatars/authored-skirt.js','src/avatars/authored-skirt-data.js','src/avatars/cast.js','src/avatars/looks.js','src/avatars/looks-data.js','src/avatars/recipe.js','src/avatars/outfit-constants.js','src/avatars/face.js','src/avatars/head-profile.js','src/avatars/garment.js','src/people/resident-personalities.js','src/render/cel.js'];
  const hash=createHash('sha256');for(const path of sourceFiles)hash.update(path+'\0').update(await readFile(resolve(root,path))).update('\0');
  await writeFile(resolve(root,'guide/portraits.json'),JSON.stringify({sourceFiles,sha256:hash.digest('hex'),count:catalogue.length},null,2)+'\n');
  console.log('Rendered',portraits.length,'resident portraits from the live avatar pipeline.');

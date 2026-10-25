@@ -79,10 +79,19 @@ function bodyOf(avatar){
  // a skirt or a dress (the drawn points the thighs carry that stand well off the legs: a long skirt hangs 10 to 15 cm out
  // from them), kept from the partner as it is drawn: the legs' round limbs are the trousers' (BackToBack, 2026-10-20: a
  // grandmother's long skirt against a child's back)
- const skirt=[];
- for(const mesh of meshes){const P=mesh.geometry.attributes.position,I=mesh.geometry.attributes.skinIndex;if(!I)continue;
-  for(let i=0;i<P.count;i+=3){const bone=mesh.skeleton.bones[I.getX(i)]?.name;if(!/^(thigh|knee)[LR]$/.test(bone))continue;q.fromBufferAttribute(P,i);
-   if(q.y<m.foot+.04||q.y>m.hipY-.02)continue;const sx=bone.endsWith('L')?1:-1;if(Math.hypot(q.x-sx*m.hipX,q.z)-m.legR>.04*m.k)skirt.push({bone,p:q.toArray()});}}
+ const skirt=[],seenCloth=new Set();
+ for(const mesh of meshes){const P=mesh.geometry.attributes.position,I=mesh.geometry.attributes.skinIndex,W=mesh.geometry.attributes.skinWeight,F=mesh.geometry.attributes.towelFit;if(!I)continue;
+  for(let i=0;i<P.count;i+=3){const bone=mesh.skeleton.bones[I.getX(i)]?.name,cloth=F&&F.getX(i)===2;
+   if(!cloth&&!/^(thigh|knee)[LR]$/.test(bone))continue;q.fromBufferAttribute(P,i);
+   if(q.y<m.foot+.04||q.y>m.hipY-.02)continue;
+   const sx=q.x>=0?1:-1;if(Math.hypot(q.x-sx*m.hipX,q.z)-m.legR<=.04*m.k)continue;
+   if(!cloth){skirt.push({bone,p:q.toArray()});continue;}
+   // Hem springs can carry most of a skirt vertex. Include that cloth and
+   // its actual leg/hip blend instead of discarding it or moving it rigidly.
+   const key=q.toArray().map(v=>Math.round(v*1e5)).join(',');if(seenCloth.has(key))continue;seenCloth.add(key);
+   const weights=new Map();for(let k=0;k<4;k++){const w=W.array[i*4+k];if(w<=.001)continue;let n=mesh.skeleton.bones[I.array[i*4+k]].name;if(/^skirt/.test(n))n='hips';weights.set(n,(weights.get(n)||0)+w);}
+   skirt.push({bone,p:q.toArray(),weights:[...weights]});
+  }}
  b={key,avatar,m,vol,S,hc,pts,gap,cloth,skirt,soles:createSoleFinder(avatar),reach:reachOf(m)};
  bodies.set(avatar,b);return b;
 }
@@ -173,8 +182,9 @@ function headGap(A,poseA,B,poseB,M){
 function bodyGap(A,poseA,B,poseB,M,armsA=null,armsB=null,heads=true,skirts=false,headMargin=0){
  const I=new THREE.Matrix4(),fB=field(B,poseB,M,armsB,heads),fA=field(A,poseA,I,armsA,heads),FA=posed(A,withArms(poseA,armsA)),FB=posed(B,withArms(poseB,armsB));
  let g=Infinity;
- for(const {bone,p} of bodyPoints(A,!!armsA,skirts))g=Math.min(g,fB(FA.at(bone,p)));
- for(const {bone,p} of bodyPoints(B,!!armsB,skirts))g=Math.min(g,fA(FB.at(bone,p).applyMatrix4(M)));
+ const point=(F,o)=>o.weights?o.weights.reduce((p,[bone,w])=>p.addScaledVector(F.at(bone,o.p),w),new THREE.Vector3()):F.at(o.bone,o.p);
+ for(const o of bodyPoints(A,!!armsA,skirts))g=Math.min(g,fB(point(FA,o)));
+ for(const o of bodyPoints(B,!!armsB,skirts))g=Math.min(g,fA(point(FB,o).applyMatrix4(M)));
  // (and the heads against the other's body: a chin on a shoulder, a child's head at a chest)
  const hA=posed(A,poseA).bone('head'),hB=new THREE.Matrix4().multiplyMatrices(M,posed(B,poseB).bone('head'));
  if(heads){
@@ -355,7 +365,7 @@ const BACK_CLOTH=.006;
  *  them (positive toward A's right), so negative: the lens on A's left, across the line between the two. */
 export const BACK_TO_BACK_VIEW=-(Math.PI/2-BACK_TURN);
 function fitBackToBack(ctx){
- const {A,B}=ctx,yawB=Math.PI-2*BACK_TURN,flowingHair=A.avatar.recipe.hair.style==='longfringe'||B.avatar.recipe.hair.style==='longfringe';
+ const {A,B}=ctx,yawB=Math.PI-2*BACK_TURN,flowingHair=[A,B].some(b=>['longfringe','sidepartwaves'].includes(b.avatar.recipe.hair.style));
  const panelClearance=(A.avatar.recipe.outfit.skirtCut==='panel'||B.avatar.recipe.outfit.skirtCut==='panel')?.01*Math.max(A.m.k,B.m.k):0;
  // B's place: behind A and to A's left, along the line between the two fronts (A's front +z, B's at yawB), so B's back
  // faces A's; s metres along it

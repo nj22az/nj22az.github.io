@@ -108,3 +108,5 @@ tree-rebuild.test.mjs
 
 # Blender seawall overlook prototype.
 seawall-photo.test.mjs
+
+ribbon-dress.test.mjs

@@ -35,7 +35,7 @@ export const ageClass=years=>!Number.isFinite(+years)?'adult':years<13?'child':y
 export const PARTS=Object.freeze({
  silhouette:Object.freeze(['neutral','feminine','masculine']),
  head:HEAD_FORMS,
- hair:Object.freeze(['crop','sidepart','bob','long','ponytail','sweptponytail','braids','longbraids','bun','spiky','perm','buzz','afro','horseshoe','bald','pixie','shoulder','curtains','slick','mullet','topknot','pigtails','twinbuns','longfringe']),
+ hair:Object.freeze(['crop','sidepart','bob','long','ponytail','sweptponytail','braids','longbraids','bun','spiky','perm','buzz','afro','horseshoe','bald','pixie','shoulder','curtains','slick','mullet','topknot','pigtails','twinbuns','longfringe','sidepartwaves']),
  eyes:Object.freeze(['round','dot','almond','sleepy','lashes','narrow','sparkle','gentle','doe','cat','droopy','heavy','bright','tired','squint','starry','inkoval']),
  brows:Object.freeze(['straight','arched','thick','thin','worried','bushy','angled','short','rounded','tapered','feathered','maro','none']),
  nose:Object.freeze(['button','dot','line','wide','hook','pointed','snub','bulb','ridge',...Object.keys(INK_NOSES),'none']),   // then the ink noses (face.js)
@@ -52,7 +52,7 @@ export const PARTS=Object.freeze({
   // The wardrobe plan's batch 2 (2026-10-11): painted on the body every top already has (garment.js).
   'shirt','vest','knitvest','gymtee','baseball',
   // Cute everyday wear (the creator, 2026-10-14: "characters need to … have cute clothes"), painted the same way.
-  'raglan','pinafore','stripedvest']),
+  'raglan','pinafore','stripedvest','ribbondress']),
  bottom:Object.freeze(['underwear','shorts','trousers','skirt','longskirt','widepants','cropped','culottes','pleatedskirt']),
  footwear:Object.freeze(['barefoot','sneakers','sandals','shoes','boots']),
  hat:Object.freeze(['none','cap','captain','police','helmet','straw','headband','kerchief','beanie','beret','bucket','ribbon','squid','teapot','sunflower','paperboat','mountain',

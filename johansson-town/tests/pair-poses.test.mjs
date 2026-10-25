@@ -90,7 +90,8 @@ test('on every pair at the still: in nothing of the other body, the hands where 
    // back) within BACK of each other, or touching; each facing away from the other (B behind A, A behind B), the arms
    // folded in front, clear of the partner (above)
    // (the drawn surface of one against the other's bare core: the drawn lathe is too coarse to measure from vertex to vertex)
-   const torso=p=>/^(hips|spine|chest|thigh[LR])$/.test(p.bone),back=Math.min(clearance(sA.filter(torso),cB),clearance(sB.filter(torso),cA));
+   // Short draped skirts can be carried primarily by their hem spring; that cloth is also a physical back contact.
+   const torso=p=>/^(hips|spine|chest|thigh[LR]|skirt[FBLR])$/.test(p.bone),back=Math.min(clearance(sA.filter(torso),cB),clearance(sB.filter(torso),cA));
    if(back>BACK)wrong.push(`${tag}: the backs are ${(back*1000).toFixed(0)} mm apart`);
    const hipsB=inFrame(A,B.avatar.bones.hips.getWorldPosition(new THREE.Vector3())),hipsA=inFrame(B,A.avatar.bones.hips.getWorldPosition(new THREE.Vector3()));
    if(hipsB.z>-.1||hipsA.z>-.1)wrong.push(`${tag}: not back to back (B at z ${hipsB.z.toFixed(2)} of A, A at z ${hipsA.z.toFixed(2)} of B)`);

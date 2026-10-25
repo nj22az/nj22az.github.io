@@ -11,6 +11,7 @@ export {THUAN_SAILOR_OUTFIT,HARBOUR_POLO_OUTFIT,AFTERBATH,houseDressColour} from
  * are appended, never renamed.
  */
 export const ISLAND_OUTFITS=Object.freeze([
+ {id:'thao-ribbon-dress',name:'Thao ribbon dress',label:'Pink ribbon dress',category:'Everyday',tags:['Thao','pink','bow','dress','Blender'],who:'Thao; a shared choice for every avatar',why:'Broad shoulder straps, fitted cotton, an eyelet ribbon band and a black bow. The matching skirt completes the owner reference, whose hem is not visible.',outfit:{top:'ribbondress',topColour:'#f2b8c6',accent:'#202027',bottom:'skirt',skirtCut:'classic',bottomColour:'#f2b8c6',bottomPattern:'none',footwear:'sandals',shoes:'#6e4a33',pattern:'none'}},
  {id:'harbour-polo',name:'Harbour polo and cream pleats',label:'Harbour polo',category:'Everyday',tags:['ferry','harbour','polo','pleats'],
   who:'the harbour visitor off the ferry; Thuan on her days off',why:'A navy polo with a cream collar over cream pleats: smart on the ferry deck, cool on the quay.',outfit:HARBOUR_POLO_OUTFIT},
  {id:'academy-sailor',name:'Harbour academy sailor',label:'Academy sailor',category:'Everyday',tags:['sailor','navy','Thuan’s wardrobe'],
