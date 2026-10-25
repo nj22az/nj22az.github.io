@@ -7,7 +7,8 @@ cosy-anime critique of 13:19). Plan and Blender proofs: studio repo `nj22az/jojo
 **State: the creator saw the sheets (25 October: "I think it looks better already"). On branch
 `claude/avatar-remake-continue-llretw` the eyes are now on for everyone (`?eyes3d=0` shows the painted ones), main merged
 in, runtime rebuilt. **Published to main on the owner's word ("Push", 25 October 2026)** by fast-forward from that branch
-(this note's commit); the live check is recorded below once Pages has deployed.**
+as `b3ebec8a`. Verified live: GitHub's Johansson World guard run 251 passed on that commit, and Pages serves the new
+runtime (`runtime/boot-Ban7D3-8.js`; the eye shader is in the live `runtime/animate-lYukqVp_.js`).**
 
 ## What it is
 
@@ -64,6 +65,6 @@ deadpan, the big reaction eyes) and a **2D blink**: the lash line pulled down in
 ## Next
 
 1. ~~The creator judges the sheets~~ (done: "looks better already"); ~~switch on by default~~ (done on the branch).
-2. ~~Publish~~ (done: pushed to main on the owner's "Push"); confirm the live site serves the new runtime.
+2. ~~Publish~~ (done: `b3ebec8a`, guard run 251 green, live on Pages). Not yet looked at on a physical phone.
 3. Notes on the look go into `eyeShape` (sizes, lids, lash weight). Then the rest of the cosy-anime critique (the face
    painter: brows, mouth line, stubble, blush, nose, ears) and the remake's step 2, the neck (a drawing first).
