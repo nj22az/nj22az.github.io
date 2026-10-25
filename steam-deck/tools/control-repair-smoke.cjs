@@ -20,8 +20,8 @@ const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),
   assert.equal(await page.locator('[data-bind],[data-axes],[name=controller],[name=glyphs],[data-action=swap]').count(),0,'The shipped Deck profile has no remapping controls');
   assert.match(await page.locator('#desktopContent').textContent(),/left trackpad/i);assert.match(await page.locator('#desktopContent').textContent(),/right trackpad/i);
   assert.equal(await page.evaluate(()=>window.johanssonDesktopInput.read(navigator.getGamepads()).pad.id),'Steam Deck test pad','Stale saved controller selection is ignored');
-  await page.locator('[name=sensitivity]').fill('1.4');await page.locator('[name=sensitivity]').dispatchEvent('input');
-  assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('johansson-town-camera-v1')).sensitivity),1.4,'Camera tuning is retained');
+  await page.locator('[name=sensitivity]').focus();await tap(15);
+  assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('johansson-town-camera-v1')).sensitivity),1.1,'Camera tuning is retained');
   await tap(1);assert.equal((await state()).page,'settings');await tap(1);assert.equal((await state()).menu,false);
   await tap(9);await page.evaluate(()=>document.querySelector('[data-tab=settings]').click());await page.evaluate(()=>document.querySelector('[data-action=controls]').click());await page.evaluate(()=>document.querySelector('[data-action=reset]').click());await tap(9);
   await page.evaluate(()=>document.getElementById('enter').focus());await tap(0);await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__,null,{timeout:120000});await page.waitForFunction(()=>window.johanssonDesktopUI.snapshot().page==='help'&&window.johanssonDesktopUI.snapshot().menu);await page.screenshot({path:path.join(out,'help.png')});await tap(9);
